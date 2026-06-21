@@ -62,6 +62,6 @@
     "modifying source bills or master data",
     "modifying committed formal migration SQL files"
   ],
-  "local_stash_count_preserved": 10,
+  "local_stash_count_preserved": 11,
   "temporary_postgresql_stopped": true
 }
