@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>M1 最小管理端</title>
+    <link rel="stylesheet" href="/admin/app.css">
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="M1 管理端导航">
+        <div class="brand">
+          <span class="brand-mark">M1</span>
+          <div>
+            <strong>数据基础管理端</strong>
+            <span>只读原型</span>
+          </div>
+        </div>
+        <nav class="nav-list">
+          <a href="#system" data-nav="system">系统状态</a>
+          <a href="#works" data-nav="works">作品列表</a>
+          <a href="#mapping" data-nav="mapping">映射版本</a>
+          <a href="#jobs" data-nav="jobs">后台任务</a>
+        </nav>
+        <section class="guardrail">
+          <strong>当前边界</strong>
+          <p>不导入、不激活、不撤销、不重试、不连接正式库。</p>
+        </section>
+      </aside>
+
+      <main class="main">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">M1 Audiobook Evaluation</p>
+            <h1>最小只读管理端</h1>
+          </div>
+          <div class="toolbar" aria-label="数据源和刷新">
+            <label class="fixture-toggle">
+              <input id="fixtureToggle" type="checkbox">
+              使用合成 fixture
+            </label>
+            <button id="refreshButton" type="button">刷新当前页</button>
+          </div>
+        </header>
+
+        <section id="globalNotice" class="notice is-hidden" aria-live="polite"></section>
+
+        <section id="page-system" class="page" data-page="system">
+          <div class="page-header">
+            <div>
+              <p class="eyebrow">System</p>
+              <h2>系统状态</h2>
+            </div>
+            <span class="state-pill" data-state-for="system">loading</span>
+          </div>
+          <div class="cards three">
+            <article class="card" id="serviceCard"></article>
+            <article class="card" id="databaseCard"></article>
+            <article class="card" id="lifecycleCard"></article>
+          </div>
+        </section>
+
+        <section id="page-works" class="page is-hidden" data-page="works">
+          <div class="page-header">
+            <div>
+              <p class="eyebrow">Works</p>
+              <h2>作品列表</h2>
+            </div>
+            <span class="state-pill" data-state-for="works">loading</span>
+          </div>
+          <div id="worksContent"></div>
+        </section>
+
+        <section id="page-mapping" class="page is-hidden" data-page="mapping">
+          <div class="page-header">
+            <div>
+              <p class="eyebrow">Mapping Versions</p>
+              <h2>映射版本</h2>
+            </div>
+            <span class="state-pill" data-state-for="mapping">loading</span>
+          </div>
+          <div id="mappingContent"></div>
+        </section>
+
+        <section id="page-jobs" class="page is-hidden" data-page="jobs">
+          <div class="page-header">
+            <div>
+              <p class="eyebrow">Jobs</p>
+              <h2>后台任务</h2>
+            </div>
+            <span class="state-pill" data-state-for="jobs">loading</span>
+          </div>
+          <div id="jobsContent"></div>
+        </section>
+      </main>
+    </div>
+    <script type="module" src="/admin/app.js"></script>
+  </body>
+</html>

@@ -9,6 +9,7 @@ import {
 } from "../repositories/mappingVersionRepository.js";
 import { getSystemStatus } from "../repositories/systemRepository.js";
 import { getWorkById, listWorks } from "../repositories/workRepository.js";
+import { serveAdminAsset } from "./staticAdmin.js";
 
 function sendJson(response, statusCode, body, requestId) {
   response.writeHead(statusCode, {
@@ -40,6 +41,9 @@ export function createApp(config, options = {}) {
     try {
       const url = routeUrl(request);
       const path = url.pathname;
+      if (await serveAdminAsset(request, response, path)) {
+        return;
+      }
 
       if (request.method === "GET" && path === "/health") {
         sendJson(response, 200, {

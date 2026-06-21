@@ -2,7 +2,7 @@ import { spawnSync } from "node:child_process";
 import { readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 
-const roots = ["src", "test", "tools/node", "tools/dev-smoke"];
+const roots = ["src", "test", "tools/node", "tools/dev-smoke", "public/admin"];
 const files = [];
 
 function collectJavaScriptFiles(directory) {
