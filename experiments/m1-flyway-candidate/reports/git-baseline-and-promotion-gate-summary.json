@@ -1,0 +1,47 @@
+{
+  "generated_at": "2026-06-21T13:52:00+08:00",
+  "repo_root": "D:/porject/system",
+  "remote_url": "https://github.com/KAtOReNA7/system",
+  "branch": "main",
+  "tracking": "main...origin/main",
+  "baseline_commit": "bcdb4af",
+  "redaction_commit": "dd23819",
+  "current_head": "dd23819",
+  "push_succeeded": true,
+  "gitignore_private_data_covered": true,
+  "committed_file_count_baseline": 273,
+  "sensitive_scan": {
+    "current_head_contains_real_bill_rows": false,
+    "current_head_contains_excel_workbooks": false,
+    "current_head_contains_master_data_workbook": false,
+    "current_head_contains_database_password_or_api_key": false,
+    "current_head_contains_actual_local_jdbc_url": false,
+    "current_head_local_private_data_paths_redacted": true,
+    "note": "Root commit bcdb4af contained one local real-bill path string; current HEAD dd23819 redacts it by forward commit. History rewrite was not performed."
+  },
+  "promotion_gate": {
+    "passed": true,
+    "candidate_sql_count": 80,
+    "manifest_count": 80,
+    "filenames_ok": true,
+    "banners_ok": true,
+    "sha256_match_manifest": true,
+    "formal_db_migrations_exists": false,
+    "documents_consistent": true,
+    "formal_data_migration_still_forbidden": true
+  },
+  "local_stashes_preserved": [
+    "preserve local master-data report refresh before promotion gate",
+    "preserve local real-bills report changes before promotion gate",
+    "preserve untracked analysis note before baseline redaction",
+    "preserve local generated analysis changes before baseline redaction"
+  ],
+  "allowed_next_step": "copy identical candidate SQL files to db/migrations in a separate authorized round",
+  "still_forbidden": [
+    "formal data migration",
+    "connecting to production database",
+    "importing real bills/master data/ops confirmations",
+    "modifying candidate SQL before promotion",
+    "rewriting git history or force-pushing without explicit authorization"
+  ]
+}
