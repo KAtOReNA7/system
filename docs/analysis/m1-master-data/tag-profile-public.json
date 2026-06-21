@@ -1,0 +1,400 @@
+[
+  {
+    "field": "独家",
+    "non_empty_count": 12033,
+    "distinct_count": 40,
+    "public_value_policy": "count_and_distinct_only",
+    "top_value_counts": [
+      7999,
+      3010,
+      829,
+      106,
+      21,
+      8,
+      7,
+      5,
+      5,
+      4
+    ],
+    "top_values": []
+  },
+  {
+    "field": "信息网络传播",
+    "non_empty_count": 12031,
+    "distinct_count": 200,
+    "public_value_policy": "count_and_distinct_only",
+    "top_value_counts": [
+      8358,
+      3167,
+      52,
+      51,
+      14,
+      12,
+      12,
+      10,
+      9,
+      9
+    ],
+    "top_values": []
+  },
+  {
+    "field": "转授权",
+    "non_empty_count": 12031,
+    "distinct_count": 24,
+    "public_value_policy": "count_and_distinct_only",
+    "top_value_counts": [
+      6531,
+      5403,
+      51,
+      12,
+      7,
+      4,
+      3,
+      2,
+      2,
+      2
+    ],
+    "top_values": []
+  },
+  {
+    "field": "有声使用权",
+    "non_empty_count": 12031,
+    "distinct_count": 114,
+    "public_value_policy": "count_and_distinct_only",
+    "top_value_counts": [
+      6196,
+      5445,
+      135,
+      21,
+      12,
+      10,
+      9,
+      9,
+      8,
+      8
+    ],
+    "top_values": []
+  },
+  {
+    "field": "有声改编权",
+    "non_empty_count": 12031,
+    "distinct_count": 17,
+    "public_value_policy": "count_and_distinct_only",
+    "top_value_counts": [
+      9219,
+      2783,
+      6,
+      5,
+      4,
+      2,
+      2,
+      1,
+      1,
+      1
+    ],
+    "top_values": []
+  },
+  {
+    "field": "有声转授权",
+    "non_empty_count": 12031,
+    "distinct_count": 20,
+    "public_value_policy": "count_and_distinct_only",
+    "top_value_counts": [
+      7372,
+      4609,
+      15,
+      7,
+      5,
+      4,
+      4,
+      2,
+      2,
+      1
+    ],
+    "top_values": []
+  },
+  {
+    "field": "有声权利描述",
+    "non_empty_count": 10803,
+    "distinct_count": 1227,
+    "public_value_policy": "count_and_distinct_only",
+    "top_value_counts": [
+      4880,
+      1372,
+      191,
+      165,
+      153,
+      140,
+      139,
+      106,
+      99,
+      57
+    ],
+    "top_values": []
+  },
+  {
+    "field": "广播剧",
+    "non_empty_count": 12030,
+    "distinct_count": 12,
+    "public_value_policy": "count_and_distinct_only",
+    "top_value_counts": [
+      9704,
+      2308,
+      4,
+      4,
+      2,
+      2,
+      1,
+      1,
+      1,
+      1
+    ],
+    "top_values": []
+  },
+  {
+    "field": "课程",
+    "non_empty_count": 12030,
+    "distinct_count": 13,
+    "public_value_policy": "count_and_distinct_only",
+    "top_value_counts": [
+      9773,
+      2241,
+      4,
+      2,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "top_values": []
+  },
+  {
+    "field": "外文、少数民族、繁体",
+    "non_empty_count": 2086,
+    "distinct_count": 10,
+    "public_value_policy": "count_and_distinct_only",
+    "top_value_counts": [
+      1459,
+      615,
+      3,
+      2,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "top_values": []
+  },
+  {
+    "field": "外文、少数民族、繁体转授权",
+    "non_empty_count": 2085,
+    "distinct_count": 10,
+    "public_value_policy": "count_and_distinct_only",
+    "top_value_counts": [
+      1477,
+      592,
+      5,
+      3,
+      2,
+      2,
+      1,
+      1,
+      1,
+      1
+    ],
+    "top_values": []
+  },
+  {
+    "field": "合作方式",
+    "non_empty_count": 12030,
+    "distinct_count": 31,
+    "public_value_policy": "count_and_distinct_only",
+    "top_value_counts": [
+      6323,
+      3007,
+      1466,
+      1158,
+      11,
+      8,
+      8,
+      8,
+      6,
+      5
+    ],
+    "top_values": []
+  },
+  {
+    "field": "是否外版",
+    "non_empty_count": 12012,
+    "distinct_count": 23,
+    "public_value_policy": "count_and_distinct_only",
+    "top_value_counts": [
+      9299,
+      1081,
+      910,
+      222,
+      217,
+      74,
+      63,
+      49,
+      29,
+      19
+    ],
+    "top_values": []
+  },
+  {
+    "field": "电子书续签情况",
+    "non_empty_count": 506,
+    "distinct_count": 87,
+    "public_value_policy": "count_and_distinct_only",
+    "top_value_counts": [
+      64,
+      44,
+      42,
+      24,
+      21,
+      19,
+      14,
+      13,
+      12,
+      11
+    ],
+    "top_values": []
+  },
+  {
+    "field": "归属",
+    "non_empty_count": 9141,
+    "distinct_count": 19,
+    "public_value_policy": "count_and_distinct_only",
+    "top_value_counts": [
+      3463,
+      1888,
+      1489,
+      1279,
+      683,
+      205,
+      56,
+      42,
+      9,
+      8
+    ],
+    "top_values": []
+  },
+  {
+    "field": "授权性质",
+    "non_empty_count": 3855,
+    "distinct_count": 5,
+    "public_value_policy": "count_and_distinct_only",
+    "top_value_counts": [
+      1974,
+      1634,
+      244,
+      2,
+      1
+    ],
+    "top_values": []
+  },
+  {
+    "field": "版权类型",
+    "non_empty_count": 9151,
+    "distinct_count": 5,
+    "public_value_policy": "count_and_distinct_only",
+    "top_value_counts": [
+      4700,
+      3030,
+      1196,
+      169,
+      56
+    ],
+    "top_values": []
+  },
+  {
+    "field": "产品线",
+    "non_empty_count": 7484,
+    "distinct_count": 265,
+    "public_value_policy": "count_and_distinct_only",
+    "top_value_counts": [
+      1503,
+      497,
+      456,
+      440,
+      354,
+      353,
+      199,
+      192,
+      190,
+      172
+    ],
+    "top_values": []
+  },
+  {
+    "field": "级别",
+    "non_empty_count": 7249,
+    "distinct_count": 71,
+    "public_value_policy": "count_and_distinct_only",
+    "top_value_counts": [
+      2183,
+      1831,
+      1770,
+      731,
+      221,
+      58,
+      52,
+      47,
+      40,
+      31
+    ],
+    "top_values": []
+  },
+  {
+    "field": "归属",
+    "non_empty_count": 9141,
+    "distinct_count": 19,
+    "public_value_policy": "count_and_distinct_only",
+    "top_value_counts": [
+      3463,
+      1888,
+      1489,
+      1279,
+      683,
+      205,
+      56,
+      42,
+      9,
+      8
+    ],
+    "top_values": []
+  },
+  {
+    "field": "授权性质",
+    "non_empty_count": 3855,
+    "distinct_count": 5,
+    "public_value_policy": "count_and_distinct_only",
+    "top_value_counts": [
+      1974,
+      1634,
+      244,
+      2,
+      1
+    ],
+    "top_values": []
+  },
+  {
+    "field": "版权类型",
+    "non_empty_count": 9151,
+    "distinct_count": 5,
+    "public_value_policy": "count_and_distinct_only",
+    "top_value_counts": [
+      4700,
+      3030,
+      1196,
+      169,
+      56
+    ],
+    "top_values": []
+  }
+]

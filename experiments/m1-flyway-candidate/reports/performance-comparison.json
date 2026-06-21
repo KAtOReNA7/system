@@ -1,0 +1,86 @@
+[
+  {
+    "metric": "synthetic master identities",
+    "prototype": 0.163143,
+    "candidate": 0.155503,
+    "delta": -0.007640000000000008,
+    "delta_pct": -4.683008158486731
+  },
+  {
+    "metric": "staging write 192899 rows",
+    "prototype": 2.298194,
+    "candidate": 2.224417,
+    "delta": -0.0737770000000002,
+    "delta_pct": -3.2102163698974153
+  },
+  {
+    "metric": "fact write 192899 rows",
+    "prototype": 5.847957,
+    "candidate": 5.257038,
+    "delta": -0.5909190000000004,
+    "delta_pct": -10.104708362253696
+  },
+  {
+    "metric": "candidate mapping identities",
+    "prototype": 0.402031,
+    "candidate": 0.406685,
+    "delta": 0.0046539999999999915,
+    "delta_pct": 1.1576221734144858
+  },
+  {
+    "metric": "full projection build 192899 rows",
+    "prototype": 17.418693,
+    "candidate": 17.890022,
+    "delta": 0.4713289999999972,
+    "delta_pct": 2.705880401015146
+  },
+  {
+    "metric": "first positive metrics build",
+    "prototype": 0.513426,
+    "candidate": 0.545139,
+    "delta": 0.03171299999999999,
+    "delta_pct": 6.176742120578231
+  },
+  {
+    "metric": "strict reconciliation preparation",
+    "prototype": 0.298632,
+    "candidate": 0.312732,
+    "delta": 0.014100000000000001,
+    "delta_pct": 4.7215301776099015
+  },
+  {
+    "metric": "mapping and batch atomic switch",
+    "prototype": 0.478247,
+    "candidate": 0.516534,
+    "delta": 0.03828700000000007,
+    "delta_pct": 8.005695801541897
+  },
+  {
+    "metric": "aggregate by month work channel form",
+    "prototype": 0.544637,
+    "candidate": 0.574722,
+    "delta": 0.030084999999999917,
+    "delta_pct": 5.5238626828511315
+  },
+  {
+    "metric": "database_size_bytes",
+    "prototype": 192879639,
+    "candidate": 193010711,
+    "delta": 131072,
+    "delta_pct": 0.06795533249624135
+  },
+  {
+    "metric": "index_size_bytes",
+    "prototype": 80084992,
+    "candidate": 80117760,
+    "delta": 32768,
+    "delta_pct": 0.04091653027823241
+  },
+  {
+    "metric": "row_count",
+    "prototype": 192899,
+    "candidate": 192899,
+    "delta": 0,
+    "delta_pct": 0.0
+  }
+]

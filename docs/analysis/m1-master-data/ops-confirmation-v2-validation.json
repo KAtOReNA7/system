@@ -1,0 +1,32 @@
+{
+  "workbook_open": true,
+  "expected_sheets_ok": true,
+  "row_counts": {
+    "确认进度总览": 6,
+    "正式导入阻断确认": 346,
+    "多ID归并候选": 85,
+    "标准作品基础信息补全": 3099,
+    "台账真实冲突": 11,
+    "版权期限反例": 2,
+    "非阻断观察": 90
+  },
+  "source_unchanged": true,
+  "formal_import_blockers_dedup_by_raw_work_id": true,
+  "multi_id_sheet_excludes_single_id_candidates": true,
+  "ledger_unmatched_and_real_conflicts_separated": true,
+  "basic_info_unique_standard_work": true,
+  "no_duplicate_basic_info_fill_fields": true,
+  "signed_date_as_copyright_start_candidate": true,
+  "full_amount_precision_columns_present": true,
+  "full_amount_precision_columns_hidden": true,
+  "freeze_panes_ok": true,
+  "auto_filter_ok": true,
+  "dropdowns_ok": true,
+  "conditional_formatting_ok": true,
+  "generated_time_format_ok": true,
+  "workbook_usability_ok": true,
+  "public_sensitive_matches": 0,
+  "public_privacy_ok": true,
+  "docs_sync_ok": true,
+  "overall": true
+}

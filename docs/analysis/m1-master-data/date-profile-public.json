@@ -1,0 +1,84 @@
+[
+  {
+    "field": "作品ID创建时间",
+    "missing_count": 1925,
+    "invalid_count": 7377,
+    "valid_count": 2731,
+    "format_counts": {
+      "invalid": 7377,
+      "excel_datetime": 2731,
+      "blank": 1925
+    },
+    "month_range": "2020-04~2026-06"
+  },
+  {
+    "field": "签订日期",
+    "missing_count": 69,
+    "invalid_count": 59,
+    "valid_count": 11905,
+    "format_counts": {
+      "excel_datetime": 11905,
+      "invalid": 59,
+      "blank": 69
+    },
+    "month_range": "2002-04~2027-08"
+  },
+  {
+    "field": "到期时间",
+    "missing_count": 0,
+    "invalid_count": 2102,
+    "valid_count": 9931,
+    "format_counts": {
+      "excel_datetime": 9931,
+      "invalid": 2102
+    },
+    "month_range": "2006-08~2089-04"
+  },
+  {
+    "field": "续约前到期日期",
+    "missing_count": 8793,
+    "invalid_count": 1754,
+    "valid_count": 1486,
+    "format_counts": {
+      "invalid": 1754,
+      "blank": 8793,
+      "excel_datetime": 1486
+    },
+    "month_range": "2012-10~2034-11"
+  },
+  {
+    "field": "CIP出版时间",
+    "missing_count": 10739,
+    "invalid_count": 1276,
+    "valid_count": 18,
+    "format_counts": {
+      "blank": 10739,
+      "invalid": 1276,
+      "excel_datetime": 18
+    },
+    "month_range": "2023-05~2024-02"
+  },
+  {
+    "field": "续签时间",
+    "missing_count": 11770,
+    "invalid_count": 263,
+    "valid_count": 0,
+    "format_counts": {
+      "blank": 11770,
+      "invalid": 263
+    },
+    "month_range": ""
+  },
+  {
+    "field": "首发时间",
+    "missing_count": 2424,
+    "invalid_count": 692,
+    "valid_count": 8917,
+    "format_counts": {
+      "excel_datetime": 8917,
+      "invalid": 692,
+      "blank": 2424
+    },
+    "month_range": "2000-01~2026-03"
+  }
+]

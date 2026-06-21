@@ -1,0 +1,155 @@
+{
+  "generated_at": "2026-06-21T05:21:37.538142+00:00",
+  "repo": {
+    "pwd": "D:\\porject\\system",
+    "rev_parse": {
+      "cmd": [
+        "git",
+        "rev-parse",
+        "--show-toplevel"
+      ],
+      "returncode": 0,
+      "stdout": "D:/porject/system",
+      "stderr": ""
+    },
+    "remote_v": {
+      "cmd": [
+        "git",
+        "remote",
+        "-v"
+      ],
+      "returncode": 0,
+      "stdout": "origin\thttps://github.com/KAtOReNA7/system (fetch)\norigin\thttps://github.com/KAtOReNA7/system (push)",
+      "stderr": ""
+    },
+    "branch": {
+      "cmd": [
+        "git",
+        "branch",
+        "--show-current"
+      ],
+      "returncode": 0,
+      "stdout": "main",
+      "stderr": ""
+    },
+    "status_short": {
+      "cmd": [
+        "git",
+        "status",
+        "--short"
+      ],
+      "returncode": 0,
+      "stdout": "?? .codex-work/\n?? .gitignore\n?? CHANGELOG.md\n?? NEXT-CODEX-INSTRUCTION.md\n?? README.md\n?? docs/\n?? experiments/\n?? tools/",
+      "stderr": ""
+    },
+    "status_branch_short": {
+      "cmd": [
+        "git",
+        "status",
+        "--branch",
+        "--short"
+      ],
+      "returncode": 0,
+      "stdout": "## No commits yet on main...origin/main [gone]\n?? .codex-work/\n?? .gitignore\n?? CHANGELOG.md\n?? NEXT-CODEX-INSTRUCTION.md\n?? README.md\n?? docs/\n?? experiments/\n?? tools/",
+      "stderr": ""
+    },
+    "git_path_exists": true,
+    "git_path_type": "directory",
+    "git_required_entries_missing": []
+  },
+  "git_repair": {
+    "broken_git_backup_path": "D:\\porject\\system\\_recovery\\git\\.git.broken-20260621-132006",
+    "temp_clone_path": "D:\\porject\\system_git_recovery_tmp",
+    "temp_clone_exists_after_cleanup": false,
+    "remote_url": "https://github.com/KAtOReNA7/system"
+  },
+  "workspace": {
+    "status_entry_count": 8,
+    "status_entries": [
+      "?? .codex-work/",
+      "?? .gitignore",
+      "?? CHANGELOG.md",
+      "?? NEXT-CODEX-INSTRUCTION.md",
+      "?? README.md",
+      "?? docs/",
+      "?? experiments/",
+      "?? tools/"
+    ],
+    "is_clean": false,
+    "has_many_untracked_or_modified": true
+  },
+  "candidate": {
+    "directory": "D:\\porject\\system\\experiments\\m1-flyway-candidate\\migrations",
+    "sql_count": 80,
+    "name_invalid": [],
+    "banner_missing": [],
+    "extra_files": [],
+    "suspicious_files": [],
+    "manifest_exists": true,
+    "manifest_count": 80,
+    "hash_mismatches": [],
+    "missing_from_manifest": [],
+    "extra_in_manifest": [],
+    "prohibited_content_hits": [],
+    "all_checks_passed": true
+  },
+  "target": {
+    "path": "D:\\porject\\system\\db\\migrations",
+    "exists": false,
+    "contents": [],
+    "is_allowed_state": true
+  },
+  "documents": {
+    "files": {
+      "M1-Flyway迁移候选清单-v0.1.md": {
+        "exists": true,
+        "size": 7511
+      },
+      "M1-Flyway候选验证报告-v0.1.md": {
+        "exists": true,
+        "size": 2911
+      },
+      "M1-Flyway候选独立审查报告-v0.1.md": {
+        "exists": true,
+        "size": 1894
+      },
+      "M1-Flyway候选对象差异报告-v0.1.md": {
+        "exists": true,
+        "size": 1816
+      },
+      "M1-迁移验收清单-v0.1.md": {
+        "exists": true,
+        "size": 10887
+      },
+      "M1-数据库迁移方案-v0.1.md": {
+        "exists": true,
+        "size": 27090
+      },
+      "M1-物理数据模型-v0.3.md": {
+        "exists": true,
+        "size": 85939
+      }
+    },
+    "checks": {
+      "candidate_count_80": true,
+      "flyway_10_21_0": true,
+      "postgres_16_14": true,
+      "schema_hash_consistent": true,
+      "permission_hash_consistent": true,
+      "independent_high_zero": true,
+      "db_migrations_not_created_or_unmodified": true,
+      "formal_data_migration_forbidden": true,
+      "v04_baseline_v03_archive": true
+    },
+    "all_checks_passed": true
+  },
+  "gate": {
+    "passed": false,
+    "blockers": [
+      "Git worktree is not clean; repository recovered from empty remote, current project files are untracked"
+    ],
+    "allow_next_copy": false,
+    "formal_data_migration_still_forbidden": true,
+    "need_rerun_flyway_validation": false
+  }
+}

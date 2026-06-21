@@ -1,0 +1,54 @@
+{
+  "overall": "PASS",
+  "independent_row_count": 192899,
+  "row_count_matches": true,
+  "independent_total_amount": "253610173.052208979970873801",
+  "total_matches": true,
+  "source_unchanged": true,
+  "source_hashes": [
+    {
+      "file_id": "F001",
+      "sha256": "866d064f40cf751fd8e773b70bb17270633e9a8fe40305c5f16454ec9f429803",
+      "size": 7792878
+    }
+  ],
+  "missing_report_prefixes": [],
+  "report_section_failures": [],
+  "missing_html_sections": [],
+  "image_checks": [
+    {
+      "file": "amount-sign-count.png",
+      "width": 1317,
+      "height": 668,
+      "bytes": 50074
+    },
+    {
+      "file": "issue-candidate-count.png",
+      "width": 1735,
+      "height": 911,
+      "bytes": 108772
+    },
+    {
+      "file": "monthly-row-count.png",
+      "width": 1496,
+      "height": 732,
+      "bytes": 69709
+    },
+    {
+      "file": "work-id-format.png",
+      "width": 1717,
+      "height": 692,
+      "bytes": 58123
+    }
+  ],
+  "public_sensitive_value_matches": 0,
+  "privacy_pass": true,
+  "requirement_count": 27,
+  "traceability_count": 27,
+  "acceptance_count": 27,
+  "requirement_traceability_consistency": true,
+  "at_m1_007_boundary_pass": true,
+  "data_analysis_approval_gate_pass": true,
+  "sensitive_paths_ignored": true,
+  "browser_render_qa": "BLOCKED: in-app browser runtime lacked sandbox configuration; static HTML and PNG QA completed instead"
+}

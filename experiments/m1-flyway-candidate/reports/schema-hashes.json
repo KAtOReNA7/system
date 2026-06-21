@@ -1,0 +1,24 @@
+{
+  "A_schema_hash": "4a2598d623ef696dccde654315dc67d229485f894f17cdd2be6e4e8818d14e1b",
+  "B_schema_hash": "4a2598d623ef696dccde654315dc67d229485f894f17cdd2be6e4e8818d14e1b",
+  "A_permission_hash": "89c6994360376dfa09e9eee38bfc5738a9d106df89c96be428ec8ca203ef72b2",
+  "B_permission_hash": "89c6994360376dfa09e9eee38bfc5738a9d106df89c96be428ec8ca203ef72b2",
+  "A_counts": {
+    "m1_tables": 48,
+    "flyway_tables": 1,
+    "views": 5,
+    "functions": 21,
+    "triggers": 32,
+    "fks": 84,
+    "indexes": 117
+  },
+  "B_counts": {
+    "m1_tables": 48,
+    "flyway_tables": 1,
+    "views": 5,
+    "functions": 21,
+    "triggers": 32,
+    "fks": 84,
+    "indexes": 117
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "overall": true,
+  "checks": {
+    "v21_retained": true,
+    "v22_exists": true,
+    "xlsx_zip_integrity": true,
+    "workbook_opens": true,
+    "expected_sheets": true,
+    "sheet_dimensions_preserved": true,
+    "freeze_panes_preserved": true,
+    "merged_ranges_preserved": true,
+    "data_validations_preserved": true,
+    "conditional_formatting_preserved": true,
+    "tables_preserved": true,
+    "table_filter_ranges_preserved": true,
+    "hidden_columns_preserved": true,
+    "version_title": true,
+    "task_total_unchanged": true,
+    "progress_classes_mutually_exclusive": true,
+    "empty_not_confirmed": true,
+    "unresolved_independent": true,
+    "confirmed_formula_is_residual": true,
+    "completion_rate_formula": true,
+    "unresolved_not_in_completion_denominator": true,
+    "risk_formula_only_counts_upgraded": true,
+    "no_formula_error_literals": true,
+    "only_requested_formulas_changed": true,
+    "public_summary_sensitive_pattern_matches_zero": true
+  },
+  "calculated_non_blocking_observation": {
+    "confirmed": 0,
+    "pending": 90,
+    "needs_material": 0,
+    "unresolved": 0,
+    "completion_rate": 0.0
+  },
+  "sensitive_detail_in_public_output": false
+}

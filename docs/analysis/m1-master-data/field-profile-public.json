@@ -1,0 +1,1226 @@
+[
+  {
+    "field": "排查时间",
+    "non_empty_count": 8630,
+    "missing_count": 3403,
+    "missing_rate": 0.2828056178841519,
+    "distinct_count": 574,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      122,
+      121,
+      116,
+      115,
+      113,
+      110,
+      99,
+      94
+    ]
+  },
+  {
+    "field": "排查人员",
+    "non_empty_count": 8167,
+    "missing_count": 3866,
+    "missing_rate": 0.32128313803706476,
+    "distinct_count": 3,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      5221,
+      2944,
+      2
+    ]
+  },
+  {
+    "field": "序号",
+    "non_empty_count": 12033,
+    "missing_count": 0,
+    "missing_rate": 0.0,
+    "distinct_count": 12019,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      4,
+      3,
+      3,
+      2,
+      2,
+      2,
+      2,
+      2
+    ]
+  },
+  {
+    "field": "编辑中心",
+    "non_empty_count": 9034,
+    "missing_count": 2999,
+    "missing_rate": 0.24923128064489322,
+    "distinct_count": 174,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      1214,
+      678,
+      499,
+      419,
+      367,
+      346,
+      344,
+      279
+    ]
+  },
+  {
+    "field": "我司签约人",
+    "non_empty_count": 8566,
+    "missing_count": 3467,
+    "missing_rate": 0.28812432477353944,
+    "distinct_count": 483,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      476,
+      443,
+      234,
+      198,
+      178,
+      137,
+      133,
+      132
+    ]
+  },
+  {
+    "field": "选题编号",
+    "non_empty_count": 12004,
+    "missing_count": 29,
+    "missing_rate": 0.002410039059253719,
+    "distinct_count": 5011,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      1472,
+      1289,
+      574,
+      562,
+      266,
+      90,
+      85,
+      82
+    ]
+  },
+  {
+    "field": "合同编号",
+    "non_empty_count": 11158,
+    "missing_count": 875,
+    "missing_rate": 0.07271669575334497,
+    "distinct_count": 7154,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      90,
+      85,
+      58,
+      54,
+      54,
+      52,
+      51,
+      42
+    ]
+  },
+  {
+    "field": "业务代码",
+    "non_empty_count": 12030,
+    "missing_count": 3,
+    "missing_rate": 0.0002493143854400399,
+    "distinct_count": 91,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      7165,
+      1227,
+      872,
+      613,
+      408,
+      284,
+      213,
+      158
+    ]
+  },
+  {
+    "field": "合同最终码",
+    "non_empty_count": 12030,
+    "missing_count": 3,
+    "missing_rate": 0.0002493143854400399,
+    "distinct_count": 11159,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      872,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  {
+    "field": "合同类型",
+    "non_empty_count": 10497,
+    "missing_count": 1536,
+    "missing_rate": 0.12764896534530043,
+    "distinct_count": 349,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      2494,
+      901,
+      625,
+      590,
+      579,
+      450,
+      366,
+      349
+    ]
+  },
+  {
+    "field": "作品ID创建时间",
+    "non_empty_count": 10108,
+    "missing_count": 1925,
+    "missing_rate": 0.15997673065735893,
+    "distinct_count": 501,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      5509,
+      1839,
+      53,
+      52,
+      50,
+      43,
+      41,
+      32
+    ]
+  },
+  {
+    "field": "作品ID",
+    "non_empty_count": 10757,
+    "missing_count": 1276,
+    "missing_rate": 0.10604171860716363,
+    "distinct_count": 8854,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      1862,
+      21,
+      11,
+      3,
+      3,
+      2,
+      2,
+      2
+    ]
+  },
+  {
+    "field": "出版书名",
+    "non_empty_count": 10667,
+    "missing_count": 1366,
+    "missing_rate": 0.11352115017036483,
+    "distinct_count": 10588,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      21,
+      11,
+      10,
+      2,
+      2,
+      2,
+      2,
+      2
+    ]
+  },
+  {
+    "field": "合同书名",
+    "non_empty_count": 11993,
+    "missing_count": 40,
+    "missing_rate": 0.0033241918058671987,
+    "distinct_count": 9334,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      90,
+      85,
+      54,
+      37,
+      35,
+      27,
+      27,
+      25
+    ]
+  },
+  {
+    "field": "作者署名",
+    "non_empty_count": 11322,
+    "missing_count": 711,
+    "missing_rate": 0.059087509349289455,
+    "distinct_count": 5346,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      146,
+      94,
+      90,
+      74,
+      63,
+      57,
+      54,
+      54
+    ]
+  },
+  {
+    "field": "作者原名",
+    "non_empty_count": 11576,
+    "missing_count": 457,
+    "missing_rate": 0.037978891382032746,
+    "distinct_count": 5189,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      138,
+      126,
+      99,
+      85,
+      80,
+      74,
+      57,
+      57
+    ]
+  },
+  {
+    "field": "授权方",
+    "non_empty_count": 11621,
+    "missing_count": 412,
+    "missing_rate": 0.034239175600432145,
+    "distinct_count": 3928,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      173,
+      167,
+      158,
+      133,
+      124,
+      113,
+      102,
+      99
+    ]
+  },
+  {
+    "field": "签订日期",
+    "non_empty_count": 11964,
+    "missing_count": 69,
+    "missing_rate": 0.0057342308651209175,
+    "distinct_count": 3590,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      92,
+      91,
+      88,
+      63,
+      59,
+      55,
+      52,
+      51
+    ]
+  },
+  {
+    "field": "到期时间",
+    "non_empty_count": 12033,
+    "missing_count": 0,
+    "missing_rate": 0.0,
+    "distinct_count": 3370,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      1139,
+      260,
+      173,
+      168,
+      117,
+      114,
+      90,
+      85
+    ]
+  },
+  {
+    "field": "续约前到期日期",
+    "non_empty_count": 3240,
+    "missing_count": 8793,
+    "missing_rate": 0.7307404637247569,
+    "distinct_count": 733,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      532,
+      173,
+      153,
+      97,
+      85,
+      57,
+      56,
+      55
+    ]
+  },
+  {
+    "field": "CIP出版时间",
+    "non_empty_count": 1294,
+    "missing_count": 10739,
+    "missing_rate": 0.8924623950801961,
+    "distinct_count": 111,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      44,
+      39,
+      38,
+      38,
+      37,
+      33,
+      32,
+      32
+    ]
+  },
+  {
+    "field": "是否续约(不再更新,请查阅下架反馈表)",
+    "non_empty_count": 5985,
+    "missing_count": 6048,
+    "missing_rate": 0.5026178010471204,
+    "distinct_count": 23,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      5679,
+      224,
+      16,
+      15,
+      12,
+      9,
+      7,
+      5
+    ]
+  },
+  {
+    "field": "续签时间",
+    "non_empty_count": 263,
+    "missing_count": 11770,
+    "missing_rate": 0.9781434388764232,
+    "distinct_count": 88,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      14,
+      14,
+      12,
+      11,
+      9,
+      8,
+      8,
+      7
+    ]
+  },
+  {
+    "field": "书号",
+    "non_empty_count": 9300,
+    "missing_count": 2733,
+    "missing_rate": 0.22712540513587634,
+    "distinct_count": 8888,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      74,
+      21,
+      16,
+      16,
+      11,
+      10,
+      10,
+      7
+    ]
+  },
+  {
+    "field": "首发时间",
+    "non_empty_count": 9609,
+    "missing_count": 2424,
+    "missing_rate": 0.20144602343555224,
+    "distinct_count": 3016,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      618,
+      88,
+      59,
+      34,
+      25,
+      25,
+      23,
+      23
+    ]
+  },
+  {
+    "field": "独家",
+    "non_empty_count": 12033,
+    "missing_count": 0,
+    "missing_rate": 0.0,
+    "distinct_count": 40,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      7999,
+      3010,
+      829,
+      106,
+      21,
+      8,
+      7,
+      5
+    ]
+  },
+  {
+    "field": "信息网络传播",
+    "non_empty_count": 12031,
+    "missing_count": 2,
+    "missing_rate": 0.00016620959029335994,
+    "distinct_count": 200,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      8358,
+      3167,
+      52,
+      51,
+      14,
+      12,
+      12,
+      10
+    ]
+  },
+  {
+    "field": "转授权",
+    "non_empty_count": 12031,
+    "missing_count": 2,
+    "missing_rate": 0.00016620959029335994,
+    "distinct_count": 24,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      6531,
+      5403,
+      51,
+      12,
+      7,
+      4,
+      3,
+      2
+    ]
+  },
+  {
+    "field": "有声使用权",
+    "non_empty_count": 12031,
+    "missing_count": 2,
+    "missing_rate": 0.00016620959029335994,
+    "distinct_count": 114,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      6196,
+      5445,
+      135,
+      21,
+      12,
+      10,
+      9,
+      9
+    ]
+  },
+  {
+    "field": "有声改编权",
+    "non_empty_count": 12031,
+    "missing_count": 2,
+    "missing_rate": 0.00016620959029335994,
+    "distinct_count": 17,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      9219,
+      2783,
+      6,
+      5,
+      4,
+      2,
+      2,
+      1
+    ]
+  },
+  {
+    "field": "有声转授权",
+    "non_empty_count": 12031,
+    "missing_count": 2,
+    "missing_rate": 0.00016620959029335994,
+    "distinct_count": 20,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      7372,
+      4609,
+      15,
+      7,
+      5,
+      4,
+      4,
+      2
+    ]
+  },
+  {
+    "field": "有声权利描述",
+    "non_empty_count": 10803,
+    "missing_count": 1230,
+    "missing_rate": 0.10221889803041635,
+    "distinct_count": 1227,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      4880,
+      1372,
+      191,
+      165,
+      153,
+      140,
+      139,
+      106
+    ]
+  },
+  {
+    "field": "广播剧",
+    "non_empty_count": 12030,
+    "missing_count": 3,
+    "missing_rate": 0.0002493143854400399,
+    "distinct_count": 12,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      9704,
+      2308,
+      4,
+      4,
+      2,
+      2,
+      1,
+      1
+    ]
+  },
+  {
+    "field": "课程",
+    "non_empty_count": 12030,
+    "missing_count": 3,
+    "missing_rate": 0.0002493143854400399,
+    "distinct_count": 13,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      9773,
+      2241,
+      4,
+      2,
+      2,
+      1,
+      1,
+      1
+    ]
+  },
+  {
+    "field": "外文、少数民族、繁体",
+    "non_empty_count": 2086,
+    "missing_count": 9947,
+    "missing_rate": 0.8266433973240256,
+    "distinct_count": 10,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      1459,
+      615,
+      3,
+      2,
+      2,
+      1,
+      1,
+      1
+    ]
+  },
+  {
+    "field": "外文、少数民族、繁体转授权",
+    "non_empty_count": 2085,
+    "missing_count": 9948,
+    "missing_rate": 0.8267265021191723,
+    "distinct_count": 10,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      1477,
+      592,
+      5,
+      3,
+      2,
+      2,
+      1,
+      1
+    ]
+  },
+  {
+    "field": "合作方式",
+    "non_empty_count": 12030,
+    "missing_count": 3,
+    "missing_rate": 0.0002493143854400399,
+    "distinct_count": 31,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      6323,
+      3007,
+      1466,
+      1158,
+      11,
+      8,
+      8,
+      8
+    ]
+  },
+  {
+    "field": "授权范围(中国大陆地区和中国大陆地区(除港澳台)都只限于中国大陆地区使用)",
+    "non_empty_count": 12032,
+    "missing_count": 1,
+    "missing_rate": 8.310479514667997e-05,
+    "distinct_count": 53,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      5070,
+      2888,
+      2560,
+      420,
+      251,
+      133,
+      120,
+      92
+    ]
+  },
+  {
+    "field": "是否外版",
+    "non_empty_count": 12012,
+    "missing_count": 21,
+    "missing_rate": 0.0017452006980802793,
+    "distinct_count": 23,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      9299,
+      1081,
+      910,
+      222,
+      217,
+      74,
+      63,
+      49
+    ]
+  },
+  {
+    "field": "电子约定定价",
+    "non_empty_count": 7354,
+    "missing_count": 4679,
+    "missing_rate": 0.38884733649131553,
+    "distinct_count": 221,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      6546,
+      147,
+      76,
+      29,
+      28,
+      23,
+      23,
+      14
+    ]
+  },
+  {
+    "field": "有声约定定价",
+    "non_empty_count": 7316,
+    "missing_count": 4717,
+    "missing_rate": 0.39200531870688937,
+    "distinct_count": 164,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      6683,
+      159,
+      62,
+      27,
+      23,
+      13,
+      12,
+      11
+    ]
+  },
+  {
+    "field": "电子预付",
+    "non_empty_count": 8247,
+    "missing_count": 3786,
+    "missing_rate": 0.31463475442533034,
+    "distinct_count": 316,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      6631,
+      182,
+      146,
+      75,
+      47,
+      46,
+      43,
+      38
+    ]
+  },
+  {
+    "field": "有声预付",
+    "non_empty_count": 8211,
+    "missing_count": 3822,
+    "missing_rate": 0.31762652705061084,
+    "distinct_count": 246,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      7011,
+      173,
+      77,
+      50,
+      38,
+      37,
+      31,
+      30
+    ]
+  },
+  {
+    "field": "电子版税",
+    "non_empty_count": 12028,
+    "missing_count": 5,
+    "missing_rate": 0.00041552397573339984,
+    "distinct_count": 114,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      5360,
+      3151,
+      1133,
+      669,
+      588,
+      400,
+      165,
+      105
+    ]
+  },
+  {
+    "field": "有声版税",
+    "non_empty_count": 12028,
+    "missing_count": 5,
+    "missing_rate": 0.00041552397573339984,
+    "distinct_count": 101,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      6167,
+      3470,
+      911,
+      323,
+      316,
+      283,
+      101,
+      66
+    ]
+  },
+  {
+    "field": "广播剧预付",
+    "non_empty_count": 1257,
+    "missing_count": 10776,
+    "missing_rate": 0.8955372725006233,
+    "distinct_count": 415,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      49,
+      43,
+      40,
+      35,
+      31,
+      28,
+      26,
+      25
+    ]
+  },
+  {
+    "field": "电子书续签情况",
+    "non_empty_count": 506,
+    "missing_count": 11527,
+    "missing_rate": 0.9579489736557799,
+    "distinct_count": 87,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      64,
+      44,
+      42,
+      24,
+      21,
+      19,
+      14,
+      13
+    ]
+  },
+  {
+    "field": "出版社",
+    "non_empty_count": 5729,
+    "missing_count": 6304,
+    "missing_rate": 0.5238926286046705,
+    "distinct_count": 182,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      1091,
+      756,
+      410,
+      319,
+      229,
+      183,
+      176,
+      157
+    ]
+  },
+  {
+    "field": "产品线",
+    "non_empty_count": 7484,
+    "missing_count": 4549,
+    "missing_rate": 0.37804371312224716,
+    "distinct_count": 265,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      1503,
+      497,
+      456,
+      440,
+      354,
+      353,
+      199,
+      192
+    ]
+  },
+  {
+    "field": "CIP",
+    "non_empty_count": 5630,
+    "missing_count": 6403,
+    "missing_rate": 0.5321200033241918,
+    "distinct_count": 2111,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      471,
+      304,
+      97,
+      91,
+      85,
+      83,
+      79,
+      79
+    ]
+  },
+  {
+    "field": "级别",
+    "non_empty_count": 7249,
+    "missing_count": 4784,
+    "missing_rate": 0.39757333998171696,
+    "distinct_count": 71,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      2183,
+      1831,
+      1770,
+      731,
+      221,
+      58,
+      52,
+      47
+    ]
+  },
+  {
+    "field": "纸书定价",
+    "non_empty_count": 7244,
+    "missing_count": 4789,
+    "missing_rate": 0.39798886395745037,
+    "distinct_count": 253,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      571,
+      546,
+      536,
+      422,
+      388,
+      313,
+      308,
+      287
+    ]
+  },
+  {
+    "field": "图书产品编码(版权系统)",
+    "non_empty_count": 9230,
+    "missing_count": 2803,
+    "missing_rate": 0.23294274079614394,
+    "distinct_count": 7899,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      944,
+      208,
+      56,
+      21,
+      11,
+      10,
+      9,
+      5
+    ]
+  },
+  {
+    "field": "合同约定作品数量",
+    "non_empty_count": 3888,
+    "missing_count": 8145,
+    "missing_rate": 0.6768885564697082,
+    "distinct_count": 29,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      2884,
+      183,
+      182,
+      108,
+      98,
+      87,
+      61,
+      51
+    ]
+  },
+  {
+    "field": "归属",
+    "non_empty_count": 9141,
+    "missing_count": 2892,
+    "missing_rate": 0.24033906756419846,
+    "distinct_count": 19,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      3463,
+      1888,
+      1489,
+      1279,
+      683,
+      205,
+      56,
+      42
+    ]
+  },
+  {
+    "field": "授权性质",
+    "non_empty_count": 3855,
+    "missing_count": 8178,
+    "missing_rate": 0.6796310147095488,
+    "distinct_count": 5,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      1974,
+      1634,
+      244,
+      2,
+      1
+    ]
+  },
+  {
+    "field": "内部转授书-数盟",
+    "non_empty_count": 9192,
+    "missing_count": 2841,
+    "missing_rate": 0.23610072301171778,
+    "distinct_count": 58,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      2475,
+      2136,
+      1210,
+      341,
+      306,
+      269,
+      214,
+      189
+    ]
+  },
+  {
+    "field": "备注JS",
+    "non_empty_count": 82,
+    "missing_count": 11951,
+    "missing_rate": 0.9931854067979723,
+    "distinct_count": 34,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      10,
+      7,
+      5,
+      5,
+      5,
+      4,
+      4,
+      3
+    ]
+  },
+  {
+    "field": "电子预付人民币",
+    "non_empty_count": 911,
+    "missing_count": 11122,
+    "missing_rate": 0.9242915316213746,
+    "distinct_count": 649,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      14,
+      13,
+      10,
+      10,
+      9,
+      8,
+      8,
+      8
+    ]
+  },
+  {
+    "field": "有声预付人民币",
+    "non_empty_count": 531,
+    "missing_count": 11502,
+    "missing_rate": 0.955871353777113,
+    "distinct_count": 379,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      11,
+      10,
+      8,
+      8,
+      8,
+      8,
+      6,
+      6
+    ]
+  },
+  {
+    "field": "译稿电子预付",
+    "non_empty_count": 51,
+    "missing_count": 11982,
+    "missing_rate": 0.9957616554475193,
+    "distinct_count": 43,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      9,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  {
+    "field": "有声译稿预付",
+    "non_empty_count": 49,
+    "missing_count": 11984,
+    "missing_rate": 0.9959278650378127,
+    "distinct_count": 41,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      9,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  {
+    "field": "译稿电子预付(人民币)",
+    "non_empty_count": 45,
+    "missing_count": 11988,
+    "missing_rate": 0.9962602842183994,
+    "distinct_count": 41,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      4,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  {
+    "field": "有声译稿预付(人民币)",
+    "non_empty_count": 40,
+    "missing_count": 11993,
+    "missing_rate": 0.9966758081941328,
+    "distinct_count": 39,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      2,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  {
+    "field": "版权类型",
+    "non_empty_count": 9151,
+    "missing_count": 2882,
+    "missing_rate": 0.23950801961273166,
+    "distinct_count": 5,
+    "public_value_policy": "count_and_distinct_only",
+    "top_values": [],
+    "top_value_counts": [
+      4700,
+      3030,
+      1196,
+      169,
+      56
+    ]
+  }
+]

@@ -1,0 +1,30 @@
+{
+  "overall": true,
+  "database": "PostgreSQL 16+",
+  "amount_type": "NUMERIC(32,18)",
+  "physical_table_count": 47,
+  "ddl_probe_statement_count": 15,
+  "checks": {
+    "all_tables_have_required_definition_parts": true,
+    "monthly_summary_table_removed": true,
+    "income_fact_no_is_effective": true,
+    "projection_no_amount_or_month_columns": true,
+    "standard_work_no_current_pointers": true,
+    "snapshot_mapping_no_row_validity": true,
+    "historical_raw_id_not_standard_fk": true,
+    "basic_info_no_cycle": true,
+    "classification_and_tag_releases_present": true,
+    "issue_run_scopes_issues": true,
+    "failed_task_terminal": true,
+    "multi_consumer_impact": true,
+    "formal_fact_fields_not_null": true,
+    "atomic_switch_documented": true,
+    "all_27_at_covered": true,
+    "fk_dependency_graph_acyclic": true,
+    "postgresql_ddl_probe_parses": true,
+    "no_formal_migration_files_generated": true
+  },
+  "review_scope": "documentation and temporary pure DDL parsing only",
+  "formal_database_connected": false,
+  "formal_migration_generated": false
+}

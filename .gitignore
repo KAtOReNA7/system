@@ -1,0 +1,64 @@
+# Codex / local working dirs
+.codex-work/
+.agents/
+.analysis-python/
+.analysis-node-workspace/
+_recovery/
+*.tmp
+*.bak
+*.log.tmp
+
+# Python / Node local caches
+__pycache__/
+*.pyc
+tools/**/__pycache__/
+experiments/**/__pycache__/
+tools/**/node_modules/
+experiments/**/node_modules/
+
+# Local database / credentials
+*.env
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.crt
+*.sqlite
+*.db
+
+# Private business data
+data/
+**/data/
+*m1-master-data-private*/
+**/m1-master-data-private/**
+**/*真实账单*
+**/*数字版权台账*
+**/*运营确认包*
+**/*专项复核包*
+**/*已填写*
+**/*.xlsx
+**/*.xls
+**/*.csv
+
+# Project assets that must stay reviewable even when titles mention data sources
+!docs/
+!docs/**
+!tools/
+!tools/**
+!experiments/
+!experiments/m1-flyway-candidate/
+!experiments/m1-flyway-candidate/**
+!experiments/m1-postgresql16-prototype/
+!experiments/m1-postgresql16-prototype/**
+
+# Local execution logs
+experiments/**/reports/*.log
+experiments/**/__pycache__/
+experiments/**/node_modules/
+tools/**/__pycache__/
+tools/**/node_modules/
+
+# Recovery and temporary clone directories
+system_git_recovery_tmp/
+.git.broken-*/

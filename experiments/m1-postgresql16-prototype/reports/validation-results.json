@@ -1,0 +1,511 @@
+{
+  "generated_at": "2026-06-20T20:31:45.711531+00:00",
+  "started_at": "2026-06-20T20:31:02.060650+00:00",
+  "environment": {
+    "server": "PostgreSQL 16.14, compiled by Visual C++ build 1944, 64-bit|listen=localhost|port=55432|timezone=Asia/Shanghai|statement_timeout=0|lock_timeout=0|max_connections=100|shared_buffers=128MB|user=postgres",
+    "host": "127.0.0.1",
+    "port": "55432",
+    "os": "Windows-10-10.0.26200-SP0",
+    "python": "3.11.4",
+    "cpu_logical": 32
+  },
+  "object_counts": {
+    "prototype_sql_files": 10,
+    "tables": 48
+  },
+  "summary": {
+    "passed": 76,
+    "failed": 0,
+    "total": 76
+  },
+  "tests": [
+    {
+      "name": "empty database creates all prototype objects",
+      "category": "ddl",
+      "status": "passed",
+      "detail": "all SQL files executed"
+    },
+    {
+      "name": "48 physical tables",
+      "category": "ddl",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\n48"
+    },
+    {
+      "name": "five version partial active indexes exist",
+      "category": "ddl",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\n5"
+    },
+    {
+      "name": "NULLS NOT DISTINCT is present",
+      "category": "ddl",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\n2"
+    },
+    {
+      "name": "schema_initialized permits zero active",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nschema_initialized"
+    },
+    {
+      "name": "ready rejects zero active",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nBEGIN\nSET\nauthorized\nUPDATE 1\n错误:  state ready_for_bill_activation requires exactly one active version of each kind; got mapping 0, basic 0, classification 0, tag 0\nCONTEXT:  在RAISE的第11行的PL/pgSQL函数assert_active_versions()"
+    },
+    {
+      "name": "enter master_data_initializing",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\n\nmaster_data_initializing"
+    },
+    {
+      "name": "bootstrap activation and ready transition",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\n\nready_for_bill_activation"
+    },
+    {
+      "name": "ready has exactly one of four active versions",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\n1111"
+    },
+    {
+      "name": "second active mapping rejected",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nauthorized\nINSERT 0 1\n错误:  重复键违反唯一约束\"uq_mapping_version_active\"\nDETAIL:  键值\"((true))=(t)\" 已经存在"
+    },
+    {
+      "name": "raw ID parsing keeps 12345 and Y12345 distinct",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\n12345,12345,audio_copyright,audio_product"
+    },
+    {
+      "name": "illegal ID returns null",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nt"
+    },
+    {
+      "name": "two business forms map to one standard work",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nINSERT 0 2\nINSERT 0 3\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 2"
+    },
+    {
+      "name": "invalid raw ID mapping is rejected",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\n错误:  raw work ID X123 does not derive standard work ID 12345\nCONTEXT:  在RAISE的第7行的PL/pgSQL函数validate_work_mapping_identity()"
+    },
+    {
+      "name": "authorization category cannot override business form",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\n错误:  business form audio_copyright conflicts with raw work ID Y99999\nCONTEXT:  在RAISE的第13行的PL/pgSQL函数validate_work_mapping_identity()"
+    },
+    {
+      "name": "historical issue context created",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nINSERT 0 1\nINSERT 0 1"
+    },
+    {
+      "name": "raw and historical mapping tables are mutually exclusive",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nBEGIN\nINSERT 0 1\n错误:  raw work ID 12345 exists in both mapping tables for version 3\nCONTEXT:  在RAISE的第14行的PL/pgSQL函数enforce_mapping_table_mutex()"
+    },
+    {
+      "name": "historical raw ID cannot repeat through another business form",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nBEGIN\nINSERT 0 1\n错误:  business form audio_copyright conflicts with raw work ID Y99999\nCONTEXT:  在RAISE的第13行的PL/pgSQL函数validate_work_mapping_identity()"
+    },
+    {
+      "name": "classification root NULL uniqueness works",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nBEGIN\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\n错误:  重复键违反唯一约束\"classification_node_classification_release_id_classificati_key1\"\nDETAIL:  键值\"(classification_release_id, classification_system_id, parent_id, display_name)=(2, 1, null, Same Root)\" 已经存在"
+    },
+    {
+      "name": "candidate first batch prepared",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nUPDATE 1\nUPDATE 1"
+    },
+    {
+      "name": "NUMERIC(32,18) preserves exact value",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\n123.123456789012345678"
+    },
+    {
+      "name": "income_fact UPDATE rejected",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\n错误:  income_fact is immutable; use batch revoke and a new projection version\nCONTEXT:  在RAISE的第2行的PL/pgSQL函数reject_income_fact_mutation()"
+    },
+    {
+      "name": "income_fact DELETE rejected",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\n错误:  income_fact is immutable; use batch revoke and a new projection version\nCONTEXT:  在RAISE的第2行的PL/pgSQL函数reject_income_fact_mutation()"
+    },
+    {
+      "name": "ready batch reconciliation fields are frozen",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\n错误:  direct active/revoked batch mutation is forbidden\nCONTEXT:  在RAISE的第6行的PL/pgSQL函数guard_batch_status()"
+    },
+    {
+      "name": "new work appears in basic info gap view",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nt"
+    },
+    {
+      "name": "first batch and mapping activate atomically",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\n\noperational"
+    },
+    {
+      "name": "bootstrap mapping retired",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nretired"
+    },
+    {
+      "name": "operational rejects zero active mapping",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nBEGIN\nSET\nauthorized\nUPDATE 1\n错误:  state operational requires exactly one active version of each kind; got mapping 0, basic 1, classification 1, tag 1\nCONTEXT:  在RAISE的第11行的PL/pgSQL函数assert_active_versions()"
+    },
+    {
+      "name": "active batch rejects appended facts",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\n错误:  income facts can only be appended while batch is draft or validating\nCONTEXT:  在RAISE的第6行的PL/pgSQL函数validate_income_fact_insert()"
+    },
+    {
+      "name": "active mapping snapshot rejects child append",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\n错误:  mapping snapshot children are immutable unless version is building\nCONTEXT:  在RAISE的第8行的PL/pgSQL函数guard_snapshot_child()"
+    },
+    {
+      "name": "second batch facts prepared",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nUPDATE 1"
+    },
+    {
+      "name": "second mapping snapshot built invisibly",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 2\nINSERT 0 2\nINSERT 0 2\nINSERT 0 1\nUPDATE 1"
+    },
+    {
+      "name": "new batch activation keeps batch/mapping atomic",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\n\n2"
+    },
+    {
+      "name": "negative-only business form has no first-positive month",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nt"
+    },
+    {
+      "name": "NUMERIC aggregation preserves 18 decimals",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\n122.123456789012345677"
+    },
+    {
+      "name": "revoke rejects candidate still containing revoked batch",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\n错误:  mapping 5 contains facts outside visible batch set\nCONTEXT:  在RAISE的第21行的PL/pgSQL函数assert_mapping_coverage(bigint,bigint,bigint)\nSQL 语句 \"SELECT m1.assert_mapping_coverage(p_mapping_version_id,NULL,p_batch_id)\"\n在PERFORM的第10行的PL/pgSQL函数revoke_bill_batch(bigint,bigint,text)"
+    },
+    {
+      "name": "revocation mapping prepared",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 2\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nUPDATE 1"
+    },
+    {
+      "name": "batch revocation and mapping switch atomic",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\n\n1"
+    },
+    {
+      "name": "pure mapping switch",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\n\n6"
+    },
+    {
+      "name": "basic info version switch",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nINSERT 0 1\nINSERT 0 1"
+    },
+    {
+      "name": "basic info, classification and tag releases switch atomically",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nUPDATE 1\n\n3:2:2"
+    },
+    {
+      "name": "active classification release rejects node append",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\n错误:  classification release children are immutable unless release is draft\nCONTEXT:  在RAISE的第14行的PL/pgSQL函数guard_snapshot_child()"
+    },
+    {
+      "name": "active basic-info snapshot rejects row append",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\n错误:  basic-info snapshot children are immutable unless version is building\nCONTEXT:  在RAISE的第11行的PL/pgSQL函数guard_snapshot_child()"
+    },
+    {
+      "name": "invalid candidate can remain invisible",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nINSERT 0 1\nINSERT 0 1"
+    },
+    {
+      "name": "validated mapping metadata is frozen",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\n错误:  cannot directly transition or mutate frozen validated/active/retired mapping_version row\nCONTEXT:  在RAISE的第11行的PL/pgSQL函数guard_version_status()"
+    },
+    {
+      "name": "pre-commit validation failure rolls back switch",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\n错误:  mapping 8 coverage mismatch expected 1/123.123456789012345678 got 0/0\nCONTEXT:  在RAISE的第15行的PL/pgSQL函数assert_mapping_coverage(bigint,bigint,bigint)\nSQL 语句 \"SELECT m1.assert_mapping_coverage(p_mapping_version_id,NULL,NULL)\"\n在PERFORM的第8行的PL/pgSQL函数switch_mapping_version(bigint,text)"
+    },
+    {
+      "name": "failed switch leaves prior active mapping",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\n6"
+    },
+    {
+      "name": "application_rw cannot update income_fact",
+      "category": "permissions",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n错误:  对表 income_fact 权限不够"
+    },
+    {
+      "name": "application_rw cannot switch active version",
+      "category": "permissions",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n错误:  对函数 switch_mapping_version 权限不够"
+    },
+    {
+      "name": "application_rw can call authorized parser",
+      "category": "permissions",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\naudio_product"
+    },
+    {
+      "name": "application_ro can query formal view",
+      "category": "permissions",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n1"
+    },
+    {
+      "name": "application_ro cannot query base facts",
+      "category": "permissions",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n错误:  对表 income_fact 权限不够"
+    },
+    {
+      "name": "background_worker can create a building candidate",
+      "category": "permissions",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nINSERT 0 1\nINSERT 0 1\nbuilding"
+    },
+    {
+      "name": "background_worker cannot activate mapping directly",
+      "category": "permissions",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n错误:  cannot directly transition or mutate frozen validated/active/retired mapping_version row\nCONTEXT:  在RAISE的第11行的PL/pgSQL函数guard_version_status()"
+    },
+    {
+      "name": "backup_operator has no business write",
+      "category": "permissions",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n错误:  对表 channel 权限不够"
+    },
+    {
+      "name": "SECURITY DEFINER functions have fixed search_path",
+      "category": "permissions",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\n7"
+    },
+    {
+      "name": "caller search_path cannot pollute SECURITY DEFINER lookup",
+      "category": "permissions",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET"
+    },
+    {
+      "name": "first concurrent switch commits",
+      "category": "concurrency",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nBEGIN\nSET\n\n\nCOMMIT"
+    },
+    {
+      "name": "second concurrent switch times out on advisory lock",
+      "category": "concurrency",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n错误:  由于锁超时，取消语句操作\nCONTEXT:  SQL 语句 \"SELECT pg_advisory_xact_lock(hashtextextended('m1.version-switch',0))\"\n在PERFORM的第3行的PL/pgSQL函数switch_mapping_version(bigint,text)"
+    },
+    {
+      "name": "timeout leaves one complete active version",
+      "category": "concurrency",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\n1:8"
+    },
+    {
+      "name": "performance DB lifecycle bootstrap",
+      "category": "performance",
+      "status": "passed",
+      "detail": "SET\nSET\nSET"
+    },
+    {
+      "name": "synthetic master identities",
+      "category": "performance",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nINSERT 0 5000\nINSERT 0 5000\nINSERT 0 5000\nINSERT 0 50\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1"
+    },
+    {
+      "name": "staging write 192899 rows",
+      "category": "performance",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nINSERT 0 192899\nUPDATE 1"
+    },
+    {
+      "name": "fact write 192899 rows",
+      "category": "performance",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nINSERT 0 1\nINSERT 0 192899"
+    },
+    {
+      "name": "candidate mapping identities",
+      "category": "performance",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nINSERT 0 1\nINSERT 0 1\nINSERT 0 50\nINSERT 0 5000\nINSERT 0 5000"
+    },
+    {
+      "name": "full projection build 192899 rows",
+      "category": "performance",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nINSERT 0 192899"
+    },
+    {
+      "name": "first positive metrics build",
+      "category": "performance",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nINSERT 0 5000\nINSERT 0 5000"
+    },
+    {
+      "name": "strict reconciliation preparation",
+      "category": "performance",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nUPDATE 1\nUPDATE 1"
+    },
+    {
+      "name": "mapping and batch atomic switch",
+      "category": "performance",
+      "status": "passed",
+      "detail": "SET\nSET\nSET"
+    },
+    {
+      "name": "aggregate by month work channel form",
+      "category": "performance",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\n15000"
+    },
+    {
+      "name": "EXPLAIN month",
+      "category": "performance",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\n[\n  {\n    \"Plan\": {\n      \"Node Type\": \"Aggregate\",\n      \"Strategy\": \"Sorted\",\n      \"Partial Mode\": \"Simple\",\n      \"Parallel Aware\": false,\n      \"Async Capable\": false,\n      \"Startup Cost\": 1944.51,\n      \"Total Cost\": 1944.57,\n      \"Plan Rows\": 3,\n      \"Plan Width\": 36,\n      \"Actual Startup Time\": 285.227,\n      \"Actual Total Time\": 304.169,\n      \"Actual Rows\": 24,\n      \"Actual Loops\": 1,\n      \"Group Key\": [\"v_current_income.bill_month\"],\n      \"Shared Hit Blocks\": 775605,\n      \"Shared Read Blocks\": 0,\n      \"Shared Dirtied Blocks\": 0,\n      \"Shared Written Blocks\": 0,\n      \"Local Hit Blocks\": 0,\n      \"Local Read Blocks\": 0,\n      \"Local Dirtied Blocks\": 0,\n      \"Local Written Blocks\": 0,\n      \"Temp Read Blocks\": 497,\n      \"Temp Written Blocks\": 500,\n      \"Plans\": [\n        {\n          \"Node Type\": \"Sort\",\n          \"Parent Relationship\": \"Outer\",\n          \"Parallel Aware\": false,\n          \"Async Capable\": false,\n          \"Startup Cost\": 1944.51,\n          \"Total Cost\": 1944.52,\n          \"Plan Rows\": 3,\n          \"Plan Width\": 30,\n          \"Actual Startup Time\": 284.396,\n          \"Actual Total Time\": 292.029,\n          \"Actual Rows\": 192899,\n          \"Actual Loops\": 1,\n          \"Sort Key\": [\"v_current_income.bill_month\"],\n          \"Sort Method\": \"external merge\",\n          \"Sort Space Used\": 3976,\n          \"Sort Space Type\": \"Disk\",\n          \"Shared Hit Blocks\": 775605,\n          \"Shared Read Blocks\": 0,\n          \"Shared Dirtied Blocks\": 0,\n          \"Shared Written Blocks\": 0,\n          \"Local Hit Blocks\": 0,\n          \"Local Read Blocks\": 0,\n          \"Local Dirtied Blocks\": 0,\n          \"Local Written Blocks\": 0,\n          \"Temp Read Blocks\": 497,\n          \"Temp Written Blocks\": 500,\n          \"Plans\": [\n            {\n              \"Node Type\": \"Subquery Scan\",\n              \"Parent Relationship\": \"Outer\",\n              \"Parallel Aware\": false,\n              \"Async Capable\": false,\n              \"Alias\": \"v_current_inco"
+    },
+    {
+      "name": "EXPLAIN work",
+      "category": "performance",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\n[\n  {\n    \"Plan\": {\n      \"Node Type\": \"Aggregate\",\n      \"Strategy\": \"Sorted\",\n      \"Partial Mode\": \"Simple\",\n      \"Parallel Aware\": false,\n      \"Async Capable\": false,\n      \"Startup Cost\": 1944.51,\n      \"Total Cost\": 1944.57,\n      \"Plan Rows\": 3,\n      \"Plan Width\": 64,\n      \"Actual Startup Time\": 475.571,\n      \"Actual Total Time\": 542.114,\n      \"Actual Rows\": 5000,\n      \"Actual Loops\": 1,\n      \"Group Key\": [\"v_current_income.standard_work_id\"],\n      \"Shared Hit Blocks\": 775605,\n      \"Shared Read Blocks\": 0,\n      \"Shared Dirtied Blocks\": 0,\n      \"Shared Written Blocks\": 0,\n      \"Local Hit Blocks\": 0,\n      \"Local Read Blocks\": 0,\n      \"Local Dirtied Blocks\": 0,\n      \"Local Written Blocks\": 0,\n      \"Temp Read Blocks\": 515,\n      \"Temp Written Blocks\": 518,\n      \"Plans\": [\n        {\n          \"Node Type\": \"Sort\",\n          \"Parent Relationship\": \"Outer\",\n          \"Parallel Aware\": false,\n          \"Async Capable\": false,\n          \"Startup Cost\": 1944.51,\n          \"Total Cost\": 1944.52,\n          \"Plan Rows\": 3,\n          \"Plan Width\": 58,\n          \"Actual Startup Time\": 475.543,\n          \"Actual Total Time\": 525.510,\n          \"Actual Rows\": 192899,\n          \"Actual Loops\": 1,\n          \"Sort Key\": [\"v_current_income.standard_work_id\"],\n          \"Sort Method\": \"external merge\",\n          \"Sort Space Used\": 4120,\n          \"Sort Space Type\": \"Disk\",\n          \"Shared Hit Blocks\": 775605,\n          \"Shared Read Blocks\": 0,\n          \"Shared Dirtied Blocks\": 0,\n          \"Shared Written Blocks\": 0,\n          \"Local Hit Blocks\": 0,\n          \"Local Read Blocks\": 0,\n          \"Local Dirtied Blocks\": 0,\n          \"Local Written Blocks\": 0,\n          \"Temp Read Blocks\": 515,\n          \"Temp Written Blocks\": 518,\n          \"Plans\": [\n            {\n              \"Node Type\": \"Subquery Scan\",\n              \"Parent Relationship\": \"Outer\",\n              \"Parallel Aware\": false,\n              \"Async Capable\": false,\n              \"Alias\": \""
+    },
+    {
+      "name": "EXPLAIN channel",
+      "category": "performance",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\n[\n  {\n    \"Plan\": {\n      \"Node Type\": \"Aggregate\",\n      \"Strategy\": \"Sorted\",\n      \"Partial Mode\": \"Simple\",\n      \"Parallel Aware\": false,\n      \"Async Capable\": false,\n      \"Startup Cost\": 1944.51,\n      \"Total Cost\": 1944.57,\n      \"Plan Rows\": 3,\n      \"Plan Width\": 40,\n      \"Actual Startup Time\": 285.993,\n      \"Actual Total Time\": 305.780,\n      \"Actual Rows\": 50,\n      \"Actual Loops\": 1,\n      \"Group Key\": [\"v_current_income.channel_id\"],\n      \"Shared Hit Blocks\": 775605,\n      \"Shared Read Blocks\": 0,\n      \"Shared Dirtied Blocks\": 0,\n      \"Shared Written Blocks\": 0,\n      \"Local Hit Blocks\": 0,\n      \"Local Read Blocks\": 0,\n      \"Local Dirtied Blocks\": 0,\n      \"Local Written Blocks\": 0,\n      \"Temp Read Blocks\": 590,\n      \"Temp Written Blocks\": 593,\n      \"Plans\": [\n        {\n          \"Node Type\": \"Sort\",\n          \"Parent Relationship\": \"Outer\",\n          \"Parallel Aware\": false,\n          \"Async Capable\": false,\n          \"Startup Cost\": 1944.51,\n          \"Total Cost\": 1944.52,\n          \"Plan Rows\": 3,\n          \"Plan Width\": 34,\n          \"Actual Startup Time\": 285.554,\n          \"Actual Total Time\": 293.420,\n          \"Actual Rows\": 192899,\n          \"Actual Loops\": 1,\n          \"Sort Key\": [\"v_current_income.channel_id\"],\n          \"Sort Method\": \"external merge\",\n          \"Sort Space Used\": 4720,\n          \"Sort Space Type\": \"Disk\",\n          \"Shared Hit Blocks\": 775605,\n          \"Shared Read Blocks\": 0,\n          \"Shared Dirtied Blocks\": 0,\n          \"Shared Written Blocks\": 0,\n          \"Local Hit Blocks\": 0,\n          \"Local Read Blocks\": 0,\n          \"Local Dirtied Blocks\": 0,\n          \"Local Written Blocks\": 0,\n          \"Temp Read Blocks\": 590,\n          \"Temp Written Blocks\": 593,\n          \"Plans\": [\n            {\n              \"Node Type\": \"Subquery Scan\",\n              \"Parent Relationship\": \"Outer\",\n              \"Parallel Aware\": false,\n              \"Async Capable\": false,\n              \"Alias\": \"v_current_inco"
+    },
+    {
+      "name": "EXPLAIN form",
+      "category": "performance",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\n[\n  {\n    \"Plan\": {\n      \"Node Type\": \"Aggregate\",\n      \"Strategy\": \"Sorted\",\n      \"Partial Mode\": \"Simple\",\n      \"Parallel Aware\": false,\n      \"Async Capable\": false,\n      \"Startup Cost\": 1944.51,\n      \"Total Cost\": 1944.57,\n      \"Plan Rows\": 3,\n      \"Plan Width\": 64,\n      \"Actual Startup Time\": 299.591,\n      \"Actual Total Time\": 312.758,\n      \"Actual Rows\": 2,\n      \"Actual Loops\": 1,\n      \"Group Key\": [\"v_current_income.business_form\"],\n      \"Shared Hit Blocks\": 775605,\n      \"Shared Read Blocks\": 0,\n      \"Shared Dirtied Blocks\": 0,\n      \"Shared Written Blocks\": 0,\n      \"Local Hit Blocks\": 0,\n      \"Local Read Blocks\": 0,\n      \"Local Dirtied Blocks\": 0,\n      \"Local Written Blocks\": 0,\n      \"Temp Read Blocks\": 755,\n      \"Temp Written Blocks\": 758,\n      \"Plans\": [\n        {\n          \"Node Type\": \"Sort\",\n          \"Parent Relationship\": \"Outer\",\n          \"Parallel Aware\": false,\n          \"Async Capable\": false,\n          \"Startup Cost\": 1944.51,\n          \"Total Cost\": 1944.52,\n          \"Plan Rows\": 3,\n          \"Plan Width\": 58,\n          \"Actual Startup Time\": 285.895,\n          \"Actual Total Time\": 297.247,\n          \"Actual Rows\": 192899,\n          \"Actual Loops\": 1,\n          \"Sort Key\": [\"v_current_income.business_form\"],\n          \"Sort Method\": \"external merge\",\n          \"Sort Space Used\": 6040,\n          \"Sort Space Type\": \"Disk\",\n          \"Shared Hit Blocks\": 775605,\n          \"Shared Read Blocks\": 0,\n          \"Shared Dirtied Blocks\": 0,\n          \"Shared Written Blocks\": 0,\n          \"Local Hit Blocks\": 0,\n          \"Local Read Blocks\": 0,\n          \"Local Dirtied Blocks\": 0,\n          \"Local Written Blocks\": 0,\n          \"Temp Read Blocks\": 755,\n          \"Temp Written Blocks\": 758,\n          \"Plans\": [\n            {\n              \"Node Type\": \"Subquery Scan\",\n              \"Parent Relationship\": \"Outer\",\n              \"Parallel Aware\": false,\n              \"Async Capable\": false,\n              \"Alias\": \"v_current"
+    },
+    {
+      "name": "all prototype SQL files carry non-production banner",
+      "category": "boundary",
+      "status": "passed",
+      "detail": "[]"
+    },
+    {
+      "name": "formal db/migrations directory not created",
+      "category": "boundary",
+      "status": "passed",
+      "detail": "False"
+    }
+  ],
+  "performance": {
+    "synthetic master identities": 0.163143,
+    "staging write 192899 rows": 2.298194,
+    "fact write 192899 rows": 5.847957,
+    "candidate mapping identities": 0.402031,
+    "full projection build 192899 rows": 17.418693,
+    "first positive metrics build": 0.513426,
+    "strict reconciliation preparation": 0.298632,
+    "mapping and batch atomic switch": 0.478247,
+    "aggregate by month work channel form": 0.544637,
+    "database_size_bytes": 192879639,
+    "index_size_bytes": 80084992,
+    "row_count": 192899,
+    "plans": {
+      "month": "SET\nSET\nSET\n[\n  {\n    \"Plan\": {\n      \"Node Type\": \"Aggregate\",\n      \"Strategy\": \"Sorted\",\n      \"Partial Mode\": \"Simple\",\n      \"Parallel Aware\": false,\n      \"Async Capable\": false,\n      \"Startup Cost\": 1944.51,\n      \"Total Cost\": 1944.57,\n      \"Plan Rows\": 3,\n      \"Plan Width\": 36,\n      \"Actual Startup Time\": 285.227,\n      \"Actual Total Time\": 304.169,\n      \"Actual Rows\": 24,\n      \"Actual Loops\": 1,\n      \"Group Key\": [\"v_current_income.bill_month\"],\n      \"Shared Hit Blocks\": 775605,\n      \"Shared Read Blocks\": 0,\n      \"Shared Dirtied Blocks\": 0,\n      \"Shared Written Blocks\": 0,\n      \"Local Hit Blocks\": 0,\n      \"Local Read Blocks\": 0,\n      \"Local Dirtied Blocks\": 0,\n      \"Local Written Blocks\": 0,\n      \"Temp Read Blocks\": 497,\n      \"Temp Written Blocks\": 500,\n      \"Plans\": [\n        {\n          \"Node Type\": \"Sort\",\n          \"Parent Relationship\": \"Outer\",\n          \"Parallel Aware\": false,\n          \"Async Capable\": false,\n          \"Startup Cost\": 1944.51,\n          \"Total Cost\": 1944.52,\n          \"Plan Rows\": 3,\n          \"Plan Width\": 30,\n          \"Actual Startup Time\": 284.396,\n          \"Actual Total Time\": 292.029,\n          \"Actual Rows\": 192899,\n          \"Actual Loops\": 1,\n          \"Sort Key\": [\"v_current_income.bill_month\"],\n          \"Sort Method\": \"external merge\",\n          \"Sort Space Used\": 3976,\n          \"Sort Space Type\": \"Disk\",\n          \"Shared Hit Blocks\": 775605,\n          \"Shared Read Blocks\": 0,\n          \"Shared Dirtied Blocks\": 0,\n          \"Shared Written Blocks\": 0,\n          \"Local Hit Blocks\": 0,\n          \"Local Read Blocks\": 0,\n          \"Local Dirtied Blocks\": 0,\n          \"Local Written Blocks\": 0,\n          \"Temp Read Blocks\": 497,\n          \"Temp Written Blocks\": 500,\n          \"Plans\": [\n            {\n              \"Node Type\": \"Subquery Scan\",\n              \"Parent Relationship\": \"Outer\",\n              \"Parallel Aware\": false,\n              \"Async Capable\": false,\n              \"Alias\": \"v_current_income\",\n              \"Startup Cost\": 30.16,\n              \"Total Cost\": 1944.49,\n              \"Plan Rows\": 3,\n              \"Plan Width\": 30,\n              \"Actual Startup Time\": 7.161,\n              \"Actual Total Time\": 266.175,\n              \"Actual Rows\": 192899,\n              \"Actual Loops\": 1,\n              \"Shared Hit Blocks\": 775602,\n              \"Shared Read Blocks\": 0,\n              \"Shared Dirtied Blocks\": 0,\n              \"Shared Written Blocks\": 0,\n              \"Local Hit Blocks\": 0,\n              \"Local Read Blocks\": 0,\n              \"Local Dirtied Blocks\": 0,\n              \"Local Written Blocks\": 0,\n              \"Temp Read Blocks\": 0,\n              \"Temp Written Blocks\": 0,\n              \"Plans\": [\n                {\n                  \"Node Type\": \"Nested Loop\",\n                  \"Parent Relationship\": \"Subquery\",\n                  \"Parallel Aware\": false,\n                  \"Async Capable\": false,\n                  \"Join Type\": \"Inner\",\n                  \"Startup Cost\": 30.16,\n                  \"Total Cost\": 1944.46,\n                  \"Plan Rows\": 3,\n                  \"Plan Width\": 330,\n                  \"Actual Startup Time\": 7.160,\n                  \"Actual Total Time\": 257.830,\n                  \"Actual Rows\": 192899,\n                  \"Actual Loops\": 1,\n                  \"Inner Unique\": false,\n                  \"Join Filter\": \"(f.import_batch_id = b.id)\",\n                  \"Rows Removed by Join Filter\": 0,\n                  \"Shared Hit Blocks\": 775602,\n                  \"Shared Read Blocks\": 0,\n                  \"Shared Dirtied Blocks\": 0,\n                  \"Shared Written Blocks\": 0,\n                  \"Local Hit Blocks\": 0,\n                  \"Local Read Blocks\": 0,\n                  \"Local Dirtied Blocks\": 0,\n                  \"Local Written Blocks\": 0,\n                  \"Temp Read Blocks\": 0,\n                  \"Temp Written Blocks\": 0,\n                  \"Plans\": [\n                    {\n                      \"Node Type\": \"Seq Scan\",\n                      \"Parent Relationship\": \"Outer\",\n                      \"Parallel Aware\": false,\n                      \"Async Capable\": false,\n                      \"Relation Name\": \"import_batch\",\n                      \"Alias\": \"b\",\n                      \"Startup Cost\": 0.00,\n                      \"Total Cost\": 12.38,\n                      \"Plan Rows\": 1,\n                      \"Plan Width\": 8,\n                      \"Actual Startup Time\": 0.008,\n                      \"Actual Total Time\": 0.009,\n                      \"Actual Rows\": 1,\n                      \"Actual Loops\": 1,\n                      \"Filter\": \"(status = 'active'::text)\",\n                      \"Rows Removed by Filter\": 0,\n                      \"Shared Hit Blocks\": 1,\n                      \"Shared Read Blocks\": 0,\n                      \"Shared Dirtied Blocks\": 0,\n                      \"Shared Written Blocks\": 0,\n                      \"Local Hit Blocks\": 0,\n                      \"Local Read Blocks\": 0,\n                      \"Local Dirtied Blocks\": 0,\n                      \"Local Written Blocks\": 0,\n                      \"Temp Read Blocks\": 0,\n                      \"Temp Written Blocks\": 0\n                    },\n                    {\n                      \"Node Type\": \"Nested Loop\",\n                      \"Parent Relationship\": \"Inner\",\n                      \"Parallel Aware\": false,\n                      \"Async Capable\": false,\n                      \"Join Type\": \"Inner\",\n                      \"Startup Cost\": 30.16,\n                      \"Total Cost\": 1926.12,\n                      \"Plan Rows\": 477,\n                      \"Plan Width\": 38,\n                      \"Actual Startup Time\": 7.149,\n                      \"Actual Total Time\": 240.859,\n                      \"Actual Rows\": 192899,\n                      \"Actual Loops\": 1,\n                      \"Inner Unique\": true,\n                      \"Shared Hit Blocks\": 775601,\n                      \"Shared Read Blocks\": 0,\n                      \"Shared Dirtied Blocks\": 0,\n                      \"Shared Written Blocks\": 0,\n                      \"Local Hit Blocks\": 0,\n                      \"Local Read Blocks\": 0,\n                      \"Local Dirtied Blocks\": 0,\n                      \"Local Written Blocks\": 0,\n                      \"Temp Read Blocks\": 0,\n                      \"Temp Written Blocks\": 0,\n                      \"Plans\": [\n                        {\n                          \"Node Type\": \"Nested Loop\",\n                          \"Parent Relationship\": \"Outer\",\n                          \"Parallel Aware\": false,\n                          \"Async Capable\": false,\n                          \"Join Type\": \"Inner\",\n                          \"Startup Cost\": 29.74,\n                          \"Total Cost\": 1645.32,\n                          \"Plan Rows\": 477,\n                          \"Plan Width\": 8,\n                          \"Actual Startup Time\": 7.112,\n                          \"Actual Total Time\": 30.210,\n                          \"Actual Rows\": 192899,\n                          \"Actual Loops\": 1,\n                          \"Inner Unique\": false,\n                          \"Shared Hit Blocks\": 4005,\n                          \"Shared Read Blocks\": 0,\n                          \"Shared Dirtied Blocks\": 0,\n                          \"Shared Written Blocks\": 0,\n                          \"Local Hit Blocks\": 0,\n                          \"Local Read Blocks\": 0,\n                          \"Local Dirtied Blocks\": 0,\n                          \"Local Written Blocks\": 0,\n                          \"Temp Read Blocks\": 0,\n                          \"Temp Written Blocks\": 0,\n                          \"Plans\": [\n                            {\n                              \"Node Type\": \"Index Scan\",\n                              \"Parent Relationship\": \"Outer\",\n                              \"Parallel Aware\": false,\n                              \"Async Capable\": false,\n                              \"Scan Direction\": \"Forward\",\n                              \"Index Name\": \"uq_mapping_version_active\",\n                              \"Relation Name\": \"mapping_version\",\n                              \"Alias\": \"mv\",\n                              \"Startup Cost\": 0.15,\n                              \"Total Cost\": 8.16,\n                              \"Plan Rows\": 1,\n                              \"Plan Width\": 8,\n                              \"Actual Startup Time\": 0.009,\n                              \"Actual Total Time\": 0.011,\n                              \"Actual Rows\": 1,\n                              \"Actual Loops\": 1,\n                              \"Shared Hit Blocks\": 2,\n                              \"Shared Read Blocks\": 0,\n                              \"Shared Dirtied Blocks\": 0,\n                              \"Shared Written Blocks\": 0,\n                              \"Local Hit Blocks\": 0,\n                              \"Local Read Blocks\": 0,\n                              \"Local Dirtied Blocks\": 0,\n                              \"Local Written Blocks\": 0,\n                              \"Temp Read Blocks\": 0,\n                              \"Temp Written Blocks\": 0\n                            },\n                            {\n                              \"Node Type\": \"Bitmap Heap Scan\",\n                              \"Parent Relationship\": \"Inner\",\n                              \"Parallel Aware\": false,\n                              \"Async Capable\": false,\n                              \"Relation Name\": \"income_projection\",\n                              \"Alias\": \"p\",\n                              \"Startup Cost\": 29.60,\n                              \"Total Cost\": 1630.47,\n                              \"Plan Rows\": 668,\n                              \"Plan Width\": 16,\n                              \"Actual Startup Time\": 7.097,\n                              \"Actual Total Time\": 21.019,\n                              \"Actual Rows\": 192899,\n                              \"Actual Loops\": 1,\n                              \"Recheck Cond\": \"(mapping_version_id = mv.id)\",\n                              \"Rows Removed by Index Recheck\": 0,\n                              \"Exact Heap Blocks\": 2967,\n                              \"Lossy Heap Blocks\": 0,\n                              \"Shared Hit Blocks\": 4003,\n                              \"Shared Read Blocks\": 0,\n                              \"Shared Dirtied Blocks\": 0,\n                              \"Shared Written Blocks\": 0,\n                              \"Local Hit Blocks\": 0,\n                              \"Local Read Blocks\": 0,\n                              \"Local Dirtied Blocks\": 0,\n                              \"Local Written Blocks\": 0,\n                              \"Temp Read Blocks\": 0,\n                              \"Temp Written Blocks\": 0,\n                              \"Plans\": [\n                                {\n                                  \"Node Type\": \"Bitmap Index Scan\",\n                                  \"Parent Relationship\": \"Outer\",\n                                  \"Parallel Aware\": false,\n                                  \"Async Capable\": false,\n                                  \"Index Name\": \"income_projection_pkey\",\n                                  \"Startup Cost\": 0.00,\n                                  \"Total Cost\": 29.43,\n                                  \"Plan Rows\": 668,\n                                  \"Plan Width\": 0,\n                                  \"Actual Startup Time\": 6.879,\n                                  \"Actual Total Time\": 6.879,\n                                  \"Actual Rows\": 192899,\n                                  \"Actual Loops\": 1,\n                                  \"Index Cond\": \"(mapping_version_id = mv.id)\",\n                                  \"Shared Hit Blocks\": 1036,\n                                  \"Shared Read Blocks\": 0,\n                                  \"Shared Dirtied Blocks\": 0,\n                                  \"Shared Written Blocks\": 0,\n                                  \"Local Hit Blocks\": 0,\n                                  \"Local Read Blocks\": 0,\n                                  \"Local Dirtied Blocks\": 0,\n                                  \"Local Written Blocks\": 0,\n                                  \"Temp Read Blocks\": 0,\n                                  \"Temp Written Blocks\": 0\n                                }\n                              ]\n                            }\n                          ]\n                        },\n                        {\n                          \"Node Type\": \"Index Scan\",\n                          \"Parent Relationship\": \"Inner\",\n                          \"Parallel Aware\": false,\n                          \"Async Capable\": false,\n                          \"Scan Direction\": \"Forward\",\n                          \"Index Name\": \"income_fact_pkey\",\n                          \"Relation Name\": \"income_fact\",\n                          \"Alias\": \"f\",\n                          \"Startup Cost\": 0.42,\n                          \"Total Cost\": 0.59,\n                          \"Plan Rows\": 1,\n                          \"Plan Width\": 46,\n                          \"Actual Startup Time\": 0.001,\n                          \"Actual Total Time\": 0.001,\n                          \"Actual Rows\": 1,\n                          \"Actual Loops\": 192899,\n                          \"Index Cond\": \"(id = p.income_fact_id)\",\n                          \"Rows Removed by Index Recheck\": 0,\n                          \"Shared Hit Blocks\": 771596,\n                          \"Shared Read Blocks\": 0,\n                          \"Shared Dirtied Blocks\": 0,\n                          \"Shared Written Blocks\": 0,\n                          \"Local Hit Blocks\": 0,\n                          \"Local Read Blocks\": 0,\n                          \"Local Dirtied Blocks\": 0,\n                          \"Local Written Blocks\": 0,\n                          \"Temp Read Blocks\": 0,\n                          \"Temp Written Blocks\": 0\n                        }\n                      ]\n                    }\n                  ]\n                }\n              ]\n            }\n          ]\n        }\n      ]\n    },\n    \"Planning\": {\n      \"Shared Hit Blocks\": 590,\n      \"Shared Read Blocks\": 0,\n      \"Shared Dirtied Blocks\": 0,\n      \"Shared Written Blocks\": 0,\n      \"Local Hit Blocks\": 0,\n      \"Local Read Blocks\": 0,\n      \"Local Dirtied Blocks\": 0,\n      \"Local Written Blocks\": 0,\n      \"Temp Read Blocks\": 0,\n      \"Temp Written Blocks\": 0\n    },\n    \"Planning Time\": 9.600,\n    \"Triggers\": [\n    ],\n    \"Execution Time\": 310.255\n  }\n]",
+      "work": "SET\nSET\nSET\n[\n  {\n    \"Plan\": {\n      \"Node Type\": \"Aggregate\",\n      \"Strategy\": \"Sorted\",\n      \"Partial Mode\": \"Simple\",\n      \"Parallel Aware\": false,\n      \"Async Capable\": false,\n      \"Startup Cost\": 1944.51,\n      \"Total Cost\": 1944.57,\n      \"Plan Rows\": 3,\n      \"Plan Width\": 64,\n      \"Actual Startup Time\": 475.571,\n      \"Actual Total Time\": 542.114,\n      \"Actual Rows\": 5000,\n      \"Actual Loops\": 1,\n      \"Group Key\": [\"v_current_income.standard_work_id\"],\n      \"Shared Hit Blocks\": 775605,\n      \"Shared Read Blocks\": 0,\n      \"Shared Dirtied Blocks\": 0,\n      \"Shared Written Blocks\": 0,\n      \"Local Hit Blocks\": 0,\n      \"Local Read Blocks\": 0,\n      \"Local Dirtied Blocks\": 0,\n      \"Local Written Blocks\": 0,\n      \"Temp Read Blocks\": 515,\n      \"Temp Written Blocks\": 518,\n      \"Plans\": [\n        {\n          \"Node Type\": \"Sort\",\n          \"Parent Relationship\": \"Outer\",\n          \"Parallel Aware\": false,\n          \"Async Capable\": false,\n          \"Startup Cost\": 1944.51,\n          \"Total Cost\": 1944.52,\n          \"Plan Rows\": 3,\n          \"Plan Width\": 58,\n          \"Actual Startup Time\": 475.543,\n          \"Actual Total Time\": 525.510,\n          \"Actual Rows\": 192899,\n          \"Actual Loops\": 1,\n          \"Sort Key\": [\"v_current_income.standard_work_id\"],\n          \"Sort Method\": \"external merge\",\n          \"Sort Space Used\": 4120,\n          \"Sort Space Type\": \"Disk\",\n          \"Shared Hit Blocks\": 775605,\n          \"Shared Read Blocks\": 0,\n          \"Shared Dirtied Blocks\": 0,\n          \"Shared Written Blocks\": 0,\n          \"Local Hit Blocks\": 0,\n          \"Local Read Blocks\": 0,\n          \"Local Dirtied Blocks\": 0,\n          \"Local Written Blocks\": 0,\n          \"Temp Read Blocks\": 515,\n          \"Temp Written Blocks\": 518,\n          \"Plans\": [\n            {\n              \"Node Type\": \"Subquery Scan\",\n              \"Parent Relationship\": \"Outer\",\n              \"Parallel Aware\": false,\n              \"Async Capable\": false,\n              \"Alias\": \"v_current_income\",\n              \"Startup Cost\": 30.16,\n              \"Total Cost\": 1944.49,\n              \"Plan Rows\": 3,\n              \"Plan Width\": 58,\n              \"Actual Startup Time\": 6.424,\n              \"Actual Total Time\": 265.109,\n              \"Actual Rows\": 192899,\n              \"Actual Loops\": 1,\n              \"Shared Hit Blocks\": 775602,\n              \"Shared Read Blocks\": 0,\n              \"Shared Dirtied Blocks\": 0,\n              \"Shared Written Blocks\": 0,\n              \"Local Hit Blocks\": 0,\n              \"Local Read Blocks\": 0,\n              \"Local Dirtied Blocks\": 0,\n              \"Local Written Blocks\": 0,\n              \"Temp Read Blocks\": 0,\n              \"Temp Written Blocks\": 0,\n              \"Plans\": [\n                {\n                  \"Node Type\": \"Nested Loop\",\n                  \"Parent Relationship\": \"Subquery\",\n                  \"Parallel Aware\": false,\n                  \"Async Capable\": false,\n                  \"Join Type\": \"Inner\",\n                  \"Startup Cost\": 30.16,\n                  \"Total Cost\": 1944.46,\n                  \"Plan Rows\": 3,\n                  \"Plan Width\": 330,\n                  \"Actual Startup Time\": 6.424,\n                  \"Actual Total Time\": 256.632,\n                  \"Actual Rows\": 192899,\n                  \"Actual Loops\": 1,\n                  \"Inner Unique\": false,\n                  \"Join Filter\": \"(f.import_batch_id = b.id)\",\n                  \"Rows Removed by Join Filter\": 0,\n                  \"Shared Hit Blocks\": 775602,\n                  \"Shared Read Blocks\": 0,\n                  \"Shared Dirtied Blocks\": 0,\n                  \"Shared Written Blocks\": 0,\n                  \"Local Hit Blocks\": 0,\n                  \"Local Read Blocks\": 0,\n                  \"Local Dirtied Blocks\": 0,\n                  \"Local Written Blocks\": 0,\n                  \"Temp Read Blocks\": 0,\n                  \"Temp Written Blocks\": 0,\n                  \"Plans\": [\n                    {\n                      \"Node Type\": \"Seq Scan\",\n                      \"Parent Relationship\": \"Outer\",\n                      \"Parallel Aware\": false,\n                      \"Async Capable\": false,\n                      \"Relation Name\": \"import_batch\",\n                      \"Alias\": \"b\",\n                      \"Startup Cost\": 0.00,\n                      \"Total Cost\": 12.38,\n                      \"Plan Rows\": 1,\n                      \"Plan Width\": 8,\n                      \"Actual Startup Time\": 0.005,\n                      \"Actual Total Time\": 0.007,\n                      \"Actual Rows\": 1,\n                      \"Actual Loops\": 1,\n                      \"Filter\": \"(status = 'active'::text)\",\n                      \"Rows Removed by Filter\": 0,\n                      \"Shared Hit Blocks\": 1,\n                      \"Shared Read Blocks\": 0,\n                      \"Shared Dirtied Blocks\": 0,\n                      \"Shared Written Blocks\": 0,\n                      \"Local Hit Blocks\": 0,\n                      \"Local Read Blocks\": 0,\n                      \"Local Dirtied Blocks\": 0,\n                      \"Local Written Blocks\": 0,\n                      \"Temp Read Blocks\": 0,\n                      \"Temp Written Blocks\": 0\n                    },\n                    {\n                      \"Node Type\": \"Nested Loop\",\n                      \"Parent Relationship\": \"Inner\",\n                      \"Parallel Aware\": false,\n                      \"Async Capable\": false,\n                      \"Join Type\": \"Inner\",\n                      \"Startup Cost\": 30.16,\n                      \"Total Cost\": 1926.12,\n                      \"Plan Rows\": 477,\n                      \"Plan Width\": 66,\n                      \"Actual Startup Time\": 6.417,\n                      \"Actual Total Time\": 239.562,\n                      \"Actual Rows\": 192899,\n                      \"Actual Loops\": 1,\n                      \"Inner Unique\": true,\n                      \"Shared Hit Blocks\": 775601,\n                      \"Shared Read Blocks\": 0,\n                      \"Shared Dirtied Blocks\": 0,\n                      \"Shared Written Blocks\": 0,\n                      \"Local Hit Blocks\": 0,\n                      \"Local Read Blocks\": 0,\n                      \"Local Dirtied Blocks\": 0,\n                      \"Local Written Blocks\": 0,\n                      \"Temp Read Blocks\": 0,\n                      \"Temp Written Blocks\": 0,\n                      \"Plans\": [\n                        {\n                          \"Node Type\": \"Nested Loop\",\n                          \"Parent Relationship\": \"Outer\",\n                          \"Parallel Aware\": false,\n                          \"Async Capable\": false,\n                          \"Join Type\": \"Inner\",\n                          \"Startup Cost\": 29.74,\n                          \"Total Cost\": 1645.32,\n                          \"Plan Rows\": 477,\n                          \"Plan Width\": 40,\n                          \"Actual Startup Time\": 6.402,\n                          \"Actual Total Time\": 31.043,\n                          \"Actual Rows\": 192899,\n                          \"Actual Loops\": 1,\n                          \"Inner Unique\": false,\n                          \"Shared Hit Blocks\": 4005,\n                          \"Shared Read Blocks\": 0,\n                          \"Shared Dirtied Blocks\": 0,\n                          \"Shared Written Blocks\": 0,\n                          \"Local Hit Blocks\": 0,\n                          \"Local Read Blocks\": 0,\n                          \"Local Dirtied Blocks\": 0,\n                          \"Local Written Blocks\": 0,\n                          \"Temp Read Blocks\": 0,\n                          \"Temp Written Blocks\": 0,\n                          \"Plans\": [\n                            {\n                              \"Node Type\": \"Index Scan\",\n                              \"Parent Relationship\": \"Outer\",\n                              \"Parallel Aware\": false,\n                              \"Async Capable\": false,\n                              \"Scan Direction\": \"Forward\",\n                              \"Index Name\": \"uq_mapping_version_active\",\n                              \"Relation Name\": \"mapping_version\",\n                              \"Alias\": \"mv\",\n                              \"Startup Cost\": 0.15,\n                              \"Total Cost\": 8.16,\n                              \"Plan Rows\": 1,\n                              \"Plan Width\": 8,\n                              \"Actual Startup Time\": 0.007,\n                              \"Actual Total Time\": 0.008,\n                              \"Actual Rows\": 1,\n                              \"Actual Loops\": 1,\n                              \"Shared Hit Blocks\": 2,\n                              \"Shared Read Blocks\": 0,\n                              \"Shared Dirtied Blocks\": 0,\n                              \"Shared Written Blocks\": 0,\n                              \"Local Hit Blocks\": 0,\n                              \"Local Read Blocks\": 0,\n                              \"Local Dirtied Blocks\": 0,\n                              \"Local Written Blocks\": 0,\n                              \"Temp Read Blocks\": 0,\n                              \"Temp Written Blocks\": 0\n                            },\n                            {\n                              \"Node Type\": \"Bitmap Heap Scan\",\n                              \"Parent Relationship\": \"Inner\",\n                              \"Parallel Aware\": false,\n                              \"Async Capable\": false,\n                              \"Relation Name\": \"income_projection\",\n                              \"Alias\": \"p\",\n                              \"Startup Cost\": 29.60,\n                              \"Total Cost\": 1630.47,\n                              \"Plan Rows\": 668,\n                              \"Plan Width\": 48,\n                              \"Actual Startup Time\": 6.392,\n                              \"Actual Total Time\": 20.057,\n                              \"Actual Rows\": 192899,\n                              \"Actual Loops\": 1,\n                              \"Recheck Cond\": \"(mapping_version_id = mv.id)\",\n                              \"Rows Removed by Index Recheck\": 0,\n                              \"Exact Heap Blocks\": 2967,\n                              \"Lossy Heap Blocks\": 0,\n                              \"Shared Hit Blocks\": 4003,\n                              \"Shared Read Blocks\": 0,\n                              \"Shared Dirtied Blocks\": 0,\n                              \"Shared Written Blocks\": 0,\n                              \"Local Hit Blocks\": 0,\n                              \"Local Read Blocks\": 0,\n                              \"Local Dirtied Blocks\": 0,\n                              \"Local Written Blocks\": 0,\n                              \"Temp Read Blocks\": 0,\n                              \"Temp Written Blocks\": 0,\n                              \"Plans\": [\n                                {\n                                  \"Node Type\": \"Bitmap Index Scan\",\n                                  \"Parent Relationship\": \"Outer\",\n                                  \"Parallel Aware\": false,\n                                  \"Async Capable\": false,\n                                  \"Index Name\": \"income_projection_pkey\",\n                                  \"Startup Cost\": 0.00,\n                                  \"Total Cost\": 29.43,\n                                  \"Plan Rows\": 668,\n                                  \"Plan Width\": 0,\n                                  \"Actual Startup Time\": 6.176,\n                                  \"Actual Total Time\": 6.176,\n                                  \"Actual Rows\": 192899,\n                                  \"Actual Loops\": 1,\n                                  \"Index Cond\": \"(mapping_version_id = mv.id)\",\n                                  \"Shared Hit Blocks\": 1036,\n                                  \"Shared Read Blocks\": 0,\n                                  \"Shared Dirtied Blocks\": 0,\n                                  \"Shared Written Blocks\": 0,\n                                  \"Local Hit Blocks\": 0,\n                                  \"Local Read Blocks\": 0,\n                                  \"Local Dirtied Blocks\": 0,\n                                  \"Local Written Blocks\": 0,\n                                  \"Temp Read Blocks\": 0,\n                                  \"Temp Written Blocks\": 0\n                                }\n                              ]\n                            }\n                          ]\n                        },\n                        {\n                          \"Node Type\": \"Index Scan\",\n                          \"Parent Relationship\": \"Inner\",\n                          \"Parallel Aware\": false,\n                          \"Async Capable\": false,\n                          \"Scan Direction\": \"Forward\",\n                          \"Index Name\": \"income_fact_pkey\",\n                          \"Relation Name\": \"income_fact\",\n                          \"Alias\": \"f\",\n                          \"Startup Cost\": 0.42,\n                          \"Total Cost\": 0.59,\n                          \"Plan Rows\": 1,\n                          \"Plan Width\": 42,\n                          \"Actual Startup Time\": 0.001,\n                          \"Actual Total Time\": 0.001,\n                          \"Actual Rows\": 1,\n                          \"Actual Loops\": 192899,\n                          \"Index Cond\": \"(id = p.income_fact_id)\",\n                          \"Rows Removed by Index Recheck\": 0,\n                          \"Shared Hit Blocks\": 771596,\n                          \"Shared Read Blocks\": 0,\n                          \"Shared Dirtied Blocks\": 0,\n                          \"Shared Written Blocks\": 0,\n                          \"Local Hit Blocks\": 0,\n                          \"Local Read Blocks\": 0,\n                          \"Local Dirtied Blocks\": 0,\n                          \"Local Written Blocks\": 0,\n                          \"Temp Read Blocks\": 0,\n                          \"Temp Written Blocks\": 0\n                        }\n                      ]\n                    }\n                  ]\n                }\n              ]\n            }\n          ]\n        }\n      ]\n    },\n    \"Planning\": {\n      \"Shared Hit Blocks\": 590,\n      \"Shared Read Blocks\": 0,\n      \"Shared Dirtied Blocks\": 0,\n      \"Shared Written Blocks\": 0,\n      \"Local Hit Blocks\": 0,\n      \"Local Read Blocks\": 0,\n      \"Local Dirtied Blocks\": 0,\n      \"Local Written Blocks\": 0,\n      \"Temp Read Blocks\": 0,\n      \"Temp Written Blocks\": 0\n    },\n    \"Planning Time\": 5.028,\n    \"Triggers\": [\n    ],\n    \"Execution Time\": 550.435\n  }\n]",
+      "channel": "SET\nSET\nSET\n[\n  {\n    \"Plan\": {\n      \"Node Type\": \"Aggregate\",\n      \"Strategy\": \"Sorted\",\n      \"Partial Mode\": \"Simple\",\n      \"Parallel Aware\": false,\n      \"Async Capable\": false,\n      \"Startup Cost\": 1944.51,\n      \"Total Cost\": 1944.57,\n      \"Plan Rows\": 3,\n      \"Plan Width\": 40,\n      \"Actual Startup Time\": 285.993,\n      \"Actual Total Time\": 305.780,\n      \"Actual Rows\": 50,\n      \"Actual Loops\": 1,\n      \"Group Key\": [\"v_current_income.channel_id\"],\n      \"Shared Hit Blocks\": 775605,\n      \"Shared Read Blocks\": 0,\n      \"Shared Dirtied Blocks\": 0,\n      \"Shared Written Blocks\": 0,\n      \"Local Hit Blocks\": 0,\n      \"Local Read Blocks\": 0,\n      \"Local Dirtied Blocks\": 0,\n      \"Local Written Blocks\": 0,\n      \"Temp Read Blocks\": 590,\n      \"Temp Written Blocks\": 593,\n      \"Plans\": [\n        {\n          \"Node Type\": \"Sort\",\n          \"Parent Relationship\": \"Outer\",\n          \"Parallel Aware\": false,\n          \"Async Capable\": false,\n          \"Startup Cost\": 1944.51,\n          \"Total Cost\": 1944.52,\n          \"Plan Rows\": 3,\n          \"Plan Width\": 34,\n          \"Actual Startup Time\": 285.554,\n          \"Actual Total Time\": 293.420,\n          \"Actual Rows\": 192899,\n          \"Actual Loops\": 1,\n          \"Sort Key\": [\"v_current_income.channel_id\"],\n          \"Sort Method\": \"external merge\",\n          \"Sort Space Used\": 4720,\n          \"Sort Space Type\": \"Disk\",\n          \"Shared Hit Blocks\": 775605,\n          \"Shared Read Blocks\": 0,\n          \"Shared Dirtied Blocks\": 0,\n          \"Shared Written Blocks\": 0,\n          \"Local Hit Blocks\": 0,\n          \"Local Read Blocks\": 0,\n          \"Local Dirtied Blocks\": 0,\n          \"Local Written Blocks\": 0,\n          \"Temp Read Blocks\": 590,\n          \"Temp Written Blocks\": 593,\n          \"Plans\": [\n            {\n              \"Node Type\": \"Subquery Scan\",\n              \"Parent Relationship\": \"Outer\",\n              \"Parallel Aware\": false,\n              \"Async Capable\": false,\n              \"Alias\": \"v_current_income\",\n              \"Startup Cost\": 30.16,\n              \"Total Cost\": 1944.49,\n              \"Plan Rows\": 3,\n              \"Plan Width\": 34,\n              \"Actual Startup Time\": 6.516,\n              \"Actual Total Time\": 267.971,\n              \"Actual Rows\": 192899,\n              \"Actual Loops\": 1,\n              \"Shared Hit Blocks\": 775602,\n              \"Shared Read Blocks\": 0,\n              \"Shared Dirtied Blocks\": 0,\n              \"Shared Written Blocks\": 0,\n              \"Local Hit Blocks\": 0,\n              \"Local Read Blocks\": 0,\n              \"Local Dirtied Blocks\": 0,\n              \"Local Written Blocks\": 0,\n              \"Temp Read Blocks\": 0,\n              \"Temp Written Blocks\": 0,\n              \"Plans\": [\n                {\n                  \"Node Type\": \"Nested Loop\",\n                  \"Parent Relationship\": \"Subquery\",\n                  \"Parallel Aware\": false,\n                  \"Async Capable\": false,\n                  \"Join Type\": \"Inner\",\n                  \"Startup Cost\": 30.16,\n                  \"Total Cost\": 1944.46,\n                  \"Plan Rows\": 3,\n                  \"Plan Width\": 330,\n                  \"Actual Startup Time\": 6.516,\n                  \"Actual Total Time\": 259.684,\n                  \"Actual Rows\": 192899,\n                  \"Actual Loops\": 1,\n                  \"Inner Unique\": false,\n                  \"Join Filter\": \"(f.import_batch_id = b.id)\",\n                  \"Rows Removed by Join Filter\": 0,\n                  \"Shared Hit Blocks\": 775602,\n                  \"Shared Read Blocks\": 0,\n                  \"Shared Dirtied Blocks\": 0,\n                  \"Shared Written Blocks\": 0,\n                  \"Local Hit Blocks\": 0,\n                  \"Local Read Blocks\": 0,\n                  \"Local Dirtied Blocks\": 0,\n                  \"Local Written Blocks\": 0,\n                  \"Temp Read Blocks\": 0,\n                  \"Temp Written Blocks\": 0,\n                  \"Plans\": [\n                    {\n                      \"Node Type\": \"Seq Scan\",\n                      \"Parent Relationship\": \"Outer\",\n                      \"Parallel Aware\": false,\n                      \"Async Capable\": false,\n                      \"Relation Name\": \"import_batch\",\n                      \"Alias\": \"b\",\n                      \"Startup Cost\": 0.00,\n                      \"Total Cost\": 12.38,\n                      \"Plan Rows\": 1,\n                      \"Plan Width\": 8,\n                      \"Actual Startup Time\": 0.007,\n                      \"Actual Total Time\": 0.008,\n                      \"Actual Rows\": 1,\n                      \"Actual Loops\": 1,\n                      \"Filter\": \"(status = 'active'::text)\",\n                      \"Rows Removed by Filter\": 0,\n                      \"Shared Hit Blocks\": 1,\n                      \"Shared Read Blocks\": 0,\n                      \"Shared Dirtied Blocks\": 0,\n                      \"Shared Written Blocks\": 0,\n                      \"Local Hit Blocks\": 0,\n                      \"Local Read Blocks\": 0,\n                      \"Local Dirtied Blocks\": 0,\n                      \"Local Written Blocks\": 0,\n                      \"Temp Read Blocks\": 0,\n                      \"Temp Written Blocks\": 0\n                    },\n                    {\n                      \"Node Type\": \"Nested Loop\",\n                      \"Parent Relationship\": \"Inner\",\n                      \"Parallel Aware\": false,\n                      \"Async Capable\": false,\n                      \"Join Type\": \"Inner\",\n                      \"Startup Cost\": 30.16,\n                      \"Total Cost\": 1926.12,\n                      \"Plan Rows\": 477,\n                      \"Plan Width\": 42,\n                      \"Actual Startup Time\": 6.508,\n                      \"Actual Total Time\": 242.555,\n                      \"Actual Rows\": 192899,\n                      \"Actual Loops\": 1,\n                      \"Inner Unique\": true,\n                      \"Shared Hit Blocks\": 775601,\n                      \"Shared Read Blocks\": 0,\n                      \"Shared Dirtied Blocks\": 0,\n                      \"Shared Written Blocks\": 0,\n                      \"Local Hit Blocks\": 0,\n                      \"Local Read Blocks\": 0,\n                      \"Local Dirtied Blocks\": 0,\n                      \"Local Written Blocks\": 0,\n                      \"Temp Read Blocks\": 0,\n                      \"Temp Written Blocks\": 0,\n                      \"Plans\": [\n                        {\n                          \"Node Type\": \"Nested Loop\",\n                          \"Parent Relationship\": \"Outer\",\n                          \"Parallel Aware\": false,\n                          \"Async Capable\": false,\n                          \"Join Type\": \"Inner\",\n                          \"Startup Cost\": 29.74,\n                          \"Total Cost\": 1645.32,\n                          \"Plan Rows\": 477,\n                          \"Plan Width\": 16,\n                          \"Actual Startup Time\": 6.488,\n                          \"Actual Total Time\": 31.308,\n                          \"Actual Rows\": 192899,\n                          \"Actual Loops\": 1,\n                          \"Inner Unique\": false,\n                          \"Shared Hit Blocks\": 4005,\n                          \"Shared Read Blocks\": 0,\n                          \"Shared Dirtied Blocks\": 0,\n                          \"Shared Written Blocks\": 0,\n                          \"Local Hit Blocks\": 0,\n                          \"Local Read Blocks\": 0,\n                          \"Local Dirtied Blocks\": 0,\n                          \"Local Written Blocks\": 0,\n                          \"Temp Read Blocks\": 0,\n                          \"Temp Written Blocks\": 0,\n                          \"Plans\": [\n                            {\n                              \"Node Type\": \"Index Scan\",\n                              \"Parent Relationship\": \"Outer\",\n                              \"Parallel Aware\": false,\n                              \"Async Capable\": false,\n                              \"Scan Direction\": \"Forward\",\n                              \"Index Name\": \"uq_mapping_version_active\",\n                              \"Relation Name\": \"mapping_version\",\n                              \"Alias\": \"mv\",\n                              \"Startup Cost\": 0.15,\n                              \"Total Cost\": 8.16,\n                              \"Plan Rows\": 1,\n                              \"Plan Width\": 8,\n                              \"Actual Startup Time\": 0.008,\n                              \"Actual Total Time\": 0.010,\n                              \"Actual Rows\": 1,\n                              \"Actual Loops\": 1,\n                              \"Shared Hit Blocks\": 2,\n                              \"Shared Read Blocks\": 0,\n                              \"Shared Dirtied Blocks\": 0,\n                              \"Shared Written Blocks\": 0,\n                              \"Local Hit Blocks\": 0,\n                              \"Local Read Blocks\": 0,\n                              \"Local Dirtied Blocks\": 0,\n                              \"Local Written Blocks\": 0,\n                              \"Temp Read Blocks\": 0,\n                              \"Temp Written Blocks\": 0\n                            },\n                            {\n                              \"Node Type\": \"Bitmap Heap Scan\",\n                              \"Parent Relationship\": \"Inner\",\n                              \"Parallel Aware\": false,\n                              \"Async Capable\": false,\n                              \"Relation Name\": \"income_projection\",\n                              \"Alias\": \"p\",\n                              \"Startup Cost\": 29.60,\n                              \"Total Cost\": 1630.47,\n                              \"Plan Rows\": 668,\n                              \"Plan Width\": 24,\n                              \"Actual Startup Time\": 6.477,\n                              \"Actual Total Time\": 20.451,\n                              \"Actual Rows\": 192899,\n                              \"Actual Loops\": 1,\n                              \"Recheck Cond\": \"(mapping_version_id = mv.id)\",\n                              \"Rows Removed by Index Recheck\": 0,\n                              \"Exact Heap Blocks\": 2967,\n                              \"Lossy Heap Blocks\": 0,\n                              \"Shared Hit Blocks\": 4003,\n                              \"Shared Read Blocks\": 0,\n                              \"Shared Dirtied Blocks\": 0,\n                              \"Shared Written Blocks\": 0,\n                              \"Local Hit Blocks\": 0,\n                              \"Local Read Blocks\": 0,\n                              \"Local Dirtied Blocks\": 0,\n                              \"Local Written Blocks\": 0,\n                              \"Temp Read Blocks\": 0,\n                              \"Temp Written Blocks\": 0,\n                              \"Plans\": [\n                                {\n                                  \"Node Type\": \"Bitmap Index Scan\",\n                                  \"Parent Relationship\": \"Outer\",\n                                  \"Parallel Aware\": false,\n                                  \"Async Capable\": false,\n                                  \"Index Name\": \"income_projection_pkey\",\n                                  \"Startup Cost\": 0.00,\n                                  \"Total Cost\": 29.43,\n                                  \"Plan Rows\": 668,\n                                  \"Plan Width\": 0,\n                                  \"Actual Startup Time\": 6.287,\n                                  \"Actual Total Time\": 6.288,\n                                  \"Actual Rows\": 192899,\n                                  \"Actual Loops\": 1,\n                                  \"Index Cond\": \"(mapping_version_id = mv.id)\",\n                                  \"Shared Hit Blocks\": 1036,\n                                  \"Shared Read Blocks\": 0,\n                                  \"Shared Dirtied Blocks\": 0,\n                                  \"Shared Written Blocks\": 0,\n                                  \"Local Hit Blocks\": 0,\n                                  \"Local Read Blocks\": 0,\n                                  \"Local Dirtied Blocks\": 0,\n                                  \"Local Written Blocks\": 0,\n                                  \"Temp Read Blocks\": 0,\n                                  \"Temp Written Blocks\": 0\n                                }\n                              ]\n                            }\n                          ]\n                        },\n                        {\n                          \"Node Type\": \"Index Scan\",\n                          \"Parent Relationship\": \"Inner\",\n                          \"Parallel Aware\": false,\n                          \"Async Capable\": false,\n                          \"Scan Direction\": \"Forward\",\n                          \"Index Name\": \"income_fact_pkey\",\n                          \"Relation Name\": \"income_fact\",\n                          \"Alias\": \"f\",\n                          \"Startup Cost\": 0.42,\n                          \"Total Cost\": 0.59,\n                          \"Plan Rows\": 1,\n                          \"Plan Width\": 42,\n                          \"Actual Startup Time\": 0.001,\n                          \"Actual Total Time\": 0.001,\n                          \"Actual Rows\": 1,\n                          \"Actual Loops\": 192899,\n                          \"Index Cond\": \"(id = p.income_fact_id)\",\n                          \"Rows Removed by Index Recheck\": 0,\n                          \"Shared Hit Blocks\": 771596,\n                          \"Shared Read Blocks\": 0,\n                          \"Shared Dirtied Blocks\": 0,\n                          \"Shared Written Blocks\": 0,\n                          \"Local Hit Blocks\": 0,\n                          \"Local Read Blocks\": 0,\n                          \"Local Dirtied Blocks\": 0,\n                          \"Local Written Blocks\": 0,\n                          \"Temp Read Blocks\": 0,\n                          \"Temp Written Blocks\": 0\n                        }\n                      ]\n                    }\n                  ]\n                }\n              ]\n            }\n          ]\n        }\n      ]\n    },\n    \"Planning\": {\n      \"Shared Hit Blocks\": 523,\n      \"Shared Read Blocks\": 0,\n      \"Shared Dirtied Blocks\": 0,\n      \"Shared Written Blocks\": 0,\n      \"Local Hit Blocks\": 0,\n      \"Local Read Blocks\": 0,\n      \"Local Dirtied Blocks\": 0,\n      \"Local Written Blocks\": 0,\n      \"Temp Read Blocks\": 0,\n      \"Temp Written Blocks\": 0\n    },\n    \"Planning Time\": 5.379,\n    \"Triggers\": [\n    ],\n    \"Execution Time\": 312.547\n  }\n]",
+      "form": "SET\nSET\nSET\n[\n  {\n    \"Plan\": {\n      \"Node Type\": \"Aggregate\",\n      \"Strategy\": \"Sorted\",\n      \"Partial Mode\": \"Simple\",\n      \"Parallel Aware\": false,\n      \"Async Capable\": false,\n      \"Startup Cost\": 1944.51,\n      \"Total Cost\": 1944.57,\n      \"Plan Rows\": 3,\n      \"Plan Width\": 64,\n      \"Actual Startup Time\": 299.591,\n      \"Actual Total Time\": 312.758,\n      \"Actual Rows\": 2,\n      \"Actual Loops\": 1,\n      \"Group Key\": [\"v_current_income.business_form\"],\n      \"Shared Hit Blocks\": 775605,\n      \"Shared Read Blocks\": 0,\n      \"Shared Dirtied Blocks\": 0,\n      \"Shared Written Blocks\": 0,\n      \"Local Hit Blocks\": 0,\n      \"Local Read Blocks\": 0,\n      \"Local Dirtied Blocks\": 0,\n      \"Local Written Blocks\": 0,\n      \"Temp Read Blocks\": 755,\n      \"Temp Written Blocks\": 758,\n      \"Plans\": [\n        {\n          \"Node Type\": \"Sort\",\n          \"Parent Relationship\": \"Outer\",\n          \"Parallel Aware\": false,\n          \"Async Capable\": false,\n          \"Startup Cost\": 1944.51,\n          \"Total Cost\": 1944.52,\n          \"Plan Rows\": 3,\n          \"Plan Width\": 58,\n          \"Actual Startup Time\": 285.895,\n          \"Actual Total Time\": 297.247,\n          \"Actual Rows\": 192899,\n          \"Actual Loops\": 1,\n          \"Sort Key\": [\"v_current_income.business_form\"],\n          \"Sort Method\": \"external merge\",\n          \"Sort Space Used\": 6040,\n          \"Sort Space Type\": \"Disk\",\n          \"Shared Hit Blocks\": 775605,\n          \"Shared Read Blocks\": 0,\n          \"Shared Dirtied Blocks\": 0,\n          \"Shared Written Blocks\": 0,\n          \"Local Hit Blocks\": 0,\n          \"Local Read Blocks\": 0,\n          \"Local Dirtied Blocks\": 0,\n          \"Local Written Blocks\": 0,\n          \"Temp Read Blocks\": 755,\n          \"Temp Written Blocks\": 758,\n          \"Plans\": [\n            {\n              \"Node Type\": \"Subquery Scan\",\n              \"Parent Relationship\": \"Outer\",\n              \"Parallel Aware\": false,\n              \"Async Capable\": false,\n              \"Alias\": \"v_current_income\",\n              \"Startup Cost\": 30.16,\n              \"Total Cost\": 1944.49,\n              \"Plan Rows\": 3,\n              \"Plan Width\": 58,\n              \"Actual Startup Time\": 6.323,\n              \"Actual Total Time\": 263.548,\n              \"Actual Rows\": 192899,\n              \"Actual Loops\": 1,\n              \"Shared Hit Blocks\": 775602,\n              \"Shared Read Blocks\": 0,\n              \"Shared Dirtied Blocks\": 0,\n              \"Shared Written Blocks\": 0,\n              \"Local Hit Blocks\": 0,\n              \"Local Read Blocks\": 0,\n              \"Local Dirtied Blocks\": 0,\n              \"Local Written Blocks\": 0,\n              \"Temp Read Blocks\": 0,\n              \"Temp Written Blocks\": 0,\n              \"Plans\": [\n                {\n                  \"Node Type\": \"Nested Loop\",\n                  \"Parent Relationship\": \"Subquery\",\n                  \"Parallel Aware\": false,\n                  \"Async Capable\": false,\n                  \"Join Type\": \"Inner\",\n                  \"Startup Cost\": 30.16,\n                  \"Total Cost\": 1944.46,\n                  \"Plan Rows\": 3,\n                  \"Plan Width\": 330,\n                  \"Actual Startup Time\": 6.322,\n                  \"Actual Total Time\": 255.380,\n                  \"Actual Rows\": 192899,\n                  \"Actual Loops\": 1,\n                  \"Inner Unique\": false,\n                  \"Join Filter\": \"(f.import_batch_id = b.id)\",\n                  \"Rows Removed by Join Filter\": 0,\n                  \"Shared Hit Blocks\": 775602,\n                  \"Shared Read Blocks\": 0,\n                  \"Shared Dirtied Blocks\": 0,\n                  \"Shared Written Blocks\": 0,\n                  \"Local Hit Blocks\": 0,\n                  \"Local Read Blocks\": 0,\n                  \"Local Dirtied Blocks\": 0,\n                  \"Local Written Blocks\": 0,\n                  \"Temp Read Blocks\": 0,\n                  \"Temp Written Blocks\": 0,\n                  \"Plans\": [\n                    {\n                      \"Node Type\": \"Seq Scan\",\n                      \"Parent Relationship\": \"Outer\",\n                      \"Parallel Aware\": false,\n                      \"Async Capable\": false,\n                      \"Relation Name\": \"import_batch\",\n                      \"Alias\": \"b\",\n                      \"Startup Cost\": 0.00,\n                      \"Total Cost\": 12.38,\n                      \"Plan Rows\": 1,\n                      \"Plan Width\": 8,\n                      \"Actual Startup Time\": 0.006,\n                      \"Actual Total Time\": 0.008,\n                      \"Actual Rows\": 1,\n                      \"Actual Loops\": 1,\n                      \"Filter\": \"(status = 'active'::text)\",\n                      \"Rows Removed by Filter\": 0,\n                      \"Shared Hit Blocks\": 1,\n                      \"Shared Read Blocks\": 0,\n                      \"Shared Dirtied Blocks\": 0,\n                      \"Shared Written Blocks\": 0,\n                      \"Local Hit Blocks\": 0,\n                      \"Local Read Blocks\": 0,\n                      \"Local Dirtied Blocks\": 0,\n                      \"Local Written Blocks\": 0,\n                      \"Temp Read Blocks\": 0,\n                      \"Temp Written Blocks\": 0\n                    },\n                    {\n                      \"Node Type\": \"Nested Loop\",\n                      \"Parent Relationship\": \"Inner\",\n                      \"Parallel Aware\": false,\n                      \"Async Capable\": false,\n                      \"Join Type\": \"Inner\",\n                      \"Startup Cost\": 30.16,\n                      \"Total Cost\": 1926.12,\n                      \"Plan Rows\": 477,\n                      \"Plan Width\": 66,\n                      \"Actual Startup Time\": 6.314,\n                      \"Actual Total Time\": 238.618,\n                      \"Actual Rows\": 192899,\n                      \"Actual Loops\": 1,\n                      \"Inner Unique\": true,\n                      \"Shared Hit Blocks\": 775601,\n                      \"Shared Read Blocks\": 0,\n                      \"Shared Dirtied Blocks\": 0,\n                      \"Shared Written Blocks\": 0,\n                      \"Local Hit Blocks\": 0,\n                      \"Local Read Blocks\": 0,\n                      \"Local Dirtied Blocks\": 0,\n                      \"Local Written Blocks\": 0,\n                      \"Temp Read Blocks\": 0,\n                      \"Temp Written Blocks\": 0,\n                      \"Plans\": [\n                        {\n                          \"Node Type\": \"Nested Loop\",\n                          \"Parent Relationship\": \"Outer\",\n                          \"Parallel Aware\": false,\n                          \"Async Capable\": false,\n                          \"Join Type\": \"Inner\",\n                          \"Startup Cost\": 29.74,\n                          \"Total Cost\": 1645.32,\n                          \"Plan Rows\": 477,\n                          \"Plan Width\": 40,\n                          \"Actual Startup Time\": 6.300,\n                          \"Actual Total Time\": 31.320,\n                          \"Actual Rows\": 192899,\n                          \"Actual Loops\": 1,\n                          \"Inner Unique\": false,\n                          \"Shared Hit Blocks\": 4005,\n                          \"Shared Read Blocks\": 0,\n                          \"Shared Dirtied Blocks\": 0,\n                          \"Shared Written Blocks\": 0,\n                          \"Local Hit Blocks\": 0,\n                          \"Local Read Blocks\": 0,\n                          \"Local Dirtied Blocks\": 0,\n                          \"Local Written Blocks\": 0,\n                          \"Temp Read Blocks\": 0,\n                          \"Temp Written Blocks\": 0,\n                          \"Plans\": [\n                            {\n                              \"Node Type\": \"Index Scan\",\n                              \"Parent Relationship\": \"Outer\",\n                              \"Parallel Aware\": false,\n                              \"Async Capable\": false,\n                              \"Scan Direction\": \"Forward\",\n                              \"Index Name\": \"uq_mapping_version_active\",\n                              \"Relation Name\": \"mapping_version\",\n                              \"Alias\": \"mv\",\n                              \"Startup Cost\": 0.15,\n                              \"Total Cost\": 8.16,\n                              \"Plan Rows\": 1,\n                              \"Plan Width\": 8,\n                              \"Actual Startup Time\": 0.008,\n                              \"Actual Total Time\": 0.009,\n                              \"Actual Rows\": 1,\n                              \"Actual Loops\": 1,\n                              \"Shared Hit Blocks\": 2,\n                              \"Shared Read Blocks\": 0,\n                              \"Shared Dirtied Blocks\": 0,\n                              \"Shared Written Blocks\": 0,\n                              \"Local Hit Blocks\": 0,\n                              \"Local Read Blocks\": 0,\n                              \"Local Dirtied Blocks\": 0,\n                              \"Local Written Blocks\": 0,\n                              \"Temp Read Blocks\": 0,\n                              \"Temp Written Blocks\": 0\n                            },\n                            {\n                              \"Node Type\": \"Bitmap Heap Scan\",\n                              \"Parent Relationship\": \"Inner\",\n                              \"Parallel Aware\": false,\n                              \"Async Capable\": false,\n                              \"Relation Name\": \"income_projection\",\n                              \"Alias\": \"p\",\n                              \"Startup Cost\": 29.60,\n                              \"Total Cost\": 1630.47,\n                              \"Plan Rows\": 668,\n                              \"Plan Width\": 48,\n                              \"Actual Startup Time\": 6.290,\n                              \"Actual Total Time\": 20.018,\n                              \"Actual Rows\": 192899,\n                              \"Actual Loops\": 1,\n                              \"Recheck Cond\": \"(mapping_version_id = mv.id)\",\n                              \"Rows Removed by Index Recheck\": 0,\n                              \"Exact Heap Blocks\": 2967,\n                              \"Lossy Heap Blocks\": 0,\n                              \"Shared Hit Blocks\": 4003,\n                              \"Shared Read Blocks\": 0,\n                              \"Shared Dirtied Blocks\": 0,\n                              \"Shared Written Blocks\": 0,\n                              \"Local Hit Blocks\": 0,\n                              \"Local Read Blocks\": 0,\n                              \"Local Dirtied Blocks\": 0,\n                              \"Local Written Blocks\": 0,\n                              \"Temp Read Blocks\": 0,\n                              \"Temp Written Blocks\": 0,\n                              \"Plans\": [\n                                {\n                                  \"Node Type\": \"Bitmap Index Scan\",\n                                  \"Parent Relationship\": \"Outer\",\n                                  \"Parallel Aware\": false,\n                                  \"Async Capable\": false,\n                                  \"Index Name\": \"income_projection_pkey\",\n                                  \"Startup Cost\": 0.00,\n                                  \"Total Cost\": 29.43,\n                                  \"Plan Rows\": 668,\n                                  \"Plan Width\": 0,\n                                  \"Actual Startup Time\": 6.103,\n                                  \"Actual Total Time\": 6.103,\n                                  \"Actual Rows\": 192899,\n                                  \"Actual Loops\": 1,\n                                  \"Index Cond\": \"(mapping_version_id = mv.id)\",\n                                  \"Shared Hit Blocks\": 1036,\n                                  \"Shared Read Blocks\": 0,\n                                  \"Shared Dirtied Blocks\": 0,\n                                  \"Shared Written Blocks\": 0,\n                                  \"Local Hit Blocks\": 0,\n                                  \"Local Read Blocks\": 0,\n                                  \"Local Dirtied Blocks\": 0,\n                                  \"Local Written Blocks\": 0,\n                                  \"Temp Read Blocks\": 0,\n                                  \"Temp Written Blocks\": 0\n                                }\n                              ]\n                            }\n                          ]\n                        },\n                        {\n                          \"Node Type\": \"Index Scan\",\n                          \"Parent Relationship\": \"Inner\",\n                          \"Parallel Aware\": false,\n                          \"Async Capable\": false,\n                          \"Scan Direction\": \"Forward\",\n                          \"Index Name\": \"income_fact_pkey\",\n                          \"Relation Name\": \"income_fact\",\n                          \"Alias\": \"f\",\n                          \"Startup Cost\": 0.42,\n                          \"Total Cost\": 0.59,\n                          \"Plan Rows\": 1,\n                          \"Plan Width\": 42,\n                          \"Actual Startup Time\": 0.001,\n                          \"Actual Total Time\": 0.001,\n                          \"Actual Rows\": 1,\n                          \"Actual Loops\": 192899,\n                          \"Index Cond\": \"(id = p.income_fact_id)\",\n                          \"Rows Removed by Index Recheck\": 0,\n                          \"Shared Hit Blocks\": 771596,\n                          \"Shared Read Blocks\": 0,\n                          \"Shared Dirtied Blocks\": 0,\n                          \"Shared Written Blocks\": 0,\n                          \"Local Hit Blocks\": 0,\n                          \"Local Read Blocks\": 0,\n                          \"Local Dirtied Blocks\": 0,\n                          \"Local Written Blocks\": 0,\n                          \"Temp Read Blocks\": 0,\n                          \"Temp Written Blocks\": 0\n                        }\n                      ]\n                    }\n                  ]\n                }\n              ]\n            }\n          ]\n        }\n      ]\n    },\n    \"Planning\": {\n      \"Shared Hit Blocks\": 590,\n      \"Shared Read Blocks\": 0,\n      \"Shared Dirtied Blocks\": 0,\n      \"Shared Written Blocks\": 0,\n      \"Local Hit Blocks\": 0,\n      \"Local Read Blocks\": 0,\n      \"Local Dirtied Blocks\": 0,\n      \"Local Written Blocks\": 0,\n      \"Temp Read Blocks\": 0,\n      \"Temp Written Blocks\": 0\n    },\n    \"Planning Time\": 5.496,\n    \"Triggers\": [\n    ],\n    \"Execution Time\": 319.002\n  }\n]"
+    }
+  },
+  "sql_checksums": {
+    "sql\\0000_bootstrap\\0000_bootstrap.sql": "d5669b6dd8346a749512d604b6ef5179596451e376506e6a2fa58679442f071c",
+    "sql\\0010_platform\\0010_platform.sql": "1deda0bbfa8e9c7875ecd90ce8a672598422a29a3985f78896245b86c45e4040",
+    "sql\\0020_import\\0020_import.sql": "a5ecb1f400ae85d6d95bec5fec9be4355b911fe2dcf9e56ba105ad0bc8e5e619",
+    "sql\\0030_mapping\\0030_mapping.sql": "aa6c98f20e2932299e32b58a907783a6f19bb189e5bff92e76f8d687867586b2",
+    "sql\\0040_basic_info\\0040_basic_info.sql": "05b023e3b95e2e92fd729b387373919f50cefe3a7c2a221da1de72f63c0bb573",
+    "sql\\0050_recovery_audit\\0050_recovery_audit.sql": "b71ea633c64263e49c7ecd48960b1e5cc0cd2e1a3ee3a34a2b638d663e32dc92",
+    "sql\\0060_functions_views\\0060_functions.sql": "5263fc94ceaa41086288fbf02bc97118de8722907b9873416f9ac0d0e14cc54d",
+    "sql\\0060_functions_views\\0061_triggers.sql": "d99547348ad661cd3fad78f8b6951c18b7f8e6a99d9b7096af3ef55fdaee1a60",
+    "sql\\0060_functions_views\\0062_views.sql": "c8ba8625f8a3d7dba785c305b9a091cdbe80e89bf8a9d88ffc872f47c0d9b376",
+    "sql\\0060_functions_views\\0063_permissions.sql": "1d59425a880b87909b9bf0e2bffd7317888d781926ec8baef0e50626e27536d5"
+  }
+}

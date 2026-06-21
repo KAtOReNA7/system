@@ -1,0 +1,1107 @@
+{
+  "generated_at": "2026-06-21T04:51:06.576527+00:00",
+  "started_at": "2026-06-21T04:49:48.233028+00:00",
+  "environment": {
+    "server": "?column?                                                                                                 \n----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n PostgreSQL 16.14, compiled by Visual C++ build 1944, 64-bit|listen=localhost|port=55432|timezone=Asia/Shanghai|statement_timeout=0|lock_timeout=0|max_connections=100|shared_buffers=128MB|user=postgres\n(1 row)",
+    "host": "127.0.0.1",
+    "port": "55432",
+    "os": "Windows-10-10.0.26200-SP0",
+    "python": "3.11.4",
+    "cpu_logical": 32,
+    "flyway_version": "WARNING: No locations configured and default location 'sql' not found.\nA more recent version of Flyway is available. Find out more about Flyway 12.9.0 at https://rd.gt/3rXiSlV\n\nFlyway OSS Edition 10.21.0 by Redgate\n\nSee release notes here: https://rd.gt/416ObMi\nPlugin Name     | Version  \n--------------- | ---------\nDB2 for z/OS    | 10.16.3  \nOceanBase       | 10.16.0  \nTiDB            | 10.16.0  \nYugabyteDB      | 10.16.0  \nClickHouse      | 10.16.0  \nApache Ignite   | 10.16.0",
+    "locations": "D:\\porject\\system\\experiments\\m1-flyway-candidate\\migrations",
+    "schemas": "flyway_history,m1",
+    "history_table": "flyway_history.flyway_schema_history"
+  },
+  "object_counts": {
+    "candidate_sql_files": 80,
+    "m1_tables": 48,
+    "flyway_tables": 1,
+    "views": 5,
+    "functions": 21,
+    "triggers": 32,
+    "fks": 84,
+    "indexes": 117
+  },
+  "regression_summary_76": {
+    "passed": 76,
+    "failed": 0,
+    "total": 76
+  },
+  "summary": {
+    "passed": 157,
+    "failed": 0,
+    "total": 157
+  },
+  "tests": [
+    {
+      "name": "empty database creates all prototype objects",
+      "category": "ddl",
+      "status": "passed",
+      "detail": "all SQL files executed"
+    },
+    {
+      "name": "48 physical tables",
+      "category": "ddl",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n48"
+    },
+    {
+      "name": "five version partial active indexes exist",
+      "category": "ddl",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n5"
+    },
+    {
+      "name": "NULLS NOT DISTINCT is present",
+      "category": "ddl",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n2"
+    },
+    {
+      "name": "schema_initialized permits zero active",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nschema_initialized"
+    },
+    {
+      "name": "ready rejects zero active",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nBEGIN\nSET\nauthorized\nUPDATE 1\n错误:  state ready_for_bill_activation requires exactly one active version of each kind; got mapping 0, basic 0, classification 0, tag 0\nCONTEXT:  在RAISE的第11行的PL/pgSQL函数assert_active_versions()"
+    },
+    {
+      "name": "enter master_data_initializing",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n\nmaster_data_initializing"
+    },
+    {
+      "name": "bootstrap activation and ready transition",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n\nready_for_bill_activation"
+    },
+    {
+      "name": "ready has exactly one of four active versions",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n1111"
+    },
+    {
+      "name": "second active mapping rejected",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nSET\nauthorized\nINSERT 0 1\n错误:  重复键违反唯一约束\"uq_mapping_version_active\"\nDETAIL:  键值\"((true))=(t)\" 已经存在"
+    },
+    {
+      "name": "raw ID parsing keeps 12345 and Y12345 distinct",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n12345,12345,audio_copyright,audio_product"
+    },
+    {
+      "name": "illegal ID returns null",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nt"
+    },
+    {
+      "name": "two business forms map to one standard work",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nINSERT 0 2\nINSERT 0 3\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 2"
+    },
+    {
+      "name": "invalid raw ID mapping is rejected",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n错误:  raw work ID X123 does not derive standard work ID 12345\nCONTEXT:  在RAISE的第7行的PL/pgSQL函数validate_work_mapping_identity()"
+    },
+    {
+      "name": "authorization category cannot override business form",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n错误:  business form audio_copyright conflicts with raw work ID Y99999\nCONTEXT:  在RAISE的第13行的PL/pgSQL函数validate_work_mapping_identity()"
+    },
+    {
+      "name": "historical issue context created",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nINSERT 0 1\nINSERT 0 1"
+    },
+    {
+      "name": "raw and historical mapping tables are mutually exclusive",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nBEGIN\nINSERT 0 1\n错误:  raw work ID 12345 exists in both mapping tables for version 3\nCONTEXT:  在RAISE的第14行的PL/pgSQL函数enforce_mapping_table_mutex()"
+    },
+    {
+      "name": "historical raw ID cannot repeat through another business form",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nBEGIN\nINSERT 0 1\n错误:  business form audio_copyright conflicts with raw work ID Y99999\nCONTEXT:  在RAISE的第13行的PL/pgSQL函数validate_work_mapping_identity()"
+    },
+    {
+      "name": "classification root NULL uniqueness works",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nBEGIN\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\n错误:  重复键违反唯一约束\"classification_node_classification_release_id_classificati_key1\"\nDETAIL:  键值\"(classification_release_id, classification_system_id, parent_id, display_name)=(2, 1, null, Same Root)\" 已经存在"
+    },
+    {
+      "name": "candidate first batch prepared",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nUPDATE 1\nUPDATE 1"
+    },
+    {
+      "name": "NUMERIC(32,18) preserves exact value",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n123.123456789012345678"
+    },
+    {
+      "name": "income_fact UPDATE rejected",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n错误:  income_fact is immutable; use batch revoke and a new projection version\nCONTEXT:  在RAISE的第2行的PL/pgSQL函数reject_income_fact_mutation()"
+    },
+    {
+      "name": "income_fact DELETE rejected",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n错误:  income_fact is immutable; use batch revoke and a new projection version\nCONTEXT:  在RAISE的第2行的PL/pgSQL函数reject_income_fact_mutation()"
+    },
+    {
+      "name": "ready batch reconciliation fields are frozen",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n错误:  direct active/revoked batch mutation is forbidden\nCONTEXT:  在RAISE的第6行的PL/pgSQL函数guard_batch_status()"
+    },
+    {
+      "name": "new work appears in basic info gap view",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nt"
+    },
+    {
+      "name": "first batch and mapping activate atomically",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n\noperational"
+    },
+    {
+      "name": "bootstrap mapping retired",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nretired"
+    },
+    {
+      "name": "operational rejects zero active mapping",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nBEGIN\nSET\nauthorized\nUPDATE 1\n错误:  state operational requires exactly one active version of each kind; got mapping 0, basic 1, classification 1, tag 1\nCONTEXT:  在RAISE的第11行的PL/pgSQL函数assert_active_versions()"
+    },
+    {
+      "name": "active batch rejects appended facts",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n错误:  income facts can only be appended while batch is draft or validating\nCONTEXT:  在RAISE的第6行的PL/pgSQL函数validate_income_fact_insert()"
+    },
+    {
+      "name": "active mapping snapshot rejects child append",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n错误:  mapping snapshot children are immutable unless version is building\nCONTEXT:  在RAISE的第8行的PL/pgSQL函数guard_snapshot_child()"
+    },
+    {
+      "name": "second batch facts prepared",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nUPDATE 1"
+    },
+    {
+      "name": "second mapping snapshot built invisibly",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 2\nINSERT 0 2\nINSERT 0 2\nINSERT 0 1\nUPDATE 1"
+    },
+    {
+      "name": "new batch activation keeps batch/mapping atomic",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n\n2"
+    },
+    {
+      "name": "negative-only business form has no first-positive month",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nt"
+    },
+    {
+      "name": "NUMERIC aggregation preserves 18 decimals",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n122.123456789012345677"
+    },
+    {
+      "name": "revoke rejects candidate still containing revoked batch",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n错误:  mapping 5 contains facts outside visible batch set\nCONTEXT:  在RAISE的第21行的PL/pgSQL函数assert_mapping_coverage(bigint,bigint,bigint)\nSQL 语句 \"SELECT m1.assert_mapping_coverage(p_mapping_version_id,NULL,p_batch_id)\"\n在PERFORM的第10行的PL/pgSQL函数revoke_bill_batch(bigint,bigint,text)"
+    },
+    {
+      "name": "revocation mapping prepared",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 2\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nUPDATE 1"
+    },
+    {
+      "name": "batch revocation and mapping switch atomic",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n\n1"
+    },
+    {
+      "name": "pure mapping switch",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n\n6"
+    },
+    {
+      "name": "basic info version switch",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nINSERT 0 1\nINSERT 0 1"
+    },
+    {
+      "name": "basic info, classification and tag releases switch atomically",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nUPDATE 1\n\n3:2:2"
+    },
+    {
+      "name": "active classification release rejects node append",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n错误:  classification release children are immutable unless release is draft\nCONTEXT:  在RAISE的第14行的PL/pgSQL函数guard_snapshot_child()"
+    },
+    {
+      "name": "active basic-info snapshot rejects row append",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n错误:  basic-info snapshot children are immutable unless version is building\nCONTEXT:  在RAISE的第11行的PL/pgSQL函数guard_snapshot_child()"
+    },
+    {
+      "name": "invalid candidate can remain invisible",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nINSERT 0 1\nINSERT 0 1"
+    },
+    {
+      "name": "validated mapping metadata is frozen",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n错误:  cannot directly transition or mutate frozen validated/active/retired mapping_version row\nCONTEXT:  在RAISE的第11行的PL/pgSQL函数guard_version_status()"
+    },
+    {
+      "name": "pre-commit validation failure rolls back switch",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n错误:  mapping 8 coverage mismatch expected 1/123.123456789012345678 got 0/0\nCONTEXT:  在RAISE的第15行的PL/pgSQL函数assert_mapping_coverage(bigint,bigint,bigint)\nSQL 语句 \"SELECT m1.assert_mapping_coverage(p_mapping_version_id,NULL,NULL)\"\n在PERFORM的第8行的PL/pgSQL函数switch_mapping_version(bigint,text)"
+    },
+    {
+      "name": "failed switch leaves prior active mapping",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n6"
+    },
+    {
+      "name": "application_rw cannot update income_fact",
+      "category": "permissions",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n错误:  对表 income_fact 权限不够"
+    },
+    {
+      "name": "application_rw cannot switch active version",
+      "category": "permissions",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n错误:  对函数 switch_mapping_version 权限不够"
+    },
+    {
+      "name": "application_rw can call authorized parser",
+      "category": "permissions",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\naudio_product"
+    },
+    {
+      "name": "application_ro can query formal view",
+      "category": "permissions",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n1"
+    },
+    {
+      "name": "application_ro cannot query base facts",
+      "category": "permissions",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n错误:  对表 income_fact 权限不够"
+    },
+    {
+      "name": "background_worker can create a building candidate",
+      "category": "permissions",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nINSERT 0 1\nINSERT 0 1\nbuilding"
+    },
+    {
+      "name": "background_worker cannot activate mapping directly",
+      "category": "permissions",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n错误:  cannot directly transition or mutate frozen validated/active/retired mapping_version row\nCONTEXT:  在RAISE的第11行的PL/pgSQL函数guard_version_status()"
+    },
+    {
+      "name": "backup_operator has no business write",
+      "category": "permissions",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n错误:  对表 channel 权限不够"
+    },
+    {
+      "name": "SECURITY DEFINER functions have fixed search_path",
+      "category": "permissions",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n7"
+    },
+    {
+      "name": "caller search_path cannot pollute SECURITY DEFINER lookup",
+      "category": "permissions",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nSET"
+    },
+    {
+      "name": "first concurrent switch commits",
+      "category": "concurrency",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nBEGIN\nSET\n\n\nCOMMIT"
+    },
+    {
+      "name": "second concurrent switch times out on advisory lock",
+      "category": "concurrency",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nSET\n错误:  由于锁超时，取消语句操作\nCONTEXT:  SQL 语句 \"SELECT pg_advisory_xact_lock(hashtextextended('m1.version-switch',0))\"\n在PERFORM的第3行的PL/pgSQL函数switch_mapping_version(bigint,text)"
+    },
+    {
+      "name": "timeout leaves one complete active version",
+      "category": "concurrency",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n1:8"
+    },
+    {
+      "name": "performance DB lifecycle bootstrap",
+      "category": "performance",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET"
+    },
+    {
+      "name": "synthetic master identities",
+      "category": "performance",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nINSERT 0 5000\nINSERT 0 5000\nINSERT 0 5000\nINSERT 0 50\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1"
+    },
+    {
+      "name": "staging write 192899 rows",
+      "category": "performance",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nINSERT 0 192899\nUPDATE 1"
+    },
+    {
+      "name": "fact write 192899 rows",
+      "category": "performance",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nINSERT 0 1\nINSERT 0 192899"
+    },
+    {
+      "name": "candidate mapping identities",
+      "category": "performance",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nINSERT 0 1\nINSERT 0 1\nINSERT 0 50\nINSERT 0 5000\nINSERT 0 5000"
+    },
+    {
+      "name": "full projection build 192899 rows",
+      "category": "performance",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nINSERT 0 192899"
+    },
+    {
+      "name": "first positive metrics build",
+      "category": "performance",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nINSERT 0 5000\nINSERT 0 5000"
+    },
+    {
+      "name": "strict reconciliation preparation",
+      "category": "performance",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nUPDATE 1\nUPDATE 1"
+    },
+    {
+      "name": "mapping and batch atomic switch",
+      "category": "performance",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET"
+    },
+    {
+      "name": "aggregate by month work channel form",
+      "category": "performance",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n15000"
+    },
+    {
+      "name": "EXPLAIN month",
+      "category": "performance",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n[\n  {\n    \"Plan\": {\n      \"Node Type\": \"Aggregate\",\n      \"Strategy\": \"Sorted\",\n      \"Partial Mode\": \"Simple\",\n      \"Parallel Aware\": false,\n      \"Async Capable\": false,\n      \"Startup Cost\": 1944.51,\n      \"Total Cost\": 1944.57,\n      \"Plan Rows\": 3,\n      \"Plan Width\": 36,\n      \"Actual Startup Time\": 301.650,\n      \"Actual Total Time\": 320.775,\n      \"Actual Rows\": 24,\n      \"Actual Loops\": 1,\n      \"Group Key\": [\"v_current_income.bill_month\"],\n      \"Shared Hit Blocks\": 775605,\n      \"Shared Read Blocks\": 0,\n      \"Shared Dirtied Blocks\": 0,\n      \"Shared Written Blocks\": 0,\n      \"Local Hit Blocks\": 0,\n      \"Local Read Blocks\": 0,\n      \"Local Dirtied Blocks\": 0,\n      \"Local Written Blocks\": 0,\n      \"Temp Read Blocks\": 497,\n      \"Temp Written Blocks\": 500,\n      \"Plans\": [\n        {\n          \"Node Type\": \"Sort\",\n          \"Parent Relationship\": \"Outer\",\n          \"Parallel Aware\": false,\n          \"Async Capable\": false,\n          \"Startup Cost\": 1944.51,\n          \"Total Cost\": 1944.52,\n          \"Plan Rows\": 3,\n          \"Plan Width\": 30,\n          \"Actual Startup Time\": 300.828,\n          \"Actual Total Time\": 308.743,\n          \"Actual Rows\": 192899,\n          \"Actual Loops\": 1,\n          \"Sort Key\": [\"v_current_income.bill_month\"],\n          \"Sort Method\": \"external merge\",\n          \"Sort Space Used\": 3976,\n          \"Sort Space Type\": \"Disk\",\n          \"Shared Hit Blocks\": 775605,\n          \"Shared Read Blocks\": 0,\n          \"Shared Dirtied Blocks\": 0,\n          \"Shared Written Blocks\": 0,\n          \"Local Hit Blocks\": 0,\n          \"Local Read Blocks\": 0,\n          \"Local Dirtied Blocks\": 0,\n          \"Local Written Blocks\": 0,\n          \"Temp Read Blocks\": 497,\n          \"Temp Written Blocks\": 500,\n          \"Plans\": [\n            {\n              \"Node Type\": \"Subquery Scan\",\n              \"Parent Relationship\": \"Outer\",\n              \"Parallel Aware\": false,\n              \"Async Capable\": false,\n              \"Alias\": \"v_current_"
+    },
+    {
+      "name": "EXPLAIN work",
+      "category": "performance",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n[\n  {\n    \"Plan\": {\n      \"Node Type\": \"Aggregate\",\n      \"Strategy\": \"Sorted\",\n      \"Partial Mode\": \"Simple\",\n      \"Parallel Aware\": false,\n      \"Async Capable\": false,\n      \"Startup Cost\": 1944.51,\n      \"Total Cost\": 1944.57,\n      \"Plan Rows\": 3,\n      \"Plan Width\": 64,\n      \"Actual Startup Time\": 484.011,\n      \"Actual Total Time\": 550.833,\n      \"Actual Rows\": 5000,\n      \"Actual Loops\": 1,\n      \"Group Key\": [\"v_current_income.standard_work_id\"],\n      \"Shared Hit Blocks\": 775605,\n      \"Shared Read Blocks\": 0,\n      \"Shared Dirtied Blocks\": 0,\n      \"Shared Written Blocks\": 0,\n      \"Local Hit Blocks\": 0,\n      \"Local Read Blocks\": 0,\n      \"Local Dirtied Blocks\": 0,\n      \"Local Written Blocks\": 0,\n      \"Temp Read Blocks\": 515,\n      \"Temp Written Blocks\": 518,\n      \"Plans\": [\n        {\n          \"Node Type\": \"Sort\",\n          \"Parent Relationship\": \"Outer\",\n          \"Parallel Aware\": false,\n          \"Async Capable\": false,\n          \"Startup Cost\": 1944.51,\n          \"Total Cost\": 1944.52,\n          \"Plan Rows\": 3,\n          \"Plan Width\": 58,\n          \"Actual Startup Time\": 483.984,\n          \"Actual Total Time\": 534.134,\n          \"Actual Rows\": 192899,\n          \"Actual Loops\": 1,\n          \"Sort Key\": [\"v_current_income.standard_work_id\"],\n          \"Sort Method\": \"external merge\",\n          \"Sort Space Used\": 4120,\n          \"Sort Space Type\": \"Disk\",\n          \"Shared Hit Blocks\": 775605,\n          \"Shared Read Blocks\": 0,\n          \"Shared Dirtied Blocks\": 0,\n          \"Shared Written Blocks\": 0,\n          \"Local Hit Blocks\": 0,\n          \"Local Read Blocks\": 0,\n          \"Local Dirtied Blocks\": 0,\n          \"Local Written Blocks\": 0,\n          \"Temp Read Blocks\": 515,\n          \"Temp Written Blocks\": 518,\n          \"Plans\": [\n            {\n              \"Node Type\": \"Subquery Scan\",\n              \"Parent Relationship\": \"Outer\",\n              \"Parallel Aware\": false,\n              \"Async Capable\": false,\n              \"Alias"
+    },
+    {
+      "name": "EXPLAIN channel",
+      "category": "performance",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n[\n  {\n    \"Plan\": {\n      \"Node Type\": \"Aggregate\",\n      \"Strategy\": \"Sorted\",\n      \"Partial Mode\": \"Simple\",\n      \"Parallel Aware\": false,\n      \"Async Capable\": false,\n      \"Startup Cost\": 1944.51,\n      \"Total Cost\": 1944.57,\n      \"Plan Rows\": 3,\n      \"Plan Width\": 40,\n      \"Actual Startup Time\": 284.930,\n      \"Actual Total Time\": 304.023,\n      \"Actual Rows\": 50,\n      \"Actual Loops\": 1,\n      \"Group Key\": [\"v_current_income.channel_id\"],\n      \"Shared Hit Blocks\": 775605,\n      \"Shared Read Blocks\": 0,\n      \"Shared Dirtied Blocks\": 0,\n      \"Shared Written Blocks\": 0,\n      \"Local Hit Blocks\": 0,\n      \"Local Read Blocks\": 0,\n      \"Local Dirtied Blocks\": 0,\n      \"Local Written Blocks\": 0,\n      \"Temp Read Blocks\": 590,\n      \"Temp Written Blocks\": 593,\n      \"Plans\": [\n        {\n          \"Node Type\": \"Sort\",\n          \"Parent Relationship\": \"Outer\",\n          \"Parallel Aware\": false,\n          \"Async Capable\": false,\n          \"Startup Cost\": 1944.51,\n          \"Total Cost\": 1944.52,\n          \"Plan Rows\": 3,\n          \"Plan Width\": 34,\n          \"Actual Startup Time\": 284.529,\n          \"Actual Total Time\": 292.151,\n          \"Actual Rows\": 192899,\n          \"Actual Loops\": 1,\n          \"Sort Key\": [\"v_current_income.channel_id\"],\n          \"Sort Method\": \"external merge\",\n          \"Sort Space Used\": 4720,\n          \"Sort Space Type\": \"Disk\",\n          \"Shared Hit Blocks\": 775605,\n          \"Shared Read Blocks\": 0,\n          \"Shared Dirtied Blocks\": 0,\n          \"Shared Written Blocks\": 0,\n          \"Local Hit Blocks\": 0,\n          \"Local Read Blocks\": 0,\n          \"Local Dirtied Blocks\": 0,\n          \"Local Written Blocks\": 0,\n          \"Temp Read Blocks\": 590,\n          \"Temp Written Blocks\": 593,\n          \"Plans\": [\n            {\n              \"Node Type\": \"Subquery Scan\",\n              \"Parent Relationship\": \"Outer\",\n              \"Parallel Aware\": false,\n              \"Async Capable\": false,\n              \"Alias\": \"v_current_"
+    },
+    {
+      "name": "EXPLAIN form",
+      "category": "performance",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n[\n  {\n    \"Plan\": {\n      \"Node Type\": \"Aggregate\",\n      \"Strategy\": \"Sorted\",\n      \"Partial Mode\": \"Simple\",\n      \"Parallel Aware\": false,\n      \"Async Capable\": false,\n      \"Startup Cost\": 1944.51,\n      \"Total Cost\": 1944.57,\n      \"Plan Rows\": 3,\n      \"Plan Width\": 64,\n      \"Actual Startup Time\": 304.950,\n      \"Actual Total Time\": 317.971,\n      \"Actual Rows\": 2,\n      \"Actual Loops\": 1,\n      \"Group Key\": [\"v_current_income.business_form\"],\n      \"Shared Hit Blocks\": 775605,\n      \"Shared Read Blocks\": 0,\n      \"Shared Dirtied Blocks\": 0,\n      \"Shared Written Blocks\": 0,\n      \"Local Hit Blocks\": 0,\n      \"Local Read Blocks\": 0,\n      \"Local Dirtied Blocks\": 0,\n      \"Local Written Blocks\": 0,\n      \"Temp Read Blocks\": 755,\n      \"Temp Written Blocks\": 758,\n      \"Plans\": [\n        {\n          \"Node Type\": \"Sort\",\n          \"Parent Relationship\": \"Outer\",\n          \"Parallel Aware\": false,\n          \"Async Capable\": false,\n          \"Startup Cost\": 1944.51,\n          \"Total Cost\": 1944.52,\n          \"Plan Rows\": 3,\n          \"Plan Width\": 58,\n          \"Actual Startup Time\": 291.347,\n          \"Actual Total Time\": 302.615,\n          \"Actual Rows\": 192899,\n          \"Actual Loops\": 1,\n          \"Sort Key\": [\"v_current_income.business_form\"],\n          \"Sort Method\": \"external merge\",\n          \"Sort Space Used\": 6040,\n          \"Sort Space Type\": \"Disk\",\n          \"Shared Hit Blocks\": 775605,\n          \"Shared Read Blocks\": 0,\n          \"Shared Dirtied Blocks\": 0,\n          \"Shared Written Blocks\": 0,\n          \"Local Hit Blocks\": 0,\n          \"Local Read Blocks\": 0,\n          \"Local Dirtied Blocks\": 0,\n          \"Local Written Blocks\": 0,\n          \"Temp Read Blocks\": 755,\n          \"Temp Written Blocks\": 758,\n          \"Plans\": [\n            {\n              \"Node Type\": \"Subquery Scan\",\n              \"Parent Relationship\": \"Outer\",\n              \"Parallel Aware\": false,\n              \"Async Capable\": false,\n              \"Alias\": \"v_cur"
+    },
+    {
+      "name": "all candidate SQL files carry formal-candidate banner",
+      "category": "boundary",
+      "status": "passed",
+      "detail": "[]"
+    },
+    {
+      "name": "formal db/migrations directory not created",
+      "category": "boundary",
+      "status": "passed",
+      "detail": "False"
+    },
+    {
+      "name": "flyway info succeeds",
+      "category": "flyway",
+      "status": "passed",
+      "detail": "A more recent version of Flyway is available. Find out more about Flyway 12.9.0 at https://rd.gt/3rXiSlV\n\nFlyway OSS Edition 10.21.0 by Redgate\n\nSee release notes here: https://rd.gt/416ObMi\nDatabase: [local-jdbc-url-redacted] (PostgreSQL 16.14)\nSchema version: 0060.290\n\n+-----------+----------+--------------------------------------------+--------+---------------------+---------+----------+\n| Category  | Version  | Description                                | Type   | Installed On        | State   | Undoable |\n+-----------+----------+--------------------------------------------+--------+---------------------+---------+----------+\n|           |          | << Flyway Schema Creation >>               | SCHEMA | 2026-06-21 12:50:03 | Success |          |\n| Versioned | 0000.010 | preflight environment roles and utc        | SQL    | 2026-06-21 12:50:03 | Success | No       |\n| Versioned | 0000.020 | create system state control table          | SQL    | 2026-06-21 12:50:03 | Success | No       |\n| Versioned | 0010.010 | table background task                      | SQL    | 2026-06-21 12:50:03 | Success | No       |\n| Versioned | 0010.020 | table background task event                | SQL    | 2026-06-21 12:50:03 | Success | No       |\n| Versioned | 0010.030 | table file fingerprint registry            | SQL    | 2026-06-21 12:50:03 | Success | No       |\n| Versioned | 0010.040 | table cleaning rule version                | SQL    | 2026-06-21 12:50:03 | Success | No       |\n| Versioned | 0010.050 | table channel                              | SQL    | 2026-06-21 12:50:03 | Success | No       |\n| Versioned | 0010.060 | table standard work                        | SQL    | 2026-06-21 12:50:03 | Success | No       |\n| Versioned | 0010.070 | table author                               | SQL    | 2026-06-21 12:50:03 | Success | No       |\n| Versioned | 0010.080 | table classification system                | SQL    | 2026-06-21 12:50:03 | Success | No       |\n| Versioned | 0010.090 | table classification release               | SQL    | 2026-06-21 12:50:03 | Success | No       |\n| Versioned | 0010.100 | table tag release                          | SQL    | 2026-06-21 12:50:03 | Success | No       |\n| Versioned | 0020.010 | table import file                          | SQL    | 2026-06-21 12:50:03 | Success | No       |\n| Versioned | 0020.020 | table bill staging session                 | SQL    | 2026-06-21 12:50:03 | Success | No       |\n| Versioned | 0020.030 | table temp bill record                     | SQL    | 2026-06-21 12:50:03 | Success | No       |\n| Versioned | 0020.040 | table import batch                         | SQL    | 2026-06-21 12:50:03 | Success | No       |\n| Versioned | 0020.050 | table import batch file                    | SQL    | 2026-06-21 12:50:03 | Success | No       |\n| Versioned | 0020.060 | table import batch month                   | SQL    | 2026-06-21 12:50:03 | Success | No       |\n| Versioned | 0020.070 | table income fact                          | SQL    | 2026-06-21 12:50:03 | Success | No       |\n| Versioned | 0030.010 | table mapping version                      | SQL    | 2026-06-21 12:50:03 | Success | No       |\n| Versioned | 0030.020 | alter import batch                         | SQL    | 2026-06-21 12:50:03 | Success | No       |\n| Versioned | 0030.030 | table issue run                            | SQL    | 2026-06-21 12:50:03 | Success | No       |\n| Versioned | 0030.040 | table data issue                           | SQL    | 2026-06-21 12:50:03 | Success | No       |\n| Versioned | 0030.050 | table data issue decision                  | SQL    | 2026-06-21 12:50:03 | Success | No       |\n| Versioned | 0030.060 | table work business form                   | SQL    | 2026-06-21 12:50:03 | Success | No       |\n| Versioned | 0030.070 | table channel alias                        | SQL    | 2026-06-21 12:50:03 | Success | No       |\n| Versioned | 0030.080 | table raw wor"
+    },
+    {
+      "name": "flyway validate succeeds",
+      "category": "flyway",
+      "status": "passed",
+      "detail": "A more recent version of Flyway is available. Find out more about Flyway 12.9.0 at https://rd.gt/3rXiSlV\n\nFlyway OSS Edition 10.21.0 by Redgate\n\nSee release notes here: https://rd.gt/416ObMi\nDatabase: [local-jdbc-url-redacted] (PostgreSQL 16.14)\nSuccessfully validated 81 migrations (execution time 00:00.043s)"
+    },
+    {
+      "name": "second flyway migrate is idempotent",
+      "category": "flyway",
+      "status": "passed",
+      "detail": "A more recent version of Flyway is available. Find out more about Flyway 12.9.0 at https://rd.gt/3rXiSlV\n\nFlyway OSS Edition 10.21.0 by Redgate\n\nSee release notes here: https://rd.gt/416ObMi\nDatabase: [local-jdbc-url-redacted] (PostgreSQL 16.14)\nSuccessfully validated 81 migrations (execution time 00:00.046s)\nCurrent version of schema \"flyway_history\": 0060.290\nSchema \"flyway_history\" is up to date. No migration necessary."
+    },
+    {
+      "name": "flyway validate fails after checksum tamper",
+      "category": "flyway",
+      "status": "passed",
+      "detail": "A more recent version of Flyway is available. Find out more about Flyway 12.9.0 at https://rd.gt/3rXiSlV\n\nFlyway OSS Edition 10.21.0 by Redgate\n\nSee release notes here: https://rd.gt/416ObMi\nDatabase: [local-jdbc-url-redacted] (PostgreSQL 16.14)\nERROR: Validate failed: Migrations have failed validation\nMigration checksum mismatch for migration version 0000.010\n-> Applied to database : 1126674805\n-> Resolved locally    : -99889355\nEither revert the changes to the migration, or run repair to update the schema history.\nNeed more flexibility with validation rules? Learn more: https://rd.gt/3AbJUZE"
+    },
+    {
+      "name": "flyway validate succeeds after original location restored",
+      "category": "flyway",
+      "status": "passed",
+      "detail": "A more recent version of Flyway is available. Find out more about Flyway 12.9.0 at https://rd.gt/3rXiSlV\n\nFlyway OSS Edition 10.21.0 by Redgate\n\nSee release notes here: https://rd.gt/416ObMi\nDatabase: [local-jdbc-url-redacted] (PostgreSQL 16.14)\nSuccessfully validated 81 migrations (execution time 00:00.042s)"
+    },
+    {
+      "name": "B database flyway info succeeds",
+      "category": "flyway",
+      "status": "passed",
+      "detail": "A more recent version of Flyway is available. Find out more about Flyway 12.9.0 at https://rd.gt/3rXiSlV\n\nFlyway OSS Edition 10.21.0 by Redgate\n\nSee release notes here: https://rd.gt/416ObMi\nDatabase: [local-jdbc-url-redacted] (PostgreSQL 16.14)\nSchema version: 0060.290\n\n+-----------+----------+--------------------------------------------+--------+---------------------+---------+----------+\n| Category  | Version  | Description                                | Type   | Installed On        | State   | Undoable |\n+-----------+----------+--------------------------------------------+--------+---------------------+---------+----------+\n|           |          | << Flyway Schema Creation >>               | SCHEMA | 2026-06-21 12:50:38 | Success |          |\n| Versioned | 0000.010 | preflight environment roles and utc        | SQL    | 2026-06-21 12:50:38 | Success | No       |\n| Versioned | 0000.020 | create system state control table          | SQL    | 2026-06-21 12:50:38 | Success | No       |\n| Versioned | 0010.010 | table background task                      | SQL    | 2026-06-21 12:50:38 | Success | No       |\n| Versioned | 0010.020 | table background task event                | SQL    | 2026-06-21 12:50:38 | Success | No       |\n| Versioned | 0010.030 | table file fingerprint registry            | SQL    | 2026-06-21 12:50:38 | Success | No       |\n| Versioned | 0010.040 | table cleaning rule version                | SQL    | 2026-06-21 12:50:38 | Success | No       |\n| Versioned | 0010.050 | table channel                              | SQL    | 2026-06-21 12:50:38 | Success | No       |\n| Versioned | 0010.060 | table standard work                        | SQL    | 2026-06-21 12:50:38 | Success | No       |\n| Versioned | 0010.070 | table author                               | SQL    | 2026-06-21 12:50:38 | Success | No       |\n| Versioned | 0010.080 | table classification system                | SQL    | 2026-06-21 12:50:38 | Success | No       |\n| Versioned | 0010.090 | table classification release               | SQL    | 2026-06-21 12:50:38 | Success | No       |\n| Versioned | 0010.100 | table tag release                          | SQL    | 2026-06-21 12:50:38 | Success | No       |\n| Versioned | 0020.010 | table import file                          | SQL    | 2026-06-21 12:50:38 | Success | No       |\n| Versioned | 0020.020 | table bill staging session                 | SQL    | 2026-06-21 12:50:38 | Success | No       |\n| Versioned | 0020.030 | table temp bill record                     | SQL    | 2026-06-21 12:50:38 | Success | No       |\n| Versioned | 0020.040 | table import batch                         | SQL    | 2026-06-21 12:50:38 | Success | No       |\n| Versioned | 0020.050 | table import batch file                    | SQL    | 2026-06-21 12:50:38 | Success | No       |\n| Versioned | 0020.060 | table import batch month                   | SQL    | 2026-06-21 12:50:38 | Success | No       |\n| Versioned | 0020.070 | table income fact                          | SQL    | 2026-06-21 12:50:38 | Success | No       |\n| Versioned | 0030.010 | table mapping version                      | SQL    | 2026-06-21 12:50:38 | Success | No       |\n| Versioned | 0030.020 | alter import batch                         | SQL    | 2026-06-21 12:50:38 | Success | No       |\n| Versioned | 0030.030 | table issue run                            | SQL    | 2026-06-21 12:50:38 | Success | No       |\n| Versioned | 0030.040 | table data issue                           | SQL    | 2026-06-21 12:50:38 | Success | No       |\n| Versioned | 0030.050 | table data issue decision                  | SQL    | 2026-06-21 12:50:38 | Success | No       |\n| Versioned | 0030.060 | table work business form                   | SQL    | 2026-06-21 12:50:38 | Success | No       |\n| Versioned | 0030.070 | table channel alias                        | SQL    | 2026-06-21 12:50:38 | Success | No       |\n| Versioned | 0030.080 | table raw wor"
+    },
+    {
+      "name": "application_rw cannot update income_fact",
+      "category": "permissions_true_connection",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n错误:  对表 income_fact 权限不够"
+    },
+    {
+      "name": "application_rw cannot directly switch mapping_version",
+      "category": "permissions_true_connection",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n错误:  对表 mapping_version 权限不够"
+    },
+    {
+      "name": "application_ro can query official view",
+      "category": "permissions_true_connection",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nt"
+    },
+    {
+      "name": "application_ro cannot query income_fact table",
+      "category": "permissions_true_connection",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n错误:  对表 income_fact 权限不够"
+    },
+    {
+      "name": "backup_operator has no business write",
+      "category": "permissions_true_connection",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n错误:  对表 channel 权限不够"
+    },
+    {
+      "name": "background_worker can write task candidate rows",
+      "category": "permissions_true_connection",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n4\nINSERT 0 1"
+    },
+    {
+      "name": "background_worker cannot activate mapping directly",
+      "category": "permissions_true_connection",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n错误:  对函数 switch_mapping_version 权限不够"
+    },
+    {
+      "name": "SECURITY DEFINER functions owned by non-superuser migration_owner",
+      "category": "permissions_true_connection",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nt"
+    },
+    {
+      "name": "caller search_path cannot pollute qualified functions",
+      "category": "permissions_true_connection",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nSET\naudio_product"
+    },
+    {
+      "name": "migration database session defaults to UTC",
+      "category": "timezone",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nUTC"
+    },
+    {
+      "name": "timestamptz epoch and natural month are timezone-safe",
+      "category": "timezone",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nt"
+    },
+    {
+      "name": "Asia/Shanghai session reads same instant and stable natural month",
+      "category": "timezone",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nSET\nt"
+    },
+    {
+      "name": "A/B object counts match",
+      "category": "ab_compare",
+      "status": "passed",
+      "detail": "{\"A\": {\"m1_tables\": 48, \"flyway_tables\": 1, \"views\": 5, \"functions\": 21, \"triggers\": 32, \"fks\": 84, \"indexes\": 117}, \"B\": {\"m1_tables\": 48, \"flyway_tables\": 1, \"views\": 5, \"functions\": 21, \"triggers\": 32, \"fks\": 84, \"indexes\": 117}}"
+    },
+    {
+      "name": "A/B schema object hashes match",
+      "category": "ab_compare",
+      "status": "passed",
+      "detail": "A=4a2598d623ef696dccde654315dc67d229485f894f17cdd2be6e4e8818d14e1b B=4a2598d623ef696dccde654315dc67d229485f894f17cdd2be6e4e8818d14e1b"
+    },
+    {
+      "name": "A/B permission hashes match",
+      "category": "ab_compare",
+      "status": "passed",
+      "detail": "A=89c6994360376dfa09e9eee38bfc5738a9d106df89c96be428ec8ca203ef72b2 B=89c6994360376dfa09e9eee38bfc5738a9d106df89c96be428ec8ca203ef72b2"
+    },
+    {
+      "name": "empty database creates all prototype objects",
+      "category": "ddl",
+      "status": "passed",
+      "detail": "all SQL files executed"
+    },
+    {
+      "name": "48 physical tables",
+      "category": "ddl",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n48"
+    },
+    {
+      "name": "five version partial active indexes exist",
+      "category": "ddl",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n5"
+    },
+    {
+      "name": "NULLS NOT DISTINCT is present",
+      "category": "ddl",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n2"
+    },
+    {
+      "name": "schema_initialized permits zero active",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nschema_initialized"
+    },
+    {
+      "name": "ready rejects zero active",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nBEGIN\nSET\nauthorized\nUPDATE 1\n错误:  state ready_for_bill_activation requires exactly one active version of each kind; got mapping 0, basic 0, classification 0, tag 0\nCONTEXT:  在RAISE的第11行的PL/pgSQL函数assert_active_versions()"
+    },
+    {
+      "name": "enter master_data_initializing",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n\nmaster_data_initializing"
+    },
+    {
+      "name": "bootstrap activation and ready transition",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n\nready_for_bill_activation"
+    },
+    {
+      "name": "ready has exactly one of four active versions",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n1111"
+    },
+    {
+      "name": "second active mapping rejected",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nSET\nauthorized\nINSERT 0 1\n错误:  重复键违反唯一约束\"uq_mapping_version_active\"\nDETAIL:  键值\"((true))=(t)\" 已经存在"
+    },
+    {
+      "name": "raw ID parsing keeps 12345 and Y12345 distinct",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n12345,12345,audio_copyright,audio_product"
+    },
+    {
+      "name": "illegal ID returns null",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nt"
+    },
+    {
+      "name": "two business forms map to one standard work",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nINSERT 0 2\nINSERT 0 3\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 2"
+    },
+    {
+      "name": "invalid raw ID mapping is rejected",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n错误:  raw work ID X123 does not derive standard work ID 12345\nCONTEXT:  在RAISE的第7行的PL/pgSQL函数validate_work_mapping_identity()"
+    },
+    {
+      "name": "authorization category cannot override business form",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n错误:  business form audio_copyright conflicts with raw work ID Y99999\nCONTEXT:  在RAISE的第13行的PL/pgSQL函数validate_work_mapping_identity()"
+    },
+    {
+      "name": "historical issue context created",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nINSERT 0 1\nINSERT 0 1"
+    },
+    {
+      "name": "raw and historical mapping tables are mutually exclusive",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nBEGIN\nINSERT 0 1\n错误:  raw work ID 12345 exists in both mapping tables for version 3\nCONTEXT:  在RAISE的第14行的PL/pgSQL函数enforce_mapping_table_mutex()"
+    },
+    {
+      "name": "historical raw ID cannot repeat through another business form",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nBEGIN\nINSERT 0 1\n错误:  business form audio_copyright conflicts with raw work ID Y99999\nCONTEXT:  在RAISE的第13行的PL/pgSQL函数validate_work_mapping_identity()"
+    },
+    {
+      "name": "classification root NULL uniqueness works",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nBEGIN\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\n错误:  重复键违反唯一约束\"classification_node_classification_release_id_classificati_key1\"\nDETAIL:  键值\"(classification_release_id, classification_system_id, parent_id, display_name)=(2, 1, null, Same Root)\" 已经存在"
+    },
+    {
+      "name": "candidate first batch prepared",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nUPDATE 1\nUPDATE 1"
+    },
+    {
+      "name": "NUMERIC(32,18) preserves exact value",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n123.123456789012345678"
+    },
+    {
+      "name": "income_fact UPDATE rejected",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n错误:  income_fact is immutable; use batch revoke and a new projection version\nCONTEXT:  在RAISE的第2行的PL/pgSQL函数reject_income_fact_mutation()"
+    },
+    {
+      "name": "income_fact DELETE rejected",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n错误:  income_fact is immutable; use batch revoke and a new projection version\nCONTEXT:  在RAISE的第2行的PL/pgSQL函数reject_income_fact_mutation()"
+    },
+    {
+      "name": "ready batch reconciliation fields are frozen",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n错误:  direct active/revoked batch mutation is forbidden\nCONTEXT:  在RAISE的第6行的PL/pgSQL函数guard_batch_status()"
+    },
+    {
+      "name": "new work appears in basic info gap view",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nt"
+    },
+    {
+      "name": "first batch and mapping activate atomically",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n\noperational"
+    },
+    {
+      "name": "bootstrap mapping retired",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nretired"
+    },
+    {
+      "name": "operational rejects zero active mapping",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nBEGIN\nSET\nauthorized\nUPDATE 1\n错误:  state operational requires exactly one active version of each kind; got mapping 0, basic 1, classification 1, tag 1\nCONTEXT:  在RAISE的第11行的PL/pgSQL函数assert_active_versions()"
+    },
+    {
+      "name": "active batch rejects appended facts",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n错误:  income facts can only be appended while batch is draft or validating\nCONTEXT:  在RAISE的第6行的PL/pgSQL函数validate_income_fact_insert()"
+    },
+    {
+      "name": "active mapping snapshot rejects child append",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n错误:  mapping snapshot children are immutable unless version is building\nCONTEXT:  在RAISE的第8行的PL/pgSQL函数guard_snapshot_child()"
+    },
+    {
+      "name": "second batch facts prepared",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nUPDATE 1"
+    },
+    {
+      "name": "second mapping snapshot built invisibly",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 2\nINSERT 0 2\nINSERT 0 2\nINSERT 0 1\nUPDATE 1"
+    },
+    {
+      "name": "new batch activation keeps batch/mapping atomic",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n\n2"
+    },
+    {
+      "name": "negative-only business form has no first-positive month",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nt"
+    },
+    {
+      "name": "NUMERIC aggregation preserves 18 decimals",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n122.123456789012345677"
+    },
+    {
+      "name": "revoke rejects candidate still containing revoked batch",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n错误:  mapping 5 contains facts outside visible batch set\nCONTEXT:  在RAISE的第21行的PL/pgSQL函数assert_mapping_coverage(bigint,bigint,bigint)\nSQL 语句 \"SELECT m1.assert_mapping_coverage(p_mapping_version_id,NULL,p_batch_id)\"\n在PERFORM的第10行的PL/pgSQL函数revoke_bill_batch(bigint,bigint,text)"
+    },
+    {
+      "name": "revocation mapping prepared",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 2\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nUPDATE 1"
+    },
+    {
+      "name": "batch revocation and mapping switch atomic",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n\n1"
+    },
+    {
+      "name": "pure mapping switch",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n\n6"
+    },
+    {
+      "name": "basic info version switch",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nINSERT 0 1\nINSERT 0 1"
+    },
+    {
+      "name": "basic info, classification and tag releases switch atomically",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nUPDATE 1\n\n3:2:2"
+    },
+    {
+      "name": "active classification release rejects node append",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n错误:  classification release children are immutable unless release is draft\nCONTEXT:  在RAISE的第14行的PL/pgSQL函数guard_snapshot_child()"
+    },
+    {
+      "name": "active basic-info snapshot rejects row append",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n错误:  basic-info snapshot children are immutable unless version is building\nCONTEXT:  在RAISE的第11行的PL/pgSQL函数guard_snapshot_child()"
+    },
+    {
+      "name": "invalid candidate can remain invisible",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nINSERT 0 1\nINSERT 0 1"
+    },
+    {
+      "name": "validated mapping metadata is frozen",
+      "category": "invariants",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n错误:  cannot directly transition or mutate frozen validated/active/retired mapping_version row\nCONTEXT:  在RAISE的第11行的PL/pgSQL函数guard_version_status()"
+    },
+    {
+      "name": "pre-commit validation failure rolls back switch",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n错误:  mapping 8 coverage mismatch expected 1/123.123456789012345678 got 0/0\nCONTEXT:  在RAISE的第15行的PL/pgSQL函数assert_mapping_coverage(bigint,bigint,bigint)\nSQL 语句 \"SELECT m1.assert_mapping_coverage(p_mapping_version_id,NULL,NULL)\"\n在PERFORM的第8行的PL/pgSQL函数switch_mapping_version(bigint,text)"
+    },
+    {
+      "name": "failed switch leaves prior active mapping",
+      "category": "lifecycle",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n6"
+    },
+    {
+      "name": "application_rw cannot update income_fact",
+      "category": "permissions",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n错误:  对表 income_fact 权限不够"
+    },
+    {
+      "name": "application_rw cannot switch active version",
+      "category": "permissions",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n错误:  对函数 switch_mapping_version 权限不够"
+    },
+    {
+      "name": "application_rw can call authorized parser",
+      "category": "permissions",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\naudio_product"
+    },
+    {
+      "name": "application_ro can query formal view",
+      "category": "permissions",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n1"
+    },
+    {
+      "name": "application_ro cannot query base facts",
+      "category": "permissions",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n错误:  对表 income_fact 权限不够"
+    },
+    {
+      "name": "background_worker can create a building candidate",
+      "category": "permissions",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nINSERT 0 1\nINSERT 0 1\nbuilding"
+    },
+    {
+      "name": "background_worker cannot activate mapping directly",
+      "category": "permissions",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n错误:  cannot directly transition or mutate frozen validated/active/retired mapping_version row\nCONTEXT:  在RAISE的第11行的PL/pgSQL函数guard_version_status()"
+    },
+    {
+      "name": "backup_operator has no business write",
+      "category": "permissions",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n错误:  对表 channel 权限不够"
+    },
+    {
+      "name": "SECURITY DEFINER functions have fixed search_path",
+      "category": "permissions",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n7"
+    },
+    {
+      "name": "caller search_path cannot pollute SECURITY DEFINER lookup",
+      "category": "permissions",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nSET"
+    },
+    {
+      "name": "first concurrent switch commits",
+      "category": "concurrency",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nBEGIN\nSET\n\n\nCOMMIT"
+    },
+    {
+      "name": "second concurrent switch times out on advisory lock",
+      "category": "concurrency",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\nSET\n错误:  由于锁超时，取消语句操作\nCONTEXT:  SQL 语句 \"SELECT pg_advisory_xact_lock(hashtextextended('m1.version-switch',0))\"\n在PERFORM的第3行的PL/pgSQL函数switch_mapping_version(bigint,text)"
+    },
+    {
+      "name": "timeout leaves one complete active version",
+      "category": "concurrency",
+      "status": "passed",
+      "detail": "SET\nSET\nSET\nSET\n1:8"
+    }
+  ],
+  "performance": {
+    "synthetic master identities": 0.155503,
+    "staging write 192899 rows": 2.224417,
+    "fact write 192899 rows": 5.257038,
+    "candidate mapping identities": 0.406685,
+    "full projection build 192899 rows": 17.890022,
+    "first positive metrics build": 0.545139,
+    "strict reconciliation preparation": 0.312732,
+    "mapping and batch atomic switch": 0.516534,
+    "aggregate by month work channel form": 0.574722,
+    "database_size_bytes": 193010711,
+    "index_size_bytes": 80117760,
+    "row_count": 192899,
+    "plans": {
+      "month": "SET\nSET\nSET\nSET\n[\n  {\n    \"Plan\": {\n      \"Node Type\": \"Aggregate\",\n      \"Strategy\": \"Sorted\",\n      \"Partial Mode\": \"Simple\",\n      \"Parallel Aware\": false,\n      \"Async Capable\": false,\n      \"Startup Cost\": 1944.51,\n      \"Total Cost\": 1944.57,\n      \"Plan Rows\": 3,\n      \"Plan Width\": 36,\n      \"Actual Startup Time\": 301.650,\n      \"Actual Total Time\": 320.775,\n      \"Actual Rows\": 24,\n      \"Actual Loops\": 1,\n      \"Group Key\": [\"v_current_income.bill_month\"],\n      \"Shared Hit Blocks\": 775605,\n      \"Shared Read Blocks\": 0,\n      \"Shared Dirtied Blocks\": 0,\n      \"Shared Written Blocks\": 0,\n      \"Local Hit Blocks\": 0,\n      \"Local Read Blocks\": 0,\n      \"Local Dirtied Blocks\": 0,\n      \"Local Written Blocks\": 0,\n      \"Temp Read Blocks\": 497,\n      \"Temp Written Blocks\": 500,\n      \"Plans\": [\n        {\n          \"Node Type\": \"Sort\",\n          \"Parent Relationship\": \"Outer\",\n          \"Parallel Aware\": false,\n          \"Async Capable\": false,\n          \"Startup Cost\": 1944.51,\n          \"Total Cost\": 1944.52,\n          \"Plan Rows\": 3,\n          \"Plan Width\": 30,\n          \"Actual Startup Time\": 300.828,\n          \"Actual Total Time\": 308.743,\n          \"Actual Rows\": 192899,\n          \"Actual Loops\": 1,\n          \"Sort Key\": [\"v_current_income.bill_month\"],\n          \"Sort Method\": \"external merge\",\n          \"Sort Space Used\": 3976,\n          \"Sort Space Type\": \"Disk\",\n          \"Shared Hit Blocks\": 775605,\n          \"Shared Read Blocks\": 0,\n          \"Shared Dirtied Blocks\": 0,\n          \"Shared Written Blocks\": 0,\n          \"Local Hit Blocks\": 0,\n          \"Local Read Blocks\": 0,\n          \"Local Dirtied Blocks\": 0,\n          \"Local Written Blocks\": 0,\n          \"Temp Read Blocks\": 497,\n          \"Temp Written Blocks\": 500,\n          \"Plans\": [\n            {\n              \"Node Type\": \"Subquery Scan\",\n              \"Parent Relationship\": \"Outer\",\n              \"Parallel Aware\": false,\n              \"Async Capable\": false,\n              \"Alias\": \"v_current_income\",\n              \"Startup Cost\": 30.16,\n              \"Total Cost\": 1944.49,\n              \"Plan Rows\": 3,\n              \"Plan Width\": 30,\n              \"Actual Startup Time\": 6.476,\n              \"Actual Total Time\": 282.736,\n              \"Actual Rows\": 192899,\n              \"Actual Loops\": 1,\n              \"Shared Hit Blocks\": 775602,\n              \"Shared Read Blocks\": 0,\n              \"Shared Dirtied Blocks\": 0,\n              \"Shared Written Blocks\": 0,\n              \"Local Hit Blocks\": 0,\n              \"Local Read Blocks\": 0,\n              \"Local Dirtied Blocks\": 0,\n              \"Local Written Blocks\": 0,\n              \"Temp Read Blocks\": 0,\n              \"Temp Written Blocks\": 0,\n              \"Plans\": [\n                {\n                  \"Node Type\": \"Nested Loop\",\n                  \"Parent Relationship\": \"Subquery\",\n                  \"Parallel Aware\": false,\n                  \"Async Capable\": false,\n                  \"Join Type\": \"Inner\",\n                  \"Startup Cost\": 30.16,\n                  \"Total Cost\": 1944.46,\n                  \"Plan Rows\": 3,\n                  \"Plan Width\": 330,\n                  \"Actual Startup Time\": 6.476,\n                  \"Actual Total Time\": 274.762,\n                  \"Actual Rows\": 192899,\n                  \"Actual Loops\": 1,\n                  \"Inner Unique\": false,\n                  \"Join Filter\": \"(f.import_batch_id = b.id)\",\n                  \"Rows Removed by Join Filter\": 0,\n                  \"Shared Hit Blocks\": 775602,\n                  \"Shared Read Blocks\": 0,\n                  \"Shared Dirtied Blocks\": 0,\n                  \"Shared Written Blocks\": 0,\n                  \"Local Hit Blocks\": 0,\n                  \"Local Read Blocks\": 0,\n                  \"Local Dirtied Blocks\": 0,\n                  \"Local Written Blocks\": 0,\n                  \"Temp Read Blocks\": 0,\n                  \"Temp Written Blocks\": 0,\n                  \"Plans\": [\n                    {\n                      \"Node Type\": \"Seq Scan\",\n                      \"Parent Relationship\": \"Outer\",\n                      \"Parallel Aware\": false,\n                      \"Async Capable\": false,\n                      \"Relation Name\": \"import_batch\",\n                      \"Alias\": \"b\",\n                      \"Startup Cost\": 0.00,\n                      \"Total Cost\": 12.38,\n                      \"Plan Rows\": 1,\n                      \"Plan Width\": 8,\n                      \"Actual Startup Time\": 0.005,\n                      \"Actual Total Time\": 0.007,\n                      \"Actual Rows\": 1,\n                      \"Actual Loops\": 1,\n                      \"Filter\": \"(status = 'active'::text)\",\n                      \"Rows Removed by Filter\": 0,\n                      \"Shared Hit Blocks\": 1,\n                      \"Shared Read Blocks\": 0,\n                      \"Shared Dirtied Blocks\": 0,\n                      \"Shared Written Blocks\": 0,\n                      \"Local Hit Blocks\": 0,\n                      \"Local Read Blocks\": 0,\n                      \"Local Dirtied Blocks\": 0,\n                      \"Local Written Blocks\": 0,\n                      \"Temp Read Blocks\": 0,\n                      \"Temp Written Blocks\": 0\n                    },\n                    {\n                      \"Node Type\": \"Nested Loop\",\n                      \"Parent Relationship\": \"Inner\",\n                      \"Parallel Aware\": false,\n                      \"Async Capable\": false,\n                      \"Join Type\": \"Inner\",\n                      \"Startup Cost\": 30.16,\n                      \"Total Cost\": 1926.12,\n                      \"Plan Rows\": 477,\n                      \"Plan Width\": 38,\n                      \"Actual Startup Time\": 6.468,\n                      \"Actual Total Time\": 257.673,\n                      \"Actual Rows\": 192899,\n                      \"Actual Loops\": 1,\n                      \"Inner Unique\": true,\n                      \"Shared Hit Blocks\": 775601,\n                      \"Shared Read Blocks\": 0,\n                      \"Shared Dirtied Blocks\": 0,\n                      \"Shared Written Blocks\": 0,\n                      \"Local Hit Blocks\": 0,\n                      \"Local Read Blocks\": 0,\n                      \"Local Dirtied Blocks\": 0,\n                      \"Local Written Blocks\": 0,\n                      \"Temp Read Blocks\": 0,\n                      \"Temp Written Blocks\": 0,\n                      \"Plans\": [\n                        {\n                          \"Node Type\": \"Nested Loop\",\n                          \"Parent Relationship\": \"Outer\",\n                          \"Parallel Aware\": false,\n                          \"Async Capable\": false,\n                          \"Join Type\": \"Inner\",\n                          \"Startup Cost\": 29.74,\n                          \"Total Cost\": 1645.32,\n                          \"Plan Rows\": 477,\n                          \"Plan Width\": 8,\n                          \"Actual Startup Time\": 6.444,\n                          \"Actual Total Time\": 29.338,\n                          \"Actual Rows\": 192899,\n                          \"Actual Loops\": 1,\n                          \"Inner Unique\": false,\n                          \"Shared Hit Blocks\": 4005,\n                          \"Shared Read Blocks\": 0,\n                          \"Shared Dirtied Blocks\": 0,\n                          \"Shared Written Blocks\": 0,\n                          \"Local Hit Blocks\": 0,\n                          \"Local Read Blocks\": 0,\n                          \"Local Dirtied Blocks\": 0,\n                          \"Local Written Blocks\": 0,\n                          \"Temp Read Blocks\": 0,\n                          \"Temp Written Blocks\": 0,\n                          \"Plans\": [\n                            {\n                              \"Node Type\": \"Index Scan\",\n                              \"Parent Relationship\": \"Outer\",\n                              \"Parallel Aware\": false,\n                              \"Async Capable\": false,\n                              \"Scan Direction\": \"Forward\",\n                              \"Index Name\": \"uq_mapping_version_active\",\n                              \"Relation Name\": \"mapping_version\",\n                              \"Alias\": \"mv\",\n                              \"Startup Cost\": 0.15,\n                              \"Total Cost\": 8.16,\n                              \"Plan Rows\": 1,\n                              \"Plan Width\": 8,\n                              \"Actual Startup Time\": 0.007,\n                              \"Actual Total Time\": 0.009,\n                              \"Actual Rows\": 1,\n                              \"Actual Loops\": 1,\n                              \"Shared Hit Blocks\": 2,\n                              \"Shared Read Blocks\": 0,\n                              \"Shared Dirtied Blocks\": 0,\n                              \"Shared Written Blocks\": 0,\n                              \"Local Hit Blocks\": 0,\n                              \"Local Read Blocks\": 0,\n                              \"Local Dirtied Blocks\": 0,\n                              \"Local Written Blocks\": 0,\n                              \"Temp Read Blocks\": 0,\n                              \"Temp Written Blocks\": 0\n                            },\n                            {\n                              \"Node Type\": \"Bitmap Heap Scan\",\n                              \"Parent Relationship\": \"Inner\",\n                              \"Parallel Aware\": false,\n                              \"Async Capable\": false,\n                              \"Relation Name\": \"income_projection\",\n                              \"Alias\": \"p\",\n                              \"Startup Cost\": 29.60,\n                              \"Total Cost\": 1630.47,\n                              \"Plan Rows\": 668,\n                              \"Plan Width\": 16,\n                              \"Actual Startup Time\": 6.432,\n                              \"Actual Total Time\": 20.433,\n                              \"Actual Rows\": 192899,\n                              \"Actual Loops\": 1,\n                              \"Recheck Cond\": \"(mapping_version_id = mv.id)\",\n                              \"Rows Removed by Index Recheck\": 0,\n                              \"Exact Heap Blocks\": 2967,\n                              \"Lossy Heap Blocks\": 0,\n                              \"Shared Hit Blocks\": 4003,\n                              \"Shared Read Blocks\": 0,\n                              \"Shared Dirtied Blocks\": 0,\n                              \"Shared Written Blocks\": 0,\n                              \"Local Hit Blocks\": 0,\n                              \"Local Read Blocks\": 0,\n                              \"Local Dirtied Blocks\": 0,\n                              \"Local Written Blocks\": 0,\n                              \"Temp Read Blocks\": 0,\n                              \"Temp Written Blocks\": 0,\n                              \"Plans\": [\n                                {\n                                  \"Node Type\": \"Bitmap Index Scan\",\n                                  \"Parent Relationship\": \"Outer\",\n                                  \"Parallel Aware\": false,\n                                  \"Async Capable\": false,\n                                  \"Index Name\": \"income_projection_pkey\",\n                                  \"Startup Cost\": 0.00,\n                                  \"Total Cost\": 29.43,\n                                  \"Plan Rows\": 668,\n                                  \"Plan Width\": 0,\n                                  \"Actual Startup Time\": 6.230,\n                                  \"Actual Total Time\": 6.230,\n                                  \"Actual Rows\": 192899,\n                                  \"Actual Loops\": 1,\n                                  \"Index Cond\": \"(mapping_version_id = mv.id)\",\n                                  \"Shared Hit Blocks\": 1036,\n                                  \"Shared Read Blocks\": 0,\n                                  \"Shared Dirtied Blocks\": 0,\n                                  \"Shared Written Blocks\": 0,\n                                  \"Local Hit Blocks\": 0,\n                                  \"Local Read Blocks\": 0,\n                                  \"Local Dirtied Blocks\": 0,\n                                  \"Local Written Blocks\": 0,\n                                  \"Temp Read Blocks\": 0,\n                                  \"Temp Written Blocks\": 0\n                                }\n                              ]\n                            }\n                          ]\n                        },\n                        {\n                          \"Node Type\": \"Index Scan\",\n                          \"Parent Relationship\": \"Inner\",\n                          \"Parallel Aware\": false,\n                          \"Async Capable\": false,\n                          \"Scan Direction\": \"Forward\",\n                          \"Index Name\": \"income_fact_pkey\",\n                          \"Relation Name\": \"income_fact\",\n                          \"Alias\": \"f\",\n                          \"Startup Cost\": 0.42,\n                          \"Total Cost\": 0.59,\n                          \"Plan Rows\": 1,\n                          \"Plan Width\": 46,\n                          \"Actual Startup Time\": 0.001,\n                          \"Actual Total Time\": 0.001,\n                          \"Actual Rows\": 1,\n                          \"Actual Loops\": 192899,\n                          \"Index Cond\": \"(id = p.income_fact_id)\",\n                          \"Rows Removed by Index Recheck\": 0,\n                          \"Shared Hit Blocks\": 771596,\n                          \"Shared Read Blocks\": 0,\n                          \"Shared Dirtied Blocks\": 0,\n                          \"Shared Written Blocks\": 0,\n                          \"Local Hit Blocks\": 0,\n                          \"Local Read Blocks\": 0,\n                          \"Local Dirtied Blocks\": 0,\n                          \"Local Written Blocks\": 0,\n                          \"Temp Read Blocks\": 0,\n                          \"Temp Written Blocks\": 0\n                        }\n                      ]\n                    }\n                  ]\n                }\n              ]\n            }\n          ]\n        }\n      ]\n    },\n    \"Planning\": {\n      \"Shared Hit Blocks\": 589,\n      \"Shared Read Blocks\": 0,\n      \"Shared Dirtied Blocks\": 0,\n      \"Shared Written Blocks\": 0,\n      \"Local Hit Blocks\": 0,\n      \"Local Read Blocks\": 0,\n      \"Local Dirtied Blocks\": 0,\n      \"Local Written Blocks\": 0,\n      \"Temp Read Blocks\": 0,\n      \"Temp Written Blocks\": 0\n    },\n    \"Planning Time\": 4.388,\n    \"Triggers\": [\n    ],\n    \"Execution Time\": 327.161\n  }\n]",
+      "work": "SET\nSET\nSET\nSET\n[\n  {\n    \"Plan\": {\n      \"Node Type\": \"Aggregate\",\n      \"Strategy\": \"Sorted\",\n      \"Partial Mode\": \"Simple\",\n      \"Parallel Aware\": false,\n      \"Async Capable\": false,\n      \"Startup Cost\": 1944.51,\n      \"Total Cost\": 1944.57,\n      \"Plan Rows\": 3,\n      \"Plan Width\": 64,\n      \"Actual Startup Time\": 484.011,\n      \"Actual Total Time\": 550.833,\n      \"Actual Rows\": 5000,\n      \"Actual Loops\": 1,\n      \"Group Key\": [\"v_current_income.standard_work_id\"],\n      \"Shared Hit Blocks\": 775605,\n      \"Shared Read Blocks\": 0,\n      \"Shared Dirtied Blocks\": 0,\n      \"Shared Written Blocks\": 0,\n      \"Local Hit Blocks\": 0,\n      \"Local Read Blocks\": 0,\n      \"Local Dirtied Blocks\": 0,\n      \"Local Written Blocks\": 0,\n      \"Temp Read Blocks\": 515,\n      \"Temp Written Blocks\": 518,\n      \"Plans\": [\n        {\n          \"Node Type\": \"Sort\",\n          \"Parent Relationship\": \"Outer\",\n          \"Parallel Aware\": false,\n          \"Async Capable\": false,\n          \"Startup Cost\": 1944.51,\n          \"Total Cost\": 1944.52,\n          \"Plan Rows\": 3,\n          \"Plan Width\": 58,\n          \"Actual Startup Time\": 483.984,\n          \"Actual Total Time\": 534.134,\n          \"Actual Rows\": 192899,\n          \"Actual Loops\": 1,\n          \"Sort Key\": [\"v_current_income.standard_work_id\"],\n          \"Sort Method\": \"external merge\",\n          \"Sort Space Used\": 4120,\n          \"Sort Space Type\": \"Disk\",\n          \"Shared Hit Blocks\": 775605,\n          \"Shared Read Blocks\": 0,\n          \"Shared Dirtied Blocks\": 0,\n          \"Shared Written Blocks\": 0,\n          \"Local Hit Blocks\": 0,\n          \"Local Read Blocks\": 0,\n          \"Local Dirtied Blocks\": 0,\n          \"Local Written Blocks\": 0,\n          \"Temp Read Blocks\": 515,\n          \"Temp Written Blocks\": 518,\n          \"Plans\": [\n            {\n              \"Node Type\": \"Subquery Scan\",\n              \"Parent Relationship\": \"Outer\",\n              \"Parallel Aware\": false,\n              \"Async Capable\": false,\n              \"Alias\": \"v_current_income\",\n              \"Startup Cost\": 30.16,\n              \"Total Cost\": 1944.49,\n              \"Plan Rows\": 3,\n              \"Plan Width\": 58,\n              \"Actual Startup Time\": 6.464,\n              \"Actual Total Time\": 276.183,\n              \"Actual Rows\": 192899,\n              \"Actual Loops\": 1,\n              \"Shared Hit Blocks\": 775602,\n              \"Shared Read Blocks\": 0,\n              \"Shared Dirtied Blocks\": 0,\n              \"Shared Written Blocks\": 0,\n              \"Local Hit Blocks\": 0,\n              \"Local Read Blocks\": 0,\n              \"Local Dirtied Blocks\": 0,\n              \"Local Written Blocks\": 0,\n              \"Temp Read Blocks\": 0,\n              \"Temp Written Blocks\": 0,\n              \"Plans\": [\n                {\n                  \"Node Type\": \"Nested Loop\",\n                  \"Parent Relationship\": \"Subquery\",\n                  \"Parallel Aware\": false,\n                  \"Async Capable\": false,\n                  \"Join Type\": \"Inner\",\n                  \"Startup Cost\": 30.16,\n                  \"Total Cost\": 1944.46,\n                  \"Plan Rows\": 3,\n                  \"Plan Width\": 330,\n                  \"Actual Startup Time\": 6.464,\n                  \"Actual Total Time\": 267.892,\n                  \"Actual Rows\": 192899,\n                  \"Actual Loops\": 1,\n                  \"Inner Unique\": false,\n                  \"Join Filter\": \"(f.import_batch_id = b.id)\",\n                  \"Rows Removed by Join Filter\": 0,\n                  \"Shared Hit Blocks\": 775602,\n                  \"Shared Read Blocks\": 0,\n                  \"Shared Dirtied Blocks\": 0,\n                  \"Shared Written Blocks\": 0,\n                  \"Local Hit Blocks\": 0,\n                  \"Local Read Blocks\": 0,\n                  \"Local Dirtied Blocks\": 0,\n                  \"Local Written Blocks\": 0,\n                  \"Temp Read Blocks\": 0,\n                  \"Temp Written Blocks\": 0,\n                  \"Plans\": [\n                    {\n                      \"Node Type\": \"Seq Scan\",\n                      \"Parent Relationship\": \"Outer\",\n                      \"Parallel Aware\": false,\n                      \"Async Capable\": false,\n                      \"Relation Name\": \"import_batch\",\n                      \"Alias\": \"b\",\n                      \"Startup Cost\": 0.00,\n                      \"Total Cost\": 12.38,\n                      \"Plan Rows\": 1,\n                      \"Plan Width\": 8,\n                      \"Actual Startup Time\": 0.008,\n                      \"Actual Total Time\": 0.009,\n                      \"Actual Rows\": 1,\n                      \"Actual Loops\": 1,\n                      \"Filter\": \"(status = 'active'::text)\",\n                      \"Rows Removed by Filter\": 0,\n                      \"Shared Hit Blocks\": 1,\n                      \"Shared Read Blocks\": 0,\n                      \"Shared Dirtied Blocks\": 0,\n                      \"Shared Written Blocks\": 0,\n                      \"Local Hit Blocks\": 0,\n                      \"Local Read Blocks\": 0,\n                      \"Local Dirtied Blocks\": 0,\n                      \"Local Written Blocks\": 0,\n                      \"Temp Read Blocks\": 0,\n                      \"Temp Written Blocks\": 0\n                    },\n                    {\n                      \"Node Type\": \"Nested Loop\",\n                      \"Parent Relationship\": \"Inner\",\n                      \"Parallel Aware\": false,\n                      \"Async Capable\": false,\n                      \"Join Type\": \"Inner\",\n                      \"Startup Cost\": 30.16,\n                      \"Total Cost\": 1926.12,\n                      \"Plan Rows\": 477,\n                      \"Plan Width\": 66,\n                      \"Actual Startup Time\": 6.455,\n                      \"Actual Total Time\": 250.995,\n                      \"Actual Rows\": 192899,\n                      \"Actual Loops\": 1,\n                      \"Inner Unique\": true,\n                      \"Shared Hit Blocks\": 775601,\n                      \"Shared Read Blocks\": 0,\n                      \"Shared Dirtied Blocks\": 0,\n                      \"Shared Written Blocks\": 0,\n                      \"Local Hit Blocks\": 0,\n                      \"Local Read Blocks\": 0,\n                      \"Local Dirtied Blocks\": 0,\n                      \"Local Written Blocks\": 0,\n                      \"Temp Read Blocks\": 0,\n                      \"Temp Written Blocks\": 0,\n                      \"Plans\": [\n                        {\n                          \"Node Type\": \"Nested Loop\",\n                          \"Parent Relationship\": \"Outer\",\n                          \"Parallel Aware\": false,\n                          \"Async Capable\": false,\n                          \"Join Type\": \"Inner\",\n                          \"Startup Cost\": 29.74,\n                          \"Total Cost\": 1645.32,\n                          \"Plan Rows\": 477,\n                          \"Plan Width\": 40,\n                          \"Actual Startup Time\": 6.435,\n                          \"Actual Total Time\": 31.520,\n                          \"Actual Rows\": 192899,\n                          \"Actual Loops\": 1,\n                          \"Inner Unique\": false,\n                          \"Shared Hit Blocks\": 4005,\n                          \"Shared Read Blocks\": 0,\n                          \"Shared Dirtied Blocks\": 0,\n                          \"Shared Written Blocks\": 0,\n                          \"Local Hit Blocks\": 0,\n                          \"Local Read Blocks\": 0,\n                          \"Local Dirtied Blocks\": 0,\n                          \"Local Written Blocks\": 0,\n                          \"Temp Read Blocks\": 0,\n                          \"Temp Written Blocks\": 0,\n                          \"Plans\": [\n                            {\n                              \"Node Type\": \"Index Scan\",\n                              \"Parent Relationship\": \"Outer\",\n                              \"Parallel Aware\": false,\n                              \"Async Capable\": false,\n                              \"Scan Direction\": \"Forward\",\n                              \"Index Name\": \"uq_mapping_version_active\",\n                              \"Relation Name\": \"mapping_version\",\n                              \"Alias\": \"mv\",\n                              \"Startup Cost\": 0.15,\n                              \"Total Cost\": 8.16,\n                              \"Plan Rows\": 1,\n                              \"Plan Width\": 8,\n                              \"Actual Startup Time\": 0.008,\n                              \"Actual Total Time\": 0.009,\n                              \"Actual Rows\": 1,\n                              \"Actual Loops\": 1,\n                              \"Shared Hit Blocks\": 2,\n                              \"Shared Read Blocks\": 0,\n                              \"Shared Dirtied Blocks\": 0,\n                              \"Shared Written Blocks\": 0,\n                              \"Local Hit Blocks\": 0,\n                              \"Local Read Blocks\": 0,\n                              \"Local Dirtied Blocks\": 0,\n                              \"Local Written Blocks\": 0,\n                              \"Temp Read Blocks\": 0,\n                              \"Temp Written Blocks\": 0\n                            },\n                            {\n                              \"Node Type\": \"Bitmap Heap Scan\",\n                              \"Parent Relationship\": \"Inner\",\n                              \"Parallel Aware\": false,\n                              \"Async Capable\": false,\n                              \"Relation Name\": \"income_projection\",\n                              \"Alias\": \"p\",\n                              \"Startup Cost\": 29.60,\n                              \"Total Cost\": 1630.47,\n                              \"Plan Rows\": 668,\n                              \"Plan Width\": 48,\n                              \"Actual Startup Time\": 6.424,\n                              \"Actual Total Time\": 20.208,\n                              \"Actual Rows\": 192899,\n                              \"Actual Loops\": 1,\n                              \"Recheck Cond\": \"(mapping_version_id = mv.id)\",\n                              \"Rows Removed by Index Recheck\": 0,\n                              \"Exact Heap Blocks\": 2967,\n                              \"Lossy Heap Blocks\": 0,\n                              \"Shared Hit Blocks\": 4003,\n                              \"Shared Read Blocks\": 0,\n                              \"Shared Dirtied Blocks\": 0,\n                              \"Shared Written Blocks\": 0,\n                              \"Local Hit Blocks\": 0,\n                              \"Local Read Blocks\": 0,\n                              \"Local Dirtied Blocks\": 0,\n                              \"Local Written Blocks\": 0,\n                              \"Temp Read Blocks\": 0,\n                              \"Temp Written Blocks\": 0,\n                              \"Plans\": [\n                                {\n                                  \"Node Type\": \"Bitmap Index Scan\",\n                                  \"Parent Relationship\": \"Outer\",\n                                  \"Parallel Aware\": false,\n                                  \"Async Capable\": false,\n                                  \"Index Name\": \"income_projection_pkey\",\n                                  \"Startup Cost\": 0.00,\n                                  \"Total Cost\": 29.43,\n                                  \"Plan Rows\": 668,\n                                  \"Plan Width\": 0,\n                                  \"Actual Startup Time\": 6.232,\n                                  \"Actual Total Time\": 6.232,\n                                  \"Actual Rows\": 192899,\n                                  \"Actual Loops\": 1,\n                                  \"Index Cond\": \"(mapping_version_id = mv.id)\",\n                                  \"Shared Hit Blocks\": 1036,\n                                  \"Shared Read Blocks\": 0,\n                                  \"Shared Dirtied Blocks\": 0,\n                                  \"Shared Written Blocks\": 0,\n                                  \"Local Hit Blocks\": 0,\n                                  \"Local Read Blocks\": 0,\n                                  \"Local Dirtied Blocks\": 0,\n                                  \"Local Written Blocks\": 0,\n                                  \"Temp Read Blocks\": 0,\n                                  \"Temp Written Blocks\": 0\n                                }\n                              ]\n                            }\n                          ]\n                        },\n                        {\n                          \"Node Type\": \"Index Scan\",\n                          \"Parent Relationship\": \"Inner\",\n                          \"Parallel Aware\": false,\n                          \"Async Capable\": false,\n                          \"Scan Direction\": \"Forward\",\n                          \"Index Name\": \"income_fact_pkey\",\n                          \"Relation Name\": \"income_fact\",\n                          \"Alias\": \"f\",\n                          \"Startup Cost\": 0.42,\n                          \"Total Cost\": 0.59,\n                          \"Plan Rows\": 1,\n                          \"Plan Width\": 42,\n                          \"Actual Startup Time\": 0.001,\n                          \"Actual Total Time\": 0.001,\n                          \"Actual Rows\": 1,\n                          \"Actual Loops\": 192899,\n                          \"Index Cond\": \"(id = p.income_fact_id)\",\n                          \"Rows Removed by Index Recheck\": 0,\n                          \"Shared Hit Blocks\": 771596,\n                          \"Shared Read Blocks\": 0,\n                          \"Shared Dirtied Blocks\": 0,\n                          \"Shared Written Blocks\": 0,\n                          \"Local Hit Blocks\": 0,\n                          \"Local Read Blocks\": 0,\n                          \"Local Dirtied Blocks\": 0,\n                          \"Local Written Blocks\": 0,\n                          \"Temp Read Blocks\": 0,\n                          \"Temp Written Blocks\": 0\n                        }\n                      ]\n                    }\n                  ]\n                }\n              ]\n            }\n          ]\n        }\n      ]\n    },\n    \"Planning\": {\n      \"Shared Hit Blocks\": 589,\n      \"Shared Read Blocks\": 0,\n      \"Shared Dirtied Blocks\": 0,\n      \"Shared Written Blocks\": 0,\n      \"Local Hit Blocks\": 0,\n      \"Local Read Blocks\": 0,\n      \"Local Dirtied Blocks\": 0,\n      \"Local Written Blocks\": 0,\n      \"Temp Read Blocks\": 0,\n      \"Temp Written Blocks\": 0\n    },\n    \"Planning Time\": 4.185,\n    \"Triggers\": [\n    ],\n    \"Execution Time\": 557.335\n  }\n]",
+      "channel": "SET\nSET\nSET\nSET\n[\n  {\n    \"Plan\": {\n      \"Node Type\": \"Aggregate\",\n      \"Strategy\": \"Sorted\",\n      \"Partial Mode\": \"Simple\",\n      \"Parallel Aware\": false,\n      \"Async Capable\": false,\n      \"Startup Cost\": 1944.51,\n      \"Total Cost\": 1944.57,\n      \"Plan Rows\": 3,\n      \"Plan Width\": 40,\n      \"Actual Startup Time\": 284.930,\n      \"Actual Total Time\": 304.023,\n      \"Actual Rows\": 50,\n      \"Actual Loops\": 1,\n      \"Group Key\": [\"v_current_income.channel_id\"],\n      \"Shared Hit Blocks\": 775605,\n      \"Shared Read Blocks\": 0,\n      \"Shared Dirtied Blocks\": 0,\n      \"Shared Written Blocks\": 0,\n      \"Local Hit Blocks\": 0,\n      \"Local Read Blocks\": 0,\n      \"Local Dirtied Blocks\": 0,\n      \"Local Written Blocks\": 0,\n      \"Temp Read Blocks\": 590,\n      \"Temp Written Blocks\": 593,\n      \"Plans\": [\n        {\n          \"Node Type\": \"Sort\",\n          \"Parent Relationship\": \"Outer\",\n          \"Parallel Aware\": false,\n          \"Async Capable\": false,\n          \"Startup Cost\": 1944.51,\n          \"Total Cost\": 1944.52,\n          \"Plan Rows\": 3,\n          \"Plan Width\": 34,\n          \"Actual Startup Time\": 284.529,\n          \"Actual Total Time\": 292.151,\n          \"Actual Rows\": 192899,\n          \"Actual Loops\": 1,\n          \"Sort Key\": [\"v_current_income.channel_id\"],\n          \"Sort Method\": \"external merge\",\n          \"Sort Space Used\": 4720,\n          \"Sort Space Type\": \"Disk\",\n          \"Shared Hit Blocks\": 775605,\n          \"Shared Read Blocks\": 0,\n          \"Shared Dirtied Blocks\": 0,\n          \"Shared Written Blocks\": 0,\n          \"Local Hit Blocks\": 0,\n          \"Local Read Blocks\": 0,\n          \"Local Dirtied Blocks\": 0,\n          \"Local Written Blocks\": 0,\n          \"Temp Read Blocks\": 590,\n          \"Temp Written Blocks\": 593,\n          \"Plans\": [\n            {\n              \"Node Type\": \"Subquery Scan\",\n              \"Parent Relationship\": \"Outer\",\n              \"Parallel Aware\": false,\n              \"Async Capable\": false,\n              \"Alias\": \"v_current_income\",\n              \"Startup Cost\": 30.16,\n              \"Total Cost\": 1944.49,\n              \"Plan Rows\": 3,\n              \"Plan Width\": 34,\n              \"Actual Startup Time\": 6.345,\n              \"Actual Total Time\": 267.154,\n              \"Actual Rows\": 192899,\n              \"Actual Loops\": 1,\n              \"Shared Hit Blocks\": 775602,\n              \"Shared Read Blocks\": 0,\n              \"Shared Dirtied Blocks\": 0,\n              \"Shared Written Blocks\": 0,\n              \"Local Hit Blocks\": 0,\n              \"Local Read Blocks\": 0,\n              \"Local Dirtied Blocks\": 0,\n              \"Local Written Blocks\": 0,\n              \"Temp Read Blocks\": 0,\n              \"Temp Written Blocks\": 0,\n              \"Plans\": [\n                {\n                  \"Node Type\": \"Nested Loop\",\n                  \"Parent Relationship\": \"Subquery\",\n                  \"Parallel Aware\": false,\n                  \"Async Capable\": false,\n                  \"Join Type\": \"Inner\",\n                  \"Startup Cost\": 30.16,\n                  \"Total Cost\": 1944.46,\n                  \"Plan Rows\": 3,\n                  \"Plan Width\": 330,\n                  \"Actual Startup Time\": 6.344,\n                  \"Actual Total Time\": 259.393,\n                  \"Actual Rows\": 192899,\n                  \"Actual Loops\": 1,\n                  \"Inner Unique\": false,\n                  \"Join Filter\": \"(f.import_batch_id = b.id)\",\n                  \"Rows Removed by Join Filter\": 0,\n                  \"Shared Hit Blocks\": 775602,\n                  \"Shared Read Blocks\": 0,\n                  \"Shared Dirtied Blocks\": 0,\n                  \"Shared Written Blocks\": 0,\n                  \"Local Hit Blocks\": 0,\n                  \"Local Read Blocks\": 0,\n                  \"Local Dirtied Blocks\": 0,\n                  \"Local Written Blocks\": 0,\n                  \"Temp Read Blocks\": 0,\n                  \"Temp Written Blocks\": 0,\n                  \"Plans\": [\n                    {\n                      \"Node Type\": \"Seq Scan\",\n                      \"Parent Relationship\": \"Outer\",\n                      \"Parallel Aware\": false,\n                      \"Async Capable\": false,\n                      \"Relation Name\": \"import_batch\",\n                      \"Alias\": \"b\",\n                      \"Startup Cost\": 0.00,\n                      \"Total Cost\": 12.38,\n                      \"Plan Rows\": 1,\n                      \"Plan Width\": 8,\n                      \"Actual Startup Time\": 0.006,\n                      \"Actual Total Time\": 0.008,\n                      \"Actual Rows\": 1,\n                      \"Actual Loops\": 1,\n                      \"Filter\": \"(status = 'active'::text)\",\n                      \"Rows Removed by Filter\": 0,\n                      \"Shared Hit Blocks\": 1,\n                      \"Shared Read Blocks\": 0,\n                      \"Shared Dirtied Blocks\": 0,\n                      \"Shared Written Blocks\": 0,\n                      \"Local Hit Blocks\": 0,\n                      \"Local Read Blocks\": 0,\n                      \"Local Dirtied Blocks\": 0,\n                      \"Local Written Blocks\": 0,\n                      \"Temp Read Blocks\": 0,\n                      \"Temp Written Blocks\": 0\n                    },\n                    {\n                      \"Node Type\": \"Nested Loop\",\n                      \"Parent Relationship\": \"Inner\",\n                      \"Parallel Aware\": false,\n                      \"Async Capable\": false,\n                      \"Join Type\": \"Inner\",\n                      \"Startup Cost\": 30.16,\n                      \"Total Cost\": 1926.12,\n                      \"Plan Rows\": 477,\n                      \"Plan Width\": 42,\n                      \"Actual Startup Time\": 6.335,\n                      \"Actual Total Time\": 242.603,\n                      \"Actual Rows\": 192899,\n                      \"Actual Loops\": 1,\n                      \"Inner Unique\": true,\n                      \"Shared Hit Blocks\": 775601,\n                      \"Shared Read Blocks\": 0,\n                      \"Shared Dirtied Blocks\": 0,\n                      \"Shared Written Blocks\": 0,\n                      \"Local Hit Blocks\": 0,\n                      \"Local Read Blocks\": 0,\n                      \"Local Dirtied Blocks\": 0,\n                      \"Local Written Blocks\": 0,\n                      \"Temp Read Blocks\": 0,\n                      \"Temp Written Blocks\": 0,\n                      \"Plans\": [\n                        {\n                          \"Node Type\": \"Nested Loop\",\n                          \"Parent Relationship\": \"Outer\",\n                          \"Parallel Aware\": false,\n                          \"Async Capable\": false,\n                          \"Join Type\": \"Inner\",\n                          \"Startup Cost\": 29.74,\n                          \"Total Cost\": 1645.32,\n                          \"Plan Rows\": 477,\n                          \"Plan Width\": 16,\n                          \"Actual Startup Time\": 6.318,\n                          \"Actual Total Time\": 30.461,\n                          \"Actual Rows\": 192899,\n                          \"Actual Loops\": 1,\n                          \"Inner Unique\": false,\n                          \"Shared Hit Blocks\": 4005,\n                          \"Shared Read Blocks\": 0,\n                          \"Shared Dirtied Blocks\": 0,\n                          \"Shared Written Blocks\": 0,\n                          \"Local Hit Blocks\": 0,\n                          \"Local Read Blocks\": 0,\n                          \"Local Dirtied Blocks\": 0,\n                          \"Local Written Blocks\": 0,\n                          \"Temp Read Blocks\": 0,\n                          \"Temp Written Blocks\": 0,\n                          \"Plans\": [\n                            {\n                              \"Node Type\": \"Index Scan\",\n                              \"Parent Relationship\": \"Outer\",\n                              \"Parallel Aware\": false,\n                              \"Async Capable\": false,\n                              \"Scan Direction\": \"Forward\",\n                              \"Index Name\": \"uq_mapping_version_active\",\n                              \"Relation Name\": \"mapping_version\",\n                              \"Alias\": \"mv\",\n                              \"Startup Cost\": 0.15,\n                              \"Total Cost\": 8.16,\n                              \"Plan Rows\": 1,\n                              \"Plan Width\": 8,\n                              \"Actual Startup Time\": 0.008,\n                              \"Actual Total Time\": 0.010,\n                              \"Actual Rows\": 1,\n                              \"Actual Loops\": 1,\n                              \"Shared Hit Blocks\": 2,\n                              \"Shared Read Blocks\": 0,\n                              \"Shared Dirtied Blocks\": 0,\n                              \"Shared Written Blocks\": 0,\n                              \"Local Hit Blocks\": 0,\n                              \"Local Read Blocks\": 0,\n                              \"Local Dirtied Blocks\": 0,\n                              \"Local Written Blocks\": 0,\n                              \"Temp Read Blocks\": 0,\n                              \"Temp Written Blocks\": 0\n                            },\n                            {\n                              \"Node Type\": \"Bitmap Heap Scan\",\n                              \"Parent Relationship\": \"Inner\",\n                              \"Parallel Aware\": false,\n                              \"Async Capable\": false,\n                              \"Relation Name\": \"income_projection\",\n                              \"Alias\": \"p\",\n                              \"Startup Cost\": 29.60,\n                              \"Total Cost\": 1630.47,\n                              \"Plan Rows\": 668,\n                              \"Plan Width\": 24,\n                              \"Actual Startup Time\": 6.307,\n                              \"Actual Total Time\": 20.209,\n                              \"Actual Rows\": 192899,\n                              \"Actual Loops\": 1,\n                              \"Recheck Cond\": \"(mapping_version_id = mv.id)\",\n                              \"Rows Removed by Index Recheck\": 0,\n                              \"Exact Heap Blocks\": 2967,\n                              \"Lossy Heap Blocks\": 0,\n                              \"Shared Hit Blocks\": 4003,\n                              \"Shared Read Blocks\": 0,\n                              \"Shared Dirtied Blocks\": 0,\n                              \"Shared Written Blocks\": 0,\n                              \"Local Hit Blocks\": 0,\n                              \"Local Read Blocks\": 0,\n                              \"Local Dirtied Blocks\": 0,\n                              \"Local Written Blocks\": 0,\n                              \"Temp Read Blocks\": 0,\n                              \"Temp Written Blocks\": 0,\n                              \"Plans\": [\n                                {\n                                  \"Node Type\": \"Bitmap Index Scan\",\n                                  \"Parent Relationship\": \"Outer\",\n                                  \"Parallel Aware\": false,\n                                  \"Async Capable\": false,\n                                  \"Index Name\": \"income_projection_pkey\",\n                                  \"Startup Cost\": 0.00,\n                                  \"Total Cost\": 29.43,\n                                  \"Plan Rows\": 668,\n                                  \"Plan Width\": 0,\n                                  \"Actual Startup Time\": 6.109,\n                                  \"Actual Total Time\": 6.109,\n                                  \"Actual Rows\": 192899,\n                                  \"Actual Loops\": 1,\n                                  \"Index Cond\": \"(mapping_version_id = mv.id)\",\n                                  \"Shared Hit Blocks\": 1036,\n                                  \"Shared Read Blocks\": 0,\n                                  \"Shared Dirtied Blocks\": 0,\n                                  \"Shared Written Blocks\": 0,\n                                  \"Local Hit Blocks\": 0,\n                                  \"Local Read Blocks\": 0,\n                                  \"Local Dirtied Blocks\": 0,\n                                  \"Local Written Blocks\": 0,\n                                  \"Temp Read Blocks\": 0,\n                                  \"Temp Written Blocks\": 0\n                                }\n                              ]\n                            }\n                          ]\n                        },\n                        {\n                          \"Node Type\": \"Index Scan\",\n                          \"Parent Relationship\": \"Inner\",\n                          \"Parallel Aware\": false,\n                          \"Async Capable\": false,\n                          \"Scan Direction\": \"Forward\",\n                          \"Index Name\": \"income_fact_pkey\",\n                          \"Relation Name\": \"income_fact\",\n                          \"Alias\": \"f\",\n                          \"Startup Cost\": 0.42,\n                          \"Total Cost\": 0.59,\n                          \"Plan Rows\": 1,\n                          \"Plan Width\": 42,\n                          \"Actual Startup Time\": 0.001,\n                          \"Actual Total Time\": 0.001,\n                          \"Actual Rows\": 1,\n                          \"Actual Loops\": 192899,\n                          \"Index Cond\": \"(id = p.income_fact_id)\",\n                          \"Rows Removed by Index Recheck\": 0,\n                          \"Shared Hit Blocks\": 771596,\n                          \"Shared Read Blocks\": 0,\n                          \"Shared Dirtied Blocks\": 0,\n                          \"Shared Written Blocks\": 0,\n                          \"Local Hit Blocks\": 0,\n                          \"Local Read Blocks\": 0,\n                          \"Local Dirtied Blocks\": 0,\n                          \"Local Written Blocks\": 0,\n                          \"Temp Read Blocks\": 0,\n                          \"Temp Written Blocks\": 0\n                        }\n                      ]\n                    }\n                  ]\n                }\n              ]\n            }\n          ]\n        }\n      ]\n    },\n    \"Planning\": {\n      \"Shared Hit Blocks\": 522,\n      \"Shared Read Blocks\": 0,\n      \"Shared Dirtied Blocks\": 0,\n      \"Shared Written Blocks\": 0,\n      \"Local Hit Blocks\": 0,\n      \"Local Read Blocks\": 0,\n      \"Local Dirtied Blocks\": 0,\n      \"Local Written Blocks\": 0,\n      \"Temp Read Blocks\": 0,\n      \"Temp Written Blocks\": 0\n    },\n    \"Planning Time\": 3.673,\n    \"Triggers\": [\n    ],\n    \"Execution Time\": 309.959\n  }\n]",
+      "form": "SET\nSET\nSET\nSET\n[\n  {\n    \"Plan\": {\n      \"Node Type\": \"Aggregate\",\n      \"Strategy\": \"Sorted\",\n      \"Partial Mode\": \"Simple\",\n      \"Parallel Aware\": false,\n      \"Async Capable\": false,\n      \"Startup Cost\": 1944.51,\n      \"Total Cost\": 1944.57,\n      \"Plan Rows\": 3,\n      \"Plan Width\": 64,\n      \"Actual Startup Time\": 304.950,\n      \"Actual Total Time\": 317.971,\n      \"Actual Rows\": 2,\n      \"Actual Loops\": 1,\n      \"Group Key\": [\"v_current_income.business_form\"],\n      \"Shared Hit Blocks\": 775605,\n      \"Shared Read Blocks\": 0,\n      \"Shared Dirtied Blocks\": 0,\n      \"Shared Written Blocks\": 0,\n      \"Local Hit Blocks\": 0,\n      \"Local Read Blocks\": 0,\n      \"Local Dirtied Blocks\": 0,\n      \"Local Written Blocks\": 0,\n      \"Temp Read Blocks\": 755,\n      \"Temp Written Blocks\": 758,\n      \"Plans\": [\n        {\n          \"Node Type\": \"Sort\",\n          \"Parent Relationship\": \"Outer\",\n          \"Parallel Aware\": false,\n          \"Async Capable\": false,\n          \"Startup Cost\": 1944.51,\n          \"Total Cost\": 1944.52,\n          \"Plan Rows\": 3,\n          \"Plan Width\": 58,\n          \"Actual Startup Time\": 291.347,\n          \"Actual Total Time\": 302.615,\n          \"Actual Rows\": 192899,\n          \"Actual Loops\": 1,\n          \"Sort Key\": [\"v_current_income.business_form\"],\n          \"Sort Method\": \"external merge\",\n          \"Sort Space Used\": 6040,\n          \"Sort Space Type\": \"Disk\",\n          \"Shared Hit Blocks\": 775605,\n          \"Shared Read Blocks\": 0,\n          \"Shared Dirtied Blocks\": 0,\n          \"Shared Written Blocks\": 0,\n          \"Local Hit Blocks\": 0,\n          \"Local Read Blocks\": 0,\n          \"Local Dirtied Blocks\": 0,\n          \"Local Written Blocks\": 0,\n          \"Temp Read Blocks\": 755,\n          \"Temp Written Blocks\": 758,\n          \"Plans\": [\n            {\n              \"Node Type\": \"Subquery Scan\",\n              \"Parent Relationship\": \"Outer\",\n              \"Parallel Aware\": false,\n              \"Async Capable\": false,\n              \"Alias\": \"v_current_income\",\n              \"Startup Cost\": 30.16,\n              \"Total Cost\": 1944.49,\n              \"Plan Rows\": 3,\n              \"Plan Width\": 58,\n              \"Actual Startup Time\": 6.579,\n              \"Actual Total Time\": 269.035,\n              \"Actual Rows\": 192899,\n              \"Actual Loops\": 1,\n              \"Shared Hit Blocks\": 775602,\n              \"Shared Read Blocks\": 0,\n              \"Shared Dirtied Blocks\": 0,\n              \"Shared Written Blocks\": 0,\n              \"Local Hit Blocks\": 0,\n              \"Local Read Blocks\": 0,\n              \"Local Dirtied Blocks\": 0,\n              \"Local Written Blocks\": 0,\n              \"Temp Read Blocks\": 0,\n              \"Temp Written Blocks\": 0,\n              \"Plans\": [\n                {\n                  \"Node Type\": \"Nested Loop\",\n                  \"Parent Relationship\": \"Subquery\",\n                  \"Parallel Aware\": false,\n                  \"Async Capable\": false,\n                  \"Join Type\": \"Inner\",\n                  \"Startup Cost\": 30.16,\n                  \"Total Cost\": 1944.46,\n                  \"Plan Rows\": 3,\n                  \"Plan Width\": 330,\n                  \"Actual Startup Time\": 6.578,\n                  \"Actual Total Time\": 260.900,\n                  \"Actual Rows\": 192899,\n                  \"Actual Loops\": 1,\n                  \"Inner Unique\": false,\n                  \"Join Filter\": \"(f.import_batch_id = b.id)\",\n                  \"Rows Removed by Join Filter\": 0,\n                  \"Shared Hit Blocks\": 775602,\n                  \"Shared Read Blocks\": 0,\n                  \"Shared Dirtied Blocks\": 0,\n                  \"Shared Written Blocks\": 0,\n                  \"Local Hit Blocks\": 0,\n                  \"Local Read Blocks\": 0,\n                  \"Local Dirtied Blocks\": 0,\n                  \"Local Written Blocks\": 0,\n                  \"Temp Read Blocks\": 0,\n                  \"Temp Written Blocks\": 0,\n                  \"Plans\": [\n                    {\n                      \"Node Type\": \"Seq Scan\",\n                      \"Parent Relationship\": \"Outer\",\n                      \"Parallel Aware\": false,\n                      \"Async Capable\": false,\n                      \"Relation Name\": \"import_batch\",\n                      \"Alias\": \"b\",\n                      \"Startup Cost\": 0.00,\n                      \"Total Cost\": 12.38,\n                      \"Plan Rows\": 1,\n                      \"Plan Width\": 8,\n                      \"Actual Startup Time\": 0.007,\n                      \"Actual Total Time\": 0.009,\n                      \"Actual Rows\": 1,\n                      \"Actual Loops\": 1,\n                      \"Filter\": \"(status = 'active'::text)\",\n                      \"Rows Removed by Filter\": 0,\n                      \"Shared Hit Blocks\": 1,\n                      \"Shared Read Blocks\": 0,\n                      \"Shared Dirtied Blocks\": 0,\n                      \"Shared Written Blocks\": 0,\n                      \"Local Hit Blocks\": 0,\n                      \"Local Read Blocks\": 0,\n                      \"Local Dirtied Blocks\": 0,\n                      \"Local Written Blocks\": 0,\n                      \"Temp Read Blocks\": 0,\n                      \"Temp Written Blocks\": 0\n                    },\n                    {\n                      \"Node Type\": \"Nested Loop\",\n                      \"Parent Relationship\": \"Inner\",\n                      \"Parallel Aware\": false,\n                      \"Async Capable\": false,\n                      \"Join Type\": \"Inner\",\n                      \"Startup Cost\": 30.16,\n                      \"Total Cost\": 1926.12,\n                      \"Plan Rows\": 477,\n                      \"Plan Width\": 66,\n                      \"Actual Startup Time\": 6.568,\n                      \"Actual Total Time\": 244.094,\n                      \"Actual Rows\": 192899,\n                      \"Actual Loops\": 1,\n                      \"Inner Unique\": true,\n                      \"Shared Hit Blocks\": 775601,\n                      \"Shared Read Blocks\": 0,\n                      \"Shared Dirtied Blocks\": 0,\n                      \"Shared Written Blocks\": 0,\n                      \"Local Hit Blocks\": 0,\n                      \"Local Read Blocks\": 0,\n                      \"Local Dirtied Blocks\": 0,\n                      \"Local Written Blocks\": 0,\n                      \"Temp Read Blocks\": 0,\n                      \"Temp Written Blocks\": 0,\n                      \"Plans\": [\n                        {\n                          \"Node Type\": \"Nested Loop\",\n                          \"Parent Relationship\": \"Outer\",\n                          \"Parallel Aware\": false,\n                          \"Async Capable\": false,\n                          \"Join Type\": \"Inner\",\n                          \"Startup Cost\": 29.74,\n                          \"Total Cost\": 1645.32,\n                          \"Plan Rows\": 477,\n                          \"Plan Width\": 40,\n                          \"Actual Startup Time\": 6.540,\n                          \"Actual Total Time\": 30.930,\n                          \"Actual Rows\": 192899,\n                          \"Actual Loops\": 1,\n                          \"Inner Unique\": false,\n                          \"Shared Hit Blocks\": 4005,\n                          \"Shared Read Blocks\": 0,\n                          \"Shared Dirtied Blocks\": 0,\n                          \"Shared Written Blocks\": 0,\n                          \"Local Hit Blocks\": 0,\n                          \"Local Read Blocks\": 0,\n                          \"Local Dirtied Blocks\": 0,\n                          \"Local Written Blocks\": 0,\n                          \"Temp Read Blocks\": 0,\n                          \"Temp Written Blocks\": 0,\n                          \"Plans\": [\n                            {\n                              \"Node Type\": \"Index Scan\",\n                              \"Parent Relationship\": \"Outer\",\n                              \"Parallel Aware\": false,\n                              \"Async Capable\": false,\n                              \"Scan Direction\": \"Forward\",\n                              \"Index Name\": \"uq_mapping_version_active\",\n                              \"Relation Name\": \"mapping_version\",\n                              \"Alias\": \"mv\",\n                              \"Startup Cost\": 0.15,\n                              \"Total Cost\": 8.16,\n                              \"Plan Rows\": 1,\n                              \"Plan Width\": 8,\n                              \"Actual Startup Time\": 0.009,\n                              \"Actual Total Time\": 0.010,\n                              \"Actual Rows\": 1,\n                              \"Actual Loops\": 1,\n                              \"Shared Hit Blocks\": 2,\n                              \"Shared Read Blocks\": 0,\n                              \"Shared Dirtied Blocks\": 0,\n                              \"Shared Written Blocks\": 0,\n                              \"Local Hit Blocks\": 0,\n                              \"Local Read Blocks\": 0,\n                              \"Local Dirtied Blocks\": 0,\n                              \"Local Written Blocks\": 0,\n                              \"Temp Read Blocks\": 0,\n                              \"Temp Written Blocks\": 0\n                            },\n                            {\n                              \"Node Type\": \"Bitmap Heap Scan\",\n                              \"Parent Relationship\": \"Inner\",\n                              \"Parallel Aware\": false,\n                              \"Async Capable\": false,\n                              \"Relation Name\": \"income_projection\",\n                              \"Alias\": \"p\",\n                              \"Startup Cost\": 29.60,\n                              \"Total Cost\": 1630.47,\n                              \"Plan Rows\": 668,\n                              \"Plan Width\": 48,\n                              \"Actual Startup Time\": 6.527,\n                              \"Actual Total Time\": 20.059,\n                              \"Actual Rows\": 192899,\n                              \"Actual Loops\": 1,\n                              \"Recheck Cond\": \"(mapping_version_id = mv.id)\",\n                              \"Rows Removed by Index Recheck\": 0,\n                              \"Exact Heap Blocks\": 2967,\n                              \"Lossy Heap Blocks\": 0,\n                              \"Shared Hit Blocks\": 4003,\n                              \"Shared Read Blocks\": 0,\n                              \"Shared Dirtied Blocks\": 0,\n                              \"Shared Written Blocks\": 0,\n                              \"Local Hit Blocks\": 0,\n                              \"Local Read Blocks\": 0,\n                              \"Local Dirtied Blocks\": 0,\n                              \"Local Written Blocks\": 0,\n                              \"Temp Read Blocks\": 0,\n                              \"Temp Written Blocks\": 0,\n                              \"Plans\": [\n                                {\n                                  \"Node Type\": \"Bitmap Index Scan\",\n                                  \"Parent Relationship\": \"Outer\",\n                                  \"Parallel Aware\": false,\n                                  \"Async Capable\": false,\n                                  \"Index Name\": \"income_projection_pkey\",\n                                  \"Startup Cost\": 0.00,\n                                  \"Total Cost\": 29.43,\n                                  \"Plan Rows\": 668,\n                                  \"Plan Width\": 0,\n                                  \"Actual Startup Time\": 6.319,\n                                  \"Actual Total Time\": 6.320,\n                                  \"Actual Rows\": 192899,\n                                  \"Actual Loops\": 1,\n                                  \"Index Cond\": \"(mapping_version_id = mv.id)\",\n                                  \"Shared Hit Blocks\": 1036,\n                                  \"Shared Read Blocks\": 0,\n                                  \"Shared Dirtied Blocks\": 0,\n                                  \"Shared Written Blocks\": 0,\n                                  \"Local Hit Blocks\": 0,\n                                  \"Local Read Blocks\": 0,\n                                  \"Local Dirtied Blocks\": 0,\n                                  \"Local Written Blocks\": 0,\n                                  \"Temp Read Blocks\": 0,\n                                  \"Temp Written Blocks\": 0\n                                }\n                              ]\n                            }\n                          ]\n                        },\n                        {\n                          \"Node Type\": \"Index Scan\",\n                          \"Parent Relationship\": \"Inner\",\n                          \"Parallel Aware\": false,\n                          \"Async Capable\": false,\n                          \"Scan Direction\": \"Forward\",\n                          \"Index Name\": \"income_fact_pkey\",\n                          \"Relation Name\": \"income_fact\",\n                          \"Alias\": \"f\",\n                          \"Startup Cost\": 0.42,\n                          \"Total Cost\": 0.59,\n                          \"Plan Rows\": 1,\n                          \"Plan Width\": 42,\n                          \"Actual Startup Time\": 0.001,\n                          \"Actual Total Time\": 0.001,\n                          \"Actual Rows\": 1,\n                          \"Actual Loops\": 192899,\n                          \"Index Cond\": \"(id = p.income_fact_id)\",\n                          \"Rows Removed by Index Recheck\": 0,\n                          \"Shared Hit Blocks\": 771596,\n                          \"Shared Read Blocks\": 0,\n                          \"Shared Dirtied Blocks\": 0,\n                          \"Shared Written Blocks\": 0,\n                          \"Local Hit Blocks\": 0,\n                          \"Local Read Blocks\": 0,\n                          \"Local Dirtied Blocks\": 0,\n                          \"Local Written Blocks\": 0,\n                          \"Temp Read Blocks\": 0,\n                          \"Temp Written Blocks\": 0\n                        }\n                      ]\n                    }\n                  ]\n                }\n              ]\n            }\n          ]\n        }\n      ]\n    },\n    \"Planning\": {\n      \"Shared Hit Blocks\": 589,\n      \"Shared Read Blocks\": 0,\n      \"Shared Dirtied Blocks\": 0,\n      \"Shared Written Blocks\": 0,\n      \"Local Hit Blocks\": 0,\n      \"Local Read Blocks\": 0,\n      \"Local Dirtied Blocks\": 0,\n      \"Local Written Blocks\": 0,\n      \"Temp Read Blocks\": 0,\n      \"Temp Written Blocks\": 0\n    },\n    \"Planning Time\": 4.578,\n    \"Triggers\": [\n    ],\n    \"Execution Time\": 323.642\n  }\n]"
+    }
+  },
+  "flyway_behavior": {},
+  "ab_compare": {
+    "A_counts": {
+      "m1_tables": 48,
+      "flyway_tables": 1,
+      "views": 5,
+      "functions": 21,
+      "triggers": 32,
+      "fks": 84,
+      "indexes": 117
+    },
+    "B_counts": {
+      "m1_tables": 48,
+      "flyway_tables": 1,
+      "views": 5,
+      "functions": 21,
+      "triggers": 32,
+      "fks": 84,
+      "indexes": 117
+    },
+    "A_schema_hash": "4a2598d623ef696dccde654315dc67d229485f894f17cdd2be6e4e8818d14e1b",
+    "B_schema_hash": "4a2598d623ef696dccde654315dc67d229485f894f17cdd2be6e4e8818d14e1b",
+    "A_permission_hash": "89c6994360376dfa09e9eee38bfc5738a9d106df89c96be428ec8ca203ef72b2",
+    "B_permission_hash": "89c6994360376dfa09e9eee38bfc5738a9d106df89c96be428ec8ca203ef72b2"
+  },
+  "sql_checksums": {
+    "migrations\\V0000_010__preflight_environment_roles_and_utc.sql": "2345d0b7da976ed43968db1f84ae626e72f6837818b15fe4012126c3e8063109",
+    "migrations\\V0000_020__create_system_state_control_table.sql": "7e7a2311ef79e346691a61193fbd77f67dc0b2a9dc2f0e4fed057090f10d8375",
+    "migrations\\V0010_010__table_background_task.sql": "fee6f55b21117a0bafadae3b1e312309cb4dbbe750747ca261b19949b7a5846e",
+    "migrations\\V0010_020__table_background_task_event.sql": "99bd0e3d9af84e942477f6c1b2a9616058a28c09113833a36b2df9ab346fdbce",
+    "migrations\\V0010_030__table_file_fingerprint_registry.sql": "d6497365cee824f34c5ec2ed881f4caa91726fde656816f7e1bb4c43ce8bb568",
+    "migrations\\V0010_040__table_cleaning_rule_version.sql": "ceaefb8ba6af0b4207204eea3088817f6636424b22a461fbda71124261cafe04",
+    "migrations\\V0010_050__table_channel.sql": "88af9aa61948aecb641b75a961706a8abfe95e133f852fae62889fe609ab30c4",
+    "migrations\\V0010_060__table_standard_work.sql": "2aa47eaa4411a3b83b62b73fe51b2a5064500469d69ff5e7600b1a7a8c9c2e77",
+    "migrations\\V0010_070__table_author.sql": "dfe8ae876a4f19dae9cbe9a3a58926ab38678aaaeb2ca551d189af89499b112f",
+    "migrations\\V0010_080__table_classification_system.sql": "1731620100bcff670c5a4a3ad1cb347702554a75f274cd9da6c0066c3822db9a",
+    "migrations\\V0010_090__table_classification_release.sql": "79d074b2bfd64ed2f87bf1b911aec7e06053ca3a0e21fe372bf87d09a294368f",
+    "migrations\\V0010_100__table_tag_release.sql": "62e8426e10af0aeef64e59d5710da1353487cb25a7e6192ae42ae2d8d67ec961",
+    "migrations\\V0020_010__table_import_file.sql": "3ea85962cf998f4d9c0956cd47a47629f5a201fe2fa611782565b640e7176b87",
+    "migrations\\V0020_020__table_bill_staging_session.sql": "b6d197c27869e065d922d50cea446be9ffdadd3ec8d64108e3da2beefdaf4c44",
+    "migrations\\V0020_030__table_temp_bill_record.sql": "f40089a6ab11326188191b7864e940c535c3e6382cdfbf73cb8c35152e08995e",
+    "migrations\\V0020_040__table_import_batch.sql": "b02bdfb722e89719a8242975368ea6942e7701c8da8f7195729ad3f0a0b006a5",
+    "migrations\\V0020_050__table_import_batch_file.sql": "68311dfe66aa6e04feac8f9a5467199c7b7e05b63419bab937a2232619ce85cb",
+    "migrations\\V0020_060__table_import_batch_month.sql": "94fa3f6b378f1f077c73263e65c1d4d03b2f59342034ffd2d777811a60dc4d08",
+    "migrations\\V0020_070__table_income_fact.sql": "aa5bc6e4673f2bd63c43c8b0615572386ced29fbe535f441dd311fffa75ae395",
+    "migrations\\V0030_010__table_mapping_version.sql": "fe154816ef18f75f1d00725278213c3e99be5002003260aacc7f242fd00a2b07",
+    "migrations\\V0030_020__alter_import_batch.sql": "c742473075c93381387fb2a3be864c6cc6a3f6c77b0b8bd792c6ec936c0113c3",
+    "migrations\\V0030_030__table_issue_run.sql": "b1916f3f0390de104b04b0b78b5a51c81ee103e5de790ec3764aaa9543a2d0f8",
+    "migrations\\V0030_040__table_data_issue.sql": "c5294575d25f4224982c9ef6fbf452e87c9cc8b1665c8f2062266ba80890fc90",
+    "migrations\\V0030_050__table_data_issue_decision.sql": "e0e8dff615c8461ecf9e62a76f363a92b7c7fa8d1a4ad4c398bb299729099a55",
+    "migrations\\V0030_060__table_work_business_form.sql": "2b60f76f35b201fa9cdedd42362927022edb226b68e5ddd0f55880fe9e100ee7",
+    "migrations\\V0030_070__table_channel_alias.sql": "9f502f9c5902351d881815ca8a727c5d22b0bc27a20bed5dd8365fb473db4bb9",
+    "migrations\\V0030_080__table_raw_work_id_mapping.sql": "d1687d0c70b1831fcebb04c8561e8062e633cda0ae8d3f8e43522ca316a22b6d",
+    "migrations\\V0030_090__table_historical_volume_mapping.sql": "17c937035364fc8fd1260a20ef44cd284a3830f5d72db5d42b3281bdcc5cb4f6",
+    "migrations\\V0030_100__table_income_projection.sql": "e73f24c8f4106464d14954f9bbd049ce82a0cbcd84aed4464522d5cc7b0eca91",
+    "migrations\\V0030_110__table_mapping_version_work_metric.sql": "24c491143d010c88d198a4aca656cacaf8732668d6c7d34ab648a05f1eb26c87",
+    "migrations\\V0030_120__table_mapping_version_work_form_metric.sql": "f80f3d59365cbd9e5f2559b672dfc04960d3141026e45cd749ed86cf867a9046",
+    "migrations\\V0030_130__table_standard_work_status_history.sql": "2305294d5ebfa31d32ef943631930ad1d040412ab36d216c43faf31a7ec64cf8",
+    "migrations\\V0040_010__table_author_alias.sql": "dac3abd2eee298b26bf841a67a10924db59e3b8126ac29f6489d20bb7c1e7d85",
+    "migrations\\V0040_020__table_classification_node.sql": "5cf87e9809dba15160f631cafad40f8a42d6b8bed5ebe7ed51737b62ed2319ab",
+    "migrations\\V0040_030__table_tag.sql": "62f337db1d06d868855efc0f138d802560f3669321f0555d4cd484471e751b22",
+    "migrations\\V0040_040__table_basic_info_version.sql": "187ab3929671a93096db51e62daa927269e21d7b56477db58939ff2c818a44f1",
+    "migrations\\V0040_050__table_basic_info_version_work.sql": "05404b7ba60dfb46f68afdedbf9dd819e20919d73397ac6eef2e91054b32f9e9",
+    "migrations\\V0040_060__table_work_classification_assignment.sql": "55cd4f6082346ef8447d077e26354d26f58d69e57720b6893693d0d28c6fa207",
+    "migrations\\V0040_070__table_work_tag_assignment.sql": "79389388719e79296da2748cad13b021eb3570a600c52fd343ad8e6505d98890",
+    "migrations\\V0040_080__table_basic_info_export.sql": "7a3656df96ec643f1d15e6c3160bf9553c300972eb6146ea770c3e858ab7d30f",
+    "migrations\\V0040_090__table_basic_info_upload.sql": "b3d15b4bde7dfcb62aa6e915364526edc68e36ffda781fca99a08a1a9c677060",
+    "migrations\\V0040_100__table_basic_info_temp_record.sql": "4495517c840aa82aaa2e7ea393d595bf3c1635ff01649176e24deae3c4bca2f1",
+    "migrations\\V0040_110__table_basic_info_issue.sql": "521ebf4d6fa92fa2f1981d353240bc7c140a1cd5390c42d294f1da4cbfa5bc29",
+    "migrations\\V0040_120__table_basic_info_apply_batch.sql": "ed579fc78e5f78e32bff70250f1178dcd5cf9010c29c76d89efa8077ae1ff496",
+    "migrations\\V0050_010__table_month_completeness_confirmation.sql": "d20d40b37ddf61ab375b1d32f4ade6084469c088e5c39a155e983b88bcd60fc9",
+    "migrations\\V0050_020__table_batch_impact_record.sql": "38ff01bcc605608fd7a95f8d9d0a292d185f4b5e52483908c3539cf14ff63cf7",
+    "migrations\\V0050_030__table_batch_impact_consumption.sql": "56ef6f4126120f9124ff8192bce4eb5822d3444b37dde809955b717b53616d37",
+    "migrations\\V0050_040__table_restore_point.sql": "1846a4f4e7726081e2db051c365ef62032054ef39a50ff3df125bda22596cca3",
+    "migrations\\V0050_050__alter_basic_info_apply_batch.sql": "16d895b3bf499b43cb51f74eda79b908a5fdadf8cbe0e3680fc34c2d8c8f0b21",
+    "migrations\\V0050_060__table_import_batch_undo.sql": "8ac2dad46b87b2433cbb2cfa2ab874ac67f4e280ef229d3f3ee12c334ba5ec2d",
+    "migrations\\V0050_070__table_mapping_change_record.sql": "851e3a3a5a5f0b034961dd64b83302d0840bcb4f1a1c47f3bae5a9bc82822cf2",
+    "migrations\\V0060_010__function_derive_standard_work_id.sql": "8226396d95994d4d8ba0e134bc8a0aa81ac291426782486b54c0abe9f076296d",
+    "migrations\\V0060_020__function_derive_business_form.sql": "cde30f06df22e2fa931bf63ff5377bbd7a07f8bb9db2ed4a428fc8051973744d",
+    "migrations\\V0060_030__function_begin_master_data_initialization.sql": "96c42d689f9a41332179b2cd02cc382a9a9b0396e1da6e268d5990cd2aef6981",
+    "migrations\\V0060_040__function_initialize_bootstrap_versions.sql": "2d29467968475af0681400a903d529975ffc3fbb514e84306ba435a2ebedc150",
+    "migrations\\V0060_050__function_assert_mapping_coverage.sql": "72ccfc0af9222000e4572d7f9bc707914287269f756b722f025db828428bcfe3",
+    "migrations\\V0060_060__function_activate_bill_batch.sql": "f6896df836a560507335f47a9f8ecbf203b95c57180c45ebf50fcb2e4ec23f14",
+    "migrations\\V0060_070__function_revoke_bill_batch.sql": "f4800badb77a515c37456b41d4ff2a93ec9f3d1d485b05b2d15c72626263263e",
+    "migrations\\V0060_080__function_switch_mapping_version.sql": "fc23d53ed31c55f31d8ff43449a84ad8f60aa81013fd6e4a1a9d241e84505ee6",
+    "migrations\\V0060_090__function_switch_basic_info_version.sql": "91d4aed93d5de5822f56dbe14bc73771742b244154ab0deef45910e6353ee685",
+    "migrations\\V0060_100__permission_grant_minimum_permissions.sql": "d14971fd703dd3c9aaf4a083379612f1cce46bc73f634daf651a9ae0db5de810",
+    "migrations\\V0060_110__function_require_switch_context.sql": "4a3faec7580d8a8e3ba1445d99a11c64dc9d029af46006c057d9e9ce58ce3dde",
+    "migrations\\V0060_120__function_guard_version_status.sql": "ba3a5b62faa851adbee7a07eccf6efb112f5232ef3485961fac982336daf3f1b",
+    "migrations\\V0060_130__function_guard_batch_status.sql": "95a13e732a207b41b43980804af88abb0dbc76f194ba28a7acbf22f69c2bf816",
+    "migrations\\V0060_140__function_assert_active_versions.sql": "1370f1cd34ebee3b12ebf8024dfa8525bb7b082705ea1cbb6b44b74d415b9cbc",
+    "migrations\\V0060_150__function_validate_work_mapping_identity.sql": "d2729cd1b48f2f740bbd53336608d1aaff4a4b253bba570879779a1d9061a3ea",
+    "migrations\\V0060_160__function_enforce_mapping_table_mutex.sql": "341c2128f08a290b4730d4456bd799e4c58542beedea3fe4d2c78a692192625a",
+    "migrations\\V0060_170__function_reject_income_fact_mutation.sql": "21ea846128969a0fe83cdaced51b90c6786d9ae758c7607ce8d13994a56f15b5",
+    "migrations\\V0060_180__function_validate_income_fact_insert.sql": "14afdc23d792ce168d4b446d8302ead24c13c60009d3b02e43ee08e470bfd98d",
+    "migrations\\V0060_190__function_guard_snapshot_child.sql": "7f26e63d57944691797802709f5a1619be44e257c5723c1c17ddce3de97363bf",
+    "migrations\\V0060_200__function_validate_classification_parent.sql": "3d62ad438aa5a9a7aa71457f4fa06dbbc59a49518b505446253e9bb79be79d21",
+    "migrations\\V0060_210__function_validate_basic_assignment_release.sql": "4fa0b4c41ed0995ba2a353523bd1f78c6a87e4f6f6339cb30c43d5650381a984",
+    "migrations\\V0060_220__function_validate_projection_sources.sql": "656186eda7a669cfdfd0adf838e640f1ef3ab579a02f8b67d0493ebe9118d2ee",
+    "migrations\\V0060_230__view_v_current_income.sql": "fbb43c42956812605240a621579f32445f1ed0feab4ee1aec17b512d0a1a9d2c",
+    "migrations\\V0060_240__view_v_basic_info_gap.sql": "2fbd544b682b6c408af67619983d811a7e932e2c84dea902449ab779e1fa088a",
+    "migrations\\V0060_250__view_v_basic_info_m2_completeness.sql": "6b18c99d31e6fd7682e4fa83efda8cdd1f7b9638d1913f2d42bea6761a9aeb47",
+    "migrations\\V0060_260__view_v_bill_cutoff_months.sql": "fddf9e8ed84646b87d02edd45c15dc20091a70a9ab8d8c9fe21eab4d46ce0f37",
+    "migrations\\V0060_270__view_v_income_projection_monthly.sql": "540c65ad9d372c7943e1b09c4024c6fb3046249d112dbc56bb08641abd2d6da1",
+    "migrations\\V0060_280__permission_grant_minimum_permissions.sql": "c72813eb5a437702c4942ffefff9f716b7f02f8f36b50dabcd00656d6c88088b",
+    "migrations\\V0060_290__harden_default_privileges.sql": "225934d28a7d7b53e089c1d05d6fb0e15dd6c2a86fc72f9b85298845b2775d8a"
+  }
+}

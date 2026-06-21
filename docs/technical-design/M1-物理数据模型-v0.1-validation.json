@@ -1,0 +1,19 @@
+{
+  "adr_exists": true,
+  "model_exists": true,
+  "recommended_database_postgresql": true,
+  "table_count": 42,
+  "table_count_ok": true,
+  "all_27_m1_at_covered": true,
+  "missing_at": [],
+  "numeric_32_18_confirmed": true,
+  "natural_month_date_check_present": true,
+  "immutable_income_fact_present": true,
+  "version_switch_visibility_present": true,
+  "delete_and_revoke_separated": true,
+  "not_dependent_on_3099_basic_info": true,
+  "cache_authority_and_recompute_present": true,
+  "no_migrations_or_app_code_generated": true,
+  "forbidden_files": [],
+  "overall": true
+}

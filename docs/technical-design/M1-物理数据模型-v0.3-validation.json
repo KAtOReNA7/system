@@ -1,0 +1,21 @@
+{
+  "validated_at": "2026-06-21T02:45:00+08:00",
+  "checks": {
+    "physical_title_v03": true,
+    "physical_table_count_47_business_plus_1_system_state": true,
+    "historical_volume_mapping_unique_by_full_raw_id": true,
+    "raw_and_historical_mapping_cross_table_mutex_documented": true,
+    "raw_id_rules_12345_y12345_documented": true,
+    "business_form_from_authoritative_parser_not_auth_category": true,
+    "basic_info_scope_snapshot_and_gap_view_documented": true,
+    "system_state_lifecycle_documented": true,
+    "initialization_zero_active_operational_exactly_one_documented": true,
+    "flyway_sql_only_frozen": true,
+    "forward_only_principle_documented": true,
+    "migration_plan_baseline_v03": true,
+    "postgres16_isolation_plan_updated": true,
+    "migration_acceptance_gate_updated": true,
+    "no_sql_or_migration_directory_generated": true
+  },
+  "overall": true
+}

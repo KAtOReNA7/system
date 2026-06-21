@@ -1,0 +1,27 @@
+{
+  "workbook_open": true,
+  "expected_sheets_ok": true,
+  "row_counts": {
+    "确认进度总览": 6,
+    "正式导入阻断确认": 346,
+    "多ID归并候选": 85,
+    "标准作品基础信息补全": 3099,
+    "台账真实冲突": 11,
+    "版权期限反例": 2,
+    "非阻断观察": 90
+  },
+  "old_workbook_kept": true,
+  "non_blocking_unresolved_formula_ok": true,
+  "non_blocking_completion_formula_ok": true,
+  "non_blocking_release_status_present": true,
+  "non_blocking_default_no_not_prefilled": true,
+  "non_blocking_false_values_not_unresolved": true,
+  "ledger_copyright_task_columns_ok": true,
+  "ledger_copyright_fields_removed": true,
+  "ledger_duplicate_rows_link_to_copyright_tasks": true,
+  "copyright_conflict_rows_ok": true,
+  "copyright_conflict_ids_ok": true,
+  "public_sensitive_matches": 0,
+  "public_privacy_ok": true,
+  "overall": true
+}

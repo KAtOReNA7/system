@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M1 真实账单数据质量分析</title>
+  <style>
+    body { font-family: "Segoe UI", "Microsoft YaHei", sans-serif; margin:0; background:#f8fafc; color:#0f172a; }
+    main { max-width:980px; margin:0 auto; padding:40px 22px 64px; }
+    header, section { margin-bottom:34px; } h1,h2 { line-height:1.2; margin:0 0 14px; }
+    p,li { line-height:1.72; } .summary { background:#fff; border:1px solid #e2e8f0; border-radius:14px; padding:20px 24px; }
+    .kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px; margin:18px 0; }
+    .kpi { background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:14px; }
+    .kpi strong { display:block; font-size:22px; margin-top:6px; }
+    figure { margin:22px 0 30px; } img { width:100%; height:auto; background:#fff; border-radius:10px; }
+    figcaption { color:#475569; font-size:14px; margin-top:8px; }
+    table { width:100%; border-collapse:collapse; background:#fff; } th,td { border-bottom:1px solid #e2e8f0; padding:10px; text-align:left; vertical-align:top; }
+    .blocked { border-left:5px solid #F0986E; padding-left:16px; } code { background:#e2e8f0; padding:2px 5px; border-radius:5px; }
+  </style>
+</head>
+<body><main data-report-audience="technical">
+  <header data-contract-section="title"><h1>M1 真实账单数据质量分析</h1></header>
+  <section data-contract-section="technical-summary" class="summary">
+    <h2>技术摘要</h2>
+    <p>已对当前完整账单目录执行只读全量分析。源文件未改变，七字段表头一致，但数据中存在需要运营确认的渠道关系、作品名称/授权分类关系、重复候选、分册候选以及首次实销金额符号问题。</p>
+    <div class="kpis"><div class="kpi">文件<strong>1</strong></div><div class="kpi">数据行<strong>192,899</strong></div><div class="kpi">月份<strong>2017-06—2026-05</strong></div><div class="kpi">总实销<strong>253,610,173.052</strong></div></div>
+    <p class="blocked"><strong>物理数据库设计尚未获准。</strong>已确认：2026-05 为不完整账单月份、最新已确认完整月份为 2026-04；首次实销只取正数实销月份；金额使用 Excel 底层完整精度和精确十进制语义。仍未满足：同一作品 ID 多名称/多授权分类等冲突组需运营确认，且作者、完整分类、版权期限和标签等物理模型关键来源仍未完全冻结。</p>
+  </section>
+  <section data-contract-section="key-findings"><h2>真实数据确认了输入规模，也暴露了必须先处理的关系歧义</h2><p><strong>月度记录量展示了数据覆盖的时间形状。</strong>最新月份只有 3 行，明显低于前月 2,949 行；运营已确认 2026-05 为不完整账单月份，正式评估截止月份为 2026-04。</p><figure><img src="assets/monthly-row-count.png" alt="各月账单记录规模"><figcaption>2017-06 至 2026-05；2026-05 已确认为不完整月份。</figcaption></figure><p><strong>零值和负值在真实账单中客观存在。</strong>它们必须保留；首次实销资格已确认只由正数实销记录决定。</p><figure><img src="assets/amount-sign-count.png" alt="实销金额符号分布"><figcaption>全量 192,899 行，按金额符号分类。</figcaption></figure><p><strong>问题候选集中在映射关系和重复识别，而不是自动可修复错误。</strong>各类型可重叠，不能直接相加。</p><figure><img src="assets/issue-candidate-count.png" alt="数据问题候选规模"><figcaption>所有候选清洗和归并规则均未自动启用。</figcaption></figure></section>
+  <section data-contract-section="scope-data-and-metric-definitions">
+    <h2>范围、数据与指标定义</h2>
+    <p>范围为 <code>data/real-bills/</code> 下全部 XLSX/XLSM 文件。数据行为七字段表头之后的非空行；总实销为所有可精确解析实销金额之和，包含零值和负值；重复只表示候选，不代表已确认删除。</p>
+  </section>
+  <section data-contract-section="methodology">
+    <h2>方法保证原始账单只读且结论可复现</h2>
+    <p>脚本使用只读工作簿模式逐行解析，运行前后校验 SHA-256、大小和修改时间。公开报告只写聚合统计和匿名样本编号；原始确认样本写入被 Git 忽略的本地目录。所有候选规则保持禁用。</p>
+  </section>
+  <section data-contract-section="limitations-uncertainty-and-robustness-checks">
+    <h2>单一账单文件无法完成主数据和阈值冻结</h2>
+    <ul><li>七字段不含作者、完整分类、版权期限和标签。</li><li>一个文件无法覆盖跨文件重复和模板漂移。</li><li>渠道多重关系、重复、冲抵、分册和产品状态均需要运营确认。</li><li>单机耗时是容量基线，不是生产 SLA。</li></ul>
+  </section>
+  <section data-contract-section="recommended-next-steps">
+    <h2>先完成运营确认和补充数据，再冻结物理模型</h2>
+    <ol><li>按本地私有样本完成渠道、作品名称/授权分类、重复和分册确认。</li><li>确认 RB-WORK-LAUNCH-001 的零/负金额规则。</li><li>提供作者、分类、版权期限和标签的权威补充来源。</li><li>确认后更新 REQ/AT 或 ADR，再决定物理字段、索引和分区。</li></ol>
+  </section>
+  <section data-contract-section="further-questions"><h2>仍需回答的业务问题</h2><ul><li>确认当前不同渠道 ID/名称组合中是否存在同一主体的历史更名或别名。</li><li>确认同一作品 ID 多名称、多授权分类的业务解释。</li><li>确认正负金额候选是否为合法冲抵。</li><li>确认同名多 ID 和分册标记候选是否属于历史分册归并。</li><li>确认零金额或负金额能否决定首次实销月份。</li><li>确认金额隐藏精度是有效业务精度还是历史计算尾差。</li><li>确认最新月份 2026-05 是否为完整结算月份。</li><li>提供作者、完整分类、版权期限和标签的权威补全来源。</li></ul></section>
+</main></body></html>

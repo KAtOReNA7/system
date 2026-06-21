@@ -1,0 +1,25 @@
+{
+  "regression_76": {
+    "passed": 76,
+    "failed": 0,
+    "total": 76
+  },
+  "overall": {
+    "passed": 157,
+    "failed": 0,
+    "total": 157
+  },
+  "category_counts": {
+    "ddl": 8,
+    "lifecycle": 44,
+    "invariants": 42,
+    "permissions": 20,
+    "concurrency": 6,
+    "performance": 14,
+    "boundary": 2,
+    "flyway": 6,
+    "permissions_true_connection": 9,
+    "timezone": 3,
+    "ab_compare": 3
+  }
+}

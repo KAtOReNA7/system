@@ -1,0 +1,36 @@
+{
+  "generated_at": "2026-06-20T19:41:29+08:00",
+  "source_unchanged": true,
+  "master_shape_recomputed": {
+    "sheet_count": 1,
+    "row_count": 12033,
+    "column_count": 65,
+    "matches_summary": true
+  },
+  "report_complete": true,
+  "html_contract_ok": true,
+  "image_ok": true,
+  "workbook_ok": true,
+  "workbook_sheets": [
+    "README",
+    "多名称作品ID确认表",
+    "多授权分类作品ID确认表",
+    "异常作品ID确认表",
+    "分册候选确认表",
+    "正负冲抵候选确认表",
+    "首次实销仍为空作品确认表",
+    "台账匹配失败或一对多冲突确认表",
+    "版权期限反例确认表"
+  ],
+  "privacy_ok": true,
+  "public_sensitive_matches": 0,
+  "ignored_paths_ok": true,
+  "req_at": {
+    "requirement_count": 27,
+    "trace_requirement_count": 27,
+    "acceptance_count": 27,
+    "trace_acceptance_count": 27,
+    "consistent": true
+  },
+  "overall": true
+}

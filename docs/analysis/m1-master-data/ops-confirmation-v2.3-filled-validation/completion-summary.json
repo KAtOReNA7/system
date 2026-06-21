@@ -1,0 +1,76 @@
+{
+  "input": {
+    "requested_path": "<repo>/data/m1-master-data-private/ops-confirmation/[private-filled-workbook].xlsx",
+    "requested_source_found": false,
+    "actual_source_path": "[local-private-path-redacted]",
+    "actual_source_sha256": "[private-workbook-sha256-redacted]"
+  },
+  "structure": {
+    "workbook_open": true,
+    "expected_sheets_ok": true,
+    "header_mismatch_count": 0,
+    "dimension_mismatch_count": 0,
+    "immutable_cell_mismatch_count": 0,
+    "formula_mismatch_count": 0,
+    "formula_error_count": 0,
+    "hidden_precision_columns_ok": true,
+    "data_validation_counts_match": true,
+    "task_id_alignment_ok": true,
+    "old_task_id_alignment_ok": true,
+    "raw_sources_unchanged": true
+  },
+  "formal_blockers": {
+    "total": 346,
+    "validated_pass": 328,
+    "releasable": 326,
+    "source_bill_fix_required": 2,
+    "needs_more_info": 0,
+    "incomplete": 0,
+    "manual_review": 18,
+    "multi_auth_review": 18,
+    "raw_consistency_issues": 0,
+    "issue_type_counts": {
+      "多授权分类作品ID": 17,
+      "多名称作品ID": 326,
+      "异常作品ID": 2,
+      "多名称作品ID\n多授权分类作品ID": 1
+    },
+    "status_counts": {
+      "需要人工重点复核": 18,
+      "校验通过且可解除阻断": 326,
+      "已确认，但仍需修改源账单": 2
+    }
+  },
+  "multi_id": {
+    "total": 85,
+    "pass": 85,
+    "needs_review": 0,
+    "merge_yes": 45,
+    "merge_no": 40,
+    "duplicate_raw_to_multiple_main": 2,
+    "duplicate_raw_conflict_task_count": 4,
+    "directly_usable_pass": 81,
+    "cross_conflicts_with_formal": 0
+  },
+  "ledger_and_copyright": {
+    "ledger_total": 11,
+    "copyright_total": 2,
+    "total": 13,
+    "pass": 13,
+    "needs_review": 0
+  },
+  "cross_sheet_conflicts": {
+    "count": 2
+  },
+  "non_blocking_observations": {
+    "total": 517,
+    "no_action_required": 517
+  },
+  "previews": {
+    "standard_work_id_mapping_preview_count": 344,
+    "standard_work_id_mapping_requires_review_count": 18,
+    "historical_volume_mapping_preview_count": 76,
+    "standard_name_preview_count": 344
+  },
+  "can_use_for_candidate_mapping_build": false
+}
