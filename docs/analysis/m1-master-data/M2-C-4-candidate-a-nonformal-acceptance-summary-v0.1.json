@@ -1,0 +1,186 @@
+{
+  "schema": "m2.c4.candidate_a_nonformal_acceptance_summary.v0.1",
+  "generatedAt": "2026-06-22T02:02:37+08:00",
+  "currentHead": "749830ab148ed40f9cd12fb18c4f085436fc89df",
+  "algorithmCandidateVersion": "m2-c3-cleaned-bill-nonformal-v0.2/candidate-a",
+  "calibrationSource": [
+    "M2-C-0 cleaned-bill aggregate calibration",
+    "M2-C-1 guarded calibrated-parameter integration",
+    "M2-C-2 non-formal aggregate dry-run",
+    "M2-C-3 candidate-a aggregate parameter iteration"
+  ],
+  "runMode": "non_formal_aggregate_dry_run",
+  "candidateVariant": "candidate-a",
+  "candidateRunExecuted": true,
+  "notForFormalDecision": true,
+  "formalEvaluationAllowed": false,
+  "latestCompleteMonth": "2026-04",
+  "excludedIncompleteMonths": [
+    "2026-05"
+  ],
+  "coverage": {
+    "evaluatedWorkCount": 3054,
+    "monthRange": [
+      "2017-06",
+      "2026-05"
+    ],
+    "businessFormCount": 2,
+    "businessFormDistribution": {
+      "audio_product": 135297,
+      "audio_copyright": 57575
+    },
+    "blockingManualReviewCount": 513,
+    "advisoryReviewCount": 2331,
+    "copyrightFallbackUsageCount": 2207,
+    "channelConcentrationCount": 1944
+  },
+  "ratingDistribution": {
+    "S+": {
+      "count": 7,
+      "share": 0.0023
+    },
+    "S": {
+      "count": 30,
+      "share": 0.0098
+    },
+    "A": {
+      "count": 160,
+      "share": 0.0524
+    },
+    "B": {
+      "count": 647,
+      "share": 0.2119
+    },
+    "C": {
+      "count": 704,
+      "share": 0.2305
+    },
+    "D": {
+      "count": 395,
+      "share": 0.1293
+    },
+    "E": {
+      "count": 1111,
+      "share": 0.3638
+    }
+  },
+  "lifecycleDistribution": {
+    "growth": {
+      "count": 540,
+      "share": 0.1768
+    },
+    "stable": {
+      "count": 872,
+      "share": 0.2855
+    },
+    "declining": {
+      "count": 394,
+      "share": 0.129
+    },
+    "long_tail": {
+      "count": 132,
+      "share": 0.0432
+    },
+    "inactive": {
+      "count": 800,
+      "share": 0.262
+    },
+    "rebound": {
+      "count": 270,
+      "share": 0.0884
+    },
+    "insufficient_history": {
+      "count": 46,
+      "share": 0.0151
+    }
+  },
+  "riskDistribution": {
+    "missing_copyright_end": 2207,
+    "aggregate_projection_gap": 2207,
+    "channel_concentration": 64,
+    "channel_concentration_advisory": 1880,
+    "copyright_expiry": 363,
+    "abnormal_spike": 382,
+    "buyout_or_oneoff_income": 328,
+    "inactive_tail": 932,
+    "revenue_decline": 394,
+    "insufficient_history": 46,
+    "insufficient_revenue_history": 46,
+    "incomplete_month_boundary": 1,
+    "business_form_mixed": 474,
+    "missing_basic_info": 2207
+  },
+  "manualReviewBreakdown": {
+    "blockingCount": 513,
+    "advisoryOnlyCount": 2331,
+    "blockingReasons": {
+      "abnormal_spike": 7,
+      "buyout_or_oneoff_income": 2,
+      "high_value_with_expiry": 60,
+      "high_value_with_data_gap": 444,
+      "insufficient_history": 6,
+      "channel_structure_unclear": 2
+    },
+    "advisoryReasons": {
+      "copyright_missing": 1763,
+      "abnormal_spike": 375,
+      "buyout_or_oneoff_income": 326,
+      "high_value_with_expiry": 303,
+      "insufficient_history": 40,
+      "channel_structure_unclear": 1942
+    }
+  },
+  "suggestionDistribution": {
+    "promote": 442,
+    "maintain": 707,
+    "reduce_investment": 252,
+    "repackage": 509,
+    "pricing_or_channel_adjustment": 402,
+    "renewal_review": 209,
+    "observe_only": 429,
+    "downlist_or_suspend": 744,
+    "manual_review_required": 513
+  },
+  "acceptanceCapability": {
+    "oldProductWorkLevelEvaluation": "candidate_ready_nonformal",
+    "lifecycleIdentification": "candidate_ready_nonformal",
+    "historicalRevenueSummary": "candidate_ready_nonformal",
+    "threeScenarioForecast": "candidate_ready_nonformal",
+    "rating": "candidate_ready_nonformal",
+    "risk": "candidate_ready_nonformal",
+    "suggestion": "candidate_ready_nonformal",
+    "aggregateBacktestAndDryRun": "candidate_ready_nonformal",
+    "fixtureAndAdminDisplay": "completed_fixture_only",
+    "nonFormalParameterVersion": "candidate_ready_nonformal"
+  },
+  "formalReadiness": {
+    "m2FixtureStageComplete": true,
+    "m2NonFormalCalibrationCandidateComplete": true,
+    "m2NonFormalCandidateStageCanClose": true,
+    "formalEvaluationReady": false,
+    "m2DFormalEvaluationCanStart": false,
+    "blockingReasons": [
+      "formal data readiness is not complete",
+      "mapping_version is not activated",
+      "candidate-a has not been accepted by operations",
+      "missing copyright end remains high at aggregate level",
+      "database persistence and evaluation task workflow are not implemented for formal evaluation"
+    ],
+    "recommendedNextStage": "operations_acceptance_and_formal_readiness_confirmation"
+  },
+  "prohibitedActionsConfirmed": {
+    "rawDetailWrittenToReport": false,
+    "rawDataCommitted": false,
+    "databaseConnected": false,
+    "dockerExecuted": false,
+    "migrationModified": false,
+    "mappingVersionActivated": false,
+    "switchMappingVersionCalled": false,
+    "formalEvaluationExecuted": false,
+    "writeApiAdded": false,
+    "exportApiAdded": false,
+    "evaluationTaskApiAdded": false,
+    "formalModeAdded": false,
+    "localDryRunProductModeAdded": false
+  }
+}
