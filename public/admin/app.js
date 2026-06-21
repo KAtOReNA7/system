@@ -197,54 +197,63 @@ async function renderSystem() {
   document.querySelector("#databaseCard").innerHTML = '<div class="loading">加载数据库状态…</div>';
   document.querySelector("#lifecycleCard").innerHTML = '<div class="loading">加载生命周期…</div>';
 
-  try {
-    const [health, dbHealth, systemStatus] = await Promise.all([
-      getJson("/health", fixture.health),
-      getJson("/health/db", fixture.dbHealth).catch((error) => error.payload || {
-        status: "degraded",
-        database: { connected: false, reason: "database_unavailable" }
-      }),
-      getJson("/api/system/status", fixture.system)
-    ]);
+  const healthResult = await getJson("/health", fixture.health).catch((error) => ({ error }));
+  const dbHealth = await getJson("/health/db", fixture.dbHealth).catch((error) => error.payload || {
+    status: "degraded",
+    database: { connected: false, reason: "database_unavailable" }
+  });
+  const systemResult = await getJson("/api/system/status", fixture.system).catch((error) => ({ error }));
 
+  if (healthResult.error) {
+    document.querySelector("#serviceCard").innerHTML = renderError(healthResult.error);
+  } else {
     document.querySelector("#serviceCard").innerHTML = `
       <h3>服务</h3>
-      ${renderMetric("service", health.service)}
-      ${renderMetric("environment", health.environment)}
-      ${renderMetric("status", health.status)}
+      ${renderMetric("service", healthResult.service)}
+      ${renderMetric("environment", healthResult.environment)}
+      ${renderMetric("status", healthResult.status)}
     `;
+  }
 
-    const db = dbHealth.database || {};
-    document.querySelector("#databaseCard").innerHTML = `
-      <h3>数据库</h3>
-      ${renderMetric("connected", db.connected === true ? "true" : "false")}
-      ${renderMetric("schemaVersion", db.schemaVersion || "未配置")}
-      ${renderMetric("systemState", db.systemState || "未配置")}
-      ${renderMetric("reason", db.reason || "无")}
-    `;
+  const db = dbHealth.database || {};
+  document.querySelector("#databaseCard").innerHTML = `
+    <h3>数据库</h3>
+    ${renderMetric("connected", db.connected === true ? "true" : "false")}
+    ${renderMetric("schemaVersion", db.schemaVersion || "未配置")}
+    ${renderMetric("systemState", db.systemState || "未配置")}
+    ${renderMetric("reason", db.reason || "无")}
+  `;
 
-    const system = systemStatus.system;
+  if (systemResult.error) {
+    document.querySelector("#lifecycleCard").innerHTML = renderError(systemResult.error);
+  } else {
+    const system = systemResult.system;
     document.querySelector("#lifecycleCard").innerHTML = `
       <h3>M1 生命周期</h3>
       ${renderMetric("state", system.state)}
       ${renderMetric("mappingVersionReady", system.mappingVersionReady)}
       ${renderMetric("billImportReady", system.billImportReady)}
     `;
-
-    const pageState = dbHealth.status === "degraded" ? "degraded" : "success";
-    setPageState("system", pageState);
-    setNotice(
-      state.fixtureMode
-        ? "当前使用前端合成 fixture，不读取真实数据。"
-        : pageState === "degraded"
-          ? "数据库健康检查降级；只读页面会显示对应错误状态。"
-          : "",
-      pageState
-    );
-  } catch (error) {
-    setPageState("system", "error");
-    document.querySelector("#lifecycleCard").innerHTML = renderError(error);
   }
+
+  const systemErrorCode = systemResult.error?.payload?.error?.code;
+  const dependencyDegraded = dbHealth.status === "degraded" ||
+    systemErrorCode === "database_not_configured" ||
+    systemErrorCode === "database_unavailable";
+  const pageState = healthResult.error || (systemResult.error && !dependencyDegraded)
+    ? "error"
+    : dependencyDegraded
+      ? "degraded"
+      : "success";
+  setPageState("system", pageState);
+  setNotice(
+    state.fixtureMode
+      ? "当前使用前端合成 fixture，不读取真实数据。"
+      : pageState === "degraded"
+        ? "数据库依赖降级；空库或未配置数据库是当前开发阶段的可预期状态。"
+        : "",
+    pageState
+  );
 }
 
 async function renderWorks() {

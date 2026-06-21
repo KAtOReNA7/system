@@ -98,6 +98,7 @@ input {
 }
 
 .main {
+  min-width: 0;
   padding: 28px;
 }
 
@@ -188,6 +189,15 @@ input:focus {
 .page {
   display: grid;
   gap: 18px;
+  min-width: 0;
+}
+
+#worksContent,
+#mappingContent,
+#jobsContent {
+  max-width: 100%;
+  min-width: 0;
+  width: 100%;
 }
 
 .is-hidden {
@@ -274,11 +284,15 @@ input:focus {
 }
 
 .table-wrap {
-  overflow: hidden;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 
 table {
   width: 100%;
+  min-width: 720px;
   border-collapse: collapse;
 }
 
@@ -321,6 +335,10 @@ tr:last-child td {
   font-size: 13px;
 }
 
+.table-wrap .pagination-note {
+  padding: 0 16px 14px;
+}
+
 .loading {
   min-height: 120px;
   display: grid;
@@ -353,5 +371,24 @@ tr:last-child td {
   .page-header {
     align-items: flex-start;
     flex-direction: column;
+  }
+}
+
+@media (max-width: 520px) {
+  .sidebar,
+  .main {
+    padding: 16px;
+  }
+
+  .toolbar {
+    align-items: stretch;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .fixture-toggle,
+  button {
+    justify-content: center;
+    width: 100%;
   }
 }
