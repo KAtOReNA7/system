@@ -1,12 +1,21 @@
 import crypto from "node:crypto";
 import { checkDatabaseHealth } from "../db/health.js";
-import { AppError, notFound, publicErrorBody } from "../errors.js";
+import { AppError, formalDataBlocked, notFound, publicErrorBody } from "../errors.js";
 import { parsePagination, parsePositiveInteger } from "./pagination.js";
 import { listJobs, getJobById } from "../repositories/jobRepository.js";
 import {
   listMappingVersions,
   getMappingVersionById
 } from "../repositories/mappingVersionRepository.js";
+import {
+  getM2OldProductEvaluationById,
+  getM2OldProductEvaluationOverview,
+  getM2OldProductBacktestById,
+  listM2OldProductAlgorithmVersions,
+  listM2OldProductBacktests,
+  listM2OldProductEvaluations,
+  listM2OldProductReadinessGaps
+} from "../repositories/oldProductEvaluationFixtureRepository.js";
 import { getSystemStatus } from "../repositories/systemRepository.js";
 import { getWorkById, listWorks } from "../repositories/workRepository.js";
 import { serveAdminAsset } from "./staticAdmin.js";
@@ -33,7 +42,20 @@ export function createApp(config, options = {}) {
     listMappingVersions: options.listMappingVersions ?? listMappingVersions,
     getMappingVersionById: options.getMappingVersionById ?? getMappingVersionById,
     listJobs: options.listJobs ?? listJobs,
-    getJobById: options.getJobById ?? getJobById
+    getJobById: options.getJobById ?? getJobById,
+    getM2OldProductEvaluationOverview:
+      options.getM2OldProductEvaluationOverview ?? getM2OldProductEvaluationOverview,
+    listM2OldProductEvaluations:
+      options.listM2OldProductEvaluations ?? listM2OldProductEvaluations,
+    getM2OldProductEvaluationById:
+      options.getM2OldProductEvaluationById ?? getM2OldProductEvaluationById,
+    listM2OldProductReadinessGaps:
+      options.listM2OldProductReadinessGaps ?? listM2OldProductReadinessGaps,
+    listM2OldProductAlgorithmVersions:
+      options.listM2OldProductAlgorithmVersions ?? listM2OldProductAlgorithmVersions,
+    listM2OldProductBacktests: options.listM2OldProductBacktests ?? listM2OldProductBacktests,
+    getM2OldProductBacktestById:
+      options.getM2OldProductBacktestById ?? getM2OldProductBacktestById
   };
 
   return async function app(request, response) {
@@ -123,10 +145,100 @@ export function createApp(config, options = {}) {
         return;
       }
 
+      if (path.startsWith("/api/m2/old-products")) {
+        blockFormalM2Mode(request, url);
+
+        if (
+          request.method === "GET" &&
+          path === "/api/m2/old-products/evaluations/overview"
+        ) {
+          const body = await repositories.getM2OldProductEvaluationOverview(config);
+          sendJson(response, 200, body, requestId);
+          return;
+        }
+
+        if (request.method === "GET" && path === "/api/m2/old-products/evaluations") {
+          const pagination = parsePagination(url.searchParams);
+          const body = await repositories.listM2OldProductEvaluations(config, {
+            pagination,
+            searchParams: url.searchParams
+          });
+          sendJson(response, 200, body, requestId);
+          return;
+        }
+
+        const oldProductEvaluationMatch = path.match(
+          /^\/api\/m2\/old-products\/evaluations\/([^/]+)$/
+        );
+        if (request.method === "GET" && oldProductEvaluationMatch) {
+          const standardWorkId = decodeURIComponent(oldProductEvaluationMatch[1]);
+          const body = await repositories.getM2OldProductEvaluationById(config, standardWorkId);
+          if (!body) {
+            throw notFound("Old product evaluation");
+          }
+          sendJson(response, 200, body, requestId);
+          return;
+        }
+
+        if (request.method === "GET" && path === "/api/m2/old-products/readiness-gaps") {
+          const pagination = parsePagination(url.searchParams);
+          const body = await repositories.listM2OldProductReadinessGaps(config, {
+            pagination,
+            searchParams: url.searchParams
+          });
+          sendJson(response, 200, body, requestId);
+          return;
+        }
+
+        if (
+          request.method === "GET" &&
+          path === "/api/m2/old-products/algorithm-versions"
+        ) {
+          const body = await repositories.listM2OldProductAlgorithmVersions(config);
+          sendJson(response, 200, body, requestId);
+          return;
+        }
+
+        if (request.method === "GET" && path === "/api/m2/old-products/backtests") {
+          const pagination = parsePagination(url.searchParams);
+          const body = await repositories.listM2OldProductBacktests(config, {
+            pagination,
+            searchParams: url.searchParams
+          });
+          sendJson(response, 200, body, requestId);
+          return;
+        }
+
+        const oldProductBacktestMatch = path.match(
+          /^\/api\/m2\/old-products\/backtests\/([^/]+)$/
+        );
+        if (request.method === "GET" && oldProductBacktestMatch) {
+          const backtestBatchId = decodeURIComponent(oldProductBacktestMatch[1]);
+          const body = await repositories.getM2OldProductBacktestById(config, backtestBatchId);
+          if (!body) {
+            throw notFound("Old product backtest");
+          }
+          sendJson(response, 200, body, requestId);
+          return;
+        }
+      }
+
       throw notFound("Route");
     } catch (error) {
       const statusCode = error instanceof AppError ? error.statusCode : 500;
       sendJson(response, statusCode, publicErrorBody(error, requestId), requestId);
     }
   };
+}
+
+function blockFormalM2Mode(request, url) {
+  const requestedMode =
+    url.searchParams.get("mode") ??
+    request.headers["x-m2-mode"] ??
+    request.headers["x-evaluation-mode"] ??
+    request.headers["x-mode"];
+
+  if (String(requestedMode ?? "").toLowerCase() === "formal") {
+    throw formalDataBlocked();
+  }
 }

@@ -55,3 +55,25 @@ export function databaseNotConfigured(role) {
 export function databaseUnavailable(role) {
   return new AppError("database_unavailable", `${role} database is unavailable`, 503);
 }
+
+export function formalDataBlocked() {
+  return new AppError(
+    "formal_data_blocked",
+    "Formal M2 old-product evaluation is blocked until M1 formal data readiness is complete.",
+    423
+  );
+}
+
+export function m1ReadinessBlocked(message = "M1 readiness is incomplete for this evaluation.") {
+  return new AppError("m1_readiness_blocked", message, 423);
+}
+
+export function evaluationNotAvailable(
+  message = "Evaluation result is not available for the requested mode."
+) {
+  return new AppError("evaluation_not_available", message, 409);
+}
+
+export function fixtureOnly(message = "This endpoint is available only for fixture data in this phase.") {
+  return new AppError("fixture_only", message, 409);
+}

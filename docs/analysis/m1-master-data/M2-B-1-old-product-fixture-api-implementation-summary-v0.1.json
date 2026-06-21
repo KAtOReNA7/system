@@ -1,0 +1,71 @@
+{
+  "currentHead": "e28f3fd132e1f084b409a820871ec11f091b23e2",
+  "originMain": "e28f3fd132e1f084b409a820871ec11f091b23e2",
+  "worktreeClean": true,
+  "implementedEndpoints": [
+    "GET /api/m2/old-products/evaluations/overview",
+    "GET /api/m2/old-products/evaluations",
+    "GET /api/m2/old-products/evaluations/:standardWorkId",
+    "GET /api/m2/old-products/readiness-gaps",
+    "GET /api/m2/old-products/algorithm-versions",
+    "GET /api/m2/old-products/backtests",
+    "GET /api/m2/old-products/backtests/:backtestBatchId"
+  ],
+  "fixtureFiles": [
+    "src/fixtures/m2OldProductEvaluationFixture.js",
+    "test/fixtures/m2OldProductEvaluationFixtureCases.js"
+  ],
+  "repositoryFiles": [
+    "src/repositories/oldProductEvaluationFixtureRepository.js"
+  ],
+  "modifiedApiFiles": [
+    "src/http/app.js"
+  ],
+  "modifiedErrorFiles": [
+    "src/errors.js"
+  ],
+  "testFiles": [
+    "test/m2-old-product-api.test.js",
+    "test/fixtures/m2OldProductEvaluationFixtureCases.js"
+  ],
+  "documentationFiles": [
+    "docs/technical-design/M2-B-1-old-product-fixture-api-implementation-report-v0.1.md",
+    "docs/analysis/m1-master-data/M2-B-1-old-product-fixture-api-implementation-summary-v0.1.json"
+  ],
+  "migrationModified": false,
+  "databaseConnected": false,
+  "dockerExecuted": false,
+  "realDataRead": false,
+  "dataDirectoryRead": false,
+  "stageJsonRead": false,
+  "mappingVersionActivated": false,
+  "switchMappingVersionCalled": false,
+  "formalModeBlocked": true,
+  "apiTestsPassed": true,
+  "noRealDataCheckPassed": true,
+  "lintPassed": true,
+  "buildPassed": true,
+  "unitTestsPassed": true,
+  "smokePassed": true,
+  "m2B2Ready": true,
+  "m2B3Blocked": true,
+  "prohibitedActionsConfirmed": {
+    "connectedDatabase": false,
+    "executedDocker": false,
+    "readDataDirectory": false,
+    "readRealData": false,
+    "readStageJson": false,
+    "importedRealData": false,
+    "activatedMappingVersion": false,
+    "calledSwitchMappingVersion": false,
+    "executedFormalDataMigration": false,
+    "modifiedDbMigrations": false,
+    "modifiedPageImplementation": false,
+    "addedPage": false,
+    "addedWriteApi": false,
+    "addedEvaluationTaskCreation": false,
+    "addedExportApi": false,
+    "usedGitAddDot": false,
+    "touchedStash": false
+  }
+}
