@@ -1,0 +1,647 @@
+openapi: 3.1.0
+info:
+  title: M1 Audiobook Evaluation API
+  version: 0.1.0
+  description: >
+    M1 current read-only API contract. This contract only covers empty database,
+    synthetic fixture, and local/test/CI usage. Real bill import, master-data
+    import, operation confirmation import, mapping-version activation, and
+    production database access are explicitly out of scope.
+servers:
+  - url: http://127.0.0.1:3000
+    description: Local development server
+tags:
+  - name: Health
+  - name: System
+  - name: Works
+  - name: MappingVersions
+  - name: Jobs
+paths:
+  /health:
+    get:
+      tags: [Health]
+      summary: Service health check without database dependency
+      description: Does not connect to the database and must be available even when database URLs are not configured.
+      x-runtime-role: none
+      responses:
+        "200":
+          description: Service process is running.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+              examples:
+                ok:
+                  value:
+                    status: ok
+                    service: m1-audiobook-evaluation
+                    environment: local
+  /health/db:
+    get:
+      tags: [Health]
+      summary: Database readiness health check
+      description: >
+        Uses read-only and control database connections. It checks UTC timezone,
+        Flyway schema version, system_state, formal views, and runtime role boundary.
+        It does not read real business rows.
+      x-runtime-role: application_ro + background_worker
+      responses:
+        "200":
+          description: Database checks passed.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DatabaseHealthResponse"
+              examples:
+                ok:
+                  value:
+                    service: m1-audiobook-evaluation
+                    status: ok
+                    database:
+                      connected: true
+                      schemaVersion: "0060.290"
+                      systemState: schema_initialized
+                      checks:
+                        timezoneUtc: true
+                        expectedSchemaVersion: true
+                        systemStateReadable: true
+                        formalViewsQueryable: true
+                        runtimeRoleAllowed: true
+        "503":
+          description: Database is not configured or not ready.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DatabaseHealthResponse"
+              examples:
+                notConfigured:
+                  value:
+                    service: m1-audiobook-evaluation
+                    status: degraded
+                    database:
+                      connected: false
+                      reason: database_not_configured
+  /api/system/status:
+    get:
+      tags: [System]
+      summary: Current M1 system lifecycle readiness
+      description: Read-only system status for administration screens. Empty database is a normal state.
+      x-runtime-role: background_worker
+      responses:
+        "200":
+          description: System status.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SystemStatusResponse"
+              examples:
+                emptyDatabase:
+                  value:
+                    status: ok
+                    system:
+                      state: schema_initialized
+                      mappingVersionReady: false
+                      billImportReady: false
+        "503":
+          $ref: "#/components/responses/DatabaseNotConfigured"
+        "500":
+          $ref: "#/components/responses/InternalError"
+  /api/works:
+    get:
+      tags: [Works]
+      summary: List standard works visible to M1 read-only views
+      description: Returns an empty list in an empty database. No real income data is exposed.
+      x-runtime-role: application_ro
+      parameters:
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PageSize"
+      responses:
+        "200":
+          description: Paged work list.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkListResponse"
+              examples:
+                empty:
+                  value:
+                    items: []
+                    pagination:
+                      page: 1
+                      pageSize: 20
+                      total: 0
+                synthetic:
+                  value:
+                    items:
+                      - id: "900001"
+                        standardWorkId: "900001"
+                        completeness:
+                          missingBasicInfoRecord: true
+                          missingCoreFields: true
+                          missingClassification: true
+                    pagination:
+                      page: 1
+                      pageSize: 20
+                      total: 1
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "503":
+          $ref: "#/components/responses/DatabaseNotConfigured"
+        "500":
+          $ref: "#/components/responses/InternalError"
+  /api/works/{id}:
+    get:
+      tags: [Works]
+      summary: Get one standard work by ID
+      description: Returns 404 when the standard work does not exist. No real income data is exposed.
+      x-runtime-role: application_ro
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Standard work ID.
+          schema:
+            type: string
+            minLength: 1
+      responses:
+        "200":
+          description: Work detail.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkDetailResponse"
+              examples:
+                synthetic:
+                  value:
+                    item:
+                      id: "900001"
+                      standardWorkId: "900001"
+                      completeness:
+                        missingBasicInfoRecord: true
+                        missingCoreFields: true
+                        missingClassification: true
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "503":
+          $ref: "#/components/responses/DatabaseNotConfigured"
+        "500":
+          $ref: "#/components/responses/InternalError"
+  /api/mapping-versions:
+    get:
+      tags: [MappingVersions]
+      summary: List mapping versions
+      description: Read-only view of mapping-version metadata. Does not import, activate, or apply mappings.
+      x-runtime-role: background_worker
+      parameters:
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PageSize"
+      responses:
+        "200":
+          description: Paged mapping-version list.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MappingVersionListResponse"
+              examples:
+                empty:
+                  value:
+                    items: []
+                    pagination:
+                      page: 1
+                      pageSize: 20
+                      total: 0
+                synthetic:
+                  value:
+                    items:
+                      - id: "1"
+                        versionNo: 1
+                        status: building
+                        triggerType: synthetic_fixture
+                        projectionRowCount: 0
+                        createdAt: "2026-01-01T00:00:00.000Z"
+                    pagination:
+                      page: 1
+                      pageSize: 20
+                      total: 1
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "503":
+          $ref: "#/components/responses/DatabaseNotConfigured"
+        "500":
+          $ref: "#/components/responses/InternalError"
+  /api/mapping-versions/{id}:
+    get:
+      tags: [MappingVersions]
+      summary: Get one mapping version by ID
+      description: ID must be a positive integer. This endpoint is read-only and never activates a version.
+      x-runtime-role: background_worker
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Mapping version numeric ID.
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        "200":
+          description: Mapping-version detail.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MappingVersionDetailResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "503":
+          $ref: "#/components/responses/DatabaseNotConfigured"
+        "500":
+          $ref: "#/components/responses/InternalError"
+  /api/jobs:
+    get:
+      tags: [Jobs]
+      summary: List background task metadata
+      description: Read-only task list. Does not start, retry, cancel, or mutate background jobs.
+      x-runtime-role: background_worker
+      parameters:
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PageSize"
+      responses:
+        "200":
+          description: Paged job list.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JobListResponse"
+              examples:
+                empty:
+                  value:
+                    items: []
+                    pagination:
+                      page: 1
+                      pageSize: 20
+                      total: 0
+                synthetic:
+                  value:
+                    items:
+                      - id: "1"
+                        type: synthetic_fixture_job
+                        logicalOperationKey: synthetic-fixture-job
+                        status: pending
+                        createdAt: "2026-01-01T00:00:00.000Z"
+                        startedAt: null
+                        finishedAt: null
+                    pagination:
+                      page: 1
+                      pageSize: 20
+                      total: 1
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "503":
+          $ref: "#/components/responses/DatabaseNotConfigured"
+        "500":
+          $ref: "#/components/responses/InternalError"
+  /api/jobs/{id}:
+    get:
+      tags: [Jobs]
+      summary: Get one background task by ID
+      description: ID must be a positive integer. This endpoint is read-only and never starts real jobs.
+      x-runtime-role: background_worker
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Job numeric ID.
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        "200":
+          description: Job detail.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JobDetailResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "503":
+          $ref: "#/components/responses/DatabaseNotConfigured"
+        "500":
+          $ref: "#/components/responses/InternalError"
+components:
+  parameters:
+    Page:
+      name: page
+      in: query
+      required: false
+      description: Page number. Defaults to 1 and must be a positive integer.
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    PageSize:
+      name: pageSize
+      in: query
+      required: false
+      description: Page size. Defaults to 20, must be a positive integer, and cannot exceed 100.
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+  responses:
+    BadRequest:
+      description: Invalid parameter.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          examples:
+            badPagination:
+              value:
+                error:
+                  code: bad_request
+                  message: page must be a positive integer
+                  requestId: 018f7ae0-0c66-73e2-8d2f-9f4c0e6b8330
+    NotFound:
+      description: Resource not found.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          examples:
+            notFound:
+              value:
+                error:
+                  code: not_found
+                  message: Resource not found
+                  requestId: 018f7ae0-0c66-73e2-8d2f-9f4c0e6b8330
+    DatabaseNotConfigured:
+      description: Database URL for the required runtime role is not configured.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          examples:
+            databaseNotConfigured:
+              value:
+                error:
+                  code: database_not_configured
+                  message: application_ro database connection is not configured
+                  requestId: 018f7ae0-0c66-73e2-8d2f-9f4c0e6b8330
+    InternalError:
+      description: Unexpected server error. Public response must not expose connection strings, passwords, SQL, stack traces, host ports, or real business data.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          examples:
+            internalError:
+              value:
+                error:
+                  code: internal_error
+                  message: Internal server error
+                  requestId: 018f7ae0-0c66-73e2-8d2f-9f4c0e6b8330
+  schemas:
+    HealthResponse:
+      type: object
+      required: [status, service, environment]
+      properties:
+        status:
+          type: string
+          enum: [ok]
+        service:
+          type: string
+          example: m1-audiobook-evaluation
+        environment:
+          type: string
+          enum: [local, test, ci]
+    DatabaseHealthResponse:
+      type: object
+      required: [service, status, database]
+      properties:
+        service:
+          type: string
+        status:
+          type: string
+          enum: [ok, degraded]
+        database:
+          oneOf:
+            - $ref: "#/components/schemas/DatabaseConnected"
+            - $ref: "#/components/schemas/DatabaseDisconnected"
+    DatabaseConnected:
+      type: object
+      required: [connected, schemaVersion, systemState, checks]
+      properties:
+        connected:
+          type: boolean
+          const: true
+        schemaVersion:
+          type: string
+          nullable: true
+          example: "0060.290"
+        systemState:
+          type: string
+          nullable: true
+          example: schema_initialized
+        checks:
+          type: object
+          required:
+            - timezoneUtc
+            - expectedSchemaVersion
+            - systemStateReadable
+            - formalViewsQueryable
+            - runtimeRoleAllowed
+          properties:
+            timezoneUtc:
+              type: boolean
+            expectedSchemaVersion:
+              type: boolean
+            systemStateReadable:
+              type: boolean
+            formalViewsQueryable:
+              type: boolean
+            runtimeRoleAllowed:
+              type: boolean
+    DatabaseDisconnected:
+      type: object
+      required: [connected, reason]
+      properties:
+        connected:
+          type: boolean
+          const: false
+        reason:
+          type: string
+          enum: [database_not_configured, database_unavailable, database_check_failed]
+    SystemStatusResponse:
+      type: object
+      required: [status, system]
+      properties:
+        status:
+          type: string
+          enum: [ok]
+        system:
+          type: object
+          required: [state, mappingVersionReady, billImportReady]
+          properties:
+            state:
+              type: string
+              nullable: true
+              enum:
+                - schema_initialized
+                - master_data_initializing
+                - ready_for_bill_activation
+                - operational
+                - null
+            mappingVersionReady:
+              type: boolean
+            billImportReady:
+              type: boolean
+    Pagination:
+      type: object
+      required: [page, pageSize, total]
+      properties:
+        page:
+          type: integer
+          minimum: 1
+        pageSize:
+          type: integer
+          minimum: 1
+          maximum: 100
+        total:
+          type: integer
+          minimum: 0
+    Work:
+      type: object
+      required: [id, standardWorkId, completeness]
+      properties:
+        id:
+          type: string
+        standardWorkId:
+          type: string
+        completeness:
+          type: object
+          required: [missingBasicInfoRecord, missingCoreFields, missingClassification]
+          properties:
+            missingBasicInfoRecord:
+              type: boolean
+            missingCoreFields:
+              type: boolean
+            missingClassification:
+              type: boolean
+    WorkListResponse:
+      type: object
+      required: [items, pagination]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Work"
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+    WorkDetailResponse:
+      type: object
+      required: [item]
+      properties:
+        item:
+          $ref: "#/components/schemas/Work"
+    MappingVersion:
+      type: object
+      required: [id, versionNo, status, triggerType, projectionRowCount, createdAt]
+      properties:
+        id:
+          type: string
+        versionNo:
+          type: integer
+        status:
+          type: string
+          enum: [building, validated, active, retired, failed]
+        triggerType:
+          type: string
+        projectionRowCount:
+          type: integer
+          minimum: 0
+        createdAt:
+          type: string
+          format: date-time
+    MappingVersionListResponse:
+      type: object
+      required: [items, pagination]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/MappingVersion"
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+    MappingVersionDetailResponse:
+      type: object
+      required: [item]
+      properties:
+        item:
+          $ref: "#/components/schemas/MappingVersion"
+    Job:
+      type: object
+      required: [id, type, logicalOperationKey, status, createdAt, startedAt, finishedAt]
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        logicalOperationKey:
+          type: string
+        status:
+          type: string
+          enum: [pending, running, succeeded, failed, blocked, cancelled]
+        createdAt:
+          type: string
+          format: date-time
+        startedAt:
+          type:
+            - string
+            - "null"
+          format: date-time
+        finishedAt:
+          type:
+            - string
+            - "null"
+          format: date-time
+    JobListResponse:
+      type: object
+      required: [items, pagination]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Job"
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+    JobDetailResponse:
+      type: object
+      required: [item]
+      properties:
+        item:
+          $ref: "#/components/schemas/Job"
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message, requestId]
+          properties:
+            code:
+              type: string
+              enum:
+                - bad_request
+                - not_found
+                - database_not_configured
+                - database_unavailable
+                - internal_error
+            message:
+              type: string
+            requestId:
+              type: string
