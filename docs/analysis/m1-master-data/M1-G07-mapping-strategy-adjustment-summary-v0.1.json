@@ -1,0 +1,73 @@
+{
+  "generated_at": "2026-06-21T17:30:00+08:00",
+  "status": "READY_FOR_DOCKER_REHEARSAL",
+  "overlay_generated": true,
+  "derived_stage_generated": true,
+  "original_candidate_package_modified": false,
+  "db_migrations_modified": false,
+  "source_stage": "experiments/m1-mapping-version-import-candidate/mapping_import_stage-v0.1.json",
+  "derived_stage": "experiments/m1-mapping-version-import-candidate/mapping_import_stage-v0.2.json",
+  "overlay": "experiments/m1-mapping-version-import-candidate/G07-mapping-strategy-overlay-v0.2.json",
+  "counts": {
+    "before": {
+      "total": 352,
+      "raw_work_id_mapping": 303,
+      "historical_volume_mapping": 49,
+      "audit_source_record_count": 353,
+      "raw_identity_conflict_count": 3,
+      "raw_unique_conflict_group_count": 1
+    },
+    "after": {
+      "total": 352,
+      "raw_work_id_mapping": 300,
+      "historical_volume_mapping": 52,
+      "audit_source_record_count": 353,
+      "raw_identity_conflict_count": 0,
+      "raw_unique_conflict_group_count": 0
+    },
+    "delta": {
+      "raw_work_id_mapping": -3,
+      "historical_volume_mapping": 3,
+      "audit_source_record_count": 0,
+      "raw_identity_conflict_count": -3,
+      "raw_unique_conflict_group_count": -1
+    }
+  },
+  "g07_new_ownership": [
+    {
+      "raw_work_id": "161280",
+      "physical_table": "historical_volume_mapping",
+      "target_standard_work_id": "161260",
+      "business_form": "audio_copyright",
+      "source_task_ids": "IMPORT-BLOCK::161280",
+      "audit_source_count": 1,
+      "is_general_rule": false
+    },
+    {
+      "raw_work_id": "161284",
+      "physical_table": "historical_volume_mapping",
+      "target_standard_work_id": "161260",
+      "business_form": "audio_copyright",
+      "source_task_ids": "IMPORT-BLOCK::161284",
+      "audit_source_count": 1,
+      "is_general_rule": false
+    },
+    {
+      "raw_work_id": "161290",
+      "physical_table": "historical_volume_mapping",
+      "target_standard_work_id": "161260",
+      "business_form": "audio_copyright",
+      "source_task_ids": "IMPORT-BLOCK::161290",
+      "audit_source_count": 1,
+      "is_general_rule": false
+    }
+  ],
+  "conflicts_after_adjustment": {
+    "raw_table_identity_conflict_count": 0,
+    "raw_table_unique_conflict_group_count": 0
+  },
+  "audit_source_record_count_preserved": true,
+  "requires_forward_only_migration": false,
+  "requires_main_regular_raw_id_auto_selection": false,
+  "next_step": "Run Docker PostgreSQL isolated rehearsal with mapping_import_stage-v0.2.json."
+}

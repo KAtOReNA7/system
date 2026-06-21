@@ -1,0 +1,129 @@
+{
+  "generated_at": "2026-06-21T18:12:00+08:00",
+  "status": "READY_FOR_CONTROLLED_IMPORT_DRY_RUN_AUTHORIZATION",
+  "source_readiness": {
+    "status": "PASS",
+    "blocked_data_or_model_resolved": true,
+    "allow_next_controlled_import_preparation": true
+  },
+  "v0_2_consistency": {
+    "readiness_summary_checked": true,
+    "g07_adjustment_summary_checked": true,
+    "docker_rehearsal_summary_checked": true,
+    "overlay_checked": true,
+    "assertions_v0_2_checked": true,
+    "readme_checked": true,
+    "raw_work_id_mapping_plan_rows": 300,
+    "historical_volume_mapping_plan_rows": 52,
+    "audit_source_record_count": 353,
+    "g06_passed": true,
+    "g07_passed": true,
+    "g07_rows_all_historical_volume_mapping": true,
+    "g07_raw_rows_absent": true,
+    "forward_only_migration_required": false,
+    "auto_main_raw_id_selection_required": false
+  },
+  "controlled_import_preparation_plan_generated": true,
+  "dry_run_execution_plan_generated": true,
+  "script_candidate_changes": {
+    "new_script_added": false,
+    "readme_v0_2_added": true,
+    "existing_scripts_reused": [
+      "experiments/m1-mapping-version-import-candidate/00_preflight_gate.sql",
+      "experiments/m1-mapping-version-import-candidate/01_controlled_import_candidate.sql",
+      "experiments/m1-mapping-version-import-candidate/03_rehearsal_assertions_v0.2.sql"
+    ],
+    "reason_no_new_sql_script": "Existing experiment scripts already cover preflight, transaction-wrapped dry-run, and G06/G07 assertions."
+  },
+  "allowed_scope": [
+    "pre-import gates",
+    "dry-run plan",
+    "candidate import script preparation",
+    "explicitly authorized local/development/test database only"
+  ],
+  "forbidden_scope": [
+    "formal_database_connection",
+    "formal_database_write",
+    "formal_credentials",
+    "real_bill_import",
+    "copyright_ledger_import",
+    "ops_confirmation_excel_import",
+    "mapping_version_activation",
+    "switch_mapping_version_call",
+    "formal_data_migration",
+    "db_migrations_modification",
+    "candidate_package_body_modification",
+    "data_as_application_startup_input"
+  ],
+  "public_commit_candidates": [
+    "docs/analysis/m1-master-data/M1-G07-mapping-strategy-confirmation-pack-v0.1.md",
+    "docs/analysis/m1-master-data/M1-G07-mapping-strategy-confirmation-summary-v0.1.json",
+    "docs/analysis/m1-master-data/M1-G07-mapping-strategy-adjustment-report-v0.1.md",
+    "docs/analysis/m1-master-data/M1-G07-mapping-strategy-adjustment-summary-v0.1.json",
+    "docs/analysis/m1-master-data/M1-mapping-version-docker-rehearsal-report-v0.1.md",
+    "docs/analysis/m1-master-data/M1-mapping-version-docker-rehearsal-summary-v0.1.json",
+    "docs/analysis/m1-master-data/M1-mapping-version-docker-rehearsal-report-v0.2.md",
+    "docs/analysis/m1-master-data/M1-mapping-version-docker-rehearsal-summary-v0.2.json",
+    "docs/analysis/m1-master-data/M1-mapping-version-v0.2-controlled-import-readiness-report-v0.1.md",
+    "docs/analysis/m1-master-data/M1-mapping-version-v0.2-controlled-import-readiness-summary-v0.1.json",
+    "docs/analysis/m1-master-data/M1-mapping-version-v0.2-controlled-import-preparation-plan-v0.1.md",
+    "docs/analysis/m1-master-data/M1-mapping-version-v0.2-controlled-import-preparation-summary-v0.1.json",
+    "experiments/m1-mapping-version-import-candidate/README.md",
+    "experiments/m1-mapping-version-import-candidate/README-v0.2-controlled-import-preparation.md",
+    "experiments/m1-mapping-version-import-candidate/00_preflight_gate.sql",
+    "experiments/m1-mapping-version-import-candidate/01_controlled_import_candidate.sql",
+    "experiments/m1-mapping-version-import-candidate/03_rehearsal_assertions.sql",
+    "experiments/m1-mapping-version-import-candidate/03_rehearsal_assertions_v0.2.sql",
+    "experiments/m1-mapping-version-import-candidate/G07-mapping-strategy-overlay-v0.2.json"
+  ],
+  "do_not_submit_without_explicit_authorization": [
+    "experiments/m1-mapping-version-import-candidate/mapping_import_stage-v0.1.json",
+    "experiments/m1-mapping-version-import-candidate/mapping_import_stage-v0.2.json"
+  ],
+  "never_submit_categories": [
+    "data/m1-master-data-private/**",
+    "data/real-bills/**",
+    ".codex-work/**",
+    ".env",
+    ".env.local",
+    ".pgpass",
+    "connection strings",
+    "passwords",
+    "temporary database files",
+    "private xlsx details",
+    "candidate package body files"
+  ],
+  "safety": {
+    "docker_executed": false,
+    "database_rehearsal_executed": false,
+    "formal_database_connected": false,
+    "formal_database_written": false,
+    "formal_credentials_used": false,
+    "real_data_imported": false,
+    "mapping_version_activated": false,
+    "switch_mapping_version_called": false,
+    "formal_data_migration_executed": false,
+    "db_migrations_modified": false,
+    "candidate_package_body_modified": false,
+    "data_read_as_application_startup_input": false,
+    "git_add_dot_used": false,
+    "stash_touched": false
+  },
+  "next_user_authorization_needed": {
+    "action": "M1 mapping_version v0.2 local/development/test controlled import dry-run",
+    "required_details": [
+      "target environment name",
+      "explicit confirmation that target is not production/staging/formal database",
+      "allowed credential source",
+      "whether transaction-wrapped writes are allowed in that environment",
+      "whether temporary database/container destruction is allowed after dry-run"
+    ],
+    "still_not_authorized": [
+      "formal database write",
+      "mapping_version activation",
+      "switch_mapping_version",
+      "real bill import",
+      "formal data migration"
+    ]
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "generated_at": "2026-06-21T17:30:00+08:00",
+  "overlay_id": "G07-mapping-strategy-overlay-v0.2",
+  "parent_stage": "mapping_import_stage-v0.1.json",
+  "derived_stage": "mapping_import_stage-v0.2.json",
+  "user_confirmation": {
+    "raw_work_ids": [
+      "161280",
+      "161284",
+      "161290"
+    ],
+    "target_standard_work_id": "161260",
+    "business_form": "audio_copyright",
+    "confirmed_relationship": "historical_volume_or_historical_registration_or_alias",
+    "do_not_write_to_raw_work_id_mapping": true,
+    "write_to_historical_volume_mapping": true,
+    "do_not_auto_select_main_regular_raw_id": true,
+    "no_forward_only_model_migration_requested": true
+  },
+  "changes": [
+    {
+      "raw_work_id": "161280",
+      "from": "raw_work_id_mapping",
+      "to": "historical_volume_mapping",
+      "target_standard_work_id": "161260",
+      "business_form": "audio_copyright",
+      "preserve_source_task_id": "IMPORT-BLOCK::161280",
+      "preserve_audit_source": true,
+      "is_general_rule": false
+    },
+    {
+      "raw_work_id": "161284",
+      "from": "raw_work_id_mapping",
+      "to": "historical_volume_mapping",
+      "target_standard_work_id": "161260",
+      "business_form": "audio_copyright",
+      "preserve_source_task_id": "IMPORT-BLOCK::161284",
+      "preserve_audit_source": true,
+      "is_general_rule": false
+    },
+    {
+      "raw_work_id": "161290",
+      "from": "raw_work_id_mapping",
+      "to": "historical_volume_mapping",
+      "target_standard_work_id": "161260",
+      "business_form": "audio_copyright",
+      "preserve_source_task_id": "IMPORT-BLOCK::161290",
+      "preserve_audit_source": true,
+      "is_general_rule": false
+    }
+  ],
+  "counts": {
+    "before": {
+      "total": 352,
+      "raw_work_id_mapping": 303,
+      "historical_volume_mapping": 49,
+      "audit_source_record_count": 353,
+      "raw_identity_conflict_count": 3,
+      "raw_unique_conflict_group_count": 1
+    },
+    "after": {
+      "total": 352,
+      "raw_work_id_mapping": 300,
+      "historical_volume_mapping": 52,
+      "audit_source_record_count": 353,
+      "raw_identity_conflict_count": 0,
+      "raw_unique_conflict_group_count": 0
+    },
+    "delta": {
+      "raw_work_id_mapping": -3,
+      "historical_volume_mapping": 3,
+      "audit_source_record_count": 0,
+      "raw_identity_conflict_count": -3,
+      "raw_unique_conflict_group_count": -1
+    }
+  }
+}

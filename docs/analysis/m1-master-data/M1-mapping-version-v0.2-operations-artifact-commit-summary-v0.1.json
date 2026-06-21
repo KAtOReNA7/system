@@ -1,0 +1,124 @@
+{
+  "generated_at": "2026-06-21T18:34:00+08:00",
+  "status": "READY_FOR_ISOLATED_COMMIT",
+  "phase": "operations_artifact_isolated_commit_gate",
+  "isolated_worktree": {
+    "used": true,
+    "path": "D:\\porject\\system-worktrees\\m1-ops-v02-public-submit-20260621-183204",
+    "branch": "codex/m1-ops-v02-public-artifacts-20260621-183204",
+    "base": "origin/main"
+  },
+  "main_worktree": {
+    "direct_commit_used": false,
+    "unrelated_files_preserved": true,
+    "unrelated_technical_files": [
+      "docs/technical-design/M1-管理端CI远端运行结果核对报告-v0.1.md"
+    ],
+    "untracked_operations_files_not_in_this_commit_candidate": [
+      "docs/analysis/m1-master-data/M1-formal-mapping-version-candidate-report-v0.1.md",
+      "docs/analysis/m1-master-data/M1-formal-mapping-version-candidate-summary-v0.1.json",
+      "docs/analysis/m1-master-data/M1-mapping-version-controlled-import-preparation-v0.1.md",
+      "docs/analysis/m1-master-data/M1-mapping-version-controlled-import-preparation-summary-v0.1.json",
+      "docs/analysis/m1-master-data/M1-mapping-version-final-confirmation-pack-v0.1.md",
+      "docs/analysis/m1-master-data/M1-mapping-version-final-confirmation-summary-v0.1.json",
+      "docs/analysis/m1-master-data/M1-mapping-version-local-rehearsal-report-v0.1.md",
+      "docs/analysis/m1-master-data/M1-mapping-version-local-rehearsal-summary-v0.1.json"
+    ]
+  },
+  "v0_2_result": {
+    "status": "PASS",
+    "g06_passed": true,
+    "g07_passed": true,
+    "raw_work_id_mapping_plan_rows": 300,
+    "historical_volume_mapping_plan_rows": 52,
+    "audit_source_record_count": 353,
+    "g07_ids_are_historical_volume_mapping": true,
+    "mapping_version_activated": false,
+    "switch_mapping_version_called": false,
+    "formal_database_connected": false,
+    "formal_data_migration_executed": false
+  },
+  "candidate_public_reports": [
+    "docs/analysis/m1-master-data/M1-G07-mapping-strategy-confirmation-pack-v0.1.md",
+    "docs/analysis/m1-master-data/M1-G07-mapping-strategy-confirmation-summary-v0.1.json",
+    "docs/analysis/m1-master-data/M1-G07-mapping-strategy-adjustment-report-v0.1.md",
+    "docs/analysis/m1-master-data/M1-G07-mapping-strategy-adjustment-summary-v0.1.json",
+    "docs/analysis/m1-master-data/M1-mapping-version-docker-rehearsal-report-v0.1.md",
+    "docs/analysis/m1-master-data/M1-mapping-version-docker-rehearsal-summary-v0.1.json",
+    "docs/analysis/m1-master-data/M1-mapping-version-docker-rehearsal-report-v0.2.md",
+    "docs/analysis/m1-master-data/M1-mapping-version-docker-rehearsal-summary-v0.2.json",
+    "docs/analysis/m1-master-data/M1-mapping-version-v0.2-controlled-import-readiness-report-v0.1.md",
+    "docs/analysis/m1-master-data/M1-mapping-version-v0.2-controlled-import-readiness-summary-v0.1.json",
+    "docs/analysis/m1-master-data/M1-mapping-version-v0.2-controlled-import-preparation-plan-v0.1.md",
+    "docs/analysis/m1-master-data/M1-mapping-version-v0.2-controlled-import-preparation-summary-v0.1.json",
+    "docs/analysis/m1-master-data/M1-mapping-version-v0.2-local-docker-dry-run-report-v0.1.md",
+    "docs/analysis/m1-master-data/M1-mapping-version-v0.2-local-docker-dry-run-summary-v0.1.json",
+    "docs/analysis/m1-master-data/M1-mapping-version-v0.2-operations-artifact-commit-report-v0.1.md",
+    "docs/analysis/m1-master-data/M1-mapping-version-v0.2-operations-artifact-commit-summary-v0.1.json"
+  ],
+  "candidate_public_experiment_files": [
+    "experiments/m1-mapping-version-import-candidate/README.md",
+    "experiments/m1-mapping-version-import-candidate/README-v0.2-controlled-import-preparation.md",
+    "experiments/m1-mapping-version-import-candidate/00_preflight_gate.sql",
+    "experiments/m1-mapping-version-import-candidate/01_controlled_import_candidate.sql",
+    "experiments/m1-mapping-version-import-candidate/03_rehearsal_assertions.sql",
+    "experiments/m1-mapping-version-import-candidate/03_rehearsal_assertions_v0.2.sql",
+    "experiments/m1-mapping-version-import-candidate/G07-mapping-strategy-overlay-v0.2.json"
+  ],
+  "never_commit": [
+    "complete stage detail v0.1",
+    "complete stage detail v0.2",
+    "private data directory",
+    "real bill directory",
+    ".codex-work/**",
+    "environment files",
+    "pgpass files",
+    "connection strings",
+    "passwords",
+    "temporary database files",
+    "private Excel detail files",
+    "candidate package body",
+    "unrelated technical-line files"
+  ],
+  "security_check": {
+    "json_parse_passed": true,
+    "local_database_connection_output_redacted": true,
+    "hard_sensitive_pattern_hits": 0,
+    "connection_string_committed": false,
+    "password_committed": false,
+    "private_data_committed": false,
+    "complete_stage_detail_committed": false
+  },
+  "validation": {
+    "npm_ci_executed": true,
+    "package_lock_modified": false,
+    "npm_run_check_no_real_data": "PASS",
+    "npm_run_lint": "PASS",
+    "npm_run_build": "PASS",
+    "npm_test": "PASS",
+    "npm_test_passed_count": 35,
+    "npm_run_smoke": "NOT_RUN",
+    "npm_run_smoke_not_run_reason": "No application code, package file, or test file was modified in this round."
+  },
+  "actions": {
+    "docker_executed": false,
+    "database_rehearsal_executed": false,
+    "formal_database_connected": false,
+    "staging_or_production_connected": false,
+    "shared_dev_or_test_connected": false,
+    "real_data_imported": false,
+    "mapping_version_activated": false,
+    "switch_mapping_version_called": false,
+    "formal_data_migration_executed": false,
+    "db_migrations_modified": false,
+    "candidate_package_modified": false,
+    "git_add_dot_used": false,
+    "stash_touched": false
+  },
+  "next_step": {
+    "may_enter_dev_test_controlled_preparation_authorization": true,
+    "requires_target_environment_credentials_and_allowed_action_scope": true,
+    "formal_database_write_still_forbidden": true,
+    "formal_data_migration_still_forbidden": true
+  }
+}

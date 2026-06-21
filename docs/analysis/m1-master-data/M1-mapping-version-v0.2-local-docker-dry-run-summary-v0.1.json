@@ -1,0 +1,179 @@
+{
+  "generated_at": "2026-06-21T18:15:28.913+08:00",
+  "status": "PASS",
+  "docker": {
+    "docker_path": "C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe",
+    "image": "postgres:16",
+    "container_name": "m1-mapping-v02-dry-run-pg16",
+    "port": 55439,
+    "started": true,
+    "stopped_and_removed": true,
+    "container_present_after_cleanup": false
+  },
+  "postgres": {
+    "version": "16.14 (Debian 16.14-1.pgdg13+1)",
+    "database": "m1_mapping_import_dry_run_v02"
+  },
+  "flyway": {
+    "migrate_passed": true,
+    "info_passed": true,
+    "validate_passed": true,
+    "second_migrate_passed": true,
+    "migration_source": "db/migrations",
+    "sql_count": 80
+  },
+  "object_counts": {
+    "views": 5,
+    "tables": 48,
+    "indexes": 117,
+    "functions": 21,
+    "foreign_keys": 84,
+    "user_triggers": 32
+  },
+  "preflight": {
+    "executed": true,
+    "exit_code": 0,
+    "no_failures": true,
+    "has_needs_local_rehearsal": false
+  },
+  "import_script": {
+    "executed": true,
+    "entered_transaction": true,
+    "exit_code": 0,
+    "expected_hard_gate_failure": false,
+    "rollback_reached_in_script": true,
+    "inserted_counts": {
+      "raw_work_id_mapping": 300,
+      "historical_volume_mapping": 52
+    }
+  },
+  "assertions": {
+    "executed": true,
+    "exit_code": 0,
+    "rollback_executed": true
+  },
+  "g06": {
+    "passed": true,
+    "effective_source_records": 2,
+    "physical_rows_after_fold": 1,
+    "audit_source_records": 2
+  },
+  "g07": {
+    "passed": true,
+    "target_standard_work_id": "161260",
+    "business_form": "audio_copyright",
+    "raw_work_ids": [
+      "161280",
+      "161284",
+      "161290"
+    ],
+    "direct_insert_conflict_verified": false,
+    "identity_rule_conflict_verified": false,
+    "unique_plan_conflict_verified": false,
+    "revised_strategy_verified": true,
+    "classification": "revised_historical_mapping_strategy_passed",
+    "requires_user_main_id_confirmation": false,
+    "requires_import_strategy_change": false,
+    "requires_forward_only_migration": false
+  },
+  "counts": {
+    "effective_mapping_snapshot_rows": 353,
+    "physical_plan_rows": 352,
+    "raw_work_id_mapping_plan_rows": 300,
+    "historical_volume_mapping_plan_rows": 52,
+    "audit_source_record_count": 353,
+    "priority_covered_rows": 41
+  },
+  "safety": {
+    "formal_database_connected": false,
+    "formal_database_written": false,
+    "real_bill_imported": false,
+    "copyright_ledger_imported": false,
+    "ops_confirmation_excel_imported": false,
+    "mapping_version_activated": false,
+    "switch_mapping_version_called": false,
+    "formal_data_migration_executed": false,
+    "db_migrations_modified": false,
+    "candidate_package_modified": false,
+    "git_add_dot_used": false,
+    "stash_touched": false
+  },
+  "allow_next_controlled_import_preparation": true,
+  "command_results": {
+    "docker_existing": {
+      "status": 0,
+      "stdout_tail": "",
+      "stderr_tail": ""
+    },
+    "docker_run": {
+      "status": 0,
+      "stdout_tail": "265bbcb0cdbb7ee107fae66613feffb1c0fb65cecde3e557bf78d4929843492d\n",
+      "stderr_tail": ""
+    },
+    "version": {
+      "status": 0,
+      "stdout_tail": "16.14 (Debian 16.14-1.pgdg13+1)\n",
+      "stderr_tail": ""
+    },
+    "create_roles": {
+      "status": 0,
+      "stdout_tail": "DO\n",
+      "stderr_tail": ""
+    },
+    "create_db": {
+      "status": 0,
+      "stdout_tail": "CREATE DATABASE\n",
+      "stderr_tail": ""
+    },
+    "flyway_migrate": {
+      "status": 0,
+      "stdout_tail": "Migrating schema \"flyway_history\" to version \"0060.120 - function guard version status\"\nMigrating schema \"flyway_history\" to version \"0060.130 - function guard batch status\"\nMigrating schema \"flyway_history\" to version \"0060.140 - function assert active versions\"\nMigrating schema \"flyway_history\" to version \"0060.150 - function validate work mapping identity\"\nMigrating schema \"flyway_history\" to version \"0060.160 - function enforce mapping table mutex\"\nMigrating schema \"flyway_history\" to version \"0060.170 - function reject income fact mutation\"\nMigrating schema \"flyway_history\" to version \"0060.180 - function validate income fact insert\"\nMigrating schema \"flyway_history\" to version \"0060.190 - function guard snapshot child\"\nMigrating schema \"flyway_history\" to version \"0060.200 - function validate classification parent\"\nMigrating schema \"flyway_history\" to version \"0060.210 - function validate basic assignment release\"\nMigrating schema \"flyway_history\" to version \"0060.220 - function validate projection sources\"\nMigrating schema \"flyway_history\" to version \"0060.230 - view v current income\"\nMigrating schema \"flyway_history\" to version \"0060.240 - view v basic info gap\"\nMigrating schema \"flyway_history\" to version \"0060.250 - view v basic info m2 completeness\"\nMigrating schema \"flyway_history\" to version \"0060.260 - view v bill cutoff months\"\nMigrating schema \"flyway_history\" to version \"0060.270 - view v income projection monthly\"\nMigrating schema \"flyway_history\" to version \"0060.280 - permission grant minimum permissions\"\nMigrating schema \"flyway_history\" to version \"0060.290 - harden default privileges\"\nSuccessfully applied 80 migrations to schema \"flyway_history\", now at version v0060.290 (execution time 00:01.248s)\n",
+      "stderr_tail": ""
+    },
+    "flyway_info": {
+      "status": 0,
+      "stdout_tail": "| Versioned | 0060.130 | function guard batch status                | SQL    | 2026-06-21 18:15:42 | Success | No       |\n| Versioned | 0060.140 | function assert active versions            | SQL    | 2026-06-21 18:15:42 | Success | No       |\n| Versioned | 0060.150 | function validate work mapping identity    | SQL    | 2026-06-21 18:15:43 | Success | No       |\n| Versioned | 0060.160 | function enforce mapping table mutex       | SQL    | 2026-06-21 18:15:43 | Success | No       |\n| Versioned | 0060.170 | function reject income fact mutation       | SQL    | 2026-06-21 18:15:43 | Success | No       |\n| Versioned | 0060.180 | function validate income fact insert       | SQL    | 2026-06-21 18:15:43 | Success | No       |\n| Versioned | 0060.190 | function guard snapshot child              | SQL    | 2026-06-21 18:15:43 | Success | No       |\n| Versioned | 0060.200 | function validate classification parent    | SQL    | 2026-06-21 18:15:43 | Success | No       |\n| Versioned | 0060.210 | function validate basic assignment release | SQL    | 2026-06-21 18:15:43 | Success | No       |\n| Versioned | 0060.220 | function validate projection sources       | SQL    | 2026-06-21 18:15:43 | Success | No       |\n| Versioned | 0060.230 | view v current income                      | SQL    | 2026-06-21 18:15:43 | Success | No       |\n| Versioned | 0060.240 | view v basic info gap                      | SQL    | 2026-06-21 18:15:43 | Success | No       |\n| Versioned | 0060.250 | view v basic info m2 completeness          | SQL    | 2026-06-21 18:15:43 | Success | No       |\n| Versioned | 0060.260 | view v bill cutoff months                  | SQL    | 2026-06-21 18:15:43 | Success | No       |\n| Versioned | 0060.270 | view v income projection monthly           | SQL    | 2026-06-21 18:15:43 | Success | No       |\n| Versioned | 0060.280 | permission grant minimum permissions       | SQL    | 2026-06-21 18:15:43 | Success | No       |\n| Versioned | 0060.290 | harden default privileges                  | SQL    | 2026-06-21 18:15:43 | Success | No       |\n+-----------+----------+--------------------------------------------+--------+---------------------+---------+----------+\n\n",
+      "stderr_tail": ""
+    },
+    "flyway_validate": {
+      "status": 0,
+        "stdout_tail": "A more recent version of Flyway is available. Find out more about Flyway 12.9.0 at https://rd.gt/3rXiSlV\n\nFlyway OSS Edition 10.21.0 by Redgate\n\nSee release notes here: https://rd.gt/416ObMi\nDatabase: [local Docker ephemeral JDBC URL redacted] (PostgreSQL 16.14)\nSuccessfully validated 81 migrations (execution time 00:00.043s)\n",
+      "stderr_tail": ""
+    },
+    "flyway_second_migrate": {
+      "status": 0,
+        "stdout_tail": "A more recent version of Flyway is available. Find out more about Flyway 12.9.0 at https://rd.gt/3rXiSlV\n\nFlyway OSS Edition 10.21.0 by Redgate\n\nSee release notes here: https://rd.gt/416ObMi\nDatabase: [local Docker ephemeral JDBC URL redacted] (PostgreSQL 16.14)\nSuccessfully validated 81 migrations (execution time 00:00.046s)\nCurrent version of schema \"flyway_history\": 0060.290\nSchema \"flyway_history\" is up to date. No migration necessary.\n",
+      "stderr_tail": ""
+    },
+    "object_counts": {
+      "status": 0,
+      "stdout_tail": "{\"views\": 5, \"tables\": 48, \"indexes\": 117, \"functions\": 21, \"foreign_keys\": 84, \"user_triggers\": 32}\n",
+      "stderr_tail": ""
+    },
+    "preflight": {
+      "status": 0,
+      "stdout_tail": "CREATE TABLE\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\n                 gate_id                 | status |                                             detail                                              \n-----------------------------------------+--------+-------------------------------------------------------------------------------------------------\n COUNT_PHYSICAL_ROWS                     | PASS   | expected 352, actual 352\n HISTORICAL_TABLE_IDENTITY_COMPATIBILITY | PASS   | historical_volume_mapping rows incompatible with derive_standard_work_id/derive_business_form=0\n HISTORICAL_TABLE_UNIQUE_COMPATIBILITY   | PASS   | historical_raw_work_id duplicate groups=0\n NO_RAW_TARGET_CONFLICT                  | PASS   | same raw_work_id mapped to multiple target_standard_work_id count=0\n RAW_TABLE_IDENTITY_COMPATIBILITY        | PASS   | raw_work_id_mapping rows incompatible with derive_standard_work_id/derive_business_form=0\n RAW_TABLE_UNIQUE_COMPATIBILITY          | PASS   | raw_work_id_mapping target/form duplicate groups=0\n VALID_BUSINESS_FORM                     | PASS   | invalid business_form rows=0\n(7 �м�¼)\n\n",
+      "stderr_tail": ""
+    },
+    "import_run": {
+      "status": 0,
+      "stdout_tail": "SET\nSET\nBEGIN\nSELECT 352\nDO\n raw_work_id_mapping_inserted | historical_volume_mapping_inserted | rehearsal_mapping_version_id \n------------------------------+------------------------------------+------------------------------\n                          300 |                                 52 |                            1\n(1 �м�¼)\n\nROLLBACK\n",
+      "stderr_tail": ""
+    },
+    "assertions": {
+      "status": 0,
+      "stdout_tail": "SET\nSET\nBEGIN\nSELECT 352\nSELECT 353\nCREATE TABLE\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\n            gate_id             | status |                                                                            detail                                                                            \n--------------------------------+--------+--------------------------------------------------------------------------------------------------------------------------------------------------------------\n G06_Y167972_FOLD               | PASS   | effective_source_records=2, physical_rows=1, audit_source_records=2, has_exception=t, source_task_ids=MERGE::167972\\n169792; MERGE::167972\\n167996\n G07_RAW_IDENTITY_COMPATIBILITY | PASS   | raw_work_id_mapping identity incompatible rows=0\n G07_RAW_UNIQUE_COMPATIBILITY   | PASS   | raw_work_id_mapping duplicate target/form groups=0\n G07_REVISED_STRATEGY           | PASS   | raw_rows=0, historical_rows=3, audit_source_records=3, general_rule_rows=0, source_task_ids=IMPORT-BLOCK::161280; IMPORT-BLOCK::161284; IMPORT-BLOCK::161290\n(4 �м�¼)\n\nROLLBACK\n",
+      "stderr_tail": ""
+    },
+    "docker_stop": {
+      "status": 0,
+      "stdout_tail": "m1-mapping-v02-dry-run-pg16\n",
+      "stderr_tail": ""
+    },
+    "docker_ps_after": {
+      "status": 0,
+      "stdout_tail": "",
+      "stderr_tail": ""
+    }
+  }
+}
