@@ -154,7 +154,7 @@
   "source_snapshots": {
     "bill": [
       {
-        "path": "<repo>/data/real-bills\\渠道实销汇总 -修改版.xlsx",
+        "path": "<repo>/data/real-bills/[private-real-bill-workbook].xlsx",
         "file_id": "B001",
         "size": 7792878,
         "mtime_ns": 1781946590928059000,
