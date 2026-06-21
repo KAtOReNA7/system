@@ -14,7 +14,10 @@ const FORBIDDEN_WRITE_CONTROL_WORDS = [
   "应用",
   "迁移",
   "写入",
-  "提交"
+  "提交",
+  "导出",
+  "创建评估",
+  "formal evaluation"
 ];
 
 const SENSITIVE_OUTPUT_PATTERNS = [
@@ -89,8 +92,15 @@ async function openPage(path, options = {}) {
     viewport: options.viewport ?? { width: 1280, height: 720 }
   });
   const page = await context.newPage();
+  const requestedUrls = [];
+  if (options.captureRequests) {
+    page.on("request", (request) => requestedUrls.push(request.url()));
+  }
+  for (const routeConfig of options.routes ?? []) {
+    await page.route(routeConfig.url, routeConfig.handler);
+  }
   await page.goto(`${baseUrl}${path}`, { waitUntil: "load" });
-  return { context, page };
+  return { context, page, requestedUrls };
 }
 
 before(async () => {
@@ -200,6 +210,210 @@ test("admin mobile fixture tables avoid page overflow and expose horizontal scro
         `${pageName} table should be horizontally scrollable inside its container`
       );
       assert.equal(metrics.tableOverflowX, "auto");
+      await assertNoForbiddenWriteControls(page);
+    } finally {
+      await context.close();
+    }
+  }
+});
+
+test("M2 old-product fixture admin pages render from M2 APIs", async () => {
+  const cases = [
+    {
+      path: "/admin#m2-overview",
+      awaitText: "eligible old products",
+      expected: ["老品评估总览", "fixture-only", "synthetic marker", "dataset.mode", "2026-04", "2026-05 excluded", "Formal old-product evaluation is blocked"],
+      endpoint: "/api/m2/old-products/evaluations/overview"
+    },
+    {
+      path: "/admin#m2-list",
+      awaitText: "SYN-WORK-0001",
+      expected: ["老品评估列表", "SYN-WORK-0001", "FORECAST TOTAL", "READINESS", "fixture-only"],
+      endpoint: "/api/m2/old-products/evaluations"
+    },
+    {
+      path: "/admin#m2-detail:SYN-WORK-0001",
+      awaitText: "remaining copyright-period forecast",
+      expected: ["老品评估详情", "SYN-WORK-0001", "forecast scenarios", "input snapshot", "algorithm version"],
+      endpoint: "/api/m2/old-products/evaluations/SYN-WORK-0001"
+    },
+    {
+      path: "/admin#m2-gaps",
+      awaitText: "missing classification",
+      expected: ["老品数据缺口", "missing classification", "missing copyright end", "SUGGESTED OWNER/ACTION"],
+      endpoint: "/api/m2/old-products/readiness-gaps"
+    },
+    {
+      path: "/admin#m2-backtests",
+      awaitText: "fixture-old-product-v1",
+      expected: ["回测与算法版本", "fixture-old-product-v1", "SYN-BACKTEST-0001", "covered", "missed", "over", "under"],
+      endpoint: "/api/m2/old-products/backtests"
+    }
+  ];
+
+  for (const testCase of cases) {
+    const { context, page, requestedUrls } = await openPage(testCase.path, {
+      captureRequests: true
+    });
+    try {
+      await page.waitForFunction(
+        (needle) => document.body.innerText.includes(needle),
+        testCase.awaitText
+      );
+      const text = await readVisibleText(page);
+      for (const expected of testCase.expected) {
+        assert.match(text, new RegExp(expected.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+      }
+      assert.ok(
+        requestedUrls.some((url) => url.includes(testCase.endpoint)),
+        `${testCase.path} should request ${testCase.endpoint}`
+      );
+      assertNoSensitiveOutput(text);
+      await assertNoForbiddenWriteControls(page);
+    } finally {
+      await context.close();
+    }
+  }
+});
+
+test("M2 old-product admin renders blocked empty error and not-found states safely", async () => {
+  const blocked = await openPage("/admin#m2-overview", {
+    routes: [
+      {
+        url: "**/api/m2/old-products/evaluations/overview",
+        handler: (route) =>
+          route.fulfill({
+            status: 423,
+            contentType: "application/json",
+            body: JSON.stringify({
+              error: {
+                code: "formal_data_blocked",
+                message: "Formal M2 old-product evaluation is blocked until M1 formal data readiness is complete.",
+                requestId: "SYN-REQUEST-BLOCKED"
+              }
+            })
+          })
+      }
+    ]
+  });
+  try {
+    await blocked.page.getByText("已阻断 / blocked").waitFor();
+    const text = await readVisibleText(blocked.page);
+    assert.match(text, /formal_data_blocked/);
+    assert.match(text, /SYN-REQUEST-BLOCKED/);
+    assertNoSensitiveOutput(text);
+    await assertNoForbiddenWriteControls(blocked.page);
+  } finally {
+    await blocked.context.close();
+  }
+
+  const empty = await openPage("/admin#m2-list", {
+    routes: [
+      {
+        url: "**/api/m2/old-products/evaluations?*",
+        handler: (route) =>
+          route.fulfill({
+            status: 200,
+            contentType: "application/json",
+            body: JSON.stringify({
+              dataset: {
+                mode: "fixture",
+                source: "m2-b-static-synthetic-fixture",
+                formalDataAuthorized: false,
+                formalEvaluationAllowed: false,
+                syntheticValue: true,
+                cutoffMonth: "2026-04",
+                incompleteMonths: ["2026-05"]
+              },
+              items: [],
+              pagination: { page: 1, pageSize: 20, total: 0 }
+            })
+          })
+      }
+    ]
+  });
+  try {
+    await empty.page.getByText("空状态 / empty").waitFor();
+    const text = await readVisibleText(empty.page);
+    assert.match(text, /暂无符合条件的老品评估/);
+    assertNoSensitiveOutput(text);
+  } finally {
+    await empty.context.close();
+  }
+
+  const error = await openPage("/admin#m2-backtests", {
+    routes: [
+      {
+        url: "**/api/m2/old-products/backtests*",
+        handler: (route) =>
+          route.fulfill({
+            status: 500,
+            contentType: "application/json",
+            body: JSON.stringify({
+              error: {
+                code: "internal_error",
+                message: "Internal server error",
+                requestId: "SYN-REQUEST-ERROR"
+              }
+            })
+          })
+      }
+    ]
+  });
+  try {
+    await error.page.getByText("错误 / error").waitFor();
+    const text = await readVisibleText(error.page);
+    assert.match(text, /internal_error/);
+    assert.match(text, /SYN-REQUEST-ERROR/);
+    assertNoSensitiveOutput(text);
+  } finally {
+    await error.context.close();
+  }
+
+  const notFound = await openPage("/admin#m2-detail:SYN-WORK-9999");
+  try {
+    await notFound.page.getByText("未找到 / not found").waitFor();
+    const text = await readVisibleText(notFound.page);
+    assert.match(text, /老品评估详情未找到/);
+    assert.match(text, /not_found/);
+    assertNoSensitiveOutput(text);
+  } finally {
+    await notFound.context.close();
+  }
+});
+
+test("M2 old-product mobile tables remain contained and scrollable", async () => {
+  const tablePages = ["m2-list", "m2-gaps", "m2-backtests"];
+
+  for (const pageName of tablePages) {
+    const { context, page } = await openPage(`/admin#${pageName}`, {
+      viewport: { width: 390, height: 780 }
+    });
+    try {
+      await page.getByText("小屏幕下可横向滚动查看完整列").first().waitFor();
+      const metrics = await page.evaluate(() => {
+        const activePage = document.querySelector("[data-page]:not(.is-hidden)");
+        const tableWrap = activePage?.querySelector(".table-wrap");
+        return {
+          pageScrollWidth: document.documentElement.scrollWidth,
+          pageClientWidth: document.documentElement.clientWidth,
+          tableClientWidth: tableWrap?.clientWidth ?? 0,
+          tableScrollWidth: tableWrap?.scrollWidth ?? 0,
+          tableOverflowX: tableWrap ? getComputedStyle(tableWrap).overflowX : ""
+        };
+      });
+
+      assert.ok(
+        metrics.pageScrollWidth <= metrics.pageClientWidth,
+        `${pageName} should not cause page-level horizontal overflow`
+      );
+      assert.ok(
+        metrics.tableScrollWidth >= metrics.tableClientWidth,
+        `${pageName} table should remain contained inside its scroll container`
+      );
+      assert.equal(metrics.tableOverflowX, "auto");
+      const text = await readVisibleText(page);
+      assertNoSensitiveOutput(text);
       await assertNoForbiddenWriteControls(page);
     } finally {
       await context.close();

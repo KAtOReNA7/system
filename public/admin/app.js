@@ -1,7 +1,27 @@
-const PAGE_KEYS = ["system", "works", "mapping", "jobs"];
+const PAGE_KEYS = [
+  "system",
+  "works",
+  "mapping",
+  "jobs",
+  "m2-overview",
+  "m2-list",
+  "m2-detail",
+  "m2-gaps",
+  "m2-backtests"
+];
 const state = {
   activePage: "system",
-  fixtureMode: new URLSearchParams(window.location.search).get("fixture") === "1"
+  fixtureMode: new URLSearchParams(window.location.search).get("fixture") === "1",
+  m2SelectedWorkId: "SYN-WORK-0001",
+  m2ListFilters: {
+    query: "",
+    rating: "",
+    lifecycle: "",
+    readiness: "",
+    sort: "updatedAt.desc",
+    page: 1,
+    pageSize: 20
+  }
 };
 
 const fixture = {
@@ -90,6 +110,7 @@ const CODE_LABELS = {
   schema_initialized: "结构已初始化",
   database_not_configured: "数据库未配置",
   database_unavailable: "数据库不可用",
+  formal_data_blocked: "正式评估已阻断",
   building: "构建中",
   active: "已启用",
   pending: "等待中",
@@ -108,7 +129,8 @@ const PAGE_STATE_LABELS = {
   degraded: "降级",
   empty: "空状态",
   error: "错误",
-  "not found": "未找到"
+  "not found": "未找到",
+  blocked: "已阻断"
 };
 
 const PAGE_STATE_DESCRIPTIONS = {
@@ -117,7 +139,8 @@ const PAGE_STATE_DESCRIPTIONS = {
   degraded: "依赖未满足或不可用；页面仍保持只读可访问。",
   empty: "请求成功但暂无数据；空库时这是正常状态。",
   error: "请求失败；请根据技术码排查。",
-  "not found": "目标记录不存在，未产生任何写入。"
+  "not found": "目标记录不存在，未产生任何写入。",
+  blocked: "请求被业务边界阻断；页面保持只读。"
 };
 
 const ERROR_MESSAGES = {
@@ -125,6 +148,7 @@ const ERROR_MESSAGES = {
   not_found: "目标记录不存在。",
   database_not_configured: "数据库未配置。当前是开发环境降级状态，不等同于空库。",
   database_unavailable: "数据库不可用。请检查本地或测试数据库是否启动并完成迁移。",
+  formal_data_blocked: "正式老品评估仍被阻断，需等待 M1 正式数据 readiness 完成。",
   internal_error: "服务处理请求时发生异常。"
 };
 
@@ -210,6 +234,123 @@ async function getJson(path, fixtureValue) {
     throw error;
   }
   return body;
+}
+
+async function getM2Json(path) {
+  const response = await fetch(path, { headers: { accept: "application/json" } });
+  const body = await response.json();
+  if (!response.ok) {
+    const error = new Error(body?.error?.message || "M2 request failed");
+    error.statusCode = response.status;
+    error.payload = body;
+    throw error;
+  }
+  return body;
+}
+
+function buildQuery(params) {
+  const search = new URLSearchParams();
+  for (const [key, value] of Object.entries(params)) {
+    if (value !== null && value !== undefined && value !== "") {
+      search.set(key, String(value));
+    }
+  }
+  return search.toString();
+}
+
+function renderM2DatasetPanel(dataset) {
+  const source = dataset?.source || "m2-b-static-synthetic-fixture";
+  return `
+    <section class="m2-safety-panel" data-testid="m2-safety-panel">
+      <div class="meta-row">
+        <span class="badge warn">fixture-only</span>
+        <span class="badge ok">synthetic marker</span>
+        <span class="badge warn">formal blocked</span>
+      </div>
+      <div class="cards three compact-cards">
+        <article class="card">
+          <h3>数据集</h3>
+          ${renderMetric("dataset.mode", dataset?.mode || "fixture")}
+          ${renderMetric("source", source)}
+          ${renderMetric("formalDataAuthorized", dataset?.formalDataAuthorized ?? false)}
+          ${renderMetric("formalEvaluationAllowed", dataset?.formalEvaluationAllowed ?? false)}
+        </article>
+        <article class="card">
+          <h3>月份边界</h3>
+          ${renderMetric("最新完整月", dataset?.cutoffMonth || "2026-04")}
+          ${renderMetric("不完整月", (dataset?.incompleteMonths || ["2026-05"]).join(", "))}
+          <p class="pagination-note">2026-05 excluded from evaluation cutoff.</p>
+        </article>
+        <article class="card">
+          <h3>正式评估状态</h3>
+          <p class="blocked-copy">Formal old-product evaluation is blocked until M1 formal data readiness is complete.</p>
+          <p class="pagination-note">当前页面不得用于正式业务决策。</p>
+        </article>
+      </div>
+    </section>
+  `;
+}
+
+function renderM2Error(error, options = {}) {
+  const payload = error.payload || {};
+  const apiError = payload.error || {};
+  const code = apiError.code || "request_failed";
+  const message = ERROR_MESSAGES[code] || "老品评估信息暂不可读取。";
+  const title = options.title || (code === "formal_data_blocked" ? "正式评估已阻断" : "老品评估状态暂不可用");
+  return `
+    <div class="error-state ${code === "formal_data_blocked" ? "blocked-state" : ""}">
+      <h3>${escapeHtml(title)}</h3>
+      <p>${escapeHtml(message)}</p>
+      <p class="technical-code">技术码：<code>${escapeHtml(code)}</code></p>
+      ${apiError.requestId ? `<p class="pagination-note">requestId: ${escapeHtml(apiError.requestId)}</p>` : ""}
+    </div>
+  `;
+}
+
+function setM2ErrorPageState(page, error) {
+  const code = error.payload?.error?.code;
+  if (code === "formal_data_blocked") {
+    setPageState(page, "blocked");
+    return;
+  }
+  if (error.statusCode === 404) {
+    setPageState(page, "not found");
+    return;
+  }
+  if (code === "database_not_configured" || code === "database_unavailable") {
+    setPageState(page, "degraded");
+    return;
+  }
+  setPageState(page, "error");
+}
+
+function renderDistribution(title, distribution = {}) {
+  return `
+    <article class="card">
+      <h3>${escapeHtml(title)}</h3>
+      <div class="distribution-grid">
+        ${Object.entries(distribution).map(([key, value]) => `
+          <div>
+            <span>${escapeHtml(key)}</span>
+            <strong>${escapeHtml(value)}</strong>
+          </div>
+        `).join("")}
+      </div>
+    </article>
+  `;
+}
+
+function renderM2LifecycleBadge(value) {
+  return `<span class="badge ok">${escapeHtml(value)}</span>`;
+}
+
+function renderM2RatingBadge(value) {
+  const tone = ["S+", "S", "A"].includes(value) ? "ok" : ["D", "E"].includes(value) ? "danger" : "warn";
+  return `<span class="badge ${tone}">${escapeHtml(value)}</span>`;
+}
+
+function renderM2ReadinessBadge(value) {
+  return `<span class="badge ${value === "ready" ? "ok" : "warn"}">${escapeHtml(value)}</span>`;
 }
 
 function renderMetric(label, value, options = {}) {
@@ -592,13 +733,474 @@ async function renderJobs() {
   }
 }
 
+async function renderM2Overview() {
+  setPageState("m2-overview", "loading");
+  document.querySelector("#m2OverviewContent").innerHTML = '<div class="loading">加载老品评估总览…</div>';
+  try {
+    const data = await getM2Json("/api/m2/old-products/evaluations/overview");
+    setPageState("m2-overview", "success");
+    const highRiskCount = data.distribution?.riskSeverity?.high ?? 0;
+    document.querySelector("#m2OverviewContent").innerHTML = `
+      ${renderM2DatasetPanel(data.dataset)}
+      <div class="cards three">
+        <article class="card">
+          <h3>评估规模</h3>
+          ${renderMetric("eligible old products", data.summary.eligibleWorks)}
+          ${renderMetric("evaluated old products", data.summary.evaluatedWorks)}
+          ${renderMetric("blocked old products", data.summary.blockedWorks)}
+          ${renderMetric("works needing readiness action", data.summary.blockedWorks)}
+        </article>
+        <article class="card">
+          <h3>结果状态</h3>
+          ${renderMetric("current results", data.summary.currentResults)}
+          ${renderMetric("historical results", data.summary.historicalResults)}
+          ${renderMetric("invalidated results", data.summary.invalidatedResults)}
+          ${renderMetric("high-risk count", highRiskCount)}
+        </article>
+        <article class="card">
+          <h3>正式边界</h3>
+          ${renderMetric("latest confirmed complete month", data.summary.latestCutoffMonth)}
+          ${renderMetric("incomplete month", data.dataset.incompleteMonths.join(", "))}
+          <p class="blocked-copy">Formal old-product evaluation is blocked until M1 formal data readiness is complete.</p>
+        </article>
+      </div>
+      <div class="cards three">
+        ${renderDistribution("rating distribution", data.distribution.rating)}
+        ${renderDistribution("lifecycle distribution", data.distribution.lifecycle)}
+        ${renderDistribution("risk distribution", data.distribution.riskSeverity)}
+      </div>
+      <div class="context-note">
+        <strong>Notices</strong>
+        <ul class="explain-list">
+          ${data.notices.map((notice) => `<li>${escapeHtml(notice.code)}：${escapeHtml(notice.message)}</li>`).join("")}
+        </ul>
+      </div>
+    `;
+  } catch (error) {
+    setM2ErrorPageState("m2-overview", error);
+    document.querySelector("#m2OverviewContent").innerHTML = renderM2Error(error);
+  }
+}
+
+async function renderM2List() {
+  setPageState("m2-list", "loading");
+  document.querySelector("#m2ListContent").innerHTML = '<div class="loading">加载老品评估列表…</div>';
+  const query = buildQuery(state.m2ListFilters);
+  try {
+    const data = await getM2Json(`/api/m2/old-products/evaluations?${query}`);
+    if (!data.items.length) {
+      setPageState("m2-list", "empty");
+      document.querySelector("#m2ListContent").innerHTML = `
+        ${renderM2DatasetPanel(data.dataset)}
+        ${renderM2ListFilters()}
+        ${renderEmpty("暂无符合条件的老品评估", "请求成功但当前筛选条件没有匹配记录。", [
+          "这是正常 empty 状态。",
+          "页面只读，不会创建评估任务。"
+        ])}
+      `;
+      attachM2ListFilterHandlers();
+      return;
+    }
+
+    setPageState("m2-list", "success");
+    document.querySelector("#m2ListContent").innerHTML = `
+      ${renderM2DatasetPanel(data.dataset)}
+      ${renderM2ListFilters()}
+      <div class="table-wrap">
+        ${renderTableHint()}
+        <table>
+          <thead>
+            <tr>
+              <th>standard work ID</th>
+              <th>work name</th>
+              <th>author</th>
+              <th>classification path</th>
+              <th>business forms</th>
+              <th>cutoff month</th>
+              <th>lifecycle</th>
+              <th>rating</th>
+              <th>forecast total</th>
+              <th>risk level</th>
+              <th>primary suggestion</th>
+              <th>result status</th>
+              <th>readiness</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${data.items.map((item) => `
+              <tr>
+                <td><a href="#m2-detail:${encodeURIComponent(item.standardWorkId)}">${escapeHtml(item.standardWorkId)}</a></td>
+                <td>${escapeHtml(item.workName)}</td>
+                <td>${escapeHtml(item.authorName)}</td>
+                <td>${escapeHtml(item.classificationPath.join(" / "))}</td>
+                <td>${escapeHtml(item.businessForms.join(", "))}</td>
+                <td>${escapeHtml(item.cutoffMonth)}</td>
+                <td>${renderM2LifecycleBadge(item.lifecycle)}</td>
+                <td>${renderM2RatingBadge(item.rating)}</td>
+                <td>${escapeHtml(item.forecastTotal)}</td>
+                <td>${escapeHtml(item.riskLevel)}</td>
+                <td>${escapeHtml(item.primarySuggestion)}</td>
+                <td>${escapeHtml(item.resultStatus)}</td>
+                <td>${renderM2ReadinessBadge(item.readiness)}</td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+        ${renderPagination(data.pagination)}
+      </div>
+    `;
+    attachM2ListFilterHandlers();
+  } catch (error) {
+    setM2ErrorPageState("m2-list", error);
+    document.querySelector("#m2ListContent").innerHTML = renderM2Error(error);
+  }
+}
+
+function renderM2ListFilters() {
+  const filters = state.m2ListFilters;
+  return `
+    <form class="filter-panel" id="m2ListFilters">
+      <label>Search
+        <input name="query" value="${escapeHtml(filters.query)}" placeholder="SYN-WORK">
+      </label>
+      <label>Rating
+        <select name="rating">
+          ${option("", "全部", filters.rating)}
+          ${["S+", "S", "A", "B", "C", "D", "E"].map((value) => option(value, value, filters.rating)).join("")}
+        </select>
+      </label>
+      <label>Lifecycle
+        <select name="lifecycle">
+          ${option("", "全部", filters.lifecycle)}
+          ${["growth", "stable", "declining", "long_tail", "inactive", "rebound", "insufficient_history"].map((value) => option(value, value, filters.lifecycle)).join("")}
+        </select>
+      </label>
+      <label>Readiness
+        <select name="readiness">
+          ${option("", "全部", filters.readiness)}
+          ${["ready", "blocked"].map((value) => option(value, value, filters.readiness)).join("")}
+        </select>
+      </label>
+      <label>Sort
+        <select name="sort">
+          ${["forecastTotal.desc", "forecastTotal.asc", "last12MonthSales.desc", "rating.asc", "riskSeverity.desc", "updatedAt.desc"].map((value) => option(value, value, filters.sort)).join("")}
+        </select>
+      </label>
+      <label>Page
+        <input name="page" inputmode="numeric" value="${escapeHtml(filters.page)}">
+      </label>
+      <label>Page size
+        <input name="pageSize" inputmode="numeric" value="${escapeHtml(filters.pageSize)}">
+      </label>
+      <button type="submit" class="secondary">查询</button>
+    </form>
+  `;
+}
+
+function option(value, label, selected) {
+  return `<option value="${escapeHtml(value)}" ${value === selected ? "selected" : ""}>${escapeHtml(label)}</option>`;
+}
+
+function attachM2ListFilterHandlers() {
+  const form = document.querySelector("#m2ListFilters");
+  if (!form) {
+    return;
+  }
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const formData = new FormData(form);
+    state.m2ListFilters = {
+      query: String(formData.get("query") || ""),
+      rating: String(formData.get("rating") || ""),
+      lifecycle: String(formData.get("lifecycle") || ""),
+      readiness: String(formData.get("readiness") || ""),
+      sort: String(formData.get("sort") || "updatedAt.desc"),
+      page: String(formData.get("page") || "1"),
+      pageSize: String(formData.get("pageSize") || "20")
+    };
+    renderM2List();
+  });
+}
+
+async function renderM2Detail() {
+  setPageState("m2-detail", "loading");
+  document.querySelector("#m2DetailContent").innerHTML = '<div class="loading">加载老品评估详情…</div>';
+  try {
+    const data = await getM2Json(`/api/m2/old-products/evaluations/${encodeURIComponent(state.m2SelectedWorkId)}`);
+    setPageState("m2-detail", "success");
+    const baseScenario = data.forecast.scenarios.base;
+    const optimisticScenario = data.forecast.scenarios.optimistic;
+    const pessimisticScenario = data.forecast.scenarios.pessimistic;
+    document.querySelector("#m2DetailContent").innerHTML = `
+      ${renderM2DatasetPanel(data.dataset)}
+      <div class="cards three">
+        <article class="card">
+          <h3>核心结论</h3>
+          ${renderMetric("rating", data.rating.value)}
+          ${renderMetric("lifecycle", data.lifecycle.type)}
+          ${renderMetric("historical cumulative sales", data.incomeSummary.historicalTotal)}
+          ${renderMetric("remaining copyright-period forecast", baseScenario.forecastTotal)}
+          ${renderMetric("remaining copyright months", baseScenario.remainingMonths)}
+          ${renderMetric("primary suggestion", data.suggestions[0]?.suggestionCode || "未提供")}
+        </article>
+        <article class="card">
+          <h3>作品身份</h3>
+          ${renderMetric("standardWorkId", data.work.standardWorkId)}
+          ${renderMetric("workName", data.work.workName)}
+          ${renderMetric("authorName", data.work.authorName)}
+          ${renderMetric("business forms", data.work.businessForms.join(", "))}
+          ${renderMetric("classification", data.work.classificationPath.join(" / "))}
+        </article>
+        <article class="card">
+          <h3>readiness</h3>
+          ${renderMetric("status", data.readiness.status)}
+          ${renderMetric("gap count", data.readiness.gaps.length)}
+          ${renderMetric("algorithm version", data.algorithmVersion.versionKey)}
+          ${renderMetric("backtest batch", data.backtestSummary.latestBatchId)}
+        </article>
+      </div>
+      <div class="cards three">
+        <article class="card">
+          <h3>income summary</h3>
+          ${renderMetric("last12MonthSales", data.incomeSummary.last12MonthSales)}
+          ${renderMetric("last24MonthSales", data.incomeSummary.last24MonthSales)}
+          ${renderMetric("firstPositiveMonth", data.incomeSummary.firstPositiveMonth)}
+          ${renderMetric("latestIncomeMonth", data.incomeSummary.latestIncomeMonth)}
+        </article>
+        <article class="card">
+          <h3>forecast scenarios</h3>
+          ${renderMetric("base", baseScenario.forecastTotal)}
+          ${renderMetric("optimistic", optimisticScenario.forecastTotal)}
+          ${renderMetric("pessimistic", pessimisticScenario.forecastTotal)}
+        </article>
+        <article class="card">
+          <h3>lifecycle rationale</h3>
+          <p>${escapeHtml(data.lifecycle.rationale)}</p>
+          <p class="pagination-note">rating rationale: ${escapeHtml(data.rating.basis)}</p>
+        </article>
+      </div>
+      <div class="cards three">
+        <article class="card">
+          <h3>risks</h3>
+          <ul class="explain-list">
+            ${data.risks.map((risk) => `<li>${escapeHtml(risk.riskCode)} · ${escapeHtml(risk.severity)} · ${escapeHtml(risk.mitigation)}</li>`).join("")}
+          </ul>
+        </article>
+        <article class="card">
+          <h3>suggestions</h3>
+          <ul class="explain-list">
+            ${data.suggestions.map((item) => `<li>${escapeHtml(item.suggestionCode)} · ${escapeHtml(item.title)}</li>`).join("")}
+          </ul>
+        </article>
+        <article class="card">
+          <h3>input snapshot</h3>
+          ${renderMetric("mappingVersion", data.inputSnapshot.mappingVersion)}
+          ${renderMetric("basicInfoVersion", data.inputSnapshot.basicInfoVersion)}
+          ${renderMetric("excludedMonths", data.inputSnapshot.excludedMonths.join(", "))}
+        </article>
+      </div>
+    `;
+  } catch (error) {
+    setM2ErrorPageState("m2-detail", error);
+    document.querySelector("#m2DetailContent").innerHTML = renderM2Error(error, {
+      title: error.statusCode === 404 ? "老品评估详情未找到" : undefined
+    });
+  }
+}
+
+async function renderM2Gaps() {
+  setPageState("m2-gaps", "loading");
+  document.querySelector("#m2GapsContent").innerHTML = '<div class="loading">加载老品数据缺口…</div>';
+  try {
+    const data = await getM2Json("/api/m2/old-products/readiness-gaps?page=1&pageSize=100");
+    if (!data.items.length) {
+      setPageState("m2-gaps", "empty");
+      document.querySelector("#m2GapsContent").innerHTML = `
+        ${renderM2DatasetPanel(data.dataset)}
+        ${renderEmpty("暂无 readiness gaps", "请求成功但当前没有缺口记录。", [
+          "这只表示 fixture 当前筛选结果为空。",
+          "页面不会创建任何补全任务。"
+        ])}
+      `;
+      return;
+    }
+    setPageState("m2-gaps", "success");
+    document.querySelector("#m2GapsContent").innerHTML = `
+      ${renderM2DatasetPanel(data.dataset)}
+      <div class="table-wrap">
+        ${renderTableHint()}
+        <table>
+          <thead>
+            <tr>
+              <th>standard work ID</th>
+              <th>work name</th>
+              <th>missing income</th>
+              <th>mapping status</th>
+              <th>missing name</th>
+              <th>missing author</th>
+              <th>missing classification</th>
+              <th>missing tags</th>
+              <th>missing copyright start</th>
+              <th>missing copyright end</th>
+              <th>unresolved data issue</th>
+              <th>suggested owner/action</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${data.items.map((item) => `
+              <tr>
+                <td>${escapeHtml(item.standardWorkId)}</td>
+                <td>${escapeHtml(item.workName)}</td>
+                <td>${item.gapCode === "missing_income_fact" ? "yes" : "no"}</td>
+                <td>${item.gapCode === "mapping_not_active" ? "blocked" : "fixture-only"}</td>
+                <td>${item.gapCode === "missing_standard_work_name" ? "yes" : "no"}</td>
+                <td>${item.gapCode === "missing_author" ? "yes" : "no"}</td>
+                <td>${item.gapCode === "missing_classification" ? "yes" : "no"}</td>
+                <td>${item.gapCode === "missing_required_tags" ? "yes" : "no"}</td>
+                <td>${item.gapCode === "missing_copyright_start" ? "yes" : "no"}</td>
+                <td>${item.gapCode === "missing_copyright_end" ? "yes" : "no"}</td>
+                <td>${item.gapCode === "unresolved_data_issue" ? "yes" : "no"}</td>
+                <td>${escapeHtml(item.message)}</td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+        ${renderPagination(data.pagination)}
+      </div>
+    `;
+  } catch (error) {
+    setM2ErrorPageState("m2-gaps", error);
+    document.querySelector("#m2GapsContent").innerHTML = renderM2Error(error);
+  }
+}
+
+async function renderM2Backtests() {
+  setPageState("m2-backtests", "loading");
+  document.querySelector("#m2BacktestsContent").innerHTML = '<div class="loading">加载回测与算法版本…</div>';
+  try {
+    const [algorithms, backtests] = await Promise.all([
+      getM2Json("/api/m2/old-products/algorithm-versions"),
+      getM2Json("/api/m2/old-products/backtests?page=1&pageSize=20")
+    ]);
+    const firstBatch = backtests.items[0]?.id;
+    const detail = firstBatch
+      ? await getM2Json(`/api/m2/old-products/backtests/${encodeURIComponent(firstBatch)}`)
+      : null;
+
+    if (!algorithms.items.length && !backtests.items.length) {
+      setPageState("m2-backtests", "empty");
+      document.querySelector("#m2BacktestsContent").innerHTML = `
+        ${renderM2DatasetPanel(algorithms.dataset)}
+        ${renderEmpty("暂无算法版本或回测批次", "请求成功但 fixture 当前没有回测数据。")}
+      `;
+      return;
+    }
+
+    setPageState("m2-backtests", "success");
+    document.querySelector("#m2BacktestsContent").innerHTML = `
+      ${renderM2DatasetPanel(algorithms.dataset)}
+      <div class="cards three">
+        ${algorithms.items.map((item) => `
+          <article class="card">
+            <h3>${escapeHtml(item.versionKey)}</h3>
+            ${renderMetric("status", item.status)}
+            ${renderMetric("fixtureOnly", item.fixtureOnly)}
+            ${renderMetric("usesAiModel", item.usesAiModel)}
+            <p class="pagination-note">${escapeHtml(item.description)}</p>
+          </article>
+        `).join("")}
+      </div>
+      <div class="table-wrap">
+        ${renderTableHint()}
+        <table>
+          <thead>
+            <tr>
+              <th>backtest batch</th>
+              <th>cutoff month</th>
+              <th>horizon months</th>
+              <th>work count</th>
+              <th>absolute error</th>
+              <th>percentage error</th>
+              <th>interval coverage</th>
+              <th>bias</th>
+              <th>status</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${backtests.items.map((item) => `
+              <tr>
+                <td>${escapeHtml(item.id)}</td>
+                <td>${escapeHtml(item.cutoffMonth)}</td>
+                <td>${escapeHtml(item.horizonMonths)}</td>
+                <td>${escapeHtml(item.metrics.totalRows)}</td>
+                <td>${escapeHtml(item.metrics.meanAbsoluteError)}</td>
+                <td>fixture metric</td>
+                <td>${escapeHtml(item.metrics.covered)} / ${escapeHtml(item.metrics.totalRows)}</td>
+                <td>covered=${escapeHtml(item.metrics.covered)}, missed=${escapeHtml(item.metrics.missed)}, over=${escapeHtml(item.metrics.over)}, under=${escapeHtml(item.metrics.under)}</td>
+                <td>${escapeHtml(item.status)}</td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+        ${renderPagination(backtests.pagination)}
+      </div>
+      ${detail ? `
+        <div class="table-wrap">
+          ${renderTableHint()}
+          <table>
+            <thead>
+              <tr>
+                <th>standard work ID</th>
+                <th>outcome</th>
+                <th>base</th>
+                <th>optimistic</th>
+                <th>pessimistic</th>
+                <th>actual</th>
+                <th>absolute error</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${detail.items.map((item) => `
+                <tr>
+                  <td>${escapeHtml(item.standardWorkId)}</td>
+                  <td>${escapeHtml(item.outcome)}</td>
+                  <td>${escapeHtml(item.predictedTotalBase)}</td>
+                  <td>${escapeHtml(item.predictedTotalOptimistic)}</td>
+                  <td>${escapeHtml(item.predictedTotalPessimistic)}</td>
+                  <td>${escapeHtml(item.actualTotal)}</td>
+                  <td>${escapeHtml(item.absoluteError)}</td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
+        </div>
+      ` : ""}
+    `;
+  } catch (error) {
+    setM2ErrorPageState("m2-backtests", error);
+    document.querySelector("#m2BacktestsContent").innerHTML = renderM2Error(error);
+  }
+}
+
 function showPage(page) {
-  state.activePage = PAGE_KEYS.includes(page) ? page : "system";
+  const parsed = parsePageHash(page);
+  state.activePage = PAGE_KEYS.includes(parsed.page) ? parsed.page : "system";
+  if (parsed.page === "m2-detail" && parsed.id) {
+    state.m2SelectedWorkId = parsed.id;
+  }
   for (const key of PAGE_KEYS) {
     document.querySelector(`#page-${key}`).classList.toggle("is-hidden", key !== state.activePage);
     document.querySelector(`[data-nav="${key}"]`).classList.toggle("is-active", key === state.activePage);
   }
   renderCurrentPage();
+}
+
+function parsePageHash(page) {
+  const [pageKey, rawId] = String(page || "").split(":");
+  return {
+    page: pageKey || "system",
+    id: rawId ? decodeURIComponent(rawId) : ""
+  };
 }
 
 function renderCurrentPage() {
@@ -611,7 +1213,25 @@ function renderCurrentPage() {
   if (state.activePage === "mapping") {
     return renderMapping();
   }
-  return renderJobs();
+  if (state.activePage === "jobs") {
+    return renderJobs();
+  }
+  if (state.activePage === "m2-overview") {
+    return renderM2Overview();
+  }
+  if (state.activePage === "m2-list") {
+    return renderM2List();
+  }
+  if (state.activePage === "m2-detail") {
+    return renderM2Detail();
+  }
+  if (state.activePage === "m2-gaps") {
+    return renderM2Gaps();
+  }
+  if (state.activePage === "m2-backtests") {
+    return renderM2Backtests();
+  }
+  return renderSystem();
 }
 
 function init() {

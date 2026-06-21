@@ -99,6 +99,7 @@ input {
 
 .main {
   min-width: 0;
+  overflow-x: hidden;
   padding: 28px;
 }
 
@@ -196,6 +197,7 @@ input:focus {
 .page {
   display: grid;
   gap: 18px;
+  max-width: 100%;
   min-width: 0;
 }
 
@@ -214,6 +216,8 @@ input:focus {
 .cards {
   display: grid;
   gap: 16px;
+  max-width: 100%;
+  min-width: 0;
 }
 
 .cards.three {
@@ -223,16 +227,22 @@ input:focus {
 .card,
 .table-wrap,
 .context-note,
+.m2-safety-panel,
+.filter-panel,
 .empty-state,
 .error-state {
   background: var(--panel);
   border: 1px solid var(--line);
   border-radius: 20px;
+  max-width: 100%;
+  min-width: 0;
   box-shadow: var(--shadow);
 }
 
 .card,
 .context-note,
+.m2-safety-panel,
+.filter-panel,
 .empty-state,
 .error-state {
   padding: 20px;
@@ -280,6 +290,7 @@ input:focus {
 }
 
 .state-pill[data-state="degraded"],
+.state-pill[data-state="blocked"],
 .badge.warn {
   background: #fff7df;
   color: var(--warn);
@@ -293,6 +304,7 @@ input:focus {
 }
 
 .table-wrap {
+  width: 100%;
   max-width: 100%;
   min-width: 0;
   overflow-x: auto;
@@ -358,6 +370,69 @@ tr:last-child td {
   display: grid;
   gap: 10px;
   background: #fbfcff;
+}
+
+.m2-safety-panel {
+  display: grid;
+  gap: 14px;
+  background: #fffdf7;
+}
+
+.compact-cards {
+  box-shadow: none;
+}
+
+.blocked-copy {
+  color: var(--warn);
+  line-height: 1.6;
+}
+
+.blocked-state {
+  border-color: #f2c66d;
+  background: #fffaf0;
+}
+
+.distribution-grid {
+  display: grid;
+  gap: 8px;
+}
+
+.distribution-grid div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 0;
+  border-top: 1px solid var(--line);
+}
+
+.distribution-grid div:first-child {
+  border-top: 0;
+}
+
+.filter-panel {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  align-items: end;
+}
+
+.filter-panel label {
+  display: grid;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.filter-panel input,
+.filter-panel select {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 9px 10px;
+  color: var(--text);
+  background: #ffffff;
 }
 
 .explain-list,
@@ -427,6 +502,10 @@ tr:last-child td {
     align-items: flex-start;
     flex-direction: column;
   }
+
+  .filter-panel {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 520px) {
@@ -445,5 +524,9 @@ tr:last-child td {
   button {
     justify-content: center;
     width: 100%;
+  }
+
+  .filter-panel {
+    grid-template-columns: 1fr;
   }
 }

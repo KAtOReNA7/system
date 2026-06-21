@@ -42,7 +42,14 @@ test("GET /admin serves the minimal read-only admin prototype", async () => {
   assert.match(response.body, /作品列表/);
   assert.match(response.body, /映射版本/);
   assert.match(response.body, /后台任务/);
+  assert.match(response.body, /老品评估总览/);
+  assert.match(response.body, /老品评估列表/);
+  assert.match(response.body, /老品评估详情/);
+  assert.match(response.body, /老品数据缺口/);
+  assert.match(response.body, /回测与算法版本/);
   assert.doesNotMatch(response.body, /<form/i);
+  assert.doesNotMatch(response.body, /evaluation-tasks/i);
+  assert.doesNotMatch(response.body, /switch_mapping_version/i);
 });
 
 test("admin assets are served without using API routes", async () => {
@@ -65,7 +72,18 @@ test("admin assets are served without using API routes", async () => {
   assert.match(js.body, /不等同于空库/);
   assert.match(js.body, /小屏幕下可横向滚动查看完整列/);
   assert.match(js.body, /未提供表示当前 API 尚未返回标准作品名称/);
+  assert.match(js.body, /\/api\/m2\/old-products\/evaluations\/overview/);
+  assert.match(js.body, /\/api\/m2\/old-products\/evaluations/);
+  assert.match(js.body, /\/api\/m2\/old-products\/readiness-gaps/);
+  assert.match(js.body, /\/api\/m2\/old-products\/algorithm-versions/);
+  assert.match(js.body, /\/api\/m2\/old-products\/backtests/);
+  assert.match(js.body, /Formal old-product evaluation is blocked/);
+  assert.match(js.body, /fixture-only/);
+  assert.match(js.body, /synthetic marker/);
+  assert.match(js.body, /2026-05 excluded/);
   assert.doesNotMatch(js.body, /method:\s*["'`](POST|PUT|PATCH|DELETE)/i);
+  assert.doesNotMatch(js.body, /evaluation-tasks/i);
+  assert.doesNotMatch(js.body, /switch_mapping_version/i);
 });
 
 test("unknown admin assets return a static 404", async () => {

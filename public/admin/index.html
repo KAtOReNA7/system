@@ -21,6 +21,11 @@
           <a href="#works" data-nav="works">作品列表</a>
           <a href="#mapping" data-nav="mapping">映射版本</a>
           <a href="#jobs" data-nav="jobs">后台任务</a>
+          <a href="#m2-overview" data-nav="m2-overview">老品评估总览</a>
+          <a href="#m2-list" data-nav="m2-list">老品评估列表</a>
+          <a href="#m2-detail" data-nav="m2-detail">老品评估详情</a>
+          <a href="#m2-gaps" data-nav="m2-gaps">老品数据缺口</a>
+          <a href="#m2-backtests" data-nav="m2-backtests">回测与算法版本</a>
         </nav>
         <section class="guardrail">
           <strong>当前边界</strong>
@@ -91,6 +96,61 @@
             <span class="state-pill" data-state-for="jobs">loading</span>
           </div>
           <div id="jobsContent"></div>
+        </section>
+
+        <section id="page-m2-overview" class="page is-hidden" data-page="m2-overview">
+          <div class="page-header">
+            <div>
+              <p class="eyebrow">M2 Old Product Evaluation</p>
+              <h2>老品评估总览</h2>
+            </div>
+            <span class="state-pill" data-state-for="m2-overview">loading</span>
+          </div>
+          <div id="m2OverviewContent"></div>
+        </section>
+
+        <section id="page-m2-list" class="page is-hidden" data-page="m2-list">
+          <div class="page-header">
+            <div>
+              <p class="eyebrow">M2 Evaluation List</p>
+              <h2>老品评估列表</h2>
+            </div>
+            <span class="state-pill" data-state-for="m2-list">loading</span>
+          </div>
+          <div id="m2ListContent"></div>
+        </section>
+
+        <section id="page-m2-detail" class="page is-hidden" data-page="m2-detail">
+          <div class="page-header">
+            <div>
+              <p class="eyebrow">M2 Evaluation Detail</p>
+              <h2>老品评估详情</h2>
+            </div>
+            <span class="state-pill" data-state-for="m2-detail">loading</span>
+          </div>
+          <div id="m2DetailContent"></div>
+        </section>
+
+        <section id="page-m2-gaps" class="page is-hidden" data-page="m2-gaps">
+          <div class="page-header">
+            <div>
+              <p class="eyebrow">M2 Readiness Gaps</p>
+              <h2>老品数据缺口</h2>
+            </div>
+            <span class="state-pill" data-state-for="m2-gaps">loading</span>
+          </div>
+          <div id="m2GapsContent"></div>
+        </section>
+
+        <section id="page-m2-backtests" class="page is-hidden" data-page="m2-backtests">
+          <div class="page-header">
+            <div>
+              <p class="eyebrow">M2 Backtests & Algorithms</p>
+              <h2>回测与算法版本</h2>
+            </div>
+            <span class="state-pill" data-state-for="m2-backtests">loading</span>
+          </div>
+          <div id="m2BacktestsContent"></div>
         </section>
       </main>
     </div>

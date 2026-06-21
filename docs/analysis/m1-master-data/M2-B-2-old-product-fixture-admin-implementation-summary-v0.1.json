@@ -1,0 +1,81 @@
+{
+  "task": "M2-B-2 old-product fixture-only admin pages and E2E minimal loop",
+  "line": "technical",
+  "currentHead": "fb6d749220376015667487c6c196f2c5d302bf88",
+  "originMain": "fb6d749220376015667487c6c196f2c5d302bf88",
+  "worktreeCleanAtStart": true,
+  "worktreeCleanAtReportGeneration": false,
+  "m2B1Commit": "fb6d749220376015667487c6c196f2c5d302bf88",
+  "modifiedAdminFiles": [
+    "public/admin/index.html",
+    "public/admin/app.js",
+    "public/admin/app.css"
+  ],
+  "modifiedStaticAssetFiles": [
+    "public/admin/index.html",
+    "public/admin/app.js",
+    "public/admin/app.css"
+  ],
+  "modifiedTestFiles": [
+    "test/admin.test.js",
+    "test/e2e/admin.e2e.test.js"
+  ],
+  "documentationFiles": [
+    "docs/technical-design/M2-B-2-old-product-fixture-admin-implementation-report-v0.1.md",
+    "docs/analysis/m1-master-data/M2-B-2-old-product-fixture-admin-implementation-summary-v0.1.json"
+  ],
+  "pagesImplemented": [
+    "/admin#m2-overview",
+    "/admin#m2-list",
+    "/admin#m2-detail:SYN-WORK-0001",
+    "/admin#m2-gaps",
+    "/admin#m2-backtests"
+  ],
+  "apiEndpointsConsumed": [
+    "GET /api/m2/old-products/evaluations/overview",
+    "GET /api/m2/old-products/evaluations",
+    "GET /api/m2/old-products/evaluations/:standardWorkId",
+    "GET /api/m2/old-products/readiness-gaps",
+    "GET /api/m2/old-products/algorithm-versions",
+    "GET /api/m2/old-products/backtests",
+    "GET /api/m2/old-products/backtests/:backtestBatchId"
+  ],
+  "fixtureBadgeVisible": true,
+  "formalBlockedNoticeVisible": true,
+  "incompleteMonthNoticeVisible": true,
+  "writeControlsPresent": false,
+  "migrationModified": false,
+  "databaseConnected": false,
+  "dockerExecuted": false,
+  "realDataRead": false,
+  "dataDirectoryRead": false,
+  "stageJsonRead": false,
+  "mappingVersionActivated": false,
+  "switchMappingVersionCalled": false,
+  "apiTestsPassed": true,
+  "pageTestsPassed": true,
+  "e2eTestsPassed": true,
+  "noRealDataCheckPassed": true,
+  "lintPassed": true,
+  "buildPassed": true,
+  "unitTestsPassed": true,
+  "smokePassed": true,
+  "m2B2Complete": true,
+  "m2B3Blocked": true,
+  "prohibitedActionsConfirmed": {
+    "formalModeImplemented": false,
+    "localDryRunModeImplemented": false,
+    "exportApiImplemented": false,
+    "evaluationTaskCreateImplemented": false,
+    "evaluationTaskCancelImplemented": false,
+    "writeApiAdded": false,
+    "writeUiAdded": false,
+    "formalDatabaseConnected": false,
+    "realBillImported": false,
+    "masterDataImported": false,
+    "opsConfirmationImported": false,
+    "dbMigrationsModified": false,
+    "stashTouched": false,
+    "gitAddDotUsed": false
+  }
+}
