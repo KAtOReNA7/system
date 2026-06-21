@@ -1,0 +1,194 @@
+{
+  "schema": "m2.c2.nonformal_aggregate_dry_run.aggregate_summary.v0.1",
+  "generatedAt": "2026-06-21T17:40:43.131394+00:00",
+  "dryRunMode": "non_formal_aggregate_dry_run",
+  "calibratedParameterVersion": "m2-c0-cleaned-bill-nonformal-v0.1",
+  "realDataAggregated": true,
+  "aggregateOnlyReport": true,
+  "rawDetailWrittenToReport": false,
+  "notForFormalDecision": true,
+  "formalEvaluationAllowed": false,
+  "dataSources": {
+    "realCleanedBillRead": true,
+    "copyrightLedgerRead": true,
+    "operationsConfirmationRead": true,
+    "dataDirectoryRead": true,
+    "realBillWorkbookCount": 1,
+    "masterDataWorkbookCount": 1,
+    "mappingCandidateFileCount": 3,
+    "operationsConfirmationRelatedFileCount": 49,
+    "selectedMappingRows": 353
+  },
+  "dataScale": {
+    "rawBillRowsRead": 192872,
+    "validCalibrationRows": 192872,
+    "completeRowsUsed": 192869,
+    "workMonthBusinessFormRows": 95090,
+    "evaluatedWorkCount": 3054,
+    "latestCompleteMonth": "2026-04",
+    "excludedIncompleteMonths": [
+      "2026-05"
+    ],
+    "masterRows": 8881,
+    "copyrightDateConflictWorkCount": 2
+  },
+  "resultDistributions": {
+    "lifecycleDistribution": {
+      "growth": 540,
+      "stable": 872,
+      "declining": 394,
+      "long_tail": 132,
+      "inactive": 800,
+      "rebound": 270,
+      "insufficient_history": 46
+    },
+    "ratingDistribution": {
+      "S+": 25,
+      "S": 97,
+      "A": 248,
+      "B": 483,
+      "C": 695,
+      "D": 395,
+      "E": 1111
+    },
+    "forecastDistributionSummary": {
+      "count": 3054,
+      "min": 0.0,
+      "p25": 0.0,
+      "median": 4.83,
+      "p75": 287.73,
+      "p95": 11146.9,
+      "p99": 89975.07,
+      "max": 10798040.03,
+      "total": 29078355.23,
+      "bucketCounts": {
+        "100_to_1k": 458,
+        "100k_to_1m": 25,
+        "10_to_100": 400,
+        "10k_to_100k": 143,
+        "1k_to_10k": 356,
+        "gte_1m": 2,
+        "lt_10": 927,
+        "zero_or_negative": 743
+      }
+    },
+    "riskDistribution": {
+      "abnormal_spike": 382,
+      "business_form_mixed": 474,
+      "buyout_or_oneoff_income": 328,
+      "channel_concentration": 2003,
+      "copyright_expiry": 363,
+      "data_readiness": 2207,
+      "inactive_tail": 932,
+      "incomplete_month_boundary": 1,
+      "insufficient_history": 46,
+      "revenue_decline": 394
+    },
+    "riskSeverityDistribution": {
+      "high": 2570,
+      "medium": 304,
+      "low": 180
+    },
+    "suggestionDistribution": {
+      "downlist_or_suspend": 744,
+      "maintain": 634,
+      "manual_review_required": 2609,
+      "observe_only": 83,
+      "pricing_or_channel_adjustment": 76,
+      "promote": 250,
+      "reduce_investment": 252,
+      "renewal_review": 209,
+      "repackage": 1078
+    },
+    "copyrightExpiryDistribution": {
+      "missingOrConflict": 2207,
+      "expiredOrDueWithin12Months": 363,
+      "dueWithin13To24Months": 164,
+      "over24Months": 320
+    },
+    "manualReviewRequiredCount": 2609,
+    "abnormalSpikeCount": 382,
+    "inactiveOrLongTailCount": 932,
+    "blockedWorkCount": 2609,
+    "insufficientWorkCount": 46
+  },
+  "alignmentWithC0C1": {
+    "calibratedParameterVersion": "m2-c0-cleaned-bill-nonformal-v0.1",
+    "lifecycleThresholdsUsed": true,
+    "forecastParametersUsed": true,
+    "ratingThresholdsUsed": true,
+    "calibratedNonFormalProfileIsolated": true,
+    "dryRunLifecycleShare": {
+      "growth": 0.1768,
+      "stable": 0.2855,
+      "declining": 0.129,
+      "long_tail": 0.0432,
+      "inactive": 0.262,
+      "rebound": 0.0884,
+      "insufficient_history": 0.0151
+    },
+    "c0LifecycleShare": {
+      "stable": 0.2855,
+      "inactive": 0.262,
+      "growth": 0.1768,
+      "declining": 0.129,
+      "rebound": 0.0884,
+      "long_tail": 0.0432,
+      "insufficient_history": 0.0151
+    },
+    "lifecycleShareDelta": {
+      "declining": 0.0,
+      "growth": 0.0,
+      "inactive": 0.0,
+      "insufficient_history": 0.0,
+      "long_tail": 0.0,
+      "rebound": 0.0,
+      "stable": 0.0
+    },
+    "dryRunRatingShare": {
+      "S+": 0.0082,
+      "S": 0.0318,
+      "A": 0.0812,
+      "B": 0.1582,
+      "C": 0.2276,
+      "D": 0.1293,
+      "E": 0.3638
+    },
+    "c0RatingShare": {
+      "S+": 0.0103,
+      "S": 0.0399,
+      "A": 0.1021,
+      "B": 0.1988,
+      "C": 0.2861,
+      "D": 0.1626,
+      "E": 0.2001
+    },
+    "ratingShareDelta": {
+      "A": -0.0209,
+      "B": -0.0406,
+      "C": -0.0585,
+      "D": -0.0333,
+      "E": 0.1637,
+      "S": -0.0081,
+      "S+": -0.0021
+    },
+    "obviousUnreasonableThresholdDetected": false,
+    "parameterAdjustmentRecommended": false,
+    "parameterAdjustmentReason": "No parameter change in M2-C-2: dry-run uses the same C-0 aggregate population and confirms C-0/C-1 parameter alignment. Differences are attributable to dry-run risk/suggestion layering and remaining-rights forecast application rather than threshold failure."
+  },
+  "prohibitedActionsConfirmed": {
+    "rawDataCommitted": false,
+    "rawDetailWrittenToReport": false,
+    "databaseConnected": false,
+    "dockerExecuted": false,
+    "migrationModified": false,
+    "mappingVersionActivated": false,
+    "switchMappingVersionCalled": false,
+    "formalEvaluationExecuted": false,
+    "writeApiAdded": false,
+    "exportApiAdded": false,
+    "evaluationTaskApiAdded": false,
+    "formalModeAdded": false,
+    "localDryRunProductModeAdded": false
+  }
+}
