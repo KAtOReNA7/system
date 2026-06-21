@@ -264,7 +264,7 @@ test("M2 old-product fixture admin pages render from M2 APIs", async () => {
     {
       path: "/admin#m2-reviews",
       awaitText: "SYN-FR-REVIEW-001",
-      expected: ["Blocking manual review queue", "fixture-only", "synthetic review queue", "databaseWritten=false", "SYN-FR-REVIEW-001", "Simulate approve"],
+      expected: ["Blocking manual review queue", "fixture-only", "synthetic review queue", "databaseWritten=false", "SYN-FR-REVIEW-001", "Simulate approve", "Advisory review summary", "does not block formal eligibility", "downlist_requires_manual_confirmation"],
       endpoint: "/api/m2/formal-readiness/reviews",
       extraExpected: ["formalEvaluationAllowed=false", "notForFormalDecision=true"]
     }
@@ -496,6 +496,8 @@ test("M2 fixture evaluation task page creates blocked task and simulates retry w
     await page.getByText("SYN-FR-TASK-001").first().waitFor();
     let text = await readVisibleText(page);
     assert.match(text, /Evaluation task fixture queue/);
+    assert.match(text, /Advisory review summary/);
+    assert.match(text, /readiness advisory reasons/);
     assert.match(text, /formalEvaluationExecuted=false/);
     assert.match(text, /databaseWritten=false/);
     assert.match(text, /mappingVersionActivated=false/);

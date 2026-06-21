@@ -6,6 +6,11 @@ import {
   transitionReviewItem
 } from "../domain/oldProductEvaluation/blockingReviewWorkflow.js";
 import {
+  buildAdvisoryDisplayModel,
+  M2_ADVISORY_REVIEW_FIXTURE_AGGREGATE,
+  summarizeAdvisoryReviews
+} from "../domain/oldProductEvaluation/advisoryReviewDisplay.js";
+import {
   M2_BLOCKING_REVIEW_DATASET,
   M2_BLOCKING_REVIEW_FIXTURE_ITEMS
 } from "../../test/fixtures/m2BlockingReviewWorkflow.fixture.js";
@@ -85,6 +90,23 @@ export async function simulateM2BlockingReviewAction(_config, reviewItemId, payl
   });
 }
 
+export async function getM2AdvisoryReviewSummaryFixture() {
+  const summary = summarizeAdvisoryReviews(M2_BLOCKING_REVIEW_FIXTURE_ITEMS, {
+    aggregate: M2_ADVISORY_REVIEW_FIXTURE_AGGREGATE
+  });
+  return withDataset({
+    advisorySummary: summary,
+    advisoryReviewCount: summary.advisoryReviewCount,
+    advisoryReasonDistribution: summary.advisoryReasonDistribution,
+    blockingReviewCount: summary.blockingReviewCount,
+    displayOnlyCount: summary.displayOnlyCount,
+    requiresManualConfirmationBeforeExportCount:
+      summary.requiresManualConfirmationBeforeExportCount,
+    renewalReviewDisplayCount: summary.renewalReviewDisplayCount,
+    downlistDisplayCount: summary.downlistDisplayCount
+  });
+}
+
 export function getM2BlockingReviewDataset() {
   return clone(M2_BLOCKING_REVIEW_DATASET);
 }
@@ -94,6 +116,7 @@ function withDataset(body) {
     dataset: getM2BlockingReviewDataset(),
     mode: "fixture",
     formalEvaluationAllowed: false,
+    formalEvaluationExecuted: false,
     notForFormalDecision: true,
     databaseWritten: false,
     ...clone(body)
@@ -167,6 +190,7 @@ function toReviewSummary(item) {
     reasonLabel: item.reasonLabel,
     isBlocking: item.isBlocking,
     blocksFormalEntry: blocksFormalEntry(item),
+    displayModel: buildAdvisoryDisplayModel(item),
     suggestedAction: item.suggestedAction,
     updatedAt: item.updatedAt,
     syntheticOnly: true,

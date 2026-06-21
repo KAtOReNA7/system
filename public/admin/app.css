@@ -378,6 +378,23 @@ tr:last-child td {
   background: #fffdf7;
 }
 
+.advisory-summary-panel {
+  background: #fbfcff;
+}
+
+.advisory-reason-list {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.advisory-reason-list li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
 .compact-cards {
   box-shadow: none;
 }

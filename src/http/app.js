@@ -17,6 +17,7 @@ import {
   listM2OldProductReadinessGaps
 } from "../repositories/oldProductEvaluationFixtureRepository.js";
 import {
+  getM2AdvisoryReviewSummaryFixture,
   getM2BlockingReviewItemById,
   listM2BlockingReviewItems,
   simulateM2BlockingReviewAction
@@ -32,6 +33,7 @@ import { getWorkById, listWorks } from "../repositories/workRepository.js";
 import { serveAdminAsset } from "./staticAdmin.js";
 
 const M2_FIXTURE_TASKS_PATH = `/api/m2/fixture/${["evaluation", "tasks"].join("-")}`;
+const M2_ADVISORY_SUMMARY_PATH = "/api/m2/fixture/advisory-reviews/summary";
 
 function sendJson(response, statusCode, body, requestId) {
   response.writeHead(statusCode, {
@@ -75,6 +77,8 @@ export function createApp(config, options = {}) {
       options.getM2BlockingReviewItemById ?? getM2BlockingReviewItemById,
     simulateM2BlockingReviewAction:
       options.simulateM2BlockingReviewAction ?? simulateM2BlockingReviewAction,
+    getM2AdvisoryReviewSummaryFixture:
+      options.getM2AdvisoryReviewSummaryFixture ?? getM2AdvisoryReviewSummaryFixture,
     listM2EvaluationTaskFixtures:
       options.listM2EvaluationTaskFixtures ?? listM2EvaluationTaskFixtures,
     getM2EvaluationTaskFixtureById:
@@ -259,6 +263,13 @@ export function createApp(config, options = {}) {
           sendJson(response, 200, body, requestId);
           return;
         }
+      }
+
+      if (request.method === "GET" && path === M2_ADVISORY_SUMMARY_PATH) {
+        blockFormalM2Mode(request, url);
+        const body = await repositories.getM2AdvisoryReviewSummaryFixture(config);
+        sendJson(response, 200, body, requestId);
+        return;
       }
 
       if (path.startsWith("/api/m2/old-products")) {

@@ -4,6 +4,7 @@ import {
   summarizeEvaluationTasks,
   transitionEvaluationTask
 } from "../domain/oldProductEvaluation/evaluationTaskWorkflow.js";
+import { buildAdvisoryDisplayModel } from "../domain/oldProductEvaluation/advisoryReviewDisplay.js";
 import {
   M2_EVALUATION_TASK_CREATION_CASES,
   M2_EVALUATION_TASK_DATASET,
@@ -162,6 +163,7 @@ function toTaskSummary(task) {
     readinessStatus: task.readinessStatus,
     blockingReasonCount: task.blockingReasons.length,
     advisoryReasonCount: task.advisoryReasons.length,
+    readinessAdvisoryReasons: task.advisoryReasons.map((item) => item.code),
     warningCount: task.warnings.length,
     createdAt: task.createdAt,
     updatedAt: task.updatedAt,
@@ -173,7 +175,19 @@ function toTaskSummary(task) {
 }
 
 function toTaskDetail(task) {
-  return clone(task);
+  return {
+    ...clone(task),
+    advisoryReviewDisplay: task.advisoryReasons.map((item, index) =>
+      buildAdvisoryDisplayModel({
+        reviewItemId: `${task.taskId}-ADVISORY-${index + 1}`,
+        standardWorkId: task.standardWorkId,
+        reviewType: "advisory_review",
+        isBlocking: false,
+        reasonCode: item.code,
+        reasonLabel: item.message
+      })
+    )
+  };
 }
 
 function clone(value) {

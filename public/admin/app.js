@@ -56,6 +56,7 @@ const state = {
 };
 
 const M2_FIXTURE_TASK_API = `/api/m2/fixture/${["evaluation", "tasks"].join("-")}`;
+const M2_ADVISORY_SUMMARY_API = "/api/m2/fixture/advisory-reviews/summary";
 
 const fixture = {
   health: {
@@ -1540,7 +1541,10 @@ async function renderM2Reviews() {
   document.querySelector("#m2ReviewsContent").innerHTML = '<div class="loading">Loading blocking review queue…</div>';
   const query = buildQuery(state.m2ReviewFilters);
   try {
-    const list = await getM2Json(`/api/m2/formal-readiness/reviews?${query}`);
+    const [list, advisorySummary] = await Promise.all([
+      getM2Json(`/api/m2/formal-readiness/reviews?${query}`),
+      getM2Json(M2_ADVISORY_SUMMARY_API)
+    ]);
     const selectedReviewId = state.m2SelectedReviewId || list.items[0]?.reviewItemId || "";
     state.m2SelectedReviewId = selectedReviewId;
     const detail = selectedReviewId
@@ -1551,6 +1555,7 @@ async function renderM2Reviews() {
       setPageState("m2-reviews", "empty");
       document.querySelector("#m2ReviewsContent").innerHTML = `
         ${renderM2ReviewDatasetPanel(list)}
+        ${renderM2AdvisorySummaryPanel(advisorySummary)}
         ${renderM2ReviewFilters()}
         ${renderM2CurrentFilterSummary(state.m2ReviewFilters)}
         ${renderEmpty("No fixture review items", "The fixture request succeeded but no synthetic review items matched the current filters.", [
@@ -1565,11 +1570,13 @@ async function renderM2Reviews() {
     setPageState("m2-reviews", "success");
     document.querySelector("#m2ReviewsContent").innerHTML = `
       ${renderM2ReviewDatasetPanel(list)}
+      ${renderM2AdvisorySummaryPanel(advisorySummary)}
       ${renderM2ReviewFilters()}
       ${renderM2CurrentFilterSummary(state.m2ReviewFilters)}
       <div class="context-note">
         <strong>Fixture-only manual review workflow</strong>
-        <p>This page simulates blocking manual review transitions in memory. It does not write a database row and cannot authorize formal processing.</p>
+        <p>This page separates blocking manual review from advisory review display. Advisory review is a prompt/notice and does not block formal eligibility by itself.</p>
+        <p>Blocking review can block entry; advisory review does not create automatic downgrade, task, export, or persistence behavior.</p>
         <p>databaseWritten=false · formalEvaluationAllowed=false · notForFormalDecision=true</p>
       </div>
       <div class="table-wrap">
@@ -1580,6 +1587,8 @@ async function renderM2Reviews() {
               <th>review item ID</th>
               <th>standard work ID</th>
               <th>review type</th>
+              <th>display class</th>
+              <th>display kind</th>
               <th>status</th>
               <th>reason code</th>
               <th>blocking</th>
@@ -1594,6 +1603,8 @@ async function renderM2Reviews() {
                 <td>${escapeHtml(item.reviewItemId)}</td>
                 <td>${escapeHtml(item.standardWorkId)}</td>
                 <td>${escapeHtml(item.reviewType)}</td>
+                <td>${renderReviewClassBadge(item.displayModel?.reviewClass)}</td>
+                <td>${renderDisplayKindBadge(item.displayModel?.displayKind)}</td>
                 <td>${renderStatusBadge(item.reviewStatus)}</td>
                 <td>${escapeHtml(item.reasonCode)}</td>
                 <td>${escapeHtml(item.isBlocking)}</td>
@@ -1654,6 +1665,74 @@ function renderM2ReviewDatasetPanel(data) {
   `;
 }
 
+function renderM2AdvisorySummaryPanel(data) {
+  const summary = data.advisorySummary || data;
+  const reasonDistribution = summary.advisoryReasonDistribution || {};
+  const topReasons = summary.topReasons || Object.entries(reasonDistribution)
+    .sort((left, right) => right[1] - left[1])
+    .slice(0, 5)
+    .map(([reasonCode, count]) => ({ reasonCode, count }));
+  return `
+    <section class="m2-safety-panel advisory-summary-panel" data-testid="m2-advisory-summary-panel">
+      <div class="meta-row">
+        <span class="badge warn">advisory display</span>
+        <span class="badge ok">does not block formal eligibility</span>
+        <span class="badge warn">databaseWritten=false</span>
+        <span class="badge warn">formalEvaluationExecuted=false</span>
+      </div>
+      <div class="cards three compact-cards">
+        <article class="card">
+          <h3>Advisory review summary</h3>
+          ${renderMetric("total advisory", summary.advisoryReviewCount ?? 0)}
+          ${renderMetric("blocking reviews", summary.blockingReviewCount ?? 0)}
+          ${renderMetric("display-only notes", summary.displayOnlyCount ?? 0)}
+          ${renderMetric("action candidates", summary.actionCandidateCount ?? 0)}
+        </article>
+        <article class="card">
+          <h3>Top advisory reasons</h3>
+          <div class="distribution-grid">
+            ${topReasons.map((item) => `
+              <div>
+                <span>${escapeHtml(item.reasonCode)}</span>
+                <strong>${escapeHtml(item.count)}</strong>
+              </div>
+            `).join("")}
+          </div>
+        </article>
+        <article class="card">
+          <h3>Manual confirmation prompts</h3>
+          ${renderMetric("before downstream action or release", summary.requiresManualConfirmationBeforeExportCount ?? 0)}
+          ${renderMetric("downlist_requires_manual_confirmation", summary.downlistDisplayCount ?? 0)}
+          ${renderMetric("renewal_review_requires_confirmation", summary.renewalReviewDisplayCount ?? 0)}
+          <p class="pagination-note">Downlist and renewal advisory prompts are visible notes only until an operator confirms them outside this prototype.</p>
+        </article>
+      </div>
+    </section>
+  `;
+}
+
+function renderReviewClassBadge(value) {
+  if (value === "blocking_review") {
+    return '<span class="badge danger">blocking review</span>';
+  }
+  if (value === "advisory_review") {
+    return '<span class="badge warn">advisory review</span>';
+  }
+  return `<span class="badge">${escapeHtml(value || "unknown")}</span>`;
+}
+
+function renderDisplayKindBadge(value) {
+  const classes = {
+    blocking_review: "danger",
+    warning: "warn",
+    action_candidate: "warn",
+    display_only_note: "ok",
+    advisory_review: "ok"
+  };
+  const badgeClass = classes[value] || "";
+  return `<span class="badge ${badgeClass}">${escapeHtml(value || "unknown")}</span>`;
+}
+
 function renderM2ReviewFilters() {
   const filters = state.m2ReviewFilters;
   return `
@@ -1706,6 +1785,9 @@ function renderM2ReviewDetail(detail) {
         ${renderMetric("status", item.reviewStatus, { code: true })}
         ${renderMetric("reasonCode", item.reasonCode)}
         ${renderMetric("blocksFormalEntry", detail.workflowImpact.blocksFormalEntry)}
+        ${renderMetric("displayClass", item.displayModel?.reviewClass)}
+        ${renderMetric("displayKind", item.displayModel?.displayKind)}
+        ${renderMetric("manualConfirmationBeforeExport", item.displayModel?.requiresManualConfirmationBeforeExport ?? false)}
       </article>
       <article class="card">
         <h3>Review explanation</h3>
@@ -1814,7 +1896,10 @@ async function renderM2FixtureTasks() {
   document.querySelector("#m2FixtureTasksContent").innerHTML = '<div class="loading">Loading fixture task queue…</div>';
   const query = buildQuery(state.m2TaskFilters);
   try {
-    const list = await getM2Json(`${M2_FIXTURE_TASK_API}?${query}`);
+    const [list, advisorySummary] = await Promise.all([
+      getM2Json(`${M2_FIXTURE_TASK_API}?${query}`),
+      getM2Json(M2_ADVISORY_SUMMARY_API)
+    ]);
     const selectedTaskId = state.m2SelectedTaskId || list.items[0]?.taskId || "";
     state.m2SelectedTaskId = selectedTaskId;
     const detail = selectedTaskId
@@ -1825,6 +1910,7 @@ async function renderM2FixtureTasks() {
       setPageState("m2-fixture-tasks", "empty");
       document.querySelector("#m2FixtureTasksContent").innerHTML = `
         ${renderM2TaskDatasetPanel(list)}
+        ${renderM2AdvisorySummaryPanel(advisorySummary)}
         ${renderM2TaskFilters()}
         ${renderM2TaskCreatePanel()}
         ${renderEmpty("No fixture tasks", "The fixture request succeeded but no synthetic tasks matched the current filters.", [
@@ -1839,6 +1925,7 @@ async function renderM2FixtureTasks() {
     setPageState("m2-fixture-tasks", "success");
     document.querySelector("#m2FixtureTasksContent").innerHTML = `
       ${renderM2TaskDatasetPanel(list)}
+      ${renderM2AdvisorySummaryPanel(advisorySummary)}
       ${renderM2TaskFilters()}
       ${renderM2TaskCreatePanel()}
       <div class="context-note">
@@ -1857,6 +1944,7 @@ async function renderM2FixtureTasks() {
               <th>readiness status</th>
               <th>blocking reasons</th>
               <th>advisory reasons</th>
+              <th>readiness advisory reason codes</th>
               <th>warnings</th>
               <th>formal executed</th>
               <th>database written</th>
@@ -1872,6 +1960,7 @@ async function renderM2FixtureTasks() {
                 <td>${renderStatusBadge(item.readinessStatus)}</td>
                 <td>${escapeHtml(item.blockingReasonCount)}</td>
                 <td>${escapeHtml(item.advisoryReasonCount)}</td>
+                <td>${escapeHtml((item.readinessAdvisoryReasons || []).join(", ") || "none")}</td>
                 <td>${escapeHtml(item.warningCount)}</td>
                 <td>${escapeHtml(item.formalEvaluationExecuted)}</td>
                 <td>${escapeHtml(item.databaseWritten)}</td>
@@ -1999,6 +2088,7 @@ function renderM2TaskDetail(task) {
         ${renderMetric("blockingReasons", task.blockingReasons.map((item) => item.code).join(", ") || "none")}
         ${renderMetric("advisoryReasons", task.advisoryReasons.map((item) => item.code).join(", ") || "none")}
         ${renderMetric("warnings", task.warnings.map((item) => item.code).join(", ") || "none")}
+        ${renderM2TaskAdvisoryReasonList(task.advisoryReviewDisplay || [])}
         <p class="pagination-note">Required actions are shown for diagnosis only; this page does not perform them.</p>
       </article>
       <article class="card">
@@ -2010,6 +2100,26 @@ function renderM2TaskDetail(task) {
           `).join("")}
         </form>
       </article>
+    </div>
+  `;
+}
+
+function renderM2TaskAdvisoryReasonList(items) {
+  if (!items.length) {
+    return '<p class="pagination-note">readiness advisory reasons: none</p>';
+  }
+  return `
+    <div class="advisory-reason-list">
+      <p class="pagination-note">readiness advisory reasons</p>
+      <ul class="explain-list">
+        ${items.map((item) => `
+          <li>
+            <strong>${escapeHtml(item.reasonCode)}</strong>
+            ${renderDisplayKindBadge(item.displayKind)}
+            ${item.requiresManualConfirmationBeforeExport ? '<span class="badge warn">manual confirmation before downstream action</span>' : '<span class="badge ok">display only</span>'}
+          </li>
+        `).join("")}
+      </ul>
     </div>
   `;
 }
