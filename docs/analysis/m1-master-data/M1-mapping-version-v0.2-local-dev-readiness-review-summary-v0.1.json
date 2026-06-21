@@ -1,0 +1,79 @@
+{
+  "status": "ok",
+  "reviewName": "M1 mapping_version v0.2 local development readiness review",
+  "reviewLine": "operations",
+  "worktree": "D:\\porject\\system-worktrees\\m1-v02-local-dev-review-20260621-192727",
+  "baseBranch": "origin/main",
+  "localEnvironments": {
+    "dev": {
+      "environmentName": "m1-local-dev",
+      "database": "m1_local_dev",
+      "host": "127.0.0.1",
+      "port": 55434,
+      "dockerImage": "postgres:16",
+      "reset": false,
+      "initialized": true,
+      "flywayMigrateInfoValidateSecondMigratePassed": true
+    },
+    "dryRun": {
+      "environmentName": "m1-local-dry-run",
+      "database": "m1_local_dry_run",
+      "host": "127.0.0.1",
+      "port": 55433,
+      "dockerImage": "postgres:16",
+      "reset": true,
+      "initialized": true,
+      "flywayMigrateInfoValidateSecondMigratePassed": true
+    }
+  },
+  "credentialBoundary": {
+    "envLocalGenerated": true,
+    "envLocalIgnoredByGit": true,
+    "envLocalCommitted": false,
+    "envCommitted": false,
+    "pgpassCommitted": false,
+    "realConnectionStringCommitted": false,
+    "passwordCommitted": false
+  },
+  "dryRun": {
+    "environmentName": "m1-local-dry-run",
+    "database": "m1_local_dry_run",
+    "host": "127.0.0.1",
+    "port": 55433,
+    "stageArtifact": "mapping_import_stage-v0.2.json",
+    "stageArtifactCommitted": false,
+    "stageArtifactBodyIncludedInReport": false,
+    "preflightPassed": true,
+    "controlledImportRolledBack": true,
+    "g06Passed": true,
+    "g07Passed": true,
+    "activeMappingCount": 0,
+    "backgroundWorkerCanSwitchMappingVersion": false,
+    "mappingVersionActivated": false,
+    "switchMappingVersionCalled": false
+  },
+  "prohibitedBoundary": {
+    "formalDatabaseConnected": false,
+    "stagingDatabaseConnected": false,
+    "productionDatabaseConnected": false,
+    "sharedDevelopmentDatabaseConnected": false,
+    "sharedTestDatabaseConnected": false,
+    "formalDatabaseWritten": false,
+    "realBillsImported": false,
+    "digitalCopyrightLedgerImported": false,
+    "operationsConfirmationExcelImported": false,
+    "operationsConfirmationResultImported": false,
+    "formalDataMigrationExecuted": false,
+    "dbMigrationsModified": false,
+    "flywayHistoryMigrationModified": false,
+    "mappingVersionActivated": false,
+    "switchMappingVersionCalled": false,
+    "stashTouched": false,
+    "gitAddDotUsed": false
+  },
+  "validation": {
+    "stageJsonSensitiveScanBlockingFindings": 0,
+    "dryRunSummaryParsed": true,
+    "dryRunReportMatchesSummary": true
+  }
+}
