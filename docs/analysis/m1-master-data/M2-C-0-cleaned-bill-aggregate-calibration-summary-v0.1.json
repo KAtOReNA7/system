@@ -1,0 +1,463 @@
+{
+  "schema": "m2.c0.cleaned_bill.aggregate_calibration_summary.v0.1",
+  "generatedAt": "2026-06-21T17:15:52.736698+00:00",
+  "currentHead": "290dcbe92ac1f12dd42b80c3dbbcd9e739dec1d6",
+  "originMain": "290dcbe92ac1f12dd42b80c3dbbcd9e739dec1d6",
+  "worktreeCleanAtStart": true,
+  "realCleanedBillRead": true,
+  "copyrightLedgerRead": true,
+  "operationsConfirmationRead": true,
+  "dataDirectoryRead": true,
+  "rawDataCommitted": false,
+  "rawDetailWrittenToReport": false,
+  "databaseConnected": false,
+  "dockerExecuted": false,
+  "migrationModified": false,
+  "mappingVersionActivated": false,
+  "switchMappingVersionCalled": false,
+  "formalEvaluationExecuted": false,
+  "aggregateOnlyReport": true,
+  "population": {
+    "sourceDictionary": {
+      "realBillWorkbookCount": 1,
+      "masterDataWorkbookCount": 1,
+      "mappingCandidateFileCount": 3,
+      "operationsConfirmationRelatedFileCount": 49,
+      "selectedMappingRows": 353,
+      "realBillColumns": [
+        "年月",
+        "渠道ID",
+        "文学库渠道名称",
+        "授权分类",
+        "我方作品ID",
+        "作品名称",
+        "实销金额"
+      ],
+      "masterDataColumnsUsed": [
+        "作品ID",
+        "签订日期",
+        "到期时间"
+      ]
+    },
+    "dataScale": {
+      "rawBillRowsRead": 192872,
+      "validCalibrationRows": 192872,
+      "completeCalibrationRows": 192869,
+      "workCount": 3054,
+      "workMonthBusinessFormRows": 95090,
+      "monthRange": [
+        "2017-06",
+        "2026-05"
+      ],
+      "latestCompleteMonthCandidate": "2026-04",
+      "incompleteMonthsExcluded": [
+        "2026-05"
+      ],
+      "businessFormCount": 2,
+      "businessFormDistribution": {
+        "audio_product": 135297,
+        "audio_copyright": 57575
+      }
+    },
+    "dataQuality": {
+      "invalidOrUnmappedRowCount": 0,
+      "mappingAppliedRowCount": 54544,
+      "rowsWithChannelId": 192872,
+      "copyrightEndDateUnambiguousWorkCount": 7542,
+      "copyrightDateConflictWorkCount": 2
+    },
+    "distribution": {
+      "totalHistoricalRevenueQuantiles": {
+        "p20": 30,
+        "p40": 280,
+        "p65": 4300,
+        "p85": 25400,
+        "p95": 101000,
+        "p99": 831000
+      },
+      "last12RevenueQuantiles": {
+        "p20": 1.76,
+        "p40": 10,
+        "p65": 310,
+        "p85": 2700,
+        "p95": 15200,
+        "p99": 133000
+      },
+      "zeroRevenueWorkShare": 0.2046,
+      "longTailWorkShareCandidate": 0.1991,
+      "channelConcentrationQuantiles": {
+        "p50": 1.0,
+        "p75": 1.0,
+        "p90": 1.0
+      },
+      "remainingCopyrightMonthsQuantiles": {
+        "p25": 2.0,
+        "p50": 16.0,
+        "p75": 34.0
+      },
+      "amountSignRowDistribution": {
+        "positive": 192222,
+        "zero": 501,
+        "negative": 146
+      }
+    }
+  },
+  "lifecycleCalibration": {
+    "thresholds": {
+      "insufficientHistoryCompleteMonths": 6,
+      "inactiveRecent6RevenueMax": 0.0,
+      "longTailLast12RevenueMax": 2.82,
+      "growthRecent6Prior6Ratio": 1.52,
+      "decliningRecent6Prior6Ratio": 0.45,
+      "reboundRecent3Previous3Ratio": 1.5,
+      "stableLast6CoefficientOfVariationMax": 0.73
+    },
+    "counts": {
+      "stable": 872,
+      "inactive": 800,
+      "growth": 540,
+      "declining": 394,
+      "rebound": 270,
+      "long_tail": 132,
+      "insufficient_history": 46
+    },
+    "shares": {
+      "stable": 0.2855,
+      "inactive": 0.262,
+      "growth": 0.1768,
+      "declining": 0.129,
+      "rebound": 0.0884,
+      "long_tail": 0.0432,
+      "insufficient_history": 0.0151
+    },
+    "manualReviewRecommendedFor": [
+      "borderline ratio cases within 10% of growth or declining thresholds",
+      "works with copyright-date conflicts",
+      "works with high channel concentration and abnormal spike signals"
+    ]
+  },
+  "forecastCalibration": {
+    "lifecycleFactors": {
+      "stable": 0.63,
+      "rebound": 0.63,
+      "growth": 0.82,
+      "long_tail": 1.09,
+      "declining": 0.35,
+      "inactive": 0.79,
+      "insufficient_history": 2.5
+    },
+    "scenarioMultipliers": {
+      "base": 1.0,
+      "pessimistic": 0.45,
+      "optimistic": 2.01
+    },
+    "backtestMetrics": [
+      {
+        "horizonMonths": 3,
+        "model": "last12_average",
+        "sampleCount": 3054,
+        "mae": 680,
+        "mape": 37.2075,
+        "medianError": 0.28,
+        "overCount": 1902,
+        "underCount": 596
+      },
+      {
+        "horizonMonths": 3,
+        "model": "last24_average",
+        "sampleCount": 3054,
+        "mae": 1100,
+        "mape": 205.6993,
+        "medianError": 1.52,
+        "overCount": 2147,
+        "underCount": 483
+      },
+      {
+        "horizonMonths": 3,
+        "model": "lifecycle_adjusted",
+        "sampleCount": 3054,
+        "mae": 450,
+        "mape": 17.5518,
+        "medianError": 0.0,
+        "overCount": 1535,
+        "underCount": 963
+      },
+      {
+        "horizonMonths": 6,
+        "model": "last12_average",
+        "sampleCount": 3054,
+        "mae": 2400,
+        "mape": 93.9446,
+        "medianError": 0.07,
+        "overCount": 1639,
+        "underCount": 910
+      },
+      {
+        "horizonMonths": 6,
+        "model": "last24_average",
+        "sampleCount": 3054,
+        "mae": 2300,
+        "mape": 512.3815,
+        "medianError": 0.94,
+        "overCount": 1841,
+        "underCount": 799
+      },
+      {
+        "horizonMonths": 6,
+        "model": "lifecycle_adjusted",
+        "sampleCount": 3054,
+        "mae": 1900,
+        "mape": 36.0154,
+        "medianError": 10,
+        "overCount": 1262,
+        "underCount": 1288
+      },
+      {
+        "horizonMonths": 12,
+        "model": "last12_average",
+        "sampleCount": 3054,
+        "mae": 5300,
+        "mape": 310.6945,
+        "medianError": 0.43,
+        "overCount": 1664,
+        "underCount": 949
+      },
+      {
+        "horizonMonths": 12,
+        "model": "last24_average",
+        "sampleCount": 3054,
+        "mae": 5100,
+        "mape": 1179.6208,
+        "medianError": 2.35,
+        "overCount": 1760,
+        "underCount": 913
+      },
+      {
+        "horizonMonths": 12,
+        "model": "lifecycle_adjusted",
+        "sampleCount": 3054,
+        "mae": 4400,
+        "mape": 174.6462,
+        "medianError": 10,
+        "overCount": 1317,
+        "underCount": 1296
+      }
+    ],
+    "sampleCount": 9162,
+    "modelsTested": [
+      "last12_average",
+      "last24_average",
+      "lifecycle_adjusted"
+    ]
+  },
+  "forecastInternal": {
+    "backtestCaseCount": 9162,
+    "residualRatioCount": 6520
+  },
+  "ratingCalibration": {
+    "method": "hybrid of last-12 historical revenue and 12-month lifecycle-adjusted forecast distribution",
+    "absoluteAmountThresholdCandidates": {
+      "S+": 133000,
+      "S": 16000,
+      "A": 2700,
+      "B": 310,
+      "C": 10,
+      "D": 1.8,
+      "E": 0.0
+    },
+    "percentileBreakpoints": {
+      "S+": 0.99,
+      "S": 0.95,
+      "A": 0.85,
+      "B": 0.65,
+      "C": 0.4,
+      "D": 0.2,
+      "E": 0.0
+    },
+    "sampleShareByRating": {
+      "S+": 0.0103,
+      "S": 0.0399,
+      "A": 0.1021,
+      "B": 0.1988,
+      "C": 0.2861,
+      "D": 0.1626,
+      "E": 0.2001
+    },
+    "lowInvestmentBoundary": {
+      "ratings": [
+        "D",
+        "E"
+      ],
+      "thresholdUpperBound": 10
+    },
+    "highPriorityBoundary": {
+      "ratings": [
+        "S+",
+        "S"
+      ],
+      "thresholdLowerBound": 16000
+    },
+    "newProductOldProductNote": "Old-product rating should not be treated as equivalent to new-product launch rating because it is driven by observed historical revenue and remaining-rights economics.",
+    "externalEventLimit": "External event override should increase at most two rating levels and must require manual review.",
+    "smallSampleFallback": "When history is below the insufficient-history threshold, use observe_only and manual_review_required instead of a high-confidence rating."
+  },
+  "riskRules": [
+    {
+      "code": "data_readiness",
+      "trigger": "missing aggregate input, unresolved mapping, or incomplete master-data field required by the target evaluation",
+      "severity": "high",
+      "evidence": "M1 readiness and mapping confirmation status",
+      "manualReviewRequired": true
+    },
+    {
+      "code": "revenue_decline",
+      "trigger": "recent6/prior6 ratio <= 0.45",
+      "severity": "medium",
+      "evidence": "work-month aggregate trend",
+      "manualReviewRequired": false
+    },
+    {
+      "code": "copyright_expiry",
+      "trigger": "remaining copyright months <= 12",
+      "severity": "high",
+      "evidence": "aggregate count=363",
+      "manualReviewRequired": true
+    },
+    {
+      "code": "insufficient_history",
+      "trigger": "history months < 6",
+      "severity": "medium",
+      "evidence": "complete-month history count",
+      "manualReviewRequired": true
+    },
+    {
+      "code": "business_form_mixed",
+      "trigger": "standard work has both audio_copyright and audio_product revenue",
+      "severity": "low",
+      "evidence": "aggregate count=474",
+      "manualReviewRequired": false
+    },
+    {
+      "code": "inactive_tail",
+      "trigger": "lifecycle in inactive or long_tail",
+      "severity": "medium",
+      "evidence": "calibrated lifecycle label",
+      "manualReviewRequired": false
+    },
+    {
+      "code": "abnormal_spike",
+      "trigger": "peak month share >= 0.9",
+      "severity": "medium",
+      "evidence": "aggregate count=382",
+      "manualReviewRequired": true
+    },
+    {
+      "code": "buyout_or_oneoff_income",
+      "trigger": "peak month share >= 0.9 with otherwise sparse revenue",
+      "severity": "medium",
+      "evidence": "monthly concentration pattern; cannot confirm commercial type from bills alone",
+      "manualReviewRequired": true
+    },
+    {
+      "code": "channel_concentration",
+      "trigger": "top channel share >= 0.95",
+      "severity": "medium",
+      "evidence": "aggregate count=2003",
+      "manualReviewRequired": false
+    },
+    {
+      "code": "mapping_uncertainty",
+      "trigger": "raw work ID is invalid, unmapped, or belongs to a confirmed conflict group",
+      "severity": "high",
+      "evidence": "mapping candidate and operation confirmation material",
+      "manualReviewRequired": true
+    },
+    {
+      "code": "incomplete_month_boundary",
+      "trigger": "latest bill month is beyond latest confirmed complete month",
+      "severity": "low",
+      "evidence": "2026-05 is excluded from calibration cutoff",
+      "manualReviewRequired": false
+    }
+  ],
+  "suggestionRules": [
+    {
+      "code": "promote",
+      "trigger": "rating in S+/S or lifecycle=growth without high readiness risk",
+      "priority": "high",
+      "copyTemplate": "Prioritize additional operation resources after manual check confirms no one-off spike.",
+      "manualReviewRequired": true
+    },
+    {
+      "code": "maintain",
+      "trigger": "rating in A/B and lifecycle stable or modest growth",
+      "priority": "medium",
+      "copyTemplate": "Maintain baseline operation and monitor next complete-month trend.",
+      "manualReviewRequired": false
+    },
+    {
+      "code": "reduce_investment",
+      "trigger": "rating in C/D with declining or inactive signal",
+      "priority": "medium",
+      "copyTemplate": "Reduce incremental spend unless external event evidence is provided.",
+      "manualReviewRequired": false
+    },
+    {
+      "code": "repackage",
+      "trigger": "business_form_mixed or channel concentration risk with non-low revenue",
+      "priority": "medium",
+      "copyTemplate": "Review package positioning across business forms and top channels.",
+      "manualReviewRequired": true
+    },
+    {
+      "code": "pricing_or_channel_adjustment",
+      "trigger": "long_tail or rebound with channel concentration below risk threshold",
+      "priority": "medium",
+      "copyTemplate": "Test price or channel adjustment in a controlled non-formal plan.",
+      "manualReviewRequired": true
+    },
+    {
+      "code": "renewal_review",
+      "trigger": "copyright_expiry risk and rating not below C",
+      "priority": "high",
+      "copyTemplate": "Review renewal economics before further resource allocation.",
+      "manualReviewRequired": true
+    },
+    {
+      "code": "observe_only",
+      "trigger": "insufficient_history or incomplete_month_boundary dominates evidence",
+      "priority": "low",
+      "copyTemplate": "Observe until more complete months are available.",
+      "manualReviewRequired": false
+    },
+    {
+      "code": "downlist_or_suspend",
+      "trigger": "rating E, inactive lifecycle, and no renewal or event support",
+      "priority": "medium",
+      "copyTemplate": "Consider downlisting or suspension only after manual confirmation.",
+      "manualReviewRequired": true
+    },
+    {
+      "code": "manual_review_required",
+      "trigger": "mapping_uncertainty, abnormal_spike, buyout_or_oneoff_income, or copyright conflict",
+      "priority": "high",
+      "copyTemplate": "Route to operations review before any formal action.",
+      "manualReviewRequired": true
+    }
+  ],
+  "calibratedParametersCreated": true,
+  "fixtureEngineUpdated": false,
+  "prohibitedActionsConfirmed": {
+    "rawRealBillsCommitted": false,
+    "rawLedgerCommitted": false,
+    "operationsWorkbookCommitted": false,
+    "databaseConnected": false,
+    "dockerExecuted": false,
+    "dbMigrationsModified": false,
+    "writeApiAdded": false,
+    "exportApiAdded": false,
+    "evaluationTaskApiAdded": false,
+    "formalModeAdded": false,
+    "localDryRunModeAdded": false
+  }
+}

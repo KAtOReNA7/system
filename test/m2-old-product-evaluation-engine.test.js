@@ -7,6 +7,7 @@ import {
   FIXTURE_ONLY_THRESHOLDS,
   buildFixtureOldProductEvaluationDataset
 } from "../src/domain/oldProductEvaluation/fixtureEngine.js";
+import { M2_C0_CLEANED_BILL_CALIBRATED_PARAMETERS } from "../src/domain/oldProductEvaluation/calibratedParameters.js";
 import {
   M2_OLD_PRODUCT_BACKTESTS,
   M2_OLD_PRODUCT_DATASET,
@@ -108,6 +109,18 @@ test("M2-B-4 engine builds synthetic backtest shape", () => {
   assert.equal(batch.over, 1);
   assert.equal(batch.under, 1);
   assert.ok(batch.summary);
+});
+
+test("M2-C-0 calibrated parameters are aggregate-only and non-formal", () => {
+  assert.equal(M2_C0_CLEANED_BILL_CALIBRATED_PARAMETERS.nonFormalCalibration, true);
+  assert.equal(M2_C0_CLEANED_BILL_CALIBRATED_PARAMETERS.realDataAggregated, true);
+  assert.equal(M2_C0_CLEANED_BILL_CALIBRATED_PARAMETERS.notForFormalDecision, true);
+  assert.equal(M2_C0_CLEANED_BILL_CALIBRATED_PARAMETERS.sourceBoundary.aggregateOnly, true);
+  assert.equal(M2_C0_CLEANED_BILL_CALIBRATED_PARAMETERS.sourceBoundary.rawDetailIncluded, false);
+  assert.equal(M2_C0_CLEANED_BILL_CALIBRATED_PARAMETERS.latestCompleteMonth, "2026-04");
+  assert.ok(M2_C0_CLEANED_BILL_CALIBRATED_PARAMETERS.lifecycle.growthRecent6Prior6Ratio > 1);
+  assert.ok(M2_C0_CLEANED_BILL_CALIBRATED_PARAMETERS.forecast.lifecycleFactors.growth > 0);
+  assert.ok(M2_C0_CLEANED_BILL_CALIBRATED_PARAMETERS.rating.absoluteAmountThresholdCandidates["S+"] > 0);
 });
 
 test("M2-B-4 fixture engine API returns full generated dataset without real data", () => {
