@@ -20,16 +20,32 @@ tools/**/node_modules/
 experiments/**/node_modules/
 
 # Local database / credentials
+.env.local
 *.env
 .env
 .env.*
 !.env.example
+.pgpass
+*.pgpass
 *.pem
 *.key
 *.p12
 *.crt
 *.sqlite
+*.sqlite3
 *.db
+*.dump
+*.backup
+dump/
+dumps/
+backup/
+backups/
+tmp/db/
+.tmp/db/
+local-db/
+docker-data/
+pgdata/
+**/pgdata/
 
 # Private business data
 data/

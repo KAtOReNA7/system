@@ -1,0 +1,19 @@
+﻿{
+    "status":  "ok",
+    "environmentName":  "m1-local-dry-run",
+    "database":  "m1_local_dry_run",
+    "host":  "127.0.0.1",
+    "port":  55433,
+    "stageArtifact":  "mapping_import_stage-v0.2.json",
+    "preflightPassed":  true,
+    "controlledImportRolledBack":  true,
+    "g06g07Passed":  true,
+    "activeMappingCount":  0,
+    "backgroundWorkerCanSwitchMappingVersion":  false,
+    "formalDatabaseConnected":  false,
+    "stagingProductionSharedConnected":  false,
+    "realDataImported":  false,
+    "dbMigrationsModified":  false,
+    "mappingVersionActivated":  false,
+    "switchMappingVersionCalled":  false
+}

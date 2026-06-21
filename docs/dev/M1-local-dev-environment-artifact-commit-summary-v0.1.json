@@ -1,0 +1,69 @@
+{
+  "status": "ready_for_commit",
+  "line": "auxiliary-tooling-preparation",
+  "worktree": "D:\\porject\\system-worktrees\\m1-local-env-public-submit-20260621-20260621-191459",
+  "branch": "codex/m1-local-env-tools-20260621-20260621-191459",
+  "base": "origin/main",
+  "artifacts": [
+    ".gitignore",
+    ".env.example",
+    "tools/dev-db/New-M1LocalEnvFile.ps1",
+    "tools/dev-db/Invoke-M1LocalDockerPostgres.ps1",
+    "tools/dev-db/Invoke-M1MappingV02DryRun.ps1",
+    "docs/dev/M1_LOCAL_DOCKER_POSTGRES.md",
+    "docs/analysis/m1-master-data/M1-local-docker-v0.2-dry-run-report-v0.1.md",
+    "docs/analysis/m1-master-data/M1-local-docker-v0.2-dry-run-summary-v0.1.json",
+    "docs/dev/M1-local-dev-environment-artifact-commit-report-v0.1.md",
+    "docs/dev/M1-local-dev-environment-artifact-commit-summary-v0.1.json"
+  ],
+  "gitignore": {
+    "coversEnvLocal": true,
+    "coversEnvFiles": true,
+    "coversPgpass": true,
+    "coversDumpDirectories": true,
+    "coversBackupDirectories": true,
+    "coversPgdata": true,
+    "coversTemporaryDatabaseFiles": true,
+    "blanketIgnoresDb": false,
+    "dbMigrationsIgnored": false
+  },
+  "envExampleSafe": true,
+  "devDbScriptsSafe": true,
+  "dryRunReportAndSummaryConsistent": true,
+  "sensitiveScanBlockingHits": 0,
+  "validation": {
+    "npmCi": "passed",
+    "checkNoRealData": "passed",
+    "lint": "passed",
+    "build": "passed",
+    "test": "passed",
+    "smoke": "passed",
+    "powershellParse": "passed"
+  },
+  "forbiddenSubmitted": {
+    "envLocal": false,
+    "env": false,
+    "pgpass": false,
+    "data": false,
+    "mappingImportStageV01": false,
+    "mappingImportStageV02": false,
+    "operationsLegacyDelta": false,
+    "connectionString": false,
+    "password": false,
+    "temporaryDatabaseFile": false
+  },
+  "executionBoundary": {
+    "mainWorktreePull": false,
+    "mainWorktreeMerge": false,
+    "mainWorktreeRebase": false,
+    "mainWorktreeDelete": false,
+    "stashTouched": false,
+    "dockerExecuted": false,
+    "databaseConnected": false,
+    "realDataImported": false,
+    "mappingVersionActivated": false,
+    "switchMappingVersionCalled": false,
+    "dbMigrationsModified": false,
+    "flywayHistoryModified": false
+  }
+}
