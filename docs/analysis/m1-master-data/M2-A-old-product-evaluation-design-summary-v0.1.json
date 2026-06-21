@@ -1,0 +1,62 @@
+{
+  "currentHead": "778b81251d4b29cb5f475651ea1740fd26a160e7",
+  "originMain": "778b81251d4b29cb5f475651ea1740fd26a160e7",
+  "worktreeClean": true,
+  "m1AuditCommit": "778b81251d4b29cb5f475651ea1740fd26a160e7",
+  "m2APrdReady": true,
+  "m2AApiContractReady": true,
+  "m2ADataModelReady": true,
+  "m2APagePlanReady": true,
+  "m2ATestPlanReady": true,
+  "m2BImplementationReady": true,
+  "m2CBlocked": true,
+  "m2DBlocked": true,
+  "hardBlockers": [
+    "formal_database_authorization_missing",
+    "real_bills_not_formally_imported",
+    "digital_copyright_ledger_not_formally_imported",
+    "operations_confirmation_results_not_formally_imported",
+    "mapping_version_v0_2_not_activated",
+    "switch_mapping_version_not_called",
+    "strict_reconciliation_not_executed_in_formal_authorized_environment",
+    "classification_tree_and_tag_library_pending_data",
+    "basic_info_and_copyright_coverage_not_formally_ready",
+    "backup_recovery_and_revoke_reimport_not_formally_accepted_on_real_imported_data"
+  ],
+  "explicitNonGoals": [
+    "no_migration",
+    "no_business_code",
+    "no_api_implementation_change",
+    "no_page_implementation_change",
+    "no_database_connection",
+    "no_docker_execution",
+    "no_real_data_import",
+    "no_mapping_version_activation",
+    "no_switch_mapping_version",
+    "no_formal_data_migration",
+    "no_db_migrations_modification"
+  ],
+  "recommendedNextTask": "Start M2-B implementation preparation for fixture-only old-product evaluation APIs, deterministic fixture evaluator, and read-only pages; keep M2-C and M2-D blocked until M1 formal data readiness is complete.",
+  "prohibitedActionsConfirmed": {
+    "databaseConnected": false,
+    "dockerExecuted": false,
+    "realDataImported": false,
+    "mappingVersionActivated": false,
+    "switchMappingVersionCalled": false,
+    "formalDataMigrationExecuted": false,
+    "dbMigrationsModified": false,
+    "businessCodeModified": false,
+    "apiImplementationModified": false,
+    "pageImplementationModified": false,
+    "gitAddDotUsed": false,
+    "stashTouched": false
+  },
+  "outputs": [
+    "docs/prd/20-evaluation/M2-old-product-evaluation-prd-v0.1.md",
+    "docs/api/M2-old-product-evaluation-api-contract-v0.1.md",
+    "docs/technical-design/M2-old-product-evaluation-data-model-v0.1.md",
+    "docs/product/M2-old-product-evaluation-pages-v0.1.md",
+    "docs/validation/M2-old-product-evaluation-test-plan-v0.1.md",
+    "docs/analysis/m1-master-data/M2-A-old-product-evaluation-design-summary-v0.1.json"
+  ]
+}
