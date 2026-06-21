@@ -12,11 +12,15 @@
     "db:check": "node src/cli/check-db.js",
     "lint": "node tools/node/check-syntax.mjs",
     "build": "node tools/node/check-syntax.mjs",
-    "test": "node --test",
+    "test": "node --test test/admin.test.js test/api.test.js test/config.test.js test/db-query.test.js test/health.test.js test/smoke-safety.test.js test/fixtures/syntheticBusinessData.js",
+    "test:e2e": "node --test test/e2e/admin.e2e.test.js",
     "smoke": "node tools/dev-smoke/run-api-smoke.mjs",
     "check:no-real-data": "node scripts/check-no-real-data.mjs"
   },
   "dependencies": {
     "pg": "^8.16.3"
+  },
+  "devDependencies": {
+    "playwright": "^1.61.0"
   }
 }

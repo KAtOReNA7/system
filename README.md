@@ -28,6 +28,34 @@ v0.2 将 v0.1 的业务汇总稿改造成更适合 Codex 长期维护的文档�
 9. `docs/prd/00-governance/traceability.md`
 10. `NEXT-CODEX-INSTRUCTION.md`
 
+## M1 本地验证命令
+
+当前 M1 应用和最小只读管理端使用 Node.js、原生 HTTP 服务和 PostgreSQL 驱动。
+
+常规验证：
+
+```bash
+npm run lint
+npm run build
+npm test
+npm run smoke
+npm run check:no-real-data
+```
+
+管理端浏览器 E2E：
+
+```bash
+npm run test:e2e
+```
+
+E2E 使用 Playwright 启动本地临时 HTTP 服务和 Chromium 浏览器，仅访问 `/admin`、前端 fixture 和无数据库配置的降级态。首次在新机器运行前，如本地尚未安装 Playwright 浏览器，请执行：
+
+```bash
+npx playwright install chromium
+```
+
+E2E 禁止连接正式数据库、读取或导入真实账单、数字版权台账、运营确认结果，且不应修改 `db/migrations/`。
+
 ## 版本边界
 
 - 本包冻结 M1 开发前的业务语义、数据边界和验收框架。
