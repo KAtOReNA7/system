@@ -1,5 +1,5 @@
 import pg from "pg";
-import { databaseNotConfigured } from "../errors.js";
+import { AppError, databaseNotConfigured, databaseUnavailable } from "../errors.js";
 
 const { Pool } = pg;
 
@@ -28,6 +28,11 @@ export async function withDatabaseClient(connectionString, roleName, application
     } finally {
       client.release();
     }
+  } catch (error) {
+    if (error instanceof AppError) {
+      throw error;
+    }
+    throw databaseUnavailable(roleName);
   } finally {
     await pool.end();
   }

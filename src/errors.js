@@ -51,3 +51,7 @@ export function badRequest(message) {
 export function databaseNotConfigured(role) {
   return new AppError("database_not_configured", `${role} database connection is not configured`, 503);
 }
+
+export function databaseUnavailable(role) {
+  return new AppError("database_unavailable", `${role} database is unavailable`, 503);
+}

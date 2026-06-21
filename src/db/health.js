@@ -1,5 +1,4 @@
 import pg from "pg";
-import { sanitizeError } from "../errors.js";
 
 const { Pool } = pg;
 
@@ -122,13 +121,12 @@ export async function checkDatabaseHealth(config, options = {}) {
     } finally {
       client.release();
     }
-  } catch (error) {
-    const sanitized = sanitizeError(error);
+  } catch {
     return {
       status: "degraded",
       database: {
         connected: false,
-        reason: sanitized.code
+        reason: "database_unavailable"
       }
     };
   } finally {

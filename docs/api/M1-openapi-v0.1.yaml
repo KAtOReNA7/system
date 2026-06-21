@@ -103,7 +103,7 @@ paths:
                       mappingVersionReady: false
                       billImportReady: false
         "503":
-          $ref: "#/components/responses/DatabaseNotConfigured"
+          $ref: "#/components/responses/DatabaseDependencyError"
         "500":
           $ref: "#/components/responses/InternalError"
   /api/works:
@@ -146,7 +146,7 @@ paths:
         "400":
           $ref: "#/components/responses/BadRequest"
         "503":
-          $ref: "#/components/responses/DatabaseNotConfigured"
+          $ref: "#/components/responses/DatabaseDependencyError"
         "500":
           $ref: "#/components/responses/InternalError"
   /api/works/{id}:
@@ -183,7 +183,7 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound"
         "503":
-          $ref: "#/components/responses/DatabaseNotConfigured"
+          $ref: "#/components/responses/DatabaseDependencyError"
         "500":
           $ref: "#/components/responses/InternalError"
   /api/mapping-versions:
@@ -226,7 +226,7 @@ paths:
         "400":
           $ref: "#/components/responses/BadRequest"
         "503":
-          $ref: "#/components/responses/DatabaseNotConfigured"
+          $ref: "#/components/responses/DatabaseDependencyError"
         "500":
           $ref: "#/components/responses/InternalError"
   /api/mapping-versions/{id}:
@@ -255,7 +255,7 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound"
         "503":
-          $ref: "#/components/responses/DatabaseNotConfigured"
+          $ref: "#/components/responses/DatabaseDependencyError"
         "500":
           $ref: "#/components/responses/InternalError"
   /api/jobs:
@@ -299,7 +299,7 @@ paths:
         "400":
           $ref: "#/components/responses/BadRequest"
         "503":
-          $ref: "#/components/responses/DatabaseNotConfigured"
+          $ref: "#/components/responses/DatabaseDependencyError"
         "500":
           $ref: "#/components/responses/InternalError"
   /api/jobs/{id}:
@@ -328,7 +328,7 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound"
         "503":
-          $ref: "#/components/responses/DatabaseNotConfigured"
+          $ref: "#/components/responses/DatabaseDependencyError"
         "500":
           $ref: "#/components/responses/InternalError"
 components:
@@ -391,6 +391,25 @@ components:
                 error:
                   code: database_not_configured
                   message: application_ro database connection is not configured
+                  requestId: 018f7ae0-0c66-73e2-8d2f-9f4c0e6b8330
+    DatabaseDependencyError:
+      description: Database dependency is either not configured or unavailable.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          examples:
+            databaseNotConfigured:
+              value:
+                error:
+                  code: database_not_configured
+                  message: application_ro database connection is not configured
+                  requestId: 018f7ae0-0c66-73e2-8d2f-9f4c0e6b8330
+            databaseUnavailable:
+              value:
+                error:
+                  code: database_unavailable
+                  message: application_ro database is unavailable
                   requestId: 018f7ae0-0c66-73e2-8d2f-9f4c0e6b8330
     InternalError:
       description: Unexpected server error. Public response must not expose connection strings, passwords, SQL, stack traces, host ports, or real business data.
@@ -475,7 +494,7 @@ components:
           const: false
         reason:
           type: string
-          enum: [database_not_configured, database_unavailable, database_check_failed]
+          enum: [database_not_configured, database_unavailable]
     SystemStatusResponse:
       type: object
       required: [status, system]

@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import http from "node:http";
 import test from "node:test";
 import { createApp } from "../src/http/app.js";
+import { databaseUnavailable } from "../src/errors.js";
 import {
   syntheticJobs,
   syntheticMappingVersions,
@@ -43,6 +44,7 @@ test("GET /api/system/status returns a clear error when database is not configur
   assert.equal(response.statusCode, 503);
   assert.equal(response.body.error.code, "database_not_configured");
   assert.equal(typeof response.body.error.requestId, "string");
+  assert.equal(response.requestId, response.body.error.requestId);
 });
 
 test("GET /api/system/status returns system readiness from repository", async () => {
@@ -57,6 +59,7 @@ test("GET /api/system/status returns system readiness from repository", async ()
   const response = await request(app, "/api/system/status");
 
   assert.equal(response.statusCode, 200);
+  assert.equal(typeof response.requestId, "string");
   assert.deepEqual(response.body, {
     status: "ok",
     system: {
@@ -65,6 +68,22 @@ test("GET /api/system/status returns system readiness from repository", async ()
       billImportReady: false
     }
   });
+});
+
+test("business APIs return database_unavailable for configured but unavailable database", async () => {
+  const app = createApp(baseConfig, {
+    listWorks: async () => {
+      throw databaseUnavailable("application_ro");
+    }
+  });
+
+  const response = await request(app, "/api/works");
+
+  assert.equal(response.statusCode, 503);
+  assert.equal(response.body.error.code, "database_unavailable");
+  assert.equal(response.body.error.message, "application_ro database is unavailable");
+  assert.equal(response.body.error.requestId, response.requestId);
+  assert.equal(JSON.stringify(response.body).includes("postgresql://"), false);
 });
 
 test("GET /api/works returns an empty list for an empty database repository", async () => {

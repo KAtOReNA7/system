@@ -115,7 +115,7 @@ x-request-id: <uuid>
 | `bad_request` | 400 | 参数错误，例如非法分页或非法 ID |
 | `not_found` | 404 | 路由或资源不存在 |
 | `database_not_configured` | 503 | 所需数据库 URL 未配置 |
-| `database_unavailable` | 503 | 数据库不可用；当前作为契约保留码，后续 DB 错误归一化时使用 |
+| `database_unavailable` | 503 | 数据库 URL 已配置，但连接、查询或数据库依赖不可用 |
 | `internal_error` | 500 | 未预期错误 |
 
 错误响应不得暴露：
@@ -130,7 +130,11 @@ x-request-id: <uuid>
 说明：
 
 - `/health/db` 是健康检查接口，数据库异常以 `status: "degraded"` 和 `database.reason` 表达，不使用统一 `error` 包装。
+- `/health/db` 在数据库 URL 未配置时返回 `database.reason=database_not_configured`。
+- `/health/db` 在数据库 URL 已配置但不可连接、不可查询或依赖检查失败时返回 `database.reason=database_unavailable`。
 - 业务 API 的公开错误响应使用统一 `error` 包装。
+- 业务 API 在数据库 URL 未配置时返回统一 `error.code=database_not_configured`。
+- 业务 API 在数据库 URL 已配置但不可用时返回统一 `error.code=database_unavailable`。
 
 ## 4. API 明细
 

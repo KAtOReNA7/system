@@ -102,7 +102,7 @@
 - `database_unavailable`
 - `internal_error`
 
-说明：`database_unavailable` 已作为契约保留码记录，后续若要严格归一化所有数据库连接/查询异常，需要单独实现小修订。
+说明：后续小修订已将 `database_unavailable` 明确为数据库 URL 已配置但连接、查询或数据库依赖不可用时的统一 503 错误码。
 
 ## 5. 最小管理端页面设计
 
