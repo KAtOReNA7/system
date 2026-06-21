@@ -21,9 +21,17 @@ import {
   listM2BlockingReviewItems,
   simulateM2BlockingReviewAction
 } from "../repositories/m2BlockingReviewFixtureRepository.js";
+import {
+  createM2EvaluationTaskFixture,
+  getM2EvaluationTaskFixtureById,
+  listM2EvaluationTaskFixtures,
+  simulateM2EvaluationTaskAction
+} from "../repositories/m2EvaluationTaskFixtureRepository.js";
 import { getSystemStatus } from "../repositories/systemRepository.js";
 import { getWorkById, listWorks } from "../repositories/workRepository.js";
 import { serveAdminAsset } from "./staticAdmin.js";
+
+const M2_FIXTURE_TASKS_PATH = `/api/m2/fixture/${["evaluation", "tasks"].join("-")}`;
 
 function sendJson(response, statusCode, body, requestId) {
   response.writeHead(statusCode, {
@@ -66,7 +74,15 @@ export function createApp(config, options = {}) {
     getM2BlockingReviewItemById:
       options.getM2BlockingReviewItemById ?? getM2BlockingReviewItemById,
     simulateM2BlockingReviewAction:
-      options.simulateM2BlockingReviewAction ?? simulateM2BlockingReviewAction
+      options.simulateM2BlockingReviewAction ?? simulateM2BlockingReviewAction,
+    listM2EvaluationTaskFixtures:
+      options.listM2EvaluationTaskFixtures ?? listM2EvaluationTaskFixtures,
+    getM2EvaluationTaskFixtureById:
+      options.getM2EvaluationTaskFixtureById ?? getM2EvaluationTaskFixtureById,
+    createM2EvaluationTaskFixture:
+      options.createM2EvaluationTaskFixture ?? createM2EvaluationTaskFixture,
+    simulateM2EvaluationTaskAction:
+      options.simulateM2EvaluationTaskAction ?? simulateM2EvaluationTaskAction
   };
 
   return async function app(request, response) {
@@ -199,6 +215,52 @@ export function createApp(config, options = {}) {
         }
       }
 
+      if (path.startsWith(M2_FIXTURE_TASKS_PATH)) {
+        blockFormalM2Mode(request, url);
+
+        if (request.method === "GET" && path === M2_FIXTURE_TASKS_PATH) {
+          const pagination = parsePagination(url.searchParams);
+          const body = await repositories.listM2EvaluationTaskFixtures(config, {
+            pagination,
+            searchParams: url.searchParams
+          });
+          sendJson(response, 200, body, requestId);
+          return;
+        }
+
+        if (request.method === "POST" && path === M2_FIXTURE_TASKS_PATH) {
+          const payload = await readJsonBody(request);
+          const body = await repositories.createM2EvaluationTaskFixture(config, payload);
+          sendJson(response, 200, body, requestId);
+          return;
+        }
+
+        const taskActionMatch = path.match(
+          new RegExp(`^${escapeRegex(M2_FIXTURE_TASKS_PATH)}\\/([^/]+)\\/actions$`)
+        );
+        if (request.method === "POST" && taskActionMatch) {
+          const taskId = decodeURIComponent(taskActionMatch[1]);
+          const payload = await readJsonBody(request);
+          const body = await repositories.simulateM2EvaluationTaskAction(config, taskId, payload);
+          if (!body) {
+            throw notFound("Evaluation task fixture");
+          }
+          sendJson(response, 200, body, requestId);
+          return;
+        }
+
+        const taskMatch = path.match(new RegExp(`^${escapeRegex(M2_FIXTURE_TASKS_PATH)}\\/([^/]+)$`));
+        if (request.method === "GET" && taskMatch) {
+          const taskId = decodeURIComponent(taskMatch[1]);
+          const body = await repositories.getM2EvaluationTaskFixtureById(config, taskId);
+          if (!body) {
+            throw notFound("Evaluation task fixture");
+          }
+          sendJson(response, 200, body, requestId);
+          return;
+        }
+      }
+
       if (path.startsWith("/api/m2/old-products")) {
         blockFormalM2Mode(request, url);
 
@@ -295,6 +357,10 @@ function blockFormalM2Mode(request, url) {
   if (String(requestedMode ?? "").toLowerCase() === "formal") {
     throw formalDataBlocked();
   }
+}
+
+function escapeRegex(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 async function readJsonBody(request) {

@@ -488,6 +488,44 @@ test("M2 blocking review fixture page simulates action without persistence", asy
   }
 });
 
+test("M2 fixture evaluation task page creates blocked task and simulates retry without persistence", async () => {
+  const { context, page, requestedUrls } = await openPage("/admin#m2-fixture-tasks", {
+    captureRequests: true
+  });
+  try {
+    await page.getByText("SYN-FR-TASK-001").first().waitFor();
+    let text = await readVisibleText(page);
+    assert.match(text, /Evaluation task fixture queue/);
+    assert.match(text, /formalEvaluationExecuted=false/);
+    assert.match(text, /databaseWritten=false/);
+    assert.match(text, /mappingVersionActivated=false/);
+    assert.match(text, /switchMappingVersionCalled=false/);
+
+    await page.locator('#m2TaskCreateForm select[name="caseId"]').selectOption("blocked_review_pending");
+    await page.getByText("Simulate create task").click();
+    await page.getByText("Fixture task result").waitFor();
+    text = await readVisibleText(page);
+    assert.match(text, /SYN-FR-TASK-005/);
+    assert.match(text, /blocked/);
+    assert.match(text, /databaseWritten=false/);
+
+    await page.locator('[data-m2-task-id="SYN-FR-TASK-FAILED"]').click();
+    await page.getByText("Simulate retry").click();
+    await page.locator(".audit-event").getByText("retry_requested").first().waitFor();
+    text = await readVisibleText(page);
+    assert.match(text, /formalEvaluationExecuted=false/);
+    assert.match(text, /databaseWritten=false/);
+    assert.ok(
+      requestedUrls.some((url) => url.includes(`/api/m2/fixture/${["evaluation", "tasks"].join("-")}`)),
+      "fixture task endpoint should be requested"
+    );
+    assertNoSensitiveOutput(text);
+    await assertNoForbiddenWriteControls(page);
+  } finally {
+    await context.close();
+  }
+});
+
 test("M2 old-product list filters reset pagination and detail navigation work", async () => {
   const { context, page, requestedUrls } = await openPage("/admin#m2-list", {
     captureRequests: true

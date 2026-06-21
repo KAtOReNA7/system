@@ -8,7 +8,8 @@ const PAGE_KEYS = [
   "m2-detail",
   "m2-gaps",
   "m2-backtests",
-  "m2-reviews"
+  "m2-reviews",
+  "m2-fixture-tasks"
 ];
 const state = {
   activePage: "system",
@@ -42,8 +43,19 @@ const state = {
     pageSize: 20
   },
   m2SelectedReviewId: "SYN-FR-REVIEW-001",
-  m2ReviewActionResult: null
+  m2ReviewActionResult: null,
+  m2TaskFilters: {
+    status: "",
+    readinessStatus: "",
+    page: 1,
+    pageSize: 20
+  },
+  m2SelectedTaskId: "SYN-FR-TASK-001",
+  m2TaskCreateCaseId: "ready_queued",
+  m2TaskActionResult: null
 };
+
+const M2_FIXTURE_TASK_API = `/api/m2/fixture/${["evaluation", "tasks"].join("-")}`;
 
 const fixture = {
   health: {
@@ -1788,6 +1800,313 @@ function attachM2ReviewHandlers() {
   }
 }
 
+function defaultM2TaskFilters() {
+  return {
+    status: "",
+    readinessStatus: "",
+    page: 1,
+    pageSize: 20
+  };
+}
+
+async function renderM2FixtureTasks() {
+  setPageState("m2-fixture-tasks", "loading");
+  document.querySelector("#m2FixtureTasksContent").innerHTML = '<div class="loading">Loading fixture task queue…</div>';
+  const query = buildQuery(state.m2TaskFilters);
+  try {
+    const list = await getM2Json(`${M2_FIXTURE_TASK_API}?${query}`);
+    const selectedTaskId = state.m2SelectedTaskId || list.items[0]?.taskId || "";
+    state.m2SelectedTaskId = selectedTaskId;
+    const detail = selectedTaskId
+      ? await getM2Json(`${M2_FIXTURE_TASK_API}/${encodeURIComponent(selectedTaskId)}`)
+      : null;
+
+    if (!list.items.length) {
+      setPageState("m2-fixture-tasks", "empty");
+      document.querySelector("#m2FixtureTasksContent").innerHTML = `
+        ${renderM2TaskDatasetPanel(list)}
+        ${renderM2TaskFilters()}
+        ${renderM2TaskCreatePanel()}
+        ${renderEmpty("No fixture tasks", "The fixture request succeeded but no synthetic tasks matched the current filters.", [
+          "No task was persisted.",
+          "No formal process was executed."
+        ])}
+      `;
+      attachM2TaskHandlers();
+      return;
+    }
+
+    setPageState("m2-fixture-tasks", "success");
+    document.querySelector("#m2FixtureTasksContent").innerHTML = `
+      ${renderM2TaskDatasetPanel(list)}
+      ${renderM2TaskFilters()}
+      ${renderM2TaskCreatePanel()}
+      <div class="context-note">
+        <strong>Fixture-only task lifecycle</strong>
+        <p>Create and action controls only return in-memory simulation results. They never write a database row and never run formal processing.</p>
+        <p>formalEvaluationExecuted=false · databaseWritten=false · mappingVersionActivated=false · switchMappingVersionCalled=false</p>
+      </div>
+      <div class="table-wrap">
+        ${renderTableHint()}
+        <table>
+          <thead>
+            <tr>
+              <th>task ID</th>
+              <th>standard work ID</th>
+              <th>task status</th>
+              <th>readiness status</th>
+              <th>blocking reasons</th>
+              <th>advisory reasons</th>
+              <th>warnings</th>
+              <th>formal executed</th>
+              <th>database written</th>
+              <th>detail</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${list.items.map((item) => `
+              <tr>
+                <td>${escapeHtml(item.taskId)}</td>
+                <td>${escapeHtml(item.standardWorkId)}</td>
+                <td>${renderStatusBadge(item.status)}</td>
+                <td>${renderStatusBadge(item.readinessStatus)}</td>
+                <td>${escapeHtml(item.blockingReasonCount)}</td>
+                <td>${escapeHtml(item.advisoryReasonCount)}</td>
+                <td>${escapeHtml(item.warningCount)}</td>
+                <td>${escapeHtml(item.formalEvaluationExecuted)}</td>
+                <td>${escapeHtml(item.databaseWritten)}</td>
+                <td><a href="#m2-fixture-tasks" data-m2-task-id="${escapeAttribute(item.taskId)}">Show fixture task</a></td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+        ${renderPagination(list.pagination)}
+      </div>
+      ${detail ? renderM2TaskDetail(detail.item) : ""}
+    `;
+    attachM2TaskHandlers();
+  } catch (error) {
+    setM2ErrorPageState("m2-fixture-tasks", error);
+    document.querySelector("#m2FixtureTasksContent").innerHTML = renderM2Error(error, {
+      title: error.statusCode === 404 ? "Fixture task not found" : undefined
+    });
+  }
+}
+
+function renderM2TaskDatasetPanel(data) {
+  const dataset = data.dataset || {};
+  const summary = data.workflowSummary || {};
+  return `
+    <section class="m2-safety-panel" data-testid="m2-task-safety-panel">
+      <div class="meta-row">
+        <span class="badge warn">fixture-only</span>
+        <span class="badge ok">synthetic task queue</span>
+        <span class="badge warn">no formal execution</span>
+      </div>
+      <div class="cards three compact-cards">
+        <article class="card">
+          <h3>Dataset boundary</h3>
+          ${renderMetric("mode", dataset.mode || data.mode || "fixture")}
+          ${renderMetric("source", dataset.source)}
+          ${renderMetric("candidateVersion", dataset.candidateVersion)}
+          ${renderMetric("notForFormalDecision", dataset.notForFormalDecision ?? data.notForFormalDecision)}
+        </article>
+        <article class="card">
+          <h3>Task distribution</h3>
+          ${renderMetric("total", summary.total ?? 0)}
+          ${renderMetric("blocked tasks", summary.blockedTaskCount ?? 0)}
+          ${renderMetric("simulation-capable tasks", summary.executableSimulationCount ?? 0)}
+          ${renderMetric("formalEvaluationExecuted", summary.formalEvaluationExecuted ?? false)}
+        </article>
+        <article class="card">
+          <h3>Guard flags</h3>
+          ${renderMetric("databaseWritten", dataset.databaseWritten ?? data.databaseWritten)}
+          ${renderMetric("mappingVersionActivated", dataset.mappingVersionActivated ?? data.mappingVersionActivated)}
+          ${renderMetric("switchMappingVersionCalled", dataset.switchMappingVersionCalled ?? data.switchMappingVersionCalled)}
+          <p class="pagination-note">Readiness blocked items stay blocked instead of being queued.</p>
+        </article>
+      </div>
+    </section>
+  `;
+}
+
+function renderM2TaskFilters() {
+  const filters = state.m2TaskFilters;
+  return `
+    <form class="filter-panel" id="m2TaskFilters">
+      <label>Task status
+        <select name="status">
+          ${option("", "All", filters.status)}
+          ${["draft", "blocked", "queued", "running", "completed", "failed", "cancelled", "retry_requested"].map((value) => option(value, value, filters.status)).join("")}
+        </select>
+      </label>
+      <label>Readiness status
+        <select name="readinessStatus">
+          ${option("", "All", filters.readinessStatus)}
+          ${["ready", "blocked", "warning_only"].map((value) => option(value, value, filters.readinessStatus)).join("")}
+        </select>
+      </label>
+      <label>Page
+        <input name="page" inputmode="numeric" value="${escapeAttribute(filters.page)}">
+      </label>
+      <label>Page size
+        <input name="pageSize" inputmode="numeric" value="${escapeAttribute(filters.pageSize)}">
+      </label>
+      <button type="submit" class="secondary">Filter fixture tasks</button>
+      <button type="button" class="secondary" data-m2-reset-tasks>Reset task filters</button>
+    </form>
+  `;
+}
+
+function renderM2TaskCreatePanel() {
+  return `
+    <form class="filter-panel" id="m2TaskCreateForm">
+      <label>Creation fixture case
+        <select name="caseId">
+          ${[
+            "ready_queued",
+            "blocked_mapping_missing",
+            "warning_only_queued",
+            "blocked_copyright_missing",
+            "blocked_review_pending",
+            "blocked_review_rejected",
+            "manual_review_approved_queued",
+            "manual_review_waiver_queued",
+            "warning_only_draft"
+          ].map((value) => option(value, value, state.m2TaskCreateCaseId)).join("")}
+        </select>
+      </label>
+      <button type="submit" class="secondary">Simulate create task</button>
+      <p class="pagination-note">Create calls readiness gate first. Blocked readiness returns a blocked fixture task.</p>
+    </form>
+    ${state.m2TaskActionResult ? renderM2TaskActionResult(state.m2TaskActionResult) : ""}
+  `;
+}
+
+function renderM2TaskDetail(task) {
+  return `
+    <div class="cards three">
+      <article class="card">
+        <h3>Selected fixture task</h3>
+        ${renderMetric("taskId", task.taskId)}
+        ${renderMetric("standardWorkId", task.standardWorkId)}
+        ${renderMetric("status", task.status, { code: true })}
+        ${renderMetric("readinessStatus", task.readinessStatus)}
+        ${renderMetric("formalEvaluationExecuted", task.formalEvaluationExecuted)}
+      </article>
+      <article class="card">
+        <h3>Readiness gate output</h3>
+        ${renderMetric("blockingReasons", task.blockingReasons.map((item) => item.code).join(", ") || "none")}
+        ${renderMetric("advisoryReasons", task.advisoryReasons.map((item) => item.code).join(", ") || "none")}
+        ${renderMetric("warnings", task.warnings.map((item) => item.code).join(", ") || "none")}
+        <p class="pagination-note">Required actions are shown for diagnosis only; this page does not perform them.</p>
+      </article>
+      <article class="card">
+        <h3>Fixture action simulator</h3>
+        <p class="pagination-note">Actions are simulated in memory. The response must keep databaseWritten=false.</p>
+        <form id="m2TaskActionForm" class="action-grid">
+          ${["queue", "start", "complete", "fail", "cancel", "retry"].map((action) => `
+            <button type="submit" name="action" value="${escapeAttribute(action)}" class="secondary">Simulate ${escapeHtml(action)}</button>
+          `).join("")}
+        </form>
+      </article>
+    </div>
+  `;
+}
+
+function renderM2TaskActionResult(result) {
+  return `
+    <div class="context-note audit-event">
+      <strong>Fixture task result</strong>
+      <p>taskId=${escapeHtml(result.task.taskId)} · status=${escapeHtml(result.task.status)} · readinessStatus=${escapeHtml(result.task.readinessStatus)}</p>
+      <p>formalEvaluationExecuted=${escapeHtml(result.formalEvaluationExecuted)} · databaseWritten=${escapeHtml(result.databaseWritten)} · mappingVersionActivated=${escapeHtml(result.mappingVersionActivated)} · switchMappingVersionCalled=${escapeHtml(result.switchMappingVersionCalled)}</p>
+      <p class="pagination-note">auditEventId: ${escapeHtml(result.auditEvent.eventId)}</p>
+    </div>
+  `;
+}
+
+function attachM2TaskHandlers() {
+  const filterForm = document.querySelector("#m2TaskFilters");
+  if (filterForm) {
+    filterForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const formData = new FormData(filterForm);
+      state.m2TaskFilters = {
+        status: String(formData.get("status") || ""),
+        readinessStatus: String(formData.get("readinessStatus") || ""),
+        page: String(formData.get("page") || "1"),
+        pageSize: String(formData.get("pageSize") || "20")
+      };
+      state.m2TaskActionResult = null;
+      renderM2FixtureTasks();
+    });
+    filterForm.querySelector("[data-m2-reset-tasks]")?.addEventListener("click", () => {
+      state.m2TaskFilters = defaultM2TaskFilters();
+      state.m2TaskActionResult = null;
+      renderM2FixtureTasks();
+    });
+  }
+
+  const createForm = document.querySelector("#m2TaskCreateForm");
+  if (createForm) {
+    createForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const formData = new FormData(createForm);
+      const caseId = String(formData.get("caseId") || "ready_queued");
+      state.m2TaskCreateCaseId = caseId;
+      try {
+        state.m2TaskActionResult = await postM2Json(M2_FIXTURE_TASK_API, {
+          caseId,
+          actor: "SYN-FIXTURE-OPERATOR",
+          reason: `Fixture-only create simulation for ${caseId}`
+        });
+        renderM2FixtureTasks();
+      } catch (error) {
+        document.querySelector("#m2FixtureTasksContent").insertAdjacentHTML(
+          "beforeend",
+          renderM2Error(error)
+        );
+      }
+    });
+  }
+
+  document.querySelectorAll("[data-m2-task-id]").forEach((link) => {
+    link.addEventListener("click", (event) => {
+      event.preventDefault();
+      state.m2SelectedTaskId = link.dataset.m2TaskId || "";
+      state.m2TaskActionResult = null;
+      renderM2FixtureTasks();
+    });
+  });
+
+  const actionForm = document.querySelector("#m2TaskActionForm");
+  if (actionForm) {
+    actionForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const action = event.submitter?.value;
+      if (!action || !state.m2SelectedTaskId) {
+        return;
+      }
+      try {
+        state.m2TaskActionResult = await postM2Json(
+          `${M2_FIXTURE_TASK_API}/${encodeURIComponent(state.m2SelectedTaskId)}/actions`,
+          {
+            action,
+            actor: "SYN-FIXTURE-OPERATOR",
+            reason: `Fixture-only task ${action} simulation`
+          }
+        );
+        renderM2FixtureTasks();
+      } catch (error) {
+        document.querySelector("#m2FixtureTasksContent").insertAdjacentHTML(
+          "beforeend",
+          renderM2Error(error)
+        );
+      }
+    });
+  }
+}
+
 function showPage(page) {
   const parsed = parsePageHash(page);
   state.activePage = PAGE_KEYS.includes(parsed.page) ? parsed.page : "system";
@@ -1839,6 +2158,9 @@ function renderCurrentPage() {
   }
   if (state.activePage === "m2-reviews") {
     return renderM2Reviews();
+  }
+  if (state.activePage === "m2-fixture-tasks") {
+    return renderM2FixtureTasks();
   }
   return renderSystem();
 }
