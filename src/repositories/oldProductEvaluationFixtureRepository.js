@@ -24,6 +24,8 @@ const ALLOWED_QUERY_KEYS = new Set([
   "cutoffMonth"
 ]);
 
+const ALLOWED_GAP_QUERY_KEYS = new Set([...ALLOWED_QUERY_KEYS, "gapCode", "severity"]);
+
 const ALLOWED_BACKTEST_QUERY_KEYS = new Set([
   "page",
   "pageSize",
@@ -57,6 +59,21 @@ const RISKS = ["high", "medium", "low"];
 const BUSINESS_FORMS = ["audio_copyright", "audio_product"];
 const READINESS = ["ready", "blocked"];
 const RESULT_STATUSES = ["current", "historical", "invalidated"];
+const GAP_CODES = [
+  "missing_income_fact",
+  "mapping_not_active",
+  "missing_standard_work_name",
+  "missing_author",
+  "missing_classification",
+  "missing_required_tags",
+  "missing_copyright_start",
+  "missing_copyright_end",
+  "copyright_expired",
+  "pending_tag_configuration",
+  "unresolved_data_issue",
+  "incomplete_month_only"
+];
+const GAP_SEVERITIES = ["high", "medium", "low"];
 
 export function getM2OldProductDataset() {
   return clone(M2_OLD_PRODUCT_DATASET);
@@ -134,7 +151,12 @@ export async function getM2OldProductEvaluationById(_config, standardWorkId) {
 }
 
 export async function listM2OldProductReadinessGaps(_config, { pagination, searchParams }) {
-  validateQueryKeys(searchParams, ALLOWED_QUERY_KEYS);
+  validateQueryKeys(searchParams, ALLOWED_GAP_QUERY_KEYS);
+  const gapCode = searchParams.get("gapCode");
+  const severity = searchParams.get("severity");
+  validateAllowedValue(gapCode, GAP_CODES, "gapCode");
+  validateAllowedValue(severity, GAP_SEVERITIES, "severity");
+
   const rows = applyEvaluationFilters(M2_OLD_PRODUCT_EVALUATIONS, searchParams)
     .flatMap((item) =>
       item.readiness.gaps.map((gap) => ({
@@ -144,8 +166,14 @@ export async function listM2OldProductReadinessGaps(_config, { pagination, searc
         gapCode: gap.code,
         severity: gap.severity,
         message: gap.message,
-        cutoffMonth: item.cutoffMonth
+        cutoffMonth: item.cutoffMonth,
+        blocksFormalEvaluation: item.readiness.status === "blocked",
+        suggestedOwnerAction: gap.message
       }))
+    )
+    .filter((row) =>
+      (!gapCode || row.gapCode === gapCode) &&
+      (!severity || row.severity === severity)
     );
 
   return withDataset({

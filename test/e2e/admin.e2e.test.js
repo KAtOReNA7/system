@@ -420,3 +420,128 @@ test("M2 old-product mobile tables remain contained and scrollable", async () =>
     }
   }
 });
+
+test("M2 old-product overview distribution links navigate to filtered list", async () => {
+  const { context, page, requestedUrls } = await openPage("/admin#m2-overview", {
+    captureRequests: true
+  });
+  try {
+    await page.locator('[data-m2-filter-key="rating"][data-m2-filter-value="S+"]').click();
+    await page.waitForFunction(() => location.hash === "#m2-list");
+    await page.getByText("Current filters").waitFor();
+    const text = await readVisibleText(page);
+    assert.match(text, /rating=S\+/);
+    assert.match(text, /SYN-WORK-0001/);
+    assert.ok(
+      requestedUrls.some((url) => url.includes("/api/m2/old-products/evaluations?") && url.includes("rating=S%2B")),
+      "filtered list should be fetched from M2 API with rating query"
+    );
+    assertNoSensitiveOutput(text);
+    await assertNoForbiddenWriteControls(page);
+  } finally {
+    await context.close();
+  }
+});
+
+test("M2 old-product list filters reset pagination and detail navigation work", async () => {
+  const { context, page, requestedUrls } = await openPage("/admin#m2-list", {
+    captureRequests: true
+  });
+  try {
+    await page.getByText("SYN-WORK-0001").waitFor();
+    await page.locator('#m2ListFilters input[name="query"]').fill("SYN-WORK-0003");
+    await page.locator('#m2ListFilters select[name="rating"]').selectOption("A");
+    await page.locator('#m2ListFilters select[name="lifecycle"]').selectOption("declining");
+    await page.locator('#m2ListFilters select[name="risk"]').selectOption("high");
+    await page.locator('#m2ListFilters select[name="readiness"]').selectOption("blocked");
+    await page.locator('#m2ListFilters select[name="resultStatus"]').selectOption("current");
+    await page.locator("#m2ListFilters").evaluate((form) => form.requestSubmit());
+
+    await page.waitForFunction(() => document.body.innerText.includes("query=SYN-WORK-0003"));
+    let text = await readVisibleText(page);
+    assert.match(text, /SYN-WORK-0003/);
+    assert.match(text, /risk=high/);
+    assert.ok(
+      requestedUrls.some((url) =>
+        url.includes("/api/m2/old-products/evaluations?") &&
+        url.includes("query=SYN-WORK-0003") &&
+        url.includes("risk=high")
+      ),
+      "list filters should request M2 API"
+    );
+
+    await page.getByText("View detail").first().click();
+    await page.waitForFunction(() => location.hash.startsWith("#m2-detail:SYN-WORK-0003"));
+    await page.getByText("Back to evaluation list").waitFor();
+    text = await readVisibleText(page);
+    assert.match(text, /SYN-WORK-0003/);
+    assert.match(text, /current-historical-invalidated summary/);
+
+    await page.getByText("Back to evaluation list").click();
+    await page.waitForFunction(() => location.hash === "#m2-list");
+    await page.getByText("Reset filters").click();
+    await page.getByText("default collection").waitFor();
+    text = await readVisibleText(page);
+    assert.match(text, /SYN-WORK-0001/);
+    assertNoSensitiveOutput(text);
+    await assertNoForbiddenWriteControls(page);
+  } finally {
+    await context.close();
+  }
+});
+
+test("M2 old-product readiness gaps filter through API", async () => {
+  const { context, page, requestedUrls } = await openPage("/admin#m2-gaps", {
+    captureRequests: true
+  });
+  try {
+    await page.getByText("Formal blocking reasons").waitFor();
+    await page.locator('#m2GapsFilters select[name="gapCode"]').selectOption("missing_classification");
+    await page.locator('#m2GapsFilters select[name="severity"]').selectOption("high");
+    await page.locator('#m2GapsFilters select[name="readiness"]').selectOption("blocked");
+    await page.locator("#m2GapsFilters").evaluate((form) => form.requestSubmit());
+
+    await page.waitForFunction(() => document.body.innerText.includes("gapCode=missing_classification"));
+    const text = await readVisibleText(page);
+    assert.match(text, /SYN-WORK-0003/);
+    assert.match(text, /blocks formal evaluation/i);
+    assert.ok(
+      requestedUrls.some((url) =>
+        url.includes("/api/m2/old-products/readiness-gaps?") &&
+        url.includes("gapCode=missing_classification") &&
+        url.includes("severity=high")
+      ),
+      "gap filters should request M2 API"
+    );
+    assertNoSensitiveOutput(text);
+    await assertNoForbiddenWriteControls(page);
+  } finally {
+    await context.close();
+  }
+});
+
+test("M2 old-product backtest selector renders selected batch detail", async () => {
+  const { context, page, requestedUrls } = await openPage("/admin#m2-backtests", {
+    captureRequests: true
+  });
+  try {
+    await page.getByText("Formal backtest blocked").waitFor();
+    await page.locator("#m2BacktestSelector").evaluate((form) => form.requestSubmit());
+    await page.locator("#m2BacktestDetail").waitFor();
+    const text = await readVisibleText(page);
+    assert.match(text, /fixtureOnly/);
+    assert.match(text, /SYN-BACKTEST-0001/);
+    assert.match(text, /covered/);
+    assert.match(text, /missed/);
+    assert.match(text, /over/);
+    assert.match(text, /under/);
+    assert.ok(
+      requestedUrls.some((url) => url.includes("/api/m2/old-products/backtests/SYN-BACKTEST-0001")),
+      "backtest detail should be fetched from M2 API"
+    );
+    assertNoSensitiveOutput(text);
+    await assertNoForbiddenWriteControls(page);
+  } finally {
+    await context.close();
+  }
+});

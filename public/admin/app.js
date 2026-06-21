@@ -17,11 +17,21 @@ const state = {
     query: "",
     rating: "",
     lifecycle: "",
+    risk: "",
     readiness: "",
+    resultStatus: "",
     sort: "updatedAt.desc",
     page: 1,
     pageSize: 20
-  }
+  },
+  m2GapFilters: {
+    gapCode: "",
+    severity: "",
+    readiness: "",
+    page: 1,
+    pageSize: 100
+  },
+  m2SelectedBacktestId: ""
 };
 
 const fixture = {
@@ -183,6 +193,14 @@ function escapeHtml(value) {
     .replaceAll('"', "&quot;");
 }
 
+function escapeAttribute(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+}
+
 function displayCode(value) {
   const code = text(value);
   const label = CODE_LABELS[code];
@@ -324,20 +342,59 @@ function setM2ErrorPageState(page, error) {
   setPageState(page, "error");
 }
 
-function renderDistribution(title, distribution = {}) {
+function renderDistribution(title, distribution = {}, filterKey = "") {
   return `
     <article class="card">
       <h3>${escapeHtml(title)}</h3>
       <div class="distribution-grid">
         ${Object.entries(distribution).map(([key, value]) => `
           <div>
-            <span>${escapeHtml(key)}</span>
+            ${filterKey
+              ? `<a href="#m2-list" data-m2-filter-key="${escapeAttribute(filterKey)}" data-m2-filter-value="${escapeAttribute(key)}">${escapeHtml(key)}</a>`
+              : `<span>${escapeHtml(key)}</span>`}
             <strong>${escapeHtml(value)}</strong>
           </div>
         `).join("")}
       </div>
     </article>
   `;
+}
+
+function applyM2ListFilter(filterKey, filterValue) {
+  state.m2ListFilters = {
+    ...defaultM2ListFilters(),
+    [filterKey]: filterValue,
+    page: 1
+  };
+  if (location.hash.replace("#", "") !== "m2-list") {
+    location.hash = "m2-list";
+    return;
+  }
+  renderM2List();
+}
+
+function defaultM2ListFilters() {
+  return {
+    query: "",
+    rating: "",
+    lifecycle: "",
+    risk: "",
+    readiness: "",
+    resultStatus: "",
+    sort: "updatedAt.desc",
+    page: 1,
+    pageSize: 20
+  };
+}
+
+function defaultM2GapFilters() {
+  return {
+    gapCode: "",
+    severity: "",
+    readiness: "",
+    page: 1,
+    pageSize: 100
+  };
 }
 
 function renderM2LifecycleBadge(value) {
@@ -765,9 +822,9 @@ async function renderM2Overview() {
         </article>
       </div>
       <div class="cards three">
-        ${renderDistribution("rating distribution", data.distribution.rating)}
-        ${renderDistribution("lifecycle distribution", data.distribution.lifecycle)}
-        ${renderDistribution("risk distribution", data.distribution.riskSeverity)}
+        ${renderDistribution("rating distribution", data.distribution.rating, "rating")}
+        ${renderDistribution("lifecycle distribution", data.distribution.lifecycle, "lifecycle")}
+        ${renderDistribution("risk distribution", data.distribution.riskSeverity, "risk")}
       </div>
       <div class="context-note">
         <strong>Notices</strong>
@@ -776,10 +833,20 @@ async function renderM2Overview() {
         </ul>
       </div>
     `;
+    attachM2OverviewDistributionHandlers();
   } catch (error) {
     setM2ErrorPageState("m2-overview", error);
     document.querySelector("#m2OverviewContent").innerHTML = renderM2Error(error);
   }
+}
+
+function attachM2OverviewDistributionHandlers() {
+  document.querySelectorAll("[data-m2-filter-key]").forEach((link) => {
+    link.addEventListener("click", (event) => {
+      event.preventDefault();
+      applyM2ListFilter(link.dataset.m2FilterKey, link.dataset.m2FilterValue);
+    });
+  });
 }
 
 async function renderM2List() {
@@ -793,6 +860,7 @@ async function renderM2List() {
       document.querySelector("#m2ListContent").innerHTML = `
         ${renderM2DatasetPanel(data.dataset)}
         ${renderM2ListFilters()}
+        ${renderM2CurrentFilterSummary(state.m2ListFilters)}
         ${renderEmpty("暂无符合条件的老品评估", "请求成功但当前筛选条件没有匹配记录。", [
           "这是正常 empty 状态。",
           "页面只读，不会创建评估任务。"
@@ -806,6 +874,7 @@ async function renderM2List() {
     document.querySelector("#m2ListContent").innerHTML = `
       ${renderM2DatasetPanel(data.dataset)}
       ${renderM2ListFilters()}
+      ${renderM2CurrentFilterSummary(state.m2ListFilters)}
       <div class="table-wrap">
         ${renderTableHint()}
         <table>
@@ -824,6 +893,7 @@ async function renderM2List() {
               <th>primary suggestion</th>
               <th>result status</th>
               <th>readiness</th>
+              <th>detail</th>
             </tr>
           </thead>
           <tbody>
@@ -842,6 +912,7 @@ async function renderM2List() {
                 <td>${escapeHtml(item.primarySuggestion)}</td>
                 <td>${escapeHtml(item.resultStatus)}</td>
                 <td>${renderM2ReadinessBadge(item.readiness)}</td>
+                <td><a href="#m2-detail:${encodeURIComponent(item.standardWorkId)}">View detail</a></td>
               </tr>
             `).join("")}
           </tbody>
@@ -861,7 +932,7 @@ function renderM2ListFilters() {
   return `
     <form class="filter-panel" id="m2ListFilters">
       <label>Search
-        <input name="query" value="${escapeHtml(filters.query)}" placeholder="SYN-WORK">
+        <input name="query" value="${escapeAttribute(filters.query)}" placeholder="SYN-WORK">
       </label>
       <label>Rating
         <select name="rating">
@@ -875,10 +946,22 @@ function renderM2ListFilters() {
           ${["growth", "stable", "declining", "long_tail", "inactive", "rebound", "insufficient_history"].map((value) => option(value, value, filters.lifecycle)).join("")}
         </select>
       </label>
+      <label>Risk
+        <select name="risk">
+          ${option("", "All", filters.risk)}
+          ${["high", "medium", "low"].map((value) => option(value, value, filters.risk)).join("")}
+        </select>
+      </label>
       <label>Readiness
         <select name="readiness">
           ${option("", "全部", filters.readiness)}
           ${["ready", "blocked"].map((value) => option(value, value, filters.readiness)).join("")}
+        </select>
+      </label>
+      <label>Result status
+        <select name="resultStatus">
+          ${option("", "All", filters.resultStatus)}
+          ${["current", "historical", "invalidated"].map((value) => option(value, value, filters.resultStatus)).join("")}
         </select>
       </label>
       <label>Sort
@@ -887,18 +970,53 @@ function renderM2ListFilters() {
         </select>
       </label>
       <label>Page
-        <input name="page" inputmode="numeric" value="${escapeHtml(filters.page)}">
+        <input name="page" inputmode="numeric" value="${escapeAttribute(filters.page)}">
       </label>
       <label>Page size
-        <input name="pageSize" inputmode="numeric" value="${escapeHtml(filters.pageSize)}">
+        <input name="pageSize" inputmode="numeric" value="${escapeAttribute(filters.pageSize)}">
       </label>
       <button type="submit" class="secondary">查询</button>
+      <button type="button" class="secondary" data-m2-reset-list>Reset filters</button>
     </form>
   `;
 }
 
 function option(value, label, selected) {
-  return `<option value="${escapeHtml(value)}" ${value === selected ? "selected" : ""}>${escapeHtml(label)}</option>`;
+  const optionValue = String(value ?? "");
+  const selectedValue = String(selected ?? "");
+  return `<option value="${escapeAttribute(optionValue)}" ${optionValue === selectedValue ? "selected" : ""}>${escapeHtml(label)}</option>`;
+}
+
+function m2FilterSummaryText(filters) {
+  const entries = Object.entries(filters).filter(([key, value]) => {
+    if (value === "" || value === null || value === undefined) {
+      return false;
+    }
+    if (key === "page" && String(value) === "1") {
+      return false;
+    }
+    if (key === "pageSize" && ["20", "100"].includes(String(value))) {
+      return false;
+    }
+    if (key === "sort" && value === "updatedAt.desc") {
+      return false;
+    }
+    return true;
+  });
+  if (!entries.length) {
+    return "default collection";
+  }
+  return entries.map(([key, value]) => `${key}=${value}`).join(", ");
+}
+
+function renderM2CurrentFilterSummary(filters) {
+  return `
+    <div class="context-note">
+      <strong>Current filters</strong>
+      <p>${escapeHtml(m2FilterSummaryText(filters))}</p>
+      <p class="pagination-note">Filtering is performed through the M2-B-1 fixture API, not by a frontend-only data shortcut.</p>
+    </div>
+  `;
 }
 
 function attachM2ListFilterHandlers() {
@@ -913,11 +1031,17 @@ function attachM2ListFilterHandlers() {
       query: String(formData.get("query") || ""),
       rating: String(formData.get("rating") || ""),
       lifecycle: String(formData.get("lifecycle") || ""),
+      risk: String(formData.get("risk") || ""),
       readiness: String(formData.get("readiness") || ""),
+      resultStatus: String(formData.get("resultStatus") || ""),
       sort: String(formData.get("sort") || "updatedAt.desc"),
       page: String(formData.get("page") || "1"),
       pageSize: String(formData.get("pageSize") || "20")
     };
+    renderM2List();
+  });
+  form.querySelector("[data-m2-reset-list]")?.addEventListener("click", () => {
+    state.m2ListFilters = defaultM2ListFilters();
     renderM2List();
   });
 }
@@ -933,6 +1057,11 @@ async function renderM2Detail() {
     const pessimisticScenario = data.forecast.scenarios.pessimistic;
     document.querySelector("#m2DetailContent").innerHTML = `
       ${renderM2DatasetPanel(data.dataset)}
+      <div class="context-note">
+        <a href="#m2-list">Back to evaluation list</a>
+        <p>Result status: ${escapeHtml(data.history?.[0]?.resultStatus || data.resultStatus || "current")} / current-historical-invalidated summary.</p>
+        <p>Input snapshot is fixture-only and must not be used for formal business decisions.</p>
+      </div>
       <div class="cards three">
         <article class="card">
           <h3>核心结论</h3>
@@ -972,6 +1101,7 @@ async function renderM2Detail() {
           ${renderMetric("base", baseScenario.forecastTotal)}
           ${renderMetric("optimistic", optimisticScenario.forecastTotal)}
           ${renderMetric("pessimistic", pessimisticScenario.forecastTotal)}
+          ${renderMetric("scenario structure", "base / optimistic / pessimistic")}
         </article>
         <article class="card">
           <h3>lifecycle rationale</h3>
@@ -994,6 +1124,8 @@ async function renderM2Detail() {
         </article>
         <article class="card">
           <h3>input snapshot</h3>
+          ${renderMetric("source", data.inputSnapshot.source)}
+          ${renderMetric("fixture-only", "true")}
           ${renderMetric("mappingVersion", data.inputSnapshot.mappingVersion)}
           ${renderMetric("basicInfoVersion", data.inputSnapshot.basicInfoVersion)}
           ${renderMetric("excludedMonths", data.inputSnapshot.excludedMonths.join(", "))}
@@ -1011,22 +1143,32 @@ async function renderM2Detail() {
 async function renderM2Gaps() {
   setPageState("m2-gaps", "loading");
   document.querySelector("#m2GapsContent").innerHTML = '<div class="loading">加载老品数据缺口…</div>';
+  const query = buildQuery(state.m2GapFilters);
   try {
-    const data = await getM2Json("/api/m2/old-products/readiness-gaps?page=1&pageSize=100");
+    const data = await getM2Json(`/api/m2/old-products/readiness-gaps?${query}`);
     if (!data.items.length) {
       setPageState("m2-gaps", "empty");
       document.querySelector("#m2GapsContent").innerHTML = `
         ${renderM2DatasetPanel(data.dataset)}
+        ${renderM2GapsFilters()}
+        ${renderM2CurrentFilterSummary(state.m2GapFilters)}
         ${renderEmpty("暂无 readiness gaps", "请求成功但当前没有缺口记录。", [
           "这只表示 fixture 当前筛选结果为空。",
           "页面不会创建任何补全任务。"
         ])}
       `;
+      attachM2GapsFilterHandlers();
       return;
     }
     setPageState("m2-gaps", "success");
     document.querySelector("#m2GapsContent").innerHTML = `
       ${renderM2DatasetPanel(data.dataset)}
+      ${renderM2GapsFilters()}
+      ${renderM2CurrentFilterSummary(state.m2GapFilters)}
+      <div class="context-note">
+        <strong>Formal blocking reasons</strong>
+        <p>Rows with readiness=blocked indicate fixture examples that would block formal old-product evaluation until the listed gap is resolved outside this page.</p>
+      </div>
       <div class="table-wrap">
         ${renderTableHint()}
         <table>
@@ -1044,6 +1186,10 @@ async function renderM2Gaps() {
               <th>missing copyright end</th>
               <th>unresolved data issue</th>
               <th>suggested owner/action</th>
+              <th>gap code</th>
+              <th>severity</th>
+              <th>readiness</th>
+              <th>blocks formal evaluation</th>
             </tr>
           </thead>
           <tbody>
@@ -1060,7 +1206,11 @@ async function renderM2Gaps() {
                 <td>${item.gapCode === "missing_copyright_start" ? "yes" : "no"}</td>
                 <td>${item.gapCode === "missing_copyright_end" ? "yes" : "no"}</td>
                 <td>${item.gapCode === "unresolved_data_issue" ? "yes" : "no"}</td>
-                <td>${escapeHtml(item.message)}</td>
+                <td>${escapeHtml(item.suggestedOwnerAction || item.message)}</td>
+                <td>${escapeHtml(item.gapCode)}</td>
+                <td>${escapeHtml(item.severity)}</td>
+                <td>${escapeHtml(item.readiness)}</td>
+                <td>${escapeHtml(item.blocksFormalEvaluation)}</td>
               </tr>
             `).join("")}
           </tbody>
@@ -1068,10 +1218,68 @@ async function renderM2Gaps() {
         ${renderPagination(data.pagination)}
       </div>
     `;
+    attachM2GapsFilterHandlers();
   } catch (error) {
     setM2ErrorPageState("m2-gaps", error);
     document.querySelector("#m2GapsContent").innerHTML = renderM2Error(error);
   }
+}
+
+function renderM2GapsFilters() {
+  const filters = state.m2GapFilters;
+  return `
+    <form class="filter-panel" id="m2GapsFilters">
+      <label>Gap code
+        <select name="gapCode">
+          ${option("", "All", filters.gapCode)}
+          ${["missing_income_fact", "mapping_not_active", "missing_standard_work_name", "missing_author", "missing_classification", "missing_required_tags", "missing_copyright_start", "missing_copyright_end", "copyright_expired", "pending_tag_configuration", "unresolved_data_issue", "incomplete_month_only"].map((value) => option(value, value, filters.gapCode)).join("")}
+        </select>
+      </label>
+      <label>Severity
+        <select name="severity">
+          ${option("", "All", filters.severity)}
+          ${["high", "medium", "low"].map((value) => option(value, value, filters.severity)).join("")}
+        </select>
+      </label>
+      <label>Readiness
+        <select name="readiness">
+          ${option("", "All", filters.readiness)}
+          ${["ready", "blocked"].map((value) => option(value, value, filters.readiness)).join("")}
+        </select>
+      </label>
+      <label>Page
+        <input name="page" inputmode="numeric" value="${escapeAttribute(filters.page)}">
+      </label>
+      <label>Page size
+        <input name="pageSize" inputmode="numeric" value="${escapeAttribute(filters.pageSize)}">
+      </label>
+      <button type="submit" class="secondary">Filter gaps</button>
+      <button type="button" class="secondary" data-m2-reset-gaps>Reset gap filters</button>
+    </form>
+  `;
+}
+
+function attachM2GapsFilterHandlers() {
+  const form = document.querySelector("#m2GapsFilters");
+  if (!form) {
+    return;
+  }
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const formData = new FormData(form);
+    state.m2GapFilters = {
+      gapCode: String(formData.get("gapCode") || ""),
+      severity: String(formData.get("severity") || ""),
+      readiness: String(formData.get("readiness") || ""),
+      page: String(formData.get("page") || "1"),
+      pageSize: String(formData.get("pageSize") || "100")
+    };
+    renderM2Gaps();
+  });
+  form.querySelector("[data-m2-reset-gaps]")?.addEventListener("click", () => {
+    state.m2GapFilters = defaultM2GapFilters();
+    renderM2Gaps();
+  });
 }
 
 async function renderM2Backtests() {
@@ -1082,9 +1290,10 @@ async function renderM2Backtests() {
       getM2Json("/api/m2/old-products/algorithm-versions"),
       getM2Json("/api/m2/old-products/backtests?page=1&pageSize=20")
     ]);
-    const firstBatch = backtests.items[0]?.id;
-    const detail = firstBatch
-      ? await getM2Json(`/api/m2/old-products/backtests/${encodeURIComponent(firstBatch)}`)
+    const selectedBatch = state.m2SelectedBacktestId || backtests.items[0]?.id;
+    state.m2SelectedBacktestId = selectedBatch || "";
+    const detail = selectedBatch
+      ? await getM2Json(`/api/m2/old-products/backtests/${encodeURIComponent(selectedBatch)}`)
       : null;
 
     if (!algorithms.items.length && !backtests.items.length) {
@@ -1099,6 +1308,10 @@ async function renderM2Backtests() {
     setPageState("m2-backtests", "success");
     document.querySelector("#m2BacktestsContent").innerHTML = `
       ${renderM2DatasetPanel(algorithms.dataset)}
+      <div class="context-note">
+        <strong>Formal backtest blocked</strong>
+        <p>Formal backtesting remains blocked until M1 formal data readiness is complete. This page shows fixture-only synthetic examples.</p>
+      </div>
       <div class="cards three">
         ${algorithms.items.map((item) => `
           <article class="card">
@@ -1110,6 +1323,7 @@ async function renderM2Backtests() {
           </article>
         `).join("")}
       </div>
+      ${renderM2BacktestSelector(backtests.items)}
       <div class="table-wrap">
         ${renderTableHint()}
         <table>
@@ -1145,7 +1359,7 @@ async function renderM2Backtests() {
         ${renderPagination(backtests.pagination)}
       </div>
       ${detail ? `
-        <div class="table-wrap">
+        <div class="table-wrap" id="m2BacktestDetail">
           ${renderTableHint()}
           <table>
             <thead>
@@ -1176,10 +1390,37 @@ async function renderM2Backtests() {
         </div>
       ` : ""}
     `;
+    attachM2BacktestHandlers();
   } catch (error) {
     setM2ErrorPageState("m2-backtests", error);
     document.querySelector("#m2BacktestsContent").innerHTML = renderM2Error(error);
   }
+}
+
+function renderM2BacktestSelector(items) {
+  return `
+    <form class="filter-panel" id="m2BacktestSelector">
+      <label>Backtest batch
+        <select name="backtestBatchId">
+          ${items.map((item) => option(item.id, item.id, state.m2SelectedBacktestId)).join("")}
+        </select>
+      </label>
+      <button type="submit" class="secondary">Show batch detail</button>
+    </form>
+  `;
+}
+
+function attachM2BacktestHandlers() {
+  const form = document.querySelector("#m2BacktestSelector");
+  if (!form) {
+    return;
+  }
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const formData = new FormData(form);
+    state.m2SelectedBacktestId = String(formData.get("backtestBatchId") || "");
+    renderM2Backtests();
+  });
 }
 
 function showPage(page) {

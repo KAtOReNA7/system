@@ -97,6 +97,28 @@ test("list API supports filters", async () => {
   assert.equal(response.body.items[0].standardWorkId, "SYN-WORK-0001");
 });
 
+test("list API supports combined interaction filters and reset-equivalent defaults", async () => {
+  const filtered = await request(
+    "/api/m2/old-products/evaluations?query=SYN-WORK-0003&rating=A&lifecycle=declining&risk=high&readiness=blocked&resultStatus=current&sort=riskSeverity.desc&page=1&pageSize=20"
+  );
+
+  assert.equal(filtered.statusCode, 200);
+  assertJsonHeaders(filtered);
+  assertFixtureDataset(filtered.body);
+  assert.equal(filtered.body.items.length, 1);
+  assert.equal(filtered.body.items[0].standardWorkId, "SYN-WORK-0003");
+  assert.equal(filtered.body.items[0].riskLevel, "high");
+  assert.equal(filtered.body.items[0].readiness, "blocked");
+
+  const resetEquivalent = await request("/api/m2/old-products/evaluations?page=1&pageSize=20&sort=updatedAt.desc");
+
+  assert.equal(resetEquivalent.statusCode, 200);
+  assertJsonHeaders(resetEquivalent);
+  assertFixtureDataset(resetEquivalent.body);
+  assert.equal(resetEquivalent.body.pagination.total, 7);
+  assert.equal(resetEquivalent.body.items[0].standardWorkId, "SYN-WORK-0001");
+});
+
 test("list API supports sorting", async () => {
   const response = await request("/api/m2/old-products/evaluations?sort=forecastTotal.asc");
 
@@ -172,6 +194,30 @@ test("readiness gaps API returns synthetic gap list", async () => {
   assert.ok(response.body.items.some((item) => item.gapCode === "missing_copyright_end"));
 });
 
+test("readiness gaps API supports gap code severity and readiness filters", async () => {
+  const response = await request(
+    "/api/m2/old-products/readiness-gaps?gapCode=missing_classification&severity=high&readiness=blocked&page=1&pageSize=20"
+  );
+
+  assert.equal(response.statusCode, 200);
+  assertJsonHeaders(response);
+  assertFixtureDataset(response.body);
+  assert.equal(response.body.items.length, 1);
+  assert.equal(response.body.items[0].standardWorkId, "SYN-WORK-0003");
+  assert.equal(response.body.items[0].gapCode, "missing_classification");
+  assert.equal(response.body.items[0].severity, "high");
+  assert.equal(response.body.items[0].readiness, "blocked");
+  assert.equal(response.body.items[0].blocksFormalEvaluation, true);
+});
+
+test("invalid readiness gap filter returns bad_request", async () => {
+  const response = await request("/api/m2/old-products/readiness-gaps?gapCode=real_gap");
+
+  assert.equal(response.statusCode, 400);
+  assertJsonHeaders(response);
+  assert.equal(response.body.error.code, "bad_request");
+});
+
 test("algorithm versions API returns fixture-only algorithm version", async () => {
   const response = await request("/api/m2/old-products/algorithm-versions");
 
@@ -199,6 +245,8 @@ test("backtest detail API returns covered missed over and under fixtures", async
   assertFixtureDataset(response.body);
   const outcomes = response.body.items.map((item) => item.outcome).sort();
   assert.deepEqual(outcomes, [...expectedM2OldProductCoverage.backtestOutcomes].sort());
+  assert.equal(response.body.batch.id, "SYN-BACKTEST-0001");
+  assert.equal(response.body.metrics.covered, 1);
 });
 
 test("mode=formal returns formal_data_blocked without reading real data", async () => {
@@ -229,6 +277,23 @@ test("controlled task endpoints are unavailable and do not create tasks", async 
   assert.equal(response.statusCode, 404);
   assertJsonHeaders(response);
   assert.equal(response.body.error.code, "not_found");
+});
+
+test("write task and export endpoints remain unavailable", async () => {
+  const paths = [
+    "/api/m2/old-products/evaluation-tasks",
+    "/api/m2/old-products/evaluation-tasks/SYN-TASK-0001/cancel",
+    "/api/m2/old-products/evaluation-tasks/SYN-TASK-0001/retry",
+    "/api/m2/old-products/export",
+    "/api/m2/old-products/evaluations/export"
+  ];
+
+  for (const path of paths) {
+    const response = await request(path, { method: "POST" });
+    assert.equal(response.statusCode, 404);
+    assertJsonHeaders(response);
+    assert.equal(response.body.error.code, "not_found");
+  }
 });
 
 test("fixture responses cover required synthetic cases", async () => {

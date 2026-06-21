@@ -1,0 +1,89 @@
+{
+  "task": "M2-B-2.1 old-product fixture-only admin interaction refinement and API contract addendum",
+  "line": "technical",
+  "currentHead": "1b554f5c78ba793c6b60123cd8bc25aa6468d066",
+  "originMain": "1b554f5c78ba793c6b60123cd8bc25aa6468d066",
+  "worktreeCleanAtStart": true,
+  "m2B2Commit": "1b554f5c78ba793c6b60123cd8bc25aa6468d066",
+  "modifiedAdminFiles": [
+    "public/admin/app.js",
+    "public/admin/app.css"
+  ],
+  "modifiedApiFiles": [
+    "src/repositories/oldProductEvaluationFixtureRepository.js"
+  ],
+  "modifiedFixtureFiles": [],
+  "modifiedTestFiles": [
+    "test/admin.test.js",
+    "test/e2e/admin.e2e.test.js",
+    "test/m2-old-product-api.test.js"
+  ],
+  "documentationFiles": [
+    "docs/api/M2-old-product-evaluation-api-contract-addendum-v0.1.md",
+    "docs/technical-design/M2-B-2.1-old-product-fixture-admin-interaction-report-v0.1.md",
+    "docs/analysis/m1-master-data/M2-B-2.1-old-product-fixture-admin-interaction-summary-v0.1.json"
+  ],
+  "apiContractAddendumCreated": true,
+  "interactionEnhancements": [
+    "overview distribution links to filtered list",
+    "list risk and resultStatus filters",
+    "list reset filters",
+    "list view-detail link",
+    "detail back-to-list link",
+    "detail result history summary",
+    "readiness gap gapCode severity readiness filters",
+    "backtest batch selector",
+    "formal blocked notices preserved"
+  ],
+  "stateCoverage": [
+    "loading",
+    "success",
+    "empty",
+    "blocked",
+    "degraded",
+    "error",
+    "not_found"
+  ],
+  "writeControlsPresent": false,
+  "formalModeAdded": false,
+  "localDryRunModeAdded": false,
+  "exportApiAdded": false,
+  "evaluationTaskApiAdded": false,
+  "migrationModified": false,
+  "databaseConnected": false,
+  "dockerExecuted": false,
+  "realDataRead": false,
+  "dataDirectoryRead": false,
+  "stageJsonRead": false,
+  "mappingVersionActivated": false,
+  "switchMappingVersionCalled": false,
+  "apiTestsPassed": true,
+  "pageTestsPassed": true,
+  "e2eTestsPassed": true,
+  "noRealDataCheckPassed": true,
+  "lintPassed": true,
+  "buildPassed": true,
+  "unitTestsPassed": true,
+  "smokePassed": true,
+  "m2B21Complete": true,
+  "m2B3Blocked": true,
+  "prohibitedActionsConfirmed": {
+    "databaseConnected": false,
+    "dockerExecuted": false,
+    "dataDirectoryRead": false,
+    "realDataRead": false,
+    "stageJsonRead": false,
+    "realDataImported": false,
+    "mappingVersionActivated": false,
+    "switchMappingVersionCalled": false,
+    "formalMigrationExecuted": false,
+    "dbMigrationsModified": false,
+    "writeApiAdded": false,
+    "formalModeAdded": false,
+    "localDryRunModeAdded": false,
+    "exportApiAdded": false,
+    "evaluationTaskApiAdded": false,
+    "gitAddDotUsed": false,
+    "stashTouched": false
+  }
+}

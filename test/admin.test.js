@@ -81,9 +81,15 @@ test("admin assets are served without using API routes", async () => {
   assert.match(js.body, /fixture-only/);
   assert.match(js.body, /synthetic marker/);
   assert.match(js.body, /2026-05 excluded/);
+  assert.match(js.body, /Reset filters/);
+  assert.match(js.body, /View detail/);
+  assert.match(js.body, /Filter gaps/);
+  assert.match(js.body, /Show batch detail/);
+  assert.match(js.body, /Formal backtest blocked/);
   assert.doesNotMatch(js.body, /method:\s*["'`](POST|PUT|PATCH|DELETE)/i);
   assert.doesNotMatch(js.body, /evaluation-tasks/i);
   assert.doesNotMatch(js.body, /switch_mapping_version/i);
+  assert.doesNotMatch(js.body, /export formal result/i);
 });
 
 test("unknown admin assets return a static 404", async () => {

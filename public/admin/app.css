@@ -409,6 +409,16 @@ tr:last-child td {
   border-top: 0;
 }
 
+.distribution-grid a {
+  color: var(--accent);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.distribution-grid a:hover {
+  text-decoration: underline;
+}
+
 .filter-panel {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
