@@ -1,0 +1,49 @@
+{
+  "stage": "M2-C-1",
+  "line": "technical",
+  "status": "passed_local_validation",
+  "implementation": {
+    "defaultProfile": "fixture_baseline",
+    "calibratedProfile": "calibrated_non_formal",
+    "profileSelectionExposedThroughApi": false,
+    "unknownProfileBehavior": "explicit_error",
+    "formalEvaluationAllowed": false,
+    "nonFormalCalibration": true,
+    "realDataAggregated": true,
+    "notForFormalDecision": true
+  },
+  "sourceParameters": {
+    "module": "src/domain/oldProductEvaluation/calibratedParameters.js",
+    "version": "m2-c0-cleaned-bill-nonformal-v0.1",
+    "aggregateOnly": true,
+    "rawDetailIncluded": false
+  },
+  "commands": {
+    "baseline": "npm run evaluate:m2:old-products:fixture",
+    "calibrated": "npm run evaluate:m2:old-products:calibrated",
+    "comparison": "npm run compare:m2:old-products:calibration"
+  },
+  "guards": {
+    "formalDatabaseConnected": false,
+    "realDataImported": false,
+    "dbMigrationsModified": false,
+    "mappingVersionActivated": false,
+    "switchMappingVersionCalled": false,
+    "writeApiAdded": false,
+    "exportApiAdded": false,
+    "evaluationTaskApiAdded": false,
+    "formalModeAdded": false,
+    "localDryRunModeAdded": false
+  },
+  "localValidation": {
+    "npmRunLint": "passed",
+    "npmRunBuild": "passed",
+    "npmTest": "passed",
+    "npmRunSmoke": "passed",
+    "npmRunTestE2e": "passed",
+    "npmRunEvaluateFixture": "passed",
+    "npmRunEvaluateCalibrated": "passed",
+    "npmRunCompareCalibration": "passed",
+    "npmRunCheckNoRealData": "passed"
+  }
+}

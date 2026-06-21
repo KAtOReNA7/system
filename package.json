@@ -19,7 +19,9 @@
     "check:m2-b3:no-db-readiness": "node scripts/check-m2-b3-no-db-readiness.mjs",
     "generate:m2-b3:no-db-validation-report": "node scripts/generate-m2-b3-no-db-validation-report.mjs",
     "validate:m2:local-dry-run-manifest": "node scripts/validate-m2-local-dry-run-manifest.mjs",
-    "evaluate:m2:old-products:fixture": "node scripts/run-m2-old-product-fixture-evaluation.mjs"
+    "evaluate:m2:old-products:fixture": "node scripts/run-m2-old-product-fixture-evaluation.mjs",
+    "evaluate:m2:old-products:calibrated": "node scripts/run-m2-old-product-fixture-evaluation.mjs --profile calibrated_non_formal",
+    "compare:m2:old-products:calibration": "node scripts/run-m2-old-product-fixture-evaluation.mjs --compare-profiles"
   },
   "dependencies": {
     "pg": "^8.16.3"

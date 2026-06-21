@@ -7,6 +7,11 @@ import {
   FIXTURE_ONLY_THRESHOLDS,
   buildFixtureOldProductEvaluationDataset
 } from "../src/domain/oldProductEvaluation/fixtureEngine.js";
+import {
+  CALIBRATED_NON_FORMAL_PARAMETER_PROFILE,
+  DEFAULT_EVALUATION_PARAMETER_PROFILE,
+  resolveEvaluationParameterProfile
+} from "../src/domain/oldProductEvaluation/evaluationParameters.js";
 import { M2_C0_CLEANED_BILL_CALIBRATED_PARAMETERS } from "../src/domain/oldProductEvaluation/calibratedParameters.js";
 import {
   M2_OLD_PRODUCT_BACKTESTS,
@@ -128,8 +133,63 @@ test("M2-B-4 fixture engine API returns full generated dataset without real data
   assert.equal(generated.evaluations.length, 7);
   assert.equal(generated.backtests.length, 1);
   assert.equal(generated.engineSummary.syntheticOnly, true);
+  assert.equal(generated.engineSummary.parameterProfile, DEFAULT_EVALUATION_PARAMETER_PROFILE);
+  assert.equal(generated.engineSummary.nonFormalCalibration, false);
+  assert.equal(generated.engineSummary.realDataAggregated, false);
   assert.equal(generated.engineSummary.notForFormalDecision, true);
+  assert.equal(generated.engineSummary.formalEvaluationAllowed, false);
   assertNoForbiddenOutput(generated);
+});
+
+test("M2-C-1 default profile remains fixture_baseline and matches explicit baseline", () => {
+  const implicit = buildFixtureOldProductEvaluationDataset();
+  const explicit = buildFixtureOldProductEvaluationDataset({
+    profile: DEFAULT_EVALUATION_PARAMETER_PROFILE
+  });
+
+  assert.equal(implicit.engineSummary.parameterProfile, "fixture_baseline");
+  assert.deepEqual(
+    implicit.evaluations.map((item) => ({
+      id: item.standardWorkId,
+      lifecycle: item.lifecycle.type,
+      rating: item.rating.rating,
+      forecastTotalBase: item.forecast.scenarios.base.forecastTotal
+    })),
+    explicit.evaluations.map((item) => ({
+      id: item.standardWorkId,
+      lifecycle: item.lifecycle.type,
+      rating: item.rating.rating,
+      forecastTotalBase: item.forecast.scenarios.base.forecastTotal
+    }))
+  );
+});
+
+test("M2-C-1 calibrated profile is explicit guarded non-formal output", () => {
+  const profile = resolveEvaluationParameterProfile(CALIBRATED_NON_FORMAL_PARAMETER_PROFILE);
+  const generated = buildFixtureOldProductEvaluationDataset({
+    profile: CALIBRATED_NON_FORMAL_PARAMETER_PROFILE
+  });
+
+  assert.equal(profile.sourceParameterVersion, M2_C0_CLEANED_BILL_CALIBRATED_PARAMETERS.version);
+  assert.equal(generated.engineSummary.parameterProfile, CALIBRATED_NON_FORMAL_PARAMETER_PROFILE);
+  assert.equal(generated.engineSummary.nonFormalCalibration, true);
+  assert.equal(generated.engineSummary.realDataAggregated, true);
+  assert.equal(generated.engineSummary.notForFormalDecision, true);
+  assert.equal(generated.engineSummary.formalEvaluationAllowed, false);
+  assert.equal(generated.evaluations.every((item) => item.parameterProfile === CALIBRATED_NON_FORMAL_PARAMETER_PROFILE), true);
+  assert.equal(generated.evaluations.every((item) => item.nonFormalCalibration === true), true);
+  assert.equal(generated.evaluations.every((item) => item.realDataAggregated === true), true);
+  assert.equal(generated.evaluations.every((item) => item.formalEvaluationAllowed === false), true);
+  assert.equal(generated.evaluations.every((item) => item.notForFormalDecision === true), true);
+  assert.equal(generated.evaluations.every((item) => item.rating.ratingParameterMode === "calibrated_amount_threshold"), true);
+  assertNoForbiddenOutput(generated);
+});
+
+test("M2-C-1 unknown parameter profile fails explicitly", () => {
+  assert.throws(
+    () => buildFixtureOldProductEvaluationDataset({ profile: "unknown_profile" }),
+    /Unknown old-product evaluation parameter profile/
+  );
 });
 
 test("M2-B-4 CLI outputs parseable fixture JSON", async () => {
@@ -140,8 +200,13 @@ test("M2-B-4 CLI outputs parseable fixture JSON", async () => {
   assert.equal(body.status, "pass");
   assert.equal(body.mode, "fixture");
   assert.equal(body.stage, "M2-B-4");
+  assert.equal(body.profile, DEFAULT_EVALUATION_PARAMETER_PROFILE);
+  assert.equal(body.parameterProfile, DEFAULT_EVALUATION_PARAMETER_PROFILE);
   assert.equal(body.syntheticOnly, true);
+  assert.equal(body.nonFormalCalibration, false);
+  assert.equal(body.realDataAggregated, false);
   assert.equal(body.notForFormalDecision, true);
+  assert.equal(body.formalEvaluationAllowed, false);
   assert.equal(body.dataset.mode, M2_OLD_PRODUCT_DATASET.mode);
   assert.equal(body.guards.databaseConnected, false);
   assert.equal(body.guards.dockerExecuted, false);
@@ -151,6 +216,49 @@ test("M2-B-4 CLI outputs parseable fixture JSON", async () => {
   assert.equal(body.guards.writeApiAdded, false);
   assert.equal(body.guards.exportApiAdded, false);
   assert.equal(body.guards.evaluationTaskApiAdded, false);
+});
+
+test("M2-C-1 CLI outputs explicit calibrated fixture JSON", async () => {
+  const { stdout, stderr } = await execFileAsync(process.execPath, [
+    cliScript,
+    "--profile",
+    CALIBRATED_NON_FORMAL_PARAMETER_PROFILE
+  ]);
+  assert.equal(stderr, "");
+  assertNoForbiddenOutput(stdout);
+  const body = JSON.parse(stdout);
+  assert.equal(body.status, "pass");
+  assert.equal(body.mode, "fixture");
+  assert.equal(body.stage, "M2-C-1");
+  assert.equal(body.profile, CALIBRATED_NON_FORMAL_PARAMETER_PROFILE);
+  assert.equal(body.parameterProfile, CALIBRATED_NON_FORMAL_PARAMETER_PROFILE);
+  assert.equal(body.nonFormalCalibration, true);
+  assert.equal(body.realDataAggregated, true);
+  assert.equal(body.notForFormalDecision, true);
+  assert.equal(body.formalEvaluationAllowed, false);
+  assert.equal(body.results.every((item) => item.parameterProfile === CALIBRATED_NON_FORMAL_PARAMETER_PROFILE), true);
+  assert.equal(body.results.every((item) => item.nonFormalCalibration === true), true);
+});
+
+test("M2-C-1 CLI compares profiles with aggregate-only output", async () => {
+  const { stdout, stderr } = await execFileAsync(process.execPath, [cliScript, "--compare-profiles"]);
+  assert.equal(stderr, "");
+  assertNoForbiddenOutput(stdout);
+  const body = JSON.parse(stdout);
+  assert.equal(body.status, "pass");
+  assert.equal(body.stage, "M2-C-1");
+  assert.equal(body.aggregateOnly, true);
+  assert.equal(body.baselineProfile, DEFAULT_EVALUATION_PARAMETER_PROFILE);
+  assert.equal(body.calibratedProfile, CALIBRATED_NON_FORMAL_PARAMETER_PROFILE);
+  assert.equal(body.nonFormalCalibration, true);
+  assert.equal(body.realDataAggregated, true);
+  assert.equal(body.formalEvaluationAllowed, false);
+  assert.ok(body.differences.ratingDistribution);
+  assert.ok(body.differences.lifecycleDistribution);
+  assert.ok(body.differences.forecastTotalDistribution);
+  assert.ok(body.differences.riskDistribution);
+  assert.ok(body.differences.suggestionDistribution);
+  assert.equal(Object.hasOwn(body, "results"), false);
 });
 
 test("M2-B-4 CLI source has no database Docker network or subprocess entrypoint", async () => {

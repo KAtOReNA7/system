@@ -194,6 +194,8 @@ test("detail API returns all required sections", async () => {
   assert.equal(typeof response.body.rating.rationale, "string");
   assert.equal(response.body.forecast.scenarios.base.range.lower, response.body.forecast.scenarios.base.lower);
   assert.equal(response.body.warnings[0].code, "fixture_only_non_formal");
+  assert.equal(JSON.stringify(response.body).includes("parameterProfile"), false);
+  assert.equal(JSON.stringify(response.body).includes("calibrated_non_formal"), false);
   assertNoSensitiveOutput(response.body);
 });
 

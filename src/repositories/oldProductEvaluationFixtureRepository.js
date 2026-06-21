@@ -258,7 +258,7 @@ function toEvaluationSummary(item) {
 
 function toEvaluationDetail(item) {
   return {
-    oldProductEvaluationResult: clone(item),
+    oldProductEvaluationResult: toPublicEvaluationResult(item),
     resultId: item.resultId,
     status: item.status,
     invalidationState: clone(item.invalidationState),
@@ -277,13 +277,13 @@ function toEvaluationDetail(item) {
     },
     readiness: clone(item.readiness),
     incomeSummary: clone(item.incomeSummary),
-    lifecycle: clone(item.lifecycle),
-    forecast: clone(item.forecast),
-    rating: clone(item.rating),
+    lifecycle: toPublicEvaluationSection(item.lifecycle),
+    forecast: toPublicEvaluationSection(item.forecast),
+    rating: toPublicEvaluationSection(item.rating),
     risks: clone(item.risks),
     suggestions: clone(item.suggestions),
     backtestSummary: clone(item.backtestSummary),
-    inputSnapshot: clone(item.inputSnapshot),
+    inputSnapshot: toPublicEvaluationSection(item.inputSnapshot),
     algorithmVersion: M2_OLD_PRODUCT_ALGORITHM_VERSIONS.find(
       (version) => version.versionKey === item.algorithmVersion
     ),
@@ -295,6 +295,39 @@ function toEvaluationDetail(item) {
       }
     ]
   };
+}
+
+function toPublicEvaluationResult(item) {
+  return toPublicEvaluationSection(item);
+}
+
+function toPublicEvaluationSection(value) {
+  const cloned = clone(value);
+  stripProfileMetadata(cloned);
+  return cloned;
+}
+
+function stripProfileMetadata(value) {
+  if (!value || typeof value !== "object") {
+    return;
+  }
+  delete value.parameterProfile;
+  delete value.parameterProfileSummary;
+  delete value.ratingParameterMode;
+  delete value.nonFormalCalibration;
+  delete value.realDataAggregated;
+  delete value.formalEvaluationAllowed;
+
+  if (Array.isArray(value)) {
+    for (const item of value) {
+      stripProfileMetadata(item);
+    }
+    return;
+  }
+
+  for (const child of Object.values(value)) {
+    stripProfileMetadata(child);
+  }
 }
 
 function toBacktestSummary(batch) {

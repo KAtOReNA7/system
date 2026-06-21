@@ -1,3 +1,9 @@
+import {
+  DEFAULT_EVALUATION_PARAMETER_PROFILE,
+  resolveEvaluationParameterProfile,
+  summarizeEvaluationParameterProfile
+} from "./evaluationParameters.js";
+
 export const FIXTURE_EVALUATION_ALGORITHM_VERSION = "fixture-old-product-v1";
 export const FIXTURE_EVALUATION_GENERATED_AT = "2026-06-22T00:00:00Z";
 
@@ -7,24 +13,13 @@ const INCOMPLETE_MONTHS = Object.freeze(["2026-05"]);
 const DATASET_BOUNDARY = "fixture-synthetic-only";
 const RATING_ORDER = Object.freeze(["S+", "S", "A", "B", "C", "D", "E"]);
 const SEVERITY_SCORE = Object.freeze({ high: 3, medium: 2, low: 1 });
+const FIXTURE_BASELINE_PARAMETER_PROFILE = resolveEvaluationParameterProfile(
+  DEFAULT_EVALUATION_PARAMETER_PROFILE
+);
 
 export const FIXTURE_ONLY_THRESHOLDS = Object.freeze({
-  insufficientHistoryCompleteMonths: 6,
-  growthRatio: 1.15,
-  decliningRatio: 0.75,
-  reboundRatio: 1.5,
-  longTailLast12RevenueMax: 100000,
-  inactiveRecentRevenueMax: 1,
-  copyrightExpiryWarningMonths: 18,
-  ratingScoreBands: Object.freeze([
-    ["S+", 85],
-    ["S", 75],
-    ["A", 62],
-    ["B", 48],
-    ["C", 34],
-    ["D", 20],
-    ["E", 0]
-  ])
+  ...FIXTURE_BASELINE_PARAMETER_PROFILE.lifecycle,
+  ratingScoreBands: FIXTURE_BASELINE_PARAMETER_PROFILE.rating.scoreBands
 });
 
 export const FIXTURE_OLD_PRODUCT_INPUTS = Object.freeze([
@@ -275,25 +270,34 @@ function month(monthValue, total, businessForms, incomplete = false) {
 
 export function buildFixtureOldProductEvaluationDataset({
   inputs = FIXTURE_OLD_PRODUCT_INPUTS,
-  generatedAt = FIXTURE_EVALUATION_GENERATED_AT
+  generatedAt = FIXTURE_EVALUATION_GENERATED_AT,
+  profile = DEFAULT_EVALUATION_PARAMETER_PROFILE
 } = {}) {
-  const evaluations = inputs.map((input, index) => evaluateFixtureOldProduct(input, { generatedAt, index }));
+  const parameterProfile = resolveEvaluationParameterProfile(profile);
+  const evaluations = inputs.map((input, index) =>
+    evaluateFixtureOldProduct(input, { generatedAt, index, profile: parameterProfile.key })
+  );
   const backtests = buildSyntheticBacktests(evaluations, inputs);
   return {
     evaluations,
     backtests,
-    engineSummary: buildEngineSummary(evaluations, backtests)
+    engineSummary: buildEngineSummary(evaluations, backtests, parameterProfile)
   };
 }
 
-export function evaluateFixtureOldProduct(input, { generatedAt = FIXTURE_EVALUATION_GENERATED_AT, index = 0 } = {}) {
+export function evaluateFixtureOldProduct(input, {
+  generatedAt = FIXTURE_EVALUATION_GENERATED_AT,
+  index = 0,
+  profile = DEFAULT_EVALUATION_PARAMETER_PROFILE
+} = {}) {
+  const parameterProfile = typeof profile === "string" ? resolveEvaluationParameterProfile(profile) : profile;
   const completeHistory = input.revenueHistory.filter((row) => row.incomplete !== true && row.month <= CUTOFF_MONTH);
-  const inputSnapshot = buildInputSnapshot(input, completeHistory);
-  const incomeSummary = buildIncomeSummary(input, completeHistory);
-  const lifecycle = classifyLifecycle(input, incomeSummary);
-  const risks = identifyRisks(input, inputSnapshot, incomeSummary, lifecycle);
-  const forecast = buildForecast(inputSnapshot, incomeSummary, lifecycle, risks);
-  const rating = buildRating(input, inputSnapshot, incomeSummary, lifecycle, forecast, risks);
+  const inputSnapshot = buildInputSnapshot(input, completeHistory, parameterProfile);
+  const incomeSummary = buildIncomeSummary(input, completeHistory, parameterProfile);
+  const lifecycle = classifyLifecycle(input, incomeSummary, parameterProfile);
+  const risks = identifyRisks(input, inputSnapshot, incomeSummary, lifecycle, parameterProfile);
+  const forecast = buildForecast(inputSnapshot, incomeSummary, lifecycle, risks, parameterProfile);
+  const rating = buildRating(input, inputSnapshot, incomeSummary, lifecycle, forecast, risks, parameterProfile);
   const suggestions = buildSuggestions(input, lifecycle, rating, risks);
   const backtestRefs = [
     {
@@ -320,7 +324,11 @@ export function evaluateFixtureOldProduct(input, { generatedAt = FIXTURE_EVALUAT
       mode: "fixture",
       boundary: DATASET_BOUNDARY,
       syntheticOnly: true,
-      notForFormalDecision: true
+      notForFormalDecision: true,
+      parameterProfile: parameterProfile.key,
+      nonFormalCalibration: parameterProfile.nonFormalCalibration,
+      realDataAggregated: parameterProfile.realDataAggregated,
+      formalEvaluationAllowed: parameterProfile.formalEvaluationAllowed
     },
     inputSnapshot,
     lifecycle,
@@ -348,14 +356,19 @@ export function evaluateFixtureOldProduct(input, { generatedAt = FIXTURE_EVALUAT
       }
     ],
     algorithmVersion: FIXTURE_EVALUATION_ALGORITHM_VERSION,
+    parameterProfile: parameterProfile.key,
+    parameterProfileSummary: summarizeEvaluationParameterProfile(parameterProfile),
     updatedAt: generatedAt,
     generatedAt,
     syntheticOnly: true,
-    notForFormalDecision: true
+    nonFormalCalibration: parameterProfile.nonFormalCalibration,
+    realDataAggregated: parameterProfile.realDataAggregated,
+    notForFormalDecision: true,
+    formalEvaluationAllowed: parameterProfile.formalEvaluationAllowed
   };
 }
 
-function buildInputSnapshot(input, completeHistory) {
+function buildInputSnapshot(input, completeHistory, parameterProfile) {
   const remainingMonths = monthsBetween(addMonths(CUTOFF_MONTH, 1), input.copyrightEndMonth);
   return {
     standardWorkId: input.standardWorkId,
@@ -385,14 +398,16 @@ function buildInputSnapshot(input, completeHistory) {
     source: "synthetic_fixture",
     datasetBoundary: DATASET_BOUNDARY,
     algorithmVersion: FIXTURE_EVALUATION_ALGORITHM_VERSION,
+    parameterProfile: parameterProfile.key,
     fixtureThresholds: true,
     thresholdPolicy: "fixture-only / non-formal; not a formal business threshold",
+    parameterProfileSummary: summarizeEvaluationParameterProfile(parameterProfile),
     notForFormalDecision: true,
     syntheticOnly: true
   };
 }
 
-function buildIncomeSummary(input, completeHistory) {
+function buildIncomeSummary(input, completeHistory, parameterProfile) {
   const last12 = completeHistory.slice(-12);
   const last24 = completeHistory.slice(-24);
   const historicalWindowRevenue = sum(completeHistory.map((row) => row.total));
@@ -405,7 +420,11 @@ function buildIncomeSummary(input, completeHistory) {
   const last12Total = sum(last12.map((row) => row.total));
   const priorSix = completeHistory.slice(-12, -6);
   const recentSix = completeHistory.slice(-6);
-  const recentTrend = describeTrend(average(priorSix.map((row) => row.total)), average(recentSix.map((row) => row.total)));
+  const recentTrend = describeTrend(
+    average(priorSix.map((row) => row.total)),
+    average(recentSix.map((row) => row.total)),
+    parameterProfile
+  );
 
   return {
     historicalTotal: money(totalHistoricalRevenue),
@@ -426,7 +445,8 @@ function buildIncomeSummary(input, completeHistory) {
   };
 }
 
-function classifyLifecycle(input, incomeSummary) {
+function classifyLifecycle(input, incomeSummary, parameterProfile) {
+  const thresholds = parameterProfile.lifecycle;
   const completeHistory = input.revenueHistory.filter((row) => row.incomplete !== true && row.month <= CUTOFF_MONTH);
   const last3 = average(completeHistory.slice(-3).map((row) => row.total));
   const previous3 = average(completeHistory.slice(-6, -3).map((row) => row.total));
@@ -437,27 +457,27 @@ function classifyLifecycle(input, incomeSummary) {
   let confidence = "medium";
   const rationale = [];
 
-  if (completeHistory.length < FIXTURE_ONLY_THRESHOLDS.insufficientHistoryCompleteMonths) {
+  if (completeHistory.length < thresholds.insufficientHistoryCompleteMonths) {
     type = "insufficient_history";
     confidence = "low";
     rationale.push("Complete fixture history has fewer than the non-formal minimum months.");
-  } else if (last3 <= FIXTURE_ONLY_THRESHOLDS.inactiveRecentRevenueMax) {
+  } else if (last3 <= thresholds.inactiveRecentRevenueMax) {
     type = "inactive";
     confidence = "high";
     rationale.push("Recent complete months have no meaningful synthetic revenue.");
-  } else if (last3 > previous3 * FIXTURE_ONLY_THRESHOLDS.reboundRatio && previous3 < previous6 * 0.8) {
+  } else if (last3 > previous3 * thresholds.reboundRatio && previous3 < previous6 * 0.8) {
     type = "rebound";
     confidence = "medium";
     rationale.push("Recent fixture revenue recovered after a prior decline.");
-  } else if (recent6 > previous6 * FIXTURE_ONLY_THRESHOLDS.growthRatio) {
+  } else if (recent6 > previous6 * thresholds.growthRatio) {
     type = "growth";
     confidence = "high";
     rationale.push("Recent six-month fixture average is above the prior six-month average.");
-  } else if (recent6 < previous6 * FIXTURE_ONLY_THRESHOLDS.decliningRatio) {
+  } else if (recent6 < previous6 * thresholds.decliningRatio) {
     type = "declining";
     confidence = "medium";
     rationale.push("Recent six-month fixture average is below the prior six-month average.");
-  } else if (Number.parseFloat(incomeSummary.last12MonthRevenue) <= FIXTURE_ONLY_THRESHOLDS.longTailLast12RevenueMax) {
+  } else if (Number.parseFloat(incomeSummary.last12MonthRevenue) <= thresholds.longTailLast12RevenueMax) {
     type = "long_tail";
     confidence = "medium";
     rationale.push("Fixture revenue is low but still persistent across complete months.");
@@ -470,33 +490,36 @@ function classifyLifecycle(input, incomeSummary) {
     confidence,
     rationale: rationale.join(" "),
     fixtureThresholds: true,
+    parameterProfile: parameterProfile.key,
     notForFormalDecision: true
   };
 }
 
-function buildForecast(inputSnapshot, incomeSummary, lifecycle, risks) {
+function buildForecast(inputSnapshot, incomeSummary, lifecycle, risks, parameterProfile) {
   const average12 = Number.parseFloat(incomeSummary.last12MonthRevenue) / 12;
   const remainingMonthCount = Math.max(0, inputSnapshot.remainingCopyrightMonths);
   const riskAdjustment = risks.some((risk) => risk.severity === "high") ? 0.85 : 1;
-  const baseFactor = lifecycleFactor(lifecycle.type) * riskAdjustment;
-  const base = average12 * remainingMonthCount * baseFactor;
-  const optimistic = base * 1.25;
-  const pessimistic = base * 0.65;
+  const scenarioMultipliers = parameterProfile.forecast.scenarioMultipliers;
+  const baseFactor = lifecycleFactor(lifecycle.type, parameterProfile) * riskAdjustment;
+  const base = average12 * remainingMonthCount * baseFactor * scenarioMultipliers.base;
+  const optimistic = base * scenarioMultipliers.optimistic;
+  const pessimistic = base * scenarioMultipliers.pessimistic;
 
   return {
     scenarios: {
-      base: scenario("base", base, remainingMonthCount, lifecycle, "Synthetic base scenario."),
-      optimistic: scenario("optimistic", optimistic, remainingMonthCount, lifecycle, "Synthetic upside scenario."),
-      pessimistic: scenario("pessimistic", pessimistic, remainingMonthCount, lifecycle, "Synthetic downside scenario.")
+      base: scenario("base", base, remainingMonthCount, lifecycle, "Synthetic base scenario.", parameterProfile),
+      optimistic: scenario("optimistic", optimistic, remainingMonthCount, lifecycle, "Synthetic upside scenario.", parameterProfile),
+      pessimistic: scenario("pessimistic", pessimistic, remainingMonthCount, lifecycle, "Synthetic downside scenario.", parameterProfile)
     },
     fixtureFormula: "last12 average * remaining copyright months * lifecycle factor * readiness/risk adjustment",
+    parameterProfile: parameterProfile.key,
     incompleteMonthExcluded: true,
     notForFormalDecision: true,
     syntheticOnly: true
   };
 }
 
-function scenario(name, value, remainingMonthCount, lifecycle, assumptionSummary) {
+function scenario(name, value, remainingMonthCount, lifecycle, assumptionSummary, parameterProfile) {
   const lower = value * 0.9;
   const upper = value * 1.1;
   return {
@@ -513,6 +536,10 @@ function scenario(name, value, remainingMonthCount, lifecycle, assumptionSummary
       "Incomplete months are excluded."
     ],
     confidence: lifecycle.confidence,
+    parameterProfile: parameterProfile.key,
+    nonFormalCalibration: parameterProfile.nonFormalCalibration,
+    realDataAggregated: parameterProfile.realDataAggregated,
+    formalEvaluationAllowed: parameterProfile.formalEvaluationAllowed,
     lower: money(lower),
     upper: money(upper),
     range: {
@@ -523,7 +550,7 @@ function scenario(name, value, remainingMonthCount, lifecycle, assumptionSummary
   };
 }
 
-function buildRating(input, inputSnapshot, incomeSummary, lifecycle, forecast, risks) {
+function buildRating(input, inputSnapshot, incomeSummary, lifecycle, forecast, risks, parameterProfile) {
   const forecastScore = Math.min(55, Number.parseFloat(forecast.scenarios.base.forecastTotal) / 12000);
   const lifecycleScore = { growth: 20, stable: 15, rebound: 12, long_tail: 6, declining: 4, inactive: 0, insufficient_history: 2 }[lifecycle.type] ?? 8;
   const readinessScore = input.readiness.status === "ready" ? 12 : 0;
@@ -544,7 +571,7 @@ function buildRating(input, inputSnapshot, incomeSummary, lifecycle, forecast, r
       )
     )
   );
-  const rating = FIXTURE_ONLY_THRESHOLDS.ratingScoreBands.find(([, min]) => ratingScore >= min)?.[0] ?? "E";
+  const rating = resolveRatingValue(ratingScore, forecast, incomeSummary, parameterProfile);
 
   return {
     value: rating,
@@ -557,12 +584,32 @@ function buildRating(input, inputSnapshot, incomeSummary, lifecycle, forecast, r
     upgradeReasons: ratingScore >= 70 ? ["Strong synthetic forecast or lifecycle signal."] : [],
     downgradeReasons: risks.filter((risk) => risk.severity !== "low").map((risk) => risk.code),
     fixtureThresholds: true,
+    parameterProfile: parameterProfile.key,
+    ratingParameterMode: parameterProfile.rating.mode,
     fixtureCalibrationOffset,
+    nonFormalCalibration: parameterProfile.nonFormalCalibration,
+    realDataAggregated: parameterProfile.realDataAggregated,
+    formalEvaluationAllowed: parameterProfile.formalEvaluationAllowed,
     notForFormalDecision: true
   };
 }
 
-function identifyRisks(input, inputSnapshot, incomeSummary, lifecycle) {
+function resolveRatingValue(ratingScore, forecast, incomeSummary, parameterProfile) {
+  if (parameterProfile.rating.mode === "calibrated_amount_threshold") {
+    const amountBasis = Math.max(
+      Number.parseFloat(forecast.scenarios.base.forecastTotal),
+      Number.parseFloat(incomeSummary.last12MonthRevenue)
+    );
+    return (
+      RATING_ORDER.find((rating) => amountBasis >= parameterProfile.rating.absoluteAmountThresholds[rating]) ??
+      "E"
+    );
+  }
+
+  return parameterProfile.rating.scoreBands.find(([, min]) => ratingScore >= min)?.[0] ?? "E";
+}
+
+function identifyRisks(input, inputSnapshot, incomeSummary, lifecycle, parameterProfile) {
   const risks = [
     risk("synthetic_fixture_boundary", "low", "Result is generated from fixture-only synthetic data.", ["dataset.mode=fixture"])
   ];
@@ -575,7 +622,7 @@ function identifyRisks(input, inputSnapshot, incomeSummary, lifecycle) {
   if (lifecycle.type === "declining") {
     risks.push(risk("revenue_decline", "medium", "Fixture lifecycle indicates declining income.", [incomeSummary.recentTrend]));
   }
-  if (inputSnapshot.remainingCopyrightMonths <= FIXTURE_ONLY_THRESHOLDS.copyrightExpiryWarningMonths) {
+  if (inputSnapshot.remainingCopyrightMonths <= parameterProfile.lifecycle.copyrightExpiryWarningMonths) {
     risks.push(
       risk("copyright_expiry", "high", "Synthetic remaining copyright period is short.", [
         `${inputSnapshot.remainingCopyrightMonths} months`
@@ -633,6 +680,7 @@ function buildSyntheticBacktests(evaluations, inputs) {
     return {
       standardWorkId: evaluation.standardWorkId,
       outcome: input?.backtestOutcome ?? "covered",
+      parameterProfile: evaluation.parameterProfile,
       predictedTotalBase: money(predicted),
       predictedTotalOptimistic: evaluation.forecast.scenarios.optimistic.forecastTotal,
       predictedTotalPessimistic: evaluation.forecast.scenarios.pessimistic.forecastTotal,
@@ -658,6 +706,7 @@ function buildSyntheticBacktests(evaluations, inputs) {
       batchNo: "SYN-BACKTEST-BATCH-0001",
       batchId: "SYN-BACKTEST-0001",
       algorithmVersion: FIXTURE_EVALUATION_ALGORITHM_VERSION,
+      parameterProfile: evaluations[0]?.parameterProfile ?? DEFAULT_EVALUATION_PARAMETER_PROFILE,
       cutoffMonth: "2025-04",
       horizonMonths: 12,
       status: "succeeded",
@@ -675,14 +724,19 @@ function buildSyntheticBacktests(evaluations, inputs) {
   ];
 }
 
-function buildEngineSummary(evaluations, backtests) {
+function buildEngineSummary(evaluations, backtests, parameterProfile) {
   return {
     mode: "fixture",
     algorithmVersion: FIXTURE_EVALUATION_ALGORITHM_VERSION,
+    parameterProfile: parameterProfile.key,
+    parameterProfileSummary: summarizeEvaluationParameterProfile(parameterProfile),
     resultCount: evaluations.length,
     backtestBatchCount: backtests.length,
     syntheticOnly: true,
+    nonFormalCalibration: parameterProfile.nonFormalCalibration,
+    realDataAggregated: parameterProfile.realDataAggregated,
     notForFormalDecision: true,
+    formalEvaluationAllowed: parameterProfile.formalEvaluationAllowed,
     lifecycleTypes: [...new Set(evaluations.map((item) => item.lifecycle.type))].sort(),
     ratings: [...new Set(evaluations.map((item) => item.rating.rating))].sort((a, b) => RATING_ORDER.indexOf(a) - RATING_ORDER.indexOf(b))
   };
@@ -717,16 +771,8 @@ function buildAnnualBreakdown(value, remainingMonthCount) {
   return [...byYear.entries()].map(([year, total]) => ({ year, forecastRevenue: money(total) }));
 }
 
-function lifecycleFactor(type) {
-  return {
-    growth: 1.2,
-    stable: 1,
-    rebound: 1.05,
-    long_tail: 0.8,
-    declining: 0.65,
-    inactive: 0.25,
-    insufficient_history: 0.6
-  }[type] ?? 1;
+function lifecycleFactor(type, parameterProfile) {
+  return parameterProfile.forecast.lifecycleFactors[type] ?? 1;
 }
 
 function resourceInvestmentLevel(rating) {
@@ -766,12 +812,12 @@ function suggestion(action, priority, reason, expectedImpact) {
   };
 }
 
-function describeTrend(previous, recent) {
+function describeTrend(previous, recent, parameterProfile) {
   if (previous === 0 && recent === 0) return "inactive";
   if (previous === 0) return "growth";
   const ratio = recent / previous;
-  if (ratio >= FIXTURE_ONLY_THRESHOLDS.growthRatio) return "up";
-  if (ratio <= FIXTURE_ONLY_THRESHOLDS.decliningRatio) return "down";
+  if (ratio >= parameterProfile.lifecycle.growthRatio) return "up";
+  if (ratio <= parameterProfile.lifecycle.decliningRatio) return "down";
   return "flat";
 }
 

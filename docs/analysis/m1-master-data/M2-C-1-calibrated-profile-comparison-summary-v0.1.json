@@ -1,0 +1,76 @@
+{
+  "stage": "M2-C-1",
+  "comparison": "fixture_baseline_vs_calibrated_non_formal",
+  "baselineProfile": "fixture_baseline",
+  "calibratedProfile": "calibrated_non_formal",
+  "resultCount": 7,
+  "aggregateOnly": true,
+  "syntheticOnly": true,
+  "notForFormalDecision": true,
+  "formalEvaluationAllowed": false,
+  "ratingDistribution": {
+    "S+": { "baseline": 1, "calibrated": 4, "delta": 3 },
+    "S": { "baseline": 1, "calibrated": 2, "delta": 1 },
+    "A": { "baseline": 1, "calibrated": 1, "delta": 0 },
+    "B": { "baseline": 1, "calibrated": 0, "delta": -1 },
+    "C": { "baseline": 1, "calibrated": 0, "delta": -1 },
+    "D": { "baseline": 1, "calibrated": 0, "delta": -1 },
+    "E": { "baseline": 1, "calibrated": 0, "delta": -1 }
+  },
+  "lifecycleDistribution": {
+    "stable": { "baseline": 1, "calibrated": 4, "delta": 3 },
+    "rebound": { "baseline": 1, "calibrated": 1, "delta": 0 },
+    "inactive": { "baseline": 1, "calibrated": 1, "delta": 0 },
+    "insufficient_history": { "baseline": 1, "calibrated": 1, "delta": 0 },
+    "growth": { "baseline": 1, "calibrated": 0, "delta": -1 },
+    "declining": { "baseline": 1, "calibrated": 0, "delta": -1 },
+    "long_tail": { "baseline": 1, "calibrated": 0, "delta": -1 }
+  },
+  "forecastTotalDistribution": {
+    "baseline": {
+      "count": 7,
+      "min": 5031.25,
+      "median": 79655.63,
+      "max": 1216000,
+      "total": 2035418.05,
+      "bucketCounts": {
+        "1k_to_10k": 1,
+        "10k_to_100k": 3,
+        "100k_to_1m": 2,
+        "gte_1m": 1
+      }
+    },
+    "calibrated": {
+      "count": 7,
+      "min": 15898.75,
+      "median": 136000,
+      "max": 638400,
+      "total": 1344765.95,
+      "bucketCounts": {
+        "10k_to_100k": 3,
+        "100k_to_1m": 4
+      }
+    },
+    "delta": {
+      "count": 0,
+      "min": 10867.5,
+      "median": 56344.37,
+      "max": -577600,
+      "total": -690652.1
+    }
+  },
+  "riskDistribution": {
+    "high": { "baseline": 5, "calibrated": 4, "delta": -1 },
+    "medium": { "baseline": 4, "calibrated": 2, "delta": -2 },
+    "low": { "baseline": 9, "calibrated": 9, "delta": 0 }
+  },
+  "suggestionDistribution": {
+    "promote": { "baseline": 2, "calibrated": 6, "delta": 4 },
+    "maintain": { "baseline": 1, "calibrated": 4, "delta": 3 },
+    "pricing_or_channel_adjustment": { "baseline": 2, "calibrated": 1, "delta": -1 },
+    "reduce_investment": { "baseline": 2, "calibrated": 1, "delta": -1 },
+    "renewal_review": { "baseline": 2, "calibrated": 1, "delta": -1 },
+    "observe_only": { "baseline": 1, "calibrated": 1, "delta": 0 },
+    "repackage": { "baseline": 2, "calibrated": 2, "delta": 0 }
+  }
+}
