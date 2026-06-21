@@ -4,6 +4,15 @@ const CONNECTION_STRING_PATTERN =
 const PASSWORD_ASSIGNMENT_PATTERN =
   /\b(password|passwd|pwd|token|secret|api[_-]?key)=([^&\s]+)/gi;
 
+export class AppError extends Error {
+  constructor(code, message, statusCode = 500) {
+    super(message);
+    this.name = "AppError";
+    this.code = code;
+    this.statusCode = statusCode;
+  }
+}
+
 export function sanitizeError(error) {
   const rawMessage = error instanceof Error ? error.message : String(error);
   const sanitizedMessage = rawMessage
@@ -16,13 +25,29 @@ export function sanitizeError(error) {
   };
 }
 
-export function publicErrorBody(error) {
-  const sanitized = sanitizeError(error);
+export function publicErrorBody(error, requestId) {
+  const isPublic = error instanceof AppError;
+  const sanitized = isPublic
+    ? { code: error.code, message: error.message }
+    : { code: error?.code || "internal_error", message: "Internal server error" };
+
   return {
-    status: "error",
     error: {
       code: sanitized.code,
-      message: sanitized.message
+      message: sanitized.message,
+      requestId
     }
   };
+}
+
+export function notFound(resource = "Resource") {
+  return new AppError("not_found", `${resource} not found`, 404);
+}
+
+export function badRequest(message) {
+  return new AppError("bad_request", message, 400);
+}
+
+export function databaseNotConfigured(role) {
+  return new AppError("database_not_configured", `${role} database connection is not configured`, 503);
 }
