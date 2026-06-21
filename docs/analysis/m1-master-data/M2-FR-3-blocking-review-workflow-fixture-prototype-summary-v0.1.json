@@ -1,0 +1,55 @@
+{
+  "stage": "M2-FR-3",
+  "candidateVersion": "candidate-a",
+  "line": "technical",
+  "implemented": {
+    "domainStateMachine": true,
+    "syntheticFixture": true,
+    "fixtureRepository": true,
+    "fixtureRuntimeApi": true,
+    "adminPrototype": true,
+    "apiContract": true,
+    "automatedTests": true
+  },
+  "guardFlags": {
+    "mode": "fixture",
+    "syntheticOnly": true,
+    "notForFormalDecision": true,
+    "formalEvaluationAllowed": false,
+    "databaseWritten": false,
+    "formalPersistenceImplemented": false,
+    "formalEvaluationImplemented": false,
+    "mappingActivationImplemented": false,
+    "switchMappingVersionCalled": false,
+    "exportApiImplemented": false,
+    "taskApiImplemented": false,
+    "realDataImported": false,
+    "dbMigrationsModified": false
+  },
+  "fixtureCoverage": {
+    "simulatedBlockingReviewCount": 513,
+    "sampleItemCount": 10,
+    "reviewStatuses": [
+      "pending",
+      "approved",
+      "data_fix_required",
+      "waiver_granted",
+      "rejected_for_formal",
+      "no_action_required"
+    ],
+    "reviewTypes": [
+      "blocking_manual_review",
+      "advisory_review"
+    ],
+    "reasonCodes": [
+      "high_value_with_data_gap",
+      "high_value_with_expiry",
+      "abnormal_spike",
+      "buyout_or_oneoff_income",
+      "insufficient_history",
+      "channel_structure_unclear",
+      "mixed_blocking_advisory"
+    ]
+  },
+  "nextGate": "business review of fixture workflow before formal persistence"
+}

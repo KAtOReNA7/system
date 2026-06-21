@@ -260,6 +260,13 @@ test("M2 old-product fixture admin pages render from M2 APIs", async () => {
       expected: ["回测与算法版本", "fixture-old-product-v1", "SYN-BACKTEST-0001", "covered", "missed", "over", "under"],
       endpoint: "/api/m2/old-products/backtests",
       extraExpected: ["Synthetic backtest shape", "no real backtest executed"]
+    },
+    {
+      path: "/admin#m2-reviews",
+      awaitText: "SYN-FR-REVIEW-001",
+      expected: ["Blocking manual review queue", "fixture-only", "synthetic review queue", "databaseWritten=false", "SYN-FR-REVIEW-001", "Simulate approve"],
+      endpoint: "/api/m2/formal-readiness/reviews",
+      extraExpected: ["formalEvaluationAllowed=false", "notForFormalDecision=true"]
     }
   ];
 
@@ -447,6 +454,32 @@ test("M2 old-product overview distribution links navigate to filtered list", asy
     assert.ok(
       requestedUrls.some((url) => url.includes("/api/m2/old-products/evaluations?") && url.includes("rating=S%2B")),
       "filtered list should be fetched from M2 API with rating query"
+    );
+    assertNoSensitiveOutput(text);
+    await assertNoForbiddenWriteControls(page);
+  } finally {
+    await context.close();
+  }
+});
+
+test("M2 blocking review fixture page simulates action without persistence", async () => {
+  const { context, page, requestedUrls } = await openPage("/admin#m2-reviews", {
+    captureRequests: true
+  });
+  try {
+    await page.getByText("SYN-FR-REVIEW-001").first().waitFor();
+    await page.getByText("Simulate approve").click();
+    await page.getByText("Fixture action result").waitFor();
+    const text = await readVisibleText(page);
+
+    assert.match(text, /databaseWritten=false/);
+    assert.match(text, /formalEvaluationAllowed=false/);
+    assert.match(text, /notForFormalDecision=true/);
+    assert.match(text, /pending/);
+    assert.match(text, /approved/);
+    assert.ok(
+      requestedUrls.some((url) => url.includes("/api/m2/formal-readiness/reviews/SYN-FR-REVIEW-001/actions")),
+      "fixture action endpoint should be called"
     );
     assertNoSensitiveOutput(text);
     await assertNoForbiddenWriteControls(page);

@@ -1,6 +1,6 @@
 import crypto from "node:crypto";
 import { checkDatabaseHealth } from "../db/health.js";
-import { AppError, formalDataBlocked, notFound, publicErrorBody } from "../errors.js";
+import { AppError, badRequest, formalDataBlocked, notFound, publicErrorBody } from "../errors.js";
 import { parsePagination, parsePositiveInteger } from "./pagination.js";
 import { listJobs, getJobById } from "../repositories/jobRepository.js";
 import {
@@ -16,6 +16,11 @@ import {
   listM2OldProductEvaluations,
   listM2OldProductReadinessGaps
 } from "../repositories/oldProductEvaluationFixtureRepository.js";
+import {
+  getM2BlockingReviewItemById,
+  listM2BlockingReviewItems,
+  simulateM2BlockingReviewAction
+} from "../repositories/m2BlockingReviewFixtureRepository.js";
 import { getSystemStatus } from "../repositories/systemRepository.js";
 import { getWorkById, listWorks } from "../repositories/workRepository.js";
 import { serveAdminAsset } from "./staticAdmin.js";
@@ -55,7 +60,13 @@ export function createApp(config, options = {}) {
       options.listM2OldProductAlgorithmVersions ?? listM2OldProductAlgorithmVersions,
     listM2OldProductBacktests: options.listM2OldProductBacktests ?? listM2OldProductBacktests,
     getM2OldProductBacktestById:
-      options.getM2OldProductBacktestById ?? getM2OldProductBacktestById
+      options.getM2OldProductBacktestById ?? getM2OldProductBacktestById,
+    listM2BlockingReviewItems:
+      options.listM2BlockingReviewItems ?? listM2BlockingReviewItems,
+    getM2BlockingReviewItemById:
+      options.getM2BlockingReviewItemById ?? getM2BlockingReviewItemById,
+    simulateM2BlockingReviewAction:
+      options.simulateM2BlockingReviewAction ?? simulateM2BlockingReviewAction
   };
 
   return async function app(request, response) {
@@ -143,6 +154,49 @@ export function createApp(config, options = {}) {
         }
         sendJson(response, 200, { item }, requestId);
         return;
+      }
+
+      if (path.startsWith("/api/m2/formal-readiness/reviews")) {
+        blockFormalM2Mode(request, url);
+
+        if (request.method === "GET" && path === "/api/m2/formal-readiness/reviews") {
+          const pagination = parsePagination(url.searchParams);
+          const body = await repositories.listM2BlockingReviewItems(config, {
+            pagination,
+            searchParams: url.searchParams
+          });
+          sendJson(response, 200, body, requestId);
+          return;
+        }
+
+        const reviewActionMatch = path.match(
+          /^\/api\/m2\/formal-readiness\/reviews\/([^/]+)\/actions$/
+        );
+        if (request.method === "POST" && reviewActionMatch) {
+          const reviewItemId = decodeURIComponent(reviewActionMatch[1]);
+          const payload = await readJsonBody(request);
+          const body = await repositories.simulateM2BlockingReviewAction(
+            config,
+            reviewItemId,
+            payload
+          );
+          if (!body) {
+            throw notFound("Blocking review item");
+          }
+          sendJson(response, 200, body, requestId);
+          return;
+        }
+
+        const reviewMatch = path.match(/^\/api\/m2\/formal-readiness\/reviews\/([^/]+)$/);
+        if (request.method === "GET" && reviewMatch) {
+          const reviewItemId = decodeURIComponent(reviewMatch[1]);
+          const body = await repositories.getM2BlockingReviewItemById(config, reviewItemId);
+          if (!body) {
+            throw notFound("Blocking review item");
+          }
+          sendJson(response, 200, body, requestId);
+          return;
+        }
       }
 
       if (path.startsWith("/api/m2/old-products")) {
@@ -240,5 +294,25 @@ function blockFormalM2Mode(request, url) {
 
   if (String(requestedMode ?? "").toLowerCase() === "formal") {
     throw formalDataBlocked();
+  }
+}
+
+async function readJsonBody(request) {
+  let body = "";
+  for await (const chunk of request) {
+    body += chunk;
+    if (body.length > 10_000) {
+      throw badRequest("request body is too large");
+    }
+  }
+
+  if (body.trim() === "") {
+    return {};
+  }
+
+  try {
+    return JSON.parse(body);
+  } catch {
+    throw badRequest("request body must be valid JSON");
   }
 }

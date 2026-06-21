@@ -474,6 +474,17 @@ tr:last-child td {
   color: var(--muted);
 }
 
+.action-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.audit-event {
+  background: #f8faff;
+}
+
 .technical-code {
   margin-top: 10px;
   color: var(--muted);

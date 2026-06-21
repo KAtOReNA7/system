@@ -12,7 +12,7 @@
     "db:check": "node src/cli/check-db.js",
     "lint": "node tools/node/check-syntax.mjs",
     "build": "node tools/node/check-syntax.mjs",
-    "test": "node --test test/admin.test.js test/api.test.js test/config.test.js test/db-query.test.js test/health.test.js test/m2-old-product-api.test.js test/m2-old-product-evaluation-engine.test.js test/m2-calibrated-parameters.test.js test/m2-b3-no-db-readiness.test.js test/m2-b3-no-db-validation-report-generator.test.js test/m2-local-dry-run-manifest-validator.test.js test/m2-formal-persistence-schema.test.js test/m2-formal-readiness-gate.test.js test/smoke-safety.test.js test/fixtures/syntheticBusinessData.js test/fixtures/m2OldProductEvaluationFixtureCases.js",
+    "test": "node --test test/admin.test.js test/api.test.js test/config.test.js test/db-query.test.js test/health.test.js test/m2-old-product-api.test.js test/m2-old-product-evaluation-engine.test.js test/m2-calibrated-parameters.test.js test/m2-b3-no-db-readiness.test.js test/m2-b3-no-db-validation-report-generator.test.js test/m2-local-dry-run-manifest-validator.test.js test/m2-formal-persistence-schema.test.js test/m2-formal-readiness-gate.test.js test/m2-blocking-review-workflow.test.js test/smoke-safety.test.js test/fixtures/syntheticBusinessData.js test/fixtures/m2OldProductEvaluationFixtureCases.js",
     "test:e2e": "node --test test/e2e/admin.e2e.test.js",
     "smoke": "node tools/dev-smoke/run-api-smoke.mjs",
     "check:no-real-data": "node scripts/check-no-real-data.mjs",

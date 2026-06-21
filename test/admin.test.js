@@ -47,6 +47,7 @@ test("GET /admin serves the minimal read-only admin prototype", async () => {
   assert.match(response.body, /老品评估详情/);
   assert.match(response.body, /老品数据缺口/);
   assert.match(response.body, /回测与算法版本/);
+  assert.match(response.body, /Blocking reviews/);
   assert.doesNotMatch(response.body, /<form/i);
   assert.doesNotMatch(response.body, /evaluation-tasks/i);
   assert.doesNotMatch(response.body, /switch_mapping_version/i);
@@ -86,7 +87,11 @@ test("admin assets are served without using API routes", async () => {
   assert.match(js.body, /Filter gaps/);
   assert.match(js.body, /Show batch detail/);
   assert.match(js.body, /Formal backtest blocked/);
-  assert.doesNotMatch(js.body, /method:\s*["'`](POST|PUT|PATCH|DELETE)/i);
+  assert.match(js.body, /\/api\/m2\/formal-readiness\/reviews/);
+  assert.match(js.body, /Fixture transition simulator/);
+  assert.match(js.body, /databaseWritten=false/);
+  assert.match(js.body, /method:\s*"POST"/);
+  assert.doesNotMatch(js.body, /method:\s*["'`](PUT|PATCH|DELETE)/i);
   assert.doesNotMatch(js.body, /evaluation-tasks/i);
   assert.doesNotMatch(js.body, /switch_mapping_version/i);
   assert.doesNotMatch(js.body, /export formal result/i);

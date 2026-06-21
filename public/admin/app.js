@@ -7,7 +7,8 @@ const PAGE_KEYS = [
   "m2-list",
   "m2-detail",
   "m2-gaps",
-  "m2-backtests"
+  "m2-backtests",
+  "m2-reviews"
 ];
 const state = {
   activePage: "system",
@@ -31,7 +32,17 @@ const state = {
     page: 1,
     pageSize: 100
   },
-  m2SelectedBacktestId: ""
+  m2SelectedBacktestId: "",
+  m2ReviewFilters: {
+    reviewStatus: "",
+    reviewType: "",
+    reasonCode: "",
+    isBlocking: "",
+    page: 1,
+    pageSize: 20
+  },
+  m2SelectedReviewId: "SYN-FR-REVIEW-001",
+  m2ReviewActionResult: null
 };
 
 const fixture = {
@@ -256,6 +267,25 @@ async function getJson(path, fixtureValue) {
 
 async function getM2Json(path) {
   const response = await fetch(path, { headers: { accept: "application/json" } });
+  const body = await response.json();
+  if (!response.ok) {
+    const error = new Error(body?.error?.message || "M2 request failed");
+    error.statusCode = response.status;
+    error.payload = body;
+    throw error;
+  }
+  return body;
+}
+
+async function postM2Json(path, payload) {
+  const response = await fetch(path, {
+    method: "POST",
+    headers: {
+      accept: "application/json",
+      "content-type": "application/json"
+    },
+    body: JSON.stringify(payload)
+  });
   const body = await response.json();
   if (!response.ok) {
     const error = new Error(body?.error?.message || "M2 request failed");
@@ -1482,6 +1512,282 @@ function attachM2BacktestHandlers() {
   });
 }
 
+function defaultM2ReviewFilters() {
+  return {
+    reviewStatus: "",
+    reviewType: "",
+    reasonCode: "",
+    isBlocking: "",
+    page: 1,
+    pageSize: 20
+  };
+}
+
+async function renderM2Reviews() {
+  setPageState("m2-reviews", "loading");
+  document.querySelector("#m2ReviewsContent").innerHTML = '<div class="loading">Loading blocking review queue…</div>';
+  const query = buildQuery(state.m2ReviewFilters);
+  try {
+    const list = await getM2Json(`/api/m2/formal-readiness/reviews?${query}`);
+    const selectedReviewId = state.m2SelectedReviewId || list.items[0]?.reviewItemId || "";
+    state.m2SelectedReviewId = selectedReviewId;
+    const detail = selectedReviewId
+      ? await getM2Json(`/api/m2/formal-readiness/reviews/${encodeURIComponent(selectedReviewId)}`)
+      : null;
+
+    if (!list.items.length) {
+      setPageState("m2-reviews", "empty");
+      document.querySelector("#m2ReviewsContent").innerHTML = `
+        ${renderM2ReviewDatasetPanel(list)}
+        ${renderM2ReviewFilters()}
+        ${renderM2CurrentFilterSummary(state.m2ReviewFilters)}
+        ${renderEmpty("No fixture review items", "The fixture request succeeded but no synthetic review items matched the current filters.", [
+          "This is not a formal review queue.",
+          "No database row was created or updated."
+        ])}
+      `;
+      attachM2ReviewHandlers();
+      return;
+    }
+
+    setPageState("m2-reviews", "success");
+    document.querySelector("#m2ReviewsContent").innerHTML = `
+      ${renderM2ReviewDatasetPanel(list)}
+      ${renderM2ReviewFilters()}
+      ${renderM2CurrentFilterSummary(state.m2ReviewFilters)}
+      <div class="context-note">
+        <strong>Fixture-only manual review workflow</strong>
+        <p>This page simulates blocking manual review transitions in memory. It does not write a database row and cannot authorize formal processing.</p>
+        <p>databaseWritten=false · formalEvaluationAllowed=false · notForFormalDecision=true</p>
+      </div>
+      <div class="table-wrap">
+        ${renderTableHint()}
+        <table>
+          <thead>
+            <tr>
+              <th>review item ID</th>
+              <th>standard work ID</th>
+              <th>review type</th>
+              <th>status</th>
+              <th>reason code</th>
+              <th>blocking</th>
+              <th>blocks entry</th>
+              <th>suggested fixture action</th>
+              <th>detail</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${list.items.map((item) => `
+              <tr>
+                <td>${escapeHtml(item.reviewItemId)}</td>
+                <td>${escapeHtml(item.standardWorkId)}</td>
+                <td>${escapeHtml(item.reviewType)}</td>
+                <td>${renderStatusBadge(item.reviewStatus)}</td>
+                <td>${escapeHtml(item.reasonCode)}</td>
+                <td>${escapeHtml(item.isBlocking)}</td>
+                <td>${escapeHtml(item.blocksFormalEntry)}</td>
+                <td>${escapeHtml(item.suggestedAction)}</td>
+                <td><a href="#m2-reviews" data-m2-review-id="${escapeAttribute(item.reviewItemId)}">Show fixture detail</a></td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+        ${renderPagination(list.pagination)}
+      </div>
+      ${detail ? renderM2ReviewDetail(detail) : ""}
+    `;
+    attachM2ReviewHandlers();
+  } catch (error) {
+    setM2ErrorPageState("m2-reviews", error);
+    document.querySelector("#m2ReviewsContent").innerHTML = renderM2Error(error, {
+      title: error.statusCode === 404 ? "Blocking review item not found" : undefined
+    });
+  }
+}
+
+function renderM2ReviewDatasetPanel(data) {
+  const dataset = data.dataset || {};
+  const summary = data.workflowSummary || {};
+  return `
+    <section class="m2-safety-panel" data-testid="m2-review-safety-panel">
+      <div class="meta-row">
+        <span class="badge warn">fixture-only</span>
+        <span class="badge ok">synthetic review queue</span>
+        <span class="badge warn">no database write</span>
+      </div>
+      <div class="cards three compact-cards">
+        <article class="card">
+          <h3>Dataset boundary</h3>
+          ${renderMetric("mode", dataset.mode || data.mode || "fixture")}
+          ${renderMetric("source", dataset.source)}
+          ${renderMetric("candidateVersion", dataset.candidateVersion)}
+          ${renderMetric("notForFormalDecision", dataset.notForFormalDecision ?? data.notForFormalDecision)}
+        </article>
+        <article class="card">
+          <h3>Review aggregate</h3>
+          ${renderMetric("simulated blocking count", dataset.reviewAggregate?.simulatedBlockingReviewCount ?? 513)}
+          ${renderMetric("sample item count", dataset.reviewAggregate?.sampleItemCount ?? summary.total ?? 0)}
+          ${renderMetric("unresolved blocking", summary.unresolvedBlockingCount ?? "not loaded")}
+          ${renderMetric("ready after review", summary.readyForFormalAfterReview ?? false)}
+        </article>
+        <article class="card">
+          <h3>Guard flags</h3>
+          ${renderMetric("formalEvaluationAllowed", dataset.formalEvaluationAllowed ?? data.formalEvaluationAllowed)}
+          ${renderMetric("databaseWritten", dataset.databaseWritten ?? data.databaseWritten)}
+          ${renderMetric("syntheticOnly", dataset.syntheticOnly)}
+          <p class="pagination-note">Actions below are fixture simulations only and are not persisted.</p>
+        </article>
+      </div>
+    </section>
+  `;
+}
+
+function renderM2ReviewFilters() {
+  const filters = state.m2ReviewFilters;
+  return `
+    <form class="filter-panel" id="m2ReviewFilters">
+      <label>Review status
+        <select name="reviewStatus">
+          ${option("", "All", filters.reviewStatus)}
+          ${["pending", "approved", "data_fix_required", "waiver_granted", "rejected_for_formal", "no_action_required"].map((value) => option(value, value, filters.reviewStatus)).join("")}
+        </select>
+      </label>
+      <label>Review type
+        <select name="reviewType">
+          ${option("", "All", filters.reviewType)}
+          ${["blocking_manual_review", "advisory_review"].map((value) => option(value, value, filters.reviewType)).join("")}
+        </select>
+      </label>
+      <label>Reason code
+        <select name="reasonCode">
+          ${option("", "All", filters.reasonCode)}
+          ${["high_value_with_data_gap", "high_value_with_expiry", "abnormal_spike", "buyout_or_oneoff_income", "insufficient_history", "channel_structure_unclear", "mixed_blocking_advisory", "advisory_lifecycle_note", "advisory_mapping_note"].map((value) => option(value, value, filters.reasonCode)).join("")}
+        </select>
+      </label>
+      <label>Blocking
+        <select name="isBlocking">
+          ${option("", "All", filters.isBlocking)}
+          ${option("true", "true", filters.isBlocking)}
+          ${option("false", "false", filters.isBlocking)}
+        </select>
+      </label>
+      <label>Page
+        <input name="page" inputmode="numeric" value="${escapeAttribute(filters.page)}">
+      </label>
+      <label>Page size
+        <input name="pageSize" inputmode="numeric" value="${escapeAttribute(filters.pageSize)}">
+      </label>
+      <button type="submit" class="secondary">Filter reviews</button>
+      <button type="button" class="secondary" data-m2-reset-reviews>Reset review filters</button>
+    </form>
+  `;
+}
+
+function renderM2ReviewDetail(detail) {
+  const item = detail.item;
+  return `
+    <div class="cards three">
+      <article class="card">
+        <h3>Selected fixture item</h3>
+        ${renderMetric("reviewItemId", item.reviewItemId)}
+        ${renderMetric("standardWorkId", item.standardWorkId)}
+        ${renderMetric("status", item.reviewStatus, { code: true })}
+        ${renderMetric("reasonCode", item.reasonCode)}
+        ${renderMetric("blocksFormalEntry", detail.workflowImpact.blocksFormalEntry)}
+      </article>
+      <article class="card">
+        <h3>Review explanation</h3>
+        <p>${escapeHtml(item.reasonLabel)}</p>
+        <p class="pagination-note">${escapeHtml(item.suggestedAction)}</p>
+        <p class="pagination-note">Review type: ${escapeHtml(item.reviewType)}</p>
+      </article>
+      <article class="card">
+        <h3>Fixture transition simulator</h3>
+        <p class="pagination-note">The buttons only call the fixture action endpoint. The response must keep databaseWritten=false.</p>
+        <form id="m2ReviewActionForm" class="action-grid">
+          ${["approve", "request_data_fix", "grant_waiver", "reject_for_formal", "mark_no_action_required"].map((action) => `
+            <button type="submit" name="action" value="${escapeAttribute(action)}" class="secondary">Simulate ${escapeHtml(action)}</button>
+          `).join("")}
+        </form>
+      </article>
+    </div>
+    ${state.m2ReviewActionResult ? renderM2ReviewActionResult(state.m2ReviewActionResult) : ""}
+  `;
+}
+
+function renderM2ReviewActionResult(result) {
+  return `
+    <div class="context-note audit-event">
+      <strong>Fixture action result</strong>
+      <p>databaseWritten=${escapeHtml(result.databaseWritten)} · formalEvaluationAllowed=${escapeHtml(result.formalEvaluationAllowed)} · notForFormalDecision=${escapeHtml(result.notForFormalDecision)}</p>
+      <p>Action: ${escapeHtml(result.auditEvent.action)} · ${escapeHtml(result.auditEvent.previousStatus)} → ${escapeHtml(result.auditEvent.nextStatus)}</p>
+      <p class="pagination-note">auditEventId: ${escapeHtml(result.auditEvent.eventId)}</p>
+    </div>
+  `;
+}
+
+function attachM2ReviewHandlers() {
+  const filterForm = document.querySelector("#m2ReviewFilters");
+  if (filterForm) {
+    filterForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const formData = new FormData(filterForm);
+      state.m2ReviewFilters = {
+        reviewStatus: String(formData.get("reviewStatus") || ""),
+        reviewType: String(formData.get("reviewType") || ""),
+        reasonCode: String(formData.get("reasonCode") || ""),
+        isBlocking: String(formData.get("isBlocking") || ""),
+        page: String(formData.get("page") || "1"),
+        pageSize: String(formData.get("pageSize") || "20")
+      };
+      state.m2ReviewActionResult = null;
+      renderM2Reviews();
+    });
+    filterForm.querySelector("[data-m2-reset-reviews]")?.addEventListener("click", () => {
+      state.m2ReviewFilters = defaultM2ReviewFilters();
+      state.m2ReviewActionResult = null;
+      renderM2Reviews();
+    });
+  }
+
+  document.querySelectorAll("[data-m2-review-id]").forEach((link) => {
+    link.addEventListener("click", (event) => {
+      event.preventDefault();
+      state.m2SelectedReviewId = link.dataset.m2ReviewId || "";
+      state.m2ReviewActionResult = null;
+      renderM2Reviews();
+    });
+  });
+
+  const actionForm = document.querySelector("#m2ReviewActionForm");
+  if (actionForm) {
+    actionForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const submitter = event.submitter;
+      const action = submitter?.value;
+      if (!action || !state.m2SelectedReviewId) {
+        return;
+      }
+      try {
+        state.m2ReviewActionResult = await postM2Json(
+          `/api/m2/formal-readiness/reviews/${encodeURIComponent(state.m2SelectedReviewId)}/actions`,
+          {
+            action,
+            actor: "SYN-FIXTURE-OPERATOR",
+            reason: "Fixture-only admin prototype transition"
+          }
+        );
+        renderM2Reviews();
+      } catch (error) {
+        document.querySelector("#m2ReviewsContent").insertAdjacentHTML(
+          "beforeend",
+          renderM2Error(error)
+        );
+      }
+    });
+  }
+}
+
 function showPage(page) {
   const parsed = parsePageHash(page);
   state.activePage = PAGE_KEYS.includes(parsed.page) ? parsed.page : "system";
@@ -1530,6 +1836,9 @@ function renderCurrentPage() {
   }
   if (state.activePage === "m2-backtests") {
     return renderM2Backtests();
+  }
+  if (state.activePage === "m2-reviews") {
+    return renderM2Reviews();
   }
   return renderSystem();
 }
