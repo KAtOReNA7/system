@@ -99,6 +99,18 @@ test("GET /api/works supports synthetic fixtures without real data", async () =>
   assert.equal(response.body.pagination.total, 1);
 });
 
+test("GET /api/works/:id returns synthetic fixture detail", async () => {
+  const app = createApp(baseConfig, {
+    getWorkById: async (_config, id) => syntheticWorks.find((item) => item.id === id) ?? null
+  });
+
+  const response = await request(app, `/api/works/${syntheticWorks[0].id}`);
+
+  assert.equal(response.statusCode, 200);
+  assert.equal(response.body.item.standardWorkId, syntheticWorks[0].standardWorkId);
+  assert.equal(response.body.item.completeness.missingBasicInfoRecord, true);
+});
+
 test("GET /api/works/:id returns unified 404 when not found", async () => {
   const app = createApp(baseConfig, {
     getWorkById: async () => null
@@ -143,6 +155,31 @@ test("GET /api/mapping-versions can return synthetic fixture summaries", async (
   assert.equal(response.body.items[0].triggerType, "synthetic_fixture");
 });
 
+test("GET /api/mapping-versions/:id returns synthetic fixture detail", async () => {
+  const app = createApp(baseConfig, {
+    getMappingVersionById: async (_config, id) =>
+      syntheticMappingVersions.find((item) => item.id === String(id)) ?? null
+  });
+
+  const response = await request(app, `/api/mapping-versions/${syntheticMappingVersions[0].id}`);
+
+  assert.equal(response.statusCode, 200);
+  assert.equal(response.body.item.versionNo, syntheticMappingVersions[0].versionNo);
+  assert.equal(response.body.item.status, syntheticMappingVersions[0].status);
+});
+
+test("GET /api/mapping-versions/:id returns unified 404 when not found", async () => {
+  const app = createApp(baseConfig, {
+    getMappingVersionById: async () => null
+  });
+
+  const response = await request(app, "/api/mapping-versions/999999");
+
+  assert.equal(response.statusCode, 404);
+  assert.equal(response.body.error.code, "not_found");
+  assert.equal(response.body.error.message, "Mapping version not found");
+});
+
 test("GET /api/jobs returns empty list for empty repository", async () => {
   const app = createApp(baseConfig, {
     listJobs: async (_config, pagination) => ({
@@ -172,6 +209,29 @@ test("GET /api/jobs can return synthetic job status structures", async () => {
 
   assert.equal(response.statusCode, 200);
   assert.equal(response.body.items[0].status, "pending");
+});
+
+test("GET /api/jobs/:id returns synthetic fixture detail", async () => {
+  const app = createApp(baseConfig, {
+    getJobById: async (_config, id) => syntheticJobs.find((item) => item.id === String(id)) ?? null
+  });
+
+  const response = await request(app, `/api/jobs/${syntheticJobs[0].id}`);
+
+  assert.equal(response.statusCode, 200);
+  assert.equal(response.body.item.logicalOperationKey, syntheticJobs[0].logicalOperationKey);
+});
+
+test("GET /api/jobs/:id returns unified 404 when not found", async () => {
+  const app = createApp(baseConfig, {
+    getJobById: async () => null
+  });
+
+  const response = await request(app, "/api/jobs/999999");
+
+  assert.equal(response.statusCode, 404);
+  assert.equal(response.body.error.code, "not_found");
+  assert.equal(response.body.error.message, "Job not found");
 });
 
 test("bad pagination returns unified 400", async () => {
