@@ -56,6 +56,29 @@ npx playwright install chromium
 
 E2E 禁止连接正式数据库、读取或导入真实账单、数字版权台账、运营确认结果，且不应修改 `db/migrations/`。
 
+## CI 门禁
+
+GitHub Actions 工作流位于 `.github/workflows/ci.yml`，使用 Node.js 24 和 `npm ci`。
+
+CI 当前执行：
+
+```bash
+npm run check:no-real-data
+npm run lint
+npm run build
+npm test
+npm run smoke
+npm run test:e2e
+```
+
+CI 会在运行 E2E 前执行：
+
+```bash
+npx playwright install chromium
+```
+
+CI 显式将 `M1_APP_ENV` 设为 `ci`，并将 `M1_DATABASE_URL`、`M1_DATABASE_READONLY_URL`、`M1_DATABASE_BACKGROUND_URL` 保持为空。CI 不应连接正式数据库、不应读取或导入真实数据、不应执行 mapping_version 激活，也不应修改 `db/migrations/`。
+
 ## 版本边界
 
 - 本包冻结 M1 开发前的业务语义、数据边界和验收框架。
