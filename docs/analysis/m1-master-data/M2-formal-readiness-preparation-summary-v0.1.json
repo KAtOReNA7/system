@@ -1,0 +1,129 @@
+{
+  "schema": "m2.formal_readiness_preparation_summary.v0.1",
+  "generatedAt": "2026-06-22T02:15:00+08:00",
+  "sourceBusinessAcceptanceFiles": [
+    "docs/analysis/m1-master-data/M2-candidate-a-business-acceptance-report-v0.1.md",
+    "docs/analysis/m1-master-data/M2-candidate-a-business-acceptance-summary-v0.1.json"
+  ],
+  "m2NonformalCloseoutAllowed": true,
+  "candidateVersion": "m2-c3-cleaned-bill-nonformal-v0.2/candidate-a",
+  "businessAccepted": false,
+  "acceptedWithConditions": true,
+  "businessAcceptanceMode": "conditional_acceptance_for_nonformal_candidate",
+  "continueTechnicalC5C6": false,
+  "formalEvaluationAllowed": false,
+  "formalReadinessPreparationAllowed": true,
+  "mappingVersionActivationRequiredBeforeFormal": true,
+  "copyrightEndMustBeCompletedBeforeFormal": true,
+  "blockingManualReviewRequiredBeforeFormal": true,
+  "advisoryReviewDisplayRequired": true,
+  "formalPersistenceRequired": true,
+  "evaluationTaskApiRequired": true,
+  "exportApiRequired": true,
+  "auditReleaseGateRequired": true,
+  "candidateAggregateFacts": {
+    "evaluatedWorkCount": 3054,
+    "blockingManualReviewCount": 513,
+    "advisoryReviewCount": 2331,
+    "copyrightFallbackUsage": 2207,
+    "downlistOrSuspendCount": 744,
+    "renewalReviewCount": 209
+  },
+  "readinessWorkstreams": [
+    {
+      "code": "mapping_version_readiness",
+      "priority": "P0",
+      "businessConfirmationRequired": true,
+      "technicalImplementationRequired": true,
+      "migrationRequired": "possibly",
+      "apiRequired": true,
+      "adminRequired": true,
+      "blockingBeforeFormal": true
+    },
+    {
+      "code": "copyright_end_basic_info_readiness",
+      "priority": "P0",
+      "businessConfirmationRequired": true,
+      "technicalImplementationRequired": true,
+      "migrationRequired": "possibly",
+      "apiRequired": true,
+      "adminRequired": true,
+      "blockingBeforeFormal": true
+    },
+    {
+      "code": "blocking_manual_review_readiness",
+      "priority": "P0",
+      "businessConfirmationRequired": true,
+      "technicalImplementationRequired": true,
+      "migrationRequired": "possibly",
+      "apiRequired": true,
+      "adminRequired": true,
+      "blockingBeforeFormal": true
+    },
+    {
+      "code": "advisory_review_display",
+      "priority": "P1",
+      "businessConfirmationRequired": true,
+      "technicalImplementationRequired": true,
+      "migrationRequired": "possibly",
+      "apiRequired": true,
+      "adminRequired": true,
+      "blockingBeforeFormal": false
+    },
+    {
+      "code": "formal_persistence",
+      "priority": "P0",
+      "businessConfirmationRequired": true,
+      "technicalImplementationRequired": true,
+      "migrationRequired": true,
+      "apiRequired": true,
+      "adminRequired": true,
+      "blockingBeforeFormal": true
+    },
+    {
+      "code": "evaluation_task_api",
+      "priority": "P0",
+      "businessConfirmationRequired": true,
+      "technicalImplementationRequired": true,
+      "migrationRequired": "possibly",
+      "apiRequired": true,
+      "adminRequired": true,
+      "blockingBeforeFormal": true
+    },
+    {
+      "code": "export_api",
+      "priority": "P1",
+      "businessConfirmationRequired": true,
+      "technicalImplementationRequired": true,
+      "migrationRequired": "possibly",
+      "apiRequired": true,
+      "adminRequired": true,
+      "blockingBeforeFormal": true
+    },
+    {
+      "code": "audit_and_release_gate",
+      "priority": "P0",
+      "businessConfirmationRequired": true,
+      "technicalImplementationRequired": true,
+      "migrationRequired": "possibly",
+      "apiRequired": true,
+      "adminRequired": true,
+      "blockingBeforeFormal": true
+    }
+  ],
+  "recommendedNextLine": "operations_and_technical_readiness",
+  "recommendedNextTask": "M2 formal readiness minimum implementation planning",
+  "prohibitedActionsConfirmed": {
+    "codeModified": false,
+    "realDataRead": false,
+    "rawDetailOutput": false,
+    "rawDataCommitted": false,
+    "databaseConnected": false,
+    "dockerExecuted": false,
+    "dbMigrationsModified": false,
+    "mappingVersionActivated": false,
+    "switchMappingVersionCalled": false,
+    "writeCapabilityAdded": false,
+    "formalEvaluationExecuted": false
+  }
+}
