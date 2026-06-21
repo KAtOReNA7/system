@@ -1,0 +1,54 @@
+{
+  "generated_at": "2026-06-21T14:18:00+08:00",
+  "history_redaction": {
+    "performed": true,
+    "before_head": "86aaf177c7b5998fe0242fcac62ea6c038ebded3",
+    "after_head": "180c166be1538a6c42a10fc1d3712862af731720",
+    "current_head_before_promotion_commit": "180c166be1538a6c42a10fc1d3712862af731720",
+    "force_pushed_main": true,
+    "remote_main_confirmed": "180c166be1538a6c42a10fc1d3712862af731720",
+    "history_scan_local_data_path_hits": 0,
+    "history_scan_scope": "main, origin/main, and local refs including stash after rewrite",
+    "backup_bundle": "<repo>/_recovery/git/pre-history-path-redaction-20260621-140412.bundle"
+  },
+  "promotion": {
+    "candidate_sql_count": 80,
+    "formal_sql_count": 80,
+    "filenames_preserved": true,
+    "hashes_match_candidate": true,
+    "banner_preserved": true,
+    "candidate_directory_unchanged": true
+  },
+  "flyway_validation": {
+    "passed": true,
+    "flyway_version": "10.21.0 OSS",
+    "postgresql_version": "16.14",
+    "timezone": "UTC",
+    "database_scope": "local isolated PostgreSQL 16 cluster under ignored _recovery directory",
+    "migrate_success": true,
+    "info_success": true,
+    "validate_success": true,
+    "second_migrate_no_repeat": true,
+    "object_counts": {
+      "m1_tables": 48,
+      "views": 5,
+      "functions": 21,
+      "user_triggers": 32,
+      "foreign_keys": 84,
+      "indexes": 117
+    }
+  },
+  "git": {
+    "status_before_report_commit": "?? db/; ?? docs/technical-design/M1-Flyway????????-v0.1.md; ?? experiments/m1-flyway-candidate/reports/formal-promotion-summary.json",
+    "diff_stat_before_report_commit": "",
+    "planned_commit_scope": "db/migrations (80 SQL), promotion report markdown, formal-promotion-summary.json"
+  },
+  "allowed_result": "db/migrations may be kept as the formal migration directory after commit and push",
+  "still_forbidden": [
+    "formal data migration",
+    "connecting to production database",
+    "importing real bills, master data, or ops confirmations",
+    "generating mapping_version from ops confirmations",
+    "modifying source bills"
+  ]
+}
