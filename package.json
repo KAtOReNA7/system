@@ -1,0 +1,20 @@
+{
+  "name": "m1-audiobook-evaluation",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "node --watch src/server.js",
+    "start": "node src/server.js",
+    "db:check": "node src/cli/check-db.js",
+    "lint": "node tools/node/check-syntax.mjs",
+    "build": "node tools/node/check-syntax.mjs",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "pg": "^8.16.3"
+  }
+}

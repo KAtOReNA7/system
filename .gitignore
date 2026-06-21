@@ -11,6 +11,9 @@ _recovery/
 # Python / Node local caches
 __pycache__/
 *.pyc
+node_modules/
+coverage/
+npm-debug.log*
 tools/**/__pycache__/
 experiments/**/__pycache__/
 tools/**/node_modules/
@@ -20,6 +23,7 @@ experiments/**/node_modules/
 *.env
 .env
 .env.*
+!.env.example
 *.pem
 *.key
 *.p12

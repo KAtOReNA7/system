@@ -122,6 +122,13 @@ Invoke-Checked -File $FlywayExecutable -Arguments ($flywayArgs + @("info"))
 Invoke-Checked -File $FlywayExecutable -Arguments ($flywayArgs + @("validate"))
 Invoke-Checked -File $FlywayExecutable -Arguments ($flywayArgs + @("migrate"))
 
+$metadataGrantSql = @"
+GRANT USAGE ON SCHEMA flyway_history TO application_ro, background_worker;
+GRANT SELECT ON flyway_history.flyway_schema_history TO application_ro, background_worker;
+"@
+$targetDbBase = @("-h", $HostName, "-p", [string]$Port, "-U", $AdminUser, "-d", $DatabaseName, "-v", "ON_ERROR_STOP=1")
+Invoke-Checked -File $psql -Arguments ($targetDbBase + @("-c", $metadataGrantSql))
+
 [pscustomobject]@{
   status = "ok"
   database = $DatabaseName
