@@ -267,6 +267,13 @@ test("M2 old-product fixture admin pages render from M2 APIs", async () => {
       expected: ["Blocking manual review queue", "fixture-only", "synthetic review queue", "databaseWritten=false", "SYN-FR-REVIEW-001", "Simulate approve", "Advisory review summary", "does not block formal eligibility", "downlist_requires_manual_confirmation"],
       endpoint: "/api/m2/formal-readiness/reviews",
       extraExpected: ["formalEvaluationAllowed=false", "notForFormalDecision=true"]
+    },
+    {
+      path: "/admin#m2-fixture-exports",
+      awaitText: "SYN-FR-EXPORT-001",
+      expected: ["Export release gate fixture queue", "fixture-only", "synthetic export package", "formalExportCreated=false", "databaseWritten=false", "SYN-FR-EXPORT-001", "Simulate release"],
+      endpoint: "/api/m2/fixture/exports",
+      extraExpected: ["formalEvaluationExecuted=false", "notForFormalDecision=true"]
     }
   ];
 
@@ -520,6 +527,43 @@ test("M2 fixture evaluation task page creates blocked task and simulates retry w
     assert.ok(
       requestedUrls.some((url) => url.includes(`/api/m2/fixture/${["evaluation", "tasks"].join("-")}`)),
       "fixture task endpoint should be requested"
+    );
+    assertNoSensitiveOutput(text);
+    await assertNoForbiddenWriteControls(page);
+  } finally {
+    await context.close();
+  }
+});
+
+test("M2 fixture export page creates blocked package and simulates release without persistence", async () => {
+  const { context, page, requestedUrls } = await openPage("/admin#m2-fixture-exports", {
+    captureRequests: true
+  });
+  try {
+    await page.getByText("SYN-FR-EXPORT-001").first().waitFor();
+    let text = await readVisibleText(page);
+    assert.match(text, /Export release gate fixture queue/);
+    assert.match(text, /formalExportCreated=false/);
+    assert.match(text, /formalEvaluationExecuted=false/);
+    assert.match(text, /databaseWritten=false/);
+    assert.match(text, /Forbidden field check/);
+
+    await page.locator('#m2ExportCreateForm select[name="caseId"]').selectOption("forbidden_field_detection");
+    await page.getByText("Simulate create fixture package").click();
+    await page.getByText("Fixture export result").waitFor();
+    text = await readVisibleText(page);
+    assert.match(text, /blocked/);
+    assert.match(text, /formalExportCreated=false/);
+
+    await page.locator('[data-m2-export-id="SYN-FR-EXPORT-001"]').click();
+    await page.getByText("Simulate release").click();
+    await page.locator(".audit-event").getByText("released").first().waitFor();
+    text = await readVisibleText(page);
+    assert.match(text, /formalExportCreated=false/);
+    assert.match(text, /databaseWritten=false/);
+    assert.ok(
+      requestedUrls.some((url) => url.includes("/api/m2/fixture/exports/SYN-FR-EXPORT-001/actions")),
+      "fixture export action endpoint should be requested"
     );
     assertNoSensitiveOutput(text);
     await assertNoForbiddenWriteControls(page);

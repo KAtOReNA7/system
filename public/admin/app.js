@@ -9,7 +9,8 @@ const PAGE_KEYS = [
   "m2-gaps",
   "m2-backtests",
   "m2-reviews",
-  "m2-fixture-tasks"
+  "m2-fixture-tasks",
+  "m2-fixture-exports"
 ];
 const state = {
   activePage: "system",
@@ -52,11 +53,21 @@ const state = {
   },
   m2SelectedTaskId: "SYN-FR-TASK-001",
   m2TaskCreateCaseId: "ready_queued",
-  m2TaskActionResult: null
+  m2TaskActionResult: null,
+  m2ExportFilters: {
+    eligibility: "",
+    releaseStatus: "",
+    page: 1,
+    pageSize: 20
+  },
+  m2SelectedExportId: "SYN-FR-EXPORT-001",
+  m2ExportCreateCaseId: "eligible_export_package",
+  m2ExportActionResult: null
 };
 
 const M2_FIXTURE_TASK_API = `/api/m2/fixture/${["evaluation", "tasks"].join("-")}`;
 const M2_ADVISORY_SUMMARY_API = "/api/m2/fixture/advisory-reviews/summary";
+const M2_FIXTURE_EXPORTS_API = "/api/m2/fixture/exports";
 
 const fixture = {
   health: {
@@ -2217,6 +2228,337 @@ function attachM2TaskHandlers() {
   }
 }
 
+function defaultM2ExportFilters() {
+  return {
+    eligibility: "",
+    releaseStatus: "",
+    page: 1,
+    pageSize: 20
+  };
+}
+
+async function renderM2FixtureExports() {
+  setPageState("m2-fixture-exports", "loading");
+  document.querySelector("#m2FixtureExportsContent").innerHTML = '<div class="loading">Loading fixture export queue…</div>';
+  const query = buildQuery(state.m2ExportFilters);
+  try {
+    const list = await getM2Json(`${M2_FIXTURE_EXPORTS_API}?${query}`);
+    const selectedExportId = state.m2SelectedExportId || list.items[0]?.exportId || "";
+    state.m2SelectedExportId = selectedExportId;
+    const detail = selectedExportId
+      ? await getM2Json(`${M2_FIXTURE_EXPORTS_API}/${encodeURIComponent(selectedExportId)}`)
+      : null;
+
+    if (!list.items.length) {
+      setPageState("m2-fixture-exports", "empty");
+      document.querySelector("#m2FixtureExportsContent").innerHTML = `
+        ${renderM2ExportDatasetPanel(list)}
+        ${renderM2ExportFilters()}
+        ${renderM2ExportCreatePanel()}
+        ${renderEmpty("No fixture export packages", "The fixture request succeeded but no synthetic export package matched the current filters.", [
+          "No package was persisted.",
+          "No formal result was created."
+        ])}
+      `;
+      attachM2ExportHandlers();
+      return;
+    }
+
+    setPageState("m2-fixture-exports", "success");
+    document.querySelector("#m2FixtureExportsContent").innerHTML = `
+      ${renderM2ExportDatasetPanel(list)}
+      ${renderM2ExportFilters()}
+      ${renderM2ExportCreatePanel()}
+      <div class="context-note">
+        <strong>Fixture-only release gate</strong>
+        <p>This page checks synthetic export fields, eligibility, forbidden field detection, approval, release, rollback and invalidation states.</p>
+        <p>formalExportCreated=false · formalEvaluationExecuted=false · databaseWritten=false · notForFormalDecision=true</p>
+      </div>
+      <div class="table-wrap">
+        ${renderTableHint()}
+        <table>
+          <thead>
+            <tr>
+              <th>export ID</th>
+              <th>standard work ID</th>
+              <th>eligibility</th>
+              <th>release status</th>
+              <th>rating</th>
+              <th>lifecycle</th>
+              <th>forbidden fields</th>
+              <th>formal created</th>
+              <th>database written</th>
+              <th>detail</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${list.items.map((item) => `
+              <tr>
+                <td>${escapeHtml(item.exportId)}</td>
+                <td>${escapeHtml(item.standardWorkId)}</td>
+                <td>${renderStatusBadge(item.exportEligibilityStatus)}</td>
+                <td>${renderStatusBadge(item.releaseStatus)}</td>
+                <td>${escapeHtml(item.rating)}</td>
+                <td>${escapeHtml(item.lifecycle)}</td>
+                <td>${escapeHtml(item.forbiddenFieldCount)}</td>
+                <td>${escapeHtml(item.formalExportCreated)}</td>
+                <td>${escapeHtml(item.databaseWritten)}</td>
+                <td><a href="#m2-fixture-exports" data-m2-export-id="${escapeAttribute(item.exportId)}">Show fixture export</a></td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+        ${renderPagination(list.pagination)}
+      </div>
+      ${detail ? renderM2ExportDetail(detail.item) : ""}
+    `;
+    attachM2ExportHandlers();
+  } catch (error) {
+    setM2ErrorPageState("m2-fixture-exports", error);
+    document.querySelector("#m2FixtureExportsContent").innerHTML = renderM2Error(error, {
+      title: error.statusCode === 404 ? "Fixture export not found" : undefined
+    });
+  }
+}
+
+function renderM2ExportDatasetPanel(data) {
+  const dataset = data.dataset || {};
+  const summary = data.workflowSummary || {};
+  return `
+    <section class="m2-safety-panel" data-testid="m2-export-safety-panel">
+      <div class="meta-row">
+        <span class="badge warn">fixture-only</span>
+        <span class="badge ok">synthetic export package</span>
+        <span class="badge warn">formalExportCreated=false</span>
+        <span class="badge warn">databaseWritten=false</span>
+      </div>
+      <div class="cards three compact-cards">
+        <article class="card">
+          <h3>Dataset boundary</h3>
+          ${renderMetric("mode", dataset.mode || data.mode || "fixture")}
+          ${renderMetric("source", dataset.source)}
+          ${renderMetric("candidateVersion", dataset.candidateVersion)}
+          ${renderMetric("notForFormalDecision", dataset.notForFormalDecision ?? data.notForFormalDecision)}
+        </article>
+        <article class="card">
+          <h3>Eligibility summary</h3>
+          ${renderMetric("total", summary.total ?? 0)}
+          ${renderMetric("eligible", summary.eligibleCount ?? 0)}
+          ${renderMetric("blocked", summary.blockedCount ?? 0)}
+          ${renderMetric("formalEvaluationExecuted", dataset.formalEvaluationExecuted ?? data.formalEvaluationExecuted)}
+        </article>
+        <article class="card">
+          <h3>Guard flags</h3>
+          ${renderMetric("databaseWritten", dataset.databaseWritten ?? data.databaseWritten)}
+          ${renderMetric("mappingVersionActivated", dataset.mappingVersionActivated ?? data.mappingVersionActivated)}
+          ${renderMetric("switchMappingVersionCalled", dataset.switchMappingVersionCalled ?? data.switchMappingVersionCalled)}
+          <p class="pagination-note">All actions are in-memory release gate simulations.</p>
+        </article>
+      </div>
+    </section>
+  `;
+}
+
+function renderM2ExportFilters() {
+  const filters = state.m2ExportFilters;
+  return `
+    <form class="filter-panel" id="m2ExportFilters">
+      <label>Eligibility
+        <select name="eligibility">
+          ${option("", "All", filters.eligibility)}
+          ${["eligible", "blocked"].map((value) => option(value, value, filters.eligibility)).join("")}
+        </select>
+      </label>
+      <label>Release status
+        <select name="releaseStatus">
+          ${option("", "All", filters.releaseStatus)}
+          ${["draft", "pending_approval", "approved_for_export", "rejected", "released", "rolled_back", "invalidated"].map((value) => option(value, value, filters.releaseStatus)).join("")}
+        </select>
+      </label>
+      <label>Page
+        <input name="page" inputmode="numeric" value="${escapeAttribute(filters.page)}">
+      </label>
+      <label>Page size
+        <input name="pageSize" inputmode="numeric" value="${escapeAttribute(filters.pageSize)}">
+      </label>
+      <button type="submit" class="secondary">Filter fixture exports</button>
+      <button type="button" class="secondary" data-m2-reset-exports>Reset export filters</button>
+    </form>
+  `;
+}
+
+function renderM2ExportCreatePanel() {
+  return `
+    <form class="filter-panel" id="m2ExportCreateForm">
+      <label>Creation fixture case
+        <select name="caseId">
+          ${[
+            "eligible_export_package",
+            "blocked_readiness",
+            "pending_blocking_review",
+            "waiver_granted_review",
+            "downlist_requires_confirmation",
+            "renewal_requires_confirmation",
+            "not_for_formal_decision_visible",
+            "formal_style_release_blocked",
+            "forbidden_field_detection"
+          ].map((value) => option(value, value, state.m2ExportCreateCaseId)).join("")}
+        </select>
+      </label>
+      <button type="submit" class="secondary">Simulate create fixture package</button>
+      <p class="pagination-note">Create returns a synthetic package and eligibility gate output only. Nothing is persisted.</p>
+    </form>
+    ${state.m2ExportActionResult ? renderM2ExportActionResult(state.m2ExportActionResult) : ""}
+  `;
+}
+
+function renderM2ExportDetail(item) {
+  const payload = item.payload || {};
+  const eligibility = item.eligibility || {};
+  const forbiddenCheck = eligibility.forbiddenFieldCheck || {};
+  return `
+    <div class="cards three">
+      <article class="card">
+        <h3>Selected fixture export</h3>
+        ${renderMetric("exportId", item.exportId)}
+        ${renderMetric("standardWorkId", payload.standardWorkId)}
+        ${renderMetric("eligibility", eligibility.exportEligibilityStatus)}
+        ${renderMetric("releaseStatus", item.releaseGate?.status)}
+        ${renderMetric("formalExportCreated", item.formalExportCreated)}
+      </article>
+      <article class="card">
+        <h3>Allowed output fields</h3>
+        <p class="pagination-note">${escapeHtml((item.allowedFields || []).join(", "))}</p>
+        ${renderMetric("disallowedOutputFields", (item.disallowedOutputFields || []).join(", ") || "none")}
+        ${renderMetric("formalEvaluationExecuted", item.formalEvaluationExecuted)}
+      </article>
+      <article class="card">
+        <h3>Forbidden field check</h3>
+        ${renderMetric("hasForbiddenFields", forbiddenCheck.hasForbiddenFields ?? false)}
+        ${renderMetric("detectedFields", (forbiddenCheck.detectedFields || []).join(", ") || "none")}
+        <p class="pagination-note">Forbidden fields are detected by field name only in this synthetic fixture.</p>
+      </article>
+    </div>
+    <div class="cards three">
+      <article class="card">
+        <h3>Eligibility blockers</h3>
+        <ul class="explain-list">
+          ${(eligibility.blockingReasons || []).map((item) => `<li><strong>${escapeHtml(item.code)}</strong> ${escapeHtml(item.message)}</li>`).join("") || "<li>none</li>"}
+        </ul>
+      </article>
+      <article class="card">
+        <h3>Release gate simulator</h3>
+        <p class="pagination-note">Actions generate audit events only. The package remains fixture-only.</p>
+        <form id="m2ExportActionForm" class="action-grid">
+          ${["submit_for_approval", "approve_export", "reject_export", "release", "rollback", "invalidate"].map((action) => `
+            <button type="submit" name="action" value="${escapeAttribute(action)}" class="secondary">Simulate ${escapeHtml(action)}</button>
+          `).join("")}
+        </form>
+      </article>
+      <article class="card">
+        <h3>Audit summary</h3>
+        ${renderMetric("eventCount", payload.auditSummary?.eventCount ?? 0)}
+        ${renderMetric("latestEventAt", payload.auditSummary?.latestEventAt)}
+        ${renderMetric("releaseGateStatus", payload.auditSummary?.releaseGateStatus)}
+      </article>
+    </div>
+  `;
+}
+
+function renderM2ExportActionResult(result) {
+  const event = result.auditEvent || result.releaseGate?.auditEvents?.at?.(-1);
+  return `
+    <div class="context-note audit-event">
+      <strong>Fixture export result</strong>
+      <p>exportId=${escapeHtml(result.exportId || result.item?.exportId || "synthetic")} · action=${escapeHtml(result.action || event?.action || "create")} · status=${escapeHtml(result.releaseGate?.status || result.item?.releaseGate?.status || "draft")}</p>
+      <p>formalExportCreated=${escapeHtml(result.formalExportCreated)} · formalEvaluationExecuted=${escapeHtml(result.formalEvaluationExecuted)} · databaseWritten=${escapeHtml(result.databaseWritten)}</p>
+      ${event ? `<p class="pagination-note">auditEventId: ${escapeHtml(event.eventId)}</p>` : ""}
+    </div>
+  `;
+}
+
+function attachM2ExportHandlers() {
+  const filterForm = document.querySelector("#m2ExportFilters");
+  if (filterForm) {
+    filterForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const formData = new FormData(filterForm);
+      state.m2ExportFilters = {
+        eligibility: String(formData.get("eligibility") || ""),
+        releaseStatus: String(formData.get("releaseStatus") || ""),
+        page: String(formData.get("page") || "1"),
+        pageSize: String(formData.get("pageSize") || "20")
+      };
+      state.m2ExportActionResult = null;
+      renderM2FixtureExports();
+    });
+    filterForm.querySelector("[data-m2-reset-exports]")?.addEventListener("click", () => {
+      state.m2ExportFilters = defaultM2ExportFilters();
+      state.m2ExportActionResult = null;
+      renderM2FixtureExports();
+    });
+  }
+
+  const createForm = document.querySelector("#m2ExportCreateForm");
+  if (createForm) {
+    createForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const formData = new FormData(createForm);
+      const caseId = String(formData.get("caseId") || "eligible_export_package");
+      state.m2ExportCreateCaseId = caseId;
+      try {
+        state.m2ExportActionResult = await postM2Json(M2_FIXTURE_EXPORTS_API, {
+          caseId,
+          actor: "SYN-FIXTURE-OPERATOR",
+          reason: `Fixture-only package creation for ${caseId}`
+        });
+        renderM2FixtureExports();
+      } catch (error) {
+        document.querySelector("#m2FixtureExportsContent").insertAdjacentHTML(
+          "beforeend",
+          renderM2Error(error)
+        );
+      }
+    });
+  }
+
+  document.querySelectorAll("[data-m2-export-id]").forEach((link) => {
+    link.addEventListener("click", (event) => {
+      event.preventDefault();
+      state.m2SelectedExportId = link.dataset.m2ExportId || "";
+      state.m2ExportActionResult = null;
+      renderM2FixtureExports();
+    });
+  });
+
+  const actionForm = document.querySelector("#m2ExportActionForm");
+  if (actionForm) {
+    actionForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const action = event.submitter?.value;
+      if (!action || !state.m2SelectedExportId) {
+        return;
+      }
+      try {
+        state.m2ExportActionResult = await postM2Json(
+          `${M2_FIXTURE_EXPORTS_API}/${encodeURIComponent(state.m2SelectedExportId)}/actions`,
+          {
+            action,
+            actor: "SYN-FIXTURE-OPERATOR",
+            reason: `Fixture-only export ${action} simulation`
+          }
+        );
+        renderM2FixtureExports();
+      } catch (error) {
+        document.querySelector("#m2FixtureExportsContent").insertAdjacentHTML(
+          "beforeend",
+          renderM2Error(error)
+        );
+      }
+    });
+  }
+}
+
 function showPage(page) {
   const parsed = parsePageHash(page);
   state.activePage = PAGE_KEYS.includes(parsed.page) ? parsed.page : "system";
@@ -2271,6 +2613,9 @@ function renderCurrentPage() {
   }
   if (state.activePage === "m2-fixture-tasks") {
     return renderM2FixtureTasks();
+  }
+  if (state.activePage === "m2-fixture-exports") {
+    return renderM2FixtureExports();
   }
   return renderSystem();
 }

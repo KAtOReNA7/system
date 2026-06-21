@@ -28,12 +28,19 @@ import {
   listM2EvaluationTaskFixtures,
   simulateM2EvaluationTaskAction
 } from "../repositories/m2EvaluationTaskFixtureRepository.js";
+import {
+  createM2ExportFixture,
+  getM2ExportFixtureById,
+  listM2ExportFixtures,
+  simulateM2ExportAction
+} from "../repositories/m2ExportFixtureRepository.js";
 import { getSystemStatus } from "../repositories/systemRepository.js";
 import { getWorkById, listWorks } from "../repositories/workRepository.js";
 import { serveAdminAsset } from "./staticAdmin.js";
 
 const M2_FIXTURE_TASKS_PATH = `/api/m2/fixture/${["evaluation", "tasks"].join("-")}`;
 const M2_ADVISORY_SUMMARY_PATH = "/api/m2/fixture/advisory-reviews/summary";
+const M2_FIXTURE_EXPORTS_PATH = "/api/m2/fixture/exports";
 
 function sendJson(response, statusCode, body, requestId) {
   response.writeHead(statusCode, {
@@ -86,7 +93,11 @@ export function createApp(config, options = {}) {
     createM2EvaluationTaskFixture:
       options.createM2EvaluationTaskFixture ?? createM2EvaluationTaskFixture,
     simulateM2EvaluationTaskAction:
-      options.simulateM2EvaluationTaskAction ?? simulateM2EvaluationTaskAction
+      options.simulateM2EvaluationTaskAction ?? simulateM2EvaluationTaskAction,
+    listM2ExportFixtures: options.listM2ExportFixtures ?? listM2ExportFixtures,
+    getM2ExportFixtureById: options.getM2ExportFixtureById ?? getM2ExportFixtureById,
+    createM2ExportFixture: options.createM2ExportFixture ?? createM2ExportFixture,
+    simulateM2ExportAction: options.simulateM2ExportAction ?? simulateM2ExportAction
   };
 
   return async function app(request, response) {
@@ -270,6 +281,54 @@ export function createApp(config, options = {}) {
         const body = await repositories.getM2AdvisoryReviewSummaryFixture(config);
         sendJson(response, 200, body, requestId);
         return;
+      }
+
+      if (path.startsWith(M2_FIXTURE_EXPORTS_PATH)) {
+        blockFormalM2Mode(request, url);
+
+        if (request.method === "GET" && path === M2_FIXTURE_EXPORTS_PATH) {
+          const pagination = parsePagination(url.searchParams);
+          const body = await repositories.listM2ExportFixtures(config, {
+            pagination,
+            searchParams: url.searchParams
+          });
+          sendJson(response, 200, body, requestId);
+          return;
+        }
+
+        if (request.method === "POST" && path === M2_FIXTURE_EXPORTS_PATH) {
+          const payload = await readJsonBody(request);
+          const body = await repositories.createM2ExportFixture(config, payload);
+          sendJson(response, 200, body, requestId);
+          return;
+        }
+
+        const exportActionMatch = path.match(
+          new RegExp(`^${escapeRegex(M2_FIXTURE_EXPORTS_PATH)}\\/([^/]+)\\/actions$`)
+        );
+        if (request.method === "POST" && exportActionMatch) {
+          const exportId = decodeURIComponent(exportActionMatch[1]);
+          const payload = await readJsonBody(request);
+          const body = await repositories.simulateM2ExportAction(config, exportId, payload);
+          if (!body) {
+            throw notFound("Export fixture");
+          }
+          sendJson(response, 200, body, requestId);
+          return;
+        }
+
+        const exportMatch = path.match(
+          new RegExp(`^${escapeRegex(M2_FIXTURE_EXPORTS_PATH)}\\/([^/]+)$`)
+        );
+        if (request.method === "GET" && exportMatch) {
+          const exportId = decodeURIComponent(exportMatch[1]);
+          const body = await repositories.getM2ExportFixtureById(config, exportId);
+          if (!body) {
+            throw notFound("Export fixture");
+          }
+          sendJson(response, 200, body, requestId);
+          return;
+        }
       }
 
       if (path.startsWith("/api/m2/old-products")) {
