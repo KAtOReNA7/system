@@ -1,0 +1,56 @@
+{
+  "phase": "M2-B-5",
+  "line": "technical",
+  "status": "implemented_validated",
+  "scope": {
+    "fixtureOnly": true,
+    "syntheticOnly": true,
+    "realDataImported": false,
+    "formalDatabaseConnected": false,
+    "dbMigrationsModified": false,
+    "writeApisAdded": false,
+    "exportApisAdded": false,
+    "evaluationTaskApisAdded": false,
+    "formalModeImplemented": false,
+    "localDryRunImplemented": false,
+    "mappingActivationImplemented": false
+  },
+  "apiProductization": {
+    "detailIncludesOldProductEvaluationResult": true,
+    "listIncludesLifecycleConfidence": true,
+    "listIncludesRatingScore": true,
+    "listIncludesForecastRange": true,
+    "listIncludesIncompleteMonthExcluded": true,
+    "listIncludesNonFormalFlags": true,
+    "backtestIncludesSyntheticShape": true
+  },
+  "adminProductization": {
+    "detailShowsLifecycleForecastRatingRiskSuggestion": true,
+    "detailShowsWarnings": true,
+    "detailShowsSyntheticOnlyAndNotForFormalDecision": true,
+    "backtestShowsNoRealBacktestBoundary": true,
+    "writeControlsAdded": false
+  },
+  "documents": {
+    "implementationReport": "docs/technical-design/M2-B-5-fixture-evaluation-productization-and-calibration-prep-report-v0.1.md",
+    "calibrationInputContract": "docs/technical-design/M2-C-real-bill-calibration-input-contract-v0.1.md",
+    "apiContractUpdated": "docs/api/M2-old-product-evaluation-api-contract-v0.1.md"
+  },
+  "pendingData": [
+    "formal rating thresholds",
+    "formal risk severity thresholds",
+    "required tag set",
+    "minimum history window",
+    "channel weighting or settlement-delay adjustment",
+    "formal backtest acceptance criteria"
+  ],
+  "validation": {
+    "evaluateM2OldProductsFixture": "pass",
+    "checkNoRealData": "pass",
+    "lint": "pass",
+    "build": "pass",
+    "test": "pass",
+    "smoke": "pass",
+    "e2e": "pass"
+  }
+}

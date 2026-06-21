@@ -83,6 +83,15 @@ test("list API supports pagination", async () => {
   assertFixtureDataset(response.body);
   assert.equal(response.body.items.length, 2);
   assert.deepEqual(response.body.pagination, { page: 2, pageSize: 2, total: 7 });
+  for (const item of response.body.items) {
+    assert.equal(typeof item.lifecycleConfidence, "string");
+    assert.equal(typeof item.ratingScore, "number");
+    assert.ok(item.forecastRange);
+    assert.equal(item.incompleteMonthExcluded, true);
+    assert.equal(item.syntheticOnly, true);
+    assert.equal(item.notForFormalDecision, true);
+    assert.equal(typeof item.warningCount, "number");
+  }
 });
 
 test("list API supports filters", async () => {
@@ -168,11 +177,23 @@ test("detail API returns all required sections", async () => {
     "suggestions",
     "backtestSummary",
     "inputSnapshot",
-    "algorithmVersion"
+    "algorithmVersion",
+    "oldProductEvaluationResult"
   ]) {
     assert.ok(response.body[key], `${key} should exist`);
   }
   assert.deepEqual(Object.keys(response.body.forecast.scenarios), expectedM2OldProductCoverage.forecastScenarios);
+  assert.equal(response.body.syntheticOnly, true);
+  assert.equal(response.body.notForFormalDecision, true);
+  assert.equal(response.body.oldProductEvaluationResult.syntheticOnly, true);
+  assert.equal(response.body.oldProductEvaluationResult.notForFormalDecision, true);
+  assert.equal(response.body.incomeSummary.incompleteMonthExcluded, true);
+  assert.equal(response.body.forecast.incompleteMonthExcluded, true);
+  assert.equal(typeof response.body.lifecycle.confidence, "string");
+  assert.equal(typeof response.body.rating.ratingScore, "number");
+  assert.equal(typeof response.body.rating.rationale, "string");
+  assert.equal(response.body.forecast.scenarios.base.range.lower, response.body.forecast.scenarios.base.lower);
+  assert.equal(response.body.warnings[0].code, "fixture_only_non_formal");
   assertNoSensitiveOutput(response.body);
 });
 
@@ -235,6 +256,12 @@ test("backtests list API returns synthetic backtest batches", async () => {
   assertJsonHeaders(response);
   assertFixtureDataset(response.body);
   assert.equal(response.body.items[0].id, "SYN-BACKTEST-0001");
+  assert.equal(response.body.items[0].syntheticOnly, true);
+  assert.equal(response.body.items[0].summary, "Synthetic fixture backtest shape only; not a real backtest.");
+  assert.equal(response.body.items[0].covered, response.body.items[0].metrics.covered);
+  assert.equal(response.body.items[0].missed, response.body.items[0].metrics.missed);
+  assert.equal(response.body.items[0].over, response.body.items[0].metrics.over);
+  assert.equal(response.body.items[0].under, response.body.items[0].metrics.under);
 });
 
 test("backtest detail API returns covered missed over and under fixtures", async () => {
@@ -246,6 +273,8 @@ test("backtest detail API returns covered missed over and under fixtures", async
   const outcomes = response.body.items.map((item) => item.outcome).sort();
   assert.deepEqual(outcomes, [...expectedM2OldProductCoverage.backtestOutcomes].sort());
   assert.equal(response.body.batch.id, "SYN-BACKTEST-0001");
+  assert.equal(response.body.batch.syntheticOnly, true);
+  assert.equal(response.body.batch.summary, "Synthetic fixture backtest shape only; not a real backtest.");
   assert.equal(response.body.metrics.covered, 1);
 });
 

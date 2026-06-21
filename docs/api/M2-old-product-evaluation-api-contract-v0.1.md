@@ -158,12 +158,20 @@ Response:
       "businessForms": ["audio_copyright", "audio_product"],
       "cutoffMonth": "2026-04",
       "lifecycle": "stable",
+      "lifecycleConfidence": "medium",
       "rating": "A",
+      "ratingScore": 72,
       "forecastTotal": "120000.00",
+      "forecastRange": { "lower": "108000.00", "upper": "132000.00" },
+      "remainingCopyrightMonths": 24,
       "riskLevel": "medium",
       "primarySuggestion": "maintain_current_operation",
       "resultStatus": "current",
-      "readiness": "ready"
+      "readiness": "ready",
+      "incompleteMonthExcluded": true,
+      "warningCount": 1,
+      "syntheticOnly": true,
+      "notForFormalDecision": true
     }
   ],
   "pagination": { "page": 1, "pageSize": 20, "total": 1 }
@@ -189,7 +197,17 @@ Response sections:
 - `backtestSummary`
 - `inputSnapshot`
 - `algorithmVersion`
-- `historyLinks`
+- `history`
+- `oldProductEvaluationResult`
+- `resultId`
+- `status`
+- `invalidationState`
+- `warnings`
+- `generatedAt`
+- `syntheticOnly`
+- `notForFormalDecision`
+
+`oldProductEvaluationResult` is the productized fixture result object used by the API and admin page. It must remain synthetic-only in M2-B and must not be used as a formal business decision result.
 
 If the work is blocked, return 200 with `readiness.status="blocked"` and no formal result, unless the work ID is unknown.
 
@@ -252,6 +270,17 @@ Filters:
 `GET /api/m2/old-products/backtests/{backtestBatchId}`
 
 Purpose: detail metrics and sampled rows.
+
+Backtest list and detail responses may include the synthetic shape fields:
+
+- `summary`;
+- `syntheticOnly`;
+- `covered`;
+- `missed`;
+- `over`;
+- `under`.
+
+These fields describe fixture coverage shape only. They do not indicate a real backtest was executed.
 
 ## 11. Algorithm Version API
 

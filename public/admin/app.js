@@ -887,8 +887,11 @@ async function renderM2List() {
               <th>business forms</th>
               <th>cutoff month</th>
               <th>lifecycle</th>
+              <th>confidence</th>
               <th>rating</th>
+              <th>rating score</th>
               <th>forecast total</th>
+              <th>fixture boundary</th>
               <th>risk level</th>
               <th>primary suggestion</th>
               <th>result status</th>
@@ -906,8 +909,11 @@ async function renderM2List() {
                 <td>${escapeHtml(item.businessForms.join(", "))}</td>
                 <td>${escapeHtml(item.cutoffMonth)}</td>
                 <td>${renderM2LifecycleBadge(item.lifecycle)}</td>
+                <td>${escapeHtml(item.lifecycleConfidence)}</td>
                 <td>${renderM2RatingBadge(item.rating)}</td>
+                <td>${escapeHtml(item.ratingScore)}</td>
                 <td>${escapeHtml(item.forecastTotal)}</td>
+                <td>${escapeHtml(item.syntheticOnly ? "fixture-only / not formal" : "unknown")}</td>
                 <td>${escapeHtml(item.riskLevel)}</td>
                 <td>${escapeHtml(item.primarySuggestion)}</td>
                 <td>${escapeHtml(item.resultStatus)}</td>
@@ -1066,7 +1072,9 @@ async function renderM2Detail() {
         <article class="card">
           <h3>核心结论</h3>
           ${renderMetric("rating", data.rating.value)}
+          ${renderMetric("rating score", data.rating.ratingScore)}
           ${renderMetric("lifecycle", data.lifecycle.type)}
+          ${renderMetric("lifecycle confidence", data.lifecycle.confidence)}
           ${renderMetric("historical cumulative sales", data.incomeSummary.historicalTotal)}
           ${renderMetric("remaining copyright-period forecast", baseScenario.forecastTotal)}
           ${renderMetric("remaining copyright months", baseScenario.remainingMonths)}
@@ -1086,6 +1094,7 @@ async function renderM2Detail() {
           ${renderMetric("gap count", data.readiness.gaps.length)}
           ${renderMetric("algorithm version", data.algorithmVersion.versionKey)}
           ${renderMetric("backtest batch", data.backtestSummary.latestBatchId)}
+          ${renderMetric("generatedAt", data.generatedAt)}
         </article>
       </div>
       <div class="cards three">
@@ -1095,10 +1104,13 @@ async function renderM2Detail() {
           ${renderMetric("last24MonthSales", data.incomeSummary.last24MonthSales)}
           ${renderMetric("firstPositiveMonth", data.incomeSummary.firstPositiveMonth)}
           ${renderMetric("latestIncomeMonth", data.incomeSummary.latestIncomeMonth)}
+          ${renderMetric("incompleteMonthExcluded", data.incomeSummary.incompleteMonthExcluded)}
         </article>
         <article class="card">
           <h3>forecast scenarios</h3>
           ${renderMetric("base", baseScenario.forecastTotal)}
+          ${renderMetric("base lower", baseScenario.range.lower)}
+          ${renderMetric("base upper", baseScenario.range.upper)}
           ${renderMetric("optimistic", optimisticScenario.forecastTotal)}
           ${renderMetric("pessimistic", pessimisticScenario.forecastTotal)}
           ${renderMetric("scenario structure", "base / optimistic / pessimistic")}
@@ -1106,7 +1118,8 @@ async function renderM2Detail() {
         <article class="card">
           <h3>lifecycle rationale</h3>
           <p>${escapeHtml(data.lifecycle.rationale)}</p>
-          <p class="pagination-note">rating rationale: ${escapeHtml(data.rating.basis)}</p>
+          <p class="pagination-note">rating rationale: ${escapeHtml(data.rating.rationale || data.rating.basis)}</p>
+          <p class="pagination-note">rating basis: ${escapeHtml(data.rating.basis)}</p>
         </article>
       </div>
       <div class="cards three">
@@ -1125,10 +1138,32 @@ async function renderM2Detail() {
         <article class="card">
           <h3>input snapshot</h3>
           ${renderMetric("source", data.inputSnapshot.source)}
-          ${renderMetric("fixture-only", "true")}
+          ${renderMetric("syntheticOnly", data.syntheticOnly)}
+          ${renderMetric("notForFormalDecision", data.notForFormalDecision)}
           ${renderMetric("mappingVersion", data.inputSnapshot.mappingVersion)}
           ${renderMetric("basicInfoVersion", data.inputSnapshot.basicInfoVersion)}
           ${renderMetric("excludedMonths", data.inputSnapshot.excludedMonths.join(", "))}
+        </article>
+      </div>
+      <div class="cards three">
+        <article class="card">
+          <h3>warnings</h3>
+          <ul class="explain-list">
+            ${data.warnings.map((warning) => `<li>${escapeHtml(warning.code)} 路 ${escapeHtml(warning.message)}</li>`).join("")}
+          </ul>
+        </article>
+        <article class="card">
+          <h3>fixture result boundary</h3>
+          ${renderMetric("oldProductEvaluationResult", data.oldProductEvaluationResult ? "present" : "missing")}
+          ${renderMetric("syntheticOnly", data.oldProductEvaluationResult?.syntheticOnly)}
+          ${renderMetric("notForFormalDecision", data.oldProductEvaluationResult?.notForFormalDecision)}
+          <p class="pagination-note">This result is productized for fixture UI and contract tests only; it is not a formal business decision.</p>
+        </article>
+        <article class="card">
+          <h3>backtest summary</h3>
+          ${renderMetric("latestBatchId", data.backtestSummary.latestBatchId)}
+          ${renderMetric("coverage", data.backtestSummary.coverage)}
+          ${renderMetric("absoluteError", data.backtestSummary.absoluteError)}
         </article>
       </div>
     `;
@@ -1311,6 +1346,7 @@ async function renderM2Backtests() {
       <div class="context-note">
         <strong>Formal backtest blocked</strong>
         <p>Formal backtesting remains blocked until M1 formal data readiness is complete. This page shows fixture-only synthetic examples.</p>
+        <p>Synthetic backtest shape only; no real backtest executed.</p>
       </div>
       <div class="cards three">
         ${algorithms.items.map((item) => `
@@ -1338,6 +1374,8 @@ async function renderM2Backtests() {
               <th>interval coverage</th>
               <th>bias</th>
               <th>status</th>
+              <th>summary</th>
+              <th>synthetic only</th>
             </tr>
           </thead>
           <tbody>
@@ -1352,6 +1390,8 @@ async function renderM2Backtests() {
                 <td>${escapeHtml(item.metrics.covered)} / ${escapeHtml(item.metrics.totalRows)}</td>
                 <td>covered=${escapeHtml(item.metrics.covered)}, missed=${escapeHtml(item.metrics.missed)}, over=${escapeHtml(item.metrics.over)}, under=${escapeHtml(item.metrics.under)}</td>
                 <td>${escapeHtml(item.status)}</td>
+                <td>${escapeHtml(item.summary)}</td>
+                <td>${escapeHtml(item.syntheticOnly)}</td>
               </tr>
             `).join("")}
           </tbody>
@@ -1359,6 +1399,25 @@ async function renderM2Backtests() {
         ${renderPagination(backtests.pagination)}
       </div>
       ${detail ? `
+        <div class="cards three">
+          <article class="card">
+            <h3>synthetic backtest shape</h3>
+            ${renderMetric("batch", detail.batch.id)}
+            ${renderMetric("syntheticOnly", detail.batch.syntheticOnly)}
+            ${renderMetric("summary", detail.batch.summary)}
+          </article>
+          <article class="card">
+            <h3>coverage shape</h3>
+            ${renderMetric("covered", detail.metrics.covered)}
+            ${renderMetric("missed", detail.metrics.missed)}
+            ${renderMetric("over", detail.metrics.over)}
+            ${renderMetric("under", detail.metrics.under)}
+          </article>
+          <article class="card">
+            <h3>formal boundary</h3>
+            <p class="pagination-note">No real backtest executed and no formal decision can be made from this fixture batch.</p>
+          </article>
+        </div>
         <div class="table-wrap" id="m2BacktestDetail">
           ${renderTableHint()}
           <table>

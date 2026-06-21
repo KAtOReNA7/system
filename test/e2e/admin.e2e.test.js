@@ -169,7 +169,7 @@ test("admin fixture mode renders all read-only pages in success state", async ()
         testCase.awaitText
       );
       const text = await readVisibleText(page);
-      for (const expected of testCase.expected) {
+      for (const expected of [...testCase.expected, ...(testCase.extraExpected || [])]) {
         assert.match(text, new RegExp(expected.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
       }
       assertNoSensitiveOutput(text);
@@ -229,13 +229,24 @@ test("M2 old-product fixture admin pages render from M2 APIs", async () => {
       path: "/admin#m2-list",
       awaitText: "SYN-WORK-0001",
       expected: ["老品评估列表", "SYN-WORK-0001", "FORECAST TOTAL", "READINESS", "fixture-only"],
-      endpoint: "/api/m2/old-products/evaluations"
+      endpoint: "/api/m2/old-products/evaluations",
+      extraExpected: ["rating score", "lifecycle confidence"]
     },
     {
       path: "/admin#m2-detail:SYN-WORK-0001",
       awaitText: "remaining copyright-period forecast",
       expected: ["老品评估详情", "SYN-WORK-0001", "forecast scenarios", "input snapshot", "algorithm version"],
-      endpoint: "/api/m2/old-products/evaluations/SYN-WORK-0001"
+      endpoint: "/api/m2/old-products/evaluations/SYN-WORK-0001",
+      extraExpected: [
+        "lifecycle confidence",
+        "rating score",
+        "rating rationale",
+        "incompleteMonthExcluded",
+        "warnings",
+        "oldProductEvaluationResult",
+        "syntheticOnly",
+        "notForFormalDecision"
+      ]
     },
     {
       path: "/admin#m2-gaps",
@@ -247,7 +258,8 @@ test("M2 old-product fixture admin pages render from M2 APIs", async () => {
       path: "/admin#m2-backtests",
       awaitText: "fixture-old-product-v1",
       expected: ["回测与算法版本", "fixture-old-product-v1", "SYN-BACKTEST-0001", "covered", "missed", "over", "under"],
-      endpoint: "/api/m2/old-products/backtests"
+      endpoint: "/api/m2/old-products/backtests",
+      extraExpected: ["Synthetic backtest shape", "no real backtest executed"]
     }
   ];
 
@@ -531,6 +543,8 @@ test("M2 old-product backtest selector renders selected batch detail", async () 
     const text = await readVisibleText(page);
     assert.match(text, /fixtureOnly/);
     assert.match(text, /SYN-BACKTEST-0001/);
+    assert.match(text, /synthetic backtest shape/i);
+    assert.match(text, /no real backtest executed/i);
     assert.match(text, /covered/);
     assert.match(text, /missed/);
     assert.match(text, /over/);

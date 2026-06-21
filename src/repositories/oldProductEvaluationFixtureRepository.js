@@ -226,6 +226,7 @@ function withDataset(body) {
 }
 
 function toEvaluationSummary(item) {
+  const baseScenario = item.forecast.scenarios.base;
   return {
     standardWorkId: item.standardWorkId,
     workName: item.workName,
@@ -234,15 +235,23 @@ function toEvaluationSummary(item) {
     businessForms: item.businessForms,
     cutoffMonth: item.cutoffMonth,
     lifecycle: item.lifecycle.type,
+    lifecycleConfidence: item.lifecycle.confidence,
     rating: item.rating.value,
+    ratingScore: item.rating.ratingScore,
     forecastTotal: item.forecast.scenarios.base.forecastTotal,
+    forecastRange: clone(baseScenario.range),
+    remainingCopyrightMonths: baseScenario.remainingMonths,
     last12MonthSales: item.incomeSummary.last12MonthSales,
+    incompleteMonthExcluded: item.incomeSummary.incompleteMonthExcluded,
     riskLevel: highestRiskSeverity(item),
     riskSeverityScore: highestRiskScore(item),
     primarySuggestion: item.suggestions[0]?.suggestionCode ?? null,
     resultStatus: item.resultStatus,
     readiness: item.readiness.status,
     algorithmVersion: item.algorithmVersion,
+    warningCount: item.warnings.length,
+    syntheticOnly: item.syntheticOnly,
+    notForFormalDecision: item.notForFormalDecision,
     updatedAt: item.updatedAt
   };
 }
@@ -296,6 +305,12 @@ function toBacktestSummary(batch) {
     cutoffMonth: batch.cutoffMonth,
     horizonMonths: batch.horizonMonths,
     status: batch.status,
+    summary: batch.summary,
+    syntheticOnly: batch.syntheticOnly,
+    covered: batch.covered,
+    missed: batch.missed,
+    over: batch.over,
+    under: batch.under,
     metrics: batch.metrics,
     createdAt: batch.createdAt,
     finishedAt: batch.finishedAt
