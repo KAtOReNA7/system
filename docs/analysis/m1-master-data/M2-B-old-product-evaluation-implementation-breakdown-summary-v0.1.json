@@ -1,0 +1,98 @@
+{
+  "currentHead": "5c6f6bfcdd3f70b55f5664fc4b7aade33f5c10dc",
+  "originMain": "5c6f6bfcdd3f70b55f5664fc4b7aade33f5c10dc",
+  "worktreeClean": true,
+  "m2ADesignCommit": "5c6f6bfcdd3f70b55f5664fc4b7aade33f5c10dc",
+  "recommendedFirstImplementationTask": "M2-B-1 fixture-only old-product evaluation API and tests",
+  "m2B1Ready": true,
+  "m2B2Ready": true,
+  "m2B3Ready": false,
+  "m2B1RequiresMigration": false,
+  "m2B2RequiresMigration": false,
+  "m2B3RequiresMigration": true,
+  "proposedApiFiles": [
+    "src/http/app.js",
+    "src/errors.js",
+    "src/fixtures/m2OldProductEvaluationFixture.js",
+    "src/repositories/oldProductEvaluationFixtureRepository.js"
+  ],
+  "proposedPageFiles": [
+    "public/admin/index.html",
+    "public/admin/app.js",
+    "public/admin/app.css"
+  ],
+  "proposedTestFiles": [
+    "test/m2-old-product-api.test.js",
+    "test/admin.test.js",
+    "test/e2e/admin.e2e.test.js",
+    "test/fixtures/m2OldProductEvaluationFixtureCases.js"
+  ],
+  "proposedFixtureFiles": [
+    "src/fixtures/m2OldProductEvaluationFixture.js",
+    "test/fixtures/m2OldProductEvaluationFixtureCases.js"
+  ],
+  "hardBlockers": [
+    "Formal database authorization is not available.",
+    "Real billing inputs are not imported.",
+    "Digital rights ledger inputs are not imported.",
+    "Operations confirmation inputs are not imported.",
+    "mapping_version is not activated.",
+    "switch_mapping_version is not called.",
+    "M2-C and M2-D remain blocked until formal data readiness and authorization are complete.",
+    "M2-B-3 persistence prototype requires separate authorization if migration is needed."
+  ],
+  "implementationLayers": {
+    "m2B1": {
+      "name": "fixture-only API + tests",
+      "recommended": true,
+      "requiresMigration": false,
+      "scope": [
+        "overview API",
+        "evaluation list API",
+        "evaluation detail API",
+        "readiness gaps API",
+        "algorithm versions API",
+        "backtests API",
+        "formal mode blocked tests",
+        "fixture-only safety tests"
+      ]
+    },
+    "m2B2": {
+      "name": "fixture-only admin pages + tests",
+      "recommended": true,
+      "requiresMigration": false,
+      "prerequisite": "Start after M2-B-1 API contract is passing."
+    },
+    "m2B3": {
+      "name": "local non-formal persistence prototype",
+      "recommended": false,
+      "requiresMigration": true,
+      "prerequisite": "Requires separate authorization after M2-B-1 and M2-B-2."
+    }
+  },
+  "deferredFromM2B1": [
+    "evaluation task create/list/detail/cancel APIs",
+    "export API",
+    "formal mode",
+    "local dry-run mode",
+    "dedicated history endpoint unless separately authorized"
+  ],
+  "prohibitedActionsConfirmed": {
+    "connectedDatabase": false,
+    "executedDocker": false,
+    "readDataDirectory": false,
+    "readRealData": false,
+    "readStageJson": false,
+    "importedRealData": false,
+    "activatedMappingVersion": false,
+    "calledSwitchMappingVersion": false,
+    "executedFormalDataMigration": false,
+    "modifiedDbMigrations": false,
+    "modifiedBusinessCode": false,
+    "modifiedApiImplementation": false,
+    "modifiedPageImplementation": false,
+    "usedGitAddDot": false,
+    "touchedStash": false
+  },
+  "nextCodexCommandTitle": "M2-B-1：老品评估 fixture-only API 与测试最小闭环实现"
+}
