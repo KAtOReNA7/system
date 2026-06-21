@@ -1,0 +1,80 @@
+{
+  "manifestVersion": "0.1",
+  "manifestKind": "m2-local-dry-run-input-manifest",
+  "datasetBoundary": "sanitized-metadata-only",
+  "localDryRunExecuted": false,
+  "sourceFileBodyReadAllowed": false,
+  "stageJsonBodyAllowed": false,
+  "operationsConfirmationBodyAllowed": false,
+  "databaseConnectionAllowed": false,
+  "dockerAllowed": false,
+  "sources": [
+    {
+      "sourceId": "synthetic-stage-summary-001",
+      "sourceType": "stage-summary",
+      "fileName": "synthetic-stage-summary.json",
+      "contentHashSha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+      "recordCount": 100,
+      "monthRange": {
+        "from": "2026-01",
+        "to": "2026-04"
+      },
+      "fieldList": [
+        {
+          "name": "standardWorkId",
+          "type": "string",
+          "purpose": "synthetic identifier"
+        },
+        {
+          "name": "businessForm",
+          "type": "string",
+          "purpose": "synthetic category marker"
+        },
+        {
+          "name": "evaluationReadiness",
+          "type": "string",
+          "purpose": "synthetic readiness label"
+        }
+      ],
+      "rangeSummary": {
+        "containsRealAmounts": false,
+        "containsRealWorkNames": false,
+        "containsRealAuthorNames": false,
+        "containsRealChannelNames": false,
+        "containsStageJsonBody": false,
+        "containsOperationsConfirmationBody": false
+      }
+    },
+    {
+      "sourceId": "synthetic-ops-summary-001",
+      "sourceType": "ops-summary",
+      "fileName": "synthetic-ops-summary.json",
+      "contentHashSha256": "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
+      "recordCount": 12,
+      "monthRange": {
+        "from": "2026-01",
+        "to": "2026-04"
+      },
+      "fieldList": [
+        {
+          "name": "taskId",
+          "type": "string",
+          "purpose": "synthetic task identifier"
+        },
+        {
+          "name": "confirmationStatus",
+          "type": "string",
+          "purpose": "synthetic status label"
+        }
+      ],
+      "rangeSummary": {
+        "containsRealAmounts": false,
+        "containsRealWorkNames": false,
+        "containsRealAuthorNames": false,
+        "containsRealChannelNames": false,
+        "containsStageJsonBody": false,
+        "containsOperationsConfirmationBody": false
+      }
+    }
+  ]
+}
