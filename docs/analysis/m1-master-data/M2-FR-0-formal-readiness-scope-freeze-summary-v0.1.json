@@ -1,0 +1,124 @@
+{
+  "m2NonformalCloseoutConfirmed": true,
+  "candidateVersionFrozen": "m2-c3-cleaned-bill-nonformal-v0.2/candidate-a",
+  "continueM2C5C6": false,
+  "formalEvaluationAllowed": false,
+  "formalReadinessImplementationAllowed": true,
+  "p0Workstreams": [
+    {
+      "code": "mapping_version_readiness",
+      "label": "mapping_version readiness",
+      "firstBatch": true,
+      "deferrable": false
+    },
+    {
+      "code": "copyright_end_basic_info_readiness",
+      "label": "copyright end / basic info readiness",
+      "firstBatch": true,
+      "deferrable": false
+    },
+    {
+      "code": "blocking_manual_review_readiness",
+      "label": "blocking manual review readiness",
+      "firstBatch": true,
+      "deferrable": false
+    },
+    {
+      "code": "formal_persistence",
+      "label": "formal persistence",
+      "firstBatch": true,
+      "deferrable": false
+    },
+    {
+      "code": "evaluation_task_api",
+      "label": "evaluation task API",
+      "firstBatch": true,
+      "deferrable": false
+    },
+    {
+      "code": "audit_and_release_gate",
+      "label": "audit and release gate",
+      "firstBatch": true,
+      "deferrable": false
+    }
+  ],
+  "p1Workstreams": [
+    {
+      "code": "advisory_review_display",
+      "label": "advisory review display",
+      "firstBatch": false,
+      "deferrableFromFirstBatch": true,
+      "blocksFormalEligibility": false,
+      "requiredBeforeFormalDisplayOrReport": true
+    },
+    {
+      "code": "export_api",
+      "label": "export API",
+      "firstBatch": false,
+      "deferrableFromFirstBatch": true,
+      "blocksFormalEligibility": false,
+      "requiredBeforeFormalExportOrRelease": true
+    }
+  ],
+  "deferredWorkstreams": [
+    "advisory_review_display",
+    "export_api"
+  ],
+  "frImplementationOrder": [
+    {
+      "step": "FR-1",
+      "title": "formal persistence data model + migration draft",
+      "purpose": "Formal evaluation result persistence model, review state, invalidation state, algorithm/candidate version, input snapshot, audit metadata, migration draft"
+    },
+    {
+      "step": "FR-2",
+      "title": "mapping/basic-info/copyright readiness gate",
+      "purpose": "Active mapping_version check, copyright end gap, basic info gap, blocking/advisory classification, formal evaluation blockers"
+    },
+    {
+      "step": "FR-3",
+      "title": "blocking manual review admin/API",
+      "purpose": "513 blocking review items, state transitions, pass/fix/waive/reject decisions, audit records"
+    },
+    {
+      "step": "FR-4",
+      "title": "evaluation task API + readiness gate",
+      "purpose": "create/query/cancel/retry, block execution when readiness is incomplete, task state and failure audit"
+    },
+    {
+      "step": "FR-5",
+      "title": "advisory review display",
+      "purpose": "Display or report 2331 advisory review flags without blocking formal eligibility"
+    },
+    {
+      "step": "FR-6",
+      "title": "export API + audit/release gate",
+      "purpose": "Export fields, masking rules, audit, release approval, rollback conditions"
+    }
+  ],
+  "fr2Fr3Merged": false,
+  "fr2Fr3MergeDecisionReason": "Keep machine readiness gate and manual review workflow separate to reduce implementation and audit risk.",
+  "blockingManualReviewMustCompleteBeforeFormal": true,
+  "copyrightEndMustCompleteOrWaiveBeforeFormal": true,
+  "advisoryReviewBlocksFormal": false,
+  "exportRequiresManualConfirmation": true,
+  "downlistOrSuspendMustBeManuallyConfirmedBeforeExport": true,
+  "renewalReviewExportDefault": "page_hint_only",
+  "sSPlusAOnlyPriorityPool": true,
+  "dEOnlyCandidatePoolNoAutoExecution": true,
+  "recommendedNextLine": "technical",
+  "recommendedNextTask": "M2-FR-1 formal persistence data model + migration draft",
+  "prohibitedActionsConfirmed": {
+    "algorithmParametersModified": false,
+    "codeModified": false,
+    "rawRealBillReadOrSubmitted": false,
+    "workLevelDetailsOutput": false,
+    "databaseWritten": false,
+    "dockerExecuted": false,
+    "dbMigrationsModified": false,
+    "mappingVersionActivated": false,
+    "switchMappingVersionCalled": false,
+    "formalEvaluationExecuted": false,
+    "exportTaskOrWriteApiAdded": false
+  }
+}
