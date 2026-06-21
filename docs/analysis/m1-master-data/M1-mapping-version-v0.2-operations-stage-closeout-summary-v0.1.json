@@ -1,0 +1,72 @@
+{
+  "generated_at": "2026-06-21T18:48:00+08:00",
+  "status": "PUSHED",
+  "phase": "operations_stage_closeout",
+  "isolated_worktree": {
+    "used": true,
+    "path": "D:\\porject\\system-worktrees\\m1-ops-v02-public-submit-20260621-183204",
+    "branch": "codex/m1-ops-v02-public-artifacts-20260621-183204",
+    "base": "origin/main"
+  },
+  "artifact_commit": {
+    "hash": "36e92f37547c627623dfe7cbd7a10774572e0ad9",
+    "message": "docs: add M1 mapping version v0.2 dry-run artifacts",
+    "pushed_to_origin_main": true
+  },
+  "submitted": {
+    "public_operations_reports": true,
+    "public_experiment_scripts_readme_overlay": true,
+    "mapping_import_stage_v0_1_json": false,
+    "mapping_import_stage_v0_2_json": false,
+    "data_files": false,
+    "environment_or_pgpass_files": false,
+    "connection_strings_passwords_or_temporary_database_files": false,
+    "unrelated_technical_files": false
+  },
+  "validation": {
+    "npm_ci": "PASS",
+    "npm_run_check_no_real_data": "PASS",
+    "npm_run_lint": "PASS",
+    "npm_run_build": "PASS",
+    "npm_test": "PASS",
+    "npm_test_passed_count": 35,
+    "npm_run_smoke": "NOT_RUN",
+    "npm_run_smoke_not_run_reason": "No application code, package file, or test file was modified in this round."
+  },
+  "v0_2_result": {
+    "status": "PASS",
+    "g06_passed": true,
+    "g07_passed": true,
+    "raw_work_id_mapping_plan_rows": 300,
+    "historical_volume_mapping_plan_rows": 52,
+    "audit_source_record_count": 353,
+    "g07_ids_are_historical_volume_mapping": true,
+    "mapping_version_activated": false,
+    "switch_mapping_version_called": false,
+    "formal_database_connected": false,
+    "staging_or_production_connected": false,
+    "shared_dev_or_test_connected": false,
+    "real_data_imported": false,
+    "formal_data_migration_executed": false
+  },
+  "safety": {
+    "docker_executed": false,
+    "database_rehearsal_executed": false,
+    "formal_database_connected": false,
+    "real_data_imported": false,
+    "mapping_version_activated": false,
+    "switch_mapping_version_called": false,
+    "formal_data_migration_executed": false,
+    "db_migrations_modified": false,
+    "git_add_dot_used": false,
+    "stash_touched": false
+  },
+  "next_step": {
+    "may_enter_dev_test_controlled_preparation_authorization": true,
+    "requires_target_environment": true,
+    "requires_credential_source": true,
+    "requires_allowed_action_scope": true,
+    "formal_database_write_still_forbidden": true,
+    "formal_data_migration_still_forbidden": true
+  }
+}
