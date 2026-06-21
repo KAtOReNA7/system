@@ -1,0 +1,57 @@
+{
+  "generated_at": "2026-06-21T15:05:00+08:00",
+  "head_at_validation": "eacb5af62832c4abe15115982222c7948ae58d74",
+  "status": "passed",
+  "scope": {
+    "allowed_environments": ["local development", "local test", "CI test"],
+    "out_of_scope_environments": ["future staging", "future production"],
+    "migration_source": "db/migrations",
+    "formal_sql_count": 80,
+    "candidate_migration_source_allowed": false
+  },
+  "generated_outputs": {
+    "plan_document": "docs/technical-design/M1-dev-db-initialization-plan-v0.1.md (canonical Chinese filename in repository)",
+    "connectivity_test_plan": "docs/technical-design/M1-dev-db-connectivity-test-plan-v0.1.md (canonical Chinese filename in repository)",
+    "init_script": "tools/dev-db/init-m1-dev-db.ps1",
+    "connectivity_script": "tools/dev-db/check-m1-db-connectivity.ps1"
+  },
+  "local_isolated_validation": {
+    "executed": true,
+    "postgresql_version": "16.14",
+    "database": "m1_dev_smoke",
+    "timezone": "UTC",
+    "flyway_migrate": "passed",
+    "flyway_info": "passed",
+    "flyway_validate": "passed",
+    "second_flyway_migrate": "no repeat execution",
+    "connectivity_tests": "passed",
+    "temporary_instance_stopped": true
+  },
+  "object_counts": {
+    "m1_tables": 48,
+    "views": 5,
+    "functions": 21,
+    "user_triggers": 32,
+    "foreign_keys": 84,
+    "indexes": 117
+  },
+  "role_boundaries": {
+    "migration_owner": "Flyway migration only; not for application runtime",
+    "application_rw": "application read/write account; cannot directly modify income_fact",
+    "application_ro": "read-only account; cannot write business tables",
+    "background_worker": "background task account; cannot activate versions directly",
+    "backup_operator": "no business write permissions"
+  },
+  "still_forbidden": [
+    "production database connection",
+    "formal data migration",
+    "real bill import",
+    "master data import",
+    "ops confirmation import",
+    "formal mapping_version generation or application",
+    "automatic application of ops confirmations",
+    "modifying committed db/migrations SQL"
+  ],
+  "allowed_next_step": "M1 minimal backend skeleton development",
+  "stash_preserved_count": 14
+}
