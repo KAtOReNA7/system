@@ -1,0 +1,139 @@
+{
+  "currentHead": "fe086f10cb05c93f40972607a8fa34d43463cb16",
+  "originMain": "fe086f10cb05c93f40972607a8fa34d43463cb16",
+  "worktreeClean": true,
+  "m2BFixtureCloseoutCommit": "fe086f10cb05c93f40972607a8fa34d43463cb16",
+  "m2BFixtureCloseoutCi": {
+    "runId": "27908781757",
+    "status": "completed",
+    "conclusion": "success"
+  },
+  "allowedDataSources": [
+    "repository_fixture_data",
+    "repository_synthetic_data",
+    "public_design_documents",
+    "public_summary_json"
+  ],
+  "prohibitedDataSources": [
+    "mapping_import_stage_v0_1_json",
+    "mapping_import_stage_v0_2_json",
+    "operations_confirmation_results",
+    "real_bills",
+    "digital_copyright_ledger",
+    "operations_confirmation_excel_source",
+    "data_directory",
+    "private_candidate_package_body",
+    "local_environment_files",
+    "database_connection_strings"
+  ],
+  "pendingUserConfirmations": [
+    "whether_future_technical_line_may_read_archived_stage_json",
+    "whether_future_technical_line_may_use_m1_local_dev",
+    "whether_future_technical_line_may_use_m1_local_dry_run",
+    "whether_future_technical_line_may_create_m2_local_dry_run",
+    "whether_future_technical_line_may_import_candidate_mapping_to_local_dry_run_with_rollback",
+    "whether_future_technical_line_may_generate_or_persist_local_non_formal_evaluation_results"
+  ],
+  "allowedEnvironments": [
+    "fixture_only_design_context",
+    "documentation_only_review_context"
+  ],
+  "prohibitedEnvironments": [
+    "formal_database",
+    "staging",
+    "production",
+    "shared_development_database",
+    "shared_test_database",
+    "docker_execution_this_round",
+    "flyway_migrate_this_round",
+    "forward_only_migration_this_round",
+    "db_migrations_modification"
+  ],
+  "allowedMappingActions": [
+    "design_level_compare_mapping_v0_2_public_summary_with_fixture_evaluation_inputs"
+  ],
+  "prohibitedMappingActions": [
+    "generate_candidate_mapping_version_this_round",
+    "read_mapping_import_stage_v0_1_json",
+    "read_mapping_import_stage_v0_2_json",
+    "activate_mapping_version",
+    "call_switch_mapping_version",
+    "use_mapping_version_as_formal_evaluation_basis",
+    "write_mapping_version_tables_this_round"
+  ],
+  "allowedEvaluationActions": [
+    "keep_fixture_only_evaluation_available",
+    "design_local_dry_run_scope_without_implementation",
+    "generate_m2_b_3_technical_plan_without_implementation"
+  ],
+  "prohibitedEvaluationActions": [
+    "implement_local_dry_run_mode_this_round",
+    "generate_local_non_formal_evaluation_result_this_round",
+    "persist_local_non_formal_evaluation_result_this_round",
+    "create_evaluation_task",
+    "cancel_or_retry_evaluation_task",
+    "export_evaluation_result",
+    "formal_evaluation",
+    "publish_current_historical_or_invalidated_results",
+    "ai_model_judgement",
+    "use_incomplete_month_as_formal_cutoff",
+    "show_real_business_amount_in_page_or_report"
+  ],
+  "m2B3RecommendedScope": {
+    "allowFixtureAndSynthetic": true,
+    "allowLocalDryRunDesignOnly": true,
+    "allowReadOnlyPublicDockerDocs": true,
+    "allowTechnicalImplementationPlan": true,
+    "allowRealBills": false,
+    "allowDigitalCopyrightLedger": false,
+    "allowOperationsConfirmationExcel": false,
+    "allowFormalOrSharedDatabases": false,
+    "allowMappingActivation": false,
+    "allowSwitchMappingVersion": false,
+    "allowExport": false,
+    "allowEvaluationTaskWrites": false,
+    "allowFormalEvaluation": false,
+    "allowDbMigrationsModification": false
+  },
+  "m2B3ImplementationAllowed": false,
+  "m2CReady": false,
+  "m2DReady": false,
+  "hardBlockers": [
+    "formal_database_connection",
+    "staging_or_production_connection",
+    "shared_development_or_test_database_connection",
+    "real_data_import",
+    "mapping_version_activation",
+    "switch_mapping_version",
+    "formal_evaluation",
+    "formal_result_export",
+    "evaluation_task_write_operation",
+    "db_migrations_modification",
+    "real_amount_as_page_fixture",
+    "incomplete_month_as_formal_cutoff"
+  ],
+  "recommendedNextLine": "technical",
+  "recommendedNextTask": "技术线：M2-B-3 fixture/local-dry-run readiness 设计，不执行实现",
+  "prohibitedActionsConfirmed": {
+    "databaseConnected": false,
+    "dockerExecuted": false,
+    "dataDirectoryRead": false,
+    "realDataRead": false,
+    "stageJsonRead": false,
+    "operationsConfirmationResultsRead": false,
+    "databaseConnectionStringRead": false,
+    "realDataImported": false,
+    "mappingVersionActivated": false,
+    "switchMappingVersionCalled": false,
+    "formalDataMigrationExecuted": false,
+    "dbMigrationsModified": false,
+    "codeApiPageOrTestsModified": false,
+    "writeApiAdded": false,
+    "formalModeAdded": false,
+    "localDryRunModeAdded": false,
+    "exportApiAdded": false,
+    "evaluationTaskApiAdded": false,
+    "gitAddDotUsed": false,
+    "stashTouched": false
+  }
+}
