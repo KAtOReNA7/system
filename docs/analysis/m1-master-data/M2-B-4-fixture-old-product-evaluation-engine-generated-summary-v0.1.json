@@ -1,0 +1,61 @@
+{
+  "status": "pass",
+  "mode": "fixture",
+  "stage": "M2-B-4",
+  "syntheticOnly": true,
+  "notForFormalDecision": true,
+  "algorithmVersion": "fixture-old-product-v1",
+  "resultCount": 7,
+  "backtestBatchCount": 1,
+  "lifecycleTypes": [
+    "declining",
+    "growth",
+    "inactive",
+    "insufficient_history",
+    "long_tail",
+    "rebound",
+    "stable"
+  ],
+  "ratings": [
+    "S+",
+    "S",
+    "A",
+    "B",
+    "C",
+    "D",
+    "E"
+  ],
+  "forecastScenarios": [
+    "base",
+    "optimistic",
+    "pessimistic"
+  ],
+  "backtestShape": {
+    "batchId": "SYN-BACKTEST-0001",
+    "covered": 1,
+    "missed": 1,
+    "over": 1,
+    "under": 1,
+    "syntheticOnly": true
+  },
+  "guards": {
+    "databaseConnected": false,
+    "dockerExecuted": false,
+    "realDataRead": false,
+    "dataDirectoryRead": false,
+    "stageJsonRead": false,
+    "operationsConfirmationBodyRead": false,
+    "dbConnectionStringRead": false,
+    "envLocalRead": false,
+    "localDryRunExecuted": false,
+    "mappingVersionActivated": false,
+    "switchMappingVersionCalled": false,
+    "formalDataMigrationExecuted": false,
+    "migrationModified": false,
+    "writeApiAdded": false,
+    "exportApiAdded": false,
+    "evaluationTaskApiAdded": false,
+    "formalModeAdded": false,
+    "localDryRunModeAdded": false
+  }
+}

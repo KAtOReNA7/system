@@ -249,6 +249,14 @@ function toEvaluationSummary(item) {
 
 function toEvaluationDetail(item) {
   return {
+    oldProductEvaluationResult: clone(item),
+    resultId: item.resultId,
+    status: item.status,
+    invalidationState: clone(item.invalidationState),
+    warnings: clone(item.warnings),
+    generatedAt: item.generatedAt,
+    syntheticOnly: item.syntheticOnly,
+    notForFormalDecision: item.notForFormalDecision,
     work: {
       standardWorkId: item.standardWorkId,
       workName: item.workName,
