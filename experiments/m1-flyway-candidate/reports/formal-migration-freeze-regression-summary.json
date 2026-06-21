@@ -1,0 +1,67 @@
+{
+  "generated_at": "2026-06-21T15:00:00+08:00",
+  "head_at_validation": "a3a089947495fe24205fb0f52f034feb35238f5f",
+  "formal_migrations": {
+    "directory": "db/migrations",
+    "sql_count": 80,
+    "hash_matches_candidate": true,
+    "banner_present": true,
+    "non_sql_files": 0,
+    "sensitive_scan_blockers": 0
+  },
+  "flyway_regression": {
+    "passed": true,
+    "flyway_version": "10.21.0 OSS",
+    "postgresql_version": "16.14",
+    "database": "m1_flyway_formal_freeze_check",
+    "timezone": "UTC",
+    "history_schema": "flyway_history",
+    "history_table": "flyway_schema_history",
+    "current_version": "0060.290",
+    "sql_migration_count": 80,
+    "successful_history_rows": 81,
+    "migrate_success": true,
+    "info_success": true,
+    "validate_success": true,
+    "second_migrate_no_repeat": true
+  },
+  "object_counts": {
+    "views": 5,
+    "indexes": 117,
+    "functions": 21,
+    "m1_tables": 48,
+    "foreign_keys": 84,
+    "user_triggers": 32
+  },
+  "permissions": {
+    "migration_owner_is_not_superuser": true,
+    "application_rw_cannot_direct_modify_income_fact": true,
+    "application_rw_can_execute_activation": false,
+    "application_ro_can_query_formal_view": true,
+    "application_ro_cannot_write_business_table": true,
+    "background_worker_can_insert_mapping_version": true,
+    "background_worker_can_execute_activation": false,
+    "backup_operator_can_insert_channel": false
+  },
+  "security_definer": {
+    "owners": [
+      "migration_owner"
+    ],
+    "owners_non_superuser": true,
+    "all_fixed_search_path": true,
+    "fixed_search_path_count": 7,
+    "security_definer_functions": 7
+  },
+  "allowed_next_use": "Application development may use db/migrations to create empty or synthetic-data dev/test database structures.",
+  "still_forbidden": [
+    "formal data migration",
+    "connecting to production database",
+    "importing real bills, master data, or ops confirmations",
+    "generating or applying formal mapping_version",
+    "automatically applying ops confirmation results",
+    "modifying source bills or master data",
+    "modifying committed formal migration SQL files"
+  ],
+  "local_stash_count_preserved": 9,
+  "temporary_postgresql_stopped": true
+}
