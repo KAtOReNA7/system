@@ -60,6 +60,11 @@ test("admin assets are served without using API routes", async () => {
   assert.match(js.body, /\/api\/works/);
   assert.match(js.body, /\/api\/mapping-versions/);
   assert.match(js.body, /\/api\/jobs/);
+  assert.match(js.body, /生命周期状态/);
+  assert.match(js.body, /数据库未配置/);
+  assert.match(js.body, /不等同于空库/);
+  assert.match(js.body, /小屏幕下可横向滚动查看完整列/);
+  assert.match(js.body, /未提供表示当前 API 尚未返回标准作品名称/);
   assert.doesNotMatch(js.body, /method:\s*["'`](POST|PUT|PATCH|DELETE)/i);
 });
 

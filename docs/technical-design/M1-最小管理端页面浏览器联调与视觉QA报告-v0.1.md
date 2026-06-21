@@ -173,3 +173,35 @@ npm run check:no-real-data
 ```
 
 验证结果记录在最终完成报告中。
+
+## 8. 2026-06-21 状态表达与文案归一化复核
+
+本轮在不改变 M1 只读边界的前提下，追加复核以下修订：
+
+- 默认未配置数据库时，系统状态页显示 `降级 / degraded`，并明确“数据库未配置”不等同于“空库”。
+- 数据库卡片显示 `数据库未配置（database_not_configured）`，`schemaVersion` 与 `systemState` 显示为“暂不可读取”，避免误读为迁移完成后的空库。
+- 生命周期卡片由通用“请求失败”改为“生命周期状态”，包含：
+  - 状态：暂不可读取；
+  - 原因：数据库未配置（database_not_configured）；
+  - 技术码：database_not_configured；
+  - requestId。
+- 错误态主文案改为业务可读表达，保留技术 code 与 requestId，不展示底层连接错误文案。
+- `success`、`degraded`、`empty`、`error`、`not found` 均增加简短状态说明。
+- `schema_initialized`、`database_not_configured`、`building`、`pending` 等技术状态增加中文展示并保留原始 code。
+- 作品列表增加字段说明：
+  - “未提供”表示当前 API 尚未返回标准作品名称；
+  - “缺失”表示该字段仍待基础信息补全；
+  - 当前不展示真实收入、作者或版权日期。
+- 映射版本和后台任务增加状态说明。
+- 作品、映射版本、后台任务表格增加“小屏幕下可横向滚动查看完整列”的提示。
+
+浏览器复核结果：
+
+- `/admin` 默认无数据库配置：通过，未暴露连接串、密码、SQL、堆栈、主机端口或真实业务数据。
+- `/admin?fixture=1#system`：通过，显示 `结构已初始化（schema_initialized）`。
+- `/admin?fixture=1#works`：通过，显示作品字段说明与表格横向滚动提示。
+- `/admin?fixture=1#mapping`：通过，显示映射版本状态说明与 `构建中（building）`。
+- `/admin?fixture=1#jobs`：通过，显示后台任务状态说明与 `等待中（pending）`。
+- 1280px 桌面布局：通过，无页面级横向溢出。
+- 390px 移动布局：通过，页面本体无横向溢出，宽表在表格容器内横向滚动。
+- 写操作入口：未发现导入、激活、撤销、重试、取消、上传、应用、迁移、写入或提交按钮。

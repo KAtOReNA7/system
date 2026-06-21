@@ -86,6 +86,64 @@ const fixture = {
   }
 };
 
+const CODE_LABELS = {
+  schema_initialized: "结构已初始化",
+  database_not_configured: "数据库未配置",
+  database_unavailable: "数据库不可用",
+  building: "构建中",
+  active: "已启用",
+  pending: "等待中",
+  running: "运行中",
+  blocked: "已阻断",
+  succeeded: "已成功",
+  failed: "已失败",
+  cancelled: "已取消",
+  validated: "已校验",
+  retired: "已退役"
+};
+
+const PAGE_STATE_LABELS = {
+  loading: "加载中",
+  success: "正常",
+  degraded: "降级",
+  empty: "空状态",
+  error: "错误",
+  "not found": "未找到"
+};
+
+const PAGE_STATE_DESCRIPTIONS = {
+  loading: "正在读取本页只读信息。",
+  success: "请求成功，当前展示的是只读结果。",
+  degraded: "依赖未满足或不可用；页面仍保持只读可访问。",
+  empty: "请求成功但暂无数据；空库时这是正常状态。",
+  error: "请求失败；请根据技术码排查。",
+  "not found": "目标记录不存在，未产生任何写入。"
+};
+
+const ERROR_MESSAGES = {
+  bad_request: "请求参数不符合要求，请检查分页或详情 ID。",
+  not_found: "目标记录不存在。",
+  database_not_configured: "数据库未配置。当前是开发环境降级状态，不等同于空库。",
+  database_unavailable: "数据库不可用。请检查本地或测试数据库是否启动并完成迁移。",
+  internal_error: "服务处理请求时发生异常。"
+};
+
+const MAPPING_STATUS_DESCRIPTIONS = {
+  building: "版本仍在构建中，仅可查看，不可激活。",
+  active: "当前启用版本；本页面仍不提供切换操作。",
+  failed: "版本构建或校验失败，需要技术排查。",
+  retired: "历史版本，仅用于追溯。"
+};
+
+const JOB_STATUS_DESCRIPTIONS = {
+  pending: "等待中，当前页面不提供启动或重试。",
+  running: "运行中，仅展示状态。",
+  blocked: "已阻断，需要按任务来源排查。",
+  succeeded: "已成功完成。",
+  failed: "已失败，需要查看后续诊断信息。",
+  cancelled: "已取消。"
+};
+
 function text(value) {
   if (value === null || value === undefined || value === "") {
     return "未提供";
@@ -101,13 +159,33 @@ function escapeHtml(value) {
     .replaceAll('"', "&quot;");
 }
 
+function displayCode(value) {
+  const code = text(value);
+  const label = CODE_LABELS[code];
+  if (!label) {
+    return code;
+  }
+  return `${label}（${code}）`;
+}
+
 function setPageState(page, value) {
   const pill = document.querySelector(`[data-state-for="${page}"]`);
   if (!pill) {
     return;
   }
   pill.dataset.state = value;
-  pill.textContent = value;
+  const label = PAGE_STATE_LABELS[value] || value;
+  pill.textContent = `${label} / ${value}`;
+
+  let help = document.querySelector(`[data-state-help-for="${page}"]`);
+  if (!help) {
+    help = document.createElement("p");
+    help.className = "state-help";
+    help.dataset.stateHelpFor = page;
+    pill.insertAdjacentElement("afterend", help);
+  }
+  help.textContent = PAGE_STATE_DESCRIPTIONS[value] || "";
+  help.classList.toggle("is-hidden", !help.textContent);
 }
 
 function setNotice(message, tone = "info") {
@@ -134,36 +212,38 @@ async function getJson(path, fixtureValue) {
   return body;
 }
 
-function renderMetric(label, value) {
+function renderMetric(label, value, options = {}) {
+  const displayValue = options.code ? displayCode(value) : text(value);
   return `
     <div class="metric">
       <span>${escapeHtml(label)}</span>
-      <strong>${escapeHtml(value)}</strong>
+      <strong>${escapeHtml(displayValue)}</strong>
     </div>
   `;
 }
 
-function renderError(error) {
+function renderError(error, options = {}) {
   const payload = error.payload || {};
   const apiError = payload.error;
   const reason = apiError?.code || payload.database?.reason || "request_failed";
-  const message = apiError?.message || error.message || "请求失败";
+  const message = ERROR_MESSAGES[reason] || "请求未完成，请查看技术码后排查。";
   const requestId = apiError?.requestId;
   return `
     <div class="error-state">
-      <h3>请求失败</h3>
+      <h3>${escapeHtml(options.title || "状态暂不可用")}</h3>
       <p>${escapeHtml(message)}</p>
-      <code>${escapeHtml(reason)}</code>
+      <p class="technical-code">技术码：<code>${escapeHtml(reason)}</code></p>
       ${requestId ? `<p class="pagination-note">requestId: ${escapeHtml(requestId)}</p>` : ""}
     </div>
   `;
 }
 
-function renderEmpty(title, description) {
+function renderEmpty(title, description, details = []) {
   return `
     <div class="empty-state">
       <h3>${escapeHtml(title)}</h3>
       <p>${escapeHtml(description)}</p>
+      ${details.length ? `<ul class="explain-list">${details.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>` : ""}
     </div>
   `;
 }
@@ -180,7 +260,7 @@ function renderBooleanBadge(value) {
 
 function renderStatusBadge(value) {
   const tone = value === "active" || value === "succeeded" ? "ok" : value === "failed" ? "danger" : "warn";
-  return `<span class="badge ${tone}">${escapeHtml(value)}</span>`;
+  return `<span class="badge ${tone}">${escapeHtml(displayCode(value))}</span>`;
 }
 
 function renderPagination(pagination) {
@@ -188,6 +268,51 @@ function renderPagination(pagination) {
     <p class="pagination-note">
       page=${escapeHtml(pagination.page)} · pageSize=${escapeHtml(pagination.pageSize)} · total=${escapeHtml(pagination.total)}
     </p>
+  `;
+}
+
+function renderTableHint() {
+  return '<p class="table-hint">小屏幕下可横向滚动查看完整列。</p>';
+}
+
+function renderExplanation(title, items) {
+  return `
+    <div class="context-note">
+      <strong>${escapeHtml(title)}</strong>
+      <ul class="explain-list">
+        ${items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
+      </ul>
+    </div>
+  `;
+}
+
+function renderStatusLegend(title, descriptions) {
+  return `
+    <div class="context-note">
+      <strong>${escapeHtml(title)}</strong>
+      <dl class="legend-list">
+        ${Object.entries(descriptions).map(([code, description]) => `
+          <div>
+            <dt>${escapeHtml(displayCode(code))}</dt>
+            <dd>${escapeHtml(description)}</dd>
+          </div>
+        `).join("")}
+      </dl>
+    </div>
+  `;
+}
+
+function renderLifecycleUnavailable(error) {
+  const payload = error.payload || {};
+  const apiError = payload.error || {};
+  const reason = apiError.code || "database_unavailable";
+  const reasonText = displayCode(reason);
+  return `
+    <h3>生命周期状态</h3>
+    ${renderMetric("状态", "暂不可读取")}
+    ${renderMetric("原因", reasonText)}
+    ${renderMetric("技术码", reason)}
+    ${apiError.requestId ? `<p class="pagination-note">requestId: ${escapeHtml(apiError.requestId)}</p>` : ""}
   `;
 }
 
@@ -205,7 +330,7 @@ async function renderSystem() {
   const systemResult = await getJson("/api/system/status", fixture.system).catch((error) => ({ error }));
 
   if (healthResult.error) {
-    document.querySelector("#serviceCard").innerHTML = renderError(healthResult.error);
+    document.querySelector("#serviceCard").innerHTML = renderError(healthResult.error, { title: "服务状态暂不可用" });
   } else {
     document.querySelector("#serviceCard").innerHTML = `
       <h3>服务</h3>
@@ -216,21 +341,23 @@ async function renderSystem() {
   }
 
   const db = dbHealth.database || {};
+  const dbReason = db.reason || "";
+  const dbConnected = db.connected === true;
   document.querySelector("#databaseCard").innerHTML = `
     <h3>数据库</h3>
-    ${renderMetric("connected", db.connected === true ? "true" : "false")}
-    ${renderMetric("schemaVersion", db.schemaVersion || "未配置")}
-    ${renderMetric("systemState", db.systemState || "未配置")}
-    ${renderMetric("reason", db.reason || "无")}
+    ${renderMetric("连接状态", dbConnected ? "已连接" : "未连接")}
+    ${renderMetric("schemaVersion", db.schemaVersion || (dbReason ? "暂不可读取" : "未配置"))}
+    ${renderMetric("systemState", db.systemState || (dbReason ? "暂不可读取" : "未配置"), { code: Boolean(db.systemState) })}
+    ${renderMetric("原因", dbReason ? displayCode(dbReason) : "无")}
   `;
 
   if (systemResult.error) {
-    document.querySelector("#lifecycleCard").innerHTML = renderError(systemResult.error);
+    document.querySelector("#lifecycleCard").innerHTML = renderLifecycleUnavailable(systemResult.error);
   } else {
     const system = systemResult.system;
     document.querySelector("#lifecycleCard").innerHTML = `
       <h3>M1 生命周期</h3>
-      ${renderMetric("state", system.state)}
+      ${renderMetric("state", system.state, { code: true })}
       ${renderMetric("mappingVersionReady", system.mappingVersionReady)}
       ${renderMetric("billImportReady", system.billImportReady)}
     `;
@@ -250,7 +377,9 @@ async function renderSystem() {
     state.fixtureMode
       ? "当前使用前端合成 fixture，不读取真实数据。"
       : pageState === "degraded"
-        ? "数据库依赖降级；空库或未配置数据库是当前开发阶段的可预期状态。"
+        ? dbReason === "database_not_configured"
+          ? "数据库未配置：这是本地开发降级状态，不等同于空库。空库需要先完成迁移并返回 schemaVersion 与 systemState。"
+          : "数据库依赖降级：请检查本地或测试数据库连接；页面仍保持只读。"
         : "",
     pageState
   );
@@ -265,7 +394,12 @@ async function renderWorks() {
       setPageState("works", "empty");
       document.querySelector("#worksContent").innerHTML = renderEmpty(
         "暂无标准作品",
-        "空库状态正常；未导入真实账单或运营确认结果。"
+        "空库状态正常：数据库已可用，但当前没有标准作品记录。",
+        [
+          "未提供表示当前 API 尚未返回标准作品名称。",
+          "缺失表示该字段仍待基础信息补全。",
+          "当前不展示真实收入、作者或版权日期。"
+        ]
       );
       return;
     }
@@ -275,7 +409,13 @@ async function renderWorks() {
       item: data.items[0]
     }).catch(() => ({ item: null }));
     document.querySelector("#worksContent").innerHTML = `
+      ${renderExplanation("字段说明", [
+        "未提供表示当前 API 尚未返回标准作品名称。",
+        "缺失表示该字段仍待基础信息补全。",
+        "当前不展示真实收入、作者或版权日期。"
+      ])}
       <div class="table-wrap">
+        ${renderTableHint()}
         <table>
           <thead>
             <tr>
@@ -325,7 +465,11 @@ async function renderMapping() {
       setPageState("mapping", "empty");
       document.querySelector("#mappingContent").innerHTML = renderEmpty(
         "暂无映射版本",
-        "空库无 mapping version 是正常状态；页面不提供激活或导入操作。"
+        "空库状态正常：数据库中暂无 mapping version。",
+        [
+          "本页面只读展示映射版本元数据。",
+          "不提供导入、激活、撤销或应用操作。"
+        ]
       );
       return;
     }
@@ -335,7 +479,9 @@ async function renderMapping() {
       item: data.items[0]
     }).catch(() => ({ item: null }));
     document.querySelector("#mappingContent").innerHTML = `
+      ${renderStatusLegend("映射版本状态说明", MAPPING_STATUS_DESCRIPTIONS)}
       <div class="table-wrap">
+        ${renderTableHint()}
         <table>
           <thead>
             <tr>
@@ -367,7 +513,7 @@ async function renderMapping() {
         ${first.item ? `
           ${renderMetric("id", first.item.id)}
           ${renderMetric("isActive", first.item.status === "active")}
-          ${renderMetric("status", first.item.status)}
+          ${renderMetric("status", first.item.status, { code: true })}
           ${renderMetric("triggerType", first.item.triggerType)}
         ` : "<p>未找到详情。</p>"}
       </div>
@@ -387,7 +533,11 @@ async function renderJobs() {
       setPageState("jobs", "empty");
       document.querySelector("#jobsContent").innerHTML = renderEmpty(
         "暂无后台任务",
-        "空库无任务是正常状态；页面不提供启动、重试或取消操作。"
+        "空库状态正常：当前没有后台任务记录。",
+        [
+          "本页面只读展示任务元数据。",
+          "不提供启动、重试或取消操作。"
+        ]
       );
       return;
     }
@@ -397,7 +547,9 @@ async function renderJobs() {
       item: data.items[0]
     }).catch(() => ({ item: null }));
     document.querySelector("#jobsContent").innerHTML = `
+      ${renderStatusLegend("后台任务状态说明", JOB_STATUS_DESCRIPTIONS)}
       <div class="table-wrap">
+        ${renderTableHint()}
         <table>
           <thead>
             <tr>
@@ -429,7 +581,7 @@ async function renderJobs() {
         ${first.item ? `
           ${renderMetric("id", first.item.id)}
           ${renderMetric("type", first.item.type)}
-          ${renderMetric("status", first.item.status)}
+          ${renderMetric("status", first.item.status, { code: true })}
           ${renderMetric("errorSummary", "当前 API 未返回")}
         ` : "<p>未找到详情。</p>"}
       </div>
