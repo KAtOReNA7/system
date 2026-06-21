@@ -1,0 +1,87 @@
+{
+  "generated_at": "2026-06-21T14:27:02+08:00",
+  "status": "PASS",
+  "source_bill": {
+    "sha256": "b7ed5b08bcfde56d78d0df5fbe63a084c45467b520fd2dda6ce2f822c0d6ba94",
+    "sha256_expected": "b7ed5b08bcfde56d78d0df5fbe63a084c45467b520fd2dda6ce2f822c0d6ba94",
+    "sha256_match": true,
+    "data_rows": 192872,
+    "expected_data_rows": 192872,
+    "data_rows_match": true,
+    "rows_reduced_from_pre_fix": 27,
+    "target_removed_rows": 27,
+    "target_records_absent": true,
+    "blank_month_rows": 0,
+    "blank_work_id_rows": 0,
+    "blank_amount_rows": 23,
+    "invalid_work_id_rows": 0,
+    "unmatched_smoothing_rows": 0,
+    "bill_abnormal_id_group_count": 0,
+    "ops_03_abnormal_id_task_count": 0,
+    "source_closure_pass": true
+  },
+  "ignored_paths_ok_false": {
+    "master_validation_ignored_paths_ok": true,
+    "source": "校验脚本要求 .gitignore 包含精确的 /data/.../ 字符串；当前 .gitignore 使用 data/、**/data/ 等泛化规则。",
+    "private_git_tracked_risk": false,
+    "tracked_private_path_count": 0,
+    "check_ignore_exit_code": 0,
+    "missing_exact_gitignore_strings": [
+      "/data/real-bills/",
+      "/data/master-data/",
+      "/data/m1-real-bills-private/",
+      "/data/m1-master-data-private/"
+    ],
+    "affects_bill_data_correctness": false,
+    "blocks_candidate_mapping_preparation": false,
+    "required_statement": "该项不是账单业务数据异常，不影响候选映射构建；但需在Git/路径治理任务中单独修复或记录。"
+  },
+  "ops_v231_alignment": {
+    "workbook_open": true,
+    "workbook_sheet_count": 7,
+    "special_review_passed_count": 20,
+    "merged_multi_auth_task_count": 18,
+    "merged_cross_group_conflict_count": 2,
+    "source_bill_fix_completion_record_exists": true,
+    "bill_registration_exception_solidified": true,
+    "multi_id_candidate_build_ready_count": 85,
+    "cross_sheet_conflict_count": 0,
+    "source_bill_fix_required_count_in_original_v231_review": 2,
+    "source_bill_fix_remaining_after_current_bill_analysis": 0,
+    "unresolved_blockers_affecting_candidate_mapping": 0
+  },
+  "candidate_mapping_preparation": {
+    "standard_count": 344,
+    "historical_count": 67,
+    "cross_group_count": 10,
+    "exception_mapping_rows_count": 2,
+    "exception_case_count": 1,
+    "candidate_input_precheck_pass": true,
+    "source_task_missing_count": 0,
+    "basis_missing_count": 0,
+    "same_full_raw_id_multiple_effective_main_targets_count": 0,
+    "same_standard_same_business_multiple_regular_raw_groups_count": 1,
+    "deleted_abnormal_record_reference_count": 0,
+    "unresolved_task_dependency_count": 0,
+    "illegal_work_id_count": 0,
+    "authorization_reverse_override_count": 0,
+    "wrongly_collapsed_numeric_body_pair_count": 0,
+    "historical_regular_unresolved_conflict_count": 0,
+    "preview_class_overlap_count": 41,
+    "blocking_errors": [],
+    "amount_key_blank_rows": 23,
+    "amount_key_blank_is_candidate_mapping_blocker": false
+  },
+  "decision": {
+    "can_enter_candidate_mapping_build_preparation": true,
+    "can_request_user_authorization_to_generate_formal_candidate_mapping_version": true,
+    "formal_mapping_version_still_forbidden_this_round": true,
+    "database_write_still_forbidden": true,
+    "formal_data_migration_still_forbidden": true
+  },
+  "outputs": {
+    "public_report": "docs/analysis/m1-master-data/M1-候选映射构建准备报告-v0.1.md",
+    "public_summary": "docs/analysis/m1-master-data/M1-候选映射构建准备摘要-v0.1.json",
+    "private_candidate_input": "data/m1-master-data-private/mapping-candidate/M1-mapping-candidate-input-v0.1.json"
+  }
+}
