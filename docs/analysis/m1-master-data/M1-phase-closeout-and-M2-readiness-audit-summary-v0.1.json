@@ -1,0 +1,70 @@
+{
+  "currentHead": "2254331738db41fdd0060cf919850ad58e12f644",
+  "originMain": "2254331738db41fdd0060cf919850ad58e12f644",
+  "worktreeClean": true,
+  "prdBaseline": {
+    "primary": "docs/prd/70-acceptance/M1.md",
+    "governingReadme": "docs/prd/README.md",
+    "adoptionBasis": [
+      "M1 acceptance file is status FROZEN and directly defines M1 acceptance and completion.",
+      "PRD README identifies v0.2, M1 engineering freeze preparation, and REQ-* domain docs as authoritative.",
+      "Implementation reports are treated as evidence, not as a replacement for PRD requirements."
+    ]
+  },
+  "m1TechnicalStatus": "stage_closed_for_read_only_admin_api_ci_schema_and_local_tooling; full_PRD_write_import_revoke_recovery_workflows_remain_partial",
+  "m1OperationsStatus": "mapping_version_v0_2_local_and_docker_dry_run_passed; G06_G07_passed; raw_work_id_mapping_300; historical_volume_mapping_52; audit_source_record_count_353; not_formally_activated",
+  "m1ToolingStatus": "complete_for_local_Docker_PostgreSQL_16_development_and_guardrails",
+  "m1FormalDataStatus": "not_complete_no_formal_database_connection_no_real_bill_import_no_ledger_import_no_ops_confirmation_import_no_mapping_activation",
+  "m2AReady": true,
+  "m2BReady": true,
+  "m2CReady": false,
+  "m2DReady": false,
+  "hardBlockers": [
+    "formal_database_authorization_missing",
+    "real_bills_not_formally_imported",
+    "digital_copyright_ledger_not_formally_imported",
+    "operations_confirmation_results_not_formally_imported",
+    "mapping_version_v0_2_not_activated",
+    "switch_mapping_version_not_called",
+    "strict_reconciliation_not_executed_in_formal_authorized_environment",
+    "classification_tree_and_tag_library_pending_data",
+    "basic_info_and_copyright_coverage_not_formally_ready",
+    "backup_recovery_and_revoke_reimport_not_formally_accepted_on_real_imported_data"
+  ],
+  "softRisks": [
+    "read_only_admin_line_is_complete_but_not_an_import_or_activation_app",
+    "legacy_local_db_scripts_should_remain_secondary_to_Docker_standard_workflow",
+    "future_pushes_need_new_CI_evidence",
+    "M2_fixture_results_must_not_be_presented_as_formal_business_results"
+  ],
+  "recommendedNextTask": "Start M2-A fixture-only old-product evaluation design and test planning, while preparing a separate formal M1 data readiness checklist.",
+  "prohibitedActionsConfirmed": {
+    "databaseConnected": false,
+    "dockerExecuted": false,
+    "databaseRehearsalExecuted": false,
+    "realDataImported": false,
+    "realBillsImported": false,
+    "digitalCopyrightLedgerImported": false,
+    "operationsConfirmationExcelImported": false,
+    "operationsConfirmationResultsImported": false,
+    "mappingVersionActivated": false,
+    "switchMappingVersionCalled": false,
+    "formalDataMigrationExecuted": false,
+    "dbMigrationsModified": false,
+    "flywayHistoryModified": false,
+    "businessCodeModified": false,
+    "apiModified": false,
+    "pagesModified": false,
+    "gitAddDotUsed": false,
+    "stashTouched": false
+  },
+  "keyEvidence": {
+    "technicalCloseout": "docs/technical-design/M1-最小只读管理端技术线收口报告-v0.1.md",
+    "operationsCloseout": "docs/analysis/m1-master-data/M1-mapping-version-v0.2-operations-stage-closeout-summary-v0.1.json",
+    "localDevReadiness": "docs/analysis/m1-master-data/M1-mapping-version-v0.2-local-dev-readiness-review-summary-v0.1.json",
+    "migrationRegression": "docs/technical-design/M1-Flyway正式迁移目录冻结回归报告-v0.1.md",
+    "realBillAnalysis": "docs/analysis/m1-real-bills/summary.json",
+    "masterDataAnalysis": "docs/analysis/m1-master-data/summary.json",
+    "toolingDoc": "docs/dev/M1_LOCAL_DOCKER_POSTGRES.md"
+  }
+}
