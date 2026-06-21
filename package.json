@@ -13,7 +13,8 @@
     "lint": "node tools/node/check-syntax.mjs",
     "build": "node tools/node/check-syntax.mjs",
     "test": "node --test",
-    "smoke": "node tools/dev-smoke/run-api-smoke.mjs"
+    "smoke": "node tools/dev-smoke/run-api-smoke.mjs",
+    "check:no-real-data": "node scripts/check-no-real-data.mjs"
   },
   "dependencies": {
     "pg": "^8.16.3"
