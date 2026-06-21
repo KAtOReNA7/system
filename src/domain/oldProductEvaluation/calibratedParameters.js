@@ -1,7 +1,7 @@
-// Non-formal M2-C-0 aggregate calibration parameters.
-// Generated from aggregate-only local analysis. Do not use as formal business rules.
+// Non-formal M2-C aggregate calibration parameters.
+// M2-C-3 records aggregate-only parameter iteration evidence. Do not use as formal business rules.
 export const M2_C0_CLEANED_BILL_CALIBRATED_PARAMETERS = Object.freeze({
-  "version": "m2-c0-cleaned-bill-nonformal-v0.1",
+  "version": "m2-c3-cleaned-bill-nonformal-v0.2",
   "nonFormalCalibration": true,
   "realDataAggregated": true,
   "notForFormalDecision": true,
@@ -90,6 +90,95 @@ export const M2_C0_CLEANED_BILL_CALIBRATED_PARAMETERS = Object.freeze({
     "newProductOldProductNote": "Old-product rating should not be treated as equivalent to new-product launch rating because it is driven by observed historical revenue and remaining-rights economics.",
     "externalEventLimit": "External event override should increase at most two rating levels and must require manual review.",
     "smallSampleFallback": "When history is below the insufficient-history threshold, use observe_only and manual_review_required instead of a high-confidence rating."
+  },
+  "riskCalibration": {
+    "stage": "M2-C-3",
+    "calibrationMode": "non_formal_aggregate_dry_run_parameter_iteration",
+    "aggregateOnly": true,
+    "notForFormalDecision": true,
+    "m2C3SelectedVariant": "candidate-a",
+    "recommendation": "Use candidate-a for the next bounded non-formal dry-run. It keeps high and mid-value uncertainty in the blocking review queue while converting low-value evidence gaps to advisory review.",
+    "validationEvidence": {
+      "evaluatedWorkCount": 3054,
+      "manualReviewRequiredCount": 513,
+      "advisoryOnlyCount": 2331,
+      "channelConcentrationCount": 1944,
+      "channelConcentrationBlockingLikeCount": 2,
+      "copyrightFallbackUsageCount": 2207
+    },
+    "dataReadinessSubtypes": [
+      "missing_copyright_end",
+      "copyright_date_conflict",
+      "mapping_uncertainty",
+      "missing_basic_info",
+      "incomplete_month_boundary",
+      "insufficient_revenue_history",
+      "aggregate_projection_gap"
+    ],
+    "manualReviewLayering": {
+      "blockingReasons": [
+        "mapping_uncertainty",
+        "copyright_conflict",
+        "abnormal_spike",
+        "buyout_or_oneoff_income",
+        "high_value_with_expiry",
+        "high_value_with_data_gap",
+        "insufficient_history",
+        "channel_structure_unclear"
+      ],
+      "advisoryReasons": [
+        "copyright_missing",
+        "abnormal_spike",
+        "buyout_or_oneoff_income",
+        "high_value_with_expiry",
+        "insufficient_history",
+        "channel_structure_unclear"
+      ],
+      "blockingPolicy": "Only blocking reasons enter the pre-formal manual review queue. Advisory reasons are analyst notes and do not block aggregate dry-run evaluation."
+    },
+    "channelConcentration": {
+      "selectedVariant": "candidate-a",
+      "conservative": {
+        "shareThreshold": 0.98,
+        "riskRevenueFloor": 2700,
+        "blockingManualReviewRevenueFloor": 16000,
+        "businessFormAware": true,
+        "lowRevenueConcentrationTreatment": "advisory"
+      },
+      "balanced": {
+        "shareThreshold": 0.98,
+        "riskRevenueFloor": 16000,
+        "blockingManualReviewRevenueFloor": 16000,
+        "businessFormAware": true,
+        "lowRevenueConcentrationTreatment": "advisory"
+      }
+    },
+    "forecastFallback": {
+      "selectedVariant": "lifecycle_layered",
+      "missingCopyrightEndFallbackMonthsByLifecycle": {
+        "growth": 12,
+        "stable": 12,
+        "rebound": 12,
+        "declining": 9,
+        "long_tail": 6,
+        "inactive": 6,
+        "insufficient_history": 6
+      },
+      "highValueMissingCopyrightTreatment": "blocking_manual_review",
+      "lowValueMissingCopyrightTreatment": "advisory_review"
+    },
+    "ratingCaps": {
+      "selectedVariant": "candidate-a",
+      "caps": {
+        "abnormal_spike": "A",
+        "buyout_or_oneoff_income": "A",
+        "missing_copyright_end": "B",
+        "copyright_date_conflict": "B",
+        "copyright_expiry": "A",
+        "insufficient_history": "C"
+      },
+      "capMeaning": "A cap is the best allowed rating when the corresponding aggregate risk is present; it never upgrades a work."
+    }
   },
   "riskRules": [
     {

@@ -1,0 +1,248 @@
+{
+  "schema": "m2.c3.parameter_variant_comparison_summary.v0.1",
+  "generatedAt": "2026-06-21T17:56:37.124766+00:00",
+  "aggregateOnlyReport": true,
+  "rawDetailWrittenToReport": false,
+  "notForFormalDecision": true,
+  "formalEvaluationAllowed": false,
+  "variants": [
+    {
+      "parameterVariantName": "baseline",
+      "evaluatedWorkCount": 3054,
+      "manualReviewRequiredCount": 2609,
+      "advisoryOnlyCount": 0,
+      "channelConcentrationCount": 2003,
+      "channelConcentrationBlockingLikeCount": 0,
+      "copyrightFallbackUsageCount": 2207,
+      "abnormalSpikeCount": 382,
+      "buyoutOrOneoffIncomeCount": 328,
+      "downlistOrSuspendCount": 744,
+      "promoteCount": 146,
+      "ratingDistribution": {
+        "S+": 25,
+        "S": 97,
+        "A": 248,
+        "B": 483,
+        "C": 695,
+        "D": 395,
+        "E": 1111
+      },
+      "riskDistribution": {
+        "abnormal_spike": 382,
+        "business_form_mixed": 474,
+        "buyout_or_oneoff_income": 328,
+        "channel_concentration": 2003,
+        "copyright_expiry": 363,
+        "data_readiness": 2224,
+        "inactive_tail": 932,
+        "incomplete_month_boundary": 1,
+        "insufficient_history": 46,
+        "revenue_decline": 394
+      },
+      "suggestionDistribution": {
+        "downlist_or_suspend": 744,
+        "maintain": 634,
+        "manual_review_required": 2609,
+        "observe_only": 83,
+        "pricing_or_channel_adjustment": 76,
+        "promote": 146,
+        "reduce_investment": 252,
+        "renewal_review": 209,
+        "repackage": 1078
+      }
+    },
+    {
+      "parameterVariantName": "candidate-a",
+      "evaluatedWorkCount": 3054,
+      "manualReviewRequiredCount": 513,
+      "advisoryOnlyCount": 2331,
+      "channelConcentrationCount": 1944,
+      "channelConcentrationBlockingLikeCount": 2,
+      "copyrightFallbackUsageCount": 2207,
+      "abnormalSpikeCount": 382,
+      "buyoutOrOneoffIncomeCount": 328,
+      "downlistOrSuspendCount": 744,
+      "promoteCount": 442,
+      "ratingDistribution": {
+        "S+": 7,
+        "S": 30,
+        "A": 160,
+        "B": 647,
+        "C": 704,
+        "D": 395,
+        "E": 1111
+      },
+      "riskDistribution": {
+        "abnormal_spike": 382,
+        "aggregate_projection_gap": 2207,
+        "business_form_mixed": 474,
+        "buyout_or_oneoff_income": 328,
+        "channel_concentration": 64,
+        "channel_concentration_advisory": 1880,
+        "copyright_expiry": 363,
+        "inactive_tail": 932,
+        "incomplete_month_boundary": 1,
+        "insufficient_history": 46,
+        "insufficient_revenue_history": 46,
+        "missing_basic_info": 2207,
+        "missing_copyright_end": 2207,
+        "revenue_decline": 394
+      },
+      "suggestionDistribution": {
+        "downlist_or_suspend": 744,
+        "maintain": 707,
+        "manual_review_required": 513,
+        "observe_only": 429,
+        "pricing_or_channel_adjustment": 402,
+        "promote": 442,
+        "reduce_investment": 252,
+        "renewal_review": 209,
+        "repackage": 509
+      }
+    },
+    {
+      "parameterVariantName": "candidate-b",
+      "evaluatedWorkCount": 3054,
+      "manualReviewRequiredCount": 85,
+      "advisoryOnlyCount": 2759,
+      "channelConcentrationCount": 1944,
+      "channelConcentrationBlockingLikeCount": 2,
+      "copyrightFallbackUsageCount": 2207,
+      "abnormalSpikeCount": 382,
+      "buyoutOrOneoffIncomeCount": 328,
+      "downlistOrSuspendCount": 744,
+      "promoteCount": 557,
+      "ratingDistribution": {
+        "S+": 7,
+        "S": 54,
+        "A": 136,
+        "B": 647,
+        "C": 704,
+        "D": 395,
+        "E": 1111
+      },
+      "riskDistribution": {
+        "abnormal_spike": 382,
+        "aggregate_projection_gap": 2207,
+        "business_form_mixed": 474,
+        "buyout_or_oneoff_income": 328,
+        "channel_concentration": 22,
+        "channel_concentration_advisory": 1922,
+        "copyright_expiry": 363,
+        "inactive_tail": 932,
+        "incomplete_month_boundary": 1,
+        "insufficient_history": 46,
+        "insufficient_revenue_history": 46,
+        "missing_basic_info": 2207,
+        "missing_copyright_end": 2207,
+        "revenue_decline": 394
+      },
+      "suggestionDistribution": {
+        "downlist_or_suspend": 744,
+        "maintain": 686,
+        "manual_review_required": 85,
+        "observe_only": 460,
+        "pricing_or_channel_adjustment": 402,
+        "promote": 557,
+        "reduce_investment": 252,
+        "renewal_review": 209,
+        "repackage": 468
+      }
+    }
+  ],
+  "selectedVariant": "candidate-a",
+  "recommendationReason": "candidate-a keeps high and mid-value uncertainty in the blocking review queue while still converting low-value channel concentration, missing copyright and insufficient history cases to advisory review.",
+  "deltaFromBaseline": {
+    "manualReviewRequiredCount": -2096,
+    "channelConcentrationCount": -59,
+    "promoteCount": 296,
+    "downlistOrSuspendCount": 0
+  },
+  "rulesEvaluated": {
+    "manualReviewReasons": [
+      "mapping_uncertainty",
+      "copyright_missing",
+      "copyright_conflict",
+      "abnormal_spike",
+      "buyout_or_oneoff_income",
+      "high_value_with_expiry",
+      "high_value_with_data_gap",
+      "insufficient_history",
+      "channel_structure_unclear"
+    ],
+    "dataReadinessSubtypes": [
+      "missing_copyright_end",
+      "copyright_date_conflict",
+      "mapping_uncertainty",
+      "missing_basic_info",
+      "incomplete_month_boundary",
+      "insufficient_revenue_history",
+      "aggregate_projection_gap"
+    ],
+    "channelConcentrationVariants": {
+      "baseline": {
+        "channelShareThreshold": 0.95,
+        "channelRiskRevenueFloor": 0,
+        "channelManualRevenueFloor": null
+      },
+      "candidate-a": {
+        "channelShareThreshold": 0.98,
+        "channelRiskRevenueFloor": 2700,
+        "channelManualRevenueFloor": 16000
+      },
+      "candidate-b": {
+        "channelShareThreshold": 0.98,
+        "channelRiskRevenueFloor": 16000,
+        "channelManualRevenueFloor": 16000
+      }
+    },
+    "forecastFallbackByLifecycle": {
+      "baseline": {
+        "growth": 12,
+        "stable": 12,
+        "rebound": 12,
+        "declining": 12,
+        "long_tail": 12,
+        "inactive": 12,
+        "insufficient_history": 12
+      },
+      "candidate-a": {
+        "growth": 12,
+        "stable": 12,
+        "rebound": 12,
+        "declining": 9,
+        "long_tail": 6,
+        "inactive": 6,
+        "insufficient_history": 6
+      },
+      "candidate-b": {
+        "growth": 12,
+        "stable": 12,
+        "rebound": 12,
+        "declining": 9,
+        "long_tail": 6,
+        "inactive": 6,
+        "insufficient_history": 6
+      }
+    },
+    "ratingCaps": {
+      "baseline": {},
+      "candidate-a": {
+        "abnormal_spike": "A",
+        "buyout_or_oneoff_income": "A",
+        "missing_copyright_end": "B",
+        "copyright_date_conflict": "B",
+        "copyright_expiry": "A",
+        "insufficient_history": "C"
+      },
+      "candidate-b": {
+        "abnormal_spike": "S",
+        "buyout_or_oneoff_income": "A",
+        "missing_copyright_end": "B",
+        "copyright_date_conflict": "B",
+        "copyright_expiry": "S",
+        "insufficient_history": "C"
+      }
+    }
+  }
+}
