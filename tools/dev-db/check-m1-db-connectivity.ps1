@@ -78,7 +78,7 @@ $view = Invoke-Psql "application_ro" "SELECT count(*) FROM m1.v_current_income;"
 Add-Test "formal_view_query_available" ($view.exit_code -eq 0) $view.output
 
 $flyway = Invoke-Psql "application_ro" "SELECT version FROM flyway_history.flyway_schema_history WHERE success ORDER BY installed_rank DESC LIMIT 1;"
-Add-Test "application_ro_can_read_flyway_schema_version" ($flyway.exit_code -eq 0 -and $flyway.output -eq "0060.290") $flyway.output
+Add-Test "application_ro_can_read_flyway_schema_version" ($flyway.exit_code -eq 0 -and $flyway.output -eq "0070.000") $flyway.output
 
 $state = Invoke-Psql "background_worker" "SELECT lifecycle_status FROM m1.system_state WHERE id = 1;"
 Add-Test "system_state_initial_status_readable" ($state.exit_code -eq 0 -and $state.output -eq "schema_initialized") $state.output

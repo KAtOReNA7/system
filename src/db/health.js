@@ -2,7 +2,7 @@ import pg from "pg";
 
 const { Pool } = pg;
 
-const EXPECTED_SCHEMA_VERSION = "0060.290";
+const EXPECTED_SCHEMA_VERSION = "0070.000";
 const FORMAL_VIEWS = [
   "m1.v_current_income",
   "m1.v_basic_info_gap",

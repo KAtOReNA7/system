@@ -1,0 +1,115 @@
+{
+  "schema": "m2.authorized_real_data.candidate_b_data_gap_remediation_summary.v0.1",
+  "remediationVersion": "m2-candidate-b-remediation-v0.1",
+  "generatedAt": "2026-06-22T10:11:37.583Z",
+  "candidateVersion": "m2-realdata-dev-candidate-b-v0.1",
+  "notFinalReleaseApproved": true,
+  "groupDecisionId": "GROUP-DATA-GAP-HIGH-VALUE",
+  "reasonCode": "high_value_with_data_gap",
+  "totalGroupItems": 57,
+  "remediationAttempted": true,
+  "finalDecisionsApplied": false,
+  "autoFixApplied": false,
+  "localDbWriteApplied": false,
+  "localImportPayloadChanged": false,
+  "classification": {
+    "autoFixableCount": 0,
+    "autoFixedCount": 0,
+    "needsSourceDataFixCount": 57,
+    "needsBusinessConfirmationCount": 34,
+    "shouldRemainBlockingCount": 57,
+    "canBeNoActionRequiredCandidateCount": 0
+  },
+  "primaryClassificationDistribution": {
+    "auto_fixable": 0,
+    "needs_source_data_fix": 57,
+    "needs_business_confirmation": 0,
+    "should_remain_blocking": 57,
+    "can_be_no_action_required_candidate": 0
+  },
+  "additionalBusinessConfirmationSignals": {
+    "businessFormMixedRiskCount": 27,
+    "abnormalSpikeRiskCount": 2,
+    "channelConcentrationRiskCount": 6,
+    "insufficientHistoryRiskCount": 1,
+    "buyoutOrOneoffIncomeRiskCount": 2,
+    "revenueDeclineRiskCount": 3
+  },
+  "evidence": {
+    "localDbInputSnapshotsChecked": true,
+    "inputSnapshotCount": 57,
+    "inputSnapshotMissingCount": 0,
+    "mappingCoverageIncompleteCount": 0,
+    "standardWorkReferenceMissingCount": 0,
+    "missingBasicInfoRiskCount": 57,
+    "missingCopyrightEndRiskCount": 57,
+    "aggregateProjectionGapRiskCount": 57,
+    "copyrightEndNullCount": 57,
+    "copyrightStartNullCount": 57,
+    "activeMonthBucketDistribution": {
+      "1-2": 2,
+      "12+": 53,
+      "3-5": 1,
+      "6-11": 1
+    },
+    "riskCodeDistribution": {
+      "abnormal_spike": 2,
+      "aggregate_projection_gap": 57,
+      "business_form_mixed": 27,
+      "buyout_or_oneoff_income": 2,
+      "channel_concentration": 6,
+      "inactive_tail": 1,
+      "incomplete_month_boundary": 1,
+      "insufficient_history": 1,
+      "insufficient_revenue_history": 1,
+      "missing_basic_info": 57,
+      "missing_copyright_end": 57,
+      "revenue_decline": 3
+    },
+    "suggestionCodeDistribution": {
+      "maintain": 52,
+      "manual_review_required": 57,
+      "observe_only": 2,
+      "repackage": 31
+    },
+    "sourceEvidenceBoundary": {
+      "derivedFromLocalDbSnapshotsAndRiskFacts": true,
+      "rawSourceRowsWritten": false,
+      "rawSourceFileNamesWritten": false,
+      "realWorkNamesWritten": false,
+      "channelNamesWritten": false,
+      "authorNamesWritten": false
+    }
+  },
+  "remediationDecision": {
+    "recommendedGroupDecisionAfterRemediation": "data_fix_required",
+    "remediationStatus": "diagnosed_no_safe_auto_fix",
+    "remediationEvidenceSummary": "Aggregate local DB evidence still shows missing source readiness fields; keep the group as data_fix_required until source data is corrected and reimported.",
+    "userConfirmationRequired": true,
+    "canApplyWithoutFurtherDataFix": false,
+    "dataFixRequiredFlag": true,
+    "reimportRequiredFlag": true
+  },
+  "beforeAfter": {
+    "beforeBlockingCount": 57,
+    "autoFixedCount": 0,
+    "afterBlockingCount": 57,
+    "postReimportBlockingCount": 57
+  },
+  "requiredNextActions": [
+    "Confirm whether source master-data correction is available for the data-gap group.",
+    "If corrected, rerun local DB-backed import and reconciliation before applying any closing decision.",
+    "If not corrected, apply only an explicit audited business decision such as data_fix_required, waiver_granted, rejected_for_formal, or pending."
+  ],
+  "safeOutputBoundary": {
+    "rawRowsWritten": false,
+    "realWorkNamesWritten": false,
+    "realAuthorNamesWritten": false,
+    "realChannelNamesWritten": false,
+    "exactPerWorkRevenueDetailWritten": false,
+    "secretsWritten": false,
+    "connectionStringsWritten": false,
+    "privateWorkbookNamesWritten": false,
+    "dumpsOrTempDbFilesWritten": false
+  }
+}

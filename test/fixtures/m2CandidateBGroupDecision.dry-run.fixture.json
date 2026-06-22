@@ -1,0 +1,44 @@
+{
+  "rows": [
+    {
+      "groupDecisionId": "GROUP-INSUFFICIENT-HISTORY",
+      "reasonCode": "insufficient_history",
+      "itemCount": "4",
+      "priorityRange": "50",
+      "defaultProposedDecision": "pending",
+      "allowedFinalDecisions": "pending|no_action_required|rejected_for_formal|data_fix_required|waiver_granted|approved",
+      "reviewerDecision": "no_action_required",
+      "reviewerReason": "synthetic aggregate fixture confirms short history is acceptable for local dry-run only",
+      "reviewerName": "synthetic_reviewer",
+      "reviewedAt": "2026-06-22T00:00:00.000Z",
+      "waiverScope": "",
+      "waiverExpiry": "",
+      "dataFixRequiredFlag": "false",
+      "reimportRequiredFlag": "false",
+      "appliesToAllItemsInGroup": "true",
+      "excludedReviewItemIds": "",
+      "includedReviewItemIds": "",
+      "auditNote": "synthetic fixture only; do not use as user final decision"
+    },
+    {
+      "groupDecisionId": "GROUP-ABNORMAL-SPIKE",
+      "reasonCode": "abnormal_spike",
+      "itemCount": "1",
+      "priorityRange": "50",
+      "defaultProposedDecision": "pending",
+      "allowedFinalDecisions": "pending|approved|data_fix_required|rejected_for_formal|waiver_granted|no_action_required",
+      "reviewerDecision": "pending",
+      "reviewerReason": "",
+      "reviewerName": "",
+      "reviewedAt": "",
+      "waiverScope": "",
+      "waiverExpiry": "",
+      "dataFixRequiredFlag": "false",
+      "reimportRequiredFlag": "false",
+      "appliesToAllItemsInGroup": "true",
+      "excludedReviewItemIds": "",
+      "includedReviewItemIds": "",
+      "auditNote": "synthetic fixture only; remains pending"
+    }
+  ]
+}

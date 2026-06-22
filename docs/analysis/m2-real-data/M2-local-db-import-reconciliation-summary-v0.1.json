@@ -1,0 +1,275 @@
+{
+  "schema": "m2.authorized_real_data.local_db_import_reconciliation.v0.1",
+  "generatedAt": "2026-06-22T10:11:08.500Z",
+  "mode": "authorized_local_real_data_db_backed_development",
+  "candidateVersion": "m2-realdata-dev-candidate-b-v0.1",
+  "notFinalReleaseApproved": true,
+  "database": {
+    "databaseName": "m1_local_dev",
+    "hostCategory": "local",
+    "port": 55434,
+    "dockerUsed": true,
+    "container": "m1-local-dev",
+    "formalDatabaseConnected": false
+  },
+  "migration": {
+    "migrationFiles": 81,
+    "migrationsExecuted": [],
+    "latestSchemaVersion": "0070.000"
+  },
+  "import": {
+    "mode": "imported",
+    "clearedResults": 3054,
+    "insertedEvaluationResults": 3054,
+    "insertedInputSnapshots": 3054,
+    "insertedRisks": 11531,
+    "insertedSuggestions": 3863,
+    "insertedReviewItems": 2844,
+    "tableCounts": {
+      "algorithmVersions": 1,
+      "results": 3054,
+      "inputSnapshots": 3054,
+      "risks": 11531,
+      "suggestions": 3863,
+      "reviewItems": 2844
+    },
+    "rawRowsWritten": false,
+    "realWorkNamesWritten": false,
+    "secretsWritten": false
+  },
+  "fileSummary": {
+    "rowReconciliation": {
+      "billRowCount": 192872,
+      "validCalibrationRows": 192872,
+      "invalidOrUnmappedRows": 0,
+      "completeRowsIncluded": 192869,
+      "incompleteRowsExcluded": 3
+    },
+    "amountReconciliation": {
+      "rawTotalAmount": "126794644.11",
+      "completeIncludedAmount": "126794638.17",
+      "excludedIncompleteAmount": "5.94",
+      "rawMinusCompleteMinusExcluded": "-0.00",
+      "invalidAmountCellCount": 0,
+      "positiveRowCount": 192222,
+      "zeroRowCount": 501,
+      "negativeRowCount": 146
+    },
+    "candidate": {
+      "evaluatedWorkCount": 3054,
+      "manualReviewRequiredCount": 85,
+      "advisoryOnlyCount": 2759,
+      "ratingDistribution": {
+        "S+": 7,
+        "S": 54,
+        "A": 136,
+        "B": 647,
+        "C": 704,
+        "D": 395,
+        "E": 1111
+      },
+      "lifecycleDistribution": {
+        "growth": 540,
+        "stable": 872,
+        "declining": 394,
+        "long_tail": 132,
+        "inactive": 800,
+        "rebound": 270,
+        "insufficient_history": 46
+      }
+    }
+  },
+  "databaseSummary": {
+    "candidateVersion": "m2-realdata-dev-candidate-b-v0.1",
+    "evaluationResults": 3054,
+    "inputSnapshots": 3054,
+    "latestCompleteMonth": "2026-04",
+    "totalHistoricalRevenue": 126794638.1685,
+    "ratingDistribution": {
+      "B": 647,
+      "S": 54,
+      "E": 1111,
+      "D": 395,
+      "A": 136,
+      "C": 704,
+      "S+": 7
+    },
+    "lifecycleDistribution": {
+      "inactive": 800,
+      "growth": 540,
+      "insufficient_history": 46,
+      "stable": 872,
+      "declining": 394,
+      "rebound": 270,
+      "long_tail": 132
+    },
+    "riskDistribution": {
+      "channel_concentration_advisory": 1922,
+      "revenue_decline": 394,
+      "aggregate_projection_gap": 2207,
+      "incomplete_month_boundary": 1,
+      "buyout_or_oneoff_income": 328,
+      "inactive_tail": 932,
+      "copyright_expiry": 363,
+      "insufficient_revenue_history": 46,
+      "insufficient_history": 46,
+      "missing_basic_info": 2207,
+      "abnormal_spike": 382,
+      "business_form_mixed": 474,
+      "channel_concentration": 22,
+      "missing_copyright_end": 2207
+    },
+    "suggestionDistribution": {
+      "renewal_review": 209,
+      "reduce_investment": 252,
+      "promote": 557,
+      "repackage": 468,
+      "manual_review_required": 85,
+      "observe_only": 460,
+      "maintain": 686,
+      "downlist_or_suspend": 744,
+      "pricing_or_channel_adjustment": 402
+    },
+    "reviewStatusDistribution": {
+      "pending": 2844
+    },
+    "blockingReviewItems": 85,
+    "advisoryReviewItems": 2759,
+    "m2TableCounts": {
+      "algorithmVersions": 1,
+      "results": 3054,
+      "inputSnapshots": 3054,
+      "risks": 11531,
+      "suggestions": 3863,
+      "reviewItems": 2844
+    }
+  },
+  "distributionComparisons": {
+    "rating": {
+      "matches": true,
+      "mismatches": [],
+      "expected": {
+        "A": 136,
+        "B": 647,
+        "C": 704,
+        "D": 395,
+        "E": 1111,
+        "S": 54,
+        "S+": 7
+      },
+      "actual": {
+        "A": 136,
+        "B": 647,
+        "C": 704,
+        "D": 395,
+        "E": 1111,
+        "S": 54,
+        "S+": 7
+      }
+    },
+    "lifecycle": {
+      "matches": true,
+      "mismatches": [],
+      "expected": {
+        "declining": 394,
+        "growth": 540,
+        "inactive": 800,
+        "insufficient_history": 46,
+        "long_tail": 132,
+        "rebound": 270,
+        "stable": 872
+      },
+      "actual": {
+        "declining": 394,
+        "growth": 540,
+        "inactive": 800,
+        "insufficient_history": 46,
+        "long_tail": 132,
+        "rebound": 270,
+        "stable": 872
+      }
+    },
+    "risks": {
+      "matches": true,
+      "mismatches": [],
+      "expected": {
+        "abnormal_spike": 382,
+        "aggregate_projection_gap": 2207,
+        "business_form_mixed": 474,
+        "buyout_or_oneoff_income": 328,
+        "channel_concentration": 22,
+        "channel_concentration_advisory": 1922,
+        "copyright_expiry": 363,
+        "inactive_tail": 932,
+        "incomplete_month_boundary": 1,
+        "insufficient_history": 46,
+        "insufficient_revenue_history": 46,
+        "missing_basic_info": 2207,
+        "missing_copyright_end": 2207,
+        "revenue_decline": 394
+      },
+      "actual": {
+        "abnormal_spike": 382,
+        "aggregate_projection_gap": 2207,
+        "business_form_mixed": 474,
+        "buyout_or_oneoff_income": 328,
+        "channel_concentration": 22,
+        "channel_concentration_advisory": 1922,
+        "copyright_expiry": 363,
+        "inactive_tail": 932,
+        "incomplete_month_boundary": 1,
+        "insufficient_history": 46,
+        "insufficient_revenue_history": 46,
+        "missing_basic_info": 2207,
+        "missing_copyright_end": 2207,
+        "revenue_decline": 394
+      }
+    },
+    "suggestions": {
+      "matches": true,
+      "mismatches": [],
+      "expected": {
+        "downlist_or_suspend": 744,
+        "maintain": 686,
+        "manual_review_required": 85,
+        "observe_only": 460,
+        "pricing_or_channel_adjustment": 402,
+        "promote": 557,
+        "reduce_investment": 252,
+        "renewal_review": 209,
+        "repackage": 468
+      },
+      "actual": {
+        "downlist_or_suspend": 744,
+        "maintain": 686,
+        "manual_review_required": 85,
+        "observe_only": 460,
+        "pricing_or_channel_adjustment": 402,
+        "promote": 557,
+        "reduce_investment": 252,
+        "renewal_review": 209,
+        "repackage": 468
+      }
+    }
+  },
+  "reconciliation": {
+    "checks": {
+      "workCount": true,
+      "candidateVersion": true,
+      "latestCompleteMonth": true,
+      "ratingDistribution": true,
+      "lifecycleDistribution": true,
+      "blockingReviewCount": true,
+      "advisoryReviewCount": true
+    },
+    "passed": true
+  },
+  "safeOutputBoundary": {
+    "rawRowsWritten": false,
+    "realWorkNamesWritten": false,
+    "realAuthorNamesWritten": false,
+    "realChannelNamesWritten": false,
+    "secretsWritten": false,
+    "connectionStringsWritten": false
+  }
+}

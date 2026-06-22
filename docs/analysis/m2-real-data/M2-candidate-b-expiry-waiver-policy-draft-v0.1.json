@@ -1,0 +1,55 @@
+{
+  "schema": "m2.authorized_real_data.candidate_b_expiry_waiver_policy_draft.v0.1",
+  "remediationVersion": "m2-candidate-b-remediation-v0.1",
+  "generatedAt": "2026-06-22T10:11:37.583Z",
+  "candidateVersion": "m2-realdata-dev-candidate-b-v0.1",
+  "notFinalReleaseApproved": true,
+  "groupDecisionId": "GROUP-EXPIRY-HIGH-VALUE",
+  "reasonCode": "high_value_with_expiry",
+  "itemCount": 23,
+  "finalDecisionApplied": false,
+  "recommendedDecision": "waiver_granted",
+  "canApplyWithoutFurtherDataFix": true,
+  "userConfirmationRequired": true,
+  "requiredFields": [
+    "reviewerDecision",
+    "reviewerReason",
+    "reviewerName",
+    "waiverScope",
+    "waiverExpiry"
+  ],
+  "defaultWaiverScope": "candidate-b local review scope",
+  "defaultWaiverExpiry": "next formal readiness review",
+  "policyDraft": {
+    "waiverScope": "Local candidate-b readiness review only; does not authorize formal release, external export, or production use.",
+    "waiverExpiry": "Expires at the next formal readiness review or earlier if copyright master data changes.",
+    "reviewerReasonRequired": true,
+    "dataFixRequiredFlag": false,
+    "reimportRequiredFlag": false,
+    "unconfirmedItemsRemainPending": true
+  },
+  "riskCodeDistribution": {
+    "business_form_mixed": 6,
+    "channel_concentration": 5,
+    "copyright_expiry": 23,
+    "revenue_decline": 2
+  },
+  "suggestionCodeDistribution": {
+    "manual_review_required": 23,
+    "pricing_or_channel_adjustment": 1,
+    "renewal_review": 23,
+    "repackage": 11
+  },
+  "readinessEffect": "A confirmed waiver can close this local blocker only after explicit scope, expiry, reviewerName, and reviewerReason are supplied.",
+  "safeOutputBoundary": {
+    "rawRowsWritten": false,
+    "realWorkNamesWritten": false,
+    "realAuthorNamesWritten": false,
+    "realChannelNamesWritten": false,
+    "exactPerWorkRevenueDetailWritten": false,
+    "secretsWritten": false,
+    "connectionStringsWritten": false,
+    "privateWorkbookNamesWritten": false,
+    "dumpsOrTempDbFilesWritten": false
+  }
+}

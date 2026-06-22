@@ -1,0 +1,153 @@
+{
+  "schema": "m2.authorized_real_data.profile_summary.v0.1",
+  "generatedAt": "2026-06-22T10:09:47.792969+00:00",
+  "mode": "authorized_local_real_data_development",
+  "currentHead": "463f86ecc1045a67c2d014d2fd4e59f55a8dcdcc",
+  "originMain": "463f86ecc1045a67c2d014d2fd4e59f55a8dcdcc",
+  "sourceInventory": [
+    {
+      "alias": "B001",
+      "sourceType": "real_bill_workbook",
+      "pathPattern": "data/real-bills/*.xlsx",
+      "fileType": "xlsx",
+      "fileCount": 1,
+      "recordScale": 192872,
+      "usableForCalibration": true,
+      "sensitiveRawDetailCommitted": false
+    },
+    {
+      "alias": "M001",
+      "sourceType": "copyright_master_workbook",
+      "pathPattern": "data/master-data/*.xlsx",
+      "fileType": "xlsx",
+      "fileCount": 1,
+      "recordScale": 8881,
+      "usableForCalibration": true,
+      "sensitiveRawDetailCommitted": false
+    },
+    {
+      "alias": "MAP001",
+      "sourceType": "mapping_candidate_private_json",
+      "pathPattern": "data/m1-master-data-private/mapping-candidate/*.json",
+      "fileType": "json",
+      "fileCount": 3,
+      "recordScale": 353,
+      "usableForCalibration": true,
+      "sensitiveRawDetailCommitted": false
+    },
+    {
+      "alias": "OPS001",
+      "sourceType": "operation_confirmation_private_artifacts",
+      "pathPattern": "data/m1-master-data-private/ops-confirmation/*",
+      "fileType": "mixed",
+      "fileCount": 49,
+      "recordScale": null,
+      "usableForCalibration": true,
+      "sensitiveRawDetailCommitted": false
+    }
+  ],
+  "billFieldRecognition": {
+    "requiredBusinessFieldRoles": [
+      "bill_month",
+      "channel_id",
+      "channel_display_name",
+      "authorization_category",
+      "source_work_id",
+      "work_display_name",
+      "actual_sales_amount"
+    ],
+    "allRequiredFieldsPresent": true,
+    "fieldCompleteness": [
+      {
+        "fieldRole": "bill_month",
+        "present": true,
+        "missingCount": 0,
+        "missingRate": 0.0
+      },
+      {
+        "fieldRole": "channel_id",
+        "present": true,
+        "missingCount": 0,
+        "missingRate": 0.0
+      },
+      {
+        "fieldRole": "channel_display_name",
+        "present": true,
+        "missingCount": 0,
+        "missingRate": 0.0
+      },
+      {
+        "fieldRole": "authorization_category",
+        "present": true,
+        "missingCount": 0,
+        "missingRate": 0.0
+      },
+      {
+        "fieldRole": "source_work_id",
+        "present": true,
+        "missingCount": 0,
+        "missingRate": 0.0
+      },
+      {
+        "fieldRole": "work_display_name",
+        "present": true,
+        "missingCount": 0,
+        "missingRate": 0.0
+      },
+      {
+        "fieldRole": "actual_sales_amount",
+        "present": true,
+        "missingCount": 23,
+        "missingRate": 0.000119
+      }
+    ],
+    "amountFieldRole": "actual_sales_amount",
+    "monthFieldRole": "bill_month",
+    "workIdFieldRole": "source_work_id",
+    "channelFieldRoles": [
+      "channel_id",
+      "channel_display_name"
+    ],
+    "businessFormFieldRole": "authorization_category",
+    "zeroNegativeAndRefundPolicy": "zero and negative values are retained; negative rows are treated as offsets/refunds in aggregate reconciliation."
+  },
+  "scale": {
+    "billRowCount": 192872,
+    "validCalibrationRows": 192872,
+    "completeCalibrationRows": 192869,
+    "standardWorkCount": 3054,
+    "rawWorkIdCount": 3575,
+    "monthRange": [
+      "2017-06",
+      "2026-05"
+    ],
+    "latestCompleteMonth": "2026-04",
+    "excludedIncompleteMonths": [
+      "2026-05"
+    ],
+    "businessFormDistribution": {
+      "audio_copyright": 57575,
+      "audio_product": 135297
+    },
+    "distinctChannelCount": 133
+  },
+  "masterDataReadiness": {
+    "mappingAppliedRowCount": 54544,
+    "invalidOrUnmappedRowCount": 0,
+    "copyrightEndDateUnambiguousWorkCount": 7542,
+    "copyrightDateConflictWorkCount": 2,
+    "manualReviewRequiredCount": 85,
+    "advisoryOnlyCount": 2759,
+    "workWithCopyrightEndCount": 847,
+    "workMissingCopyrightEndCount": 2207,
+    "workWithMultipleBusinessFormsCount": 474,
+    "classificationAndTagCoverage": "not fully covered by the two source workbooks; requires follow-up master-data version integration."
+  },
+  "safeOutputBoundary": {
+    "rawRowsWritten": false,
+    "realWorkNamesWritten": false,
+    "realAuthorNamesWritten": false,
+    "realChannelNamesWritten": false,
+    "secretsWritten": false
+  }
+}

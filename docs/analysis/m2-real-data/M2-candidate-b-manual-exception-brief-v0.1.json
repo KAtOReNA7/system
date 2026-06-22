@@ -1,0 +1,60 @@
+{
+  "schema": "m2.authorized_real_data.candidate_b_manual_exception_brief.v0.1",
+  "remediationVersion": "m2-candidate-b-remediation-v0.1",
+  "generatedAt": "2026-06-22T10:11:37.583Z",
+  "candidateVersion": "m2-realdata-dev-candidate-b-v0.1",
+  "notFinalReleaseApproved": true,
+  "finalDecisionApplied": false,
+  "groups": [
+    {
+      "groupDecisionId": "GROUP-INSUFFICIENT-HISTORY",
+      "reasonCode": "insufficient_history",
+      "itemCount": 4,
+      "defaultProposedDecision": "pending",
+      "recommendedDecision": "pending",
+      "userConfirmationRequired": true,
+      "canApplyWithoutFurtherDataFix": false,
+      "reimportRequiredFlag": false,
+      "riskCodeDistribution": {
+        "channel_concentration_advisory": 4,
+        "insufficient_history": 4,
+        "insufficient_revenue_history": 4
+      },
+      "suggestionCodeDistribution": {
+        "manual_review_required": 4,
+        "observe_only": 4
+      },
+      "requiredBusinessDecision": "Decide whether short history can be accepted, deferred, rejected for formal use, or handled by additional local source evidence."
+    },
+    {
+      "groupDecisionId": "GROUP-ABNORMAL-SPIKE",
+      "reasonCode": "abnormal_spike",
+      "itemCount": 1,
+      "defaultProposedDecision": "pending",
+      "recommendedDecision": "pending",
+      "userConfirmationRequired": true,
+      "canApplyWithoutFurtherDataFix": false,
+      "reimportRequiredFlag": false,
+      "riskCodeDistribution": {
+        "abnormal_spike": 1
+      },
+      "suggestionCodeDistribution": {
+        "manual_review_required": 1
+      },
+      "requiredBusinessDecision": "Inspect aggregate spike evidence and decide whether the spike is valid one-off income, a data issue, or a formal blocker."
+    }
+  ],
+  "totalManualExceptionItems": 5,
+  "conclusion": "Manual exception groups remain pending by default; no automatic closure is safe without user/business confirmation.",
+  "safeOutputBoundary": {
+    "rawRowsWritten": false,
+    "realWorkNamesWritten": false,
+    "realAuthorNamesWritten": false,
+    "realChannelNamesWritten": false,
+    "exactPerWorkRevenueDetailWritten": false,
+    "secretsWritten": false,
+    "connectionStringsWritten": false,
+    "privateWorkbookNamesWritten": false,
+    "dumpsOrTempDbFilesWritten": false
+  }
+}

@@ -1,0 +1,472 @@
+{
+  "schema": "m2.authorized_real_data.algorithm_calibration_summary.v0.1",
+  "generatedAt": "2026-06-22T10:09:50.774276+00:00",
+  "mode": "authorized_local_real_data_development",
+  "baselineCandidate": "m2-c3-cleaned-bill-nonformal-v0.2/candidate-a",
+  "newDevelopmentCandidate": "m2-realdata-dev-candidate-b-v0.1",
+  "latestCompleteMonth": "2026-04",
+  "baselineCandidateA": {
+    "evaluatedWorkCount": 3054,
+    "lifecycleDistribution": {
+      "growth": 540,
+      "stable": 872,
+      "declining": 394,
+      "long_tail": 132,
+      "inactive": 800,
+      "rebound": 270,
+      "insufficient_history": 46
+    },
+    "ratingDistribution": {
+      "S+": 7,
+      "S": 30,
+      "A": 160,
+      "B": 647,
+      "C": 704,
+      "D": 395,
+      "E": 1111
+    },
+    "riskDistribution": {
+      "abnormal_spike": 382,
+      "aggregate_projection_gap": 2207,
+      "business_form_mixed": 474,
+      "buyout_or_oneoff_income": 328,
+      "channel_concentration": 64,
+      "channel_concentration_advisory": 1880,
+      "copyright_expiry": 363,
+      "inactive_tail": 932,
+      "incomplete_month_boundary": 1,
+      "insufficient_history": 46,
+      "insufficient_revenue_history": 46,
+      "missing_basic_info": 2207,
+      "missing_copyright_end": 2207,
+      "revenue_decline": 394
+    },
+    "suggestionDistribution": {
+      "downlist_or_suspend": 744,
+      "maintain": 707,
+      "manual_review_required": 513,
+      "observe_only": 429,
+      "pricing_or_channel_adjustment": 402,
+      "promote": 442,
+      "reduce_investment": 252,
+      "renewal_review": 209,
+      "repackage": 509
+    },
+    "forecastDistributionSummary": {
+      "count": 3054,
+      "min": 0.0,
+      "p25": 0.0,
+      "median": 4.37,
+      "p75": 278.63,
+      "p95": 11146.9,
+      "p99": 86321.0,
+      "max": 10798040.03,
+      "total": 28875135.04,
+      "bucketCounts": {
+        "100_to_1k": 456,
+        "100k_to_1m": 24,
+        "10_to_100": 397,
+        "10k_to_100k": 143,
+        "1k_to_10k": 352,
+        "gte_1m": 2,
+        "lt_10": 937,
+        "zero_or_negative": 743
+      }
+    },
+    "manualReviewRequiredCount": 513,
+    "advisoryOnlyCount": 2331,
+    "blockingReasons": {
+      "mapping_uncertainty": 0,
+      "copyright_missing": 0,
+      "copyright_conflict": 0,
+      "abnormal_spike": 7,
+      "buyout_or_oneoff_income": 2,
+      "high_value_with_expiry": 60,
+      "high_value_with_data_gap": 444,
+      "insufficient_history": 6,
+      "channel_structure_unclear": 2
+    },
+    "advisoryReasons": {
+      "mapping_uncertainty": 0,
+      "copyright_missing": 1763,
+      "copyright_conflict": 0,
+      "abnormal_spike": 375,
+      "buyout_or_oneoff_income": 326,
+      "high_value_with_expiry": 303,
+      "high_value_with_data_gap": 0,
+      "insufficient_history": 40,
+      "channel_structure_unclear": 1942
+    },
+    "downlistOrSuspendCount": 744,
+    "promoteCount": 442,
+    "copyrightFallbackUsage": {
+      "count": 2207,
+      "ratingDistribution": {
+        "S+": 0,
+        "S": 0,
+        "A": 0,
+        "B": 443,
+        "C": 494,
+        "D": 336,
+        "E": 934
+      },
+      "uncappedRatingDistribution": {
+        "S+": 14,
+        "S": 43,
+        "A": 111,
+        "B": 276,
+        "C": 493,
+        "D": 336,
+        "E": 934
+      },
+      "lifecycleDistribution": {
+        "growth": 339,
+        "stable": 569,
+        "declining": 291,
+        "long_tail": 110,
+        "inactive": 645,
+        "rebound": 224,
+        "insufficient_history": 29
+      },
+      "forecastDistributionSummary": {
+        "count": 2207,
+        "min": 0.0,
+        "p25": 0.01,
+        "median": 2.25,
+        "p75": 99.61,
+        "p95": 3100.86,
+        "p99": 71533.02,
+        "max": 593419.65,
+        "total": 4388607.33,
+        "bucketCounts": {
+          "100_to_1k": 330,
+          "100k_to_1m": 6,
+          "10_to_100": 293,
+          "10k_to_100k": 52,
+          "1k_to_10k": 164,
+          "lt_10": 849,
+          "zero_or_negative": 513
+        }
+      }
+    }
+  },
+  "candidateB": {
+    "evaluatedWorkCount": 3054,
+    "lifecycleDistribution": {
+      "growth": 540,
+      "stable": 872,
+      "declining": 394,
+      "long_tail": 132,
+      "inactive": 800,
+      "rebound": 270,
+      "insufficient_history": 46
+    },
+    "ratingDistribution": {
+      "S+": 7,
+      "S": 54,
+      "A": 136,
+      "B": 647,
+      "C": 704,
+      "D": 395,
+      "E": 1111
+    },
+    "riskDistribution": {
+      "abnormal_spike": 382,
+      "aggregate_projection_gap": 2207,
+      "business_form_mixed": 474,
+      "buyout_or_oneoff_income": 328,
+      "channel_concentration": 22,
+      "channel_concentration_advisory": 1922,
+      "copyright_expiry": 363,
+      "inactive_tail": 932,
+      "incomplete_month_boundary": 1,
+      "insufficient_history": 46,
+      "insufficient_revenue_history": 46,
+      "missing_basic_info": 2207,
+      "missing_copyright_end": 2207,
+      "revenue_decline": 394
+    },
+    "suggestionDistribution": {
+      "downlist_or_suspend": 744,
+      "maintain": 686,
+      "manual_review_required": 85,
+      "observe_only": 460,
+      "pricing_or_channel_adjustment": 402,
+      "promote": 557,
+      "reduce_investment": 252,
+      "renewal_review": 209,
+      "repackage": 468
+    },
+    "forecastDistributionSummary": {
+      "count": 3054,
+      "min": 0.0,
+      "p25": 0.0,
+      "median": 4.37,
+      "p75": 278.63,
+      "p95": 11146.9,
+      "p99": 86321.0,
+      "max": 10798040.03,
+      "total": 28875135.04,
+      "bucketCounts": {
+        "100_to_1k": 456,
+        "100k_to_1m": 24,
+        "10_to_100": 397,
+        "10k_to_100k": 143,
+        "1k_to_10k": 352,
+        "gte_1m": 2,
+        "lt_10": 937,
+        "zero_or_negative": 743
+      }
+    },
+    "manualReviewRequiredCount": 85,
+    "advisoryOnlyCount": 2759,
+    "blockingReasons": {
+      "mapping_uncertainty": 0,
+      "copyright_missing": 0,
+      "copyright_conflict": 0,
+      "abnormal_spike": 3,
+      "buyout_or_oneoff_income": 2,
+      "high_value_with_expiry": 23,
+      "high_value_with_data_gap": 57,
+      "insufficient_history": 5,
+      "channel_structure_unclear": 2
+    },
+    "advisoryReasons": {
+      "mapping_uncertainty": 0,
+      "copyright_missing": 2150,
+      "copyright_conflict": 0,
+      "abnormal_spike": 379,
+      "buyout_or_oneoff_income": 326,
+      "high_value_with_expiry": 340,
+      "high_value_with_data_gap": 0,
+      "insufficient_history": 41,
+      "channel_structure_unclear": 1942
+    },
+    "downlistOrSuspendCount": 744,
+    "promoteCount": 557,
+    "copyrightFallbackUsage": {
+      "count": 2207,
+      "ratingDistribution": {
+        "S+": 0,
+        "S": 0,
+        "A": 0,
+        "B": 443,
+        "C": 494,
+        "D": 336,
+        "E": 934
+      },
+      "uncappedRatingDistribution": {
+        "S+": 14,
+        "S": 43,
+        "A": 111,
+        "B": 276,
+        "C": 493,
+        "D": 336,
+        "E": 934
+      },
+      "lifecycleDistribution": {
+        "growth": 339,
+        "stable": 569,
+        "declining": 291,
+        "long_tail": 110,
+        "inactive": 645,
+        "rebound": 224,
+        "insufficient_history": 29
+      },
+      "forecastDistributionSummary": {
+        "count": 2207,
+        "min": 0.0,
+        "p25": 0.01,
+        "median": 2.25,
+        "p75": 99.61,
+        "p95": 3100.86,
+        "p99": 71533.02,
+        "max": 593419.65,
+        "total": 4388607.33,
+        "bucketCounts": {
+          "100_to_1k": 330,
+          "100k_to_1m": 6,
+          "10_to_100": 293,
+          "10k_to_100k": 52,
+          "1k_to_10k": 164,
+          "lt_10": 849,
+          "zero_or_negative": 513
+        }
+      }
+    }
+  },
+  "deltaCandidateBMinusA": {
+    "manualReviewRequiredCount": -428,
+    "advisoryOnlyCount": 428,
+    "promoteCount": 115,
+    "downlistOrSuspendCount": 0
+  },
+  "lifecycleAlgorithm": {
+    "labels": [
+      "growth",
+      "stable",
+      "rebound",
+      "declining",
+      "long_tail",
+      "inactive",
+      "insufficient_history"
+    ],
+    "thresholds": {
+      "insufficientHistoryCompleteMonths": 6,
+      "inactiveRecent6RevenueMax": 0.0,
+      "longTailLast12RevenueMax": 2.82,
+      "growthRecent6Prior6Ratio": 1.52,
+      "decliningRecent6Prior6Ratio": 0.45,
+      "reboundRecent3Previous3Ratio": 1.5,
+      "stableLast6CoefficientOfVariationMax": 0.73
+    },
+    "thresholdDerivation": "derived from real revenue distributions, recent/prior ratios, active history windows, and backtest usability."
+  },
+  "forecastAlgorithm": {
+    "modelsCompared": [
+      "last12_average",
+      "last24_average",
+      "lifecycle_adjusted"
+    ],
+    "backtestMetrics": [
+      {
+        "horizonMonths": 3,
+        "model": "last12_average",
+        "sampleCount": 3054,
+        "mae": 680,
+        "mape": 37.2075,
+        "medianError": 0.28,
+        "overCount": 1902,
+        "underCount": 596
+      },
+      {
+        "horizonMonths": 3,
+        "model": "last24_average",
+        "sampleCount": 3054,
+        "mae": 1100,
+        "mape": 205.6993,
+        "medianError": 1.52,
+        "overCount": 2147,
+        "underCount": 483
+      },
+      {
+        "horizonMonths": 3,
+        "model": "lifecycle_adjusted",
+        "sampleCount": 3054,
+        "mae": 450,
+        "mape": 17.5518,
+        "medianError": 0.0,
+        "overCount": 1535,
+        "underCount": 963
+      },
+      {
+        "horizonMonths": 6,
+        "model": "last12_average",
+        "sampleCount": 3054,
+        "mae": 2400,
+        "mape": 93.9446,
+        "medianError": 0.07,
+        "overCount": 1639,
+        "underCount": 910
+      },
+      {
+        "horizonMonths": 6,
+        "model": "last24_average",
+        "sampleCount": 3054,
+        "mae": 2300,
+        "mape": 512.3815,
+        "medianError": 0.94,
+        "overCount": 1841,
+        "underCount": 799
+      },
+      {
+        "horizonMonths": 6,
+        "model": "lifecycle_adjusted",
+        "sampleCount": 3054,
+        "mae": 1900,
+        "mape": 36.0154,
+        "medianError": 10,
+        "overCount": 1262,
+        "underCount": 1288
+      },
+      {
+        "horizonMonths": 12,
+        "model": "last12_average",
+        "sampleCount": 3054,
+        "mae": 5300,
+        "mape": 310.6945,
+        "medianError": 0.43,
+        "overCount": 1664,
+        "underCount": 949
+      },
+      {
+        "horizonMonths": 12,
+        "model": "last24_average",
+        "sampleCount": 3054,
+        "mae": 5100,
+        "mape": 1179.6208,
+        "medianError": 2.35,
+        "overCount": 1760,
+        "underCount": 913
+      },
+      {
+        "horizonMonths": 12,
+        "model": "lifecycle_adjusted",
+        "sampleCount": 3054,
+        "mae": 4400,
+        "mape": 174.6462,
+        "medianError": 10,
+        "overCount": 1317,
+        "underCount": 1296
+      }
+    ],
+    "recommendedModel": "lifecycle_adjusted",
+    "scenarioMultipliers": {
+      "base": 1.0,
+      "pessimistic": 0.45,
+      "optimistic": 2.01
+    },
+    "lifecycleFactors": {
+      "stable": 0.63,
+      "rebound": 0.63,
+      "growth": 0.82,
+      "long_tail": 1.09,
+      "declining": 0.35,
+      "inactive": 0.79,
+      "insufficient_history": 2.5
+    }
+  },
+  "ratingAlgorithm": {
+    "method": "hybrid of last-12 historical revenue and 12-month lifecycle-adjusted forecast distribution",
+    "thresholds": {
+      "S+": 133000,
+      "S": 16000,
+      "A": 2700,
+      "B": 310,
+      "C": 10,
+      "D": 1.8,
+      "E": 0.0
+    },
+    "percentileBreakpoints": {
+      "S+": 0.99,
+      "S": 0.95,
+      "A": 0.85,
+      "B": 0.65,
+      "C": 0.4,
+      "D": 0.2,
+      "E": 0.0
+    },
+    "manualReviewPolicy": {
+      "SPlusRequiresManualConfirmation": true,
+      "downlistSuspendRequiresManualConfirmation": true,
+      "renewalReviewRequiresManualConfirmation": true,
+      "externalEventOverrideMaxIncreaseLevels": 2
+    }
+  },
+  "safeOutputBoundary": {
+    "rawRowsWritten": false,
+    "realWorkNamesWritten": false,
+    "realChannelNamesWritten": false,
+    "notFinalReleaseApproved": true
+  }
+}

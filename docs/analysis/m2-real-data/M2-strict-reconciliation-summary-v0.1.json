@@ -1,0 +1,751 @@
+{
+  "schema": "m2.authorized_real_data.strict_reconciliation_summary.v0.1",
+  "generatedAt": "2026-06-22T10:09:50.721062+00:00",
+  "mode": "authorized_local_real_data_development",
+  "rowReconciliation": {
+    "billRowCount": 192872,
+    "validCalibrationRows": 192872,
+    "invalidOrUnmappedRows": 0,
+    "completeRowsIncluded": 192869,
+    "incompleteRowsExcluded": 3
+  },
+  "amountReconciliation": {
+    "rawTotalAmount": "126794644.11",
+    "completeIncludedAmount": "126794638.17",
+    "excludedIncompleteAmount": "5.94",
+    "rawMinusCompleteMinusExcluded": "-0.00",
+    "invalidAmountCellCount": 0,
+    "positiveRowCount": 192222,
+    "zeroRowCount": 501,
+    "negativeRowCount": 146
+  },
+  "monthTotals": [
+    {
+      "month": "2017-06",
+      "rowCount": 29,
+      "amount": "80754.12",
+      "status": "included_complete"
+    },
+    {
+      "month": "2017-07",
+      "rowCount": 1,
+      "amount": "18870.83",
+      "status": "included_complete"
+    },
+    {
+      "month": "2017-08",
+      "rowCount": 1,
+      "amount": "5490.14",
+      "status": "included_complete"
+    },
+    {
+      "month": "2017-09",
+      "rowCount": 1,
+      "amount": "1564.75",
+      "status": "included_complete"
+    },
+    {
+      "month": "2017-10",
+      "rowCount": 5,
+      "amount": "251007.76",
+      "status": "included_complete"
+    },
+    {
+      "month": "2017-11",
+      "rowCount": 10,
+      "amount": "1001785.75",
+      "status": "included_complete"
+    },
+    {
+      "month": "2017-12",
+      "rowCount": 22,
+      "amount": "144324.04",
+      "status": "included_complete"
+    },
+    {
+      "month": "2018-01",
+      "rowCount": 9,
+      "amount": "229093.47",
+      "status": "included_complete"
+    },
+    {
+      "month": "2018-02",
+      "rowCount": 4,
+      "amount": "14686.74",
+      "status": "included_complete"
+    },
+    {
+      "month": "2018-03",
+      "rowCount": 6,
+      "amount": "19072.52",
+      "status": "included_complete"
+    },
+    {
+      "month": "2018-04",
+      "rowCount": 5,
+      "amount": "33317.02",
+      "status": "included_complete"
+    },
+    {
+      "month": "2018-05",
+      "rowCount": 19,
+      "amount": "462329.17",
+      "status": "included_complete"
+    },
+    {
+      "month": "2018-06",
+      "rowCount": 20,
+      "amount": "290372.73",
+      "status": "included_complete"
+    },
+    {
+      "month": "2018-07",
+      "rowCount": 17,
+      "amount": "56199.67",
+      "status": "included_complete"
+    },
+    {
+      "month": "2018-08",
+      "rowCount": 37,
+      "amount": "164099.39",
+      "status": "included_complete"
+    },
+    {
+      "month": "2018-09",
+      "rowCount": 84,
+      "amount": "266655.61",
+      "status": "included_complete"
+    },
+    {
+      "month": "2018-10",
+      "rowCount": 67,
+      "amount": "197003.41",
+      "status": "included_complete"
+    },
+    {
+      "month": "2018-11",
+      "rowCount": 63,
+      "amount": "90197.64",
+      "status": "included_complete"
+    },
+    {
+      "month": "2018-12",
+      "rowCount": 117,
+      "amount": "863671.05",
+      "status": "included_complete"
+    },
+    {
+      "month": "2019-01",
+      "rowCount": 119,
+      "amount": "155711.92",
+      "status": "included_complete"
+    },
+    {
+      "month": "2019-02",
+      "rowCount": 118,
+      "amount": "104081.34",
+      "status": "included_complete"
+    },
+    {
+      "month": "2019-03",
+      "rowCount": 121,
+      "amount": "148770.40",
+      "status": "included_complete"
+    },
+    {
+      "month": "2019-04",
+      "rowCount": 126,
+      "amount": "149156.34",
+      "status": "included_complete"
+    },
+    {
+      "month": "2019-05",
+      "rowCount": 132,
+      "amount": "208395.43",
+      "status": "included_complete"
+    },
+    {
+      "month": "2019-06",
+      "rowCount": 197,
+      "amount": "1649469.41",
+      "status": "included_complete"
+    },
+    {
+      "month": "2019-07",
+      "rowCount": 176,
+      "amount": "751781.30",
+      "status": "included_complete"
+    },
+    {
+      "month": "2019-08",
+      "rowCount": 162,
+      "amount": "186011.17",
+      "status": "included_complete"
+    },
+    {
+      "month": "2019-09",
+      "rowCount": 174,
+      "amount": "157453.09",
+      "status": "included_complete"
+    },
+    {
+      "month": "2019-10",
+      "rowCount": 198,
+      "amount": "445795.69",
+      "status": "included_complete"
+    },
+    {
+      "month": "2019-11",
+      "rowCount": 303,
+      "amount": "1120820.89",
+      "status": "included_complete"
+    },
+    {
+      "month": "2019-12",
+      "rowCount": 290,
+      "amount": "7034731.29",
+      "status": "included_complete"
+    },
+    {
+      "month": "2020-01",
+      "rowCount": 235,
+      "amount": "205286.04",
+      "status": "included_complete"
+    },
+    {
+      "month": "2020-02",
+      "rowCount": 251,
+      "amount": "198011.34",
+      "status": "included_complete"
+    },
+    {
+      "month": "2020-03",
+      "rowCount": 265,
+      "amount": "300412.55",
+      "status": "included_complete"
+    },
+    {
+      "month": "2020-04",
+      "rowCount": 286,
+      "amount": "304684.36",
+      "status": "included_complete"
+    },
+    {
+      "month": "2020-05",
+      "rowCount": 336,
+      "amount": "218708.51",
+      "status": "included_complete"
+    },
+    {
+      "month": "2020-06",
+      "rowCount": 382,
+      "amount": "545842.41",
+      "status": "included_complete"
+    },
+    {
+      "month": "2020-07",
+      "rowCount": 470,
+      "amount": "270449.73",
+      "status": "included_complete"
+    },
+    {
+      "month": "2020-08",
+      "rowCount": 565,
+      "amount": "277591.22",
+      "status": "included_complete"
+    },
+    {
+      "month": "2020-09",
+      "rowCount": 701,
+      "amount": "316584.22",
+      "status": "included_complete"
+    },
+    {
+      "month": "2020-10",
+      "rowCount": 795,
+      "amount": "2520023.25",
+      "status": "included_complete"
+    },
+    {
+      "month": "2020-11",
+      "rowCount": 690,
+      "amount": "2063133.50",
+      "status": "included_complete"
+    },
+    {
+      "month": "2020-12",
+      "rowCount": 804,
+      "amount": "2824954.34",
+      "status": "included_complete"
+    },
+    {
+      "month": "2021-01",
+      "rowCount": 757,
+      "amount": "797230.93",
+      "status": "included_complete"
+    },
+    {
+      "month": "2021-02",
+      "rowCount": 774,
+      "amount": "695207.42",
+      "status": "included_complete"
+    },
+    {
+      "month": "2021-03",
+      "rowCount": 844,
+      "amount": "645529.90",
+      "status": "included_complete"
+    },
+    {
+      "month": "2021-04",
+      "rowCount": 870,
+      "amount": "670030.94",
+      "status": "included_complete"
+    },
+    {
+      "month": "2021-05",
+      "rowCount": 863,
+      "amount": "1530729.06",
+      "status": "included_complete"
+    },
+    {
+      "month": "2021-06",
+      "rowCount": 975,
+      "amount": "728022.71",
+      "status": "included_complete"
+    },
+    {
+      "month": "2021-07",
+      "rowCount": 949,
+      "amount": "2194673.01",
+      "status": "included_complete"
+    },
+    {
+      "month": "2021-08",
+      "rowCount": 996,
+      "amount": "745261.17",
+      "status": "included_complete"
+    },
+    {
+      "month": "2021-09",
+      "rowCount": 1099,
+      "amount": "1423733.61",
+      "status": "included_complete"
+    },
+    {
+      "month": "2021-10",
+      "rowCount": 1133,
+      "amount": "846978.10",
+      "status": "included_complete"
+    },
+    {
+      "month": "2021-11",
+      "rowCount": 1267,
+      "amount": "1604294.24",
+      "status": "included_complete"
+    },
+    {
+      "month": "2021-12",
+      "rowCount": 1267,
+      "amount": "1048021.96",
+      "status": "included_complete"
+    },
+    {
+      "month": "2022-01",
+      "rowCount": 1262,
+      "amount": "1022045.22",
+      "status": "included_complete"
+    },
+    {
+      "month": "2022-02",
+      "rowCount": 1290,
+      "amount": "990328.45",
+      "status": "included_complete"
+    },
+    {
+      "month": "2022-03",
+      "rowCount": 1520,
+      "amount": "1321319.33",
+      "status": "included_complete"
+    },
+    {
+      "month": "2022-04",
+      "rowCount": 1529,
+      "amount": "1136506.59",
+      "status": "included_complete"
+    },
+    {
+      "month": "2022-05",
+      "rowCount": 1578,
+      "amount": "1180729.37",
+      "status": "included_complete"
+    },
+    {
+      "month": "2022-06",
+      "rowCount": 1749,
+      "amount": "2163581.56",
+      "status": "included_complete"
+    },
+    {
+      "month": "2022-07",
+      "rowCount": 1873,
+      "amount": "1186990.34",
+      "status": "included_complete"
+    },
+    {
+      "month": "2022-08",
+      "rowCount": 1902,
+      "amount": "1198774.52",
+      "status": "included_complete"
+    },
+    {
+      "month": "2022-09",
+      "rowCount": 1690,
+      "amount": "2646287.05",
+      "status": "included_complete"
+    },
+    {
+      "month": "2022-10",
+      "rowCount": 1866,
+      "amount": "1492649.72",
+      "status": "included_complete"
+    },
+    {
+      "month": "2022-11",
+      "rowCount": 2046,
+      "amount": "1280701.80",
+      "status": "included_complete"
+    },
+    {
+      "month": "2022-12",
+      "rowCount": 2330,
+      "amount": "2753940.47",
+      "status": "included_complete"
+    },
+    {
+      "month": "2023-01",
+      "rowCount": 2018,
+      "amount": "1351885.08",
+      "status": "included_complete"
+    },
+    {
+      "month": "2023-02",
+      "rowCount": 2215,
+      "amount": "1270615.21",
+      "status": "included_complete"
+    },
+    {
+      "month": "2023-03",
+      "rowCount": 2555,
+      "amount": "1846848.02",
+      "status": "included_complete"
+    },
+    {
+      "month": "2023-04",
+      "rowCount": 2482,
+      "amount": "1551717.67",
+      "status": "included_complete"
+    },
+    {
+      "month": "2023-05",
+      "rowCount": 2611,
+      "amount": "1799531.05",
+      "status": "included_complete"
+    },
+    {
+      "month": "2023-06",
+      "rowCount": 2867,
+      "amount": "1845880.51",
+      "status": "included_complete"
+    },
+    {
+      "month": "2023-07",
+      "rowCount": 2728,
+      "amount": "1313360.01",
+      "status": "included_complete"
+    },
+    {
+      "month": "2023-08",
+      "rowCount": 2918,
+      "amount": "1745444.11",
+      "status": "included_complete"
+    },
+    {
+      "month": "2023-09",
+      "rowCount": 3245,
+      "amount": "2373719.00",
+      "status": "included_complete"
+    },
+    {
+      "month": "2023-10",
+      "rowCount": 3332,
+      "amount": "1504717.74",
+      "status": "included_complete"
+    },
+    {
+      "month": "2023-11",
+      "rowCount": 3269,
+      "amount": "1363975.76",
+      "status": "included_complete"
+    },
+    {
+      "month": "2023-12",
+      "rowCount": 3685,
+      "amount": "2646511.81",
+      "status": "included_complete"
+    },
+    {
+      "month": "2024-01",
+      "rowCount": 3446,
+      "amount": "1269103.25",
+      "status": "included_complete"
+    },
+    {
+      "month": "2024-02",
+      "rowCount": 3637,
+      "amount": "1512682.29",
+      "status": "included_complete"
+    },
+    {
+      "month": "2024-03",
+      "rowCount": 4024,
+      "amount": "1704572.04",
+      "status": "included_complete"
+    },
+    {
+      "month": "2024-04",
+      "rowCount": 4093,
+      "amount": "2091202.32",
+      "status": "included_complete"
+    },
+    {
+      "month": "2024-05",
+      "rowCount": 4006,
+      "amount": "1300079.10",
+      "status": "included_complete"
+    },
+    {
+      "month": "2024-06",
+      "rowCount": 4195,
+      "amount": "1842286.37",
+      "status": "included_complete"
+    },
+    {
+      "month": "2024-07",
+      "rowCount": 4192,
+      "amount": "1218578.08",
+      "status": "included_complete"
+    },
+    {
+      "month": "2024-08",
+      "rowCount": 4165,
+      "amount": "1255600.46",
+      "status": "included_complete"
+    },
+    {
+      "month": "2024-09",
+      "rowCount": 4288,
+      "amount": "1599728.09",
+      "status": "included_complete"
+    },
+    {
+      "month": "2024-10",
+      "rowCount": 4179,
+      "amount": "1258751.11",
+      "status": "included_complete"
+    },
+    {
+      "month": "2024-11",
+      "rowCount": 4486,
+      "amount": "8535237.98",
+      "status": "included_complete"
+    },
+    {
+      "month": "2024-12",
+      "rowCount": 4626,
+      "amount": "1587228.95",
+      "status": "included_complete"
+    },
+    {
+      "month": "2025-01",
+      "rowCount": 4471,
+      "amount": "1116092.28",
+      "status": "included_complete"
+    },
+    {
+      "month": "2025-02",
+      "rowCount": 4173,
+      "amount": "1019265.97",
+      "status": "included_complete"
+    },
+    {
+      "month": "2025-03",
+      "rowCount": 4543,
+      "amount": "1634015.76",
+      "status": "included_complete"
+    },
+    {
+      "month": "2025-04",
+      "rowCount": 4544,
+      "amount": "1225641.24",
+      "status": "included_complete"
+    },
+    {
+      "month": "2025-05",
+      "rowCount": 4288,
+      "amount": "2292106.99",
+      "status": "included_complete"
+    },
+    {
+      "month": "2025-06",
+      "rowCount": 4814,
+      "amount": "1637053.47",
+      "status": "included_complete"
+    },
+    {
+      "month": "2025-07",
+      "rowCount": 4710,
+      "amount": "1058566.80",
+      "status": "included_complete"
+    },
+    {
+      "month": "2025-08",
+      "rowCount": 4780,
+      "amount": "1111011.88",
+      "status": "included_complete"
+    },
+    {
+      "month": "2025-09",
+      "rowCount": 4765,
+      "amount": "2332637.18",
+      "status": "included_complete"
+    },
+    {
+      "month": "2025-10",
+      "rowCount": 4181,
+      "amount": "1036743.41",
+      "status": "included_complete"
+    },
+    {
+      "month": "2025-11",
+      "rowCount": 4147,
+      "amount": "1041954.24",
+      "status": "included_complete"
+    },
+    {
+      "month": "2025-12",
+      "rowCount": 4354,
+      "amount": "2815990.84",
+      "status": "included_complete"
+    },
+    {
+      "month": "2026-01",
+      "rowCount": 4167,
+      "amount": "1070660.11",
+      "status": "included_complete"
+    },
+    {
+      "month": "2026-02",
+      "rowCount": 3978,
+      "amount": "1004393.86",
+      "status": "included_complete"
+    },
+    {
+      "month": "2026-03",
+      "rowCount": 3901,
+      "amount": "2200020.39",
+      "status": "included_complete"
+    },
+    {
+      "month": "2026-04",
+      "rowCount": 2949,
+      "amount": "757304.67",
+      "status": "included_complete"
+    },
+    {
+      "month": "2026-05",
+      "rowCount": 3,
+      "amount": "5.94",
+      "status": "excluded_incomplete"
+    }
+  ],
+  "businessFormTotals": [
+    {
+      "businessForm": "audio_copyright",
+      "rowCount": 57575,
+      "amount": "59446213.94"
+    },
+    {
+      "businessForm": "audio_product",
+      "rowCount": 135297,
+      "amount": "67348430.17"
+    }
+  ],
+  "channelTotalsAnonymizedTop10": [
+    {
+      "rank": 1,
+      "amount": "27416918.17",
+      "share": 0.211866
+    },
+    {
+      "rank": 2,
+      "amount": "17224441.76",
+      "share": 0.133103
+    },
+    {
+      "rank": 3,
+      "amount": "5502519.01",
+      "share": 0.042521
+    },
+    {
+      "rank": 4,
+      "amount": "5000000.00",
+      "share": 0.038638
+    },
+    {
+      "rank": 5,
+      "amount": "4956063.98",
+      "share": 0.038298
+    },
+    {
+      "rank": 6,
+      "amount": "3929155.90",
+      "share": 0.030363
+    },
+    {
+      "rank": 7,
+      "amount": "3361794.65",
+      "share": 0.025978
+    },
+    {
+      "rank": 8,
+      "amount": "3357479.71",
+      "share": 0.025945
+    },
+    {
+      "rank": 9,
+      "amount": "3287970.79",
+      "share": 0.025408
+    },
+    {
+      "rank": 10,
+      "amount": "3170889.30",
+      "share": 0.024503
+    }
+  ],
+  "issueSummary": {
+    "unmatchedWorkIdRows": 0,
+    "duplicateCandidateHandling": "no row-level duplicate detail is written; use private source files for drill-down if needed.",
+    "copyrightDateConflictWorkCount": 2,
+    "incompleteMonthDetected": [
+      "2026-05"
+    ],
+    "latestCompleteMonthRecommended": "2026-04"
+  },
+  "safeOutputBoundary": {
+    "rawRowsWritten": false,
+    "channelNamesWritten": false,
+    "workNamesWritten": false,
+    "secretsWritten": false
+  }
+}

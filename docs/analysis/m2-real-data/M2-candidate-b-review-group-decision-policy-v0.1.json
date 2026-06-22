@@ -1,0 +1,260 @@
+{
+  "schema": "m2.authorized_real_data.candidate_b_review_group_decision_policy.v0.1",
+  "groupCount": 4,
+  "totalBlockingReviewItems": 85,
+  "groupDistribution": {
+    "GROUP-DATA-GAP-HIGH-VALUE": 57,
+    "GROUP-EXPIRY-HIGH-VALUE": 23,
+    "GROUP-INSUFFICIENT-HISTORY": 4,
+    "GROUP-ABNORMAL-SPIKE": 1
+  },
+  "proposedGroupDecisionDistribution": {
+    "data_fix_required": 1,
+    "pending": 2,
+    "waiver_granted": 1
+  },
+  "finalGroupDecisionDistribution": {},
+  "groups": [
+    {
+      "groupDecisionId": "GROUP-DATA-GAP-HIGH-VALUE",
+      "reasonCode": "high_value_with_data_gap",
+      "reasonGroup": "data_readiness",
+      "itemCount": 57,
+      "priorityRange": "20-40",
+      "priorityDistribution": {
+        "p1": 56,
+        "p2": 1
+      },
+      "riskCodeDistribution": {
+        "abnormal_spike": 2,
+        "aggregate_projection_gap": 57,
+        "business_form_mixed": 27,
+        "buyout_or_oneoff_income": 2,
+        "channel_concentration": 6,
+        "inactive_tail": 1,
+        "incomplete_month_boundary": 1,
+        "insufficient_history": 1,
+        "insufficient_revenue_history": 1,
+        "missing_basic_info": 57,
+        "missing_copyright_end": 57,
+        "revenue_decline": 3
+      },
+      "riskTypeDistribution": {
+        "blocking": 57
+      },
+      "suggestionCodeDistribution": {
+        "maintain": 52,
+        "manual_review_required": 57,
+        "observe_only": 2,
+        "repackage": 31
+      },
+      "defaultProposedDecision": "data_fix_required",
+      "allowedFinalDecisions": [
+        "data_fix_required",
+        "waiver_granted",
+        "no_action_required",
+        "approved",
+        "rejected_for_formal",
+        "pending"
+      ],
+      "requiredUserDecision": "Confirm all remain data_fix_required, select a scoped exception policy, or request data correction and reimport.",
+      "shouldFinalApplyByDefault": false,
+      "defaultDataFixRequiredFlag": "true",
+      "defaultReimportRequiredFlag": "true",
+      "defaultWaiverScope": "",
+      "defaultWaiverExpiry": "",
+      "readinessEffect": "data_fix_required keeps local readiness blocked until the local data fix and reimport pass.",
+      "reimportRequiredWhenDecisionIsDataFix": true,
+      "unconfirmedItemsRemainPending": true
+    },
+    {
+      "groupDecisionId": "GROUP-EXPIRY-HIGH-VALUE",
+      "reasonCode": "high_value_with_expiry",
+      "reasonGroup": "copyright_readiness",
+      "itemCount": 23,
+      "priorityRange": "10",
+      "priorityDistribution": {
+        "p1": 23
+      },
+      "riskCodeDistribution": {
+        "business_form_mixed": 6,
+        "channel_concentration": 5,
+        "copyright_expiry": 23,
+        "revenue_decline": 2
+      },
+      "riskTypeDistribution": {
+        "blocking": 23
+      },
+      "suggestionCodeDistribution": {
+        "manual_review_required": 23,
+        "pricing_or_channel_adjustment": 1,
+        "renewal_review": 23,
+        "repackage": 11
+      },
+      "defaultProposedDecision": "waiver_granted",
+      "allowedFinalDecisions": [
+        "waiver_granted",
+        "data_fix_required",
+        "no_action_required",
+        "approved",
+        "rejected_for_formal",
+        "pending"
+      ],
+      "requiredUserDecision": "Confirm waiver policy, waiverScope, waiverExpiry or no-expiry rationale, and reviewerReason.",
+      "shouldFinalApplyByDefault": false,
+      "defaultDataFixRequiredFlag": "false",
+      "defaultReimportRequiredFlag": "false",
+      "defaultWaiverScope": "candidate-b local review scope",
+      "defaultWaiverExpiry": "next formal readiness review",
+      "readinessEffect": "waiver_granted may close the local blocker only when waiver scope and audit reason are explicit.",
+      "reimportRequiredWhenDecisionIsDataFix": true,
+      "unconfirmedItemsRemainPending": true
+    },
+    {
+      "groupDecisionId": "GROUP-INSUFFICIENT-HISTORY",
+      "reasonCode": "insufficient_history",
+      "reasonGroup": "history_depth",
+      "itemCount": 4,
+      "priorityRange": "40",
+      "priorityDistribution": {
+        "p2": 4
+      },
+      "riskCodeDistribution": {
+        "channel_concentration_advisory": 4,
+        "insufficient_history": 4,
+        "insufficient_revenue_history": 4
+      },
+      "riskTypeDistribution": {
+        "blocking": 4
+      },
+      "suggestionCodeDistribution": {
+        "manual_review_required": 4,
+        "observe_only": 4
+      },
+      "defaultProposedDecision": "pending",
+      "allowedFinalDecisions": [
+        "pending",
+        "no_action_required",
+        "rejected_for_formal",
+        "data_fix_required",
+        "waiver_granted",
+        "approved"
+      ],
+      "requiredUserDecision": "Keep pending, accept as no_action_required, reject for formal, or request more history/source data.",
+      "shouldFinalApplyByDefault": false,
+      "defaultDataFixRequiredFlag": "false",
+      "defaultReimportRequiredFlag": "false",
+      "defaultWaiverScope": "",
+      "defaultWaiverExpiry": "",
+      "readinessEffect": "pending or rejected_for_formal keeps local readiness blocked; no_action_required or approved can close this blocker.",
+      "reimportRequiredWhenDecisionIsDataFix": true,
+      "unconfirmedItemsRemainPending": true
+    },
+    {
+      "groupDecisionId": "GROUP-ABNORMAL-SPIKE",
+      "reasonCode": "abnormal_spike",
+      "reasonGroup": "revenue_anomaly",
+      "itemCount": 1,
+      "priorityRange": "10",
+      "priorityDistribution": {
+        "p1": 1
+      },
+      "riskCodeDistribution": {
+        "abnormal_spike": 1
+      },
+      "riskTypeDistribution": {
+        "blocking": 1
+      },
+      "suggestionCodeDistribution": {
+        "manual_review_required": 1
+      },
+      "defaultProposedDecision": "pending",
+      "allowedFinalDecisions": [
+        "pending",
+        "approved",
+        "data_fix_required",
+        "rejected_for_formal",
+        "waiver_granted",
+        "no_action_required"
+      ],
+      "requiredUserDecision": "Manual inspect, then approve with reason, require data fix, reject for formal, or grant a narrow waiver.",
+      "shouldFinalApplyByDefault": false,
+      "defaultDataFixRequiredFlag": "false",
+      "defaultReimportRequiredFlag": "false",
+      "defaultWaiverScope": "",
+      "defaultWaiverExpiry": "",
+      "readinessEffect": "pending, data_fix_required, or rejected_for_formal keeps local readiness blocked.",
+      "reimportRequiredWhenDecisionIsDataFix": true,
+      "unconfirmedItemsRemainPending": true
+    }
+  ],
+  "requiredFieldsPerDecision": {
+    "approved": [
+      "reviewerDecision",
+      "reviewerReason",
+      "reviewerName"
+    ],
+    "data_fix_required": [
+      "reviewerDecision",
+      "reviewerReason",
+      "reviewerName",
+      "dataFixRequiredFlag",
+      "reimportRequiredFlag"
+    ],
+    "waiver_granted": [
+      "reviewerDecision",
+      "reviewerReason",
+      "reviewerName",
+      "waiverScope",
+      "waiverExpiry"
+    ],
+    "rejected_for_formal": [
+      "reviewerDecision",
+      "reviewerReason",
+      "reviewerName"
+    ],
+    "no_action_required": [
+      "reviewerDecision",
+      "reviewerReason",
+      "reviewerName"
+    ],
+    "pending": [
+      "reviewerDecision"
+    ]
+  },
+  "auditMetadataRequirements": [
+    "reviewerName",
+    "reviewerReason",
+    "reviewedAt or apply timestamp",
+    "groupDecisionId",
+    "affectedReviewItemIds",
+    "aggregateOnly=true",
+    "rawDetailWritten=false"
+  ],
+  "unconfirmedItemPolicy": "Rows with blank reviewerDecision or reviewerDecision=pending are not applied and remain pending.",
+  "nextUserAction": "Fill the private group decision template for only the groups that have a confirmed business policy.",
+  "generatedAt": "2026-06-22T10:11:28.987Z",
+  "mode": "summary",
+  "candidateVersion": "m2-realdata-dev-candidate-b-v0.1",
+  "notFinalReleaseApproved": true,
+  "itemLevelStatusDistribution": {
+    "pending": 85
+  },
+  "privateGroupDecisionTemplate": {
+    "relativePath": "data/private-output/m2-review/candidate-b-group-decision-template.csv",
+    "format": "csv",
+    "gitignoredExpected": true,
+    "notForCommit": true
+  },
+  "safeOutputBoundary": {
+    "rawRowsWritten": false,
+    "realWorkNamesWritten": false,
+    "realAuthorNamesWritten": false,
+    "realChannelNamesWritten": false,
+    "exactPerWorkRevenueDetailWritten": false,
+    "secretsWritten": false,
+    "connectionStringsWritten": false,
+    "privateWorkbookNamesWritten": false,
+    "dumpsOrTempDbFilesWritten": false
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "schema": "m2.authorized_real_data.candidate_b_review_workflow_summary.v0.1",
+  "generatedAt": "2026-06-22T10:11:12.735Z",
+  "mode": "authorized_local_real_data_db_backed_development",
+  "candidateVersion": "m2-realdata-dev-candidate-b-v0.1",
+  "notFinalReleaseApproved": true,
+  "mutation": null,
+  "summary": {
+    "totalReviewItems": 2844,
+    "blockingReviewItems": 85,
+    "advisoryReviewItems": 2759,
+    "statusDistribution": {
+      "pending": 2844
+    },
+    "reviewTypeDistribution": {
+      "advisory_review": 2759,
+      "blocking_manual_review": 85
+    },
+    "reasonCodeDistribution": {
+      "abnormal_spike": 1,
+      "high_value_with_data_gap": 57,
+      "high_value_with_expiry": 23,
+      "insufficient_history": 4
+    },
+    "priorityDistribution": {
+      "p1": 80,
+      "p2": 5,
+      "p3": 2759
+    },
+    "auditEventCount": 2844,
+    "waiverCount": 0,
+    "dataFixRequiredCount": 0,
+    "rejectedForFormalCount": 0,
+    "approvedCount": 0,
+    "pendingCount": 2844
+  },
+  "safeOutputBoundary": {
+    "rawRowsWritten": false,
+    "realWorkNamesWritten": false,
+    "realAuthorNamesWritten": false,
+    "realChannelNamesWritten": false,
+    "secretsWritten": false,
+    "connectionStringsWritten": false
+  }
+}

@@ -1,0 +1,139 @@
+{
+  "schema": "m2.authorized_real_data.candidate_b_blocking_review_business_closure_plan.v0.1",
+  "generatedAt": "2026-06-22T10:11:28.987Z",
+  "mode": "summary",
+  "candidateVersion": "m2-realdata-dev-candidate-b-v0.1",
+  "notFinalReleaseApproved": true,
+  "reviewClosureVersion": "m2-candidate-b-review-closure-v0.1",
+  "privateReviewPack": {
+    "relativePath": "data/private-output/m2-review/candidate-b-blocking-review-pack.csv",
+    "format": "csv",
+    "rowCount": 85,
+    "gitignoredExpected": true,
+    "notForCommit": true
+  },
+  "privateGroupDecisionTemplate": {
+    "relativePath": "data/private-output/m2-review/candidate-b-group-decision-template.csv",
+    "format": "csv",
+    "rowCount": 4,
+    "gitignoredExpected": true,
+    "notForCommit": true
+  },
+  "closureSummary": {
+    "totalBlockingReviewItems": 85,
+    "reasonCodeDistribution": {
+      "abnormal_spike": 1,
+      "high_value_with_data_gap": 57,
+      "high_value_with_expiry": 23,
+      "insufficient_history": 4
+    },
+    "reasonGroupDistribution": {
+      "copyright_readiness": 23,
+      "data_readiness": 57,
+      "history_depth": 4,
+      "revenue_anomaly": 1
+    },
+    "priorityDistribution": {
+      "p1": 80,
+      "p2": 5
+    },
+    "riskTypeDistribution": {
+      "blocking": 85
+    },
+    "suggestionCodeDistribution": {
+      "maintain": 52,
+      "manual_review_required": 85,
+      "observe_only": 6,
+      "pricing_or_channel_adjustment": 1,
+      "renewal_review": 23,
+      "repackage": 42
+    },
+    "dataGapTypeDistribution": {
+      "basic_info_or_copyright_readiness": 57,
+      "copyright_expiry": 23,
+      "insufficient_history": 4,
+      "revenue_anomaly": 1
+    },
+    "proposedDecisionDistribution": {
+      "data_fix_required": 57,
+      "pending": 5,
+      "waiver_granted": 23
+    },
+    "dataFixRequiredCandidateCount": 57,
+    "waiverCandidateCount": 23,
+    "rejectedForFormalCandidateCount": 0,
+    "noActionRequiredCandidateCount": 0,
+    "approvedCandidateCount": 0,
+    "ambiguousManualOnlyCount": 5,
+    "requiredBusinessDecisionCategories": [
+      "copyright_readiness",
+      "data_readiness",
+      "history_depth",
+      "revenue_anomaly"
+    ]
+  },
+  "groupPolicySummary": {
+    "groupCount": 4,
+    "totalBlockingReviewItems": 85,
+    "groupDistribution": {
+      "GROUP-DATA-GAP-HIGH-VALUE": 57,
+      "GROUP-EXPIRY-HIGH-VALUE": 23,
+      "GROUP-INSUFFICIENT-HISTORY": 4,
+      "GROUP-ABNORMAL-SPIKE": 1
+    },
+    "proposedGroupDecisionDistribution": {
+      "data_fix_required": 1,
+      "pending": 2,
+      "waiver_granted": 1
+    },
+    "finalGroupDecisionDistribution": {}
+  },
+  "currentDbReviewSummary": {
+    "totalReviewItems": 2844,
+    "blockingReviewItems": 85,
+    "advisoryReviewItems": 2759,
+    "statusDistribution": {
+      "pending": 2844
+    },
+    "reviewTypeDistribution": {
+      "advisory_review": 2759,
+      "blocking_manual_review": 85
+    },
+    "reasonCodeDistribution": {
+      "abnormal_spike": 1,
+      "high_value_with_data_gap": 57,
+      "high_value_with_expiry": 23,
+      "insufficient_history": 4
+    },
+    "priorityDistribution": {
+      "p1": 80,
+      "p2": 5,
+      "p3": 2759
+    },
+    "auditEventCount": 2844,
+    "waiverCount": 0,
+    "dataFixRequiredCount": 0,
+    "rejectedForFormalCount": 0,
+    "approvedCount": 0,
+    "pendingCount": 2844,
+    "blockingStatusDistribution": {
+      "pending": 85
+    },
+    "finalDecisionDistribution": {},
+    "noActionRequiredCount": 0
+  },
+  "decisionImport": null,
+  "groupDecisionImport": null,
+  "mutation": null,
+  "safeOutputBoundary": {
+    "rawRowsWritten": false,
+    "realWorkNamesWritten": false,
+    "realAuthorNamesWritten": false,
+    "realChannelNamesWritten": false,
+    "exactPerWorkRevenueDetailWritten": false,
+    "secretsWritten": false,
+    "connectionStringsWritten": false,
+    "privateWorkbookNamesWritten": false,
+    "dumpsOrTempDbFilesWritten": false
+  }
+}

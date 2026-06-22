@@ -1,0 +1,48 @@
+{
+  "schema": "m2.authorized_real_data.candidate_b_summary.v0.1",
+  "generatedAt": "2026-06-22T10:09:50.774354+00:00",
+  "candidateVersion": "m2-realdata-dev-candidate-b-v0.1",
+  "candidateStatus": "authorized_local_real_data_development_candidate",
+  "baselineCandidate": "m2-c3-cleaned-bill-nonformal-v0.2/candidate-a",
+  "notFinalReleaseApproved": true,
+  "notForAutomatedBusinessAction": true,
+  "recommendedForBusinessReview": true,
+  "reason": "candidate-b preserves the real-data forecast/rating calibration while converting many lower-value uncertainty cases from blocking review to advisory review.",
+  "evaluatedWorkCount": 3054,
+  "manualReviewRequiredCount": 85,
+  "advisoryOnlyCount": 2759,
+  "manualReviewReductionFromCandidateA": 428,
+  "promoteCount": 557,
+  "downlistOrSuspendCount": 744,
+  "ratingDistribution": {
+    "S+": 7,
+    "S": 54,
+    "A": 136,
+    "B": 647,
+    "C": 704,
+    "D": 395,
+    "E": 1111
+  },
+  "lifecycleDistribution": {
+    "growth": 540,
+    "stable": 872,
+    "declining": 394,
+    "long_tail": 132,
+    "inactive": 800,
+    "rebound": 270,
+    "insufficient_history": 46
+  },
+  "requiresManualConfirmation": [
+    "S+ release",
+    "promote actions",
+    "downlist_or_suspend actions",
+    "renewal_review actions",
+    "copyright conflicts",
+    "abnormal spike or one-off income risks"
+  ],
+  "safeOutputBoundary": {
+    "rawRowsWritten": false,
+    "sensitiveDetailWritten": false,
+    "secretsWritten": false
+  }
+}

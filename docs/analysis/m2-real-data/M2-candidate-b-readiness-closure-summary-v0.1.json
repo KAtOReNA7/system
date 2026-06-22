@@ -1,0 +1,59 @@
+{
+  "schema": "m2.authorized_real_data.candidate_b_readiness_closure_summary.v0.1",
+  "generatedAt": "2026-06-22T10:11:37.583Z",
+  "mode": "summary",
+  "candidateVersion": "m2-realdata-dev-candidate-b-v0.1",
+  "notFinalReleaseApproved": true,
+  "finalDecisionsApplied": false,
+  "proposedDecisionsGenerated": true,
+  "readiness": {
+    "finalDecisionsApplied": false,
+    "proposedDecisionsGenerated": true,
+    "statusDistribution": {
+      "pending": 2844
+    },
+    "blockingStatusDistribution": {
+      "pending": 85
+    },
+    "remainingBlockingCount": 85,
+    "dataFixRequiredCount": 0,
+    "waiverCount": 0,
+    "rejectedForFormalCount": 0,
+    "noActionRequiredCount": 0,
+    "approvedCount": 0,
+    "pendingCount": 2844,
+    "auditEventCount": 2844,
+    "reimportRequired": false,
+    "candidateCanMoveToNextLocalReadinessStage": false
+  },
+  "dryRunPlan": null,
+  "groupDryRunPlan": null,
+  "conclusion": "Remediation diagnostics were generated, but final decisions were not applied. Blocking items remain pending until user/business confirmation and any required local data fix/reimport are complete.",
+  "safeOutputBoundary": {
+    "rawRowsWritten": false,
+    "realWorkNamesWritten": false,
+    "realAuthorNamesWritten": false,
+    "realChannelNamesWritten": false,
+    "exactPerWorkRevenueDetailWritten": false,
+    "secretsWritten": false,
+    "connectionStringsWritten": false,
+    "privateWorkbookNamesWritten": false,
+    "dumpsOrTempDbFilesWritten": false
+  },
+  "remediation": {
+    "remediationVersion": "m2-candidate-b-remediation-v0.1",
+    "generatedAt": "2026-06-22T10:11:37.583Z",
+    "finalDecisionsApplied": false,
+    "autoFixApplied": false,
+    "beforeBlockingCount": 85,
+    "afterRemediationBlockingCount": 85,
+    "dataGapBeforeCount": 57,
+    "dataGapAutoFixedCount": 0,
+    "dataGapRemainingBlockingCount": 57,
+    "expiryWaiverCandidateCount": 23,
+    "manualExceptionPendingCount": 5,
+    "reimportRequired": true,
+    "candidateCanMoveToNextLocalReadinessStage": false,
+    "conclusion": "Remediation diagnostics were generated, but no final business decisions were applied. candidate-b remains a local development candidate pending user/business confirmation."
+  }
+}
