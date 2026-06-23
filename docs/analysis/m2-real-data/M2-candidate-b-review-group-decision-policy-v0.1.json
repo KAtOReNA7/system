@@ -233,12 +233,13 @@
   ],
   "unconfirmedItemPolicy": "Rows with blank reviewerDecision or reviewerDecision=pending are not applied and remain pending.",
   "nextUserAction": "Fill the private group decision template for only the groups that have a confirmed business policy.",
-  "generatedAt": "2026-06-22T10:11:28.987Z",
+  "generatedAt": "2026-06-23T08:44:01.140Z",
   "mode": "summary",
   "candidateVersion": "m2-realdata-dev-candidate-b-v0.1",
   "notFinalReleaseApproved": true,
   "itemLevelStatusDistribution": {
-    "pending": 85
+    "no_action_required": 62,
+    "waiver_granted": 23
   },
   "privateGroupDecisionTemplate": {
     "relativePath": "data/private-output/m2-review/candidate-b-group-decision-template.csv",

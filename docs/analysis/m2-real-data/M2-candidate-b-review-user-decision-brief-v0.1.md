@@ -9,7 +9,7 @@ This brief compresses the 85 pending blocking review items into auditable group-
 ## Current State
 
 - Blocking review items: 85
-- Blocking status distribution: pending=85
+- Blocking status distribution: no_action_required=62, waiver_granted=23
 - Final group decisions: none
 - Unconfirmed groups and items remain `pending`.
 

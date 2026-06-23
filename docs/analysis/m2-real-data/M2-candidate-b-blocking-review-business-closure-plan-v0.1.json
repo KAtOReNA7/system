@@ -1,6 +1,6 @@
 {
   "schema": "m2.authorized_real_data.candidate_b_blocking_review_business_closure_plan.v0.1",
-  "generatedAt": "2026-06-22T10:11:28.987Z",
+  "generatedAt": "2026-06-23T08:44:01.140Z",
   "mode": "summary",
   "candidateVersion": "m2-realdata-dev-candidate-b-v0.1",
   "notFinalReleaseApproved": true,
@@ -93,7 +93,9 @@
     "blockingReviewItems": 85,
     "advisoryReviewItems": 2759,
     "statusDistribution": {
-      "pending": 2844
+      "no_action_required": 62,
+      "pending": 2759,
+      "waiver_granted": 23
     },
     "reviewTypeDistribution": {
       "advisory_review": 2759,
@@ -110,17 +112,21 @@
       "p2": 5,
       "p3": 2759
     },
-    "auditEventCount": 2844,
-    "waiverCount": 0,
+    "auditEventCount": 2929,
+    "waiverCount": 23,
     "dataFixRequiredCount": 0,
     "rejectedForFormalCount": 0,
     "approvedCount": 0,
-    "pendingCount": 2844,
+    "pendingCount": 2759,
     "blockingStatusDistribution": {
-      "pending": 85
+      "no_action_required": 62,
+      "waiver_granted": 23
     },
-    "finalDecisionDistribution": {},
-    "noActionRequiredCount": 0
+    "finalDecisionDistribution": {
+      "no_action_required": 62,
+      "waiver_granted": 23
+    },
+    "noActionRequiredCount": 62
   },
   "decisionImport": null,
   "groupDecisionImport": null,

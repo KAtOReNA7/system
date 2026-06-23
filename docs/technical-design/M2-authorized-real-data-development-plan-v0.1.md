@@ -1,6 +1,6 @@
 # M2 authorized real-data development plan v0.1
 
-Generated: 2026-06-22T10:09:50.780388+00:00
+Generated: 2026-06-23T08:03:23.106182+00:00
 
 ## Conclusion
 
@@ -50,29 +50,6 @@ Current execution note:
 - Import dry-run can build the sanitized aggregate payload and plans 3054 work-level candidate rows, 85 blocking review items, and 2759 advisory review items.
 - Local Docker/PostgreSQL execution has been validated with PostgreSQL 16 (`postgres:16-bookworm`), local migration state reaches `0070.000`, DB import writes 3054 evaluation results, 85 blocking review items, and 2759 advisory review items, and DB-backed reconciliation passes against the file-level aggregate reports.
 - These DB-backed outputs remain authorized local development evidence, not final release-approved formal results.
-
-## Group-level Review Decision Flow
-
-The 85 candidate-b blocking review items now have both item-level and group-level local review artifacts:
-
-- Item private review pack: `data/private-output/m2-review/candidate-b-blocking-review-pack.csv` (gitignored, not for commit).
-- Group decision policy: `docs/analysis/m2-real-data/M2-candidate-b-review-group-decision-policy-v0.1.md`.
-- User decision brief: `docs/analysis/m2-real-data/M2-candidate-b-review-user-decision-brief-v0.1.md`.
-- Data-gap remediation summary: `docs/analysis/m2-real-data/M2-candidate-b-data-gap-remediation-summary-v0.1.md`.
-- Expiry waiver policy draft: `docs/analysis/m2-real-data/M2-candidate-b-expiry-waiver-policy-draft-v0.1.md`.
-- Manual exception brief: `docs/analysis/m2-real-data/M2-candidate-b-manual-exception-brief-v0.1.md`.
-- Private group decision template: `data/private-output/m2-review/candidate-b-group-decision-template.csv` (gitignored, not for commit).
-- Decision apply runner: `scripts/m2-real-data/run_candidate_b_review_decision_apply.mjs`.
-- Remediation runner: `scripts/m2-real-data/run_candidate_b_review_remediation.mjs`.
-
-The current group flow compresses the 85 pending blocking items into 4 business decision groups: data gap high value, expiry high value, insufficient history, and abnormal spike. The next business step is group-level confirmation, not row-by-row manual entry for all 85 items. Unconfirmed groups remain `pending`; no final decision is applied automatically.
-
-Remediation diagnostics have narrowed the next action:
-
-- `GROUP-DATA-GAP-HIGH-VALUE`: 57 items checked through local DB input snapshots and risk facts; no safe auto-fix was found, 57 remain `data_fix_required` candidates pending source data correction or explicit business decision.
-- `GROUP-EXPIRY-HIGH-VALUE`: 23 items have a scoped local waiver policy draft only; no waiver has been applied.
-- `GROUP-INSUFFICIENT-HISTORY` and `GROUP-ABNORMAL-SPIKE`: 5 total manual exception items remain `pending` by default.
-- The private group decision template has been refreshed with remediation fields; it remains gitignored and not for commit.
 
 ## Safety
 

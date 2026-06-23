@@ -24,6 +24,7 @@
     "evaluate:m2:old-products:calibrated": "node scripts/run-m2-old-product-fixture-evaluation.mjs --profile calibrated_non_formal",
     "compare:m2:old-products:calibration": "node scripts/run-m2-old-product-fixture-evaluation.mjs --compare-profiles",
     "evaluate:m2:real-data:dev": "python scripts/m2-real-data/run_authorized_real_data_development.py",
+    "evaluate:m2:state-machine": "node scripts/m2-real-data/run_m2_state_machine_evaluation.mjs",
     "import:m2:real-data:local-db": "node scripts/m2-real-data/run_authorized_real_data_db_import.mjs --clear",
     "review:m2:candidate-b:local": "node scripts/m2-real-data/run_candidate_b_review_workflow.mjs",
     "review:m2:candidate-b:export-pack": "node scripts/m2-real-data/run_candidate_b_review_decision_apply.mjs --export-pack",

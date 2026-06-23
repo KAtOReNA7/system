@@ -34,6 +34,10 @@ import {
   listM2ExportFixtures,
   simulateM2ExportAction
 } from "../repositories/m2ExportFixtureRepository.js";
+import {
+  getM2FormalEvaluationExportById,
+  listM2FormalEvaluationExports
+} from "../repositories/m2EvaluationExportRepository.js";
 import { getSystemStatus } from "../repositories/systemRepository.js";
 import { getWorkById, listWorks } from "../repositories/workRepository.js";
 import { serveAdminAsset } from "./staticAdmin.js";
@@ -97,7 +101,11 @@ export function createApp(config, options = {}) {
     listM2ExportFixtures: options.listM2ExportFixtures ?? listM2ExportFixtures,
     getM2ExportFixtureById: options.getM2ExportFixtureById ?? getM2ExportFixtureById,
     createM2ExportFixture: options.createM2ExportFixture ?? createM2ExportFixture,
-    simulateM2ExportAction: options.simulateM2ExportAction ?? simulateM2ExportAction
+    simulateM2ExportAction: options.simulateM2ExportAction ?? simulateM2ExportAction,
+    listM2FormalEvaluationExports:
+      options.listM2FormalEvaluationExports ?? listM2FormalEvaluationExports,
+    getM2FormalEvaluationExportById:
+      options.getM2FormalEvaluationExportById ?? getM2FormalEvaluationExportById
   };
 
   return async function app(request, response) {
@@ -325,6 +333,29 @@ export function createApp(config, options = {}) {
           const body = await repositories.getM2ExportFixtureById(config, exportId);
           if (!body) {
             throw notFound("Export fixture");
+          }
+          sendJson(response, 200, body, requestId);
+          return;
+        }
+      }
+
+      if (path.startsWith("/api/m2/formal/exports")) {
+        if (request.method === "GET" && path === "/api/m2/formal/exports") {
+          const pagination = parsePagination(url.searchParams);
+          const body = await repositories.listM2FormalEvaluationExports(config, {
+            pagination,
+            searchParams: url.searchParams
+          });
+          sendJson(response, 200, body, requestId);
+          return;
+        }
+
+        const formalExportMatch = path.match(/^\/api\/m2\/formal\/exports\/([^/]+)$/);
+        if (request.method === "GET" && formalExportMatch) {
+          const standardWorkId = decodeURIComponent(formalExportMatch[1]);
+          const body = await repositories.getM2FormalEvaluationExportById(config, standardWorkId);
+          if (!body) {
+            throw notFound("M2 formal evaluation export");
           }
           sendJson(response, 200, body, requestId);
           return;

@@ -1,9 +1,9 @@
 {
   "schema": "m2.authorized_real_data.profile_summary.v0.1",
-  "generatedAt": "2026-06-22T10:09:47.792969+00:00",
+  "generatedAt": "2026-06-23T08:03:17.984071+00:00",
   "mode": "authorized_local_real_data_development",
-  "currentHead": "463f86ecc1045a67c2d014d2fd4e59f55a8dcdcc",
-  "originMain": "463f86ecc1045a67c2d014d2fd4e59f55a8dcdcc",
+  "currentHead": "c78ec1523d7783e9ef4b420b428bf566d685ecf4",
+  "originMain": "c78ec1523d7783e9ef4b420b428bf566d685ecf4",
   "sourceInventory": [
     {
       "alias": "B001",
