@@ -1,0 +1,4387 @@
+{
+  "schema": "m2.candidate_b.forecast_backtest_validation.v0.2",
+  "generatedAt": "2026-06-23T14:01:15.181635+00:00",
+  "candidateVersion": "m2-realdata-dev-candidate-b-forecast-calibrated-v0.2",
+  "legacyCandidateVersion": "m2-realdata-dev-candidate-b-v0.1",
+  "calibrationPatch": "candidate-b forecast scenario calibration patch v0.2",
+  "currentHead": "041e934f3188cfeec1dfc13b68abeb33034d9cba",
+  "originMain": "041e934f3188cfeec1dfc13b68abeb33034d9cba",
+  "deepDiveSample": {
+    "sampleSource": "deterministic stratified selection; previous private 20-work artifact was not present in the worktree",
+    "sampleCount": 20,
+    "allHaveRevenueForecast": true,
+    "allHaveBacktest": true,
+    "samples": [
+      {
+        "sampleId": "W001",
+        "rating": "B",
+        "uncappedRating": "S+",
+        "lifecycle": "declining",
+        "revenueScale": "top",
+        "latestCompleteMonth": "2026-04",
+        "remainingCopyrightMonthsBucket": "fallback_used",
+        "forecast": {
+          "base": 241886.94,
+          "optimistic": 377208.81,
+          "pessimistic": 155111.15,
+          "yearlyBreakdown": [
+            {
+              "year": "2026",
+              "baseForecast": 215010.61
+            },
+            {
+              "year": "2027",
+              "baseForecast": 26876.33
+            }
+          ],
+          "confidence": "low",
+          "intervalReason": [
+            "declining lifecycle damping"
+          ],
+          "optimisticPessimisticRatio": 2.4319,
+          "assumptions": [
+            "candidate-b forecast scenario calibration patch v0.2",
+            "last-12 revenue as base signal",
+            "remaining copyright months or scoped fallback",
+            "data-driven interval from volatility, residual, lifecycle, revenue scale, confidence, and readiness signals"
+          ]
+        },
+        "history": {
+          "last3Revenue": 68798.33,
+          "last6Revenue": 153660.42,
+          "last12Revenue": 921474.05,
+          "last24Revenue": 1469210.47,
+          "totalHistoricalRevenue": 2546765.03,
+          "activeMonthCount": 42,
+          "zeroRevenueMonthCount": 0,
+          "recentTrend": "decreasing",
+          "abnormalPeakOrOneOff": false
+        },
+        "backtest": [
+          {
+            "horizonMonths": 3,
+            "cutoffMonth": "2026-01",
+            "predictionHorizon": "3-month",
+            "cutoffLifecycle": "declining",
+            "predictedRevenue": 84810.39,
+            "baselinePredictedRevenue": 242315.4,
+            "pessimisticPredictedRevenue": 59970.0,
+            "optimisticPredictedRevenue": 119940.0,
+            "forecastConfidence": "medium",
+            "intervalCoverage": true,
+            "intervalReason": [
+              "declining lifecycle damping"
+            ],
+            "actualRevenue": 68798.33,
+            "absoluteError": 16012.06,
+            "baselineAbsoluteError": 173517.07,
+            "percentageError": 0.2327,
+            "candidateBetterOrEqualBaseline": true
+          },
+          {
+            "horizonMonths": 6,
+            "cutoffMonth": "2025-10",
+            "predictionHorizon": "6-month",
+            "cutoffLifecycle": "growth",
+            "predictedRevenue": 414899.08,
+            "baselinePredictedRevenue": 505974.49,
+            "pessimisticPredictedRevenue": 293377.96,
+            "optimisticPredictedRevenue": 586755.91,
+            "forecastConfidence": "medium",
+            "intervalCoverage": false,
+            "intervalReason": [
+              "cutoff residual and volatility interval"
+            ],
+            "actualRevenue": 153660.42,
+            "absoluteError": 261238.66,
+            "baselineAbsoluteError": 352314.07,
+            "percentageError": 1.7001,
+            "candidateBetterOrEqualBaseline": true
+          },
+          {
+            "horizonMonths": 12,
+            "cutoffMonth": "2025-04",
+            "predictionHorizon": "12-month",
+            "cutoffLifecycle": "stable",
+            "predictedRevenue": 345073.94,
+            "baselinePredictedRevenue": 547736.42,
+            "pessimisticPredictedRevenue": 281751.69,
+            "optimisticPredictedRevenue": 422627.54,
+            "forecastConfidence": "high",
+            "intervalCoverage": false,
+            "intervalReason": [
+              "cutoff residual and volatility interval"
+            ],
+            "actualRevenue": 921474.05,
+            "absoluteError": 576400.11,
+            "baselineAbsoluteError": 373737.64,
+            "percentageError": 0.6255,
+            "candidateBetterOrEqualBaseline": false
+          }
+        ],
+        "ratingReliability": {
+          "forecastValue": 241886.94,
+          "historicalRevenuePercentile": 0.999,
+          "lifecycleAdjustment": "declining",
+          "remainingCopyrightAdjustment": "fallback_used",
+          "riskAdjustment": "capped",
+          "finalRatingReason": "rating basis amount supports S+; lifecycle=declining; risk cap adjusted rating to B; manual review context required",
+          "nearThresholdBoundary": false
+        },
+        "risks": [
+          {
+            "risk": "missing_copyright_end",
+            "severity": "high",
+            "affectsForecast": true,
+            "affectsRating": true,
+            "affectsSuggestion": false
+          },
+          {
+            "risk": "missing_basic_info",
+            "severity": "medium",
+            "affectsForecast": false,
+            "affectsRating": false,
+            "affectsSuggestion": false
+          },
+          {
+            "risk": "aggregate_projection_gap",
+            "severity": "low",
+            "affectsForecast": true,
+            "affectsRating": false,
+            "affectsSuggestion": false
+          },
+          {
+            "risk": "revenue_decline",
+            "severity": "medium",
+            "affectsForecast": false,
+            "affectsRating": false,
+            "affectsSuggestion": false
+          }
+        ],
+        "suggestions": [
+          {
+            "suggestion": "manual_review_required",
+            "trigger": "blocking manual review reason exists",
+            "supported": true,
+            "requiresManualConfirmation": true
+          }
+        ],
+        "validationOutcome": "fail",
+        "warningOrFailureReasons": [
+          "low interval coverage in available backtests",
+          "forecast uses copyright fallback for action-bearing or high-value row",
+          "manual review dependency remains in algorithm evidence"
+        ]
+      },
+      {
+        "sampleId": "W002",
+        "rating": "S+",
+        "uncappedRating": "S+",
+        "lifecycle": "growth",
+        "revenueScale": "top",
+        "latestCompleteMonth": "2026-04",
+        "remainingCopyrightMonthsBucket": "25_to_60",
+        "forecast": {
+          "base": 5336811.88,
+          "optimistic": 7547391.75,
+          "pessimistic": 3773695.87,
+          "yearlyBreakdown": [
+            {
+              "year": "2026",
+              "baseForecast": 992895.23
+            },
+            {
+              "year": "2027",
+              "baseForecast": 1489342.85
+            },
+            {
+              "year": "2028",
+              "baseForecast": 1489342.85
+            },
+            {
+              "year": "2029",
+              "baseForecast": 1365230.95
+            }
+          ],
+          "confidence": "medium",
+          "intervalReason": [
+            "data-driven residual and volatility interval"
+          ],
+          "optimisticPessimisticRatio": 2.0,
+          "assumptions": [
+            "candidate-b forecast scenario calibration patch v0.2",
+            "last-12 revenue as base signal",
+            "remaining copyright months or scoped fallback",
+            "data-driven interval from volatility, residual, lifecycle, revenue scale, confidence, and readiness signals"
+          ]
+        },
+        "history": {
+          "last3Revenue": 710983.62,
+          "last6Revenue": 1154263.55,
+          "last12Revenue": 1816271.77,
+          "last24Revenue": 1816271.77,
+          "totalHistoricalRevenue": 1816271.77,
+          "activeMonthCount": 3,
+          "zeroRevenueMonthCount": 5,
+          "recentTrend": "increasing",
+          "abnormalPeakOrOneOff": false
+        },
+        "backtest": [
+          {
+            "horizonMonths": 3,
+            "cutoffMonth": "2026-01",
+            "predictionHorizon": "3-month",
+            "cutoffLifecycle": "insufficient_history",
+            "predictedRevenue": 690805.09,
+            "baselinePredictedRevenue": 276322.04,
+            "pessimisticPredictedRevenue": 405654.72,
+            "optimisticPredictedRevenue": 1176398.68,
+            "forecastConfidence": "low",
+            "intervalCoverage": true,
+            "intervalReason": [
+              "insufficient-history cap",
+              "sparse-near-zero floor/cap guard"
+            ],
+            "actualRevenue": 710983.62,
+            "absoluteError": 20178.53,
+            "baselineAbsoluteError": 434661.58,
+            "percentageError": 0.0284,
+            "candidateBetterOrEqualBaseline": true
+          },
+          {
+            "horizonMonths": 6,
+            "cutoffMonth": "2025-10",
+            "predictionHorizon": "6-month",
+            "cutoffLifecycle": "insufficient_history",
+            "predictedRevenue": 430305.34,
+            "baselinePredictedRevenue": 331004.11,
+            "pessimisticPredictedRevenue": 252684.0,
+            "optimisticPredictedRevenue": 732783.59,
+            "forecastConfidence": "low",
+            "intervalCoverage": false,
+            "intervalReason": [
+              "insufficient-history cap",
+              "sparse-near-zero floor/cap guard",
+              "abnormal-spike damping"
+            ],
+            "actualRevenue": 1154263.55,
+            "absoluteError": 723958.21,
+            "baselineAbsoluteError": 823259.44,
+            "percentageError": 0.6272,
+            "candidateBetterOrEqualBaseline": true
+          },
+          {
+            "horizonMonths": 12,
+            "cutoffMonth": "2025-04",
+            "predictionHorizon": "12-month",
+            "cutoffLifecycle": "insufficient_history",
+            "predictedRevenue": 0.0,
+            "baselinePredictedRevenue": 0.0,
+            "pessimisticPredictedRevenue": 0.0,
+            "optimisticPredictedRevenue": 0.0,
+            "forecastConfidence": "low",
+            "intervalCoverage": false,
+            "intervalReason": [
+              "insufficient-history cap",
+              "sparse-near-zero floor/cap guard"
+            ],
+            "actualRevenue": 1816271.77,
+            "absoluteError": 1816271.77,
+            "baselineAbsoluteError": 1816271.77,
+            "percentageError": 1.0,
+            "candidateBetterOrEqualBaseline": true
+          }
+        ],
+        "ratingReliability": {
+          "forecastValue": 5336811.88,
+          "historicalRevenuePercentile": 0.9997,
+          "lifecycleAdjustment": "growth",
+          "remainingCopyrightAdjustment": "25_to_60",
+          "riskAdjustment": "none",
+          "finalRatingReason": "rating basis amount supports S+; lifecycle=growth",
+          "nearThresholdBoundary": false
+        },
+        "risks": [
+          {
+            "risk": "channel_concentration",
+            "severity": "medium",
+            "affectsForecast": false,
+            "affectsRating": false,
+            "affectsSuggestion": true
+          }
+        ],
+        "suggestions": [
+          {
+            "suggestion": "promote",
+            "trigger": "rating in S+/S or lifecycle=growth without blocking readiness risk",
+            "supported": true,
+            "requiresManualConfirmation": true
+          },
+          {
+            "suggestion": "repackage",
+            "trigger": "mixed business form or channel concentration with non-low rating",
+            "supported": true,
+            "requiresManualConfirmation": true
+          }
+        ],
+        "validationOutcome": "fail",
+        "warningOrFailureReasons": [
+          "low interval coverage in available backtests"
+        ]
+      },
+      {
+        "sampleId": "W003",
+        "rating": "E",
+        "uncappedRating": "E",
+        "lifecycle": "inactive",
+        "revenueScale": "top",
+        "latestCompleteMonth": "2026-04",
+        "remainingCopyrightMonthsBucket": "fallback_used",
+        "forecast": {
+          "base": 0.0,
+          "optimistic": 0.0,
+          "pessimistic": 0.0,
+          "yearlyBreakdown": [
+            {
+              "year": "2026",
+              "baseForecast": 0.0
+            }
+          ],
+          "confidence": "blocked_for_business_use",
+          "intervalReason": [
+            "inactive forecast cap",
+            "low-value forecast guard",
+            "sparse-near-zero floor/cap guard"
+          ],
+          "optimisticPessimisticRatio": null,
+          "assumptions": [
+            "candidate-b forecast scenario calibration patch v0.2",
+            "last-12 revenue as base signal",
+            "remaining copyright months or scoped fallback",
+            "data-driven interval from volatility, residual, lifecycle, revenue scale, confidence, and readiness signals"
+          ]
+        },
+        "history": {
+          "last3Revenue": 0.0,
+          "last6Revenue": 0.0,
+          "last12Revenue": 0.0,
+          "last24Revenue": 3550000.0,
+          "totalHistoricalRevenue": 4530000.0,
+          "activeMonthCount": 2,
+          "zeroRevenueMonthCount": 75,
+          "recentTrend": "insufficient_prior_window",
+          "abnormalPeakOrOneOff": false
+        },
+        "backtest": [
+          {
+            "horizonMonths": 3,
+            "cutoffMonth": "2026-01",
+            "predictionHorizon": "3-month",
+            "cutoffLifecycle": "inactive",
+            "predictedRevenue": 0.0,
+            "baselinePredictedRevenue": 0.0,
+            "pessimisticPredictedRevenue": 0.0,
+            "optimisticPredictedRevenue": 0.0,
+            "forecastConfidence": "low",
+            "intervalCoverage": true,
+            "intervalReason": [
+              "inactive forecast cap",
+              "sparse-near-zero floor/cap guard"
+            ],
+            "actualRevenue": 0.0,
+            "absoluteError": 0.0,
+            "baselineAbsoluteError": 0.0,
+            "percentageError": null,
+            "candidateBetterOrEqualBaseline": true
+          },
+          {
+            "horizonMonths": 6,
+            "cutoffMonth": "2025-10",
+            "predictionHorizon": "6-month",
+            "cutoffLifecycle": "inactive",
+            "predictedRevenue": 1242500.0,
+            "baselinePredictedRevenue": 1775000.0,
+            "pessimisticPredictedRevenue": 729621.12,
+            "optimisticPredictedRevenue": 2115901.26,
+            "forecastConfidence": "low",
+            "intervalCoverage": false,
+            "intervalReason": [
+              "inactive forecast cap",
+              "sparse-near-zero floor/cap guard"
+            ],
+            "actualRevenue": 0.0,
+            "absoluteError": 1242500.0,
+            "baselineAbsoluteError": 1775000.0,
+            "percentageError": null,
+            "candidateBetterOrEqualBaseline": true
+          },
+          {
+            "horizonMonths": 12,
+            "cutoffMonth": "2025-04",
+            "predictionHorizon": "12-month",
+            "cutoffLifecycle": "stable",
+            "predictedRevenue": 2236500.0,
+            "baselinePredictedRevenue": 3550000.0,
+            "pessimisticPredictedRevenue": 1581444.32,
+            "optimisticPredictedRevenue": 3162888.63,
+            "forecastConfidence": "medium",
+            "intervalCoverage": false,
+            "intervalReason": [
+              "sparse-near-zero floor/cap guard"
+            ],
+            "actualRevenue": 0.0,
+            "absoluteError": 2236500.0,
+            "baselineAbsoluteError": 3550000.0,
+            "percentageError": null,
+            "candidateBetterOrEqualBaseline": true
+          }
+        ],
+        "ratingReliability": {
+          "forecastValue": 0.0,
+          "historicalRevenuePercentile": 0.1025,
+          "lifecycleAdjustment": "inactive",
+          "remainingCopyrightAdjustment": "fallback_used",
+          "riskAdjustment": "none",
+          "finalRatingReason": "rating basis amount supports E; lifecycle=inactive",
+          "nearThresholdBoundary": false
+        },
+        "risks": [
+          {
+            "risk": "missing_copyright_end",
+            "severity": "high",
+            "affectsForecast": true,
+            "affectsRating": true,
+            "affectsSuggestion": false
+          },
+          {
+            "risk": "missing_basic_info",
+            "severity": "medium",
+            "affectsForecast": false,
+            "affectsRating": false,
+            "affectsSuggestion": false
+          },
+          {
+            "risk": "aggregate_projection_gap",
+            "severity": "low",
+            "affectsForecast": true,
+            "affectsRating": false,
+            "affectsSuggestion": false
+          },
+          {
+            "risk": "inactive_tail",
+            "severity": "medium",
+            "affectsForecast": false,
+            "affectsRating": false,
+            "affectsSuggestion": true
+          }
+        ],
+        "suggestions": [
+          {
+            "suggestion": "downlist_or_suspend",
+            "trigger": "rating E, inactive lifecycle, and no renewal/event support",
+            "supported": true,
+            "requiresManualConfirmation": true
+          }
+        ],
+        "validationOutcome": "fail",
+        "warningOrFailureReasons": [
+          "low interval coverage in available backtests"
+        ]
+      },
+      {
+        "sampleId": "W004",
+        "rating": "C",
+        "uncappedRating": "S",
+        "lifecycle": "insufficient_history",
+        "revenueScale": "high",
+        "latestCompleteMonth": "2026-04",
+        "remainingCopyrightMonthsBucket": "fallback_used",
+        "forecast": {
+          "base": 35678.6,
+          "optimistic": 63323.23,
+          "pessimistic": 20102.61,
+          "yearlyBreakdown": [
+            {
+              "year": "2026",
+              "baseForecast": 35678.6
+            }
+          ],
+          "confidence": "blocked_for_business_use",
+          "intervalReason": [
+            "insufficient-history cap",
+            "abnormal-spike damping"
+          ],
+          "optimisticPessimisticRatio": 3.15,
+          "assumptions": [
+            "candidate-b forecast scenario calibration patch v0.2",
+            "last-12 revenue as base signal",
+            "remaining copyright months or scoped fallback",
+            "data-driven interval from volatility, residual, lifecycle, revenue scale, confidence, and readiness signals"
+          ]
+        },
+        "history": {
+          "last3Revenue": 43912.12,
+          "last6Revenue": 43912.12,
+          "last12Revenue": 43912.12,
+          "last24Revenue": 43912.12,
+          "totalHistoricalRevenue": 43912.12,
+          "activeMonthCount": 1,
+          "zeroRevenueMonthCount": 1,
+          "recentTrend": "insufficient_prior_window",
+          "abnormalPeakOrOneOff": true
+        },
+        "backtest": [
+          {
+            "horizonMonths": 3,
+            "cutoffMonth": "2026-01",
+            "predictionHorizon": "3-month",
+            "cutoffLifecycle": "insufficient_history",
+            "predictedRevenue": 0.0,
+            "baselinePredictedRevenue": 0.0,
+            "pessimisticPredictedRevenue": 0.0,
+            "optimisticPredictedRevenue": 0.0,
+            "forecastConfidence": "low",
+            "intervalCoverage": false,
+            "intervalReason": [
+              "insufficient-history cap",
+              "sparse-near-zero floor/cap guard"
+            ],
+            "actualRevenue": 43912.12,
+            "absoluteError": 43912.12,
+            "baselineAbsoluteError": 43912.12,
+            "percentageError": 1.0,
+            "candidateBetterOrEqualBaseline": true
+          },
+          {
+            "horizonMonths": 6,
+            "cutoffMonth": "2025-10",
+            "predictionHorizon": "6-month",
+            "cutoffLifecycle": "insufficient_history",
+            "predictedRevenue": 0.0,
+            "baselinePredictedRevenue": 0.0,
+            "pessimisticPredictedRevenue": 0.0,
+            "optimisticPredictedRevenue": 0.0,
+            "forecastConfidence": "low",
+            "intervalCoverage": false,
+            "intervalReason": [
+              "insufficient-history cap",
+              "sparse-near-zero floor/cap guard"
+            ],
+            "actualRevenue": 43912.12,
+            "absoluteError": 43912.12,
+            "baselineAbsoluteError": 43912.12,
+            "percentageError": 1.0,
+            "candidateBetterOrEqualBaseline": true
+          },
+          {
+            "horizonMonths": 12,
+            "cutoffMonth": "2025-04",
+            "predictionHorizon": "12-month",
+            "cutoffLifecycle": "insufficient_history",
+            "predictedRevenue": 0.0,
+            "baselinePredictedRevenue": 0.0,
+            "pessimisticPredictedRevenue": 0.0,
+            "optimisticPredictedRevenue": 0.0,
+            "forecastConfidence": "low",
+            "intervalCoverage": false,
+            "intervalReason": [
+              "insufficient-history cap",
+              "sparse-near-zero floor/cap guard"
+            ],
+            "actualRevenue": 43912.12,
+            "absoluteError": 43912.12,
+            "baselineAbsoluteError": 43912.12,
+            "percentageError": 1.0,
+            "candidateBetterOrEqualBaseline": true
+          }
+        ],
+        "ratingReliability": {
+          "forecastValue": 35678.6,
+          "historicalRevenuePercentile": 0.9885,
+          "lifecycleAdjustment": "insufficient_history",
+          "remainingCopyrightAdjustment": "fallback_used",
+          "riskAdjustment": "capped",
+          "finalRatingReason": "rating basis amount supports S; lifecycle=insufficient_history; risk cap adjusted rating to C; manual review context required",
+          "nearThresholdBoundary": false
+        },
+        "risks": [
+          {
+            "risk": "missing_copyright_end",
+            "severity": "high",
+            "affectsForecast": true,
+            "affectsRating": true,
+            "affectsSuggestion": false
+          },
+          {
+            "risk": "missing_basic_info",
+            "severity": "medium",
+            "affectsForecast": false,
+            "affectsRating": false,
+            "affectsSuggestion": false
+          },
+          {
+            "risk": "insufficient_revenue_history",
+            "severity": "medium",
+            "affectsForecast": false,
+            "affectsRating": false,
+            "affectsSuggestion": false
+          },
+          {
+            "risk": "aggregate_projection_gap",
+            "severity": "low",
+            "affectsForecast": true,
+            "affectsRating": false,
+            "affectsSuggestion": false
+          },
+          {
+            "risk": "insufficient_history",
+            "severity": "medium",
+            "affectsForecast": true,
+            "affectsRating": true,
+            "affectsSuggestion": true
+          },
+          {
+            "risk": "abnormal_spike",
+            "severity": "medium",
+            "affectsForecast": true,
+            "affectsRating": true,
+            "affectsSuggestion": true
+          },
+          {
+            "risk": "buyout_or_oneoff_income",
+            "severity": "medium",
+            "affectsForecast": true,
+            "affectsRating": true,
+            "affectsSuggestion": true
+          },
+          {
+            "risk": "channel_concentration",
+            "severity": "medium",
+            "affectsForecast": false,
+            "affectsRating": false,
+            "affectsSuggestion": true
+          }
+        ],
+        "suggestions": [
+          {
+            "suggestion": "repackage",
+            "trigger": "mixed business form or channel concentration with non-low rating",
+            "supported": true,
+            "requiresManualConfirmation": true
+          },
+          {
+            "suggestion": "observe_only",
+            "trigger": "insufficient history or incomplete month dominates evidence",
+            "supported": true,
+            "requiresManualConfirmation": false
+          },
+          {
+            "suggestion": "manual_review_required",
+            "trigger": "blocking manual review reason exists",
+            "supported": true,
+            "requiresManualConfirmation": true
+          }
+        ],
+        "validationOutcome": "fail",
+        "warningOrFailureReasons": [
+          "low interval coverage in available backtests",
+          "manual review dependency remains in algorithm evidence"
+        ]
+      },
+      {
+        "sampleId": "W005",
+        "rating": "E",
+        "uncappedRating": "E",
+        "lifecycle": "long_tail",
+        "revenueScale": "long_tail",
+        "latestCompleteMonth": "2026-04",
+        "remainingCopyrightMonthsBucket": "fallback_used",
+        "forecast": {
+          "base": 0.01,
+          "optimistic": 0.02,
+          "pessimistic": 0.01,
+          "yearlyBreakdown": [
+            {
+              "year": "2026",
+              "baseForecast": 0.01
+            }
+          ],
+          "confidence": "blocked_for_business_use",
+          "intervalReason": [
+            "long-tail low-revenue cap",
+            "low-value forecast guard",
+            "abnormal-spike damping",
+            "high backtest residual widens interval"
+          ],
+          "optimisticPessimisticRatio": 3.2,
+          "assumptions": [
+            "candidate-b forecast scenario calibration patch v0.2",
+            "last-12 revenue as base signal",
+            "remaining copyright months or scoped fallback",
+            "data-driven interval from volatility, residual, lifecycle, revenue scale, confidence, and readiness signals"
+          ]
+        },
+        "history": {
+          "last3Revenue": 0.0,
+          "last6Revenue": 0.03,
+          "last12Revenue": 0.03,
+          "last24Revenue": 164.46,
+          "totalHistoricalRevenue": 40436.8,
+          "activeMonthCount": 22,
+          "zeroRevenueMonthCount": 14,
+          "recentTrend": "insufficient_prior_window",
+          "abnormalPeakOrOneOff": true
+        },
+        "backtest": [
+          {
+            "horizonMonths": 3,
+            "cutoffMonth": "2026-01",
+            "predictionHorizon": "3-month",
+            "cutoffLifecycle": "long_tail",
+            "predictedRevenue": 0.0,
+            "baselinePredictedRevenue": 0.01,
+            "pessimisticPredictedRevenue": 0.0,
+            "optimisticPredictedRevenue": 0.01,
+            "forecastConfidence": "low",
+            "intervalCoverage": true,
+            "intervalReason": [
+              "long-tail low-revenue cap",
+              "sparse-near-zero floor/cap guard",
+              "abnormal-spike damping"
+            ],
+            "actualRevenue": 0.0,
+            "absoluteError": 0.0,
+            "baselineAbsoluteError": 0.01,
+            "percentageError": null,
+            "candidateBetterOrEqualBaseline": true
+          },
+          {
+            "horizonMonths": 6,
+            "cutoffMonth": "2025-10",
+            "predictionHorizon": "6-month",
+            "cutoffLifecycle": "inactive",
+            "predictedRevenue": 0.05,
+            "baselinePredictedRevenue": 0.09,
+            "pessimisticPredictedRevenue": 0.03,
+            "optimisticPredictedRevenue": 0.08,
+            "forecastConfidence": "low",
+            "intervalCoverage": false,
+            "intervalReason": [
+              "inactive forecast cap",
+              "sparse-near-zero floor/cap guard",
+              "abnormal-spike damping"
+            ],
+            "actualRevenue": 0.03,
+            "absoluteError": 0.02,
+            "baselineAbsoluteError": 0.07,
+            "percentageError": 0.9231,
+            "candidateBetterOrEqualBaseline": true
+          },
+          {
+            "horizonMonths": 12,
+            "cutoffMonth": "2025-04",
+            "predictionHorizon": "12-month",
+            "cutoffLifecycle": "declining",
+            "predictedRevenue": 37.41,
+            "baselinePredictedRevenue": 164.43,
+            "pessimisticPredictedRevenue": 26.45,
+            "optimisticPredictedRevenue": 52.9,
+            "forecastConfidence": "medium",
+            "intervalCoverage": false,
+            "intervalReason": [
+              "declining lifecycle damping",
+              "abnormal-spike damping"
+            ],
+            "actualRevenue": 0.03,
+            "absoluteError": 37.38,
+            "baselineAbsoluteError": 164.4,
+            "percentageError": 1437.8462,
+            "candidateBetterOrEqualBaseline": true
+          }
+        ],
+        "ratingReliability": {
+          "forecastValue": 0.01,
+          "historicalRevenuePercentile": 0.2292,
+          "lifecycleAdjustment": "long_tail",
+          "remainingCopyrightAdjustment": "fallback_used",
+          "riskAdjustment": "none",
+          "finalRatingReason": "rating basis amount supports E; lifecycle=long_tail",
+          "nearThresholdBoundary": false
+        },
+        "risks": [
+          {
+            "risk": "missing_copyright_end",
+            "severity": "high",
+            "affectsForecast": true,
+            "affectsRating": true,
+            "affectsSuggestion": false
+          },
+          {
+            "risk": "missing_basic_info",
+            "severity": "medium",
+            "affectsForecast": false,
+            "affectsRating": false,
+            "affectsSuggestion": false
+          },
+          {
+            "risk": "aggregate_projection_gap",
+            "severity": "low",
+            "affectsForecast": true,
+            "affectsRating": false,
+            "affectsSuggestion": false
+          },
+          {
+            "risk": "inactive_tail",
+            "severity": "medium",
+            "affectsForecast": false,
+            "affectsRating": false,
+            "affectsSuggestion": true
+          },
+          {
+            "risk": "abnormal_spike",
+            "severity": "medium",
+            "affectsForecast": true,
+            "affectsRating": true,
+            "affectsSuggestion": true
+          },
+          {
+            "risk": "channel_concentration_advisory",
+            "severity": "low",
+            "affectsForecast": false,
+            "affectsRating": false,
+            "affectsSuggestion": false
+          }
+        ],
+        "suggestions": [
+          {
+            "suggestion": "pricing_or_channel_adjustment",
+            "trigger": "long tail or rebound without hard channel concentration risk",
+            "supported": true,
+            "requiresManualConfirmation": true
+          }
+        ],
+        "validationOutcome": "fail",
+        "warningOrFailureReasons": [
+          "high relative forecast error; inspect private pack",
+          "low interval coverage in available backtests"
+        ]
+      },
+      {
+        "sampleId": "W006",
+        "rating": "S",
+        "uncappedRating": "S+",
+        "lifecycle": "rebound",
+        "revenueScale": "top",
+        "latestCompleteMonth": "2026-04",
+        "remainingCopyrightMonthsBucket": "0_to_12",
+        "forecast": {
+          "base": 146137.53,
+          "optimistic": 204291.77,
+          "pessimistic": 104537.63,
+          "yearlyBreakdown": [
+            {
+              "year": "2026",
+              "baseForecast": 116910.02
+            },
+            {
+              "year": "2027",
+              "baseForecast": 29227.51
+            }
+          ],
+          "confidence": "medium",
+          "intervalReason": [
+            "data-driven residual and volatility interval"
+          ],
+          "optimisticPessimisticRatio": 1.9542,
+          "assumptions": [
+            "candidate-b forecast scenario calibration patch v0.2",
+            "last-12 revenue as base signal",
+            "remaining copyright months or scoped fallback",
+            "data-driven interval from volatility, residual, lifecycle, revenue scale, confidence, and readiness signals"
+          ]
+        },
+        "history": {
+          "last3Revenue": 92391.86,
+          "last6Revenue": 134982.93,
+          "last12Revenue": 278357.2,
+          "last24Revenue": 923496.81,
+          "totalHistoricalRevenue": 960056.88,
+          "activeMonthCount": 27,
+          "zeroRevenueMonthCount": 0,
+          "recentTrend": "stable",
+          "abnormalPeakOrOneOff": false
+        },
+        "backtest": [
+          {
+            "horizonMonths": 3,
+            "cutoffMonth": "2026-01",
+            "predictionHorizon": "3-month",
+            "cutoffLifecycle": "declining",
+            "predictedRevenue": 26448.68,
+            "baselinePredictedRevenue": 75567.66,
+            "pessimisticPredictedRevenue": 18702.04,
+            "optimisticPredictedRevenue": 37404.09,
+            "forecastConfidence": "medium",
+            "intervalCoverage": false,
+            "intervalReason": [
+              "declining lifecycle damping"
+            ],
+            "actualRevenue": 92391.86,
+            "absoluteError": 65943.18,
+            "baselineAbsoluteError": 16824.2,
+            "percentageError": 0.7137,
+            "candidateBetterOrEqualBaseline": false
+          },
+          {
+            "horizonMonths": 6,
+            "cutoffMonth": "2025-10",
+            "predictionHorizon": "6-month",
+            "cutoffLifecycle": "declining",
+            "predictedRevenue": 113730.85,
+            "baselinePredictedRevenue": 324945.29,
+            "pessimisticPredictedRevenue": 80419.86,
+            "optimisticPredictedRevenue": 160839.71,
+            "forecastConfidence": "medium",
+            "intervalCoverage": true,
+            "intervalReason": [
+              "declining lifecycle damping"
+            ],
+            "actualRevenue": 134982.93,
+            "absoluteError": 21252.08,
+            "baselineAbsoluteError": 189962.36,
+            "percentageError": 0.1574,
+            "candidateBetterOrEqualBaseline": true
+          },
+          {
+            "horizonMonths": 12,
+            "cutoffMonth": "2025-04",
+            "predictionHorizon": "12-month",
+            "cutoffLifecycle": "growth",
+            "predictedRevenue": 529014.48,
+            "baselinePredictedRevenue": 645139.6,
+            "pessimisticPredictedRevenue": 374069.72,
+            "optimisticPredictedRevenue": 748139.45,
+            "forecastConfidence": "medium",
+            "intervalCoverage": false,
+            "intervalReason": [
+              "cutoff residual and volatility interval"
+            ],
+            "actualRevenue": 278357.2,
+            "absoluteError": 250657.28,
+            "baselineAbsoluteError": 366782.4,
+            "percentageError": 0.9005,
+            "candidateBetterOrEqualBaseline": true
+          }
+        ],
+        "ratingReliability": {
+          "forecastValue": 146137.53,
+          "historicalRevenuePercentile": 0.9971,
+          "lifecycleAdjustment": "rebound",
+          "remainingCopyrightAdjustment": "0_to_12",
+          "riskAdjustment": "capped",
+          "finalRatingReason": "rating basis amount supports S+; lifecycle=rebound; risk cap adjusted rating to S; manual review context required",
+          "nearThresholdBoundary": false
+        },
+        "risks": [
+          {
+            "risk": "copyright_expiry",
+            "severity": "high",
+            "affectsForecast": false,
+            "affectsRating": true,
+            "affectsSuggestion": true
+          }
+        ],
+        "suggestions": [
+          {
+            "suggestion": "pricing_or_channel_adjustment",
+            "trigger": "long tail or rebound without hard channel concentration risk",
+            "supported": true,
+            "requiresManualConfirmation": true
+          },
+          {
+            "suggestion": "renewal_review",
+            "trigger": "copyright_expiry risk and rating not below C",
+            "supported": true,
+            "requiresManualConfirmation": true
+          },
+          {
+            "suggestion": "manual_review_required",
+            "trigger": "blocking manual review reason exists",
+            "supported": true,
+            "requiresManualConfirmation": true
+          }
+        ],
+        "validationOutcome": "fail",
+        "warningOrFailureReasons": [
+          "low interval coverage in available backtests",
+          "manual review dependency remains in algorithm evidence"
+        ]
+      },
+      {
+        "sampleId": "W007",
+        "rating": "S+",
+        "uncappedRating": "S+",
+        "lifecycle": "stable",
+        "revenueScale": "top",
+        "latestCompleteMonth": "2026-04",
+        "remainingCopyrightMonthsBucket": "25_to_60",
+        "forecast": {
+          "base": 10798040.03,
+          "optimistic": 13023053.21,
+          "pessimistic": 8953174.54,
+          "yearlyBreakdown": [
+            {
+              "year": "2026",
+              "baseForecast": 1542577.15
+            },
+            {
+              "year": "2027",
+              "baseForecast": 2313865.72
+            },
+            {
+              "year": "2028",
+              "baseForecast": 2313865.72
+            },
+            {
+              "year": "2029",
+              "baseForecast": 2313865.72
+            },
+            {
+              "year": "2030",
+              "baseForecast": 2313865.72
+            }
+          ],
+          "confidence": "high",
+          "intervalReason": [
+            "data-driven residual and volatility interval"
+          ],
+          "optimisticPessimisticRatio": 1.4546,
+          "assumptions": [
+            "candidate-b forecast scenario calibration patch v0.2",
+            "last-12 revenue as base signal",
+            "remaining copyright months or scoped fallback",
+            "data-driven interval from volatility, residual, lifecycle, revenue scale, confidence, and readiness signals"
+          ]
+        },
+        "history": {
+          "last3Revenue": 938329.13,
+          "last6Revenue": 1810519.61,
+          "last12Revenue": 3672802.73,
+          "last24Revenue": 7891316.47,
+          "totalHistoricalRevenue": 19987289.85,
+          "activeMonthCount": 67,
+          "zeroRevenueMonthCount": 0,
+          "recentTrend": "stable",
+          "abnormalPeakOrOneOff": false
+        },
+        "backtest": [
+          {
+            "horizonMonths": 3,
+            "cutoffMonth": "2026-01",
+            "predictionHorizon": "3-month",
+            "cutoffLifecycle": "stable",
+            "predictedRevenue": 592429.54,
+            "baselinePredictedRevenue": 940364.35,
+            "pessimisticPredictedRevenue": 483716.69,
+            "optimisticPredictedRevenue": 725575.04,
+            "forecastConfidence": "high",
+            "intervalCoverage": false,
+            "intervalReason": [
+              "cutoff residual and volatility interval"
+            ],
+            "actualRevenue": 938329.13,
+            "absoluteError": 345899.59,
+            "baselineAbsoluteError": 2035.22,
+            "percentageError": 0.3686,
+            "candidateBetterOrEqualBaseline": false
+          },
+          {
+            "horizonMonths": 6,
+            "cutoffMonth": "2025-10",
+            "predictionHorizon": "6-month",
+            "cutoffLifecycle": "stable",
+            "predictedRevenue": 1258449.85,
+            "baselinePredictedRevenue": 1997539.44,
+            "pessimisticPredictedRevenue": 1027520.0,
+            "optimisticPredictedRevenue": 1541280.0,
+            "forecastConfidence": "high",
+            "intervalCoverage": false,
+            "intervalReason": [
+              "cutoff residual and volatility interval"
+            ],
+            "actualRevenue": 1810519.61,
+            "absoluteError": 552069.76,
+            "baselineAbsoluteError": 187019.83,
+            "percentageError": 0.3049,
+            "candidateBetterOrEqualBaseline": false
+          },
+          {
+            "horizonMonths": 12,
+            "cutoffMonth": "2025-04",
+            "predictionHorizon": "12-month",
+            "cutoffLifecycle": "stable",
+            "predictedRevenue": 2657663.66,
+            "baselinePredictedRevenue": 4218513.74,
+            "pessimisticPredictedRevenue": 2169973.29,
+            "optimisticPredictedRevenue": 3254959.93,
+            "forecastConfidence": "high",
+            "intervalCoverage": false,
+            "intervalReason": [
+              "cutoff residual and volatility interval"
+            ],
+            "actualRevenue": 3672802.73,
+            "absoluteError": 1015139.07,
+            "baselineAbsoluteError": 545711.01,
+            "percentageError": 0.2764,
+            "candidateBetterOrEqualBaseline": false
+          }
+        ],
+        "ratingReliability": {
+          "forecastValue": 10798040.03,
+          "historicalRevenuePercentile": 1.0,
+          "lifecycleAdjustment": "stable",
+          "remainingCopyrightAdjustment": "25_to_60",
+          "riskAdjustment": "none",
+          "finalRatingReason": "rating basis amount supports S+; lifecycle=stable",
+          "nearThresholdBoundary": false
+        },
+        "risks": [
+          {
+            "risk": "channel_concentration",
+            "severity": "medium",
+            "affectsForecast": false,
+            "affectsRating": false,
+            "affectsSuggestion": true
+          }
+        ],
+        "suggestions": [
+          {
+            "suggestion": "promote",
+            "trigger": "rating in S+/S or lifecycle=growth without blocking readiness risk",
+            "supported": true,
+            "requiresManualConfirmation": true
+          },
+          {
+            "suggestion": "repackage",
+            "trigger": "mixed business form or channel concentration with non-low rating",
+            "supported": true,
+            "requiresManualConfirmation": true
+          }
+        ],
+        "validationOutcome": "fail",
+        "warningOrFailureReasons": [
+          "high-value sample worse than trailing baseline across tested horizons",
+          "low interval coverage in available backtests"
+        ]
+      },
+      {
+        "sampleId": "W008",
+        "rating": "A",
+        "uncappedRating": "A",
+        "lifecycle": "stable",
+        "revenueScale": "top",
+        "latestCompleteMonth": "2026-04",
+        "remainingCopyrightMonthsBucket": "expired_or_zero",
+        "forecast": {
+          "base": 0.0,
+          "optimistic": 0.0,
+          "pessimistic": 0.0,
+          "yearlyBreakdown": [],
+          "confidence": "high",
+          "intervalReason": [
+            "data-driven residual and volatility interval"
+          ],
+          "optimisticPessimisticRatio": null,
+          "assumptions": [
+            "candidate-b forecast scenario calibration patch v0.2",
+            "last-12 revenue as base signal",
+            "remaining copyright months or scoped fallback",
+            "data-driven interval from volatility, residual, lifecycle, revenue scale, confidence, and readiness signals"
+          ]
+        },
+        "history": {
+          "last3Revenue": 1568.88,
+          "last6Revenue": 3377.59,
+          "last12Revenue": 8840.75,
+          "last24Revenue": 24204.57,
+          "totalHistoricalRevenue": 768139.8,
+          "activeMonthCount": 77,
+          "zeroRevenueMonthCount": 0,
+          "recentTrend": "decreasing",
+          "abnormalPeakOrOneOff": false
+        },
+        "backtest": [
+          {
+            "horizonMonths": 3,
+            "cutoffMonth": "2026-01",
+            "predictionHorizon": "3-month",
+            "cutoffLifecycle": "stable",
+            "predictedRevenue": 1609.04,
+            "baselinePredictedRevenue": 2554.04,
+            "pessimisticPredictedRevenue": 1313.78,
+            "optimisticPredictedRevenue": 1970.67,
+            "forecastConfidence": "high",
+            "intervalCoverage": true,
+            "intervalReason": [
+              "cutoff residual and volatility interval"
+            ],
+            "actualRevenue": 1568.88,
+            "absoluteError": 40.16,
+            "baselineAbsoluteError": 985.16,
+            "percentageError": 0.0256,
+            "candidateBetterOrEqualBaseline": true
+          },
+          {
+            "horizonMonths": 6,
+            "cutoffMonth": "2025-10",
+            "predictionHorizon": "6-month",
+            "cutoffLifecycle": "stable",
+            "predictedRevenue": 3677.33,
+            "baselinePredictedRevenue": 5837.03,
+            "pessimisticPredictedRevenue": 3002.53,
+            "optimisticPredictedRevenue": 4503.79,
+            "forecastConfidence": "high",
+            "intervalCoverage": true,
+            "intervalReason": [
+              "cutoff residual and volatility interval"
+            ],
+            "actualRevenue": 3377.59,
+            "absoluteError": 299.74,
+            "baselineAbsoluteError": 2459.44,
+            "percentageError": 0.0887,
+            "candidateBetterOrEqualBaseline": true
+          },
+          {
+            "horizonMonths": 12,
+            "cutoffMonth": "2025-04",
+            "predictionHorizon": "12-month",
+            "cutoffLifecycle": "stable",
+            "predictedRevenue": 6291.48,
+            "baselinePredictedRevenue": 15363.82,
+            "pessimisticPredictedRevenue": 5136.98,
+            "optimisticPredictedRevenue": 7705.46,
+            "forecastConfidence": "high",
+            "intervalCoverage": false,
+            "intervalReason": [
+              "abnormal-spike damping"
+            ],
+            "actualRevenue": 8840.75,
+            "absoluteError": 2549.27,
+            "baselineAbsoluteError": 6523.07,
+            "percentageError": 0.2884,
+            "candidateBetterOrEqualBaseline": true
+          }
+        ],
+        "ratingReliability": {
+          "forecastValue": 0.0,
+          "historicalRevenuePercentile": 0.9404,
+          "lifecycleAdjustment": "stable",
+          "remainingCopyrightAdjustment": "expired_or_zero",
+          "riskAdjustment": "none",
+          "finalRatingReason": "rating basis amount supports A; lifecycle=stable",
+          "nearThresholdBoundary": false
+        },
+        "risks": [
+          {
+            "risk": "copyright_expiry",
+            "severity": "high",
+            "affectsForecast": false,
+            "affectsRating": true,
+            "affectsSuggestion": true
+          }
+        ],
+        "suggestions": [
+          {
+            "suggestion": "maintain",
+            "trigger": "rating in A/B and lifecycle stable or growth",
+            "supported": true,
+            "requiresManualConfirmation": false
+          },
+          {
+            "suggestion": "renewal_review",
+            "trigger": "copyright_expiry risk and rating not below C",
+            "supported": true,
+            "requiresManualConfirmation": true
+          }
+        ],
+        "validationOutcome": "pass",
+        "warningOrFailureReasons": []
+      },
+      {
+        "sampleId": "W009",
+        "rating": "D",
+        "uncappedRating": "D",
+        "lifecycle": "declining",
+        "revenueScale": "top",
+        "latestCompleteMonth": "2026-04",
+        "remainingCopyrightMonthsBucket": "expired_or_zero",
+        "forecast": {
+          "base": 0.0,
+          "optimistic": 0.0,
+          "pessimistic": 0.0,
+          "yearlyBreakdown": [],
+          "confidence": "medium",
+          "intervalReason": [
+            "declining lifecycle damping",
+            "low-value forecast guard",
+            "high backtest residual widens interval"
+          ],
+          "optimisticPessimisticRatio": null,
+          "assumptions": [
+            "candidate-b forecast scenario calibration patch v0.2",
+            "last-12 revenue as base signal",
+            "remaining copyright months or scoped fallback",
+            "data-driven interval from volatility, residual, lifecycle, revenue scale, confidence, and readiness signals"
+          ]
+        },
+        "history": {
+          "last3Revenue": 0.0,
+          "last6Revenue": 0.41,
+          "last12Revenue": 6.2,
+          "last24Revenue": 50.19,
+          "totalHistoricalRevenue": 242299.48,
+          "activeMonthCount": 90,
+          "zeroRevenueMonthCount": 6,
+          "recentTrend": "decreasing",
+          "abnormalPeakOrOneOff": false
+        },
+        "backtest": [
+          {
+            "horizonMonths": 3,
+            "cutoffMonth": "2026-01",
+            "predictionHorizon": "3-month",
+            "cutoffLifecycle": "declining",
+            "predictedRevenue": 1.2,
+            "baselinePredictedRevenue": 3.42,
+            "pessimisticPredictedRevenue": 0.85,
+            "optimisticPredictedRevenue": 1.69,
+            "forecastConfidence": "medium",
+            "intervalCoverage": false,
+            "intervalReason": [
+              "declining lifecycle damping"
+            ],
+            "actualRevenue": 0.0,
+            "absoluteError": 1.2,
+            "baselineAbsoluteError": 3.42,
+            "percentageError": null,
+            "candidateBetterOrEqualBaseline": true
+          },
+          {
+            "horizonMonths": 6,
+            "cutoffMonth": "2025-10",
+            "predictionHorizon": "6-month",
+            "cutoffLifecycle": "stable",
+            "predictedRevenue": 5.27,
+            "baselinePredictedRevenue": 8.36,
+            "pessimisticPredictedRevenue": 3.72,
+            "optimisticPredictedRevenue": 7.45,
+            "forecastConfidence": "medium",
+            "intervalCoverage": false,
+            "intervalReason": [
+              "cutoff residual and volatility interval"
+            ],
+            "actualRevenue": 0.41,
+            "absoluteError": 4.86,
+            "baselineAbsoluteError": 7.95,
+            "percentageError": 11.8224,
+            "candidateBetterOrEqualBaseline": true
+          },
+          {
+            "horizonMonths": 12,
+            "cutoffMonth": "2025-04",
+            "predictionHorizon": "12-month",
+            "cutoffLifecycle": "rebound",
+            "predictedRevenue": 27.72,
+            "baselinePredictedRevenue": 44.0,
+            "pessimisticPredictedRevenue": 19.6,
+            "optimisticPredictedRevenue": 39.2,
+            "forecastConfidence": "medium",
+            "intervalCoverage": false,
+            "intervalReason": [
+              "cutoff residual and volatility interval"
+            ],
+            "actualRevenue": 6.2,
+            "absoluteError": 21.52,
+            "baselineAbsoluteError": 37.8,
+            "percentageError": 3.4746,
+            "candidateBetterOrEqualBaseline": true
+          }
+        ],
+        "ratingReliability": {
+          "forecastValue": 0.0,
+          "historicalRevenuePercentile": 0.4587,
+          "lifecycleAdjustment": "declining",
+          "remainingCopyrightAdjustment": "expired_or_zero",
+          "riskAdjustment": "none",
+          "finalRatingReason": "rating basis amount supports D; lifecycle=declining",
+          "nearThresholdBoundary": false
+        },
+        "risks": [
+          {
+            "risk": "revenue_decline",
+            "severity": "medium",
+            "affectsForecast": false,
+            "affectsRating": false,
+            "affectsSuggestion": false
+          },
+          {
+            "risk": "copyright_expiry",
+            "severity": "high",
+            "affectsForecast": false,
+            "affectsRating": true,
+            "affectsSuggestion": true
+          }
+        ],
+        "suggestions": [
+          {
+            "suggestion": "reduce_investment",
+            "trigger": "rating in C/D with declining or inactive signal",
+            "supported": true,
+            "requiresManualConfirmation": false
+          }
+        ],
+        "validationOutcome": "fail",
+        "warningOrFailureReasons": [
+          "high relative forecast error; inspect private pack",
+          "low interval coverage in available backtests"
+        ]
+      },
+      {
+        "sampleId": "W010",
+        "rating": "C",
+        "uncappedRating": "C",
+        "lifecycle": "stable",
+        "revenueScale": "low",
+        "latestCompleteMonth": "2026-04",
+        "remainingCopyrightMonthsBucket": "fallback_used",
+        "forecast": {
+          "base": 155.98,
+          "optimistic": 264.71,
+          "pessimistic": 91.92,
+          "yearlyBreakdown": [
+            {
+              "year": "2026",
+              "baseForecast": 103.99
+            },
+            {
+              "year": "2027",
+              "baseForecast": 51.99
+            }
+          ],
+          "confidence": "blocked_for_business_use",
+          "intervalReason": [
+            "low-value forecast guard"
+          ],
+          "optimisticPessimisticRatio": 2.8798,
+          "assumptions": [
+            "candidate-b forecast scenario calibration patch v0.2",
+            "last-12 revenue as base signal",
+            "remaining copyright months or scoped fallback",
+            "data-driven interval from volatility, residual, lifecycle, revenue scale, confidence, and readiness signals"
+          ]
+        },
+        "history": {
+          "last3Revenue": 78.31,
+          "last6Revenue": 136.95,
+          "last12Revenue": 247.59,
+          "last24Revenue": 283.73,
+          "totalHistoricalRevenue": 283.73,
+          "activeMonthCount": 22,
+          "zeroRevenueMonthCount": 0,
+          "recentTrend": "increasing",
+          "abnormalPeakOrOneOff": false
+        },
+        "backtest": [
+          {
+            "horizonMonths": 3,
+            "cutoffMonth": "2026-01",
+            "predictionHorizon": "3-month",
+            "cutoffLifecycle": "growth",
+            "predictedRevenue": 35.85,
+            "baselinePredictedRevenue": 43.72,
+            "pessimisticPredictedRevenue": 29.27,
+            "optimisticPredictedRevenue": 43.91,
+            "forecastConfidence": "high",
+            "intervalCoverage": false,
+            "intervalReason": [
+              "cutoff residual and volatility interval"
+            ],
+            "actualRevenue": 78.31,
+            "absoluteError": 42.46,
+            "baselineAbsoluteError": 34.59,
+            "percentageError": 0.5422,
+            "candidateBetterOrEqualBaseline": false
+          },
+          {
+            "horizonMonths": 6,
+            "cutoffMonth": "2025-10",
+            "predictionHorizon": "6-month",
+            "cutoffLifecycle": "growth",
+            "predictedRevenue": 50.43,
+            "baselinePredictedRevenue": 61.5,
+            "pessimisticPredictedRevenue": 41.17,
+            "optimisticPredictedRevenue": 61.76,
+            "forecastConfidence": "high",
+            "intervalCoverage": false,
+            "intervalReason": [
+              "cutoff residual and volatility interval"
+            ],
+            "actualRevenue": 136.95,
+            "absoluteError": 86.52,
+            "baselineAbsoluteError": 75.45,
+            "percentageError": 0.6318,
+            "candidateBetterOrEqualBaseline": false
+          },
+          {
+            "horizonMonths": 12,
+            "cutoffMonth": "2025-04",
+            "predictionHorizon": "12-month",
+            "cutoffLifecycle": "stable",
+            "predictedRevenue": 22.77,
+            "baselinePredictedRevenue": 36.13,
+            "pessimisticPredictedRevenue": 16.1,
+            "optimisticPredictedRevenue": 32.19,
+            "forecastConfidence": "medium",
+            "intervalCoverage": false,
+            "intervalReason": [
+              "cutoff residual and volatility interval"
+            ],
+            "actualRevenue": 247.59,
+            "absoluteError": 224.82,
+            "baselineAbsoluteError": 211.46,
+            "percentageError": 0.908,
+            "candidateBetterOrEqualBaseline": false
+          }
+        ],
+        "ratingReliability": {
+          "forecastValue": 155.98,
+          "historicalRevenuePercentile": 0.7017,
+          "lifecycleAdjustment": "stable",
+          "remainingCopyrightAdjustment": "fallback_used",
+          "riskAdjustment": "none",
+          "finalRatingReason": "rating basis amount supports C; lifecycle=stable",
+          "nearThresholdBoundary": false
+        },
+        "risks": [
+          {
+            "risk": "missing_copyright_end",
+            "severity": "high",
+            "affectsForecast": true,
+            "affectsRating": true,
+            "affectsSuggestion": false
+          },
+          {
+            "risk": "missing_basic_info",
+            "severity": "medium",
+            "affectsForecast": false,
+            "affectsRating": false,
+            "affectsSuggestion": false
+          },
+          {
+            "risk": "aggregate_projection_gap",
+            "severity": "low",
+            "affectsForecast": true,
+            "affectsRating": false,
+            "affectsSuggestion": false
+          },
+          {
+            "risk": "business_form_mixed",
+            "severity": "low",
+            "affectsForecast": false,
+            "affectsRating": false,
+            "affectsSuggestion": false
+          }
+        ],
+        "suggestions": [
+          {
+            "suggestion": "repackage",
+            "trigger": "mixed business form or channel concentration with non-low rating",
+            "supported": true,
+            "requiresManualConfirmation": true
+          }
+        ],
+        "validationOutcome": "fail",
+        "warningOrFailureReasons": [
+          "candidate forecast worse than baseline in most tested horizons",
+          "low interval coverage in available backtests"
+        ]
+      },
+      {
+        "sampleId": "W011",
+        "rating": "A",
+        "uncappedRating": "A",
+        "lifecycle": "growth",
+        "revenueScale": "mid",
+        "latestCompleteMonth": "2026-04",
+        "remainingCopyrightMonthsBucket": "25_to_60",
+        "forecast": {
+          "base": 39718.63,
+          "optimistic": 56170.62,
+          "pessimistic": 28085.31,
+          "yearlyBreakdown": [
+            {
+              "year": "2026",
+              "baseForecast": 6760.62
+            },
+            {
+              "year": "2027",
+              "baseForecast": 10140.93
+            },
+            {
+              "year": "2028",
+              "baseForecast": 10140.93
+            },
+            {
+              "year": "2029",
+              "baseForecast": 10140.93
+            },
+            {
+              "year": "2030",
+              "baseForecast": 2535.23
+            }
+          ],
+          "confidence": "medium",
+          "intervalReason": [
+            "data-driven residual and volatility interval"
+          ],
+          "optimisticPessimisticRatio": 2.0,
+          "assumptions": [
+            "candidate-b forecast scenario calibration patch v0.2",
+            "last-12 revenue as base signal",
+            "remaining copyright months or scoped fallback",
+            "data-driven interval from volatility, residual, lifecycle, revenue scale, confidence, and readiness signals"
+          ]
+        },
+        "history": {
+          "last3Revenue": 708.25,
+          "last6Revenue": 10866.69,
+          "last12Revenue": 12366.98,
+          "last24Revenue": 12366.98,
+          "totalHistoricalRevenue": 12366.98,
+          "activeMonthCount": 10,
+          "zeroRevenueMonthCount": 0,
+          "recentTrend": "increasing",
+          "abnormalPeakOrOneOff": false
+        },
+        "backtest": [
+          {
+            "horizonMonths": 3,
+            "cutoffMonth": "2026-01",
+            "predictionHorizon": "3-month",
+            "cutoffLifecycle": "growth",
+            "predictedRevenue": 2390.04,
+            "baselinePredictedRevenue": 2914.68,
+            "pessimisticPredictedRevenue": 1690.01,
+            "optimisticPredictedRevenue": 3380.03,
+            "forecastConfidence": "medium",
+            "intervalCoverage": false,
+            "intervalReason": [
+              "cutoff residual and volatility interval"
+            ],
+            "actualRevenue": 708.25,
+            "absoluteError": 1681.79,
+            "baselineAbsoluteError": 2206.44,
+            "percentageError": 2.3746,
+            "candidateBetterOrEqualBaseline": true
+          },
+          {
+            "horizonMonths": 6,
+            "cutoffMonth": "2025-10",
+            "predictionHorizon": "6-month",
+            "cutoffLifecycle": "insufficient_history",
+            "predictedRevenue": 1875.37,
+            "baselinePredictedRevenue": 750.15,
+            "pessimisticPredictedRevenue": 1101.26,
+            "optimisticPredictedRevenue": 3193.64,
+            "forecastConfidence": "low",
+            "intervalCoverage": false,
+            "intervalReason": [
+              "insufficient-history cap"
+            ],
+            "actualRevenue": 10866.69,
+            "absoluteError": 8991.32,
+            "baselineAbsoluteError": 10116.54,
+            "percentageError": 0.8274,
+            "candidateBetterOrEqualBaseline": true
+          },
+          {
+            "horizonMonths": 12,
+            "cutoffMonth": "2025-04",
+            "predictionHorizon": "12-month",
+            "cutoffLifecycle": "insufficient_history",
+            "predictedRevenue": 0.0,
+            "baselinePredictedRevenue": 0.0,
+            "pessimisticPredictedRevenue": 0.0,
+            "optimisticPredictedRevenue": 0.0,
+            "forecastConfidence": "low",
+            "intervalCoverage": false,
+            "intervalReason": [
+              "insufficient-history cap",
+              "sparse-near-zero floor/cap guard"
+            ],
+            "actualRevenue": 12366.98,
+            "absoluteError": 12366.98,
+            "baselineAbsoluteError": 12366.98,
+            "percentageError": 1.0,
+            "candidateBetterOrEqualBaseline": true
+          }
+        ],
+        "ratingReliability": {
+          "forecastValue": 39718.63,
+          "historicalRevenuePercentile": 0.9538,
+          "lifecycleAdjustment": "growth",
+          "remainingCopyrightAdjustment": "25_to_60",
+          "riskAdjustment": "none",
+          "finalRatingReason": "rating basis amount supports A; lifecycle=growth",
+          "nearThresholdBoundary": false
+        },
+        "risks": [],
+        "suggestions": [
+          {
+            "suggestion": "promote",
+            "trigger": "rating in S+/S or lifecycle=growth without blocking readiness risk",
+            "supported": true,
+            "requiresManualConfirmation": false
+          },
+          {
+            "suggestion": "maintain",
+            "trigger": "rating in A/B and lifecycle stable or growth",
+            "supported": true,
+            "requiresManualConfirmation": false
+          }
+        ],
+        "validationOutcome": "fail",
+        "warningOrFailureReasons": [
+          "low interval coverage in available backtests"
+        ]
+      },
+      {
+        "sampleId": "W012",
+        "rating": "D",
+        "uncappedRating": "D",
+        "lifecycle": "growth",
+        "revenueScale": "low",
+        "latestCompleteMonth": "2026-04",
+        "remainingCopyrightMonthsBucket": "fallback_used",
+        "forecast": {
+          "base": 2.57,
+          "optimistic": 4.56,
+          "pessimistic": 1.45,
+          "yearlyBreakdown": [
+            {
+              "year": "2026",
+              "baseForecast": 1.71
+            },
+            {
+              "year": "2027",
+              "baseForecast": 0.86
+            }
+          ],
+          "confidence": "blocked_for_business_use",
+          "intervalReason": [
+            "low-value forecast guard"
+          ],
+          "optimisticPessimisticRatio": 3.15,
+          "assumptions": [
+            "candidate-b forecast scenario calibration patch v0.2",
+            "last-12 revenue as base signal",
+            "remaining copyright months or scoped fallback",
+            "data-driven interval from volatility, residual, lifecycle, revenue scale, confidence, and readiness signals"
+          ]
+        },
+        "history": {
+          "last3Revenue": 1.97,
+          "last6Revenue": 1.97,
+          "last12Revenue": 3.14,
+          "last24Revenue": 3.2,
+          "totalHistoricalRevenue": 13.22,
+          "activeMonthCount": 13,
+          "zeroRevenueMonthCount": 20,
+          "recentTrend": "increasing",
+          "abnormalPeakOrOneOff": false
+        },
+        "backtest": [
+          {
+            "horizonMonths": 3,
+            "cutoffMonth": "2026-01",
+            "predictionHorizon": "3-month",
+            "cutoffLifecycle": "growth",
+            "predictedRevenue": 0.25,
+            "baselinePredictedRevenue": 0.31,
+            "pessimisticPredictedRevenue": 0.18,
+            "optimisticPredictedRevenue": 0.36,
+            "forecastConfidence": "medium",
+            "intervalCoverage": false,
+            "intervalReason": [
+              "sparse-near-zero floor/cap guard"
+            ],
+            "actualRevenue": 1.97,
+            "absoluteError": 1.72,
+            "baselineAbsoluteError": 1.66,
+            "percentageError": 0.8731,
+            "candidateBetterOrEqualBaseline": false
+          },
+          {
+            "horizonMonths": 6,
+            "cutoffMonth": "2025-10",
+            "predictionHorizon": "6-month",
+            "cutoffLifecycle": "growth",
+            "predictedRevenue": 0.51,
+            "baselinePredictedRevenue": 0.62,
+            "pessimisticPredictedRevenue": 0.36,
+            "optimisticPredictedRevenue": 0.71,
+            "forecastConfidence": "medium",
+            "intervalCoverage": false,
+            "intervalReason": [
+              "sparse-near-zero floor/cap guard"
+            ],
+            "actualRevenue": 1.97,
+            "absoluteError": 1.46,
+            "baselineAbsoluteError": 1.35,
+            "percentageError": 0.7411,
+            "candidateBetterOrEqualBaseline": false
+          },
+          {
+            "horizonMonths": 12,
+            "cutoffMonth": "2025-04",
+            "predictionHorizon": "12-month",
+            "cutoffLifecycle": "long_tail",
+            "predictedRevenue": 0.07,
+            "baselinePredictedRevenue": 0.07,
+            "pessimisticPredictedRevenue": 0.04,
+            "optimisticPredictedRevenue": 0.12,
+            "forecastConfidence": "low",
+            "intervalCoverage": false,
+            "intervalReason": [
+              "long-tail low-revenue cap",
+              "sparse-near-zero floor/cap guard"
+            ],
+            "actualRevenue": 3.14,
+            "absoluteError": 3.07,
+            "baselineAbsoluteError": 3.07,
+            "percentageError": 0.9777,
+            "candidateBetterOrEqualBaseline": true
+          }
+        ],
+        "ratingReliability": {
+          "forecastValue": 2.57,
+          "historicalRevenuePercentile": 0.406,
+          "lifecycleAdjustment": "growth",
+          "remainingCopyrightAdjustment": "fallback_used",
+          "riskAdjustment": "none",
+          "finalRatingReason": "rating basis amount supports D; lifecycle=growth",
+          "nearThresholdBoundary": false
+        },
+        "risks": [
+          {
+            "risk": "missing_copyright_end",
+            "severity": "high",
+            "affectsForecast": true,
+            "affectsRating": true,
+            "affectsSuggestion": false
+          },
+          {
+            "risk": "missing_basic_info",
+            "severity": "medium",
+            "affectsForecast": false,
+            "affectsRating": false,
+            "affectsSuggestion": false
+          },
+          {
+            "risk": "aggregate_projection_gap",
+            "severity": "low",
+            "affectsForecast": true,
+            "affectsRating": false,
+            "affectsSuggestion": false
+          },
+          {
+            "risk": "channel_concentration_advisory",
+            "severity": "low",
+            "affectsForecast": false,
+            "affectsRating": false,
+            "affectsSuggestion": false
+          }
+        ],
+        "suggestions": [
+          {
+            "suggestion": "promote",
+            "trigger": "rating in S+/S or lifecycle=growth without blocking readiness risk",
+            "supported": true,
+            "requiresManualConfirmation": false
+          }
+        ],
+        "validationOutcome": "fail",
+        "warningOrFailureReasons": [
+          "candidate forecast worse than baseline in most tested horizons",
+          "low interval coverage in available backtests",
+          "forecast uses copyright fallback for action-bearing or high-value row"
+        ]
+      },
+      {
+        "sampleId": "W013",
+        "rating": "S",
+        "uncappedRating": "S+",
+        "lifecycle": "declining",
+        "revenueScale": "top",
+        "latestCompleteMonth": "2026-04",
+        "remainingCopyrightMonthsBucket": "0_to_12",
+        "forecast": {
+          "base": 6298.17,
+          "optimistic": 8802.68,
+          "pessimistic": 4506.23,
+          "yearlyBreakdown": [
+            {
+              "year": "2026",
+              "baseForecast": 6298.17
+            }
+          ],
+          "confidence": "medium",
+          "intervalReason": [
+            "declining lifecycle damping"
+          ],
+          "optimisticPessimisticRatio": 1.9534,
+          "assumptions": [
+            "candidate-b forecast scenario calibration patch v0.2",
+            "last-12 revenue as base signal",
+            "remaining copyright months or scoped fallback",
+            "data-driven interval from volatility, residual, lifecycle, revenue scale, confidence, and readiness signals"
+          ]
+        },
+        "history": {
+          "last3Revenue": 32088.8,
+          "last6Revenue": 65819.94,
+          "last12Revenue": 215937.1,
+          "last24Revenue": 393585.65,
+          "totalHistoricalRevenue": 460163.89,
+          "activeMonthCount": 32,
+          "zeroRevenueMonthCount": 0,
+          "recentTrend": "decreasing",
+          "abnormalPeakOrOneOff": false
+        },
+        "backtest": [
+          {
+            "horizonMonths": 3,
+            "cutoffMonth": "2026-01",
+            "predictionHorizon": "3-month",
+            "cutoffLifecycle": "stable",
+            "predictedRevenue": 38084.41,
+            "baselinePredictedRevenue": 60451.45,
+            "pessimisticPredictedRevenue": 26929.74,
+            "optimisticPredictedRevenue": 53859.49,
+            "forecastConfidence": "medium",
+            "intervalCoverage": true,
+            "intervalReason": [
+              "cutoff residual and volatility interval"
+            ],
+            "actualRevenue": 32088.8,
+            "absoluteError": 5995.61,
+            "baselineAbsoluteError": 28362.64,
+            "percentageError": 0.1868,
+            "candidateBetterOrEqualBaseline": true
+          },
+          {
+            "horizonMonths": 6,
+            "cutoffMonth": "2025-10",
+            "predictionHorizon": "6-month",
+            "cutoffLifecycle": "stable",
+            "predictedRevenue": 87806.97,
+            "baselinePredictedRevenue": 139376.14,
+            "pessimisticPredictedRevenue": 62088.9,
+            "optimisticPredictedRevenue": 124177.81,
+            "forecastConfidence": "medium",
+            "intervalCoverage": true,
+            "intervalReason": [
+              "cutoff residual and volatility interval"
+            ],
+            "actualRevenue": 65819.94,
+            "absoluteError": 21987.03,
+            "baselineAbsoluteError": 73556.2,
+            "percentageError": 0.334,
+            "candidateBetterOrEqualBaseline": true
+          },
+          {
+            "horizonMonths": 12,
+            "cutoffMonth": "2025-04",
+            "predictionHorizon": "12-month",
+            "cutoffLifecycle": "growth",
+            "predictedRevenue": 145671.81,
+            "baselinePredictedRevenue": 177648.55,
+            "pessimisticPredictedRevenue": 103005.52,
+            "optimisticPredictedRevenue": 206011.05,
+            "forecastConfidence": "medium",
+            "intervalCoverage": false,
+            "intervalReason": [
+              "cutoff residual and volatility interval"
+            ],
+            "actualRevenue": 215937.1,
+            "absoluteError": 70265.29,
+            "baselineAbsoluteError": 38288.55,
+            "percentageError": 0.3254,
+            "candidateBetterOrEqualBaseline": false
+          }
+        ],
+        "ratingReliability": {
+          "forecastValue": 6298.17,
+          "historicalRevenuePercentile": 0.9967,
+          "lifecycleAdjustment": "declining",
+          "remainingCopyrightAdjustment": "0_to_12",
+          "riskAdjustment": "capped",
+          "finalRatingReason": "rating basis amount supports S+; lifecycle=declining; risk cap adjusted rating to S; manual review context required",
+          "nearThresholdBoundary": false
+        },
+        "risks": [
+          {
+            "risk": "revenue_decline",
+            "severity": "medium",
+            "affectsForecast": false,
+            "affectsRating": false,
+            "affectsSuggestion": false
+          },
+          {
+            "risk": "copyright_expiry",
+            "severity": "high",
+            "affectsForecast": false,
+            "affectsRating": true,
+            "affectsSuggestion": true
+          }
+        ],
+        "suggestions": [
+          {
+            "suggestion": "renewal_review",
+            "trigger": "copyright_expiry risk and rating not below C",
+            "supported": true,
+            "requiresManualConfirmation": true
+          },
+          {
+            "suggestion": "manual_review_required",
+            "trigger": "blocking manual review reason exists",
+            "supported": true,
+            "requiresManualConfirmation": true
+          }
+        ],
+        "validationOutcome": "warning",
+        "warningOrFailureReasons": [
+          "manual review dependency remains in algorithm evidence"
+        ]
+      },
+      {
+        "sampleId": "W014",
+        "rating": "B",
+        "uncappedRating": "S",
+        "lifecycle": "declining",
+        "revenueScale": "high",
+        "latestCompleteMonth": "2026-04",
+        "remainingCopyrightMonthsBucket": "fallback_used",
+        "forecast": {
+          "base": 7587.74,
+          "optimistic": 11997.62,
+          "pessimistic": 4798.77,
+          "yearlyBreakdown": [
+            {
+              "year": "2026",
+              "baseForecast": 6744.66
+            },
+            {
+              "year": "2027",
+              "baseForecast": 843.08
+            }
+          ],
+          "confidence": "low",
+          "intervalReason": [
+            "declining lifecycle damping"
+          ],
+          "optimisticPessimisticRatio": 2.5001,
+          "assumptions": [
+            "candidate-b forecast scenario calibration patch v0.2",
+            "last-12 revenue as base signal",
+            "remaining copyright months or scoped fallback",
+            "data-driven interval from volatility, residual, lifecycle, revenue scale, confidence, and readiness signals"
+          ]
+        },
+        "history": {
+          "last3Revenue": 159.72,
+          "last6Revenue": 465.78,
+          "last12Revenue": 28905.68,
+          "last24Revenue": 29941.99,
+          "totalHistoricalRevenue": 34619.56,
+          "activeMonthCount": 57,
+          "zeroRevenueMonthCount": 10,
+          "recentTrend": "decreasing",
+          "abnormalPeakOrOneOff": false
+        },
+        "backtest": [
+          {
+            "horizonMonths": 3,
+            "cutoffMonth": "2026-01",
+            "predictionHorizon": "3-month",
+            "cutoffLifecycle": "rebound",
+            "predictedRevenue": 4537.42,
+            "baselinePredictedRevenue": 7202.25,
+            "pessimisticPredictedRevenue": 3208.44,
+            "optimisticPredictedRevenue": 6416.88,
+            "forecastConfidence": "medium",
+            "intervalCoverage": false,
+            "intervalReason": [
+              "cutoff residual and volatility interval"
+            ],
+            "actualRevenue": 159.72,
+            "absoluteError": 4377.7,
+            "baselineAbsoluteError": 7042.53,
+            "percentageError": 27.4084,
+            "candidateBetterOrEqualBaseline": true
+          },
+          {
+            "horizonMonths": 6,
+            "cutoffMonth": "2025-10",
+            "predictionHorizon": "6-month",
+            "cutoffLifecycle": "growth",
+            "predictedRevenue": 11753.44,
+            "baselinePredictedRevenue": 14333.47,
+            "pessimisticPredictedRevenue": 8310.94,
+            "optimisticPredictedRevenue": 16621.88,
+            "forecastConfidence": "medium",
+            "intervalCoverage": false,
+            "intervalReason": [
+              "cutoff residual and volatility interval"
+            ],
+            "actualRevenue": 465.78,
+            "absoluteError": 11287.66,
+            "baselineAbsoluteError": 13867.69,
+            "percentageError": 24.2338,
+            "candidateBetterOrEqualBaseline": true
+          },
+          {
+            "horizonMonths": 12,
+            "cutoffMonth": "2025-04",
+            "predictionHorizon": "12-month",
+            "cutoffLifecycle": "declining",
+            "predictedRevenue": 362.71,
+            "baselinePredictedRevenue": 1036.3,
+            "pessimisticPredictedRevenue": 256.47,
+            "optimisticPredictedRevenue": 512.94,
+            "forecastConfidence": "medium",
+            "intervalCoverage": false,
+            "intervalReason": [
+              "declining lifecycle damping"
+            ],
+            "actualRevenue": 28905.68,
+            "absoluteError": 28542.97,
+            "baselineAbsoluteError": 27869.38,
+            "percentageError": 0.9875,
+            "candidateBetterOrEqualBaseline": false
+          }
+        ],
+        "ratingReliability": {
+          "forecastValue": 7587.74,
+          "historicalRevenuePercentile": 0.9751,
+          "lifecycleAdjustment": "declining",
+          "remainingCopyrightAdjustment": "fallback_used",
+          "riskAdjustment": "capped",
+          "finalRatingReason": "rating basis amount supports S; lifecycle=declining; risk cap adjusted rating to B; manual review context required",
+          "nearThresholdBoundary": false
+        },
+        "risks": [
+          {
+            "risk": "missing_copyright_end",
+            "severity": "high",
+            "affectsForecast": true,
+            "affectsRating": true,
+            "affectsSuggestion": false
+          },
+          {
+            "risk": "missing_basic_info",
+            "severity": "medium",
+            "affectsForecast": false,
+            "affectsRating": false,
+            "affectsSuggestion": false
+          },
+          {
+            "risk": "incomplete_month_boundary",
+            "severity": "low",
+            "affectsForecast": false,
+            "affectsRating": false,
+            "affectsSuggestion": false
+          },
+          {
+            "risk": "aggregate_projection_gap",
+            "severity": "low",
+            "affectsForecast": true,
+            "affectsRating": false,
+            "affectsSuggestion": false
+          },
+          {
+            "risk": "revenue_decline",
+            "severity": "medium",
+            "affectsForecast": false,
+            "affectsRating": false,
+            "affectsSuggestion": false
+          }
+        ],
+        "suggestions": [
+          {
+            "suggestion": "observe_only",
+            "trigger": "insufficient history or incomplete month dominates evidence",
+            "supported": true,
+            "requiresManualConfirmation": false
+          },
+          {
+            "suggestion": "manual_review_required",
+            "trigger": "blocking manual review reason exists",
+            "supported": true,
+            "requiresManualConfirmation": true
+          }
+        ],
+        "validationOutcome": "fail",
+        "warningOrFailureReasons": [
+          "low interval coverage in available backtests",
+          "forecast uses copyright fallback for action-bearing or high-value row",
+          "manual review dependency remains in algorithm evidence"
+        ]
+      },
+      {
+        "sampleId": "W015",
+        "rating": "B",
+        "uncappedRating": "S+",
+        "lifecycle": "stable",
+        "revenueScale": "top",
+        "latestCompleteMonth": "2026-04",
+        "remainingCopyrightMonthsBucket": "fallback_used",
+        "forecast": {
+          "base": 593419.65,
+          "optimistic": 952025.6,
+          "pessimistic": 369892.24,
+          "yearlyBreakdown": [
+            {
+              "year": "2026",
+              "baseForecast": 395613.1
+            },
+            {
+              "year": "2027",
+              "baseForecast": 197806.55
+            }
+          ],
+          "confidence": "low",
+          "intervalReason": [
+            "data-driven residual and volatility interval"
+          ],
+          "optimisticPessimisticRatio": 2.5738,
+          "assumptions": [
+            "candidate-b forecast scenario calibration patch v0.2",
+            "last-12 revenue as base signal",
+            "remaining copyright months or scoped fallback",
+            "data-driven interval from volatility, residual, lifecycle, revenue scale, confidence, and readiness signals"
+          ]
+        },
+        "history": {
+          "last3Revenue": 188175.79,
+          "last6Revenue": 372394.72,
+          "last12Revenue": 941935.95,
+          "last24Revenue": 1429017.88,
+          "totalHistoricalRevenue": 1429017.88,
+          "activeMonthCount": 19,
+          "zeroRevenueMonthCount": 0,
+          "recentTrend": "decreasing",
+          "abnormalPeakOrOneOff": false
+        },
+        "backtest": [
+          {
+            "horizonMonths": 3,
+            "cutoffMonth": "2026-01",
+            "predictionHorizon": "3-month",
+            "cutoffLifecycle": "stable",
+            "predictedRevenue": 171517.44,
+            "baselinePredictedRevenue": 272249.9,
+            "pessimisticPredictedRevenue": 121281.14,
+            "optimisticPredictedRevenue": 242562.28,
+            "forecastConfidence": "medium",
+            "intervalCoverage": true,
+            "intervalReason": [
+              "cutoff residual and volatility interval"
+            ],
+            "actualRevenue": 188175.79,
+            "absoluteError": 16658.35,
+            "baselineAbsoluteError": 84074.1,
+            "percentageError": 0.0885,
+            "candidateBetterOrEqualBaseline": true
+          },
+          {
+            "horizonMonths": 6,
+            "cutoffMonth": "2025-10",
+            "predictionHorizon": "6-month",
+            "cutoffLifecycle": "stable",
+            "predictedRevenue": 315382.62,
+            "baselinePredictedRevenue": 500607.34,
+            "pessimisticPredictedRevenue": 223009.19,
+            "optimisticPredictedRevenue": 446018.38,
+            "forecastConfidence": "medium",
+            "intervalCoverage": true,
+            "intervalReason": [
+              "cutoff residual and volatility interval"
+            ],
+            "actualRevenue": 372394.72,
+            "absoluteError": 57012.1,
+            "baselineAbsoluteError": 128212.61,
+            "percentageError": 0.1531,
+            "candidateBetterOrEqualBaseline": true
+          },
+          {
+            "horizonMonths": 12,
+            "cutoffMonth": "2025-04",
+            "predictionHorizon": "12-month",
+            "cutoffLifecycle": "growth",
+            "predictedRevenue": 399407.18,
+            "baselinePredictedRevenue": 487081.93,
+            "pessimisticPredictedRevenue": 282423.53,
+            "optimisticPredictedRevenue": 564847.05,
+            "forecastConfidence": "medium",
+            "intervalCoverage": false,
+            "intervalReason": [
+              "cutoff residual and volatility interval"
+            ],
+            "actualRevenue": 941935.95,
+            "absoluteError": 542528.77,
+            "baselineAbsoluteError": 454854.02,
+            "percentageError": 0.576,
+            "candidateBetterOrEqualBaseline": false
+          }
+        ],
+        "ratingReliability": {
+          "forecastValue": 593419.65,
+          "historicalRevenuePercentile": 0.9993,
+          "lifecycleAdjustment": "stable",
+          "remainingCopyrightAdjustment": "fallback_used",
+          "riskAdjustment": "capped",
+          "finalRatingReason": "rating basis amount supports S+; lifecycle=stable; risk cap adjusted rating to B; manual review context required",
+          "nearThresholdBoundary": false
+        },
+        "risks": [
+          {
+            "risk": "missing_copyright_end",
+            "severity": "high",
+            "affectsForecast": true,
+            "affectsRating": true,
+            "affectsSuggestion": false
+          },
+          {
+            "risk": "missing_basic_info",
+            "severity": "medium",
+            "affectsForecast": false,
+            "affectsRating": false,
+            "affectsSuggestion": false
+          },
+          {
+            "risk": "aggregate_projection_gap",
+            "severity": "low",
+            "affectsForecast": true,
+            "affectsRating": false,
+            "affectsSuggestion": false
+          }
+        ],
+        "suggestions": [
+          {
+            "suggestion": "maintain",
+            "trigger": "rating in A/B and lifecycle stable or growth",
+            "supported": true,
+            "requiresManualConfirmation": false
+          },
+          {
+            "suggestion": "manual_review_required",
+            "trigger": "blocking manual review reason exists",
+            "supported": true,
+            "requiresManualConfirmation": true
+          }
+        ],
+        "validationOutcome": "warning",
+        "warningOrFailureReasons": [
+          "forecast uses copyright fallback for action-bearing or high-value row",
+          "manual review dependency remains in algorithm evidence"
+        ]
+      },
+      {
+        "sampleId": "W016",
+        "rating": "S+",
+        "uncappedRating": "S+",
+        "lifecycle": "stable",
+        "revenueScale": "top",
+        "latestCompleteMonth": "2026-04",
+        "remainingCopyrightMonthsBucket": "25_to_60",
+        "forecast": {
+          "base": 911952.68,
+          "optimistic": 1104872.46,
+          "pessimistic": 752718.28,
+          "yearlyBreakdown": [
+            {
+              "year": "2026",
+              "baseForecast": 202656.15
+            },
+            {
+              "year": "2027",
+              "baseForecast": 303984.23
+            },
+            {
+              "year": "2028",
+              "baseForecast": 303984.23
+            },
+            {
+              "year": "2029",
+              "baseForecast": 101328.08
+            }
+          ],
+          "confidence": "high",
+          "intervalReason": [
+            "data-driven residual and volatility interval"
+          ],
+          "optimisticPessimisticRatio": 1.4678,
+          "assumptions": [
+            "candidate-b forecast scenario calibration patch v0.2",
+            "last-12 revenue as base signal",
+            "remaining copyright months or scoped fallback",
+            "data-driven interval from volatility, residual, lifecycle, revenue scale, confidence, and readiness signals"
+          ]
+        },
+        "history": {
+          "last3Revenue": 104293.03,
+          "last6Revenue": 252790.86,
+          "last12Revenue": 482514.65,
+          "last24Revenue": 984162.81,
+          "totalHistoricalRevenue": 2089043.89,
+          "activeMonthCount": 51,
+          "zeroRevenueMonthCount": 0,
+          "recentTrend": "stable",
+          "abnormalPeakOrOneOff": false
+        },
+        "backtest": [
+          {
+            "horizonMonths": 3,
+            "cutoffMonth": "2026-01",
+            "predictionHorizon": "3-month",
+            "cutoffLifecycle": "stable",
+            "predictedRevenue": 79390.31,
+            "baselinePredictedRevenue": 126016.37,
+            "pessimisticPredictedRevenue": 64821.92,
+            "optimisticPredictedRevenue": 97232.88,
+            "forecastConfidence": "high",
+            "intervalCoverage": false,
+            "intervalReason": [
+              "cutoff residual and volatility interval"
+            ],
+            "actualRevenue": 104293.03,
+            "absoluteError": 24902.72,
+            "baselineAbsoluteError": 21723.34,
+            "percentageError": 0.2388,
+            "candidateBetterOrEqualBaseline": false
+          },
+          {
+            "horizonMonths": 6,
+            "cutoffMonth": "2025-10",
+            "predictionHorizon": "6-month",
+            "cutoffLifecycle": "stable",
+            "predictedRevenue": 146563.99,
+            "baselinePredictedRevenue": 232641.26,
+            "pessimisticPredictedRevenue": 119669.0,
+            "optimisticPredictedRevenue": 179503.5,
+            "forecastConfidence": "high",
+            "intervalCoverage": false,
+            "intervalReason": [
+              "cutoff residual and volatility interval"
+            ],
+            "actualRevenue": 252790.86,
+            "absoluteError": 106226.88,
+            "baselineAbsoluteError": 20149.61,
+            "percentageError": 0.4202,
+            "candidateBetterOrEqualBaseline": false
+          },
+          {
+            "horizonMonths": 12,
+            "cutoffMonth": "2025-04",
+            "predictionHorizon": "12-month",
+            "cutoffLifecycle": "stable",
+            "predictedRevenue": 316038.34,
+            "baselinePredictedRevenue": 501648.16,
+            "pessimisticPredictedRevenue": 258044.23,
+            "optimisticPredictedRevenue": 387066.34,
+            "forecastConfidence": "high",
+            "intervalCoverage": false,
+            "intervalReason": [
+              "cutoff residual and volatility interval"
+            ],
+            "actualRevenue": 482514.65,
+            "absoluteError": 166476.31,
+            "baselineAbsoluteError": 19133.52,
+            "percentageError": 0.345,
+            "candidateBetterOrEqualBaseline": false
+          }
+        ],
+        "ratingReliability": {
+          "forecastValue": 911952.68,
+          "historicalRevenuePercentile": 0.9987,
+          "lifecycleAdjustment": "stable",
+          "remainingCopyrightAdjustment": "25_to_60",
+          "riskAdjustment": "none",
+          "finalRatingReason": "rating basis amount supports S+; lifecycle=stable",
+          "nearThresholdBoundary": false
+        },
+        "risks": [],
+        "suggestions": [
+          {
+            "suggestion": "promote",
+            "trigger": "rating in S+/S or lifecycle=growth without blocking readiness risk",
+            "supported": true,
+            "requiresManualConfirmation": true
+          }
+        ],
+        "validationOutcome": "fail",
+        "warningOrFailureReasons": [
+          "high-value sample worse than trailing baseline across tested horizons",
+          "low interval coverage in available backtests"
+        ]
+      },
+      {
+        "sampleId": "W017",
+        "rating": "B",
+        "uncappedRating": "S+",
+        "lifecycle": "stable",
+        "revenueScale": "top",
+        "latestCompleteMonth": "2026-04",
+        "remainingCopyrightMonthsBucket": "fallback_used",
+        "forecast": {
+          "base": 265671.43,
+          "optimistic": 440916.97,
+          "pessimistic": 160078.46,
+          "yearlyBreakdown": [
+            {
+              "year": "2026",
+              "baseForecast": 177114.29
+            },
+            {
+              "year": "2027",
+              "baseForecast": 88557.14
+            }
+          ],
+          "confidence": "low",
+          "intervalReason": [
+            "data-driven residual and volatility interval"
+          ],
+          "optimisticPessimisticRatio": 2.7544,
+          "assumptions": [
+            "candidate-b forecast scenario calibration patch v0.2",
+            "last-12 revenue as base signal",
+            "remaining copyright months or scoped fallback",
+            "data-driven interval from volatility, residual, lifecycle, revenue scale, confidence, and readiness signals"
+          ]
+        },
+        "history": {
+          "last3Revenue": 157097.3,
+          "last6Revenue": 234415.84,
+          "last12Revenue": 421700.69,
+          "last24Revenue": 669582.39,
+          "totalHistoricalRevenue": 712793.88,
+          "activeMonthCount": 27,
+          "zeroRevenueMonthCount": 0,
+          "recentTrend": "increasing",
+          "abnormalPeakOrOneOff": false
+        },
+        "backtest": [
+          {
+            "horizonMonths": 3,
+            "cutoffMonth": "2026-01",
+            "predictionHorizon": "3-month",
+            "cutoffLifecycle": "growth",
+            "predictedRevenue": 60387.07,
+            "baselinePredictedRevenue": 73642.77,
+            "pessimisticPredictedRevenue": 42700.11,
+            "optimisticPredictedRevenue": 85400.21,
+            "forecastConfidence": "medium",
+            "intervalCoverage": false,
+            "intervalReason": [
+              "cutoff residual and volatility interval"
+            ],
+            "actualRevenue": 157097.3,
+            "absoluteError": 96710.23,
+            "baselineAbsoluteError": 83454.53,
+            "percentageError": 0.6156,
+            "candidateBetterOrEqualBaseline": false
+          },
+          {
+            "horizonMonths": 6,
+            "cutoffMonth": "2025-10",
+            "predictionHorizon": "6-month",
+            "cutoffLifecycle": "rebound",
+            "predictedRevenue": 91290.61,
+            "baselinePredictedRevenue": 144905.73,
+            "pessimisticPredictedRevenue": 64552.21,
+            "optimisticPredictedRevenue": 129104.42,
+            "forecastConfidence": "medium",
+            "intervalCoverage": false,
+            "intervalReason": [
+              "cutoff residual and volatility interval"
+            ],
+            "actualRevenue": 234415.84,
+            "absoluteError": 143125.23,
+            "baselineAbsoluteError": 89510.1,
+            "percentageError": 0.6106,
+            "candidateBetterOrEqualBaseline": false
+          },
+          {
+            "horizonMonths": 12,
+            "cutoffMonth": "2025-04",
+            "predictionHorizon": "12-month",
+            "cutoffLifecycle": "stable",
+            "predictedRevenue": 156165.47,
+            "baselinePredictedRevenue": 247881.7,
+            "pessimisticPredictedRevenue": 110425.67,
+            "optimisticPredictedRevenue": 220851.33,
+            "forecastConfidence": "medium",
+            "intervalCoverage": false,
+            "intervalReason": [
+              "cutoff residual and volatility interval"
+            ],
+            "actualRevenue": 421700.69,
+            "absoluteError": 265535.22,
+            "baselineAbsoluteError": 173818.98,
+            "percentageError": 0.6297,
+            "candidateBetterOrEqualBaseline": false
+          }
+        ],
+        "ratingReliability": {
+          "forecastValue": 265671.43,
+          "historicalRevenuePercentile": 0.9984,
+          "lifecycleAdjustment": "stable",
+          "remainingCopyrightAdjustment": "fallback_used",
+          "riskAdjustment": "capped",
+          "finalRatingReason": "rating basis amount supports S+; lifecycle=stable; risk cap adjusted rating to B; manual review context required",
+          "nearThresholdBoundary": false
+        },
+        "risks": [
+          {
+            "risk": "missing_copyright_end",
+            "severity": "high",
+            "affectsForecast": true,
+            "affectsRating": true,
+            "affectsSuggestion": false
+          },
+          {
+            "risk": "missing_basic_info",
+            "severity": "medium",
+            "affectsForecast": false,
+            "affectsRating": false,
+            "affectsSuggestion": false
+          },
+          {
+            "risk": "aggregate_projection_gap",
+            "severity": "low",
+            "affectsForecast": true,
+            "affectsRating": false,
+            "affectsSuggestion": false
+          },
+          {
+            "risk": "business_form_mixed",
+            "severity": "low",
+            "affectsForecast": false,
+            "affectsRating": false,
+            "affectsSuggestion": false
+          }
+        ],
+        "suggestions": [
+          {
+            "suggestion": "maintain",
+            "trigger": "rating in A/B and lifecycle stable or growth",
+            "supported": true,
+            "requiresManualConfirmation": false
+          },
+          {
+            "suggestion": "repackage",
+            "trigger": "mixed business form or channel concentration with non-low rating",
+            "supported": true,
+            "requiresManualConfirmation": true
+          },
+          {
+            "suggestion": "manual_review_required",
+            "trigger": "blocking manual review reason exists",
+            "supported": true,
+            "requiresManualConfirmation": true
+          }
+        ],
+        "validationOutcome": "fail",
+        "warningOrFailureReasons": [
+          "high-value sample worse than trailing baseline across tested horizons",
+          "low interval coverage in available backtests",
+          "forecast uses copyright fallback for action-bearing or high-value row",
+          "manual review dependency remains in algorithm evidence"
+        ]
+      },
+      {
+        "sampleId": "W018",
+        "rating": "B",
+        "uncappedRating": "S+",
+        "lifecycle": "stable",
+        "revenueScale": "top",
+        "latestCompleteMonth": "2026-04",
+        "remainingCopyrightMonthsBucket": "fallback_used",
+        "forecast": {
+          "base": 217205.64,
+          "optimistic": 339982.71,
+          "pessimistic": 138766.74,
+          "yearlyBreakdown": [
+            {
+              "year": "2026",
+              "baseForecast": 144803.76
+            },
+            {
+              "year": "2027",
+              "baseForecast": 72401.88
+            }
+          ],
+          "confidence": "low",
+          "intervalReason": [
+            "data-driven residual and volatility interval"
+          ],
+          "optimisticPessimisticRatio": 2.45,
+          "assumptions": [
+            "candidate-b forecast scenario calibration patch v0.2",
+            "last-12 revenue as base signal",
+            "remaining copyright months or scoped fallback",
+            "data-driven interval from volatility, residual, lifecycle, revenue scale, confidence, and readiness signals"
+          ]
+        },
+        "history": {
+          "last3Revenue": 50961.99,
+          "last6Revenue": 123786.98,
+          "last12Revenue": 344770.86,
+          "last24Revenue": 765250.47,
+          "totalHistoricalRevenue": 4601993.26,
+          "activeMonthCount": 52,
+          "zeroRevenueMonthCount": 0,
+          "recentTrend": "decreasing",
+          "abnormalPeakOrOneOff": false
+        },
+        "backtest": [
+          {
+            "horizonMonths": 3,
+            "cutoffMonth": "2026-01",
+            "predictionHorizon": "3-month",
+            "cutoffLifecycle": "stable",
+            "predictedRevenue": 59674.59,
+            "baselinePredictedRevenue": 94721.58,
+            "pessimisticPredictedRevenue": 48724.1,
+            "optimisticPredictedRevenue": 73086.15,
+            "forecastConfidence": "high",
+            "intervalCoverage": true,
+            "intervalReason": [
+              "cutoff residual and volatility interval"
+            ],
+            "actualRevenue": 50961.99,
+            "absoluteError": 8712.6,
+            "baselineAbsoluteError": 43759.59,
+            "percentageError": 0.171,
+            "candidateBetterOrEqualBaseline": true
+          },
+          {
+            "horizonMonths": 6,
+            "cutoffMonth": "2025-10",
+            "predictionHorizon": "6-month",
+            "cutoffLifecycle": "stable",
+            "predictedRevenue": 129364.57,
+            "baselinePredictedRevenue": 205340.59,
+            "pessimisticPredictedRevenue": 105625.73,
+            "optimisticPredictedRevenue": 158438.59,
+            "forecastConfidence": "high",
+            "intervalCoverage": true,
+            "intervalReason": [
+              "cutoff residual and volatility interval"
+            ],
+            "actualRevenue": 123786.98,
+            "absoluteError": 5577.59,
+            "baselineAbsoluteError": 81553.6,
+            "percentageError": 0.0451,
+            "candidateBetterOrEqualBaseline": true
+          },
+          {
+            "horizonMonths": 12,
+            "cutoffMonth": "2025-04",
+            "predictionHorizon": "12-month",
+            "cutoffLifecycle": "stable",
+            "predictedRevenue": 264902.16,
+            "baselinePredictedRevenue": 420479.61,
+            "pessimisticPredictedRevenue": 216291.7,
+            "optimisticPredictedRevenue": 324437.56,
+            "forecastConfidence": "high",
+            "intervalCoverage": false,
+            "intervalReason": [
+              "cutoff residual and volatility interval"
+            ],
+            "actualRevenue": 344770.86,
+            "absoluteError": 79868.7,
+            "baselineAbsoluteError": 75708.75,
+            "percentageError": 0.2317,
+            "candidateBetterOrEqualBaseline": false
+          }
+        ],
+        "ratingReliability": {
+          "forecastValue": 217205.64,
+          "historicalRevenuePercentile": 0.998,
+          "lifecycleAdjustment": "stable",
+          "remainingCopyrightAdjustment": "fallback_used",
+          "riskAdjustment": "capped",
+          "finalRatingReason": "rating basis amount supports S+; lifecycle=stable; risk cap adjusted rating to B; manual review context required",
+          "nearThresholdBoundary": false
+        },
+        "risks": [
+          {
+            "risk": "missing_copyright_end",
+            "severity": "high",
+            "affectsForecast": true,
+            "affectsRating": true,
+            "affectsSuggestion": false
+          },
+          {
+            "risk": "missing_basic_info",
+            "severity": "medium",
+            "affectsForecast": false,
+            "affectsRating": false,
+            "affectsSuggestion": false
+          },
+          {
+            "risk": "aggregate_projection_gap",
+            "severity": "low",
+            "affectsForecast": true,
+            "affectsRating": false,
+            "affectsSuggestion": false
+          }
+        ],
+        "suggestions": [
+          {
+            "suggestion": "maintain",
+            "trigger": "rating in A/B and lifecycle stable or growth",
+            "supported": true,
+            "requiresManualConfirmation": false
+          },
+          {
+            "suggestion": "manual_review_required",
+            "trigger": "blocking manual review reason exists",
+            "supported": true,
+            "requiresManualConfirmation": true
+          }
+        ],
+        "validationOutcome": "warning",
+        "warningOrFailureReasons": [
+          "forecast uses copyright fallback for action-bearing or high-value row",
+          "manual review dependency remains in algorithm evidence"
+        ]
+      },
+      {
+        "sampleId": "W019",
+        "rating": "S+",
+        "uncappedRating": "S+",
+        "lifecycle": "stable",
+        "revenueScale": "top",
+        "latestCompleteMonth": "2026-04",
+        "remainingCopyrightMonthsBucket": "25_to_60",
+        "forecast": {
+          "base": 956345.34,
+          "optimistic": 1155394.63,
+          "pessimistic": 791587.9,
+          "yearlyBreakdown": [
+            {
+              "year": "2026",
+              "baseForecast": 136620.76
+            },
+            {
+              "year": "2027",
+              "baseForecast": 204931.14
+            },
+            {
+              "year": "2028",
+              "baseForecast": 204931.14
+            },
+            {
+              "year": "2029",
+              "baseForecast": 204931.14
+            },
+            {
+              "year": "2030",
+              "baseForecast": 204931.14
+            }
+          ],
+          "confidence": "high",
+          "intervalReason": [
+            "data-driven residual and volatility interval"
+          ],
+          "optimisticPessimisticRatio": 1.4596,
+          "assumptions": [
+            "candidate-b forecast scenario calibration patch v0.2",
+            "last-12 revenue as base signal",
+            "remaining copyright months or scoped fallback",
+            "data-driven interval from volatility, residual, lifecycle, revenue scale, confidence, and readiness signals"
+          ]
+        },
+        "history": {
+          "last3Revenue": 55241.59,
+          "last6Revenue": 127202.67,
+          "last12Revenue": 325287.53,
+          "last24Revenue": 951046.04,
+          "totalHistoricalRevenue": 1769010.33,
+          "activeMonthCount": 46,
+          "zeroRevenueMonthCount": 43,
+          "recentTrend": "decreasing",
+          "abnormalPeakOrOneOff": false
+        },
+        "backtest": [
+          {
+            "horizonMonths": 3,
+            "cutoffMonth": "2026-01",
+            "predictionHorizon": "3-month",
+            "cutoffLifecycle": "stable",
+            "predictedRevenue": 68866.07,
+            "baselinePredictedRevenue": 109311.22,
+            "pessimisticPredictedRevenue": 56228.91,
+            "optimisticPredictedRevenue": 84343.37,
+            "forecastConfidence": "high",
+            "intervalCoverage": false,
+            "intervalReason": [
+              "cutoff residual and volatility interval"
+            ],
+            "actualRevenue": 55241.59,
+            "absoluteError": 13624.48,
+            "baselineAbsoluteError": 54069.63,
+            "percentageError": 0.2466,
+            "candidateBetterOrEqualBaseline": true
+          },
+          {
+            "horizonMonths": 6,
+            "cutoffMonth": "2025-10",
+            "predictionHorizon": "6-month",
+            "cutoffLifecycle": "stable",
+            "predictedRevenue": 156314.97,
+            "baselinePredictedRevenue": 248118.99,
+            "pessimisticPredictedRevenue": 127630.64,
+            "optimisticPredictedRevenue": 191445.95,
+            "forecastConfidence": "high",
+            "intervalCoverage": false,
+            "intervalReason": [
+              "cutoff residual and volatility interval"
+            ],
+            "actualRevenue": 127202.67,
+            "absoluteError": 29112.3,
+            "baselineAbsoluteError": 120916.32,
+            "percentageError": 0.2289,
+            "candidateBetterOrEqualBaseline": true
+          },
+          {
+            "horizonMonths": 12,
+            "cutoffMonth": "2025-04",
+            "predictionHorizon": "12-month",
+            "cutoffLifecycle": "stable",
+            "predictedRevenue": 394227.86,
+            "baselinePredictedRevenue": 625758.51,
+            "pessimisticPredictedRevenue": 321885.7,
+            "optimisticPredictedRevenue": 482828.55,
+            "forecastConfidence": "high",
+            "intervalCoverage": true,
+            "intervalReason": [
+              "cutoff residual and volatility interval"
+            ],
+            "actualRevenue": 325287.53,
+            "absoluteError": 68940.33,
+            "baselineAbsoluteError": 300470.98,
+            "percentageError": 0.2119,
+            "candidateBetterOrEqualBaseline": true
+          }
+        ],
+        "ratingReliability": {
+          "forecastValue": 956345.34,
+          "historicalRevenuePercentile": 0.9977,
+          "lifecycleAdjustment": "stable",
+          "remainingCopyrightAdjustment": "25_to_60",
+          "riskAdjustment": "none",
+          "finalRatingReason": "rating basis amount supports S+; lifecycle=stable",
+          "nearThresholdBoundary": false
+        },
+        "risks": [],
+        "suggestions": [
+          {
+            "suggestion": "promote",
+            "trigger": "rating in S+/S or lifecycle=growth without blocking readiness risk",
+            "supported": true,
+            "requiresManualConfirmation": true
+          }
+        ],
+        "validationOutcome": "fail",
+        "warningOrFailureReasons": [
+          "low interval coverage in available backtests"
+        ]
+      },
+      {
+        "sampleId": "W020",
+        "rating": "S",
+        "uncappedRating": "S+",
+        "lifecycle": "stable",
+        "revenueScale": "top",
+        "latestCompleteMonth": "2026-04",
+        "remainingCopyrightMonthsBucket": "0_to_12",
+        "forecast": {
+          "base": 151287.9,
+          "optimistic": 213953.4,
+          "pessimistic": 106976.7,
+          "yearlyBreakdown": [
+            {
+              "year": "2026",
+              "baseForecast": 121030.32
+            },
+            {
+              "year": "2027",
+              "baseForecast": 30257.58
+            }
+          ],
+          "confidence": "medium",
+          "intervalReason": [
+            "data-driven residual and volatility interval"
+          ],
+          "optimisticPessimisticRatio": 2.0,
+          "assumptions": [
+            "candidate-b forecast scenario calibration patch v0.2",
+            "last-12 revenue as base signal",
+            "remaining copyright months or scoped fallback",
+            "data-driven interval from volatility, residual, lifecycle, revenue scale, confidence, and readiness signals"
+          ]
+        },
+        "history": {
+          "last3Revenue": 74174.86,
+          "last6Revenue": 139625.88,
+          "last12Revenue": 288167.43,
+          "last24Revenue": 785990.47,
+          "totalHistoricalRevenue": 2308332.52,
+          "activeMonthCount": 14,
+          "zeroRevenueMonthCount": 27,
+          "recentTrend": "stable",
+          "abnormalPeakOrOneOff": false
+        },
+        "backtest": [
+          {
+            "horizonMonths": 3,
+            "cutoffMonth": "2026-01",
+            "predictionHorizon": "3-month",
+            "cutoffLifecycle": "stable",
+            "predictedRevenue": 49623.32,
+            "baselinePredictedRevenue": 78767.18,
+            "pessimisticPredictedRevenue": 35088.99,
+            "optimisticPredictedRevenue": 70177.98,
+            "forecastConfidence": "medium",
+            "intervalCoverage": false,
+            "intervalReason": [
+              "cutoff residual and volatility interval"
+            ],
+            "actualRevenue": 74174.86,
+            "absoluteError": 24551.54,
+            "baselineAbsoluteError": 4592.32,
+            "percentageError": 0.331,
+            "candidateBetterOrEqualBaseline": false
+          },
+          {
+            "horizonMonths": 6,
+            "cutoffMonth": "2025-10",
+            "predictionHorizon": "6-month",
+            "cutoffLifecycle": "stable",
+            "predictedRevenue": 106871.98,
+            "baselinePredictedRevenue": 169638.06,
+            "pessimisticPredictedRevenue": 75569.9,
+            "optimisticPredictedRevenue": 151139.8,
+            "forecastConfidence": "medium",
+            "intervalCoverage": true,
+            "intervalReason": [
+              "cutoff residual and volatility interval"
+            ],
+            "actualRevenue": 139625.88,
+            "absoluteError": 32753.9,
+            "baselineAbsoluteError": 30012.18,
+            "percentageError": 0.2346,
+            "candidateBetterOrEqualBaseline": false
+          },
+          {
+            "horizonMonths": 12,
+            "cutoffMonth": "2025-04",
+            "predictionHorizon": "12-month",
+            "cutoffLifecycle": "stable",
+            "predictedRevenue": 313628.52,
+            "baselinePredictedRevenue": 497823.04,
+            "pessimisticPredictedRevenue": 221768.85,
+            "optimisticPredictedRevenue": 443537.7,
+            "forecastConfidence": "medium",
+            "intervalCoverage": true,
+            "intervalReason": [
+              "cutoff residual and volatility interval"
+            ],
+            "actualRevenue": 288167.43,
+            "absoluteError": 25461.09,
+            "baselineAbsoluteError": 209655.61,
+            "percentageError": 0.0884,
+            "candidateBetterOrEqualBaseline": true
+          }
+        ],
+        "ratingReliability": {
+          "forecastValue": 151287.9,
+          "historicalRevenuePercentile": 0.9974,
+          "lifecycleAdjustment": "stable",
+          "remainingCopyrightAdjustment": "0_to_12",
+          "riskAdjustment": "capped",
+          "finalRatingReason": "rating basis amount supports S+; lifecycle=stable; risk cap adjusted rating to S; manual review context required",
+          "nearThresholdBoundary": false
+        },
+        "risks": [
+          {
+            "risk": "copyright_expiry",
+            "severity": "high",
+            "affectsForecast": false,
+            "affectsRating": true,
+            "affectsSuggestion": true
+          },
+          {
+            "risk": "channel_concentration",
+            "severity": "medium",
+            "affectsForecast": false,
+            "affectsRating": false,
+            "affectsSuggestion": true
+          }
+        ],
+        "suggestions": [
+          {
+            "suggestion": "repackage",
+            "trigger": "mixed business form or channel concentration with non-low rating",
+            "supported": true,
+            "requiresManualConfirmation": true
+          },
+          {
+            "suggestion": "renewal_review",
+            "trigger": "copyright_expiry risk and rating not below C",
+            "supported": true,
+            "requiresManualConfirmation": true
+          },
+          {
+            "suggestion": "manual_review_required",
+            "trigger": "blocking manual review reason exists",
+            "supported": true,
+            "requiresManualConfirmation": true
+          }
+        ],
+        "validationOutcome": "fail",
+        "warningOrFailureReasons": [
+          "candidate forecast worse than baseline in most tested horizons",
+          "manual review dependency remains in algorithm evidence"
+        ]
+      }
+    ],
+    "outcomeDistribution": {
+      "pass": 1,
+      "warning": 3,
+      "fail": 16
+    }
+  },
+  "stratifiedSample200": {
+    "coverage": {
+      "sampleCount": 200,
+      "ratingsCovered": {
+        "S+": 7,
+        "S": 54,
+        "A": 46,
+        "B": 83,
+        "C": 6,
+        "D": 2,
+        "E": 2
+      },
+      "lifecyclesCovered": {
+        "growth": 44,
+        "stable": 130,
+        "declining": 14,
+        "long_tail": 1,
+        "inactive": 4,
+        "rebound": 2,
+        "insufficient_history": 5
+      },
+      "revenueScalesCovered": {
+        "top": 101,
+        "high": 82,
+        "mid": 15,
+        "low": 1,
+        "long_tail": 1
+      },
+      "suggestionsCovered": {
+        "downlist_or_suspend": 2,
+        "maintain": 119,
+        "manual_review_required": 85,
+        "observe_only": 9,
+        "pricing_or_channel_adjustment": 3,
+        "promote": 61,
+        "reduce_investment": 1,
+        "renewal_review": 32,
+        "repackage": 87
+      },
+      "risksCovered": {
+        "abnormal_spike": 6,
+        "aggregate_projection_gap": 88,
+        "business_form_mixed": 67,
+        "buyout_or_oneoff_income": 3,
+        "channel_concentration": 22,
+        "channel_concentration_advisory": 14,
+        "copyright_expiry": 33,
+        "inactive_tail": 5,
+        "incomplete_month_boundary": 1,
+        "insufficient_history": 5,
+        "insufficient_revenue_history": 5,
+        "missing_basic_info": 88,
+        "missing_copyright_end": 88,
+        "revenue_decline": 14
+      },
+      "ratingBoundaryCount": 41,
+      "lifecycleBoundaryCount": 21,
+      "featureCount": 48
+    },
+    "issueSummary": {
+      "outcomeDistribution": {
+        "pass": 12,
+        "warning": 43,
+        "fail": 145
+      },
+      "issueSeverityDistribution": {
+        "P0": 21,
+        "P1": 178,
+        "P2": 211
+      },
+      "issueCategoryDistribution": {
+        "forecast": 282,
+        "rating": 43,
+        "readiness": 85
+      },
+      "failRate": 0.725
+    },
+    "forecastByHorizon": [
+      {
+        "horizonMonths": 3,
+        "caseCount": 3054,
+        "actualRevenueTotal": 3961718.63,
+        "predictedRevenueTotal": 3471649.24,
+        "baselinePredictedRevenueTotal": 4568912.12,
+        "absoluteErrorTotal": 1369032.47,
+        "baselineAbsoluteErrorTotal": 2066216.63,
+        "mae": 448.2752,
+        "wape": 0.3456,
+        "mape": 6.626,
+        "intervalCoverage": 0.368,
+        "candidateBetterOrEqualCount": 2299,
+        "candidateWorseCount": 755,
+        "candidateBetterOrEqualShare": 0.7528,
+        "candidateTotalAbsErrorBetterThanBaseline": true
+      },
+      {
+        "horizonMonths": 6,
+        "caseCount": 3054,
+        "actualRevenueTotal": 8890323.83,
+        "predictedRevenueTotal": 8174836.79,
+        "baselinePredictedRevenueTotal": 12292800.73,
+        "absoluteErrorTotal": 5984283.61,
+        "baselineAbsoluteErrorTotal": 7418911.67,
+        "mae": 1959.4904,
+        "wape": 0.6731,
+        "mape": 30.5207,
+        "intervalCoverage": 0.3527,
+        "candidateBetterOrEqualCount": 2059,
+        "candidateWorseCount": 995,
+        "candidateBetterOrEqualShare": 0.6742,
+        "candidateTotalAbsErrorBetterThanBaseline": true
+      },
+      {
+        "horizonMonths": 12,
+        "caseCount": 3054,
+        "actualRevenueTotal": 18358443.57,
+        "predictedRevenueTotal": 15306141.7,
+        "baselinePredictedRevenueTotal": 23592505.09,
+        "absoluteErrorTotal": 13458876.1,
+        "baselineAbsoluteErrorTotal": 16139193.78,
+        "mae": 4406.9666,
+        "wape": 0.7331,
+        "mape": 14.8672,
+        "intervalCoverage": 0.3238,
+        "candidateBetterOrEqualCount": 2201,
+        "candidateWorseCount": 853,
+        "candidateBetterOrEqualShare": 0.7207,
+        "candidateTotalAbsErrorBetterThanBaseline": true
+      }
+    ],
+    "errorByLifecycle": [
+      {
+        "caseCount": 3,
+        "actualRevenueTotal": 4.33,
+        "predictedRevenueTotal": 4659.71,
+        "baselinePredictedRevenueTotal": 6156.28,
+        "absoluteErrorTotal": 4655.38,
+        "baselineAbsoluteErrorTotal": 6151.95,
+        "mae": 1551.7933,
+        "wape": 1075.1455,
+        "mape": 713.757,
+        "intervalCoverage": 0.0,
+        "candidateBetterOrEqualCount": 3,
+        "candidateWorseCount": 0,
+        "candidateBetterOrEqualShare": 1.0,
+        "candidateTotalAbsErrorBetterThanBaseline": true,
+        "lifecycle": "long_tail"
+      },
+      {
+        "caseCount": 12,
+        "actualRevenueTotal": 131787.53,
+        "predictedRevenueTotal": 3532124.76,
+        "baselinePredictedRevenueTotal": 5432175.01,
+        "absoluteErrorTotal": 3657721.05,
+        "baselineAbsoluteErrorTotal": 5554437.56,
+        "mae": 304810.0875,
+        "wape": 27.7547,
+        "mape": 0.8687,
+        "intervalCoverage": 0.3333,
+        "candidateBetterOrEqualCount": 11,
+        "candidateWorseCount": 1,
+        "candidateBetterOrEqualShare": 0.9167,
+        "candidateTotalAbsErrorBetterThanBaseline": true,
+        "lifecycle": "inactive"
+      },
+      {
+        "caseCount": 15,
+        "actualRevenueTotal": 236230.75,
+        "predictedRevenueTotal": 7308.68,
+        "baselinePredictedRevenueTotal": 3581.18,
+        "absoluteErrorTotal": 233551.79,
+        "baselineAbsoluteErrorTotal": 232649.57,
+        "mae": 15570.1193,
+        "wape": 0.9887,
+        "mape": 0.9376,
+        "intervalCoverage": 0.0667,
+        "candidateBetterOrEqualCount": 14,
+        "candidateWorseCount": 1,
+        "candidateBetterOrEqualShare": 0.9333,
+        "candidateTotalAbsErrorBetterThanBaseline": false,
+        "lifecycle": "insufficient_history"
+      },
+      {
+        "caseCount": 42,
+        "actualRevenueTotal": 1918522.0,
+        "predictedRevenueTotal": 1484585.08,
+        "baselinePredictedRevenueTotal": 2190026.59,
+        "absoluteErrorTotal": 1481901.72,
+        "baselineAbsoluteErrorTotal": 1701009.76,
+        "mae": 35283.3743,
+        "wape": 0.7724,
+        "mape": 4.3026,
+        "intervalCoverage": 0.119,
+        "candidateBetterOrEqualCount": 31,
+        "candidateWorseCount": 11,
+        "candidateBetterOrEqualShare": 0.7381,
+        "candidateTotalAbsErrorBetterThanBaseline": true,
+        "lifecycle": "declining"
+      },
+      {
+        "caseCount": 132,
+        "actualRevenueTotal": 5656437.53,
+        "predictedRevenueTotal": 1830753.91,
+        "baselinePredictedRevenueTotal": 1554076.31,
+        "absoluteErrorTotal": 4052662.91,
+        "baselineAbsoluteErrorTotal": 4510733.48,
+        "mae": 30701.9917,
+        "wape": 0.7165,
+        "mape": 3.2402,
+        "intervalCoverage": 0.1742,
+        "candidateBetterOrEqualCount": 63,
+        "candidateWorseCount": 69,
+        "candidateBetterOrEqualShare": 0.4773,
+        "candidateTotalAbsErrorBetterThanBaseline": true,
+        "lifecycle": "growth"
+      },
+      {
+        "caseCount": 6,
+        "actualRevenueTotal": 523850.36,
+        "predictedRevenueTotal": 680705.97,
+        "baselinePredictedRevenueTotal": 1062010.9,
+        "absoluteErrorTotal": 347704.83,
+        "baselineAbsoluteErrorTotal": 582149.04,
+        "mae": 57950.805,
+        "wape": 0.6637,
+        "mape": 0.5078,
+        "intervalCoverage": 0.3333,
+        "candidateBetterOrEqualCount": 4,
+        "candidateWorseCount": 2,
+        "candidateBetterOrEqualShare": 0.6667,
+        "candidateTotalAbsErrorBetterThanBaseline": true,
+        "lifecycle": "rebound"
+      },
+      {
+        "caseCount": 390,
+        "actualRevenueTotal": 20342472.35,
+        "predictedRevenueTotal": 15423250.58,
+        "baselinePredictedRevenueTotal": 23946028.66,
+        "absoluteErrorTotal": 7478487.4,
+        "baselineAbsoluteErrorTotal": 7774276.89,
+        "mae": 19175.6087,
+        "wape": 0.3676,
+        "mape": 0.4131,
+        "intervalCoverage": 0.4564,
+        "candidateBetterOrEqualCount": 244,
+        "candidateWorseCount": 146,
+        "candidateBetterOrEqualShare": 0.6256,
+        "candidateTotalAbsErrorBetterThanBaseline": true,
+        "lifecycle": "stable"
+      }
+    ],
+    "errorByRating": [
+      {
+        "caseCount": 6,
+        "actualRevenueTotal": 10.94,
+        "predictedRevenueTotal": 4693.9,
+        "baselinePredictedRevenueTotal": 6212.06,
+        "absoluteErrorTotal": 4682.96,
+        "baselineAbsoluteErrorTotal": 6201.12,
+        "mae": 780.4933,
+        "wape": 428.0585,
+        "mape": 431.3136,
+        "intervalCoverage": 0.0,
+        "candidateBetterOrEqualCount": 6,
+        "candidateWorseCount": 0,
+        "candidateBetterOrEqualShare": 1.0,
+        "candidateTotalAbsErrorBetterThanBaseline": true,
+        "rating": "D"
+      },
+      {
+        "caseCount": 18,
+        "actualRevenueTotal": 236693.6,
+        "predictedRevenueTotal": 7417.73,
+        "baselinePredictedRevenueTotal": 3722.53,
+        "absoluteErrorTotal": 233905.59,
+        "baselineAbsoluteErrorTotal": 232971.07,
+        "mae": 12994.755,
+        "wape": 0.9882,
+        "mape": 0.897,
+        "intervalCoverage": 0.0556,
+        "candidateBetterOrEqualCount": 14,
+        "candidateWorseCount": 4,
+        "candidateBetterOrEqualShare": 0.7778,
+        "candidateTotalAbsErrorBetterThanBaseline": false,
+        "rating": "C"
+      },
+      {
+        "caseCount": 138,
+        "actualRevenueTotal": 915653.55,
+        "predictedRevenueTotal": 610501.64,
+        "baselinePredictedRevenueTotal": 865854.04,
+        "absoluteErrorTotal": 637771.88,
+        "baselineAbsoluteErrorTotal": 777990.13,
+        "mae": 4621.5354,
+        "wape": 0.6965,
+        "mape": 1.4027,
+        "intervalCoverage": 0.2826,
+        "candidateBetterOrEqualCount": 84,
+        "candidateWorseCount": 54,
+        "candidateBetterOrEqualShare": 0.6087,
+        "candidateTotalAbsErrorBetterThanBaseline": true,
+        "rating": "A"
+      },
+      {
+        "caseCount": 162,
+        "actualRevenueTotal": 4793573.2,
+        "predictedRevenueTotal": 3817572.21,
+        "baselinePredictedRevenueTotal": 5724742.65,
+        "absoluteErrorTotal": 2560945.78,
+        "baselineAbsoluteErrorTotal": 3467318.52,
+        "mae": 15808.3073,
+        "wape": 0.5342,
+        "mape": 0.9349,
+        "intervalCoverage": 0.3086,
+        "candidateBetterOrEqualCount": 93,
+        "candidateWorseCount": 69,
+        "candidateBetterOrEqualShare": 0.5741,
+        "candidateTotalAbsErrorBetterThanBaseline": true,
+        "rating": "S"
+      },
+      {
+        "caseCount": 249,
+        "actualRevenueTotal": 10644217.87,
+        "predictedRevenueTotal": 8022574.18,
+        "baselinePredictedRevenueTotal": 12362991.84,
+        "absoluteErrorTotal": 4873242.72,
+        "baselineAbsoluteErrorTotal": 5655452.35,
+        "mae": 19571.2559,
+        "wape": 0.4578,
+        "mape": 1.5927,
+        "intervalCoverage": 0.4618,
+        "candidateBetterOrEqualCount": 157,
+        "candidateWorseCount": 92,
+        "candidateBetterOrEqualShare": 0.6305,
+        "candidateTotalAbsErrorBetterThanBaseline": true,
+        "rating": "B"
+      },
+      {
+        "caseCount": 21,
+        "actualRevenueTotal": 12219155.69,
+        "predictedRevenueTotal": 7021629.03,
+        "baselinePredictedRevenueTotal": 9905531.81,
+        "absoluteErrorTotal": 5467136.15,
+        "baselineAbsoluteErrorTotal": 4896475.06,
+        "mae": 260339.8167,
+        "wape": 0.4474,
+        "mape": 0.5807,
+        "intervalCoverage": 0.1905,
+        "candidateBetterOrEqualCount": 10,
+        "candidateWorseCount": 11,
+        "candidateBetterOrEqualShare": 0.4762,
+        "candidateTotalAbsErrorBetterThanBaseline": false,
+        "rating": "S+"
+      },
+      {
+        "caseCount": 6,
+        "actualRevenueTotal": 0.0,
+        "predictedRevenueTotal": 3479000.0,
+        "baselinePredictedRevenueTotal": 5325000.0,
+        "absoluteErrorTotal": 3479000.0,
+        "baselineAbsoluteErrorTotal": 5325000.0,
+        "mae": 579833.3333,
+        "wape": null,
+        "mape": null,
+        "intervalCoverage": 0.6667,
+        "candidateBetterOrEqualCount": 6,
+        "candidateWorseCount": 0,
+        "candidateBetterOrEqualShare": 1.0,
+        "candidateTotalAbsErrorBetterThanBaseline": true,
+        "rating": "E"
+      }
+    ],
+    "errorByRevenueScale": [
+      {
+        "caseCount": 3,
+        "actualRevenueTotal": 4.33,
+        "predictedRevenueTotal": 4659.71,
+        "baselinePredictedRevenueTotal": 6156.28,
+        "absoluteErrorTotal": 4655.38,
+        "baselineAbsoluteErrorTotal": 6151.95,
+        "mae": 1551.7933,
+        "wape": 1075.1455,
+        "mape": 713.757,
+        "intervalCoverage": 0.0,
+        "candidateBetterOrEqualCount": 3,
+        "candidateWorseCount": 0,
+        "candidateBetterOrEqualShare": 1.0,
+        "candidateTotalAbsErrorBetterThanBaseline": true,
+        "revenueScale": "long_tail"
+      },
+      {
+        "caseCount": 45,
+        "actualRevenueTotal": 309257.02,
+        "predictedRevenueTotal": 50389.72,
+        "baselinePredictedRevenueTotal": 44313.4,
+        "absoluteErrorTotal": 293279.07,
+        "baselineAbsoluteErrorTotal": 295260.88,
+        "mae": 6517.3127,
+        "wape": 0.9483,
+        "mape": 2.3576,
+        "intervalCoverage": 0.1333,
+        "candidateBetterOrEqualCount": 30,
+        "candidateWorseCount": 15,
+        "candidateBetterOrEqualShare": 0.6667,
+        "candidateTotalAbsErrorBetterThanBaseline": true,
+        "revenueScale": "mid"
+      },
+      {
+        "caseCount": 3,
+        "actualRevenueTotal": 462.85,
+        "predictedRevenueTotal": 109.05,
+        "baselinePredictedRevenueTotal": 141.35,
+        "absoluteErrorTotal": 353.8,
+        "baselineAbsoluteErrorTotal": 321.5,
+        "mae": 117.9333,
+        "wape": 0.7644,
+        "mape": 0.694,
+        "intervalCoverage": 0.0,
+        "candidateBetterOrEqualCount": 0,
+        "candidateWorseCount": 3,
+        "candidateBetterOrEqualShare": 0.0,
+        "candidateTotalAbsErrorBetterThanBaseline": false,
+        "revenueScale": "low"
+      },
+      {
+        "caseCount": 246,
+        "actualRevenueTotal": 2784854.47,
+        "predictedRevenueTotal": 1479123.89,
+        "baselinePredictedRevenueTotal": 1950749.05,
+        "absoluteErrorTotal": 2088915.82,
+        "baselineAbsoluteErrorTotal": 2277868.94,
+        "mae": 8491.5277,
+        "wape": 0.7501,
+        "mape": 2.1755,
+        "intervalCoverage": 0.2724,
+        "candidateBetterOrEqualCount": 134,
+        "candidateWorseCount": 112,
+        "candidateBetterOrEqualShare": 0.5447,
+        "candidateTotalAbsErrorBetterThanBaseline": true,
+        "revenueScale": "high"
+      },
+      {
+        "caseCount": 303,
+        "actualRevenueTotal": 25714726.18,
+        "predictedRevenueTotal": 21429106.32,
+        "baselinePredictedRevenueTotal": 32192694.85,
+        "absoluteErrorTotal": 14869481.01,
+        "baselineAbsoluteErrorTotal": 17781804.98,
+        "mae": 49074.1948,
+        "wape": 0.5782,
+        "mape": 0.4774,
+        "intervalCoverage": 0.462,
+        "candidateBetterOrEqualCount": 203,
+        "candidateWorseCount": 100,
+        "candidateBetterOrEqualShare": 0.67,
+        "candidateTotalAbsErrorBetterThanBaseline": true,
+        "revenueScale": "top"
+      }
+    ],
+    "errorByConfidence": [
+      {
+        "caseCount": 33,
+        "actualRevenueTotal": 368485.46,
+        "predictedRevenueTotal": 3544202.2,
+        "baselinePredictedRevenueTotal": 5442053.82,
+        "absoluteErrorTotal": 3896282.02,
+        "baselineAbsoluteErrorTotal": 5793560.58,
+        "mae": 118069.1521,
+        "wape": 10.5738,
+        "mape": 93.8763,
+        "intervalCoverage": 0.1515,
+        "candidateBetterOrEqualCount": 28,
+        "candidateWorseCount": 5,
+        "candidateBetterOrEqualShare": 0.8485,
+        "candidateTotalAbsErrorBetterThanBaseline": true,
+        "forecastConfidence": "blocked_for_business_use"
+      },
+      {
+        "caseCount": 186,
+        "actualRevenueTotal": 7685865.77,
+        "predictedRevenueTotal": 4010477.73,
+        "baselinePredictedRevenueTotal": 4737993.93,
+        "absoluteErrorTotal": 5369059.11,
+        "baselineAbsoluteErrorTotal": 6562976.79,
+        "mae": 28865.9092,
+        "wape": 0.6986,
+        "mape": 1.7911,
+        "intervalCoverage": 0.2151,
+        "candidateBetterOrEqualCount": 112,
+        "candidateWorseCount": 74,
+        "candidateBetterOrEqualShare": 0.6022,
+        "candidateTotalAbsErrorBetterThanBaseline": true,
+        "forecastConfidence": "medium"
+      },
+      {
+        "caseCount": 249,
+        "actualRevenueTotal": 10561445.53,
+        "predictedRevenueTotal": 7981867.61,
+        "baselinePredictedRevenueTotal": 12285060.63,
+        "absoluteErrorTotal": 4733995.71,
+        "baselineAbsoluteErrorTotal": 5463387.56,
+        "mae": 19012.031,
+        "wape": 0.4482,
+        "mape": 1.5802,
+        "intervalCoverage": 0.4618,
+        "candidateBetterOrEqualCount": 155,
+        "candidateWorseCount": 94,
+        "candidateBetterOrEqualShare": 0.6225,
+        "candidateTotalAbsErrorBetterThanBaseline": true,
+        "forecastConfidence": "low"
+      },
+      {
+        "caseCount": 132,
+        "actualRevenueTotal": 10193508.09,
+        "predictedRevenueTotal": 7426841.15,
+        "baselinePredictedRevenueTotal": 11728946.55,
+        "absoluteErrorTotal": 3257348.24,
+        "baselineAbsoluteErrorTotal": 2541483.32,
+        "mae": 24676.8806,
+        "wape": 0.3196,
+        "mape": 0.2818,
+        "intervalCoverage": 0.4015,
+        "candidateBetterOrEqualCount": 75,
+        "candidateWorseCount": 57,
+        "candidateBetterOrEqualShare": 0.5682,
+        "candidateTotalAbsErrorBetterThanBaseline": false,
+        "forecastConfidence": "high"
+      }
+    ],
+    "highErrorSamples": [
+      {
+        "sampleId": "S003",
+        "rating": "D",
+        "lifecycle": "long_tail",
+        "revenueScale": "long_tail",
+        "wape": 1075.1455,
+        "candidateWorseCount": 0,
+        "outcome": "fail",
+        "reasons": [
+          "high relative forecast error; inspect private pack",
+          "low interval coverage in available backtests"
+        ]
+      },
+      {
+        "sampleId": "S013",
+        "rating": "D",
+        "lifecycle": "declining",
+        "revenueScale": "top",
+        "wape": 4.1725,
+        "candidateWorseCount": 0,
+        "outcome": "fail",
+        "reasons": [
+          "high relative forecast error; inspect private pack",
+          "low interval coverage in available backtests"
+        ]
+      },
+      {
+        "sampleId": "S048",
+        "rating": "B",
+        "lifecycle": "stable",
+        "revenueScale": "top",
+        "wape": 2.6152,
+        "candidateWorseCount": 0,
+        "outcome": "fail",
+        "reasons": [
+          "high relative forecast error; inspect private pack",
+          "low interval coverage in available backtests",
+          "forecast uses copyright fallback for action-bearing or high-value row"
+        ]
+      },
+      {
+        "sampleId": "S151",
+        "rating": "A",
+        "lifecycle": "stable",
+        "revenueScale": "high",
+        "wape": 2.9221,
+        "candidateWorseCount": 1,
+        "outcome": "fail",
+        "reasons": [
+          "high relative forecast error; inspect private pack",
+          "low interval coverage in available backtests"
+        ]
+      }
+    ]
+  },
+  "fullCohortSanity": {
+    "evaluatedWorkCount": 3054,
+    "ratingDistribution": {
+      "S+": 7,
+      "S": 54,
+      "A": 136,
+      "B": 647,
+      "C": 704,
+      "D": 395,
+      "E": 1111
+    },
+    "lifecycleDistribution": {
+      "growth": 540,
+      "stable": 872,
+      "declining": 394,
+      "long_tail": 132,
+      "inactive": 800,
+      "rebound": 270,
+      "insufficient_history": 46
+    },
+    "forecastTotalByRating": [
+      {
+        "rating": "A",
+        "count": 136,
+        "baseForecastTotal": 1568470.63,
+        "optimisticForecastTotal": 2075749.27,
+        "pessimisticForecastTotal": 1192541.26
+      },
+      {
+        "rating": "B",
+        "count": 647,
+        "baseForecastTotal": 4624103.12,
+        "optimisticForecastTotal": 7312713.1,
+        "pessimisticForecastTotal": 2931198.61
+      },
+      {
+        "rating": "C",
+        "count": 704,
+        "baseForecastTotal": 163703.94,
+        "optimisticForecastTotal": 272401.1,
+        "pessimisticForecastTotal": 98948.91
+      },
+      {
+        "rating": "D",
+        "count": 395,
+        "baseForecastTotal": 1031.21,
+        "optimisticForecastTotal": 1775.67,
+        "pessimisticForecastTotal": 599.68
+      },
+      {
+        "rating": "E",
+        "count": 1111,
+        "baseForecastTotal": 136.08,
+        "optimisticForecastTotal": 237.18,
+        "pessimisticForecastTotal": 78.17
+      },
+      {
+        "rating": "S",
+        "count": 54,
+        "baseForecastTotal": 2766322.96,
+        "optimisticForecastTotal": 3639749.79,
+        "pessimisticForecastTotal": 2113518.49
+      },
+      {
+        "rating": "S+",
+        "count": 7,
+        "baseForecastTotal": 19260917.72,
+        "optimisticForecastTotal": 24428721.13,
+        "pessimisticForecastTotal": 15266336.51
+      }
+    ],
+    "forecastTotalByLifecycle": [
+      {
+        "lifecycle": "declining",
+        "count": 394,
+        "baseForecastTotal": 429178.31,
+        "optimisticForecastTotal": 641814.66,
+        "pessimisticForecastTotal": 288218.2
+      },
+      {
+        "lifecycle": "growth",
+        "count": 540,
+        "baseForecastTotal": 7486628.74,
+        "optimisticForecastTotal": 10608023.62,
+        "pessimisticForecastTotal": 5291947.45
+      },
+      {
+        "lifecycle": "inactive",
+        "count": 800,
+        "baseForecastTotal": 36339.22,
+        "optimisticForecastTotal": 60363.31,
+        "pessimisticForecastTotal": 21892.34
+      },
+      {
+        "lifecycle": "insufficient_history",
+        "count": 46,
+        "baseForecastTotal": 113742.47,
+        "optimisticForecastTotal": 195726.54,
+        "pessimisticForecastTotal": 66132.23
+      },
+      {
+        "lifecycle": "long_tail",
+        "count": 132,
+        "baseForecastTotal": 62.07,
+        "optimisticForecastTotal": 108.23,
+        "pessimisticForecastTotal": 35.7
+      },
+      {
+        "lifecycle": "rebound",
+        "count": 270,
+        "baseForecastTotal": 172106.83,
+        "optimisticForecastTotal": 243957.71,
+        "pessimisticForecastTotal": 121646.22
+      },
+      {
+        "lifecycle": "stable",
+        "count": 872,
+        "baseForecastTotal": 20146628.02,
+        "optimisticForecastTotal": 25981353.17,
+        "pessimisticForecastTotal": 15813349.49
+      }
+    ],
+    "suggestionDistribution": {
+      "downlist_or_suspend": 744,
+      "maintain": 686,
+      "manual_review_required": 85,
+      "observe_only": 460,
+      "pricing_or_channel_adjustment": 402,
+      "promote": 557,
+      "reduce_investment": 252,
+      "renewal_review": 209,
+      "repackage": 468
+    },
+    "riskDistribution": {
+      "abnormal_spike": 382,
+      "aggregate_projection_gap": 2207,
+      "business_form_mixed": 474,
+      "buyout_or_oneoff_income": 328,
+      "channel_concentration": 22,
+      "channel_concentration_advisory": 1922,
+      "copyright_expiry": 363,
+      "inactive_tail": 932,
+      "incomplete_month_boundary": 1,
+      "insufficient_history": 46,
+      "insufficient_revenue_history": 46,
+      "missing_basic_info": 2207,
+      "missing_copyright_end": 2207,
+      "revenue_decline": 394
+    },
+    "riskReadinessSanity": {
+      "manualReviewRequiredCount": 85,
+      "forecastFallbackCount": 2207,
+      "remainingBlockingCountAfterBusinessClosure": 0,
+      "notFinalReleaseApproved": true
+    },
+    "highErrorSegments": [
+      {
+        "rating": "E",
+        "lifecycle": "inactive",
+        "revenueScale": "high",
+        "caseCount": 669,
+        "actualRevenueTotal": 2.38,
+        "predictedRevenueTotal": 34931.89,
+        "baselinePredictedRevenueTotal": 53708.62,
+        "absoluteErrorTotal": 34929.51,
+        "baselineAbsoluteErrorTotal": 53706.25,
+        "mae": 52.2115,
+        "wape": 14676.2647,
+        "mape": 10.0634,
+        "intervalCoverage": 0.9522,
+        "candidateBetterOrEqualCount": 669,
+        "candidateWorseCount": 0,
+        "candidateBetterOrEqualShare": 1.0,
+        "candidateTotalAbsErrorBetterThanBaseline": true
+      },
+      {
+        "rating": "E",
+        "lifecycle": "inactive",
+        "revenueScale": "mid",
+        "caseCount": 612,
+        "actualRevenueTotal": 3.8,
+        "predictedRevenueTotal": 15638.53,
+        "baselinePredictedRevenueTotal": 63111.36,
+        "absoluteErrorTotal": 15634.72,
+        "baselineAbsoluteErrorTotal": 63107.53,
+        "mae": 25.5469,
+        "wape": 4114.4,
+        "mape": 787.8414,
+        "intervalCoverage": 0.7647,
+        "candidateBetterOrEqualCount": 606,
+        "candidateWorseCount": 6,
+        "candidateBetterOrEqualShare": 0.9902,
+        "candidateTotalAbsErrorBetterThanBaseline": true
+      },
+      {
+        "rating": "E",
+        "lifecycle": "declining",
+        "revenueScale": "high",
+        "caseCount": 9,
+        "actualRevenueTotal": 2.7,
+        "predictedRevenueTotal": 522.73,
+        "baselinePredictedRevenueTotal": 744.08,
+        "absoluteErrorTotal": 520.03,
+        "baselineAbsoluteErrorTotal": 741.37,
+        "mae": 57.7811,
+        "wape": 192.6037,
+        "mape": 153.1922,
+        "intervalCoverage": 0.0,
+        "candidateBetterOrEqualCount": 8,
+        "candidateWorseCount": 1,
+        "candidateBetterOrEqualShare": 0.8889,
+        "candidateTotalAbsErrorBetterThanBaseline": true
+      },
+      {
+        "rating": "E",
+        "lifecycle": "declining",
+        "revenueScale": "mid",
+        "caseCount": 36,
+        "actualRevenueTotal": 11.9,
+        "predictedRevenueTotal": 1053.95,
+        "baselinePredictedRevenueTotal": 2186.59,
+        "absoluteErrorTotal": 1043.45,
+        "baselineAbsoluteErrorTotal": 2174.64,
+        "mae": 28.9847,
+        "wape": 87.6849,
+        "mape": 328.9473,
+        "intervalCoverage": 0.0278,
+        "candidateBetterOrEqualCount": 35,
+        "candidateWorseCount": 1,
+        "candidateBetterOrEqualShare": 0.9722,
+        "candidateTotalAbsErrorBetterThanBaseline": true
+      },
+      {
+        "rating": "D",
+        "lifecycle": "long_tail",
+        "revenueScale": "long_tail",
+        "caseCount": 90,
+        "actualRevenueTotal": 115.39,
+        "predictedRevenueTotal": 9672.11,
+        "baselinePredictedRevenueTotal": 12880.55,
+        "absoluteErrorTotal": 9610.0,
+        "baselineAbsoluteErrorTotal": 12809.53,
+        "mae": 106.7778,
+        "wape": 83.2828,
+        "mape": 58.3082,
+        "intervalCoverage": 0.3444,
+        "candidateBetterOrEqualCount": 69,
+        "candidateWorseCount": 21,
+        "candidateBetterOrEqualShare": 0.7667,
+        "candidateTotalAbsErrorBetterThanBaseline": true
+      },
+      {
+        "rating": "E",
+        "lifecycle": "growth",
+        "revenueScale": "mid",
+        "caseCount": 15,
+        "actualRevenueTotal": 7.72,
+        "predictedRevenueTotal": 482.47,
+        "baselinePredictedRevenueTotal": 994.72,
+        "absoluteErrorTotal": 478.86,
+        "baselineAbsoluteErrorTotal": 989.34,
+        "mae": 31.924,
+        "wape": 62.0285,
+        "mape": 133.9773,
+        "intervalCoverage": 0.0,
+        "candidateBetterOrEqualCount": 11,
+        "candidateWorseCount": 4,
+        "candidateBetterOrEqualShare": 0.7333,
+        "candidateTotalAbsErrorBetterThanBaseline": true
+      },
+      {
+        "rating": "D",
+        "lifecycle": "inactive",
+        "revenueScale": "mid",
+        "caseCount": 21,
+        "actualRevenueTotal": 36.82,
+        "predictedRevenueTotal": 2243.23,
+        "baselinePredictedRevenueTotal": 3468.14,
+        "absoluteErrorTotal": 2211.55,
+        "baselineAbsoluteErrorTotal": 3433.93,
+        "mae": 105.3119,
+        "wape": 60.0638,
+        "mape": 56.9386,
+        "intervalCoverage": 0.0,
+        "candidateBetterOrEqualCount": 20,
+        "candidateWorseCount": 1,
+        "candidateBetterOrEqualShare": 0.9524,
+        "candidateTotalAbsErrorBetterThanBaseline": true
+      },
+      {
+        "rating": "D",
+        "lifecycle": "declining",
+        "revenueScale": "mid",
+        "caseCount": 72,
+        "actualRevenueTotal": 164.41,
+        "predictedRevenueTotal": 6533.52,
+        "baselinePredictedRevenueTotal": 10605.03,
+        "absoluteErrorTotal": 6401.84,
+        "baselineAbsoluteErrorTotal": 10449.31,
+        "mae": 88.9144,
+        "wape": 38.9383,
+        "mape": 39.1928,
+        "intervalCoverage": 0.1389,
+        "candidateBetterOrEqualCount": 67,
+        "candidateWorseCount": 5,
+        "candidateBetterOrEqualShare": 0.9306,
+        "candidateTotalAbsErrorBetterThanBaseline": true
+      },
+      {
+        "rating": "E",
+        "lifecycle": "inactive",
+        "revenueScale": "low",
+        "caseCount": 885,
+        "actualRevenueTotal": 27.76,
+        "predictedRevenueTotal": 632.84,
+        "baselinePredictedRevenueTotal": 1115.81,
+        "absoluteErrorTotal": 619.03,
+        "baselineAbsoluteErrorTotal": 1101.79,
+        "mae": 0.6995,
+        "wape": 22.2994,
+        "mape": 29.1863,
+        "intervalCoverage": 0.5141,
+        "candidateBetterOrEqualCount": 786,
+        "candidateWorseCount": 99,
+        "candidateBetterOrEqualShare": 0.8881,
+        "candidateTotalAbsErrorBetterThanBaseline": true
+      },
+      {
+        "rating": "C",
+        "lifecycle": "stable",
+        "revenueScale": "top",
+        "caseCount": 18,
+        "actualRevenueTotal": 652.64,
+        "predictedRevenueTotal": 15163.87,
+        "baselinePredictedRevenueTotal": 35419.14,
+        "absoluteErrorTotal": 14543.75,
+        "baselineAbsoluteErrorTotal": 34766.49,
+        "mae": 807.9861,
+        "wape": 22.2845,
+        "mape": 24.7574,
+        "intervalCoverage": 0.1667,
+        "candidateBetterOrEqualCount": 18,
+        "candidateWorseCount": 0,
+        "candidateBetterOrEqualShare": 1.0,
+        "candidateTotalAbsErrorBetterThanBaseline": true
+      },
+      {
+        "rating": "C",
+        "lifecycle": "rebound",
+        "revenueScale": "high",
+        "caseCount": 15,
+        "actualRevenueTotal": 787.43,
+        "predictedRevenueTotal": 17890.32,
+        "baselinePredictedRevenueTotal": 34678.84,
+        "absoluteErrorTotal": 17125.75,
+        "baselineAbsoluteErrorTotal": 33891.42,
+        "mae": 1141.7167,
+        "wape": 21.7489,
+        "mape": 189.3821,
+        "intervalCoverage": 0.1333,
+        "candidateBetterOrEqualCount": 14,
+        "candidateWorseCount": 1,
+        "candidateBetterOrEqualShare": 0.9333,
+        "candidateTotalAbsErrorBetterThanBaseline": true
+      },
+      {
+        "rating": "C",
+        "lifecycle": "declining",
+        "revenueScale": "high",
+        "caseCount": 21,
+        "actualRevenueTotal": 1523.14,
+        "predictedRevenueTotal": 21615.43,
+        "baselinePredictedRevenueTotal": 32992.45,
+        "absoluteErrorTotal": 20962.44,
+        "baselineAbsoluteErrorTotal": 31791.39,
+        "mae": 998.2114,
+        "wape": 13.7626,
+        "mape": 43.9304,
+        "intervalCoverage": 0.1429,
+        "candidateBetterOrEqualCount": 18,
+        "candidateWorseCount": 3,
+        "candidateBetterOrEqualShare": 0.8571,
+        "candidateTotalAbsErrorBetterThanBaseline": true
+      },
+      {
+        "rating": "E",
+        "lifecycle": "long_tail",
+        "revenueScale": "long_tail",
+        "caseCount": 306,
+        "actualRevenueTotal": 72.4,
+        "predictedRevenueTotal": 589.73,
+        "baselinePredictedRevenueTotal": 1271.53,
+        "absoluteErrorTotal": 557.25,
+        "baselineAbsoluteErrorTotal": 1234.76,
+        "mae": 1.8211,
+        "wape": 7.6968,
+        "mape": 29.599,
+        "intervalCoverage": 0.1634,
+        "candidateBetterOrEqualCount": 214,
+        "candidateWorseCount": 92,
+        "candidateBetterOrEqualShare": 0.6993,
+        "candidateTotalAbsErrorBetterThanBaseline": true
+      },
+      {
+        "rating": "C",
+        "lifecycle": "inactive",
+        "revenueScale": "mid",
+        "caseCount": 18,
+        "actualRevenueTotal": 768.33,
+        "predictedRevenueTotal": 3688.77,
+        "baselinePredictedRevenueTotal": 5705.35,
+        "absoluteErrorTotal": 3413.98,
+        "baselineAbsoluteErrorTotal": 5369.79,
+        "mae": 189.6656,
+        "wape": 4.4434,
+        "mape": 5.6185,
+        "intervalCoverage": 0.0,
+        "candidateBetterOrEqualCount": 16,
+        "candidateWorseCount": 2,
+        "candidateBetterOrEqualShare": 0.8889,
+        "candidateTotalAbsErrorBetterThanBaseline": true
+      },
+      {
+        "rating": "E",
+        "lifecycle": "declining",
+        "revenueScale": "low",
+        "caseCount": 312,
+        "actualRevenueTotal": 92.96,
+        "predictedRevenueTotal": 377.96,
+        "baselinePredictedRevenueTotal": 634.89,
+        "absoluteErrorTotal": 325.68,
+        "baselineAbsoluteErrorTotal": 579.31,
+        "mae": 1.0438,
+        "wape": 3.5034,
+        "mape": 12.5279,
+        "intervalCoverage": 0.1282,
+        "candidateBetterOrEqualCount": 239,
+        "candidateWorseCount": 73,
+        "candidateBetterOrEqualShare": 0.766,
+        "candidateTotalAbsErrorBetterThanBaseline": true
+      },
+      {
+        "rating": "C",
+        "lifecycle": "declining",
+        "revenueScale": "mid",
+        "caseCount": 165,
+        "actualRevenueTotal": 6521.5,
+        "predictedRevenueTotal": 27317.6,
+        "baselinePredictedRevenueTotal": 41180.99,
+        "absoluteErrorTotal": 22130.59,
+        "baselineAbsoluteErrorTotal": 35572.29,
+        "mae": 134.1248,
+        "wape": 3.3935,
+        "mape": 314.9672,
+        "intervalCoverage": 0.1455,
+        "candidateBetterOrEqualCount": 154,
+        "candidateWorseCount": 11,
+        "candidateBetterOrEqualShare": 0.9333,
+        "candidateTotalAbsErrorBetterThanBaseline": true
+      },
+      {
+        "rating": "E",
+        "lifecycle": "rebound",
+        "revenueScale": "mid",
+        "caseCount": 18,
+        "actualRevenueTotal": 13.16,
+        "predictedRevenueTotal": 46.08,
+        "baselinePredictedRevenueTotal": 94.96,
+        "absoluteErrorTotal": 38.44,
+        "baselineAbsoluteErrorTotal": 86.95,
+        "mae": 2.1356,
+        "wape": 2.921,
+        "mape": 3.7175,
+        "intervalCoverage": 0.0,
+        "candidateBetterOrEqualCount": 16,
+        "candidateWorseCount": 2,
+        "candidateBetterOrEqualShare": 0.8889,
+        "candidateTotalAbsErrorBetterThanBaseline": true
+      },
+      {
+        "rating": "B",
+        "lifecycle": "inactive",
+        "revenueScale": "high",
+        "caseCount": 9,
+        "actualRevenueTotal": 14079.93,
+        "predictedRevenueTotal": 32326.46,
+        "baselinePredictedRevenueTotal": 45309.85,
+        "absoluteErrorTotal": 35630.35,
+        "baselineAbsoluteErrorTotal": 45280.0,
+        "mae": 3958.9278,
+        "wape": 2.5306,
+        "mape": 7.8022,
+        "intervalCoverage": 0.0,
+        "candidateBetterOrEqualCount": 8,
+        "candidateWorseCount": 1,
+        "candidateBetterOrEqualShare": 0.8889,
+        "candidateTotalAbsErrorBetterThanBaseline": true
+      },
+      {
+        "rating": "E",
+        "lifecycle": "growth",
+        "revenueScale": "low",
+        "caseCount": 216,
+        "actualRevenueTotal": 105.05,
+        "predictedRevenueTotal": 256.12,
+        "baselinePredictedRevenueTotal": 510.08,
+        "absoluteErrorTotal": 235.63,
+        "baselineAbsoluteErrorTotal": 468.78,
+        "mae": 1.0909,
+        "wape": 2.243,
+        "mape": 6.952,
+        "intervalCoverage": 0.1806,
+        "candidateBetterOrEqualCount": 127,
+        "candidateWorseCount": 89,
+        "candidateBetterOrEqualShare": 0.588,
+        "candidateTotalAbsErrorBetterThanBaseline": true
+      },
+      {
+        "rating": "E",
+        "lifecycle": "rebound",
+        "revenueScale": "low",
+        "caseCount": 162,
+        "actualRevenueTotal": 75.82,
+        "predictedRevenueTotal": 198.29,
+        "baselinePredictedRevenueTotal": 363.57,
+        "absoluteErrorTotal": 162.46,
+        "baselineAbsoluteErrorTotal": 322.4,
+        "mae": 1.0028,
+        "wape": 2.1427,
+        "mape": 3.1547,
+        "intervalCoverage": 0.2037,
+        "candidateBetterOrEqualCount": 107,
+        "candidateWorseCount": 55,
+        "candidateBetterOrEqualShare": 0.6605,
+        "candidateTotalAbsErrorBetterThanBaseline": true
+      }
+    ],
+    "lowConfidenceSegment": {
+      "high": 94,
+      "medium": 431,
+      "low": 996,
+      "blocked_for_business_use": 1533
+    },
+    "abnormalSpikeHandling": {
+      "riskCount": 382,
+      "blockingCount": 3,
+      "advisoryCount": 379,
+      "autoPassCount": 0
+    },
+    "downlistSuspendSanity": {
+      "count": 744,
+      "logicViolationCount": 0
+    },
+    "promoteSanity": {
+      "count": 557,
+      "logicViolationCount": 0
+    }
+  },
+  "scenarioSpreadAuditSummary": {
+    "oldFixedMultiplierConfirmed": true,
+    "newFixedMultiplierDetected": false,
+    "oldFullOptimisticPessimisticRatio": {
+      "count": 2311,
+      "p50": 4.4667,
+      "p75": 4.4667,
+      "p90": 4.4667,
+      "p95": 4.4667
+    },
+    "newFullOptimisticPessimisticRatio": {
+      "count": 2259,
+      "p50": 2.6792,
+      "p75": 2.9761,
+      "p90": 3.1465,
+      "p95": 3.2
+    },
+    "newHighConfidenceOptimisticPessimisticRatio": {
+      "count": 86,
+      "p50": 1.461,
+      "p75": 1.4683,
+      "p90": 1.4745,
+      "p95": 1.4772
+    }
+  },
+  "acceptance": {
+    "deepDiveComplete": true,
+    "sample200FailRate": 0.725,
+    "sample200FailRatePass": false,
+    "sample200WarningRate": 0.215,
+    "sample200WarningRatePass": true,
+    "p0AlgorithmIssueCount": 61,
+    "p0Pass": false,
+    "p1AlgorithmIssueCount": 3265,
+    "p1Pass": false,
+    "legacyFixedMultiplierConfirmed": true,
+    "newFixedMultiplierDetected": false,
+    "newFixedMultiplierPass": true,
+    "highConfidenceMedianOptimisticPessimisticRatio": 1.461,
+    "highConfidenceSpreadPass": true,
+    "fullP75OptimisticPessimisticRatioExcludingLowConfidenceSpikeInsufficientHistory": 2.0,
+    "fullP75SpreadPass": true,
+    "highValueP0Count": 0,
+    "downlistSuspendLogicViolationCount": 0,
+    "promoteLogicViolationCount": 0,
+    "renewalReviewSupported": true,
+    "abnormalSpikeAutoPassCount": 0,
+    "forecastTotalErrorBetterThanTrailingBaseline": true,
+    "ratingExplanationConsistent": false,
+    "suggestionTriggerConsistent": true,
+    "sanitizedReportSafe": true,
+    "candidateBPassesPrdAlgorithmUsability": false
+  },
+  "safeOutputBoundary": {
+    "sanitizedReportsUseAnonymousSampleIds": true,
+    "realWorkNamesWritten": false,
+    "realAuthorNamesWritten": false,
+    "realChannelNamesWritten": false,
+    "rawBillRowsWritten": false,
+    "workChannelMonthRevenueDetailWritten": false,
+    "connectionStringsWritten": false,
+    "secretsWritten": false,
+    "privateOutputsGitignored": true,
+    "notFinalReleaseApproved": true
+  }
+}

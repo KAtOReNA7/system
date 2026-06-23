@@ -1,0 +1,2440 @@
+{
+  "schema": "m2.candidate_b.forecast_scenario_spread_audit.v0.1",
+  "generatedAt": "2026-06-23T14:01:15.044524+00:00",
+  "legacyCandidateVersion": "m2-realdata-dev-candidate-b-v0.1",
+  "calibratedCandidateVersion": "m2-realdata-dev-candidate-b-forecast-calibrated-v0.2",
+  "finding": "candidate-b scenario generation is not sufficiently data-driven and fails scenario reliability requirement.",
+  "oldFull": {
+    "count": 3054,
+    "optimisticBaseRatio": {
+      "count": 2311,
+      "p50": 2.01,
+      "p75": 2.01,
+      "p90": 2.01,
+      "p95": 2.01
+    },
+    "basePessimisticRatio": {
+      "count": 2311,
+      "p50": 2.2222,
+      "p75": 2.2222,
+      "p90": 2.2222,
+      "p95": 2.2222
+    },
+    "optimisticPessimisticRatio": {
+      "count": 2311,
+      "p50": 4.4667,
+      "p75": 4.4667,
+      "p90": 4.4667,
+      "p95": 4.4667
+    },
+    "scenarioSpread": {
+      "count": 2311,
+      "p50": 1.56,
+      "p75": 1.56,
+      "p90": 1.56,
+      "p95": 1.56
+    },
+    "fixedMultiplierDetected": true
+  },
+  "newFull": {
+    "count": 3054,
+    "optimisticBaseRatio": {
+      "count": 2272,
+      "p50": 1.634,
+      "p75": 1.7232,
+      "p90": 1.7753,
+      "p95": 1.7919
+    },
+    "basePessimisticRatio": {
+      "count": 2259,
+      "p50": 1.6318,
+      "p75": 1.7213,
+      "p90": 1.7759,
+      "p95": 1.8
+    },
+    "optimisticPessimisticRatio": {
+      "count": 2259,
+      "p50": 2.6792,
+      "p75": 2.9761,
+      "p90": 3.1465,
+      "p95": 3.2
+    },
+    "scenarioSpread": {
+      "count": 2259,
+      "p50": 1.0188,
+      "p75": 1.1427,
+      "p90": 1.2111,
+      "p95": 1.2284
+    },
+    "fixedMultiplierDetected": false
+  },
+  "newHighConfidence": {
+    "count": 94,
+    "optimisticBaseRatio": {
+      "count": 86,
+      "p50": 1.2087,
+      "p75": 1.2117,
+      "p90": 1.2143,
+      "p95": 1.2154
+    },
+    "basePessimisticRatio": {
+      "count": 86,
+      "p50": 1.2087,
+      "p75": 1.2117,
+      "p90": 1.2143,
+      "p95": 1.2154
+    },
+    "optimisticPessimisticRatio": {
+      "count": 86,
+      "p50": 1.461,
+      "p75": 1.4683,
+      "p90": 1.4745,
+      "p95": 1.4772
+    },
+    "scenarioSpread": {
+      "count": 86,
+      "p50": 0.3814,
+      "p75": 0.3865,
+      "p90": 0.3907,
+      "p95": 0.3926
+    },
+    "fixedMultiplierDetected": false
+  },
+  "newNonLowConfidenceNoSpikeOrInsufficientHistory": {
+    "count": 525,
+    "optimisticBaseRatio": {
+      "count": 443,
+      "p50": 1.3709,
+      "p75": 1.4142,
+      "p90": 1.4142,
+      "p95": 1.4142
+    },
+    "basePessimisticRatio": {
+      "count": 443,
+      "p50": 1.3709,
+      "p75": 1.4142,
+      "p90": 1.4142,
+      "p95": 1.4142
+    },
+    "optimisticPessimisticRatio": {
+      "count": 443,
+      "p50": 1.8794,
+      "p75": 2.0,
+      "p90": 2.0,
+      "p95": 2.0
+    },
+    "scenarioSpread": {
+      "count": 443,
+      "p50": 0.6415,
+      "p75": 0.7071,
+      "p90": 0.7071,
+      "p95": 0.7071
+    },
+    "fixedMultiplierDetected": false
+  },
+  "scopes": {
+    "full3054": {
+      "old": {
+        "count": 3054,
+        "optimisticBaseRatio": {
+          "count": 2311,
+          "p50": 2.01,
+          "p75": 2.01,
+          "p90": 2.01,
+          "p95": 2.01
+        },
+        "basePessimisticRatio": {
+          "count": 2311,
+          "p50": 2.2222,
+          "p75": 2.2222,
+          "p90": 2.2222,
+          "p95": 2.2222
+        },
+        "optimisticPessimisticRatio": {
+          "count": 2311,
+          "p50": 4.4667,
+          "p75": 4.4667,
+          "p90": 4.4667,
+          "p95": 4.4667
+        },
+        "scenarioSpread": {
+          "count": 2311,
+          "p50": 1.56,
+          "p75": 1.56,
+          "p90": 1.56,
+          "p95": 1.56
+        },
+        "fixedMultiplierDetected": true
+      },
+      "new": {
+        "count": 3054,
+        "optimisticBaseRatio": {
+          "count": 2272,
+          "p50": 1.634,
+          "p75": 1.7232,
+          "p90": 1.7753,
+          "p95": 1.7919
+        },
+        "basePessimisticRatio": {
+          "count": 2259,
+          "p50": 1.6318,
+          "p75": 1.7213,
+          "p90": 1.7759,
+          "p95": 1.8
+        },
+        "optimisticPessimisticRatio": {
+          "count": 2259,
+          "p50": 2.6792,
+          "p75": 2.9761,
+          "p90": 3.1465,
+          "p95": 3.2
+        },
+        "scenarioSpread": {
+          "count": 2259,
+          "p50": 1.0188,
+          "p75": 1.1427,
+          "p90": 1.2111,
+          "p95": 1.2284
+        },
+        "fixedMultiplierDetected": false
+      }
+    },
+    "stratified200": {
+      "old": {
+        "count": 200,
+        "optimisticBaseRatio": {
+          "count": 189,
+          "p50": 2.01,
+          "p75": 2.01,
+          "p90": 2.01,
+          "p95": 2.01
+        },
+        "basePessimisticRatio": {
+          "count": 189,
+          "p50": 2.2222,
+          "p75": 2.2222,
+          "p90": 2.2222,
+          "p95": 2.2222
+        },
+        "optimisticPessimisticRatio": {
+          "count": 189,
+          "p50": 4.4667,
+          "p75": 4.4667,
+          "p90": 4.4667,
+          "p95": 4.4667
+        },
+        "scenarioSpread": {
+          "count": 189,
+          "p50": 1.56,
+          "p75": 1.56,
+          "p90": 1.56,
+          "p95": 1.56
+        },
+        "fixedMultiplierDetected": true
+      },
+      "new": {
+        "count": 200,
+        "optimisticBaseRatio": {
+          "count": 189,
+          "p50": 1.4142,
+          "p75": 1.591,
+          "p90": 1.6556,
+          "p95": 1.6988
+        },
+        "basePessimisticRatio": {
+          "count": 189,
+          "p50": 1.4142,
+          "p75": 1.591,
+          "p90": 1.6556,
+          "p95": 1.6988
+        },
+        "optimisticPessimisticRatio": {
+          "count": 189,
+          "p50": 2.0,
+          "p75": 2.5313,
+          "p90": 2.741,
+          "p95": 2.8859
+        },
+        "scenarioSpread": {
+          "count": 189,
+          "p50": 0.7071,
+          "p75": 0.9625,
+          "p90": 1.0516,
+          "p95": 1.1101
+        },
+        "fixedMultiplierDetected": false
+      }
+    },
+    "deepDive20": {
+      "old": {
+        "count": 20,
+        "optimisticBaseRatio": {
+          "count": 17,
+          "p50": 2.01,
+          "p75": 2.01,
+          "p90": 2.01,
+          "p95": 2.01
+        },
+        "basePessimisticRatio": {
+          "count": 17,
+          "p50": 2.2222,
+          "p75": 2.2222,
+          "p90": 2.2222,
+          "p95": 2.2222
+        },
+        "optimisticPessimisticRatio": {
+          "count": 17,
+          "p50": 4.4667,
+          "p75": 4.4667,
+          "p90": 4.4667,
+          "p95": 4.4667
+        },
+        "scenarioSpread": {
+          "count": 17,
+          "p50": 1.56,
+          "p75": 1.56,
+          "p90": 1.56,
+          "p95": 1.56
+        },
+        "fixedMultiplierDetected": true
+      },
+      "new": {
+        "count": 20,
+        "optimisticBaseRatio": {
+          "count": 17,
+          "p50": 1.5594,
+          "p75": 1.6596,
+          "p90": 1.7745,
+          "p95": 1.8199
+        },
+        "basePessimisticRatio": {
+          "count": 17,
+          "p50": 1.4142,
+          "p75": 1.6043,
+          "p90": 1.7271,
+          "p95": 1.7729
+        },
+        "optimisticPessimisticRatio": {
+          "count": 17,
+          "p50": 2.0,
+          "p75": 2.5738,
+          "p90": 2.9858,
+          "p95": 3.1459
+        },
+        "scenarioSpread": {
+          "count": 17,
+          "p50": 0.9182,
+          "p75": 1.0,
+          "p90": 1.1487,
+          "p95": 1.2104
+        },
+        "fixedMultiplierDetected": false
+      }
+    }
+  },
+  "byRating": [
+    {
+      "group": "A",
+      "old": {
+        "count": 136,
+        "optimisticBaseRatio": {
+          "count": 131,
+          "p50": 2.01,
+          "p75": 2.01,
+          "p90": 2.01,
+          "p95": 2.01
+        },
+        "basePessimisticRatio": {
+          "count": 131,
+          "p50": 2.2222,
+          "p75": 2.2222,
+          "p90": 2.2222,
+          "p95": 2.2222
+        },
+        "optimisticPessimisticRatio": {
+          "count": 131,
+          "p50": 4.4667,
+          "p75": 4.4667,
+          "p90": 4.4667,
+          "p95": 4.4667
+        },
+        "scenarioSpread": {
+          "count": 131,
+          "p50": 1.56,
+          "p75": 1.56,
+          "p90": 1.56,
+          "p95": 1.56
+        },
+        "fixedMultiplierDetected": true
+      },
+      "new": {
+        "count": 136,
+        "optimisticBaseRatio": {
+          "count": 131,
+          "p50": 1.3766,
+          "p75": 1.4142,
+          "p90": 1.4142,
+          "p95": 1.4142
+        },
+        "basePessimisticRatio": {
+          "count": 131,
+          "p50": 1.3766,
+          "p75": 1.4142,
+          "p90": 1.4142,
+          "p95": 1.4142
+        },
+        "optimisticPessimisticRatio": {
+          "count": 131,
+          "p50": 1.895,
+          "p75": 2.0,
+          "p90": 2.0,
+          "p95": 2.0
+        },
+        "scenarioSpread": {
+          "count": 131,
+          "p50": 0.6501,
+          "p75": 0.7071,
+          "p90": 0.7071,
+          "p95": 0.7071
+        },
+        "fixedMultiplierDetected": false
+      }
+    },
+    {
+      "group": "B",
+      "old": {
+        "count": 647,
+        "optimisticBaseRatio": {
+          "count": 624,
+          "p50": 2.01,
+          "p75": 2.01,
+          "p90": 2.01,
+          "p95": 2.01
+        },
+        "basePessimisticRatio": {
+          "count": 624,
+          "p50": 2.2222,
+          "p75": 2.2222,
+          "p90": 2.2222,
+          "p95": 2.2222
+        },
+        "optimisticPessimisticRatio": {
+          "count": 624,
+          "p50": 4.4667,
+          "p75": 4.4667,
+          "p90": 4.4667,
+          "p95": 4.4667
+        },
+        "scenarioSpread": {
+          "count": 624,
+          "p50": 1.56,
+          "p75": 1.56,
+          "p90": 1.56,
+          "p95": 1.56
+        },
+        "fixedMultiplierDetected": true
+      },
+      "new": {
+        "count": 647,
+        "optimisticBaseRatio": {
+          "count": 624,
+          "p50": 1.5794,
+          "p75": 1.6058,
+          "p90": 1.65,
+          "p95": 1.6949
+        },
+        "basePessimisticRatio": {
+          "count": 624,
+          "p50": 1.5794,
+          "p75": 1.6059,
+          "p90": 1.65,
+          "p95": 1.6949
+        },
+        "optimisticPessimisticRatio": {
+          "count": 624,
+          "p50": 2.4946,
+          "p75": 2.5788,
+          "p90": 2.7225,
+          "p95": 2.8727
+        },
+        "scenarioSpread": {
+          "count": 624,
+          "p50": 0.9463,
+          "p75": 0.9831,
+          "p90": 1.0439,
+          "p95": 1.1049
+        },
+        "fixedMultiplierDetected": false
+      }
+    },
+    {
+      "group": "C",
+      "old": {
+        "count": 704,
+        "optimisticBaseRatio": {
+          "count": 659,
+          "p50": 2.01,
+          "p75": 2.01,
+          "p90": 2.01,
+          "p95": 2.01
+        },
+        "basePessimisticRatio": {
+          "count": 659,
+          "p50": 2.2222,
+          "p75": 2.2222,
+          "p90": 2.2222,
+          "p95": 2.2222
+        },
+        "optimisticPessimisticRatio": {
+          "count": 659,
+          "p50": 4.4667,
+          "p75": 4.4667,
+          "p90": 4.4667,
+          "p95": 4.4667
+        },
+        "scenarioSpread": {
+          "count": 659,
+          "p50": 1.56,
+          "p75": 1.56,
+          "p90": 1.56,
+          "p95": 1.56
+        },
+        "fixedMultiplierDetected": true
+      },
+      "new": {
+        "count": 704,
+        "optimisticBaseRatio": {
+          "count": 659,
+          "p50": 1.6394,
+          "p75": 1.7036,
+          "p90": 1.7262,
+          "p95": 1.7411
+        },
+        "basePessimisticRatio": {
+          "count": 659,
+          "p50": 1.64,
+          "p75": 1.7035,
+          "p90": 1.7261,
+          "p95": 1.7408
+        },
+        "optimisticPessimisticRatio": {
+          "count": 659,
+          "p50": 2.6873,
+          "p75": 2.9016,
+          "p90": 2.9796,
+          "p95": 3.0312
+        },
+        "scenarioSpread": {
+          "count": 659,
+          "p50": 1.0294,
+          "p75": 1.1162,
+          "p90": 1.1469,
+          "p95": 1.1667
+        },
+        "fixedMultiplierDetected": false
+      }
+    },
+    {
+      "group": "D",
+      "old": {
+        "count": 395,
+        "optimisticBaseRatio": {
+          "count": 380,
+          "p50": 2.01,
+          "p75": 2.01,
+          "p90": 2.01,
+          "p95": 2.01
+        },
+        "basePessimisticRatio": {
+          "count": 380,
+          "p50": 2.2222,
+          "p75": 2.2222,
+          "p90": 2.2222,
+          "p95": 2.2222
+        },
+        "optimisticPessimisticRatio": {
+          "count": 380,
+          "p50": 4.4667,
+          "p75": 4.4667,
+          "p90": 4.4667,
+          "p95": 4.4667
+        },
+        "scenarioSpread": {
+          "count": 380,
+          "p50": 1.56,
+          "p75": 1.56,
+          "p90": 1.56,
+          "p95": 1.56
+        },
+        "fixedMultiplierDetected": true
+      },
+      "new": {
+        "count": 395,
+        "optimisticBaseRatio": {
+          "count": 380,
+          "p50": 1.7362,
+          "p75": 1.772,
+          "p90": 1.7835,
+          "p95": 1.7887
+        },
+        "basePessimisticRatio": {
+          "count": 380,
+          "p50": 1.7336,
+          "p75": 1.77,
+          "p90": 1.7808,
+          "p95": 1.7898
+        },
+        "optimisticPessimisticRatio": {
+          "count": 380,
+          "p50": 3.0124,
+          "p75": 3.1365,
+          "p90": 3.1743,
+          "p95": 3.2
+        },
+        "scenarioSpread": {
+          "count": 380,
+          "p50": 1.1599,
+          "p75": 1.208,
+          "p90": 1.2213,
+          "p95": 1.2286
+        },
+        "fixedMultiplierDetected": false
+      }
+    },
+    {
+      "group": "E",
+      "old": {
+        "count": 1111,
+        "optimisticBaseRatio": {
+          "count": 461,
+          "p50": 2.01,
+          "p75": 2.01,
+          "p90": 2.01,
+          "p95": 2.01
+        },
+        "basePessimisticRatio": {
+          "count": 461,
+          "p50": 2.2222,
+          "p75": 2.2222,
+          "p90": 2.2222,
+          "p95": 2.2222
+        },
+        "optimisticPessimisticRatio": {
+          "count": 461,
+          "p50": 4.4667,
+          "p75": 4.4667,
+          "p90": 4.4667,
+          "p95": 4.4667
+        },
+        "scenarioSpread": {
+          "count": 461,
+          "p50": 1.56,
+          "p75": 1.56,
+          "p90": 1.56,
+          "p95": 1.56
+        },
+        "fixedMultiplierDetected": true
+      },
+      "new": {
+        "count": 1111,
+        "optimisticBaseRatio": {
+          "count": 422,
+          "p50": 1.75,
+          "p75": 1.7929,
+          "p90": 1.8462,
+          "p95": 2.0
+        },
+        "basePessimisticRatio": {
+          "count": 409,
+          "p50": 1.75,
+          "p75": 1.8,
+          "p90": 2.0,
+          "p95": 2.0
+        },
+        "optimisticPessimisticRatio": {
+          "count": 409,
+          "p50": 3.0,
+          "p75": 3.1833,
+          "p90": 3.3333,
+          "p95": 3.5
+        },
+        "scenarioSpread": {
+          "count": 409,
+          "p50": 1.1837,
+          "p75": 1.2254,
+          "p90": 1.25,
+          "p95": 1.3333
+        },
+        "fixedMultiplierDetected": false
+      }
+    },
+    {
+      "group": "S",
+      "old": {
+        "count": 54,
+        "optimisticBaseRatio": {
+          "count": 49,
+          "p50": 2.01,
+          "p75": 2.01,
+          "p90": 2.01,
+          "p95": 2.01
+        },
+        "basePessimisticRatio": {
+          "count": 49,
+          "p50": 2.2222,
+          "p75": 2.2222,
+          "p90": 2.2222,
+          "p95": 2.2222
+        },
+        "optimisticPessimisticRatio": {
+          "count": 49,
+          "p50": 4.4667,
+          "p75": 4.4667,
+          "p90": 4.4667,
+          "p95": 4.4667
+        },
+        "scenarioSpread": {
+          "count": 49,
+          "p50": 1.56,
+          "p75": 1.56,
+          "p90": 1.56,
+          "p95": 1.56
+        },
+        "fixedMultiplierDetected": true
+      },
+      "new": {
+        "count": 54,
+        "optimisticBaseRatio": {
+          "count": 49,
+          "p50": 1.3746,
+          "p75": 1.4142,
+          "p90": 1.4142,
+          "p95": 1.4142
+        },
+        "basePessimisticRatio": {
+          "count": 49,
+          "p50": 1.3746,
+          "p75": 1.4142,
+          "p90": 1.4142,
+          "p95": 1.4142
+        },
+        "optimisticPessimisticRatio": {
+          "count": 49,
+          "p50": 1.8896,
+          "p75": 2.0,
+          "p90": 2.0,
+          "p95": 2.0
+        },
+        "scenarioSpread": {
+          "count": 49,
+          "p50": 0.6471,
+          "p75": 0.7071,
+          "p90": 0.7071,
+          "p95": 0.7071
+        },
+        "fixedMultiplierDetected": false
+      }
+    },
+    {
+      "group": "S+",
+      "old": {
+        "count": 7,
+        "optimisticBaseRatio": {
+          "count": 7,
+          "p50": 2.01,
+          "p75": 2.01,
+          "p90": 2.01,
+          "p95": 2.01
+        },
+        "basePessimisticRatio": {
+          "count": 7,
+          "p50": 2.2222,
+          "p75": 2.2222,
+          "p90": 2.2222,
+          "p95": 2.2222
+        },
+        "optimisticPessimisticRatio": {
+          "count": 7,
+          "p50": 4.4667,
+          "p75": 4.4667,
+          "p90": 4.4667,
+          "p95": 4.4667
+        },
+        "scenarioSpread": {
+          "count": 7,
+          "p50": 1.56,
+          "p75": 1.56,
+          "p90": 1.56,
+          "p95": 1.56
+        },
+        "fixedMultiplierDetected": false
+      },
+      "new": {
+        "count": 7,
+        "optimisticBaseRatio": {
+          "count": 7,
+          "p50": 1.2115,
+          "p75": 1.3148,
+          "p90": 1.4142,
+          "p95": 1.4142
+        },
+        "basePessimisticRatio": {
+          "count": 7,
+          "p50": 1.2115,
+          "p75": 1.3148,
+          "p90": 1.4142,
+          "p95": 1.4142
+        },
+        "optimisticPessimisticRatio": {
+          "count": 7,
+          "p50": 1.4678,
+          "p75": 1.7386,
+          "p90": 2.0,
+          "p95": 2.0
+        },
+        "scenarioSpread": {
+          "count": 7,
+          "p50": 0.3862,
+          "p75": 0.5498,
+          "p90": 0.7071,
+          "p95": 0.7071
+        },
+        "fixedMultiplierDetected": false
+      }
+    }
+  ],
+  "byLifecycle": [
+    {
+      "group": "declining",
+      "old": {
+        "count": 394,
+        "optimisticBaseRatio": {
+          "count": 363,
+          "p50": 2.01,
+          "p75": 2.01,
+          "p90": 2.01,
+          "p95": 2.01
+        },
+        "basePessimisticRatio": {
+          "count": 363,
+          "p50": 2.2222,
+          "p75": 2.2222,
+          "p90": 2.2222,
+          "p95": 2.2222
+        },
+        "optimisticPessimisticRatio": {
+          "count": 363,
+          "p50": 4.4667,
+          "p75": 4.4667,
+          "p90": 4.4667,
+          "p95": 4.4667
+        },
+        "scenarioSpread": {
+          "count": 363,
+          "p50": 1.56,
+          "p75": 1.56,
+          "p90": 1.56,
+          "p95": 1.56
+        },
+        "fixedMultiplierDetected": true
+      },
+      "new": {
+        "count": 394,
+        "optimisticBaseRatio": {
+          "count": 360,
+          "p50": 1.7,
+          "p75": 1.7686,
+          "p90": 1.7969,
+          "p95": 1.8333
+        },
+        "basePessimisticRatio": {
+          "count": 360,
+          "p50": 1.6953,
+          "p75": 1.7694,
+          "p90": 1.8087,
+          "p95": 2.0
+        },
+        "optimisticPessimisticRatio": {
+          "count": 360,
+          "p50": 2.8975,
+          "p75": 3.1308,
+          "p90": 3.2252,
+          "p95": 3.4
+        },
+        "scenarioSpread": {
+          "count": 360,
+          "p50": 1.1157,
+          "p75": 1.2023,
+          "p90": 1.2342,
+          "p95": 1.2511
+        },
+        "fixedMultiplierDetected": false
+      }
+    },
+    {
+      "group": "growth",
+      "old": {
+        "count": 540,
+        "optimisticBaseRatio": {
+          "count": 526,
+          "p50": 2.01,
+          "p75": 2.01,
+          "p90": 2.01,
+          "p95": 2.01
+        },
+        "basePessimisticRatio": {
+          "count": 526,
+          "p50": 2.2222,
+          "p75": 2.2222,
+          "p90": 2.2222,
+          "p95": 2.2222
+        },
+        "optimisticPessimisticRatio": {
+          "count": 526,
+          "p50": 4.4667,
+          "p75": 4.4667,
+          "p90": 4.4667,
+          "p95": 4.4667
+        },
+        "scenarioSpread": {
+          "count": 526,
+          "p50": 1.56,
+          "p75": 1.56,
+          "p90": 1.56,
+          "p95": 1.56
+        },
+        "fixedMultiplierDetected": true
+      },
+      "new": {
+        "count": 540,
+        "optimisticBaseRatio": {
+          "count": 525,
+          "p50": 1.6267,
+          "p75": 1.7164,
+          "p90": 1.7664,
+          "p95": 1.7795
+        },
+        "basePessimisticRatio": {
+          "count": 524,
+          "p50": 1.6283,
+          "p75": 1.7145,
+          "p90": 1.769,
+          "p95": 1.7863
+        },
+        "optimisticPessimisticRatio": {
+          "count": 524,
+          "p50": 2.6517,
+          "p75": 2.9505,
+          "p90": 3.1182,
+          "p95": 3.1593
+        },
+        "scenarioSpread": {
+          "count": 524,
+          "p50": 1.0126,
+          "p75": 1.1349,
+          "p90": 1.2017,
+          "p95": 1.2186
+        },
+        "fixedMultiplierDetected": false
+      }
+    },
+    {
+      "group": "inactive",
+      "old": {
+        "count": 800,
+        "optimisticBaseRatio": {
+          "count": 155,
+          "p50": 2.01,
+          "p75": 2.01,
+          "p90": 2.01,
+          "p95": 2.01
+        },
+        "basePessimisticRatio": {
+          "count": 155,
+          "p50": 2.2222,
+          "p75": 2.2222,
+          "p90": 2.2222,
+          "p95": 2.2222
+        },
+        "optimisticPessimisticRatio": {
+          "count": 155,
+          "p50": 4.4667,
+          "p75": 4.4667,
+          "p90": 4.4667,
+          "p95": 4.4667
+        },
+        "scenarioSpread": {
+          "count": 155,
+          "p50": 1.56,
+          "p75": 1.56,
+          "p90": 1.56,
+          "p95": 1.56
+        },
+        "fixedMultiplierDetected": true
+      },
+      "new": {
+        "count": 800,
+        "optimisticBaseRatio": {
+          "count": 132,
+          "p50": 1.6697,
+          "p75": 1.7236,
+          "p90": 1.83,
+          "p95": 2.0
+        },
+        "basePessimisticRatio": {
+          "count": 124,
+          "p50": 1.6667,
+          "p75": 1.7177,
+          "p90": 2.0,
+          "p95": 2.0
+        },
+        "optimisticPessimisticRatio": {
+          "count": 124,
+          "p50": 2.8787,
+          "p75": 2.9539,
+          "p90": 3.0,
+          "p95": 3.2833
+        },
+        "scenarioSpread": {
+          "count": 124,
+          "p50": 1.0721,
+          "p75": 1.1364,
+          "p90": 1.1667,
+          "p95": 1.2
+        },
+        "fixedMultiplierDetected": false
+      }
+    },
+    {
+      "group": "insufficient_history",
+      "old": {
+        "count": 46,
+        "optimisticBaseRatio": {
+          "count": 45,
+          "p50": 2.01,
+          "p75": 2.01,
+          "p90": 2.01,
+          "p95": 2.01
+        },
+        "basePessimisticRatio": {
+          "count": 45,
+          "p50": 2.2222,
+          "p75": 2.2222,
+          "p90": 2.2222,
+          "p95": 2.2222
+        },
+        "optimisticPessimisticRatio": {
+          "count": 45,
+          "p50": 4.4667,
+          "p75": 4.4667,
+          "p90": 4.4667,
+          "p95": 4.4667
+        },
+        "scenarioSpread": {
+          "count": 45,
+          "p50": 1.56,
+          "p75": 1.56,
+          "p90": 1.56,
+          "p95": 1.56
+        },
+        "fixedMultiplierDetected": true
+      },
+      "new": {
+        "count": 46,
+        "optimisticBaseRatio": {
+          "count": 45,
+          "p50": 1.7374,
+          "p75": 1.7745,
+          "p90": 1.7753,
+          "p95": 1.7758
+        },
+        "basePessimisticRatio": {
+          "count": 45,
+          "p50": 1.7325,
+          "p75": 1.7743,
+          "p90": 1.7808,
+          "p95": 1.7879
+        },
+        "optimisticPessimisticRatio": {
+          "count": 45,
+          "p50": 3.0135,
+          "p75": 3.1497,
+          "p90": 3.1606,
+          "p95": 3.1644
+        },
+        "scenarioSpread": {
+          "count": 45,
+          "p50": 1.162,
+          "p75": 1.2111,
+          "p90": 1.2127,
+          "p95": 1.215
+        },
+        "fixedMultiplierDetected": false
+      }
+    },
+    {
+      "group": "long_tail",
+      "old": {
+        "count": 132,
+        "optimisticBaseRatio": {
+          "count": 125,
+          "p50": 2.01,
+          "p75": 2.01,
+          "p90": 2.01,
+          "p95": 2.01
+        },
+        "basePessimisticRatio": {
+          "count": 125,
+          "p50": 2.2222,
+          "p75": 2.2222,
+          "p90": 2.2222,
+          "p95": 2.2222
+        },
+        "optimisticPessimisticRatio": {
+          "count": 125,
+          "p50": 4.4667,
+          "p75": 4.4667,
+          "p90": 4.4667,
+          "p95": 4.4667
+        },
+        "scenarioSpread": {
+          "count": 125,
+          "p50": 1.56,
+          "p75": 1.56,
+          "p90": 1.56,
+          "p95": 1.56
+        },
+        "fixedMultiplierDetected": true
+      },
+      "new": {
+        "count": 132,
+        "optimisticBaseRatio": {
+          "count": 114,
+          "p50": 1.75,
+          "p75": 1.7891,
+          "p90": 1.8423,
+          "p95": 2.0
+        },
+        "basePessimisticRatio": {
+          "count": 110,
+          "p50": 1.75,
+          "p75": 1.7864,
+          "p90": 1.91,
+          "p95": 2.0
+        },
+        "optimisticPessimisticRatio": {
+          "count": 110,
+          "p50": 3.0224,
+          "p75": 3.1775,
+          "p90": 3.25,
+          "p95": 3.3763
+        },
+        "scenarioSpread": {
+          "count": 110,
+          "p50": 1.1822,
+          "p75": 1.2281,
+          "p90": 1.25,
+          "p95": 1.2978
+        },
+        "fixedMultiplierDetected": false
+      }
+    },
+    {
+      "group": "rebound",
+      "old": {
+        "count": 270,
+        "optimisticBaseRatio": {
+          "count": 267,
+          "p50": 2.01,
+          "p75": 2.01,
+          "p90": 2.01,
+          "p95": 2.01
+        },
+        "basePessimisticRatio": {
+          "count": 267,
+          "p50": 2.2222,
+          "p75": 2.2222,
+          "p90": 2.2222,
+          "p95": 2.2222
+        },
+        "optimisticPessimisticRatio": {
+          "count": 267,
+          "p50": 4.4667,
+          "p75": 4.4667,
+          "p90": 4.4667,
+          "p95": 4.4667
+        },
+        "scenarioSpread": {
+          "count": 267,
+          "p50": 1.56,
+          "p75": 1.56,
+          "p90": 1.56,
+          "p95": 1.56
+        },
+        "fixedMultiplierDetected": true
+      },
+      "new": {
+        "count": 270,
+        "optimisticBaseRatio": {
+          "count": 266,
+          "p50": 1.7186,
+          "p75": 1.7646,
+          "p90": 1.7869,
+          "p95": 1.7913
+        },
+        "basePessimisticRatio": {
+          "count": 266,
+          "p50": 1.7157,
+          "p75": 1.7627,
+          "p90": 1.7864,
+          "p95": 1.7946
+        },
+        "optimisticPessimisticRatio": {
+          "count": 266,
+          "p50": 2.9542,
+          "p75": 3.1103,
+          "p90": 3.1824,
+          "p95": 3.2063
+        },
+        "scenarioSpread": {
+          "count": 266,
+          "p50": 1.1365,
+          "p75": 1.2,
+          "p90": 1.224,
+          "p95": 1.231
+        },
+        "fixedMultiplierDetected": false
+      }
+    },
+    {
+      "group": "stable",
+      "old": {
+        "count": 872,
+        "optimisticBaseRatio": {
+          "count": 830,
+          "p50": 2.01,
+          "p75": 2.01,
+          "p90": 2.01,
+          "p95": 2.01
+        },
+        "basePessimisticRatio": {
+          "count": 830,
+          "p50": 2.2222,
+          "p75": 2.2222,
+          "p90": 2.2222,
+          "p95": 2.2222
+        },
+        "optimisticPessimisticRatio": {
+          "count": 830,
+          "p50": 4.4667,
+          "p75": 4.4667,
+          "p90": 4.4667,
+          "p95": 4.4667
+        },
+        "scenarioSpread": {
+          "count": 830,
+          "p50": 1.56,
+          "p75": 1.56,
+          "p90": 1.56,
+          "p95": 1.56
+        },
+        "fixedMultiplierDetected": true
+      },
+      "new": {
+        "count": 872,
+        "optimisticBaseRatio": {
+          "count": 830,
+          "p50": 1.5843,
+          "p75": 1.6263,
+          "p90": 1.7087,
+          "p95": 1.7267
+        },
+        "basePessimisticRatio": {
+          "count": 830,
+          "p50": 1.5842,
+          "p75": 1.6263,
+          "p90": 1.7086,
+          "p95": 1.7268
+        },
+        "optimisticPessimisticRatio": {
+          "count": 830,
+          "p50": 2.5099,
+          "p75": 2.6448,
+          "p90": 2.9196,
+          "p95": 2.9822
+        },
+        "scenarioSpread": {
+          "count": 830,
+          "p50": 0.9531,
+          "p75": 1.0114,
+          "p90": 1.1234,
+          "p95": 1.1478
+        },
+        "fixedMultiplierDetected": false
+      }
+    }
+  ],
+  "byRevenueScale": [
+    {
+      "group": "high",
+      "old": {
+        "count": 609,
+        "optimisticBaseRatio": {
+          "count": 368,
+          "p50": 2.01,
+          "p75": 2.01,
+          "p90": 2.01,
+          "p95": 2.01
+        },
+        "basePessimisticRatio": {
+          "count": 368,
+          "p50": 2.2222,
+          "p75": 2.2222,
+          "p90": 2.2222,
+          "p95": 2.2222
+        },
+        "optimisticPessimisticRatio": {
+          "count": 368,
+          "p50": 4.4667,
+          "p75": 4.4667,
+          "p90": 4.4667,
+          "p95": 4.4667
+        },
+        "scenarioSpread": {
+          "count": 368,
+          "p50": 1.56,
+          "p75": 1.56,
+          "p90": 1.56,
+          "p95": 1.56
+        },
+        "fixedMultiplierDetected": true
+      },
+      "new": {
+        "count": 609,
+        "optimisticBaseRatio": {
+          "count": 367,
+          "p50": 1.5768,
+          "p75": 1.6127,
+          "p90": 1.6738,
+          "p95": 1.7029
+        },
+        "basePessimisticRatio": {
+          "count": 367,
+          "p50": 1.5768,
+          "p75": 1.613,
+          "p90": 1.6729,
+          "p95": 1.7029
+        },
+        "optimisticPessimisticRatio": {
+          "count": 367,
+          "p50": 2.4864,
+          "p75": 2.6012,
+          "p90": 2.8033,
+          "p95": 2.9
+        },
+        "scenarioSpread": {
+          "count": 367,
+          "p50": 0.9426,
+          "p75": 0.9927,
+          "p90": 1.0764,
+          "p95": 1.1157
+        },
+        "fixedMultiplierDetected": false
+      }
+    },
+    {
+      "group": "long_tail",
+      "old": {
+        "count": 133,
+        "optimisticBaseRatio": {
+          "count": 125,
+          "p50": 2.01,
+          "p75": 2.01,
+          "p90": 2.01,
+          "p95": 2.01
+        },
+        "basePessimisticRatio": {
+          "count": 125,
+          "p50": 2.2222,
+          "p75": 2.2222,
+          "p90": 2.2222,
+          "p95": 2.2222
+        },
+        "optimisticPessimisticRatio": {
+          "count": 125,
+          "p50": 4.4667,
+          "p75": 4.4667,
+          "p90": 4.4667,
+          "p95": 4.4667
+        },
+        "scenarioSpread": {
+          "count": 125,
+          "p50": 1.56,
+          "p75": 1.56,
+          "p90": 1.56,
+          "p95": 1.56
+        },
+        "fixedMultiplierDetected": true
+      },
+      "new": {
+        "count": 133,
+        "optimisticBaseRatio": {
+          "count": 114,
+          "p50": 1.75,
+          "p75": 1.7891,
+          "p90": 1.8423,
+          "p95": 2.0
+        },
+        "basePessimisticRatio": {
+          "count": 110,
+          "p50": 1.75,
+          "p75": 1.7864,
+          "p90": 1.91,
+          "p95": 2.0
+        },
+        "optimisticPessimisticRatio": {
+          "count": 110,
+          "p50": 3.0224,
+          "p75": 3.1775,
+          "p90": 3.25,
+          "p95": 3.3763
+        },
+        "scenarioSpread": {
+          "count": 110,
+          "p50": 1.1822,
+          "p75": 1.2281,
+          "p90": 1.25,
+          "p95": 1.2978
+        },
+        "fixedMultiplierDetected": false
+      }
+    },
+    {
+      "group": "low",
+      "old": {
+        "count": 1115,
+        "optimisticBaseRatio": {
+          "count": 906,
+          "p50": 2.01,
+          "p75": 2.01,
+          "p90": 2.01,
+          "p95": 2.01
+        },
+        "basePessimisticRatio": {
+          "count": 906,
+          "p50": 2.2222,
+          "p75": 2.2222,
+          "p90": 2.2222,
+          "p95": 2.2222
+        },
+        "optimisticPessimisticRatio": {
+          "count": 906,
+          "p50": 4.4667,
+          "p75": 4.4667,
+          "p90": 4.4667,
+          "p95": 4.4667
+        },
+        "scenarioSpread": {
+          "count": 906,
+          "p50": 1.56,
+          "p75": 1.56,
+          "p90": 1.56,
+          "p95": 1.56
+        },
+        "fixedMultiplierDetected": true
+      },
+      "new": {
+        "count": 1115,
+        "optimisticBaseRatio": {
+          "count": 881,
+          "p50": 1.7195,
+          "p75": 1.7647,
+          "p90": 1.788,
+          "p95": 1.8
+        },
+        "basePessimisticRatio": {
+          "count": 874,
+          "p50": 1.7186,
+          "p75": 1.7647,
+          "p90": 1.7956,
+          "p95": 1.8571
+        },
+        "optimisticPessimisticRatio": {
+          "count": 874,
+          "p50": 2.9595,
+          "p75": 3.1031,
+          "p90": 3.1895,
+          "p95": 3.25
+        },
+        "scenarioSpread": {
+          "count": 874,
+          "p50": 1.1379,
+          "p75": 1.2,
+          "p90": 1.2252,
+          "p95": 1.2372
+        },
+        "fixedMultiplierDetected": false
+      }
+    },
+    {
+      "group": "mid",
+      "old": {
+        "count": 1044,
+        "optimisticBaseRatio": {
+          "count": 798,
+          "p50": 2.01,
+          "p75": 2.01,
+          "p90": 2.01,
+          "p95": 2.01
+        },
+        "basePessimisticRatio": {
+          "count": 798,
+          "p50": 2.2222,
+          "p75": 2.2222,
+          "p90": 2.2222,
+          "p95": 2.2222
+        },
+        "optimisticPessimisticRatio": {
+          "count": 798,
+          "p50": 4.4667,
+          "p75": 4.4667,
+          "p90": 4.4667,
+          "p95": 4.4667
+        },
+        "scenarioSpread": {
+          "count": 798,
+          "p50": 1.56,
+          "p75": 1.56,
+          "p90": 1.56,
+          "p95": 1.56
+        },
+        "fixedMultiplierDetected": true
+      },
+      "new": {
+        "count": 1044,
+        "optimisticBaseRatio": {
+          "count": 796,
+          "p50": 1.5888,
+          "p75": 1.6334,
+          "p90": 1.7225,
+          "p95": 1.7669
+        },
+        "basePessimisticRatio": {
+          "count": 794,
+          "p50": 1.5889,
+          "p75": 1.6323,
+          "p90": 1.7186,
+          "p95": 1.7659
+        },
+        "optimisticPessimisticRatio": {
+          "count": 794,
+          "p50": 2.5251,
+          "p75": 2.6665,
+          "p90": 2.9596,
+          "p95": 3.1211
+        },
+        "scenarioSpread": {
+          "count": 794,
+          "p50": 0.9599,
+          "p75": 1.0212,
+          "p90": 1.1406,
+          "p95": 1.2003
+        },
+        "fixedMultiplierDetected": false
+      }
+    },
+    {
+      "group": "top",
+      "old": {
+        "count": 153,
+        "optimisticBaseRatio": {
+          "count": 114,
+          "p50": 2.01,
+          "p75": 2.01,
+          "p90": 2.01,
+          "p95": 2.01
+        },
+        "basePessimisticRatio": {
+          "count": 114,
+          "p50": 2.2222,
+          "p75": 2.2222,
+          "p90": 2.2222,
+          "p95": 2.2222
+        },
+        "optimisticPessimisticRatio": {
+          "count": 114,
+          "p50": 4.4667,
+          "p75": 4.4667,
+          "p90": 4.4667,
+          "p95": 4.4667
+        },
+        "scenarioSpread": {
+          "count": 114,
+          "p50": 1.56,
+          "p75": 1.56,
+          "p90": 1.56,
+          "p95": 1.56
+        },
+        "fixedMultiplierDetected": true
+      },
+      "new": {
+        "count": 153,
+        "optimisticBaseRatio": {
+          "count": 114,
+          "p50": 1.5647,
+          "p75": 1.591,
+          "p90": 1.6185,
+          "p95": 1.6539
+        },
+        "basePessimisticRatio": {
+          "count": 114,
+          "p50": 1.5648,
+          "p75": 1.591,
+          "p90": 1.6185,
+          "p95": 1.6538
+        },
+        "optimisticPessimisticRatio": {
+          "count": 114,
+          "p50": 2.4485,
+          "p75": 2.5313,
+          "p90": 2.6196,
+          "p95": 2.7353
+        },
+        "scenarioSpread": {
+          "count": 114,
+          "p50": 0.9257,
+          "p75": 0.9625,
+          "p90": 1.0007,
+          "p95": 1.0492
+        },
+        "fixedMultiplierDetected": false
+      }
+    }
+  ],
+  "byConfidence": [
+    {
+      "group": "blocked_for_business_use",
+      "old": {
+        "count": 1533,
+        "optimisticBaseRatio": {
+          "count": 1020,
+          "p50": 2.01,
+          "p75": 2.01,
+          "p90": 2.01,
+          "p95": 2.01
+        },
+        "basePessimisticRatio": {
+          "count": 1020,
+          "p50": 2.2222,
+          "p75": 2.2222,
+          "p90": 2.2222,
+          "p95": 2.2222
+        },
+        "optimisticPessimisticRatio": {
+          "count": 1020,
+          "p50": 4.4667,
+          "p75": 4.4667,
+          "p90": 4.4667,
+          "p95": 4.4667
+        },
+        "scenarioSpread": {
+          "count": 1020,
+          "p50": 1.56,
+          "p75": 1.56,
+          "p90": 1.56,
+          "p95": 1.56
+        },
+        "fixedMultiplierDetected": true
+      },
+      "new": {
+        "count": 1533,
+        "optimisticBaseRatio": {
+          "count": 985,
+          "p50": 1.7332,
+          "p75": 1.7745,
+          "p90": 1.7945,
+          "p95": 1.8333
+        },
+        "basePessimisticRatio": {
+          "count": 972,
+          "p50": 1.7297,
+          "p75": 1.7742,
+          "p90": 1.8,
+          "p95": 2.0
+        },
+        "optimisticPessimisticRatio": {
+          "count": 972,
+          "p50": 3.0,
+          "p75": 3.1429,
+          "p90": 3.205,
+          "p95": 3.3
+        },
+        "scenarioSpread": {
+          "count": 972,
+          "p50": 1.1554,
+          "p75": 1.2091,
+          "p90": 1.2308,
+          "p95": 1.25
+        },
+        "fixedMultiplierDetected": false
+      }
+    },
+    {
+      "group": "high",
+      "old": {
+        "count": 94,
+        "optimisticBaseRatio": {
+          "count": 86,
+          "p50": 2.01,
+          "p75": 2.01,
+          "p90": 2.01,
+          "p95": 2.01
+        },
+        "basePessimisticRatio": {
+          "count": 86,
+          "p50": 2.2222,
+          "p75": 2.2222,
+          "p90": 2.2222,
+          "p95": 2.2222
+        },
+        "optimisticPessimisticRatio": {
+          "count": 86,
+          "p50": 4.4667,
+          "p75": 4.4667,
+          "p90": 4.4667,
+          "p95": 4.4667
+        },
+        "scenarioSpread": {
+          "count": 86,
+          "p50": 1.56,
+          "p75": 1.56,
+          "p90": 1.56,
+          "p95": 1.56
+        },
+        "fixedMultiplierDetected": true
+      },
+      "new": {
+        "count": 94,
+        "optimisticBaseRatio": {
+          "count": 86,
+          "p50": 1.2087,
+          "p75": 1.2117,
+          "p90": 1.2143,
+          "p95": 1.2154
+        },
+        "basePessimisticRatio": {
+          "count": 86,
+          "p50": 1.2087,
+          "p75": 1.2117,
+          "p90": 1.2143,
+          "p95": 1.2154
+        },
+        "optimisticPessimisticRatio": {
+          "count": 86,
+          "p50": 1.461,
+          "p75": 1.4683,
+          "p90": 1.4745,
+          "p95": 1.4772
+        },
+        "scenarioSpread": {
+          "count": 86,
+          "p50": 0.3814,
+          "p75": 0.3865,
+          "p90": 0.3907,
+          "p95": 0.3926
+        },
+        "fixedMultiplierDetected": false
+      }
+    },
+    {
+      "group": "low",
+      "old": {
+        "count": 996,
+        "optimisticBaseRatio": {
+          "count": 848,
+          "p50": 2.01,
+          "p75": 2.01,
+          "p90": 2.01,
+          "p95": 2.01
+        },
+        "basePessimisticRatio": {
+          "count": 848,
+          "p50": 2.2222,
+          "p75": 2.2222,
+          "p90": 2.2222,
+          "p95": 2.2222
+        },
+        "optimisticPessimisticRatio": {
+          "count": 848,
+          "p50": 4.4667,
+          "p75": 4.4667,
+          "p90": 4.4667,
+          "p95": 4.4667
+        },
+        "scenarioSpread": {
+          "count": 848,
+          "p50": 1.56,
+          "p75": 1.56,
+          "p90": 1.56,
+          "p95": 1.56
+        },
+        "fixedMultiplierDetected": true
+      },
+      "new": {
+        "count": 996,
+        "optimisticBaseRatio": {
+          "count": 844,
+          "p50": 1.599,
+          "p75": 1.6266,
+          "p90": 1.6752,
+          "p95": 1.7027
+        },
+        "basePessimisticRatio": {
+          "count": 844,
+          "p50": 1.599,
+          "p75": 1.6262,
+          "p90": 1.6756,
+          "p95": 1.7025
+        },
+        "optimisticPessimisticRatio": {
+          "count": 844,
+          "p50": 2.5567,
+          "p75": 2.6452,
+          "p90": 2.8045,
+          "p95": 2.8994
+        },
+        "scenarioSpread": {
+          "count": 844,
+          "p50": 0.9737,
+          "p75": 1.0116,
+          "p90": 1.078,
+          "p95": 1.1155
+        },
+        "fixedMultiplierDetected": false
+      }
+    },
+    {
+      "group": "medium",
+      "old": {
+        "count": 431,
+        "optimisticBaseRatio": {
+          "count": 357,
+          "p50": 2.01,
+          "p75": 2.01,
+          "p90": 2.01,
+          "p95": 2.01
+        },
+        "basePessimisticRatio": {
+          "count": 357,
+          "p50": 2.2222,
+          "p75": 2.2222,
+          "p90": 2.2222,
+          "p95": 2.2222
+        },
+        "optimisticPessimisticRatio": {
+          "count": 357,
+          "p50": 4.4667,
+          "p75": 4.4667,
+          "p90": 4.4667,
+          "p95": 4.4667
+        },
+        "scenarioSpread": {
+          "count": 357,
+          "p50": 1.56,
+          "p75": 1.56,
+          "p90": 1.56,
+          "p95": 1.56
+        },
+        "fixedMultiplierDetected": true
+      },
+      "new": {
+        "count": 431,
+        "optimisticBaseRatio": {
+          "count": 357,
+          "p50": 1.3816,
+          "p75": 1.4142,
+          "p90": 1.4142,
+          "p95": 1.4142
+        },
+        "basePessimisticRatio": {
+          "count": 357,
+          "p50": 1.3827,
+          "p75": 1.4142,
+          "p90": 1.4142,
+          "p95": 1.4142
+        },
+        "optimisticPessimisticRatio": {
+          "count": 357,
+          "p50": 1.9119,
+          "p75": 2.0,
+          "p90": 2.0,
+          "p95": 2.0
+        },
+        "scenarioSpread": {
+          "count": 357,
+          "p50": 0.6595,
+          "p75": 0.7071,
+          "p90": 0.7071,
+          "p95": 0.7071
+        },
+        "fixedMultiplierDetected": false
+      }
+    }
+  ],
+  "byRiskBucket": [
+    {
+      "group": "abnormal_spike",
+      "old": {
+        "count": 382,
+        "optimisticBaseRatio": {
+          "count": 56,
+          "p50": 2.01,
+          "p75": 2.01,
+          "p90": 2.01,
+          "p95": 2.01
+        },
+        "basePessimisticRatio": {
+          "count": 56,
+          "p50": 2.2222,
+          "p75": 2.2222,
+          "p90": 2.2222,
+          "p95": 2.2222
+        },
+        "optimisticPessimisticRatio": {
+          "count": 56,
+          "p50": 4.4667,
+          "p75": 4.4667,
+          "p90": 4.4667,
+          "p95": 4.4667
+        },
+        "scenarioSpread": {
+          "count": 56,
+          "p50": 1.56,
+          "p75": 1.56,
+          "p90": 1.56,
+          "p95": 1.56
+        },
+        "fixedMultiplierDetected": true
+      },
+      "new": {
+        "count": 382,
+        "optimisticBaseRatio": {
+          "count": 52,
+          "p50": 1.7029,
+          "p75": 1.7746,
+          "p90": 1.7768,
+          "p95": 1.8437
+        },
+        "basePessimisticRatio": {
+          "count": 51,
+          "p50": 1.7029,
+          "p75": 1.775,
+          "p90": 1.8,
+          "p95": 1.9167
+        },
+        "optimisticPessimisticRatio": {
+          "count": 51,
+          "p50": 2.9,
+          "p75": 3.15,
+          "p90": 3.1644,
+          "p95": 3.3333
+        },
+        "scenarioSpread": {
+          "count": 51,
+          "p50": 1.1157,
+          "p75": 1.2114,
+          "p90": 1.2154,
+          "p95": 1.25
+        },
+        "fixedMultiplierDetected": false
+      }
+    },
+    {
+      "group": "copyright_expiry",
+      "old": {
+        "count": 194,
+        "optimisticBaseRatio": {
+          "count": 136,
+          "p50": 2.01,
+          "p75": 2.01,
+          "p90": 2.01,
+          "p95": 2.01
+        },
+        "basePessimisticRatio": {
+          "count": 136,
+          "p50": 2.2222,
+          "p75": 2.2222,
+          "p90": 2.2222,
+          "p95": 2.2222
+        },
+        "optimisticPessimisticRatio": {
+          "count": 136,
+          "p50": 4.4667,
+          "p75": 4.4667,
+          "p90": 4.4667,
+          "p95": 4.4667
+        },
+        "scenarioSpread": {
+          "count": 136,
+          "p50": 1.56,
+          "p75": 1.56,
+          "p90": 1.56,
+          "p95": 1.56
+        },
+        "fixedMultiplierDetected": true
+      },
+      "new": {
+        "count": 194,
+        "optimisticBaseRatio": {
+          "count": 135,
+          "p50": 1.4067,
+          "p75": 1.4142,
+          "p90": 1.6108,
+          "p95": 1.6387
+        },
+        "basePessimisticRatio": {
+          "count": 135,
+          "p50": 1.4067,
+          "p75": 1.4142,
+          "p90": 1.6113,
+          "p95": 1.6393
+        },
+        "optimisticPessimisticRatio": {
+          "count": 135,
+          "p50": 1.9789,
+          "p75": 2.0,
+          "p90": 2.5831,
+          "p95": 2.6863
+        },
+        "scenarioSpread": {
+          "count": 135,
+          "p50": 0.6959,
+          "p75": 0.7071,
+          "p90": 0.9916,
+          "p95": 1.0287
+        },
+        "fixedMultiplierDetected": false
+      }
+    },
+    {
+      "group": "data_gap_or_copyright_fallback",
+      "old": {
+        "count": 1874,
+        "optimisticBaseRatio": {
+          "count": 1658,
+          "p50": 2.01,
+          "p75": 2.01,
+          "p90": 2.01,
+          "p95": 2.01
+        },
+        "basePessimisticRatio": {
+          "count": 1658,
+          "p50": 2.2222,
+          "p75": 2.2222,
+          "p90": 2.2222,
+          "p95": 2.2222
+        },
+        "optimisticPessimisticRatio": {
+          "count": 1658,
+          "p50": 4.4667,
+          "p75": 4.4667,
+          "p90": 4.4667,
+          "p95": 4.4667
+        },
+        "scenarioSpread": {
+          "count": 1658,
+          "p50": 1.56,
+          "p75": 1.56,
+          "p90": 1.56,
+          "p95": 1.56
+        },
+        "fixedMultiplierDetected": true
+      },
+      "new": {
+        "count": 1874,
+        "optimisticBaseRatio": {
+          "count": 1626,
+          "p50": 1.6966,
+          "p75": 1.744,
+          "p90": 1.7839,
+          "p95": 1.8
+        },
+        "basePessimisticRatio": {
+          "count": 1614,
+          "p50": 1.6927,
+          "p75": 1.7398,
+          "p90": 1.7855,
+          "p95": 1.8077
+        },
+        "optimisticPessimisticRatio": {
+          "count": 1614,
+          "p50": 2.8851,
+          "p75": 3.0175,
+          "p90": 3.1667,
+          "p95": 3.2146
+        },
+        "scenarioSpread": {
+          "count": 1614,
+          "p50": 1.1084,
+          "p75": 1.1667,
+          "p90": 1.2187,
+          "p95": 1.2333
+        },
+        "fixedMultiplierDetected": false
+      }
+    },
+    {
+      "group": "inactive_tail",
+      "old": {
+        "count": 146,
+        "optimisticBaseRatio": {
+          "count": 33,
+          "p50": 2.01,
+          "p75": 2.01,
+          "p90": 2.01,
+          "p95": 2.01
+        },
+        "basePessimisticRatio": {
+          "count": 33,
+          "p50": 2.2222,
+          "p75": 2.2222,
+          "p90": 2.2222,
+          "p95": 2.2222
+        },
+        "optimisticPessimisticRatio": {
+          "count": 33,
+          "p50": 4.4667,
+          "p75": 4.4667,
+          "p90": 4.4667,
+          "p95": 4.4667
+        },
+        "scenarioSpread": {
+          "count": 33,
+          "p50": 1.56,
+          "p75": 1.56,
+          "p90": 1.56,
+          "p95": 1.56
+        },
+        "fixedMultiplierDetected": true
+      },
+      "new": {
+        "count": 146,
+        "optimisticBaseRatio": {
+          "count": 31,
+          "p50": 1.5,
+          "p75": 1.6375,
+          "p90": 1.6977,
+          "p95": 1.9
+        },
+        "basePessimisticRatio": {
+          "count": 31,
+          "p50": 1.5,
+          "p75": 1.5874,
+          "p90": 1.6667,
+          "p95": 1.7154
+        },
+        "optimisticPessimisticRatio": {
+          "count": 31,
+          "p50": 2.2388,
+          "p75": 2.5441,
+          "p90": 2.8816,
+          "p95": 2.9667
+        },
+        "scenarioSpread": {
+          "count": 31,
+          "p50": 0.8333,
+          "p75": 1.0,
+          "p90": 1.1085,
+          "p95": 1.1577
+        },
+        "fixedMultiplierDetected": false
+      }
+    },
+    {
+      "group": "insufficient_history",
+      "old": {
+        "count": 10,
+        "optimisticBaseRatio": {
+          "count": 10,
+          "p50": 2.01,
+          "p75": 2.01,
+          "p90": 2.01,
+          "p95": 2.01
+        },
+        "basePessimisticRatio": {
+          "count": 10,
+          "p50": 2.2222,
+          "p75": 2.2222,
+          "p90": 2.2222,
+          "p95": 2.2222
+        },
+        "optimisticPessimisticRatio": {
+          "count": 10,
+          "p50": 4.4667,
+          "p75": 4.4667,
+          "p90": 4.4667,
+          "p95": 4.4667
+        },
+        "scenarioSpread": {
+          "count": 10,
+          "p50": 1.56,
+          "p75": 1.56,
+          "p90": 1.56,
+          "p95": 1.56
+        },
+        "fixedMultiplierDetected": true
+      },
+      "new": {
+        "count": 10,
+        "optimisticBaseRatio": {
+          "count": 10,
+          "p50": 1.697,
+          "p75": 1.7077,
+          "p90": 1.7109,
+          "p95": 1.7152
+        },
+        "basePessimisticRatio": {
+          "count": 10,
+          "p50": 1.697,
+          "p75": 1.7077,
+          "p90": 1.7109,
+          "p95": 1.7152
+        },
+        "optimisticPessimisticRatio": {
+          "count": 10,
+          "p50": 2.8798,
+          "p75": 2.9161,
+          "p90": 2.9271,
+          "p95": 2.9418
+        },
+        "scenarioSpread": {
+          "count": 10,
+          "p50": 1.1077,
+          "p75": 1.1221,
+          "p90": 1.1264,
+          "p95": 1.1321
+        },
+        "fixedMultiplierDetected": false
+      }
+    },
+    {
+      "group": "no_major_risk",
+      "old": {
+        "count": 141,
+        "optimisticBaseRatio": {
+          "count": 141,
+          "p50": 2.01,
+          "p75": 2.01,
+          "p90": 2.01,
+          "p95": 2.01
+        },
+        "basePessimisticRatio": {
+          "count": 141,
+          "p50": 2.2222,
+          "p75": 2.2222,
+          "p90": 2.2222,
+          "p95": 2.2222
+        },
+        "optimisticPessimisticRatio": {
+          "count": 141,
+          "p50": 4.4667,
+          "p75": 4.4667,
+          "p90": 4.4667,
+          "p95": 4.4667
+        },
+        "scenarioSpread": {
+          "count": 141,
+          "p50": 1.56,
+          "p75": 1.56,
+          "p90": 1.56,
+          "p95": 1.56
+        },
+        "fixedMultiplierDetected": true
+      },
+      "new": {
+        "count": 141,
+        "optimisticBaseRatio": {
+          "count": 141,
+          "p50": 1.379,
+          "p75": 1.4142,
+          "p90": 1.4142,
+          "p95": 1.4142
+        },
+        "basePessimisticRatio": {
+          "count": 141,
+          "p50": 1.379,
+          "p75": 1.4142,
+          "p90": 1.4142,
+          "p95": 1.4142
+        },
+        "optimisticPessimisticRatio": {
+          "count": 141,
+          "p50": 1.9015,
+          "p75": 2.0,
+          "p90": 2.0,
+          "p95": 2.0
+        },
+        "scenarioSpread": {
+          "count": 141,
+          "p50": 0.6538,
+          "p75": 0.7071,
+          "p90": 0.7071,
+          "p95": 0.7071
+        },
+        "fixedMultiplierDetected": false
+      }
+    },
+    {
+      "group": "other_risk",
+      "old": {
+        "count": 205,
+        "optimisticBaseRatio": {
+          "count": 205,
+          "p50": 2.01,
+          "p75": 2.01,
+          "p90": 2.01,
+          "p95": 2.01
+        },
+        "basePessimisticRatio": {
+          "count": 205,
+          "p50": 2.2222,
+          "p75": 2.2222,
+          "p90": 2.2222,
+          "p95": 2.2222
+        },
+        "optimisticPessimisticRatio": {
+          "count": 205,
+          "p50": 4.4667,
+          "p75": 4.4667,
+          "p90": 4.4667,
+          "p95": 4.4667
+        },
+        "scenarioSpread": {
+          "count": 205,
+          "p50": 1.56,
+          "p75": 1.56,
+          "p90": 1.56,
+          "p95": 1.56
+        },
+        "fixedMultiplierDetected": true
+      },
+      "new": {
+        "count": 205,
+        "optimisticBaseRatio": {
+          "count": 205,
+          "p50": 1.3677,
+          "p75": 1.4143,
+          "p90": 1.5848,
+          "p95": 1.6309
+        },
+        "basePessimisticRatio": {
+          "count": 205,
+          "p50": 1.3677,
+          "p75": 1.4142,
+          "p90": 1.5848,
+          "p95": 1.6312
+        },
+        "optimisticPessimisticRatio": {
+          "count": 205,
+          "p50": 1.8706,
+          "p75": 2.0,
+          "p90": 2.5115,
+          "p95": 2.6604
+        },
+        "scenarioSpread": {
+          "count": 205,
+          "p50": 0.6365,
+          "p75": 0.7071,
+          "p90": 0.9538,
+          "p95": 1.0179
+        },
+        "fixedMultiplierDetected": false
+      }
+    },
+    {
+      "group": "revenue_decline",
+      "old": {
+        "count": 102,
+        "optimisticBaseRatio": {
+          "count": 72,
+          "p50": 2.01,
+          "p75": 2.01,
+          "p90": 2.01,
+          "p95": 2.01
+        },
+        "basePessimisticRatio": {
+          "count": 72,
+          "p50": 2.2222,
+          "p75": 2.2222,
+          "p90": 2.2222,
+          "p95": 2.2222
+        },
+        "optimisticPessimisticRatio": {
+          "count": 72,
+          "p50": 4.4667,
+          "p75": 4.4667,
+          "p90": 4.4667,
+          "p95": 4.4667
+        },
+        "scenarioSpread": {
+          "count": 72,
+          "p50": 1.56,
+          "p75": 1.56,
+          "p90": 1.56,
+          "p95": 1.56
+        },
+        "fixedMultiplierDetected": true
+      },
+      "new": {
+        "count": 102,
+        "optimisticBaseRatio": {
+          "count": 72,
+          "p50": 1.4142,
+          "p75": 1.6325,
+          "p90": 1.6777,
+          "p95": 1.6922
+        },
+        "basePessimisticRatio": {
+          "count": 72,
+          "p50": 1.4142,
+          "p75": 1.6228,
+          "p90": 1.6849,
+          "p95": 1.6972
+        },
+        "optimisticPessimisticRatio": {
+          "count": 72,
+          "p50": 2.0,
+          "p75": 2.6625,
+          "p90": 2.8376,
+          "p95": 2.8872
+        },
+        "scenarioSpread": {
+          "count": 72,
+          "p50": 0.7071,
+          "p75": 1.0201,
+          "p90": 1.0906,
+          "p95": 1.1105
+        },
+        "fixedMultiplierDetected": false
+      }
+    }
+  ],
+  "requirements": {
+    "oldFixedMultiplierConfirmed": true,
+    "newFixedMultiplierDetected": false,
+    "highConfidenceMedianOptimisticPessimisticRatioLe1_5": true,
+    "fullP75OptimisticPessimisticRatioLe2ExcludingLowConfidenceSpikeInsufficientHistory": true
+  },
+  "safeOutputBoundary": {
+    "sanitizedReportsUseAnonymousSampleIds": true,
+    "realWorkNamesWritten": false,
+    "realAuthorNamesWritten": false,
+    "realChannelNamesWritten": false,
+    "rawBillRowsWritten": false,
+    "workChannelMonthRevenueDetailWritten": false,
+    "connectionStringsWritten": false,
+    "secretsWritten": false,
+    "privateOutputsGitignored": true,
+    "notFinalReleaseApproved": true
+  }
+}
