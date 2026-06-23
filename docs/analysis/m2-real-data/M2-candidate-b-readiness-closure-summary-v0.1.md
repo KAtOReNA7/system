@@ -8,7 +8,7 @@ This is local development evidence only. It is not a final formal evaluation or 
 
 ## Current Closure State
 
-- Final decisions applied: no
+- Local closure decisions applied: yes
 - Proposed decisions generated: yes
 - Remaining blocking count: 0
 - Pending count: 2759
@@ -30,6 +30,8 @@ This is local development evidence only. It is not a final formal evaluation or 
 
 ## Conclusion
 
-Final decisions were not applied. Proposed decisions are generated, and blocking items remain pending until user/business confirmation.
+Local M2 readiness closure decisions were applied for the 85 original blocking review items. The current blocking status distribution is `no_action_required=62` and `waiver_granted=23`; remaining blocking count is `0`.
+
+This closes the candidate-b business review blocking state for authorized local M2 readiness. It is still not a final production release approval, does not by itself authorize production use, and does not execute destructive mapping activation or `switch_mapping_version`.
 
 No raw rows, real work names, author names, channel names, exact per-work revenue detail, secrets, connection strings, private workbook names, dumps, or temporary DB files are written in this report.

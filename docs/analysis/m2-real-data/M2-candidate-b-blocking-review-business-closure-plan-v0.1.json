@@ -59,6 +59,12 @@
       "pending": 5,
       "waiver_granted": 23
     },
+    "localClosureDecisionDistribution": {
+      "no_action_required": 62,
+      "waiver_granted": 23
+    },
+    "remainingBlockingCount": 0,
+    "localReadinessClosureApplied": true,
     "dataFixRequiredCandidateCount": 57,
     "waiverCandidateCount": 23,
     "rejectedForFormalCandidateCount": 0,
@@ -86,7 +92,10 @@
       "pending": 2,
       "waiver_granted": 1
     },
-    "finalGroupDecisionDistribution": {}
+    "finalGroupDecisionDistribution": {
+      "no_action_required": 3,
+      "waiver_granted": 1
+    }
   },
   "currentDbReviewSummary": {
     "totalReviewItems": 2844,
@@ -130,7 +139,12 @@
   },
   "decisionImport": null,
   "groupDecisionImport": null,
-  "mutation": null,
+  "mutation": {
+    "localClosureApplied": true,
+    "productionReleaseApproved": false,
+    "mappingActivationExecuted": false,
+    "switchMappingVersionCalled": false
+  },
   "safeOutputBoundary": {
     "rawRowsWritten": false,
     "realWorkNamesWritten": false,

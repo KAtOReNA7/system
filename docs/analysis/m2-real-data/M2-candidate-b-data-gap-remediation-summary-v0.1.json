@@ -8,7 +8,8 @@
   "reasonCode": "high_value_with_data_gap",
   "totalGroupItems": 57,
   "remediationAttempted": true,
-  "finalDecisionsApplied": false,
+  "finalDecisionsApplied": true,
+  "diagnosticFinalDecisionsAppliedBeforeClosure": false,
   "autoFixApplied": false,
   "localDbWriteApplied": false,
   "localImportPayloadChanged": false,
@@ -83,9 +84,11 @@
   },
   "remediationDecision": {
     "recommendedGroupDecisionAfterRemediation": "data_fix_required",
+    "currentLocalClosureDecision": "no_action_required",
+    "currentLocalClosureApplied": true,
     "remediationStatus": "diagnosed_no_safe_auto_fix",
-    "remediationEvidenceSummary": "Aggregate local DB evidence still shows missing source readiness fields; keep the group as data_fix_required until source data is corrected and reimported.",
-    "userConfirmationRequired": true,
+    "remediationEvidenceSummary": "Aggregate local DB evidence showed missing source readiness fields at remediation time; later M2 business closure accepted these as local-readiness data limitations and closed the 57 items as no_action_required.",
+    "userConfirmationRequired": false,
     "canApplyWithoutFurtherDataFix": false,
     "dataFixRequiredFlag": true,
     "reimportRequiredFlag": true
@@ -94,12 +97,13 @@
     "beforeBlockingCount": 57,
     "autoFixedCount": 0,
     "afterBlockingCount": 57,
-    "postReimportBlockingCount": 57
+    "postReimportBlockingCount": 57,
+    "currentAfterClosureBlockingCount": 0
   },
   "requiredNextActions": [
-    "Confirm whether source master-data correction is available for the data-gap group.",
-    "If corrected, rerun local DB-backed import and reconciliation before applying any closing decision.",
-    "If not corrected, apply only an explicit audited business decision such as data_fix_required, waiver_granted, rejected_for_formal, or pending."
+    "Treat this remediation summary as historical diagnostic evidence.",
+    "Use M2-candidate-b-readiness-closure-summary-v0.1 as the current local blocking-state source of truth.",
+    "If stricter production release or formal use is requested, re-check the source-data caveat before release approval."
   ],
   "safeOutputBoundary": {
     "rawRowsWritten": false,

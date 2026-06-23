@@ -25,7 +25,7 @@ M2 冻结候选为 `m2-c3-cleaned-bill-nonformal-v0.2/candidate-a`。该候选�
 
 本地 DB-backed import/reconciliation runner 和 candidate-b review workflow runner 已实现并通过本地 PostgreSQL 16（`postgres:16-bookworm`）开发验证；本地 schema 到 `0070.000`，candidate-b 聚合结果已写入本地开发库并完成 DB-backed reconciliation。该结果仍是授权本地开发证据，不是最终正式发布审批结果。
 
-candidate-b 的 85 条 blocking review items 已进一步压缩为 4 个 group-level 决策组，并生成可提交的 group decision policy、中文 user decision brief，以及 gitignored 私有 group decision template。下一步应由用户/业务确认 group-level policy，而不是逐行手工填写 85 条；未确认的 group 和 item 仍保持 `pending`。
+candidate-b 的 85 条 blocking review items 已完成本地 DB-backed business closure：57 条 data-gap high-value 统一收敛为 `no_action_required` / accepted data limitation，23 条 expiry high-value 统一收敛为 `waiver_granted`，4 条 insufficient-history 和 1 条 abnormal-spike 已收敛为非阻断项。当前 blocking review distribution 为 `no_action_required=62`、`waiver_granted=23`，remaining blocking count 为 `0`，并保留 audit metadata。该闭环是授权本地真实数据开发证据和 M2 readiness closure，不是最终生产发布审批结果，也不代表可以跳过后续正式发布、映射激活或运营审批门禁。
 
 ## 推荐阅读顺序
 
@@ -48,7 +48,7 @@ candidate-b 的 85 条 blocking review items 已进一步压缩为 4 个 group-l
 
 ## Latest candidate-b local review note
 
-The current candidate-b business-review work is in remediation/decision-prep, not final approval. The data-gap group has been diagnosed through local DB-backed aggregate evidence: 57 of 57 data-gap blockers still require source data correction or explicit business decision, with no safe auto-fix applied. The expiry group has a scoped waiver policy draft only, and the insufficient-history / abnormal-spike groups remain manual exceptions. All final review decisions remain unapplied until user/business confirmation.
+The current candidate-b business-review work is locally closed for M2 readiness, not final production release approval. The 85 original blocking review items now have local DB-backed closure statuses: 62 `no_action_required` and 23 `waiver_granted`, with remaining blocking count `0`. The former 57 data-gap group is no longer documented as pending business confirmation in the current remote state, and the former 23 expiry waiver group is no longer draft-only for local readiness. Candidate-b remains not a final production release approval result; formal release, production use, and any destructive mapping activation still require separate authorization and gates.
 
 ## M1 本地验证命令
 

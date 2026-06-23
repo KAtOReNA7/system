@@ -4,7 +4,7 @@ Mode: authorized local real-data DB-backed development.
 
 Candidate: `m2-realdata-dev-candidate-b-v0.1`
 
-This policy compresses 85 pending blocking review items into auditable group-level business decisions. It is local development evidence only, not final formal release approval.
+This policy records the original group-level structure for the 85 blocking review items and the current local readiness closure state. It is local development evidence only, not final production release approval.
 
 ## Group Summary
 
@@ -22,6 +22,15 @@ This policy compresses 85 pending blocking review items into auditable group-lev
 | data_fix_required | 1 |
 | pending | 2 |
 | waiver_granted | 1 |
+
+## Current Local Closure Distribution
+
+| Local Closure Decision | Count |
+|---|---:|
+| no_action_required | 3 groups / 62 items |
+| waiver_granted | 1 group / 23 items |
+
+Current remaining blocking count: `0`.
 
 ## Required Fields Per Decision
 
@@ -46,6 +55,6 @@ This policy compresses 85 pending blocking review items into auditable group-lev
 
 ## Unconfirmed Group Policy
 
-Rows with blank reviewerDecision or reviewerDecision=pending are not applied and remain pending.
+No current blocking review group remains pending in the remote M2 readiness closure state. If a reviewer rejects the closure policy, reopen the affected group explicitly and rerun the review summary before M3 planning.
 
 No raw rows, real work names, author names, channel names, exact per-work revenue detail, secrets, connection strings, private workbook names, dumps, or temporary DB files are written in this report.

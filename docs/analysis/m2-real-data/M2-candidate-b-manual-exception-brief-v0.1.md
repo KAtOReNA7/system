@@ -6,6 +6,8 @@ Candidate: `m2-realdata-dev-candidate-b-v0.1`
 
 This is a local manual exception brief only. It does not apply final decisions and does not approve formal release.
 
+Status update: this brief remains historical exception evidence. The later M2 business closure marked the 4 insufficient-history items and the 1 abnormal-spike item as non-blocking / `no_action_required` for local M2 readiness. This does not approve production release.
+
 ## Manual Exception Groups
 
 | Group | Reason Code | Count | Recommended Decision | Required Business Decision |
@@ -15,6 +17,6 @@ This is a local manual exception brief only. It does not apply final decisions a
 
 ## Conclusion
 
-Manual exception groups remain pending by default; no automatic closure is safe without user/business confirmation.
+Manual exception groups were pending at brief time. The later M2 business closure accepted them as non-blocking for local M2 readiness; production release or stricter formal use should still re-check exception evidence.
 
 No raw rows, real work names, author names, channel names, exact per-work revenue detail, secrets, connection strings, private workbook names, dumps, or temporary DB files are written in this report.

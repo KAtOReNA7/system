@@ -4,7 +4,8 @@
   "generatedAt": "2026-06-22T10:11:37.583Z",
   "candidateVersion": "m2-realdata-dev-candidate-b-v0.1",
   "notFinalReleaseApproved": true,
-  "finalDecisionApplied": false,
+  "finalDecisionApplied": true,
+  "briefFinalDecisionAppliedBeforeClosure": false,
   "groups": [
     {
       "groupDecisionId": "GROUP-INSUFFICIENT-HISTORY",
@@ -12,7 +13,9 @@
       "itemCount": 4,
       "defaultProposedDecision": "pending",
       "recommendedDecision": "pending",
-      "userConfirmationRequired": true,
+      "currentLocalClosureDecision": "no_action_required",
+      "currentLocalClosureApplied": true,
+      "userConfirmationRequired": false,
       "canApplyWithoutFurtherDataFix": false,
       "reimportRequiredFlag": false,
       "riskCodeDistribution": {
@@ -32,7 +35,9 @@
       "itemCount": 1,
       "defaultProposedDecision": "pending",
       "recommendedDecision": "pending",
-      "userConfirmationRequired": true,
+      "currentLocalClosureDecision": "no_action_required",
+      "currentLocalClosureApplied": true,
+      "userConfirmationRequired": false,
       "canApplyWithoutFurtherDataFix": false,
       "reimportRequiredFlag": false,
       "riskCodeDistribution": {
@@ -45,7 +50,7 @@
     }
   ],
   "totalManualExceptionItems": 5,
-  "conclusion": "Manual exception groups remain pending by default; no automatic closure is safe without user/business confirmation.",
+  "conclusion": "Manual exception groups were pending at brief time. The later M2 business closure accepted them as non-blocking/no_action_required for local M2 readiness; production release or stricter formal use should still re-check exception evidence.",
   "safeOutputBoundary": {
     "rawRowsWritten": false,
     "realWorkNamesWritten": false,

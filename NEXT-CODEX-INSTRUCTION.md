@@ -1,31 +1,31 @@
 # 下一步交给 Codex 的指令
 
-请使用最高模型能力和充分上下文。当前入口不是 M1 技术设计，不是纯文档 contract pack，不是重新发现 candidate-b，不是重跑无必要的数据画像，不是继续 M2-C5/C6，不是开启 FR-7，也不是进入 M3。
+请使用最高模型能力和充分上下文。当前入口不是 M1 技术设计，不是纯文档 contract pack，不是重新发现 candidate-b，不是重跑无必要的数据画像，不是继续 M2-C5/C6，也不是开启 FR-7。
 
 当前入口是：
 
-`M2 candidate-b business review decision apply / data-fix continuation sprint`
+`M2 candidate-b final algorithm validation before M3 planning`
 
 ## 当前状态
 
-- 本地/远端 `main` 目标 HEAD 仍应为 `463f86ecc1045a67c2d014d2fd4e59f55a8dcdcc`，开始前必须重新门禁确认。
+- 本地/远端 `main` 已推进到 M2 closure 后续提交；开始前必须重新门禁确认 `HEAD == origin/main`，不要假定旧 HEAD `463f86e...` 仍是目标。
 - 项目处于 **authorized local real-data development mode**。
 - candidate-a `m2-c3-cleaned-bill-nonformal-v0.2/candidate-a` 只能作为非正式 baseline，不能用于正式发布决策。
 - candidate-b `m2-realdata-dev-candidate-b-v0.1` 是授权本地真实数据开发候选，不是最终正式发布审批结果。
 - 本地 Docker/PostgreSQL 已验证使用 `postgres:16-bookworm`，本地 schema 已到 `0070.000`。
 - 本地 DB-backed import/reconciliation 已通过，DB 中有 3054 个 evaluation results、3054 个 input snapshots、11531 个 risks、3863 个 suggestions、2844 个 review items。
-- review workflow 默认不自动 approve；当前 85 个 blocking review items 和 2759 个 advisory review items 仍为 `pending`。
-- 85 个 blocking review items 已压缩为 4 个 group decision groups：
+- review workflow 曾生成 85 个 blocking review items 和 2759 个 advisory review items；当前 M2 business closure 已将 85 个 blocking review items 本地闭环，remaining blocking count = `0`。
+- 85 个 blocking review items 的原始 group decision groups 为：
   - `GROUP-DATA-GAP-HIGH-VALUE` = 57
   - `GROUP-EXPIRY-HIGH-VALUE` = 23
   - `GROUP-INSUFFICIENT-HISTORY` = 4
   - `GROUP-ABNORMAL-SPIKE` = 1
 - 已生成 item-level private review pack：`data/private-output/m2-review/candidate-b-blocking-review-pack.csv`；该文件 gitignored，不得提交。
 - 已生成 private group decision template：`data/private-output/m2-review/candidate-b-group-decision-template.csv`；该文件 gitignored，不得提交。
-- 已完成 data-gap remediation 诊断：57 个 data-gap blockers 中未发现可安全自动修复项，57 个仍建议 `data_fix_required`，需要源数据修正或明确业务决策后再继续。
-- 已完成 expiry waiver policy draft：23 个 expiry blockers 可作为 scoped local waiver 候选，但必须由用户/业务填写 `reviewerReason`、`reviewerName`、`waiverScope`、`waiverExpiry` 后才能 dry-run/apply。
-- 已完成 manual exception brief：4 个 insufficient-history 和 1 个 abnormal-spike 仍应默认 `pending`，不得自动关闭。
-- 当前没有 final review decisions applied；candidate-b 仍不能晋级为正式发布审批结果。
+- 已完成 data-gap remediation 诊断；在后续 M2 business closure 中，57 个 data-gap high-value items 已按本地闭环策略收敛为 `no_action_required` / accepted data limitation，不再作为当前 blocking 项。
+- 已完成 expiry waiver policy draft；在后续 M2 business closure 中，23 个 expiry high-value items 已按本地闭环策略收敛为 `waiver_granted`，并保留 audit metadata，不再作为当前 blocking 项。
+- 4 个 insufficient-history 和 1 个 abnormal-spike 已按本地闭环策略收敛为非阻断项。
+- 当前 blocking review distribution 为 `no_action_required=62`、`waiver_granted=23`；candidate-b 可作为 M2 本地 readiness closure / formal baseline evidence，但仍不是最终生产发布审批结果。
 
 ## 优先读取文件
 
@@ -88,11 +88,10 @@
 
 1. 重新执行门禁：`git status --short`、`git rev-parse HEAD`、`git fetch origin main`、`git rev-parse origin/main`、`git diff --stat`、`git diff -- db/migrations`、`git ls-files --others --exclude-standard`。
 2. 确认本地 Docker/PostgreSQL 可用，确认 schema `0070.000` 和 candidate-b DB-backed import/reconciliation 状态。
-3. 从 remediation 后的 private group decision template 继续；只处理用户/业务已经明确填写和授权的 group decisions。
-4. 对用户填写的 group template 先运行 dry-run：`npm run review:m2:candidate-b:group-apply -- --dry-run --group-decisions <path>`。
-5. dry-run 通过且用户明确授权后，才运行 apply：`npm run review:m2:candidate-b:group-apply -- --apply --group-decisions <path>`。
-6. 如果仍有 `data_fix_required`，只在授权本地开发边界内做最小源数据修正、重新 import/reconciliation、刷新 remediation/readiness summaries。
-7. 如果 85 个 blocking items 全部闭环，再推进 local readiness gate 和 formal task/export/release local contract implementation；仍不要创建正式发布导出或对外正式 API。
+3. 基于当前 M2 closure 状态做算法正确性验证：抽样版权期明确作品，检查历史收入、生命周期、剩余版权期预测、评级、运营建议、风险、参考作品和回测误差。
+4. 若验证发现系统性偏高/偏低，先给出最小算法调整建议和影响范围；不要直接进入 M3。
+5. 若验证通过，冻结 M2 算法口径并进入 M3 年度目标规划。
+6. 仍不要把本地 candidate-b 表述为最终生产发布审批结果；正式发布、生产使用、mapping activation 或 `switch_mapping_version` 仍需单独授权。
 
 ## 验证要求
 

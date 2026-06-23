@@ -6,6 +6,8 @@ Candidate: `m2-realdata-dev-candidate-b-v0.1`
 
 This is local development evidence only. It is not a final formal evaluation or release approval.
 
+Status update: this diagnostic remains historical evidence. The later M2 business closure superseded the recommended blocking action for local readiness: all 57 data-gap items are currently closed as `no_action_required` / accepted data limitation in the remote M2 readiness state. This does not erase the source-data caveat and does not approve production release.
+
 ## Executive Summary
 
 - Data-gap blocking group items: 57
@@ -59,6 +61,6 @@ This is local development evidence only. It is not a final formal evaluation or 
 
 ## Conclusion
 
-Aggregate local DB evidence still shows missing source readiness fields; keep the group as data_fix_required until source data is corrected and reimported.
+Aggregate local DB evidence showed missing source readiness fields at remediation time. The later M2 business closure accepted these as local-readiness data limitations and closed the 57 items as `no_action_required`; production release or stricter formal use should still re-check the source-data caveat.
 
 No raw rows, real work names, author names, channel names, exact per-work revenue detail, secrets, connection strings, private workbook names, dumps, or temporary DB files are written in this report.

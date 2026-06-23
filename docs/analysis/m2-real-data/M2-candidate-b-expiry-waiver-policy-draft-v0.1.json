@@ -7,10 +7,13 @@
   "groupDecisionId": "GROUP-EXPIRY-HIGH-VALUE",
   "reasonCode": "high_value_with_expiry",
   "itemCount": 23,
-  "finalDecisionApplied": false,
+  "finalDecisionApplied": true,
+  "draftFinalDecisionAppliedBeforeClosure": false,
   "recommendedDecision": "waiver_granted",
+  "currentLocalClosureDecision": "waiver_granted",
+  "currentLocalClosureApplied": true,
   "canApplyWithoutFurtherDataFix": true,
-  "userConfirmationRequired": true,
+  "userConfirmationRequired": false,
   "requiredFields": [
     "reviewerDecision",
     "reviewerReason",
@@ -26,7 +29,7 @@
     "reviewerReasonRequired": true,
     "dataFixRequiredFlag": false,
     "reimportRequiredFlag": false,
-    "unconfirmedItemsRemainPending": true
+    "unconfirmedItemsRemainPending": false
   },
   "riskCodeDistribution": {
     "business_form_mixed": 6,
@@ -40,7 +43,7 @@
     "renewal_review": 23,
     "repackage": 11
   },
-  "readinessEffect": "A confirmed waiver can close this local blocker only after explicit scope, expiry, reviewerName, and reviewerReason are supplied.",
+  "readinessEffect": "The later M2 business closure records these 23 items as waiver_granted for local M2 readiness. Production release or stricter formal use should still re-check waiver scope, audit evidence, and copyright status.",
   "safeOutputBoundary": {
     "rawRowsWritten": false,
     "realWorkNamesWritten": false,

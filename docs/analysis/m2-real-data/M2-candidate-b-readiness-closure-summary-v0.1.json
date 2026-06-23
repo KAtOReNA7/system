@@ -4,10 +4,10 @@
   "mode": "summary",
   "candidateVersion": "m2-realdata-dev-candidate-b-v0.1",
   "notFinalReleaseApproved": true,
-  "finalDecisionsApplied": false,
+  "finalDecisionsApplied": true,
   "proposedDecisionsGenerated": true,
   "readiness": {
-    "finalDecisionsApplied": false,
+    "finalDecisionsApplied": true,
     "proposedDecisionsGenerated": true,
     "statusDistribution": {
       "no_action_required": 62,
@@ -31,7 +31,7 @@
   },
   "dryRunPlan": null,
   "groupDryRunPlan": null,
-  "conclusion": "Final decisions were not applied. Proposed decisions are generated, and blocking items remain pending until user/business confirmation.",
+  "conclusion": "Local M2 readiness closure decisions were applied for the 85 original blocking review items. Current blocking status distribution is no_action_required=62 and waiver_granted=23; remaining blocking count is 0. This is not a final production release approval and does not authorize production use, destructive mapping activation, or switch_mapping_version.",
   "safeOutputBoundary": {
     "rawRowsWritten": false,
     "realWorkNamesWritten": false,

@@ -4,12 +4,13 @@ Mode: authorized local real-data DB-backed development.
 
 Candidate: `m2-realdata-dev-candidate-b-v0.1`
 
-This is a local development closure plan. It is not a final formal evaluation or release approval.
+This is a local development closure plan and status record. It is not a final production release approval.
 
 ## Executive Summary
 
 - Blocking review items: 85
-- Final decisions applied in this run: 0
+- Local closure decisions applied: yes
+- Remaining blocking count: 0
 - Proposed decisions generated: yes
 - Private review pack: `data/private-output/m2-review/candidate-b-blocking-review-pack.csv`
 - Private group decision template: `data/private-output/m2-review/candidate-b-group-decision-template.csv`
@@ -74,6 +75,13 @@ This is a local development closure plan. It is not a final formal evaluation or
 | pending | 5 |
 | waiver_granted | 23 |
 
+## Local Closure Decision Distribution
+
+| Local Closure Decision | Count |
+|---|---:|
+| no_action_required | 62 |
+| waiver_granted | 23 |
+
 ## Group Decision Distribution
 
 | Group | Count |
@@ -97,5 +105,9 @@ This is a local development closure plan. It is not a final formal evaluation or
 - data_readiness
 - history_depth
 - revenue_anomaly
+
+## Current Status
+
+The original 85 blocking review items are closed for authorized local M2 readiness: 57 data-gap items, 4 insufficient-history items, and 1 abnormal-spike item are `no_action_required`; 23 expiry items are `waiver_granted`. This status supports M2 local readiness closure, but does not approve production release, external formal export, destructive mapping activation, or `switch_mapping_version`.
 
 No raw rows, real work names, author names, channel names, exact per-work revenue detail, secrets, connection strings, private workbook names, dumps, or temporary DB files are written in this report.

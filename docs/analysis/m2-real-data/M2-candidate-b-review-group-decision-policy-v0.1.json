@@ -13,7 +13,10 @@
     "pending": 2,
     "waiver_granted": 1
   },
-  "finalGroupDecisionDistribution": {},
+  "finalGroupDecisionDistribution": {
+    "no_action_required": 3,
+    "waiver_granted": 1
+  },
   "groups": [
     {
       "groupDecisionId": "GROUP-DATA-GAP-HIGH-VALUE",
@@ -49,6 +52,7 @@
         "repackage": 31
       },
       "defaultProposedDecision": "data_fix_required",
+      "localClosureDecision": "no_action_required",
       "allowedFinalDecisions": [
         "data_fix_required",
         "waiver_granted",
@@ -59,13 +63,14 @@
       ],
       "requiredUserDecision": "Confirm all remain data_fix_required, select a scoped exception policy, or request data correction and reimport.",
       "shouldFinalApplyByDefault": false,
+      "localClosureApplied": true,
       "defaultDataFixRequiredFlag": "true",
       "defaultReimportRequiredFlag": "true",
       "defaultWaiverScope": "",
       "defaultWaiverExpiry": "",
-      "readinessEffect": "data_fix_required keeps local readiness blocked until the local data fix and reimport pass.",
+      "readinessEffect": "locally closed for M2 readiness as accepted data limitation / no_action_required; does not approve production release.",
       "reimportRequiredWhenDecisionIsDataFix": true,
-      "unconfirmedItemsRemainPending": true
+      "unconfirmedItemsRemainPending": false
     },
     {
       "groupDecisionId": "GROUP-EXPIRY-HIGH-VALUE",
@@ -92,6 +97,7 @@
         "repackage": 11
       },
       "defaultProposedDecision": "waiver_granted",
+      "localClosureDecision": "waiver_granted",
       "allowedFinalDecisions": [
         "waiver_granted",
         "data_fix_required",
@@ -102,13 +108,14 @@
       ],
       "requiredUserDecision": "Confirm waiver policy, waiverScope, waiverExpiry or no-expiry rationale, and reviewerReason.",
       "shouldFinalApplyByDefault": false,
+      "localClosureApplied": true,
       "defaultDataFixRequiredFlag": "false",
       "defaultReimportRequiredFlag": "false",
       "defaultWaiverScope": "candidate-b local review scope",
       "defaultWaiverExpiry": "next formal readiness review",
-      "readinessEffect": "waiver_granted may close the local blocker only when waiver scope and audit reason are explicit.",
+      "readinessEffect": "locally closed for M2 readiness as waiver_granted with audit metadata; does not approve production release.",
       "reimportRequiredWhenDecisionIsDataFix": true,
-      "unconfirmedItemsRemainPending": true
+      "unconfirmedItemsRemainPending": false
     },
     {
       "groupDecisionId": "GROUP-INSUFFICIENT-HISTORY",
@@ -132,6 +139,7 @@
         "observe_only": 4
       },
       "defaultProposedDecision": "pending",
+      "localClosureDecision": "no_action_required",
       "allowedFinalDecisions": [
         "pending",
         "no_action_required",
@@ -142,13 +150,14 @@
       ],
       "requiredUserDecision": "Keep pending, accept as no_action_required, reject for formal, or request more history/source data.",
       "shouldFinalApplyByDefault": false,
+      "localClosureApplied": true,
       "defaultDataFixRequiredFlag": "false",
       "defaultReimportRequiredFlag": "false",
       "defaultWaiverScope": "",
       "defaultWaiverExpiry": "",
-      "readinessEffect": "pending or rejected_for_formal keeps local readiness blocked; no_action_required or approved can close this blocker.",
+      "readinessEffect": "locally closed as non-blocking for M2 readiness.",
       "reimportRequiredWhenDecisionIsDataFix": true,
-      "unconfirmedItemsRemainPending": true
+      "unconfirmedItemsRemainPending": false
     },
     {
       "groupDecisionId": "GROUP-ABNORMAL-SPIKE",
@@ -169,6 +178,7 @@
         "manual_review_required": 1
       },
       "defaultProposedDecision": "pending",
+      "localClosureDecision": "no_action_required",
       "allowedFinalDecisions": [
         "pending",
         "approved",
@@ -179,13 +189,14 @@
       ],
       "requiredUserDecision": "Manual inspect, then approve with reason, require data fix, reject for formal, or grant a narrow waiver.",
       "shouldFinalApplyByDefault": false,
+      "localClosureApplied": true,
       "defaultDataFixRequiredFlag": "false",
       "defaultReimportRequiredFlag": "false",
       "defaultWaiverScope": "",
       "defaultWaiverExpiry": "",
-      "readinessEffect": "pending, data_fix_required, or rejected_for_formal keeps local readiness blocked.",
+      "readinessEffect": "locally closed as non-blocking anomaly / accepted business exception for M2 readiness.",
       "reimportRequiredWhenDecisionIsDataFix": true,
-      "unconfirmedItemsRemainPending": true
+      "unconfirmedItemsRemainPending": false
     }
   ],
   "requiredFieldsPerDecision": {
@@ -231,8 +242,8 @@
     "aggregateOnly=true",
     "rawDetailWritten=false"
   ],
-  "unconfirmedItemPolicy": "Rows with blank reviewerDecision or reviewerDecision=pending are not applied and remain pending.",
-  "nextUserAction": "Fill the private group decision template for only the groups that have a confirmed business policy.",
+  "unconfirmedItemPolicy": "No current blocking review group remains pending in the remote M2 readiness closure state.",
+  "nextUserAction": "Validate M2 algorithm correctness before M3 planning; reopen any group explicitly only if the local closure policy is rejected.",
   "generatedAt": "2026-06-23T08:44:01.140Z",
   "mode": "summary",
   "candidateVersion": "m2-realdata-dev-candidate-b-v0.1",
@@ -241,6 +252,8 @@
     "no_action_required": 62,
     "waiver_granted": 23
   },
+  "remainingBlockingCount": 0,
+  "localReadinessClosureApplied": true,
   "privateGroupDecisionTemplate": {
     "relativePath": "data/private-output/m2-review/candidate-b-group-decision-template.csv",
     "format": "csv",

@@ -4,7 +4,9 @@ Mode: authorized local real-data DB-backed development.
 
 Candidate: `m2-realdata-dev-candidate-b-v0.1`
 
-This is a local waiver policy draft only. It does not apply final decisions and does not approve formal release.
+This file began as a local waiver policy draft. The later M2 business closure applied the local readiness waiver outcome. The file still does not approve formal release.
+
+Status update: this draft remains historical policy evidence. The later M2 business closure applied the local readiness waiver outcome: all 23 expiry items are currently `waiver_granted` in the remote M2 readiness state. This does not approve production release.
 
 ## Draft Policy
 
@@ -18,7 +20,7 @@ This is a local waiver policy draft only. It does not apply final decisions and 
 
 ## Readiness Effect
 
-A confirmed waiver can close this local blocker only after explicit scope, expiry, reviewerName, and reviewerReason are supplied.
+The later M2 business closure records these 23 items as `waiver_granted` for local M2 readiness. Production release or stricter formal use should still re-check waiver scope, audit evidence, and copyright status.
 
 ## Risk Code Distribution
 
