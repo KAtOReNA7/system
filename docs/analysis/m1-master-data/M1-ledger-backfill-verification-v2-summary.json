@@ -1,0 +1,40 @@
+{
+  "schema": "m1.m2.ledger_backfill_v2.verificationV2Summary.v1",
+  "generatedAt": "2026-06-24T18:23:07.569225+00:00",
+  "currentHead": "00f7b24d29d2f19334487d28d9179e4e43acb094",
+  "originMain": "00f7b24d29d2f19334487d28d9179e4e43acb094",
+  "sanitizedBoundary": {
+    "sanitizedAggregateOnly": true,
+    "realTitlesIncluded": false,
+    "authorNamesIncluded": false,
+    "channelNamesIncluded": false,
+    "rawLedgerRowsIncluded": false,
+    "privateDetailsStoredOnlyInGitignoredOutput": true,
+    "databaseConnected": false,
+    "dockerExecuted": false,
+    "formalMasterDataWritten": false,
+    "m3Entered": false,
+    "currentHead": "00f7b24d29d2f19334487d28d9179e4e43acb094",
+    "originMain": "00f7b24d29d2f19334487d28d9179e4e43acb094"
+  },
+  "verificationV2Summary": {
+    "matchEnhancementCompleted": true,
+    "m2CoverageImproved": false,
+    "highConfidenceAccuracyAuditPassed": true,
+    "userSpotcheckPackGenerated": true,
+    "autoApplyV2Safer": true,
+    "dryRunV2ManualReduction": 0.2449,
+    "canEnterUserConfirmationHighConfidenceBackfill": true,
+    "notM3": true,
+    "headline": {
+      "previousMatchedWorks": 1240,
+      "v2MatchedWorks": 1240,
+      "newMatchedWorks": 0,
+      "v2UnmatchedWorks": 1814,
+      "v2AutoFieldCandidates": 7097,
+      "v2AutoStandardWorks": 1225,
+      "v2ManualReductionRatio": 0.2449,
+      "copyrightTermForecastIncrease": 806
+    }
+  }
+}

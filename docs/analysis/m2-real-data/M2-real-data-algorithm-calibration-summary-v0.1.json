@@ -1,6 +1,6 @@
 {
   "schema": "m2.authorized_real_data.algorithm_calibration_summary.v0.1",
-  "generatedAt": "2026-06-23T08:03:23.098521+00:00",
+  "generatedAt": "2026-06-23T14:25:45.967286+00:00",
   "mode": "authorized_local_real_data_development",
   "baselineCandidate": "m2-c3-cleaned-bill-nonformal-v0.2/candidate-a",
   "newDevelopmentCandidate": "m2-realdata-dev-candidate-b-v0.1",

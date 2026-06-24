@@ -1,0 +1,37 @@
+{
+  "schema": "m1.m2.ledger_backfill.countMethodology.v1",
+  "generatedAt": "2026-06-24T17:52:31.899700+00:00",
+  "currentHead": "00f7b24d29d2f19334487d28d9179e4e43acb094",
+  "originMain": "00f7b24d29d2f19334487d28d9179e4e43acb094",
+  "sanitizedBoundary": {
+    "sanitizedAggregateOnly": true,
+    "realTitlesIncluded": false,
+    "authorNamesIncluded": false,
+    "channelNamesIncluded": false,
+    "rawLedgerRowsIncluded": false,
+    "privateDetailsStoredOnlyInGitignoredOutput": true,
+    "databaseConnected": false,
+    "dockerExecuted": false,
+    "formalMasterDataWritten": false,
+    "m3Entered": false,
+    "currentHead": "00f7b24d29d2f19334487d28d9179e4e43acb094",
+    "originMain": "00f7b24d29d2f19334487d28d9179e4e43acb094"
+  },
+  "countMethodology": {
+    "standardWorkIdCount": 3054,
+    "rawWorkIdCount": 3575,
+    "businessFormRows": 3528,
+    "basicInfoGapViewRows": 3099,
+    "matchedLedgerRows": 1558,
+    "candidateRows": 12945,
+    "fieldCandidateRows": 12945,
+    "candidateStandardWorks": 1240,
+    "whyGapCanExceedStandardWorkCount": [
+      "standard_work_id 口径统计唯一标准作品；basic info gap view 来自运营确认/补全视图，可能包含历史 ID、业务形态或补全视图行。",
+      "candidate row 与 field candidate 均按字段候选计数，同一标准作品可同时产生名称、作者、版权起止、出版社、分类、权利等多个候选。",
+      "后续评估补全效果必须同时报告 standard_work_id、candidate row 和 field candidate 口径，不能混用单一总数。"
+    ],
+    "authoritativeEvaluationObject": "standard_work_id",
+    "mixedCountingDisallowed": true
+  }
+}

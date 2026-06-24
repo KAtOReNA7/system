@@ -1,0 +1,67 @@
+{
+  "schema": "m1.m2.ledger_backfill.autoApplyRule.v1",
+  "generatedAt": "2026-06-24T17:52:31.899700+00:00",
+  "currentHead": "00f7b24d29d2f19334487d28d9179e4e43acb094",
+  "originMain": "00f7b24d29d2f19334487d28d9179e4e43acb094",
+  "sanitizedBoundary": {
+    "sanitizedAggregateOnly": true,
+    "realTitlesIncluded": false,
+    "authorNamesIncluded": false,
+    "channelNamesIncluded": false,
+    "rawLedgerRowsIncluded": false,
+    "privateDetailsStoredOnlyInGitignoredOutput": true,
+    "databaseConnected": false,
+    "dockerExecuted": false,
+    "formalMasterDataWritten": false,
+    "m3Entered": false,
+    "currentHead": "00f7b24d29d2f19334487d28d9179e4e43acb094",
+    "originMain": "00f7b24d29d2f19334487d28d9179e4e43acb094"
+  },
+  "autoApplyRule": {
+    "ruleVersion": "strict-auto-apply-v1",
+    "automaticFieldCandidates": 7152,
+    "automaticStandardWorks": 1225,
+    "automaticRevenueCoverage": 0.6373,
+    "byField": {
+      "standardWorkName": 1233,
+      "authorName": 1270,
+      "copyrightStartDate": 1227,
+      "audioRightsStatus": 819,
+      "firstPublicationDate": 917,
+      "copyrightEndDate": 918,
+      "publisherName": 768
+    },
+    "byFieldStandardWorks": {
+      "audioRightsStatus": 778,
+      "authorName": 1189,
+      "copyrightEndDate": 856,
+      "copyrightStartDate": 1156,
+      "firstPublicationDate": 914,
+      "publisherName": 732,
+      "standardWorkName": 1171
+    },
+    "exclusionReasons": {
+      "requires_manual_review": 5793,
+      "perpetual_or_infinite_requires_business_confirmation": 385,
+      "value_confidence_below_0_95": 5007,
+      "match_method_or_confidence_not_strict": 1946,
+      "conflict_status_not_none": 1446,
+      "date_pending_anchor": 18,
+      "audio_rights_limited_or_conflict": 1
+    },
+    "recommendedBucket": {
+      "auto_apply": 7152,
+      "manual_review": 1386,
+      "suggested_quick_review": 2949,
+      "conflict_manual_review": 1446,
+      "date_manual_review": 12
+    },
+    "mediumAndFuzzyAutoApplyAllowed": false,
+    "formalMasterDataWritten": false,
+    "ruleText": [
+      "exact_work_id / mapping_work_id 可进入自动应用候选；title_author_exact 仅在匹配置信度 >= 0.98 时可进入。",
+      "valueConfidence 必须 >= 0.95，且 conflictStatus=none、requiresManualReview=false。",
+      "classificationLevel3、相对期限锚点、无限期、自动续约、limited_or_conflict 有声权利均不得自动应用。"
+    ]
+  }
+}

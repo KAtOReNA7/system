@@ -1,0 +1,72 @@
+{
+  "schema": "m1.m2.ledger_backfill.m2DryRunImpact.v1",
+  "generatedAt": "2026-06-24T17:52:31.899700+00:00",
+  "currentHead": "00f7b24d29d2f19334487d28d9179e4e43acb094",
+  "originMain": "00f7b24d29d2f19334487d28d9179e4e43acb094",
+  "sanitizedBoundary": {
+    "sanitizedAggregateOnly": true,
+    "realTitlesIncluded": false,
+    "authorNamesIncluded": false,
+    "channelNamesIncluded": false,
+    "rawLedgerRowsIncluded": false,
+    "privateDetailsStoredOnlyInGitignoredOutput": true,
+    "databaseConnected": false,
+    "dockerExecuted": false,
+    "formalMasterDataWritten": false,
+    "m3Entered": false,
+    "currentHead": "00f7b24d29d2f19334487d28d9179e4e43acb094",
+    "originMain": "00f7b24d29d2f19334487d28d9179e4e43acb094"
+  },
+  "m2DryRunImpact": {
+    "methodology": "file-level forecastOutputType proxy; not a formal DB evaluation result",
+    "before": {
+      "copyright_term_forecast": 847,
+      "operating_window_forecast_pending_expiry": 2206,
+      "relative_expiry_pending_anchor": 0,
+      "copyright_conflict_manual_review": 0,
+      "no_numeric_forecast": 1
+    },
+    "after": {
+      "copyright_term_forecast": 1703,
+      "operating_window_forecast_pending_expiry": 1350,
+      "relative_expiry_pending_anchor": 0,
+      "copyright_conflict_manual_review": 0,
+      "no_numeric_forecast": 1
+    },
+    "delta": {
+      "copyright_term_forecast": 856,
+      "operating_window_forecast_pending_expiry": -856,
+      "relative_expiry_pending_anchor": 0,
+      "copyright_conflict_manual_review": 0,
+      "no_numeric_forecast": 0
+    },
+    "transitions": {
+      "operatingWindowPendingExpiryToCopyrightTermForecast": 856,
+      "renewalReviewBecameReviewable": 856,
+      "ratingRemainingCopyrightAdjustmentEnabled": 856,
+      "manualReviewCanReduceByStrictAutoCandidates": 2012
+    },
+    "rerunRecommendations": {
+      "rerun30WorkOperatorPack": true,
+      "rerun20YearSample": true,
+      "rerunV11ForecastabilityGate": true,
+      "rerunBusinessReviewSampleSelection": true
+    },
+    "previousBroadImpactReference": {
+      "copyrightTermForecastCanIncrease": 856,
+      "operatingWindowForecastPendingExpiryCanReduce": 856,
+      "relativeExpiryPendingAnchorCanReduce": 0,
+      "manualReviewCanReduceByHighConfidenceCandidates": 1165,
+      "renewalReviewReliabilityCanImprove": 885,
+      "ratingRemainingCopyrightAdjustmentCanImprove": 856,
+      "requiresRerunForecastOutputType": true,
+      "requiresRerun30WorkOperatorPack": true,
+      "requiresRerunBusinessReviewSampleSelection": true,
+      "affectsLimitedBusinessReviewBaseline": true,
+      "formalCompleteAllowed": false,
+      "notM3": true
+    },
+    "formalCompleteAllowed": false,
+    "notM3": true
+  }
+}

@@ -1,0 +1,551 @@
+{
+  "schema": "m1.m2.digital_copyright_ledger.summary.v1",
+  "generatedAt": "2026-06-24T17:14:12.765070+00:00",
+  "currentHead": "00f7b24d29d2f19334487d28d9179e4e43acb094",
+  "originMain": "00f7b24d29d2f19334487d28d9179e4e43acb094",
+  "sanitizedBoundary": {
+    "sanitizedAggregateOnly": true,
+    "realTitlesIncluded": false,
+    "authorNamesIncluded": false,
+    "channelNamesIncluded": false,
+    "rawLedgerRowsIncluded": false,
+    "privateDetailsStoredOnlyInGitignoredOutput": true,
+    "formalMasterDataWritten": false,
+    "m3Entered": false
+  },
+  "ledgerStructure": {
+    "sheetCount": 1,
+    "totalDataRows": 12033,
+    "keyFieldCoverage": [
+      {
+        "fieldName": "作品ID",
+        "present": true,
+        "nonEmptyCount": 10757,
+        "nonEmptyRate": 0.894,
+        "usage": [
+          "M1 标准作品身份",
+          "M1/M2 匹配"
+        ]
+      },
+      {
+        "fieldName": "出版书名",
+        "present": true,
+        "nonEmptyCount": 10667,
+        "nonEmptyRate": 0.8865,
+        "usage": [
+          "M1 标准作品基础信息",
+          "标题匹配"
+        ]
+      },
+      {
+        "fieldName": "合同书名",
+        "present": true,
+        "nonEmptyCount": 11993,
+        "nonEmptyRate": 0.9967,
+        "usage": [
+          "M1 标准作品基础信息",
+          "标题匹配"
+        ]
+      },
+      {
+        "fieldName": "作者署名",
+        "present": true,
+        "nonEmptyCount": 11322,
+        "nonEmptyRate": 0.9409,
+        "usage": [
+          "M1 作者信息",
+          "标题作者匹配"
+        ]
+      },
+      {
+        "fieldName": "作者原名",
+        "present": true,
+        "nonEmptyCount": 11576,
+        "nonEmptyRate": 0.962,
+        "usage": [
+          "M1 作者信息",
+          "标题作者匹配"
+        ]
+      },
+      {
+        "fieldName": "授权方",
+        "present": true,
+        "nonEmptyCount": 11621,
+        "nonEmptyRate": 0.9658,
+        "usage": [
+          "M1 权利来源辅助"
+        ]
+      },
+      {
+        "fieldName": "签订日期",
+        "present": true,
+        "nonEmptyCount": 11964,
+        "nonEmptyRate": 0.9943,
+        "usage": [
+          "M1 版权起始",
+          "M2 renewal review"
+        ]
+      },
+      {
+        "fieldName": "到期时间",
+        "present": true,
+        "nonEmptyCount": 12033,
+        "nonEmptyRate": 1.0,
+        "usage": [
+          "M1 版权到期",
+          "M2 forecast/rating/risk"
+        ]
+      },
+      {
+        "fieldName": "续约前到期日期",
+        "present": true,
+        "nonEmptyCount": 3240,
+        "nonEmptyRate": 0.2693,
+        "usage": [
+          "M1 版权到期冲突复核",
+          "M2 renewal review"
+        ]
+      },
+      {
+        "fieldName": "CIP出版时间",
+        "present": true,
+        "nonEmptyCount": 1294,
+        "nonEmptyRate": 0.1075,
+        "usage": [
+          "M1 出版/首发日期",
+          "分类辅助"
+        ]
+      },
+      {
+        "fieldName": "书号",
+        "present": true,
+        "nonEmptyCount": 9300,
+        "nonEmptyRate": 0.7729,
+        "usage": [
+          "M1 身份辅助",
+          "匹配辅助"
+        ]
+      },
+      {
+        "fieldName": "首发时间",
+        "present": true,
+        "nonEmptyCount": 9609,
+        "nonEmptyRate": 0.7986,
+        "usage": [
+          "M1 出版/首发日期"
+        ]
+      },
+      {
+        "fieldName": "出版社",
+        "present": true,
+        "nonEmptyCount": 5729,
+        "nonEmptyRate": 0.4761,
+        "usage": [
+          "M1 基础信息",
+          "分类辅助"
+        ]
+      },
+      {
+        "fieldName": "产品线",
+        "present": true,
+        "nonEmptyCount": 7484,
+        "nonEmptyRate": 0.622,
+        "usage": [
+          "M1 分类候选"
+        ]
+      },
+      {
+        "fieldName": "CIP",
+        "present": true,
+        "nonEmptyCount": 5630,
+        "nonEmptyRate": 0.4679,
+        "usage": [
+          "M1 分类候选"
+        ]
+      },
+      {
+        "fieldName": "合同编号",
+        "present": true,
+        "nonEmptyCount": 11158,
+        "nonEmptyRate": 0.9273,
+        "usage": [
+          "匹配辅助"
+        ]
+      },
+      {
+        "fieldName": "合同类型",
+        "present": true,
+        "nonEmptyCount": 10497,
+        "nonEmptyRate": 0.8724,
+        "usage": [
+          "M1 权利/业务形态辅助",
+          "M1 分类候选"
+        ]
+      },
+      {
+        "fieldName": "有声使用权",
+        "present": true,
+        "nonEmptyCount": 12031,
+        "nonEmptyRate": 0.9998,
+        "usage": [
+          "M1 有声权利/业务形态",
+          "M2 risk"
+        ]
+      },
+      {
+        "fieldName": "有声改编权",
+        "present": true,
+        "nonEmptyCount": 12031,
+        "nonEmptyRate": 0.9998,
+        "usage": [
+          "M1 有声权利/业务形态",
+          "M2 risk"
+        ]
+      },
+      {
+        "fieldName": "有声转授权",
+        "present": true,
+        "nonEmptyCount": 12031,
+        "nonEmptyRate": 0.9998,
+        "usage": [
+          "M1 有声权利/业务形态",
+          "M2 risk"
+        ]
+      },
+      {
+        "fieldName": "有声权利描述",
+        "present": true,
+        "nonEmptyCount": 10803,
+        "nonEmptyRate": 0.8978,
+        "usage": [
+          "M1 有声权利/业务形态",
+          "M2 risk"
+        ]
+      },
+      {
+        "fieldName": "信息网络传播",
+        "present": true,
+        "nonEmptyCount": 12031,
+        "nonEmptyRate": 0.9998,
+        "usage": [
+          "M1 权利/业务形态"
+        ]
+      },
+      {
+        "fieldName": "转授权",
+        "present": true,
+        "nonEmptyCount": 12031,
+        "nonEmptyRate": 0.9998,
+        "usage": [
+          "M1 权利/业务形态"
+        ]
+      },
+      {
+        "fieldName": "独家",
+        "present": true,
+        "nonEmptyCount": 12033,
+        "nonEmptyRate": 1.0,
+        "usage": [
+          "M1 权利/业务形态",
+          "M2 risk"
+        ]
+      },
+      {
+        "fieldName": "授权范围（中国大陆地区和中国大陆地区（除港澳台）都只限于中国大陆地区使用）",
+        "present": true,
+        "nonEmptyCount": 12032,
+        "nonEmptyRate": 0.9999,
+        "usage": [
+          "M1 权利/业务形态"
+        ]
+      },
+      {
+        "fieldName": "是否外版",
+        "present": true,
+        "nonEmptyCount": 12012,
+        "nonEmptyRate": 0.9983,
+        "usage": [
+          "M1 分类候选"
+        ]
+      },
+      {
+        "fieldName": "合作方式",
+        "present": true,
+        "nonEmptyCount": 12030,
+        "nonEmptyRate": 0.9998,
+        "usage": [
+          "M1 权利/业务形态"
+        ]
+      },
+      {
+        "fieldName": "电子版税",
+        "present": true,
+        "nonEmptyCount": 12028,
+        "nonEmptyRate": 0.9996,
+        "usage": [
+          "M1 权利/版税辅助"
+        ]
+      },
+      {
+        "fieldName": "有声版税",
+        "present": true,
+        "nonEmptyCount": 12028,
+        "nonEmptyRate": 0.9996,
+        "usage": [
+          "M1 权利/版税辅助"
+        ]
+      },
+      {
+        "fieldName": "电子预付",
+        "present": true,
+        "nonEmptyCount": 8247,
+        "nonEmptyRate": 0.6854,
+        "usage": [
+          "M1 权利/版税辅助"
+        ]
+      },
+      {
+        "fieldName": "有声预付",
+        "present": true,
+        "nonEmptyCount": 8211,
+        "nonEmptyRate": 0.6824,
+        "usage": [
+          "M1 权利/版税辅助"
+        ]
+      }
+    ]
+  },
+  "matchingSummary": {
+    "ledgerRows": 12033,
+    "matchedLedgerRows": 1558,
+    "matchedStandardWorkCount": 1240,
+    "unmatchedLedgerRows": 10460,
+    "conflictLedgerRows": 15,
+    "matchMethodDistribution": {
+      "unmatched": 10460,
+      "exact_work_id": 1240,
+      "title_author_fuzzy": 77,
+      "title_author_exact": 253,
+      "mapping_work_id": 3
+    },
+    "matchStatusDistribution": {
+      "unmatched": 10460,
+      "matched": 1558,
+      "conflict": 15
+    },
+    "revenueCoverageDistribution": {
+      "other": 1056,
+      "top_5_percent": 86,
+      "top_1_percent": 21,
+      "top_10_percent": 77
+    },
+    "isbnOrCipAssistedRows": 9351,
+    "contractAssistedRows": 12030
+  },
+  "candidateSummary": {
+    "total": 12945,
+    "highConfidenceAuto": 7153,
+    "mediumConfidenceSuggested": 3160,
+    "lowConfidenceManual": 1846,
+    "manualReview": 5792,
+    "conflict": 1444,
+    "byField": {
+      "standardWorkName": 1558,
+      "authorName": 1557,
+      "copyrightStartDate": 1558,
+      "copyrightEndDate": 1557,
+      "classificationLevel1": 1558,
+      "classificationLevel2": 1290,
+      "audioRightsStatus": 1558,
+      "firstPublicationDate": 1341,
+      "publisherName": 968
+    },
+    "byMatchMethod": {
+      "exact_work_id": 10330,
+      "title_author_fuzzy": 624,
+      "title_author_exact": 1964,
+      "mapping_work_id": 27
+    },
+    "byConfidence": {
+      "high": 7939,
+      "medium": 3160,
+      "low": 1846
+    }
+  },
+  "gapSummary": {
+    "totalStandardWorks": 3054,
+    "currentGapCounts": {
+      "missingWorkName": 3099,
+      "missingAuthor": 1830,
+      "missingCopyrightStart": 1833,
+      "missingCopyrightEnd": 2223,
+      "missingPublisher": 3099,
+      "missingClassification1": 3099,
+      "missingClassification2": 3099,
+      "missingClassification3": 3099,
+      "missingRequiredTags": 1829,
+      "missingAudioRights": 3054,
+      "missingFirstPublicationDate": 3099
+    },
+    "fieldBackfillPotential": {
+      "standardWorkName": {
+        "highConfidenceAuto": 1233,
+        "mediumConfidenceSuggested": 113,
+        "lowConfidenceManual": 212,
+        "conflict": 212,
+        "candidateRows": 1558
+      },
+      "authorName": {
+        "highConfidenceAuto": 1270,
+        "mediumConfidenceSuggested": 156,
+        "lowConfidenceManual": 131,
+        "conflict": 120,
+        "candidateRows": 1557
+      },
+      "copyrightStartDate": {
+        "highConfidenceAuto": 1227,
+        "mediumConfidenceSuggested": 114,
+        "lowConfidenceManual": 217,
+        "conflict": 211,
+        "candidateRows": 1558
+      },
+      "copyrightEndDate": {
+        "highConfidenceAuto": 918,
+        "mediumConfidenceSuggested": 140,
+        "lowConfidenceManual": 174,
+        "conflict": 165,
+        "candidateRows": 1557
+      },
+      "classificationLevel1": {
+        "highConfidenceAuto": 0,
+        "mediumConfidenceSuggested": 1318,
+        "lowConfidenceManual": 240,
+        "conflict": 0,
+        "candidateRows": 1558
+      },
+      "classificationLevel2": {
+        "highConfidenceAuto": 0,
+        "mediumConfidenceSuggested": 1034,
+        "lowConfidenceManual": 256,
+        "conflict": 139,
+        "candidateRows": 1290
+      },
+      "audioRightsStatus": {
+        "highConfidenceAuto": 819,
+        "mediumConfidenceSuggested": 181,
+        "lowConfidenceManual": 97,
+        "conflict": 85,
+        "candidateRows": 1558
+      },
+      "firstPublicationDate": {
+        "highConfidenceAuto": 918,
+        "mediumConfidenceSuggested": 26,
+        "lowConfidenceManual": 397,
+        "conflict": 396,
+        "candidateRows": 1341
+      },
+      "publisherName": {
+        "highConfidenceAuto": 768,
+        "mediumConfidenceSuggested": 78,
+        "lowConfidenceManual": 122,
+        "conflict": 116,
+        "candidateRows": 968
+      }
+    },
+    "highIncomeImpact": [
+      {
+        "bucket": "top_1_percent",
+        "standardWorkCount": 30,
+        "candidateRows": 219,
+        "highConfidenceAuto": 114,
+        "manualReview": 105
+      },
+      {
+        "bucket": "top_5_percent",
+        "standardWorkCount": 122,
+        "candidateRows": 1232,
+        "highConfidenceAuto": 523,
+        "manualReview": 709
+      },
+      {
+        "bucket": "top_10_percent",
+        "standardWorkCount": 153,
+        "candidateRows": 931,
+        "highConfidenceAuto": 463,
+        "manualReview": 468
+      }
+    ],
+    "ledgerAlsoMissingRows": {
+      "missingTitle": 1,
+      "missingAuthor": 137,
+      "missingSignedDate": 69,
+      "missingExpiryDate": 0,
+      "missingProductLineAndCip": 4533,
+      "missingAudioRights": 2
+    }
+  },
+  "categoryAuthorRightsSummary": {
+    "authorBackfill": {
+      "candidateRows": 1557,
+      "highConfidenceAuto": 1270,
+      "mediumConfidenceSuggested": 156,
+      "lowConfidenceManual": 131,
+      "conflict": 120
+    },
+    "classificationBackfill": {
+      "level1": {
+        "candidateRows": 1558,
+        "highConfidenceAuto": 0,
+        "mediumConfidenceSuggested": 1318,
+        "lowConfidenceManual": 240,
+        "conflict": 0
+      },
+      "level2": {
+        "candidateRows": 1290,
+        "highConfidenceAuto": 0,
+        "mediumConfidenceSuggested": 1034,
+        "lowConfidenceManual": 256,
+        "conflict": 139
+      },
+      "level3": {
+        "candidateRows": 0,
+        "highConfidenceAuto": 0,
+        "mediumConfidenceSuggested": 0,
+        "lowConfidenceManual": 0,
+        "conflict": 0
+      },
+      "productLineCoveredRows": 7484,
+      "cipCoveredRows": 5630,
+      "threeLevelAutoCompletionAllowed": false,
+      "reason": "产品线和 CIP 只能作为分类候选，不能伪造三级分类。"
+    },
+    "audioRightsBackfill": {
+      "candidateRows": 1558,
+      "highConfidenceAuto": 819,
+      "mediumConfidenceSuggested": 181,
+      "lowConfidenceManual": 97,
+      "conflict": 85
+    },
+    "rightsDistribution": {
+      "granted": 5756,
+      "not_granted": 6266,
+      "limited_or_conflict": 9,
+      "unknown": 2
+    },
+    "multiAuthorRiskRows": 652
+  },
+  "m2ImpactSummary": {
+    "copyrightTermForecastCanIncrease": 856,
+    "operatingWindowForecastPendingExpiryCanReduce": 856,
+    "relativeExpiryPendingAnchorCanReduce": 0,
+    "manualReviewCanReduceByHighConfidenceCandidates": 1165,
+    "renewalReviewReliabilityCanImprove": 885,
+    "ratingRemainingCopyrightAdjustmentCanImprove": 856,
+    "requiresRerunForecastOutputType": true,
+    "requiresRerun30WorkOperatorPack": true,
+    "requiresRerunBusinessReviewSampleSelection": true,
+    "affectsLimitedBusinessReviewBaseline": true,
+    "formalCompleteAllowed": false,
+    "notM3": true
+  }
+}

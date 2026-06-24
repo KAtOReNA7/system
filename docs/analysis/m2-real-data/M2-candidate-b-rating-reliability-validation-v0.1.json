@@ -1,0 +1,130 @@
+{
+  "schema": "m2.candidate_b.rating_reliability_validation.v0.1",
+  "generatedAt": "2026-06-23T14:01:18.892722+00:00",
+  "candidateVersion": "m2-realdata-dev-candidate-b-forecast-calibrated-v0.2",
+  "ratingDistribution": {
+    "S+": 7,
+    "S": 54,
+    "A": 136,
+    "B": 647,
+    "C": 704,
+    "D": 395,
+    "E": 1111
+  },
+  "uncappedRatingDistribution": {
+    "S+": 25,
+    "S": 97,
+    "A": 248,
+    "B": 483,
+    "C": 695,
+    "D": 395,
+    "E": 1111
+  },
+  "ratingBoundary": {
+    "nearBoundaryCount": 261,
+    "nearBoundaryByRating": {
+      "S+": 2,
+      "S": 7,
+      "A": 20,
+      "B": 95,
+      "C": 54,
+      "D": 43,
+      "E": 40
+    }
+  },
+  "historicalRevenuePercentileByRating": [
+    {
+      "rating": "A",
+      "count": 136,
+      "p25": 0.9049,
+      "median": 0.9242,
+      "p75": 0.9434
+    },
+    {
+      "rating": "B",
+      "count": 647,
+      "p25": 0.7742,
+      "median": 0.8278,
+      "p75": 0.8808
+    },
+    {
+      "rating": "C",
+      "count": 704,
+      "p25": 0.551,
+      "median": 0.6085,
+      "p75": 0.6661
+    },
+    {
+      "rating": "D",
+      "count": 395,
+      "p25": 0.3964,
+      "median": 0.4286,
+      "p75": 0.4609
+    },
+    {
+      "rating": "E",
+      "count": 1111,
+      "p25": 0.1025,
+      "median": 0.1025,
+      "p75": 0.2729
+    },
+    {
+      "rating": "S",
+      "count": 54,
+      "p25": 0.9677,
+      "median": 0.9756,
+      "p75": 0.9835
+    },
+    {
+      "rating": "S+",
+      "count": 7,
+      "p25": 0.9949,
+      "median": 0.9977,
+      "p75": 0.9992
+    }
+  ],
+  "highRatingOptimismCheck": {
+    "highRatingCount": 197,
+    "highRatingWithManualOrAdvisoryRiskCount": 64,
+    "p0Count": 61
+  },
+  "downlistFalseKillCheck": {
+    "count": 744,
+    "logicViolationCount": 0
+  },
+  "ratingIssueSummary": {
+    "outcomeDistribution": {
+      "pass": 748,
+      "warning": 113,
+      "fail": 2193
+    },
+    "issueSeverityDistribution": {
+      "P0": 61,
+      "P1": 3265,
+      "P2": 1037
+    },
+    "issueCategoryDistribution": {
+      "forecast": 4013,
+      "rating": 265,
+      "readiness": 85
+    },
+    "failRate": 0.7181
+  },
+  "acceptance": {
+    "p0AlgorithmIssueCount": 61,
+    "p1AlgorithmIssueCount": 3265,
+    "ratingReliabilityPass": false
+  },
+  "safeOutputBoundary": {
+    "sanitizedReportsUseAnonymousSampleIds": true,
+    "realWorkNamesWritten": false,
+    "realAuthorNamesWritten": false,
+    "realChannelNamesWritten": false,
+    "rawBillRowsWritten": false,
+    "workChannelMonthRevenueDetailWritten": false,
+    "connectionStringsWritten": false,
+    "secretsWritten": false,
+    "privateOutputsGitignored": true,
+    "notFinalReleaseApproved": true
+  }
+}

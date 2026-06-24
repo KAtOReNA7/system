@@ -1,0 +1,65 @@
+{
+  "schema": "m1.m2.ledger_backfill_v2.autoApplyRuleV2.v1",
+  "generatedAt": "2026-06-24T18:23:07.569225+00:00",
+  "currentHead": "00f7b24d29d2f19334487d28d9179e4e43acb094",
+  "originMain": "00f7b24d29d2f19334487d28d9179e4e43acb094",
+  "sanitizedBoundary": {
+    "sanitizedAggregateOnly": true,
+    "realTitlesIncluded": false,
+    "authorNamesIncluded": false,
+    "channelNamesIncluded": false,
+    "rawLedgerRowsIncluded": false,
+    "privateDetailsStoredOnlyInGitignoredOutput": true,
+    "databaseConnected": false,
+    "dockerExecuted": false,
+    "formalMasterDataWritten": false,
+    "m3Entered": false,
+    "currentHead": "00f7b24d29d2f19334487d28d9179e4e43acb094",
+    "originMain": "00f7b24d29d2f19334487d28d9179e4e43acb094"
+  },
+  "autoApplyRuleV2": {
+    "ruleVersion": "strict-auto-apply-v2",
+    "v1AutomaticFieldCandidates": 7152,
+    "v1RecomputedAutomaticFieldCandidates": 7152,
+    "v2AutomaticFieldCandidates": 7097,
+    "autoApplyFieldDelta": -55,
+    "v1AutomaticStandardWorks": 1225,
+    "v1RecomputedAutomaticStandardWorks": 1225,
+    "v2AutomaticStandardWorks": 1225,
+    "automaticFieldCandidates": 7097,
+    "automaticStandardWorks": 1225,
+    "automaticRevenueCoverage": 0.6373,
+    "byField": {
+      "audioRightsStatus": 819,
+      "authorName": 1270,
+      "copyrightStartDate": 1223,
+      "firstPublicationDate": 917,
+      "standardWorkName": 1233,
+      "copyrightEndDate": 867,
+      "publisherName": 768
+    },
+    "downgradedToManualCount": 55,
+    "downgradedReasons": {
+      "multiple_date_text_requires_manual_review": 55
+    },
+    "exclusionReasons": {
+      "field_not_allowed_for_v2_auto_apply": 2848,
+      "requires_manual_review": 5793,
+      "value_confidence_below_0_97": 5007,
+      "perpetual_or_infinite_requires_business_confirmation": 385,
+      "match_method_or_confidence_not_strict_v2": 1946,
+      "title_author_fuzzy_never_auto_apply_v2": 624,
+      "conflict_status_not_none": 1446,
+      "multiple_date_text_requires_manual_review": 66,
+      "date_pending_anchor": 18,
+      "audio_rights_limited_or_conflict": 1
+    },
+    "ruleText": [
+      "当前值必须为空；非空权威值不覆盖，完全一致或格式标准化也不作为自动应用。",
+      "允许 exact_work_id / mapping_work_id；title_author_exact 需 matchConfidence >= 0.99。",
+      "valueConfidence >= 0.97，conflictStatus=none，requiresManualReview=false。",
+      "仅允许作品名、作者、版权开始、版权到期、出版社、首发/出版日期、有声权利状态自动应用。",
+      "fuzzy、三级分类、相对期限、多日期冲突、自动续约、权利冲突全部进入复核。"
+    ]
+  }
+}

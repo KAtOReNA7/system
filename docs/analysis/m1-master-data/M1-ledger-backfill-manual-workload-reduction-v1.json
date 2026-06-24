@@ -1,0 +1,44 @@
+{
+  "schema": "m1.m2.ledger_backfill.manualWorkloadReduction.v1",
+  "generatedAt": "2026-06-24T17:52:31.899700+00:00",
+  "currentHead": "00f7b24d29d2f19334487d28d9179e4e43acb094",
+  "originMain": "00f7b24d29d2f19334487d28d9179e4e43acb094",
+  "sanitizedBoundary": {
+    "sanitizedAggregateOnly": true,
+    "realTitlesIncluded": false,
+    "authorNamesIncluded": false,
+    "channelNamesIncluded": false,
+    "rawLedgerRowsIncluded": false,
+    "privateDetailsStoredOnlyInGitignoredOutput": true,
+    "databaseConnected": false,
+    "dockerExecuted": false,
+    "formalMasterDataWritten": false,
+    "m3Entered": false,
+    "currentHead": "00f7b24d29d2f19334487d28d9179e4e43acb094",
+    "originMain": "00f7b24d29d2f19334487d28d9179e4e43acb094"
+  },
+  "manualWorkloadReduction": {
+    "originalManualGapTotal": 29363,
+    "afterStrictAutoApplyManualGapTotal": 22567,
+    "autoApplyGapReduction": 6796,
+    "mediumQuickReviewCandidateCount": 2949,
+    "lowOrConflictManualCandidateCount": 2844,
+    "manualReductionRatio": 0.2314,
+    "fieldsStillManual": [
+      "分类三级",
+      "多作者冲突",
+      "相对期限缺出版日期锚点",
+      "多日期冲突",
+      "权利冲突"
+    ],
+    "suggestedReviewOrder": [
+      "高收入作品",
+      "版权到期",
+      "作者",
+      "有声权利",
+      "分类一级/二级",
+      "分类三级"
+    ],
+    "automaticFieldCandidates": 7152
+  }
+}

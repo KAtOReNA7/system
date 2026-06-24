@@ -1,0 +1,81 @@
+{
+  "schema": "m1.ledgerBackfill.spotcheckSummary.v2.public",
+  "generatedAt": "2026-06-24T18:40:15.913685+00:00",
+  "sourceWorkbook": "M1-ledger-backfill-user-spotcheck-pack-simple-cn.xlsx",
+  "sanitizedAggregateOnly": true,
+  "realTitlesIncluded": false,
+  "authorNamesIncluded": false,
+  "channelNamesIncluded": false,
+  "rawLedgerRowsIncluded": false,
+  "status": "waiting_for_user_spotcheck",
+  "readyForLocalStagingApply": false,
+  "metrics": {
+    "totalRows": 80,
+    "completedRows": 0,
+    "completionRate": 0.0,
+    "acceptedRows": 0,
+    "acceptanceRate": 0,
+    "rejectedRows": 0,
+    "rejectionRate": 0,
+    "needsModifyRows": 0,
+    "needsModifyRate": 0,
+    "uncertainRows": 0,
+    "uncertainRate": 0,
+    "highConfidenceRows": 70,
+    "highConfidenceCompletedRows": 0,
+    "highConfidenceAcceptedRows": 0,
+    "highConfidenceAcceptanceRate": 0,
+    "needsModifyMissingCorrectionCount": 0,
+    "highRevenueErrorCount": 0,
+    "copyrightEndSevereErrorCount": 0,
+    "titleAuthorSevereErrorCount": 0,
+    "audioRightsSevereErrorCount": 0,
+    "uncertainExcludedFromAutoApply": true,
+    "lowOrMediumConfidenceExcludedFromAutoApply": true,
+    "conflictRowsExcludedFromAutoApply": true,
+    "lowOrMediumConfidenceRowCount": 10,
+    "conflictRowCount": 0
+  },
+  "decisionDistribution": {
+    "未填写": 80
+  },
+  "fieldTypeDistribution": {
+    "版权到期日期": 15,
+    "版权开始日期": 15,
+    "作者": 14,
+    "作品名": 7,
+    "有声权利": 14,
+    "出版社": 4,
+    "一级分类候选": 2,
+    "二级分类候选": 2,
+    "首发/出版日期": 7
+  },
+  "matchMethodDistribution": {
+    "精确作品ID匹配": 75,
+    "书名作者精确匹配": 5
+  },
+  "priorityDistribution": {
+    "高": 80
+  },
+  "gateChecks": {
+    "completionRateAtLeast90Percent": false,
+    "highConfidenceAcceptanceRateAtLeast95Percent": false,
+    "highRevenueErrorCountZero": true,
+    "copyrightEndSevereErrorCountZero": true,
+    "titleAuthorSevereErrorCountZero": true,
+    "audioRightsSevereErrorCountAtMostOne": true,
+    "allNeedsModifyHaveCorrectionValue": true,
+    "uncertainRowsExcludedFromAutoApply": true,
+    "lowOrMediumConfidenceRowsExcludedFromAutoApply": true,
+    "conflictRowsExcludedFromAutoApply": true
+  },
+  "blockingSummary": {
+    "needsModifyMissingCorrectionReviewIds": [],
+    "highRevenueErrorReviewIds": [],
+    "copyrightEndSevereErrorReviewIds": [],
+    "titleAuthorSevereErrorReviewIds": [],
+    "audioRightsSevereErrorReviewIds": [],
+    "uncertainReviewIds": []
+  },
+  "nextAction": "请用户填写极简中文抽检审核包后重新运行 npm run summarize:m1:ledger-spotcheck。"
+}

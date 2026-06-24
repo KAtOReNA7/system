@@ -1,0 +1,46 @@
+{
+  "schema": "m1.ledgerBackfill.applyReadinessGate.v2",
+  "sanitizedAggregateOnly": true,
+  "realTitlesIncluded": false,
+  "authorNamesIncluded": false,
+  "channelNamesIncluded": false,
+  "rawLedgerRowsIncluded": false,
+  "statuses": [
+    "waiting_for_user_spotcheck",
+    "needs_more_spotcheck",
+    "needs_rule_fix",
+    "not_ready",
+    "ready_for_local_staging_apply"
+  ],
+  "thresholds": {
+    "completionRateAtLeast90Percent": true,
+    "highConfidenceAcceptanceRateAtLeast95Percent": true,
+    "highRevenueErrorCountZero": true,
+    "copyrightEndSevereErrorCountZero": true,
+    "titleAuthorSevereErrorCountZero": true,
+    "audioRightsSevereErrorCountAtMostOne": true,
+    "allNeedsModifyHaveCorrectionValue": true,
+    "uncertainRowsExcludedFromAutoApply": true,
+    "lowOrMediumConfidenceRowsExcludedFromAutoApply": true,
+    "conflictRowsExcludedFromAutoApply": true
+  },
+  "blockingErrorFamilies": [
+    "high_revenue_error",
+    "copyright_end_severe_error",
+    "title_author_severe_error",
+    "audio_rights_severe_error",
+    "needs_modify_missing_correction",
+    "completion_rate_below_threshold",
+    "high_confidence_acceptance_rate_below_threshold"
+  ],
+  "blankTemplateStatus": {
+    "status": "waiting_for_user_spotcheck",
+    "readyForLocalStagingApply": false
+  },
+  "prohibitedActionsConfirmed": {
+    "formalMasterDataWrite": false,
+    "remoteProductionDatabaseConnection": false,
+    "m3Entry": false,
+    "privateWorkbookCommit": false
+  }
+}

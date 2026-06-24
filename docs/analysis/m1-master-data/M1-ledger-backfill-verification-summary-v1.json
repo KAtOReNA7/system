@@ -1,0 +1,81 @@
+{
+  "schema": "m1.m2.ledger_backfill.verificationSummary.v1",
+  "generatedAt": "2026-06-24T17:52:31.899700+00:00",
+  "currentHead": "00f7b24d29d2f19334487d28d9179e4e43acb094",
+  "originMain": "00f7b24d29d2f19334487d28d9179e4e43acb094",
+  "sanitizedBoundary": {
+    "sanitizedAggregateOnly": true,
+    "realTitlesIncluded": false,
+    "authorNamesIncluded": false,
+    "channelNamesIncluded": false,
+    "rawLedgerRowsIncluded": false,
+    "privateDetailsStoredOnlyInGitignoredOutput": true,
+    "databaseConnected": false,
+    "dockerExecuted": false,
+    "formalMasterDataWritten": false,
+    "m3Entered": false,
+    "currentHead": "00f7b24d29d2f19334487d28d9179e4e43acb094",
+    "originMain": "00f7b24d29d2f19334487d28d9179e4e43acb094"
+  },
+  "verificationSummary": {
+    "candidateVerificationCompleted": true,
+    "verificationSampleWorkbookRequired": true,
+    "sampleRows": 247,
+    "highConfidenceSampleRows": 220,
+    "fieldCoverage": {
+      "audioRightsStatus": 221,
+      "standardWorkName": 9,
+      "authorName": 3,
+      "copyrightStartDate": 3,
+      "copyrightEndDate": 5,
+      "firstPublicationDate": 3,
+      "publisherName": 1,
+      "classificationLevel1": 1,
+      "classificationLevel2": 1
+    },
+    "matchMethodCoverage": {
+      "exact_work_id": 237,
+      "mapping_work_id": 1,
+      "title_author_exact": 3,
+      "title_author_fuzzy": 2,
+      "unmatched": 4
+    },
+    "revenueTierCoverage": {
+      "low": 122,
+      "middle": 82,
+      "top 10%": 13,
+      "top 5%": 24,
+      "top 1%": 2
+    },
+    "dateParseTypeCoverage": {
+      "标准日期": 4,
+      "无限期": 2,
+      "无法解析": 1,
+      "多日期文本": 1,
+      "相对期限": 1,
+      "Excel serial date": 1,
+      "自动续约": 1
+    },
+    "conflictCoverage": {
+      "none": 243,
+      "conflict": 4
+    },
+    "expectedAccuracyStatement": "机器规则只能给出严格一致性校验和高置信优先级，最终准确率仍需用户在 private 样本包中人工验证。",
+    "countMethodologyCorrected": true,
+    "workCentricCoverageCompleted": true,
+    "strictAutoApplyRuleCompleted": true,
+    "dryRunCompleted": true,
+    "m2ImpactRecalculated": true,
+    "canEnterUserConfirmationHighConfidenceBackfill": true,
+    "notM3": true,
+    "headline": {
+      "standardWorkIdCount": 3054,
+      "candidateRows": 12945,
+      "matchedStandardWorks": 1240,
+      "strictAutoFieldCandidates": 7152,
+      "strictAutoStandardWorks": 1225,
+      "manualReductionRatio": 0.2314,
+      "forecastCopyrightTermIncrease": 856
+    }
+  }
+}

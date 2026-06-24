@@ -1,0 +1,932 @@
+{
+  "schema": "m1.m2.digital_copyright_ledger.ledgerStructure.v1",
+  "generatedAt": "2026-06-24T17:14:12.765070+00:00",
+  "currentHead": "00f7b24d29d2f19334487d28d9179e4e43acb094",
+  "originMain": "00f7b24d29d2f19334487d28d9179e4e43acb094",
+  "sanitizedBoundary": {
+    "sanitizedAggregateOnly": true,
+    "realTitlesIncluded": false,
+    "authorNamesIncluded": false,
+    "channelNamesIncluded": false,
+    "rawLedgerRowsIncluded": false,
+    "privateDetailsStoredOnlyInGitignoredOutput": true,
+    "formalMasterDataWritten": false,
+    "m3Entered": false
+  },
+  "ledgerStructure": {
+    "sheetCount": 1,
+    "totalDataRows": 12033,
+    "sheets": [
+      {
+        "sheetName": "Sheet1",
+        "totalRows": 12033,
+        "fieldCount": 65,
+        "fields": [
+          "排查时间",
+          "排查人员",
+          "序号",
+          "编辑中心",
+          "我司签约人",
+          "选题编号",
+          "合同编号",
+          "业务代码",
+          "合同最终码",
+          "合同类型",
+          "作品ID创建时间",
+          "作品ID",
+          "出版书名",
+          "合同书名",
+          "作者署名",
+          "作者原名",
+          "授权方",
+          "签订日期",
+          "到期时间",
+          "续约前到期日期",
+          "CIP出版时间",
+          "是否续约（不再更新，请查阅下架反馈表）",
+          "续签时间",
+          "书号",
+          "首发时间",
+          "独家",
+          "信息网络传播",
+          "转授权",
+          "有声使用权",
+          "有声改编权",
+          "有声转授权",
+          "有声权利描述",
+          "广播剧",
+          "课程",
+          "外文、少数民族、繁体",
+          "外文、少数民族、繁体转授权",
+          "合作方式",
+          "授权范围（中国大陆地区和中国大陆地区（除港澳台）都只限于中国大陆地区使用）",
+          "是否外版",
+          "电子约定定价",
+          "有声约定定价",
+          "电子预付",
+          "有声预付",
+          "电子版税",
+          "有声版税",
+          "广播剧预付",
+          "电子书续签情况",
+          "出版社",
+          "产品线",
+          "CIP",
+          "级别",
+          "纸书定价",
+          "图书产品编码（版权系统）",
+          "合同约定作品数量",
+          "归属",
+          "授权性质",
+          "内部转授书-数盟",
+          "备注JS",
+          "电子预付人民币",
+          "有声预付人民币",
+          "译稿电子预付",
+          "有声译稿预付",
+          "译稿电子预付（人民币）",
+          "有声译稿预付（人民币）",
+          "版权类型"
+        ],
+        "fieldStats": [
+          {
+            "fieldName": "排查时间",
+            "nonEmptyCount": 8630,
+            "nonEmptyRate": 0.7172,
+            "usage": [
+              "辅助字段"
+            ]
+          },
+          {
+            "fieldName": "排查人员",
+            "nonEmptyCount": 8167,
+            "nonEmptyRate": 0.6787,
+            "usage": [
+              "辅助字段"
+            ]
+          },
+          {
+            "fieldName": "序号",
+            "nonEmptyCount": 12033,
+            "nonEmptyRate": 1.0,
+            "usage": [
+              "辅助字段"
+            ]
+          },
+          {
+            "fieldName": "编辑中心",
+            "nonEmptyCount": 9034,
+            "nonEmptyRate": 0.7508,
+            "usage": [
+              "辅助字段"
+            ]
+          },
+          {
+            "fieldName": "我司签约人",
+            "nonEmptyCount": 8566,
+            "nonEmptyRate": 0.7119,
+            "usage": [
+              "辅助字段"
+            ]
+          },
+          {
+            "fieldName": "选题编号",
+            "nonEmptyCount": 12004,
+            "nonEmptyRate": 0.9976,
+            "usage": [
+              "辅助字段"
+            ]
+          },
+          {
+            "fieldName": "合同编号",
+            "nonEmptyCount": 11158,
+            "nonEmptyRate": 0.9273,
+            "usage": [
+              "匹配辅助"
+            ]
+          },
+          {
+            "fieldName": "业务代码",
+            "nonEmptyCount": 12030,
+            "nonEmptyRate": 0.9998,
+            "usage": [
+              "辅助字段"
+            ]
+          },
+          {
+            "fieldName": "合同最终码",
+            "nonEmptyCount": 12030,
+            "nonEmptyRate": 0.9998,
+            "usage": [
+              "辅助字段"
+            ]
+          },
+          {
+            "fieldName": "合同类型",
+            "nonEmptyCount": 10497,
+            "nonEmptyRate": 0.8724,
+            "usage": [
+              "M1 权利/业务形态辅助",
+              "M1 分类候选"
+            ]
+          },
+          {
+            "fieldName": "作品ID创建时间",
+            "nonEmptyCount": 10108,
+            "nonEmptyRate": 0.84,
+            "usage": [
+              "辅助字段"
+            ]
+          },
+          {
+            "fieldName": "作品ID",
+            "nonEmptyCount": 10757,
+            "nonEmptyRate": 0.894,
+            "usage": [
+              "M1 标准作品身份",
+              "M1/M2 匹配"
+            ]
+          },
+          {
+            "fieldName": "出版书名",
+            "nonEmptyCount": 10667,
+            "nonEmptyRate": 0.8865,
+            "usage": [
+              "M1 标准作品基础信息",
+              "标题匹配"
+            ]
+          },
+          {
+            "fieldName": "合同书名",
+            "nonEmptyCount": 11993,
+            "nonEmptyRate": 0.9967,
+            "usage": [
+              "M1 标准作品基础信息",
+              "标题匹配"
+            ]
+          },
+          {
+            "fieldName": "作者署名",
+            "nonEmptyCount": 11322,
+            "nonEmptyRate": 0.9409,
+            "usage": [
+              "M1 作者信息",
+              "标题作者匹配"
+            ]
+          },
+          {
+            "fieldName": "作者原名",
+            "nonEmptyCount": 11576,
+            "nonEmptyRate": 0.962,
+            "usage": [
+              "M1 作者信息",
+              "标题作者匹配"
+            ]
+          },
+          {
+            "fieldName": "授权方",
+            "nonEmptyCount": 11621,
+            "nonEmptyRate": 0.9658,
+            "usage": [
+              "M1 权利来源辅助"
+            ]
+          },
+          {
+            "fieldName": "签订日期",
+            "nonEmptyCount": 11964,
+            "nonEmptyRate": 0.9943,
+            "usage": [
+              "M1 版权起始",
+              "M2 renewal review"
+            ]
+          },
+          {
+            "fieldName": "到期时间",
+            "nonEmptyCount": 12033,
+            "nonEmptyRate": 1.0,
+            "usage": [
+              "M1 版权到期",
+              "M2 forecast/rating/risk"
+            ]
+          },
+          {
+            "fieldName": "续约前到期日期",
+            "nonEmptyCount": 3240,
+            "nonEmptyRate": 0.2693,
+            "usage": [
+              "M1 版权到期冲突复核",
+              "M2 renewal review"
+            ]
+          },
+          {
+            "fieldName": "CIP出版时间",
+            "nonEmptyCount": 1294,
+            "nonEmptyRate": 0.1075,
+            "usage": [
+              "M1 出版/首发日期",
+              "分类辅助"
+            ]
+          },
+          {
+            "fieldName": "是否续约（不再更新，请查阅下架反馈表）",
+            "nonEmptyCount": 5985,
+            "nonEmptyRate": 0.4974,
+            "usage": [
+              "辅助字段"
+            ]
+          },
+          {
+            "fieldName": "续签时间",
+            "nonEmptyCount": 263,
+            "nonEmptyRate": 0.0219,
+            "usage": [
+              "辅助字段"
+            ]
+          },
+          {
+            "fieldName": "书号",
+            "nonEmptyCount": 9300,
+            "nonEmptyRate": 0.7729,
+            "usage": [
+              "M1 身份辅助",
+              "匹配辅助"
+            ]
+          },
+          {
+            "fieldName": "首发时间",
+            "nonEmptyCount": 9609,
+            "nonEmptyRate": 0.7986,
+            "usage": [
+              "M1 出版/首发日期"
+            ]
+          },
+          {
+            "fieldName": "独家",
+            "nonEmptyCount": 12033,
+            "nonEmptyRate": 1.0,
+            "usage": [
+              "M1 权利/业务形态",
+              "M2 risk"
+            ]
+          },
+          {
+            "fieldName": "信息网络传播",
+            "nonEmptyCount": 12031,
+            "nonEmptyRate": 0.9998,
+            "usage": [
+              "M1 权利/业务形态"
+            ]
+          },
+          {
+            "fieldName": "转授权",
+            "nonEmptyCount": 12031,
+            "nonEmptyRate": 0.9998,
+            "usage": [
+              "M1 权利/业务形态"
+            ]
+          },
+          {
+            "fieldName": "有声使用权",
+            "nonEmptyCount": 12031,
+            "nonEmptyRate": 0.9998,
+            "usage": [
+              "M1 有声权利/业务形态",
+              "M2 risk"
+            ]
+          },
+          {
+            "fieldName": "有声改编权",
+            "nonEmptyCount": 12031,
+            "nonEmptyRate": 0.9998,
+            "usage": [
+              "M1 有声权利/业务形态",
+              "M2 risk"
+            ]
+          },
+          {
+            "fieldName": "有声转授权",
+            "nonEmptyCount": 12031,
+            "nonEmptyRate": 0.9998,
+            "usage": [
+              "M1 有声权利/业务形态",
+              "M2 risk"
+            ]
+          },
+          {
+            "fieldName": "有声权利描述",
+            "nonEmptyCount": 10803,
+            "nonEmptyRate": 0.8978,
+            "usage": [
+              "M1 有声权利/业务形态",
+              "M2 risk"
+            ]
+          },
+          {
+            "fieldName": "广播剧",
+            "nonEmptyCount": 12030,
+            "nonEmptyRate": 0.9998,
+            "usage": [
+              "辅助字段"
+            ]
+          },
+          {
+            "fieldName": "课程",
+            "nonEmptyCount": 12030,
+            "nonEmptyRate": 0.9998,
+            "usage": [
+              "辅助字段"
+            ]
+          },
+          {
+            "fieldName": "外文、少数民族、繁体",
+            "nonEmptyCount": 2086,
+            "nonEmptyRate": 0.1734,
+            "usage": [
+              "辅助字段"
+            ]
+          },
+          {
+            "fieldName": "外文、少数民族、繁体转授权",
+            "nonEmptyCount": 2085,
+            "nonEmptyRate": 0.1733,
+            "usage": [
+              "辅助字段"
+            ]
+          },
+          {
+            "fieldName": "合作方式",
+            "nonEmptyCount": 12030,
+            "nonEmptyRate": 0.9998,
+            "usage": [
+              "M1 权利/业务形态"
+            ]
+          },
+          {
+            "fieldName": "授权范围（中国大陆地区和中国大陆地区（除港澳台）都只限于中国大陆地区使用）",
+            "nonEmptyCount": 12032,
+            "nonEmptyRate": 0.9999,
+            "usage": [
+              "M1 权利/业务形态"
+            ]
+          },
+          {
+            "fieldName": "是否外版",
+            "nonEmptyCount": 12012,
+            "nonEmptyRate": 0.9983,
+            "usage": [
+              "M1 分类候选"
+            ]
+          },
+          {
+            "fieldName": "电子约定定价",
+            "nonEmptyCount": 7354,
+            "nonEmptyRate": 0.6112,
+            "usage": [
+              "辅助字段"
+            ]
+          },
+          {
+            "fieldName": "有声约定定价",
+            "nonEmptyCount": 7316,
+            "nonEmptyRate": 0.608,
+            "usage": [
+              "辅助字段"
+            ]
+          },
+          {
+            "fieldName": "电子预付",
+            "nonEmptyCount": 8247,
+            "nonEmptyRate": 0.6854,
+            "usage": [
+              "M1 权利/版税辅助"
+            ]
+          },
+          {
+            "fieldName": "有声预付",
+            "nonEmptyCount": 8211,
+            "nonEmptyRate": 0.6824,
+            "usage": [
+              "M1 权利/版税辅助"
+            ]
+          },
+          {
+            "fieldName": "电子版税",
+            "nonEmptyCount": 12028,
+            "nonEmptyRate": 0.9996,
+            "usage": [
+              "M1 权利/版税辅助"
+            ]
+          },
+          {
+            "fieldName": "有声版税",
+            "nonEmptyCount": 12028,
+            "nonEmptyRate": 0.9996,
+            "usage": [
+              "M1 权利/版税辅助"
+            ]
+          },
+          {
+            "fieldName": "广播剧预付",
+            "nonEmptyCount": 1257,
+            "nonEmptyRate": 0.1045,
+            "usage": [
+              "辅助字段"
+            ]
+          },
+          {
+            "fieldName": "电子书续签情况",
+            "nonEmptyCount": 506,
+            "nonEmptyRate": 0.0421,
+            "usage": [
+              "辅助字段"
+            ]
+          },
+          {
+            "fieldName": "出版社",
+            "nonEmptyCount": 5729,
+            "nonEmptyRate": 0.4761,
+            "usage": [
+              "M1 基础信息",
+              "分类辅助"
+            ]
+          },
+          {
+            "fieldName": "产品线",
+            "nonEmptyCount": 7484,
+            "nonEmptyRate": 0.622,
+            "usage": [
+              "M1 分类候选"
+            ]
+          },
+          {
+            "fieldName": "CIP",
+            "nonEmptyCount": 5630,
+            "nonEmptyRate": 0.4679,
+            "usage": [
+              "M1 分类候选"
+            ]
+          },
+          {
+            "fieldName": "级别",
+            "nonEmptyCount": 7249,
+            "nonEmptyRate": 0.6024,
+            "usage": [
+              "辅助字段"
+            ]
+          },
+          {
+            "fieldName": "纸书定价",
+            "nonEmptyCount": 7244,
+            "nonEmptyRate": 0.602,
+            "usage": [
+              "辅助字段"
+            ]
+          },
+          {
+            "fieldName": "图书产品编码（版权系统）",
+            "nonEmptyCount": 9230,
+            "nonEmptyRate": 0.7671,
+            "usage": [
+              "辅助字段"
+            ]
+          },
+          {
+            "fieldName": "合同约定作品数量",
+            "nonEmptyCount": 3888,
+            "nonEmptyRate": 0.3231,
+            "usage": [
+              "辅助字段"
+            ]
+          },
+          {
+            "fieldName": "归属",
+            "nonEmptyCount": 9141,
+            "nonEmptyRate": 0.7597,
+            "usage": [
+              "辅助字段"
+            ]
+          },
+          {
+            "fieldName": "授权性质",
+            "nonEmptyCount": 3855,
+            "nonEmptyRate": 0.3204,
+            "usage": [
+              "辅助字段"
+            ]
+          },
+          {
+            "fieldName": "内部转授书-数盟",
+            "nonEmptyCount": 9192,
+            "nonEmptyRate": 0.7639,
+            "usage": [
+              "辅助字段"
+            ]
+          },
+          {
+            "fieldName": "备注JS",
+            "nonEmptyCount": 82,
+            "nonEmptyRate": 0.0068,
+            "usage": [
+              "辅助字段"
+            ]
+          },
+          {
+            "fieldName": "电子预付人民币",
+            "nonEmptyCount": 911,
+            "nonEmptyRate": 0.0757,
+            "usage": [
+              "辅助字段"
+            ]
+          },
+          {
+            "fieldName": "有声预付人民币",
+            "nonEmptyCount": 531,
+            "nonEmptyRate": 0.0441,
+            "usage": [
+              "辅助字段"
+            ]
+          },
+          {
+            "fieldName": "译稿电子预付",
+            "nonEmptyCount": 51,
+            "nonEmptyRate": 0.0042,
+            "usage": [
+              "辅助字段"
+            ]
+          },
+          {
+            "fieldName": "有声译稿预付",
+            "nonEmptyCount": 49,
+            "nonEmptyRate": 0.0041,
+            "usage": [
+              "辅助字段"
+            ]
+          },
+          {
+            "fieldName": "译稿电子预付（人民币）",
+            "nonEmptyCount": 45,
+            "nonEmptyRate": 0.0037,
+            "usage": [
+              "辅助字段"
+            ]
+          },
+          {
+            "fieldName": "有声译稿预付（人民币）",
+            "nonEmptyCount": 40,
+            "nonEmptyRate": 0.0033,
+            "usage": [
+              "辅助字段"
+            ]
+          },
+          {
+            "fieldName": "版权类型",
+            "nonEmptyCount": 9151,
+            "nonEmptyRate": 0.7605,
+            "usage": [
+              "辅助字段"
+            ]
+          }
+        ]
+      }
+    ],
+    "keyFieldCoverage": [
+      {
+        "fieldName": "作品ID",
+        "present": true,
+        "nonEmptyCount": 10757,
+        "nonEmptyRate": 0.894,
+        "usage": [
+          "M1 标准作品身份",
+          "M1/M2 匹配"
+        ]
+      },
+      {
+        "fieldName": "出版书名",
+        "present": true,
+        "nonEmptyCount": 10667,
+        "nonEmptyRate": 0.8865,
+        "usage": [
+          "M1 标准作品基础信息",
+          "标题匹配"
+        ]
+      },
+      {
+        "fieldName": "合同书名",
+        "present": true,
+        "nonEmptyCount": 11993,
+        "nonEmptyRate": 0.9967,
+        "usage": [
+          "M1 标准作品基础信息",
+          "标题匹配"
+        ]
+      },
+      {
+        "fieldName": "作者署名",
+        "present": true,
+        "nonEmptyCount": 11322,
+        "nonEmptyRate": 0.9409,
+        "usage": [
+          "M1 作者信息",
+          "标题作者匹配"
+        ]
+      },
+      {
+        "fieldName": "作者原名",
+        "present": true,
+        "nonEmptyCount": 11576,
+        "nonEmptyRate": 0.962,
+        "usage": [
+          "M1 作者信息",
+          "标题作者匹配"
+        ]
+      },
+      {
+        "fieldName": "授权方",
+        "present": true,
+        "nonEmptyCount": 11621,
+        "nonEmptyRate": 0.9658,
+        "usage": [
+          "M1 权利来源辅助"
+        ]
+      },
+      {
+        "fieldName": "签订日期",
+        "present": true,
+        "nonEmptyCount": 11964,
+        "nonEmptyRate": 0.9943,
+        "usage": [
+          "M1 版权起始",
+          "M2 renewal review"
+        ]
+      },
+      {
+        "fieldName": "到期时间",
+        "present": true,
+        "nonEmptyCount": 12033,
+        "nonEmptyRate": 1.0,
+        "usage": [
+          "M1 版权到期",
+          "M2 forecast/rating/risk"
+        ]
+      },
+      {
+        "fieldName": "续约前到期日期",
+        "present": true,
+        "nonEmptyCount": 3240,
+        "nonEmptyRate": 0.2693,
+        "usage": [
+          "M1 版权到期冲突复核",
+          "M2 renewal review"
+        ]
+      },
+      {
+        "fieldName": "CIP出版时间",
+        "present": true,
+        "nonEmptyCount": 1294,
+        "nonEmptyRate": 0.1075,
+        "usage": [
+          "M1 出版/首发日期",
+          "分类辅助"
+        ]
+      },
+      {
+        "fieldName": "书号",
+        "present": true,
+        "nonEmptyCount": 9300,
+        "nonEmptyRate": 0.7729,
+        "usage": [
+          "M1 身份辅助",
+          "匹配辅助"
+        ]
+      },
+      {
+        "fieldName": "首发时间",
+        "present": true,
+        "nonEmptyCount": 9609,
+        "nonEmptyRate": 0.7986,
+        "usage": [
+          "M1 出版/首发日期"
+        ]
+      },
+      {
+        "fieldName": "出版社",
+        "present": true,
+        "nonEmptyCount": 5729,
+        "nonEmptyRate": 0.4761,
+        "usage": [
+          "M1 基础信息",
+          "分类辅助"
+        ]
+      },
+      {
+        "fieldName": "产品线",
+        "present": true,
+        "nonEmptyCount": 7484,
+        "nonEmptyRate": 0.622,
+        "usage": [
+          "M1 分类候选"
+        ]
+      },
+      {
+        "fieldName": "CIP",
+        "present": true,
+        "nonEmptyCount": 5630,
+        "nonEmptyRate": 0.4679,
+        "usage": [
+          "M1 分类候选"
+        ]
+      },
+      {
+        "fieldName": "合同编号",
+        "present": true,
+        "nonEmptyCount": 11158,
+        "nonEmptyRate": 0.9273,
+        "usage": [
+          "匹配辅助"
+        ]
+      },
+      {
+        "fieldName": "合同类型",
+        "present": true,
+        "nonEmptyCount": 10497,
+        "nonEmptyRate": 0.8724,
+        "usage": [
+          "M1 权利/业务形态辅助",
+          "M1 分类候选"
+        ]
+      },
+      {
+        "fieldName": "有声使用权",
+        "present": true,
+        "nonEmptyCount": 12031,
+        "nonEmptyRate": 0.9998,
+        "usage": [
+          "M1 有声权利/业务形态",
+          "M2 risk"
+        ]
+      },
+      {
+        "fieldName": "有声改编权",
+        "present": true,
+        "nonEmptyCount": 12031,
+        "nonEmptyRate": 0.9998,
+        "usage": [
+          "M1 有声权利/业务形态",
+          "M2 risk"
+        ]
+      },
+      {
+        "fieldName": "有声转授权",
+        "present": true,
+        "nonEmptyCount": 12031,
+        "nonEmptyRate": 0.9998,
+        "usage": [
+          "M1 有声权利/业务形态",
+          "M2 risk"
+        ]
+      },
+      {
+        "fieldName": "有声权利描述",
+        "present": true,
+        "nonEmptyCount": 10803,
+        "nonEmptyRate": 0.8978,
+        "usage": [
+          "M1 有声权利/业务形态",
+          "M2 risk"
+        ]
+      },
+      {
+        "fieldName": "信息网络传播",
+        "present": true,
+        "nonEmptyCount": 12031,
+        "nonEmptyRate": 0.9998,
+        "usage": [
+          "M1 权利/业务形态"
+        ]
+      },
+      {
+        "fieldName": "转授权",
+        "present": true,
+        "nonEmptyCount": 12031,
+        "nonEmptyRate": 0.9998,
+        "usage": [
+          "M1 权利/业务形态"
+        ]
+      },
+      {
+        "fieldName": "独家",
+        "present": true,
+        "nonEmptyCount": 12033,
+        "nonEmptyRate": 1.0,
+        "usage": [
+          "M1 权利/业务形态",
+          "M2 risk"
+        ]
+      },
+      {
+        "fieldName": "授权范围（中国大陆地区和中国大陆地区（除港澳台）都只限于中国大陆地区使用）",
+        "present": true,
+        "nonEmptyCount": 12032,
+        "nonEmptyRate": 0.9999,
+        "usage": [
+          "M1 权利/业务形态"
+        ]
+      },
+      {
+        "fieldName": "是否外版",
+        "present": true,
+        "nonEmptyCount": 12012,
+        "nonEmptyRate": 0.9983,
+        "usage": [
+          "M1 分类候选"
+        ]
+      },
+      {
+        "fieldName": "合作方式",
+        "present": true,
+        "nonEmptyCount": 12030,
+        "nonEmptyRate": 0.9998,
+        "usage": [
+          "M1 权利/业务形态"
+        ]
+      },
+      {
+        "fieldName": "电子版税",
+        "present": true,
+        "nonEmptyCount": 12028,
+        "nonEmptyRate": 0.9996,
+        "usage": [
+          "M1 权利/版税辅助"
+        ]
+      },
+      {
+        "fieldName": "有声版税",
+        "present": true,
+        "nonEmptyCount": 12028,
+        "nonEmptyRate": 0.9996,
+        "usage": [
+          "M1 权利/版税辅助"
+        ]
+      },
+      {
+        "fieldName": "电子预付",
+        "present": true,
+        "nonEmptyCount": 8247,
+        "nonEmptyRate": 0.6854,
+        "usage": [
+          "M1 权利/版税辅助"
+        ]
+      },
+      {
+        "fieldName": "有声预付",
+        "present": true,
+        "nonEmptyCount": 8211,
+        "nonEmptyRate": 0.6824,
+        "usage": [
+          "M1 权利/版税辅助"
+        ]
+      }
+    ],
+    "sanitized": true
+  }
+}

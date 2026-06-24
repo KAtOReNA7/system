@@ -1,0 +1,128 @@
+{
+  "schema": "m1.m2.digital_copyright_ledger.gapSummary.v1",
+  "generatedAt": "2026-06-24T17:14:12.765070+00:00",
+  "currentHead": "00f7b24d29d2f19334487d28d9179e4e43acb094",
+  "originMain": "00f7b24d29d2f19334487d28d9179e4e43acb094",
+  "sanitizedBoundary": {
+    "sanitizedAggregateOnly": true,
+    "realTitlesIncluded": false,
+    "authorNamesIncluded": false,
+    "channelNamesIncluded": false,
+    "rawLedgerRowsIncluded": false,
+    "privateDetailsStoredOnlyInGitignoredOutput": true,
+    "formalMasterDataWritten": false,
+    "m3Entered": false
+  },
+  "gapSummary": {
+    "totalStandardWorks": 3054,
+    "currentGapCounts": {
+      "missingWorkName": 3099,
+      "missingAuthor": 1830,
+      "missingCopyrightStart": 1833,
+      "missingCopyrightEnd": 2223,
+      "missingPublisher": 3099,
+      "missingClassification1": 3099,
+      "missingClassification2": 3099,
+      "missingClassification3": 3099,
+      "missingRequiredTags": 1829,
+      "missingAudioRights": 3054,
+      "missingFirstPublicationDate": 3099
+    },
+    "fieldBackfillPotential": {
+      "standardWorkName": {
+        "highConfidenceAuto": 1233,
+        "mediumConfidenceSuggested": 113,
+        "lowConfidenceManual": 212,
+        "conflict": 212,
+        "candidateRows": 1558
+      },
+      "authorName": {
+        "highConfidenceAuto": 1270,
+        "mediumConfidenceSuggested": 156,
+        "lowConfidenceManual": 131,
+        "conflict": 120,
+        "candidateRows": 1557
+      },
+      "copyrightStartDate": {
+        "highConfidenceAuto": 1227,
+        "mediumConfidenceSuggested": 114,
+        "lowConfidenceManual": 217,
+        "conflict": 211,
+        "candidateRows": 1558
+      },
+      "copyrightEndDate": {
+        "highConfidenceAuto": 918,
+        "mediumConfidenceSuggested": 140,
+        "lowConfidenceManual": 174,
+        "conflict": 165,
+        "candidateRows": 1557
+      },
+      "classificationLevel1": {
+        "highConfidenceAuto": 0,
+        "mediumConfidenceSuggested": 1318,
+        "lowConfidenceManual": 240,
+        "conflict": 0,
+        "candidateRows": 1558
+      },
+      "classificationLevel2": {
+        "highConfidenceAuto": 0,
+        "mediumConfidenceSuggested": 1034,
+        "lowConfidenceManual": 256,
+        "conflict": 139,
+        "candidateRows": 1290
+      },
+      "audioRightsStatus": {
+        "highConfidenceAuto": 819,
+        "mediumConfidenceSuggested": 181,
+        "lowConfidenceManual": 97,
+        "conflict": 85,
+        "candidateRows": 1558
+      },
+      "firstPublicationDate": {
+        "highConfidenceAuto": 918,
+        "mediumConfidenceSuggested": 26,
+        "lowConfidenceManual": 397,
+        "conflict": 396,
+        "candidateRows": 1341
+      },
+      "publisherName": {
+        "highConfidenceAuto": 768,
+        "mediumConfidenceSuggested": 78,
+        "lowConfidenceManual": 122,
+        "conflict": 116,
+        "candidateRows": 968
+      }
+    },
+    "highIncomeImpact": [
+      {
+        "bucket": "top_1_percent",
+        "standardWorkCount": 30,
+        "candidateRows": 219,
+        "highConfidenceAuto": 114,
+        "manualReview": 105
+      },
+      {
+        "bucket": "top_5_percent",
+        "standardWorkCount": 122,
+        "candidateRows": 1232,
+        "highConfidenceAuto": 523,
+        "manualReview": 709
+      },
+      {
+        "bucket": "top_10_percent",
+        "standardWorkCount": 153,
+        "candidateRows": 931,
+        "highConfidenceAuto": 463,
+        "manualReview": 468
+      }
+    ],
+    "ledgerAlsoMissingRows": {
+      "missingTitle": 1,
+      "missingAuthor": 137,
+      "missingSignedDate": 69,
+      "missingExpiryDate": 0,
+      "missingProductLineAndCip": 4533,
+      "missingAudioRights": 2
+    }
+  }
+}

@@ -1,0 +1,163 @@
+{
+  "schema": "m1.m2.ledger_backfill.dryRunResult.v1",
+  "generatedAt": "2026-06-24T17:52:31.899700+00:00",
+  "currentHead": "00f7b24d29d2f19334487d28d9179e4e43acb094",
+  "originMain": "00f7b24d29d2f19334487d28d9179e4e43acb094",
+  "sanitizedBoundary": {
+    "sanitizedAggregateOnly": true,
+    "realTitlesIncluded": false,
+    "authorNamesIncluded": false,
+    "channelNamesIncluded": false,
+    "rawLedgerRowsIncluded": false,
+    "privateDetailsStoredOnlyInGitignoredOutput": true,
+    "databaseConnected": false,
+    "dockerExecuted": false,
+    "formalMasterDataWritten": false,
+    "m3Entered": false,
+    "currentHead": "00f7b24d29d2f19334487d28d9179e4e43acb094",
+    "originMain": "00f7b24d29d2f19334487d28d9179e4e43acb094"
+  },
+  "dryRunResult": {
+    "mode": "file-level-dry-run",
+    "databaseConnected": false,
+    "dockerExecuted": false,
+    "formalMasterDataWritten": false,
+    "fieldGapBeforeAfter": [
+      {
+        "field": "missingWorkName",
+        "candidateField": "standardWorkName",
+        "fieldCn": "标准作品名称",
+        "before": 3099,
+        "after": 1928,
+        "reduction": 1171
+      },
+      {
+        "field": "missingAuthor",
+        "candidateField": "authorName",
+        "fieldCn": "作者",
+        "before": 1830,
+        "after": 641,
+        "reduction": 1189
+      },
+      {
+        "field": "missingCopyrightStart",
+        "candidateField": "copyrightStartDate",
+        "fieldCn": "版权开始日期",
+        "before": 1833,
+        "after": 677,
+        "reduction": 1156
+      },
+      {
+        "field": "missingCopyrightEnd",
+        "candidateField": "copyrightEndDate",
+        "fieldCn": "版权到期日期",
+        "before": 2223,
+        "after": 1367,
+        "reduction": 856
+      },
+      {
+        "field": "missingPublisher",
+        "candidateField": "publisherName",
+        "fieldCn": "出版社",
+        "before": 3099,
+        "after": 2367,
+        "reduction": 732
+      },
+      {
+        "field": "missingClassification1",
+        "candidateField": "classificationLevel1",
+        "fieldCn": "一级分类",
+        "before": 3099,
+        "after": 3099,
+        "reduction": 0
+      },
+      {
+        "field": "missingClassification2",
+        "candidateField": "classificationLevel2",
+        "fieldCn": "二级分类",
+        "before": 3099,
+        "after": 3099,
+        "reduction": 0
+      },
+      {
+        "field": "missingClassification3",
+        "candidateField": "classificationLevel3",
+        "fieldCn": "三级分类",
+        "before": 3099,
+        "after": 3099,
+        "reduction": 0
+      },
+      {
+        "field": "missingAudioRights",
+        "candidateField": "audioRightsStatus",
+        "fieldCn": "有声权利状态",
+        "before": 3054,
+        "after": 2276,
+        "reduction": 778
+      },
+      {
+        "field": "missingFirstPublicationDate",
+        "candidateField": "firstPublicationDate",
+        "fieldCn": "首发/出版日期",
+        "before": 3099,
+        "after": 2185,
+        "reduction": 914
+      }
+    ],
+    "automaticCandidateRows": 7152,
+    "automaticStandardWorks": 1225,
+    "remainingManualCandidateRows": 5793,
+    "nonAutoReasonGroups": {
+      "manual_review": 1386,
+      "suggested_quick_review": 2949,
+      "conflict_manual_review": 1446,
+      "date_manual_review": 12
+    },
+    "topRevenueBeforeAfter": [
+      {
+        "bucket": "top 1%",
+        "autoFieldCandidates": 114,
+        "autoStandardWorks": 20,
+        "copyrightEndReductions": 8,
+        "manualReviewRemainingCandidates": 105
+      },
+      {
+        "bucket": "top 5%",
+        "autoFieldCandidates": 637,
+        "autoStandardWorks": 104,
+        "copyrightEndReductions": 71,
+        "manualReviewRemainingCandidates": 814
+      },
+      {
+        "bucket": "top 10%",
+        "autoFieldCandidates": 1098,
+        "autoStandardWorks": 181,
+        "copyrightEndReductions": 127,
+        "manualReviewRemainingCandidates": 1291
+      },
+      {
+        "bucket": "middle",
+        "autoFieldCandidates": 3399,
+        "autoStandardWorks": 575,
+        "copyrightEndReductions": 443,
+        "manualReviewRemainingCandidates": 2698
+      },
+      {
+        "bucket": "low",
+        "autoFieldCandidates": 2655,
+        "autoStandardWorks": 469,
+        "copyrightEndReductions": 286,
+        "manualReviewRemainingCandidates": 1804
+      }
+    ],
+    "cannotAutoApplyFields": [
+      "中置信建议补全",
+      "低置信补全",
+      "冲突候选",
+      "需要出版日期锚点的相对期限",
+      "需要业务确认的无限期/自动续约",
+      "分类三级",
+      "limited_or_conflict 有声权利"
+    ]
+  }
+}

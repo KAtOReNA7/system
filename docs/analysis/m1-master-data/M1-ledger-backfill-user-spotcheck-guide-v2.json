@@ -1,0 +1,44 @@
+{
+  "schema": "m1.ledgerBackfill.userSpotcheckGuide.v2",
+  "sanitizedAggregateOnly": true,
+  "realTitlesIncluded": false,
+  "authorNamesIncluded": false,
+  "channelNamesIncluded": false,
+  "rawLedgerRowsIncluded": false,
+  "sampleSize": 80,
+  "whyEightyRows": [
+    "v2 automatic candidates are too many for direct full manual review.",
+    "The sample prioritizes high-revenue works, copyright dates, author/title, audio rights, and boundary cases.",
+    "The result is only an input to local staging apply readiness, not a formal master-data write approval."
+  ],
+  "coveredFieldTypes": [
+    "作品名",
+    "作者",
+    "版权开始日期",
+    "版权到期日期",
+    "出版社",
+    "首发/出版日期",
+    "有声权利",
+    "一级分类候选",
+    "二级分类候选"
+  ],
+  "userDecisionOptions": [
+    "接受",
+    "拒绝",
+    "需修改",
+    "不确定"
+  ],
+  "applyReadinessThresholds": {
+    "completionRate": ">= 90%",
+    "highConfidenceAcceptanceRate": ">= 95%",
+    "highRevenueErrorCount": "= 0",
+    "copyrightEndSevereErrorCount": "= 0",
+    "titleAuthorSevereErrorCount": "= 0",
+    "audioRightsSevereErrorCount": "<= 1",
+    "needsModifyRequiresCorrectionValue": true,
+    "uncertainRowsAutoApply": false,
+    "lowOrMediumConfidenceRowsAutoApply": false,
+    "conflictRowsAutoApply": false
+  },
+  "recommendedNextStep": "User fills the simplified private workbook, then run npm run summarize:m1:ledger-spotcheck."
+}

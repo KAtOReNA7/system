@@ -1,0 +1,112 @@
+{
+  "schema": "m2.candidate_b.suggestion_actionability_validation.v0.1",
+  "generatedAt": "2026-06-23T14:01:18.899728+00:00",
+  "candidateVersion": "m2-realdata-dev-candidate-b-forecast-calibrated-v0.2",
+  "suggestionDistribution": {
+    "downlist_or_suspend": 744,
+    "maintain": 686,
+    "manual_review_required": 85,
+    "observe_only": 460,
+    "pricing_or_channel_adjustment": 402,
+    "promote": 557,
+    "reduce_investment": 252,
+    "renewal_review": 209,
+    "repackage": 468
+  },
+  "suggestionSupport": [
+    {
+      "suggestion": "downlist_or_suspend",
+      "count": 744,
+      "supportedCount": 744,
+      "unsupportedCount": 0,
+      "manualConfirmationCount": 744
+    },
+    {
+      "suggestion": "maintain",
+      "count": 686,
+      "supportedCount": 686,
+      "unsupportedCount": 0,
+      "manualConfirmationCount": 0
+    },
+    {
+      "suggestion": "manual_review_required",
+      "count": 85,
+      "supportedCount": 85,
+      "unsupportedCount": 0,
+      "manualConfirmationCount": 85
+    },
+    {
+      "suggestion": "observe_only",
+      "count": 460,
+      "supportedCount": 47,
+      "unsupportedCount": 413,
+      "manualConfirmationCount": 0
+    },
+    {
+      "suggestion": "pricing_or_channel_adjustment",
+      "count": 402,
+      "supportedCount": 402,
+      "unsupportedCount": 0,
+      "manualConfirmationCount": 402
+    },
+    {
+      "suggestion": "promote",
+      "count": 557,
+      "supportedCount": 557,
+      "unsupportedCount": 0,
+      "manualConfirmationCount": 46
+    },
+    {
+      "suggestion": "reduce_investment",
+      "count": 252,
+      "supportedCount": 252,
+      "unsupportedCount": 0,
+      "manualConfirmationCount": 0
+    },
+    {
+      "suggestion": "renewal_review",
+      "count": 209,
+      "supportedCount": 209,
+      "unsupportedCount": 0,
+      "manualConfirmationCount": 209
+    },
+    {
+      "suggestion": "repackage",
+      "count": 468,
+      "supportedCount": 468,
+      "unsupportedCount": 0,
+      "manualConfirmationCount": 468
+    }
+  ],
+  "manualConfirmationDependencies": {
+    "promoteRequiresManualContextWhenHighRatingOrSpike": true,
+    "downlistSuspendRequiresManualConfirmation": true,
+    "renewalReviewRequiresCopyrightExpiryEvidence": true,
+    "notForAutomatedBusinessAction": true
+  },
+  "promoteSanity": {
+    "count": 557,
+    "logicViolationCount": 0
+  },
+  "downlistSuspendSanity": {
+    "count": 744,
+    "logicViolationCount": 0
+  },
+  "renewalReviewSanity": {
+    "count": 209,
+    "withoutExpiryRiskCount": 0
+  },
+  "actionabilityPass": true,
+  "safeOutputBoundary": {
+    "sanitizedReportsUseAnonymousSampleIds": true,
+    "realWorkNamesWritten": false,
+    "realAuthorNamesWritten": false,
+    "realChannelNamesWritten": false,
+    "rawBillRowsWritten": false,
+    "workChannelMonthRevenueDetailWritten": false,
+    "connectionStringsWritten": false,
+    "secretsWritten": false,
+    "privateOutputsGitignored": true,
+    "notFinalReleaseApproved": true
+  }
+}

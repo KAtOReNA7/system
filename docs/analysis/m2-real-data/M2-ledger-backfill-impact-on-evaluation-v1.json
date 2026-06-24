@@ -1,0 +1,30 @@
+{
+  "schema": "m1.m2.digital_copyright_ledger.m2ImpactSummary.v1",
+  "generatedAt": "2026-06-24T17:14:12.765070+00:00",
+  "currentHead": "00f7b24d29d2f19334487d28d9179e4e43acb094",
+  "originMain": "00f7b24d29d2f19334487d28d9179e4e43acb094",
+  "sanitizedBoundary": {
+    "sanitizedAggregateOnly": true,
+    "realTitlesIncluded": false,
+    "authorNamesIncluded": false,
+    "channelNamesIncluded": false,
+    "rawLedgerRowsIncluded": false,
+    "privateDetailsStoredOnlyInGitignoredOutput": true,
+    "formalMasterDataWritten": false,
+    "m3Entered": false
+  },
+  "m2ImpactSummary": {
+    "copyrightTermForecastCanIncrease": 856,
+    "operatingWindowForecastPendingExpiryCanReduce": 856,
+    "relativeExpiryPendingAnchorCanReduce": 0,
+    "manualReviewCanReduceByHighConfidenceCandidates": 1165,
+    "renewalReviewReliabilityCanImprove": 885,
+    "ratingRemainingCopyrightAdjustmentCanImprove": 856,
+    "requiresRerunForecastOutputType": true,
+    "requiresRerun30WorkOperatorPack": true,
+    "requiresRerunBusinessReviewSampleSelection": true,
+    "affectsLimitedBusinessReviewBaseline": true,
+    "formalCompleteAllowed": false,
+    "notM3": true
+  }
+}

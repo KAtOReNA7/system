@@ -1,0 +1,92 @@
+{
+  "schema": "m1.m2.ledger_backfill_v2.matchEnhancementAudit.v1",
+  "generatedAt": "2026-06-24T18:23:07.569225+00:00",
+  "currentHead": "00f7b24d29d2f19334487d28d9179e4e43acb094",
+  "originMain": "00f7b24d29d2f19334487d28d9179e4e43acb094",
+  "sanitizedBoundary": {
+    "sanitizedAggregateOnly": true,
+    "realTitlesIncluded": false,
+    "authorNamesIncluded": false,
+    "channelNamesIncluded": false,
+    "rawLedgerRowsIncluded": false,
+    "privateDetailsStoredOnlyInGitignoredOutput": true,
+    "databaseConnected": false,
+    "dockerExecuted": false,
+    "formalMasterDataWritten": false,
+    "m3Entered": false,
+    "currentHead": "00f7b24d29d2f19334487d28d9179e4e43acb094",
+    "originMain": "00f7b24d29d2f19334487d28d9179e4e43acb094"
+  },
+  "matchEnhancementAudit": {
+    "previousMatchedWorks": 1240,
+    "previousUnmatchedWorks": 1814,
+    "newHighConfidenceMatchedWorks": 0,
+    "newMediumConfidenceCandidateWorks": 3,
+    "v2MatchedWorks": 1240,
+    "newMatchedWorks": 0,
+    "v2UnmatchedWorks": 1814,
+    "candidateRowsByGroup": {
+      "high_revenue_unmatched_priority_review": 120,
+      "low_confidence_manual_review": 1,
+      "medium_confidence_new_match": 3
+    },
+    "candidateWorksByGroup": {
+      "high_revenue_unmatched_priority_review": 120,
+      "low_confidence_manual_review": 1,
+      "medium_confidence_new_match": 3
+    },
+    "topRevenueCoverage": [
+      {
+        "bucket": "top 1%",
+        "standardWorkCount": 30,
+        "previousMatched": 21,
+        "v2HighConfidenceNewMatched": 0,
+        "v2Matched": 21,
+        "stillUnmatched": 9
+      },
+      {
+        "bucket": "top 5%",
+        "standardWorkCount": 152,
+        "previousMatched": 107,
+        "v2HighConfidenceNewMatched": 0,
+        "v2Matched": 107,
+        "stillUnmatched": 45
+      },
+      {
+        "bucket": "top 10%",
+        "standardWorkCount": 305,
+        "previousMatched": 184,
+        "v2HighConfidenceNewMatched": 0,
+        "v2Matched": 184,
+        "stillUnmatched": 121
+      },
+      {
+        "bucket": "middle",
+        "standardWorkCount": 1222,
+        "previousMatched": 580,
+        "v2HighConfidenceNewMatched": 0,
+        "v2Matched": 580,
+        "stillUnmatched": 642
+      },
+      {
+        "bucket": "low",
+        "standardWorkCount": 1527,
+        "previousMatched": 476,
+        "v2HighConfidenceNewMatched": 0,
+        "v2Matched": 476,
+        "stillUnmatched": 1051
+      }
+    ],
+    "auditDimensions": {
+      "idNormalization": true,
+      "titleNormalization": true,
+      "authorNormalization": true,
+      "ledgerScopeRisk": true,
+      "highRevenueUnmatchedPriorityReview": true
+    },
+    "mainFailureReasons": {
+      "标题相似度 0.89；作者未确认重叠": 1
+    },
+    "publicReportContainsPrivateDetails": false
+  }
+}

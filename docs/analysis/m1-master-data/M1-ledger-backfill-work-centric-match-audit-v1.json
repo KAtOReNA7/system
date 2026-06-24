@@ -1,0 +1,83 @@
+{
+  "schema": "m1.m2.ledger_backfill.workCentricMatchAudit.v1",
+  "generatedAt": "2026-06-24T17:52:31.899700+00:00",
+  "currentHead": "00f7b24d29d2f19334487d28d9179e4e43acb094",
+  "originMain": "00f7b24d29d2f19334487d28d9179e4e43acb094",
+  "sanitizedBoundary": {
+    "sanitizedAggregateOnly": true,
+    "realTitlesIncluded": false,
+    "authorNamesIncluded": false,
+    "channelNamesIncluded": false,
+    "rawLedgerRowsIncluded": false,
+    "privateDetailsStoredOnlyInGitignoredOutput": true,
+    "databaseConnected": false,
+    "dockerExecuted": false,
+    "formalMasterDataWritten": false,
+    "m3Entered": false,
+    "currentHead": "00f7b24d29d2f19334487d28d9179e4e43acb094",
+    "originMain": "00f7b24d29d2f19334487d28d9179e4e43acb094"
+  },
+  "workCentricMatchAudit": {
+    "totalStandardWorks": 3054,
+    "exactIdMatched": 1233,
+    "mappingIdMatched": 1,
+    "titleAuthorExactMatched": 170,
+    "titleAuthorFuzzyMatched": 40,
+    "noLedgerMatch": 1814,
+    "conflictStandardWorks": 192,
+    "revenueShares": {
+      "matchedRevenueShare": 0.6608,
+      "unmatchedRevenueShare": 0.3392,
+      "highConfidenceBackfillableRevenueShare": 0.6373,
+      "conflictRevenueShare": 0.1213
+    },
+    "topRevenueCoverage": [
+      {
+        "bucket": "top 1%",
+        "standardWorkCount": 30,
+        "matched": 21,
+        "unmatched": 9,
+        "highConfidenceBackfillable": 20,
+        "conflict": 4
+      },
+      {
+        "bucket": "top 5%",
+        "standardWorkCount": 152,
+        "matched": 107,
+        "unmatched": 45,
+        "highConfidenceBackfillable": 104,
+        "conflict": 33
+      },
+      {
+        "bucket": "top 10%",
+        "standardWorkCount": 305,
+        "matched": 184,
+        "unmatched": 121,
+        "highConfidenceBackfillable": 181,
+        "conflict": 55
+      },
+      {
+        "bucket": "middle",
+        "standardWorkCount": 1222,
+        "matched": 580,
+        "unmatched": 642,
+        "highConfidenceBackfillable": 575,
+        "conflict": 97
+      },
+      {
+        "bucket": "low",
+        "standardWorkCount": 1527,
+        "matched": 476,
+        "unmatched": 1051,
+        "highConfidenceBackfillable": 469,
+        "conflict": 40
+      }
+    ],
+    "ledgerUnmatchedExplanation": {
+      "ledgerRows": 12033,
+      "unmatchedLedgerRows": 10460,
+      "mainReason": "台账 12033 行覆盖合同/版权台账全量范围，明显大于当前 M2 评估标准作品集合；因此 ledger-row unmatched 不能直接等价为 M2 作品未覆盖。",
+      "needsMatchStrategyEnhancement": true
+    }
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "schema": "m1.m2.digital_copyright_ledger.categoryAuthorRightsSummary.v1",
+  "generatedAt": "2026-06-24T17:14:12.765070+00:00",
+  "currentHead": "00f7b24d29d2f19334487d28d9179e4e43acb094",
+  "originMain": "00f7b24d29d2f19334487d28d9179e4e43acb094",
+  "sanitizedBoundary": {
+    "sanitizedAggregateOnly": true,
+    "realTitlesIncluded": false,
+    "authorNamesIncluded": false,
+    "channelNamesIncluded": false,
+    "rawLedgerRowsIncluded": false,
+    "privateDetailsStoredOnlyInGitignoredOutput": true,
+    "formalMasterDataWritten": false,
+    "m3Entered": false
+  },
+  "categoryAuthorRightsSummary": {
+    "authorBackfill": {
+      "candidateRows": 1557,
+      "highConfidenceAuto": 1270,
+      "mediumConfidenceSuggested": 156,
+      "lowConfidenceManual": 131,
+      "conflict": 120
+    },
+    "classificationBackfill": {
+      "level1": {
+        "candidateRows": 1558,
+        "highConfidenceAuto": 0,
+        "mediumConfidenceSuggested": 1318,
+        "lowConfidenceManual": 240,
+        "conflict": 0
+      },
+      "level2": {
+        "candidateRows": 1290,
+        "highConfidenceAuto": 0,
+        "mediumConfidenceSuggested": 1034,
+        "lowConfidenceManual": 256,
+        "conflict": 139
+      },
+      "level3": {
+        "candidateRows": 0,
+        "highConfidenceAuto": 0,
+        "mediumConfidenceSuggested": 0,
+        "lowConfidenceManual": 0,
+        "conflict": 0
+      },
+      "productLineCoveredRows": 7484,
+      "cipCoveredRows": 5630,
+      "threeLevelAutoCompletionAllowed": false,
+      "reason": "产品线和 CIP 只能作为分类候选，不能伪造三级分类。"
+    },
+    "audioRightsBackfill": {
+      "candidateRows": 1558,
+      "highConfidenceAuto": 819,
+      "mediumConfidenceSuggested": 181,
+      "lowConfidenceManual": 97,
+      "conflict": 85
+    },
+    "rightsDistribution": {
+      "granted": 5756,
+      "not_granted": 6266,
+      "limited_or_conflict": 9,
+      "unknown": 2
+    },
+    "multiAuthorRiskRows": 652
+  }
+}

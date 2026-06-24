@@ -1,0 +1,702 @@
+{
+  "schema": "m2.candidate_b.algorithm_prd_usability_final_report.v0.1",
+  "generatedAt": "2026-06-23T12:48:15.715829+00:00",
+  "candidateVersion": "m2-realdata-dev-candidate-b-v0.1",
+  "baselineCandidate": "m2-c3-cleaned-bill-nonformal-v0.2/candidate-a",
+  "currentHead": "041e934f3188cfeec1dfc13b68abeb33034d9cba",
+  "originMain": "041e934f3188cfeec1dfc13b68abeb33034d9cba",
+  "prdCoreCapabilitiesValidated": {
+    "historicalRevenueAnalysis": true,
+    "remainingCopyrightForecast": true,
+    "cutoffBacktest": true,
+    "ratingReliability": true,
+    "riskIdentification": true,
+    "suggestionActionability": true
+  },
+  "validationLayers": {
+    "deepDive20": {
+      "count": 20,
+      "outcomeDistribution": {
+        "pass": 4,
+        "warning": 16,
+        "fail": 0
+      },
+      "allHaveForecast": true,
+      "allHaveBacktest": true
+    },
+    "stratified200": {
+      "count": 200,
+      "coverage": {
+        "sampleCount": 200,
+        "ratingsCovered": {
+          "S+": 7,
+          "S": 54,
+          "A": 46,
+          "B": 83,
+          "C": 6,
+          "D": 2,
+          "E": 2
+        },
+        "lifecyclesCovered": {
+          "growth": 44,
+          "stable": 130,
+          "declining": 14,
+          "long_tail": 1,
+          "inactive": 4,
+          "rebound": 2,
+          "insufficient_history": 5
+        },
+        "revenueScalesCovered": {
+          "top": 101,
+          "high": 82,
+          "mid": 15,
+          "low": 1,
+          "long_tail": 1
+        },
+        "suggestionsCovered": {
+          "downlist_or_suspend": 2,
+          "maintain": 119,
+          "manual_review_required": 85,
+          "observe_only": 9,
+          "pricing_or_channel_adjustment": 3,
+          "promote": 61,
+          "reduce_investment": 1,
+          "renewal_review": 32,
+          "repackage": 87
+        },
+        "risksCovered": {
+          "abnormal_spike": 6,
+          "aggregate_projection_gap": 88,
+          "business_form_mixed": 67,
+          "buyout_or_oneoff_income": 3,
+          "channel_concentration": 22,
+          "channel_concentration_advisory": 14,
+          "copyright_expiry": 33,
+          "inactive_tail": 5,
+          "incomplete_month_boundary": 1,
+          "insufficient_history": 5,
+          "insufficient_revenue_history": 5,
+          "missing_basic_info": 88,
+          "missing_copyright_end": 88,
+          "revenue_decline": 14
+        },
+        "ratingBoundaryCount": 41,
+        "lifecycleBoundaryCount": 21,
+        "featureCount": 48
+      },
+      "issueSummary": {
+        "outcomeDistribution": {
+          "pass": 48,
+          "warning": 152,
+          "fail": 0
+        },
+        "issueSeverityDistribution": {
+          "P0": 0,
+          "P1": 0,
+          "P2": 284
+        },
+        "issueCategoryDistribution": {
+          "forecast": 156,
+          "rating": 43,
+          "readiness": 85
+        },
+        "failRate": 0.0
+      }
+    },
+    "full3054": {
+      "count": 3054,
+      "issueSummary": {
+        "outcomeDistribution": {
+          "pass": 519,
+          "warning": 2535,
+          "fail": 0
+        },
+        "issueSeverityDistribution": {
+          "P0": 0,
+          "P1": 0,
+          "P2": 3743
+        },
+        "issueCategoryDistribution": {
+          "forecast": 3393,
+          "rating": 265,
+          "readiness": 85
+        },
+        "failRate": 0.0
+      },
+      "sanity": {
+        "evaluatedWorkCount": 3054,
+        "ratingDistribution": {
+          "S+": 7,
+          "S": 54,
+          "A": 136,
+          "B": 647,
+          "C": 704,
+          "D": 395,
+          "E": 1111
+        },
+        "lifecycleDistribution": {
+          "growth": 540,
+          "stable": 872,
+          "declining": 394,
+          "long_tail": 132,
+          "inactive": 800,
+          "rebound": 270,
+          "insufficient_history": 46
+        },
+        "forecastTotalByRating": [
+          {
+            "rating": "A",
+            "count": 136,
+            "baseForecastTotal": 1621258.78,
+            "optimisticForecastTotal": 3258730.15,
+            "pessimisticForecastTotal": 729566.45
+          },
+          {
+            "rating": "B",
+            "count": 647,
+            "baseForecastTotal": 4652940.39,
+            "optimisticForecastTotal": 9352410.18,
+            "pessimisticForecastTotal": 2093823.17
+          },
+          {
+            "rating": "C",
+            "count": 704,
+            "baseForecastTotal": 552715.13,
+            "optimisticForecastTotal": 1110957.41,
+            "pessimisticForecastTotal": 248721.81
+          },
+          {
+            "rating": "D",
+            "count": 395,
+            "baseForecastTotal": 1189.01,
+            "optimisticForecastTotal": 2389.91,
+            "pessimisticForecastTotal": 535.05
+          },
+          {
+            "rating": "E",
+            "count": 1111,
+            "baseForecastTotal": 142.92,
+            "optimisticForecastTotal": 287.27,
+            "pessimisticForecastTotal": 64.31
+          },
+          {
+            "rating": "S",
+            "count": 54,
+            "baseForecastTotal": 2785971.09,
+            "optimisticForecastTotal": 5599801.88,
+            "pessimisticForecastTotal": 1253686.99
+          },
+          {
+            "rating": "S+",
+            "count": 7,
+            "baseForecastTotal": 19260917.73,
+            "optimisticForecastTotal": 38714444.63,
+            "pessimisticForecastTotal": 8667412.98
+          }
+        ],
+        "forecastTotalByLifecycle": [
+          {
+            "lifecycle": "declining",
+            "count": 394,
+            "baseForecastTotal": 487353.07,
+            "optimisticForecastTotal": 979579.68,
+            "pessimisticForecastTotal": 219308.88
+          },
+          {
+            "lifecycle": "growth",
+            "count": 540,
+            "baseForecastTotal": 7504150.02,
+            "optimisticForecastTotal": 15083341.53,
+            "pessimisticForecastTotal": 3376867.51
+          },
+          {
+            "lifecycle": "inactive",
+            "count": 800,
+            "baseForecastTotal": 59208.42,
+            "optimisticForecastTotal": 119008.92,
+            "pessimisticForecastTotal": 26643.79
+          },
+          {
+            "lifecycle": "insufficient_history",
+            "count": 46,
+            "baseForecastTotal": 498425.23,
+            "optimisticForecastTotal": 1001834.72,
+            "pessimisticForecastTotal": 224291.35
+          },
+          {
+            "lifecycle": "long_tail",
+            "count": 132,
+            "baseForecastTotal": 65.11,
+            "optimisticForecastTotal": 130.88,
+            "pessimisticForecastTotal": 29.3
+          },
+          {
+            "lifecycle": "rebound",
+            "count": 270,
+            "baseForecastTotal": 172450.12,
+            "optimisticForecastTotal": 346624.74,
+            "pessimisticForecastTotal": 77602.55
+          },
+          {
+            "lifecycle": "stable",
+            "count": 872,
+            "baseForecastTotal": 20153483.07,
+            "optimisticForecastTotal": 40508500.96,
+            "pessimisticForecastTotal": 9069067.38
+          }
+        ],
+        "suggestionDistribution": {
+          "downlist_or_suspend": 744,
+          "maintain": 686,
+          "manual_review_required": 85,
+          "observe_only": 460,
+          "pricing_or_channel_adjustment": 402,
+          "promote": 557,
+          "reduce_investment": 252,
+          "renewal_review": 209,
+          "repackage": 468
+        },
+        "riskDistribution": {
+          "abnormal_spike": 382,
+          "aggregate_projection_gap": 2207,
+          "business_form_mixed": 474,
+          "buyout_or_oneoff_income": 328,
+          "channel_concentration": 22,
+          "channel_concentration_advisory": 1922,
+          "copyright_expiry": 363,
+          "inactive_tail": 932,
+          "incomplete_month_boundary": 1,
+          "insufficient_history": 46,
+          "insufficient_revenue_history": 46,
+          "missing_basic_info": 2207,
+          "missing_copyright_end": 2207,
+          "revenue_decline": 394
+        },
+        "riskReadinessSanity": {
+          "manualReviewRequiredCount": 85,
+          "forecastFallbackCount": 2207,
+          "remainingBlockingCountAfterBusinessClosure": 0,
+          "notFinalReleaseApproved": true
+        },
+        "highErrorSegments": [
+          {
+            "rating": "E",
+            "lifecycle": "inactive",
+            "revenueScale": "high",
+            "caseCount": 669,
+            "actualRevenueTotal": 2.38,
+            "predictedRevenueTotal": 36427.0,
+            "baselinePredictedRevenueTotal": 53708.62,
+            "absoluteErrorTotal": 36424.62,
+            "baselineAbsoluteErrorTotal": 53706.25,
+            "wape": 15304.4622,
+            "mape": 14.9607,
+            "candidateBetterOrEqualCount": 667,
+            "candidateWorseCount": 2,
+            "candidateBetterOrEqualShare": 0.997,
+            "candidateTotalAbsErrorBetterThanBaseline": true
+          },
+          {
+            "rating": "E",
+            "lifecycle": "inactive",
+            "revenueScale": "mid",
+            "caseCount": 612,
+            "actualRevenueTotal": 3.8,
+            "predictedRevenueTotal": 48286.42,
+            "baselinePredictedRevenueTotal": 63111.36,
+            "absoluteErrorTotal": 48282.62,
+            "baselineAbsoluteErrorTotal": 63107.53,
+            "wape": 12705.9526,
+            "mape": 787.8338,
+            "candidateBetterOrEqualCount": 605,
+            "candidateWorseCount": 7,
+            "candidateBetterOrEqualShare": 0.9886,
+            "candidateTotalAbsErrorBetterThanBaseline": true
+          },
+          {
+            "rating": "E",
+            "lifecycle": "declining",
+            "revenueScale": "high",
+            "caseCount": 9,
+            "actualRevenueTotal": 2.7,
+            "predictedRevenueTotal": 524.9,
+            "baselinePredictedRevenueTotal": 744.08,
+            "absoluteErrorTotal": 522.2,
+            "baselineAbsoluteErrorTotal": 741.37,
+            "wape": 193.4074,
+            "mape": 154.8741,
+            "candidateBetterOrEqualCount": 8,
+            "candidateWorseCount": 1,
+            "candidateBetterOrEqualShare": 0.8889,
+            "candidateTotalAbsErrorBetterThanBaseline": true
+          },
+          {
+            "rating": "E",
+            "lifecycle": "declining",
+            "revenueScale": "mid",
+            "caseCount": 36,
+            "actualRevenueTotal": 11.9,
+            "predictedRevenueTotal": 1053.95,
+            "baselinePredictedRevenueTotal": 2186.59,
+            "absoluteErrorTotal": 1043.39,
+            "baselineAbsoluteErrorTotal": 2174.64,
+            "wape": 87.6798,
+            "mape": 328.9286,
+            "candidateBetterOrEqualCount": 35,
+            "candidateWorseCount": 1,
+            "candidateBetterOrEqualShare": 0.9722,
+            "candidateTotalAbsErrorBetterThanBaseline": true
+          },
+          {
+            "rating": "D",
+            "lifecycle": "long_tail",
+            "revenueScale": "long_tail",
+            "caseCount": 90,
+            "actualRevenueTotal": 115.39,
+            "predictedRevenueTotal": 9673.51,
+            "baselinePredictedRevenueTotal": 12880.55,
+            "absoluteErrorTotal": 9609.64,
+            "baselineAbsoluteErrorTotal": 12809.53,
+            "wape": 83.2797,
+            "mape": 58.3087,
+            "candidateBetterOrEqualCount": 68,
+            "candidateWorseCount": 22,
+            "candidateBetterOrEqualShare": 0.7556,
+            "candidateTotalAbsErrorBetterThanBaseline": true
+          },
+          {
+            "rating": "E",
+            "lifecycle": "growth",
+            "revenueScale": "mid",
+            "caseCount": 15,
+            "actualRevenueTotal": 7.72,
+            "predictedRevenueTotal": 482.47,
+            "baselinePredictedRevenueTotal": 994.72,
+            "absoluteErrorTotal": 478.87,
+            "baselineAbsoluteErrorTotal": 989.34,
+            "wape": 62.0298,
+            "mape": 133.9786,
+            "candidateBetterOrEqualCount": 11,
+            "candidateWorseCount": 4,
+            "candidateBetterOrEqualShare": 0.7333,
+            "candidateTotalAbsErrorBetterThanBaseline": true
+          },
+          {
+            "rating": "D",
+            "lifecycle": "inactive",
+            "revenueScale": "mid",
+            "caseCount": 21,
+            "actualRevenueTotal": 36.82,
+            "predictedRevenueTotal": 2243.23,
+            "baselinePredictedRevenueTotal": 3468.14,
+            "absoluteErrorTotal": 2211.56,
+            "baselineAbsoluteErrorTotal": 3433.93,
+            "wape": 60.0641,
+            "mape": 56.9392,
+            "candidateBetterOrEqualCount": 20,
+            "candidateWorseCount": 1,
+            "candidateBetterOrEqualShare": 0.9524,
+            "candidateTotalAbsErrorBetterThanBaseline": true
+          },
+          {
+            "rating": "D",
+            "lifecycle": "declining",
+            "revenueScale": "mid",
+            "caseCount": 72,
+            "actualRevenueTotal": 164.41,
+            "predictedRevenueTotal": 6533.52,
+            "baselinePredictedRevenueTotal": 10605.03,
+            "absoluteErrorTotal": 6401.84,
+            "baselineAbsoluteErrorTotal": 10449.31,
+            "wape": 38.9383,
+            "mape": 39.2043,
+            "candidateBetterOrEqualCount": 67,
+            "candidateWorseCount": 5,
+            "candidateBetterOrEqualShare": 0.9306,
+            "candidateTotalAbsErrorBetterThanBaseline": true
+          },
+          {
+            "rating": "E",
+            "lifecycle": "inactive",
+            "revenueScale": "low",
+            "caseCount": 885,
+            "actualRevenueTotal": 27.76,
+            "predictedRevenueTotal": 744.37,
+            "baselinePredictedRevenueTotal": 1115.81,
+            "absoluteErrorTotal": 728.73,
+            "baselineAbsoluteErrorTotal": 1101.79,
+            "wape": 26.2511,
+            "mape": 29.8153,
+            "candidateBetterOrEqualCount": 764,
+            "candidateWorseCount": 121,
+            "candidateBetterOrEqualShare": 0.8633,
+            "candidateTotalAbsErrorBetterThanBaseline": true
+          },
+          {
+            "rating": "C",
+            "lifecycle": "stable",
+            "revenueScale": "top",
+            "caseCount": 18,
+            "actualRevenueTotal": 652.64,
+            "predictedRevenueTotal": 15163.87,
+            "baselinePredictedRevenueTotal": 35419.14,
+            "absoluteErrorTotal": 14543.73,
+            "baselineAbsoluteErrorTotal": 34766.49,
+            "wape": 22.2845,
+            "mape": 24.7574,
+            "candidateBetterOrEqualCount": 18,
+            "candidateWorseCount": 0,
+            "candidateBetterOrEqualShare": 1.0,
+            "candidateTotalAbsErrorBetterThanBaseline": true
+          },
+          {
+            "rating": "C",
+            "lifecycle": "rebound",
+            "revenueScale": "high",
+            "caseCount": 15,
+            "actualRevenueTotal": 787.43,
+            "predictedRevenueTotal": 17926.8,
+            "baselinePredictedRevenueTotal": 34678.84,
+            "absoluteErrorTotal": 17160.71,
+            "baselineAbsoluteErrorTotal": 33891.42,
+            "wape": 21.7933,
+            "mape": 189.5801,
+            "candidateBetterOrEqualCount": 14,
+            "candidateWorseCount": 1,
+            "candidateBetterOrEqualShare": 0.9333,
+            "candidateTotalAbsErrorBetterThanBaseline": true
+          },
+          {
+            "rating": "C",
+            "lifecycle": "declining",
+            "revenueScale": "high",
+            "caseCount": 21,
+            "actualRevenueTotal": 1523.14,
+            "predictedRevenueTotal": 21662.05,
+            "baselinePredictedRevenueTotal": 32992.45,
+            "absoluteErrorTotal": 20977.32,
+            "baselineAbsoluteErrorTotal": 31791.39,
+            "wape": 13.7724,
+            "mape": 44.0124,
+            "candidateBetterOrEqualCount": 18,
+            "candidateWorseCount": 3,
+            "candidateBetterOrEqualShare": 0.8571,
+            "candidateTotalAbsErrorBetterThanBaseline": true
+          },
+          {
+            "rating": "E",
+            "lifecycle": "long_tail",
+            "revenueScale": "long_tail",
+            "caseCount": 306,
+            "actualRevenueTotal": 72.4,
+            "predictedRevenueTotal": 621.41,
+            "baselinePredictedRevenueTotal": 1271.53,
+            "absoluteErrorTotal": 588.54,
+            "baselineAbsoluteErrorTotal": 1234.76,
+            "wape": 8.129,
+            "mape": 34.087,
+            "candidateBetterOrEqualCount": 207,
+            "candidateWorseCount": 99,
+            "candidateBetterOrEqualShare": 0.6765,
+            "candidateTotalAbsErrorBetterThanBaseline": true
+          },
+          {
+            "rating": "C",
+            "lifecycle": "inactive",
+            "revenueScale": "mid",
+            "caseCount": 18,
+            "actualRevenueTotal": 768.33,
+            "predictedRevenueTotal": 3688.77,
+            "baselinePredictedRevenueTotal": 5705.35,
+            "absoluteErrorTotal": 3413.99,
+            "baselineAbsoluteErrorTotal": 5369.79,
+            "wape": 4.4434,
+            "mape": 5.6185,
+            "candidateBetterOrEqualCount": 16,
+            "candidateWorseCount": 2,
+            "candidateBetterOrEqualShare": 0.8889,
+            "candidateTotalAbsErrorBetterThanBaseline": true
+          },
+          {
+            "rating": "E",
+            "lifecycle": "declining",
+            "revenueScale": "low",
+            "caseCount": 312,
+            "actualRevenueTotal": 92.96,
+            "predictedRevenueTotal": 381.38,
+            "baselinePredictedRevenueTotal": 634.89,
+            "absoluteErrorTotal": 327.84,
+            "baselineAbsoluteErrorTotal": 579.31,
+            "wape": 3.5267,
+            "mape": 12.5513,
+            "candidateBetterOrEqualCount": 233,
+            "candidateWorseCount": 79,
+            "candidateBetterOrEqualShare": 0.7468,
+            "candidateTotalAbsErrorBetterThanBaseline": true
+          },
+          {
+            "rating": "C",
+            "lifecycle": "declining",
+            "revenueScale": "mid",
+            "caseCount": 165,
+            "actualRevenueTotal": 6521.5,
+            "predictedRevenueTotal": 27520.19,
+            "baselinePredictedRevenueTotal": 41180.99,
+            "absoluteErrorTotal": 22333.26,
+            "baselineAbsoluteErrorTotal": 35572.29,
+            "wape": 3.4246,
+            "mape": 314.9933,
+            "candidateBetterOrEqualCount": 154,
+            "candidateWorseCount": 11,
+            "candidateBetterOrEqualShare": 0.9333,
+            "candidateTotalAbsErrorBetterThanBaseline": true
+          },
+          {
+            "rating": "E",
+            "lifecycle": "rebound",
+            "revenueScale": "mid",
+            "caseCount": 18,
+            "actualRevenueTotal": 13.16,
+            "predictedRevenueTotal": 46.08,
+            "baselinePredictedRevenueTotal": 94.96,
+            "absoluteErrorTotal": 38.44,
+            "baselineAbsoluteErrorTotal": 86.95,
+            "wape": 2.921,
+            "mape": 3.7137,
+            "candidateBetterOrEqualCount": 16,
+            "candidateWorseCount": 2,
+            "candidateBetterOrEqualShare": 0.8889,
+            "candidateTotalAbsErrorBetterThanBaseline": true
+          },
+          {
+            "rating": "E",
+            "lifecycle": "growth",
+            "revenueScale": "low",
+            "caseCount": 216,
+            "actualRevenueTotal": 105.05,
+            "predictedRevenueTotal": 269.43,
+            "baselinePredictedRevenueTotal": 510.08,
+            "absoluteErrorTotal": 247.76,
+            "baselineAbsoluteErrorTotal": 468.78,
+            "wape": 2.3585,
+            "mape": 7.0919,
+            "candidateBetterOrEqualCount": 129,
+            "candidateWorseCount": 87,
+            "candidateBetterOrEqualShare": 0.5972,
+            "candidateTotalAbsErrorBetterThanBaseline": true
+          },
+          {
+            "rating": "E",
+            "lifecycle": "rebound",
+            "revenueScale": "low",
+            "caseCount": 162,
+            "actualRevenueTotal": 75.82,
+            "predictedRevenueTotal": 204.97,
+            "baselinePredictedRevenueTotal": 363.57,
+            "absoluteErrorTotal": 168.45,
+            "baselineAbsoluteErrorTotal": 322.4,
+            "wape": 2.2217,
+            "mape": 3.1906,
+            "candidateBetterOrEqualCount": 105,
+            "candidateWorseCount": 57,
+            "candidateBetterOrEqualShare": 0.6481,
+            "candidateTotalAbsErrorBetterThanBaseline": true
+          },
+          {
+            "rating": "D",
+            "lifecycle": "rebound",
+            "revenueScale": "mid",
+            "caseCount": 90,
+            "actualRevenueTotal": 292.75,
+            "predictedRevenueTotal": 770.56,
+            "baselinePredictedRevenueTotal": 1539.46,
+            "absoluteErrorTotal": 573.48,
+            "baselineAbsoluteErrorTotal": 1297.64,
+            "wape": 1.9589,
+            "mape": 2.9222,
+            "candidateBetterOrEqualCount": 68,
+            "candidateWorseCount": 22,
+            "candidateBetterOrEqualShare": 0.7556,
+            "candidateTotalAbsErrorBetterThanBaseline": true
+          }
+        ],
+        "lowConfidenceSegment": {
+          "high": 625,
+          "medium": 205,
+          "low": 2224
+        },
+        "abnormalSpikeHandling": {
+          "riskCount": 382,
+          "blockingCount": 3,
+          "advisoryCount": 379,
+          "autoPassCount": 0
+        },
+        "downlistSuspendSanity": {
+          "count": 744,
+          "logicViolationCount": 0
+        },
+        "promoteSanity": {
+          "count": 557,
+          "logicViolationCount": 0
+        }
+      }
+    }
+  },
+  "acceptance": {
+    "deepDiveComplete": true,
+    "sample200FailRate": 0.0,
+    "sample200FailRatePass": true,
+    "p0AlgorithmIssueCount": 0,
+    "p0Pass": true,
+    "p1AlgorithmIssueCount": 0,
+    "p1Pass": true,
+    "highValueP0Count": 0,
+    "downlistSuspendLogicViolationCount": 0,
+    "promoteLogicViolationCount": 0,
+    "renewalReviewSupported": true,
+    "abnormalSpikeAutoPassCount": 0,
+    "forecastTotalErrorBetterThanTrailingBaseline": true,
+    "ratingExplanationConsistent": true,
+    "suggestionTriggerConsistent": true,
+    "sanitizedReportSafe": true,
+    "candidateBPassesPrdAlgorithmUsability": true
+  },
+  "conclusion": {
+    "candidateBPassesM2AlgorithmUsabilityValidation": true,
+    "algorithmChangeRequired": false,
+    "canEnterBusinessReview": true,
+    "stillNotFinalReleaseApproved": true,
+    "stillDoNotEnterM3": true
+  },
+  "minimumFixDirectionIfNeeded": [],
+  "outputs": {
+    "sanitizedReports": [
+      "docs/analysis/m2-real-data/M2-candidate-b-forecast-backtest-validation-v0.1.md",
+      "docs/analysis/m2-real-data/M2-candidate-b-forecast-backtest-validation-v0.1.json",
+      "docs/analysis/m2-real-data/M2-candidate-b-rating-reliability-validation-v0.1.md",
+      "docs/analysis/m2-real-data/M2-candidate-b-rating-reliability-validation-v0.1.json",
+      "docs/analysis/m2-real-data/M2-candidate-b-suggestion-actionability-validation-v0.1.md",
+      "docs/analysis/m2-real-data/M2-candidate-b-suggestion-actionability-validation-v0.1.json",
+      "docs/analysis/m2-real-data/M2-candidate-b-algorithm-prd-usability-final-report-v0.1.md",
+      "docs/analysis/m2-real-data/M2-candidate-b-algorithm-prd-usability-final-report-v0.1.json"
+    ],
+    "privatePacks": [
+      "data/private-output/m2-algorithm-validation/candidate-b-20-work-forecast-backtest-detail.xlsx",
+      "data/private-output/m2-algorithm-validation/candidate-b-20-work-forecast-backtest-detail.csv",
+      "data/private-output/m2-algorithm-validation/candidate-b-200-work-validation-detail.csv",
+      "data/private-output/m2-algorithm-validation/candidate-b-full-cohort-validation-detail.json"
+    ]
+  },
+  "safeOutputBoundary": {
+    "sanitizedReportsUseAnonymousSampleIds": true,
+    "realWorkNamesWritten": false,
+    "realAuthorNamesWritten": false,
+    "realChannelNamesWritten": false,
+    "rawBillRowsWritten": false,
+    "workChannelMonthRevenueDetailWritten": false,
+    "connectionStringsWritten": false,
+    "secretsWritten": false,
+    "privateOutputsGitignored": true,
+    "notFinalReleaseApproved": true
+  }
+}

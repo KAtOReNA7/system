@@ -1,0 +1,59 @@
+{
+  "schema": "m1.m2.ledger_backfill_v2.m2ImpactV2.v1",
+  "generatedAt": "2026-06-24T18:23:07.569225+00:00",
+  "currentHead": "00f7b24d29d2f19334487d28d9179e4e43acb094",
+  "originMain": "00f7b24d29d2f19334487d28d9179e4e43acb094",
+  "sanitizedBoundary": {
+    "sanitizedAggregateOnly": true,
+    "realTitlesIncluded": false,
+    "authorNamesIncluded": false,
+    "channelNamesIncluded": false,
+    "rawLedgerRowsIncluded": false,
+    "privateDetailsStoredOnlyInGitignoredOutput": true,
+    "databaseConnected": false,
+    "dockerExecuted": false,
+    "formalMasterDataWritten": false,
+    "m3Entered": false,
+    "currentHead": "00f7b24d29d2f19334487d28d9179e4e43acb094",
+    "originMain": "00f7b24d29d2f19334487d28d9179e4e43acb094"
+  },
+  "m2ImpactV2": {
+    "methodology": "file-level forecastOutputType proxy; not a formal DB evaluation result",
+    "before": {
+      "copyright_term_forecast": 847,
+      "operating_window_forecast_pending_expiry": 2206,
+      "relative_expiry_pending_anchor": 0,
+      "copyright_conflict_manual_review": 0,
+      "no_numeric_forecast": 1
+    },
+    "after": {
+      "copyright_term_forecast": 1653,
+      "operating_window_forecast_pending_expiry": 1400,
+      "relative_expiry_pending_anchor": 0,
+      "copyright_conflict_manual_review": 0,
+      "no_numeric_forecast": 1
+    },
+    "delta": {
+      "copyright_term_forecast": 806,
+      "operating_window_forecast_pending_expiry": -806,
+      "relative_expiry_pending_anchor": 0,
+      "copyright_conflict_manual_review": 0,
+      "no_numeric_forecast": 0
+    },
+    "v1Reference": {
+      "copyrightTermForecastIncrease": 856,
+      "operatingWindowForecastPendingExpiryDecrease": -856
+    },
+    "v2": {
+      "copyrightTermForecastIncrease": 806,
+      "operatingWindowForecastPendingExpiryDecrease": -806,
+      "renewalReviewImproved": 806,
+      "ratingRemainingCopyrightAdjustmentImproved": 806,
+      "manualReviewReduced": 1958,
+      "operatorPackSamplesNeedUpdate": 30
+    },
+    "worthEnteringUserConfirmationStage": true,
+    "formalCompleteAllowed": false,
+    "notM3": true
+  }
+}
