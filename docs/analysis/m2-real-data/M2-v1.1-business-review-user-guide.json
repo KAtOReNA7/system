@@ -1,6 +1,6 @@
 {
   "schema": "m2.v1_1_business_review_user_guide.v1",
-  "generatedAt": "2026-06-24T10:00:02.861976+00:00",
+  "generatedAt": "2026-06-24T13:40:02.228626+00:00",
   "candidateVersion": "m2-realdata-dev-disentangled-forecast-v1.1-conditional",
   "audience": "business reviewer and next Codex session",
   "reviewPurpose": "confirm whether the conditional v1.1 forecast baseline is acceptable for limited M2 business review on forecastable cohorts only",

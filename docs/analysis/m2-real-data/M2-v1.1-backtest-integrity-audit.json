@@ -1,6 +1,6 @@
 {
   "schema": "m2.v1_1_backtest_integrity_audit.v1",
-  "generatedAt": "2026-06-24T10:00:02.827637+00:00",
+  "generatedAt": "2026-06-24T13:40:02.222126+00:00",
   "backtestIntegrity": "PASS",
   "bugFixAppliedBeforeAudit": {
     "issue": "v1.1 interval calibration previously used full-sample residual quantiles for coverage evaluation.",

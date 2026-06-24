@@ -1,6 +1,6 @@
 {
   "schema": "m2.v1_1_conditional_business_review_package_summary.v1",
-  "generatedAt": "2026-06-24T10:00:02.848759+00:00",
+  "generatedAt": "2026-06-24T13:40:02.226627+00:00",
   "candidateVersion": "m2-realdata-dev-disentangled-forecast-v1.1-conditional",
   "freezeType": "conditional business-review baseline",
   "limitedBusinessReviewReady": true,

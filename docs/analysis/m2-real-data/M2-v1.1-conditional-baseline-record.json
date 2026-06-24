@@ -1,6 +1,6 @@
 {
   "schema": "m2.v1_1_conditional_baseline_record.v1",
-  "generatedAt": "2026-06-24T10:00:02.862005+00:00",
+  "generatedAt": "2026-06-24T13:40:02.228626+00:00",
   "candidateName": "m2-realdata-dev-disentangled-forecast-v1.1-conditional",
   "freezeType": "conditional business-review baseline",
   "freezeDecision": "FREEZE_CONDITIONAL",

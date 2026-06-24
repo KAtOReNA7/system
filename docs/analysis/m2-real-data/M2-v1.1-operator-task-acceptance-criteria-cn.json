@@ -1,0 +1,83 @@
+{
+  "schema": "m2.v1_1.operator_task_acceptance_criteria.cn.v1",
+  "generatedAt": "2026-06-24T15:46:28.867437+00:00",
+  "candidateVersion": "m2-realdata-dev-disentangled-forecast-v1.1-conditional",
+  "passCriteria": [
+    "严重违背业务常识 <= 2 部。",
+    "高收入样本无 P0。",
+    "下架或暂停无明显误杀。",
+    "推广建议无明显高估。",
+    "续约复核有版权期或收益价值支撑。",
+    "可预测样本的预测方向大体合理。",
+    "仅观察或人工复核样本没有被包装成可直接决策。",
+    "运营建议能追溯到收入、生命周期、版权或风险证据。",
+    "人工指定5部样本中不得出现高优先级业务反例。",
+    "M4校准案例池只做候选沉淀，本轮不实现自学习。"
+  ],
+  "failCriteria": [
+    "高收入样本出现 P0。",
+    "多个建议明显违背业务常识。",
+    "下架、推广或续约触发逻辑明显错误。",
+    "预测方向与历史趋势明显冲突且无解释。",
+    "系统无法解释某作品为何可预测或不可预测。"
+  ],
+  "m4Boundary": "M4校准案例候选只做沉淀，不在M2实现自学习。",
+  "dropdownOptions": {
+    "forecastTrust": [
+      "可信",
+      "基本可信",
+      "不确定",
+      "不可信",
+      "不适用"
+    ],
+    "ratingReasonable": [
+      "合理",
+      "基本合理",
+      "不确定",
+      "不合理",
+      "不适用"
+    ],
+    "suggestionExecutable": [
+      "可执行",
+      "需要人工确认",
+      "仅供参考",
+      "不可执行",
+      "不适用"
+    ],
+    "issueType": [
+      "无明显问题",
+      "预测偏高",
+      "预测偏低",
+      "评级偏高",
+      "评级偏低",
+      "建议不合理",
+      "风险识别遗漏",
+      "版权/数据问题",
+      "业务常识冲突",
+      "其他"
+    ],
+    "m4CalibrationCandidate": [
+      "是",
+      "否",
+      "待定"
+    ],
+    "userPriority": [
+      "高",
+      "中",
+      "低"
+    ]
+  },
+  "operatorSummaryInputRequirement": "用户填写 Excel 后，Codex 才读取填写结果生成 operator validation summary。",
+  "m3Boundary": "本轮不进入M3，除非用户另行明确授权平行规划。",
+  "safeOutputBoundary": {
+    "sanitizedReportsUseAnonymousIdsOnly": true,
+    "privateWorkbookGitignored": true,
+    "realWorkNamesIncluded": false,
+    "realAuthorNamesIncluded": false,
+    "realChannelNamesIncluded": false,
+    "sourceBillRowsIncluded": false,
+    "connectionStringsIncluded": false,
+    "formalReleaseApproved": false,
+    "m3Started": false
+  }
+}

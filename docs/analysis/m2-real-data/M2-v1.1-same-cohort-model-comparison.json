@@ -1,6 +1,6 @@
 {
   "schema": "m2.v1_1_same_cohort_model_comparison.v1",
-  "generatedAt": "2026-06-24T09:59:56.595780+00:00",
+  "generatedAt": "2026-06-24T13:40:00.887927+00:00",
   "primaryComparisonCohort": "v1.1 forecastable cohort, same work/cutoff/horizon cases",
   "directV1_0VsV1_1AggregateComparable": false,
   "directV1_0VsV1_1AggregateNote": "Published v1.0 and v1.1 aggregate WAPE use different forecastable cohorts; use common/intersection rows instead.",
