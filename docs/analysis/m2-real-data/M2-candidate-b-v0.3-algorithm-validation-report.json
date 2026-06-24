@@ -1,10 +1,10 @@
 {
   "schema": "m2.candidate_b.v0_3_algorithm_validation_report",
-  "generatedAt": "2026-06-24T02:12:07.942757+00:00",
+  "generatedAt": "2026-06-24T02:48:11.422721+00:00",
   "candidateVersion": "m2-realdata-dev-candidate-b-forecast-rebuilt-v0.3",
   "legacyCandidateVersion": "m2-realdata-dev-candidate-b-v0.1",
-  "currentHead": "998a6c9852d55d2b9deea0c09f26192f22f04edf",
-  "originMain": "998a6c9852d55d2b9deea0c09f26192f22f04edf",
+  "currentHead": "ed8fe4a157dc9f24024b2d09e71c1017271e5533",
+  "originMain": "ed8fe4a157dc9f24024b2d09e71c1017271e5533",
   "conclusion": {
     "legacyCandidateBPassConclusionReversed": true,
     "forecastScenarioCalibrationCompleted": true,

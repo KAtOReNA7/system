@@ -1,0 +1,182 @@
+{
+  "schema": "m2.manual_review_forecastability_disentanglement.v1",
+  "generatedAt": "2026-06-24T05:48:23.971217+00:00",
+  "oldManualReview": {
+    "count": 2293,
+    "revenueTotal": 73846479.06,
+    "revenueShare": 0.5824
+  },
+  "reasonCodeDistribution": [
+    {
+      "reasonCode": "insufficient_history",
+      "count": 507,
+      "revenueTotal": 25556484.21,
+      "revenueShareTotal": 0.2016,
+      "revenueShareWithinManualReview": 0.3461,
+      "top1OverlapCount": 7,
+      "top5OverlapCount": 24,
+      "top10OverlapCount": 66,
+      "ratingDistribution": {
+        "A": 1,
+        "B": 6,
+        "C": 35,
+        "D": 14,
+        "E": 450,
+        "S+": 1
+      },
+      "lifecycleDistribution": {
+        "declining": 8,
+        "growth": 8,
+        "inactive": 430,
+        "insufficient_history": 45,
+        "long_tail": 12,
+        "stable": 4
+      },
+      "recentRevenueDistribution": {
+        "high": 202,
+        "long_tail": 12,
+        "low": 141,
+        "mid": 128,
+        "top": 24
+      }
+    },
+    {
+      "reasonCode": "severe_data_gap_or_copyright_fallback",
+      "count": 2206,
+      "revenueTotal": 68198680.49,
+      "revenueShareTotal": 0.5379,
+      "revenueShareWithinManualReview": 0.9235,
+      "top1OverlapCount": 21,
+      "top5OverlapCount": 81,
+      "top10OverlapCount": 180,
+      "ratingDistribution": {
+        "B": 443,
+        "C": 494,
+        "D": 336,
+        "E": 933
+      },
+      "lifecycleDistribution": {
+        "declining": 291,
+        "growth": 339,
+        "inactive": 645,
+        "insufficient_history": 28,
+        "long_tail": 110,
+        "rebound": 224,
+        "stable": 569
+      },
+      "recentRevenueDistribution": {
+        "high": 415,
+        "long_tail": 110,
+        "low": 920,
+        "mid": 679,
+        "top": 82
+      }
+    },
+    {
+      "reasonCode": "unresolved_spike_or_oneoff_income",
+      "count": 382,
+      "revenueTotal": 13784604.12,
+      "revenueShareTotal": 0.1087,
+      "revenueShareWithinManualReview": 0.1867,
+      "top1OverlapCount": 3,
+      "top5OverlapCount": 14,
+      "top10OverlapCount": 55,
+      "ratingDistribution": {
+        "A": 3,
+        "B": 5,
+        "C": 23,
+        "D": 5,
+        "E": 345,
+        "S": 1
+      },
+      "lifecycleDistribution": {
+        "declining": 6,
+        "growth": 9,
+        "inactive": 333,
+        "insufficient_history": 18,
+        "long_tail": 5,
+        "rebound": 2,
+        "stable": 9
+      },
+      "recentRevenueDistribution": {
+        "high": 202,
+        "long_tail": 5,
+        "low": 53,
+        "mid": 108,
+        "top": 14
+      }
+    }
+  ],
+  "disentangledCategoryDistribution": [
+    {
+      "category": "formal_readiness_blocker_only",
+      "count": 1743,
+      "revenueTotal": 46573017.27,
+      "revenueShareTotal": 0.3673,
+      "revenueShareWithinManualReview": 0.6307
+    },
+    {
+      "category": "true_forecastability_blocker",
+      "count": 550,
+      "revenueTotal": 27273461.78,
+      "revenueShareTotal": 0.2151,
+      "revenueShareWithinManualReview": 0.3693
+    }
+  ],
+  "highRevenueManualReviewBreakdown": [
+    {
+      "bucket": "top_1_percent",
+      "category": "formal_readiness_blocker_only",
+      "count": 15,
+      "revenueShareWithinBucketManualReview": 0.6233,
+      "revenueShareTotal": 0.1797
+    },
+    {
+      "bucket": "top_1_percent",
+      "category": "true_forecastability_blocker",
+      "count": 8,
+      "revenueShareWithinBucketManualReview": 0.3767,
+      "revenueShareTotal": 0.1086
+    },
+    {
+      "bucket": "top_5_percent",
+      "category": "formal_readiness_blocker_only",
+      "count": 63,
+      "revenueShareWithinBucketManualReview": 0.6586,
+      "revenueShareTotal": 0.2983
+    },
+    {
+      "bucket": "top_5_percent",
+      "category": "true_forecastability_blocker",
+      "count": 26,
+      "revenueShareWithinBucketManualReview": 0.3414,
+      "revenueShareTotal": 0.1547
+    },
+    {
+      "bucket": "top_10_percent",
+      "category": "formal_readiness_blocker_only",
+      "count": 120,
+      "revenueShareWithinBucketManualReview": 0.6491,
+      "revenueShareTotal": 0.3266
+    },
+    {
+      "bucket": "top_10_percent",
+      "category": "true_forecastability_blocker",
+      "count": 72,
+      "revenueShareWithinBucketManualReview": 0.3509,
+      "revenueShareTotal": 0.1766
+    }
+  ],
+  "previousGateOverBlockedForecastability": true,
+  "interpretation": "previous gate over-blocked forecastability",
+  "safeOutputBoundary": {
+    "rawRowsWritten": false,
+    "realWorkNamesWritten": false,
+    "realAuthorNamesWritten": false,
+    "realChannelNamesWritten": false,
+    "connectionStringsWritten": false,
+    "privateWorkbookGitignored": true,
+    "notFinalReleaseApproval": true,
+    "m3Started": false
+  }
+}

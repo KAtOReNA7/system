@@ -1,0 +1,298 @@
+{
+  "schema": "m2.forecast_materiality_root_cause_audit.v1",
+  "generatedAt": "2026-06-24T04:29:02.066533+00:00",
+  "candidateBSeriesAbandoned": true,
+  "ungatedBakeoffVerdict": "FAIL",
+  "materialityDistribution": {
+    "totalWorks": 3054,
+    "totalHistoricalRevenue": 126794638.17,
+    "top1Percent": {
+      "workCount": 31,
+      "revenueTotal": 67608772.42,
+      "revenueShare": 0.5332
+    },
+    "top5Percent": {
+      "workCount": 153,
+      "revenueTotal": 102673932.12,
+      "revenueShare": 0.8098
+    },
+    "top10Percent": {
+      "workCount": 306,
+      "revenueTotal": 112513777.79,
+      "revenueShare": 0.8874
+    },
+    "bottom50Percent": {
+      "workCount": 1527,
+      "revenueTotal": 231217.91,
+      "revenueShare": 0.0018
+    },
+    "zeroOrNearZeroWorks": {
+      "workCount": 386,
+      "revenueTotal": 1160.75,
+      "revenueShare": 0.0
+    }
+  },
+  "ungatedFailureMateriality": {
+    "ungatedModel": "model_e_selector",
+    "caseCount": 198510,
+    "failCaseCount": 32830,
+    "warningCaseCount": 45287,
+    "failCaseRateByCount": 0.1654,
+    "failCaseActualRevenue": 556583551.61,
+    "failCaseRevenueShare": 0.4898,
+    "failUniqueWorkCount": 2229,
+    "lowRevenueFailCaseShareByCount": 0.643,
+    "lowRevenueFailActualShareWithinFails": 0.6011,
+    "p0RevenueShare": 0.0,
+    "p1RevenueShare": 0.0
+  },
+  "segmentMateriality": [
+    {
+      "segmentType": "rating",
+      "segment": "B",
+      "count": 647,
+      "revenueTotal": 47569364.05,
+      "revenueShare": 0.3752
+    },
+    {
+      "segmentType": "rating",
+      "segment": "S+",
+      "count": 7,
+      "revenueTotal": 26538268.38,
+      "revenueShare": 0.2093
+    },
+    {
+      "segmentType": "rating",
+      "segment": "E",
+      "count": 1111,
+      "revenueTotal": 25087454.66,
+      "revenueShare": 0.1979
+    },
+    {
+      "segmentType": "rating",
+      "segment": "S",
+      "count": 54,
+      "revenueTotal": 15755886.66,
+      "revenueShare": 0.1243
+    },
+    {
+      "segmentType": "rating",
+      "segment": "A",
+      "count": 136,
+      "revenueTotal": 6627037.24,
+      "revenueShare": 0.0523
+    },
+    {
+      "segmentType": "rating",
+      "segment": "C",
+      "count": 704,
+      "revenueTotal": 4671244.58,
+      "revenueShare": 0.0368
+    },
+    {
+      "segmentType": "rating",
+      "segment": "D",
+      "count": 395,
+      "revenueTotal": 545382.62,
+      "revenueShare": 0.0043
+    },
+    {
+      "segmentType": "lifecycle",
+      "segment": "stable",
+      "count": 872,
+      "revenueTotal": 82742093.35,
+      "revenueShare": 0.6526
+    },
+    {
+      "segmentType": "lifecycle",
+      "segment": "inactive",
+      "count": 800,
+      "revenueTotal": 24953855.18,
+      "revenueShare": 0.1968
+    },
+    {
+      "segmentType": "lifecycle",
+      "segment": "growth",
+      "count": 540,
+      "revenueTotal": 10191185.19,
+      "revenueShare": 0.0804
+    },
+    {
+      "segmentType": "lifecycle",
+      "segment": "declining",
+      "count": 394,
+      "revenueTotal": 6767341.84,
+      "revenueShare": 0.0534
+    },
+    {
+      "segmentType": "lifecycle",
+      "segment": "rebound",
+      "count": 270,
+      "revenueTotal": 1936029.07,
+      "revenueShare": 0.0153
+    },
+    {
+      "segmentType": "lifecycle",
+      "segment": "long_tail",
+      "count": 132,
+      "revenueTotal": 116494.11,
+      "revenueShare": 0.0009
+    },
+    {
+      "segmentType": "lifecycle",
+      "segment": "insufficient_history",
+      "count": 46,
+      "revenueTotal": 87639.43,
+      "revenueShare": 0.0007
+    },
+    {
+      "segmentType": "revenueBucket",
+      "segment": "top",
+      "count": 153,
+      "revenueTotal": 102673932.12,
+      "revenueShare": 0.8098
+    },
+    {
+      "segmentType": "revenueBucket",
+      "segment": "high",
+      "count": 609,
+      "revenueTotal": 20440791.44,
+      "revenueShare": 0.1612
+    },
+    {
+      "segmentType": "revenueBucket",
+      "segment": "mid",
+      "count": 1044,
+      "revenueTotal": 3491489.17,
+      "revenueShare": 0.0275
+    },
+    {
+      "segmentType": "revenueBucket",
+      "segment": "long_tail",
+      "count": 133,
+      "revenueTotal": 116494.11,
+      "revenueShare": 0.0009
+    },
+    {
+      "segmentType": "revenueBucket",
+      "segment": "low",
+      "count": 1115,
+      "revenueTotal": 71931.34,
+      "revenueShare": 0.0006
+    },
+    {
+      "segmentType": "riskBucket",
+      "segment": "data_gap_or_copyright_fallback",
+      "count": 1874,
+      "revenueTotal": 57945892.03,
+      "revenueShare": 0.457
+    },
+    {
+      "segmentType": "riskBucket",
+      "segment": "channel_concentration",
+      "count": 235,
+      "revenueTotal": 26320894.62,
+      "revenueShare": 0.2076
+    },
+    {
+      "segmentType": "riskBucket",
+      "segment": "copyright_expiry",
+      "count": 343,
+      "revenueTotal": 15596767.3,
+      "revenueShare": 0.123
+    },
+    {
+      "segmentType": "riskBucket",
+      "segment": "abnormal_spike",
+      "count": 382,
+      "revenueTotal": 13784604.12,
+      "revenueShare": 0.1087
+    },
+    {
+      "segmentType": "riskBucket",
+      "segment": "no_major_risk",
+      "count": 141,
+      "revenueTotal": 11875700.01,
+      "revenueShare": 0.0937
+    },
+    {
+      "segmentType": "riskBucket",
+      "segment": "other_risk",
+      "count": 48,
+      "revenueTotal": 703115.32,
+      "revenueShare": 0.0055
+    },
+    {
+      "segmentType": "riskBucket",
+      "segment": "revenue_decline",
+      "count": 18,
+      "revenueTotal": 444387.42,
+      "revenueShare": 0.0035
+    },
+    {
+      "segmentType": "riskBucket",
+      "segment": "inactive_tail",
+      "count": 3,
+      "revenueTotal": 80022.14,
+      "revenueShare": 0.0006
+    },
+    {
+      "segmentType": "riskBucket",
+      "segment": "insufficient_history",
+      "count": 10,
+      "revenueTotal": 43255.19,
+      "revenueShare": 0.0003
+    },
+    {
+      "segmentType": "forecastabilityStatus",
+      "segment": "manual_review_required",
+      "count": 2293,
+      "revenueTotal": 73846479.06,
+      "revenueShare": 0.5824
+    },
+    {
+      "segmentType": "forecastabilityStatus",
+      "segment": "numeric_forecast_eligible",
+      "count": 236,
+      "revenueTotal": 40525947.42,
+      "revenueShare": 0.3196
+    },
+    {
+      "segmentType": "forecastabilityStatus",
+      "segment": "conservative_numeric_forecast",
+      "count": 222,
+      "revenueTotal": 10864310.76,
+      "revenueShare": 0.0857
+    },
+    {
+      "segmentType": "forecastabilityStatus",
+      "segment": "observe_only_no_numeric_forecast",
+      "count": 302,
+      "revenueTotal": 1557900.93,
+      "revenueShare": 0.0123
+    },
+    {
+      "segmentType": "forecastabilityStatus",
+      "segment": "excluded_from_forecast_baseline",
+      "count": 1,
+      "revenueTotal": 0.0,
+      "revenueShare": 0.0
+    }
+  ],
+  "conclusion": {
+    "lowMaterialityDominatesFailCount": true,
+    "failureRevenueShareMaterial": true,
+    "forecastProblemRemainsSevere": true,
+    "interpretation": "Use revenue materiality plus forecastability gate; do not require uniform numeric forecasts for every work."
+  },
+  "safeOutputBoundary": {
+    "rawRowsWritten": false,
+    "realWorkNamesWritten": false,
+    "realAuthorNamesWritten": false,
+    "realChannelNamesWritten": false,
+    "connectionStringsWritten": false,
+    "privateWorkbookGitignored": true,
+    "notFinalReleaseApproval": true,
+    "m3Started": false
+  }
+}

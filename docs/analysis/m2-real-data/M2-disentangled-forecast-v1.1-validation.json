@@ -1,0 +1,529 @@
+{
+  "schema": "m2.disentangled_forecast_v1_1_validation.v1",
+  "generatedAt": "2026-06-24T08:12:12.724562+00:00",
+  "modelId": "model_h_disentangled_forecast_v1_1",
+  "candidateVersion": "m2-realdata-dev-disentangled-forecast-v1.1-conditional",
+  "verdict": "CONDITIONAL PASS",
+  "forecastableCohortScore": {
+    "caseCount": 67665,
+    "actualTotal": 937311846.38,
+    "predictedTotal": 577549469.21,
+    "baselinePredictedTotal": 754556341.09,
+    "wape": 0.6485,
+    "mae": 8982.7856,
+    "smape": 1.1301,
+    "medianApe": 0.9659,
+    "intervalCoverage": 0.5562,
+    "overForecastRate": 0.2716,
+    "underForecastRate": 0.381,
+    "betterThanBaselineRate": 0.7423,
+    "totalAbsErrorBetterThanBaseline": true,
+    "baselineWape": 0.7039,
+    "passCount": 33038,
+    "warningCount": 16671,
+    "failCount": 17956,
+    "failRate": 0.2654,
+    "warningRate": 0.2464
+  },
+  "numericCohortScore": {
+    "caseCount": 41665,
+    "actualTotal": 768342608.24,
+    "predictedTotal": 503218388.22,
+    "baselinePredictedTotal": 622140149.1,
+    "wape": 0.6007,
+    "mae": 11077.5345,
+    "smape": 1.047,
+    "medianApe": 0.8734,
+    "intervalCoverage": 0.4622,
+    "overForecastRate": 0.2691,
+    "underForecastRate": 0.4027,
+    "betterThanBaselineRate": 0.734,
+    "totalAbsErrorBetterThanBaseline": true,
+    "baselineWape": 0.6493,
+    "passCount": 19208,
+    "warningCount": 12365,
+    "failCount": 10092,
+    "failRate": 0.2422,
+    "warningRate": 0.2968
+  },
+  "conservativeCohortScore": {
+    "caseCount": 26000,
+    "actualTotal": 168969238.14,
+    "predictedTotal": 74331080.99,
+    "baselinePredictedTotal": 132416192.0,
+    "wape": 0.8657,
+    "mae": 5625.9506,
+    "smape": 1.2741,
+    "medianApe": 1.0,
+    "intervalCoverage": 0.7069,
+    "overForecastRate": 0.2757,
+    "underForecastRate": 0.3461,
+    "betterThanBaselineRate": 0.7556,
+    "totalAbsErrorBetterThanBaseline": true,
+    "baselineWape": 0.9517,
+    "passCount": 13830,
+    "warningCount": 4306,
+    "failCount": 7864,
+    "failRate": 0.3025,
+    "warningRate": 0.1656
+  },
+  "highValueForecastableScore": {
+    "caseCount": 14690,
+    "actualTotal": 856747841.46,
+    "predictedTotal": 536304551.2,
+    "baselinePredictedTotal": 691536777.84,
+    "wape": 0.6232,
+    "mae": 36343.4955,
+    "smape": 0.9822,
+    "medianApe": 0.8011,
+    "intervalCoverage": 0.4669,
+    "overForecastRate": 0.3321,
+    "underForecastRate": 0.4262,
+    "betterThanBaselineRate": 0.6741,
+    "totalAbsErrorBetterThanBaseline": true,
+    "baselineWape": 0.6742,
+    "passCount": 6215,
+    "warningCount": 4648,
+    "failCount": 3827,
+    "failRate": 0.2605,
+    "warningRate": 0.3164
+  },
+  "issueSummary": {
+    "p0": 0,
+    "p1": 0,
+    "p2": 394,
+    "p0RevenueShare": 0.0,
+    "p1RevenueShare": 0.0,
+    "p2RevenueShare": 0.3891
+  },
+  "passWarningFail": {
+    "pass": 33038,
+    "warning": 16671,
+    "fail": 17956
+  },
+  "segmentPerformance": [
+    {
+      "segmentType": "businessActionStatus",
+      "segment": "action_allowed",
+      "caseCount": 42055,
+      "wape": 0.6724,
+      "smape": 1.0917,
+      "mae": 7423.4355,
+      "coverage": 0.5391,
+      "failRate": 0.2637
+    },
+    {
+      "segmentType": "businessActionStatus",
+      "segment": "action_blocked",
+      "caseCount": 34645,
+      "wape": 1.0783,
+      "smape": 2.0,
+      "mae": 5630.7656,
+      "coverage": 0.0,
+      "failRate": 0.0665
+    },
+    {
+      "segmentType": "businessActionStatus",
+      "segment": "manual_confirmation_required",
+      "caseCount": 25610,
+      "wape": 0.625,
+      "smape": 1.2027,
+      "mae": 11543.4443,
+      "coverage": 0.5844,
+      "failRate": 0.2681
+    },
+    {
+      "segmentType": "businessActionStatus",
+      "segment": "observe_only",
+      "caseCount": 96200,
+      "wape": 1.2491,
+      "smape": 2.0,
+      "mae": 235.448,
+      "coverage": 0.0,
+      "failRate": 0.1466
+    },
+    {
+      "segmentType": "forecastabilityStatus",
+      "segment": "conservative_numeric_forecast",
+      "caseCount": 26000,
+      "wape": 0.8657,
+      "smape": 1.2741,
+      "mae": 5625.9506,
+      "coverage": 0.7069,
+      "failRate": 0.3025
+    },
+    {
+      "segmentType": "forecastabilityStatus",
+      "segment": "numeric_forecast_eligible",
+      "caseCount": 41665,
+      "wape": 0.6007,
+      "smape": 1.047,
+      "mae": 11077.5345,
+      "coverage": 0.4622,
+      "failRate": 0.2422
+    },
+    {
+      "segmentType": "forecastabilityStatus",
+      "segment": "observe_only_no_numeric_forecast",
+      "caseCount": 96200,
+      "wape": 1.2491,
+      "smape": 2.0,
+      "mae": 235.448,
+      "coverage": 0.0,
+      "failRate": 0.1466
+    },
+    {
+      "segmentType": "forecastabilityStatus",
+      "segment": "true_forecast_blocked",
+      "caseCount": 34645,
+      "wape": 1.0783,
+      "smape": 2.0,
+      "mae": 5630.7656,
+      "coverage": 0.0,
+      "failRate": 0.0665
+    },
+    {
+      "segmentType": "formalReadinessStatus",
+      "segment": "data_fix_required",
+      "caseCount": 143455,
+      "wape": 0.7496,
+      "smape": 1.6438,
+      "mae": 3099.697,
+      "coverage": 0.1363,
+      "failRate": 0.1547
+    },
+    {
+      "segmentType": "formalReadinessStatus",
+      "segment": "ready_for_local_algorithm_validation",
+      "caseCount": 31460,
+      "wape": 0.6241,
+      "smape": 1.4086,
+      "mae": 7772.3743,
+      "coverage": 0.3746,
+      "failRate": 0.2011
+    },
+    {
+      "segmentType": "formalReadinessStatus",
+      "segment": "waiver_required",
+      "caseCount": 23595,
+      "wape": 0.901,
+      "smape": 1.571,
+      "mae": 5779.2855,
+      "coverage": 0.2672,
+      "failRate": 0.2477
+    },
+    {
+      "segmentType": "lifecycleAtCutoff",
+      "segment": "declining",
+      "caseCount": 5631,
+      "wape": 0.7303,
+      "smape": 0.9474,
+      "mae": 5432.927,
+      "coverage": 0.4665,
+      "failRate": 0.2905
+    },
+    {
+      "segmentType": "lifecycleAtCutoff",
+      "segment": "growth",
+      "caseCount": 7651,
+      "wape": 0.5526,
+      "smape": 0.7684,
+      "mae": 10778.0538,
+      "coverage": 0.4486,
+      "failRate": 0.1962
+    },
+    {
+      "segmentType": "lifecycleAtCutoff",
+      "segment": "inactive",
+      "caseCount": 886,
+      "wape": 1.0006,
+      "smape": 1.9939,
+      "mae": 14490.2478,
+      "coverage": 0.5948,
+      "failRate": 0.3973
+    },
+    {
+      "segmentType": "lifecycleAtCutoff",
+      "segment": "insufficient_history",
+      "caseCount": 36673,
+      "wape": 0.9788,
+      "smape": 1.8517,
+      "mae": 8522.201,
+      "coverage": 0.6485,
+      "failRate": 0.3116
+    },
+    {
+      "segmentType": "lifecycleAtCutoff",
+      "segment": "long_tail",
+      "caseCount": 8,
+      "wape": 0.9982,
+      "smape": 1.894,
+      "mae": 388.6443,
+      "coverage": 0.0,
+      "failRate": 0.625
+    },
+    {
+      "segmentType": "lifecycleAtCutoff",
+      "segment": "rebound",
+      "caseCount": 3811,
+      "wape": 0.6786,
+      "smape": 0.8553,
+      "mae": 6791.9478,
+      "coverage": 0.4448,
+      "failRate": 0.2343
+    },
+    {
+      "segmentType": "lifecycleAtCutoff",
+      "segment": "stable",
+      "caseCount": 13005,
+      "wape": 0.3817,
+      "smape": 0.718,
+      "mae": 11034.5427,
+      "coverage": 0.4285,
+      "failRate": 0.1648
+    },
+    {
+      "segmentType": "materialityBucket",
+      "segment": "bottom_50_percent",
+      "caseCount": 74165,
+      "wape": 1.0018,
+      "smape": 2.0,
+      "mae": 28.4631,
+      "coverage": 0.0,
+      "failRate": 0.1363
+    },
+    {
+      "segmentType": "materialityBucket",
+      "segment": "middle_40_percent",
+      "caseCount": 79430,
+      "wape": 0.9396,
+      "smape": 1.3252,
+      "mae": 1274.8333,
+      "coverage": 0.3875,
+      "failRate": 0.2434
+    },
+    {
+      "segmentType": "materialityBucket",
+      "segment": "near_zero",
+      "caseCount": 25090,
+      "wape": null,
+      "smape": 2.0,
+      "mae": 1.3855,
+      "coverage": 0.0,
+      "failRate": 0.0001
+    },
+    {
+      "segmentType": "materialityBucket",
+      "segment": "top_10_percent",
+      "caseCount": 9945,
+      "wape": 0.8681,
+      "smape": 1.1505,
+      "mae": 7567.7151,
+      "coverage": 0.2998,
+      "failRate": 0.2453
+    },
+    {
+      "segmentType": "materialityBucket",
+      "segment": "top_1_percent",
+      "caseCount": 1950,
+      "wape": 0.5971,
+      "smape": 0.8402,
+      "mae": 191915.302,
+      "coverage": 0.3728,
+      "failRate": 0.1964
+    },
+    {
+      "segmentType": "materialityBucket",
+      "segment": "top_5_percent",
+      "caseCount": 7930,
+      "wape": 0.871,
+      "smape": 1.0746,
+      "mae": 34381.6718,
+      "coverage": 0.3972,
+      "failRate": 0.2643
+    },
+    {
+      "segmentType": "ratingAtCutoff",
+      "segment": "A",
+      "caseCount": 8645,
+      "wape": 0.8994,
+      "smape": 1.1594,
+      "mae": 5502.4026,
+      "coverage": 0.5979,
+      "failRate": 0.2339
+    },
+    {
+      "segmentType": "ratingAtCutoff",
+      "segment": "B",
+      "caseCount": 39065,
+      "wape": 0.6552,
+      "smape": 1.0774,
+      "mae": 7405.9564,
+      "coverage": 0.5135,
+      "failRate": 0.2475
+    },
+    {
+      "segmentType": "ratingAtCutoff",
+      "segment": "C",
+      "caseCount": 16055,
+      "wape": 1.1238,
+      "smape": 1.2449,
+      "mae": 2904.4327,
+      "coverage": 0.6227,
+      "failRate": 0.3383
+    },
+    {
+      "segmentType": "ratingAtCutoff",
+      "segment": "D",
+      "caseCount": 0,
+      "wape": null,
+      "smape": null,
+      "mae": null,
+      "coverage": null,
+      "failRate": null
+    },
+    {
+      "segmentType": "ratingAtCutoff",
+      "segment": "E",
+      "caseCount": 0,
+      "wape": null,
+      "smape": null,
+      "mae": null,
+      "coverage": null,
+      "failRate": null
+    },
+    {
+      "segmentType": "ratingAtCutoff",
+      "segment": "S",
+      "caseCount": 3510,
+      "wape": 0.8715,
+      "smape": 1.1063,
+      "mae": 39031.8208,
+      "coverage": 0.614,
+      "failRate": 0.2165
+    },
+    {
+      "segmentType": "ratingAtCutoff",
+      "segment": "S+",
+      "caseCount": 390,
+      "wape": 0.3576,
+      "smape": 0.8468,
+      "mae": 223861.219,
+      "coverage": 0.6615,
+      "failRate": 0.1846
+    },
+    {
+      "segmentType": "revenueScaleAtCutoff",
+      "segment": "high",
+      "caseCount": 11980,
+      "wape": 0.764,
+      "smape": 0.8137,
+      "mae": 8762.8774,
+      "coverage": 0.4164,
+      "failRate": 0.229
+    },
+    {
+      "segmentType": "revenueScaleAtCutoff",
+      "segment": "long_tail",
+      "caseCount": 32702,
+      "wape": 1.0,
+      "smape": 1.9999,
+      "mae": 6381.29,
+      "coverage": 0.7039,
+      "failRate": 0.2668
+    },
+    {
+      "segmentType": "revenueScaleAtCutoff",
+      "segment": "low",
+      "caseCount": 2536,
+      "wape": 0.995,
+      "smape": 1.7222,
+      "mae": 6568.9233,
+      "coverage": 0.0808,
+      "failRate": 0.8139
+    },
+    {
+      "segmentType": "revenueScaleAtCutoff",
+      "segment": "mid",
+      "caseCount": 16539,
+      "wape": 0.8332,
+      "smape": 0.8496,
+      "mae": 3093.1636,
+      "coverage": 0.4673,
+      "failRate": 0.2267
+    },
+    {
+      "segmentType": "revenueScaleAtCutoff",
+      "segment": "top",
+      "caseCount": 3908,
+      "wape": 0.4411,
+      "smape": 0.7068,
+      "mae": 57917.9508,
+      "coverage": 0.4335,
+      "failRate": 0.173
+    }
+  ],
+  "passConditions": {
+    "forecastableRevenueCoverageAtLeast70": true,
+    "top5ForecastableCountShareAtLeast80": true,
+    "wapeNotWorseThanBaseline": true,
+    "coverageAtLeast50": true,
+    "p0EqualsZero": true,
+    "p1AtMost3": true,
+    "highConfidenceSpreadP75AtMost1_5": true,
+    "nonLowConfidenceSpreadP75AtMost2_0": true,
+    "trueForecastBlockedRevenueShareAtMost20": false,
+    "formalAndBusinessBlockersSeparated": true,
+    "noGateMasqueradeDetected": true
+  },
+  "conditionalPassConditions": {
+    "forecastableRevenueCoverageAtLeast70": true,
+    "wapeNotWorseThanBaseline": true,
+    "p0EqualsZero": true,
+    "p1AtMost10": true,
+    "coverageAtLeast45": true,
+    "trueForecastBlockedRevenueShareAtMost25": true
+  },
+  "safeOutputBoundary": {
+    "aggregateOnly": true,
+    "anonymousIdsOnly": true,
+    "sensitiveEntityNamesIncluded": false,
+    "sourceRowLevelDetailsIncluded": false,
+    "connectionSecretsIncluded": false,
+    "privateDetailAvailable": true
+  },
+  "spreadSummary": {
+    "highConfidenceSpreadP75": 1.48,
+    "nonLowConfidenceSpreadP75": 1.95,
+    "byConfidence": {
+      "high": {
+        "count": 5300,
+        "p50": 1.48,
+        "p75": 1.48,
+        "p90": 1.48,
+        "p95": 1.48
+      },
+      "medium": {
+        "count": 14707,
+        "p50": 1.95,
+        "p75": 1.95,
+        "p90": 1.95,
+        "p95": 1.95
+      },
+      "low": {
+        "count": 35962,
+        "p50": 3.4,
+        "p75": 3.4,
+        "p90": 3.4,
+        "p95": 3.4
+      },
+      "blocked_for_business_use": {
+        "count": 11696,
+        "p50": 2.8,
+        "p75": 2.8,
+        "p90": 2.8,
+        "p95": 2.8
+      }
+    }
+  }
+}

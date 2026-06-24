@@ -1,0 +1,293 @@
+{
+  "schema": "m2.forecast_model_failure_root_cause_audit.v0.1",
+  "generatedAt": "2026-06-24T03:49:18.562575+00:00",
+  "failedCandidate": "m2-realdata-dev-candidate-b-forecast-rebuilt-v0.3",
+  "conclusion": "candidate-b forecast route should be abandoned for M2 baseline selection; failures are structural rather than another patch target.",
+  "factorFlags": {
+    "low_income_denominator_mape_explosion": false,
+    "inactive_long_tail_overforecast": true,
+    "spike_not_fully_removed": true,
+    "trailing_baseline_better_for_many_cases": false,
+    "lifecycle_forecast_mismatch": true,
+    "remaining_copyright_horizon_amplifies_error": "not directly measurable in rolling cutoff; current reports show fallback and horizon caps remain material",
+    "sparse_data_instability": true,
+    "validation_low_amount_penalty": true
+  },
+  "failureGroups": [
+    {
+      "dimension": "lifecycle",
+      "segment": "declining",
+      "count": 14058,
+      "actualTotal": 43248426.93,
+      "predictedTotal": 31779617.95,
+      "wape": 0.7682,
+      "mape": 0.9838,
+      "mae": 2363.3862,
+      "coverage": 0.1381,
+      "candidateBetterThanBaselineRate": 0.7153
+    },
+    {
+      "dimension": "lifecycle",
+      "segment": "growth",
+      "count": 14062,
+      "actualTotal": 151677654.8,
+      "predictedTotal": 132562631.56,
+      "wape": 0.5501,
+      "mape": 0.7309,
+      "mae": 5933.2754,
+      "coverage": 0.213,
+      "candidateBetterThanBaselineRate": 0.5036
+    },
+    {
+      "dimension": "lifecycle",
+      "segment": "inactive",
+      "count": 22688,
+      "actualTotal": 94848491.95,
+      "predictedTotal": 3294816.64,
+      "wape": 1.1178,
+      "mape": 1.0,
+      "mae": 4672.9011,
+      "coverage": 0.796,
+      "candidateBetterThanBaselineRate": 0.9806
+    },
+    {
+      "dimension": "lifecycle",
+      "segment": "insufficient_history",
+      "count": 117365,
+      "actualTotal": 429908057.62,
+      "predictedTotal": 33582935.49,
+      "wape": 1.0428,
+      "mape": 1.0,
+      "mae": 3819.6905,
+      "coverage": 0.6774,
+      "candidateBetterThanBaselineRate": 0.9402
+    },
+    {
+      "dimension": "lifecycle",
+      "segment": "long_tail",
+      "count": 1307,
+      "actualTotal": 7804.0,
+      "predictedTotal": 392.82,
+      "wape": 0.9982,
+      "mape": 0.9299,
+      "mae": 5.9601,
+      "coverage": 0.0918,
+      "candidateBetterThanBaselineRate": 0.3948
+    },
+    {
+      "dimension": "lifecycle",
+      "segment": "rebound",
+      "count": 7841,
+      "actualTotal": 38941006.65,
+      "predictedTotal": 39431916.16,
+      "wape": 0.6966,
+      "mape": 0.9079,
+      "mae": 3459.6204,
+      "coverage": 0.1768,
+      "candidateBetterThanBaselineRate": 0.5516
+    },
+    {
+      "dimension": "lifecycle",
+      "segment": "stable",
+      "count": 21189,
+      "actualTotal": 377727255.79,
+      "predictedTotal": 416818671.17,
+      "wape": 0.4763,
+      "mape": 0.7991,
+      "mae": 8491.2243,
+      "coverage": 0.1822,
+      "candidateBetterThanBaselineRate": 0.5412
+    },
+    {
+      "dimension": "revenueScale",
+      "segment": "high",
+      "count": 24700,
+      "actualTotal": 169704036.26,
+      "predictedTotal": 105382552.01,
+      "wape": 0.8693,
+      "mape": 0.8077,
+      "mae": 5972.6955,
+      "coverage": 0.4621,
+      "candidateBetterThanBaselineRate": 0.7681
+    },
+    {
+      "dimension": "revenueScale",
+      "segment": "long_tail",
+      "count": 107466,
+      "actualTotal": 315835232.36,
+      "predictedTotal": 392.82,
+      "wape": 1.0,
+      "mape": 1.0,
+      "mae": 2938.9316,
+      "coverage": 0.7295,
+      "candidateBetterThanBaselineRate": 0.9926
+    },
+    {
+      "dimension": "revenueScale",
+      "segment": "low",
+      "count": 29380,
+      "actualTotal": 19344296.58,
+      "predictedTotal": 716595.24,
+      "wape": 0.9895,
+      "mape": 0.9464,
+      "mae": 651.4954,
+      "coverage": 0.2346,
+      "candidateBetterThanBaselineRate": 0.5836
+    },
+    {
+      "dimension": "revenueScale",
+      "segment": "mid",
+      "count": 31945,
+      "actualTotal": 66585118.8,
+      "predictedTotal": 28185493.88,
+      "wape": 0.8621,
+      "mape": 0.8862,
+      "mae": 1796.9078,
+      "coverage": 0.3005,
+      "candidateBetterThanBaselineRate": 0.6301
+    },
+    {
+      "dimension": "revenueScale",
+      "segment": "top",
+      "count": 5019,
+      "actualTotal": 564890013.75,
+      "predictedTotal": 523185947.84,
+      "wape": 0.5986,
+      "mape": 0.5901,
+      "mae": 67369.2434,
+      "coverage": 0.3112,
+      "candidateBetterThanBaselineRate": 0.6212
+    },
+    {
+      "dimension": "confidence",
+      "segment": "blocked_for_business_use",
+      "count": 103392,
+      "actualTotal": 304002627.98,
+      "predictedTotal": 24820712.5,
+      "wape": 1.0493,
+      "mape": 1.0,
+      "mae": 3085.2292,
+      "coverage": 0.6913,
+      "candidateBetterThanBaselineRate": 0.9425
+    },
+    {
+      "dimension": "confidence",
+      "segment": "high",
+      "count": 7264,
+      "actualTotal": 317071397.37,
+      "predictedTotal": 323818443.35,
+      "wape": 0.3492,
+      "mape": 0.6103,
+      "mae": 15243.707,
+      "coverage": 0.1396,
+      "candidateBetterThanBaselineRate": 0.4809
+    },
+    {
+      "dimension": "confidence",
+      "segment": "low",
+      "count": 56381,
+      "actualTotal": 222981996.29,
+      "predictedTotal": 12626931.45,
+      "wape": 1.065,
+      "mape": 1.0,
+      "mae": 4212.0196,
+      "coverage": 0.5405,
+      "candidateBetterThanBaselineRate": 0.8419
+    },
+    {
+      "dimension": "confidence",
+      "segment": "medium",
+      "count": 31473,
+      "actualTotal": 292302676.11,
+      "predictedTotal": 296204894.48,
+      "wape": 0.7213,
+      "mape": 0.857,
+      "mae": 6698.8848,
+      "coverage": 0.1557,
+      "candidateBetterThanBaselineRate": 0.5601
+    },
+    {
+      "dimension": "horizon",
+      "segment": "3",
+      "count": 45810,
+      "actualTotal": 52501480.43,
+      "predictedTotal": 43178494.31,
+      "wape": 0.5918,
+      "mape": 0.8948,
+      "mae": 678.2091,
+      "coverage": 0.6113,
+      "candidateBetterThanBaselineRate": 0.8138
+    },
+    {
+      "dimension": "horizon",
+      "segment": "6",
+      "count": 42756,
+      "actualTotal": 124046502.57,
+      "predictedTotal": 78317055.18,
+      "wape": 0.7222,
+      "mape": 0.9669,
+      "mae": 2095.3986,
+      "coverage": 0.5957,
+      "candidateBetterThanBaselineRate": 0.818
+    },
+    {
+      "dimension": "horizon",
+      "segment": "12",
+      "count": 39702,
+      "actualTotal": 229577302.97,
+      "predictedTotal": 146258479.63,
+      "wape": 0.7774,
+      "mape": 1.0,
+      "mae": 4495.4453,
+      "coverage": 0.5448,
+      "candidateBetterThanBaselineRate": 0.8333
+    },
+    {
+      "dimension": "horizon",
+      "segment": "18",
+      "count": 36648,
+      "actualTotal": 330060344.89,
+      "predictedTotal": 178367679.4,
+      "wape": 0.7715,
+      "mape": 1.0,
+      "mae": 6948.3801,
+      "coverage": 0.4912,
+      "candidateBetterThanBaselineRate": 0.8557
+    },
+    {
+      "dimension": "horizon",
+      "segment": "24",
+      "count": 33594,
+      "actualTotal": 400173066.9,
+      "predictedTotal": 211349273.26,
+      "wape": 0.8103,
+      "mape": 1.0,
+      "mae": 9651.9664,
+      "coverage": 0.4393,
+      "candidateBetterThanBaselineRate": 0.8735
+    }
+  ],
+  "classification": {
+    "algorithmIssues": [
+      "inactive and long-tail rows remain hard to calibrate with lifecycle-factor extrapolation",
+      "scenario intervals do not reach required coverage after fixed multiplier removal",
+      "model route is too coupled to last-12 extrapolation and lifecycle caps"
+    ],
+    "metricIssues": [
+      "MAPE becomes unstable on very low actual revenue denominators; WAPE/SMAPE/median APE are safer acceptance metrics"
+    ],
+    "dataSparsityIssues": [
+      "low active-month count and zero-heavy histories need a zero-inflated or shrinkage model instead of point extrapolation"
+    ]
+  },
+  "abandonCandidateBForecastRoute": true,
+  "safeOutputBoundary": {
+    "rawRowsWritten": false,
+    "realWorkNamesWritten": false,
+    "realAuthorNamesWritten": false,
+    "realChannelNamesWritten": false,
+    "connectionStringsWritten": false,
+    "notFinalReleaseApproval": true,
+    "m3Started": false
+  }
+}

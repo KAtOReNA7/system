@@ -1,0 +1,48 @@
+{
+  "schema": "m2.disentangled_algorithm_business_readiness.v1",
+  "generatedAt": "2026-06-24T05:49:43.813471+00:00",
+  "readiness": "limited_m2_business_review_ready_for_forecastable_cohort",
+  "m3Allowed": false,
+  "candidateVersion": "m2-realdata-dev-disentangled-forecast-v1.0-conditional",
+  "modelVerdict": "CONDITIONAL PASS",
+  "forecastableRevenueShare": 0.7666,
+  "trueForecastBlockedRevenueShare": 0.2151,
+  "businessGroups": [
+    {
+      "group": "numeric_forecast_eligible",
+      "businessUse": "can_enter_business_review_if_validation_passes",
+      "reason": "forecastability is based only on local revenue time-series evidence"
+    },
+    {
+      "group": "conservative_numeric_forecast",
+      "businessUse": "reference_forecast_only",
+      "reason": "forecastable but lower confidence or tail/volatile pattern"
+    },
+    {
+      "group": "formal_release_blocked_but_forecastable",
+      "businessUse": "can_validate_algorithm_locally_but_cannot_release_formally",
+      "reason": "formal readiness blockers are separated from forecastability"
+    },
+    {
+      "group": "business_action_blocked_but_forecastable",
+      "businessUse": "forecast_can_be_reviewed_but_action_requires_confirmation",
+      "reason": "promote/downlist/renewal controls block action, not forecast"
+    },
+    {
+      "group": "true_forecast_blocked",
+      "businessUse": "no_numeric_forecast",
+      "reason": "insufficient series, severe unresolved spike, or not backtestable"
+    }
+  ],
+  "m3BlockReason": "M3 remains blocked unless user explicitly authorizes parallel planning after forecast baseline acceptance.",
+  "safeOutputBoundary": {
+    "rawRowsWritten": false,
+    "realWorkNamesWritten": false,
+    "realAuthorNamesWritten": false,
+    "realChannelNamesWritten": false,
+    "connectionStringsWritten": false,
+    "privateWorkbookGitignored": true,
+    "notFinalReleaseApproval": true,
+    "m3Started": false
+  }
+}

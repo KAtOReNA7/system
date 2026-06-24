@@ -1,0 +1,50 @@
+{
+  "schema": "m2.forecastability_business_readiness.v1",
+  "generatedAt": "2026-06-24T04:30:23.816681+00:00",
+  "readiness": "not_ready_for_m2_business_review",
+  "m3Allowed": false,
+  "candidateVersion": null,
+  "modelVerdict": "FAIL",
+  "numericForecastEligibleCount": 236,
+  "numericForecastEligibleRevenueShare": 0.3196,
+  "forecastableNumericIncludingConservativeCount": 458,
+  "forecastableNumericIncludingConservativeRevenueShare": 0.4053,
+  "businessGroups": [
+    {
+      "group": "numeric_forecast_eligible",
+      "businessUse": "allowed_for_business_review_only_if_verdict_pass_or_conditional",
+      "reason": "material history, meaningful recent revenue, controlled volatility, no severe gap"
+    },
+    {
+      "group": "conservative_numeric_forecast",
+      "businessUse": "reference_only_low_confidence",
+      "reason": "bounded forecast can be shown, but not used for strong business actions"
+    },
+    {
+      "group": "observe_only_no_numeric_forecast",
+      "businessUse": "no_business_numeric_forecast",
+      "reason": "low materiality, zero-heavy, inactive, long-tail, D/E, or near-zero revenue"
+    },
+    {
+      "group": "manual_review_required",
+      "businessUse": "blocked_until_manual_review",
+      "reason": "spike, data gap, copyright fallback, mapping/basic-info issue, or insufficient history"
+    },
+    {
+      "group": "excluded_from_forecast_baseline",
+      "businessUse": "excluded_from_acceptance_score",
+      "reason": "not backtestable or no usable revenue history"
+    }
+  ],
+  "m3BlockReason": "M3 remains blocked until a forecast baseline passes and user/business review is completed.",
+  "safeOutputBoundary": {
+    "rawRowsWritten": false,
+    "realWorkNamesWritten": false,
+    "realAuthorNamesWritten": false,
+    "realChannelNamesWritten": false,
+    "connectionStringsWritten": false,
+    "privateWorkbookGitignored": true,
+    "notFinalReleaseApproval": true,
+    "m3Started": false
+  }
+}

@@ -1,0 +1,339 @@
+{
+  "schema": "m2.v1_1_backtest_integrity_audit.v1",
+  "generatedAt": "2026-06-24T10:00:02.827637+00:00",
+  "backtestIntegrity": "PASS",
+  "bugFixAppliedBeforeAudit": {
+    "issue": "v1.1 interval calibration previously used full-sample residual quantiles for coverage evaluation.",
+    "fix": "calibration now uses rolling-prior residual quantiles from cutoff months earlier than the evaluated cutoff; early insufficient segments retain the original interval.",
+    "modelParameterTuning": false
+  },
+  "cutoffAudit": {
+    "featuresUseCutoffOrEarlierOnly": true,
+    "actualUsesCutoffFutureWindowOnly": true,
+    "incompleteMonthsExcluded": true,
+    "futureLeakageDetected": false
+  },
+  "horizonAudit": {
+    "requiredHorizons": [
+      3,
+      6,
+      12
+    ],
+    "optionalExtendedHorizons": [
+      18,
+      24
+    ],
+    "observedHorizons": [
+      3,
+      6,
+      12,
+      18,
+      24
+    ],
+    "insufficientHorizonSkipped": true,
+    "horizonRows": [
+      {
+        "horizonMonths": 3,
+        "caseCount": 15615,
+        "wape": 0.498,
+        "coverage": 0.6724
+      },
+      {
+        "horizonMonths": 6,
+        "caseCount": 14574,
+        "wape": 0.5653,
+        "coverage": 0.6155
+      },
+      {
+        "horizonMonths": 12,
+        "caseCount": 13533,
+        "wape": 0.6098,
+        "coverage": 0.5429
+      },
+      {
+        "horizonMonths": 18,
+        "caseCount": 12492,
+        "wape": 0.6575,
+        "coverage": 0.4785
+      },
+      {
+        "horizonMonths": 24,
+        "caseCount": 11451,
+        "wape": 0.7086,
+        "coverage": 0.4229
+      }
+    ]
+  },
+  "baselineAudit": {
+    "baselineUsesSameHistoryAndCutoff": true,
+    "baselineSameCohortComparable": true,
+    "baselineWape": 0.7039,
+    "v1_1Wape": 0.6485
+  },
+  "metricAudit": {
+    "wapeDenominatorCorrect": true,
+    "mapeNearZeroRisk": "MAPE/APE is retained only as a diagnostic; WAPE and SMAPE carry the decision because near-zero actuals can amplify APE.",
+    "smapeMoreStableForLowRevenue": true,
+    "maeHighRevenueSensitive": true,
+    "coverageComputedByActualWithinInterval": true
+  },
+  "intervalCoverageAudit": {
+    "coverage": 0.5562,
+    "usesRollingPriorResiduals": true,
+    "fixedGlobalIntervalMultiplierUsed": false,
+    "highConfidenceSpreadP75": 1.48,
+    "nonLowConfidenceSpreadP75": 1.95,
+    "calibrationReasonDistribution": {
+      "conservative_low_confidence_zero_floor": 3365,
+      "existing_interval_retained": 6963,
+      "rolling_prior_residual_quantile_by_confidence": 1345,
+      "rolling_prior_residual_quantile_by_forecastabilityStatus+confidence": 5050,
+      "rolling_prior_residual_quantile_by_forecastabilityStatus+horizonMonths+confidence": 21396,
+      "rolling_prior_residual_quantile_by_forecastabilityStatus+horizonMonths+confidence+revenueScaleAtCutoff": 29546
+    },
+    "segmentCalibrationRows": [
+      {
+        "segmentType": "confidence",
+        "segment": "blocked_for_business_use",
+        "caseCount": 11696,
+        "coverageBefore": 0.5877,
+        "coverageAfter": 0.5866,
+        "spreadP75After": 2.8
+      },
+      {
+        "segmentType": "confidence",
+        "segment": "high",
+        "caseCount": 5300,
+        "coverageBefore": 0.1592,
+        "coverageAfter": 0.2258,
+        "spreadP75After": 1.48
+      },
+      {
+        "segmentType": "confidence",
+        "segment": "low",
+        "caseCount": 35962,
+        "coverageBefore": 0.5284,
+        "coverageAfter": 0.6828,
+        "spreadP75After": 3.4
+      },
+      {
+        "segmentType": "confidence",
+        "segment": "medium",
+        "caseCount": 14707,
+        "coverageBefore": 0.2092,
+        "coverageAfter": 0.3417,
+        "spreadP75After": 1.95
+      },
+      {
+        "segmentType": "forecastabilityStatus",
+        "segment": "conservative_numeric_forecast",
+        "caseCount": 26000,
+        "coverageBefore": 0.46,
+        "coverageAfter": 0.7069,
+        "spreadP75After": 3.4
+      },
+      {
+        "segmentType": "forecastabilityStatus",
+        "segment": "numeric_forecast_eligible",
+        "caseCount": 41665,
+        "coverageBefore": 0.4281,
+        "coverageAfter": 0.4622,
+        "spreadP75After": 2.8
+      },
+      {
+        "segmentType": "horizonMonths",
+        "segment": "12",
+        "caseCount": 13533,
+        "coverageBefore": 0.4348,
+        "coverageAfter": 0.5429,
+        "spreadP75After": 3.4
+      },
+      {
+        "segmentType": "horizonMonths",
+        "segment": "18",
+        "caseCount": 12492,
+        "coverageBefore": 0.3821,
+        "coverageAfter": 0.4785,
+        "spreadP75After": 3.4
+      },
+      {
+        "segmentType": "horizonMonths",
+        "segment": "24",
+        "caseCount": 11451,
+        "coverageBefore": 0.3355,
+        "coverageAfter": 0.4229,
+        "spreadP75After": 3.4
+      },
+      {
+        "segmentType": "horizonMonths",
+        "segment": "3",
+        "caseCount": 15615,
+        "coverageBefore": 0.5217,
+        "coverageAfter": 0.6724,
+        "spreadP75After": 3.4
+      },
+      {
+        "segmentType": "horizonMonths",
+        "segment": "6",
+        "caseCount": 14574,
+        "coverageBefore": 0.4907,
+        "coverageAfter": 0.6155,
+        "spreadP75After": 3.4
+      },
+      {
+        "segmentType": "lifecycleAtCutoff",
+        "segment": "declining",
+        "caseCount": 5631,
+        "coverageBefore": 0.1454,
+        "coverageAfter": 0.4665,
+        "spreadP75After": 3.4
+      },
+      {
+        "segmentType": "lifecycleAtCutoff",
+        "segment": "growth",
+        "caseCount": 7651,
+        "coverageBefore": 0.2358,
+        "coverageAfter": 0.4486,
+        "spreadP75After": 3.4
+      },
+      {
+        "segmentType": "lifecycleAtCutoff",
+        "segment": "inactive",
+        "caseCount": 886,
+        "coverageBefore": 0.5474,
+        "coverageAfter": 0.5948,
+        "spreadP75After": 3.4
+      },
+      {
+        "segmentType": "lifecycleAtCutoff",
+        "segment": "insufficient_history",
+        "caseCount": 36673,
+        "coverageBefore": 0.639,
+        "coverageAfter": 0.6485,
+        "spreadP75After": 3.4
+      },
+      {
+        "segmentType": "lifecycleAtCutoff",
+        "segment": "long_tail",
+        "caseCount": 8,
+        "coverageBefore": 0.0,
+        "coverageAfter": 0.0,
+        "spreadP75After": 2.8
+      },
+      {
+        "segmentType": "lifecycleAtCutoff",
+        "segment": "rebound",
+        "caseCount": 3811,
+        "coverageBefore": 0.2099,
+        "coverageAfter": 0.4448,
+        "spreadP75After": 3.4
+      },
+      {
+        "segmentType": "lifecycleAtCutoff",
+        "segment": "stable",
+        "caseCount": 13005,
+        "coverageBefore": 0.1889,
+        "coverageAfter": 0.4285,
+        "spreadP75After": 1.95
+      },
+      {
+        "segmentType": "revenueScaleAtCutoff",
+        "segment": "high",
+        "caseCount": 11980,
+        "coverageBefore": 0.1949,
+        "coverageAfter": 0.4164,
+        "spreadP75After": 3.4
+      },
+      {
+        "segmentType": "revenueScaleAtCutoff",
+        "segment": "long_tail",
+        "caseCount": 32702,
+        "coverageBefore": 0.7039,
+        "coverageAfter": 0.7039,
+        "spreadP75After": 3.4
+      },
+      {
+        "segmentType": "revenueScaleAtCutoff",
+        "segment": "low",
+        "caseCount": 2536,
+        "coverageBefore": 0.0442,
+        "coverageAfter": 0.0808,
+        "spreadP75After": 3.4
+      },
+      {
+        "segmentType": "revenueScaleAtCutoff",
+        "segment": "mid",
+        "caseCount": 16539,
+        "coverageBefore": 0.2064,
+        "coverageAfter": 0.4673,
+        "spreadP75After": 3.4
+      },
+      {
+        "segmentType": "revenueScaleAtCutoff",
+        "segment": "top",
+        "caseCount": 3908,
+        "coverageBefore": 0.2346,
+        "coverageAfter": 0.4335,
+        "spreadP75After": 1.95
+      }
+    ]
+  },
+  "highValueAudit": {
+    "highValueRows": [
+      {
+        "bucket": "top1",
+        "caseCount": 1495,
+        "wape": 0.5183,
+        "smape": 0.753,
+        "mae": 181716.8107,
+        "coverage": 0.4863,
+        "failCount": 294
+      },
+      {
+        "bucket": "top5",
+        "caseCount": 8125,
+        "wape": 0.6084,
+        "smape": 0.9631,
+        "mae": 59550.8112,
+        "coverage": 0.4772,
+        "failCount": 2100
+      },
+      {
+        "bucket": "top10",
+        "caseCount": 14690,
+        "wape": 0.6232,
+        "smape": 0.9822,
+        "mae": 36343.4955,
+        "coverage": 0.4669,
+        "failCount": 3827
+      }
+    ],
+    "p0": 0,
+    "p1": 0,
+    "acceptable": true
+  },
+  "passConditions": {
+    "featuresUseCutoffOrEarlierOnly": true,
+    "actualUsesCutoffFutureWindowOnly": true,
+    "incompleteMonthsExcluded": true,
+    "insufficientHorizonSkipped": true,
+    "baselineUsesSameHistoryAndCutoff": true,
+    "v11IntervalUsesRollingPriorResiduals": true,
+    "fixedGlobalIntervalMultiplierAbsent": true,
+    "requiredHorizonsPresent": true,
+    "baselineSameCohortComparable": true,
+    "wapeDenominatorPositive": true,
+    "coverageComputedFromIntervalContainment": true,
+    "highConfidenceSpreadWithinGuardrail": true,
+    "nonLowConfidenceSpreadWithinGuardrail": true,
+    "lowConfidenceExplicitlyMarked": true
+  },
+  "safeOutputBoundary": {
+    "aggregateOnly": true,
+    "anonymousIdsOnly": true,
+    "sensitiveEntityNamesIncluded": false,
+    "sourceRowLevelDetailsIncluded": false,
+    "connectionSecretsIncluded": false,
+    "privateBusinessReviewPackAvailable": true
+  }
+}

@@ -1,0 +1,171 @@
+{
+  "schema": "m2.v1_1_same_cohort_model_comparison.v1",
+  "generatedAt": "2026-06-24T09:59:56.595780+00:00",
+  "primaryComparisonCohort": "v1.1 forecastable cohort, same work/cutoff/horizon cases",
+  "directV1_0VsV1_1AggregateComparable": false,
+  "directV1_0VsV1_1AggregateNote": "Published v1.0 and v1.1 aggregate WAPE use different forecastable cohorts; use common/intersection rows instead.",
+  "v1_0Coverage": {
+    "numericPlusConservativeRevenueShare": 0.7666,
+    "trueBlockedRevenueShare": 0.2151
+  },
+  "v1_1Coverage": {
+    "numericPlusConservativeRevenueShare": 0.7779,
+    "trueBlockedRevenueShare": 0.2038
+  },
+  "sameCohortRows": [
+    {
+      "model": "trailing_baseline_same_v1_1_cohort",
+      "caseCount": 67665,
+      "actualTotal": 937311846.38,
+      "predictedTotal": 754556341.09,
+      "wape": 0.7039,
+      "smape": 1.1053,
+      "mae": 9750.0088,
+      "coverage": null,
+      "overForecastRate": 0.3134,
+      "underForecastRate": 0.3396,
+      "betterThanBaselineRate": 1.0,
+      "passCount": null,
+      "warningCount": null,
+      "failCount": null,
+      "p0": null,
+      "p1": null,
+      "p2": null
+    },
+    {
+      "model": "v1.0_on_v1.1_forecastable_cohort",
+      "caseCount": 67665,
+      "actualTotal": 937311846.38,
+      "predictedTotal": 574046865.25,
+      "wape": 0.6451,
+      "smape": 1.1378,
+      "mae": 8935.9924,
+      "coverage": 0.4335,
+      "overForecastRate": 0.2643,
+      "underForecastRate": 0.3879,
+      "betterThanBaselineRate": 0.7431,
+      "passCount": 29915,
+      "warningCount": 19809,
+      "failCount": 17941,
+      "p0": 0,
+      "p1": 0,
+      "p2": 387
+    },
+    {
+      "model": "v1.1_on_v1.1_forecastable_cohort",
+      "caseCount": 67665,
+      "actualTotal": 937311846.38,
+      "predictedTotal": 577549469.21,
+      "wape": 0.6485,
+      "smape": 1.1301,
+      "mae": 8982.7856,
+      "coverage": 0.5562,
+      "overForecastRate": 0.2716,
+      "underForecastRate": 0.381,
+      "betterThanBaselineRate": 0.7423,
+      "passCount": 33038,
+      "warningCount": 16671,
+      "failCount": 17956,
+      "p0": 0,
+      "p1": 0,
+      "p2": 394
+    },
+    {
+      "model": "model_e_selector_on_v1.1_forecastable_cohort",
+      "caseCount": 67665,
+      "actualTotal": 937311846.38,
+      "predictedTotal": 589238761.35,
+      "wape": 0.6469,
+      "smape": 1.1242,
+      "mae": 8961.5438,
+      "coverage": 0.4332,
+      "overForecastRate": 0.2644,
+      "underForecastRate": 0.3876,
+      "betterThanBaselineRate": 0.7435,
+      "passCount": 29461,
+      "warningCount": 20486,
+      "failCount": 17718,
+      "p0": null,
+      "p1": null,
+      "p2": null
+    }
+  ],
+  "commonForecastableIntersectionRows": [
+    {
+      "model": "v1.0_common_forecastable_intersection",
+      "caseCount": 66495,
+      "actualTotal": 923304578.35,
+      "predictedTotal": 574046865.25,
+      "wape": 0.6397,
+      "smape": 1.1231,
+      "mae": 8882.5725,
+      "coverage": 0.4411,
+      "overForecastRate": 0.269,
+      "underForecastRate": 0.3835,
+      "betterThanBaselineRate": 0.7425,
+      "passCount": 29474,
+      "warningCount": 19590,
+      "failCount": 17431,
+      "p0": null,
+      "p1": null,
+      "p2": null
+    },
+    {
+      "model": "v1.1_common_forecastable_intersection",
+      "caseCount": 66495,
+      "actualTotal": 923304578.35,
+      "predictedTotal": 574046865.25,
+      "wape": 0.6397,
+      "smape": 1.1231,
+      "mae": 8882.5725,
+      "coverage": 0.5521,
+      "overForecastRate": 0.269,
+      "underForecastRate": 0.3835,
+      "betterThanBaselineRate": 0.7425,
+      "passCount": 32518,
+      "warningCount": 16546,
+      "failCount": 17431,
+      "p0": null,
+      "p1": null,
+      "p2": null
+    }
+  ],
+  "highValuePerformance": [
+    {
+      "bucket": "top1",
+      "caseCount": 1495,
+      "wape": 0.5183,
+      "smape": 0.753,
+      "mae": 181716.8107,
+      "coverage": 0.4863,
+      "failCount": 294
+    },
+    {
+      "bucket": "top5",
+      "caseCount": 8125,
+      "wape": 0.6084,
+      "smape": 0.9631,
+      "mae": 59550.8112,
+      "coverage": 0.4772,
+      "failCount": 2100
+    },
+    {
+      "bucket": "top10",
+      "caseCount": 14690,
+      "wape": 0.6232,
+      "smape": 0.9822,
+      "mae": 36343.4955,
+      "coverage": 0.4669,
+      "failCount": 3827
+    }
+  ],
+  "v1_1BetterThanBaselineOnSameCohort": true,
+  "safeOutputBoundary": {
+    "aggregateOnly": true,
+    "anonymousIdsOnly": true,
+    "sensitiveEntityNamesIncluded": false,
+    "sourceRowLevelDetailsIncluded": false,
+    "connectionSecretsIncluded": false,
+    "privateBusinessReviewPackAvailable": true
+  }
+}

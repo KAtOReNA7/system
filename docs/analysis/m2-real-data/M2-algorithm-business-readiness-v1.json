@@ -1,0 +1,49 @@
+{
+  "schema": "m2.algorithm_business_readiness.v1",
+  "generatedAt": "2026-06-24T03:49:17.934875+00:00",
+  "businessReviewReadiness": "not_ready",
+  "m3Allowed": false,
+  "reason": "M3 remains blocked until model pass, review decisions, release gates, and formal approval are complete.",
+  "readinessGroups": [
+    {
+      "group": "high_confidence_stable_growth_top_high",
+      "status": "business_review_ready",
+      "reason": "high/medium confidence and enough history"
+    },
+    {
+      "group": "inactive_long_tail_D_E_low_revenue",
+      "status": "low_confidence_manual_review",
+      "reason": "zero-inflated guard prevents overforecast but business action remains manual"
+    },
+    {
+      "group": "insufficient_history",
+      "status": "manual_review_required",
+      "reason": "model uses shrinkage prior and cannot be formal without more months"
+    },
+    {
+      "group": "data_gap_or_copyright_fallback",
+      "status": "manual_review_required",
+      "reason": "forecast may exist but source readiness is incomplete"
+    },
+    {
+      "group": "abnormal_spike_or_oneoff",
+      "status": "manual_review_required",
+      "reason": "spike damping is deterministic but business cause remains unconfirmed"
+    }
+  ],
+  "selectedOutputConfidenceDistribution": {
+    "high": 253,
+    "medium": 952,
+    "low": 1065,
+    "blocked_for_business_use": 784
+  },
+  "safeOutputBoundary": {
+    "rawRowsWritten": false,
+    "realWorkNamesWritten": false,
+    "realAuthorNamesWritten": false,
+    "realChannelNamesWritten": false,
+    "connectionStringsWritten": false,
+    "notFinalReleaseApproval": true,
+    "m3Started": false
+  }
+}

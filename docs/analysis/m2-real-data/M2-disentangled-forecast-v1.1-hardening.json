@@ -1,0 +1,260 @@
+{
+  "schema": "m2.disentangled_forecast_v1_1_hardening.v1",
+  "generatedAt": "2026-06-24T08:12:17.490457+00:00",
+  "candidateVersion": "m2-realdata-dev-disentangled-forecast-v1.1-conditional",
+  "verdict": "CONDITIONAL PASS",
+  "v1_0Shortfalls": [
+    {
+      "metric": "intervalCoverage",
+      "value": 0.4411,
+      "requiredForPass": 0.5
+    },
+    {
+      "metric": "trueForecastBlockedRevenueShare",
+      "value": 0.2151,
+      "requiredForPass": 0.2
+    }
+  ],
+  "v1_0VsV1_1": [
+    {
+      "version": "v1.0",
+      "verdict": "CONDITIONAL PASS",
+      "candidateVersion": "m2-realdata-dev-disentangled-forecast-v1.0-conditional",
+      "forecastableRevenueShare": 0.7666,
+      "trueBlockedRevenueShare": 0.2151,
+      "wape": 0.6397,
+      "baselineWape": 0.6848,
+      "coverage": 0.4411,
+      "p0": 0,
+      "p1": 0,
+      "p2": 387,
+      "highConfidenceSpreadP75": null,
+      "nonLowConfidenceSpreadP75": null
+    },
+    {
+      "version": "v1.1",
+      "verdict": "CONDITIONAL PASS",
+      "candidateVersion": "m2-realdata-dev-disentangled-forecast-v1.1-conditional",
+      "forecastableRevenueShare": 0.7779,
+      "trueBlockedRevenueShare": 0.2038,
+      "wape": 0.6485,
+      "baselineWape": 0.7039,
+      "coverage": 0.5562,
+      "p0": 0,
+      "p1": 0,
+      "p2": 394,
+      "highConfidenceSpreadP75": 1.48,
+      "nonLowConfidenceSpreadP75": 1.95
+    }
+  ],
+  "gateBoundaryChanges": {
+    "downgradedToConservativeCount": 18,
+    "downgradedRevenueShare": 0.011,
+    "rule": "only active unresolved-spike rows with enough recent revenue are downgraded to conservative numeric forecast",
+    "changesByMateriality": {
+      "middle_40_percent": 14,
+      "top_10_percent": 2,
+      "top_1_percent": 1,
+      "top_5_percent": 1
+    }
+  },
+  "intervalCalibration": {
+    "method": "segmented residual quantile calibration by status, horizon, confidence, and revenue bucket",
+    "fixedGlobalMultiplierUsed": false,
+    "uniformWideningUsed": false,
+    "segmentRows": [
+      {
+        "segmentType": "confidence",
+        "segment": "blocked_for_business_use",
+        "caseCount": 11696,
+        "coverageBefore": 0.5877,
+        "coverageAfter": 0.5866,
+        "spreadP75After": 2.8
+      },
+      {
+        "segmentType": "confidence",
+        "segment": "high",
+        "caseCount": 5300,
+        "coverageBefore": 0.1592,
+        "coverageAfter": 0.2258,
+        "spreadP75After": 1.48
+      },
+      {
+        "segmentType": "confidence",
+        "segment": "low",
+        "caseCount": 35962,
+        "coverageBefore": 0.5284,
+        "coverageAfter": 0.6828,
+        "spreadP75After": 3.4
+      },
+      {
+        "segmentType": "confidence",
+        "segment": "medium",
+        "caseCount": 14707,
+        "coverageBefore": 0.2092,
+        "coverageAfter": 0.3417,
+        "spreadP75After": 1.95
+      },
+      {
+        "segmentType": "forecastabilityStatus",
+        "segment": "conservative_numeric_forecast",
+        "caseCount": 26000,
+        "coverageBefore": 0.46,
+        "coverageAfter": 0.7069,
+        "spreadP75After": 3.4
+      },
+      {
+        "segmentType": "forecastabilityStatus",
+        "segment": "numeric_forecast_eligible",
+        "caseCount": 41665,
+        "coverageBefore": 0.4281,
+        "coverageAfter": 0.4622,
+        "spreadP75After": 2.8
+      },
+      {
+        "segmentType": "horizonMonths",
+        "segment": "12",
+        "caseCount": 13533,
+        "coverageBefore": 0.4348,
+        "coverageAfter": 0.5429,
+        "spreadP75After": 3.4
+      },
+      {
+        "segmentType": "horizonMonths",
+        "segment": "18",
+        "caseCount": 12492,
+        "coverageBefore": 0.3821,
+        "coverageAfter": 0.4785,
+        "spreadP75After": 3.4
+      },
+      {
+        "segmentType": "horizonMonths",
+        "segment": "24",
+        "caseCount": 11451,
+        "coverageBefore": 0.3355,
+        "coverageAfter": 0.4229,
+        "spreadP75After": 3.4
+      },
+      {
+        "segmentType": "horizonMonths",
+        "segment": "3",
+        "caseCount": 15615,
+        "coverageBefore": 0.5217,
+        "coverageAfter": 0.6724,
+        "spreadP75After": 3.4
+      },
+      {
+        "segmentType": "horizonMonths",
+        "segment": "6",
+        "caseCount": 14574,
+        "coverageBefore": 0.4907,
+        "coverageAfter": 0.6155,
+        "spreadP75After": 3.4
+      },
+      {
+        "segmentType": "lifecycleAtCutoff",
+        "segment": "declining",
+        "caseCount": 5631,
+        "coverageBefore": 0.1454,
+        "coverageAfter": 0.4665,
+        "spreadP75After": 3.4
+      },
+      {
+        "segmentType": "lifecycleAtCutoff",
+        "segment": "growth",
+        "caseCount": 7651,
+        "coverageBefore": 0.2358,
+        "coverageAfter": 0.4486,
+        "spreadP75After": 3.4
+      },
+      {
+        "segmentType": "lifecycleAtCutoff",
+        "segment": "inactive",
+        "caseCount": 886,
+        "coverageBefore": 0.5474,
+        "coverageAfter": 0.5948,
+        "spreadP75After": 3.4
+      },
+      {
+        "segmentType": "lifecycleAtCutoff",
+        "segment": "insufficient_history",
+        "caseCount": 36673,
+        "coverageBefore": 0.639,
+        "coverageAfter": 0.6485,
+        "spreadP75After": 3.4
+      },
+      {
+        "segmentType": "lifecycleAtCutoff",
+        "segment": "long_tail",
+        "caseCount": 8,
+        "coverageBefore": 0.0,
+        "coverageAfter": 0.0,
+        "spreadP75After": 2.8
+      },
+      {
+        "segmentType": "lifecycleAtCutoff",
+        "segment": "rebound",
+        "caseCount": 3811,
+        "coverageBefore": 0.2099,
+        "coverageAfter": 0.4448,
+        "spreadP75After": 3.4
+      },
+      {
+        "segmentType": "lifecycleAtCutoff",
+        "segment": "stable",
+        "caseCount": 13005,
+        "coverageBefore": 0.1889,
+        "coverageAfter": 0.4285,
+        "spreadP75After": 1.95
+      },
+      {
+        "segmentType": "revenueScaleAtCutoff",
+        "segment": "high",
+        "caseCount": 11980,
+        "coverageBefore": 0.1949,
+        "coverageAfter": 0.4164,
+        "spreadP75After": 3.4
+      },
+      {
+        "segmentType": "revenueScaleAtCutoff",
+        "segment": "long_tail",
+        "caseCount": 32702,
+        "coverageBefore": 0.7039,
+        "coverageAfter": 0.7039,
+        "spreadP75After": 3.4
+      },
+      {
+        "segmentType": "revenueScaleAtCutoff",
+        "segment": "low",
+        "caseCount": 2536,
+        "coverageBefore": 0.0442,
+        "coverageAfter": 0.0808,
+        "spreadP75After": 3.4
+      },
+      {
+        "segmentType": "revenueScaleAtCutoff",
+        "segment": "mid",
+        "caseCount": 16539,
+        "coverageBefore": 0.2064,
+        "coverageAfter": 0.4673,
+        "spreadP75After": 3.4
+      },
+      {
+        "segmentType": "revenueScaleAtCutoff",
+        "segment": "top",
+        "caseCount": 3908,
+        "coverageBefore": 0.2346,
+        "coverageAfter": 0.4335,
+        "spreadP75After": 1.95
+      }
+    ]
+  },
+  "safeOutputBoundary": {
+    "aggregateOnly": true,
+    "anonymousIdsOnly": true,
+    "sensitiveEntityNamesIncluded": false,
+    "sourceRowLevelDetailsIncluded": false,
+    "connectionSecretsIncluded": false,
+    "privateDetailAvailable": true
+  }
+}

@@ -1,0 +1,87 @@
+{
+  "schema": "m2.v1_1_conditional_business_review_package_summary.v1",
+  "generatedAt": "2026-06-24T10:00:02.848759+00:00",
+  "candidateVersion": "m2-realdata-dev-disentangled-forecast-v1.1-conditional",
+  "freezeType": "conditional business-review baseline",
+  "limitedBusinessReviewReady": true,
+  "businessReviewPackGenerated": true,
+  "businessReviewPackCommitted": false,
+  "requiredSheets": [
+    "00_read_me",
+    "01_executive_summary",
+    "02_forecastable_cohort_review",
+    "03_high_value_review",
+    "04_non_forecastable_cohort",
+    "05_formal_readiness_blocked_but_forecastable",
+    "06_business_action_guard",
+    "07_warning_and_p2_cases",
+    "08_user_decision_template"
+  ],
+  "metrics": {
+    "wape": 0.6485,
+    "baselineWape": 0.7039,
+    "coverage": 0.5562,
+    "p0": 0,
+    "p1": 0,
+    "p2": 394,
+    "forecastableRevenueShare": 0.7779,
+    "trueForecastBlockedRevenueShare": 0.2038,
+    "highConfidenceSpreadP75": 1.48,
+    "nonLowConfidenceSpreadP75": 1.95
+  },
+  "cohortCounts": {
+    "numeric_forecast_eligible": 641,
+    "conservative_numeric_forecast": 400,
+    "true_forecast_blocked": 533,
+    "observe_only_no_numeric_forecast": 1480,
+    "formalReadinessBlockedButForecastable": 742,
+    "businessActionGuardRows": 394
+  },
+  "cohortRevenueShares": {
+    "numeric_forecast_eligible": 0.6372,
+    "conservative_numeric_forecast": 0.1407,
+    "true_forecast_blocked": 0.2038,
+    "observe_only_no_numeric_forecast": 0.0183
+  },
+  "highValueAttention": [
+    {
+      "bucket": "top1",
+      "caseCount": 1495,
+      "wape": 0.5183,
+      "smape": 0.753,
+      "mae": 181716.8107,
+      "coverage": 0.4863,
+      "failCount": 294
+    },
+    {
+      "bucket": "top5",
+      "caseCount": 8125,
+      "wape": 0.6084,
+      "smape": 0.9631,
+      "mae": 59550.8112,
+      "coverage": 0.4772,
+      "failCount": 2100
+    },
+    {
+      "bucket": "top10",
+      "caseCount": 14690,
+      "wape": 0.6232,
+      "smape": 0.9822,
+      "mae": 36343.4955,
+      "coverage": 0.4669,
+      "failCount": 3827
+    }
+  ],
+  "backtestIntegrity": "PASS",
+  "recommendedNextStep": "business users review the private workbook and decide whether to accept v1.1 as a limited forecastable-cohort review baseline",
+  "m3Allowed": false,
+  "notFinalReleaseApproval": true,
+  "safeOutputBoundary": {
+    "aggregateOnly": true,
+    "anonymousIdsOnly": true,
+    "sensitiveEntityNamesIncluded": false,
+    "sourceRowLevelDetailsIncluded": false,
+    "connectionSecretsIncluded": false,
+    "privateBusinessReviewPackAvailable": true
+  }
+}

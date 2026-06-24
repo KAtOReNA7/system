@@ -1,0 +1,180 @@
+{
+  "schema": "m2.disentangled_forecastability_coverage.v1",
+  "generatedAt": "2026-06-24T05:48:24.037573+00:00",
+  "oldGateSummary": [
+    {
+      "status": "numeric_forecast_eligible",
+      "count": 236,
+      "revenueTotal": 40525947.42,
+      "revenueShare": 0.3196
+    },
+    {
+      "status": "conservative_numeric_forecast",
+      "count": 222,
+      "revenueTotal": 10864310.76,
+      "revenueShare": 0.0857
+    },
+    {
+      "status": "observe_only_no_numeric_forecast",
+      "count": 302,
+      "revenueTotal": 1557900.93,
+      "revenueShare": 0.0123
+    },
+    {
+      "status": "manual_review_required",
+      "count": 2293,
+      "revenueTotal": 73846479.06,
+      "revenueShare": 0.5824
+    },
+    {
+      "status": "excluded_from_forecast_baseline",
+      "count": 1,
+      "revenueTotal": 0.0,
+      "revenueShare": 0.0
+    }
+  ],
+  "disentangledForecastabilitySummary": [
+    {
+      "status": "numeric_forecast_eligible",
+      "count": 641,
+      "revenueTotal": 80788039.95,
+      "revenueShare": 0.6372
+    },
+    {
+      "status": "conservative_numeric_forecast",
+      "count": 382,
+      "revenueTotal": 16410693.28,
+      "revenueShare": 0.1294
+    },
+    {
+      "status": "observe_only_no_numeric_forecast",
+      "count": 1480,
+      "revenueTotal": 2322443.15,
+      "revenueShare": 0.0183
+    },
+    {
+      "status": "true_forecast_blocked",
+      "count": 551,
+      "revenueTotal": 27273461.78,
+      "revenueShare": 0.2151
+    }
+  ],
+  "formalReadinessSummary": [
+    {
+      "status": "ready_for_local_algorithm_validation",
+      "count": 484,
+      "revenueTotal": 42450654.37,
+      "revenueShare": 0.3348
+    },
+    {
+      "status": "formal_release_blocked",
+      "count": 0,
+      "revenueTotal": 0.0,
+      "revenueShare": 0.0
+    },
+    {
+      "status": "waiver_required",
+      "count": 363,
+      "revenueTotal": 16145303.31,
+      "revenueShare": 0.1273
+    },
+    {
+      "status": "data_fix_required",
+      "count": 2207,
+      "revenueTotal": 68198680.49,
+      "revenueShare": 0.5379
+    },
+    {
+      "status": "mapping_activation_required",
+      "count": 0,
+      "revenueTotal": 0.0,
+      "revenueShare": 0.0
+    }
+  ],
+  "businessActionSummary": [
+    {
+      "status": "action_allowed",
+      "count": 636,
+      "revenueTotal": 47920691.94,
+      "revenueShare": 0.3779
+    },
+    {
+      "status": "manual_confirmation_required",
+      "count": 387,
+      "revenueTotal": 49278041.29,
+      "revenueShare": 0.3886
+    },
+    {
+      "status": "action_blocked",
+      "count": 551,
+      "revenueTotal": 27273461.78,
+      "revenueShare": 0.2151
+    },
+    {
+      "status": "observe_only",
+      "count": 1480,
+      "revenueTotal": 2322443.15,
+      "revenueShare": 0.0183
+    }
+  ],
+  "forecastableNumericIncludingConservative": {
+    "count": 1023,
+    "revenueShare": 0.7666
+  },
+  "numericForecastEligible": {
+    "count": 641,
+    "revenueShare": 0.6372
+  },
+  "conservativeForecast": {
+    "count": 382,
+    "revenueShare": 0.1294
+  },
+  "trueForecastBlocked": {
+    "count": 551,
+    "revenueShare": 0.2151
+  },
+  "topRevenueCoverage": {
+    "top1Percent": {
+      "workCount": 30,
+      "forecastableCount": 22,
+      "forecastableCountShare": 0.7333,
+      "forecastableRevenueShareWithinBucket": 0.7937
+    },
+    "top5Percent": {
+      "workCount": 152,
+      "forecastableCount": 123,
+      "forecastableCountShare": 0.8092,
+      "forecastableRevenueShareWithinBucket": 0.8019
+    },
+    "top10Percent": {
+      "workCount": 305,
+      "forecastableCount": 222,
+      "forecastableCountShare": 0.7279,
+      "forecastableRevenueShareWithinBucket": 0.79
+    }
+  },
+  "oldManualReviewReclassified": [
+    {
+      "category": "formal_readiness_blocker_only",
+      "count": 1743,
+      "revenueShareWithinOldManual": 0.6307,
+      "revenueShareTotal": 0.3673
+    },
+    {
+      "category": "true_forecastability_blocker",
+      "count": 550,
+      "revenueShareWithinOldManual": 0.3693,
+      "revenueShareTotal": 0.2151
+    }
+  ],
+  "safeOutputBoundary": {
+    "rawRowsWritten": false,
+    "realWorkNamesWritten": false,
+    "realAuthorNamesWritten": false,
+    "realChannelNamesWritten": false,
+    "connectionStringsWritten": false,
+    "privateWorkbookGitignored": true,
+    "notFinalReleaseApproval": true,
+    "m3Started": false
+  }
+}

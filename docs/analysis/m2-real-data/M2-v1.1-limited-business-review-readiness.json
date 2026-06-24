@@ -1,0 +1,36 @@
+{
+  "schema": "m2.v1_1_limited_business_review_readiness.v1",
+  "generatedAt": "2026-06-24T10:00:02.841640+00:00",
+  "limitedBusinessReviewReady": true,
+  "candidateVersion": "m2-realdata-dev-disentangled-forecast-v1.1-conditional",
+  "forecastableRevenueShare": 0.7779,
+  "trueForecastBlockedRevenueShare": 0.2038,
+  "businessReviewBoundary": [
+    {
+      "cohort": "numeric_forecast_eligible",
+      "allowedUse": "limited M2 business review of numeric forecast"
+    },
+    {
+      "cohort": "conservative_numeric_forecast",
+      "allowedUse": "reference forecast only; business action still requires guard checks"
+    },
+    {
+      "cohort": "true_forecast_blocked",
+      "allowedUse": "no business-usable numeric forecast"
+    },
+    {
+      "cohort": "observe_only_no_numeric_forecast",
+      "allowedUse": "observe only; no business action forecast"
+    }
+  ],
+  "m3Allowed": false,
+  "notFinalReleaseApproval": true,
+  "safeOutputBoundary": {
+    "aggregateOnly": true,
+    "anonymousIdsOnly": true,
+    "sensitiveEntityNamesIncluded": false,
+    "sourceRowLevelDetailsIncluded": false,
+    "connectionSecretsIncluded": false,
+    "privateBusinessReviewPackAvailable": true
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "schema": "m2.v1_1_business_review_user_guide.v1",
+  "generatedAt": "2026-06-24T10:00:02.861976+00:00",
+  "candidateVersion": "m2-realdata-dev-disentangled-forecast-v1.1-conditional",
+  "audience": "business reviewer and next Codex session",
+  "reviewPurpose": "confirm whether the conditional v1.1 forecast baseline is acceptable for limited M2 business review on forecastable cohorts only",
+  "howToUseWorkbook": [
+    {
+      "sheet": "00_read_me",
+      "use": "read the candidate boundary, non-release status, cohort definitions, and business decision task"
+    },
+    {
+      "sheet": "01_executive_summary",
+      "use": "check WAPE, baseline comparison, coverage, P0/P1/P2, applicable scope, and remaining restrictions"
+    },
+    {
+      "sheet": "02_forecastable_cohort_review",
+      "use": "review anonymous forecastable rows and decide whether forecast confidence/action labels are acceptable"
+    },
+    {
+      "sheet": "03_high_value_review",
+      "use": "inspect high-value anonymous cases because top revenue coverage remains weaker than overall coverage"
+    },
+    {
+      "sheet": "04_non_forecastable_cohort",
+      "use": "confirm that blocked or observe-only rows do not receive business-usable numeric forecasts"
+    },
+    {
+      "sheet": "05_formal_readiness_blocked_but_forecastable",
+      "use": "separate local forecast validation from formal release blockers"
+    },
+    {
+      "sheet": "06_business_action_guard",
+      "use": "confirm action-bearing suggestions still require manual business review before execution"
+    },
+    {
+      "sheet": "07_warning_and_p2_cases",
+      "use": "review warning/P2 cases before accepting the conditional baseline"
+    },
+    {
+      "sheet": "08_user_decision_template",
+      "use": "record group-level accept/reject/pending decisions, reviewer reason, reviewer name, and date"
+    }
+  ],
+  "decisionOptions": [
+    "accept_limited_business_review_baseline",
+    "accept_with_manual_high_value_review",
+    "reject_for_algorithm_rework",
+    "keep_pending"
+  ],
+  "mustNotDo": [
+    "do not use this as final release approval",
+    "do not use non-forecastable rows for numeric business decisions",
+    "do not enter M3 unless the user explicitly authorizes parallel planning after accepting the baseline",
+    "do not commit the private workbook"
+  ],
+  "summaryMetrics": {
+    "wape": 0.6485,
+    "baselineWape": 0.7039,
+    "coverage": 0.5562,
+    "p0": 0,
+    "p1": 0,
+    "p2": 394,
+    "forecastableRevenueShare": 0.7779,
+    "trueForecastBlockedRevenueShare": 0.2038,
+    "highConfidenceSpreadP75": 1.48,
+    "nonLowConfidenceSpreadP75": 1.95
+  },
+  "safeOutputBoundary": {
+    "aggregateOnly": true,
+    "anonymousIdsOnly": true,
+    "sensitiveEntityNamesIncluded": false,
+    "sourceRowLevelDetailsIncluded": false,
+    "connectionSecretsIncluded": false,
+    "privateBusinessReviewPackAvailable": true
+  }
+}

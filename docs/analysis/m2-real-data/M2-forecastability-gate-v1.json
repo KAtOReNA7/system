@@ -1,0 +1,178 @@
+{
+  "schema": "m2.forecastability_gate.v1",
+  "generatedAt": "2026-06-24T04:29:02.095754+00:00",
+  "gateStatuses": [
+    "numeric_forecast_eligible",
+    "conservative_numeric_forecast",
+    "observe_only_no_numeric_forecast",
+    "manual_review_required",
+    "excluded_from_forecast_baseline"
+  ],
+  "summaryByStatus": [
+    {
+      "forecastabilityStatus": "numeric_forecast_eligible",
+      "count": 236,
+      "revenueTotal": 40525947.42,
+      "revenueShare": 0.3196,
+      "confidenceDistribution": {
+        "high": 236,
+        "medium": 0,
+        "low": 0,
+        "blocked_for_business_use": 0
+      },
+      "canUseNumericForecastCount": 236,
+      "canUseForBusinessReviewCount": 236
+    },
+    {
+      "forecastabilityStatus": "conservative_numeric_forecast",
+      "count": 222,
+      "revenueTotal": 10864310.76,
+      "revenueShare": 0.0857,
+      "confidenceDistribution": {
+        "high": 0,
+        "medium": 82,
+        "low": 140,
+        "blocked_for_business_use": 0
+      },
+      "canUseNumericForecastCount": 222,
+      "canUseForBusinessReviewCount": 0
+    },
+    {
+      "forecastabilityStatus": "observe_only_no_numeric_forecast",
+      "count": 302,
+      "revenueTotal": 1557900.93,
+      "revenueShare": 0.0123,
+      "confidenceDistribution": {
+        "high": 0,
+        "medium": 0,
+        "low": 302,
+        "blocked_for_business_use": 0
+      },
+      "canUseNumericForecastCount": 0,
+      "canUseForBusinessReviewCount": 0
+    },
+    {
+      "forecastabilityStatus": "manual_review_required",
+      "count": 2293,
+      "revenueTotal": 73846479.06,
+      "revenueShare": 0.5824,
+      "confidenceDistribution": {
+        "high": 0,
+        "medium": 0,
+        "low": 0,
+        "blocked_for_business_use": 2293
+      },
+      "canUseNumericForecastCount": 0,
+      "canUseForBusinessReviewCount": 0
+    },
+    {
+      "forecastabilityStatus": "excluded_from_forecast_baseline",
+      "count": 1,
+      "revenueTotal": 0.0,
+      "revenueShare": 0.0,
+      "confidenceDistribution": {
+        "high": 0,
+        "medium": 0,
+        "low": 0,
+        "blocked_for_business_use": 1
+      },
+      "canUseNumericForecastCount": 0,
+      "canUseForBusinessReviewCount": 0
+    }
+  ],
+  "summaryByMateriality": [
+    {
+      "materialityBucket": "bottom_50_percent",
+      "count": 1141,
+      "revenueShare": 0.0018,
+      "statusDistribution": {
+        "numeric_forecast_eligible": 0,
+        "conservative_numeric_forecast": 0,
+        "observe_only_no_numeric_forecast": 218,
+        "manual_review_required": 923,
+        "excluded_from_forecast_baseline": 0
+      }
+    },
+    {
+      "materialityBucket": "middle_40_percent",
+      "count": 1222,
+      "revenueShare": 0.1111,
+      "statusDistribution": {
+        "numeric_forecast_eligible": 170,
+        "conservative_numeric_forecast": 182,
+        "observe_only_no_numeric_forecast": 56,
+        "manual_review_required": 814,
+        "excluded_from_forecast_baseline": 0
+      }
+    },
+    {
+      "materialityBucket": "near_zero",
+      "count": 386,
+      "revenueShare": 0.0,
+      "statusDistribution": {
+        "numeric_forecast_eligible": 0,
+        "conservative_numeric_forecast": 0,
+        "observe_only_no_numeric_forecast": 21,
+        "manual_review_required": 364,
+        "excluded_from_forecast_baseline": 1
+      }
+    },
+    {
+      "materialityBucket": "top_10_percent",
+      "count": 153,
+      "revenueShare": 0.0781,
+      "statusDistribution": {
+        "numeric_forecast_eligible": 26,
+        "conservative_numeric_forecast": 20,
+        "observe_only_no_numeric_forecast": 4,
+        "manual_review_required": 103,
+        "excluded_from_forecast_baseline": 0
+      }
+    },
+    {
+      "materialityBucket": "top_1_percent",
+      "count": 30,
+      "revenueShare": 0.5267,
+      "statusDistribution": {
+        "numeric_forecast_eligible": 5,
+        "conservative_numeric_forecast": 2,
+        "observe_only_no_numeric_forecast": 0,
+        "manual_review_required": 23,
+        "excluded_from_forecast_baseline": 0
+      }
+    },
+    {
+      "materialityBucket": "top_5_percent",
+      "count": 122,
+      "revenueShare": 0.2823,
+      "statusDistribution": {
+        "numeric_forecast_eligible": 35,
+        "conservative_numeric_forecast": 18,
+        "observe_only_no_numeric_forecast": 3,
+        "manual_review_required": 66,
+        "excluded_from_forecast_baseline": 0
+      }
+    }
+  ],
+  "numericForecastEligible": {
+    "count": 236,
+    "revenueShare": 0.3196
+  },
+  "forecastableNumericIncludingConservative": {
+    "count": 458,
+    "revenueShare": 0.4053
+  },
+  "observeOnlyCount": 302,
+  "manualReviewCount": 2293,
+  "excludedCount": 1,
+  "safeOutputBoundary": {
+    "rawRowsWritten": false,
+    "realWorkNamesWritten": false,
+    "realAuthorNamesWritten": false,
+    "realChannelNamesWritten": false,
+    "connectionStringsWritten": false,
+    "privateWorkbookGitignored": true,
+    "notFinalReleaseApproval": true,
+    "m3Started": false
+  }
+}
