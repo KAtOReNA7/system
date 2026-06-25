@@ -1,0 +1,42 @@
+{
+  "schema": "m2.random_20_year_evaluation_after_dual_source_staging.v2.summary.public",
+  "generatedAt": "2026-06-25T14:21:13+00:00",
+  "currentHead": "25b83a6e88c64a2dcb3544575a1ccf73aebc564a",
+  "originMain": "25b83a6e88c64a2dcb3544575a1ccf73aebc564a",
+  "safeOutputBoundary": {
+    "sanitizedAggregateOnly": true,
+    "realWorkNamesIncluded": false,
+    "authorNamesIncluded": false,
+    "channelNamesIncluded": false,
+    "rawLedgerRowsIncluded": false,
+    "privateDetailsStoredOnlyInGitignoredOutput": true,
+    "formalMasterDataWritten": false,
+    "databaseConnected": false,
+    "databaseWritten": false,
+    "m3Entered": false
+  },
+  "payload": {
+    "rowCount": 20,
+    "stagingAffectedRows": 10,
+    "copyrightTermForecastRows": 7,
+    "operatingWindowRows": 13,
+    "yearsCovered": [
+      "2017",
+      "2018",
+      "2019",
+      "2020",
+      "2021",
+      "2022"
+    ],
+    "sourceCohortsCovered": {
+      "mixed_or_uncertain_cohort": 6,
+      "publication_cohort": 5,
+      "unknown": 4,
+      "web_original_cohort": 5
+    },
+    "privateWorkbookPath": "data\\private-output\\m2-business-review\\M2-v1.1-random-20-year-evaluation-after-dual-source-staging-v2-cn.xlsx",
+    "privateSourceJsonPath": "data\\private-output\\m2-business-review\\M2-v1.1-random-20-year-evaluation-after-dual-source-staging-v2-cn-source.json",
+    "gitignored": true,
+    "publicReportSanitized": true
+  }
+}

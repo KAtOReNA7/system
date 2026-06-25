@@ -1,0 +1,39 @@
+{
+  "schema": "m2.random_20_after_dual_source_staging_summary.v1.public",
+  "generatedAt": "2026-06-25T14:21:22+00:00",
+  "currentHead": "25b83a6e88c64a2dcb3544575a1ccf73aebc564a",
+  "originMain": "25b83a6e88c64a2dcb3544575a1ccf73aebc564a",
+  "safeOutputBoundary": {
+    "sanitizedAggregateOnly": true,
+    "realWorkNamesIncluded": false,
+    "authorNamesIncluded": false,
+    "channelNamesIncluded": false,
+    "rawLedgerRowsIncluded": false,
+    "privateDetailsStoredOnlyInGitignoredOutput": true,
+    "databaseConnected": false,
+    "databaseWritten": false,
+    "formalMasterDataWritten": false,
+    "m3Entered": false
+  },
+  "payload": {
+    "sourceWorkbook": "M2-v1.1-random-20-year-evaluation-cn.xlsx",
+    "outputWorkbook": "data/private-output/m2-business-review/M2-v1.1-random-20-year-evaluation-after-dual-source-staging-cn.xlsx",
+    "rowCount": 20,
+    "matchedRows": 18,
+    "privateWorkbookGitignored": true,
+    "formalMasterDataWritten": false,
+    "m3Entered": false,
+    "safeOutputBoundary": {
+      "sanitizedAggregateOnly": true,
+      "realWorkNamesIncluded": false,
+      "authorNamesIncluded": false,
+      "channelNamesIncluded": false,
+      "rawLedgerRowsIncluded": false,
+      "privateDetailsStoredOnlyInGitignoredOutput": true,
+      "databaseConnected": false,
+      "databaseWritten": false,
+      "formalMasterDataWritten": false,
+      "m3Entered": false
+    }
+  }
+}

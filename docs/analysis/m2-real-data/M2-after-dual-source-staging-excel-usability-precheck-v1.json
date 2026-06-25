@@ -1,0 +1,87 @@
+{
+  "schema": "m2.after_dual_source_staging_excel_usability_precheck.v1",
+  "generatedAt": "2026-06-25T14:21:52.556189+00:00",
+  "currentHead": "25b83a6e88c64a2dcb3544575a1ccf73aebc564a",
+  "originMain": "25b83a6e88c64a2dcb3544575a1ccf73aebc564a",
+  "operatorTask": {
+    "path": "data\\private-output\\m2-business-review\\m2-v1.1-30-work-operator-task-pack-cn-after-dual-source-staging-v3.xlsx",
+    "originalLockedPath": "data\\private-output\\m2-business-review\\m2-v1.1-30-work-operator-task-pack-cn-after-dual-source-staging-v2.xlsx",
+    "sourceJsonPath": "data\\private-output\\m2-business-review\\m2-v1.1-30-work-operator-task-pack-cn-after-dual-source-staging-v2-source.json",
+    "xlsxExists": true,
+    "xlsxZipValid": true,
+    "fillable": true,
+    "taskRowCount": 30,
+    "nonUserSampleCount": 25,
+    "sampleBreakdown": {
+      "系统分层样本": 20,
+      "用户指定作品": 5,
+      "高风险边界样本": 5
+    },
+    "requiredColumnMissing": [],
+    "structuralBlankCounts": {},
+    "dataGapBlankCounts": {
+      "standardWorkIdButMissingAuthor": 2
+    },
+    "mainReadingCodeHits": [],
+    "canRoundTripUserFeedbackByStandardWorkId": true,
+    "anonymousMatchingIssue": false,
+    "detailRowCount": 25
+  },
+  "random20": {
+    "path": "data\\private-output\\m2-business-review\\M2-v1.1-random-20-year-evaluation-after-dual-source-staging-v3-cn.xlsx",
+    "originalPath": "data\\private-output\\m2-business-review\\M2-v1.1-random-20-year-evaluation-after-dual-source-staging-v2-cn.xlsx",
+    "sourceJsonPath": "data\\private-output\\m2-business-review\\M2-v1.1-random-20-year-evaluation-after-dual-source-staging-v2-cn-source.json",
+    "xlsxExists": true,
+    "xlsxZipValid": true,
+    "readable": true,
+    "rowCount": 20,
+    "yearsCovered": [
+      "2017",
+      "2018",
+      "2019",
+      "2020",
+      "2021",
+      "2022"
+    ],
+    "yearCoverageCount": 6,
+    "rowsWithStandardWorkId": 20,
+    "rowsWithWorkName": 20,
+    "rowsWithAuthor": 14,
+    "forecastOutputTypeDistribution": {
+      "运营窗口预测（待补版权到期）": 13,
+      "版权期预测": 7
+    },
+    "requiredColumnMissing": [],
+    "mainReadingCodeHits": [],
+    "blankReasonDistribution": {
+      "缺版权到期": 13
+    },
+    "bugLikeBlankCounts": {},
+    "dataGapBlankCounts": {
+      "standardWorkIdButMissingAuthor": 6
+    }
+  },
+  "bothWorkbooksCanBeGivenToUser": true,
+  "anonymousMatchingIssue": false,
+  "mainReadingCodeIssue": false,
+  "unreasonableBlankIssue": false,
+  "userShouldFillFields": [
+    "运营判断：预测是否可信",
+    "运营判断：评级是否合理",
+    "运营判断：建议是否可执行",
+    "运营发现的问题类型",
+    "运营建议修正",
+    "是否应进入M4校准案例池"
+  ],
+  "m3Entered": false,
+  "privateWorkbookCommitted": false,
+  "safeOutputBoundary": {
+    "sanitizedAggregateOnly": true,
+    "realWorkNamesIncluded": false,
+    "authorNamesIncluded": false,
+    "channelNamesIncluded": false,
+    "rawLedgerRowsIncluded": false,
+    "databaseConnected": false,
+    "databaseWritten": false
+  }
+}

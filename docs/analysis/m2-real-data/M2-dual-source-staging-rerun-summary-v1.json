@@ -1,0 +1,107 @@
+{
+  "schema": "m2.dual_source_staging_rerun_summary.v1.public",
+  "generatedAt": "2026-06-25T14:21:13+00:00",
+  "currentHead": "25b83a6e88c64a2dcb3544575a1ccf73aebc564a",
+  "originMain": "25b83a6e88c64a2dcb3544575a1ccf73aebc564a",
+  "safeOutputBoundary": {
+    "sanitizedAggregateOnly": true,
+    "realWorkNamesIncluded": false,
+    "authorNamesIncluded": false,
+    "channelNamesIncluded": false,
+    "rawLedgerRowsIncluded": false,
+    "privateDetailsStoredOnlyInGitignoredOutput": true,
+    "formalMasterDataWritten": false,
+    "databaseConnected": false,
+    "databaseWritten": false,
+    "m3Entered": false
+  },
+  "payload": {
+    "schema": "m2.dual_source_staging_rerun_summary.v1",
+    "generatedAt": "2026-06-25T14:19:58+00:00",
+    "currentHead": "25b83a6e88c64a2dcb3544575a1ccf73aebc564a",
+    "originMain": "25b83a6e88c64a2dcb3544575a1ccf73aebc564a",
+    "dualSourceStagingSignificantlyImprovesM2Inputs": true,
+    "formalCompletionStillBlocked": true,
+    "v1_1ConditionalStillValid": true,
+    "limitedM2BusinessReviewMoreReliable": true,
+    "remainingMissingExpiryNeedsManualBackfill": true,
+    "m3Entered": false,
+    "forecastOutputType": {
+      "copyrightTermForecastAfter": 2444,
+      "operatingWindowPendingAfter": 610,
+      "newCopyrightTermForecastWorks": 2444
+    },
+    "forecastability": {
+      "numeric_forecast_eligible": 644,
+      "conservative_numeric_forecast": 397,
+      "observe_only_no_numeric_forecast": 1480,
+      "true_forecast_blocked": 533,
+      "formalReadinessBlocked": 3054,
+      "businessActionManualConfirmation": 238,
+      "businessReviewReadyCohort": 1041
+    },
+    "businessReadiness": {
+      "forecastableCohortRevenueShare": 0.7779,
+      "businessReviewReadyCohort": 1041,
+      "businessReviewReadyRevenueShare": 0.7779
+    },
+    "operatorTaskPack": {
+      "taskRows": 30,
+      "systemRows": 20,
+      "userReservedRows": 5,
+      "highRiskRows": 5,
+      "hasStandardWorkIdColumn": true,
+      "canRoundTripUserFeedbackByStandardWorkId": true,
+      "privateWorkbookPath": "data\\private-output\\m2-business-review\\m2-v1.1-30-work-operator-task-pack-cn-after-dual-source-staging-v2.xlsx",
+      "privateSourceJsonPath": "data\\private-output\\m2-business-review\\m2-v1.1-30-work-operator-task-pack-cn-after-dual-source-staging-v2-source.json",
+      "gitignored": true,
+      "publicReportSanitized": true,
+      "matchedByOldAnonymousTaskCard": false
+    },
+    "random20": {
+      "rowCount": 20,
+      "stagingAffectedRows": 10,
+      "copyrightTermForecastRows": 7,
+      "operatingWindowRows": 13,
+      "yearsCovered": [
+        "2017",
+        "2018",
+        "2019",
+        "2020",
+        "2021",
+        "2022"
+      ],
+      "sourceCohortsCovered": {
+        "mixed_or_uncertain_cohort": 6,
+        "publication_cohort": 5,
+        "unknown": 4,
+        "web_original_cohort": 5
+      },
+      "privateWorkbookPath": "data\\private-output\\m2-business-review\\M2-v1.1-random-20-year-evaluation-after-dual-source-staging-v2-cn.xlsx",
+      "privateSourceJsonPath": "data\\private-output\\m2-business-review\\M2-v1.1-random-20-year-evaluation-after-dual-source-staging-v2-cn-source.json",
+      "gitignored": true,
+      "publicReportSanitized": true
+    },
+    "safeOutputBoundary": {
+      "sanitizedAggregateOnly": true,
+      "realWorkNamesIncluded": false,
+      "authorNamesIncluded": false,
+      "channelNamesIncluded": false,
+      "rawLedgerRowsIncluded": false,
+      "privateDetailsStoredOnlyInGitignoredOutput": true,
+      "formalMasterDataWritten": false,
+      "databaseConnected": false,
+      "databaseWritten": false,
+      "m3Entered": false
+    },
+    "prohibitedActionsConfirmed": {
+      "remoteProductionOrSharedDbConnected": false,
+      "formalMasterDataWritten": false,
+      "privateExcelCommitted": false,
+      "gitAddDotUsed": false,
+      "stashTouched": false,
+      "modelParametersChanged": false,
+      "m3Entered": false
+    }
+  }
+}

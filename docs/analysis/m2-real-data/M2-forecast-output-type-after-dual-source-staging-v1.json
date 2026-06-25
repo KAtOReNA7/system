@@ -1,0 +1,58 @@
+{
+  "schema": "m2.forecast_output_type_after_dual_source_staging.v1.public",
+  "generatedAt": "2026-06-25T14:21:21+00:00",
+  "currentHead": "25b83a6e88c64a2dcb3544575a1ccf73aebc564a",
+  "originMain": "25b83a6e88c64a2dcb3544575a1ccf73aebc564a",
+  "safeOutputBoundary": {
+    "sanitizedAggregateOnly": true,
+    "realWorkNamesIncluded": false,
+    "authorNamesIncluded": false,
+    "channelNamesIncluded": false,
+    "rawLedgerRowsIncluded": false,
+    "privateDetailsStoredOnlyInGitignoredOutput": true,
+    "databaseConnected": false,
+    "databaseWritten": false,
+    "formalMasterDataWritten": false,
+    "m3Entered": false
+  },
+  "payload": {
+    "schema": "m2.forecast_output_type_after_dual_source_staging.v1",
+    "scope": "estimated_after_local_file_level_staging",
+    "forecastOutputTypes": [
+      "copyright_term_forecast",
+      "operating_window_forecast_pending_expiry",
+      "formal_evaluation_blocked",
+      "insufficient_masterdata_observation_only"
+    ],
+    "beforeDistribution": {
+      "copyright_term_forecast": 0,
+      "operating_window_forecast_pending_expiry": 3054,
+      "formal_evaluation_blocked": 0,
+      "insufficient_masterdata_observation_only": 3054
+    },
+    "afterDistribution": {
+      "copyright_term_forecast": 2444,
+      "operating_window_forecast_pending_expiry": 610,
+      "formal_evaluation_blocked": 0,
+      "insufficient_masterdata_observation_only": 3054
+    },
+    "copyrightTermForecastIncreaseWorks": 2444,
+    "impactedWorksWithCopyrightEnd": 2444,
+    "requiresForecastOutputTypeRerun": true,
+    "formalEvaluationAllowed": false,
+    "formalMasterDataWritten": false,
+    "databaseWritten": false,
+    "safeOutputBoundary": {
+      "sanitizedAggregateOnly": true,
+      "realWorkNamesIncluded": false,
+      "authorNamesIncluded": false,
+      "channelNamesIncluded": false,
+      "rawLedgerRowsIncluded": false,
+      "privateDetailsStoredOnlyInGitignoredOutput": true,
+      "databaseConnected": false,
+      "databaseWritten": false,
+      "formalMasterDataWritten": false,
+      "m3Entered": false
+    }
+  }
+}

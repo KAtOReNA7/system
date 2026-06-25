@@ -1,6 +1,6 @@
 {
   "schema": "m2.disentangled_forecast_business_readiness.v1_1",
-  "generatedAt": "2026-06-24T08:12:17.490515+00:00",
+  "generatedAt": "2026-06-25T13:48:30.515469+00:00",
   "readiness": "limited_m2_business_review_ready_for_forecastable_cohort_only",
   "m3Allowed": false,
   "candidateVersion": "m2-realdata-dev-disentangled-forecast-v1.1-conditional",

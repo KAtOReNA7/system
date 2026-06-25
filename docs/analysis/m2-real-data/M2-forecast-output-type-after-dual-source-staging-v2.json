@@ -1,0 +1,101 @@
+{
+  "schema": "m2.forecast_output_type_after_dual_source_staging.v2.public",
+  "generatedAt": "2026-06-25T14:21:13+00:00",
+  "currentHead": "25b83a6e88c64a2dcb3544575a1ccf73aebc564a",
+  "originMain": "25b83a6e88c64a2dcb3544575a1ccf73aebc564a",
+  "safeOutputBoundary": {
+    "sanitizedAggregateOnly": true,
+    "realWorkNamesIncluded": false,
+    "authorNamesIncluded": false,
+    "channelNamesIncluded": false,
+    "rawLedgerRowsIncluded": false,
+    "privateDetailsStoredOnlyInGitignoredOutput": true,
+    "formalMasterDataWritten": false,
+    "databaseConnected": false,
+    "databaseWritten": false,
+    "m3Entered": false
+  },
+  "payload": {
+    "schema": "m2.forecast_output_type_after_dual_source_staging.v2",
+    "generatedAt": "2026-06-25T14:21:13+00:00",
+    "candidateVersion": "m2-realdata-dev-disentangled-forecast-v1.1-conditional",
+    "totalWorks": 3054,
+    "before": {
+      "copyright_term_forecast": 0,
+      "operating_window_forecast_pending_expiry": 3054,
+      "missingCopyrightEnd": 3054,
+      "remainingCopyrightMonthAvailable": 0
+    },
+    "after": {
+      "copyright_term_forecast": 2444,
+      "operating_window_forecast_pending_expiry": 610,
+      "perpetual_or_no_fixed_expiry_forecast": 0,
+      "relative_expiry_pending_anchor": 0,
+      "copyright_conflict_manual_review": 0,
+      "no_numeric_forecast": 420,
+      "missingCopyrightEnd": 610,
+      "remainingCopyrightMonthAvailable": 2444,
+      "renewalReviewReliable": 2444,
+      "ratingRemainingCopyrightAdjustmentAvailable": 2444
+    },
+    "delta": {
+      "newCopyrightTermForecastWorks": 2444,
+      "remainingMissingExpiryWorks": 610
+    },
+    "remainingMissingExpiryDistribution": [
+      {
+        "reason": "no_numeric_forecast",
+        "count": 420,
+        "revenue": 3652706.82,
+        "revenueShare": 0.0288
+      },
+      {
+        "reason": "missing_copyright_end",
+        "count": 190,
+        "revenue": 22867960.03,
+        "revenueShare": 0.1804
+      }
+    ],
+    "topRevenueMissingExpiry": [
+      {
+        "topN": 1,
+        "missingExpiryCount": 0,
+        "missingExpiryRevenue": 0.0,
+        "missingExpiryShareWithinTopN": 0.0,
+        "missingExpiryShareOfTotalRevenue": 0.0
+      },
+      {
+        "topN": 5,
+        "missingExpiryCount": 1,
+        "missingExpiryRevenue": 2546765.03,
+        "missingExpiryShareWithinTopN": 0.075,
+        "missingExpiryShareOfTotalRevenue": 0.0201
+      },
+      {
+        "topN": 10,
+        "missingExpiryCount": 2,
+        "missingExpiryRevenue": 4806540.32,
+        "missingExpiryShareWithinTopN": 0.1083,
+        "missingExpiryShareOfTotalRevenue": 0.0379
+      }
+    ],
+    "notes": {
+      "shortTermBacktestChangedByCopyrightEnd": false,
+      "copyrightTermForecastChanged": true,
+      "operatingWindowForecastChanged": true,
+      "modelParametersChanged": false
+    },
+    "safeOutputBoundary": {
+      "sanitizedAggregateOnly": true,
+      "realWorkNamesIncluded": false,
+      "authorNamesIncluded": false,
+      "channelNamesIncluded": false,
+      "rawLedgerRowsIncluded": false,
+      "privateDetailsStoredOnlyInGitignoredOutput": true,
+      "formalMasterDataWritten": false,
+      "databaseConnected": false,
+      "databaseWritten": false,
+      "m3Entered": false
+    }
+  }
+}

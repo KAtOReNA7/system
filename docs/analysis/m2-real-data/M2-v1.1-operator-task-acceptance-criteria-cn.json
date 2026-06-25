@@ -1,6 +1,6 @@
 {
   "schema": "m2.v1_1.operator_task_acceptance_criteria.cn.v1",
-  "generatedAt": "2026-06-24T15:46:28.867437+00:00",
+  "generatedAt": "2026-06-25T13:45:34.266146+00:00",
   "candidateVersion": "m2-realdata-dev-disentangled-forecast-v1.1-conditional",
   "passCriteria": [
     "严重违背业务常识 <= 2 部。",

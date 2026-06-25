@@ -1,0 +1,77 @@
+{
+  "schema": "m1.dual_source_auto_apply_rule.v2",
+  "generatedAt": "2026-06-25T12:53:26.488394+00:00",
+  "currentHead": "25b83a6e88c64a2dcb3544575a1ccf73aebc564a",
+  "originMain": "25b83a6e88c64a2dcb3544575a1ccf73aebc564a",
+  "safeOutputBoundary": {
+    "sanitizedAggregateOnly": true,
+    "realWorkNamesIncluded": false,
+    "authorNamesIncluded": false,
+    "channelNamesIncluded": false,
+    "rawLedgerRowsIncluded": false,
+    "privateDetailsStoredOnlyInGitignoredOutput": true,
+    "databaseConnected": false,
+    "formalMasterDataWritten": false,
+    "m3Entered": false
+  },
+  "payload": {
+    "schema": "m1.dual_source_auto_apply_rule.v2",
+    "status": "corrected_by_user_spotcheck_feedback",
+    "allowedAutoApplyFields": [
+      "authorName",
+      "copyrightEndDate",
+      "copyrightStartDate",
+      "standardWorkName"
+    ],
+    "neverAutoApplyFields": [
+      "classificationLevel1",
+      "classificationLevel2",
+      "classificationLevel3",
+      "requiredTags"
+    ],
+    "rules": {
+      "dualSourceConflict": {
+        "autoApply": false,
+        "manualReviewRequired": true,
+        "stagingAllowedOnlyWhenUserConfirmed": true
+      },
+      "classificationAndTags": {
+        "autoApply": false,
+        "candidateOnly": true,
+        "originalLibraryClassificationNotAuthoritativeForM1": true
+      },
+      "titleAndAuthor": {
+        "autoApplyRequiresSingleSourceExactOrMappingId": true,
+        "fuzzyOrTitleOnlyAutoApply": false,
+        "demotePatternsSeenInSpotcheck": true
+      },
+      "copyrightDates": {
+        "autoApplyRequiresSingleSourceClearParsedDate": true,
+        "relativeExpiryAutoApply": false,
+        "autoRenewalAutoApply": false,
+        "multiDateConflictAutoApply": false
+      },
+      "userCorrectedValues": {
+        "generalizeAutomatically": false,
+        "allowedScope": "reviewed_candidate_or_explicit_duplicate_only_after_tested_rule"
+      }
+    },
+    "feedbackEvidence": {
+      "totalRows": 80,
+      "needsModifyRows": 42,
+      "categoryOrTagNeedsModifyRows": 33,
+      "dualSourceConflictNeedsModifyRows": 42
+    },
+    "safeOutputBoundary": {
+      "sanitizedAggregateOnly": true,
+      "realWorkNamesIncluded": false,
+      "authorNamesIncluded": false,
+      "channelNamesIncluded": false,
+      "rawLedgerRowsIncluded": false,
+      "privateDetailsStoredOnlyInGitignoredOutput": true,
+      "databaseConnected": false,
+      "formalMasterDataWritten": false,
+      "m3Entered": false
+    }
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "schema": "m1.dual_source_user_confirmed_overrides.v1.public",
+  "generatedAt": "2026-06-25T12:53:26.488394+00:00",
+  "currentHead": "25b83a6e88c64a2dcb3544575a1ccf73aebc564a",
+  "originMain": "25b83a6e88c64a2dcb3544575a1ccf73aebc564a",
+  "safeOutputBoundary": {
+    "sanitizedAggregateOnly": true,
+    "realWorkNamesIncluded": false,
+    "authorNamesIncluded": false,
+    "channelNamesIncluded": false,
+    "rawLedgerRowsIncluded": false,
+    "privateDetailsStoredOnlyInGitignoredOutput": true,
+    "databaseConnected": false,
+    "formalMasterDataWritten": false,
+    "m3Entered": false
+  },
+  "payload": {
+    "totalRows": 80,
+    "byAction": {
+      "acceptCandidate": 38,
+      "applyCorrectedValue": 42
+    },
+    "byField": {
+      "copyrightEndDate": 23,
+      "standardWorkName": 15,
+      "authorName": 9,
+      "classificationLevel1": 17,
+      "classificationLevel2": 16
+    },
+    "canApplyToStagingRows": 80,
+    "canGeneralizeRows": 0,
+    "safeOutputBoundary": {
+      "sanitizedAggregateOnly": true,
+      "realWorkNamesIncluded": false,
+      "authorNamesIncluded": false,
+      "channelNamesIncluded": false,
+      "rawLedgerRowsIncluded": false,
+      "privateDetailsStoredOnlyInGitignoredOutput": true,
+      "databaseConnected": false,
+      "formalMasterDataWritten": false,
+      "m3Entered": false
+    }
+  }
+}

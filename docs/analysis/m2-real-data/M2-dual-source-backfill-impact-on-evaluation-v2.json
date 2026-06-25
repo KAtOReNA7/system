@@ -1,0 +1,62 @@
+{
+  "schema": "m2.dual_source_backfill_impact_on_evaluation.v2",
+  "generatedAt": "2026-06-25T12:53:26.488394+00:00",
+  "currentHead": "25b83a6e88c64a2dcb3544575a1ccf73aebc564a",
+  "originMain": "25b83a6e88c64a2dcb3544575a1ccf73aebc564a",
+  "safeOutputBoundary": {
+    "sanitizedAggregateOnly": true,
+    "realWorkNamesIncluded": false,
+    "authorNamesIncluded": false,
+    "channelNamesIncluded": false,
+    "rawLedgerRowsIncluded": false,
+    "privateDetailsStoredOnlyInGitignoredOutput": true,
+    "databaseConnected": false,
+    "formalMasterDataWritten": false,
+    "m3Entered": false
+  },
+  "payload": {
+    "schema": "m2.dual_source_backfill_impact_on_evaluation.v2",
+    "comparisonBaseline": "dual_source_v1_feedback_corrected_to_v2",
+    "v1VsV2": {
+      "copyrightTermForecastIncreaseWorksV1": 1537,
+      "copyrightTermForecastIncreaseWorksV2": 1556,
+      "copyrightTermForecastDeltaWorks": 19,
+      "operator30WorkPackRowsLikelyNeedRefresh": 30
+    },
+    "copyrightTermForecast": {
+      "increaseWorks": 1556,
+      "decreaseIsAccuracyProtection": false
+    },
+    "operatingWindowForecastPendingExpiry": {
+      "estimatedReductionWorks": 1556,
+      "requiresRerunAfterApprovedLocalStagingApply": true
+    },
+    "renewalReview": {
+      "improvedCandidateWorks": 2461,
+      "requiresUserConfirmedApplyBeforeBusinessUse": true
+    },
+    "ratingRemainingCopyrightAdjustment": {
+      "newlyUsableWorks": 1556,
+      "requiresForecastOutputTypeRerun": true
+    },
+    "manualReview": {
+      "manualReviewRowsV2": 8760,
+      "reductionIsConservativeForCorrectness": true
+    },
+    "samplePacks": {
+      "operator30WorkPackNeedsRerunAfterApprovedApply": true
+    },
+    "status": "local_dry_run_only_no_formal_write_no_m3",
+    "safeOutputBoundary": {
+      "sanitizedAggregateOnly": true,
+      "realWorkNamesIncluded": false,
+      "authorNamesIncluded": false,
+      "channelNamesIncluded": false,
+      "rawLedgerRowsIncluded": false,
+      "privateDetailsStoredOnlyInGitignoredOutput": true,
+      "databaseConnected": false,
+      "formalMasterDataWritten": false,
+      "m3Entered": false
+    }
+  }
+}

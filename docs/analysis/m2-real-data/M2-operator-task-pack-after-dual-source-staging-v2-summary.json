@@ -1,0 +1,31 @@
+{
+  "schema": "m2.operator_task_pack_after_dual_source_staging.v2.summary.public",
+  "generatedAt": "2026-06-25T14:21:13+00:00",
+  "currentHead": "25b83a6e88c64a2dcb3544575a1ccf73aebc564a",
+  "originMain": "25b83a6e88c64a2dcb3544575a1ccf73aebc564a",
+  "safeOutputBoundary": {
+    "sanitizedAggregateOnly": true,
+    "realWorkNamesIncluded": false,
+    "authorNamesIncluded": false,
+    "channelNamesIncluded": false,
+    "rawLedgerRowsIncluded": false,
+    "privateDetailsStoredOnlyInGitignoredOutput": true,
+    "formalMasterDataWritten": false,
+    "databaseConnected": false,
+    "databaseWritten": false,
+    "m3Entered": false
+  },
+  "payload": {
+    "taskRows": 30,
+    "systemRows": 20,
+    "userReservedRows": 5,
+    "highRiskRows": 5,
+    "hasStandardWorkIdColumn": true,
+    "canRoundTripUserFeedbackByStandardWorkId": true,
+    "privateWorkbookPath": "data\\private-output\\m2-business-review\\m2-v1.1-30-work-operator-task-pack-cn-after-dual-source-staging-v2.xlsx",
+    "privateSourceJsonPath": "data\\private-output\\m2-business-review\\m2-v1.1-30-work-operator-task-pack-cn-after-dual-source-staging-v2-source.json",
+    "gitignored": true,
+    "publicReportSanitized": true,
+    "matchedByOldAnonymousTaskCard": false
+  }
+}

@@ -7,8 +7,8 @@ Candidate version: `m2-realdata-dev-disentangled-forecast-v1.1-conditional`.
 
 | Version | Verdict | Forecastable Revenue Share | True Blocked Revenue Share | WAPE | Baseline WAPE | Coverage | P0 | P1 |
 |---|---|---|---|---|---|---|---|---|
-| v1.0 | CONDITIONAL PASS | 0.7666 | 0.2151 | 0.6397 | 0.6848 | 0.4411 | 0 | 0 |
-| v1.1 | CONDITIONAL PASS | 0.7779 | 0.2038 | 0.6485 | 0.7039 | 0.5562 | 0 | 0 |
+| v1.0 | CONDITIONAL PASS | 0.7666 | 0.2151 | 0.64 | 0.6848 | 0.4414 | 0 | 0 |
+| v1.1 | CONDITIONAL PASS | 0.7779 | 0.2038 | 0.6488 | 0.7039 | 0.5539 | 0 | 0 |
 
 ## Gate Boundary Changes
 

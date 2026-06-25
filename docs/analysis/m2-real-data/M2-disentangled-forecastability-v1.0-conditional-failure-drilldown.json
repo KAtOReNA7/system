@@ -1,183 +1,194 @@
 {
   "schema": "m2.disentangled_forecastability_v1_0_conditional_failure_drilldown.v1",
-  "generatedAt": "2026-06-24T08:09:02.586087+00:00",
+  "generatedAt": "2026-06-25T13:48:22.629820+00:00",
   "v1Candidate": "m2-realdata-dev-disentangled-forecast-v1.0-conditional",
   "coverageRootCause": {
-    "coverage": 0.4411,
+    "coverage": 0.4414,
     "underForecastRate": 0.3835,
-    "overForecastRate": 0.269,
+    "overForecastRate": 0.2691,
     "primaryFinding": "coverage was constrained by under-covered medium/low confidence and conservative forecastability cohorts rather than a P0/P1 forecast failure",
     "lowCoverageSegments": [
       {
         "segmentType": "confidence",
         "segment": "high",
-        "caseCount": 5300,
-        "coverage": 0.1592,
-        "wape": 0.296,
-        "baselineWape": 0.3265,
-        "underForecastRate": 0.2994,
-        "overForecastRate": 0.7006,
-        "failRate": 0.0751
+        "caseCount": 5370,
+        "coverage": 0.1587,
+        "wape": 0.2976,
+        "baselineWape": 0.3273,
+        "underForecastRate": 0.2983,
+        "overForecastRate": 0.7017,
+        "failRate": 0.0747
+      },
+      {
+        "segmentType": "confidence",
+        "segment": "low",
+        "caseCount": 9546,
+        "coverage": 0.1973,
+        "wape": 0.7521,
+        "baselineWape": 0.82,
+        "underForecastRate": 0.4371,
+        "overForecastRate": 0.5629,
+        "failRate": 0.3338
       },
       {
         "segmentType": "confidence",
         "segment": "medium",
-        "caseCount": 14707,
-        "coverage": 0.2092,
-        "wape": 0.5835,
-        "baselineWape": 0.7078,
-        "underForecastRate": 0.452,
-        "overForecastRate": 0.548,
-        "failRate": 0.1561
+        "caseCount": 14687,
+        "coverage": 0.2095,
+        "wape": 0.5833,
+        "baselineWape": 0.7085,
+        "underForecastRate": 0.4531,
+        "overForecastRate": 0.5469,
+        "failRate": 0.1571
       },
       {
         "segmentType": "forecastability_status",
         "segment": "conservative_numeric_forecast",
-        "caseCount": 24830,
-        "coverage": 0.463,
-        "wape": 0.8331,
-        "baselineWape": 0.8603,
-        "underForecastRate": 0.3513,
-        "overForecastRate": 0.2687,
-        "failRate": 0.2956
+        "caseCount": 24635,
+        "coverage": 0.4652,
+        "wape": 0.8321,
+        "baselineWape": 0.8583,
+        "underForecastRate": 0.3507,
+        "overForecastRate": 0.2676,
+        "failRate": 0.2958
       },
       {
         "segmentType": "forecastability_status",
         "segment": "numeric_forecast_eligible",
-        "caseCount": 41665,
-        "coverage": 0.4281,
-        "wape": 0.6007,
-        "baselineWape": 0.6493,
-        "underForecastRate": 0.4027,
-        "overForecastRate": 0.2691,
-        "failRate": 0.2422
+        "caseCount": 41860,
+        "coverage": 0.4275,
+        "wape": 0.6019,
+        "baselineWape": 0.6503,
+        "underForecastRate": 0.4028,
+        "overForecastRate": 0.2699,
+        "failRate": 0.2424
       },
       {
         "segmentType": "horizon",
         "segment": "12",
         "caseCount": 13299,
-        "coverage": 0.4357,
-        "wape": 0.6006,
+        "coverage": 0.4362,
+        "wape": 0.6008,
         "baselineWape": 0.6432,
-        "underForecastRate": 0.3989,
+        "underForecastRate": 0.3988,
         "overForecastRate": 0.2523,
-        "failRate": 0.2706
+        "failRate": 0.2708
       },
       {
         "segmentType": "horizon",
         "segment": "18",
         "caseCount": 12276,
-        "coverage": 0.3832,
-        "wape": 0.649,
+        "coverage": 0.3834,
+        "wape": 0.6493,
         "baselineWape": 0.6887,
-        "underForecastRate": 0.467,
-        "overForecastRate": 0.2272,
+        "underForecastRate": 0.4669,
+        "overForecastRate": 0.2273,
         "failRate": 0.3532
       },
       {
         "segmentType": "horizon",
         "segment": "24",
         "caseCount": 11253,
-        "coverage": 0.3364,
-        "wape": 0.7007,
+        "coverage": 0.3366,
+        "wape": 0.7011,
         "baselineWape": 0.7441,
-        "underForecastRate": 0.5309,
-        "overForecastRate": 0.2053,
+        "underForecastRate": 0.5308,
+        "overForecastRate": 0.2054,
         "failRate": 0.4323
       },
       {
         "segmentType": "horizon",
         "segment": "6",
         "caseCount": 14322,
-        "coverage": 0.4913,
-        "wape": 0.5561,
+        "coverage": 0.4914,
+        "wape": 0.5563,
         "baselineWape": 0.606,
         "underForecastRate": 0.3236,
-        "overForecastRate": 0.2857,
-        "failRate": 0.1905
+        "overForecastRate": 0.2858,
+        "failRate": 0.1906
       },
       {
         "segmentType": "lifecycle",
         "segment": "declining",
         "caseCount": 5538,
-        "coverage": 0.1464,
-        "wape": 0.7291,
+        "coverage": 0.1461,
+        "wape": 0.7299,
         "baselineWape": 1.377,
         "underForecastRate": 0.4547,
         "overForecastRate": 0.5453,
-        "failRate": 0.2855
+        "failRate": 0.2853
       },
       {
         "segmentType": "lifecycle",
         "segment": "growth",
         "caseCount": 7491,
         "coverage": 0.238,
-        "wape": 0.5521,
+        "wape": 0.5527,
         "baselineWape": 0.621,
-        "underForecastRate": 0.5362,
-        "overForecastRate": 0.4638,
-        "failRate": 0.1893
+        "underForecastRate": 0.5358,
+        "overForecastRate": 0.4642,
+        "failRate": 0.1897
       },
       {
         "segmentType": "lifecycle",
         "segment": "rebound",
         "caseCount": 3681,
-        "coverage": 0.2086,
-        "wape": 0.6776,
+        "coverage": 0.2084,
+        "wape": 0.6778,
         "baselineWape": 0.8436,
         "underForecastRate": 0.4705,
         "overForecastRate": 0.5295,
-        "failRate": 0.2287
+        "failRate": 0.229
       },
       {
         "segmentType": "lifecycle",
         "segment": "stable",
         "caseCount": 12893,
         "coverage": 0.1903,
-        "wape": 0.3783,
+        "wape": 0.3787,
         "baselineWape": 0.3808,
-        "underForecastRate": 0.3231,
-        "overForecastRate": 0.6769,
-        "failRate": 0.159
+        "underForecastRate": 0.323,
+        "overForecastRate": 0.677,
+        "failRate": 0.1591
       },
       {
         "segmentType": "rating",
         "segment": "B",
-        "caseCount": 38805,
-        "coverage": 0.4392,
-        "wape": 0.6498,
-        "baselineWape": 0.6941,
-        "underForecastRate": 0.4153,
-        "overForecastRate": 0.2492,
-        "failRate": 0.2471
+        "caseCount": 51155,
+        "coverage": 0.4663,
+        "wape": 0.6185,
+        "baselineWape": 0.6635,
+        "underForecastRate": 0.4033,
+        "overForecastRate": 0.2289,
+        "failRate": 0.2422
       },
       {
         "segmentType": "rating",
         "segment": "C",
         "caseCount": 15340,
-        "coverage": 0.3583,
+        "coverage": 0.3586,
         "wape": 1.11,
         "baselineWape": 1.1512,
-        "underForecastRate": 0.3175,
+        "underForecastRate": 0.3174,
         "overForecastRate": 0.4029,
-        "failRate": 0.3287
+        "failRate": 0.3289
       },
       {
         "segmentType": "revenue_bucket",
         "segment": "high",
         "caseCount": 11450,
-        "coverage": 0.1935,
-        "wape": 0.7586,
+        "coverage": 0.1934,
+        "wape": 0.7606,
         "baselineWape": 0.8487,
-        "underForecastRate": 0.3969,
-        "overForecastRate": 0.5857,
-        "failRate": 0.2147
+        "underForecastRate": 0.3965,
+        "overForecastRate": 0.586,
+        "failRate": 0.2148
       },
       {
         "segmentType": "revenue_bucket",
         "segment": "low",
         "caseCount": 2503,
-        "coverage": 0.0443,
+        "coverage": 0.0439,
         "wape": 0.995,
         "baselineWape": 0.9885,
         "underForecastRate": 0.9557,
@@ -188,57 +199,57 @@
         "segmentType": "revenue_bucket",
         "segment": "mid",
         "caseCount": 16484,
-        "coverage": 0.2067,
-        "wape": 0.833,
+        "coverage": 0.2078,
+        "wape": 0.8331,
         "baselineWape": 0.8019,
         "underForecastRate": 0.4601,
-        "overForecastRate": 0.5347,
-        "failRate": 0.2259
+        "overForecastRate": 0.5348,
+        "failRate": 0.2261
       },
       {
         "segmentType": "revenue_bucket",
         "segment": "top",
         "caseCount": 3818,
-        "coverage": 0.2334,
+        "coverage": 0.2342,
         "wape": 0.4361,
         "baselineWape": 0.497,
-        "underForecastRate": 0.38,
-        "overForecastRate": 0.5917,
+        "underForecastRate": 0.3803,
+        "overForecastRate": 0.5914,
         "failRate": 0.1624
       }
     ],
     "confidenceDrilldown": [
       {
         "confidence": "blocked_for_business_use",
-        "caseCount": 17925,
-        "coverage": 0.5913,
-        "wape": 0.9795,
-        "underForecastRate": 0.3948,
-        "overForecastRate": 0.0266
+        "caseCount": 36892,
+        "coverage": 0.6381,
+        "wape": 0.9731,
+        "underForecastRate": 0.3543,
+        "overForecastRate": 0.0194
       },
       {
         "confidence": "high",
-        "caseCount": 5300,
-        "coverage": 0.1592,
-        "wape": 0.296,
-        "underForecastRate": 0.2994,
-        "overForecastRate": 0.7006
+        "caseCount": 5370,
+        "coverage": 0.1587,
+        "wape": 0.2976,
+        "underForecastRate": 0.2983,
+        "overForecastRate": 0.7017
       },
       {
         "confidence": "low",
-        "caseCount": 28563,
-        "coverage": 0.5186,
-        "wape": 0.9089,
-        "underForecastRate": 0.3568,
-        "overForecastRate": 0.1974
+        "caseCount": 9546,
+        "coverage": 0.1973,
+        "wape": 0.7521,
+        "underForecastRate": 0.4371,
+        "overForecastRate": 0.5629
       },
       {
         "confidence": "medium",
-        "caseCount": 14707,
-        "coverage": 0.2092,
-        "wape": 0.5835,
-        "underForecastRate": 0.452,
-        "overForecastRate": 0.548
+        "caseCount": 14687,
+        "coverage": 0.2095,
+        "wape": 0.5833,
+        "underForecastRate": 0.4531,
+        "overForecastRate": 0.5469
       }
     ]
   },
@@ -255,12 +266,10 @@
         "top5OverlapCount": 24,
         "top10OverlapCount": 66,
         "ratingDistribution": {
-          "A": 1,
-          "B": 6,
+          "B": 8,
           "C": 35,
           "D": 14,
-          "E": 450,
-          "S+": 1
+          "E": 450
         },
         "lifecycleDistribution": {
           "declining": 8,
@@ -280,11 +289,9 @@
         "top5OverlapCount": 2,
         "top10OverlapCount": 6,
         "ratingDistribution": {
-          "A": 3,
-          "B": 4,
+          "B": 8,
           "C": 14,
-          "E": 21,
-          "S": 1
+          "E": 21
         },
         "lifecycleDistribution": {
           "declining": 3,
@@ -319,34 +326,16 @@
         "revenueShare": 0.1855
       },
       {
-        "segment": "S+",
-        "count": 1,
-        "revenueTotal": 1816271.77,
-        "revenueShare": 0.0143
-      },
-      {
-        "segment": "S",
-        "count": 1,
-        "revenueTotal": 1028393.12,
-        "revenueShare": 0.0081
-      },
-      {
         "segment": "B",
-        "count": 10,
-        "revenueTotal": 536210.3,
-        "revenueShare": 0.0042
+        "count": 16,
+        "revenueTotal": 3403639.47,
+        "revenueShare": 0.0268
       },
       {
         "segment": "C",
         "count": 49,
         "revenueTotal": 350732.26,
         "revenueShare": 0.0028
-      },
-      {
-        "segment": "A",
-        "count": 4,
-        "revenueTotal": 22764.28,
-        "revenueShare": 0.0002
       },
       {
         "segment": "D",

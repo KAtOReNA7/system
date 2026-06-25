@@ -7,13 +7,13 @@ Candidate version: `m2-realdata-dev-disentangled-forecast-v1.1-conditional`.
 
 | WAPE | Baseline WAPE | SMAPE | MAE | Coverage | Fail Rate |
 |---|---|---|---|---|---|
-| 0.6485 | 0.7039 | 1.1301 | 8982.7856 | 0.5562 | 0.2654 |
+| 0.6488 | 0.7039 | 1.1304 | 8986.7138 | 0.5539 | 0.2654 |
 
 ## Issue Summary
 
 | P0 | P1 | P2 | P2 Revenue Share |
 |---|---|---|---|
-| 0 | 0 | 394 | 0.3891 |
+| 0 | 0 | 238 | 0.0405 |
 
 ## Spread Guardrails
 

@@ -13,14 +13,18 @@ export const COHORTS = Object.freeze({
 
 const STRICT_ORIGINAL_METHODS = new Set(["exact_original_id", "mapping_original_id", "title_author_exact"]);
 const STRICT_DIGITAL_METHODS = new Set(["exact_work_id", "mapping_work_id", "title_author_exact"]);
+const STRICT_ORIGINAL_ID_METHODS = new Set(["exact_original_id", "mapping_original_id"]);
+const STRICT_DIGITAL_ID_METHODS = new Set(["exact_work_id", "mapping_work_id"]);
 const AUTO_FIELDS = new Set(["standardWorkName", "authorName", "copyrightStartDate", "copyrightEndDate"]);
 const MANUAL_ONLY_FIELDS = new Set([
   "classificationLevel1",
   "classificationLevel2",
+  "classificationLevel3",
   "requiredTags",
   "workStatus",
   "audioRightsStatus"
 ]);
+const CLASSIFICATION_TAG_FIELDS = new Set(["classificationLevel1", "classificationLevel2", "classificationLevel3", "requiredTags"]);
 
 const FIELD_PATTERNS = Object.freeze({
   id: [/作品ID/u, /书号/u, /内容ID/u, /项目ID/u, /原创ID/u],
@@ -192,10 +196,155 @@ export function summarizeDualSourceDryRun(candidates = []) {
   };
 }
 
+export function evaluateDualSourceAutoApplyV2(candidate = {}) {
+  const reasons = [];
+  const fieldName = candidate.fieldName ?? "";
+  const source = candidate.source ?? "";
+  const current = normalizeComparable(candidate.currentValue);
+  const proposed = normalizeComparable(candidate.proposedValueNormalized ?? candidate.proposedValue);
+  const methods = methodSet(candidate.matchMethod);
+  const parserStatus = candidate.parserStatus ?? "parsed";
+
+  if (!AUTO_FIELDS.has(fieldName)) {
+    reasons.push(CLASSIFICATION_TAG_FIELDS.has(fieldName) ? "classification_or_tag_never_auto_apply_v2" : "field_not_supported_v2");
+  }
+  if (source === SOURCE_TYPES.BOTH_CONFLICT || candidate.conflictStatus === "dual_source_value_conflict") {
+    reasons.push("dual_source_conflict_never_auto_apply_v2");
+  }
+  if (source === SOURCE_TYPES.BOTH_CONSISTENT) {
+    reasons.push("dual_source_consistency_requires_manual_review_v2");
+  }
+  if (/fuzzy|title_only/.test(String(candidate.matchMethod ?? ""))) {
+    reasons.push("weak_match_never_auto_apply_v2");
+  }
+  if (source === SOURCE_TYPES.ORIGINAL && !hasAny(methods, STRICT_ORIGINAL_ID_METHODS)) {
+    reasons.push("original_match_must_be_exact_or_mapping_id_v2");
+  }
+  if (source === SOURCE_TYPES.DIGITAL && !hasAny(methods, STRICT_DIGITAL_ID_METHODS)) {
+    reasons.push("digital_match_must_be_exact_or_mapping_id_v2");
+  }
+  if (![SOURCE_TYPES.ORIGINAL, SOURCE_TYPES.DIGITAL].includes(source)) {
+    reasons.push("auto_apply_requires_single_source_v2");
+  }
+  if (candidate.requiresManualReview === true) {
+    reasons.push("requires_manual_review_v2");
+  }
+  if (parserStatus !== "parsed") {
+    reasons.push(`parser_status_${parserStatus}_v2`);
+  }
+  if (confidenceScore(candidate.valueConfidence) < 0.97) {
+    reasons.push("value_confidence_below_0_97_v2");
+  }
+  if (current && current !== proposed) {
+    reasons.push("current_authoritative_value_not_empty_v2");
+  }
+  if (["copyrightStartDate", "copyrightEndDate"].includes(fieldName) && hasComplexDateSignal(candidate)) {
+    reasons.push("complex_date_signal_never_auto_apply_v2");
+  }
+
+  return {
+    safeAutoApplyEligibleV2: reasons.length === 0,
+    autoApplyExclusionReasonsV2: [...new Set(reasons)],
+    recommendedBucketV2: reasons.length === 0 ? "safe_auto_apply_candidates" : "manual_review_candidates"
+  };
+}
+
+export function buildUserConfirmedOverride(candidate = {}, feedback = {}) {
+  const decision = canonicalUserDecision(feedback.userDecision);
+  const correctedValue = String(feedback.userCorrectedValue ?? "").trim();
+  const base = {
+    candidateId: feedback.candidateId ?? candidate.candidateId ?? "",
+    standardWorkId: candidate.standardWorkId ?? "",
+    fieldName: candidate.fieldName ?? "",
+    originalCandidateValue: candidate.proposedValue ?? "",
+    userDecision: decision,
+    userCorrectedValue: correctedValue,
+    userNote: String(feedback.userNote ?? "").trim(),
+    canGeneralize: false,
+    generalizationReason: "user_feedback_applies_only_to_the_reviewed_candidate"
+  };
+
+  if (decision === "accept") {
+    return {
+      ...base,
+      userConfirmedAction: "acceptCandidate",
+      canApplyToStaging: true
+    };
+  }
+  if (decision === "needs_modify") {
+    return {
+      ...base,
+      userConfirmedAction: correctedValue ? "applyCorrectedValue" : "missingCorrectedValue",
+      canApplyToStaging: Boolean(correctedValue)
+    };
+  }
+  if (decision === "reject") {
+    return {
+      ...base,
+      userConfirmedAction: "rejectCandidate",
+      canApplyToStaging: false
+    };
+  }
+  return {
+    ...base,
+    userConfirmedAction: "noAction",
+    canApplyToStaging: false
+  };
+}
+
+export function summarizeDualSourceDryRunV2(candidates = [], overrides = []) {
+  const safe = candidates.filter((candidate) => candidate.safeAutoApplyEligibleV2);
+  const stagingOverrides = overrides.filter((override) => override.canApplyToStaging);
+  const blocked = candidates.filter((candidate) => !candidate.safeAutoApplyEligibleV2);
+  return {
+    totalCandidateRows: candidates.length,
+    safeAutoApplyRows: safe.length,
+    userConfirmedOverrideRows: stagingOverrides.length,
+    manualReviewRows: blocked.length,
+    rejectedOrRuleBlockedRows: candidates.filter((candidate) =>
+      (candidate.autoApplyExclusionReasonsV2 ?? []).some((reason) =>
+        [
+          "classification_or_tag_never_auto_apply_v2",
+          "dual_source_conflict_never_auto_apply_v2",
+          "weak_match_never_auto_apply_v2",
+          "complex_date_signal_never_auto_apply_v2"
+        ].includes(reason)
+      )
+    ).length,
+    safeAutoApplyWorks: new Set(safe.map((candidate) => candidate.standardWorkId)).size,
+    userConfirmedOverrideWorks: new Set(stagingOverrides.map((override) => override.standardWorkId)).size,
+    byField: countBy(candidates, (candidate) => candidate.fieldName),
+    safeByField: countBy(safe, (candidate) => candidate.fieldName),
+    bySource: countBy(candidates, (candidate) => candidate.source)
+  };
+}
+
 function hasStrictOriginalMethod(matchMethod) {
   return String(matchMethod)
     .split("+")
     .some((method) => STRICT_ORIGINAL_METHODS.has(method));
+}
+
+function methodSet(matchMethod) {
+  return new Set(String(matchMethod ?? "").split("+").filter(Boolean));
+}
+
+function hasAny(left, right) {
+  return [...right].some((value) => left.has(value));
+}
+
+function hasComplexDateSignal(candidate) {
+  const raw = String(candidate.sourceRawValue ?? candidate.proposedValue ?? "");
+  return /auto_renewal|pending_anchor|relative|renew|续|自动|出版之日|签订之日|上线之日|最后一部|\|/.test(raw);
+}
+
+function canonicalUserDecision(value) {
+  const text = String(value ?? "").trim();
+  if (["接受", "accept", "accepted"].includes(text)) return "accept";
+  if (["拒绝", "reject", "rejected"].includes(text)) return "reject";
+  if (["需修改", "需要修改", "modify", "needs_modify"].includes(text)) return "needs_modify";
+  if (["不确定", "uncertain"].includes(text)) return "uncertain";
+  return "blank";
 }
 
 function hasStrictDigitalMethod(matchMethod) {

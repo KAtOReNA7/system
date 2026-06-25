@@ -1,0 +1,184 @@
+{
+  "schema": "m1.dual_source_limited_staging_apply_dry_run.v1.public",
+  "generatedAt": "2026-06-25T14:21:21+00:00",
+  "currentHead": "25b83a6e88c64a2dcb3544575a1ccf73aebc564a",
+  "originMain": "25b83a6e88c64a2dcb3544575a1ccf73aebc564a",
+  "safeOutputBoundary": {
+    "sanitizedAggregateOnly": true,
+    "realWorkNamesIncluded": false,
+    "authorNamesIncluded": false,
+    "channelNamesIncluded": false,
+    "rawLedgerRowsIncluded": false,
+    "privateDetailsStoredOnlyInGitignoredOutput": true,
+    "databaseConnected": false,
+    "databaseWritten": false,
+    "formalMasterDataWritten": false,
+    "m3Entered": false
+  },
+  "payload": {
+    "schema": "m1.m2.dual_source_limited_staging_apply.v1.summary",
+    "generatedAt": "2026-06-25T14:21:20+00:00",
+    "currentHead": "25b83a6e88c64a2dcb3544575a1ccf73aebc564a",
+    "originMain": "25b83a6e88c64a2dcb3544575a1ccf73aebc564a",
+    "worktreeScope": "local_private_staging_outputs_plus_sanitized_public_reports",
+    "applyScope": {
+      "allowedSources": [
+        "safe_auto_apply",
+        "user_confirmed_override"
+      ],
+      "allowedFields": [
+        "authorName",
+        "copyrightEndDate",
+        "copyrightStartDate",
+        "standardWorkName"
+      ],
+      "blockedFields": [
+        "classificationLevel1",
+        "classificationLevel2",
+        "classificationLevel3",
+        "requiredTags"
+      ],
+      "formalMasterDataWritten": false,
+      "databaseWritten": false,
+      "m3Entered": false
+    },
+    "counts": {
+      "safeAutoApplyRecords": 7780,
+      "userConfirmedOverrideRecords": 2,
+      "totalStagingRecords": 7782,
+      "totalImpactedWorks": 2971,
+      "fieldCounts": {
+        "authorName": 2369,
+        "copyrightEndDate": 2444,
+        "copyrightStartDate": 2969
+      },
+      "sourceCounts": {
+        "safe_auto_apply": 7780,
+        "user_confirmed_override": 2
+      },
+      "safeBlocked": {
+        "complex_or_relative_date_signal": 18,
+        "current_authoritative_value_not_empty": 2779
+      },
+      "overrideBlocked": {
+        "classification_or_tag_blocked": 33,
+        "current_authoritative_value_not_empty": 18,
+        "field_not_in_limited_apply_scope": 33,
+        "value_confidence_below_0_97": 78,
+        "weak_match_blocked": 74
+      },
+      "duplicateSummary": {
+        "safeSkippedBecauseOverrideWins": 0,
+        "duplicateOverrideRecords": 0,
+        "duplicateSafeRecords": 0
+      }
+    },
+    "m1Gap": {
+      "missingWorkName": {
+        "before": 0,
+        "afterLocalStaging": 0,
+        "localStagingReduction": 0,
+        "formalMasterDataChanged": false
+      },
+      "missingAuthor": {
+        "before": 2444,
+        "afterLocalStaging": 75,
+        "localStagingReduction": 2369,
+        "formalMasterDataChanged": false
+      },
+      "missingCopyrightStart": {
+        "before": 3054,
+        "afterLocalStaging": 85,
+        "localStagingReduction": 2969,
+        "formalMasterDataChanged": false
+      },
+      "missingCopyrightEnd": {
+        "before": 3054,
+        "afterLocalStaging": 610,
+        "localStagingReduction": 2444,
+        "formalMasterDataChanged": false
+      },
+      "missingClassification1": {
+        "before": 3054,
+        "afterLocalStaging": 3054,
+        "localStagingReduction": 0,
+        "formalMasterDataChanged": false
+      },
+      "missingClassification2": {
+        "before": 3054,
+        "afterLocalStaging": 3054,
+        "localStagingReduction": 0,
+        "formalMasterDataChanged": false
+      },
+      "missingRequiredTags": {
+        "before": 3054,
+        "afterLocalStaging": 3054,
+        "localStagingReduction": 0,
+        "formalMasterDataChanged": false
+      },
+      "missingWorkStatus": {
+        "before": 3054,
+        "afterLocalStaging": 3054,
+        "localStagingReduction": 0,
+        "formalMasterDataChanged": false
+      },
+      "missingAudioRightsStatus": {
+        "before": 3054,
+        "afterLocalStaging": 3054,
+        "localStagingReduction": 0,
+        "formalMasterDataChanged": false
+      }
+    },
+    "m2ForecastOutputType": {
+      "requiresForecastOutputTypeRerun": true,
+      "copyrightTermForecastIncreaseWorks": 2444,
+      "formalEvaluationAllowed": false
+    },
+    "m2TaskPacks": {
+      "operatorTaskPackGenerated": true,
+      "operatorTaskRows": 209,
+      "operatorRowsMatchedToStaging": 0,
+      "random20PackGenerated": true,
+      "random20Rows": 20,
+      "random20RowsMatchedToStaging": 18
+    },
+    "rollback": {
+      "fileLevelStaging": "data/private-output/m1-master-data/M1-dual-source-limited-staging-table-v1.json",
+      "clearMethod": "delete the private file-level staging JSON/XLSX outputs and regenerate reports; no database rollback is required because no database was written"
+    },
+    "safeOutputBoundary": {
+      "sanitizedAggregateOnly": true,
+      "realWorkNamesIncluded": false,
+      "authorNamesIncluded": false,
+      "channelNamesIncluded": false,
+      "rawLedgerRowsIncluded": false,
+      "privateDetailsStoredOnlyInGitignoredOutput": true,
+      "databaseConnected": false,
+      "databaseWritten": false,
+      "formalMasterDataWritten": false,
+      "m3Entered": false
+    },
+    "prohibitedActionsConfirmed": {
+      "enteredM3": false,
+      "formalMasterDataWritten": false,
+      "databaseConnected": false,
+      "databaseWritten": false,
+      "migrationExecuted": false,
+      "classificationOrTagsApplied": false,
+      "nonEmptyAuthoritativeValueOverwritten": false,
+      "gitAddDotUsed": false,
+      "stashTouched": false
+    },
+    "dryRunSafetyChecks": {
+      "onlyAllowedFields": true,
+      "classificationAndTagsApplied": false,
+      "nonEmptyAuthoritativeOverwriteCount": 0,
+      "weakMatchAppliedCount": 0,
+      "unresolvedDualSourceConflictAppliedCount": 0,
+      "formalMasterDataWritten": false,
+      "databaseWritten": false,
+      "m3Entered": false
+    },
+    "dryRunResult": "pass"
+  }
+}

@@ -1,0 +1,115 @@
+{
+  "schema": "m2.v1_1_forecastability_after_dual_source_staging.v1.public",
+  "generatedAt": "2026-06-25T14:21:13+00:00",
+  "currentHead": "25b83a6e88c64a2dcb3544575a1ccf73aebc564a",
+  "originMain": "25b83a6e88c64a2dcb3544575a1ccf73aebc564a",
+  "safeOutputBoundary": {
+    "sanitizedAggregateOnly": true,
+    "realWorkNamesIncluded": false,
+    "authorNamesIncluded": false,
+    "channelNamesIncluded": false,
+    "rawLedgerRowsIncluded": false,
+    "privateDetailsStoredOnlyInGitignoredOutput": true,
+    "formalMasterDataWritten": false,
+    "databaseConnected": false,
+    "databaseWritten": false,
+    "m3Entered": false
+  },
+  "payload": {
+    "schema": "m2.v1_1_forecastability_after_dual_source_staging.v1",
+    "generatedAt": "2026-06-25T14:21:13+00:00",
+    "candidateVersion": "m2-realdata-dev-disentangled-forecast-v1.1-conditional",
+    "modelVerdict": "CONDITIONAL PASS",
+    "modelParametersChanged": false,
+    "stagingChangedShortTermBacktest": false,
+    "shortTermBacktestNote": "3/6/12 month backtest is revenue-series based and is not directly changed by copyright-end staging.",
+    "beforeAfter": {
+      "numeric_forecast_eligible": 644,
+      "conservative_numeric_forecast": 397,
+      "observe_only_no_numeric_forecast": 1480,
+      "true_forecast_blocked": 533,
+      "formalReadinessBlocked": 3054,
+      "businessActionManualConfirmation": 238,
+      "businessReviewReadyCohort": 1041
+    },
+    "revenueShare": {
+      "forecastableIncludingConservative": 0.7779,
+      "numericForecastEligible": 0.6387,
+      "conservativeForecast": 0.1392,
+      "trueForecastBlocked": 0.2038,
+      "businessReviewReadyCohort": 0.7779
+    },
+    "performanceUnchanged": {
+      "wape": 0.6488,
+      "baselineWape": 0.7039,
+      "coverage": 0.5539,
+      "p0": 0,
+      "p1": 0,
+      "p2": 238
+    },
+    "forecastabilityDistribution": [
+      {
+        "status": "numeric_forecast_eligible",
+        "count": 644,
+        "revenue": 80985567.59,
+        "revenueShare": 0.6387
+      },
+      {
+        "status": "true_forecast_blocked",
+        "count": 533,
+        "revenue": 25837925.21,
+        "revenueShare": 0.2038
+      },
+      {
+        "status": "conservative_numeric_forecast",
+        "count": 397,
+        "revenue": 17648702.22,
+        "revenueShare": 0.1392
+      },
+      {
+        "status": "observe_only_no_numeric_forecast",
+        "count": 1480,
+        "revenue": 2322443.15,
+        "revenueShare": 0.0183
+      }
+    ],
+    "businessActionDistribution": [
+      {
+        "status": "action_allowed",
+        "count": 803,
+        "revenue": 93498772.79,
+        "revenueShare": 0.7374
+      },
+      {
+        "status": "action_blocked",
+        "count": 533,
+        "revenue": 25837925.21,
+        "revenueShare": 0.2038
+      },
+      {
+        "status": "manual_confirmation_required",
+        "count": 238,
+        "revenue": 5135497.01,
+        "revenueShare": 0.0405
+      },
+      {
+        "status": "observe_only",
+        "count": 1480,
+        "revenue": 2322443.15,
+        "revenueShare": 0.0183
+      }
+    ],
+    "safeOutputBoundary": {
+      "sanitizedAggregateOnly": true,
+      "realWorkNamesIncluded": false,
+      "authorNamesIncluded": false,
+      "channelNamesIncluded": false,
+      "rawLedgerRowsIncluded": false,
+      "privateDetailsStoredOnlyInGitignoredOutput": true,
+      "formalMasterDataWritten": false,
+      "databaseConnected": false,
+      "databaseWritten": false,
+      "m3Entered": false
+    }
+  }
+}

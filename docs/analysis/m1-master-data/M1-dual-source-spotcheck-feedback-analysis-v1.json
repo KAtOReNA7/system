@@ -1,0 +1,190 @@
+{
+  "schema": "m1.dual_source_spotcheck_feedback_analysis.v1",
+  "generatedAt": "2026-06-25T12:53:26.488394+00:00",
+  "currentHead": "25b83a6e88c64a2dcb3544575a1ccf73aebc564a",
+  "originMain": "25b83a6e88c64a2dcb3544575a1ccf73aebc564a",
+  "safeOutputBoundary": {
+    "sanitizedAggregateOnly": true,
+    "realWorkNamesIncluded": false,
+    "authorNamesIncluded": false,
+    "channelNamesIncluded": false,
+    "rawLedgerRowsIncluded": false,
+    "privateDetailsStoredOnlyInGitignoredOutput": true,
+    "databaseConnected": false,
+    "formalMasterDataWritten": false,
+    "m3Entered": false
+  },
+  "payload": {
+    "schema": "m1.dual_source_spotcheck_feedback_analysis.v1",
+    "totalRows": 80,
+    "completedRows": 80,
+    "completionRate": 1.0,
+    "decisionDistribution": {
+      "accept": 38,
+      "needs_modify": 42
+    },
+    "acceptanceRate": 0.475,
+    "needsModifyRate": 0.525,
+    "rejectRate": 0.0,
+    "uncertainRate": 0.0,
+    "readyForLocalStagingApply": false,
+    "readyStatus": "not_ready",
+    "byField": {
+      "authorName": {
+        "rowCount": 9,
+        "decisions": {
+          "accept": 5,
+          "needs_modify": 4
+        },
+        "acceptanceRate": 0.555556,
+        "needsModifyRate": 0.444444
+      },
+      "classificationLevel1": {
+        "rowCount": 17,
+        "decisions": {
+          "needs_modify": 17
+        },
+        "acceptanceRate": 0.0,
+        "needsModifyRate": 1.0
+      },
+      "classificationLevel2": {
+        "rowCount": 16,
+        "decisions": {
+          "needs_modify": 16
+        },
+        "acceptanceRate": 0.0,
+        "needsModifyRate": 1.0
+      },
+      "copyrightEndDate": {
+        "rowCount": 23,
+        "decisions": {
+          "accept": 18,
+          "needs_modify": 5
+        },
+        "acceptanceRate": 0.782609,
+        "needsModifyRate": 0.217391
+      },
+      "standardWorkName": {
+        "rowCount": 15,
+        "decisions": {
+          "accept": 15
+        },
+        "acceptanceRate": 1.0,
+        "needsModifyRate": 0.0
+      }
+    },
+    "bySource": {
+      "both_sources_conflict": {
+        "rowCount": 80,
+        "decisions": {
+          "accept": 38,
+          "needs_modify": 42
+        },
+        "acceptanceRate": 0.475,
+        "needsModifyRate": 0.525
+      }
+    },
+    "byMatchMethod": {
+      "exact_work_id+exact_original_id": {
+        "rowCount": 6,
+        "decisions": {
+          "needs_modify": 5,
+          "accept": 1
+        },
+        "acceptanceRate": 0.166667,
+        "needsModifyRate": 0.833333
+      },
+      "exact_work_id+title_author_fuzzy": {
+        "rowCount": 9,
+        "decisions": {
+          "accept": 3,
+          "needs_modify": 6
+        },
+        "acceptanceRate": 0.333333,
+        "needsModifyRate": 0.666667
+      },
+      "exact_work_id+title_only_high_confidence": {
+        "rowCount": 28,
+        "decisions": {
+          "accept": 8,
+          "needs_modify": 20
+        },
+        "acceptanceRate": 0.285714,
+        "needsModifyRate": 0.714286
+      },
+      "title_author_fuzzy+exact_original_id": {
+        "rowCount": 37,
+        "decisions": {
+          "accept": 26,
+          "needs_modify": 11
+        },
+        "acceptanceRate": 0.702703,
+        "needsModifyRate": 0.297297
+      }
+    },
+    "errorPatterns": {
+      "dual_source_conflict_causes_modification": 42,
+      "original_library_classification_mapping_inaccurate": 33,
+      "ledger_and_original_library_semantics_differ": 42,
+      "title_or_author_requires_manual_correction": 4,
+      "copyright_end_requires_manual_correction": 5,
+      "classification_or_tags_not_suitable_for_auto_apply": 33
+    },
+    "seriousErrorCounts": {
+      "dualSourceConflictNeedsModify": 42,
+      "categoryOrTagNeedsModify": 33,
+      "titleAuthorNeedsModify": 4,
+      "copyrightEndNeedsModify": 5,
+      "highRevenueNeedsModify": 11,
+      "highConfidenceAccepted": 1,
+      "highConfidenceTotal": 2
+    },
+    "ruleExtractions": {
+      "fieldsFrequentlyCorrected": [
+        {
+          "fieldName": "authorName",
+          "fieldLabel": "作者",
+          "needsModifyRows": 4
+        },
+        {
+          "fieldName": "classificationLevel1",
+          "fieldLabel": "一级分类",
+          "needsModifyRows": 17
+        },
+        {
+          "fieldName": "classificationLevel2",
+          "fieldLabel": "二级分类",
+          "needsModifyRows": 16
+        },
+        {
+          "fieldName": "copyrightEndDate",
+          "fieldLabel": "版权到期",
+          "needsModifyRows": 5
+        }
+      ],
+      "sourcesToDemote": [
+        "both_sources_conflict",
+        "original_library_classification_mapping"
+      ],
+      "fieldsNeverAutoApply": [
+        "classificationLevel1",
+        "classificationLevel2",
+        "classificationLevel3",
+        "requiredTags"
+      ],
+      "userCorrectionGeneralizationAllowed": false,
+      "userCorrectionScope": "reviewed_candidate_only"
+    },
+    "safeOutputBoundary": {
+      "sanitizedAggregateOnly": true,
+      "realWorkNamesIncluded": false,
+      "authorNamesIncluded": false,
+      "channelNamesIncluded": false,
+      "rawLedgerRowsIncluded": false,
+      "privateDetailsStoredOnlyInGitignoredOutput": true,
+      "databaseConnected": false,
+      "formalMasterDataWritten": false,
+      "m3Entered": false
+    }
+  }
+}

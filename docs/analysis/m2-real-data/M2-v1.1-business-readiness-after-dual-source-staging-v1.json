@@ -1,0 +1,55 @@
+{
+  "schema": "m2.v1_1_business_readiness_after_dual_source_staging.v1.public",
+  "generatedAt": "2026-06-25T14:21:13+00:00",
+  "currentHead": "25b83a6e88c64a2dcb3544575a1ccf73aebc564a",
+  "originMain": "25b83a6e88c64a2dcb3544575a1ccf73aebc564a",
+  "safeOutputBoundary": {
+    "sanitizedAggregateOnly": true,
+    "realWorkNamesIncluded": false,
+    "authorNamesIncluded": false,
+    "channelNamesIncluded": false,
+    "rawLedgerRowsIncluded": false,
+    "privateDetailsStoredOnlyInGitignoredOutput": true,
+    "formalMasterDataWritten": false,
+    "databaseConnected": false,
+    "databaseWritten": false,
+    "m3Entered": false
+  },
+  "payload": {
+    "schema": "m2.v1_1_business_readiness_after_dual_source_staging.v1",
+    "generatedAt": "2026-06-25T14:21:13+00:00",
+    "candidateVersion": "m2-realdata-dev-disentangled-forecast-v1.1-conditional",
+    "v1_1ConditionalStillValid": true,
+    "formalCompletionBlocked": true,
+    "m3Allowed": false,
+    "improvements": {
+      "dualSourceStagingSignificantlyImprovesM2Inputs": true,
+      "newCopyrightTermForecastWorks": 2444,
+      "remainingMissingExpiryWorks": 610,
+      "businessReviewScopeExpanded": true
+    },
+    "stillBlocked": [
+      "local_staging_is_not_formal_master_data",
+      "formal_readiness_status_remains_data_fix_required",
+      "remaining_610_missing_copyright_end_works_need_manual_backfill_or_exception",
+      "m3_not_authorized"
+    ],
+    "readinessAfterStaging": {
+      "forecastableCohortRevenueShare": 0.7779,
+      "businessReviewReadyCohort": 1041,
+      "businessReviewReadyRevenueShare": 0.7779
+    },
+    "safeOutputBoundary": {
+      "sanitizedAggregateOnly": true,
+      "realWorkNamesIncluded": false,
+      "authorNamesIncluded": false,
+      "channelNamesIncluded": false,
+      "rawLedgerRowsIncluded": false,
+      "privateDetailsStoredOnlyInGitignoredOutput": true,
+      "formalMasterDataWritten": false,
+      "databaseConnected": false,
+      "databaseWritten": false,
+      "m3Entered": false
+    }
+  }
+}
