@@ -1,0 +1,101 @@
+{
+  "schema": "m1.cleaned_ledger_minimal.user_spotcheck_guide.v3",
+  "generatedAt": "2026-06-25T06:40:28.924332+00:00",
+  "currentHead": "f504492cbeb1a2beb51d2d3c26841b08fbd40fa3",
+  "originMain": "f504492cbeb1a2beb51d2d3c26841b08fbd40fa3",
+  "safeOutputBoundary": {
+    "sanitizedAggregateOnly": true,
+    "realWorkNamesIncluded": false,
+    "authorNamesIncluded": false,
+    "rawLedgerRowsIncluded": false,
+    "privateDetailsStoredOnlyInGitignoredOutput": true,
+    "databaseConnected": false,
+    "formalMasterDataWritten": false,
+    "m3Entered": false
+  },
+  "payload": {
+    "schema": "m1.cleaned_ledger_minimal.user_spotcheck_guide.v3",
+    "rowCount": 80,
+    "privateWorkbook": "data/private-output/m1-master-data/M1-cleaned-ledger-minimal-user-spotcheck-pack-cn-v3.xlsx",
+    "reviewDecisions": [
+      "接受",
+      "拒绝",
+      "需修改",
+      "不确定"
+    ],
+    "fieldScope": {
+      "included": [
+        "作品名称",
+        "作者",
+        "版权开始",
+        "版权到期",
+        "分类一级",
+        "分类二级"
+      ],
+      "excluded": [
+        "出版社",
+        "首次出版日期",
+        "有声权利状态",
+        "分类三级",
+        "CIP",
+        "ISBN",
+        "合同编号"
+      ]
+    },
+    "instructions": [
+      "只复核候选值是否能作为本地 dry-run 回填候选。",
+      "不确定、需修改、拒绝均不会自动进入正式主数据。",
+      "分类一二级默认仅作人工复核候选。",
+      "本轮不进入 M3，不写正式主数据。"
+    ],
+    "candidateSummary": {
+      "schema": "m1.cleaned_ledger_minimal.backfill_candidates.v3",
+      "totalCandidateRows": 7054,
+      "candidateWorks": 1248,
+      "autoApplyEligibleRows": 3900,
+      "autoApplyEligibleWorks": 1233,
+      "manualReviewRows": 2433,
+      "byField": {
+        "standardWorkName": 1248,
+        "authorName": 1246,
+        "copyrightStartDate": 1248,
+        "copyrightEndDate": 1248,
+        "classificationLevel1": 1048,
+        "classificationLevel2": 1016
+      },
+      "byMatchMethod": {
+        "exact_work_id": 6977,
+        "title_author_fuzzy": 77
+      },
+      "byParserStatus": {
+        "parsed": 6741,
+        "unparsed": 296,
+        "pending_anchor": 13,
+        "auto_renewal": 4
+      },
+      "byConflictStatus": {
+        "none": 7047,
+        "value_conflict": 7
+      },
+      "byRecommendedBucket": {
+        "auto_apply_v3": 3900,
+        "manual_review_or_dry_run_only": 3154
+      },
+      "candidateRevenueShare": 0.661113,
+      "autoApplyRevenueShare": 0.638379,
+      "explicitlyExcludedFields": [
+        "publisherName",
+        "firstPublicationDate",
+        "audioRightsStatus",
+        "classificationLevel3",
+        "isbn",
+        "cip",
+        "contractNo",
+        "contractType",
+        "audioUseRight",
+        "audioAdaptationRight",
+        "audioSublicenseRight"
+      ]
+    }
+  }
+}

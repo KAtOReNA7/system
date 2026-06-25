@@ -1,0 +1,97 @@
+{
+  "schema": "m1.cleaned_ledger_minimal.dry_run_result.v3",
+  "generatedAt": "2026-06-25T06:40:28.622046+00:00",
+  "currentHead": "f504492cbeb1a2beb51d2d3c26841b08fbd40fa3",
+  "originMain": "f504492cbeb1a2beb51d2d3c26841b08fbd40fa3",
+  "safeOutputBoundary": {
+    "sanitizedAggregateOnly": true,
+    "realWorkNamesIncluded": false,
+    "authorNamesIncluded": false,
+    "rawLedgerRowsIncluded": false,
+    "privateDetailsStoredOnlyInGitignoredOutput": true,
+    "databaseConnected": false,
+    "formalMasterDataWritten": false,
+    "m3Entered": false
+  },
+  "payload": {
+    "schema": "m1.cleaned_ledger_minimal.dry_run.v3",
+    "formalMasterDataWritten": false,
+    "databaseWritten": false,
+    "fieldGapResults": {
+      "missingWorkName": {
+        "before": 0,
+        "autoApplyAfter": 0,
+        "autoApplyReduction": 0,
+        "manualCandidateWorks": 133
+      },
+      "missingAuthor": {
+        "before": 2444,
+        "autoApplyAfter": 1820,
+        "autoApplyReduction": 624,
+        "manualCandidateWorks": 622
+      },
+      "missingCopyrightStart": {
+        "before": 3054,
+        "autoApplyAfter": 1821,
+        "autoApplyReduction": 1233,
+        "manualCandidateWorks": 15
+      },
+      "missingCopyrightEnd": {
+        "before": 3054,
+        "autoApplyAfter": 2126,
+        "autoApplyReduction": 928,
+        "manualCandidateWorks": 320
+      },
+      "missingClassification1": {
+        "before": 3054,
+        "autoApplyAfter": 3054,
+        "autoApplyReduction": 0,
+        "manualCandidateWorks": 1048
+      },
+      "missingClassification2": {
+        "before": 3054,
+        "autoApplyAfter": 3054,
+        "autoApplyReduction": 0,
+        "manualCandidateWorks": 1016
+      }
+    },
+    "manualWorkloadReduction": {
+      "autoApplyEligibleWorks": 1233,
+      "remainingManualReviewWorks": 1064,
+      "manualCandidateRows": 2433
+    },
+    "topRevenueGapReduction": {
+      "top1Percent": {
+        "workCount": 31,
+        "matchedWorkCount": 21,
+        "matchedWorkRate": 0.677419,
+        "matchedRevenueShare": 0.669077,
+        "matchedTotalRevenueShare": 0.356762
+      },
+      "top5Percent": {
+        "workCount": 153,
+        "matchedWorkCount": 106,
+        "matchedWorkRate": 0.69281,
+        "matchedRevenueShare": 0.673271,
+        "matchedTotalRevenueShare": 0.545192
+      },
+      "top10Percent": {
+        "workCount": 306,
+        "matchedWorkCount": 182,
+        "matchedWorkRate": 0.594771,
+        "matchedRevenueShare": 0.659117,
+        "matchedTotalRevenueShare": 0.584881
+      }
+    },
+    "safetyGuards": {
+      "onlySixMinimalFieldsGenerated": true,
+      "publisherNameGenerated": false,
+      "firstPublicationDateGenerated": false,
+      "audioRightsStatusGenerated": false,
+      "classificationLevel3Generated": false,
+      "fuzzyAutoApplyBlocked": true,
+      "relativeExpiryAutoApplyBlocked": true,
+      "automaticRenewalAutoExtendBlocked": true
+    }
+  }
+}

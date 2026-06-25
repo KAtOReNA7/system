@@ -1,0 +1,55 @@
+{
+  "schema": "m2.dual_source_backfill_impact_on_evaluation.v1",
+  "generatedAt": "2026-06-25T08:01:36.159280+00:00",
+  "currentHead": "f504492cbeb1a2beb51d2d3c26841b08fbd40fa3",
+  "originMain": "f504492cbeb1a2beb51d2d3c26841b08fbd40fa3",
+  "safeOutputBoundary": {
+    "sanitizedAggregateOnly": true,
+    "realWorkNamesIncluded": false,
+    "authorNamesIncluded": false,
+    "rawRowsIncluded": false,
+    "privateDetailsStoredOnlyInGitignoredOutput": true,
+    "databaseConnected": false,
+    "formalMasterDataWritten": false,
+    "m3Entered": false
+  },
+  "payload": {
+    "schema": "m2.dual_source_backfill_impact_on_evaluation.v1",
+    "comparisonBaseline": "cleaned_digital_ledger_v3_only",
+    "copyrightTermForecast": {
+      "digitalV3AutoEndDateWorks": 928,
+      "dualSourceAutoEndDateWorks": 2465,
+      "increaseWorks": 1537
+    },
+    "operatingWindowForecastPendingExpiry": {
+      "estimatedReductionWorks": 1537,
+      "requiresRerunAfterApprovedApply": true
+    },
+    "relativeExpiryPendingAnchor": {
+      "estimatedReductionRows": 1542,
+      "note": "Dual-source parsing uses concrete original-library expiry dates where available; relative digital-ledger anchors remain non-auto."
+    },
+    "renewalReview": {
+      "improvedCandidateWorks": 1542,
+      "reliabilityImprovementRequiresApprovedApply": true
+    },
+    "ratingRemainingCopyrightAdjustment": {
+      "newlyUsableWorks": 1537,
+      "requiresForecastOutputTypeRerun": true
+    },
+    "manualReview": {
+      "digitalUnmatchedLikelyWebOriginalWorks": 1750,
+      "unmatchedByBothSources": 56,
+      "estimatedManualTriageReductionWorks": 1694
+    },
+    "samplePacks": {
+      "operator30WorkPackLikelyNeedsUpdatedSamples": 8,
+      "twentyYearSampleLikelyNeedsUpdatedSamples": 8
+    },
+    "forecastabilityGate": {
+      "v1_1RerunRecommended": true,
+      "reason": "copyright expiry coverage changes forecastOutputType and remaining-copyright adjustment inputs"
+    },
+    "status": "local_dry_run_only_no_formal_write_no_m3"
+  }
+}

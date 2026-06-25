@@ -1,0 +1,66 @@
+{
+  "schema": "m1.dual_source_masterdata_backfill.summary.v1",
+  "generatedAt": "2026-06-25T08:01:36.369738+00:00",
+  "currentHead": "f504492cbeb1a2beb51d2d3c26841b08fbd40fa3",
+  "originMain": "f504492cbeb1a2beb51d2d3c26841b08fbd40fa3",
+  "safeOutputBoundary": {
+    "sanitizedAggregateOnly": true,
+    "realWorkNamesIncluded": false,
+    "authorNamesIncluded": false,
+    "rawRowsIncluded": false,
+    "privateDetailsStoredOnlyInGitignoredOutput": true,
+    "databaseConnected": false,
+    "formalMasterDataWritten": false,
+    "m3Entered": false
+  },
+  "payload": {
+    "schema": "m1.dual_source_masterdata_backfill_summary.v1",
+    "conclusion": "original_library_added_for_web_original_cohort_local_dry_run_only",
+    "digitalLedgerPrimaryUse": "publication_cohort",
+    "originalLibraryPrimaryUse": "web_original_cohort",
+    "supportedFieldsByOriginalLibrary": [
+      "authorName",
+      "classificationLevel1",
+      "classificationLevel2",
+      "copyrightEndDate",
+      "copyrightStartDate",
+      "requiredTags",
+      "standardWorkName"
+    ],
+    "dualSourceConflictPolicy": "manual_review_required_no_auto_apply",
+    "nextUserAction": "fill the new dual-source private spotcheck pack before any local staging apply",
+    "notEnteringM3": true,
+    "cohortSummary": [
+      {
+        "cohort": "mixed_or_uncertain_cohort",
+        "workCount": 81,
+        "revenueShare": 0.029826
+      },
+      {
+        "cohort": "publication_cohort",
+        "workCount": 1223,
+        "revenueShare": 0.63591
+      },
+      {
+        "cohort": "web_original_cohort",
+        "workCount": 1750,
+        "revenueShare": 0.334263
+      }
+    ],
+    "originalCoverage": {
+      "matchedWorks": 1775,
+      "matchedRevenueShare": 0.359466,
+      "originalOnlyMatchedWorks": 1750
+    },
+    "dryRunSummary": {
+      "matchedWorks": 2998,
+      "autoApplyEligibleRows": 10584,
+      "copyrightEndFillableWorks": 2465,
+      "additionalCopyrightEndFillableWorks": 1537
+    },
+    "m2ImpactSummary": {
+      "copyrightTermForecastIncreaseWorks": 1537,
+      "v1_1ForecastabilityGateRerunRecommended": true
+    }
+  }
+}

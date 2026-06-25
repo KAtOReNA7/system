@@ -1,0 +1,62 @@
+{
+  "schema": "m1.original_library.match_coverage.v1",
+  "generatedAt": "2026-06-25T08:01:35.966169+00:00",
+  "currentHead": "f504492cbeb1a2beb51d2d3c26841b08fbd40fa3",
+  "originMain": "f504492cbeb1a2beb51d2d3c26841b08fbd40fa3",
+  "safeOutputBoundary": {
+    "sanitizedAggregateOnly": true,
+    "realWorkNamesIncluded": false,
+    "authorNamesIncluded": false,
+    "rawRowsIncluded": false,
+    "privateDetailsStoredOnlyInGitignoredOutput": true,
+    "databaseConnected": false,
+    "formalMasterDataWritten": false,
+    "m3Entered": false
+  },
+  "payload": {
+    "schema": "m1.original_library.match_coverage.v1",
+    "totalM2Works": 3054,
+    "matchedWorks": 1775,
+    "unmatchedWorks": 1279,
+    "matchedRevenueShare": 0.359466,
+    "matchMethodDistribution": {
+      "unmatched": 1279,
+      "exact_original_id": 1763,
+      "title_only_high_confidence": 9,
+      "title_author_fuzzy": 3
+    },
+    "conflictMatchedWorks": 1,
+    "originalOnlyMatchedWorks": 1750,
+    "bothSourceMatchedWorks": 25,
+    "digitalOnlyMatchedWorks": 1223,
+    "unmatchedByBothSources": 56,
+    "topRevenueCoverage": {
+      "top1Percent": {
+        "workCount": 31,
+        "matchedWorkCount": 10,
+        "matchedWorkRate": 0.322581,
+        "matchedRevenueShare": 0.330923,
+        "matchedTotalRevenueShare": 0.176453
+      },
+      "top5Percent": {
+        "workCount": 153,
+        "matchedWorkCount": 47,
+        "matchedWorkRate": 0.30719,
+        "matchedRevenueShare": 0.325952,
+        "matchedTotalRevenueShare": 0.263944
+      },
+      "top10Percent": {
+        "workCount": 306,
+        "matchedWorkCount": 123,
+        "matchedWorkRate": 0.401961,
+        "matchedRevenueShare": 0.339918,
+        "matchedTotalRevenueShare": 0.301633
+      }
+    },
+    "sanitized": {
+      "realWorkNamesIncluded": false,
+      "authorNamesIncluded": false,
+      "rawRowsIncluded": false
+    }
+  }
+}

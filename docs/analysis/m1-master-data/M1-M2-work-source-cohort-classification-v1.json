@@ -1,0 +1,89 @@
+{
+  "schema": "m1.m2.work_source_cohort_classification.v1",
+  "generatedAt": "2026-06-25T08:01:35.875545+00:00",
+  "currentHead": "f504492cbeb1a2beb51d2d3c26841b08fbd40fa3",
+  "originMain": "f504492cbeb1a2beb51d2d3c26841b08fbd40fa3",
+  "safeOutputBoundary": {
+    "sanitizedAggregateOnly": true,
+    "realWorkNamesIncluded": false,
+    "authorNamesIncluded": false,
+    "rawRowsIncluded": false,
+    "privateDetailsStoredOnlyInGitignoredOutput": true,
+    "databaseConnected": false,
+    "formalMasterDataWritten": false,
+    "m3Entered": false
+  },
+  "payload": {
+    "schema": "m1.m2.work_source_cohort_classification.v1",
+    "totalM2Works": 3054,
+    "cohorts": [
+      {
+        "cohort": "mixed_or_uncertain_cohort",
+        "workCount": 81,
+        "revenueShare": 0.029826
+      },
+      {
+        "cohort": "publication_cohort",
+        "workCount": 1223,
+        "revenueShare": 0.63591
+      },
+      {
+        "cohort": "web_original_cohort",
+        "workCount": 1750,
+        "revenueShare": 0.334263
+      }
+    ],
+    "topRevenueCohortDistribution": {
+      "top1Percent": {
+        "workCount": 31,
+        "countByCohort": {
+          "publication_cohort": 21,
+          "web_original_cohort": 9,
+          "mixed_or_uncertain_cohort": 1
+        },
+        "revenueShareByCohort": {
+          "publication_cohort": 0.669077,
+          "web_original_cohort": 0.293254,
+          "mixed_or_uncertain_cohort": 0.037669
+        }
+      },
+      "top5Percent": {
+        "workCount": 153,
+        "countByCohort": {
+          "publication_cohort": 105,
+          "web_original_cohort": 44,
+          "mixed_or_uncertain_cohort": 4
+        },
+        "revenueShareByCohort": {
+          "publication_cohort": 0.67288,
+          "web_original_cohort": 0.298339,
+          "mixed_or_uncertain_cohort": 0.028781
+        }
+      },
+      "top10Percent": {
+        "workCount": 306,
+        "countByCohort": {
+          "publication_cohort": 180,
+          "web_original_cohort": 119,
+          "mixed_or_uncertain_cohort": 7
+        },
+        "revenueShareByCohort": {
+          "publication_cohort": 0.658058,
+          "web_original_cohort": 0.314018,
+          "mixed_or_uncertain_cohort": 0.027924
+        }
+      }
+    },
+    "digitalMatchedPublicationCohortWorks": 1223,
+    "digitalUnmatchedLikelyWebOriginalWorks": 1750,
+    "digitalMatchedWorks": 1248,
+    "originalMatchedWorks": 1775,
+    "bothSourceMatchedWorks": 25,
+    "unmatchedByBothSources": 56,
+    "sanitized": {
+      "realWorkNamesIncluded": false,
+      "authorNamesIncluded": false,
+      "rowLevelDetailsIncluded": false
+    }
+  }
+}

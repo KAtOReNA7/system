@@ -1,0 +1,174 @@
+{
+  "schema": "m1.original_library.structure_audit.v1",
+  "generatedAt": "2026-06-25T08:01:35.701577+00:00",
+  "currentHead": "f504492cbeb1a2beb51d2d3c26841b08fbd40fa3",
+  "originMain": "f504492cbeb1a2beb51d2d3c26841b08fbd40fa3",
+  "safeOutputBoundary": {
+    "sanitizedAggregateOnly": true,
+    "realWorkNamesIncluded": false,
+    "authorNamesIncluded": false,
+    "rawRowsIncluded": false,
+    "privateDetailsStoredOnlyInGitignoredOutput": true,
+    "databaseConnected": false,
+    "formalMasterDataWritten": false,
+    "m3Entered": false
+  },
+  "payload": {
+    "schema": "m1.original_library.structure_audit.v1",
+    "sourceWorkbook": "data/master-data/原创全库.xlsx",
+    "sheetNames": [
+      "全库排查"
+    ],
+    "totalDataRows": 13848,
+    "sheetCount": 1,
+    "sheets": [
+      {
+        "sheetName": "全库排查",
+        "dataRows": 13848,
+        "fieldCount": 11,
+        "fields": [
+          "作品ID",
+          "书名初",
+          "书名更",
+          "作者笔名",
+          "一级分类",
+          "二级分类",
+          "三级分类",
+          "点击数",
+          "网址链接",
+          "授权时间",
+          "结束时间"
+        ],
+        "recognizedKeyFields": {
+          "idFields": [
+            "作品ID"
+          ],
+          "titleFields": [
+            "书名初",
+            "书名更"
+          ],
+          "authorFields": [
+            "作者笔名"
+          ],
+          "licensorFields": [],
+          "copyrightStartFields": [
+            "授权时间"
+          ],
+          "copyrightEndFields": [
+            "结束时间"
+          ],
+          "workStatusFields": [],
+          "categoryFields": [
+            "一级分类",
+            "二级分类",
+            "三级分类"
+          ],
+          "tagFields": [
+            "三级分类"
+          ],
+          "audioRightsFields": [],
+          "contractStatusFields": []
+        },
+        "nonEmptyRates": {
+          "作品ID": {
+            "nonEmptyRows": 13848,
+            "rate": 1.0
+          },
+          "书名初": {
+            "nonEmptyRows": 13848,
+            "rate": 1.0
+          },
+          "书名更": {
+            "nonEmptyRows": 705,
+            "rate": 0.05091
+          },
+          "作者笔名": {
+            "nonEmptyRows": 13848,
+            "rate": 1.0
+          },
+          "一级分类": {
+            "nonEmptyRows": 13848,
+            "rate": 1.0
+          },
+          "二级分类": {
+            "nonEmptyRows": 13848,
+            "rate": 1.0
+          },
+          "三级分类": {
+            "nonEmptyRows": 13848,
+            "rate": 1.0
+          },
+          "点击数": {
+            "nonEmptyRows": 13848,
+            "rate": 1.0
+          },
+          "网址链接": {
+            "nonEmptyRows": 13848,
+            "rate": 1.0
+          },
+          "授权时间": {
+            "nonEmptyRows": 13839,
+            "rate": 0.99935
+          },
+          "结束时间": {
+            "nonEmptyRows": 13839,
+            "rate": 0.99935
+          }
+        },
+        "supportedBackfillFields": [
+          "authorName",
+          "classificationLevel1",
+          "classificationLevel2",
+          "copyrightEndDate",
+          "copyrightStartDate",
+          "requiredTags",
+          "standardWorkName"
+        ]
+      }
+    ],
+    "recognizedKeyFields": {
+      "idFields": [
+        "作品ID"
+      ],
+      "titleFields": [
+        "书名初",
+        "书名更"
+      ],
+      "authorFields": [
+        "作者笔名"
+      ],
+      "licensorFields": [],
+      "copyrightStartFields": [
+        "授权时间"
+      ],
+      "copyrightEndFields": [
+        "结束时间"
+      ],
+      "workStatusFields": [],
+      "categoryFields": [
+        "一级分类",
+        "三级分类",
+        "二级分类"
+      ],
+      "tagFields": [
+        "三级分类"
+      ],
+      "audioRightsFields": [],
+      "contractStatusFields": []
+    },
+    "supportedBackfillFields": [
+      "authorName",
+      "classificationLevel1",
+      "classificationLevel2",
+      "copyrightEndDate",
+      "copyrightStartDate",
+      "requiredTags",
+      "standardWorkName"
+    ],
+    "sanitized": {
+      "realWorkNamesIncluded": false,
+      "authorNamesIncluded": false,
+      "rawRowsIncluded": false
+    }
+  }
+}

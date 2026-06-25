@@ -1,0 +1,41 @@
+{
+  "schema": "m1.dual_source_user_spotcheck_guide.v1",
+  "generatedAt": "2026-06-25T08:01:36.512548+00:00",
+  "currentHead": "f504492cbeb1a2beb51d2d3c26841b08fbd40fa3",
+  "originMain": "f504492cbeb1a2beb51d2d3c26841b08fbd40fa3",
+  "safeOutputBoundary": {
+    "sanitizedAggregateOnly": true,
+    "realWorkNamesIncluded": false,
+    "authorNamesIncluded": false,
+    "rawRowsIncluded": false,
+    "privateDetailsStoredOnlyInGitignoredOutput": true,
+    "databaseConnected": false,
+    "formalMasterDataWritten": false,
+    "m3Entered": false
+  },
+  "payload": {
+    "schema": "m1.dual_source_user_spotcheck_guide.v1",
+    "privateWorkbook": "data/private-output/m1-master-data/M1-dual-source-user-spotcheck-pack-cn-v1.xlsx",
+    "rowCount": 80,
+    "maxRows": 80,
+    "reviewDecisions": [
+      "接受",
+      "拒绝",
+      "需修改",
+      "不确定"
+    ],
+    "coverageTargets": [
+      "publication_cohort",
+      "web_original_cohort",
+      "both_sources_consistent",
+      "both_sources_conflict",
+      "high_revenue",
+      "copyright_expiry",
+      "work_name_author",
+      "classification_tags"
+    ],
+    "dualSourceDryRunStatus": "local_dry_run_only",
+    "formalMasterDataWritten": false,
+    "m3Entered": false
+  }
+}

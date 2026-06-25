@@ -1,0 +1,107 @@
+{
+  "schema": "m1.cleaned_ledger_minimal.structure_audit.v3",
+  "generatedAt": "2026-06-25T06:40:28.324597+00:00",
+  "currentHead": "f504492cbeb1a2beb51d2d3c26841b08fbd40fa3",
+  "originMain": "f504492cbeb1a2beb51d2d3c26841b08fbd40fa3",
+  "safeOutputBoundary": {
+    "sanitizedAggregateOnly": true,
+    "realWorkNamesIncluded": false,
+    "authorNamesIncluded": false,
+    "rawLedgerRowsIncluded": false,
+    "privateDetailsStoredOnlyInGitignoredOutput": true,
+    "databaseConnected": false,
+    "formalMasterDataWritten": false,
+    "m3Entered": false
+  },
+  "payload": {
+    "schema": "m1.cleaned_ledger_minimal.structure.v3",
+    "ledgerPath": "data/master-data/cleaned-digital-copyright-ledger.xlsx",
+    "ledgerPathNote": "actual private workbook is gitignored under data/master-data",
+    "sheetCount": 1,
+    "sheetNames": [
+      "Sheet1"
+    ],
+    "totalDataRows": 12033,
+    "fieldCount": 7,
+    "fields": [
+      "作品ID",
+      "出版书名",
+      "合同书名",
+      "作者署名",
+      "签订日期",
+      "到期时间",
+      "产品线"
+    ],
+    "expectedFields": [
+      "作品ID",
+      "出版书名",
+      "合同书名",
+      "作者署名",
+      "签订日期",
+      "到期时间",
+      "产品线"
+    ],
+    "exactSevenFieldLedger": true,
+    "nonEmptyRates": {
+      "作品ID": {
+        "nonEmptyRows": 10757,
+        "rate": 0.893958
+      },
+      "出版书名": {
+        "nonEmptyRows": 10667,
+        "rate": 0.886479
+      },
+      "合同书名": {
+        "nonEmptyRows": 11993,
+        "rate": 0.996676
+      },
+      "作者署名": {
+        "nonEmptyRows": 11322,
+        "rate": 0.940912
+      },
+      "签订日期": {
+        "nonEmptyRows": 11964,
+        "rate": 0.994266
+      },
+      "到期时间": {
+        "nonEmptyRows": 12033,
+        "rate": 1.0
+      },
+      "产品线": {
+        "nonEmptyRows": 7484,
+        "rate": 0.621956
+      }
+    },
+    "sheets": [
+      {
+        "sheetName": "Sheet1",
+        "rowCount": 12033,
+        "fieldCount": 7,
+        "fields": [
+          "作品ID",
+          "出版书名",
+          "合同书名",
+          "作者署名",
+          "签订日期",
+          "到期时间",
+          "产品线"
+        ],
+        "exactSevenFieldLedger": true
+      }
+    ],
+    "oldFieldsNoLongerParsed": [
+      "publisherName",
+      "firstPublicationDate",
+      "audioRightsStatus",
+      "classificationLevel3",
+      "isbn",
+      "cip",
+      "contractNo",
+      "contractType",
+      "audioUseRight",
+      "audioAdaptationRight",
+      "audioSublicenseRight"
+    ],
+    "oldV2SpotcheckPackStatus": "obsolete_not_used"
+  }
+}

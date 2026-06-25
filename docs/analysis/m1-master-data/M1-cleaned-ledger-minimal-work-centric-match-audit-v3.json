@@ -1,0 +1,72 @@
+{
+  "schema": "m1.cleaned_ledger_minimal.work_centric_match_audit.v3",
+  "generatedAt": "2026-06-25T06:40:28.444117+00:00",
+  "currentHead": "f504492cbeb1a2beb51d2d3c26841b08fbd40fa3",
+  "originMain": "f504492cbeb1a2beb51d2d3c26841b08fbd40fa3",
+  "safeOutputBoundary": {
+    "sanitizedAggregateOnly": true,
+    "realWorkNamesIncluded": false,
+    "authorNamesIncluded": false,
+    "rawLedgerRowsIncluded": false,
+    "privateDetailsStoredOnlyInGitignoredOutput": true,
+    "databaseConnected": false,
+    "formalMasterDataWritten": false,
+    "m3Entered": false
+  },
+  "payload": {
+    "schema": "m1.cleaned_ledger_minimal.work_centric_match.v3",
+    "m2TotalStandardWorks": 3054,
+    "totalStandardWorks": 3054,
+    "matchedWorks": 1248,
+    "unmatchedWorks": 1806,
+    "conflictStandardWorks": 7,
+    "exactIdMatched": 1233,
+    "mappingIdMatched": 0,
+    "titleAuthorExactMatched": 0,
+    "titleAuthorFuzzyMatched": 15,
+    "matchMethodDistribution": {
+      "unmatched": 1806,
+      "exact_work_id": 1233,
+      "title_author_fuzzy": 15
+    },
+    "revenueShares": {
+      "matchedRevenueShare": 0.661113,
+      "unmatchedRevenueShare": 0.338887
+    },
+    "topRevenueCoverage": {
+      "top1Percent": {
+        "workCount": 31,
+        "matchedWorkCount": 22,
+        "matchedWorkRate": 0.709677,
+        "matchedRevenueShare": 0.706746,
+        "matchedTotalRevenueShare": 0.376847
+      },
+      "top5Percent": {
+        "workCount": 153,
+        "matchedWorkCount": 108,
+        "matchedWorkRate": 0.705882,
+        "matchedRevenueShare": 0.700492,
+        "matchedTotalRevenueShare": 0.567234
+      },
+      "top10Percent": {
+        "workCount": 306,
+        "matchedWorkCount": 184,
+        "matchedWorkRate": 0.601307,
+        "matchedRevenueShare": 0.683957,
+        "matchedTotalRevenueShare": 0.606923
+      }
+    },
+    "v2Comparison": {
+      "v2ReportAvailable": true,
+      "previousMatchedWorks": 1240,
+      "v2MatchedWorks": 1240,
+      "v2UnmatchedWorks": 1814,
+      "comparisonNote": "v3 uses only the new seven-column cleaned ledger; v2 65-field/audio-rights/publisher/CIP logic is obsolete."
+    },
+    "sanitized": {
+      "realWorkNamesIncluded": false,
+      "authorNamesIncluded": false,
+      "rawLedgerRowsIncluded": false
+    }
+  }
+}

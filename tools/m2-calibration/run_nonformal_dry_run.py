@@ -24,6 +24,17 @@ CODEX_BUNDLED_PYTHON_PACKAGES = (
 if CODEX_BUNDLED_PYTHON_PACKAGES.exists():
     sys.path.append(str(CODEX_BUNDLED_PYTHON_PACKAGES))
 
+if "--help" in sys.argv or "-h" in sys.argv:
+    print("usage: run_nonformal_dry_run.py [-h] [--variant {baseline,candidate-a,candidate-b}] [--compare-variants]")
+    print()
+    print("Run M2 non-formal aggregate dry-run parameter validation.")
+    print()
+    print("options:")
+    print("  -h, --help            show this help message and exit")
+    print("  --variant {baseline,candidate-a,candidate-b}")
+    print("  --compare-variants")
+    sys.exit(0)
+
 import numpy as np
 import pandas as pd
 

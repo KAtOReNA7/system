@@ -5,6 +5,8 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
 
+import { isObsoleteV2Field } from "../src/domain/oldProductEvaluation/cleanedLedgerMinimalBackfill.js";
+
 const script = "scripts/m2-real-data/run_m1_ledger_spotcheck_summary.py";
 
 function row(overrides = {}) {
@@ -72,6 +74,13 @@ test("spotcheck summary calculates completion rate", () => {
   assert.equal(summary.metrics.totalRows, 10);
   assert.equal(summary.metrics.completedRows, 9);
   assert.equal(summary.metrics.completionRate, 0.9);
+});
+
+test("v3 minimal spotcheck treats old v2-only fields as obsolete", () => {
+  assert.equal(isObsoleteV2Field("audioRightsStatus"), true);
+  assert.equal(isObsoleteV2Field("publisherName"), true);
+  assert.equal(isObsoleteV2Field("firstPublicationDate"), true);
+  assert.equal(isObsoleteV2Field("classificationLevel3"), true);
 });
 
 test("spotcheck summary calculates high-confidence acceptance rate", () => {

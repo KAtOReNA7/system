@@ -1,0 +1,58 @@
+{
+  "schema": "m2.cleaned_ledger_minimal_backfill_impact.v3",
+  "generatedAt": "2026-06-25T06:40:28.718318+00:00",
+  "currentHead": "f504492cbeb1a2beb51d2d3c26841b08fbd40fa3",
+  "originMain": "f504492cbeb1a2beb51d2d3c26841b08fbd40fa3",
+  "safeOutputBoundary": {
+    "sanitizedAggregateOnly": true,
+    "realWorkNamesIncluded": false,
+    "authorNamesIncluded": false,
+    "rawLedgerRowsIncluded": false,
+    "privateDetailsStoredOnlyInGitignoredOutput": true,
+    "databaseConnected": false,
+    "formalMasterDataWritten": false,
+    "m3Entered": false
+  },
+  "payload": {
+    "schema": "m2.cleaned_ledger_minimal_backfill_impact.v3",
+    "copyrightTermForecast": {
+      "autoApplyEndDateCandidateWorks": 928,
+      "manualReviewEndDateCandidateWorks": 320,
+      "expectedIncrease": "copyright_term_forecast output type can increase after approved local staging apply and forecast rerun"
+    },
+    "pendingExpiryReduction": {
+      "autoReducibleWorks": 928,
+      "manualCandidateWorks": 320
+    },
+    "relativeExpiryPendingAnchorReduction": {
+      "pendingAnchorCandidateRows": 13,
+      "autoReduction": 0,
+      "reason": "relative expiry without an anchor remains manual-only"
+    },
+    "renewalReviewImprovement": {
+      "startDateAutoCandidateWorks": 1233,
+      "endDateAutoCandidateWorks": 928
+    },
+    "ratingAdjustmentImprovement": {
+      "classificationCandidateRows": 2064,
+      "classificationDefaultAutoApply": false
+    },
+    "manualReviewImprovement": {
+      "candidateWorks": 1248,
+      "autoApplyEligibleWorks": 1233,
+      "manualReviewRows": 2433
+    },
+    "audioRightsStatus": {
+      "stillNeedsOtherSource": true,
+      "reason": "the cleaned ledger v3 has no audio-rights field"
+    },
+    "recommendedRerunsAfterApprovedApply": [
+      "forecastOutputType distribution",
+      "30-work operator pack selection",
+      "20-year sample validation",
+      "business review selection",
+      "v1.1 forecastability gate"
+    ],
+    "notM3": true
+  }
+}

@@ -1,0 +1,101 @@
+{
+  "schema": "m1.cleaned_ledger_minimal.auto_apply_rule.v3",
+  "generatedAt": "2026-06-25T06:40:28.533261+00:00",
+  "currentHead": "f504492cbeb1a2beb51d2d3c26841b08fbd40fa3",
+  "originMain": "f504492cbeb1a2beb51d2d3c26841b08fbd40fa3",
+  "safeOutputBoundary": {
+    "sanitizedAggregateOnly": true,
+    "realWorkNamesIncluded": false,
+    "authorNamesIncluded": false,
+    "rawLedgerRowsIncluded": false,
+    "privateDetailsStoredOnlyInGitignoredOutput": true,
+    "databaseConnected": false,
+    "formalMasterDataWritten": false,
+    "m3Entered": false
+  },
+  "payload": {
+    "schema": "m1.cleaned_ledger_minimal.auto_apply_rule.v3",
+    "allowedAutoApplyFields": [
+      "authorName",
+      "copyrightEndDate",
+      "copyrightStartDate",
+      "standardWorkName"
+    ],
+    "neverAutoApplyFields": [
+      "classificationLevel1",
+      "classificationLevel2",
+      "publisherName",
+      "firstPublicationDate",
+      "audioRightsStatus",
+      "classificationLevel3",
+      "isbn",
+      "cip",
+      "contractNo",
+      "contractType",
+      "audioUseRight",
+      "audioAdaptationRight",
+      "audioSublicenseRight"
+    ],
+    "criteria": {
+      "currentValue": "must be empty, unless identical formatting normalization only",
+      "matchMethod": "exact_work_id or mapping_work_id, or title_author_exact with matchConfidence >= 0.99",
+      "valueConfidence": ">= 0.97",
+      "conflictStatus": "none",
+      "manualReview": "false",
+      "fuzzyMatch": "never auto apply",
+      "relativeExpiryWithoutAnchor": "never auto apply",
+      "automaticRenewal": "never extend automatically",
+      "indefiniteExpiry": "not converted to concrete date",
+      "nonEmptyAuthoritativeValue": "not overwritten unless identical"
+    },
+    "summary": {
+      "schema": "m1.cleaned_ledger_minimal.backfill_candidates.v3",
+      "totalCandidateRows": 7054,
+      "candidateWorks": 1248,
+      "autoApplyEligibleRows": 3900,
+      "autoApplyEligibleWorks": 1233,
+      "manualReviewRows": 2433,
+      "byField": {
+        "standardWorkName": 1248,
+        "authorName": 1246,
+        "copyrightStartDate": 1248,
+        "copyrightEndDate": 1248,
+        "classificationLevel1": 1048,
+        "classificationLevel2": 1016
+      },
+      "byMatchMethod": {
+        "exact_work_id": 6977,
+        "title_author_fuzzy": 77
+      },
+      "byParserStatus": {
+        "parsed": 6741,
+        "unparsed": 296,
+        "pending_anchor": 13,
+        "auto_renewal": 4
+      },
+      "byConflictStatus": {
+        "none": 7047,
+        "value_conflict": 7
+      },
+      "byRecommendedBucket": {
+        "auto_apply_v3": 3900,
+        "manual_review_or_dry_run_only": 3154
+      },
+      "candidateRevenueShare": 0.661113,
+      "autoApplyRevenueShare": 0.638379,
+      "explicitlyExcludedFields": [
+        "publisherName",
+        "firstPublicationDate",
+        "audioRightsStatus",
+        "classificationLevel3",
+        "isbn",
+        "cip",
+        "contractNo",
+        "contractType",
+        "audioUseRight",
+        "audioAdaptationRight",
+        "audioSublicenseRight"
+      ]
+    }
+  }
+}
