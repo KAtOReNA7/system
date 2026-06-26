@@ -1,0 +1,76 @@
+{
+  "schema": "m2.commercial_rating_calibration_v2.summary",
+  "generatedAt": "2026-06-26T08:40:00.881396+00:00",
+  "currentHead": "62401d496115f20edfa7b206749570ff113ce8a6",
+  "originMain": "62401d496115f20edfa7b206749570ff113ce8a6",
+  "payload": {
+    "candidateVersion": "m2-realdata-dev-commercial-rating-suggestion-v2.0",
+    "previousCandidateVersion": "m2-realdata-dev-rating-suggestion-calibrated-v1.0",
+    "reviewableRows": 25,
+    "historicalPerformanceDistribution": {
+      "A": 12,
+      "B": 3,
+      "C": 9,
+      "E": 1
+    },
+    "rightsStatusDistribution": {
+      "active": 19,
+      "unknown": 6
+    },
+    "forecastValueRatingDistribution": {
+      "A": 10,
+      "B": 3,
+      "not_applicable": 12
+    },
+    "operationalDecisionRatingDistribution": {
+      "commercial_review_required": 14,
+      "manual_review_required": 1,
+      "operable": 4,
+      "rights_review_required": 6
+    },
+    "displayRatingDistribution": {
+      "A": 12,
+      "B": 3,
+      "C": 9,
+      "E": 1
+    },
+    "ratingChangedFromV1Rows": 10,
+    "expiredRows": 0,
+    "expiredDisplayedAsOnlyE": 0,
+    "expiredButRevenuePresentRows": 0,
+    "rightsAuditRequiredRows": 6,
+    "formalMasterDataWritten": false,
+    "databaseConnected": false,
+    "m3Entered": false,
+    "safeOutputBoundary": {
+      "sanitizedAggregateOnly": true,
+      "realWorkNamesIncluded": false,
+      "authorNamesIncluded": false,
+      "channelNamesIncluded": false,
+      "rawLedgerRowsIncluded": false,
+      "rawContractTextIncluded": false,
+      "standardWorkIdDetailsIncluded": false,
+      "privateDetailsStoredOnlyInGitignoredOutput": true,
+      "formalMasterDataWritten": false,
+      "databaseConnected": false,
+      "databaseWritten": false,
+      "forecastModelChanged": false,
+      "m3Entered": false
+    }
+  },
+  "safeOutputBoundary": {
+    "sanitizedAggregateOnly": true,
+    "realWorkNamesIncluded": false,
+    "authorNamesIncluded": false,
+    "channelNamesIncluded": false,
+    "rawLedgerRowsIncluded": false,
+    "rawContractTextIncluded": false,
+    "standardWorkIdDetailsIncluded": false,
+    "privateDetailsStoredOnlyInGitignoredOutput": true,
+    "formalMasterDataWritten": false,
+    "databaseConnected": false,
+    "databaseWritten": false,
+    "forecastModelChanged": false,
+    "m3Entered": false
+  }
+}

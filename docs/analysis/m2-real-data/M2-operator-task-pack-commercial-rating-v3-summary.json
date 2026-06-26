@@ -1,0 +1,34 @@
+{
+  "kind": "m2.operator_task_pack_commercial_rating_v3.summary",
+  "generatedAt": "2026-06-26T07:03:36+00:00",
+  "gitHead": "62401d496115f20edfa7b206749570ff113ce8a6",
+  "candidateVersion": "m2-realdata-dev-commercial-rating-suggestion-v3.0",
+  "containsRealWorkNames": false,
+  "containsAuthorNames": false,
+  "containsChannelNames": false,
+  "containsRawLedgerRows": false,
+  "containsRawBillRows": false,
+  "containsContractText": false,
+  "containsSecrets": false,
+  "payload": {
+    "candidateVersion": "m2-realdata-dev-commercial-rating-suggestion-v3.0",
+    "operatorRows": 30,
+    "reviewableRows": 25,
+    "commercialColumnsAdded": [
+      "商业模式",
+      "商业模式置信度",
+      "是否买断",
+      "历史表现评级",
+      "当前版权状态",
+      "预测价值评级",
+      "当前运营决策级别",
+      "展示评级",
+      "建议证据",
+      "是否需要人工确认"
+    ],
+    "englishMainReadingCodesPresent": false,
+    "privateWorkbook": "data/private-output/m2-business-review/m2-v1.1-30-work-operator-task-pack-cn-commercial-rating-v3.xlsx",
+    "privateWorkbookCommitted": false,
+    "m3Entered": false
+  }
+}

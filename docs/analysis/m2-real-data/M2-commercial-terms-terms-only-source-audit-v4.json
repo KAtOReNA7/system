@@ -1,0 +1,128 @@
+{
+  "kind": "m2.commercial_terms_terms_only_source_audit.v4",
+  "candidateVersion": "m2-realdata-dev-commercial-rating-suggestion-v4.0-source-gate",
+  "commercial_terms_source_missing": true,
+  "oldCompleteCommercialTermsLedgerFound": false,
+  "termsOnlyLookupExecuted": false,
+  "ratingV4Executed": false,
+  "suggestionV4Executed": false,
+  "privateTaskPackGenerated": false,
+  "m3Entered": false,
+  "sourceGate": {
+    "cleanedSevenColumnLedger": {
+      "available": true,
+      "usableForCommercialTerms": false,
+      "reason": "identity, title, author, signing date, expiry date, and product line only"
+    },
+    "originalLibrary": {
+      "available": true,
+      "usableForCommercialTerms": false,
+      "reason": "web-original identity and copyright dates only"
+    },
+    "dualSourceStaging": {
+      "available": true,
+      "usableForCommercialTerms": false,
+      "reason": "confirmed identity/copyright staging scope only"
+    },
+    "operationConfirmationExtractedTags": {
+      "available": true,
+      "usableForCommercialTerms": false,
+      "reason": "v4 forbids using extracted tag candidates alone as commercial terms facts"
+    },
+    "oldCompleteCommercialTermsLedger": {
+      "available": false,
+      "usableForCommercialTerms": false,
+      "reason": "standalone structured source with required commercial terms columns was not found"
+    }
+  },
+  "requiredCommercialFieldCoverage": {
+    "cooperationMode": {
+      "oldCompleteLedger": false,
+      "extractedTagsOnly": true
+    },
+    "ebookRoyalty": {
+      "oldCompleteLedger": false,
+      "extractedTagsOnly": false
+    },
+    "audioRoyalty": {
+      "oldCompleteLedger": false,
+      "extractedTagsOnly": false
+    },
+    "ebookAdvance": {
+      "oldCompleteLedger": false,
+      "extractedTagsOnly": false
+    },
+    "audioAdvance": {
+      "oldCompleteLedger": false,
+      "extractedTagsOnly": false
+    },
+    "contractType": {
+      "oldCompleteLedger": false,
+      "extractedTagsOnly": false
+    },
+    "audioRightsDescription": {
+      "oldCompleteLedger": false,
+      "extractedTagsOnly": true
+    },
+    "audioUseRight": {
+      "oldCompleteLedger": false,
+      "extractedTagsOnly": true
+    },
+    "audioAdaptationRight": {
+      "oldCompleteLedger": false,
+      "extractedTagsOnly": true
+    },
+    "audioSublicenseRight": {
+      "oldCompleteLedger": false,
+      "extractedTagsOnly": true
+    }
+  },
+  "v3CoverageBaseline": {
+    "m2TotalWorks": 3054,
+    "knownCommercialModelWorks": 885,
+    "buyout": 255,
+    "royalty": 3,
+    "prepaidRoyalty": 1,
+    "revenueShare": 613,
+    "mixed": 13,
+    "conflict": 0,
+    "unknown": 2086,
+    "coverageRate": 0.289784
+  },
+  "v4PromotedCoverage": {
+    "m2TotalWorks": 3054,
+    "knownCommercialModelWorks": 0,
+    "buyout": 0,
+    "audioSpecificBuyout": 0,
+    "royalty": 0,
+    "prepaidRoyalty": 0,
+    "revenueShare": 0,
+    "ebookOnly": 0,
+    "mixedOrConflict": 0,
+    "unknown": 3054,
+    "coverageRate": 0
+  },
+  "blockers": [
+    "old complete commercial terms ledger is missing",
+    "operation-confirmation tags cannot be promoted to commercial terms facts",
+    "exact-id or strict title-author terms-only lookup cannot be validated",
+    "fuzzy and title-only commercial terms matching are forbidden"
+  ],
+  "requiredUserInput": [
+    "old complete commercial-terms ledger or equivalent structured export",
+    "exact work identity key that can map to already matched standard/raw/ledger work IDs",
+    "publication title, contract title, and author fields for strict verification",
+    "cooperation mode, e-book royalty, audio royalty, e-book advance, audio advance, contract type, and audio rights fields"
+  ],
+  "safety": {
+    "containsRealWorkNames": false,
+    "containsAuthorNames": false,
+    "containsChannelNames": false,
+    "containsContractText": false,
+    "containsRawLedgerRows": false,
+    "containsRawBillRows": false,
+    "containsSecrets": false,
+    "containsConnectionStrings": false,
+    "containsAbsoluteDataPaths": false
+  }
+}

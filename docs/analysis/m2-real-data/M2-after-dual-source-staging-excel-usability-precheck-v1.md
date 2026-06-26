@@ -10,7 +10,7 @@
 - 是否进入 M3: `False`
 
 ## 30-work 运营任务包
-- 文件: `data\private-output\m2-business-review\m2-v1.1-30-work-operator-task-pack-cn-after-dual-source-staging-v3.xlsx`
+- 文件: `data\private-output\m2-business-review\m2-v1.1-30-work-operator-task-pack-cn-after-dual-source-staging-v2.xlsx`
 - xlsx 格式有效: `True`
 - 任务行数: `30`
 - 样本分布: `{"系统分层样本": 20, "用户指定作品": 5, "高风险边界样本": 5}`
@@ -20,7 +20,7 @@
 - 可用 standard_work_id 回写: `True`
 
 ## 20-year evaluation
-- 文件: `data\private-output\m2-business-review\M2-v1.1-random-20-year-evaluation-after-dual-source-staging-v3-cn.xlsx`
+- 文件: `data\private-output\m2-business-review\M2-v1.1-random-20-year-evaluation-after-dual-source-staging-v2-cn.xlsx`
 - xlsx 格式有效: `True`
 - 有效样本行数: `20`
 - 覆盖年份: `["2017", "2018", "2019", "2020", "2021", "2022"]`

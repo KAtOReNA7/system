@@ -1,10 +1,10 @@
 {
   "schema": "m2.after_dual_source_staging_excel_usability_precheck.v1",
-  "generatedAt": "2026-06-25T14:21:52.556189+00:00",
-  "currentHead": "25b83a6e88c64a2dcb3544575a1ccf73aebc564a",
-  "originMain": "25b83a6e88c64a2dcb3544575a1ccf73aebc564a",
+  "generatedAt": "2026-06-26T02:56:17.705339+00:00",
+  "currentHead": "62401d496115f20edfa7b206749570ff113ce8a6",
+  "originMain": "62401d496115f20edfa7b206749570ff113ce8a6",
   "operatorTask": {
-    "path": "data\\private-output\\m2-business-review\\m2-v1.1-30-work-operator-task-pack-cn-after-dual-source-staging-v3.xlsx",
+    "path": "data\\private-output\\m2-business-review\\m2-v1.1-30-work-operator-task-pack-cn-after-dual-source-staging-v2.xlsx",
     "originalLockedPath": "data\\private-output\\m2-business-review\\m2-v1.1-30-work-operator-task-pack-cn-after-dual-source-staging-v2.xlsx",
     "sourceJsonPath": "data\\private-output\\m2-business-review\\m2-v1.1-30-work-operator-task-pack-cn-after-dual-source-staging-v2-source.json",
     "xlsxExists": true,
@@ -28,7 +28,7 @@
     "detailRowCount": 25
   },
   "random20": {
-    "path": "data\\private-output\\m2-business-review\\M2-v1.1-random-20-year-evaluation-after-dual-source-staging-v3-cn.xlsx",
+    "path": "data\\private-output\\m2-business-review\\M2-v1.1-random-20-year-evaluation-after-dual-source-staging-v2-cn.xlsx",
     "originalPath": "data\\private-output\\m2-business-review\\M2-v1.1-random-20-year-evaluation-after-dual-source-staging-v2-cn.xlsx",
     "sourceJsonPath": "data\\private-output\\m2-business-review\\M2-v1.1-random-20-year-evaluation-after-dual-source-staging-v2-cn-source.json",
     "xlsxExists": true,

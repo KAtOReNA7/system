@@ -1,6 +1,6 @@
 {
   "schema": "m2.v1_1.operator_task_validation_guide.cn.v1",
-  "generatedAt": "2026-06-25T13:45:34.266146+00:00",
+  "generatedAt": "2026-06-26T02:37:45.769059+00:00",
   "candidateVersion": "m2-realdata-dev-disentangled-forecast-v1.1-conditional",
   "reviewWorkflow": [
     "先阅读 00_阅读说明，确认任务边界。",

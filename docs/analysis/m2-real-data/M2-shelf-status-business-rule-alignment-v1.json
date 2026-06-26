@@ -1,0 +1,34 @@
+{
+  "reportId": "m2.shelf_status_business_rule_alignment.v1",
+  "generatedAt": "2026-06-26T10:39:27.284353+00:00",
+  "sanitized": true,
+  "containsRealWorkTitles": false,
+  "containsAuthors": false,
+  "containsChannels": false,
+  "containsRawBillingRows": false,
+  "payload": {
+    "candidateVersion": "m2-realdata-dev-rating-standard-v3.0",
+    "businessRules": [
+      "版权到期是下架强信号。",
+      "收入为 0 不能单独判断下架。",
+      "已下架作品仍可能因已购用户或会员收听产生少量尾部收入。",
+      "版权到期 + 少量尾部收入 = 已下架但有尾部收入。",
+      "在架状态影响当前评级解释，但不抹掉历史评级。"
+    ],
+    "fullCohortShelfStatusDistribution": {
+      "active_on_shelf": 1704,
+      "likely_off_shelf": 61,
+      "rights_expired_likely_off_shelf": 82,
+      "off_shelf_but_tail_revenue": 145,
+      "unknown_shelf_status": 1062
+    },
+    "taskPackShelfStatusDistribution": {
+      "仍在架或可运营": 14,
+      "无法判断": 11,
+      "版权到期，大概率下架": 3,
+      "已下架但仍有存量会员/已购用户尾部收入": 2
+    },
+    "sanitized": true,
+    "m3Entered": false
+  }
+}

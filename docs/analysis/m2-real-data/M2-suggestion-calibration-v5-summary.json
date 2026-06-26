@@ -1,0 +1,26 @@
+{
+  "reportId": "m2.suggestion_calibration_v5_summary",
+  "generatedAt": "2026-06-26T09:36:23.638930+00:00",
+  "sanitized": true,
+  "containsRealWorkTitles": false,
+  "containsAuthors": false,
+  "containsChannels": false,
+  "containsRawBillingRows": false,
+  "payload": {
+    "candidateVersion": "m2-realdata-dev-revenue-model-rating-v2.0",
+    "operatingSuggestionCount": 671,
+    "reviewPromptCount": 2383,
+    "noAutomaticSuggestionCount": 2156,
+    "suggestionTypeDistribution": {
+      "observe_only": 2213,
+      "maintain": 400,
+      "reduce": 271,
+      "rights_audit": 145,
+      "renewal_review": 25
+    },
+    "usesEvidenceGate": true,
+    "templateLikeSuggestionSuppressed": true,
+    "sanitized": true,
+    "m3Entered": false
+  }
+}

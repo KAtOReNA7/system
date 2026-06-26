@@ -1,0 +1,80 @@
+{
+  "reportId": "m2.revenue_model_classification_audit.v1",
+  "generatedAt": "2026-06-26T10:38:21.091106+00:00",
+  "sanitized": true,
+  "containsRealWorkTitles": false,
+  "containsAuthors": false,
+  "containsChannels": false,
+  "containsRawBillingRows": false,
+  "payload": {
+    "candidateVersion": "m2-realdata-dev-rating-standard-v1.0",
+    "classificationBoundary": "inferred from billing behavior, not contract terms",
+    "totalWorks": 3054,
+    "totalHistoricalRevenue": 126794638.17,
+    "revenueModelDistribution": {
+      "pure_sales_share": 2275,
+      "pure_buyout": 370,
+      "buyout_plus_sales": 0,
+      "unknown_revenue_model": 409
+    },
+    "revenueModelChineseDistribution": {
+      "纯实销/纯分成": 2275,
+      "纯买断": 370,
+      "买断+实销": 0,
+      "收入模式未知": 409
+    },
+    "revenueShareByRevenueModel": {
+      "pure_sales_share": 0.7563,
+      "pure_buyout": 0.1791,
+      "buyout_plus_sales": 0.0,
+      "unknown_revenue_model": 0.0646
+    },
+    "confidenceDistributionByModel": {
+      "pure_sales_share": {
+        "high": 1675,
+        "medium": 600
+      },
+      "pure_buyout": {
+        "high": 320,
+        "medium": 50
+      },
+      "unknown_revenue_model": {
+        "low": 409
+      }
+    },
+    "topRevenueCohortDistribution": {
+      "top1Percent": {
+        "count": 31,
+        "modelDistribution": {
+          "pure_sales_share": 22,
+          "pure_buyout": 6,
+          "buyout_plus_sales": 0,
+          "unknown_revenue_model": 3
+        }
+      },
+      "top5Percent": {
+        "count": 153,
+        "modelDistribution": {
+          "pure_sales_share": 124,
+          "pure_buyout": 21,
+          "buyout_plus_sales": 0,
+          "unknown_revenue_model": 8
+        }
+      },
+      "top10Percent": {
+        "count": 306,
+        "modelDistribution": {
+          "pure_sales_share": 227,
+          "pure_buyout": 62,
+          "buyout_plus_sales": 0,
+          "unknown_revenue_model": 17
+        }
+      }
+    },
+    "estimatedBuyoutAmountShare": 0.187,
+    "estimatedSalesTailAmountShare": 0.8282,
+    "manualReviewRequiredCount": 459,
+    "sanitized": true,
+    "m3Entered": false
+  }
+}

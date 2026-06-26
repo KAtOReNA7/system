@@ -1,0 +1,58 @@
+{
+  "schema": "m2.commercial_suggestion_calibration_v2.summary",
+  "generatedAt": "2026-06-26T08:40:01.027072+00:00",
+  "currentHead": "62401d496115f20edfa7b206749570ff113ce8a6",
+  "originMain": "62401d496115f20edfa7b206749570ff113ce8a6",
+  "payload": {
+    "candidateVersion": "m2-realdata-dev-commercial-rating-suggestion-v2.0",
+    "reviewableRows": 25,
+    "suggestionDistribution": {
+      "maintain": 2,
+      "manual_review_required": 22,
+      "renewal_review": 1
+    },
+    "actionabilityDistribution": {
+      "有证据": 2,
+      "有证据但需人工确认": 1,
+      "证据不足": 22
+    },
+    "deletedOrDowngradedRows": 22,
+    "evidenceBackedSuggestionRows": 25,
+    "manualConfirmationRows": 23,
+    "buyoutInfluencedRows": 1,
+    "expiredRightsInfluencedRows": 0,
+    "formalMasterDataWritten": false,
+    "databaseConnected": false,
+    "m3Entered": false,
+    "safeOutputBoundary": {
+      "sanitizedAggregateOnly": true,
+      "realWorkNamesIncluded": false,
+      "authorNamesIncluded": false,
+      "channelNamesIncluded": false,
+      "rawLedgerRowsIncluded": false,
+      "rawContractTextIncluded": false,
+      "standardWorkIdDetailsIncluded": false,
+      "privateDetailsStoredOnlyInGitignoredOutput": true,
+      "formalMasterDataWritten": false,
+      "databaseConnected": false,
+      "databaseWritten": false,
+      "forecastModelChanged": false,
+      "m3Entered": false
+    }
+  },
+  "safeOutputBoundary": {
+    "sanitizedAggregateOnly": true,
+    "realWorkNamesIncluded": false,
+    "authorNamesIncluded": false,
+    "channelNamesIncluded": false,
+    "rawLedgerRowsIncluded": false,
+    "rawContractTextIncluded": false,
+    "standardWorkIdDetailsIncluded": false,
+    "privateDetailsStoredOnlyInGitignoredOutput": true,
+    "formalMasterDataWritten": false,
+    "databaseConnected": false,
+    "databaseWritten": false,
+    "forecastModelChanged": false,
+    "m3Entered": false
+  }
+}

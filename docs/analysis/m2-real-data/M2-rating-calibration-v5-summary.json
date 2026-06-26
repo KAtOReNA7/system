@@ -1,0 +1,56 @@
+{
+  "reportId": "m2.rating_calibration_v5_summary",
+  "generatedAt": "2026-06-26T09:36:23.638220+00:00",
+  "sanitized": true,
+  "containsRealWorkTitles": false,
+  "containsAuthors": false,
+  "containsChannels": false,
+  "containsRawBillingRows": false,
+  "payload": {
+    "candidateVersion": "m2-realdata-dev-revenue-model-rating-v2.0",
+    "salesPerformanceRatingDistribution": {
+      "S+": 35,
+      "S": 113,
+      "A": 79,
+      "B": 332,
+      "C": 163,
+      "D": 364,
+      "E": 1968
+    },
+    "buyoutHistoricalValueRatingDistribution": {
+      "not_applicable": 2029,
+      "S": 323,
+      "E": 457,
+      "A": 45,
+      "D": 23,
+      "B": 116,
+      "S+": 40,
+      "C": 21
+    },
+    "historicalPerformanceRatingDistribution": {
+      "S+": 66,
+      "S": 406,
+      "A": 97,
+      "B": 397,
+      "C": 163,
+      "D": 346,
+      "E": 1579
+    },
+    "forecastValueRatingDistribution": {
+      "D": 395,
+      "C": 704,
+      "B": 844,
+      "E": 1111
+    },
+    "operationalDecisionRatingDistribution": {
+      "operable": 2751,
+      "shelf_review_required": 61,
+      "revenue_model_review_required": 15,
+      "renewal_review_required": 227
+    },
+    "expiredDoesNotRewriteHistoricalE": true,
+    "shelfDoesNotRewriteHistoricalE": true,
+    "sanitized": true,
+    "m3Entered": false
+  }
+}

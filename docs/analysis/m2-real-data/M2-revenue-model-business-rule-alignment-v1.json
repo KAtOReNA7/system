@@ -1,0 +1,38 @@
+{
+  "reportId": "m2.revenue_model_business_rule_alignment.v1",
+  "generatedAt": "2026-06-26T10:39:27.283422+00:00",
+  "sanitized": true,
+  "containsRealWorkTitles": false,
+  "containsAuthors": false,
+  "containsChannels": false,
+  "containsRawBillingRows": false,
+  "payload": {
+    "candidateVersion": "m2-realdata-dev-rating-standard-v3.0",
+    "userRules": {
+      "pure_sales_share": "按渠道判断；多月连续或半连续；金额不标准且自然变化；无同批次同额买断信号。",
+      "pure_buyout": "按渠道判断；个别月份大额；金额整齐；同批次多作品同额或近似均分；后续该渠道无持续实销入账。",
+      "buyout_plus_sales": "不同渠道或不同阶段同时满足买断和实销，或买断后存在持续实销尾部。",
+      "unknown": "仅限数据不足或冲突，不得过度保守。"
+    },
+    "currentRecognition": {
+      "pure_sales_share": 2013,
+      "pure_buyout": 385,
+      "buyout_plus_sales": 640,
+      "unknown_revenue_model": 16
+    },
+    "unknownCount": 16,
+    "buyoutPlusSalesCount": 640,
+    "taskPackRevenueModelDistribution": {
+      "纯实销/纯分成": 9,
+      "买断+实销": 13,
+      "纯买断": 8
+    },
+    "typicalPatternsNeedingUserReview": [
+      "单月大额但后续有尾部收入的混合渠道",
+      "买断+实销渠道拆分",
+      "低频单月收入且金额不高的 unknown 边界"
+    ],
+    "sanitized": true,
+    "m3Entered": false
+  }
+}

@@ -1,0 +1,151 @@
+{
+  "schema": "m2.v1_1.after_staging_operator_validation_summary.v1",
+  "generatedAt": "2026-06-26T05:35:56.157542+00:00",
+  "currentHead": "62401d496115f20edfa7b206749570ff113ce8a6",
+  "originMain": "62401d496115f20edfa7b206749570ff113ce8a6",
+  "input": {
+    "privateWorkbookPath": "data\\private-output\\m2-business-review\\m2-v1.1-30-work-operator-task-pack-cn-after-dual-source-staging-v2.xlsx",
+    "versionConstraint": "after-dual-source-staging-v2 only",
+    "oldAnonymousWorkbookRead": false,
+    "groupedByStandardWorkId": true
+  },
+  "summary": {
+    "taskRows": 30,
+    "reviewableRows": 25,
+    "userReservedRows": 5,
+    "uniqueStandardWorkIdCount": 30,
+    "duplicateStandardWorkIdCount": 0,
+    "rowsWithCoreFeedback": 25,
+    "coreFeedbackCompletionRate": 1.0,
+    "overallCoreFeedbackCompletionRate": 0.8333,
+    "sampleSourceDistribution": {
+      "用户指定作品": 5,
+      "系统分层样本": 20,
+      "高风险边界样本": 5
+    },
+    "forecastOutputTypeDistribution": {
+      "copyright_term_forecast": 19,
+      "operating_window_forecast_pending_expiry": 6
+    },
+    "forecastabilityStatusDistribution": {
+      "conservative_numeric_forecast": 5,
+      "numeric_forecast_eligible": 8,
+      "observe_only_no_numeric_forecast": 2,
+      "true_forecast_blocked": 10
+    },
+    "businessActionStatusDistribution": {
+      "action_allowed": 13,
+      "action_blocked": 10,
+      "observe_only": 2
+    },
+    "revenueBucketDistribution": {
+      "high": 1,
+      "long_tail": 1,
+      "top": 23
+    },
+    "lifecycleDistribution": {
+      "declining": 3,
+      "growth": 1,
+      "inactive": 8,
+      "insufficient_history": 1,
+      "long_tail": 1,
+      "stable": 11
+    }
+  },
+  "operatorFeedback": {
+    "forecastTrust": {
+      "distribution": {
+        "不可信": 1,
+        "可信": 24
+      },
+      "positiveCount": 24,
+      "negativeOrUncertainCount": 1,
+      "blankCount": 0,
+      "positiveRate": 0.96
+    },
+    "ratingReasonable": {
+      "distribution": {
+        "不合理": 25
+      },
+      "positiveCount": 0,
+      "negativeOrUncertainCount": 25,
+      "blankCount": 0,
+      "positiveRate": 0.0
+    },
+    "suggestionExecutable": {
+      "distribution": {
+        "不可执行": 8,
+        "不适用": 4,
+        "可执行": 13
+      },
+      "positiveCount": 17,
+      "negativeOrUncertainCount": 8,
+      "blankCount": 0,
+      "positiveRate": 0.68
+    },
+    "issueType": {
+      "exactDistribution": {
+        "评级不合理": 12,
+        "评级不合理，业务常识冲突": 12,
+        "预测不合理，评级不合理": 1
+      },
+      "splitDistribution": {
+        "业务常识冲突": 12,
+        "评级不合理": 25,
+        "预测不合理": 1
+      }
+    },
+    "suggestionCorrection": {
+      "filledCount": 0,
+      "blankCount": 25
+    }
+  },
+  "m4Calibration": {
+    "distributionAllRows": {
+      "待定": 25,
+      "未填写": 5
+    },
+    "distributionReviewableRows": {
+      "待定": 25
+    },
+    "confirmedCandidateCount": 0,
+    "pendingCandidateCount": 25,
+    "rejectedCandidateCount": 0,
+    "operatorIssueRowsThatMayNeedCalibration": 25,
+    "userReservedRowsWithoutCoreFeedback": 5,
+    "m4Boundary": "candidate sedimentation only; no self-learning and no M3 entry in this run"
+  },
+  "v1_1ConditionalAcceptance": {
+    "candidateVersion": "m2-realdata-dev-disentangled-forecast-v1.1-conditional",
+    "overallDecision": "not_accepted_for_limited_m2_business_review_baseline",
+    "forecastLayerDecision": "usable_with_exception",
+    "ratingLayerDecision": "needs_rework",
+    "suggestionLayerDecision": "needs_rework",
+    "canBeAcceptedAsLimitedM2BusinessReviewBaseline": false,
+    "blockers": [
+      "业务常识冲突 12 条，超过通过阈值 2 条",
+      "评级被运营标记为不合理 25 条",
+      "运营建议被标记为不可执行 8 条"
+    ],
+    "warnings": [
+      "预测被标记为不可信 1 条",
+      "问题类型包含预测不合理 1 条",
+      "M4 校准候选仍为待定 25 条"
+    ],
+    "m3Allowed": false,
+    "formalReleaseApproved": false
+  },
+  "safeOutputBoundary": {
+    "sanitizedAggregateOnly": true,
+    "realWorkNamesIncluded": false,
+    "authorNamesIncluded": false,
+    "standardWorkIdDetailsIncluded": false,
+    "channelNamesIncluded": false,
+    "rawLedgerRowsIncluded": false,
+    "privateWorkbookCommitted": false,
+    "formalMasterDataWritten": false,
+    "databaseConnected": false,
+    "databaseWritten": false,
+    "m3Entered": false
+  }
+}

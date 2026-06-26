@@ -1,0 +1,77 @@
+{
+  "schema": "m2.suggestion_failure_root_cause_after_staging.v1",
+  "generatedAt": "2026-06-26T06:37:20+00:00",
+  "currentHead": "62401d496115f20edfa7b206749570ff113ce8a6",
+  "originMain": "62401d496115f20edfa7b206749570ff113ce8a6",
+  "payload": {
+    "candidateVersion": "m2-realdata-dev-rating-suggestion-calibrated-v1.0",
+    "reviewableRows": 25,
+    "suggestionNotExecutableRows": 8,
+    "businessCommonSenseConflictRows": 12,
+    "currentSuggestionDistribution": {
+      "仅观察，暂不作为投放、续约或下架的直接依据": 2,
+      "先按运营窗口复核，待补版权到期后再生成版权期预测": 5,
+      "先补齐预测阻断原因，不建议直接执行业务动作": 10,
+      "包装或定位复核": 1,
+      "维持当前运营": 7
+    },
+    "newSuggestionDistribution": {
+      "maintain": 8,
+      "manual_review_required": 11,
+      "observe_only": 2,
+      "reduce_investment": 2,
+      "renewal_review": 2
+    },
+    "rootCauseDistribution": {
+      "calibrated_rule_changed_suggestion": 18,
+      "old_suggestion_did_not_explain_true_forecast_blocker": 10,
+      "old_suggestion_not_actionable_under_business_action_block": 10,
+      "operator_marked_business_common_sense_conflict": 12,
+      "operator_marked_suggestion_not_executable": 8
+    },
+    "analysisFindings": {
+      "promoteOveruse": 0,
+      "downlistMisfire": 0,
+      "renewalWithoutSupport": 0,
+      "observeOnlyUnderused": 2,
+      "ignoredForecastabilityStatus": 10,
+      "ignoredBusinessActionStatus": 10,
+      "forecastModelChanged": false
+    },
+    "ruleFixesRequired": [
+      "action_blocked/true_forecast_blocked 统一转人工复核动作，不输出直接业务动作",
+      "observe-only/历史不足保持仅观察",
+      "promote 只允许高评级、增长/回升、置信度中高且 action_allowed",
+      "downlist 只允许低收入长尾/沉寂，且必须人工确认",
+      "renewal review 必须有版权期和收入价值支撑"
+    ],
+    "safeOutputBoundary": {
+      "sanitizedAggregateOnly": true,
+      "realWorkNamesIncluded": false,
+      "authorNamesIncluded": false,
+      "channelNamesIncluded": false,
+      "rawLedgerRowsIncluded": false,
+      "standardWorkIdDetailsIncluded": false,
+      "privateDetailsStoredOnlyInGitignoredOutput": true,
+      "formalMasterDataWritten": false,
+      "databaseConnected": false,
+      "databaseWritten": false,
+      "forecastModelChanged": false,
+      "m3Entered": false
+    }
+  },
+  "safeOutputBoundary": {
+    "sanitizedAggregateOnly": true,
+    "realWorkNamesIncluded": false,
+    "authorNamesIncluded": false,
+    "channelNamesIncluded": false,
+    "rawLedgerRowsIncluded": false,
+    "standardWorkIdDetailsIncluded": false,
+    "privateDetailsStoredOnlyInGitignoredOutput": true,
+    "formalMasterDataWritten": false,
+    "databaseConnected": false,
+    "databaseWritten": false,
+    "forecastModelChanged": false,
+    "m3Entered": false
+  }
+}

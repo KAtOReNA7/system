@@ -1,0 +1,53 @@
+{
+  "reportId": "m2.rating_standard_v1_validation_summary",
+  "generatedAt": "2026-06-26T10:38:21.092030+00:00",
+  "sanitized": true,
+  "containsRealWorkTitles": false,
+  "containsAuthors": false,
+  "containsChannels": false,
+  "containsRawBillingRows": false,
+  "payload": {
+    "candidateVersion": "m2-realdata-dev-rating-standard-v1.0",
+    "operatorFeedback": {
+      "inputWorkbook": "data/private-output/m2-business-review/m2-v1.1-30-work-operator-task-pack-cn-commercial-rating-v3.xlsx",
+      "rows": 30,
+      "reviewableRows": 25,
+      "ratingIssueRows": 25,
+      "ratingIssueHitRows": 25,
+      "suggestionIssueRows": 8,
+      "suggestionIssueHitRows": 8,
+      "hitDefinition": "hit if v1 separates historical rating/rights/revenue model or downgrades weak suggestion into evidence-based prompt"
+    },
+    "ratingStandard": {
+      "displayRatingDistribution": {
+        "S+": 0,
+        "S": 0,
+        "A": 435,
+        "B": 987,
+        "C": 784,
+        "D": 484,
+        "E": 364
+      },
+      "operatorRowsRatingChanged": 14,
+      "expiredNoLongerForcedToE": true,
+      "buyoutNotAutoHighWithoutAmountSupport": true
+    },
+    "suggestionGate": {
+      "automaticOperatingSuggestionRows": 14,
+      "reviewPromptRows": 30,
+      "noAutomaticSuggestionRows": 16,
+      "templateSuggestionSuppressedRows": 16,
+      "evidenceRequired": true
+    },
+    "revenueModelDistribution": {
+      "pure_sales_share": 2275,
+      "pure_buyout": 370,
+      "buyout_plus_sales": 0,
+      "unknown_revenue_model": 409
+    },
+    "privateValidationWorkbook": "data/private-output/m2-business-review/m2-rating-standard-v1-validation.xlsx",
+    "privateOperatorWorkbook": "data/private-output/m2-business-review/m2-v1.1-30-work-operator-task-pack-cn-rating-standard-v1.xlsx",
+    "sanitized": true,
+    "m3Entered": false
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "kind": "m2.commercial_rating_calibration_v3.summary",
+  "generatedAt": "2026-06-26T07:03:36+00:00",
+  "gitHead": "62401d496115f20edfa7b206749570ff113ce8a6",
+  "candidateVersion": "m2-realdata-dev-commercial-rating-suggestion-v3.0",
+  "containsRealWorkNames": false,
+  "containsAuthorNames": false,
+  "containsChannelNames": false,
+  "containsRawLedgerRows": false,
+  "containsRawBillRows": false,
+  "containsContractText": false,
+  "containsSecrets": false,
+  "payload": {
+    "candidateVersion": "m2-realdata-dev-commercial-rating-suggestion-v3.0",
+    "previousCandidateVersion": "m2-realdata-dev-commercial-rating-suggestion-v2.0",
+    "validationRows": 2971,
+    "expiredValidationRows": 295,
+    "expiredHighOrMediumHistoricalValueRows": 63,
+    "expiredDisplayedAsOnlyE": 0,
+    "operatorRows": 25,
+    "operatorRatingChangedRows": 0,
+    "ratingSystemSplit": [
+      "historicalPerformanceRating",
+      "currentRightsStatus",
+      "forecastValueRating",
+      "operationalDecisionRating",
+      "displayRating"
+    ],
+    "m3Entered": false
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "reportId": "m2.billing_pattern_feature_audit.v1",
+  "generatedAt": "2026-06-26T10:38:21.090527+00:00",
+  "sanitized": true,
+  "containsRealWorkTitles": false,
+  "containsAuthors": false,
+  "containsChannels": false,
+  "containsRawBillingRows": false,
+  "payload": {
+    "candidateVersion": "m2-realdata-dev-rating-standard-v1.0",
+    "inputBoundary": "billing-pattern-only: uses cleaned local billing behavior and existing M2 work summaries; no contract/commercial-term field lookup",
+    "latestCompleteMonth": "2026-04",
+    "observableMonthCount": 107,
+    "totalWorks": 3054,
+    "featureDefinitions": [
+      {
+        "feature": "incomeMonthCount",
+        "meaning": "有正收入的月份数"
+      },
+      {
+        "feature": "largestMonthShare",
+        "meaning": "最大单月收入占总正收入比例，用于识别买断/批次集中"
+      },
+      {
+        "feature": "roundAmountRatio",
+        "meaning": "整额/圆整金额月份比例，用于识别买断/批次款"
+      },
+      {
+        "feature": "sameAmountSiblingWorks",
+        "meaning": "同月同金额的其他作品数量，用于识别同批次均分/买断信号"
+      },
+      {
+        "feature": "continuityScore",
+        "meaning": "正收入月份连续度，用于识别持续实销"
+      },
+      {
+        "feature": "randomnessScore",
+        "meaning": "正收入自然波动强度，用于识别非固定批次销售"
+      },
+      {
+        "feature": "postBuyoutTailSalesSignal",
+        "meaning": "大额收入后是否存在连续小额实销尾部"
+      }
+    ],
+    "incomeMonthCountBuckets": {
+      "> 48": 576,
+      "<= 24": 590,
+      "<= 48": 1083,
+      "<= 1": 318,
+      "<= 6": 113,
+      "<= 12": 260,
+      "<= 3": 114
+    },
+    "largestMonthShareBuckets": {
+      "0.00-0.20": 1182,
+      "0.20-0.40": 879,
+      "0.60-0.80": 191,
+      "0.80-1.00": 442,
+      "0.40-0.60": 360
+    },
+    "continuityScoreBuckets": {
+      "0.80-1.00": 2259,
+      "0.00-0.20": 425,
+      "0.60-0.80": 239,
+      "0.20-0.40": 29,
+      "0.40-0.60": 102
+    },
+    "roundAmountRatioBuckets": {
+      "0.00-0.20": 2740,
+      "0.80-1.00": 294,
+      "0.40-0.60": 8,
+      "0.60-0.80": 2,
+      "0.20-0.40": 10
+    },
+    "equalSplitSignalCount": 2812,
+    "postBuyoutTailSignalCount": 2239,
+    "dataSensitiveFieldsInReport": false,
+    "m3Entered": false
+  }
+}

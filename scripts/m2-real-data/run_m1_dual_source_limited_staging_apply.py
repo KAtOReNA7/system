@@ -158,7 +158,6 @@ def ensure_inputs() -> None:
             PRIVATE_OVERRIDES_JSON,
             PRIVATE_DRY_RUN_V2_JSON,
             SOURCE_OPERATOR_TASK_JSON,
-            SOURCE_RANDOM_20_JSON,
         ]
         if not path.exists()
     ]
@@ -402,7 +401,7 @@ def build_task_pack_payload(staging_records: list[dict]) -> dict:
     for record in staging_records:
         staging_by_work[record["standardWorkId"]].append(record)
     operator_source = read_json(SOURCE_OPERATOR_TASK_JSON)
-    random_source = read_json(SOURCE_RANDOM_20_JSON)
+    random_source = read_json(SOURCE_RANDOM_20_JSON) if SOURCE_RANDOM_20_JSON.exists() else fallback_random20_source(operator_source)
 
     operator_sheets = []
     operator_rows = 0
@@ -461,11 +460,42 @@ def append_staging_columns(row: dict, staging_by_work: dict[str, list[dict]]) ->
 
 
 def extract_standard_work_id(row: dict) -> str:
-    for key in ["标准作品ID", "standardWorkId", "作品ID", "用户指定作品ID"]:
+    for key in ["标准作品ID", "standardWorkId", "standard_work_id", "作品ID", "用户指定作品ID"]:
         value = clean(row.get(key))
         if value:
             return value
     return ""
+
+
+def fallback_random20_source(operator_source: dict) -> dict:
+    """Build a private compatibility source when the old random-20 pack is absent."""
+    rows = []
+    for sheet in operator_source.get("sheets", []):
+        for source_row in sheet.get("rows", []):
+            if not clean(source_row.get("样本编号")):
+                continue
+            if clean(source_row.get("样本来源")) == "用户指定作品":
+                continue
+            standard_id = clean(source_row.get("standard_work_id") or source_row.get("standardWorkId"))
+            row = dict(source_row)
+            if standard_id:
+                row["standardWorkId"] = standard_id
+            rows.append(row)
+            if len(rows) >= 20:
+                return {
+                    "summary": {
+                        "fallbackGeneratedFromOperatorTaskSource": True,
+                        "rowCount": len(rows),
+                    },
+                    "rows": rows,
+                }
+    return {
+        "summary": {
+            "fallbackGeneratedFromOperatorTaskSource": True,
+            "rowCount": len(rows),
+        },
+        "rows": rows,
+    }
 
 
 def build_public_summary(

@@ -1,0 +1,156 @@
+{
+  "schema": "m2.commercial_terms_source_audit.v1",
+  "generatedAt": "2026-06-26T08:40:00.736492+00:00",
+  "currentHead": "62401d496115f20edfa7b206749570ff113ce8a6",
+  "originMain": "62401d496115f20edfa7b206749570ff113ce8a6",
+  "payload": {
+    "candidateVersion": "m2-realdata-dev-commercial-rating-suggestion-v2.0",
+    "forecastModelChanged": false,
+    "formalMasterDataWritten": false,
+    "databaseConnected": false,
+    "m3Entered": false,
+    "sourceFiles": [
+      {
+        "sourceAlias": "OPS_CONFIRMATION_V2_3_JSON",
+        "relativePath": "data\\m1-master-data-private\\ops-confirmation\\ops-confirmation-v2.3-data.json",
+        "sheetOrObject": "sheets[].标准作品基础信息补全.rows",
+        "usableForCommercialTerms": true
+      }
+    ],
+    "fieldFindings": [
+      {
+        "fieldName": "标签候选",
+        "containsSignals": [
+          "合作方式",
+          "买断",
+          "分成",
+          "版税",
+          "预付",
+          "保底"
+        ],
+        "nonEmptyCommercialSignalRows": 1270,
+        "rawContractTextCommitted": false
+      },
+      {
+        "fieldName": "运营备注/需要补充的字段/补全状态",
+        "containsSignals": [
+          "人工备注中的商业模式线索"
+        ],
+        "nonEmptyCommercialSignalRows": 0,
+        "rawContractTextCommitted": false
+      }
+    ],
+    "sourceRows": 3099,
+    "sourceWithCommercialTextRows": 929,
+    "commercialModelDistributionInSource": {
+      "buyout": 271,
+      "mixed": 13,
+      "prepaid_royalty": 1,
+      "revenue_share": 641,
+      "royalty": 3,
+      "unknown": 2170
+    },
+    "sourceGap": null,
+    "m2Mapping": {
+      "m2TotalWorks": 3054,
+      "stagingRevenueMappedWorks": 2971,
+      "unmappedByStagingRevenueIndexWorks": 83,
+      "commercialSourceMatchedWorks": 2971,
+      "knownCommercialModelWorks": 885,
+      "commercialCoverageRateOfM2": 0.972823,
+      "knownCommercialCoverageRateOfM2": 0.289784,
+      "commercialCoverageRateOfStagingRevenueMapped": 1.0,
+      "knownCommercialCoverageRateOfStagingRevenueMapped": 0.29788,
+      "commercialModelDistribution": {
+        "buyout": 255,
+        "mixed": 13,
+        "prepaid_royalty": 1,
+        "revenue_share": 613,
+        "royalty": 3,
+        "unknown": 2086
+      },
+      "commercialRevenueDistribution": {
+        "buyout": 3207425.52,
+        "mixed": 1492952.38,
+        "prepaid_royalty": 163.45,
+        "revenue_share": 33490999.88,
+        "royalty": 14620.41,
+        "unknown": 84744560.45
+      },
+      "buyoutRevenueShareOfMappedRevenue": 0.026087,
+      "topRevenueCommercialDistribution": {
+        "top1Percent": {
+          "workCount": 31,
+          "distribution": {
+            "revenue_share": 2,
+            "unknown": 29
+          },
+          "revenueDistribution": {
+            "revenue_share": 21756300.18,
+            "unknown": 44135707.24
+          }
+        },
+        "top5Percent": {
+          "workCount": 153,
+          "distribution": {
+            "buyout": 7,
+            "mixed": 3,
+            "revenue_share": 31,
+            "unknown": 112
+          },
+          "revenueDistribution": {
+            "buyout": 1302827.55,
+            "mixed": 1256618.84,
+            "revenue_share": 27950971.92,
+            "unknown": 69526167.91
+          }
+        },
+        "top10Percent": {
+          "workCount": 306,
+          "distribution": {
+            "buyout": 22,
+            "mixed": 5,
+            "revenue_share": 64,
+            "unknown": 215
+          },
+          "revenueDistribution": {
+            "buyout": 2155644.41,
+            "mixed": 1360994.1,
+            "revenue_share": 30082975.34,
+            "unknown": 75981284.24
+          }
+        }
+      }
+    },
+    "safeOutputBoundary": {
+      "sanitizedAggregateOnly": true,
+      "realWorkNamesIncluded": false,
+      "authorNamesIncluded": false,
+      "channelNamesIncluded": false,
+      "rawLedgerRowsIncluded": false,
+      "rawContractTextIncluded": false,
+      "standardWorkIdDetailsIncluded": false,
+      "privateDetailsStoredOnlyInGitignoredOutput": true,
+      "formalMasterDataWritten": false,
+      "databaseConnected": false,
+      "databaseWritten": false,
+      "forecastModelChanged": false,
+      "m3Entered": false
+    }
+  },
+  "safeOutputBoundary": {
+    "sanitizedAggregateOnly": true,
+    "realWorkNamesIncluded": false,
+    "authorNamesIncluded": false,
+    "channelNamesIncluded": false,
+    "rawLedgerRowsIncluded": false,
+    "rawContractTextIncluded": false,
+    "standardWorkIdDetailsIncluded": false,
+    "privateDetailsStoredOnlyInGitignoredOutput": true,
+    "formalMasterDataWritten": false,
+    "databaseConnected": false,
+    "databaseWritten": false,
+    "forecastModelChanged": false,
+    "m3Entered": false
+  }
+}

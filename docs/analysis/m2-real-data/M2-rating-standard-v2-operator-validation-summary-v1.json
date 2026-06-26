@@ -1,0 +1,205 @@
+{
+  "reportId": "m2.rating_standard_v2_operator_validation_summary.v1",
+  "generatedAt": "2026-06-26T10:17:54.939864+00:00",
+  "sanitized": true,
+  "containsRealWorkTitles": false,
+  "containsAuthors": false,
+  "containsChannels": false,
+  "containsRawBillingRows": false,
+  "payload": {
+    "inputWorkbook": "data/private-output/m2-business-review/m2-v1.1-30-work-operator-task-pack-cn-rating-standard-v2.xlsx",
+    "onlyReadRatingStandardV2Workbook": true,
+    "formalMasterDataWritten": false,
+    "m3Entered": false,
+    "sampleRows": 30,
+    "feedbackRows": 30,
+    "feedbackCompletionRate": 1.0,
+    "feedbackSummary": {
+      "revenueModelReasonable": {
+        "filled": 30,
+        "positive": 26,
+        "negative": 4,
+        "uncertain": 0,
+        "other": 0,
+        "positiveRate": 0.8667,
+        "negativeRate": 0.1333,
+        "rawValueDistribution": {
+          "合理": 26,
+          "不合理": 4
+        }
+      },
+      "ratingReasonable": {
+        "filled": 30,
+        "positive": 17,
+        "negative": 13,
+        "uncertain": 0,
+        "other": 0,
+        "positiveRate": 0.5667,
+        "negativeRate": 0.4333,
+        "rawValueDistribution": {
+          "不合理": 13,
+          "合理": 17
+        }
+      },
+      "suggestionActionable": {
+        "filled": 30,
+        "positive": 0,
+        "negative": 30,
+        "uncertain": 0,
+        "other": 0,
+        "positiveRate": 0.0,
+        "negativeRate": 1.0,
+        "rawValueDistribution": {
+          "不可执行": 30
+        }
+      }
+    },
+    "revenueModelDistribution": {
+      "纯实销/纯分成": 9,
+      "买断+实销": 13,
+      "纯买断": 8
+    },
+    "shelfStatusDistribution": {
+      "仍在架或可运营": 14,
+      "无法判断": 11,
+      "版权到期，大概率下架": 3,
+      "已下架但仍有存量会员/已购用户尾部收入": 2
+    },
+    "salesRatingDistribution": {
+      "S+": 11,
+      "S": 6,
+      "A": 0,
+      "B": 1,
+      "C": 0,
+      "D": 0,
+      "E": 12
+    },
+    "historicalRatingDistribution": {
+      "S+": 19,
+      "S": 9,
+      "A": 1,
+      "B": 1,
+      "C": 0,
+      "D": 0,
+      "E": 0
+    },
+    "buyoutSummary": {
+      "buyoutRelatedRows": 21,
+      "pureBuyoutRows": 8,
+      "buyoutPlusSalesRows": 13,
+      "buyoutPlusSalesSplitCompleteRows": 13,
+      "buyoutHistoricalRatingDistribution": {
+        "E": 3,
+        "S+": 12,
+        "S": 5,
+        "A": 1
+      },
+      "ratingFeedbackOnBuyoutRows": {
+        "filled": 21,
+        "positive": 14,
+        "negative": 7,
+        "uncertain": 0,
+        "other": 0,
+        "positiveRate": 0.6667,
+        "negativeRate": 0.3333,
+        "rawValueDistribution": {
+          "不合理": 7,
+          "合理": 14
+        }
+      }
+    },
+    "expiredRightsSummary": {
+      "expiredRows": 5,
+      "simpleEOnlyRows": 0,
+      "notSimplyRatedERows": 5,
+      "expiredHistoricalRatingDistribution": {
+        "S": 3,
+        "A": 1,
+        "S+": 1
+      }
+    },
+    "ratingThresholdCheck": {
+      "basis": "年化实销收入优先；为空时使用实销12月收入；买断金额不进入实销评级",
+      "mismatchCount": 0,
+      "mismatchAnonymousIds": [],
+      "mismatchesByExpectedActual": {}
+    },
+    "suggestionSummary": {
+      "rowsWithSuggestionEvidence": 30,
+      "rowsWithConcreteSuggestion": 0,
+      "rowsWithReviewPrompt": 30,
+      "userMarkedSuggestionNegative": 30,
+      "templateLikeIssueCountFromUserNotes": 0,
+      "suggestionFeedback": {
+        "filled": 30,
+        "positive": 0,
+        "negative": 30,
+        "uncertain": 0,
+        "other": 0,
+        "positiveRate": 0.0,
+        "negativeRate": 1.0,
+        "rawValueDistribution": {
+          "不可执行": 30
+        }
+      }
+    },
+    "issueCategoryCounts": {
+      "评级标准": 10,
+      "收入模式/买断实销拆分": 9
+    },
+    "m4CalibrationCandidates": {
+      "count": 30,
+      "anonymousIds": [
+        "RSV2-001",
+        "RSV2-002",
+        "RSV2-003",
+        "RSV2-004",
+        "RSV2-005",
+        "RSV2-006",
+        "RSV2-007",
+        "RSV2-008",
+        "RSV2-009",
+        "RSV2-010",
+        "RSV2-011",
+        "RSV2-012",
+        "RSV2-013",
+        "RSV2-014",
+        "RSV2-015",
+        "RSV2-016",
+        "RSV2-017",
+        "RSV2-018",
+        "RSV2-019",
+        "RSV2-020",
+        "RSV2-021",
+        "RSV2-022",
+        "RSV2-023",
+        "RSV2-024",
+        "RSV2-025",
+        "RSV2-026",
+        "RSV2-027",
+        "RSV2-028",
+        "RSV2-029",
+        "RSV2-030"
+      ],
+      "reasonDistribution": {
+        "收入模式/买断实销拆分": 9,
+        "收入模式判断复核": 4,
+        "评级判断复核": 13,
+        "评级标准": 10,
+        "运营建议复核": 30
+      },
+      "rawWorkIdentifiersExcluded": true
+    },
+    "baselineDecision": {
+      "verdict": "CONDITIONAL_REWORK_REQUIRED",
+      "reason": "存在较多负向反馈或建议质量问题，应进入 M4 校准样本池后再定版",
+      "notFinalFormalReleaseApproval": true,
+      "m3Allowed": false
+    },
+    "sanitized": true,
+    "containsRealWorkTitles": false,
+    "containsAuthors": false,
+    "containsChannels": false,
+    "containsRawBillingRows": false
+  }
+}

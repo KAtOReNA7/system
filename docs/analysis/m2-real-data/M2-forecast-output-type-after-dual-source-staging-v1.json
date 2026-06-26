@@ -1,8 +1,8 @@
 {
   "schema": "m2.forecast_output_type_after_dual_source_staging.v1.public",
-  "generatedAt": "2026-06-25T14:21:21+00:00",
-  "currentHead": "25b83a6e88c64a2dcb3544575a1ccf73aebc564a",
-  "originMain": "25b83a6e88c64a2dcb3544575a1ccf73aebc564a",
+  "generatedAt": "2026-06-26T02:56:12+00:00",
+  "currentHead": "62401d496115f20edfa7b206749570ff113ce8a6",
+  "originMain": "62401d496115f20edfa7b206749570ff113ce8a6",
   "safeOutputBoundary": {
     "sanitizedAggregateOnly": true,
     "realWorkNamesIncluded": false,

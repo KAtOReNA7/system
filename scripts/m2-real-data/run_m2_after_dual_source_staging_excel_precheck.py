@@ -15,10 +15,10 @@ M2_PRIVATE = ROOT / "data" / "private-output" / "m2-business-review"
 
 OPERATOR_SOURCE_JSON = M2_PRIVATE / "m2-v1.1-30-work-operator-task-pack-cn-after-dual-source-staging-v2-source.json"
 OPERATOR_ORIGINAL_XLSX = M2_PRIVATE / "m2-v1.1-30-work-operator-task-pack-cn-after-dual-source-staging-v2.xlsx"
-OPERATOR_XLSX = M2_PRIVATE / "m2-v1.1-30-work-operator-task-pack-cn-after-dual-source-staging-v3.xlsx"
+OPERATOR_XLSX = OPERATOR_ORIGINAL_XLSX
 RANDOM20_SOURCE_JSON = M2_PRIVATE / "M2-v1.1-random-20-year-evaluation-after-dual-source-staging-v2-cn-source.json"
 RANDOM20_ORIGINAL_XLSX = M2_PRIVATE / "M2-v1.1-random-20-year-evaluation-after-dual-source-staging-v2-cn.xlsx"
-RANDOM20_XLSX = M2_PRIVATE / "M2-v1.1-random-20-year-evaluation-after-dual-source-staging-v3-cn.xlsx"
+RANDOM20_XLSX = RANDOM20_ORIGINAL_XLSX
 
 REPORT_MD = M2_DOCS / "M2-after-dual-source-staging-excel-usability-precheck-v1.md"
 REPORT_JSON = M2_DOCS / "M2-after-dual-source-staging-excel-usability-precheck-v1.json"

@@ -1,0 +1,84 @@
+{
+  "schema": "m2.rating_failure_root_cause_after_staging.v1",
+  "generatedAt": "2026-06-26T06:37:20+00:00",
+  "currentHead": "62401d496115f20edfa7b206749570ff113ce8a6",
+  "originMain": "62401d496115f20edfa7b206749570ff113ce8a6",
+  "payload": {
+    "candidateVersion": "m2-realdata-dev-rating-suggestion-calibrated-v1.0",
+    "reviewableRows": 25,
+    "ratingUnreasonableRows": 25,
+    "currentRatingDistribution": {
+      "B": 14,
+      "C": 2,
+      "D": 1,
+      "E": 8
+    },
+    "newRatingDistribution": {
+      "A": 4,
+      "B": 7,
+      "C": 9,
+      "E": 1,
+      "S": 4
+    },
+    "ratingChangeDirectionDistribution": {
+      "downgrade": 1,
+      "unchanged": 6,
+      "upgrade": 18
+    },
+    "rootCauseDistribution": {
+      "business_action_status_over_penalized_rating": 11,
+      "calibrated_rule_changed_rating": 19,
+      "forecastability_over_penalized_rating": 11,
+      "high_revenue_low_rating": 10,
+      "high_revenue_stable_under_rated": 10,
+      "lifecycle_over_penalized_high_revenue": 8,
+      "missing_expiry_should_be_readiness_warning_not_value_downgrade": 6,
+      "operator_marked_rating_unreasonable": 25
+    },
+    "analysisFindings": {
+      "thresholdIssue": "旧规则把高收入样本大量压在 B/C/D/E，阈值和状态惩罚组合偏保守",
+      "forecastWeightIssue": "预测阻断被用于压低商业价值，导致高历史收入样本被误判为低价值",
+      "lifecycleWeightIssue": "inactive/long_tail 对高收入样本惩罚过强",
+      "remainingCopyrightIssue": "双源 staging 后版权期变长，但旧 rating 未同步吸收剩余版权价值",
+      "dataFallbackIssue": "缺版权到期应作为 readiness warning，不应直接打低价值评级",
+      "businessKnowledgeMismatch": "用户对 25 个有效样本全部标记评级不合理",
+      "forecastModelChanged": false,
+      "stagingRecordCountRead": 7782
+    },
+    "ruleFixesRequired": [
+      "将历史收入/收入层级作为主价值信号",
+      "forecastable 与 non-forecastable cohort 分开评级",
+      "true_forecast_blocked 默认不超过 C，但高收入非长尾样本可到 B 且需人工复核",
+      "缺版权到期只作为 readiness warning",
+      "长剩余版权期与稳定/增长收入可上调评级"
+    ],
+    "safeOutputBoundary": {
+      "sanitizedAggregateOnly": true,
+      "realWorkNamesIncluded": false,
+      "authorNamesIncluded": false,
+      "channelNamesIncluded": false,
+      "rawLedgerRowsIncluded": false,
+      "standardWorkIdDetailsIncluded": false,
+      "privateDetailsStoredOnlyInGitignoredOutput": true,
+      "formalMasterDataWritten": false,
+      "databaseConnected": false,
+      "databaseWritten": false,
+      "forecastModelChanged": false,
+      "m3Entered": false
+    }
+  },
+  "safeOutputBoundary": {
+    "sanitizedAggregateOnly": true,
+    "realWorkNamesIncluded": false,
+    "authorNamesIncluded": false,
+    "channelNamesIncluded": false,
+    "rawLedgerRowsIncluded": false,
+    "standardWorkIdDetailsIncluded": false,
+    "privateDetailsStoredOnlyInGitignoredOutput": true,
+    "formalMasterDataWritten": false,
+    "databaseConnected": false,
+    "databaseWritten": false,
+    "forecastModelChanged": false,
+    "m3Entered": false
+  }
+}

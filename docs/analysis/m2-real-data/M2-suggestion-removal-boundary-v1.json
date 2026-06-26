@@ -1,0 +1,25 @@
+{
+  "reportId": "m2.suggestion_removal_boundary.v1",
+  "generatedAt": "2026-06-26T10:39:27.286080+00:00",
+  "sanitized": true,
+  "containsRealWorkTitles": false,
+  "containsAuthors": false,
+  "containsChannels": false,
+  "containsRawBillingRows": false,
+  "payload": {
+    "candidateVersion": "m2-realdata-dev-rating-standard-v3.0",
+    "automaticOperatingSuggestionMainFieldRemoved": true,
+    "m2AutomaticOperatingActionSuggestionEnabled": false,
+    "replacementFields": [
+      "riskAndReviewPrompt",
+      "m4CalibrationCandidateReason",
+      "noAutomaticSuggestionReason"
+    ],
+    "riskAndReviewPromptRows": 30,
+    "noAutomaticSuggestionReasonRows": 30,
+    "m4CalibrationCandidateRows": 30,
+    "reason": "v2 用户反馈显示 30/30 运营建议不可执行；M2 暂不提供自动运营动作建议，待 M4 校准阶段再启用。",
+    "sanitized": true,
+    "m3Entered": false
+  }
+}

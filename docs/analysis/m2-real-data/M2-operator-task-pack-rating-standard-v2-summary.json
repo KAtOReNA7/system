@@ -1,0 +1,23 @@
+{
+  "reportId": "m2.operator_task_pack_rating_standard_v2_summary",
+  "generatedAt": "2026-06-26T09:36:23.639549+00:00",
+  "sanitized": true,
+  "containsRealWorkTitles": false,
+  "containsAuthors": false,
+  "containsChannels": false,
+  "containsRawBillingRows": false,
+  "payload": {
+    "candidateVersion": "m2-realdata-dev-revenue-model-rating-v2.0",
+    "inputWorkbook": "data/private-output/m2-business-review/m2-v1.1-30-work-operator-task-pack-cn-rating-standard-v1.xlsx",
+    "privateOperatorWorkbook": "data/private-output/m2-business-review/m2-v1.1-30-work-operator-task-pack-cn-rating-standard-v2.xlsx",
+    "privateValidationWorkbook": "data/private-output/m2-business-review/m2-revenue-model-rating-v2-validation.xlsx",
+    "rows": 30,
+    "containsChannelRevenueModelSummary": true,
+    "containsShelfStatus": true,
+    "containsUserThresholdRating": true,
+    "containsUserFeedbackColumns": true,
+    "privateOnly": true,
+    "sanitizedPublicSummary": true,
+    "m3Entered": false
+  }
+}

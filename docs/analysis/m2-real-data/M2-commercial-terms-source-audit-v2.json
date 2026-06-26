@@ -1,0 +1,125 @@
+{
+  "kind": "m2.commercial_terms_source_audit.v2",
+  "generatedAt": "2026-06-26T07:03:36+00:00",
+  "gitHead": "62401d496115f20edfa7b206749570ff113ce8a6",
+  "candidateVersion": "m2-realdata-dev-commercial-rating-suggestion-v3.0",
+  "containsRealWorkNames": false,
+  "containsAuthorNames": false,
+  "containsChannelNames": false,
+  "containsRawLedgerRows": false,
+  "containsRawBillRows": false,
+  "containsContractText": false,
+  "containsSecrets": false,
+  "payload": {
+    "candidateVersion": "m2-realdata-dev-commercial-rating-suggestion-v3.0",
+    "sourceFiles": [
+      {
+        "sourceAlias": "OPS_CONFIRMATION_V2_3_JSON",
+        "relativePath": "data/m1-master-data-private/ops-confirmation/ops-confirmation-v2.3-data.json",
+        "sheetOrObject": "标准作品基础信息补全",
+        "sourceSnapshotMasterPath": "data/master-data/数字版权台账.xlsx",
+        "usableForCommercialTerms": true,
+        "sourceBoundary": "contains extracted ledger/operation tag fields, not raw contract rows"
+      },
+      {
+        "sourceAlias": "数字版权台账",
+        "relativePath": "data/master-data/数字版权台账.xlsx",
+        "usableForCommercialTerms": false,
+        "headerCommercialFields": [],
+        "reason": "no commercial terms headers found in visible first rows/columns"
+      },
+      {
+        "sourceAlias": "原创全库",
+        "relativePath": "data/master-data/原创全库.xlsx",
+        "usableForCommercialTerms": false,
+        "headerCommercialFields": [],
+        "reason": "no commercial terms headers found in visible first rows/columns"
+      }
+    ],
+    "fieldFindings": [
+      {
+        "fieldName": "标签候选",
+        "nonEmptyCommercialSignalRows": 1270,
+        "sourceType": "full_digital_ledger_extracted_tags"
+      }
+    ],
+    "sourceRows": 3099,
+    "sourceWithCommercialTextRows": 1270,
+    "commercialModelDistributionInSource": {
+      "buyout": 271,
+      "mixed": 13,
+      "prepaid_royalty": 1,
+      "revenue_share": 641,
+      "royalty": 3,
+      "unknown": 2170
+    },
+    "sourceGap": "当前可见精简数字版权台账未暴露完整商业条款列；v3 只能使用运营确认包中从台账/确认链路抽取的标签字段，因此商业模式置信度被降级并要求人工复核。",
+    "formalMasterDataWritten": false,
+    "databaseConnected": false,
+    "m3Entered": false,
+    "m2Mapping": {
+      "m2TotalWorks": 3054,
+      "stagingRevenueMappedWorks": 2971,
+      "commercialSourceMatchedWorks": 2971,
+      "knownCommercialModelWorks": 885,
+      "commercialCoverageRateOfM2": 0.972823,
+      "knownCommercialCoverageRateOfM2": 0.289784,
+      "commercialModelDistribution": {
+        "buyout": 255,
+        "mixed": 13,
+        "prepaid_royalty": 1,
+        "revenue_share": 613,
+        "royalty": 3,
+        "unknown": 2086
+      },
+      "commercialConfidenceDistribution": {
+        "medium": 885,
+        "none": 2086
+      },
+      "manualCommercialReviewDistribution": {
+        "requiresManualCommercialReview": 2971
+      },
+      "revenueByCommercialModel": {
+        "buyout": 3207425.52,
+        "mixed": 1492952.38,
+        "prepaid_royalty": 163.45,
+        "revenue_share": 33490999.88,
+        "royalty": 14620.41,
+        "unknown": 84744560.45
+      },
+      "buyoutRevenueShareOfMappedRevenue": 0.026087,
+      "topRevenueDistribution": {
+        "top1Percent": {
+          "workCount": 31,
+          "distribution": {
+            "revenue_share": 2,
+            "unknown": 29
+          }
+        },
+        "top5Percent": {
+          "workCount": 153,
+          "distribution": {
+            "buyout": 7,
+            "mixed": 3,
+            "revenue_share": 31,
+            "unknown": 112
+          }
+        },
+        "top10Percent": {
+          "workCount": 306,
+          "distribution": {
+            "buyout": 22,
+            "mixed": 5,
+            "revenue_share": 64,
+            "unknown": 215
+          }
+        }
+      }
+    },
+    "assessment": {
+      "v2CoverageConcernResolved": false,
+      "coverageExplanation": "v3 improves source confidence boundaries; it does not claim full commercial coverage because standalone full contract fields are not present in the current cleaned ledger.",
+      "rawDetailsExcluded": true
+    }
+  }
+}

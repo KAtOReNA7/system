@@ -1,0 +1,100 @@
+{
+  "schema": "m2.rating_suggestion_calibration_v1.summary",
+  "generatedAt": "2026-06-26T06:37:20+00:00",
+  "currentHead": "62401d496115f20edfa7b206749570ff113ce8a6",
+  "originMain": "62401d496115f20edfa7b206749570ff113ce8a6",
+  "payload": {
+    "candidateVersion": "m2-realdata-dev-rating-suggestion-calibrated-v1.0",
+    "forecastModelChanged": false,
+    "formalMasterDataWritten": false,
+    "databaseConnected": false,
+    "m3Entered": false,
+    "rating": {
+      "changedRows": 19,
+      "changedCoverageRate": 0.76,
+      "oldDistribution": {
+        "B": 14,
+        "C": 2,
+        "D": 1,
+        "E": 8
+      },
+      "newDistribution": {
+        "A": 4,
+        "B": 7,
+        "C": 9,
+        "E": 1,
+        "S": 4
+      },
+      "changeDirectionDistribution": {
+        "downgrade": 1,
+        "unchanged": 6,
+        "upgrade": 18
+      }
+    },
+    "suggestion": {
+      "changedRows": 18,
+      "changedCoverageRate": 0.72,
+      "oldDistribution": {
+        "仅观察，暂不作为投放、续约或下架的直接依据": 2,
+        "先按运营窗口复核，待补版权到期后再生成版权期预测": 5,
+        "先补齐预测阻断原因，不建议直接执行业务动作": 10,
+        "包装或定位复核": 1,
+        "维持当前运营": 7
+      },
+      "newDistribution": {
+        "maintain": 8,
+        "manual_review_required": 11,
+        "observe_only": 2,
+        "reduce_investment": 2,
+        "renewal_review": 2
+      }
+    },
+    "expectedImprovement": {
+      "ratingUnreasonableRows": 25,
+      "ratingUnreasonableHitRows": 19,
+      "suggestionNotExecutableRows": 8,
+      "suggestionNotExecutableHitRows": 8,
+      "remainingManualReviewRows": 17,
+      "stillNeedsUserValidation": true
+    },
+    "privateOutputs": {
+      "validationWorkbook": "data\\private-output\\m2-business-review\\m2-rating-suggestion-calibrated-v1.0-validation.xlsx",
+      "operatorTaskPack": "data\\private-output\\m2-business-review\\m2-v1.1-30-work-operator-task-pack-cn-after-rating-suggestion-calibration-v1.xlsx",
+      "gitignored": true
+    },
+    "inputContext": {
+      "forecastabilityVerdict": "CONDITIONAL PASS",
+      "businessReviewReadyCohort": 1041,
+      "copyrightTermForecastWorks": 2444,
+      "operatingWindowForecastWorks": 610
+    },
+    "safeOutputBoundary": {
+      "sanitizedAggregateOnly": true,
+      "realWorkNamesIncluded": false,
+      "authorNamesIncluded": false,
+      "channelNamesIncluded": false,
+      "rawLedgerRowsIncluded": false,
+      "standardWorkIdDetailsIncluded": false,
+      "privateDetailsStoredOnlyInGitignoredOutput": true,
+      "formalMasterDataWritten": false,
+      "databaseConnected": false,
+      "databaseWritten": false,
+      "forecastModelChanged": false,
+      "m3Entered": false
+    }
+  },
+  "safeOutputBoundary": {
+    "sanitizedAggregateOnly": true,
+    "realWorkNamesIncluded": false,
+    "authorNamesIncluded": false,
+    "channelNamesIncluded": false,
+    "rawLedgerRowsIncluded": false,
+    "standardWorkIdDetailsIncluded": false,
+    "privateDetailsStoredOnlyInGitignoredOutput": true,
+    "formalMasterDataWritten": false,
+    "databaseConnected": false,
+    "databaseWritten": false,
+    "forecastModelChanged": false,
+    "m3Entered": false
+  }
+}

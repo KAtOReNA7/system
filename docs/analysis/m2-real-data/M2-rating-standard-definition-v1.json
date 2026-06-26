@@ -1,0 +1,58 @@
+{
+  "reportId": "m2.rating_standard_definition.v1",
+  "generatedAt": "2026-06-26T10:38:21.091584+00:00",
+  "sanitized": true,
+  "containsRealWorkTitles": false,
+  "containsAuthors": false,
+  "containsChannels": false,
+  "containsRawBillingRows": false,
+  "payload": {
+    "candidateVersion": "m2-realdata-dev-rating-standard-v1.0",
+    "standardPurpose": "define rating as a layered business assessment, not a single copyright-expiry flag",
+    "ratingDefinitions": {
+      "S+": "历史收入或预测价值处于顶级，收入模式可信且权利可运营或有明确续约价值；必须人工确认。",
+      "S": "高历史价值或高预测价值，收入模式可信，预测置信度中高，无严重数据阻断。",
+      "A": "明显有业务价值，稳定收入、增长或买断后仍有实销尾部，可作为重点复核对象。",
+      "B": "中等价值，可维持运营或观察，历史或预测至少有一项支撑。",
+      "C": "低至中等价值，建议保守处理，需要结合权利、收入模式和风险判断。",
+      "D": "低价值或明显衰退，但不等于必须下架，可降低投入或观察。",
+      "E": "历史和预测均极低、长期无收入、且无买断保留价值或续约价值；不得仅因版权到期触发。"
+    },
+    "layers": [
+      "historicalPerformanceRating",
+      "currentRightsStatus",
+      "forecastValueRating",
+      "operationalDecisionRating",
+      "displayRating"
+    ],
+    "revenueQuantiles": {
+      "p40": 285.6,
+      "p50": 848.19,
+      "p75": 12378.72,
+      "p90": 41840.18,
+      "p95": 101254.47,
+      "p99": 831062.83
+    },
+    "historicalPerformanceRatingDistribution": {
+      "S+": 0,
+      "S": 0,
+      "A": 435,
+      "B": 987,
+      "C": 784,
+      "D": 484,
+      "E": 364
+    },
+    "forecastValueRatingDistribution": {
+      "C": 1070,
+      "D": 1221,
+      "B": 763
+    },
+    "operationalDecisionRatingDistribution": {
+      "rights_review_required": 3054
+    },
+    "expiredHandling": "copyright expiry affects currentRightsStatus and operationalDecisionRating, but never directly rewrites historicalPerformanceRating to E",
+    "buyoutHandling": "pure_buyout is evaluated by historical amount concentration and retained rights/value evidence; it is not automatically high-rated without amount support",
+    "unknownRevenueModelHandling": "unknown revenue model lowers automatic operating action strength but does not erase historical revenue value",
+    "m3Entered": false
+  }
+}

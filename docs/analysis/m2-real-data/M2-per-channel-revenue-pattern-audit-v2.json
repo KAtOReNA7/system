@@ -1,0 +1,46 @@
+{
+  "reportId": "m2.per_channel_revenue_pattern_audit.v2",
+  "generatedAt": "2026-06-26T09:36:23.635424+00:00",
+  "sanitized": true,
+  "containsRealWorkTitles": false,
+  "containsAuthors": false,
+  "containsChannels": false,
+  "containsRawBillingRows": false,
+  "payload": {
+    "candidateVersion": "m2-realdata-dev-revenue-model-rating-v2.0",
+    "inputBoundary": "standard_work_id + channel + business_form + month income facts; no contract/commercial-term lookup",
+    "latestCompleteMonth": "2026-04",
+    "channelGroups": 10822,
+    "observableMonthSpan": 107,
+    "channelRevenueModelDistribution": {
+      "sales_share_channel": 8812,
+      "buyout_channel": 1396,
+      "mixed_channel": 110,
+      "unknown_channel": 504
+    },
+    "featureDefinitions": [
+      "positiveMonthCount",
+      "observedMonthCount",
+      "activeMonthRatio",
+      "monthlyContinuityScore",
+      "amountVariationScore",
+      "nonStandardAmountRatio",
+      "integerAmountRatio",
+      "roundAmountRatio",
+      "singleLargeMonthShare",
+      "sameMonthSameAmountClusterSize",
+      "adjacentRowsSameAmountSignal",
+      "equalSplitBatchSignal",
+      "postLargePaymentTailMonthCount",
+      "postLargePaymentTailRevenue",
+      "naturalSalesSequenceSignal",
+      "buyoutSignalScore",
+      "salesSignalScore",
+      "channelRevenueModel"
+    ],
+    "naturalSalesSequenceSignalCount": 7444,
+    "equalSplitBatchSignalCount": 9613,
+    "sanitized": true,
+    "m3Entered": false
+  }
+}
