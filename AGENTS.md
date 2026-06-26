@@ -1,6 +1,6 @@
 # Codex 工作规则
 
-项目路径：`D:\porject\system`
+项目路径：`E:\project\system`
 
 ## 当前模式
 
@@ -15,6 +15,14 @@
 
 本地真实数据开发结果不自动等于正式发布审批结果。
 
+## 当前项目状态快照
+
+- 远端 `main` 已包含 M1/M2 本地开发 checkpoint：dual-source limited local staging、M2 v1.1 conditional forecastability、收入模式识别、货架/版权状态推断、rating-standard-v3 单一前台评级、风险/复核提示和自动运营建议主输出移除。
+- M1 dual-source staging 是文件级本地 staging，不写正式主数据，不等于正式主数据验收完成。
+- M2 v1.1 conditional 与 rating-standard-v3 只能作为本地真实数据开发和有限业务复核候选，不是最终正式发布审批结果。
+- `data/private-output/**` 中的 private Excel/CSV/JSON 只供本地查看和用户填写，禁止提交。
+- 当前未进入 M3；进入 M3、正式发布、生产数据连接、mapping activation、对外正式 task/export/write API 均需要用户后续单独明确授权。
+
 ## 禁止事项
 
 - 禁止连接远端生产、共享、staging-like 或未明确授权的数据库。
@@ -22,6 +30,7 @@
 - 禁止打印或提交 `.env`、`.pgpass`、密钥、连接串密码。
 - 禁止 `git add .`。
 - 禁止触碰 stash，包含清理、应用、删除或改写 stash。
+- 禁止把本地真实数据开发候选、v1.1 conditional、rating-standard-v3 或 private 任务包表述为最终正式发布审批结果。
 
 ## 提交规则
 

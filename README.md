@@ -1,7 +1,7 @@
 # 有声书产品收入评估与年度目标系统 PRD v0.2
 
-**状态：M1 工程冻结准备版**  
-**确认日期：2026-06-20**  
+**状态：M1/M2 本地真实数据开发 checkpoint**
+**确认日期：2026-06-26**
 **面向读者：运营、Codex、开发与测试**
 
 ## 本版本目的
@@ -17,15 +17,15 @@ v0.2 将 v0.1 的业务汇总稿改造成更适合 Codex 长期维护的文档�
 
 ## 当前工程进度提示
 
-当前仓库已经完成 M1+M2 staged engineering / fixture / non-formal candidate / formal-readiness prototype 阶段性收口，但这不等于 M1 正式真实数据验收完成，也不等于 M2 formal evaluation 完成。
+当前仓库处于 **authorized local real-data development mode**。允许读取用户提供的本地真实数据和 `data/**`，允许使用本地开发数据库、本地 Docker/PostgreSQL、本地 migration、真实数据导入、严格对账、回测和算法校准。仍禁止提交原始账单、台账、私有 Excel/CSV/JSON、`.env`、`.pgpass`、数据库 dump、临时数据库文件或敏感明细；仍禁止连接远端生产、共享、staging-like 或未明确授权的数据库。
 
-M2 冻结候选为 `m2-c3-cleaned-bill-nonformal-v0.2/candidate-a`。该候选只能作为非正式算法候选基线，不能用于正式发布决策；授权本地真实数据开发已经产生新的开发候选 `m2-realdata-dev-candidate-b-v0.1`，可用于下一轮业务复核和继续开发，但不是最终正式发布审批结果。
+当前远端 `main` 已包含 M1/M2 本地开发 checkpoint：
 
-当前策略已经进入 **authorized local real-data development mode**：允许读取用户提供的本地真实数据和 `data/**`，允许使用本地开发数据库、本地 Docker/PostgreSQL、本地 migration、真实数据导入、严格对账、回测和算法校准。仍禁止提交原始账单、台账、私有 Excel/CSV、`.env`、`.pgpass`、数据库 dump、临时数据库文件或敏感明细；仍禁止连接远端生产/共享数据库，除非用户未来单独授权。下一阶段入口见 `NEXT-CODEX-INSTRUCTION.md`。
-
-本地 DB-backed import/reconciliation runner 和 candidate-b review workflow runner 已实现并通过本地 PostgreSQL 16（`postgres:16-bookworm`）开发验证；本地 schema 到 `0070.000`，candidate-b 聚合结果已写入本地开发库并完成 DB-backed reconciliation。该结果仍是授权本地开发证据，不是最终正式发布审批结果。
-
-candidate-b 的 85 条 blocking review items 已完成本地 DB-backed business closure：57 条 data-gap high-value 统一收敛为 `no_action_required` / accepted data limitation，23 条 expiry high-value 统一收敛为 `waiver_granted`，4 条 insufficient-history 和 1 条 abnormal-spike 已收敛为非阻断项。当前 blocking review distribution 为 `no_action_required=62`、`waiver_granted=23`，remaining blocking count 为 `0`，并保留 audit metadata。该闭环是授权本地真实数据开发证据和 M2 readiness closure，不是最终生产发布审批结果，也不代表可以跳过后续正式发布、映射激活或运营审批门禁。
+- M1 dual-source 主数据补全链路已形成文件级 limited local staging apply 证据；该 staging 不写正式主数据，不等同于正式主数据验收。
+- M2 candidate-b DB-backed import/reconciliation、review workflow 和本地 business closure 证据已完成；这些结果是授权本地开发证据，不是最终生产发布审批结果。
+- candidate-b 系列预测模型已不再作为 M2 算法基线；当前预测路线为 disentangled forecastability v1.1 conditional，仍只能作为有限 M2 业务复核候选，不允许直接进入正式发布或 M3。
+- M2 评级/建议已推进到 rating-standard-v3：包含收入模式识别、货架/版权状态推断、单一前台评级、风险/复核提示，并移除自动运营建议主输出。private 任务包保存在 `data/private-output/**`，不会进入版本控制。
+- 当前 M2 仍不是 formal completion；正式发布、映射激活、对外 task/export/write API、生产数据连接和 M3 均需要用户后续单独授权。
 
 ## 推荐阅读顺序
 
@@ -39,16 +39,19 @@ candidate-b 的 85 条 blocking review items 已完成本地 DB-backed business 
 8. `docs/prd/70-acceptance/M1.md`
 9. `docs/prd/00-governance/traceability.md`
 10. `docs/technical-design/M2-next-stage-formalization-master-plan-v0.1.md`
-11. `docs/analysis/m2-real-data/M2-candidate-b-review-group-decision-policy-v0.1.md`
-12. `docs/analysis/m2-real-data/M2-candidate-b-data-gap-remediation-summary-v0.1.md`
-13. `docs/analysis/m2-real-data/M2-candidate-b-expiry-waiver-policy-draft-v0.1.md`
-14. `docs/analysis/m2-real-data/M2-candidate-b-manual-exception-brief-v0.1.md`
-15. `docs/analysis/m2-real-data/M2-candidate-b-review-user-decision-brief-v0.1.md`
-16. `NEXT-CODEX-INSTRUCTION.md`
+11. `docs/analysis/m1-master-data/M1-dual-source-limited-staging-apply-result-v1.json`
+12. `docs/analysis/m2-real-data/M2-disentangled-forecast-v1.1-validation.md`
+13. `docs/analysis/m2-real-data/M2-rating-standard-v3-task-pack-summary.md`
+14. `docs/analysis/m2-real-data/M2-revenue-model-business-rule-alignment-v1.md`
+15. `docs/analysis/m2-real-data/M2-shelf-status-business-rule-alignment-v1.md`
+16. `docs/analysis/m2-real-data/M2-front-rating-simplification-v1.md`
+17. `docs/analysis/m2-real-data/M2-suggestion-removal-boundary-v1.md`
+18. `AGENTS.md`
+19. `NEXT-CODEX-INSTRUCTION.md`
 
-## Latest candidate-b local review note
+## Latest M1/M2 checkpoint note
 
-The current candidate-b business-review work is locally closed for M2 readiness, not final production release approval. The 85 original blocking review items now have local DB-backed closure statuses: 62 `no_action_required` and 23 `waiver_granted`, with remaining blocking count `0`. The former 57 data-gap group is no longer documented as pending business confirmation in the current remote state, and the former 23 expiry waiver group is no longer draft-only for local readiness. Candidate-b remains not a final production release approval result; formal release, production use, and any destructive mapping activation still require separate authorization and gates.
+The current remote checkpoint is for local development continuity only. It includes sanitized aggregate reports, source code, scripts, tests, and package scripts for M1/M2 local validation. It intentionally excludes private workbooks, private JSON/CSV outputs, raw bills, raw ledgers, original library files, database dumps, environment files, and sensitive row-level details.
 
 ## M1 本地验证命令
 
