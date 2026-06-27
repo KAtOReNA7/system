@@ -1,0 +1,120 @@
+{
+  "schema": "m2.partialCopyrightExpiryReviewM2StageCheck.v1",
+  "generatedAt": "2026-06-27T17:05:41+00:00",
+  "privateWorkbook": {
+    "path": "data/private-output/m2-readiness/M2-copyright-expiry-gap-review-pack-cn-v1.xlsx",
+    "gitignored": true,
+    "submitted": false,
+    "containsPrivateRows": true
+  },
+  "safeOutputBoundary": {
+    "publicReportContainsRealWorkNames": false,
+    "publicReportContainsAuthors": false,
+    "publicReportContainsChannels": false,
+    "publicReportContainsRawBillingRows": false,
+    "publicReportContainsRawLedgerRows": false,
+    "databaseConnected": false,
+    "formalMasterDataWritten": false,
+    "m3Entered": false
+  },
+  "queueSummary": {
+    "expectedUniqueCopyrightExpiryGapWorks": 610,
+    "queueSheetRowsIncludingViews": 663,
+    "uniqueWorksCovered": 610,
+    "uniqueWorksWithUserCopyrightEndDate": 88,
+    "uniqueWorksWithWaiverYes": 0,
+    "uniqueWorksClosedByDateOrWaiver": 88,
+    "remainingWithoutDateOrWaiver": 522,
+        "uniqueWorksIdentityConfirmed": 24,
+        "uniqueWorksPendingNewBaseTable": 0,
+        "externalUserReportedNewBaseTableNeeded": true,
+        "externalUserReportedNewBaseTableDetectedInWorkbook": false,
+        "sheetSummaries": {
+      "高收入优先队列": {
+        "rows": 61,
+        "filledCopyrightEndDate": 59,
+        "identityConfirmation": {
+          "是": 24,
+          "待定": 37
+        },
+        "waiverDecision": {
+          "否": 61
+        },
+        "waiverReasonFilled": 0,
+        "remarksFilled": 0,
+        "pendingNewBaseTableRows": 0
+      },
+      "普通补齐队列": {
+        "rows": 386,
+        "filledCopyrightEndDate": 0,
+        "identityConfirmation": {
+          "未填写": 386
+        },
+        "waiverDecision": {
+          "未填写": 386
+        },
+        "waiverReasonFilled": 0,
+        "remarksFilled": 0,
+        "pendingNewBaseTableRows": 0
+      },
+      "unmatched 身份确认队列": {
+        "rows": 83,
+        "filledCopyrightEndDate": 34,
+        "identityConfirmation": {
+          "待定": 83
+        },
+        "waiverDecision": {
+          "否": 83
+        },
+        "waiverReasonFilled": 0,
+        "remarksFilled": 0,
+        "pendingNewBaseTableRows": 0
+      },
+      "formal waiver 候选队列": {
+        "rows": 133,
+        "filledCopyrightEndDate": 0,
+        "identityConfirmation": {
+          "未填写": 133
+        },
+        "waiverDecision": {
+          "未填写": 133
+        },
+        "waiverReasonFilled": 0,
+        "remarksFilled": 0,
+        "pendingNewBaseTableRows": 0
+      }
+    }
+  },
+  "reviewSummary": {
+    "到期但有收入复核": {
+      "rows": 142,
+      "remarksFilled": 0,
+      "pendingNewBaseTableRows": 0,
+      "tailRevenueReasonFilled": 0,
+      "copyrightStatusCorrectionDecision": {
+        "未填写": 142
+      }
+    },
+    "版权有效但收入稀疏复核": {
+      "rows": 92,
+      "remarksFilled": 0,
+      "pendingNewBaseTableRows": 0,
+      "operabilityDecision": {
+        "未填写": 92
+      }
+    }
+  },
+  "m2StageCheck": {
+    "m2LocalCandidateCanContinue": true,
+    "m2FormalReadinessComplete": false,
+    "m3Ready": false,
+    "m3Entered": false,
+            "blockingReasons": [
+                "522 个版权到期缺口仍未被用户填写版权到期日或明确豁免。",
+                "用户补充说明存在需要新基础表补齐的指定作品/系列内容，当前不能视为闭环。",
+                "分类、标签、作品状态、音频版权状态仍未形成 formal readiness 闭环。",
+                "本轮未写正式主数据，private Excel 只作为本地复核输入。"
+            ],
+    "recommendedNextAction": "先基于当前部分填写结果保存脱敏检查；待新基础表补齐指定内容后，再生成下一轮复核 summary 和 readiness 闭环报告。"
+  }
+}
