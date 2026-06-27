@@ -1,0 +1,104 @@
+{
+  "schema": "m2.localCandidateCloseout.v1",
+  "generatedAt": "2026-06-28",
+  "currentHeadAtGeneration": "a24d6335481d34ed2c51660cf9d030a779f1cdad",
+  "originMainAtGeneration": "a24d6335481d34ed2c51660cf9d030a779f1cdad",
+  "scope": {
+    "line": "M2 local candidate closeout",
+    "sanitizedAggregateOnly": true,
+    "noM2AlgorithmChange": true,
+    "noFormalMasterDataWrite": true,
+    "noM3FormalExecution": true
+  },
+  "m2LocalCandidateStatus": {
+    "closeout": true,
+    "formalComplete": false,
+    "m3ParallelPlanningAllowed": true,
+    "m3FormalExecutionAllowed": false
+  },
+  "stableCandidateEvidence": {
+    "revenueModel": {
+      "totalWorks": 3054,
+      "pureSalesShare": 2579,
+      "pureBuyout": 287,
+      "buyoutPlusSales": 183,
+      "unknown": 5,
+      "evidence": "docs/analysis/m2-real-data/M2-revenue-model-classification-v2.json"
+    },
+    "rating": {
+      "distribution": {
+        "S+": 38,
+        "S": 117,
+        "A": 84,
+        "B": 358,
+        "C": 152,
+        "D": 356,
+        "E": 1949
+      },
+      "evidence": "docs/analysis/m2-real-data/M2-rating-calibration-v5-summary.json"
+    },
+    "forecastV11Conditional": {
+      "copyrightTermForecast": 2444,
+      "operatingWindowForecastPendingExpiry": 610,
+      "evidence": "docs/analysis/m2-real-data/M2-forecast-output-type-after-dual-source-staging-v2.json"
+    },
+    "reviewBuckets": {
+      "activeRightsSparseRevenueReview": 92,
+      "expiredWithTailRevenueReview": 142,
+      "unknownShelfStatusBefore": 630,
+      "unknownShelfStatusAfter": 538,
+      "evidence": "docs/analysis/m2-real-data/M2-shelf-status-review-bucket-update-v1.json"
+    }
+  },
+  "formalM2Blockers": {
+    "remainingCopyrightExpiryGapAfterPartialReview": 522,
+    "missingAuthor": 75,
+    "missingCopyrightStart": 85,
+    "missingClassificationLevel1": 3054,
+    "missingClassificationLevel2": 3054,
+    "missingRequiredTags": 3054,
+    "missingWorkStatus": 3054,
+    "missingAudioRightsStatus": 3054,
+    "formalEvaluationReleaseExportAuditComplete": false
+  },
+  "companyInputNeeded": [
+    "版权到期日",
+    "作者",
+    "版权开始",
+    "一级/二级分类",
+    "必要标签",
+    "作品状态",
+    "音频版权状态",
+    "到期但仍有收入的业务解释",
+    "版权有效但收入稀疏样本的运营状态",
+    "用户提到的指定内容/系列对应的新基础表"
+  ],
+  "includedSanitizedReports": [
+    "docs/analysis/m2-real-data/M2-copyright-expiry-gap-readiness-v1.md",
+    "docs/analysis/m2-real-data/M2-copyright-expiry-gap-readiness-v1.json",
+    "docs/analysis/m2-real-data/M2-master-data-readiness-gap-v1.md",
+    "docs/analysis/m2-real-data/M2-master-data-readiness-gap-v1.json",
+    "docs/analysis/m2-real-data/M2-shelf-copyright-readiness-next-plan-v1.md",
+    "docs/analysis/m2-real-data/M2-shelf-copyright-readiness-next-plan-v1.json",
+    "docs/analysis/m2-real-data/M2-shelf-copyright-status-failure-analysis-v1.md",
+    "docs/analysis/m2-real-data/M2-shelf-copyright-status-failure-analysis-v1.json"
+  ],
+  "recommendedNextTask": "先补齐公司基础表并回到 M2 readiness rerun；M3 仅允许 parallel planning，不允许 formal execution。",
+  "prohibitedActionsConfirmed": {
+    "modifiedRevenueModel": false,
+    "modifiedRatingModel": false,
+    "modifiedForecastModel": false,
+    "restoredOperatingSuggestionMainOutput": false,
+    "submittedPrivateExcel": false,
+    "submittedDataPrivateOutput": false,
+    "includedRawBillingRows": false,
+    "includedRawLedgerRows": false,
+    "includedRealWorkNames": false,
+    "includedAuthors": false,
+    "includedChannels": false,
+    "usedGitAddDot": false,
+    "touchedStash": false,
+    "forcePushed": false,
+    "enteredM3Formal": false
+  }
+}

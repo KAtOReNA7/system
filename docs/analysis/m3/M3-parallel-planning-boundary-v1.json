@@ -1,0 +1,55 @@
+{
+  "schema": "m3.parallelPlanningBoundary.v1",
+  "generatedAt": "2026-06-28",
+  "currentHeadAtGeneration": "a24d6335481d34ed2c51660cf9d030a779f1cdad",
+  "originMainAtGeneration": "a24d6335481d34ed2c51660cf9d030a779f1cdad",
+  "m3ParallelPlanningAllowed": true,
+  "m3FormalExecutionAllowed": false,
+  "allowedWork": [
+    "PRD 框架",
+    "新品评估输入字段设计",
+    "新品预测思路讨论",
+    "与 M2 的接口依赖设计",
+    "数据需求清单",
+    "fixture/prototype 设计",
+    "不连接正式数据库的文档和测试计划"
+  ],
+  "prohibitedWork": [
+    "正式 M3 任务执行",
+    "M3 正式 API / write API / export API",
+    "formal release/export/audit",
+    "绕过 M2 readiness 使用缺失主数据",
+    "把 M2 local candidate 当作 formal input",
+    "写正式主数据",
+    "连接远端生产、共享或 staging-like 数据库",
+    "输出真实作品名、作者名、渠道名或原始行级明细"
+  ],
+  "formalM3EntryGates": {
+    "m2FormalReadinessPassed": false,
+    "remainingCopyrightExpiryGapAfterPartialReview": 522,
+    "missingAuthor": 75,
+    "missingCopyrightStart": 85,
+    "missingClassificationLevel1": 3054,
+    "missingClassificationLevel2": 3054,
+    "missingRequiredTags": 3054,
+    "missingWorkStatus": 3054,
+    "missingAudioRightsStatus": 3054,
+    "expiredWithTailRevenueReviewOpen": 142,
+    "activeRightsSparseRevenueReviewOpen": 92,
+    "formalTaskExportReleaseAuditComplete": false,
+    "explicitUserAuthorizationForM3Formal": false
+  },
+  "recommendedNextTask": "并行准备 M3 PRD/字段/API 依赖设计；正式 M3 前必须先完成 M2 readiness rerun 和用户单独授权。",
+  "safeOutputBoundary": {
+    "sanitizedAggregateOnly": true,
+    "containsRealWorkTitles": false,
+    "containsAuthors": false,
+    "containsChannels": false,
+    "containsRawBillingRows": false,
+    "containsRawLedgerRows": false,
+    "containsPrivateExcel": false,
+    "formalMasterDataWritten": false,
+    "databaseConnected": false,
+    "m3FormalEntered": false
+  }
+}

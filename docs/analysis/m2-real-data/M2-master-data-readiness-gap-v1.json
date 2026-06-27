@@ -1,0 +1,115 @@
+{
+  "schema": "m2.masterDataReadinessGap.v1",
+  "generatedAt": "2026-06-27",
+  "scope": {
+    "totalWorks": 3054,
+    "notM3": true,
+    "noFormalMasterDataWrite": true,
+    "noRawDetailIncluded": true
+  },
+  "evidenceSources": [
+    "docs/prd/10-data-foundation/work-master-data.md",
+    "docs/prd/10-data-foundation/classification-and-tags.md",
+    "docs/prd/20-evaluation/M2-old-product-evaluation-prd-v0.1.md",
+    "docs/analysis/m2-real-data/M2-business-readiness-after-dual-source-staging-v1.json",
+    "docs/analysis/m1-master-data/M1-dual-source-masterdata-backfill-dry-run-v2.json",
+    "docs/analysis/m1-master-data/M1-dual-source-auto-apply-rule-v2.json"
+  ],
+  "currentMissingFieldsAfterLocalStaging": {
+    "missingWorkName": 0,
+    "missingAuthor": 75,
+    "missingCopyrightStart": 85,
+    "missingCopyrightEnd": 610,
+    "missingClassificationLevel1": 3054,
+    "missingClassificationLevel2": 3054,
+    "missingRequiredTags": 3054,
+    "missingWorkStatus": 3054,
+    "missingAudioRightsStatus": 3054
+  },
+  "localCandidateEvidence": {
+    "standardWorkName": {
+      "missingAfterLocalStaging": 0,
+      "formalBlocker": false
+    },
+    "authorName": {
+      "missingAfterLocalStaging": 75,
+      "formalBlocker": true
+    },
+    "copyrightStartDate": {
+      "missingAfterLocalStaging": 85,
+      "formalBlocker": true
+    },
+    "copyrightEndDate": {
+      "missingAfterLocalStaging": 610,
+      "formalBlocker": true
+    },
+    "classificationLevel1": {
+      "missingAfterLocalStaging": 3054,
+      "candidateCoverageWorksInDryRun": 2802,
+      "autoApplyAllowed": false,
+      "formalBlocker": true
+    },
+    "classificationLevel2": {
+      "missingAfterLocalStaging": 3054,
+      "candidateCoverageWorksInDryRun": 2770,
+      "autoApplyAllowed": false,
+      "formalBlocker": true
+    },
+    "requiredTags": {
+      "missingAfterLocalStaging": 3054,
+      "candidateCoverageWorksInDryRun": 1775,
+      "autoApplyAllowed": false,
+      "formalBlocker": true
+    },
+    "workStatus": {
+      "missingAfterLocalStaging": 3054,
+      "candidateCoverageWorksInDryRun": 0,
+      "formalBlocker": true
+    },
+    "audioRightsStatus": {
+      "missingAfterLocalStaging": 3054,
+      "candidateCoverageWorksInDryRun": 0,
+      "formalBlocker": true
+    }
+  },
+  "prdAlignment": {
+    "workMasterData": "M2 正式评估依赖标准作品、版权开始/到期、版本状态等主数据输入。",
+    "classificationAndTags": "分类和标签属于运营解释、策略分层和后续校准的必要输入，不能在 formal readiness 中长期空缺。",
+    "oldProductEvaluation": "M2 可先用本地候选与 fixture/synthetic 验证，但正式发布、导出和 M3 前置必须完成 readiness 闭环。"
+  },
+  "localCandidateStatus": {
+    "canContinueLocalM2CandidateValidation": true,
+    "canUseFixtureOrPrivateLocalEvaluation": true,
+    "limits": [
+      "不能表述为 formal complete。",
+      "不能进入 M3。",
+      "不能生成正式发布审批结论。"
+    ]
+  },
+  "formalReadinessStatus": {
+    "complete": false,
+    "hardBlockers": [
+      "610 个版权到期缺口。",
+      "75 个作者缺口。",
+      "85 个版权开始缺口。",
+      "全库缺一级/二级分类与必要标签。",
+      "全库缺作品状态与音频版权状态。"
+    ]
+  },
+  "recommendedClosurePath": [
+    "先闭环版权到期、作者、版权开始三类基础字段。",
+    "再由用户/版权部确认分类、标签、作品状态、音频版权状态口径。",
+    "对无法补齐的低影响样本单独设计 formal waiver，不默认豁免。",
+    "完成后重新跑 M2 PRD 对齐与 M3 readiness 审计。"
+  ],
+  "conclusion": {
+    "m1M2MasterDataReadinessComplete": false,
+    "m3Ready": false,
+    "notEnteringM3": true
+  },
+  "prohibitedActionsConfirmed": {
+    "enteredM3": false,
+    "includedPrivateExcel": false,
+    "includedRawRows": false
+  }
+}

@@ -1,0 +1,115 @@
+{
+  "schema": "m2.shelfCopyrightStatusFailureAnalysis.v1",
+  "generatedAt": "2026-06-27",
+  "candidateVersion": "m2-realdata-dev-revenue-model-rating-v2.1-two-signal-buyout",
+  "scope": {
+    "totalWorks": 3054,
+    "line": "M2 readiness audit",
+    "notM3": true,
+    "noFormalMasterDataWrite": true,
+    "noRawDetailIncluded": true
+  },
+  "evidenceSources": [
+    "docs/analysis/m2-real-data/M2-shelf-status-inference-v1.json",
+    "docs/analysis/m2-real-data/M2-business-readiness-after-dual-source-staging-v1.json",
+    "docs/analysis/m2-real-data/M2-forecast-output-type-after-dual-source-staging-v2.json",
+    "docs/analysis/m2-real-data/M2-revenue-model-classification-v2.json",
+    "src/domain/oldProductEvaluation/shelfStatusInference.js"
+  ],
+  "shelfStatusDistribution": {
+    "active_on_shelf_confident": 0,
+    "active_or_available_inferred": 2125,
+    "active_on_shelf": 0,
+    "likely_off_shelf": 72,
+    "rights_expired_likely_off_shelf": 227,
+    "rights_expired_needs_review": 0,
+    "off_shelf_but_tail_revenue": 0,
+    "unknown_shelf_status": 630
+  },
+  "unknownShelfDiagnostics": {
+    "unknownShelfStatusCount": 630,
+    "unknownByRightsStatus": {
+      "unknownRightsStatus": 538,
+      "activeRightsStatus": 92
+    },
+    "unknownCausedByMissingCopyrightEnd": 538,
+    "unknownWithTrailingTwelveMonthRevenue": 547,
+    "unknownWithZeroTrailingTwelveMonthSales": 83,
+    "primaryCauses": [
+      {
+        "cause": "missing_copyright_end",
+        "count": 538,
+        "assessment": "版权到期缺失使 remaining rights 与 rights status 无法判定，是 unknown_shelf_status 的主因。"
+      },
+      {
+        "cause": "active_rights_sparse_or_old_revenue_signal",
+        "count": 92,
+        "assessment": "版权仍有效但收入信号不足以满足当前 active inference 阈值，规则缺少单独复核桶。"
+      },
+      {
+        "cause": "no_explicit_shelf_or_work_status_source",
+        "count": 3054,
+        "assessment": "当前全库缺少正式 workStatus/shelfStatus 输入，无法产出 confident shelf status。"
+      }
+    ]
+  },
+  "expiredRightsDiagnostics": {
+    "expiredRightsWorks": 227,
+    "expiredRightsWithTrailingTwelveMonthRevenue": 142,
+    "offShelfButTailRevenueStatusCount": 0,
+    "assessment": "当前规则信任版权台账，不再用尾部收入覆盖到期/下架判断；142 个到期仍有近 12 月收入的样本应作为复核提示，而不是直接改写状态。"
+  },
+  "activeNoRevenueDiagnostics": {
+    "activeRightsWorks": 2217,
+    "activeRightsZeroTrailingTwelveMonthSales": 408,
+    "activeRightsZeroSalesClassifiedActiveOrAvailable": 404,
+    "activeRightsZeroSalesUnknown": 4,
+    "assessment": "版权未到期但近期无收入不应自动判定下架；当前规则大体遵守该边界。"
+  },
+  "zeroRevenueRuleAssessment": {
+    "zeroRevenueAloneUsedAsOffShelfSignal": false,
+    "zeroSalesLikelyOffShelfCount": 72,
+    "assessment": "likely_off_shelf 主要来自版权状态未知且长期无收入，不是单纯因零收入判定下架。"
+  },
+  "algorithmRisks": [
+    {
+      "risk": "active_rights_sparse_revenue_falls_to_unknown",
+      "severity": "medium",
+      "count": 92,
+      "suggestedFix": "后续可新增 active_rights_sparse_revenue_review 或类似复核状态。"
+    },
+    {
+      "risk": "explicit_shelf_status_absent",
+      "severity": "high",
+      "count": 3054,
+      "suggestedFix": "引入正式 workStatus/shelfStatus 或 audioRightsStatus 来源后再做 confident 状态。"
+    },
+    {
+      "risk": "legacy_off_shelf_but_tail_revenue_bucket_confusing",
+      "severity": "low",
+      "count": 0,
+      "suggestedFix": "后续将其改为 review note 或废弃旧桶，避免和信任版权台账原则冲突。"
+    }
+  ],
+  "dataReadinessBlockers": {
+    "missingCopyrightEnd": 610,
+    "missingWorkStatus": 3054,
+    "missingAudioRightsStatus": 3054,
+    "missingClassificationLevel1": 3054,
+    "missingClassificationLevel2": 3054,
+    "missingRequiredTags": 3054
+  },
+  "conclusion": {
+    "shelfCopyrightStatusStableEnoughForM3": false,
+    "primaryBlocker": "版权到期、作品状态和音频版权状态未形成正式 readiness 闭环。",
+    "notEnteringM3": true
+  },
+  "prohibitedActionsConfirmed": {
+    "enteredM3": false,
+    "modifiedRevenueModel": false,
+    "modifiedRatingModel": false,
+    "restoredOperatingSuggestion": false,
+    "includedPrivateExcel": false,
+    "includedRawRows": false
+  }
+}

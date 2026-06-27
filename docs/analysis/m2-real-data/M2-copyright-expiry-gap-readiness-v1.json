@@ -1,0 +1,115 @@
+{
+  "schema": "m2.copyrightExpiryGapReadiness.v1",
+  "generatedAt": "2026-06-27",
+  "scope": {
+    "totalWorks": 3054,
+    "missingCopyrightEndWorks": 610,
+    "notM3": true,
+    "noFormalMasterDataWrite": true,
+    "noRawDetailIncluded": true
+  },
+  "evidenceSources": [
+    "docs/analysis/m2-real-data/M2-business-readiness-after-dual-source-staging-v1.json",
+    "docs/analysis/m2-real-data/M2-forecast-output-type-after-dual-source-staging-v2.json",
+    "docs/analysis/m1-master-data/M1-dual-source-limited-staging-apply-result-v1.json",
+    "docs/analysis/m1-master-data/M1-dual-source-masterdata-backfill-dry-run-v2.json",
+    "docs/analysis/m1-master-data/M1-dual-source-auto-apply-rule-v2.json"
+  ],
+  "aggregateImpact": {
+    "missingCopyrightEndWorks": 610,
+    "missingRevenueAmount": 26935391.02,
+    "totalRevenueAmount": 129023545.3,
+    "missingRevenueShare": 0.2088
+  },
+  "cohortDistribution": {
+    "note": "由本地 staging candidate-source 覆盖情况聚合推断，不包含行级明细。",
+    "publication_cohort": {
+      "count": 318,
+      "revenueAmount": 15509803.57
+    },
+    "web_original_cohort": {
+      "count": 208,
+      "revenueAmount": 7553466.51
+    },
+    "mixed_or_uncertain_cohort": {
+      "count": 1,
+      "revenueAmount": 26760.19
+    },
+    "unmatched": {
+      "count": 83,
+      "revenueAmount": 3845360.75
+    }
+  },
+  "topRevenueCoverage": {
+    "top1Percent": {
+      "topN": 31,
+      "missingCount": 11,
+      "missingRevenueAmount": 13971535.66,
+      "shareOfTopRevenue": 0.203,
+      "shareOfTotalRevenue": 0.1083
+    },
+    "top5Percent": {
+      "topN": 153,
+      "missingCount": 36,
+      "missingRevenueAmount": 22232668.49,
+      "shareOfTopRevenue": 0.212,
+      "shareOfTotalRevenue": 0.1723
+    },
+    "top10Percent": {
+      "topN": 305,
+      "missingCount": 61,
+      "missingRevenueAmount": 23808242.84,
+      "shareOfTopRevenue": 0.2076,
+      "shareOfTotalRevenue": 0.1845
+    }
+  },
+  "currentCandidateCoverage": {
+    "copyrightEndCandidatesAcceptedInLimitedStaging": 2444,
+    "missingWorksWithAcceptedCopyrightEndCandidate": 0,
+    "missingWorksWithCopyrightStartCandidate": 526,
+    "missingWorksWithAuthorCandidate": 337,
+    "missingWorksWithNoAnyCurrentCandidate": 83,
+    "acceptedCopyrightEndCandidateSources": {
+      "original_library": 1541,
+      "digital_copyright_ledger": 902,
+      "both_sources_conflict": 1
+    }
+  },
+  "forecastImpact": {
+    "missingCopyrightEndWorks": 610,
+    "operatingWindowForecastPendingExpiry": 610,
+    "conservativeNumericForecastWithinMissingExpiry": 464,
+    "observeOnlyNoNumericForecastWithinMissingExpiry": 146,
+    "assessment": "缺版权到期会阻断版权期预测、剩余版权月数和 formal readiness。部分样本仍可做保守运营窗口观察，但不能等同 formal complete。"
+  },
+  "revenueModelDistributionWithinGap": {
+    "pure_sales_share": 488,
+    "buyout_plus_sales": 47,
+    "pure_buyout": 74,
+    "unknown_revenue_model": 1
+  },
+  "shelfStatusDistributionWithinGap": {
+    "unknown_shelf_status": 538,
+    "likely_off_shelf": 72
+  },
+  "readinessAssessment": {
+    "canBeClosedByCurrentLimitedStagingAlone": false,
+    "manualCopyrightOpsReviewNeeded": true,
+    "formalWaiverPossibleOnlyForLowRiskSubsets": true,
+    "priority": [
+      "先处理高收入缺版权到期样本。",
+      "再处理有版权开始/作者候选但无版权到期候选的样本。",
+      "最后处理完全无候选的 unmatched 样本。"
+    ]
+  },
+  "conclusion": {
+    "copyrightExpiryReadinessComplete": false,
+    "m3Ready": false,
+    "primaryBlocker": "610 个版权到期缺口覆盖约 20.88% 聚合收入，不能直接进入 M3。"
+  },
+  "prohibitedActionsConfirmed": {
+    "enteredM3": false,
+    "includedPrivateExcel": false,
+    "includedRawRows": false
+  }
+}

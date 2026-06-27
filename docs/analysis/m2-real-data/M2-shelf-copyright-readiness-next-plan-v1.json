@@ -1,0 +1,91 @@
+{
+  "schema": "m2.shelfCopyrightReadinessNextPlan.v1",
+  "generatedAt": "2026-06-27",
+  "scope": {
+    "notM3": true,
+    "noFormalMasterDataWrite": true,
+    "noRevenueModelChange": true,
+    "noRatingModelChange": true,
+    "noOperatingSuggestionRestore": true
+  },
+  "currentBaseline": {
+    "totalWorks": 3054,
+    "revenueModelCandidateStable": true,
+    "ratingCandidateStable": true,
+    "shelfCopyrightReadinessStable": false,
+    "formalReadinessBlocked": true
+  },
+  "immediateSafeActions": [
+    {
+      "action": "保留当前收入模式和评级候选基线。",
+      "reason": "本轮目标是货架/版权 readiness，不继续修改收入和评级规则。"
+    },
+    {
+      "action": "将 610 个版权到期缺口拆成高收入优先队列、普通队列和 waiver 候选队列。",
+      "reason": "610 个缺口覆盖约 20.88% 聚合收入，不能整体豁免。"
+    },
+    {
+      "action": "新增或规划 active rights sparse revenue 复核桶。",
+      "reason": "92 个版权有效但收入信号不足样本不应继续混在 unknown_shelf_status 中。"
+    },
+    {
+      "action": "把到期后尾部收入改为复核提示。",
+      "reason": "142 个到期仍有收入样本应提示运营/版权部复核，但不应覆盖版权台账。"
+    }
+  ],
+  "userOrCopyrightOpsInputNeeded": [
+    "610 个版权到期缺口的补充或豁免口径。",
+    "作品状态来源和可用枚举。",
+    "音频版权状态来源和可用枚举。",
+    "分类/标签业务口径和是否允许分批人工确认。",
+    "到期后仍有收入样本是否属于结算滞后、续约未入账、渠道滞后或异常。"
+  ],
+  "localStagingFields": {
+    "canStageWithCurrentMechanism": [
+      "standardWorkName",
+      "authorName",
+      "copyrightStartDate",
+      "copyrightEndDate"
+    ],
+    "candidateExistsButManualOnly": [
+      "classificationLevel1",
+      "classificationLevel2",
+      "requiredTags"
+    ],
+    "noCurrentCandidateCoverage": [
+      "workStatus",
+      "audioRightsStatus"
+    ]
+  },
+  "formalBeforeM2Completion": [
+    "补齐或正式豁免 610 个版权到期缺口。",
+    "补齐或正式豁免 75 个作者缺口。",
+    "补齐或正式豁免 85 个版权开始缺口。",
+    "形成分类、标签、作品状态、音频版权状态 readiness 闭环。",
+    "重新生成 M2 readiness 审计和 formal evaluation 边界结论。"
+  ],
+  "m3EntryBlockers": [
+    "货架/版权状态不稳定。",
+    "formal readiness blocked。",
+    "版权到期、分类/标签、作品状态、音频版权状态缺口未闭环。",
+    "formal evaluation/export/release/audit 尚未完成。"
+  ],
+  "recommendedNextTasks": [
+    "任务 1：版权到期 610 缺口优先级队列与可豁免口径设计。",
+    "任务 2：货架/版权状态推断规则小修，新增复核提示而不是扩大自动判断。",
+    "任务 3：分类/标签/作品状态/音频版权状态来源确认和人工确认模板。",
+    "任务 4：完成补齐或豁免后再做 M2 PRD 对齐与 M3 readiness 审计。"
+  ],
+  "conclusion": {
+    "canEnterM3Now": false,
+    "nextBestStep": "先做货架/版权状态专项和主数据 readiness 闭环，不进入 M3。"
+  },
+  "prohibitedActionsConfirmed": {
+    "enteredM3": false,
+    "modifiedRevenueModel": false,
+    "modifiedRatingModel": false,
+    "restoredOperatingSuggestion": false,
+    "includedPrivateExcel": false,
+    "includedRawRows": false
+  }
+}
