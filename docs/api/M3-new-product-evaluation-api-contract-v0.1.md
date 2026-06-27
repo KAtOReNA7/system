@@ -63,6 +63,18 @@
 - `page`
 - `pageSize`
 
+`/m4-calibration-candidates` supports:
+- `trigger`
+- `status`
+- `page`
+- `pageSize`
+
+Additional fixture endpoint:
+
+| Method | Path | Description |
+|---|---|---|
+| GET | `/api/m3/new-products/m4-calibration-candidates` | M4 calibration candidate entry-only fixture; does not execute M4 |
+
 ## Write Routes
 
 当前不提供：

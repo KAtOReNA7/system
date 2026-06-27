@@ -9,7 +9,13 @@ export const M3_NEW_PRODUCT_SYNTHETIC_MARKERS = Object.freeze([
   "SYN-TOPIC-0003",
   "SYN-TOPIC-0004",
   "SYN-TOPIC-0005",
+  "SYN-TOPIC-0006",
+  "SYN-TOPIC-0007",
+  "SYN-TOPIC-0008",
+  "SYN-TOPIC-0009",
+  "SYN-TOPIC-0010",
   "SYN-TITLE-PUBLICATION-GROWTH",
+  "SYN-TITLE-SUPER-HIGH-M4-CANDIDATE",
   "SYN-TITLE-WEB-STABLE",
   "SYN-AUTHOR-ALPHA",
   "SYN-AUTHOR-BETA",
@@ -39,4 +45,7 @@ export const M3_NEW_PRODUCT_ALGORITHM_VERSIONS = Object.freeze(
   }))
 );
 export const M3_NEW_PRODUCT_BACKTESTS = Object.freeze(generatedFixture.backtests);
+export const M3_NEW_PRODUCT_M4_CALIBRATION_CANDIDATES = Object.freeze(
+  generatedFixture.m4CalibrationCandidates
+);
 export const M3_NEW_PRODUCT_ENGINE_SUMMARY = Object.freeze(generatedFixture.engineSummary);

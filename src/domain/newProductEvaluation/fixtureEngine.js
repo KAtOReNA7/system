@@ -4,6 +4,26 @@ const RATINGS = ["S+", "S", "A", "B", "C", "D", "E"];
 
 const TOPIC_BLUEPRINTS = [
   {
+    topicId: "SYN-TOPIC-0006",
+    title: "SYN-TITLE-SUPER-HIGH-M4-CANDIDATE",
+    authorName: "SYN-AUTHOR-ZETA",
+    source: "publication",
+    classificationPath: ["SYN-CLASS-L1-S", "SYN-CLASS-L2-S", "SYN-CLASS-L3-S"],
+    wordCount: 920000,
+    completionStatus: "completed",
+    targetChannels: ["SYN-CHANNEL-AUDIO-PRIMARY", "SYN-CHANNEL-AUDIO-SECONDARY"],
+    status: "evaluation_ready",
+    readiness: "ready",
+    materialTypes: ["manual"],
+    readingSignals: { reads: 2600000, collections: 180000, rating: 9.1 },
+    comparableRevenue: 1180000,
+    heatMultiplier: 1.08,
+    authorMultiplier: 1.04,
+    yearCurve: [0.34, 0.24, 0.18, 0.14, 0.1],
+    topicWorkLink: { status: "not_linked_pre_sales", standardWorkId: null },
+    backtest: { checkpoint: "first_year", outcome: "above_interval" }
+  },
+  {
     topicId: "SYN-TOPIC-0001",
     title: "SYN-TITLE-PUBLICATION-GROWTH",
     authorName: "SYN-AUTHOR-ALPHA",
@@ -20,6 +40,26 @@ const TOPIC_BLUEPRINTS = [
     heatMultiplier: 1.08,
     authorMultiplier: 1.12,
     yearCurve: [0.32, 0.24, 0.18, 0.15, 0.11],
+    topicWorkLink: { status: "not_linked_pre_sales", standardWorkId: null },
+    backtest: { checkpoint: "not_started_pre_launch", outcome: "pending" }
+  },
+  {
+    topicId: "SYN-TOPIC-0007",
+    title: "SYN-TITLE-A-BAND-STABLE",
+    authorName: "SYN-AUTHOR-ETA",
+    source: "publication",
+    classificationPath: ["SYN-CLASS-L1-A", "SYN-CLASS-L2-A", "SYN-CLASS-L3-B"],
+    wordCount: 760000,
+    completionStatus: "completed",
+    targetChannels: ["SYN-CHANNEL-AUDIO-PRIMARY"],
+    status: "evaluation_ready",
+    readiness: "ready",
+    materialTypes: ["pdf"],
+    readingSignals: { reads: 1420000, collections: 72000, rating: 8.5 },
+    comparableRevenue: 720000,
+    heatMultiplier: 1.01,
+    authorMultiplier: 0.98,
+    yearCurve: [0.31, 0.24, 0.2, 0.14, 0.11],
     topicWorkLink: { status: "not_linked_pre_sales", standardWorkId: null },
     backtest: { checkpoint: "not_started_pre_launch", outcome: "pending" }
   },
@@ -102,11 +142,72 @@ const TOPIC_BLUEPRINTS = [
     yearCurve: [0.31, 0.24, 0.19, 0.15, 0.11],
     topicWorkLink: { status: "linked_to_standard_work", standardWorkId: "SYN-WORK-LINK-0005" },
     backtest: { checkpoint: "first_year", outcome: "within_interval_near_base" }
+  },
+  {
+    topicId: "SYN-TOPIC-0008",
+    title: "SYN-TITLE-C-BAND-WEB",
+    authorName: "SYN-AUTHOR-THETA",
+    source: "web_original",
+    classificationPath: ["SYN-CLASS-L1-C", "SYN-CLASS-L2-C", "SYN-CLASS-L3-C"],
+    wordCount: 480000,
+    completionStatus: "completed",
+    targetChannels: ["SYN-CHANNEL-AUDIO-SECONDARY"],
+    status: "evaluation_ready",
+    readiness: "ready",
+    materialTypes: ["word"],
+    readingSignals: { reads: 420000, collections: 26000, rating: 7.9 },
+    comparableRevenue: 300000,
+    heatMultiplier: 1.03,
+    authorMultiplier: 1,
+    yearCurve: [0.29, 0.25, 0.2, 0.15, 0.11],
+    topicWorkLink: { status: "not_linked_pre_sales", standardWorkId: null },
+    backtest: { checkpoint: "not_started_pre_launch", outcome: "pending" }
+  },
+  {
+    topicId: "SYN-TOPIC-0009",
+    title: "SYN-TITLE-D-BAND-NICHE",
+    authorName: "SYN-AUTHOR-IOTA",
+    source: "publication",
+    classificationPath: ["SYN-CLASS-L1-D", "SYN-CLASS-L2-D", "SYN-CLASS-L3-D"],
+    wordCount: 360000,
+    completionStatus: "completed",
+    targetChannels: ["SYN-CHANNEL-AUDIO-SECONDARY"],
+    status: "evaluation_ready",
+    readiness: "ready",
+    materialTypes: ["manual"],
+    readingSignals: { reads: 160000, collections: 9000, rating: 7.2 },
+    comparableRevenue: 145000,
+    heatMultiplier: 1,
+    authorMultiplier: 1,
+    yearCurve: [0.28, 0.24, 0.2, 0.16, 0.12],
+    topicWorkLink: { status: "not_linked_pre_sales", standardWorkId: null },
+    backtest: { checkpoint: "not_started_pre_launch", outcome: "pending" }
+  },
+  {
+    topicId: "SYN-TOPIC-0010",
+    title: "SYN-TITLE-E-BAND-LOW-SIGNAL",
+    authorName: "SYN-AUTHOR-KAPPA",
+    source: "web_original",
+    classificationPath: ["SYN-CLASS-L1-E", "SYN-CLASS-L2-E", "SYN-CLASS-L3-E"],
+    wordCount: 310000,
+    completionStatus: "completed",
+    targetChannels: ["SYN-CHANNEL-AUDIO-SECONDARY"],
+    status: "evaluation_ready",
+    readiness: "ready",
+    materialTypes: ["manual"],
+    readingSignals: { reads: 90000, collections: 4200, rating: 6.9 },
+    comparableRevenue: 78000,
+    heatMultiplier: 0.94,
+    authorMultiplier: 1,
+    yearCurve: [0.27, 0.24, 0.2, 0.16, 0.13],
+    topicWorkLink: { status: "not_linked_pre_sales", standardWorkId: null },
+    backtest: { checkpoint: "not_started_pre_launch", outcome: "pending" }
   }
 ];
 
 export function buildM3NewProductFixtureDataset() {
   const topics = TOPIC_BLUEPRINTS.map(buildTopic);
+  const backtests = buildBacktests(topics);
   return {
     topics,
     algorithmVersions: [
@@ -122,7 +223,8 @@ export function buildM3NewProductFixtureDataset() {
         description: "Synthetic fixture-only M3 new-product evaluation prototype."
       }
     ],
-    backtests: buildBacktests(topics),
+    backtests,
+    m4CalibrationCandidates: buildM4CalibrationCandidates(topics),
     engineSummary: summarizeTopics(topics)
   };
 }
@@ -254,10 +356,20 @@ function buildComparators(blueprint) {
     launchYear: 2021 + index,
     historicalRevenue: Math.round(base * (0.88 + index * 0.08)),
     adjustedReferenceRevenue: Math.round(base * (0.92 + index * 0.06)),
-    selectedAsFinal: index <= 2,
+    selectedAsFinal: index <= 3,
+    countsAgainstFinalComparatorCap: index !== 1,
     sameAuthor: index === 1,
-    reason: index === 1 ? "same author and comparable category" : "category and heat signal match",
-    differences: index === 3 ? ["excluded_by_lower_similarity"] : ["different launch year"],
+    comparatorOrigin: index === 1
+      ? "same_author_adjustment"
+      : index === 2
+        ? "system_selected"
+        : "operator_suggested",
+    reason: index === 1
+      ? "same author adjustment reference"
+      : index === 2
+        ? "system category and heat signal match"
+        : "operator comparator retained in parallel",
+    differences: index === 3 ? ["operator_selected_reference"] : ["different launch year"],
     buyoutRevenueSeparated: true
   }));
 }
@@ -372,6 +484,7 @@ function buildRating(forecast, blueprint, readinessGaps) {
 }
 
 function ratingForAmount(amount) {
+  if (amount >= 1200000) return "S+";
   if (amount >= 900000) return "S";
   if (amount >= 650000) return "A";
   if (amount >= 420000) return "B";
@@ -430,6 +543,24 @@ function buildBacktests(topics) {
   ];
 }
 
+function buildM4CalibrationCandidates(topics) {
+  return topics
+    .filter((topic) => ["above_interval", "below_interval"].includes(topic.backtestPlan.currentOutcome))
+    .map((topic, index) => ({
+      candidateId: `SYN-M4-CAL-${String(index + 1).padStart(4, "0")}`,
+      topicId: topic.topicId,
+      algorithmVersion: M3_FIXTURE_ALGORITHM_VERSION,
+      trigger: topic.backtestPlan.currentOutcome,
+      checkpoint: topic.backtestPlan.currentCheckpoint,
+      status: "candidate_entry_only",
+      entryOnly: true,
+      m4Executed: false,
+      syntheticOnly: true,
+      notForFormalDecision: true,
+      reason: "Synthetic backtest deviation creates an M4 calibration handoff candidate."
+    }));
+}
+
 function summarizeTopics(topics) {
   return {
     totalTopics: topics.length,
@@ -437,9 +568,14 @@ function summarizeTopics(topics) {
     blockedTopics: topics.filter((topic) => topic.inputSnapshot.readiness === "blocked").length,
     draftTopics: topics.filter((topic) => topic.inputSnapshot.readiness === "draft").length,
     linkedTopics: topics.filter((topic) => topic.topicWorkLink.status === "linked_to_standard_work").length,
+    m4CalibrationCandidateCount: topics.filter((topic) =>
+      ["above_interval", "below_interval"].includes(topic.backtestPlan.currentOutcome)
+    ).length,
     ratings: Object.fromEntries(RATINGS.map((rating) => [
       rating,
       topics.filter((topic) => topic.rating.value === rating).length
+    ]).concat([
+      ["blocked", topics.filter((topic) => topic.rating.value === "blocked").length]
     ]))
   };
 }

@@ -4,6 +4,7 @@ import {
   M3_NEW_PRODUCT_BACKTESTS,
   M3_NEW_PRODUCT_DATASET,
   M3_NEW_PRODUCT_ENGINE_SUMMARY,
+  M3_NEW_PRODUCT_M4_CALIBRATION_CANDIDATES,
   M3_NEW_PRODUCT_TOPICS
 } from "../fixtures/m3NewProductEvaluationFixture.js";
 
@@ -27,6 +28,7 @@ const ALLOWED_GAP_QUERY_KEYS = new Set([
 ]);
 
 const ALLOWED_BACKTEST_QUERY_KEYS = new Set(["page", "pageSize", "checkpoint", "outcome"]);
+const ALLOWED_M4_QUERY_KEYS = new Set(["page", "pageSize", "trigger", "status"]);
 
 const SOURCES = ["publication", "web_original"];
 const READINESS = ["ready", "blocked", "draft"];
@@ -40,6 +42,8 @@ const STATUSES = [
 const RATINGS = ["S+", "S", "A", "B", "C", "D", "E", "blocked"];
 const SORTS = ["createdAt.desc", "fiveYearBase.desc", "firstYearForecast.desc", "rating.asc"];
 const SEVERITIES = ["high", "medium", "low"];
+const M4_TRIGGERS = ["above_interval", "below_interval"];
+const M4_STATUSES = ["candidate_entry_only"];
 
 export function getM3NewProductDataset() {
   return clone(M3_NEW_PRODUCT_DATASET);
@@ -55,7 +59,8 @@ export async function getM3NewProductOverview() {
       draftTopics: M3_NEW_PRODUCT_ENGINE_SUMMARY.draftTopics,
       linkedTopics: M3_NEW_PRODUCT_ENGINE_SUMMARY.linkedTopics,
       finalComparatorCap: 3,
-      backtestCheckpoints: ["first_year", "third_year", "fifth_year"]
+      backtestCheckpoints: ["first_year", "third_year", "fifth_year"],
+      m4CalibrationCandidateCount: M3_NEW_PRODUCT_ENGINE_SUMMARY.m4CalibrationCandidateCount
     },
     distribution: {
       source: distribution(topics, (topic) => topic.source, SOURCES),
@@ -203,6 +208,27 @@ export async function getM3NewProductBacktestById(_config, backtestBatchId) {
   });
 }
 
+export async function listM3NewProductM4CalibrationCandidates(_config, { pagination, searchParams }) {
+  validateQueryKeys(searchParams, ALLOWED_M4_QUERY_KEYS);
+  const trigger = searchParams.get("trigger");
+  const status = searchParams.get("status");
+  validateAllowedValue(trigger, M4_TRIGGERS, "trigger");
+  validateAllowedValue(status, M4_STATUSES, "status");
+
+  const rows = M3_NEW_PRODUCT_M4_CALIBRATION_CANDIDATES.filter((item) =>
+    (!trigger || item.trigger === trigger) &&
+    (!status || item.status === status)
+  );
+  return withDataset({
+    items: paginate(rows, pagination),
+    pagination: {
+      page: pagination.page,
+      pageSize: pagination.pageSize,
+      total: rows.length
+    }
+  });
+}
+
 function withDataset(body) {
   return {
     dataset: getM3NewProductDataset(),
@@ -223,7 +249,12 @@ function toTopicSummary(topic) {
     fiveYearBase: topic.forecast.fiveYearBase,
     firstYearForecast: topic.forecast.firstYearForecast,
     targetChannels: topic.targetChannels,
-    finalComparatorCount: topic.comparators.filter((item) => item.selectedAsFinal).length,
+    finalComparatorCount: topic.comparators.filter(
+      (item) => item.selectedAsFinal && item.countsAgainstFinalComparatorCap
+    ).length,
+    sameAuthorReferenceCount: topic.comparators.filter(
+      (item) => item.sameAuthor && item.selectedAsFinal
+    ).length,
     authorRankingEnabled: topic.authorRanking.enabled,
     topicWorkLinkStatus: topic.topicWorkLink.status,
     syntheticOnly: topic.syntheticOnly,

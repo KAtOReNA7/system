@@ -45,6 +45,7 @@ import {
   listM3NewProductAlgorithmVersions,
   listM3NewProductBacktests,
   listM3NewProductComparatorCandidates,
+  listM3NewProductM4CalibrationCandidates,
   listM3NewProductReadinessGaps,
   listM3NewProductTopics
 } from "../repositories/newProductEvaluationFixtureRepository.js";
@@ -129,7 +130,9 @@ export function createApp(config, options = {}) {
     listM3NewProductBacktests:
       options.listM3NewProductBacktests ?? listM3NewProductBacktests,
     getM3NewProductBacktestById:
-      options.getM3NewProductBacktestById ?? getM3NewProductBacktestById
+      options.getM3NewProductBacktestById ?? getM3NewProductBacktestById,
+    listM3NewProductM4CalibrationCandidates:
+      options.listM3NewProductM4CalibrationCandidates ?? listM3NewProductM4CalibrationCandidates
   };
 
   return async function app(request, response) {
@@ -523,6 +526,16 @@ export function createApp(config, options = {}) {
         if (request.method === "GET" && path === "/api/m3/new-products/backtests") {
           const pagination = parsePagination(url.searchParams);
           const body = await repositories.listM3NewProductBacktests(config, {
+            pagination,
+            searchParams: url.searchParams
+          });
+          sendJson(response, 200, body, requestId);
+          return;
+        }
+
+        if (request.method === "GET" && path === "/api/m3/new-products/m4-calibration-candidates") {
+          const pagination = parsePagination(url.searchParams);
+          const body = await repositories.listM3NewProductM4CalibrationCandidates(config, {
             pagination,
             searchParams: url.searchParams
           });

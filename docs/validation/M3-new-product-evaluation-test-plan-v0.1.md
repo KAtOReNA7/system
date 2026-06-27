@@ -31,3 +31,10 @@ npm run test:e2e
 - 作者排位不足 3 个可测算样本时禁用。
 - 评级不输出固定“是否建议开发”结论。
 - 页面不得泄露连接串、密码、原始材料、原始账单或 private 输出路径。
+
+## Gap-closure coverage added after acceptance audit
+
+- Same-author comparator references must expose a non-counting cap marker.
+- System-selected and operator-suggested comparator origins must coexist in fixture output.
+- Synthetic topics must cover S+/S/A/B/C/D/E plus blocked rating states.
+- M4 calibration candidates are entry-only fixture handoff records and must keep `m4Executed=false`.
