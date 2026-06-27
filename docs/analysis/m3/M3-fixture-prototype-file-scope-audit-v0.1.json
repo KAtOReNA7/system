@@ -1,0 +1,64 @@
+{
+  "schema": "m3.fixture_prototype_file_scope_audit.v0.1",
+  "generatedAt": "2026-06-28",
+  "currentHead": "4b32ef8275af9795581c087081f1db45d3c88cee",
+  "originMain": "4b32ef8275af9795581c087081f1db45d3c88cee",
+  "worktreeCleanAtStart": true,
+  "m3Commits": [
+    {
+      "sha": "bc1a5438b664576ef4b56084e22b0ef22ccbd1fc",
+      "scope": "M3 contract pack"
+    },
+    {
+      "sha": "5002fae41307054fbc4a8f82bbd5e73c14b10415",
+      "scope": "M3 fixture APIs"
+    },
+    {
+      "sha": "4b32ef8275af9795581c087081f1db45d3c88cee",
+      "scope": "M3 admin prototype and E2E"
+    }
+  ],
+  "fileScope": {
+    "docs": [
+      "docs/prd/30-new-product-evaluation/M3-new-product-evaluation-prd-v0.1.md",
+      "docs/api/M3-new-product-evaluation-api-contract-v0.1.md",
+      "docs/technical-design/M3-new-product-evaluation-data-model-v0.1.md",
+      "docs/product/M3-new-product-evaluation-pages-v0.1.md",
+      "docs/validation/M3-new-product-evaluation-test-plan-v0.1.md",
+      "docs/analysis/m3/M3-0-to-M3-7-development-summary-v0.1.json"
+    ],
+    "apiServer": [
+      "src/http/app.js",
+      "src/errors.js"
+    ],
+    "engine": [
+      "src/domain/newProductEvaluation/fixtureEngine.js"
+    ],
+    "fixture": [
+      "src/fixtures/m3NewProductEvaluationFixture.js"
+    ],
+    "repository": [
+      "src/repositories/newProductEvaluationFixtureRepository.js"
+    ],
+    "admin": [
+      "public/admin/index.html",
+      "public/admin/app.js"
+    ],
+    "tests": [
+      "test/m3-new-product-api.test.js",
+      "test/m3-new-product-fixture-engine.test.js",
+      "test/e2e/admin.e2e.test.js",
+      "package.json"
+    ]
+  },
+  "scopeFindings": {
+    "dbMigrationsModified": false,
+    "databaseDependencyAdded": false,
+    "privateDataDependencyAdded": false,
+    "privateExcelCommitted": false,
+    "realDataCommitted": false,
+    "formalApiAdded": false,
+    "formalLikeNamingRisk": "low_to_medium_mitigated_by_fixture_markers_and_formal_guard"
+  },
+  "recommendation": "Keep current M3 scope as fixture/prototype baseline; add stronger fixture path/version separation before formal M3."
+}
