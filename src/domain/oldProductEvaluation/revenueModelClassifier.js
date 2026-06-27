@@ -19,6 +19,8 @@ const MODEL_LABELS = Object.freeze({
   unknown_revenue_model: "收入模式未知"
 });
 
+const MIN_BUYOUT_NO_SALES_MONTHS = 12;
+
 export function computeBillingPatternFeatures(input = {}) {
   const values = monthlyValues(input);
   const observableMonthCount = Number(input.observableMonthCount ?? values.length) || values.length || 0;
@@ -38,6 +40,13 @@ export function computeBillingPatternFeatures(input = {}) {
   const randomnessScore = randomness(values);
   const spikeScore = largestMonthShare;
   const postBuyoutTailSalesSignal = hasPostBuyoutTail(values, largestMonthIncome);
+  const postLargePaymentObservedMonthCount = postPeakObservedMonthCount(values, largestMonthIncome);
+  const postLargePaymentPositiveMonthCount = postPeakPositiveMonthCount(values, largestMonthIncome);
+  const postLargePaymentNoSalesMonthCount =
+    postLargePaymentPositiveMonthCount === 0 ? postLargePaymentObservedMonthCount : 0;
+  const postLargePaymentNoSalesSignal = postLargePaymentNoSalesMonthCount >= MIN_BUYOUT_NO_SALES_MONTHS;
+  const largeIntegerPaymentSignal = largestMonthIncome >= 1000 && isNearInteger(largestMonthIncome);
+  const largeRoundPaymentSignal = largestMonthIncome >= 1000 && isRoundAmount(largestMonthIncome);
   const businessFormMix = clean(input.businessFormMix) || businessFormMixFromCounts(input);
 
   return {
@@ -58,6 +67,12 @@ export function computeBillingPatternFeatures(input = {}) {
     randomnessScore: round(randomnessScore),
     spikeScore: round(spikeScore),
     postBuyoutTailSalesSignal,
+    postLargePaymentObservedMonthCount,
+    postLargePaymentPositiveMonthCount,
+    postLargePaymentNoSalesMonthCount,
+    postLargePaymentNoSalesSignal,
+    largeIntegerPaymentSignal,
+    largeRoundPaymentSignal,
     businessFormMix,
     latestIncomeMonth: clean(input.latestIncomeMonth),
     firstPositiveMonth: clean(input.firstPositiveMonth)
@@ -86,27 +101,25 @@ export function classifyRevenueModel(input = {}) {
     reasons.push("历史收入月份或金额不足，无法稳定区分买断与实销");
   } else if (
     features.incomeMonthCount < 2 &&
-    buyoutSignalScore >= 0.7 &&
-    (Number(features.largestMonthIncome) >= 1000 || features.equalSplitSignal)
+    hasAnyBuyoutSignal(features)
   ) {
     revenueModel = REVENUE_MODELS.PURE_BUYOUT;
     confidence = buyoutSignalScore >= 0.82 ? "high" : "medium";
     manualReviewRequired = confidence !== "high";
-    reasons.push("单月大额或同批次同额信号较强，可识别为纯买断");
+    reasons.push("命中大额整数/同批次同额/买断后无实销任一买断信号，可识别为纯买断");
   } else if (features.incomeMonthCount < 2) {
-    revenueModel = REVENUE_MODELS.UNKNOWN;
+    revenueModel = REVENUE_MODELS.PURE_SALES_SHARE;
     confidence = "low";
-    reasons.push("单月低额收入不足以识别买断或实销");
-  } else if (buyoutSignalScore >= 0.66 && salesContinuityScore >= 0.46 && features.postBuyoutTailSalesSignal) {
-    revenueModel = REVENUE_MODELS.BUYOUT_PLUS_SALES;
-    confidence = buyoutSignalScore >= 0.74 && salesContinuityScore >= 0.55 ? "high" : "medium";
-    manualReviewRequired = confidence !== "high";
-    reasons.push("同时存在大额/整额/批次信号和后续连续小额实销尾部");
-  } else if (buyoutSignalScore >= 0.70 && salesContinuityScore < 0.45) {
+    manualReviewRequired = false;
+    reasons.push("有效账单收入未命中任一买断信号，按单月实销样本计入实销口径");
+  } else if (
+    buyoutSignalScore >= 0.70 &&
+    hasAnyBuyoutSignal(features)
+  ) {
     revenueModel = REVENUE_MODELS.PURE_BUYOUT;
     confidence = buyoutSignalScore >= 0.82 ? "high" : "medium";
     manualReviewRequired = confidence !== "high";
-    reasons.push("收入集中于少数月份，且整额或同批次同额信号较强");
+    reasons.push("命中大额整数/同批次同额/买断后无实销任一买断信号，可识别为纯买断");
   } else if (salesContinuityScore >= 0.58 && buyoutSignalScore < 0.56) {
     revenueModel = REVENUE_MODELS.PURE_SALES_SHARE;
     confidence = salesContinuityScore >= 0.72 ? "high" : "medium";
@@ -171,14 +184,12 @@ export function computeChannelBillingPatternFeatures(input = {}) {
 
 // User-confirmed channel-first billing rules:
 // - Sales share is identified per channel when income is multi-month, continuous
-//   or semi-continuous, naturally variable, and lacks same-batch equal-split
-//   buyout signals.
-// - Buyout is identified per channel when one/few months carry large round or
-//   integer-like payments, same-month sibling works have equal/similar amounts,
-//   and that channel has no continuing sales tail.
+//   or semi-continuous; an early high month is not a buyout signal by itself.
+// - Buyout is identified per channel when any user-confirmed buyout signal
+//   appears: large round/integer-like one-off payment, same-batch equal/similar
+//   amounts, or a post-candidate no-sales window.
 // - Buyout plus sales is a work-level aggregation: one channel/stage can be
-//   buyout while another channel/stage is sales share, or a buyout channel later
-//   shows continuing sales tail.
+//   buyout while another channel/stage is sales share.
 // - Unknown is reserved for sparse or conflicting evidence and should remain low.
 export function classifyChannelRevenueModel(input = {}) {
   const features = input.features ? { ...input.features } : computeChannelBillingPatternFeatures(input);
@@ -190,30 +201,34 @@ export function classifyChannelRevenueModel(input = {}) {
 
   if (features.positiveIncomeTotal <= 0 || features.positiveMonthCount <= 0) {
     reasons.push("渠道没有可判定的正收入月份");
-  } else if (buyoutSignalScore >= 0.68 && salesSignalScore >= 0.45 && features.postLargePaymentTailMonthCount >= 3) {
-    channelRevenueModel = CHANNEL_REVENUE_MODELS.MIXED;
-    confidence = buyoutSignalScore >= 0.78 && salesSignalScore >= 0.55 ? "high" : "medium";
-    reasons.push("同一渠道存在大额买断信号和后续持续实销尾部");
-  } else if (
-    buyoutSignalScore >= 0.68 &&
-    (features.positiveMonthCount <= 3 || features.postLargePaymentTailMonthCount <= 1) &&
-    salesSignalScore < 0.58
-  ) {
+  } else if (hasAnyBuyoutSignal(features)) {
     channelRevenueModel = CHANNEL_REVENUE_MODELS.BUYOUT;
-    confidence = buyoutSignalScore >= 0.8 ? "high" : "medium";
-    reasons.push("渠道收入集中在少数月份，整额/同额/批次信号强，后续实销尾部弱");
+    confidence = buyoutSignalScore >= 0.68 ? "medium" : "low";
+    reasons.push("渠道命中大额整数/同批次同额/买断后无实销任一买断信号，按买断渠道处理");
+  } else if (
+    features.naturalSalesSequenceSignal &&
+    Number(features.positiveMonthCount ?? features.incomeMonthCount) >= 4 &&
+    Number(features.postLargePaymentTailMonthCount) >= 2
+  ) {
+    channelRevenueModel = CHANNEL_REVENUE_MODELS.SALES_SHARE;
+    confidence = Number(features.positiveMonthCount ?? features.incomeMonthCount) >= 6 ? "high" : "medium";
+    reasons.push("渠道存在连续多月自然实销序列，优先按实销/分成处理，不因整额或同批次信号直接判买断");
   } else if (salesSignalScore >= 0.5 && buyoutSignalScore < 0.68) {
     channelRevenueModel = CHANNEL_REVENUE_MODELS.SALES_SHARE;
     confidence = salesSignalScore >= 0.68 ? "high" : "medium";
     reasons.push("渠道收入连续或半连续，金额呈自然波动，符合实销/分成");
   } else if (features.positiveMonthCount >= 4 && features.postLargePaymentTailMonthCount >= 3) {
-    channelRevenueModel = CHANNEL_REVENUE_MODELS.MIXED;
+    channelRevenueModel = CHANNEL_REVENUE_MODELS.SALES_SHARE;
     confidence = "medium";
-    reasons.push("渠道存在大额收入后持续尾部收入，按混合模式保守处理");
+    reasons.push("渠道大额收入后仍有持续实销，按上线前期大卖或自然实销序列处理，不判买断");
   } else if (features.positiveMonthCount >= 3) {
     channelRevenueModel = CHANNEL_REVENUE_MODELS.SALES_SHARE;
     confidence = "low";
     reasons.push("渠道数据虽不强，但多月收入更接近实销而非纯买断");
+  } else if (features.positiveMonthCount >= 1) {
+    channelRevenueModel = CHANNEL_REVENUE_MODELS.SALES_SHARE;
+    confidence = "low";
+    reasons.push("有效账单收入未命中任一买断信号，按单月实销样本计入实销口径");
   } else {
     reasons.push("渠道数据稀少或买断/实销信号冲突，暂无法判定");
   }
@@ -314,8 +329,9 @@ function scoreBuyout(features) {
   if (Number(features.integerAmountRatio) >= 0.75) score += 0.13;
   if (Number(features.roundAmountRatio) >= 0.5) score += 0.13;
   if (features.equalSplitSignal) score += 0.17;
-  if (Number(features.spikeScore) >= 0.9) score += 0.1;
-  return Math.min(1, score);
+  if (hasPostBuyoutNoSalesSignal(features)) score += 0.15;
+  if (Number(features.postLargePaymentPositiveMonthCount) > 0) score -= 0.2;
+  return Math.max(0, Math.min(1, score));
 }
 
 function scoreSalesContinuity(features) {
@@ -340,8 +356,9 @@ function channelBuyoutScore(features) {
   if (Number(features.integerAmountRatio) >= 0.7) score += 0.09;
   if (features.equalSplitBatchSignal || features.equalSplitSignal) score += 0.18;
   if (features.adjacentRowsSameAmountSignal) score += 0.08;
-  if (Number(features.postLargePaymentTailMonthCount) <= 1) score += 0.06;
-  return Math.min(1, score);
+  if (hasPostBuyoutNoSalesSignal(features)) score += 0.16;
+  if (Number(features.postLargePaymentPositiveMonthCount) > 0) score -= 0.24;
+  return Math.max(0, Math.min(1, score));
 }
 
 function channelSalesScore(features) {
@@ -363,6 +380,42 @@ function estimateBuyoutAmount(features, model) {
   return 0;
 }
 
+function hasAnyBuyoutSignal(features) {
+  return (
+    hasLargeAmountBuyoutSignal(features) ||
+    hasSameBatchBuyoutSignal(features) ||
+    hasNoSalesAfterCandidateBuyoutSignal(features)
+  );
+}
+
+function hasLargeAmountBuyoutSignal(features) {
+  return Boolean(
+    Number(features.positiveIncomeTotal ?? 0) >= 1000 &&
+      Number(features.postLargePaymentPositiveMonthCount ?? 0) === 0 &&
+      (features.largeRoundPaymentSignal || features.largeIntegerPaymentSignal)
+  );
+}
+
+function hasSameBatchBuyoutSignal(features) {
+  return Boolean(
+    features.equalSplitSignal ||
+      features.equalSplitBatchSignal ||
+      features.adjacentRowsSameAmountSignal
+  );
+}
+
+function hasNoSalesAfterCandidateBuyoutSignal(features) {
+  return Number(features.positiveIncomeTotal ?? 0) >= 1000 && hasPostBuyoutNoSalesSignal(features);
+}
+
+function hasPostBuyoutNoSalesSignal(features) {
+  return (
+    Boolean(features.postLargePaymentNoSalesSignal) ||
+    (Number(features.postLargePaymentNoSalesMonthCount) >= MIN_BUYOUT_NO_SALES_MONTHS &&
+      Number(features.postLargePaymentPositiveMonthCount) === 0)
+  );
+}
+
 function buildEvidenceSummary(features, model, buyoutScore, salesScore) {
   const base = [
     `收入月份=${features.incomeMonthCount}/${features.observableMonthCount}`,
@@ -371,7 +424,10 @@ function buildEvidenceSummary(features, model, buyoutScore, salesScore) {
     `连续性=${round(features.continuityScore)}`
   ];
   if (features.equalSplitSignal) base.push("存在同月同额/均分信号");
-  if (features.postBuyoutTailSalesSignal) base.push("存在买断后实销尾部信号");
+  if (hasLargeAmountBuyoutSignal(features)) base.push("命中大额整数/整额买断信号");
+  if (hasSameBatchBuyoutSignal(features)) base.push("命中同批次同额买断信号");
+  if (features.postBuyoutTailSalesSignal) base.push("候选买断月后仍有实销，不作为买断证据");
+  if (hasNoSalesAfterCandidateBuyoutSignal(features)) base.push("命中买断后无实销信号");
   base.push(`买断信号=${round(buyoutScore)}`);
   base.push(`实销连续信号=${round(salesScore)}`);
   base.push(`分类=${MODEL_LABELS[model]}`);
@@ -414,6 +470,20 @@ function hasPostBuyoutTail(values, largestMonthIncome) {
   const tail = values.slice(peakIndex + 1);
   const positiveTail = tail.filter((value) => value > 0 && value < largestMonthIncome * 0.35);
   return positiveTail.length >= 3 && continuity(tail) >= 0.35;
+}
+
+function postPeakObservedMonthCount(values, largestMonthIncome) {
+  if (!values.length || largestMonthIncome <= 0) return 0;
+  const peakIndex = values.findIndex((value) => value === largestMonthIncome);
+  if (peakIndex < 0) return 0;
+  return Math.max(0, values.length - peakIndex - 1);
+}
+
+function postPeakPositiveMonthCount(values, largestMonthIncome) {
+  if (!values.length || largestMonthIncome <= 0) return 0;
+  const peakIndex = values.findIndex((value) => value === largestMonthIncome);
+  if (peakIndex < 0) return 0;
+  return values.slice(peakIndex + 1).filter((value) => value > 0).length;
 }
 
 function tailMonthCount(input) {

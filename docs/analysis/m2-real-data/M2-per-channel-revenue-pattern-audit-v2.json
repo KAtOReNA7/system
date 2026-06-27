@@ -1,6 +1,6 @@
 {
   "reportId": "m2.per_channel_revenue_pattern_audit.v2",
-  "generatedAt": "2026-06-26T09:36:23.635424+00:00",
+  "generatedAt": "2026-06-27T03:48:06.755220+00:00",
   "sanitized": true,
   "containsRealWorkTitles": false,
   "containsAuthors": false,
@@ -13,10 +13,10 @@
     "channelGroups": 10822,
     "observableMonthSpan": 107,
     "channelRevenueModelDistribution": {
-      "sales_share_channel": 8812,
-      "buyout_channel": 1396,
-      "mixed_channel": 110,
-      "unknown_channel": 504
+      "sales_share_channel": 1010,
+      "buyout_channel": 9768,
+      "mixed_channel": 0,
+      "unknown_channel": 44
     },
     "featureDefinitions": [
       "positiveMonthCount",

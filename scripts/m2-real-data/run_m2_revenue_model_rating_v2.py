@@ -67,6 +67,7 @@ SHELF_STATUSES = [
 ]
 RATINGS = ["S+", "S", "A", "B", "C", "D", "E"]
 RANK = {rating: index for index, rating in enumerate(RATINGS)}
+MIN_BUYOUT_NO_SALES_MONTHS = 12
 
 WORK_MODEL_CN = {
     "pure_sales_share": "纯实销/纯分成",
@@ -288,6 +289,10 @@ def channel_features(values: np.ndarray, max_cluster: int, adjacent_signal: bool
     peak_index = int(np.argmax(values)) if len(values) else 0
     tail_values = values[peak_index + 1 :] if len(values) else np.array([])
     tail = tail_values[(tail_values > 0) & (tail_values < largest * 0.35)] if largest > 0 else np.array([])
+    post_positive_count = int(len(tail_values[tail_values > 0])) if len(tail_values) else 0
+    post_observed_count = int(len(tail_values))
+    post_no_sales_count = post_observed_count if post_positive_count == 0 else 0
+    post_no_sales_signal = post_no_sales_count >= MIN_BUYOUT_NO_SALES_MONTHS
     positive_count = int(len(positive))
     observed_count = int(len(values))
     active_ratio = positive_count / observed_count if observed_count else 0.0
@@ -307,6 +312,8 @@ def channel_features(values: np.ndarray, max_cluster: int, adjacent_signal: bool
         equal_split=equal_split,
         adjacent_signal=adjacent_signal,
         tail_count=len(tail),
+        post_positive_count=post_positive_count,
+        post_no_sales_signal=post_no_sales_signal,
     )
     sales_score = score_sales_channel(
         positive_count=positive_count,
@@ -332,6 +339,12 @@ def channel_features(values: np.ndarray, max_cluster: int, adjacent_signal: bool
         "equalSplitBatchSignal": equal_split,
         "postLargePaymentTailMonthCount": int(len(tail)),
         "postLargePaymentTailRevenue": round_float(float(tail.sum()), 2),
+        "postLargePaymentObservedMonthCount": post_observed_count,
+        "postLargePaymentPositiveMonthCount": post_positive_count,
+        "postLargePaymentNoSalesMonthCount": post_no_sales_count,
+        "postLargePaymentNoSalesSignal": post_no_sales_signal,
+        "largeIntegerPaymentSignal": largest >= 1000 and abs(largest - round(largest)) <= 0.01,
+        "largeRoundPaymentSignal": largest >= 1000 and is_round_amount(largest),
         "naturalSalesSequenceSignal": natural_sales,
         "buyoutSignalScore": round_float(buyout_score),
         "salesSignalScore": round_float(sales_score),
@@ -348,30 +361,34 @@ def classify_channel(features: dict) -> dict:
         model = "unknown_channel"
         confidence = "low"
         reasons.append("渠道没有正收入事实")
-    elif buyout_score >= 0.68 and sales_score >= 0.45 and features["postLargePaymentTailMonthCount"] >= 3:
-        model = "mixed_channel"
-        confidence = "high" if buyout_score >= 0.78 and sales_score >= 0.55 else "medium"
-        reasons.append("渠道同时存在大额买断信号和后续持续实销尾部")
-    elif (
-        buyout_score >= 0.68
-        and (features["positiveMonthCount"] <= 3 or features["postLargePaymentTailMonthCount"] <= 1)
-        and sales_score < 0.58
-    ):
+    elif has_any_buyout_signal(features):
         model = "buyout_channel"
-        confidence = "high" if buyout_score >= 0.8 else "medium"
-        reasons.append("渠道收入集中在少数月份，整额/同额/批次信号强")
+        confidence = "medium" if buyout_score >= 0.68 else "low"
+        reasons.append("渠道命中大额整数/同批次同额/买断后无实销任一买断信号，按买断渠道处理")
+    elif (
+        features["naturalSalesSequenceSignal"]
+        and features["positiveMonthCount"] >= 4
+        and features["postLargePaymentTailMonthCount"] >= 2
+    ):
+        model = "sales_share_channel"
+        confidence = "high" if features["positiveMonthCount"] >= 6 else "medium"
+        reasons.append("渠道存在连续多月自然实销序列，优先按实销/分成处理，不因整额或同批次信号直接判买断")
     elif sales_score >= 0.5 and buyout_score < 0.68:
         model = "sales_share_channel"
         confidence = "high" if sales_score >= 0.68 else "medium"
         reasons.append("渠道收入连续或半连续，金额自然波动")
     elif features["positiveMonthCount"] >= 4 and features["postLargePaymentTailMonthCount"] >= 3:
-        model = "mixed_channel"
+        model = "sales_share_channel"
         confidence = "medium"
-        reasons.append("渠道有大额收入后持续尾部收入，按混合模式保守处理")
+        reasons.append("渠道大额收入后仍有持续实销，按上线前期大卖或自然实销序列处理，不判买断")
     elif features["positiveMonthCount"] >= 3:
         model = "sales_share_channel"
         confidence = "low"
         reasons.append("多月收入更接近实销，不保守归为 unknown")
+    elif features["positiveMonthCount"] >= 1:
+        model = "sales_share_channel"
+        confidence = "low"
+        reasons.append("有效账单收入未命中任一买断信号，按单月实销样本计入实销口径")
     else:
         model = "unknown_channel"
         confidence = "low"
@@ -382,6 +399,40 @@ def classify_channel(features: dict) -> dict:
         "channelRevenueModelConfidence": confidence,
         "channelClassificationReasonChinese": reasons,
     }
+
+
+def has_any_buyout_signal(features: dict) -> bool:
+    return (
+        has_large_amount_buyout_signal(features)
+        or has_same_batch_buyout_signal(features)
+        or has_no_sales_after_candidate_buyout_signal(features)
+    )
+
+
+def has_large_amount_buyout_signal(features: dict) -> bool:
+    return bool(
+        float(features.get("positiveIncomeTotal") or 0) >= 1000
+        and int(features.get("postLargePaymentPositiveMonthCount") or 0) == 0
+        and (features.get("largeRoundPaymentSignal") or features.get("largeIntegerPaymentSignal"))
+    )
+
+
+def has_same_batch_buyout_signal(features: dict) -> bool:
+    return bool(
+        features.get("equalSplitBatchSignal")
+        or features.get("adjacentRowsSameAmountSignal")
+    )
+
+
+def has_no_sales_after_candidate_buyout_signal(features: dict) -> bool:
+    return float(features.get("positiveIncomeTotal") or 0) >= 1000 and has_post_buyout_no_sales_signal(features)
+
+
+def has_post_buyout_no_sales_signal(features: dict) -> bool:
+    return bool(features.get("postLargePaymentNoSalesSignal")) or (
+        int(features.get("postLargePaymentNoSalesMonthCount") or 0) >= MIN_BUYOUT_NO_SALES_MONTHS
+        and int(features.get("postLargePaymentPositiveMonthCount") or 0) == 0
+    )
 
 
 def build_work_rows(
@@ -550,12 +601,11 @@ def aggregate_work(sid: str, channels: list[dict], summary, months: list[str], l
 def fallback_work_model(channels: list[dict]) -> tuple[str, str]:
     positive_months = sum(channel["positiveMonthCount"] for channel in channels)
     total = sum(channel["positiveIncomeTotal"] for channel in channels)
-    largest_share = max([channel["singleLargeMonthShare"] for channel in channels], default=0.0)
-    has_equal_split = any(channel["equalSplitBatchSignal"] for channel in channels)
-    if positive_months >= 3:
-        return "pure_sales_share", "渠道信号弱但多月收入更接近实销，避免过度 unknown"
-    if total >= 1000 and (largest_share >= 0.8 or has_equal_split):
-        return "pure_buyout", "单月大额或同额批次信号足以判定买断"
+    has_any_buyout = any(has_any_buyout_signal(channel) for channel in channels)
+    if has_any_buyout:
+        return "pure_buyout", "命中大额整数/同批次同额/买断后无实销任一买断信号"
+    if positive_months >= 1:
+        return "pure_sales_share", "有效账单收入未命中任一买断信号，按实销口径处理"
     return "unknown_revenue_model", "仅极少收入或渠道证据冲突，保留 unknown"
 
 
@@ -1062,9 +1112,11 @@ def score_buyout_channel(**kwargs) -> float:
         score += 0.18
     if kwargs["adjacent_signal"]:
         score += 0.08
-    if kwargs["tail_count"] <= 1:
-        score += 0.06
-    return min(1.0, score)
+    if kwargs["post_no_sales_signal"]:
+        score += 0.16
+    if kwargs["post_positive_count"] > 0:
+        score -= 0.24
+    return max(0.0, min(1.0, score))
 
 
 def score_sales_channel(**kwargs) -> float:
