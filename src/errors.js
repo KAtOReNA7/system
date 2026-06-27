@@ -64,6 +64,14 @@ export function formalDataBlocked() {
   );
 }
 
+export function formalM3DataBlocked() {
+  return new AppError(
+    "formal_data_blocked",
+    "Formal M3 new-product evaluation is blocked until M2 formal readiness and explicit authorization are complete.",
+    423
+  );
+}
+
 export function m1ReadinessBlocked(message = "M1 readiness is incomplete for this evaluation.") {
   return new AppError("m1_readiness_blocked", message, 423);
 }

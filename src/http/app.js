@@ -1,6 +1,6 @@
 import crypto from "node:crypto";
 import { checkDatabaseHealth } from "../db/health.js";
-import { AppError, badRequest, formalDataBlocked, notFound, publicErrorBody } from "../errors.js";
+import { AppError, badRequest, formalDataBlocked, formalM3DataBlocked, notFound, publicErrorBody } from "../errors.js";
 import { parsePagination, parsePositiveInteger } from "./pagination.js";
 import { listJobs, getJobById } from "../repositories/jobRepository.js";
 import {
@@ -38,6 +38,16 @@ import {
   getM2FormalEvaluationExportById,
   listM2FormalEvaluationExports
 } from "../repositories/m2EvaluationExportRepository.js";
+import {
+  getM3NewProductBacktestById,
+  getM3NewProductOverview,
+  getM3NewProductTopicById,
+  listM3NewProductAlgorithmVersions,
+  listM3NewProductBacktests,
+  listM3NewProductComparatorCandidates,
+  listM3NewProductReadinessGaps,
+  listM3NewProductTopics
+} from "../repositories/newProductEvaluationFixtureRepository.js";
 import { getSystemStatus } from "../repositories/systemRepository.js";
 import { getWorkById, listWorks } from "../repositories/workRepository.js";
 import { serveAdminAsset } from "./staticAdmin.js";
@@ -105,7 +115,21 @@ export function createApp(config, options = {}) {
     listM2FormalEvaluationExports:
       options.listM2FormalEvaluationExports ?? listM2FormalEvaluationExports,
     getM2FormalEvaluationExportById:
-      options.getM2FormalEvaluationExportById ?? getM2FormalEvaluationExportById
+      options.getM2FormalEvaluationExportById ?? getM2FormalEvaluationExportById,
+    getM3NewProductOverview: options.getM3NewProductOverview ?? getM3NewProductOverview,
+    listM3NewProductTopics: options.listM3NewProductTopics ?? listM3NewProductTopics,
+    getM3NewProductTopicById:
+      options.getM3NewProductTopicById ?? getM3NewProductTopicById,
+    listM3NewProductReadinessGaps:
+      options.listM3NewProductReadinessGaps ?? listM3NewProductReadinessGaps,
+    listM3NewProductComparatorCandidates:
+      options.listM3NewProductComparatorCandidates ?? listM3NewProductComparatorCandidates,
+    listM3NewProductAlgorithmVersions:
+      options.listM3NewProductAlgorithmVersions ?? listM3NewProductAlgorithmVersions,
+    listM3NewProductBacktests:
+      options.listM3NewProductBacktests ?? listM3NewProductBacktests,
+    getM3NewProductBacktestById:
+      options.getM3NewProductBacktestById ?? getM3NewProductBacktestById
   };
 
   return async function app(request, response) {
@@ -440,6 +464,86 @@ export function createApp(config, options = {}) {
         }
       }
 
+      if (path.startsWith("/api/m3/new-products")) {
+        blockFormalM3Mode(request, url);
+
+        if (request.method === "GET" && path === "/api/m3/new-products/topics/overview") {
+          const body = await repositories.getM3NewProductOverview(config);
+          sendJson(response, 200, body, requestId);
+          return;
+        }
+
+        if (request.method === "GET" && path === "/api/m3/new-products/topics") {
+          const pagination = parsePagination(url.searchParams);
+          const body = await repositories.listM3NewProductTopics(config, {
+            pagination,
+            searchParams: url.searchParams
+          });
+          sendJson(response, 200, body, requestId);
+          return;
+        }
+
+        const newProductTopicMatch = path.match(/^\/api\/m3\/new-products\/topics\/([^/]+)$/);
+        if (request.method === "GET" && newProductTopicMatch) {
+          const topicId = decodeURIComponent(newProductTopicMatch[1]);
+          const body = await repositories.getM3NewProductTopicById(config, topicId);
+          if (!body) {
+            throw notFound("New product topic");
+          }
+          sendJson(response, 200, body, requestId);
+          return;
+        }
+
+        if (request.method === "GET" && path === "/api/m3/new-products/readiness-gaps") {
+          const pagination = parsePagination(url.searchParams);
+          const body = await repositories.listM3NewProductReadinessGaps(config, {
+            pagination,
+            searchParams: url.searchParams
+          });
+          sendJson(response, 200, body, requestId);
+          return;
+        }
+
+        if (request.method === "GET" && path === "/api/m3/new-products/comparator-candidates") {
+          const pagination = parsePagination(url.searchParams);
+          const body = await repositories.listM3NewProductComparatorCandidates(config, {
+            pagination,
+            searchParams: url.searchParams
+          });
+          sendJson(response, 200, body, requestId);
+          return;
+        }
+
+        if (request.method === "GET" && path === "/api/m3/new-products/algorithm-versions") {
+          const body = await repositories.listM3NewProductAlgorithmVersions(config);
+          sendJson(response, 200, body, requestId);
+          return;
+        }
+
+        if (request.method === "GET" && path === "/api/m3/new-products/backtests") {
+          const pagination = parsePagination(url.searchParams);
+          const body = await repositories.listM3NewProductBacktests(config, {
+            pagination,
+            searchParams: url.searchParams
+          });
+          sendJson(response, 200, body, requestId);
+          return;
+        }
+
+        const newProductBacktestMatch = path.match(
+          /^\/api\/m3\/new-products\/backtests\/([^/]+)$/
+        );
+        if (request.method === "GET" && newProductBacktestMatch) {
+          const backtestBatchId = decodeURIComponent(newProductBacktestMatch[1]);
+          const body = await repositories.getM3NewProductBacktestById(config, backtestBatchId);
+          if (!body) {
+            throw notFound("M3 new-product backtest");
+          }
+          sendJson(response, 200, body, requestId);
+          return;
+        }
+      }
+
       throw notFound("Route");
     } catch (error) {
       const statusCode = error instanceof AppError ? error.statusCode : 500;
@@ -457,6 +561,18 @@ function blockFormalM2Mode(request, url) {
 
   if (String(requestedMode ?? "").toLowerCase() === "formal") {
     throw formalDataBlocked();
+  }
+}
+
+function blockFormalM3Mode(request, url) {
+  const requestedMode =
+    url.searchParams.get("mode") ??
+    request.headers["x-m3-mode"] ??
+    request.headers["x-evaluation-mode"] ??
+    request.headers["x-mode"];
+
+  if (String(requestedMode ?? "").toLowerCase() === "formal") {
+    throw formalM3DataBlocked();
   }
 }
 
