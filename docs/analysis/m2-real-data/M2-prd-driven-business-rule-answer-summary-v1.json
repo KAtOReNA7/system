@@ -1,0 +1,57 @@
+{
+  "reportId": "m2.prd_driven_business_rule_answer_summary.v1",
+  "generatedAt": "2026-06-27T00:00:00+08:00",
+  "sanitized": true,
+  "containsRealWorkTitles": false,
+  "containsAuthors": false,
+  "containsChannels": false,
+  "containsRawBillingRows": false,
+  "containsPrivateExcelDetail": false,
+  "payload": {
+    "source": "user_chat_answers_q1_q12",
+    "m3Entered": false,
+    "formalReleaseApproved": false,
+    "answers": {
+      "Q1": "A",
+      "Q2": "A",
+      "Q3": "A",
+      "Q4": "default_3_years_cap_by_remaining_copyright_min_1_year",
+      "Q5": "all_ratings_by_monthly_sales_equivalent; pure_buyout_uses_latest_buyout_over_q4_duration; prior_cycle_buyout_monthly_sales_retained_for_pure_buyout_forecast_reference; mixed_buyout_plus_sales_current_rating_adds_buyout_monthly_allocation_to_current_sales; mixed_next_cycle_forecasts_sales_only",
+      "Q6": "B",
+      "Q7": "A",
+      "Q8": "A",
+      "Q9": "A",
+      "Q10": "A",
+      "Q11": "C",
+      "Q12": "A"
+    },
+    "businessRuleDecisions": {
+      "buyoutAmortization": {
+        "defaultYears": 3,
+        "capByRemainingCopyright": true,
+        "minimumYears": 1
+      },
+      "ratingBasis": "monthly_sales_equivalent",
+      "pureBuyout": {
+        "currentRatingBasis": "latest_buyout_amount_divided_by_q4_duration_months",
+        "forecastReference": "previous_buyout_amount_divided_by_months_between_previous_and_current_buyout_when_available"
+      },
+      "buyoutPlusSales": {
+        "currentRatingBasis": "current_sales_monthly_amount_plus_current_cycle_buyout_monthly_allocation",
+        "nextCycleForecast": "forecast_sales_only_no_future_buyout_negotiation"
+      },
+      "shelfStatus": {
+        "copyrightLedgerTrust": "high",
+        "tailRevenueHandling": "review_note_only_not_mutual_constraint"
+      },
+      "m4CalibrationPool": "user_selected_classic_or_key_works_not_auto_failure_bucket"
+    },
+    "prohibitedActionsConfirmed": {
+      "enteredM3": false,
+      "wroteFormalMasterData": false,
+      "submittedPrivateExcel": false,
+      "usedGitAddDot": false,
+      "touchedStash": false
+    }
+  }
+}

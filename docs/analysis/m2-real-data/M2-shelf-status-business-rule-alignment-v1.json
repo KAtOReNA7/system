@@ -1,6 +1,6 @@
 {
   "reportId": "m2.shelf_status_business_rule_alignment.v1",
-  "generatedAt": "2026-06-26T10:39:27.284353+00:00",
+  "generatedAt": "2026-06-27T03:52:56.703274+00:00",
   "sanitized": true,
   "containsRealWorkTitles": false,
   "containsAuthors": false,
@@ -16,17 +16,19 @@
       "在架状态影响当前评级解释，但不抹掉历史评级。"
     ],
     "fullCohortShelfStatusDistribution": {
-      "active_on_shelf": 1704,
-      "likely_off_shelf": 61,
-      "rights_expired_likely_off_shelf": 82,
-      "off_shelf_but_tail_revenue": 145,
-      "unknown_shelf_status": 1062
+      "active_on_shelf_confident": 0,
+      "active_or_available_inferred": 2215,
+      "active_on_shelf": 0,
+      "likely_off_shelf": 10,
+      "rights_expired_likely_off_shelf": 227,
+      "rights_expired_needs_review": 0,
+      "off_shelf_but_tail_revenue": 0,
+      "unknown_shelf_status": 602
     },
     "taskPackShelfStatusDistribution": {
-      "仍在架或可运营": 14,
-      "无法判断": 11,
-      "版权到期，大概率下架": 3,
-      "已下架但仍有存量会员/已购用户尾部收入": 2
+      "可运营或在架（推断）": 14,
+      "无法判断": 6,
+      "版权到期，疑似下架": 5
     },
     "sanitized": true,
     "m3Entered": false

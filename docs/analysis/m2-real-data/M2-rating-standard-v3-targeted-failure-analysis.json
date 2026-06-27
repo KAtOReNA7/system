@@ -1,0 +1,59 @@
+{
+  "reportId": "m2.rating_standard_v3_targeted_failure_analysis",
+  "generatedAt": "2026-06-27T05:21:52.951310+00:00",
+  "sanitized": true,
+  "containsRealWorkTitles": false,
+  "containsAuthors": false,
+  "containsChannels": false,
+  "containsRawBillingRows": false,
+  "containsRawLedgerRows": false,
+  "payload": {
+    "candidateVersion": "m2-realdata-dev-rating-standard-v3.0",
+    "sourceWorkbook": "data/private-output/m2-business-review/m2-v1.1-30-work-operator-task-pack-cn-rating-standard-v3.xlsx",
+    "effectiveReviewRows": 25,
+    "revenueModeReasonableRate": 0.88,
+    "shelfStatusReasonableRate": 0.72,
+    "ratingReasonableRate": 0.08,
+    "pureSalesConclusion": {
+      "pureSalesDirectMatchRate": 1.0,
+      "action": "保持纯实销/分成实销档位不变"
+    },
+    "pureBuyoutFailure": {
+      "rows": 8,
+      "userMarkedUnreasonable": 8,
+      "v3Basis": "buyout_value",
+      "v3AmountBandMatchRate": 1.0,
+      "rootCauses": [
+        "v3 将一次性买断金额直接按前台价值展示，容易推高到 S+/S。",
+        "纯买断缺少当前持续实销能力，应把买断金额折为对应周期月均实销等价值。",
+        "买断金额需要按默认 3 年、剩余版权期封顶、最低 1 年折算，并与当前权利/上架状态分开解释。",
+        "部分样本同时存在到期、下架或状态不明，影响用户对评级合理性的判断。"
+      ]
+    },
+    "buyoutPlusSalesFailure": {
+      "rows": 11,
+      "userMarkedUnreasonable": 9,
+      "rootCauses": [
+        "v3 综合评级未清楚区分当前评级和下一周期预测。",
+        "买断+实销当前评级应把买断对应周期月均与当周期原实销相加。",
+        "买断+实销下一周期预测只预测实销部分，不预测未来买断谈判。",
+        "缺少对下架/版权状态置信度的显式提示。"
+      ]
+    },
+    "shelfStatusFailure": {
+      "userMarkedUnreasonable": 7,
+      "negativeReasons": {
+        "上下架状态需复核": 4,
+        "其他货架/版权状态复核原因": 3
+      },
+      "rootCauses": [
+        "版权台账由版权部负责，作为高可信状态来源。",
+        "尾部收入说明收入来源可后续核查，但不应反向约束版权台账状态。",
+        "缺少明确上架字段时，不能高置信判断当前可运营或已下架。",
+        "版权未到期但近期无收入不应直接判下架。"
+      ]
+    },
+    "sanitized": true,
+    "m3Entered": false
+  }
+}

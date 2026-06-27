@@ -6,6 +6,8 @@ export const M2_COMMERCIAL_RATING_SUGGESTION_VERSION =
 
 export const M2_RATING_ORDER = Object.freeze(["S+", "S", "A", "B", "C", "D", "E"]);
 
+export const DEFAULT_BUYOUT_AMORTIZATION_YEARS = 3;
+
 const RATING_RANK = Object.freeze({
   "S+": 0,
   S: 1,
@@ -66,6 +68,16 @@ export const SALES_PERFORMANCE_THRESHOLDS = Object.freeze({
   C: { min: 500, max: 1000, label: "500 - 1000" },
   D: { min: 100, max: 500, label: "100 - 500" },
   E: { max: 100, label: "100 以内" }
+});
+
+export const BUYOUT_HISTORY_VALUE_THRESHOLDS = Object.freeze({
+  "S+": { min: 100000, label: "月均实销等价值 100000 以上" },
+  S: { min: 10000, max: 100000, label: "月均实销等价值 10000 - 100000" },
+  A: { min: 5000, max: 10000, label: "月均实销等价值 5000 - 10000" },
+  B: { min: 1000, max: 5000, label: "月均实销等价值 1000 - 5000" },
+  C: { min: 500, max: 1000, label: "月均实销等价值 500 - 1000" },
+  D: { min: 100, max: 500, label: "月均实销等价值 100 - 500" },
+  E: { max: 100, label: "月均实销等价值 100 以内" }
 });
 
 export const RATING_STANDARD_DEFINITIONS = Object.freeze({
@@ -133,6 +145,13 @@ export function calibrateRating(input = {}) {
     salesPerformanceRationaleCn: sales.rationaleCn,
     buyoutHistoricalValueRating: buyout.rating,
     buyoutHistoricalValueAmount: buyout.amount,
+    buyoutAmortizationYears: buyout.amortizationYears,
+    buyoutAmortizationMonths: buyout.amortizationMonths,
+    buyoutEquivalentMonthlySales: buyout.equivalentMonthlySales,
+    buyoutEquivalentAnnualValue: buyout.equivalentAnnualValue,
+    previousBuyoutMonthlySalesEquivalent: buyout.previousBuyoutMonthlySalesEquivalent,
+    ratingIncludesBuyout: front.ratingIncludesBuyout,
+    nextCycleForecastPolicy: front.nextCycleForecastPolicy,
     buyoutHistoricalValueRationaleCn: buyout.rationaleCn,
     forecastValueRating: forecast.rating,
     forecastValueScore: forecast.score,
@@ -182,37 +201,59 @@ export function buildFrontRatingDisplay(input = {}, parts = {}) {
   const rights = parts.rights ?? buildRightsAndReadinessStatus(normalized);
   const forecast = parts.forecast ?? buildForecastValueRating(normalized);
 
+  return buildFrontRatingDisplayV4(normalized, { historical, sales, buyout, forecast, rights });
+}
+
+function buildFrontRatingDisplayV4(normalized, parts) {
+  const { historical, sales, buyout, forecast, rights } = parts;
   const revenueModel = clean(normalized.revenueModel);
   const shelfStatus = clean(normalized.shelfStatus);
-  const activeShelf = !shelfStatus || shelfStatus === "active_on_shelf";
+  const activeShelf = !shelfStatus || isActiveOrInferredShelfStatus(shelfStatus);
   const activeRights = ["active", "perpetual"].includes(rights.currentRightsStatus);
   const offShelfOrExpired = !activeShelf || rights.currentRightsStatus === "expired";
   let rating = historical.rating;
   let ratingBasis = "historical";
+  let ratingIncludesBuyout = false;
+  let nextCycleForecastPolicy = "forecast_is_auxiliary_only";
   const reasons = [];
 
   if (revenueModel === "pure_buyout") {
     rating = buyout.rating && buyout.rating !== "not_applicable" ? buyout.rating : historical.rating;
-    ratingBasis = "buyout_value";
-    reasons.push("评级基于买断估计金额形成历史价值判断，不因最近实销为 0 直接降为 E");
+    ratingBasis = "buyout_monthly_sales_equivalent";
+    ratingIncludesBuyout = true;
+    nextCycleForecastPolicy = "pure_buyout_may_use_previous_cycle_monthly_sales_equivalent";
+    reasons.push("\u8be5\u4f5c\u54c1\u4e3a\u7eaf\u4e70\u65ad\uff1b\u8bc4\u7ea7\u6309\u4e70\u65ad\u91d1\u989d\u5728\u4e1a\u52a1\u5468\u671f\u5185\u6298\u7b97\u7684\u6708\u5747\u5b9e\u9500\u7b49\u4ef7\u8ba1\u7b97");
+    reasons.push(`buyoutEquivalentMonthlySales=${round(buyout.equivalentMonthlySales ?? 0, 2)}, amortizationYears=${buyout.amortizationYears}`);
+    if (buyout.previousBuyoutMonthlySalesEquivalent != null) {
+      reasons.push(`previousBuyoutMonthlySalesEquivalent=${round(buyout.previousBuyoutMonthlySalesEquivalent, 2)}\uff0c\u53ef\u4f5c\u4e0b\u4e00\u5468\u671f\u7eaf\u4e70\u65ad\u9884\u4f30\u53c2\u8003`);
+    }
+    if (offShelfOrExpired) reasons.push("\u5f53\u524d\u8fd0\u8425\u4ecd\u53d6\u51b3\u4e8e\u7248\u6743/\u4e0a\u67b6\u72b6\u6001");
   } else if (revenueModel === "buyout_plus_sales") {
-    rating = bestRating([sales.rating, buyout.rating, historical.rating].filter((item) => item && item !== "not_applicable"));
-    ratingBasis = "mixed";
-    reasons.push(`买断+实销综合判断：买断历史价值=${buyout.rating}，当前实销=${sales.rating}`);
+    const mixed = buildMixedSalesWithBuyoutRating(sales, buyout, historical.rating);
+    rating = mixed.rating;
+    ratingBasis = "current_sales_with_buyout_allocation";
+    ratingIncludesBuyout = mixed.includesBuyout;
+    nextCycleForecastPolicy = "mixed_buyout_forecasts_sales_only";
+    reasons.push(
+      `\u4e70\u65ad+\u5b9e\u9500\u524d\u53f0\u8bc4\u7ea7\u4f7f\u7528\u5f53\u524d\u5b9e\u9500\u6708\u5747=${round(sales.monthlyAmount ?? 0, 2)}`
+        + `\uff0c\u53e0\u52a0\u4e70\u65ad\u6298\u7b97\u6708\u5747=${round(buyout.equivalentMonthlySales ?? 0, 2)}`
+        + `\uff0c\u5408\u8ba1\u6708\u5747=${round(mixed.combinedMonthlySalesEquivalent ?? 0, 2)}`
+    );
+    reasons.push("\u4e0b\u4e00\u5468\u671f\u9884\u4f30\u4ec5\u9884\u4f30\u5b9e\u9500\u90e8\u5206\uff0c\u4e0d\u9884\u4f30\u672a\u6765\u4e70\u65ad\u8c08\u5224");
   } else if (!offShelfOrExpired && activeRights && sales.rating && sales.rating !== "not_applicable") {
     rating = sales.rating;
     ratingBasis = "current_sales";
-    reasons.push("在架/可运营作品按剔除买断后的最近 12 月实销或年化实销档位评级");
+    reasons.push("\u5728\u67b6/\u53ef\u8fd0\u8425\u4f5c\u54c1\u6309\u7528\u6237\u6708\u5747\u5b9e\u9500\u6863\u4f4d\u8bc4\u7ea7\uff0c\u4fdd\u6301\u7eaf\u5b9e\u9500\u89c4\u5219\u4e0d\u53d8");
   } else {
     rating = historical.rating;
     ratingBasis = "historical";
-    reasons.push("到期/下架/状态不明作品展示历史评级，不用状态直接改写为 E");
+    reasons.push("\u5230\u671f/\u4e0b\u67b6/\u72b6\u6001\u4e0d\u660e\u4f5c\u54c1\u5c55\u793a\u5386\u53f2\u8bc4\u7ea7\uff0c\u4e0d\u7528\u72b6\u6001\u76f4\u63a5\u6539\u5199\u4e3a E");
   }
 
   if (forecast.rating && forecast.rating !== "not_applicable") {
-    reasons.push(`预测评级=${forecast.rating} 仅作辅助，不覆盖真实账单实销档位`);
+    reasons.push(`\u9884\u6d4b\u8bc4\u7ea7=${forecast.rating} \u4ec5\u4f5c\u8f85\u52a9\uff0c\u4e0d\u8986\u76d6\u771f\u5b9e\u8d26\u5355\u5b9e\u9500\u6863\u4f4d`);
   } else {
-    reasons.push("预测不作为主评级路径");
+    reasons.push("\u9884\u6d4b\u4e0d\u4f5c\u4e3a\u4e3b\u8bc4\u7ea7\u8def\u5f84");
   }
 
   const shelfStatusDisplay = normalized.shelfStatusChinese || normalized.shelfStatus || rights.currentRightsStatusChinese;
@@ -222,16 +263,19 @@ export function buildFrontRatingDisplay(input = {}, parts = {}) {
     shelfStatus: shelfStatusDisplay,
     ratingScore: ratingToScore(rating, historical.score),
     ratingExplanation: [
-      `评级=${rating}`,
-      `状态=${shelfStatusDisplay}`,
-      `当前权利=${rights.currentRightsStatusChinese}`,
-      `下架状态=${shelfStatusDisplay}`,
-      `历史表现 ${historical.rating}`,
-      `实销评级：${sales.rating}`,
-      `买断历史价值：${buyout.rating}`,
-      `商业模式/收入模式=${normalized.revenueModelChinese || normalized.revenueModel || "未知"}`,
+      `\u8bc4\u7ea7=${rating}`,
+      `\u72b6\u6001=${shelfStatusDisplay}`,
+      `\u5f53\u524d\u6743\u5229=${rights.currentRightsStatusChinese}`,
+      `\u4e0b\u67b6\u72b6\u6001\uff1a${shelfStatusDisplay}`,
+      `\u5386\u53f2\u8868\u73b0 ${historical.rating}`,
+      `\u5b9e\u9500\u8bc4\u7ea7\uff1a${sales.rating}`,
+      `\u4e70\u65ad\u6708\u5747\u5b9e\u9500\u7b49\u4ef7\uff1a${buyout.rating}`,
+      `\u8bc4\u7ea7\u662f\u5426\u542b\u4e70\u65ad\uff1a${ratingIncludesBuyout ? "\u662f" : "\u5426"}`,
+      `\u5546\u4e1a\u6a21\u5f0f/\u6536\u5165\u6a21\u5f0f=${normalized.revenueModelChinese || normalized.revenueModel || "\u672a\u77e5"}`,
       ...reasons
-    ].join("；"),
+    ].join("\uff1b"),
+    ratingIncludesBuyout,
+    nextCycleForecastPolicy,
     hiddenAuxiliaryRatings: {
       historicalPerformanceRating: historical.rating,
       salesPerformanceRating: sales.rating,
@@ -242,51 +286,101 @@ export function buildFrontRatingDisplay(input = {}, parts = {}) {
 }
 
 export function buildSalesPerformanceRating(input = {}) {
+  const monthly = numberOrNull(input.salesRevenueMonthly ?? input.monthlySalesRevenue);
   const amount12m = numberOrNull(input.salesRevenue12m);
   const annualized = numberOrNull(input.salesRevenueAnnualized);
-  const amount = amount12m != null ? amount12m : annualized != null ? annualized : null;
-  const amountSource = amount12m != null ? "salesRevenue12m" : annualized != null ? "salesRevenueAnnualized" : "missing";
-  const rating = amount == null ? "not_applicable" : ratingFromSalesAmount(amount);
+  const monthlyAmount = monthly != null ? monthly : amount12m != null ? amount12m / 12 : annualized != null ? annualized / 12 : null;
+  const amountSource =
+    monthly != null ? "salesRevenueMonthly" : amount12m != null ? "salesRevenue12m/12" : annualized != null ? "salesRevenueAnnualized/12" : "missing";
+  const rating = monthlyAmount == null ? "not_applicable" : ratingFromMonthlySalesAmount(monthlyAmount);
   return {
     rating,
-    amount,
+    amount: monthlyAmount,
+    monthlyAmount,
     amountSource,
     rationaleCn: [
-      "实销评级基于剔除买断后的实销收入",
-      amountSource === "salesRevenue12m" ? "优先采用最近 12 个完整月实销收入" : "12 个月不足时采用年化实销 run-rate",
-      amount == null ? "缺少实销收入口径，实销评级暂不适用" : `实销评级金额=${round(amount, 2)}，评级=${rating}`
+      "实销评级基于剔除买断后的月均实销收入",
+      amountSource === "salesRevenueMonthly"
+        ? "优先采用已提供的月均实销"
+        : amountSource === "salesRevenue12m/12"
+          ? "最近 12 个完整月实销收入折算为月均实销"
+          : amountSource === "salesRevenueAnnualized/12"
+            ? "年化实销 run-rate 折算为月均实销"
+            : "缺少实销收入口径",
+      monthlyAmount == null ? "缺少实销收入口径，实销评级暂不适用" : `月均实销=${round(monthlyAmount, 2)}，评级=${rating}`
     ]
   };
 }
 
 export function buildBuyoutHistoricalValueRating(input = {}) {
-  const amount = numberOrNull(input.buyoutEstimatedAmount);
+  return buildBuyoutHistoricalValueRatingV4(input);
+}
+
+function buildBuyoutHistoricalValueRatingV4(input = {}) {
+  const amount = numberOrNull(input.latestBuyoutAmount ?? input.currentBuyoutAmount ?? input.buyoutEstimatedAmount);
   const revenueModel = clean(input.revenueModel);
   const applies = ["pure_buyout", "buyout_plus_sales"].includes(revenueModel) || (amount != null && amount > 0);
-  const rating = applies && amount != null ? ratingFromSalesAmount(amount) : "not_applicable";
+  const amortizationYears = resolveBuyoutAmortizationYears(input);
+  const amortizationMonths = round(amortizationYears * 12, 2);
+  const equivalentMonthlySales = applies && amount != null && amortizationMonths > 0 ? amount / amortizationMonths : null;
+  const equivalentAnnualValue = equivalentMonthlySales != null ? equivalentMonthlySales * 12 : null;
+  const rating = applies && equivalentMonthlySales != null ? ratingFromMonthlySalesAmount(equivalentMonthlySales) : "not_applicable";
+  const previousBuyoutAmount = numberOrNull(input.previousBuyoutAmount ?? input.priorBuyoutAmount ?? input.lastCycleBuyoutAmount);
+  const monthsBetweenBuyouts = numberOrNull(input.monthsBetweenBuyouts ?? input.buyoutCycleMonths ?? input.previousBuyoutCycleMonths);
+  const previousBuyoutMonthlySalesEquivalent =
+    previousBuyoutAmount != null && monthsBetweenBuyouts != null && monthsBetweenBuyouts > 0
+      ? previousBuyoutAmount / monthsBetweenBuyouts
+      : null;
+
   return {
     rating,
     amount: applies ? amount ?? 0 : null,
+    amortizationYears,
+    amortizationMonths,
+    equivalentMonthlySales,
+    equivalentAnnualValue,
+    previousBuyoutMonthlySalesEquivalent,
     rationaleCn: [
-      "买断历史价值单独展示，不混入实销评级档位",
-      applies ? `买断估计金额=${round(amount ?? 0, 2)}，历史价值评级=${rating}` : "非买断或无买断估计金额，买断历史价值不适用"
+      "\u4e70\u65ad\u8bc4\u7ea7\u6309\u6708\u5747\u5b9e\u9500\u7b49\u4ef7\u8ba1\u7b97\uff1a\u6700\u65b0\u4e70\u65ad\u91d1\u989d\u9664\u4ee5\u9ed8\u8ba4 3 \u5e74\uff0c\u5982\u5269\u4f59\u7248\u6743\u671f\u66f4\u77ed\u5219\u6309\u5269\u4f59\u671f\u9650\uff0c\u6700\u4f4e 1 \u5e74",
+      applies
+        ? `buyoutAmount=${round(amount ?? 0, 2)}, amortizationYears=${amortizationYears}, buyoutEquivalentMonthlySales=${round(equivalentMonthlySales ?? 0, 2)}, buyoutMonthlySalesRating=${rating}`
+        : "\u975e\u4e70\u65ad\u6216\u65e0\u4e70\u65ad\u4f30\u8ba1\u91d1\u989d\uff0c\u4e70\u65ad\u5386\u53f2\u4ef7\u503c\u4e0d\u9002\u7528"
     ]
   };
 }
 
 function buildCombinedHistoricalPerformanceRating(input, baselineHistorical, sales, buyout) {
+  return buildCombinedHistoricalPerformanceRatingV4(input, baselineHistorical, sales, buyout);
+}
+
+function buildCombinedHistoricalPerformanceRatingV4(input, baselineHistorical, sales, buyout) {
   if (!hasRatingStandardV2Inputs(input)) return baselineHistorical;
-  const candidates = [sales.rating, buyout.rating].filter((rating) => RATING_RANK[rating] != null);
-  const rating = candidates.length ? bestRating(candidates) : baselineHistorical.rating;
-  const score = ratingToScore(rating, baselineHistorical.score);
+  const revenueModel = clean(input.revenueModel);
+  let rating = baselineHistorical.rating;
+  const rationale = [];
+
+  if (revenueModel === "pure_buyout") {
+    rating = buyout.rating && buyout.rating !== "not_applicable" ? buyout.rating : baselineHistorical.rating;
+    rationale.push("\u7eaf\u4e70\u65ad\u5386\u53f2\u8868\u73b0\u4f7f\u7528\u4e70\u65ad\u6708\u5747\u5b9e\u9500\u7b49\u4ef7\uff0c\u4e0d\u76f4\u63a5\u4f7f\u7528\u4e70\u65ad\u603b\u989d");
+  } else if (revenueModel === "buyout_plus_sales") {
+    const mixed = buildMixedSalesWithBuyoutRating(sales, buyout, baselineHistorical.rating);
+    rating = mixed.rating;
+    rationale.push("\u4e70\u65ad+\u5b9e\u9500\u7efc\u5408\u8bc4\u7ea7\u5c06\u4e70\u65ad\u91d1\u989d\u6309\u5bf9\u5e94\u5468\u671f\u6298\u6210\u6708\u5747\u5b9e\u9500\uff0c\u4e0e\u5f53\u671f\u539f\u5b9e\u9500\u6708\u5747\u76f8\u52a0");
+  } else {
+    const candidates = [sales.rating, baselineHistorical.rating].filter((item) => RATING_RANK[item] != null);
+    rating = candidates.length ? bestRating(candidates) : baselineHistorical.rating;
+    rationale.push("\u7eaf\u5b9e\u9500/\u5206\u6210\u4fdd\u6301\u7528\u6237\u5b9e\u9500\u6863\u4f4d\u89c4\u5219\u4e0d\u53d8");
+  }
+
   return {
     rating,
-    score,
+    score: ratingToScore(rating, baselineHistorical.score),
     rationaleCn: [
-      "历史表现评级综合实销评级与买断历史价值评级",
-      `实销评级=${sales.rating}`,
-      `买断历史价值评级=${buyout.rating}`,
-      "版权到期和下架状态只影响当前运营，不直接抹掉历史表现评级"
+      ...rationale,
+      `salesPerformanceRating=${sales.rating}`,
+      `buyoutHistoricalValueRating=${buyout.rating}`,
+      buyout.equivalentMonthlySales != null ? `buyoutEquivalentMonthlySales=${round(buyout.equivalentMonthlySales, 2)}` : "buyoutEquivalentMonthlySales=not_applicable",
+      "\u7248\u6743\u5230\u671f\u548c\u4e0b\u67b6\u72b6\u6001\u53ea\u5f71\u54cd\u5f53\u524d\u8fd0\u8425\uff0c\u4e0d\u76f4\u63a5\u628a\u5386\u53f2\u8bc4\u7ea7\u6539\u5199\u4e3a E"
     ]
   };
 }
@@ -501,9 +595,13 @@ function normalizeRatingInput(input) {
     revenueModel,
     revenueModelChinese: clean(input.revenueModelChinese ?? input.revenueModelClassification?.revenueModelChinese),
     salesContinuityScore: numberOrNull(input.salesContinuityScore ?? input.revenueModelClassification?.salesContinuityScore),
+    salesRevenueMonthly: numberOrNull(input.salesRevenueMonthly ?? input.monthlySalesRevenue),
     salesRevenue12m: numberOrNull(input.salesRevenue12m),
     salesRevenueAnnualized: numberOrNull(input.salesRevenueAnnualized),
-    buyoutEstimatedAmount: numberOrNull(input.buyoutEstimatedAmount ?? input.revenueModelClassification?.buyoutEstimatedAmount),
+    buyoutEstimatedAmount: numberOrNull(input.latestBuyoutAmount ?? input.currentBuyoutAmount ?? input.buyoutEstimatedAmount ?? input.revenueModelClassification?.buyoutEstimatedAmount),
+    previousBuyoutAmount: numberOrNull(input.previousBuyoutAmount ?? input.priorBuyoutAmount ?? input.lastCycleBuyoutAmount),
+    monthsBetweenBuyouts: numberOrNull(input.monthsBetweenBuyouts ?? input.buyoutCycleMonths ?? input.previousBuyoutCycleMonths),
+    buyoutAmortizationYears: numberOrNull(input.buyoutAmortizationYears ?? input.amortizationYears),
     shelfStatus: clean(input.shelfStatus ?? input.shelfStatusInference?.shelfStatus),
     shelfStatusChinese: clean(input.shelfStatusChinese ?? input.shelfStatusInference?.shelfStatusChinese),
     remainingCopyrightMonths: numberOrNull(input.remainingCopyrightMonths),
@@ -531,6 +629,50 @@ export function ratingFromSalesAmount(amount) {
   if (value >= 500) return "C";
   if (value >= 100) return "D";
   return "E";
+}
+
+export function ratingFromMonthlySalesAmount(amount) {
+  return ratingFromSalesAmount(amount);
+}
+
+export function ratingFromBuyoutAnnualValue(amount) {
+  return ratingFromSalesAmount(amount);
+}
+
+function resolveBuyoutAmortizationYears(input = {}) {
+  const configured = numberOrNull(input.buyoutAmortizationYears ?? input.amortizationYears);
+  let years = configured != null && configured > 0 ? configured : DEFAULT_BUYOUT_AMORTIZATION_YEARS;
+  const remainingMonths = numberOrNull(input.remainingCopyrightMonths);
+  if (remainingMonths != null) {
+    years = Math.min(years, Math.max(1, remainingMonths / 12));
+  }
+  return round(years, 2);
+}
+
+function buildMixedSalesWithBuyoutRating(sales = {}, buyout = {}, fallbackRating = "E") {
+  const salesMonthly = numberOrNull(sales.monthlyAmount ?? sales.amount) ?? 0;
+  const buyoutMonthly = numberOrNull(buyout.equivalentMonthlySales) ?? 0;
+  const combinedMonthlySalesEquivalent = salesMonthly + buyoutMonthly;
+  const rating = combinedMonthlySalesEquivalent > 0
+    ? ratingFromMonthlySalesAmount(combinedMonthlySalesEquivalent)
+    : RATING_RANK[fallbackRating] != null
+      ? fallbackRating
+      : "E";
+  return {
+    rating,
+    combinedMonthlySalesEquivalent,
+    includesBuyout: buyoutMonthly > 0
+  };
+}
+
+function improveRating(rating, steps = 1) {
+  const index = RATING_RANK[rating];
+  if (index == null) return rating;
+  return M2_RATING_ORDER[Math.max(0, index - steps)];
+}
+
+function isActiveOrInferredShelfStatus(status) {
+  return ["active_on_shelf", "active_on_shelf_confident", "active_or_available_inferred"].includes(status);
 }
 
 function hasRatingStandardV2Inputs(input) {

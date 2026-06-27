@@ -1,0 +1,59 @@
+{
+  "reportId": "m2.buyout_false_positive_revenue_model_audit.v1",
+  "generatedAt": "2026-06-27T00:00:00+08:00",
+  "sanitized": true,
+  "containsRealWorkTitles": false,
+  "containsAuthors": false,
+  "containsChannels": false,
+  "containsRawBillingRows": false,
+  "containsPrivateExcelDetail": false,
+  "payload": {
+    "trigger": "user_reported_five_private_task_pack_samples_should_be_pure_sales",
+    "checkedArtifacts": [
+      "data/private-output/m2-business-review/m2-v1.1-30-work-operator-task-pack-cn-rating-standard-v4.xlsx",
+      "data/private-output/m2-business-review/m2-v1.1-30-work-operator-task-pack-cn-after-dual-source-staging-v2-source.json",
+      "scripts/m2-real-data/run_m2_revenue_model_rating_v2.py",
+      "src/domain/oldProductEvaluation/revenueModelClassifier.js"
+    ],
+    "findings": {
+      "ratingStandardV4ContainsUserReportedSamples": false,
+      "afterStagingPackContainsUserReportedSamples": true,
+      "afterStagingPackHasRevenueModelColumns": false,
+      "likelyAlgorithmicRootCause": "channel revenue classification evaluated buyout/mixed branches before natural continuous sales sequence; round amount, equal-split, or large-month signals could override sustained sales evidence",
+      "scopeBoundary": "current fix prevents the same algorithmic pattern from propagating into regenerated revenue-model/rating-standard packs, but the five user-reported samples are not directly present in the current rating-standard-v4 workbook in this workspace"
+    },
+    "implementedFix": {
+      "naturalSalesSequencePriority": true,
+      "postBuyoutNoSalesWindowRequired": true,
+      "postBuyoutNoSalesMinimumObservedMonths": 12,
+      "firstMonthSpikeIsNotBuyoutSignal": true,
+      "sameChannelPostPeakSalesClassifiesAsSalesShare": true,
+      "rule": "buyout requires large integer/round amount or same-batch equal-amount signal plus at least twelve post-candidate observed months with no positive revenue in the same channel; a first-month spike followed by continued revenue is treated as sales share",
+      "modifiedFiles": [
+        "src/domain/oldProductEvaluation/revenueModelClassifier.js",
+        "scripts/m2-real-data/run_m2_revenue_model_rating_v2.py",
+        "test/m2-revenue-model-classifier.test.js"
+      ]
+    },
+    "userConfirmedBusinessRules": {
+      "sameChannelBuyoutImpliesNoSalesForOneToThreeYears": true,
+      "manualConfirmationRequired": false,
+      "acceptedSignals": [
+        "large_integer_income",
+        "large_same_amount_same_batch_income",
+        "no_same_channel_sales_after_candidate_buyout"
+      ],
+      "firstMonthHighIncomeSignal": "not_buyout_signal",
+      "addTaskPackEvidenceColumns": false
+    },
+    "refreshedPrivateOutputs": [
+      "data/private-output/m2-business-review/m2-revenue-model-rating-v2-validation.xlsx",
+      "data/private-output/m2-business-review/m2-v1.1-30-work-operator-task-pack-cn-rating-standard-v2.xlsx",
+      "data/private-output/m2-business-review/m2-v1.1-30-work-operator-task-pack-cn-rating-standard-v3.xlsx",
+      "data/private-output/m2-business-review/m2-v1.1-30-work-operator-task-pack-cn-rating-standard-v4.xlsx"
+    ],
+    "questionPack": "docs/analysis/m2-real-data/M2-buyout-false-positive-business-rule-questions-v1.md",
+    "m3Entered": false,
+    "privateExcelCommitted": false
+  }
+}

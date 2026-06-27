@@ -1,0 +1,81 @@
+{
+  "reportId": "m2.buyout_false_positive_business_rule_questions.v1",
+  "generatedAt": "2026-06-27T00:00:00+08:00",
+  "sanitized": true,
+  "containsRealWorkTitles": false,
+  "containsAuthors": false,
+  "containsChannels": false,
+  "containsRawBillingRows": false,
+  "payload": {
+    "userConfirmedAnswers": {
+      "Q1": {
+        "answer": "yes",
+        "summary": "同一作品同一渠道如果发生买断，则该渠道后续 1-3 年内不应再有实销，这是强判断标准。"
+      },
+      "Q2": {
+        "answer": "no_manual_confirmation_required",
+        "summary": "不需要人工确认字段；系统按大额整数、同批次大量相同金额、候选买断后无实销三条账单依据判断。"
+      },
+      "Q3": {
+        "answer": "first_month_spike_not_signal",
+        "summary": "首月明显高不是买断信号，只能说明上线前期大卖、题材、特殊类别或运营手段影响。"
+      },
+      "Q4": {
+        "answer": "do_not_add_evidence_columns",
+        "summary": "不新增收入模式证据列，系统应准确执行三条判断依据。"
+      }
+    },
+    "questions": [
+      {
+        "questionId": "Q1",
+        "priority": "P0",
+        "title": "连续多月实销是否应优先压过买断形态信号",
+        "recommendedAnswer": "A",
+        "options": {
+          "A": "是。只要存在连续多月自然实销序列，就优先判纯实销，除非有明确商业条款/合同/人工确认买断。",
+          "B": "否。账单形态中出现整额、同批次、首月大额时，仍允许系统自动判买断或买断+实销。",
+          "C": "折中。连续实销优先，但首月占比超过用户确认阈值时仍进入人工复核。"
+        },
+        "impact": "决定系统是否继续仅凭账单形态自动产生买断标签。"
+      },
+      {
+        "questionId": "Q2",
+        "priority": "P0",
+        "title": "买断认定是否必须依赖明确商业条款或人工确认",
+        "recommendedAnswer": "A",
+        "options": {
+          "A": "必须。没有商业条款、合同或人工确认时，账单形态只能作为疑似买断复核提示，不能直接进入买断评级。",
+          "B": "不必须。少数月份大额/整额/同批次仍可自动认定买断。",
+          "C": "仅纯买断必须明确确认；买断+实销可由系统根据账单形态推断。"
+        },
+        "impact": "决定后续是否新增“疑似买断待确认”中间态。"
+      },
+      {
+        "questionId": "Q3",
+        "priority": "P1",
+        "title": "首月明显高、后续持续收入的作品应如何默认处理",
+        "recommendedAnswer": "A",
+        "options": {
+          "A": "默认纯实销。首月高收入可能是上线/推广/结算节奏，不直接视为买断。",
+          "B": "默认买断+实销。首月高收入作为买断候选，后续收入作为实销尾部。",
+          "C": "默认人工复核，不给自动收入模式。"
+        },
+        "impact": "影响高收入稳定作品是否被误打买断。"
+      },
+      {
+        "questionId": "Q4",
+        "priority": "P1",
+        "title": "任务包是否需要增加收入模式证据列",
+        "recommendedAnswer": "A",
+        "options": {
+          "A": "需要。增加收入模式、买断证据、是否人工确认买断、买断估计金额来源等列。",
+          "B": "不需要。任务包只保留评级和预测字段。",
+          "C": "仅在疑似买断样本中展示证据列。"
+        },
+        "impact": "影响运营填写前是否能直接发现买断误判来源。"
+      }
+    ],
+    "recommendedNextAction": "user_answer_q1_q4_then_codex_finalize_buyout_recognition_policy",
+    "m3Entered": false
+  }
+}

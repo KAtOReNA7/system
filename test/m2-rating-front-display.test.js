@@ -13,10 +13,10 @@ test("front display exposes one rating plus status and explanation", () => {
     forecastValueRating: "S"
   });
 
-  assert.equal(result.rating, "S+");
+  assert.equal(result.rating, "S");
   assert.equal(result.ratingBasis, "current_sales");
   assert.equal(result.shelfStatus, "仍在架或可运营");
-  assert.ok(result.ratingExplanation.includes("评级=S+"));
+  assert.ok(result.ratingExplanation.includes("评级=S"));
   assert.deepEqual(Object.keys(result.hiddenAuxiliaryRatings).sort(), [
     "buyoutHistoricalValueRating",
     "forecastValueRating",
@@ -49,21 +49,38 @@ test("pure buyout uses buyout amount even when recent sales are zero", () => {
     currentRightsStatus: "active"
   });
 
-  assert.equal(result.rating, "S");
-  assert.equal(result.ratingBasis, "buyout_value");
+  assert.equal(result.rating, "B");
+  assert.equal(result.ratingBasis, "buyout_monthly_sales_equivalent");
+  assert.ok(result.ratingExplanation.includes("buyoutEquivalentMonthlySales="));
+  assert.ok(result.ratingExplanation.includes("评级是否含买断：是"));
 });
 
 test("buyout plus sales shows one combined front rating", () => {
   const result = buildFrontRatingDisplay({
     revenueModel: "buyout_plus_sales",
     salesRevenue12m: 1200,
-    buyoutEstimatedAmount: 120000,
+    buyoutEstimatedAmount: 600000,
     shelfStatus: "active_on_shelf",
     currentRightsStatus: "active"
   });
 
-  assert.equal(result.rating, "S+");
-  assert.equal(result.ratingBasis, "mixed");
+  assert.equal(result.rating, "S");
+  assert.equal(result.ratingBasis, "current_sales_with_buyout_allocation");
+  assert.equal(result.ratingIncludesBuyout, true);
+});
+
+test("buyout plus sales current rating adds current cycle buyout allocation", () => {
+  const result = buildFrontRatingDisplay({
+    revenueModel: "buyout_plus_sales",
+    salesRevenue12m: 12000,
+    buyoutEstimatedAmount: 90000,
+    shelfStatus: "active_on_shelf",
+    currentRightsStatus: "active"
+  });
+
+  assert.equal(result.rating, "B");
+  assert.equal(result.ratingBasis, "current_sales_with_buyout_allocation");
+  assert.equal(result.nextCycleForecastPolicy, "mixed_buyout_forecasts_sales_only");
 });
 
 test("forecast does not override current sales rating", () => {
@@ -76,6 +93,6 @@ test("forecast does not override current sales rating", () => {
     revenueBucket: "top"
   });
 
-  assert.equal(result.rating, "C");
+  assert.equal(result.rating, "E");
   assert.equal(result.ratingBasis, "current_sales");
 });

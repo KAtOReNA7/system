@@ -1,6 +1,6 @@
 {
   "reportId": "m2.revenue_model_business_rule_alignment.v1",
-  "generatedAt": "2026-06-26T10:39:27.283422+00:00",
+  "generatedAt": "2026-06-27T03:52:56.702769+00:00",
   "sanitized": true,
   "containsRealWorkTitles": false,
   "containsAuthors": false,
@@ -15,17 +15,17 @@
       "unknown": "仅限数据不足或冲突，不得过度保守。"
     },
     "currentRecognition": {
-      "pure_sales_share": 2013,
-      "pure_buyout": 385,
-      "buyout_plus_sales": 640,
-      "unknown_revenue_model": 16
+      "pure_sales_share": 84,
+      "pure_buyout": 2471,
+      "buyout_plus_sales": 494,
+      "unknown_revenue_model": 5
     },
-    "unknownCount": 16,
-    "buyoutPlusSalesCount": 640,
+    "unknownCount": 5,
+    "buyoutPlusSalesCount": 494,
     "taskPackRevenueModelDistribution": {
-      "纯实销/纯分成": 9,
-      "买断+实销": 13,
-      "纯买断": 8
+      "纯实销/纯分成": 5,
+      "买断+实销": 11,
+      "纯买断": 9
     },
     "typicalPatternsNeedingUserReview": [
       "单月大额但后续有尾部收入的混合渠道",

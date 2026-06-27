@@ -74,15 +74,25 @@ test("per-channel continuous non-standard amounts classify as sales share channe
   assert.ok(result.salesSignalScore > result.buyoutSignalScore);
 });
 
-test("per-channel single large round amount classifies as buyout channel", () => {
+test("per-channel single large round amount alone remains sales share sample", () => {
   const result = classifyChannelRevenueModel({
     monthlyAmounts: [0, 0, 50000, 0, 0, 0],
     observableMonthCount: 6
   });
 
-  assert.equal(result.channelRevenueModel, "buyout_channel");
+  assert.equal(result.channelRevenueModel, "sales_share_channel");
   assert.ok(result.buyoutSignalScore > 0);
   assert.equal(result.features.postLargePaymentNoSalesSignal, false);
+});
+
+test("per-channel large round amount plus long no-sales window classifies as buyout channel", () => {
+  const result = classifyChannelRevenueModel({
+    monthlyAmounts: [0, 0, 50000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    observableMonthCount: 18
+  });
+
+  assert.equal(result.channelRevenueModel, "buyout_channel");
+  assert.equal(result.features.postLargePaymentNoSalesSignal, true);
 });
 
 test("per-channel single valid non-buyout amount classifies as sales share sample", () => {
@@ -95,7 +105,7 @@ test("per-channel single valid non-buyout amount classifies as sales share sampl
   assert.equal(result.features.positiveIncomeTotal, 43912.12);
 });
 
-test("same-batch same-amount signal alone is enough to classify buyout", () => {
+test("same-batch same-amount signal alone is not enough to classify buyout", () => {
   const result = classifyChannelRevenueModel({
     monthlyAmounts: [80000, 8000, 7500, 9000, 8500, 8200],
     observableMonthCount: 6,
@@ -103,7 +113,7 @@ test("same-batch same-amount signal alone is enough to classify buyout", () => {
     adjacentRowsSameAmountSignal: true
   });
 
-  assert.equal(result.channelRevenueModel, "buyout_channel");
+  assert.equal(result.channelRevenueModel, "sales_share_channel");
   assert.ok(result.features.naturalSalesSequenceSignal);
 });
 

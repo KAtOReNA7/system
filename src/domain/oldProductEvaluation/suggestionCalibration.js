@@ -331,7 +331,12 @@ function hasValueSupport(ctx) {
 }
 
 function isActiveShelf(ctx) {
-  return !ctx.shelfStatus || ctx.shelfStatus === "active_on_shelf";
+  return (
+    !ctx.shelfStatus ||
+    ctx.shelfStatus === "active_on_shelf" ||
+    ctx.shelfStatus === "active_on_shelf_confident" ||
+    ctx.shelfStatus === "active_or_available_inferred"
+  );
 }
 
 function revenueModelEvidence(ctx) {

@@ -1,6 +1,6 @@
 {
   "reportId": "m2.front_rating_simplification.v1",
-  "generatedAt": "2026-06-26T10:39:27.285142+00:00",
+  "generatedAt": "2026-06-27T03:52:56.703773+00:00",
   "sanitized": true,
   "containsRealWorkTitles": false,
   "containsAuthors": false,
@@ -22,31 +22,31 @@
       "operationalDecisionRating"
     ],
     "ratingBasisDistribution": {
-      "current_sales": 7,
-      "historical": 2,
-      "mixed": 13,
-      "buyout_value": 8
+      "current_sales": 3,
+      "mixed": 11,
+      "buyout_value": 9,
+      "historical": 2
     },
     "ratingDistribution": {
-      "S+": 19,
-      "S": 9,
-      "A": 1,
-      "B": 1,
-      "C": 0,
-      "D": 0,
-      "E": 0
-    },
-    "expiredOrOffShelfRatingDistribution": {
-      "S+": 1,
-      "S": 3,
-      "A": 1,
+      "S+": 23,
+      "S": 1,
+      "A": 0,
       "B": 0,
       "C": 0,
       "D": 0,
-      "E": 0
+      "E": 1
+    },
+    "expiredOrOffShelfRatingDistribution": {
+      "S+": 4,
+      "S": 0,
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 0,
+      "E": 1
     },
     "pureBuyoutRatingDistribution": {
-      "S+": 7,
+      "S+": 8,
       "S": 1,
       "A": 0,
       "B": 0,
@@ -55,10 +55,10 @@
       "E": 0
     },
     "buyoutPlusSalesRatingDistribution": {
-      "S+": 6,
-      "S": 5,
-      "A": 1,
-      "B": 1,
+      "S+": 11,
+      "S": 0,
+      "A": 0,
+      "B": 0,
       "C": 0,
       "D": 0,
       "E": 0

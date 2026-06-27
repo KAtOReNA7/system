@@ -1,0 +1,185 @@
+{
+  "reportId": "m2.rating_standard_v3_operator_validation_summary.v1",
+  "generatedAt": "2026-06-26T14:21:32.969791+00:00",
+  "sourceWorkbook": "data/private-output/m2-business-review/m2-v1.1-30-work-operator-task-pack-cn-rating-standard-v3.xlsx",
+  "onlyReadRatingStandardV3Workbook": true,
+  "sanitized": true,
+  "containsRealWorkTitles": false,
+  "containsAuthors": false,
+  "containsChannels": false,
+  "containsRawBillingRows": false,
+  "rows": {
+    "rawNonEmptyRows": 30,
+    "rowsWithStandardWorkId": 30,
+    "evaluatedTaskRows": 25,
+    "userSpecifiedRowsPendingTaskCard": 5
+  },
+  "missingRequiredHeaders": [],
+  "revenueMode": {
+    "distribution": {
+      "纯实销/纯分成": 6,
+      "买断+实销": 11,
+      "纯买断": 8
+    },
+    "judgment": {
+      "positive": 22,
+      "negative": 3,
+      "neutral": 0,
+      "notApplicable": 0,
+      "blank": 0,
+      "other": 0,
+      "effectiveAnswered": 25,
+      "positiveRateOfEffectiveAnswered": 0.88,
+      "positiveRateOfDecisiveAnswered": 0.88
+    },
+    "negativeReasons": {
+      "买断/实销/分成边界需复核": 3
+    }
+  },
+  "shelfStatus": {
+    "judgment": {
+      "positive": 18,
+      "negative": 7,
+      "neutral": 0,
+      "notApplicable": 0,
+      "blank": 0,
+      "other": 0,
+      "effectiveAnswered": 25,
+      "positiveRateOfEffectiveAnswered": 0.72,
+      "positiveRateOfDecisiveAnswered": 0.72
+    },
+    "negativeReasons": {
+      "上下架状态需复核": 4,
+      "其他货架/版权状态复核原因": 3
+    },
+    "expiredOrOffShelfRows": 5,
+    "expiredOrOffShelfRatedE": 0,
+    "expiredOrOffShelfNotSimplyE": 5
+  },
+  "rating": {
+    "distribution": {
+      "S+": 18,
+      "S": 5,
+      "A": 1,
+      "B": 1,
+      "C": 0,
+      "D": 0,
+      "E": 0
+    },
+    "basisDistribution": {
+      "current_sales": 4,
+      "historical": 2,
+      "mixed": 11,
+      "buyout_value": 8
+    },
+    "judgment": {
+      "positive": 2,
+      "negative": 23,
+      "neutral": 0,
+      "notApplicable": 0,
+      "blank": 0,
+      "other": 0,
+      "effectiveAnswered": 25,
+      "positiveRateOfEffectiveAnswered": 0.08,
+      "positiveRateOfDecisiveAnswered": 0.08
+    },
+    "negativeReasons": {
+      "评级档位边界需复核": 15,
+      "评级所用收入口径需复核": 5,
+      "评级需结合版权/下架状态复核": 2,
+      "用户未填写结构化原因": 1
+    },
+    "salesBandComparison": {
+      "amountSourcePriority": [
+        "年化实销收入",
+        "最近12月实销收入"
+      ],
+      "rowsWithComparableSalesAmount": 25,
+      "directSalesBandMatches": 12,
+      "directSalesBandMatchRate": 0.48,
+      "pureSalesRowsWithComparableSalesAmount": 6,
+      "pureSalesDirectMatches": 6,
+      "pureSalesDirectMatchRate": 1.0,
+      "byDisplayedRating": {
+        "S+": {
+          "rows": 18,
+          "matchesSalesBand": 10,
+          "nonMatchingSalesBand": 8
+        },
+        "S": {
+          "rows": 5,
+          "matchesSalesBand": 1,
+          "nonMatchingSalesBand": 4
+        },
+        "A": {
+          "rows": 1,
+          "matchesSalesBand": 0,
+          "nonMatchingSalesBand": 1
+        },
+        "B": {
+          "rows": 1,
+          "matchesSalesBand": 1,
+          "nonMatchingSalesBand": 0
+        },
+        "C": {
+          "rows": 0,
+          "matchesSalesBand": 0,
+          "nonMatchingSalesBand": 0
+        },
+        "D": {
+          "rows": 0,
+          "matchesSalesBand": 0,
+          "nonMatchingSalesBand": 0
+        },
+        "E": {
+          "rows": 0,
+          "matchesSalesBand": 0,
+          "nonMatchingSalesBand": 0
+        }
+      }
+    },
+    "pureBuyout": {
+      "rows": 8,
+      "userRatingPositive": 0,
+      "userRatingNegative": 8,
+      "rowsWithBuyoutAmountBand": 8,
+      "buyoutAmountBandMatches": 8,
+      "buyoutAmountBandMatchRate": 1.0
+    },
+    "buyoutPlusSales": {
+      "rows": 11,
+      "userRatingPositive": 2,
+      "userRatingNegative": 9
+    }
+  },
+  "riskAndReviewPrompt": {
+    "rowsWithPrompt": 25,
+    "coverageRate": 1.0,
+    "userFlaggedPromptIssueRows": 0
+  },
+  "m4CalibrationCandidates": {
+    "systemSuggestedYes": 25,
+    "userMarkedYes": 1,
+    "userMarkedNo": 24,
+    "userMarkedPendingOrUncertain": 0
+  },
+  "baselineVerdict": {
+    "canUseAsM2RatingLayerCandidateBaseline": false,
+    "verdict": "暂不建议直接作为 M2 评级层候选基线；需先完成最小修正后再冻结。",
+    "minimumFixDirections": [
+      "用户指定作品行已填写 ID 但尚未补生成任务卡，可作为下一轮单独补卡任务",
+      "复核货架/版权状态推断，优先处理到期、下架和尾部收入并存样本",
+      "复核评级口径，重点校准实销档位、买断金额和混合收入的合成规则",
+      "复核买断+实销作品的单一前台评级合成规则",
+      "复核纯买断作品评级：用户对纯买断样本评级不合理反馈集中，不能只凭买断金额档位冻结基线"
+    ],
+    "hardBlockers": []
+  },
+  "prohibitedActionsConfirmed": {
+    "wroteFormalMasterData": false,
+    "enteredM3": false,
+    "committedPrivateExcel": false,
+    "usedGitAddDot": false,
+    "touchedStash": false
+  }
+}

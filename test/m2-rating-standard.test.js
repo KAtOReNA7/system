@@ -3,6 +3,8 @@ import test from "node:test";
 
 import {
   calibrateRating,
+  ratingFromBuyoutAnnualValue,
+  ratingFromMonthlySalesAmount,
   ratingFromSalesAmount,
   RATING_STANDARD_DEFINITIONS
 } from "../src/domain/oldProductEvaluation/ratingCalibration.js";
@@ -70,7 +72,7 @@ test("user sales thresholds map to S plus S A B C D E", () => {
   assert.equal(ratingFromSalesAmount(99), "E");
 });
 
-test("on-shelf work uses sales revenue rating and display includes shelf status", () => {
+test("on-shelf work uses monthly sales revenue rating and display includes shelf status", () => {
   const result = calibrateRating({
     revenueModel: "pure_sales_share",
     revenueModelChinese: "纯实销/纯分成",
@@ -83,13 +85,14 @@ test("on-shelf work uses sales revenue rating and display includes shelf status"
     remainingCopyrightMonths: 36
   });
 
-  assert.equal(result.salesPerformanceRating, "S+");
-  assert.equal(result.historicalPerformanceRating, "S+");
-  assert.ok(result.displayRatingExplanationCn.includes("实销评级：S+"));
+  assert.equal(result.salesPerformanceAmount, 10000);
+  assert.equal(result.salesPerformanceRating, "S");
+  assert.equal(result.historicalPerformanceRating, "S");
+  assert.ok(result.displayRatingExplanationCn.includes("实销评级：S"));
   assert.ok(result.displayRatingExplanationCn.includes("下架状态"));
 });
 
-test("buyout value is displayed separately from sales rating", () => {
+test("buyout value is converted to monthly sales equivalent", () => {
   const result = calibrateRating({
     revenueModel: "pure_buyout",
     revenueModelChinese: "纯买断",
@@ -100,8 +103,47 @@ test("buyout value is displayed separately from sales rating", () => {
   });
 
   assert.equal(result.salesPerformanceRating, "E");
+  assert.equal(result.buyoutAmortizationYears, 3);
+  assert.equal(result.buyoutAmortizationMonths, 36);
+  assert.equal(Math.round(result.buyoutEquivalentMonthlySales), 2222);
+  assert.equal(Math.round(result.buyoutEquivalentAnnualValue), 26667);
+  assert.equal(result.buyoutHistoricalValueRating, "B");
+  assert.equal(result.historicalPerformanceRating, "B");
+  assert.equal(result.ratingBasis, "buyout_monthly_sales_equivalent");
+  assert.equal(result.ratingIncludesBuyout, true);
+});
+
+test("pure buyout does not directly apply total buyout amount to monthly sales thresholds", () => {
+  assert.equal(ratingFromSalesAmount(120000), "S+");
+  assert.equal(ratingFromMonthlySalesAmount(120000 / 36), "B");
+  assert.equal(ratingFromBuyoutAnnualValue(120000 / 36), "B");
+});
+
+test("buyout amortization is capped by shorter remaining copyright with a one-year floor", () => {
+  const result = calibrateRating({
+    revenueModel: "pure_buyout",
+    buyoutEstimatedAmount: 120000,
+    remainingCopyrightMonths: 6,
+    currentRightsStatus: "active"
+  });
+
+  assert.equal(result.buyoutAmortizationYears, 1);
+  assert.equal(result.buyoutAmortizationMonths, 12);
+  assert.equal(result.buyoutEquivalentMonthlySales, 10000);
   assert.equal(result.buyoutHistoricalValueRating, "S");
-  assert.equal(result.historicalPerformanceRating, "S");
+});
+
+test("previous buyout cycle monthly sales can be retained for pure buyout forecast reference", () => {
+  const result = calibrateRating({
+    revenueModel: "pure_buyout",
+    buyoutEstimatedAmount: 90000,
+    previousBuyoutAmount: 60000,
+    monthsBetweenBuyouts: 20,
+    currentRightsStatus: "active"
+  });
+
+  assert.equal(result.previousBuyoutMonthlySalesEquivalent, 3000);
+  assert.equal(result.nextCycleForecastPolicy, "pure_buyout_may_use_previous_cycle_monthly_sales_equivalent");
 });
 
 test("off shelf does not directly rewrite historical rating to E", () => {
@@ -113,7 +155,7 @@ test("off shelf does not directly rewrite historical rating to E", () => {
     currentRightsStatus: "active"
   });
 
-  assert.equal(result.salesPerformanceRating, "S");
-  assert.equal(result.historicalPerformanceRating, "S");
+  assert.equal(result.salesPerformanceRating, "B");
+  assert.equal(result.historicalPerformanceRating, "B");
   assert.notEqual(result.historicalPerformanceRating, "E");
 });

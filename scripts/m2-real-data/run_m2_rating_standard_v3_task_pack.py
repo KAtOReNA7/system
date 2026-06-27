@@ -146,7 +146,7 @@ def build_v3_row(row: dict, index: int, m4_ids: set[str]) -> dict:
     m4_candidate = anonymous_id in m4_ids or True
     m4_reason = m4_reason_for(row, anonymous_id, m4_ids)
     risk_prompt = risk_prompt_for(row, shelf_status, rights_status, revenue_model)
-    return {
+    output = {
         "standard_work_id": clean(row.get("standardWorkId")),
         "作品名": clean(row.get("作品名")),
         "作者": clean(row.get("作者")),
@@ -175,6 +175,13 @@ def build_v3_row(row: dict, index: int, m4_ids: set[str]) -> dict:
         "内部辅助：预测价值评级": forecast_rating,
         "内部辅助：原运营评级": clean(row.get("当前运营评级")),
     }
+    if not output["standard_work_id"]:
+        return {key: "" for key in output}
+    return output
+
+
+def rows_with_standard_work_id(rows: list[dict]) -> list[dict]:
+    return [row for row in rows if clean(row.get("standard_work_id"))]
 
 
 def front_rating(*, revenue_model: str, shelf_status: str, rights_status: str, sales_rating: str, buyout_rating: str, historical_rating: str, forecast_rating: str):
@@ -238,6 +245,7 @@ def m4_reason_for(row: dict, anonymous_id: str, m4_ids: set[str]) -> str:
 
 
 def build_revenue_rule_report(rows: list[dict]) -> dict:
+    rows = rows_with_standard_work_id(rows)
     v2 = read_payload(DOCS_DIR / "M2-revenue-model-classification-v2.json")
     return {
         "candidateVersion": CANDIDATE_VERSION,
@@ -262,6 +270,7 @@ def build_revenue_rule_report(rows: list[dict]) -> dict:
 
 
 def build_shelf_rule_report(rows: list[dict]) -> dict:
+    rows = rows_with_standard_work_id(rows)
     v2 = read_payload(DOCS_DIR / "M2-shelf-status-inference-v1.json")
     return {
         "candidateVersion": CANDIDATE_VERSION,
@@ -280,6 +289,7 @@ def build_shelf_rule_report(rows: list[dict]) -> dict:
 
 
 def build_front_rating_report(rows: list[dict]) -> dict:
+    rows = rows_with_standard_work_id(rows)
     return {
         "candidateVersion": CANDIDATE_VERSION,
         "frontFields": ["rating", "ratingBasis", "shelfStatus", "ratingExplanation"],
@@ -304,6 +314,7 @@ def build_front_rating_report(rows: list[dict]) -> dict:
 
 
 def build_suggestion_boundary_report(rows: list[dict]) -> dict:
+    rows = rows_with_standard_work_id(rows)
     return {
         "candidateVersion": CANDIDATE_VERSION,
         "automaticOperatingSuggestionMainFieldRemoved": True,
@@ -319,10 +330,15 @@ def build_suggestion_boundary_report(rows: list[dict]) -> dict:
 
 
 def build_task_summary(rows: list[dict]) -> dict:
+    total_rows = len(rows)
+    rows = rows_with_standard_work_id(rows)
+    user_blank_rows = total_rows - len(rows)
     return {
         "candidateVersion": CANDIDATE_VERSION,
         "privateTaskPackGenerated": True,
-        "rows": len(rows),
+        "rows": total_rows,
+        "sampleRows": len(rows),
+        "userBlankRows": user_blank_rows,
         "frontRatingSimplified": True,
         "singleMainRatingColumn": True,
         "automaticOperatingSuggestionMainFieldRemoved": True,
@@ -410,6 +426,8 @@ def render_task_summary_md(payload: dict) -> str:
             "# M2 Rating Standard v3 Task Pack Summary",
             "",
             f"- Rows: `{payload['rows']}`",
+            f"- Non-empty sample rows: `{payload.get('sampleRows')}`",
+            f"- User specified blank rows: `{payload.get('userBlankRows')}`",
             f"- Private task pack generated: `{payload['privateTaskPackGenerated']}`",
             f"- Single main rating column: `{payload['singleMainRatingColumn']}`",
             f"- Automatic operating suggestion main field removed: `{payload['automaticOperatingSuggestionMainFieldRemoved']}`",

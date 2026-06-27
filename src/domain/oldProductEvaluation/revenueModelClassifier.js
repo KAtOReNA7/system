@@ -185,9 +185,10 @@ export function computeChannelBillingPatternFeatures(input = {}) {
 // User-confirmed channel-first billing rules:
 // - Sales share is identified per channel when income is multi-month, continuous
 //   or semi-continuous; an early high month is not a buyout signal by itself.
-// - Buyout is identified per channel when any user-confirmed buyout signal
-//   appears: large round/integer-like one-off payment, same-batch equal/similar
-//   amounts, or a post-candidate no-sales window.
+// - Buyout is identified per channel only when at least two user-confirmed
+//   buyout signal families appear together: large round/integer-like one-off
+//   payment, same-batch equal/similar amounts, or a post-candidate no-sales
+//   window. One signal alone is too weak and must remain sales/share evidence.
 // - Buyout plus sales is a work-level aggregation: one channel/stage can be
 //   buyout while another channel/stage is sales share.
 // - Unknown is reserved for sparse or conflicting evidence and should remain low.
@@ -381,11 +382,15 @@ function estimateBuyoutAmount(features, model) {
 }
 
 function hasAnyBuyoutSignal(features) {
-  return (
-    hasLargeAmountBuyoutSignal(features) ||
-    hasSameBatchBuyoutSignal(features) ||
+  return countBuyoutSignalFamilies(features) >= 2;
+}
+
+function countBuyoutSignalFamilies(features) {
+  return [
+    hasLargeAmountBuyoutSignal(features),
+    hasSameBatchBuyoutSignal(features),
     hasNoSalesAfterCandidateBuyoutSignal(features)
-  );
+  ].filter(Boolean).length;
 }
 
 function hasLargeAmountBuyoutSignal(features) {

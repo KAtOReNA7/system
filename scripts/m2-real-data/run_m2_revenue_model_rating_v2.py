@@ -32,7 +32,7 @@ from calibrate_cleaned_bills import month_range
 from run_nonformal_dry_run import evaluate_work_summary, load_analysis_inputs
 
 
-CANDIDATE_VERSION = "m2-realdata-dev-revenue-model-rating-v2.0"
+CANDIDATE_VERSION = "m2-realdata-dev-revenue-model-rating-v2.1-two-signal-buyout"
 DOCS_DIR = ROOT / "docs" / "analysis" / "m2-real-data"
 PRIVATE_DIR = ROOT / "data" / "private-output" / "m2-business-review"
 
@@ -408,10 +408,18 @@ def classify_channel(features: dict) -> dict:
 
 
 def has_any_buyout_signal(features: dict) -> bool:
-    return (
-        has_large_amount_buyout_signal(features)
-        or has_same_batch_buyout_signal(features)
-        or has_no_sales_after_candidate_buyout_signal(features)
+    return count_buyout_signal_families(features) >= 2
+
+
+def count_buyout_signal_families(features: dict) -> int:
+    return sum(
+        1
+        for matched in [
+            has_large_amount_buyout_signal(features),
+            has_same_batch_buyout_signal(features),
+            has_no_sales_after_candidate_buyout_signal(features),
+        ]
+        if matched
     )
 
 

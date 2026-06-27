@@ -2,8 +2,8 @@
 
 | metric | value |
 |---|---|
-| riskAndReviewPromptRows | 30 |
-| noAutomaticSuggestionReasonRows | 30 |
-| m4CalibrationCandidateRows | 30 |
+| riskAndReviewPromptRows | 25 |
+| noAutomaticSuggestionReasonRows | 25 |
+| m4CalibrationCandidateRows | 25 |
 
 No real work titles, authors, channel names, or raw billing rows are included.

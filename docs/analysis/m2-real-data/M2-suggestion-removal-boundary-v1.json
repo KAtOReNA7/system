@@ -1,6 +1,6 @@
 {
   "reportId": "m2.suggestion_removal_boundary.v1",
-  "generatedAt": "2026-06-26T10:39:27.286080+00:00",
+  "generatedAt": "2026-06-27T03:52:56.704273+00:00",
   "sanitized": true,
   "containsRealWorkTitles": false,
   "containsAuthors": false,
@@ -15,9 +15,9 @@
       "m4CalibrationCandidateReason",
       "noAutomaticSuggestionReason"
     ],
-    "riskAndReviewPromptRows": 30,
-    "noAutomaticSuggestionReasonRows": 30,
-    "m4CalibrationCandidateRows": 30,
+    "riskAndReviewPromptRows": 25,
+    "noAutomaticSuggestionReasonRows": 25,
+    "m4CalibrationCandidateRows": 25,
     "reason": "v2 用户反馈显示 30/30 运营建议不可执行；M2 暂不提供自动运营动作建议，待 M4 校准阶段再启用。",
     "sanitized": true,
     "m3Entered": false

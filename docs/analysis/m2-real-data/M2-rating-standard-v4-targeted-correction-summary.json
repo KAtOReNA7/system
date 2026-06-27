@@ -1,6 +1,6 @@
 {
-  "reportId": "m2.rating_standard_v4_2_targeted_correction_summary",
-  "generatedAt": "2026-06-27T05:21:52.951810+00:00",
+  "reportId": "m2.rating_standard_v4_targeted_correction_summary",
+  "generatedAt": "2026-06-26T17:18:47.739536+00:00",
   "sanitized": true,
   "containsRealWorkTitles": false,
   "containsAuthors": false,
@@ -8,7 +8,7 @@
   "containsRawBillingRows": false,
   "containsRawLedgerRows": false,
   "payload": {
-    "candidateVersion": "m2-realdata-dev-rating-standard-v4.2-revenue-signal-aligned",
+    "candidateVersion": "m2-realdata-dev-rating-standard-v4.1-prd-driven",
     "pureSalesRuleChanged": false,
     "pureSalesRule": "保持用户月均实销档位阈值，不做整体重构。",
     "pureBuyoutRule": {
@@ -37,32 +37,32 @@
     },
     "v4Metrics": {
       "sampleRows": 25,
-      "ratingChangedRows": 21,
-      "pureBuyoutRatingChangedRows": 8,
-      "buyoutPlusSalesRatingChangedRows": 11,
+      "ratingChangedRows": 19,
+      "pureBuyoutRatingChangedRows": 5,
+      "buyoutPlusSalesRatingChangedRows": 8,
       "ratingDistribution": {
         "S+": 3,
-        "S": 18,
+        "S": 14,
         "A": 0,
         "B": 3,
-        "C": 0,
+        "C": 1,
         "D": 0,
-        "E": 1
+        "E": 4
       },
       "ratingBasisDistribution": {
-        "current_sales": 3,
-        "current_sales_with_buyout_allocation": 11,
-        "buyout_monthly_sales_equivalent": 9,
-        "historical": 2
+        "current_sales": 6,
+        "historical": 5,
+        "current_sales_with_buyout_allocation": 8,
+        "buyout_monthly_sales_equivalent": 6
       },
       "statusConfidenceDistribution": {
-        "中": 14,
-        "低": 6,
+        "中": 9,
+        "低": 11,
         "高": 5
       }
     },
     "stillRequiresUserReview": true,
-    "privateTaskPack": "data/private-output/m2-business-review/m2-v1.1-30-work-operator-task-pack-cn-rating-standard-v4.2.xlsx",
+    "privateTaskPack": "data/private-output/m2-business-review/m2-v1.1-30-work-operator-task-pack-cn-rating-standard-v4.xlsx",
     "sanitized": true,
     "m3Entered": false
   }

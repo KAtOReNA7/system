@@ -1,0 +1,123 @@
+{
+  "reportId": "m2.prd_driven_current_state_assessment.v1",
+  "generatedAt": "2026-06-26T00:00:00+08:00",
+  "sanitized": true,
+  "containsRealWorkTitles": false,
+  "containsAuthors": false,
+  "containsChannels": false,
+  "containsRawBillingRows": false,
+  "currentHead": "ddc2ea95a901f0b34f9751831259186bc690e87b",
+  "originMainLocalRef": "ddc2ea95a901f0b34f9751831259186bc690e87b",
+  "fetchOriginMainSucceeded": false,
+  "fetchFailure": "TLS connect error while fetching origin/main; local origin/main ref matched HEAD before report generation",
+  "worktreeClean": false,
+  "missingInputs": [
+    "src/domain/oldProductEvaluation/forecastModelSelector.js"
+  ],
+  "m2Capabilities": {
+    "incomeAnalysis": {
+      "status": "partial",
+      "evidence": [
+        "docs/analysis/m2-real-data/M2-revenue-model-classification-v2.json",
+        "docs/analysis/m2-real-data/M2-rating-standard-v3-operator-validation-summary-v1.json",
+        "src/domain/oldProductEvaluation/revenueModelClassifier.js"
+      ],
+      "blocksM2Closeout": true
+    },
+    "lifecycle": {
+      "status": "basically_available_local_candidate",
+      "evidence": [
+        "docs/prd/20-evaluation/M2-old-product-evaluation-prd-v0.1.md",
+        "src/domain/oldProductEvaluation/forecastabilityGate.js"
+      ],
+      "blocksM2Closeout": false
+    },
+    "forecast": {
+      "status": "conditional_pass",
+      "evidence": [
+        "docs/analysis/m2-real-data/M2-v1.1-backtest-integrity-audit.md",
+        "docs/analysis/m2-real-data/M2-v1.1-conditional-baseline-freeze-decision.json"
+      ],
+      "blocksM2Closeout": true
+    },
+    "backtest": {
+      "status": "aggregate_integrity_pass",
+      "evidence": [
+        "docs/analysis/m2-real-data/M2-v1.1-backtest-integrity-audit.md"
+      ],
+      "blocksM2Closeout": false
+    },
+    "risk": {
+      "status": "available_as_review_prompt",
+      "evidence": [
+        "docs/analysis/m2-real-data/M2-suggestion-removal-boundary-v1.json",
+        "src/domain/oldProductEvaluation/suggestionCalibration.js"
+      ],
+      "blocksM2Closeout": false
+    },
+    "rating": {
+      "status": "business_validation_failed_v3_v4_candidate_unaccepted",
+      "evidence": [
+        "docs/analysis/m2-real-data/M2-rating-standard-v3-operator-validation-summary-v1.json",
+        "docs/analysis/m2-real-data/M2-rating-standard-v4-targeted-correction-summary.json"
+      ],
+      "blocksM2Closeout": true
+    },
+    "operatingSuggestion": {
+      "status": "main_output_removed_pending_business_decision",
+      "evidence": [
+        "docs/analysis/m2-real-data/M2-suggestion-removal-boundary-v1.json"
+      ],
+      "blocksM2Closeout": true
+    },
+    "versionAndSnapshot": {
+      "status": "local_candidate_available_not_formal_release",
+      "evidence": [
+        "README.md",
+        "NEXT-CODEX-INSTRUCTION.md"
+      ],
+      "blocksM2Closeout": true
+    },
+    "exportAndFormalRelease": {
+      "status": "blocked",
+      "evidence": [
+        "docs/analysis/m2-real-data/M2-v1.1-business-readiness-after-dual-source-staging-v1.json"
+      ],
+      "blocksM2Closeout": true
+    }
+  },
+  "hardBlockers": [
+    "rating_business_validation_not_passed",
+    "forecast_freeze_is_conditional",
+    "local_staging_is_not_formal_master_data",
+    "formal_readiness_blocked",
+    "automatic_operating_suggestion_removed_needs_business_acceptance",
+    "m3_not_authorized"
+  ],
+  "decisionSplit": {
+    "mustAskUser": [
+      "revenue_model_boundaries",
+      "buyout_rating_basis",
+      "mixed_revenue_rating_basis",
+      "shelf_status_confidence",
+      "single_front_rating",
+      "sales_band_baseline",
+      "forecast_rating_relationship",
+      "suggestion_removal_boundary",
+      "m4_calibration_scope",
+      "m2_closeout_boundary"
+    ],
+    "codexCanImplementAfterAnswer": [
+      "domain_rule_changes",
+      "tests",
+      "sanitized_reports",
+      "new_private_review_pack_if_authorized"
+    ],
+    "deferToM4": [
+      "automatic_operating_suggestion_recovery",
+      "long_term_case_calibration",
+      "feedback_loop_rule_repair"
+    ]
+  },
+  "m3Entered": false
+}

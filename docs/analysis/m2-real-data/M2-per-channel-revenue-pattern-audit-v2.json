@@ -1,20 +1,20 @@
 {
   "reportId": "m2.per_channel_revenue_pattern_audit.v2",
-  "generatedAt": "2026-06-27T03:48:06.755220+00:00",
+  "generatedAt": "2026-06-27T04:41:24.802433+00:00",
   "sanitized": true,
   "containsRealWorkTitles": false,
   "containsAuthors": false,
   "containsChannels": false,
   "containsRawBillingRows": false,
   "payload": {
-    "candidateVersion": "m2-realdata-dev-revenue-model-rating-v2.0",
+    "candidateVersion": "m2-realdata-dev-revenue-model-rating-v2.1-two-signal-buyout",
     "inputBoundary": "standard_work_id + channel + business_form + month income facts; no contract/commercial-term lookup",
     "latestCompleteMonth": "2026-04",
     "channelGroups": 10822,
     "observableMonthSpan": 107,
     "channelRevenueModelDistribution": {
-      "sales_share_channel": 1010,
-      "buyout_channel": 9768,
+      "sales_share_channel": 10220,
+      "buyout_channel": 558,
       "mixed_channel": 0,
       "unknown_channel": 44
     },

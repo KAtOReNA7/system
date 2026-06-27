@@ -1,0 +1,50 @@
+{
+  "reportId": "m2.prd_driven_business_rule_implementation_summary.v1",
+  "generatedAt": "2026-06-27T00:00:00+08:00",
+  "sanitized": true,
+  "containsRealWorkTitles": false,
+  "containsAuthors": false,
+  "containsChannels": false,
+  "containsRawBillingRows": false,
+  "containsPrivateExcelDetail": false,
+  "payload": {
+    "candidateVersion": "m2-realdata-dev-rating-standard-v4.1-prd-driven",
+    "implementedRules": [
+      "default buyout amortization changed from 5 years to 3 years",
+      "buyout amortization is capped by remaining copyright period with a 1 year floor",
+      "sales and buyout ratings use monthly sales equivalent",
+      "pure buyout exposes previous buyout cycle monthly sales equivalent when available",
+      "buyout plus sales current rating adds buyout monthly allocation to current sales monthly amount",
+      "buyout plus sales next-cycle forecast policy is sales-only",
+      "shelf status inference trusts copyright ledger status and treats tail revenue as review note only",
+      "M4 calibration candidate defaults are not auto-populated from prior failures"
+    ],
+    "modifiedCodeAreas": [
+      "src/domain/oldProductEvaluation/ratingCalibration.js",
+      "src/domain/oldProductEvaluation/shelfStatusInference.js",
+      "scripts/m2-real-data/run_m2_rating_standard_v4_task_pack.py"
+    ],
+    "modifiedTests": [
+      "test/m2-rating-standard.test.js",
+      "test/m2-rating-front-display.test.js",
+      "test/m2-shelf-status-inference.test.js"
+    ],
+    "validationRequired": [
+      "npm run check:no-real-data",
+      "npm run lint",
+      "npm run build",
+      "npm test",
+      "npm run smoke",
+      "npm run validate:m2:rating-standard-v4"
+    ],
+    "m3Entered": false,
+    "formalReleaseApproved": false,
+    "prohibitedActionsConfirmed": {
+      "connectedRemoteDatabase": false,
+      "wroteFormalMasterData": false,
+      "submittedPrivateExcel": false,
+      "usedGitAddDot": false,
+      "touchedStash": false
+    }
+  }
+}

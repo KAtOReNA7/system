@@ -1,0 +1,414 @@
+{
+  "reportId": "m2.prd_driven_business_rule_questions.v1",
+  "generatedAt": "2026-06-26T00:00:00+08:00",
+  "sanitized": true,
+  "containsRealWorkTitles": false,
+  "containsAuthors": false,
+  "containsChannels": false,
+  "containsRawBillingRows": false,
+  "questionCount": 12,
+  "priorityCounts": {
+    "P0": 6,
+    "P1": 4,
+    "P2": 2
+  },
+  "decisionDomains": [
+    "revenue_model_boundary",
+    "pure_buyout_rating_basis",
+    "mixed_revenue_rating_basis",
+    "shelf_and_rights_status",
+    "single_front_rating",
+    "sales_band_baseline",
+    "forecast_rating_relationship",
+    "operating_suggestion_boundary",
+    "m4_calibration_case_pool",
+    "m2_closeout_boundary"
+  ],
+  "questions": [
+    {
+      "questionId": "Q1",
+      "priority": "P0",
+      "title": "收入模式应以渠道行为优先还是作品聚合优先判定",
+      "whyNow": "v3 收入模式合理率为 88.0%，方向可用但买断/实销/分成边界仍需确认。",
+      "currentSystemBehavior": "revenueModelClassifier 支持渠道行为识别并聚合到作品级输出。",
+      "userFeedbackProblem": "收入模式仍有边界不合理反馈。",
+      "prdEvidence": [
+        "docs/prd/20-evaluation/M2-old-product-evaluation-prd-v0.1.md#2-old-product-definition",
+        "docs/prd/20-evaluation/M2-old-product-evaluation-prd-v0.1.md#3-included-scope"
+      ],
+      "reportEvidence": [
+        "docs/analysis/m2-real-data/M2-rating-standard-v3-operator-validation-summary-v1.json",
+        "docs/analysis/m2-real-data/M2-revenue-model-classification-v2.json"
+      ],
+      "codeEvidence": [
+        "src/domain/oldProductEvaluation/revenueModelClassifier.js"
+      ],
+      "recommendedAnswer": "A",
+      "answerOptions": {
+        "A": "渠道行为优先，作品级聚合输出",
+        "B": "完全按作品聚合",
+        "C": "渠道冲突即 unknown"
+      },
+      "impactByAnswer": {
+        "A": "保留当前有效方向并增强解释",
+        "B": "可能重新误判买断+实销",
+        "C": "人工复核量增加"
+      },
+      "affectsM2Closeout": true,
+      "canDeferToM4": false,
+      "recommendedUserReply": "采用 A；备注列出特殊例外类型"
+    },
+    {
+      "questionId": "Q2",
+      "priority": "P0",
+      "title": "unknown 收入模式保留条件",
+      "whyNow": "unknown 过少会误判，过多会阻塞评级。",
+      "currentSystemBehavior": "证据不足或冲突时可输出 unknown_revenue_model。",
+      "userFeedbackProblem": "边界样本仍需要复核。",
+      "prdEvidence": [
+        "docs/prd/20-evaluation/M2-old-product-evaluation-prd-v0.1.md#10-risk-system"
+      ],
+      "reportEvidence": [
+        "docs/analysis/m2-real-data/M2-revenue-model-classification-v2.json"
+      ],
+      "codeEvidence": [
+        "src/domain/oldProductEvaluation/revenueModelClassifier.js"
+      ],
+      "recommendedAnswer": "A",
+      "answerOptions": {
+        "A": "仅证据不足或冲突时 unknown",
+        "B": "低活跃低收入少月份一律 unknown",
+        "C": "非高置信一律 unknown"
+      },
+      "impactByAnswer": {
+        "A": "减少不必要阻塞",
+        "B": "扩大人工复核",
+        "C": "削弱批量评估"
+      },
+      "affectsM2Closeout": true,
+      "canDeferToM4": false,
+      "recommendedUserReply": "采用 A"
+    },
+    {
+      "questionId": "Q3",
+      "priority": "P0",
+      "title": "纯买断评级是否改为买断历史价值折算",
+      "whyNow": "纯买断 8/8 被用户标记评级不合理。",
+      "currentSystemBehavior": "v4 候选已改为 ratingBasis=buyout_history。",
+      "userFeedbackProblem": "一次性买断金额直接推高前台评级。",
+      "prdEvidence": [
+        "docs/prd/20-evaluation/M2-old-product-evaluation-prd-v0.1.md#9-rating-system"
+      ],
+      "reportEvidence": [
+        "docs/analysis/m2-real-data/M2-rating-standard-v3-targeted-failure-analysis.json",
+        "docs/analysis/m2-real-data/M2-rating-standard-v4-targeted-correction-summary.json"
+      ],
+      "codeEvidence": [
+        "src/domain/oldProductEvaluation/ratingCalibration.js"
+      ],
+      "recommendedAnswer": "A",
+      "answerOptions": {
+        "A": "折算为历史价值评级",
+        "B": "买断总额降档",
+        "C": "纯买断不进入主评级"
+      },
+      "impactByAnswer": {
+        "A": "兼容单一评级并减少虚高",
+        "B": "仍可能误解口径",
+        "C": "偏离统一评级输出"
+      },
+      "affectsM2Closeout": true,
+      "canDeferToM4": false,
+      "recommendedUserReply": "采用 A"
+    },
+    {
+      "questionId": "Q4",
+      "priority": "P0",
+      "title": "买断折算年限与版权剩余期约束",
+      "whyNow": "默认折算年限会显著影响纯买断评级。",
+      "currentSystemBehavior": "v4 候选默认 5 年并可受剩余版权期限制。",
+      "userFeedbackProblem": "买断评级虚高与版权状态混杂。",
+      "prdEvidence": [
+        "docs/prd/20-evaluation/M2-old-product-evaluation-prd-v0.1.md#8-remaining-copyright-period-forecast",
+        "docs/prd/20-evaluation/M2-old-product-evaluation-prd-v0.1.md#9-rating-system"
+      ],
+      "reportEvidence": [
+        "docs/analysis/m2-real-data/M2-rating-standard-v4-targeted-correction-summary.json"
+      ],
+      "codeEvidence": [
+        "src/domain/oldProductEvaluation/ratingCalibration.js"
+      ],
+      "recommendedAnswer": "A",
+      "answerOptions": {
+        "A": "默认 5 年，受剩余版权期上限限制",
+        "B": "固定 3 年",
+        "C": "固定 5 年不看版权"
+      },
+      "impactByAnswer": {
+        "A": "保守且解释一致",
+        "B": "更严厉但可能低估",
+        "C": "简单但可能高估"
+      },
+      "affectsM2Closeout": true,
+      "canDeferToM4": false,
+      "recommendedUserReply": "采用 A"
+    },
+    {
+      "questionId": "Q5",
+      "priority": "P0",
+      "title": "买断+实销评级合成口径",
+      "whyNow": "买断+实销 11 条中 9 条评级不合理。",
+      "currentSystemBehavior": "v4 候选为当前实销优先，买断最多上调一档。",
+      "userFeedbackProblem": "v3 过度取买断历史价值。",
+      "prdEvidence": [
+        "docs/prd/20-evaluation/M2-old-product-evaluation-prd-v0.1.md#6-output-results",
+        "docs/prd/20-evaluation/M2-old-product-evaluation-prd-v0.1.md#9-rating-system"
+      ],
+      "reportEvidence": [
+        "docs/analysis/m2-real-data/M2-rating-standard-v3-operator-validation-summary-v1.json",
+        "docs/analysis/m2-real-data/M2-rating-standard-v4-targeted-correction-summary.json"
+      ],
+      "codeEvidence": [
+        "src/domain/oldProductEvaluation/ratingCalibration.js"
+      ],
+      "recommendedAnswer": "A",
+      "answerOptions": {
+        "A": "当前实销优先，买断最多上调一档",
+        "B": "实销和买断取高者",
+        "C": "实销与买断分开展示不合成"
+      },
+      "impactByAnswer": {
+        "A": "最符合用户反馈",
+        "B": "可能复现 v3 问题",
+        "C": "冲突单一前台评级"
+      },
+      "affectsM2Closeout": true,
+      "canDeferToM4": false,
+      "recommendedUserReply": "采用 A"
+    },
+    {
+      "questionId": "Q6",
+      "priority": "P0",
+      "title": "版权到期、尾部收入与下架状态关系",
+      "whyNow": "下架/版权状态合理率 72.0%，7 条不合理。",
+      "currentSystemBehavior": "v4 候选展示状态置信度，版权到期不是绝对下架事实。",
+      "userFeedbackProblem": "版权风险、尾部收入和上架事实混在一起。",
+      "prdEvidence": [
+        "docs/prd/10-data-foundation/work-master-data.md#req-work-007-标准作品状态",
+        "docs/prd/20-evaluation/M2-old-product-evaluation-prd-v0.1.md#10-risk-system"
+      ],
+      "reportEvidence": [
+        "docs/analysis/m2-real-data/M2-rating-standard-v3-operator-validation-summary-v1.json"
+      ],
+      "codeEvidence": [
+        "src/domain/oldProductEvaluation/shelfStatusInference.js"
+      ],
+      "recommendedAnswer": "A",
+      "answerOptions": {
+        "A": "状态事实和权利风险分开，展示置信度",
+        "B": "版权到期默认下架",
+        "C": "有收入默认在架"
+      },
+      "impactByAnswer": {
+        "A": "减少误判",
+        "B": "可能过度阻断",
+        "C": "可能忽略权利风险"
+      },
+      "affectsM2Closeout": true,
+      "canDeferToM4": false,
+      "recommendedUserReply": "采用 A"
+    },
+    {
+      "questionId": "Q7",
+      "priority": "P1",
+      "title": "是否确认只保留一个前台 rating",
+      "whyNow": "用户复核围绕单一评级合理性展开。",
+      "currentSystemBehavior": "v3/v4 候选只显示一个主评级并隐藏辅助评级。",
+      "userFeedbackProblem": "多评级会增加解释成本。",
+      "prdEvidence": [
+        "docs/prd/20-evaluation/M2-old-product-evaluation-prd-v0.1.md#6-output-results"
+      ],
+      "reportEvidence": [
+        "docs/analysis/m2-real-data/M2-front-rating-simplification-v1.json"
+      ],
+      "codeEvidence": [
+        "src/domain/oldProductEvaluation/ratingCalibration.js"
+      ],
+      "recommendedAnswer": "A",
+      "answerOptions": {
+        "A": "一个主 rating + 依据 + 说明",
+        "B": "多个评级并列",
+        "C": "取消 rating"
+      },
+      "impactByAnswer": {
+        "A": "利于 API/page 一致",
+        "B": "复核成本高",
+        "C": "偏离 PRD"
+      },
+      "affectsM2Closeout": true,
+      "canDeferToM4": false,
+      "recommendedUserReply": "采用 A"
+    },
+    {
+      "questionId": "Q8",
+      "priority": "P1",
+      "title": "用户实销档位是否作为 M2 v1 基准",
+      "whyNow": "纯实销/纯分成直接匹配率 100.0%。",
+      "currentSystemBehavior": "实销档位已用于 ratingFromSalesAmount，v4 不改纯实销阈值。",
+      "userFeedbackProblem": "纯实销不是当前失败主因。",
+      "prdEvidence": [
+        "docs/prd/20-evaluation/M2-old-product-evaluation-prd-v0.1.md#9-rating-system"
+      ],
+      "reportEvidence": [
+        "docs/analysis/m2-real-data/M2-rating-standard-v3-operator-validation-summary-v1.json"
+      ],
+      "codeEvidence": [
+        "src/domain/oldProductEvaluation/ratingCalibration.js"
+      ],
+      "recommendedAnswer": "A",
+      "answerOptions": {
+        "A": "最近 12 月优先，不足时年化，边界含等号",
+        "B": "统一自然年收入",
+        "C": "统一年化 run-rate"
+      },
+      "impactByAnswer": {
+        "A": "保留已通过反馈",
+        "B": "需重验",
+        "C": "需重验"
+      },
+      "affectsM2Closeout": true,
+      "canDeferToM4": false,
+      "recommendedUserReply": "采用 A"
+    },
+    {
+      "questionId": "Q9",
+      "priority": "P1",
+      "title": "forecast 与 rating 的关系",
+      "whyNow": "forecast conditional pass，但评级业务复核失败。",
+      "currentSystemBehavior": "v4 候选中 forecast 仅作辅助说明。",
+      "userFeedbackProblem": "非实销信号过度影响主评级会降低可信度。",
+      "prdEvidence": [
+        "docs/prd/20-evaluation/M2-old-product-evaluation-prd-v0.1.md#8-remaining-copyright-period-forecast",
+        "docs/prd/20-evaluation/M2-old-product-evaluation-prd-v0.1.md#9-rating-system"
+      ],
+      "reportEvidence": [
+        "docs/analysis/m2-real-data/M2-v1.1-conditional-baseline-freeze-decision.json",
+        "docs/analysis/m2-real-data/M2-v1.1-forecastability-after-dual-source-staging-v1.json"
+      ],
+      "codeEvidence": [
+        "src/domain/oldProductEvaluation/forecastabilityGate.js",
+        "src/domain/oldProductEvaluation/ratingCalibration.js"
+      ],
+      "recommendedAnswer": "A",
+      "answerOptions": {
+        "A": "forecast 辅助，不覆盖实销主评级",
+        "B": "forecastable cohort 可直接提高评级",
+        "C": "forecast 不进入评级说明"
+      },
+      "impactByAnswer": {
+        "A": "兼顾预测和可解释性",
+        "B": "业务风险高",
+        "C": "浪费 forecast 成果"
+      },
+      "affectsM2Closeout": true,
+      "canDeferToM4": true,
+      "recommendedUserReply": "采用 A"
+    },
+    {
+      "questionId": "Q10",
+      "priority": "P1",
+      "title": "M2 是否删除自动运营建议主字段",
+      "whyNow": "PRD 包含建议，但当前建议主输出已删除。",
+      "currentSystemBehavior": "只保留风险/复核提示和 M4 校准候选。",
+      "userFeedbackProblem": "建议不可执行会削弱任务包可信度。",
+      "prdEvidence": [
+        "docs/prd/20-evaluation/M2-old-product-evaluation-prd-v0.1.md#11-operating-suggestions"
+      ],
+      "reportEvidence": [
+        "docs/analysis/m2-real-data/M2-suggestion-removal-boundary-v1.json"
+      ],
+      "codeEvidence": [
+        "src/domain/oldProductEvaluation/suggestionCalibration.js"
+      ],
+      "recommendedAnswer": "A",
+      "answerOptions": {
+        "A": "M2 删除建议主字段，M4 再恢复",
+        "B": "M2 保留建议但标仅供参考",
+        "C": "M2 继续完整建议"
+      },
+      "impactByAnswer": {
+        "A": "最利于 M2 收口",
+        "B": "需重验建议",
+        "C": "高风险"
+      },
+      "affectsM2Closeout": true,
+      "canDeferToM4": true,
+      "recommendedUserReply": "采用 A"
+    },
+    {
+      "questionId": "Q11",
+      "priority": "P2",
+      "title": "M4 校准案例池自动纳入规则",
+      "whyNow": "v3 系统建议过宽，用户标记较少。",
+      "currentSystemBehavior": "候选包保留 M4 标记但未冻结规则。",
+      "userFeedbackProblem": "M4 候选需要更窄更可解释。",
+      "prdEvidence": [
+        "docs/prd/00-governance/scope.md"
+      ],
+      "reportEvidence": [
+        "docs/analysis/m2-real-data/M2-rating-standard-v3-operator-validation-summary-v1.json"
+      ],
+      "codeEvidence": [],
+      "recommendedAnswer": "A",
+      "answerOptions": {
+        "A": "窄口径自动纳入",
+        "B": "全部抽检样本纳入",
+        "C": "只允许用户手工纳入"
+      },
+      "impactByAnswer": {
+        "A": "利于 M4 沉淀",
+        "B": "噪声大",
+        "C": "可能遗漏系统性问题"
+      },
+      "affectsM2Closeout": false,
+      "canDeferToM4": true,
+      "recommendedUserReply": "采用 A"
+    },
+    {
+      "questionId": "Q12",
+      "priority": "P2",
+      "title": "M2 收口类型定义",
+      "whyNow": "formal readiness blocked，但本地工程候选较完整。",
+      "currentSystemBehavior": "本地候选不是最终正式发布审批结果，M3 not allowed。",
+      "userFeedbackProblem": "不区分收口类型会混淆 M2 与 M3。",
+      "prdEvidence": [
+        "docs/prd/00-governance/scope.md",
+        "docs/prd/20-evaluation/M2-old-product-evaluation-prd-v0.1.md#16-phase-split"
+      ],
+      "reportEvidence": [
+        "docs/analysis/m2-real-data/M2-v1.1-business-readiness-after-dual-source-staging-v1.json"
+      ],
+      "codeEvidence": [],
+      "recommendedAnswer": "A",
+      "answerOptions": {
+        "A": "engineering/local closeout 与 formal complete 分开",
+        "B": "formal complete 前不做 M3 规划",
+        "C": "当前直接允许 M3"
+      },
+      "impactByAnswer": {
+        "A": "符合当前证据",
+        "B": "暂停规划",
+        "C": "冲突现有阻断"
+      },
+      "affectsM2Closeout": true,
+      "canDeferToM4": false,
+      "recommendedUserReply": "采用 A"
+    }
+  ],
+  "topThreeUserQuestions": [
+    "Q3",
+    "Q5",
+    "Q6"
+  ],
+  "m3Entered": false
+}

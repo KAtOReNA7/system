@@ -1,22 +1,22 @@
 {
   "reportId": "m2.shelf_status_inference.v1",
-  "generatedAt": "2026-06-27T03:57:46.342843+00:00",
+  "generatedAt": "2026-06-27T04:41:24.804774+00:00",
   "sanitized": true,
   "containsRealWorkTitles": false,
   "containsAuthors": false,
   "containsChannels": false,
   "containsRawBillingRows": false,
   "payload": {
-    "candidateVersion": "m2-realdata-dev-revenue-model-rating-v2.0",
+    "candidateVersion": "m2-realdata-dev-revenue-model-rating-v2.1-two-signal-buyout",
     "shelfStatusDistribution": {
       "active_on_shelf_confident": 0,
-      "active_or_available_inferred": 2215,
+      "active_or_available_inferred": 2125,
       "active_on_shelf": 0,
-      "likely_off_shelf": 10,
+      "likely_off_shelf": 72,
       "rights_expired_likely_off_shelf": 227,
       "rights_expired_needs_review": 0,
       "off_shelf_but_tail_revenue": 0,
-      "unknown_shelf_status": 602
+      "unknown_shelf_status": 630
     },
     "ruleBoundary": "shelf status affects operational decision and suggestion, not historicalPerformanceRating",
     "expiredTailRevenueCount": 0,

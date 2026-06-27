@@ -1,40 +1,37 @@
 {
   "reportId": "m2.rating_calibration_v5_summary",
-  "generatedAt": "2026-06-26T09:36:23.638220+00:00",
+  "generatedAt": "2026-06-27T04:41:24.807439+00:00",
   "sanitized": true,
   "containsRealWorkTitles": false,
   "containsAuthors": false,
   "containsChannels": false,
   "containsRawBillingRows": false,
   "payload": {
-    "candidateVersion": "m2-realdata-dev-revenue-model-rating-v2.0",
+    "candidateVersion": "m2-realdata-dev-revenue-model-rating-v2.1-two-signal-buyout",
     "salesPerformanceRatingDistribution": {
-      "S+": 35,
-      "S": 113,
-      "A": 79,
-      "B": 332,
-      "C": 163,
-      "D": 364,
-      "E": 1968
+      "S+": 38,
+      "S": 117,
+      "A": 84,
+      "B": 358,
+      "C": 152,
+      "D": 356,
+      "E": 1949
     },
     "buyoutHistoricalValueRatingDistribution": {
-      "not_applicable": 2029,
-      "S": 323,
-      "E": 457,
-      "A": 45,
-      "D": 23,
-      "B": 116,
-      "S+": 40,
-      "C": 21
+      "not_applicable": 2584,
+      "S": 303,
+      "A": 43,
+      "B": 92,
+      "S+": 32
     },
     "historicalPerformanceRatingDistribution": {
-      "S+": 66,
-      "S": 406,
-      "A": 97,
-      "B": 397,
-      "C": 163,
-      "D": 346,
-      "E": 1579
+      "S+": 64,
+      "S": 394,
+      "A": 98,
+      "B": 406,
+      "C": 141,
+      "D": 334,
+      "E": 1617
     },
     "forecastValueRatingDistribution": {
       "D": 395,
@@ -43,10 +40,10 @@
       "E": 1111
     },
     "operationalDecisionRatingDistribution": {
-      "operable": 2751,
-      "shelf_review_required": 61,
-      "revenue_model_review_required": 15,
-      "renewal_review_required": 227
+      "operable": 2750,
+      "shelf_review_required": 72,
+      "renewal_review_required": 227,
+      "revenue_model_review_required": 5
     },
     "expiredDoesNotRewriteHistoricalE": true,
     "shelfDoesNotRewriteHistoricalE": true,

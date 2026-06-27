@@ -1,0 +1,47 @@
+{
+  "reportId": "m2.prd_driven_business_rule_implementation_plan.v1",
+  "generatedAt": "2026-06-26T00:00:00+08:00",
+  "sanitized": true,
+  "containsRealWorkTitles": false,
+  "containsAuthors": false,
+  "containsChannels": false,
+  "containsRawBillingRows": false,
+  "thisRoundCodeChanged": false,
+  "thisRoundTaskPackGenerated": false,
+  "nextImplementationFiles": [
+    "src/domain/oldProductEvaluation/revenueModelClassifier.js",
+    "src/domain/oldProductEvaluation/ratingCalibration.js",
+    "src/domain/oldProductEvaluation/shelfStatusInference.js",
+    "src/domain/oldProductEvaluation/suggestionCalibration.js",
+    "scripts/m2-real-data/run_m2_rating_standard_v4_task_pack.py",
+    "package.json"
+  ],
+  "nextTests": [
+    "test/m2-revenue-model-classifier.test.js",
+    "test/m2-rating-standard.test.js",
+    "test/m2-rating-front-display.test.js",
+    "test/m2-shelf-status-inference.test.js",
+    "test/m2-suggestion-removal-boundary.test.js"
+  ],
+  "nextValidationCommands": [
+    "npm run check:no-real-data",
+    "npm run lint",
+    "npm run build",
+    "npm test",
+    "npm run smoke",
+    "npm run validate:m2:rating-standard",
+    "npm run validate:m2:rating-standard-v4",
+    "npm run test:e2e"
+  ],
+  "nextPrivateTaskPackIfNeeded": "m2-v1.1-30-work-operator-task-pack-cn-prd-driven-v5.xlsx",
+  "needsForecastRerunByDefault": false,
+  "forecastRerunCondition": "Only if user chooses to let forecast directly affect main rating.",
+  "m3Entered": false,
+  "deferToM4": [
+    "automatic_operating_suggestion_recovery",
+    "long_term_case_calibration",
+    "feedback_loop_rule_repair",
+    "complex_exception_reevaluation_and_rollback",
+    "m4_calibration_ui_or_workflow"
+  ]
+}

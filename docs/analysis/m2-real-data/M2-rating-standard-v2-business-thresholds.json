@@ -1,13 +1,13 @@
 {
   "reportId": "m2.rating_standard_v2_business_thresholds",
-  "generatedAt": "2026-06-26T09:36:23.637522+00:00",
+  "generatedAt": "2026-06-27T04:41:24.805940+00:00",
   "sanitized": true,
   "containsRealWorkTitles": false,
   "containsAuthors": false,
   "containsChannels": false,
   "containsRawBillingRows": false,
   "payload": {
-    "candidateVersion": "m2-realdata-dev-revenue-model-rating-v2.0",
+    "candidateVersion": "m2-realdata-dev-revenue-model-rating-v2.1-two-signal-buyout",
     "userThresholds": {
       "S+": "100000 以上",
       "S": "10000 - 100000",
@@ -23,15 +23,15 @@
       "buyoutEstimatedAmount separately displayed as buyoutHistoricalValueRating"
     ],
     "salesPerformanceRatingDistribution": {
-      "S+": 35,
-      "S": 113,
-      "A": 79,
-      "B": 332,
-      "C": 163,
-      "D": 364,
-      "E": 1968
+      "S+": 38,
+      "S": 117,
+      "A": 84,
+      "B": 358,
+      "C": 152,
+      "D": 356,
+      "E": 1949
     },
-    "sAndSPlusCount": 148,
+    "sAndSPlusCount": 155,
     "previousV1DisplayRatingDistribution": {
       "S+": 0,
       "S": 0,
@@ -42,13 +42,13 @@
       "E": 364
     },
     "thresholdWidthCheck": {
-      "positiveCount": 2377,
+      "positiveCount": 2410,
       "quantiles": {
-        "p50": 55.69,
-        "p75": 823.7,
-        "p90": 4658.94,
-        "p95": 12836.36,
-        "p99": 132527.62
+        "p50": 52.92,
+        "p75": 956.94,
+        "p90": 4866.29,
+        "p95": 13460.04,
+        "p99": 133038.87
       },
       "recommendation": "use_user_thresholds_as_baseline"
     },

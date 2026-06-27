@@ -1,32 +1,32 @@
 {
   "reportId": "m2.revenue_model_classification.v2",
-  "generatedAt": "2026-06-27T03:48:06.756221+00:00",
+  "generatedAt": "2026-06-27T04:41:24.803275+00:00",
   "sanitized": true,
   "containsRealWorkTitles": false,
   "containsAuthors": false,
   "containsChannels": false,
   "containsRawBillingRows": false,
   "payload": {
-    "candidateVersion": "m2-realdata-dev-revenue-model-rating-v2.0",
+    "candidateVersion": "m2-realdata-dev-revenue-model-rating-v2.1-two-signal-buyout",
     "classificationBoundary": "work model is aggregated from per-channel models",
     "totalWorks": 3054,
     "revenueModelDistribution": {
-      "pure_sales_share": 84,
-      "pure_buyout": 2471,
-      "buyout_plus_sales": 494,
+      "pure_sales_share": 2579,
+      "pure_buyout": 287,
+      "buyout_plus_sales": 183,
       "unknown_revenue_model": 5
     },
     "revenueShareByRevenueModel": {
-      "pure_sales_share": 0.2458,
-      "pure_buyout": 0.2965,
-      "buyout_plus_sales": 0.4577,
+      "pure_sales_share": 0.5371,
+      "pure_buyout": 0.1811,
+      "buyout_plus_sales": 0.2818,
       "unknown_revenue_model": 0.0
     },
     "unknownReasons": {
       "作品缺少可判定收入事实": 5
     },
     "manualReviewRequiredCount": 5,
-    "buyoutPlusSalesCount": 494,
+    "buyoutPlusSalesCount": 183,
     "unknownReducedFromV1": true,
     "sanitized": true,
     "m3Entered": false

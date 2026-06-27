@@ -1,0 +1,151 @@
+{
+  "reportId": "m2.prd_driven_business_rule_answer_template.v1",
+  "generatedAt": "2026-06-26T00:00:00+08:00",
+  "sanitized": true,
+  "containsRealWorkTitles": false,
+  "containsAuthors": false,
+  "containsChannels": false,
+  "containsRawBillingRows": false,
+  "instructions": {
+    "doesNotRequireExcel": true,
+    "allowedReplyStyle": [
+      "全部采用推荐答案，除了 Q3 选 B，Q7 备注……",
+      "逐条回答每个问题"
+    ]
+  },
+  "questions": [
+    {
+      "questionId": "Q1",
+      "codexRecommendation": "A",
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "userAnswer": "",
+      "note": ""
+    },
+    {
+      "questionId": "Q2",
+      "codexRecommendation": "A",
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "userAnswer": "",
+      "note": ""
+    },
+    {
+      "questionId": "Q3",
+      "codexRecommendation": "A",
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "userAnswer": "",
+      "note": ""
+    },
+    {
+      "questionId": "Q4",
+      "codexRecommendation": "A",
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "userAnswer": "",
+      "note": ""
+    },
+    {
+      "questionId": "Q5",
+      "codexRecommendation": "A",
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "userAnswer": "",
+      "note": ""
+    },
+    {
+      "questionId": "Q6",
+      "codexRecommendation": "A",
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "userAnswer": "",
+      "note": ""
+    },
+    {
+      "questionId": "Q7",
+      "codexRecommendation": "A",
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "userAnswer": "",
+      "note": ""
+    },
+    {
+      "questionId": "Q8",
+      "codexRecommendation": "A",
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "userAnswer": "",
+      "note": ""
+    },
+    {
+      "questionId": "Q9",
+      "codexRecommendation": "A",
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "userAnswer": "",
+      "note": ""
+    },
+    {
+      "questionId": "Q10",
+      "codexRecommendation": "A",
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "userAnswer": "",
+      "note": ""
+    },
+    {
+      "questionId": "Q11",
+      "codexRecommendation": "A",
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "userAnswer": "",
+      "note": ""
+    },
+    {
+      "questionId": "Q12",
+      "codexRecommendation": "A",
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "userAnswer": "",
+      "note": ""
+    }
+  ],
+  "m3Entered": false
+}
