@@ -1,8 +1,8 @@
 {
   "schema": "m3.prototype_test_coverage_audit.v0.1",
   "generatedAt": "2026-06-28",
-  "currentHead": "4b32ef8275af9795581c087081f1db45d3c88cee",
-  "originMain": "4b32ef8275af9795581c087081f1db45d3c88cee",
+  "currentHead": "670d6b50b93fc951b291d58f249a6b7da563c34c",
+  "originMain": "670d6b50b93fc951b291d58f249a6b7da563c34c",
   "coverageStatus": "fixture_baseline_covered",
   "testFiles": {
     "unitEngine": [
@@ -20,22 +20,27 @@
     "formal mode blocked",
     "write-like routes unavailable",
     "no raw material stored",
-    "final comparator count not above three",
+    "final counting comparator count not above three",
+    "same-author comparator non-counting marker",
+    "system/operator/same-author comparator origins",
     "author ranking sample threshold",
     "five-year forecast output shape",
     "readiness blocked topics avoid numeric formal-style forecasts",
+    "all rating bands S+/S/A/B/C/D/E plus blocked",
     "no fixed develop decision output",
     "no resource investment level output",
     "one-topic-one-work link shape",
     "first-year third-year fifth-year backtest checkpoints",
+    "M4 candidate entry-only handoff and m4Executed=false",
     "admin read-only M3 pages render"
   ],
-  "uncoveredOrPartialBoundaries": [
-    "same-author comparator non-counting field is not explicitly tested",
-    "system/operator comparator origin separation is not tested",
-    "all rating bands S+/S/A/B/C/D/E are not all exercised by the current fixture",
-    "M4 candidate handoff queue is not modeled or tested",
-    "formal persistence/release/export/audit gates remain out of scope"
+  "uncoveredOrPartialBoundaries": [],
+  "formalOnlyFutureCoverage": [
+    "formal persistence schema and DB constraints",
+    "formal task/write API authorization idempotency and audit",
+    "formal release/export/audit gate",
+    "raw material storage permission and redaction",
+    "M2 formal readiness rerun and M3 formal input gate"
   ],
   "validationCommandsRequired": [
     "npm run check:no-real-data",
@@ -51,7 +56,7 @@
     "build": "passed_122_js_files",
     "test": {
       "status": "passed",
-      "pass": 405,
+      "pass": 406,
       "fail": 0
     },
     "smoke": {
@@ -66,5 +71,5 @@
       "fail": 0
     }
   },
-  "recommendation": "Accept current test coverage for fixture/prototype; add partial-boundary tests before any formal M3 work."
+  "recommendation": "Accept current test coverage for M3 fixture/prototype; add formal-only tests only after separate formal M3 authorization."
 }

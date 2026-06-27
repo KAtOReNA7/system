@@ -1,8 +1,8 @@
 {
   "schema": "m3.prd_contract_implementation_consistency_audit.v0.1",
   "generatedAt": "2026-06-28",
-  "currentHead": "4b32ef8275af9795581c087081f1db45d3c88cee",
-  "originMain": "4b32ef8275af9795581c087081f1db45d3c88cee",
+  "currentHead": "670d6b50b93fc951b291d58f249a6b7da563c34c",
+  "originMain": "670d6b50b93fc951b291d58f249a6b7da563c34c",
   "overallStatus": "fixture_baseline_acceptable",
   "hardBlockingMismatches": [],
   "satisfiedItems": [
@@ -11,42 +11,54 @@
     "material processing is metadata-only",
     "raw materials are not committed or stored",
     "final comparators are capped at three",
+    "same-author comparator is explicitly non-counting",
+    "system and operator comparator origins coexist",
     "buyout revenue is separated",
     "author ranking is disabled when comparable sample count is below three",
     "five-year interval/base/first-year/year-1-to-5 forecast shape exists",
     "readiness blocked samples do not emit formal-style numeric forecasts",
+    "rating covers S+/S/A/B/C/D/E plus blocked in synthetic fixture",
     "rating omits fixed develop decision",
     "rating omits resource investment level",
     "topic-work link shape enforces one-topic-one-work intent",
     "backtest entry points are first-year, third-year and fifth-year",
+    "M4 calibration candidate handoff is entry-only and non-executing",
     "M2 formal readiness dependency remains explicit"
   ],
-  "partialItems": [
-    {
-      "item": "same-author comparator does not count against final comparator quota",
-      "status": "sameAuthor flag exists, but explicit non-counting field is not exposed",
-      "recommendation": "Add countsAgainstFinalComparatorCap=false or equivalent before formal M3."
+  "partialItems": [],
+  "fixtureStats": {
+    "topicCount": 10,
+    "ratings": {
+      "S+": 1,
+      "S": 1,
+      "A": 1,
+      "B": 2,
+      "C": 1,
+      "D": 1,
+      "E": 1,
+      "blocked": 2
     },
-    {
-      "item": "system comparator and operator comparator coexist",
-      "status": "comparator API exists, but system/operator source dimension is not explicit",
-      "recommendation": "Add comparator source/origin dimension in next fixture hardening."
-    },
-    {
-      "item": "S+/S/A/B/C/D/E rating coverage",
-      "status": "rating design supports the scale, but current five synthetic topics do not cover all bands",
-      "recommendation": "Add all-band synthetic cases before formal validation."
-    },
-    {
-      "item": "M4 calibration entry",
-      "status": "documented as follow-on entry, but no independent M4 candidate queue fixture",
-      "recommendation": "Define M4 candidate handoff structure before M4 planning."
-    }
-  ],
+    "maxCountingFinalComparators": 2,
+    "sameAuthorNonCounting": true,
+    "comparatorOrigins": [
+      "operator_suggested",
+      "same_author_adjustment",
+      "system_selected"
+    ],
+    "m4CalibrationCandidateCount": 1,
+    "m4Executed": false
+  },
   "m2FormalDependency": {
     "m2LocalCandidateUsedAsFormalInput": false,
     "dependsOnM2FormalReadiness": true,
     "formalM3StillBlocked": true
   },
-  "recommendation": "Accept current implementation as M3 fixture/prototype baseline; resolve partial items before formal M3 execution."
+  "remainingFormalWork": [
+    "formal persistence model and migration",
+    "formal task/write API",
+    "formal release/export/audit chain",
+    "raw material storage and permission model",
+    "M2 formal readiness rerun"
+  ],
+  "recommendation": "Accept current implementation as M3 fixture/prototype baseline; do not enter formal M3 without separate authorization."
 }

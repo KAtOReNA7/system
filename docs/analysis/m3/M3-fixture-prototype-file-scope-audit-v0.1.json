@@ -1,8 +1,8 @@
 {
   "schema": "m3.fixture_prototype_file_scope_audit.v0.1",
   "generatedAt": "2026-06-28",
-  "currentHead": "4b32ef8275af9795581c087081f1db45d3c88cee",
-  "originMain": "4b32ef8275af9795581c087081f1db45d3c88cee",
+  "currentHead": "670d6b50b93fc951b291d58f249a6b7da563c34c",
+  "originMain": "670d6b50b93fc951b291d58f249a6b7da563c34c",
   "worktreeCleanAtStart": true,
   "m3Commits": [
     {
@@ -16,6 +16,14 @@
     {
       "sha": "4b32ef8275af9795581c087081f1db45d3c88cee",
       "scope": "M3 admin prototype and E2E"
+    },
+    {
+      "sha": "fa298582dd057cf80f6cbfbb5996120ac65e309a",
+      "scope": "M3 acceptance and boundary audits"
+    },
+    {
+      "sha": "670d6b50b93fc951b291d58f249a6b7da563c34c",
+      "scope": "M3 fixture PRD gap closure"
     }
   ],
   "fileScope": {
@@ -25,7 +33,9 @@
       "docs/technical-design/M3-new-product-evaluation-data-model-v0.1.md",
       "docs/product/M3-new-product-evaluation-pages-v0.1.md",
       "docs/validation/M3-new-product-evaluation-test-plan-v0.1.md",
-      "docs/analysis/m3/M3-0-to-M3-7-development-summary-v0.1.json"
+      "docs/analysis/m3/M3-0-to-M3-7-development-summary-v0.1.json",
+      "docs/analysis/m3/M3-fixture-prototype-gap-closure-report-v0.1.md",
+      "docs/analysis/m3/M3-fixture-prototype-gap-closure-report-v0.1.json"
     ],
     "apiServer": [
       "src/http/app.js",
@@ -51,6 +61,13 @@
       "package.json"
     ]
   },
+  "fixtureStats": {
+    "topicCount": 10,
+    "readinessReady": 8,
+    "readinessBlocked": 1,
+    "readinessDraft": 1,
+    "m4CalibrationCandidateCount": 1
+  },
   "scopeFindings": {
     "dbMigrationsModified": false,
     "databaseDependencyAdded": false,
@@ -58,7 +75,7 @@
     "privateExcelCommitted": false,
     "realDataCommitted": false,
     "formalApiAdded": false,
-    "formalLikeNamingRisk": "low_to_medium_mitigated_by_fixture_markers_and_formal_guard"
+    "formalLikeNamingRisk": "low_mitigated_by_fixture_markers_and_formal_guard"
   },
-  "recommendation": "Keep current M3 scope as fixture/prototype baseline; add stronger fixture path/version separation before formal M3."
+  "recommendation": "Keep current M3 scope as fixture/prototype baseline; require separate authorization before formal M3."
 }

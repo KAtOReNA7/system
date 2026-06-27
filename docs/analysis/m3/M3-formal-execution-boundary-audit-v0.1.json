@@ -1,13 +1,14 @@
 {
   "schema": "m3.formal_execution_boundary_audit.v0.1",
   "generatedAt": "2026-06-28",
-  "currentHead": "4b32ef8275af9795581c087081f1db45d3c88cee",
-  "originMain": "4b32ef8275af9795581c087081f1db45d3c88cee",
+  "currentHead": "670d6b50b93fc951b291d58f249a6b7da563c34c",
+  "originMain": "670d6b50b93fc951b291d58f249a6b7da563c34c",
   "formalBoundaryStatus": "no_violation_found",
   "checks": {
     "formalDbWritePathFound": false,
     "migrationFound": false,
     "formalResultVersionFound": false,
+    "formalTaskWriteApiFound": false,
     "releaseOrExportFoundForM3": false,
     "apiImpliesFormalResultAvailable": false,
     "pageImpliesFormalResultAvailable": false,
@@ -15,7 +16,8 @@
     "m2LocalCandidateUsedAsFormalM3Input": false,
     "privateDataPathDependencyFound": false,
     "realMaterialPathFound": false,
-    "productionConnectionOrSecretFound": false
+    "productionConnectionOrSecretFound": false,
+    "m4Executed": false
   },
   "expectedExplanatoryHits": [
     "data/private-output in forbidden-token tests or boundary docs",

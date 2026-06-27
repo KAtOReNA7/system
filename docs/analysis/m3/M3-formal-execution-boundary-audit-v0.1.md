@@ -4,8 +4,8 @@
 
 审计基准：
 
-- 当前 HEAD：`4b32ef8275af9795581c087081f1db45d3c88cee`
-- 范围：M3 PRD、API contract、data model、page plan、test plan、fixture engine、fixtures、repository、routes、admin、tests
+- 当前 HEAD：`670d6b50b93fc951b291d58f249a6b7da563c34c`
+- 范围：M3 PRD、API contract、data model、page plan、test plan、fixture engine、fixtures、repository、routes、admin、tests、M3 审计报告
 
 ## 总结论
 
@@ -21,7 +21,7 @@
 - `m3FormalExecutionAllowed=false`
 - `dependsOnM2FormalReadiness=true`
 
-formal 请求通过 `mode=formal` 或 formal header 被 `formal_data_blocked` 阻断。
+formal 请求通过 `mode=formal` 或 formal header 被 `formal_data_blocked` 阻断。M4 相关能力只提供 entry-only candidate fixture，`m4Executed=false`。
 
 ## 边界核对
 
@@ -30,6 +30,7 @@ formal 请求通过 `mode=formal` 或 formal header 被 `formal_data_blocked` �
 | 是否存在 M3 代码路径写正式 DB | 否 | `src/repositories/newProductEvaluationFixtureRepository.js` 仅读取内存 fixture |
 | 是否存在 M3 migration | 否 | M3 diff 未包含 `db/migrations/`；data model 明确“本轮未新增 migration” |
 | 是否存在正式 resultVersion / release / export | 否 | M3 API contract 写明当前不提供结果发布或导出 |
+| 是否存在正式 M3 task/write API | 否 | M3 write-like route 未实现；测试要求 unavailable |
 | API 文档是否暗示 formal result 可用 | 否 | contract 明确 formal mode 必须 blocked，write routes 不可用 |
 | 页面文案是否暗示 formal result 可用 | 否 | admin 显示 `formal M3 blocked` 和 `notForFormalDecision` |
 | fixture 数据是否被当作正式数据 | 否 | fixture dataset 和 tests 均校验 synthetic-only 标记 |
@@ -37,12 +38,13 @@ formal 请求通过 `mode=formal` 或 formal header 被 `formal_data_blocked` �
 | 是否存在 private data path 依赖 | 否 | M3 fixture 不引用 private output；测试只把相关 token 当 forbidden token |
 | 是否存在真实材料文件路径 | 否 | 材料只保留 `materialTypes` 和 chunk metadata，不存储原始材料 |
 | 是否存在生产连接串或 secret | 否 | M3 代码未出现生产连接串或 secret；通用错误处理只包含脱敏逻辑 |
+| 是否执行 M4 | 否 | M4 candidate 为 `entryOnly=true`、`m4Executed=false` |
 
 ## 敏感词命中解释
 
 静态搜索会命中以下说明性内容，不视为泄漏：
 
-- `data/private-output`：仅出现在测试 forbidden token 或历史边界文档中。
+- `data/private-output`：仅出现在测试 forbidden token 或边界文档中。
 - `.xlsx` / `.csv`：仅出现在测试 forbidden token 或禁止提交说明中。
 - `Word` / `PPT` / `PDF`：PRD 描述材料类型，当前实现只保存 metadata/chunking plan，不提交原文件。
 - `formal execution` / `release` / `export`：用于说明禁止或 blocked 状态。
