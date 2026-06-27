@@ -1,0 +1,84 @@
+﻿{
+  "schema": "m2.localCandidateMajorVersionCheckpoint.v1",
+  "generatedAt": "2026-06-28",
+  "baseCommit": "90169851a2866cac02e6b4cc97a97542d3bef604",
+  "checkpointType": "sanitized_repository_checkpoint",
+  "m2LocalCandidatePaused": true,
+  "m2FormalComplete": false,
+  "m3ParallelPlanningCanStart": true,
+  "m3FormalExecutionAllowed": false,
+  "stableCandidateState": {
+    "revenueModel": {
+      "pureSalesShare": 2579,
+      "pureBuyout": 287,
+      "buyoutPlusSales": 183,
+      "unknown": 5
+    },
+    "ratingDistribution": {
+      "S+": 38,
+      "S": 117,
+      "A": 84,
+      "B": 358,
+      "C": 152,
+      "D": 356,
+      "E": 1949
+    },
+    "forecastV11Conditional": {
+      "copyrightTermForecast": 2444,
+      "operatingWindowForecastPendingExpiry": 610
+    },
+    "reviewBuckets": {
+      "expiredWithTailRevenueReview": 142,
+      "activeRightsSparseRevenueReview": 92
+    }
+  },
+  "remainingFormalM2Gaps": {
+    "remainingCopyrightExpiryGapAfterPartialReview": 522,
+    "missingAuthor": 75,
+    "missingCopyrightStart": 85,
+    "missingClassificationLevel1": 3054,
+    "missingClassificationLevel2": 3054,
+    "missingRequiredTags": 3054,
+    "missingWorkStatus": 3054,
+    "missingAudioRightsStatus": 3054,
+    "formalEvaluationReleaseExportAuditComplete": false
+  },
+  "checkpointIncludes": [
+    "source code already committed before this checkpoint",
+    "tests already committed before this checkpoint",
+    "sanitized aggregate M2 reports",
+    "M2 local candidate closeout",
+    "M3 parallel planning boundary",
+    "M3 concrete implementation plan"
+  ],
+  "checkpointExcludes": [
+    "data/private-output/**",
+    "private Excel/CSV/JSON",
+    "raw bills",
+    "raw ledgers",
+    "original full library",
+    "real work names",
+    "author names",
+    "channel names",
+    "raw billing rows",
+    "complete work details",
+    "environment files",
+    "database dumps",
+    "connection strings",
+    "secrets"
+  ],
+  "recommendedNextTask": "进入 M3 parallel planning；同时等待公司基础表补齐后回到 M2 readiness rerun。",
+  "prohibitedActionsConfirmed": {
+    "submittedPrivateExcel": false,
+    "submittedDataPrivateOutput": false,
+    "includedRawBillingRows": false,
+    "includedRawLedgerRows": false,
+    "includedRealWorkNames": false,
+    "includedAuthors": false,
+    "includedChannels": false,
+    "connectedDatabase": false,
+    "executedMigration": false,
+    "wroteFormalMasterData": false,
+    "enteredM3Formal": false
+  }
+}

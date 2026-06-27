@@ -1,0 +1,62 @@
+{
+  "schema": "m3.newProductEvaluationImplementationPlanSummary.v0.1",
+  "generatedAt": "2026-06-28",
+  "baseCommit": "90169851a2866cac02e6b4cc97a97542d3bef604",
+  "prdSources": [
+    "docs/prd/06-新品评估.md",
+    "docs/prd/00-governance/scope.md",
+    "docs/prd/20-evaluation/common-evaluation-rules.md",
+    "docs/analysis/m2-real-data/M2-local-candidate-closeout-v1.json",
+    "docs/analysis/m3/M3-parallel-planning-boundary-v1.json"
+  ],
+  "m3Stage": "parallel_planning_only",
+  "m3FormalExecutionAllowed": false,
+  "implementationPhases": [
+    "M3-0 planning freeze",
+    "M3-1 topic library and input readiness",
+    "M3-2 material parsing and structured confirmation",
+    "M3-3 comparator and author ranking",
+    "M3-4 forecast engine",
+    "M3-5 new-product rating and risks",
+    "M3-6 topic-to-work link",
+    "M3-7 backtest and calibration entry"
+  ],
+  "initialModelObjects": [
+    "m3_topic",
+    "m3_topic_input_snapshot",
+    "m3_material_file_metadata",
+    "m3_material_chunk",
+    "m3_comparator_candidate",
+    "m3_author_rank_signal",
+    "m3_external_signal_snapshot",
+    "m3_forecast_attempt",
+    "m3_forecast_result",
+    "m3_backtest_checkpoint",
+    "m3_topic_work_link"
+  ],
+  "formalEntryGates": {
+    "m2ReadinessRerunPassed": false,
+    "copyrightExpiryClosed": false,
+    "authorClosed": false,
+    "copyrightStartClosed": false,
+    "classificationAndTagsClosed": false,
+    "workStatusClosed": false,
+    "audioRightsStatusClosed": false,
+    "formalTaskExportReleaseAuditComplete": false,
+    "explicitUserAuthorizationForM3Formal": false
+  },
+  "recommendedNextTask": "M3-0 PRD/API/Data/Page/Test contract pack; no migration, no formal API, no database connection.",
+  "safeOutputBoundary": {
+    "sanitizedPlanOnly": true,
+    "containsRealWorkTitles": false,
+    "containsAuthors": false,
+    "containsChannels": false,
+    "containsRawBillingRows": false,
+    "containsRawLedgerRows": false,
+    "containsPrivateExcel": false,
+    "databaseConnected": false,
+    "migrationWritten": false,
+    "formalMasterDataWritten": false,
+    "m3FormalEntered": false
+  }
+}
