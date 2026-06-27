@@ -1,0 +1,84 @@
+{
+  "schema": "m2.v4_2_prd_and_m3_readiness_audit.v1",
+  "generatedAt": "2026-06-27T12:00:00+08:00",
+  "currentHead": "bf19d7774c6b9192e66ad996cddbb8f710b74758",
+  "originMain": "bf19d7774c6b9192e66ad996cddbb8f710b74758",
+  "worktreeClean": false,
+  "prdSourceOfTruth": [
+    "docs/prd/20-evaluation/M2-old-product-evaluation-prd-v0.1.md",
+    "docs/prd/20-evaluation/common-evaluation-rules.md",
+    "docs/technical-design/M2-next-stage-formalization-master-plan-v0.1.md",
+    "docs/technical-design/M2-final-closeout-report-v0.1.md"
+  ],
+  "m2Status": {
+    "engineeringCandidateReady": true,
+    "localRealDataCandidateReadyForLimitedReview": true,
+    "revenueModeCandidateReady": true,
+    "ratingLayerCandidateReady": true,
+    "shelfCopyrightLayerReady": false,
+    "formalDataReady": false,
+    "formalEvaluationExecuted": false,
+    "m3Ready": false
+  },
+  "prdMapping": [
+    {
+      "prdItem": "Formal M2 requires active income by standard work, month, channel, and business form.",
+      "implementationStatus": "partially_complete",
+      "evidence": "M2-revenue-model-classification-v2.json; M2-per-channel-revenue-pattern-audit-v2.json",
+      "blocksM3": false,
+      "nextAction": "Keep aggregate reconciliation and protect private row-level details."
+    },
+    {
+      "prdItem": "Formal M2 requires standard work identity, author, classification, tags, copyright start/end, and product status.",
+      "implementationStatus": "not_formally_ready",
+      "evidence": "M2-business-readiness-after-dual-source-staging-v1.json; M2-v4.2-readiness-gap-closure-summary-v1.json",
+      "blocksM3": true,
+      "nextAction": "Close or waive 610 copyright-end gaps and all classification/tag/status gaps."
+    },
+    {
+      "prdItem": "M2 outputs lifecycle, forecast, rating, risks, suggestions, backtest evidence, versioning, and invalidation.",
+      "implementationStatus": "local_candidate_only",
+      "evidence": "M2-v1.1-forecastability-after-dual-source-staging-v1.json; M2-rating-calibration-v5-summary.json",
+      "blocksM3": true,
+      "nextAction": "Run a new limited operator review on v4.2 and freeze only after shelf/copyright layer passes."
+    },
+    {
+      "prdItem": "Formal result version and invalidation require DB-backed task/attempt/result/release/audit controls.",
+      "implementationStatus": "prototype_only",
+      "evidence": "M2-final-closeout-report-v0.1.md; M2-next-stage-formalization-master-plan-v0.1.md",
+      "blocksM3": true,
+      "nextAction": "Implement and validate DB-backed formal task/export/release only after explicit authorization."
+    },
+    {
+      "prdItem": "M2-C/M2-D require formal authorization and approved real historical data readiness.",
+      "implementationStatus": "blocked",
+      "evidence": "M2-old-product-evaluation-prd-v0.1.md; M2-v1.1-business-readiness-after-dual-source-staging-v1.json",
+      "blocksM3": true,
+      "nextAction": "Do not enter M3 until formal readiness is re-audited and approved."
+    }
+  ],
+  "hardBlockers": [
+    "worktree_not_clean_for_final_stage_baseline",
+    "shelf_copyright_operator_reasonable_rate_was_0_48_before_v4_2_retest",
+    "remaining_610_missing_copyright_end_works",
+    "classification_level_1_missing_for_3054_works",
+    "classification_level_2_missing_for_3054_works",
+    "required_tags_missing_for_3054_works",
+    "work_status_missing_for_3054_works",
+    "audio_rights_status_missing_for_3054_works",
+    "formal_evaluation_not_executed",
+    "formal_db_backed_task_export_release_not_implemented",
+    "m3_not_explicitly_authorized"
+  ],
+  "recommendedNextTask": "Run v4.2 limited operator review, then close source-data readiness gaps before requesting M3 authorization.",
+  "prohibitedActionsConfirmed": {
+    "formalDatabaseConnected": false,
+    "formalMasterDataWritten": false,
+    "rawDataCommitted": false,
+    "privateExcelCommitted": false,
+    "migrationExecuted": false,
+    "mappingVersionActivated": false,
+    "switchMappingVersionCalled": false,
+    "m3Entered": false
+  }
+}

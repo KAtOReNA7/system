@@ -77,7 +77,8 @@
     "validate:m2:commercial-rating-suggestion-v3": "node scripts/run-codex-python.mjs scripts/m2-real-data/run_m2_commercial_rating_suggestion_v3.py",
     "validate:m2:rating-standard": "node scripts/run-codex-python.mjs scripts/m2-real-data/run_m2_rating_standard_rebuild.py",
     "validate:m2:revenue-model-rating-v2": "node scripts/run-codex-python.mjs scripts/m2-real-data/run_m2_revenue_model_rating_v2.py",
-    "validate:m2:rating-standard-v3": "node scripts/run-codex-python.mjs scripts/m2-real-data/run_m2_rating_standard_v3_task_pack.py"
+    "validate:m2:rating-standard-v3": "node scripts/run-codex-python.mjs scripts/m2-real-data/run_m2_rating_standard_v3_task_pack.py",
+    "validate:m2:rating-standard-v4": "node scripts/run-codex-python.mjs scripts/m2-real-data/run_m2_rating_standard_v4_task_pack.py"
   },
   "dependencies": {
     "pg": "^8.16.3"

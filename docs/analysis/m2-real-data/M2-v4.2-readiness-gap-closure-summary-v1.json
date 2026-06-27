@@ -1,0 +1,73 @@
+{
+  "schema": "m2.v4_2_readiness_gap_closure_summary.v1",
+  "generatedAt": "2026-06-27T12:00:00+08:00",
+  "currentHead": "bf19d7774c6b9192e66ad996cddbb8f710b74758",
+  "originMain": "bf19d7774c6b9192e66ad996cddbb8f710b74758",
+  "worktreeClean": false,
+  "candidateVersion": "m2-realdata-dev-rating-standard-v4.2-revenue-signal-aligned",
+  "scope": "sanitized aggregate readiness closure only; no formal master-data write",
+  "m1GapAfterLocalStaging": {
+    "missingWorkName": 0,
+    "missingAuthor": 75,
+    "missingCopyrightStart": 85,
+    "missingCopyrightEnd": 610,
+    "missingClassificationLevel1": 3054,
+    "missingClassificationLevel2": 3054,
+    "missingRequiredTags": 3054,
+    "missingWorkStatus": 3054,
+    "missingAudioRightsStatus": 3054
+  },
+  "readinessClosure": {
+    "copyrightEndGap610": {
+      "status": "not_closed_for_formal_use",
+      "reason": "610 works still require copyright-end manual backfill or auditable waiver before formal M2/M3 use.",
+      "allowedNow": "local candidate review and exception planning",
+      "blockedForM3": true
+    },
+    "classificationAndTags": {
+      "status": "not_closed_for_formal_use",
+      "reason": "classification level 1, classification level 2, and required tags remain absent for all 3054 evaluated works in the local-staging readiness view.",
+      "blockedForM3": true
+    },
+    "workAndAudioRightsStatus": {
+      "status": "not_closed_for_formal_use",
+      "reason": "work status and audio-rights status remain absent for all 3054 evaluated works in the local-staging readiness view.",
+      "blockedForM3": true
+    },
+    "localBlockingReview": {
+      "status": "locally_closed_candidate_only",
+      "remainingBlockingCount": 0,
+      "waiverCount": 23,
+      "noActionRequiredCount": 62,
+      "note": "Local candidate-b blocking review closure does not override source-data readiness gaps for formal release."
+    }
+  },
+  "currentRuleCheck": {
+    "revenueModelUnknownWorks": 5,
+    "shelfStatusUnknownWorks": 602,
+    "activeOrAvailableInferredWorks": 2215,
+    "expiredOrRightsReviewWorks": 227,
+    "operatorV4RevenueModelReasonableRate": 0.92,
+    "operatorV4RatingReasonableRate": 0.92,
+    "operatorV4ShelfStatusReasonableRate": 0.48
+  },
+  "recommendedClosureActions": [
+    "Do not enter M3 yet.",
+    "Use v4.2 task pack for another limited operator review after revenue and shelf status fixes.",
+    "Create a 610-work copyright-end backfill or waiver queue without exposing raw titles in public reports.",
+    "Define formal classification, tag, work-status, and audio-rights status source and acceptance rules.",
+    "Re-run formal readiness only after source gaps are closed or explicitly waived."
+  ],
+  "safeOutputBoundary": {
+    "sanitizedAggregateOnly": true,
+    "containsRealWorkTitles": false,
+    "containsAuthors": false,
+    "containsChannels": false,
+    "containsRawBillingRows": false,
+    "containsPrivateExcel": false,
+    "formalMasterDataWritten": false,
+    "databaseConnected": false,
+    "databaseWritten": false,
+    "m3Entered": false
+  }
+}

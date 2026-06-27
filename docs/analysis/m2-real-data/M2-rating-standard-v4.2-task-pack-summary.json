@@ -1,0 +1,59 @@
+{
+  "reportId": "m2.rating_standard_v4_2_task_pack_summary",
+  "generatedAt": "2026-06-27T03:57:51.289190+00:00",
+  "sanitized": true,
+  "containsRealWorkTitles": false,
+  "containsAuthors": false,
+  "containsChannels": false,
+  "containsRawBillingRows": false,
+  "containsRawLedgerRows": false,
+  "payload": {
+    "candidateVersion": "m2-realdata-dev-rating-standard-v4.2-revenue-signal-aligned",
+    "privateTaskPackGenerated": true,
+    "privateTaskPack": "data/private-output/m2-business-review/m2-v1.1-30-work-operator-task-pack-cn-rating-standard-v4.2.xlsx",
+    "rows": 25,
+    "sampleRows": 25,
+    "pendingUserSpecifiedRows": 0,
+    "sameStandardWorkIdsAsV3": true,
+    "containsBuyoutAmortization": true,
+    "containsStatusConfidence": true,
+    "singleMainRatingColumn": true,
+    "automaticOperatingSuggestionMainFieldRemoved": true,
+    "containsOperatingSuggestionMainColumn": false,
+    "userWritableFields": [
+      "用户判断：收入模式是否合理",
+      "用户判断：下架/版权状态是否合理",
+      "用户判断：评级是否合理",
+      "用户判断：是否应进入M4",
+      "用户备注"
+    ],
+    "revenueModelDistribution": {
+      "纯实销/纯分成": 5,
+      "买断+实销": 11,
+      "纯买断": 9
+    },
+    "ratingDistribution": {
+      "S+": 3,
+      "S": 18,
+      "A": 0,
+      "B": 3,
+      "C": 0,
+      "D": 0,
+      "E": 1
+    },
+    "ratingBasisDistribution": {
+      "current_sales": 3,
+      "current_sales_with_buyout_allocation": 11,
+      "buyout_monthly_sales_equivalent": 9,
+      "historical": 2
+    },
+    "statusConfidenceDistribution": {
+      "中": 14,
+      "低": 6,
+      "高": 5
+    },
+    "m4CandidateRows": 0,
+    "sanitized": true,
+    "m3Entered": false
+  }
+}

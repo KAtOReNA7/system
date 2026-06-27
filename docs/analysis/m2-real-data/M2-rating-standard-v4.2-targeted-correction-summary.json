@@ -1,0 +1,69 @@
+{
+  "reportId": "m2.rating_standard_v4_2_targeted_correction_summary",
+  "generatedAt": "2026-06-27T03:57:51.288691+00:00",
+  "sanitized": true,
+  "containsRealWorkTitles": false,
+  "containsAuthors": false,
+  "containsChannels": false,
+  "containsRawBillingRows": false,
+  "containsRawLedgerRows": false,
+  "payload": {
+    "candidateVersion": "m2-realdata-dev-rating-standard-v4.2-revenue-signal-aligned",
+    "pureSalesRuleChanged": false,
+    "pureSalesRule": "保持用户月均实销档位阈值，不做整体重构。",
+    "pureBuyoutRule": {
+      "ratingBasis": "buyout_monthly_sales_equivalent",
+      "amortizationYears": 3,
+      "configurable": true,
+      "formula": "buyoutEquivalentMonthlySales = buyoutEstimatedAmount / (min(default_3_years, remaining_copyright_years, floor_1_year) * 12)",
+      "explanation": "纯买断当前评级使用买断折算月均实销等价值；下一周期可参考上一个买断周期月均。"
+    },
+    "mixedRule": {
+      "ratingBasis": "current_sales_with_buyout_allocation",
+      "primarySignal": "current_sales_plus_current_cycle_buyout_monthly_allocation",
+      "buyoutAdjustment": "当前评级将买断对应周期月均与当前实销相加；下一周期只预测实销部分。"
+    },
+    "shelfStatusRule": {
+      "expiredSignal": "trusted_copyright_ledger_status",
+      "tailRevenueHandling": "尾部收入只作为后续运营核查线索，不反向改写版权台账状态",
+      "confidenceDisplayed": true,
+      "activeRightsZeroRevenue": "不直接判下架，按版权台账有效状态保留可运营/在架推断。"
+    },
+    "v3Metrics": {
+      "ratingReasonableRate": 0.08,
+      "pureBuyoutNegativeRows": 8,
+      "buyoutPlusSalesNegativeRows": 9,
+      "shelfStatusNegativeRows": 7
+    },
+    "v4Metrics": {
+      "sampleRows": 25,
+      "ratingChangedRows": 21,
+      "pureBuyoutRatingChangedRows": 8,
+      "buyoutPlusSalesRatingChangedRows": 11,
+      "ratingDistribution": {
+        "S+": 3,
+        "S": 18,
+        "A": 0,
+        "B": 3,
+        "C": 0,
+        "D": 0,
+        "E": 1
+      },
+      "ratingBasisDistribution": {
+        "current_sales": 3,
+        "current_sales_with_buyout_allocation": 11,
+        "buyout_monthly_sales_equivalent": 9,
+        "historical": 2
+      },
+      "statusConfidenceDistribution": {
+        "中": 14,
+        "低": 6,
+        "高": 5
+      }
+    },
+    "stillRequiresUserReview": true,
+    "privateTaskPack": "data/private-output/m2-business-review/m2-v1.1-30-work-operator-task-pack-cn-rating-standard-v4.2.xlsx",
+    "sanitized": true,
+    "m3Entered": false
+  }
+}
