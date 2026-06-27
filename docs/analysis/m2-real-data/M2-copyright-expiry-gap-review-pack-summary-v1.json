@@ -1,0 +1,64 @@
+{
+  "schema": "m2.copyrightExpiryGapReviewPackSummary.v1",
+  "generatedAt": "2026-06-27",
+  "currentHeadAtGeneration": "9d91902a05f622419ac21be89e94dbdb67ab1511",
+  "candidateVersion": "m2-realdata-dev-revenue-model-rating-v2.1-two-signal-buyout",
+  "privatePack": {
+    "path": "data/private-output/m2-readiness/M2-copyright-expiry-gap-review-pack-cn-v1.xlsx",
+    "gitignored": true,
+    "mustNotCommit": true,
+    "containsPrivateWorkNamesAndAuthors": true,
+    "formalMasterDataWritten": false,
+    "m3Entered": false
+  },
+  "sheetCounts": {
+    "usageGuide": 6,
+    "highIncomePriorityQueue": 61,
+    "ordinaryCompletionQueue": 386,
+    "unmatchedIdentityQueue": 83,
+    "formalWaiverCandidateQueue": 133,
+    "expiredWithTailRevenueReview": 142,
+    "activeRightsSparseRevenueReview": 92
+  },
+  "queueSemantics": {
+    "missingCopyrightEndWorks": 610,
+    "specialReviewSheetsMayOverlap": true,
+    "ordinaryCompletionQueueExcludesHighIncomeUnmatchedAndWaiverViews": true,
+    "uniqueWorksCoveredAcrossGapSheets": 610,
+    "overlaps": {
+      "highIncomeAndUnmatched": 7,
+      "highIncomeAndWaiver": 0,
+      "unmatchedAndWaiver": 46
+    }
+  },
+  "topRevenueCoverage": {
+    "top1PercentMissingCount": 11,
+    "top5PercentMissingCountInclusive": 36,
+    "top10PercentMissingCountInclusive": 61
+  },
+  "cohortDistribution": {
+    "publication_cohort": 318,
+    "web_original_cohort": 208,
+    "mixed_or_uncertain_cohort": 1,
+    "unmatched": 83
+  },
+  "readinessAssessment": {
+    "formalReadinessBlocked": true,
+    "m3Ready": false,
+    "m3Entered": false,
+    "reason": "610 个版权到期缺口仍需补齐、人工确认或 formal waiver；分类、标签、作品状态和音频版权状态也未闭环。"
+  },
+  "safeOutputBoundary": {
+    "publicReportContainsRealWorkNames": false,
+    "publicReportContainsAuthors": false,
+    "publicReportContainsChannels": false,
+    "publicReportContainsRawBillingRows": false,
+    "publicReportContainsRawLedgerRows": false,
+    "databaseConnected": false,
+    "formalMasterDataWritten": false,
+    "revenueModelModified": false,
+    "ratingModified": false,
+    "operatingSuggestionRestored": false
+  },
+  "recommendedNextStep": "用户或版权部填写 private 复核包后，下一轮只生成 operator/copyright validation summary 和本地候选，不自动写正式主数据。"
+}

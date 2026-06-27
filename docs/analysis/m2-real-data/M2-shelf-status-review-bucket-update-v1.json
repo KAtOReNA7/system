@@ -1,0 +1,62 @@
+{
+  "schema": "m2.shelfStatusReviewBucketUpdate.v1",
+  "generatedAt": "2026-06-27",
+  "currentHeadAtGeneration": "9d91902a05f622419ac21be89e94dbdb67ab1511",
+  "changedFiles": [
+    "src/domain/oldProductEvaluation/shelfStatusInference.js",
+    "test/m2-shelf-status-inference.test.js"
+  ],
+  "codeChangeBoundary": {
+    "revenueModelModified": false,
+    "ratingModified": false,
+    "operatingSuggestionRestored": false,
+    "formalMasterDataWritten": false,
+    "m3Entered": false
+  },
+  "reviewBuckets": {
+    "active_rights_sparse_revenue_review": {
+      "count": 92,
+      "behavior": "版权仍有效但收入信号稀疏或陈旧时，进入复核桶，不继续归为 unknown_shelf_status，不直接判下架。"
+    },
+    "expired_with_tail_revenue_review": {
+      "count": 142,
+      "behavior": "版权到期且近 12 月仍有收入时，保持 rights_expired_likely_off_shelf，同时输出复核提示，不覆盖版权台账。"
+    }
+  },
+  "unknownShelfStatusChange": {
+    "before": 630,
+    "after": 538,
+    "reducedBy": 92,
+    "remainingReason": "剩余 unknown 主要由版权到期缺失导致，仍需补数据或 formal waiver。"
+  },
+  "invariantsPreserved": {
+    "zeroRevenueAloneDoesNotInferOffShelf": true,
+    "expiredRightsRemainTrustedLedgerSignal": true,
+    "noExplicitShelfStatusDoesNotCreateConfidentOnShelf": true,
+    "historicalRatingNotRewrittenByShelfStatus": true
+  },
+  "testCoverage": [
+    "active rights with sparse or stale revenue enters review bucket instead of unknown",
+    "expired rights with tail revenue follows trusted copyright ledger status and emits review prompt",
+    "zero revenue alone does not infer off shelf",
+    "no explicit shelf or work status does not fabricate confident on-shelf status",
+    "shelf review bucket does not change revenue classifier or rating modules"
+  ],
+  "formalReadiness": {
+    "blocked": true,
+    "m3Ready": false,
+    "m3Entered": false,
+    "blockers": [
+      "610 个版权到期缺口仍未补齐或 formal waiver。",
+      "分类、标签、作品状态、音频版权状态仍未闭环。",
+      "active_rights_sparse_revenue_review 是复核桶，不等于 formal ready。"
+    ]
+  },
+  "safeOutputBoundary": {
+    "publicReportContainsRealWorkNames": false,
+    "publicReportContainsAuthors": false,
+    "publicReportContainsChannels": false,
+    "publicReportContainsRawBillingRows": false,
+    "publicReportContainsRawLedgerRows": false
+  }
+}
