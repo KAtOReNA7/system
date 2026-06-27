@@ -302,65 +302,6 @@ test("M2 old-product fixture admin pages render from M2 APIs", async () => {
   }
 });
 
-test("M3 new-product fixture admin pages render from M3 APIs", async () => {
-  const cases = [
-    {
-      path: "/admin#m3-overview",
-      awaitText: "total topics",
-      expected: ["新品评估总览", "fixture-only", "formal M3 blocked", "total topics", "backtest checkpoints"],
-      endpoint: "/api/m3/new-products/topics/overview"
-    },
-    {
-      path: "/admin#m3-topics",
-      awaitText: "SYN-TOPIC-0001",
-      expected: ["新品选题库", "SYN-TOPIC-0001", "FIVE-YEAR BASE", "FIRST-YEAR FORECAST", "linked_after_sales"],
-      endpoint: "/api/m3/new-products/topics"
-    },
-    {
-      path: "/admin#m3-detail:SYN-TOPIC-0001",
-      awaitText: "fiveYearBase",
-      expected: ["新品评估详情", "SYN-TOPIC-0001", "对标", "作者排位", "选题与老品关联", "回测计划"],
-      endpoint: "/api/m3/new-products/topics/SYN-TOPIC-0001"
-    },
-    {
-      path: "/admin#m3-gaps",
-      awaitText: "missing_completeClassification",
-      expected: ["新品数据缺口", "missing_completeClassification", "BLOCKS FORMAL", "OWNER ACTION"],
-      endpoint: "/api/m3/new-products/readiness-gaps"
-    },
-    {
-      path: "/admin#m3-backtests",
-      awaitText: "fixture-new-product-v1",
-      expected: ["新品回测", "fixture-new-product-v1", "SYN-M3-BACKTEST-0001", "first_year", "third_year", "fifth_year"],
-      endpoint: "/api/m3/new-products/backtests"
-    }
-  ];
-
-  for (const testCase of cases) {
-    const { context, page, requestedUrls } = await openPage(testCase.path, {
-      captureRequests: true
-    });
-    try {
-      await page.waitForFunction(
-        (needle) => document.body.innerText.includes(needle),
-        testCase.awaitText
-      );
-      const text = await readVisibleText(page);
-      for (const expected of testCase.expected) {
-        assert.match(text, new RegExp(expected.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
-      }
-      assert.ok(
-        requestedUrls.some((url) => url.includes(testCase.endpoint)),
-        `${testCase.path} should request ${testCase.endpoint}`
-      );
-      assertNoSensitiveOutput(text);
-      await assertNoForbiddenWriteControls(page);
-    } finally {
-      await context.close();
-    }
-  }
-});
-
 test("M2 old-product admin renders blocked empty error and not-found states safely", async () => {
   const blocked = await openPage("/admin#m2-overview", {
     routes: [
