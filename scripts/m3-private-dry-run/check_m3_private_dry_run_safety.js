@@ -164,6 +164,9 @@ export function groupPrimaryMaterials(inventory) {
 }
 
 export function plannedParseModeFor(extension, hasCompanionText = false) {
+  if (hasCompanionText && [".jpg", ".jpeg", ".png"].includes(extension)) {
+    return "image_manual_transcript";
+  }
   if (hasCompanionText && !COMPANION_TEXT_EXTENSIONS.includes(extension)) {
     return "companion_text_enhanced";
   }

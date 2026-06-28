@@ -77,9 +77,13 @@ export function runM3PrivateMaterialDryRun(options = {}) {
 
   const absoluteInputDir = path.join(repoRoot, safety.inputDir);
   const absoluteOutputDir = path.join(repoRoot, safety.outputDir);
+  const privateTempDir = path.join(absoluteOutputDir, "tmp");
   mkdirSync(absoluteOutputDir, { recursive: true });
   const materialGroups = groupPrimaryMaterials(collectInputInventory(absoluteInputDir));
-  const materialResults = materialGroups.map((item) => evaluatePrivateMaterialGroup(item));
+  const materialResults = materialGroups.map((item) => evaluatePrivateMaterialGroup(item, {
+    privateTempDir,
+    legacyDocConverter: options.legacyDocConverter
+  }));
   const result = {
     ok: true,
     version: "m3-private-material-dry-run-v0.3",
@@ -124,8 +128,8 @@ export function runM3PrivateMaterialDryRun(options = {}) {
   };
 }
 
-export function evaluatePrivateMaterialGroup(group) {
-  const extraction = extractPrivateMaterialContent(group);
+export function evaluatePrivateMaterialGroup(group, options = {}) {
+  const extraction = extractPrivateMaterialContent(group, options);
   if (extraction.extractedTextAvailable) {
     return evaluateTextMaterial(group, extraction);
   }
@@ -151,6 +155,7 @@ export function buildPublicAggregateSummary(result) {
     extensionDistribution: result.aggregate?.extensionDistribution ?? {},
     parseStatusDistribution: result.aggregate?.parseStatusDistribution ?? {},
     extractionStatusDistribution: result.aggregate?.extractionStatusDistribution ?? {},
+    extractionProviderDistribution: result.aggregate?.extractionProviderDistribution ?? {},
     readinessDistribution: result.aggregate?.readinessDistribution ?? {},
     forecastStatusDistribution: result.aggregate?.forecastStatusDistribution ?? {},
     ratingGeneratedCount: result.aggregate?.ratingGeneratedCount ?? 0,
@@ -195,6 +200,14 @@ function summarizeMetadataOnly(group, extraction) {
     inputExtension: group.extension,
     parseStatus: extraction.parseStatus,
     extractionStatus: extraction.extractionStatus,
+    extractionProvider: extraction.extractionProvider,
+    extractionProviderAvailable: extraction.extractionProviderAvailable,
+    extractionAttempted: extraction.extractionAttempted,
+    extractionFailureReason: extraction.extractionFailureReason,
+    manualTranscriptProvided: extraction.manualTranscriptProvided,
+    converterUsed: extraction.converterUsed,
+    privateTempFileCreated: extraction.privateTempFileCreated,
+    privateTempFileCleaned: extraction.privateTempFileCleaned,
     extractedTextAvailable: extraction.extractedTextAvailable,
     extractedTextLengthBucket: extraction.extractedTextLengthBucket,
     extractedFieldCandidates: extraction.extractedFieldCandidates,
@@ -239,6 +252,14 @@ function summarizeEvaluation({ group, extraction, fields, evaluation, manualExtr
     inputExtension: group.extension,
     parseStatus: extraction.parseStatus,
     extractionStatus: extraction.extractionStatus,
+    extractionProvider: extraction.extractionProvider,
+    extractionProviderAvailable: extraction.extractionProviderAvailable,
+    extractionAttempted: extraction.extractionAttempted,
+    extractionFailureReason: extraction.extractionFailureReason,
+    manualTranscriptProvided: extraction.manualTranscriptProvided,
+    converterUsed: extraction.converterUsed,
+    privateTempFileCreated: extraction.privateTempFileCreated,
+    privateTempFileCleaned: extraction.privateTempFileCleaned,
     extractedTextAvailable: extraction.extractedTextAvailable,
     extractedTextLengthBucket: extraction.extractedTextLengthBucket,
     extractedFieldCandidates: extraction.extractedFieldCandidates,
@@ -412,6 +433,14 @@ function buildSections(materialResults) {
       "extension",
       "parseStatus",
       "extractionStatus",
+      "extractionProvider",
+      "extractionProviderAvailable",
+      "extractionAttempted",
+      "extractionFailureReason",
+      "manualTranscriptProvided",
+      "converterUsed",
+      "privateTempFileCreated",
+      "privateTempFileCleaned",
       "extractedTextAvailable",
       "extractedTextLengthBucket",
       "extractedFieldCandidates",
@@ -443,12 +472,20 @@ function buildAggregate(materialResults) {
     materialGroupCount: materialResults.length,
     extensionDistribution: countBy(materialResults, "extension"),
     extractionStatusDistribution: countBy(materialResults, "extractionStatus"),
+    extractionProviderDistribution: countBy(materialResults, "extractionProvider"),
     acceptedPrimaryMaterialCount: materialResults.filter((item) => item.acceptedAsPrimaryMaterial).length,
     acceptedDocCount: materialResults.filter((item) => item.extension === ".doc").length,
     acceptedImageCount: materialResults.filter((item) => [".jpg", ".jpeg", ".png"].includes(item.extension)).length,
     companionTextCount: materialResults.filter((item) => item.hasCompanionText).length,
     metadataOnlyCount: materialResults.filter((item) => item.parseStatus.includes("metadata_only")).length,
     extractedTextAvailableCount: materialResults.filter((item) => item.extractedTextAvailable).length,
+    extractionAttemptedCount: materialResults.filter((item) => item.extractionAttempted).length,
+    extractionProviderAvailableCount: materialResults.filter((item) => item.extractionProviderAvailable).length,
+    extractionFailedCount: materialResults.filter((item) => item.extractionFailureReason).length,
+    manualTranscriptProvidedCount: materialResults.filter((item) => item.manualTranscriptProvided).length,
+    converterUsedDistribution: countBy(materialResults.filter((item) => item.converterUsed), "converterUsed"),
+    privateTempFileCreatedCount: materialResults.filter((item) => item.privateTempFileCreated).length,
+    privateTempFileCleanedCount: materialResults.filter((item) => item.privateTempFileCleaned).length,
     manualExtractionRequiredCount: materialResults.filter((item) => item.manualExtractionRequired).length,
     visualExtractionRequiredCount: materialResults.filter((item) => item.visualExtractionRequired).length,
     legacyDocExtractionRequiredCount: materialResults.filter((item) => item.legacyDocExtractionRequired).length,
@@ -482,6 +519,7 @@ function buildPrivateMarkdown(result) {
     `- Extension distribution: ${JSON.stringify(result.aggregate.extensionDistribution)}`,
     `- Parse status: ${JSON.stringify(result.aggregate.parseStatusDistribution)}`,
     `- Extraction status: ${JSON.stringify(result.aggregate.extractionStatusDistribution)}`,
+    `- Extraction provider: ${JSON.stringify(result.aggregate.extractionProviderDistribution)}`,
     `- Readiness: ${JSON.stringify(result.aggregate.readinessDistribution)}`,
     `- Forecast status: ${JSON.stringify(result.aggregate.forecastStatusDistribution)}`,
     `- Rating status: ${JSON.stringify(result.aggregate.ratingStatusDistribution)}`,
@@ -494,6 +532,10 @@ function buildPrivateMarkdown(result) {
     lines.push(`- Extension: ${item.extension}`);
     lines.push(`- Parse status: ${item.parseStatus}`);
     lines.push(`- Extraction status: ${item.extractionStatus}`);
+    lines.push(`- Extraction provider: ${item.extractionProvider}`);
+    lines.push(`- Extraction attempted: ${item.extractionAttempted}`);
+    lines.push(`- Manual transcript provided: ${item.manualTranscriptProvided}`);
+    lines.push(`- Converter used: ${item.converterUsed ?? "none"}`);
     lines.push(`- Extracted text available: ${item.extractedTextAvailable}`);
     lines.push(`- Extracted text length bucket: ${item.extractedTextLengthBucket}`);
     lines.push(`- Accepted as primary material: ${item.acceptedAsPrimaryMaterial}`);

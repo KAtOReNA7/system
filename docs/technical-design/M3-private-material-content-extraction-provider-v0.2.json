@@ -1,0 +1,120 @@
+{
+  "document": "M3-private-material-content-extraction-provider-v0.2",
+  "generatedAt": "2026-06-28",
+  "scope": "local_private_material_dry_run",
+  "formalExecution": false,
+  "formatStrategy": {
+    ".txt": {
+      "strategy": "direct_local_text_read",
+      "parseStatus": "parsed_from_text"
+    },
+    ".md": {
+      "strategy": "direct_local_text_read",
+      "parseStatus": "parsed_from_text"
+    },
+    ".docx": {
+      "strategy": "lightweight_word_document_xml_extraction",
+      "parseStatusOnSuccess": "parsed_from_docx_text",
+      "parseStatusOnFailure": "accepted_docx_metadata_only"
+    },
+    ".doc": {
+      "strategy": "optional_local_converter_or_metadata_only",
+      "optionalConverters": [
+        "soffice",
+        "libreoffice",
+        "antiword",
+        "catdoc"
+      ],
+      "converterRequiredInCi": false,
+      "parseStatuses": [
+        "parsed_from_legacy_doc_text",
+        "legacy_doc_converter_unavailable",
+        "legacy_doc_conversion_failed",
+        "accepted_legacy_doc_metadata_only"
+      ],
+      "privateTempRoot": "data/private-output/m3-dry-run/tmp/"
+    },
+    ".jpg": {
+      "strategy": "metadata_only_or_same_stem_manual_transcript",
+      "ocrCalled": false,
+      "parseStatusWithTranscript": "parsed_from_image_manual_transcript",
+      "parseStatusWithoutTranscript": "accepted_image_metadata_only"
+    },
+    ".jpeg": {
+      "strategy": "metadata_only_or_same_stem_manual_transcript",
+      "ocrCalled": false,
+      "parseStatusWithTranscript": "parsed_from_image_manual_transcript",
+      "parseStatusWithoutTranscript": "accepted_image_metadata_only"
+    },
+    ".png": {
+      "strategy": "metadata_only_or_same_stem_manual_transcript",
+      "ocrCalled": false,
+      "parseStatusWithTranscript": "parsed_from_image_manual_transcript",
+      "parseStatusWithoutTranscript": "accepted_image_metadata_only"
+    },
+    ".pdf": {
+      "strategy": "metadata_only_until_safe_local_parser_is_added",
+      "ocrCalled": false
+    },
+    ".pptx": {
+      "strategy": "metadata_only_until_safe_local_parser_is_added"
+    },
+    ".xlsx": {
+      "strategy": "metadata_only_until_safe_local_parser_is_added"
+    }
+  },
+  "outputFields": [
+    "extractionProvider",
+    "extractionProviderAvailable",
+    "extractionAttempted",
+    "extractionFailureReason",
+    "manualTranscriptProvided",
+    "converterUsed",
+    "privateTempFileCreated",
+    "privateTempFileCleaned",
+    "extractionStatus",
+    "extractedTextAvailable",
+    "extractedTextLengthBucket",
+    "extractedFieldCandidates",
+    "extractionWarnings",
+    "extractionLimitations",
+    "manualExtractionRequired",
+    "visualExtractionRequired",
+    "legacyDocExtractionRequired"
+  ],
+  "ratingBoundary": {
+    "readinessBlockedRating": null,
+    "ratingStatus": "not_generated_due_to_readiness_blocked",
+    "candidateRatingGenerated": false,
+    "eIsNotPlaceholder": true
+  },
+  "safety": {
+    "printsRawText": false,
+    "writesPublicRawText": false,
+    "commitsPrivateInput": false,
+    "commitsPrivateOutput": false,
+    "ocrCalled": false,
+    "visionModelCalled": false,
+    "realSearchCalled": false,
+    "chatGptWebCalled": false,
+    "chromePluginCalled": false,
+    "browserAutomationCalled": false,
+    "databaseConnected": false,
+    "migrationWritten": false,
+    "formalExecution": false
+  },
+  "validation": {
+    "tests": [
+      "test/m3-private-material-content-extractor.test.js",
+      "test/m3-private-dry-run-runner.test.js",
+      "test/m3-private-dry-run-safety.test.js"
+    ],
+    "requiredCommands": [
+      "npm run check:no-real-data",
+      "npm run lint",
+      "npm run build",
+      "npm test",
+      "npm run smoke"
+    ]
+  }
+}

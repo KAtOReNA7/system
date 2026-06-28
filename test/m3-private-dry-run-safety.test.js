@@ -70,6 +70,25 @@ test("M3 private dry-run safety counts companion text as enhancement only", () =
   });
 });
 
+test("M3 private dry-run safety marks image companion text as manual transcript", () => {
+  withTempRepo(({ repoRoot, inputDir }) => {
+    writeFileSync(path.join(inputDir, "private-a.jpg"), "binary-placeholder", "utf8");
+    writeFileSync(path.join(inputDir, "private-a.txt"), "title: Secret Synthetic Title\n", "utf8");
+    writeFileSync(path.join(inputDir, "private-b.png"), "binary-placeholder", "utf8");
+    writeFileSync(path.join(inputDir, "private-b.md"), "title: Secret Synthetic Title\n", "utf8");
+    writeFileSync(path.join(inputDir, "private-c.jpeg"), "binary-placeholder", "utf8");
+
+    const result = checkM3PrivateDryRunSafety({ repoRoot, skipGitChecks: true });
+
+    assert.equal(result.ok, true);
+    assert.equal(result.materialGroupCount, 3);
+    assert.equal(result.companionTextCount, 2);
+    assert.equal(result.anonymousInputs[0].plannedParseMode, "image_manual_transcript");
+    assert.equal(result.anonymousInputs[1].plannedParseMode, "image_manual_transcript");
+    assert.equal(result.anonymousInputs[2].plannedParseMode, "image_metadata_only");
+  });
+});
+
 test("M3 private dry-run safety stops when material group count is outside 3 to 5", () => {
   withTempRepo(({ repoRoot, inputDir }) => {
     writeFileSync(path.join(inputDir, "one.txt"), "title: synthetic\n", "utf8");

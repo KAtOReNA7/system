@@ -22,7 +22,7 @@ test("M3 private dry-run parses synthetic txt and md without storing raw values"
     writeFileSync(path.join(inputDir, "material-b.md"), syntheticText("B"), "utf8");
     writeFileSync(path.join(inputDir, "material-c.pdf"), "binary-placeholder", "utf8");
 
-    const result = runM3PrivateMaterialDryRun({ repoRoot, skipGitChecks: true });
+    const result = runM3PrivateMaterialDryRun({ repoRoot, skipGitChecks: true, legacyDocConverter: null });
     const resultJsonPath = path.join(outputDir, PRIVATE_RESULT_JSON);
     const resultMarkdownPath = path.join(outputDir, PRIVATE_RESULT_MARKDOWN);
     const resultText = readFileSync(resultJsonPath, "utf8");
@@ -49,13 +49,13 @@ test("M3 private dry-run accepts doc and image inputs as primary metadata-only m
     writeFileSync(path.join(inputDir, "private-two.jpg"), "binary-placeholder", "utf8");
     writeFileSync(path.join(inputDir, "private-three.png"), "binary-placeholder", "utf8");
 
-    const result = runM3PrivateMaterialDryRun({ repoRoot, skipGitChecks: true });
+    const result = runM3PrivateMaterialDryRun({ repoRoot, skipGitChecks: true, legacyDocConverter: null });
 
     assert.equal(result.ok, true);
     assert.equal(result.aggregate.materialGroupCount, 3);
     assert.equal(result.aggregate.acceptedPrimaryMaterialCount, 3);
     assert.deepEqual(result.aggregate.extensionDistribution, { ".doc": 1, ".jpg": 1, ".png": 1 });
-    assert.equal(result.aggregate.parseStatusDistribution.accepted_legacy_doc_metadata_only, 1);
+    assert.equal(result.aggregate.parseStatusDistribution.legacy_doc_converter_unavailable, 1);
     assert.equal(result.aggregate.parseStatusDistribution.accepted_image_metadata_only, 2);
     assert.equal(result.aggregate.forecastStatusDistribution.blocked, 3);
     assert.equal(result.aggregate.ratingGeneratedCount, 0);
@@ -71,7 +71,7 @@ test("M3 private dry-run handles jpg jpeg png parse statuses", () => {
     writeFileSync(path.join(inputDir, "b.jpeg"), "binary-placeholder", "utf8");
     writeFileSync(path.join(inputDir, "c.png"), "binary-placeholder", "utf8");
 
-    const result = runM3PrivateMaterialDryRun({ repoRoot, skipGitChecks: true });
+    const result = runM3PrivateMaterialDryRun({ repoRoot, skipGitChecks: true, legacyDocConverter: null });
 
     assert.equal(result.ok, true);
     assert.equal(result.aggregate.acceptedImageCount, 3);
@@ -87,13 +87,96 @@ test("M3 private dry-run uses companion text as enhancement without adding a mat
     writeFileSync(path.join(inputDir, "material-b.jpg"), "binary-placeholder", "utf8");
     writeFileSync(path.join(inputDir, "material-c.png"), "binary-placeholder", "utf8");
 
-    const result = runM3PrivateMaterialDryRun({ repoRoot, skipGitChecks: true });
+    const result = runM3PrivateMaterialDryRun({ repoRoot, skipGitChecks: true, legacyDocConverter: null });
 
     assert.equal(result.ok, true);
     assert.equal(result.aggregate.materialGroupCount, 3);
     assert.equal(result.aggregate.companionTextCount, 1);
     assert.equal(result.aggregate.parseStatusDistribution.parsed_from_companion_text_enhanced, 1);
     assert.equal(result.aggregate.parseStatusDistribution.accepted_image_metadata_only, 2);
+  });
+});
+
+test("M3 private dry-run parses legacy doc text through mock converter without public raw text", () => {
+  withTempRepo(({ repoRoot, inputDir, outputDir }) => {
+    writeFileSync(path.join(inputDir, "material-a.doc"), "binary-placeholder", "utf8");
+    writeFileSync(path.join(inputDir, "material-b.jpg"), "binary-placeholder", "utf8");
+    writeFileSync(path.join(inputDir, "material-c.png"), "binary-placeholder", "utf8");
+
+    const result = runM3PrivateMaterialDryRun({
+      repoRoot,
+      skipGitChecks: true,
+      legacyDocConverter: {
+        name: "mock-converter",
+        convertToText({ privateTempDir }) {
+          assert.ok(privateTempDir.replaceAll("\\", "/").endsWith("data/private-output/m3-dry-run/tmp"));
+          return {
+            text: syntheticText("LEGACY-DOC"),
+            privateTempFileCreated: true,
+            privateTempFileCleaned: true
+          };
+        }
+      }
+    });
+    const resultJsonText = readFileSync(path.join(outputDir, PRIVATE_RESULT_JSON), "utf8");
+    const parsed = JSON.parse(resultJsonText);
+    const docResult = parsed.materialResults.find((item) => item.extension === ".doc");
+
+    assert.equal(result.ok, true);
+    assert.equal(result.aggregate.parseStatusDistribution.parsed_from_legacy_doc_text, 1);
+    assert.equal(result.aggregate.converterUsedDistribution["mock-converter"], 1);
+    assert.equal(result.aggregate.privateTempFileCreatedCount, 1);
+    assert.equal(result.aggregate.privateTempFileCleanedCount, 1);
+    assert.equal(docResult.extractionStatus, "extracted_from_legacy_doc_text");
+    assert.ok(docResult.extractedFieldKeys.includes("title"));
+    assert.equal(resultJsonText.includes("Secret Synthetic Title LEGACY-DOC"), false);
+  });
+});
+
+test("M3 private dry-run records legacy doc converter failure without generating E rating", () => {
+  withTempRepo(({ repoRoot, inputDir }) => {
+    writeFileSync(path.join(inputDir, "material-a.doc"), "binary-placeholder", "utf8");
+    writeFileSync(path.join(inputDir, "material-b.jpg"), "binary-placeholder", "utf8");
+    writeFileSync(path.join(inputDir, "material-c.png"), "binary-placeholder", "utf8");
+
+    const result = runM3PrivateMaterialDryRun({
+      repoRoot,
+      skipGitChecks: true,
+      legacyDocConverter: {
+        name: "mock-failing-converter",
+        convertToText() {
+          throw new Error("synthetic failure");
+        }
+      }
+    });
+
+    assert.equal(result.ok, true);
+    assert.equal(result.aggregate.parseStatusDistribution.legacy_doc_conversion_failed, 1);
+    assert.equal(result.aggregate.extractionFailedCount, 1);
+    assert.equal(result.aggregate.ratingGeneratedCount, 0);
+    assert.equal(result.aggregate.ratingDistribution.E, undefined);
+  });
+});
+
+test("M3 private dry-run uses image manual transcripts as field extraction input", () => {
+  withTempRepo(({ repoRoot, inputDir, outputDir }) => {
+    writeFileSync(path.join(inputDir, "material-a.jpg"), "binary-placeholder", "utf8");
+    writeFileSync(path.join(inputDir, "material-a.txt"), syntheticText("IMAGE-TXT"), "utf8");
+    writeFileSync(path.join(inputDir, "material-b.png"), "binary-placeholder", "utf8");
+    writeFileSync(path.join(inputDir, "material-b.md"), syntheticText("IMAGE-MD"), "utf8");
+    writeFileSync(path.join(inputDir, "material-c.jpeg"), "binary-placeholder", "utf8");
+
+    const result = runM3PrivateMaterialDryRun({ repoRoot, skipGitChecks: true });
+    const parsed = JSON.parse(readFileSync(path.join(outputDir, PRIVATE_RESULT_JSON), "utf8"));
+
+    assert.equal(result.ok, true);
+    assert.equal(result.aggregate.materialGroupCount, 3);
+    assert.equal(result.aggregate.parseStatusDistribution.parsed_from_image_manual_transcript, 2);
+    assert.equal(result.aggregate.parseStatusDistribution.accepted_image_metadata_only, 1);
+    assert.equal(result.aggregate.manualTranscriptProvidedCount, 2);
+    assert.equal(result.aggregate.visualExtractionRequiredCount, 1);
+    assert.equal(JSON.stringify(parsed).includes("Secret Synthetic Title IMAGE-TXT"), false);
+    assert.equal(JSON.stringify(parsed).includes("Secret Synthetic Title IMAGE-MD"), false);
   });
 });
 
@@ -125,7 +208,7 @@ test("M3 private dry-run metadata-only blocked results suppress candidate E rati
     writeFileSync(path.join(inputDir, "private-two.jpg"), "binary-placeholder", "utf8");
     writeFileSync(path.join(inputDir, "private-three.jpeg"), "binary-placeholder", "utf8");
 
-    runM3PrivateMaterialDryRun({ repoRoot, skipGitChecks: true });
+    runM3PrivateMaterialDryRun({ repoRoot, skipGitChecks: true, legacyDocConverter: null });
     const parsed = JSON.parse(readFileSync(path.join(outputDir, PRIVATE_RESULT_JSON), "utf8"));
 
     for (const material of parsed.materialResults) {
@@ -143,8 +226,9 @@ test("M3 private dry-run public aggregate summary stays sanitized", () => {
     aggregate: {
       materialGroupCount: 3,
       extensionDistribution: { ".doc": 1, ".jpg": 1, ".png": 1 },
-      parseStatusDistribution: { accepted_image_metadata_only: 2, accepted_legacy_doc_metadata_only: 1 },
+      parseStatusDistribution: { accepted_image_metadata_only: 2, legacy_doc_converter_unavailable: 1 },
       extractionStatusDistribution: { metadata_only: 3 },
+      extractionProviderDistribution: { image_metadata_only: 2, legacy_doc_converter: 1 },
       readinessDistribution: { blocked: 3 },
       forecastStatusDistribution: { blocked: 3 },
       ratingGeneratedCount: 0,
@@ -158,6 +242,7 @@ test("M3 private dry-run public aggregate summary stays sanitized", () => {
     "extensionDistribution",
     "parseStatusDistribution",
     "extractionStatusDistribution",
+    "extractionProviderDistribution",
     "readinessDistribution",
     "forecastStatusDistribution",
     "ratingGeneratedCount",

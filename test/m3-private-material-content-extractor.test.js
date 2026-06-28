@@ -63,12 +63,69 @@ test("private material content extractor falls back on invalid docx", () => {
 test("private material content extractor keeps legacy doc metadata-only", () => {
   withTempDir((dir) => {
     const file = writeFixture(dir, "legacy.doc", "binary-placeholder", "utf8");
-    const result = extractPrivateMaterialContent(groupFor(file));
+    const result = extractPrivateMaterialContent(groupFor(file), { legacyDocConverter: null });
 
-    assert.equal(result.parseStatus, "accepted_legacy_doc_metadata_only");
+    assert.equal(result.parseStatus, "legacy_doc_converter_unavailable");
     assert.equal(result.extractionStatus, "metadata_only");
+    assert.equal(result.extractionProvider, "legacy_doc_converter");
+    assert.equal(result.extractionProviderAvailable, false);
+    assert.equal(result.extractionAttempted, false);
+    assert.equal(result.extractionFailureReason, "legacy_doc_converter_unavailable");
     assert.equal(result.legacyDocExtractionRequired, true);
     assert.equal(result.manualExtractionRequired, true);
+  });
+});
+
+test("private material content extractor parses legacy doc text through mock converter", () => {
+  withTempDir((dir) => {
+    const file = writeFixture(dir, "legacy.doc", "binary-placeholder", "utf8");
+    const privateTempDir = path.join(dir, "data", "private-output", "m3-dry-run", "tmp");
+    const result = extractPrivateMaterialContent(groupFor(file), {
+      privateTempDir,
+      legacyDocConverter: {
+        name: "mock-converter",
+        convertToText({ privateTempDir: actualTempDir }) {
+          assert.equal(actualTempDir, privateTempDir);
+          return {
+            text: "title: Secret Synthetic Legacy Doc\nauthor: Secret Synthetic Author",
+            privateTempFileCreated: true,
+            privateTempFileCleaned: true
+          };
+        }
+      }
+    });
+
+    assert.equal(result.parseStatus, "parsed_from_legacy_doc_text");
+    assert.equal(result.extractionStatus, "extracted_from_legacy_doc_text");
+    assert.equal(result.extractionProviderAvailable, true);
+    assert.equal(result.extractionAttempted, true);
+    assert.equal(result.converterUsed, "mock-converter");
+    assert.equal(result.privateTempFileCreated, true);
+    assert.equal(result.privateTempFileCleaned, true);
+    assert.equal(result.extractedTextAvailable, true);
+    assert.deepEqual(result.extractedFieldCandidates.map((item) => item.key), ["title", "author"]);
+  });
+});
+
+test("private material content extractor falls back when legacy doc converter fails", () => {
+  withTempDir((dir) => {
+    const file = writeFixture(dir, "legacy.doc", "binary-placeholder", "utf8");
+    const result = extractPrivateMaterialContent(groupFor(file), {
+      legacyDocConverter: {
+        name: "mock-failing-converter",
+        convertToText() {
+          throw new Error("synthetic conversion failure");
+        }
+      }
+    });
+
+    assert.equal(result.parseStatus, "legacy_doc_conversion_failed");
+    assert.equal(result.extractionStatus, "metadata_only");
+    assert.equal(result.extractionProviderAvailable, true);
+    assert.equal(result.extractionAttempted, true);
+    assert.equal(result.extractionFailureReason, "legacy_doc_conversion_failed");
+    assert.equal(result.converterUsed, "mock-failing-converter");
+    assert.equal(result.legacyDocExtractionRequired, true);
   });
 });
 
@@ -98,7 +155,7 @@ test("private material content extractor keeps pdf metadata-only without parser"
   });
 });
 
-test("private material content extractor uses companion text enhancement without OCR or external service", () => {
+test("private material content extractor uses image manual transcript without OCR or external service", () => {
   withTempDir((dir) => {
     const image = writeFixture(dir, "material.jpg", "binary-placeholder", "utf8");
     const companion = writeFixture(dir, "material.txt", "title: Secret Companion Text", "utf8");
@@ -108,10 +165,28 @@ test("private material content extractor uses companion text enhancement without
       companionTextFiles: [groupFor(companion)]
     });
 
-    assert.equal(result.parseStatus, "parsed_from_companion_text_enhanced");
-    assert.equal(result.extractionStatus, "extracted_from_companion_text");
+    assert.equal(result.parseStatus, "parsed_from_image_manual_transcript");
+    assert.equal(result.extractionStatus, "extracted_from_manual_transcript");
     assert.equal(result.visualExtractionRequired, false);
+    assert.equal(result.manualTranscriptProvided, true);
     assert.equal(result.extractedTextAvailable, true);
+  });
+});
+
+test("private material content extractor uses png md manual transcript", () => {
+  withTempDir((dir) => {
+    const image = writeFixture(dir, "material.png", "binary-placeholder", "utf8");
+    const companion = writeFixture(dir, "material.md", "title: Secret Companion Markdown", "utf8");
+    const result = extractPrivateMaterialContent({
+      ...groupFor(image),
+      hasCompanionText: true,
+      companionTextFiles: [groupFor(companion)]
+    });
+
+    assert.equal(result.parseStatus, "parsed_from_image_manual_transcript");
+    assert.equal(result.visualExtractionRequired, false);
+    assert.equal(result.manualTranscriptProvided, true);
+    assert.equal(result.extractionProvider, "manual_transcript");
   });
 });
 
