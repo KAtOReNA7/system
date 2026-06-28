@@ -1,0 +1,75 @@
+{
+  "document": "M3-private-material-field-completion-workflow-v0.1",
+  "generatedAt": "2026-06-28",
+  "scope": "local_private_material_dry_run",
+  "formalExecution": false,
+  "triggerConditions": [
+    "metadata_only_parse_status",
+    "insufficient_extracted_fields",
+    "readiness_hard_blockers",
+    "user_needs_to_fill_core_fields"
+  ],
+  "coreFields": [
+    "title",
+    "author",
+    "source",
+    "classificationCandidate_or_confirmedClassification",
+    "wordCount_or_audioVolumeEstimate",
+    "heatSignal",
+    "copyrightTermRange",
+    "targetChannels",
+    "sameNameAudioStatusCheckStatus",
+    "completionStatus_for_web_original"
+  ],
+  "warningOnlyFields": [
+    "synopsis",
+    "commentCount",
+    "adaptationSignals",
+    "operatorRecommendationReason",
+    "operatorComparators",
+    "materialSource",
+    "materialUpdatedAt",
+    "inputConfirmedBy"
+  ],
+  "privateOutputs": [
+    "data/private-output/m3-dry-run/M3-private-material-field-completion-pack-v0.1.json",
+    "data/private-output/m3-dry-run/M3-private-material-field-completion-pack-v0.1.md",
+    "data/private-output/m3-dry-run/M3-private-material-dry-run-result-after-completion-v0.1.json",
+    "data/private-output/m3-dry-run/M3-private-material-dry-run-result-after-completion-v0.1.md"
+  ],
+  "runnerFields": [
+    "missingCoreFields",
+    "canGenerateFieldCompletionPack",
+    "completionPackRecommended"
+  ],
+  "safety": {
+    "commitsPrivateInput": false,
+    "commitsPrivateOutput": false,
+    "printsRawMaterial": false,
+    "printsUserFieldValues": false,
+    "databaseConnected": false,
+    "migrationWritten": false,
+    "ocrCalled": false,
+    "realSearchCalled": false,
+    "chatGptWebCalled": false,
+    "chromePluginCalled": false,
+    "browserAutomationCalled": false,
+    "formalExecution": false,
+    "developmentRecommendationEmitted": false,
+    "resourceLevelEmitted": false,
+    "forecastRangeRestored": false
+  },
+  "validation": {
+    "tests": [
+      "test/m3-private-field-completion-pack.test.js",
+      "test/m3-private-dry-run-runner.test.js"
+    ],
+    "requiredCommands": [
+      "npm run check:no-real-data",
+      "npm run lint",
+      "npm run build",
+      "npm test",
+      "npm run smoke"
+    ]
+  }
+}

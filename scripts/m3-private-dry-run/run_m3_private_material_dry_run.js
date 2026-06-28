@@ -51,6 +51,34 @@ const FIELD_KEY_MAP = new Map([
   ["inputConfirmedBy", "inputConfirmedBy"]
 ]);
 
+export const M3_CORE_COMPLETION_FIELDS = Object.freeze([
+  "title",
+  "author",
+  "source",
+  "classification",
+  "wordCountOrAudioVolumeEstimate",
+  "heatSignal",
+  "copyrightTermRange",
+  "targetChannels",
+  "sameNameAudioStatusCheckStatus",
+  "completionStatus"
+]);
+
+const HARD_BLOCKER_TO_CORE_FIELDS = Object.freeze({
+  missing_title: ["title"],
+  missing_author: ["author"],
+  missing_source: ["source"],
+  unsupported_source: ["source"],
+  missing_classification: ["classification"],
+  missing_volume_estimate: ["wordCountOrAudioVolumeEstimate"],
+  missing_heat_signal: ["heatSignal"],
+  missing_copyright_term: ["copyrightTermRange"],
+  missing_target_channels: ["targetChannels"],
+  missing_same_name_audio_check_status: ["sameNameAudioStatusCheckStatus"],
+  same_name_audio_not_checked: ["sameNameAudioStatusCheckStatus"],
+  missing_completion_status_web_original: ["completionStatus"]
+});
+
 export function runM3PrivateMaterialDryRun(options = {}) {
   const repoRoot = path.resolve(options.repoRoot ?? process.cwd());
   const inputDir = options.inputDir ?? DEFAULT_INPUT_DIR;
@@ -193,6 +221,8 @@ function summarizeMetadataOnly(group, extraction) {
   ];
   if (extraction.visualExtractionRequired) hardBlockers.push("visual_extraction_required");
   if (extraction.legacyDocExtractionRequired) hardBlockers.push("legacy_doc_extraction_required");
+  const missingCoreFields = deriveMissingCoreFields(hardBlockers);
+  const completionPackRecommended = missingCoreFields.length > 0;
 
   return {
     anonymousMaterialId: group.anonymousMaterialId,
@@ -223,6 +253,9 @@ function summarizeMetadataOnly(group, extraction) {
     missingFields: hardBlockers.filter((code) => code.startsWith("missing_")),
     readinessStatus: "blocked",
     hardBlockers,
+    missingCoreFields,
+    canGenerateFieldCompletionPack: completionPackRecommended,
+    completionPackRecommended,
     warnings: [],
     researchQuestions: buildManualResearchQuestions(group, hardBlockers),
     externalEvidenceSummary: emptyCountSummary(),
@@ -246,6 +279,9 @@ function summarizeEvaluation({ group, extraction, fields, evaluation, manualExtr
   const ratingSummary = readinessStatus === "blocked"
     ? suppressedRatingSummary()
     : summarizeRating(evaluation.candidateRating);
+  const hardBlockers = evaluation.readiness?.hardBlockerCodes ?? [];
+  const missingCoreFields = deriveMissingCoreFields(hardBlockers);
+  const completionPackRecommended = readinessStatus === "blocked" && missingCoreFields.length > 0;
   return {
     anonymousMaterialId: group.anonymousMaterialId,
     extension: group.extension,
@@ -274,7 +310,10 @@ function summarizeEvaluation({ group, extraction, fields, evaluation, manualExtr
     extractedFieldKeys: Object.keys(fields).sort(),
     missingFields: evaluation.parsedMaterial?.missingFields ?? [],
     readinessStatus,
-    hardBlockers: evaluation.readiness?.hardBlockerCodes ?? [],
+    hardBlockers,
+    missingCoreFields,
+    canGenerateFieldCompletionPack: completionPackRecommended,
+    completionPackRecommended,
     warnings: evaluation.readiness?.warningCodes ?? [],
     researchQuestions: sanitizeResearchQuestions(evaluation.researchQuestions ?? []),
     externalEvidenceSummary: evaluation.evidenceSummary ?? emptyCountSummary(),
@@ -450,6 +489,9 @@ function buildSections(materialResults) {
       "visualExtractionRequired",
       "legacyDocExtractionRequired",
       "extractedFields",
+      "missingCoreFields",
+      "canGenerateFieldCompletionPack",
+      "completionPackRecommended",
       "missingFields"
     ])),
     "02_readiness": materialResults.map((item) => pick(item, ["anonymousMaterialId", "readinessStatus", "hardBlockers", "warnings"])),
@@ -477,6 +519,9 @@ function buildAggregate(materialResults) {
     acceptedDocCount: materialResults.filter((item) => item.extension === ".doc").length,
     acceptedImageCount: materialResults.filter((item) => [".jpg", ".jpeg", ".png"].includes(item.extension)).length,
     companionTextCount: materialResults.filter((item) => item.hasCompanionText).length,
+    canGenerateFieldCompletionPackCount: materialResults.filter((item) => item.canGenerateFieldCompletionPack).length,
+    completionPackRecommendedCount: materialResults.filter((item) => item.completionPackRecommended).length,
+    missingCoreFieldDistribution: countListValues(materialResults, "missingCoreFields"),
     metadataOnlyCount: materialResults.filter((item) => item.extractionStatus === "metadata_only").length,
     extractedTextAvailableCount: materialResults.filter((item) => item.extractedTextAvailable).length,
     extractionAttemptedCount: materialResults.filter((item) => item.extractionAttempted).length,
@@ -520,6 +565,7 @@ function buildPrivateMarkdown(result) {
     `- Parse status: ${JSON.stringify(result.aggregate.parseStatusDistribution)}`,
     `- Extraction status: ${JSON.stringify(result.aggregate.extractionStatusDistribution)}`,
     `- Extraction provider: ${JSON.stringify(result.aggregate.extractionProviderDistribution)}`,
+    `- Completion pack recommended: ${result.aggregate.completionPackRecommendedCount}`,
     `- Readiness: ${JSON.stringify(result.aggregate.readinessDistribution)}`,
     `- Forecast status: ${JSON.stringify(result.aggregate.forecastStatusDistribution)}`,
     `- Rating status: ${JSON.stringify(result.aggregate.ratingStatusDistribution)}`,
@@ -536,6 +582,8 @@ function buildPrivateMarkdown(result) {
     lines.push(`- Extraction attempted: ${item.extractionAttempted}`);
     lines.push(`- Manual transcript provided: ${item.manualTranscriptProvided}`);
     lines.push(`- Converter used: ${item.converterUsed ?? "none"}`);
+    lines.push(`- Missing core fields: ${(item.missingCoreFields ?? []).join(", ") || "none"}`);
+    lines.push(`- Completion pack recommended: ${item.completionPackRecommended}`);
     lines.push(`- Extracted text available: ${item.extractedTextAvailable}`);
     lines.push(`- Extracted text length bucket: ${item.extractedTextLengthBucket}`);
     lines.push(`- Accepted as primary material: ${item.acceptedAsPrimaryMaterial}`);
@@ -564,6 +612,16 @@ function buildPreparationGuidance(safety) {
     ],
     issues: safety.issues
   };
+}
+
+export function deriveMissingCoreFields(hardBlockers = []) {
+  const fields = [];
+  for (const blocker of hardBlockers) {
+    for (const field of HARD_BLOCKER_TO_CORE_FIELDS[blocker] ?? []) {
+      fields.push(field);
+    }
+  }
+  return [...new Set(fields)].filter((field) => M3_CORE_COMPLETION_FIELDS.includes(field));
 }
 
 function normalizeParsedValue(key, rawValue) {
