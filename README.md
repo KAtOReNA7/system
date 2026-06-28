@@ -25,7 +25,37 @@ v0.2 将 v0.1 的业务汇总稿改造成更适合 Codex 长期维护的文档�
 - M2 candidate-b DB-backed import/reconciliation、review workflow 和本地 business closure 证据已完成；这些结果是授权本地开发证据，不是最终生产发布审批结果。
 - candidate-b 系列预测模型已不再作为 M2 算法基线；当前预测路线为 disentangled forecastability v1.1 conditional，仍只能作为有限 M2 业务复核候选，不允许直接进入正式发布或 M3。
 - M2 评级/建议已推进到 rating-standard-v3：包含收入模式识别、货架/版权状态推断、单一前台评级、风险/复核提示，并移除自动运营建议主输出。private 任务包保存在 `data/private-output/**`，不会进入版本控制。
-- 当前 M2 仍不是 formal completion；正式发布、映射激活、对外 task/export/write API、生产数据连接和 M3 均需要用户后续单独授权。
+- 当前 M2 仍不是 formal completion；正式发布、映射激活、对外 task/export/write API、生产数据连接和 M3 formal execution 均需要用户后续单独授权。
+
+## M2 后续补全信息提醒
+
+在继续任何 M3 设计或实现前，必须先确认以下 M2 信息仍是后续补全项，不能把当前 M2 local candidate 当作 formal complete：
+
+| 数据项 | 当前缺口/状态 | 对 M2/M3 的影响 |
+|---|---:|---|
+| 版权到期 | 仍有 522 个在用户部分填写后未闭环；历史报告中原始缺口为 610 | 阻断剩余版权月数、版权期预测、formal readiness 和 M3 formal 输入 |
+| 作者 | 75 | 阻断标准作品 formal 主数据完整性 |
+| 版权开始 | 85 | 影响生命周期、版权期、回测解释和正式评估依据 |
+| 一级分类 | 3054 | 全库缺失，阻断正式分层、页面筛选、解释和校准 |
+| 二级分类 | 3054 | 全库缺失，阻断细分策略和同类对标 |
+| 必要标签 | 3054 | 全库缺失，阻断策略解释、运营复核和 M4 校准 |
+| 作品状态 | 3054 | 全库缺失，阻断货架/下架 formal 判断 |
+| 音频版权状态 | 3054 | 全库缺失，阻断版权有效性 formal 判断 |
+| 到期但仍有收入样本 | 142 个复核桶 | 需判断结算滞后、续约未入账、渠道滞后或异常 |
+| 版权有效但收入稀疏样本 | 92 个复核桶 | 需运营/版权确认是否仍可运营、仅观察或无需动作 |
+
+这些缺口的权威证据见：
+
+- `docs/analysis/m2-real-data/M2-local-candidate-closeout-v1.md`
+- `docs/analysis/m2-real-data/M2-master-data-readiness-gap-v1.md`
+- `docs/analysis/m2-real-data/M2-copyright-expiry-gap-readiness-v1.md`
+- `docs/analysis/m3/M3-parallel-planning-boundary-v1.md`
+
+## M3 当前状态提醒
+
+当前 `main` 已通过 `cd951ba4bdc6008f3839ae76c00c451394c06479` 回退到 **M3 未开发基线**。本地和远端只保留 M3 parallel planning 边界与实施方案摘要，不包含 M3 PRD、API contract、业务实现、页面实现或 M3 测试。
+
+允许继续准备 M3 开发计划、字段清单、接口依赖、fixture/prototype 方案和测试计划；但在 M2 readiness 未重新闭环前，不得进入 M3 formal execution，不得开放正式 task/export/write API，不得把 M2 local candidate 作为 formal M3 输入。
 
 ## 推荐阅读顺序
 
@@ -46,8 +76,9 @@ v0.2 将 v0.1 的业务汇总稿改造成更适合 Codex 长期维护的文档�
 15. `docs/analysis/m2-real-data/M2-shelf-status-business-rule-alignment-v1.md`
 16. `docs/analysis/m2-real-data/M2-front-rating-simplification-v1.md`
 17. `docs/analysis/m2-real-data/M2-suggestion-removal-boundary-v1.md`
-18. `AGENTS.md`
-19. `NEXT-CODEX-INSTRUCTION.md`
+18. `docs/technical-design/M3-restart-development-plan-v0.1.md`
+19. `AGENTS.md`
+20. `NEXT-CODEX-INSTRUCTION.md`
 
 ## Latest M1/M2 checkpoint note
 

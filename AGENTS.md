@@ -1,6 +1,6 @@
 # Codex 工作规则
 
-项目路径：`E:\project\system`
+项目路径：`D:\porject\system`
 
 ## 当前模式
 
@@ -21,7 +21,41 @@
 - M1 dual-source staging 是文件级本地 staging，不写正式主数据，不等于正式主数据验收完成。
 - M2 v1.1 conditional 与 rating-standard-v3 只能作为本地真实数据开发和有限业务复核候选，不是最终正式发布审批结果。
 - `data/private-output/**` 中的 private Excel/CSV/JSON 只供本地查看和用户填写，禁止提交。
-- 当前未进入 M3；进入 M3、正式发布、生产数据连接、mapping activation、对外正式 task/export/write API 均需要用户后续单独明确授权。
+- 当前 `main` 已通过 `cd951ba4bdc6008f3839ae76c00c451394c06479` 回退到 M3 未开发基线；本地和远端只保留 M3 parallel planning 边界与实施方案摘要，不包含 M3 PRD/API/实现/页面/测试。
+- 当前未进入 M3 formal execution；重新准备 M3 开发计划可以进行，但正式发布、生产数据连接、mapping activation、对外正式 task/export/write API、M3 formal execution 均需要用户后续单独明确授权。
+
+## M2 后续补全信息提醒
+
+任何 M3 设计、实现或评估前，必须先提醒用户当前 M2 local candidate 不是 formal complete，并核对以下 M2 后续补全项：
+
+| 数据项 | 当前缺口/状态 | 影响 |
+|---|---:|---|
+| 版权到期 | 仍有 522 个在用户部分填写后未闭环；历史报告中原始缺口为 610 | 阻断剩余版权月数、版权期预测、formal readiness 和 M3 formal 输入 |
+| 作者 | 75 | 阻断标准作品 formal 主数据完整性 |
+| 版权开始 | 85 | 影响生命周期、版权期、回测解释和正式评估依据 |
+| 一级分类 | 3054 | 全库缺失，阻断正式分层、页面筛选、解释和校准 |
+| 二级分类 | 3054 | 全库缺失，阻断细分策略和同类对标 |
+| 必要标签 | 3054 | 全库缺失，阻断策略解释、运营复核和 M4 校准 |
+| 作品状态 | 3054 | 全库缺失，阻断货架/下架 formal 判断 |
+| 音频版权状态 | 3054 | 全库缺失，阻断版权有效性 formal 判断 |
+| 到期但仍有收入样本 | 142 个复核桶 | 需判断结算滞后、续约未入账、渠道滞后或异常 |
+| 版权有效但收入稀疏样本 | 92 个复核桶 | 需运营/版权确认是否仍可运营、仅观察或无需动作 |
+
+证据文件：
+
+- `docs/analysis/m2-real-data/M2-local-candidate-closeout-v1.md`
+- `docs/analysis/m2-real-data/M2-master-data-readiness-gap-v1.md`
+- `docs/analysis/m2-real-data/M2-copyright-expiry-gap-readiness-v1.md`
+- `docs/analysis/m3/M3-parallel-planning-boundary-v1.md`
+
+## M3 当前门禁
+
+- 本地和远端 M3 状态必须先确认 clean：`HEAD` 应等于 `origin/main`，工作区不能有非本轮变更。
+- 当前允许准备 M3 开发计划、字段清单、接口依赖、fixture/prototype 方案和测试计划。
+- 在 M2 readiness 未重新闭环前，禁止进入 M3 formal execution。
+- 禁止把 M2 local candidate、v1.1 conditional、rating-standard-v3/v4/v4.2 或 private 任务包当作 formal M3 输入。
+- 禁止开放 M3 正式 task/export/write API。
+- 禁止绕过版权到期、分类、标签、作品状态、音频版权状态缺口。
 
 ## 禁止事项
 
