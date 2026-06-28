@@ -40,7 +40,11 @@ export function buildChannelForecast(fields, readiness, context = {}) {
     readiness,
     context.comparableWorks,
     context.authorRanking,
-    { referenceAmount: unweightedFirstYear }
+    {
+      referenceAmount: unweightedFirstYear,
+      externalEvidence: context.externalEvidence,
+      evidenceSummary: context.evidenceSummary
+    }
   );
   const weightedFirstYear = Math.max(0, Math.round(unweightedFirstYear * weighting.forecastMultiplier));
   const totalWeight = channels.reduce((total, channel) => total + channel.weight, 0);

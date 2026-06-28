@@ -1,0 +1,42 @@
+{
+  "title": "M3 external evidence design v0.1",
+  "generatedAt": "2026-06-28",
+  "status": "fixture_prototype_design",
+  "evidenceTypes": [
+    "originalPlatformStats",
+    "rankingSignal",
+    "searchHeatSignal",
+    "socialHeatSignal",
+    "sameNameAudioEvidence",
+    "adaptationEvidence",
+    "publicationEvidence",
+    "reviewReputationEvidence",
+    "operatorResearchNote",
+    "gptWebAssistedSummary"
+  ],
+  "implementedCollectionModes": [
+    "manualEvidenceEntry",
+    "gptWebAssistedManualEntry",
+    "fixtureEvidenceProvider"
+  ],
+  "futureProviderPlaceholders": [
+    "futureSearchApiProvider",
+    "futurePlatformApiProvider",
+    "futureBrowserResearchProvider"
+  ],
+  "gptWebBoundary": {
+    "automaticDependency": false,
+    "requiresSources": true,
+    "withoutSourceConfidence": "low",
+    "withSourceMaxConfidence": "medium",
+    "manualConfirmationRequiredBeforeUse": true
+  },
+  "nonFormal": true,
+  "fixtureOnly": true,
+  "notForFormalDecision": true,
+  "databaseConnected": false,
+  "migrationWritten": false,
+  "realSearchCalled": false,
+  "chatGptWebCalled": false,
+  "browserAutomationCalled": false
+}

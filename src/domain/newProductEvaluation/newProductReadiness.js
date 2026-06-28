@@ -2,6 +2,7 @@ import {
   M3_SOURCE_VALUES,
   hasUsableHeatSignal
 } from "./materialFieldExtractor.js";
+import { applyExternalEvidenceToParsedMaterial } from "./externalEvidence.js";
 
 export const M3_HARD_BLOCKER_CODES = Object.freeze([
   "missing_title",
@@ -32,9 +33,12 @@ export const M3_WARNING_CODES = Object.freeze([
   "same_name_audio_unknown"
 ]);
 
-export function evaluateNewProductReadiness(parsedMaterial) {
-  const fields = parsedMaterial?.normalizedFields ?? parsedMaterial ?? {};
-  const defaultedFields = parsedMaterial?.defaultedFields ?? [];
+export function evaluateNewProductReadiness(parsedMaterial, options = {}) {
+  const effectiveMaterial = options.externalEvidence
+    ? applyExternalEvidenceToParsedMaterial(parsedMaterial, options.externalEvidence)
+    : parsedMaterial;
+  const fields = effectiveMaterial?.normalizedFields ?? effectiveMaterial ?? {};
+  const defaultedFields = effectiveMaterial?.defaultedFields ?? [];
   const hardBlockers = [];
   const warnings = [];
 
@@ -102,6 +106,7 @@ export function evaluateNewProductReadiness(parsedMaterial) {
     manualCompletionRequired: warnings
       .filter((item) => item.code === "classification_requires_user_confirmation")
       .map((item) => ({ code: "confirm_classification", sourceWarningCode: item.code })),
+    evidenceDerivedFields: effectiveMaterial?.evidenceDerivedFields ?? null,
     notForFormalDecision: true
   };
 }

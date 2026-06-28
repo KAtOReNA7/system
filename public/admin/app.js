@@ -2677,6 +2677,9 @@ function renderM3MaterialDetail(item, parseResult, evaluation) {
   const authorRanking = evaluation?.authorRanking || {};
   const forecastContributions = forecast.forecastContributions || [];
   const ratingValue = rating.rating || rating.value;
+  const researchQuestions = evaluation?.researchQuestions || [];
+  const externalEvidence = evaluation?.externalEvidence || [];
+  const evidenceSummary = evaluation?.evidenceSummary || {};
   return `
     <div class="cards three">
       <article class="card">
@@ -2700,6 +2703,56 @@ function renderM3MaterialDetail(item, parseResult, evaluation) {
         ${renderMetric("rating", ratingValue)}
         ${renderMetric("nonFormal", rating.nonFormal)}
         ${renderMetric("notForFormalDecision", rating.notForFormalDecision)}
+      </article>
+    </div>
+    <div class="cards three">
+      <article class="card">
+        <h3>Research questions</h3>
+        <p class="pagination-note">Generated questions guide manual external research. They do not call search automatically.</p>
+        <ul class="explain-list">
+          ${researchQuestions.slice(0, 6).map((item) => `
+            <li>${escapeHtml(item.priority)} / ${escapeHtml(item.question)} / query=${escapeHtml(item.suggestedSearchQuery)}</li>
+          `).join("") || "<li>none</li>"}
+        </ul>
+      </article>
+      <article class="card">
+        <h3>External evidence summary</h3>
+        ${renderMetric("heatSignalEvidenceCount", evidenceSummary.heatSignalEvidenceCount ?? 0)}
+        ${renderMetric("sameNameAudioEvidenceCount", evidenceSummary.sameNameAudioEvidenceCount ?? 0)}
+        ${renderMetric("adaptationEvidenceCount", evidenceSummary.adaptationEvidenceCount ?? 0)}
+        ${renderMetric("manualConfirmedEvidenceCount", evidenceSummary.manualConfirmedEvidenceCount ?? 0)}
+        ${renderMetric("gptWebAssistedSummaryCount", evidenceSummary.gptWebAssistedSummaryCount ?? 0)}
+      </article>
+      <article class="card">
+        <h3>GPT web-assisted boundary</h3>
+        <p class="pagination-note">GPT web-assisted summaries are manual research notes only. They must be structured with sources, confidence and manual confirmation.</p>
+        <p class="pagination-note">No real search, ChatGPT web call, Chrome plugin call or browser automation is used in this fixture prototype.</p>
+      </article>
+    </div>
+    <div class="cards three">
+      <article class="card">
+        <h3>External evidence</h3>
+        <ul class="explain-list">
+          ${externalEvidence.slice(0, 8).map((item) => `
+            <li>${escapeHtml(item.evidenceType)} / ${escapeHtml(item.sourceName)} / confidence=${escapeHtml(item.confidence)} / confirmed=${escapeHtml(item.manualConfirmed)}</li>
+          `).join("") || "<li>none</li>"}
+        </ul>
+      </article>
+      <article class="card">
+        <h3>Evidence mapped fields</h3>
+        <ul class="explain-list">
+          ${externalEvidence.slice(0, 8).map((item) => `
+            <li>${escapeHtml(item.evidenceId)} / ${escapeHtml((item.mappedFields || []).join(", ") || "none")}</li>
+          `).join("") || "<li>none</li>"}
+        </ul>
+      </article>
+      <article class="card">
+        <h3>M3-3.5 boundary</h3>
+        ${renderMetric("fixtureOnly", evidenceSummary.fixtureOnly)}
+        ${renderMetric("nonFormal", evidenceSummary.nonFormal)}
+        ${renderMetric("notForFormalDecision", evidenceSummary.notForFormalDecision)}
+        ${renderMetric("externalSearchCalled", evaluation?.guardrails?.externalSearchCalled)}
+        ${renderMetric("browserAutomationCalled", evaluation?.guardrails?.browserAutomationCalled)}
       </article>
     </div>
     <div class="cards three">
@@ -2806,6 +2859,35 @@ function renderM3MaterialDetail(item, parseResult, evaluation) {
           `).join("")}
           ${(rating.sameNameAudioRiskInfluence || []).map((item) => `
             <li>sameNameAudio=${escapeHtml(item.status)} / ${escapeHtml(item.direction)}</li>
+          `).join("")}
+        </ul>
+      </article>
+    </div>
+    <div class="cards three">
+      <article class="card">
+        <h3>External evidence influence</h3>
+        <ul class="explain-list">
+          ${(rating.externalEvidenceInfluence || []).slice(0, 8).map((item) => `
+            <li>${escapeHtml(item.evidenceId)} / ${escapeHtml(item.evidenceType)} / ${escapeHtml(item.direction)} / confirmed=${escapeHtml(item.manualConfirmed)}</li>
+          `).join("") || "<li>none</li>"}
+        </ul>
+      </article>
+      <article class="card">
+        <h3>GPT evidence notes</h3>
+        <ul class="explain-list">
+          ${(rating.gptWebAssistedEvidenceNotes || []).map((item) => `
+            <li>${escapeHtml(item.evidenceId)} / hasSource=${escapeHtml(item.hasSource)} / ${escapeHtml(item.note)}</li>
+          `).join("") || "<li>none</li>"}
+        </ul>
+      </article>
+      <article class="card">
+        <h3>Evidence limitations</h3>
+        <ul class="explain-list">
+          ${(rating.missingEvidenceLimitations || []).map((item) => `
+            <li>${escapeHtml(item.code)} / ${escapeHtml(item.explanation)}</li>
+          `).join("") || "<li>none</li>"}
+          ${(rating.manualConfirmationWarnings || []).map((item) => `
+            <li>${escapeHtml(item.evidenceId)} / ${escapeHtml(item.warning)}</li>
           `).join("")}
         </ul>
       </article>

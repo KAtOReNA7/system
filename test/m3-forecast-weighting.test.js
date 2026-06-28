@@ -3,6 +3,10 @@ import test from "node:test";
 import { buildAuthorRanking } from "../src/domain/newProductEvaluation/authorRanking.js";
 import { buildComparableWorks } from "../src/domain/newProductEvaluation/comparableWorkSelector.js";
 import { buildChannelForecast } from "../src/domain/newProductEvaluation/channelForecast.js";
+import {
+  getFixtureExternalEvidenceForMaterial,
+  summarizeExternalEvidence
+} from "../src/domain/newProductEvaluation/externalEvidence.js";
 import { buildForecastWeighting } from "../src/domain/newProductEvaluation/forecastWeighting.js";
 import { extractMaterialFields } from "../src/domain/newProductEvaluation/materialFieldExtractor.js";
 import { evaluateNewProductReadiness } from "../src/domain/newProductEvaluation/newProductReadiness.js";
@@ -13,7 +17,9 @@ function contextForFixture(index = 0) {
   const readiness = evaluateNewProductReadiness(parsed);
   const comparableWorks = buildComparableWorks(parsed.normalizedFields);
   const authorRanking = buildAuthorRanking(parsed.normalizedFields);
-  return { fields: parsed.normalizedFields, readiness, comparableWorks, authorRanking };
+  const externalEvidence = getFixtureExternalEvidenceForMaterial(M3_NEW_PRODUCT_MATERIAL_FIXTURES[index].materialId);
+  const evidenceSummary = summarizeExternalEvidence(externalEvidence);
+  return { fields: parsed.normalizedFields, readiness, comparableWorks, authorRanking, externalEvidence, evidenceSummary };
 }
 
 test("M3 forecast weighting emits required explanation signals", () => {
@@ -23,13 +29,18 @@ test("M3 forecast weighting emits required explanation signals", () => {
     context.readiness,
     context.comparableWorks,
     context.authorRanking,
-    { referenceAmount: 100000 }
+    {
+      referenceAmount: 100000,
+      externalEvidence: context.externalEvidence,
+      evidenceSummary: context.evidenceSummary
+    }
   );
   const signalCodes = weighting.forecastContributions.map((item) => item.signalCode);
 
   for (const expected of [
     "readiness_quality",
     "heat_signal_strength",
+    "external_evidence_strength",
     "comparable_works_strength",
     "same_author_reference_strength",
     "author_ranking_tier",
@@ -54,7 +65,9 @@ test("channel forecasts include channel contribution breakdown and remain point-
   const context = contextForFixture(0);
   const forecast = buildChannelForecast(context.fields, context.readiness, {
     comparableWorks: context.comparableWorks,
-    authorRanking: context.authorRanking
+    authorRanking: context.authorRanking,
+    externalEvidence: context.externalEvidence,
+    evidenceSummary: context.evidenceSummary
   });
 
   assert.equal(forecast.forecastShape, "point_estimate_only");
@@ -73,7 +86,9 @@ test("forecast weighting output does not restore range or scenario fields", () =
   const context = contextForFixture(0);
   const forecast = buildChannelForecast(context.fields, context.readiness, {
     comparableWorks: context.comparableWorks,
-    authorRanking: context.authorRanking
+    authorRanking: context.authorRanking,
+    externalEvidence: context.externalEvidence,
+    evidenceSummary: context.evidenceSummary
   });
 
   assert.equal(Object.hasOwn(forecast, "forecastRange"), false);

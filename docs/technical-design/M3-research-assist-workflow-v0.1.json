@@ -1,0 +1,36 @@
+{
+  "title": "M3 research assist workflow v0.1",
+  "generatedAt": "2026-06-28",
+  "status": "fixture_prototype_design",
+  "steps": [
+    "parse_material",
+    "normalize_external_evidence",
+    "apply_confirmed_evidence",
+    "run_readiness",
+    "generate_research_questions",
+    "feed_forecast_weighting",
+    "feed_rating_explanation",
+    "display_read_only_admin"
+  ],
+  "workflowSteps": [
+    "parse_material",
+    "normalize_external_evidence",
+    "apply_confirmed_evidence",
+    "run_readiness",
+    "generate_research_questions",
+    "feed_forecast_weighting",
+    "feed_rating_explanation",
+    "display_read_only_admin"
+  ],
+  "hardBlockerFillRule": "manualConfirmed high_or_medium_confidence_with_source",
+  "lowConfidenceCanFillHardBlocker": false,
+  "unconfirmedCanFillHardBlocker": false,
+  "gptWebWithoutSourceConfidence": "low",
+  "gptWebWithSourceMaxConfidence": "medium",
+  "automaticSearchImplemented": false,
+  "browserAutomationImplemented": false,
+  "chatGptWebAutomationImplemented": false,
+  "nonFormal": true,
+  "fixtureOnly": true,
+  "notForFormalDecision": true
+}

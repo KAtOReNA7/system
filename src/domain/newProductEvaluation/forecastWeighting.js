@@ -10,16 +10,19 @@ export function buildForecastWeighting(
   options = {}
 ) {
   const referenceAmount = positiveNumber(options.referenceAmount, 0);
+  const externalEvidence = options.externalEvidence ?? [];
+  const evidenceSummary = options.evidenceSummary ?? {};
   const drafts = [
     readinessContribution(readiness),
     heatContribution(fields),
+    externalEvidenceContribution(externalEvidence, evidenceSummary),
     comparableContribution(comparableWorks),
     sameAuthorContribution(comparableWorks),
     authorRankingContribution(authorRanking),
     adaptationContribution(fields),
     sourceContribution(fields),
     targetChannelContribution(fields),
-    sameNameAudioContribution(fields),
+    sameNameAudioContribution(fields, externalEvidence),
     materialCompletenessContribution(readiness),
     buyoutTreatmentContribution(comparableWorks)
   ];
@@ -36,8 +39,8 @@ export function buildForecastWeighting(
     pointEstimateOnly: true,
     forecastMultiplier: round(forecastMultiplier),
     forecastContributions,
-    limitations: buildLimitations(comparableWorks),
-    confidenceNotes: buildConfidenceNotes(readiness, comparableWorks, authorRanking),
+    limitations: buildLimitations(comparableWorks, evidenceSummary),
+    confidenceNotes: buildConfidenceNotes(readiness, comparableWorks, authorRanking, evidenceSummary),
     nonFormal: true,
     fixtureOnly: true,
     notForFormalDecision: true
@@ -118,6 +121,42 @@ function heatContribution(fields) {
     0.22,
     -0.12,
     "No usable heat signal is present.",
+    []
+  );
+}
+
+function externalEvidenceContribution(externalEvidence = [], evidenceSummary = {}) {
+  const confirmedCount = evidenceSummary.manualConfirmedEvidenceCount ?? 0;
+  const highCount = evidenceSummary.highConfidenceEvidenceCount ?? 0;
+  if (confirmedCount > 0 && highCount > 0) {
+    return draft(
+      "external_evidence_strength",
+      "External evidence strength",
+      "increase",
+      0.12,
+      Math.min(0.08, confirmedCount * 0.02 + highCount * 0.01),
+      "Manual-confirmed structured external evidence supports the point estimate.",
+      externalEvidence.filter((item) => item.manualConfirmed).map((item) => item.evidenceId)
+    );
+  }
+  if (externalEvidence.length > 0) {
+    return draft(
+      "external_evidence_strength",
+      "External evidence strength",
+      "neutral",
+      0.12,
+      0,
+      "External evidence exists but is unconfirmed or low confidence.",
+      externalEvidence.map((item) => item.evidenceId)
+    );
+  }
+  return draft(
+    "external_evidence_strength",
+    "External evidence strength",
+    "neutral",
+    0.12,
+    0,
+    "No structured external evidence is available.",
     []
   );
 }
@@ -297,7 +336,8 @@ function targetChannelContribution(fields) {
   );
 }
 
-function sameNameAudioContribution(fields) {
+function sameNameAudioContribution(fields, externalEvidence = []) {
+  const sameNameEvidenceCount = externalEvidence.filter((item) => item.evidenceType === "sameNameAudioEvidence").length;
   if (fields.sameNameAudioStatus === "has") {
     return draft(
       "same_name_audio_risk",
@@ -326,8 +366,10 @@ function sameNameAudioContribution(fields) {
     "neutral",
     0.08,
     0,
-    "No same-name audio risk is present in the synthetic fixture.",
-    [fields.sameNameAudioStatus ?? "missing"]
+    sameNameEvidenceCount > 0
+      ? "Structured same-name audio evidence is present and does not indicate a risk."
+      : "No same-name audio risk is present in the synthetic fixture.",
+    [fields.sameNameAudioStatus ?? "missing", `evidence_count:${sameNameEvidenceCount}`]
   );
 }
 
@@ -383,7 +425,7 @@ function buyoutTreatmentContribution(comparableWorks = {}) {
   );
 }
 
-function buildLimitations(comparableWorks = {}) {
+function buildLimitations(comparableWorks = {}, evidenceSummary = {}) {
   const limitations = [
     "Synthetic fixture weighting only.",
     "Point estimate only; no forecast range is emitted.",
@@ -393,10 +435,16 @@ function buildLimitations(comparableWorks = {}) {
   if ((comparableWorks.excluded ?? []).some((item) => item.excludedReasonCode === "pure_buyout_historical_value_only")) {
     limitations.push("Pure buyout comparables are separated as historical value references.");
   }
+  if ((evidenceSummary.lowConfidenceEvidenceCount ?? 0) > 0) {
+    limitations.push("Low-confidence external evidence is explanation-only.");
+  }
+  if ((evidenceSummary.gptWebAssistedSummaryCount ?? 0) > 0) {
+    limitations.push("GPT web-assisted summaries are not automatic facts and require structured sources.");
+  }
   return limitations;
 }
 
-function buildConfidenceNotes(readiness = {}, comparableWorks = {}, authorRanking = {}) {
+function buildConfidenceNotes(readiness = {}, comparableWorks = {}, authorRanking = {}, evidenceSummary = {}) {
   const notes = [];
   if ((readiness.warningCodes ?? []).length > 0) {
     notes.push(`Readiness warnings: ${(readiness.warningCodes ?? []).join(", ")}`);
@@ -407,7 +455,21 @@ function buildConfidenceNotes(readiness = {}, comparableWorks = {}, authorRankin
   } else {
     notes.push(`Author ranking disabled: ${authorRanking.disabledReason ?? "unknown"}`);
   }
+  notes.push(`External evidence count: ${sumEvidenceCount(evidenceSummary)}`);
+  notes.push(`Manual-confirmed evidence count: ${evidenceSummary.manualConfirmedEvidenceCount ?? 0}`);
   return notes;
+}
+
+function sumEvidenceCount(evidenceSummary = {}) {
+  return (
+    (evidenceSummary.heatSignalEvidenceCount ?? 0) +
+    (evidenceSummary.sameNameAudioEvidenceCount ?? 0) +
+    (evidenceSummary.adaptationEvidenceCount ?? 0) +
+    (evidenceSummary.publicationEvidenceCount ?? 0) +
+    (evidenceSummary.reviewReputationEvidenceCount ?? 0) +
+    (evidenceSummary.operatorResearchNoteCount ?? 0) +
+    (evidenceSummary.gptWebAssistedSummaryCount ?? 0)
+  );
 }
 
 function draft(signalCode, signalName, direction, weight, factorDelta, explanation, limitations) {

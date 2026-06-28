@@ -18,6 +18,7 @@ test("M3 rating explanation includes support, limitation and warning factors", (
   assert.ok(rating.authorRankingInfluence.some((item) => item.enabled === true));
   assert.ok(rating.heatInfluence.length > 0);
   assert.ok(rating.adaptationInfluence.some((item) => item.direction === "support"));
+  assert.ok(rating.externalEvidenceInfluence.some((item) => item.evidenceType === "rankingSignal"));
 });
 
 test("rating explanation surfaces same-name audio risk and disabled author ranking", () => {
@@ -29,6 +30,9 @@ test("rating explanation surfaces same-name audio risk and disabled author ranki
   assert.ok(rating.sameNameAudioRiskInfluence.some((item) => item.direction === "warning"));
   assert.ok(rating.authorRankingInfluence.some((item) => item.enabled === false));
   assert.ok(rating.manualReviewNotes.some((item) => item.includes("Same-name audio")));
+  assert.ok(rating.gptWebAssistedEvidenceNotes.some((item) => item.hasSource === false));
+  assert.ok(rating.sourceReliabilityWarnings.some((item) => item.evidenceType === "gptWebAssistedSummary"));
+  assert.ok(rating.manualConfirmationWarnings.some((item) => item.evidenceType === "gptWebAssistedSummary"));
 });
 
 test("rating explanation does not output development recommendation or resource level", () => {

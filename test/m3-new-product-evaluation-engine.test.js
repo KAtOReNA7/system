@@ -64,6 +64,18 @@ test("engine includes M3-3 forecast weighting and rating explanation", () => {
   assert.ok(result.candidateRating.warningFactors.length > 0);
 });
 
+test("engine includes M3-3.5 external evidence and research questions", () => {
+  const result = evaluateNewProductMaterial(M3_NEW_PRODUCT_MATERIAL_FIXTURES[1]);
+
+  assert.ok(result.externalEvidence.length > 0);
+  assert.ok(result.evidenceSummary.gptWebAssistedSummaryCount > 0);
+  assert.ok(result.researchQuestions.some((item) => item.missingFieldOrRisk === "missing_adaptation_signals"));
+  assert.equal(result.guardrails.externalSearchCalled, false);
+  assert.equal(result.guardrails.chatGptWebCalled, false);
+  assert.equal(result.guardrails.browserAutomationCalled, false);
+  assert.ok(result.candidateRating.gptWebAssistedEvidenceNotes.length > 0);
+});
+
 test("blocked material does not produce numeric channel forecast", () => {
   const result = evaluateNewProductMaterial(M3_NEW_PRODUCT_MATERIAL_FIXTURES[2]);
 

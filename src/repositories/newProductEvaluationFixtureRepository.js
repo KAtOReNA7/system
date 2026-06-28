@@ -7,9 +7,16 @@ import {
   assertNoRawMaterialPayload,
   extractMaterialFields
 } from "../domain/newProductEvaluation/materialFieldExtractor.js";
+import {
+  applyExternalEvidenceToParsedMaterial,
+  getFixtureExternalEvidenceForMaterial,
+  summarizeExternalEvidence
+} from "../domain/newProductEvaluation/externalEvidence.js";
 import { buildAuthorRanking } from "../domain/newProductEvaluation/authorRanking.js";
 import { buildComparableWorks } from "../domain/newProductEvaluation/comparableWorkSelector.js";
 import { evaluateNewProductMaterial } from "../domain/newProductEvaluation/newProductEvaluationEngine.js";
+import { evaluateNewProductReadiness } from "../domain/newProductEvaluation/newProductReadiness.js";
+import { generateResearchQuestions } from "../domain/newProductEvaluation/researchQuestionGenerator.js";
 
 export async function listM3NewProductMaterialFixtures(_config, { pagination }) {
   const items = M3_NEW_PRODUCT_MATERIAL_FIXTURES.map(toMaterialSummary);
@@ -89,6 +96,56 @@ export async function getM3NewProductMaterialAuthorRankingFixture(_config, mater
   return withDataset({
     materialId,
     authorRanking: buildAuthorRanking(parsed.normalizedFields),
+    nonFormal: true,
+    fixtureOnly: true,
+    notForFormalDecision: true,
+    rawMaterialStored: false,
+    privateFileRead: false
+  });
+}
+
+export async function getM3NewProductMaterialExternalEvidenceFixture(_config, materialId) {
+  const item = findMaterial(materialId);
+  if (!item) {
+    return null;
+  }
+  const externalEvidence = getFixtureExternalEvidenceForMaterial(materialId);
+  return withDataset({
+    materialId,
+    externalEvidence,
+    evidenceSummary: summarizeExternalEvidence(externalEvidence),
+    noRealSearchCalled: true,
+    noChatGptWebCalled: true,
+    noBrowserAutomationCalled: true,
+    nonFormal: true,
+    fixtureOnly: true,
+    notForFormalDecision: true,
+    rawMaterialStored: false,
+    privateFileRead: false
+  });
+}
+
+export async function getM3NewProductMaterialResearchQuestionsFixture(_config, materialId) {
+  const item = findMaterial(materialId);
+  if (!item) {
+    return null;
+  }
+  const externalEvidence = getFixtureExternalEvidenceForMaterial(materialId);
+  const evidenceSummary = summarizeExternalEvidence(externalEvidence);
+  const parsed = applyExternalEvidenceToParsedMaterial(extractMaterialFields(item), externalEvidence);
+  const readiness = evaluateNewProductReadiness(parsed);
+  return withDataset({
+    materialId,
+    researchQuestions: generateResearchQuestions({
+      parsedMaterial: parsed,
+      readiness,
+      externalEvidence,
+      evidenceSummary
+    }),
+    evidenceSummary,
+    noRealSearchCalled: true,
+    noChatGptWebCalled: true,
+    noBrowserAutomationCalled: true,
     nonFormal: true,
     fixtureOnly: true,
     notForFormalDecision: true,

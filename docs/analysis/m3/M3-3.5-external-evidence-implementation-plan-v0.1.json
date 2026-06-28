@@ -1,0 +1,38 @@
+{
+  "title": "M3-3.5 external evidence implementation plan v0.1",
+  "generatedAt": "2026-06-28",
+  "status": "implemented_fixture_prototype",
+  "goal": "Add structured external evidence and research-assist fixture layer",
+  "plannedFiles": [
+    "src/domain/newProductEvaluation/externalEvidence.js",
+    "src/domain/newProductEvaluation/researchQuestionGenerator.js",
+    "src/domain/newProductEvaluation/fixtures/newProductExternalEvidence.fixture.js",
+    "src/domain/newProductEvaluation/newProductReadiness.js",
+    "src/domain/newProductEvaluation/newProductEvaluationEngine.js",
+    "src/domain/newProductEvaluation/forecastWeighting.js",
+    "src/domain/newProductEvaluation/ratingExplanation.js",
+    "src/repositories/newProductEvaluationFixtureRepository.js",
+    "src/http/app.js",
+    "public/admin/app.js",
+    "test/m3-external-evidence.test.js",
+    "test/m3-research-question-generator.test.js"
+  ],
+  "tests": [
+    "test/m3-external-evidence.test.js",
+    "test/m3-research-question-generator.test.js",
+    "test/m3-new-product-readiness.test.js",
+    "test/m3-forecast-weighting.test.js",
+    "test/m3-rating-explanation.test.js",
+    "test/m3-new-product-evaluation-engine.test.js",
+    "test/m3-api-fixture.test.js",
+    "test/m3-admin-prototype.test.js"
+  ],
+  "manualResearchAllowedOutsideSystem": true,
+  "realSearchCalled": false,
+  "chatGptWebCalled": false,
+  "browserAutomationCalled": false,
+  "databaseConnected": false,
+  "migrationWritten": false,
+  "formalExecutionAllowed": false,
+  "privateMaterialRead": false
+}

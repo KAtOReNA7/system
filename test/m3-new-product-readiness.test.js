@@ -113,3 +113,89 @@ test("other source is rejected", () => {
   assert.equal(readiness.readinessStatus, "blocked");
   assert.ok(readiness.hardBlockerCodes.includes("unsupported_source"));
 });
+
+test("confirmed high-confidence heat evidence can fill missing heat hard blocker", () => {
+  const parsed = extractMaterialFields({
+    materialId: "SYN-M3-READINESS-EVIDENCE",
+    fields: readyFields({ reads: undefined })
+  });
+  const readiness = evaluateNewProductReadiness(parsed, {
+    externalEvidence: [{
+      evidenceId: "SYN-EVID-HEAT",
+      evidenceType: "rankingSignal",
+      sourceUrl: "https://example.invalid/synthetic-ranking",
+      confidence: "high",
+      manualConfirmed: true,
+      rawExcerptSummary: "Short synthetic ranking summary."
+    }]
+  });
+
+  assert.equal(readiness.hardBlockerCodes.includes("missing_heat_signal"), false);
+  assert.equal(readiness.numericForecastAllowed, true);
+  assert.ok(readiness.evidenceDerivedFields.appliedEvidence.some((item) => item.evidenceId === "SYN-EVID-HEAT"));
+});
+
+test("low-confidence heat evidence cannot fill missing heat hard blocker", () => {
+  const parsed = extractMaterialFields({
+    materialId: "SYN-M3-READINESS-LOW-EVIDENCE",
+    fields: readyFields({ reads: undefined })
+  });
+  const readiness = evaluateNewProductReadiness(parsed, {
+    externalEvidence: [{
+      evidenceId: "SYN-EVID-LOW-HEAT",
+      evidenceType: "searchHeatSignal",
+      sourceUrl: "https://example.invalid/synthetic-search",
+      confidence: "low",
+      manualConfirmed: true,
+      rawExcerptSummary: "Short synthetic search summary."
+    }]
+  });
+
+  assert.ok(readiness.hardBlockerCodes.includes("missing_heat_signal"));
+  assert.equal(readiness.numericForecastAllowed, false);
+});
+
+test("confirmed same-name audio evidence can fill missing same-name check", () => {
+  const parsed = extractMaterialFields({
+    materialId: "SYN-M3-READINESS-AUDIO-EVIDENCE",
+    fields: readyFields({
+      sameNameAudioStatus: undefined,
+      sameNameAudioStatusCheckStatus: undefined
+    })
+  });
+  const readiness = evaluateNewProductReadiness(parsed, {
+    externalEvidence: [{
+      evidenceId: "SYN-EVID-SAME-NAME",
+      evidenceType: "sameNameAudioEvidence",
+      sourceUrl: "https://example.invalid/synthetic-audio-check",
+      confidence: "high",
+      manualConfirmed: true,
+      metricValue: "none",
+      rawExcerptSummary: "Short synthetic same-name audio summary."
+    }]
+  });
+
+  assert.equal(readiness.hardBlockerCodes.includes("missing_same_name_audio_check_status"), false);
+  assert.equal(readiness.hardBlockerCodes.includes("same_name_audio_not_checked"), false);
+  assert.equal(readiness.numericForecastAllowed, true);
+});
+
+test("unconfirmed evidence cannot fill hard blockers", () => {
+  const parsed = extractMaterialFields({
+    materialId: "SYN-M3-READINESS-UNCONFIRMED-EVIDENCE",
+    fields: readyFields({ reads: undefined })
+  });
+  const readiness = evaluateNewProductReadiness(parsed, {
+    externalEvidence: [{
+      evidenceId: "SYN-EVID-UNCONFIRMED",
+      evidenceType: "rankingSignal",
+      sourceUrl: "https://example.invalid/synthetic-ranking",
+      confidence: "high",
+      manualConfirmed: false,
+      rawExcerptSummary: "Short synthetic ranking summary."
+    }]
+  });
+
+  assert.ok(readiness.hardBlockerCodes.includes("missing_heat_signal"));
+  assert.equal(readiness.numericForecastAllowed, false);
+});

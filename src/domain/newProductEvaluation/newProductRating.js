@@ -19,7 +19,9 @@ export function buildNewProductCandidateRating(fields, forecast, readiness, cont
       rating: "E",
       ratingBasis: null,
       comparableWorks: context.comparableWorks,
-      authorRanking: context.authorRanking
+      authorRanking: context.authorRanking,
+      externalEvidence: context.externalEvidence,
+      evidenceSummary: context.evidenceSummary
     });
     return {
       ratingType: "new_product_candidate_rating",
@@ -54,7 +56,9 @@ export function buildNewProductCandidateRating(fields, forecast, readiness, cont
     rating: value,
     ratingBasis: round(ratingBasis),
     comparableWorks: context.comparableWorks,
-    authorRanking: context.authorRanking
+    authorRanking: context.authorRanking,
+    externalEvidence: context.externalEvidence,
+    evidenceSummary: context.evidenceSummary
   });
 
   return {

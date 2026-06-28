@@ -7,7 +7,9 @@ export function buildRatingExplanation({
   rating,
   ratingBasis = null,
   comparableWorks = {},
-  authorRanking = {}
+  authorRanking = {},
+  externalEvidence = [],
+  evidenceSummary = {}
 } = {}) {
   const heatSignals = usableHeatSignals(fields);
   const supportFactors = buildSupportFactors(fields, forecast, comparableWorks, authorRanking, heatSignals);
@@ -22,6 +24,11 @@ export function buildRatingExplanation({
   }));
   const adaptationInfluence = buildAdaptationInfluence(fields);
   const sameNameAudioRiskInfluence = buildSameNameAudioRiskInfluence(fields);
+  const externalEvidenceInfluence = buildExternalEvidenceInfluence(externalEvidence);
+  const gptWebAssistedEvidenceNotes = buildGptWebAssistedEvidenceNotes(externalEvidence);
+  const sourceReliabilityWarnings = buildSourceReliabilityWarnings(externalEvidence);
+  const missingEvidenceLimitations = buildMissingEvidenceLimitations(evidenceSummary);
+  const manualConfirmationWarnings = buildManualConfirmationWarnings(externalEvidence);
 
   return {
     ratingExplanation: buildExplanationText(rating, ratingBasis, supportFactors, limitingFactors),
@@ -33,10 +40,15 @@ export function buildRatingExplanation({
     heatInfluence,
     adaptationInfluence,
     sameNameAudioRiskInfluence,
+    externalEvidenceInfluence,
+    gptWebAssistedEvidenceNotes,
+    sourceReliabilityWarnings,
+    missingEvidenceLimitations,
+    manualConfirmationWarnings,
     riskFlags: buildRiskFlags(fields, readiness, authorRanking),
-    limitationNotes: buildLimitationNotes(forecast, comparableWorks),
-    uncertaintyNotes: buildUncertaintyNotes(readiness, authorRanking),
-    manualReviewNotes: buildManualReviewNotes(readiness, fields),
+    limitationNotes: buildLimitationNotes(forecast, comparableWorks, evidenceSummary),
+    uncertaintyNotes: buildUncertaintyNotes(readiness, authorRanking, evidenceSummary),
+    manualReviewNotes: buildManualReviewNotes(readiness, fields, externalEvidence),
     nonFormal: true,
     fixtureOnly: true,
     notForFormalDecision: true
@@ -184,6 +196,70 @@ function buildSameNameAudioRiskInfluence(fields) {
   }];
 }
 
+function buildExternalEvidenceInfluence(externalEvidence = []) {
+  return externalEvidence.map((item) => ({
+    evidenceId: item.evidenceId,
+    evidenceType: item.evidenceType,
+    direction: influenceDirection(item),
+    confidence: item.confidence,
+    manualConfirmed: item.manualConfirmed,
+    mappedFields: item.mappedFields,
+    explanation: item.manualConfirmed
+      ? "Structured external evidence can influence forecast/rating explanation."
+      : "Unconfirmed external evidence remains explanation-only."
+  }));
+}
+
+function buildGptWebAssistedEvidenceNotes(externalEvidence = []) {
+  return externalEvidence
+    .filter((item) => item.evidenceType === "gptWebAssistedSummary")
+    .map((item) => ({
+      evidenceId: item.evidenceId,
+      confidence: item.confidence,
+      hasSource: Boolean(item.sourceUrl || item.sourceDescription),
+      manualConfirmed: item.manualConfirmed,
+      note: item.sourceUrl || item.sourceDescription
+        ? "GPT web-assisted summary has a recorded source but still requires manual confirmation."
+        : "GPT web-assisted summary has no recorded source and must remain low-confidence operator research note."
+    }));
+}
+
+function buildSourceReliabilityWarnings(externalEvidence = []) {
+  return externalEvidence
+    .filter((item) => item.sourceReliability === "low" || item.confidence === "low")
+    .map((item) => ({
+      evidenceId: item.evidenceId,
+      evidenceType: item.evidenceType,
+      sourceReliability: item.sourceReliability,
+      confidence: item.confidence,
+      warning: "Low reliability or low confidence evidence cannot fill hard blockers."
+    }));
+}
+
+function buildMissingEvidenceLimitations(evidenceSummary = {}) {
+  const limitations = [];
+  if ((evidenceSummary.heatSignalEvidenceCount ?? 0) === 0) {
+    limitations.push({ code: "missing_external_heat_evidence", explanation: "No structured external heat evidence is available." });
+  }
+  if ((evidenceSummary.sameNameAudioEvidenceCount ?? 0) === 0) {
+    limitations.push({ code: "missing_same_name_audio_evidence", explanation: "No structured same-name audio evidence is available." });
+  }
+  if ((evidenceSummary.adaptationEvidenceCount ?? 0) === 0) {
+    limitations.push({ code: "missing_adaptation_evidence", explanation: "No structured adaptation evidence is available." });
+  }
+  return limitations;
+}
+
+function buildManualConfirmationWarnings(externalEvidence = []) {
+  return externalEvidence
+    .filter((item) => !item.manualConfirmed)
+    .map((item) => ({
+      evidenceId: item.evidenceId,
+      evidenceType: item.evidenceType,
+      warning: "Manual confirmation is required before this evidence can affect hard blockers."
+    }));
+}
+
 function buildRiskFlags(fields, readiness, authorRanking) {
   const flags = [];
   if ((readiness.warningCodes ?? []).length > 0) {
@@ -210,7 +286,7 @@ function buildRiskFlags(fields, readiness, authorRanking) {
   return flags;
 }
 
-function buildLimitationNotes(forecast, comparableWorks) {
+function buildLimitationNotes(forecast, comparableWorks, evidenceSummary = {}) {
   const notes = [
     "Fixture-only rating explanation; not for formal decision.",
     "Rating is not a development recommendation.",
@@ -222,10 +298,16 @@ function buildLimitationNotes(forecast, comparableWorks) {
   if ((comparableWorks.excluded ?? []).some((item) => item.excludedReasonCode === "pure_buyout_historical_value_only")) {
     notes.push("Pure buyout comparables are separated from direct sales-curve comparison.");
   }
+  if ((evidenceSummary.lowConfidenceEvidenceCount ?? 0) > 0) {
+    notes.push("Low-confidence external evidence is not used to fill hard blockers.");
+  }
+  if ((evidenceSummary.gptWebAssistedSummaryCount ?? 0) > 0) {
+    notes.push("GPT web-assisted summaries require cited sources and manual confirmation before influencing forecast or rating.");
+  }
   return [...new Set(notes)];
 }
 
-function buildUncertaintyNotes(readiness, authorRanking) {
+function buildUncertaintyNotes(readiness, authorRanking, evidenceSummary = {}) {
   const notes = [];
   if ((readiness.warningCodes ?? []).length > 0) {
     notes.push(`Readiness warnings remain: ${(readiness.warningCodes ?? []).join(", ")}`);
@@ -233,10 +315,13 @@ function buildUncertaintyNotes(readiness, authorRanking) {
   if (!authorRanking.enabled) {
     notes.push(`Author ranking disabled: ${authorRanking.disabledReason ?? "unknown"}`);
   }
+  if ((evidenceSummary.manualConfirmedEvidenceCount ?? 0) === 0) {
+    notes.push("No manual-confirmed external evidence is available.");
+  }
   return notes;
 }
 
-function buildManualReviewNotes(readiness, fields) {
+function buildManualReviewNotes(readiness, fields, externalEvidence = []) {
   const notes = [];
   if ((readiness.warningCodes ?? []).includes("classification_requires_user_confirmation")) {
     notes.push("Classification candidate still requires user confirmation.");
@@ -244,7 +329,20 @@ function buildManualReviewNotes(readiness, fields) {
   if (fields.sameNameAudioStatus === "unknown") {
     notes.push("Same-name audio status is unknown after check and should be reviewed.");
   }
+  if (externalEvidence.some((item) => !item.manualConfirmed)) {
+    notes.push("Some external evidence is not manually confirmed and cannot fill hard blockers.");
+  }
   return notes;
+}
+
+function influenceDirection(item) {
+  if (!item.manualConfirmed || item.confidence === "low") return "limitation";
+  if (["originalPlatformStats", "rankingSignal", "searchHeatSignal", "socialHeatSignal", "reviewReputationEvidence"].includes(item.evidenceType)) {
+    return "support";
+  }
+  if (item.evidenceType === "sameNameAudioEvidence") return "risk_or_clearance";
+  if (item.evidenceType === "adaptationEvidence") return "support";
+  return "context";
 }
 
 function buildExplanationText(rating, ratingBasis, supportFactors, limitingFactors) {

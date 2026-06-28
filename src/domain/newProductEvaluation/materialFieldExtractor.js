@@ -60,7 +60,12 @@ const RAW_PAYLOAD_KEYS = Object.freeze([
   "fileBytes",
   "document",
   "upload",
-  "privateFile"
+  "privateFile",
+  "fullText",
+  "webpageFullText",
+  "pageHtml",
+  "browserDump",
+  "searchResultHtml"
 ]);
 
 export function assertNoRawMaterialPayload(payload = {}) {

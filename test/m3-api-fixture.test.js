@@ -72,9 +72,15 @@ test("M3 parse and evaluate APIs process only synthetic fixture ids", async () =
   assert.ok(evaluateResponse.body.evaluation.forecast.channelForecasts[0].channelContributionBreakdown.length > 0);
   assert.equal(evaluateResponse.body.evaluation.candidateRating.ratingType, "new_product_candidate_rating");
   assert.ok(evaluateResponse.body.evaluation.candidateRating.ratingExplanation);
+  assert.ok(Array.isArray(evaluateResponse.body.evaluation.researchQuestions));
+  assert.ok(Array.isArray(evaluateResponse.body.evaluation.externalEvidence));
+  assert.equal(evaluateResponse.body.evaluation.evidenceSummary.nonFormal, true);
   assert.equal(evaluateResponse.body.evaluation.comparableWorks.fixtureOnly, true);
   assert.equal(evaluateResponse.body.evaluation.authorRanking.nonFormal, true);
   assert.equal(evaluateResponse.body.evaluation.guardrails.databaseWritten, false);
+  assert.equal(evaluateResponse.body.evaluation.guardrails.externalSearchCalled, false);
+  assert.equal(evaluateResponse.body.evaluation.guardrails.chatGptWebCalled, false);
+  assert.equal(evaluateResponse.body.evaluation.guardrails.browserAutomationCalled, false);
 });
 
 test("M3 comparable and author-ranking APIs are fixture-only and non-formal", async () => {
@@ -89,6 +95,23 @@ test("M3 comparable and author-ranking APIs are fixture-only and non-formal", as
   assert.equal(authorRankingResponse.body.authorRanking.nonFormal, true);
   assert.equal(authorRankingResponse.body.authorRanking.fixtureOnly, true);
   assert.equal(authorRankingResponse.body.authorRanking.enabled, true);
+});
+
+test("M3 external evidence and research-question APIs are fixture-only and non-formal", async () => {
+  const evidenceResponse = await request("/api/m3/new-product/material-fixtures/SYN-M3-MATERIAL-002/external-evidence");
+  const researchResponse = await request("/api/m3/new-product/material-fixtures/SYN-M3-MATERIAL-002/research-questions");
+
+  assert.equal(evidenceResponse.statusCode, 200);
+  assert.equal(evidenceResponse.body.nonFormal, true);
+  assert.equal(evidenceResponse.body.fixtureOnly, true);
+  assert.equal(evidenceResponse.body.notForFormalDecision, true);
+  assert.equal(evidenceResponse.body.noRealSearchCalled, true);
+  assert.equal(evidenceResponse.body.noChatGptWebCalled, true);
+  assert.ok(evidenceResponse.body.externalEvidence.some((item) => item.evidenceType === "gptWebAssistedSummary"));
+  assert.equal(researchResponse.statusCode, 200);
+  assert.equal(researchResponse.body.nonFormal, true);
+  assert.equal(researchResponse.body.fixtureOnly, true);
+  assert.ok(researchResponse.body.researchQuestions.some((item) => item.missingFieldOrRisk === "missing_adaptation_signals"));
 });
 
 test("M3 parse API rejects raw material payload", async () => {
@@ -125,4 +148,6 @@ test("M3 fixture API output does not expose forbidden private markers", async ()
   assert.equal(text.includes("developmentRecommendation"), false);
   assert.equal(text.includes("resourceInvestmentLevel"), false);
   assert.equal(text.includes("recommendedDevelopmentDecision"), false);
+  assert.equal(text.includes("webpageFullText"), false);
+  assert.equal(text.includes("pageHtml"), false);
 });
