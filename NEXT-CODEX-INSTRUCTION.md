@@ -101,3 +101,17 @@ npm test
 ```
 
 任何失败不得伪造通过。若验证失败，必须说明失败命令、失败摘要和是否已有 staged 文件。
+# M3 Private Completion Pack Recovery Reminder
+
+On a new machine, the M3 private completion pack is intentionally absent because `data/private-output/**` is not committed. Regenerate it locally with:
+
+```bash
+git pull origin main
+npm ci
+npm run check:no-real-data
+npm run m3:private-completion-bootstrap
+```
+
+Before running the command, the user must place 3 to 5 private topic materials in `data/private-input/m3-material-dry-run/`. If those files are missing, the command should stop with guidance and should not invent private material or field values. If the files are present, it regenerates the JSON and Markdown completion packs under `data/private-output/m3-dry-run/`.
+
+Do not commit private input/output or generated completion packs. Do not enter M3 formal execution. Applying a filled pack is a separate user-authorized step.

@@ -141,3 +141,24 @@ CI 显式将 `M1_APP_ENV` 设为 `ci`，并将 `M1_DATABASE_URL`、`M1_DATABASE_
 - 具体数据库表、索引、框架和接口实现由后续技术设计决定。
 - 评级门槛、生命周期阈值、预测算法、性能最终数值等继续保持待真实数据验证。
 - v0.1 原文和 Codex 审阅报告保存在 `docs/archive/v0.1/`，仅用于历史追溯，不作为当前权威规则。
+# M3 Private Completion Pack Recovery
+
+After a new machine runs `git pull origin main`, the M3 private field completion pack is not restored from Git because it lives under `data/private-output/**` and must remain private.
+
+Use this local recovery flow:
+
+```bash
+git pull origin main
+npm ci
+npm run check:no-real-data
+npm run m3:private-completion-bootstrap
+```
+
+Place 3 to 5 private topic materials in `data/private-input/m3-material-dry-run/` before running the bootstrap command. Supported primary formats are `.doc`, `.docx`, `.pdf`, `.pptx`, `.jpg`, `.jpeg`, `.png`, `.txt`, `.md`, and `.xlsx`.
+
+If no private input materials are present, the command stops with guidance and does not fabricate a completion pack. If private input materials are present, it runs the local private dry-run and regenerates:
+
+- `data/private-output/m3-dry-run/M3-private-material-field-completion-pack-v0.1.json`
+- `data/private-output/m3-dry-run/M3-private-material-field-completion-pack-v0.1.md`
+
+The private completion pack is not committed. After the user fills it, apply requires separate authorization and can be run with `npm run m3:field-completion-apply`. This remains local private execution, not M3 formal execution.

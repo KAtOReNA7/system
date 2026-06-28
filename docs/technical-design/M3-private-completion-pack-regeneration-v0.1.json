@@ -1,0 +1,56 @@
+{
+  "document": "M3-private-completion-pack-regeneration-v0.1",
+  "generatedAt": "2026-06-28",
+  "scope": "local_private_completion_pack_regeneration",
+  "formalExecution": false,
+  "command": "npm run m3:private-completion-bootstrap",
+  "newMachineRecovery": [
+    "git pull origin main",
+    "npm ci",
+    "npm run check:no-real-data",
+    "npm run m3:private-completion-bootstrap"
+  ],
+  "privateInputDir": "data/private-input/m3-material-dry-run/",
+  "privateOutputDir": "data/private-output/m3-dry-run/",
+  "supportedPrimaryExtensions": [
+    ".doc",
+    ".docx",
+    ".pdf",
+    ".pptx",
+    ".jpg",
+    ".jpeg",
+    ".png",
+    ".txt",
+    ".md",
+    ".xlsx"
+  ],
+  "materialGroupRequirement": {
+    "min": 3,
+    "max": 5
+  },
+  "outputs": [
+    "data/private-output/m3-dry-run/M3-private-material-field-completion-pack-v0.1.json",
+    "data/private-output/m3-dry-run/M3-private-material-field-completion-pack-v0.1.md"
+  ],
+  "overwritePolicy": {
+    "defaultOverwrite": false,
+    "forceFlag": "--force"
+  },
+  "applyRequiresSeparateAuthorization": true,
+  "guardrails": {
+    "privateInputCommitted": false,
+    "privateOutputCommitted": false,
+    "rawMaterialCommitted": false,
+    "realTitlesAuthorsOrMaterialTextCommitted": false,
+    "databaseConnected": false,
+    "migrationWritten": false,
+    "ocrCalled": false,
+    "realSearchCalled": false,
+    "chatGptWebCalled": false,
+    "chromePluginCalled": false,
+    "formalExecution": false,
+    "gitAddDotAllowed": false,
+    "stashTouched": false,
+    "forcePushAllowed": false
+  }
+}

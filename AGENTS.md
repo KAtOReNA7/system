@@ -94,3 +94,17 @@ npm test
 ```
 
 任何失败不得伪造通过，必须如实报告失败命令、失败原因和未验证项。
+# M3 Private Completion Pack Recovery Rule
+
+M3 private field completion packs are private local output under `data/private-output/**` and must not be committed. To restore the workflow after cloning or pulling on a new machine, use:
+
+```bash
+git pull origin main
+npm ci
+npm run check:no-real-data
+npm run m3:private-completion-bootstrap
+```
+
+The bootstrap reads only `data/private-input/m3-material-dry-run/` and writes only `data/private-output/m3-dry-run/`. It requires 3 to 5 private materials. If the private input directory is missing or incomplete, it must stop and tell the user to place materials there; it must not fabricate private material or completion fields.
+
+Do not commit private input, private output, completion packs, original Word/PDF/PPT/image/spreadsheet materials, true titles, authors, material text, webpage full text, database credentials, `.env`, `.pgpass`, dumps or temporary database files. Applying a filled pack with `npm run m3:field-completion-apply` requires separate user authorization and is not M3 formal execution.
