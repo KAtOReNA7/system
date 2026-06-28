@@ -1,0 +1,101 @@
+{
+  "document": "M3-private-material-content-extraction-provider-v0.1",
+  "generatedAt": "2026-06-28",
+  "scope": "local_private_material_dry_run",
+  "formalExecution": false,
+  "formatStrategy": {
+    ".txt": {
+      "parseStatus": "parsed_from_text",
+      "strategy": "local_text_read"
+    },
+    ".md": {
+      "parseStatus": "parsed_from_text",
+      "strategy": "local_text_read"
+    },
+    ".docx": {
+      "parseStatusOnSuccess": "parsed_from_docx_text",
+      "parseStatusOnFailure": "accepted_docx_metadata_only",
+      "strategy": "lightweight_local_word_document_xml_extraction"
+    },
+    ".xlsx": {
+      "parseStatus": "accepted_spreadsheet_metadata_only",
+      "strategy": "metadata_only_until_safe_local_parser_is_added"
+    },
+    ".pdf": {
+      "parseStatus": "accepted_pdf_metadata_only",
+      "strategy": "metadata_only_without_ocr"
+    },
+    ".doc": {
+      "parseStatus": "accepted_legacy_doc_metadata_only",
+      "strategy": "metadata_only_legacy_binary_word",
+      "legacyDocExtractionRequired": true
+    },
+    ".jpg": {
+      "parseStatus": "accepted_image_metadata_only",
+      "strategy": "metadata_only_without_ocr",
+      "visualExtractionRequired": true
+    },
+    ".jpeg": {
+      "parseStatus": "accepted_image_metadata_only",
+      "strategy": "metadata_only_without_ocr",
+      "visualExtractionRequired": true
+    },
+    ".png": {
+      "parseStatus": "accepted_image_metadata_only",
+      "strategy": "metadata_only_without_ocr",
+      "visualExtractionRequired": true
+    },
+    ".pptx": {
+      "parseStatus": "accepted_pptx_metadata_only",
+      "strategy": "metadata_only"
+    },
+    "companionText": {
+      "parseStatus": "parsed_from_companion_text_enhanced",
+      "strategy": "same_stem_txt_or_md_enhancement"
+    }
+  },
+  "outputFields": [
+    "extractionStatus",
+    "extractedTextAvailable",
+    "extractedTextLengthBucket",
+    "extractedFieldCandidates",
+    "extractionWarnings",
+    "extractionLimitations",
+    "manualExtractionRequired",
+    "visualExtractionRequired",
+    "legacyDocExtractionRequired"
+  ],
+  "ratingBoundary": {
+    "readinessBlockedRating": null,
+    "ratingStatus": "not_generated_due_to_readiness_blocked",
+    "candidateRatingGenerated": false,
+    "eIsNotPlaceholder": true
+  },
+  "safety": {
+    "printsRawText": false,
+    "writesPublicRawText": false,
+    "commitsPrivateInput": false,
+    "commitsPrivateOutput": false,
+    "ocrCalled": false,
+    "realSearchCalled": false,
+    "chatGptWebCalled": false,
+    "chromePluginCalled": false,
+    "browserAutomationCalled": false,
+    "databaseConnected": false,
+    "migrationWritten": false,
+    "formalExecution": false
+  },
+  "validation": {
+    "tests": [
+      "test/m3-private-material-content-extractor.test.js",
+      "test/m3-private-dry-run-runner.test.js"
+    ],
+    "requiredCommands": [
+      "npm run check:no-real-data",
+      "npm run lint",
+      "npm run build",
+      "npm test",
+      "npm run smoke"
+    ]
+  }
+}

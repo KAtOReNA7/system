@@ -1,4 +1,4 @@
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -10,15 +10,11 @@ import {
   collectInputInventory,
   groupPrimaryMaterials
 } from "./check_m3_private_dry_run_safety.js";
+import { extractPrivateMaterialContent } from "./private_material_content_extractor.js";
 
 export const PRIVATE_RESULT_JSON = "M3-private-material-dry-run-result-v0.1.json";
 export const PRIVATE_RESULT_MARKDOWN = "M3-private-material-dry-run-result-v0.1.md";
 
-const TEXT_EXTENSIONS = new Set([".txt", ".md"]);
-const LEGACY_DOC_EXTENSIONS = new Set([".doc"]);
-const IMAGE_EXTENSIONS = new Set([".jpg", ".jpeg", ".png"]);
-const DOCUMENT_METADATA_EXTENSIONS = new Set([".docx", ".pdf", ".pptx"]);
-const SPREADSHEET_EXTENSIONS = new Set([".xlsx"]);
 const SCRIPT_PATH = fileURLToPath(import.meta.url);
 const IS_CLI = path.resolve(process.argv[1] ?? "") === path.resolve(SCRIPT_PATH);
 
@@ -86,7 +82,7 @@ export function runM3PrivateMaterialDryRun(options = {}) {
   const materialResults = materialGroups.map((item) => evaluatePrivateMaterialGroup(item));
   const result = {
     ok: true,
-    version: "m3-private-material-dry-run-v0.2",
+    version: "m3-private-material-dry-run-v0.3",
     generatedAt: new Date().toISOString(),
     inputDir: safety.inputDir,
     outputDir: safety.outputDir,
@@ -129,36 +125,17 @@ export function runM3PrivateMaterialDryRun(options = {}) {
 }
 
 export function evaluatePrivateMaterialGroup(group) {
-  const companionText = readCompanionText(group);
-  if (TEXT_EXTENSIONS.has(group.extension)) {
-    const text = readFileSync(group.absolutePath, "utf8");
-    return evaluateTextMaterial(group, text, "parsed_from_text");
+  const extraction = extractPrivateMaterialContent(group);
+  if (extraction.extractedTextAvailable) {
+    return evaluateTextMaterial(group, extraction);
   }
-
-  if (companionText !== null) {
-    return evaluateTextMaterial(group, companionText, "parsed_from_companion_text_enhanced");
-  }
-
-  if (LEGACY_DOC_EXTENSIONS.has(group.extension)) {
-    return summarizeMetadataOnly(group, "accepted_legacy_doc_metadata_only");
-  }
-  if (IMAGE_EXTENSIONS.has(group.extension)) {
-    return summarizeMetadataOnly(group, "accepted_image_metadata_only");
-  }
-  if (DOCUMENT_METADATA_EXTENSIONS.has(group.extension)) {
-    return summarizeMetadataOnly(group, "accepted_document_metadata_only");
-  }
-  if (SPREADSHEET_EXTENSIONS.has(group.extension)) {
-    return summarizeMetadataOnly(group, "accepted_spreadsheet_metadata_only");
-  }
-
-  return summarizeMetadataOnly(group, "unsupported_extension");
+  return summarizeMetadataOnly(group, extraction);
 }
 
 export function extractFieldsFromText(text) {
   const fields = {};
   for (const line of String(text ?? "").split(/\r?\n/)) {
-    const match = line.match(/^\s*([^:：]{1,48})\s*[:：]\s*(.+?)\s*$/);
+    const match = line.match(/^\s*([^:\uFF1A]{1,48})\s*[:\uFF1A]\s*(.+?)\s*$/u);
     if (!match) continue;
     const mappedKey = FIELD_KEY_MAP.get(match[1].trim());
     if (!mappedKey) continue;
@@ -173,6 +150,7 @@ export function buildPublicAggregateSummary(result) {
     materialGroupCount: result.aggregate?.materialGroupCount ?? 0,
     extensionDistribution: result.aggregate?.extensionDistribution ?? {},
     parseStatusDistribution: result.aggregate?.parseStatusDistribution ?? {},
+    extractionStatusDistribution: result.aggregate?.extractionStatusDistribution ?? {},
     readinessDistribution: result.aggregate?.readinessDistribution ?? {},
     forecastStatusDistribution: result.aggregate?.forecastStatusDistribution ?? {},
     ratingGeneratedCount: result.aggregate?.ratingGeneratedCount ?? 0,
@@ -183,23 +161,20 @@ export function buildPublicAggregateSummary(result) {
   };
 }
 
-function evaluateTextMaterial(group, text, parseStatus) {
-  const fields = extractFieldsFromText(text);
+function evaluateTextMaterial(group, extraction) {
+  const fields = extractFieldsFromText(extraction.extractedText);
   const material = buildAnonymousMaterial(group, fields);
   const evaluation = evaluateNewProductMaterial(material, { externalEvidence: [] });
   return summarizeEvaluation({
     group,
-    parseStatus,
+    extraction,
     fields,
     evaluation,
-    manualExtractionRequired: Object.keys(fields).length === 0
+    manualExtractionRequired: extraction.manualExtractionRequired || Object.keys(fields).length === 0
   });
 }
 
-function summarizeMetadataOnly(group, parseStatus) {
-  const manualExtractionRequired = true;
-  const visualExtractionRequired = IMAGE_EXTENSIONS.has(group.extension);
-  const legacyDocExtractionRequired = LEGACY_DOC_EXTENSIONS.has(group.extension);
+function summarizeMetadataOnly(group, extraction) {
   const hardBlockers = [
     "missing_title",
     "missing_author",
@@ -211,18 +186,25 @@ function summarizeMetadataOnly(group, parseStatus) {
     "missing_target_channels",
     "manual_extraction_required"
   ];
-  if (visualExtractionRequired) hardBlockers.push("visual_extraction_required");
-  if (legacyDocExtractionRequired) hardBlockers.push("legacy_doc_extraction_required");
+  if (extraction.visualExtractionRequired) hardBlockers.push("visual_extraction_required");
+  if (extraction.legacyDocExtractionRequired) hardBlockers.push("legacy_doc_extraction_required");
+
   return {
     anonymousMaterialId: group.anonymousMaterialId,
     extension: group.extension,
     inputExtension: group.extension,
-    parseStatus,
+    parseStatus: extraction.parseStatus,
+    extractionStatus: extraction.extractionStatus,
+    extractedTextAvailable: extraction.extractedTextAvailable,
+    extractedTextLengthBucket: extraction.extractedTextLengthBucket,
+    extractedFieldCandidates: extraction.extractedFieldCandidates,
+    extractionWarnings: extraction.extractionWarnings,
+    extractionLimitations: extraction.extractionLimitations,
     acceptedAsPrimaryMaterial: true,
     hasCompanionText: group.hasCompanionText,
-    manualExtractionRequired,
-    visualExtractionRequired,
-    legacyDocExtractionRequired,
+    manualExtractionRequired: extraction.manualExtractionRequired,
+    visualExtractionRequired: extraction.visualExtractionRequired,
+    legacyDocExtractionRequired: extraction.legacyDocExtractionRequired,
     extractedFields: [],
     extractedFieldKeys: [],
     missingFields: hardBlockers.filter((code) => code.startsWith("missing_")),
@@ -246,7 +228,7 @@ function summarizeMetadataOnly(group, parseStatus) {
   };
 }
 
-function summarizeEvaluation({ group, parseStatus, fields, evaluation, manualExtractionRequired }) {
+function summarizeEvaluation({ group, extraction, fields, evaluation, manualExtractionRequired }) {
   const readinessStatus = evaluation.readiness?.readinessStatus ?? "blocked";
   const ratingSummary = readinessStatus === "blocked"
     ? suppressedRatingSummary()
@@ -255,12 +237,18 @@ function summarizeEvaluation({ group, parseStatus, fields, evaluation, manualExt
     anonymousMaterialId: group.anonymousMaterialId,
     extension: group.extension,
     inputExtension: group.extension,
-    parseStatus,
+    parseStatus: extraction.parseStatus,
+    extractionStatus: extraction.extractionStatus,
+    extractedTextAvailable: extraction.extractedTextAvailable,
+    extractedTextLengthBucket: extraction.extractedTextLengthBucket,
+    extractedFieldCandidates: extraction.extractedFieldCandidates,
+    extractionWarnings: extraction.extractionWarnings,
+    extractionLimitations: extraction.extractionLimitations,
     acceptedAsPrimaryMaterial: true,
     hasCompanionText: group.hasCompanionText,
     manualExtractionRequired,
-    visualExtractionRequired: false,
-    legacyDocExtractionRequired: false,
+    visualExtractionRequired: extraction.visualExtractionRequired,
+    legacyDocExtractionRequired: extraction.legacyDocExtractionRequired,
     extractedFields: summarizeExtractedFields(evaluation.parsedMaterial?.extractedFields ?? []),
     extractedFieldKeys: Object.keys(fields).sort(),
     missingFields: evaluation.parsedMaterial?.missingFields ?? [],
@@ -282,12 +270,6 @@ function summarizeEvaluation({ group, parseStatus, fields, evaluation, manualExt
     rawTextPersisted: false,
     notForFormalDecision: true
   };
-}
-
-function readCompanionText(group) {
-  if (!group.hasCompanionText) return null;
-  const companion = group.companionTextFiles[0];
-  return readFileSync(companion.absolutePath, "utf8");
 }
 
 function buildAnonymousMaterial(group, fields) {
@@ -429,6 +411,10 @@ function buildSections(materialResults) {
       "anonymousMaterialId",
       "extension",
       "parseStatus",
+      "extractionStatus",
+      "extractedTextAvailable",
+      "extractedTextLengthBucket",
+      "extractedFieldCandidates",
       "acceptedAsPrimaryMaterial",
       "hasCompanionText",
       "manualExtractionRequired",
@@ -456,11 +442,13 @@ function buildAggregate(materialResults) {
     materialCount: materialResults.length,
     materialGroupCount: materialResults.length,
     extensionDistribution: countBy(materialResults, "extension"),
+    extractionStatusDistribution: countBy(materialResults, "extractionStatus"),
     acceptedPrimaryMaterialCount: materialResults.filter((item) => item.acceptedAsPrimaryMaterial).length,
     acceptedDocCount: materialResults.filter((item) => item.extension === ".doc").length,
-    acceptedImageCount: materialResults.filter((item) => IMAGE_EXTENSIONS.has(item.extension)).length,
+    acceptedImageCount: materialResults.filter((item) => [".jpg", ".jpeg", ".png"].includes(item.extension)).length,
     companionTextCount: materialResults.filter((item) => item.hasCompanionText).length,
     metadataOnlyCount: materialResults.filter((item) => item.parseStatus.includes("metadata_only")).length,
+    extractedTextAvailableCount: materialResults.filter((item) => item.extractedTextAvailable).length,
     manualExtractionRequiredCount: materialResults.filter((item) => item.manualExtractionRequired).length,
     visualExtractionRequiredCount: materialResults.filter((item) => item.visualExtractionRequired).length,
     legacyDocExtractionRequiredCount: materialResults.filter((item) => item.legacyDocExtractionRequired).length,
@@ -493,6 +481,7 @@ function buildPrivateMarkdown(result) {
     `- Material group count: ${result.aggregate.materialGroupCount}`,
     `- Extension distribution: ${JSON.stringify(result.aggregate.extensionDistribution)}`,
     `- Parse status: ${JSON.stringify(result.aggregate.parseStatusDistribution)}`,
+    `- Extraction status: ${JSON.stringify(result.aggregate.extractionStatusDistribution)}`,
     `- Readiness: ${JSON.stringify(result.aggregate.readinessDistribution)}`,
     `- Forecast status: ${JSON.stringify(result.aggregate.forecastStatusDistribution)}`,
     `- Rating status: ${JSON.stringify(result.aggregate.ratingStatusDistribution)}`,
@@ -504,6 +493,9 @@ function buildPrivateMarkdown(result) {
     lines.push(`### ${item.anonymousMaterialId}`);
     lines.push(`- Extension: ${item.extension}`);
     lines.push(`- Parse status: ${item.parseStatus}`);
+    lines.push(`- Extraction status: ${item.extractionStatus}`);
+    lines.push(`- Extracted text available: ${item.extractedTextAvailable}`);
+    lines.push(`- Extracted text length bucket: ${item.extractedTextLengthBucket}`);
     lines.push(`- Accepted as primary material: ${item.acceptedAsPrimaryMaterial}`);
     lines.push(`- Has companion text: ${item.hasCompanionText}`);
     lines.push(`- Manual extraction required: ${item.manualExtractionRequired}`);

@@ -34,7 +34,7 @@ test("M3 private dry-run parses synthetic txt and md without storing raw values"
     assert.equal(existsSync(resultMarkdownPath), true);
     assert.equal(parsed.aggregate.materialGroupCount, 3);
     assert.equal(parsed.aggregate.parseStatusDistribution.parsed_from_text, 2);
-    assert.equal(parsed.aggregate.parseStatusDistribution.accepted_document_metadata_only, 1);
+    assert.equal(parsed.aggregate.parseStatusDistribution.accepted_pdf_metadata_only, 1);
     assert.equal(parsed.guardrails.rawMaterialStored, false);
     assert.equal(resultText.includes("Secret Synthetic Title"), false);
     assert.equal(resultText.includes("Secret Synthetic Author"), false);
@@ -97,6 +97,28 @@ test("M3 private dry-run uses companion text as enhancement without adding a mat
   });
 });
 
+test("M3 private dry-run feeds parsed docx text into field extraction without public raw text", () => {
+  withTempRepo(({ repoRoot, inputDir, outputDir }) => {
+    writeFileSync(path.join(inputDir, "material-a.docx"), makeDocxBuffer(syntheticText("DOCX")));
+    writeFileSync(path.join(inputDir, "material-b.jpg"), "binary-placeholder", "utf8");
+    writeFileSync(path.join(inputDir, "material-c.png"), "binary-placeholder", "utf8");
+
+    const result = runM3PrivateMaterialDryRun({ repoRoot, skipGitChecks: true });
+    const resultJsonText = readFileSync(path.join(outputDir, PRIVATE_RESULT_JSON), "utf8");
+    const parsed = JSON.parse(resultJsonText);
+    const docxResult = parsed.materialResults.find((item) => item.extension === ".docx");
+
+    assert.equal(result.ok, true);
+    assert.equal(result.aggregate.parseStatusDistribution.parsed_from_docx_text, 1);
+    assert.equal(docxResult.extractionStatus, "extracted_from_docx_text");
+    assert.equal(docxResult.extractedTextAvailable, true);
+    assert.ok(docxResult.extractedFieldKeys.includes("title"));
+    assert.ok(docxResult.extractedFieldKeys.includes("author"));
+    assert.equal(resultJsonText.includes("Secret Synthetic Title DOCX"), false);
+    assert.equal(resultJsonText.includes("Secret Synthetic Author DOCX"), false);
+  });
+});
+
 test("M3 private dry-run metadata-only blocked results suppress candidate E rating", () => {
   withTempRepo(({ repoRoot, inputDir, outputDir }) => {
     writeFileSync(path.join(inputDir, "private-one.doc"), "binary-placeholder", "utf8");
@@ -122,6 +144,7 @@ test("M3 private dry-run public aggregate summary stays sanitized", () => {
       materialGroupCount: 3,
       extensionDistribution: { ".doc": 1, ".jpg": 1, ".png": 1 },
       parseStatusDistribution: { accepted_image_metadata_only: 2, accepted_legacy_doc_metadata_only: 1 },
+      extractionStatusDistribution: { metadata_only: 3 },
       readinessDistribution: { blocked: 3 },
       forecastStatusDistribution: { blocked: 3 },
       ratingGeneratedCount: 0,
@@ -134,6 +157,7 @@ test("M3 private dry-run public aggregate summary stays sanitized", () => {
     "materialGroupCount",
     "extensionDistribution",
     "parseStatusDistribution",
+    "extractionStatusDistribution",
     "readinessDistribution",
     "forecastStatusDistribution",
     "ratingGeneratedCount",
@@ -207,4 +231,78 @@ function withTempRepo(callback) {
   } finally {
     rmSync(repoRoot, { recursive: true, force: true });
   }
+}
+
+function makeDocxBuffer(text) {
+  const escaped = String(text)
+    .split(/\r?\n/)
+    .map((line) => `<w:p><w:r><w:t>${escapeXml(line)}</w:t></w:r></w:p>`)
+    .join("");
+  const documentXml = `<?xml version="1.0" encoding="UTF-8"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>${escaped}</w:body></w:document>`;
+  return makeStoredZip([{ name: "word/document.xml", data: Buffer.from(documentXml, "utf8") }]);
+}
+
+function makeStoredZip(entries) {
+  const localParts = [];
+  const centralParts = [];
+  let offset = 0;
+  for (const entry of entries) {
+    const name = Buffer.from(entry.name, "utf8");
+    const data = Buffer.isBuffer(entry.data) ? entry.data : Buffer.from(entry.data);
+    const local = Buffer.alloc(30 + name.length);
+    local.writeUInt32LE(0x04034b50, 0);
+    local.writeUInt16LE(20, 4);
+    local.writeUInt16LE(0, 6);
+    local.writeUInt16LE(0, 8);
+    local.writeUInt32LE(0, 10);
+    local.writeUInt32LE(0, 14);
+    local.writeUInt32LE(data.length, 18);
+    local.writeUInt32LE(data.length, 22);
+    local.writeUInt16LE(name.length, 26);
+    local.writeUInt16LE(0, 28);
+    name.copy(local, 30);
+    localParts.push(local, data);
+
+    const central = Buffer.alloc(46 + name.length);
+    central.writeUInt32LE(0x02014b50, 0);
+    central.writeUInt16LE(20, 4);
+    central.writeUInt16LE(20, 6);
+    central.writeUInt16LE(0, 8);
+    central.writeUInt16LE(0, 10);
+    central.writeUInt32LE(0, 12);
+    central.writeUInt32LE(0, 16);
+    central.writeUInt32LE(data.length, 20);
+    central.writeUInt32LE(data.length, 24);
+    central.writeUInt16LE(name.length, 28);
+    central.writeUInt16LE(0, 30);
+    central.writeUInt16LE(0, 32);
+    central.writeUInt16LE(0, 34);
+    central.writeUInt16LE(0, 36);
+    central.writeUInt32LE(0, 38);
+    central.writeUInt32LE(offset, 42);
+    name.copy(central, 46);
+    centralParts.push(central);
+    offset += local.length + data.length;
+  }
+
+  const centralDirectoryOffset = offset;
+  const centralDirectory = Buffer.concat(centralParts);
+  const eocd = Buffer.alloc(22);
+  eocd.writeUInt32LE(0x06054b50, 0);
+  eocd.writeUInt16LE(0, 4);
+  eocd.writeUInt16LE(0, 6);
+  eocd.writeUInt16LE(entries.length, 8);
+  eocd.writeUInt16LE(entries.length, 10);
+  eocd.writeUInt32LE(centralDirectory.length, 12);
+  eocd.writeUInt32LE(centralDirectoryOffset, 16);
+  eocd.writeUInt16LE(0, 20);
+  return Buffer.concat([...localParts, centralDirectory, eocd]);
+}
+
+function escapeXml(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
 }
