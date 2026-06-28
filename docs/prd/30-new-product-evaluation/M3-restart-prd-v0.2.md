@@ -2,55 +2,80 @@
 
 生成日期：2026-06-28
 
-状态：基于用户 Q1-Q16 答复修订。本 PRD 只定义 M3 重启方向和 M3-1 输入边界，不代表 M3 formal execution。
+状态：当前权威 PRD。本文基于用户 Q1-Q16 答复和 M3-1 acceptance audit 清理生成，直接替换 v0.1 中与用户答复冲突的旧硬阻断表和旧输出口径。v0.1 仅保留为历史记录，不再作为最高优先级规则。
 
 ## 1. M3 定位
 
-M3 的目标是新作品选题评估。当前应优先服务运营现实工作流：绝大多数新品评估只有选题物料，标准化选题表只是补充入口。
+M3 面向新品选题评估。现实运营中 90% 以上新品评估只有选题物料，因此 M3 的第一入口是 material-first：从 Word/PDF/PPT/物料表等本地 private 物料中提取候选字段，再由用户确认关键判断。
 
-M3 不替代人工选题决策，不输出“是否建议开发”，不输出资源投入等级。M3 的输出应是可解释的评估要素、渠道级收入预测、候选评级、风险和对标依据。
+结构化选题表只作为 fallback，用于少数仅有书名、作者或少量字段、没有完整物料的小众选题。
 
-## 2. 输入优先级
+M3 当前只允许本地非正式候选开发，不代表 formal execution、正式发布、正式审批或生产任务执行。
 
-| 优先级 | 输入形态 | 用途 |
-|---|---|---|
-| P0 | Word/PDF/PPT/物料表等 private 选题物料 | M3-1 主入口，解析候选字段和部分明确字段 |
-| P1 | 人工补充字段 | 补齐核心阻断字段、确认分类和版权期 |
-| P2 | 结构化选题表 | 少量只有书名、作者、缺少完整物料的小众选题补充入口 |
+## 2. 输入范围
 
-## 3. 来源枚举
+允许输入形态：
 
-`source` 只保留两类：
+- 本地 private 选题物料，作为 M3-1 主入口；
+- 人工补充字段，用于补齐 readiness hard blockers；
+- 结构化选题表 fallback；
+- 后续经用户授权的外部热度和对标信息。
 
-- 出版物；
-- 原创网文。
+当前公开仓库只允许保存规则、fixture、脱敏报告和测试，不保存 raw material、原文片段、private Excel/CSV/JSON、Word/PDF/PPT 原文件或真实作品明细。
 
-当前不设置“其他”来源。
+## 3. Source 枚举
 
-## 4. 核心阻断字段
+`source` 只允许：
 
-M3 不应因为所有字段缺失都阻断 numeric forecast。只在核心字段缺失时阻断：
+- `publication`：出版物；
+- `web_original`：原创网文。
 
-| 核心字段组 | 示例字段 | 缺失处理 |
-|---|---|---|
-| 身份 | 书名、作者、来源 | 阻断 numeric forecast |
-| 分类 | 完整分类或可确认分类候选 | 阻断 numeric forecast |
-| 热度 | 阅读、收藏、评分、评论、榜单、搜索、社媒、平台热度之一或组合 | 阻断 numeric forecast |
-| 版权期 | 授权/可开发窗口、版权期限范围 | 阻断 numeric forecast |
+不保留 `other` 来源。任何其他值均阻断 numeric forecast。
 
-非核心字段缺失时，应输出风险或解释限制，不应自动阻断 numeric forecast。
+## 4. 最终 readiness hard blockers
 
-## 5. 分类规则
+只有下列字段或条件缺失时阻断 numeric forecast：
 
-系统可以从物料中抽取分类候选，但分类不能自动确认。分类必须进入用户确认流程，确认后才可作为评估输入。
+| hard blocker | 规则 |
+|---|---|
+| `title` | 必须存在 |
+| `author` | 必须存在 |
+| `source` | 必须存在且只能是 `publication` / `web_original` |
+| `classificationCandidate` 或 `confirmedClassification` | 至少一个存在；系统候选不能自动等同最终确认 |
+| `wordCount` 或 `audioVolumeEstimate` | 二者至少一个存在 |
+| usable heat signal | 至少一个可用热度信号存在 |
+| `copyrightTermRange` | 必须存在 |
+| `targetChannels` | 至少一个目标渠道 |
+| `sameNameAudioStatusCheckStatus` | 必须已核查同名有声状态 |
 
-## 6. 同名有声状态
+## 5. Source-specific 规则
 
-同名有声状态只判断是否已有同名有声，不拆分已上线、制作中、授权中等更细状态。
+- `publication` 缺少 `completionStatus` 时，可按来源默认 `completed`，但必须输出 warning，说明这是 source default。
+- `web_original` 缺少 `completionStatus` 时，必须 blocked 或进入 pending confirmation，不得直接生成 numeric forecast。
+- `sameNameAudioStatus` 只允许 `has` / `none` / `unknown`。
+- 如果完全没有核查同名有声状态，必须 blocked。
+- 如果已核查但结果为 `unknown`，只输出 warning，不 blocked。
 
-## 7. 外部热度
+## 6. Warning 字段
 
-外部热度允许包括：
+下列字段缺失或不确定时只输出 warning、limitation 或 risk，不直接阻断 numeric forecast：
+
+- `synopsis`
+- `commentCount`
+- `adaptationSignals`
+- `operatorRecommendationReason`
+- `operatorComparators`
+- `materialSource`
+- `materialUpdatedAt`
+- `inputConfirmedBy`
+- `completionStatus` for `publication` if defaulted
+- `sameNameAudioStatus = unknown` after checked
+
+分类候选仍需用户确认。当前 M3-1 fixture/prototype 可在有 `classificationCandidate` 时继续生成本地非正式候选结果，但必须保留人工确认提示。
+
+## 7. 热度信号
+
+至少一个可用热度信号即可满足 hard blocker。允许来源包括：
 
 - 阅读；
 - 收藏；
@@ -59,69 +84,68 @@ M3 不应因为所有字段缺失都阻断 numeric forecast。只在核心字段
 - 榜单；
 - 搜索；
 - 社媒；
-- 平台热度。
+- 平台热度；
+- 其他可追溯外部热度摘要。
 
-具体平台和热度计算方式后续由用户在 PRD 或 M4 校准案例中补充。
+具体外部平台口径和权重后续由 PRD 或 M4 校准案例补充。
 
 ## 8. 改编信号
 
-影视、动漫、漫画、游戏等改编信号是关键信息，应影响新品候选评级和风险解释。
+影视、动漫、漫画、游戏等改编信号是关键信息，应影响新品候选评级和风险解释。缺失改编信号不阻断 numeric forecast。
 
 ## 9. 预测输出
 
-M3 不以预测区间作为主输出。主输出应是高概率命中的点值预测。
+M3 不输出预测区间，不输出 high/base/low，不输出 optimistic/pessimistic。
 
-必须支持：
+必须输出：
 
-- 渠道级点值预测；
-- 各渠道求和后的总点值预测；
-- 五年累计预测；
-- 首年预测；
-- 第 1-5 年拆分。
+- channel-level point forecast；
+- `totalForecast = sum(channelForecasts)`；
+- first-year forecast；
+- year 1-5 breakdown；
+- five-year total。
 
-后续也需要评估 M2 老品评估是否从区间优先切换为点值优先。
+人工预测的业务口径是所有渠道收入预测求和，系统也必须保持这一结构。
 
-## 10. 评级
+## 10. 评级与禁止输出
 
-沿用 S+/S/A/B/C/D/E 评级体系，但必须标记为“新品候选评级”。该评级不能被表述为最终正式发布审批结果。
+M3 沿用 S+/S/A/B/C/D/E，但必须标记为 `new_product_candidate_rating`。
 
-## 11. 对标
+禁止输出：
 
-运营指定对标与系统候选对标并列展示。运营指定对标不应无条件覆盖系统对标，系统对标也不应覆盖运营经验。
+- “是否建议开发”；
+- 资源投入等级；
+- formal release conclusion；
+- formal task/export/write API。
 
-## 12. 物料解析确认边界
+## 11. 对标展示
 
-物料内容不完全一致，因此解析不要求所有字段都存在。
+运营指定对标和系统候选对标并列展示，互不覆盖。运营经验不能被系统候选自动覆盖，系统候选也不能被运营指定对标无条件替代。
 
-可自动确认的字段应仅限低风险、明确出现、可追溯来源的事实字段，例如标题、作者、来源、字数、完结状态等。分类、版权期、关键热度解释、对标、预测输入判断等字段必须保留人工确认或复核。
+## 12. M3-1 验收标准
 
-## 13. M3 启动边界
+M3-1 必须满足：
 
-M2 当前接近完成但不是 formal complete。M3 可以启动本地非正式候选开发和物料解析/评估原型，但仍禁止：
+- material-first 是主入口；
+- structured topic table 只是 fallback；
+- source 仅允许 `publication` / `web_original`；
+- 支持 variable material fields；
+- 不保存 raw material；
+- readiness hard blockers 与本文一致；
+- channel forecast 按渠道生成；
+- totalForecast 为渠道求和；
+- 不输出 forecast range；
+- 不输出开发建议；
+- 不输出资源投入等级；
+- fixture-only / nonFormal；
+- 不连接数据库、不写 migration、不提交 private data。
 
-- M3 formal execution；
-- 正式发布；
-- 正式 task/export/write API；
-- 将本地候选结果表述为正式审批结果。
+## 13. 当前不做
 
-## 14. 当前不做
-
-- 不输出“是否建议开发”的直接结论。
-- 不输出资源投入等级。
-- 不连接远端生产、共享、staging-like 或未授权数据库。
-- 不提交 private 选题物料、Word、PDF、PPT、Excel、CSV、JSON。
-- 不提交真实作品名、作者名、渠道名、原始账单行、原始台账行或完整作品明细。
-
-## 15. M3-1 验收标准
-
-M3-1 应完成：
-
-- private 物料输入边界；
-- 物料解析字段候选规则；
-- 可自动确认字段白名单；
-- 必须人工确认字段清单；
-- 核心 readiness gate；
-- 渠道级点值预测输入需求；
-- 新品候选评级输入需求；
-- 结构化选题表补充入口说明；
-- 不输出开发建议和资源等级的安全检查。
+- 不进入 M3-2；
+- 不进入 M3 formal execution；
+- 不连接数据库；
+- 不写 migration；
+- 不读取或提交 private 物料；
+- 不生成正式发布审批结果；
+- 不新增正式 task/export/write API。

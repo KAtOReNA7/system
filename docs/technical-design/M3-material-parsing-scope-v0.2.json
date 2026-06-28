@@ -1,0 +1,81 @@
+{
+  "schema": "m3.materialParsingScope.v0.2",
+  "generatedAt": "2026-06-28",
+  "authority": "current_authoritative",
+  "supersedes": "docs/technical-design/M3-material-parsing-scope-v0.1.json",
+  "stage": "M3-1",
+  "primaryInputMode": "material_first",
+  "structuredTopicTableRole": "fallback_only",
+  "rawMaterialStored": false,
+  "privateMaterialReadInRepositoryWorkflow": false,
+  "parsedOutputShape": [
+    "extractedFields",
+    "missingFields",
+    "invalidFields",
+    "confidence",
+    "sourceSpanSummary",
+    "manualFillRequired",
+    "defaultedFields",
+    "normalizedFields"
+  ],
+  "candidateFields": [
+    "title",
+    "author",
+    "source",
+    "classificationCandidate",
+    "confirmedClassification",
+    "synopsis",
+    "wordCount",
+    "audioVolumeEstimate",
+    "completionStatus",
+    "reads",
+    "collections",
+    "ratingScore",
+    "commentCount",
+    "rankings",
+    "searchHeat",
+    "socialHeat",
+    "platformHeat",
+    "sameNameAudioStatus",
+    "sameNameAudioStatusCheckStatus",
+    "adaptationSignals",
+    "externalHeat",
+    "targetChannels",
+    "copyrightTermRange",
+    "operatorRecommendationReason",
+    "operatorComparators",
+    "materialSource",
+    "materialUpdatedAt",
+    "inputConfirmedBy"
+  ],
+  "defaultRules": {
+    "publicationMissingCompletionStatus": "default_completed_with_warning",
+    "webOriginalMissingCompletionStatus": "blocked_or_pending_confirmation",
+    "sameNameAudioCheckedMissingStatus": "default_unknown_with_warning",
+    "sameNameAudioUnchecked": "blocked"
+  },
+  "manualConfirmationRequiredFor": [
+    "classification",
+    "copyrightTermRange",
+    "keyHeatInterpretation",
+    "comparators",
+    "forecastInputJudgment"
+  ],
+  "forbiddenPayloadKeys": [
+    "rawMaterial",
+    "rawText",
+    "rawContent",
+    "filePath",
+    "fileBytes",
+    "document",
+    "upload",
+    "privateFile"
+  ],
+  "safety": {
+    "databaseConnected": false,
+    "migrationWritten": false,
+    "m3FormalExecutionEntered": false,
+    "privateMaterialCommitted": false,
+    "rawMaterialPersisted": false
+  }
+}

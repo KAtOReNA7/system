@@ -19,11 +19,11 @@ test("material-first is the default input mode and structured table is not requi
 test("source accepts only publication and web_original", () => {
   const publication = extractMaterialFields({
     materialId: "SYN-M3-SOURCE-001",
-    fields: { source: "出版物" }
+    fields: { source: "publication" }
   });
   const webOriginal = extractMaterialFields({
     materialId: "SYN-M3-SOURCE-002",
-    fields: { source: "原创网文" }
+    fields: { source: "web_original" }
   });
   const unsupported = extractMaterialFields({
     materialId: "SYN-M3-SOURCE-003",
@@ -42,6 +42,39 @@ test("variable-field material still emits candidates, missing fields and manual 
   assert.ok(result.missingFields.includes("synopsis"));
   assert.ok(result.manualFillRequired.includes("classificationCandidate"));
   assert.equal(result.normalizedFields.source, "web_original");
+});
+
+test("publication completionStatus defaults to completed and is marked defaulted", () => {
+  const result = extractMaterialFields({
+    materialId: "SYN-M3-PUB-DEFAULT",
+    fields: {
+      source: "publication"
+    }
+  });
+
+  assert.equal(result.normalizedFields.completionStatus, "completed");
+  assert.ok(result.defaultedFields.includes("completionStatus"));
+  assert.equal(result.missingFields.includes("completionStatus"), false);
+});
+
+test("same-name audio check status is normalized and unknown status defaults after checked", () => {
+  const result = extractMaterialFields({
+    materialId: "SYN-M3-AUDIO-CHECKED",
+    fields: {
+      sameNameAudioStatusCheckStatus: "checked"
+    }
+  });
+  const unchecked = extractMaterialFields({
+    materialId: "SYN-M3-AUDIO-UNCHECKED",
+    fields: {
+      sameNameAudioStatusCheckStatus: "pending"
+    }
+  });
+
+  assert.equal(result.normalizedFields.sameNameAudioStatusCheckStatus, "checked");
+  assert.equal(result.normalizedFields.sameNameAudioStatus, "unknown");
+  assert.ok(result.defaultedFields.includes("sameNameAudioStatus"));
+  assert.equal(unchecked.normalizedFields.sameNameAudioStatusCheckStatus, "unchecked");
 });
 
 test("raw material payload is rejected before parsing", () => {

@@ -12,6 +12,10 @@ test("M3 fixture engine produces non-formal material-first evaluation", () => {
   assert.equal(result.guardrails.formalExecutionAllowed, false);
   assert.equal(result.guardrails.databaseWritten, false);
   assert.equal(result.guardrails.rawMaterialStored, false);
+  assert.equal(result.guardrails.forecastRangeEmitted, false);
+  assert.equal(result.forecast.totalForecast.firstYearForecast, sum(
+    result.forecast.channelForecasts.map((channel) => channel.firstYearForecast)
+  ));
 });
 
 test("adaptation signals affect rating and risk explanation", () => {
@@ -27,6 +31,7 @@ test("engine does not output development recommendation or resource investment l
 
   assert.equal(Object.hasOwn(result, "developmentRecommendation"), false);
   assert.equal(Object.hasOwn(result, "resourceInvestmentLevel"), false);
+  assert.equal(Object.hasOwn(result.forecast, "forecastRange"), false);
   assert.equal(text.includes("developmentRecommendation"), false);
   assert.equal(text.includes("resourceInvestmentLevel"), false);
   assert.equal(result.guardrails.developDecisionEmitted, false);
@@ -40,3 +45,7 @@ test("blocked material does not produce numeric channel forecast", () => {
   assert.equal(result.forecast.forecastStatus, "blocked");
   assert.ok(result.forecast.blockedBy.includes("missing_heat_signal"));
 });
+
+function sum(values) {
+  return Math.round(values.reduce((total, value) => total + value, 0) * 100) / 100;
+}

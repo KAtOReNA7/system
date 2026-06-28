@@ -1,0 +1,53 @@
+{
+  "schema": "m3.materialFirstAcceptanceAudit.v0.1",
+  "generatedAt": "2026-06-28",
+  "currentHeadAtStart": "4e8e6722882a7648e6d86a8721d38ff951673bf7",
+  "stage": "M3-1",
+  "status": "accepted_after_cleanup",
+  "formalExecutionAllowed": false,
+  "auditItems": [
+    {"item": "material_first_primary", "status": "passed", "evidence": ["src/domain/newProductEvaluation/newProductEvaluationEngine.js", "test/m3-new-product-evaluation-engine.test.js"]},
+    {"item": "structured_topic_table_fallback_only", "status": "passed", "evidence": ["docs/prd/30-new-product-evaluation/M3-restart-prd-v0.2.md"]},
+    {"item": "source_publication_web_original_only", "status": "passed", "evidence": ["src/domain/newProductEvaluation/materialFieldExtractor.js", "test/m3-material-field-extractor.test.js"]},
+    {"item": "variable_material_fields_supported", "status": "passed", "evidence": ["src/domain/newProductEvaluation/materialFieldExtractor.js"]},
+    {"item": "raw_material_not_stored", "status": "passed", "evidence": ["src/domain/newProductEvaluation/materialFieldExtractor.js", "test/m3-api-fixture.test.js"]},
+    {"item": "readiness_blockers_match_user_rules", "status": "passed_after_fix", "evidence": ["src/domain/newProductEvaluation/newProductReadiness.js", "test/m3-new-product-readiness.test.js"]},
+    {"item": "channel_forecast_per_channel", "status": "passed", "evidence": ["src/domain/newProductEvaluation/channelForecast.js", "test/m3-channel-forecast.test.js"]},
+    {"item": "total_forecast_is_channel_sum", "status": "passed", "evidence": ["src/domain/newProductEvaluation/channelForecast.js", "test/m3-channel-forecast.test.js"]},
+    {"item": "no_forecast_range", "status": "passed", "evidence": ["test/m3-channel-forecast.test.js", "test/m3-new-product-evaluation-engine.test.js"]},
+    {"item": "no_development_recommendation", "status": "passed", "evidence": ["test/m3-new-product-evaluation-engine.test.js"]},
+    {"item": "no_resource_investment_level", "status": "passed", "evidence": ["test/m3-new-product-evaluation-engine.test.js"]},
+    {"item": "fixture_only_non_formal", "status": "passed", "evidence": ["src/domain/newProductEvaluation/fixtures/newProductMaterials.fixture.js", "test/m3-api-fixture.test.js"]},
+    {"item": "no_db_migration_private_data", "status": "passed", "evidence": ["git diff --name-only", "npm run check:no-real-data"]}
+  ],
+  "finalHardBlockers": [
+    "title",
+    "author",
+    "source_publication_or_web_original",
+    "classificationCandidate_or_confirmedClassification",
+    "wordCount_or_audioVolumeEstimate",
+    "atLeastOneUsableHeatSignal",
+    "copyrightTermRange",
+    "targetChannels",
+    "sameNameAudioStatusCheckStatus_checked"
+  ],
+  "finalWarningFields": [
+    "synopsis",
+    "commentCount",
+    "adaptationSignals",
+    "operatorRecommendationReason",
+    "operatorComparators",
+    "materialSource",
+    "materialUpdatedAt",
+    "inputConfirmedBy",
+    "completionStatus_publication_source_defaulted",
+    "sameNameAudioStatus_unknown_after_checked"
+  ],
+  "m3FormalExecutionEntered": false,
+  "databaseConnected": false,
+  "dockerExecuted": false,
+  "migrationChanged": false,
+  "privateMaterialRead": false,
+  "privateMaterialCommitted": false,
+  "recommendedNextTask": "Only after user approval, start M3-2 design or implementation from PRD v0.2; do not treat M3-1 fixture output as formal execution."
+}

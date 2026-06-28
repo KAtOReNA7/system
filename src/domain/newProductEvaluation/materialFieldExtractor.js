@@ -1,5 +1,6 @@
 export const M3_SOURCE_VALUES = Object.freeze(["publication", "web_original"]);
 export const M3_SAME_NAME_AUDIO_STATUSES = Object.freeze(["has", "none", "unknown"]);
+export const M3_SAME_NAME_AUDIO_CHECK_STATUSES = Object.freeze(["checked", "unchecked"]);
 
 export const M3_AUTO_CONFIRM_FIELDS = Object.freeze([
   "title",
@@ -7,7 +8,8 @@ export const M3_AUTO_CONFIRM_FIELDS = Object.freeze([
   "source",
   "wordCount",
   "audioVolumeEstimate",
-  "completionStatus"
+  "completionStatus",
+  "sameNameAudioStatusCheckStatus"
 ]);
 
 export const M3_MANUAL_CONFIRM_FIELDS = Object.freeze([
@@ -38,6 +40,7 @@ const MATERIAL_FIELD_KEYS = Object.freeze([
   "socialHeat",
   "platformHeat",
   "sameNameAudioStatus",
+  "sameNameAudioStatusCheckStatus",
   "adaptationSignals",
   "externalHeat",
   "targetChannels",
@@ -78,6 +81,7 @@ export function extractMaterialFields(material) {
   const missingFields = [];
   const manualFillRequired = [];
   const normalizedFields = {};
+  const defaultedFields = [];
 
   for (const key of MATERIAL_FIELD_KEYS) {
     const value = normalizeFieldValue(key, fields[key]);
@@ -101,6 +105,9 @@ export function extractMaterialFields(material) {
     });
   }
 
+  applySourceDefaults(normalizedFields, missingFields, defaultedFields, extractedFields, material);
+  applySameNameAudioDefaults(normalizedFields, missingFields, defaultedFields, extractedFields, material);
+
   const invalidFields = validateNormalizedFields(normalizedFields);
   for (const invalid of invalidFields) {
     manualFillRequired.push(invalid.key);
@@ -122,6 +129,7 @@ export function extractMaterialFields(material) {
       extractedFields.map((field) => [field.key, field.sourceSpanSummary])
     ),
     manualFillRequired: [...new Set(manualFillRequired)],
+    defaultedFields,
     normalizedFields
   };
 }
@@ -171,6 +179,9 @@ function normalizeFieldValue(key, value) {
   if (key === "sameNameAudioStatus" && typeof value === "string") {
     return normalizeSameNameAudioStatus(value);
   }
+  if (key === "sameNameAudioStatusCheckStatus" && typeof value === "string") {
+    return normalizeSameNameAudioCheckStatus(value);
+  }
   if (["reads", "collections", "ratingScore", "commentCount", "wordCount", "audioVolumeEstimate"].includes(key)) {
     return normalizeNumber(value);
   }
@@ -196,6 +207,50 @@ function normalizeSameNameAudioStatus(value) {
   if (["has", "yes", "true", "已有", "有"].includes(normalized)) return "has";
   if (["none", "no", "false", "无", "没有"].includes(normalized)) return "none";
   return "unknown";
+}
+
+function normalizeSameNameAudioCheckStatus(value) {
+  const normalized = value.trim().toLowerCase();
+  if (["checked", "yes", "true", "confirmed"].includes(normalized)) return "checked";
+  if (["unchecked", "not_checked", "no", "false", "pending"].includes(normalized)) return "unchecked";
+  return normalized;
+}
+
+function applySourceDefaults(normalizedFields, missingFields, defaultedFields, extractedFields, material) {
+  if (normalizedFields.source !== "publication" || hasValue(normalizedFields.completionStatus)) {
+    return;
+  }
+  normalizedFields.completionStatus = "completed";
+  defaultedFields.push("completionStatus");
+  removeValue(missingFields, "completionStatus");
+  extractedFields.push(defaultedField("completionStatus", "completed", material));
+}
+
+function applySameNameAudioDefaults(normalizedFields, missingFields, defaultedFields, extractedFields, material) {
+  if (normalizedFields.sameNameAudioStatusCheckStatus !== "checked" || hasValue(normalizedFields.sameNameAudioStatus)) {
+    return;
+  }
+  normalizedFields.sameNameAudioStatus = "unknown";
+  defaultedFields.push("sameNameAudioStatus");
+  removeValue(missingFields, "sameNameAudioStatus");
+  extractedFields.push(defaultedField("sameNameAudioStatus", "unknown", material));
+}
+
+function defaultedField(key, value, material) {
+  return {
+    key,
+    value,
+    confidence: 0.65,
+    confirmationStatus: "source_default",
+    sourceSpanSummary: `source default for ${material?.materialType ?? "material"} field ${key}`
+  };
+}
+
+function removeValue(values, value) {
+  const index = values.indexOf(value);
+  if (index >= 0) {
+    values.splice(index, 1);
+  }
 }
 
 function normalizeNumber(value) {
@@ -230,6 +285,16 @@ function validateNormalizedFields(fields) {
       key: "sameNameAudioStatus",
       code: "unsupported_same_name_audio_status",
       message: "sameNameAudioStatus must be has, none or unknown"
+    });
+  }
+  if (
+    hasValue(fields.sameNameAudioStatusCheckStatus) &&
+    !M3_SAME_NAME_AUDIO_CHECK_STATUSES.includes(fields.sameNameAudioStatusCheckStatus)
+  ) {
+    invalid.push({
+      key: "sameNameAudioStatusCheckStatus",
+      code: "unsupported_same_name_audio_check_status",
+      message: "sameNameAudioStatusCheckStatus must be checked or unchecked"
     });
   }
   return invalid;

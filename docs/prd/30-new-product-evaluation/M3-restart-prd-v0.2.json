@@ -1,41 +1,63 @@
 {
   "version": "0.2",
   "generatedAt": "2026-06-28",
-  "basedOn": "docs/analysis/m3/M3-user-clarification-decisions-v0.1.json",
-  "stage": "M3-0",
-  "status": "user_confirmed_prd_delta",
+  "authority": "current_authoritative",
+  "supersedes": [
+    "docs/prd/30-new-product-evaluation/M3-restart-prd-v0.1.md",
+    "docs/prd/30-new-product-evaluation/M3-restart-prd-v0.1.json"
+  ],
+  "basedOn": [
+    "docs/analysis/m3/M3-user-clarification-answers-v0.1.json",
+    "docs/analysis/m3/M3-1-material-first-acceptance-audit-v0.1.json"
+  ],
+  "stage": "M3-1",
+  "status": "authoritative_non_formal_prd",
   "formalExecutionAllowed": false,
-  "primaryInputMode": "material_parsing_first",
-  "supplementalInputMode": "structured_topic_table",
+  "primaryInputMode": "material_first",
+  "structuredTopicTableRole": "fallback_only",
   "sourceEnum": [
     "publication",
-    "original_web"
+    "web_original"
   ],
-  "coreBlockingFieldGroups": [
-    "identity",
-    "classification",
-    "heat",
-    "copyright_term"
+  "hardBlockers": [
+    "title",
+    "author",
+    "source_publication_or_web_original",
+    "classificationCandidate_or_confirmedClassification",
+    "wordCount_or_audioVolumeEstimate",
+    "atLeastOneUsableHeatSignal",
+    "copyrightTermRange",
+    "targetChannels",
+    "sameNameAudioStatusCheckStatus_checked"
   ],
-  "classificationConfirmation": "system_candidate_user_confirmed",
-  "sameNameAudioStatus": "has_same_name_audio_boolean_or_unknown",
-  "externalHeatSignals": [
-    "reads",
-    "collections",
-    "rating",
-    "comments",
-    "rankings",
-    "search",
-    "social_media",
-    "platform_heat"
-  ],
-  "adaptationSignalsAffect": [
-    "candidate_rating",
-    "risk_explanation"
+  "sourceSpecificRules": {
+    "publication": {
+      "missingCompletionStatus": "default_completed_with_warning"
+    },
+    "web_original": {
+      "missingCompletionStatus": "blocked_or_pending_confirmation"
+    },
+    "sameNameAudioStatus": {
+      "allowedValues": ["has", "none", "unknown"],
+      "unchecked": "blocked",
+      "checkedUnknown": "warning_only"
+    }
+  },
+  "warningFields": [
+    "synopsis",
+    "commentCount",
+    "adaptationSignals",
+    "operatorRecommendationReason",
+    "operatorComparators",
+    "materialSource",
+    "materialUpdatedAt",
+    "inputConfirmedBy",
+    "completionStatus_publication_source_defaulted",
+    "sameNameAudioStatus_unknown_after_checked"
   ],
   "forecastOutputPolicy": {
     "mainForecastShape": "point_value",
-    "intervalAsMainOutput": false,
+    "forecastRangeOutputAllowed": false,
     "channelLevelForecastRequired": true,
     "sumChannelsForTotal": true,
     "outputs": [
@@ -47,47 +69,43 @@
     ]
   },
   "ratingPolicy": {
-    "reuseM2Scale": true,
-    "scale": [
-      "S+",
-      "S",
-      "A",
-      "B",
-      "C",
-      "D",
-      "E"
-    ],
-    "label": "new_product_candidate_rating"
+    "scale": ["S+", "S", "A", "B", "C", "D", "E"],
+    "label": "new_product_candidate_rating",
+    "formalApprovalResult": false
   },
+  "forbiddenOutputs": [
+    "direct_development_recommendation",
+    "resource_investment_level",
+    "forecast_range",
+    "formal_release_conclusion",
+    "formal_task_export_write_api"
+  ],
   "comparatorPolicy": {
     "operatorComparators": "display_alongside_system_comparators",
     "systemComparators": "display_alongside_operator_comparators"
   },
-  "materialParsingPolicy": {
-    "allFieldsRequired": false,
-    "autoConfirmAllowedForLowRiskExplicitFacts": true,
-    "manualConfirmationRequiredFor": [
-      "classification",
-      "copyright_term",
-      "key_heat_interpretation",
-      "comparators",
-      "forecast_input_judgment"
-    ]
-  },
-  "m3CanStart": true,
-  "m3StartBoundary": "local_non_formal_candidate_development",
-  "nonGoals": [
-    "direct development recommendation",
-    "resource investment level",
-    "formal execution",
-    "formal release",
-    "formal task/export/write API"
+  "acceptanceCriteria": [
+    "material_first_primary",
+    "structured_topic_table_fallback_only",
+    "source_limited_to_publication_or_web_original",
+    "variable_material_fields_supported",
+    "raw_material_not_persisted",
+    "readiness_hard_blockers_match_prd_v0_2",
+    "channel_forecast_per_channel",
+    "total_forecast_is_channel_sum",
+    "no_forecast_range",
+    "no_development_recommendation",
+    "no_resource_investment_level",
+    "fixture_only_non_formal",
+    "no_database_no_migration_no_private_data"
   ],
   "safety": {
     "containsRealWorkNames": false,
     "containsAuthorNames": false,
     "containsChannelNames": false,
     "containsRawBillRows": false,
-    "containsPrivateMaterials": false
+    "containsPrivateMaterials": false,
+    "databaseConnected": false,
+    "migrationChanged": false
   }
 }

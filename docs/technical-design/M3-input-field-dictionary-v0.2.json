@@ -1,0 +1,69 @@
+{
+  "schema": "m3.inputFieldDictionary.v0.2",
+  "generatedAt": "2026-06-28",
+  "authority": "current_authoritative",
+  "supersedes": "docs/technical-design/M3-input-field-dictionary-v0.1.json",
+  "stage": "M3-1",
+  "fields": [
+    {"key": "title", "zhName": "作品名/选题名", "type": "string", "blockingLevel": "hard_blocker"},
+    {"key": "author", "zhName": "作者", "type": "string", "blockingLevel": "hard_blocker"},
+    {"key": "source", "zhName": "来源", "type": "enum", "allowedValues": ["publication", "web_original"], "blockingLevel": "hard_blocker"},
+    {"key": "classificationCandidate", "zhName": "分类候选", "type": "list", "blockingLevel": "hard_blocker_if_no_confirmed_classification", "manualConfirmationRequired": true},
+    {"key": "confirmedClassification", "zhName": "已确认分类", "type": "list", "blockingLevel": "hard_blocker_if_no_classification_candidate"},
+    {"key": "wordCount", "zhName": "字数", "type": "number", "blockingLevel": "hard_blocker_if_no_audio_volume_estimate"},
+    {"key": "audioVolumeEstimate", "zhName": "音频体量估算", "type": "number", "blockingLevel": "hard_blocker_if_no_word_count"},
+    {"key": "reads", "zhName": "阅读量", "type": "number", "blockingLevel": "heat_signal_candidate"},
+    {"key": "collections", "zhName": "收藏量", "type": "number", "blockingLevel": "heat_signal_candidate"},
+    {"key": "ratingScore", "zhName": "评分", "type": "number", "blockingLevel": "heat_signal_candidate"},
+    {"key": "commentCount", "zhName": "评论数", "type": "number", "blockingLevel": "warning_and_heat_signal_candidate"},
+    {"key": "rankings", "zhName": "榜单", "type": "list_or_object", "blockingLevel": "heat_signal_candidate"},
+    {"key": "searchHeat", "zhName": "搜索热度", "type": "object", "blockingLevel": "heat_signal_candidate"},
+    {"key": "socialHeat", "zhName": "社媒热度", "type": "object", "blockingLevel": "heat_signal_candidate"},
+    {"key": "platformHeat", "zhName": "平台热度", "type": "object", "blockingLevel": "heat_signal_candidate"},
+    {"key": "externalHeat", "zhName": "外部热度摘要", "type": "object_or_label", "blockingLevel": "heat_signal_candidate"},
+    {"key": "copyrightTermRange", "zhName": "版权期/可开发窗口", "type": "string", "blockingLevel": "hard_blocker"},
+    {"key": "targetChannels", "zhName": "目标渠道", "type": "list", "blockingLevel": "hard_blocker"},
+    {"key": "sameNameAudioStatusCheckStatus", "zhName": "同名有声状态是否已核查", "type": "enum", "allowedValues": ["checked", "unchecked"], "blockingLevel": "hard_blocker_unless_checked"},
+    {"key": "sameNameAudioStatus", "zhName": "同名有声状态", "type": "enum", "allowedValues": ["has", "none", "unknown"], "blockingLevel": "warning_if_checked_unknown"},
+    {"key": "completionStatus", "zhName": "完结状态", "type": "enum", "sourceSpecific": {"publication": "default_completed_with_warning", "web_original": "hard_blocker_if_missing"}},
+    {"key": "synopsis", "zhName": "简介", "type": "text", "blockingLevel": "warning"},
+    {"key": "adaptationSignals", "zhName": "改编信号", "type": "list", "blockingLevel": "warning", "affects": ["candidate_rating", "risk_explanation"]},
+    {"key": "operatorRecommendationReason", "zhName": "运营推荐理由", "type": "text", "blockingLevel": "warning"},
+    {"key": "operatorComparators", "zhName": "运营指定对标", "type": "list", "blockingLevel": "warning"},
+    {"key": "materialSource", "zhName": "物料来源摘要", "type": "string", "blockingLevel": "warning"},
+    {"key": "materialUpdatedAt", "zhName": "物料更新时间", "type": "date", "blockingLevel": "warning"},
+    {"key": "inputConfirmedBy", "zhName": "输入确认人", "type": "string", "blockingLevel": "warning"}
+  ],
+  "readinessSummary": {
+    "hardBlockers": [
+      "title",
+      "author",
+      "source_publication_or_web_original",
+      "classificationCandidate_or_confirmedClassification",
+      "wordCount_or_audioVolumeEstimate",
+      "atLeastOneUsableHeatSignal",
+      "copyrightTermRange",
+      "targetChannels",
+      "sameNameAudioStatusCheckStatus_checked"
+    ],
+    "warningFields": [
+      "synopsis",
+      "commentCount",
+      "adaptationSignals",
+      "operatorRecommendationReason",
+      "operatorComparators",
+      "materialSource",
+      "materialUpdatedAt",
+      "inputConfirmedBy",
+      "completionStatus_publication_source_defaulted",
+      "sameNameAudioStatus_unknown_after_checked"
+    ]
+  },
+  "safety": {
+    "containsRealWorkNames": false,
+    "containsAuthorNames": false,
+    "containsChannelNames": false,
+    "containsRawBillRows": false,
+    "containsPrivateMaterials": false
+  }
+}

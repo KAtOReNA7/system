@@ -38,6 +38,7 @@ export const M3_NEW_PRODUCT_MATERIAL_FIXTURES = Object.freeze([
       socialHeat: Object.freeze({ level: "usable" }),
       platformHeat: Object.freeze({ level: "strong" }),
       sameNameAudioStatus: "none",
+      sameNameAudioStatusCheckStatus: "checked",
       adaptationSignals: Object.freeze(["screen", "comic"]),
       externalHeat: Object.freeze({ summary: "synthetic multi-signal heat" }),
       targetChannels: Object.freeze([
@@ -86,9 +87,12 @@ export const M3_NEW_PRODUCT_MATERIAL_FIXTURES = Object.freeze([
       author: "SYN-M3-AUTHOR-002",
       source: "web_original",
       classificationCandidate: Object.freeze(["SYN-M3-L1-B", "SYN-M3-L2-B", "SYN-M3-L3-B"]),
+      audioVolumeEstimate: 80,
+      completionStatus: "ongoing",
       reads: 24000,
       platformHeat: Object.freeze({ level: "usable" }),
       sameNameAudioStatus: "unknown",
+      sameNameAudioStatusCheckStatus: "checked",
       targetChannels: Object.freeze([
         Object.freeze({
           channelId: "SYN-M3-CHANNEL-C",
@@ -124,7 +128,9 @@ export const M3_NEW_PRODUCT_MATERIAL_FIXTURES = Object.freeze([
       author: "SYN-M3-AUTHOR-003",
       source: "publication",
       classificationCandidate: Object.freeze(["SYN-M3-L1-C", "SYN-M3-L2-C", "SYN-M3-L3-C"]),
+      wordCount: 300000,
       sameNameAudioStatus: "none",
+      sameNameAudioStatusCheckStatus: "checked",
       targetChannels: Object.freeze([
         Object.freeze({
           channelId: "SYN-M3-CHANNEL-D",

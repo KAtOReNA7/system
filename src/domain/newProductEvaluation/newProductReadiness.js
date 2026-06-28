@@ -9,28 +9,32 @@ export const M3_HARD_BLOCKER_CODES = Object.freeze([
   "missing_source",
   "unsupported_source",
   "missing_classification",
+  "missing_volume_estimate",
+  "missing_completion_status_web_original",
   "missing_heat_signal",
   "missing_copyright_term",
-  "missing_target_channels"
+  "missing_target_channels",
+  "missing_same_name_audio_check_status",
+  "same_name_audio_not_checked"
 ]);
 
 export const M3_WARNING_CODES = Object.freeze([
   "classification_requires_user_confirmation",
   "missing_synopsis",
-  "missing_volume_estimate",
-  "missing_completion_status",
   "missing_comment_count",
-  "missing_same_name_audio_status",
   "missing_adaptation_signals",
   "missing_operator_reason",
   "missing_operator_comparators",
   "missing_material_source",
   "missing_material_updated_at",
-  "missing_input_confirmed_by"
+  "missing_input_confirmed_by",
+  "completion_status_source_defaulted",
+  "same_name_audio_unknown"
 ]);
 
 export function evaluateNewProductReadiness(parsedMaterial) {
   const fields = parsedMaterial?.normalizedFields ?? parsedMaterial ?? {};
+  const defaultedFields = parsedMaterial?.defaultedFields ?? [];
   const hardBlockers = [];
   const warnings = [];
 
@@ -43,6 +47,12 @@ export function evaluateNewProductReadiness(parsedMaterial) {
   if (!hasListValue(fields.confirmedClassification) && !hasListValue(fields.classificationCandidate)) {
     hardBlockers.push(reason("missing_classification", "classification candidate or confirmed classification is required."));
   }
+  if (!hasValue(fields.wordCount) && !hasValue(fields.audioVolumeEstimate)) {
+    hardBlockers.push(reason("missing_volume_estimate", "word count or audio volume estimate is required."));
+  }
+  if (fields.source === "web_original" && !hasValue(fields.completionStatus)) {
+    hardBlockers.push(reason("missing_completion_status_web_original", "web_original requires explicit completion status or manual confirmation."));
+  }
   if (!hasUsableHeatSignal(fields)) {
     hardBlockers.push(reason("missing_heat_signal", "at least one usable heat signal is required."));
   }
@@ -50,17 +60,17 @@ export function evaluateNewProductReadiness(parsedMaterial) {
   if (!hasListValue(fields.targetChannels)) {
     hardBlockers.push(reason("missing_target_channels", "target channels are required for channel-level forecast."));
   }
+  if (!hasValue(fields.sameNameAudioStatusCheckStatus)) {
+    hardBlockers.push(reason("missing_same_name_audio_check_status", "same-name audio status check status is required."));
+  } else if (fields.sameNameAudioStatusCheckStatus !== "checked") {
+    hardBlockers.push(reason("same_name_audio_not_checked", "same-name audio status must be checked before numeric forecast."));
+  }
 
   if (hasListValue(fields.classificationCandidate) && !hasListValue(fields.confirmedClassification)) {
     warnings.push(reason("classification_requires_user_confirmation", "classification candidate must be confirmed by user."));
   }
   addWarningIfMissing(warnings, fields.synopsis, "missing_synopsis", "synopsis is missing.");
-  if (!hasValue(fields.wordCount) && !hasValue(fields.audioVolumeEstimate)) {
-    warnings.push(reason("missing_volume_estimate", "word count or audio volume estimate is missing."));
-  }
-  addWarningIfMissing(warnings, fields.completionStatus, "missing_completion_status", "completion status is missing.");
   addWarningIfMissing(warnings, fields.commentCount, "missing_comment_count", "comment count is missing.");
-  addWarningIfMissing(warnings, fields.sameNameAudioStatus, "missing_same_name_audio_status", "same-name audio status is missing.");
   if (!hasListValue(fields.adaptationSignals)) {
     warnings.push(reason("missing_adaptation_signals", "adaptation signals are missing."));
   }
@@ -71,6 +81,12 @@ export function evaluateNewProductReadiness(parsedMaterial) {
   addWarningIfMissing(warnings, fields.materialSource, "missing_material_source", "material source is missing.");
   addWarningIfMissing(warnings, fields.materialUpdatedAt, "missing_material_updated_at", "material update time is missing.");
   addWarningIfMissing(warnings, fields.inputConfirmedBy, "missing_input_confirmed_by", "input confirmer is missing.");
+  if (defaultedFields.includes("completionStatus") && fields.source === "publication") {
+    warnings.push(reason("completion_status_source_defaulted", "publication completion status defaulted to completed by source rule."));
+  }
+  if (fields.sameNameAudioStatusCheckStatus === "checked" && (!hasValue(fields.sameNameAudioStatus) || fields.sameNameAudioStatus === "unknown")) {
+    warnings.push(reason("same_name_audio_unknown", "same-name audio status was checked but remains unknown."));
+  }
 
   const readinessStatus =
     hardBlockers.length > 0 ? "blocked" : warnings.length > 0 ? "warning_only" : "ready";

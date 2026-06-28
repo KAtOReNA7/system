@@ -1,0 +1,78 @@
+{
+  "schema": "m3.materialFirstReadinessDesign.v0.2",
+  "generatedAt": "2026-06-28",
+  "authority": "current_authoritative",
+  "supersedes": "docs/technical-design/M3-material-first-readiness-design-v0.1.json",
+  "stage": "M3-1",
+  "readinessOutput": [
+    "readinessStatus",
+    "numericForecastAllowed",
+    "nonFormal",
+    "hardBlockers",
+    "warnings",
+    "hardBlockerCodes",
+    "warningCodes",
+    "notForFormalDecision"
+  ],
+  "hardBlockerCodes": [
+    "missing_title",
+    "missing_author",
+    "missing_source",
+    "unsupported_source",
+    "missing_classification",
+    "missing_volume_estimate",
+    "missing_completion_status_web_original",
+    "missing_heat_signal",
+    "missing_copyright_term",
+    "missing_target_channels",
+    "missing_same_name_audio_check_status",
+    "same_name_audio_not_checked"
+  ],
+  "warningCodes": [
+    "classification_requires_user_confirmation",
+    "missing_synopsis",
+    "missing_comment_count",
+    "missing_adaptation_signals",
+    "missing_operator_reason",
+    "missing_operator_comparators",
+    "missing_material_source",
+    "missing_material_updated_at",
+    "missing_input_confirmed_by",
+    "completion_status_source_defaulted",
+    "same_name_audio_unknown"
+  ],
+  "sourceSpecificRules": {
+    "publication": {
+      "completionStatusMissing": {
+        "action": "default_completed",
+        "warningCode": "completion_status_source_defaulted"
+      }
+    },
+    "web_original": {
+      "completionStatusMissing": {
+        "action": "block_or_pending_confirmation",
+        "hardBlockerCode": "missing_completion_status_web_original"
+      }
+    }
+  },
+  "sameNameAudioRules": {
+    "statusValues": ["has", "none", "unknown"],
+    "checkStatusValues": ["checked", "unchecked"],
+    "missingCheckStatus": "missing_same_name_audio_check_status",
+    "unchecked": "same_name_audio_not_checked",
+    "checkedUnknown": "same_name_audio_unknown"
+  },
+  "forecastGate": {
+    "hardBlockersEmpty": "numericForecastAllowed_true",
+    "hardBlockersPresent": "numericForecastAllowed_false",
+    "warningsOnly": "warning_only"
+  },
+  "safety": {
+    "nonFormal": true,
+    "databaseConnected": false,
+    "migrationChanged": false,
+    "rawMaterialStored": false,
+    "privateMaterialCommitted": false,
+    "formalExecutionAllowed": false
+  }
+}
