@@ -477,7 +477,7 @@ function buildAggregate(materialResults) {
     acceptedDocCount: materialResults.filter((item) => item.extension === ".doc").length,
     acceptedImageCount: materialResults.filter((item) => [".jpg", ".jpeg", ".png"].includes(item.extension)).length,
     companionTextCount: materialResults.filter((item) => item.hasCompanionText).length,
-    metadataOnlyCount: materialResults.filter((item) => item.parseStatus.includes("metadata_only")).length,
+    metadataOnlyCount: materialResults.filter((item) => item.extractionStatus === "metadata_only").length,
     extractedTextAvailableCount: materialResults.filter((item) => item.extractedTextAvailable).length,
     extractionAttemptedCount: materialResults.filter((item) => item.extractionAttempted).length,
     extractionProviderAvailableCount: materialResults.filter((item) => item.extractionProviderAvailable).length,

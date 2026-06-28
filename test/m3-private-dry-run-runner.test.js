@@ -57,6 +57,7 @@ test("M3 private dry-run accepts doc and image inputs as primary metadata-only m
     assert.deepEqual(result.aggregate.extensionDistribution, { ".doc": 1, ".jpg": 1, ".png": 1 });
     assert.equal(result.aggregate.parseStatusDistribution.legacy_doc_converter_unavailable, 1);
     assert.equal(result.aggregate.parseStatusDistribution.accepted_image_metadata_only, 2);
+    assert.equal(result.aggregate.metadataOnlyCount, 3);
     assert.equal(result.aggregate.forecastStatusDistribution.blocked, 3);
     assert.equal(result.aggregate.ratingGeneratedCount, 0);
     assert.equal(result.aggregate.ratingNotGeneratedCount, 3);
