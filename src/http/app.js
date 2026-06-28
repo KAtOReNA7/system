@@ -38,6 +38,12 @@ import {
   getM2FormalEvaluationExportById,
   listM2FormalEvaluationExports
 } from "../repositories/m2EvaluationExportRepository.js";
+import {
+  evaluateM3NewProductMaterialFixture,
+  getM3NewProductMaterialFixtureById,
+  listM3NewProductMaterialFixtures,
+  parseM3NewProductMaterialFixture
+} from "../repositories/newProductEvaluationFixtureRepository.js";
 import { getSystemStatus } from "../repositories/systemRepository.js";
 import { getWorkById, listWorks } from "../repositories/workRepository.js";
 import { serveAdminAsset } from "./staticAdmin.js";
@@ -105,7 +111,15 @@ export function createApp(config, options = {}) {
     listM2FormalEvaluationExports:
       options.listM2FormalEvaluationExports ?? listM2FormalEvaluationExports,
     getM2FormalEvaluationExportById:
-      options.getM2FormalEvaluationExportById ?? getM2FormalEvaluationExportById
+      options.getM2FormalEvaluationExportById ?? getM2FormalEvaluationExportById,
+    listM3NewProductMaterialFixtures:
+      options.listM3NewProductMaterialFixtures ?? listM3NewProductMaterialFixtures,
+    getM3NewProductMaterialFixtureById:
+      options.getM3NewProductMaterialFixtureById ?? getM3NewProductMaterialFixtureById,
+    parseM3NewProductMaterialFixture:
+      options.parseM3NewProductMaterialFixture ?? parseM3NewProductMaterialFixture,
+    evaluateM3NewProductMaterialFixture:
+      options.evaluateM3NewProductMaterialFixture ?? evaluateM3NewProductMaterialFixture
   };
 
   return async function app(request, response) {
@@ -139,6 +153,55 @@ export function createApp(config, options = {}) {
         const system = await repositories.getSystemStatus(config);
         sendJson(response, 200, { status: "ok", system }, requestId);
         return;
+      }
+
+      if (path.startsWith("/api/m3/new-product/material-fixtures")) {
+        blockFormalM3Mode(request, url);
+
+        if (request.method === "GET" && path === "/api/m3/new-product/material-fixtures") {
+          const pagination = parsePagination(url.searchParams);
+          const body = await repositories.listM3NewProductMaterialFixtures(config, {
+            pagination,
+            searchParams: url.searchParams
+          });
+          sendJson(response, 200, body, requestId);
+          return;
+        }
+
+        const parseMatch = path.match(/^\/api\/m3\/new-product\/material-fixtures\/([^/]+)\/parse$/);
+        if (request.method === "POST" && parseMatch) {
+          const materialId = decodeURIComponent(parseMatch[1]);
+          const payload = await readJsonBody(request);
+          const body = await repositories.parseM3NewProductMaterialFixture(config, materialId, payload);
+          if (!body) {
+            throw notFound("M3 material fixture");
+          }
+          sendJson(response, 200, body, requestId);
+          return;
+        }
+
+        const evaluateMatch = path.match(/^\/api\/m3\/new-product\/material-fixtures\/([^/]+)\/evaluate$/);
+        if (request.method === "POST" && evaluateMatch) {
+          const materialId = decodeURIComponent(evaluateMatch[1]);
+          const payload = await readJsonBody(request);
+          const body = await repositories.evaluateM3NewProductMaterialFixture(config, materialId, payload);
+          if (!body) {
+            throw notFound("M3 material fixture");
+          }
+          sendJson(response, 200, body, requestId);
+          return;
+        }
+
+        const materialMatch = path.match(/^\/api\/m3\/new-product\/material-fixtures\/([^/]+)$/);
+        if (request.method === "GET" && materialMatch) {
+          const materialId = decodeURIComponent(materialMatch[1]);
+          const body = await repositories.getM3NewProductMaterialFixtureById(config, materialId);
+          if (!body) {
+            throw notFound("M3 material fixture");
+          }
+          sendJson(response, 200, body, requestId);
+          return;
+        }
       }
 
       if (request.method === "GET" && path === "/api/works") {
@@ -452,6 +515,18 @@ function blockFormalM2Mode(request, url) {
   const requestedMode =
     url.searchParams.get("mode") ??
     request.headers["x-m2-mode"] ??
+    request.headers["x-evaluation-mode"] ??
+    request.headers["x-mode"];
+
+  if (String(requestedMode ?? "").toLowerCase() === "formal") {
+    throw formalDataBlocked();
+  }
+}
+
+function blockFormalM3Mode(request, url) {
+  const requestedMode =
+    url.searchParams.get("mode") ??
+    request.headers["x-m3-mode"] ??
     request.headers["x-evaluation-mode"] ??
     request.headers["x-mode"];
 

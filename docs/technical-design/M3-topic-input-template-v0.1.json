@@ -39,5 +39,11 @@
     "optional": "risk_or_explanation_note",
     "unconfirmedParsedMaterial": "draft_or_pending_confirmation",
     "staleExternalData": "staleness_risk"
+  },
+  "userConfirmedDelta": {
+    "templateRole": "fallback_only",
+    "primaryInputMode": "material_first",
+    "useCase": "Only for rare topics with title and author but no full material.",
+    "sourceEnum": ["publication", "web_original"]
   }
 }

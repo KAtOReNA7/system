@@ -1,0 +1,45 @@
+{
+  "version": "0.1",
+  "generatedAt": "2026-06-28",
+  "stage": "M3-1",
+  "status": "fixture_prototype_plan",
+  "implementationFiles": [
+    "src/domain/newProductEvaluation/materialFieldExtractor.js",
+    "src/domain/newProductEvaluation/newProductReadiness.js",
+    "src/domain/newProductEvaluation/channelForecast.js",
+    "src/domain/newProductEvaluation/newProductRating.js",
+    "src/domain/newProductEvaluation/newProductEvaluationEngine.js",
+    "src/domain/newProductEvaluation/fixtures/newProductMaterials.fixture.js",
+    "src/repositories/newProductEvaluationFixtureRepository.js"
+  ],
+  "apiRoutes": [
+    "GET /api/m3/new-product/material-fixtures",
+    "GET /api/m3/new-product/material-fixtures/:id",
+    "POST /api/m3/new-product/material-fixtures/:id/parse",
+    "POST /api/m3/new-product/material-fixtures/:id/evaluate"
+  ],
+  "tests": [
+    "test/m3-material-field-extractor.test.js",
+    "test/m3-new-product-readiness.test.js",
+    "test/m3-channel-forecast.test.js",
+    "test/m3-new-product-evaluation-engine.test.js",
+    "test/m3-api-fixture.test.js",
+    "test/m3-admin-prototype.test.js"
+  ],
+  "nonGoals": [
+    "migration",
+    "database connection",
+    "real private material read",
+    "file upload",
+    "raw material persistence",
+    "development recommendation",
+    "resource investment level",
+    "formal execution"
+  ],
+  "safety": {
+    "nonFormal": true,
+    "databaseConnected": false,
+    "migrationChanged": false,
+    "privateMaterialCommitted": false
+  }
+}

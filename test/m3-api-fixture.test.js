@@ -1,0 +1,105 @@
+import assert from "node:assert/strict";
+import http from "node:http";
+import test from "node:test";
+import { createApp } from "../src/http/app.js";
+
+const baseConfig = {
+  service: "m1-audiobook-evaluation",
+  appEnv: "test",
+  port: 0,
+  database: {
+    rwUrl: undefined,
+    readonlyUrl: undefined,
+    backgroundUrl: undefined
+  }
+};
+
+async function request(path, options = {}) {
+  const app = createApp(baseConfig);
+  const server = http.createServer(app);
+  await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
+  const { port } = server.address();
+  try {
+    const response = await fetch(`http://127.0.0.1:${port}${path}`, {
+      headers: { accept: "application/json", ...(options.headers ?? {}) },
+      ...options
+    });
+    return {
+      statusCode: response.status,
+      requestId: response.headers.get("x-request-id"),
+      body: await response.json()
+    };
+  } finally {
+    await new Promise((resolve) => server.close(resolve));
+  }
+}
+
+test("M3 material fixture list API is fixture-only and non-formal", async () => {
+  const response = await request("/api/m3/new-product/material-fixtures");
+
+  assert.equal(response.statusCode, 200);
+  assert.equal(response.body.dataset.mode, "fixture");
+  assert.equal(response.body.dataset.nonFormal, true);
+  assert.equal(response.body.dataset.formalExecutionAllowed, false);
+  assert.equal(response.body.items[0].inputMode, "material_first");
+});
+
+test("M3 material fixture detail API exposes parsed preview without raw material", async () => {
+  const response = await request("/api/m3/new-product/material-fixtures/SYN-M3-MATERIAL-001");
+
+  assert.equal(response.statusCode, 200);
+  assert.equal(response.body.item.rawMaterialStored, false);
+  assert.equal(response.body.item.privateFileRead, false);
+  assert.ok(response.body.item.parsePreview.extractedFields.length > 0);
+});
+
+test("M3 parse and evaluate APIs process only synthetic fixture ids", async () => {
+  const parseResponse = await request("/api/m3/new-product/material-fixtures/SYN-M3-MATERIAL-001/parse", {
+    method: "POST",
+    body: JSON.stringify({ fixtureOnly: true })
+  });
+  const evaluateResponse = await request("/api/m3/new-product/material-fixtures/SYN-M3-MATERIAL-001/evaluate", {
+    method: "POST",
+    body: JSON.stringify({ fixtureOnly: true })
+  });
+
+  assert.equal(parseResponse.statusCode, 200);
+  assert.equal(parseResponse.body.parseResult.inputMode, "material_first");
+  assert.equal(evaluateResponse.statusCode, 200);
+  assert.equal(evaluateResponse.body.evaluation.nonFormal, true);
+  assert.equal(evaluateResponse.body.evaluation.forecast.pointEstimateOnly, true);
+  assert.equal(evaluateResponse.body.evaluation.guardrails.databaseWritten, false);
+});
+
+test("M3 parse API rejects raw material payload", async () => {
+  const response = await request("/api/m3/new-product/material-fixtures/SYN-M3-MATERIAL-001/parse", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ rawText: "SYNTHETIC RAW MATERIAL BODY" })
+  });
+
+  assert.equal(response.statusCode, 400);
+  assert.equal(response.body.error.code, "bad_request");
+});
+
+test("M3 formal mode is blocked without reading database", async () => {
+  const response = await request("/api/m3/new-product/material-fixtures?mode=formal");
+
+  assert.equal(response.statusCode, 423);
+  assert.equal(response.body.error.code, "formal_data_blocked");
+});
+
+test("M3 fixture API output does not expose forbidden private markers", async () => {
+  const response = await request("/api/m3/new-product/material-fixtures/SYN-M3-MATERIAL-001/evaluate", {
+    method: "POST",
+    body: JSON.stringify({ fixtureOnly: true })
+  });
+  const text = JSON.stringify(response.body);
+
+  assert.equal(text.includes("data/private-output"), false);
+  assert.equal(text.includes(".xlsx"), false);
+  assert.equal(text.includes(".docx"), false);
+  assert.equal(text.includes(".pdf"), false);
+  assert.equal(text.includes("postgres://"), false);
+  assert.equal(text.includes("postgresql://"), false);
+});

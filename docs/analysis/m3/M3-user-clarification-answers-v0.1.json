@@ -1,0 +1,69 @@
+{
+  "version": "0.1",
+  "generatedAt": "2026-06-28",
+  "stage": "M3-0",
+  "status": "user_answers_recorded",
+  "formalExecutionAllowed": false,
+  "answers": {
+    "Q1": "B",
+    "Q2": "A",
+    "Q3": "B",
+    "Q4": "B",
+    "Q5": "A",
+    "Q6": "B",
+    "Q7": "A",
+    "Q8": "B",
+    "Q9": "A",
+    "Q10": "A",
+    "Q11": "A",
+    "Q12": "A",
+    "Q13": "A",
+    "Q14": "B",
+    "Q15": "B",
+    "Q16": "B"
+  },
+  "confirmedBusinessDecisions": {
+    "primaryInputMode": "material_first",
+    "structuredTopicTableRole": "fallback_only",
+    "sourceEnum": [
+      "publication",
+      "web_original"
+    ],
+    "classificationPolicy": "system_candidate_user_confirmed",
+    "readinessPolicy": "core_blockers_only",
+    "sameNameAudioStatusPolicy": "has_none_unknown_only",
+    "externalHeatPolicy": [
+      "reads",
+      "collections",
+      "rating",
+      "comments",
+      "rankings",
+      "search",
+      "social_media",
+      "platform_heat"
+    ],
+    "adaptationSignalsAffectRatingAndRisk": true,
+    "channelLevelForecastRequired": true,
+    "forecastRangeOutputAllowed": false,
+    "ratingScale": [
+      "S+",
+      "S",
+      "A",
+      "B",
+      "C",
+      "D",
+      "E"
+    ],
+    "directDevelopRecommendationAllowed": false,
+    "resourceInvestmentLevelAllowed": false,
+    "operatorAndSystemComparatorsDisplayedTogether": true,
+    "m3LocalCandidateDevelopmentCanStart": true
+  },
+  "safety": {
+    "containsRealWorkNames": false,
+    "containsAuthorNames": false,
+    "containsChannelNames": false,
+    "containsRawBillRows": false,
+    "containsPrivateMaterials": false
+  }
+}

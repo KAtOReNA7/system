@@ -10,7 +10,8 @@ const PAGE_KEYS = [
   "m2-backtests",
   "m2-reviews",
   "m2-fixture-tasks",
-  "m2-fixture-exports"
+  "m2-fixture-exports",
+  "m3-materials"
 ];
 const state = {
   activePage: "system",
@@ -62,12 +63,14 @@ const state = {
   },
   m2SelectedExportId: "SYN-FR-EXPORT-001",
   m2ExportCreateCaseId: "eligible_export_package",
-  m2ExportActionResult: null
+  m2ExportActionResult: null,
+  m3SelectedMaterialId: "SYN-M3-MATERIAL-001"
 };
 
 const M2_FIXTURE_TASK_API = `/api/m2/fixture/${["evaluation", "tasks"].join("-")}`;
 const M2_ADVISORY_SUMMARY_API = "/api/m2/fixture/advisory-reviews/summary";
 const M2_FIXTURE_EXPORTS_API = "/api/m2/fixture/exports";
+const M3_MATERIAL_FIXTURE_API = "/api/m3/new-product/material-fixtures";
 
 const fixture = {
   health: {
@@ -2559,6 +2562,180 @@ function attachM2ExportHandlers() {
   }
 }
 
+async function renderM3Materials() {
+  setPageState("m3-materials", "loading");
+  document.querySelector("#m3MaterialsContent").innerHTML = '<div class="loading">Loading M3 material fixtures...</div>';
+  try {
+    const list = await getM2Json(`${M3_MATERIAL_FIXTURE_API}?page=1&pageSize=20`);
+    const selectedId = state.m3SelectedMaterialId || list.items[0]?.materialId || "";
+    state.m3SelectedMaterialId = selectedId;
+    const detail = selectedId
+      ? await getM2Json(`${M3_MATERIAL_FIXTURE_API}/${encodeURIComponent(selectedId)}`)
+      : null;
+    const parsed = selectedId
+      ? await postM2Json(`${M3_MATERIAL_FIXTURE_API}/${encodeURIComponent(selectedId)}/parse`, {
+        fixtureOnly: true
+      })
+      : null;
+    const evaluated = selectedId
+      ? await postM2Json(`${M3_MATERIAL_FIXTURE_API}/${encodeURIComponent(selectedId)}/evaluate`, {
+        fixtureOnly: true
+      })
+      : null;
+
+    setPageState("m3-materials", "success");
+    document.querySelector("#m3MaterialsContent").innerHTML = `
+      ${renderM3DatasetPanel(list)}
+      <div class="context-note">
+        <strong>M3 material-first boundary</strong>
+        <p>fixture-only material parsing prototype. nonFormal=true, rawMaterialStored=false, privateFileRead=false, formalExecutionAllowed=false.</p>
+        <p>No development recommendation. No resource investment level. No forecast range.</p>
+      </div>
+      <div class="table-wrap">
+        ${renderTableHint()}
+        <table>
+          <thead>
+            <tr>
+              <th>material ID</th>
+              <th>type</th>
+              <th>source</th>
+              <th>fields</th>
+              <th>missing</th>
+              <th>manual fill</th>
+              <th>nonFormal</th>
+              <th>detail</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${list.items.map((item) => `
+              <tr>
+                <td>${escapeHtml(item.materialId)}</td>
+                <td>${escapeHtml(item.materialType)}</td>
+                <td>${escapeHtml(item.source)}</td>
+                <td>${escapeHtml(item.extractedFieldCount)}</td>
+                <td>${escapeHtml(item.missingFieldCount)}</td>
+                <td>${escapeHtml(item.manualFillRequiredCount)}</td>
+                <td>${escapeHtml(item.nonFormal)}</td>
+                <td><a href="#m3-materials" data-m3-material-id="${escapeAttribute(item.materialId)}">Show material</a></td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+        ${renderPagination(list.pagination)}
+      </div>
+      ${detail ? renderM3MaterialDetail(detail.item, parsed?.parseResult, evaluated?.evaluation) : ""}
+    `;
+    attachM3MaterialHandlers();
+  } catch (error) {
+    setM2ErrorPageState("m3-materials", error);
+    document.querySelector("#m3MaterialsContent").innerHTML = renderM2Error(error, {
+      title: "M3 material fixture unavailable"
+    });
+  }
+}
+
+function renderM3DatasetPanel(data) {
+  const dataset = data.dataset || {};
+  return `
+    <section class="m2-safety-panel" data-testid="m3-material-safety-panel">
+      <div class="meta-row">
+        <span class="badge warn">fixture-only</span>
+        <span class="badge warn">nonFormal=true</span>
+        <span class="badge ok">material-first</span>
+        <span class="badge warn">formal blocked</span>
+      </div>
+      <div class="cards three compact-cards">
+        <article class="card">
+          <h3>Dataset</h3>
+          ${renderMetric("mode", dataset.mode)}
+          ${renderMetric("source", dataset.source)}
+          ${renderMetric("syntheticOnly", dataset.syntheticOnly)}
+          ${renderMetric("notForFormalDecision", dataset.notForFormalDecision)}
+        </article>
+        <article class="card">
+          <h3>Material boundary</h3>
+          ${renderMetric("rawMaterialStored", dataset.rawMaterialStored)}
+          ${renderMetric("privateFileRead", dataset.privateFileRead)}
+          ${renderMetric("formalExecutionAllowed", dataset.formalExecutionAllowed)}
+        </article>
+        <article class="card">
+          <h3>Output policy</h3>
+          ${renderMetric("forecast", "point estimate only")}
+          ${renderMetric("channelForecasts", "required")}
+          ${renderMetric("develop recommendation", "not emitted")}
+        </article>
+      </div>
+    </section>
+  `;
+}
+
+function renderM3MaterialDetail(item, parseResult, evaluation) {
+  const readiness = evaluation?.readiness || {};
+  const forecast = evaluation?.forecast || {};
+  const rating = evaluation?.candidateRating || {};
+  return `
+    <div class="cards three">
+      <article class="card">
+        <h3>Selected material</h3>
+        ${renderMetric("materialId", item.materialId)}
+        ${renderMetric("materialType", item.materialType)}
+        ${renderMetric("inputMode", item.inputMode)}
+        ${renderMetric("rawMaterialStored", item.rawMaterialStored)}
+        ${renderMetric("privateFileRead", item.privateFileRead)}
+      </article>
+      <article class="card">
+        <h3>Readiness</h3>
+        ${renderMetric("status", readiness.readinessStatus)}
+        ${renderMetric("numericForecastAllowed", readiness.numericForecastAllowed)}
+        ${renderMetric("hardBlockers", (readiness.hardBlockerCodes || []).join(", ") || "none")}
+        ${renderMetric("warnings", (readiness.warningCodes || []).join(", ") || "none")}
+      </article>
+      <article class="card">
+        <h3>Candidate rating</h3>
+        ${renderMetric("ratingType", rating.ratingType)}
+        ${renderMetric("rating", rating.value)}
+        ${renderMetric("nonFormal", rating.nonFormal)}
+        ${renderMetric("notForFormalDecision", rating.notForFormalDecision)}
+      </article>
+    </div>
+    <div class="cards three">
+      <article class="card">
+        <h3>Parsed candidate fields</h3>
+        <ul class="explain-list">
+          ${(parseResult?.extractedFields || []).slice(0, 12).map((field) => `
+            <li>${escapeHtml(field.key)} / ${escapeHtml(field.confirmationStatus)} / confidence=${escapeHtml(field.confidence)}</li>
+          `).join("")}
+        </ul>
+      </article>
+      <article class="card">
+        <h3>Channel point forecast</h3>
+        <p class="pagination-note">pointEstimateOnly=${escapeHtml(forecast.pointEstimateOnly)}. No forecast range is emitted.</p>
+        <ul class="explain-list">
+          ${(forecast.channelForecasts || []).map((channel) => `
+            <li>${escapeHtml(channel.channelId)} firstYear=${escapeHtml(channel.firstYearForecast)} fiveYear=${escapeHtml(channel.fiveYearTotal)}</li>
+          `).join("") || "<li>blocked</li>"}
+        </ul>
+      </article>
+      <article class="card">
+        <h3>Total forecast</h3>
+        ${renderMetric("firstYearForecast", forecast.totalForecast?.firstYearForecast ?? "blocked")}
+        ${renderMetric("fiveYearTotal", forecast.totalForecast?.fiveYearTotal ?? "blocked")}
+        ${renderMetric("forecastRangeEmitted", evaluation?.guardrails?.forecastRangeEmitted)}
+      </article>
+    </div>
+  `;
+}
+
+function attachM3MaterialHandlers() {
+  document.querySelectorAll("[data-m3-material-id]").forEach((link) => {
+    link.addEventListener("click", (event) => {
+      event.preventDefault();
+      state.m3SelectedMaterialId = link.dataset.m3MaterialId || "";
+      renderM3Materials();
+    });
+  });
+}
+
 function showPage(page) {
   const parsed = parsePageHash(page);
   state.activePage = PAGE_KEYS.includes(parsed.page) ? parsed.page : "system";
@@ -2616,6 +2793,9 @@ function renderCurrentPage() {
   }
   if (state.activePage === "m2-fixture-exports") {
     return renderM2FixtureExports();
+  }
+  if (state.activePage === "m3-materials") {
+    return renderM3Materials();
   }
   return renderSystem();
 }

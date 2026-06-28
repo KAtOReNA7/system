@@ -65,5 +65,25 @@
     "businessCodeWritten": false,
     "m3FormalExecutionEntered": false,
     "privateMaterialCommitted": false
+  },
+  "userConfirmedDelta": {
+    "materialParsingIsPrimaryInput": true,
+    "variableFieldsSupported": true,
+    "parsedOutputShape": [
+      "extractedFields",
+      "missingFields",
+      "confidence",
+      "sourceSpanSummary",
+      "manualFillRequired"
+    ],
+    "autoConfirmLowRiskFactsAllowed": true,
+    "manualConfirmationRequiredFor": [
+      "classification",
+      "copyrightTermRange",
+      "keyHeatInterpretation",
+      "comparators",
+      "forecastInputJudgment"
+    ],
+    "rawMaterialCommitted": false
   }
 }

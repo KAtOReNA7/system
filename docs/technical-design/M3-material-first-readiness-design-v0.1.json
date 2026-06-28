@@ -1,0 +1,48 @@
+{
+  "version": "0.1",
+  "generatedAt": "2026-06-28",
+  "stage": "M3-1",
+  "status": "design_only",
+  "primaryInputMode": "material_first",
+  "structuredTopicTableRole": "fallback_only",
+  "hardBlockers": [
+    "title",
+    "author",
+    "source",
+    "classificationCandidate_or_confirmedClassification",
+    "atLeastOneUsableHeatSignal",
+    "copyrightTermRange",
+    "targetChannels"
+  ],
+  "warningOnlyFields": [
+    "synopsis",
+    "wordCount_or_audioVolumeEstimate",
+    "completionStatus",
+    "commentCount",
+    "sameNameAudioStatus",
+    "adaptationSignals",
+    "operatorRecommendationReason",
+    "operatorComparators",
+    "materialSource",
+    "materialUpdatedAt",
+    "inputConfirmedBy"
+  ],
+  "sourceEnum": [
+    "publication",
+    "web_original"
+  ],
+  "manualConfirmationRequiredFor": [
+    "classification",
+    "copyrightTermRange",
+    "keyHeatInterpretation",
+    "comparators",
+    "forecastInputJudgment"
+  ],
+  "safety": {
+    "nonFormal": true,
+    "databaseConnected": false,
+    "migrationChanged": false,
+    "rawMaterialStored": false,
+    "privateMaterialCommitted": false
+  }
+}

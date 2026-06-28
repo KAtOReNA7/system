@@ -29,6 +29,33 @@
   "ruleSummary": {
     "requiredMissingBehavior": "readiness_blocked",
     "optionalMissingBehavior": "risk_or_explanation_note",
-    "materialParsingBehavior": "candidate_only_until_manual_confirmation"
+    "materialParsingBehavior": "candidate_only_until_manual_confirmation",
+    "userConfirmedDelta": {
+      "primaryInputMode": "material_first",
+      "sourceEnum": ["publication", "web_original"],
+      "hardBlockers": [
+        "title",
+        "author",
+        "source",
+        "classificationCandidate_or_confirmedClassification",
+        "atLeastOneUsableHeatSignal",
+        "copyrightTermRange",
+        "targetChannels"
+      ],
+      "warningOnlyFields": [
+        "synopsis",
+        "wordCount_or_audioVolumeEstimate",
+        "completionStatus",
+        "commentCount",
+        "sameNameAudioStatus",
+        "adaptationSignals",
+        "operatorRecommendationReason",
+        "operatorComparators",
+        "materialSource",
+        "materialUpdatedAt",
+        "inputConfirmedBy"
+      ],
+      "forecastRangeOutputAllowed": false
+    }
   }
 }

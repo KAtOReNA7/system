@@ -129,3 +129,16 @@ M3-0 验收标准：
 ## 9. 下一步
 
 用户回答 M3 clarification questions 后，再进入 M3-1 输入 readiness 与材料解析设计。M3 formal execution 仍禁止。
+
+## 10. 用户答复后的修订口径
+
+本 v0.1 已被用户 Q1-Q16 答复修订，后续开发以 `M3-restart-prd-v0.2` 和 `M3-user-clarification-answers-v0.1` 为准：
+
+- M3 第一入口改为选题物料优先，结构化选题表降级为 fallback。
+- `source` 只允许出版物、原创网文；不保留“其他”。
+- 分类可以系统候选，但必须用户确认，不能自动确认。
+- readiness 只阻断核心字段；非核心字段缺失输出 warning、limitation 或 risk。
+- 预测输出改为渠道级 point estimate，`totalForecast = sum(channelForecasts)`。
+- 不输出 forecast range、high/base/low、optimistic/pessimistic。
+- 沿用 S+/S/A/B/C/D/E，但标记为新品候选评级。
+- 禁止输出“是否建议开发”和资源投入等级。

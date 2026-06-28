@@ -42,3 +42,12 @@
 
 - 选题表、材料原文、字段抽取明细、人工补录明细默认属于 private。
 - 公开仓库只允许提交字段字典、模板说明、脱敏 summary 和规则文档。
+
+## 用户答复后的字段口径修订
+
+- M3-1 默认输入来自选题物料，结构化选题表只作为 fallback。
+- `source` 只允许 `publication` / `web_original`。
+- hard blockers 缩减为：title、author、source、classification candidate or confirmed classification、至少一个可用 heat signal、copyrightTermRange、targetChannels。
+- synopsis、wordCount/audioVolumeEstimate、completionStatus、commentCount、sameNameAudioStatus、adaptationSignals、operatorRecommendationReason、operatorComparators、materialSource、materialUpdatedAt、inputConfirmedBy 缺失时只输出 warning / limitation / risk。
+- `sameNameAudioStatus` 只判断 has / none / unknown。
+- `adaptationSignals` 影响新品候选评级和风险解释。

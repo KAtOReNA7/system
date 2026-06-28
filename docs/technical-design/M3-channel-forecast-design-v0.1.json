@@ -1,0 +1,33 @@
+{
+  "version": "0.1",
+  "generatedAt": "2026-06-28",
+  "stage": "M3-1",
+  "status": "design_only",
+  "forecastShape": "point_estimate_only",
+  "channelLevelRequired": true,
+  "outputs": [
+    "channelForecasts",
+    "totalForecast",
+    "firstYearForecast",
+    "year1To5Breakdown",
+    "fiveYearTotal",
+    "confidence",
+    "limitations"
+  ],
+  "forbiddenOutputs": [
+    "optimistic",
+    "pessimistic",
+    "high",
+    "base",
+    "low",
+    "forecastRange",
+    "developmentRecommendation",
+    "resourceInvestmentLevel"
+  ],
+  "aggregationRules": {
+    "totalFirstYearForecast": "sum(channelForecasts.firstYearForecast)",
+    "totalFiveYearTotal": "sum(channelForecasts.fiveYearTotal)",
+    "totalYearBreakdown": "sum(channelForecasts.year1To5Breakdown[year])"
+  },
+  "m2FollowUp": "Review old-product forecast interval output later; no M2 code change in M3-1."
+}

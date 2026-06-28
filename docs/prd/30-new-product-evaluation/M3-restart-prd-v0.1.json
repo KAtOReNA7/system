@@ -72,5 +72,17 @@
     "databaseConnected": false,
     "privateMaterialReadOrSubmitted": false,
     "m3FormalExecutionEntered": false
+  },
+  "userConfirmedDelta": {
+    "supersededBy": "docs/prd/30-new-product-evaluation/M3-restart-prd-v0.2.md",
+    "answers": "docs/analysis/m3/M3-user-clarification-answers-v0.1.json",
+    "primaryInputMode": "material_first",
+    "structuredTopicTableRole": "fallback_only",
+    "sourceEnum": ["publication", "web_original"],
+    "forecastShape": "point_estimate_only",
+    "channelLevelForecastRequired": true,
+    "forecastRangeOutputAllowed": false,
+    "directDevelopRecommendationAllowed": false,
+    "resourceInvestmentLevelAllowed": false
   }
 }

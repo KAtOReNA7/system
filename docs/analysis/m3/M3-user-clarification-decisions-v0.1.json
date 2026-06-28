@@ -1,0 +1,128 @@
+{
+  "version": "0.1",
+  "generatedAt": "2026-06-28",
+  "stage": "M3-0",
+  "status": "user_clarification_recorded",
+  "formalExecutionAllowed": false,
+  "primaryInputMode": "material_parsing_first",
+  "supplementalInputMode": "structured_topic_table_for_small_cases",
+  "decisions": [
+    {
+      "id": "Q1",
+      "answer": "B",
+      "decision": "Prioritize material parsing before structured topic table."
+    },
+    {
+      "id": "Q2",
+      "answer": "A",
+      "decision": "Use only publication and original_web as source enum values."
+    },
+    {
+      "id": "Q3",
+      "answer": "B",
+      "decision": "System may propose classification candidates, but user confirmation is required."
+    },
+    {
+      "id": "Q4",
+      "answer": "B",
+      "decision": "Only core fields block numeric forecast."
+    },
+    {
+      "id": "Q5",
+      "answer": "A",
+      "decision": "Same-name audio status is a boolean or unknown signal."
+    },
+    {
+      "id": "Q6",
+      "answer": "B",
+      "decision": "External heat may include rankings, search, social media, and platform heat in addition to reads, collections, rating, and comments."
+    },
+    {
+      "id": "Q7",
+      "answer": "A",
+      "decision": "Adaptation signals affect rating and risk explanation."
+    },
+    {
+      "id": "Q8",
+      "answer": "B",
+      "decision": "Channel-level point forecasts are required; forecast interval should not be the main output."
+    },
+    {
+      "id": "Q9",
+      "answer": "A",
+      "decision": "Output five-year total, first-year forecast, and year 1-5 split."
+    },
+    {
+      "id": "Q10",
+      "answer": "A",
+      "decision": "Reuse S+/S/A/B/C/D/E as new-product candidate rating."
+    },
+    {
+      "id": "Q11",
+      "answer": "A",
+      "decision": "Do not output direct development recommendation."
+    },
+    {
+      "id": "Q12",
+      "answer": "A",
+      "decision": "Do not output resource investment level."
+    },
+    {
+      "id": "Q13",
+      "answer": "A",
+      "decision": "Display operator comparators alongside system comparators."
+    },
+    {
+      "id": "Q14",
+      "answer": "B",
+      "decision": "Some explicit material fields may be auto-confirmed, but key judgment fields require human confirmation."
+    },
+    {
+      "id": "Q15",
+      "answer": "B",
+      "decision": "M3 local non-formal candidate development may start before M2 formal completion."
+    },
+    {
+      "id": "Q16",
+      "answer": "B",
+      "decision": "Initial test input is a single material file, not a structured topic table."
+    }
+  ],
+  "coreBlockingFieldGroups": [
+    "identity",
+    "classification",
+    "heat",
+    "copyright_term"
+  ],
+  "sourceEnum": [
+    "publication",
+    "original_web"
+  ],
+  "forecastOutputPolicy": {
+    "mainForecastShape": "point_value",
+    "channelLevelForecastRequired": true,
+    "intervalAsMainOutput": false,
+    "outputs": [
+      "channel_point_forecast",
+      "total_point_forecast",
+      "five_year_total",
+      "first_year_forecast",
+      "year_1_to_5_split"
+    ],
+    "m2FollowUp": "Review whether M2 old-product evaluation should also move away from interval-first output."
+  },
+  "nonGoals": [
+    "direct development recommendation",
+    "resource investment level",
+    "formal execution",
+    "formal release",
+    "formal task/export/write API"
+  ],
+  "safety": {
+    "containsRealWorkNames": false,
+    "containsAuthorNames": false,
+    "containsChannelNames": false,
+    "containsRawBillRows": false,
+    "containsPrivateMaterials": false
+  }
+}

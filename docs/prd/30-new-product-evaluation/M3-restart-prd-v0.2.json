@@ -1,0 +1,93 @@
+{
+  "version": "0.2",
+  "generatedAt": "2026-06-28",
+  "basedOn": "docs/analysis/m3/M3-user-clarification-decisions-v0.1.json",
+  "stage": "M3-0",
+  "status": "user_confirmed_prd_delta",
+  "formalExecutionAllowed": false,
+  "primaryInputMode": "material_parsing_first",
+  "supplementalInputMode": "structured_topic_table",
+  "sourceEnum": [
+    "publication",
+    "original_web"
+  ],
+  "coreBlockingFieldGroups": [
+    "identity",
+    "classification",
+    "heat",
+    "copyright_term"
+  ],
+  "classificationConfirmation": "system_candidate_user_confirmed",
+  "sameNameAudioStatus": "has_same_name_audio_boolean_or_unknown",
+  "externalHeatSignals": [
+    "reads",
+    "collections",
+    "rating",
+    "comments",
+    "rankings",
+    "search",
+    "social_media",
+    "platform_heat"
+  ],
+  "adaptationSignalsAffect": [
+    "candidate_rating",
+    "risk_explanation"
+  ],
+  "forecastOutputPolicy": {
+    "mainForecastShape": "point_value",
+    "intervalAsMainOutput": false,
+    "channelLevelForecastRequired": true,
+    "sumChannelsForTotal": true,
+    "outputs": [
+      "channel_point_forecast",
+      "total_point_forecast",
+      "five_year_total",
+      "first_year_forecast",
+      "year_1_to_5_split"
+    ]
+  },
+  "ratingPolicy": {
+    "reuseM2Scale": true,
+    "scale": [
+      "S+",
+      "S",
+      "A",
+      "B",
+      "C",
+      "D",
+      "E"
+    ],
+    "label": "new_product_candidate_rating"
+  },
+  "comparatorPolicy": {
+    "operatorComparators": "display_alongside_system_comparators",
+    "systemComparators": "display_alongside_operator_comparators"
+  },
+  "materialParsingPolicy": {
+    "allFieldsRequired": false,
+    "autoConfirmAllowedForLowRiskExplicitFacts": true,
+    "manualConfirmationRequiredFor": [
+      "classification",
+      "copyright_term",
+      "key_heat_interpretation",
+      "comparators",
+      "forecast_input_judgment"
+    ]
+  },
+  "m3CanStart": true,
+  "m3StartBoundary": "local_non_formal_candidate_development",
+  "nonGoals": [
+    "direct development recommendation",
+    "resource investment level",
+    "formal execution",
+    "formal release",
+    "formal task/export/write API"
+  ],
+  "safety": {
+    "containsRealWorkNames": false,
+    "containsAuthorNames": false,
+    "containsChannelNames": false,
+    "containsRawBillRows": false,
+    "containsPrivateMaterials": false
+  }
+}

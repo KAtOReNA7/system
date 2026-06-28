@@ -83,5 +83,16 @@
     "noStash": true,
     "noForcePush": true,
     "noM3FormalExecution": true
+  },
+  "userConfirmedDelta": {
+    "answers": "docs/analysis/m3/M3-user-clarification-answers-v0.1.json",
+    "m3CanStart": true,
+    "nextTask": "M3-1 material-first input readiness and parsing prototype",
+    "primaryInputMode": "material_first",
+    "structuredTopicTableRole": "fallback_only",
+    "forecastShape": "point_estimate_only",
+    "channelLevelForecastRequired": true,
+    "forecastRangeOutputAllowed": false,
+    "formalExecutionAllowed": false
   }
 }

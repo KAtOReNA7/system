@@ -1,0 +1,89 @@
+{
+  "version": "0.1",
+  "generatedAt": "2026-06-28",
+  "stage": "M3-1",
+  "status": "design_plan_only",
+  "formalExecutionAllowed": false,
+  "primaryGoal": "material_first_input_readiness",
+  "mainFlow": [
+    "accept_private_material_reference_or_manual_summary",
+    "detect_material_type",
+    "extract_or_record_field_candidates",
+    "auto_confirm_low_risk_explicit_facts",
+    "route_judgment_fields_to_manual_confirmation",
+    "calculate_core_readiness",
+    "prepare_channel_level_point_forecast_inputs"
+  ],
+  "autoConfirmAllowedFor": [
+    "title",
+    "author",
+    "source",
+    "word_count",
+    "completion_status"
+  ],
+  "manualConfirmationRequiredFor": [
+    "classification",
+    "copyright_term",
+    "key_heat_interpretation",
+    "comparators",
+    "forecast_input_judgment"
+  ],
+  "coreReadinessGate": {
+    "identity": [
+      "title",
+      "author",
+      "source"
+    ],
+    "classification": [
+      "user_confirmed_classification"
+    ],
+    "heat": [
+      "at_least_one_usable_heat_signal_or_summary"
+    ],
+    "copyright_term": [
+      "copyright_term_range_or_development_window"
+    ]
+  },
+  "nonBlockingOptionalFields": [
+    "comment_count",
+    "adaptation_signals",
+    "material_source",
+    "material_updated_at",
+    "notes"
+  ],
+  "forecastPreparation": {
+    "channelLevelPointForecast": true,
+    "forecastIntervalMainOutput": false,
+    "fiveYearTotal": true,
+    "firstYearForecast": true,
+    "year1To5Split": true
+  },
+  "explicitNonOutputs": [
+    "development_recommendation",
+    "resource_investment_level",
+    "formal_income_forecast",
+    "formal_rating",
+    "formal_task_export_write_api"
+  ],
+  "testPlan": [
+    "material field extraction fixtures",
+    "auto confirmation whitelist",
+    "classification cannot auto confirm",
+    "core readiness blocking",
+    "non-core missing fields do not block",
+    "structured table supplemental input",
+    "no development recommendation",
+    "no resource investment level",
+    "no private material committed"
+  ],
+  "safety": {
+    "businessCodeChanged": false,
+    "migrationChanged": false,
+    "databaseConnected": false,
+    "privateDataReadOrImported": false,
+    "containsRealWorkNames": false,
+    "containsAuthorNames": false,
+    "containsChannelNames": false,
+    "containsRawBillRows": false
+  }
+}

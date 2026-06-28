@@ -88,3 +88,11 @@
 - 本阶段不写业务代码。
 - 本阶段不进入 M3 formal execution。
 - 本阶段不提交 private 材料或解析明细。
+
+## 8. 用户答复后的解析范围修订
+
+- 物料解析是 M3 第一入口。
+- 物料字段不固定，不要求每份材料具备完全相同字段。
+- 解析结果必须支持 `extractedFields`、`missingFields`、`confidence`、`sourceSpanSummary`、`manualFillRequired`。
+- 可自动确认低风险明确事实字段，但分类、版权期、关键热度解释、对标和预测输入判断必须保留人工确认。
+- 不提交原文，不提交材料原文件，不保存 raw material。
