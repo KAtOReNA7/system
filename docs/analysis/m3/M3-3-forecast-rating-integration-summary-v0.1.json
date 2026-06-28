@@ -1,0 +1,32 @@
+{
+  "title": "M3-3 forecast rating integration summary v0.1",
+  "generatedAt": "2026-06-28",
+  "m3Step": "M3-3",
+  "forecastWeightingComplete": true,
+  "ratingExplanationComplete": true,
+  "channelLevelPointForecastPreserved": true,
+  "totalForecastIsChannelSum": true,
+  "forecastRangeEmitted": false,
+  "optimisticPessimisticEmitted": false,
+  "highBaseLowEmitted": false,
+  "developmentRecommendationEmitted": false,
+  "resourceInvestmentLevelEmitted": false,
+  "manualTestingPerformed": false,
+  "manualTestingDeferredUntilMainM3ChainComplete": true,
+  "formalExecutionAllowed": false,
+  "databaseConnected": false,
+  "migrationWritten": false,
+  "privateMaterialRead": false,
+  "targetedM3Tests": "passed",
+  "validationResults": {
+    "checkNoRealData": "passed",
+    "lint": "passed",
+    "build": "passed",
+    "test": "passed",
+    "testCount": 445,
+    "smoke": "passed",
+    "e2e": "passed",
+    "e2eTestCount": 13
+  },
+  "recommendedNextTask": "M3-4 page/workflow chaining or backtest anchor prototype"
+}

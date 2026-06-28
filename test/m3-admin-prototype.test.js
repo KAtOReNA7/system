@@ -50,6 +50,11 @@ test("admin JavaScript calls M3 fixture API and shows non-formal guardrails", as
   assert.match(response.body, /sameAuthorReferenceWorks/);
   assert.match(response.body, /Author ranking/);
   assert.match(response.body, /Buyout treatment/);
+  assert.match(response.body, /Forecast contribution breakdown/);
+  assert.match(response.body, /Rating explanation/);
+  assert.match(response.body, /Rating support factors/);
+  assert.match(response.body, /Author ranking influence/);
+  assert.match(response.body, /No resource investment level/);
   assert.doesNotMatch(response.body, /method:\s*["'`](PUT|PATCH|DELETE)/i);
   assert.doesNotMatch(response.body, /switch_mapping_version/i);
 });

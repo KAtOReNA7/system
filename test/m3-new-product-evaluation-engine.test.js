@@ -50,6 +50,20 @@ test("engine includes M3-2 comparable works and author ranking", () => {
   assert.equal(result.comparatorDisplay.displayTogether, true);
 });
 
+test("engine includes M3-3 forecast weighting and rating explanation", () => {
+  const result = evaluateNewProductMaterial(M3_NEW_PRODUCT_MATERIAL_FIXTURES[0]);
+
+  assert.equal(result.forecast.forecastShape, "point_estimate_only");
+  assert.ok(result.forecast.forecastContributions.some((item) => item.signalCode === "comparable_works_strength"));
+  assert.ok(result.forecast.forecastContributions.some((item) => item.signalCode === "author_ranking_tier"));
+  assert.ok(result.forecast.forecastContributions.some((item) => item.signalCode === "adaptation_signal_boost"));
+  assert.ok(result.forecast.channelForecasts.every((channel) => channel.channelContributionBreakdown.length > 0));
+  assert.equal(result.candidateRating.ratingType, "new_product_candidate_rating");
+  assert.ok(result.candidateRating.ratingExplanation);
+  assert.ok(result.candidateRating.supportFactors.length > 0);
+  assert.ok(result.candidateRating.warningFactors.length > 0);
+});
+
 test("blocked material does not produce numeric channel forecast", () => {
   const result = evaluateNewProductMaterial(M3_NEW_PRODUCT_MATERIAL_FIXTURES[2]);
 

@@ -18,11 +18,14 @@ export function evaluateNewProductMaterial(material) {
   const parsedMaterial = parseNewProductMaterial(material);
   const readiness = evaluateNewProductReadiness(parsedMaterial);
   const fields = parsedMaterial.normalizedFields;
-  const forecast = buildChannelForecast(fields, readiness);
-  const candidateRating = buildNewProductCandidateRating(fields, forecast, readiness);
-  const risks = buildNewProductRisks(fields, readiness, forecast);
   const comparableWorks = buildComparableWorks(fields);
   const authorRanking = buildAuthorRanking(fields);
+  const forecast = buildChannelForecast(fields, readiness, { comparableWorks, authorRanking });
+  const candidateRating = buildNewProductCandidateRating(fields, forecast, readiness, {
+    comparableWorks,
+    authorRanking
+  });
+  const risks = buildNewProductRisks(fields, readiness, forecast);
 
   return {
     materialId: material.materialId,

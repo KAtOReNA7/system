@@ -68,6 +68,10 @@ test("M3 parse and evaluate APIs process only synthetic fixture ids", async () =
   assert.equal(evaluateResponse.statusCode, 200);
   assert.equal(evaluateResponse.body.evaluation.nonFormal, true);
   assert.equal(evaluateResponse.body.evaluation.forecast.pointEstimateOnly, true);
+  assert.ok(evaluateResponse.body.evaluation.forecast.forecastContributions.length > 0);
+  assert.ok(evaluateResponse.body.evaluation.forecast.channelForecasts[0].channelContributionBreakdown.length > 0);
+  assert.equal(evaluateResponse.body.evaluation.candidateRating.ratingType, "new_product_candidate_rating");
+  assert.ok(evaluateResponse.body.evaluation.candidateRating.ratingExplanation);
   assert.equal(evaluateResponse.body.evaluation.comparableWorks.fixtureOnly, true);
   assert.equal(evaluateResponse.body.evaluation.authorRanking.nonFormal, true);
   assert.equal(evaluateResponse.body.evaluation.guardrails.databaseWritten, false);
@@ -120,4 +124,5 @@ test("M3 fixture API output does not expose forbidden private markers", async ()
   assert.equal(text.includes("postgresql://"), false);
   assert.equal(text.includes("developmentRecommendation"), false);
   assert.equal(text.includes("resourceInvestmentLevel"), false);
+  assert.equal(text.includes("recommendedDevelopmentDecision"), false);
 });

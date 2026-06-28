@@ -2675,6 +2675,8 @@ function renderM3MaterialDetail(item, parseResult, evaluation) {
   const rating = evaluation?.candidateRating || {};
   const comparableWorks = evaluation?.comparableWorks || {};
   const authorRanking = evaluation?.authorRanking || {};
+  const forecastContributions = forecast.forecastContributions || [];
+  const ratingValue = rating.rating || rating.value;
   return `
     <div class="cards three">
       <article class="card">
@@ -2695,7 +2697,7 @@ function renderM3MaterialDetail(item, parseResult, evaluation) {
       <article class="card">
         <h3>Candidate rating</h3>
         ${renderMetric("ratingType", rating.ratingType)}
-        ${renderMetric("rating", rating.value)}
+        ${renderMetric("rating", ratingValue)}
         ${renderMetric("nonFormal", rating.nonFormal)}
         ${renderMetric("notForFormalDecision", rating.notForFormalDecision)}
       </article>
@@ -2711,10 +2713,10 @@ function renderM3MaterialDetail(item, parseResult, evaluation) {
       </article>
       <article class="card">
         <h3>Channel point forecast</h3>
-        <p class="pagination-note">pointEstimateOnly=${escapeHtml(forecast.pointEstimateOnly)}. No forecast range is emitted.</p>
+        <p class="pagination-note">pointEstimateOnly=${escapeHtml(forecast.pointEstimateOnly)}. No forecast range is emitted. No optimistic or pessimistic scenario is emitted.</p>
         <ul class="explain-list">
           ${(forecast.channelForecasts || []).map((channel) => `
-            <li>${escapeHtml(channel.channelId)} firstYear=${escapeHtml(channel.firstYearForecast)} fiveYear=${escapeHtml(channel.fiveYearTotal)}</li>
+            <li>${escapeHtml(channel.channelId)} firstYear=${escapeHtml(channel.firstYearForecast)} fiveYear=${escapeHtml(channel.fiveYearTotal)} contributions=${escapeHtml((channel.channelContributionBreakdown || []).length)}</li>
           `).join("") || "<li>blocked</li>"}
         </ul>
       </article>
@@ -2723,6 +2725,89 @@ function renderM3MaterialDetail(item, parseResult, evaluation) {
         ${renderMetric("firstYearForecast", forecast.totalForecast?.firstYearForecast ?? "blocked")}
         ${renderMetric("fiveYearTotal", forecast.totalForecast?.fiveYearTotal ?? "blocked")}
         ${renderMetric("forecastRangeEmitted", evaluation?.guardrails?.forecastRangeEmitted)}
+        ${renderMetric("weightingVersion", forecast.forecastWeighting?.weightingVersion || "none")}
+      </article>
+    </div>
+    <div class="cards three">
+      <article class="card">
+        <h3>Forecast contribution breakdown</h3>
+        <p class="pagination-note">Signals are explanation-only and remain fixture-only.</p>
+        <ul class="explain-list">
+          ${forecastContributions.map((item) => `
+            <li>${escapeHtml(item.signalCode)} / ${escapeHtml(item.direction)} / weight=${escapeHtml(item.weight)} / amount=${escapeHtml(item.contributionAmount)}</li>
+          `).join("") || "<li>none</li>"}
+        </ul>
+      </article>
+      <article class="card">
+        <h3>Forecast confidence notes</h3>
+        <ul class="explain-list">
+          ${(forecast.confidenceNotes || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("") || "<li>none</li>"}
+        </ul>
+        <p class="pagination-note">No direct development recommendation. No resource investment level.</p>
+      </article>
+      <article class="card">
+        <h3>Rating explanation</h3>
+        ${renderMetric("rating", ratingValue)}
+        ${renderMetric("ratingType", rating.ratingType)}
+        <p class="pagination-note">${escapeHtml(rating.ratingExplanation || rating.rationale || "none")}</p>
+      </article>
+    </div>
+    <div class="cards three">
+      <article class="card">
+        <h3>Rating support factors</h3>
+        <ul class="explain-list">
+          ${(rating.supportFactors || []).map((item) => `
+            <li>${escapeHtml(item.code)} / ${escapeHtml(item.explanation)}</li>
+          `).join("") || "<li>none</li>"}
+        </ul>
+      </article>
+      <article class="card">
+        <h3>Rating limiting factors</h3>
+        <ul class="explain-list">
+          ${(rating.limitingFactors || []).map((item) => `
+            <li>${escapeHtml(item.code)} / ${escapeHtml(item.explanation)}</li>
+          `).join("") || "<li>none</li>"}
+        </ul>
+      </article>
+      <article class="card">
+        <h3>Rating warning factors</h3>
+        <ul class="explain-list">
+          ${(rating.warningFactors || []).map((item) => `
+            <li>${escapeHtml(item.code)} / ${escapeHtml(item.explanation)}</li>
+          `).join("") || "<li>none</li>"}
+        </ul>
+      </article>
+    </div>
+    <div class="cards three">
+      <article class="card">
+        <h3>Comparable influence</h3>
+        <ul class="explain-list">
+          ${(rating.comparableInfluence || []).map((item) => `
+            <li>${escapeHtml(item.comparableWorkId)} / ${escapeHtml(item.direction)} / score=${escapeHtml(item.similarityScore)}</li>
+          `).join("") || "<li>none</li>"}
+        </ul>
+      </article>
+      <article class="card">
+        <h3>Author ranking influence</h3>
+        <ul class="explain-list">
+          ${(rating.authorRankingInfluence || []).map((item) => `
+            <li>enabled=${escapeHtml(item.enabled)} / tier=${escapeHtml(item.authorTier || item.disabledReason || "none")} / ${escapeHtml(item.explanation)}</li>
+          `).join("") || "<li>none</li>"}
+        </ul>
+      </article>
+      <article class="card">
+        <h3>Heat adaptation and same-name risk</h3>
+        <ul class="explain-list">
+          ${(rating.heatInfluence || []).slice(0, 4).map((item) => `
+            <li>heat=${escapeHtml(item.code)} / ${escapeHtml(item.direction)}</li>
+          `).join("") || "<li>no heat influence</li>"}
+          ${(rating.adaptationInfluence || []).map((item) => `
+            <li>adaptation=${escapeHtml(item.signal || "none")} / ${escapeHtml(item.direction)}</li>
+          `).join("")}
+          ${(rating.sameNameAudioRiskInfluence || []).map((item) => `
+            <li>sameNameAudio=${escapeHtml(item.status)} / ${escapeHtml(item.direction)}</li>
+          `).join("")}
+        </ul>
       </article>
     </div>
     <div class="cards three">

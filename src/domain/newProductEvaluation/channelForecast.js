@@ -1,13 +1,28 @@
 import { usableHeatSignals } from "./materialFieldExtractor.js";
+import {
+  buildForecastWeighting,
+  scaleForecastContributions
+} from "./forecastWeighting.js";
 
 const YEAR_FACTORS = Object.freeze([1, 0.92, 0.84, 0.78, 0.72]);
 
-export function buildChannelForecast(fields, readiness) {
+export function buildChannelForecast(fields, readiness, context = {}) {
   if (readiness && readiness.numericForecastAllowed === false) {
     return {
       forecastStatus: "blocked",
+      forecastShape: "point_estimate_only",
       pointEstimateOnly: true,
+      forecastContributions: [],
+      limitations: [
+        "Numeric forecast is blocked by readiness hard blockers.",
+        "No forecast range is emitted.",
+        "No direct development recommendation is emitted.",
+        "No resource investment level is emitted."
+      ],
+      confidenceNotes: [],
       nonFormal: true,
+      fixtureOnly: true,
+      notForFormalDecision: true,
       blockedBy: readiness.hardBlockerCodes ?? []
     };
   }
@@ -19,11 +34,19 @@ export function buildChannelForecast(fields, readiness) {
     : 0;
   const sourceFactor = fields.source === "publication" ? 1.05 : 1;
   const volumeFactor = volumeScore(fields);
-  const baseFirstYear = Math.max(3000, Math.round((heatScore + volumeFactor) * sourceFactor * (1 + adaptationLift)));
+  const unweightedFirstYear = Math.max(3000, Math.round((heatScore + volumeFactor) * sourceFactor * (1 + adaptationLift)));
+  const weighting = buildForecastWeighting(
+    fields,
+    readiness,
+    context.comparableWorks,
+    context.authorRanking,
+    { referenceAmount: unweightedFirstYear }
+  );
+  const weightedFirstYear = Math.max(0, Math.round(unweightedFirstYear * weighting.forecastMultiplier));
   const totalWeight = channels.reduce((total, channel) => total + channel.weight, 0);
 
-  const channelForecasts = channels.map((channel) => {
-    const firstYearForecast = round(baseFirstYear * (channel.weight / totalWeight) * channel.channelFit);
+  const rawChannelForecasts = channels.map((channel) => {
+    const firstYearForecast = round(weightedFirstYear * (channel.weight / totalWeight) * channel.channelFit);
     const year1To5Breakdown = YEAR_FACTORS.map((factor, index) => ({
       year: index + 1,
       forecast: round(firstYearForecast * factor)
@@ -39,20 +62,41 @@ export function buildChannelForecast(fields, readiness) {
       limitations: channel.limitations ?? ["fixture-only point estimate; not a formal forecast"]
     };
   });
+  const totalForecast = aggregateChannelForecasts(rawChannelForecasts);
+  const channelForecasts = rawChannelForecasts.map((channel) => ({
+    ...channel,
+    channelContributionBreakdown: scaleForecastContributions(
+      weighting.forecastContributions,
+      totalForecast.firstYearForecast > 0 ? channel.firstYearForecast / totalForecast.firstYearForecast : 0
+    )
+  }));
 
   return {
     forecastStatus: "generated",
     forecastShape: "point_estimate_only",
     pointEstimateOnly: true,
     channelForecasts,
-    totalForecast: aggregateChannelForecasts(channelForecasts),
+    totalForecast,
+    forecastWeighting: {
+      weightingVersion: weighting.weightingVersion,
+      forecastMultiplier: weighting.forecastMultiplier,
+      appliedSignalCodes: weighting.forecastContributions.map((item) => item.signalCode),
+      nonFormal: true,
+      fixtureOnly: true,
+      notForFormalDecision: true
+    },
+    forecastContributions: weighting.forecastContributions,
     confidence: summarizeForecastConfidence(fields, channelForecasts),
-    limitations: [
+    limitations: unique([
       "Synthetic fixture forecast only.",
       "No forecast range is emitted.",
-      "No direct development recommendation is emitted."
-    ],
+      "No direct development recommendation is emitted.",
+      "No resource investment level is emitted.",
+      ...weighting.limitations
+    ]),
+    confidenceNotes: weighting.confidenceNotes,
     nonFormal: true,
+    fixtureOnly: true,
     notForFormalDecision: true
   };
 }
@@ -134,6 +178,10 @@ function positiveNumber(value, fallback) {
 
 function sum(values) {
   return values.reduce((total, value) => total + value, 0);
+}
+
+function unique(values) {
+  return [...new Set(values)];
 }
 
 function round(value) {

@@ -1,0 +1,34 @@
+{
+  "title": "M3 rating explanation design v0.1",
+  "generatedAt": "2026-06-28",
+  "status": "fixture_prototype_design",
+  "ratingType": "new_product_candidate_rating",
+  "ratingScale": ["S+", "S", "A", "B", "C", "D", "E"],
+  "outputs": [
+    "ratingExplanation",
+    "supportFactors",
+    "limitingFactors",
+    "warningFactors",
+    "comparableInfluence",
+    "authorRankingInfluence",
+    "heatInfluence",
+    "adaptationInfluence",
+    "sameNameAudioRiskInfluence",
+    "riskFlags",
+    "limitationNotes",
+    "uncertaintyNotes",
+    "manualReviewNotes"
+  ],
+  "forbiddenOutputs": [
+    "recommendedDevelopmentDecision",
+    "developmentRecommendation",
+    "resourceInvestmentLevel",
+    "formalReleaseConclusion"
+  ],
+  "nonFormal": true,
+  "fixtureOnly": true,
+  "notForFormalDecision": true,
+  "databaseConnected": false,
+  "migrationWritten": false,
+  "privateMaterialRead": false
+}

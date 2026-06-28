@@ -1,0 +1,28 @@
+{
+  "title": "M3-3 forecast rating integration plan v0.1",
+  "generatedAt": "2026-06-28",
+  "goal": "Integrate forecast weighting and rating explanation for M3 fixture prototype",
+  "plannedFiles": [
+    "src/domain/newProductEvaluation/forecastWeighting.js",
+    "src/domain/newProductEvaluation/ratingExplanation.js",
+    "src/domain/newProductEvaluation/channelForecast.js",
+    "src/domain/newProductEvaluation/newProductRating.js",
+    "src/domain/newProductEvaluation/newProductEvaluationEngine.js",
+    "public/admin/app.js",
+    "test/m3-forecast-weighting.test.js",
+    "test/m3-rating-explanation.test.js",
+    "test/m3-new-product-rating.test.js"
+  ],
+  "manualTestingDeferred": true,
+  "formalExecutionAllowed": false,
+  "databaseConnected": false,
+  "migrationWritten": false,
+  "privateMaterialRead": false,
+  "forbiddenOutputs": [
+    "forecastRange",
+    "optimistic",
+    "pessimistic",
+    "recommendedDevelopmentDecision",
+    "resourceInvestmentLevel"
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "title": "M3 forecast weighting design v0.1",
+  "generatedAt": "2026-06-28",
+  "status": "fixture_prototype_design",
+  "forecastShape": "point_estimate_only",
+  "forbiddenOutputs": [
+    "forecastRange",
+    "lowerBound",
+    "upperBound",
+    "optimistic",
+    "pessimistic",
+    "high",
+    "base",
+    "low",
+    "recommendedDevelopmentDecision",
+    "resourceInvestmentLevel"
+  ],
+  "signals": [
+    "readiness_quality",
+    "heat_signal_strength",
+    "comparable_works_strength",
+    "same_author_reference_strength",
+    "author_ranking_tier",
+    "adaptation_signal_boost",
+    "source_type",
+    "target_channel_suitability",
+    "same_name_audio_risk",
+    "material_completeness_warning",
+    "buyout_treatment_limitation"
+  ],
+  "channelLevelPointForecast": true,
+  "totalForecastIsChannelSum": true,
+  "nonFormal": true,
+  "fixtureOnly": true,
+  "notForFormalDecision": true,
+  "databaseConnected": false,
+  "migrationWritten": false,
+  "privateMaterialRead": false
+}
