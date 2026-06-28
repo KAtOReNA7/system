@@ -7,6 +7,8 @@ import {
   assertNoRawMaterialPayload,
   extractMaterialFields
 } from "../domain/newProductEvaluation/materialFieldExtractor.js";
+import { buildAuthorRanking } from "../domain/newProductEvaluation/authorRanking.js";
+import { buildComparableWorks } from "../domain/newProductEvaluation/comparableWorkSelector.js";
 import { evaluateNewProductMaterial } from "../domain/newProductEvaluation/newProductEvaluationEngine.js";
 
 export async function listM3NewProductMaterialFixtures(_config, { pagination }) {
@@ -56,6 +58,40 @@ export async function evaluateM3NewProductMaterialFixture(_config, materialId, p
     materialId,
     evaluation: evaluateNewProductMaterial(item),
     nonFormal: true,
+    rawMaterialStored: false,
+    privateFileRead: false
+  });
+}
+
+export async function getM3NewProductMaterialComparablesFixture(_config, materialId) {
+  const item = findMaterial(materialId);
+  if (!item) {
+    return null;
+  }
+  const parsed = extractMaterialFields(item);
+  return withDataset({
+    materialId,
+    comparableWorks: buildComparableWorks(parsed.normalizedFields),
+    nonFormal: true,
+    fixtureOnly: true,
+    notForFormalDecision: true,
+    rawMaterialStored: false,
+    privateFileRead: false
+  });
+}
+
+export async function getM3NewProductMaterialAuthorRankingFixture(_config, materialId) {
+  const item = findMaterial(materialId);
+  if (!item) {
+    return null;
+  }
+  const parsed = extractMaterialFields(item);
+  return withDataset({
+    materialId,
+    authorRanking: buildAuthorRanking(parsed.normalizedFields),
+    nonFormal: true,
+    fixtureOnly: true,
+    notForFormalDecision: true,
     rawMaterialStored: false,
     privateFileRead: false
   });

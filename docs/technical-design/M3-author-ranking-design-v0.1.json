@@ -1,0 +1,34 @@
+{
+  "schema": "m3.authorRankingDesign.v0.1",
+  "generatedAt": "2026-06-28",
+  "stage": "M3-2",
+  "status": "fixture_prototype_design",
+  "minimumMeasurableAuthorWorks": 3,
+  "disabledReasonWhenInsufficient": "insufficient_measurable_author_works",
+  "outputShape": [
+    "enabled",
+    "disabledReason",
+    "comparableAuthorWorkCount",
+    "measurableWorkCount",
+    "medianMonthlyEquivalent",
+    "topWorkMonthlyEquivalent",
+    "authorTier",
+    "rankingExplanation",
+    "limitations",
+    "nonFormal",
+    "fixtureOnly",
+    "notForFormalDecision"
+  ],
+  "forecastPolicy": {
+    "doesNotRecomputeChannelForecast": true,
+    "doesNotRestoreForecastRange": true,
+    "usedAsLaterExplanationInput": true
+  },
+  "safety": {
+    "usesSyntheticFixtureDataOnly": true,
+    "databaseConnected": false,
+    "migrationChanged": false,
+    "privateMaterialRead": false,
+    "formalExecutionEntered": false
+  }
+}

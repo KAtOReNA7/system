@@ -1,4 +1,6 @@
+import { buildAuthorRanking } from "./authorRanking.js";
 import { buildChannelForecast } from "./channelForecast.js";
+import { buildComparableWorks } from "./comparableWorkSelector.js";
 import { extractMaterialFields } from "./materialFieldExtractor.js";
 import { evaluateNewProductReadiness } from "./newProductReadiness.js";
 import {
@@ -19,6 +21,8 @@ export function evaluateNewProductMaterial(material) {
   const forecast = buildChannelForecast(fields, readiness);
   const candidateRating = buildNewProductCandidateRating(fields, forecast, readiness);
   const risks = buildNewProductRisks(fields, readiness, forecast);
+  const comparableWorks = buildComparableWorks(fields);
+  const authorRanking = buildAuthorRanking(fields);
 
   return {
     materialId: material.materialId,
@@ -29,11 +33,14 @@ export function evaluateNewProductMaterial(material) {
     parsedMaterial,
     readiness,
     forecast,
+    comparableWorks,
+    authorRanking,
     candidateRating,
     risks,
     comparatorDisplay: {
       operatorComparators: fields.operatorComparators ?? [],
-      systemComparators: buildSystemComparators(fields),
+      systemComparators: comparableWorks.systemSelected,
+      sameAuthorReferenceWorks: comparableWorks.sameAuthorReferenceWorks,
       displayTogether: true
     },
     guardrails: {
@@ -51,19 +58,4 @@ export function evaluateNewProductMaterial(material) {
     syntheticOnly: true,
     notForFormalDecision: true
   };
-}
-
-function buildSystemComparators(fields) {
-  const classification = fields.confirmedClassification ?? fields.classificationCandidate ?? [];
-  if (!classification.length) {
-    return [];
-  }
-  return [
-    {
-      comparatorId: "SYN-M3-COMPARATOR-001",
-      basis: "synthetic classification and heat similarity",
-      classificationPath: classification,
-      nonFormal: true
-    }
-  ];
 }

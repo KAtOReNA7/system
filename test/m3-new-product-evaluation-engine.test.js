@@ -38,6 +38,18 @@ test("engine does not output development recommendation or resource investment l
   assert.equal(result.guardrails.resourceLevelEmitted, false);
 });
 
+test("engine includes M3-2 comparable works and author ranking", () => {
+  const result = evaluateNewProductMaterial(M3_NEW_PRODUCT_MATERIAL_FIXTURES[0]);
+
+  assert.ok(result.comparableWorks.systemSelected.length <= 3);
+  assert.equal(result.comparableWorks.operatorSpecified[0].notCountedAgainstSystemLimit, true);
+  assert.ok(result.comparableWorks.sameAuthorReferenceWorks.length >= 3);
+  assert.ok(result.comparableWorks.excluded.some((item) => item.excludedReasonCode));
+  assert.equal(result.authorRanking.enabled, true);
+  assert.equal(result.authorRanking.measurableWorkCount, 3);
+  assert.equal(result.comparatorDisplay.displayTogether, true);
+});
+
 test("blocked material does not produce numeric channel forecast", () => {
   const result = evaluateNewProductMaterial(M3_NEW_PRODUCT_MATERIAL_FIXTURES[2]);
 

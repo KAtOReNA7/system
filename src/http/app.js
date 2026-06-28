@@ -40,6 +40,8 @@ import {
 } from "../repositories/m2EvaluationExportRepository.js";
 import {
   evaluateM3NewProductMaterialFixture,
+  getM3NewProductMaterialAuthorRankingFixture,
+  getM3NewProductMaterialComparablesFixture,
   getM3NewProductMaterialFixtureById,
   listM3NewProductMaterialFixtures,
   parseM3NewProductMaterialFixture
@@ -119,7 +121,11 @@ export function createApp(config, options = {}) {
     parseM3NewProductMaterialFixture:
       options.parseM3NewProductMaterialFixture ?? parseM3NewProductMaterialFixture,
     evaluateM3NewProductMaterialFixture:
-      options.evaluateM3NewProductMaterialFixture ?? evaluateM3NewProductMaterialFixture
+      options.evaluateM3NewProductMaterialFixture ?? evaluateM3NewProductMaterialFixture,
+    getM3NewProductMaterialComparablesFixture:
+      options.getM3NewProductMaterialComparablesFixture ?? getM3NewProductMaterialComparablesFixture,
+    getM3NewProductMaterialAuthorRankingFixture:
+      options.getM3NewProductMaterialAuthorRankingFixture ?? getM3NewProductMaterialAuthorRankingFixture
   };
 
   return async function app(request, response) {
@@ -185,6 +191,28 @@ export function createApp(config, options = {}) {
           const materialId = decodeURIComponent(evaluateMatch[1]);
           const payload = await readJsonBody(request);
           const body = await repositories.evaluateM3NewProductMaterialFixture(config, materialId, payload);
+          if (!body) {
+            throw notFound("M3 material fixture");
+          }
+          sendJson(response, 200, body, requestId);
+          return;
+        }
+
+        const comparablesMatch = path.match(/^\/api\/m3\/new-product\/material-fixtures\/([^/]+)\/comparables$/);
+        if (request.method === "GET" && comparablesMatch) {
+          const materialId = decodeURIComponent(comparablesMatch[1]);
+          const body = await repositories.getM3NewProductMaterialComparablesFixture(config, materialId);
+          if (!body) {
+            throw notFound("M3 material fixture");
+          }
+          sendJson(response, 200, body, requestId);
+          return;
+        }
+
+        const authorRankingMatch = path.match(/^\/api\/m3\/new-product\/material-fixtures\/([^/]+)\/author-ranking$/);
+        if (request.method === "GET" && authorRankingMatch) {
+          const materialId = decodeURIComponent(authorRankingMatch[1]);
+          const body = await repositories.getM3NewProductMaterialAuthorRankingFixture(config, materialId);
           if (!body) {
             throw notFound("M3 material fixture");
           }

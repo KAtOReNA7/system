@@ -46,6 +46,10 @@ test("admin JavaScript calls M3 fixture API and shows non-formal guardrails", as
   assert.match(response.body, /nonFormal=true/);
   assert.match(response.body, /No forecast range/);
   assert.match(response.body, /No development recommendation/);
+  assert.match(response.body, /System comparable works/);
+  assert.match(response.body, /sameAuthorReferenceWorks/);
+  assert.match(response.body, /Author ranking/);
+  assert.match(response.body, /Buyout treatment/);
   assert.doesNotMatch(response.body, /method:\s*["'`](PUT|PATCH|DELETE)/i);
   assert.doesNotMatch(response.body, /switch_mapping_version/i);
 });

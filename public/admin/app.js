@@ -2673,6 +2673,8 @@ function renderM3MaterialDetail(item, parseResult, evaluation) {
   const readiness = evaluation?.readiness || {};
   const forecast = evaluation?.forecast || {};
   const rating = evaluation?.candidateRating || {};
+  const comparableWorks = evaluation?.comparableWorks || {};
+  const authorRanking = evaluation?.authorRanking || {};
   return `
     <div class="cards three">
       <article class="card">
@@ -2721,6 +2723,61 @@ function renderM3MaterialDetail(item, parseResult, evaluation) {
         ${renderMetric("firstYearForecast", forecast.totalForecast?.firstYearForecast ?? "blocked")}
         ${renderMetric("fiveYearTotal", forecast.totalForecast?.fiveYearTotal ?? "blocked")}
         ${renderMetric("forecastRangeEmitted", evaluation?.guardrails?.forecastRangeEmitted)}
+      </article>
+    </div>
+    <div class="cards three">
+      <article class="card">
+        <h3>System comparable works</h3>
+        <p class="pagination-note">Max 3 system comparables. Operator comparators do not override system comparables.</p>
+        <ul class="explain-list">
+          ${(comparableWorks.systemSelected || []).map((item) => `
+            <li>${escapeHtml(item.comparableWorkId)} score=${escapeHtml(item.similarityScore)} / ${escapeHtml(item.buyoutTreatment)}</li>
+          `).join("") || "<li>none</li>"}
+        </ul>
+      </article>
+      <article class="card">
+        <h3>Operator and sameAuthorReferenceWorks</h3>
+        <p class="pagination-note">Operator specified comparators are displayed beside system comparables. Same-author works do not consume comparable slots.</p>
+        <ul class="explain-list">
+          ${(comparableWorks.operatorSpecified || []).map((item) => `
+            <li>operator=${escapeHtml(item.operatorComparatorId)} matched=${escapeHtml(item.matchedToSyntheticFixture || "none")}</li>
+          `).join("") || "<li>no operator specified comparator</li>"}
+          ${(comparableWorks.sameAuthorReferenceWorks || []).map((item) => `
+            <li>sameAuthor=${escapeHtml(item.authorWorkId)} monthly=${escapeHtml(item.monthlyEquivalent)}</li>
+          `).join("") || "<li>no same-author reference</li>"}
+        </ul>
+      </article>
+      <article class="card">
+        <h3>Author ranking</h3>
+        ${renderMetric("enabled", authorRanking.enabled)}
+        ${renderMetric("disabledReason", authorRanking.disabledReason || "none")}
+        ${renderMetric("measurableWorkCount", authorRanking.measurableWorkCount ?? 0)}
+        ${renderMetric("authorTier", authorRanking.authorTier || "none")}
+        ${renderMetric("medianMonthlyEquivalent", authorRanking.medianMonthlyEquivalent ?? "none")}
+      </article>
+    </div>
+    <div class="cards three">
+      <article class="card">
+        <h3>Excluded comparable reasons</h3>
+        <ul class="explain-list">
+          ${(comparableWorks.excluded || []).slice(0, 6).map((item) => `
+            <li>${escapeHtml(item.candidateId)} / ${escapeHtml(item.excludedReasonCode)} / ${escapeHtml(item.excludedReason)}</li>
+          `).join("") || "<li>none</li>"}
+        </ul>
+      </article>
+      <article class="card">
+        <h3>Buyout treatment</h3>
+        <ul class="explain-list">
+          ${(comparableWorks.systemSelected || []).map((item) => `
+            <li>${escapeHtml(item.comparableWorkId)} / ${escapeHtml(item.revenueBasis?.type)} / salesCurveEligible=${escapeHtml(item.revenueBasis?.salesCurveEligible)}</li>
+          `).join("") || "<li>no sales-curve comparable</li>"}
+        </ul>
+      </article>
+      <article class="card">
+        <h3>M3-2 boundary</h3>
+        ${renderMetric("fixtureOnly", comparableWorks.fixtureOnly)}
+        ${renderMetric("nonFormal", comparableWorks.nonFormal)}
+        ${renderMetric("notForFormalDecision", comparableWorks.notForFormalDecision)}
       </article>
     </div>
   `;

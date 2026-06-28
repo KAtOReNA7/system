@@ -68,7 +68,23 @@ test("M3 parse and evaluate APIs process only synthetic fixture ids", async () =
   assert.equal(evaluateResponse.statusCode, 200);
   assert.equal(evaluateResponse.body.evaluation.nonFormal, true);
   assert.equal(evaluateResponse.body.evaluation.forecast.pointEstimateOnly, true);
+  assert.equal(evaluateResponse.body.evaluation.comparableWorks.fixtureOnly, true);
+  assert.equal(evaluateResponse.body.evaluation.authorRanking.nonFormal, true);
   assert.equal(evaluateResponse.body.evaluation.guardrails.databaseWritten, false);
+});
+
+test("M3 comparable and author-ranking APIs are fixture-only and non-formal", async () => {
+  const comparablesResponse = await request("/api/m3/new-product/material-fixtures/SYN-M3-MATERIAL-001/comparables");
+  const authorRankingResponse = await request("/api/m3/new-product/material-fixtures/SYN-M3-MATERIAL-001/author-ranking");
+
+  assert.equal(comparablesResponse.statusCode, 200);
+  assert.equal(comparablesResponse.body.comparableWorks.nonFormal, true);
+  assert.equal(comparablesResponse.body.comparableWorks.fixtureOnly, true);
+  assert.equal(comparablesResponse.body.comparableWorks.systemSelected.length <= 3, true);
+  assert.equal(authorRankingResponse.statusCode, 200);
+  assert.equal(authorRankingResponse.body.authorRanking.nonFormal, true);
+  assert.equal(authorRankingResponse.body.authorRanking.fixtureOnly, true);
+  assert.equal(authorRankingResponse.body.authorRanking.enabled, true);
 });
 
 test("M3 parse API rejects raw material payload", async () => {
@@ -102,4 +118,6 @@ test("M3 fixture API output does not expose forbidden private markers", async ()
   assert.equal(text.includes(".pdf"), false);
   assert.equal(text.includes("postgres://"), false);
   assert.equal(text.includes("postgresql://"), false);
+  assert.equal(text.includes("developmentRecommendation"), false);
+  assert.equal(text.includes("resourceInvestmentLevel"), false);
 });

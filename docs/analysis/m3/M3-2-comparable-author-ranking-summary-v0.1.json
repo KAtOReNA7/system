@@ -1,0 +1,42 @@
+{
+  "schema": "m3.comparableAuthorRankingSummary.v0.1",
+  "generatedAt": "2026-06-28",
+  "stage": "M3-2",
+  "status": "completed_fixture_prototype",
+  "comparableWorksPrototypeCompleted": true,
+  "authorRankingPrototypeCompleted": true,
+  "materialFirstPreserved": true,
+  "manualTestingDeferred": true,
+  "userFillPackageGenerated": false,
+  "systemComparableLimit": 3,
+  "operatorSpecifiedDisplayedBesideSystem": true,
+  "sameAuthorReferenceWorksSeparated": true,
+  "buyoutIncomeSeparatedOrExcluded": true,
+  "evaluationEngineIntegrated": true,
+  "fixtureOnlyApiAdded": true,
+  "adminReadOnlyDisplayAdded": true,
+  "validationResults": {
+    "checkNoRealData": "passed",
+    "lint": "passed",
+    "build": "passed",
+    "test": {
+      "status": "passed",
+      "count": 434
+    },
+    "smoke": "passed",
+    "e2e": {
+      "status": "passed",
+      "count": 13
+    }
+  },
+  "formalExecutionStillForbidden": true,
+  "databaseConnected": false,
+  "dockerExecuted": false,
+  "migrationChanged": false,
+  "privateMaterialRead": false,
+  "privateMaterialCommitted": false,
+  "forecastRangeRestored": false,
+  "developmentRecommendationEmitted": false,
+  "resourceInvestmentLevelEmitted": false,
+  "recommendedNextTask": "M3-3 forecast weight and rating explanation integration"
+}

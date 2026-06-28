@@ -1,0 +1,43 @@
+{
+  "schema": "m3.comparableWorksDesign.v0.1",
+  "generatedAt": "2026-06-28",
+  "stage": "M3-2",
+  "status": "fixture_prototype_design",
+  "systemComparableLimit": 3,
+  "operatorSpecifiedPolicy": "display_beside_system_comparables_without_override",
+  "sameAuthorPolicy": "separate_sameAuthorReferenceWorks_not_counted_against_system_limit",
+  "selectionSignals": [
+    "source_match",
+    "classification_similarity",
+    "volume_similarity",
+    "completion_status",
+    "heat_signal",
+    "channel_similarity",
+    "revenue_model",
+    "buyout_status",
+    "same_author",
+    "operator_specified"
+  ],
+  "buyoutTreatment": {
+    "pure_buyout": "separated_historical_value_reference_not_sales_curve",
+    "buyout_plus_sales": "sales_component_used_buyout_component_reported_separately",
+    "pure_sales_share": "sales_curve_eligible"
+  },
+  "outputShape": [
+    "systemSelected",
+    "operatorSpecified",
+    "sameAuthorReferenceWorks",
+    "excluded",
+    "selectionRules",
+    "limitations",
+    "nonFormal",
+    "fixtureOnly",
+    "notForFormalDecision"
+  ],
+  "safety": {
+    "databaseConnected": false,
+    "migrationChanged": false,
+    "privateMaterialRead": false,
+    "formalExecutionEntered": false
+  }
+}
