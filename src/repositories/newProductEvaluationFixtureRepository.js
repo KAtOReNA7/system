@@ -19,6 +19,7 @@ import { evaluateNewProductMaterial } from "../domain/newProductEvaluation/newPr
 import { evaluateNewProductReadiness } from "../domain/newProductEvaluation/newProductReadiness.js";
 import { generateResearchQuestions } from "../domain/newProductEvaluation/researchQuestionGenerator.js";
 import { buildM3WorkflowTimeline } from "../domain/newProductEvaluation/workflowStateMachine.js";
+import { buildSyntheticCompletionDryRunReview } from "../domain/newProductEvaluation/dryRunReview.js";
 
 export async function listM3NewProductMaterialFixtures(_config, { pagination }) {
   const items = M3_NEW_PRODUCT_MATERIAL_FIXTURES.map(toMaterialSummary);
@@ -203,6 +204,17 @@ export async function createM3NewProductBacktestAnchorFixture(_config, materialI
     fixtureOnly: true,
     notForFormalDecision: true,
     rawMaterialStored: false,
+    privateFileRead: false
+  });
+}
+
+export async function getM3NewProductDryRunReviewFixture() {
+  return withDataset({
+    dryRunReview: buildSyntheticCompletionDryRunReview(),
+    nonFormal: true,
+    fixtureOnly: true,
+    notForFormalDecision: true,
+    databaseWritten: false,
     privateFileRead: false
   });
 }

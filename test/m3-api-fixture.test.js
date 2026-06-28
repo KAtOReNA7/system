@@ -134,6 +134,28 @@ test("M3 workflow and backtest-anchor APIs are fixture-only and non-formal", asy
   assert.equal(anchorResponse.body.workflow.currentState, "backtest_anchor_locked_fixture");
 });
 
+test("M3 dry-run review API is fixture-only and summarizes completion before after", async () => {
+  const response = await request("/api/m3/new-product/dry-run-review");
+
+  assert.equal(response.statusCode, 200);
+  assert.equal(response.body.dryRunReview.fixtureOnly, true);
+  assert.equal(response.body.dryRunReview.nonFormal, true);
+  assert.equal(response.body.dryRunReview.notForFormalDecision, true);
+  assert.equal(response.body.dryRunReview.overview.completionNeededCount, 3);
+  assert.equal(response.body.dryRunReview.overview.completionAppliedCount, 3);
+  assert.equal(response.body.dryRunReview.overview.forecastGeneratedCount, 3);
+  assert.equal(response.body.dryRunReview.overview.ratingGeneratedCount, 3);
+  assert.equal(response.body.dryRunReview.beforeAfterComparison.every((item) => item.afterMissingCoreFields.length === 0), true);
+  assert.equal(response.body.dryRunReview.guardrails.databaseConnected, false);
+});
+
+test("M3 dry-run review formal mode is blocked without reading database", async () => {
+  const response = await request("/api/m3/new-product/dry-run-review?mode=formal");
+
+  assert.equal(response.statusCode, 423);
+  assert.equal(response.body.error.code, "formal_data_blocked");
+});
+
 test("M3 parse API rejects raw material payload", async () => {
   const response = await request("/api/m3/new-product/material-fixtures/SYN-M3-MATERIAL-001/parse", {
     method: "POST",

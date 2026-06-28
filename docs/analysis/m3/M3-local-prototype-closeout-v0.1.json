@@ -1,0 +1,73 @@
+{
+  "title": "M3 local prototype closeout v0.1",
+  "generatedAt": "2026-06-28",
+  "scope": "fixture_only_synthetic_completion_local_prototype",
+  "localPrototypeClosed": true,
+  "formalComplete": false,
+  "privateCompletionPackRead": false,
+  "privateCompletionPackApplied": false,
+  "completedModules": [
+    "material_first_input",
+    "supported_material_formats",
+    "content_extraction_provider",
+    "field_completion_workflow",
+    "synthetic_completion_apply",
+    "readiness",
+    "research_questions",
+    "external_evidence",
+    "comparables",
+    "author_ranking",
+    "channel_point_forecast",
+    "forecast_weighting",
+    "rating_explanation",
+    "workflow_state_machine",
+    "backtest_anchor",
+    "dry_run_review_prototype"
+  ],
+  "syntheticCompletion": {
+    "materialCount": 3,
+    "beforeReadiness": {
+      "blocked": 3
+    },
+    "afterReadinessBlocked": false,
+    "forecastGeneratedCount": 3,
+    "ratingGeneratedCount": 3,
+    "workflowCompletedCount": 3,
+    "backtestAnchorCandidateCount": 3,
+    "blockedERatingPlaceholderRemoved": true
+  },
+  "explicitNonGoals": [
+    "formal_execution",
+    "database_read_or_write",
+    "migration",
+    "production_task_export_write_api",
+    "real_search",
+    "chatgpt_web_automation",
+    "chrome_plugin",
+    "browser_automation",
+    "ocr",
+    "real_private_material_formal_evaluation",
+    "development_recommendation",
+    "resource_investment_level",
+    "forecast_range"
+  ],
+  "nextStep": [
+    "user_fills_real_private_completion_pack",
+    "user_separately_authorizes_field_completion_apply",
+    "generate_after_completion_private_dry_run_result",
+    "human_acceptance_review"
+  ],
+  "guardrails": {
+    "databaseConnected": false,
+    "migrationWritten": false,
+    "privateInputCommitted": false,
+    "privateOutputCommitted": false,
+    "originalMaterialCommitted": false,
+    "ocrCalled": false,
+    "realSearchCalled": false,
+    "chatGptWebCalled": false,
+    "chromePluginCalled": false,
+    "browserAutomationCalled": false,
+    "formalExecution": false
+  }
+}

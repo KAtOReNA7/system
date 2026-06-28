@@ -1,0 +1,40 @@
+{
+  "title": "M3 formal boundary after prototype v0.1",
+  "generatedAt": "2026-06-28",
+  "m3LocalPrototypeComplete": true,
+  "m3FormalComplete": false,
+  "m2ReadinessFormalClose": false,
+  "privateDryRunUse": "local_review_only",
+  "formalM3Blocked": true,
+  "requiredBeforeFormalM3": [
+    "user_authorization",
+    "m2_readiness_rerun",
+    "data_source_closure",
+    "formal_db_migration_design",
+    "task_export_release_audit_mechanism",
+    "private_material_compliance_handling",
+    "formal_acceptance_criteria",
+    "rollback_and_audit_trail"
+  ],
+  "prohibitedClaims": [
+    "m3_production_ready",
+    "m3_formal_complete",
+    "approved_formal_evaluation",
+    "release_ready",
+    "compliant_private_material_processing"
+  ],
+  "guardrails": {
+    "databaseConnected": false,
+    "migrationWritten": false,
+    "formalExecution": false,
+    "privateInputCommitted": false,
+    "privateOutputCommitted": false,
+    "originalMaterialCommitted": false,
+    "realSearchCalled": false,
+    "chatGptWebCalled": false,
+    "chromePluginCalled": false,
+    "browserAutomationCalled": false,
+    "ocrCalled": false
+  },
+  "recommendedNextGate": "after_user_completion_and_human_acceptance_run_m3_formal_boundary_prd_alignment_audit"
+}

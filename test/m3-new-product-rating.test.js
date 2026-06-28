@@ -23,12 +23,14 @@ test("new product rating uses comparable and author ranking explanation signals"
   assert.ok(result.candidateRating.authorRankingInfluence.length > 0);
 });
 
-test("blocked forecast caps candidate rating and explains readiness blockers", () => {
+test("blocked forecast does not emit E placeholder rating and explains readiness blockers", () => {
   const result = evaluateNewProductMaterial(M3_NEW_PRODUCT_MATERIAL_FIXTURES[2]);
 
   assert.equal(result.forecast.forecastStatus, "blocked");
-  assert.equal(result.candidateRating.rating, "E");
-  assert.equal(result.candidateRating.value, "E");
+  assert.equal(result.candidateRating.rating, null);
+  assert.equal(result.candidateRating.value, null);
+  assert.equal(result.candidateRating.ratingStatus, "not_generated_due_to_readiness_blocked");
+  assert.equal(result.candidateRating.candidateRatingGenerated, false);
   assert.ok(result.candidateRating.limitingFactors.some((item) => item.code === "numeric_forecast_blocked"));
   assert.equal(result.candidateRating.nonFormal, true);
 });

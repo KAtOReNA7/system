@@ -64,6 +64,10 @@ test("admin JavaScript calls M3 fixture API and shows non-formal guardrails", as
   assert.match(response.body, /Backtest anchor/);
   assert.match(response.body, /Backtest future windows/);
   assert.match(response.body, /No real backtest yet/);
+  assert.match(response.body, /M3_DRY_RUN_REVIEW_API/);
+  assert.match(response.body, /Dry-run review overview/);
+  assert.match(response.body, /Before completion chain|After completion chain/);
+  assert.match(response.body, /Human acceptance checklist/);
   assert.match(response.body, /No real search/);
   assert.match(response.body, /browser automation/);
   assert.doesNotMatch(response.body, /method:\s*["'`](PUT|PATCH|DELETE)/i);

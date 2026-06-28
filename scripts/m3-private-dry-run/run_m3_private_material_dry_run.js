@@ -3,6 +3,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { evaluateNewProductMaterial } from "../../src/domain/newProductEvaluation/newProductEvaluationEngine.js";
+import { deriveMissingCoreFields, M3_CORE_COMPLETION_FIELDS } from "../../src/domain/newProductEvaluation/fieldCompletion.js";
 import {
   DEFAULT_INPUT_DIR,
   DEFAULT_OUTPUT_DIR,
@@ -14,6 +15,7 @@ import { extractPrivateMaterialContent } from "./private_material_content_extrac
 
 export const PRIVATE_RESULT_JSON = "M3-private-material-dry-run-result-v0.1.json";
 export const PRIVATE_RESULT_MARKDOWN = "M3-private-material-dry-run-result-v0.1.md";
+export { deriveMissingCoreFields, M3_CORE_COMPLETION_FIELDS };
 
 const SCRIPT_PATH = fileURLToPath(import.meta.url);
 const IS_CLI = path.resolve(process.argv[1] ?? "") === path.resolve(SCRIPT_PATH);
@@ -50,34 +52,6 @@ const FIELD_KEY_MAP = new Map([
   ["materialUpdatedAt", "materialUpdatedAt"],
   ["inputConfirmedBy", "inputConfirmedBy"]
 ]);
-
-export const M3_CORE_COMPLETION_FIELDS = Object.freeze([
-  "title",
-  "author",
-  "source",
-  "classification",
-  "wordCountOrAudioVolumeEstimate",
-  "heatSignal",
-  "copyrightTermRange",
-  "targetChannels",
-  "sameNameAudioStatusCheckStatus",
-  "completionStatus"
-]);
-
-const HARD_BLOCKER_TO_CORE_FIELDS = Object.freeze({
-  missing_title: ["title"],
-  missing_author: ["author"],
-  missing_source: ["source"],
-  unsupported_source: ["source"],
-  missing_classification: ["classification"],
-  missing_volume_estimate: ["wordCountOrAudioVolumeEstimate"],
-  missing_heat_signal: ["heatSignal"],
-  missing_copyright_term: ["copyrightTermRange"],
-  missing_target_channels: ["targetChannels"],
-  missing_same_name_audio_check_status: ["sameNameAudioStatusCheckStatus"],
-  same_name_audio_not_checked: ["sameNameAudioStatusCheckStatus"],
-  missing_completion_status_web_original: ["completionStatus"]
-});
 
 export function runM3PrivateMaterialDryRun(options = {}) {
   const repoRoot = path.resolve(options.repoRoot ?? process.cwd());
@@ -612,16 +586,6 @@ function buildPreparationGuidance(safety) {
     ],
     issues: safety.issues
   };
-}
-
-export function deriveMissingCoreFields(hardBlockers = []) {
-  const fields = [];
-  for (const blocker of hardBlockers) {
-    for (const field of HARD_BLOCKER_TO_CORE_FIELDS[blocker] ?? []) {
-      fields.push(field);
-    }
-  }
-  return [...new Set(fields)].filter((field) => M3_CORE_COMPLETION_FIELDS.includes(field));
 }
 
 function normalizeParsedValue(key, rawValue) {

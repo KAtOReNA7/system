@@ -47,6 +47,7 @@ import {
   getM3NewProductMaterialFixtureById,
   getM3NewProductMaterialResearchQuestionsFixture,
   getM3NewProductMaterialWorkflowFixture,
+  getM3NewProductDryRunReviewFixture,
   listM3NewProductMaterialFixtures,
   parseM3NewProductMaterialFixture
 } from "../repositories/newProductEvaluationFixtureRepository.js";
@@ -136,6 +137,8 @@ export function createApp(config, options = {}) {
       options.getM3NewProductMaterialResearchQuestionsFixture ?? getM3NewProductMaterialResearchQuestionsFixture,
     getM3NewProductMaterialWorkflowFixture:
       options.getM3NewProductMaterialWorkflowFixture ?? getM3NewProductMaterialWorkflowFixture,
+    getM3NewProductDryRunReviewFixture:
+      options.getM3NewProductDryRunReviewFixture ?? getM3NewProductDryRunReviewFixture,
     createM3NewProductBacktestAnchorFixture:
       options.createM3NewProductBacktestAnchorFixture ?? createM3NewProductBacktestAnchorFixture
   };
@@ -287,6 +290,13 @@ export function createApp(config, options = {}) {
           sendJson(response, 200, body, requestId);
           return;
         }
+      }
+
+      if (request.method === "GET" && path === "/api/m3/new-product/dry-run-review") {
+        blockFormalM3Mode(request, url);
+        const body = await repositories.getM3NewProductDryRunReviewFixture(config);
+        sendJson(response, 200, body, requestId);
+        return;
       }
 
       if (request.method === "GET" && path === "/api/works") {

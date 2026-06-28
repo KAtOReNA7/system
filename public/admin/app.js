@@ -71,6 +71,7 @@ const M2_FIXTURE_TASK_API = `/api/m2/fixture/${["evaluation", "tasks"].join("-")
 const M2_ADVISORY_SUMMARY_API = "/api/m2/fixture/advisory-reviews/summary";
 const M2_FIXTURE_EXPORTS_API = "/api/m2/fixture/exports";
 const M3_MATERIAL_FIXTURE_API = "/api/m3/new-product/material-fixtures";
+const M3_DRY_RUN_REVIEW_API = "/api/m3/new-product/dry-run-review";
 
 const fixture = {
   health: {
@@ -2582,6 +2583,7 @@ async function renderM3Materials() {
         fixtureOnly: true
       })
       : null;
+    const dryRunReview = await getM2Json(M3_DRY_RUN_REVIEW_API);
 
     setPageState("m3-materials", "success");
     document.querySelector("#m3MaterialsContent").innerHTML = `
@@ -2591,6 +2593,7 @@ async function renderM3Materials() {
         <p>fixture-only material parsing prototype. nonFormal=true, rawMaterialStored=false, privateFileRead=false, formalExecutionAllowed=false.</p>
         <p>No development recommendation. No resource investment level. No forecast range.</p>
       </div>
+      ${renderM3DryRunReviewPanel(dryRunReview.dryRunReview)}
       <div class="table-wrap">
         ${renderTableHint()}
         <table>
@@ -2632,6 +2635,89 @@ async function renderM3Materials() {
       title: "M3 material fixture unavailable"
     });
   }
+}
+
+function renderM3DryRunReviewPanel(review = {}) {
+  const overview = review.overview || {};
+  const comparisons = review.beforeAfterComparison || [];
+  const checklist = review.humanAcceptanceChecklist || [];
+  return `
+    <section class="m2-safety-panel" data-testid="m3-dry-run-review-panel">
+      <div class="meta-row">
+        <span class="badge warn">dry-run review prototype</span>
+        <span class="badge warn">fixture-only</span>
+        <span class="badge warn">non-formal</span>
+        <span class="badge warn">not for formal decision</span>
+      </div>
+      <div class="cards three compact-cards">
+        <article class="card">
+          <h3>Dry-run review overview</h3>
+          ${renderMetric("materialCount", overview.materialCount ?? 0)}
+          ${renderMetric("completionNeeded", overview.completionNeededCount ?? 0)}
+          ${renderMetric("completionApplied", overview.completionAppliedCount ?? 0)}
+          ${renderMetric("backtestAnchors", overview.backtestAnchorCount ?? 0)}
+        </article>
+        <article class="card">
+          <h3>After completion chain</h3>
+          ${renderMetric("forecastGenerated", overview.forecastGeneratedCount ?? 0)}
+          ${renderMetric("ratingGenerated", overview.ratingGeneratedCount ?? 0)}
+          ${renderMetric("workflowCompleted", overview.workflowCompletedCount ?? 0)}
+          ${renderMetric("afterReadiness", JSON.stringify(overview.afterReadinessDistribution || {}))}
+        </article>
+        <article class="card">
+          <h3>Review boundary</h3>
+          ${renderMetric("fixtureOnly", review.fixtureOnly)}
+          ${renderMetric("nonFormal", review.nonFormal)}
+          ${renderMetric("notForFormalDecision", review.notForFormalDecision)}
+          <p class="pagination-note">No development recommendation. No resource investment level. No forecast range.</p>
+        </article>
+      </div>
+      <div class="table-wrap">
+        ${renderTableHint()}
+        <table>
+          <thead>
+            <tr>
+              <th>anonymous material</th>
+              <th>before readiness</th>
+              <th>after readiness</th>
+              <th>before missing core fields</th>
+              <th>after missing core fields</th>
+              <th>forecast after completion</th>
+              <th>rating after completion</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${comparisons.map((item) => `
+              <tr>
+                <td>${escapeHtml(item.anonymousMaterialId)}</td>
+                <td>${escapeHtml(item.beforeReadiness)}</td>
+                <td>${escapeHtml(item.afterReadiness)}</td>
+                <td>${escapeHtml((item.beforeMissingCoreFields || []).join(", ") || "none")}</td>
+                <td>${escapeHtml((item.afterMissingCoreFields || []).join(", ") || "none")}</td>
+                <td>${escapeHtml(item.forecastGeneratedAfterCompletion)}</td>
+                <td>${escapeHtml(item.ratingGeneratedAfterCompletion)}</td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>
+      <div class="cards two compact-cards">
+        <article class="card">
+          <h3>Human acceptance checklist</h3>
+          <ul class="explain-list">
+            ${checklist.map((item) => `<li>${escapeHtml(item.item)} / ${escapeHtml(item.reviewStatus)}</li>`).join("")}
+          </ul>
+        </article>
+        <article class="card">
+          <h3>Prototype guardrails</h3>
+          ${renderMetric("databaseConnected", review.guardrails?.databaseConnected)}
+          ${renderMetric("migrationExecuted", review.guardrails?.migrationExecuted)}
+          ${renderMetric("realSearchCalled", review.guardrails?.realSearchCalled)}
+          ${renderMetric("browserAutomationCalled", review.guardrails?.browserAutomationCalled)}
+        </article>
+      </div>
+    </section>
+  `;
 }
 
 function renderM3DatasetPanel(data) {

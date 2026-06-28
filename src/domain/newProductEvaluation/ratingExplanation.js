@@ -101,7 +101,7 @@ function buildLimitingFactors(fields, readiness, forecast, authorRanking) {
   if (forecast.forecastStatus === "blocked") {
     factors.push({
       code: "numeric_forecast_blocked",
-      explanation: "Numeric forecast is blocked by readiness and the candidate rating is capped."
+      explanation: "Numeric forecast is blocked by readiness and the candidate rating is not generated."
     });
   }
   if (!authorRanking.enabled) {
