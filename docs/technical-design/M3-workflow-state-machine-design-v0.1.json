@@ -1,0 +1,50 @@
+{
+  "title": "M3 workflow state machine design v0.1",
+  "generatedAt": "2026-06-28",
+  "status": "fixture_prototype_design",
+  "states": [
+    "material_received",
+    "material_parsed",
+    "research_questions_generated",
+    "evidence_pending",
+    "evidence_attached",
+    "readiness_blocked",
+    "readiness_warning_only",
+    "ready_for_fixture_evaluation",
+    "comparables_selected",
+    "author_ranking_evaluated",
+    "forecast_generated",
+    "rating_explained",
+    "fixture_evaluation_completed",
+    "backtest_anchor_candidate",
+    "backtest_anchor_locked_fixture"
+  ],
+  "transitionLogFields": [
+    "fromState",
+    "toState",
+    "reason",
+    "triggeredBy",
+    "timestampSynthetic",
+    "nonFormal"
+  ],
+  "connectedModules": [
+    "materialFieldExtractor",
+    "researchQuestionGenerator",
+    "externalEvidence",
+    "newProductReadiness",
+    "comparableWorkSelector",
+    "authorRanking",
+    "channelForecast",
+    "forecastWeighting",
+    "newProductRating",
+    "ratingExplanation",
+    "newProductEvaluationEngine",
+    "backtestAnchor"
+  ],
+  "nonFormal": true,
+  "fixtureOnly": true,
+  "notForFormalDecision": true,
+  "databaseWritten": false,
+  "migrationWritten": false,
+  "formalTaskExportWriteApiOpened": false
+}

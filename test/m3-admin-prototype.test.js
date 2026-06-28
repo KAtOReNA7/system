@@ -58,6 +58,12 @@ test("admin JavaScript calls M3 fixture API and shows non-formal guardrails", as
   assert.match(response.body, /Research questions/);
   assert.match(response.body, /External evidence/);
   assert.match(response.body, /GPT web-assisted boundary/);
+  assert.match(response.body, /Workflow overview/);
+  assert.match(response.body, /Workflow timeline/);
+  assert.match(response.body, /Full evaluation chain/);
+  assert.match(response.body, /Backtest anchor/);
+  assert.match(response.body, /Backtest future windows/);
+  assert.match(response.body, /No real backtest yet/);
   assert.match(response.body, /No real search/);
   assert.match(response.body, /browser automation/);
   assert.doesNotMatch(response.body, /method:\s*["'`](PUT|PATCH|DELETE)/i);

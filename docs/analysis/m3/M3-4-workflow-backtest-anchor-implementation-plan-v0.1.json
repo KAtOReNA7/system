@@ -1,0 +1,33 @@
+{
+  "title": "M3-4 workflow and backtest anchor implementation plan v0.1",
+  "generatedAt": "2026-06-28",
+  "status": "implemented_fixture_prototype",
+  "plannedFiles": [
+    "src/domain/newProductEvaluation/workflowStateMachine.js",
+    "src/domain/newProductEvaluation/backtestAnchor.js",
+    "src/domain/newProductEvaluation/newProductEvaluationEngine.js",
+    "src/repositories/newProductEvaluationFixtureRepository.js",
+    "src/http/app.js",
+    "public/admin/app.js",
+    "test/m3-workflow-state-machine.test.js",
+    "test/m3-backtest-anchor.test.js",
+    "test/m3-new-product-evaluation-engine.test.js",
+    "test/m3-api-fixture.test.js",
+    "test/m3-admin-prototype.test.js",
+    "package.json"
+  ],
+  "fixtureWorkflowStateMachine": true,
+  "fullEvaluationChain": true,
+  "backtestAnchorPrototype": true,
+  "manualTestingPackageGenerated": false,
+  "realBacktestExecuted": false,
+  "databaseConnected": false,
+  "migrationWritten": false,
+  "realSearchCalled": false,
+  "chatGptWebCalled": false,
+  "chromePluginCalled": false,
+  "formalExecutionAllowed": false,
+  "nonFormal": true,
+  "fixtureOnly": true,
+  "notForFormalDecision": true
+}

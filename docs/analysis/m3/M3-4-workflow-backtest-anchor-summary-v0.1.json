@@ -1,0 +1,33 @@
+{
+  "title": "M3-4 workflow and backtest anchor summary v0.1",
+  "generatedAt": "2026-06-28",
+  "baseHeadBeforeSprint": "0ddd72b804bf5cf7b730e7bd95dcf7d1744df9e2",
+  "originMainBeforeSprint": "0ddd72b804bf5cf7b730e7bd95dcf7d1744df9e2",
+  "workflowStateMachineComplete": true,
+  "fullEvaluationChainComplete": true,
+  "backtestAnchorPrototypeComplete": true,
+  "realBacktestExecuted": false,
+  "manualTestingPackageGenerated": false,
+  "formalExecutionAllowed": false,
+  "databaseConnected": false,
+  "migrationWritten": false,
+  "privateMaterialRead": false,
+  "realSearchCalled": false,
+  "chatGptWebCalled": false,
+  "chromePluginCalled": false,
+  "browserAutomationCalled": false,
+  "validationResults": {
+    "checkNoRealData": "passed",
+    "lint": "passed",
+    "build": "passed",
+    "test": "passed",
+    "testCount": 473,
+    "smoke": "passed",
+    "e2e": "passed",
+    "e2eTestCount": 13
+  },
+  "recommendedNextTask": "M3-5 fixture-only end-to-end acceptance audit / private material dry-run design",
+  "nonFormal": true,
+  "fixtureOnly": true,
+  "notForFormalDecision": true
+}

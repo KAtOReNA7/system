@@ -2680,6 +2680,8 @@ function renderM3MaterialDetail(item, parseResult, evaluation) {
   const researchQuestions = evaluation?.researchQuestions || [];
   const externalEvidence = evaluation?.externalEvidence || [];
   const evidenceSummary = evaluation?.evidenceSummary || {};
+  const workflow = evaluation?.workflow || {};
+  const backtestAnchor = evaluation?.backtestAnchor || {};
   return `
     <div class="cards three">
       <article class="card">
@@ -2703,6 +2705,84 @@ function renderM3MaterialDetail(item, parseResult, evaluation) {
         ${renderMetric("rating", ratingValue)}
         ${renderMetric("nonFormal", rating.nonFormal)}
         ${renderMetric("notForFormalDecision", rating.notForFormalDecision)}
+      </article>
+    </div>
+    <div class="cards three">
+      <article class="card">
+        <h3>Workflow overview</h3>
+        ${renderMetric("currentState", workflow.currentState || "none")}
+        ${renderMetric("completedSteps", (workflow.completedSteps || []).length)}
+        ${renderMetric("pendingSteps", (workflow.pendingSteps || []).length)}
+        ${renderMetric("blockedReasons", (workflow.blockedReasons || []).join(", ") || "none")}
+        ${renderMetric("warnings", (workflow.warnings || []).join(", ") || "none")}
+      </article>
+      <article class="card">
+        <h3>Workflow timeline</h3>
+        <ul class="explain-list">
+          ${(workflow.transitionLog || []).slice(0, 9).map((item) => `
+            <li>${escapeHtml(item.fromState)} -> ${escapeHtml(item.toState)} / ${escapeHtml(item.reason)}</li>
+          `).join("") || "<li>none</li>"}
+        </ul>
+      </article>
+      <article class="card">
+        <h3>Workflow boundary</h3>
+        ${renderMetric("fixtureOnly", workflow.fixtureOnly)}
+        ${renderMetric("nonFormal", workflow.nonFormal)}
+        ${renderMetric("notForFormalDecision", workflow.notForFormalDecision)}
+        <p class="pagination-note">No direct development recommendation. No resource investment level. No real backtest yet.</p>
+      </article>
+    </div>
+    <div class="cards three">
+      <article class="card">
+        <h3>Full evaluation chain</h3>
+        <ul class="explain-list">
+          <li>material parsing: ${escapeHtml(Boolean(parseResult))}</li>
+          <li>research questions: ${escapeHtml(researchQuestions.length)}</li>
+          <li>external evidence: ${escapeHtml(externalEvidence.length)}</li>
+          <li>readiness: ${escapeHtml(readiness.readinessStatus || "none")}</li>
+          <li>comparables: ${escapeHtml((comparableWorks.systemSelected || []).length)}</li>
+          <li>author ranking: ${escapeHtml(authorRanking.enabled === true ? "enabled" : "disabled")}</li>
+          <li>channel forecast: ${escapeHtml(forecast.forecastStatus || "none")}</li>
+          <li>rating explanation: ${escapeHtml(Boolean(rating.ratingExplanation || rating.rationale))}</li>
+        </ul>
+      </article>
+      <article class="card">
+        <h3>Backtest anchor</h3>
+        ${renderMetric("anchorId", backtestAnchor.anchorId || "none")}
+        ${renderMetric("anchorStatus", backtestAnchor.anchorStatus || "none")}
+        ${renderMetric("anchorType", backtestAnchor.anchorType || "none")}
+        ${renderMetric("realBacktestExecuted", backtestAnchor.realBacktestExecuted)}
+        ${renderMetric("postLaunchRevenueRead", backtestAnchor.postLaunchRevenueRead)}
+      </article>
+      <article class="card">
+        <h3>Backtest future windows</h3>
+        ${renderMetric("year1", backtestAnchor.futureBacktestWindows?.year1?.status || "none")}
+        ${renderMetric("year3", backtestAnchor.futureBacktestWindows?.year3?.status || "none")}
+        ${renderMetric("year5", backtestAnchor.futureBacktestWindows?.year5?.status || "none")}
+        <p class="pagination-note">Backtest anchor is a fixture snapshot only. It does not run a real backtest.</p>
+      </article>
+    </div>
+    <div class="cards three">
+      <article class="card">
+        <h3>Forecast snapshot</h3>
+        ${renderMetric("forecastStatus", backtestAnchor.forecastSnapshot?.forecastStatus || "none")}
+        ${renderMetric("forecastShape", backtestAnchor.forecastSnapshot?.forecastShape || "none")}
+        ${renderMetric("pointEstimateOnly", backtestAnchor.forecastSnapshot?.pointEstimateOnly)}
+        ${renderMetric("channelForecastCount", backtestAnchor.forecastSnapshot?.channelForecastCount ?? 0)}
+      </article>
+      <article class="card">
+        <h3>Rating snapshot</h3>
+        ${renderMetric("ratingType", backtestAnchor.ratingSnapshot?.ratingType || "none")}
+        ${renderMetric("rating", backtestAnchor.ratingSnapshot?.rating || "none")}
+        ${renderMetric("supportFactorCount", backtestAnchor.ratingSnapshot?.supportFactorCount ?? 0)}
+        ${renderMetric("warningFactorCount", backtestAnchor.ratingSnapshot?.warningFactorCount ?? 0)}
+      </article>
+      <article class="card">
+        <h3>Input evidence comparable snapshot</h3>
+        ${renderMetric("inputFields", (backtestAnchor.inputSnapshot?.extractedFieldKeys || []).length)}
+        ${renderMetric("evidenceIds", (backtestAnchor.evidenceSnapshot?.evidenceIds || []).length)}
+        ${renderMetric("systemComparableIds", (backtestAnchor.comparableSnapshot?.systemComparableIds || []).length)}
+        ${renderMetric("authorRankingEnabled", backtestAnchor.comparableSnapshot?.authorRankingEnabled)}
       </article>
     </div>
     <div class="cards three">

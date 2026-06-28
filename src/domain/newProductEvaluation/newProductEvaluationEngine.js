@@ -1,4 +1,5 @@
 import { buildAuthorRanking } from "./authorRanking.js";
+import { buildBacktestAnchorPrototype } from "./backtestAnchor.js";
 import { buildChannelForecast } from "./channelForecast.js";
 import { buildComparableWorks } from "./comparableWorkSelector.js";
 import {
@@ -14,6 +15,7 @@ import {
   buildNewProductRisks
 } from "./newProductRating.js";
 import { generateResearchQuestions } from "./researchQuestionGenerator.js";
+import { buildM3WorkflowTimeline } from "./workflowStateMachine.js";
 
 export const M3_NEW_PRODUCT_ALGORITHM_VERSION = "m3-material-first-fixture-v1";
 
@@ -51,8 +53,7 @@ export function evaluateNewProductMaterial(material, options = {}) {
     evidenceSummary
   });
   const risks = buildNewProductRisks(fields, readiness, forecast);
-
-  return {
+  const baseEvaluation = {
     materialId: material.materialId,
     algorithmVersion: M3_NEW_PRODUCT_ALGORITHM_VERSION,
     inputMode: "material_first",
@@ -91,5 +92,23 @@ export function evaluateNewProductMaterial(material, options = {}) {
     nonFormal: true,
     syntheticOnly: true,
     notForFormalDecision: true
+  };
+  const workflow = buildM3WorkflowTimeline({
+    parsedMaterial,
+    researchQuestions,
+    externalEvidence,
+    readiness,
+    comparableWorks,
+    authorRanking,
+    forecast,
+    candidateRating
+  });
+  const evaluation = {
+    ...baseEvaluation,
+    workflow
+  };
+  return {
+    ...evaluation,
+    backtestAnchor: buildBacktestAnchorPrototype(evaluation)
   };
 }

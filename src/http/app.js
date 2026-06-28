@@ -39,12 +39,14 @@ import {
   listM2FormalEvaluationExports
 } from "../repositories/m2EvaluationExportRepository.js";
 import {
+  createM3NewProductBacktestAnchorFixture,
   evaluateM3NewProductMaterialFixture,
   getM3NewProductMaterialAuthorRankingFixture,
   getM3NewProductMaterialComparablesFixture,
   getM3NewProductMaterialExternalEvidenceFixture,
   getM3NewProductMaterialFixtureById,
   getM3NewProductMaterialResearchQuestionsFixture,
+  getM3NewProductMaterialWorkflowFixture,
   listM3NewProductMaterialFixtures,
   parseM3NewProductMaterialFixture
 } from "../repositories/newProductEvaluationFixtureRepository.js";
@@ -131,7 +133,11 @@ export function createApp(config, options = {}) {
     getM3NewProductMaterialExternalEvidenceFixture:
       options.getM3NewProductMaterialExternalEvidenceFixture ?? getM3NewProductMaterialExternalEvidenceFixture,
     getM3NewProductMaterialResearchQuestionsFixture:
-      options.getM3NewProductMaterialResearchQuestionsFixture ?? getM3NewProductMaterialResearchQuestionsFixture
+      options.getM3NewProductMaterialResearchQuestionsFixture ?? getM3NewProductMaterialResearchQuestionsFixture,
+    getM3NewProductMaterialWorkflowFixture:
+      options.getM3NewProductMaterialWorkflowFixture ?? getM3NewProductMaterialWorkflowFixture,
+    createM3NewProductBacktestAnchorFixture:
+      options.createM3NewProductBacktestAnchorFixture ?? createM3NewProductBacktestAnchorFixture
   };
 
   return async function app(request, response) {
@@ -241,6 +247,29 @@ export function createApp(config, options = {}) {
         if (request.method === "GET" && researchQuestionsMatch) {
           const materialId = decodeURIComponent(researchQuestionsMatch[1]);
           const body = await repositories.getM3NewProductMaterialResearchQuestionsFixture(config, materialId);
+          if (!body) {
+            throw notFound("M3 material fixture");
+          }
+          sendJson(response, 200, body, requestId);
+          return;
+        }
+
+        const workflowMatch = path.match(/^\/api\/m3\/new-product\/material-fixtures\/([^/]+)\/workflow$/);
+        if (request.method === "GET" && workflowMatch) {
+          const materialId = decodeURIComponent(workflowMatch[1]);
+          const body = await repositories.getM3NewProductMaterialWorkflowFixture(config, materialId);
+          if (!body) {
+            throw notFound("M3 material fixture");
+          }
+          sendJson(response, 200, body, requestId);
+          return;
+        }
+
+        const backtestAnchorMatch = path.match(/^\/api\/m3\/new-product\/material-fixtures\/([^/]+)\/backtest-anchor$/);
+        if (request.method === "POST" && backtestAnchorMatch) {
+          const materialId = decodeURIComponent(backtestAnchorMatch[1]);
+          const payload = await readJsonBody(request);
+          const body = await repositories.createM3NewProductBacktestAnchorFixture(config, materialId, payload);
           if (!body) {
             throw notFound("M3 material fixture");
           }

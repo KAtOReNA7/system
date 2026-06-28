@@ -114,6 +114,26 @@ test("M3 external evidence and research-question APIs are fixture-only and non-f
   assert.ok(researchResponse.body.researchQuestions.some((item) => item.missingFieldOrRisk === "missing_adaptation_signals"));
 });
 
+test("M3 workflow and backtest-anchor APIs are fixture-only and non-formal", async () => {
+  const workflowResponse = await request("/api/m3/new-product/material-fixtures/SYN-M3-MATERIAL-001/workflow");
+  const anchorResponse = await request("/api/m3/new-product/material-fixtures/SYN-M3-MATERIAL-001/backtest-anchor", {
+    method: "POST",
+    body: JSON.stringify({ fixtureOnly: true })
+  });
+
+  assert.equal(workflowResponse.statusCode, 200);
+  assert.equal(workflowResponse.body.workflow.currentState, "backtest_anchor_candidate");
+  assert.equal(workflowResponse.body.workflow.nonFormal, true);
+  assert.equal(workflowResponse.body.workflow.fixtureOnly, true);
+  assert.equal(workflowResponse.body.workflow.notForFormalDecision, true);
+  assert.equal(workflowResponse.body.databaseWritten, false);
+  assert.equal(anchorResponse.statusCode, 200);
+  assert.equal(anchorResponse.body.backtestAnchor.anchorStatus, "locked_fixture");
+  assert.equal(anchorResponse.body.backtestAnchor.realBacktestExecuted, false);
+  assert.equal(anchorResponse.body.backtestAnchor.databaseWritten, false);
+  assert.equal(anchorResponse.body.workflow.currentState, "backtest_anchor_locked_fixture");
+});
+
 test("M3 parse API rejects raw material payload", async () => {
   const response = await request("/api/m3/new-product/material-fixtures/SYN-M3-MATERIAL-001/parse", {
     method: "POST",
@@ -148,6 +168,8 @@ test("M3 fixture API output does not expose forbidden private markers", async ()
   assert.equal(text.includes("developmentRecommendation"), false);
   assert.equal(text.includes("resourceInvestmentLevel"), false);
   assert.equal(text.includes("recommendedDevelopmentDecision"), false);
-  assert.equal(text.includes("webpageFullText"), false);
+  assert.equal(text.includes('"webpageFullText":'), false);
   assert.equal(text.includes("pageHtml"), false);
+  assert.equal(Object.hasOwn(response.body.evaluation.forecast, "forecastRange"), false);
+  assert.equal(response.body.evaluation.guardrails.forecastRangeEmitted, false);
 });

@@ -1,0 +1,36 @@
+{
+  "title": "M3 backtest anchor design v0.1",
+  "generatedAt": "2026-06-28",
+  "status": "fixture_prototype_design",
+  "anchorFields": [
+    "anchorId",
+    "topicId",
+    "materialId",
+    "evaluationId",
+    "anchorType",
+    "anchorStatus",
+    "lockedAtSynthetic",
+    "forecastSnapshot",
+    "ratingSnapshot",
+    "inputSnapshot",
+    "evidenceSnapshot",
+    "comparableSnapshot",
+    "limitations",
+    "futureBacktestWindows",
+    "nonFormal",
+    "fixtureOnly",
+    "notForFormalDecision"
+  ],
+  "futureBacktestWindows": [
+    "year1",
+    "year3",
+    "year5"
+  ],
+  "realBacktestExecuted": false,
+  "postLaunchRevenueRead": false,
+  "databaseWritten": false,
+  "formalExecutionAllowed": false,
+  "nonFormal": true,
+  "fixtureOnly": true,
+  "notForFormalDecision": true
+}

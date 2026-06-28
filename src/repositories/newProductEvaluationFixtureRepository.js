@@ -3,6 +3,7 @@ import {
   M3_NEW_PRODUCT_FIXTURE_DATASET,
   M3_NEW_PRODUCT_MATERIAL_FIXTURES
 } from "../domain/newProductEvaluation/fixtures/newProductMaterials.fixture.js";
+import { buildBacktestAnchorPrototype } from "../domain/newProductEvaluation/backtestAnchor.js";
 import {
   assertNoRawMaterialPayload,
   extractMaterialFields
@@ -17,6 +18,7 @@ import { buildComparableWorks } from "../domain/newProductEvaluation/comparableW
 import { evaluateNewProductMaterial } from "../domain/newProductEvaluation/newProductEvaluationEngine.js";
 import { evaluateNewProductReadiness } from "../domain/newProductEvaluation/newProductReadiness.js";
 import { generateResearchQuestions } from "../domain/newProductEvaluation/researchQuestionGenerator.js";
+import { buildM3WorkflowTimeline } from "../domain/newProductEvaluation/workflowStateMachine.js";
 
 export async function listM3NewProductMaterialFixtures(_config, { pagination }) {
   const items = M3_NEW_PRODUCT_MATERIAL_FIXTURES.map(toMaterialSummary);
@@ -154,6 +156,57 @@ export async function getM3NewProductMaterialResearchQuestionsFixture(_config, m
   });
 }
 
+export async function getM3NewProductMaterialWorkflowFixture(_config, materialId) {
+  const item = findMaterial(materialId);
+  if (!item) {
+    return null;
+  }
+  const evaluation = evaluateNewProductMaterial(item);
+  return withDataset({
+    materialId,
+    workflow: evaluation.workflow,
+    fullEvaluationChain: fullEvaluationChainSummary(evaluation),
+    nonFormal: true,
+    fixtureOnly: true,
+    notForFormalDecision: true,
+    rawMaterialStored: false,
+    privateFileRead: false,
+    databaseWritten: false
+  });
+}
+
+export async function createM3NewProductBacktestAnchorFixture(_config, materialId, payload = {}) {
+  rejectRawPayload(payload);
+  const item = findMaterial(materialId);
+  if (!item) {
+    return null;
+  }
+  const evaluation = evaluateNewProductMaterial(item);
+  return withDataset({
+    materialId,
+    backtestAnchor: buildBacktestAnchorPrototype(evaluation, { lockFixture: true }),
+    workflow: buildM3WorkflowTimeline({
+      parsedMaterial: evaluation.parsedMaterial,
+      researchQuestions: evaluation.researchQuestions,
+      externalEvidence: evaluation.externalEvidence,
+      readiness: evaluation.readiness,
+      comparableWorks: evaluation.comparableWorks,
+      authorRanking: evaluation.authorRanking,
+      forecast: evaluation.forecast,
+      candidateRating: evaluation.candidateRating,
+      backtestAnchorLocked: true
+    }),
+    realBacktestExecuted: false,
+    postLaunchRevenueRead: false,
+    databaseWritten: false,
+    nonFormal: true,
+    fixtureOnly: true,
+    notForFormalDecision: true,
+    rawMaterialStored: false,
+    privateFileRead: false
+  });
+}
+
 function withDataset(body) {
   return {
     dataset: clone(M3_NEW_PRODUCT_FIXTURE_DATASET),
@@ -213,6 +266,22 @@ function toMaterialDetail(item) {
     nonFormal: true,
     rawMaterialStored: false,
     privateFileRead: false
+  };
+}
+
+function fullEvaluationChainSummary(evaluation) {
+  return {
+    materialParsing: Boolean(evaluation.parsedMaterial),
+    researchQuestions: evaluation.researchQuestions?.length ?? 0,
+    externalEvidence: evaluation.externalEvidence?.length ?? 0,
+    readiness: evaluation.readiness?.readinessStatus ?? "unknown",
+    comparables: evaluation.comparableWorks?.systemSelected?.length ?? 0,
+    authorRanking: evaluation.authorRanking?.enabled === true ? "enabled" : "disabled",
+    forecast: evaluation.forecast?.forecastStatus ?? "unknown",
+    ratingExplanation: Boolean(evaluation.candidateRating?.ratingExplanation),
+    nonFormal: true,
+    fixtureOnly: true,
+    notForFormalDecision: true
   };
 }
 

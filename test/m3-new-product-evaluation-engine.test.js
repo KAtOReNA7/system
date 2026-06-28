@@ -76,6 +76,18 @@ test("engine includes M3-3.5 external evidence and research questions", () => {
   assert.ok(result.candidateRating.gptWebAssistedEvidenceNotes.length > 0);
 });
 
+test("engine includes M3-4 workflow timeline and backtest anchor prototype", () => {
+  const result = evaluateNewProductMaterial(M3_NEW_PRODUCT_MATERIAL_FIXTURES[0]);
+
+  assert.equal(result.workflow.currentState, "backtest_anchor_candidate");
+  assert.ok(result.workflow.completedSteps.includes("fixture_evaluation_completed"));
+  assert.ok(result.workflow.transitionLog.length > 0);
+  assert.equal(result.workflow.transitionLog.every((item) => item.nonFormal === true), true);
+  assert.equal(result.backtestAnchor.anchorStatus, "candidate");
+  assert.equal(result.backtestAnchor.futureBacktestWindows.year1.status, "future_fixture_window");
+  assert.equal(result.backtestAnchor.realBacktestExecuted, false);
+});
+
 test("blocked material does not produce numeric channel forecast", () => {
   const result = evaluateNewProductMaterial(M3_NEW_PRODUCT_MATERIAL_FIXTURES[2]);
 
