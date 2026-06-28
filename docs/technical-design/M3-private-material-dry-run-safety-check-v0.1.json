@@ -1,0 +1,40 @@
+{
+  "title": "M3 private material dry-run safety check v0.1",
+  "generatedAt": "2026-06-28",
+  "status": "design_only",
+  "checks": [
+    "file_path_check",
+    "gitignore_check",
+    "forbidden_commit_check",
+    "original_material_not_in_docs",
+    "raw_material_not_in_public_report",
+    "external_webpage_full_text_not_saved",
+    "short_summary_only",
+    "no_real_data_guard",
+    "private_output_check",
+    "git_status_before_after"
+  ],
+  "allowedPrivateRoots": [
+    "data/private-input/",
+    "data/private-output/"
+  ],
+  "forbiddenStagedExtensions": [
+    ".docx",
+    ".pdf",
+    ".pptx",
+    ".xlsx",
+    ".csv",
+    ".sqlite",
+    ".db",
+    ".dump"
+  ],
+  "rawMaterialStorageAllowed": false,
+  "webpageFullTextStorageAllowed": false,
+  "formalResultGenerated": false,
+  "databaseConnected": false,
+  "migrationWritten": false,
+  "realSearchCalled": false,
+  "chatGptWebCalled": false,
+  "chromePluginCalled": false,
+  "browserAutomationCalled": false
+}

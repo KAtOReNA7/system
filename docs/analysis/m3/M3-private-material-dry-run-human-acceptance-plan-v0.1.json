@@ -1,0 +1,41 @@
+{
+  "title": "M3 private material dry-run human acceptance plan v0.1",
+  "generatedAt": "2026-06-28",
+  "status": "plan_only",
+  "reviewChecklist": [
+    "field_extraction_accuracy",
+    "missing_field_prompts",
+    "research_question_value",
+    "external_evidence_structure",
+    "readiness_strictness",
+    "comparable_explainability",
+    "author_ranking_enable_disable_reasonableness",
+    "channel_forecast_business_fit",
+    "rating_explanation_usefulness",
+    "workflow_clarity",
+    "backtest_anchor_snapshot_sufficiency",
+    "no_development_recommendation",
+    "no_resource_investment_level"
+  ],
+  "acceptanceLabels": [
+    "pass",
+    "minor_issue",
+    "major_issue",
+    "blocked",
+    "needs_more_material"
+  ],
+  "minimumPassCriteria": [
+    "at_least_3_private_materials",
+    "no_private_output_tracked",
+    "core_field_extraction_reviewable",
+    "readiness_blockers_explainable",
+    "point_only_channel_forecast",
+    "new_product_candidate_rating",
+    "workflow_visible",
+    "backtest_anchor_visible",
+    "no_formal_execution_result"
+  ],
+  "privateMaterialReadInThisSprint": false,
+  "realDryRunExecutedInThisSprint": false,
+  "formalExecutionAllowed": false
+}

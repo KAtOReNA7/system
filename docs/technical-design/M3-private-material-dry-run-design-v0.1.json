@@ -1,0 +1,55 @@
+{
+  "title": "M3 private material dry-run design v0.1",
+  "generatedAt": "2026-06-28",
+  "status": "design_only",
+  "purpose": "local_private_material_fixture_dry_run",
+  "recommendedSampleSize": {
+    "min": 3,
+    "max": 5
+  },
+  "requiredCoverage": [
+    "publication",
+    "web_original",
+    "complete_material",
+    "sparse_material",
+    "clear_external_heat",
+    "same_name_audio_risk",
+    "adaptation_signal_or_missing_adaptation_signal"
+  ],
+  "allowedFormats": [
+    "docx",
+    "pdf",
+    "pptx",
+    "txt",
+    "md",
+    "xlsx",
+    "manual_pasted_text"
+  ],
+  "privateInputDirectories": [
+    "data/private-input/m3-material-dry-run/",
+    "data/private-output/m3-dry-run/"
+  ],
+  "privateOutputPaths": [
+    "data/private-output/m3-dry-run/M3-private-material-dry-run-result-v0.1.xlsx",
+    "data/private-output/m3-dry-run/M3-private-material-dry-run-result-v0.1.json"
+  ],
+  "outputSheets": [
+    "00_说明",
+    "01_物料字段抽取",
+    "02_readiness",
+    "03_research_questions",
+    "04_external_evidence",
+    "05_comparables_author",
+    "06_channel_forecast",
+    "07_rating_explanation",
+    "08_workflow",
+    "09_backtest_anchor",
+    "10_user_feedback"
+  ],
+  "formalResultGenerated": false,
+  "databaseWritten": false,
+  "privateMaterialCommitted": false,
+  "realDryRunExecuted": false,
+  "nonFormal": true,
+  "notForFormalDecision": true
+}
