@@ -141,21 +141,50 @@ function buildCompletionPackMarkdown(pack) {
     "",
     "This file is private local output. Do not commit it.",
     "",
+    "## Fill Instructions",
+    "",
+    "- Fill either this Markdown file or the JSON file. You do not need to keep both in sync manually.",
+    "- Apply can read JSON or Markdown. If both exist and conflict, specify the intended path.",
+    "- Do not paste material full text, webpage full text, private file names, secrets, or database connection strings.",
+    "- Allowed `source`: `publication` or `web_original`.",
+    "- Allowed `sameNameAudioStatusCheckStatus`: `checked`.",
+    "- Allowed `sameNameAudioStatus`: `has`, `none`, or `unknown`.",
+    "- `targetChannels`: comma-separated values.",
+    "- Allowed `heatSignalType`: `reads`, `collections`, `rating`, `ranking`, `searchHeat`, `socialHeat`, `platformHeat`, or `manualHeat`.",
+    "- `web_original` rows must include `completionStatus`.",
+    "",
     `- Material count: ${pack.materialCount}`,
     `- Readiness: ${JSON.stringify(pack.aggregate.readinessDistribution)}`,
     `- Missing core fields: ${JSON.stringify(pack.aggregate.missingCoreFieldDistribution)}`,
     "",
-    "| anonymousMaterialId | inputExtension | readinessStatus | missingCoreFields | userFieldsToFill |",
-    "| --- | --- | --- | --- | --- |"
+    "## Fillable Table",
+    "",
+    "| anonymousMaterialId | inputExtension | parseStatus | readinessStatus | missingCoreFields | title | author | source | classification | wordCount | audioVolumeEstimate | heatSignalType | heatSignalValue | copyrightTermRange | targetChannels | sameNameAudioStatusCheckStatus | sameNameAudioStatus | completionStatus | notes |",
+    "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |"
   ];
   for (const row of pack.rows) {
-    lines.push([
+    const cells = [
       row.anonymousMaterialId,
       row.inputExtension,
+      row.parseStatus,
       row.readinessStatus,
       row.missingCoreFields.join(", ") || "none",
-      Object.keys(row.userFields).join(", ")
-    ].map(escapeMarkdownCell).join(" | "));
+      row.userFields.title,
+      row.userFields.author,
+      row.userFields.source,
+      row.userFields.classification,
+      row.userFields.wordCount,
+      row.userFields.audioVolumeEstimate,
+      row.userFields.heatSignalType,
+      row.userFields.heatSignalValue,
+      row.userFields.copyrightTermRange,
+      row.userFields.targetChannels,
+      row.userFields.sameNameAudioStatusCheckStatus,
+      row.userFields.sameNameAudioStatus,
+      row.userFields.completionStatus,
+      row.userFields.notes
+    ].map(escapeMarkdownCell);
+    lines.push(`| ${cells.join(" | ")} |`);
   }
   lines.push("");
   return `${lines.join("\n")}\n`;
@@ -188,7 +217,7 @@ function countListValues(values, key) {
 }
 
 function escapeMarkdownCell(value) {
-  return String(value ?? "").replace(/\|/g, "\\|");
+  return String(value ?? "").replace(/\|/g, "\\|").replace(/\r?\n/g, "<br>");
 }
 
 if (IS_CLI) {

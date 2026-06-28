@@ -13,6 +13,7 @@ import {
 } from "../scripts/m3-private-dry-run/apply_m3_field_completion_pack.js";
 import {
   FIELD_COMPLETION_PACK_JSON,
+  FIELD_COMPLETION_PACK_MARKDOWN,
   generateM3FieldCompletionPack
 } from "../scripts/m3-private-dry-run/generate_m3_field_completion_pack.js";
 import {
@@ -29,6 +30,7 @@ test("M3 field completion pack includes hard-blocker core fields without filenam
 
     const result = generateM3FieldCompletionPack({ repoRoot });
     const packText = readFileSync(path.join(outputDir, FIELD_COMPLETION_PACK_JSON), "utf8");
+    const markdownText = readFileSync(path.join(outputDir, FIELD_COMPLETION_PACK_MARKDOWN), "utf8");
     const pack = JSON.parse(packText);
 
     assert.equal(result.ok, true);
@@ -39,6 +41,9 @@ test("M3 field completion pack includes hard-blocker core fields without filenam
     assert.equal(pack.rows.every((row) => Object.hasOwn(row.userFields, "title")), true);
     assert.equal(pack.rows.every((row) => Object.hasOwn(row.userFields, "sameNameAudioStatusCheckStatus")), true);
     assert.equal(packText.includes("real-looking-private"), false);
+    assert.equal(markdownText.includes("Fill Instructions"), true);
+    assert.equal(markdownText.includes("source`: `publication` or `web_original`"), true);
+    assert.equal(markdownText.includes("| anonymousMaterialId | inputExtension | parseStatus"), true);
     assert.equal(packText.includes("Secret Synthetic"), false);
     assert.equal(result.outputJson.startsWith(DEFAULT_OUTPUT_DIR.replaceAll("\\", "/")), true);
   });
@@ -73,7 +78,10 @@ test("M3 field completion apply merges manual fields and can unblock forecast an
     }));
     writeFileSync(packPath, `${JSON.stringify(pack, null, 2)}\n`, "utf8");
 
-    const result = applyM3FieldCompletionPack({ repoRoot });
+    const result = applyM3FieldCompletionPack({
+      repoRoot,
+      packPath: path.join(DEFAULT_OUTPUT_DIR, FIELD_COMPLETION_PACK_JSON)
+    });
     const resultText = readFileSync(path.join(outputDir, "M3-private-material-dry-run-result-after-completion-v0.1.json"), "utf8");
     const applied = JSON.parse(resultText);
 
@@ -85,6 +93,39 @@ test("M3 field completion apply merges manual fields and can unblock forecast an
     assert.equal(applied.materialResults.every((row) => row.missingCoreFields.length === 0), true);
     assert.equal(resultText.includes("Synthetic Filled Title"), false);
     assert.equal(resultText.includes("Synthetic Filled Author"), false);
+  });
+});
+
+test("M3 field completion apply can read a filled Markdown pack", () => {
+  withTempRepo(({ repoRoot, outputDir }) => {
+    writeFileSync(path.join(outputDir, FIELD_COMPLETION_PACK_MARKDOWN), markdownPack(), "utf8");
+
+    const result = applyM3FieldCompletionPack({
+      repoRoot,
+      packPath: path.join(DEFAULT_OUTPUT_DIR, FIELD_COMPLETION_PACK_MARKDOWN)
+    });
+
+    assert.equal(result.ok, true);
+    assert.equal(result.aggregate.materialCount, 1);
+    assert.equal(result.aggregate.readinessDistribution.blocked, undefined);
+    assert.equal(result.aggregate.forecastGeneratedCount, 1);
+    assert.equal(result.aggregate.ratingGeneratedCount, 1);
+  });
+});
+
+test("M3 field completion auto-discovery stops when JSON and Markdown packs conflict", () => {
+  withTempRepo(({ repoRoot, outputDir }) => {
+    const jsonPack = {
+      version: "conflict-json",
+      rows: [completionRow("ANON-CONFLICT-001", "Synthetic JSON Title")]
+    };
+    writeFileSync(path.join(outputDir, FIELD_COMPLETION_PACK_JSON), `${JSON.stringify(jsonPack, null, 2)}\n`, "utf8");
+    writeFileSync(path.join(outputDir, FIELD_COMPLETION_PACK_MARKDOWN), markdownPack("ANON-CONFLICT-001", "Synthetic Markdown Title"), "utf8");
+
+    assert.throws(
+      () => applyM3FieldCompletionPack({ repoRoot }),
+      /conflicting user fields/
+    );
   });
 });
 
@@ -133,4 +174,37 @@ function withTempRepo(callback) {
   } finally {
     rmSync(repoRoot, { recursive: true, force: true });
   }
+}
+
+function markdownPack(materialId = "ANON-MD-APPLY-001", title = "Synthetic Markdown Title") {
+  return [
+    "# M3 private material field completion pack v0.1",
+    "",
+    "| anonymousMaterialId | inputExtension | parseStatus | readinessStatus | missingCoreFields | title | author | source | classification | wordCount | audioVolumeEstimate | heatSignalType | heatSignalValue | copyrightTermRange | targetChannels | sameNameAudioStatusCheckStatus | sameNameAudioStatus | completionStatus | notes |",
+    "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+    `| ${materialId} | .md | parsed | blocked | title | ${title} | Synthetic Markdown Author | publication | class-a | 320000 |  | reads | 50000 | 3 years | channel-a, channel-b | checked | none |  | note |`
+  ].join("\n");
+}
+
+function completionRow(materialId, title) {
+  return {
+    anonymousMaterialId: materialId,
+    inputExtension: ".json",
+    parseStatus: "parsed",
+    readinessStatus: "blocked",
+    missingCoreFields: ["title"],
+    userFields: {
+      title,
+      author: "Synthetic JSON Author",
+      source: "publication",
+      classification: "class-a",
+      wordCount: "320000",
+      heatSignalType: "reads",
+      heatSignalValue: "50000",
+      copyrightTermRange: "3 years",
+      targetChannels: "channel-a, channel-b",
+      sameNameAudioStatusCheckStatus: "checked",
+      sameNameAudioStatus: "none"
+    }
+  };
 }

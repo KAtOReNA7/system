@@ -1,0 +1,71 @@
+{
+  "document": "M3-private-field-completion-pack-format-v0.1",
+  "generatedAt": "2026-06-28",
+  "scope": "local_private_m3_completion_pack_import",
+  "formalExecution": false,
+  "supportedFormats": {
+    "json": {
+      "enabled": true,
+      "reads": "rows[].userFields",
+      "requiresManualSyncWithMarkdown": false
+    },
+    "markdown": {
+      "enabled": true,
+      "reads": "fillable_table_user_field_columns",
+      "requiresManualSyncWithJson": false
+    },
+    "xlsx": {
+      "enabled": false,
+      "reason": "project_has_no_committed_xlsx_or_exceljs_dependency",
+      "futureWork": "separate_dependency_and_security_review"
+    }
+  },
+  "requiredFields": [
+    "title",
+    "author",
+    "source",
+    "classification",
+    "wordCount_or_audioVolumeEstimate",
+    "heatSignalType_and_heatSignalValue",
+    "copyrightTermRange",
+    "targetChannels",
+    "sameNameAudioStatusCheckStatus_checked",
+    "sameNameAudioStatus",
+    "completionStatus_for_web_original"
+  ],
+  "allowedValues": {
+    "source": ["publication", "web_original"],
+    "sameNameAudioStatusCheckStatus": ["checked"],
+    "sameNameAudioStatus": ["has", "none", "unknown"],
+    "heatSignalType": [
+      "reads",
+      "collections",
+      "rating",
+      "ranking",
+      "searchHeat",
+      "socialHeat",
+      "platformHeat",
+      "manualHeat"
+    ]
+  },
+  "applyBehavior": {
+    "explicitPathSupported": true,
+    "autoDetectOrder": ["json", "markdown", "xlsx"],
+    "conflictStopsApply": true,
+    "validationBeforeApply": true,
+    "printsRealFieldValues": false
+  },
+  "guardrails": {
+    "privatePackCommitted": false,
+    "databaseConnected": false,
+    "migrationWritten": false,
+    "ocrCalled": false,
+    "realSearchCalled": false,
+    "chatGptWebCalled": false,
+    "chromePluginCalled": false,
+    "browserAutomationCalled": false,
+    "developmentRecommendationEmitted": false,
+    "resourceLevelEmitted": false,
+    "forecastRangeRestored": false
+  }
+}

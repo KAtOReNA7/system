@@ -9,6 +9,11 @@ import {
   buildMaterialFromCompletionRow,
   normalizeUserFields
 } from "../../src/domain/newProductEvaluation/fieldCompletion.js";
+import { parseFieldCompletionPack } from "../../src/domain/newProductEvaluation/fieldCompletionPackParser.js";
+import {
+  assertValidFieldCompletionRows,
+  summarizeValidationIssues
+} from "../../src/domain/newProductEvaluation/fieldCompletionValidator.js";
 import {
   DEFAULT_OUTPUT_DIR,
   isAllowedPrivatePath,
@@ -18,6 +23,8 @@ import { FIELD_COMPLETION_PACK_JSON } from "./generate_m3_field_completion_pack.
 
 export const FIELD_COMPLETION_APPLY_RESULT_JSON = "M3-private-material-dry-run-result-after-completion-v0.1.json";
 export const FIELD_COMPLETION_APPLY_RESULT_MARKDOWN = "M3-private-material-dry-run-result-after-completion-v0.1.md";
+export const FIELD_COMPLETION_PACK_MARKDOWN = "M3-private-material-field-completion-pack-v0.1.md";
+export const FIELD_COMPLETION_PACK_XLSX = "M3-private-material-field-completion-pack-v0.1.xlsx";
 export {
   applyFieldCompletionRow as applyCompletionRow,
   buildFieldCompletionAggregate,
@@ -37,16 +44,12 @@ export function applyM3FieldCompletionPack(options = {}) {
 
   const absoluteOutputDir = path.join(repoRoot, outputDir);
   mkdirSync(absoluteOutputDir, { recursive: true });
-  const packPath = resolvePrivateOutputPath(
-    repoRoot,
-    options.packPath ?? path.join(outputDir, FIELD_COMPLETION_PACK_JSON)
-  );
-  if (!existsSync(packPath.absolutePath)) {
-    throw new Error("field completion pack is missing");
-  }
+  const packPath = options.packPath
+    ? resolvePrivateOutputPath(repoRoot, options.packPath)
+    : discoverFieldCompletionPack(repoRoot, outputDir);
+  const parsedPack = readAndValidatePack(packPath);
 
-  const pack = JSON.parse(readFileSync(packPath.absolutePath, "utf8"));
-  const applied = applyFieldCompletionRows(pack.rows ?? [], {
+  const applied = applyFieldCompletionRows(parsedPack.rows, {
     disableFixtureEvidence: true,
     externalEvidenceByMaterialId: options.externalEvidenceByMaterialId
   });
@@ -55,6 +58,7 @@ export function applyM3FieldCompletionPack(options = {}) {
     version: "m3-private-field-completion-apply-v0.2",
     generatedAt: new Date().toISOString(),
     sourcePack: packPath.relativePath,
+    sourcePackFormat: parsedPack.format,
     outputDir,
     materialResults: applied.materialResults,
     aggregate: applied.aggregate,
@@ -75,6 +79,34 @@ export function applyM3FieldCompletionPack(options = {}) {
     outputMarkdown: path.join(outputDir, FIELD_COMPLETION_APPLY_RESULT_MARKDOWN).replaceAll("\\", "/"),
     aggregate: result.aggregate,
     guardrails: result.guardrails
+  };
+}
+
+export function validateM3FieldCompletionPack(options = {}) {
+  const repoRoot = path.resolve(options.repoRoot ?? process.cwd());
+  const outputDir = normalizeRelativePath(options.outputDir ?? DEFAULT_OUTPUT_DIR);
+  const packPath = options.packPath
+    ? resolvePrivateOutputPath(repoRoot, options.packPath)
+    : discoverFieldCompletionPack(repoRoot, outputDir);
+  const parsedPack = readAndValidatePack(packPath);
+  return {
+    ok: true,
+    sourcePack: packPath.relativePath,
+    sourcePackFormat: parsedPack.format,
+    materialCount: parsedPack.rows.length,
+    validation: {
+      ok: true,
+      rowCount: parsedPack.rows.length,
+      realFieldValuesPrinted: false
+    },
+    guardrails: {
+      privatePackRead: true,
+      userFieldValuesPrinted: false,
+      databaseConnected: false,
+      migrationExecuted: false,
+      formalExecution: false,
+      notForFormalDecision: true
+    }
   };
 }
 
@@ -115,16 +147,89 @@ function resolvePrivateOutputPath(repoRoot, value) {
   return { absolutePath, relativePath };
 }
 
+function discoverFieldCompletionPack(repoRoot, outputDir) {
+  const candidates = [
+    FIELD_COMPLETION_PACK_JSON,
+    FIELD_COMPLETION_PACK_MARKDOWN,
+    FIELD_COMPLETION_PACK_XLSX
+  ].map((fileName) => resolvePrivateOutputPath(repoRoot, path.join(outputDir, fileName)))
+    .filter((candidate) => existsSync(candidate.absolutePath));
+
+  if (candidates.length === 0) {
+    throw new Error("field completion pack is missing");
+  }
+
+  const supported = candidates.filter((candidate) => !candidate.relativePath.toLowerCase().endsWith(".xlsx"));
+  if (supported.length === 0) {
+    throw new Error("xlsx completion pack exists but xlsx parsing is not enabled; provide json or markdown pack");
+  }
+  const parsedCandidates = supported.map((candidate) => ({
+    candidate,
+    parsed: parsePackFile(candidate)
+  }));
+  const fingerprints = new Set(parsedCandidates.map((item) => fingerprintRows(item.parsed.rows)));
+  if (fingerprints.size > 1) {
+    const error = new Error("multiple field completion packs exist with conflicting user fields; specify the intended path");
+    error.code = "field_completion_pack_conflict";
+    error.candidates = parsedCandidates.map((item) => ({
+      path: item.candidate.relativePath,
+      format: item.parsed.format,
+      materialCount: item.parsed.rows.length
+    }));
+    throw error;
+  }
+  return parsedCandidates[0].candidate;
+}
+
+function readAndValidatePack(packPath) {
+  const parsedPack = parsePackFile(packPath);
+  assertValidFieldCompletionRows(parsedPack.rows);
+  return parsedPack;
+}
+
+function parsePackFile(packPath) {
+  if (packPath.relativePath.toLowerCase().endsWith(".xlsx")) {
+    return parseFieldCompletionPack("", {
+      filePath: packPath.relativePath
+    });
+  }
+  const content = readFileSync(packPath.absolutePath, "utf8");
+  return parseFieldCompletionPack(content, {
+    filePath: packPath.relativePath
+  });
+}
+
+function fingerprintRows(rows = []) {
+  return JSON.stringify(rows.map((row) => ({
+    anonymousMaterialId: row.anonymousMaterialId,
+    userFields: row.userFields
+  })).sort((a, b) => a.anonymousMaterialId.localeCompare(b.anonymousMaterialId)));
+}
+
 function escapeMarkdownCell(value) {
   return String(value ?? "").replace(/\|/g, "\\|");
 }
 
 if (IS_CLI) {
   try {
-    const result = applyM3FieldCompletionPack();
+    const cliPath = process.argv[2];
+    const result = applyM3FieldCompletionPack({ packPath: cliPath });
     process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
   } catch (error) {
-    process.stderr.write(`${error.message}\n`);
+    const payload = error.validation
+      ? {
+          ok: false,
+          code: error.code,
+          message: error.message,
+          validation: summarizeValidationIssues(error.validation.issues)
+        }
+      : {
+          ok: false,
+          code: error.code ?? "field_completion_apply_failed",
+          message: error.message,
+          candidates: error.candidates
+        };
+    process.stderr.write(`${JSON.stringify(payload, null, 2)}\n`);
     process.exitCode = 1;
   }
 }
