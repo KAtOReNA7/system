@@ -10,6 +10,7 @@ import {
   DEFAULT_OUTPUT_DIR,
   checkM3PrivateDryRunSafety,
   collectInputInventory,
+  groupPrimaryMaterials,
   isAllowedPrivatePath
 } from "../scripts/m3-private-dry-run/check_m3_private_dry_run_safety.js";
 
@@ -21,7 +22,55 @@ test("M3 private dry-run safety accepts only private input and output roots", ()
   assert.equal(isAllowedPrivatePath("data/private-output/m3-dry-run", "input"), false);
 });
 
-test("M3 private dry-run safety stops when input count is outside 3 to 5", () => {
+test("M3 private dry-run safety accepts 3 legacy doc primary materials", () => {
+  withTempRepo(({ repoRoot, inputDir }) => {
+    writeFileSync(path.join(inputDir, "private-a.doc"), "binary-placeholder", "utf8");
+    writeFileSync(path.join(inputDir, "private-b.doc"), "binary-placeholder", "utf8");
+    writeFileSync(path.join(inputDir, "private-c.doc"), "binary-placeholder", "utf8");
+
+    const result = checkM3PrivateDryRunSafety({ repoRoot, skipGitChecks: true });
+
+    assert.equal(result.ok, true);
+    assert.equal(result.materialGroupCount, 3);
+    assert.deepEqual(result.extensionDistribution, { ".doc": 3 });
+    assert.equal(result.anonymousInputs.every((item) => item.plannedParseMode === "legacy_doc_metadata_only"), true);
+  });
+});
+
+test("M3 private dry-run safety accepts jpg jpeg png primary materials", () => {
+  withTempRepo(({ repoRoot, inputDir }) => {
+    writeFileSync(path.join(inputDir, "private-a.jpg"), "binary-placeholder", "utf8");
+    writeFileSync(path.join(inputDir, "private-b.jpeg"), "binary-placeholder", "utf8");
+    writeFileSync(path.join(inputDir, "private-c.png"), "binary-placeholder", "utf8");
+
+    const result = checkM3PrivateDryRunSafety({ repoRoot, skipGitChecks: true });
+
+    assert.equal(result.ok, true);
+    assert.equal(result.materialGroupCount, 3);
+    assert.deepEqual(result.extensionDistribution, { ".jpg": 1, ".jpeg": 1, ".png": 1 });
+    assert.equal(result.anonymousInputs.every((item) => item.plannedParseMode === "image_metadata_only"), true);
+  });
+});
+
+test("M3 private dry-run safety counts companion text as enhancement only", () => {
+  withTempRepo(({ repoRoot, inputDir }) => {
+    writeFileSync(path.join(inputDir, "private-a.doc"), "binary-placeholder", "utf8");
+    writeFileSync(path.join(inputDir, "private-a.txt"), "title: Secret Synthetic Title\n", "utf8");
+    writeFileSync(path.join(inputDir, "private-b.jpg"), "binary-placeholder", "utf8");
+    writeFileSync(path.join(inputDir, "private-c.png"), "binary-placeholder", "utf8");
+
+    const result = checkM3PrivateDryRunSafety({ repoRoot, skipGitChecks: true });
+
+    assert.equal(result.ok, true);
+    assert.equal(result.inputFileCount, 4);
+    assert.equal(result.materialGroupCount, 3);
+    assert.equal(result.companionTextCount, 1);
+    assert.equal(result.anonymousInputs[0].hasCompanionText, true);
+    assert.equal(result.anonymousInputs[0].plannedParseMode, "companion_text_enhanced");
+  });
+});
+
+test("M3 private dry-run safety stops when material group count is outside 3 to 5", () => {
   withTempRepo(({ repoRoot, inputDir }) => {
     writeFileSync(path.join(inputDir, "one.txt"), "title: synthetic\n", "utf8");
     writeFileSync(path.join(inputDir, "two.txt"), "title: synthetic\n", "utf8");
@@ -29,8 +78,8 @@ test("M3 private dry-run safety stops when input count is outside 3 to 5", () =>
     const result = checkM3PrivateDryRunSafety({ repoRoot, skipGitChecks: true });
 
     assert.equal(result.ok, false);
-    assert.ok(result.issues.some((issue) => issue.code === "input_file_count_out_of_range"));
-    assert.equal(result.inputFileCount, 2);
+    assert.ok(result.issues.some((issue) => issue.code === "material_group_count_out_of_range"));
+    assert.equal(result.materialGroupCount, 2);
   });
 });
 
@@ -46,30 +95,35 @@ test("M3 private dry-run safety reports unsupported extensions with anonymous id
     assert.equal(result.ok, false);
     assert.ok(issue);
     assert.deepEqual(issue.unsupportedInputs, [{
-      anonymousInputId: "ANON-M3-PRIVATE-003",
+      anonymousFileId: "ANON-M3-FILE-003",
       extension: ".exe"
     }]);
     assert.equal(JSON.stringify(result).includes("c.exe"), false);
   });
 });
 
-test("M3 private dry-run inventory omits real filenames", () => {
+test("M3 private dry-run inventory can build anonymous material groups", () => {
   withTempRepo(({ inputDir }) => {
     writeFileSync(path.join(inputDir, "private-real-title.txt"), "title: synthetic\n", "utf8");
     writeFileSync(path.join(inputDir, "private-real-author.md"), "title: synthetic\n", "utf8");
     writeFileSync(path.join(inputDir, "private-real-material.pdf"), "synthetic", "utf8");
 
-    const inventory = collectInputInventory(inputDir);
-    const publicInventory = inventory.map(({ anonymousInputId, extension }) => ({ anonymousInputId, extension }));
+    const groups = groupPrimaryMaterials(collectInputInventory(inputDir));
+    const publicInventory = groups.map(({ anonymousMaterialId, extension, hasCompanionText, plannedParseMode }) => ({
+      anonymousMaterialId,
+      extension,
+      hasCompanionText,
+      plannedParseMode
+    }));
 
-    assert.equal(inventory.length, 3);
+    assert.equal(groups.length, 3);
     assert.deepEqual(publicInventory.map((item) => item.extension).sort(), [".md", ".pdf", ".txt"]);
     assert.equal(JSON.stringify(publicInventory).includes("private-real-title"), false);
   });
 });
 
 test("M3 private dry-run safety keeps allowed extension list explicit", () => {
-  assert.deepEqual(ALLOWED_EXTENSIONS, [".docx", ".pdf", ".pptx", ".txt", ".md", ".xlsx"]);
+  assert.deepEqual(ALLOWED_EXTENSIONS, [".doc", ".docx", ".pdf", ".pptx", ".jpg", ".jpeg", ".png", ".txt", ".md", ".xlsx"]);
 });
 
 function withTempRepo(callback) {

@@ -7,85 +7,52 @@ import {
   DEFAULT_INPUT_DIR,
   DEFAULT_OUTPUT_DIR,
   checkM3PrivateDryRunSafety,
-  collectInputInventory
+  collectInputInventory,
+  groupPrimaryMaterials
 } from "./check_m3_private_dry_run_safety.js";
 
 export const PRIVATE_RESULT_JSON = "M3-private-material-dry-run-result-v0.1.json";
 export const PRIVATE_RESULT_MARKDOWN = "M3-private-material-dry-run-result-v0.1.md";
 
 const TEXT_EXTENSIONS = new Set([".txt", ".md"]);
-const METADATA_ONLY_EXTENSIONS = new Set([".docx", ".pdf", ".pptx"]);
-const UNSUPPORTED_EXTENSIONS = new Set([".xlsx"]);
+const LEGACY_DOC_EXTENSIONS = new Set([".doc"]);
+const IMAGE_EXTENSIONS = new Set([".jpg", ".jpeg", ".png"]);
+const DOCUMENT_METADATA_EXTENSIONS = new Set([".docx", ".pdf", ".pptx"]);
+const SPREADSHEET_EXTENSIONS = new Set([".xlsx"]);
 const SCRIPT_PATH = fileURLToPath(import.meta.url);
 const IS_CLI = path.resolve(process.argv[1] ?? "") === path.resolve(SCRIPT_PATH);
 
 const FIELD_KEY_MAP = new Map([
   ["title", "title"],
-  ["作品名", "title"],
-  ["书名", "title"],
-  ["名称", "title"],
+  ["workTitle", "title"],
   ["author", "author"],
-  ["作者", "author"],
   ["source", "source"],
-  ["来源", "source"],
-  ["题材来源", "source"],
   ["classification", "classificationCandidate"],
   ["classificationCandidate", "classificationCandidate"],
-  ["分类", "classificationCandidate"],
-  ["题材", "classificationCandidate"],
   ["confirmedClassification", "confirmedClassification"],
-  ["确认分类", "confirmedClassification"],
   ["synopsis", "synopsis"],
-  ["简介", "synopsis"],
-  ["梗概", "synopsis"],
   ["wordCount", "wordCount"],
-  ["字数", "wordCount"],
   ["audioVolumeEstimate", "audioVolumeEstimate"],
-  ["预计集数", "audioVolumeEstimate"],
-  ["音频体量", "audioVolumeEstimate"],
   ["completionStatus", "completionStatus"],
-  ["完结状态", "completionStatus"],
   ["reads", "reads"],
-  ["阅读", "reads"],
-  ["阅读量", "reads"],
   ["collections", "collections"],
-  ["收藏", "collections"],
-  ["收藏量", "collections"],
   ["ratingScore", "ratingScore"],
-  ["评分", "ratingScore"],
   ["commentCount", "commentCount"],
-  ["评论", "commentCount"],
-  ["评论数", "commentCount"],
   ["rankings", "rankings"],
-  ["榜单", "rankings"],
   ["searchHeat", "searchHeat"],
-  ["搜索热度", "searchHeat"],
   ["socialHeat", "socialHeat"],
-  ["社媒热度", "socialHeat"],
   ["platformHeat", "platformHeat"],
-  ["平台热度", "platformHeat"],
   ["sameNameAudioStatus", "sameNameAudioStatus"],
-  ["同名音频状态", "sameNameAudioStatus"],
   ["sameNameAudioStatusCheckStatus", "sameNameAudioStatusCheckStatus"],
-  ["同名音频核查状态", "sameNameAudioStatusCheckStatus"],
   ["adaptationSignals", "adaptationSignals"],
-  ["改编信号", "adaptationSignals"],
   ["externalHeat", "externalHeat"],
-  ["外部热度", "externalHeat"],
   ["targetChannels", "targetChannels"],
-  ["目标渠道", "targetChannels"],
   ["copyrightTermRange", "copyrightTermRange"],
-  ["版权期", "copyrightTermRange"],
   ["operatorRecommendationReason", "operatorRecommendationReason"],
-  ["运营判断理由", "operatorRecommendationReason"],
   ["operatorComparators", "operatorComparators"],
-  ["运营对标", "operatorComparators"],
   ["materialSource", "materialSource"],
-  ["物料来源", "materialSource"],
   ["materialUpdatedAt", "materialUpdatedAt"],
-  ["物料更新时间", "materialUpdatedAt"],
-  ["inputConfirmedBy", "inputConfirmedBy"],
-  ["确认人", "inputConfirmedBy"]
+  ["inputConfirmedBy", "inputConfirmedBy"]
 ]);
 
 export function runM3PrivateMaterialDryRun(options = {}) {
@@ -115,11 +82,11 @@ export function runM3PrivateMaterialDryRun(options = {}) {
   const absoluteInputDir = path.join(repoRoot, safety.inputDir);
   const absoluteOutputDir = path.join(repoRoot, safety.outputDir);
   mkdirSync(absoluteOutputDir, { recursive: true });
-  const inventory = collectInputInventory(absoluteInputDir);
-  const materialResults = inventory.map((item) => evaluatePrivateInput(item));
+  const materialGroups = groupPrimaryMaterials(collectInputInventory(absoluteInputDir));
+  const materialResults = materialGroups.map((item) => evaluatePrivateMaterialGroup(item));
   const result = {
     ok: true,
-    version: "m3-private-material-dry-run-v0.1",
+    version: "m3-private-material-dry-run-v0.2",
     generatedAt: new Date().toISOString(),
     inputDir: safety.inputDir,
     outputDir: safety.outputDir,
@@ -136,6 +103,7 @@ export function runM3PrivateMaterialDryRun(options = {}) {
       externalSearchCalled: false,
       chatGptWebCalled: false,
       browserAutomationCalled: false,
+      ocrCalled: false,
       databaseConnected: false,
       dockerExecuted: false,
       migrationExecuted: false,
@@ -160,30 +128,31 @@ export function runM3PrivateMaterialDryRun(options = {}) {
   };
 }
 
-export function evaluatePrivateInput(input) {
-  if (TEXT_EXTENSIONS.has(input.extension)) {
-    const text = readFileSync(input.absolutePath, "utf8");
-    const fields = extractFieldsFromText(text);
-    const material = buildAnonymousMaterial(input, fields);
-    const evaluation = evaluateNewProductMaterial(material, { externalEvidence: [] });
-    return summarizeEvaluation({
-      input,
-      parseStatus: Object.keys(fields).length > 0 ? "text_parsed_partial" : "text_read_no_mapped_fields",
-      fields,
-      evaluation,
-      unsupportedReason: null
-    });
+export function evaluatePrivateMaterialGroup(group) {
+  const companionText = readCompanionText(group);
+  if (TEXT_EXTENSIONS.has(group.extension)) {
+    const text = readFileSync(group.absolutePath, "utf8");
+    return evaluateTextMaterial(group, text, "parsed_from_text");
   }
 
-  if (METADATA_ONLY_EXTENSIONS.has(input.extension)) {
-    return summarizeUnsupportedInput(input, "metadata_only_manual_text_required");
+  if (companionText !== null) {
+    return evaluateTextMaterial(group, companionText, "parsed_from_companion_text_enhanced");
   }
 
-  if (UNSUPPORTED_EXTENSIONS.has(input.extension)) {
-    return summarizeUnsupportedInput(input, "unsupported_in_current_runner");
+  if (LEGACY_DOC_EXTENSIONS.has(group.extension)) {
+    return summarizeMetadataOnly(group, "accepted_legacy_doc_metadata_only");
+  }
+  if (IMAGE_EXTENSIONS.has(group.extension)) {
+    return summarizeMetadataOnly(group, "accepted_image_metadata_only");
+  }
+  if (DOCUMENT_METADATA_EXTENSIONS.has(group.extension)) {
+    return summarizeMetadataOnly(group, "accepted_document_metadata_only");
+  }
+  if (SPREADSHEET_EXTENSIONS.has(group.extension)) {
+    return summarizeMetadataOnly(group, "accepted_spreadsheet_metadata_only");
   }
 
-  return summarizeUnsupportedInput(input, "unsupported_extension");
+  return summarizeMetadataOnly(group, "unsupported_extension");
 }
 
 export function extractFieldsFromText(text) {
@@ -201,59 +170,74 @@ export function extractFieldsFromText(text) {
 export function buildPublicAggregateSummary(result) {
   return {
     ok: result.ok === true,
-    materialCount: result.aggregate?.materialCount ?? 0,
+    materialGroupCount: result.aggregate?.materialGroupCount ?? 0,
     extensionDistribution: result.aggregate?.extensionDistribution ?? {},
     parseStatusDistribution: result.aggregate?.parseStatusDistribution ?? {},
     readinessDistribution: result.aggregate?.readinessDistribution ?? {},
     forecastStatusDistribution: result.aggregate?.forecastStatusDistribution ?? {},
-    ratingDistribution: result.aggregate?.ratingDistribution ?? {},
+    ratingGeneratedCount: result.aggregate?.ratingGeneratedCount ?? 0,
+    ratingNotGeneratedCount: result.aggregate?.ratingNotGeneratedCount ?? 0,
     rawMaterialStored: false,
     realFileNamesPrinted: false,
     notForFormalDecision: true
   };
 }
 
-function buildAnonymousMaterial(input, fields) {
-  return {
-    materialId: input.anonymousInputId,
-    materialType: "private_material",
-    inputMode: "material_first",
+function evaluateTextMaterial(group, text, parseStatus) {
+  const fields = extractFieldsFromText(text);
+  const material = buildAnonymousMaterial(group, fields);
+  const evaluation = evaluateNewProductMaterial(material, { externalEvidence: [] });
+  return summarizeEvaluation({
+    group,
+    parseStatus,
     fields,
-    confidenceByField: Object.fromEntries(Object.keys(fields).map((key) => [key, 0.78])),
-    materialMetadata: {
-      anonymousInputId: input.anonymousInputId,
-      inputExtension: input.extension,
-      rawMaterialStored: false,
-      rawTextPersisted: false
-    }
-  };
+    evaluation,
+    manualExtractionRequired: Object.keys(fields).length === 0
+  });
 }
 
-function summarizeUnsupportedInput(input, parseStatus) {
-  const hardBlockers = parseStatus === "unsupported_in_current_runner"
-    ? ["unsupported_spreadsheet_input_requires_text_companion"]
-    : ["manual_text_required_for_binary_material"];
+function summarizeMetadataOnly(group, parseStatus) {
+  const manualExtractionRequired = true;
+  const visualExtractionRequired = IMAGE_EXTENSIONS.has(group.extension);
+  const legacyDocExtractionRequired = LEGACY_DOC_EXTENSIONS.has(group.extension);
+  const hardBlockers = [
+    "missing_title",
+    "missing_author",
+    "missing_source",
+    "missing_classification",
+    "missing_volume_estimate",
+    "missing_heat_signal",
+    "missing_copyright_term",
+    "missing_target_channels",
+    "manual_extraction_required"
+  ];
+  if (visualExtractionRequired) hardBlockers.push("visual_extraction_required");
+  if (legacyDocExtractionRequired) hardBlockers.push("legacy_doc_extraction_required");
   return {
-    anonymousMaterialId: input.anonymousInputId,
-    inputExtension: input.extension,
+    anonymousMaterialId: group.anonymousMaterialId,
+    extension: group.extension,
+    inputExtension: group.extension,
     parseStatus,
+    acceptedAsPrimaryMaterial: true,
+    hasCompanionText: group.hasCompanionText,
+    manualExtractionRequired,
+    visualExtractionRequired,
+    legacyDocExtractionRequired,
     extractedFields: [],
-    missingFields: [],
+    extractedFieldKeys: [],
+    missingFields: hardBlockers.filter((code) => code.startsWith("missing_")),
     readinessStatus: "blocked",
     hardBlockers,
     warnings: [],
-    researchQuestions: [{
-      questionId: `${input.anonymousInputId}-RQ-001`,
-      missingFieldOrRisk: "manual_text_required",
-      priority: "high",
-      evidenceTypesExpected: ["manualEvidenceEntry"]
-    }],
+    researchQuestions: buildManualResearchQuestions(group, hardBlockers),
     externalEvidenceSummary: emptyCountSummary(),
     comparablesSummary: emptyComparableSummary(),
-    authorRankingSummary: { enabled: false, disabledReason: "manual_text_required" },
+    authorRankingSummary: { enabled: false, disabledReason: "manual_extraction_required" },
     channelForecastSummary: { forecastStatus: "blocked", pointEstimateOnly: true, channelCount: 0 },
-    ratingSummary: { ratingType: "new_product_candidate_rating", rating: "E", supportFactorCount: 0, warningFactorCount: 0, limitingFactorCount: 0 },
-    workflowState: { currentState: "material_received", blockedReasons: hardBlockers },
+    ratingSummary: suppressedRatingSummary(),
+    ratingStatus: "not_generated_due_to_readiness_blocked",
+    candidateRatingGenerated: false,
+    workflowState: { currentState: "readiness_blocked", blockedReasons: hardBlockers },
     backtestAnchorStatus: "not_eligible_readiness_blocked",
     userFeedbackFields: buildUserFeedbackFields(),
     rawMaterialStored: false,
@@ -262,15 +246,25 @@ function summarizeUnsupportedInput(input, parseStatus) {
   };
 }
 
-function summarizeEvaluation({ input, parseStatus, fields, evaluation }) {
+function summarizeEvaluation({ group, parseStatus, fields, evaluation, manualExtractionRequired }) {
+  const readinessStatus = evaluation.readiness?.readinessStatus ?? "blocked";
+  const ratingSummary = readinessStatus === "blocked"
+    ? suppressedRatingSummary()
+    : summarizeRating(evaluation.candidateRating);
   return {
-    anonymousMaterialId: input.anonymousInputId,
-    inputExtension: input.extension,
+    anonymousMaterialId: group.anonymousMaterialId,
+    extension: group.extension,
+    inputExtension: group.extension,
     parseStatus,
+    acceptedAsPrimaryMaterial: true,
+    hasCompanionText: group.hasCompanionText,
+    manualExtractionRequired,
+    visualExtractionRequired: false,
+    legacyDocExtractionRequired: false,
     extractedFields: summarizeExtractedFields(evaluation.parsedMaterial?.extractedFields ?? []),
     extractedFieldKeys: Object.keys(fields).sort(),
     missingFields: evaluation.parsedMaterial?.missingFields ?? [],
-    readinessStatus: evaluation.readiness?.readinessStatus ?? "blocked",
+    readinessStatus,
     hardBlockers: evaluation.readiness?.hardBlockerCodes ?? [],
     warnings: evaluation.readiness?.warningCodes ?? [],
     researchQuestions: sanitizeResearchQuestions(evaluation.researchQuestions ?? []),
@@ -278,13 +272,64 @@ function summarizeEvaluation({ input, parseStatus, fields, evaluation }) {
     comparablesSummary: summarizeComparables(evaluation.comparableWorks),
     authorRankingSummary: summarizeAuthorRanking(evaluation.authorRanking),
     channelForecastSummary: summarizeForecast(evaluation.forecast),
-    ratingSummary: summarizeRating(evaluation.candidateRating),
+    ratingSummary,
+    ratingStatus: ratingSummary.ratingStatus,
+    candidateRatingGenerated: ratingSummary.candidateRatingGenerated,
     workflowState: summarizeWorkflow(evaluation.workflow),
     backtestAnchorStatus: evaluation.backtestAnchor?.anchorStatus ?? "not_created",
     userFeedbackFields: buildUserFeedbackFields(),
     rawMaterialStored: false,
     rawTextPersisted: false,
     notForFormalDecision: true
+  };
+}
+
+function readCompanionText(group) {
+  if (!group.hasCompanionText) return null;
+  const companion = group.companionTextFiles[0];
+  return readFileSync(companion.absolutePath, "utf8");
+}
+
+function buildAnonymousMaterial(group, fields) {
+  return {
+    materialId: group.anonymousMaterialId,
+    materialType: "private_material",
+    inputMode: "material_first",
+    fields,
+    confidenceByField: Object.fromEntries(Object.keys(fields).map((key) => [key, 0.78])),
+    materialMetadata: {
+      anonymousMaterialId: group.anonymousMaterialId,
+      inputExtension: group.extension,
+      hasCompanionText: group.hasCompanionText,
+      rawMaterialStored: false,
+      rawTextPersisted: false
+    }
+  };
+}
+
+function buildManualResearchQuestions(group, hardBlockers) {
+  return [
+    {
+      questionId: `${group.anonymousMaterialId}-RQ-001`,
+      missingFieldOrRisk: "manual_extraction_required",
+      priority: "high",
+      evidenceTypesExpected: ["manualEvidenceEntry"],
+      hardBlockers
+    }
+  ];
+}
+
+function suppressedRatingSummary() {
+  return {
+    ratingType: "new_product_candidate_rating",
+    rating: null,
+    ratingStatus: "not_generated_due_to_readiness_blocked",
+    candidateRatingGenerated: false,
+    ratingExplanation: "readiness blocked; no valid new product candidate rating generated.",
+    ratingBasis: null,
+    supportFactorCount: 0,
+    warningFactorCount: 0,
+    limitingFactorCount: 0
   };
 }
 
@@ -342,6 +387,8 @@ function summarizeRating(candidateRating = {}) {
   return {
     ratingType: candidateRating.ratingType ?? "new_product_candidate_rating",
     rating: candidateRating.rating ?? candidateRating.value ?? null,
+    ratingStatus: "generated",
+    candidateRatingGenerated: true,
     ratingBasis: candidateRating.ratingBasis ?? null,
     supportFactorCount: candidateRating.supportFactors?.length ?? 0,
     warningFactorCount: candidateRating.warningFactors?.length ?? 0,
@@ -361,32 +408,41 @@ function summarizeWorkflow(workflow = {}) {
 
 function buildUserFeedbackFields() {
   return [
-    "用户判断：字段抽取是否可用",
-    "用户判断：readiness 阻断是否合理",
-    "用户判断：外部证据问题是否完整",
-    "用户判断：对标与作者解释是否有用",
-    "用户判断：渠道点估预测是否可读",
-    "用户判断：新品候选评级解释是否合理",
-    "用户补充说明"
+    "fieldExtractionUsable",
+    "readinessBlockersReasonable",
+    "researchQuestionsActionable",
+    "manualExtractionNotes",
+    "operatorFeedback"
   ];
 }
 
 function buildSections(materialResults) {
   return {
-    "00_说明": {
+    "00_instructions": {
       purpose: "M3 private material local dry-run result; not a formal execution result.",
       inputFilesAreAnonymous: true,
       rawMaterialStored: false,
       realFileNamesPrinted: false,
       notForFormalDecision: true
     },
-    "01_物料字段抽取": materialResults.map((item) => pick(item, ["anonymousMaterialId", "inputExtension", "parseStatus", "extractedFields", "missingFields"])),
+    "01_material_field_extraction": materialResults.map((item) => pick(item, [
+      "anonymousMaterialId",
+      "extension",
+      "parseStatus",
+      "acceptedAsPrimaryMaterial",
+      "hasCompanionText",
+      "manualExtractionRequired",
+      "visualExtractionRequired",
+      "legacyDocExtractionRequired",
+      "extractedFields",
+      "missingFields"
+    ])),
     "02_readiness": materialResults.map((item) => pick(item, ["anonymousMaterialId", "readinessStatus", "hardBlockers", "warnings"])),
     "03_research_questions": materialResults.map((item) => pick(item, ["anonymousMaterialId", "researchQuestions"])),
     "04_external_evidence": materialResults.map((item) => pick(item, ["anonymousMaterialId", "externalEvidenceSummary"])),
     "05_comparables_author": materialResults.map((item) => pick(item, ["anonymousMaterialId", "comparablesSummary", "authorRankingSummary"])),
     "06_channel_forecast": materialResults.map((item) => pick(item, ["anonymousMaterialId", "channelForecastSummary"])),
-    "07_rating_explanation": materialResults.map((item) => pick(item, ["anonymousMaterialId", "ratingSummary"])),
+    "07_rating_explanation": materialResults.map((item) => pick(item, ["anonymousMaterialId", "ratingSummary", "ratingStatus", "candidateRatingGenerated"])),
     "08_workflow": materialResults.map((item) => pick(item, ["anonymousMaterialId", "workflowState"])),
     "09_backtest_anchor": materialResults.map((item) => pick(item, ["anonymousMaterialId", "backtestAnchorStatus"])),
     "10_user_feedback": materialResults.map((item) => pick(item, ["anonymousMaterialId", "userFeedbackFields"]))
@@ -394,13 +450,31 @@ function buildSections(materialResults) {
 }
 
 function buildAggregate(materialResults) {
+  const ratingGeneratedCount = materialResults.filter((item) => item.candidateRatingGenerated).length;
+  const ratingNotGeneratedCount = materialResults.length - ratingGeneratedCount;
   return {
     materialCount: materialResults.length,
-    extensionDistribution: countBy(materialResults, "inputExtension"),
+    materialGroupCount: materialResults.length,
+    extensionDistribution: countBy(materialResults, "extension"),
+    acceptedPrimaryMaterialCount: materialResults.filter((item) => item.acceptedAsPrimaryMaterial).length,
+    acceptedDocCount: materialResults.filter((item) => item.extension === ".doc").length,
+    acceptedImageCount: materialResults.filter((item) => IMAGE_EXTENSIONS.has(item.extension)).length,
+    companionTextCount: materialResults.filter((item) => item.hasCompanionText).length,
+    metadataOnlyCount: materialResults.filter((item) => item.parseStatus.includes("metadata_only")).length,
+    manualExtractionRequiredCount: materialResults.filter((item) => item.manualExtractionRequired).length,
+    visualExtractionRequiredCount: materialResults.filter((item) => item.visualExtractionRequired).length,
+    legacyDocExtractionRequiredCount: materialResults.filter((item) => item.legacyDocExtractionRequired).length,
+    ratingGeneratedCount,
+    ratingNotGeneratedCount,
+    blockedRatingSuppressedCount: materialResults.filter((item) =>
+      item.readinessStatus === "blocked" &&
+      item.ratingStatus === "not_generated_due_to_readiness_blocked"
+    ).length,
     parseStatusDistribution: countBy(materialResults, "parseStatus"),
     readinessDistribution: countBy(materialResults, "readinessStatus"),
     forecastStatusDistribution: countBy(materialResults.map((item) => item.channelForecastSummary), "forecastStatus"),
-    ratingDistribution: countBy(materialResults.map((item) => item.ratingSummary), "rating"),
+    ratingDistribution: countNonNullRatings(materialResults),
+    ratingStatusDistribution: countBy(materialResults, "ratingStatus"),
     backtestAnchorDistribution: countBy(materialResults, "backtestAnchorStatus"),
     hardBlockerDistribution: countListValues(materialResults, "hardBlockers"),
     warningDistribution: countListValues(materialResults, "warnings"),
@@ -416,23 +490,26 @@ function buildPrivateMarkdown(result) {
     "",
     "This private report is local-only and not for formal decision.",
     "",
-    `- Material count: ${result.aggregate.materialCount}`,
+    `- Material group count: ${result.aggregate.materialGroupCount}`,
+    `- Extension distribution: ${JSON.stringify(result.aggregate.extensionDistribution)}`,
     `- Parse status: ${JSON.stringify(result.aggregate.parseStatusDistribution)}`,
     `- Readiness: ${JSON.stringify(result.aggregate.readinessDistribution)}`,
     `- Forecast status: ${JSON.stringify(result.aggregate.forecastStatusDistribution)}`,
-    `- Rating: ${JSON.stringify(result.aggregate.ratingDistribution)}`,
+    `- Rating status: ${JSON.stringify(result.aggregate.ratingStatusDistribution)}`,
     "",
     "## Anonymous material results",
     ""
   ];
   for (const item of result.materialResults) {
     lines.push(`### ${item.anonymousMaterialId}`);
-    lines.push(`- Extension: ${item.inputExtension}`);
+    lines.push(`- Extension: ${item.extension}`);
     lines.push(`- Parse status: ${item.parseStatus}`);
+    lines.push(`- Accepted as primary material: ${item.acceptedAsPrimaryMaterial}`);
+    lines.push(`- Has companion text: ${item.hasCompanionText}`);
+    lines.push(`- Manual extraction required: ${item.manualExtractionRequired}`);
     lines.push(`- Readiness: ${item.readinessStatus}`);
-    lines.push(`- Hard blockers: ${item.hardBlockers.join(", ") || "none"}`);
     lines.push(`- Forecast status: ${item.channelForecastSummary.forecastStatus}`);
-    lines.push(`- Rating: ${item.ratingSummary.rating ?? "none"}`);
+    lines.push(`- Rating status: ${item.ratingStatus}`);
     lines.push(`- Backtest anchor: ${item.backtestAnchorStatus}`);
     lines.push("");
   }
@@ -441,15 +518,15 @@ function buildPrivateMarkdown(result) {
 
 function buildPreparationGuidance(safety) {
   return {
-    requiredInputCount: "3 to 5 files",
+    requiredMaterialGroups: "3 to 5 primary material groups",
     allowedExtensions: safety.allowedExtensions,
     inputDir: safety.inputDir,
     outputDir: safety.outputDir,
     guidance: [
-      "Place 3 to 5 private materials in the configured private input directory.",
-      "Use .txt or .md companion files when binary materials cannot be parsed safely.",
-      "Keep private inputs and outputs under ignored data/private-* directories.",
-      "Run the safety check again before dry-run."
+      "Place 3 to 5 private primary materials in the configured private input directory.",
+      "Optional .txt or .md files with matching stem are treated as companion text enhancements.",
+      "Companion text is not required for .doc/.jpg/.jpeg/.png acceptance.",
+      "Keep private inputs and outputs under ignored data/private-* directories."
     ],
     issues: safety.issues
   };
@@ -468,29 +545,31 @@ function normalizeParsedValue(key, rawValue) {
     return { summary: value };
   }
   if (key === "source") {
-    if (["出版物", "出版", "publication"].includes(value)) return "publication";
-    if (["原创网文", "原创", "web_original", "original_web"].includes(value)) return "web_original";
+    if (["publication", "published"].includes(value)) return "publication";
+    if (["web_original", "original_web"].includes(value)) return "web_original";
   }
   if (key === "sameNameAudioStatus") {
-    if (["有", "已有", "has", "yes"].includes(value)) return "has";
-    if (["无", "没有", "none", "no"].includes(value)) return "none";
+    if (["has", "yes", "true"].includes(value)) return "has";
+    if (["none", "no", "false"].includes(value)) return "none";
     return "unknown";
   }
   if (key === "sameNameAudioStatusCheckStatus") {
-    if (["已核查", "checked", "yes"].includes(value)) return "checked";
-    if (["未核查", "unchecked", "no"].includes(value)) return "unchecked";
+    if (["checked", "yes", "true"].includes(value)) return "checked";
+    if (["unchecked", "no", "false"].includes(value)) return "unchecked";
   }
   return value;
 }
 
 function splitList(value) {
-  return value.split(/[;,，、\n]/).map((item) => item.trim()).filter(Boolean);
+  return value.split(/[;,\n]/).map((item) => item.trim()).filter(Boolean);
 }
 
 function stripSensitiveSafety(safety) {
   return {
     ok: safety.ok,
-    inputFileCount: safety.inputFileCount,
+    materialGroupCount: safety.materialGroupCount,
+    acceptedPrimaryMaterialCount: safety.acceptedPrimaryMaterialCount,
+    companionTextCount: safety.companionTextCount,
     allowedExtensions: safety.allowedExtensions,
     anonymousInputs: safety.anonymousInputs,
     extensionDistribution: safety.extensionDistribution,
@@ -504,6 +583,15 @@ function countBy(values, key) {
   return values.reduce((counts, value) => {
     const group = value?.[key] ?? "unknown";
     counts[group] = (counts[group] ?? 0) + 1;
+    return counts;
+  }, {});
+}
+
+function countNonNullRatings(values) {
+  return values.reduce((counts, value) => {
+    const rating = value.ratingSummary?.rating;
+    if (!rating) return counts;
+    counts[rating] = (counts[rating] ?? 0) + 1;
     return counts;
   }, {});
 }

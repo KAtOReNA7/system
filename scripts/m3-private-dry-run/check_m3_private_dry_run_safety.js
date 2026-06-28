@@ -5,9 +5,22 @@ import { fileURLToPath } from "node:url";
 
 export const DEFAULT_INPUT_DIR = "data/private-input/m3-material-dry-run";
 export const DEFAULT_OUTPUT_DIR = "data/private-output/m3-dry-run";
-export const ALLOWED_EXTENSIONS = Object.freeze([".docx", ".pdf", ".pptx", ".txt", ".md", ".xlsx"]);
-export const MIN_INPUT_FILES = 3;
-export const MAX_INPUT_FILES = 5;
+export const PRIMARY_MATERIAL_EXTENSIONS = Object.freeze([
+  ".doc",
+  ".docx",
+  ".pdf",
+  ".pptx",
+  ".jpg",
+  ".jpeg",
+  ".png",
+  ".txt",
+  ".md",
+  ".xlsx"
+]);
+export const ALLOWED_EXTENSIONS = PRIMARY_MATERIAL_EXTENSIONS;
+export const COMPANION_TEXT_EXTENSIONS = Object.freeze([".txt", ".md"]);
+export const MIN_MATERIAL_GROUPS = 3;
+export const MAX_MATERIAL_GROUPS = 5;
 
 const SCRIPT_PATH = fileURLToPath(import.meta.url);
 const IS_CLI = path.resolve(process.argv[1] ?? "") === path.resolve(SCRIPT_PATH);
@@ -57,41 +70,40 @@ export function checkM3PrivateDryRunSafety(options = {}) {
     }
   }
 
-  const inventory = existsSync(absoluteInputDir)
-    ? collectInputInventory(absoluteInputDir)
-    : [];
-  const validFileCount = inventory.length;
-  if (validFileCount < MIN_INPUT_FILES || validFileCount > MAX_INPUT_FILES) {
-    issues.push(issue("input_file_count_out_of_range", "Private dry-run requires 3 to 5 direct input files.", {
-      inputFileCount: validFileCount,
-      expectedMin: MIN_INPUT_FILES,
-      expectedMax: MAX_INPUT_FILES
-    }));
-  }
-
-  const unsupported = inventory.filter((item) => !ALLOWED_EXTENSIONS.includes(item.extension));
+  const inventory = existsSync(absoluteInputDir) ? collectInputInventory(absoluteInputDir) : [];
+  const unsupported = inventory.filter((item) => !PRIMARY_MATERIAL_EXTENSIONS.includes(item.extension));
   if (unsupported.length > 0) {
     issues.push(issue("unsupported_input_extension", "Unsupported private input extension detected.", {
       unsupportedInputs: unsupported.map((item) => ({
-        anonymousInputId: item.anonymousInputId,
+        anonymousFileId: item.anonymousFileId,
         extension: item.extension
       }))
     }));
   }
 
+  const materialGroups = groupPrimaryMaterials(inventory);
+  const materialGroupCount = materialGroups.length;
+  if (materialGroupCount < MIN_MATERIAL_GROUPS || materialGroupCount > MAX_MATERIAL_GROUPS) {
+    issues.push(issue("material_group_count_out_of_range", "Private dry-run requires 3 to 5 primary material groups.", {
+      materialGroupCount,
+      expectedMin: MIN_MATERIAL_GROUPS,
+      expectedMax: MAX_MATERIAL_GROUPS
+    }));
+  }
+
   const ok = issues.length === 0;
+  const anonymousMaterials = materialGroups.map(toPublicMaterialGroup);
   return {
     ok,
     inputDir,
     outputDir,
-    inputFileCount: validFileCount,
-    allowedExtensions: [...ALLOWED_EXTENSIONS],
-    anonymousInputs: inventory.map(({ anonymousInputId, extension, sizeBytes }) => ({
-      anonymousInputId,
-      extension,
-      sizeBytes
-    })),
-    extensionDistribution: countBy(inventory, "extension"),
+    materialGroupCount,
+    inputFileCount: inventory.length,
+    acceptedPrimaryMaterialCount: materialGroups.length,
+    companionTextCount: materialGroups.filter((item) => item.companionTextFiles.length > 0).length,
+    allowedExtensions: [...PRIMARY_MATERIAL_EXTENSIONS],
+    anonymousInputs: anonymousMaterials,
+    extensionDistribution: countBy(materialGroups, "extension"),
     issues,
     databaseConnected: false,
     dockerExecuted: false,
@@ -109,14 +121,58 @@ export function collectInputInventory(absoluteInputDir) {
     .sort((left, right) => left.name.localeCompare(right.name))
     .map((entry, index) => {
       const extension = path.extname(entry.name).toLowerCase();
+      const stem = path.basename(entry.name, extension);
       const absolutePath = path.join(absoluteInputDir, entry.name);
       return {
-        anonymousInputId: `ANON-M3-PRIVATE-${String(index + 1).padStart(3, "0")}`,
+        anonymousFileId: `ANON-M3-FILE-${String(index + 1).padStart(3, "0")}`,
         extension,
+        stem,
         absolutePath,
         sizeBytes: statSync(absolutePath).size
       };
     });
+}
+
+export function groupPrimaryMaterials(inventory) {
+  const byStem = new Map();
+  for (const item of inventory.filter((entry) => PRIMARY_MATERIAL_EXTENSIONS.includes(entry.extension))) {
+    const items = byStem.get(item.stem) ?? [];
+    items.push(item);
+    byStem.set(item.stem, items);
+  }
+
+  return [...byStem.entries()]
+    .sort(([left], [right]) => left.localeCompare(right))
+    .map(([, items], index) => {
+      const sorted = [...items].sort((left, right) => materialSortRank(left.extension) - materialSortRank(right.extension));
+      const primary = sorted.find((item) => !COMPANION_TEXT_EXTENSIONS.includes(item.extension)) ?? sorted[0];
+      const companionTextFiles = sorted.filter((item) =>
+        item !== primary &&
+        COMPANION_TEXT_EXTENSIONS.includes(item.extension)
+      );
+      return {
+        anonymousMaterialId: `ANON-M3-PRIVATE-${String(index + 1).padStart(3, "0")}`,
+        extension: primary.extension,
+        absolutePath: primary.absolutePath,
+        sizeBytes: primary.sizeBytes,
+        hasCompanionText: companionTextFiles.length > 0,
+        companionTextFiles,
+        plannedParseMode: plannedParseModeFor(primary.extension, companionTextFiles.length > 0),
+        acceptedAsPrimaryMaterial: true
+      };
+    });
+}
+
+export function plannedParseModeFor(extension, hasCompanionText = false) {
+  if (hasCompanionText && !COMPANION_TEXT_EXTENSIONS.includes(extension)) {
+    return "companion_text_enhanced";
+  }
+  if (extension === ".txt" || extension === ".md") return "text";
+  if (extension === ".doc") return "legacy_doc_metadata_only";
+  if ([".jpg", ".jpeg", ".png"].includes(extension)) return "image_metadata_only";
+  if ([".docx", ".pdf", ".pptx"].includes(extension)) return "document_metadata_only";
+  if (extension === ".xlsx") return "spreadsheet_metadata_only";
+  return "unsupported";
 }
 
 export function isAllowedPrivatePath(relativePath, kind) {
@@ -135,6 +191,31 @@ export function normalizeRelativePath(value) {
     .replaceAll("\\", "/")
     .replace(/^\/+/, "")
     .replace(/\/+$/, "");
+}
+
+function toPublicMaterialGroup(group) {
+  return {
+    anonymousMaterialId: group.anonymousMaterialId,
+    extension: group.extension,
+    hasCompanionText: group.hasCompanionText,
+    plannedParseMode: group.plannedParseMode
+  };
+}
+
+function materialSortRank(extension) {
+  const ranks = {
+    ".doc": 1,
+    ".docx": 1,
+    ".pdf": 1,
+    ".pptx": 1,
+    ".jpg": 1,
+    ".jpeg": 1,
+    ".png": 1,
+    ".xlsx": 1,
+    ".txt": 2,
+    ".md": 2
+  };
+  return ranks[extension] ?? 99;
 }
 
 function isGitIgnored(repoRoot, relativePath) {
