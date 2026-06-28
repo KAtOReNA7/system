@@ -1,0 +1,222 @@
+{
+  "version": "0.1",
+  "generatedAt": "2026-06-28",
+  "stage": "M3-0",
+  "status": "planning_only",
+  "formalExecutionAllowed": false,
+  "questionCount": 16,
+  "priorityQuestionIds": [
+    "Q1",
+    "Q4",
+    "Q5",
+    "Q8",
+    "Q9",
+    "Q10",
+    "Q11",
+    "Q14",
+    "Q15",
+    "Q16"
+  ],
+  "questions": [
+    {
+      "id": "Q1",
+      "category": "scope",
+      "question": "M3 第一优先级是新作品选题表评估，还是物料解析器能力？",
+      "options": [
+        "A. 先评估选题表",
+        "B. 先做物料解析",
+        "C. 两者并行但只允许 fixture/prototype"
+      ],
+      "default": "A",
+      "why": "决定 M3-1 的最小闭环输入来源。"
+    },
+    {
+      "id": "Q2",
+      "category": "input_enum",
+      "question": "M3 输入来源 source 是否只保留出版物、原创网文、其他三类？",
+      "options": [
+        "A. 是",
+        "B. 增加更多来源",
+        "C. 暂不固定枚举"
+      ],
+      "default": "A",
+      "why": "决定模型分流、模板校验和页面筛选项。"
+    },
+    {
+      "id": "Q3",
+      "category": "classification",
+      "question": "完整三级分类由用户直接填写，还是先允许系统从材料中候选提取？",
+      "options": [
+        "A. 用户填写为准",
+        "B. 系统候选 + 用户确认",
+        "C. 暂时只要求一级分类"
+      ],
+      "default": "B",
+      "why": "分类会影响同类对标和曲线选择。"
+    },
+    {
+      "id": "Q4",
+      "category": "readiness",
+      "question": "缺失哪些字段时必须阻断 numeric forecast？",
+      "options": [
+        "A. 按当前字典全部必填字段阻断",
+        "B. 只阻断身份、分类、热度、版权期",
+        "C. 允许降级输出观察结论"
+      ],
+      "default": "A",
+      "why": "决定 readiness 的严格程度。"
+    },
+    {
+      "id": "Q5",
+      "category": "audio_status",
+      "question": "同名有声状态如何定义？",
+      "options": [
+        "A. 只看是否已有同名有声",
+        "B. 区分已上线、制作中、授权中、未知",
+        "C. 暂不作为必填"
+      ],
+      "default": "B",
+      "why": "影响重复开发风险和竞争状态判断。"
+    },
+    {
+      "id": "Q6",
+      "category": "external_heat",
+      "question": "外部热度需要哪些平台或指标？",
+      "options": [
+        "A. 阅读、收藏、评分、评论四类即可",
+        "B. 增加榜单、搜索、社媒热度",
+        "C. 只接受用户手工摘要"
+      ],
+      "default": "A",
+      "why": "决定选题表字段和后续解析范围。"
+    },
+    {
+      "id": "Q7",
+      "category": "adaptation_signal",
+      "question": "改编信号是否影响评级？",
+      "options": [
+        "A. 影响评级和风险解释",
+        "B. 只做说明不影响评级",
+        "C. 暂不纳入"
+      ],
+      "default": "A",
+      "why": "决定评级和解释的可用字段。"
+    },
+    {
+      "id": "Q8",
+      "category": "channel",
+      "question": "目标渠道是否需要做渠道级预测？",
+      "options": [
+        "A. 暂不做渠道级金额，只输出渠道结构说明",
+        "B. 做渠道级区间",
+        "C. 只保留目标渠道文本"
+      ],
+      "default": "A",
+      "why": "渠道级预测会显著提高数据需求。"
+    },
+    {
+      "id": "Q9",
+      "category": "forecast_output",
+      "question": "五年预测输出需要哪些字段？",
+      "options": [
+        "A. 五年累计、基准、首年、1-5 年拆分",
+        "B. 只要五年累计区间",
+        "C. 只要首年预测"
+      ],
+      "default": "A",
+      "why": "决定 M3 输出结构和测试口径。"
+    },
+    {
+      "id": "Q10",
+      "category": "rating",
+      "question": "M3 是否继续沿用 M2 的 S+/S/A/B/C/D/E 评级口径？",
+      "options": [
+        "A. 沿用但标记为新品候选评级",
+        "B. 新建 M3 评级",
+        "C. 只输出风险不评级"
+      ],
+      "default": "A",
+      "why": "避免把老品评级直接误用为新品正式评级。"
+    },
+    {
+      "id": "Q11",
+      "category": "non_goal",
+      "question": "M3 是否明确禁止输出是否建议开发的直接结论？",
+      "options": [
+        "A. 禁止，只输出评估要素",
+        "B. 允许输出谨慎建议",
+        "C. 由页面隐藏但接口保留"
+      ],
+      "default": "A",
+      "why": "防止系统替代人工选题决策。"
+    },
+    {
+      "id": "Q12",
+      "category": "non_goal",
+      "question": "是否禁止输出资源投入等级？",
+      "options": [
+        "A. 禁止",
+        "B. 允许输出低/中/高",
+        "C. 只允许人工填写"
+      ],
+      "default": "A",
+      "why": "防止系统越权给出投资决策。"
+    },
+    {
+      "id": "Q13",
+      "category": "comparator",
+      "question": "运营指定对标作品如何使用？",
+      "options": [
+        "A. 与系统对标并列展示",
+        "B. 只用于解释",
+        "C. 强制覆盖系统对标"
+      ],
+      "default": "A",
+      "why": "影响对标可信度和可解释性。"
+    },
+    {
+      "id": "Q14",
+      "category": "material_parsing",
+      "question": "Word/PDF/PPT 物料解析是否只能产生候选字段？",
+      "options": [
+        "A. 是，必须人工确认",
+        "B. 部分字段可自动确认",
+        "C. 暂不做解析"
+      ],
+      "default": "A",
+      "why": "决定材料解析安全边界。"
+    },
+    {
+      "id": "Q15",
+      "category": "m2_dependency",
+      "question": "M2 尚未 formal complete 时，M3 是否只能做 fixture/prototype 和本地候选验证？",
+      "options": [
+        "A. 是",
+        "B. 允许本地真实选题试算但标记非正式",
+        "C. 允许进入 formal"
+      ],
+      "default": "A",
+      "why": "决定 M3 能力是否可以对外发布。"
+    },
+    {
+      "id": "Q16",
+      "category": "next_input",
+      "question": "M3-1 用户准备的第一批测试输入形态是什么？",
+      "options": [
+        "A. 结构化选题表",
+        "B. 单个 Word/PDF/PPT 物料",
+        "C. 两者都有"
+      ],
+      "default": "A",
+      "why": "决定下一轮实现计划和验证脚本。"
+    }
+  ],
+  "safety": {
+    "containsRealWorkNames": false,
+    "containsAuthorNames": false,
+    "containsChannelNames": false,
+    "containsRawBillRows": false,
+    "containsPrivateMaterials": false,
+    "requiresUserAnswersBeforeM3Execution": true
+  }
+}

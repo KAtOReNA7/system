@@ -1,0 +1,43 @@
+{
+  "schema": "m3.topicInputTemplate.v0.1",
+  "generatedAt": "2026-06-28",
+  "stage": "M3-0",
+  "inputFilePolicy": {
+    "allowedFormats": ["xlsx", "csv", "json"],
+    "privateOnly": true,
+    "commitOriginalInput": false,
+    "recommendedPrivateDirectory": "gitignored private directory"
+  },
+  "requiredColumns": [
+    {"zhName":"书名","key":"title","validation":"non_empty","missingPrompt":"缺书名，无法识别选题"},
+    {"zhName":"作者","key":"author","validation":"non_empty","missingPrompt":"缺作者，无法做作者排位或同作者修正"},
+    {"zhName":"来源","key":"source","validation":"publication/web_original/other","missingPrompt":"缺来源，无法分流模型"},
+    {"zhName":"完整三级分类","key":"completeClassification","validation":"three_levels","missingPrompt":"缺完整分类，无法做类别曲线和同类对标"},
+    {"zhName":"简介","key":"synopsis","validation":"non_empty","missingPrompt":"缺简介，无法确认内容和适配风险"},
+    {"zhName":"字数","key":"wordCount","validation":"positive_number","missingPrompt":"缺字数，无法估算有声体量"},
+    {"zhName":"完结状态","key":"completionStatus","validation":"completed/serializing/unknown","missingPrompt":"缺完结状态，无法判断曲线风险"},
+    {"zhName":"阅读量","key":"reads","validation":"non_negative_number","missingPrompt":"缺阅读量，热度信号不足"},
+    {"zhName":"收藏量","key":"collections","validation":"non_negative_number","missingPrompt":"缺收藏量，热度信号不足"},
+    {"zhName":"评分","key":"ratingScore","validation":"number","missingPrompt":"缺评分，口碑信号不足"},
+    {"zhName":"同名有声状态","key":"sameNameAudioStatus","validation":"yes/no/unknown","missingPrompt":"缺同名有声判断，竞争状态不明"},
+    {"zhName":"站外热度","key":"externalHeat","validation":"label_or_metric_summary","missingPrompt":"缺站外热度，外部热度映射不足"},
+    {"zhName":"目标渠道","key":"targetChannels","validation":"one_or_more","missingPrompt":"缺目标渠道，无法输出渠道结构说明"},
+    {"zhName":"版权期限范围","key":"copyrightTermRange","validation":"non_empty","missingPrompt":"缺版权期限，无法确认可开发窗口"},
+    {"zhName":"运营推荐理由","key":"operatorRecommendationReason","validation":"non_empty","missingPrompt":"缺运营理由，无法保留人工依据"}
+  ],
+  "optionalColumns": [
+    {"zhName":"评论量","key":"commentCount","purpose":"口碑可信度和热度解释"},
+    {"zhName":"影视/动漫/漫画/游戏改编信号","key":"adaptationSignals","purpose":"评级修正、风险和解释"},
+    {"zhName":"运营指定对标","key":"operatorComparators","purpose":"与系统对标并列展示"},
+    {"zhName":"材料来源","key":"materialSource","purpose":"可追溯性"},
+    {"zhName":"材料更新时间","key":"materialUpdatedAt","purpose":"时效性风险"},
+    {"zhName":"输入确认人","key":"inputConfirmedBy","purpose":"审计和确认责任"},
+    {"zhName":"备注","key":"notes","purpose":"人工补充说明"}
+  ],
+  "missingBehavior": {
+    "required": "readiness_blocked_no_numeric_forecast",
+    "optional": "risk_or_explanation_note",
+    "unconfirmedParsedMaterial": "draft_or_pending_confirmation",
+    "staleExternalData": "staleness_risk"
+  }
+}

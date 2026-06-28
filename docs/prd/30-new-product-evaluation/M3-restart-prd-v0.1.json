@@ -1,0 +1,76 @@
+{
+  "schema": "m3.restartPrd.v0.1",
+  "generatedAt": "2026-06-28",
+  "stage": "M3-0",
+  "status": "planning_only",
+  "goal": "Restart M3 as new-product topic evaluation, beginning with requirements and input field confirmation.",
+  "formalExecutionAllowed": false,
+  "explicitNonGoals": [
+    "formal M3 execution",
+    "formal release",
+    "business code changes",
+    "migration changes",
+    "database connection",
+    "formal task/export/write API",
+    "direct develop-or-not recommendation",
+    "resource investment level"
+  ],
+  "inputGroups": [
+    "user topic table",
+    "private material files",
+    "M2/old-product reference data",
+    "external platform signals",
+    "manual confirmation"
+  ],
+  "numericForecastBlockingFields": [
+    "title",
+    "author",
+    "source",
+    "completeClassification",
+    "synopsis",
+    "wordCount",
+    "completionStatus",
+    "reads",
+    "collections",
+    "ratingScore",
+    "sameNameAudioStatus",
+    "externalHeat",
+    "targetChannels",
+    "copyrightTermRange",
+    "operatorRecommendationReason"
+  ],
+  "plannedOutputs": [
+    "readiness",
+    "comparator candidates",
+    "author ranking",
+    "external heat signals",
+    "five-year cumulative forecast interval",
+    "five-year base",
+    "first-year forecast",
+    "year 1-5 breakdown",
+    "new-product rating",
+    "risks and explanations",
+    "backtest anchor"
+  ],
+  "m2OpenGaps": {
+    "copyrightExpiryUnclosedAfterPartialUserFill": 522,
+    "copyrightExpiryOriginalGap": 610,
+    "authorGap": 75,
+    "copyrightStartGap": 85,
+    "classificationLevel1Gap": 3054,
+    "classificationLevel2Gap": 3054,
+    "requiredTagGap": 3054,
+    "workStatusGap": 3054,
+    "audioRightsStatusGap": 3054,
+    "expiredWithTailRevenueReviewBucket": 142,
+    "activeRightsSparseRevenueReviewBucket": 92
+  },
+  "nextRecommendedTask": "User answers M3 clarification questions, then start M3-1 input readiness and material parsing design.",
+  "safety": {
+    "businessCodeChanged": false,
+    "migrationChanged": false,
+    "databaseConnected": false,
+    "privateMaterialReadOrSubmitted": false,
+    "m3FormalExecutionEntered": false
+  }
+}

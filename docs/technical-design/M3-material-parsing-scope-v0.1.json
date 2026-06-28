@@ -1,0 +1,69 @@
+{
+  "schema": "m3.materialParsingScope.v0.1",
+  "generatedAt": "2026-06-28",
+  "stage": "M3-0",
+  "status": "planning_only",
+  "globalRules": {
+    "rawMaterialPrivateOnly": true,
+    "commitRawMaterial": false,
+    "parsedFieldsAreCandidatesOnly": true,
+    "manualConfirmationRequired": true,
+    "evaluationCandidateRequiresReadiness": true
+  },
+  "sources": [
+    {
+      "sourceType": "word_or_material_table",
+      "candidateFields": [
+        "title",
+        "author",
+        "source",
+        "synopsis",
+        "wordCount",
+        "completionStatus",
+        "reads",
+        "collections",
+        "ratingScore",
+        "commentCount",
+        "sameNameAudioStatus",
+        "adaptationSignals",
+        "externalHeat",
+        "targetChannels",
+        "copyrightTermRange",
+        "operatorRecommendationReason",
+        "materialSource",
+        "materialUpdatedAt"
+      ],
+      "limits": ["no_raw_text_commit", "candidate_only"]
+    },
+    {
+      "sourceType": "pdf",
+      "candidateFields": ["title", "author", "synopsis", "wordCount", "publicationInfo", "adaptationSignals", "materialSource", "materialUpdatedAt"],
+      "limits": ["no_pdf_commit", "ocr_or_extraction_not_auto_confirmed"]
+    },
+    {
+      "sourceType": "ppt",
+      "candidateFields": ["title", "author", "operatorRecommendationReason", "reads", "collections", "ratingScore", "targetChannels", "adaptationSignals", "externalHeat"],
+      "limits": ["no_screenshot_commit", "image_data_requires_manual_confirmation"]
+    },
+    {
+      "sourceType": "manual_entry",
+      "candidateFields": ["all_input_fields"],
+      "limits": ["confirmation_person_and_time_required"]
+    }
+  ],
+  "flow": [
+    "private_material_loaded_locally",
+    "candidate_fields_extracted",
+    "gaps_reported",
+    "user_confirms_or_corrects",
+    "confirmed_input_enters_evaluation_candidate",
+    "required_missing_blocks_numeric_forecast"
+  ],
+  "safety": {
+    "databaseConnected": false,
+    "migrationWritten": false,
+    "businessCodeWritten": false,
+    "m3FormalExecutionEntered": false,
+    "privateMaterialCommitted": false
+  }
+}
