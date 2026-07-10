@@ -1,0 +1,45 @@
+{
+  "schema": "m1_m2.post_foundation_project_status.v1",
+  "generatedAt": "2026-07-10",
+  "foundationData": {
+    "workCount": 3053,
+    "publicationWorks": 1195,
+    "webWorks": 1858,
+    "classificationAndTagManualGap": 0,
+    "taggedWorks": 387,
+    "tagAssignments": 532,
+    "changedWorksFromGeneratedBaseline": 836,
+    "localCandidateClosed": true,
+    "formalMasterDataWritten": false
+  },
+  "milestones": {
+    "m1LocalDataReadiness": "ready_for_rerun",
+    "m1FormalAcceptance": "not_complete",
+    "m2LocalEngineeringCandidate": "checkpoint_complete_pending_foundation_rerun",
+    "m2ScopeReconciliation": "3054_old_aggregate_vs_3053_fixed_foundation_pending",
+    "m2FormalCompletion": "not_complete",
+    "m3FormalExecution": "not_started"
+  },
+  "humanIntervention": {
+    "classificationOrTagRows": 0,
+    "optionalAuthorEditConfirmation": 0,
+    "accidentalAuthorEditsRepaired": 2,
+    "expiredWithRevenueBusinessReview": 142,
+    "activeRightsSparseRevenueBusinessReview": 92,
+    "m2CandidateAcceptanceRequiredAfterRerun": true,
+    "formalAuthorizationRequired": true
+  },
+  "nextEngineeringActions": [
+    "rerun_m2_readiness_with_fixed_foundation",
+    "reconcile_3054_old_scope_with_3053_fixed_foundation",
+    "recompute_classification_tag_segment_metrics",
+    "refresh_business_review_aggregates",
+    "produce_formal_gap_audit"
+  ],
+  "boundaries": {
+    "sanitizedAggregateOnly": true,
+    "databaseWritten": false,
+    "mappingActivated": false,
+    "m3FormalExecutionStarted": false
+  }
+}

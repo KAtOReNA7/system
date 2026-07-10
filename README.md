@@ -27,8 +27,14 @@ v0.2 将 v0.1 的业务汇总稿改造成更适合 Codex 长期维护的文档�
 - M2 评级/建议已推进到 rating-standard-v3：包含收入模式识别、货架/版权状态推断、单一前台评级、风险/复核提示，并移除自动运营建议主输出。private 任务包保存在 `data/private-output/**`，不会进入版本控制。
 - 2026-07-08 本地五源重清洗已完成：账单、数字版权台账、原创全库、原创全库2、授权汇总台账、授权关系仪表板合并后，作者、版权开始、版权到期三个核心字段已形成本地文件级 staging 候选。该候选覆盖 3053 个账单作品、9159 个核心字段，其中 8729 个字段为高置信直接通过，430 个字段为用户确认填写；仍未写正式主数据，private 输出不进入版本控制。
 - 2026-07-09 状态类字段已完成本地文件级 staging：作品状态和音频版权状态覆盖 3053 个账单作品、6106 个状态字段；作品状态分布为已上架 2410、已下架 643；音频版权状态分布为版权有效 2238、无限期 487、版权已到期 328。该结果仍未写正式主数据。
-- 2026-07-09 分类与辅助标签治理口径已更新：一级分类只允许出版物、网文；出版物和网文分别使用固定二级、三级分类树；辅助标签仅用于影视、动画、游戏、漫画、奖项、耽美等特殊加值，不再与一级、二级、三级分类混填。
-- 当前已生成分类/辅助标签私有补表：`data/private-output/m2-readiness/M2-classification-aux-tag-fill-pack-cn-v3.xlsx`。其中 `01_分类需人工确认` 有 257 行，`02_辅助标签需核对` 有 51 行；该表需要用户填写，且不会进入版本控制。
+- 2026-07-10 分类树和辅助标签口径已更新：历史三级分类新增先秦、汉、三国、南北朝、隋、唐、五代十国、宋、元、明、清、近代史；辅助标签新增国家组，仍与一级、二级、三级分类分开管理。
+- 用户已完成 `M2-classification-aux-tag-fill-pack-cn-v3.xlsx`：257 部人工分类和 51 部辅助标签核对均已应用到本地文件级 staging。3053 部作品分类路径全部有效，其中系统自动 2796 部、用户确认 257 部；正式主数据仍未写入。
+- 用户已完成 19 条国家标签核对：采用 6 条、不采用 13 条；当前本地辅助标签结果覆盖 57 部作品、127 个标签赋值。
+- 作者、版权开始、版权到期、作品状态和音频版权状态已按用户确认口径完成本地文件级 staging 收口，不再进入当前人工补表。此前生成的 `M2-foundation-data-final-human-review-pack-cn-v1.xlsx` 已废弃，禁止继续作为当前任务入口。
+- 2026-07-10 用户已完成并明确确认分类与标签最终基础大表；系统已将其固定为 `data/private-output/m2-readiness/M2-classification-tag-foundation-local-fixed-cn-v1.xlsx/json`。最终覆盖 3053 部作品，出版物 1195 部、网文 1858 部，分类路径和标签均有效，分类与标签人工缺口为 0。
+- 最终大表相对系统预填基线修正 836 部作品；当前有 387 部作品包含 532 个辅助标签赋值。新增“科普、教辅、诗歌”三级分类及 11 个辅助标签已进入受控词表版本 `2026-07-10-user-confirmed-v2`。
+- 用户已确认大表中的 2 个作者显示修改属于误操作；系统已恢复为此前已收口作者值，未进入固定结果，也不会进入提交。当前没有作者人工待办。
+- 较早 M2 聚合仍按 3054 部计算，而最终固定基础表为 3053 部；这是下一轮工程重算必须解释和统一的范围差异，不需要用户手工判断。
 - 当前 M2 仍不是 formal completion；正式发布、映射激活、对外 task/export/write API、生产数据连接和 M3 formal execution 均需要用户后续单独授权。
 
 ## M2 后续补全信息提醒
@@ -38,24 +44,26 @@ v0.2 将 v0.1 的业务汇总稿改造成更适合 Codex 长期维护的文档�
 | 数据项 | 当前缺口/状态 | 对 M2/M3 的影响 |
 |---|---:|---|
 | 作者 | 本地文件级 staging 候选已闭环，当前缺口 0；正式主数据尚未写入 | 可支撑后续本地 M2 readiness 重算，但不等于正式主数据验收 |
-| 版权开始 | 本地文件级 staging 候选已闭环，当前缺口 0；正式主数据尚未写入 | 可支撑生命周期、版权期和回测解释的本地候选输入 |
-| 版权到期 | 本地文件级 staging 候选已闭环，当前缺口 0；正式主数据尚未写入 | 可支撑剩余版权月数和版权期预测的本地候选输入 |
-| 一级分类 | 本地候选已生成：2796 个作品可自动采用，257 个作品需在 v3 私有补表中人工确认；正式主数据尚未写入 | 阻断正式分层、页面筛选、解释和校准 |
-| 二级分类 | 本地候选已生成：2796 个作品可自动采用，257 个作品需在 v3 私有补表中人工确认；正式主数据尚未写入 | 阻断细分策略和同类对标 |
-| 三级分类 | 本地候选已生成：2796 个作品可自动采用，257 个作品需在 v3 私有补表中人工确认；正式主数据尚未写入 | 阻断完整分类路径、回测分层和业务解释 |
-| 辅助标签 | 已按特殊加值标签重新定位，当前有 51 个候选需在 v3 私有补表中人工核对；正式主数据尚未写入 | 阻断特殊项目加值解释、运营复核和 M4 校准 |
-| 特殊属性标签 | 尚未进入本轮自动补表，需后续单独治理；正式主数据尚未写入 | 阻断特殊状态类解释和后续标签库版本冻结 |
+| 版权开始 | 本地文件级 staging 已按用户确认口径收口，当前人工缺口 0；正式主数据尚未写入 | 不再进入分类与标签核对表 |
+| 版权到期 | 本地文件级 staging 已按用户确认口径收口；“无限期”直接作为有效值，当前人工缺口 0；正式主数据尚未写入 | 不再进入分类与标签核对表 |
+| 一级分类 | 用户最终基础大表已固定：出版物 1195、网文 1858；人工缺口 0 | 可作为后续本地 M2 readiness 输入；尚未写正式主数据 |
+| 二级分类 | 3053 部均已由最终基础大表固定；人工缺口 0 | 可支撑本地细分策略和同类对标 |
+| 三级分类 | 3053 部均已固定；新增科普、教辅、诗歌已进入受控词表 | 可支撑本地完整分类路径和分层回测 |
+| 辅助标签 | 387 部作品、532 个标签赋值已固定；人工缺口 0 | 可支撑本地特殊项目解释和校准 |
+| 特殊属性标签 | 当前 M1/M2 人工收口不再启用独立字段；后续只有在明确新增规则和版本时才单独治理 | 不阻断本轮分类与标签人工收口 |
 | 作品状态 | 本地文件级 staging 已闭环：已上架 2410、已下架 643；正式主数据尚未写入 | 可支撑本地货架/下架判断，但不等于 formal 主数据验收 |
 | 音频版权状态 | 本地文件级 staging 已闭环：版权有效 2238、无限期 487、版权已到期 328；正式主数据尚未写入 | 可支撑本地版权有效性判断，但不等于 formal 主数据验收 |
 | 到期但仍有收入样本 | 142 个复核桶 | 需判断结算滞后、续约未入账、渠道滞后或异常 |
 | 版权有效但收入稀疏样本 | 92 个复核桶 | 需运营/版权确认是否仍可运营、仅观察或无需动作 |
 
-这些缺口的权威证据见：
+当前状态证据见：
 
 - `docs/analysis/m2-real-data/M2-local-candidate-closeout-v1.md`
-- `docs/analysis/m2-real-data/M2-master-data-readiness-gap-v1.md`
-- `docs/analysis/m2-real-data/M2-copyright-expiry-gap-readiness-v1.md`
+- `docs/analysis/m2-real-data/M2-classification-tag-foundation-local-closeout-v1.md`
+- `docs/analysis/m2-real-data/M1-M2-post-foundation-project-status-v1.md`
 - `docs/analysis/m3/M3-parallel-planning-boundary-v1.md`
+
+早期 master-data/copyright gap 报告仅用于历史追溯，不再作为当前人工补表入口。
 
 ## M3 当前状态提醒
 
@@ -63,7 +71,7 @@ v0.2 将 v0.1 的业务汇总稿改造成更适合 Codex 长期维护的文档�
 
 允许继续准备 M3 开发计划、字段清单、接口依赖、fixture/prototype 方案和测试计划；但在 M2 readiness 未重新闭环前，不得进入 M3 formal execution，不得开放正式 task/export/write API，不得把 M2 local candidate 作为 formal M3 输入。
 
-截至 2026-07-09，M2 作者、版权开始、版权到期、作品状态、音频版权状态均已在本地文件级 staging 候选中闭环；M3 formal execution 仍被分类、辅助标签、特殊属性标签 formal 主数据缺口阻断。下一步应优先由用户填写 `data/private-output/m2-readiness/M2-classification-aux-tag-fill-pack-cn-v3.xlsx`，完成 257 行分类确认和 51 行辅助标签核对。
+截至 2026-07-10，作者、版权日期、作品状态、音频版权状态、一级/二级/三级分类和辅助标签均已在本地文件级候选层收口，当前基础字段不再需要逐条人工补表，2 个作者误操作也已恢复。下一工程动作是使用固定基础 JSON 重跑 M2 readiness、分层统计和本地评估一致性；正式主数据写入、M2 formal gate 和 M3 formal execution 仍需后续单独授权。
 
 ## 推荐阅读顺序
 
@@ -84,9 +92,12 @@ v0.2 将 v0.1 的业务汇总稿改造成更适合 Codex 长期维护的文档�
 15. `docs/analysis/m2-real-data/M2-shelf-status-business-rule-alignment-v1.md`
 16. `docs/analysis/m2-real-data/M2-front-rating-simplification-v1.md`
 17. `docs/analysis/m2-real-data/M2-suggestion-removal-boundary-v1.md`
-18. `docs/technical-design/M3-restart-development-plan-v0.1.md`
-19. `AGENTS.md`
-20. `NEXT-CODEX-INSTRUCTION.md`
+18. `docs/analysis/m2-real-data/M2-classification-aux-tag-local-staging-summary-v1.md`
+19. `docs/analysis/m2-real-data/M2-classification-tag-foundation-local-closeout-v1.md`
+20. `docs/analysis/m2-real-data/M1-M2-post-foundation-project-status-v1.md`
+21. `docs/technical-design/M3-restart-development-plan-v0.1.md`
+22. `AGENTS.md`
+23. `NEXT-CODEX-INSTRUCTION.md`
 
 ## Latest M1/M2 checkpoint note
 

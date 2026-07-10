@@ -1,10 +1,10 @@
 # 下一步交给 Codex 的指令
 
-请使用最高模型能力和充分上下文。当前入口不是继续修改 M2 收入模式、评级、预测或建议规则，不是重新生成 private 任务包，不是进入 M3 formal execution。
+请使用最高模型能力和充分上下文。当前入口不是继续修改 M2 收入模式、评级、预测或建议规则，不是重新打开版权/作者/状态补表，也不是进入 M3 formal execution。
 
 当前入口是：
 
-`M3-0 new-product evaluation contract pack under M2 local candidate checkpoint`
+`基于用户最终固定基础表的 M2 readiness 重算与剩余 formal gap 审计`
 
 ## 当前状态
 
@@ -12,50 +12,54 @@
 - M2 本地候选阶段已经保存为大版本 checkpoint：
   - `docs/analysis/m2-real-data/M2-local-candidate-major-version-checkpoint-v1.md`
   - `docs/analysis/m2-real-data/M2-local-candidate-major-version-checkpoint-v1.json`
-- M2 local candidate 可以暂时告一段落，但 **M2 formal complete = no**。
+- M2 local candidate 尚未 formal complete；人工基础数据字段已在本地候选层收口。
 - M3 只允许 parallel planning，不允许 formal execution。
 - 收入模式候选稳定：pure_sales_share=2579、pure_buyout=287、buyout_plus_sales=183、unknown=5。
 - 评级层候选稳定：S+=38、S=117、A=84、B=358、C=152、D=356、E=1949。
-- 预测层仍为 v1.1 conditional：2444 个版权期预测，610 个因版权到期缺口进入 operating-window pending。
-- 当前仍有 formal readiness 缺口：版权到期 522、作者 75、版权开始 85、一级/二级分类 3054、必要标签 3054、作品状态 3054、音频版权状态 3054。
-- 上述剩余问题主要依赖公司基础表或人工补全，后续补表后必须先回到 M2 readiness rerun。
+- 预测层仍为 v1.1 conditional；该模型边界不在当前任务中修改。
+- 作者、版权开始、版权到期、作品状态和音频版权状态已按用户确认口径完成本地文件级 staging 收口，禁止依据旧 gap 报告重新生成待办。
+- 用户最终分类标签基础表已固定：3053 部作品，出版物 1195 部、网文 1858 部，分类与标签人工缺口为 0；固定结果为 `M2-classification-tag-foundation-local-fixed-cn-v1.xlsx/json`。
+- 最终表修正 836 部作品，固定 387 部作品、532 个标签赋值；新增分类和标签已进入受控词表 `2026-07-10-user-confirmed-v2`。
+- 用户已确认 2 个作者显示改动属于误操作，系统已恢复此前已收口作者值；当前没有作者人工待办。
+- 人工字段本地收口不等于正式主数据写入或 M2 formal complete。下一步必须使用固定基础 JSON 重跑 M2 readiness 和本地评估一致性。
 
 ## 优先读取文件
 
 1. `README.md`
 2. `AGENTS.md`
 3. `NEXT-CODEX-INSTRUCTION.md`
-4. `docs/prd/00-governance/scope.md`
-5. `docs/prd/06-新品评估.md`
-6. `docs/prd/20-evaluation/common-evaluation-rules.md`
-7. `docs/analysis/m2-real-data/M2-local-candidate-major-version-checkpoint-v1.md`
-8. `docs/analysis/m2-real-data/M2-local-candidate-major-version-checkpoint-v1.json`
-9. `docs/analysis/m2-real-data/M2-local-candidate-closeout-v1.md`
-10. `docs/analysis/m3/M3-parallel-planning-boundary-v1.md`
-11. `docs/technical-design/M3-new-product-evaluation-implementation-plan-v0.1.md`
-12. `docs/analysis/m3/M3-new-product-evaluation-implementation-plan-summary-v0.1.json`
+4. `docs/prd/10-data-foundation/classification-and-tags.md`
+5. `docs/prd/04-标准作品与主数据.md`
+6. `docs/analysis/m2-real-data/M2-classification-tag-foundation-local-closeout-v1.md`
+7. `docs/analysis/m2-real-data/M2-classification-tag-foundation-local-closeout-v1.json`
+8. `docs/analysis/m2-real-data/M1-M2-post-foundation-project-status-v1.md`
+9. `docs/analysis/m2-real-data/M1-M2-post-foundation-project-status-v1.json`
+10. `docs/analysis/m2-real-data/M2-local-candidate-closeout-v1.md`
+11. `docs/analysis/m2-real-data/M2-disentangled-forecast-v1.1-validation.md`
+12. `src/domain/oldProductEvaluation/classificationTaxonomy.v1.json`
+13. `scripts/m2-real-data/run_m2_classification_tag_final_foundation_apply.py`
 
 ## 下一轮推荐任务
 
 优先执行：
 
-`M3-0 PRD / API contract / data model / page plan / test plan contract pack`
+`使用最终固定基础 JSON 重跑 M2 readiness、分类分层统计和本地评估一致性`
 
-建议输出：
+执行要求：
 
-1. `docs/prd/30-new-product-evaluation/M3-new-product-evaluation-prd-v0.1.md`
-2. `docs/api/M3-new-product-evaluation-api-contract-v0.1.md`
-3. `docs/technical-design/M3-new-product-evaluation-data-model-v0.1.md`
-4. `docs/product/M3-new-product-evaluation-pages-v0.1.md`
-5. `docs/validation/M3-new-product-evaluation-test-plan-v0.1.md`
-6. `docs/analysis/m3/M3-0-new-product-evaluation-contract-pack-summary-v0.1.json`
+1. 以 `data/private-output/m2-readiness/M2-classification-tag-foundation-local-fixed-cn-v1.json` 为分类与标签唯一输入，不得退回早期候选覆盖用户确认值。
+2. 重算 M2 readiness、分类/标签分层统计、预测可用性和评级解释的一致性；不修改 forecast 模型规则。
+3. 对齐旧 M2 聚合 3054 部与最终固定基础表 3053 部的范围差异，输出脱敏原因，不把该差异交给用户手工猜测。
+4. 单独汇总到期但仍有收入 142 个、版权有效但收入稀疏 92 个业务复核桶的当前状态，不能把它们重新表述为基础字段缺失。
+5. 输出脱敏聚合结果，不得在可提交报告中输出作品名、作者名或行级收入明细。
+6. 不写正式主数据、不执行 mapping activation、不进入 M3 formal execution；如需正式主数据写入，必须先取得用户单独授权。
 
 ## 当前允许做的事
 
-- 做 M3 PRD、字段、API contract、数据模型草案、页面方案、fixture/prototype 边界和测试计划。
-- 只新增文档和 summary JSON。
-- 使用 PRD 和脱敏聚合报告作为规划输入。
-- 为后续 M2 补表后 readiness rerun 准备输入清单。
+- 读取最终固定分类标签 JSON 和既有本地 staging 结果。
+- 重跑 M2 readiness、分类分层统计和本地评估一致性。
+- 生成脱敏聚合报告并区分数据字段收口、业务复核和 formal gate。
+- 保持 v1.1 conditional 与 rating-standard-v3 的非正式候选边界，除非后续任务明确授权修改。
 
 ## 当前禁止做的事
 
@@ -74,7 +78,7 @@
 M3 formal 前必须满足：
 
 1. M2 readiness rerun 通过，或用户明确给出 formal exception。
-2. 版权到期、作者、版权开始、分类、标签、作品状态、音频版权状态形成闭环。
+2. 人工基础数据字段已按当前口径在本地候选层收口；正式主数据写入或 formal exception 仍需用户授权。
 3. formal task/export/release/audit 机制完成。
 4. M3 PRD/API/data/page/test contract pack 经用户确认。
 5. 用户单独明确授权 M3 formal。

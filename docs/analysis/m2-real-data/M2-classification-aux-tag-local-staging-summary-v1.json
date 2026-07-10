@@ -1,0 +1,96 @@
+{
+  "schema": "m2.classification_aux_tag_local_staging_summary.v1",
+  "status": "superseded_checkpoint",
+  "supersededBy": "docs/analysis/m2-real-data/M2-classification-tag-final-foundation-table-precheck-v1.json",
+  "generatedAt": "2026-07-10T10:33:16+08:00",
+  "taxonomyVersion": "2026-07-10",
+  "candidateVersion": "m2-local-classification-aux-tag-staging-v1",
+  "classification": {
+    "validWorks": 3053,
+    "invalidOrMissingWorks": 0,
+    "systemAutomaticWorks": 2796,
+    "userConfirmedWorks": 257,
+    "aliasNormalizedWorks": 1,
+    "hierarchyNormalizedWorks": 4,
+    "historySpecificRefinedWorks": 1,
+    "level1Distribution": {
+      "出版物": 1194,
+      "网文": 1859
+    },
+    "level2Distribution": {
+      "人文": 184,
+      "儿童": 80,
+      "小说": 488,
+      "个人成长": 217,
+      "健康生活": 55,
+      "经管商财": 80,
+      "男频": 664,
+      "女频": 1195,
+      "历史": 90
+    },
+    "level3Top20": {
+      "现言": 585,
+      "古言": 536,
+      "中国当代小说": 314,
+      "悬疑": 274,
+      "都市": 272,
+      "成功励志": 122,
+      "言情小说": 93,
+      "散杂文": 74,
+      "中国通史": 73,
+      "玄幻": 68,
+      "文化艺术": 63,
+      "心理健康": 56,
+      "悬疑推理": 50,
+      "儿童故事": 45,
+      "悬爱": 37,
+      "幻言": 36,
+      "学习方法": 33,
+      "人物传记": 30,
+      "经营管理": 27,
+      "家长课堂": 27
+    },
+    "localFileStagingClosed": true
+  },
+  "auxiliaryTags": {
+    "reviewedWorksApplied": 51,
+    "reviewedTagAssignmentsApplied": 121,
+    "countryCandidateWorksPendingReview": 19,
+    "countryCandidateDistribution": {
+      "美国": 5,
+      "泰国": 2,
+      "日本": 10,
+      "英国": 1,
+      "波兰": 1
+    },
+    "countryTagsApplied": 0,
+    "countryReviewRequired": true
+  },
+  "quality": {
+    "issueCount": 0,
+    "classificationDuplicateWorkIds": 0,
+    "auxiliaryDuplicateWorkIds": 0
+  },
+  "outputs": {
+    "privateResultJson": "data/private-output/m2-readiness/M2-classification-aux-tag-local-staging-apply-result-cn-v1.json",
+    "privateResultWorkbook": "data/private-output/m2-readiness/M2-classification-aux-tag-local-staging-apply-result-cn-v1.xlsx",
+    "privateCountryReviewWorkbook": "data/private-output/m2-readiness/M2-country-aux-tag-review-pack-cn-v1.xlsx",
+    "publicSummaryJson": "docs/analysis/m2-real-data/M2-classification-aux-tag-local-staging-summary-v1.json",
+    "publicSummaryMarkdown": "docs/analysis/m2-real-data/M2-classification-aux-tag-local-staging-summary-v1.md"
+  },
+  "boundaries": {
+    "formalMasterDataWritten": false,
+    "databaseWritten": false,
+    "privateFilesGitignored": true,
+    "m3FormalExecutionStarted": false,
+    "specialAttributeTagsClosed": false
+  },
+  "input": {
+    "coveredWorks": 3053,
+    "baseCandidateWorks": 3053,
+    "manualClassificationRows": 257,
+    "manualClassificationUniqueWorks": 257,
+    "reviewedAuxiliaryRows": 51,
+    "reviewedAuxiliaryUniqueWorks": 51
+  }
+}

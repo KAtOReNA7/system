@@ -1,5 +1,7 @@
 # M2 local candidate closeout v1
 
+> 历史 checkpoint：本文记录 2026-06-28 的旧缺口状态，其中作者、版权、分类、标签和状态缺口已经被后续本地 staging 与用户最终基础大表取代。当前状态请以 `M1-M2-post-foundation-project-status-v1.md` 和 README 为准，不得依据本文重新生成补表任务。
+
 生成日期：2026-06-28
 
 本报告用于收口当前 M2 本地候选阶段，并明确其与 formal M2 complete、M3 formal execution 的边界。报告只使用 PRD、脱敏聚合报告和已提交代码证据，不包含真实作品名、作者名、渠道名、原始账单行、原始台账行或 private Excel 明细。

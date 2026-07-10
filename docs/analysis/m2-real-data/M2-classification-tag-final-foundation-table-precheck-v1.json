@@ -1,0 +1,91 @@
+{
+  "schema": "m2.classification_tag_final_foundation_precheck.v1",
+  "status": "superseded_by_user_confirmed_closeout",
+  "supersededBy": "docs/analysis/m2-real-data/M2-classification-tag-foundation-local-closeout-v1.json",
+  "generatedAt": "2026-07-10T13:41:34+08:00",
+  "taxonomyVersion": "2026-07-10",
+  "scope": "classification_and_auxiliary_tags_only",
+  "workCount": 3053,
+  "level1Distribution": {
+    "出版物": 1194,
+    "网文": 1859
+  },
+  "validClassificationPaths": 3053,
+  "taggedWorkCount": 57,
+  "tagAssignmentCount": 127,
+  "manualCarryForward": {
+    "latestClassificationWorks": 257,
+    "classificationWorksCarried": 257,
+    "latestAuxiliaryWorks": 51,
+    "auxiliaryWorksCarried": 51,
+    "countryReviewRows": 19,
+    "countryDecisionsComplete": true,
+    "countryTagsAdopted": 6
+  },
+  "sourceAudit": {
+    "workbooksInspected": 61,
+    "classificationOrTagInputCandidates": [
+      {
+        "path": "data/private-output/m2-readiness/M2-classification-aux-tag-fill-pack-cn-v2.xlsx",
+        "matchingSheets": [
+          "01_分类需人工确认",
+          "02_辅助标签需核对"
+        ]
+      },
+      {
+        "path": "data/private-output/m2-readiness/M2-classification-aux-tag-fill-pack-cn-v3.xlsx",
+        "matchingSheets": [
+          "01_分类需人工确认",
+          "02_辅助标签需核对"
+        ]
+      },
+      {
+        "path": "data/private-output/m2-readiness/M2-country-aux-tag-review-pack-cn-v1.xlsx",
+        "matchingSheets": [
+          "01_国家标签需核对"
+        ]
+      }
+    ],
+    "inspectionErrors": [],
+    "latestFinalInputs": [
+      "data/private-output/m2-readiness/M2-classification-aux-tag-fill-pack-cn-v3.xlsx",
+      "data/private-output/m2-readiness/M2-country-aux-tag-review-pack-cn-v1.xlsx"
+    ],
+    "supersededInputs": [
+      "data/private-output/m2-readiness/M2-classification-aux-tag-fill-pack-cn-v2.xlsx",
+      "data/private-output/m2-readiness/M2-foundation-data-final-human-review-pack-cn-v1.xlsx"
+    ]
+  },
+  "oldV2Pack": {
+    "classificationRows": 257,
+    "classificationRowsWithAnyFilledValue": 246,
+    "auxiliaryRows": 70,
+    "auxiliaryRowsWithPrefilledValue": 70,
+    "supersededBy": "M2-classification-aux-tag-fill-pack-cn-v3.xlsx",
+    "usedAsFinalInput": false
+  },
+  "quality": {
+    "uniqueWorkIds": 3053,
+    "missingTitles": 0,
+    "missingAuthors": 0,
+    "missingClassificationFields": 0,
+    "invalidClassificationPaths": 0,
+    "invalidAuxiliaryTags": 0,
+    "priorConfirmedItemsReopened": 0
+  },
+  "boundaries": {
+    "copyrightFieldsIncluded": false,
+    "authorFieldEditableAsMasterData": false,
+    "statusFieldsIncluded": false,
+    "formalMasterDataWritten": false,
+    "databaseWritten": false,
+    "m3FormalExecutionStarted": false,
+    "privateOutputsGitignored": true
+  },
+  "outputs": {
+    "privateWorkbook": "data/private-output/m2-readiness/M2-classification-tag-final-foundation-table-cn-v1.xlsx",
+    "privateBaselineJson": "data/private-output/m2-readiness/M2-classification-tag-final-foundation-table-cn-v1.json",
+    "publicReportMarkdown": "docs/analysis/m2-real-data/M2-classification-tag-final-foundation-table-precheck-v1.md",
+    "publicReportJson": "docs/analysis/m2-real-data/M2-classification-tag-final-foundation-table-precheck-v1.json"
+  }
+}

@@ -6,6 +6,7 @@ import {
   expectedM2OldProductCoverage,
   forbiddenM2OldProductOutputTokens
 } from "./fixtures/m2OldProductEvaluationFixtureCases.js";
+import { listenOnFetchSafePort } from "./helpers/listenOnFetchSafePort.js";
 
 const baseConfig = {
   service: "m1-audiobook-evaluation",
@@ -21,8 +22,7 @@ const baseConfig = {
 async function request(path, options = {}) {
   const app = createApp(baseConfig);
   const server = http.createServer(app);
-  await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
-  const { port } = server.address();
+  const port = await listenOnFetchSafePort(server);
   try {
     const response = await fetch(`http://127.0.0.1:${port}${path}`, options);
     const body = await response.json();

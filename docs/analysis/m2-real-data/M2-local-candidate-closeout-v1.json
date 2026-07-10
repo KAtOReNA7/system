@@ -1,5 +1,7 @@
 {
   "schema": "m2.localCandidateCloseout.v1",
+  "status": "superseded_checkpoint",
+  "supersededBy": "docs/analysis/m2-real-data/M1-M2-post-foundation-project-status-v1.json",
   "generatedAt": "2026-06-28",
   "currentHeadAtGeneration": "a24d6335481d34ed2c51660cf9d030a779f1cdad",
   "originMainAtGeneration": "a24d6335481d34ed2c51660cf9d030a779f1cdad",
