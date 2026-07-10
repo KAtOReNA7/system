@@ -4,6 +4,8 @@
 
 状态：当前权威 PRD。本文基于用户 Q1-Q16 答复和 M3-1 acceptance audit 清理生成，直接替换 v0.1 中与用户答复冲突的旧硬阻断表和旧输出口径。v0.1 仅保留为历史记录，不再作为最高优先级规则。
 
+阶段状态补充（2026-07-10）：本文的输入、readiness、预测、评级和禁止输出规则继续作为当前权威业务口径；后续本地 fixture/synthetic prototype 已覆盖 M3-2/M3-3/M3-4 的非正式主链，因此第 13 节只作为 2026-06-28 冻结时点记录。当前下一步是 private human acceptance 与 formal contract 准备，M3 formal execution 仍未开始且未获授权。执行顺序见 `docs/analysis/m3/M3-next-execution-roadmap-v1.md`。
+
 ## 1. M3 定位
 
 M3 面向新品选题评估。现实运营中 90% 以上新品评估只有选题物料，因此 M3 的第一入口是 material-first：从 Word/PDF/PPT/物料表等本地 private 物料中提取候选字段，再由用户确认关键判断。
@@ -140,7 +142,9 @@ M3-1 必须满足：
 - fixture-only / nonFormal；
 - 不连接数据库、不写 migration、不提交 private data。
 
-## 13. 当前不做
+## 13. 2026-06-28 冻结时点不做事项（历史阶段记录）
+
+以下条目记录 v0.2 发布时的阶段边界，不覆盖后续已经完成的本地 fixture/synthetic prototype；其中 formal、数据库、migration、发布和正式 API 禁令仍然有效：
 
 - 不进入 M3-2；
 - 不进入 M3 formal execution；

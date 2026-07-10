@@ -4,7 +4,7 @@
 
 当前入口是：
 
-`基于用户最终固定基础表的 M2 readiness 重算与剩余 formal gap 审计`
+`补齐并通过逐作品 private 输入内容契约，然后设计 formal basic-info version/input snapshot 并请求单独授权`
 
 ## 当前状态
 
@@ -13,15 +13,17 @@
   - `docs/analysis/m2-real-data/M2-local-candidate-major-version-checkpoint-v1.md`
   - `docs/analysis/m2-real-data/M2-local-candidate-major-version-checkpoint-v1.json`
 - M2 local candidate 尚未 formal complete；人工基础数据字段已在本地候选层收口。
-- M3 只允许 parallel planning，不允许 formal execution。
-- 收入模式候选稳定：pure_sales_share=2579、pure_buyout=287、buyout_plus_sales=183、unknown=5。
-- 评级层候选稳定：S+=38、S=117、A=84、B=358、C=152、D=356、E=1949。
+- M3 fixture/synthetic prototype 主链已完成；当前允许 private dry-run、人工补全、human acceptance 和 formal 设计准备，不允许 formal execution。
+- 最终 3053 部范围的收入模式重算稳定：pure_sales_share=2578、pure_buyout=287、buyout_plus_sales=183、unknown=5。
+- 最终 3053 部范围的前台评级重算稳定：S+=38、S=117、A=84、B=358、C=152、D=356、E=1948。
 - 预测层仍为 v1.1 conditional；该模型边界不在当前任务中修改。
 - 作者、版权开始、版权到期、作品状态和音频版权状态已按用户确认口径完成本地文件级 staging 收口，禁止依据旧 gap 报告重新生成待办。
-- 用户最终分类标签基础表已固定：3053 部作品，出版物 1195 部、网文 1858 部，分类与标签人工缺口为 0；固定结果为 `M2-classification-tag-foundation-local-fixed-cn-v1.xlsx/json`。
+- 用户最终分类标签基础表已固定：3053 部作品，出版物 1195 部、网文 1858 部，分类与标签人工缺口为 0；private 明细不进入版本控制。
 - 最终表修正 836 部作品，固定 387 部作品、532 个标签赋值；新增分类和标签已进入受控词表 `2026-07-10-user-confirmed-v2`。
 - 用户已确认 2 个作者显示改动属于误操作，系统已恢复此前已收口作者值；当前没有作者人工待办。
-- 人工字段本地收口不等于正式主数据写入或 M2 formal complete。下一步必须使用固定基础 JSON 重跑 M2 readiness 和本地评估一致性。
+- 最终分类标签基础已恢复，M2 readiness/分类分层/本地评估一致性重算已通过：账单、基础表和评估范围统一为 3053 部，行数和收入守恒。
+- 复核桶当前为到期但仍有收入 146、版权有效但收入稀疏 92；前者按 Excel 底层完整金额精度计算。
+- 当前业务数据决策缺口为 0。跨电脑恢复脚本和内容契约已经建立；本次 private 恢复候选虽覆盖 3053 部，但仍缺 12 个版权开始、65 个版权到期/音频版权状态、2860 个可验证作品状态，并且无法重建原来源确认分布，因此契约未通过、未被本次评估使用。不得仅凭文件存在解除门禁，也不得重开用户全量补表。
 
 ## 优先读取文件
 
@@ -38,25 +40,30 @@
 11. `docs/analysis/m2-real-data/M2-disentangled-forecast-v1.1-validation.md`
 12. `src/domain/oldProductEvaluation/classificationTaxonomy.v1.json`
 13. `scripts/m2-real-data/run_m2_classification_tag_final_foundation_apply.py`
+14. `docs/analysis/m2-real-data/M2-post-foundation-readiness-rerun-v1.md`
+15. `docs/analysis/m2-real-data/M2-post-foundation-formal-gap-audit-v1.md`
+16. `scripts/m2-real-data/run_m2_post_foundation_readiness.py`
+17. `scripts/m2-real-data/m2_five_source_staging_contract.py`
+18. `scripts/m2-real-data/run_m2_five_source_staging_recovery.py`
+19. `docs/analysis/m3/M3-next-execution-roadmap-v1.md`
 
 ## 下一轮推荐任务
 
 优先执行：
 
-`使用最终固定基础 JSON 重跑 M2 readiness、分类分层统计和本地评估一致性`
+`从批准的 private 存储恢复，或从已确认来源补齐逐作品输入并通过内容契约，再产出 formal basic-info version/input snapshot 设计审计`
 
 执行要求：
 
-1. 以 `data/private-output/m2-readiness/M2-classification-tag-foundation-local-fixed-cn-v1.json` 为分类与标签唯一输入，不得退回早期候选覆盖用户确认值。
-2. 重算 M2 readiness、分类/标签分层统计、预测可用性和评级解释的一致性；不修改 forecast 模型规则。
-3. 对齐旧 M2 聚合 3054 部与最终固定基础表 3053 部的范围差异，输出脱敏原因，不把该差异交给用户手工猜测。
-4. 单独汇总到期但仍有收入 142 个、版权有效但收入稀疏 92 个业务复核桶的当前状态，不能把它们重新表述为基础字段缺失。
-5. 输出脱敏聚合结果，不得在可提交报告中输出作品名、作者名或行级收入明细。
-6. 不写正式主数据、不执行 mapping activation、不进入 M3 formal execution；如需正式主数据写入，必须先取得用户单独授权。
+1. 不得从脱敏聚合计数伪造逐作品版权日期、作品状态、音频版权状态或来源确认方式。
+2. 优先从批准的 private 存储恢复；如确实丢失，只能从已确认源材料重建，并重跑 schema、唯一性、完整性、冲突、来源哈希和范围对账。
+3. 恢复后必须与最终 3053 部分类标签基础逐 ID 对齐，且不覆盖用户确认分类/标签；文件存在不等于契约通过。
+4. 然后设计 formal basic-info version 和 input snapshot，但在用户单独授权前不写正式主数据、不激活 mapping、不执行 formal evaluation。
+5. 报告只输出脱敏聚合，不得提交 private staging、作品名、作者名、渠道名或行级收入。
 
 ## 当前允许做的事
 
-- 读取最终固定分类标签 JSON 和既有本地 staging 结果。
+- 读取用户授权的 private 分类标签基础和既有本地 staging 证据。
 - 重跑 M2 readiness、分类分层统计和本地评估一致性。
 - 生成脱敏聚合报告并区分数据字段收口、业务复核和 formal gate。
 - 保持 v1.1 conditional 与 rating-standard-v3 的非正式候选边界，除非后续任务明确授权修改。
@@ -77,7 +84,7 @@
 
 M3 formal 前必须满足：
 
-1. M2 readiness rerun 通过，或用户明确给出 formal exception。
+1. M2 3053 部本地 readiness/分层重算已通过；还需获得通过内容契约的逐作品 private 输入并生成可验证的 formal input snapshot。
 2. 人工基础数据字段已按当前口径在本地候选层收口；正式主数据写入或 formal exception 仍需用户授权。
 3. formal task/export/release/audit 机制完成。
 4. M3 PRD/API/data/page/test contract pack 经用户确认。
@@ -105,9 +112,10 @@ npm test
 ```
 
 任何失败不得伪造通过。若验证失败，必须说明失败命令、失败摘要和是否已有 staged 文件。
+
 # M3 Private Completion Pack Recovery Reminder
 
-On a new machine, the M3 private completion pack is intentionally absent because `data/private-output/**` is not committed. Regenerate it locally with:
+On a new machine, ignored private materials and completion packs are intentionally absent. README/AGENTS must not record machine-specific absolute paths or promise that ignored artifacts exist. Regenerate the local pack with:
 
 ```bash
 git pull origin main
@@ -116,6 +124,6 @@ npm run check:no-real-data
 npm run m3:private-completion-bootstrap
 ```
 
-Before running the command, the user must place 3 to 5 private topic materials in `data/private-input/m3-material-dry-run/`. If those files are missing, the command should stop with guidance and should not invent private material or field values. If the files are present, it regenerates the JSON and Markdown completion packs under `data/private-output/m3-dry-run/`.
+Before running the command, the user must provide 3 to 5 materials through the Git-ignored private input role. If those files are missing, the command must stop with guidance and must not invent material or field values. Only code, format contracts, safety tests and sanitized evidence are committed.
 
 Do not commit private input/output or generated completion packs. Do not enter M3 formal execution. Applying a filled pack is a separate user-authorized step.

@@ -3,12 +3,14 @@
 | 项目 | 内容 |
 |---|---|
 | 当前版本 | v0.2 |
-| 当前阶段 | M1 工程冻结准备 |
-| 最后确认 | 2026-06-20 |
+| 当前阶段 | M2 local candidate 已收口；M3 private human acceptance 准备中，formal blocked |
+| 最后确认 | 2026-07-10 |
 | 权威规则 | 各领域专项文档中带稳定 `REQ-*` 编号的条目 |
 | 决策历史 | `docs/decisions/ADR-*.md` |
 | 待数据验证 | `60-validation/pending-data-decisions.md` |
 | 验收 | `70-acceptance/` |
+
+当前阶段说明：M2 的 3053 部本地候选可用于授权范围内的重算与复核，但尚未形成 formal basic-info version、不可变输入快照或正式 mapping activation。M3 已完成 fixture/synthetic prototype 主链，不代表 formal execution 已开始。下一阶段顺序以 `docs/analysis/m3/M3-next-execution-roadmap-v1.md` 为准，业务规则仍以各权威 PRD 为准。
 
 ## 单一事实来源原则
 
