@@ -65,6 +65,7 @@ SHELF_STATUSES = [
     "likely_off_shelf",
     "rights_expired_likely_off_shelf",
     "rights_expired_needs_review",
+    "active_rights_sparse_revenue_review",
     "off_shelf_but_tail_revenue",
     "unknown_shelf_status",
 ]
@@ -85,6 +86,7 @@ SHELF_CN = {
     "likely_off_shelf": "疑似下架（需人工确认）",
     "rights_expired_likely_off_shelf": "版权到期，疑似下架",
     "rights_expired_needs_review": "权利到期需人工核查",
+    "active_rights_sparse_revenue_review": "版权有效但收入稀疏（需复核）",
     "off_shelf_but_tail_revenue": "已下架但仍有存量会员/已购用户尾部收入",
     "unknown_shelf_status": "无法判断",
 }
@@ -370,7 +372,7 @@ def classify_channel(features: dict) -> dict:
     elif has_any_buyout_signal(features):
         model = "buyout_channel"
         confidence = "medium" if buyout_score >= 0.68 else "low"
-        reasons.append("渠道命中大额整数/同批次同额/买断后无实销任一买断信号，按买断渠道处理")
+        reasons.append("渠道在大额整数/同批次同额/买断后无实销三类信号中至少同时命中两类，按买断渠道处理")
     elif (
         features["naturalSalesSequenceSignal"]
         and features["positiveMonthCount"] >= 4
@@ -394,7 +396,7 @@ def classify_channel(features: dict) -> dict:
     elif features["positiveMonthCount"] >= 1:
         model = "sales_share_channel"
         confidence = "low"
-        reasons.append("有效账单收入未命中任一买断信号，按单月实销样本计入实销口径")
+        reasons.append("有效账单收入未同时满足至少两类买断信号，按单月实销样本计入实销口径")
     else:
         model = "unknown_channel"
         confidence = "low"
@@ -617,9 +619,9 @@ def fallback_work_model(channels: list[dict]) -> tuple[str, str]:
     total = sum(channel["positiveIncomeTotal"] for channel in channels)
     has_any_buyout = any(has_any_buyout_signal(channel) for channel in channels)
     if has_any_buyout:
-        return "pure_buyout", "命中大额整数/同批次同额/买断后无实销任一买断信号"
+        return "pure_buyout", "大额整数/同批次同额/买断后无实销三类信号中至少同时命中两类"
     if positive_months >= 1:
-        return "pure_sales_share", "有效账单收入未命中任一买断信号，按实销口径处理"
+        return "pure_sales_share", "有效账单收入未同时满足至少两类买断信号，按实销口径处理"
     return "unknown_revenue_model", "仅极少收入或渠道证据冲突，保留 unknown"
 
 
@@ -636,10 +638,12 @@ def infer_shelf_status(
     expired = current_rights_status == "expired" or (remaining_months is not None and remaining_months < 0)
     active_rights = current_rights_status == "active" or (remaining_months is not None and remaining_months >= 0)
     has_revenue = recent3 > 0 or recent6 > 0 or sales12 > 0
+    review_prompts = []
     if expired and sales12 > 0:
         status = "rights_expired_likely_off_shelf"
         confidence = "high"
         reason = "版权台账显示权利到期，按高可信状态作为下架/权利状态信号；尾部收入仅作后续运营核查线索，不反向改写版权台账状态"
+        review_prompts.append("expired_with_tail_revenue_review")
     elif expired:
         status = "rights_expired_likely_off_shelf"
         confidence = "high"
@@ -652,6 +656,11 @@ def infer_shelf_status(
         status = "active_or_available_inferred"
         confidence = "medium"
         reason = "版权有效且近 12 个月有实销"
+    elif active_rights and has_revenue:
+        status = "active_rights_sparse_revenue_review"
+        confidence = "medium"
+        reason = "版权有效，但收入信号稀疏或陈旧，不直接判断下架，进入复核桶"
+        review_prompts.append("active_rights_sparse_revenue_review")
     elif not active_rights and months_since_latest_income is not None and months_since_latest_income >= 12 and revenue_model != "pure_buyout":
         status = "likely_off_shelf"
         confidence = "low"
@@ -673,6 +682,8 @@ def infer_shelf_status(
         "shelfStatusChinese": SHELF_CN[status],
         "shelfStatusConfidence": confidence,
         "shelfStatusReasonChinese": reason,
+        "shelfStatusReviewPrompts": review_prompts,
+        "requiresShelfStatusReview": bool(review_prompts) or status == "unknown_shelf_status",
     }
 
 
@@ -681,8 +692,13 @@ def operational_rating(current_rights: str, shelf_status: str, revenue_model: st
         return {"operationalDecisionRating": "renewal_review_required", "operationalDecisionRatingChinese": "需续约/权利复核"}
     if shelf_status == "off_shelf_but_tail_revenue":
         return {"operationalDecisionRating": "rights_audit_required", "operationalDecisionRatingChinese": "需权利/尾部收入核查"}
-    if shelf_status in {"likely_off_shelf", "rights_expired_likely_off_shelf", "rights_expired_needs_review"}:
-        return {"operationalDecisionRating": "shelf_review_required", "operationalDecisionRatingChinese": "需下架状态复核"}
+    if shelf_status in {
+        "likely_off_shelf",
+        "rights_expired_likely_off_shelf",
+        "rights_expired_needs_review",
+        "active_rights_sparse_revenue_review",
+    }:
+        return {"operationalDecisionRating": "shelf_review_required", "operationalDecisionRatingChinese": "需货架/可运营状态复核"}
     if revenue_model == "unknown_revenue_model":
         return {"operationalDecisionRating": "revenue_model_review_required", "operationalDecisionRatingChinese": "需收入模式复核"}
     return {"operationalDecisionRating": "operable", "operationalDecisionRatingChinese": "可运营/可观察"}

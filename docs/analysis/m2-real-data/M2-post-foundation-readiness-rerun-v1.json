@@ -1,0 +1,622 @@
+{
+  "schema": "m2.post_foundation_readiness_rerun.v1",
+  "generatedAt": "2026-07-10T16:11:17.487912+00:00",
+  "generationBase": {
+    "head": "f6af1e173da170bad08c553b1dd30e3b81a2782f",
+    "originMain": "f6af1e173da170bad08c553b1dd30e3b81a2782f"
+  },
+  "mode": "authorized_local_real_data_candidate_rerun",
+  "scopeReconciliation": {
+    "beforeWorkCount": 3054,
+    "afterWorkCount": 3053,
+    "foundationWorkCount": 3053,
+    "billRowsBefore": 192872,
+    "billRowsAfter": 192872,
+    "mappedRowsByRawHistoricalMapping": 0,
+    "mappedRowsByFoundationScopeReconciliation": 31,
+    "historicalRawMappingsConfigured": 46,
+    "historicalStandardMappingsConfigured": 42,
+    "incomeAmountConserved": true,
+    "rowCountConserved": true,
+    "scopeFullyAligned": true,
+    "reconciliationReason": "canonicalize numeric IDs and merge bill-only historical-volume identity into its confirmed foundation target; no income row is dropped"
+  },
+  "foundation": {
+    "workCount": 3053,
+    "level1Distribution": {
+      "出版物": 1195,
+      "网文": 1858
+    },
+    "taggedWorks": 387,
+    "tagAssignments": 532,
+    "tagDistribution": {
+      "影视已启动": 47,
+      "动画已播": 12,
+      "漫画": 24,
+      "电视剧已播": 64,
+      "日本": 104,
+      "电影已上映": 34,
+      "电视剧待播": 11,
+      "诺贝尔文学奖": 2,
+      "女性主义": 19,
+      "这本推理小说了不起": 3,
+      "戛纳电影节": 1,
+      "美国": 58,
+      "奥斯卡": 2,
+      "印度": 2,
+      "瑞典": 3,
+      "英国": 21,
+      "丹麦": 2,
+      "加拿大": 2,
+      "冰岛": 2,
+      "直木奖": 2,
+      "日本书店大奖": 3,
+      "动画": 11,
+      "德国": 4,
+      "韩国": 21,
+      "挪威": 2,
+      "柏林电影节": 1,
+      "都柏林文学奖": 1,
+      "澳大利亚": 1,
+      "法国": 5,
+      "俄罗斯": 2,
+      "奥地利": 5,
+      "布克文学奖": 2,
+      "耽美": 22,
+      "广播剧": 7,
+      "晋江": 15,
+      "西班牙": 2,
+      "游戏": 3,
+      "银河奖": 1,
+      "意大利": 1,
+      "南非": 4,
+      "新西兰": 1,
+      "希腊": 1,
+      "雨果奖": 1,
+      "星云奖": 1
+    },
+    "missingAuthor": 0,
+    "missingClassificationPath": 0,
+    "localCandidateClosed": true,
+    "formalMasterDataWritten": false
+  },
+  "candidateRerun": {
+    "workCount": 3053,
+    "revenueModelDistribution": {
+      "pure_sales_share": 2578,
+      "pure_buyout": 287,
+      "buyout_plus_sales": 183,
+      "unknown_revenue_model": 5
+    },
+    "frontRatingDistribution": {
+      "E": 1948,
+      "B": 358,
+      "D": 356,
+      "S": 117,
+      "C": 152,
+      "A": 84,
+      "S+": 38
+    },
+    "shelfStatusDistribution": {
+      "unknown_shelf_status": 538,
+      "active_or_available_inferred": 2125,
+      "active_rights_sparse_revenue_review": 92,
+      "likely_off_shelf": 72,
+      "rights_expired_likely_off_shelf": 226
+    },
+    "forecastabilityDistribution": {
+      "conservative_numeric_forecast": 2429,
+      "observe_only_no_numeric_forecast": 624
+    },
+    "reviewBucketDistribution": {
+      "active_rights_sparse_revenue_review": 92,
+      "expired_with_tail_revenue_review": 146
+    },
+    "reviewBucketComparison": {
+      "previous3054Checkpoint": {
+        "expired_with_tail_revenue_review": 142,
+        "active_rights_sparse_revenue_review": 92
+      },
+      "current3053Rerun": {
+        "expired_with_tail_revenue_review": 146,
+        "active_rights_sparse_revenue_review": 92
+      },
+      "delta": {
+        "expired_with_tail_revenue_review": 4,
+        "active_rights_sparse_revenue_review": 0
+      },
+      "precisionRule": "full underlying bill precision remains authoritative; valid non-zero amounts are not rounded away for review-bucket membership",
+      "legacyMembershipSnapshotAvailable": false
+    },
+    "byLevel1": {
+      "出版物": {
+        "workCount": 1195,
+        "revenueModelDistribution": {
+          "pure_sales_share": 1017,
+          "pure_buyout": 28,
+          "buyout_plus_sales": 146,
+          "unknown_revenue_model": 4
+        },
+        "frontRatingDistribution": {
+          "E": 598,
+          "D": 145,
+          "B": 203,
+          "C": 72,
+          "S+": 32,
+          "S": 86,
+          "A": 59
+        },
+        "shelfStatusDistribution": {
+          "unknown_shelf_status": 299,
+          "active_or_available_inferred": 647,
+          "likely_off_shelf": 39,
+          "rights_expired_likely_off_shelf": 186,
+          "active_rights_sparse_revenue_review": 24
+        },
+        "forecastabilityDistribution": {
+          "conservative_numeric_forecast": 1019,
+          "observe_only_no_numeric_forecast": 176
+        }
+      },
+      "网文": {
+        "workCount": 1858,
+        "revenueModelDistribution": {
+          "pure_sales_share": 1561,
+          "pure_buyout": 259,
+          "buyout_plus_sales": 37,
+          "unknown_revenue_model": 1
+        },
+        "frontRatingDistribution": {
+          "E": 1350,
+          "B": 155,
+          "D": 211,
+          "S": 31,
+          "C": 80,
+          "A": 25,
+          "S+": 6
+        },
+        "shelfStatusDistribution": {
+          "active_or_available_inferred": 1478,
+          "unknown_shelf_status": 239,
+          "active_rights_sparse_revenue_review": 68,
+          "likely_off_shelf": 33,
+          "rights_expired_likely_off_shelf": 40
+        },
+        "forecastabilityDistribution": {
+          "conservative_numeric_forecast": 1410,
+          "observe_only_no_numeric_forecast": 448
+        }
+      }
+    },
+    "byLevel2": {
+      "个人成长": {
+        "workCount": 218,
+        "revenueModelDistribution": {
+          "pure_sales_share": 207,
+          "buyout_plus_sales": 9,
+          "pure_buyout": 2
+        },
+        "frontRatingDistribution": {
+          "E": 136,
+          "D": 24,
+          "S": 8,
+          "C": 10,
+          "B": 32,
+          "A": 8
+        },
+        "shelfStatusDistribution": {
+          "unknown_shelf_status": 61,
+          "likely_off_shelf": 8,
+          "rights_expired_likely_off_shelf": 32,
+          "active_or_available_inferred": 115,
+          "active_rights_sparse_revenue_review": 2
+        },
+        "forecastabilityDistribution": {
+          "conservative_numeric_forecast": 188,
+          "observe_only_no_numeric_forecast": 30
+        }
+      },
+      "人文": {
+        "workCount": 216,
+        "revenueModelDistribution": {
+          "pure_sales_share": 191,
+          "pure_buyout": 3,
+          "buyout_plus_sales": 22
+        },
+        "frontRatingDistribution": {
+          "E": 137,
+          "C": 14,
+          "B": 31,
+          "D": 18,
+          "S": 11,
+          "A": 5
+        },
+        "shelfStatusDistribution": {
+          "unknown_shelf_status": 67,
+          "likely_off_shelf": 14,
+          "active_or_available_inferred": 99,
+          "rights_expired_likely_off_shelf": 34,
+          "active_rights_sparse_revenue_review": 2
+        },
+        "forecastabilityDistribution": {
+          "conservative_numeric_forecast": 173,
+          "observe_only_no_numeric_forecast": 43
+        }
+      },
+      "健康生活": {
+        "workCount": 47,
+        "revenueModelDistribution": {
+          "pure_sales_share": 44,
+          "buyout_plus_sales": 3
+        },
+        "frontRatingDistribution": {
+          "E": 33,
+          "D": 5,
+          "S": 5,
+          "B": 3,
+          "C": 1
+        },
+        "shelfStatusDistribution": {
+          "unknown_shelf_status": 12,
+          "active_or_available_inferred": 29,
+          "rights_expired_likely_off_shelf": 6
+        },
+        "forecastabilityDistribution": {
+          "conservative_numeric_forecast": 44,
+          "observe_only_no_numeric_forecast": 3
+        }
+      },
+      "儿童": {
+        "workCount": 56,
+        "revenueModelDistribution": {
+          "pure_sales_share": 50,
+          "buyout_plus_sales": 4,
+          "unknown_revenue_model": 2
+        },
+        "frontRatingDistribution": {
+          "E": 34,
+          "S": 1,
+          "D": 11,
+          "C": 4,
+          "A": 2,
+          "B": 3,
+          "S+": 1
+        },
+        "shelfStatusDistribution": {
+          "unknown_shelf_status": 8,
+          "likely_off_shelf": 2,
+          "rights_expired_likely_off_shelf": 20,
+          "active_or_available_inferred": 26
+        },
+        "forecastabilityDistribution": {
+          "conservative_numeric_forecast": 42,
+          "observe_only_no_numeric_forecast": 14
+        }
+      },
+      "历史": {
+        "workCount": 80,
+        "revenueModelDistribution": {
+          "buyout_plus_sales": 11,
+          "pure_sales_share": 67,
+          "pure_buyout": 2
+        },
+        "frontRatingDistribution": {
+          "E": 27,
+          "D": 8,
+          "C": 4,
+          "B": 28,
+          "S+": 1,
+          "A": 5,
+          "S": 7
+        },
+        "shelfStatusDistribution": {
+          "rights_expired_likely_off_shelf": 10,
+          "unknown_shelf_status": 22,
+          "active_or_available_inferred": 47,
+          "likely_off_shelf": 1
+        },
+        "forecastabilityDistribution": {
+          "conservative_numeric_forecast": 73,
+          "observe_only_no_numeric_forecast": 7
+        }
+      },
+      "女频": {
+        "workCount": 1203,
+        "revenueModelDistribution": {
+          "pure_sales_share": 1073,
+          "pure_buyout": 117,
+          "buyout_plus_sales": 13
+        },
+        "frontRatingDistribution": {
+          "E": 864,
+          "B": 106,
+          "D": 147,
+          "S": 14,
+          "C": 52,
+          "A": 17,
+          "S+": 3
+        },
+        "shelfStatusDistribution": {
+          "active_or_available_inferred": 1024,
+          "unknown_shelf_status": 100,
+          "active_rights_sparse_revenue_review": 41,
+          "likely_off_shelf": 15,
+          "rights_expired_likely_off_shelf": 23
+        },
+        "forecastabilityDistribution": {
+          "conservative_numeric_forecast": 991,
+          "observe_only_no_numeric_forecast": 212
+        }
+      },
+      "小说": {
+        "workCount": 498,
+        "revenueModelDistribution": {
+          "pure_sales_share": 382,
+          "pure_buyout": 20,
+          "buyout_plus_sales": 94,
+          "unknown_revenue_model": 2
+        },
+        "frontRatingDistribution": {
+          "D": 68,
+          "B": 94,
+          "E": 181,
+          "A": 38,
+          "S": 53,
+          "C": 34,
+          "S+": 30
+        },
+        "shelfStatusDistribution": {
+          "active_or_available_inferred": 293,
+          "unknown_shelf_status": 101,
+          "likely_off_shelf": 13,
+          "rights_expired_likely_off_shelf": 71,
+          "active_rights_sparse_revenue_review": 20
+        },
+        "forecastabilityDistribution": {
+          "conservative_numeric_forecast": 430,
+          "observe_only_no_numeric_forecast": 68
+        }
+      },
+      "男频": {
+        "workCount": 655,
+        "revenueModelDistribution": {
+          "pure_sales_share": 488,
+          "pure_buyout": 142,
+          "buyout_plus_sales": 24,
+          "unknown_revenue_model": 1
+        },
+        "frontRatingDistribution": {
+          "E": 486,
+          "D": 64,
+          "S": 17,
+          "C": 28,
+          "B": 49,
+          "A": 8,
+          "S+": 3
+        },
+        "shelfStatusDistribution": {
+          "active_or_available_inferred": 454,
+          "active_rights_sparse_revenue_review": 27,
+          "unknown_shelf_status": 139,
+          "likely_off_shelf": 18,
+          "rights_expired_likely_off_shelf": 17
+        },
+        "forecastabilityDistribution": {
+          "conservative_numeric_forecast": 419,
+          "observe_only_no_numeric_forecast": 236
+        }
+      },
+      "经管商财": {
+        "workCount": 80,
+        "revenueModelDistribution": {
+          "pure_sales_share": 76,
+          "pure_buyout": 1,
+          "buyout_plus_sales": 3
+        },
+        "frontRatingDistribution": {
+          "E": 50,
+          "C": 5,
+          "D": 11,
+          "B": 12,
+          "A": 1,
+          "S": 1
+        },
+        "shelfStatusDistribution": {
+          "unknown_shelf_status": 28,
+          "likely_off_shelf": 1,
+          "active_or_available_inferred": 38,
+          "rights_expired_likely_off_shelf": 13
+        },
+        "forecastabilityDistribution": {
+          "conservative_numeric_forecast": 69,
+          "observe_only_no_numeric_forecast": 11
+        }
+      }
+    },
+    "regressionAgainst3054Checkpoint": {
+      "baselineWorkCount": 3054,
+      "currentWorkCount": 3053,
+      "revenueModelDelta": {
+        "buyout_plus_sales": 0,
+        "pure_buyout": 0,
+        "pure_sales_share": -1,
+        "unknown_revenue_model": 0
+      },
+      "frontRatingDelta": {
+        "S+": 0,
+        "S": 0,
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 0,
+        "E": -1
+      },
+      "expectedScopeOnlyRevenueDelta": {
+        "pure_sales_share": -1,
+        "pure_buyout": 0,
+        "buyout_plus_sales": 0,
+        "unknown_revenue_model": 0
+      },
+      "expectedScopeOnlyRatingDelta": {
+        "S+": 0,
+        "S": 0,
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 0,
+        "E": -1
+      },
+      "unexpectedRevenueModelRegression": false,
+      "unexpectedFrontRatingRegression": false,
+      "modelRulesChangedByRerun": false
+    }
+  },
+  "evaluationInputSnapshot": {
+    "latestCompleteMonth": "2026-04",
+    "workMonthStats": {
+      "workMonthRows": 95059,
+      "completeRows": 192869,
+      "monthColumns": 107
+    },
+    "legacyMasterStats": {
+      "masterRows": 13848,
+      "dateRows": 0,
+      "unambiguousWorks": 0,
+      "conflictWorks": 0
+    },
+    "legacyDualSourceEvaluationSnapshot": true,
+    "evaluationInputMode": "legacy_dual_source_checkpoint",
+    "fiveSourcePrivateInput": {
+      "providedForThisRun": true,
+      "contractVerified": false,
+      "usedByEvaluation": false,
+      "artifactRole": "private_local_recovery_candidate",
+      "schema": "m2.five_source_local_staging_recovery.v1",
+      "declaredStatus": "blocked_incomplete_recovery",
+      "artifactSha256": "3440466b988b07b57c08bf68857513d4b56f609465aba059fb514cda45c2b4e5",
+      "contractIssues": [
+        "required_fields_incomplete",
+        "work_status_distribution_mismatch",
+        "audio_rights_status_distribution_mismatch",
+        "confirmation_mode_distribution_mismatch",
+        "artifact_not_declared_verified",
+        "artifact_status_not_verified_complete"
+      ],
+      "contractSummary": {
+        "recordCount": 3053,
+        "uniqueWorkCount": 3053,
+        "missingByField": {
+          "作品状态": 2860,
+          "版权到期": 65,
+          "音频版权状态": 65,
+          "版权开始": 12
+        },
+        "workStatusDistribution": {
+          "已下架": 191,
+          "已上架": 2
+        },
+        "audioRightsStatusDistribution": {
+          "版权已到期": 361,
+          "无限期": 468,
+          "版权有效": 2159
+        },
+        "confirmationModeDistribution": {
+          "recovered_from_user_foundation": 3053,
+          "regenerated_direct_source": 619,
+          "legacy_local_staging": 5410,
+          "unresolved": 77
+        }
+      }
+    },
+    "copyrightEndUnavailableInLegacyEvaluationSnapshot": 610
+  },
+  "documentedFoundationEvidence": {
+    "m1LocalDataReadiness": "ready_for_rerun",
+    "manualClassificationAndTagGap": 0,
+    "formalMasterDataWritten": false,
+    "source": "docs/analysis/m2-real-data/M1-M2-post-foundation-project-status-v1.json"
+  },
+  "gate": {
+    "postFoundationScopeAndSegmentRerun": "pass",
+    "m2LocalCandidateEngineeringCheckpoint": "pass_for_scope_and_candidate_only_private_input_unverified",
+    "m2FormalComplete": false,
+    "m3LocalPrototypeMayContinue": true,
+    "m3FormalExecutionAllowed": false,
+    "hardBlockers": [
+      "verified_private_per_work_input_snapshot_not_available",
+      "formal_master_data_not_written",
+      "mapping_version_not_active",
+      "formal_basic_info_version_not_created",
+      "formal_input_snapshot_not_created",
+      "formal_task_export_release_audit_not_complete",
+      "m3_formal_authorization_not_granted"
+    ]
+  },
+  "prohibitedActionsConfirmed": {
+    "connectedRemoteDatabase": false,
+    "wroteFormalMasterData": false,
+    "activatedMappingVersion": false,
+    "calledSwitchMappingVersion": false,
+    "enteredM3FormalExecution": false,
+    "submittedPrivateOutput": false
+  },
+  "inputs": {
+    "confirmedFoundation": {
+      "role": "private_confirmed_foundation",
+      "sha256": "eac2f8c9c1de4fc0b4f57a92317693bc2ccbb3d76f0b9bc83eaef34529f5caee"
+    },
+    "mappingCandidate": {
+      "role": "private_mapping_candidate"
+    },
+    "mappingOverlay": {
+      "role": "committed_mapping_overlay"
+    },
+    "perWorkPrivateInput": {
+      "providedForThisRun": true,
+      "contractVerified": false,
+      "usedByEvaluation": false,
+      "artifactRole": "private_local_recovery_candidate",
+      "schema": "m2.five_source_local_staging_recovery.v1",
+      "declaredStatus": "blocked_incomplete_recovery",
+      "artifactSha256": "3440466b988b07b57c08bf68857513d4b56f609465aba059fb514cda45c2b4e5",
+      "contractIssues": [
+        "required_fields_incomplete",
+        "work_status_distribution_mismatch",
+        "audio_rights_status_distribution_mismatch",
+        "confirmation_mode_distribution_mismatch",
+        "artifact_not_declared_verified",
+        "artifact_status_not_verified_complete"
+      ],
+      "contractSummary": {
+        "recordCount": 3053,
+        "uniqueWorkCount": 3053,
+        "missingByField": {
+          "作品状态": 2860,
+          "版权到期": 65,
+          "音频版权状态": 65,
+          "版权开始": 12
+        },
+        "workStatusDistribution": {
+          "已下架": 191,
+          "已上架": 2
+        },
+        "audioRightsStatusDistribution": {
+          "版权已到期": 361,
+          "无限期": 468,
+          "版权有效": 2159
+        },
+        "confirmationModeDistribution": {
+          "recovered_from_user_foundation": 3053,
+          "regenerated_direct_source": 619,
+          "legacy_local_staging": 5410,
+          "unresolved": 77
+        }
+      }
+    }
+  },
+  "outputs": {
+    "privateDetail": "private_local_only",
+    "publicReadinessEvidence": "committed_sanitized_json_and_markdown",
+    "publicFormalGapEvidence": "committed_sanitized_json_and_markdown"
+  }
+}

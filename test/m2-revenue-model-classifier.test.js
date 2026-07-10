@@ -93,6 +93,11 @@ test("per-channel large round amount plus long no-sales window classifies as buy
 
   assert.equal(result.channelRevenueModel, "buyout_channel");
   assert.equal(result.features.postLargePaymentNoSalesSignal, true);
+  assert.ok(
+    result.classificationReasonChinese.some((reason) =>
+      reason.includes("至少同时命中两类")
+    )
+  );
 });
 
 test("per-channel single valid non-buyout amount classifies as sales share sample", () => {
@@ -103,6 +108,11 @@ test("per-channel single valid non-buyout amount classifies as sales share sampl
 
   assert.equal(result.channelRevenueModel, "sales_share_channel");
   assert.equal(result.features.positiveIncomeTotal, 43912.12);
+  assert.ok(
+    result.classificationReasonChinese.some((reason) =>
+      reason.includes("未同时满足至少两类")
+    )
+  );
 });
 
 test("same-batch same-amount signal alone is not enough to classify buyout", () => {

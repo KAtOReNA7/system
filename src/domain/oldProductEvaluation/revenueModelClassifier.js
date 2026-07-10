@@ -106,12 +106,12 @@ export function classifyRevenueModel(input = {}) {
     revenueModel = REVENUE_MODELS.PURE_BUYOUT;
     confidence = buyoutSignalScore >= 0.82 ? "high" : "medium";
     manualReviewRequired = confidence !== "high";
-    reasons.push("命中大额整数/同批次同额/买断后无实销任一买断信号，可识别为纯买断");
+    reasons.push("大额整数/同批次同额/买断后无实销三类信号中至少同时命中两类，可识别为纯买断");
   } else if (features.incomeMonthCount < 2) {
     revenueModel = REVENUE_MODELS.PURE_SALES_SHARE;
     confidence = "low";
     manualReviewRequired = false;
-    reasons.push("有效账单收入未命中任一买断信号，按单月实销样本计入实销口径");
+    reasons.push("有效账单收入未同时满足至少两类买断信号，按单月实销样本计入实销口径");
   } else if (
     buyoutSignalScore >= 0.70 &&
     hasAnyBuyoutSignal(features)
@@ -119,7 +119,7 @@ export function classifyRevenueModel(input = {}) {
     revenueModel = REVENUE_MODELS.PURE_BUYOUT;
     confidence = buyoutSignalScore >= 0.82 ? "high" : "medium";
     manualReviewRequired = confidence !== "high";
-    reasons.push("命中大额整数/同批次同额/买断后无实销任一买断信号，可识别为纯买断");
+    reasons.push("大额整数/同批次同额/买断后无实销三类信号中至少同时命中两类，可识别为纯买断");
   } else if (salesContinuityScore >= 0.58 && buyoutSignalScore < 0.56) {
     revenueModel = REVENUE_MODELS.PURE_SALES_SHARE;
     confidence = salesContinuityScore >= 0.72 ? "high" : "medium";
@@ -205,7 +205,7 @@ export function classifyChannelRevenueModel(input = {}) {
   } else if (hasAnyBuyoutSignal(features)) {
     channelRevenueModel = CHANNEL_REVENUE_MODELS.BUYOUT;
     confidence = buyoutSignalScore >= 0.68 ? "medium" : "low";
-    reasons.push("渠道命中大额整数/同批次同额/买断后无实销任一买断信号，按买断渠道处理");
+    reasons.push("渠道在大额整数/同批次同额/买断后无实销三类信号中至少同时命中两类，按买断渠道处理");
   } else if (
     features.naturalSalesSequenceSignal &&
     Number(features.positiveMonthCount ?? features.incomeMonthCount) >= 4 &&
@@ -229,7 +229,7 @@ export function classifyChannelRevenueModel(input = {}) {
   } else if (features.positiveMonthCount >= 1) {
     channelRevenueModel = CHANNEL_REVENUE_MODELS.SALES_SHARE;
     confidence = "low";
-    reasons.push("有效账单收入未命中任一买断信号，按单月实销样本计入实销口径");
+    reasons.push("有效账单收入未同时满足至少两类买断信号，按单月实销样本计入实销口径");
   } else {
     reasons.push("渠道数据稀少或买断/实销信号冲突，暂无法判定");
   }
