@@ -25,19 +25,22 @@ test("five-source staging contract rejects presence-only and incomplete artifact
   assert.equal(result.noFormalMasterDataWrite, true);
 });
 
-test("post-foundation gate requires a contract-verified private input", async () => {
+test("post-foundation gate records the contract-verified private input checkpoint", async () => {
   const report = JSON.parse(await readFile(readinessReport, "utf8"));
   const privateInput = report.evaluationInputSnapshot.fiveSourcePrivateInput;
 
   assert.equal(privateInput.providedForThisRun, true);
-  assert.equal(privateInput.contractVerified, false);
-  assert.equal(privateInput.usedByEvaluation, false);
-  assert.ok(privateInput.contractIssues.length > 0);
-  assert.ok(
+  assert.equal(privateInput.contractVerified, true);
+  assert.equal(privateInput.usedByEvaluation, true);
+  assert.deepEqual(privateInput.contractIssues, []);
+  assert.equal(
     report.gate.hardBlockers.includes(
       "verified_private_per_work_input_snapshot_not_available"
-    )
+    ),
+    false
   );
+  assert.equal(report.postFoundationBusinessReview.totalPending, 0);
+  assert.equal(report.postFoundationBusinessReview.decisionsApplied, true);
   assert.equal(report.gate.m2FormalComplete, false);
   assert.equal(report.gate.m3FormalExecutionAllowed, false);
 });

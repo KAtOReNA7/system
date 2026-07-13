@@ -3,14 +3,14 @@
 | 项目 | 内容 |
 |---|---|
 | 当前版本 | v0.2 |
-| 当前阶段 | M2 local candidate 已收口；M3 private human acceptance 准备中，formal blocked |
-| 最后确认 | 2026-07-10 |
+| 当前阶段 | M2 两类复核桶待用户确认；M2 formal 操作已授权但尚未执行；M3 暂缓 |
+| 最后确认 | 2026-07-13 |
 | 权威规则 | 各领域专项文档中带稳定 `REQ-*` 编号的条目 |
 | 决策历史 | `docs/decisions/ADR-*.md` |
 | 待数据验证 | `60-validation/pending-data-decisions.md` |
 | 验收 | `70-acceptance/` |
 
-当前阶段说明：M2 的 3053 部本地候选可用于授权范围内的重算与复核，但尚未形成 formal basic-info version、不可变输入快照或正式 mapping activation。M3 已完成 fixture/synthetic prototype 主链，不代表 formal execution 已开始。下一阶段顺序以 `docs/analysis/m3/M3-next-execution-roadmap-v1.md` 为准，业务规则仍以各权威 PRD 为准。
+当前阶段说明：M2 的 3053 部本地候选可用于授权范围内的重算与复核。用户已明确授权正式主数据写入、正式基础信息版本/输入快照、mapping activation、formal evaluation 及正式 task/export/release/audit，但这些操作必须在 146/92 两类复核桶确认和逐作品 private 输入内容契约通过后按顺序执行。`REQ-M2-OUTPUT-001` 已冻结为 M2 不输出自动运营建议或资源投入动作。M3 代表性材料和 formal execution 均暂缓，等待 M2 流程彻底收口。
 
 ## 单一事实来源原则
 

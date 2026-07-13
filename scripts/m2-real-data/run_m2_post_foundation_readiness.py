@@ -7,7 +7,7 @@ import re
 import subprocess
 import sys
 from collections import Counter, defaultdict
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 import pandas as pd
@@ -29,6 +29,10 @@ import run_m2_revenue_model_rating_v2 as m2  # noqa: E402
 from m2_five_source_staging_contract import (  # noqa: E402
     validate_staging_payload,
 )
+from m2_post_foundation_input_contract import (  # noqa: E402
+    SCHEMA as POST_FOUNDATION_INPUT_SCHEMA,
+    validate_post_foundation_input_payload,
+)
 
 
 PRIVATE_DIR = ROOT / "data" / "private-output" / "m2-readiness"
@@ -36,6 +40,7 @@ DOCS_DIR = ROOT / "docs" / "analysis" / "m2-real-data"
 
 FOUNDATION_PATH = PRIVATE_DIR / "M2-classification-tag-foundation-local-fixed-cn-v1.json"
 FIVE_SOURCE_STAGING_PATH = PRIVATE_DIR / "M2-five-source-local-staging-apply-result-cn-v1.json"
+FORMAL_INPUT_PATH = PRIVATE_DIR / "M2-formal-basic-info-input-private-v1.json"
 MAPPING_PAYLOAD = (
     ROOT
     / "data"
@@ -106,7 +111,10 @@ def read_json(path: Path) -> dict:
 
 
 def inspect_five_source_staging(final_ids: set[str]) -> dict:
-    if not FIVE_SOURCE_STAGING_PATH.exists():
+    input_path = (
+        FORMAL_INPUT_PATH if FORMAL_INPUT_PATH.exists() else FIVE_SOURCE_STAGING_PATH
+    )
+    if not input_path.exists():
         return {
             "providedForThisRun": False,
             "contractVerified": False,
@@ -116,20 +124,26 @@ def inspect_five_source_staging(final_ids: set[str]) -> dict:
             "contractIssues": ["private_input_not_provided_for_this_run"],
         }
     try:
-        payload = read_json(FIVE_SOURCE_STAGING_PATH)
-        validation = validate_staging_payload(
-            payload, final_ids, require_verified=True
-        )
+        payload = read_json(input_path)
+        if payload.get("schema") == POST_FOUNDATION_INPUT_SCHEMA:
+            validation = validate_post_foundation_input_payload(
+                payload, final_ids, require_verified=True
+            )
+        else:
+            validation = validate_staging_payload(
+                payload, final_ids, require_verified=True
+            )
         return {
             "providedForThisRun": True,
             "contractVerified": validation["verified"],
-            "usedByEvaluation": False,
+            "usedByEvaluation": validation["verified"],
             "artifactRole": clean(payload.get("artifactRole"))
             or "private_per_work_staging_input",
             "schema": payload.get("schema"),
             "declaredStatus": payload.get("status"),
-            "artifactSha256": sha256(FIVE_SOURCE_STAGING_PATH),
+            "artifactSha256": sha256(input_path),
             "contractIssues": validation["issues"],
+            "reviewDecisionSummary": payload.get("reviewDecisionSummary", {}),
             "contractSummary": {
                 key: validation[key]
                 for key in [
@@ -138,7 +152,7 @@ def inspect_five_source_staging(final_ids: set[str]) -> dict:
                     "missingByField",
                     "workStatusDistribution",
                     "audioRightsStatusDistribution",
-                    "confirmationModeDistribution",
+                    "copyrightTermTypeDistribution",
                 ]
             },
         }
@@ -152,6 +166,21 @@ def inspect_five_source_staging(final_ids: set[str]) -> dict:
             "contractIssues": ["private_input_validation_error"],
             "validationErrorType": type(error).__name__,
         }
+
+
+def load_verified_formal_input(final_ids: set[str]) -> dict[str, dict]:
+    if not FORMAL_INPUT_PATH.exists():
+        return {}
+    payload = read_json(FORMAL_INPUT_PATH)
+    validation = validate_post_foundation_input_payload(
+        payload, final_ids, require_verified=True
+    )
+    if not validation["verified"]:
+        return {}
+    return {
+        canonical_work_id(row.get("作品编号")): row
+        for row in payload.get("records", [])
+    }
 
 
 def git_value(*args: str) -> str | None:
@@ -301,8 +330,42 @@ def build_current_work_rows(
 ) -> tuple[list[dict], dict]:
     final_ids = set(foundation)
     five_source_input = inspect_five_source_staging(final_ids)
-    _, master_path, _, _ = discover_sources()
-    master_dates, master_stats = read_master_dates(master_path)
+    formal_input_index = load_verified_formal_input(final_ids)
+    if formal_input_index:
+        master_dates = {}
+        for work_id, record in formal_input_index.items():
+            copyright_start = clean(record.get("版权开始"))
+            copyright_end = clean(record.get("版权到期"))
+            master_dates[work_id] = {
+                "start": (
+                    date.fromisoformat(copyright_start)
+                    if re.fullmatch(r"\d{4}-\d{2}-\d{2}", copyright_start)
+                    else None
+                ),
+                "end": (
+                    date.fromisoformat(copyright_end)
+                    if re.fullmatch(r"\d{4}-\d{2}-\d{2}", copyright_end)
+                    else None
+                ),
+                "conflict": False,
+                "perpetual": copyright_end == "无限期",
+            }
+        master_stats = {
+            "masterRows": len(master_dates),
+            "dateRows": sum(
+                bool(item["end"] or item["perpetual"])
+                for item in master_dates.values()
+            ),
+            "unambiguousWorks": len(master_dates),
+            "conflictWorks": 0,
+            "perpetualWorks": sum(
+                item["perpetual"] for item in master_dates.values()
+            ),
+            "source": "contract_verified_post_foundation_private_input",
+        }
+    else:
+        _, master_path, _, _ = discover_sources()
+        master_dates, master_stats = read_master_dates(master_path)
     work_summary, work_month_stats = build_work_summary(
         bill,
         canonical_master_dates(master_dates),
@@ -343,7 +406,22 @@ def build_current_work_rows(
         cluster_lookup,
         context["latest_complete_month"],
     )
-    staging_index = canonical_staging_index(m2.build_staging_index(), final_ids)
+    if formal_input_index:
+        staging_index = {
+            work_id: {
+                "copyrightStartDate": clean(record.get("版权开始")),
+                "copyrightEndDate": (
+                    ""
+                    if clean(record.get("版权到期")) == "无限期"
+                    else clean(record.get("版权到期"))
+                ),
+                "copyrightStartDateSource": "post_foundation_private_input",
+                "copyrightEndDateSource": "post_foundation_private_input",
+            }
+            for work_id, record in formal_input_index.items()
+        }
+    else:
+        staging_index = canonical_staging_index(m2.build_staging_index(), final_ids)
     work_rows = m2.build_work_rows(
         channel_rows,
         evaluated,
@@ -366,16 +444,49 @@ def build_current_work_rows(
         row["classificationLevel3"] = foundation[work_id]["三级分类"]
         row["auxiliaryTags"] = split_tags(foundation[work_id]["辅助标签"])
         row["frontRating"] = row["salesPerformanceRating"]
+        if formal_input_index:
+            formal_record = formal_input_index[work_id]
+            confirmed_work_status = clean(formal_record.get("作品状态"))
+            confirmed_audio_status = clean(formal_record.get("音频版权状态"))
+            copyright_end = clean(formal_record.get("版权到期"))
+            row["confirmedWorkStatus"] = confirmed_work_status
+            row["confirmedAudioRightsStatus"] = confirmed_audio_status
+            row["copyrightEnd"] = copyright_end
+            row["currentRightsStatus"] = {
+                "版权有效": "active",
+                "版权已到期": "expired",
+                "无限期": "perpetual",
+            }.get(confirmed_audio_status, "unknown")
+            row["shelfStatus"] = (
+                "confirmed_on_shelf"
+                if confirmed_work_status == "已上架"
+                else "confirmed_off_shelf"
+            )
+            row["shelfStatusChinese"] = confirmed_work_status
+            row["shelfStatusConfidence"] = "user_confirmed"
+            row["shelfStatusReasonChinese"] = "采用用户完成的 post-foundation 状态复核结果"
+            row["shelfStatusReviewPrompts"] = []
+            row["requiresShelfStatusReview"] = False
+            row["businessReviewAdvisories"] = list(
+                formal_record.get("复核提示") or []
+            )
+            row["formalInputBlockers"] = list(
+                formal_record.get("正式输入阻断") or []
+            )
 
     return work_rows, {
         "latestCompleteMonth": context["latest_complete_month"],
         "workMonthStats": work_month_stats,
         "legacyMasterStats": master_stats,
-        "legacyDualSourceEvaluationSnapshot": True,
-        "evaluationInputMode": "legacy_dual_source_checkpoint",
+        "legacyDualSourceEvaluationSnapshot": not bool(formal_input_index),
+        "evaluationInputMode": (
+            "post_foundation_contract_verified_private_input"
+            if formal_input_index
+            else "legacy_dual_source_checkpoint"
+        ),
         "fiveSourcePrivateInput": five_source_input,
         "copyrightEndUnavailableInLegacyEvaluationSnapshot": sum(
-            row["remainingCopyrightMonths"] is None for row in work_rows
+            not clean(row.get("copyrightEnd")) for row in work_rows
         ),
     }
 
@@ -476,14 +587,20 @@ def build_summary(
             "active_rights_sparse_revenue_review", 0
         ),
     }
+    review_decision_summary = evaluation["fiveSourcePrivateInput"].get(
+        "reviewDecisionSummary", {}
+    )
+    review_pending = int(review_decision_summary.get("pending", 0))
     hard_blockers = [
+        "copyright_term_persistence_schema_not_ready",
         "formal_master_data_not_written",
         "mapping_version_not_active",
         "formal_basic_info_version_not_created",
         "formal_input_snapshot_not_created",
         "formal_task_export_release_audit_not_complete",
-        "m3_formal_authorization_not_granted",
     ]
+    if review_pending > 0:
+        hard_blockers.insert(0, "post_foundation_review_bucket_confirmation_pending")
     if not evaluation["fiveSourcePrivateInput"]["contractVerified"]:
         hard_blockers.insert(
             0, "verified_private_per_work_input_snapshot_not_available"
@@ -584,6 +701,46 @@ def build_summary(
             "m3FormalExecutionAllowed": False,
             "hardBlockers": hard_blockers,
         },
+        "formalAuthorization": {
+            "grantedAt": "2026-07-13",
+            "formalMasterDataWrite": "granted_pending_prerequisites",
+            "formalBasicInfoVersionAndInputSnapshot": "granted_pending_prerequisites",
+            "mappingActivation": "granted_pending_prerequisites",
+            "formalEvaluation": "granted_pending_prerequisites",
+            "formalTaskExportReleaseAudit": "granted_pending_prerequisites",
+            "m3FormalExecution": "not_granted_deferred",
+            "executionPrerequisites": [
+                "post_foundation_review_bucket_confirmation_complete",
+                "private_per_work_input_contract_verified",
+                "formal_dry_run_and_reconciliation_passed",
+                "rollback_evidence_ready",
+            ],
+        },
+        "postFoundationBusinessReview": {
+            "expiredWithRevenueReviewed": int(
+                review_decision_summary.get("expiredWithRevenue", 0)
+            ),
+            "activeRightsSparseRevenueReviewed": int(
+                review_decision_summary.get("activeRightsSparseRevenue", 0)
+            ),
+            "expiredWithRevenuePending": 0 if review_decision_summary else current_review_buckets[
+                "expired_with_tail_revenue_review"
+            ],
+            "activeRightsSparseRevenuePending": 0 if review_decision_summary else current_review_buckets[
+                "active_rights_sparse_revenue_review"
+            ],
+            "totalPending": review_pending if review_decision_summary else sum(current_review_buckets.values()),
+            "confirmationPackGenerated": True,
+            "decisionsApplied": bool(review_decision_summary)
+            and review_pending == 0,
+            "approved": int(review_decision_summary.get("approved", 0)),
+            "auditEventCount": int(
+                review_decision_summary.get("auditEventCount", 0)
+            ),
+            "advisoryAssignmentCount": int(
+                review_decision_summary.get("advisoryAssignmentCount", 0)
+            ),
+        },
         "prohibitedActionsConfirmed": {
             "connectedRemoteDatabase": False,
             "wroteFormalMasterData": False,
@@ -617,6 +774,7 @@ def markdown(summary: dict) -> str:
     regression = candidate["regressionAgainst3054Checkpoint"]
     gate = summary["gate"]
     evaluation = summary["evaluationInputSnapshot"]
+    business_review = summary["postFoundationBusinessReview"]
 
     lines = [
         "# M2 最终基础表接入后的 readiness 重算 v1",
@@ -626,7 +784,7 @@ def markdown(summary: dict) -> str:
         "- 最终分类与标签基础表已接入本地 M2 评估集合，账单、基础表和评估结果均统一为 `3053` 部。",
         "- 旧 `3054` 部口径的净差不是丢弃收入，而是一个历史分册身份在内存中归并到已确认标准作品；账单行数和收入金额均守恒。",
         "- 收入模式和前台评级相对旧 checkpoint 只各减少一条被归并的 `纯实销 / E` 旧身份，其余档位不变；未发现模型规则回归。",
-        "- 分类与辅助标签可以进入本地分层统计；当前结果仍不是正式主数据、M2 formal completion 或 M3 formal execution 授权。",
+        "- 分类与辅助标签可以进入本地分层统计；当前结果仍不是正式主数据或 M2 formal completion，M3 formal execution 仍未授权。",
         "",
         "## 范围对账",
         "",
@@ -650,8 +808,9 @@ def markdown(summary: dict) -> str:
         "## 当前工程边界",
         "",
         f"- 本次运行是否获得通过内容契约的逐作品 private 输入：`{evaluation['fiveSourcePrivateInput']['contractVerified']}`。文件存在本身不构成通过。",
-        f"- 本次评估输入模式：`{evaluation['evaluationInputMode']}`；旧评估快照仍有 `{evaluation['copyrightEndUnavailableInLegacyEvaluationSnapshot']}` 个版权到期不可用记录，因此本轮 146/92 复核桶只能作为 local candidate，不是 formal input snapshot。",
+        f"- 本次评估输入模式：`{evaluation['evaluationInputMode']}`；版权到期不可用记录 `{evaluation['copyrightEndUnavailableInLegacyEvaluationSnapshot']}` 个。",
         f"- private 输入契约问题：`{json.dumps(evaluation['fiveSourcePrivateInput']['contractIssues'], ensure_ascii=False)}`。这属于跨机器可重复性/正式输入快照缺口，不重新定义已经收口的业务基础字段决策。",
+        f"- 两类复核已应用：`{business_review['decisionsApplied']}`；已确认 `{business_review.get('approved', 0)}` 条；仍待确认 `{business_review['totalPending']}` 条。",
         "- 正式主数据尚未写入，mapping_version 未激活，formal input snapshot 与 task/export/release/audit 闭环尚未建立。",
         "",
         "## PRD / M3 门禁",
@@ -660,7 +819,8 @@ def markdown(summary: dict) -> str:
         f"- M2 formal complete：`{gate['m2FormalComplete']}`。",
         f"- M3 本地 prototype 可继续：`{gate['m3LocalPrototypeMayContinue']}`。",
         f"- M3 formal execution：`{gate['m3FormalExecutionAllowed']}`。",
-        "- formal 前仍需提供并验证逐作品 private 输入、创建正式基础信息版本和不可变输入快照、完成 task/export/release/audit，并取得单独授权。",
+        "- 用户已授权 M2 formal 操作；两类复核和逐作品 private 输入内容契约通过后，按正式基础信息版本/输入快照、mapping、formal evaluation、task/export/release/audit 的顺序推进。",
+        "- M3 formal execution 未获授权，代表性选题材料准备暂缓至 M2 收口后。",
         "",
         "## 安全边界",
         "",
@@ -672,11 +832,36 @@ def markdown(summary: dict) -> str:
 
 
 def build_formal_gap_audit(summary: dict) -> dict:
+    private_input = summary["evaluationInputSnapshot"]["fiveSourcePrivateInput"]
+    input_verified = private_input["contractVerified"]
+    reproducibility_gaps = []
+    if not input_verified:
+        reproducibility_gaps.append(
+            {
+                "code": "verified_private_per_work_input_snapshot_not_available",
+                "description": (
+                    "This run did not receive a contract-verified private per-work input. "
+                    "A local recovery candidate may exist, but file presence alone is insufficient."
+                ),
+                "businessDataGap": False,
+                "blocksFormalInputSnapshot": True,
+                "inputProvidedForThisRun": private_input["providedForThisRun"],
+                "inputContractVerified": input_verified,
+                "contractIssues": private_input["contractIssues"],
+                "smallestRemediation": (
+                    "restore from approved private storage or regenerate from authorized source "
+                    "materials, then pass the committed content contract before creating a formal snapshot"
+                ),
+            }
+        )
     return {
         "schema": "m2.post_foundation_formal_gap_audit.v1",
         "generatedAt": summary["generatedAt"],
         "generationBase": summary["generationBase"],
         "businessDataDecisionGapCount": 0,
+        "businessReviewDecisionPendingCount": summary[
+            "postFoundationBusinessReview"
+        ]["totalPending"],
         "localCandidate": {
             "foundationScopeAligned": summary["scopeReconciliation"][
                 "scopeFullyAligned"
@@ -700,8 +885,19 @@ def build_formal_gap_audit(summary: dict) -> dict:
         "prdAlignment": [
             {
                 "prdItem": "M1 standard work and required basic information",
-                "currentStatus": "local_candidate_closed_formal_version_missing",
+                "currentStatus": (
+                    "private_input_contract_verified_formal_version_missing"
+                    if input_verified
+                    else "local_candidate_closed_formal_version_missing"
+                ),
                 "evidence": relative(PROJECT_STATUS_PATH),
+                "blocksM2Formal": True,
+                "requiresUserDataEntry": False,
+            },
+            {
+                "prdItem": "formal copyright-term persistence",
+                "currentStatus": "date_only_schema_requires_forward_migration",
+                "evidence": "db/migrations/V0040_050__table_basic_info_version_work.sql",
                 "blocksM2Formal": True,
                 "requiresUserDataEntry": False,
             },
@@ -721,7 +917,11 @@ def build_formal_gap_audit(summary: dict) -> dict:
             },
             {
                 "prdItem": "formal basic-info version and input snapshot",
-                "currentStatus": "not_created",
+                "currentStatus": (
+                    "private_input_verified_version_not_created"
+                    if input_verified
+                    else "not_created"
+                ),
                 "evidence": "src/domain/oldProductEvaluation/formalReadinessGate.js",
                 "blocksM2Formal": True,
                 "requiresUserDataEntry": False,
@@ -742,43 +942,16 @@ def build_formal_gap_audit(summary: dict) -> dict:
                 "requiresUserDataEntry": False,
             },
         ],
-        "reproducibilityGaps": [
-            {
-                "code": "verified_private_per_work_input_snapshot_not_available",
-                "description": (
-                    "This run did not receive a contract-verified private per-work input. "
-                    "A local recovery candidate may exist, but file presence alone is insufficient."
-                ),
-                "businessDataGap": False,
-                "blocksFormalInputSnapshot": True,
-                "inputProvidedForThisRun": summary["evaluationInputSnapshot"][
-                    "fiveSourcePrivateInput"
-                ]["providedForThisRun"],
-                "inputContractVerified": summary["evaluationInputSnapshot"][
-                    "fiveSourcePrivateInput"
-                ]["contractVerified"],
-                "contractIssues": summary["evaluationInputSnapshot"][
-                    "fiveSourcePrivateInput"
-                ]["contractIssues"],
-                "smallestRemediation": (
-                    "restore from approved private storage or regenerate from authorized source "
-                    "materials, then pass the committed content contract before creating a formal snapshot"
-                ),
-            }
-        ],
-        "authorizationGaps": [
-            "formal_master_data_write",
-            "mapping_activation",
-            "formal_evaluation_execution",
-            "formal_task_export_release_audit",
-            "m3_formal_execution",
-        ],
+        "reproducibilityGaps": reproducibility_gaps,
+        "authorizationStatus": summary["formalAuthorization"],
+        "authorizationGaps": ["m3_formal_execution"],
         "m1FormalAcceptance": "not_complete",
         "m2FormalComplete": False,
         "m3FormalExecutionAllowed": False,
         "recommendedNextTask": (
-            "supply_contract_verified_private_per_work_input_then_build_formal_basic_info_"
-            "snapshot_and_request_separate_authorization"
+            "add_copyright_term_type_forward_migration_then_execute_authorized_m2_formal_chain"
+            if input_verified
+            else "restore_contract_verified_private_input_then_execute_authorized_m2_formal_chain"
         ),
         "prohibitedActionsConfirmed": summary["prohibitedActionsConfirmed"],
     }
@@ -799,12 +972,20 @@ def formal_gap_markdown(audit: dict) -> str:
             )
             + " |"
         )
+    input_verified = not audit["reproducibilityGaps"]
+    reproducibility_text = (
+        "- 逐作品 private 输入已通过 schema、范围、必填字段、状态、复核决策和禁止建议字段内容契约；当前不再存在 private 输入恢复缺口。\n"
+        if input_verified
+        else "- 公开仓库只保存脱敏聚合 checkpoint；本次运行没有获得通过内容契约的逐作品 private 输入。即使本地存在恢复候选，也不能仅凭文件存在解除 formal blocker。\n"
+        "- 最小处理是从批准的 private 存储恢复，或用已确认来源重新生成并通过 schema、范围、字段完整性、状态分布和来源确认校验；不得依据聚合计数伪造逐作品字段。\n"
+    )
     return (
         "# M2 最终基础表接入后的 formal gap 审计 v1\n\n"
         "## 结论\n\n"
         "- 当前约定范围内的业务基础数据决定已经收口，人工数据缺口计为 `0`。\n"
+        f"- 当前到期/收入状态复核待确认数为 `{audit['businessReviewDecisionPendingCount']}`。\n"
         "- M2 本地工程候选完成最终基础表重算且无收入模式/前台评级意外回归。\n"
-        "- M2 仍未 formal complete；剩余问题是 private 逐作品 staging 可重复性、正式版本/输入快照、mapping 激活、正式任务/导出/发布/审计和授权，不应重新包装成业务补表任务。\n"
+        "- M2 仍未 formal complete；用户已授权 M2 formal 操作，剩余问题是期限类型持久化 migration、正式版本/输入快照、mapping、正式评估和 task/export/release/audit 的实际执行。\n"
         "- M3 本地 prototype 可以保留，M3 formal execution 仍不可开始。\n\n"
         "## PRD 对齐\n\n"
         "| PRD 条目 | 当前状态 | 阻断 M2 formal | 需要重新人工补数据 |\n"
@@ -812,11 +993,12 @@ def formal_gap_markdown(audit: dict) -> str:
         + "\n".join(rows)
         + "\n\n"
         "## 跨机器可重复性缺口\n\n"
-        "- 公开仓库只保存脱敏聚合 checkpoint；本次运行没有获得通过内容契约的逐作品 private 输入。即使本地存在恢复候选，也不能仅凭文件存在解除 formal blocker。\n"
-        "- 最小处理是从批准的 private 存储恢复，或用已确认来源重新生成并通过 schema、范围、字段完整性、状态分布和来源确认校验；不得依据聚合计数伪造逐作品字段。\n\n"
-        "## 后续授权门槛\n\n"
-        "- 正式主数据写入、mapping activation、formal evaluation、正式 task/export/release/audit 和 M3 formal execution 均需用户分别明确授权。\n"
-        "- 在取得授权前，本地结果继续标记为 candidate/non-formal。\n"
+        + reproducibility_text
+        + "\n"
+        "## 授权与执行门槛\n\n"
+        "- 用户已于 2026-07-13 明确授权正式主数据写入、正式基础信息版本/输入快照、mapping activation、formal evaluation 和正式 task/export/release/audit。\n"
+        "- 授权不等于操作已执行：逐作品 private 输入内容契约已经通过；下一步必须先让 forward migration 保真承载非精确日期期限，再通过 dry-run/严格对账并准备回滚证据。\n"
+        "- M3 formal execution 未获授权且明确暂缓；M2 正式链路完成前不得准备代表性 M3 选题材料。\n"
     )
 
 

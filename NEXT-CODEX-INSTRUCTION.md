@@ -1,10 +1,10 @@
 # 下一步交给 Codex 的指令
 
-请使用最高模型能力和充分上下文。当前入口不是继续修改 M2 收入模式、评级、预测或建议规则，不是重新打开版权/作者/状态补表，也不是进入 M3 formal execution。
+请使用最高模型能力和充分上下文。当前入口不是重新打开版权/作者/状态/分类补表，不是 release 旧 v1.1 prepared export，也不是进入 M3。
 
 当前入口是：
 
-`补齐并通过逐作品 private 输入内容契约，然后设计 formal basic-info version/input snapshot 并请求单独授权`
+`基于最终 3053 部权威基础数据拟定并执行 M2 最终上线预测算法校准；旧 v1.1 conditional 已被用户拒绝，不得 release，不得进入 M3`
 
 ## 当前状态
 
@@ -16,14 +16,20 @@
 - M3 fixture/synthetic prototype 主链已完成；当前允许 private dry-run、人工补全、human acceptance 和 formal 设计准备，不允许 formal execution。
 - 最终 3053 部范围的收入模式重算稳定：pure_sales_share=2578、pure_buyout=287、buyout_plus_sales=183、unknown=5。
 - 最终 3053 部范围的前台评级重算稳定：S+=38、S=117、A=84、B=358、C=152、D=356、E=1948。
-- 预测层仍为 v1.1 conditional；该模型边界不在当前任务中修改。
+- v1.1 conditional 已被用户明确拒绝作为最终上线预测算法；旧 package 只保留审计和对照用途，禁止 approved/released。
 - 作者、版权开始、版权到期、作品状态和音频版权状态已按用户确认口径完成本地文件级 staging 收口，禁止依据旧 gap 报告重新生成待办。
 - 用户最终分类标签基础表已固定：3053 部作品，出版物 1195 部、网文 1858 部，分类与标签人工缺口为 0；private 明细不进入版本控制。
 - 最终表修正 836 部作品，固定 387 部作品、532 个标签赋值；新增分类和标签已进入受控词表 `2026-07-10-user-confirmed-v2`。
 - 用户已确认 2 个作者显示改动属于误操作，系统已恢复此前已收口作者值；当前没有作者人工待办。
 - 最终分类标签基础已恢复，M2 readiness/分类分层/本地评估一致性重算已通过：账单、基础表和评估范围统一为 3053 部，行数和收入守恒。
-- 复核桶当前为到期但仍有收入 146、版权有效但收入稀疏 92；前者按 Excel 底层完整金额精度计算。
-- 当前业务数据决策缺口为 0。跨电脑恢复脚本和内容契约已经建立；本次 private 恢复候选虽覆盖 3053 部，但仍缺 12 个版权开始、65 个版权到期/音频版权状态、2860 个可验证作品状态，并且无法重建原来源确认分布，因此契约未通过、未被本次评估使用。不得仅凭文件存在解除门禁，也不得重开用户全量补表。
+- 两类复核桶为到期但仍有收入 146、版权有效但收入稀疏 92；用户已完成全部 238 条确认，系统已校验并应用，待确认数为 0。
+- 应用结果包含 238 条用户决定和 139 条事实型复核提示；作品状态为已上架 2298、已下架 755，音频版权状态为版权有效 2250、无限期 473、版权已到期 330。
+- 用户已冻结 M2 产品口径：不输出自动运营建议或资源投入动作，只保留风险和事实型复核提示。
+- 隔离本地正式执行已经完成：Flyway `0071.020`、3053 部基础信息、192872 条事实/projection、active mapping、3053 条 evaluation/input snapshot、task/audit 和 prepared export 均严格对账通过；自动运营建议为 0。
+- M3 代表性材料和 formal execution 均暂缓；M2 完整收口前不准备 3 至 5 份选题材料。
+- 当前业务数据决策缺口为 0。逐作品 private 正式基础信息输入候选覆盖 3053 部且已通过内容契约，并已用于 readiness 重算；不得依据旧恢复报告重开用户全量补表。
+- 参考执行环境已用 PostgreSQL 16 和 Flyway `0071.020` 验证通过；每台开发机器必须自行核验本地隔离环境，不得在文档中写入机器专属绝对路径或假设 private 输出已经存在。
+- 当前 3053 部基础信息和 192872 条收入事实是用户确认的最准确、后续上线时继续使用的权威输入。基础数据人工缺口为 0，不再生成补表；下一任务是算法校准。
 
 ## 优先读取文件
 
@@ -45,36 +51,40 @@
 16. `scripts/m2-real-data/run_m2_post_foundation_readiness.py`
 17. `scripts/m2-real-data/m2_five_source_staging_contract.py`
 18. `scripts/m2-real-data/run_m2_five_source_staging_recovery.py`
-19. `docs/analysis/m3/M3-next-execution-roadmap-v1.md`
+19. `docs/analysis/m2-real-data/M2-formal-local-execution-summary-v1.md`
+20. `scripts/m2-real-data/run_m2_formal_local_execution.mjs`
+21. `src/repositories/m2EvaluationExportRepository.js`
+22. `docs/analysis/m3/M3-next-execution-roadmap-v1.md`
 
 ## 下一轮推荐任务
 
 优先执行：
 
-`从批准的 private 存储恢复，或从已确认来源补齐逐作品输入并通过内容契约，再产出 formal basic-info version/input snapshot 设计审计`
+`一次性完成 M2 最终上线预测算法校准与候选选择：只使用最终 3053 部权威基础数据和 192872 条收入事实，对旧 v1.1 做可复现基线对照，建立候选、滚动回测、分层误差、区间校准和业务可读验证包；未达到门槛则如实 FAIL，不得 release 或进入 M3`
 
 执行要求：
 
-1. 不得从脱敏聚合计数伪造逐作品版权日期、作品状态、音频版权状态或来源确认方式。
-2. 优先从批准的 private 存储恢复；如确实丢失，只能从已确认源材料重建，并重跑 schema、唯一性、完整性、冲突、来源哈希和范围对账。
-3. 恢复后必须与最终 3053 部分类标签基础逐 ID 对齐，且不覆盖用户确认分类/标签；文件存在不等于契约通过。
-4. 然后设计 formal basic-info version 和 input snapshot，但在用户单独授权前不写正式主数据、不激活 mapping、不执行 formal evaluation。
-5. 报告只输出脱敏聚合，不得提交 private staging、作品名、作者名、渠道名或行级收入。
+1. 先确认 `HEAD == origin/main`、工作区范围和本机隔离环境；读取 README、AGENTS、当前 PRD、v1.1 验证报告、post-foundation readiness 和 formal-local execution 汇总。
+2. 只使用最终 3053 部权威基础信息、最终 mapping 和 192872 条收入事实；不得重新清洗或覆盖已确认基础字段，除非发现可证明的工程错误并先报告。
+3. 将 v1.1 作为被拒绝的历史基线，不做状态包装或小修粉饰。新候选必须重新完成 3/6/12/18/24 月滚动回测、关键分层比较、区间覆盖、P0/P1/P2、稳定性和高价值样本检查。
+4. 生成中文、可读、Git 忽略的业务验证表，以及不含真实作品明细的可提交聚合报告；测试结果主要信息必须中文化。
+5. 新候选通过工程门槛后仍不得自动 release；必须再次交给用户抽检并获得明确批准。M2 输出继续禁止自动运营建议或资源投入动作字段。
 
 ## 当前允许做的事
 
 - 读取用户授权的 private 分类标签基础和既有本地 staging 证据。
 - 重跑 M2 readiness、分类分层统计和本地评估一致性。
 - 生成脱敏聚合报告并区分数据字段收口、业务复核和 formal gate。
-- 保持 v1.1 conditional 与 rating-standard-v3 的非正式候选边界，除非后续任务明确授权修改。
+- 读取已完成的本地正式执行和 prepared export 聚合证据作为历史对照。
+- 修改 M2 预测算法、校准参数、回测脚本、测试和脱敏聚合报告。
+- 在新候选获用户批准前保持所有结果 `not_for_formal_decision`，旧 v1.1 package 永不自动 release。
 
 ## 当前禁止做的事
 
 - 禁止进入 M3 formal execution。
 - 禁止实现正式 M3 API / write API / export API。
-- 禁止写 migration，除非用户后续单独明确授权。
+- M2 formal 链路确有需要时允许新增本地 forward migration，但必须先通过两类复核、内容契约和 dry-run 门禁；禁止在远端生产/共享/staging-like 数据库执行。
 - 禁止连接远端生产、共享、staging-like 或未明确授权的数据库。
-- 禁止写正式主数据。
 - 禁止提交 `data/private-output/**`、private Excel/CSV/JSON、原始账单、原始台账、完整作品明细、`.env`、`.pgpass`、dump、sqlite/db 文件。
 - 禁止使用 `git add .`。
 - 禁止触碰 stash。
@@ -84,11 +94,11 @@
 
 M3 formal 前必须满足：
 
-1. M2 3053 部本地 readiness/分层重算已通过；还需获得通过内容契约的逐作品 private 输入并生成可验证的 formal input snapshot。
-2. 人工基础数据字段已按当前口径在本地候选层收口；正式主数据写入或 formal exception 仍需用户授权。
-3. formal task/export/release/audit 机制完成。
+1. M2 3053 部 readiness、两类复核、private 输入契约、formal input snapshot 与严格对账均已通过。
+2. M2 formal master/mapping/evaluation/task/audit 已在隔离本地执行完成。
+3. 基于最终权威输入的新预测算法通过回测、业务抽检和用户批准，新的 release 形成可审计完成证据；旧 v1.1 不满足本条。
 4. M3 PRD/API/data/page/test contract pack 经用户确认。
-5. 用户单独明确授权 M3 formal。
+5. 用户在 M2 正式链路完成后单独明确授权 M3 formal；当前已明确暂缓。
 
 ## 验证要求
 
@@ -113,7 +123,7 @@ npm test
 
 任何失败不得伪造通过。若验证失败，必须说明失败命令、失败摘要和是否已有 staged 文件。
 
-# M3 Private Completion Pack Recovery Reminder
+# M3 Private Completion Pack Recovery Reminder（当前暂缓）
 
 On a new machine, ignored private materials and completion packs are intentionally absent. README/AGENTS must not record machine-specific absolute paths or promise that ignored artifacts exist. Regenerate the local pack with:
 

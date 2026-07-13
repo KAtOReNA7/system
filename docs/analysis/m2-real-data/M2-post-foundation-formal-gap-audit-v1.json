@@ -1,11 +1,14 @@
 {
+  "snapshotStatus": "superseded_by_formal_local_execution",
+  "supersededBy": "docs/analysis/m2-real-data/M2-formal-local-execution-summary-v1.json",
   "schema": "m2.post_foundation_formal_gap_audit.v1",
-  "generatedAt": "2026-07-10T16:11:17.487912+00:00",
+  "generatedAt": "2026-07-13T07:18:33.594698+00:00",
   "generationBase": {
-    "head": "f6af1e173da170bad08c553b1dd30e3b81a2782f",
-    "originMain": "f6af1e173da170bad08c553b1dd30e3b81a2782f"
+    "head": "9f00cc9acb8b453f438bbe4141159cb7dcdb4db7",
+    "originMain": "9f00cc9acb8b453f438bbe4141159cb7dcdb4db7"
   },
   "businessDataDecisionGapCount": 0,
+  "businessReviewDecisionPendingCount": 0,
   "localCandidate": {
     "foundationScopeAligned": true,
     "foundationWorkCount": 3053,
@@ -16,8 +19,15 @@
   "prdAlignment": [
     {
       "prdItem": "M1 standard work and required basic information",
-      "currentStatus": "local_candidate_closed_formal_version_missing",
+      "currentStatus": "private_input_contract_verified_formal_version_missing",
       "evidence": "docs/analysis/m2-real-data/M1-M2-post-foundation-project-status-v1.json",
+      "blocksM2Formal": true,
+      "requiresUserDataEntry": false
+    },
+    {
+      "prdItem": "formal copyright-term persistence",
+      "currentStatus": "date_only_schema_requires_forward_migration",
+      "evidence": "db/migrations/V0040_050__table_basic_info_version_work.sql",
       "blocksM2Formal": true,
       "requiresUserDataEntry": false
     },
@@ -37,7 +47,7 @@
     },
     {
       "prdItem": "formal basic-info version and input snapshot",
-      "currentStatus": "not_created",
+      "currentStatus": "private_input_verified_version_not_created",
       "evidence": "src/domain/oldProductEvaluation/formalReadinessGate.js",
       "blocksM2Formal": true,
       "requiresUserDataEntry": false
@@ -58,36 +68,29 @@
       "requiresUserDataEntry": false
     }
   ],
-  "reproducibilityGaps": [
-    {
-      "code": "verified_private_per_work_input_snapshot_not_available",
-      "description": "This run did not receive a contract-verified private per-work input. A local recovery candidate may exist, but file presence alone is insufficient.",
-      "businessDataGap": false,
-      "blocksFormalInputSnapshot": true,
-      "inputProvidedForThisRun": true,
-      "inputContractVerified": false,
-      "contractIssues": [
-        "required_fields_incomplete",
-        "work_status_distribution_mismatch",
-        "audio_rights_status_distribution_mismatch",
-        "confirmation_mode_distribution_mismatch",
-        "artifact_not_declared_verified",
-        "artifact_status_not_verified_complete"
-      ],
-      "smallestRemediation": "restore from approved private storage or regenerate from authorized source materials, then pass the committed content contract before creating a formal snapshot"
-    }
-  ],
+  "reproducibilityGaps": [],
+  "authorizationStatus": {
+    "grantedAt": "2026-07-13",
+    "formalMasterDataWrite": "granted_pending_prerequisites",
+    "formalBasicInfoVersionAndInputSnapshot": "granted_pending_prerequisites",
+    "mappingActivation": "granted_pending_prerequisites",
+    "formalEvaluation": "granted_pending_prerequisites",
+    "formalTaskExportReleaseAudit": "granted_pending_prerequisites",
+    "m3FormalExecution": "not_granted_deferred",
+    "executionPrerequisites": [
+      "post_foundation_review_bucket_confirmation_complete",
+      "private_per_work_input_contract_verified",
+      "formal_dry_run_and_reconciliation_passed",
+      "rollback_evidence_ready"
+    ]
+  },
   "authorizationGaps": [
-    "formal_master_data_write",
-    "mapping_activation",
-    "formal_evaluation_execution",
-    "formal_task_export_release_audit",
     "m3_formal_execution"
   ],
   "m1FormalAcceptance": "not_complete",
   "m2FormalComplete": false,
   "m3FormalExecutionAllowed": false,
-  "recommendedNextTask": "supply_contract_verified_private_per_work_input_then_build_formal_basic_info_snapshot_and_request_separate_authorization",
+  "recommendedNextTask": "add_copyright_term_type_forward_migration_then_execute_authorized_m2_formal_chain",
   "prohibitedActionsConfirmed": {
     "connectedRemoteDatabase": false,
     "wroteFormalMasterData": false,

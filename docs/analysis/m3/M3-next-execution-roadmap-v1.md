@@ -1,12 +1,12 @@
 # M3 下一阶段执行路线图 v1
 
-状态：`prototype complete / private human acceptance pending / formal blocked`
+状态：`prototype complete / user-deferred until M2 formal closure / formal blocked`
 
 确认日期：2026-07-10
 
 ## 1. 当前结论
 
-M3 已完成本地 fixture/synthetic prototype 主链，具备从选题物料到候选评估、流程状态和回测锚点的非正式工程能力。当前下一步不是直接建设正式写接口或发布能力，而是：
+M3 已完成本地 fixture/synthetic prototype 主链，具备从选题物料到候选评估、流程状态和回测锚点的非正式工程能力。2026-07-13 用户明确暂缓 3 至 5 份代表性选题材料、private human acceptance 和 M3 formal execution，直到 M2 两类复核桶及正式链路彻底收口。后续恢复时再按以下顺序执行：
 
 1. 完成代表性 private 材料的人工补全；
 2. 完成 local human acceptance；

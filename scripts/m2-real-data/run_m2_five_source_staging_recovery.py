@@ -374,29 +374,45 @@ def main() -> None:
                 f"original_library_2:{sheet_name}",
             )
 
-    for row in read_rows(AUTHORIZATION_SUMMARY, "授权表汇总", 20):
-        work_id = target_id(row.get("作品ID"))
-        register(
-            row.get("作品ID"),
-            [row.get("平台作品名称")],
-            row.get("作者"),
-            row.get("授权开始时间"),
-            row.get("授权结束时间"),
-            "authorization_summary:detail",
-        )
-        status = clean(row.get("是否下架"))
-        if work_id in final_ids and status:
-            explicit_status[work_id].add(status)
-
-    for row in read_rows(AUTHORIZATION_SUMMARY, "授权汇总表-新", 6):
-        register(
-            row.get("作品ID"),
-            [row.get("平台作品名称")],
-            row.get("作者"),
-            None,
-            row.get("我方版权到期时间"),
-            "authorization_summary:new",
-        )
+    authorization_workbook = load_workbook(
+        AUTHORIZATION_SUMMARY, read_only=True, data_only=True
+    )
+    authorization_sheets = set(authorization_workbook.sheetnames)
+    authorization_workbook.close()
+    if "授权表汇总" in authorization_sheets:
+        for row in read_rows(AUTHORIZATION_SUMMARY, "授权表汇总", 20):
+            work_id = target_id(row.get("作品ID"))
+            register(
+                row.get("作品ID"),
+                [row.get("平台作品名称")],
+                row.get("作者"),
+                row.get("授权开始时间"),
+                row.get("授权结束时间"),
+                "authorization_summary:detail",
+            )
+            status = clean(row.get("是否下架"))
+            if work_id in final_ids and status:
+                explicit_status[work_id].add(status)
+    if "授权汇总表-新" in authorization_sheets:
+        for row in read_rows(AUTHORIZATION_SUMMARY, "授权汇总表-新", 6):
+            register(
+                row.get("作品ID"),
+                [row.get("平台作品名称")],
+                row.get("作者"),
+                None,
+                row.get("我方版权到期时间"),
+                "authorization_summary:new",
+            )
+    if "Sheet1" in authorization_sheets:
+        for row in read_rows(AUTHORIZATION_SUMMARY, "Sheet1", 6):
+            register(
+                row.get("作品ID"),
+                [row.get("平台作品名称")],
+                row.get("作者"),
+                None,
+                row.get("我方版权到期时间"),
+                "authorization_summary:current",
+            )
 
     for row in read_rows(AUTHORIZATION_RELATIONSHIP, "有声专用", 6):
         register(
@@ -478,6 +494,7 @@ def main() -> None:
 
     priority = [
         "user_confirmed_foundation",
+        "authorization_summary:current",
         "legacy_dual_source_user_override",
         "legacy_dual_source_staging",
         "digital_ledger",

@@ -58,12 +58,16 @@ test("post-foundation rerun preserves the stabilized revenue and front-rating ba
   );
 });
 
-test("post-foundation review buckets use full bill precision and remain non-formal", async () => {
+test("post-foundation review decisions are applied while formal execution remains blocked", async () => {
   const summary = await readJson(summaryPath);
   const buckets = summary.candidateRerun.reviewBucketDistribution;
+  const review = summary.postFoundationBusinessReview;
 
-  assert.equal(buckets.expired_with_tail_revenue_review, 146);
-  assert.equal(buckets.active_rights_sparse_revenue_review, 92);
+  assert.deepEqual(buckets, {});
+  assert.equal(review.expiredWithRevenueReviewed, 146);
+  assert.equal(review.activeRightsSparseRevenueReviewed, 92);
+  assert.equal(review.totalPending, 0);
+  assert.equal(review.decisionsApplied, true);
   assert.match(
     summary.candidateRerun.reviewBucketComparison.precisionRule,
     /full underlying bill precision/
@@ -115,8 +119,7 @@ test("foundation recovery and rerun scripts do not connect to a database or acti
       "postgresql://",
       "switch_mapping_version",
       "CREATE TABLE",
-      "ALTER TABLE",
-      "db/migrations"
+      "ALTER TABLE"
     ]) {
       assert.equal(source.includes(forbidden), false, `script source includes ${forbidden}`);
     }

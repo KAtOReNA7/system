@@ -1,0 +1,70 @@
+{
+  "schema": "m2.post_foundation_review_decision_apply_summary.v1",
+  "generatedAt": "2026-07-13T08:58:11.475365+00:00",
+  "mode": "apply",
+  "input": {
+    "workbookVersion": "post_foundation_user_confirmation_cn_v1",
+    "expiredWithRevenue": 146,
+    "activeRightsSparseRevenue": 92,
+    "total": 238
+  },
+  "result": {
+    "approved": 238,
+    "pending": 0,
+    "auditEventCount": 238,
+    "advisoryAssignmentCount": 139,
+    "fieldUpdates": {
+      "版权到期": 69,
+      "作品状态": 120,
+      "音频版权状态": 21
+    },
+    "workStatusDistribution": {
+      "已下架": 755,
+      "已上架": 2298
+    },
+    "audioRightsStatusDistribution": {
+      "无限期": 473,
+      "版权有效": 2250,
+      "版权已到期": 330
+    },
+    "copyrightTermTypeDistribution": {
+      "perpetual": 473,
+      "exact_date": 2503,
+      "expired_unknown_date": 16,
+      "relative_term": 59,
+      "year_only": 2
+    },
+    "normalizedOutcomeDistribution": {
+      "post_expiry_entitlement_revenue_confirmed_with_audit_advisory": 103,
+      "system_candidate_accepted": 11,
+      "renewal_in_progress_current_expiry_retained": 18,
+      "perpetual_rights_applied": 3,
+      "active_expiry_resolved_from_current_sources": 5,
+      "renewal_date_applied": 6,
+      "on_shelf_confirmed": 85,
+      "off_shelf_confirmed": 7
+    },
+    "sourceResolutionDistribution": {
+      "single_future_value_across_available_sources": 57,
+      "two_source_exact_agreement": 14,
+      "current_authorization_summary": 3,
+      "single_exact_value_across_available_sources": 2,
+      "current_authorization_summary_plus_user_confirmation": 16
+    },
+    "formalInputBlockerDistribution": {},
+    "formalInputContractVerified": true
+  },
+  "privacy": {
+    "containsRealTitles": false,
+    "containsAuthors": false,
+    "containsChannels": false,
+    "containsPerWorkRevenue": false,
+    "privateArtifactsCommitted": false
+  },
+  "boundary": {
+    "formalMasterDataWritten": false,
+    "mappingActivated": false,
+    "formalEvaluationExecuted": false,
+    "m3Entered": false
+  }
+}

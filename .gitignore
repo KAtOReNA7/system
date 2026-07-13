@@ -50,6 +50,7 @@ pgdata/
 # Private business data
 data/
 **/data/
+.analysis-python*/
 *m1-master-data-private*/
 **/m1-master-data-private/**
 **/*真实账单*

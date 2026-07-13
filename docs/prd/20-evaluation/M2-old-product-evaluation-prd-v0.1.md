@@ -6,7 +6,7 @@ This document defines the M2 old-product evaluation scope for design and fixture
 
 ## 1. Positioning
 
-M2 turns the M1 data foundation into old-product evaluation outputs: historical income analysis, lifecycle identification, remaining copyright-period forecast, rating, risks, operating suggestions, and backtesting evidence.
+M2 turns the M1 data foundation into old-product evaluation outputs: historical income analysis, lifecycle identification, remaining copyright-period forecast, rating, risks, fact-based review prompts, and backtesting evidence. M2 does not output automatic operating suggestions.
 
 M2-A is a design and contract phase. It may use fixture or synthetic data to validate object boundaries, API shapes, page information architecture, and test expectations. It must not claim formal business accuracy.
 
@@ -18,7 +18,7 @@ An old product is a standard work that:
 - has entered the old-product library as a standard work;
 - is evaluated at original-work level, not separately by raw financial ID;
 - may have both `audio_copyright` and `audio_product` business forms;
-- produces one combined work-level forecast, rating, risk set, and suggestion set.
+- produces one combined work-level forecast, rating, risk set, and review-prompt set.
 
 ## 3. Included Scope
 
@@ -32,9 +32,8 @@ M2 includes:
 - remaining copyright-period forecast;
 - three-scenario forecast: base, optimistic, pessimistic;
 - rating result: `S+`, `S`, `A`, `B`, `C`, `D`, `E`;
-- resource investment level: high, medium, low;
 - risk identification;
-- up to three operating suggestions;
+- fact-based review prompts without automatic operating actions;
 - historical backtesting;
 - algorithm and rule version traceability;
 - input version snapshots;
@@ -91,9 +90,8 @@ Each successful old-product evaluation result should output:
 - base, optimistic, and pessimistic forecast totals;
 - annual forecast breakdown;
 - rating and rating rationale;
-- resource investment level;
 - risks;
-- operating suggestions;
+- fact-based review prompts and unresolved evidence requirements;
 - backtest references where available;
 - created time and actor/system source;
 - invalidation state.
@@ -160,22 +158,15 @@ Initial risk categories:
 
 Each risk should include severity, affected field, rationale, and suggested mitigation.
 
-## 11. Operating Suggestions
+## 11. Review Prompts and No-Operating-Suggestion Boundary
 
-Each result may have one primary suggestion and up to two secondary suggestions.
+`REQ-M2-OUTPUT-001` is FROZEN as of 2026-07-13:
 
-Allowed suggestion families:
-
-- promote or feature;
-- maintain current operation;
-- reduce operation investment;
-- repackage or bundle;
-- pricing or channel adjustment;
-- merge-version cleanup;
-- copyright renewal review;
-- observe only.
-
-Suggestions must be derived from structured signals and must not invent business facts not present in the input snapshot.
+- M2 must not output automatic operating suggestions, resource-investment levels, or recommended actions such as promotion, pricing, renewal, downlisting, repackaging, re-recording, bundling, or channel adjustment.
+- M2 may output fact-based review prompts that identify a conflict, missing evidence, risk, or required human confirmation.
+- A review prompt must describe the observed evidence and the item requiring confirmation. It must not select an operating action for the user.
+- Current formal results, pages, exports, task payloads, and release artifacts must omit operating-suggestion fields.
+- Legacy fixture/prototype suggestion fields may remain only for historical regression coverage. They are non-formal and must not be promoted into current or formal outputs.
 
 ## 12. Backtesting
 
@@ -230,7 +221,7 @@ M2 export should match page filters and include:
 - selected detail fields;
 - forecast totals and yearly breakdown;
 - rating and risk fields;
-- suggestion summary;
+- review-prompt and unresolved-risk summary;
 - backtest metrics where requested.
 
 M2-A only defines export consistency tests. It does not implement export.
@@ -248,6 +239,7 @@ M2 does not:
 - run algorithm repair loops;
 - hide data gaps;
 - treat fixtures as formal business evidence.
+- output automatic operating suggestions or resource-investment actions.
 
 ## 16. Phase Split
 
@@ -262,9 +254,9 @@ M2 does not:
 
 M2-A acceptance:
 
-- PRD covers scope, non-goals, phase split, inputs, outputs, lifecycle, forecast, rating, risks, suggestions, backtest, versioning, export, and acceptance.
+- PRD covers scope, non-goals, phase split, inputs, outputs, lifecycle, forecast, rating, risks, review prompts, the no-operating-suggestion boundary, backtest, versioning, export, and acceptance.
 - API contract covers overview, list, detail, history, gaps, backtest, algorithm version, and controlled task APIs.
-- Data model design covers evaluation batches, results, summaries, lifecycle, forecasts, ratings, risks, suggestions, backtests, versions, snapshots, invalidation, and M1 dependencies.
+- Data model design covers evaluation batches, results, summaries, lifecycle, forecasts, ratings, risks, review prompts, backtests, versions, snapshots, invalidation, and M1 dependencies. Legacy suggestion persistence is not part of the current formal output contract.
 - Page plan covers overview, list, detail, gaps, backtest/version pages, states, fixture labels, incomplete-month notice, and formal-data blocking.
 - Test plan covers fixture, synthetic, readiness, lifecycle, rating, forecast, backtest, API, page, export, and prohibited-action tests.
 

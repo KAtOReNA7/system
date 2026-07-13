@@ -1,0 +1,42 @@
+{
+  "schema": "m2.formal_execution_authorization_checkpoint.v1",
+  "confirmedAt": "2026-07-13",
+  "authorization": {
+    "formalMasterDataWrite": "granted_pending_prerequisites",
+    "formalBasicInfoVersionAndInputSnapshot": "granted_pending_prerequisites",
+    "mappingActivation": "granted_pending_prerequisites",
+    "formalEvaluation": "granted_pending_prerequisites",
+    "formalTaskExportReleaseAudit": "granted_pending_prerequisites",
+    "m3FormalExecution": "not_granted_deferred"
+  },
+  "requiredExecutionOrder": [
+    "complete_post_foundation_146_92_user_confirmation",
+    "verify_private_per_work_input_contract",
+    "create_formal_basic_info_version_and_immutable_input_snapshot",
+    "run_formal_dry_run_strict_reconciliation_and_prepare_rollback",
+    "write_formal_master_data",
+    "activate_validated_mapping_version",
+    "execute_formal_evaluation",
+    "execute_formal_task_export_release_audit"
+  ],
+  "productDecision": {
+    "automaticOperatingSuggestionsEnabled": false,
+    "resourceInvestmentActionsEnabled": false,
+    "factBasedReviewPromptsAllowed": true,
+    "authoritativeRequirement": "REQ-M2-OUTPUT-001"
+  },
+  "currentExecutionState": {
+    "reviewConfirmationComplete": false,
+    "formalMasterDataWritten": false,
+    "formalInputSnapshotCreated": false,
+    "mappingActivated": false,
+    "formalEvaluationExecuted": false,
+    "formalReleaseExecuted": false,
+    "m3Entered": false
+  },
+  "environmentBoundary": {
+    "authorizedLocalEnvironment": true,
+    "remoteProductionSharedOrStagingLikeDatabaseAuthorized": false,
+    "privateDataCommitAuthorized": false
+  }
+}

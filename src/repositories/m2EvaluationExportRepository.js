@@ -1,8 +1,8 @@
 import { withDatabaseClient } from "../db/query.js";
 import { evaluateM2FormalEvaluationState } from "../domain/oldProductEvaluation/formalEvaluationStateMachine.js";
 
-const CANDIDATE_VERSION = "m2-realdata-dev-candidate-b-v0.1";
 const BLOCKING_STATUSES = new Set(["pending", "data_fix_required", "rejected_for_formal"]);
+const VISIBLE_PACKAGE_STATUSES = ["prepared", "pending_approval", "approved", "released"];
 
 export async function listM2FormalEvaluationExports(config, { pagination }) {
   return withDatabaseClient(
@@ -10,7 +10,11 @@ export async function listM2FormalEvaluationExports(config, { pagination }) {
     "background",
     "m2-formal-evaluation-exports",
     async (client) => {
-      const gate = await loadReleaseGate(client);
+      const exportPackage = await loadLatestExportPackage(client);
+      const releaseGate = await loadReleaseGate(client, exportPackage);
+      if (!exportPackage) {
+        return emptyExportList(pagination, releaseGate);
+      }
       const result = await client.query(
         `SELECT
            r.id,
@@ -22,26 +26,27 @@ export async function listM2FormalEvaluationExports(config, { pagination }) {
            r.rating,
            r.lifecycle,
            r.risk_level AS "riskLevel",
-           r.primary_suggestion AS "primarySuggestion",
            r.formal_evaluation_allowed AS "formalEvaluationAllowed",
            r.not_for_formal_decision AS "notForFormalDecision",
            r.generated_at AS "generatedAt"
-         FROM m1.m2_evaluation_results r
-         WHERE r.candidate_version = $1
+         FROM m1.m2_formal_export_items item
+         JOIN m1.m2_evaluation_results r ON r.id = item.evaluation_result_id
+         WHERE item.export_package_id = $1
            AND r.result_status = 'current'
          ORDER BY r.rating ASC NULLS LAST, r.standard_work_id ASC
          LIMIT $2 OFFSET $3`,
-        [CANDIDATE_VERSION, pagination.pageSize, (pagination.page - 1) * pagination.pageSize]
+        [exportPackage.id, pagination.pageSize, (pagination.page - 1) * pagination.pageSize]
       );
       const total = await scalar(
         client,
-        "SELECT count(*)::int FROM m1.m2_evaluation_results WHERE candidate_version = $1 AND result_status = 'current'",
-        [CANDIDATE_VERSION]
+        "SELECT count(*)::int FROM m1.m2_formal_export_items WHERE export_package_id = $1",
+        [exportPackage.id]
       );
       return {
         mode: "db_backed",
-        candidateVersion: CANDIDATE_VERSION,
-        releaseGate: gate,
+        candidateVersion: exportPackage.candidateVersion,
+        exportPackage: sanitizeExportPackage(exportPackage),
+        releaseGate,
         items: result.rows.map(toExportSummary),
         pagination: {
           page: pagination.page,
@@ -49,7 +54,8 @@ export async function listM2FormalEvaluationExports(config, { pagination }) {
           total
         },
         rawRowsWritten: false,
-        secretsWritten: false
+        secretsWritten: false,
+        operatingSuggestionsIncluded: false
       };
     }
   );
@@ -61,7 +67,11 @@ export async function getM2FormalEvaluationExportById(config, standardWorkId) {
     "background",
     "m2-formal-evaluation-export-detail",
     async (client) => {
-      const gate = await loadReleaseGate(client);
+      const exportPackage = await loadLatestExportPackage(client);
+      if (!exportPackage) {
+        return null;
+      }
+      const releaseGate = await loadReleaseGate(client, exportPackage);
       const result = await client.query(
         `SELECT
            r.id,
@@ -78,7 +88,6 @@ export async function getM2FormalEvaluationExportById(config, standardWorkId) {
            r.forecast_optimistic_total AS "forecastOptimisticTotal",
            r.forecast_pessimistic_total AS "forecastPessimisticTotal",
            r.risk_level AS "riskLevel",
-           r.primary_suggestion AS "primarySuggestion",
            r.formal_evaluation_allowed AS "formalEvaluationAllowed",
            r.not_for_formal_decision AS "notForFormalDecision",
            r.generated_at AS "generatedAt",
@@ -92,14 +101,6 @@ export async function getM2FormalEvaluationExportById(config, standardWorkId) {
              )) FILTER (WHERE risk.id IS NOT NULL),
              '[]'::jsonb
            ) AS risks,
-           COALESCE(
-             jsonb_agg(DISTINCT jsonb_build_object(
-               'suggestionCode', suggestion.suggestion_code,
-               'priority', suggestion.priority,
-               'requiresManualConfirmation', suggestion.requires_manual_confirmation
-             )) FILTER (WHERE suggestion.id IS NOT NULL),
-             '[]'::jsonb
-           ) AS suggestions,
            jsonb_build_object(
              'cutoffMonth', snapshot.cutoff_month,
              'latestCompleteMonth', snapshot.latest_complete_month,
@@ -109,15 +110,15 @@ export async function getM2FormalEvaluationExportById(config, standardWorkId) {
              'zeroRevenueMonthCount', snapshot.zero_revenue_month_count,
              'incompleteMonthsExcluded', snapshot.incomplete_months_excluded
            ) AS snapshot
-         FROM m1.m2_evaluation_results r
+         FROM m1.m2_formal_export_items item
+         JOIN m1.m2_evaluation_results r ON r.id = item.evaluation_result_id
          LEFT JOIN m1.m2_evaluation_risks risk ON risk.evaluation_result_id = r.id
-         LEFT JOIN m1.m2_evaluation_suggestions suggestion ON suggestion.evaluation_result_id = r.id
          LEFT JOIN m1.m2_evaluation_input_snapshots snapshot ON snapshot.evaluation_result_id = r.id
-         WHERE r.candidate_version = $1
+         WHERE item.export_package_id = $1
            AND r.result_status = 'current'
-           AND r.standard_work_id = $2
+           AND item.standard_work_id = $2
          GROUP BY r.id, snapshot.id`,
-        [CANDIDATE_VERSION, standardWorkId]
+        [exportPackage.id, standardWorkId]
       );
       const item = result.rows[0];
       if (!item) {
@@ -125,18 +126,66 @@ export async function getM2FormalEvaluationExportById(config, standardWorkId) {
       }
       return {
         mode: "db_backed",
-        candidateVersion: CANDIDATE_VERSION,
-        releaseGate: gate,
+        candidateVersion: exportPackage.candidateVersion,
+        exportPackage: sanitizeExportPackage(exportPackage),
+        releaseGate,
         item: toExportDetail(item),
         rawRowsWritten: false,
-        secretsWritten: false
+        secretsWritten: false,
+        operatingSuggestionsIncluded: false
       };
     }
   );
 }
 
-async function loadReleaseGate(client) {
-  const evidence = await loadStateEvidence(client);
+async function loadLatestExportPackage(client) {
+  const result = await client.query(
+    `SELECT
+       id,
+       export_key AS "exportKey",
+       candidate_version AS "candidateVersion",
+       algorithm_version AS "algorithmVersion",
+       mapping_version_id AS "mappingVersionId",
+       basic_info_version_id AS "basicInfoVersionId",
+       cutoff_month AS "cutoffMonth",
+       status,
+       item_count AS "itemCount",
+       contains_operating_suggestions AS "containsOperatingSuggestions",
+       generated_at AS "generatedAt",
+       approved_at AS "approvedAt",
+       released_at AS "releasedAt"
+     FROM m1.m2_formal_export_packages
+     WHERE status = ANY($1::text[])
+     ORDER BY id DESC
+     LIMIT 1`,
+    [VISIBLE_PACKAGE_STATUSES]
+  );
+  return result.rows[0] ?? null;
+}
+
+async function loadReleaseGate(client, exportPackage) {
+  if (!exportPackage) {
+    return {
+      status: "blocked",
+      stateMachine: evaluateM2FormalEvaluationState({}),
+      checks: {
+        packagePrepared: false,
+        packageReleased: false,
+        blockerZero: false,
+        formalFlags: false,
+        mappingValidated: false,
+        mappingActivated: false,
+        algorithmFormal: false,
+        noOperatingSuggestions: true
+      },
+      blockingReasons: ["db_backed_export_package_missing"],
+      formalExportCreated: false,
+      mappingActivationPrepared: false,
+      mappingVersionActivated: false,
+      switchMappingVersionCalled: false
+    };
+  }
+  const evidence = await loadStateEvidence(client, exportPackage);
   const stateMachine = evaluateM2FormalEvaluationState(evidence);
   const blockingReasons = [];
   if (evidence.reviewBlockingRemaining !== 0) {
@@ -148,84 +197,150 @@ async function loadReleaseGate(client) {
   if (evidence.mappingVersionValidated !== true) {
     blockingReasons.push("mapping_version_not_validated");
   }
+  if (evidence.mappingVersionActive !== true) {
+    blockingReasons.push("mapping_version_not_active");
+  }
+  if (evidence.algorithmVersionFormal !== true) {
+    blockingReasons.push("algorithm_not_formal");
+  }
+  if (exportPackage.status !== "released") {
+    blockingReasons.push("export_not_released");
+  }
+  if (exportPackage.containsOperatingSuggestions === true) {
+    blockingReasons.push("operating_suggestions_forbidden");
+  }
   return {
-    status: blockingReasons.length === 0 ? "release_ready" : "blocked",
+    status: blockingReasons.length === 0 ? "released" : "blocked",
+    packageStatus: exportPackage.status,
     stateMachine,
     checks: {
+      packagePrepared: ["prepared", "pending_approval", "approved", "released"].includes(
+        exportPackage.status
+      ),
+      packageReleased: exportPackage.status === "released",
       blockerZero: evidence.reviewBlockingRemaining === 0,
       formalFlags: evidence.formalEvaluationAllowed === true,
-      mappingValidated: evidence.mappingVersionValidated === true
+      mappingValidated: evidence.mappingVersionValidated === true,
+      mappingActivated: evidence.mappingVersionActive === true,
+      algorithmFormal: evidence.algorithmVersionFormal === true,
+      noOperatingSuggestions: exportPackage.containsOperatingSuggestions !== true
     },
     blockingReasons,
-    formalExportCreated: blockingReasons.length === 0,
+    formalExportCreated: true,
     mappingActivationPrepared: evidence.mappingActivationPrepared,
-    mappingVersionActivated: false,
+    mappingVersionActivated: evidence.mappingVersionActive,
     switchMappingVersionCalled: false
   };
 }
 
-async function loadStateEvidence(client) {
+async function loadStateEvidence(client, exportPackage) {
   const total = await scalar(
     client,
-    "SELECT count(*)::int FROM m1.m2_evaluation_results WHERE candidate_version = $1 AND result_status = 'current'",
-    [CANDIDATE_VERSION]
+    `SELECT count(*)::int
+       FROM m1.m2_formal_export_items item
+       JOIN m1.m2_evaluation_results r ON r.id = item.evaluation_result_id
+      WHERE item.export_package_id = $1
+        AND r.result_status = 'current'`,
+    [exportPackage.id]
   );
   const formalAllowed = await scalar(
     client,
-    "SELECT count(*)::int FROM m1.m2_evaluation_results WHERE candidate_version = $1 AND result_status = 'current' AND formal_evaluation_allowed = true AND not_for_formal_decision = false",
-    [CANDIDATE_VERSION]
+    `SELECT count(*)::int
+       FROM m1.m2_formal_export_items item
+       JOIN m1.m2_evaluation_results r ON r.id = item.evaluation_result_id
+      WHERE item.export_package_id = $1
+        AND r.result_status = 'current'
+        AND r.formal_evaluation_allowed = true
+        AND r.not_for_formal_decision = false`,
+    [exportPackage.id]
   );
   const pendingRows = await client.query(
-    `SELECT i.review_status AS "reviewStatus", count(*)::int AS count
-       FROM m1.m2_evaluation_review_items i
-       JOIN m1.m2_evaluation_results r ON r.id = i.evaluation_result_id
-      WHERE r.candidate_version = $1
-        AND i.review_type = 'blocking_manual_review'
-      GROUP BY i.review_status`,
-    [CANDIDATE_VERSION]
+    `SELECT review.review_status AS "reviewStatus", count(*)::int AS count
+       FROM m1.m2_formal_export_items item
+       JOIN m1.m2_evaluation_review_items review
+         ON review.evaluation_result_id = item.evaluation_result_id
+      WHERE item.export_package_id = $1
+        AND review.review_type = 'blocking_manual_review'
+      GROUP BY review.review_status`,
+    [exportPackage.id]
   );
   const reviewBlockingRemaining = pendingRows.rows.reduce(
     (sum, row) => sum + (BLOCKING_STATUSES.has(row.reviewStatus) ? Number(row.count) : 0),
     0
   );
   const mapping = await client.query(
-    `SELECT bool_or(mv.status = 'active') AS "active",
-            bool_or(mv.status = 'validated') AS "validated"
-       FROM m1.m2_evaluation_results r
-       JOIN m1.mapping_version mv ON mv.id = r.mapping_version_id
-      WHERE r.candidate_version = $1`,
-    [CANDIDATE_VERSION]
+    `SELECT status,
+            status IN ('validated', 'active') AS "validated",
+            status = 'active' AS "active"
+       FROM m1.mapping_version
+      WHERE id = $1`,
+    [exportPackage.mappingVersionId]
   );
   const algorithm = await client.query(
-    "SELECT status, is_formal AS \"isFormal\" FROM m1.m2_evaluation_algorithm_versions WHERE version_key = $1",
-    [CANDIDATE_VERSION]
+    `SELECT status, is_formal AS "isFormal"
+       FROM m1.m2_evaluation_algorithm_versions
+      WHERE version_key = $1`,
+    [exportPackage.algorithmVersion]
   );
+  const currentMapping = mapping.rows[0] ?? {};
   const currentAlgorithm = algorithm.rows[0] ?? {};
+  const packageComplete = total > 0 && total === Number(exportPackage.itemCount);
   return {
     prdScoreBefore: 35,
-    candidateVersion: CANDIDATE_VERSION,
-    expectedCandidateVersion: CANDIDATE_VERSION,
+    candidateVersion: exportPackage.candidateVersion,
+    expectedCandidateVersion: exportPackage.candidateVersion,
     candidateGenerated: total > 0,
     dbBackedImportComplete: total > 0,
-    importReconciliationPassed: true,
+    importReconciliationPassed: packageComplete,
     lifecycleRatingRuntimeAvailable: true,
     forecastRuntimeAvailable: true,
-    forecastValidationPassed: reviewBlockingRemaining === 0,
+    forecastValidationPassed: packageComplete,
     reviewBlockingRemaining,
     reviewPendingBlocking: reviewBlockingRemaining,
-    totalBlockingReviewItems: Number(pendingRows.rows.reduce((sum, row) => sum + Number(row.count), 0)),
+    totalBlockingReviewItems: Number(
+      pendingRows.rows.reduce((sum, row) => sum + Number(row.count), 0)
+    ),
     reviewClosureBusinessComplete: reviewBlockingRemaining === 0,
     finalDecisionsApplied: reviewBlockingRemaining === 0,
-    dbBackedExportAvailable: true,
+    dbBackedExportAvailable: packageComplete,
     formalEvaluationAllowed: total > 0 && formalAllowed === total,
-    mappingActivationPrepared: mapping.rows[0]?.validated === true,
-    mappingActivationExecuted: mapping.rows[0]?.active === true,
+    mappingActivationPrepared: currentMapping.validated === true,
+    mappingActivationExecuted: currentMapping.active === true,
     switchMappingVersionCalled: false,
-    mappingVersionActive: mapping.rows[0]?.active === true,
-    mappingVersionValidated: mapping.rows[0]?.validated === true,
+    mappingVersionActive: currentMapping.active === true,
+    mappingVersionValidated: currentMapping.validated === true,
     algorithmVersionFrozen: currentAlgorithm.status === "frozen",
     algorithmVersionFormal: currentAlgorithm.isFormal === true,
-    notFinalReleaseApproved: !(total > 0 && formalAllowed === total && currentAlgorithm.isFormal === true)
+    notFinalReleaseApproved: !["approved", "released"].includes(exportPackage.status)
+  };
+}
+
+function emptyExportList(pagination, releaseGate) {
+  return {
+    mode: "db_backed",
+    candidateVersion: null,
+    exportPackage: null,
+    releaseGate,
+    items: [],
+    pagination: { page: pagination.page, pageSize: pagination.pageSize, total: 0 },
+    rawRowsWritten: false,
+    secretsWritten: false,
+    operatingSuggestionsIncluded: false
+  };
+}
+
+function sanitizeExportPackage(exportPackage) {
+  return {
+    exportKey: exportPackage.exportKey,
+    candidateVersion: exportPackage.candidateVersion,
+    algorithmVersion: exportPackage.algorithmVersion,
+    cutoffMonth: toIsoDate(exportPackage.cutoffMonth),
+    status: exportPackage.status,
+    itemCount: Number(exportPackage.itemCount),
+    generatedAt: exportPackage.generatedAt,
+    approvedAt: exportPackage.approvedAt,
+    releasedAt: exportPackage.releasedAt,
+    operatingSuggestionsIncluded: false
   };
 }
 
@@ -240,7 +355,6 @@ function toExportSummary(row) {
     rating: row.rating,
     lifecycle: row.lifecycle,
     riskLevel: row.riskLevel,
-    primarySuggestion: row.primarySuggestion,
     formalEvaluationAllowed: row.formalEvaluationAllowed,
     notForFormalDecision: row.notForFormalDecision,
     generatedAt: row.generatedAt
@@ -252,11 +366,12 @@ function toExportDetail(row) {
     ...toExportSummary(row),
     ratingScore: Number(row.ratingScore ?? 0),
     lifecycleConfidence: row.lifecycleConfidence,
-    forecastBaseTotal: Number(row.forecastBaseTotal ?? 0),
-    forecastOptimisticTotal: Number(row.forecastOptimisticTotal ?? 0),
-    forecastPessimisticTotal: Number(row.forecastPessimisticTotal ?? 0),
+    forecastBaseTotal: row.forecastBaseTotal === null ? null : Number(row.forecastBaseTotal),
+    forecastOptimisticTotal:
+      row.forecastOptimisticTotal === null ? null : Number(row.forecastOptimisticTotal),
+    forecastPessimisticTotal:
+      row.forecastPessimisticTotal === null ? null : Number(row.forecastPessimisticTotal),
     risks: row.risks ?? [],
-    suggestions: row.suggestions ?? [],
     snapshot: sanitizeSnapshot(row.snapshot)
   };
 }

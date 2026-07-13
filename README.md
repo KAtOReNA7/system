@@ -1,7 +1,7 @@
 # 有声书产品收入评估与年度目标系统 PRD v0.2
 
 **状态：M1/M2 本地真实数据开发 checkpoint**
-**确认日期：2026-07-10**
+**确认日期：2026-07-13**
 **面向读者：运营、Codex、开发与测试**
 
 ## 本版本目的
@@ -23,7 +23,7 @@ v0.2 将 v0.1 的业务汇总稿改造成更适合 Codex 长期维护的文档�
 
 - M1 dual-source 主数据补全链路已形成文件级 limited local staging apply 证据；该 staging 不写正式主数据，不等同于正式主数据验收。
 - M2 candidate-b DB-backed import/reconciliation、review workflow 和本地 business closure 证据已完成；这些结果是授权本地开发证据，不是最终生产发布审批结果。
-- candidate-b 系列预测模型已不再作为 M2 算法基线；当前预测路线为 disentangled forecastability v1.1 conditional，仍只能作为有限 M2 业务复核候选，不允许直接进入正式发布或 M3。
+- candidate-b 系列预测模型已不再作为 M2 算法基线。用户已于 2026-07-13 明确拒绝将 disentangled forecastability v1.1 conditional 作为最终上线算法；该版本只保留为历史校准证据，不得 release，也不得作为 M3 输入。
 - M2 评级/建议已推进到 rating-standard-v3：包含收入模式识别、货架/版权状态推断、单一前台评级、风险/复核提示，并移除自动运营建议主输出。private 任务包只保存在 Git 忽略区域，不会进入版本控制。
 - 2026-07-08 本地五源重清洗已完成：账单、数字版权台账、原创全库、原创全库2、授权汇总台账、授权关系仪表板合并后，作者、版权开始、版权到期三个核心字段已形成本地文件级 staging 候选。该候选覆盖 3053 个账单作品、9159 个核心字段，其中 8729 个字段为高置信直接通过，430 个字段为用户确认填写；仍未写正式主数据，private 输出不进入版本控制。
 - 2026-07-09 状态类字段已完成本地文件级 staging：作品状态和音频版权状态覆盖 3053 个账单作品、6106 个状态字段；作品状态分布为已上架 2410、已下架 643；音频版权状态分布为版权有效 2238、无限期 487、版权已到期 328。该结果仍未写正式主数据。
@@ -36,9 +36,13 @@ v0.2 将 v0.1 的业务汇总稿改造成更适合 Codex 长期维护的文档�
 - 用户已确认大表中的 2 个作者显示修改属于误操作；系统已恢复为此前已收口作者值，未进入固定结果，也不会进入提交。当前没有作者人工待办。
 - 2026-07-10 已完成最终基础表接入后的 M2 重算：旧 3054 部口径中的 1 个历史分册身份已在内存中归并到已确认标准作品，192872 行账单和收入金额全部保留，账单/基础表/评估范围均统一为 3053 部。
 - 重算后收入模式为纯实销 2578、纯买断 287、买断+实销 183、unknown 5；前台评级为 S+ 38、S 117、A 84、B 358、C 152、D 356、E 1948。相对旧 checkpoint 只减少被归并的 1 条纯实销/E 旧身份，没有模型规则回归。
-- 按 PRD 的 Excel 底层完整金额精度重算后，到期但仍有收入复核桶为 146，版权有效但收入稀疏复核桶为 92。
-- 当前业务基础数据决策缺口为 0。跨电脑恢复新增了可提交的恢复脚本和内容契约，但本次逐作品 private 恢复候选仍未通过契约：缺 12 个版权开始、65 个版权到期/音频版权状态、2860 个可验证作品状态，且原来源确认分布不能从分类标签大表反推。该问题阻断 formal input snapshot，但不是重新进行全量业务补表的理由。
-- 当前 M2 仍不是 formal completion；正式发布、映射激活、对外 task/export/write API、生产数据连接和 M3 formal execution 均需要用户后续单独授权。
+- 按 PRD 的 Excel 底层完整金额精度重算后，到期但仍有收入复核桶为 146，版权有效但收入稀疏复核桶为 92。用户已完成全部 238 条确认，系统已校验并应用，形成 238 条审计事件、139 条事实型复核提示，待确认数为 0。
+- 逐作品 private 正式基础信息输入已覆盖 3053 部作品并通过 schema、范围、必填字段、状态、复核决定、日期顺序和禁止运营建议字段的内容契约。当前作品状态为已上架 2298、已下架 755；音频版权状态为版权有效 2250、无限期 473、版权已到期 330；跨来源期限/当前权利状态冲突和到期早于开始均为 0。
+- 2026-07-13 已在隔离本地 PostgreSQL 16 完成获授权的 M2 正式执行：Flyway schema `0071.020`、3053 部正式基础信息版本、192872 条收入事实及 projection、active mapping、3053 条 DB-backed evaluation/input snapshot、task/audit 和 3053 条 prepared export item 均已写入并严格对账通过。
+- prepared export 当前仍未 released：预测候选 `m2-realdata-dev-disentangled-forecast-v1.1-conditional` 已被用户拒绝，算法继续保持 `is_formal=false`，评估结果保持 `not_for_formal_decision=true`，最终发布批准为 false。禁止把该 package 改为 approved/released。
+- M2 正式口径已冻结为不输出自动运营建议或资源投入动作；只保留风险和事实型复核提示。正式导出不得包含运营建议字段。
+- 当前 3053 部基础信息是用户能够提供的最终、最准确基础数据版本，后续最终上线预测算法必须以该版本和对应 192872 条收入事实为输入，不得退回旧补表或旧 3054 口径。
+- 当前 M2 的隔离本地正式执行链已走到 prepared export，但 v1.1 已拒绝，最终 formal release 尚未完成。下一开发方向是基于已冻结基础数据校准并验证最终上线预测算法；本轮不直接开始开发。M3 formal execution 未获授权，3 至 5 份代表性选题材料继续暂缓。
 
 ## M2 后续补全信息提醒
 
@@ -46,18 +50,18 @@ v0.2 将 v0.1 的业务汇总稿改造成更适合 Codex 长期维护的文档�
 
 | 数据项 | 当前缺口/状态 | 对 M2/M3 的影响 |
 |---|---:|---|
-| 作者 | 本地文件级 staging 候选已闭环，当前缺口 0；正式主数据尚未写入 | 可支撑后续本地 M2 readiness 重算，但不等于正式主数据验收 |
-| 版权开始 | 本地文件级 staging 已按用户确认口径收口，当前人工缺口 0；正式主数据尚未写入 | 不再进入分类与标签核对表 |
-| 版权到期 | 本地文件级 staging 已按用户确认口径收口；“无限期”直接作为有效值，当前人工缺口 0；正式主数据尚未写入 | 不再进入分类与标签核对表 |
-| 一级分类 | 用户最终基础大表已固定：出版物 1195、网文 1858；人工缺口 0 | 可作为后续本地 M2 readiness 输入；尚未写正式主数据 |
-| 二级分类 | 3053 部均已由最终基础大表固定；人工缺口 0 | 可支撑本地细分策略和同类对标 |
-| 三级分类 | 3053 部均已固定；新增科普、教辅、诗歌已进入受控词表 | 可支撑本地完整分类路径和分层回测 |
-| 辅助标签 | 387 部作品、532 个标签赋值已固定；人工缺口 0 | 可支撑本地特殊项目解释和校准 |
+| 作者 | 缺口 0；已写入隔离本地 active 正式基础信息版本 | 非生产发布，不再生成作者补表 |
+| 版权开始 | 人工缺口 0；已写入隔离本地 active 正式基础信息版本和 evaluation snapshot | 不再进入分类与标签核对表 |
+| 版权到期 | 人工缺口 0；无限期/相对期限/仅年份/到期日未知语义由 `0071.020` 保真持久化 | 不再静默改为空日期，不再生成旧补表 |
+| 一级分类 | 出版物 1195、网文 1858；人工缺口 0 | 已写入隔离本地 active 分类版本 |
+| 二级分类 | 3053 部均已固定；人工缺口 0 | 已写入隔离本地 active 分类版本 |
+| 三级分类 | 3053 部均已固定；新增科普、教辅、诗歌已进入受控词表 | 已写入隔离本地 active 分类版本 |
+| 辅助标签 | 387 部作品、532 个标签赋值已固定；人工缺口 0 | 已写入隔离本地正式基础信息关联 |
 | 特殊属性标签 | 当前 M1/M2 人工收口不再启用独立字段；后续只有在明确新增规则和版本时才单独治理 | 不阻断本轮分类与标签人工收口 |
-| 作品状态 | 本地文件级 staging 已闭环：已上架 2410、已下架 643；正式主数据尚未写入 | 可支撑本地货架/下架判断，但不等于 formal 主数据验收 |
-| 音频版权状态 | 本地文件级 staging 已闭环：版权有效 2238、无限期 487、版权已到期 328；正式主数据尚未写入 | 可支撑本地版权有效性判断，但不等于 formal 主数据验收 |
-| 到期但仍有收入样本 | 最终基础表重算后 146 个复核桶 | 按 Excel 底层完整金额精度保留有效非零收入；需判断结算滞后、续约未入账、渠道滞后或异常 |
-| 版权有效但收入稀疏样本 | 92 个复核桶 | 需运营/版权确认是否仍可运营、仅观察或无需动作 |
+| 作品状态 | 已上架 2298、已下架 755；已写入隔离本地 active 正式基础信息版本 | 可支撑当前 DB-backed M2 评估 |
+| 音频版权状态 | 版权有效 2250、无限期 473、版权已到期 330；已写入隔离本地 active 正式基础信息版本 | 期限与当前状态分别保真，冲突计数 0 |
+| 到期但仍有收入样本 | 146 条已全部确认并应用，待确认 0 | 保留事实型审计/复核提示，不再构成人工数据阻断 |
+| 版权有效但收入稀疏样本 | 92 条已全部确认并应用，待确认 0 | 状态决定已进入 private 输入候选，不再构成人工数据阻断 |
 
 当前状态证据见：
 
@@ -70,11 +74,11 @@ v0.2 将 v0.1 的业务汇总稿改造成更适合 Codex 长期维护的文档�
 
 ## M3 当前状态提醒
 
-当前 `main` 的 M3 状态为：`prototype complete / private human acceptance pending / formal blocked`。本地 fixture/synthetic 主链已覆盖 material-first、字段补全、readiness、外部证据结构、对标、作者排位、渠道点预测、候选评级、workflow 和 backtest anchor；不代表 M3 formal execution 已开始，也不包含正式 M3 发布能力。
+当前 `main` 的 M3 状态为：`prototype complete / user-deferred until M2 closure / formal blocked`。本地 fixture/synthetic 主链已覆盖 material-first、字段补全、readiness、外部证据结构、对标、作者排位、渠道点预测、候选评级、workflow 和 backtest anchor；不代表 M3 formal execution 已开始，也不包含正式 M3 发布能力。
 
-允许继续 private dry-run、人工字段补全、human acceptance、PRD/contract 冻结和 formal 设计准备；但在 M2 formal input、private 合规、持久化、task/export/release/audit 与单独授权完成前，不得进入 M3 formal execution，不得开放正式 task/export/write API，不得把 M2 local candidate 作为 formal M3 输入。
+M3 private 材料准备、dry-run 和 human acceptance 当前均按用户决定暂缓。M2 已完成隔离本地持久化、mapping activation、formal-evaluation run、task/audit 和 prepared export，但用户已拒绝当前 v1.1 conditional 算法与对应 release。新算法通过回测、业务抽检和 release gate 前，不得进入 M3 formal execution，不得开放正式 M3 task/export/write API。
 
-截至 2026-07-10，作者、版权日期、作品状态、音频版权状态、一级/二级/三级分类和辅助标签均已有本地候选层聚合收口证据，最终 3053 部范围的 M2 readiness/分层一致性重算也已通过。当前下一工程入口是补齐并通过逐作品 private 输入内容契约，再设计 formal basic-info version/input snapshot；正式主数据写入、M2 formal gate 和 M3 formal execution 仍需后续单独授权。
+截至 2026-07-13，作者、版权日期、作品状态、音频版权状态、分类、标签和 146/92 两类业务复核均已收口；隔离本地正式执行与严格对账已通过，DB-backed export 状态为 `prepared`。v1.1 已明确拒绝，下一步只推进基于最终基础数据的 M2 上线预测算法校准、回测和新一轮业务验收；M3 formal execution 仍未授权。
 
 ## 推荐阅读顺序
 
@@ -100,12 +104,13 @@ v0.2 将 v0.1 的业务汇总稿改造成更适合 Codex 长期维护的文档�
 20. `docs/analysis/m2-real-data/M1-M2-post-foundation-project-status-v1.md`
 21. `docs/analysis/m2-real-data/M2-post-foundation-readiness-rerun-v1.md`
 22. `docs/analysis/m2-real-data/M2-post-foundation-formal-gap-audit-v1.md`
-23. `docs/analysis/m3/M3-next-execution-roadmap-v1.md`
-24. `docs/analysis/m3/M3-local-prototype-closeout-v0.1.md`
-25. `docs/analysis/m3/M3-formal-boundary-after-prototype-v0.1.md`
-26. `docs/technical-design/M3-restart-development-plan-v0.1.md`（历史设计背景）
-27. `AGENTS.md`
-28. `NEXT-CODEX-INSTRUCTION.md`
+23. `docs/analysis/m2-real-data/M2-formal-local-execution-summary-v1.md`
+24. `docs/analysis/m3/M3-next-execution-roadmap-v1.md`
+25. `docs/analysis/m3/M3-local-prototype-closeout-v0.1.md`
+26. `docs/analysis/m3/M3-formal-boundary-after-prototype-v0.1.md`
+27. `docs/technical-design/M3-restart-development-plan-v0.1.md`（历史设计背景）
+28. `AGENTS.md`
+29. `NEXT-CODEX-INSTRUCTION.md`
 
 ## Latest M1/M2 checkpoint note
 
@@ -166,7 +171,7 @@ CI 显式将 `M1_APP_ENV` 设为 `ci`，并将 `M1_DATABASE_URL`、`M1_DATABASE_
 
 - PRD v0.2 保留稳定业务语义、数据边界和验收框架；当前工程状态以最新脱敏 checkpoint、closeout 和 formal-boundary 证据为准。
 - local candidate、private dry-run 和 fixture prototype 均不自动转为 formal approval。
-- 具体数据库表、索引、正式接口、权限、审计和发布机制仍需后续 formal 设计与单独授权。
+- M2 本地正式持久化、审计和 prepared export 已实现；v1.1 conditional 已被用户拒绝，必须完成新算法校准和新一轮验收后才能重新申请 release，且任何本地执行都不代表生产部署或生产审批。
 - v0.1 原文和早期 gap 报告仅用于历史追溯，不得重新作为当前人工待办入口。
 
 # M3 Private Completion Pack Recovery

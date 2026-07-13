@@ -1,0 +1,130 @@
+{
+  "schema": "m2.formal_local_execution_summary.v1",
+  "generatedAt": "2026-07-13T09:12:04.661Z",
+  "mode": "applied",
+  "environment": {
+    "localIsolatedDatabase": true,
+    "postgresMajorVersion": 16,
+    "flywaySchemaVersion": "0071.020",
+    "remoteProductionOrSharedDatabaseConnected": false
+  },
+  "input": {
+    "workCount": 3053,
+    "factRowCount": 192872,
+    "reviewDecisionCount": 238,
+    "reviewDecisionPendingCount": 0,
+    "scopeFullyAligned": true,
+    "audioRightsStatusDistribution": {
+      "perpetual": 473,
+      "active": 2250,
+      "expired": 330
+    },
+    "copyrightEndTypeDistribution": {
+      "perpetual": 473,
+      "exact_date": 2503,
+      "expired_unknown_date": 16,
+      "relative_term": 59,
+      "year_only": 2
+    },
+    "rightsTermStatusConflictCount": 0,
+    "copyrightChronologyInvalidCount": 0,
+    "operatingSuggestionsIncluded": false
+  },
+  "versions": {
+    "candidateVersion": "m2-realdata-dev-disentangled-forecast-v1.1-conditional",
+    "algorithmVersion": "m2-disentangled-forecast-v1.1-conditional-formal-eval-v1",
+    "parameterVersion": "m2-disentangled-forecast-v1.1",
+    "algorithmStatus": "frozen_conditional_not_released"
+  },
+  "modelValidation": {
+    "candidateVersion": "m2-realdata-dev-disentangled-forecast-v1.1-conditional",
+    "verdict": "CONDITIONAL PASS",
+    "wape": 0.6409,
+    "baselineWape": 0.7043,
+    "intervalCoverage": 0.5769,
+    "p0": 0,
+    "p1": 0,
+    "p2": 473,
+    "forecastableRevenueShare": 0.7788,
+    "trueBlockedRevenueShare": 0.2038
+  },
+  "formalExecution": {
+    "formalMasterDataWritten": true,
+    "mappingActivated": true,
+    "formalEvaluationExecuted": true,
+    "dbBackedExportPrepared": true,
+    "finalReleaseApproved": false,
+    "exportStatus": "prepared",
+    "m2FormalReleaseComplete": false,
+    "m3FormalExecutionAllowed": false
+  },
+  "strictReconciliation": {
+    "passed": true,
+    "checks": {
+      "factRowsMatch": true,
+      "projectionRowsMatch": true,
+      "projectedWorksMatch": true,
+      "amountsMatch": true,
+      "sourceAmountMatch": true,
+      "basicInfoWorksMatch": true,
+      "classificationAssignmentsMatch": true,
+      "evaluationResultsMatch": true,
+      "inputSnapshotsMatch": true,
+      "noOperatingSuggestions": true,
+      "noOpenBlockingReviews": true,
+      "exportItemsMatch": true,
+      "oneExportPackage": true,
+      "noReleasedPackage": true,
+      "auditEventChainComplete": true,
+      "formalTaskSucceeded": true,
+      "algorithmFrozenConditional": true,
+      "formalFlagsRemainUnapproved": true,
+      "exportPreparedNotReleased": true,
+      "lifecycleOperational": true,
+      "oneActiveMappingVersion": true,
+      "oneActiveBasicInfoVersion": true
+    },
+    "counts": {
+      "incomeFacts": 192872,
+      "activeProjections": 192872,
+      "projectedWorks": 3053,
+      "basicInfoWorks": 3053,
+      "classificationAssignments": 3053,
+      "evaluationResults": 3053,
+      "inputSnapshots": 3053,
+      "suggestions": 0,
+      "blockingReviews": 0,
+      "exportItems": 3053,
+      "exportPackages": 1,
+      "releasedPackages": 0,
+      "auditEvents": 7,
+      "succeededTasks": 1,
+      "formalAllowedResults": 0,
+      "notForFormalResults": 3053
+    },
+    "exportStatus": "prepared",
+    "lifecycleStatus": "operational"
+  },
+  "remainingHumanDecision": {
+    "required": false,
+    "code": "v1_1_rejected_recalibration_required",
+    "reason": "The user rejected the v1.1 conditional candidate and its prepared export; a new calibrated candidate is required."
+  },
+  "postExecutionUserDecision": {
+    "decidedAt": "2026-07-13",
+    "v1_1ConditionalAccepted": false,
+    "preparedExportReleaseApproved": false,
+    "decision": "reject_and_continue_m2_algorithm_calibration",
+    "authoritativeFoundationWorkCount": 3053,
+    "authoritativeIncomeFactRowCount": 192872
+  },
+  "safety": {
+    "rawRowsIncludedInReport": false,
+    "realTitlesIncludedInReport": false,
+    "authorNamesIncludedInReport": false,
+    "channelNamesIncludedInReport": false,
+    "secretsIncludedInReport": false,
+    "operatingSuggestionsIncluded": false,
+    "privateOutputsTrackedByGit": false
+  }
+}

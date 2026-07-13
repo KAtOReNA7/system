@@ -1,6 +1,6 @@
 {
   "schema": "m1_m2.post_foundation_project_status.v1",
-  "generatedAt": "2026-07-10",
+  "generatedAt": "2026-07-13",
   "foundationData": {
     "workCount": 3053,
     "publicationWorks": 1195,
@@ -10,36 +10,91 @@
     "tagAssignments": 532,
     "changedWorksFromGeneratedBaseline": 836,
     "localCandidateClosed": true,
-    "formalMasterDataWritten": false
+    "formalInputContractVerified": true,
+    "formalMasterDataWritten": true,
+    "activeBasicInfoVersionCount": 1
+  },
+  "reviewClosure": {
+    "expiredWithRevenueReviewed": 146,
+    "activeRightsSparseRevenueReviewed": 92,
+    "approved": 238,
+    "pending": 0,
+    "decisionAuditEventCount": 238,
+    "advisoryAssignmentCount": 139,
+    "workStatusDistribution": {
+      "已上架": 2298,
+      "已下架": 755
+    },
+    "audioRightsStatusDistribution": {
+      "版权有效": 2250,
+      "无限期": 473,
+      "版权已到期": 330
+    }
+  },
+  "formalLocalExecution": {
+    "postgresMajorVersion": 16,
+    "flywaySchemaVersion": "0071.020",
+    "incomeFactRows": 192872,
+    "activeProjectionRows": 192872,
+    "evaluationResults": 3053,
+    "inputSnapshots": 3053,
+    "exportItems": 3053,
+    "exportStatus": "prepared",
+    "releasedPackages": 0,
+    "automaticOperatingSuggestions": 0,
+    "blockingReviews": 0,
+    "auditEvents": 7,
+    "strictReconciliationPassed": true
+  },
+  "modelValidation": {
+    "candidateVersion": "m2-realdata-dev-disentangled-forecast-v1.1-conditional",
+    "verdict": "CONDITIONAL PASS",
+    "wape": 0.6409,
+    "baselineWape": 0.7043,
+    "intervalCoverage": 0.5769,
+    "p0": 0,
+    "p1": 0,
+    "p2": 473,
+    "forecastableRevenueShare": 0.7788,
+    "trueBlockedRevenueShare": 0.2038,
+    "algorithmFormal": false
   },
   "milestones": {
-    "m1LocalDataReadiness": "ready_for_rerun",
-    "m1FormalAcceptance": "not_complete",
-    "m2LocalEngineeringCandidate": "checkpoint_complete_pending_foundation_rerun",
-    "m2ScopeReconciliation": "3054_old_aggregate_vs_3053_fixed_foundation_pending",
-    "m2FormalCompletion": "not_complete",
+    "m1LocalDataReadiness": "active_local_formal_basic_info_version",
+    "m1FormalAcceptance": "local_execution_complete_not_production_released",
+    "m2LocalEngineeringCandidate": "formal_local_execution_reconciled",
+    "m2ScopeReconciliation": "3054_identity_scope_reconciled_to_3053",
+    "m2FormalCompletion": "v1_1_rejected_recalibration_required",
     "m3FormalExecution": "not_started"
   },
   "humanIntervention": {
     "classificationOrTagRows": 0,
-    "optionalAuthorEditConfirmation": 0,
-    "accidentalAuthorEditsRepaired": 2,
-    "expiredWithRevenueBusinessReview": 142,
-    "activeRightsSparseRevenueBusinessReview": 92,
-    "m2CandidateAcceptanceRequiredAfterRerun": true,
-    "formalAuthorizationRequired": true
+    "expiredWithRevenueBusinessReview": 0,
+    "activeRightsSparseRevenueBusinessReview": 0,
+    "localDockerPostgresRecoveryRequired": false,
+    "conditionalAlgorithmAndReleaseAcceptanceRequired": false,
+    "newAlgorithmBusinessAcceptanceRequiredAfterCalibration": true,
+    "m3FormalAuthorizationRequired": true
   },
-  "nextEngineeringActions": [
-    "rerun_m2_readiness_with_fixed_foundation",
-    "reconcile_3054_old_scope_with_3053_fixed_foundation",
-    "recompute_classification_tag_segment_metrics",
-    "refresh_business_review_aggregates",
-    "produce_formal_gap_audit"
-  ],
+  "nextAction": "calibrate_final_production_forecast_algorithm_on_authoritative_3053_work_input",
   "boundaries": {
-    "sanitizedAggregateOnly": true,
-    "databaseWritten": false,
-    "mappingActivated": false,
+    "formalExecutionAuthorized": true,
+    "localDatabaseWritten": true,
+    "mappingActivatedInIsolatedLocalDatabase": true,
+    "formalEvaluationRunExecuted": true,
+    "formalReleaseCreated": false,
+    "evaluationResultsAllowedForFormalDecision": false,
+    "automaticOperatingSuggestionsAllowed": false,
+    "remoteProductionOrSharedDatabaseConnected": false,
     "m3FormalExecutionStarted": false
-  }
+  },
+  "postExecutionUserDecision": {
+    "decidedAt": "2026-07-13",
+    "v1_1ConditionalAccepted": false,
+    "preparedExportReleaseApproved": false,
+    "decision": "reject_and_continue_m2_algorithm_calibration",
+    "authoritativeFoundationWorkCount": 3053,
+    "authoritativeIncomeFactRowCount": 192872
+  },
+  "latestEvidence": "docs/analysis/m2-real-data/M2-formal-local-execution-summary-v1.md"
 }

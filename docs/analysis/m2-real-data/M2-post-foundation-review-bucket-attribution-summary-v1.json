@@ -1,0 +1,57 @@
+{
+  "schema": "m2.post_foundation_review_bucket_attribution_summary.v1",
+  "generatedAt": "2026-07-13T03:15:22.832803+00:00",
+  "scope": {
+    "workCount": 3053,
+    "expiredWithRevenueReviewCount": 146,
+    "activeRightsSparseRevenueReviewCount": 92,
+    "totalReviewCount": 238,
+    "latestCompleteMonth": "2026-04"
+  },
+  "expiredWithRevenue": {
+    "attributionDistribution": {
+      "作品仍标记已上架且到期后持续有收入，疑似续约信息尚未回填": 94,
+      "到期后仅有微量短尾收入，优先按结算或渠道滞后核查": 23,
+      "到期后收入较明显或持续时间较长，不能仅按尾款自动关闭": 10,
+      "收入发生在到期前，因近十二个月窗口与到期日重叠进入复核桶": 17,
+      "作品已下架且到期后收入占比较低，优先核查尾款或渠道延迟": 2
+    },
+    "candidateDistribution": {
+      "核查是否已续约；如已续约请填写新的版权到期时间": 94,
+      "按结算或渠道滞后处理；保持现有版权状态": 23,
+      "发起权利期外收入审计；确认前不修改版权状态": 10,
+      "保持版权已到期；无需调整": 17,
+      "按结算或渠道滞后处理；保持版权已到期和已下架": 2
+    }
+  },
+  "activeRightsSparseRevenue": {
+    "attributionDistribution": {
+      "作品标记已上架，但较长时间未再产生收入，需要确认实际货架状态": 87,
+      "状态表已确认下架，版权仍有效不等于当前仍在运营": 5
+    },
+    "candidateDistribution": {
+      "确认是否仍上架；系统暂保留已上架状态": 87,
+      "保持版权有效；作品状态保持已下架": 5
+    }
+  },
+  "userConfirmation": {
+    "required": true,
+    "confirmedCount": 0,
+    "remainingCount": 238,
+    "privatePackReady": true
+  },
+  "productDecision": {
+    "automaticOperatingSuggestionsEnabled": false,
+    "reviewPromptsOnly": true
+  },
+  "formalAuthorization": {
+    "m2FormalOperationsGranted": true,
+    "executionPendingReviewConfirmation": true,
+    "m3FormalExecutionGranted": false
+  },
+  "privacy": {
+    "publicReportAggregateOnly": true,
+    "privateRowsCommitted": false,
+    "privateOutputRole": "gitignored_local_only"
+  }
+}
