@@ -1,9 +1,9 @@
 {
   "schema": "m2.calibration_spec.v1",
   "version": "calibration-spec-v1",
-  "preHoldoutRevision": 2,
-  "supersedesPreHoldoutCommit": "18a40032605ffee7ef9c74172c64da2ff7e992da",
-  "preHoldoutCorrectionReason": "remove_full_period_outcome_exposed_B0b_thresholds_and_factors_before_any_new_replay_result_or_final_holdout_was_opened",
+  "preHoldoutRevision": 3,
+  "supersedesPreHoldoutCommit": "dfffa360c7e7fb976f929346bca307c1804e260c",
+  "preHoldoutCorrectionReason": "require_strict_committed_development_fit_provenance_after_removing_full_period_outcome_exposed_B0b_parameters_before_any_new_replay_result_or_final_holdout_was_opened",
   "frozenAt": "2026-07-14T00:00:00+08:00",
   "decisionStatus": "not_for_formal_decision",
   "authority": {
@@ -48,7 +48,71 @@
       "requiredBeforeAnyFairB0bReplay": true,
       "mustBeCommittedBeforeFinalHoldout": true,
       "mayContainPrivateIdentifiers": false,
-      "mayUseEmbargoShadowOrHoldoutLabels": false
+      "mayUseEmbargoShadowOrHoldoutLabels": false,
+      "requiredTopLevelFields": [
+        "schema",
+        "version",
+        "decisionStatus",
+        "specVersion",
+        "specRevision",
+        "specDigest",
+        "fit",
+        "B0b"
+      ],
+      "requiredFitFields": [
+        "baselineId",
+        "fitStatus",
+        "caseRole",
+        "maximumTargetEnd",
+        "excludedRoles",
+        "algorithm",
+        "randomSeed",
+        "factorGridDigest",
+        "caseKeyFields",
+        "caseFingerprintAlgorithm",
+        "caseFingerprint",
+        "caseCount",
+        "caseCountByHorizon",
+        "originCount",
+        "originCountByHorizon",
+        "authoritativeInputSignatureSha256",
+        "specCommit",
+        "fitCodeCommit",
+        "passes",
+        "usesEmbargoShadowLabels",
+        "usesFinalHoldoutLabels",
+        "usesLongHorizonAuditLabels",
+        "legacyFactorsReused",
+        "developmentWape",
+        "developmentSignedAggregateBias",
+        "oofProtocol",
+        "oofFoldUnit",
+        "oofFoldCount",
+        "oofFoldOrigins",
+        "oofCaseFingerprint",
+        "oofComparatorScoreUsed",
+        "minimumTrainingCasesPerLifecycleFactor",
+        "minimumTrainingOriginsPerLifecycleFactor",
+        "minimumActualRevenueSharePerLifecycleFactor",
+        "unsupportedFactorValue",
+        "finalFactorsFitScope"
+      ],
+      "requiredB0bFields": [
+        "lifecycleThresholds",
+        "lifecycleFactors",
+        "oofComparatorMetrics",
+        "finalFitDiagnosticMetrics",
+        "lifecycleSupport"
+      ],
+      "forbiddenFitFields": [
+        "passesByHorizon"
+      ],
+      "forbiddenB0bFields": [
+        "lifecycleFactorsByHorizon",
+        "oofComparatorMetricsByHorizon",
+        "finalFitDiagnosticMetricsByHorizon",
+        "lifecycleSupportByHorizon"
+      ]
     },
     "finalHoldout": {
       "originCount": 2,
@@ -589,6 +653,17 @@
           "decliningRecent6Prior6Ratio": 0.5,
           "reboundRecent3Previous3Ratio": 1.5
         },
+        "legacyOutcomeExposedThresholdsAuditOnly": {
+          "insufficientHistoryCompleteMonths": 6,
+          "inactiveRecent6RevenueMax": 0.0,
+          "longTailLast12RevenueMax": 2.82,
+          "growthRecent6Prior6Ratio": 1.52,
+          "decliningRecent6Prior6Ratio": 0.45,
+          "reboundRecent3Previous3Ratio": 1.5,
+          "fairReplayUseAllowed": false,
+          "predictorLoadAllowed": false,
+          "selectionAllowed": false
+        },
         "legacyOutcomeExposedFactorsAuditOnly": {
           "growth": 1.12,
           "stable": 0.88,
@@ -597,7 +672,23 @@
           "long_tail": 0.22,
           "inactive": 0.04,
           "insufficient_history": 0.45,
-          "fairReplayUseAllowed": false
+          "fairReplayUseAllowed": false,
+          "predictorLoadAllowed": false,
+          "selectionAllowed": false
+        },
+        "structuralConstants": {
+          "trimmedMeanTailFraction": 0.15,
+          "positiveMedianWeight": 0.4,
+          "lowRevenueLast12Threshold": 10.0,
+          "lowRevenueActiveMonthThreshold": 2,
+          "positiveHistoryPointFloor": 1.0
+        },
+        "structuralConstantProvenance": {
+          "trimmedMeanTailFraction": "pre_registered_robust_statistic_definition_not_selected_on_calibration_v1_results",
+          "positiveMedianWeight": "historical_formula_structure_constant_carried_forward_without_calibration_v1_tuning",
+          "lowRevenueLast12Threshold": "pre_registered_round_currency_low_revenue_guard_not_selected_on_calibration_v1_results",
+          "lowRevenueActiveMonthThreshold": "pre_registered_sparse_history_guard_not_selected_on_calibration_v1_results",
+          "positiveHistoryPointFloor": "pre_registered_nonzero_nominal_floor_not_selected_on_calibration_v1_results"
         },
         "developmentFit": {
           "caseRole": "development_only",
@@ -607,7 +698,31 @@
             "final_holdout",
             "long_horizon_audit"
           ],
-          "fitMetric": "pooled_work_level_wape",
+          "fitHorizonsMonths": [
+            3,
+            6,
+            12,
+            18,
+            24
+          ],
+          "allowedOriginSetReference": "origins.coreByHorizon.*.development",
+          "roleIdentityFields": [
+            "origin",
+            "horizon_months",
+            "role"
+          ],
+          "comparatorCaseScope": "all_frozen_forecastable_numeric_routes",
+          "factorEligibleRoutes": [
+            "pure_sales_share",
+            "buyout_plus_sales"
+          ],
+          "pureBuyoutFitBehavior": "included_in_case_parity_and_comparator_metrics_but_has_no_lifecycle_factor_update",
+          "unknownRouteFitBehavior": "retained_only_in_coverage_denominator_and_never_used_for_factor_fit",
+          "fitMetric": "pooled_work_level_wape_across_core_horizons",
+          "fitAcrossCoreHorizons": true,
+          "fitSeparateByHorizon": false,
+          "crossHorizonPoolingExceptionReason": "B0b_is_a_legacy_structural_baseline_with_one_shared_low_dimension_lifecycle_vector_not_a_candidate_model",
+          "longHorizonAuditFactorSource": "reuse_the_single_core_horizon_vector_without_long_audit_label_fitting",
           "algorithm": "deterministic_cyclic_coordinate_grid_search",
           "lifecycleOrder": [
             "inactive",
@@ -629,39 +744,34 @@
           },
           "factorGrid": [
             0.0,
-            0.05,
             0.1,
-            0.15,
             0.2,
-            0.25,
             0.3,
-            0.35,
             0.4,
-            0.45,
             0.5,
-            0.55,
             0.6,
-            0.65,
             0.7,
-            0.75,
             0.8,
-            0.85,
             0.9,
-            0.95,
             1.0,
-            1.05,
             1.1,
-            1.15,
             1.2,
-            1.25,
             1.3,
-            1.35,
             1.4,
-            1.45,
             1.5
           ],
           "maximumPasses": 20,
           "stopRule": "full_pass_with_no_factor_change",
+          "comparisonTolerance": 1e-12,
+          "factorPrecisionDecimals": 1,
+          "monotonicConstraints": [
+            "inactive<=long_tail",
+            "long_tail<=declining",
+            "declining<=stable",
+            "stable<=rebound",
+            "rebound<=growth",
+            "insufficient_history<=stable"
+          ],
           "candidateTieBreak": [
             "lower_pooled_work_level_wape",
             "lower_absolute_signed_aggregate_bias",
@@ -669,12 +779,35 @@
             "lower_numeric_factor"
           ],
           "caseFingerprint": "sha256_of_sorted_aggregate_case_keys_and_actuals_without_emitting_identifiers",
+          "caseFingerprintSerialization": "standard_work_id|origin|horizon_months|route|actual_fixed_8_decimals_sorted_lexicographically_joined_with_newline",
+          "oofComparatorProtocol": {
+            "method": "leave_one_origin_out",
+            "foldUnit": "origin_date_across_all_core_horizons",
+            "foldOrigins": [
+              "2019-06",
+              "2019-12",
+              "2020-06",
+              "2020-12",
+              "2021-06",
+              "2021-12",
+              "2022-06",
+              "2022-12"
+            ],
+            "fitFactorsInsideEachFold": true,
+            "comparatorUsesOnlyOutOfFoldPredictions": true,
+            "finalFactorsFitAfterOofScoring": "all_cross_horizon_purged_development_cases_single_global_vector",
+            "minimumTrainingCasesPerLifecycleFactor": 200,
+            "minimumTrainingOriginsPerLifecycleFactor": 3,
+            "minimumActualRevenueSharePerLifecycleFactor": 0.001,
+            "supportDefinition": "work_cases_and_distinct_origins_with_positive_unfactored_component_for_lifecycle_and_their_share_of_training_actual_revenue",
+            "unsupportedFactorValue": 1.0
+          },
           "outputArtifact": "src/domain/oldProductEvaluation/calibrationFittedParameters.v1.json"
         },
         "monthlySignal": "max(raw_last12_mean,trimmed_last24_mean,positive_median*0.40)",
         "recentZeroAdditionalFactor": 1.0,
         "peakShareAdditionalFactor": 1.0,
-        "lowRevenueGuard": "if_last12<=10_or_active_months<=2_cap_at_max(last12_mean*horizon,1_if_last12_positive_else_0)",
+        "lowRevenueGuard": "if_last12<=10_or_all_positive_months_before_origin<=2_cap_at_max(last12_mean*horizon,1_if_last12_positive_else_0)",
         "intentionalDivergencesFromB0a": [
           "as_of_only_features_and_quantiles",
           "no_current_rating_risk_gate_or_rights_features",
@@ -916,7 +1049,14 @@
       "lexicographically_smaller_parameter_tuple"
     ],
     "fitSeparateByHorizon": true,
-    "crossHorizonTargetPoolingAllowed": false
+    "fitSeparateByHorizonAppliesTo": [
+      "C1",
+      "C2-R",
+      "C2",
+      "C3"
+    ],
+    "crossHorizonTargetPoolingAllowed": false,
+    "B0bBaselineException": "single_global_7_stage_vector_fitted_only_on_purged_development_with_origin_level_OOF_scoring"
   },
   "trainingWindows": {
     "featureLookbacksMonths": [
@@ -1018,7 +1158,7 @@
   "gates": {
     "appliesTo": "final_holdout_candidate_evaluation",
     "allMustPass": true,
-    "lockedComparatorSelection": "lowest_development_wape_among_B0b_B1_B2_B3_with_ties_broken_by_lower_absolute_bias_then_simpler_baseline_id",
+    "lockedComparatorSelection": "lowest_development_wape_among_B0b_out_of_fold_predictions_and_B1_B2_B3_direct_predictions_with_ties_broken_by_lower_absolute_bias_then_simpler_baseline_id",
     "integrity": {
       "authorityScopeExact": true,
       "amountReconciliationExact": true,

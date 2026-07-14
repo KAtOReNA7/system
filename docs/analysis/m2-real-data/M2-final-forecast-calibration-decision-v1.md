@@ -57,7 +57,7 @@
 
 所有可比较基线和候选必须使用完全一致的 case keys。`B0a` 不得因历史指标较好而进入候选排名或验收判定。
 
-2026-07-14 pre-holdout 参数来源审计进一步确认：旧 v1.1 的部分 lifecycle 阈值和系数曾使用全期结果形成，不能原样进入 `B0b` 的公平比较。该问题在任何新 replay 结果和 final holdout 被读取前发现。`B0b` 因此只保留旧公式结构；阈值改为预注册语义常量，lifecycle 系数只能使用跨 horizon purge 后、target end 不晚于 2023-06 的 development cases 做确定性离散拟合。拟合数值、development case fingerprint 和 spec digest 必须写入无私有标识的 machine-readable fitted-parameter artifact 并提交；该 artifact 未提交或不匹配时，`B0b` 不具备公平比较资格，也不得打开 final holdout。旧全期阈值和系数只留在 spec 的 audit-only 字段中。
+2026-07-14 pre-holdout 参数来源审计进一步确认：旧 v1.1 的部分 lifecycle 阈值和系数曾使用全期结果形成，不能原样进入 `B0b` 的公平比较。该问题在任何新 replay 结果和 final holdout 被读取前发现。`B0b` 因此只保留旧公式结构；阈值改为预注册语义常量，lifecycle 系数固定为一个跨全部核心 horizon 共用的 7-stage 全局向量，只能使用跨 horizon purge 后、target end 不晚于 2023-06 的 development cases 做确定性离散拟合。这个低维共享向量是历史结构基线的显式例外，候选模型仍禁止跨 horizon target pooling；36/60 月审计只能复用该全局向量，不能读取长期 audit label 拟合。为防止 fitted B0b 在 development 上取得 in-sample 优势，锁定 comparator 时必须按 origin date（同一日期的所有 horizon 同时留出）执行 leave-one-origin-out，`B0b` 只使用拼接后的 OOF 预测计分；最终 full-development 全局向量仅用于之后已冻结的 holdout 预测。拟合数值、OOF 指标、development case fingerprint 和 spec digest 必须写入无私有标识的 machine-readable fitted-parameter artifact 并提交；该 artifact 未提交或不匹配时，`B0b` 不具备公平比较资格，也不得打开 final holdout。旧全期阈值和系数只留在 spec 的 audit-only 字段中。
 
 ## 4. 无泄漏内核与先行完整性证明
 
