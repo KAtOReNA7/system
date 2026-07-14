@@ -647,7 +647,9 @@ test("synthetic attribution separates Stage 5 legacy coverage loss from Stage 6 
     "stage6UsesRawAllScoreableWape",
     "stage5To6PredictionUnchanged",
     "stage5To6ScoringSemanticsChanged",
-    "integrityNamesSemanticTransition"
+    "integrityNamesSemanticTransition",
+    "perOriginDevelopmentRoleAccepted",
+    "perOriginDevelopmentRoleMismatchRejected"
   ]) {
     assert.equal(result.checks[check], true, `failed synthetic attribution check: ${check}`);
   }

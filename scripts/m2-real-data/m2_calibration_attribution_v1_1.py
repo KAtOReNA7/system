@@ -14,6 +14,7 @@ legacy key can never remove a case from the model-quality population.
 
 from __future__ import annotations
 
+import copy
 import hashlib
 import json
 import math
@@ -380,14 +381,22 @@ def _fixed_forward_cases(
     for row in forward_rows:
         if not isinstance(row, Mapping) or _model_id(row) != "B0b":
             continue
+        key = _case_key(row)
         role = _row_role(row)
         if role is not None:
             lowered = role.lower()
             if any(token in lowered for token in _FORBIDDEN_ROLE_TOKENS):
                 raise AttributionError("attribution input includes a sealed or audit-only label role")
-            if role != _DEVELOPMENT_ROLE:
+            if role == _DEVELOPMENT_ROLE:
+                pass
+            elif role.startswith(f"{_DEVELOPMENT_ROLE}:"):
+                bound_origin = role.split(":", 1)[1]
+                if bound_origin != key[1] or bound_origin not in allowed_origins:
+                    raise AttributionError(
+                        "B0b attribution per-origin role binding is invalid"
+                    )
+            else:
                 raise AttributionError("B0b attribution row is not development_forward_score")
-        key = _case_key(row)
         if role is None and (not allowed_origins or key[1] not in allowed_origins):
             raise AttributionError("role-less B0b row is outside frozen development score origins")
         if not _scoreable(row):
@@ -1512,6 +1521,44 @@ def synthetic_self_test() -> dict[str, Any]:
     ]
     integrity = _assert_fixed_population(stages)
     stage5, stage6 = stages[3], stages[4]
+    per_origin_row = {
+        "model_id": "B0b",
+        "case_key": {
+            "standard_work_id": "SYNTHETIC-ROLE-WORK",
+            "origin": "2020-12",
+            "horizon_months": 3,
+            "route": "pure_sales_share",
+        },
+        "_residual_case_role": "development_forward_score:2020-12",
+        "statisticallyScoreable": True,
+        "modelPredictionAvailable": True,
+        "businessServingEligible": True,
+        "rawModelPrediction": 8.0,
+        "servedPrediction": 8.0,
+        "abstentionReason": None,
+        "actual": 10.0,
+        "strata": {
+            "high_value": True,
+            "top_1_percent": True,
+            "top_5_percent": True,
+            "top_10_percent": True,
+        },
+    }
+    role_spec = {
+        "origins": {
+            "forwardValidation": {
+                "scoreOrigins": ["2020-12", "2021-06"]
+            }
+        }
+    }
+    per_origin_accepted = len(_fixed_forward_cases([per_origin_row], role_spec)) == 1
+    mismatched_role = copy.deepcopy(per_origin_row)
+    mismatched_role["_residual_case_role"] = "development_forward_score:2021-06"
+    mismatch_rejected = False
+    try:
+        _fixed_forward_cases([mismatched_role], role_spec)
+    except AttributionError:
+        mismatch_rejected = True
     checks = {
         "stage2ProxyDidNotReadPostPurgeAmount": (
             guarded_monthly.post_purge_amount_reads == 0
@@ -1557,6 +1604,8 @@ def synthetic_self_test() -> dict[str, Any]:
         "integrityNamesSemanticTransition": integrity[
             "stage5To6ScoringSemanticsFingerprintDifferent"
         ],
+        "perOriginDevelopmentRoleAccepted": per_origin_accepted,
+        "perOriginDevelopmentRoleMismatchRejected": mismatch_rejected,
     }
     if not all(checks.values()):
         raise AttributionError(f"synthetic attribution checks failed: {checks}")
