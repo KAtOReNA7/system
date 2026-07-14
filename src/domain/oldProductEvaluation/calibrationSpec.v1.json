@@ -1,6 +1,9 @@
 {
   "schema": "m2.calibration_spec.v1",
   "version": "calibration-spec-v1",
+  "preHoldoutRevision": 2,
+  "supersedesPreHoldoutCommit": "18a40032605ffee7ef9c74172c64da2ff7e992da",
+  "preHoldoutCorrectionReason": "remove_full_period_outcome_exposed_B0b_thresholds_and_factors_before_any_new_replay_result_or_final_holdout_was_opened",
   "frozenAt": "2026-07-14T00:00:00+08:00",
   "decisionStatus": "not_for_formal_decision",
   "authority": {
@@ -36,8 +39,17 @@
       "metrics",
       "gates"
     ],
-    "changeRule": "any_change_requires_a_new_spec_version_and_a_new_untouched_holdout",
+    "changeRule": "after_any_final_holdout_is_opened_any_change_requires_a_new_spec_version_and_a_new_untouched_holdout",
+    "preHoldoutIntegrityCorrectionRule": "allowed_only_before_any_new_replay_result_is_read_and_must_record_and_supersede_the_prior_commit",
     "resultDependentEditsAllowed": false,
+    "fittedParametersArtifact": {
+      "path": "src/domain/oldProductEvaluation/calibrationFittedParameters.v1.json",
+      "schema": "m2.calibration_spec.v1.fitted_parameters",
+      "requiredBeforeAnyFairB0bReplay": true,
+      "mustBeCommittedBeforeFinalHoldout": true,
+      "mayContainPrivateIdentifiers": false,
+      "mayUseEmbargoShadowOrHoldoutLabels": false
+    },
     "finalHoldout": {
       "originCount": 2,
       "unit": "per_core_horizon",
@@ -565,24 +577,99 @@
         "id": "B0b",
         "role": "leakage_free_comparator",
         "fairComparisonEligible": true,
-        "definition": "policy_conformant_v1_1_sales_formula_replay_inside_predict_as_of",
+        "fairComparisonEligibilityCondition": "committed_fitted_parameters_artifact_matches_spec_and_development_case_fingerprint",
+        "definition": "policy_conformant_v1_1_structural_sales_formula_replay_inside_predict_as_of_with_development_only_factors",
+        "parameterProvenance": "semantic_thresholds_plus_cross_horizon_purged_development_only_deterministic_factor_fit_v1",
         "salesPointFormula": "legacy_lifecycle_robust_v1_1_without_spike_or_current_state_adjustments",
         "lifecycleThresholds": {
           "insufficientHistoryCompleteMonths": 6,
           "inactiveRecent6RevenueMax": 0.0,
-          "longTailLast12RevenueMax": 2.82,
-          "growthRecent6Prior6Ratio": 1.52,
-          "decliningRecent6Prior6Ratio": 0.45,
+          "longTailLast12RevenueMax": 10.0,
+          "growthRecent6Prior6Ratio": 1.5,
+          "decliningRecent6Prior6Ratio": 0.5,
           "reboundRecent3Previous3Ratio": 1.5
         },
-        "lifecycleFactors": {
+        "legacyOutcomeExposedFactorsAuditOnly": {
           "growth": 1.12,
           "stable": 0.88,
           "rebound": 1.02,
           "declining": 0.48,
           "long_tail": 0.22,
           "inactive": 0.04,
-          "insufficient_history": 0.45
+          "insufficient_history": 0.45,
+          "fairReplayUseAllowed": false
+        },
+        "developmentFit": {
+          "caseRole": "development_only",
+          "maximumTargetEnd": "2023-06",
+          "excludedRoles": [
+            "embargo_shadow",
+            "final_holdout",
+            "long_horizon_audit"
+          ],
+          "fitMetric": "pooled_work_level_wape",
+          "algorithm": "deterministic_cyclic_coordinate_grid_search",
+          "lifecycleOrder": [
+            "inactive",
+            "long_tail",
+            "declining",
+            "stable",
+            "growth",
+            "rebound",
+            "insufficient_history"
+          ],
+          "initialFactors": {
+            "growth": 1.0,
+            "stable": 1.0,
+            "rebound": 1.0,
+            "declining": 1.0,
+            "long_tail": 1.0,
+            "inactive": 1.0,
+            "insufficient_history": 1.0
+          },
+          "factorGrid": [
+            0.0,
+            0.05,
+            0.1,
+            0.15,
+            0.2,
+            0.25,
+            0.3,
+            0.35,
+            0.4,
+            0.45,
+            0.5,
+            0.55,
+            0.6,
+            0.65,
+            0.7,
+            0.75,
+            0.8,
+            0.85,
+            0.9,
+            0.95,
+            1.0,
+            1.05,
+            1.1,
+            1.15,
+            1.2,
+            1.25,
+            1.3,
+            1.35,
+            1.4,
+            1.45,
+            1.5
+          ],
+          "maximumPasses": 20,
+          "stopRule": "full_pass_with_no_factor_change",
+          "candidateTieBreak": [
+            "lower_pooled_work_level_wape",
+            "lower_absolute_signed_aggregate_bias",
+            "factor_closer_to_1",
+            "lower_numeric_factor"
+          ],
+          "caseFingerprint": "sha256_of_sorted_aggregate_case_keys_and_actuals_without_emitting_identifiers",
+          "outputArtifact": "src/domain/oldProductEvaluation/calibrationFittedParameters.v1.json"
         },
         "monthlySignal": "max(raw_last12_mean,trimmed_last24_mean,positive_median*0.40)",
         "recentZeroAdditionalFactor": 1.0,
@@ -595,6 +682,7 @@
           "sales_channels_predicted_separately_then_summed",
           "pure_buyout_uses_frozen_cycle_monthly_equivalent_route",
           "buyout_plus_sales_excludes_future_buyout",
+          "full_period_outcome_exposed_thresholds_and_factors_are_not_reused",
           "raw_last12_mean_floor_prevents_unconfirmed_spike_removal",
           "no_unconfirmed_peak_share_or_spike_damping",
           "single_public_point_contract"

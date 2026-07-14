@@ -57,6 +57,8 @@
 
 所有可比较基线和候选必须使用完全一致的 case keys。`B0a` 不得因历史指标较好而进入候选排名或验收判定。
 
+2026-07-14 pre-holdout 参数来源审计进一步确认：旧 v1.1 的部分 lifecycle 阈值和系数曾使用全期结果形成，不能原样进入 `B0b` 的公平比较。该问题在任何新 replay 结果和 final holdout 被读取前发现。`B0b` 因此只保留旧公式结构；阈值改为预注册语义常量，lifecycle 系数只能使用跨 horizon purge 后、target end 不晚于 2023-06 的 development cases 做确定性离散拟合。拟合数值、development case fingerprint 和 spec digest 必须写入无私有标识的 machine-readable fitted-parameter artifact 并提交；该 artifact 未提交或不匹配时，`B0b` 不具备公平比较资格，也不得打开 final holdout。旧全期阈值和系数只留在 spec 的 audit-only 字段中。
+
 ## 4. 无泄漏内核与先行完整性证明
 
 历史回测和未来预测必须共用唯一 `predict_as_of` 语义。任一 cutoff 的特征、路由、eligibility、分层输入、参数和预测只能读取该 cutoff 当时及以前可用的信息。

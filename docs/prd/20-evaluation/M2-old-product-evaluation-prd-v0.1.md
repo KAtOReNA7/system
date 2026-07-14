@@ -220,6 +220,8 @@ Comparator roles are distinct:
 - `B0b` is the v1.1 logic replayed through the new leakage-free `predict_as_of` kernel and is the only v1.1 comparator eligible for fair comparison.
 - `B1`, `B2`, and `B3` are the pre-registered simple baselines defined by `calibration-spec-v1`.
 
+`B0b` fair-comparison eligibility is conditional on parameter provenance as well as cutoff-safe features. Full-period outcome-exposed v1.1 thresholds or factors must not be reused. Its semantic thresholds are pre-registered, and its lifecycle factors must be fitted only on the cross-horizon-purged development cases, written to the committed machine-readable fitted-parameter artifact, and verified against the spec and development-case fingerprint before any fair replay or final holdout is opened.
+
 All comparators and candidates must use identical case keys. A future-perturbation invariance test must prove that changing data after a cutoff cannot change that cutoff's features, route, eligibility, prediction, or case keys. Baseline results and this integrity evidence must be reviewed before candidate training begins.
 
 Metrics:
