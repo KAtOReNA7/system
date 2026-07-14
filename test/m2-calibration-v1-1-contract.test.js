@@ -524,14 +524,17 @@ test("forward pre-truth boundary binds scoreOrigin, all four baselines, and seal
       "missing_key_rejected=False",
       "try: scoring.prediction_fingerprint(missing_key,contract)",
       "except scoring.ScoringContractError: missing_key_rejected=True",
+      "interval_projection=runner._interval_compatible(annotated)",
+      "interval_role_compatible=all(row['_residual_case_role']=='development_forward_score' for row in interval_projection) and all(row['_interval_role_projected_from']==f'development_forward_score:{origin}' for row in interval_projection) and all(row['_residual_case_role']==f'development_forward_score:{origin}' for row in annotated)",
       "preflight=runner.preflight(contract)",
-      "print(json.dumps({'missingModelRejectedBeforeJoin':missing_model_rejected and not join_called,'mixedOriginRejected':mixed_origin_rejected,'missingKeyRejected':missing_key_rejected,'runnerOrder':preflight['checks']['runnerPredictionLockTruthOrder'],'futureInvariant':preflight['checks']['runnerFutureTruthPerturbationInvariant'],'sealedGuard':preflight['checks']['sealedTruthJoinGuard'],'availabilityGuard':preflight['checks']['canonicalFoldAvailabilityBoundaries']},sort_keys=True))"
+      "print(json.dumps({'missingModelRejectedBeforeJoin':missing_model_rejected and not join_called,'mixedOriginRejected':mixed_origin_rejected,'missingKeyRejected':missing_key_rejected,'intervalRoleCompatibleWithoutLockMutation':interval_role_compatible,'runnerOrder':preflight['checks']['runnerPredictionLockTruthOrder'],'futureInvariant':preflight['checks']['runnerFutureTruthPerturbationInvariant'],'sealedGuard':preflight['checks']['sealedTruthJoinGuard'],'availabilityGuard':preflight['checks']['canonicalFoldAvailabilityBoundaries']},sort_keys=True))"
     ].join("\n")
   );
 
   assert.deepEqual(result, {
     availabilityGuard: true,
     futureInvariant: true,
+    intervalRoleCompatibleWithoutLockMutation: true,
     missingKeyRejected: true,
     missingModelRejectedBeforeJoin: true,
     mixedOriginRejected: true,

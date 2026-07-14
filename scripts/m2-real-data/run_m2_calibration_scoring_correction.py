@@ -888,6 +888,13 @@ def _interval_compatible(rows: Sequence[Mapping[str, Any]]) -> list[dict[str, An
     compatible: list[dict[str, Any]] = []
     for source in rows:
         row = copy.deepcopy(dict(source))
+        lock_role = str(row.get("_residual_case_role", ""))
+        if lock_role.startswith("development_forward_score:"):
+            # The legacy conformal kernel has one frozen generic development
+            # role.  Project only the role label on this disposable copy; the
+            # per-origin lock role and fingerprint remain unchanged on source.
+            row["_residual_case_role"] = "development_forward_score"
+            row["_interval_role_projected_from"] = lock_role
         scoreable = row.get("statisticallyScoreable") is True
         row["eligibility"] = {
             "status": "forecastable_numeric" if scoreable else "not_statistically_scoreable"
