@@ -442,6 +442,7 @@ test("a sub-threshold aggregate is suppressed as one whole cell before any model
   );
 
   assert.deepEqual(result, {
+    allCellMetricsWithheld: true,
     caseCount: "<10",
     suppressed: true,
     suppressionReason: "case_or_unique_work_count_below_public_minimum",

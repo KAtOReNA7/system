@@ -953,8 +953,9 @@ def _unique_work_count(rows: Sequence[Mapping[str, Any]]) -> int:
 def _suppressed_cell(case_count: int, work_count: int, minimum: int) -> dict[str, Any]:
     return {
         "suppressed": True,
-        "caseCount": f"<{minimum}",
-        "uniqueWorkCount": f"<{minimum}",
+        "caseCount": f"<{minimum}" if case_count < minimum else None,
+        "uniqueWorkCount": f"<{minimum}" if work_count < minimum else None,
+        "allCellMetricsWithheld": True,
         "suppressionReason": "case_or_unique_work_count_below_public_minimum",
     }
 
@@ -1046,8 +1047,8 @@ def _sanitize_reason_distribution(
         if case_count < minimum or work_count < minimum:
             output[str(reason)] = {
                 "suppressed": True,
-                "caseCount": f"<{minimum}",
-                work_key: f"<{minimum}",
+                "caseCount": f"<{minimum}" if case_count < minimum else None,
+                work_key: f"<{minimum}" if work_count < minimum else None,
                 "positiveActualRevenueShare": None,
                 "suppressionReason": "case_or_unique_work_count_below_public_minimum",
             }
@@ -1080,8 +1081,9 @@ def sanitize_score_payload(
     if small_abstention:
         result["abstentionMetrics"] = {
             "suppressed": True,
-            "caseCount": f"<{minimum}",
-            "uniqueWorkCount": f"<{minimum}",
+            "caseCount": f"<{minimum}" if abstained_cases < minimum else None,
+            "uniqueWorkCount": f"<{minimum}" if abstained_works < minimum else None,
+            "allCellMetricsWithheld": True,
             "suppressionReason": (
                 "abstained_case_or_unique_work_count_below_public_minimum"
             ),
@@ -1156,8 +1158,9 @@ def sanitize_attribution_report(
         ):
             cleaned = {
                 "suppressed": True,
-                "caseCount": f"<{minimum}",
-                "uniqueWorkCount": f"<{minimum}",
+                "caseCount": f"<{minimum}" if cases < minimum else None,
+                "uniqueWorkCount": f"<{minimum}" if works < minimum else None,
+                "allCellMetricsWithheld": True,
                 "suppressionReason": (
                     "abstained_case_or_unique_work_count_below_public_minimum"
                 ),
@@ -1465,8 +1468,16 @@ def state_reconciliation(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
         "businessServingEligibleScoreableCaseCount": (
             None if suppress_abstention else len(serving)
         ),
-        "abstainedScoreableCaseCount": "<10" if suppress_abstention else len(abstained),
-        "abstainedWorkCount": "<10" if suppress_abstention else len(abstained_blocks),
+        "abstainedScoreableCaseCount": (
+            ("<10" if len(abstained) < 10 else None)
+            if suppress_abstention
+            else len(abstained)
+        ),
+        "abstainedWorkCount": (
+            ("<10" if len(abstained_blocks) < 10 else None)
+            if suppress_abstention
+            else len(abstained_blocks)
+        ),
         "abstentionCellSuppressed": suppress_abstention,
         "servingCountSuppressedToProtectComplementSmallCell": suppress_abstention,
         "statisticallyUnscoreableCaseCount": len(b0b) - len(scoreable),
