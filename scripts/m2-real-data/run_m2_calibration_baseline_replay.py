@@ -2631,7 +2631,74 @@ def aggregate_report(
     by_model: dict[str, list[Mapping[str, Any]]] = defaultdict(list)
     for row in rows:
         by_model[str(row["model_id"])].append(row)
-    overall = {model: metric_score(by_model.get(model, [])) for model in BASELINE_IDS}
+
+    def metric_cell(group: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
+        """Suppress every metric-bearing cell below the public minimum size."""
+
+        if len(group) < minimum_cell_count:
+            return {
+                "suppressed": True,
+                "caseCount": f"<{minimum_cell_count}",
+            }
+        score = metric_score(group)
+
+        for population_name, population in list(score["populations"].items()):
+            if int(population["caseCount"]) < minimum_cell_count:
+                score["populations"][population_name] = {
+                    "suppressed": True,
+                    "caseCount": f"<{minimum_cell_count}",
+                }
+            else:
+                score["populations"][population_name] = {
+                    "suppressed": False,
+                    **population,
+                }
+
+        forecastable_count = int(score["forecastableCaseCount"])
+        if forecastable_count < minimum_cell_count:
+            score["forecastableCaseCount"] = f"<{minimum_cell_count}"
+            score["forecastableRevenueCoverage"] = None
+            score["forecastableRevenueCoverageSuppressed"] = True
+        else:
+            score["forecastableRevenueCoverageSuppressed"] = False
+
+        blocked_count = int(score["blockedCaseCount"])
+        if blocked_count < minimum_cell_count:
+            score["blockedCaseCount"] = f"<{minimum_cell_count}"
+
+        top10_count = sum(
+            bool(row.get("strata", {}).get("top_10_percent")) for row in group
+        )
+        if top10_count < minimum_cell_count:
+            score["top10ForecastableRevenueCoverage"] = None
+            score["top10ForecastableRevenueCoverageSuppressed"] = True
+        else:
+            score["top10ForecastableRevenueCoverageSuppressed"] = False
+
+        interval = score["internalInterval"]
+        if int(interval["requiredCaseCount"]) < minimum_cell_count:
+            score["internalInterval"] = {
+                "suppressed": True,
+                "caseCount": f"<{minimum_cell_count}",
+            }
+        else:
+            for count_name in (
+                "availableCaseCount",
+                "missingCaseCount",
+            ):
+                if int(interval[count_name]) < minimum_cell_count:
+                    interval[count_name] = f"<{minimum_cell_count}"
+            score["internalInterval"] = {
+                "suppressed": False,
+                **interval,
+            }
+
+        return {
+            "suppressed": False,
+            **score,
+        }
+
+    overall = {model: metric_cell(by_model.get(model, [])) for model in BASELINE_IDS}
 
     registered: dict[str, list[Any]] = {
         "horizon": [
@@ -2685,8 +2752,7 @@ def aggregate_report(
                     {
                         "modelId": model,
                         "value": value,
-                        "suppressed": False,
-                        **metric_score(group),
+                        **metric_cell(group),
                     }
                 )
         return output
@@ -3261,9 +3327,69 @@ def assert_committable_report_privacy(
         "internal_pi_lower",
         "internal_pi_upper",
     }
+    minimum_cell_count = int(
+        spec["reporting"]["committableAggregateReport"]["minimumCellCount"]
+    )
+    sensitive_metric_keys = {
+        "actualtotal",
+        "availablecasecount",
+        "blockedcasecount",
+        "completeonrequiredpopulation",
+        "forecastablecasecount",
+        "forecastablerevenuecoverage",
+        "forecastablerevenuecoveragesuppressed",
+        "gateeligible",
+        "predictedtotal",
+        "wape",
+        "signedaggregatebias",
+        "internal80coverage",
+        "meanwis",
+        "missingcasecount",
+        "nullpredictioncount",
+        "nullpredictionevaluationvalue",
+        "requiredcasecount",
+        "standardizedwidth",
+        "top10forecastablerevenuecoverage",
+        "top10forecastablerevenuecoveragesuppressed",
+        "uniqueworkcount",
+    }
 
     def visit(value: Any) -> None:
         if isinstance(value, Mapping):
+            normalized_keys = {str(key).casefold() for key in value}
+            case_count = value.get("caseCount")
+            if isinstance(case_count, int) and not isinstance(case_count, bool) and case_count < minimum_cell_count:
+                raise ReplayError(
+                    "committable aggregate report exposes a numeric small-cell count"
+                )
+            if case_count == f"<{minimum_cell_count}":
+                if value.get("suppressed") is not True:
+                    raise ReplayError(
+                        "committable aggregate report has an unmarked small cell"
+                    )
+                if normalized_keys & sensitive_metric_keys:
+                    raise ReplayError(
+                        "committable aggregate report retains metrics in a small cell"
+                    )
+            required_case_count = value.get("requiredCaseCount")
+            if (
+                isinstance(required_case_count, int)
+                and not isinstance(required_case_count, bool)
+                and required_case_count < minimum_cell_count
+                and normalized_keys & sensitive_metric_keys
+            ):
+                raise ReplayError(
+                    "committable aggregate report exposes interval metrics for a small cell"
+                )
+            if value.get("suppressed") is True:
+                if case_count != f"<{minimum_cell_count}":
+                    raise ReplayError(
+                        "committable aggregate report has a malformed suppressed cell"
+                    )
+                if normalized_keys & sensitive_metric_keys:
+                    raise ReplayError(
+                        "committable aggregate report retains metrics in a suppressed cell"
+                    )
             for key, child in value.items():
                 normalized = str(key).casefold()
                 if normalized in forbidden:
@@ -3295,6 +3421,9 @@ def assert_committable_report_privacy(
 def synthetic_report_shape_privacy_evidence(spec: Mapping[str, Any]) -> dict[str, Any]:
     """Exercise required-section shape and recursive privacy fail-closed behavior."""
 
+    minimum_cell_count = int(
+        spec["reporting"]["committableAggregateReport"]["minimumCellCount"]
+    )
     required = list(
         spec["reporting"]["committableAggregateReport"]["requiredSections"]
     )
@@ -3344,7 +3473,74 @@ def synthetic_report_shape_privacy_evidence(spec: Mapping[str, Any]) -> dict[str
             "internalPredictionIntervalEndpointsPresent": False,
         },
     }
+    synthetic_rows: list[dict[str, Any]] = []
+    for index in range(minimum_cell_count):
+        forecastable = index == 0
+        synthetic_rows.append(
+            {
+                "model_id": "B0b",
+                "case_key": {
+                    "standard_work_id": f"SYNTHETIC-{index}",
+                    "origin": "2020-12",
+                    "horizon_months": 3,
+                    "route": "pure_sales_share",
+                },
+                "route": "pure_sales_share",
+                "actual": 10.0,
+                "point_forecast": 10.0 if forecastable else None,
+                "eligibility": {
+                    "status": (
+                        "forecastable_numeric"
+                        if forecastable
+                        else "blocked_insufficient_history"
+                    )
+                },
+                "confidence": "medium" if forecastable else "unavailable",
+                "strata": {
+                    "horizon": 3,
+                    "revenue_model": "pure_sales_share",
+                    "source": "synthetic",
+                    "shelf_rights": "synthetic",
+                    "rights_term_type": "perpetual",
+                    "high_value": forecastable,
+                    "value_band": "top_1_percent" if forecastable else "other_positive",
+                    "long_tail": False,
+                    "dormant": False,
+                    "sparse_income": False,
+                    "spike_candidate": False,
+                    "top_10_percent": forecastable,
+                },
+                "_internal_interval": (
+                    {
+                        "available": True,
+                        "lower": 0.0,
+                        "upper": 20.0,
+                        "covered": True,
+                        "wis": 2.0,
+                        "width": 20.0,
+                    }
+                    if forecastable
+                    else {"available": False}
+                ),
+            }
+        )
+    report["requiredSections"][required[2]]["nestedPopulationFixture"] = aggregate_report(
+        synthetic_rows,
+        minimum_cell_count,
+        spec,
+    )
     assert_committable_report_privacy(report, spec)
+    nested_small_cells_suppressed = (
+        report["requiredSections"][required[2]]["nestedPopulationFixture"]
+        ["overall"]["B0b"]["populations"]["forecastableNumeric"]
+        == {"suppressed": True, "caseCount": f"<{minimum_cell_count}"}
+        and report["requiredSections"][required[2]]["nestedPopulationFixture"]
+        ["overall"]["B0b"]["populations"]["highValueAll"]
+        == {"suppressed": True, "caseCount": f"<{minimum_cell_count}"}
+        and report["requiredSections"][required[2]]["nestedPopulationFixture"]
+        ["overall"]["B0b"]["internalInterval"]
+        == {"suppressed": True, "caseCount": f"<{minimum_cell_count}"}
+    )
     recursive_privacy_failed_closed = False
     bad_privacy = copy.deepcopy(report)
     bad_privacy["requiredSections"][required[1]]["nested"] = [
@@ -3361,13 +3557,55 @@ def synthetic_report_shape_privacy_evidence(spec: Mapping[str, Any]) -> dict[str
         assert_committable_report_privacy(bad_shape, spec)
     except ReplayError:
         missing_section_failed_closed = True
+    small_cell_metrics_failed_closed = False
+    bad_small_cell = copy.deepcopy(report)
+    bad_small_cell["requiredSections"][required[2]]["smallMetricCell"] = {
+        "caseCount": 1,
+        "actualTotal": 100.0,
+        "predictedTotal": 90.0,
+        "wape": 0.1,
+    }
+    try:
+        assert_committable_report_privacy(bad_small_cell, spec)
+    except ReplayError:
+        small_cell_metrics_failed_closed = True
+    suppressed_cell_metrics_failed_closed = False
+    bad_suppressed_cell = copy.deepcopy(report)
+    bad_suppressed_cell["requiredSections"][required[2]]["smallMetricCell"] = {
+        "suppressed": True,
+        "caseCount": f"<{spec['reporting']['committableAggregateReport']['minimumCellCount']}",
+        "actualTotal": 100.0,
+    }
+    try:
+        assert_committable_report_privacy(bad_suppressed_cell, spec)
+    except ReplayError:
+        suppressed_cell_metrics_failed_closed = True
+    coverage_only_small_cell_failed_closed = False
+    bad_coverage_cell = copy.deepcopy(report)
+    bad_coverage_cell["requiredSections"][required[2]]["smallMetricCell"] = {
+        "caseCount": f"<{minimum_cell_count}",
+        "forecastableRevenueCoverage": 0.5,
+        "top10ForecastableRevenueCoverage": 0.5,
+    }
+    try:
+        assert_committable_report_privacy(bad_coverage_cell, spec)
+    except ReplayError:
+        coverage_only_small_cell_failed_closed = True
     return {
         "requiredSectionCount": len(required),
         "validShapeAccepted": True,
         "recursivePrivacyFailedClosed": recursive_privacy_failed_closed,
         "missingSectionFailedClosed": missing_section_failed_closed,
+        "smallCellMetricsFailedClosed": small_cell_metrics_failed_closed,
+        "suppressedCellMetricsFailedClosed": suppressed_cell_metrics_failed_closed,
+        "coverageOnlySmallCellFailedClosed": coverage_only_small_cell_failed_closed,
+        "nestedSmallCellsSuppressed": nested_small_cells_suppressed,
         "allChecksPass": recursive_privacy_failed_closed
-        and missing_section_failed_closed,
+        and missing_section_failed_closed
+        and small_cell_metrics_failed_closed
+        and suppressed_cell_metrics_failed_closed
+        and coverage_only_small_cell_failed_closed
+        and nested_small_cells_suppressed,
     }
 
 
@@ -3556,6 +3794,9 @@ def run_replay(mode: str, spec: Mapping[str, Any], frozen_commit: str | None) ->
     long_generated_keys = {case_key(row) for row in target_long}
     long_eligible_keys = {case_key(row) for row in target_long_eligible}
     long_counts_by_horizon = {}
+    public_count = lambda count: (
+        f"<{minimum_cell}" if int(count) < minimum_cell else int(count)
+    )
     for horizon in spec["backtest"]["longHorizonAuditMonths"]:
         generated = {
             case_key(row) for row in target_long
@@ -3566,8 +3807,8 @@ def run_replay(mode: str, spec: Mapping[str, Any], frozen_commit: str | None) ->
             if int(row["case_key"]["horizon_months"]) == int(horizon)
         }
         long_counts_by_horizon[str(horizon)] = {
-            "generatedAggregateCaseCount": len(generated),
-            "eligibleAggregateCaseCount": len(eligible),
+            "generatedAggregateCaseCount": public_count(len(generated)),
+            "eligibleAggregateCaseCount": public_count(len(eligible)),
         }
     target_parity = (
         calibration.assert_case_key_parity(
@@ -3629,10 +3870,10 @@ def run_replay(mode: str, spec: Mapping[str, Any], frozen_commit: str | None) ->
                 "extrapolated" in row.get("limitation", []) for row in target_long
             ) if target_long else True,
             "cohortDefinition": copy.deepcopy(spec["backtest"]["longHorizonEvidence"]),
-            "generatedAggregateCaseCount": len(long_generated_keys),
-            "eligibleAggregateCaseCount": len(long_eligible_keys),
-            "generatedModelCaseRowCount": len(target_long),
-            "eligibleModelCaseRowCount": len(target_long_eligible),
+            "generatedAggregateCaseCount": public_count(len(long_generated_keys)),
+            "eligibleAggregateCaseCount": public_count(len(long_eligible_keys)),
+            "generatedModelCaseRowCount": public_count(len(target_long)),
+            "eligibleModelCaseRowCount": public_count(len(target_long_eligible)),
             "countsByHorizon": long_counts_by_horizon,
             "aggregate": aggregate_report(target_long_eligible, minimum_cell, spec)
             if target_long_eligible else None,

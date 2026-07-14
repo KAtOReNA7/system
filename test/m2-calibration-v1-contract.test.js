@@ -5,6 +5,8 @@ import test from "node:test";
 
 const SPEC_PATH = "src/domain/oldProductEvaluation/calibrationSpec.v1.json";
 const KERNEL_PATH = "scripts/m2-real-data/m2_calibration_v1.py";
+const BASELINE_RUNNER_PATH =
+  "scripts/m2-real-data/run_m2_calibration_baseline_replay.py";
 const PYTHON_RUNNER_PATH = "scripts/run-codex-python.mjs";
 
 function readSpec() {
@@ -823,6 +825,40 @@ test("calibration-spec-v1 makes spike damping and current-status leakage impossi
     spec.historicalStatusPolicy.currentShelfRightsSliceUseWithoutAsOfSnapshot,
     "post_hoc_only"
   );
+});
+
+test("committable aggregate report suppresses every small metric cell", () => {
+  const output = runPython(["-"], {
+    encoding: "utf8",
+    maxBuffer: 4 * 1024 * 1024,
+    input: String.raw`
+import importlib.util
+import json
+import sys
+from pathlib import Path
+
+runner_path = Path("${BASELINE_RUNNER_PATH}").resolve()
+sys.path.insert(0, str(runner_path.parent))
+module_spec = importlib.util.spec_from_file_location(
+    "m2_calibration_baseline_replay",
+    runner_path,
+)
+module = importlib.util.module_from_spec(module_spec)
+module_spec.loader.exec_module(module)
+spec = module.calibration.load_spec()
+print(json.dumps(module.synthetic_report_shape_privacy_evidence(spec), sort_keys=True))
+`
+  });
+  const evidence = JSON.parse(output);
+
+  assert.equal(evidence.validShapeAccepted, true);
+  assert.equal(evidence.recursivePrivacyFailedClosed, true);
+  assert.equal(evidence.missingSectionFailedClosed, true);
+  assert.equal(evidence.smallCellMetricsFailedClosed, true);
+  assert.equal(evidence.suppressedCellMetricsFailedClosed, true);
+  assert.equal(evidence.coverageOnlySmallCellFailedClosed, true);
+  assert.equal(evidence.nestedSmallCellsSuppressed, true);
+  assert.equal(evidence.allChecksPass, true);
 });
 
 test("revision 5 Python primitives are exact, deterministic, and preserve case boundaries", () => {
