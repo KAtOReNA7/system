@@ -2185,9 +2185,12 @@ def verify_private_evidence_manifest(
     if actual_digest.hexdigest() != expected_digest:
         raise CorrectionError("private case evidence digest differs from manifest")
 
-    recomputed_scoreability = scoring.scoreability_fingerprint(
-        reconstructed_rows, contract
-    )
+    try:
+        recomputed_scoreability = scoring.scoreability_fingerprint(
+            reconstructed_rows, contract
+        )
+    except scoring.ScoringContractError as exc:
+        raise CorrectionError("private case scoreability evidence is invalid") from exc
     if recomputed_scoreability != manifest["scoreabilityFingerprint"]:
         raise CorrectionError("private case scoreability fingerprint differs from manifest")
     fold_training_fingerprints = manifest["foldTrainingPopulationFingerprints"]
@@ -2255,9 +2258,14 @@ def verify_private_evidence_manifest(
         raise CorrectionError("private manifest contains an invalid prediction lock digest")
 
     def role_fingerprint(role: str) -> str:
-        return scoring.prediction_fingerprint(
-            rows_by_role.get(role, []), contract, allow_outcome_projection=True
-        )
+        try:
+            return scoring.prediction_fingerprint(
+                rows_by_role.get(role, []), contract, allow_outcome_projection=True
+            )
+        except scoring.ScoringContractError as exc:
+            raise CorrectionError(
+                f"private prediction evidence is invalid for role: {role}"
+            ) from exc
 
     recomputed_locks = {
         "warmup": role_fingerprint("development_warmup_interval_calibration"),
@@ -2275,9 +2283,12 @@ def verify_private_evidence_manifest(
         for origin in sorted(expected_origins)
         for row in rows_by_role.get(f"development_forward_score:{origin}", [])
     ]
-    recomputed_locks["forwardCombined"] = scoring.prediction_fingerprint(
-        forward_rows, contract, allow_outcome_projection=True
-    )
+    try:
+        recomputed_locks["forwardCombined"] = scoring.prediction_fingerprint(
+            forward_rows, contract, allow_outcome_projection=True
+        )
+    except scoring.ScoringContractError as exc:
+        raise CorrectionError("private combined forward prediction evidence is invalid") from exc
     if recomputed_locks != locks:
         raise CorrectionError("private case prediction locks differ from manifest")
 
