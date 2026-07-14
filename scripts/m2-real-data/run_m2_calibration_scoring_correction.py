@@ -355,7 +355,113 @@ def score_model_group(
         return _suppressed_cell(len(rows), _unique_work_count(rows), minimum)
     result = scoring.score_populations(rows)
     result["internal80PredictionInterval"] = internal_interval_metrics(rows)
-    return {"suppressed": False, **result}
+    return {"suppressed": False, **sanitize_score_payload(result, minimum)}
+
+
+def _sanitize_metric_population(
+    population: Mapping[str, Any], minimum: int
+) -> dict[str, Any]:
+    case_count = int(population.get("caseCount", 0))
+    work_count = int(population.get("uniqueWorkCount", 0))
+    if case_count < minimum or work_count < minimum:
+        return _suppressed_cell(case_count, work_count, minimum)
+    return {"suppressed": False, **copy.deepcopy(dict(population))}
+
+
+def _sanitize_reason_distribution(
+    reasons: Mapping[str, Mapping[str, Any]], minimum: int
+) -> dict[str, Any]:
+    output: dict[str, Any] = {}
+    for reason, values in reasons.items():
+        case_count = int(values.get("caseCount", 0))
+        work_key = "uniqueWorkCount" if "uniqueWorkCount" in values else "workCount"
+        work_count = int(values.get(work_key, 0))
+        if case_count < minimum or work_count < minimum:
+            output[str(reason)] = {
+                "suppressed": True,
+                "caseCount": f"<{minimum}" if case_count < minimum else case_count,
+                work_key: f"<{minimum}" if work_count < minimum else work_count,
+            }
+        else:
+            output[str(reason)] = {"suppressed": False, **copy.deepcopy(dict(values))}
+    return output
+
+
+def sanitize_score_payload(
+    payload: Mapping[str, Any], minimum: int
+) -> dict[str, Any]:
+    """Apply the committed case-and-work small-cell rule to every population."""
+
+    result = copy.deepcopy(dict(payload))
+    result["allScoreableModelMetrics"] = _sanitize_metric_population(
+        result["allScoreableModelMetrics"], minimum
+    )
+    served = copy.deepcopy(result["servedCohortMetrics"])
+    high = _sanitize_metric_population(served.pop("highValuePerformance"), minimum)
+    served_sanitized = _sanitize_metric_population(served, minimum)
+    if not served_sanitized.get("suppressed"):
+        served_sanitized["highValuePerformance"] = high
+    result["servedCohortMetrics"] = served_sanitized
+
+    abstention = copy.deepcopy(result["abstentionMetrics"])
+    abstained_cases = int(abstention.get("abstainedCaseCount", 0))
+    abstained_works = int(abstention.get("abstainedWorkCount", 0))
+    small_abstention = abstained_cases < minimum or abstained_works < minimum
+    abstention["abstentionCellSuppressed"] = small_abstention
+    if small_abstention:
+        abstention["abstainedCaseCount"] = (
+            f"<{minimum}" if abstained_cases < minimum else abstained_cases
+        )
+        abstention["abstainedWorkCount"] = (
+            f"<{minimum}" if abstained_works < minimum else abstained_works
+        )
+        abstention.pop("abstainedActualRevenueShare", None)
+        abstention["highValueAbstainedWorkCount"] = f"<{minimum}"
+    abstention["abstentionReasonDistribution"] = _sanitize_reason_distribution(
+        abstention.get("abstentionReasonDistribution", {}), minimum
+    )
+    result["abstentionMetrics"] = abstention
+
+    interval = copy.deepcopy(result["internal80PredictionInterval"])
+    required = int(interval.get("requiredCaseCount", 0))
+    if required < minimum:
+        result["internal80PredictionInterval"] = {
+            "suppressed": True,
+            "requiredCaseCount": f"<{minimum}",
+        }
+    else:
+        result["internal80PredictionInterval"] = {"suppressed": False, **interval}
+    return result
+
+
+def sanitize_attribution_report(
+    report: Mapping[str, Any], minimum: int
+) -> dict[str, Any]:
+    result = copy.deepcopy(dict(report))
+    for stage in result.get("stages", []):
+        abstention = stage.get("abstentionMetrics")
+        if not isinstance(abstention, Mapping):
+            continue
+        cleaned = copy.deepcopy(dict(abstention))
+        cases = cleaned.get("abstainedCaseCount")
+        works = cleaned.get("abstainedWorkCount")
+        if isinstance(cases, int) and isinstance(works, int) and (
+            cases < minimum or works < minimum
+        ):
+            cleaned["abstentionCellSuppressed"] = True
+            cleaned["abstainedCaseCount"] = f"<{minimum}" if cases < minimum else cases
+            cleaned["abstainedWorkCount"] = f"<{minimum}" if works < minimum else works
+            cleaned["fullyAbstainedWorkCount"] = f"<{minimum}"
+            cleaned["highValueAbstainedCaseCount"] = f"<{minimum}"
+            cleaned["highValueAbstainedWorkCount"] = f"<{minimum}"
+            cleaned.pop("abstainedActualRevenueShare", None)
+        reasons = cleaned.get("abstentionReasonDistribution")
+        if isinstance(reasons, Mapping):
+            cleaned["abstentionReasonDistribution"] = _sanitize_reason_distribution(
+                reasons, minimum
+            )
+        stage["abstentionMetrics"] = cleaned
+    return result
 
 
 def aggregate_models(
@@ -613,6 +719,17 @@ def assert_public_privacy(value: Any) -> None:
 
     def visit(current: Any) -> None:
         if isinstance(current, Mapping):
+            case_count = current.get("caseCount")
+            work_count = current.get(
+                "uniqueWorkCount", current.get("workCount")
+            )
+            if (
+                isinstance(case_count, int)
+                and isinstance(work_count, int)
+                and (case_count < 10 or work_count < 10)
+                and current.get("suppressed") is not True
+            ):
+                raise CorrectionError("public report contains an unsuppressed small cell")
             for key, child in current.items():
                 normalized = str(key).replace("-", "").replace("_", "").casefold()
                 if normalized in {item.replace("_", "") for item in forbidden_keys}:
@@ -623,6 +740,8 @@ def assert_public_privacy(value: Any) -> None:
                 visit(child)
         elif isinstance(current, str):
             text = current.replace("\\", "/").casefold()
+            if text in {"standard_work_id", "channel_key"}:
+                raise CorrectionError("public report names a row-level identifier field")
             if "data/private-output/" in text:
                 raise CorrectionError("public report contains a private path")
             root = str(ROOT).replace("\\", "/").casefold()
@@ -695,7 +814,7 @@ def baseline_markdown(report: Mapping[str, Any]) -> str:
             f"- served work share：`{_fmt(abstention['servedWorkShare'])}`",
             f"- served actual revenue share：`{_fmt(abstention['servedActualRevenueShare'])}`",
             f"- top1 / top5 / top10 served revenue coverage：`{_fmt(abstention['top1ServedRevenueShare'])}` / `{_fmt(abstention['top5ServedRevenueShare'])}` / `{_fmt(abstention['top10ServedRevenueShare'])}`",
-            f"- abstained work count：`{abstention['abstainedWorkCount']}`；abstained actual revenue share：`{_fmt(abstention['abstainedActualRevenueShare'])}`。",
+            f"- abstained work count：`{abstention['abstainedWorkCount']}`；abstained actual revenue share：`{_fmt(abstention.get('abstainedActualRevenueShare'))}`（小 cell 时按规则抑制）。",
             "- abstained 的 servedPrediction 为 null；其 rawModelPrediction 仍进入 all-scoreable 模型指标，未按 0 混入 WAPE。",
             "",
             "## 完整性与边界",
@@ -715,6 +834,8 @@ def correction_markdown(report: Mapping[str, Any]) -> str:
     metrics = report["correctedMetricsByBaseline"]
     state = report["stateReconciliation"]
     top = report["preC1Gate"]["top10ServedRevenueCoveragePreC1"]
+    mixed = report["historicalMixedScoringAudit"]
+    attribution_conclusion = report["differenceAttributionConclusion"]
     lines = [
         "# M2 calibration-spec-v1.1 计分与 eligibility 修正",
         "",
@@ -737,6 +858,13 @@ def correction_markdown(report: Mapping[str, Any]) -> str:
     lines.extend(
         [
             "",
+            "## 旧约 64% → 132% 的解释",
+            "",
+            f"- B0a 历史 WAPE：`{_fmt(attribution_conclusion['historicalB0aWape'])}`；旧 coverage-aware null→0 混合量：`{_fmt(mixed['coverageAwareNullToZeroWape'])}`。后者不是模型 WAPE。",
+            f"- 旧混合量同时出现总体 bias `{_fmt(mixed['coverageAwareNullToZeroSignedBias'])}`、legacy forecastable bias `{_fmt(mixed['legacyForecastableNumericSignedBias'])}` 与高价值 null→0 bias `{_fmt(mixed['legacyHighValueNullToZeroSignedBias'])}`，说明误差与 abstention 人口发生机械抵消。",
+            f"- 固定 Stage 2–7 keys 后：as-of quantile/prior/features 的 WAPE 变化为 `{_fmt(attribution_conclusion['asOfQuantilePriorAndFeatureDelta'])}`；eligibility/abstention raw 模型 WAPE 变化为 `{_fmt(attribution_conclusion['eligibilityAndAbstentionRawModelWapeDelta'])}`；旧 selector 切换完整 B0b 的变化为 `{_fmt(attribution_conclusion['legacyModelToCompleteB0bFormulaDelta'])}`。",
+            "- 因此不能把全部差异归因于去泄漏；固定 keys 下的主要恶化来自模型公式切换。",
+            "",
             "## C1 前覆盖门禁",
             "",
             f"- top10 served revenue coverage：`{_fmt(top['value'])}`；冻结门槛：`0.9000`；通过：`{top['pass']}`。",
@@ -754,6 +882,8 @@ def correction_markdown(report: Mapping[str, Any]) -> str:
 
 
 def attribution_markdown(report: Mapping[str, Any]) -> str:
+    mixed = report["historicalMixedScoringAudit"]
+    conclusion = report["differenceAttributionConclusion"]
     lines = [
         "# M2 B0a → B0b 重放差异归因",
         "",
@@ -784,6 +914,13 @@ def attribution_markdown(report: Mapping[str, Any]) -> str:
         )
     lines.extend(
         [
+            "",
+            "## 差异主因",
+            "",
+            f"- 旧约 132% 数值为 `{_fmt(mixed['coverageAwareNullToZeroWape'])}`，其 null evaluation value 为 0，只能称业务覆盖混合量，不能称模型 WAPE。",
+            f"- Stage 2→4 的 as-of 量化/先验/特征合计变化：`{_fmt(conclusion['asOfQuantilePriorAndFeatureDelta'])}`。",
+            f"- Stage 4→6 的 eligibility 与 abstention raw 模型 WAPE 变化：`{_fmt(conclusion['eligibilityAndAbstentionRawModelWapeDelta'])}`。",
+            f"- Stage 6→7 从旧 selector 到完整 B0b 公式的变化：`{_fmt(conclusion['legacyModelToCompleteB0bFormulaDelta'])}`，是固定 keys 后的主要来源。",
             "",
             "## 解释边界",
             "",
@@ -1005,9 +1142,85 @@ def run_development(contract: scoring.ScoringContract) -> dict[str, Any]:
     gates = gate_evidence(development_aggregate, locked_comparator, parity)
 
     progress("building fixed-key B0a-to-B0b attribution bridge")
-    attribution_report = attribution.build_attribution_report(
+    attribution_internal = attribution.build_attribution_report(
         works, forward_rows, model_inputs, spec, contract.amendment
     )
+    legacy_b0b_rows = [
+        row for row in forward_rows_legacy if row.get("model_id") == "B0b"
+    ]
+    legacy_mixed_score = legacy.metric_score(legacy_b0b_rows)
+    historical_mixed_audit = {
+        "classification": "historical_business_coverage_mixture_not_model_wape",
+        "coverageAwareNullToZeroWape": legacy_mixed_score["populations"][
+            "coverageAwareOverall"
+        ]["wape"],
+        "coverageAwareNullToZeroSignedBias": legacy_mixed_score["populations"][
+            "coverageAwareOverall"
+        ]["signedAggregateBias"],
+        "legacyForecastableNumericWape": legacy_mixed_score["populations"][
+            "forecastableNumeric"
+        ]["wape"],
+        "legacyForecastableNumericSignedBias": legacy_mixed_score["populations"][
+            "forecastableNumeric"
+        ]["signedAggregateBias"],
+        "legacyHighValueNullToZeroWape": legacy_mixed_score["populations"][
+            "highValueAll"
+        ]["wape"],
+        "legacyHighValueNullToZeroSignedBias": legacy_mixed_score["populations"][
+            "highValueAll"
+        ]["signedAggregateBias"],
+        "forecastableRevenueCoverage": legacy_mixed_score[
+            "forecastableRevenueCoverage"
+        ],
+        "top10ForecastableRevenueCoverage": legacy_mixed_score[
+            "top10ForecastableRevenueCoverage"
+        ],
+        "nullPredictionEvaluationValue": 0.0,
+        "mayBeNamedModelWape": False,
+        "selectionUseAllowed": False,
+    }
+    stages = {str(stage["stage"]): stage for stage in attribution_internal["stages"]}
+    attribution_interpretation = {
+        "historicalB0aWape": stages["1"]["servedCohortMetrics"]["wape"],
+        "historicalMixedApproximately132Percent": historical_mixed_audit[
+            "coverageAwareNullToZeroWape"
+        ],
+        "fixedKeyLegacyModelWape": stages["2"]["allScoreableModelMetrics"][
+            "wape"
+        ],
+        "asOfSafeLegacyModelWape": stages["4"]["allScoreableModelMetrics"][
+            "wape"
+        ],
+        "completeB0bWape": stages["7"]["allScoreableModelMetrics"]["wape"],
+        "asOfQuantilePriorAndFeatureDelta": rounded(
+            float(stages["4"]["allScoreableModelMetrics"]["wape"])
+            - float(stages["2"]["allScoreableModelMetrics"]["wape"])
+        ),
+        "eligibilityAndAbstentionRawModelWapeDelta": rounded(
+            float(stages["6"]["allScoreableModelMetrics"]["wape"])
+            - float(stages["4"]["allScoreableModelMetrics"]["wape"])
+        ),
+        "legacyModelToCompleteB0bFormulaDelta": rounded(
+            float(stages["7"]["allScoreableModelMetrics"]["wape"])
+            - float(stages["6"]["allScoreableModelMetrics"]["wape"])
+        ),
+        "conclusionZh": (
+            "旧约132%来自把未服务null按0混入全量业务覆盖人口，不能称模型WAPE；"
+            "在Stage2至7固定keys后，as-of量化与特征使WAPE小幅下降，"
+            "主要恶化来自旧selector切换为完整B0b公式，而不是eligibility或abstention计分。"
+        ),
+    }
+    attribution_internal["historicalMixedScoringAudit"] = historical_mixed_audit
+    attribution_internal["differenceAttributionConclusion"] = attribution_interpretation
+    minimum_public_cell = int(
+        spec["reporting"]["committableAggregateReport"]["minimumCellCount"]
+    )
+    attribution_report = sanitize_attribution_report(
+        attribution_internal, minimum_public_cell
+    )
+    public_bootstrap = copy.deepcopy(bootstrap)
+    public_bootstrap["clusterKeys"] = ["work_cluster", "origin_cluster"]
+    public_bootstrap["population"] = "allScoreable_exact_key_parity"
 
     long_included, long_deferred = legacy.long_audit_origins(
         spec, development_safe_only=True
@@ -1069,7 +1282,7 @@ def run_development(contract: scoring.ScoringContract) -> dict[str, Any]:
         "stateReconciliation": state,
         "developmentBaseline": development_aggregate,
         "baselineSelection": selection,
-        "pairedTwoWayBlockBootstrap": bootstrap,
+        "pairedTwoWayBlockBootstrap": public_bootstrap,
         "preC1Gates": gates,
         "rawPredictionLocks": {
             "forward": raw_forward_lock,
@@ -1077,6 +1290,8 @@ def run_development(contract: scoring.ScoringContract) -> dict[str, Any]:
             "longAudit": raw_long_lock,
         },
         "B0aHistoricalAuditOnly": attribution_report["stages"][0],
+        "historicalMixedScoringAudit": historical_mixed_audit,
+        "differenceAttributionConclusion": attribution_interpretation,
         "B0aToB0bAttributionSummary": {
             "stageCount": len(attribution_report["stages"]),
             "fixedStage2To7Population": attribution_report["integrity"],
@@ -1114,7 +1329,7 @@ def run_development(contract: scoring.ScoringContract) -> dict[str, Any]:
             ],
             "futurePerturbationEvidence": synthetic["futurePerturbationEvidence"],
             "caseIidBootstrapUsed": False,
-            "bootstrapClusters": ["standard_work_id", "origin"],
+            "bootstrapClusters": ["work_cluster", "origin_cluster"],
             "currentStatusPostHocOnly": True,
             "blockedOrAbstainedZeroImputedIntoModelWape": False,
         },
@@ -1159,6 +1374,8 @@ def run_development(contract: scoring.ScoringContract) -> dict[str, Any]:
         "stateReconciliation": state,
         "rawAndServedReconciliation": parity,
         "correctedMetricsByBaseline": development_aggregate["overall"],
+        "historicalMixedScoringAudit": historical_mixed_audit,
+        "differenceAttributionConclusion": attribution_interpretation,
         "preC1Gate": gates,
         "B0aToB0bAttribution": {
             "stageCount": len(attribution_report["stages"]),
