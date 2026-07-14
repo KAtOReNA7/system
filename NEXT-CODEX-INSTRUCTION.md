@@ -4,7 +4,7 @@
 
 当前入口是：
 
-`基于最终 3053 部权威基础数据拟定并执行 M2 最终上线预测算法校准；旧 v1.1 conditional 已被用户拒绝，不得 release，不得进入 M3`
+`复核 calibration-spec-v1.1 scoring correction 与 B0b-B3 baseline replay；未经用户再次明确授权不得开始 C1，旧 v1.1 不得 release，不得进入 M3`
 
 ## 当前状态
 
@@ -17,6 +17,11 @@
 - 最终 3053 部范围的收入模式重算稳定：pure_sales_share=2578、pure_buyout=287、buyout_plus_sales=183、unknown=5。
 - 最终 3053 部范围的前台评级重算稳定：S+=38、S=117、A=84、B=358、C=152、D=356、E=1948。
 - v1.1 conditional 已被用户明确拒绝作为最终上线预测算法；旧 package 只保留审计和对照用途，禁止 approved/released。
+- `calibration-spec-v1.1-amendment` 已在 C1 前冻结；scoreable、model prediction available、business serving eligible 与 abstained 已拆分，served null 不再按 0 混入模型 WAPE。
+- development forward 已完成：每模型 18615 个 case，statistically scoreable 12223；abstention 的 unique work×origin 小于公开最小 cell，served/abstained 精确计数按互补保护规则不公开。top1/top5/top10 served revenue coverage 均为 1.0000。
+- B0b/B1/B2/B3 all-scoreable WAPE 分别为 1.6666/1.9022/1.8640/1.6995，signed bias 分别为 +1.1961/+1.4794/+1.4497/+1.2348；baseline 诊断不满足最终候选 bias gate。
+- 按冻结的“相对差 <1% 或 paired CI 包含 0”规则，四个 baseline 统计等价，当前 comparator 依简单度锁定 B1；B0b 经验 WAPE 最低且与 B3 一并继续报告。
+- B0a→B0b 七阶段归因、future perturbation、case-key/state parity 和内部 80% PI 审计均已完成；final holdout、embargo、60 月标签和全部候选仍 sealed，状态保持 `not_for_formal_decision`。
 - 作者、版权开始、版权到期、作品状态和音频版权状态已按用户确认口径完成本地文件级 staging 收口，禁止依据旧 gap 报告重新生成待办。
 - 用户最终分类标签基础表已固定：3053 部作品，出版物 1195 部、网文 1858 部，分类与标签人工缺口为 0；private 明细不进入版本控制。
 - 最终表修正 836 部作品，固定 387 部作品、532 个标签赋值；新增分类和标签已进入受控词表 `2026-07-10-user-confirmed-v2`。
@@ -55,20 +60,25 @@
 20. `scripts/m2-real-data/run_m2_formal_local_execution.mjs`
 21. `src/repositories/m2EvaluationExportRepository.js`
 22. `docs/analysis/m3/M3-next-execution-roadmap-v1.md`
+23. `src/domain/oldProductEvaluation/calibrationSpec.v1.1.amendment.json`
+24. `docs/analysis/m2-real-data/M2-calibration-baseline-scoring-correction-v1.md`
+25. `docs/analysis/m2-real-data/M2-B0a-B0b-replay-attribution-v1.md`
+26. `docs/analysis/m2-real-data/M2-calibration-baseline-development-v1.1.md`
+27. `scripts/m2-real-data/run_m2_calibration_scoring_correction.py`
 
 ## 下一轮推荐任务
 
 优先执行：
 
-`一次性完成 M2 最终上线预测算法校准与候选选择：只使用最终 3053 部权威基础数据和 192872 条收入事实，对旧 v1.1 做可复现基线对照，建立候选、滚动回测、分层误差、区间校准和业务可读验证包；未达到门槛则如实 FAIL，不得 release 或进入 M3`
+`先复核 scoring correction、七阶段归因、B0b-B3 指标与 B1 comparator 锁定；若用户明确批准，再从 C1 开始按 C1→C2-R→C2→C3 顺序训练，选择通过全部冻结 gate 的最简单候选；不得自动打开 final holdout、release 或进入 M3`
 
 执行要求：
 
-1. 先确认 `HEAD == origin/main`、工作区范围和本机隔离环境；读取 README、AGENTS、当前 PRD、v1.1 验证报告、post-foundation readiness 和 formal-local execution 汇总。
+1. 先确认 `HEAD == origin/main`、工作区范围和本机隔离环境；读取 README、AGENTS、当前 PRD、calibration-spec-v1.1 amendment、scoring correction、七阶段归因和更新后的 baseline replay。
 2. 只使用最终 3053 部权威基础信息、最终 mapping 和 192872 条收入事实；不得重新清洗或覆盖已确认基础字段，除非发现可证明的工程错误并先报告。
-3. 将 v1.1 作为被拒绝的历史基线，不做状态包装或小修粉饰。新候选必须重新完成 3/6/12/18/24 月滚动回测、关键分层比较、区间覆盖、P0/P1/P2、稳定性和高价值样本检查。
+3. 将旧 v1.1 作为被拒绝的 B0a 历史锚点；B0b-B3 使用已冻结的 12223 个 scoreable keys。不得恢复 forecastabilityStatus 混合口径，不得把 abstained served null 按 0 计入模型 WAPE。
 4. 生成中文、可读、Git 忽略的业务验证表，以及不含真实作品明细的可提交聚合报告；测试结果主要信息必须中文化。
-5. 新候选通过工程门槛后仍不得自动 release；必须再次交给用户抽检并获得明确批准。M2 输出继续禁止自动运营建议或资源投入动作字段。
+5. 当前必须停在 C1 前。只有用户再次明确授权后才可训练 C1；新候选通过工程门槛后仍不得自动打开 final holdout 或 release，必须再次交给用户抽检并获得明确批准。M2 输出继续禁止自动运营建议或资源投入动作字段。
 
 ## 当前允许做的事
 
