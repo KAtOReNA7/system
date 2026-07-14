@@ -228,6 +228,16 @@
     "abstained": "servedPrediction_is_null",
     "blockedOrAbstainedServedPredictionMayBeCoercedToZeroForModelMetric": false,
     "rawAndServedMustMatchWhenServed": true,
+    "unresolvedRevenueModelRawPolicy": {
+      "statisticallyScoreableCaseMustRemainInAllScoreable": true,
+      "businessServingEligible": false,
+      "servedPrediction": null,
+      "rawModelPredictionWhenAllCutoffAvailableChannelHistoryAmountsAreZero": 0,
+      "positiveOrNonFiniteCutoffHistoryBehavior": "integrity_failure_before_model_scoring",
+      "aggregateSalesTimeSeriesFallbackAllowed": false,
+      "routeComponentReconciliationMayBeClaimed": false,
+      "selectionUse": "structural_zero_only_not_a_fitted_unknown_route_model"
+    },
     "negativePointFloorReference": "base:/parameters/negativePointForecastFloor",
     "productContract": {
       "allowedFields": [
@@ -256,8 +266,8 @@
       "actual",
       "model_id"
     ],
-    "scoreabilityFingerprint": "for_every_case_key_serialize_case_key|statisticallyScoreable|scoreability_reason|target_end|label_available_as_of|actual_fixed_8_or_NULL_sorted_lexicographically_joined_with_LF",
-    "predictionFingerprint": "for_every_model_and_case_key_before_truth_join_serialize_case_key|model_id|rawModelPrediction_fixed_8_or_NULL|modelPredictionAvailable|businessServingEligible|servedPrediction_fixed_8_or_NULL|abstained|abstentionReason|canonical_raw_annual_breakdown|canonical_served_annual_breakdown|confidence|ordered_limitation_JSON_sorted_lexicographically_joined_with_LF",
+    "scoreabilityFingerprint": "for_every_case_key_serialize_case_key|statisticallyScoreable|scoreability_reason|target_end|label_available_as_of|actual_fixed_8_or_NULL_sorted_lexicographically_joined_with_LF_without_trailing_LF",
+    "predictionFingerprint": "for_every_model_and_case_key_before_truth_join_serialize_case_key|model_id|rawModelPrediction_fixed_8_or_NULL|modelPredictionAvailable|businessServingEligible|servedPrediction_fixed_8_or_NULL|abstained|abstentionReason|canonical_raw_annual_breakdown|canonical_served_annual_breakdown|confidence|ordered_limitation_JSON_sorted_lexicographically_joined_with_LF_without_trailing_LF",
     "internalIntervalFingerprintSeparateFromPublicPredictionFingerprint": true,
     "parityRequiredAcrossB0bB1B2B3": [
       "case_key_set",
@@ -266,6 +276,28 @@
       "post_hoc_segment_assignments"
     ],
     "intersectionDropAllowed": false
+  },
+  "executionOrderEvidence": {
+    "predictionLockMustPrecedeScoringTruthJoinPerRoleAndScoreOrigin": true,
+    "truthJoinRequiresMatchingPredictionLockReceipt": true,
+    "predictionLockInputMustRejectOutcomeFields": true,
+    "postTruthPredictionProjectionMustMatchPreTruthFingerprint": true,
+    "forwardFoldOrder": "fit_only_from_prior_labels_available_at_score_origin_then_generate_and_lock_held_predictions_then_join_held_truth",
+    "sameOrFutureFoldTruthMayAffectCurrentPrediction": false,
+    "warmupOrder": "generate_annotate_lock_then_truth_join",
+    "longAuditOrder": "generate_annotate_lock_then_development_safe_truth_join",
+    "deferred60MonthPredictionOrTruthJoinAllowed": false,
+    "privateEvidenceManifestMustBind": [
+      "private_case_row_count",
+      "private_case_sha256",
+      "private_case_serialization",
+      "base_spec_digest",
+      "amendment_digest",
+      "correction_code_commit",
+      "input_fingerprint",
+      "prediction_lock_fingerprints",
+      "public_report_sha256"
+    ]
   },
   "metrics": {
     "populations": {
@@ -466,7 +498,11 @@
       },
       "legacy_model_new_case_key_intersection": {
         "freezesIntersectionForStages2Through7": true,
-        "changeFromPrior": "replay_legacy_model_on_the_new_fixed_development_case_key_intersection"
+        "changeFromPrior": "replay_legacy_selector_on_the_new_fixed_development_case_key_intersection_using_only_development_purge_bounded_global_quantiles_and_priors",
+        "historicalFullPeriodCasePredictionArtifactAvailable": false,
+        "reconstructionProxy": "development_purge_bounded_global_quantiles_and_priors",
+        "maximumIncomeFactMonthRead": "base:/origins/crossHorizonPurge/developmentTargetEndOnOrBefore",
+        "sealedEmbargoFinalHoldoutOrDeferred60MonthFactsAllowed": false
       },
       "legacy_model_as_of_quantiles_and_priors": {
         "changeFromPrior": "replace_only_quantiles_and_priors_with_cutoff_available_as_of_versions"
@@ -476,11 +512,17 @@
       },
       "legacy_model_new_eligibility": {
         "changeFromPrior": "apply_only_the_frozen_caseStates_statistical_and_business_eligibility",
-        "expectedAllScoreableRawMetricInvariant": true
+        "scoringSemantics": "legacy_served_prediction_with_null_to_zero_business_coverage_mixture",
+        "metricName": "legacyCoverageAwareLoss",
+        "mayBeNamedModelWape": false,
+        "expectedRawPredictionInvariant": true
       },
       "legacy_model_new_abstention_scoring": {
         "changeFromPrior": "apply_only_raw_served_abstention_metric_separation_and_remove_null_to_zero_from_model_metrics",
-        "legacyZeroImputedMetricName": "legacyCoverageAwareLoss"
+        "scoringSemantics": "all_scoreable_raw_model_metrics_plus_served_cohort_plus_abstention_metrics",
+        "legacyZeroImputedMetricName": "legacyCoverageAwareLoss",
+        "rawModelPredictionUsedForAllScoreableWape": true,
+        "servedNullCoercedToZeroForModelWape": false
       },
       "complete_B0b": {
         "changeFromPrior": "apply_the_complete_leakage_free_B0b_route_fit_predict_and_interval_contract"
@@ -499,7 +541,7 @@
       "caseFingerprint",
       "predictionFingerprint",
       "caseCount",
-      "allScoreableWape",
+      "allScoreableWape_or_explicit_legacyCoverageAwareLoss_when_the_stage_precedes_scoring_correction",
       "allScoreableSignedAggregateBias",
       "servedRevenueCoverage",
       "top10ServedRevenueCoverage",
