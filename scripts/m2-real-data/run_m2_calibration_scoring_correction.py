@@ -1040,6 +1040,8 @@ def _sanitize_metric_population(
     # all-scoreable minus served, so they stay in ignored private evidence only.
     result.pop("actualTotal", None)
     result.pop("predictedTotal", None)
+    if "workCountDefinition" in result:
+        result["workCountDefinition"] = "distinct_work_origin_block"
     return {"suppressed": False, **result}
 
 
@@ -1060,7 +1062,10 @@ def _sanitize_reason_distribution(
                 "suppressionReason": "case_or_unique_work_count_below_public_minimum",
             }
         else:
-            output[str(reason)] = {"suppressed": False, **copy.deepcopy(dict(values))}
+            public_values = copy.deepcopy(dict(values))
+            if "workCountDefinition" in public_values:
+                public_values["workCountDefinition"] = "distinct_work_origin_block"
+            output[str(reason)] = {"suppressed": False, **public_values}
     return output
 
 
@@ -1630,7 +1635,7 @@ def assert_public_privacy(value: Any) -> None:
                 visit(child)
         elif isinstance(current, str):
             text = current.replace("\\", "/").casefold()
-            if text in {"standard_work_id", "channel_key"}:
+            if "standard_work_id" in text or "channel_key" in text:
                 raise CorrectionError("public report names a row-level identifier field")
             if "data/private-output/" in text:
                 raise CorrectionError("public report contains a private path")
@@ -1757,7 +1762,7 @@ def baseline_markdown(report: Mapping[str, Any]) -> str:
             f"- served work share：`{_fmt(coverage['servedWorkShare'])}`",
             f"- served actual revenue share：`{_fmt(coverage['servedActualRevenueShare'])}`",
             f"- top1 / top5 / top10 served revenue coverage：`{_fmt(coverage['top1ServedRevenueShare'])}` / `{_fmt(coverage['top5ServedRevenueShare'])}` / `{_fmt(coverage['top10ServedRevenueShare'])}`",
-            f"- abstention cell：`{abstention.get('caseCount')}` cases / `{abstention.get('uniqueWorkCount')}` works（小 cell 按规则整组抑制）。",
+            f"- abstention cell：cases `{abstention.get('caseCount') if abstention.get('caseCount') is not None else '已抑制'}` / works `{abstention.get('uniqueWorkCount') if abstention.get('uniqueWorkCount') is not None else '已抑制'}`（小 cell 按规则整组抑制）。",
             "- abstained 的 servedPrediction 为 null；其 rawModelPrediction 仍进入 all-scoreable 模型指标，未按 0 混入 WAPE。",
             "",
             "## 完整性与边界",
@@ -1779,11 +1784,13 @@ def correction_markdown(report: Mapping[str, Any]) -> str:
     top = report["preC1Gate"]["top10ServedRevenueCoveragePreC1"]
     mixed = report["historicalMixedScoringAudit"]
     attribution_conclusion = report["differenceAttributionConclusion"]
+    served_count = state["businessServingEligibleScoreableCaseCount"]
+    abstained_count = state["abstainedScoreableCaseCount"]
     lines = [
         "# M2 calibration-spec-v1.1 计分与 eligibility 修正",
         "",
         f"- 决策状态：`{report['decisionStatus']}`；C1 started：`false`。",
-        f"- case universe / statistically scoreable / served / abstained：`{state['caseUniverseCount']}` / `{state['statisticallyScoreableCaseCount']}` / `{state['businessServingEligibleScoreableCaseCount']}` / `{state['abstainedScoreableCaseCount']}`。",
+        f"- case universe / statistically scoreable / served / abstained：`{state['caseUniverseCount']}` / `{state['statisticallyScoreableCaseCount']}` / `{served_count if served_count is not None else '已抑制'}` / `{abstained_count if abstained_count is not None else '已抑制'}`。",
         "- `forecastabilityStatus` 仅保留历史审计用途，不再同时控制回测、模型能力和业务展示。",
         "- all-scoreable 使用 rawModelPrediction；served-cohort 使用 servedPrediction；abstention 单独报告。",
         "- blocked/abstained served null 从未按 0 混入模型 WAPE；如评估未服务损失，仅使用 `endToEndBusinessLoss` 名称。",

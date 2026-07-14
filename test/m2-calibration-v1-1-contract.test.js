@@ -457,7 +457,7 @@ test("public sanitization prevents complement inference, row identifiers, local 
       "sys.path.insert(0,str(pathlib.Path('scripts/m2-real-data').resolve()))",
       "import run_m2_calibration_scoring_correction as runner",
       "payload={",
-      " 'allScoreableModelMetrics':{'caseCount':20,'uniqueWorkCount':10,'actualTotal':100.0,'predictedTotal':90.0,'wape':0.2,'mae':1.0,'smape':0.3,'signedAggregateBias':-0.1,'horizonStability':{}},",
+      " 'allScoreableModelMetrics':{'caseCount':20,'uniqueWorkCount':10,'workCountDefinition':'distinct_standard_work_id_x_origin','actualTotal':100.0,'predictedTotal':90.0,'wape':0.2,'mae':1.0,'smape':0.3,'signedAggregateBias':-0.1,'horizonStability':{}},",
       " 'servedCohortMetrics':{'caseCount':19,'uniqueWorkCount':10,'actualTotal':99.0,'predictedTotal':89.0,'wape':0.2,'mae':1.0,'smape':0.3,'signedAggregateBias':-0.1,'highValuePerformance':{'caseCount':10,'uniqueWorkCount':10,'actualTotal':80.0,'predictedTotal':70.0,'wape':0.2,'mae':1.0,'smape':0.3,'signedAggregateBias':-0.1}},",
       " 'abstentionMetrics':{'scoreableCaseCount':20,'servedCaseCount':19,'servedWorkShare':0.9,'servedActualRevenueShare':0.99,'top1ServedRevenueShare':1.0,'top5ServedRevenueShare':1.0,'top10ServedRevenueShare':1.0,'abstainedCaseCount':1,'abstainedWorkCount':1,'abstainedActualRevenueShare':0.01,'highValueAbstainedWorkCount':1,'abstentionReasonDistribution':{}},",
       " 'internal80PredictionInterval':{'requiredCaseCount':20,'availableCaseCount':20,'missingCaseCount':0,'completeOnAllScoreablePopulation':True,'internal80Coverage':0.8,'meanWis':1.0,'endpointsPresentInPublicReport':False}",
@@ -466,7 +466,7 @@ test("public sanitization prevents complement inference, row identifiers, local 
       "runner.assert_public_privacy(sanitized)",
       "cells=[{'modelId':'B0b','value':'rare','suppressed':True,'caseCount':'<10','uniqueWorkCount':'<10'},{'modelId':'B0b','value':'common','suppressed':False,'allScoreableModelMetrics':{'caseCount':20,'uniqueWorkCount':10}}]",
       "secondary=runner._apply_complementary_axis_suppression(cells)",
-      "negative=[{'caseKey':['PRIVATE-WORK','2020-12',3,'pure_sales_share']},{'workKey':'PRIVATE-WORK'},{'raw_income_row':{'amount':1}},{'path':'C:/Users/Other/secret/source.xlsx'},{'p10':1,'p90':2},{'caseCount':1},{'uniqueWorkCount':1}]",
+      "negative=[{'caseKey':['PRIVATE-WORK','2020-12',3,'pure_sales_share']},{'workKey':'PRIVATE-WORK'},{'raw_income_row':{'amount':1}},{'definition':'distinct_standard_work_id_x_origin'},{'path':'C:/Users/Other/secret/source.xlsx'},{'p10':1,'p90':2},{'caseCount':1},{'uniqueWorkCount':1}]",
       "rejected=[]",
       "for candidate in negative:",
       " try: runner.assert_public_privacy(candidate)",
@@ -476,7 +476,7 @@ test("public sanitization prevents complement inference, row identifiers, local 
       "try: runner.assert_public_markdown_privacy('`predictionIntervalLower`: 1')",
       "except runner.CorrectionError: markdown_rejected=True",
       "long_receipt=runner._public_lock_receipt({'role':'development_long_horizon_audit','predictionFingerprint':'a'*64,'predictionRowCount':1,'caseKeyCount':1},suppress_counts=True)",
-      "print(json.dumps({'allTotalsRemoved':'actualTotal' not in sanitized['allScoreableModelMetrics'] and 'predictedTotal' not in sanitized['allScoreableModelMetrics'],'servedTotalsRemoved':'actualTotal' not in sanitized['servedCohortMetrics'] and 'predictedTotal' not in sanitized['servedCohortMetrics'],'servedCountHidden':sanitized['servedCohortMetrics']['caseCount'] is None,'abstentionSuppressed':sanitized['abstentionMetrics']['suppressed'],'coverageRetainedAsLargeDenominator':sanitized['servingCoverageMetrics']['top10ServedRevenueShare']==1.0,'secondarySuppression':len(secondary)==2 and all(cell['suppressed'] for cell in secondary) and any(cell.get('secondarySuppression') for cell in secondary),'negativeRejected':all(rejected),'markdownRejected':markdown_rejected,'longFingerprintWithheld':'predictionFingerprint' not in long_receipt and long_receipt.get('predictionFingerprintWithheldForSmallCell') is True},sort_keys=True))"
+      "print(json.dumps({'allTotalsRemoved':'actualTotal' not in sanitized['allScoreableModelMetrics'] and 'predictedTotal' not in sanitized['allScoreableModelMetrics'],'semanticDefinitionSanitized':sanitized['allScoreableModelMetrics']['workCountDefinition']=='distinct_work_origin_block','servedTotalsRemoved':'actualTotal' not in sanitized['servedCohortMetrics'] and 'predictedTotal' not in sanitized['servedCohortMetrics'],'servedCountHidden':sanitized['servedCohortMetrics']['caseCount'] is None,'abstentionSuppressed':sanitized['abstentionMetrics']['suppressed'],'coverageRetainedAsLargeDenominator':sanitized['servingCoverageMetrics']['top10ServedRevenueShare']==1.0,'secondarySuppression':len(secondary)==2 and all(cell['suppressed'] for cell in secondary) and any(cell.get('secondarySuppression') for cell in secondary),'negativeRejected':all(rejected),'markdownRejected':markdown_rejected,'longFingerprintWithheld':'predictionFingerprint' not in long_receipt and long_receipt.get('predictionFingerprintWithheldForSmallCell') is True},sort_keys=True))"
     ].join("\n")
   );
 
@@ -488,6 +488,7 @@ test("public sanitization prevents complement inference, row identifiers, local 
     markdownRejected: true,
     negativeRejected: true,
     secondarySuppression: true,
+    semanticDefinitionSanitized: true,
     servedCountHidden: true,
     servedTotalsRemoved: true
   });
