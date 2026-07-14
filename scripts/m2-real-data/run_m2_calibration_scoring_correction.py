@@ -1069,6 +1069,25 @@ def _sanitize_reason_distribution(
     return output
 
 
+def _sanitize_public_semantic_strings(value: Any) -> Any:
+    """Remove internal identifier field names while retaining aggregate meaning."""
+
+    if isinstance(value, Mapping):
+        return {
+            str(key): _sanitize_public_semantic_strings(child)
+            for key, child in value.items()
+        }
+    if isinstance(value, list):
+        return [_sanitize_public_semantic_strings(child) for child in value]
+    if isinstance(value, tuple):
+        return [_sanitize_public_semantic_strings(child) for child in value]
+    if isinstance(value, str):
+        return value.replace("standard_work_id", "work").replace(
+            "channel_key", "channel"
+        )
+    return value
+
+
 def sanitize_score_payload(
     payload: Mapping[str, Any], minimum: int
 ) -> dict[str, Any]:
@@ -1136,7 +1155,7 @@ def sanitize_score_payload(
         }
     else:
         result["internal80PredictionInterval"] = {"suppressed": False, **interval}
-    return result
+    return _sanitize_public_semantic_strings(result)
 
 
 def sanitize_attribution_report(
@@ -1192,7 +1211,7 @@ def sanitize_attribution_report(
                     reasons, minimum
                 )
         stage["abstentionMetrics"] = cleaned
-    return result
+    return _sanitize_public_semantic_strings(result)
 
 
 def _public_lock_receipt(
