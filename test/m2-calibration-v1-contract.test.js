@@ -858,6 +858,9 @@ print(json.dumps(module.synthetic_report_shape_privacy_evidence(spec), sort_keys
   assert.equal(evidence.suppressedCellMetricsFailedClosed, true);
   assert.equal(evidence.coverageOnlySmallCellFailedClosed, true);
   assert.equal(evidence.nestedSmallCellsSuppressed, true);
+  assert.equal(evidence.uniqueWorkSmallCellFailedClosed, true);
+  assert.equal(evidence.uniqueWorkCountOnlyFailedClosed, true);
+  assert.equal(evidence.forecastableWorkCountOnlyFailedClosed, true);
   assert.equal(evidence.allChecksPass, true);
 });
 
