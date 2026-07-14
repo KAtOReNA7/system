@@ -21,7 +21,7 @@
 - development forward 已完成：每模型 18615 个 case，statistically scoreable 12223；abstention 的 unique work×origin 小于公开最小 cell，served/abstained 精确计数按互补保护规则不公开。top1/top5/top10 served revenue coverage 均为 1.0000。
 - B0b/B1/B2/B3 all-scoreable WAPE 分别为 1.6666/1.9022/1.8640/1.6995，signed bias 分别为 +1.1961/+1.4794/+1.4497/+1.2348；baseline 诊断不满足最终候选 bias gate。
 - 按冻结的“相对差 <1% 或 paired CI 包含 0”规则，四个 baseline 统计等价，当前 comparator 依简单度锁定 B1；B0b 经验 WAPE 最低且与 B3 一并继续报告。
-- B0a→B0b 七阶段归因、future perturbation、case-key/state parity 和内部 80% PI 审计均已完成；final holdout、embargo、60 月标签和全部候选仍 sealed，状态保持 `not_for_formal_decision`。
+- B0a→B0b 七阶段归因、future perturbation、per-origin prediction lock、case-key/state parity、fold-training population fingerprint、private manifest 复算和内部 80% PI 审计均已完成；final holdout、embargo、60 月标签和全部候选仍 sealed，状态保持 `not_for_formal_decision`。
 - 作者、版权开始、版权到期、作品状态和音频版权状态已按用户确认口径完成本地文件级 staging 收口，禁止依据旧 gap 报告重新生成待办。
 - 用户最终分类标签基础表已固定：3053 部作品，出版物 1195 部、网文 1858 部，分类与标签人工缺口为 0；private 明细不进入版本控制。
 - 最终表修正 836 部作品，固定 387 部作品、532 个标签赋值；新增分类和标签已进入受控词表 `2026-07-10-user-confirmed-v2`。

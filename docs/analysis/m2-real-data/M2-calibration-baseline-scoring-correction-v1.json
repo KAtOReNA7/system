@@ -1,0 +1,592 @@
+{
+  "B0aToB0bAttribution": {
+    "fixedStage2To7CaseKeys": {
+      "actualFingerprint": "16417b3e73341201b763b0b9169a3b6cd3eee8533fd491fed0bf188f906c41d6",
+      "caseCount": 12223,
+      "caseFingerprint": "59ac9b715b5612396e9651f66c9dde67c727411a924438c0965972ca286448c8",
+      "stage4To5RawPredictionFingerprintEqual": true,
+      "stage5PrimaryMetricIsLegacyCoverageAwareLoss": true,
+      "stage5To6PredictionFingerprintEqual": true,
+      "stage5To6RawAndServingFingerprintsEqual": true,
+      "stage5To6ScoringSemanticsFingerprintDifferent": true,
+      "stage6PrimaryMetricIsRawAllScoreableWape": true,
+      "stage6To7ServingFingerprintEqual": true,
+      "stages2Through7ActualFingerprintEqual": true,
+      "stages2Through7CaseCountEqual": true,
+      "stages2Through7CaseFingerprintEqual": true
+    },
+    "stageCount": 7
+  },
+  "B0bToB3Replay": {
+    "baselineSelection": {
+      "B0aParticipated": false,
+      "complexityOrderSimplestFirst": [
+        "B1",
+        "B2",
+        "B3",
+        "B0b"
+      ],
+      "equivalentBaselineIds": [
+        "B0b",
+        "B1",
+        "B2",
+        "B3"
+      ],
+      "evidence": {
+        "B0b": {
+          "pairedCiContainsZero": true,
+          "pairedCiLower": 0.0,
+          "pairedCiUpper": 0.0,
+          "relativeDifferenceBelowOnePercent": true,
+          "relativeDifferenceVsProvisionalBest": 0.0,
+          "statisticallyEquivalent": true,
+          "wape": 1.66656758
+        },
+        "B1": {
+          "pairedCiContainsZero": true,
+          "pairedCiLower": -0.06046984,
+          "pairedCiUpper": 1.27009405,
+          "relativeDifferenceBelowOnePercent": false,
+          "relativeDifferenceVsProvisionalBest": 0.1413645,
+          "statisticallyEquivalent": true,
+          "wape": 1.90216107
+        },
+        "B2": {
+          "pairedCiContainsZero": true,
+          "pairedCiLower": -0.02774205,
+          "pairedCiUpper": 1.00030177,
+          "relativeDifferenceBelowOnePercent": false,
+          "relativeDifferenceVsProvisionalBest": 0.11845649,
+          "statisticallyEquivalent": true,
+          "wape": 1.86398333
+        },
+        "B3": {
+          "pairedCiContainsZero": true,
+          "pairedCiLower": -0.1332995,
+          "pairedCiUpper": 0.41579656,
+          "relativeDifferenceBelowOnePercent": false,
+          "relativeDifferenceVsProvisionalBest": 0.01974263,
+          "statisticallyEquivalent": true,
+          "wape": 1.69947001
+        }
+      },
+      "lockedComparator": "B1",
+      "provisionalBest": "B0b"
+    },
+    "businessServingKeysIdentical": true,
+    "caseKeysIdentical": true,
+    "scoreableKeysIdentical": true
+  },
+  "contractBinding": {
+    "amendmentDigest": "440eef4bb9120c8dadac038f6a2ebe8ede38ddab4c381948b6e9574af5547375",
+    "amendmentFreezeCommit": "c348b5218d2cc5f2eec71ae619a284becf8f9254",
+    "baseSpecDigest": "625631279889e46ce174ffb507b3926793fdc7a435fc2c7c8aafbf990c8a7fb9",
+    "combinedDigest": "670013dfec65634c773bc7bf636895258098a879f3fddddcb9968dc4b035d200",
+    "correctionCodeCommit": "a732537a2d3b57c07a8bcc067b98d80511e52a61"
+  },
+  "correctedMetricsByBaseline": {
+    "B0b": {
+      "abstentionMetrics": {
+        "allCellMetricsWithheld": true,
+        "caseCount": null,
+        "suppressed": true,
+        "suppressionReason": "abstained_case_or_unique_work_count_below_public_minimum",
+        "uniqueWorkCount": "<10"
+      },
+      "allScoreableModelMetrics": {
+        "caseCount": 12223,
+        "horizonStability": {
+          "maximumMinusMinimumWape": 1.35037855,
+          "wapeByHorizon": {
+            "12": 1.49189738,
+            "18": 1.82011664,
+            "24": 2.65175197,
+            "3": 1.32616788,
+            "6": 1.30137342
+          }
+        },
+        "mae": 10955.77472984,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 1.19610576,
+        "smape": 1.27124078,
+        "suppressed": false,
+        "uniqueWorkCount": 1044,
+        "wape": 1.66656758,
+        "zeroImputationUsed": false
+      },
+      "endToEndBusinessLoss": {
+        "caseCount": 12223,
+        "classification": "business_coverage_loss_not_model_wape",
+        "mayBeNamedModelWape": false,
+        "value": 1.66656758
+      },
+      "internal80PredictionInterval": {
+        "availableCaseCount": 12223,
+        "completeOnAllScoreablePopulation": true,
+        "endpointsPresentInPublicReport": false,
+        "internal80Coverage": 0.83367422,
+        "meanWis": 9303.41628548,
+        "missingCaseCount": 0,
+        "requiredCaseCount": 12223,
+        "suppressed": false
+      },
+      "servedCohortMetrics": {
+        "caseCount": null,
+        "countSuppressedToProtectComplementSmallCell": true,
+        "highValuePerformance": {
+          "caseCount": null,
+          "countSuppressedToProtectComplementSmallCell": true,
+          "mae": 37121.66761174,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.18037025,
+          "smape": 0.70870122,
+          "suppressed": false,
+          "uniqueWorkCount": null,
+          "wape": 0.52144883,
+          "zeroImputationUsed": false
+        },
+        "mae": 10968.33766261,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 1.19610576,
+        "smape": 1.27269851,
+        "suppressed": false,
+        "uniqueWorkCount": null,
+        "wape": 1.66656758,
+        "zeroImputationUsed": false
+      },
+      "servingCoverageMetrics": {
+        "abstentionSmallCellDetailsSuppressed": true,
+        "population": "all_statistically_scoreable_large_denominator_cells",
+        "servedActualRevenueShare": 1.0,
+        "servedWorkShare": 0.99888081,
+        "top10ServedRevenueShare": 1.0,
+        "top1ServedRevenueShare": 1.0,
+        "top5ServedRevenueShare": 1.0
+      },
+      "suppressed": false
+    },
+    "B1": {
+      "abstentionMetrics": {
+        "allCellMetricsWithheld": true,
+        "caseCount": null,
+        "suppressed": true,
+        "suppressionReason": "abstained_case_or_unique_work_count_below_public_minimum",
+        "uniqueWorkCount": "<10"
+      },
+      "allScoreableModelMetrics": {
+        "caseCount": 12223,
+        "horizonStability": {
+          "maximumMinusMinimumWape": 1.94448215,
+          "wapeByHorizon": {
+            "12": 1.6322408,
+            "18": 2.11328288,
+            "24": 3.33897526,
+            "3": 1.42167398,
+            "6": 1.39449311
+          }
+        },
+        "mae": 12504.53231327,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 1.47943848,
+        "smape": 1.27620019,
+        "suppressed": false,
+        "uniqueWorkCount": 1044,
+        "wape": 1.90216107,
+        "zeroImputationUsed": false
+      },
+      "endToEndBusinessLoss": {
+        "caseCount": 12223,
+        "classification": "business_coverage_loss_not_model_wape",
+        "mayBeNamedModelWape": false,
+        "value": 1.90216107
+      },
+      "internal80PredictionInterval": {
+        "availableCaseCount": 12223,
+        "completeOnAllScoreablePopulation": true,
+        "endpointsPresentInPublicReport": false,
+        "internal80Coverage": 0.83596498,
+        "meanWis": 10797.92250709,
+        "missingCaseCount": 0,
+        "requiredCaseCount": 12223,
+        "suppressed": false
+      },
+      "servedCohortMetrics": {
+        "caseCount": null,
+        "countSuppressedToProtectComplementSmallCell": true,
+        "highValuePerformance": {
+          "caseCount": null,
+          "countSuppressedToProtectComplementSmallCell": true,
+          "mae": 57144.0874076,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.5104041,
+          "smape": 0.76255464,
+          "suppressed": false,
+          "uniqueWorkCount": null,
+          "wape": 0.80270418,
+          "zeroImputationUsed": false
+        },
+        "mae": 12518.87119871,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 1.47943848,
+        "smape": 1.2776636,
+        "suppressed": false,
+        "uniqueWorkCount": null,
+        "wape": 1.90216107,
+        "zeroImputationUsed": false
+      },
+      "servingCoverageMetrics": {
+        "abstentionSmallCellDetailsSuppressed": true,
+        "population": "all_statistically_scoreable_large_denominator_cells",
+        "servedActualRevenueShare": 1.0,
+        "servedWorkShare": 0.99888081,
+        "top10ServedRevenueShare": 1.0,
+        "top1ServedRevenueShare": 1.0,
+        "top5ServedRevenueShare": 1.0
+      },
+      "suppressed": false
+    },
+    "B2": {
+      "abstentionMetrics": {
+        "allCellMetricsWithheld": true,
+        "caseCount": null,
+        "suppressed": true,
+        "suppressionReason": "abstained_case_or_unique_work_count_below_public_minimum",
+        "uniqueWorkCount": "<10"
+      },
+      "allScoreableModelMetrics": {
+        "caseCount": 12223,
+        "horizonStability": {
+          "maximumMinusMinimumWape": 2.04643712,
+          "wapeByHorizon": {
+            "12": 1.62790017,
+            "18": 2.01146137,
+            "24": 3.37458747,
+            "3": 1.40526849,
+            "6": 1.32815035
+          }
+        },
+        "mae": 12253.55737415,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 1.44974836,
+        "smape": 1.29396739,
+        "suppressed": false,
+        "uniqueWorkCount": 1044,
+        "wape": 1.86398333,
+        "zeroImputationUsed": false
+      },
+      "endToEndBusinessLoss": {
+        "caseCount": 12223,
+        "classification": "business_coverage_loss_not_model_wape",
+        "mayBeNamedModelWape": false,
+        "value": 1.86398333
+      },
+      "internal80PredictionInterval": {
+        "availableCaseCount": 12223,
+        "completeOnAllScoreablePopulation": true,
+        "endpointsPresentInPublicReport": false,
+        "internal80Coverage": 0.82950176,
+        "meanWis": 10578.01658391,
+        "missingCaseCount": 0,
+        "requiredCaseCount": 12223,
+        "suppressed": false
+      },
+      "servedCohortMetrics": {
+        "caseCount": null,
+        "countSuppressedToProtectComplementSmallCell": true,
+        "highValuePerformance": {
+          "caseCount": null,
+          "countSuppressedToProtectComplementSmallCell": true,
+          "mae": 54008.22343863,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.44759748,
+          "smape": 0.76029293,
+          "suppressed": false,
+          "uniqueWorkCount": null,
+          "wape": 0.75865463,
+          "zeroImputationUsed": false
+        },
+        "mae": 12267.60846787,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 1.44974836,
+        "smape": 1.29545117,
+        "suppressed": false,
+        "uniqueWorkCount": null,
+        "wape": 1.86398333,
+        "zeroImputationUsed": false
+      },
+      "servingCoverageMetrics": {
+        "abstentionSmallCellDetailsSuppressed": true,
+        "population": "all_statistically_scoreable_large_denominator_cells",
+        "servedActualRevenueShare": 1.0,
+        "servedWorkShare": 0.99888081,
+        "top10ServedRevenueShare": 1.0,
+        "top1ServedRevenueShare": 1.0,
+        "top5ServedRevenueShare": 1.0
+      },
+      "suppressed": false
+    },
+    "B3": {
+      "abstentionMetrics": {
+        "allCellMetricsWithheld": true,
+        "caseCount": null,
+        "suppressed": true,
+        "suppressionReason": "abstained_case_or_unique_work_count_below_public_minimum",
+        "uniqueWorkCount": "<10"
+      },
+      "allScoreableModelMetrics": {
+        "caseCount": 12223,
+        "horizonStability": {
+          "maximumMinusMinimumWape": 1.54960429,
+          "wapeByHorizon": {
+            "12": 1.49786308,
+            "18": 1.86160505,
+            "24": 2.840035,
+            "3": 1.30988719,
+            "6": 1.29043071
+          }
+        },
+        "mae": 11172.07058775,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 1.23477116,
+        "smape": 1.25007074,
+        "suppressed": false,
+        "uniqueWorkCount": 1044,
+        "wape": 1.69947001,
+        "zeroImputationUsed": false
+      },
+      "endToEndBusinessLoss": {
+        "caseCount": 12223,
+        "classification": "business_coverage_loss_not_model_wape",
+        "mayBeNamedModelWape": false,
+        "value": 1.69947001
+      },
+      "internal80PredictionInterval": {
+        "availableCaseCount": 12223,
+        "completeOnAllScoreablePopulation": true,
+        "endpointsPresentInPublicReport": false,
+        "internal80Coverage": 0.83743762,
+        "meanWis": 9572.66164771,
+        "missingCaseCount": 0,
+        "requiredCaseCount": 12223,
+        "suppressed": false
+      },
+      "servedCohortMetrics": {
+        "caseCount": null,
+        "countSuppressedToProtectComplementSmallCell": true,
+        "highValuePerformance": {
+          "caseCount": null,
+          "countSuppressedToProtectComplementSmallCell": true,
+          "mae": 37842.60661052,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.20052486,
+          "smape": 0.71275087,
+          "suppressed": false,
+          "uniqueWorkCount": null,
+          "wape": 0.53157588,
+          "zeroImputationUsed": false
+        },
+        "mae": 11184.88154592,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 1.23477116,
+        "smape": 1.25150419,
+        "suppressed": false,
+        "uniqueWorkCount": null,
+        "wape": 1.69947001,
+        "zeroImputationUsed": false
+      },
+      "servingCoverageMetrics": {
+        "abstentionSmallCellDetailsSuppressed": true,
+        "population": "all_statistically_scoreable_large_denominator_cells",
+        "servedActualRevenueShare": 1.0,
+        "servedWorkShare": 0.99888081,
+        "top10ServedRevenueShare": 1.0,
+        "top1ServedRevenueShare": 1.0,
+        "top5ServedRevenueShare": 1.0
+      },
+      "suppressed": false
+    }
+  },
+  "decisionStatus": "not_for_formal_decision",
+  "differenceAttributionConclusion": {
+    "asOfQuantilePriorAndFeatureDelta": -0.00906023,
+    "asOfSafeLegacyModelWape": 0.57489182,
+    "completeB0bWape": 1.66656758,
+    "conclusionZh": "旧约132%来自把未服务null按0混入全量业务覆盖人口，不能称模型WAPE；在Stage2至7固定keys后，as-of量化与特征使WAPE小幅下降，主要恶化来自旧selector切换为完整B0b公式，而不是eligibility或abstention计分。",
+    "eligibilityAndAbstentionRawModelWapeDelta": 0.0,
+    "fixedKeyLegacyModelWape": 0.58395205,
+    "historicalB0aWape": 0.6409,
+    "historicalMixedApproximately132Percent": 1.31666957,
+    "legacyModelToCompleteB0bFormulaDelta": 1.09167576
+  },
+  "futurePerturbation": {
+    "allInvariant": true,
+    "byBaseline": {
+      "B0b": true,
+      "B1": true,
+      "B2": true,
+      "B3": true
+    },
+    "canonicalAvailabilityBoundaryChecks": {
+      "_available_as_of": true,
+      "_bill_month_max": true,
+      "label_available_as_of": true,
+      "origin": true,
+      "target_end": true
+    },
+    "futureFactBoundary": "bill_month_greater_than_origin",
+    "futureOnlyChannelAndBatchMetadataPerturbed": true,
+    "runnerCaseStatesInvariant": true,
+    "runnerControlLockReceipt": {
+      "eventOrder": [
+        "held_prediction_lock_created",
+        "held_truth_join_complete"
+      ],
+      "predictionLockCreatedBeforeTruthJoin": true,
+      "scoreOrigin": "2020-12"
+    },
+    "runnerPerturbedLockReceipt": {
+      "eventOrder": [
+        "held_prediction_lock_created",
+        "held_truth_join_complete"
+      ],
+      "predictionLockCreatedBeforeTruthJoin": true,
+      "scoreOrigin": "2020-12"
+    },
+    "runnerPredictionFingerprintInvariant": true,
+    "runnerTruthOutcomeChanged": true,
+    "sealedTruthBuilderCalled": false,
+    "sealedTruthJoinCasesRejectedBeforeTruthBuilder": true
+  },
+  "generatedAt": "2026-07-14T12:26:28.282129+00:00",
+  "historicalMixedScoringAudit": {
+    "classification": "historical_business_coverage_mixture_not_model_wape",
+    "coverageAwareNullToZeroSignedBias": 0.04203217,
+    "coverageAwareNullToZeroWape": 1.31666957,
+    "forecastableRevenueCoverage": 0.47043465,
+    "legacyForecastableNumericSignedBias": 1.21504849,
+    "legacyForecastableNumericWape": 1.67314034,
+    "legacyHighValueNullToZeroSignedBias": -0.42049489,
+    "legacyHighValueNullToZeroWape": 0.76479529,
+    "mayBeNamedModelWape": false,
+    "nullPredictionEvaluationValue": 0.0,
+    "selectionUseAllowed": false,
+    "top10ForecastableRevenueCoverage": 0.48906043
+  },
+  "preC1Gate": {
+    "caseStateAndKeyParityPass": true,
+    "signedAggregateBiasDiagnostics": {
+      "allScoreableOverall": {
+        "absoluteMaximum": 0.1,
+        "pass": false,
+        "value": 1.47943848
+      },
+      "eachCoreHorizonAllScoreable": {
+        "absoluteMaximum": 0.15,
+        "pass": false,
+        "values": {
+          "12": 1.25829026,
+          "18": 1.70909512,
+          "24": 2.74556369,
+          "3": 1.05986784,
+          "6": 0.96295936
+        }
+      },
+      "servedHighValue": {
+        "absoluteMaximum": 0.1,
+        "pass": false,
+        "value": 0.5104041
+      },
+      "servedOverall": {
+        "absoluteMaximum": 0.1,
+        "pass": false,
+        "value": 1.47943848
+      }
+    },
+    "top10ServedRevenueCoveragePreC1": {
+      "labelsMovedToPass": false,
+      "minimum": 0.9,
+      "pass": true,
+      "thresholdLowered": false,
+      "value": 1.0
+    }
+  },
+  "rawAndServedReconciliation": {
+    "abstentionCellSuppressed": true,
+    "blockedOrAbstainedZeroImputedIntoModelWape": false,
+    "businessServingCaseCountPerModel": null,
+    "businessServingKeysIdentical": true,
+    "caseCountPerModel": 18615,
+    "caseKeysIdentical": true,
+    "contractPredictionFingerprint": "319b3e427c74af7870c559af58fb5b411f711e1d346651fae1a1f30d5c30e2a3",
+    "intersectionDropUsed": false,
+    "postHocSegmentAssignmentsIdentical": true,
+    "postHocSegmentFingerprint": "540e3954b732c7cca130e4a3769f694730dee2e43ec850cb11b0774d4b8ddb8f",
+    "rawEqualsServedWhenServedAndOtherwiseNull": true,
+    "rawPredictionCompleteOnAllScoreable": true,
+    "scoreabilityFingerprint": "ef640f1518bfa0bf8c1d34b916d2c4be4bd86c77cd03f9d264d5c104a55209a9",
+    "scoreableCaseCountPerModel": 12223,
+    "scoreableKeysIdentical": true,
+    "stateAndPredictionFingerprint": "905d87ca0a1d4ab97208f55d7b362db3e031d8d19864f1fe9656dc5b150bc51a"
+  },
+  "releaseBoundary": {
+    "formalDecisionAllowed": false,
+    "m3Allowed": false,
+    "preparedExportPublishAllowed": false,
+    "releaseAllowed": false,
+    "requiresChineseBusinessSampling": true,
+    "requiresExplicitUserApproval": true
+  },
+  "reportingBoundary": {
+    "aggregateOnly": true,
+    "automaticOperatingSuggestions": 0,
+    "deidentified": true,
+    "internalPredictionIntervalEndpointsPresent": false,
+    "language": "zh-CN",
+    "productFields": [
+      "pointForecast",
+      "annualBreakdown",
+      "confidence",
+      "limitation"
+    ],
+    "workOrChannelIdentifiersPresent": false
+  },
+  "schema": "m2.calibration-baseline-scoring-correction.v1",
+  "seals": {
+    "C1Started": false,
+    "authorityFactLoadingAloneDoesNotOpenHoldout": true,
+    "authorizedAuthorityFactsLoadedThroughLatestCompleteMonth": true,
+    "candidateTrainingStarted": false,
+    "deferred60MonthLabelsOpened": false,
+    "deferred60MonthTruthWindowConstructedOrJoined": false,
+    "embargoShadowOpened": false,
+    "embargoShadowTruthRead": false,
+    "embargoTruthWindowConstructedOrJoined": false,
+    "embargoUsedForFitSelectionOrThresholds": false,
+    "finalHoldoutOpened": false,
+    "finalHoldoutTruthRead": false,
+    "finalHoldoutTruthReadDefinition": "no_final_holdout_case_window_materialized_joined_or_used",
+    "finalHoldoutTruthWindowConstructedOrJoined": false,
+    "finalHoldoutUsedForFitSelectionOrThresholds": false
+  },
+  "stateReconciliation": {
+    "abstainedScoreableCaseCount": null,
+    "abstainedWorkCount": "<10",
+    "abstentionCellSuppressed": true,
+    "businessServingEligibleScoreableCaseCount": null,
+    "caseUniverseCount": 18615,
+    "legacyForecastabilityControlsNewStates": false,
+    "legacyForecastableCaseCountAuditOnly": 11935,
+    "modelPredictionAvailableScoreableCaseCount": 12223,
+    "servingCountSuppressedToProtectComplementSmallCell": true,
+    "statesAreIndependent": true,
+    "statisticallyScoreableCaseCount": 12223,
+    "statisticallyUnscoreableCaseCount": 6392
+  },
+  "stopStatus": {
+    "candidateTrainingAuthorized": false,
+    "nextStepRequiresExplicitUserAuthorization": true,
+    "stoppedBeforeC1": true,
+    "top10HardBlockerPresent": false
+  },
+  "version": "M2-calibration-baseline-scoring-correction-v1"
+}

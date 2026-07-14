@@ -8,7 +8,8 @@
 - 严格对账 22 项全部通过：基础信息、mapping、收入事实、评估结果和导出范围一致，自动运营建议为 0，开放 blocking review 为 0。
 - 当前算法仍为 `m2-realdata-dev-disentangled-forecast-v1.1-conditional`，算法未标记为 formal，3053 条结果均保持 `not_for_formal_decision=true`；export 仅为 `prepared`。
 - 用户已于 2026-07-13 明确拒绝该 conditional 算法与 prepared export，禁止 release。下一工程任务是以当前 3053 部最终权威基础数据和 192872 条收入事实校准最终上线预测算法；M3 formal execution 未获授权且继续暂缓。
-- 2026-07-14 已完成 calibration-spec-v1.1 scoring / eligibility correction、B0a→B0b 七阶段归因和 B0b-B3 development replay。当前 statistically-scoreable case 为 12223；abstention 的 unique work×origin 小于公开最小 cell，因此 served/abstained 精确计数按互补保护规则不公开。top10 served revenue coverage 为 1.0000；comparator 按冻结等价规则锁定 B1。全部 baseline 的 signed bias 仍明显超出最终候选 gate，C1 尚未开始，final holdout/embargo/60-month labels 继续 sealed。
+- 2026-07-14 已完成 calibration-spec-v1.1 scoring / eligibility correction、B0a→B0b 七阶段归因和 B0b-B3 development replay。当前 statistically-scoreable case 为 12223；abstention 的 unique work×origin 小于公开最小 cell，因此 served/abstained 精确计数按互补保护规则不公开。top1/top5/top10 served revenue coverage 均为 1.0000；comparator 按冻结等价规则锁定 B1。全部 baseline 的 signed bias 仍明显超出最终候选 gate，C1 尚未开始，final holdout/embargo/60-month labels 继续 sealed。
+- 七阶段固定 keys 归因中，as-of quantile/prior/features 合计使 WAPE 下降 0.0091，eligibility/abstention raw WAPE 变化为 0，旧 selector 切换到完整 B0b 公式增加 1.0917。逐 fold prediction lock、future perturbation、sealed truth guard、fold-training fingerprint 与 private manifest/report hash 复算全部通过。
 
 ## 当前状态
 
@@ -55,4 +56,4 @@
 - 本报告只包含脱敏聚合，不包含作品名、作者名、渠道名或行级收入。
 - private Excel/JSON、payload、缓存和数据库备份不进入版本控制。
 - 当前是“隔离本地 formal execution 已完成、旧 v1.1 release 已被拒绝、baseline scoring correction 已完成、等待用户决定是否授权 C1”，不是生产发布审批完成。
-- 最新执行证据见 `docs/analysis/m2-real-data/M2-formal-local-execution-summary-v1.md`。
+- 最新校准证据见 `docs/analysis/m2-real-data/M2-calibration-baseline-development-v1.1.md`、`docs/analysis/m2-real-data/M2-calibration-baseline-scoring-correction-v1.md` 和 `docs/analysis/m2-real-data/M2-B0a-B0b-replay-attribution-v1.md`。

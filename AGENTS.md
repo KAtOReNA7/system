@@ -38,7 +38,8 @@
 - 修正后的 development forward 每个 baseline 均为 18615 个 case，其中 statistically scoreable 12223；因 abstention 的 unique work×origin 小于公开最小 cell，served/abstained 精确计数按互补保护规则不公开。top1/top5/top10 served revenue coverage 均为 1.0000，未降低 90% 门槛，也未按目标比例移动标签。
 - 修正后的 all-scoreable WAPE / signed bias 为：B0b 1.6666 / +1.1961，B1 1.9022 / +1.4794，B2 1.8640 / +1.4497，B3 1.6995 / +1.2348；四者均未通过最终候选 bias gate。旧约 1.3167 是把未服务 null 按 0 计入的业务覆盖混合量，不得再称模型 WAPE。
 - paired work×origin block bootstrap 的 95% CI 均包含 0；依照已冻结的 OR 等价规则与 `B1 < B2 < B3 < B0b` 简单度顺序，当前 baseline comparator 锁定为 B1。B0b 仍是经验 WAPE 最低者，B0b 与 B3 均继续报告。
-- B0a→B0b 七阶段归因固定 Stage 2–7 case/actual fingerprints，并把 as-of quantile/prior/features、eligibility、abstention scoring 与完整 B0b 公式逐层拆开；具体差异以绑定当前 code commit 的最新重放报告为准，禁止把全部变化笼统归因于去泄漏。
+- B0a→B0b 七阶段归因确认 Stage 2–7 case/actual fingerprints 完全一致；as-of quantile/prior/features 使 WAPE 合计下降 0.0091，eligibility/abstention 不改变 raw 模型 WAPE，主要恶化来自旧 selector 切换为完整 B0b 公式（+1.0917），不能把全部差异归因于去泄漏。
+- 当前重放已证明逐 fold 顺序为 prior-truth fit→per-origin prediction lock→held truth join；future perturbation、sealed truth-join guard、scoreability/fold-training/prediction-lock fingerprints 和公开报告 hashes 均通过独立 manifest 复算。公开 JSON/Markdown 不含作品或渠道标识、private 路径、原始行、PI endpoints 或可差分还原的小 cell。
 - C1/C2-R/C2/C3 均未开始，final holdout、embargo shadow 和 deferred 60-month labels 均未打开。当前校准结果仍为 `not_for_formal_decision`；即使 top10 前置门禁通过，也必须等待用户复核和再次明确授权后才能开始 C1。
 - 当前 3053 部基础信息、分类标签、状态、238 条业务决定和 192872 条收入事实是后续 M2 最终上线算法的权威输入。不得退回旧补表、旧 3054 口径或较早 private candidate 覆盖该版本。
 - M2 正式输出不再包含自动运营建议或资源投入动作；只允许风险和事实型复核提示。历史 fixture/prototype 建议字段不得进入当前正式结果、页面或导出。
