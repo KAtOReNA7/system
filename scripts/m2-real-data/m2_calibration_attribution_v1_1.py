@@ -40,8 +40,10 @@ class AttributionError(RuntimeError):
 _MISSING = object()
 _DEVELOPMENT_ROLE = "development_forward_score"
 _FORBIDDEN_ROLE_TOKENS = ("holdout", "embargo", "shadow", "long_audit")
-_FROZEN_AMENDMENT_COMMIT = "c64c56be0ad51048647ee450639b1ac91ebef62d"
-_FROZEN_AMENDMENT_DIGEST = "5c7945571520b4f229f15c14b29320bf65d11880ae92770fe0513f2a21eb799b"
+_FROZEN_AMENDMENT_COMMIT = "c348b5218d2cc5f2eec71ae619a284becf8f9254"
+_FROZEN_AMENDMENT_DIGEST = "440eef4bb9120c8dadac038f6a2ebe8ede38ddab4c381948b6e9574af5547375"
+_LEGACY_COVERAGE_SCORING = "legacy_served_null_to_zero_coverage_loss"
+_RAW_ALL_SCOREABLE_SCORING = "raw_all_scoreable_model_metrics"
 
 
 def _normalize(value: Any) -> Any:
@@ -339,7 +341,7 @@ def _validate_frozen_binding(
         raise AttributionError("calibration-spec-v1.1 amendment version mismatch")
     amendment_digest = _digest(amendment)
     if amendment_digest != _FROZEN_AMENDMENT_DIGEST:
-        raise AttributionError("amendment bytes do not match frozen commit c64c56be")
+        raise AttributionError("amendment bytes do not match frozen commit c348b521")
     binding = amendment.get("baseBinding") or {}
     base_digest = _digest(base_spec)
     if base_digest != binding.get("canonicalSpecDigestSha256"):
@@ -435,7 +437,7 @@ def _fixed_forward_cases(
 
 def _build_authoritative_matrix(
     works: Sequence[Mapping[str, Any]], spec: Mapping[str, Any]
-) -> tuple[Any, list[str], dict[str, str | None]]:
+) -> tuple[Any, list[str], dict[str, str | None], dict[str, Any]]:
     try:
         import run_m2_forecast_model_bakeoff as bake  # pylint: disable=import-outside-toplevel
     except ImportError as exc:
@@ -444,19 +446,31 @@ def _build_authoritative_matrix(
         ) from exc
 
     first = str(_first_path(spec, (("authority", "firstBillMonth"),)))
-    latest = str(_first_path(spec, (("authority", "latestCompleteMonth"),)))
-    months = _month_range(first, latest)
+    authority_latest = str(_first_path(spec, (("authority", "latestCompleteMonth"),)))
+    development_purge = str(
+        _first_path(
+            spec,
+            (("origins", "crossHorizonPurge", "developmentTargetEndOnOrBefore"),),
+        )
+    )
+    if development_purge > authority_latest:
+        raise AttributionError("development purge exceeds authority.latestCompleteMonth")
+    months = _month_range(first, development_purge)
     month_index = {month: index for index, month in enumerate(months)}
     rows: dict[str, list[float]] = {}
     first_observed: dict[str, str | None] = {}
+    seen_work_ids: set[str] = set()
+    post_purge_month_entries_ignored = 0
+    post_purge_works_excluded = 0
     for work in works:
         if not isinstance(work, Mapping):
             raise AttributionError("work must be an object")
         work_id = str(
             _first_path(work, (("standard_work_id",), ("standardWorkId",)))
         ).strip()
-        if not work_id or work_id in rows:
+        if not work_id or work_id in seen_work_ids:
             raise AttributionError("authoritative works contain a blank or duplicate id")
+        seen_work_ids.add(work_id)
         values = [0.0] * len(months)
         observed: list[str] = []
         channels = work.get("channels", []) or []
@@ -474,21 +488,46 @@ def _build_authoritative_matrix(
                 observed.append(explicit_first)
             elif monthly:
                 observed.append(min(str(month) for month in monthly))
-            for month, amount in monthly.items():
+            for month in monthly:
                 month_text = str(month)
                 _month_ordinal(month_text)
-                if month_text > latest:
+                if month_text > development_purge:
+                    # Do not dereference the post-purge amount.  Stage 2 is a
+                    # development-safe proxy, not a reconstruction permitted to
+                    # inspect embargo, holdout, or deferred long-audit outcomes.
+                    post_purge_month_entries_ignored += 1
                     continue
                 if month_text < first:
                     raise AttributionError("work facts precede authority.firstBillMonth")
-                values[month_index[month_text]] += _finite(amount, "monthly income")
+                values[month_index[month_text]] += _finite(
+                    monthly[month], "monthly income"
+                )
+        first_month = min(observed) if observed else None
+        if first_month is None or first_month > development_purge:
+            post_purge_works_excluded += 1
+            continue
         rows[work_id] = values
-        first_observed[work_id] = min(observed) if observed else None
+        first_observed[work_id] = first_month
     if not rows:
         raise AttributionError("authoritative work collection is empty")
     matrix = bake.pd.DataFrame.from_dict(rows, orient="index", columns=months, dtype=float)
     matrix = matrix.sort_index()
-    return matrix, months, first_observed
+    proxy_evidence = {
+        "reconstructionType": "development_purge_proxy_not_historical_full_period_reconstruction",
+        "maximumIncomeMonthReadOrUsed": development_purge,
+        "authorityLatestCompleteMonth": authority_latest,
+        "postPurgeAmountValuesRead": False,
+        "postPurgeAmountValuesUsed": False,
+        "postPurgeMonthEntriesIgnoredWithoutAmountDereference": post_purge_month_entries_ignored,
+        "postPurgeWorksExcluded": post_purge_works_excluded,
+        "includedWorkCount": len(rows),
+        "selectionUseAllowed": False,
+        "proxyReason": (
+            "the exact legacy full-period quantile artifact is unavailable without "
+            "reading sealed post-purge outcomes"
+        ),
+    }
+    return matrix, months, first_observed, proxy_evidence
 
 
 def _legacy_features(model_inputs: Mapping[str, Any]) -> dict[str, dict[str, Any]]:
@@ -561,7 +600,7 @@ def _legacy_predictions(
     thresholds = _lifecycle_thresholds(model_inputs)
     features = _legacy_features(model_inputs)
     month_to_index = {month: index for index, month in enumerate(months)}
-    full_quantiles = bake.build_quantile_reference(matrix)
+    development_proxy_quantiles = bake.build_quantile_reference(matrix)
     all_work_priors: dict[str, Mapping[Any, float]] = {}
     as_of_quantiles: dict[str, Mapping[str, float]] = {}
     as_of_priors: dict[str, Mapping[Any, float]] = {}
@@ -580,7 +619,7 @@ def _legacy_predictions(
         cutoff = month_to_index[origin]
         if origin not in all_work_priors:
             all_work_priors[origin] = bake.build_cohort_priors(
-                matrix, cutoff, thresholds, full_quantiles
+                matrix, cutoff, thresholds, development_proxy_quantiles
             )
         if origin not in as_of_priors:
             eligible_ids = [
@@ -599,7 +638,12 @@ def _legacy_predictions(
         history = matrix.loc[work_id].iloc[: cutoff + 1].to_numpy(dtype=float)
         current = features.get(work_id, {"rating": "C", "data_gap": False})
         stage_inputs = {
-            2: (full_quantiles, all_work_priors[origin], current["rating"], current["data_gap"]),
+            2: (
+                development_proxy_quantiles,
+                all_work_priors[origin],
+                current["rating"],
+                current["data_gap"],
+            ),
             3: (
                 as_of_quantiles[origin],
                 as_of_priors[origin],
@@ -678,6 +722,7 @@ def _point_metrics(
         return {
             "caseCount": 0,
             "uniqueWorkCount": 0,
+            "workCountDefinition": "distinct_standard_work_id_x_origin",
             "wape": None,
             "mae": None,
             "smape": None,
@@ -702,8 +747,13 @@ def _point_metrics(
     metrics = {
         "caseCount": len(rows),
         "uniqueWorkCount": len(
-            {str(row["key"][0]) for row in rows if row.get("key") is not None}
+            {
+                (str(row["key"][0]), str(row["key"][1]))
+                for row in rows
+                if row.get("key") is not None
+            }
         ),
+        "workCountDefinition": "distinct_standard_work_id_x_origin",
         "wape": _rounded(sum(errors) / absolute_denominator) if absolute_denominator > 0 else None,
         "mae": _rounded(sum(errors) / len(errors)),
         "smape": _rounded(sum(smape_values) / len(smape_values)) if smape_values else None,
@@ -826,12 +876,18 @@ def _stage_report(
     reasons: Mapping[tuple[str, str, int, str], str],
     *,
     change: str,
+    scoring_semantics: str,
     lifecycle: Mapping[tuple[str, str, int, str], str] | None = None,
 ) -> dict[str, Any]:
     if set(predictions) != {case["key"] for case in cases}:
         raise AttributionError(f"{stage_id} prediction keys differ from the fixed scoreable keys")
     if set(served) != set(predictions) or set(reasons) != set(predictions):
         raise AttributionError(f"{stage_id} serving keys differ from the fixed scoreable keys")
+    if scoring_semantics not in {
+        _LEGACY_COVERAGE_SCORING,
+        _RAW_ALL_SCOREABLE_SCORING,
+    }:
+        raise AttributionError(f"{stage_id} has an unsupported scoring semantics")
     all_rows = [
         {"key": case["key"], "actual": case["actual"], "prediction": predictions[case["key"]]}
         for case in cases
@@ -893,14 +949,56 @@ def _stage_report(
     served_metrics["highValueSignedAggregateBias"] = high_value_metrics[
         "signedAggregateBias"
     ]
+    legacy_semantics = scoring_semantics == _LEGACY_COVERAGE_SCORING
+    scoring_semantics_contract = {
+        "id": scoring_semantics,
+        "primaryMetric": (
+            "legacyCoverageAwareLoss"
+            if legacy_semantics
+            else "allScoreableModelMetrics.wape"
+        ),
+        "servedNullEvaluationValue": 0.0 if legacy_semantics else None,
+        "servedNullMayEnterModelWape": False,
+        "allScoreableRawMetricsRole": (
+            "parallel_diagnostic_not_stage_primary"
+            if legacy_semantics
+            else "primary_model_quality_metric"
+        ),
+    }
+    scoring_semantics_fingerprint = _digest(scoring_semantics_contract)
     definition_digest = _digest(
-        {"stage": stage_id, "change": change, "casePopulation": "fixed_all_scoreable"}
+        {
+            "stage": stage_id,
+            "change": change,
+            "casePopulation": "fixed_all_scoreable",
+            "scoringSemanticsFingerprint": scoring_semantics_fingerprint,
+        }
     )
     prediction_fingerprint = _digest(
         {
             "raw": fingerprints["rawPredictionFingerprint"],
             "serving": fingerprints["servingFingerprint"],
             "served": fingerprints["servedPredictionFingerprint"],
+        }
+    )
+    legacy_coverage_loss = (
+        {
+            "available": True,
+            "value": end_to_end_score["wape"],
+            "caseCount": end_to_end_score["caseCount"],
+            "uniqueWorkCount": end_to_end_score["uniqueWorkCount"],
+            "workCountDefinition": "distinct_standard_work_id_x_origin",
+            "formula": "sum(abs((served_raw_or_zero)-actual))/sum(abs(actual))",
+            "classification": "legacy_business_coverage_loss_not_model_wape",
+            "mayBeNamedModelWape": False,
+            "selectionUseAllowed": False,
+        }
+        if legacy_semantics
+        else {
+            "available": False,
+            "reason": "stage_6_and_later_use_raw_all_scoreable_model_metrics",
+            "mayBeNamedModelWape": False,
+            "selectionUseAllowed": False,
         }
     )
     return {
@@ -911,6 +1009,9 @@ def _stage_report(
         "definitionDigest": definition_digest,
         "caseFingerprint": fingerprints["caseFingerprint"],
         "predictionFingerprint": prediction_fingerprint,
+        "scoringSemantics": scoring_semantics_contract,
+        "scoringSemanticsFingerprint": scoring_semantics_fingerprint,
+        "primaryScoringMetric": scoring_semantics_contract["primaryMetric"],
         "allScoreableWape": all_metrics["wape"],
         "allScoreableSignedAggregateBias": all_metrics["signedAggregateBias"],
         "servedRevenueCoverage": abstention_metrics["servedActualRevenueShare"],
@@ -921,6 +1022,7 @@ def _stage_report(
         "servedCohortMetrics": served_metrics,
         "highValueServedPerformance": high_value_metrics,
         "abstentionMetrics": abstention_metrics,
+        "legacyCoverageAwareLoss": legacy_coverage_loss,
         "endToEndBusinessLoss": {
             "value": end_to_end_score["wape"],
             "caseCount": end_to_end_score["caseCount"],
@@ -1051,11 +1153,30 @@ def _transition(previous: Mapping[str, Any], current: Mapping[str, Any]) -> dict
         return _rounded(float(right) - float(left))
 
     comparable = bool(previous_all.get("wape") is not None and current_all.get("wape") is not None)
+    prediction_unchanged = (
+        previous.get("predictionFingerprint") is not None
+        and previous.get("predictionFingerprint") == current.get("predictionFingerprint")
+    )
+    scoring_semantics_changed = (
+        previous.get("scoringSemanticsFingerprint") is not None
+        and previous.get("scoringSemanticsFingerprint")
+        != current.get("scoringSemanticsFingerprint")
+    )
     return {
         "fromStage": previous["stage"],
         "toStage": current["stage"],
         "comparable": comparable,
         "change": current.get("changeFromPrior"),
+        "predictionUnchanged": prediction_unchanged,
+        "scoringSemanticsChanged": scoring_semantics_changed,
+        "primaryScoringMetricBefore": previous.get("primaryScoringMetric"),
+        "primaryScoringMetricAfter": current.get("primaryScoringMetric"),
+        "legacyCoverageAwareLossBefore": (
+            previous.get("legacyCoverageAwareLoss", {}) or {}
+        ).get("value"),
+        "legacyCoverageAwareLossAfter": (
+            current.get("legacyCoverageAwareLoss", {}) or {}
+        ).get("value"),
         "allScoreableWapeDelta": delta(previous_all.get("wape"), current_all.get("wape")),
         "allScoreableSignedBiasDelta": delta(
             previous_all.get("signedAggregateBias"),
@@ -1090,9 +1211,27 @@ def _assert_fixed_population(stages: Sequence[Mapping[str, Any]]) -> dict[str, A
     by_id = {stage["stage"]: stage for stage in comparable}
     if by_id["4"]["fingerprints"]["rawPredictionFingerprint"] != by_id["5"]["fingerprints"]["rawPredictionFingerprint"]:
         raise AttributionError("stage 5 changed raw predictions while swapping eligibility")
-    for field in ("rawPredictionFingerprint", "servingFingerprint", "servedPredictionFingerprint"):
+    for field in (
+        "rawPredictionFingerprint",
+        "servingFingerprint",
+        "servedPredictionFingerprint",
+        "abstentionFingerprint",
+    ):
         if by_id["5"]["fingerprints"][field] != by_id["6"]["fingerprints"][field]:
-            raise AttributionError("stage 6 changed predictions or serving while renaming scoring populations")
+            raise AttributionError(
+                "stage 6 changed predictions, serving, or abstention while changing scoring semantics"
+            )
+    if by_id["5"]["predictionFingerprint"] != by_id["6"]["predictionFingerprint"]:
+        raise AttributionError("stage 5-to-6 prediction fingerprint changed")
+    if (
+        by_id["5"]["scoringSemanticsFingerprint"]
+        == by_id["6"]["scoringSemanticsFingerprint"]
+    ):
+        raise AttributionError("stage 5-to-6 scoring semantics fingerprint did not change")
+    if by_id["5"].get("primaryScoringMetric") != "legacyCoverageAwareLoss":
+        raise AttributionError("stage 5 does not use legacy coverage loss semantics")
+    if by_id["6"].get("primaryScoringMetric") != "allScoreableModelMetrics.wape":
+        raise AttributionError("stage 6 does not use raw all-scoreable model metrics")
     if by_id["6"]["fingerprints"]["servingFingerprint"] != by_id["7"]["fingerprints"]["servingFingerprint"]:
         raise AttributionError("stage 7 unexpectedly changed the frozen business-serving population")
     return {
@@ -1101,6 +1240,10 @@ def _assert_fixed_population(stages: Sequence[Mapping[str, Any]]) -> dict[str, A
         "stages2Through7ActualFingerprintEqual": True,
         "stage4To5RawPredictionFingerprintEqual": True,
         "stage5To6RawAndServingFingerprintsEqual": True,
+        "stage5To6PredictionFingerprintEqual": True,
+        "stage5To6ScoringSemanticsFingerprintDifferent": True,
+        "stage5PrimaryMetricIsLegacyCoverageAwareLoss": True,
+        "stage6PrimaryMetricIsRawAllScoreableWape": True,
         "stage6To7ServingFingerprintEqual": True,
         "caseCount": next(iter(case_counts)),
         "caseFingerprint": next(iter(case_fingerprints)),
@@ -1129,7 +1272,9 @@ def build_attribution_report(
     binding_evidence = _validate_frozen_binding(base_spec, amendment)
     spec = base_spec
     cases = _fixed_forward_cases(forward_rows, spec)
-    matrix, months, first_observed = _build_authoritative_matrix(works, spec)
+    matrix, months, first_observed, stage2_proxy_evidence = _build_authoritative_matrix(
+        works, spec
+    )
     predictions, lifecycles = _legacy_predictions(
         cases, matrix, months, first_observed, model_inputs
     )
@@ -1158,12 +1303,16 @@ def build_attribution_report(
     stage1 = _legacy_b0a_stage(model_inputs)
     stage2 = _stage_report(
         "2",
-        "旧模型+固定B0b可计分case keys",
+        "旧模型+development-purge历史代理+固定B0b可计分case keys",
         cases,
         predictions[2],
         legacy_served,
         legacy_reasons,
-        change="legacy_selector_full_period_quantiles_all_work_prior_current_rating_and_data_gap",
+        change=(
+            "legacy_selector_development_purge_proxy_quantiles_all_purge_catalog_"
+            "prior_current_rating_and_data_gap"
+        ),
+        scoring_semantics=_LEGACY_COVERAGE_SCORING,
         lifecycle=lifecycles[2],
     )
     stage3 = _stage_report(
@@ -1174,6 +1323,7 @@ def build_attribution_report(
         legacy_served,
         legacy_reasons,
         change="only_quantiles_and_priors_switch_to_cutoff_as_of_excluding_future_entrants",
+        scoring_semantics=_LEGACY_COVERAGE_SCORING,
         lifecycle=lifecycles[3],
     )
     stage4 = _stage_report(
@@ -1184,6 +1334,7 @@ def build_attribution_report(
         legacy_served,
         legacy_reasons,
         change="only_unavailable_historical_rating_and_risk_features_switch_to_C_and_false",
+        scoring_semantics=_LEGACY_COVERAGE_SCORING,
         lifecycle=lifecycles[4],
     )
     stage5 = _stage_report(
@@ -1194,6 +1345,7 @@ def build_attribution_report(
         new_served,
         new_reasons,
         change="only_business_serving_eligibility_and_abstention_reason_change",
+        scoring_semantics=_LEGACY_COVERAGE_SCORING,
         lifecycle=lifecycles[4],
     )
     stage6 = _stage_report(
@@ -1204,6 +1356,7 @@ def build_attribution_report(
         new_served,
         new_reasons,
         change="only_metric_population_names_and_served_vs_raw_scoring_semantics_change",
+        scoring_semantics=_RAW_ALL_SCOREABLE_SCORING,
         lifecycle=lifecycles[4],
     )
     stage7 = _stage_report(
@@ -1214,6 +1367,7 @@ def build_attribution_report(
         new_served,
         new_reasons,
         change="replace_legacy_selector_raw_prediction_with_B0b_raw_model_prediction",
+        scoring_semantics=_RAW_ALL_SCOREABLE_SCORING,
         lifecycle=None,
     )
     stages = [stage1, stage2, stage3, stage4, stage5, stage6, stage7]
@@ -1234,12 +1388,15 @@ def build_attribution_report(
         "embargoShadowOpened": False,
         "longHorizonLabelsUsed": False,
         "legacyGateMissingCaseCount": missing_legacy_gate_case_count,
+        "stage2ReconstructionProxy": stage2_proxy_evidence,
         "integrity": integrity,
         "stages": stages,
         "attributionTransitions": transitions,
         "caveats": [
             "B0a only has a final historical aggregate and no case or prediction fingerprint, so stage 1 is not numerically attributable to stage 2.",
+            "Stage 2 is a development-purge proxy: it reads and uses no amount after the frozen development purge and is not an exact historical full-period reconstruction.",
             "Stages 2 through 4 use the legacy selector for audit only and never participate in comparator selection.",
+            "Stages 2 through 5 expose served-null-to-zero only as legacyCoverageAwareLoss, never as model WAPE; Stage 6 switches the primary model metric to raw all-scoreable WAPE without changing predictions or serving state.",
             "Historical rating and risk snapshots are unavailable; stage 4 freezes rating=C and data_gap=false. Lifecycle remains cutoff-as-of from income history.",
             "A missing legacy gate key abstains the audit-only served view but never removes a scoreable case or its raw prediction.",
             "Internal 80% interval values and endpoint fields are intentionally absent from this attribution report.",
@@ -1255,4 +1412,155 @@ def build_attribution_report(
     }
 
 
-__all__ = ["AttributionError", "build_attribution_report"]
+def synthetic_self_test() -> dict[str, Any]:
+    """Exercise the fixed-key Stage 5-to-6 scoring-semantics transition."""
+
+    class GuardedMonthly(Mapping[str, float]):
+        """Fail if the reconstruction dereferences a sealed-period amount."""
+
+        def __init__(self) -> None:
+            self._values = {"2023-06": 2.5, "2023-07": 999_999.0}
+            self.post_purge_amount_reads = 0
+
+        def __getitem__(self, key: str) -> float:
+            if key > "2023-06":
+                self.post_purge_amount_reads += 1
+                raise AttributionError("synthetic sealed amount was dereferenced")
+            return self._values[key]
+
+        def __iter__(self):
+            return iter(self._values)
+
+        def __len__(self) -> int:
+            return len(self._values)
+
+    guarded_monthly = GuardedMonthly()
+    proxy_matrix, proxy_months, _, proxy_evidence = _build_authoritative_matrix(
+        [
+            {
+                "standard_work_id": "SYNTHETIC-PROXY-WORK",
+                "channels": [
+                    {
+                        "first_income_month": "2023-06",
+                        "monthly": guarded_monthly,
+                    }
+                ],
+            }
+        ],
+        {
+            "authority": {
+                "firstBillMonth": "2023-06",
+                "latestCompleteMonth": "2024-12",
+            },
+            "origins": {
+                "crossHorizonPurge": {
+                    "developmentTargetEndOnOrBefore": "2023-06"
+                }
+            },
+        },
+    )
+
+    cases = [
+        {
+            "key": ("SYNTHETIC-WORK", "2020-06", 3, "pure_sales_share"),
+            "actual": 10.0,
+            "high_value": True,
+            "top_1": True,
+            "top_5": True,
+            "top_10": True,
+        },
+        {
+            "key": ("SYNTHETIC-WORK", "2020-12", 3, "unknown_revenue_model"),
+            "actual": 5.0,
+            "high_value": False,
+            "top_1": False,
+            "top_5": False,
+            "top_10": False,
+        },
+    ]
+    predictions = {cases[0]["key"]: 8.0, cases[1]["key"]: 4.0}
+    complete_b0b = {cases[0]["key"]: 9.0, cases[1]["key"]: 3.0}
+    served = {cases[0]["key"]: True, cases[1]["key"]: False}
+    reasons = {
+        cases[0]["key"]: "",
+        cases[1]["key"]: "business_ineligible_unresolved_revenue_model",
+    }
+
+    def stage(
+        stage_id: str,
+        semantics: str,
+        points: Mapping[Any, float] | None = None,
+    ) -> dict[str, Any]:
+        return _stage_report(
+            stage_id,
+            f"synthetic-stage-{stage_id}",
+            cases,
+            predictions if points is None else points,
+            served,
+            reasons,
+            change=f"synthetic-change-{stage_id}",
+            scoring_semantics=semantics,
+        )
+
+    stages = [
+        stage("2", _LEGACY_COVERAGE_SCORING),
+        stage("3", _LEGACY_COVERAGE_SCORING),
+        stage("4", _LEGACY_COVERAGE_SCORING),
+        stage("5", _LEGACY_COVERAGE_SCORING),
+        stage("6", _RAW_ALL_SCOREABLE_SCORING),
+        stage("7", _RAW_ALL_SCOREABLE_SCORING, complete_b0b),
+    ]
+    integrity = _assert_fixed_population(stages)
+    stage5, stage6 = stages[3], stages[4]
+    checks = {
+        "stage2ProxyDidNotReadPostPurgeAmount": (
+            guarded_monthly.post_purge_amount_reads == 0
+            and proxy_evidence["postPurgeAmountValuesRead"] is False
+            and proxy_evidence["postPurgeAmountValuesUsed"] is False
+        ),
+        "stage2ProxyStopsAtDevelopmentPurge": (
+            proxy_months == ["2023-06"]
+            and proxy_evidence["maximumIncomeMonthReadOrUsed"] == "2023-06"
+            and proxy_evidence[
+                "postPurgeMonthEntriesIgnoredWithoutAmountDereference"
+            ]
+            == 1
+            and float(proxy_matrix.loc["SYNTHETIC-PROXY-WORK", "2023-06"])
+            == 2.5
+        ),
+        "fixedPopulation": integrity["stages2Through7CaseFingerprintEqual"],
+        "workCountUsesWorkOrigin": stage6["allScoreableModelMetrics"][
+            "uniqueWorkCount"
+        ]
+        == 2,
+        "stage5LegacyLossAvailable": stage5["legacyCoverageAwareLoss"][
+            "available"
+        ]
+        is True,
+        "stage5LegacyLossNotModelWape": stage5["legacyCoverageAwareLoss"][
+            "mayBeNamedModelWape"
+        ]
+        is False,
+        "stage5LegacyLossUsesServedNullAsZero": stage5[
+            "legacyCoverageAwareLoss"
+        ]["value"]
+        == _rounded(7.0 / 15.0),
+        "stage6UsesRawAllScoreableWape": stage6["primaryScoringMetric"]
+        == "allScoreableModelMetrics.wape"
+        and stage6["allScoreableModelMetrics"]["wape"] == _rounded(3.0 / 15.0),
+        "stage5To6PredictionUnchanged": stage5["predictionFingerprint"]
+        == stage6["predictionFingerprint"],
+        "stage5To6ScoringSemanticsChanged": stage5[
+            "scoringSemanticsFingerprint"
+        ]
+        != stage6["scoringSemanticsFingerprint"],
+        "integrityNamesSemanticTransition": integrity[
+            "stage5To6ScoringSemanticsFingerprintDifferent"
+        ],
+    }
+    if not all(checks.values()):
+        raise AttributionError(f"synthetic attribution checks failed: {checks}")
+    return {"ok": True, "checks": checks}
+
+
+__all__ = ["AttributionError", "build_attribution_report", "synthetic_self_test"]

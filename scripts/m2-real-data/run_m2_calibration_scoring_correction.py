@@ -15,8 +15,11 @@ import copy
 import hashlib
 import json
 import math
+import os
 import pickle
+import re
 import sys
+import tempfile
 from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
@@ -41,6 +44,24 @@ ATTRIBUTION_JSON = PUBLIC_DIR / "M2-B0a-B0b-replay-attribution-v1.json"
 ATTRIBUTION_MD = PUBLIC_DIR / "M2-B0a-B0b-replay-attribution-v1.md"
 PRIVATE_CASES = PRIVATE_DIR / "M2-calibration-baseline-development-cases-private-v1.1.ndjson"
 PRIVATE_MANIFEST = PRIVATE_DIR / "M2-calibration-baseline-development-manifest-private-v1.1.json"
+
+PUBLIC_REPORT_PATHS = (
+    BASELINE_JSON,
+    BASELINE_MD,
+    CORRECTION_JSON,
+    CORRECTION_MD,
+    ATTRIBUTION_JSON,
+    ATTRIBUTION_MD,
+)
+CORRECTION_CODE_PATHS = (
+    Path(__file__).resolve(),
+    Path(scoring.__file__).resolve(),
+    Path(attribution.__file__).resolve(),
+    Path(legacy.__file__).resolve(),
+    Path(calibration.__file__).resolve(),
+)
+SHA256_PATTERN = re.compile(r"^[0-9a-f]{64}$")
+GIT_COMMIT_PATTERN = re.compile(r"^[0-9a-f]{40}$")
 
 
 class CorrectionError(RuntimeError):
@@ -103,20 +124,26 @@ def _unresolved_raw_fallback(
     spec: Mapping[str, Any],
     b0b_role: str | None,
 ) -> dict[str, Any]:
-    """Keep an audit-only raw point when a route is unresolved; never serve it."""
+    """Apply the frozen unresolved-route structural-zero policy; never serve it."""
 
-    months, history = _aggregate_history(work, origin, spec)
-    forecast, detail = calibration._sales_monthly_forecast(  # pylint: disable=protected-access
-        months, history, origin, horizon, model_id, spec
-    )
-    if model_id == "B0b":
-        detail["parameterRole"] = b0b_role
-    point = round(sum(float(value) for value in forecast.values()), 8)
+    _months, history = _aggregate_history(work, origin, spec)
+    if any(not math.isfinite(float(value)) or abs(float(value)) > 1e-12 for value in history):
+        raise CorrectionError(
+            "unresolved revenue-model route has non-zero or non-finite cutoff history"
+        )
+    forecast = {
+        calibration.add_months(origin, offset): 0.0
+        for offset in range(1, int(horizon) + 1)
+    }
     return {
-        "point": point,
-        "annual": calibration.annual_breakdown(forecast, point),
-        "source": "aggregate_diagnostic_fallback_unresolved_route_not_served",
-        "detail": detail,
+        "point": 0.0,
+        "annual": calibration.annual_breakdown(forecast, 0.0),
+        "source": "frozen_unresolved_route_structural_zero_not_served",
+        "detail": {
+            "policy": "all_cutoff_available_channel_history_amounts_are_zero",
+            "modelId": model_id,
+            "parameterRole": b0b_role if model_id == "B0b" else None,
+        },
     }
 
 
@@ -175,6 +202,13 @@ def materialize_raw_predictions(
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """Materialize raw values without reading ``actual`` or any post-cutoff fact."""
 
+    forbidden = {
+        "actual",
+        "component_actuals",
+        "_component_actual_by_channel",
+    }
+    if any(forbidden.intersection(row) for row in rows):
+        raise CorrectionError("raw materialization received scoring-truth fields")
     work_lookup = {str(work["standard_work_id"]): work for work in works}
     output: list[dict[str, Any]] = []
     newly_materialized = 0
@@ -207,7 +241,7 @@ def materialize_raw_predictions(
             annual = copy.deepcopy(result["annual"])
             raw_source = str(result["source"])
             newly_materialized += 1
-            if raw_source.startswith("aggregate_diagnostic"):
+            if raw_source == "frozen_unresolved_route_structural_zero_not_served":
                 unresolved_fallbacks += 1
         row["_raw_model_prediction"] = raw
         row["_raw_annual_breakdown"] = annual
@@ -231,11 +265,11 @@ def materialize_raw_predictions(
         )
         output.append(row)
     return output, {
-        "predictionFingerprint": digest(raw_lock_rows),
-        "predictionLockedBeforeScoringTruthAccess": True,
+        "rawMaterializationFingerprint": digest(raw_lock_rows),
+        "predictionLockCreated": False,
         "actualReadByMaterializer": False,
         "newlyMaterializedCaseRowCount": newly_materialized,
-        "unresolvedRouteDiagnosticFallbackCaseRowCount": unresolved_fallbacks,
+        "unresolvedRouteStructuralZeroCaseRowCount": unresolved_fallbacks,
     }
 
 
@@ -250,8 +284,11 @@ def annotate_rows(
     result: list[dict[str, Any]] = []
     for source in rows:
         row = copy.deepcopy(dict(source))
-        work_id, _origin, _horizon, _route = legacy.case_key(row)
+        work_id, origin, horizon, _route = legacy.case_key(row)
         row["_residual_case_role"] = role
+        row["target_end"] = str(
+            row.get("target_end") or calibration.add_months(origin, horizon)
+        )
         row["label_available_as_of"] = str(
             row.get("label_available_as_of")
             or row.get("_available_as_of")
@@ -272,6 +309,579 @@ def annotate_rows(
             raise CorrectionError("public output escaped the four-field contract")
         result.append(annotated)
     return result
+
+
+def _group_by_model(
+    rows: Sequence[Mapping[str, Any]],
+) -> dict[str, list[dict[str, Any]]]:
+    grouped: dict[str, list[dict[str, Any]]] = {model: [] for model in BASELINE_IDS}
+    for source in rows:
+        model = str(source["model_id"])
+        if model not in grouped:
+            raise CorrectionError(f"unexpected model in prediction population: {model}")
+        grouped[model].append(copy.deepcopy(dict(source)))
+    return grouped
+
+
+def _flatten_predictions(
+    predictions: Mapping[str, Sequence[Mapping[str, Any]]],
+) -> list[dict[str, Any]]:
+    return [
+        copy.deepcopy(dict(row))
+        for model in BASELINE_IDS
+        for row in predictions.get(model, [])
+    ]
+
+
+def _replace_prediction_population(
+    predictions: dict[str, list[dict[str, Any]]],
+    replacements: Sequence[Mapping[str, Any]],
+) -> None:
+    replacement_lookup = {
+        (str(row["model_id"]), legacy.case_key(row)): copy.deepcopy(dict(row))
+        for row in replacements
+    }
+    if len(replacement_lookup) != len(replacements):
+        raise CorrectionError("replacement prediction population contains duplicate keys")
+    replaced: set[tuple[str, tuple[str, str, int, str]]] = set()
+    for model in BASELINE_IDS:
+        for index, row in enumerate(predictions.get(model, [])):
+            key = (model, legacy.case_key(row))
+            replacement = replacement_lookup.get(key)
+            if replacement is not None:
+                predictions[model][index] = replacement
+                replaced.add(key)
+    if replaced != set(replacement_lookup):
+        raise CorrectionError("replacement prediction population differs from generated keys")
+
+
+def _origin_horizon_blocks(
+    origins_by_horizon: Mapping[Any, Sequence[Any]],
+) -> set[tuple[str, int]]:
+    return {
+        (str(origin), int(horizon))
+        for horizon, origins in origins_by_horizon.items()
+        for origin in origins
+    }
+
+
+def _allowed_truth_join_blocks(
+    role: str,
+    score_origin: str | None,
+    spec: Mapping[str, Any],
+) -> set[tuple[str, int]]:
+    """Return the exact development-safe blocks a truth-join role may access."""
+
+    if role == "development_warmup_interval_calibration":
+        if score_origin is not None:
+            raise CorrectionError("warmup truth join must not bind a score origin")
+        return _origin_horizon_blocks(legacy.interval_warmup_origins(spec))
+    if role == "development_fold_training_seed":
+        if score_origin is not None:
+            raise CorrectionError("training-seed truth join must not bind a score origin")
+        warmup = set(spec["origins"]["forwardValidation"]["warmupOrigins"])
+        return {
+            (str(origin), int(horizon))
+            for horizon, split in spec["origins"]["coreByHorizon"].items()
+            for origin in split["development"]
+            if str(origin) in warmup
+        }
+    if role.startswith("development_forward_score:"):
+        role_origin = role.split(":", 1)[1]
+        if not score_origin or role_origin != str(score_origin):
+            raise CorrectionError("forward truth-join role and scoreOrigin differ")
+        fold = next(
+            (
+                item
+                for item in spec["origins"]["forwardValidation"]["folds"]
+                if str(item["scoreOrigin"]) == str(score_origin)
+            ),
+            None,
+        )
+        if fold is None:
+            raise CorrectionError("forward truth join uses a non-development score origin")
+        return {
+            (str(score_origin), int(horizon))
+            for horizon in fold["testHorizons"]
+        }
+    if role == "development_long_horizon_audit":
+        if score_origin is not None:
+            raise CorrectionError("long-audit truth join must not bind a score origin")
+        included, _deferred = legacy.long_audit_origins(
+            spec, development_safe_only=True
+        )
+        return _origin_horizon_blocks(included)
+    raise CorrectionError(f"truth join role is not authorized by the development seal: {role}")
+
+
+def _assert_development_truth_join_scope(
+    prediction_rows: Sequence[Mapping[str, Any]],
+    lock: Mapping[str, Any],
+    spec: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Fail before truth access for embargo, final, deferred-60, or unknown blocks."""
+
+    role = str(lock.get("role", ""))
+    score_origin = lock.get("scoreOrigin")
+    allowed = _allowed_truth_join_blocks(role, score_origin, spec)
+    observed = {
+        (legacy.case_key(row)[1], legacy.case_key(row)[2])
+        for row in prediction_rows
+    }
+    if not observed.issubset(allowed):
+        raise CorrectionError("truth join attempted a sealed or non-development case block")
+    purge = str(
+        spec["origins"]["crossHorizonPurge"]["developmentTargetEndOnOrBefore"]
+    )
+    for row in prediction_rows:
+        origin = legacy.case_key(row)[1]
+        horizon = legacy.case_key(row)[2]
+        target_end = str(row.get("target_end") or calibration.add_months(origin, horizon))
+        label_available = str(
+            row.get("label_available_as_of")
+            or row.get("_available_as_of")
+            or target_end
+        )
+        if target_end > purge or label_available > purge or horizon == 60:
+            raise CorrectionError("truth join crossed the development purge or 60-month seal")
+    return {
+        "role": role,
+        "scoreOrigin": score_origin,
+        "authorizedBlockCount": len(observed),
+        "developmentPurge": purge,
+        "sealedBlockIntersectionCount": 0,
+    }
+
+
+def _join_truth_after_prediction_lock(
+    prediction_rows: Sequence[Mapping[str, Any]],
+    works: Sequence[Mapping[str, Any]],
+    spec: Mapping[str, Any],
+    contract: scoring.ScoringContract,
+    lock: Mapping[str, Any],
+    *,
+    event_log: list[dict[str, Any]] | None = None,
+    event_scope: str | None = None,
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    scoring.verify_prediction_lock(prediction_rows, lock, contract)
+    scope_evidence = _assert_development_truth_join_scope(
+        prediction_rows, lock, spec
+    )
+    joined = legacy.join_truth(_group_by_model(prediction_rows), works, spec)
+    if event_log is not None:
+        event_log.append(
+            {
+                "event": "held_truth_join_complete",
+                "scope": event_scope or str(lock["role"]),
+                "scoreOrigin": lock.get("scoreOrigin"),
+            }
+        )
+    scoring.verify_prediction_lock(joined, lock, contract)
+    return joined, {
+        "role": lock["role"],
+        "scoreOrigin": lock.get("scoreOrigin"),
+        "predictionFingerprint": lock["predictionFingerprint"],
+        "predictionRowCount": lock["predictionRowCount"],
+        "predictionLockCreatedBeforeTruthJoin": True,
+        "postTruthPredictionProjectionMatchesLock": True,
+        "truthJoinScope": scope_evidence,
+    }
+
+
+def _materialize_annotate_lock_join(
+    prediction_rows: Sequence[Mapping[str, Any]],
+    works: Sequence[Mapping[str, Any]],
+    spec: Mapping[str, Any],
+    contract: scoring.ScoringContract,
+    *,
+    role: str,
+    b0b_role: str,
+    fold_evidence: Mapping[str, Any] | None = None,
+    score_origin: str | None = None,
+    event_log: list[dict[str, Any]] | None = None,
+    event_scope: str | None = None,
+) -> tuple[list[dict[str, Any]], dict[str, Any], dict[str, Any]]:
+    materialized, materialization = materialize_raw_predictions(
+        prediction_rows,
+        works,
+        spec,
+        b0b_role=b0b_role,
+        fold_evidence=fold_evidence,
+    )
+    annotated = annotate_rows(materialized, works, contract, role=role)
+    expected_models = {"B0b"} if role == "development_fold_training_seed" else set(BASELINE_IDS)
+    observed_models = {str(row["model_id"]) for row in annotated}
+    if observed_models != expected_models:
+        raise CorrectionError(
+            f"pre-truth model population differs from frozen role contract: {role}"
+        )
+    lock = scoring.lock_prediction_population(
+        annotated,
+        role=role,
+        score_origin=score_origin,
+        contract=contract,
+    )
+    if event_log is not None:
+        event_log.append(
+            {
+                "event": "held_prediction_lock_created",
+                "scope": event_scope or role,
+                "scoreOrigin": score_origin,
+                "predictionFingerprint": lock["predictionFingerprint"],
+            }
+        )
+    joined, join_receipt = _join_truth_after_prediction_lock(
+        annotated,
+        works,
+        spec,
+        contract,
+        lock,
+        event_log=event_log,
+        event_scope=event_scope,
+    )
+    return joined, {
+        **materialization,
+        **lock,
+        **join_receipt,
+    }, lock
+
+
+def _target_end(row: Mapping[str, Any]) -> str:
+    _work_id, origin, horizon, _route = legacy.case_key(row)
+    return str(row.get("target_end") or calibration.add_months(origin, horizon))
+
+
+def _fold_training_row_available(
+    row: Mapping[str, Any], score_origin: str
+) -> bool:
+    """Canonical cutoff-availability predicate used before every B0b fold fit."""
+
+    target_end = _target_end(row)
+    return bool(
+        legacy.fold_label_available(row, score_origin)
+        and str(row.get("label_available_as_of") or target_end) <= score_origin
+        and str(row.get("_bill_month_max", target_end)) <= score_origin
+        and str(row.get("_available_as_of", target_end)) <= score_origin
+    )
+
+
+def _training_rows_availability_fingerprint(
+    rows: Sequence[Mapping[str, Any]],
+) -> str:
+    records = []
+    for row in rows:
+        key = legacy.case_key(row)
+        target_end = _target_end(row)
+        actual = row.get("actual")
+        records.append(
+            {
+                "caseKey": list(key),
+                "targetEnd": target_end,
+                "labelAvailableAsOf": str(
+                    row.get("label_available_as_of") or target_end
+                ),
+                "billMonthMax": str(row.get("_bill_month_max", target_end)),
+                "sourceAvailableAsOf": str(
+                    row.get("_available_as_of", target_end)
+                ),
+                "actual": None
+                if actual is None
+                else calibration.fixed_decimal(actual),
+            }
+        )
+    return digest(sorted(records, key=lambda item: tuple(item["caseKey"])))
+
+
+def _fold_training_population_fingerprints(
+    rows: Sequence[Mapping[str, Any]], spec: Mapping[str, Any]
+) -> dict[str, str]:
+    """Bind exact B0b training rows and every as-of availability dimension."""
+
+    eligible_roles = {"development_fold_training_seed"} | {
+        f"development_forward_score:{origin}"
+        for origin in spec["origins"]["forwardValidation"]["scoreOrigins"]
+    }
+    b0b_rows = [
+        row
+        for row in rows
+        if str(row.get("model_id")) == "B0b"
+        and str(row.get("_residual_case_role")) in eligible_roles
+    ]
+    return {
+        str(score_origin): _training_rows_availability_fingerprint(
+            [
+                row
+                for row in b0b_rows
+                if _fold_training_row_available(row, str(score_origin))
+            ]
+        )
+        for score_origin in spec["origins"]["forwardValidation"]["scoreOrigins"]
+    }
+
+
+def _fit_b0b_fold_from_prior_truth(
+    training_truth_rows: Sequence[Mapping[str, Any]],
+    score_origin: str,
+    spec: Mapping[str, Any],
+) -> dict[str, Any]:
+    fit = legacy.b0b_baseline(spec)["developmentFit"]
+    fold = next(
+        (
+            item
+            for item in spec["origins"]["forwardValidation"]["folds"]
+            if str(item["scoreOrigin"]) == str(score_origin)
+        ),
+        None,
+    )
+    if fold is None:
+        raise CorrectionError(f"missing frozen forward fold: {score_origin}")
+    available = [
+        row
+        for row in training_truth_rows
+        if _fold_training_row_available(row, str(score_origin))
+    ]
+    if not available:
+        raise CorrectionError(f"B0b forward fold has no prior truth: {score_origin}")
+    if any(
+        row.get("actual") is None
+        or _target_end(row) > str(score_origin)
+        or str(row.get("label_available_as_of") or _target_end(row)) > str(score_origin)
+        or str(row.get("_bill_month_max", _target_end(row))) > str(score_origin)
+        or str(row.get("_available_as_of", _target_end(row))) > str(score_origin)
+        for row in available
+    ):
+        raise CorrectionError("B0b fold training crossed its label-availability boundary")
+    block_count = len(
+        {
+            (legacy.case_key(row)[1], legacy.case_key(row)[2])
+            for row in available
+        }
+    )
+    if block_count != int(fold["expectedTrainOriginHorizonBlockCount"]):
+        raise CorrectionError(
+            f"B0b forward training block mismatch at {score_origin}: {block_count}"
+        )
+    factor_routes = set(fit["factorEligibleRoutes"])
+    factor_rows = [
+        row
+        for row in legacy.numeric_b0b_fit_rows(available)
+        if str(row["route"]) in factor_routes
+    ]
+    prior_origins = {legacy.case_key(row)[1] for row in factor_rows}
+    if len(prior_origins) < int(
+        spec["origins"]["forwardValidation"]["minimumPriorDistinctOriginDates"]
+    ):
+        raise CorrectionError(f"B0b fold has too few prior origins: {score_origin}")
+    matrix = legacy.build_fit_matrix(factor_rows, fit["lifecycleOrder"])
+    fitted = legacy.fit_b0b_matrix(matrix, spec)
+    return {
+        "factors": copy.deepcopy(fitted["factors"]),
+        "passes": int(fitted["passes"]),
+        "trainingCaseCount": len(factor_rows),
+        "trainingPopulationFingerprint": _training_rows_availability_fingerprint(
+            available
+        ),
+        "trainingOriginCount": len(prior_origins),
+        "trainingMaximumTargetEnd": max(_target_end(row) for row in available),
+        "trainingMaximumLabelAvailableAsOf": max(
+            str(row.get("label_available_as_of") or _target_end(row))
+            for row in available
+        ),
+        "trainingMaximumBillMonth": max(
+            str(row.get("_bill_month_max", _target_end(row))) for row in available
+        ),
+        "trainingMaximumSourceAvailableAsOf": max(
+            str(row.get("_available_as_of", _target_end(row))) for row in available
+        ),
+        "trainingBlockCount": block_count,
+    }
+
+
+def _replace_b0b_fold_predictions(
+    predictions: dict[str, list[dict[str, Any]]],
+    works: Sequence[Mapping[str, Any]],
+    spec: Mapping[str, Any],
+    score_origin: str,
+    horizons: Sequence[int],
+    factors: Mapping[str, float],
+) -> dict[tuple[str, str, int, str], float]:
+    fold_spec = copy.deepcopy(spec)
+    baseline = next(
+        item for item in fold_spec["models"]["baselines"] if item["id"] == "B0b"
+    )
+    baseline["lifecycleFactors"] = dict(factors)
+    baseline.pop("boundFittedParameterDigest", None)
+    generated = legacy.generate_predictions(
+        works,
+        {int(horizon): [str(score_origin)] for horizon in horizons},
+        fold_spec,
+        model_ids=("B0b",),
+        b0b_parameter_role="development_forward_fold",
+    )["B0b"]
+    generated_lookup = {legacy.case_key(row): copy.deepcopy(row) for row in generated}
+    expected = {
+        legacy.case_key(row)
+        for row in predictions["B0b"]
+        if legacy.case_key(row)[1] == str(score_origin)
+        and legacy.case_key(row)[2] in {int(value) for value in horizons}
+    }
+    if set(generated_lookup) != expected:
+        raise CorrectionError("generated B0b held keys differ from frozen fold keys")
+    for index, row in enumerate(predictions["B0b"]):
+        replacement = generated_lookup.get(legacy.case_key(row))
+        if replacement is not None:
+            predictions["B0b"][index] = replacement
+    numeric = {
+        key: float(row["point_forecast"])
+        for key, row in generated_lookup.items()
+        if legacy.eligibility_status(row) == "forecastable_numeric"
+        and row.get("point_forecast") is not None
+    }
+    return numeric
+
+
+def _ordered_forward_replay_with_prediction_locks(
+    development_predictions: dict[str, list[dict[str, Any]]],
+    works: Sequence[Mapping[str, Any]],
+    spec: Mapping[str, Any],
+    contract: scoring.ScoringContract,
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]], dict[str, Any]]:
+    warmup_origins = set(spec["origins"]["forwardValidation"]["warmupOrigins"])
+    training_seed = [
+        row
+        for row in development_predictions["B0b"]
+        if legacy.case_key(row)[1] in warmup_origins
+    ]
+    seed_joined, seed_receipt, _seed_lock = _materialize_annotate_lock_join(
+        training_seed,
+        works,
+        spec,
+        contract,
+        role="development_fold_training_seed",
+        b0b_role="prefit_development_template",
+    )
+    training_truth: list[dict[str, Any]] = list(seed_joined)
+    forward_joined: list[dict[str, Any]] = []
+    fold_receipts: list[dict[str, Any]] = []
+    fold_factors: dict[str, dict[str, float]] = {}
+    oof_points: dict[tuple[str, str, int, str], float] = {}
+    event_log: list[dict[str, Any]] = []
+
+    for fold in spec["origins"]["forwardValidation"]["folds"]:
+        score_origin = str(fold["scoreOrigin"])
+        horizons = [int(value) for value in fold["testHorizons"]]
+        fitted = _fit_b0b_fold_from_prior_truth(training_truth, score_origin, spec)
+        event_log.append(
+            {
+                "event": "prior_truth_fit_complete",
+                "scope": score_origin,
+                "scoreOrigin": score_origin,
+                "trainingMaximumTargetEnd": fitted["trainingMaximumTargetEnd"],
+                "trainingMaximumLabelAvailableAsOf": fitted[
+                    "trainingMaximumLabelAvailableAsOf"
+                ],
+                "trainingMaximumBillMonth": fitted["trainingMaximumBillMonth"],
+                "trainingMaximumSourceAvailableAsOf": fitted[
+                    "trainingMaximumSourceAvailableAsOf"
+                ],
+            }
+        )
+        fold_factors[score_origin] = copy.deepcopy(fitted["factors"])
+        generated_numeric = _replace_b0b_fold_predictions(
+            development_predictions,
+            works,
+            spec,
+            score_origin,
+            horizons,
+            fitted["factors"],
+        )
+        overlap = set(oof_points).intersection(generated_numeric)
+        if overlap:
+            raise CorrectionError("B0b OOF prediction key duplicated across folds")
+        oof_points.update(generated_numeric)
+        held = [
+            row
+            for row in _flatten_predictions(development_predictions)
+            if legacy.case_key(row)[1] == score_origin
+            and legacy.case_key(row)[2] in set(horizons)
+        ]
+        joined, receipt, lock = _materialize_annotate_lock_join(
+            held,
+            works,
+            spec,
+            contract,
+            role=f"development_forward_score:{score_origin}",
+            b0b_role="development_forward_fold",
+            fold_evidence={"foldFactors": {score_origin: fitted["factors"]}},
+            score_origin=score_origin,
+            event_log=event_log,
+            event_scope=score_origin,
+        )
+        if any(legacy.case_key(row)[1] != score_origin for row in joined):
+            raise CorrectionError("forward fold truth join escaped its score origin")
+        forward_joined.extend(joined)
+        training_truth.extend(row for row in joined if row["model_id"] == "B0b")
+        fold_receipts.append(
+            {
+                "scoreOrigin": score_origin,
+                "testHorizons": horizons,
+                "fit": fitted,
+                "lock": receipt,
+                "eventOrder": [
+                    event["event"]
+                    for event in event_log
+                    if event.get("scope") == score_origin
+                ],
+                "heldTruthFieldsAbsentAtLock": bool(
+                    lock.get("outcomeFieldsAbsentAtLock", True)
+                ),
+            }
+        )
+
+    expected_order = [
+        "prior_truth_fit_complete",
+        "held_prediction_lock_created",
+        "held_truth_join_complete",
+    ]
+    order_by_origin = {
+        str(origin): [
+            event["event"]
+            for event in event_log
+            if event.get("scope") == str(origin)
+        ]
+        for origin in spec["origins"]["forwardValidation"]["scoreOrigins"]
+    }
+    order_valid = all(order == expected_order for order in order_by_origin.values())
+    availability_valid = all(
+        str(event.get(field)) <= str(event["scoreOrigin"])
+        for event in event_log
+        if event["event"] == "prior_truth_fit_complete"
+        for field in (
+            "trainingMaximumTargetEnd",
+            "trainingMaximumLabelAvailableAsOf",
+            "trainingMaximumBillMonth",
+            "trainingMaximumSourceAvailableAsOf",
+        )
+    )
+    if not order_valid or not availability_valid:
+        raise CorrectionError("forward event trace or prior-label boundary is invalid")
+
+    combined_fingerprint = scoring.prediction_fingerprint(
+        forward_joined,
+        contract,
+        allow_outcome_projection=True,
+    )
+    return forward_joined, training_truth, {
+        "trainingSeed": seed_receipt,
+        "folds": fold_receipts,
+        "foldFactors": fold_factors,
+        "_oofPredictionByKey": oof_points,
+        "combinedPredictionFingerprint": combined_fingerprint,
+        "eventTrace": event_log,
+        "eventOrderByScoreOrigin": order_by_origin,
+        "predictionLockedBeforeScoringTruthAccess": order_valid,
+        "sameOrFutureFoldTruthUsedForCurrentPrediction": not availability_valid,
+    }
 
 
 def _interval_compatible(rows: Sequence[Mapping[str, Any]]) -> list[dict[str, Any]]:
@@ -343,16 +953,68 @@ def _unique_work_count(rows: Sequence[Mapping[str, Any]]) -> int:
 def _suppressed_cell(case_count: int, work_count: int, minimum: int) -> dict[str, Any]:
     return {
         "suppressed": True,
-        "caseCount": f"<{minimum}" if case_count < minimum else case_count,
-        "uniqueWorkCount": f"<{minimum}" if work_count < minimum else work_count,
+        "caseCount": f"<{minimum}",
+        "uniqueWorkCount": f"<{minimum}",
+        "suppressionReason": "case_or_unique_work_count_below_public_minimum",
     }
+
+
+def _secondary_suppressed_cell() -> dict[str, Any]:
+    return {
+        "suppressed": True,
+        "caseCount": None,
+        "uniqueWorkCount": None,
+        "secondarySuppression": True,
+        "suppressionReason": "complement_protection_for_primary_small_cell",
+    }
+
+
+def _apply_complementary_axis_suppression(
+    cells: Sequence[Mapping[str, Any]],
+) -> list[dict[str, Any]]:
+    """Hide one sibling when a sole primary small cell could be differenced."""
+
+    result = [copy.deepcopy(dict(cell)) for cell in cells]
+    for model in BASELINE_IDS:
+        indexes = [
+            index
+            for index, cell in enumerate(result)
+            if str(cell.get("modelId")) == model
+        ]
+        primary = [index for index in indexes if result[index].get("suppressed") is True]
+        visible = [index for index in indexes if result[index].get("suppressed") is not True]
+        if len(primary) != 1 or not visible:
+            continue
+
+        def population_size(index: int) -> tuple[int, int, str]:
+            metrics = result[index].get("allScoreableModelMetrics", {})
+            case_count = metrics.get("caseCount")
+            work_count = metrics.get("uniqueWorkCount")
+            return (
+                int(case_count) if isinstance(case_count, int) else sys.maxsize,
+                int(work_count) if isinstance(work_count, int) else sys.maxsize,
+                str(result[index].get("value")),
+            )
+
+        chosen = min(visible, key=population_size)
+        identity = {
+            "modelId": result[chosen].get("modelId"),
+            "value": result[chosen].get("value"),
+        }
+        result[chosen] = {**identity, **_secondary_suppressed_cell()}
+    return result
 
 
 def score_model_group(
     rows: Sequence[Mapping[str, Any]], minimum: int, *, allow_suppression: bool
 ) -> dict[str, Any]:
-    if allow_suppression and (len(rows) < minimum or _unique_work_count(rows) < minimum):
-        return _suppressed_cell(len(rows), _unique_work_count(rows), minimum)
+    scoreable = [row for row in rows if row.get("statisticallyScoreable") is True]
+    if allow_suppression and (
+        len(scoreable) < minimum or _unique_work_count(scoreable) < minimum
+    ):
+        return _suppressed_cell(
+            len(scoreable), _unique_work_count(scoreable), minimum
+        )
     result = scoring.score_populations(rows)
     result["internal80PredictionInterval"] = internal_interval_metrics(rows)
     return {"suppressed": False, **sanitize_score_payload(result, minimum)}
@@ -365,7 +1027,12 @@ def _sanitize_metric_population(
     work_count = int(population.get("uniqueWorkCount", 0))
     if case_count < minimum or work_count < minimum:
         return _suppressed_cell(case_count, work_count, minimum)
-    return {"suppressed": False, **copy.deepcopy(dict(population))}
+    result = copy.deepcopy(dict(population))
+    # Additive totals make a suppressed complement exactly recoverable from
+    # all-scoreable minus served, so they stay in ignored private evidence only.
+    result.pop("actualTotal", None)
+    result.pop("predictedTotal", None)
+    return {"suppressed": False, **result}
 
 
 def _sanitize_reason_distribution(
@@ -379,8 +1046,10 @@ def _sanitize_reason_distribution(
         if case_count < minimum or work_count < minimum:
             output[str(reason)] = {
                 "suppressed": True,
-                "caseCount": f"<{minimum}" if case_count < minimum else case_count,
-                work_key: f"<{minimum}" if work_count < minimum else work_count,
+                "caseCount": f"<{minimum}",
+                work_key: f"<{minimum}",
+                "positiveActualRevenueShare": None,
+                "suppressionReason": "case_or_unique_work_count_below_public_minimum",
             }
         else:
             output[str(reason)] = {"suppressed": False, **copy.deepcopy(dict(values))}
@@ -409,18 +1078,40 @@ def sanitize_score_payload(
     small_abstention = abstained_cases < minimum or abstained_works < minimum
     abstention["abstentionCellSuppressed"] = small_abstention
     if small_abstention:
-        abstention["abstainedCaseCount"] = (
-            f"<{minimum}" if abstained_cases < minimum else abstained_cases
+        result["abstentionMetrics"] = {
+            "suppressed": True,
+            "caseCount": f"<{minimum}",
+            "uniqueWorkCount": f"<{minimum}",
+            "suppressionReason": (
+                "abstained_case_or_unique_work_count_below_public_minimum"
+            ),
+        }
+        served_public = result["servedCohortMetrics"]
+        if not served_public.get("suppressed"):
+            served_public["caseCount"] = None
+            served_public["uniqueWorkCount"] = None
+            served_public["countSuppressedToProtectComplementSmallCell"] = True
+            high_public = served_public.get("highValuePerformance")
+            if isinstance(high_public, Mapping) and not high_public.get("suppressed"):
+                high_public["caseCount"] = None
+                high_public["uniqueWorkCount"] = None
+                high_public["countSuppressedToProtectComplementSmallCell"] = True
+    else:
+        abstention["suppressed"] = False
+        abstention["abstentionReasonDistribution"] = _sanitize_reason_distribution(
+            abstention.get("abstentionReasonDistribution", {}), minimum
         )
-        abstention["abstainedWorkCount"] = (
-            f"<{minimum}" if abstained_works < minimum else abstained_works
-        )
-        abstention.pop("abstainedActualRevenueShare", None)
-        abstention["highValueAbstainedWorkCount"] = f"<{minimum}"
-    abstention["abstentionReasonDistribution"] = _sanitize_reason_distribution(
-        abstention.get("abstentionReasonDistribution", {}), minimum
-    )
-    result["abstentionMetrics"] = abstention
+        result["abstentionMetrics"] = abstention
+
+    result["servingCoverageMetrics"] = {
+        "population": "all_statistically_scoreable_large_denominator_cells",
+        "servedWorkShare": abstention.get("servedWorkShare"),
+        "servedActualRevenueShare": abstention.get("servedActualRevenueShare"),
+        "top1ServedRevenueShare": abstention.get("top1ServedRevenueShare"),
+        "top5ServedRevenueShare": abstention.get("top5ServedRevenueShare"),
+        "top10ServedRevenueShare": abstention.get("top10ServedRevenueShare"),
+        "abstentionSmallCellDetailsSuppressed": small_abstention,
+    }
 
     interval = copy.deepcopy(result["internal80PredictionInterval"])
     required = int(interval.get("requiredCaseCount", 0))
@@ -439,6 +1130,21 @@ def sanitize_attribution_report(
 ) -> dict[str, Any]:
     result = copy.deepcopy(dict(report))
     for stage in result.get("stages", []):
+        all_metrics = stage.get("allScoreableModelMetrics")
+        if isinstance(all_metrics, Mapping) and "caseCount" in all_metrics:
+            stage["allScoreableModelMetrics"] = _sanitize_metric_population(
+                all_metrics, minimum
+            )
+        served_metrics = stage.get("servedCohortMetrics")
+        if isinstance(served_metrics, Mapping) and "caseCount" in served_metrics:
+            stage["servedCohortMetrics"] = _sanitize_metric_population(
+                served_metrics, minimum
+            )
+        high_metrics = stage.get("highValueServedPerformance")
+        if isinstance(high_metrics, Mapping) and "caseCount" in high_metrics:
+            stage["highValueServedPerformance"] = _sanitize_metric_population(
+                high_metrics, minimum
+            )
         abstention = stage.get("abstentionMetrics")
         if not isinstance(abstention, Mapping):
             continue
@@ -448,20 +1154,106 @@ def sanitize_attribution_report(
         if isinstance(cases, int) and isinstance(works, int) and (
             cases < minimum or works < minimum
         ):
-            cleaned["abstentionCellSuppressed"] = True
-            cleaned["abstainedCaseCount"] = f"<{minimum}" if cases < minimum else cases
-            cleaned["abstainedWorkCount"] = f"<{minimum}" if works < minimum else works
-            cleaned["fullyAbstainedWorkCount"] = f"<{minimum}"
-            cleaned["highValueAbstainedCaseCount"] = f"<{minimum}"
-            cleaned["highValueAbstainedWorkCount"] = f"<{minimum}"
-            cleaned.pop("abstainedActualRevenueShare", None)
-        reasons = cleaned.get("abstentionReasonDistribution")
-        if isinstance(reasons, Mapping):
-            cleaned["abstentionReasonDistribution"] = _sanitize_reason_distribution(
-                reasons, minimum
-            )
+            cleaned = {
+                "suppressed": True,
+                "caseCount": f"<{minimum}",
+                "uniqueWorkCount": f"<{minimum}",
+                "suppressionReason": (
+                    "abstained_case_or_unique_work_count_below_public_minimum"
+                ),
+            }
+            served = stage.get("servedCohortMetrics")
+            if isinstance(served, Mapping):
+                served = copy.deepcopy(dict(served))
+                served["caseCount"] = None
+                served["uniqueWorkCount"] = None
+                served["countSuppressedToProtectComplementSmallCell"] = True
+                stage["servedCohortMetrics"] = served
+        else:
+            cleaned["suppressed"] = False
+            reasons = cleaned.get("abstentionReasonDistribution")
+            if isinstance(reasons, Mapping):
+                cleaned["abstentionReasonDistribution"] = _sanitize_reason_distribution(
+                    reasons, minimum
+                )
         stage["abstentionMetrics"] = cleaned
     return result
+
+
+def _public_lock_receipt(
+    receipt: Mapping[str, Any], *, suppress_counts: bool = False
+) -> dict[str, Any]:
+    included_keys = [
+        "role",
+        "scoreOrigin",
+        "outcomeFieldsAbsentAtLock",
+        "outcomeFieldRejectionPassed",
+        "predictionLockedBeforeTruthJoin",
+        "predictionLockCreatedBeforeTruthJoin",
+        "postTruthPredictionProjectionVerified",
+        "postTruthPredictionProjectionMatchesLock",
+    ]
+    if not suppress_counts:
+        included_keys.append("predictionFingerprint")
+    result = {
+        key: copy.deepcopy(receipt.get(key))
+        for key in included_keys
+        if key in receipt
+    }
+    if not suppress_counts:
+        result["predictionRowCount"] = receipt.get("predictionRowCount")
+        result["caseKeyCount"] = receipt.get("caseKeyCount")
+    else:
+        result["countsSuppressed"] = True
+        result["predictionFingerprintWithheldForSmallCell"] = True
+    return result
+
+
+def public_prediction_lock_evidence(
+    warmup: Mapping[str, Any],
+    forward: Mapping[str, Any],
+    long_audit: Mapping[str, Any],
+) -> dict[str, Any]:
+    return {
+        "warmup": _public_lock_receipt(warmup),
+        "forward": {
+            "trainingSeed": _public_lock_receipt(forward.get("trainingSeed", {})),
+            "folds": [
+                {
+                    "scoreOrigin": item.get("scoreOrigin"),
+                    "testHorizons": copy.deepcopy(item.get("testHorizons", [])),
+                    "trainingMaximumTargetEnd": item.get("fit", {}).get(
+                        "trainingMaximumTargetEnd"
+                    ),
+                    "trainingMaximumLabelAvailableAsOf": item.get("fit", {}).get(
+                        "trainingMaximumLabelAvailableAsOf"
+                    ),
+                    "trainingMaximumBillMonth": item.get("fit", {}).get(
+                        "trainingMaximumBillMonth"
+                    ),
+                    "trainingMaximumSourceAvailableAsOf": item.get("fit", {}).get(
+                        "trainingMaximumSourceAvailableAsOf"
+                    ),
+                    "eventOrder": copy.deepcopy(item.get("eventOrder", [])),
+                    "heldTruthFieldsAbsentAtLock": item.get(
+                        "heldTruthFieldsAbsentAtLock"
+                    ),
+                    "lock": _public_lock_receipt(item.get("lock", {})),
+                }
+                for item in forward.get("folds", [])
+            ],
+            "combinedPredictionFingerprint": forward.get(
+                "combinedPredictionFingerprint"
+            ),
+            "predictionLockedBeforeScoringTruthAccess": forward.get(
+                "predictionLockedBeforeScoringTruthAccess"
+            ),
+            "sameOrFutureFoldTruthUsedForCurrentPrediction": forward.get(
+                "sameOrFutureFoldTruthUsedForCurrentPrediction"
+            ),
+        },
+        "longAudit": _public_lock_receipt(long_audit, suppress_counts=True),
+    }
 
 
 def aggregate_models(
@@ -472,8 +1264,20 @@ def aggregate_models(
         model: [row for row in rows if row["model_id"] == model]
         for model in BASELINE_IDS
     }
+    scoreable_by_model = {
+        model: [row for row in value if row.get("statisticallyScoreable") is True]
+        for model, value in by_model.items()
+    }
+    population_case_count = min(
+        (len(value) for value in scoreable_by_model.values()), default=0
+    )
+    population_work_count = min(
+        (_unique_work_count(value) for value in scoreable_by_model.values()), default=0
+    )
+    if population_case_count < minimum or population_work_count < minimum:
+        return _suppressed_cell(population_case_count, population_work_count, minimum)
     overall = {
-        model: score_model_group(model_rows, minimum, allow_suppression=False)
+        model: score_model_group(model_rows, minimum, allow_suppression=True)
         for model, model_rows in by_model.items()
     }
     axes = {
@@ -503,8 +1307,8 @@ def aggregate_models(
                         **score_model_group(group, minimum, allow_suppression=True),
                     }
                 )
-        slices[axis] = cells
-    return {"overall": overall, "slices": slices}
+        slices[axis] = _apply_complementary_axis_suppression(cells)
+    return {"suppressed": False, "overall": overall, "slices": slices}
 
 
 def _state_fingerprint(rows: Sequence[Mapping[str, Any]]) -> str:
@@ -530,6 +1334,18 @@ def _state_fingerprint(rows: Sequence[Mapping[str, Any]]) -> str:
     return digest(values)
 
 
+def _posthoc_segment_fingerprint(rows: Sequence[Mapping[str, Any]]) -> str:
+    return digest(
+        [
+            {
+                "key": list(legacy.case_key(row)),
+                "strata": copy.deepcopy(row.get("strata", {})),
+            }
+            for row in sorted(rows, key=legacy.case_key)
+        ]
+    )
+
+
 def parity_evidence(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     by_model = {
         model: [row for row in rows if row["model_id"] == model]
@@ -553,6 +1369,9 @@ def parity_evidence(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
         for model, values in by_model.items()
     }
     first = BASELINE_IDS[0]
+    posthoc_fingerprints = {
+        model: _posthoc_segment_fingerprint(values) for model, values in by_model.items()
+    }
     raw_complete = all(
         row.get("rawModelPrediction") is not None
         for row in rows
@@ -566,6 +1385,21 @@ def parity_evidence(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
         )
         for row in rows
     )
+    first_scoreable_rows = [
+        row
+        for row in by_model[first]
+        if row.get("statisticallyScoreable") is True
+    ]
+    first_abstained_rows = [
+        row for row in first_scoreable_rows if row.get("abstained") is True
+    ]
+    first_abstained_blocks = {
+        (legacy.case_key(row)[0], legacy.case_key(row)[1])
+        for row in first_abstained_rows
+    }
+    suppress_abstention = (
+        len(first_abstained_rows) < 10 or len(first_abstained_blocks) < 10
+    )
     return {
         "caseKeysIdentical": all(values == key_sets[first] for values in key_sets.values()),
         "scoreableKeysIdentical": all(
@@ -574,14 +1408,26 @@ def parity_evidence(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
         "businessServingKeysIdentical": all(
             values == serving_sets[first] for values in serving_sets.values()
         ),
+        "postHocSegmentAssignmentsIdentical": all(
+            value == posthoc_fingerprints[first]
+            for value in posthoc_fingerprints.values()
+        ),
         "intersectionDropUsed": False,
         "rawPredictionCompleteOnAllScoreable": raw_complete,
         "rawEqualsServedWhenServedAndOtherwiseNull": served_consistent,
         "blockedOrAbstainedZeroImputedIntoModelWape": False,
         "caseCountPerModel": len(key_sets[first]),
         "scoreableCaseCountPerModel": len(scoreable_sets[first]),
-        "businessServingCaseCountPerModel": len(serving_sets[first]),
+        "businessServingCaseCountPerModel": (
+            None if suppress_abstention else len(serving_sets[first])
+        ),
+        "abstentionCellSuppressed": suppress_abstention,
         "stateAndPredictionFingerprint": _state_fingerprint(rows),
+        "contractPredictionFingerprint": scoring.prediction_fingerprint(
+            rows, allow_outcome_projection=True
+        ),
+        "scoreabilityFingerprint": scoring.scoreability_fingerprint(rows),
+        "postHocSegmentFingerprint": posthoc_fingerprints[first],
     }
 
 
@@ -605,6 +1451,10 @@ def state_reconciliation(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     scoreable = [row for row in b0b if row["statisticallyScoreable"]]
     serving = [row for row in scoreable if row["businessServingEligible"]]
     abstained = [row for row in scoreable if row["abstained"]]
+    abstained_blocks = {
+        (legacy.case_key(row)[0], legacy.case_key(row)[1]) for row in abstained
+    }
+    suppress_abstention = len(abstained) < 10 or len(abstained_blocks) < 10
     return {
         "caseUniverseCount": len(b0b),
         "legacyForecastableCaseCountAuditOnly": len(legacy_numeric),
@@ -612,8 +1462,13 @@ def state_reconciliation(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
         "modelPredictionAvailableScoreableCaseCount": sum(
             bool(row["modelPredictionAvailable"]) for row in scoreable
         ),
-        "businessServingEligibleScoreableCaseCount": len(serving),
-        "abstainedScoreableCaseCount": len(abstained),
+        "businessServingEligibleScoreableCaseCount": (
+            None if suppress_abstention else len(serving)
+        ),
+        "abstainedScoreableCaseCount": "<10" if suppress_abstention else len(abstained),
+        "abstainedWorkCount": "<10" if suppress_abstention else len(abstained_blocks),
+        "abstentionCellSuppressed": suppress_abstention,
+        "servingCountSuppressedToProtectComplementSmallCell": suppress_abstention,
         "statisticallyUnscoreableCaseCount": len(b0b) - len(scoreable),
         "statesAreIndependent": True,
         "legacyForecastabilityControlsNewStates": False,
@@ -626,7 +1481,7 @@ def gate_evidence(
     score = aggregate["overall"][locked_comparator]
     all_scoreable = score["allScoreableModelMetrics"]
     served = score["servedCohortMetrics"]
-    abstention = score["abstentionMetrics"]
+    coverage = score["servingCoverageMetrics"]
     high = served["highValuePerformance"]
     horizon_biases = {}
     for cell in aggregate["slices"]["horizon"]:
@@ -635,7 +1490,7 @@ def gate_evidence(
         horizon_biases[str(cell["value"])] = cell["allScoreableModelMetrics"][
             "signedAggregateBias"
         ]
-    top10 = abstention["top10ServedRevenueShare"]
+    top10 = coverage["top10ServedRevenueShare"]
     return {
         "top10ServedRevenueCoveragePreC1": {
             "value": top10,
@@ -677,6 +1532,7 @@ def gate_evidence(
                 "caseKeysIdentical",
                 "scoreableKeysIdentical",
                 "businessServingKeysIdentical",
+                "postHocSegmentAssignmentsIdentical",
                 "rawPredictionCompleteOnAllScoreable",
                 "rawEqualsServedWhenServedAndOtherwiseNull",
             )
@@ -705,16 +1561,33 @@ def load_verified_model_inputs() -> Mapping[str, Any]:
 
 def assert_public_privacy(value: Any) -> None:
     forbidden_keys = {
-        "standard_work_id",
         "standardworkid",
-        "work_title",
+        "workid",
+        "workkey",
+        "casekey",
+        "worktitle",
         "author",
-        "channel_key",
+        "channelkey",
         "channelidentifier",
+        "channelrowdetail",
+        "channeldetail",
+        "rawincomerow",
+        "rawbillrow",
+        "rawrow",
+        "billrow",
         "lower",
         "upper",
+        "p10",
+        "p90",
+        "pilower",
+        "piupper",
         "predictionintervallower",
         "predictionintervalupper",
+        "optimistic",
+        "pessimistic",
+        "high",
+        "base",
+        "low",
     }
 
     def visit(current: Any) -> None:
@@ -723,16 +1596,15 @@ def assert_public_privacy(value: Any) -> None:
             work_count = current.get(
                 "uniqueWorkCount", current.get("workCount")
             )
-            if (
-                isinstance(case_count, int)
-                and isinstance(work_count, int)
-                and (case_count < 10 or work_count < 10)
-                and current.get("suppressed") is not True
-            ):
+            small_count = (
+                (isinstance(case_count, int) and case_count < 10)
+                or (isinstance(work_count, int) and work_count < 10)
+            )
+            if small_count and current.get("suppressed") is not True:
                 raise CorrectionError("public report contains an unsuppressed small cell")
             for key, child in current.items():
                 normalized = str(key).replace("-", "").replace("_", "").casefold()
-                if normalized in {item.replace("_", "") for item in forbidden_keys}:
+                if normalized in forbidden_keys:
                     raise CorrectionError(f"public report contains forbidden key: {key}")
                 visit(child)
         elif isinstance(current, (list, tuple)):
@@ -747,19 +1619,69 @@ def assert_public_privacy(value: Any) -> None:
             root = str(ROOT).replace("\\", "/").casefold()
             if root in text:
                 raise CorrectionError("public report contains a machine-local path")
+            if (
+                re.match(r"^[a-z]:/", text)
+                or text.startswith("//")
+                or re.match(r"^/(home|users|tmp|var|private|mnt)/", text)
+            ):
+                raise CorrectionError("public report contains an absolute local path")
 
     visit(value)
 
 
+def assert_public_markdown_privacy(value: str) -> None:
+    normalized = value.replace("\\", "/")
+    folded = normalized.casefold()
+    if "data/private-output/" in folded or str(ROOT).replace("\\", "/").casefold() in folded:
+        raise CorrectionError("public Markdown contains a private or machine-local path")
+    if re.search(r"(?im)(?:^|[\s`|])(?:standard_work_id|channel_key|caseKey|workKey)(?:[\s`|:]|$)", value):
+        raise CorrectionError("public Markdown names a row-level identifier")
+    if re.search(
+        r"(?i)(?:predictionIntervalLower|predictionIntervalUpper|PI_lower|PI_upper|`(?:optimistic|pessimistic|high|base|low)`)",
+        value,
+    ):
+        raise CorrectionError("public Markdown exposes an interval or scenario endpoint")
+    for line in normalized.splitlines():
+        candidate = line.strip().strip("`<>()[]{}.,;:'\"")
+        if re.match(r"^[a-zA-Z]:/", candidate) or candidate.startswith("//"):
+            raise CorrectionError("public Markdown contains an absolute local path")
+
+
+def _atomic_write_bytes(path: Path, payload: bytes) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary: Path | None = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="wb",
+            dir=path.parent,
+            prefix=f".{path.name}.",
+            suffix=".tmp",
+            delete=False,
+        ) as handle:
+            temporary = Path(handle.name)
+            handle.write(payload)
+            handle.flush()
+            os.fsync(handle.fileno())
+        temporary.replace(path)
+    finally:
+        if temporary is not None and temporary.exists():
+            temporary.unlink()
+
+
 def write_json(path: Path, value: Mapping[str, Any]) -> None:
     assert_public_privacy(value)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_bytes(
+    _atomic_write_bytes(
+        path,
         json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True, allow_nan=False).encode(
             "utf-8"
         )
-        + b"\n"
+        + b"\n",
     )
+
+
+def write_public_markdown(path: Path, value: str) -> None:
+    assert_public_markdown_privacy(value)
+    _atomic_write_bytes(path, value.encode("utf-8") + (b"" if value.endswith("\n") else b"\n"))
 
 
 def _fmt(value: Any) -> str:
@@ -806,15 +1728,18 @@ def baseline_markdown(report: Mapping[str, Any]) -> str:
             )
         )
     abstention = report["developmentBaseline"]["overall"]["B0b"]["abstentionMetrics"]
+    coverage = report["developmentBaseline"]["overall"]["B0b"][
+        "servingCoverageMetrics"
+    ]
     lines.extend(
         [
             "",
             "## Serving 与 abstention",
             "",
-            f"- served work share：`{_fmt(abstention['servedWorkShare'])}`",
-            f"- served actual revenue share：`{_fmt(abstention['servedActualRevenueShare'])}`",
-            f"- top1 / top5 / top10 served revenue coverage：`{_fmt(abstention['top1ServedRevenueShare'])}` / `{_fmt(abstention['top5ServedRevenueShare'])}` / `{_fmt(abstention['top10ServedRevenueShare'])}`",
-            f"- abstained work count：`{abstention['abstainedWorkCount']}`；abstained actual revenue share：`{_fmt(abstention.get('abstainedActualRevenueShare'))}`（小 cell 时按规则抑制）。",
+            f"- served work share：`{_fmt(coverage['servedWorkShare'])}`",
+            f"- served actual revenue share：`{_fmt(coverage['servedActualRevenueShare'])}`",
+            f"- top1 / top5 / top10 served revenue coverage：`{_fmt(coverage['top1ServedRevenueShare'])}` / `{_fmt(coverage['top5ServedRevenueShare'])}` / `{_fmt(coverage['top10ServedRevenueShare'])}`",
+            f"- abstention cell：`{abstention.get('caseCount')}` cases / `{abstention.get('uniqueWorkCount')}` works（小 cell 按规则整组抑制）。",
             "- abstained 的 servedPrediction 为 null；其 rawModelPrediction 仍进入 all-scoreable 模型指标，未按 0 混入 WAPE。",
             "",
             "## 完整性与边界",
@@ -853,7 +1778,7 @@ def correction_markdown(report: Mapping[str, Any]) -> str:
     for model in BASELINE_IDS:
         item = metrics[model]
         lines.append(
-            f"| {model} | {item['allScoreableModelMetrics']['caseCount']} | {_fmt(item['allScoreableModelMetrics']['wape'])} | {_fmt(item['allScoreableModelMetrics']['signedAggregateBias'])} | {_fmt(item['servedCohortMetrics']['wape'])} | {_fmt(item['servedCohortMetrics']['signedAggregateBias'])} | {item['abstentionMetrics']['abstainedWorkCount']} |"
+            f"| {model} | {item['allScoreableModelMetrics']['caseCount']} | {_fmt(item['allScoreableModelMetrics']['wape'])} | {_fmt(item['allScoreableModelMetrics']['signedAggregateBias'])} | {_fmt(item['servedCohortMetrics']['wape'])} | {_fmt(item['servedCohortMetrics']['signedAggregateBias'])} | {item['abstentionMetrics'].get('uniqueWorkCount', item['abstentionMetrics'].get('abstainedWorkCount'))} |"
         )
     lines.extend(
         [
@@ -897,7 +1822,6 @@ def attribution_markdown(report: Mapping[str, Any]) -> str:
     for stage in report["stages"]:
         all_metrics = stage.get("allScoreableModelMetrics", {}) or {}
         served = stage.get("servedCohortMetrics", {}) or {}
-        abstention_metrics = stage.get("abstentionMetrics", {}) or {}
         high = stage.get("highValueServedPerformance", {}) or {}
         lines.append(
             "| {stage} {title} | {cases} | {wape} | {bias} | {coverage} | {top10} | {high_wape} | {high_bias} |".format(
@@ -906,8 +1830,8 @@ def attribution_markdown(report: Mapping[str, Any]) -> str:
                 cases=stage.get("caseCount"),
                 wape=_fmt(all_metrics.get("wape")),
                 bias=_fmt(all_metrics.get("signedAggregateBias")),
-                coverage=_fmt(abstention_metrics.get("servedActualRevenueShare")),
-                top10=_fmt(abstention_metrics.get("top10ServedRevenueShare")),
+                coverage=_fmt(stage.get("servedRevenueCoverage")),
+                top10=_fmt(stage.get("top10ServedRevenueCoverage")),
                 high_wape=_fmt(high.get("wape")),
                 high_bias=_fmt(high.get("signedAggregateBias")),
             )
@@ -936,34 +1860,450 @@ def attribution_markdown(report: Mapping[str, Any]) -> str:
 def write_private_evidence(
     rows: Sequence[Mapping[str, Any]], manifest: Mapping[str, Any]
 ) -> dict[str, Any]:
+    for path in (PRIVATE_CASES, PRIVATE_MANIFEST):
+        if not legacy.git_path_is_ignored(path):
+            raise CorrectionError("private calibration evidence path is not Git-ignored")
     PRIVATE_DIR.mkdir(parents=True, exist_ok=True)
-    with PRIVATE_CASES.open("w", encoding="utf-8", newline="\n") as handle:
-        for row in rows:
-            payload = {
-                "modelId": row["model_id"],
-                "caseKey": row["case_key"],
-                "actual": row.get("actual"),
-                "statisticallyScoreable": row["statisticallyScoreable"],
-                "scoreabilityReason": row["scoreabilityReason"],
-                "modelPredictionAvailable": row["modelPredictionAvailable"],
-                "businessServingEligible": row["businessServingEligible"],
-                "rawModelPrediction": row["rawModelPrediction"],
-                "servedPrediction": row["servedPrediction"],
-                "abstained": row["abstained"],
-                "abstentionReason": row["abstentionReason"],
-                "strata": row.get("strata"),
+    case_temp: Path | None = None
+    manifest_temp: Path | None = None
+    try:
+        case_digest = hashlib.sha256()
+        row_count = 0
+        with tempfile.NamedTemporaryFile(
+            mode="wb",
+            dir=PRIVATE_DIR,
+            prefix=f".{PRIVATE_CASES.name}.",
+            suffix=".tmp",
+            delete=False,
+        ) as handle:
+            case_temp = Path(handle.name)
+            for row in rows:
+                payload = {
+                    "modelId": row["model_id"],
+                    "caseKey": row["case_key"],
+                    "actual": row.get("actual"),
+                    "targetEnd": row.get("target_end"),
+                    "labelAvailableAsOf": row.get("label_available_as_of"),
+                    "billMonthMax": row.get("_bill_month_max", row.get("target_end")),
+                    "sourceAvailableAsOf": row.get(
+                        "_available_as_of", row.get("target_end")
+                    ),
+                    "statisticallyScoreable": row["statisticallyScoreable"],
+                    "scoreabilityReason": row["scoreabilityReason"],
+                    "modelPredictionAvailable": row["modelPredictionAvailable"],
+                    "businessServingEligible": row["businessServingEligible"],
+                    "rawModelPrediction": row["rawModelPrediction"],
+                    "servedPrediction": row["servedPrediction"],
+                    "abstained": row["abstained"],
+                    "abstentionReason": row["abstentionReason"],
+                    "rawAnnualBreakdown": row.get("rawAnnualBreakdown", []),
+                    "servedAnnualBreakdown": row.get("servedAnnualBreakdown", []),
+                    "confidence": row.get("confidence"),
+                    "limitation": row.get("limitation", []),
+                    "predictionRole": row.get("_residual_case_role"),
+                    "internal80PredictionInterval": row.get("_internal_interval"),
+                    "strata": row.get("strata"),
+                }
+                encoded_row = (
+                    json.dumps(
+                        payload,
+                        ensure_ascii=False,
+                        sort_keys=True,
+                        separators=(",", ":"),
+                        allow_nan=False,
+                    ).encode("utf-8")
+                    + b"\n"
+                )
+                handle.write(encoded_row)
+                case_digest.update(encoded_row)
+                row_count += 1
+            handle.flush()
+            os.fsync(handle.fileno())
+        report_digests = {
+            path.relative_to(ROOT).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()
+            for path in PUBLIC_REPORT_PATHS
+        }
+        bound_manifest = {
+            **copy.deepcopy(dict(manifest)),
+            "privateCaseRowCount": row_count,
+            "caseEvidenceSha256": case_digest.hexdigest(),
+            "privateCaseSerialization": "canonical_compact_JSON_UTF8_LF_one_object_per_line",
+            "publicReportSha256": report_digests,
+        }
+        encoded = (
+            json.dumps(
+                bound_manifest,
+                ensure_ascii=False,
+                indent=2,
+                sort_keys=True,
+                allow_nan=False,
+            ).encode("utf-8")
+            + b"\n"
+        )
+        with tempfile.NamedTemporaryFile(
+            mode="wb",
+            dir=PRIVATE_DIR,
+            prefix=f".{PRIVATE_MANIFEST.name}.",
+            suffix=".tmp",
+            delete=False,
+        ) as handle:
+            manifest_temp = Path(handle.name)
+            handle.write(encoded)
+            handle.flush()
+            os.fsync(handle.fileno())
+
+        # Verify the complete staged bundle before either canonical path is replaced.
+        verify_private_evidence_manifest(
+            case_temp,
+            manifest_temp,
+            expected_bindings=manifest,
+        )
+        case_temp.replace(PRIVATE_CASES)
+        case_temp = None
+        manifest_temp.replace(PRIVATE_MANIFEST)
+        manifest_temp = None
+        verified = verify_private_evidence_manifest(
+            PRIVATE_CASES,
+            PRIVATE_MANIFEST,
+            expected_bindings=manifest,
+        )
+        final_manifest_bytes = PRIVATE_MANIFEST.read_bytes()
+        return {
+            **verified,
+            "manifestSha256": hashlib.sha256(final_manifest_bytes).hexdigest(),
+            "tracked": False,
+        }
+    finally:
+        for temporary in (case_temp, manifest_temp):
+            if temporary is not None and temporary.exists():
+                temporary.unlink()
+
+
+def verify_private_evidence_manifest(
+    case_path: Path = PRIVATE_CASES,
+    manifest_path: Path = PRIVATE_MANIFEST,
+    *,
+    expected_bindings: Mapping[str, Any] | None = None,
+    public_report_paths: Mapping[str, Path] | None = None,
+) -> dict[str, Any]:
+    def strict_object(pairs: Sequence[tuple[str, Any]]) -> dict[str, Any]:
+        result: dict[str, Any] = {}
+        for key, value in pairs:
+            if key in result:
+                raise CorrectionError("private evidence JSON contains a duplicate key")
+            result[key] = value
+        return result
+
+    def reject_constant(value: str) -> Any:
+        raise CorrectionError(f"private evidence JSON contains non-finite {value}")
+
+    def load_strict_json(payload: bytes) -> Any:
+        try:
+            return json.loads(
+                payload.decode("utf-8"),
+                object_pairs_hook=strict_object,
+                parse_constant=reject_constant,
+            )
+        except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+            raise CorrectionError("private evidence JSON is invalid UTF-8 JSON") from exc
+
+    manifest_value = load_strict_json(manifest_path.read_bytes())
+    if not isinstance(manifest_value, Mapping):
+        raise CorrectionError("private evidence manifest is not an object")
+    manifest = dict(manifest_value)
+    required_fields = {
+        "schema",
+        "decisionStatus",
+        "baseSpecDigest",
+        "amendmentDigest",
+        "combinedContractDigest",
+        "correctionCodeCommit",
+        "inputFingerprint",
+        "scoreabilityFingerprint",
+        "foldTrainingPopulationFingerprints",
+        "predictionLockFingerprints",
+        "fittedArtifactSha256",
+        "privateCaseRowCount",
+        "caseEvidenceSha256",
+        "privateCaseSerialization",
+        "publicReportSha256",
+        "caseKeyAndStateParity",
+        "finalHoldoutOpened",
+        "candidateTrainingStarted",
+    }
+    missing = sorted(required_fields.difference(manifest))
+    if missing:
+        raise CorrectionError(f"private evidence manifest lacks bindings: {missing}")
+    if manifest["schema"] != "m2.calibration-baseline-replay.private-manifest.v1_1":
+        raise CorrectionError("private evidence manifest schema mismatch")
+    if manifest["decisionStatus"] != "not_for_formal_decision":
+        raise CorrectionError("private evidence manifest decision status is not sealed")
+    if (
+        manifest["caseKeyAndStateParity"] is not True
+        or manifest["finalHoldoutOpened"] is not False
+        or manifest["candidateTrainingStarted"] is not False
+    ):
+        raise CorrectionError("private evidence manifest seal or parity binding failed")
+    if (
+        manifest["privateCaseSerialization"]
+        != "canonical_compact_JSON_UTF8_LF_one_object_per_line"
+    ):
+        raise CorrectionError("private case serialization contract mismatch")
+
+    contract = scoring.load_contract()
+    expected_contract = {
+        "baseSpecDigest": contract.base_digest,
+        "amendmentDigest": contract.amendment_digest,
+        "combinedContractDigest": contract.combined_digest,
+    }
+    if any(manifest.get(key) != value for key, value in expected_contract.items()):
+        raise CorrectionError("private manifest contract digest binding mismatch")
+    for field in (
+        "baseSpecDigest",
+        "amendmentDigest",
+        "combinedContractDigest",
+        "inputFingerprint",
+        "scoreabilityFingerprint",
+        "fittedArtifactSha256",
+        "caseEvidenceSha256",
+    ):
+        if not SHA256_PATTERN.fullmatch(str(manifest[field])):
+            raise CorrectionError(f"private manifest has an invalid digest: {field}")
+    code_commit = str(manifest["correctionCodeCommit"])
+    if not GIT_COMMIT_PATTERN.fullmatch(code_commit):
+        raise CorrectionError("private manifest correction code commit is invalid")
+    if legacy.latest_exact_commit(CORRECTION_CODE_PATHS) != code_commit:
+        raise CorrectionError("private manifest correction code bytes do not match commit")
+    if expected_bindings is not None:
+        for key, expected in expected_bindings.items():
+            if manifest.get(key) != expected:
+                raise CorrectionError(f"private manifest trusted binding differs: {key}")
+
+    expected_count = manifest["privateCaseRowCount"]
+    if isinstance(expected_count, bool) or not isinstance(expected_count, int) or expected_count <= 0:
+        raise CorrectionError("private case row count is not a positive integer")
+    expected_digest = str(manifest["caseEvidenceSha256"])
+    actual_digest = hashlib.sha256()
+    actual_count = 0
+    seen: set[tuple[str, str, str, int, str, str]] = set()
+    reconstructed_rows: list[dict[str, Any]] = []
+    with case_path.open("rb") as handle:
+        for raw_line in handle:
+            if not raw_line.endswith(b"\n") or raw_line in {b"\n", b"\r\n"}:
+                raise CorrectionError("private case evidence is not canonical LF NDJSON")
+            actual_digest.update(raw_line)
+            payload_value = load_strict_json(raw_line[:-1])
+            if not isinstance(payload_value, Mapping):
+                raise CorrectionError("private case evidence row is not an object")
+            payload = dict(payload_value)
+            canonical = (
+                json.dumps(
+                    payload,
+                    ensure_ascii=False,
+                    sort_keys=True,
+                    separators=(",", ":"),
+                    allow_nan=False,
+                ).encode("utf-8")
+                + b"\n"
+            )
+            if canonical != raw_line:
+                raise CorrectionError("private case evidence row is not canonical JSON")
+            required_case_fields = {
+                "modelId",
+                "caseKey",
+                "actual",
+                "targetEnd",
+                "labelAvailableAsOf",
+                "billMonthMax",
+                "sourceAvailableAsOf",
+                "statisticallyScoreable",
+                "scoreabilityReason",
+                "modelPredictionAvailable",
+                "businessServingEligible",
+                "rawModelPrediction",
+                "servedPrediction",
+                "abstained",
+                "abstentionReason",
+                "rawAnnualBreakdown",
+                "servedAnnualBreakdown",
+                "confidence",
+                "limitation",
+                "predictionRole",
             }
-            handle.write(json.dumps(payload, ensure_ascii=False, sort_keys=True) + "\n")
-    encoded = (
-        json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True).encode("utf-8")
-        + b"\n"
+            if required_case_fields.difference(payload):
+                raise CorrectionError("private case evidence row lacks a required field")
+            key = payload["caseKey"]
+            if not isinstance(key, Mapping):
+                raise CorrectionError("private case evidence case key is invalid")
+            role = str(payload["predictionRole"] or "")
+            if not role:
+                raise CorrectionError("private case evidence prediction role is missing")
+            identity = (
+                role,
+                str(payload["modelId"]),
+                str(key.get("standard_work_id", key.get("standardWorkId", ""))),
+                str(key["origin"]),
+                int(key.get("horizon_months", key.get("horizonMonths", 0))),
+                str(key.get("route", "")),
+            )
+            if identity in seen:
+                raise CorrectionError("private case evidence contains a duplicate role/model case key")
+            seen.add(identity)
+            reconstructed_rows.append(
+                {
+                    "model_id": payload["modelId"],
+                    "case_key": copy.deepcopy(dict(key)),
+                    "actual": payload["actual"],
+                    "target_end": payload["targetEnd"],
+                    "label_available_as_of": payload["labelAvailableAsOf"],
+                    "_bill_month_max": payload["billMonthMax"],
+                    "_available_as_of": payload["sourceAvailableAsOf"],
+                    "statisticallyScoreable": payload["statisticallyScoreable"],
+                    "scoreabilityReason": payload["scoreabilityReason"],
+                    "modelPredictionAvailable": payload["modelPredictionAvailable"],
+                    "businessServingEligible": payload["businessServingEligible"],
+                    "rawModelPrediction": payload["rawModelPrediction"],
+                    "servedPrediction": payload["servedPrediction"],
+                    "abstained": payload["abstained"],
+                    "abstentionReason": payload["abstentionReason"],
+                    "rawAnnualBreakdown": payload["rawAnnualBreakdown"],
+                    "servedAnnualBreakdown": payload["servedAnnualBreakdown"],
+                    "confidence": payload["confidence"],
+                    "limitation": payload["limitation"],
+                    "public_output": {
+                        "pointForecast": payload["servedPrediction"],
+                        "annualBreakdown": payload["servedAnnualBreakdown"],
+                        "confidence": payload["confidence"],
+                        "limitation": payload["limitation"],
+                    },
+                    "_residual_case_role": role,
+                }
+            )
+            actual_count += 1
+    if actual_count != expected_count:
+        raise CorrectionError("private case evidence row count differs from manifest")
+    if actual_digest.hexdigest() != expected_digest:
+        raise CorrectionError("private case evidence digest differs from manifest")
+
+    recomputed_scoreability = scoring.scoreability_fingerprint(
+        reconstructed_rows, contract
     )
-    PRIVATE_MANIFEST.write_bytes(encoded)
+    if recomputed_scoreability != manifest["scoreabilityFingerprint"]:
+        raise CorrectionError("private case scoreability fingerprint differs from manifest")
+    fold_training_fingerprints = manifest["foldTrainingPopulationFingerprints"]
+    expected_fold_origins = {
+        str(origin)
+        for origin in contract.base_spec["origins"]["forwardValidation"]["scoreOrigins"]
+    }
+    if (
+        not isinstance(fold_training_fingerprints, Mapping)
+        or set(fold_training_fingerprints) != expected_fold_origins
+        or any(
+            not SHA256_PATTERN.fullmatch(str(value))
+            for value in fold_training_fingerprints.values()
+        )
+    ):
+        raise CorrectionError("private manifest fold-training fingerprints are invalid")
+    if _fold_training_population_fingerprints(
+        reconstructed_rows, contract.base_spec
+    ) != dict(fold_training_fingerprints):
+        raise CorrectionError("private fold-training population differs from manifest")
+    rows_by_role: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for row in reconstructed_rows:
+        rows_by_role[str(row["_residual_case_role"])].append(row)
+    allowed_roles = {
+        "development_warmup_interval_calibration",
+        "development_fold_training_seed",
+        "development_long_horizon_audit",
+    } | {
+        f"development_forward_score:{origin}"
+        for origin in contract.base_spec["origins"]["forwardValidation"]["scoreOrigins"]
+    }
+    if set(rows_by_role).difference(allowed_roles):
+        raise CorrectionError("private case evidence contains an unknown prediction role")
+    expected_models_by_role = {
+        "development_fold_training_seed": {"B0b"},
+    }
+    for role, role_rows in rows_by_role.items():
+        expected_models = expected_models_by_role.get(role, set(BASELINE_IDS))
+        if {str(row["model_id"]) for row in role_rows} != expected_models:
+            raise CorrectionError("private case role has an incomplete model population")
+    locks = manifest["predictionLockFingerprints"]
+    if not isinstance(locks, Mapping):
+        raise CorrectionError("private manifest prediction locks are invalid")
+    required_lock_fields = {
+        "warmup",
+        "developmentTrainingSeed",
+        "forwardCombined",
+        "forwardByScoreOrigin",
+        "longAudit",
+    }
+    if set(locks) != required_lock_fields:
+        raise CorrectionError("private manifest prediction lock set differs from contract")
+    forward_by_origin = locks["forwardByScoreOrigin"]
+    expected_origins = expected_fold_origins
+    if not isinstance(forward_by_origin, Mapping) or set(forward_by_origin) != expected_origins:
+        raise CorrectionError("private manifest forward lock origins differ from contract")
+    lock_values = [
+        locks["warmup"],
+        locks["developmentTrainingSeed"],
+        locks["forwardCombined"],
+        locks["longAudit"],
+        *forward_by_origin.values(),
+    ]
+    if any(not SHA256_PATTERN.fullmatch(str(value)) for value in lock_values):
+        raise CorrectionError("private manifest contains an invalid prediction lock digest")
+
+    def role_fingerprint(role: str) -> str:
+        return scoring.prediction_fingerprint(
+            rows_by_role.get(role, []), contract, allow_outcome_projection=True
+        )
+
+    recomputed_locks = {
+        "warmup": role_fingerprint("development_warmup_interval_calibration"),
+        "developmentTrainingSeed": role_fingerprint(
+            "development_fold_training_seed"
+        ),
+        "forwardByScoreOrigin": {
+            origin: role_fingerprint(f"development_forward_score:{origin}")
+            for origin in sorted(expected_origins)
+        },
+        "longAudit": role_fingerprint("development_long_horizon_audit"),
+    }
+    forward_rows = [
+        row
+        for origin in sorted(expected_origins)
+        for row in rows_by_role.get(f"development_forward_score:{origin}", [])
+    ]
+    recomputed_locks["forwardCombined"] = scoring.prediction_fingerprint(
+        forward_rows, contract, allow_outcome_projection=True
+    )
+    if recomputed_locks != locks:
+        raise CorrectionError("private case prediction locks differ from manifest")
+
+    allowed_reports = public_report_paths or {
+        path.relative_to(ROOT).as_posix(): path for path in PUBLIC_REPORT_PATHS
+    }
+    report_digests = manifest["publicReportSha256"]
+    if not isinstance(report_digests, Mapping) or set(report_digests) != set(allowed_reports):
+        raise CorrectionError("private manifest public report set differs from contract")
+    for relative, path in allowed_reports.items():
+        expected = report_digests[relative]
+        if not SHA256_PATTERN.fullmatch(str(expected)):
+            raise CorrectionError("private manifest has an invalid public report digest")
+        if hashlib.sha256(path.read_bytes()).hexdigest() != str(expected):
+            raise CorrectionError("public report digest differs from private manifest")
     return {
-        "privateCaseRowCount": len(rows),
-        "caseEvidenceSha256": hashlib.sha256(PRIVATE_CASES.read_bytes()).hexdigest(),
-        "manifestSha256": hashlib.sha256(encoded).hexdigest(),
-        "tracked": False,
+        "privateCaseRowCount": actual_count,
+        "caseEvidenceSha256": actual_digest.hexdigest(),
+        "manifestEvidenceBound": expected_bindings is not None,
+        "trustedBindingsVerified": expected_bindings is not None,
+        "predictionLocksRecomputedFromCases": True,
+        "scoreabilityFingerprintRecomputedFromCases": True,
+        "foldTrainingFingerprintsRecomputedFromCases": True,
+        "codeCommitBytesVerified": True,
+        "allPublicReportDigestsVerified": True,
+        "manifestRoundTripVerified": True,
     }
 
 
@@ -987,16 +2327,225 @@ def synthetic_corrected_future_invariance(
     }
     perturbed = copy.deepcopy(work)
     perturbed["channels"][0]["monthly"]["2025-01"] = 999999999.0
+    perturbed["channels"][0]["batch_cluster_sizes"]["2025-01"] = 999
+    perturbed["channels"].append(
+        {
+            "channel_key": "SYNTHETIC-FUTURE-ONLY",
+            "business_form": "synthetic",
+            "first_observed_month": "2025-01",
+            "monthly": {"2025-01": 888888888.0},
+            "batch_cluster_sizes": {"2025-01": 888},
+        }
+    )
     checks = {}
     for model in BASELINE_IDS:
         role = "prefit_development_template" if model == "B0b" else None
         before = _raw_prediction(work, "2020-12", 12, model, contract.base_spec, role)
         after = _raw_prediction(perturbed, "2020-12", 12, model, contract.base_spec, role)
         checks[model] = before == after
+
+    score_origin = str(
+        contract.base_spec["origins"]["forwardValidation"]["scoreOrigins"][0]
+    )
+    fold = next(
+        item
+        for item in contract.base_spec["origins"]["forwardValidation"]["folds"]
+        if str(item["scoreOrigin"]) == score_origin
+    )
+    horizon = int(fold["testHorizons"][0])
+    target_months = {
+        calibration.add_months(score_origin, offset): float(offset * 3)
+        for offset in range(1, horizon + 1)
+    }
+    runner_work = copy.deepcopy(work)
+    runner_work["channels"][0]["monthly"].update(target_months)
+    runner_perturbed = copy.deepcopy(runner_work)
+    perturb_month = calibration.add_months(score_origin, 1)
+    runner_perturbed["channels"][0]["monthly"][perturb_month] = 987654321.0
+    prediction_rows = [
+        {
+            "model_id": model,
+            "case_key": {
+                "standard_work_id": runner_work["standard_work_id"],
+                "origin": score_origin,
+                "horizon_months": horizon,
+                "route": "pure_sales_share",
+            },
+            "point_forecast": float(10 + index),
+            "annual_breakdown": [],
+            "confidence": "low",
+            "limitation": [],
+        }
+        for index, model in enumerate(BASELINE_IDS)
+    ]
+    control_events: list[dict[str, Any]] = []
+    perturbed_events: list[dict[str, Any]] = []
+    control_joined, control_receipt, control_lock = _materialize_annotate_lock_join(
+        prediction_rows,
+        [runner_work],
+        contract.base_spec,
+        contract,
+        role=f"development_forward_score:{score_origin}",
+        b0b_role="development_forward_fold",
+        score_origin=score_origin,
+        event_log=control_events,
+        event_scope=score_origin,
+    )
+    perturbed_joined, perturbed_receipt, perturbed_lock = (
+        _materialize_annotate_lock_join(
+            prediction_rows,
+            [runner_perturbed],
+            contract.base_spec,
+            contract,
+            role=f"development_forward_score:{score_origin}",
+            b0b_role="development_forward_fold",
+            score_origin=score_origin,
+            event_log=perturbed_events,
+            event_scope=score_origin,
+        )
+    )
+    state_fields = (
+        "statisticallyScoreable",
+        "scoreabilityReason",
+        "modelPredictionAvailable",
+        "businessServingEligible",
+        "abstained",
+        "abstentionReason",
+    )
+    control_states = [
+        (str(row["model_id"]), *(row.get(field) for field in state_fields))
+        for row in control_joined
+    ]
+    perturbed_states = [
+        (str(row["model_id"]), *(row.get(field) for field in state_fields))
+        for row in perturbed_joined
+    ]
+    actual_changed = {
+        str(row["model_id"]): row.get("actual") for row in control_joined
+    } != {
+        str(row["model_id"]): row.get("actual") for row in perturbed_joined
+    }
+    expected_join_events = [
+        "held_prediction_lock_created",
+        "held_truth_join_complete",
+    ]
+
+    availability_probe = {
+        "case_key": {
+            "standard_work_id": "SYNTHETIC-AVAILABILITY",
+            "origin": "2019-06",
+            "horizon_months": 3,
+            "route": "pure_sales_share",
+        },
+        "target_end": "2019-09",
+        "label_available_as_of": "2019-09",
+        "_bill_month_max": "2019-09",
+        "_available_as_of": "2019-09",
+        "actual": 1.0,
+    }
+    availability_checks = {}
+    for field in (
+        "target_end",
+        "label_available_as_of",
+        "_bill_month_max",
+        "_available_as_of",
+    ):
+        candidate = copy.deepcopy(availability_probe)
+        candidate[field] = "2021-01"
+        availability_checks[field] = not _fold_training_row_available(
+            candidate, "2020-12"
+        )
+    origin_candidate = copy.deepcopy(availability_probe)
+    origin_candidate["case_key"]["origin"] = "2020-12"
+    availability_checks["origin"] = not _fold_training_row_available(
+        origin_candidate, "2020-12"
+    )
+
+    join_called = False
+    sealed_cases = (
+        ("development_forward_score:2023-06", "2023-06", "2023-06", 3),
+        ("development_forward_score:2025-06", "2025-06", "2025-06", 3),
+        ("development_long_horizon_audit", None, "2019-06", 60),
+    )
+    sealed_rejected = []
+    original_join_truth = legacy.join_truth
+
+    def forbidden_join(*_args: Any, **_kwargs: Any) -> Any:
+        nonlocal join_called
+        join_called = True
+        raise AssertionError("sealed truth join reached the truth builder")
+
+    legacy.join_truth = forbidden_join
+    try:
+        for sealed_role, sealed_origin_binding, origin, sealed_horizon in sealed_cases:
+            sealed_predictions = copy.deepcopy(prediction_rows)
+            for row in sealed_predictions:
+                row["case_key"]["origin"] = origin
+                row["case_key"]["horizon_months"] = sealed_horizon
+            sealed_annotated = annotate_rows(
+                sealed_predictions,
+                [runner_work],
+                contract,
+                role=sealed_role,
+            )
+            sealed_lock = scoring.lock_prediction_population(
+                sealed_annotated,
+                role=sealed_role,
+                score_origin=sealed_origin_binding,
+                contract=contract,
+            )
+            try:
+                _join_truth_after_prediction_lock(
+                    sealed_annotated,
+                    [runner_work],
+                    contract.base_spec,
+                    contract,
+                    sealed_lock,
+                )
+            except CorrectionError:
+                sealed_rejected.append(True)
+            else:
+                sealed_rejected.append(False)
+    finally:
+        legacy.join_truth = original_join_truth
+
     return {
         "byBaseline": checks,
-        "allInvariant": all(checks.values()),
+        "allInvariant": all(checks.values())
+        and control_lock["predictionFingerprint"]
+        == perturbed_lock["predictionFingerprint"]
+        and control_states == perturbed_states
+        and actual_changed
+        and [event["event"] for event in control_events] == expected_join_events
+        and [event["event"] for event in perturbed_events] == expected_join_events
+        and all(availability_checks.values())
+        and all(sealed_rejected)
+        and not join_called,
         "futureFactBoundary": "bill_month_greater_than_origin",
+        "futureOnlyChannelAndBatchMetadataPerturbed": True,
+        "runnerPredictionFingerprintInvariant": (
+            control_lock["predictionFingerprint"]
+            == perturbed_lock["predictionFingerprint"]
+        ),
+        "runnerCaseStatesInvariant": control_states == perturbed_states,
+        "runnerTruthOutcomeChanged": actual_changed,
+        "runnerControlLockReceipt": {
+            "scoreOrigin": control_receipt.get("scoreOrigin"),
+            "predictionLockCreatedBeforeTruthJoin": control_receipt.get(
+                "predictionLockCreatedBeforeTruthJoin"
+            ),
+            "eventOrder": [event["event"] for event in control_events],
+        },
+        "runnerPerturbedLockReceipt": {
+            "scoreOrigin": perturbed_receipt.get("scoreOrigin"),
+            "predictionLockCreatedBeforeTruthJoin": perturbed_receipt.get(
+                "predictionLockCreatedBeforeTruthJoin"
+            ),
+            "eventOrder": [event["event"] for event in perturbed_events],
+        },
+        "canonicalAvailabilityBoundaryChecks": availability_checks,
+        "sealedTruthJoinCasesRejectedBeforeTruthBuilder": all(sealed_rejected),
+        "sealedTruthBuilderCalled": join_called,
     }
 
 
@@ -1009,6 +2558,22 @@ def preflight(contract: scoring.ScoringContract) -> dict[str, Any]:
         "baseKernel": all(base_fixture["checks"].values()),
         "scoringKernel": all(scoring_fixture["checks"].values()),
         "correctedFuturePerturbation": future["allInvariant"],
+        "runnerPredictionLockTruthOrder": bool(
+            future["runnerControlLockReceipt"]["eventOrder"]
+            == ["held_prediction_lock_created", "held_truth_join_complete"]
+        ),
+        "runnerFutureTruthPerturbationInvariant": bool(
+            future["runnerPredictionFingerprintInvariant"]
+            and future["runnerCaseStatesInvariant"]
+            and future["runnerTruthOutcomeChanged"]
+        ),
+        "canonicalFoldAvailabilityBoundaries": all(
+            future["canonicalAvailabilityBoundaryChecks"].values()
+        ),
+        "sealedTruthJoinGuard": bool(
+            future["sealedTruthJoinCasesRejectedBeforeTruthBuilder"]
+            and not future["sealedTruthBuilderCalled"]
+        ),
         "B0bForwardRefit": bool(refit["factorsInvariant"] and refit["oofPointsInvariant"]),
         "finalHoldoutSealed": contract.amendment["seals"]["finalHoldout"]["opened"] is False,
         "candidateTrainingSealed": contract.amendment["seals"]["candidateTraining"]["C1Started"] is False,
@@ -1028,20 +2593,12 @@ def preflight(contract: scoring.ScoringContract) -> dict[str, Any]:
 
 def run_development(contract: scoring.ScoringContract) -> dict[str, Any]:
     legacy.require_clean_worktree()
-    code_commit = legacy.latest_exact_commit(
-        [
-            Path(__file__).resolve(),
-            Path(scoring.__file__).resolve(),
-            Path(attribution.__file__).resolve(),
-        ]
-    )
+    code_commit = legacy.latest_exact_commit(CORRECTION_CODE_PATHS)
     synthetic = preflight(contract)
     spec = contract.base_spec
     artifact_with_bound, artifact_path = legacy.load_and_validate_fitted_artifact(spec)
     replay_spec = artifact_with_bound.pop("_boundSpec")
     works, posthoc, input_evidence = legacy.load_authorized_works(spec)
-    model_inputs = load_verified_model_inputs()
-
     progress("materializing frozen warmup and development predictions")
     warmup_predictions = legacy.generate_predictions(
         works,
@@ -1058,61 +2615,115 @@ def run_development(contract: scoring.ScoringContract) -> dict[str, Any]:
     )
     development_parity = calibration.assert_case_key_parity(development_predictions)
 
-    warmup_rows_legacy = legacy.join_truth(warmup_predictions, works, spec)
-    warmup_evidence = legacy.complete_interval_warmup_evidence(
-        warmup_rows_legacy, warmup_locks, spec
-    )
-    warmup_availability = legacy.interval_warmup_availability_evidence(
-        warmup_evidence, spec
-    )
-    development_rows_legacy = legacy.join_truth(development_predictions, works, spec)
-    recomputed_fit = legacy.b0b_fit_evidence(development_rows_legacy, spec)
-    recomputed_fit["intervalWarmup"] = warmup_evidence["B0b"]
-    legacy.validate_recomputed_b0b_fit(
-        artifact_with_bound, recomputed_fit, input_evidence
-    )
-    legacy.validate_artifact_case_fingerprint(
-        artifact_with_bound, legacy.numeric_b0b_fit_rows(development_rows_legacy)
-    )
-    legacy.materialize_b0b_forward_predictions(
-        development_rows_legacy, works, spec, recomputed_fit
-    )
-    legacy.attach_b0b_oof_comparison_points(development_rows_legacy, recomputed_fit)
-    legacy.attach_strata(development_rows_legacy, works, posthoc)
-    forward_rows_legacy, legacy_forward_parity = legacy.exact_forward_score_rows(
-        development_rows_legacy, spec, recomputed_fit
-    )
-    legacy.attach_strata(warmup_rows_legacy, works, posthoc)
-
-    progress("materializing raw predictions independently from serving eligibility")
-    raw_forward, raw_forward_lock = materialize_raw_predictions(
-        forward_rows_legacy,
-        works,
-        spec,
-        b0b_role="development_forward_fold",
-        fold_evidence=recomputed_fit,
-    )
-    raw_warmup, raw_warmup_lock = materialize_raw_predictions(
-        warmup_rows_legacy,
+    progress("locking warmup predictions before warmup truth join")
+    raw_warmup, raw_warmup_materialization = materialize_raw_predictions(
+        _flatten_predictions(warmup_predictions),
         works,
         spec,
         b0b_role="interval_warmup_cold_start",
     )
-    forward_rows = annotate_rows(
-        raw_forward,
-        works,
-        contract,
-        role="development_forward_score",
-    )
-    warmup_rows = annotate_rows(
+    annotated_warmup = annotate_rows(
         raw_warmup,
         works,
         contract,
         role="development_warmup_interval_calibration",
     )
+    warmup_prediction_lock = scoring.create_prediction_lock(
+        annotated_warmup,
+        "development_warmup_interval_calibration",
+        contract,
+    )
+    legacy_warmup_rows = legacy.join_truth(warmup_predictions, works, spec)
+    warmup_rows, warmup_join_receipt = _join_truth_after_prediction_lock(
+        annotated_warmup,
+        works,
+        spec,
+        contract,
+        warmup_prediction_lock,
+    )
+    raw_warmup_lock = {
+        **raw_warmup_materialization,
+        **warmup_prediction_lock,
+        **warmup_join_receipt,
+    }
+    warmup_evidence = legacy.complete_interval_warmup_evidence(
+        legacy_warmup_rows, warmup_locks, spec
+    )
+    warmup_availability = legacy.interval_warmup_availability_evidence(
+        warmup_evidence, spec
+    )
+    progress("replaying forward folds as prior-truth fit -> held lock -> held truth")
+    forward_rows_legacy, development_b0b_truth, raw_forward_lock = (
+        _ordered_forward_replay_with_prediction_locks(
+            development_predictions, works, spec, contract
+        )
+    )
+    recomputed_fit = legacy.b0b_fit_evidence(development_b0b_truth, spec)
+    recomputed_fit["intervalWarmup"] = warmup_evidence["B0b"]
+    legacy.validate_recomputed_b0b_fit(
+        artifact_with_bound, recomputed_fit, input_evidence
+    )
+    legacy.validate_artifact_case_fingerprint(
+        artifact_with_bound, legacy.numeric_b0b_fit_rows(development_b0b_truth)
+    )
+    if digest(raw_forward_lock["foldFactors"]) != digest(recomputed_fit["foldFactors"]):
+        raise CorrectionError("pre-truth B0b fold factors differ from recomputed fit evidence")
+    if {
+        key: calibration.fixed_decimal(value)
+        for key, value in raw_forward_lock["_oofPredictionByKey"].items()
+    } != {
+        key: calibration.fixed_decimal(value)
+        for key, value in recomputed_fit["oofPredictionByKey"].items()
+    }:
+        raise CorrectionError("pre-truth B0b OOF predictions differ after truth join")
+    raw_forward_lock.pop("_oofPredictionByKey", None)
+    legacy.attach_b0b_oof_comparison_points(development_b0b_truth, recomputed_fit)
+    legacy.attach_strata(forward_rows_legacy, works, posthoc)
+    forward_rows_legacy, legacy_forward_parity = legacy.exact_forward_score_rows(
+        forward_rows_legacy, spec, recomputed_fit
+    )
+    legacy.attach_strata(warmup_rows, works, posthoc)
+    forward_rows = forward_rows_legacy
     apply_corrected_internal_intervals(
         forward_rows, [*warmup_rows, *forward_rows], spec
     )
+
+    progress("locking development-safe long-horizon predictions before long truth")
+    long_included, long_deferred = legacy.long_audit_origins(
+        spec, development_safe_only=True
+    )
+    long_predictions = legacy.generate_predictions(
+        works,
+        long_included,
+        replay_spec,
+        b0b_parameter_role="committed_development_fit",
+    )
+    if any(long_included.values()):
+        long_rows, raw_long_lock, _long_prediction_lock = (
+            _materialize_annotate_lock_join(
+                _flatten_predictions(long_predictions),
+                works,
+                replay_spec,
+                contract,
+                role="development_long_horizon_audit",
+                b0b_role="committed_development_fit",
+            )
+        )
+    else:
+        long_rows = []
+        raw_long_lock = {
+            "role": "development_long_horizon_audit",
+            "predictionRowCount": 0,
+            "predictionLockedBeforeScoringTruthAccess": True,
+            "truthJoinSkippedBecausePopulationEmpty": True,
+        }
+    legacy.attach_strata(long_rows, works, posthoc)
+    apply_corrected_internal_intervals(
+        long_rows, [*warmup_rows, *forward_rows], spec
+    )
+    long_eligible = [
+        row for row in long_rows if legacy.long_horizon_cohort_eligible(row, spec)
+    ]
 
     progress("scoring corrected all-scoreable, served, and abstention populations")
     development_aggregate = aggregate_models(forward_rows, spec)
@@ -1141,6 +2752,8 @@ def run_development(contract: scoring.ScoringContract) -> dict[str, Any]:
     locked_comparator = selection["lockedComparator"]
     gates = gate_evidence(development_aggregate, locked_comparator, parity)
 
+    progress("loading the verified historical model cache after every prediction lock")
+    model_inputs = load_verified_model_inputs()
     progress("building fixed-key B0a-to-B0b attribution bridge")
     attribution_internal = attribution.build_attribution_report(
         works, forward_rows, model_inputs, spec, contract.amendment
@@ -1221,40 +2834,12 @@ def run_development(contract: scoring.ScoringContract) -> dict[str, Any]:
     public_bootstrap = copy.deepcopy(bootstrap)
     public_bootstrap["clusterKeys"] = ["work_cluster", "origin_cluster"]
     public_bootstrap["population"] = "allScoreable_exact_key_parity"
-
-    long_included, long_deferred = legacy.long_audit_origins(
-        spec, development_safe_only=True
-    )
-    long_predictions = legacy.generate_predictions(
-        works,
-        long_included,
-        replay_spec,
-        b0b_parameter_role="committed_development_fit",
-    )
-    long_rows_legacy = (
-        legacy.join_truth(long_predictions, works, replay_spec)
-        if any(long_included.values())
-        else []
-    )
-    legacy.attach_strata(long_rows_legacy, works, posthoc)
-    raw_long, raw_long_lock = materialize_raw_predictions(
-        long_rows_legacy,
-        works,
-        replay_spec,
-        b0b_role="committed_development_fit",
-    )
-    long_rows = annotate_rows(
-        raw_long,
-        works,
-        contract,
-        role="development_long_horizon_audit",
-    )
-    apply_corrected_internal_intervals(
-        long_rows, [*warmup_rows, *forward_rows], spec
-    )
-    long_eligible = [
-        row for row in long_rows if legacy.long_horizon_cohort_eligible(row, spec)
-    ]
+    public_bootstrap["referenceBaseline"] = provisional_best
+    for comparison in public_bootstrap.get("comparisons", {}).values():
+        if "deltaWapeVsLockedComparatorMedian" in comparison:
+            comparison["deltaWapeVsProvisionalBestMedian"] = comparison.pop(
+                "deltaWapeVsLockedComparatorMedian"
+            )
 
     state = state_reconciliation(forward_rows)
     now = datetime.now(timezone.utc).isoformat()
@@ -1285,9 +2870,9 @@ def run_development(contract: scoring.ScoringContract) -> dict[str, Any]:
         "pairedTwoWayBlockBootstrap": public_bootstrap,
         "preC1Gates": gates,
         "rawPredictionLocks": {
-            "forward": raw_forward_lock,
-            "warmup": raw_warmup_lock,
-            "longAudit": raw_long_lock,
+            **public_prediction_lock_evidence(
+                raw_warmup_lock, raw_forward_lock, raw_long_lock
+            )
         },
         "B0aHistoricalAuditOnly": attribution_report["stages"][0],
         "historicalMixedScoringAudit": historical_mixed_audit,
@@ -1299,9 +2884,11 @@ def run_development(contract: scoring.ScoringContract) -> dict[str, Any]:
         },
         "longHorizonAudit": {
             "maySelectModelOrThreshold": False,
-            "included36MonthOriginCount": len(long_included.get(36, [])),
-            "deferred36MonthOriginCount": len(long_deferred.get(36, [])),
-            "deferred60MonthOriginCount": len(long_deferred.get(60, [])),
+            "included36MonthOriginCount": f"<{minimum_public_cell}",
+            "deferred36MonthOriginCount": f"<{minimum_public_cell}",
+            "deferred60MonthOriginCount": f"<{minimum_public_cell}",
+            "originCountValuesSuppressed": True,
+            "originListsRemainFrozenInMachineReadableSpec": True,
             "deferred60MonthLabelsOpened": False,
             "allPredictionsOver24MonthsMarkedExtrapolated": all(
                 "extrapolated" in row.get("limitation", []) for row in long_rows
@@ -1317,6 +2904,7 @@ def run_development(contract: scoring.ScoringContract) -> dict[str, Any]:
                     "caseKeysIdentical",
                     "scoreableKeysIdentical",
                     "businessServingKeysIdentical",
+                    "postHocSegmentAssignmentsIdentical",
                     "rawPredictionCompleteOnAllScoreable",
                     "rawEqualsServedWhenServedAndOtherwiseNull",
                 )
@@ -1328,6 +2916,32 @@ def run_development(contract: scoring.ScoringContract) -> dict[str, Any]:
                 "correctedFuturePerturbation"
             ],
             "futurePerturbationEvidence": synthetic["futurePerturbationEvidence"],
+            "predictionLockBeforeTruthJoinVerified": bool(
+                raw_warmup_lock.get("predictionLockCreatedBeforeTruthJoin")
+                and raw_forward_lock.get("predictionLockedBeforeScoringTruthAccess")
+                and all(
+                    item.get("lock", {}).get(
+                        "predictionLockCreatedBeforeTruthJoin"
+                    )
+                    for item in raw_forward_lock.get("folds", [])
+                )
+                and raw_long_lock.get(
+                    "predictionLockCreatedBeforeTruthJoin",
+                    raw_long_lock.get("truthJoinSkippedBecausePopulationEmpty", False),
+                )
+            ),
+            "sealedTruthJoinGuardPassed": synthetic["checks"][
+                "sealedTruthJoinGuard"
+            ],
+            "forwardEventOrderDerivedFromTrace": bool(
+                raw_forward_lock.get("predictionLockedBeforeScoringTruthAccess")
+            ),
+            "sameOrFutureFoldTruthUsedForCurrentPrediction": raw_forward_lock.get(
+                "sameOrFutureFoldTruthUsedForCurrentPrediction"
+            ),
+            "scoreabilityFingerprint": parity["scoreabilityFingerprint"],
+            "predictionFingerprint": parity["contractPredictionFingerprint"],
+            "postHocSegmentFingerprint": parity["postHocSegmentFingerprint"],
             "caseIidBootstrapUsed": False,
             "bootstrapClusters": ["work_cluster", "origin_cluster"],
             "currentStatusPostHocOnly": True,
@@ -1338,9 +2952,19 @@ def run_development(contract: scoring.ScoringContract) -> dict[str, Any]:
             "C1Started": False,
             "finalHoldoutOpened": final_holdout_opened,
             "finalHoldoutTruthRead": False,
+            "finalHoldoutTruthReadDefinition": (
+                "no_final_holdout_case_window_materialized_joined_or_used"
+            ),
+            "authorizedAuthorityFactsLoadedThroughLatestCompleteMonth": True,
+            "authorityFactLoadingAloneDoesNotOpenHoldout": True,
+            "finalHoldoutTruthWindowConstructedOrJoined": False,
+            "finalHoldoutUsedForFitSelectionOrThresholds": False,
             "embargoShadowOpened": False,
             "embargoShadowTruthRead": False,
+            "embargoTruthWindowConstructedOrJoined": False,
+            "embargoUsedForFitSelectionOrThresholds": False,
             "deferred60MonthLabelsOpened": False,
+            "deferred60MonthTruthWindowConstructedOrJoined": False,
         },
         "reportingBoundary": {
             "language": "zh-CN",
@@ -1405,19 +3029,71 @@ def run_development(contract: scoring.ScoringContract) -> dict[str, Any]:
 
     progress("writing Chinese de-identified aggregate reports")
     write_json(BASELINE_JSON, baseline_report)
-    BASELINE_MD.write_text(baseline_markdown(baseline_report), encoding="utf-8", newline="\n")
+    write_public_markdown(BASELINE_MD, baseline_markdown(baseline_report))
     write_json(CORRECTION_JSON, correction_report)
-    CORRECTION_MD.write_text(correction_markdown(correction_report), encoding="utf-8", newline="\n")
+    write_public_markdown(CORRECTION_MD, correction_markdown(correction_report))
     write_json(ATTRIBUTION_JSON, attribution_report)
-    ATTRIBUTION_MD.write_text(attribution_markdown(attribution_report), encoding="utf-8", newline="\n")
+    write_public_markdown(ATTRIBUTION_MD, attribution_markdown(attribution_report))
+    private_seed_rows = [
+        row
+        for row in development_b0b_truth
+        if row.get("_residual_case_role") == "development_fold_training_seed"
+    ]
+    private_evidence_rows = [
+        *warmup_rows,
+        *private_seed_rows,
+        *forward_rows,
+        *long_rows,
+    ]
+    private_fold_training_fingerprints = _fold_training_population_fingerprints(
+        private_evidence_rows, spec
+    )
+    runtime_fold_training_fingerprints = {
+        str(item["scoreOrigin"]): str(item["fit"]["trainingPopulationFingerprint"])
+        for item in raw_forward_lock.get("folds", [])
+    }
+    if runtime_fold_training_fingerprints != private_fold_training_fingerprints:
+        raise CorrectionError(
+            "private evidence does not reproduce the runtime fold-training population"
+        )
+    empty_prediction_fingerprint = scoring.prediction_fingerprint(
+        [], contract, allow_outcome_projection=True
+    )
     private = write_private_evidence(
-        [*warmup_rows, *forward_rows, *long_rows],
+        private_evidence_rows,
         {
             "schema": "m2.calibration-baseline-replay.private-manifest.v1_1",
             "decisionStatus": "not_for_formal_decision",
             "baseSpecDigest": contract.base_digest,
             "amendmentDigest": contract.amendment_digest,
+            "combinedContractDigest": contract.combined_digest,
+            "correctionCodeCommit": code_commit,
             "inputFingerprint": input_evidence["inputFingerprint"],
+            "fittedArtifactSha256": hashlib.sha256(artifact_path.read_bytes()).hexdigest(),
+            "scoreabilityFingerprint": scoring.scoreability_fingerprint(
+                private_evidence_rows, contract
+            ),
+            "foldTrainingPopulationFingerprints": (
+                private_fold_training_fingerprints
+            ),
+            "predictionLockFingerprints": {
+                "warmup": raw_warmup_lock.get("predictionFingerprint"),
+                "developmentTrainingSeed": raw_forward_lock.get(
+                    "trainingSeed", {}
+                ).get("predictionFingerprint"),
+                "forwardCombined": raw_forward_lock.get(
+                    "combinedPredictionFingerprint"
+                ),
+                "forwardByScoreOrigin": {
+                    str(item["scoreOrigin"]): item["lock"].get(
+                        "predictionFingerprint"
+                    )
+                    for item in raw_forward_lock.get("folds", [])
+                },
+                "longAudit": raw_long_lock.get(
+                    "predictionFingerprint", empty_prediction_fingerprint
+                ),
+            },
             "caseKeyAndStateParity": baseline_report["integrity"][
                 "caseKeyAndStateParity"
             ],
@@ -1440,6 +3116,13 @@ def run_development(contract: scoring.ScoringContract) -> dict[str, Any]:
             ATTRIBUTION_JSON.relative_to(ROOT).as_posix(),
         ],
         "privateCaseRowCount": private["privateCaseRowCount"],
+        "privateEvidence": {
+            "caseEvidenceSha256": private["caseEvidenceSha256"],
+            "manifestSha256": private["manifestSha256"],
+            "manifestEvidenceBound": private["manifestEvidenceBound"],
+            "manifestRoundTripVerified": private["manifestRoundTripVerified"],
+            "tracked": private["tracked"],
+        },
         "integrity": baseline_report["integrity"],
         "finalHoldoutOpened": False,
         "candidateTrainingStarted": False,
