@@ -1,9 +1,9 @@
 {
   "schema": "m2.calibration_spec.v1",
   "version": "calibration-spec-v1",
-  "preHoldoutRevision": 4,
-  "supersedesPreHoldoutCommit": "f5fc332d29ef6accf02438ae9ab1e5dd8ac77cb0",
-  "preHoldoutCorrectionReason": "replace_origin_leave_one_out_with_strict_target_available_forward_validation_and_close_remaining_machine_contract_ambiguities_before_any_private_fit_replay_or_holdout_result_was_opened",
+  "preHoldoutRevision": 5,
+  "supersedesPreHoldoutCommit": "80b6c40c7eaa90106ad64a2bdaebff0c7b8cd82d",
+  "preHoldoutCorrectionReason": "define_strict_warmup_interval_residual_cold_start_and_as_of_rights_serving_contract_before_any_private_fit_replay_or_holdout_result_was_opened",
   "frozenAt": "2026-07-14T00:00:00+08:00",
   "decisionStatus": "not_for_formal_decision",
   "authority": {
@@ -97,6 +97,14 @@
         "comparatorOriginCount",
         "comparatorOriginCountByHorizon",
         "oofPredictionFingerprint",
+        "intervalWarmupCaseFingerprint",
+        "intervalWarmupPredictionFingerprint",
+        "intervalWarmupCaseCount",
+        "intervalWarmupCaseCountByHorizon",
+        "intervalWarmupOriginCount",
+        "intervalWarmupOriginCountByHorizon",
+        "intervalWarmupPredictionLockedBeforeTruthJoin",
+        "intervalWarmupUsesOutcomeLabelsForPrediction",
         "authoritativeInputSignatureSha256",
         "specCommit",
         "fitCodeCommit",
@@ -144,6 +152,10 @@
         "absoluteActualRevenueShare",
         "supported"
       ],
+      "requiredFitFieldValues": {
+        "intervalWarmupPredictionLockedBeforeTruthJoin": true,
+        "intervalWarmupUsesOutcomeLabelsForPrediction": false
+      },
       "forbiddenFitFields": [
         "passesByHorizon",
         "caseFingerprint",
@@ -206,13 +218,25 @@
         "fallbackRouteHorizons",
         "prequentialOofMetrics",
         "developmentForwardSelectionMetrics",
+        "intervalWarmupPredictionFingerprint",
+        "intervalWarmupCaseFingerprint",
+        "intervalWarmupCaseCount",
+        "intervalWarmupCaseCountByHorizon",
+        "intervalWarmupOriginCount",
+        "intervalWarmupOriginCountByHorizon",
+        "intervalWarmupPredictionLockedBeforeTruthJoin",
+        "intervalWarmupUsesOutcomeLabelsForPrediction",
         "usesEmbargoShadowLabels",
         "usesFinalHoldoutLabels",
         "usesLongHorizonAuditLabels",
         "status"
       ],
+      "requiredPerCandidateFieldValues": {
+        "intervalWarmupPredictionLockedBeforeTruthJoin": true,
+        "intervalWarmupUsesOutcomeLabelsForPrediction": false
+      },
       "selectedCandidateRule": "selectedCandidateId_must_equal_the_requiredCandidateId_with_the_lowest_models.candidates.complexityRank_among_candidates_passing_all_development_forward_gates_after_all_required_candidates_complete",
-      "finalHoldoutReadyCondition": "completedCandidateIds_exactly_equal_requiredCandidateIds_in_order_and_selectedCandidateId_is_a_requiredCandidateId_and_satisfies_selectedCandidateRule_and_selectionLockedBeforeFinalHoldout_is_true_and_all_forbidden_label_flags_are_false_and_artifact_bytes_match_the_frozen_commit"
+      "finalHoldoutReadyCondition": "completedCandidateIds_exactly_equal_requiredCandidateIds_in_order_and_selectedCandidateId_is_a_requiredCandidateId_and_satisfies_selectedCandidateRule_and_selectionLockedBeforeFinalHoldout_is_true_and_every_candidate_intervalWarmupPredictionLockedBeforeTruthJoin_is_true_and_every_candidate_intervalWarmupUsesOutcomeLabelsForPrediction_is_false_and_all_forbidden_label_flags_are_false_and_artifact_bytes_match_the_frozen_commit"
     },
     "finalHoldout": {
       "originCount": 2,
@@ -266,6 +290,8 @@
     ],
     "caseFingerprint": "NFC_each_field_then_standard_work_id|origin|horizon_months|route|eligibility_status|target_end|actual_fixed_8_decimal_ROUND_HALF_UP_sorted_by_these_fields_lexicographically_joined_with_LF_and_no_trailing_LF",
     "predictionFingerprint": "for_every_locked_model_and_final_case_key_serialize_standard_work_id|origin|horizon_months|route|eligibility_status|model_id|point_fixed_8_decimal_or_NULL|internal_PI_lower_fixed_8_or_NULL|internal_PI_upper_fixed_8_or_NULL|canonical_annualBreakdown_JSON|confidence|ordered_limitation_JSON_then_sort_lexicographically_join_with_LF_and_no_trailing_LF",
+    "intervalWarmupPredictionFingerprint": "for_every_origin_eligible_work_x_warmup_origin_x_core_horizon_whose_origin_is_in_that_horizon_development_set_including_blocked_cases_before_any_truth_join_serialize_NFC_standard_work_id|origin|horizon_months|route|eligibility_status|model_id|point_fixed_8_decimal_ROUND_HALF_UP_or_NULL|canonical_annualBreakdown_JSON|confidence|ordered_limitation_JSON_then_sort_lexicographically_join_with_LF_and_no_trailing_LF",
+    "intervalWarmupCaseFingerprint": "for_exactly_the_intervalWarmupPredictionFingerprint_population_filtered_to_eligibility_status_forecastable_numeric_and_numeric_point_after_development_safe_truth_join_serialize_NFC_standard_work_id|origin|horizon_months|route|eligibility_status|target_end|label_available_as_of|actual_fixed_8_decimal_ROUND_HALF_UP_then_sort_lexicographically_join_with_LF_and_no_trailing_LF",
     "emptySequenceDigest": "SHA256_of_empty_UTF8_byte_sequence"
   },
   "randomSeed": 20260714,
@@ -308,6 +334,66 @@
         "relative_term": "derive_end_month_only_when_start_month_and_numeric_term_are_both_as_of_known_otherwise_H=24_with_rights_horizon_not_exact",
         "year_only": "H=min(24,max(0,month_ordinal(December_of_confirmed_end_year)-month_ordinal(origin)))_with_rights_horizon_not_exact",
         "expired_unknown_date": "H=0_pointForecast=0_annualBreakdown_empty_with_rights_expired_unknown_date"
+      },
+      "servingRightsSnapshotContract": {
+        "resolver": "resolve_serving_horizon_as_of",
+        "servingPredictor": "predict_for_serving_as_of",
+        "resolverInput": "nonempty_sequence_of_rights_snapshot_objects",
+        "snapshotFieldFormats": {
+          "available_as_of": "YYYY-MM",
+          "rights_term_type": "one_of_publicOutput.forecastHorizon.rightsTermTypePolicy_keys",
+          "rights_end_month": "YYYY-MM",
+          "rights_start_month": "YYYY-MM",
+          "relative_term_months": "positive_integer_at_least_1",
+          "rights_end_year": "four_digit_year"
+        },
+        "requiredFields": [
+          "rights_term_type",
+          "available_as_of"
+        ],
+        "conditionalFields": {
+          "exact_date": [
+            "rights_end_month"
+          ],
+          "perpetual": [],
+          "relative_term": [],
+          "year_only": [
+            "rights_end_year"
+          ],
+          "expired_unknown_date": []
+        },
+        "relativeTermDerivationFields": [
+          "rights_start_month",
+          "relative_term_months"
+        ],
+        "relativeTermDerivationFieldsMustBePresentTogether": true,
+        "relativeTermMissingDerivationFieldsBehavior": "horizon_24_with_rights_horizon_not_exact",
+        "relativeTermOnlyOneDerivationFieldBehavior": "integrity_failure_no_serving_prediction",
+        "exactDateMissingEndMonthBehavior": "integrity_failure_no_serving_prediction",
+        "yearOnlyMissingEndYearBehavior": "integrity_failure_no_serving_prediction",
+        "relativeTermUnit": "integer_calendar_months",
+        "relativeEndMonthFormula": "add_months(rights_start_month,relative_term_months)",
+        "availableAsOfPredicate": "available_as_of<=origin",
+        "selectionAlgorithm": [
+          "validate_every_input_snapshot_and_fail_if_available_as_of_is_missing_or_not_YYYY-MM",
+          "filter_available_as_of<=origin",
+          "fail_if_no_eligible_snapshot",
+          "select_the_maximum_available_as_of",
+          "canonical_JSON_deduplicate_payloads_at_that_maximum_available_as_of",
+          "fail_if_more_than_one_distinct_payload_remains",
+          "use_the_single_remaining_payload"
+        ],
+        "validateAllSnapshotFieldsBeforeSelection": true,
+        "identicalLatestDuplicateBehavior": "deduplicate_then_use_once",
+        "conflictingLatestPayloadBehavior": "integrity_failure_no_serving_prediction",
+        "noEligibleSnapshotBehavior": "integrity_failure_no_serving_prediction",
+        "unknownAvailabilityBehavior": "integrity_failure_no_serving_prediction",
+        "unsupportedTermTypeBehavior": "integrity_failure_no_serving_prediction",
+        "callerSuppliedServingHorizonAllowed": false,
+        "historicalBacktestUsesExplicitFrozenHorizon": true,
+        "historicalBacktestMayUseCurrentRightsSnapshot": false,
+        "historicalBacktestRightsUse": "post_hoc_slice_only_when_no_as_of_snapshot_exists",
+        "output": "exactly_publicOutput.allowedFields"
       },
       "candidateCoreAnchorMonths": [
         3,
@@ -672,6 +758,99 @@
       "minimumPriorDistinctOriginDates": 3,
       "sameScoreOriginAllAvailableHorizonsHeldTogether": true,
       "warmupMaySelectOrScoreComparator": false,
+      "warmupIntervalCalibration": {
+        "role": "development_warmup_interval_calibration",
+        "originReference": "origins.forwardValidation.warmupOrigins",
+        "predictionCasePredicate": "role==development_and_origin_in_origins.forwardValidation.warmupOrigins",
+        "predictionMustBeMaterializedBeforeTruthJoin": true,
+        "labelAvailableAsOfDefault": "target_end_when_no_later_source_availability_timestamp_exists",
+        "labelUseAtScoreOriginPredicate": "origin<score_origin_and_target_end<=score_origin_and_label_available_as_of<=score_origin_and_eligibility_status==forecastable_numeric_and_pointForecast_is_numeric",
+        "mayCalibrateFrozenIntervalAndThereforeEnterIntervalGate": true,
+        "mayFitPointModelOrChooseHyperparameter": false,
+        "maySelectOrScoreComparator": false,
+        "mayEnterPointMetricGate": false,
+        "mayEnterBootstrap": false,
+        "mayTuneIntervalMethodCoverageGroupThresholdOrGate": false,
+        "earliestRequiredScoreOrigin": "2020-12",
+        "expectedAvailableOriginHorizonBlocksAtEarliestRequiredScoreOrigin": {
+          "2019-06": [
+            3,
+            6,
+            12,
+            18
+          ],
+          "2019-12": [
+            3,
+            6,
+            12
+          ],
+          "2020-06": [
+            3,
+            6
+          ]
+        },
+        "expectedAvailableOriginHorizonBlockCountAtEarliestRequiredScoreOrigin": 9,
+        "predictionFingerprintRequiredBeforeTruthJoin": true,
+        "predictionFingerprintSerializationReference": "digestContract.intervalWarmupPredictionFingerprint",
+        "caseFingerprintRequiredAfterTruthJoin": true,
+        "caseFingerprintSerializationReference": "digestContract.intervalWarmupCaseFingerprint",
+        "artifactCountContract": {
+          "intervalWarmupCaseCountPopulation": "digestContract.intervalWarmupCaseFingerprint_population",
+          "intervalWarmupCaseCountByHorizonKeys": [
+            "3",
+            "6",
+            "12",
+            "18",
+            "24"
+          ],
+          "intervalWarmupOriginCountPopulation": "distinct_origin_in_digestContract.intervalWarmupCaseFingerprint_population",
+          "intervalWarmupOriginCountByHorizonKeys": [
+            "3",
+            "6",
+            "12",
+            "18",
+            "24"
+          ],
+          "allCountsMustBeNonnegativeIntegers": true,
+          "intervalWarmupCaseCountMustEqualSumByHorizon": true,
+          "intervalWarmupOriginCountMustEqualCardinalityOfUnionAcrossHorizons": true,
+          "intervalWarmupOriginCountsByHorizonAreNonAdditive": true
+        },
+        "coldStartByModel": {
+          "B0b": {
+            "mode": "pre_registered_no_fit",
+            "lifecycleFactorsReference": "models.baselines[id=B0b].developmentFit.initialFactors",
+            "mayReadAnyOutcomeLabel": false
+          },
+          "B1": {
+            "mode": "frozen_formula_no_label_fit"
+          },
+          "B2": {
+            "mode": "frozen_formula_no_label_fit"
+          },
+          "B3": {
+            "mode": "frozen_formula_no_label_fit"
+          },
+          "C1": {
+            "mode": "insufficient_fit_fallback",
+            "fallbackReference": "models.candidateFitProtocol.insufficientFitRowsFallback"
+          },
+          "C2-R": {
+            "mode": "insufficient_fit_fallback",
+            "fallbackReference": "models.candidateFitProtocol.insufficientFitRowsFallback"
+          },
+          "C2": {
+            "mode": "insufficient_fit_fallback",
+            "fallbackReference": "models.candidateFitProtocol.insufficientFitRowsFallback"
+          },
+          "C3": {
+            "mode": "prior_member_oof_unavailable_default",
+            "weightsReference": "models.candidates[id=C3].defaultHyperparametersWhenPriorMemberOofUnavailable"
+          }
+        },
+        "pureBuyoutBehavior": "always_use_revenueRouting.pure_buyout_without_point_model_fit",
+        "unknownRouteBehavior": "blocked_and_excluded_from_prediction_interval_population"
+      },
       "futurePerturbationRefitsFold": true,
       "futurePerturbationBoundary": "bill_month>score_origin_or_label_target_end>score_origin_or_available_as_of>score_origin",
       "folds": [
@@ -1117,7 +1296,7 @@
         "id": "B0b",
         "role": "leakage_free_comparator",
         "fairComparisonEligible": true,
-        "fairComparisonEligibilityCondition": "committed_fitted_parameters_artifact_matches_spec_fit_case_and_forward_comparator_case_fingerprints",
+        "fairComparisonEligibilityCondition": "committed_fitted_parameters_artifact_matches_spec_fit_case_forward_comparator_and_interval_warmup_case_prediction_fingerprints_and_intervalWarmupPredictionLockedBeforeTruthJoin_is_true_and_intervalWarmupUsesOutcomeLabelsForPrediction_is_false",
         "definition": "policy_conformant_v1_1_structural_sales_formula_replay_inside_predict_as_of_with_development_only_factors",
         "parameterProvenance": "semantic_thresholds_plus_cross_horizon_purged_development_only_deterministic_factor_fit_v1",
         "routeWrapperReference": "revenueRouting",
@@ -1311,6 +1490,8 @@
             "comparatorUsesOnlyForwardOutOfFoldPredictions": true,
             "B1B2B3UseExactlyTheSameForwardScoreCaseKeys": true,
             "warmupCasesMayEnterComparatorScore": false,
+            "warmupIntervalCalibrationReference": "origins.forwardValidation.warmupIntervalCalibration",
+            "warmupIntervalB0bFactorsReference": "models.baselines[id=B0b].developmentFit.initialFactors",
             "finalFactorsFitAfterOofScoring": "all_cross_horizon_purged_development_cases_single_global_vector",
             "minimumTrainingCasesPerLifecycleFactor": 200,
             "minimumTrainingOriginsPerLifecycleFactor": 3,
@@ -1612,6 +1793,7 @@
       "minimumInnerScoreOrigins": 2,
       "innerUnavailableBehavior": "use_candidate_pre_registered_defaultHyperparametersWhenInnerValidationUnavailable",
       "outerOofMetric": "pool_each_outer_fold_prediction_from_its_inner_selected_hyperparameters_without_refitting_on_the_outer_label",
+      "warmupIntervalColdStartReference": "origins.forwardValidation.warmupIntervalCalibration.coldStartByModel",
       "finalHyperparameterSelectionBoundary": "2023-06",
       "finalHyperparameterSelection": "evaluate_every_frozen_parameter_tuple_with_strict_prequential_predictions_on_all_origins.forwardValidation.scoreOrigins_then_apply_the_candidate_specific_tie_break",
       "finalRefit": "refit_selected_hyperparameters_on_all_cross_horizon_purged_development_cases_with_target_end<=2023-06",
@@ -1715,6 +1897,32 @@
     "quantileFiniteSampleRule": "sort_residuals_ascending_then_k=min(n,ceil((n+1)*0.8))_and_q=sorted_residuals[k-1]_with_no_interpolation",
     "residualPredictionSource": "strict_forward_out_of_fold_prediction_made_at_each_residual_case_origin_without_that_case_label_or_any_later_label",
     "inSampleResidualAllowed": false,
+    "residualCaseProtocol": {
+      "allowedOriginRoles": [
+        "development_warmup_interval_calibration",
+        "development_forward_score"
+      ],
+      "warmupProtocolReference": "origins.forwardValidation.warmupIntervalCalibration",
+      "scoreOriginsReference": "origins.forwardValidation.scoreOrigins",
+      "predicateAtScoreOrigin": "residual_case_origin<score_origin_and_residual_case_target_end<=score_origin_and_label_available_as_of<=score_origin_and_eligibility_status==forecastable_numeric_and_pointForecast_is_numeric",
+      "predictionMustBeMaterializedBeforeTruthJoin": true,
+      "warmupUse": "interval_calibration_only",
+      "warmupMayEnterComparatorPointMetricOrBootstrap": false,
+      "futurePerturbationMustRefitResidualPredictionFold": true
+    },
+    "requiredPopulation": {
+      "reference": "metrics.populations.modelDeltaAndBootstrap",
+      "firstRequiredScoreOrigin": "2020-12",
+      "burnInScoreOrigins": [],
+      "burnInExclusionAllowed": false,
+      "completeCaseFilteringAllowed": false,
+      "missingInterval": "gate_failure"
+    },
+    "residualValueContract": {
+      "finite": true,
+      "nonnegative": true,
+      "invalidOrMissingResidual": "integrity_failure_no_silent_drop"
+    },
     "calibrationAvailability": "residual_case_origin<score_origin_and_residual_case_target_end<=score_origin",
     "calibrationOrder": "strictly_target_available_forward_development_cases_only",
     "groupFallbackOrder": [
@@ -1764,6 +1972,8 @@
       },
       "predictionInterval": {
         "definitionBeforeIntervalAvailability": "exactly_every_metrics.populations.modelDeltaAndBootstrap_case_key",
+        "requiredPopulationReference": "internalInterval.requiredPopulation",
+        "warmupResidualProtocolReference": "internalInterval.residualCaseProtocol",
         "bothModelsMustHaveNumericIntervalOnEveryKey": true,
         "completeCaseFilteringAllowed": false,
         "missingInterval": "gate_failure"

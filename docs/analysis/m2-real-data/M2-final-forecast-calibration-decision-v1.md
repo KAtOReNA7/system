@@ -3,7 +3,7 @@
 - 决策日期：2026-07-14
 - 状态：`FROZEN_FOR_LOCAL_CALIBRATION`
 - 候选决策状态：`not_for_formal_decision`
-- pre-holdout 修订：revision 4；在读取任何 private 拟合、replay 或 final holdout 结果前，以严格 target-available forward validation 替代会使用未来标签的 origin leave-one-out
+- pre-holdout 修订：revision 5；在读取任何 private 拟合、replay 或 final holdout 结果前，以严格 target-available forward validation 替代会使用未来标签的 origin leave-one-out，并补齐 interval-only warmup residual cold-start 与 as-of rights serving 合同
 
 ## 1. 决策边界与优先级
 
@@ -30,7 +30,7 @@
 
 内部可以计算 80% prediction interval，但只用于 coverage 和 weighted interval score（`WIS`）校准。作品级区间上下界不得进入产品、页面、API、Excel 或正式导出。当前外部合同禁止 `optimistic`、`pessimistic`、`high`、`base`、`low`，也禁止用 `confidence` 或 `limitation` 暗中承载三情景值或区间端点。
 
-渠道级点值只作为内部模型分量；外部仍只输出对账后的作品级单点总值及年度拆分。精确到期日按剩余月数预测；无限期采用 60 个月规划口径并标记 `perpetual_rights_60_month_planning_horizon`；relative term 只有在开始月与数值期限均可得时才推导结束月，否则采用 24 个月并标记 `rights_horizon_not_exact`；year-only 最多预测至该年 12 月且上限 24 个月，并保留同一 limitation；`expired_unknown_date` 固定为 0 个月、0 点值和空年度拆分并标记 `rights_expired_unknown_date`，不得静默变成 24 个月。候选只拟合 3/6/12/18/24 月：24 月内的非核心 horizon 使用不小于 H 的最小核心锚点并按 `H/anchor` 缩放，超过 24 月按 24 月点值乘 `H/24`；36/60 月真实标签不得拟合该适配器。超过 24 个月且没有合格长期证据时仍必须标记 `extrapolated`。
+渠道级点值只作为内部模型分量；外部仍只输出对账后的作品级单点总值及年度拆分。精确到期日按剩余月数预测；无限期采用 60 个月规划口径并标记 `perpetual_rights_60_month_planning_horizon`；relative term 只有在 `rights_start_month` 与正整数 `relative_term_months` 成对可得时才推导结束月，两者均缺失时采用 24 个月并标记 `rights_horizon_not_exact`，只缺一个则完整性失败；year-only 最多预测至该年 12 月且上限 24 个月，并保留同一 limitation；`expired_unknown_date` 固定为 0 个月、0 点值和空年度拆分并标记 `rights_expired_unknown_date`，不得静默变成 24 个月。serving 输入必须是规范化 snapshot 序列：所有 `available_as_of` 均须为 `YYYY-MM`，先筛选不晚于 origin 的记录，再选最大 `available_as_of`；同一最新月份的完全相同 payload 可去重，存在不同 payload、无合格记录、未知可用时间或非法期限字段时必须 fail closed。调用方不得任意传入 serving horizon。历史固定-horizon 回测继续使用预注册 H；没有历史 rights snapshot 时，当前 rights 只能 post-hoc 切片。候选只拟合 3/6/12/18/24 月：24 月内的非核心 horizon 使用不小于 H 的最小核心锚点并按 `H/anchor` 缩放，超过 24 月按 24 月点值乘 `H/24`；36/60 月真实标签不得拟合该适配器。超过 24 个月且没有合格长期证据时仍必须标记 `extrapolated`。
 
 ## 3. 预注册、final holdout 与比较角色
 
@@ -60,7 +60,9 @@
 
 2026-07-14 pre-holdout 参数来源审计进一步确认：旧 v1.1 的部分 lifecycle 阈值和系数曾使用全期结果形成，不能原样进入 `B0b` 的公平比较。该问题在任何新 replay 结果和 final holdout 被读取前发现。`B0b` 因此只保留旧公式结构；阈值改为预注册语义常量，lifecycle 系数固定为一个跨全部核心 horizon 共用的 7-stage 全局向量，只能使用跨 horizon purge 后的 development cases 做确定性离散拟合。这个低维共享向量是历史结构基线的显式例外，候选模型仍禁止跨 horizon target pooling；36/60 月审计只能复用该全局向量，不能读取长期 audit label 拟合。
 
-公平计分不使用 leave-one-origin-out，因为早期 origin 由此会看到更晚 origin 的已实现结果。revision 4 固定采用严格 expanding-origin forward folds：warm-up origins 为 `2019-06`、`2019-12`、`2020-06`；score origins 为 `2020-12`、`2021-06`、`2021-12`、`2022-06`、`2022-12`。每个 fold 只能用 `origin < score_origin` 且 `target_end <= score_origin` 的训练 case；同一 score origin 当时可评分的所有 horizon 必须一起留出。`B0b` 的 comparator 分数只能来自这些 forward predictions，full-development 全局向量只供后续已冻结预测使用。拟合数值、forward 指标、fit/comparator case fingerprints、OOF prediction fingerprint 和 spec digest 必须写入不含私有标识的 machine-readable fitted-parameter artifact 并提交；artifact 未提交或不匹配时，`B0b` 不具备公平比较资格。
+公平计分不使用 leave-one-origin-out，因为早期 origin 由此会看到更晚 origin 的已实现结果。revision 5 固定采用严格 expanding-origin forward folds：warm-up origins 为 `2019-06`、`2019-12`、`2020-06`；score origins 为 `2020-12`、`2021-06`、`2021-12`、`2022-06`、`2022-12`。每个 fold 只能用 `origin < score_origin` 且 `target_end <= score_origin` 的训练 case；同一 score origin 当时可评分的所有 horizon 必须一起留出。`B0b` 的 comparator 分数只能来自这些 forward predictions，full-development 全局向量只供后续已冻结预测使用。拟合数值、forward 指标、fit/comparator case fingerprints、OOF prediction fingerprint、warm-up prediction/case fingerprints、warm-up counts、truth-join 前锁定证明和 spec digest 必须写入不含私有标识的 machine-readable fitted-parameter artifact 并提交；artifact 未提交或不匹配时，`B0b` 不具备公平比较资格。每个候选的 fitted artifact 也必须记录同样的 warm-up fingerprints、counts、锁定与未使用 warm-up outcome label 证明。
+
+Warm-up 不进入 comparator、点值 gate、bootstrap 或 point-model/hyperparameter 拟合，只为已经冻结的内部区间方法提供 strict-forward residual。每个 warm-up 点值必须先于 truth join 物化并锁 fingerprint：`B0b` 使用预注册 initial factors 且不读 outcome label，`B1/B2/B3` 使用固定公式，`C1/C2-R/C2` 在不足 200 rows 或 3 origins 时使用冻结的 `B3` fallback，`C3` 使用 `C1=1, C2-R=0, C2=0` 的冻结默认权重；纯买断始终使用固定 cycle route。最早 score origin `2020-12` 可用的 warm-up label blocks 严格固定为 `2019-06:[3,6,12,18]`、`2019-12:[3,6,12]`、`2020-06:[3,6]`，共 9 个；仍须逐 case 满足 `target_end <= score_origin` 且 `label_available_as_of <= score_origin`。
 
 本轮基线阶段只允许 development forward replay。最后两个 origin 在基线报告后仍保持关闭；只有用户确认无泄漏和 case-key parity、明确授权候选训练、四个候选依次完成，并在 development forward gates 上选出最简单的通过者、把唯一 `selectedCandidateId` 写入候选 fitted-parameter artifact 提交且通过冻结字节校验后，才可另行讨论打开 final holdout。final 只确认这一预先锁定的候选与 comparator；失败后不得换用更复杂候选，除非重新版本化 spec 并建立新的未触碰 holdout。
 
@@ -146,7 +148,7 @@ signed aggregate bias 公式固定为：
 
 baseline ID 只在严格 forward 的 forecastable population 上锁定一次。之后每个 overall、horizon、高价值或重要 as-of 分层 gate，都必须把同一个 locked comparator 在该 gate 的完全相同人口上重新计分；不得按 gate 改选更弱的 comparator。source 和缺少历史快照的 shelf/rights 仍必须出现在聚合报告中，但只能 report-only，不能导致候选失败。
 
-80% PI 的内部残差必须来自在各残差 case 自己 origin 上生成的 strict forward-OOF 预测，不能使用 in-sample residual；在目标 score origin 校准时还必须满足 `residual_case_origin < score_origin` 且 `target_end <= score_origin`。有限样本分位数固定为：残差升序后 `k=min(n,ceil((n+1)*0.8))`，取第 k 个值且不插值。单个中央区间的 `WIS=(0.5*abs(actual-point)+0.1*IS_0.2)/1.5`；标准化宽度为 `sum(upper-lower)/sum(abs(actual))`。PI 人口先固定为全部 model-delta keys，再要求双方每个 key 都有区间；不得做 complete-case 筛选，所需区间缺失不能通过 gate。
+80% PI 的内部残差必须来自在各残差 case 自己 origin 上、按 revision 5 warm-up/score 角色协议生成并在 truth join 前锁定的 strict forward 预测，不能使用 in-sample residual；在目标 score origin 校准时还必须满足 `residual_case_origin < score_origin`、`target_end <= score_origin` 且 `label_available_as_of <= score_origin`。Warm-up residual 只校准已经冻结的区间，不得进入 comparator 或点值指标。有限样本分位数固定为：残差升序后 `k=min(n,ceil((n+1)*0.8))`，取第 k 个值且不插值；非法、缺失、非有限或负 residual 必须完整性失败，不能静默丢弃。单个中央区间的 `WIS=(0.5*abs(actual-point)+0.1*IS_0.2)/1.5`；标准化宽度为 `sum(upper-lower)/sum(abs(actual))`。PI 人口先固定为从 `2020-12` 开始的全部 model-delta keys，无 burn-in 排除，再要求双方每个 key 都有区间；不得做 complete-case 筛选，所需区间缺失不能通过 gate。
 
 | Gate | 冻结要求 |
 |---|---|
