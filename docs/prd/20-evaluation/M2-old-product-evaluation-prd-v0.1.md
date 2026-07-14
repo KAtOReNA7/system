@@ -131,8 +131,10 @@ The forecast period starts after the latest confirmed complete month and ends at
 - The aliases `optimistic`, `pessimistic`, `high`, `base`, and `low` are prohibited in the current external forecast contract. Historical fixture/prototype fields may remain only as explicitly non-formal regression evidence.
 - Channel-level component forecasts may be calculated internally where required by the frozen route, but only their reconciled work-level point total and annual breakdown enter the external contract.
 - A forecast extending beyond 24 months without qualifying 36/60-month cohort evidence must include the `extrapolated` limitation.
+- An exact rights-end date determines the remaining-month horizon. Perpetual rights use a 60-month planning horizon and the `perpetual_rights_60_month_planning_horizon` limitation. A fully known relative term may derive its end month; otherwise it uses 24 months with `rights_horizon_not_exact`. A year-only end uses no more than the months through December of that year, capped at 24, with the same limitation. `expired_unknown_date` produces a zero-month, zero-point forecast with `rights_expired_unknown_date`; it must never become a silent 24-month forecast. No implementation may invent an exact end date.
+- Candidate forecasts are fitted only at 3/6/12/18/24 months. A non-core horizon up to 24 months uses the smallest core anchor at or above it and scales by `H/anchor`; a horizon over 24 months scales the 24-month point by `H/24`. The 36/60-month labels are audit-only and must not fit this adapter. `pure_buyout` instead uses its frozen historical monthly-equivalent rule for the requested horizon.
 
-The forecast result also includes:
+The following are evaluation or audit metadata, not additional work-level forecast payload fields:
 
 - yearly breakdown;
 - remaining-month count;
@@ -176,7 +178,7 @@ Initial risk categories:
 - data issue unresolved;
 - forecast confidence low.
 
-Each risk should include severity, affected field, rationale, and suggested mitigation.
+Each risk should include severity, affected field, rationale, observed evidence, and any required human confirmation. It must not include a suggested operating action or mitigation.
 
 ## 11. Review Prompts and No-Operating-Suggestion Boundary
 
@@ -208,7 +210,7 @@ Backtesting dimensions:
 - forecast horizon;
 - rating.
 
-All dimensions used as model features or routing inputs must be reconstructed as of the historical cutoff. When a historical shelf or rights-status snapshot does not exist, the current value may be used only as a labelled post-hoc analysis slice and must never enter historical features, routing, eligibility, parameter selection, or gate tuning.
+All dimensions used as model features or routing inputs must be reconstructed as of the historical cutoff. A work enters an origin's case universe only after its first observed income source row; a future catalog entrant is absent at earlier origins, not represented as a blocked zero. When a historical shelf or rights-status snapshot does not exist, the current value may be used only as a labelled post-hoc analysis slice and must never enter historical features, routing, eligibility, parameter/model selection, gate tuning, or acceptance failure.
 
 Core rolling horizons are 3, 6, 12, 18, and 24 months. Cohorts with sufficient history also receive non-selection 36- and 60-month long-horizon audits. The final two eligible origins are the untouched final holdout and must not be used for model, parameter, threshold, forecastability, stratum, confidence, interval, or gate selection.
 
@@ -220,7 +222,9 @@ Comparator roles are distinct:
 - `B0b` is the v1.1 logic replayed through the new leakage-free `predict_as_of` kernel and is the only v1.1 comparator eligible for fair comparison.
 - `B1`, `B2`, and `B3` are the pre-registered simple baselines defined by `calibration-spec-v1`.
 
-`B0b` fair-comparison eligibility is conditional on parameter provenance as well as cutoff-safe features. Full-period outcome-exposed v1.1 thresholds or factors must not be reused. Its semantic thresholds are pre-registered, and one global seven-stage lifecycle-factor vector must be fitted across the core horizons only on the cross-horizon-purged development cases, written to the committed machine-readable fitted-parameter artifact, and verified against the spec and development-case fingerprint before any fair replay or final holdout is opened. This shared low-dimensional vector is an explicit structural-baseline exception; candidate models still cannot pool targets across horizons. Comparator selection uses leave-one-origin-out B0b predictions, holding out the same origin date across all core horizons; the final full-development global vector is used only after OOF scoring. The 36/60-month audit reuses that frozen vector and never fits on long-audit labels.
+`B0b` fair-comparison eligibility is conditional on parameter provenance as well as cutoff-safe features. Full-period outcome-exposed v1.1 thresholds or factors must not be reused. Its semantic thresholds are pre-registered, and one global seven-stage lifecycle-factor vector must be fitted across the core horizons only on cross-horizon-purged development cases, written to the committed machine-readable fitted-parameter artifact, and verified against the spec and fit/comparator fingerprints before any fair replay is opened. This shared low-dimensional vector is an explicit structural-baseline exception; candidate models still cannot pool targets across horizons. Fair scoring uses strict expanding-origin forward folds: for each score origin, every training case must have an earlier origin and `target_end <= score_origin`, while all available horizons at the score origin remain together. The full-development vector is only a later prediction artifact and cannot replace forward-scored B0b predictions in comparator selection. The 36/60-month audit reuses the frozen vector and never fits on long-audit labels.
+
+This baseline phase is development-only. The final two eligible origins remain closed until the baseline report is reviewed, the user explicitly authorizes candidate training, `C1`, `C2-R`, `C2`, and `C3` are completed in order, and the simplest candidate passing every development-forward gate is written as `selectedCandidateId` in the committed fitted-parameter artifact. The final holdout evaluates only that precommitted candidate and the locked comparator as confirmation. A failure cannot cause fallback to another candidate; doing so requires a new spec and a new untouched holdout.
 
 All comparators and candidates must use identical case keys. A future-perturbation invariance test must prove that changing data after a cutoff cannot change that cutoff's features, route, eligibility, prediction, or case keys. Baseline results and this integrity evidence must be reviewed before candidate training begins.
 
@@ -232,9 +236,9 @@ Metrics:
 - signed aggregate bias, fixed as `(sum(pred)-sum(actual))/sum(actual)` for a slice with positive actual revenue;
 - business usability notes.
 
-Signed aggregate bias must remain within +/-10% for overall, forecastable, and high-value results, and within +/-15% at each core horizon. A zero-actual slice has undefined signed aggregate bias and must be reported separately rather than treated as a pass.
+Signed aggregate bias must remain within +/-10% for overall, forecastable, and high-value results, and within +/-15% at each core horizon. A zero-actual slice has undefined signed aggregate bias and must be reported separately rather than treated as a pass. After the baseline identity is locked on the frozen forecastable forward population, that same baseline must be re-scored on each gate's exact population; the comparator must not be reselected per gate.
 
-Uncertainty comparisons and confidence intervals must use a paired block/bootstrap design that preserves dependence by both `standard_work_id` and origin. Overlapping work-origin cases must not be sampled as independent observations.
+Uncertainty comparisons and confidence intervals must use a paired two-way block/bootstrap design that independently resamples `standard_work_id` and origin clusters with replacement and weights each paired case by the product of their multiplicities. All horizons within a work-origin block remain together; overlapping cases must not be sampled as independent observations.
 
 Forecastability eligibility is frozen before results are observed. The prior 77.88% forecastable-revenue share and 20.38% true-blocked-revenue share are historical non-regression references only; labels or thresholds must not move to reproduce either ratio. The pre-registered top-10%-value forecastable-revenue coverage gate is at least 90%.
 

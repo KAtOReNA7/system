@@ -3,6 +3,7 @@
 - 决策日期：2026-07-14
 - 状态：`FROZEN_FOR_LOCAL_CALIBRATION`
 - 候选决策状态：`not_for_formal_decision`
+- pre-holdout 修订：revision 4；在读取任何 private 拟合、replay 或 final holdout 结果前，以严格 target-available forward validation 替代会使用未来标签的 origin leave-one-out
 
 ## 1. 决策边界与优先级
 
@@ -29,7 +30,7 @@
 
 内部可以计算 80% prediction interval，但只用于 coverage 和 weighted interval score（`WIS`）校准。作品级区间上下界不得进入产品、页面、API、Excel 或正式导出。当前外部合同禁止 `optimistic`、`pessimistic`、`high`、`base`、`low`，也禁止用 `confidence` 或 `limitation` 暗中承载三情景值或区间端点。
 
-渠道级点值只作为内部模型分量；外部仍只输出对账后的作品级单点总值及年度拆分。超过 24 个月且没有合格 36/60 月长期证据的预测必须在 `limitation` 中标记 `extrapolated`。
+渠道级点值只作为内部模型分量；外部仍只输出对账后的作品级单点总值及年度拆分。精确到期日按剩余月数预测；无限期采用 60 个月规划口径并标记 `perpetual_rights_60_month_planning_horizon`；relative term 只有在开始月与数值期限均可得时才推导结束月，否则采用 24 个月并标记 `rights_horizon_not_exact`；year-only 最多预测至该年 12 月且上限 24 个月，并保留同一 limitation；`expired_unknown_date` 固定为 0 个月、0 点值和空年度拆分并标记 `rights_expired_unknown_date`，不得静默变成 24 个月。候选只拟合 3/6/12/18/24 月：24 月内的非核心 horizon 使用不小于 H 的最小核心锚点并按 `H/anchor` 缩放，超过 24 月按 24 月点值乘 `H/24`；36/60 月真实标签不得拟合该适配器。超过 24 个月且没有合格长期证据时仍必须标记 `extrapolated`。
 
 ## 3. 预注册、final holdout 与比较角色
 
@@ -57,7 +58,11 @@
 
 所有可比较基线和候选必须使用完全一致的 case keys。`B0a` 不得因历史指标较好而进入候选排名或验收判定。
 
-2026-07-14 pre-holdout 参数来源审计进一步确认：旧 v1.1 的部分 lifecycle 阈值和系数曾使用全期结果形成，不能原样进入 `B0b` 的公平比较。该问题在任何新 replay 结果和 final holdout 被读取前发现。`B0b` 因此只保留旧公式结构；阈值改为预注册语义常量，lifecycle 系数固定为一个跨全部核心 horizon 共用的 7-stage 全局向量，只能使用跨 horizon purge 后、target end 不晚于 2023-06 的 development cases 做确定性离散拟合。这个低维共享向量是历史结构基线的显式例外，候选模型仍禁止跨 horizon target pooling；36/60 月审计只能复用该全局向量，不能读取长期 audit label 拟合。为防止 fitted B0b 在 development 上取得 in-sample 优势，锁定 comparator 时必须按 origin date（同一日期的所有 horizon 同时留出）执行 leave-one-origin-out，`B0b` 只使用拼接后的 OOF 预测计分；最终 full-development 全局向量仅用于之后已冻结的 holdout 预测。拟合数值、OOF 指标、development case fingerprint 和 spec digest 必须写入无私有标识的 machine-readable fitted-parameter artifact 并提交；该 artifact 未提交或不匹配时，`B0b` 不具备公平比较资格，也不得打开 final holdout。旧全期阈值和系数只留在 spec 的 audit-only 字段中。
+2026-07-14 pre-holdout 参数来源审计进一步确认：旧 v1.1 的部分 lifecycle 阈值和系数曾使用全期结果形成，不能原样进入 `B0b` 的公平比较。该问题在任何新 replay 结果和 final holdout 被读取前发现。`B0b` 因此只保留旧公式结构；阈值改为预注册语义常量，lifecycle 系数固定为一个跨全部核心 horizon 共用的 7-stage 全局向量，只能使用跨 horizon purge 后的 development cases 做确定性离散拟合。这个低维共享向量是历史结构基线的显式例外，候选模型仍禁止跨 horizon target pooling；36/60 月审计只能复用该全局向量，不能读取长期 audit label 拟合。
+
+公平计分不使用 leave-one-origin-out，因为早期 origin 由此会看到更晚 origin 的已实现结果。revision 4 固定采用严格 expanding-origin forward folds：warm-up origins 为 `2019-06`、`2019-12`、`2020-06`；score origins 为 `2020-12`、`2021-06`、`2021-12`、`2022-06`、`2022-12`。每个 fold 只能用 `origin < score_origin` 且 `target_end <= score_origin` 的训练 case；同一 score origin 当时可评分的所有 horizon 必须一起留出。`B0b` 的 comparator 分数只能来自这些 forward predictions，full-development 全局向量只供后续已冻结预测使用。拟合数值、forward 指标、fit/comparator case fingerprints、OOF prediction fingerprint 和 spec digest 必须写入不含私有标识的 machine-readable fitted-parameter artifact 并提交；artifact 未提交或不匹配时，`B0b` 不具备公平比较资格。
+
+本轮基线阶段只允许 development forward replay。最后两个 origin 在基线报告后仍保持关闭；只有用户确认无泄漏和 case-key parity、明确授权候选训练、四个候选依次完成，并在 development forward gates 上选出最简单的通过者、把唯一 `selectedCandidateId` 写入候选 fitted-parameter artifact 提交且通过冻结字节校验后，才可另行讨论打开 final holdout。final 只确认这一预先锁定的候选与 comparator；失败后不得换用更复杂候选，除非重新版本化 spec 并建立新的未触碰 holdout。
 
 ## 4. 无泄漏内核与先行完整性证明
 
@@ -87,7 +92,7 @@ revenue model、渠道存在性和历史周期必须按 cutoff 重建，不能�
 
 核心滚动回测 horizon 固定为 3、6、12、18、24 月。对历史长度和可用 origin 达到预注册条件的 cohort，增加 36、60 月长期审计；36/60 月只作长期稳定性证据，不参与 final holdout 的模型或阈值选择。
 
-任何超过 24 月、但所属 cohort 没有合格 36/60 月证据的预测，都必须标记 `extrapolated`。不得用扩大区间、提高 confidence 或隐藏 limitation 替代该标记。
+任何超过 24 月、但所属 cohort 没有合格 36/60 月证据的预测，都必须标记 `extrapolated`。不得用扩大区间、提高 confidence 或隐藏 limitation 替代该标记。source 是当前基础表的 post-hoc 切片，不能决定长期证据资格；36/60 月 development 审计只可打开 `target_end <= 2023-06` 的标签，其余长期标签继续关闭。
 
 ## 7. Spike 候选与分类
 
@@ -125,7 +130,7 @@ spike 规则只能先生成候选，不能直接触发衰减。候选定义使�
 - 高价值；
 - horizon。
 
-如历史 cutoff 没有当时的 shelf/rights 状态快照，当前状态只能作为明确标注的 post-hoc 切片，不得进入历史特征、路由、eligibility、模型/阈值选择或 gate 调整。其他当前字段也不得在缺少 as-of 证据时冒充历史输入。
+作品只在第一条可观察收入源记录不晚于 origin 时进入该 origin 的 case universe；未来才出现的作品在更早 origin 中应当不存在，不能伪造成 blocked-zero。如历史 cutoff 没有当时的 shelf/rights 状态快照，当前状态只能作为明确标注的 post-hoc 报告切片，不得进入历史特征、路由、eligibility、模型/阈值选择、gate 调整或 acceptance failure。其他当前字段也不得在缺少 as-of 证据时冒充历史输入。
 
 ## 9. 指标、signed aggregate bias 与 gate
 
@@ -137,10 +142,16 @@ signed aggregate bias 公式固定为：
 
 仅当切片 `sum(actual) > 0` 时计算；实际收入为 0 的切片必须单列，不能记为通过。
 
+指标人口同时冻结：外部 blocked case 继续输出 `point=null`、年度拆分空数组和 `confidence=unavailable`；总体、高价值和各 horizon 的 coverage-aware 评估只在内部将 null 预测计为 0，绝不写回外部结果。forecastable 指标只使用冻结 eligibility 为 `forecastable_numeric` 的全部 case keys，双方均必须给出数值预测。模型差异、comparator 排名和 bootstrap 使用这套完整 keys；不得通过取交集或 complete-case drop 掩盖缺失，任何应为数值却缺失的预测都是完整性失败。
+
+baseline ID 只在严格 forward 的 forecastable population 上锁定一次。之后每个 overall、horizon、高价值或重要 as-of 分层 gate，都必须把同一个 locked comparator 在该 gate 的完全相同人口上重新计分；不得按 gate 改选更弱的 comparator。source 和缺少历史快照的 shelf/rights 仍必须出现在聚合报告中，但只能 report-only，不能导致候选失败。
+
+80% PI 的内部残差必须来自在各残差 case 自己 origin 上生成的 strict forward-OOF 预测，不能使用 in-sample residual；在目标 score origin 校准时还必须满足 `residual_case_origin < score_origin` 且 `target_end <= score_origin`。有限样本分位数固定为：残差升序后 `k=min(n,ceil((n+1)*0.8))`，取第 k 个值且不插值。单个中央区间的 `WIS=(0.5*abs(actual-point)+0.1*IS_0.2)/1.5`；标准化宽度为 `sum(upper-lower)/sum(abs(actual))`。PI 人口先固定为全部 model-delta keys，再要求双方每个 key 都有区间；不得做 complete-case 筛选，所需区间缺失不能通过 gate。
+
 | Gate | 冻结要求 |
 |---|---|
 | 数据与 case 完整性 | 权威范围、金额、hash、cutoff、origin、horizon 对账通过；所有公平比较对象 case keys 完全一致；future perturbation invariance 通过 |
-| Overall point accuracy | final holdout WAPE 不高于 `min(0.60, 0.95 * best leakage-free baseline WAPE)`，并以第 11 节的相关性 bootstrap 证明改善 |
+| Overall point accuracy | development-forward 选择与 final confirmation 两种 role 都必须在各自冻结人口上独立满足 WAPE 不高于 `min(0.60, 0.95 * locked leakage-free comparator WAPE)`，并以第 11 节的相关性 bootstrap 证明改善；前者用于锁定 `selectedCandidateId`，后者只确认、不得改选 |
 | Signed aggregate bias | overall、forecastable、高价值均在 +/-10%；每个核心 horizon 均在 +/-15% |
 | Horizon non-regression | 3/6/12 月分别较最佳无泄漏基线改善至少 3%；18/24 月不得回退超过 2% |
 | High-value accuracy | top 10% WAPE 改善至少 5%；top 1% 和 top 5% 均不得回退超过 5% |
@@ -157,9 +168,9 @@ top 10% 高价值作品的 forecastable revenue coverage gate 固定为至少 90
 
 ## 11. 相关性 bootstrap
 
-模型差异的置信证据必须使用 paired block/bootstrap，并同时保留 `standard_work_id` 与 origin 维度的相关性。重叠 horizon、同一作品和同一 origin 产生的 case 不能被当作相互独立的单条样本抽样。
+模型差异的置信证据必须使用 paired two-way pigeonhole cluster bootstrap：`standard_work_id` 和 origin 两个 cluster universe 分别有放回抽样，每条配对 case 的权重是两个 multiplicity 的乘积，同一 work-origin 下全部 horizon 始终一起保留。重叠 horizon、同一作品和同一 origin 产生的 case 不能被当作相互独立的单条样本抽样。
 
-bootstrap 具体算法、block 构造、重复次数、seed、比较统计量和置信区间规则必须在 final holdout 前写入 machine-readable spec。不得看到结果后改用更有利的抽样单位或单侧检验。
+重复次数固定 2000、seed 固定 20260714，随机数生成器固定为 PCG64；cluster 分别按标准作品标识和 origin 稳定排序，每个 replicate 先抽作品、再抽 origin，抽样数等于各自 unique cluster 数。比较统计量为 `candidate_wape - locked_comparator_wape`。95% 区间使用经验 nearest-rank 的第 `ceil(0.025R)` 与 `ceil(0.975R)` 个排序值；任一 replicate 分母无效即为整体 bootstrap 完整性失败。不得看到结果后改用更有利的抽样单位、人口或单侧检验。spec、模型定义、特征、forward protocol 与 case/prediction fingerprints 一律使用冻结的 UTF-8 canonical serialization 和 SHA-256。
 
 ## 12. 执行顺序与最终选择
 
@@ -176,6 +187,8 @@ bootstrap 具体算法、block 构造、重复次数、seed、比较统计量和
 
 中文业务验证表属于 Git 忽略的 private 本地输出，不得提交作品名、作者、渠道明细、原始账单行或逐作品收入。可提交报告只允许使用脱敏聚合层，至少说明：
 
+抽检表只在某一候选通过全部技术 gate 后生成，候选状态仍为 `not_for_formal_decision`。抽检固定为 80 个去重的 work-origin-horizon case：依次覆盖最大绝对误差、最大正/负 signed error、未确认 spike、低/不可用 confidence、三类 revenue route、unknown/blocked、重要价值/收入模式/版权期限层，最后按 seed 20260714 随机补足。private 表可为业务复核展示作品标识、作品名、作者和逐 case 证据，但整个文件必须留在 Git 忽略目录；它只收集“预测是否合理、路由是否正确、limitation 是否清晰、事实是否有误”和备注，不提供运营动作选项。
+
 - 数据版本、spec 版本、代码版本和 cutoff；
 - B0a 审计值与 B0b-B3 公平 replay 的角色差异；
 - 各 horizon、source、revenue model、shelf/rights、高价值及稀疏/沉寂/长尾/spike 类型的聚合指标；
@@ -183,4 +196,4 @@ bootstrap 具体算法、block 构造、重复次数、seed、比较统计量和
 - eligibility 覆盖、`extrapolated` 数量、limitation 分布和事实型复核提示；
 - 所有失败 gate、未验证项和候选的 `not_for_formal_decision` 状态。
 
-报告不得包含自动运营建议或资源投入动作，也不得把内部 PI 改名包装为三情景输出。
+脱敏聚合报告的 cell count 小于 10 时必须抑制指标值，只能输出 `<10` 并在存在预注册父层时上卷。报告不得包含自动运营建议或资源投入动作，也不得把内部 PI 改名包装为三情景输出。
