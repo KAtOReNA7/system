@@ -1,0 +1,675 @@
+{
+  "schema": "m2.calibration_spec.v1_1.amendment",
+  "version": "calibration-spec-v1.1-amendment",
+  "frozenAt": "2026-07-14T00:00:00+08:00",
+  "decisionStatus": "not_for_formal_decision",
+  "baseBinding": {
+    "path": "src/domain/oldProductEvaluation/calibrationSpec.v1.json",
+    "schema": "m2.calibration_spec.v1",
+    "version": "calibration-spec-v1",
+    "preHoldoutRevision": 5,
+    "canonicalSpecDigestSha256": "625631279889e46ce174ffb507b3926793fdc7a435fc2c7c8aafbf990c8a7fb9",
+    "introducingCommit": "bbc4563a79dfb8387b93bdd47b898f0a91bb952b",
+    "bindingFailureBehavior": "integrity_failure_no_replay_no_candidate_training",
+    "baseRemainsHistoricalCheckpoint": true
+  },
+  "applicationContract": {
+    "mode": "semantic_amendment_overlay",
+    "precedence": "amendment_over_base_only_for_declared_pointers",
+    "undeclaredBaseFields": "inherit_unchanged",
+    "declaredObjectPointerBehavior": "replace_the_complete_object_at_the_pointer",
+    "declaredScalarPointerBehavior": "replace_the_scalar_at_the_pointer",
+    "arrayMergeAllowed": false,
+    "canonicalDigest": "SHA256_of_base_canonical_digest_UTF8_LF_amendment_canonical_JSON",
+    "declaredPointers": [
+      "/digestContract/caseFingerprint",
+      "/digestContract/predictionFingerprint",
+      "/origins/forwardValidation/warmupIntervalCalibration/labelUseAtScoreOriginPredicate",
+      "/origins/forwardValidation/warmupIntervalCalibration/unknownRouteBehavior",
+      "/caseKeys/ineligibleCasesRetainedForCoverageDenominators",
+      "/caseKeys/caseUniverse",
+      "/forecastability",
+      "/confidence",
+      "/internalInterval/residualCaseProtocol/predicateAtScoreOrigin",
+      "/internalInterval/requiredPopulation",
+      "/metrics",
+      "/gates/lockedComparatorSelection",
+      "/gates/lockedComparatorRescoring",
+      "/gates/overallPointAccuracy",
+      "/gates/signedAggregateBias",
+      "/gates/horizonNonRegression",
+      "/gates/highValue",
+      "/gates/importantStrata",
+      "/gates/internal80PredictionInterval",
+      "/gates/originStability",
+      "/models/candidateTrainingRequires",
+      "/reporting/committableAggregateReport/requiredSections"
+    ],
+    "semanticSources": {
+      "/digestContract/caseFingerprint": "fingerprintAmendment.scoreabilityFingerprint",
+      "/digestContract/predictionFingerprint": "fingerprintAmendment.predictionFingerprint",
+      "/caseKeys": "fingerprintAmendment_and_caseStates",
+      "/forecastability": "caseStates",
+      "/confidence": "predictionSemantics.servedPrediction",
+      "/internalInterval": "internalIntervalAndPublicBoundary.internal80PI_and_metrics.populations.internalPredictionInterval",
+      "/metrics": "metrics",
+      "/gates": "gates_and_baselineComparatorTieBreak",
+      "/models/candidateTrainingRequires": "gates.candidateTrainingPreconditions_and_seals.candidateTraining",
+      "/reporting/committableAggregateReport": "reporting"
+    }
+  },
+  "correctionBoundary": {
+    "reason": "baseline_replay_exposed_conflated_model_scoring_business_abstention_and_forecastability_population_semantics",
+    "authorizedSprint": "calibration-spec-v1.1-scoring-eligibility-correction",
+    "baselineReplayResultsObserved": true,
+    "candidateTrainingStarted": false,
+    "candidateTrainingAuthorizedNow": false,
+    "finalHoldoutOpened": false,
+    "embargoShadowOpened": false,
+    "deferred60MonthLabelsOpened": false,
+    "allowedChanges": [
+      "statistical_scoreability_definition",
+      "model_prediction_availability_definition",
+      "business_serving_eligibility_definition",
+      "abstention_definition",
+      "raw_and_served_prediction_semantics",
+      "metric_populations_and_names",
+      "top10_served_revenue_pre_C1_gate",
+      "B0a_to_B0b_attribution_bridge",
+      "baseline_statistical_equivalence_tie_break",
+      "fingerprints_and_reports_required_to_prove_the_correction"
+    ],
+    "forbiddenChanges": [
+      "base_model_formula_change",
+      "candidate_model_or_hyperparameter_change",
+      "development_origin_change",
+      "final_holdout_origin_change",
+      "random_seed_change",
+      "bootstrap_cluster_or_replicate_change",
+      "gate_threshold_relaxation",
+      "use_of_final_holdout_embargo_or_deferred_60_month_labels",
+      "release_or_M3_enablement"
+    ],
+    "freezePoint": "this_amendment_must_be_committed_before_corrected_B0b_B3_replay_and_before_C1",
+    "resultDependentEditsAfterFreezeAllowed": false,
+    "changeAfterFreeze": "new_amendment_version_required_and_C1_must_remain_stopped",
+    "changeAfterFinalHoldoutOpen": "new_full_spec_and_new_untouched_final_holdout_required"
+  },
+  "caseStates": {
+    "legacyForecastabilityStatus": {
+      "mayFilterModelMetrics": false,
+      "mayRepresentModelCapability": false,
+      "mayRepresentBusinessServing": false,
+      "use": "historical_attribution_and_non_regression_reporting_only"
+    },
+    "statisticallyScoreable": {
+      "type": "boolean",
+      "unit": "standard_work_id_x_origin_x_horizon_months",
+      "evaluatedAfterTargetAvailabilityMetadataJoin": true,
+      "allMustHold": [
+        "standard_work_id_is_present_and_unique_in_the_authoritative_case_universe",
+        "origin_eligible_work_exists_by_the_first_observed_income_source_row_at_or_before_origin",
+        "observed_calendar_months_from_first_observed_income_source_row_through_origin_is_at_least_12",
+        "target_end_is_within_the_authoritative_latest_complete_month",
+        "every_calendar_month_in_origin_plus_1_through_target_end_is_reconstructable_from_valid_income_facts_with_absent_rows_treated_as_observed_zero_only_under_the_frozen_income_contract",
+        "target_label_available_as_of_is_not_later_than_the_scored_role_availability_boundary",
+        "income_fact_amounts_and_work_mapping_reconcile"
+      ],
+      "doesNotRequire": [
+        "positive_income_at_or_before_origin",
+        "resolved_revenue_model",
+        "business_serving_eligibility",
+        "model_prediction_availability"
+      ],
+      "mustNotDependOn": [
+        "actual_target_value_or_sign",
+        "current_rating",
+        "current_shelf_status",
+        "current_rights_status",
+        "current_rights_term_type_without_as_of_snapshot",
+        "current_risk_bucket",
+        "current_businessActionStatus",
+        "candidate_prediction_or_error",
+        "embargo_shadow_result",
+        "final_holdout_result",
+        "deferred_60_month_result"
+      ],
+      "falseReasons": [
+        "identity_integrity_failure",
+        "work_not_yet_observable_at_origin",
+        "insufficient_observed_calendar_history",
+        "incomplete_actual_window",
+        "income_fact_integrity_failure",
+        "target_label_not_available_for_role"
+      ],
+      "falseCaseUse": "case_universe_and_scoreability_reconciliation_only_not_model_metrics"
+    },
+    "modelPredictionAvailable": {
+      "type": "boolean",
+      "unit": "model_id_x_standard_work_id_x_origin_x_horizon_months",
+      "definition": "rawModelPrediction_is_finite_numeric_and_was_locked_before_truth_join",
+      "requiredForEveryStatisticallyScoreableFairComparatorOrCandidateCase": true,
+      "routeUnresolvedMaySilentlyDropCase": false,
+      "missingBehavior": "integrity_failure_no_case_drop_no_zero_imputation"
+    },
+    "businessServingEligible": {
+      "type": "boolean",
+      "unit": "standard_work_id_x_origin_x_horizon_months",
+      "modelIndependent": true,
+      "evaluatedBeforeModelResult": true,
+      "cutoffAvailableHardConditionsOnly": true,
+      "allMustHold": [
+        "standard_work_id_identity_is_valid_at_origin",
+        "cutoff_income_history_is_valid_and_reconciled",
+        "observed_calendar_months_from_first_observed_income_source_row_through_origin_is_at_least_12",
+        "revenue_model_route_is_resolved_as_of_origin"
+      ],
+      "positiveIncomeRequired": false,
+      "historicalActualWindowCompletenessMayAffectServing": false,
+      "forbiddenInputs": [
+        "current_rating",
+        "current_shelf_status",
+        "current_rights_status",
+        "current_rights_term_type_without_as_of_snapshot",
+        "current_risk_bucket",
+        "current_businessActionStatus",
+        "candidate_prediction_or_error",
+        "model_id",
+        "embargo_shadow_result",
+        "final_holdout_result",
+        "deferred_60_month_result"
+      ],
+      "currentStatusUseWhenHistoricalSnapshotMissing": "postHocSegmentOnly",
+      "labelsMayMoveToMeetCoverageTarget": false
+    },
+    "abstained": {
+      "type": "boolean",
+      "definition": "servedPrediction_is_null",
+      "abstentionReasonRequiredWhenTrue": true,
+      "abstentionReasonMustBeNullWhenFalse": true,
+      "primaryReasonPrecedence": [
+        "not_statistically_scoreable_identity_integrity",
+        "not_statistically_scoreable_work_not_yet_observable",
+        "not_statistically_scoreable_insufficient_history",
+        "not_statistically_scoreable_incomplete_actual_window",
+        "not_statistically_scoreable_income_fact_integrity",
+        "not_statistically_scoreable_label_unavailable",
+        "business_ineligible_identity_integrity",
+        "business_ineligible_income_history_integrity",
+        "business_ineligible_insufficient_history",
+        "business_ineligible_unresolved_revenue_model",
+        "model_prediction_unavailable"
+      ],
+      "reasonSelection": "first_true_reason_in_primaryReasonPrecedence",
+      "reasonMayDependOnCandidateError": false
+    },
+    "independenceInvariants": [
+      "statisticallyScoreable_does_not_imply_businessServingEligible",
+      "businessServingEligible_does_not_imply_modelPredictionAvailable",
+      "modelPredictionAvailable_does_not_imply_businessServingEligible",
+      "legacyForecastabilityStatus_does_not_control_any_of_the_three_new_states"
+    ]
+  },
+  "predictionSemantics": {
+    "rawModelPrediction": {
+      "internalOnly": true,
+      "requiredWhen": "statisticallyScoreable_for_every_fair_comparator_or_candidate",
+      "valueContract": "finite_numeric_work_level_point_after_route_component_reconciliation",
+      "lockedBeforeTruthJoin": true,
+      "rawAnnualBreakdownInternalOnly": true
+    },
+    "servedPrediction": {
+      "value": "rawModelPrediction_when_businessServingEligible_and_modelPredictionAvailable_else_null",
+      "externalAlias": "pointForecast",
+      "nullWhenBusinessServingEligibleFalse": true,
+      "nullWhenModelPredictionAvailableFalse": true,
+      "servedAnnualBreakdown": "raw_annual_breakdown_when_servedPrediction_is_numeric_else_empty_array"
+    },
+    "abstained": "servedPrediction_is_null",
+    "blockedOrAbstainedServedPredictionMayBeCoercedToZeroForModelMetric": false,
+    "rawAndServedMustMatchWhenServed": true,
+    "negativePointFloorReference": "base:/parameters/negativePointForecastFloor",
+    "productContract": {
+      "allowedFields": [
+        "pointForecast",
+        "annualBreakdown",
+        "confidence",
+        "limitation"
+      ],
+      "pointForecastSource": "servedPrediction",
+      "rawModelPredictionExposed": false,
+      "abstentionReasonMustBeRepresentedInLimitationWhenAbstained": true
+    }
+  },
+  "fingerprintAmendment": {
+    "caseKeyFields": [
+      "standard_work_id",
+      "origin",
+      "horizon_months",
+      "route"
+    ],
+    "caseKeyMustNotContain": [
+      "statisticallyScoreable",
+      "modelPredictionAvailable",
+      "businessServingEligible",
+      "abstained",
+      "actual",
+      "model_id"
+    ],
+    "scoreabilityFingerprint": "for_every_case_key_serialize_case_key|statisticallyScoreable|scoreability_reason|target_end|label_available_as_of|actual_fixed_8_or_NULL_sorted_lexicographically_joined_with_LF",
+    "predictionFingerprint": "for_every_model_and_case_key_before_truth_join_serialize_case_key|model_id|rawModelPrediction_fixed_8_or_NULL|modelPredictionAvailable|businessServingEligible|servedPrediction_fixed_8_or_NULL|abstained|abstentionReason|canonical_raw_annual_breakdown|canonical_served_annual_breakdown|confidence|ordered_limitation_JSON_sorted_lexicographically_joined_with_LF",
+    "internalIntervalFingerprintSeparateFromPublicPredictionFingerprint": true,
+    "parityRequiredAcrossB0bB1B2B3": [
+      "case_key_set",
+      "statistically_scoreable_key_set",
+      "business_serving_eligible_key_set",
+      "post_hoc_segment_assignments"
+    ],
+    "intersectionDropAllowed": false
+  },
+  "metrics": {
+    "populations": {
+      "caseUniverse": {
+        "definition": "base:/caseKeys/caseUniverse_with_all_four_new_states_retained",
+        "modelMetricUse": false
+      },
+      "allScoreable": {
+        "predicate": "statisticallyScoreable",
+        "predictionField": "rawModelPrediction",
+        "requiredPrediction": "finite_numeric",
+        "missingPrediction": "integrity_failure",
+        "zeroImputationAllowed": false,
+        "caseDropAllowed": false
+      },
+      "servedCohort": {
+        "predicate": "statisticallyScoreable_and_businessServingEligible",
+        "predictionField": "servedPrediction",
+        "requiredPrediction": "finite_numeric",
+        "missingPrediction": "integrity_failure",
+        "zeroImputationAllowed": false,
+        "caseDropAllowed": false
+      },
+      "abstainedCohort": {
+        "predicate": "statisticallyScoreable_and_abstained",
+        "predictionFieldForModelAccuracy": null,
+        "modelWapeAllowed": false
+      },
+      "modelDeltaAndBootstrap": {
+        "definition": "every_allScoreable_case_key_with_raw_numeric_predictions_required_from_both_models",
+        "keyIntersectionDropAllowed": false,
+        "missingNumericPrediction": "integrity_failure"
+      },
+      "internalPredictionInterval": {
+        "definition": "every_allScoreable_case_key_from_the_first_required_score_origin",
+        "pointField": "rawModelPrediction",
+        "servedOrAbstentionFilterAllowed": false,
+        "completeCaseFilteringAllowed": false
+      }
+    },
+    "formulas": {
+      "wape": "sum(abs(pred-actual))/sum(abs(actual))",
+      "mae": "mean(abs(pred-actual))",
+      "smape": "mean(case_term_where_case_term_is_0_when_pred_and_actual_are_both_0_else_2*abs(pred-actual)/(abs(pred)+abs(actual)))",
+      "signedAggregateBias": "(sum(pred)-sum(actual))/sum(actual)",
+      "servedWorkShare": "count(distinct_standard_work_id_x_origin_with_at_least_one_served_core_horizon_case)/count(distinct_standard_work_id_x_origin_with_at_least_one_statisticallyScoreable_core_horizon_case)",
+      "servedActualRevenueShare": "sum(max(actual,0)_for_servedCohort)/sum(max(actual,0)_for_allScoreable)",
+      "topBandServedRevenueShare": "sum(max(actual,0)_for_servedCohort_and_band)/sum(max(actual,0)_for_allScoreable_and_band)",
+      "abstainedActualRevenueShare": "sum(max(actual,0)_for_abstainedCohort)/sum(max(actual,0)_for_allScoreable)",
+      "endToEndBusinessLoss": "sum(abs(coalesce(servedPrediction,0)-actual)_for_allScoreable)/sum(abs(actual)_for_allScoreable)"
+    },
+    "undefinedWhen": {
+      "wape": "sum(abs(actual))==0",
+      "signedAggregateBias": "sum(actual)<=0",
+      "revenueShare": "sum(max(actual,0)_in_denominator)==0"
+    },
+    "allScoreableRequiredMetrics": [
+      "caseCount",
+      "uniqueWorkCount",
+      "wape",
+      "mae",
+      "smape",
+      "signedAggregateBias",
+      "horizonStability"
+    ],
+    "servedRequiredMetrics": [
+      "caseCount",
+      "uniqueWorkCount",
+      "wape",
+      "mae",
+      "smape",
+      "signedAggregateBias",
+      "highValueWape",
+      "highValueSignedAggregateBias"
+    ],
+    "abstentionRequiredMetrics": [
+      "servedWorkShare",
+      "servedActualRevenueShare",
+      "top1ServedRevenueShare",
+      "top5ServedRevenueShare",
+      "top10ServedRevenueShare",
+      "abstainedWorkCount",
+      "abstainedActualRevenueShare",
+      "abstentionReasonCaseWorkAndRevenueDistribution",
+      "highValueAbstainedWorkCount"
+    ],
+    "endToEndBusinessLoss": {
+      "optional": true,
+      "reportOnly": true,
+      "mayBeNamedWape": false,
+      "maySelectComparatorOrCandidate": false
+    },
+    "requiredSlices": [
+      "horizon",
+      "source",
+      "revenue_model",
+      "high_value",
+      "shelf_rights",
+      "long_tail",
+      "dormant",
+      "sparse_income",
+      "spike_candidate",
+      "rights_term_type"
+    ],
+    "postHocOnlySlices": [
+      "source",
+      "shelf_rights",
+      "rights_term_type_without_historical_snapshot"
+    ]
+  },
+  "gates": {
+    "candidateTrainingPreconditions": {
+      "eligibilityFrozenAndCommitted": true,
+      "correctedB0bB3ReplayComplete": true,
+      "futurePerturbationInvariant": true,
+      "caseStateAndKeyParityPass": true,
+      "B0aB0bAttributionCompleteOrExplicitlyNotReconstructable": true,
+      "top10ServedRevenueCoverage": {
+        "population": "metrics.populations.allScoreable_with_base:/strata/rankingContract/top10",
+        "formula": "metrics.formulas.topBandServedRevenueShare",
+        "minimum": 0.9,
+        "modelIndependent": true,
+        "evaluateBeforeC1": true,
+        "thresholdMayBeLowered": false,
+        "labelsMayBeMovedToPass": false,
+        "failureBehavior": "stop_before_C1_and_report_each_frozen_hard_blocking_reason"
+      }
+    },
+    "pointAccuracy": {
+      "population": "metrics.populations.allScoreable",
+      "predictionField": "rawModelPrediction",
+      "maximumWape": "min(0.60,0.95*locked_comparator_allScoreable_wape)",
+      "bootstrapImprovementRequired": true
+    },
+    "signedAggregateBias": {
+      "formula": "metrics.formulas.signedAggregateBias",
+      "allScoreableOverallAbsoluteMaximum": 0.1,
+      "servedOverallAbsoluteMaximum": 0.1,
+      "servedHighValueAbsoluteMaximum": 0.1,
+      "eachCoreHorizonAllScoreableAbsoluteMaximum": 0.15,
+      "undefinedMayPass": false
+    },
+    "horizonNonRegression": {
+      "population": "allScoreable_for_exact_horizon",
+      "predictionField": "rawModelPrediction",
+      "thresholdsInheritedFromBase": true
+    },
+    "highValue": {
+      "accuracyPopulation": "servedCohort_with_base:/strata/rankingContract/top1_top5_or_top10",
+      "predictionField": "servedPrediction",
+      "thresholdsInheritedFromBase": true,
+      "top10ServedRevenueCoverageMovedToPreC1Gate": true
+    },
+    "importantStrata": {
+      "modelAccuracyPopulation": "allScoreable_in_cell_with_rawModelPrediction",
+      "servedMetricsAlsoRequired": true,
+      "zeroImputationAllowed": false,
+      "gateAxesInheritedFromBase": true,
+      "postHocAxesMayFailAcceptance": false
+    },
+    "internal80PredictionInterval": {
+      "population": "metrics.populations.internalPredictionInterval",
+      "pointField": "rawModelPrediction",
+      "servedOrAbstentionFilterAllowed": false,
+      "thresholdsInheritedFromBase": true,
+      "externalOutputAllowed": false
+    },
+    "originStability": {
+      "population": "metrics.populations.allScoreable_grouped_by_score_origin",
+      "predictionField": "rawModelPrediction",
+      "thresholdsInheritedFromBase": true
+    },
+    "gateMayBeRelaxedAfterSeeingCorrectedReplay": false
+  },
+  "baselineAttributionBridge": {
+    "purpose": "separate_population_scoring_as_of_feature_eligibility_and_abstention_contributions_without_attributing_the_entire_B0a_to_B0b_gap_to_leakage",
+    "selectionUseAllowed": false,
+    "rolesAllowed": [
+      "development_forward_score"
+    ],
+    "embargoShadowLabelsAllowed": false,
+    "finalHoldoutLabelsAllowed": false,
+    "deferred60MonthLabelsAllowed": false,
+    "stageOrder": [
+      "B0a_recorded_historical_metrics",
+      "legacy_model_new_case_key_intersection",
+      "legacy_model_as_of_quantiles_and_priors",
+      "legacy_model_as_of_rating_lifecycle_and_features",
+      "legacy_model_new_eligibility",
+      "legacy_model_new_abstention_scoring",
+      "complete_B0b"
+    ],
+    "stages": {
+      "B0a_recorded_historical_metrics": {
+        "sameCaseKeyComparisonAvailable": false,
+        "role": "audit_only",
+        "differenceToNextStageName": "historical_to_intersection_bridge_gap_not_causal_attribution"
+      },
+      "legacy_model_new_case_key_intersection": {
+        "freezesIntersectionForStages2Through7": true,
+        "changeFromPrior": "replay_legacy_model_on_the_new_fixed_development_case_key_intersection"
+      },
+      "legacy_model_as_of_quantiles_and_priors": {
+        "changeFromPrior": "replace_only_quantiles_and_priors_with_cutoff_available_as_of_versions"
+      },
+      "legacy_model_as_of_rating_lifecycle_and_features": {
+        "changeFromPrior": "replace_only_rating_lifecycle_and_features_with_cutoff_available_as_of_versions"
+      },
+      "legacy_model_new_eligibility": {
+        "changeFromPrior": "apply_only_the_frozen_caseStates_statistical_and_business_eligibility",
+        "expectedAllScoreableRawMetricInvariant": true
+      },
+      "legacy_model_new_abstention_scoring": {
+        "changeFromPrior": "apply_only_raw_served_abstention_metric_separation_and_remove_null_to_zero_from_model_metrics",
+        "legacyZeroImputedMetricName": "legacyCoverageAwareLoss"
+      },
+      "complete_B0b": {
+        "changeFromPrior": "apply_the_complete_leakage_free_B0b_route_fit_predict_and_interval_contract"
+      }
+    },
+    "fixedIntersectionAppliesToStages": [
+      "legacy_model_new_case_key_intersection",
+      "legacy_model_as_of_quantiles_and_priors",
+      "legacy_model_as_of_rating_lifecycle_and_features",
+      "legacy_model_new_eligibility",
+      "legacy_model_new_abstention_scoring",
+      "complete_B0b"
+    ],
+    "requiredPerReplayableStage": [
+      "definitionDigest",
+      "caseFingerprint",
+      "predictionFingerprint",
+      "caseCount",
+      "allScoreableWape",
+      "allScoreableSignedAggregateBias",
+      "servedRevenueCoverage",
+      "top10ServedRevenueCoverage",
+      "highValueWape",
+      "highValueSignedAggregateBias"
+    ],
+    "notReconstructableBehavior": "name_the_exact_missing_legacy_artifact_or_semantics_and_do_not_fabricate_a_stage_metric",
+    "stageDeltaInterpretation": "sequential_descriptive_attribution_not_causal_and_not_additive_when_metric_semantics_change"
+  },
+  "baselineComparatorTieBreak": {
+    "eligibleBaselineIds": [
+      "B0b",
+      "B1",
+      "B2",
+      "B3"
+    ],
+    "excludedBaselineIds": [
+      "B0a"
+    ],
+    "population": "metrics.populations.modelDeltaAndBootstrap",
+    "predictionField": "rawModelPrediction",
+    "primaryMetric": "allScoreableWape",
+    "provisionalBest": "lowest_primaryMetric_with_numeric_tolerance_1e-12",
+    "relativePrimaryDifferenceFormula": "abs(baseline_wape-provisional_best_wape)/min(baseline_wape,provisional_best_wape)",
+    "statisticallyEquivalentWhenAny": [
+      "relativePrimaryDifference<0.01",
+      "paired_two_way_block_bootstrap_95_percent_CI_for_baseline_wape_minus_provisional_best_wape_has_lower<=0_and_upper>=0"
+    ],
+    "relativeThresholdIsStrict": true,
+    "ciEndpointZeroCountsAsContainsZero": true,
+    "equivalenceReference": "compare_every_baseline_directly_to_the_single_provisionalBest_to_avoid_nontransitive_pairwise_chaining",
+    "pairedBootstrapReference": "base:/bootstrap",
+    "complexityOrderSimplestFirst": [
+      "B1",
+      "B2",
+      "B3",
+      "B0b"
+    ],
+    "selection": "choose_the_simplest_baseline_in_the_equivalence_set_containing_the_provisionalBest",
+    "undefinedMetricOrConfidenceInterval": "integrity_failure",
+    "B0bAndB3MustBothRemainReported": true,
+    "lockedOnceAfterCorrectedB0bB3Replay": true,
+    "mayReselectPerGate": false
+  },
+  "internalIntervalAndPublicBoundary": {
+    "internal80PI": {
+      "allowed": true,
+      "nominalCoverage": 0.8,
+      "pointField": "rawModelPrediction",
+      "uses": [
+        "coverage",
+        "WIS",
+        "overconfidence_audit"
+      ],
+      "mayAffectBusinessServingEligibility": false,
+      "mayAffectAbstention": false,
+      "endpointsExternalOutputAllowed": false,
+      "endpointsCommittablePublicReportAllowed": false
+    },
+    "externalForecast": {
+      "allowedFields": [
+        "pointForecast",
+        "annualBreakdown",
+        "confidence",
+        "limitation"
+      ],
+      "pointForecastSource": "servedPrediction",
+      "forbiddenFields": [
+        "rawModelPrediction",
+        "optimistic",
+        "pessimistic",
+        "high",
+        "base",
+        "low",
+        "predictionIntervalLower",
+        "predictionIntervalUpper",
+        "PI_lower",
+        "PI_upper"
+      ],
+      "confidenceOrLimitationMayEncodeIntervalEndpoint": false
+    }
+  },
+  "reporting": {
+    "language": "zh-CN",
+    "committableReports": [
+      "docs/analysis/m2-real-data/M2-calibration-baseline-scoring-correction-v1.md",
+      "docs/analysis/m2-real-data/M2-calibration-baseline-scoring-correction-v1.json",
+      "docs/analysis/m2-real-data/M2-B0a-B0b-replay-attribution-v1.md",
+      "docs/analysis/m2-real-data/M2-B0a-B0b-replay-attribution-v1.json",
+      "updated_B0b_B3_baseline_replay_report"
+    ],
+    "requiredSections": [
+      "base_and_amendment_binding",
+      "final_embargo_and_deferred_60_month_seals",
+      "statisticallyScoreable_modelPredictionAvailable_businessServingEligible_and_abstained_reconciliation",
+      "rawModelPrediction_and_servedPrediction_reconciliation",
+      "all_scoreable_metrics",
+      "served_cohort_metrics",
+      "abstention_metrics_and_reasons",
+      "top1_top5_top10_served_revenue_coverage",
+      "B0a_to_B0b_attribution_bridge",
+      "B0b_B3_identical_case_replay",
+      "baseline_statistical_equivalence_and_tie_break",
+      "future_perturbation_case_key_and_state_invariance",
+      "horizon_source_revenue_model_high_value_and_post_hoc_slices",
+      "internal_80_PI_aggregate_metrics_without_endpoints",
+      "all_gate_failures_and_pre_C1_stop_status",
+      "not_for_formal_decision_release_and_M3_boundary"
+    ],
+    "deidentified": true,
+    "aggregateOnly": true,
+    "minimumCaseCountPerMetricCell": 10,
+    "minimumUniqueWorkCountPerMetricCell": 10,
+    "smallCellRule": "suppress_all_metric_values_when_either_count_is_below_10_and_emit_only_less_than_10_counts_and_suppressed_true",
+    "forbidden": [
+      "standard_work_id",
+      "work_title",
+      "author",
+      "channel_identifier_or_detail",
+      "raw_income_row",
+      "work_level_revenue_or_prediction_row",
+      "private_path",
+      "database_credentials",
+      "PI_endpoint",
+      "automatic_operating_suggestion"
+    ]
+  },
+  "seals": {
+    "candidateTraining": {
+      "C1Started": false,
+      "C2RStarted": false,
+      "C2Started": false,
+      "C3Started": false,
+      "mayStartOnlyAfterAllCandidateTrainingPreconditionsPassAndExplicitUserAuthorization": true
+    },
+    "finalHoldout": {
+      "originsReference": "base:/origins/coreByHorizon/*/finalHoldout",
+      "opened": false,
+      "truthRead": false,
+      "predictionRunAllowed": false,
+      "baselineRunnerMustFailClosed": true
+    },
+    "embargoShadow": {
+      "originsReference": "base:/origins/coreByHorizon/*/embargoShadow",
+      "opened": false,
+      "truthRead": false,
+      "fitSelectionOrThresholdUseAllowed": false
+    },
+    "deferred60Month": {
+      "originsReference": "base:/origins/longAuditByHorizon/60",
+      "opened": false,
+      "truthRead": false,
+      "fitSelectionOrThresholdUseAllowed": false
+    },
+    "sealEvidenceRequiredInEveryReplay": [
+      "usesFinalHoldoutLabels_false",
+      "usesEmbargoShadowLabels_false",
+      "usesDeferred60MonthLabels_false",
+      "finalHoldoutOpened_false",
+      "candidateTrainingStarted_false"
+    ],
+    "sealFailureBehavior": "integrity_failure_stop_before_C1"
+  },
+  "releaseBoundary": {
+    "formalDecisionAllowed": false,
+    "releaseAllowed": false,
+    "preparedExportPublishAllowed": false,
+    "requiresChineseBusinessSampling": true,
+    "requiresExplicitUserApproval": true,
+    "automaticOperatingSuggestionsAllowed": false,
+    "m3Allowed": false
+  }
+}
