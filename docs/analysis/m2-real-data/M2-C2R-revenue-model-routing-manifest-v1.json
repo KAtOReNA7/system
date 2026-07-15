@@ -1,0 +1,720 @@
+{
+  "currentRightsOrShelfUsedHistorically": false,
+  "decisionStatus": "not_for_formal_decision",
+  "eligibilityChanged": false,
+  "finalHoldoutOpened": false,
+  "perOriginRouteDistribution": {
+    "2020-12": {
+      "buyout_plus_sales": {
+        "caseCount": null,
+        "suppressed": true,
+        "suppressionReason": "complementary_suppression",
+        "uniqueWorkCount": null
+      },
+      "pure_buyout": {
+        "caseCount": 1120,
+        "suppressed": false,
+        "uniqueWorkCount": 224
+      },
+      "pure_sales_share": {
+        "caseCount": 2410,
+        "suppressed": false,
+        "uniqueWorkCount": 482
+      },
+      "unknown_revenue_model": {
+        "caseCount": null,
+        "suppressed": true,
+        "suppressionReason": "primary_small_cell",
+        "uniqueWorkCount": null
+      }
+    },
+    "2021-06": {
+      "buyout_plus_sales": {
+        "caseCount": null,
+        "suppressed": true,
+        "suppressionReason": "complementary_suppression",
+        "uniqueWorkCount": null
+      },
+      "pure_buyout": {
+        "caseCount": 1275,
+        "suppressed": false,
+        "uniqueWorkCount": 255
+      },
+      "pure_sales_share": {
+        "caseCount": 2160,
+        "suppressed": false,
+        "uniqueWorkCount": 432
+      },
+      "unknown_revenue_model": {
+        "caseCount": null,
+        "suppressed": true,
+        "suppressionReason": "primary_small_cell",
+        "uniqueWorkCount": null
+      }
+    },
+    "2021-12": {
+      "buyout_plus_sales": {
+        "caseCount": null,
+        "suppressed": true,
+        "suppressionReason": "complementary_suppression",
+        "uniqueWorkCount": null
+      },
+      "pure_buyout": {
+        "caseCount": 888,
+        "suppressed": false,
+        "uniqueWorkCount": 222
+      },
+      "pure_sales_share": {
+        "caseCount": 2540,
+        "suppressed": false,
+        "uniqueWorkCount": 635
+      },
+      "unknown_revenue_model": {
+        "caseCount": null,
+        "suppressed": true,
+        "suppressionReason": "primary_small_cell",
+        "uniqueWorkCount": null
+      }
+    },
+    "2022-06": {
+      "buyout_plus_sales": {
+        "caseCount": null,
+        "suppressed": true,
+        "suppressionReason": "complementary_suppression",
+        "uniqueWorkCount": null
+      },
+      "pure_buyout": {
+        "caseCount": 774,
+        "suppressed": false,
+        "uniqueWorkCount": 258
+      },
+      "pure_sales_share": {
+        "caseCount": 2412,
+        "suppressed": false,
+        "uniqueWorkCount": 804
+      },
+      "unknown_revenue_model": {
+        "caseCount": null,
+        "suppressed": true,
+        "suppressionReason": "primary_small_cell",
+        "uniqueWorkCount": null
+      }
+    },
+    "2022-12": {
+      "buyout_plus_sales": {
+        "caseCount": null,
+        "suppressed": true,
+        "suppressionReason": "complementary_suppression",
+        "uniqueWorkCount": null
+      },
+      "pure_buyout": {
+        "caseCount": 498,
+        "suppressed": false,
+        "uniqueWorkCount": 249
+      },
+      "pure_sales_share": {
+        "caseCount": 1966,
+        "suppressed": false,
+        "uniqueWorkCount": 983
+      },
+      "unknown_revenue_model": {
+        "caseCount": null,
+        "suppressed": true,
+        "suppressionReason": "primary_small_cell",
+        "uniqueWorkCount": null
+      }
+    }
+  },
+  "perOriginRouteMetrics": {
+    "2020-12": {
+      "buyout_plus_sales": {
+        "caseCount": null,
+        "signedAggregateBias": null,
+        "suppressed": true,
+        "suppressionReason": "complementary_suppression",
+        "uniqueWorkCount": null,
+        "wape": null
+      },
+      "pure_buyout": {
+        "caseCount": 1050,
+        "mae": 12429.28571429,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 184.94722222,
+        "smape": 1.64532851,
+        "suppressed": false,
+        "uniqueWorkCount": 210,
+        "wape": 186.43928571,
+        "zeroImputationUsed": false
+      },
+      "pure_sales_share": {
+        "caseCount": 540,
+        "mae": 12722.64710162,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 0.24358689,
+        "smape": 0.65511428,
+        "suppressed": false,
+        "uniqueWorkCount": 108,
+        "wape": 0.76372053,
+        "zeroImputationUsed": false
+      },
+      "unknown_revenue_model": {
+        "caseCount": null,
+        "signedAggregateBias": null,
+        "suppressed": true,
+        "suppressionReason": "primary_small_cell",
+        "uniqueWorkCount": null,
+        "wape": null
+      }
+    },
+    "2021-06": {
+      "buyout_plus_sales": {
+        "caseCount": null,
+        "signedAggregateBias": null,
+        "suppressed": true,
+        "suppressionReason": "complementary_suppression",
+        "uniqueWorkCount": null,
+        "wape": null
+      },
+      "pure_buyout": {
+        "caseCount": 1155,
+        "mae": 14191.79865601,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 55.48121769,
+        "smape": 1.46084682,
+        "suppressed": false,
+        "uniqueWorkCount": 231,
+        "wape": 57.25997746,
+        "zeroImputationUsed": false
+      },
+      "pure_sales_share": {
+        "caseCount": 1090,
+        "mae": 5370.42629172,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 0.85176381,
+        "smape": 0.7707008,
+        "suppressed": false,
+        "uniqueWorkCount": 218,
+        "wape": 1.26222631,
+        "zeroImputationUsed": false
+      },
+      "unknown_revenue_model": {
+        "caseCount": null,
+        "signedAggregateBias": null,
+        "suppressed": true,
+        "suppressionReason": "primary_small_cell",
+        "uniqueWorkCount": null,
+        "wape": null
+      }
+    },
+    "2021-12": {
+      "buyout_plus_sales": {
+        "caseCount": null,
+        "signedAggregateBias": null,
+        "suppressed": true,
+        "suppressionReason": "complementary_suppression",
+        "uniqueWorkCount": null,
+        "wape": null
+      },
+      "pure_buyout": {
+        "caseCount": 884,
+        "mae": 12192.38742494,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 58.01705824,
+        "smape": 1.37785257,
+        "suppressed": false,
+        "uniqueWorkCount": 221,
+        "wape": 59.87816935,
+        "zeroImputationUsed": false
+      },
+      "pure_sales_share": {
+        "caseCount": 1556,
+        "mae": 4239.12026765,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 0.09336199,
+        "smape": 0.99984044,
+        "suppressed": false,
+        "uniqueWorkCount": 389,
+        "wape": 0.39221403,
+        "zeroImputationUsed": false
+      },
+      "unknown_revenue_model": {
+        "caseCount": null,
+        "signedAggregateBias": null,
+        "suppressed": true,
+        "suppressionReason": "primary_small_cell",
+        "uniqueWorkCount": null,
+        "wape": null
+      }
+    },
+    "2022-06": {
+      "buyout_plus_sales": {
+        "caseCount": null,
+        "signedAggregateBias": null,
+        "suppressed": true,
+        "suppressionReason": "complementary_suppression",
+        "uniqueWorkCount": null,
+        "wape": null
+      },
+      "pure_buyout": {
+        "caseCount": 771,
+        "mae": 8098.35219126,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 32.68794189,
+        "smape": 0.88197147,
+        "suppressed": false,
+        "uniqueWorkCount": 257,
+        "wape": 34.68794189,
+        "zeroImputationUsed": false
+      },
+      "pure_sales_share": {
+        "caseCount": 1317,
+        "mae": 1869.02652001,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 0.01405691,
+        "smape": 0.75075516,
+        "suppressed": false,
+        "uniqueWorkCount": 439,
+        "wape": 0.25630985,
+        "zeroImputationUsed": false
+      },
+      "unknown_revenue_model": {
+        "caseCount": null,
+        "signedAggregateBias": null,
+        "suppressed": true,
+        "suppressionReason": "primary_small_cell",
+        "uniqueWorkCount": null,
+        "wape": null
+      }
+    },
+    "2022-12": {
+      "buyout_plus_sales": {
+        "caseCount": null,
+        "signedAggregateBias": null,
+        "suppressed": true,
+        "suppressionReason": "complementary_suppression",
+        "uniqueWorkCount": null,
+        "wape": null
+      },
+      "pure_buyout": {
+        "caseCount": 498,
+        "mae": 3560.70154121,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": null,
+        "smape": 0.6184739,
+        "suppressed": false,
+        "uniqueWorkCount": 249,
+        "wape": null,
+        "zeroImputationUsed": false
+      },
+      "pure_sales_share": {
+        "caseCount": 1180,
+        "mae": 2387.27292739,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 0.32246018,
+        "smape": 0.99987533,
+        "suppressed": false,
+        "uniqueWorkCount": 590,
+        "wape": 0.54021495,
+        "zeroImputationUsed": false
+      },
+      "unknown_revenue_model": {
+        "caseCount": null,
+        "signedAggregateBias": null,
+        "suppressed": true,
+        "suppressionReason": "primary_small_cell",
+        "uniqueWorkCount": null,
+        "wape": null
+      }
+    }
+  },
+  "pureBuyoutEventEvidenceBoundary": "as_of_classifier_resolved_not_user_confirmed_and_low_confidence_unless_classifier_high_with_multiple_events",
+  "routeDefinitions": {
+    "buyout_plus_sales": "sales_channels_only_excludes_future_buyout",
+    "pure_buyout": "as_of_event_cycle_monthly_equivalent_no_future_renewal_assumption",
+    "pure_sales_share": "channel_first_zero_retaining_sales_forecast_then_sum",
+    "unknown_revenue_model": "structural_zero_raw_and_business_abstain"
+  },
+  "routeSelection": [
+    {
+      "biasFeasibleCandidateCount": 0,
+      "candidateSpaceCount": 38,
+      "fallbackAppliedToRoute": true,
+      "fallbackCaseCount": 2410,
+      "fallbackCaseCountSuppressed": false,
+      "innerDistinctScoreOrigins": 0,
+      "innerScoreableCaseCount": 0,
+      "outerOrigin": "2020-12",
+      "rejectionReasonDistribution": {
+        "insufficient_inner_evidence": 38
+      },
+      "route": "pure_sales_share",
+      "sameOrLaterOuterTruthRead": false,
+      "selectedCandidateId": "single:B4_channel_point",
+      "selectedWeights": {
+        "B4_channel_point": 1.0
+      },
+      "selectionStatus": "frozen_fallback_insufficient_inner_evidence"
+    },
+    {
+      "biasFeasibleCandidateCount": 0,
+      "candidateSpaceCount": 38,
+      "fallbackAppliedToRoute": true,
+      "fallbackCaseCount": null,
+      "fallbackCaseCountSuppressed": true,
+      "innerDistinctScoreOrigins": 0,
+      "innerScoreableCaseCount": 0,
+      "outerOrigin": "2020-12",
+      "rejectionReasonDistribution": {
+        "insufficient_inner_evidence": 38
+      },
+      "route": "buyout_plus_sales",
+      "sameOrLaterOuterTruthRead": false,
+      "selectedCandidateId": "single:B4_channel_point",
+      "selectedWeights": {
+        "B4_channel_point": 1.0
+      },
+      "selectionStatus": "frozen_fallback_insufficient_inner_evidence"
+    },
+    {
+      "biasFeasibleCandidateCount": 1,
+      "candidateSpaceCount": 1,
+      "fallbackAppliedToRoute": false,
+      "fallbackCaseCount": 0,
+      "fallbackCaseCountSuppressed": false,
+      "innerDistinctScoreOrigins": 0,
+      "innerScoreableCaseCount": 0,
+      "outerOrigin": "2020-12",
+      "rejectionReasonDistribution": {},
+      "route": "pure_buyout",
+      "sameOrLaterOuterTruthRead": false,
+      "selectedCandidateId": "pure_buyout_event_cycle_v1",
+      "selectedWeights": {},
+      "selectionStatus": "frozen_route_policy"
+    },
+    {
+      "biasFeasibleCandidateCount": 1,
+      "candidateSpaceCount": 1,
+      "fallbackAppliedToRoute": false,
+      "fallbackCaseCount": 0,
+      "fallbackCaseCountSuppressed": false,
+      "innerDistinctScoreOrigins": 0,
+      "innerScoreableCaseCount": 0,
+      "outerOrigin": "2020-12",
+      "rejectionReasonDistribution": {},
+      "route": "unknown_revenue_model",
+      "sameOrLaterOuterTruthRead": false,
+      "selectedCandidateId": "unknown_structural_zero_abstain",
+      "selectedWeights": {},
+      "selectionStatus": "frozen_route_policy"
+    },
+    {
+      "biasFeasibleCandidateCount": 0,
+      "candidateSpaceCount": 38,
+      "fallbackAppliedToRoute": true,
+      "fallbackCaseCount": 2160,
+      "fallbackCaseCountSuppressed": false,
+      "innerDistinctScoreOrigins": 1,
+      "innerScoreableCaseCount": 216,
+      "outerOrigin": "2021-06",
+      "rejectionReasonDistribution": {
+        "insufficient_inner_evidence": 38
+      },
+      "route": "pure_sales_share",
+      "sameOrLaterOuterTruthRead": false,
+      "selectedCandidateId": "single:B4_channel_point",
+      "selectedWeights": {
+        "B4_channel_point": 1.0
+      },
+      "selectionStatus": "frozen_fallback_insufficient_inner_evidence"
+    },
+    {
+      "biasFeasibleCandidateCount": 0,
+      "candidateSpaceCount": 38,
+      "fallbackAppliedToRoute": true,
+      "fallbackCaseCount": null,
+      "fallbackCaseCountSuppressed": true,
+      "innerDistinctScoreOrigins": 1,
+      "innerScoreableCaseCount": 80,
+      "outerOrigin": "2021-06",
+      "rejectionReasonDistribution": {
+        "insufficient_inner_evidence": 38
+      },
+      "route": "buyout_plus_sales",
+      "sameOrLaterOuterTruthRead": false,
+      "selectedCandidateId": "single:B4_channel_point",
+      "selectedWeights": {
+        "B4_channel_point": 1.0
+      },
+      "selectionStatus": "frozen_fallback_insufficient_inner_evidence"
+    },
+    {
+      "biasFeasibleCandidateCount": 1,
+      "candidateSpaceCount": 1,
+      "fallbackAppliedToRoute": false,
+      "fallbackCaseCount": 0,
+      "fallbackCaseCountSuppressed": false,
+      "innerDistinctScoreOrigins": 0,
+      "innerScoreableCaseCount": 0,
+      "outerOrigin": "2021-06",
+      "rejectionReasonDistribution": {},
+      "route": "pure_buyout",
+      "sameOrLaterOuterTruthRead": false,
+      "selectedCandidateId": "pure_buyout_event_cycle_v1",
+      "selectedWeights": {},
+      "selectionStatus": "frozen_route_policy"
+    },
+    {
+      "biasFeasibleCandidateCount": 1,
+      "candidateSpaceCount": 1,
+      "fallbackAppliedToRoute": false,
+      "fallbackCaseCount": 0,
+      "fallbackCaseCountSuppressed": false,
+      "innerDistinctScoreOrigins": 0,
+      "innerScoreableCaseCount": 0,
+      "outerOrigin": "2021-06",
+      "rejectionReasonDistribution": {},
+      "route": "unknown_revenue_model",
+      "sameOrLaterOuterTruthRead": false,
+      "selectedCandidateId": "unknown_structural_zero_abstain",
+      "selectedWeights": {},
+      "selectionStatus": "frozen_route_policy"
+    },
+    {
+      "biasFeasibleCandidateCount": 0,
+      "candidateEvaluationDigest": "9bb6b712b0d19f1f658674fd9b998bffd4474dc8bcd9aeab8a5fed71065726e2",
+      "candidateSpaceCount": 38,
+      "fallbackAppliedToRoute": true,
+      "fallbackCaseCount": 2540,
+      "fallbackCaseCountSuppressed": false,
+      "innerDistinctScoreOrigins": 2,
+      "innerScoreableCaseCount": 760,
+      "outerOrigin": "2021-12",
+      "rejectionReasonDistribution": {
+        "high_value_bias": 33,
+        "horizon_bias": 38,
+        "overall_bias": 33
+      },
+      "route": "pure_sales_share",
+      "sameOrLaterOuterTruthRead": false,
+      "selectedCandidateId": "single:B4_channel_point",
+      "selectedWeights": {
+        "B4_channel_point": 1.0
+      },
+      "selectionStatus": "frozen_fallback_no_bias_feasible_candidate"
+    },
+    {
+      "biasFeasibleCandidateCount": 0,
+      "candidateEvaluationDigest": "3dc9790ecaa221d789681506a01f1e19483787d8efcb5ce1f31de7a2a6032f05",
+      "candidateSpaceCount": 38,
+      "fallbackAppliedToRoute": true,
+      "fallbackCaseCount": null,
+      "fallbackCaseCountSuppressed": true,
+      "innerDistinctScoreOrigins": 2,
+      "innerScoreableCaseCount": 276,
+      "outerOrigin": "2021-12",
+      "rejectionReasonDistribution": {
+        "high_value_bias": 38,
+        "horizon_bias": 38,
+        "overall_bias": 33
+      },
+      "route": "buyout_plus_sales",
+      "sameOrLaterOuterTruthRead": false,
+      "selectedCandidateId": "single:B4_channel_point",
+      "selectedWeights": {
+        "B4_channel_point": 1.0
+      },
+      "selectionStatus": "frozen_fallback_no_bias_feasible_candidate"
+    },
+    {
+      "biasFeasibleCandidateCount": 1,
+      "candidateSpaceCount": 1,
+      "fallbackAppliedToRoute": false,
+      "fallbackCaseCount": 0,
+      "fallbackCaseCountSuppressed": false,
+      "innerDistinctScoreOrigins": 0,
+      "innerScoreableCaseCount": 0,
+      "outerOrigin": "2021-12",
+      "rejectionReasonDistribution": {},
+      "route": "pure_buyout",
+      "sameOrLaterOuterTruthRead": false,
+      "selectedCandidateId": "pure_buyout_event_cycle_v1",
+      "selectedWeights": {},
+      "selectionStatus": "frozen_route_policy"
+    },
+    {
+      "biasFeasibleCandidateCount": 1,
+      "candidateSpaceCount": 1,
+      "fallbackAppliedToRoute": false,
+      "fallbackCaseCount": 0,
+      "fallbackCaseCountSuppressed": false,
+      "innerDistinctScoreOrigins": 0,
+      "innerScoreableCaseCount": 0,
+      "outerOrigin": "2021-12",
+      "rejectionReasonDistribution": {},
+      "route": "unknown_revenue_model",
+      "sameOrLaterOuterTruthRead": false,
+      "selectedCandidateId": "unknown_structural_zero_abstain",
+      "selectedWeights": {},
+      "selectionStatus": "frozen_route_policy"
+    },
+    {
+      "biasFeasibleCandidateCount": 3,
+      "candidateEvaluationDigest": "9aeeb577e2caebd4a835b882c633e05b901c475e79a25a79fedbba74275a7402",
+      "candidateSpaceCount": 38,
+      "fallbackAppliedToRoute": false,
+      "fallbackCaseCount": 0,
+      "fallbackCaseCountSuppressed": false,
+      "innerDistinctScoreOrigins": 3,
+      "innerScoreableCaseCount": 1864,
+      "outerOrigin": "2022-06",
+      "rejectionReasonDistribution": {
+        "high_value_bias": 31,
+        "horizon_bias": 35,
+        "overall_bias": 35
+      },
+      "route": "pure_sales_share",
+      "sameOrLaterOuterTruthRead": false,
+      "selectedCandidateId": "single:zero_aware_median_12",
+      "selectedWeights": {
+        "zero_aware_median_12": 1.0
+      },
+      "selectionStatus": "bias_feasible_lexicographic_minimum"
+    },
+    {
+      "biasFeasibleCandidateCount": 0,
+      "candidateEvaluationDigest": "55288ea2c8376f4acdcc0081242cf2fb22dcc2fe26c92e7cd5a1c993681a2074",
+      "candidateSpaceCount": 38,
+      "fallbackAppliedToRoute": true,
+      "fallbackCaseCount": null,
+      "fallbackCaseCountSuppressed": true,
+      "innerDistinctScoreOrigins": 3,
+      "innerScoreableCaseCount": 718,
+      "outerOrigin": "2022-06",
+      "rejectionReasonDistribution": {
+        "high_value_bias": 12,
+        "horizon_bias": 38,
+        "overall_bias": 14
+      },
+      "route": "buyout_plus_sales",
+      "sameOrLaterOuterTruthRead": false,
+      "selectedCandidateId": "single:B4_channel_point",
+      "selectedWeights": {
+        "B4_channel_point": 1.0
+      },
+      "selectionStatus": "frozen_fallback_no_bias_feasible_candidate"
+    },
+    {
+      "biasFeasibleCandidateCount": 1,
+      "candidateSpaceCount": 1,
+      "fallbackAppliedToRoute": false,
+      "fallbackCaseCount": 0,
+      "fallbackCaseCountSuppressed": false,
+      "innerDistinctScoreOrigins": 0,
+      "innerScoreableCaseCount": 0,
+      "outerOrigin": "2022-06",
+      "rejectionReasonDistribution": {},
+      "route": "pure_buyout",
+      "sameOrLaterOuterTruthRead": false,
+      "selectedCandidateId": "pure_buyout_event_cycle_v1",
+      "selectedWeights": {},
+      "selectionStatus": "frozen_route_policy"
+    },
+    {
+      "biasFeasibleCandidateCount": 1,
+      "candidateSpaceCount": 1,
+      "fallbackAppliedToRoute": false,
+      "fallbackCaseCount": 0,
+      "fallbackCaseCountSuppressed": false,
+      "innerDistinctScoreOrigins": 0,
+      "innerScoreableCaseCount": 0,
+      "outerOrigin": "2022-06",
+      "rejectionReasonDistribution": {},
+      "route": "unknown_revenue_model",
+      "sameOrLaterOuterTruthRead": false,
+      "selectedCandidateId": "unknown_structural_zero_abstain",
+      "selectedWeights": {},
+      "selectionStatus": "frozen_route_policy"
+    },
+    {
+      "biasFeasibleCandidateCount": 0,
+      "candidateEvaluationDigest": "95d40948d1e2bcf20223258965003c1d699c0e0440e0f4da78a7dcf0e8da14a7",
+      "candidateSpaceCount": 38,
+      "fallbackAppliedToRoute": true,
+      "fallbackCaseCount": 1966,
+      "fallbackCaseCountSuppressed": false,
+      "innerDistinctScoreOrigins": 4,
+      "innerScoreableCaseCount": 3457,
+      "outerOrigin": "2022-12",
+      "rejectionReasonDistribution": {
+        "high_value_bias": 32,
+        "horizon_bias": 38,
+        "overall_bias": 35
+      },
+      "route": "pure_sales_share",
+      "sameOrLaterOuterTruthRead": false,
+      "selectedCandidateId": "single:B4_channel_point",
+      "selectedWeights": {
+        "B4_channel_point": 1.0
+      },
+      "selectionStatus": "frozen_fallback_no_bias_feasible_candidate"
+    },
+    {
+      "biasFeasibleCandidateCount": 2,
+      "candidateEvaluationDigest": "e60b36bccdeae6bb26abc1bbd1b90b244a86e456098ab65dfe2e8012d74ebb67",
+      "candidateSpaceCount": 38,
+      "fallbackAppliedToRoute": false,
+      "fallbackCaseCount": 0,
+      "fallbackCaseCountSuppressed": false,
+      "innerDistinctScoreOrigins": 4,
+      "innerScoreableCaseCount": 1346,
+      "outerOrigin": "2022-12",
+      "rejectionReasonDistribution": {
+        "high_value_bias": 22,
+        "horizon_bias": 36,
+        "overall_bias": 19
+      },
+      "route": "buyout_plus_sales",
+      "sameOrLaterOuterTruthRead": false,
+      "selectedCandidateId": "blend:B4_channel_point@0.50+zero_aware_median_12@0.50",
+      "selectedWeights": {
+        "B4_channel_point": 0.5,
+        "zero_aware_median_12": 0.5
+      },
+      "selectionStatus": "bias_feasible_lexicographic_minimum"
+    },
+    {
+      "biasFeasibleCandidateCount": 1,
+      "candidateSpaceCount": 1,
+      "fallbackAppliedToRoute": false,
+      "fallbackCaseCount": 0,
+      "fallbackCaseCountSuppressed": false,
+      "innerDistinctScoreOrigins": 0,
+      "innerScoreableCaseCount": 0,
+      "outerOrigin": "2022-12",
+      "rejectionReasonDistribution": {},
+      "route": "pure_buyout",
+      "sameOrLaterOuterTruthRead": false,
+      "selectedCandidateId": "pure_buyout_event_cycle_v1",
+      "selectedWeights": {},
+      "selectionStatus": "frozen_route_policy"
+    },
+    {
+      "biasFeasibleCandidateCount": 1,
+      "candidateSpaceCount": 1,
+      "fallbackAppliedToRoute": false,
+      "fallbackCaseCount": 0,
+      "fallbackCaseCountSuppressed": false,
+      "innerDistinctScoreOrigins": 0,
+      "innerScoreableCaseCount": 0,
+      "outerOrigin": "2022-12",
+      "rejectionReasonDistribution": {},
+      "route": "unknown_revenue_model",
+      "sameOrLaterOuterTruthRead": false,
+      "selectedCandidateId": "unknown_structural_zero_abstain",
+      "selectedWeights": {},
+      "selectionStatus": "frozen_route_policy"
+    }
+  ],
+  "schema": "m2.c2r_revenue_model_routing_manifest.v1",
+  "scoreabilityChanged": false
+}

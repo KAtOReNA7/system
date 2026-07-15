@@ -1,0 +1,241 @@
+{
+  "decisionStatus": "not_for_formal_decision",
+  "finalHoldoutOpened": false,
+  "perOriginRoutes": {
+    "2020-12": {
+      "buyout_plus_sales": {
+        "caseCount": null,
+        "signedAggregateBias": null,
+        "suppressed": true,
+        "suppressionReason": "complementary_suppression",
+        "uniqueWorkCount": null,
+        "wape": null
+      },
+      "pure_buyout": {
+        "caseCount": 1050,
+        "mae": 12429.28571429,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 184.94722222,
+        "smape": 1.64532851,
+        "suppressed": false,
+        "uniqueWorkCount": 210,
+        "wape": 186.43928571,
+        "zeroImputationUsed": false
+      },
+      "pure_sales_share": {
+        "caseCount": 540,
+        "mae": 12722.64710162,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 0.24358689,
+        "smape": 0.65511428,
+        "suppressed": false,
+        "uniqueWorkCount": 108,
+        "wape": 0.76372053,
+        "zeroImputationUsed": false
+      },
+      "unknown_revenue_model": {
+        "caseCount": null,
+        "signedAggregateBias": null,
+        "suppressed": true,
+        "suppressionReason": "primary_small_cell",
+        "uniqueWorkCount": null,
+        "wape": null
+      }
+    },
+    "2021-06": {
+      "buyout_plus_sales": {
+        "caseCount": null,
+        "signedAggregateBias": null,
+        "suppressed": true,
+        "suppressionReason": "complementary_suppression",
+        "uniqueWorkCount": null,
+        "wape": null
+      },
+      "pure_buyout": {
+        "caseCount": 1155,
+        "mae": 14191.79865601,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 55.48121769,
+        "smape": 1.46084682,
+        "suppressed": false,
+        "uniqueWorkCount": 231,
+        "wape": 57.25997746,
+        "zeroImputationUsed": false
+      },
+      "pure_sales_share": {
+        "caseCount": 1090,
+        "mae": 5370.42629172,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 0.85176381,
+        "smape": 0.7707008,
+        "suppressed": false,
+        "uniqueWorkCount": 218,
+        "wape": 1.26222631,
+        "zeroImputationUsed": false
+      },
+      "unknown_revenue_model": {
+        "caseCount": null,
+        "signedAggregateBias": null,
+        "suppressed": true,
+        "suppressionReason": "primary_small_cell",
+        "uniqueWorkCount": null,
+        "wape": null
+      }
+    },
+    "2021-12": {
+      "buyout_plus_sales": {
+        "caseCount": null,
+        "signedAggregateBias": null,
+        "suppressed": true,
+        "suppressionReason": "complementary_suppression",
+        "uniqueWorkCount": null,
+        "wape": null
+      },
+      "pure_buyout": {
+        "caseCount": 884,
+        "mae": 12192.38742494,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 58.01705824,
+        "smape": 1.37785257,
+        "suppressed": false,
+        "uniqueWorkCount": 221,
+        "wape": 59.87816935,
+        "zeroImputationUsed": false
+      },
+      "pure_sales_share": {
+        "caseCount": 1556,
+        "mae": 4239.12026765,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 0.09336199,
+        "smape": 0.99984044,
+        "suppressed": false,
+        "uniqueWorkCount": 389,
+        "wape": 0.39221403,
+        "zeroImputationUsed": false
+      },
+      "unknown_revenue_model": {
+        "caseCount": null,
+        "signedAggregateBias": null,
+        "suppressed": true,
+        "suppressionReason": "primary_small_cell",
+        "uniqueWorkCount": null,
+        "wape": null
+      }
+    },
+    "2022-06": {
+      "buyout_plus_sales": {
+        "caseCount": null,
+        "signedAggregateBias": null,
+        "suppressed": true,
+        "suppressionReason": "complementary_suppression",
+        "uniqueWorkCount": null,
+        "wape": null
+      },
+      "pure_buyout": {
+        "caseCount": 771,
+        "mae": 8098.35219126,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 32.68794189,
+        "smape": 0.88197147,
+        "suppressed": false,
+        "uniqueWorkCount": 257,
+        "wape": 34.68794189,
+        "zeroImputationUsed": false
+      },
+      "pure_sales_share": {
+        "caseCount": 1317,
+        "mae": 1869.02652001,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 0.01405691,
+        "smape": 0.75075516,
+        "suppressed": false,
+        "uniqueWorkCount": 439,
+        "wape": 0.25630985,
+        "zeroImputationUsed": false
+      },
+      "unknown_revenue_model": {
+        "caseCount": null,
+        "signedAggregateBias": null,
+        "suppressed": true,
+        "suppressionReason": "primary_small_cell",
+        "uniqueWorkCount": null,
+        "wape": null
+      }
+    },
+    "2022-12": {
+      "buyout_plus_sales": {
+        "caseCount": null,
+        "signedAggregateBias": null,
+        "suppressed": true,
+        "suppressionReason": "complementary_suppression",
+        "uniqueWorkCount": null,
+        "wape": null
+      },
+      "pure_buyout": {
+        "caseCount": 498,
+        "mae": 3560.70154121,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": null,
+        "smape": 0.6184739,
+        "suppressed": false,
+        "uniqueWorkCount": 249,
+        "wape": null,
+        "zeroImputationUsed": false
+      },
+      "pure_sales_share": {
+        "caseCount": 1180,
+        "mae": 2387.27292739,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 0.32246018,
+        "smape": 0.99987533,
+        "suppressed": false,
+        "uniqueWorkCount": 590,
+        "wape": 0.54021495,
+        "zeroImputationUsed": false
+      },
+      "unknown_revenue_model": {
+        "caseCount": null,
+        "signedAggregateBias": null,
+        "suppressed": true,
+        "suppressionReason": "primary_small_cell",
+        "uniqueWorkCount": null,
+        "wape": null
+      }
+    }
+  },
+  "pureBuyoutEventEvidenceBoundary": "as_of_classifier_resolved_not_user_confirmed",
+  "routes": {
+    "buyout_plus_sales": {
+      "suppressed": true,
+      "suppressionReason": "complementary_suppression"
+    },
+    "pure_buyout": {
+      "caseCount": 4358,
+      "mae": 11068.70280824,
+      "nullPredictionCount": 0,
+      "signedAggregateBias": 65.51871965,
+      "smape": 1.28978767,
+      "suppressed": false,
+      "uniqueWorkCount": 267,
+      "wape": 67.34575449,
+      "zeroImputationUsed": false
+    },
+    "pure_sales_share": {
+      "caseCount": 5683,
+      "mae": 4328.4454004,
+      "nullPredictionCount": 0,
+      "signedAggregateBias": 0.21047831,
+      "smape": 0.86541875,
+      "suppressed": false,
+      "uniqueWorkCount": 643,
+      "wape": 0.54338491,
+      "zeroImputationUsed": false
+    },
+    "unknown_revenue_model": {
+      "suppressed": true,
+      "suppressionReason": "primary_small_cell"
+    }
+  },
+  "schema": "m2.c2r_route_specific_metrics.v1",
+  "smallCellsComplementarilySuppressed": true
+}
