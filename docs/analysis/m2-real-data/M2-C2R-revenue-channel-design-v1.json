@@ -1,0 +1,27 @@
+{
+  "schema": "m2.c2r_revenue_channel_design.v1",
+  "version": "M2-C2R-revenue-channel-design-v1",
+  "decisionStatus": "not_for_formal_decision",
+  "specPath": "src/domain/oldProductEvaluation/calibrationSpec.c2r.v1.amendment.json",
+  "candidateId": "C2-R",
+  "definition": "revenue-model-aware + channel-aware transparent forecast",
+  "frozenBeforeOuterReplay": true,
+  "routeSummary": {
+    "pure_sales_share": "每个实销渠道独立预测并保留零月，然后严格求和",
+    "pure_buyout": "按 cutoff 可得的买断事件和周期折算，不假设未来续买断",
+    "buyout_plus_sales": "剔除历史买断事件，只预测各实销渠道，明确排除未来买断",
+    "unknown_revenue_model": "固定原始零值并业务 abstain，不参与其他路由选择"
+  },
+  "candidateCount": 38,
+  "primaryComparator": "B4",
+  "reportedComparators": ["B4", "B0b", "B1", "B3"],
+  "randomSeed": 20260714,
+  "gateChanged": false,
+  "eligibilityChanged": false,
+  "scoreabilityChanged": false,
+  "finalHoldoutOpened": false,
+  "embargoShadowOpened": false,
+  "deferred60MonthLabelsOpened": false,
+  "releaseAuthorized": false,
+  "C2OrC3Authorized": false
+}

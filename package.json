@@ -63,6 +63,7 @@
     "validate:m2:c1-transparent-ensemble": "node --test test/m2-c1-transparent-ensemble.test.js",
     "validate:m2:c1-failure-forensic": "node --test test/m2-c1-failure-forensic.test.js",
     "audit:m2:c1-failure-forensic": "node scripts/run-codex-python.mjs scripts/m2-real-data/run_m2_c1_failure_forensic.py --run-audit",
+    "validate:m2:c2r-spec": "node --test test/m2-c2r-spec-contract.test.js",
     "replay:m2:c1:preflight": "node scripts/run-codex-python.mjs scripts/m2-real-data/run_m2_c1_development_validation.py --preflight",
     "replay:m2:c1:development": "node scripts/run-codex-python.mjs scripts/m2-real-data/run_m2_c1_development_validation.py --run-development",
     "replay:m2:c1:verify-development": "node scripts/run-codex-python.mjs scripts/m2-real-data/run_m2_c1_development_validation.py --verify-development",
