@@ -1,0 +1,145 @@
+{
+  "authority": {
+    "completeMonthIncomeFactCount": 192869,
+    "factsAfterLatestCompleteMonthExcludedFromCoverage": 3,
+    "incomeFactCount": 192872,
+    "latestCompleteMonth": "2026-04",
+    "standardWorkCount": 3053
+  },
+  "decisionStatus": "not_for_formal_decision",
+  "forwardPathsForHistoricallyUnscoreableWorks": {
+    "abstentionReasonRequiredWheneverServedPredictionIsNull": true,
+    "allowedPathEnum": [
+      "deterministic_fallback",
+      "low_confidence_output",
+      "insufficient_history_route",
+      "abstain"
+    ],
+    "asOfMonth": "2026-04",
+    "distribution": {
+      "abstain": {
+        "count": "<10",
+        "reason": "primary_small_cell",
+        "share": null,
+        "suppressed": true
+      },
+      "deterministic_fallback": {
+        "count": 1880,
+        "share": 0.93578895,
+        "suppressed": false
+      },
+      "insufficient_history_route": {
+        "count": null,
+        "reason": "complementary_suppression",
+        "share": null,
+        "suppressed": true
+      },
+      "low_confidence_output": {
+        "count": "<10",
+        "reason": "primary_small_cell",
+        "share": null,
+        "suppressed": true
+      }
+    },
+    "exhaustive": true,
+    "historicallyUnscoreableDoesNotMeanCurrentlyUnservable": true,
+    "insufficientHistoryRouteServedPrediction": null,
+    "mutuallyExclusive": true,
+    "servedNullAbstentionReasonDistribution": {
+      "insufficient_history_below_12_complete_calendar_months": {
+        "count": 129,
+        "share": 1.0,
+        "suppressed": false
+      }
+    },
+    "total": 2009
+  },
+  "fullLibraryRanking": {
+    "builtBeforeScoreableServedOrAbstentionFilter": true,
+    "rankingUniverseWorkCount": 3053,
+    "rule": "rank_all_3053_by_max_0_work_signed_revenue_desc_then_stable_work_id_tie_break",
+    "stableWorkIdUsedOnlyAsTieBreak": true,
+    "uniqueRankedWorkCount": 3053
+  },
+  "fullLibraryTopBands": {
+    "top1": {
+      "denominatorBuiltBeforeScoreableServedFilter": true,
+      "denominatorPopulation": "full_3053_complete_month_positive_work_revenue_bucket",
+      "fullLibraryBucketWorkCount": 31,
+      "rankingUniverseWorkCount": 3053,
+      "scoreableRevenueCoverage": 0.80278003,
+      "servedCoverageComplementarilySuppressed": true,
+      "servedRevenueCoverage": null
+    },
+    "top10": {
+      "denominatorBuiltBeforeScoreableServedFilter": true,
+      "denominatorPopulation": "full_3053_complete_month_positive_work_revenue_bucket",
+      "fullLibraryBucketWorkCount": 306,
+      "rankingUniverseWorkCount": 3053,
+      "scoreableRevenueCoverage": 0.74260518,
+      "servedCoverageComplementarilySuppressed": true,
+      "servedRevenueCoverage": null
+    },
+    "top5": {
+      "denominatorBuiltBeforeScoreableServedFilter": true,
+      "denominatorPopulation": "full_3053_complete_month_positive_work_revenue_bucket",
+      "fullLibraryBucketWorkCount": 153,
+      "rankingUniverseWorkCount": 3053,
+      "scoreableRevenueCoverage": 0.75638306,
+      "servedCoverageComplementarilySuppressed": true,
+      "servedRevenueCoverage": null
+    }
+  },
+  "generatedAt": "2026-07-15T05:26:31.798290+00:00",
+  "population": {
+    "overlappingBacktestActualUsedAsPopulationDenominator": false,
+    "revenueBasis": "work_level_signed_net_sum_then_max_zero_across_complete_month_facts; post_hoc_population_description_only",
+    "scoreableFullHistoryRevenueShare": 0.73232909,
+    "scoreableWorkCount": 1044,
+    "scoreableWorksShareOf3053": 0.34195873,
+    "servedAndAbstainedComplementarilySuppressed": true,
+    "servedFullHistoryRevenueShareOfLibrary": null,
+    "servedFullHistoryRevenueShareOfScoreable": null,
+    "servedWorkCount": null,
+    "servedWorkCountRange": {
+      "maximumInclusive": 1044,
+      "minimumInclusive": 1035
+    },
+    "servedWorksShareOf3053": null,
+    "servedWorksShareOfScoreable": null,
+    "unscoreableWorkCount": 2009
+  },
+  "privacy": {
+    "aggregateOnly": true,
+    "deidentified": true,
+    "globalDenominatorsSuppressed": false,
+    "servedComplementProtectedBecauseUniqueWorksBelowMinimum": true,
+    "smallCellsComplementarilySuppressed": true
+  },
+  "schema": "m2.calibration_population_coverage.v1",
+  "selectionBoundary": {
+    "authorityFullHistoryAggregationReadForPostHocPopulationOnly": true,
+    "authorityFullHistoryAggregationUsedForModelOrThresholdSelection": false,
+    "currentShelfRightsRatingRiskUsed": false,
+    "finalHoldoutOriginHorizonTruthWindowConstructed": false,
+    "fullHistoryCoverageMaySelectModelOrThreshold": false
+  },
+  "unscoreableReasons": {
+    "distribution": {
+      "insufficient_observed_calendar_history_at_every_eligible_origin": {
+        "count": 399,
+        "share": 0.19860627,
+        "suppressed": false
+      },
+      "not_observable_at_any_frozen_development_origin": {
+        "count": 1610,
+        "share": 0.80139373,
+        "suppressed": false
+      }
+    },
+    "exhaustive": true,
+    "mutuallyExclusive": true,
+    "total": 2009
+  },
+  "version": "M2-calibration-population-coverage-v1"
+}

@@ -1,0 +1,118 @@
+{
+  "backtestForwardIdentityMismatch": true,
+  "decisionStatus": "not_for_formal_decision",
+  "differences": {
+    "confidenceAnnualAndServing": {
+      "faithfulReplay": "confidence_inherited_from_lawful_B1_as_of_output; annual_allocation_routing_and_served_null_postprocessing_follow_the_v1.2_contract",
+      "fidelity": "required_policy_divergence_and_not_a_claim_of_bit_exact_wrapper_replay",
+      "legacy": "historical_wrapper_confidence_and_backtest_specific_postprocessing"
+    },
+    "features": {
+      "faithfulReplay": "origin_as_of_quantiles_priors_rating_C_data_gap_false",
+      "fidelity": "required_no_leakage_divergence",
+      "legacy": "full_period_quantiles_current_rating_and_data_gap"
+    },
+    "gate": {
+      "faithfulReplay": "independent_frozen_business_serving_eligibility",
+      "fidelity": "legacy_behavior_illegal_and_not_replayed",
+      "legacy": "current_state_work_gate_plus_target_20_percent_boundary"
+    },
+    "interval": {
+      "faithfulReplay": "strict_target_available_rolling_residual_conformal_internal_80",
+      "fidelity": "legacy_overlap_residual_behavior_illegal_and_unreplayable",
+      "legacy": "confidence_multiplier_then_required_ratio_group_widening"
+    },
+    "pointFormula": {
+      "B4": "max_recent_robust_positive_median_times_fitted_lifecycle_factor",
+      "faithfulReplay": "legacy_A_B_C_D_per_sales_component_then_sum",
+      "fidelity": "A_B_C_D_numeric_formula_exact_except_the_explicit_unconfirmed_spike_policy; historical_full_period_lifecycle_thresholds_2.82_1.52_0.45_are_outcome_exposed_and_are_replaced_by_the_pre_registered_as_of_safe_10_1.5_0.5_thresholds",
+      "legacy": "Model_E_selected_A_B_C_or_D"
+    },
+    "postProcessing": {
+      "faithfulReplay": "raw_E_identity_served_null_when_abstained",
+      "fidelity": "canonicalized_due_historical_backtest_forward_conflict",
+      "legacy": "conservative_to_D_and_blocked_to_zero_in_backtest_only"
+    },
+    "routing": {
+      "faithfulReplay": "sales_per_channel_buyout_cycle_mixed_future_sales_only",
+      "fidelity": "required_current_policy_divergence",
+      "legacy": "whole_work_aggregate_single_selector"
+    },
+    "scoring": {
+      "faithfulReplay": "all_scoreable_raw_WAPE_and_served_null_abstention",
+      "fidelity": "required_scoring_correction",
+      "legacy": "blocked_zero_and_forecastable_subset"
+    },
+    "selector": {
+      "B4": "single_lifecycle_robust_formula_no_selector",
+      "faithfulReplay": "same_selector_precedence_with_neutral_C_rating",
+      "fidelity": "required_policy_divergence_for_unavailable_rating_snapshot",
+      "legacy": "A_B_C_D_Model_E_selector"
+    },
+    "spike": {
+      "faithfulReplay": "buyout_launch_burst_batch_proration_settlement_lag_and_unconfirmed_never_auto_damped; only_cutoff_available_explicit_true_anomaly_confirmation_applies_legacy_0.40_peak_damping",
+      "fidelity": "required_user_policy_divergence",
+      "legacy": "peakShare_at_least_0.90_automatic_0.40_damping"
+    }
+  },
+  "faithfulReplayId": "B0b_v1_1_leakage_free_replay",
+  "forbiddenHistoricalBehaviors": [
+    "future_outcome_quantiles_or_priors",
+    "current_rating_risk_rights_shelf_or_action_as_historical_feature",
+    "target_coverage_driven_eligibility",
+    "blocked_or_abstained_null_to_zero_in_model_WAPE",
+    "unconfirmed_spike_automatic_damping",
+    "overlapping_unavailable_interval_residual"
+  ],
+  "historicalBacktestPostProcessor": "numeric_E_conservative_D_blocked_zero",
+  "historicalForwardPointEngine": "model_e_selector_for_all_served",
+  "historicalPointEngine": "model_e_selector",
+  "historicalReportedModelId": "model_h_disentangled_forecast_v1_1",
+  "renamedVariantId": "B4_formula_switched_legacy_variant",
+  "schema": "m2.v1_1_formula_difference_manifest.v1",
+  "sealedRolesAccessed": false,
+  "sources": [
+    {
+      "currentFileSha256": "5ad9f18096e192441abe1bb50e456babfa272a305dceb65434dc158fd8b04c90",
+      "currentMatchesSourceCommit": true,
+      "historicalBlobSha256": "5ad9f18096e192441abe1bb50e456babfa272a305dceb65434dc158fd8b04c90",
+      "path": "scripts/m2-real-data/run_m2_forecast_model_bakeoff.py",
+      "role": "legacy_model_formulas",
+      "sourceCommit": "797f222c7bd6e8f437487749b446db1f7e09d4be"
+    },
+    {
+      "currentFileSha256": "2b10e8fee6f55ebff7c0a1102df4a73d404e77caf55d044d0101717238d3829d",
+      "currentMatchesSourceCommit": true,
+      "historicalBlobSha256": "2b10e8fee6f55ebff7c0a1102df4a73d404e77caf55d044d0101717238d3829d",
+      "path": "scripts/m2-real-data/run_m2_disentangled_forecastability_validation.py",
+      "role": "legacy_forecastability_wrapper",
+      "sourceCommit": "797f222c7bd6e8f437487749b446db1f7e09d4be"
+    },
+    {
+      "currentFileSha256": "af3768b8457000f54126d86d670f88b3563f68315b73df1fdc42582389a0cd14",
+      "currentMatchesSourceCommit": true,
+      "historicalBlobSha256": "af3768b8457000f54126d86d670f88b3563f68315b73df1fdc42582389a0cd14",
+      "path": "scripts/m2-real-data/run_m2_disentangled_forecast_v1_1_validation.py",
+      "role": "legacy_v1_1_validation",
+      "sourceCommit": "797f222c7bd6e8f437487749b446db1f7e09d4be"
+    },
+    {
+      "currentFileSha256": "926932c02138005ca282e6c14bdf2b02b7e78ae64e8e65d5b456f87695fa5c32",
+      "currentMatchesSourceCommit": true,
+      "historicalBlobSha256": "926932c02138005ca282e6c14bdf2b02b7e78ae64e8e65d5b456f87695fa5c32",
+      "path": "scripts/m2-real-data/run_m2_formal_execution_payload.py",
+      "role": "formal_adapter",
+      "sourceCommit": "74feb1277918ffbea827ddd9a8745e62a5293034"
+    },
+    {
+      "currentFileSha256": "9708d49306cd1a43b5d4af964fd1965792ae848ce5dd4111031ec280888e1145",
+      "currentMatchesSourceCommit": true,
+      "historicalBlobSha256": "9708d49306cd1a43b5d4af964fd1965792ae848ce5dd4111031ec280888e1145",
+      "path": "scripts/m2-real-data/m2_calibration_v1.py",
+      "role": "formula_switched_kernel",
+      "sourceCommit": "be03db7bdec19b83139d85712bee43995d872679"
+    }
+  ],
+  "version": "M2-v1.1-formula-difference-manifest-v1",
+  "zeroImputationUsed": false
+}

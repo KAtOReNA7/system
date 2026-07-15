@@ -1,5 +1,7 @@
 # M2 calibration scoring / eligibility correction 决策记录 v1
 
+> 2026-07-15 继承说明：本文继续冻结 scoreable/served/abstained 与 null-not-zero 口径；其中 B0b 身份、OR 等价规则、B1 comparator、旧 top10 90% pre-C1 gate 和 C1 授权状态已被 `calibration-spec-v1.2-amendment` 及 `M2-calibration-v1.2-comparator-identity-decision-v1.md` 明确取代。90% 只保留为旧分母口径的审计参考，不得套用到完整 3053 收入桶，也不得用于移动 eligibility。
+
 - 决策日期：2026-07-14
 - 状态：`FROZEN_BEFORE_CORRECTED_BASELINE_REPLAY`
 - 候选训练：未开始，仍停在 `C1` 前
@@ -142,11 +144,11 @@
 
 收入 share 的分子和分母使用 `max(actual,0)`，避免 signed net cancellation；分母为 0 时为 undefined，不能记为通过。
 
-## 6. eligibility 与 pre-C1 90% gate
+## 6. eligibility 与历史 pre-C1 90% 口径（已被 v1.2 取代）
 
 eligibility 条件在 corrected replay 前冻结并提交。不得为接近旧 77.88% / 20.38%，也不得为满足新 gate 而按目标比例移动作品、route 或阈值。
 
-top10 served revenue coverage 固定至少 90%，公式为：
+本 sprint 当时记录的 top10 served revenue coverage 90% 公式为：
 
 ```text
 sum(max(actual,0) for served top10 all-scoreable cases)
@@ -154,7 +156,7 @@ sum(max(actual,0) for served top10 all-scoreable cases)
 sum(max(actual,0) for all top10 all-scoreable cases)
 ```
 
-该 gate 是模型无关的 `C1` 前置条件，不是靠候选精度补救的候选 gate。如果冻结 eligibility 后仍低于 90%，必须停在 `C1` 前，并按 abstention reason 报告每项硬阻断收入和作品数量；不得降低 90%。
+该公式使用重叠 all-scoreable case actual 作为分母，既不是完整 3053 作品收入桶，也不能迁移为 v1.2 候选 gate。`calibration-spec-v1.2-amendment` 的穷尽 Gate A 已明确取代这项前置条件；90% 数值没有被调低，而是只保留为旧分母口径的历史非回归审计。v1.2 的完整 3053 top1/top5/top10 只作 post-hoc population disclosure，不进入 C1 授权、训练、threshold 或 eligibility。
 
 ## 7. B0a 到 B0b attribution bridge
 
@@ -166,7 +168,7 @@ development-only attribution 固定七个阶段：
 4. legacy model + as-of rating/lifecycle/features；
 5. legacy model + new eligibility；
 6. legacy model + new abstention scoring；
-7. complete B0b。
+7. 当时称 complete B0b、现已更正身份为 B4 的公式切换版本。
 
 Stage 2 到 Stage 7 必须共享完全相同的 development intersection keys，每一步只切换列明的一层语义，并保存 definition/case/prediction fingerprints。每个可 replay 阶段至少报告 case count、all-scoreable WAPE/bias、served revenue coverage、top10 served coverage 和高价值 WAPE/bias。
 
@@ -176,9 +178,9 @@ Stage 1 只是旧记录，没有相同 case keys；Stage 1 到 Stage 2 的差只
 
 private case evidence 的 manifest 必须持久化绑定 case 行数、case SHA-256、序列化版本、base/amendment/code/input fingerprints、各 role prediction-lock fingerprint 和公开报告 SHA-256，并在写入后重新读取校验。公开聚合只要 case count 或 unique work count 任一小于 10，整个 cell 只能输出 `suppressed=true` 与两个 `<10`，不得保留 metric、维度 value 或可交叉拼接的切片。
 
-## 8. corrected B0b-B3 replay 与 comparator tie-break
+## 8. corrected replay 与 comparator 规则（v1.2 规范替代）
 
-B0b-B3 必须继续保持：
+faithful B0b、B1、B2、B3、B4 必须继续保持：
 
 - 相同 development origins、case keys、scoreable keys 和 business-serving keys；
 - 相同 seed；
@@ -186,12 +188,14 @@ B0b-B3 必须继续保持：
 - future-perturbation invariance；
 - final holdout、embargo shadow 和 deferred 60-month labels 封存。
 
-comparator 先在 all-scoreable raw WAPE 上找到 provisional 最低者。每个 baseline 都只与该 provisional 最低者比较，避免非传递 pairwise chaining。若满足任一条件，即视为统计等价：
+comparator 先在 all-scoreable raw WAPE 上找到 empirical leader。每个 baseline 都只与该 leader 比较，避免非传递 pairwise chaining。v1.2 practical equivalence 必须同时满足：
 
-- 相对 WAPE 差 `abs(a-b)/min(a,b) < 1%`；
-- paired block-bootstrap 95% CI 包含 0，端点为 0 也算包含。
+- 主要 WAPE 相对差绝对值不超过 1%；
+- paired work×origin bootstrap 相对 delta 的 95% CI 完整落入 `[-1%,+1%]`；
+- signed bias 差不超过 2 个百分点；
+- top10 与每个核心 horizon WAPE 回退均不超过 2%。
 
-统计等价集合按结构复杂度 `B1 < B2 < B3 < B0b` 选最简单者。B0a 永不参与；B0b 和 B3 无论最终选择结果如何都必须继续报告。comparator 锁定后不得按 gate 重选。
+只有四项严格 AND 全部成立时，才在等价集合按结构复杂度 `B1 < B2 < B3 < B0b < B4` 选最简单者。B0a 永不参与；B1、B3、faithful B0b 无论最终 primary 结果如何都必须继续报告。comparator 锁定后不得按候选 gate 重选。
 
 ## 9. 内部 80% PI 与公开报告
 
@@ -202,17 +206,17 @@ comparator 先在 all-scoreable raw WAPE 上找到 provisional 最低者。每�
 - 不包含作品、作者、渠道标识、原始收入行、逐作品收入/预测、private 路径、数据库凭据或 PI endpoints；
 - case count 或 unique work count 任一小于 10 时抑制该 cell 的全部指标；
 - 明确分别报告 all-scoreable、served、abstention；
-- 输出 scoring correction、B0a-B0b attribution 和更新后的 B0b-B3 replay；
+- 输出 scoring correction、不可改写的历史 attribution、faithful B0b/B1/B2/B3/B4 replay；
 - 显示所有失败 gate、pre-C1 stop 和 `not_for_formal_decision` 状态。
 
 ## 10. seal 与停止条件
 
-本 sprint 中：
+本 sprint 原始停止状态与当前 v1.2 授权边界分别为：
 
-- `C1/C2-R/C2/C3` 均未开始；
+- 原 sprint 中 `C1/C2-R/C2/C3` 均未开始；当前最新授权仅允许 Gate A 全 true 后执行 C1；
 - final holdout 未打开、truth 未读取、baseline runner 必须 fail closed；
 - embargo shadow 未打开且不得参与拟合、选择或阈值；
 - deferred 60-month labels 未打开且不得参与拟合、选择或阈值；
 - 不批准 formal decision、release、prepared export 发布或 M3。
 
-完成 amendment、修正内核、测试、attribution 和 corrected B0b-B3 replay 后，必须再次停在 `C1` 前。只有 top10 pre-C1 gate 等全部前置条件通过且用户再次明确授权，才可开始 `C1`。
+v1.2 Phase A commit 并 push 后，只有独立 runtime receipt 证明 Gate A 全部 true 才可开始 C1；C1 完成后无论 PASS/FAIL 都立即停止。C2-R/C2/C3、final holdout、release 与 M3 仍未授权。

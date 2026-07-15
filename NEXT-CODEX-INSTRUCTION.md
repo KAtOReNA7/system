@@ -4,7 +4,7 @@
 
 当前入口是：
 
-`复核 calibration-spec-v1.1 scoring correction 与 B0b-B3 baseline replay；未经用户再次明确授权不得开始 C1，旧 v1.1 不得 release，不得进入 M3`
+`执行 calibration-spec-v1.2 comparator identity 修正与 B0b-B4 final freeze；只有 Gate A 全部通过并完成同分支 checkpoint push 后才允许开发 C1，C1 完成后立即停止，不得进入 C2-R/C2/C3/M3 或 release`
 
 ## 当前状态
 
@@ -17,11 +17,12 @@
 - 最终 3053 部范围的收入模式重算稳定：pure_sales_share=2578、pure_buyout=287、buyout_plus_sales=183、unknown=5。
 - 最终 3053 部范围的前台评级重算稳定：S+=38、S=117、A=84、B=358、C=152、D=356、E=1948。
 - v1.1 conditional 已被用户明确拒绝作为最终上线预测算法；旧 package 只保留审计和对照用途，禁止 approved/released。
-- `calibration-spec-v1.1-amendment` 已在 C1 前冻结；scoreable、model prediction available、business serving eligible 与 abstained 已拆分，served null 不再按 0 混入模型 WAPE。
-- development forward 已完成：每模型 18615 个 case，statistically scoreable 12223；abstention 的 unique work×origin 小于公开最小 cell，served/abstained 精确计数按互补保护规则不公开。top1/top5/top10 served revenue coverage 均为 1.0000。
-- B0b/B1/B2/B3 all-scoreable WAPE 分别为 1.6666/1.9022/1.8640/1.6995，signed bias 分别为 +1.1961/+1.4794/+1.4497/+1.2348；baseline 诊断不满足最终候选 bias gate。
-- 按冻结的“相对差 <1% 或 paired CI 包含 0”规则，四个 baseline 统计等价，当前 comparator 依简单度锁定 B1；B0b 经验 WAPE 最低且与 B3 一并继续报告。
-- B0a→B0b 七阶段归因、future perturbation、per-origin prediction lock、case-key/state parity、fold-training population fingerprint、private manifest 复算和内部 80% PI 审计均已完成；final holdout、embargo、60 月标签和全部候选仍 sealed，状态保持 `not_for_formal_decision`。
+- `calibration-spec-v1.2-amendment` 已纠正 baseline 身份：faithful B0b 是旧 v1.1 Model E（A/B/C/D selector）的无泄漏 as-of 重放；此前误称 B0b 的公式切换版本已改名 B4。
+- development forward 每模型 18615 个 case，statistically scoreable 12223，覆盖 1044/3053 部作品；served null 不按 0 混入模型 WAPE，`zeroImputationUsed=false`。
+- faithful B0b/B1/B2/B3/B4 all-scoreable WAPE 分别为 1.6996/1.9022/1.8640/1.6995/1.6666，signed bias 分别为 +1.1024/+1.4794/+1.4497/+1.2348/+1.1961；所有 baseline 均不满足最终候选 bias gate。
+- practical-equivalence 已改为 WAPE 相对差、paired block-bootstrap 等价区间、bias 差和 top10/horizon 回退四项严格 AND；仅 B4 属于严格等价集合，primary comparator 锁定 B4。B1、B3 和 faithful B0b 仍必须并列报告。
+- 完整人口覆盖使用 3053 部和 192872 条权威事实，其中截至 2026-04 的 192869 条完整月事实作为非重叠收入分母；历史 scoreable 1044 部、unscoreable 2009 部。
+- B0a→B0b 七阶段归因、5 模型×4 route×5 horizon future perturbation、所有 baseline 的 v1.2 单入口 materialization、per-origin prediction lock、case-key/state parity、fold-training population fingerprint、private manifest 复算和内部 80% PI 审计均已完成；final holdout、embargo、60 月标签和全部候选仍 sealed，状态保持 `not_for_formal_decision`。
 - 作者、版权开始、版权到期、作品状态和音频版权状态已按用户确认口径完成本地文件级 staging 收口，禁止依据旧 gap 报告重新生成待办。
 - 用户最终分类标签基础表已固定：3053 部作品，出版物 1195 部、网文 1858 部，分类与标签人工缺口为 0；private 明细不进入版本控制。
 - 最终表修正 836 部作品，固定 387 部作品、532 个标签赋值；新增分类和标签已进入受控词表 `2026-07-10-user-confirmed-v2`。
@@ -70,15 +71,15 @@
 
 优先执行：
 
-`先复核 scoring correction、七阶段归因、B0b-B3 指标与 B1 comparator 锁定；若用户明确批准，再从 C1 开始按 C1→C2-R→C2→C3 顺序训练，选择通过全部冻结 gate 的最简单候选；不得自动打开 final holdout、release 或进入 M3`
+`先完成并推送 Phase A comparator checkpoint，再由独立 runtime receipt 验证 Gate A；仅在全部条件为 true 时执行已预注册的 C1 transparent ensemble development validation，完成后立即停止，不得开始 C2-R/C2/C3、打开 final holdout、release 或进入 M3`
 
 执行要求：
 
-1. 先确认 `HEAD == origin/main`、工作区范围和本机隔离环境；读取 README、AGENTS、当前 PRD、calibration-spec-v1.1 amendment、scoring correction、七阶段归因和更新后的 baseline replay。
+1. 在 `codex/m2-calibration-v1` 上确认 Phase A checkpoint 已正常 push 且 `HEAD == origin/codex/m2-calibration-v1`、工作区 clean；读取 README、AGENTS、当前 PRD、calibration-spec-v1/v1.1/v1.2、formula manifest、Gate A 和更新后的 baseline replay。
 2. 只使用最终 3053 部权威基础信息、最终 mapping 和 192872 条收入事实；不得重新清洗或覆盖已确认基础字段，除非发现可证明的工程错误并先报告。
-3. 将旧 v1.1 作为被拒绝的 B0a 历史锚点；B0b-B3 使用已冻结的 12223 个 scoreable keys。不得恢复 forecastabilityStatus 混合口径，不得把 abstained served null 按 0 计入模型 WAPE。
+3. 将旧 v1.1 作为被拒绝的 B0a 历史锚点；faithful B0b、B1、B2、B3、B4 使用已冻结的 12223 个 scoreable keys。不得恢复 forecastabilityStatus 混合口径，不得把 abstained served null 按 0 计入模型 WAPE。
 4. 生成中文、可读、Git 忽略的业务验证表，以及不含真实作品明细的可提交聚合报告；测试结果主要信息必须中文化。
-5. 当前必须停在 C1 前。只有用户再次明确授权后才可训练 C1；新候选通过工程门槛后仍不得自动打开 final holdout 或 release，必须再次交给用户抽检并获得明确批准。M2 输出继续禁止自动运营建议或资源投入动作字段。
+5. 当前 C1 授权由本轮最新任务和 Gate A 共同约束：Gate A 任一 false 就停在 C1 前；全部 true 才执行 C1。C1 完成后无论 PASS/FAIL 都立即停止，不得打开 final holdout 或 release，必须再次交给用户抽检并获得明确批准。M2 输出继续禁止自动运营建议或资源投入动作字段。
 
 ## 当前允许做的事
 

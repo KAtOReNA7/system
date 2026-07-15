@@ -34,13 +34,13 @@
 - 2026-07-13 已在隔离本地 PostgreSQL 16 执行 Flyway `0071.020`，完成 3053 部正式基础信息版本、192872 条收入事实/projection、active mapping、3053 条 evaluation/input snapshot、task/audit 和 prepared export；严格对账全部通过，运营建议数为 0。
 - v1.1 仍是 `CONDITIONAL PASS`：WAPE 0.6409、baseline 0.7043、coverage 0.5769、P0/P1/P2=0/0/473、可预测收入覆盖 0.7788、true blocked 收入占比 0.2038。算法仍 `is_formal=false`，export 仍 `prepared`，最终 release 未批准。
 - 用户已拒绝上述 v1.1 conditional 和 prepared export；禁止后续 Codex 自动批准、release 或通过改写状态绕过该决定。
-- 2026-07-14 已冻结 `calibration-spec-v1.1-amendment` 并完成 scoring / eligibility correction：`statisticallyScoreable`、`modelPredictionAvailable`、`businessServingEligible` 与 `abstained` 已分离，blocked/abstained 的 served null 不再按 0 混入模型 WAPE。
-- 修正后的 development forward 每个 baseline 均为 18615 个 case，其中 statistically scoreable 12223；因 abstention 的 unique work×origin 小于公开最小 cell，served/abstained 精确计数按互补保护规则不公开。top1/top5/top10 served revenue coverage 均为 1.0000，未降低 90% 门槛，也未按目标比例移动标签。
-- 修正后的 all-scoreable WAPE / signed bias 为：B0b 1.6666 / +1.1961，B1 1.9022 / +1.4794，B2 1.8640 / +1.4497，B3 1.6995 / +1.2348；四者均未通过最终候选 bias gate。旧约 1.3167 是把未服务 null 按 0 计入的业务覆盖混合量，不得再称模型 WAPE。
-- paired work×origin block bootstrap 的 95% CI 均包含 0；依照已冻结的 OR 等价规则与 `B1 < B2 < B3 < B0b` 简单度顺序，当前 baseline comparator 锁定为 B1。B0b 仍是经验 WAPE 最低者，B0b 与 B3 均继续报告。
-- B0a→B0b 七阶段归因确认 Stage 2–7 case/actual fingerprints 完全一致；as-of quantile/prior/features 使 WAPE 合计下降 0.0091，eligibility/abstention 不改变 raw 模型 WAPE，主要恶化来自旧 selector 切换为完整 B0b 公式（+1.0917），不能把全部差异归因于去泄漏。
-- 当前重放已证明逐 fold 顺序为 prior-truth fit→per-origin prediction lock→held truth join；future perturbation、sealed truth-join guard、scoreability/fold-training/prediction-lock fingerprints 和公开报告 hashes 均通过独立 manifest 复算。公开 JSON/Markdown 不含作品或渠道标识、private 路径、原始行、PI endpoints 或可差分还原的小 cell。
-- C1/C2-R/C2/C3 均未开始，final holdout、embargo shadow 和 deferred 60-month labels 均未打开。当前校准结果仍为 `not_for_formal_decision`；即使 top10 前置门禁通过，也必须等待用户复核和再次明确授权后才能开始 C1。
+- 2026-07-15 `calibration-spec-v1.2-amendment` 已修正 baseline 身份和比较规则：faithful B0b 是旧 v1.1 Model E（A/B/C/D selector）的无泄漏、as-of、route-aware 重放；此前误称 B0b 的切换公式现命名为 `B4_formula_switched_legacy_variant`。B0a 仍只作历史审计，不能参与选择。
+- v1.2 development replay 中每个 baseline 均为 18615 个 case，其中 statistically scoreable 12223、覆盖 1044/3053 部作品；所有 scoreable case 均保留 raw prediction，abstained 的 served prediction 为 null，`zeroImputationUsed=false`。
+- v1.2 all-scoreable WAPE / signed bias 为：faithful B0b 1.6996 / +1.1024，B1 1.9022 / +1.4794，B2 1.8640 / +1.4497，B3 1.6995 / +1.2348，B4 1.6666 / +1.1961；所有 baseline 均未通过最终候选 bias gate。
+- practical-equivalence 已由旧 OR 规则改为四项严格 AND：WAPE 相对差绝对值不超过 1%、paired work×origin block-bootstrap 95% CI 完整落在 [-1%, +1%]、signed bias 差不超过 2 个百分点、top10 与各核心 horizon 回退不超过 2%。按该规则仅 B4 与经验 leader 等价，primary performance comparator 锁定为 B4；B1、B3 与 faithful B0b 继续组成固定 comparator bundle。
+- 完整人口报告以 3053 部作品和 192872 条权威收入事实为范围，以截至 2026-04 的 192869 条完整月事实计算非重叠全库收入覆盖：scoreable 1044 部、历史 unscoreable 2009 部；小样本继续互补抑制，完整总量分母不抑制。
+- v1.2 重放已证明 B0b/B1/B2/B3/B4 全部经同一 `predict_as_of` 入口重新 materialize，旧 checkpoint numeric point 只作锁后审计对账；case-key/actual/scoreable/raw prediction parity、future perturbation invariance、scoreable/served/abstention 契约与逐 fold prediction lock 均通过。公开 JSON/Markdown 不含作品或渠道标识、private 路径、原始行或 PI endpoints；scoreable/served 互补作品数小于 10 时，served 精确数量与收入覆盖做互补抑制。
+- Gate A 只有在 comparator checkpoint 完成 commit 并 push、全部验证和三条 final-holdout 命令 fail-closed 均确认后才允许启动 C1；该授权仅覆盖 C1 transparent ensemble。C2-R/C2/C3 均未授权，final holdout、embargo shadow 和 deferred 60-month labels 均未打开，所有结果保持 `not_for_formal_decision`。
 - 当前 3053 部基础信息、分类标签、状态、238 条业务决定和 192872 条收入事实是后续 M2 最终上线算法的权威输入。不得退回旧补表、旧 3054 口径或较早 private candidate 覆盖该版本。
 - M2 正式输出不再包含自动运营建议或资源投入动作；只允许风险和事实型复核提示。历史 fixture/prototype 建议字段不得进入当前正式结果、页面或导出。
 - 146 个到期仍有收入样本和 92 个版权有效但收入稀疏样本已经完成中文 private 确认、校验和应用；不得依据旧报告重新生成这些人工待办。
@@ -50,7 +50,7 @@
 
 ## M2 后续补全信息提醒
 
-任何 M3 设计、实现或评估前，必须先提醒用户：M2 隔离本地正式执行已完成，旧 v1.1 conditional 已被用户拒绝；calibration-spec-v1.1 计分修正和 B0b-B3 replay 已完成，但 C1 及后续候选训练、业务抽检、最终 holdout、验收和 release 均未开始或完成。
+任何 M3 设计、实现或评估前，必须先提醒用户：M2 隔离本地正式执行已完成，旧 v1.1 conditional 已被用户拒绝；calibration-spec-v1.2 comparator 修正和 B0b-B4 replay 已完成，但 C1 仍受 Gate A 约束，C2-R/C2/C3、业务抽检、最终 holdout、验收和 release 均未完成。
 
 | 数据项 | 当前缺口/状态 | 影响 |
 |---|---:|---|
@@ -82,7 +82,7 @@
 
 - 本地和远端 M3 状态必须先确认 clean：`HEAD` 应等于 `origin/main`，工作区不能有非本轮变更。
 - 当前允许准备 M3 开发计划、字段清单、接口依赖、fixture/prototype 方案和测试计划。
-- M2 隔离本地正式执行与严格对账已完成；旧 export 仅为 `prepared` 且已被用户拒绝。calibration-spec-v1.1 scoring correction、七阶段归因和 B0b-B3 development replay 已完成；下一步先由用户复核 baseline，只有再次明确授权后才能按 C1→C2-R→C2→C3 顺序训练候选。通过业务抽检、final holdout 与明确批准前禁止进入 M3 formal execution。
+- M2 隔离本地正式执行与严格对账已完成；旧 export 仅为 `prepared` 且已被用户拒绝。calibration-spec-v1.2、faithful B0b/B4 身份修正、严格 comparator 规则和 B0b-B4 development replay 已完成；当前用户授权仅允许 Gate A 全部通过后开发 C1，并要求完成后立即停止。C2-R/C2/C3 未授权；通过业务抽检、final holdout 与明确批准前禁止进入 M3 formal execution。
 - 禁止把 M2 local candidate、v1.1 conditional、rating-standard-v3/v4/v4.2 或 private 任务包当作 formal M3 输入。
 - 禁止开放 M3 正式 task/export/write API；M2 正式 task/export/release/audit 已获授权，但只能在前置门禁通过后实施。
 - 禁止退回较早分类候选覆盖用户最终固定基础表；当前未启用独立特殊属性标签字段，不得在没有新规则的情况下重新制造人工阻断。

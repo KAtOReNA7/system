@@ -1,5 +1,7 @@
 # M2 最终上线预测算法校准决策记录 v1
 
+> 2026-07-15 继承说明：本文的输出边界、路由、origin、seed、封存和 release/M3 边界继续有效；此前将生命周期稳健单公式称为 B0b 的身份与 comparator 规则已由 `calibration-spec-v1.2-amendment` 取代，该公式现名 B4，faithful B0b 为旧 Model E selector 的合法无泄漏重放。
+
 - 决策日期：2026-07-14
 - 状态：`FROZEN_FOR_LOCAL_CALIBRATION`
 - 候选决策状态：`not_for_formal_decision`
@@ -37,7 +39,7 @@
 打开 final holdout 前，必须把以下内容完整写入并提交 machine-readable `src/domain/oldProductEvaluation/calibrationSpec.v1.json`（`calibration-spec-v1`）：
 
 - 全部模型、模型参数和允许的训练数据窗口；
-- B0-B3 基线和 C1/C2-R/C2/C3 候选的完整定义；
+- B0a 审计、faithful B0b/B1/B2/B3/B4 基线和当前仅获授权的 C1 候选定义；C2-R/C2/C3 的历史定义不构成本轮授权；
 - revenue-model/channel 路由；
 - forecastability eligibility；
 - 分层定义、置信度规则、spike 候选与分类规则；
@@ -58,11 +60,11 @@
 
 所有可比较基线和候选必须使用完全一致的 case keys。`B0a` 不得因历史指标较好而进入候选排名或验收判定。
 
-2026-07-14 pre-holdout 参数来源审计进一步确认：旧 v1.1 的部分 lifecycle 阈值和系数曾使用全期结果形成，不能原样进入 `B0b` 的公平比较。该问题在任何新 replay 结果和 final holdout 被读取前发现。`B0b` 因此只保留旧公式结构；阈值改为预注册语义常量，lifecycle 系数固定为一个跨全部核心 horizon 共用的 7-stage 全局向量，只能使用跨 horizon purge 后的 development cases 做确定性离散拟合。这个低维共享向量是历史结构基线的显式例外，候选模型仍禁止跨 horizon target pooling；36/60 月审计只能复用该全局向量，不能读取长期 audit label 拟合。
+2026-07-15 v1.2 身份修正后，本段所述 lifecycle-robust 公式和 7-stage 全局向量只属于 `B4_formula_switched_legacy_variant`，不得再称 faithful B0b。faithful `B0b_v1_1_leakage_free_replay` 是旧 Model E A/B/C/D selector 的 cutoff-as-of、route-aware 重放，使用 origin-as-of quantiles/priors、neutral historical rating 和独立 serving state，不拟合上述 lifecycle 向量。两者均不得读取长期 audit label 拟合；36 月仅审计，60 月仍封存。
 
-公平计分不使用 leave-one-origin-out，因为早期 origin 由此会看到更晚 origin 的已实现结果。revision 5 固定采用严格 expanding-origin forward folds：warm-up origins 为 `2019-06`、`2019-12`、`2020-06`；score origins 为 `2020-12`、`2021-06`、`2021-12`、`2022-06`、`2022-12`。每个 fold 只能用 `origin < score_origin` 且 `target_end <= score_origin` 的训练 case；同一 score origin 当时可评分的所有 horizon 必须一起留出。`B0b` 的 comparator 分数只能来自这些 forward predictions，full-development 全局向量只供后续已冻结预测使用。拟合数值、forward 指标、fit/comparator case fingerprints、OOF prediction fingerprint、warm-up prediction/case fingerprints、warm-up counts、truth-join 前锁定证明和 spec digest 必须写入不含私有标识的 machine-readable fitted-parameter artifact 并提交；artifact 未提交或不匹配时，`B0b` 不具备公平比较资格。每个候选的 fitted artifact 也必须记录同样的 warm-up fingerprints、counts、锁定与未使用 warm-up outcome label 证明。
+公平计分不使用 leave-one-origin-out，因为早期 origin 由此会看到更晚 origin 的已实现结果。revision 5 固定采用严格 expanding-origin forward folds：warm-up origins 为 `2019-06`、`2019-12`、`2020-06`；score origins 为 `2020-12`、`2021-06`、`2021-12`、`2022-06`、`2022-12`。每个 fold 只能用 `origin < score_origin` 且 `target_end <= score_origin` 的训练 case；同一 score origin 当时可评分的所有 horizon 必须一起留出。faithful B0b 的 selector context 与 B4 的 fold factors 都只能由相应 origin 当时可得的历史形成；只有 B4 使用 full-development lifecycle 向量作后续冻结预测。预测、forward 指标、case/prediction fingerprints、warm-up counts、truth-join 前锁定证明和 spec digest 必须写入脱敏 machine-readable artifact；任一绑定不匹配都失去公平比较资格。C1 也必须记录同样的 prior-only 选择、warm-up fingerprint 和未使用 warm-up outcome label 证明。
 
-Warm-up 不进入 comparator、点值 gate、bootstrap 或 point-model/hyperparameter 拟合，只为已经冻结的内部区间方法提供 strict-forward residual。每个 warm-up 点值必须先于 truth join 物化并锁 fingerprint：`B0b` 使用预注册 initial factors 且不读 outcome label，`B1/B2/B3` 使用固定公式，`C1/C2-R/C2` 在不足 200 rows 或 3 origins 时使用冻结的 `B3` fallback，`C3` 使用 `C1=1, C2-R=0, C2=0` 的冻结默认权重；纯买断始终使用固定 cycle route。最早 score origin `2020-12` 可用的 warm-up label blocks 严格固定为 `2019-06:[3,6,12,18]`、`2019-12:[3,6,12]`、`2020-06:[3,6]`，共 9 个；仍须逐 case 满足 `target_end <= score_origin` 且 `label_available_as_of <= score_origin`。
+Warm-up 不进入 comparator、点值 gate、bootstrap 或 point-model/hyperparameter 拟合，只为已经冻结的内部区间方法提供 strict-forward residual。每个 warm-up 点值必须先于 truth join 物化并锁 fingerprint：faithful B0b 使用 origin-as-of selector context，B4 才使用相应 frozen parameter role，B1/B2/B3 使用固定公式；Gate A 通过后 C1 仅使用 v1.2 预注册 fallback 和自己的 prior out-of-fold residual。C2-R/C2/C3 未授权，不能读取 warm-up 或生成预测。纯买断始终使用固定 cycle route。最早 score origin `2020-12` 可用的 warm-up label blocks 严格固定为 `2019-06:[3,6,12,18]`、`2019-12:[3,6,12]`、`2020-06:[3,6]`，共 9 个；仍须逐 case 满足 `target_end <= score_origin` 且 `label_available_as_of <= score_origin`。
 
 本轮基线阶段只允许 development forward replay。最后两个 origin 在基线报告后仍保持关闭；只有用户确认无泄漏和 case-key parity、明确授权候选训练、四个候选依次完成，并在 development forward gates 上选出最简单的通过者、把唯一 `selectedCandidateId` 写入候选 fitted-parameter artifact 提交且通过冻结字节校验后，才可另行讨论打开 final holdout。final 只确认这一预先锁定的候选与 comparator；失败后不得换用更复杂候选，除非重新版本化 spec 并建立新的未触碰 holdout。
 
@@ -73,7 +75,7 @@ Warm-up 不进入 comparator、点值 gate、bootstrap 或 point-model/hyperpara
 在训练候选前必须完成并报告：
 
 1. future-perturbation invariance tests：扰动 cutoff 之后的数据，不得改变 cutoff 时点的特征、路由、eligibility、预测或 case key；
-2. B0-B3 replay；
+2. B0a 审计及 faithful B0b/B1/B2/B3/B4 replay；
 3. baseline/candidate comparison frame 的 case keys 完全一致证明；
 4. 数据范围、金额、cutoff、origin 和 horizon 的严格对账。
 
@@ -144,7 +146,7 @@ signed aggregate bias 公式固定为：
 
 仅当切片 `sum(actual) > 0` 时计算；实际收入为 0 的切片必须单列，不能记为通过。
 
-指标人口同时冻结：外部 blocked case 继续输出 `point=null`、年度拆分空数组和 `confidence=unavailable`；总体、高价值和各 horizon 的 coverage-aware 评估只在内部将 null 预测计为 0，绝不写回外部结果。forecastable 指标只使用冻结 eligibility 为 `forecastable_numeric` 的全部 case keys，双方均必须给出数值预测。模型差异、comparator 排名和 bootstrap 使用这套完整 keys；不得通过取交集或 complete-case drop 掩盖缺失，任何应为数值却缺失的预测都是完整性失败。
+指标人口按 v1.2 四状态契约冻结：所有 statistically-scoreable case 都必须保留 numeric `rawModelPrediction`，模型 WAPE、高价值、horizon、comparator 和 bootstrap 全部使用 raw；business-serving-ineligible 的 `servedPrediction=null` 且必须给出 abstentionReason。任何 null→0 都被禁止，旧 coverage-aware null→0 量只能作为历史业务损失审计，不能命名为模型 WAPE。不得通过取交集或 complete-case drop 掩盖缺失；任何 scoreable raw 缺失都是完整性失败。
 
 baseline ID 只在严格 forward 的 forecastable population 上锁定一次。之后每个 overall、horizon、高价值或重要 as-of 分层 gate，都必须把同一个 locked comparator 在该 gate 的完全相同人口上重新计分；不得按 gate 改选更弱的 comparator。source 和缺少历史快照的 shelf/rights 仍必须出现在聚合报告中，但只能 report-only，不能导致候选失败。
 
@@ -166,21 +168,21 @@ baseline ID 只在严格 forward 的 forecastable population 上锁定一次。�
 
 forecastability eligibility 必须在结果可见前冻结。旧 v1.1 的 77.88% forecastable revenue share 和 20.38% true-blocked revenue share 只作历史非回归参考，不是新 gate；不得为了接近这些比例移动标签、阈值或路由。
 
-top 10% 高价值作品的 forecastable revenue coverage gate 固定为至少 90%。总体 forecastable/blocked 分布按冻结 eligibility 如实报告，不以结果反推 eligibility。
+旧 top10 served-revenue coverage ≥90% 仅保留在原重叠 scoreable-case 分母上的历史非回归审计，不是 v1.2 Gate A、C1 训练或验收条件，也不得套用到完整 3053 收入桶。v1.2 完整 3053 top1/top5/top10 只作 post-hoc population disclosure；eligibility 仍不得为达到任何比例而移动。
 
 ## 11. 相关性 bootstrap
 
 模型差异的置信证据必须使用 paired two-way pigeonhole cluster bootstrap：`standard_work_id` 和 origin 两个 cluster universe 分别有放回抽样，每条配对 case 的权重是两个 multiplicity 的乘积，同一 work-origin 下全部 horizon 始终一起保留。重叠 horizon、同一作品和同一 origin 产生的 case 不能被当作相互独立的单条样本抽样。
 
-重复次数固定 2000、seed 固定 20260714，随机数生成器固定为 PCG64；cluster 分别按标准作品标识和 origin 稳定排序，每个 replicate 先抽作品、再抽 origin，抽样数等于各自 unique cluster 数。比较统计量为 `candidate_wape - locked_comparator_wape`。95% 区间使用经验 nearest-rank 的第 `ceil(0.025R)` 与 `ceil(0.975R)` 个排序值；任一 replicate 分母无效即为整体 bootstrap 完整性失败。不得看到结果后改用更有利的抽样单位、人口或单侧检验。spec、模型定义、特征、forward protocol 与 case/prediction fingerprints 一律使用冻结的 UTF-8 canonical serialization 和 SHA-256。
+重复次数固定 2000、seed 固定 20260714，随机数生成器固定为 PCG64；cluster 分别按标准作品标识和 origin 稳定排序，每个 replicate 先抽作品、再抽 origin，抽样数等于各自 unique cluster 数。v1.2 baseline practical-equivalence 与 C1 superiority 均使用预注册的相对 WAPE delta；前者要求双侧 95% CI 完整落入 `[-1%,+1%]`，后者要求相对 primary comparator 的 95% CI 上界严格小于 0。95% 区间使用经验 nearest-rank 的第 `ceil(0.025R)` 与 `ceil(0.975R)` 个排序值；任一 replicate 分母无效即为整体 bootstrap 完整性失败。不得看到结果后改用更有利的抽样单位、人口或单侧检验。spec、模型定义、特征、forward protocol 与 case/prediction fingerprints 一律使用冻结的 UTF-8 canonical serialization 和 SHA-256。
 
 ## 12. 执行顺序与最终选择
 
 执行顺序固定为：
 
-1. 完成 calibration spec、无泄漏内核、future-perturbation invariance tests 和 B0-B3 replay；
+1. 完成 calibration-spec-v1.2、无泄漏内核、future-perturbation invariance tests 和 B0a/B0b/B1/B2/B3/B4 replay；
 2. 先报告 baseline 结果，确认无泄漏且 case keys 完全一致；
-3. 依次训练 `C1`、`C2-R`、`C2`、`C3`，不得并行查看 final holdout 后再挑路线；
+3. 仅当 Gate A 全部通过时训练并验证 `C1`，随后无论 PASS/FAIL 都停止；C2-R/C2/C3、final holdout、release 和 M3 均需未来单独授权；
 4. 在全部冻结 gate 上选择最简单且全部通过的候选。
 
 任何候选即使通过全部 gate，也必须保持 `not_for_formal_decision`。下一步只能是中文业务验证表抽检和脱敏聚合报告复核；只有用户明确批准后，才能另行讨论正式决策或 release。
