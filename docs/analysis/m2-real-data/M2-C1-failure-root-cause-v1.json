@@ -1,0 +1,377 @@
+{
+  "C1FinalStatus": "FAIL",
+  "C1RerunPerformed": false,
+  "C1RerunReason": "no_provable_engineering_error",
+  "authority": {
+    "incomeFactCount": 192872,
+    "scoreableCaseCount": 12223,
+    "scoreableWorkCount": 1044,
+    "standardWorkCount": 3053
+  },
+  "componentAttribution": {
+    "fallbackWeights": {
+      "robust_positive_median": 0.5,
+      "trailing_mean_12": 0.5
+    },
+    "robustPositiveMedianPointToActualRatioByHorizon": {
+      "12": {
+        "definedCaseCount": 1426,
+        "p50": 1.83246284,
+        "p90": 11.67975975,
+        "p95": 34.93940145,
+        "p99": 487.28784218,
+        "shareAbove10x": 0.11500701,
+        "shareAbove2x": 0.47545582,
+        "shareAbove5x": 0.21879383,
+        "zeroActualCaseCount": 1103
+      },
+      "18": {
+        "definedCaseCount": 892,
+        "p50": 1.98119147,
+        "p90": 16.97456804,
+        "p95": 66.61933595,
+        "p99": 529.36480555,
+        "shareAbove10x": 0.16143498,
+        "shareAbove2x": 0.49887892,
+        "shareAbove5x": 0.27130045,
+        "zeroActualCaseCount": 767
+      },
+      "24": {
+        "definedCaseCount": 415,
+        "p50": 2.17319799,
+        "p90": 35.88301726,
+        "p95": 94.34666995,
+        "p99": 238.9961173,
+        "shareAbove10x": 0.18554217,
+        "shareAbove2x": 0.5253012,
+        "shareAbove5x": 0.30120482,
+        "zeroActualCaseCount": 471
+      },
+      "3": {
+        "definedCaseCount": 2021,
+        "p50": 1.81445795,
+        "p90": 16.59403583,
+        "p95": 55.035,
+        "p99": 642.92722157,
+        "shareAbove10x": 0.13656606,
+        "shareAbove2x": 0.46214745,
+        "shareAbove5x": 0.2068283,
+        "zeroActualCaseCount": 1543
+      },
+      "6": {
+        "definedCaseCount": 2056,
+        "p50": 1.76777454,
+        "p90": 14.21353683,
+        "p95": 45.97939528,
+        "p99": 519.13829104,
+        "shareAbove10x": 0.125,
+        "shareAbove2x": 0.45914397,
+        "shareAbove5x": 0.19698444,
+        "zeroActualCaseCount": 1513
+      }
+    },
+    "robustPositiveMedianUsesPositiveMonthsOnly": true,
+    "zeroMonthsRetainedByTrailingMean12": true
+  },
+  "decisionStatus": "not_for_formal_decision",
+  "engineeringErrorFound": false,
+  "fallbackAttribution": [
+    {
+      "allViolationReasonDistribution": {
+        "insufficient_inner_evidence": 148
+      },
+      "biasFeasibleCandidateCount": 0,
+      "evaluatedCandidateCount": 0,
+      "innerCaseCount": 0,
+      "innerOriginCount": 0,
+      "outerOrigin": "2020-12",
+      "primaryRejectionReasonDistribution": {
+        "insufficient_inner_evidence": 148
+      },
+      "recordedBiasFeasibleCandidateCount": 0,
+      "recordedCandidateId": "pair:robust_positive_median@0.50+trailing_mean_12@0.50",
+      "recordedSelectionStatus": "frozen_fallback_insufficient_inner_evidence"
+    },
+    {
+      "allViolationReasonDistribution": {
+        "insufficient_inner_evidence": 148
+      },
+      "biasFeasibleCandidateCount": 0,
+      "evaluatedCandidateCount": 0,
+      "innerCaseCount": 716,
+      "innerOriginCount": 1,
+      "outerOrigin": "2021-06",
+      "primaryRejectionReasonDistribution": {
+        "insufficient_inner_evidence": 148
+      },
+      "recordedBiasFeasibleCandidateCount": 0,
+      "recordedCandidateId": "pair:robust_positive_median@0.50+trailing_mean_12@0.50",
+      "recordedSelectionStatus": "frozen_fallback_insufficient_inner_evidence"
+    },
+    {
+      "allViolationReasonDistribution": {
+        "horizon_12_bias": 148,
+        "horizon_3_bias": 148,
+        "horizon_6_bias": 148,
+        "overall_bias": 148
+      },
+      "biasFeasibleCandidateCount": 0,
+      "biasPenaltyApplied": true,
+      "evaluatedCandidateCount": 148,
+      "fallbackObjectiveRank": 135,
+      "innerCaseCount": 2130,
+      "innerOriginCount": 2,
+      "objectiveMinimumCandidateWasFallback": false,
+      "objectiveSortDirection": "ascending_minimum",
+      "outerOrigin": "2021-12",
+      "primaryRejectionReasonDistribution": {
+        "overall_bias": 148
+      },
+      "recordedBiasFeasibleCandidateCount": 0,
+      "recordedCandidateId": "pair:robust_positive_median@0.50+trailing_mean_12@0.50",
+      "recordedSelectionStatus": "frozen_fallback_no_bias_feasible_candidate"
+    },
+    {
+      "allViolationReasonDistribution": {
+        "horizon_12_bias": 148,
+        "horizon_18_bias": 148,
+        "horizon_3_bias": 148,
+        "horizon_6_bias": 148,
+        "overall_bias": 148
+      },
+      "biasFeasibleCandidateCount": 0,
+      "biasPenaltyApplied": true,
+      "evaluatedCandidateCount": 148,
+      "fallbackObjectiveRank": 135,
+      "innerCaseCount": 4562,
+      "innerOriginCount": 3,
+      "objectiveMinimumCandidateWasFallback": false,
+      "objectiveSortDirection": "ascending_minimum",
+      "outerOrigin": "2022-06",
+      "primaryRejectionReasonDistribution": {
+        "overall_bias": 148
+      },
+      "recordedBiasFeasibleCandidateCount": 0,
+      "recordedCandidateId": "pair:robust_positive_median@0.50+trailing_mean_12@0.50",
+      "recordedSelectionStatus": "frozen_fallback_no_bias_feasible_candidate"
+    },
+    {
+      "allViolationReasonDistribution": {
+        "horizon_12_bias": 148,
+        "horizon_18_bias": 148,
+        "horizon_24_bias": 148,
+        "horizon_3_bias": 148,
+        "horizon_6_bias": 148,
+        "overall_bias": 148
+      },
+      "biasFeasibleCandidateCount": 0,
+      "biasPenaltyApplied": true,
+      "evaluatedCandidateCount": 148,
+      "fallbackObjectiveRank": 135,
+      "innerCaseCount": 7963,
+      "innerOriginCount": 4,
+      "objectiveMinimumCandidateWasFallback": false,
+      "objectiveSortDirection": "ascending_minimum",
+      "outerOrigin": "2022-12",
+      "primaryRejectionReasonDistribution": {
+        "overall_bias": 148
+      },
+      "recordedBiasFeasibleCandidateCount": 0,
+      "recordedCandidateId": "pair:robust_positive_median@0.50+trailing_mean_12@0.50",
+      "recordedSelectionStatus": "frozen_fallback_no_bias_feasible_candidate"
+    }
+  ],
+  "generatedAt": "2026-07-15T08:07:43.162079+00:00",
+  "historicalEvidenceBinding": {
+    "C1Commit": "9d8cee8dbf3526de61e25d20036947d25ad0b010",
+    "forensicVerifierAllowsNoOtherMismatch": true,
+    "gitBlobBytesUsedForTrackedHashVerification": true,
+    "historicalEvidenceBindingDefectFound": true,
+    "mismatchScope": [
+      "package.json"
+    ],
+    "modelBearingSourceMismatchCount": 0,
+    "packageJsonCarriesCommandAliasesOnly": true,
+    "phaseACommit": "879fbd0a951ce6d465082321b38f965b14815935",
+    "workingTreeLineEndingsExcludedFromHistoricalHashComparison": true
+  },
+  "implementationChecks": {
+    "annualizationBugFound": false,
+    "biasPenaltyApplied": true,
+    "candidateRankingSortDirection": "ascending_minimum",
+    "channelWorkDoubleCountingFound": false,
+    "duplicateAggregationFound": false,
+    "monthlyToHorizonScalingBugFound": false,
+    "sameFallbackAcrossOriginsExplainedByFrozenRules": true,
+    "selectorObjectiveDirectionReversed": false
+  },
+  "nextBoundary": "C1_frozen_FAIL_continue_only_to_authorized_C2R",
+  "pointPredictionRatios": {
+    "byActivity": {
+      "dense": {
+        "C1ToActualAggregateRatio": 2.38510747,
+        "C1ToB1AggregateRatio": 1.91792795,
+        "C1ToB4AggregateRatio": 2.12554066,
+        "caseCount": 3857,
+        "signedAggregateBias": 1.38510747,
+        "suppressed": false,
+        "wape": 1.6661259,
+        "workCount": 470
+      },
+      "dormant": {
+        "C1ToActualAggregateRatio": 34.40773503,
+        "C1ToB1AggregateRatio": 1.00007067,
+        "C1ToB4AggregateRatio": 1.00010144,
+        "caseCount": 5191,
+        "signedAggregateBias": 33.40773503,
+        "suppressed": false,
+        "wape": 35.08135299,
+        "workCount": 343
+      },
+      "other": {
+        "C1ToActualAggregateRatio": 1.14211939,
+        "C1ToB1AggregateRatio": 1.75916593,
+        "C1ToB4AggregateRatio": 1.89585268,
+        "caseCount": 2896,
+        "signedAggregateBias": 0.14211939,
+        "suppressed": false,
+        "wape": 1.12356536,
+        "workCount": 421
+      },
+      "sparse": {
+        "C1ToActualAggregateRatio": 707.29674275,
+        "C1ToB1AggregateRatio": 6.49651043,
+        "C1ToB4AggregateRatio": 293.9579234,
+        "caseCount": 279,
+        "signedAggregateBias": 706.29674275,
+        "suppressed": false,
+        "wape": 707.46134861,
+        "workCount": 70
+      }
+    },
+    "byHorizon": {
+      "12": {
+        "C1ToActualAggregateRatio": 3.69868256,
+        "C1ToB1AggregateRatio": 1.63782426,
+        "C1ToB4AggregateRatio": 1.78168392,
+        "caseCount": 2530,
+        "signedAggregateBias": 2.69868256,
+        "suppressed": false,
+        "wape": 2.9832287,
+        "workCount": 871
+      },
+      "18": {
+        "C1ToActualAggregateRatio": 5.21569793,
+        "C1ToB1AggregateRatio": 1.92525463,
+        "C1ToB4AggregateRatio": 2.20553859,
+        "caseCount": 1659,
+        "signedAggregateBias": 4.21569793,
+        "suppressed": false,
+        "wape": 4.53439398,
+        "workCount": 773
+      },
+      "24": {
+        "C1ToActualAggregateRatio": 8.62328599,
+        "C1ToB1AggregateRatio": 2.30226655,
+        "C1ToB4AggregateRatio": 2.92126211,
+        "caseCount": 886,
+        "signedAggregateBias": 7.62328599,
+        "suppressed": false,
+        "wape": 8.06858676,
+        "workCount": 528
+      },
+      "3": {
+        "C1ToActualAggregateRatio": 3.14540333,
+        "C1ToB1AggregateRatio": 1.52699278,
+        "C1ToB4AggregateRatio": 1.62525979,
+        "caseCount": 3574,
+        "signedAggregateBias": 2.14540333,
+        "suppressed": false,
+        "wape": 2.45948804,
+        "workCount": 1044
+      },
+      "6": {
+        "C1ToActualAggregateRatio": 2.99742477,
+        "C1ToB1AggregateRatio": 1.52699278,
+        "C1ToB4AggregateRatio": 1.62526449,
+        "caseCount": 3574,
+        "signedAggregateBias": 1.99742477,
+        "suppressed": false,
+        "wape": 2.37412913,
+        "workCount": 1044
+      }
+    },
+    "byRevenueModel": {
+      "buyout_plus_sales": {
+        "reason": "complementary_suppression",
+        "suppressed": true
+      },
+      "pure_buyout": {
+        "C1ToActualAggregateRatio": 125.27278581,
+        "C1ToB1AggregateRatio": 1.0,
+        "C1ToB4AggregateRatio": 1.0,
+        "caseCount": 4358,
+        "signedAggregateBias": 124.27278581,
+        "suppressed": false,
+        "wape": 125.0881265,
+        "workCount": 267
+      },
+      "pure_sales_share": {
+        "C1ToActualAggregateRatio": 2.27491564,
+        "C1ToB1AggregateRatio": 1.76161207,
+        "C1ToB4AggregateRatio": 1.97868801,
+        "caseCount": 5683,
+        "signedAggregateBias": 1.27491564,
+        "suppressed": false,
+        "wape": 1.51236577,
+        "workCount": 643
+      },
+      "unknown_revenue_model": {
+        "reason": "primary_small_cell",
+        "suppressed": true
+      }
+    },
+    "overall": {
+      "C1ToActualAggregateRatio": 4.51137048,
+      "C1ToB1AggregateRatio": 1.81951297,
+      "C1ToB4AggregateRatio": 2.05425921,
+      "caseCount": 12223,
+      "signedAggregateBias": 3.51137048,
+      "wape": 3.8501573,
+      "workCount": 1044
+    }
+  },
+  "privacy": {
+    "aggregateOnly": true,
+    "deidentified": true,
+    "minimumCellCount": 10,
+    "predictionIntervalEndpointsPresent": false,
+    "privateAttributionTracked": false
+  },
+  "rootCause": {
+    "designNotImplementation": true,
+    "gateOrPopulationChanged": false,
+    "primary": "frozen_fallback_combines_positive_only_median_with_trailing_mean_12_and_is_not_zero_aware_enough_for_sparse_or_dormant_series",
+    "secondary": "first_two_origins_lack_preregistered_inner_support_and_last_three_origins_have_zero_bias_feasible_candidates_so_all_origins_use_the_same_frozen_fallback"
+  },
+  "schema": "m2.c1_failure_root_cause.v1",
+  "seals": {
+    "deferred60MonthLabelsOpened": false,
+    "embargoShadowOpened": false,
+    "finalHoldoutOpened": false
+  },
+  "unitAndAggregationAudit": {
+    "annualizationThenMonthMultiplicationFound": false,
+    "componentUnit": "monthly_path_then_sum_once_to_horizon_point",
+    "duplicateChannelComponentKeyCount": 0,
+    "maximumAnnualBreakdownReconciliationAbsolute": 0.01,
+    "maximumChannelToWorkReconciliationAbsolute": 0.0,
+    "maximumPredictionReconciliationAbsolute": 0.0,
+    "maximumTruthComponentReconciliationAbsolute": 0.0,
+    "negativeWeightCount": 0,
+    "secondHorizonMultiplicationFound": false,
+    "weightsAppliedExactlyOnce": true,
+    "weightsNonnegativeAndSumOne": true
+  },
+  "version": "M2-C1-failure-root-cause-v1"
+}
