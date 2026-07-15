@@ -1,0 +1,626 @@
+{
+  "schema": "m2.calibration_spec.v1_2.amendment",
+  "version": "calibration-spec-v1.2-amendment",
+  "frozenAt": "2026-07-15T00:00:00+08:00",
+  "decisionStatus": "not_for_formal_decision",
+  "notForFormalDecision": true,
+  "baseBindings": {
+    "calibrationSpecV1": {
+      "path": "src/domain/oldProductEvaluation/calibrationSpec.v1.json",
+      "canonicalDigestSha256": "625631279889e46ce174ffb507b3926793fdc7a435fc2c7c8aafbf990c8a7fb9"
+    },
+    "calibrationSpecV1_1Amendment": {
+      "path": "src/domain/oldProductEvaluation/calibrationSpec.v1.1.amendment.json",
+      "canonicalDigestSha256": "440eef4bb9120c8dadac038f6a2ebe8ede38ddab4c381948b6e9574af5547375"
+    },
+    "precedence": "v1_2_over_v1_1_over_v1_for_declared_subjects_only",
+    "bindingFailure": "fail_closed_no_replay_no_candidate_training"
+  },
+  "authority": {
+    "standardWorkCount": 3053,
+    "incomeFactCount": 192872,
+    "completeIncomeFactCountThroughLatestCompleteMonth": 192869,
+    "latestCompleteMonth": "2026-04",
+    "developmentPurgeMonth": "2023-06",
+    "authorizedDataRoles": [
+      "verified_final_model_input_cache_read_only",
+      "verified_private_v1_1_case_manifest_read_only"
+    ],
+    "databasePolicy": "local_authorized_files_only_no_database_connection"
+  },
+  "correctionBoundary": {
+    "reason": "faithful_v1_1_identity_and_practical_equivalence_were_misclassified_and_full_library_population_denominators_were_missing",
+    "latestUserDecisionOverridesOlderStopBeforeC1Text": true,
+    "C1AuthorizedOnlyAfterGateA": true,
+    "C2RAuthorized": false,
+    "C2Authorized": false,
+    "C3Authorized": false,
+    "M3Authorized": false,
+    "releaseAuthorized": false
+  },
+  "stateModel": {
+    "statisticallyScoreable": "cutoff_history_at_least_12_calendar_months_and_complete_actual_window_and_valid_income_facts_and_valid_identity",
+    "modelPredictionAvailable": "raw_model_point_is_finite",
+    "businessServingEligible": "valid_identity_and_valid_income_history_and_at_least_12_cutoff_calendar_months_and_resolved_revenue_route",
+    "abstained": "servedPrediction_is_null",
+    "rawPredictionPopulation": "all_statisticallyScoreable_cases",
+    "servedPredictionRule": "rawModelPrediction_when_businessServingEligible_else_null",
+    "blockedOrAbstainedNullToZeroAllowedInModelMetrics": false,
+    "zeroImputationUsed": false,
+    "eligibilityMayUseCandidateOrOutcomeResults": false,
+    "currentStatePolicy": "source_shelf_rights_term_may_be_postHocSegmentOnly_but_never_historical_feature_or_eligibility"
+  },
+  "caseUniverse": {
+    "keyFields": [
+      "standard_work_id",
+      "origin",
+      "horizon_months",
+      "route"
+    ],
+    "nestedKeyRequiresAllFields": true,
+    "rowLevelFallbackForMissingNestedKeyFieldAllowed": false,
+    "expectedUniverse": "cartesian_development_score_origin_horizons_x_every_work_existing_as_of_origin_with_route_computed_as_of_origin",
+    "eachModelMustEqualIndependentExpectedUniverse": true,
+    "intersectionOnlyComparisonAllowed": false,
+    "coreHorizonsMonths": [3, 6, 12, 18, 24],
+    "developmentOriginsReference": "calibrationSpec.v1.origins.forwardValidation",
+    "randomSeed": 20260714
+  },
+  "modelIdentity": {
+    "B0a": {
+      "id": "B0a_v1_1_recorded_audit_only",
+      "selectionEligible": false,
+      "caseReplayAvailable": false
+    },
+    "B0b": {
+      "id": "B0b_v1_1_leakage_free_replay",
+      "selectionEligible": true,
+      "canonicalLegacyIdentity": "Model_E_selector_point_engine",
+      "historicalBacktestPostProcessor": "numeric_uses_E_conservative_uses_D_blocked_was_zeroed",
+      "historicalForwardIdentity": "Model_E_for_served_rows",
+      "canonicalization": "use_Model_E_selector_as_raw_point_identity_then_apply_v1_2_independent_business_serving_state",
+      "reason": "legacy_backtest_and_forward_identities_conflict_and_the_historical_current_state_target_driven_gate_is_illegal_for_fair_replay",
+      "unavailableHistoricalFeatures": {
+        "rating": "constant_C",
+        "dataGap": false,
+        "risk": "not_used"
+      },
+      "quantilesAndPriors": "recomputed_per_origin_from_cutoff_available_catalog_and_component_history_only",
+      "routing": "mandatory_v1_2_revenue_model_and_channel_wrapper",
+      "unconfirmedSpikeDamping": false,
+      "interval": "current_strict_rolling_residual_internal_80_only",
+      "legacyCurrentStateGateUsed": false,
+      "legacyTargetCoverageBoundaryUsed": false,
+      "legacyNullToZeroUsed": false
+    },
+    "B1": {
+      "id": "B1_trailing_12_mean",
+      "selectionEligible": true
+    },
+    "B2": {
+      "id": "B2_seasonal_naive",
+      "selectionEligible": true
+    },
+    "B3": {
+      "id": "B3_sparse_dormant_business_aware",
+      "selectionEligible": true
+    },
+    "B4": {
+      "id": "B4_formula_switched_legacy_variant",
+      "previousIncorrectId": "B0b",
+      "selectionEligible": true,
+      "formula": "calibrationSpec.v1_models.baselines_B0b_lifecycle_robust_formula_with_development_fold_factors",
+      "reasonForRename": "does_not_contain_the_legacy_Model_E_selector_or_its_A_B_C_D_submodels"
+    }
+  },
+  "faithfulB0bFormula": {
+    "selectorPrecedence": [
+      "inactive_or_long_tail_or_neutral_rating_D_E_or_scale_low_long_tail_to_C",
+      "insufficient_history_or_active_months_below_6_to_D",
+      "confirmed_spike_to_B",
+      "growth_stable_rebound_declining_to_B",
+      "otherwise_to_A"
+    ],
+    "neutralHistoricalRating": "C",
+    "submodels": {
+      "A": "weighted_monthly_means_0.15_last3_0.35_last6_0.35_last12_0.15_last24_times_horizon_and_lifecycle_factor_with_recent_zero_factor_0.20",
+      "B": "max_winsorized_last12_trimmed_last24_positive_median_times_0.40_times_horizon_and_lifecycle_factor_with_low_revenue_cap",
+      "C": "recent_zero_to_zero_else_sparse_tail_guard_else_0.75_times_B",
+      "D": "B_shrunk_to_origin_available_lifecycle_x_scale_monthly_prior_with_reliability_and_low_revenue_cap"
+    },
+    "legacyPeakShareAutomaticDamping": "enabled_only_for_cutoff_available_explicitly_confirmed_true_anomaly_when_peak_share_at_least_0_90",
+    "spikeTypeTreatment": {
+      "buyout": "route_or_candidate_only_never_automatic_spike_damping",
+      "launch_burst": "candidate_type_only_never_automatic_spike_damping",
+      "batch_proration": "candidate_type_only_never_automatic_spike_damping",
+      "settlement_lag": "candidate_type_only_never_automatic_spike_damping",
+      "true_anomaly": "apply_legacy_0_40_peak_damping_only_when_explicit_confirmation_available_as_of_cutoff",
+      "unconfirmed": "candidate_only_never_automatic_spike_damping"
+    },
+    "buyoutPolicy": "pure_buyout_uses_historical_cycle_monthly_equivalent_not_selector",
+    "mixedPolicy": "buyout_plus_sales_predicts_future_sales_only",
+    "salesPolicy": "pure_sales_share_predicts_each_channel_component_then_sums"
+  },
+  "revenueRouting": {
+    "reference": "calibrationSpec.v1.revenueRouting",
+    "appliesTo": ["B0b", "B1", "B2", "B3", "B4", "C1"],
+    "pure_sales_share": "per_channel_point_prediction_then_sum",
+    "pure_buyout": "historical_buyout_cycle_and_monthly_equivalent",
+    "buyout_plus_sales": "future_sales_only_no_future_buyout",
+    "unknown_revenue_model": "raw_structural_zero_only_when_all_cutoff_history_is_zero_and_never_served",
+    "oneTimeSeriesModelAcrossAllThreeRoutesAllowed": false
+  },
+  "practicalEquivalence": {
+    "referenceModel": "empiricalWapeLeader",
+    "allConditionsRequired": true,
+    "relativePrimaryWapeDifferenceMaximumInclusive": 0.01,
+    "pairedBlockBootstrapRelativeDeltaCi": {
+      "method": "paired_two_way_pigeonhole_cluster_bootstrap",
+      "clusterKeys": ["standard_work_id", "origin"],
+      "clusterAxisFields": ["standard_work_id", "origin"],
+      "aggregatedPairedErrorBlockKeyFields": ["standard_work_id", "origin"],
+      "nestedCaseFieldsKeptTogetherWithinBlock": ["horizon_months", "route"],
+      "sampling": "sample_distinct_standard_work_id_clusters_with_replacement_and_distinct_origin_clusters_with_replacement_independently_then_weight_each_aggregated_standard_work_id_x_origin_error_block_by_the_product_of_multiplicities",
+      "pairedAcrossModels": true,
+      "horizonsWithinStandardWorkIdOriginRemainTogether": true,
+      "replicates": 2000,
+      "seed": 20260714,
+      "rng": "numpy.random.Generator(numpy.random.PCG64(seed))",
+      "clusterOrdering": "distinct_standard_work_id_NFC_lexicographic_ascending_and_distinct_origin_ascending",
+      "drawOrderWithinReplicate": "draw_standard_work_id_cluster_indices_first_then_draw_origin_cluster_indices",
+      "confidenceLevel": 0.95,
+      "intervalMethod": "empirical_nearest_rank_percentile",
+      "lowerRank": "ceil(0.025*replicates)_one_based_after_sort",
+      "upperRank": "ceil(0.975*replicates)_one_based_after_sort",
+      "statistic": "(replicate_model_wape-replicate_leader_wape)/replicate_leader_wape",
+      "requiredEntireIntervalInclusive": [-0.01, 0.01],
+      "caseIidSamplingAllowed": false
+    },
+    "signedBiasDifferenceMaximumInclusive": 0.02,
+    "top10AndEachCoreHorizonRelativeWapeRegressionMaximumInclusive": 0.02,
+    "missingMetricBehavior": "fail_not_equivalent",
+    "zeroLeaderDenominatorBehavior": "equivalent_only_when_both_are_zero",
+    "decisionPrecision": "full_precision_with_1e-12_boundary_tolerance",
+    "complexityOrderSimplestFirst": ["B1", "B2", "B3", "B0b", "B4"]
+  },
+  "comparatorBundle": {
+    "empiricalWapeLeader": "lowest_full_precision_all_scoreable_development_wape_among_legal_models",
+    "primaryPerformanceComparator": "simplest_model_in_the_strict_practical_equivalence_set_containing_the_empirical_leader_otherwise_the_empirical_leader",
+    "B1NaiveComparator": "B1",
+    "B3BusinessAwareComparator": "B3",
+    "faithfulB0bComparator": "B0b",
+    "B0aMayParticipate": false,
+    "allFourRolesAlwaysReported": true,
+    "C1MustReportAgainstEveryRole": true
+  },
+  "populationCoverage": {
+    "workDenominator": 3053,
+    "authorityFactDenominator": 192872,
+    "completeMonthFactCount": 192869,
+    "fullHistoryRevenueBasis": "max_0_of_work_level_signed_net_sum_across_192869_complete_month_facts_through_2026_04",
+    "threeFactsAfterLatestCompleteMonth": "scope_reconciliation_only_excluded_from_revenue_coverage_and_modeling",
+    "use": "post_hoc_population_description_only_not_model_feature_threshold_comparator_or_gate_optimization",
+    "topBandRanking": "rank_all_3053_by_max_0_work_signed_revenue_desc_then_stable_work_id_tie_break",
+    "topBandRankingUniverse": "all_3053_standard_works_before_any_scoreable_served_or_abstention_filter",
+    "topBandRevenueValue": "max(0,sum(signed_net_income_amount_for_the_work_across_complete_month_facts_through_2026_04))",
+    "topBandCounts": "ceil_3053_times_0.01_0.05_0.10",
+    "topBandExactWorkCounts": {
+      "top1": 31,
+      "top5": 153,
+      "top10": 306
+    },
+    "requiredCoverage": [
+      "scoreable_work_share_of_3053",
+      "scoreable_full_history_positive_revenue_share",
+      "served_work_share_of_scoreable_and_3053",
+      "served_positive_revenue_share_of_scoreable_and_full_library",
+      "top1_top5_top10_scoreable_and_served_revenue_coverage_using_full_library_bucket_denominators",
+      "unscoreable_work_count_and_mutually_exclusive_reason",
+      "forward_path_for_every_unscoreable_work"
+    ],
+    "smallCellMinimum": 10,
+    "totalDenominatorsMayBeSuppressed": false,
+    "complementarySuppressionRequired": true
+  },
+  "unscoreableForwardPolicy": {
+    "asOfMonth": "2026-04",
+    "allowedPathEnum": [
+      "deterministic_fallback",
+      "low_confidence_output",
+      "insufficient_history_route",
+      "abstain"
+    ],
+    "dispatchPriority": [
+      "identity_or_income_integrity_failure",
+      "unresolved_revenue_route",
+      "no_observable_history",
+      "observed_history_below_12_complete_calendar_months",
+      "resolved_route_and_at_least_12_complete_calendar_months"
+    ],
+    "pathRules": {
+      "identity_or_income_integrity_failure": {
+        "path": "abstain",
+        "servedPrediction": null,
+        "abstentionReason": "identity_or_income_integrity_failure"
+      },
+      "unresolved_revenue_route": {
+        "path": "abstain",
+        "servedPrediction": null,
+        "abstentionReason": "unresolved_revenue_route"
+      },
+      "no_observable_history": {
+        "path": "abstain",
+        "servedPrediction": null,
+        "abstentionReason": "no_observable_history"
+      },
+      "observed_history_below_12_complete_calendar_months": {
+        "path": "insufficient_history_route",
+        "rawModelPrediction": "route_specific_internal_prediction_if_defined_else_null",
+        "servedPrediction": null,
+        "abstentionReason": "insufficient_history_below_12_complete_calendar_months",
+        "deterministicTrailingMeanMayBeDescribedAsServedFallback": false
+      },
+      "resolved_route_and_at_least_12_complete_calendar_months": {
+        "pointEngine": "frozen_B1_trailing_12_mean_inside_the_v1_2_revenue_route_wrapper",
+        "confidenceRuleReference": "calibrationSpec.v1.confidence",
+        "confidenceLowPredicate": "confidence==low",
+        "pathWhenConfidenceLow": "low_confidence_output",
+        "pathOtherwise": "deterministic_fallback",
+        "servedPrediction": "numeric_when_businessServingEligible_else_null"
+      }
+    },
+    "abstentionReasonRequiredWhenPathIsAbstain": true,
+    "abstentionReasonRequiredWheneverServedPredictionIsNull": true,
+    "servedNullRequiredForInsufficientHistoryRoute": true,
+    "pathMayBeSelectedFromCandidateOrOutcomeResults": false,
+    "businessServingEligibilityChangedByCandidate": false
+  },
+  "C1": {
+    "id": "C1_transparent_ensemble",
+    "definitionPrecedence": "fully_overrides_calibrationSpec.v1.models.candidates[id=C1]",
+    "authorizedOnlyWhenEveryGateAItemTrue": true,
+    "candidateSpaceFrozenBeforeGateAAndBeforeAnyC1OuterResult": true,
+    "predictEntryPoint": "the_same_predict_as_of_entry_point_for_backtest_and_forward_prediction",
+    "minimumCompleteCalendarHistoryMonths": 12,
+    "componentInput": {
+      "unit": "one_cutoff_available_sales_channel_monthly_series",
+      "calendarCompletion": "zero_fill_every_missing_complete_calendar_month_at_or_before_origin",
+      "value": "signed_net_income_amount",
+      "futureMonthMayBeRead": false,
+      "currentRatingRiskShelfRightsOrBusinessActionMayBeRead": false,
+      "monthlyComponentOutputFloor": 0.0,
+      "channelCombination": "predict_each_cutoff_resolved_sales_channel_independently_then_sum_monthly_points"
+    },
+    "allowedComponents": [
+      "trailing_mean_3",
+      "trailing_mean_6",
+      "trailing_mean_12",
+      "seasonal_naive_12",
+      "robust_positive_median",
+      "winsorized_recent_trend",
+      "damped_linear_trend",
+      "recency_weighted_mean"
+    ],
+    "componentDefinitions": {
+      "minimumHistoryMonths": 12,
+      "trailing_mean_3": {
+        "windowMonths": 3,
+        "monthlyFormula": "max(0,arithmetic_mean(last_3_signed_zero_filled_months))",
+        "horizonFormula": "repeat_the_monthly_value_for_each_target_step"
+      },
+      "trailing_mean_6": {
+        "windowMonths": 6,
+        "monthlyFormula": "max(0,arithmetic_mean(last_6_signed_zero_filled_months))",
+        "horizonFormula": "repeat_the_monthly_value_for_each_target_step"
+      },
+      "trailing_mean_12": {
+        "windowMonths": 12,
+        "monthlyFormula": "max(0,arithmetic_mean(last_12_signed_zero_filled_months))",
+        "horizonFormula": "repeat_the_monthly_value_for_each_target_step"
+      },
+      "seasonal_naive_12": {
+        "windowMonths": 12,
+        "frozenSeasonalVector": "last_12_signed_zero_filled_months_ordered_oldest_to_newest",
+        "monthlyFormula": "for_1_based_target_step_k_max(0,frozenSeasonalVector[(k-1)_mod_12])",
+        "recursiveRefitInsideHorizonAllowed": false
+      },
+      "robust_positive_median": {
+        "windowMonths": 12,
+        "positivePredicate": "value>0",
+        "monthlyFormula": "median(positive_values_in_last_12)_when_any_positive_value_else_0",
+        "horizonFormula": "repeat_the_monthly_value_for_each_target_step"
+      },
+      "winsorized_recent_trend": {
+        "windowMonths": 12,
+        "quantiles": [0.1, 0.9],
+        "quantileMethod": "linear_interpolation",
+        "winsorization": "clip_each_last_12_signed_zero_filled_value_to_the_frozen_q10_q90_bounds",
+        "xCoordinates": "integers_0_through_11_oldest_to_newest",
+        "fit": "ordinary_least_squares_intercept_and_slope_on_the_12_winsorized_values",
+        "monthlyFormula": "for_1_based_target_step_k_max(0,intercept+slope*(11+k))",
+        "upperGuard": "when_last_12_has_a_positive_value_cap_each_monthly_point_at_3_times_median(positive_last_12_values)_otherwise_no_finite_upper_cap",
+        "slopeDamping": 1.0
+      },
+      "damped_linear_trend": {
+        "windowMonths": 12,
+        "xCoordinates": "integers_0_through_11_oldest_to_newest",
+        "fit": "ordinary_least_squares_intercept_and_slope_on_the_raw_signed_zero_filled_last_12_values",
+        "slopeDamping": 0.25,
+        "monthlyFormula": "for_1_based_target_step_k_max(0,fitted_value_at_x_11+0.25*slope*k)",
+        "recursiveRefitInsideHorizonAllowed": false
+      },
+      "recency_weighted_mean": {
+        "windowMonths": 12,
+        "weightsOldestToNewest": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+        "weightDenominator": 78,
+        "monthlyFormula": "max(0,sum(weight_i*last_12_signed_zero_filled_value_i)/78)",
+        "horizonFormula": "repeat_the_monthly_value_for_each_target_step"
+      }
+    },
+    "componentCap": 3,
+    "weightGrid": [0.25, 0.5, 0.75],
+    "candidateEnumeration": {
+      "singleComponentCount": 8,
+      "twoComponentPairCount": 28,
+      "weightsPerTwoComponentPair": 3,
+      "twoComponentCandidateCount": 84,
+      "equalWeightThreeComponentCount": 56,
+      "expectedTotalCandidateCount": 148,
+      "canonicalComponentOrderRequired": true,
+      "componentCanonicalOrder": "component_id_ASCII_lexicographic_ascending",
+      "singleComponentCandidates": {
+        "count": 8,
+        "weights": [1.0],
+        "candidateId": "single:{component_id}"
+      },
+      "twoComponentCandidates": {
+        "unorderedComponentPairCount": 28,
+        "weightChoicesAppliedToLexicographicallyFirstComponent": [0.25, 0.5, 0.75],
+        "secondComponentWeight": "1-first_component_weight",
+        "count": 84,
+        "candidateId": "pair:{first_component_id}@{first_weight_fixed_2}+{second_component_id}@{second_weight_fixed_2}"
+      },
+      "threeComponentCandidates": {
+        "unorderedComponentTripleCount": 56,
+        "exactWeightNumerators": [1, 1, 1],
+        "exactWeightDenominator": 3,
+        "weights": [0.3333333333333333, 0.3333333333333333, 0.3333333333333333],
+        "count": 56,
+        "candidateId": "triple:{first_component_id}+{second_component_id}+{third_component_id}:equal_thirds"
+      },
+      "expectedCandidateCount": 148,
+      "allWeightsMustBeNonnegativeAndSumExactlyToOne": true,
+      "duplicateCandidateIdsAllowed": false,
+      "enumerationOrder": "candidate_id_ASCII_lexicographic_ascending",
+      "outerOriginResultsMayAddRemoveOrMutateCandidate": false
+    },
+    "training": {
+      "method": "nested_expanding_origin",
+      "outerOriginsReference": "calibrationSpec.v1.origins.forwardValidation.scoreOrigins",
+      "fitUnit": "one_global_candidate_per_outer_origin_shared_across_all_core_horizons_and_all_revenue_routes",
+      "innerOriginRole": "development_forward_score_only",
+      "intervalWarmupOriginsMaySelectComponentWeightParameterOrThreshold": false,
+      "innerCasePredicate": "inner_origin_is_a_strictly_earlier_forward_score_origin_and_target_end<=outer_origin_and_label_available_as_of<=outer_origin_and_statisticallyScoreable_is_true",
+      "minimumDistinctInnerScoreOrigins": 2,
+      "minimumScoreableInnerCases": 200,
+      "minimumInnerScoreOrigins": 2,
+      "minimumInnerCaseCount": 200,
+      "warmupMaySelectCandidate": false,
+      "outerResultsMayAlterCandidateSpace": false,
+      "pureBuyoutRowsInObjective": "included_with_the_frozen_route_prediction_and_therefore_candidate_invariant",
+      "top10ForInnerObjective": "at_each_inner_origin_apply_calibrationSpec.v1.strata.rankingContract_using_only_origin_minus_11_through_origin_signed_income_then_restrict_to_statisticallyScoreable_inner_cases",
+      "top10ForInnerObjectivePredictionField": "rawModelPrediction",
+      "top10ForInnerObjectiveBusinessServingFilterAllowed": false,
+      "postHoc2026_04PopulationRankingMaySelectCandidate": false,
+      "metricDefinitions": {
+        "overallWape": "sum(abs(rawModelPrediction-actual))/sum(abs(actual))_over_all_inner_scoreable_cases",
+        "eachCoreHorizonWape": "the_same_WAPE_formula_restricted_to_each_of_3_6_12_18_24_months",
+        "meanCoreHorizonWape": "arithmetic_mean_of_the_five_defined_core_horizon_WAPEs",
+        "absoluteSignedBias": "abs((sum(rawModelPrediction)-sum(actual))/sum(actual))_over_all_inner_scoreable_cases",
+        "top10Wape": "the_same_WAPE_formula_on_the_inner_origin_as_of_top10_band"
+      },
+      "undefinedObjectiveMetricBehavior": "insufficient_inner_evidence_use_frozen_fallback",
+      "selectionObjective": {
+        "formula": "0.45*overallWape+0.20*meanCoreHorizonWape+0.15*absoluteSignedBias+0.20*top10Wape",
+        "weights": {
+          "overallWape": 0.45,
+          "meanCoreHorizonWape": 0.2,
+          "absoluteSignedBias": 0.15,
+          "top10Wape": 0.2
+        },
+        "aggregateBeforeCandidateComparison": true
+      },
+      "biasFeasibilityGuard": {
+        "overallAbsoluteSignedBiasMaximumInclusive": 0.1,
+        "eachDefinedCoreHorizonAbsoluteSignedBiasMaximumInclusive": 0.15,
+        "applyBeforeObjectiveRanking": true,
+        "whenAtLeastOneCandidateFeasible": "rank_only_feasible_candidates_by_the_selection_objective_and_tie_break",
+        "whenNoCandidateFeasible": "record_no_bias_feasible_candidate_and_use_the_frozen_fallback_without_relaxing_any_threshold",
+        "thresholdMayChangeAfterAnyOuterResult": false
+      },
+      "tieBreak": "lower_component_count_then_lower_nonzero_parameter_count_then_lexicographic_candidate_id",
+      "nonzeroParameterCount": "number_of_strictly_positive_component_weights",
+      "insufficientInnerEvidenceFallback": {
+        "candidateId": "pair:robust_positive_median@0.50+trailing_mean_12@0.50",
+        "weights": {
+          "robust_positive_median": 0.5,
+          "trailing_mean_12": 0.5
+        },
+        "mayBeRetuned": false
+      },
+      "outerPredictionMustBeLockedBeforeTruthJoin": true,
+      "outerResultsMayAlterCandidateSpaceObjectiveGuardOrThreshold": false,
+      "seed": 20260714,
+      "finalHoldoutMayBeRead": false
+    },
+    "routePolicy": {
+      "pure_sales_share": "component_ensemble_per_channel_then_sum",
+      "pure_buyout": "frozen_historical_cycle_monthly_equivalent_no_ensemble_fit",
+      "buyout_plus_sales": "component_ensemble_on_sales_only",
+      "unknown_revenue_model": "never_served",
+      "implementsOrMasqueradesAsC2RFullBusinessRouting": false
+    },
+    "monthlyToPointAndAnnualOutput": {
+      "pointForecast": "sum_of_routed_monthly_point_predictions_for_target_steps_1_through_horizon_months",
+      "annualBreakdown": "group_the_same_locked_monthly_point_predictions_by_target_calendar_year_and_sum_with_no_refit_or_rescaling",
+      "annualBreakdownMustSumToPointForecast": true,
+      "publicOutputFields": ["pointForecast", "annualBreakdown", "confidence", "limitation"],
+      "publicIntervalEndpointsAllowed": false
+    },
+    "internal80Interval": {
+      "protocolReference": "calibrationSpec.v1.internalInterval",
+      "modelOwnResidualsOnly": true,
+      "residualModelId": "C1",
+      "residual": "abs(actual-C1_pointForecast)",
+      "residualPredictionSource": "strictly_earlier_C1_forward_out_of_fold_or_C1_interval_warmup_predictions_locked_before_their_truth_join",
+      "currentOrLaterOuterResidualMayBeRead": false,
+      "baselineResidualMayBeReused": false,
+      "intervalWarmupMayCalibrateInterval": true,
+      "intervalWarmupMaySelectCandidateComponentWeightParameterOrThreshold": false,
+      "groupFallbackOrder": [
+        "C1_x_horizon_x_route_if_n>=100",
+        "C1_x_horizon_if_n>=100",
+        "C1_if_n>=200"
+      ],
+      "quantileFiniteSampleRule": "sort_absolute_residuals_ascending_then_k=min(n,ceil((n+1)*0.8))_and_q=sorted_residuals[k-1]_with_no_interpolation",
+      "lowerBoundInternalOnly": "max(0,pointForecast-q)",
+      "upperBoundInternalOnly": "pointForecast+q",
+      "uses": ["coverage", "WIS", "overconfidence_audit"],
+      "publicEndpointOutputAllowed": false
+    },
+    "statusAfterDevelopmentValidation": "not_for_formal_decision"
+  },
+  "C1AcceptanceGates": {
+    "overallWapeMaximum": 0.6,
+    "metricPopulationContract": {
+      "allScoreablePredictionField": "rawModelPrediction",
+      "allScoreablePredicate": "statisticallyScoreable==true",
+      "businessServingEligibilityMayFilterAllScoreableHorizonHighValueTopBandOrOriginMetrics": false,
+      "servedOverallPredictionField": "servedPrediction",
+      "servedOverallPredicate": "statisticallyScoreable==true_and_businessServingEligible==true_and_modelPredictionAvailable==true",
+      "originAsOfValueRanking": {
+        "reference": "calibrationSpec.v1.strata.rankingContract",
+        "unit": "standard_work_id_at_origin",
+        "value": "sum_signed_income_for_origin_minus_11_through_origin",
+        "universe": "works_with_value>0_as_of_that_origin",
+        "sort": "value_desc_then_standard_work_id_asc",
+        "countRule": "ceil(p*positive_as_of_universe_count)",
+        "topBandsAreCumulative": true,
+        "futureCatalogMembershipIncomeOrCurrentFullLibraryRankingMayBeRead": false
+      },
+      "highValuePopulation": "all_scoreable_raw_cases_in_the_origin_as_of_top10_band",
+      "top1Population": "all_scoreable_raw_cases_in_the_origin_as_of_top1_band",
+      "top5Population": "all_scoreable_raw_cases_in_the_origin_as_of_top5_band",
+      "top10Population": "all_scoreable_raw_cases_in_the_origin_as_of_top10_band",
+      "eachCoreHorizonPopulation": "all_scoreable_raw_cases_at_the_exact_horizon",
+      "originStabilityPopulation": "at_each_outer_origin_pool_all_scoreable_raw_cases_across_the_five_core_horizons",
+      "full3053CurrentHistoryPopulationRankingUse": "post_hoc_population_audit_only",
+      "full3053CurrentHistoryPopulationRankingMayEnterCandidateSelectionComparatorOrAcceptanceGate": false
+    },
+    "pairedBootstrapSuperiorityVsPrimary": {
+      "comparatorRole": "primaryPerformanceComparator",
+      "method": "paired_two_way_pigeonhole_cluster_bootstrap",
+      "clusterKeys": ["standard_work_id", "origin"],
+      "clusterAxisFields": ["standard_work_id", "origin"],
+      "aggregatedPairedErrorBlockKeyFields": ["standard_work_id", "origin"],
+      "nestedCaseFieldsKeptTogetherWithinBlock": ["horizon_months", "route"],
+      "sampling": "sample_distinct_standard_work_id_clusters_with_replacement_and_distinct_origin_clusters_with_replacement_independently_then_weight_each_aggregated_standard_work_id_x_origin_error_block_by_the_product_of_multiplicities",
+      "pairedAcrossModels": true,
+      "horizonsWithinStandardWorkIdOriginRemainTogether": true,
+      "caseIidSamplingAllowed": false,
+      "replicates": 2000,
+      "seed": 20260714,
+      "rng": "numpy.random.Generator(numpy.random.PCG64(seed))",
+      "clusterOrdering": "distinct_standard_work_id_NFC_lexicographic_ascending_and_distinct_origin_ascending",
+      "drawOrderWithinReplicate": "draw_standard_work_id_cluster_indices_first_then_draw_origin_cluster_indices",
+      "confidenceLevel": 0.95,
+      "statistic": "(C1_wape-primaryPerformanceComparator_wape)/primaryPerformanceComparator_wape",
+      "intervalMethod": "empirical_nearest_rank_percentile",
+      "lowerRank": "ceil(0.025*replicates)_one_based_after_sort",
+      "upperRank": "ceil(0.975*replicates)_one_based_after_sort",
+      "requiredUpperBoundExclusive": 0.0,
+      "zeroComparatorDenominatorBehavior": "pass_only_when_C1_wape_is_also_zero_and_the_relative_delta_is_defined_as_zero_but_strict_upper_bound_still_fails",
+      "otherComparatorBundleRoles": "report_only_not_an_acceptance_gate"
+    },
+    "overallServedAndHighValueAbsoluteSignedBiasMaximum": 0.1,
+    "overallServedAndHighValueBiasPopulations": [
+      "all_scoreable_raw",
+      "served_cohort_served_prediction",
+      "high_value_origin_as_of_top10_all_scoreable_raw"
+    ],
+    "eachCoreHorizonAbsoluteSignedBiasMaximum": 0.15,
+    "coreHorizonsMonths": [3, 6, 12, 18, 24],
+    "horizon3_6_12RelativeImprovementVsPrimaryMinimum": 0.03,
+    "horizon18_24RelativeRegressionVsPrimaryMaximum": 0.02,
+    "top10WapeRelativeImprovementVsPrimaryMinimum": 0.05,
+    "top1Top5WapeRelativeRegressionVsPrimaryMaximum": 0.05,
+    "topBandPredictionField": "rawModelPrediction",
+    "topBandRankingReference": "C1AcceptanceGates.metricPopulationContract.originAsOfValueRanking",
+    "outerOriginWinShareMinimum": 0.7,
+    "threeConsecutiveOriginsRegressionOverFivePercentAllowed": false,
+    "originStabilityPredictionField": "rawModelPrediction",
+    "originStabilityPopulationReference": "C1AcceptanceGates.metricPopulationContract.originStabilityPopulation",
+    "internal80CoverageInclusive": [0.75, 0.85],
+    "meanWisRelativeImprovementVsPrimaryMinimum": 0.05,
+    "standardizedWidthRelativeRegressionMaximum": 0.1,
+    "P0Maximum": 0,
+    "P1Maximum": 0,
+    "P2Policy": "fact_review_prompts_only",
+    "automaticOperatingActionFieldCountMaximum": 0,
+    "allConditionsRequired": true,
+    "thresholdsMayBeChangedAfterResults": false
+  },
+  "GateA": {
+    "requiredTrueItems": [
+      "faithfulB0bIdentityConfirmed",
+      "incorrectB0bRenamed",
+      "comparatorBundleFrozen",
+      "strictPracticalEquivalenceTested",
+      "full3053DenominatorReported",
+      "baselineExpectedCaseUniverseExact",
+      "futurePerturbationPassed",
+      "scoreableServedAbstentionPassed",
+      "allSealsClosed",
+      "calibrationSpecV1_2Generated",
+      "allPhaseAValidationPassed",
+      "phaseACheckpointCommittedAndPushed",
+      "privateFilesUntracked"
+    ],
+    "anyFalseBehavior": "stop_before_C1"
+  },
+  "intervalAndPublicBoundary": {
+    "internalNominalCoverage": 0.8,
+    "internalUses": ["coverage", "WIS", "overconfidence_audit"],
+    "publicAllowedFields": ["pointForecast", "annualBreakdown", "confidence", "limitation"],
+    "publicForbidden": ["optimistic", "pessimistic", "high", "base", "low", "prediction_interval_endpoints"]
+  },
+  "seals": {
+    "finalHoldoutOpened": false,
+    "finalHoldoutTruthWindowConstructedOrJoined": false,
+    "embargoShadowOpened": false,
+    "embargoTruthWindowConstructedOrJoined": false,
+    "deferred60MonthLabelsOpened": false,
+    "deferred60MonthTruthWindowConstructedOrJoined": false,
+    "finalHoldoutCommand": "fail_closed_nonzero_exit",
+    "authorityCacheMayBeLoaded": true,
+    "authorityCacheLoadingAloneCountsAsOpeningHoldout": false,
+    "fullHistoryPopulationAggregationMaySelectModelOrGate": false
+  },
+  "reporting": {
+    "language": "zh-CN",
+    "aggregateOnly": true,
+    "deidentified": true,
+    "minimumCellCount": 10,
+    "forbidden": [
+      "work_title",
+      "author_name",
+      "work_identifier",
+      "channel_identifier",
+      "private_path",
+      "raw_income_row",
+      "prediction_interval_endpoint"
+    ],
+    "privateArtifactsMustBeGitIgnored": true,
+    "automaticOperatingSuggestions": 0
+  }
+}

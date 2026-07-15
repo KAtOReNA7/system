@@ -1,0 +1,286 @@
+{
+  "B0b": {
+    "finalFitDiagnosticMetrics": {
+      "byHorizon": {
+        "12": {
+          "actualTotal": 27774504.5122,
+          "caseCount": 3038,
+          "predictedTotal": 57085125.0489488,
+          "signedAggregateBias": 1.05530669,
+          "wape": 1.54542479
+        },
+        "18": {
+          "actualTotal": 28943165.9465,
+          "caseCount": 2179,
+          "predictedTotal": 60849474.5226464,
+          "signedAggregateBias": 1.10237797,
+          "wape": 1.71020398
+        },
+        "24": {
+          "actualTotal": 24236000.4594,
+          "caseCount": 1456,
+          "predictedTotal": 51521362.92597662,
+          "signedAggregateBias": 1.12581952,
+          "wape": 1.97583421
+        },
+        "3": {
+          "actualTotal": 9751308.1859,
+          "caseCount": 4071,
+          "predictedTotal": 19344336.30473169,
+          "signedAggregateBias": 0.98376832,
+          "wape": 1.36192593
+        },
+        "6": {
+          "actualTotal": 19708636.0955,
+          "caseCount": 4071,
+          "predictedTotal": 38688594.4143734,
+          "signedAggregateBias": 0.96302749,
+          "wape": 1.36214082
+        }
+      },
+      "overall": {
+        "actualTotal": 110413615.1995,
+        "caseCount": 14815,
+        "predictedTotal": 227488893.21667692,
+        "signedAggregateBias": 1.06033371,
+        "wape": 1.6359398
+      }
+    },
+    "lifecycleFactors": {
+      "declining": 1.0,
+      "growth": 1.0,
+      "inactive": 0.0,
+      "insufficient_history": 0.0,
+      "long_tail": 1.0,
+      "rebound": 1.0,
+      "stable": 1.0
+    },
+    "lifecycleSupport": {
+      "declining": {
+        "absoluteActualRevenueShare": 0.10249778,
+        "componentCaseCount": 4927,
+        "distinctOriginCount": 8,
+        "supported": true
+      },
+      "growth": {
+        "absoluteActualRevenueShare": 0.17463871,
+        "componentCaseCount": 3934,
+        "distinctOriginCount": 8,
+        "supported": true
+      },
+      "inactive": {
+        "absoluteActualRevenueShare": 0.03505673,
+        "componentCaseCount": 7252,
+        "distinctOriginCount": 8,
+        "supported": true
+      },
+      "insufficient_history": {
+        "absoluteActualRevenueShare": 0.07646329,
+        "componentCaseCount": 4378,
+        "distinctOriginCount": 8,
+        "supported": true
+      },
+      "long_tail": {
+        "absoluteActualRevenueShare": 3.899e-05,
+        "componentCaseCount": 540,
+        "distinctOriginCount": 7,
+        "supported": false
+      },
+      "rebound": {
+        "absoluteActualRevenueShare": 0.06096097,
+        "componentCaseCount": 1813,
+        "distinctOriginCount": 8,
+        "supported": true
+      },
+      "stable": {
+        "absoluteActualRevenueShare": 0.55034355,
+        "componentCaseCount": 6224,
+        "distinctOriginCount": 8,
+        "supported": true
+      }
+    },
+    "lifecycleThresholds": {
+      "decliningRecent6Prior6Ratio": 0.5,
+      "growthRecent6Prior6Ratio": 1.5,
+      "inactiveRecent6RevenueMax": 0.0,
+      "insufficientHistoryCompleteMonths": 6,
+      "longTailLast12RevenueMax": 10.0,
+      "reboundRecent3Previous3Ratio": 1.5
+    },
+    "oofComparatorMetrics": {
+      "byHorizon": {
+        "12": {
+          "actualTotal": 22664368.2387,
+          "caseCount": 2462,
+          "predictedTotal": 47302468.49398987,
+          "signedAggregateBias": 1.08708524,
+          "wape": 1.49595874
+        },
+        "18": {
+          "actualTotal": 19406644.1694,
+          "caseCount": 1603,
+          "predictedTotal": 46147589.91703895,
+          "signedAggregateBias": 1.37792735,
+          "wape": 1.8261097
+        },
+        "24": {
+          "actualTotal": 10829260.3492,
+          "caseCount": 880,
+          "predictedTotal": 31906837.6040574,
+          "signedAggregateBias": 1.94635428,
+          "wape": 2.64621049
+        },
+        "3": {
+          "actualTotal": 8633370.1207,
+          "caseCount": 3495,
+          "predictedTotal": 16898688.41100831,
+          "signedAggregateBias": 0.9573687,
+          "wape": 1.33100159
+        },
+        "6": {
+          "actualTotal": 17946722.4594,
+          "caseCount": 3495,
+          "predictedTotal": 33797278.98385655,
+          "signedAggregateBias": 0.88320063,
+          "wape": 1.30892882
+        }
+      },
+      "overall": {
+        "actualTotal": 79480365.3374,
+        "caseCount": 11935,
+        "predictedTotal": 176052863.4099511,
+        "signedAggregateBias": 1.21504849,
+        "wape": 1.67314034
+      }
+    }
+  },
+  "decisionStatus": "not_for_formal_decision",
+  "fit": {
+    "algorithm": "deterministic_cyclic_coordinate_grid_search",
+    "authoritativeInputSignatureSha256": "288e202f906d8574743e21842f0818ef3292986fbeb6707aff00fd959a59da4e",
+    "baselineId": "B0b",
+    "caseFingerprintSerialization": "digestContract.caseFingerprint",
+    "caseKeyFields": [
+      "standard_work_id",
+      "origin",
+      "horizon_months",
+      "route"
+    ],
+    "caseRole": "development_only",
+    "comparatorCaseCount": 11935,
+    "comparatorCaseCountByHorizon": {
+      "12": 2462,
+      "18": 1603,
+      "24": 880,
+      "3": 3495,
+      "6": 3495
+    },
+    "comparatorCaseFingerprint": "4d9f3d15499d1c5ddf66d42b4a00e01635b8030d90151f29bd3dcceb3ba7992d",
+    "comparatorOriginCount": 5,
+    "comparatorOriginCountByHorizon": {
+      "12": 4,
+      "18": 3,
+      "24": 2,
+      "3": 5,
+      "6": 5
+    },
+    "developmentSignedAggregateBias": 1.21504849,
+    "developmentWape": 1.67314034,
+    "excludedRoles": [
+      "embargo_shadow",
+      "final_holdout",
+      "long_horizon_audit"
+    ],
+    "factorGridDigest": "b27b7fcbb0474daf9f33f0a9c75b84fb2cafaecd3b7e6b943b50eaa07a5f7857",
+    "finalFactorsFitScope": "all_cross_horizon_purged_development_cases_single_global_vector",
+    "fitCaseCount": 14815,
+    "fitCaseCountByHorizon": {
+      "12": 3038,
+      "18": 2179,
+      "24": 1456,
+      "3": 4071,
+      "6": 4071
+    },
+    "fitCaseFingerprint": "ca1d2d7402e9c50233c178ef8237bac9d6541d45d42f91e0d90c15e03a506787",
+    "fitCodeCommit": "ee35f7b30b58162a80b6d6e3c48c019b8081c1b5",
+    "fitOriginCount": 8,
+    "fitOriginCountByHorizon": {
+      "12": 7,
+      "18": 6,
+      "24": 5,
+      "3": 8,
+      "6": 8
+    },
+    "fitStatus": "complete",
+    "foldTrainingCaseCountsByScoreOrigin": {
+      "2020-12": 589,
+      "2021-06": 1100,
+      "2021-12": 2030,
+      "2022-06": 3580,
+      "2022-12": 5725
+    },
+    "foldTrainingMaximumTargetEndByScoreOrigin": {
+      "2020-12": "2020-12",
+      "2021-06": "2021-06",
+      "2021-12": "2021-12",
+      "2022-06": "2022-06",
+      "2022-12": "2022-12"
+    },
+    "foldUnit": "score_origin_date_across_all_available_core_horizons",
+    "forwardValidationMethod": "expanding_origin_target_available",
+    "intervalWarmupCaseCount": 2880,
+    "intervalWarmupCaseCountByHorizon": {
+      "12": 576,
+      "18": 576,
+      "24": 576,
+      "3": 576,
+      "6": 576
+    },
+    "intervalWarmupCaseFingerprint": "ba8e016be212e0152194f5e7bc5e72253450b77d91196f537b7dadd67ca4b29d",
+    "intervalWarmupOriginCount": 3,
+    "intervalWarmupOriginCountByHorizon": {
+      "12": 3,
+      "18": 3,
+      "24": 3,
+      "3": 3,
+      "6": 3
+    },
+    "intervalWarmupPredictionFingerprint": "544715c63847e710a1d9d40a1d89a58e22e5c631fea825bbd2c43ae8e5461c16",
+    "intervalWarmupPredictionLockedBeforeTruthJoin": true,
+    "intervalWarmupUsesOutcomeLabelsForPrediction": false,
+    "legacyFactorsReused": false,
+    "maximumTargetEnd": "2023-06",
+    "minimumActualRevenueSharePerLifecycleFactor": 0.001,
+    "minimumTrainingCasesPerLifecycleFactor": 200,
+    "minimumTrainingOriginsPerLifecycleFactor": 3,
+    "oofComparatorScoreUsed": true,
+    "oofPredictionFingerprint": "2506d63353c9565ec52ef2c55ff21e08f433338be08be3b335a000a36c50dd98",
+    "passes": 2,
+    "randomSeed": 20260714,
+    "scoreOrigins": [
+      "2020-12",
+      "2021-06",
+      "2021-12",
+      "2022-06",
+      "2022-12"
+    ],
+    "specCommit": "bbc4563a79dfb8387b93bdd47b898f0a91bb952b",
+    "trainingTargetEndRule": "role==development_and_origin<score_origin_and_target_end<=score_origin",
+    "unsupportedFactorValue": 1.0,
+    "usesEmbargoShadowLabels": false,
+    "usesFinalHoldoutLabels": false,
+    "usesLongHorizonAuditLabels": false,
+    "usesOnlyStrictlyAvailableLabels": true,
+    "warmupOrigins": [
+      "2019-06",
+      "2019-12",
+      "2020-06"
+    ]
+  },
+  "parameterProvenance": "semantic_thresholds_plus_cross_horizon_purged_development_only_deterministic_factor_fit_v1",
+  "schema": "m2.calibration_spec.v1.fitted_parameters",
+  "specDigest": "625631279889e46ce174ffb507b3926793fdc7a435fc2c7c8aafbf990c8a7fb9",
+  "specRevision": 5,
+  "specVersion": "calibration-spec-v1",
+  "version": "calibration-fitted-parameters-v1"
+}

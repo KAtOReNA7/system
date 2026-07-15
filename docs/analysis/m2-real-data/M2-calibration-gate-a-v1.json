@@ -1,0 +1,371 @@
+{
+  "C1MayStartNow": false,
+  "conditionEvidence": {
+    "allSealsClosed": {
+      "allFinalEntrypointsLoaderSentinelZero": true,
+      "allMasqueradesRejected": true,
+      "allSealedRolesRejected": true,
+      "deferred60Closed": true,
+      "developmentControlCalledOnce": true,
+      "embargoClosed": true,
+      "finalClosed": true,
+      "priorRowsDevelopmentOnly": true,
+      "priorRowsNoSealedIntersection": true,
+      "sealedBuildersNeverCalled": true
+    },
+    "baselineExpectedCaseUniverseExact": {
+      "actualValuesIdentical": true,
+      "allExpectedUniversesExact": true,
+      "allScoreableRawComplete": true,
+      "allThroughV12Entry": true,
+      "caseKeysIdentical": true,
+      "expectedCaseCountExact": true,
+      "predictionLockedBeforeTruth": true,
+      "scoreableKeysIdentical": true,
+      "targetMetadataIdentical": true
+    },
+    "calibrationSpecV1_2Generated": {
+      "candidateCountExact": true,
+      "candidateSpaceFrozen": true,
+      "decisionStatusSealed": true,
+      "finalReadForbidden": true,
+      "versionExact": true
+    },
+    "comparatorBundleFrozen": {
+      "B0aExcluded": true,
+      "B1RoleExact": true,
+      "B3RoleExact": true,
+      "B4IncludedBecauseFormulaDiffers": true,
+      "empiricalLeaderInEquivalentSet": true,
+      "faithfulRoleExact": true,
+      "primaryInEquivalentSet": true,
+      "primaryIsLegalBaseline": true
+    },
+    "faithfulB0bIdentityConfirmed": {
+      "allFormulaSourcesBoundToHistoricalBlob": true,
+      "faithfulIdExact": true,
+      "formulaManifestNamesFaithfulId": true,
+      "freshV12Materialization": true,
+      "historicalConflictDisclosed": true,
+      "oldNumericNotUsed": true
+    },
+    "full3053DenominatorReported": {
+      "authorityFactCountExact": true,
+      "authorityWorkCountExact": true,
+      "completeFactCountExact": true,
+      "forwardPathsExactEnum": true,
+      "forwardPathsExhaustive": true,
+      "postHocCoverageCannotSelect": true,
+      "rankingBeforeFilters": true,
+      "rankingUniverseExact": true,
+      "scoreableUnscoreablePartitionExact": true,
+      "servedComplementProtected": true,
+      "topBucketCountsExact": true,
+      "topDenominatorsBuiltBeforeFilters": true,
+      "unscoreableReasonsExhaustive": true
+    },
+    "futurePerturbationPassed": {
+      "B4AllParameterRolesInvariant": true,
+      "allModelsRoutesHorizonsCovered": true,
+      "fullStateProjectionInvariant": true,
+      "futureMatrixPassed": true,
+      "futureOnlyWorkRejected": true,
+      "matrixCaseCountExact": true,
+      "scoreabilityNotPredictorInput": true
+    },
+    "incorrectB0bRenamed": {
+      "B4CommittedArtifactVerified": true,
+      "B4SequentialFitVerified": true,
+      "formulaManifestNamesB4": true,
+      "renamedIdExact": true
+    },
+    "privateFilesUntracked": {
+      "globalTrackedPrivateScanEmpty": true,
+      "knownRolesIgnoredAndUntracked": true
+    },
+    "scoreableServedAbstentionPassed": {
+      "abstainedIffServedNull": true,
+      "abstentionReasonReconciled": true,
+      "availabilityIffRaw": true,
+      "intersectionDropDisabled": true,
+      "nativeStateTypes": true,
+      "scoreabilityReasonReconciled": true,
+      "servedMatchesEligibilityAndRaw": true,
+      "truthTableValidated": true,
+      "zeroImputationDisabled": true
+    },
+    "strictPracticalEquivalenceTested": {
+      "bootstrapCaseIidDisabled": true,
+      "bootstrapClusterKeysExact": true,
+      "boundarySelfTestPassed": true,
+      "fourWayAndFrozen": true,
+      "inclusiveBoundaryAccepted": true,
+      "selectionEvidenceUsesExactAnd": true,
+      "singleFailuresRejected": true,
+      "wideCiContainingZeroRejected": true
+    }
+  },
+  "contentGatePassExceptRuntimePush": true,
+  "contentGatePassExceptValidationAndRuntimePush": true,
+  "decisionStatus": "not_for_formal_decision",
+  "evidenceBindings": {
+    "actualFingerprint": "f446e667d9d176a4c7924a199a479ae32e82d72794e0b5aa9ab5e6b5ce716520",
+    "conditionEvidenceDigest": "1e5c9c6564d8b85d2e8e6b5842d1ec92f790e97cc5156edc2fe588f395b61979",
+    "expectedUniverseFingerprint": "ce8e4bcfb23335523077b367ff82b05b1663ea541ae954c719ef3eceee34c578",
+    "inputFingerprint": "288e202f906d8574743e21842f0818ef3292986fbeb6707aff00fd959a59da4e",
+    "internalIntervalFingerprint": "a840311dc60fa47b88b248a95015573324d196e9e233253901d2f40578da9e6d",
+    "materializationEvidenceDigest": "0dcc724021fbc91850f5ed95473025019c930253e0ecd6cca0376658f5e08db4",
+    "nonSelfPublicEvidenceSha256": {
+      "docs/analysis/m2-real-data/M2-C1-transparent-ensemble-design-v1.json": "f982b693b4b2ab656d71bf6c9af8618ba0ed0c49d0a85ef9f654e9d89e8319c9",
+      "docs/analysis/m2-real-data/M2-C1-transparent-ensemble-design-v1.md": "44bca83d7f8fe074ccbc44b17cd616aebf47c4a738f77244b7dfaaed3eb8a051",
+      "docs/analysis/m2-real-data/M2-baseline-comparator-identity-correction-v1.json": "94a12b25b3f2ee9aa80e40ebb211d9affeda70ca51633ec6235ee0166a5efd98",
+      "docs/analysis/m2-real-data/M2-baseline-comparator-identity-correction-v1.md": "829e51937232bc74da0805c109bf0d6f5f42a3decdeabfbb7c110392d4413968",
+      "docs/analysis/m2-real-data/M2-calibration-population-coverage-v1.json": "0ac3bdba1d310edaaac2018d0d1375ce5925d2449b6df80f3a5e44c9f5608805",
+      "docs/analysis/m2-real-data/M2-calibration-population-coverage-v1.md": "8a32eefbd71d619c7e049f9157e5c6d018d89a6ad48555bda0ffc8d28a51ce02",
+      "docs/analysis/m2-real-data/M2-v1.1-formula-difference-manifest-v1.json": "5ee234dd1310351c1c3530a8c5f4ec0dc8dc578a3ac44a74a6efdbd7901aaad0"
+    },
+    "predictionFingerprintsByModel": {
+      "B0b": "c0e07f60eadf51e6494f23bdfdc2d6dbf842da356344c8d3bc65eafd5948d9d9",
+      "B1": "71c551f4c3b70efbd1057a1109b0e201ec24e2fde066db28ea6d9b25986166cd",
+      "B2": "a2dcc3aa44dc6d675289d7bd2b65b5cfeceb136945573cae0cdf24e2eccbcae2",
+      "B3": "49bc9ef54e8eb86a33ac9f818934fb3d9029ff6caa364bc05d02b71961e47bf5",
+      "B4": "17656ae50e4a2812f5775668ff646ff0cc88f600ebfbc74b0b7a2e6c317f55c0"
+    },
+    "priorPrivateManifestSha256": "c10cf4762b8bbb1f2fe00edd6d61ac6e42fe89884ead124e29e61d7c7ff2a7da",
+    "privateCaseEvidenceSha256": "e2498667ce1b0f491fb5614d34b4e6d2d5aa22f25ff79ff5169ff1e2d755d9d9",
+    "privateCaseRowCount": 131225,
+    "roleModelCounts": {
+      "development_fold_training_seed": {
+        "B4": 5450
+      },
+      "development_forward_score:2020-12": {
+        "B0b": 3735,
+        "B1": 3735,
+        "B2": 3735,
+        "B3": 3735,
+        "B4": 3735
+      },
+      "development_forward_score:2021-06": {
+        "B0b": 4185,
+        "B1": 4185,
+        "B2": 4185,
+        "B3": 4185,
+        "B4": 4185
+      },
+      "development_forward_score:2021-12": {
+        "B0b": 4080,
+        "B1": 4080,
+        "B2": 4080,
+        "B3": 4080,
+        "B4": 4080
+      },
+      "development_forward_score:2022-06": {
+        "B0b": 3729,
+        "B1": 3729,
+        "B2": 3729,
+        "B3": 3729,
+        "B4": 3729
+      },
+      "development_forward_score:2022-12": {
+        "B0b": 2886,
+        "B1": 2886,
+        "B2": 2886,
+        "B3": 2886,
+        "B4": 2886
+      },
+      "development_long_horizon_audit": {
+        "B0b": 1090,
+        "B1": 1090,
+        "B2": 1090,
+        "B3": 1090,
+        "B4": 1090
+      },
+      "development_warmup_interval_calibration": {
+        "B0b": 5450,
+        "B1": 5450,
+        "B2": 5450,
+        "B3": 5450,
+        "B4": 5450
+      }
+    },
+    "scoreableUniverseFingerprint": "8abb27eafa1dbd83198f215e42785bee3822c1bc1f27bb0ac304e5ab1cc169e4",
+    "sourceSha256": {
+      "package.json": "1ee754ca2da9f782981ad6bcbd689f98c6196a8853742005f14a5bec15ea5b26",
+      "scripts/m2-real-data/m2_calibration_v1_2.py": "57c533a82d0fbe2eedf5b6fd8699f203052b2d7b0607407f042097e947412746",
+      "scripts/m2-real-data/run_m2_calibration_baseline_replay.py": "a1ee805c6a2d04984e9d6f27342ba1301aa0c0f5ef8e0cb24fbd748bd60ad2b0",
+      "scripts/m2-real-data/run_m2_calibration_scoring_correction.py": "6159c02ea9d82f49cf9f89b3f214f8dd853f9b9cdcf6f226ef5098130aeceb6b",
+      "scripts/m2-real-data/run_m2_calibration_v1_2.py": "af3b15d14c4f95d1a5f766ce684dedd875ff8a698ae4e7e36b17bb3c911598f6",
+      "src/domain/oldProductEvaluation/calibrationSpec.v1.1.amendment.json": "1d62277191c1f0d7093ac961329c2eb475431c4b0324ae65713e75fb5541f37f",
+      "src/domain/oldProductEvaluation/calibrationSpec.v1.2.amendment.json": "9449c459eded746561e0b3c3deea82371a05d85ef663c11518dd223acb7ea088",
+      "src/domain/oldProductEvaluation/calibrationSpec.v1.json": "dad7e84e7e803cecd48cb65f9ff73078e0a249a6199fdfe2fcf6abda5cc130db",
+      "test/m2-calibration-v1-2-contract.test.js": "1c87a5aba475e96e0fbc7ca8aba5b3bbf413eba4874a07eea975dc05e5ef89be"
+    },
+    "specDigest": "2bb1e01ce7e93f3545d8f09187aa0c6182995dc186604a833a1ed7ade918b4d3",
+    "strataFingerprint": "735a7a7b24d27e4476a62fc474ce5b968bfe16711905e21d9087c045f03eb83f",
+    "targetAvailabilityFingerprint": "05fae41bb2eec08651ff3aa791ac71128b70def26b2cae363bf084822a8dbd05",
+    "trackedPrivateArtifactCount": 0
+  },
+  "gateAContentConditions": {
+    "allPhaseAValidationPassed": true,
+    "allSealsClosed": true,
+    "baselineExpectedCaseUniverseExact": true,
+    "calibrationSpecV1_2Generated": true,
+    "comparatorBundleFrozen": true,
+    "faithfulB0bIdentityConfirmed": true,
+    "full3053DenominatorReported": true,
+    "futurePerturbationPassed": true,
+    "incorrectB0bRenamed": true,
+    "privateFilesUntracked": true,
+    "scoreableServedAbstentionPassed": true,
+    "strictPracticalEquivalenceTested": true
+  },
+  "generatedAt": "2026-07-15T05:26:32.612696+00:00",
+  "phaseACheckpointCommittedAndPushed": {
+    "selfReferentialCommitShaStoredInTrackedArtifact": false,
+    "status": "runtime_verification_required_after_first_commit_and_push"
+  },
+  "postFinalizationContractVerification": {
+    "command": "npm run validate:m2:calibration-v1-2-contract",
+    "exitCode": 0,
+    "stderrBytes": 0,
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdoutBytes": 2611,
+    "stdoutSha256": "8473c84dace81bd9769fdd605cf03603c95dedc592616f8073df7336a62aa8db"
+  },
+  "runtimeReceiptRequired": true,
+  "schema": "m2.calibration_gate_a.content_result.v1",
+  "seals": {
+    "deferred60MonthBlockCount": 4,
+    "deferred60MonthLabelsOpened": false,
+    "developmentGuardSyntheticControlBuilderCalls": 1,
+    "developmentRoleMasqueradeRejectionCount": 30,
+    "embargoShadowBlockCount": 16,
+    "embargoShadowOpened": false,
+    "failClosedEntrypointLoaderSentinel": {
+      "allExitedNonzero": true,
+      "commandsChecked": 3,
+      "developmentLoaderCallCount": 0,
+      "truthBuilderCallCount": 0
+    },
+    "finalHoldoutBlockCount": 10,
+    "finalHoldoutOpened": false,
+    "runnerFinalHoldoutMode": "fail_closed_before_data_load",
+    "sealedBlockAttemptCount": 30,
+    "sealedRoleRejectionCount": 30,
+    "truthBuilderCallsForThoseBlocks": 0
+  },
+  "validationReceipt": {
+    "allCommandsExitZero": true,
+    "allExpectedFailClosedCommandsExitedNonzeroBeforeDataLoad": true,
+    "commandResults": [
+      {
+        "command": "npm run check:no-real-data",
+        "exitCode": 0,
+        "stderrBytes": 0,
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutBytes": 161,
+        "stdoutSha256": "97c26ca4bbfb1c840e9aca3889449cd25c66c7db3c9915a603631a234d3a1b8b"
+      },
+      {
+        "command": "npm run lint",
+        "exitCode": 0,
+        "stderrBytes": 0,
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutBytes": 104,
+        "stdoutSha256": "d04901bf992c788a1a454d05638cc8b8c8b4131371dece697d43be5180eaeb31"
+      },
+      {
+        "command": "npm run build",
+        "exitCode": 0,
+        "stderrBytes": 0,
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutBytes": 105,
+        "stdoutSha256": "2d5bec7602a1e3b71a9f57478ce1018efd67ce8be305ae9fb2cb25ac912249a2"
+      },
+      {
+        "command": "npm test",
+        "exitCode": 0,
+        "stderrBytes": 0,
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutBytes": 52241,
+        "stdoutSha256": "bcd3eb9131f2eb498515ead6d301fd0a4ddaa1ffbdc0c481a92d7151c18f83a1"
+      },
+      {
+        "command": "npm run smoke",
+        "exitCode": 0,
+        "stderrBytes": 0,
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutBytes": 188,
+        "stdoutSha256": "06d5fc03470dfb684293bff3d779f489cf24309cd3a98d85fef7cdeb50d29041"
+      },
+      {
+        "command": "npm run validate:m2:calibration-v1-contract",
+        "exitCode": 0,
+        "stderrBytes": 0,
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutBytes": 1593,
+        "stdoutSha256": "4cbb814a2134625641d24033ee2318ffdd8fa38d76f1d828d0f387c74860a22a"
+      },
+      {
+        "command": "npm run validate:m2:calibration-v1-1-contract",
+        "exitCode": 0,
+        "stderrBytes": 0,
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutBytes": 2465,
+        "stdoutSha256": "8504a6d003e4d44ff97829bbee95bcd30bc6ee5d5f1a1a791a1e583e9be858bc"
+      },
+      {
+        "command": "npm run validate:m2:calibration-v1-2-contract",
+        "exitCode": 0,
+        "stderrBytes": 0,
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutBytes": 2611,
+        "stdoutSha256": "72b6e7ee6eadd0916fd960abf630163597242c6ad64e5d5ce062b3f35c40c003"
+      },
+      {
+        "command": "npm run replay:m2:calibration-v1-2:preflight",
+        "exitCode": 0,
+        "stderrBytes": 0,
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutBytes": 2835,
+        "stdoutSha256": "8e7d6d8dee1bcf24f3605ca6f53d9899fb3fe02bf5d9ee13cdb41b8eb4030c46"
+      }
+    ],
+    "expectedFailClosedCommandResults": [
+      {
+        "command": "npm run replay:m2:calibration-scoring-correction:final-holdout",
+        "exitCode": 2,
+        "stderrBytes": 111,
+        "stderrSha256": "ef30aa80d8def59473bc12155222e23e3aa26acab33ce8922db68e4f2271df9f",
+        "stdoutBytes": 207,
+        "stdoutSha256": "a7cc505426a718b24f448612f513688a7535204bf27843448f8ce4685df33d1a"
+      },
+      {
+        "command": "npm run replay:m2:calibration-baselines:final-holdout",
+        "exitCode": 2,
+        "stderrBytes": 100,
+        "stderrSha256": "4faa55ad41cf35372ecc9787efe81d7e63338908fe1e41b257cae04af8eef9f5",
+        "stdoutBytes": 195,
+        "stdoutSha256": "dd1c378e768ca7006680557a2603e889b5c122e5cdbe8c40c5c28f72c1505f44"
+      },
+      {
+        "command": "npm run replay:m2:calibration-v1-2:final-holdout",
+        "exitCode": 2,
+        "stderrBytes": 124,
+        "stderrSha256": "34c45d7a6c36f93bb41e6b52739b5ebf729666ae713c5cda9a2eb4490f1f1f92",
+        "stdoutBytes": 179,
+        "stdoutSha256": "edc0e26ec72cc3f3eec8fc09a6ce8cf2f6a34c9db2de21f4c6e72440abbf4288"
+      }
+    ],
+    "failClosedEntrypointLoaderSentinel": {
+      "allExitedNonzero": true,
+      "commandsChecked": 3,
+      "developmentLoaderCallCount": 0,
+      "truthBuilderCallCount": 0
+    },
+    "phaseAStartHead": "be03db7bdec19b83139d85712bee43995d872679",
+    "recordedAt": "2026-07-15T05:38:21.094683+00:00",
+    "validatedIndexTree": "3370ea41deadbb09be38de7105a7c95e06fabb9f"
+  },
+  "version": "M2-calibration-gate-a-v1"
+}

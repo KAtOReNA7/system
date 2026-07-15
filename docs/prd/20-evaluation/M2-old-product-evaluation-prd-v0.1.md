@@ -1,8 +1,10 @@
 # M2 old-product evaluation PRD v0.1
 
-Status: M2-A DESIGN ONLY
+Status: HISTORICAL M2-A BASELINE WITH 2026-07-15 CALIBRATION V1.2 ADDENDUM
 
 This document defines the M2 old-product evaluation scope for design and fixture/synthetic testing. It is based on `docs/prd/05-老品评估.md`, `docs/prd/20-evaluation/common-evaluation-rules.md`, and the M1 closeout audit. M2-A does not authorize formal database access, real data import, `mapping_version` activation, `switch_mapping_version`, or formal old-product evaluation.
+
+The phase statements above and below preserve the original M2-A boundary for historical traceability. For final-algorithm calibration, `src/domain/oldProductEvaluation/calibrationSpec.v1.2.amendment.json` and `docs/analysis/m2-real-data/M2-calibration-v1.2-comparator-identity-decision-v1.md` take precedence for B0b/B4 identity, full-library coverage, practical equivalence, comparator selection, Gate A, and C1. The v1 and v1.1 files remain digest-bound historical checkpoints for every subject not replaced by v1.2. The current authorized work is isolated local calibration only. It does not approve a candidate for formal decision or release and does not authorize C2-R/C2/C3 or M3.
 
 ## 1. Positioning
 
@@ -30,7 +32,7 @@ M2 includes:
 - business-form and channel income structure;
 - lifecycle identification;
 - remaining copyright-period forecast;
-- three-scenario forecast: base, optimistic, pessimistic;
+- one point forecast, annual breakdown, confidence, and limitation;
 - rating result: `S+`, `S`, `A`, `B`, `C`, `D`, `E`;
 - risk identification;
 - fact-based review prompts without automatic operating actions;
@@ -54,6 +56,8 @@ M2-A excludes:
 - algorithm calibration and Codex rule repair;
 - notification/email delivery implementation;
 - page or API implementation.
+
+These exclusions describe the historical M2-A phase. Separately authorized isolated local calibration may use the final authoritative local inputs, but it remains non-release work and must observe the current calibration decision and safety boundary.
 
 ## 5. Input Data
 
@@ -87,8 +91,10 @@ Each successful old-product evaluation result should output:
 - lifecycle type and confidence;
 - historical income summary;
 - remaining copyright-month count;
-- base, optimistic, and pessimistic forecast totals;
+- one point forecast total;
 - annual forecast breakdown;
+- forecast confidence;
+- forecast limitation, including `extrapolated` when applicable;
 - rating and rating rationale;
 - risks;
 - fact-based review prompts and unresolved evidence requirements;
@@ -116,11 +122,20 @@ Thresholds, windows, and final classification rules remain PENDING-DATA until re
 
 The forecast period starts after the latest confirmed complete month and ends at the standard work copyright end date.
 
-Forecast output:
+`REQ-M2-FORECAST-OUTPUT-001` is FROZEN as of 2026-07-14:
 
-- base scenario;
-- optimistic scenario;
-- pessimistic scenario;
+- Product, page, API, Excel, and formal-export contracts expose exactly one point forecast, its annual breakdown, confidence, and limitation.
+- Annual values must reconcile exactly to the exposed point forecast total, subject only to a documented currency-rounding rule.
+- `confidence` and `limitation` explain evidence strength and applicability. They must not encode hidden high/base/low values or act as interval endpoints.
+- An internal 80% prediction interval may be computed solely for coverage and weighted interval score (`WIS`) calibration. Work-level interval bounds are not product, API, Excel, or formal-export fields.
+- The aliases `optimistic`, `pessimistic`, `high`, `base`, and `low` are prohibited in the current external forecast contract. Historical fixture/prototype fields may remain only as explicitly non-formal regression evidence.
+- Channel-level component forecasts may be calculated internally where required by the frozen route, but only their reconciled work-level point total and annual breakdown enter the external contract.
+- A forecast extending beyond 24 months without qualifying 36/60-month cohort evidence must include the `extrapolated` limitation.
+- An exact rights-end date determines the remaining-month horizon. Perpetual rights use a 60-month planning horizon and the `perpetual_rights_60_month_planning_horizon` limitation. A fully known relative term uses integer calendar months and derives its end month from `rights_start_month + relative_term_months`; when both derivation fields are absent it uses 24 months with `rights_horizon_not_exact`, while a one-field-only or invalid pair fails closed. A year-only end uses no more than the months through December of that year, capped at 24, with the same limitation. `expired_unknown_date` produces a zero-month, zero-point forecast with `rights_expired_unknown_date`; it must never become a silent 24-month forecast. Serving validates every snapshot, filters `available_as_of <= origin`, selects the latest available month, de-duplicates identical latest payloads, and fails closed on distinct latest payloads, no eligible snapshot, unknown availability, or invalid term fields. A caller-supplied serving horizon is prohibited. Fixed-horizon backtests do not use the current rights snapshot as a historical feature. No implementation may invent an exact end date.
+- Candidate forecasts are fitted only at 3/6/12/18/24 months. A non-core horizon up to 24 months uses the smallest core anchor at or above it and scales by `H/anchor`; a horizon over 24 months scales the 24-month point by `H/24`. The 36/60-month labels are audit-only and must not fit this adapter. `pure_buyout` instead uses its frozen historical monthly-equivalent rule for the requested horizon.
+
+The following are evaluation or audit metadata, not additional work-level forecast payload fields:
+
 - yearly breakdown;
 - remaining-month count;
 - assumptions and rule version;
@@ -128,13 +143,20 @@ Forecast output:
 
 M2-A may use deterministic fixture formulas. M2-C/M2-D must use backtested rules and formally ready M1 data.
 
+Final-algorithm candidates must not apply one time-series route to every revenue model:
+
+- `pure_sales_share`: predict each eligible channel independently as a point value, then reconcile by summing the channel points;
+- `pure_buyout`: use historical buyout cadence and monthly-equivalent treatment;
+- `buyout_plus_sales`: forecast future sales-share income only and never forecast a future buyout payment;
+- an unresolved revenue model must not be silently assigned to any of the three routes and must be reflected in eligibility or limitation according to the pre-registered spec.
+
 ## 9. Rating System
 
 Ratings are `S+`, `S`, `A`, `B`, `C`, `D`, `E`.
 
 Design principles:
 
-- forecast value is the base signal;
+- the single point forecast value is the primary signal;
 - lifecycle, remaining copyright period, risk, and operational opportunity may adjust the result;
 - `S+` requires explicit confirmation in formal flow;
 - `E` indicates down-shelf or no meaningful future income;
@@ -156,7 +178,7 @@ Initial risk categories:
 - data issue unresolved;
 - forecast confidence low.
 
-Each risk should include severity, affected field, rationale, and suggested mitigation.
+Each risk should include severity, affected field, rationale, observed evidence, and any required human confirmation. It must not include a suggested operating action or mitigation.
 
 ## 11. Review Prompts and No-Operating-Suggestion Boundary
 
@@ -178,17 +200,72 @@ Backtesting dimensions:
 - classification;
 - revenue scale;
 - business form mix;
+- source;
+- revenue model;
+- shelf and rights status;
+- high-value cohort;
+- long-tail, dormant, sparse-income, and spike-candidate cohorts;
+- rights-term type;
 - algorithm version;
 - forecast horizon;
 - rating.
 
-Metrics:
+All dimensions used as model features or routing inputs must be reconstructed as of the historical cutoff. A work enters an origin's case universe only after its first observed income source row; a future catalog entrant is absent at earlier origins, not represented as a blocked zero. When a historical shelf or rights-status snapshot does not exist, the current value may be used only as a labelled post-hoc analysis slice and must never enter historical features, routing, eligibility, parameter/model selection, gate tuning, or acceptance failure.
 
-- absolute error amount;
-- percentage error;
-- interval coverage;
-- over/under prediction bias;
+Core rolling horizons are 3, 6, 12, 18, and 24 months. Cohorts with sufficient history also receive non-selection 36- and 60-month long-horizon audits. The final two eligible origins are the untouched final holdout and must not be used for model, parameter, threshold, forecastability, stratum, confidence, interval, or gate selection.
+
+Before v1.2 baseline replay or candidate training, the machine-readable v1.2 amendment must bind the canonical digests of both prior checkpoints and freeze the corrected identities, formulas, state semantics, origins, seed, full-3053 population denominators, strict equivalence rule, comparator bundle, Gate A, C1 search space, and C1 acceptance gates. No result-dependent threshold or eligibility edit is allowed. Any change after opening the final holdout requires a new full spec and a new untouched holdout.
+
+Comparator roles are distinct:
+
+- `B0a` is the previously recorded v1.1 metric set and is audit-only. It cannot participate in fair ranking or candidate acceptance.
+- `B0b` is `B0b_v1_1_leakage_free_replay`: the legacy Model E selector and A/B/C/D point formulas, replayed with cutoff-only quantiles/priors, neutral historical rating, independent serving state, and mandatory revenue-model/channel routing.
+- `B1`, `B2`, and `B3` are the pre-registered simple baselines defined by the digest-bound `calibration-spec-v1` plus `calibration-spec-v1.1-amendment` pair.
+- `B4` is `B4_formula_switched_legacy_variant`, the lifecycle-robust formula formerly misnamed B0b. It remains a legal reported baseline but is not a faithful v1.1 identity.
+
+The fitted seven-stage lifecycle-factor paragraph in the prior version describes B4, not faithful B0b. Faithful B0b uses the legacy selector structure with origin-as-of component quantiles/priors and no outcome-fitted lifecycle vector. Historical current-state gates, target-20%-coverage boundary movement, blocked-null-to-zero scoring, unconfirmed-spike automatic damping, and unavailable overlapping interval residuals are illegal and are explicitly listed as required-policy divergences in the formula-difference manifest.
+
+The digest-bound B0a-to-“B0b” attribution report is an immutable historical audit artifact. Its Stage 7 is now identified as B4, not faithful B0b: recorded B0a; legacy model on the new fixed case-key intersection; as-of quantiles/priors; as-of rating/lifecycle/features; new eligibility; new abstention scoring; and the formula-switched lifecycle variant. Stages 2 through 7 use exactly the same development intersection keys and change only the named layer. The recorded B0a has no identical case keys, so its difference to Stage 2 is a non-causal historical-to-intersection bridge gap. Faithful B0b is defined only by v1.2 and the new formula-difference manifest. A missing legacy artifact must be reported as not reconstructable, never fabricated, and no attribution stage may participate in comparator or candidate selection.
+
+The three warm-up origins are not comparator or point-gate cases. They may supply interval-only residuals only when their predictions were materialized before truth join under the frozen cold-start contract and their labels are target-available at the later score origin. Faithful `B0b` uses its origin-as-of Model E selector context without fitted lifecycle factors; B4 alone uses the historical lifecycle-factor roles; `B1/B2/B3` use their frozen formulas. If Gate A later authorizes C1, C1 uses only the v1.2 pre-registered insufficient-inner-evidence fallback and its own prior out-of-fold residuals. No C2-R/C2/C3 fallback or training is authorized by this PRD revision. At the first required score origin, `2020-12`, the only authorized warm-up blocks are `2019-06:[3,6,12,18]`, `2019-12:[3,6,12]`, and `2020-06:[3,6]`. Warm-up rows cannot enter comparator selection, point gates, or bootstrap, and cannot change any interval method, threshold, fallback group, or gate.
+
+This baseline phase is development-only. The latest authorization permits only C1, and only after every Gate A item is independently verified true on the committed and pushed Phase A tree. C1 must stop after development validation whether it passes or fails. The final two eligible origins, embargo shadow, and deferred 60-month labels remain closed; this revision does not authorize `selectedCandidateId`, final-holdout evaluation, C2-R/C2/C3, release, or M3. Any later final-holdout protocol requires a separate explicit user decision and a precommitted candidate; a confirmation failure can never trigger model switching on the opened holdout.
+
+All comparators and candidates must use identical case keys. A future-perturbation invariance test must prove that changing data after a cutoff cannot change that cutoff's features, route, `statisticallyScoreable`, `businessServingEligible`, raw prediction, served prediction, abstention reason, or case keys. Baseline results and this integrity evidence must be reviewed before candidate training begins.
+
+`forecastabilityStatus` is no longer allowed to represent three different concepts. The corrected contract keeps these fields independent:
+
+- `statisticallyScoreable`: the case has at least 12 observed calendar months before the cutoff, a complete and available target-actual window, valid income facts, and valid identity reconciliation, so it participates in model backtesting;
+- `modelPredictionAvailable`: the model materialized a finite numeric `rawModelPrediction` before truth join;
+- `businessServingEligible`: model-independent cutoff-available hard rules permit displaying a numeric forecast;
+- `abstained`: `servedPrediction` is null and a frozen-precedence `abstentionReason` is mandatory.
+
+A scoreable case does not disappear because it has no historical positive income, an unresolved route, or a business abstention. Every fair comparator/candidate must retain a numeric `rawModelPrediction` for every scoreable case or fail integrity. `servedPrediction` equals raw only when business serving is eligible and the raw prediction is available; otherwise it is null. A blocked or abstained served null must never be coerced to zero in a model WAPE.
+
+Metrics are reported in three explicitly different populations:
+
+- all-scoreable model metrics use `rawModelPrediction` for every `statisticallyScoreable` case and include WAPE, MAE, SMAPE, signed aggregate bias, and horizon stability;
+- served-cohort metrics use `servedPrediction` only for `statisticallyScoreable && businessServingEligible` cases and include WAPE, bias, and high-value performance;
+- abstention metrics include served work share, served actual-revenue share, top1/top5/top10 served-revenue share, abstained work count and revenue share, reason distribution, and high-value abstained count;
+- internal 80% prediction-interval coverage and `WIS`, using only frozen warm-up/forward residual roles with `origin < score_origin`, `target_end <= score_origin`, and `label_available_as_of <= score_origin`;
+- signed aggregate bias, fixed as `(sum(pred)-sum(actual))/sum(actual)` for a slice with positive actual revenue;
 - business usability notes.
+
+Signed aggregate bias must remain within +/-10% for all-scoreable overall, served overall, and served high-value results, and within +/-15% at each all-scoreable core horizon. A zero-actual slice has undefined signed aggregate bias and must be reported separately rather than treated as a pass. After the baseline identity is locked on the frozen all-scoreable forward population, that same baseline must be re-scored on each gate's exact population; the comparator must not be reselected per gate.
+
+The interval population is every all-scoreable model-delta key beginning with the `2020-12` score origin, with no burn-in exclusion, and uses `rawModelPrediction`. Business serving or abstention must not filter interval cases. Every required key must have a numeric interval for both compared models. Complete-case filtering is prohibited; any missing, non-finite, negative, or otherwise invalid required residual or interval is an integrity/gate failure and must not be silently discarded.
+
+Uncertainty comparisons and confidence intervals must use a paired two-way block/bootstrap design that independently resamples `standard_work_id` and origin clusters with replacement and weights each paired case by the product of their multiplicities. All horizons within a work-origin block remain together; overlapping cases must not be sampled as independent observations.
+
+For baseline comparator selection, first identify the legal empirical leader by full-precision all-scoreable raw WAPE. Practical equivalence requires all four conditions simultaneously: absolute relative WAPE difference no greater than 1%; paired work×origin bootstrap relative-delta 95% CI entirely inside `[-1%, +1%]`; signed-bias difference no greater than two percentage points; and no top10 or core-horizon WAPE regression over 2%. Only then may simplicity select among the strict equivalent set under `B1 < B2 < B3 < B0b < B4`. The bundle always reports the primary comparator, B1, B3, and faithful B0b. B0a never participates.
+
+Statistical scoreability and business-serving eligibility are frozen before corrected replay. They may use only model-independent, cutoff-available hard conditions and may not use current rating, current shelf/rights status, current risk bucket, current business action status, candidate results, or holdout results. The prior 77.88% forecastable-revenue share and 20.38% true-blocked-revenue share are historical references only; labels or thresholds must not move to reproduce either ratio. Current source/shelf/rights values without historical snapshots remain post-hoc-only.
+
+The v1.1 pre-C1 top10 served-revenue 90% rule remains an audit-only non-regression reference on its original all-scoreable overlapping-case denominator. It is not a Gate A item and may not be reinterpreted as a full-3053 bucket gate: that would make frozen historical scoreability itself an impossible candidate prerequisite. V1.2 reports scoreable and served coverage against top1/top5/top10 buckets ranked across all 3053 works before filtering, uses those values only for post-hoc population disclosure, and suppresses a served/abstained complement smaller than 10. The numerical 90% reference has not been lowered; it has been removed from candidate authorization because the latest exhaustive Gate A contract replaces the invalid denominator semantics. Eligibility still may not move to hit any coverage target.
+
+A spike rule first creates a candidate for evidence review. It must distinguish buyout, launch burst, batch proration, settlement lag, and true anomaly; no unconfirmed spike type may trigger automatic attenuation.
+
+The latest user decision authorizes C1 only when every machine-readable Gate A condition is true after the Phase A checkpoint is committed and pushed. C1 then uses only its pre-registered transparent component grid and development inner origins. This authorization does not extend to C2-R/C2/C3. Every C1 result, including a pass, remains `not_for_formal_decision` until Chinese business sampling and explicit user approval.
 
 M2-A designs the object model and fixture checks. M2-C/M2-D require real historical data readiness.
 
@@ -219,12 +296,15 @@ M2 export should match page filters and include:
 - overview totals;
 - list rows;
 - selected detail fields;
-- forecast totals and yearly breakdown;
+- one point forecast total and its yearly breakdown;
+- forecast confidence and limitation;
 - rating and risk fields;
 - review-prompt and unresolved-risk summary;
 - backtest metrics where requested.
 
 M2-A only defines export consistency tests. It does not implement export.
+
+Current Excel and formal export schemas must not contain scenario or prediction-interval columns. Internal backtest artifacts may retain the 80% interval evidence needed for aggregate coverage and `WIS` calibration, but that evidence is not a work-level formal forecast output.
 
 ## 15. M2 Does Not Do
 
@@ -250,14 +330,18 @@ M2 does not:
 | M2-C | controlled formal-data readiness | explicit formal authorization required | M1 formal data readiness and backtest dataset approved |
 | M2-D | formal old-product evaluation | authorized formal environment only | full old-product evaluation and backtest acceptance |
 
+The 2026-07-14 activity is a separately authorized isolated local final-algorithm calibration and candidate-selection step. It does not retroactively change the historical phase table, does not enter M3, and does not grant release authority.
+
 ## 17. Acceptance Standards
 
 M2-A acceptance:
 
 - PRD covers scope, non-goals, phase split, inputs, outputs, lifecycle, forecast, rating, risks, review prompts, the no-operating-suggestion boundary, backtest, versioning, export, and acceptance.
-- API contract covers overview, list, detail, history, gaps, backtest, algorithm version, and controlled task APIs.
+- API contract covers overview, list, detail, history, gaps, backtest, algorithm version, and controlled task APIs, and exposes only the frozen point forecast, annual breakdown, confidence, and limitation forecast fields.
 - Data model design covers evaluation batches, results, summaries, lifecycle, forecasts, ratings, risks, review prompts, backtests, versions, snapshots, invalidation, and M1 dependencies. Legacy suggestion persistence is not part of the current formal output contract.
 - Page plan covers overview, list, detail, gaps, backtest/version pages, states, fixture labels, incomplete-month notice, and formal-data blocking.
 - Test plan covers fixture, synthetic, readiness, lifecycle, rating, forecast, backtest, API, page, export, and prohibited-action tests.
 
-Formal M2 acceptance remains blocked until M1 formal data readiness is complete.
+Final-algorithm calibration additionally requires the committed pre-registration, untouched final holdout, leakage and future-perturbation invariance tests, B0a audit plus faithful B0b/B1/B2/B3/B4 identical-case replay, routed revenue-model handling, correlated block-bootstrap inference, internal 80% interval calibration, frozen signed-bias gates, long-horizon audit, Chinese business sampling plan, and explicit `not_for_formal_decision` state.
+
+The original M2-A acceptance statement treated M1 readiness as pending. Current foundation readiness is complete, but final M2 algorithm acceptance remains blocked until a pre-registered candidate passes every gate, Chinese business sampling is complete, and the user explicitly approves a later formal decision and release.

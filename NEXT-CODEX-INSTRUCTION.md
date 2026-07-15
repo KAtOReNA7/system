@@ -4,7 +4,7 @@
 
 当前入口是：
 
-`基于最终 3053 部权威基础数据拟定并执行 M2 最终上线预测算法校准；旧 v1.1 conditional 已被用户拒绝，不得 release，不得进入 M3`
+`复核已完成的 calibration-spec-v1.2、Gate A 和 C1 FAIL 证据；停在 C1 后等待用户下一次明确授权，不得自动进入 C2-R/C2/C3/M3、final holdout 或 release`
 
 ## 当前状态
 
@@ -17,6 +17,15 @@
 - 最终 3053 部范围的收入模式重算稳定：pure_sales_share=2578、pure_buyout=287、buyout_plus_sales=183、unknown=5。
 - 最终 3053 部范围的前台评级重算稳定：S+=38、S=117、A=84、B=358、C=152、D=356、E=1948。
 - v1.1 conditional 已被用户明确拒绝作为最终上线预测算法；旧 package 只保留审计和对照用途，禁止 approved/released。
+- `calibration-spec-v1.2-amendment` 已纠正 baseline 身份：faithful B0b 是旧 v1.1 Model E（A/B/C/D selector）的无泄漏 as-of 重放；此前误称 B0b 的公式切换版本已改名 B4。
+- development forward 每模型 18615 个 case，statistically scoreable 12223，覆盖 1044/3053 部作品；served null 不按 0 混入模型 WAPE，`zeroImputationUsed=false`。
+- faithful B0b/B1/B2/B3/B4 all-scoreable WAPE 分别为 1.6996/1.9022/1.8640/1.6995/1.6666，signed bias 分别为 +1.1024/+1.4794/+1.4497/+1.2348/+1.1961；所有 baseline 均不满足最终候选 bias gate。
+- practical-equivalence 已改为 WAPE 相对差、paired block-bootstrap 等价区间、bias 差和 top10/horizon 回退四项严格 AND；仅 B4 属于严格等价集合，primary comparator 锁定 B4。B1、B3 和 faithful B0b 仍必须并列报告。
+- 完整人口覆盖使用 3053 部和 192872 条权威事实，其中截至 2026-04 的 192869 条完整月事实作为非重叠收入分母；历史 scoreable 1044 部、unscoreable 2009 部。
+- Phase A checkpoint `879fbd0a951ce6d465082321b38f965b14815935` 已 push；推送后 runtime receipt 已核对真实远端 SHA、重跑全部验证并独立复算 Gate A，所有条件为 true。
+- C1 transparent ensemble 已按 8 个组件、148 个候选和 nested expanding-origin 完成 development validation；5 个 outer origin 均没有 bias-feasible candidate，使用预注册 fallback，未放宽任何 gate。
+- C1 all-scoreable WAPE / signed bias 为 3.8502 / +3.5114，高价值 WAPE / bias 为 2.9538 / +2.7188，内部 80% coverage 为 0.8302；相对 B4 overall WAPE 回退 131.02%，bootstrap 相对差 95% CI 为 [0.0531, 4.5434]。19 项验收仅 5 项通过，结论为 `FAIL`。
+- C1 结构验证、同 case-key、无泄漏、future perturbation、raw/served/abstention、C1-only interval 和脱敏契约全部通过；模型质量失败后已按要求停止。final holdout、embargo、60 月标签及 C2-R/C2/C3 仍 sealed，状态保持 `not_for_formal_decision`。
 - 作者、版权开始、版权到期、作品状态和音频版权状态已按用户确认口径完成本地文件级 staging 收口，禁止依据旧 gap 报告重新生成待办。
 - 用户最终分类标签基础表已固定：3053 部作品，出版物 1195 部、网文 1858 部，分类与标签人工缺口为 0；private 明细不进入版本控制。
 - 最终表修正 836 部作品，固定 387 部作品、532 个标签赋值；新增分类和标签已进入受控词表 `2026-07-10-user-confirmed-v2`。
@@ -55,20 +64,31 @@
 20. `scripts/m2-real-data/run_m2_formal_local_execution.mjs`
 21. `src/repositories/m2EvaluationExportRepository.js`
 22. `docs/analysis/m3/M3-next-execution-roadmap-v1.md`
+23. `src/domain/oldProductEvaluation/calibrationSpec.v1.1.amendment.json`
+24. `docs/analysis/m2-real-data/M2-calibration-baseline-scoring-correction-v1.md`
+25. `docs/analysis/m2-real-data/M2-B0a-B0b-replay-attribution-v1.md`
+26. `docs/analysis/m2-real-data/M2-calibration-baseline-development-v1.1.md`
+27. `scripts/m2-real-data/run_m2_calibration_scoring_correction.py`
+28. `src/domain/oldProductEvaluation/calibrationSpec.v1.2.amendment.json`
+29. `docs/analysis/m2-real-data/M2-baseline-comparator-identity-correction-v1.md`
+30. `docs/analysis/m2-real-data/M2-calibration-population-coverage-v1.md`
+31. `docs/analysis/m2-real-data/M2-calibration-gate-a-v1.json`
+32. `docs/analysis/m2-real-data/M2-C1-development-validation-v1.md`
+33. `scripts/m2-real-data/run_m2_c1_development_validation.py`
 
 ## 下一轮推荐任务
 
 优先执行：
 
-`一次性完成 M2 最终上线预测算法校准与候选选择：只使用最终 3053 部权威基础数据和 192872 条收入事实，对旧 v1.1 做可复现基线对照，建立候选、滚动回测、分层误差、区间校准和业务可读验证包；未达到门槛则如实 FAIL，不得 release 或进入 M3`
+`停在已验证的 C1 FAIL checkpoint，先向用户报告并等待新的明确方法授权；不得自行开始 C2-R/C2/C3、打开 final holdout、release 或进入 M3`
 
 执行要求：
 
-1. 先确认 `HEAD == origin/main`、工作区范围和本机隔离环境；读取 README、AGENTS、当前 PRD、v1.1 验证报告、post-foundation readiness 和 formal-local execution 汇总。
+1. 在 `codex/m2-calibration-v1` 上确认两个 checkpoint 均已正常 push 且 `HEAD == origin/codex/m2-calibration-v1`、工作区 clean；读取 README、AGENTS、当前 PRD、calibration-spec-v1/v1.1/v1.2、Gate A、baseline replay 和 C1 validation。
 2. 只使用最终 3053 部权威基础信息、最终 mapping 和 192872 条收入事实；不得重新清洗或覆盖已确认基础字段，除非发现可证明的工程错误并先报告。
-3. 将 v1.1 作为被拒绝的历史基线，不做状态包装或小修粉饰。新候选必须重新完成 3/6/12/18/24 月滚动回测、关键分层比较、区间覆盖、P0/P1/P2、稳定性和高价值样本检查。
+3. 将旧 v1.1 作为被拒绝的 B0a 历史锚点；faithful B0b、B1、B2、B3、B4 使用已冻结的 12223 个 scoreable keys。不得恢复 forecastabilityStatus 混合口径，不得把 abstained served null 按 0 计入模型 WAPE。
 4. 生成中文、可读、Git 忽略的业务验证表，以及不含真实作品明细的可提交聚合报告；测试结果主要信息必须中文化。
-5. 新候选通过工程门槛后仍不得自动 release；必须再次交给用户抽检并获得明确批准。M2 输出继续禁止自动运营建议或资源投入动作字段。
+5. C1 已完成并 FAIL；不得重复训练、改 gate、自动进入 C2-R/C2/C3、打开 final holdout 或 release。下一算法动作必须由用户在复核 C1 证据后另行明确授权。M2 输出继续禁止自动运营建议或资源投入动作字段。
 
 ## 当前允许做的事
 

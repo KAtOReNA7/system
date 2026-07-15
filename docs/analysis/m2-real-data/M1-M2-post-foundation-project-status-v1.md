@@ -8,6 +8,8 @@
 - 严格对账 22 项全部通过：基础信息、mapping、收入事实、评估结果和导出范围一致，自动运营建议为 0，开放 blocking review 为 0。
 - 当前算法仍为 `m2-realdata-dev-disentangled-forecast-v1.1-conditional`，算法未标记为 formal，3053 条结果均保持 `not_for_formal_decision=true`；export 仅为 `prepared`。
 - 用户已于 2026-07-13 明确拒绝该 conditional 算法与 prepared export，禁止 release。下一工程任务是以当前 3053 部最终权威基础数据和 192872 条收入事实校准最终上线预测算法；M3 formal execution 未获授权且继续暂缓。
+- 2026-07-14 已完成 calibration-spec-v1.1 scoring / eligibility correction、B0a→B0b 七阶段归因和 B0b-B3 development replay。当前 statistically-scoreable case 为 12223；abstention 的 unique work×origin 小于公开最小 cell，因此 served/abstained 精确计数按互补保护规则不公开。top1/top5/top10 served revenue coverage 均为 1.0000；comparator 按冻结等价规则锁定 B1。全部 baseline 的 signed bias 仍明显超出最终候选 gate，C1 尚未开始，final holdout/embargo/60-month labels 继续 sealed。
+- 七阶段固定 keys 归因中，as-of quantile/prior/features 合计使 WAPE 下降 0.0091，eligibility/abstention raw WAPE 变化为 0，旧 selector 切换到完整 B0b 公式增加 1.0917。逐 fold prediction lock、future perturbation、sealed truth guard、fold-training fingerprint 与 private manifest/report hash 复算全部通过。
 
 ## 当前状态
 
@@ -30,7 +32,7 @@
 | 标准作品与基础信息 | active 版本和不可变输入快照已创建 | 隔离本地执行完成，不等于生产发布 |
 | 历史收入与收入模式 | 3053 部、192872 条事实重算通过 | DB-backed 严格对账通过 |
 | 生命周期与评级 | rating-standard-v3 已进入正式输入快照 | 仍受 conditional 算法发布门禁约束 |
-| 剩余版权期预测 | v1.1 `CONDITIONAL PASS` | WAPE 0.6409，baseline 0.7043，coverage 0.5769，P0/P1/P2 为 0/0/473 |
+| 剩余版权期预测 | 旧 v1.1 rejected；scoring correction 完成 | B0a 0.6409 仅为历史锚点；旧 1.3167 为 null→0 业务覆盖混合量，不是模型 WAPE；修正后 B0b all-scoreable WAPE 1.6666、bias +1.1961 |
 | 风险与运营处理 | 只保留风险和事实型复核提示 | 自动运营建议已从正式结果和导出移除 |
 | 回测 | 固化到当前算法和输入版本 | 可复现证据已记录，尚未最终 release |
 | task/export/audit | 1 个 task 成功、7 个 audit event、3053 个 export item | package=`prepared`，released package=0 |
@@ -38,7 +40,7 @@
 ## 当前需要人工介入
 
 1. 当前不需要继续补基础数据；用户已声明当前版本是上线时继续使用的最准确基础数据。
-2. 系统先完成最终上线预测算法校准、回测和中文业务验证包；形成新候选后再由用户抽检。
+2. scoring correction、baseline replay 和中文聚合报告已完成；系统停在 C1 前，等待用户复核并决定是否授权候选训练。
 3. 新候选获得明确批准前，不得把算法改为 formal，不得把结果改为可正式决策，不得发布 export，也不得进入 M3 formal execution。
 
 ## 系统已经完成的动作
@@ -47,10 +49,11 @@
 2. 在隔离本地 PostgreSQL 上完成 migration、正式基础信息、收入事实、mapping、评估、task、audit 和 prepared export。
 3. 完成 22 项严格对账，确认 3053 部范围、192872 条事实、金额、版本、快照和导出均一致。
 4. 保持 conditional 安全边界：算法未 formal、结果不可用于正式决策、package 未 release。
+5. 冻结 scoreable/served/abstention 三套人口，完成 future perturbation、case-key parity、work×origin block bootstrap、内部 80% PI 和七阶段差异归因；未训练任何候选。
 
 ## 边界
 
 - 本报告只包含脱敏聚合，不包含作品名、作者名、渠道名或行级收入。
 - private Excel/JSON、payload、缓存和数据库备份不进入版本控制。
-- 当前是“隔离本地 formal execution 已完成、旧 v1.1 release 已被拒绝、等待新算法校准”，不是生产发布审批完成。
-- 最新执行证据见 `docs/analysis/m2-real-data/M2-formal-local-execution-summary-v1.md`。
+- 当前是“隔离本地 formal execution 已完成、旧 v1.1 release 已被拒绝、baseline scoring correction 已完成、等待用户决定是否授权 C1”，不是生产发布审批完成。
+- 最新校准证据见 `docs/analysis/m2-real-data/M2-calibration-baseline-development-v1.1.md`、`docs/analysis/m2-real-data/M2-calibration-baseline-scoring-correction-v1.md` 和 `docs/analysis/m2-real-data/M2-B0a-B0b-replay-attribution-v1.md`。

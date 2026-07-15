@@ -1,6 +1,6 @@
 {
   "schema": "m1_m2.post_foundation_project_status.v1",
-  "generatedAt": "2026-07-13",
+  "generatedAt": "2026-07-14",
   "foundationData": {
     "workCount": 3053,
     "publicationWorks": 1195,
@@ -59,12 +59,58 @@
     "trueBlockedRevenueShare": 0.2038,
     "algorithmFormal": false
   },
+  "calibrationScoringCorrection": {
+    "specVersion": "calibration-spec-v1.1-amendment",
+    "decisionStatus": "not_for_formal_decision",
+    "developmentCaseCountPerBaseline": 18615,
+    "statisticallyScoreableCaseCount": 12223,
+    "businessServingEligibleCaseCount": null,
+    "abstainedCaseCount": null,
+    "abstainedWorkCount": "<10",
+    "abstentionCellSuppressed": true,
+    "servingCountSuppressedToProtectComplementSmallCell": true,
+    "top1ServedRevenueCoverage": 1.0,
+    "top5ServedRevenueCoverage": 1.0,
+    "top10ServedRevenueCoverage": 1.0,
+    "top10CoverageGateMinimum": 0.9,
+    "top10CoverageGatePassed": true,
+    "servedWorkShare": 0.99888081,
+    "servedActualRevenueShare": 1.0,
+    "lockedComparator": "B1",
+    "empiricalLowestWapeBaseline": "B0b",
+    "allScoreableMetrics": {
+      "B0b": { "wape": 1.66656758, "signedAggregateBias": 1.19610576 },
+      "B1": { "wape": 1.90216107, "signedAggregateBias": 1.47943848 },
+      "B2": { "wape": 1.86398333, "signedAggregateBias": 1.44974836 },
+      "B3": { "wape": 1.69947001, "signedAggregateBias": 1.23477116 }
+    },
+    "legacyCoverageAwareNullToZeroValue": 1.31666957,
+    "legacyCoverageAwareValueIsModelWape": false,
+    "attribution": {
+      "fixedKeyLegacyModelWape": 0.58395205,
+      "asOfSafeLegacyModelWape": 0.57489182,
+      "asOfQuantilePriorAndFeatureDelta": -0.00906023,
+      "eligibilityAndAbstentionRawModelWapeDelta": 0.0,
+      "legacyModelToCompleteB0bFormulaDelta": 1.09167576,
+      "stages2Through7CaseAndActualFingerprintsEqual": true
+    },
+    "caseKeyAndStateParityPassed": true,
+    "futurePerturbationInvariant": true,
+    "predictionLockBeforeTruthJoinVerified": true,
+    "sealedTruthJoinGuardPassed": true,
+    "privateManifestEvidenceBound": true,
+    "publicReportPrivacyScanPassed": true,
+    "candidateTrainingStarted": false,
+    "finalHoldoutOpened": false,
+    "embargoShadowOpened": false,
+    "deferred60MonthLabelsOpened": false
+  },
   "milestones": {
     "m1LocalDataReadiness": "active_local_formal_basic_info_version",
     "m1FormalAcceptance": "local_execution_complete_not_production_released",
     "m2LocalEngineeringCandidate": "formal_local_execution_reconciled",
     "m2ScopeReconciliation": "3054_identity_scope_reconciled_to_3053",
-    "m2FormalCompletion": "v1_1_rejected_recalibration_required",
+    "m2FormalCompletion": "baseline_scoring_corrected_waiting_for_C1_authorization",
     "m3FormalExecution": "not_started"
   },
   "humanIntervention": {
@@ -76,7 +122,7 @@
     "newAlgorithmBusinessAcceptanceRequiredAfterCalibration": true,
     "m3FormalAuthorizationRequired": true
   },
-  "nextAction": "calibrate_final_production_forecast_algorithm_on_authoritative_3053_work_input",
+  "nextAction": "user_review_baseline_scoring_correction_then_explicitly_decide_whether_to_authorize_C1",
   "boundaries": {
     "formalExecutionAuthorized": true,
     "localDatabaseWritten": true,
@@ -96,5 +142,5 @@
     "authoritativeFoundationWorkCount": 3053,
     "authoritativeIncomeFactRowCount": 192872
   },
-  "latestEvidence": "docs/analysis/m2-real-data/M2-formal-local-execution-summary-v1.md"
+  "latestEvidence": "docs/analysis/m2-real-data/M2-calibration-baseline-development-v1.1.md"
 }
