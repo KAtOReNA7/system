@@ -52,10 +52,13 @@
     "inputRole": "cash_commitment_snapshots",
     "snapshotUnit": "standard_work_id_x_commitment_id_x_available_as_of",
     "requiredFields": [
+      "standard_work_id",
       "commitment_id",
       "cash_type",
       "status",
       "confirmed_amount",
+      "outstanding_amount",
+      "receivable_status",
       "expected_posting_month",
       "confirmed_as_of",
       "available_as_of",
@@ -69,18 +72,64 @@
       "signed",
       "confirmed"
     ],
+    "eligibleReceivableStatuses": [
+      "outstanding",
+      "partially_outstanding"
+    ],
     "monthFormat": "YYYY-MM",
-    "visibilityPredicate": "available_as_of<=origin_and_confirmed_as_of<=origin",
+    "visibilityPredicate": "confirmed_as_of<=available_as_of<=origin",
     "snapshotSelection": "latest_available_as_of_per_commitment_at_or_before_origin_with_identical_payload_deduplication_and_conflicting_latest_payload_fail_closed",
     "futureEvidenceMayBackfillHistoricalCutoff": false,
     "missingConfirmationTimestampBehavior": "not_committed_as_of_cutoff",
     "missingEvidenceAvailabilityBehavior": "not_committed_as_of_cutoff",
     "missingAmountOrExpectedPostingMonthBehavior": "not_committed_as_of_cutoff",
+    "settledOrCancelledAtCutoffBehavior": "not_outstanding_future_cash",
+    "pointAmountField": "outstanding_amount",
+    "outstandingAmountMayExceedConfirmedAmount": false,
+    "commitmentExistenceIsResolvedBeforeHorizonAllocation": true,
+    "validCommitmentOutsideCurrentHorizonBehavior": "known_commitment_with_zero_cash_inside_this_horizon_not_uncommitted_abstention",
     "ledgerOccurrenceAloneIsCommitmentEvidence": false,
     "businessFormAloneIsCommitmentEvidence": false,
     "classifierBuyoutEventAloneIsCommitmentEvidence": false,
     "currentAuthorityRoleAvailability": "absent",
     "requiredFutureDataRole": "separately_authorized_auditable_commitment_snapshot_role"
+  },
+  "truthSettlementLinkContract": {
+    "inputRole": "cash_commitment_settlement_links",
+    "registryRole": "authority_ledger_fact_registry",
+    "currentAuthorityRoleAvailability": "absent",
+    "predictionAccessAllowed": false,
+    "truthJoinOccursAfterPredictionLock": true,
+    "requiredLinkFields": [
+      "standard_work_id",
+      "commitment_id",
+      "ledger_fact_key",
+      "cash_type",
+      "channel_component_key",
+      "posting_month",
+      "settlement_amount",
+      "truth_available_as_of"
+    ],
+    "requiredRegistryFields": [
+      "standard_work_id",
+      "ledger_fact_key",
+      "channel_component_key",
+      "posting_month",
+      "amount",
+      "cash_type"
+    ],
+    "constraints": [
+      "ledger_fact_key_unique_per_work",
+      "registry_target_window_cells_exactly_reconcile_to_authority_cash_with_no_extra_nonzero_cells",
+      "one_settlement_link_per_ledger_fact_key",
+      "link_work_commitment_cash_type_month_component_and_amount_match_authority_registry_fact_and_cutoff_commitment",
+      "posting_month_not_after_truth_available_as_of",
+      "truth_available_as_of_not_after_label_available_as_of",
+      "linked_fact_must_be_inside_target_window",
+      "no_aggregate_offset_between_distinct_events"
+    ],
+    "missingOrUnboundLinkBehavior": "cannot_reclassify_classifier_buyout_as_cutoff_committed_actual",
+    "futureRoleRequiresSeparateAuthorizationAndFingerprintBinding": true
   },
   "buyoutMonthlyEquivalentBoundary": {
     "field": "buyoutMonthlyEquivalent",
@@ -104,11 +153,19 @@
   },
   "routeOverrides": {
     "pure_sales_share": {
-      "futureCashRevenueForecast": "sum_independent_sales_channel_points_plus_cutoff_confirmed_other_cash",
+      "futureCashRevenueForecast": "sum_independent_sales_channel_points_plus_all_cutoff_confirmed_future_receivables",
       "uncommittedFutureBuyoutPredicted": false
     },
     "pure_buyout": {
-      "withAuditableCutoffCommitment": "sum_only_confirmed_amounts_whose_expected_posting_month_is_inside_the_forecast_horizon",
+      "withAuditableCutoffCommitment": {
+        "qualification": "at_least_one_outstanding_buyout_receivable_is_auditable_at_cutoff_independent_of_current_horizon",
+        "rawModelPrediction": "sum_outstanding_cutoff_confirmed_cash_whose_expected_posting_month_is_inside_the_forecast_horizon",
+        "modelPredictionAvailable": true,
+        "routeAbstained": false,
+        "servedPrediction": "raw_only_when_businessServingEligible_otherwise_null",
+        "outOfHorizonPoint": 0,
+        "evidenceAndStatusRetainedInInternalAudit": true
+      },
       "withoutAuditableCutoffCommitment": {
         "futureCashRevenueForecast": null,
         "rawModelPrediction": null,
@@ -184,7 +241,7 @@
     "routeAbstainedScoreableCases": "report_only_in_abstention_and_end_to_end_business_audits",
     "nullPredictionEvaluationValue": null,
     "nullToZeroAllowed": false,
-    "gatesChanged": false,
+    "gateThresholdsChanged": false,
     "gateTargetSemanticsChanged": true
   },
   "caseAndAmountConservation": {
@@ -219,12 +276,21 @@
     "targetSemantics": "legacy_c2r_v1_monthly_equivalent",
     "formalCashMetricEligible": false,
     "mustNotCompareDirectlyToC2R1": true,
+    "developmentWriteEntryDisabled": true,
+    "verificationEntryRetained": true,
     "artifacts": [
+      "docs/analysis/m2-real-data/M2-C2R-legacy-target-supersession-v1.json",
+      "docs/analysis/m2-real-data/M2-C2R-legacy-target-supersession-v1.md",
       "docs/analysis/m2-real-data/M2-C2R-revenue-channel-design-v1.json",
+      "docs/analysis/m2-real-data/M2-C2R-revenue-channel-design-v1.md",
       "docs/analysis/m2-real-data/M2-C2R-revenue-model-routing-manifest-v1.json",
+      "docs/analysis/m2-real-data/M2-C2R-revenue-model-routing-manifest-v1.md",
       "docs/analysis/m2-real-data/M2-C2R-route-specific-metrics-v1.json",
+      "docs/analysis/m2-real-data/M2-C2R-route-specific-metrics-v1.md",
       "docs/analysis/m2-real-data/M2-C2R-channel-reconciliation-v1.json",
-      "docs/analysis/m2-real-data/M2-C2R-development-validation-v1.json"
+      "docs/analysis/m2-real-data/M2-C2R-channel-reconciliation-v1.md",
+      "docs/analysis/m2-real-data/M2-C2R-development-validation-v1.json",
+      "docs/analysis/m2-real-data/M2-C2R-development-validation-v1.md"
     ]
   },
   "publicOutput": {

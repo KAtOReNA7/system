@@ -1,0 +1,81 @@
+{
+  "version": "M2-C2R-legacy-target-supersession-v1",
+  "recordedAt": "2026-07-15",
+  "decisionStatus": "not_for_formal_decision",
+  "scope": "legacy_C2R_target_semantics_supersession_only",
+  "targetSemantics": "legacy_c2r_v1_monthly_equivalent",
+  "legacyC2RDevelopmentStatus": "FAIL",
+  "formalCashMetricEligible": false,
+  "mustNotCompareDirectlyToC2R1": true,
+  "legacyArtifactsFrozen": true,
+  "legacyArtifactFamilyCount": 5,
+  "legacyArtifactCount": 10,
+  "legacyArtifacts": [
+    {
+      "path": "docs/analysis/m2-real-data/M2-C2R-channel-reconciliation-v1.md",
+      "sha256": "85c87f019ad74c2203035b2daaa2aa1cb3f5b7114d84d6f955ed6945ff1cc447"
+    },
+    {
+      "path": "docs/analysis/m2-real-data/M2-C2R-channel-reconciliation-v1.json",
+      "sha256": "ce66892e6f595c5a665fbcc56d979837657a13f4fa7413d9a5c1e35d7ce30332"
+    },
+    {
+      "path": "docs/analysis/m2-real-data/M2-C2R-development-validation-v1.md",
+      "sha256": "6854774f27d98a3cd95603887a18851f90a009f217f698455f317be84a182d91"
+    },
+    {
+      "path": "docs/analysis/m2-real-data/M2-C2R-development-validation-v1.json",
+      "sha256": "f7fcfb465d23d843b8a2f15605fdd3dc3ff9865644b3d78118ae1d4efa36b7ba"
+    },
+    {
+      "path": "docs/analysis/m2-real-data/M2-C2R-revenue-channel-design-v1.md",
+      "sha256": "66718b94848d74cc28018b70fc127f53546fbb65f907fbb6e2ddbf9a33e1e6fe"
+    },
+    {
+      "path": "docs/analysis/m2-real-data/M2-C2R-revenue-channel-design-v1.json",
+      "sha256": "93a49e545c1859587dee60665da4cfd2ad7c544ff80e4af38f4288eb9d8476d8"
+    },
+    {
+      "path": "docs/analysis/m2-real-data/M2-C2R-revenue-model-routing-manifest-v1.md",
+      "sha256": "0010fefadd1e1c961f22d81b1ab7de787e7277aef6681a4e45fcb6271d805008"
+    },
+    {
+      "path": "docs/analysis/m2-real-data/M2-C2R-revenue-model-routing-manifest-v1.json",
+      "sha256": "930218e62a95660d64a0e1915f379a1cae4475a5e1f410de4a20d2b18d1ba176"
+    },
+    {
+      "path": "docs/analysis/m2-real-data/M2-C2R-route-specific-metrics-v1.md",
+      "sha256": "6c180be81ffe63f594ee747ba5ec4c6336c54db0803d45eb53cd92bdece043a0"
+    },
+    {
+      "path": "docs/analysis/m2-real-data/M2-C2R-route-specific-metrics-v1.json",
+      "sha256": "1518a386752247c6c5d18a8b35149fb369298a780e901cc4567e58747de6e969"
+    }
+  ],
+  "supersededForFormalCashUseBy": {
+    "decision": "docs/analysis/m2-real-data/M2-formal-cash-forecast-target-decision-v1.md",
+    "machineReadableAmendment": "src/domain/oldProductEvaluation/calibrationSpec.c2r.v1.1.amendment.json",
+    "evidenceReports": [
+      "docs/analysis/m2-real-data/M2-C2R1-formal-cash-target-separation-v1.md",
+      "docs/analysis/m2-real-data/M2-C2R1-buyout-commitment-as-of-audit-v1.md",
+      "docs/analysis/m2-real-data/M2-C2R1-old-target-new-target-bridge-v1.md"
+    ]
+  },
+  "interpretation": {
+    "legacyArtifactsRemainHistoricalAuditEvidence": true,
+    "legacyMetricsMayBeRenamedAsFormalCashMetrics": false,
+    "legacyResultsMayBeUsedForFormalCashCandidateGate": false,
+    "formalCashReplayRequiredBeforeComparison": true
+  },
+  "executionBoundary": {
+    "C2R1TrainingStarted": false,
+    "C2R1TuningStarted": false,
+    "C2Started": false,
+    "C3Started": false,
+    "finalHoldoutSealed": true,
+    "embargoShadowSealed": true,
+    "deferred60MonthLabelsSealed": true,
+    "released": false,
+    "M3FormalExecutionStarted": false
+  }
+}

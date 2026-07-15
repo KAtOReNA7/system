@@ -2408,7 +2408,9 @@ def main(argv: Sequence[str] | None = None) -> int:
             "C2-R final holdout is sealed; this command is intentionally fail-closed"
         )
     if args.run_development:
-        result = run_development()
+        raise C2RValidationError(
+            "legacy-target C2-R development writes are superseded and fail-closed; use --verify-development for immutable historical audit"
+        )
     elif args.verify_development:
         result = verify_development()
     else:

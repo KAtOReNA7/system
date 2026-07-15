@@ -1,0 +1,119 @@
+{
+  "C2R1TrainingStarted": false,
+  "authorityInputsChanged": false,
+  "backtestTarget": {
+    "endToEndField": "totalLedgerCashActual",
+    "primaryActualField": "forecastableCashActual",
+    "surpriseAuditField": "uncommittedBuyoutSurpriseActual",
+    "totalLedgerGapMayBeNamedModelWape": false
+  },
+  "businessImpact": {
+    "amountsAreOverlappingCaseWindowsNotUniqueLedgerTotals": true,
+    "overlappingCaseWindowSurpriseShareOfLedgerCash": 0.06289208,
+    "pureBuyoutWithoutCutoffCommitmentRouteAbstains": true,
+    "surpriseExcludedFromPrimaryModelMetricsAndGates": true,
+    "surpriseIncludedInEndToEndBusinessGap": true
+  },
+  "caseStateAudit": {
+    "businessServingEligibilityDefinitionChanged": false,
+    "businessServingEligibleFrozenCaseWindowCount": null,
+    "edgeTotalsSuppressed": true,
+    "nullPredictionMayBeScoredAsZero": false,
+    "routeAbstainedRawAndServedPredictionsAreNull": true,
+    "routeAbstainedScoreableActualRevenueShare": null,
+    "routeAbstainedScoreableCaseWindowCount": null,
+    "salesRouteCandidatePredictionsRecomputed": false,
+    "scoreabilityDefinitionChanged": false,
+    "structurallyForecastableRouteCaseWindowCount": null,
+    "suppressionReason": "complementary_disclosure_protection"
+  },
+  "classificationDiagnostics": {
+    "classifierEvidenceAcceptedAsCommitmentEvidence": false,
+    "negativeLedgerCash": {
+      "caseWindowCount": 389,
+      "cashAmount": -32820.58,
+      "present": true,
+      "suppressed": false
+    },
+    "uncertainCash": {
+      "caseWindowCount": 4242,
+      "cashAmount": -230.38,
+      "present": true,
+      "suppressed": false
+    }
+  },
+  "conservation": {
+    "aggregateAmountDifference": 0.0,
+    "caseKeyFingerprint": "ce8e4bcfb23335523077b367ff82b05b1663ea541ae954c719ef3eceee34c578",
+    "caseKeysMatchFrozenDevelopmentUniverse": true,
+    "eligibilityMatchesFrozenDevelopmentUniverse": true,
+    "maximumPerCaseAmountDifference": 0.0,
+    "stateFingerprint": "ed13a25e21fc07aeff18d84bb1cea45b6a47bde03cc9b72da4420fdb6150546d"
+  },
+  "decisionStatus": "not_for_formal_decision",
+  "developmentActualAudit": {
+    "forecastableCashActual": 82206415.7,
+    "positiveSurpriseCaseWindowCount": 466,
+    "surpriseShareOfTotalLedgerCash": 0.06289208,
+    "totalLedgerCashActual": 87723530.85,
+    "uncommittedBuyoutSurpriseActual": 5517115.15
+  },
+  "eligibilityChanged": false,
+  "evidenceBinding": {
+    "amendmentDigest": "7d537414f6b7e9a9071ca2013dcb0c3cbd3e86f258625defb1d2c4aeef198c07",
+    "authorityCompleteIncomeFactCount": 192869,
+    "authorityIncomeFactCount": 192872,
+    "authorityInputFingerprint": "288e202f906d8574743e21842f0818ef3292986fbeb6707aff00fd959a59da4e",
+    "authorityInputFingerprintMatchesGateA": true,
+    "authorityWorkCount": 3053,
+    "dataLoadCalls": 2,
+    "databaseRead": false,
+    "frozenGateAInputFingerprint": "288e202f906d8574743e21842f0818ef3292986fbeb6707aff00fd959a59da4e",
+    "modelInputCacheReadOnly": true,
+    "phaseACaseEvidenceSha256": "e2498667ce1b0f491fb5614d34b4e6d2d5aa22f25ff79ff5169ff1e2d755d9d9",
+    "phaseACheckpoint": "879fbd0a951ce6d465082321b38f965b14815935"
+  },
+  "formalDecisionAuthorized": false,
+  "formalTarget": {
+    "buyoutMonthlyEquivalentIncluded": false,
+    "field": "futureCashRevenueForecast",
+    "formula": "future_sales_cash_plus_cutoff_confirmed_future_receivables",
+    "futureBuyoutProbabilityModelIncluded": false,
+    "historicalCycleBuyoutIncluded": false,
+    "receivedBuyoutAmortizationIncluded": false,
+    "uncommittedFutureBuyoutIncluded": false
+  },
+  "frozenAt": "2026-07-15T00:00:00+08:00",
+  "language": "zh-CN",
+  "metricStatus": {
+    "C2R1CandidateMetricsComputed": false,
+    "reason": "本轮只修正目标语义、路由和实际值；尚未重新训练或调参。"
+  },
+  "privacy": {
+    "aggregateOnly": true,
+    "channelIdentifiersPresent": false,
+    "commitmentEvidenceReferencesPresent": false,
+    "deidentified": true,
+    "minimumCellCount": 10,
+    "predictionIntervalEndpointsPresent": false,
+    "privatePathsPresent": false,
+    "rawLedgerRowsPresent": false,
+    "workIdentifiersPresent": false
+  },
+  "releaseAuthorized": false,
+  "reportTitle": "M2 C2-R.1 正式现金目标拆分审计 v1",
+  "schema": "m2.c2r1.formal_cash_target_separation.public.v1",
+  "scope": {
+    "developmentCaseWindowCount": 18615,
+    "incomeFactCount": 192872,
+    "overlappingCaseWindowAmountsAreNotUniqueLedgerTotals": true,
+    "standardWorkCount": 3053,
+    "statisticallyScoreableCaseWindowCount": 12223
+  },
+  "seals": {
+    "deferred60MonthLabelsOpened": false,
+    "embargoShadowOpened": false,
+    "finalHoldoutOpened": false
+  },
+  "version": "v1"
+}

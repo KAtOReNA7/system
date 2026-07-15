@@ -44,11 +44,11 @@ futureCashRevenueForecast
 
 ### pure_sales_share
 
-各实销渠道独立生成点值后求和，只允许再加入 cutoff 时已有可审计证据的其他确认现金。
+各实销渠道独立生成点值后求和，再加入 cutoff 时已有可审计证据的全部未来确认应收。若其中存在已确认买断应收，现金仍须计入，同时生成事实型 route-review limitation；不得仅为维持旧 route 标签而漏掉已确认现金。
 
 ### pure_buyout
 
-如果 cutoff 时存在可审计的已签署/已确认未来买断应收，只按确认金额和预计入账月计入，不推测额外买断。
+如果 cutoff 时存在可审计的已签署/已确认、且仍未结的未来买断应收，只按未结金额和预计入账月计入，不推测额外买断。承诺是否存在必须先于 horizon 分配判断；承诺预计在当前 horizon 之后入账时，该 horizon 的 raw point 为可解释的数值 0，而不是无承诺 abstention。
 
 如果不存在：
 
@@ -60,6 +60,8 @@ futureCashRevenueForecast
 - `abstentionReason=uncommitted_future_buyout_not_forecastable`。
 
 不得以 0 冒充预测。
+
+只有其他确认现金、但没有买断应收时，不能解除 pure-buyout abstention。
 
 ### buyout_plus_sales
 
@@ -92,7 +94,7 @@ forecastableCashActual
 = totalLedgerCashActual
 ```
 
-历史数据没有签约/确认和证据可得时间戳时，后来发生的买断全部进入 surprise。不得使用账单发生、`businessForm`、买断分类器结果或 target-end 信息反向恢复 cutoff 承诺状态。
+历史数据没有签约/确认和证据可得时间戳时，后来发生的买断全部进入 surprise。不得使用账单发生、`businessForm`、买断分类器结果或 target-end 信息反向恢复 cutoff 承诺状态。只有在 prediction lock 之后，通过同作品、同 commitment、同现金类型、同 channel component、同入账月、同金额的唯一权威账单 fact link，才能把对应实际现金认定为 cutoff 已承诺；不同事件不得按聚合金额相互抵消。
 
 ## 6. 状态边界
 
@@ -110,9 +112,9 @@ statisticallyScoreable
 
 ## 7. 当前证据结论
 
-当前 3053 部/192872 条权威输入、授权本地 cache、正式基础输入、收入事实和校准适配器均没有买断签署/确认时间、应收金额、预计入账月或 commitment evidence `available_as_of` 字段。因此当前历史开发窗口中不存在可证明的 cutoff 已承诺未来买断；后来识别到的买断只能作为 classifier-derived surprise 诊断，不能称为合同已确认事实。
+当前 3053 部/192872 条权威输入、授权本地 cache、正式基础输入、收入事实和校准适配器均没有独立的 commitment snapshot、逐账单事实 registry 或 settlement link 角色。因此当前历史开发窗口中不存在可证明的 cutoff 已承诺未来买断；后来识别到的买断只能作为 classifier-derived surprise 诊断，不能称为合同已确认事实。
 
-未来若需计入已确认应收，必须新增单独授权、可审计的 as-of commitment snapshot 数据角色，至少提供 commitment id、现金类型、状态、确认金额、预计入账月、确认时间、证据可得时间和证据引用。不得从账单反推。
+未来若需计入已确认应收，必须新增单独授权、可审计的 as-of commitment snapshot 数据角色，至少提供作品身份、commitment id、现金类型、签署/确认状态、未结应收状态、确认金额、未结金额、预计入账月、确认时间、证据可得时间和证据引用，并另行提供 truth-only 的唯一权威账单 fact registry 与 settlement link。不得从账单反推，也不得让 truth link 进入预测阶段。
 
 ## 8. 执行与停止边界
 

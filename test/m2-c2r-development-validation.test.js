@@ -84,6 +84,16 @@ test("C2-R final-holdout entry remains fail-closed", () => {
   assert.match(`${result.stdout}\n${result.stderr}`, /sealed|fail-closed/i);
 });
 
+test("legacy-target C2-R development write entry remains fail-closed", () => {
+  const result = spawnSync(
+    process.execPath,
+    [python, runner, "--run-development"],
+    { cwd: root, encoding: "utf8" },
+  );
+  assert.notEqual(result.status, 0);
+  assert.match(`${result.stdout}\n${result.stderr}`, /superseded|fail-closed/i);
+});
+
 test("C2-R report preserves case keys, scoring states, and sealed truth", (t) => {
   if (!fs.existsSync(reportPath)) {
     t.skip("C2-R development report has not been generated on this machine");

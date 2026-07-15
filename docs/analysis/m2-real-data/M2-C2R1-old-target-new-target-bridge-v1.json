@@ -1,0 +1,118 @@
+{
+  "C2R1TrainingStarted": false,
+  "amountBridge": {
+    "bridgeBalanceDifference": 0.0,
+    "formalForecastableCashAddedOnPureBuyoutCases": 2571419.36,
+    "legacyPureBuyoutTargetRemoved": 716265.0,
+    "newForecastableCashActual": 82206415.7,
+    "newMinusOldTarget": 1855154.36,
+    "nonPureBuyoutNetDifference": 0.0,
+    "oldTargetActual": 80351261.34,
+    "totalLedgerCashActual": 87723530.85,
+    "uncommittedBuyoutSurpriseActual": 5517115.15
+  },
+  "amountConservation": {
+    "aggregateDifference": 0.0,
+    "formula": "forecastableCashActual + uncommittedBuyoutSurpriseActual = totalLedgerCashActual",
+    "maximumPerCaseDifference": 0.0,
+    "passed": true
+  },
+  "authorityInputsChanged": false,
+  "businessImpact": {
+    "legacyC2RRemainsHistoricalTargetEvidenceOnly": true,
+    "overlappingCaseWindowSurpriseShareOfLedgerCash": 0.06289208,
+    "surpriseExcludedFromPrimaryModelMetricsAndGates": true,
+    "surpriseIncludedInEndToEndBusinessGap": true
+  },
+  "decisionStatus": "not_for_formal_decision",
+  "eligibilityChanged": false,
+  "evidenceBinding": {
+    "amendmentDigest": "7d537414f6b7e9a9071ca2013dcb0c3cbd3e86f258625defb1d2c4aeef198c07",
+    "authorityCompleteIncomeFactCount": 192869,
+    "authorityIncomeFactCount": 192872,
+    "authorityInputFingerprint": "288e202f906d8574743e21842f0818ef3292986fbeb6707aff00fd959a59da4e",
+    "authorityInputFingerprintMatchesGateA": true,
+    "authorityWorkCount": 3053,
+    "dataLoadCalls": 2,
+    "databaseRead": false,
+    "frozenGateAInputFingerprint": "288e202f906d8574743e21842f0818ef3292986fbeb6707aff00fd959a59da4e",
+    "modelInputCacheReadOnly": true,
+    "phaseACaseEvidenceSha256": "e2498667ce1b0f491fb5614d34b4e6d2d5aa22f25ff79ff5169ff1e2d755d9d9",
+    "phaseACheckpoint": "879fbd0a951ce6d465082321b38f965b14815935"
+  },
+  "formalDecisionAuthorized": false,
+  "frozenAt": "2026-07-15T00:00:00+08:00",
+  "interpretation": {
+    "C2R1MayCompareDirectlyBeforeTargetReplay": false,
+    "allDifferenceAttributedToLeakageRemoval": false,
+    "classifierDerivedBuyoutIsContractConfirmed": false,
+    "legacyC2RResultsAreFormalCashMetrics": false
+  },
+  "language": "zh-CN",
+  "population": {
+    "developmentCaseWindowCount": 18615,
+    "oldAndNewActualValuesExpectedToDiffer": true,
+    "overlappingCaseWindowAmountsAreNotUniqueLedgerTotals": true,
+    "sameCaseKeys": true,
+    "sameScoreabilityAndEligibility": true,
+    "statisticallyScoreableCaseWindowCount": 12223
+  },
+  "privacy": {
+    "aggregateOnly": true,
+    "channelIdentifiersPresent": false,
+    "commitmentEvidenceReferencesPresent": false,
+    "deidentified": true,
+    "minimumCellCount": 10,
+    "predictionIntervalEndpointsPresent": false,
+    "privatePathsPresent": false,
+    "rawLedgerRowsPresent": false,
+    "workIdentifiersPresent": false
+  },
+  "releaseAuthorized": false,
+  "reportTitle": "M2 C2-R.1 旧目标到正式现金目标桥接 v1",
+  "routeDiagnostics": {
+    "buyout_plus_sales": {
+      "caseWindowCount": null,
+      "forecastableCashAmount": null,
+      "oldTargetAmount": null,
+      "suppressed": true,
+      "surpriseBuyoutAmount": null,
+      "totalLedgerCashAmount": null,
+      "uniqueWorkCount": null
+    },
+    "pure_buyout": {
+      "caseWindowCount": 4358,
+      "forecastableCashAmount": 2571419.36,
+      "oldTargetAmount": 716265.0,
+      "suppressed": false,
+      "surpriseBuyoutAmount": 716265.0,
+      "totalLedgerCashAmount": 3287684.36,
+      "uniqueWorkCount": 267
+    },
+    "pure_sales_share": {
+      "caseWindowCount": 5683,
+      "forecastableCashAmount": 45268372.06,
+      "oldTargetAmount": 45268372.06,
+      "suppressed": false,
+      "surpriseBuyoutAmount": 749589.38,
+      "totalLedgerCashAmount": 46017961.44,
+      "uniqueWorkCount": 643
+    },
+    "unknown_revenue_model": {
+      "caseWindowCount": null,
+      "forecastableCashAmount": null,
+      "oldTargetAmount": null,
+      "suppressed": true,
+      "surpriseBuyoutAmount": null,
+      "totalLedgerCashAmount": null,
+      "uniqueWorkCount": null
+    }
+  },
+  "schema": "m2.c2r1.old_target_new_target_bridge.public.v1",
+  "seals": {
+    "deferred60MonthLabelsOpened": false,
+    "embargoShadowOpened": false,
+    "finalHoldoutOpened": false
+  },
+  "version": "v1"
+}
