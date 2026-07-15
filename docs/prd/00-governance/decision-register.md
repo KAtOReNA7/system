@@ -2,6 +2,7 @@
 
 | 决策 | 状态 | 当前结论 | ADR |
 |---|---|---|---|
+| DEC-008 | 已冻结（formal cash target） | M2 正式点值只预测未来实销现金与 cutoff 时已确认、可审计的应收；未承诺买断必须 abstain/null，买断月均等效值仅用于评级和历史价值 | `docs/analysis/m2-real-data/M2-formal-cash-forecast-target-decision-v1.md` |
 | DEC-001 | 已确认 | 评估尝试状态仅保留成功、失败 | ADR-0001 |
 | DEC-002 | 已确认 | 标准作品上线时间取所有业务形态最早首笔实销月 | ADR-0002 |
 | DEC-003 | 已确认 | 账单当前只保留实销金额，不存在两个非统计金额字段 | ADR-0003 |
