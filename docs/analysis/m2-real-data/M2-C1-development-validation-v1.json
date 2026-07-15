@@ -1,0 +1,1669 @@
+{
+  "C1DevelopmentResult": "FAIL",
+  "acceptance": {
+    "allAcceptanceConditionsPassed": false,
+    "conditions": {
+      "P0IsZero": true,
+      "P1IsZero": true,
+      "P2IsFactReviewOnly": true,
+      "automaticOperatingActionFieldsAreZero": true,
+      "eachCoreHorizonBiasWithin15Percent": false,
+      "highValueBiasWithin10Percent": false,
+      "horizon18_24RegressAtMost2Percent": false,
+      "horizon3_6_12ImproveAtLeast3Percent": false,
+      "internal80CoverageBetween75And85Percent": true,
+      "meanWisImprovesAtLeast5Percent": false,
+      "noThreeConsecutiveOriginsRegressOver5Percent": false,
+      "outerOriginWinShareAtLeast70Percent": false,
+      "overallBiasWithin10Percent": false,
+      "overallWapeAtMost060": false,
+      "pairedBootstrapUpper95BelowZero": false,
+      "servedBiasWithin10Percent": false,
+      "standardizedWidthRegressAtMost10Percent": false,
+      "top10WapeImprovesAtLeast5Percent": false,
+      "top1Top5RegressAtMost5Percent": false
+    },
+    "evidence": {
+      "absoluteBias": {
+        "highValue": 2.7188027,
+        "overall": 3.51137048,
+        "served": null
+      },
+      "automaticOperatingActionFieldCount": 0,
+      "horizonAbsoluteBias": {
+        "12": 2.69868256,
+        "18": 4.21569793,
+        "24": 7.62328599,
+        "3": 2.14540333,
+        "6": 1.99742477
+      },
+      "horizonWapeRelativeImprovementVsPrimary": {
+        "12": -0.99962057,
+        "18": -1.4912656,
+        "24": -2.0427381,
+        "3": -0.85458272,
+        "6": -0.82432581
+      },
+      "internal80Coverage": 0.83015626,
+      "issueCounts": {
+        "P0": 0,
+        "P1": 0,
+        "P2": 0
+      },
+      "meanWisRelativeImprovementVsPrimary": -1.53012957,
+      "outerOriginRelativeRegressions": {
+        "2020-12": 4.58327161,
+        "2021-06": 0.07173062,
+        "2021-12": 0.60148923,
+        "2022-06": -0.01097963,
+        "2022-12": 0.3091583
+      },
+      "outerOriginWinShare": 0.2,
+      "overallWape": 3.8501573,
+      "pairedBootstrapRelativeDeltaCi95": {
+        "percentileLower": 0.05312122,
+        "percentileUpper": 4.54335193
+      },
+      "servedBiasProtectedByComplementarySuppression": true,
+      "standardizedWidthRelativeRegressionVsPrimary": 0.46433725,
+      "threeConsecutiveOriginsRegressionOverFivePercent": true,
+      "topBandWapeRelativeImprovementVsPrimary": {
+        "top1": -13.89343496,
+        "top10": -4.66451595,
+        "top5": -5.7870635
+      }
+    },
+    "thresholdsChangedAfterResults": false
+  },
+  "allStructuralValidationPassed": true,
+  "contractBinding": {
+    "C1CandidateCount": 148,
+    "calibrationSpecV1_2Digest": "2bb1e01ce7e93f3545d8f09187aa0c6182995dc186604a833a1ed7ade918b4d3",
+    "candidateSpaceOrThresholdChangedAfterResults": false,
+    "primaryPerformanceComparator": "B4"
+  },
+  "decisionStatus": "not_for_formal_decision",
+  "developmentPopulation": {
+    "expectedCaseCount": 18615,
+    "expectedUniverseFingerprint": "ce8e4bcfb23335523077b367ff82b05b1663ea541ae954c719ef3eceee34c578",
+    "scoreableCaseCount": 12223,
+    "scoreableUniverseFingerprint": "8abb27eafa1dbd83198f215e42785bee3822c1bc1f27bb0ac304e5ab1cc169e4",
+    "scoreableWorkCount": 1044,
+    "servingEligibilityChangedByC1": false
+  },
+  "formalDecisionAuthorized": false,
+  "generatedAt": "2026-07-15T06:30:07.451341+00:00",
+  "internal80Protocol": {
+    "availableCaseCount": 12223,
+    "baselineResidualReused": false,
+    "calibrationGroupDistribution": {
+      "model": 358,
+      "model_x_horizon": 1655,
+      "model_x_horizon_x_route": 10210
+    },
+    "completeOnAllScoreable": true,
+    "minimumCalibrationCount": 100,
+    "publicEndpointsAbsent": true,
+    "residualModelId": "C1",
+    "strictlyEarlierResidualFilter": true,
+    "targetCaseCount": 12223,
+    "warmupCandidateSelectionAllowed": false,
+    "warmupResidualCaseCount": 2900,
+    "warmupUsedForIntervalOnly": true
+  },
+  "issueAndProductBoundary": {
+    "P0": 0,
+    "P1": 0,
+    "P2": 0,
+    "P2FactReviewPromptsOnly": true,
+    "automaticOperatingActionFieldCount": 0,
+    "publicOutputFieldsExact": true,
+    "publicPredictionIntervalEndpointsAbsent": true,
+    "singlePointForecastOnly": true
+  },
+  "metrics": {
+    "C1": {
+      "abstention": {
+        "abstainedCaseCount": null,
+        "abstainedUniqueWorkCount": "<10",
+        "abstentionReasonDistribution": null,
+        "scoreableCaseCount": 12223,
+        "servedActualRevenueShareOfScoreableCases": null,
+        "servedCaseCount": null,
+        "servedPredictionNullOnEveryAbstention": true,
+        "suppressed": true,
+        "suppressionReason": "small_abstention_and_complement_protection",
+        "zeroImputationUsed": false
+      },
+      "allScoreable": {
+        "caseCount": 12223,
+        "mae": 25310.37839238,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 3.51137048,
+        "smape": 1.28896771,
+        "uniqueWorkCount": 1044,
+        "wape": 3.8501573,
+        "zeroImputationUsed": false
+      },
+      "highValueAllScoreable": {
+        "caseCount": 888,
+        "mae": 210276.27819566,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 2.7188027,
+        "smape": 0.89118478,
+        "uniqueWorkCount": 118,
+        "wape": 2.95375523,
+        "zeroImputationUsed": false
+      },
+      "highValueServed": {
+        "caseCount": null,
+        "mae": null,
+        "nullPredictionCount": null,
+        "signedAggregateBias": null,
+        "smape": null,
+        "suppressed": true,
+        "suppressionReason": "served_metric_complement_of_small_abstention_cell",
+        "uniqueWorkCount": null,
+        "wape": null,
+        "zeroImputationUsed": false
+      },
+      "horizons": {
+        "12": {
+          "caseCount": 2530,
+          "mae": 26936.35329236,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 2.69868256,
+          "smape": 1.28570402,
+          "uniqueWorkCount": 871,
+          "wape": 2.9832287,
+          "zeroImputationUsed": false
+        },
+        "18": {
+          "caseCount": 1659,
+          "mae": 53485.32079753,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 4.21569793,
+          "smape": 1.3327105,
+          "uniqueWorkCount": 773,
+          "wape": 4.53439398,
+          "zeroImputationUsed": false
+        },
+        "24": {
+          "caseCount": 886,
+          "mae": 98620.63664563,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 7.62328599,
+          "smape": 1.36198516,
+          "uniqueWorkCount": 528,
+          "wape": 8.06858676,
+          "zeroImputationUsed": false
+        },
+        "3": {
+          "caseCount": 3574,
+          "mae": 6020.79167234,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 2.14540333,
+          "smape": 1.27415872,
+          "uniqueWorkCount": 1044,
+          "wape": 2.45948804,
+          "zeroImputationUsed": false
+        },
+        "6": {
+          "caseCount": 3574,
+          "mae": 12196.82164306,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 1.99742477,
+          "smape": 1.26768111,
+          "uniqueWorkCount": 1044,
+          "wape": 2.37412913,
+          "zeroImputationUsed": false
+        }
+      },
+      "internal80": {
+        "availableCaseCount": 12223,
+        "completeOnAllScoreablePopulation": true,
+        "endpointsPresentInPublicReport": false,
+        "internal80Coverage": 0.83015626,
+        "meanWis": 23538.84867415,
+        "requiredCaseCount": 12223,
+        "standardizedWidth": 3.31069532
+      },
+      "origins": {
+        "2020-12": {
+          "caseCount": 1790,
+          "mae": 102713.38876934,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 13.66907761,
+          "smape": 1.55840334,
+          "uniqueWorkCount": 358,
+          "wape": 13.84208388,
+          "zeroImputationUsed": false
+        },
+        "2021-06": {
+          "caseCount": 2640,
+          "mae": 17444.18162701,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 1.83600155,
+          "smape": 1.28525252,
+          "uniqueWorkCount": 528,
+          "wape": 2.59683846,
+          "zeroImputationUsed": false
+        },
+        "2021-12": {
+          "caseCount": 3092,
+          "mae": 16128.04942941,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 1.72822473,
+          "smape": 1.27403064,
+          "uniqueWorkCount": 773,
+          "wape": 1.96070009,
+          "zeroImputationUsed": false
+        },
+        "2022-06": {
+          "caseCount": 2613,
+          "mae": 6609.81809194,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.887555,
+          "smape": 1.17832026,
+          "uniqueWorkCount": 871,
+          "wape": 1.13241712,
+          "zeroImputationUsed": false
+        },
+        "2022-12": {
+          "caseCount": 2088,
+          "mae": 5900.27116268,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 1.21767444,
+          "smape": 1.22327111,
+          "uniqueWorkCount": 1044,
+          "wape": 1.42423855,
+          "zeroImputationUsed": false
+        }
+      },
+      "served": {
+        "caseCount": null,
+        "mae": null,
+        "nullPredictionCount": null,
+        "signedAggregateBias": null,
+        "smape": null,
+        "suppressed": true,
+        "suppressionReason": "served_metric_complement_of_small_abstention_cell",
+        "uniqueWorkCount": null,
+        "wape": null,
+        "zeroImputationUsed": false
+      },
+      "slices": {
+        "dense": {
+          "False": {
+            "caseCount": 8366,
+            "mae": 21777.43861417,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 43.88488199,
+            "smape": 1.4571942,
+            "suppressed": false,
+            "uniqueWorkCount": 741,
+            "wape": 45.31810292,
+            "zeroImputationUsed": false
+          },
+          "True": {
+            "caseCount": 3857,
+            "mae": 32973.47774019,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 1.38510747,
+            "smape": 0.92407716,
+            "suppressed": false,
+            "uniqueWorkCount": 470,
+            "wape": 1.6661259,
+            "zeroImputationUsed": false
+          }
+        },
+        "dormant": {
+          "False": {
+            "caseCount": 7032,
+            "mae": 30983.18566404,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 2.50842558,
+            "smape": 0.98907697,
+            "suppressed": false,
+            "uniqueWorkCount": 787,
+            "wape": 2.80244547,
+            "zeroImputationUsed": false
+          },
+          "True": {
+            "caseCount": 5191,
+            "mae": 17625.69707195,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 33.40773503,
+            "smape": 1.69521538,
+            "suppressed": false,
+            "uniqueWorkCount": 343,
+            "wape": 35.08135299,
+            "zeroImputationUsed": false
+          }
+        },
+        "lifecycle": {
+          "unknown": {
+            "caseCount": 12223,
+            "mae": 25310.37839238,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 3.51137048,
+            "smape": 1.28896771,
+            "suppressed": false,
+            "uniqueWorkCount": 1044,
+            "wape": 3.8501573,
+            "zeroImputationUsed": false
+          }
+        },
+        "longTail": {
+          "False": {
+            "caseCount": 9327,
+            "mae": 33014.2420512,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 3.56616007,
+            "smape": 1.37296641,
+            "suppressed": false,
+            "uniqueWorkCount": 805,
+            "wape": 3.89450534,
+            "zeroImputationUsed": false
+          },
+          "True": {
+            "caseCount": 2896,
+            "mae": 498.936284,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.14211939,
+            "smape": 1.01843736,
+            "suppressed": false,
+            "uniqueWorkCount": 421,
+            "wape": 1.12356536,
+            "zeroImputationUsed": false
+          }
+        },
+        "revenueModel": {
+          "buyout_plus_sales": {
+            "caseCount": null,
+            "suppressed": true,
+            "suppressionReason": "complementary_suppression",
+            "uniqueWorkCount": null
+          },
+          "pure_buyout": {
+            "caseCount": 4358,
+            "mae": 20559.02866623,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 124.27278581,
+            "smape": 1.95574848,
+            "suppressed": false,
+            "uniqueWorkCount": 267,
+            "wape": 125.0881265,
+            "zeroImputationUsed": false
+          },
+          "pure_sales_share": {
+            "caseCount": 5683,
+            "mae": 12047.06384889,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 1.27491564,
+            "smape": 0.88982976,
+            "suppressed": false,
+            "uniqueWorkCount": 643,
+            "wape": 1.51236577,
+            "zeroImputationUsed": false
+          },
+          "unknown_revenue_model": {
+            "caseCount": null,
+            "suppressed": true,
+            "suppressionReason": "primary_small_cell",
+            "uniqueWorkCount": null
+          }
+        },
+        "shelfRightsPostHoc": {
+          "已上架|无限期": {
+            "caseCount": 2113,
+            "mae": 8735.88601847,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 1.31745432,
+            "smape": 0.94441695,
+            "suppressed": false,
+            "uniqueWorkCount": 224,
+            "wape": 1.45455512,
+            "zeroImputationUsed": false
+          },
+          "已上架|版权已到期": {
+            "caseCount": 191,
+            "mae": 37275.4595913,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 3.80258256,
+            "smape": 0.99766379,
+            "suppressed": false,
+            "uniqueWorkCount": 29,
+            "wape": 4.20011909,
+            "zeroImputationUsed": false
+          },
+          "已上架|版权有效": {
+            "caseCount": 2874,
+            "mae": 32512.09228518,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 1.27170293,
+            "smape": 0.95097586,
+            "suppressed": false,
+            "uniqueWorkCount": 283,
+            "wape": 1.61918765,
+            "zeroImputationUsed": false
+          },
+          "已下架|无限期": {
+            "caseCount": 887,
+            "mae": 12731.61919695,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 177.75550981,
+            "smape": 1.68234099,
+            "suppressed": false,
+            "uniqueWorkCount": 78,
+            "wape": 178.21312263,
+            "zeroImputationUsed": false
+          },
+          "已下架|版权已到期": {
+            "caseCount": 2112,
+            "mae": 10212.07458581,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 2.56823527,
+            "smape": 1.41082156,
+            "suppressed": false,
+            "uniqueWorkCount": 169,
+            "wape": 3.15736889,
+            "zeroImputationUsed": false
+          },
+          "已下架|版权有效": {
+            "caseCount": 4046,
+            "mae": 38924.76870256,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 114.91905057,
+            "smape": 1.57289899,
+            "suppressed": false,
+            "uniqueWorkCount": 261,
+            "wape": 115.41303568,
+            "zeroImputationUsed": false
+          }
+        },
+        "sourcePostHoc": {
+          "出版物": {
+            "caseCount": 5015,
+            "mae": 25641.59904964,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 1.71609229,
+            "smape": 1.00185068,
+            "suppressed": false,
+            "uniqueWorkCount": 514,
+            "wape": 2.05602907,
+            "zeroImputationUsed": false
+          },
+          "网文": {
+            "caseCount": 7208,
+            "mae": 25079.93005772,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 9.81662506,
+            "smape": 1.48873074,
+            "suppressed": false,
+            "uniqueWorkCount": 530,
+            "wape": 10.15135815,
+            "zeroImputationUsed": false
+          }
+        },
+        "sparseIncome": {
+          "False": {
+            "caseCount": 11944,
+            "mae": 18429.22108363,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 2.40622717,
+            "smape": 1.28210174,
+            "suppressed": false,
+            "uniqueWorkCount": 1039,
+            "wape": 2.74372885,
+            "zeroImputationUsed": false
+          },
+          "True": {
+            "caseCount": 279,
+            "mae": 319892.96941631,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 706.29674275,
+            "smape": 1.58289995,
+            "suppressed": false,
+            "uniqueWorkCount": 70,
+            "wape": 707.46134861,
+            "zeroImputationUsed": false
+          }
+        }
+      },
+      "topBands": {
+        "top1": {
+          "caseCount": 93,
+          "mae": 1339337.10742594,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 4.23957076,
+          "smape": 0.99013117,
+          "uniqueWorkCount": 18,
+          "wape": 4.38315245,
+          "zeroImputationUsed": false
+        },
+        "top10": {
+          "caseCount": 888,
+          "mae": 210276.27819566,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 2.7188027,
+          "smape": 0.89118478,
+          "uniqueWorkCount": 118,
+          "wape": 2.95375523,
+          "zeroImputationUsed": false
+        },
+        "top5": {
+          "caseCount": 472,
+          "mae": 364081.38927948,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 2.94550945,
+          "smape": 0.87164402,
+          "uniqueWorkCount": 59,
+          "wape": 3.14028223,
+          "zeroImputationUsed": false
+        }
+      }
+    },
+    "comparators": {
+      "B0b": {
+        "abstention": {
+          "abstainedCaseCount": null,
+          "abstainedUniqueWorkCount": "<10",
+          "abstentionReasonDistribution": null,
+          "scoreableCaseCount": 12223,
+          "servedActualRevenueShareOfScoreableCases": null,
+          "servedCaseCount": null,
+          "servedPredictionNullOnEveryAbstention": true,
+          "suppressed": true,
+          "suppressionReason": "small_abstention_and_complement_protection",
+          "zeroImputationUsed": false
+        },
+        "allScoreable": {
+          "caseCount": 12223,
+          "mae": 11173.14581891,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 1.10236988,
+          "smape": 1.24218451,
+          "uniqueWorkCount": 1044,
+          "wape": 1.69963357,
+          "zeroImputationUsed": false
+        },
+        "highValueAllScoreable": {
+          "caseCount": 888,
+          "mae": 39481.22498627,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.08394758,
+          "smape": 0.72753547,
+          "uniqueWorkCount": 118,
+          "wape": 0.55459358,
+          "zeroImputationUsed": false
+        },
+        "highValueServed": {
+          "caseCount": null,
+          "mae": null,
+          "nullPredictionCount": null,
+          "signedAggregateBias": null,
+          "smape": null,
+          "suppressed": true,
+          "suppressionReason": "served_metric_complement_of_small_abstention_cell",
+          "uniqueWorkCount": null,
+          "wape": null,
+          "zeroImputationUsed": false
+        },
+        "horizons": {
+          "12": {
+            "caseCount": 2530,
+            "mae": 13605.62109164,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.96442846,
+            "smape": 1.24667244,
+            "uniqueWorkCount": 871,
+            "wape": 1.50683646,
+            "zeroImputationUsed": false
+          },
+          "18": {
+            "caseCount": 1659,
+            "mae": 22173.8694749,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 1.28080848,
+            "smape": 1.29481599,
+            "uniqueWorkCount": 773,
+            "wape": 1.87986271,
+            "zeroImputationUsed": false
+          },
+          "24": {
+            "caseCount": 886,
+            "mae": 33460.26624426,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 1.93263667,
+            "smape": 1.31198844,
+            "uniqueWorkCount": 528,
+            "wape": 2.73753111,
+            "zeroImputationUsed": false
+          },
+          "3": {
+            "caseCount": 3574,
+            "mae": 3238.33712661,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.81600335,
+            "smape": 1.21127642,
+            "uniqueWorkCount": 1044,
+            "wape": 1.32285783,
+            "zeroImputationUsed": false
+          },
+          "6": {
+            "caseCount": 3574,
+            "mae": 6754.6384278,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.73056058,
+            "smape": 1.22818036,
+            "uniqueWorkCount": 1044,
+            "wape": 1.31480023,
+            "zeroImputationUsed": false
+          }
+        },
+        "internal80": {
+          "availableCaseCount": 12223,
+          "completeOnAllScoreablePopulation": true,
+          "endpointsPresentInPublicReport": false,
+          "internal80Coverage": 0.83784668,
+          "meanWis": 9552.54322208,
+          "requiredCaseCount": 12223,
+          "standardizedWidth": 2.27479479
+        },
+        "origins": {
+          "2020-12": {
+            "caseCount": 1790,
+            "mae": 21101.46498658,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 2.14354066,
+            "smape": 1.49025464,
+            "uniqueWorkCount": 358,
+            "wape": 2.84372127,
+            "zeroImputationUsed": false
+          },
+          "2021-06": {
+            "caseCount": 2640,
+            "mae": 15784.36528992,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 1.34647054,
+            "smape": 1.24304292,
+            "uniqueWorkCount": 528,
+            "wape": 2.34974891,
+            "zeroImputationUsed": false
+          },
+          "2021-12": {
+            "caseCount": 3092,
+            "mae": 10228.97437153,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.77307004,
+            "smape": 1.25724059,
+            "uniqueWorkCount": 773,
+            "wape": 1.24354474,
+            "zeroImputationUsed": false
+          },
+          "2022-06": {
+            "caseCount": 2613,
+            "mae": 6528.62635228,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.73502471,
+            "smape": 1.13546265,
+            "uniqueWorkCount": 871,
+            "wape": 1.11850707,
+            "zeroImputationUsed": false
+          },
+          "2022-12": {
+            "caseCount": 2088,
+            "mae": 4042.01400283,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.6190715,
+            "smape": 1.13969366,
+            "uniqueWorkCount": 1044,
+            "wape": 0.97568264,
+            "zeroImputationUsed": false
+          }
+        },
+        "served": {
+          "caseCount": null,
+          "mae": null,
+          "nullPredictionCount": null,
+          "signedAggregateBias": null,
+          "smape": null,
+          "suppressed": true,
+          "suppressionReason": "served_metric_complement_of_small_abstention_cell",
+          "uniqueWorkCount": null,
+          "wape": null,
+          "zeroImputationUsed": false
+        },
+        "topBands": {
+          "top1": {
+            "caseCount": 93,
+            "mae": 131015.27414084,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.10262511,
+            "smape": 0.82617709,
+            "uniqueWorkCount": 18,
+            "wape": 0.42876429,
+            "zeroImputationUsed": false
+          },
+          "top10": {
+            "caseCount": 888,
+            "mae": 39481.22498627,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.08394758,
+            "smape": 0.72753547,
+            "uniqueWorkCount": 118,
+            "wape": 0.55459358,
+            "zeroImputationUsed": false
+          },
+          "top5": {
+            "caseCount": 472,
+            "mae": 59140.80611039,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.09526129,
+            "smape": 0.68497131,
+            "uniqueWorkCount": 59,
+            "wape": 0.51010249,
+            "zeroImputationUsed": false
+          }
+        }
+      },
+      "B1": {
+        "abstention": {
+          "abstainedCaseCount": null,
+          "abstainedUniqueWorkCount": "<10",
+          "abstentionReasonDistribution": null,
+          "scoreableCaseCount": 12223,
+          "servedActualRevenueShareOfScoreableCases": null,
+          "servedCaseCount": null,
+          "servedPredictionNullOnEveryAbstention": true,
+          "suppressed": true,
+          "suppressionReason": "small_abstention_and_complement_protection",
+          "zeroImputationUsed": false
+        },
+        "allScoreable": {
+          "caseCount": 12223,
+          "mae": 12504.53231327,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 1.47943848,
+          "smape": 1.27620019,
+          "uniqueWorkCount": 1044,
+          "wape": 1.90216107,
+          "zeroImputationUsed": false
+        },
+        "highValueAllScoreable": {
+          "caseCount": 888,
+          "mae": 57144.0874076,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.5104041,
+          "smape": 0.76255464,
+          "uniqueWorkCount": 118,
+          "wape": 0.80270418,
+          "zeroImputationUsed": false
+        },
+        "highValueServed": {
+          "caseCount": null,
+          "mae": null,
+          "nullPredictionCount": null,
+          "signedAggregateBias": null,
+          "smape": null,
+          "suppressed": true,
+          "suppressionReason": "served_metric_complement_of_small_abstention_cell",
+          "uniqueWorkCount": null,
+          "wape": null,
+          "zeroImputationUsed": false
+        },
+        "horizons": {
+          "12": {
+            "caseCount": 2530,
+            "mae": 14737.92971005,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 1.25829026,
+            "smape": 1.2792212,
+            "uniqueWorkCount": 871,
+            "wape": 1.6322408,
+            "zeroImputationUsed": false
+          },
+          "18": {
+            "caseCount": 1659,
+            "mae": 24927.17072615,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 1.70909512,
+            "smape": 1.31969918,
+            "uniqueWorkCount": 773,
+            "wape": 2.11328288,
+            "zeroImputationUsed": false
+          },
+          "24": {
+            "caseCount": 886,
+            "mae": 40811.59144574,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 2.74556369,
+            "smape": 1.34340008,
+            "uniqueWorkCount": 528,
+            "wape": 3.33897526,
+            "zeroImputationUsed": false
+          },
+          "3": {
+            "caseCount": 3574,
+            "mae": 3480.2376517,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 1.05986784,
+            "smape": 1.26086343,
+            "uniqueWorkCount": 1044,
+            "wape": 1.42167398,
+            "zeroImputationUsed": false
+          },
+          "6": {
+            "caseCount": 3574,
+            "mae": 7164.05167204,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.96295936,
+            "smape": 1.25254785,
+            "uniqueWorkCount": 1044,
+            "wape": 1.39449311,
+            "zeroImputationUsed": false
+          }
+        },
+        "internal80": {
+          "availableCaseCount": 12223,
+          "completeOnAllScoreablePopulation": true,
+          "endpointsPresentInPublicReport": false,
+          "internal80Coverage": 0.83596498,
+          "meanWis": 10797.92250709,
+          "requiredCaseCount": 12223,
+          "standardizedWidth": 2.38012906
+        },
+        "origins": {
+          "2020-12": {
+            "caseCount": 1790,
+            "mae": 29505.81620392,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 3.51782738,
+            "smape": 1.50338659,
+            "uniqueWorkCount": 358,
+            "wape": 3.97632663,
+            "zeroImputationUsed": false
+          },
+          "2021-06": {
+            "caseCount": 2640,
+            "mae": 16198.50870786,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 1.62025072,
+            "smape": 1.27838848,
+            "uniqueWorkCount": 528,
+            "wape": 2.41140062,
+            "zeroImputationUsed": false
+          },
+          "2021-12": {
+            "caseCount": 3092,
+            "mae": 10092.0342701,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.92456666,
+            "smape": 1.26838537,
+            "uniqueWorkCount": 773,
+            "wape": 1.22689682,
+            "zeroImputationUsed": false
+          },
+          "2022-06": {
+            "caseCount": 2613,
+            "mae": 6503.41421299,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.86418651,
+            "smape": 1.20062561,
+            "uniqueWorkCount": 871,
+            "wape": 1.11418763,
+            "zeroImputationUsed": false
+          },
+          "2022-12": {
+            "caseCount": 2088,
+            "mae": 4341.68255251,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.77696859,
+            "smape": 1.18482045,
+            "uniqueWorkCount": 1044,
+            "wape": 1.04801822,
+            "zeroImputationUsed": false
+          }
+        },
+        "served": {
+          "caseCount": null,
+          "mae": null,
+          "nullPredictionCount": null,
+          "signedAggregateBias": null,
+          "smape": null,
+          "suppressed": true,
+          "suppressionReason": "served_metric_complement_of_small_abstention_cell",
+          "uniqueWorkCount": null,
+          "wape": null,
+          "zeroImputationUsed": false
+        },
+        "topBands": {
+          "top1": {
+            "caseCount": 93,
+            "mae": 274013.20983145,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.7431526,
+            "smape": 0.8464546,
+            "uniqueWorkCount": 18,
+            "wape": 0.89674337,
+            "zeroImputationUsed": false
+          },
+          "top10": {
+            "caseCount": 888,
+            "mae": 57144.0874076,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.5104041,
+            "smape": 0.76255464,
+            "uniqueWorkCount": 118,
+            "wape": 0.80270418,
+            "zeroImputationUsed": false
+          },
+          "top5": {
+            "caseCount": 472,
+            "mae": 92031.46746838,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.54677429,
+            "smape": 0.71373562,
+            "uniqueWorkCount": 59,
+            "wape": 0.79379169,
+            "zeroImputationUsed": false
+          }
+        }
+      },
+      "B3": {
+        "abstention": {
+          "abstainedCaseCount": null,
+          "abstainedUniqueWorkCount": "<10",
+          "abstentionReasonDistribution": null,
+          "scoreableCaseCount": 12223,
+          "servedActualRevenueShareOfScoreableCases": null,
+          "servedCaseCount": null,
+          "servedPredictionNullOnEveryAbstention": true,
+          "suppressed": true,
+          "suppressionReason": "small_abstention_and_complement_protection",
+          "zeroImputationUsed": false
+        },
+        "allScoreable": {
+          "caseCount": 12223,
+          "mae": 11172.07058775,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 1.23477116,
+          "smape": 1.25007074,
+          "uniqueWorkCount": 1044,
+          "wape": 1.69947001,
+          "zeroImputationUsed": false
+        },
+        "highValueAllScoreable": {
+          "caseCount": 888,
+          "mae": 37842.60661052,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.20052486,
+          "smape": 0.71275087,
+          "uniqueWorkCount": 118,
+          "wape": 0.53157588,
+          "zeroImputationUsed": false
+        },
+        "highValueServed": {
+          "caseCount": null,
+          "mae": null,
+          "nullPredictionCount": null,
+          "signedAggregateBias": null,
+          "smape": null,
+          "suppressed": true,
+          "suppressionReason": "served_metric_complement_of_small_abstention_cell",
+          "uniqueWorkCount": null,
+          "wape": null,
+          "zeroImputationUsed": false
+        },
+        "horizons": {
+          "12": {
+            "caseCount": 2530,
+            "mae": 13524.59811073,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 1.08446511,
+            "smape": 1.26057981,
+            "uniqueWorkCount": 871,
+            "wape": 1.49786308,
+            "zeroImputationUsed": false
+          },
+          "18": {
+            "caseCount": 1659,
+            "mae": 21958.51172113,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 1.41129084,
+            "smape": 1.29979917,
+            "uniqueWorkCount": 773,
+            "wape": 1.86160505,
+            "zeroImputationUsed": false
+          },
+          "24": {
+            "caseCount": 886,
+            "mae": 34713.14971045,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 2.15699492,
+            "smape": 1.30519868,
+            "uniqueWorkCount": 528,
+            "wape": 2.840035,
+            "zeroImputationUsed": false
+          },
+          "3": {
+            "caseCount": 3574,
+            "mae": 3206.58518669,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.92700688,
+            "smape": 1.23002384,
+            "uniqueWorkCount": 1044,
+            "wape": 1.30988719,
+            "zeroImputationUsed": false
+          },
+          "6": {
+            "caseCount": 3574,
+            "mae": 6629.44278901,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.83634897,
+            "smape": 1.22592885,
+            "uniqueWorkCount": 1044,
+            "wape": 1.29043071,
+            "zeroImputationUsed": false
+          }
+        },
+        "internal80": {
+          "availableCaseCount": 12223,
+          "completeOnAllScoreablePopulation": true,
+          "endpointsPresentInPublicReport": false,
+          "internal80Coverage": 0.83743762,
+          "meanWis": 9572.66164771,
+          "requiredCaseCount": 12223,
+          "standardizedWidth": 2.21470747
+        },
+        "origins": {
+          "2020-12": {
+            "caseCount": 1790,
+            "mae": 22199.21678675,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 2.39630394,
+            "smape": 1.45856642,
+            "uniqueWorkCount": 358,
+            "wape": 2.99165887,
+            "zeroImputationUsed": false
+          },
+          "2021-06": {
+            "caseCount": 2640,
+            "mae": 15890.40324138,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 1.51679247,
+            "smape": 1.25292996,
+            "uniqueWorkCount": 528,
+            "wape": 2.36553432,
+            "zeroImputationUsed": false
+          },
+          "2021-12": {
+            "caseCount": 3092,
+            "mae": 9460.64477209,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.8353521,
+            "smape": 1.265081,
+            "uniqueWorkCount": 773,
+            "wape": 1.15013828,
+            "zeroImputationUsed": false
+          },
+          "2022-06": {
+            "caseCount": 2613,
+            "mae": 6472.64943301,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.85434546,
+            "smape": 1.16918895,
+            "uniqueWorkCount": 871,
+            "wape": 1.1089169,
+            "zeroImputationUsed": false
+          },
+          "2022-12": {
+            "caseCount": 2088,
+            "mae": 4168.39539503,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.71814238,
+            "smape": 1.14670714,
+            "uniqueWorkCount": 1044,
+            "wape": 1.00618925,
+            "zeroImputationUsed": false
+          }
+        },
+        "served": {
+          "caseCount": null,
+          "mae": null,
+          "nullPredictionCount": null,
+          "signedAggregateBias": null,
+          "smape": null,
+          "suppressed": true,
+          "suppressionReason": "served_metric_complement_of_small_abstention_cell",
+          "uniqueWorkCount": null,
+          "wape": null,
+          "zeroImputationUsed": false
+        },
+        "topBands": {
+          "top1": {
+            "caseCount": 93,
+            "mae": 132133.12094976,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.27587225,
+            "smape": 0.77397346,
+            "uniqueWorkCount": 18,
+            "wape": 0.43242258,
+            "zeroImputationUsed": false
+          },
+          "top10": {
+            "caseCount": 888,
+            "mae": 37842.60661052,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.20052486,
+            "smape": 0.71275087,
+            "uniqueWorkCount": 118,
+            "wape": 0.53157588,
+            "zeroImputationUsed": false
+          },
+          "top5": {
+            "caseCount": 472,
+            "mae": 56877.09725794,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.20981042,
+            "smape": 0.6442687,
+            "uniqueWorkCount": 59,
+            "wape": 0.4905775,
+            "zeroImputationUsed": false
+          }
+        }
+      },
+      "B4": {
+        "abstention": {
+          "abstainedCaseCount": null,
+          "abstainedUniqueWorkCount": "<10",
+          "abstentionReasonDistribution": null,
+          "scoreableCaseCount": 12223,
+          "servedActualRevenueShareOfScoreableCases": null,
+          "servedCaseCount": null,
+          "servedPredictionNullOnEveryAbstention": true,
+          "suppressed": true,
+          "suppressionReason": "small_abstention_and_complement_protection",
+          "zeroImputationUsed": false
+        },
+        "allScoreable": {
+          "caseCount": 12223,
+          "mae": 10955.77472984,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 1.19610576,
+          "smape": 1.27124078,
+          "uniqueWorkCount": 1044,
+          "wape": 1.66656758,
+          "zeroImputationUsed": false
+        },
+        "highValueAllScoreable": {
+          "caseCount": 888,
+          "mae": 37121.66761174,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.18037025,
+          "smape": 0.70870122,
+          "uniqueWorkCount": 118,
+          "wape": 0.52144883,
+          "zeroImputationUsed": false
+        },
+        "highValueServed": {
+          "caseCount": null,
+          "mae": null,
+          "nullPredictionCount": null,
+          "signedAggregateBias": null,
+          "smape": null,
+          "suppressed": true,
+          "suppressionReason": "served_metric_complement_of_small_abstention_cell",
+          "uniqueWorkCount": null,
+          "wape": null,
+          "zeroImputationUsed": false
+        },
+        "horizons": {
+          "12": {
+            "caseCount": 2530,
+            "mae": 13470.73221399,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 1.07594766,
+            "smape": 1.27901957,
+            "uniqueWorkCount": 871,
+            "wape": 1.49189738,
+            "zeroImputationUsed": false
+          },
+          "18": {
+            "caseCount": 1659,
+            "mae": 21469.13636831,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 1.36481825,
+            "smape": 1.3087367,
+            "uniqueWorkCount": 773,
+            "wape": 1.82011664,
+            "zeroImputationUsed": false
+          },
+          "24": {
+            "caseCount": 886,
+            "mae": 32411.80589031,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 1.95190424,
+            "smape": 1.30365985,
+            "uniqueWorkCount": 528,
+            "wape": 2.65175197,
+            "zeroImputationUsed": false
+          },
+          "3": {
+            "caseCount": 3574,
+            "mae": 3246.44008055,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.93532342,
+            "smape": 1.25626422,
+            "uniqueWorkCount": 1044,
+            "wape": 1.32616788,
+            "zeroImputationUsed": false
+          },
+          "6": {
+            "caseCount": 3574,
+            "mae": 6685.65974248,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.84426892,
+            "smape": 1.25526902,
+            "uniqueWorkCount": 1044,
+            "wape": 1.30137342,
+            "zeroImputationUsed": false
+          }
+        },
+        "internal80": {
+          "availableCaseCount": 12223,
+          "completeOnAllScoreablePopulation": true,
+          "endpointsPresentInPublicReport": false,
+          "internal80Coverage": 0.83367422,
+          "meanWis": 9303.41628548,
+          "requiredCaseCount": 12223,
+          "standardizedWidth": 2.26088309
+        },
+        "origins": {
+          "2020-12": {
+            "caseCount": 1790,
+            "mae": 18396.63121939,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 1.81766235,
+            "smape": 1.42850607,
+            "uniqueWorkCount": 358,
+            "wape": 2.47920661,
+            "zeroImputationUsed": false
+          },
+          "2021-06": {
+            "caseCount": 2640,
+            "mae": 16276.64757176,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 1.62143228,
+            "smape": 1.26359991,
+            "uniqueWorkCount": 528,
+            "wape": 2.42303281,
+            "zeroImputationUsed": false
+          },
+          "2021-12": {
+            "caseCount": 3092,
+            "mae": 10070.6574656,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.89978483,
+            "smape": 1.29135815,
+            "uniqueWorkCount": 773,
+            "wape": 1.22429802,
+            "zeroImputationUsed": false
+          },
+          "2022-06": {
+            "caseCount": 2613,
+            "mae": 6683.19714339,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.90158726,
+            "smape": 1.19853683,
+            "uniqueWorkCount": 871,
+            "wape": 1.14498867,
+            "zeroImputationUsed": false
+          },
+          "2022-12": {
+            "caseCount": 2088,
+            "mae": 4506.91955522,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.76022674,
+            "smape": 1.20727507,
+            "uniqueWorkCount": 1044,
+            "wape": 1.087904,
+            "zeroImputationUsed": false
+          }
+        },
+        "served": {
+          "caseCount": null,
+          "mae": null,
+          "nullPredictionCount": null,
+          "signedAggregateBias": null,
+          "smape": null,
+          "suppressed": true,
+          "suppressionReason": "served_metric_complement_of_small_abstention_cell",
+          "uniqueWorkCount": null,
+          "wape": null,
+          "zeroImputationUsed": false
+        },
+        "topBands": {
+          "top1": {
+            "caseCount": 93,
+            "mae": 89928.01935986,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.13583734,
+            "smape": 0.54676454,
+            "uniqueWorkCount": 18,
+            "wape": 0.29430098,
+            "zeroImputationUsed": false
+          },
+          "top10": {
+            "caseCount": 888,
+            "mae": 37121.66761174,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.18037025,
+            "smape": 0.70870122,
+            "uniqueWorkCount": 118,
+            "wape": 0.52144883,
+            "zeroImputationUsed": false
+          },
+          "top5": {
+            "caseCount": 472,
+            "mae": 53643.43346928,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.17070639,
+            "smape": 0.63625002,
+            "uniqueWorkCount": 59,
+            "wape": 0.46268644,
+            "zeroImputationUsed": false
+          }
+        }
+      }
+    }
+  },
+  "nextBoundary": "stop_after_C1_FAIL_no_C2R_C2_C3",
+  "outerOriginCandidateSelection": [
+    {
+      "biasFeasibleCandidateCount": 0,
+      "candidateEvaluationDigest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "candidateSpaceCount": 148,
+      "finalHoldoutRead": false,
+      "innerDistinctScoreOrigins": 0,
+      "innerOrigins": [],
+      "innerScoreableCaseCount": 0,
+      "maximumInnerLabelAvailableAsOf": null,
+      "maximumInnerTargetEnd": null,
+      "outerOrigin": "2020-12",
+      "sameOrLaterOuterTruthRead": false,
+      "seed": 20260714,
+      "selectedCandidateId": "pair:robust_positive_median@0.50+trailing_mean_12@0.50",
+      "selectedObjective": null,
+      "selectionStatus": "frozen_fallback_insufficient_inner_evidence",
+      "warmupUsedForCandidateSelection": false
+    },
+    {
+      "biasFeasibleCandidateCount": 0,
+      "candidateEvaluationDigest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "candidateSpaceCount": 148,
+      "finalHoldoutRead": false,
+      "innerDistinctScoreOrigins": 1,
+      "innerOrigins": [
+        "2020-12"
+      ],
+      "innerScoreableCaseCount": 716,
+      "maximumInnerLabelAvailableAsOf": "2021-06",
+      "maximumInnerTargetEnd": "2021-06",
+      "outerOrigin": "2021-06",
+      "sameOrLaterOuterTruthRead": false,
+      "seed": 20260714,
+      "selectedCandidateId": "pair:robust_positive_median@0.50+trailing_mean_12@0.50",
+      "selectedObjective": null,
+      "selectionStatus": "frozen_fallback_insufficient_inner_evidence",
+      "warmupUsedForCandidateSelection": false
+    },
+    {
+      "biasFeasibleCandidateCount": 0,
+      "candidateEvaluationDigest": "335959087a1ff3d0959b47c830c6b43844c49b93c6cf0ba647e3a8596cb44459",
+      "candidateSpaceCount": 148,
+      "finalHoldoutRead": false,
+      "innerDistinctScoreOrigins": 2,
+      "innerOrigins": [
+        "2020-12",
+        "2021-06"
+      ],
+      "innerScoreableCaseCount": 2130,
+      "maximumInnerLabelAvailableAsOf": "2021-12",
+      "maximumInnerTargetEnd": "2021-12",
+      "outerOrigin": "2021-12",
+      "sameOrLaterOuterTruthRead": false,
+      "seed": 20260714,
+      "selectedCandidateId": "pair:robust_positive_median@0.50+trailing_mean_12@0.50",
+      "selectedObjective": {
+        "biasFeasible": false,
+        "candidateId": "pair:robust_positive_median@0.50+trailing_mean_12@0.50",
+        "componentCount": 2,
+        "horizonSignedBias": {
+          "12": 10.69150366,
+          "3": 5.24780169,
+          "6": 5.50138893
+        },
+        "meanCoreHorizonWape": 7.77687848,
+        "nonzeroParameterCount": 2,
+        "objective": 8.04443237,
+        "overallSignedBias": 7.35475837,
+        "overallWape": 7.95379945,
+        "top10Wape": 9.03316583
+      },
+      "selectionStatus": "frozen_fallback_no_bias_feasible_candidate",
+      "warmupUsedForCandidateSelection": false
+    },
+    {
+      "biasFeasibleCandidateCount": 0,
+      "candidateEvaluationDigest": "52d98e85b70dae939ca2cb08a392acbab1b12bac4fb70d4c82b81e9da3ea207f",
+      "candidateSpaceCount": 148,
+      "finalHoldoutRead": false,
+      "innerDistinctScoreOrigins": 3,
+      "innerOrigins": [
+        "2020-12",
+        "2021-06",
+        "2021-12"
+      ],
+      "innerScoreableCaseCount": 4562,
+      "maximumInnerLabelAvailableAsOf": "2022-06",
+      "maximumInnerTargetEnd": "2022-06",
+      "outerOrigin": "2022-06",
+      "sameOrLaterOuterTruthRead": false,
+      "seed": 20260714,
+      "selectedCandidateId": "pair:robust_positive_median@0.50+trailing_mean_12@0.50",
+      "selectedObjective": {
+        "biasFeasible": false,
+        "candidateId": "pair:robust_positive_median@0.50+trailing_mean_12@0.50",
+        "componentCount": 2,
+        "horizonSignedBias": {
+          "12": 6.31071023,
+          "18": 14.75827227,
+          "3": 3.3478512,
+          "6": 3.45446927
+        },
+        "meanCoreHorizonWape": 7.37035163,
+        "nonzeroParameterCount": 2,
+        "objective": 6.62156155,
+        "overallSignedBias": 6.14469471,
+        "overallWape": 6.57183709,
+        "top10Wape": 6.34230163
+      },
+      "selectionStatus": "frozen_fallback_no_bias_feasible_candidate",
+      "warmupUsedForCandidateSelection": false
+    },
+    {
+      "biasFeasibleCandidateCount": 0,
+      "candidateEvaluationDigest": "8cd17ebd01cd3e6b298e33ec029e484f47cd5e4c07c0977563ecadc7c76e988b",
+      "candidateSpaceCount": 148,
+      "finalHoldoutRead": false,
+      "innerDistinctScoreOrigins": 4,
+      "innerOrigins": [
+        "2020-12",
+        "2021-06",
+        "2021-12",
+        "2022-06"
+      ],
+      "innerScoreableCaseCount": 7963,
+      "maximumInnerLabelAvailableAsOf": "2022-12",
+      "maximumInnerTargetEnd": "2022-12",
+      "outerOrigin": "2022-12",
+      "sameOrLaterOuterTruthRead": false,
+      "seed": 20260714,
+      "selectedCandidateId": "pair:robust_positive_median@0.50+trailing_mean_12@0.50",
+      "selectedObjective": {
+        "biasFeasible": false,
+        "candidateId": "pair:robust_positive_median@0.50+trailing_mean_12@0.50",
+        "componentCount": 2,
+        "horizonSignedBias": {
+          "12": 3.69190602,
+          "18": 7.39690506,
+          "24": 14.19397598,
+          "3": 2.47900787,
+          "6": 2.41037758
+        },
+        "meanCoreHorizonWape": 6.39209912,
+        "nonzeroParameterCount": 2,
+        "objective": 5.36035274,
+        "overallSignedBias": 4.9686289,
+        "overallWape": 5.33818087,
+        "top10Wape": 4.67228597
+      },
+      "selectionStatus": "frozen_fallback_no_bias_feasible_candidate",
+      "warmupUsedForCandidateSelection": false
+    }
+  ],
+  "pairedBootstrapVsPrimary": {
+    "caseIidSampling": false,
+    "clusterKeys": [
+      "work",
+      "origin"
+    ],
+    "method": "paired_two_way_pigeonhole_cluster_bootstrap",
+    "pairedAcrossModels": true,
+    "relativeDeltaC1VsPrimary": {
+      "percentileLower": 0.05312122,
+      "percentileUpper": 4.54335193,
+      "relativeDeltaMedian": 1.11583697
+    },
+    "replicatesCompleted": 2000,
+    "seed": 20260714,
+    "workOriginBlockCount": 3574
+  },
+  "phaseAGate": {
+    "C1AuthorizedOnlyAfterRuntimeReceipt": true,
+    "allTrue": true,
+    "phaseAHead": "879fbd0a951ce6d465082321b38f965b14815935",
+    "runtimeReceiptTracked": false
+  },
+  "privacy": {
+    "aggregateOnly": true,
+    "deidentified": true,
+    "predictionIntervalEndpointsPresent": false,
+    "privatePathsPresent": false,
+    "rawIncomeRowsPresent": false,
+    "smallCellsComplementarilySuppressed": true,
+    "workOrChannelIdentifiersPresent": false
+  },
+  "relativeComparisons": {
+    "B0b": {
+      "horizonWapeRelativeImprovement": {
+        "12": -0.97979593,
+        "18": -1.41208783,
+        "24": -1.94739545,
+        "3": -0.85922325,
+        "6": -0.80569571
+      },
+      "internal80StandardizedWidthRelativeRegression": 0.45538197,
+      "internal80WisRelativeImprovement": -1.46414469,
+      "overallSignedBiasDifference": 2.40900059,
+      "overallWapeRelativeImprovement": -1.26528668,
+      "topBandWapeRelativeImprovement": {
+        "top1": -9.22275545,
+        "top10": -4.32598161,
+        "top5": -5.15617901
+      }
+    },
+    "B1": {
+      "horizonWapeRelativeImprovement": {
+        "12": -0.82768909,
+        "18": -1.14566352,
+        "24": -1.41648593,
+        "3": -0.72999441,
+        "6": -0.7025033
+      },
+      "internal80StandardizedWidthRelativeRegression": 0.39097303,
+      "internal80WisRelativeImprovement": -1.17994236,
+      "overallSignedBiasDifference": 2.03193199,
+      "overallWapeRelativeImprovement": -1.02409636,
+      "topBandWapeRelativeImprovement": {
+        "top1": -3.88785598,
+        "top10": -2.67975564,
+        "top5": -2.95605329
+      }
+    },
+    "B3": {
+      "horizonWapeRelativeImprovement": {
+        "12": -0.99165647,
+        "18": -1.43574435,
+        "24": -1.84101666,
+        "3": -0.87763347,
+        "6": -0.8397959
+      },
+      "internal80StandardizedWidthRelativeRegression": 0.494868,
+      "internal80WisRelativeImprovement": -1.45896591,
+      "overallSignedBiasDifference": 2.27659931,
+      "overallWapeRelativeImprovement": -1.2655047,
+      "topBandWapeRelativeImprovement": {
+        "top1": -9.13627089,
+        "top10": -4.55660133,
+        "top5": -5.40119498
+      }
+    },
+    "B4": {
+      "horizonWapeRelativeImprovement": {
+        "12": -0.99962057,
+        "18": -1.4912656,
+        "24": -2.0427381,
+        "3": -0.85458272,
+        "6": -0.82432581
+      },
+      "internal80StandardizedWidthRelativeRegression": 0.46433725,
+      "internal80WisRelativeImprovement": -1.53012957,
+      "overallSignedBiasDifference": 2.31526472,
+      "overallWapeRelativeImprovement": -1.31023173,
+      "topBandWapeRelativeImprovement": {
+        "top1": -13.89343496,
+        "top10": -4.66451595,
+        "top5": -5.7870635
+      }
+    }
+  },
+  "releaseAuthorized": false,
+  "schema": "m2.c1_development_validation.v1",
+  "seals": {
+    "deferred60MonthLabelsOpened": false,
+    "embargoShadowOpened": false,
+    "finalHoldoutOpened": false
+  },
+  "structuralValidation": {
+    "C1OwnResidualIntervalOnly": true,
+    "allSealsClosed": true,
+    "authorityInputMatchesPhaseA": true,
+    "candidateCountFrozenAt148": true,
+    "caseKeysAndActualsMatchPrimary": true,
+    "everyHeldPredictionLockedBeforeTruthJoin": true,
+    "futurePerturbationPassed": true,
+    "gateARuntimeReceiptVerified": true,
+    "heldOutcomeFieldsAbsentAtPredictionLock": true,
+    "outerSelectionUsesEarlierAvailableTruthOnly": true,
+    "productOutputFieldsExact": true,
+    "publicPredictionIntervalEndpointsAbsent": true,
+    "rawPredictionCompleteOnAllScoreable": true,
+    "samePredictAsOfEntryUsedForBacktestAndForward": true,
+    "servedNullIffAbstained": true,
+    "zeroImputationDisabled": true
+  },
+  "version": "M2-C1-development-validation-v1"
+}

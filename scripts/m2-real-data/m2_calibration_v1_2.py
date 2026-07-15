@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import copy
 import hashlib
+import itertools
 import json
 import math
 import re
@@ -43,6 +44,16 @@ V1_1_AMENDMENT_PATH = (
 BASELINE_IDS = ("B0b", "B1", "B2", "B3", "B4")
 LEGAL_BASELINE_IDS = BASELINE_IDS
 CORE_HORIZONS = (3, 6, 12, 18, 24)
+C1_COMPONENT_IDS = (
+    "damped_linear_trend",
+    "recency_weighted_mean",
+    "robust_positive_median",
+    "seasonal_naive_12",
+    "trailing_mean_12",
+    "trailing_mean_3",
+    "trailing_mean_6",
+    "winsorized_recent_trend",
+)
 TOLERANCE = 1e-12
 
 
@@ -656,6 +667,389 @@ def _restore_business_eligibility_after_raw_materialization(
     return result
 
 
+def enumerate_c1_candidates(
+    amendment: Mapping[str, Any] | None = None,
+) -> list[dict[str, Any]]:
+    """Enumerate the complete frozen C1 grid without reading any outcomes."""
+
+    contract = (amendment or load_amendment())["C1"]
+    allowed = tuple(sorted(str(item) for item in contract["allowedComponents"]))
+    if allowed != C1_COMPONENT_IDS:
+        raise CalibrationV12Error("C1 component order differs from the frozen grid")
+    candidates: list[dict[str, Any]] = []
+    for component in allowed:
+        candidates.append(
+            {
+                "candidateId": f"single:{component}",
+                "weights": {component: 1.0},
+                "componentCount": 1,
+                "nonzeroParameterCount": 1,
+            }
+        )
+    for first, second in itertools.combinations(allowed, 2):
+        for first_weight in contract["weightGrid"]:
+            left = float(first_weight)
+            right = 1.0 - left
+            candidates.append(
+                {
+                    "candidateId": (
+                        f"pair:{first}@{left:.2f}+{second}@{right:.2f}"
+                    ),
+                    "weights": {first: left, second: right},
+                    "componentCount": 2,
+                    "nonzeroParameterCount": 2,
+                }
+            )
+    for first, second, third in itertools.combinations(allowed, 3):
+        weight = 1.0 / 3.0
+        candidates.append(
+            {
+                "candidateId": (
+                    f"triple:{first}+{second}+{third}:equal_thirds"
+                ),
+                "weights": {first: weight, second: weight, third: weight},
+                "componentCount": 3,
+                "nonzeroParameterCount": 3,
+            }
+        )
+    candidates.sort(key=lambda item: str(item["candidateId"]))
+    expected = int(contract["candidateEnumeration"]["expectedCandidateCount"])
+    identifiers = [str(item["candidateId"]) for item in candidates]
+    if len(candidates) != expected or len(set(identifiers)) != expected:
+        raise CalibrationV12Error("C1 candidate enumeration is incomplete or duplicated")
+    if any(
+        set(candidate["weights"]).difference(allowed)
+        or any(float(weight) <= 0 for weight in candidate["weights"].values())
+        or not math.isclose(
+            sum(float(weight) for weight in candidate["weights"].values()),
+            1.0,
+            abs_tol=TOLERANCE,
+        )
+        for candidate in candidates
+    ):
+        raise CalibrationV12Error("C1 candidate weights violate the frozen simplex")
+    return candidates
+
+
+def c1_candidate_by_id(
+    candidate_id: str, amendment: Mapping[str, Any] | None = None
+) -> dict[str, Any]:
+    matches = [
+        candidate
+        for candidate in enumerate_c1_candidates(amendment)
+        if candidate["candidateId"] == candidate_id
+    ]
+    if len(matches) != 1:
+        raise CalibrationV12Error("C1 candidate id is outside the frozen grid")
+    return copy.deepcopy(matches[0])
+
+
+def _validate_c1_candidate(
+    candidate: Mapping[str, Any] | None, amendment: Mapping[str, Any]
+) -> dict[str, Any]:
+    if not isinstance(candidate, Mapping):
+        raise CalibrationV12Error("C1 requires one frozen candidate")
+    candidate_id = candidate.get("candidateId")
+    if not isinstance(candidate_id, str):
+        raise CalibrationV12Error("C1 candidate lacks a native id")
+    expected = c1_candidate_by_id(candidate_id, amendment)
+    observed = {
+        "candidateId": candidate_id,
+        "weights": {
+            str(key): float(value)
+            for key, value in dict(candidate.get("weights", {})).items()
+        },
+        "componentCount": int(candidate.get("componentCount", -1)),
+        "nonzeroParameterCount": int(candidate.get("nonzeroParameterCount", -1)),
+    }
+    if canonical_digest(observed) != canonical_digest(expected):
+        raise CalibrationV12Error("C1 candidate parameters differ from pre-registration")
+    return expected
+
+
+def c1_component_monthly_values(
+    history: Sequence[float], horizon: int
+) -> dict[str, list[float]]:
+    """Return all eight frozen component paths for one cutoff sales series."""
+
+    horizon = int(horizon)
+    if horizon < 0:
+        raise CalibrationV12Error("C1 horizon cannot be negative")
+    clean = [base.finite_number(value) for value in history]
+    recent = ([0.0] * max(0, 12 - len(clean)) + clean)[-12:]
+    positives = [value for value in recent if value > 0]
+
+    def repeated(value: float) -> list[float]:
+        return [max(0.0, float(value)) for _ in range(horizon)]
+
+    means = {
+        "trailing_mean_3": base.mean(recent[-3:]),
+        "trailing_mean_6": base.mean(recent[-6:]),
+        "trailing_mean_12": base.mean(recent),
+    }
+    seasonal = [max(0.0, recent[index % 12]) for index in range(horizon)]
+    robust = repeated(float(statistics.median(positives)) if positives else 0.0)
+    weights = list(range(1, 13))
+    recency = repeated(
+        sum(weight * value for weight, value in zip(weights, recent)) / 78.0
+    )
+
+    def linear_fit(values: Sequence[float]) -> tuple[float, float]:
+        x_center = 5.5
+        y_center = base.mean(values)
+        denominator = sum((index - x_center) ** 2 for index in range(12))
+        slope = sum(
+            (index - x_center) * (float(value) - y_center)
+            for index, value in enumerate(values)
+        ) / denominator
+        return y_center - slope * x_center, slope
+
+    raw_intercept, raw_slope = linear_fit(recent)
+    fitted_at_11 = raw_intercept + raw_slope * 11.0
+    damped = [
+        max(0.0, fitted_at_11 + 0.25 * raw_slope * step)
+        for step in range(1, horizon + 1)
+    ]
+    q10 = float(base.linear_quantile(recent, 0.10) or 0.0)
+    q90 = float(base.linear_quantile(recent, 0.90) or 0.0)
+    winsorized = [min(q90, max(q10, value)) for value in recent]
+    win_intercept, win_slope = linear_fit(winsorized)
+    upper = 3.0 * float(statistics.median(positives)) if positives else math.inf
+    winsorized_trend = [
+        min(upper, max(0.0, win_intercept + win_slope * (11 + step)))
+        for step in range(1, horizon + 1)
+    ]
+    result = {
+        **{name: repeated(value) for name, value in means.items()},
+        "seasonal_naive_12": seasonal,
+        "robust_positive_median": robust,
+        "winsorized_recent_trend": winsorized_trend,
+        "damped_linear_trend": damped,
+        "recency_weighted_mean": recency,
+    }
+    if tuple(sorted(result)) != C1_COMPONENT_IDS or any(
+        len(path) != horizon
+        or any(not math.isfinite(value) or value < 0 for value in path)
+        for path in result.values()
+    ):
+        raise CalibrationV12Error("C1 component materialization failed")
+    return result
+
+
+def _c1_prediction_basis(
+    work: Mapping[str, Any],
+    origin: str,
+    horizon: int,
+    spec: Mapping[str, Any],
+    *,
+    long_horizon_evidence: bool,
+) -> dict[str, Any]:
+    if not base.work_exists_as_of(work, origin):
+        raise CalibrationV12Error("future catalog entrant cannot be predicted")
+    routing = base.route_work_as_of(work, origin, spec)
+    relaxed = _raw_prediction_spec(spec)
+    template = base.predict_as_of(
+        work,
+        origin,
+        horizon,
+        "B1",
+        relaxed,
+        long_horizon_evidence=long_horizon_evidence,
+    )
+    template = _apply_structural_zero_if_allowed(
+        template, work, origin, horizon, relaxed
+    )
+    route = str(routing["route"])
+    if route not in {"pure_sales_share", "buyout_plus_sales"}:
+        point = template.get("point_forecast")
+        points = {
+            component: None if point is None else float(point)
+            for component in C1_COMPONENT_IDS
+        }
+        return {
+            "routing": routing,
+            "template": template,
+            "monthlyByComponent": None,
+            "pointByComponent": points,
+            "channelComponents": copy.deepcopy(
+                template.get("channel_components", [])
+            ),
+        }
+
+    future_months = [base.add_months(origin, step) for step in range(1, horizon + 1)]
+    monthly_by_component = {
+        component: {month: 0.0 for month in future_months}
+        for component in C1_COMPONENT_IDS
+    }
+    channels = base.channel_index(work)
+    channel_components: list[dict[str, Any]] = []
+    for item in routing["channels"]:
+        if item["label"] not in {"sales_share_channel", "mixed_channel"}:
+            continue
+        channel = channels[str(item["channel_key"])]
+        months, history = base._channel_history(  # pylint: disable=protected-access
+            channel, origin, spec["authority"]["firstBillMonth"]
+        )
+        if item["label"] == "mixed_channel":
+            buyout_months = set(item.get("buyoutEventMonths", []))
+            history = [
+                0.0 if month in buyout_months else value
+                for month, value in zip(months, history)
+            ]
+        component_paths = c1_component_monthly_values(history, horizon)
+        for component, path in component_paths.items():
+            for month, value in zip(future_months, path):
+                monthly_by_component[component][month] += value
+        channel_components.append(
+            {
+                "channel_key": item["channel_key"],
+                "detail": {
+                    "routeLabel": item["label"],
+                    "componentPointForecasts": {
+                        component: round(sum(path), 8)
+                        for component, path in sorted(component_paths.items())
+                    },
+                    "buyoutMonthsExcludedFromSalesHistory": len(
+                        item.get("buyoutEventMonths", [])
+                    ),
+                },
+            }
+        )
+    point_by_component = {
+        component: round(sum(monthly.values()), 8)
+        for component, monthly in monthly_by_component.items()
+    }
+    return {
+        "routing": routing,
+        "template": template,
+        "monthlyByComponent": monthly_by_component,
+        "pointByComponent": point_by_component,
+        "channelComponents": channel_components,
+    }
+
+
+def c1_component_point_predictions(
+    work: Mapping[str, Any],
+    origin: str,
+    horizon: int,
+    spec: Mapping[str, Any],
+    *,
+    long_horizon_evidence: bool = False,
+) -> dict[str, float | None]:
+    basis = _c1_prediction_basis(
+        work,
+        origin,
+        int(horizon),
+        spec,
+        long_horizon_evidence=long_horizon_evidence,
+    )
+    return copy.deepcopy(basis["pointByComponent"])
+
+
+def _predict_c1_as_of(
+    work: Mapping[str, Any],
+    origin: str,
+    horizon: int,
+    spec: Mapping[str, Any],
+    amendment: Mapping[str, Any],
+    candidate: Mapping[str, Any] | None,
+    candidate_role: str | None,
+    *,
+    long_horizon_evidence: bool,
+) -> dict[str, Any]:
+    selected = _validate_c1_candidate(candidate, amendment)
+    if not isinstance(candidate_role, str) or not candidate_role.strip():
+        raise CalibrationV12Error("C1 candidate selection role is required")
+    basis = _c1_prediction_basis(
+        work,
+        origin,
+        int(horizon),
+        spec,
+        long_horizon_evidence=long_horizon_evidence,
+    )
+    routing = basis["routing"]
+    route = str(routing["route"])
+    template = copy.deepcopy(basis["template"])
+    monthly_by_component = basis["monthlyByComponent"]
+    if monthly_by_component is None:
+        point = template.get("point_forecast")
+        annual = copy.deepcopy(template.get("annual_breakdown", []))
+        components = copy.deepcopy(basis["channelComponents"])
+    else:
+        future_months = [
+            base.add_months(origin, step) for step in range(1, int(horizon) + 1)
+        ]
+        monthly = {
+            month: sum(
+                float(weight) * float(monthly_by_component[component][month])
+                for component, weight in selected["weights"].items()
+            )
+            for month in future_months
+        }
+        point = round(sum(monthly.values()), 8)
+        annual = base.annual_breakdown(monthly, point)
+        components = copy.deepcopy(basis["channelComponents"])
+        for item in components:
+            component_points = item["detail"]["componentPointForecasts"]
+            item["point_forecast"] = round(
+                sum(
+                    float(weight) * float(component_points[component])
+                    for component, weight in selected["weights"].items()
+                ),
+                8,
+            )
+            item["detail"]["selectedCandidateId"] = selected["candidateId"]
+    features = copy.deepcopy(template.get("features", {}))
+    features.update(
+        {
+            "c1CandidateId": selected["candidateId"],
+            "c1CandidateRole": candidate_role,
+            "c1ComponentCount": selected["componentCount"],
+        }
+    )
+    limitations = base.ordered_limitations(
+        list(template.get("limitation", [])), spec
+    )
+    result = {
+        **template,
+        "model_id": "C1",
+        "case_key": {
+            "standard_work_id": str(work["standard_work_id"]),
+            "origin": origin,
+            "horizon_months": int(horizon),
+            "route": route,
+        },
+        "route": route,
+        "point_forecast": None if point is None else float(point),
+        "annual_breakdown": annual if point is not None else [],
+        "features": features,
+        "limitation": limitations,
+        "channel_components": components,
+        "identity": "C1_transparent_ensemble",
+        "c1_candidate": copy.deepcopy(selected),
+        "c1_candidate_role": candidate_role,
+    }
+    result["public_output"] = {
+        "pointForecast": result["point_forecast"],
+        "annualBreakdown": copy.deepcopy(result["annual_breakdown"]),
+        "confidence": result.get("confidence", "unavailable"),
+        "limitation": copy.deepcopy(result["limitation"]),
+    }
+    original_eligibility = base.forecastability_as_of(work, origin, routing, spec)
+    result = _restore_business_eligibility_after_raw_materialization(
+        result, original_eligibility, route, spec
+    )
+    strict_case_key(result)
+    if set(result["public_output"]) != {
+        "pointForecast",
+        "annualBreakdown",
+        "confidence",
+        "limitation",
+    }:
+        raise CalibrationV12Error("C1 public output escaped the four-field contract")
+    return result
+
+
 def predict_as_of(
     work: Mapping[str, Any],
     origin: str,
@@ -665,9 +1059,23 @@ def predict_as_of(
     *,
     b0b_context: Mapping[str, Any] | None = None,
     b4_parameter_role: str | None = None,
+    c1_candidate: Mapping[str, Any] | None = None,
+    c1_candidate_role: str | None = None,
     long_horizon_evidence: bool = False,
 ) -> dict[str, Any]:
     """Single v1.2 point-prediction entry for replay and forward serving."""
+
+    if model_id == "C1":
+        return _predict_c1_as_of(
+            work,
+            origin,
+            int(horizon),
+            spec,
+            load_amendment(),
+            c1_candidate,
+            c1_candidate_role,
+            long_horizon_evidence=long_horizon_evidence,
+        )
 
     if model_id in {"B1", "B2", "B3"}:
         routing = base.route_work_as_of(work, origin, spec)
@@ -1230,13 +1638,18 @@ def synthetic_self_test() -> dict[str, Any]:
 
 __all__ = [
     "BASELINE_IDS",
+    "C1_COMPONENT_IDS",
     "CORE_HORIZONS",
     "CalibrationV12Error",
     "build_b0b_context",
+    "c1_candidate_by_id",
+    "c1_component_monthly_values",
+    "c1_component_point_predictions",
     "canonical_digest",
     "load_amendment",
     "load_and_validate_contract",
     "metric_rows",
+    "enumerate_c1_candidates",
     "paired_relative_block_bootstrap",
     "predict_as_of",
     "select_primary_comparator",
