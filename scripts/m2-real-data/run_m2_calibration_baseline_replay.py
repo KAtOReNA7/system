@@ -121,13 +121,29 @@ def committed_file_bytes(commit: str, path: Path) -> bytes:
     return result.stdout
 
 
+def committed_file_oid(commit: str, path: Path) -> str:
+    relative = path.relative_to(ROOT).as_posix()
+    return run_git("rev-parse", f"{commit}:{relative}")
+
+
+def clean_worktree_oid(path: Path) -> str:
+    """Return the Git-clean object id, independent of checkout EOL style."""
+
+    relative = path.relative_to(ROOT).as_posix()
+    return run_git("hash-object", f"--path={relative}", relative)
+
+
+def matches_committed_file(commit: str, path: Path) -> bool:
+    return committed_file_oid(commit, path) == clean_worktree_oid(path)
+
+
 def latest_exact_commit(paths: Sequence[Path]) -> str:
     relative = [path.relative_to(ROOT).as_posix() for path in paths]
     commit = run_git("log", "-1", "--format=%H", "--", *relative)
     if not re.fullmatch(r"[0-9a-f]{40}", commit):
         raise ReplayError("fit protocol/code must be committed before fitting B0b")
     for path in paths:
-        if committed_file_bytes(commit, path) != path.read_bytes():
+        if not matches_committed_file(commit, path):
             raise ReplayError(
                 f"current {path.relative_to(ROOT).as_posix()} is not frozen in fit commit {commit[:12]}"
             )
@@ -267,10 +283,11 @@ def preflight(spec: Mapping[str, Any]) -> dict[str, Any]:
     refit_invariance = synthetic_forward_refit_invariance(spec)
     currency_rounding = synthetic_currency_rounding_evidence()
     report_contract = synthetic_report_shape_privacy_evidence(spec)
-    frozen_spec_bytes = committed_file_bytes(FROZEN_REVISION_5_COMMIT, SPEC_PATH)
     checks = {
         "specValid": True,
-        "specRevision5BytesFrozen": frozen_spec_bytes == SPEC_PATH.read_bytes(),
+        "specRevision5BytesFrozen": matches_committed_file(
+            FROZEN_REVISION_5_COMMIT, SPEC_PATH
+        ),
         "strictForwardFoldGeometryValid": forward_contract[
             "trainingBlockCountsByScoreOrigin"
         ] == {
@@ -356,13 +373,13 @@ def load_and_validate_fitted_artifact(spec: Mapping[str, Any]) -> tuple[dict[str
     fit_code_commit = str(artifact["fit"]["fitCodeCommit"])
     if spec_commit != FROZEN_REVISION_5_COMMIT:
         raise ReplayError("B0b artifact is not bound to the frozen revision-5 spec commit")
-    if committed_file_bytes(spec_commit, SPEC_PATH) != SPEC_PATH.read_bytes():
+    if not matches_committed_file(spec_commit, SPEC_PATH):
         raise ReplayError("B0b artifact specCommit does not contain the current frozen spec bytes")
     for code_path in (Path(__file__).resolve(), Path(calibration.__file__).resolve()):
-        if committed_file_bytes(fit_code_commit, code_path) != code_path.read_bytes():
+        if not matches_committed_file(fit_code_commit, code_path):
             raise ReplayError("B0b artifact fitCodeCommit does not contain the current fit code bytes")
     artifact_commit = latest_exact_commit([path])
-    if committed_file_bytes(artifact_commit, path) != path.read_bytes():
+    if not matches_committed_file(artifact_commit, path):
         raise ReplayError("B0b fitted-parameter artifact bytes are not committed")
     return {
         **artifact,

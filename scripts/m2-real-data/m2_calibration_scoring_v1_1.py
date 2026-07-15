@@ -112,19 +112,41 @@ def _rounded(value: Any, places: int = 8) -> float | None:
     return None if number is None else round(number, places)
 
 
-def _git_bytes(commit: str, path: Path) -> bytes:
+def _git_blob_oid(commit: str, path: Path) -> str:
     relative = path.relative_to(ROOT).as_posix()
     result = subprocess.run(
-        ["git", "show", f"{commit}:{relative}"],
+        ["git", "rev-parse", f"{commit}:{relative}"],
         cwd=ROOT,
         capture_output=True,
+        text=True,
         check=False,
     )
     if result.returncode != 0:
         raise ScoringContractError(
             f"frozen amendment commit does not contain {relative}"
         )
-    return result.stdout
+    return result.stdout.strip()
+
+
+def _worktree_clean_oid(path: Path) -> str:
+    """Hash worktree bytes after Git's checkout-clean normalization.
+
+    A Windows checkout may contain CRLF while the frozen blob contains LF.
+    Comparing physical worktree bytes would reject that legitimate checkout;
+    Git's path-aware clean filter preserves the exact repository-blob guard.
+    """
+
+    relative = path.relative_to(ROOT).as_posix()
+    result = subprocess.run(
+        ["git", "hash-object", f"--path={relative}", relative],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        raise ScoringContractError("cannot hash the v1.1 amendment through Git")
+    return result.stdout.strip()
 
 
 @dataclass(frozen=True)
@@ -147,7 +169,9 @@ def load_contract() -> ScoringContract:
     amendment_digest = canonical_digest(amendment)
     if amendment_digest != FROZEN_AMENDMENT_DIGEST:
         raise ScoringContractError("v1.1 amendment canonical digest changed")
-    if _git_bytes(FROZEN_AMENDMENT_COMMIT, AMENDMENT_PATH) != AMENDMENT_PATH.read_bytes():
+    if _git_blob_oid(FROZEN_AMENDMENT_COMMIT, AMENDMENT_PATH) != _worktree_clean_oid(
+        AMENDMENT_PATH
+    ):
         raise ScoringContractError("v1.1 amendment bytes differ from the frozen commit")
     if amendment.get("decisionStatus") != "not_for_formal_decision":
         raise ScoringContractError("v1.1 amendment decision boundary changed")
