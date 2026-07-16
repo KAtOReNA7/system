@@ -8,7 +8,7 @@
 
 2026-07-15 用户已冻结新的最高优先级业务口径：M2 正式点值只预测未来实销现金与 cutoff 时已确认且可审计的未来应收。未承诺买断、历史周期猜测、概率模型、已到账款未来摊销和 `buyoutMonthlyEquivalent` 不得进入现金预测。legacy-target C2-R development 已完成但结果为 `FAIL`，只保留为历史目标口径证据，不是 formal-cash 指标，也不得与 C2-R.1 直接比较。
 
-当前 formal-cash correction 已完成 18615/12223 原 case universe 的三套 actual 和桥接：scoreable 重叠 case-window 聚合 `forecastableCashActual=82206415.70`、`uncommittedBuyoutSurpriseActual=5517115.15`、`totalLedgerCashActual=87723530.85`，466 个正 surprise case window，占比 0.06289208。当前权威输入没有 cutoff commitment as-of 数据角色，纯买断无承诺必须 null abstain。formal-cash comparator replay 在 7851 个固定模型人口 case 上冻结 B4；Gate B 经远端 checkpoint 重跑验证 14/14。C2-R.1 已按 45 个预冻结候选执行，overall WAPE 0.58382425、signed bias +0.02933805，23 项通过 13 项，结论 `FAIL`。C2 已在 Gate C 14/14 后按 79 个冻结候选执行，overall WAPE 0.55695480、signed bias +0.09289130，25 项通过 15 项，`modelQualityDecision=FAIL`；全库/Top10 forecastable cash coverage 为 0.73964685/0.75941253，`businessCoverageDecision=CONDITIONAL`。
+当前 formal-cash correction 已完成 18615/12223 原 case universe 的三套 actual 和桥接：scoreable 重叠 case-window 聚合 `forecastableCashActual=82206415.70`、`uncommittedBuyoutSurpriseActual=5517115.15`、`totalLedgerCashActual=87723530.85`，466 个正 surprise case window，占比 0.06289208。当前权威输入没有 cutoff commitment as-of 数据角色，纯买断无承诺必须 null abstain。formal-cash comparator replay 在 7851 个固定模型人口 case 上冻结 B4；Gate B 经远端 checkpoint 重跑验证 14/14。C2-R.1 已按 45 个预冻结候选执行，overall WAPE 0.58382425、signed bias +0.02933805，23 项通过 13 项，结论 `FAIL`。C2 已在 Gate C 14/14 后按 79 个冻结候选执行，overall WAPE 0.55695480、signed bias +0.09289130；货币 reconciliation 已按 `calibration-spec-c2-v1.1-reconciliation-amendment` 改为整数分精确相等，预测和指标未变，25 项通过 16 项，`modelQualityDecision=FAIL`；全库/Top10 forecastable cash coverage 为 0.73964685/0.75941253，`businessCoverageDecision=CONDITIONAL`。
 
 ## 当前状态
 

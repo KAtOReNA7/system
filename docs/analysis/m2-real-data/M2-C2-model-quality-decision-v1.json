@@ -22,7 +22,7 @@
       "no_three_consecutive_origins_regress_over_5pct": true,
       "overall_absolute_bias_at_most_10pct": true,
       "overall_wape_at_most_0_60": true,
-      "residual_does_not_duplicate_cash": false,
+      "residual_does_not_duplicate_cash": true,
       "served_absolute_bias_at_most_10pct": true,
       "standardized_width_regression_at_most_10pct": true,
       "top10_wape_improves_at_least_5pct": false,
@@ -55,7 +55,7 @@
       }
     },
     "modelQualityDecision": "FAIL",
-    "passedConditionCount": 15,
+    "passedConditionCount": 16,
     "thresholdsChangedAfterResults": false
   },
   "decisionStatus": "not_for_formal_decision",
@@ -63,6 +63,26 @@
   "modelPopulationCaseCount": 7851,
   "modelPopulationWorkCount": 824,
   "modelQualityDecision": "FAIL",
+  "monetaryReconciliationCorrection": {
+    "B4Changed": false,
+    "GateCChanged": false,
+    "changedAcceptanceConditions": [
+      "residual_does_not_duplicate_cash"
+    ],
+    "comparisonUnit": "integer_cent",
+    "contractVersion": "calibration-spec-c2-v1.1-reconciliation-amendment",
+    "floatingAbsoluteToleranceUsed": false,
+    "maximumRawWorkPointDifferenceYuan": 1.1e-07,
+    "maximumWorkPointDifferenceCents": 0,
+    "minorUnitYuan": 0.01,
+    "modelMetricsChanged": false,
+    "modelPopulationChanged": false,
+    "otherAcceptanceThresholdsChanged": false,
+    "predictionsChanged": false,
+    "rawFloatingDifferenceRetainedAsDiagnostic": true,
+    "roundingMode": "ROUND_HALF_UP",
+    "scope": "monetary_reconciliation_numeric_representation_only"
+  },
   "populationMoved": false,
   "primaryComparator": "B4",
   "releaseAuthorized": false,

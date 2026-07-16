@@ -70,8 +70,21 @@
   "matchedForecastableCash": 66713233.25000008,
   "matchedForecastableCashShare": 0.83773763,
   "maximumTruthComponentReconciliationDifference": 0.0,
+  "maximumTruthComponentReconciliationDifferenceCents": 0,
+  "maximumTruthComponentReconciliationDifferenceRawYuan": 0.0,
   "maximumWorkPointReconciliationDifference": 1.1e-07,
+  "maximumWorkPointReconciliationDifferenceCents": 0,
+  "maximumWorkPointReconciliationDifferenceRawYuan": 1.1e-07,
   "modelPopulationCaseCount": 7851,
+  "monetaryReconciliation": {
+    "comparisonUnit": "integer_cent",
+    "contractVersion": "calibration-spec-c2-v1.1-reconciliation-amendment",
+    "floatingAbsoluteToleranceUsed": false,
+    "minorUnitYuan": 0.01,
+    "oneCentMismatchMustFail": true,
+    "rawFloatingDifferenceRetainedAsDiagnostic": true,
+    "roundingMode": "ROUND_HALF_UP"
+  },
   "otherOrNewChannelResidualPredictedCash": 0.0,
   "outerTruthUsed": false,
   "publicRealChannelIdentifiersPresent": false,
@@ -83,6 +96,9 @@
     "embargoShadowOpened": false,
     "finalHoldoutOpened": false
   },
+  "truthComponentReconciliationMismatchCaseCountAtCentPrecision": 0,
   "truthWithoutPredictionComponentCash": 12921763.08520002,
-  "workPointFormulaVerified": false
+  "workPointFormulaVerificationBasis": "exact_integer_cent_difference",
+  "workPointFormulaVerified": true,
+  "workPointReconciliationMismatchCaseCountAtCentPrecision": 0
 }
