@@ -1,0 +1,104 @@
+{
+  "byActivitySegment": {
+    "dense": {
+      "actualCashWithoutKnownComponent": 9470396.72800001,
+      "caseCount": 5174,
+      "predictedResidualCash": 0.0,
+      "signedAggregateDifference": -9470396.72800001,
+      "workCount": 617
+    },
+    "dormant": {
+      "actualCashWithoutKnownComponent": 1871299.6772000003,
+      "caseCount": 833,
+      "predictedResidualCash": 0.0,
+      "signedAggregateDifference": -1871299.6772000003,
+      "workCount": 76
+    },
+    "intermittent": {
+      "actualCashWithoutKnownComponent": 1580066.6800000009,
+      "caseCount": 1844,
+      "predictedResidualCash": 0.0,
+      "signedAggregateDifference": -1580066.6800000009,
+      "workCount": 367
+    }
+  },
+  "byHorizon": {
+    "12": {
+      "actualCashWithoutKnownComponent": 3140091.1892000027,
+      "caseCount": 1608,
+      "predictedResidualCash": 0.0,
+      "signedAggregateDifference": -3140091.1892000027,
+      "workCount": 643
+    },
+    "18": {
+      "actualCashWithoutKnownComponent": 3082567.2127,
+      "caseCount": 995,
+      "predictedResidualCash": 0.0,
+      "signedAggregateDifference": -3082567.2127,
+      "workCount": 556
+    },
+    "24": {
+      "actualCashWithoutKnownComponent": 3289365.344499999,
+      "caseCount": 444,
+      "predictedResidualCash": 0.0,
+      "signedAggregateDifference": -3289365.344499999,
+      "workCount": 301
+    },
+    "3": {
+      "actualCashWithoutKnownComponent": 757525.9122000011,
+      "caseCount": 2402,
+      "predictedResidualCash": 0.0,
+      "signedAggregateDifference": -757525.9122000011,
+      "workCount": 824
+    },
+    "6": {
+      "actualCashWithoutKnownComponent": 2652213.426599998,
+      "caseCount": 2402,
+      "predictedResidualCash": 0.0,
+      "signedAggregateDifference": -2652213.426599998,
+      "workCount": 824
+    }
+  },
+  "decisionStatus": "not_for_formal_decision",
+  "fitEvidence": "strictly_earlier_nested_origins_only",
+  "formalDecisionAuthorized": false,
+  "futureChannelIdentityPredicted": false,
+  "genericComponentCount": 7851,
+  "genericComponentIsARealChannel": false,
+  "knownChannelCashDuplicated": false,
+  "knownChannelPredictedCash": 87032395.04945639,
+  "matchedForecastableCash": 66713233.25000008,
+  "matchedForecastableCashShare": 0.83773763,
+  "maximumTruthComponentReconciliationDifference": 0.0,
+  "maximumTruthComponentReconciliationDifferenceCents": 0,
+  "maximumTruthComponentReconciliationDifferenceRawYuan": 0.0,
+  "maximumWorkPointReconciliationDifference": 1.1e-07,
+  "maximumWorkPointReconciliationDifferenceCents": 0,
+  "maximumWorkPointReconciliationDifferenceRawYuan": 1.1e-07,
+  "modelPopulationCaseCount": 7851,
+  "monetaryReconciliation": {
+    "comparisonUnit": "integer_cent",
+    "contractVersion": "calibration-spec-c2-v1.1-reconciliation-amendment",
+    "floatingAbsoluteToleranceUsed": false,
+    "minorUnitYuan": 0.01,
+    "oneCentMismatchMustFail": true,
+    "rawFloatingDifferenceRetainedAsDiagnostic": true,
+    "roundingMode": "ROUND_HALF_UP"
+  },
+  "otherOrNewChannelResidualPredictedCash": 0.0,
+  "outerTruthUsed": false,
+  "publicRealChannelIdentifiersPresent": false,
+  "releaseAuthorized": false,
+  "residualPositiveCaseCount": 0,
+  "schema": "m2.c2_other_new_channel_residual_audit.v1",
+  "seals": {
+    "deferred60MonthLabelsOpened": false,
+    "embargoShadowOpened": false,
+    "finalHoldoutOpened": false
+  },
+  "truthComponentReconciliationMismatchCaseCountAtCentPrecision": 0,
+  "truthWithoutPredictionComponentCash": 12921763.08520002,
+  "workPointFormulaVerificationBasis": "exact_integer_cent_difference",
+  "workPointFormulaVerified": true,
+  "workPointReconciliationMismatchCaseCountAtCentPrecision": 0
+}

@@ -4,11 +4,11 @@
 
 当前入口是：
 
-`复核已完成的 formal-cash comparator、Gate B 和 C2-R.1 FAIL 证据；停在 C2/C3 与 final holdout 前，等待用户明确授权，不得重复训练 C2-R.1、进入 C2/C3/M3、打开 final holdout 或 release`
+`复核已完成的 Gate C 与 C2 FAIL/业务覆盖 CONDITIONAL 证据；停在 C3 与 final holdout 前，等待用户明确授权，不得重复训练 C2、进入 C3/M3、打开 final holdout 或 release`
 
 2026-07-15 用户已冻结新的最高优先级业务口径：M2 正式点值只预测未来实销现金与 cutoff 时已确认且可审计的未来应收。未承诺买断、历史周期猜测、概率模型、已到账款未来摊销和 `buyoutMonthlyEquivalent` 不得进入现金预测。legacy-target C2-R development 已完成但结果为 `FAIL`，只保留为历史目标口径证据，不是 formal-cash 指标，也不得与 C2-R.1 直接比较。
 
-当前 formal-cash correction 已完成 18615/12223 原 case universe 的三套 actual 和桥接：scoreable 重叠 case-window 聚合 `forecastableCashActual=82206415.70`、`uncommittedBuyoutSurpriseActual=5517115.15`、`totalLedgerCashActual=87723530.85`，466 个正 surprise case window，占比 0.06289208。当前权威输入没有 cutoff commitment as-of 数据角色，纯买断无承诺必须 null abstain。formal-cash comparator replay 在 7851 个固定模型人口 case 上冻结 B4；Gate B 经远端 checkpoint 重跑验证 14/14。C2-R.1 已按 45 个预冻结候选执行，overall WAPE 0.58382425、signed bias +0.02933805，23 项通过 13 项，结论 `FAIL`。
+当前 formal-cash correction 已完成 18615/12223 原 case universe 的三套 actual 和桥接：scoreable 重叠 case-window 聚合 `forecastableCashActual=82206415.70`、`uncommittedBuyoutSurpriseActual=5517115.15`、`totalLedgerCashActual=87723530.85`，466 个正 surprise case window，占比 0.06289208。当前权威输入没有 cutoff commitment as-of 数据角色，纯买断无承诺必须 null abstain。formal-cash comparator replay 在 7851 个固定模型人口 case 上冻结 B4；Gate B 经远端 checkpoint 重跑验证 14/14。C2-R.1 已按 45 个预冻结候选执行，overall WAPE 0.58382425、signed bias +0.02933805，23 项通过 13 项，结论 `FAIL`。C2 已在 Gate C 14/14 后按 79 个冻结候选执行，overall WAPE 0.55695480、signed bias +0.09289130；货币 reconciliation 已按 `calibration-spec-c2-v1.1-reconciliation-amendment` 改为整数分精确相等，预测和指标未变，25 项通过 16 项，`modelQualityDecision=FAIL`；全库/Top10 forecastable cash coverage 为 0.73964685/0.75941253，`businessCoverageDecision=CONDITIONAL`。
 
 ## 当前状态
 
@@ -29,7 +29,7 @@
 - Phase A checkpoint `879fbd0a951ce6d465082321b38f965b14815935` 已 push；推送后 runtime receipt 已核对真实远端 SHA、重跑全部验证并独立复算 Gate A，所有条件为 true。
 - C1 transparent ensemble 已按 8 个组件、148 个候选和 nested expanding-origin 完成 development validation；5 个 outer origin 均没有 bias-feasible candidate，使用预注册 fallback，未放宽任何 gate。
 - C1 all-scoreable WAPE / signed bias 为 3.8502 / +3.5114，高价值 WAPE / bias 为 2.9538 / +2.7188，内部 80% coverage 为 0.8302；相对 B4 overall WAPE 回退 131.02%，bootstrap 相对差 95% CI 为 [0.0531, 4.5434]。19 项验收仅 5 项通过，结论为 `FAIL`。
-- C1 结构验证、同 case-key、无泄漏、future perturbation、raw/served/abstention、C1-only interval 和脱敏契约全部通过；legacy-target C2-R 随后已执行但结论为 `FAIL`，旧 development 写入口已 fail-closed，只保留历史验证入口。formal-cash comparator、Gate B 和 C2-R.1 development 已完成；C2-R.1 结论同样为 `FAIL`。C2/C3 未开始；final holdout、embargo 和 60 月标签仍 sealed，状态保持 `not_for_formal_decision`。
+- C1 结构验证、同 case-key、无泄漏、future perturbation、raw/served/abstention、C1-only interval 和脱敏契约全部通过；legacy-target C2-R 随后已执行但结论为 `FAIL`，旧 development 写入口已 fail-closed，只保留历史验证入口。formal-cash comparator、Gate B 和 C2-R.1 development 已完成；C2-R.1 结论同样为 `FAIL`。Gate C 与 C2 development 也已完成，C2 结论为 `FAIL`、业务覆盖为 `CONDITIONAL`。C3 未开始；final holdout、embargo 和 60 月标签仍 sealed，状态保持 `not_for_formal_decision`。
 - 作者、版权开始、版权到期、作品状态和音频版权状态已按用户确认口径完成本地文件级 staging 收口，禁止依据旧 gap 报告重新生成待办。
 - 用户最终分类标签基础表已固定：3053 部作品，出版物 1195 部、网文 1858 部，分类与标签人工缺口为 0；private 明细不进入版本控制。
 - 最终表修正 836 部作品，固定 387 部作品、532 个标签赋值；新增分类和标签已进入受控词表 `2026-07-10-user-confirmed-v2`。
@@ -42,7 +42,7 @@
 - M3 代表性材料和 formal execution 均暂缓；M2 完整收口前不准备 3 至 5 份选题材料。
 - 当前业务数据决策缺口为 0。逐作品 private 正式基础信息输入候选覆盖 3053 部且已通过内容契约，并已用于 readiness 重算；不得依据旧恢复报告重开用户全量补表。
 - 参考执行环境已用 PostgreSQL 16 和 Flyway `0071.020` 验证通过；每台开发机器必须自行核验本地隔离环境，不得在文档中写入机器专属绝对路径或假设 private 输出已经存在。
-- 当前 3053 部基础信息和 192872 条收入事实是用户确认的最准确、后续上线时继续使用的权威输入。基础数据人工缺口为 0，不再生成补表；下一任务是算法校准。
+- 当前 3053 部基础信息和 192872 条收入事实是用户确认的最准确、后续上线时继续使用的权威输入。基础数据人工缺口为 0，不再生成补表；C2 development 已完成并 FAIL，下一算法动作须由用户另行明确授权。
 
 ## 优先读取文件
 
@@ -94,20 +94,26 @@
 46. `src/domain/oldProductEvaluation/calibrationSpec.c2r1.v1.amendment.json`
 47. `docs/analysis/m2-real-data/M2-C2R1-development-validation-v1.md`
 48. `scripts/m2-real-data/run_m2_c2r1_development_validation.py`
+49. `src/domain/oldProductEvaluation/calibrationSpec.c2.v1.amendment.json`
+50. `docs/analysis/m2-real-data/M2-calibration-gate-c-v1.json`
+51. `docs/analysis/m2-real-data/M2-C2-development-validation-v1.md`
+52. `docs/analysis/m2-real-data/M2-C2-model-quality-decision-v1.md`
+53. `docs/analysis/m2-real-data/M2-C2-business-coverage-decision-v1.md`
+54. `scripts/m2-real-data/run_m2_c2_development_validation.py`
 
 ## 下一轮推荐任务
 
 优先执行：
 
-`停在已验证的 C2-R.1 FAIL checkpoint，先报告 formal-cash comparator、surprise 唯一账单、业务覆盖和 23 项 gate；等待用户明确授权下一动作，不得重复训练 C2-R.1、进入 C2/C3、打开 final holdout、release 或进入 M3`
+`停在已验证的 C2 FAIL checkpoint，先报告 Gate C、C2 25 项 gate、渠道残差、高价值保护和业务覆盖双判定；等待用户明确授权下一动作，不得重复训练 C2、进入 C3、打开 final holdout、release 或进入 M3`
 
 执行要求：
 
-1. 在 `codex/m2-calibration-v1` 上确认两个 checkpoint 均已正常 push 且 `HEAD == origin/codex/m2-calibration-v1`、工作区 clean；读取 README、AGENTS、当前 PRD、calibration-spec-v1/v1.1/v1.2、Gate A、baseline replay 和 C1 validation。
+1. 在 `codex/m2-c2-v1` 上确认 C2 两个 checkpoint 均已正常 push 且 `HEAD == origin/codex/m2-c2-v1`、工作区 clean；读取 README、AGENTS、formal-cash comparator、C2 spec、Gate C 和 C2 validation。
 2. 只使用最终 3053 部权威基础信息、最终 mapping 和 192872 条收入事实；不得重新清洗或覆盖已确认基础字段，除非发现可证明的工程错误并先报告。
 3. 将旧 v1.1 作为被拒绝的 B0a 历史锚点；faithful B0b、B1、B2、B3、B4 使用已冻结的 12223 个 scoreable keys。不得恢复 forecastabilityStatus 混合口径，不得把 abstained served null 按 0 计入模型 WAPE。
 4. 生成中文、可读、Git 忽略的业务验证表，以及不含真实作品明细的可提交聚合报告；测试结果主要信息必须中文化。
-5. C1、legacy-target C2-R 与 formal-cash C2-R.1 均已完成并 FAIL；不得重复训练、改 gate、进入 C2/C3、打开 final holdout 或 release。下一算法动作必须由用户在复核 formal-cash comparator、surprise、业务覆盖和 C2-R.1 失败证据后另行明确授权。M2 输出继续禁止自动运营建议或资源投入动作字段。
+5. C1、legacy-target C2-R、formal-cash C2-R.1 与 C2 均已完成并 FAIL；不得重复训练、改 gate、进入 C3、打开 final holdout 或 release。下一算法动作必须由用户在复核 Gate C、C2 渠道残差、高价值保护、25 项 gate 和业务覆盖双判定后另行明确授权。M2 输出继续禁止自动运营建议或资源投入动作字段。
 
 ## 当前允许做的事
 

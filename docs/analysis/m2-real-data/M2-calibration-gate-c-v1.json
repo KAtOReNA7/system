@@ -1,0 +1,173 @@
+{
+  "C2AuthorizedByGateC": true,
+  "C2OuterReplayExecuted": false,
+  "allTrue": true,
+  "conditionCount": 14,
+  "conditions": {
+    "all_seals_closed": true,
+    "as_of_activity_segments_frozen": true,
+    "candidate_space_frozen": true,
+    "case_population_parity_passed": true,
+    "full_validation_suite_passed": true,
+    "future_perturbation_tests_passed": true,
+    "high_value_guard_frozen": true,
+    "mixed_excludes_future_buyout_test_passed": true,
+    "no_private_file_tracked": true,
+    "other_new_channel_residual_frozen": true,
+    "phase_a_commit_pushed": true,
+    "pure_buyout_abstention_test_passed": true,
+    "residual_no_leakage_test_passed": true,
+    "selection_objective_frozen": true
+  },
+  "decisionStatus": "not_for_formal_decision",
+  "formalDecisionAuthorized": false,
+  "nextBoundary": "C2_outer_replay_only_if_all_14_true",
+  "passedConditionCount": 14,
+  "phaseACheckpoint": "5184d7f36c6f7fd1d3872184b5f87767d7fb5a9e",
+  "phaseACommitPushed": true,
+  "privateFilesTracked": false,
+  "releaseAuthorized": false,
+  "remoteHeadVerified": true,
+  "runtimePushReceiptSha256": "9d1260017cc0b527364430c8c5d5b1581e3798c26e37a5e573caad134b5d2a36",
+  "schema": "m2.calibration_gate_c.v1",
+  "seals": {
+    "deferred60MonthLabelsOpened": false,
+    "embargoShadowOpened": false,
+    "finalHoldoutOpened": false
+  },
+  "validationEvidence": {
+    "M1_APP_ENV": "ci",
+    "allExpectedFailClosedCommandsFailedBeforeDataLoad": true,
+    "allSuccessCommandsPassed": true,
+    "branch": "codex/m2-c2-v1",
+    "commandResults": [
+      {
+        "command": "npm run check:no-real-data",
+        "exitCode": 0,
+        "stderrBytes": 0,
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutBytes": 161,
+        "stdoutSha256": "4f8654686fbd9485a514ad0851a9068c8606773e3b4f313e7fa5bb6edd457642"
+      },
+      {
+        "command": "npm run lint",
+        "exitCode": 0,
+        "stderrBytes": 0,
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutBytes": 104,
+        "stdoutSha256": "62984e946ae22627ccff8587fff0903ec5308b694268dc1591365e36c5c12f5c"
+      },
+      {
+        "command": "npm run build",
+        "exitCode": 0,
+        "stderrBytes": 0,
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutBytes": 105,
+        "stdoutSha256": "2486de789a912a4d7fd27becf2808f64ae735c8b84ee7a2014eb789c3bf07cb4"
+      },
+      {
+        "command": "npm test",
+        "exitCode": 0,
+        "stderrBytes": 0,
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutBytes": 57196,
+        "stdoutSha256": "6c4f814e6cdd6b8b422624098276860aac48afa1498e4436acc3680b3416694b"
+      },
+      {
+        "command": "npm run smoke",
+        "exitCode": 0,
+        "stderrBytes": 0,
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutBytes": 188,
+        "stdoutSha256": "06d5fc03470dfb684293bff3d779f489cf24309cd3a98d85fef7cdeb50d29041"
+      },
+      {
+        "command": "npm run test:e2e",
+        "exitCode": 0,
+        "stderrBytes": 0,
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutBytes": 1355,
+        "stdoutSha256": "85783a0b95e346f88c97b8b429cbf91a3ab8438cbe51ca335977290ecac16d25"
+      },
+      {
+        "command": "npm run validate:m2:formal-cash-comparator",
+        "exitCode": 0,
+        "stderrBytes": 0,
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutBytes": 965,
+        "stdoutSha256": "b142625ba209f583e3e0ae296493ec1713582b1571350d9eef053701543bfbc0"
+      },
+      {
+        "command": "npm run validate:m2:c2r1",
+        "exitCode": 0,
+        "stderrBytes": 0,
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutBytes": 990,
+        "stdoutSha256": "7bcb5f99c55e8edf125362ff041a57e87d4d924c1d6f50d4e4fac9be301323d8"
+      },
+      {
+        "command": "npm run validate:m2:c2",
+        "exitCode": 0,
+        "stderrBytes": 0,
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutBytes": 1906,
+        "stdoutSha256": "aabaddd9563c01c3c70dcc510ff8d8ee8614f6d2cfca82c98e4efdc8e8fe0b2f"
+      }
+    ],
+    "databaseEnvironmentEmpty": true,
+    "deferred60MonthLabelsOpened": false,
+    "embargoShadowOpened": false,
+    "expectedFailClosedCommandResults": [
+      {
+        "command": "npm run replay:m2:formal-cash-target:final-holdout",
+        "exitCode": 1,
+        "stderrBytes": 110,
+        "stderrSha256": "d502f94518b330b372db75141c6343a30f6cb70cb56e5f244e0c0ae11c6facc5",
+        "stdoutBytes": 194,
+        "stdoutSha256": "845ffdffe498aefddf3fa564a500f986ab7f814398fca2607b109fa88cc44d09"
+      },
+      {
+        "command": "npm run replay:m2:formal-cash-comparator:final-holdout",
+        "exitCode": 2,
+        "stderrBytes": 113,
+        "stderrSha256": "e317d6b2b85a83a4b8b9b16bf024bc93b363b78ee4ee5d169cc120dce0ef1bca",
+        "stdoutBytes": 198,
+        "stdoutSha256": "edb4db089117102698ef2e321253e87dec5429ef974e5261a918390b394fdd3c"
+      },
+      {
+        "command": "npm run replay:m2:c2:final-holdout",
+        "exitCode": 2,
+        "stderrBytes": 93,
+        "stderrSha256": "53403c45352293b7182a2dc63d3571511dab07bc4f04a896b6a976a4108a3bd5",
+        "stdoutBytes": 174,
+        "stdoutSha256": "e19f31947802ebd1745fff4bc8c70c0072175e71dbd67af7c4628a56885c1589"
+      }
+    ],
+    "finalHoldoutOpened": false,
+    "phaseAHead": "5184d7f36c6f7fd1d3872184b5f87767d7fb5a9e",
+    "phaseAStartHead": "7b315d74a29f0eb136b0827e7f2f0367db868c63",
+    "phaseATree": "4efe665b66c3535e77cd0f97978dc33fcf824e69",
+    "realDataCalibrationExecutedByValidationCommands": false,
+    "recordedAt": "2026-07-16T07:25:26.329411+00:00",
+    "remoteHead": "5184d7f36c6f7fd1d3872184b5f87767d7fb5a9e",
+    "schema": "m2.calibration_gate_c.validation_receipt.private.v1",
+    "trackedArtifactSha256": {
+      "docs/analysis/m2-real-data/M2-C2-model-design-v1.json": "1bd0b04596b892377ac45e017cb3964b462f52bbb64aa1e5e51952cd2affa93d",
+      "docs/analysis/m2-real-data/M2-C2-model-design-v1.md": "4ee8a79aa23e0af2ef20f7b7b47f74067359e35ac2e532349fba5b9f2510b615",
+      "docs/analysis/m2-real-data/M2-C2-opportunity-audit-v1.json": "da8d04e9d6f63ebae382357276f266ccd5ee1a0a96d1e183ce00855704d99fd7",
+      "docs/analysis/m2-real-data/M2-C2-opportunity-audit-v1.md": "8466be859d61e3bac300e77467a29820fa2cea400530fac259a2296897b0ebb0",
+      "docs/analysis/m2-real-data/M2-calibration-gate-c-v1.json": "e173bc9baf78a91e0c51263f7a5211881f8b4541ffc5928594ee4937553d32d5",
+      "package.json": "097f8d5daf9290a4b341b3d60f6cd0cf1526140c451c41ddce5fd1795bb2f330",
+      "scripts/m2-real-data/m2_calibration_c2_v1.py": "a99d5e923db87aa3b761904641526d0bb372457c6fa0c660eac7faeeb1830606",
+      "scripts/m2-real-data/run_m2_c2_development_validation.py": "6104dfcc28fb2bb53544e994097b8eb17659ef71f7c8170f9afdd3f52cea7fb1",
+      "scripts/m2-real-data/run_m2_formal_cash_comparator_replay.py": "017e72573178e4885c72e37e9d92fd78e1af5e97e55f891eef7ca18c66602c2b",
+      "src/domain/oldProductEvaluation/calibrationSpec.c2.v1.amendment.json": "8d92019db05a6776aca79ff24739b4a74c1bd56b001c93f53f25bbd99b10009e",
+      "test/m2-c2-contract.test.js": "36b0b38b79403050912b49f20303ef7642947d102353c9e1863595aae512d91b",
+      "test/m2-c2-development-validation.test.js": "aa8b7eba11c1aba0f07fc55d62df42d6ba08d3856b5e191e4c2bd4701d5f1ea4",
+      "test/m2-formal-cash-comparator.test.js": "876abdd85a661f5553c25b9dfb26cabac056ca0ea3c8cf1937cefd168f7cd5a7",
+      "test/m2-formal-cash-target-report.test.js": "30f0aa32b3d4d2d389f77061bfc3dbc5e3eadb6d9b0f1966e06ccb329ae2a56b"
+    }
+  },
+  "validationReceiptSha256": "9e3753bbe4b3cae6eec419b6cdf5d6b933277d28e73763ef3860769040be189c",
+  "version": "v1"
+}

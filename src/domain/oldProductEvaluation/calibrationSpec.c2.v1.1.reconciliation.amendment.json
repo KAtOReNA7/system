@@ -1,0 +1,66 @@
+{
+  "version": "calibration-spec-c2-v1.1-reconciliation-amendment",
+  "baseVersion": "calibration-spec-c2-v1",
+  "decisionStatus": "not_for_formal_decision",
+  "scope": "monetary_reconciliation_numeric_representation_only",
+  "reason": "floating_point_accumulation_difference_must_not_be_treated_as_duplicate_cash_when_it_is_zero_at_the_currency_minor_unit",
+  "frozenPhaseA": {
+    "baseSpecSha256": "8d92019db05a6776aca79ff24739b4a74c1bd56b001c93f53f25bbd99b10009e",
+    "c2CoreSha256": "a99d5e923db87aa3b761904641526d0bb372457c6fa0c660eac7faeeb1830606",
+    "c2RunnerSha256": "6104dfcc28fb2bb53544e994097b8eb17659ef71f7c8170f9afdd3f52cea7fb1",
+    "gateCReportSha256": "8e73b43c6d92008adea1126202638c4717b5b8c4a2fa30b408b30c381bd6b785",
+    "gateCConditionCount": 14,
+    "gateCPassedConditionCount": 14,
+    "gateCMayChange": false
+  },
+  "monetaryReconciliation": {
+    "currency": "CNY",
+    "minorUnit": "cent",
+    "minorUnitYuan": "0.01",
+    "decimalSource": "canonical_json_number_lexeme",
+    "roundingMode": "ROUND_HALF_UP",
+    "calculation": "quantize(left_minus_right, 0.01 CNY), convert to integer cents, require exact zero",
+    "floatingAbsoluteToleranceAllowed": false,
+    "integerCentExactEqualityRequired": true,
+    "oneCentMismatchMustFail": true,
+    "rawFloatingDifferenceRetainedAsDiagnostic": true,
+    "workPointFormula": "known_channel_points + other_or_new_channel_residual + cutoff_confirmed_receivables == raw_model_prediction",
+    "truthFormula": "sum(forecastable_actual_by_component) == forecastable_cash_actual"
+  },
+  "correctionBoundary": {
+    "allowedChangedAcceptanceCondition": "residual_does_not_duplicate_cash",
+    "previousPassedConditionCount": 15,
+    "correctedPassedConditionCount": 16,
+    "conditionCount": 25,
+    "modelQualityDecision": "FAIL",
+    "businessCoverageDecision": "CONDITIONAL",
+    "overallDecision": "MODEL_FAIL_BUSINESS_COVERAGE_CONDITIONAL",
+    "expectedMaximumRawWorkPointDifferenceYuan": "0.00000011",
+    "expectedMaximumWorkPointDifferenceCents": 0,
+    "expectedMaximumTruthDifferenceCents": 0
+  },
+  "frozenModelEvidence": {
+    "developmentCaseCount": 18615,
+    "statisticallyScoreableCaseCount": 12223,
+    "modelPopulationCaseCount": 7851,
+    "modelPopulationWorkCount": 824,
+    "overallWape": 0.5569548,
+    "overallMae": 5649.42524532,
+    "overallSmape": 0.90320362,
+    "overallSignedAggregateBias": 0.0928913,
+    "predictionProjectionDigest": "b4a3037a12df7e8bd6a763dd636061e4557c30b3f53433298b4098e6deff0c6b",
+    "primaryComparator": "B4",
+    "predictionsMayChange": false,
+    "modelPopulationMayChange": false,
+    "otherAcceptanceThresholdsMayChange": false
+  },
+  "seals": {
+    "finalHoldoutOpened": false,
+    "embargoShadowOpened": false,
+    "deferred60MonthLabelsOpened": false
+  },
+  "formalDecisionAuthorized": false,
+  "releaseAuthorized": false,
+  "C3Started": false,
+  "M3Started": false
+}

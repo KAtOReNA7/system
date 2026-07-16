@@ -114,9 +114,12 @@ test("synthetic preflight proves formal route state and future invariance withou
   const payload = lastJson(result.stdout);
   assert.equal(payload.status, "passed");
   assert.ok(
-    ["named_branch", "trusted_pr_merge_ref", "trusted_main_push"].includes(
-      payload.checkoutBoundary,
-    ),
+    [
+      "named_branch",
+      "synthetic_m2_development_branch",
+      "trusted_pr_merge_ref",
+      "trusted_main_push",
+    ].includes(payload.checkoutBoundary),
   );
   assert.equal(
     Object.values(payload.checkoutBoundarySelfTest).every((value) => value === true),
