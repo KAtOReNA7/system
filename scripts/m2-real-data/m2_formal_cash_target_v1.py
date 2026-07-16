@@ -480,6 +480,74 @@ def _truth_cash_components(
     }
 
 
+def build_complete_month_cash_audit(
+    work: Mapping[str, Any],
+    first_month: str,
+    latest_complete_month: str,
+    calibration_spec: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Build one non-overlapping complete-month cash partition per work.
+
+    This is a post-hoc business-coverage audit, not a prediction feature.  It
+    intentionally returns component maps only to the ignored local evidence
+    layer; public reports must aggregate and remove their identifiers.
+    """
+
+    if not _is_month(first_month) or not _is_month(latest_complete_month):
+        raise FormalCashContractError("complete-month audit bounds must use YYYY-MM")
+    start_order = base.month_ordinal(first_month)
+    end_order = base.month_ordinal(latest_complete_month)
+    if end_order < start_order:
+        raise FormalCashContractError("complete-month audit bounds are inverted")
+    origin = base.add_months(first_month, -1)
+    horizon = end_order - base.month_ordinal(origin)
+    components = _truth_cash_components(
+        work, origin, horizon, calibration_spec
+    )
+    ledger_by_component: dict[str, float] = defaultdict(float)
+    buyout_by_component: dict[str, float] = defaultdict(float)
+    for (component, _month), amount in components[
+        "cellActualByComponentMonth"
+    ].items():
+        ledger_by_component[str(component)] += float(amount)
+    for (component, _month), amount in components[
+        "classifierBuyoutByComponentMonth"
+    ].items():
+        buyout_by_component[str(component)] += float(amount)
+    forecastable_by_component = {
+        component: float(amount) - float(buyout_by_component.get(component, 0.0))
+        for component, amount in ledger_by_component.items()
+    }
+    total = float(components["totalLedgerCashActual"])
+    surprise = float(components["classifierDerivedBuyoutActual"])
+    forecastable = total - surprise
+    conservation = forecastable + surprise - total
+    if not math.isclose(
+        conservation, 0.0, rel_tol=0.0, abs_tol=CONSERVATION_TOLERANCE
+    ):
+        raise FormalCashContractError("complete-month cash audit does not conserve")
+    return {
+        "forecastableCashActual": round(forecastable, 8),
+        "uncommittedBuyoutSurpriseActual": round(surprise, 8),
+        "totalLedgerCashActual": round(total, 8),
+        "forecastableActualByComponent": {
+            key: round(value, 8)
+            for key, value in sorted(forecastable_by_component.items())
+        },
+        "totalLedgerActualByComponent": {
+            key: round(value, 8)
+            for key, value in sorted(ledger_by_component.items())
+        },
+        "classifierDerivedBuyoutEventCount": int(
+            components["classifierDerivedBuyoutEventCount"]
+        ),
+        "amountConservationDifference": round(conservation, 8),
+        "firstMonth": first_month,
+        "latestCompleteMonth": latest_complete_month,
+        "postHocBusinessCoverageOnly": True,
+    }
+
+
 def _linked_committed_actual_by_event(
     work: Mapping[str, Any],
     resolved_commitments: Mapping[str, Any],
@@ -704,6 +772,23 @@ def build_formal_cash_actuals(
             )
         surprise += max(0.0, float(classified_amount) - linked_amount)
     forecastable = total - surprise
+    ledger_by_component: dict[str, float] = defaultdict(float)
+    surprise_by_component: dict[str, float] = defaultdict(float)
+    for (component, _month), amount in components[
+        "cellActualByComponentMonth"
+    ].items():
+        ledger_by_component[str(component)] += float(amount)
+    for (component, _month), classified_amount in components[
+        "classifierBuyoutByComponentMonth"
+    ].items():
+        linked_amount = float(linked_by_cell.get((component, _month), 0.0))
+        surprise_by_component[str(component)] += max(
+            0.0, float(classified_amount) - linked_amount
+        )
+    forecastable_by_component = {
+        component: float(amount) - float(surprise_by_component.get(component, 0.0))
+        for component, amount in ledger_by_component.items()
+    }
     conservation = forecastable + surprise - total
     if not math.isclose(
         conservation, 0.0, rel_tol=0.0, abs_tol=CONSERVATION_TOLERANCE
@@ -737,6 +822,27 @@ def build_formal_cash_actuals(
             commitments["cutoffKnown"]
         ),
         "linkedLedgerFactCount": int(linked["linkedLedgerFactCount"]),
+        "forecastableActualByComponent": {
+            key: round(value, 8)
+            for key, value in sorted(forecastable_by_component.items())
+        },
+        "totalLedgerActualByComponent": {
+            key: round(value, 8)
+            for key, value in sorted(ledger_by_component.items())
+        },
+        "surpriseActualByComponentMonth": {
+            (str(component), str(month)): round(
+                max(
+                    0.0,
+                    float(classified_amount)
+                    - float(linked_by_cell.get((component, month), 0.0)),
+                ),
+                8,
+            )
+            for (component, month), classified_amount in sorted(
+                components["classifierBuyoutByComponentMonth"].items()
+            )
+        },
         "target_end": str(components["targetEnd"]),
         "label_available_as_of": str(label_available_as_of),
         "amountConservationDifference": round(conservation, 8),

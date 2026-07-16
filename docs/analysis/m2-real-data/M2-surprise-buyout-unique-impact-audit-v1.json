@@ -1,0 +1,129 @@
+{
+  "decisionStatus": "not_for_formal_decision",
+  "formalDecisionAuthorized": false,
+  "language": "zh-CN",
+  "limitations": {
+    "commitmentEvidenceAvailable": false,
+    "futureCrossRevisionTrackingNeedsPersistentLedgerFactKey": true,
+    "identityNaturalKeyStableOnlyWithinFrozenAuthoritySnapshot": true,
+    "uniqueScopeIsAllLibraryUncommittedBuyout": false
+  },
+  "overlapToUniqueBridge": {
+    "overlapAmount": 5517115.15,
+    "overlapToUniqueRatio": 3.8241649696610103,
+    "repeatedWindowAmount": 4074417.15,
+    "repeatedWindowAmountIsBusinessLoss": false,
+    "uniqueAmount": 1442698.0
+  },
+  "overlappingBacktestWindows": {
+    "forecastableCashActual": 82206415.7,
+    "overlappingWindowsMayBeNamedUniqueLedgerFacts": false,
+    "positiveSurpriseWindowCount": 466,
+    "scopeLabel": "backtest_window_exposure_only",
+    "surpriseShareOfWindowLedgerCash": 0.0628920780984136,
+    "totalLedgerCashActual": 87723530.85,
+    "uncommittedBuyoutSurpriseActual": 5517115.15
+  },
+  "privacy": {
+    "aggregateOnly": true,
+    "authorIdentifiersPresent": false,
+    "channelIdentifiersPresent": false,
+    "deidentified": true,
+    "predictionIntervalEndpointsPresent": false,
+    "privatePathsPresent": false,
+    "rawRowsPresent": false,
+    "smallCellsComplementarilySuppressed": true,
+    "workIdentifiersPresent": false
+  },
+  "releaseAuthorized": false,
+  "schema": "m2.surprise_buyout_unique_impact_audit.public.v1",
+  "seals": {
+    "deferred60MonthLabelsOpened": false,
+    "embargoShadowOpened": false,
+    "finalHoldoutOpened": false
+  },
+  "technicalSummary": {
+    "classifierDerivedNotContractConfirmed": true,
+    "overlappingWindowShareIsFullLibraryBusinessShare": false,
+    "uniqueAuditStatus": "available"
+  },
+  "uniqueFactUnion": {
+    "allSurpriseCellsReconcileToAuthorityFacts": true,
+    "auditIdentity": "source_bill_sha256_x_source_sheet_name_x_source_row_number",
+    "factIdentityChecks": {
+      "allRowHashesRecomputed": true,
+      "authorityFactCount": 192872,
+      "factChecksumMatchesManifest": true,
+      "factFileDigestMatchesManifest": true,
+      "identityUniqueCount": 192872,
+      "modelCacheSignatureCurrent": true,
+      "modelCacheSourceRowsMatchFactPayload": true,
+      "rowHashUniqueCount": 192872
+    },
+    "historicalRevenueScaleDistribution": {
+      "bottom50": {
+        "amount": 0.0,
+        "share": 0.0
+      },
+      "middle40": {
+        "amount": 147191.0,
+        "share": 0.10202482
+      },
+      "next4": {
+        "amount": 540008.15,
+        "share": 0.37430436
+      },
+      "next5": {
+        "amount": 174896.0,
+        "share": 0.12122842
+      },
+      "top1": {
+        "amount": 580602.85,
+        "share": 0.4024424
+      }
+    },
+    "identityStableAcrossAuthorityRevisions": false,
+    "identityStableWithinFrozenAuthoritySnapshot": true,
+    "involvedWorkCount": 114,
+    "rowHashRole": "content_integrity_only_not_identity",
+    "sameBatchClassifierSignal": {
+      "amount": 1105034.0,
+      "eventCellCount": 95,
+      "factCount": 101,
+      "isContractCommitmentEvidence": false,
+      "present": true,
+      "share": 0.76594963
+    },
+    "semanticConfidence": "classifier_derived_diagnostic_not_contract_fact",
+    "sourceDistribution": {
+      "出版物": {
+        "amount": 1239071.0,
+        "factCount": 134,
+        "share": 0.85885681,
+        "workCount": 80
+      },
+      "网文": {
+        "amount": 203627.0,
+        "factCount": 34,
+        "share": 0.14114319,
+        "workCount": 34
+      }
+    },
+    "status": "available",
+    "topSurpriseShares": {
+      "top1": 0.4024424,
+      "top10": 0.89797518,
+      "top5": 0.77674676
+    },
+    "uniqueCompleteMonthLedgerCash": 126794638.17,
+    "uniqueScope": "frozen_scoreable_development_window_unique_surprise_fact_union",
+    "uniqueSurpriseAmount": 1442698.0,
+    "uniqueSurpriseEventCellCount": 154,
+    "uniqueSurpriseLedgerFactCount": 168,
+    "uniqueSurpriseShareOfUniqueCompleteMonthLedgerCash": 0.01137823,
+    "unsafeDedupAmount": 0.0,
+    "unsafeDedupCellCount": 0,
+    "workMonthAmountIdentityUsed": false
+  },
+  "version": "M2-surprise-buyout-unique-impact-audit-v1"
+}
