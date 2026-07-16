@@ -1,0 +1,26 @@
+{
+  "businessCoverageDecision": "CONDITIONAL",
+  "decisionStatus": "not_for_formal_decision",
+  "formalDecisionAuthorized": false,
+  "fullLibraryForecastableCashCoverage": 0.7396468495203204,
+  "fullLibraryThreshold": 0.9,
+  "mayAuthorizeRelease": false,
+  "populationMovedToMeetCoverage": false,
+  "releaseAuthorized": false,
+  "schema": "m2.c3_business_coverage_decision.v1",
+  "scope": {
+    "completeIncomeFactCount": 192869,
+    "nonOverlappingWorkLevelAggregation": true,
+    "standardWorkCount": 3053
+  },
+  "seals": {
+    "deferred60MonthLabelsOpened": false,
+    "embargoShadowOpened": false,
+    "finalHoldoutOpened": false
+  },
+  "surpriseBuyoutHidden": false,
+  "top10ForecastableCashCoverage": 0.7594125279899511,
+  "top10Threshold": 0.9,
+  "top1ForecastableCashCoverage": 0.784825777206678,
+  "top5ForecastableCashCoverage": 0.7743196465159894
+}

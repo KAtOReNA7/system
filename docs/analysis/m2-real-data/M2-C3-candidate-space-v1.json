@@ -1,0 +1,167 @@
+{
+  "C3SActivation": {
+    "absoluteBiasMayWorsen": false,
+    "eachHorizonRelativeWapeRegressionMaximum": 0.02,
+    "failedOrInsufficientEvidence": "skip_C3S_and_fallback_to_B4",
+    "minimumAggregateWapeImprovement": 0.03,
+    "minimumOriginWinShare": 0.7,
+    "minimumStrictlyEarlierOofValidationOrigins": 3,
+    "outerActualMayActivate": false
+  },
+  "anchor": "B4",
+  "candidateSpace": {
+    "anchor": "B4",
+    "c3A": {
+      "candidateCount": 8,
+      "correctionCap": "candidate_specific_ratio_of_B4_or_cutoff_scale",
+      "correctionCaps": [
+        0.25,
+        0.5
+      ],
+      "fallback": "B4",
+      "fallbackToB4": true,
+      "hierarchyDepths": [
+        "fine",
+        "coarse"
+      ],
+      "minimumGlobalCases": 30,
+      "minimumGroupCases": 20,
+      "model": "signed_residual_hierarchical_shrinkage",
+      "shrinkage": "empirical_group_mean_with_prior",
+      "shrinkagePriors": [
+        25.0,
+        75.0
+      ],
+      "winsorAbsoluteResidualQuantile": 0.95
+    },
+    "c3B": {
+      "b4AnchorWeights": [
+        0.5,
+        0.75
+      ],
+      "candidateCount": 4,
+      "correctionCap": 0.5,
+      "fallback": "B4",
+      "fallbackToB4": true,
+      "l2": [
+        0.1,
+        1.0
+      ],
+      "logisticIterations": 300,
+      "logisticLearningRate": 0.2,
+      "minimumPositiveCases": 20,
+      "minimumTrainingCases": 40,
+      "model": "positive_hurdle_log_amount",
+      "shrinkage": "candidate_specific_B4_anchor_weight",
+      "twoStage": true
+    },
+    "c3C": {
+      "candidateCount": 8,
+      "correctionCap": "candidate_specific_absolute_log_correction",
+      "fallback": "B4",
+      "fallbackToB4": true,
+      "l2": [
+        0.1,
+        1.0
+      ],
+      "log1pResidual": true,
+      "logCorrectionCaps": [
+        0.25,
+        0.5
+      ],
+      "minimumTrainingCases": 30,
+      "model": "log1p_b4_offset_residual_ridge",
+      "shrinkage": [
+        0.5,
+        1.0
+      ]
+    },
+    "c3S": {
+      "activation": {
+        "absoluteBiasMayWorsen": false,
+        "eachHorizonRelativeWapeRegressionMaximum": 0.02,
+        "failedOrInsufficientEvidence": "skip_C3S_and_fallback_to_B4",
+        "minimumAggregateWapeImprovement": 0.03,
+        "minimumOriginWinShare": 0.7,
+        "minimumStrictlyEarlierOofValidationOrigins": 3
+      },
+      "candidateCount": 4,
+      "convexCombinations": [
+        {
+          "c3A": 0.3333333333333333,
+          "c3B": 0.3333333333333333,
+          "c3C": 0.3333333333333334,
+          "id": "equal"
+        },
+        {
+          "c3A": 0.5,
+          "c3B": 0.0,
+          "c3C": 0.5,
+          "id": "a_c"
+        },
+        {
+          "c3A": 0.5,
+          "c3B": 0.25,
+          "c3C": 0.25,
+          "id": "a_heavy"
+        },
+        {
+          "c3A": 0.25,
+          "c3B": 0.25,
+          "c3C": 0.5,
+          "id": "c_heavy"
+        }
+      ],
+      "model": "earlier_oof_convex_stack",
+      "otherwise": "skip",
+      "stableInnerOriginImprovementRequired": true
+    },
+    "candidateSpaceMayChangeAfterResults": false,
+    "postHocOuterResultScalingAllowed": false,
+    "totalCandidateCount": 24
+  },
+  "candidateSpaceMayChangeAfterOuterResults": false,
+  "decisionStatus": "not_for_formal_decision",
+  "outerActualCreatesRules": false,
+  "schema": "m2.c3.candidate_space.v1",
+  "seals": {
+    "deferred60MonthLabelsOpened": false,
+    "embargoShadowOpened": false,
+    "finalHoldoutOpened": false
+  },
+  "selection": {
+    "biasFeasibility": {
+      "eachHorizonAbsoluteMaximum": 0.15,
+      "overallAbsoluteMaximum": 0.1
+    },
+    "eachHorizonRelativeWapeRegressionMaximum": 0.02,
+    "evidence": "strictly_earlier_nested_inner_origins_only",
+    "finalRoutePolicy": {
+      "conditionalReplacement": "C3-S",
+      "outerActualMaySelectOrScale": false,
+      "primaryModel": "C3-A",
+      "replacementCondition": "at_least_one_outer_origin_activated_by_frozen_strictly_earlier_oof_rule"
+    },
+    "highValue": {
+      "absoluteBiasMayWorsen": false,
+      "minimumCases": 30,
+      "minimumRelativeWapeImprovement": 0.01
+    },
+    "insufficientEvidenceFallback": "B4",
+    "minimumEarlierCases": 100,
+    "minimumEarlierOofOrigins": 2,
+    "noFeasibleCandidateFallback": "B4",
+    "orderedObjective": [
+      "signed_bias_feasibility",
+      "minimum_wape",
+      "high_value_safety",
+      "horizon_safety",
+      "minimum_complexity"
+    ],
+    "outerActualMaySelectOrScale": false,
+    "thresholdsMayMoveAfterResults": false,
+    "unit": "outer_origin",
+    "wapePracticalEquivalenceRelativeMaximum": 0.01
+  },
+  "version": "v1"
+}

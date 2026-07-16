@@ -1,0 +1,179 @@
+{
+  "acceptance": {
+    "P0Maximum": 0,
+    "P1Maximum": 0,
+    "P2FactAuditOnly": true,
+    "absoluteBiasMaximum": {
+      "eachHorizon": 0.15,
+      "highValue": 0.1,
+      "overall": 0.1,
+      "served": 0.1
+    },
+    "allConditionsRequired": true,
+    "automaticOperationalActionCountMaximum": 0,
+    "conditionCount": 25,
+    "highValueGuardRequired": true,
+    "internal80CoverageInclusive": [
+      0.75,
+      0.85
+    ],
+    "overallWapeMaximum": 0.6,
+    "populationReductionAllowed": false,
+    "relativeToB4": {
+      "horizon12ImprovementMinimum": 0.03,
+      "horizon18RegressionMaximum": 0.02,
+      "horizon24RegressionMaximum": 0.02,
+      "horizon3ImprovementMinimum": 0.03,
+      "horizon6ImprovementMinimum": 0.03,
+      "internalWisImprovementMinimum": 0.05,
+      "maximumConsecutiveOriginsRegressingOverFivePercent": 2,
+      "outerOriginWinShareMinimum": 0.7,
+      "standardizedWidthRegressionMaximum": 0.1,
+      "top10ImprovementMinimum": 0.05,
+      "top1RegressionMaximum": 0.05,
+      "top5RegressionMaximum": 0.05
+    },
+    "residualDuplicateCashAllowed": false,
+    "thresholdsMayChangeAfterResults": false
+  },
+  "authority": {
+    "businessServingEligibilityMayChange": false,
+    "caseUniverseMayChange": false,
+    "completeIncomeFactCount": 192869,
+    "developmentCaseCount": 18615,
+    "formalModelPopulationCaseCount": 7851,
+    "formalModelPopulationWorkCount": 824,
+    "horizonsMonths": [
+      3,
+      6,
+      12,
+      18,
+      24
+    ],
+    "incomeFactCount": 192872,
+    "origins": [
+      "2020-12",
+      "2021-06",
+      "2021-12",
+      "2022-06",
+      "2022-12"
+    ],
+    "randomSeed": 20260714,
+    "routeMayChangeFromCandidateResults": false,
+    "scoreabilityMayChange": false,
+    "standardWorkCount": 3053,
+    "statisticallyScoreableCaseCount": 12223
+  },
+  "businessCoverageDecision": {
+    "bothMet": "PASS",
+    "fullLibraryForecastableCashCoverageMinimum": 0.9,
+    "mayAuthorizeRelease": false,
+    "mayMoveModelPopulation": false,
+    "missingOrInvalidEvidence": "FAIL",
+    "top10ForecastableCashCoverageMinimum": 0.9,
+    "validEvidenceButBelowEitherThreshold": "CONDITIONAL"
+  },
+  "decisionStatus": "not_for_formal_decision",
+  "finalRoutePolicy": {
+    "conditionalReplacement": "C3-S",
+    "outerActualMaySelectOrScale": false,
+    "primaryModel": "C3-A",
+    "replacementCondition": "at_least_one_outer_origin_activated_by_frozen_strictly_earlier_oof_rule"
+  },
+  "formalCashTarget": {
+    "buyoutMonthlyEquivalentBoundary": {
+      "historicalValueOnly": true,
+      "notCashForecast": true,
+      "notIncludedInFutureCashRevenue": true,
+      "ratingContextOnly": true
+    },
+    "buyoutMonthlyEquivalentIncluded": false,
+    "formula": "futureSalesCashForecast + cutoffConfirmedFutureReceivables",
+    "futureBuyoutProbabilityModelIncluded": false,
+    "historicalBuyoutCycleIncluded": false,
+    "primaryActual": "forecastableCashActual",
+    "receivedBuyoutAmortizationIncluded": false,
+    "uncommittedFutureBuyoutIncluded": false
+  },
+  "models": {
+    "C3-A": {
+      "mechanism": "hierarchical_signed_residual_shrinkage",
+      "requirements": [
+        "shrinkage",
+        "correction_cap",
+        "B4_fallback"
+      ],
+      "target": "forecastableCashActual_minus_B4"
+    },
+    "C3-B": {
+      "anchor": "bounded_shrinkage_toward_B4",
+      "composition": "probability_times_conditional_amount",
+      "stage1": "probability_forecastable_cash_positive",
+      "stage2": "conditional_positive_cash_amount"
+    },
+    "C3-C": {
+      "composition": "bounded_B4_multiplicative_correction",
+      "requirements": [
+        "shrinkage",
+        "correction_cap",
+        "B4_fallback"
+      ],
+      "target": "log1p_actual_minus_log1p_B4"
+    },
+    "C3-S": {
+      "activation": {
+        "absoluteBiasMayWorsen": false,
+        "eachHorizonRelativeWapeRegressionMaximum": 0.02,
+        "failedOrInsufficientEvidence": "skip_C3S_and_fallback_to_B4",
+        "minimumAggregateWapeImprovement": 0.03,
+        "minimumOriginWinShare": 0.7,
+        "minimumStrictlyEarlierOofValidationOrigins": 3,
+        "outerActualMayActivate": false
+      },
+      "conditional": true,
+      "input": "strictly_earlier_out_of_fold_C3_A_B_C_points_only"
+    }
+  },
+  "nextBoundary": "gate_d_then_outer_development_replay_only",
+  "notARevenueReforecast": true,
+  "objective": "B4_anchored_global_residual_hurdle_hierarchical_correction",
+  "privacy": {
+    "aggregateOnly": true,
+    "complementarySuppressionMinimumWorks": 10,
+    "predictionIntervalEndpointsAllowed": false,
+    "privatePathsAllowed": false,
+    "publicReportsChinese": true,
+    "rawIncomeRowsAllowed": false,
+    "workAuthorRealChannelIdentifiersAllowed": false
+  },
+  "routes": {
+    "buyout_plus_sales": "sales_cash_only_plus_cutoff_confirmed_receivables",
+    "oneTimeSeriesModelAcrossAllRevenueModelsAllowed": false,
+    "pure_buyoutWithoutCutoffCommitment": {
+      "abstentionReason": "uncommitted_future_buyout_not_forecastable",
+      "rawModelPrediction": null,
+      "routeAbstained": true,
+      "servedPrediction": null,
+      "zeroMayReplaceNull": false
+    },
+    "pure_sales_share": "as_of_sales_cash_with_B4_anchored_correction",
+    "unknown_revenue_model": "route_abstain_null"
+  },
+  "schema": "m2.c3.model_design.v1",
+  "seals": {
+    "deferred60MonthLabelsOpened": false,
+    "embargoShadowOpened": false,
+    "finalHoldoutOpened": false
+  },
+  "trainingBoundary": {
+    "candidateSelection": "nested_inner_origin_only",
+    "crossFitRequired": true,
+    "deterministicReplayRequired": true,
+    "futureOrOuterTruthAllowed": false,
+    "modelFitEvidence": "strictly_earlier_origins_with_labels_available_by_prediction_origin",
+    "outerReplay": "fixed_five_origin_development_replay",
+    "preprocessing": "fold_local_strictly_earlier_only",
+    "stackEvidence": "strictly_earlier_out_of_fold_predictions_only"
+  },
+  "version": "v1"
+}

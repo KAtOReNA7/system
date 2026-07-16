@@ -1,0 +1,57 @@
+{
+  "C4Authorized": false,
+  "C4Started": false,
+  "M3Started": false,
+  "decisionStatus": "not_for_formal_decision",
+  "formalDecisionAuthorized": false,
+  "nextBoundary": "stop_no_C4_M3_or_release",
+  "reason": "C3_model_quality_failed_fixed_acceptance",
+  "releaseAuthorized": false,
+  "routeResults": {
+    "B4": {
+      "decision": "PRIMARY_COMPARATOR_NOT_RELEASE_APPROVAL",
+      "signedAggregateBias": 0.08911106,
+      "target": "formal_cash",
+      "wape": 0.55648454
+    },
+    "C1": {
+      "decision": "FAIL",
+      "signedAggregateBias": 3.51137048,
+      "target": "historical_calibration_target",
+      "wape": 3.8501573
+    },
+    "C2": {
+      "decision": "FAIL",
+      "signedAggregateBias": 0.0928913,
+      "target": "formal_cash",
+      "wape": 0.5569548
+    },
+    "C2-R": {
+      "decision": "FAIL",
+      "formalCashMetricEligible": false,
+      "signedAggregateBias": 0.79261851,
+      "target": "legacy_target",
+      "wape": 1.17959394
+    },
+    "C3": {
+      "decision": "FAIL",
+      "finalModel": "C3-A",
+      "signedAggregateBias": 0.08273912976841973,
+      "target": "formal_cash",
+      "wape": 0.5539451692408673
+    }
+  },
+  "routes": [
+    "B4",
+    "C1",
+    "C2-R",
+    "C2",
+    "C3"
+  ],
+  "schema": "m2.terminal_model_route_summary.v1",
+  "seals": {
+    "deferred60MonthLabelsOpened": false,
+    "embargoShadowOpened": false,
+    "finalHoldoutOpened": false
+  }
+}

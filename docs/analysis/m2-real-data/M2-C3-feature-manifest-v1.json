@@ -1,0 +1,94 @@
+{
+  "allPreprocessingFitScope": "strictly_earlier_inner_origin_training_only",
+  "allowed": [
+    "b4Prediction",
+    "historyObservedMonths",
+    "historyCashTotal",
+    "trailing3Cash",
+    "trailing6Cash",
+    "trailing12Cash",
+    "trailing24Cash",
+    "zeroMonthCount",
+    "zeroRate",
+    "positiveMonthCount",
+    "positiveRate",
+    "positiveMonthCountTrailing6",
+    "positiveMonthCountTrailing12",
+    "trend12",
+    "volatility12",
+    "horizonMonths",
+    "knownChannelCount",
+    "knownChannelConcentration",
+    "route",
+    "activitySegment"
+  ],
+  "auditOnly": [
+    "origin",
+    "sourcePostHoc",
+    "lifecyclePostHoc",
+    "rightsPostHoc",
+    "shelfPostHoc",
+    "actualErrorBuckets"
+  ],
+  "categoricalLevels": {
+    "activitySegment": [
+      "dense",
+      "intermittent",
+      "dormant"
+    ],
+    "route": [
+      "pure_sales_share",
+      "buyout_plus_sales"
+    ]
+  },
+  "decisionStatus": "not_for_formal_decision",
+  "forbidden": [
+    "standardWorkId",
+    "workId",
+    "title",
+    "author",
+    "channelIdentity",
+    "channelKey",
+    "sourceIdentity",
+    "currentRating",
+    "currentLifecycle",
+    "currentRisk",
+    "currentRights",
+    "currentShelf",
+    "actual",
+    "outcome",
+    "postCutoff",
+    "futureIncome",
+    "futureBuyout",
+    "buyoutMonthlyEquivalent",
+    "holdout",
+    "embargo",
+    "deferred60MonthLabels"
+  ],
+  "futureInformationAllowed": false,
+  "identityHashingAllowed": false,
+  "postCutoffFeatureAllowed": false,
+  "preprocessing": {
+    "categoricalVocabulary": "frozen_spec_allowlist",
+    "fitBoundary": "strictly_earlier_inner_origin_training_rows_only",
+    "missingValuePolicy": "frozen_safe_default_then_fold_local_indicator",
+    "numericScaling": "fold_local_mean_and_standard_deviation",
+    "outerActualAccessible": false,
+    "winsorization": "fold_local_when_candidate_requires_it"
+  },
+  "preprocessingFitScope": "inner_origin_fold_only",
+  "schema": "m2.c3.feature_manifest.v1",
+  "seals": {
+    "deferred60MonthLabelsOpened": false,
+    "embargoShadowOpened": false,
+    "finalHoldoutOpened": false
+  },
+  "trainingLabelsNotFeatures": [
+    "forecastableCashActual",
+    "actualPositiveIndicator",
+    "actualMinusB4Residual",
+    "logActualMinusLogB4Residual"
+  ],
+  "unknownCategoricalLevelPolicy": "reject",
+  "version": "v1"
+}

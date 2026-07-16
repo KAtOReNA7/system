@@ -1,0 +1,118 @@
+{
+  "acceptance": {
+    "allPassed": false,
+    "conditionCount": 25,
+    "conditions": {
+      "P0_equals_0": true,
+      "P1_equals_0": true,
+      "P2_is_fact_audit_only": true,
+      "at_least_70pct_origins_beat_B4": false,
+      "each_horizon_absolute_bias_at_most_15pct": false,
+      "high_value_absolute_bias_at_most_10pct": false,
+      "high_value_guard_active": false,
+      "horizon_12_wape_improves_at_least_3pct": false,
+      "horizon_18_wape_regression_at_most_2pct": true,
+      "horizon_24_wape_regression_at_most_2pct": true,
+      "horizon_3_wape_improves_at_least_3pct": false,
+      "horizon_6_wape_improves_at_least_3pct": false,
+      "internal_80_coverage_between_75_and_85pct": false,
+      "internal_WIS_improves_at_least_5pct": false,
+      "model_population_unchanged": true,
+      "no_automatic_operational_actions": true,
+      "no_three_consecutive_origins_regress_over_5pct": true,
+      "overall_absolute_bias_at_most_10pct": true,
+      "overall_wape_at_most_0_60": true,
+      "residual_does_not_duplicate_cash": true,
+      "served_absolute_bias_at_most_10pct": true,
+      "standardized_width_regression_at_most_10pct": true,
+      "top10_wape_improves_at_least_5pct": false,
+      "top1_wape_regression_at_most_5pct": true,
+      "top5_wape_regression_at_most_5pct": true
+    },
+    "evidence": {
+      "horizonRelativeWapeVsB4": {
+        "12": -0.00621941,
+        "18": 0.0,
+        "24": 0.0,
+        "3": -0.01405806,
+        "6": -0.00834414
+      },
+      "internalWisImprovementVsB4": 0.00406675,
+      "maximumConsecutiveOriginsRegressingOverFivePercent": 0,
+      "observedOperationalBoundary": {
+        "P0Count": 0,
+        "P1Count": 0,
+        "P2Boundary": "fact_audit_only",
+        "P2OperationalActionCount": 0,
+        "automaticOperationalActionCount": 0,
+        "publicOutputSchemaExact": true
+      },
+      "originRelativeWapeVsB4": {
+        "2020-12": -0.0,
+        "2021-06": 0.0,
+        "2021-12": 0.0,
+        "2022-06": -0.02116115,
+        "2022-12": -0.02158699
+      },
+      "originWinShare": 0.4,
+      "standardizedWidthRelativeDeltaVsB4": -0.00635707,
+      "topBandRelativeWapeVsB4": {
+        "top1": 0.0,
+        "top10": -0.0,
+        "top5": -0.0
+      }
+    },
+    "passedConditionCount": 15,
+    "populationMoved": false,
+    "thresholds": {
+      "P0Maximum": 0,
+      "P1Maximum": 0,
+      "P2FactAuditOnly": true,
+      "absoluteBiasMaximum": {
+        "eachHorizon": 0.15,
+        "highValue": 0.1,
+        "overall": 0.1,
+        "served": 0.1
+      },
+      "allConditionsRequired": true,
+      "automaticOperationalActionCountMaximum": 0,
+      "conditionCount": 25,
+      "highValueGuardRequired": true,
+      "internal80CoverageInclusive": [
+        0.75,
+        0.85
+      ],
+      "overallWapeMaximum": 0.6,
+      "populationReductionAllowed": false,
+      "relativeToB4": {
+        "horizon12ImprovementMinimum": 0.03,
+        "horizon18RegressionMaximum": 0.02,
+        "horizon24RegressionMaximum": 0.02,
+        "horizon3ImprovementMinimum": 0.03,
+        "horizon6ImprovementMinimum": 0.03,
+        "internalWisImprovementMinimum": 0.05,
+        "maximumConsecutiveOriginsRegressingOverFivePercent": 2,
+        "outerOriginWinShareMinimum": 0.7,
+        "standardizedWidthRegressionMaximum": 0.1,
+        "top10ImprovementMinimum": 0.05,
+        "top1RegressionMaximum": 0.05,
+        "top5RegressionMaximum": 0.05
+      },
+      "residualDuplicateCashAllowed": false,
+      "thresholdsMayChangeAfterResults": false
+    },
+    "thresholdsChangedAfterResults": false
+  },
+  "decisionStatus": "not_for_formal_decision",
+  "finalModel": "C3-A",
+  "formalDecisionAuthorized": false,
+  "modelQualityDecision": "FAIL",
+  "nextBoundary": "stop_C3_fail_terminal_summary_no_C4_M3_or_release",
+  "releaseAuthorized": false,
+  "schema": "m2.c3_model_quality_decision.v1",
+  "seals": {
+    "deferred60MonthLabelsOpened": false,
+    "embargoShadowOpened": false,
+    "finalHoldoutOpened": false
+  }
+}
