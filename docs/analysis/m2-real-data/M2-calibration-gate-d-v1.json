@@ -1,0 +1,262 @@
+{
+  "C3AuthorizedByGateD": false,
+  "C3OuterReplayExecuted": false,
+  "allTrue": false,
+  "authorityEvidence": {
+    "caseKeyFingerprint": "ce8e4bcfb23335523077b367ff82b05b1663ea541ae954c719ef3eceee34c578",
+    "developmentCaseCount": 18615,
+    "formalCashActualFingerprint": "1733224007528dbe583d25dcfd8905124cb265fe9ff7f5e61d34e3c05c598fde",
+    "formalModelPopulationCaseCount": 7851,
+    "formalModelPopulationKeyFingerprint": "02a218fc058e4dadc397437d64a77d298ef47f2933e7063dc78c2e3ff6b98000",
+    "formalModelPopulationWorkCount": 824,
+    "statisticallyScoreableCaseCount": 12223
+  },
+  "comparatorParityEvidence": {
+    "actualFingerprintByModel": {
+      "B0b": "e98d19ff4c9d3005f2eb7910dee1f1197bd6fbcd7b54292fa4ba195cb9fdafea",
+      "B1": "e98d19ff4c9d3005f2eb7910dee1f1197bd6fbcd7b54292fa4ba195cb9fdafea",
+      "B3": "e98d19ff4c9d3005f2eb7910dee1f1197bd6fbcd7b54292fa4ba195cb9fdafea",
+      "B4": "e98d19ff4c9d3005f2eb7910dee1f1197bd6fbcd7b54292fa4ba195cb9fdafea"
+    },
+    "allPassed": true,
+    "caseKeyFingerprintByModel": {
+      "B0b": "ce8e4bcfb23335523077b367ff82b05b1663ea541ae954c719ef3eceee34c578",
+      "B1": "ce8e4bcfb23335523077b367ff82b05b1663ea541ae954c719ef3eceee34c578",
+      "B3": "ce8e4bcfb23335523077b367ff82b05b1663ea541ae954c719ef3eceee34c578",
+      "B4": "ce8e4bcfb23335523077b367ff82b05b1663ea541ae954c719ef3eceee34c578"
+    },
+    "forwardCaseCountByModel": {
+      "B0b": 18615,
+      "B1": 18615,
+      "B3": 18615,
+      "B4": 18615
+    },
+    "models": [
+      "B0b",
+      "B1",
+      "B3",
+      "B4"
+    ],
+    "sameActuals": true,
+    "sameCaseKeys": true,
+    "sameCaseStates": true,
+    "stateFingerprintByModel": {
+      "B0b": "83c655e38a9cb0e55160d870d66e9f9a2b36d90413e5afd474e8bc569f22ddf3",
+      "B1": "83c655e38a9cb0e55160d870d66e9f9a2b36d90413e5afd474e8bc569f22ddf3",
+      "B3": "83c655e38a9cb0e55160d870d66e9f9a2b36d90413e5afd474e8bc569f22ddf3",
+      "B4": "83c655e38a9cb0e55160d870d66e9f9a2b36d90413e5afd474e8bc569f22ddf3"
+    }
+  },
+  "conditionCount": 14,
+  "conditionOrder": [
+    "formal_cash_target_and_c2_checkpoint_unchanged",
+    "authority_population_frozen",
+    "case_key_actual_and_state_parity_passed",
+    "opportunity_regions_and_b4_fallback_frozen",
+    "feature_manifest_as_of_boundary_frozen",
+    "candidate_space_and_c3s_activation_rule_frozen",
+    "inner_origin_only_training_passed",
+    "cross_fit_and_fold_local_preprocessing_passed",
+    "prediction_lock_future_perturbation_and_determinism_passed",
+    "formal_cash_route_abstention_passed",
+    "all_seals_closed",
+    "full_validation_suite_passed",
+    "phase_a_commit_pushed",
+    "no_private_file_tracked"
+  ],
+  "conditions": {
+    "all_seals_closed": true,
+    "authority_population_frozen": true,
+    "candidate_space_and_c3s_activation_rule_frozen": true,
+    "case_key_actual_and_state_parity_passed": true,
+    "cross_fit_and_fold_local_preprocessing_passed": true,
+    "feature_manifest_as_of_boundary_frozen": true,
+    "formal_cash_route_abstention_passed": true,
+    "formal_cash_target_and_c2_checkpoint_unchanged": true,
+    "full_validation_suite_passed": true,
+    "inner_origin_only_training_passed": true,
+    "no_private_file_tracked": true,
+    "opportunity_regions_and_b4_fallback_frozen": true,
+    "phase_a_commit_pushed": false,
+    "prediction_lock_future_perturbation_and_determinism_passed": true
+  },
+  "decisionStatus": "not_for_formal_decision",
+  "formalDecisionAuthorized": false,
+  "nextBoundary": "C3_outer_replay_only_if_all_gate_d_conditions_true",
+  "passedConditionCount": 13,
+  "phaseACheckpoint": null,
+  "phaseACommitPushed": false,
+  "phaseAStartHead": "50d927d64438af5057e8b623a901a22c70bced53",
+  "phaseATree": null,
+  "privateFilesTracked": false,
+  "releaseAuthorized": false,
+  "remoteHead": null,
+  "remoteHeadVerified": false,
+  "runtimePushReceiptSha256": null,
+  "schema": "m2.calibration_gate_d.v1",
+  "seals": {
+    "deferred60MonthLabelsOpened": false,
+    "embargoShadowOpened": false,
+    "finalHoldoutOpened": false
+  },
+  "validationEvidence": {
+    "M1_APP_ENV": "ci",
+    "allExpectedFailClosedCommandsFailedBeforeDataLoad": true,
+    "allSuccessCommandsPassed": true,
+    "branch": "codex/m2-c3-v2",
+    "commandResults": [
+      {
+        "command": "npm run check:no-real-data",
+        "exitCode": 0,
+        "stderrBytes": 0,
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutBytes": 161,
+        "stdoutSha256": "5f9c7b10c48a1b15f19b01f45363749474d0ff09d792e19211d17598f7fd2f79"
+      },
+      {
+        "command": "npm run lint",
+        "exitCode": 0,
+        "stderrBytes": 0,
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutBytes": 104,
+        "stdoutSha256": "12ec7193d2b56f7a801ebbc43653df5c79acc1d07eb34f8adc9ca3bd1056acf9"
+      },
+      {
+        "command": "npm run build",
+        "exitCode": 0,
+        "stderrBytes": 0,
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutBytes": 105,
+        "stdoutSha256": "2e8c3a04d485548a470c0b5f0ba65c61af677a8904e7a01b2b63e36c8d0182ec"
+      },
+      {
+        "command": "npm test",
+        "exitCode": 0,
+        "stderrBytes": 0,
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutBytes": 59038,
+        "stdoutSha256": "9e61b6e3f11d82b80426c7573c955ae94b056fd9ab566499f17b43eede94e8bc"
+      },
+      {
+        "command": "npm run smoke",
+        "exitCode": 0,
+        "stderrBytes": 0,
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutBytes": 188,
+        "stdoutSha256": "06d5fc03470dfb684293bff3d779f489cf24309cd3a98d85fef7cdeb50d29041"
+      },
+      {
+        "command": "npm run test:e2e",
+        "exitCode": 0,
+        "stderrBytes": 0,
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutBytes": 1351,
+        "stdoutSha256": "2ab3cc6c2b414ef70f6a04e6def0f50862100c535fcf7fa67e02c01d9a36b68b"
+      },
+      {
+        "command": "npm run validate:m2:formal-cash-comparator",
+        "exitCode": 0,
+        "stderrBytes": 0,
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutBytes": 963,
+        "stdoutSha256": "10ce0f85eb6df80eb5a683eb5a255b193018d004b296a8fa92d501313ff459a1"
+      },
+      {
+        "command": "npm run validate:m2:c2r1",
+        "exitCode": 0,
+        "stderrBytes": 0,
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutBytes": 990,
+        "stdoutSha256": "0fffd750f7e96500fca4d172abac6a03195e342b411bb0e4e290bb7f9da66030"
+      },
+      {
+        "command": "npm run validate:m2:c2",
+        "exitCode": 0,
+        "stderrBytes": 0,
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutBytes": 1604,
+        "stdoutSha256": "5678c5fe86a65320484d18867972d6ecd2f65a6c17fd0546bda761046ea7949c"
+      },
+      {
+        "command": "npm run validate:m2:c2-reconciliation",
+        "exitCode": 0,
+        "stderrBytes": 0,
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutBytes": 668,
+        "stdoutSha256": "5d6a5030536c65cb0a0e0c310c175b241546e2bd62195c5fa11ddcf2fa2db268"
+      },
+      {
+        "command": "npm run validate:m2:c3-contract",
+        "exitCode": 0,
+        "stderrBytes": 0,
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutBytes": 915,
+        "stdoutSha256": "6474387b87e159899455b2fde3a67db3ba1b2dcc783a4932d2b47f910cec10e7"
+      }
+    ],
+    "databaseEnvironmentEmpty": true,
+    "deferred60MonthLabelsOpened": false,
+    "embargoShadowOpened": false,
+    "expectedFailClosedCommandResults": [
+      {
+        "command": "npm run replay:m2:formal-cash-target:final-holdout",
+        "exitCode": 1,
+        "stderrBytes": 110,
+        "stderrSha256": "d502f94518b330b372db75141c6343a30f6cb70cb56e5f244e0c0ae11c6facc5",
+        "stdoutBytes": 194,
+        "stdoutSha256": "845ffdffe498aefddf3fa564a500f986ab7f814398fca2607b109fa88cc44d09"
+      },
+      {
+        "command": "npm run replay:m2:formal-cash-comparator:final-holdout",
+        "exitCode": 2,
+        "stderrBytes": 113,
+        "stderrSha256": "e317d6b2b85a83a4b8b9b16bf024bc93b363b78ee4ee5d169cc120dce0ef1bca",
+        "stdoutBytes": 198,
+        "stdoutSha256": "edb4db089117102698ef2e321253e87dec5429ef974e5261a918390b394fdd3c"
+      },
+      {
+        "command": "npm run replay:m2:c2:final-holdout",
+        "exitCode": 2,
+        "stderrBytes": 93,
+        "stderrSha256": "53403c45352293b7182a2dc63d3571511dab07bc4f04a896b6a976a4108a3bd5",
+        "stdoutBytes": 174,
+        "stdoutSha256": "e19f31947802ebd1745fff4bc8c70c0072175e71dbd67af7c4628a56885c1589"
+      },
+      {
+        "command": "npm run replay:m2:c3:final-holdout",
+        "exitCode": 2,
+        "stderrBytes": 162,
+        "stderrSha256": "67614d69bd874f47ec20e086ad13b4bf3b0858250e5e2f9f6f7d6aa77a80b012",
+        "stdoutBytes": 174,
+        "stdoutSha256": "1cc4c9f982922725643db01eed3734ae29e5e4d99593222242cb62c80a4dd79e"
+      },
+      {
+        "command": "npm run replay:m2:c3:embargo-shadow",
+        "exitCode": 2,
+        "stderrBytes": 163,
+        "stderrSha256": "39d606e5ed38ea1358819cdc38d4cb896b1803eb044ff5be6c15bded74305feb",
+        "stdoutBytes": 176,
+        "stdoutSha256": "57072a8c5a79f28eae02544f116c4f85b016bf719494ff20ca1448d2ec1df367"
+      },
+      {
+        "command": "npm run replay:m2:c3:deferred-labels",
+        "exitCode": 2,
+        "stderrBytes": 173,
+        "stderrSha256": "e8810bf986e91db230cc7aa76a28fdd7a3a8057b8ce818ce3a2b2f30b1d61e58",
+        "stdoutBytes": 178,
+        "stdoutSha256": "5847dee8f455da1a1e797764ed8ec6c9e510a8905bf07b3f405b6d9cb576b654"
+      }
+    ],
+    "finalHoldoutOpened": false,
+    "phaseAHead": null,
+    "phaseAStartHead": "50d927d64438af5057e8b623a901a22c70bced53",
+    "phaseATree": null,
+    "realDataCalibrationExecutedByValidationCommands": false,
+    "recordedAt": "2026-07-16T14:30:53.981226+00:00",
+    "remoteHead": null,
+    "schema": "m2.calibration_gate_d.validation_receipt.private.v1",
+    "trackedArtifactSha256": {}
+  },
+  "validationReceiptSha256": "7b03da415216a53b89e8a7d7873f46998ee03c3a3b0c167c62a2a4f8dd537597",
+  "version": "v1"
+}
