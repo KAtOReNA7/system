@@ -133,7 +133,7 @@ test("buyout amortization is capped by shorter remaining copyright with a one-ye
   assert.equal(result.buyoutHistoricalValueRating, "S");
 });
 
-test("previous buyout cycle monthly sales can be retained for pure buyout forecast reference", () => {
+test("previous buyout cycle monthly equivalent remains rating-only history", () => {
   const result = calibrateRating({
     revenueModel: "pure_buyout",
     buyoutEstimatedAmount: 90000,
@@ -143,7 +143,21 @@ test("previous buyout cycle monthly sales can be retained for pure buyout foreca
   });
 
   assert.equal(result.previousBuyoutMonthlySalesEquivalent, 3000);
-  assert.equal(result.nextCycleForecastPolicy, "pure_buyout_may_use_previous_cycle_monthly_sales_equivalent");
+  assert.equal(
+    result.nextCycleForecastPolicy,
+    "pure_buyout_cash_forecast_requires_cutoff_confirmed_receivable",
+  );
+  assert.equal(result.buyoutMonthlyEquivalent, result.buyoutEquivalentMonthlySales);
+  assert.deepEqual(result.buyoutMonthlyEquivalentBoundary, {
+    ratingContextOnly: true,
+    historicalValueOnly: true,
+    notCashForecast: true,
+    notIncludedInFutureCashRevenue: true,
+  });
+  for (const boundaryField of Object.keys(result.buyoutMonthlyEquivalentBoundary)) {
+    assert.equal(boundaryField in result, false);
+  }
+  assert.match(result.ratingExplanation, /不用于未来现金预测/);
 });
 
 test("off shelf does not directly rewrite historical rating to E", () => {

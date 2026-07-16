@@ -4,7 +4,11 @@
 
 当前入口是：
 
-`复核已完成的 calibration-spec-v1.2、Gate A 和 C1 FAIL 证据；停在 C1 后等待用户下一次明确授权，不得自动进入 C2-R/C2/C3/M3、final holdout 或 release`
+`复核已完成的 formal-cash comparator、Gate B 和 C2-R.1 FAIL 证据；停在 C2/C3 与 final holdout 前，等待用户明确授权，不得重复训练 C2-R.1、进入 C2/C3/M3、打开 final holdout 或 release`
+
+2026-07-15 用户已冻结新的最高优先级业务口径：M2 正式点值只预测未来实销现金与 cutoff 时已确认且可审计的未来应收。未承诺买断、历史周期猜测、概率模型、已到账款未来摊销和 `buyoutMonthlyEquivalent` 不得进入现金预测。legacy-target C2-R development 已完成但结果为 `FAIL`，只保留为历史目标口径证据，不是 formal-cash 指标，也不得与 C2-R.1 直接比较。
+
+当前 formal-cash correction 已完成 18615/12223 原 case universe 的三套 actual 和桥接：scoreable 重叠 case-window 聚合 `forecastableCashActual=82206415.70`、`uncommittedBuyoutSurpriseActual=5517115.15`、`totalLedgerCashActual=87723530.85`，466 个正 surprise case window，占比 0.06289208。当前权威输入没有 cutoff commitment as-of 数据角色，纯买断无承诺必须 null abstain。formal-cash comparator replay 在 7851 个固定模型人口 case 上冻结 B4；Gate B 经远端 checkpoint 重跑验证 14/14。C2-R.1 已按 45 个预冻结候选执行，overall WAPE 0.58382425、signed bias +0.02933805，23 项通过 13 项，结论 `FAIL`。
 
 ## 当前状态
 
@@ -25,7 +29,7 @@
 - Phase A checkpoint `879fbd0a951ce6d465082321b38f965b14815935` 已 push；推送后 runtime receipt 已核对真实远端 SHA、重跑全部验证并独立复算 Gate A，所有条件为 true。
 - C1 transparent ensemble 已按 8 个组件、148 个候选和 nested expanding-origin 完成 development validation；5 个 outer origin 均没有 bias-feasible candidate，使用预注册 fallback，未放宽任何 gate。
 - C1 all-scoreable WAPE / signed bias 为 3.8502 / +3.5114，高价值 WAPE / bias 为 2.9538 / +2.7188，内部 80% coverage 为 0.8302；相对 B4 overall WAPE 回退 131.02%，bootstrap 相对差 95% CI 为 [0.0531, 4.5434]。19 项验收仅 5 项通过，结论为 `FAIL`。
-- C1 结构验证、同 case-key、无泄漏、future perturbation、raw/served/abstention、C1-only interval 和脱敏契约全部通过；模型质量失败后已按要求停止。final holdout、embargo、60 月标签及 C2-R/C2/C3 仍 sealed，状态保持 `not_for_formal_decision`。
+- C1 结构验证、同 case-key、无泄漏、future perturbation、raw/served/abstention、C1-only interval 和脱敏契约全部通过；legacy-target C2-R 随后已执行但结论为 `FAIL`，旧 development 写入口已 fail-closed，只保留历史验证入口。formal-cash comparator、Gate B 和 C2-R.1 development 已完成；C2-R.1 结论同样为 `FAIL`。C2/C3 未开始；final holdout、embargo 和 60 月标签仍 sealed，状态保持 `not_for_formal_decision`。
 - 作者、版权开始、版权到期、作品状态和音频版权状态已按用户确认口径完成本地文件级 staging 收口，禁止依据旧 gap 报告重新生成待办。
 - 用户最终分类标签基础表已固定：3053 部作品，出版物 1195 部、网文 1858 部，分类与标签人工缺口为 0；private 明细不进入版本控制。
 - 最终表修正 836 部作品，固定 387 部作品、532 个标签赋值；新增分类和标签已进入受控词表 `2026-07-10-user-confirmed-v2`。
@@ -75,12 +79,27 @@
 31. `docs/analysis/m2-real-data/M2-calibration-gate-a-v1.json`
 32. `docs/analysis/m2-real-data/M2-C1-development-validation-v1.md`
 33. `scripts/m2-real-data/run_m2_c1_development_validation.py`
+34. `src/domain/oldProductEvaluation/calibrationSpec.c2r.v1.1.amendment.json`
+35. `docs/analysis/m2-real-data/M2-formal-cash-forecast-target-decision-v1.md`
+36. `docs/analysis/m2-real-data/M2-C2R1-formal-cash-target-separation-v1.md`
+37. `docs/analysis/m2-real-data/M2-C2R1-buyout-commitment-as-of-audit-v1.md`
+38. `docs/analysis/m2-real-data/M2-C2R1-old-target-new-target-bridge-v1.md`
+39. `docs/analysis/m2-real-data/M2-C2R-legacy-target-supersession-v1.md`
+40. `scripts/m2-real-data/m2_formal_cash_target_v1.py`
+41. `scripts/m2-real-data/run_m2_formal_cash_target_correction.py`
+42. `src/domain/oldProductEvaluation/calibrationSpec.formalCashComparator.v1.json`
+43. `docs/analysis/m2-real-data/M2-formal-cash-comparator-replay-v1.md`
+44. `docs/analysis/m2-real-data/M2-surprise-buyout-unique-impact-audit-v1.md`
+45. `docs/analysis/m2-real-data/M2-calibration-gate-b-v1.json`
+46. `src/domain/oldProductEvaluation/calibrationSpec.c2r1.v1.amendment.json`
+47. `docs/analysis/m2-real-data/M2-C2R1-development-validation-v1.md`
+48. `scripts/m2-real-data/run_m2_c2r1_development_validation.py`
 
 ## 下一轮推荐任务
 
 优先执行：
 
-`停在已验证的 C1 FAIL checkpoint，先向用户报告并等待新的明确方法授权；不得自行开始 C2-R/C2/C3、打开 final holdout、release 或进入 M3`
+`停在已验证的 C2-R.1 FAIL checkpoint，先报告 formal-cash comparator、surprise 唯一账单、业务覆盖和 23 项 gate；等待用户明确授权下一动作，不得重复训练 C2-R.1、进入 C2/C3、打开 final holdout、release 或进入 M3`
 
 执行要求：
 
@@ -88,7 +107,7 @@
 2. 只使用最终 3053 部权威基础信息、最终 mapping 和 192872 条收入事实；不得重新清洗或覆盖已确认基础字段，除非发现可证明的工程错误并先报告。
 3. 将旧 v1.1 作为被拒绝的 B0a 历史锚点；faithful B0b、B1、B2、B3、B4 使用已冻结的 12223 个 scoreable keys。不得恢复 forecastabilityStatus 混合口径，不得把 abstained served null 按 0 计入模型 WAPE。
 4. 生成中文、可读、Git 忽略的业务验证表，以及不含真实作品明细的可提交聚合报告；测试结果主要信息必须中文化。
-5. C1 已完成并 FAIL；不得重复训练、改 gate、自动进入 C2-R/C2/C3、打开 final holdout 或 release。下一算法动作必须由用户在复核 C1 证据后另行明确授权。M2 输出继续禁止自动运营建议或资源投入动作字段。
+5. C1、legacy-target C2-R 与 formal-cash C2-R.1 均已完成并 FAIL；不得重复训练、改 gate、进入 C2/C3、打开 final holdout 或 release。下一算法动作必须由用户在复核 formal-cash comparator、surprise、业务覆盖和 C2-R.1 失败证据后另行明确授权。M2 输出继续禁止自动运营建议或资源投入动作字段。
 
 ## 当前允许做的事
 

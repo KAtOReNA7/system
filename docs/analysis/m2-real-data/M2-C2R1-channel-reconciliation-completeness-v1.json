@@ -1,0 +1,139 @@
+{
+  "candidate": {
+    "byRoute": {
+      "buyout_plus_sales": {
+        "aggregateMatchedChannelSignedBias": 0.30832143,
+        "aggregateMatchedChannelWape": 1.02376982,
+        "allWorkActualsStrictlyReconciled": true,
+        "allWorkPointsStrictlyReconciled": true,
+        "channelMetricIsWorkLevelModelWape": false,
+        "identifiersPresent": false,
+        "matchedComponentCaseCount": 11521,
+        "matchedForecastableCashShare": 0.77027095,
+        "maximumChannelSumToWorkPointAbsoluteDifference": 1.1e-07,
+        "maximumTruthComponentSumToWorkActualAbsoluteDifference": 0.0,
+        "predictedComponentCount": 11521,
+        "predictedWithoutTruthComponentCount": 0,
+        "truthWithoutPredictionCash": 7895011.84069999,
+        "truthWithoutPredictionComponentCount": 18411,
+        "workCaseCount": 2168
+      },
+      "pure_sales_share": {
+        "aggregateMatchedChannelSignedBias": 0.17634312,
+        "aggregateMatchedChannelWape": 0.75242627,
+        "allWorkActualsStrictlyReconciled": true,
+        "allWorkPointsStrictlyReconciled": true,
+        "channelMetricIsWorkLevelModelWape": false,
+        "identifiersPresent": false,
+        "matchedComponentCaseCount": 14998,
+        "matchedForecastableCashShare": 0.88895666,
+        "maximumChannelSumToWorkPointAbsoluteDifference": 1.1e-07,
+        "maximumTruthComponentSumToWorkActualAbsoluteDifference": 0.0,
+        "predictedComponentCount": 14998,
+        "predictedWithoutTruthComponentCount": 0,
+        "truthWithoutPredictionCash": 5026751.24449999,
+        "truthWithoutPredictionComponentCount": 10412,
+        "workCaseCount": 5683
+      }
+    },
+    "overall": {
+      "aggregateMatchedChannelSignedBias": 0.22871172,
+      "aggregateMatchedChannelWape": 0.86012531,
+      "allWorkActualsStrictlyReconciled": true,
+      "allWorkPointsStrictlyReconciled": true,
+      "channelMetricIsWorkLevelModelWape": false,
+      "identifiersPresent": false,
+      "matchedComponentCaseCount": 26519,
+      "matchedForecastableCashShare": 0.83773763,
+      "maximumChannelSumToWorkPointAbsoluteDifference": 1.1e-07,
+      "maximumTruthComponentSumToWorkActualAbsoluteDifference": 0.0,
+      "predictedComponentCount": 26519,
+      "predictedWithoutTruthComponentCount": 0,
+      "truthWithoutPredictionCash": 12921763.08520002,
+      "truthWithoutPredictionComponentCount": 28823,
+      "workCaseCount": 7851
+    }
+  },
+  "candidateDecision": "FAIL",
+  "decisionStatus": "not_for_formal_decision",
+  "language": "zh-CN",
+  "matchedChannelMetricMayBeNamedWorkLevelModelWape": false,
+  "primaryComparator": {
+    "byRoute": {
+      "buyout_plus_sales": {
+        "aggregateMatchedChannelSignedBias": 0.31030536,
+        "aggregateMatchedChannelWape": 1.02600511,
+        "allWorkActualsStrictlyReconciled": true,
+        "allWorkPointsStrictlyReconciled": true,
+        "channelMetricIsWorkLevelModelWape": false,
+        "identifiersPresent": false,
+        "matchedComponentCaseCount": 11521,
+        "matchedForecastableCashShare": 0.77027095,
+        "maximumChannelSumToWorkPointAbsoluteDifference": 1.1e-07,
+        "maximumTruthComponentSumToWorkActualAbsoluteDifference": 0.0,
+        "predictedComponentCount": 11521,
+        "predictedWithoutTruthComponentCount": 0,
+        "truthWithoutPredictionCash": 7895011.84069999,
+        "truthWithoutPredictionComponentCount": 18411,
+        "workCaseCount": 2168
+      },
+      "pure_sales_share": {
+        "aggregateMatchedChannelSignedBias": 0.29332415,
+        "aggregateMatchedChannelWape": 0.7028019,
+        "allWorkActualsStrictlyReconciled": true,
+        "allWorkPointsStrictlyReconciled": true,
+        "channelMetricIsWorkLevelModelWape": false,
+        "identifiersPresent": false,
+        "matchedComponentCaseCount": 14998,
+        "matchedForecastableCashShare": 0.88895666,
+        "maximumChannelSumToWorkPointAbsoluteDifference": 1.1e-07,
+        "maximumTruthComponentSumToWorkActualAbsoluteDifference": 0.0,
+        "predictedComponentCount": 14998,
+        "predictedWithoutTruthComponentCount": 0,
+        "truthWithoutPredictionCash": 5026751.24449999,
+        "truthWithoutPredictionComponentCount": 10412,
+        "workCaseCount": 5683
+      }
+    },
+    "overall": {
+      "aggregateMatchedChannelSignedBias": 0.30006224,
+      "aggregateMatchedChannelWape": 0.83108456,
+      "allWorkActualsStrictlyReconciled": true,
+      "allWorkPointsStrictlyReconciled": true,
+      "channelMetricIsWorkLevelModelWape": false,
+      "identifiersPresent": false,
+      "matchedComponentCaseCount": 26519,
+      "matchedForecastableCashShare": 0.83773763,
+      "maximumChannelSumToWorkPointAbsoluteDifference": 1.1e-07,
+      "maximumTruthComponentSumToWorkActualAbsoluteDifference": 0.0,
+      "predictedComponentCount": 26519,
+      "predictedWithoutTruthComponentCount": 0,
+      "truthWithoutPredictionCash": 12921763.08520002,
+      "truthWithoutPredictionComponentCount": 28823,
+      "workCaseCount": 7851
+    }
+  },
+  "privacy": {
+    "aggregateOnly": true,
+    "authorIdentifiersPresent": false,
+    "channelIdentifiersPresent": false,
+    "deidentified": true,
+    "predictionIntervalEndpointsPresent": false,
+    "privatePathsPresent": false,
+    "rawRowsPresent": false,
+    "workIdentifiersPresent": false
+  },
+  "schema": "m2.c2r1.channel_reconciliation.public.v1",
+  "seals": {
+    "deferred60MonthLabelsOpened": false,
+    "embargoShadowOpened": false,
+    "finalHoldoutOpened": false
+  },
+  "truthWithoutPredictionReportedNotHidden": true,
+  "twoLevelConservation": {
+    "channelSumEqualsFutureSalesCashForecast": true,
+    "componentActualSumEqualsForecastableCashActual": true,
+    "cutoffConfirmedReceivableCount": 0
+  },
+  "version": "M2-C2R1-channel-reconciliation-completeness-v1"
+}

@@ -116,6 +116,27 @@ M3 private 材料准备、dry-run 和 human acceptance 当前均按用户决定�
 
 The current remote checkpoint is for local development continuity only. It includes sanitized aggregate reports, source code, scripts, tests, and package scripts for M1/M2 local validation. It intentionally excludes private workbooks, private JSON/CSV outputs, raw bills, raw ledgers, original library files, database dumps, environment files, and sensitive row-level details.
 
+### 2026-07-15 M2 正式现金目标校正
+
+M2 正式 point forecast 已冻结为未来账单现金：未来实销现金，加 cutoff 时已确认且可审计的未来应收。未承诺未来买断、历史周期推测、买断概率乘金额、已到账买断未来摊销及 `buyoutMonthlyEquivalent` 均不进入正式现金预测；买断月均等效值只用于历史价值和评级。
+
+当前权威输入没有历史 cutoff commitment as-of 数据角色，因此后来发生的买断只能进入 `uncommittedBuyoutSurpriseActual`，不能事后恢复为已承诺。冻结 development universe 的 scoreable 重叠 case-window 聚合为：`forecastableCashActual=82206415.70`、`uncommittedBuyoutSurpriseActual=5517115.15`、`totalLedgerCashActual=87723530.85`。case key、eligibility 和所有 sealed labels 未改变。
+
+legacy-target C2-R development 已完成但结论为 `FAIL`，其结果继续作为历史目标口径证据，不是 formal-cash 指标，也不得与 C2-R.1 直接比较；旧 development 写入口现已 fail-closed，只保留历史验证入口。2026-07-16 formal-cash comparator replay 已在 7851 个固定模型人口 case 上冻结 B4 为 primary，Gate B 经远端 checkpoint 后验证为 14/14；随后获授权的 C2-R.1 development 使用 45 个预冻结透明候选完成训练与验证，overall WAPE 0.5838、signed bias +2.93%，23 项验收通过 13 项，结论为 `FAIL`。C2/C3 未开始；所有结果仍为 `not_for_formal_decision`，final holdout、embargo shadow 和 deferred 60-month labels 仍 sealed，未 release，未进入 M3。
+
+正式现金口径证据：
+
+- `docs/analysis/m2-real-data/M2-formal-cash-forecast-target-decision-v1.md`
+- `src/domain/oldProductEvaluation/calibrationSpec.c2r.v1.1.amendment.json`
+- `docs/analysis/m2-real-data/M2-C2R1-formal-cash-target-separation-v1.md`
+- `docs/analysis/m2-real-data/M2-C2R1-buyout-commitment-as-of-audit-v1.md`
+- `docs/analysis/m2-real-data/M2-C2R1-old-target-new-target-bridge-v1.md`
+- `docs/analysis/m2-real-data/M2-C2R-legacy-target-supersession-v1.md`
+- `docs/analysis/m2-real-data/M2-formal-cash-comparator-replay-v1.md`
+- `docs/analysis/m2-real-data/M2-surprise-buyout-unique-impact-audit-v1.md`
+- `docs/analysis/m2-real-data/M2-calibration-gate-b-v1.json`
+- `docs/analysis/m2-real-data/M2-C2R1-development-validation-v1.md`
+
 ## M1 本地验证命令
 
 当前 M1 应用和最小只读管理端使用 Node.js、原生 HTTP 服务和 PostgreSQL 驱动。

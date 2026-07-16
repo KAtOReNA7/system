@@ -1,0 +1,175 @@
+{
+  "C2R1AuthorizedByGateB": true,
+  "allTrue": true,
+  "conditionCount": 14,
+  "conditions": {
+    "all_seals_closed": true,
+    "comparator_target_population_case_key_parity": true,
+    "formal_cash_calibration_spec_frozen": true,
+    "formal_cash_comparator_replay_complete": true,
+    "full_validation_suite_passed": true,
+    "future_perturbation_invariance_passed": true,
+    "legacy_target_comparator_excluded_from_selection": true,
+    "no_private_file_tracked": true,
+    "old_new_target_bridge_reconciles": true,
+    "phase_a_commit_pushed": true,
+    "population_and_coverage_report_complete": true,
+    "pure_buyout_null_never_scored_as_zero": true,
+    "surprise_unique_audit_complete_or_fail_closed_unavailable": true,
+    "three_actuals_conserve_per_case_and_aggregate": true
+  },
+  "decisionStatus": "not_for_formal_decision",
+  "evidenceBindings": {
+    "bundleDigest": "b903a39adb8d498b1b2419cde6bd816a022cd09b28977d4792406db39372820b",
+    "coverageDigest": "ead853b7e71fc897df3bf471551cfb5e599cee11cbd2932b03aaf32b7b27d404",
+    "formalCashComparatorSpecDigest": "845e052dc4ef969aa5c3f9fea828b746f9712ce9356bb7281338480754f7fd71",
+    "replayDigest": "edf75e560b21f02f61ec370dd4a2579a1d8581497aef96e330f3a694332160cb",
+    "surpriseAuditDigest": "d1e1296cc5d92e259a46fd069aa7122a9b2aa22dfcaa62b1aa32076ab277bb2b"
+  },
+  "formalDecisionAuthorized": false,
+  "nextBoundary": "C2R1_development_only",
+  "observationGates": {
+    "belowThresholdBehavior": "conditional_only_never_formal_approval",
+    "forecastableCashShareMinimumRecommended": 0.9,
+    "forecastableCashShareObserved": 0.7396468495203204,
+    "forecastableCashShareObservedPass": false,
+    "mayAuthorizeRelease": false,
+    "top10ForecastableCashCoverageMinimum": 0.9,
+    "top10ForecastableCashCoverageObserved": 0.7594125279899511,
+    "top10ForecastableCashCoverageObservedPass": false
+  },
+  "observationGatesMayAuthorizeFormalApproval": false,
+  "passedConditionCount": 14,
+  "phaseACheckpoint": "127c07cac9d1822e235d993066bcbf9fd28efd29",
+  "phaseACommitPushed": true,
+  "privateFilesTracked": false,
+  "releaseAuthorized": false,
+  "remoteHeadVerified": true,
+  "runtimePushReceiptSha256": "ad591ad2ef114dde0d09a166d2dbd4534500954b2e52dae284910bfc482ce4d3",
+  "schema": "m2.calibration_gate_b.v1",
+  "seals": {
+    "deferred60MonthLabelsOpened": false,
+    "embargoShadowOpened": false,
+    "finalHoldoutOpened": false
+  },
+  "validationEvidence": {
+    "M1_APP_ENV": "ci",
+    "allExpectedFailClosedCommandsFailedBeforeDataLoad": true,
+    "allSuccessCommandsPassed": true,
+    "branch": "codex/m2-calibration-v1",
+    "commandResults": [
+      {
+        "command": "npm run check:no-real-data",
+        "exitCode": 0,
+        "stderrBytes": 0,
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutBytes": 161,
+        "stdoutSha256": "0649e586583691be7b3263a5cff8445dda15d410dc944632b6a28716ed0e04c2"
+      },
+      {
+        "command": "npm run lint",
+        "exitCode": 0,
+        "stderrBytes": 0,
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutBytes": 104,
+        "stdoutSha256": "fd4a98a1196db60db1fb8013465d53e9f7c7ab200ac2ce5a232a4d5f8afc75e2"
+      },
+      {
+        "command": "npm run build",
+        "exitCode": 0,
+        "stderrBytes": 0,
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutBytes": 105,
+        "stdoutSha256": "f3c0bf7755299548859e74bc41603432008091dccfdcbbb00b0d2d5d2cccab2e"
+      },
+      {
+        "command": "npm test",
+        "exitCode": 0,
+        "stderrBytes": 0,
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutBytes": 54670,
+        "stdoutSha256": "fc519402c5422afe41d5c3d3c9fcfdda2b1f2f3ce7459b57b29240324dd578ff"
+      },
+      {
+        "command": "npm run smoke",
+        "exitCode": 0,
+        "stderrBytes": 0,
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutBytes": 188,
+        "stdoutSha256": "06d5fc03470dfb684293bff3d779f489cf24309cd3a98d85fef7cdeb50d29041"
+      },
+      {
+        "command": "npm run test:e2e",
+        "exitCode": 0,
+        "stderrBytes": 0,
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutBytes": 1353,
+        "stdoutSha256": "3d720786c4f30418b5a93d38cd4bb9a3b0e312d05e2d2db224df5e4570a2ffbf"
+      },
+      {
+        "command": "npm run validate:m2:formal-cash-target",
+        "exitCode": 0,
+        "stderrBytes": 0,
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutBytes": 1840,
+        "stdoutSha256": "0a00edb55f70fb8e0c5a3e201e870c8c2df2ec7648802e3aa4989d0290bb2640"
+      },
+      {
+        "command": "npm run validate:m2:formal-cash-comparator",
+        "exitCode": 0,
+        "stderrBytes": 0,
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutBytes": 965,
+        "stdoutSha256": "dd5cfa5767f0ad2e19d047129a5ddb5b9a8924c217b610b6fdf0b08f83848b63"
+      }
+    ],
+    "databaseEnvironmentEmpty": true,
+    "deferred60MonthLabelsOpened": false,
+    "embargoShadowOpened": false,
+    "expectedFailClosedCommandResults": [
+      {
+        "command": "npm run replay:m2:formal-cash-target:final-holdout",
+        "exitCode": 1,
+        "stderrBytes": 110,
+        "stderrSha256": "d502f94518b330b372db75141c6343a30f6cb70cb56e5f244e0c0ae11c6facc5",
+        "stdoutBytes": 194,
+        "stdoutSha256": "845ffdffe498aefddf3fa564a500f986ab7f814398fca2607b109fa88cc44d09"
+      },
+      {
+        "command": "npm run replay:m2:formal-cash-comparator:final-holdout",
+        "exitCode": 2,
+        "stderrBytes": 113,
+        "stderrSha256": "e317d6b2b85a83a4b8b9b16bf024bc93b363b78ee4ee5d169cc120dce0ef1bca",
+        "stdoutBytes": 198,
+        "stdoutSha256": "edb4db089117102698ef2e321253e87dec5429ef974e5261a918390b394fdd3c"
+      }
+    ],
+    "finalHoldoutOpened": false,
+    "phaseAHead": "127c07cac9d1822e235d993066bcbf9fd28efd29",
+    "phaseAStartHead": "c7f1c21ea54f2a16ffd753afebfa157cfbf6ca12",
+    "phaseATree": "0b99b6f422b2732a99515903b1ccbfd7f5aa72f3",
+    "realDataCalibrationExecutedByValidationCommands": false,
+    "recordedAt": "2026-07-16T03:37:58.093278+00:00",
+    "remoteHead": "127c07cac9d1822e235d993066bcbf9fd28efd29",
+    "schema": "m2.calibration_gate_b.validation_receipt.private.v1",
+    "trackedArtifactSha256": {
+      "docs/analysis/m2-real-data/M2-calibration-gate-b-v1.json": "30d18434710e7ca6e9d905e11a3fabf1defde5d436856f2de3266c4e699918ab",
+      "docs/analysis/m2-real-data/M2-formal-cash-comparator-bundle-v1.json": "40a2f9b000692e8876b034dec741d02c1d51e5dab24efdbb552158c1be773f5d",
+      "docs/analysis/m2-real-data/M2-formal-cash-comparator-bundle-v1.md": "97afa64e619c23d61b1db2b3e76738253ecfd34fa58be1557db0597354a60a7b",
+      "docs/analysis/m2-real-data/M2-formal-cash-comparator-replay-v1.json": "08b3bd2df0206e34c32c546ee92cb1e7991911186cd777cfc5d2db7ffd09ddf3",
+      "docs/analysis/m2-real-data/M2-formal-cash-comparator-replay-v1.md": "96ed0dec0a452141bc4dcddab26ab8a3433a0373d448e949695aef75f2cb5b76",
+      "docs/analysis/m2-real-data/M2-formal-cash-population-business-coverage-v1.json": "1172203257404b88886a1834c658d2f09e9e3eb11830dd2646c12ce4d80a7f1e",
+      "docs/analysis/m2-real-data/M2-formal-cash-population-business-coverage-v1.md": "4f7dfc30ad2bfeb371ad6fe3fc18e759f8b396d85efb08879841e15f2e6eba33",
+      "docs/analysis/m2-real-data/M2-surprise-buyout-unique-impact-audit-v1.json": "a875275b5ad8948a67e05af91d145aa27f12b43e350d8f499de1968a30b333bd",
+      "docs/analysis/m2-real-data/M2-surprise-buyout-unique-impact-audit-v1.md": "17f36ab68978a40fad6953dcc4d863abeb11e951460210e069b106a8ddf7e72a",
+      "package.json": "ffc86f27cc30232327ae2bc2333ed511ea23a28a4ff035972da4d06c5e56a92d",
+      "scripts/m2-real-data/m2_formal_cash_comparator_v1.py": "2c4ab4625a7d58ab14fb768530ddb55a86a0fe8aeec34e1d3d55cfc5394b26c7",
+      "scripts/m2-real-data/m2_formal_cash_target_v1.py": "7580b85b8cb8666b7c2f843956f7fe4497db1349d427c8de4e97a245644ca6be",
+      "scripts/m2-real-data/run_m2_formal_cash_comparator_replay.py": "3d6e2e55dff9800049b6fac87170f66fed043a1f68695f890abebe4df2866cd1",
+      "src/domain/oldProductEvaluation/calibrationSpec.formalCashComparator.v1.json": "f3941760e8fc3f12fcebd50133e11815beaaa649bc82110a6b68576d292450b5",
+      "test/m2-formal-cash-comparator.test.js": "db88061c904e054830fd10d782786ea2b5dfe4800c7c935a1998e65bfd2abfe0"
+    }
+  },
+  "validationReceiptSha256": "0e646ed8a3de36a6338a2b3112d9b8a378c98734923356f55473547b6c78ae0a",
+  "version": "M2-calibration-gate-b-v1"
+}

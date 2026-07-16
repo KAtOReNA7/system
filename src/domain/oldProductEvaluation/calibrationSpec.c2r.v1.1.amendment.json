@@ -1,0 +1,344 @@
+{
+  "schema": "m2.calibration_spec.c2r.v1_1.amendment",
+  "version": "calibration-spec-c2r-v1.1-amendment",
+  "amendmentKind": "formal_cash_target_correction",
+  "frozenAt": "2026-07-15T00:00:00+08:00",
+  "decisionStatus": "not_for_formal_decision",
+  "formalDecisionAuthorized": false,
+  "releaseAuthorized": false,
+  "precedence": {
+    "rule": "this_amendment_overrides_all_earlier_M2_rules_only_for_formal_cash_target_buyout_routing_backtest_actuals_metric_populations_and_related_reporting",
+    "preservesHistoricalCheckpoints": true,
+    "mayRewriteHistoricalMetrics": false
+  },
+  "parentBindings": {
+    "calibrationV1_2": {
+      "path": "src/domain/oldProductEvaluation/calibrationSpec.v1.2.amendment.json",
+      "canonicalDigestSha256": "2bb1e01ce7e93f3545d8f09187aa0c6182995dc186604a833a1ed7ade918b4d3"
+    },
+    "C2RV1": {
+      "path": "src/domain/oldProductEvaluation/calibrationSpec.c2r.v1.amendment.json",
+      "canonicalDigestSha256": "beb1d74811a4cae8e4c3c1fc5b83d9c34f589a3bd3c762db5d80004f17ae407b"
+    }
+  },
+  "authority": {
+    "standardWorkCount": 3053,
+    "incomeFactCount": 192872,
+    "authorityInputsChanged": false,
+    "eligibilityChanged": false,
+    "finalHoldoutOpened": false
+  },
+  "formalCashTarget": {
+    "field": "futureCashRevenueForecast",
+    "pointFormula": "sales_cash_point_plus_cutoff_confirmed_future_receivables",
+    "mixedRouteOperator": "addition",
+    "mixedRouteMinusSignInterpretation": "the_isolated_dash_in_the_user_message_is_a_list_separator_not_a_subtraction_because_the_controlling_inclusion_rules_require_confirmed_receivables_to_be_included",
+    "included": [
+      "future_sales_cash",
+      "buyout_receivable_signed_or_confirmed_and_auditable_at_cutoff",
+      "other_cash_with_amount_and_expected_posting_month_confirmed_and_auditable_at_cutoff"
+    ],
+    "excluded": [
+      "uncommitted_future_buyout",
+      "next_buyout_inferred_from_historical_cycle",
+      "future_buyout_probability_times_expected_amount",
+      "future_amortization_of_already_received_buyout_cash",
+      "buyoutMonthlyEquivalent"
+    ],
+    "nonnegativePointRequired": true,
+    "uncommittedBuyoutMayBeRepresentedAsZeroPoint": false
+  },
+  "asOfCommitmentEvidenceContract": {
+    "inputRole": "cash_commitment_snapshots",
+    "snapshotUnit": "standard_work_id_x_commitment_id_x_available_as_of",
+    "requiredFields": [
+      "standard_work_id",
+      "commitment_id",
+      "cash_type",
+      "status",
+      "confirmed_amount",
+      "outstanding_amount",
+      "receivable_status",
+      "expected_posting_month",
+      "confirmed_as_of",
+      "available_as_of",
+      "evidence_ref"
+    ],
+    "cashTypes": [
+      "buyout_receivable",
+      "other_confirmed_cash"
+    ],
+    "eligibleStatuses": [
+      "signed",
+      "confirmed"
+    ],
+    "eligibleReceivableStatuses": [
+      "outstanding",
+      "partially_outstanding"
+    ],
+    "monthFormat": "YYYY-MM",
+    "visibilityPredicate": "confirmed_as_of<=available_as_of<=origin",
+    "snapshotSelection": "latest_available_as_of_per_commitment_at_or_before_origin_with_identical_payload_deduplication_and_conflicting_latest_payload_fail_closed",
+    "futureEvidenceMayBackfillHistoricalCutoff": false,
+    "missingConfirmationTimestampBehavior": "not_committed_as_of_cutoff",
+    "missingEvidenceAvailabilityBehavior": "not_committed_as_of_cutoff",
+    "missingAmountOrExpectedPostingMonthBehavior": "not_committed_as_of_cutoff",
+    "settledOrCancelledAtCutoffBehavior": "not_outstanding_future_cash",
+    "pointAmountField": "outstanding_amount",
+    "outstandingAmountMayExceedConfirmedAmount": false,
+    "commitmentExistenceIsResolvedBeforeHorizonAllocation": true,
+    "validCommitmentOutsideCurrentHorizonBehavior": "known_commitment_with_zero_cash_inside_this_horizon_not_uncommitted_abstention",
+    "ledgerOccurrenceAloneIsCommitmentEvidence": false,
+    "businessFormAloneIsCommitmentEvidence": false,
+    "classifierBuyoutEventAloneIsCommitmentEvidence": false,
+    "currentAuthorityRoleAvailability": "absent",
+    "requiredFutureDataRole": "separately_authorized_auditable_commitment_snapshot_role"
+  },
+  "truthSettlementLinkContract": {
+    "inputRole": "cash_commitment_settlement_links",
+    "registryRole": "authority_ledger_fact_registry",
+    "currentAuthorityRoleAvailability": "absent",
+    "predictionAccessAllowed": false,
+    "truthJoinOccursAfterPredictionLock": true,
+    "requiredLinkFields": [
+      "standard_work_id",
+      "commitment_id",
+      "ledger_fact_key",
+      "cash_type",
+      "channel_component_key",
+      "posting_month",
+      "settlement_amount",
+      "truth_available_as_of"
+    ],
+    "requiredRegistryFields": [
+      "standard_work_id",
+      "ledger_fact_key",
+      "channel_component_key",
+      "posting_month",
+      "amount",
+      "cash_type"
+    ],
+    "constraints": [
+      "ledger_fact_key_unique_per_work",
+      "registry_target_window_cells_exactly_reconcile_to_authority_cash_with_no_extra_nonzero_cells",
+      "one_settlement_link_per_ledger_fact_key",
+      "link_work_commitment_cash_type_month_component_and_amount_match_authority_registry_fact_and_cutoff_commitment",
+      "posting_month_not_after_truth_available_as_of",
+      "truth_available_as_of_not_after_label_available_as_of",
+      "linked_fact_must_be_inside_target_window",
+      "no_aggregate_offset_between_distinct_events"
+    ],
+    "missingOrUnboundLinkBehavior": "cannot_reclassify_classifier_buyout_as_cutoff_committed_actual",
+    "futureRoleRequiresSeparateAuthorizationAndFingerprintBinding": true
+  },
+  "buyoutMonthlyEquivalentBoundary": {
+    "field": "buyoutMonthlyEquivalent",
+    "ratingContextOnly": true,
+    "historicalValueOnly": true,
+    "notCashForecast": true,
+    "notIncludedInFutureCashRevenue": true,
+    "allowedUses": [
+      "historical_value",
+      "rating",
+      "buyout_work_value_comparison",
+      "rating_explanation"
+    ],
+    "forbiddenUses": [
+      "future_cash_point",
+      "annual_cash_breakdown",
+      "model_training_target",
+      "prediction_interval_center",
+      "next_buyout_timing"
+    ]
+  },
+  "routeOverrides": {
+    "pure_sales_share": {
+      "futureCashRevenueForecast": "sum_independent_sales_channel_points_plus_all_cutoff_confirmed_future_receivables",
+      "uncommittedFutureBuyoutPredicted": false
+    },
+    "pure_buyout": {
+      "withAuditableCutoffCommitment": {
+        "qualification": "at_least_one_outstanding_buyout_receivable_is_auditable_at_cutoff_independent_of_current_horizon",
+        "rawModelPrediction": "sum_outstanding_cutoff_confirmed_cash_whose_expected_posting_month_is_inside_the_forecast_horizon",
+        "modelPredictionAvailable": true,
+        "routeAbstained": false,
+        "servedPrediction": "raw_only_when_businessServingEligible_otherwise_null",
+        "outOfHorizonPoint": 0,
+        "evidenceAndStatusRetainedInInternalAudit": true
+      },
+      "withoutAuditableCutoffCommitment": {
+        "futureCashRevenueForecast": null,
+        "rawModelPrediction": null,
+        "modelPredictionAvailable": false,
+        "routeAbstained": true,
+        "servedPrediction": null,
+        "abstentionReason": "uncommitted_future_buyout_not_forecastable"
+      },
+      "additionalBuyoutSpeculationAllowed": false,
+      "historicalCycleForecastAllowed": false,
+      "default36MonthCycleForecastAllowed": false,
+      "alreadyReceivedCashAmortizationAllowed": false
+    },
+    "buyout_plus_sales": {
+      "futureCashRevenueForecast": "sum_independent_sales_channel_points_plus_cutoff_confirmed_future_receivables",
+      "whenNoCutoffConfirmedBuyout": "sales_cash_only",
+      "excludesUncommittedFutureBuyout": true,
+      "futureBuyoutOccurrenceModelAllowed": false
+    },
+    "unknown_revenue_model": {
+      "routeAbstained": true,
+      "rawModelPrediction": null,
+      "servedPrediction": null,
+      "abstentionReason": "unknown_revenue_model"
+    }
+  },
+  "caseStateOverride": {
+    "statisticallyScoreableDefinitionChanged": false,
+    "businessServingEligibilityDefinitionChanged": false,
+    "modelPredictionAvailableMayBeFalseForStatisticallyScoreablePureBuyoutWithoutCommitment": true,
+    "servedPredictionPredicate": "businessServingEligible_and_modelPredictionAvailable_and_not_routeAbstained",
+    "routeAbstentionMayRemoveCaseFromCaseUniverse": false,
+    "routeAbstentionMayChangeEligibility": false,
+    "nullRawPredictionMayBeCoercedToZero": false
+  },
+  "backtestActualPartition": {
+    "forecastableCashActual": {
+      "definition": "sales_cash_actual_plus_cutoff_confirmed_buyout_receivable_actual_plus_cutoff_confirmed_other_cash_actual",
+      "primaryPointMetricTarget": true
+    },
+    "uncommittedBuyoutSurpriseActual": {
+      "definition": "buyout_cash_unknown_at_cutoff_that_later_appears_in_the_ledger",
+      "includedInPrimaryPointMetric": false,
+      "requiredAuditFields": [
+        "case_count",
+        "amount",
+        "share_of_total_ledger_cash",
+        "business_impact"
+      ]
+    },
+    "totalLedgerCashActual": {
+      "definition": "all_final_ledger_cash_inside_the_target_window",
+      "allowedMetricName": "endToEndBusinessGap",
+      "mayBeNamedModelWape": false
+    },
+    "missingHistoricalCommitmentTimestamp": "classify_later_buyout_as_uncommittedBuyoutSurpriseActual",
+    "postHocCommitmentRestorationAllowed": false,
+    "truthJoinOccursAfterPredictionLock": true,
+    "conservationFormula": "forecastableCashActual+uncommittedBuyoutSurpriseActual=totalLedgerCashActual"
+  },
+  "modelMetricPopulationOverride": {
+    "population": "statisticallyScoreable_and_modelPredictionAvailable_and_not_routeAbstained",
+    "actualField": "forecastableCashActual",
+    "predictionField": "rawModelPrediction",
+    "metrics": [
+      "WAPE",
+      "MAE",
+      "SMAPE",
+      "signedAggregateBias",
+      "internal80Coverage",
+      "WIS"
+    ],
+    "routeAbstainedScoreableCases": "report_only_in_abstention_and_end_to_end_business_audits",
+    "nullPredictionEvaluationValue": null,
+    "nullToZeroAllowed": false,
+    "gateThresholdsChanged": false,
+    "gateTargetSemanticsChanged": true
+  },
+  "caseAndAmountConservation": {
+    "caseKeyFields": [
+      "standard_work_id",
+      "origin",
+      "horizon_months",
+      "route"
+    ],
+    "caseKeysMustMatchFrozenDevelopmentUniverse": true,
+    "eligibilityMustMatchFrozenDevelopmentUniverse": true,
+    "oldAndNewActualValuesMustMatch": false,
+    "actualChangeReason": "formal_cash_target_semantics_correction",
+    "amountToleranceAbsolute": 0.000001,
+    "conservationRequiredPerCase": true,
+    "conservationRequiredByAggregateSlice": true,
+    "overlappingHorizonTotalsMayBeDescribedAsUniqueLedgerCash": false
+  },
+  "oldTargetToNewTargetBridge": {
+    "required": true,
+    "sameCaseKeysRequired": true,
+    "requiredFields": [
+      "oldTargetActual",
+      "forecastableCashActual",
+      "uncommittedBuyoutSurpriseActual",
+      "totalLedgerCashActual",
+      "differenceAttribution"
+    ],
+    "historicalClassifierDerivedBuyoutMayBeCalledContractConfirmed": false
+  },
+  "historicalArtifactStatus": {
+    "targetSemantics": "legacy_c2r_v1_monthly_equivalent",
+    "formalCashMetricEligible": false,
+    "mustNotCompareDirectlyToC2R1": true,
+    "developmentWriteEntryDisabled": true,
+    "verificationEntryRetained": true,
+    "artifacts": [
+      "docs/analysis/m2-real-data/M2-C2R-legacy-target-supersession-v1.json",
+      "docs/analysis/m2-real-data/M2-C2R-legacy-target-supersession-v1.md",
+      "docs/analysis/m2-real-data/M2-C2R-revenue-channel-design-v1.json",
+      "docs/analysis/m2-real-data/M2-C2R-revenue-channel-design-v1.md",
+      "docs/analysis/m2-real-data/M2-C2R-revenue-model-routing-manifest-v1.json",
+      "docs/analysis/m2-real-data/M2-C2R-revenue-model-routing-manifest-v1.md",
+      "docs/analysis/m2-real-data/M2-C2R-route-specific-metrics-v1.json",
+      "docs/analysis/m2-real-data/M2-C2R-route-specific-metrics-v1.md",
+      "docs/analysis/m2-real-data/M2-C2R-channel-reconciliation-v1.json",
+      "docs/analysis/m2-real-data/M2-C2R-channel-reconciliation-v1.md",
+      "docs/analysis/m2-real-data/M2-C2R-development-validation-v1.json",
+      "docs/analysis/m2-real-data/M2-C2R-development-validation-v1.md"
+    ]
+  },
+  "publicOutput": {
+    "allowedFields": [
+      "pointForecast",
+      "annualBreakdown",
+      "confidence",
+      "limitation"
+    ],
+    "pointForecastMeaning": "futureCashRevenueForecast",
+    "confirmedReceivableAnnualAllocation": "expected_posting_month_calendar_year",
+    "uncommittedPureBuyoutOutput": {
+      "pointForecast": null,
+      "annualBreakdown": [],
+      "confidence": "unavailable",
+      "requiredLimitation": "uncommitted_future_buyout_not_forecastable"
+    },
+    "predictionIntervalEndpointsAllowed": false,
+    "scenarioFieldsAllowed": false
+  },
+  "reporting": {
+    "language": "zh-CN",
+    "aggregateOnly": true,
+    "deidentified": true,
+    "minimumCellCount": 10,
+    "requiredReports": [
+      "formal_cash_target_separation",
+      "buyout_commitment_as_of_audit",
+      "old_target_to_new_target_bridge"
+    ],
+    "forbidden": [
+      "work_identifier",
+      "channel_identifier",
+      "private_path",
+      "raw_ledger_row",
+      "commitment_evidence_ref",
+      "prediction_interval_endpoint"
+    ]
+  },
+  "seals": {
+    "finalHoldoutOpened": false,
+    "embargoShadowOpened": false,
+    "deferred60MonthLabelsOpened": false,
+    "C2R1TrainingStarted": false,
+    "C2R1AutomaticTrainingAllowed": false,
+    "C2Authorized": false,
+    "C3Authorized": false,
+    "releaseAllowed": false,
+    "M3Allowed": false
+  }
+}

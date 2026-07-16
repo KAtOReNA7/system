@@ -43,7 +43,7 @@
 - Phase A comparator checkpoint `879fbd0a951ce6d465082321b38f965b14815935` 已正常 push；推送后的独立 runtime receipt 已复跑全套验证、核对真实远端 SHA 并重新计算 Gate A，全部条件为 true。该收据保持 Git 忽略且只授权本次 C1 development。
 - C1 transparent ensemble development 已按冻结的 8 个组件、148 个候选、nested expanding-origin 和 B4 primary comparator 完成。每个 outer origin 的 bias-feasible candidate 均为 0；前两个 origin 因 earlier-origin 证据不足使用预注册 fallback，后三个 origin 因没有 bias-feasible candidate 使用同一 fallback，未移动候选空间或阈值。
 - C1 在相同 18615/12223 case universe 上的 all-scoreable WAPE / signed bias 为 3.8502 / +3.5114，高价值 WAPE / bias 为 2.9538 / +2.7188，内部 80% coverage 为 0.8302；相对 B4 overall WAPE 回退 131.02%，paired work×origin bootstrap 相对差 95% CI 为 [0.0531, 4.5434]。19 项验收仅 coverage、P0=0、P1=0、P2 事实边界和无自动运营动作 5 项通过，结论明确为 `FAIL`。
-- C1 的 case-key/actual/state parity、raw/served/abstention、同一 `predict_as_of`、prediction lock、future perturbation、C1 自有 earlier-residual 区间和脱敏产物契约均通过；失败是模型质量失败，不是泄漏或计分失败。按用户停止条件，不得开始 C2-R/C2/C3；final holdout、embargo shadow 和 deferred 60-month labels 均未打开，所有结果保持 `not_for_formal_decision`。
+- C1 的 case-key/actual/state parity、raw/served/abstention、同一 `predict_as_of`、prediction lock、future perturbation、C1 自有 earlier-residual 区间和脱敏产物契约均通过；失败是模型质量失败，不是泄漏或计分失败。后续 legacy-target C2-R development 已执行但结论为 `FAIL`；该结果不具备 formal-cash 指标资格，旧 development 写入口已 fail-closed，只保留历史验证入口。formal-cash comparator replay 与 Gate B 已完成，C2-R.1 development 随后获授权执行并明确 `FAIL`；C2/C3 未开始，final holdout、embargo shadow 和 deferred 60-month labels 均未打开，所有结果保持 `not_for_formal_decision`。
 - 当前 3053 部基础信息、分类标签、状态、238 条业务决定和 192872 条收入事实是后续 M2 最终上线算法的权威输入。不得退回旧补表、旧 3054 口径或较早 private candidate 覆盖该版本。
 - M2 正式输出不再包含自动运营建议或资源投入动作；只允许风险和事实型复核提示。历史 fixture/prototype 建议字段不得进入当前正式结果、页面或导出。
 - 146 个到期仍有收入样本和 92 个版权有效但收入稀疏样本已经完成中文 private 确认、校验和应用；不得依据旧报告重新生成这些人工待办。
@@ -51,9 +51,31 @@
 - 当前 `main` 保留 M3 parallel planning 边界、实施方案摘要与非正式 fixture/prototype 测试能力；不代表 M3 formal execution 已开始，也不包含正式 M3 发布能力。
 - 当前未进入 M3 formal execution；用户已明确暂缓 3 至 5 份代表性选题材料，待 M2 两类复核和正式链路彻底收口后再准备。M3 formal execution 仍需后续单独明确授权。
 
+## M2 正式现金目标校正（2026-07-15）
+
+- 用户已冻结 M2 正式预测对象为未来账单现金：未来实销现金，加 cutoff 时已签署/确认且可审计的未来买断应收或其他已确认现金。未承诺未来买断、历史周期推测、概率乘金额、已到账买断摊销和 `buyoutMonthlyEquivalent` 均不得进入正式现金预测。
+- `buyoutMonthlyEquivalent` 只保留为历史价值和评级上下文，必须同时标记 `ratingContextOnly=true`、`historicalValueOnly=true`、`notCashForecast=true`、`notIncludedInFutureCashRevenue=true`。
+- 当前 3053 部/192872 条权威输入和 replay adapter 没有独立、可审计的 `cash_commitment_snapshots` as-of 数据角色。因此历史后来发生的买断不得回填成 cutoff 已承诺；纯买断无 cutoff 承诺时必须 route abstain，raw/served/future cash forecast 均为 null，禁止用 0 或月均等效值冒充预测。
+- formal-cash target correction 保持冻结的 18615/12223 development case universe、scoreability、business eligibility 和所有 seals 不变。scoreable 重叠 case-window 聚合为：`forecastableCashActual=82206415.70`、`uncommittedBuyoutSurpriseActual=5517115.15`、`totalLedgerCashActual=87723530.85`；466 个 case window 有正 surprise，占 total ledger cash 0.06289208。三套 actual 逐 case 和聚合守恒。
+- 旧目标到新目标桥接确认：旧目标 actual 为 80351261.34；pure-buyout case 改用正式现金口径后加入 2571419.36 forecastable cash，并移除 716265.00 legacy pure-buyout target，新减旧为 1855154.36。legacy-target C2-R 已完成但结论为 `FAIL`；旧结果只能作为历史目标口径证据，不能改称 formal-cash 指标，也不能在新目标 replay 前与 C2-R.1 直接比较。
+- `calibration-spec-c2r-v1.1-amendment`、正式现金内核、as-of 审计、三套 actual、桥接和自动测试已建立。formal-cash B0b/B1/B3/B4 replay 在共同 7851-case 模型人口上冻结 B4 为 primary；Gate B 在 Phase A checkpoint push 后 14/14 通过。C2-R.1 使用预冻结 45 候选、earlier-origin route selection 完成 development，overall WAPE 0.58382425、signed bias +0.02933805，23 项验收通过 13 项，结论 `FAIL`。C2/C3 未开始；final holdout、embargo shadow、deferred 60-month labels 仍 sealed，状态保持 `not_for_formal_decision`，未 release，未进入 M3。
+
+证据文件：
+
+- `docs/analysis/m2-real-data/M2-formal-cash-forecast-target-decision-v1.md`
+- `src/domain/oldProductEvaluation/calibrationSpec.c2r.v1.1.amendment.json`
+- `docs/analysis/m2-real-data/M2-C2R1-formal-cash-target-separation-v1.md`
+- `docs/analysis/m2-real-data/M2-C2R1-buyout-commitment-as-of-audit-v1.md`
+- `docs/analysis/m2-real-data/M2-C2R1-old-target-new-target-bridge-v1.md`
+- `docs/analysis/m2-real-data/M2-C2R-legacy-target-supersession-v1.md`
+- `docs/analysis/m2-real-data/M2-formal-cash-comparator-replay-v1.md`
+- `docs/analysis/m2-real-data/M2-surprise-buyout-unique-impact-audit-v1.md`
+- `docs/analysis/m2-real-data/M2-calibration-gate-b-v1.json`
+- `docs/analysis/m2-real-data/M2-C2R1-development-validation-v1.md`
+
 ## M2 后续补全信息提醒
 
-任何 M3 设计、实现或评估前，必须先提醒用户：M2 隔离本地正式执行已完成，旧 v1.1 conditional 已被用户拒绝；calibration-spec-v1.2 comparator 修正、B0b-B4 replay 和 Gate A 已完成，C1 development 已执行但明确 FAIL。C2-R/C2/C3、业务抽检、最终 holdout、验收和 release 均未开始或完成。
+任何 M3 设计、实现或评估前，必须先提醒用户：M2 隔离本地正式执行已完成，旧 v1.1 conditional 已被用户拒绝；calibration-spec-v1.2 comparator 修正、historical-target B0b-B4 replay 和 Gate A 已完成，C1 development 与 legacy-target C2-R development 均明确 FAIL。formal-cash comparator replay、surprise 唯一账单审计、完整人口覆盖和 Gate B 已完成，C2-R.1 development 也已执行但明确 FAIL。legacy C2-R 不具备 formal-cash 指标资格；C2/C3、业务抽检、最终 holdout、正式验收和 release 均未开始或完成。
 
 | 数据项 | 当前缺口/状态 | 影响 |
 |---|---:|---|
@@ -85,7 +107,7 @@
 
 - 本地和远端 M3 状态必须先确认 clean：`HEAD` 应等于 `origin/main`，工作区不能有非本轮变更。
 - 当前允许准备 M3 开发计划、字段清单、接口依赖、fixture/prototype 方案和测试计划。
-- M2 隔离本地正式执行与严格对账已完成；旧 export 仅为 `prepared` 且已被用户拒绝。calibration-spec-v1.2、faithful B0b/B4 身份修正、严格 comparator、B0b-B4 replay 和 Gate A 均已完成；C1 development 已按授权执行并 FAIL，当前必须停止。C2-R/C2/C3 未授权；通过后续另行授权的候选开发、业务抽检、final holdout 与明确批准前禁止进入 M3 formal execution。
+- M2 隔离本地正式执行与严格对账已完成；旧 export 仅为 `prepared` 且已被用户拒绝。calibration-spec-v1.2、faithful B0b/B4 身份修正、historical-target replay 和 Gate A 均已完成；C1 与 legacy-target C2-R development 均为 FAIL。formal-cash comparator replay、Gate B 和 C2-R.1 development 也已完成，C2-R.1 结论为 FAIL。C2/C3 未开始；业务抽检、final holdout、明确批准和 release 前禁止进入 M3 formal execution。
 - 禁止把 M2 local candidate、v1.1 conditional、rating-standard-v3/v4/v4.2 或 private 任务包当作 formal M3 输入。
 - 禁止开放 M3 正式 task/export/write API；M2 正式 task/export/release/audit 已获授权，但只能在前置门禁通过后实施。
 - 禁止退回较早分类候选覆盖用户最终固定基础表；当前未启用独立特殊属性标签字段，不得在没有新规则的情况下重新制造人工阻断。

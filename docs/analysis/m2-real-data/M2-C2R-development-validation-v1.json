@@ -1,0 +1,3318 @@
+{
+  "C2RDevelopmentResult": "FAIL",
+  "acceptance": {
+    "allAcceptanceConditionsPassed": false,
+    "conditions": {
+      "P0IsZero": true,
+      "P1IsZero": true,
+      "P2FactReviewOnly": true,
+      "automaticOperatingActionFieldsZero": true,
+      "eachHorizonBiasWithin15Percent": false,
+      "horizon18_24RegressAtMost2Percent": true,
+      "horizon3_6_12ImproveAtLeast3Percent": true,
+      "internal80CoverageBetween75And85Percent": false,
+      "meanWisImprovesAtLeast5Percent": true,
+      "noThreeConsecutiveOriginsRegressOver5Percent": true,
+      "outerOriginWinShareAtLeast70Percent": true,
+      "overallServedHighValueBiasWithin10Percent": false,
+      "overallWapeAtMost60Percent": false,
+      "pairedBootstrapUpper95BelowZero": true,
+      "standardizedWidthRegressAtMost10Percent": true,
+      "top10ImprovesAtLeast5Percent": false,
+      "top1Top5RegressAtMost5Percent": false
+    },
+    "horizonWapeRelativeImprovementVsB4": {
+      "12": 0.30040408,
+      "18": 0.28230436,
+      "24": 0.32024371,
+      "3": 0.26207719,
+      "6": 0.27618139
+    },
+    "originWapeRelativeImprovementVsB4": {
+      "2020-12": 0.3183337,
+      "2021-06": 0.26852705,
+      "2021-12": 0.23684693,
+      "2022-06": 0.36790965,
+      "2022-12": 0.35153182
+    },
+    "thresholdsChangedAfterResults": false,
+    "topBandWapeRelativeImprovementVsB4": {
+      "top1": -0.23410794,
+      "top10": -0.09892658,
+      "top5": -0.15865974
+    }
+  },
+  "allStructuralValidationPassed": true,
+  "authority": {
+    "expectedCaseCount": 18615,
+    "incomeFactCount": 192872,
+    "inputFingerprintMatchesPhaseA": true,
+    "inputFingerprintPresent": true,
+    "scoreableCaseCount": 12223,
+    "standardWorkCount": 3053
+  },
+  "channelReconciliation": {
+    "aggregateMatchedChannelSignedBias": 1.15343046,
+    "aggregateMatchedChannelWape": 1.54011356,
+    "allWorkForecastsStrictlyReconciled": true,
+    "channelConcentrationMeanLargestShare": 0.90557316,
+    "decisionStatus": "not_for_formal_decision",
+    "deidentifiedPerChannelSignedBiasDistribution": {
+      "deidentifiedChannelCount": 49,
+      "p10": -0.64106177,
+      "p50": 0.75805526,
+      "p90": 15.0218748,
+      "suppressed": false
+    },
+    "finalHoldoutOpened": false,
+    "knownComponentTruthIsAReconciliationAuditNotACompletenessClaim": true,
+    "knownTruthWithoutPredictedComponentCount": 2615,
+    "matchedChannelActualRevenueShareOfScoreableWorkActual": 0.83244783,
+    "matchedComponentMetricsByRoute": {
+      "buyout_plus_sales": {
+        "aggregateMatchedChannelSignedBias": null,
+        "aggregateMatchedChannelWape": null,
+        "matchedComponentCaseCount": null,
+        "suppressed": true,
+        "suppressionReason": "complementary_suppression"
+      },
+      "pure_buyout": {
+        "aggregateMatchedChannelSignedBias": 271.25731844,
+        "aggregateMatchedChannelWape": 272.97795336,
+        "matchedComponentCaseCount": 4567,
+        "suppressed": false
+      },
+      "pure_sales_share": {
+        "aggregateMatchedChannelSignedBias": 0.36168429,
+        "aggregateMatchedChannelWape": 0.74685138,
+        "matchedComponentCaseCount": 14998,
+        "suppressed": false
+      },
+      "unknown_revenue_model": {
+        "aggregateMatchedChannelSignedBias": null,
+        "aggregateMatchedChannelWape": null,
+        "matchedComponentCaseCount": null,
+        "suppressed": true,
+        "suppressionReason": "primary_small_cell"
+      }
+    },
+    "maximumChannelSumToWorkAbsoluteDifference": 0.0,
+    "maximumKnownComponentActualToWorkActualDifference": 602867.4278,
+    "perOriginChannelAudit": {
+      "2020-12": {
+        "aggregateMatchedChannelSignedBias": 1.79989274,
+        "aggregateMatchedChannelWape": 2.72220231,
+        "allWorkForecastsStrictlyReconciled": true,
+        "channelComponentCount": 4235,
+        "matchedComponentCaseCount": 4235,
+        "maximumChannelSumToWorkAbsoluteDifference": 0.0,
+        "seasonalNaive12FallbackChannelComponentCount": 1285,
+        "shortHistoryFallbackChannelComponentCount": 980,
+        "smallPositiveCountsSuppressed": false,
+        "suppressed": false
+      },
+      "2021-06": {
+        "aggregateMatchedChannelSignedBias": 2.35945629,
+        "aggregateMatchedChannelWape": 2.75365955,
+        "allWorkForecastsStrictlyReconciled": true,
+        "channelComponentCount": 6290,
+        "matchedComponentCaseCount": 6290,
+        "maximumChannelSumToWorkAbsoluteDifference": 0.0,
+        "seasonalNaive12FallbackChannelComponentCount": 2070,
+        "shortHistoryFallbackChannelComponentCount": 535,
+        "smallPositiveCountsSuppressed": false,
+        "suppressed": false
+      },
+      "2021-12": {
+        "aggregateMatchedChannelSignedBias": 0.7803104,
+        "aggregateMatchedChannelWape": 1.10101398,
+        "allWorkForecastsStrictlyReconciled": true,
+        "channelComponentCount": 7624,
+        "matchedComponentCaseCount": 7624,
+        "maximumChannelSumToWorkAbsoluteDifference": 0.0,
+        "seasonalNaive12FallbackChannelComponentCount": 1912,
+        "shortHistoryFallbackChannelComponentCount": 1048,
+        "smallPositiveCountsSuppressed": false,
+        "suppressed": false
+      },
+      "2022-06": {
+        "aggregateMatchedChannelSignedBias": 0.65247739,
+        "aggregateMatchedChannelWape": 0.78829186,
+        "allWorkForecastsStrictlyReconciled": true,
+        "channelComponentCount": 6831,
+        "matchedComponentCaseCount": 6831,
+        "maximumChannelSumToWorkAbsoluteDifference": 0.0,
+        "seasonalNaive12FallbackChannelComponentCount": 1395,
+        "shortHistoryFallbackChannelComponentCount": 516,
+        "smallPositiveCountsSuppressed": false,
+        "suppressed": false
+      },
+      "2022-12": {
+        "aggregateMatchedChannelSignedBias": 0.50486414,
+        "aggregateMatchedChannelWape": 0.7868228,
+        "allWorkForecastsStrictlyReconciled": true,
+        "channelComponentCount": 6106,
+        "matchedComponentCaseCount": 6106,
+        "maximumChannelSumToWorkAbsoluteDifference": 0.0,
+        "seasonalNaive12FallbackChannelComponentCount": 1478,
+        "shortHistoryFallbackChannelComponentCount": 742,
+        "smallPositiveCountsSuppressed": false,
+        "suppressed": false
+      }
+    },
+    "predictedComponentWithoutMatchedTruthCount": 0,
+    "schema": "m2.c2r_channel_reconciliation.v1",
+    "scoreableChannelComponentCaseCount": 31086,
+    "trueChannelNamesPresent": false
+  },
+  "contractBinding": {
+    "C2RSpecDigest": "beb1d74811a4cae8e4c3c1fc5b83d9c34f589a3bd3c762db5d80004f17ae407b",
+    "candidateCount": 38,
+    "designCheckpoint": "b495fa1c63f3d45b94eadf063577819ee0f47430",
+    "primaryComparator": "B4",
+    "thresholdsChangedAfterResults": false
+  },
+  "coverage": {
+    "abstention": {
+      "abstainedCaseCount": null,
+      "abstainedUniqueWorkCount": "<10",
+      "abstentionReasonDistribution": null,
+      "scoreableCaseCount": 12223,
+      "servedActualRevenueShareOfScoreableCases": null,
+      "servedCaseCount": null,
+      "servedPredictionNullOnEveryAbstention": true,
+      "suppressed": true,
+      "suppressionReason": "small_abstention_and_complement_protection",
+      "zeroImputationUsed": false
+    },
+    "fullLibraryWorkDenominator": 3053,
+    "highValueUnscoreableFallbackDetailPubliclySuppressed": true,
+    "scoreableFullLibraryRevenueCoverageReference": 0.73232909,
+    "scoreableWorkCount": 1044,
+    "scoreableWorksShareOf3053": 0.34195873,
+    "servedCoverageComplementarilySuppressed": true,
+    "servedWorkAndRevenueCoverage": null,
+    "topBandCoverage": {
+      "top1": {
+        "fullLibraryWorkCount": 31,
+        "scoreableRevenueCoverage": 0.80278003,
+        "servedRevenueCoverage": null
+      },
+      "top10": {
+        "fullLibraryWorkCount": 306,
+        "scoreableRevenueCoverage": 0.74260518,
+        "servedRevenueCoverage": null
+      },
+      "top5": {
+        "fullLibraryWorkCount": 153,
+        "scoreableRevenueCoverage": 0.75638306,
+        "servedRevenueCoverage": null
+      }
+    },
+    "unscoreableForwardUsesFrozenPopulationPolicy": true,
+    "unscoreableWorkCount": 2009
+  },
+  "decisionStatus": "not_for_formal_decision",
+  "foldParameterEvidence": {
+    "2020-12": {
+      "passes": 2,
+      "trainingBlockCount": 9,
+      "trainingCaseCount": 589,
+      "trainingMaximumBillMonth": "2020-12",
+      "trainingMaximumLabelAvailableAsOf": "2020-12",
+      "trainingMaximumSourceAvailableAsOf": "2020-12",
+      "trainingMaximumTargetEnd": "2020-12",
+      "trainingOriginCount": 3
+    },
+    "2021-06": {
+      "passes": 3,
+      "trainingBlockCount": 14,
+      "trainingCaseCount": 1100,
+      "trainingMaximumBillMonth": "2021-06",
+      "trainingMaximumLabelAvailableAsOf": "2021-06",
+      "trainingMaximumSourceAvailableAsOf": "2021-06",
+      "trainingMaximumTargetEnd": "2021-06",
+      "trainingOriginCount": 4
+    },
+    "2021-12": {
+      "passes": 3,
+      "trainingBlockCount": 19,
+      "trainingCaseCount": 2030,
+      "trainingMaximumBillMonth": "2021-12",
+      "trainingMaximumLabelAvailableAsOf": "2021-12",
+      "trainingMaximumSourceAvailableAsOf": "2021-12",
+      "trainingMaximumTargetEnd": "2021-12",
+      "trainingOriginCount": 5
+    },
+    "2022-06": {
+      "passes": 3,
+      "trainingBlockCount": 24,
+      "trainingCaseCount": 3580,
+      "trainingMaximumBillMonth": "2022-06",
+      "trainingMaximumLabelAvailableAsOf": "2022-06",
+      "trainingMaximumSourceAvailableAsOf": "2022-06",
+      "trainingMaximumTargetEnd": "2022-06",
+      "trainingOriginCount": 6
+    },
+    "2022-12": {
+      "passes": 2,
+      "trainingBlockCount": 29,
+      "trainingCaseCount": 5725,
+      "trainingMaximumBillMonth": "2022-12",
+      "trainingMaximumLabelAvailableAsOf": "2022-12",
+      "trainingMaximumSourceAvailableAsOf": "2022-12",
+      "trainingMaximumTargetEnd": "2022-12",
+      "trainingOriginCount": 7
+    }
+  },
+  "formalDecisionAuthorized": false,
+  "generatedAt": "2026-07-15T09:09:57.445565+00:00",
+  "internalIntervalProtocol": {
+    "allAvailableIntervalsMeetMinimum": true,
+    "allowedCalibrationGroups": [
+      "global",
+      "route_x_horizon"
+    ],
+    "availableOnAllScoreable": true,
+    "calibrationGroupDistribution": {
+      "global": 608,
+      "route_x_horizon": 11615
+    },
+    "candidateOwnResidualsOnly": true,
+    "configuredMinimumCalibrationCount": 20,
+    "observedMinimumCalibrationCount": 27,
+    "publicEndpointsAbsent": true,
+    "residualModelId": "C2-R",
+    "routeHorizonThenGlobalFallback": true,
+    "strictlyEarlierOriginAndAvailableLabelFilter": true
+  },
+  "issueAndProductBoundary": {
+    "P0": 0,
+    "P1": 0,
+    "P2": 0,
+    "P2FactReviewPromptsOnly": true,
+    "automaticOperatingActionFieldCount": 0,
+    "publicOutputFieldsExact": true,
+    "publicPredictionIntervalEndpointsAbsent": true,
+    "singlePointForecastOnly": true
+  },
+  "metrics": {
+    "B0b": {
+      "abstention": {
+        "abstainedCaseCount": null,
+        "abstainedUniqueWorkCount": "<10",
+        "abstentionReasonDistribution": null,
+        "scoreableCaseCount": 12223,
+        "servedActualRevenueShareOfScoreableCases": null,
+        "servedCaseCount": null,
+        "servedPredictionNullOnEveryAbstention": true,
+        "suppressed": true,
+        "suppressionReason": "small_abstention_and_complement_protection",
+        "zeroImputationUsed": false
+      },
+      "allScoreable": {
+        "caseCount": 12223,
+        "mae": 11173.14581891,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 1.10236988,
+        "smape": 1.24218451,
+        "uniqueWorkCount": 1044,
+        "wape": 1.69963357,
+        "zeroImputationUsed": false
+      },
+      "highValueAllScoreable": {
+        "caseCount": 888,
+        "mae": 39481.22498627,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 0.08394758,
+        "smape": 0.72753547,
+        "uniqueWorkCount": 118,
+        "wape": 0.55459358,
+        "zeroImputationUsed": false
+      },
+      "highValueServed": {
+        "caseCount": null,
+        "mae": null,
+        "nullPredictionCount": null,
+        "signedAggregateBias": null,
+        "smape": null,
+        "suppressed": true,
+        "suppressionReason": "served_metric_complement_of_small_abstention_cell",
+        "uniqueWorkCount": null,
+        "wape": null,
+        "zeroImputationUsed": false
+      },
+      "horizons": {
+        "12": {
+          "caseCount": 2530,
+          "mae": 13605.62109164,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.96442846,
+          "smape": 1.24667244,
+          "uniqueWorkCount": 871,
+          "wape": 1.50683646,
+          "zeroImputationUsed": false
+        },
+        "18": {
+          "caseCount": 1659,
+          "mae": 22173.8694749,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 1.28080848,
+          "smape": 1.29481599,
+          "uniqueWorkCount": 773,
+          "wape": 1.87986271,
+          "zeroImputationUsed": false
+        },
+        "24": {
+          "caseCount": 886,
+          "mae": 33460.26624426,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 1.93263667,
+          "smape": 1.31198844,
+          "uniqueWorkCount": 528,
+          "wape": 2.73753111,
+          "zeroImputationUsed": false
+        },
+        "3": {
+          "caseCount": 3574,
+          "mae": 3238.33712661,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.81600335,
+          "smape": 1.21127642,
+          "uniqueWorkCount": 1044,
+          "wape": 1.32285783,
+          "zeroImputationUsed": false
+        },
+        "6": {
+          "caseCount": 3574,
+          "mae": 6754.6384278,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.73056058,
+          "smape": 1.22818036,
+          "uniqueWorkCount": 1044,
+          "wape": 1.31480023,
+          "zeroImputationUsed": false
+        }
+      },
+      "internal80": {
+        "availableCaseCount": 12223,
+        "completeOnAllScoreablePopulation": true,
+        "endpointsPresentInPublicReport": false,
+        "internal80Coverage": 0.83784668,
+        "meanWis": 9552.54322208,
+        "requiredCaseCount": 12223,
+        "standardizedWidth": 2.27479479
+      },
+      "origins": {
+        "2020-12": {
+          "caseCount": 1790,
+          "mae": 21101.46498658,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 2.14354066,
+          "smape": 1.49025464,
+          "uniqueWorkCount": 358,
+          "wape": 2.84372127,
+          "zeroImputationUsed": false
+        },
+        "2021-06": {
+          "caseCount": 2640,
+          "mae": 15784.36528992,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 1.34647054,
+          "smape": 1.24304292,
+          "uniqueWorkCount": 528,
+          "wape": 2.34974891,
+          "zeroImputationUsed": false
+        },
+        "2021-12": {
+          "caseCount": 3092,
+          "mae": 10228.97437153,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.77307004,
+          "smape": 1.25724059,
+          "uniqueWorkCount": 773,
+          "wape": 1.24354474,
+          "zeroImputationUsed": false
+        },
+        "2022-06": {
+          "caseCount": 2613,
+          "mae": 6528.62635228,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.73502471,
+          "smape": 1.13546265,
+          "uniqueWorkCount": 871,
+          "wape": 1.11850707,
+          "zeroImputationUsed": false
+        },
+        "2022-12": {
+          "caseCount": 2088,
+          "mae": 4042.01400283,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.6190715,
+          "smape": 1.13969366,
+          "uniqueWorkCount": 1044,
+          "wape": 0.97568264,
+          "zeroImputationUsed": false
+        }
+      },
+      "served": {
+        "caseCount": null,
+        "mae": null,
+        "nullPredictionCount": null,
+        "signedAggregateBias": null,
+        "smape": null,
+        "suppressed": true,
+        "suppressionReason": "served_metric_complement_of_small_abstention_cell",
+        "uniqueWorkCount": null,
+        "wape": null,
+        "zeroImputationUsed": false
+      },
+      "slices": {
+        "dense": {
+          "False": {
+            "caseCount": 8366,
+            "mae": 11295.32286333,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 21.94636187,
+            "smape": 1.44024712,
+            "suppressed": false,
+            "uniqueWorkCount": 741,
+            "wape": 23.50517952,
+            "zeroImputationUsed": false
+          },
+          "True": {
+            "caseCount": 3857,
+            "mae": 10908.13851956,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.00462516,
+            "smape": 0.81257813,
+            "suppressed": false,
+            "uniqueWorkCount": 470,
+            "wape": 0.55118032,
+            "zeroImputationUsed": false
+          }
+        },
+        "dormant": {
+          "False": {
+            "caseCount": 7032,
+            "mae": 6410.8786821,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.01873321,
+            "smape": 0.92435572,
+            "suppressed": false,
+            "uniqueWorkCount": 787,
+            "wape": 0.57986735,
+            "zeroImputationUsed": false
+          },
+          "True": {
+            "caseCount": 5191,
+            "mae": 17624.36186708,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 33.40404201,
+            "smape": 1.67273202,
+            "suppressed": false,
+            "uniqueWorkCount": 343,
+            "wape": 35.07869546,
+            "zeroImputationUsed": false
+          }
+        },
+        "lifecycle": {
+          "unknown": {
+            "caseCount": 12223,
+            "mae": 11173.14581891,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 1.10236988,
+            "smape": 1.24218451,
+            "suppressed": false,
+            "uniqueWorkCount": 1044,
+            "wape": 1.69963357,
+            "zeroImputationUsed": false
+          }
+        },
+        "longTail": {
+          "False": {
+            "caseCount": 9327,
+            "mae": 14523.87981789,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 1.12782581,
+            "smape": 1.31455652,
+            "suppressed": false,
+            "uniqueWorkCount": 805,
+            "wape": 1.7133008,
+            "zeroImputationUsed": false
+          },
+          "True": {
+            "caseCount": 2896,
+            "mae": 381.60714196,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": -0.46302595,
+            "smape": 1.00909968,
+            "suppressed": false,
+            "uniqueWorkCount": 421,
+            "wape": 0.85934934,
+            "zeroImputationUsed": false
+          }
+        },
+        "revenueModel": {
+          "buyout_plus_sales": {
+            "caseCount": null,
+            "suppressed": true,
+            "suppressionReason": "complementary_suppression",
+            "uniqueWorkCount": null
+          },
+          "pure_buyout": {
+            "caseCount": 4358,
+            "mae": 20559.02866623,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 124.27278581,
+            "smape": 1.95574848,
+            "suppressed": false,
+            "uniqueWorkCount": 267,
+            "wape": 125.0881265,
+            "zeroImputationUsed": false
+          },
+          "pure_sales_share": {
+            "caseCount": 5683,
+            "mae": 3962.66077888,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.02512845,
+            "smape": 0.82459503,
+            "suppressed": false,
+            "uniqueWorkCount": 643,
+            "wape": 0.49746499,
+            "zeroImputationUsed": false
+          },
+          "unknown_revenue_model": {
+            "caseCount": null,
+            "suppressed": true,
+            "suppressionReason": "primary_small_cell",
+            "uniqueWorkCount": null
+          }
+        },
+        "shelfRightsPostHoc": {
+          "已上架|无限期": {
+            "caseCount": 2113,
+            "mae": 3691.41299563,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.19569516,
+            "smape": 0.89994517,
+            "suppressed": false,
+            "uniqueWorkCount": 224,
+            "wape": 0.61463298,
+            "zeroImputationUsed": false
+          },
+          "已上架|版权已到期": {
+            "caseCount": 191,
+            "mae": 10383.42488188,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.40583136,
+            "smape": 0.82242876,
+            "suppressed": false,
+            "uniqueWorkCount": 29,
+            "wape": 1.16998211,
+            "zeroImputationUsed": false
+          },
+          "已上架|版权有效": {
+            "caseCount": 2874,
+            "mae": 12984.14501285,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.05905782,
+            "smape": 0.86810658,
+            "suppressed": false,
+            "uniqueWorkCount": 283,
+            "wape": 0.64664455,
+            "zeroImputationUsed": false
+          },
+          "已下架|无限期": {
+            "caseCount": 887,
+            "mae": 11429.60854055,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 159.44290864,
+            "smape": 1.68683589,
+            "suppressed": false,
+            "uniqueWorkCount": 78,
+            "wape": 159.987995,
+            "zeroImputationUsed": false
+          },
+          "已下架|版权已到期": {
+            "caseCount": 2112,
+            "mae": 5589.4317533,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.76299301,
+            "smape": 1.36126877,
+            "suppressed": false,
+            "uniqueWorkCount": 169,
+            "wape": 1.72814033,
+            "zeroImputationUsed": false
+          },
+          "已下架|版权有效": {
+            "caseCount": 4046,
+            "mae": 16689.76671453,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 48.87600186,
+            "smape": 1.54680966,
+            "suppressed": false,
+            "uniqueWorkCount": 261,
+            "wape": 49.48562845,
+            "zeroImputationUsed": false
+          }
+        },
+        "sourcePostHoc": {
+          "出版物": {
+            "caseCount": 5015,
+            "mae": 9900.01179648,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.18739841,
+            "smape": 0.93792115,
+            "suppressed": false,
+            "uniqueWorkCount": 514,
+            "wape": 0.79381602,
+            "zeroImputationUsed": false
+          },
+          "网文": {
+            "caseCount": 7208,
+            "mae": 12058.93482037,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 4.31587077,
+            "smape": 1.45387718,
+            "suppressed": false,
+            "uniqueWorkCount": 530,
+            "wape": 4.88097718,
+            "zeroImputationUsed": false
+          }
+        },
+        "sparseIncome": {
+          "False": {
+            "caseCount": 11944,
+            "mae": 11274.77285709,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 1.08292966,
+            "smape": 1.23406048,
+            "suppressed": false,
+            "uniqueWorkCount": 1039,
+            "wape": 1.67857987,
+            "zeroImputationUsed": false
+          },
+          "True": {
+            "caseCount": 279,
+            "mae": 6822.48867181,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 13.46484135,
+            "smape": 1.5899744,
+            "suppressed": false,
+            "uniqueWorkCount": 70,
+            "wape": 15.08831859,
+            "zeroImputationUsed": false
+          }
+        }
+      },
+      "topBands": {
+        "top1": {
+          "caseCount": 93,
+          "mae": 131015.27414084,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.10262511,
+          "smape": 0.82617709,
+          "uniqueWorkCount": 18,
+          "wape": 0.42876429,
+          "zeroImputationUsed": false
+        },
+        "top10": {
+          "caseCount": 888,
+          "mae": 39481.22498627,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.08394758,
+          "smape": 0.72753547,
+          "uniqueWorkCount": 118,
+          "wape": 0.55459358,
+          "zeroImputationUsed": false
+        },
+        "top5": {
+          "caseCount": 472,
+          "mae": 59140.80611039,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.09526129,
+          "smape": 0.68497131,
+          "uniqueWorkCount": 59,
+          "wape": 0.51010249,
+          "zeroImputationUsed": false
+        }
+      }
+    },
+    "B1": {
+      "abstention": {
+        "abstainedCaseCount": null,
+        "abstainedUniqueWorkCount": "<10",
+        "abstentionReasonDistribution": null,
+        "scoreableCaseCount": 12223,
+        "servedActualRevenueShareOfScoreableCases": null,
+        "servedCaseCount": null,
+        "servedPredictionNullOnEveryAbstention": true,
+        "suppressed": true,
+        "suppressionReason": "small_abstention_and_complement_protection",
+        "zeroImputationUsed": false
+      },
+      "allScoreable": {
+        "caseCount": 12223,
+        "mae": 12504.53231327,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 1.47943848,
+        "smape": 1.27620019,
+        "uniqueWorkCount": 1044,
+        "wape": 1.90216107,
+        "zeroImputationUsed": false
+      },
+      "highValueAllScoreable": {
+        "caseCount": 888,
+        "mae": 57144.0874076,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 0.5104041,
+        "smape": 0.76255464,
+        "uniqueWorkCount": 118,
+        "wape": 0.80270418,
+        "zeroImputationUsed": false
+      },
+      "highValueServed": {
+        "caseCount": null,
+        "mae": null,
+        "nullPredictionCount": null,
+        "signedAggregateBias": null,
+        "smape": null,
+        "suppressed": true,
+        "suppressionReason": "served_metric_complement_of_small_abstention_cell",
+        "uniqueWorkCount": null,
+        "wape": null,
+        "zeroImputationUsed": false
+      },
+      "horizons": {
+        "12": {
+          "caseCount": 2530,
+          "mae": 14737.92971005,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 1.25829026,
+          "smape": 1.2792212,
+          "uniqueWorkCount": 871,
+          "wape": 1.6322408,
+          "zeroImputationUsed": false
+        },
+        "18": {
+          "caseCount": 1659,
+          "mae": 24927.17072615,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 1.70909512,
+          "smape": 1.31969918,
+          "uniqueWorkCount": 773,
+          "wape": 2.11328288,
+          "zeroImputationUsed": false
+        },
+        "24": {
+          "caseCount": 886,
+          "mae": 40811.59144574,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 2.74556369,
+          "smape": 1.34340008,
+          "uniqueWorkCount": 528,
+          "wape": 3.33897526,
+          "zeroImputationUsed": false
+        },
+        "3": {
+          "caseCount": 3574,
+          "mae": 3480.2376517,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 1.05986784,
+          "smape": 1.26086343,
+          "uniqueWorkCount": 1044,
+          "wape": 1.42167398,
+          "zeroImputationUsed": false
+        },
+        "6": {
+          "caseCount": 3574,
+          "mae": 7164.05167204,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.96295936,
+          "smape": 1.25254785,
+          "uniqueWorkCount": 1044,
+          "wape": 1.39449311,
+          "zeroImputationUsed": false
+        }
+      },
+      "internal80": {
+        "availableCaseCount": 12223,
+        "completeOnAllScoreablePopulation": true,
+        "endpointsPresentInPublicReport": false,
+        "internal80Coverage": 0.83596498,
+        "meanWis": 10797.92250709,
+        "requiredCaseCount": 12223,
+        "standardizedWidth": 2.38012906
+      },
+      "origins": {
+        "2020-12": {
+          "caseCount": 1790,
+          "mae": 29505.81620392,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 3.51782738,
+          "smape": 1.50338659,
+          "uniqueWorkCount": 358,
+          "wape": 3.97632663,
+          "zeroImputationUsed": false
+        },
+        "2021-06": {
+          "caseCount": 2640,
+          "mae": 16198.50870786,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 1.62025072,
+          "smape": 1.27838848,
+          "uniqueWorkCount": 528,
+          "wape": 2.41140062,
+          "zeroImputationUsed": false
+        },
+        "2021-12": {
+          "caseCount": 3092,
+          "mae": 10092.0342701,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.92456666,
+          "smape": 1.26838537,
+          "uniqueWorkCount": 773,
+          "wape": 1.22689682,
+          "zeroImputationUsed": false
+        },
+        "2022-06": {
+          "caseCount": 2613,
+          "mae": 6503.41421299,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.86418651,
+          "smape": 1.20062561,
+          "uniqueWorkCount": 871,
+          "wape": 1.11418763,
+          "zeroImputationUsed": false
+        },
+        "2022-12": {
+          "caseCount": 2088,
+          "mae": 4341.68255251,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.77696859,
+          "smape": 1.18482045,
+          "uniqueWorkCount": 1044,
+          "wape": 1.04801822,
+          "zeroImputationUsed": false
+        }
+      },
+      "served": {
+        "caseCount": null,
+        "mae": null,
+        "nullPredictionCount": null,
+        "signedAggregateBias": null,
+        "smape": null,
+        "suppressed": true,
+        "suppressionReason": "served_metric_complement_of_small_abstention_cell",
+        "uniqueWorkCount": null,
+        "wape": null,
+        "zeroImputationUsed": false
+      },
+      "slices": {
+        "dense": {
+          "False": {
+            "caseCount": 8366,
+            "mae": 12728.86093768,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 24.9458313,
+            "smape": 1.46562459,
+            "suppressed": false,
+            "uniqueWorkCount": 741,
+            "wape": 26.48832309,
+            "zeroImputationUsed": false
+          },
+          "True": {
+            "caseCount": 3857,
+            "mae": 12017.95381396,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.24358554,
+            "smape": 0.86533048,
+            "suppressed": false,
+            "uniqueWorkCount": 470,
+            "wape": 0.60725848,
+            "zeroImputationUsed": false
+          }
+        },
+        "dormant": {
+          "False": {
+            "caseCount": 7032,
+            "mae": 8724.76488569,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.40840915,
+            "smape": 0.9655684,
+            "suppressed": false,
+            "uniqueWorkCount": 787,
+            "wape": 0.78915958,
+            "zeroImputationUsed": false
+          },
+          "True": {
+            "caseCount": 5191,
+            "mae": 17624.80288749,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 33.40530361,
+            "smape": 1.69699826,
+            "suppressed": false,
+            "uniqueWorkCount": 343,
+            "wape": 35.07957324,
+            "zeroImputationUsed": false
+          }
+        },
+        "lifecycle": {
+          "unknown": {
+            "caseCount": 12223,
+            "mae": 12504.53231327,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 1.47943848,
+            "smape": 1.27620019,
+            "suppressed": false,
+            "uniqueWorkCount": 1044,
+            "wape": 1.90216107,
+            "zeroImputationUsed": false
+          }
+        },
+        "longTail": {
+          "False": {
+            "caseCount": 9327,
+            "mae": 16261.79402116,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 1.50920055,
+            "smape": 1.35188274,
+            "suppressed": false,
+            "uniqueWorkCount": 805,
+            "wape": 1.91831282,
+            "zeroImputationUsed": false
+          },
+          "True": {
+            "caseCount": 2896,
+            "mae": 403.71050751,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": -0.35076085,
+            "smape": 1.03245324,
+            "suppressed": false,
+            "uniqueWorkCount": 421,
+            "wape": 0.90912439,
+            "zeroImputationUsed": false
+          }
+        },
+        "revenueModel": {
+          "buyout_plus_sales": {
+            "caseCount": null,
+            "suppressed": true,
+            "suppressionReason": "complementary_suppression",
+            "uniqueWorkCount": null
+          },
+          "pure_buyout": {
+            "caseCount": 4358,
+            "mae": 20559.02866623,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 124.27278581,
+            "smape": 1.95574848,
+            "suppressed": false,
+            "uniqueWorkCount": 267,
+            "wape": 125.0881265,
+            "zeroImputationUsed": false
+          },
+          "pure_sales_share": {
+            "caseCount": 5683,
+            "mae": 4741.38605683,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.29138286,
+            "smape": 0.88661354,
+            "suppressed": false,
+            "uniqueWorkCount": 643,
+            "wape": 0.5952247,
+            "zeroImputationUsed": false
+          },
+          "unknown_revenue_model": {
+            "caseCount": null,
+            "suppressed": true,
+            "suppressionReason": "primary_small_cell",
+            "uniqueWorkCount": null
+          }
+        },
+        "shelfRightsPostHoc": {
+          "已上架|无限期": {
+            "caseCount": 2113,
+            "mae": 4609.42792378,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.56654845,
+            "smape": 0.9412125,
+            "suppressed": false,
+            "uniqueWorkCount": 224,
+            "wape": 0.76748563,
+            "zeroImputationUsed": false
+          },
+          "已上架|版权已到期": {
+            "caseCount": 191,
+            "mae": 11735.66553285,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.64135054,
+            "smape": 0.92459046,
+            "suppressed": false,
+            "uniqueWorkCount": 29,
+            "wape": 1.3223497,
+            "zeroImputationUsed": false
+          },
+          "已上架|版权有效": {
+            "caseCount": 2874,
+            "mae": 13542.09407881,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.27048986,
+            "smape": 0.90297315,
+            "suppressed": false,
+            "uniqueWorkCount": 283,
+            "wape": 0.67443188,
+            "zeroImputationUsed": false
+          },
+          "已下架|无限期": {
+            "caseCount": 887,
+            "mae": 11486.47474616,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 160.24002123,
+            "smape": 1.68018514,
+            "suppressed": false,
+            "uniqueWorkCount": 78,
+            "wape": 160.78398991,
+            "zeroImputationUsed": false
+          },
+          "已下架|版权已到期": {
+            "caseCount": 2112,
+            "mae": 5727.02107071,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.86767511,
+            "smape": 1.38852343,
+            "suppressed": false,
+            "uniqueWorkCount": 169,
+            "wape": 1.77068019,
+            "zeroImputationUsed": false
+          },
+          "已下架|版权有效": {
+            "caseCount": 4046,
+            "mae": 19688.01659953,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 57.83710371,
+            "smape": 1.5856613,
+            "suppressed": false,
+            "uniqueWorkCount": 261,
+            "wape": 58.37552381,
+            "zeroImputationUsed": false
+          }
+        },
+        "sourcePostHoc": {
+          "出版物": {
+            "caseCount": 5015,
+            "mae": 10414.40069359,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.40901742,
+            "smape": 0.96340801,
+            "suppressed": false,
+            "uniqueWorkCount": 514,
+            "wape": 0.83506144,
+            "zeroImputationUsed": false
+          },
+          "网文": {
+            "caseCount": 7208,
+            "mae": 13958.75124678,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 5.23889892,
+            "smape": 1.49382683,
+            "suppressed": false,
+            "uniqueWorkCount": 530,
+            "wape": 5.6499473,
+            "zeroImputationUsed": false
+          }
+        },
+        "sparseIncome": {
+          "False": {
+            "caseCount": 11944,
+            "mae": 11638.70941721,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 1.31213207,
+            "smape": 1.26730427,
+            "suppressed": false,
+            "uniqueWorkCount": 1039,
+            "wape": 1.73276248,
+            "zeroImputationUsed": false
+          },
+          "True": {
+            "caseCount": 279,
+            "mae": 49570.4415267,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 107.87333291,
+            "smape": 1.65703481,
+            "suppressed": false,
+            "uniqueWorkCount": 70,
+            "wape": 109.62782795,
+            "zeroImputationUsed": false
+          }
+        }
+      },
+      "topBands": {
+        "top1": {
+          "caseCount": 93,
+          "mae": 274013.20983145,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.7431526,
+          "smape": 0.8464546,
+          "uniqueWorkCount": 18,
+          "wape": 0.89674337,
+          "zeroImputationUsed": false
+        },
+        "top10": {
+          "caseCount": 888,
+          "mae": 57144.0874076,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.5104041,
+          "smape": 0.76255464,
+          "uniqueWorkCount": 118,
+          "wape": 0.80270418,
+          "zeroImputationUsed": false
+        },
+        "top5": {
+          "caseCount": 472,
+          "mae": 92031.46746838,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.54677429,
+          "smape": 0.71373562,
+          "uniqueWorkCount": 59,
+          "wape": 0.79379169,
+          "zeroImputationUsed": false
+        }
+      }
+    },
+    "B3": {
+      "abstention": {
+        "abstainedCaseCount": null,
+        "abstainedUniqueWorkCount": "<10",
+        "abstentionReasonDistribution": null,
+        "scoreableCaseCount": 12223,
+        "servedActualRevenueShareOfScoreableCases": null,
+        "servedCaseCount": null,
+        "servedPredictionNullOnEveryAbstention": true,
+        "suppressed": true,
+        "suppressionReason": "small_abstention_and_complement_protection",
+        "zeroImputationUsed": false
+      },
+      "allScoreable": {
+        "caseCount": 12223,
+        "mae": 11172.07058775,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 1.23477116,
+        "smape": 1.25007074,
+        "uniqueWorkCount": 1044,
+        "wape": 1.69947001,
+        "zeroImputationUsed": false
+      },
+      "highValueAllScoreable": {
+        "caseCount": 888,
+        "mae": 37842.60661052,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 0.20052486,
+        "smape": 0.71275087,
+        "uniqueWorkCount": 118,
+        "wape": 0.53157588,
+        "zeroImputationUsed": false
+      },
+      "highValueServed": {
+        "caseCount": null,
+        "mae": null,
+        "nullPredictionCount": null,
+        "signedAggregateBias": null,
+        "smape": null,
+        "suppressed": true,
+        "suppressionReason": "served_metric_complement_of_small_abstention_cell",
+        "uniqueWorkCount": null,
+        "wape": null,
+        "zeroImputationUsed": false
+      },
+      "horizons": {
+        "12": {
+          "caseCount": 2530,
+          "mae": 13524.59811073,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 1.08446511,
+          "smape": 1.26057981,
+          "uniqueWorkCount": 871,
+          "wape": 1.49786308,
+          "zeroImputationUsed": false
+        },
+        "18": {
+          "caseCount": 1659,
+          "mae": 21958.51172113,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 1.41129084,
+          "smape": 1.29979917,
+          "uniqueWorkCount": 773,
+          "wape": 1.86160505,
+          "zeroImputationUsed": false
+        },
+        "24": {
+          "caseCount": 886,
+          "mae": 34713.14971045,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 2.15699492,
+          "smape": 1.30519868,
+          "uniqueWorkCount": 528,
+          "wape": 2.840035,
+          "zeroImputationUsed": false
+        },
+        "3": {
+          "caseCount": 3574,
+          "mae": 3206.58518669,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.92700688,
+          "smape": 1.23002384,
+          "uniqueWorkCount": 1044,
+          "wape": 1.30988719,
+          "zeroImputationUsed": false
+        },
+        "6": {
+          "caseCount": 3574,
+          "mae": 6629.44278901,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.83634897,
+          "smape": 1.22592885,
+          "uniqueWorkCount": 1044,
+          "wape": 1.29043071,
+          "zeroImputationUsed": false
+        }
+      },
+      "internal80": {
+        "availableCaseCount": 12223,
+        "completeOnAllScoreablePopulation": true,
+        "endpointsPresentInPublicReport": false,
+        "internal80Coverage": 0.83743762,
+        "meanWis": 9572.66164771,
+        "requiredCaseCount": 12223,
+        "standardizedWidth": 2.21470747
+      },
+      "origins": {
+        "2020-12": {
+          "caseCount": 1790,
+          "mae": 22199.21678675,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 2.39630394,
+          "smape": 1.45856642,
+          "uniqueWorkCount": 358,
+          "wape": 2.99165887,
+          "zeroImputationUsed": false
+        },
+        "2021-06": {
+          "caseCount": 2640,
+          "mae": 15890.40324138,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 1.51679247,
+          "smape": 1.25292996,
+          "uniqueWorkCount": 528,
+          "wape": 2.36553432,
+          "zeroImputationUsed": false
+        },
+        "2021-12": {
+          "caseCount": 3092,
+          "mae": 9460.64477209,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.8353521,
+          "smape": 1.265081,
+          "uniqueWorkCount": 773,
+          "wape": 1.15013828,
+          "zeroImputationUsed": false
+        },
+        "2022-06": {
+          "caseCount": 2613,
+          "mae": 6472.64943301,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.85434546,
+          "smape": 1.16918895,
+          "uniqueWorkCount": 871,
+          "wape": 1.1089169,
+          "zeroImputationUsed": false
+        },
+        "2022-12": {
+          "caseCount": 2088,
+          "mae": 4168.39539503,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.71814238,
+          "smape": 1.14670714,
+          "uniqueWorkCount": 1044,
+          "wape": 1.00618925,
+          "zeroImputationUsed": false
+        }
+      },
+      "served": {
+        "caseCount": null,
+        "mae": null,
+        "nullPredictionCount": null,
+        "signedAggregateBias": null,
+        "smape": null,
+        "suppressed": true,
+        "suppressionReason": "served_metric_complement_of_small_abstention_cell",
+        "uniqueWorkCount": null,
+        "wape": null,
+        "zeroImputationUsed": false
+      },
+      "slices": {
+        "dense": {
+          "False": {
+            "caseCount": 8366,
+            "mae": 11928.82155629,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 23.2429779,
+            "smape": 1.45060467,
+            "suppressed": false,
+            "uniqueWorkCount": 741,
+            "wape": 24.82346857,
+            "zeroImputationUsed": false
+          },
+          "True": {
+            "caseCount": 3857,
+            "mae": 9530.64497127,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.0757133,
+            "smape": 0.81510396,
+            "suppressed": false,
+            "uniqueWorkCount": 470,
+            "wape": 0.48157657,
+            "zeroImputationUsed": false
+          }
+        },
+        "dormant": {
+          "False": {
+            "caseCount": 7032,
+            "mae": 6409.00971872,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.1555762,
+            "smape": 0.93806354,
+            "suppressed": false,
+            "uniqueWorkCount": 787,
+            "wape": 0.57969831,
+            "zeroImputationUsed": false
+          },
+          "True": {
+            "caseCount": 5191,
+            "mae": 17624.36186708,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 33.40404201,
+            "smape": 1.67273202,
+            "suppressed": false,
+            "uniqueWorkCount": 343,
+            "wape": 35.07869546,
+            "zeroImputationUsed": false
+          }
+        },
+        "lifecycle": {
+          "unknown": {
+            "caseCount": 12223,
+            "mae": 11172.07058775,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 1.23477116,
+            "smape": 1.25007074,
+            "suppressed": false,
+            "uniqueWorkCount": 1044,
+            "wape": 1.69947001,
+            "zeroImputationUsed": false
+          }
+        },
+        "longTail": {
+          "False": {
+            "caseCount": 9327,
+            "mae": 14515.28710252,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 1.26237243,
+            "smape": 1.3200977,
+            "suppressed": false,
+            "uniqueWorkCount": 805,
+            "wape": 1.71228717,
+            "zeroImputationUsed": false
+          },
+          "True": {
+            "caseCount": 2896,
+            "mae": 404.74309008,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": -0.46255112,
+            "smape": 1.02453849,
+            "suppressed": false,
+            "uniqueWorkCount": 421,
+            "wape": 0.91144968,
+            "zeroImputationUsed": false
+          }
+        },
+        "revenueModel": {
+          "buyout_plus_sales": {
+            "caseCount": null,
+            "suppressed": true,
+            "suppressionReason": "complementary_suppression",
+            "uniqueWorkCount": null
+          },
+          "pure_buyout": {
+            "caseCount": 4358,
+            "mae": 20559.02866623,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 124.27278581,
+            "smape": 1.95574848,
+            "suppressed": false,
+            "uniqueWorkCount": 267,
+            "wape": 125.0881265,
+            "zeroImputationUsed": false
+          },
+          "pure_sales_share": {
+            "caseCount": 5683,
+            "mae": 4422.40251824,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.21901812,
+            "smape": 0.84789975,
+            "suppressed": false,
+            "uniqueWorkCount": 643,
+            "wape": 0.55518011,
+            "zeroImputationUsed": false
+          },
+          "unknown_revenue_model": {
+            "caseCount": null,
+            "suppressed": true,
+            "suppressionReason": "primary_small_cell",
+            "uniqueWorkCount": null
+          }
+        },
+        "shelfRightsPostHoc": {
+          "已上架|无限期": {
+            "caseCount": 2113,
+            "mae": 4094.64518868,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.40538943,
+            "smape": 0.91688315,
+            "suppressed": false,
+            "uniqueWorkCount": 224,
+            "wape": 0.68177253,
+            "zeroImputationUsed": false
+          },
+          "已上架|版权已到期": {
+            "caseCount": 191,
+            "mae": 8607.13049597,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.20621587,
+            "smape": 0.87930885,
+            "suppressed": false,
+            "uniqueWorkCount": 29,
+            "wape": 0.96983306,
+            "zeroImputationUsed": false
+          },
+          "已上架|版权有效": {
+            "caseCount": 2874,
+            "mae": 11389.00060947,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.13704015,
+            "smape": 0.86897795,
+            "suppressed": false,
+            "uniqueWorkCount": 283,
+            "wape": 0.56720217,
+            "zeroImputationUsed": false
+          },
+          "已下架|无限期": {
+            "caseCount": 887,
+            "mae": 11310.48057433,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 157.84751486,
+            "smape": 1.67135681,
+            "suppressed": false,
+            "uniqueWorkCount": 78,
+            "wape": 158.32047993,
+            "zeroImputationUsed": false
+          },
+          "已下架|版权已到期": {
+            "caseCount": 2112,
+            "mae": 5345.28688365,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.64943483,
+            "smape": 1.34739222,
+            "suppressed": false,
+            "uniqueWorkCount": 169,
+            "wape": 1.65265562,
+            "zeroImputationUsed": false
+          },
+          "已下架|版权有效": {
+            "caseCount": 4046,
+            "mae": 17846.42651171,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 52.31545728,
+            "smape": 1.56912113,
+            "suppressed": false,
+            "uniqueWorkCount": 261,
+            "wape": 52.91515733,
+            "zeroImputationUsed": false
+          }
+        },
+        "sourcePostHoc": {
+          "出版物": {
+            "caseCount": 5015,
+            "mae": 9341.04633692,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.28703108,
+            "smape": 0.92386655,
+            "suppressed": false,
+            "uniqueWorkCount": 514,
+            "wape": 0.7489963,
+            "zeroImputationUsed": false
+          },
+          "网文": {
+            "caseCount": 7208,
+            "mae": 12446.01434718,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 4.56335975,
+            "smape": 1.47702885,
+            "suppressed": false,
+            "uniqueWorkCount": 530,
+            "wape": 5.03765157,
+            "zeroImputationUsed": false
+          }
+        },
+        "sparseIncome": {
+          "False": {
+            "caseCount": 11944,
+            "mae": 10835.55727521,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 1.15057507,
+            "smape": 1.2386195,
+            "suppressed": false,
+            "uniqueWorkCount": 1039,
+            "wape": 1.61318978,
+            "zeroImputationUsed": false
+          },
+          "True": {
+            "caseCount": 279,
+            "mae": 25578.21755928,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 54.7769527,
+            "smape": 1.74029872,
+            "suppressed": false,
+            "uniqueWorkCount": 70,
+            "wape": 56.56767113,
+            "zeroImputationUsed": false
+          }
+        }
+      },
+      "topBands": {
+        "top1": {
+          "caseCount": 93,
+          "mae": 132133.12094976,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.27587225,
+          "smape": 0.77397346,
+          "uniqueWorkCount": 18,
+          "wape": 0.43242258,
+          "zeroImputationUsed": false
+        },
+        "top10": {
+          "caseCount": 888,
+          "mae": 37842.60661052,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.20052486,
+          "smape": 0.71275087,
+          "uniqueWorkCount": 118,
+          "wape": 0.53157588,
+          "zeroImputationUsed": false
+        },
+        "top5": {
+          "caseCount": 472,
+          "mae": 56877.09725794,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.20981042,
+          "smape": 0.6442687,
+          "uniqueWorkCount": 59,
+          "wape": 0.4905775,
+          "zeroImputationUsed": false
+        }
+      }
+    },
+    "B4": {
+      "abstention": {
+        "abstainedCaseCount": null,
+        "abstainedUniqueWorkCount": "<10",
+        "abstentionReasonDistribution": null,
+        "scoreableCaseCount": 12223,
+        "servedActualRevenueShareOfScoreableCases": null,
+        "servedCaseCount": null,
+        "servedPredictionNullOnEveryAbstention": true,
+        "suppressed": true,
+        "suppressionReason": "small_abstention_and_complement_protection",
+        "zeroImputationUsed": false
+      },
+      "allScoreable": {
+        "caseCount": 12223,
+        "mae": 10955.77472984,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 1.19610576,
+        "smape": 1.27124078,
+        "uniqueWorkCount": 1044,
+        "wape": 1.66656758,
+        "zeroImputationUsed": false
+      },
+      "highValueAllScoreable": {
+        "caseCount": 888,
+        "mae": 37121.66761174,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 0.18037025,
+        "smape": 0.70870122,
+        "uniqueWorkCount": 118,
+        "wape": 0.52144883,
+        "zeroImputationUsed": false
+      },
+      "highValueServed": {
+        "caseCount": null,
+        "mae": null,
+        "nullPredictionCount": null,
+        "signedAggregateBias": null,
+        "smape": null,
+        "suppressed": true,
+        "suppressionReason": "served_metric_complement_of_small_abstention_cell",
+        "uniqueWorkCount": null,
+        "wape": null,
+        "zeroImputationUsed": false
+      },
+      "horizons": {
+        "12": {
+          "caseCount": 2530,
+          "mae": 13470.73221399,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 1.07594766,
+          "smape": 1.27901957,
+          "uniqueWorkCount": 871,
+          "wape": 1.49189738,
+          "zeroImputationUsed": false
+        },
+        "18": {
+          "caseCount": 1659,
+          "mae": 21469.13636831,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 1.36481825,
+          "smape": 1.3087367,
+          "uniqueWorkCount": 773,
+          "wape": 1.82011664,
+          "zeroImputationUsed": false
+        },
+        "24": {
+          "caseCount": 886,
+          "mae": 32411.80589031,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 1.95190424,
+          "smape": 1.30365985,
+          "uniqueWorkCount": 528,
+          "wape": 2.65175197,
+          "zeroImputationUsed": false
+        },
+        "3": {
+          "caseCount": 3574,
+          "mae": 3246.44008055,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.93532342,
+          "smape": 1.25626422,
+          "uniqueWorkCount": 1044,
+          "wape": 1.32616788,
+          "zeroImputationUsed": false
+        },
+        "6": {
+          "caseCount": 3574,
+          "mae": 6685.65974248,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.84426892,
+          "smape": 1.25526902,
+          "uniqueWorkCount": 1044,
+          "wape": 1.30137342,
+          "zeroImputationUsed": false
+        }
+      },
+      "internal80": {
+        "availableCaseCount": 12223,
+        "completeOnAllScoreablePopulation": true,
+        "endpointsPresentInPublicReport": false,
+        "internal80Coverage": 0.83367422,
+        "meanWis": 9303.41628548,
+        "requiredCaseCount": 12223,
+        "standardizedWidth": 2.26088309
+      },
+      "origins": {
+        "2020-12": {
+          "caseCount": 1790,
+          "mae": 18396.63121939,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 1.81766235,
+          "smape": 1.42850607,
+          "uniqueWorkCount": 358,
+          "wape": 2.47920661,
+          "zeroImputationUsed": false
+        },
+        "2021-06": {
+          "caseCount": 2640,
+          "mae": 16276.64757176,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 1.62143228,
+          "smape": 1.26359991,
+          "uniqueWorkCount": 528,
+          "wape": 2.42303281,
+          "zeroImputationUsed": false
+        },
+        "2021-12": {
+          "caseCount": 3092,
+          "mae": 10070.6574656,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.89978483,
+          "smape": 1.29135815,
+          "uniqueWorkCount": 773,
+          "wape": 1.22429802,
+          "zeroImputationUsed": false
+        },
+        "2022-06": {
+          "caseCount": 2613,
+          "mae": 6683.19714339,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.90158726,
+          "smape": 1.19853683,
+          "uniqueWorkCount": 871,
+          "wape": 1.14498867,
+          "zeroImputationUsed": false
+        },
+        "2022-12": {
+          "caseCount": 2088,
+          "mae": 4506.91955522,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.76022674,
+          "smape": 1.20727507,
+          "uniqueWorkCount": 1044,
+          "wape": 1.087904,
+          "zeroImputationUsed": false
+        }
+      },
+      "served": {
+        "caseCount": null,
+        "mae": null,
+        "nullPredictionCount": null,
+        "signedAggregateBias": null,
+        "smape": null,
+        "suppressed": true,
+        "suppressionReason": "served_metric_complement_of_small_abstention_cell",
+        "uniqueWorkCount": null,
+        "wape": null,
+        "zeroImputationUsed": false
+      },
+      "slices": {
+        "dense": {
+          "False": {
+            "caseCount": 8366,
+            "mae": 11137.58004044,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 21.58899988,
+            "smape": 1.4664841,
+            "suppressed": false,
+            "uniqueWorkCount": 741,
+            "wape": 23.17692211,
+            "zeroImputationUsed": false
+          },
+          "True": {
+            "caseCount": 3857,
+            "mae": 10561.43113934,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.12211802,
+            "smape": 0.84774959,
+            "suppressed": false,
+            "uniqueWorkCount": 470,
+            "wape": 0.53366145,
+            "zeroImputationUsed": false
+          }
+        },
+        "dormant": {
+          "False": {
+            "caseCount": 7032,
+            "mae": 6032.99555114,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.11560686,
+            "smape": 0.96211418,
+            "suppressed": false,
+            "uniqueWorkCount": 787,
+            "wape": 0.54568763,
+            "zeroImputationUsed": false
+          },
+          "True": {
+            "caseCount": 5191,
+            "mae": 17624.42878196,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 33.40424506,
+            "smape": 1.68999985,
+            "suppressed": false,
+            "uniqueWorkCount": 343,
+            "wape": 35.07882864,
+            "zeroImputationUsed": false
+          }
+        },
+        "lifecycle": {
+          "unknown": {
+            "caseCount": 12223,
+            "mae": 10955.77472984,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 1.19610576,
+            "smape": 1.27124078,
+            "suppressed": false,
+            "uniqueWorkCount": 1044,
+            "wape": 1.66656758,
+            "zeroImputationUsed": false
+          }
+        },
+        "longTail": {
+          "False": {
+            "caseCount": 9327,
+            "mae": 14221.12707234,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 1.22202155,
+            "smape": 1.33210415,
+            "suppressed": false,
+            "uniqueWorkCount": 805,
+            "wape": 1.67758676,
+            "zeroImputationUsed": false
+          },
+          "True": {
+            "caseCount": 2896,
+            "mae": 439.22041404,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": -0.39756955,
+            "smape": 1.07522124,
+            "suppressed": false,
+            "uniqueWorkCount": 421,
+            "wape": 0.98908991,
+            "zeroImputationUsed": false
+          }
+        },
+        "revenueModel": {
+          "buyout_plus_sales": {
+            "caseCount": null,
+            "suppressed": true,
+            "suppressionReason": "complementary_suppression",
+            "uniqueWorkCount": null
+          },
+          "pure_buyout": {
+            "caseCount": 4358,
+            "mae": 20559.02866623,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 124.27278581,
+            "smape": 1.95574848,
+            "suppressed": false,
+            "uniqueWorkCount": 267,
+            "wape": 125.0881265,
+            "zeroImputationUsed": false
+          },
+          "pure_sales_share": {
+            "caseCount": 5683,
+            "mae": 4077.12291326,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.14970912,
+            "smape": 0.90297715,
+            "suppressed": false,
+            "uniqueWorkCount": 643,
+            "wape": 0.51183435,
+            "zeroImputationUsed": false
+          },
+          "unknown_revenue_model": {
+            "caseCount": null,
+            "suppressed": true,
+            "suppressionReason": "primary_small_cell",
+            "uniqueWorkCount": null
+          }
+        },
+        "shelfRightsPostHoc": {
+          "已上架|无限期": {
+            "caseCount": 2113,
+            "mae": 4253.7313771,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.49187704,
+            "smape": 0.94274601,
+            "suppressed": false,
+            "uniqueWorkCount": 224,
+            "wape": 0.70826093,
+            "zeroImputationUsed": false
+          },
+          "已上架|版权已到期": {
+            "caseCount": 191,
+            "mae": 9491.57523598,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.19704835,
+            "smape": 0.93293667,
+            "suppressed": false,
+            "uniqueWorkCount": 29,
+            "wape": 1.0694904,
+            "zeroImputationUsed": false
+          },
+          "已上架|版权有效": {
+            "caseCount": 2874,
+            "mae": 12270.74398673,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.15828964,
+            "smape": 0.9035741,
+            "suppressed": false,
+            "uniqueWorkCount": 283,
+            "wape": 0.6111153,
+            "zeroImputationUsed": false
+          },
+          "已下架|无限期": {
+            "caseCount": 887,
+            "mae": 11288.64138144,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 157.4772748,
+            "smape": 1.64053861,
+            "suppressed": false,
+            "uniqueWorkCount": 78,
+            "wape": 158.01478191,
+            "zeroImputationUsed": false
+          },
+          "已下架|版权已到期": {
+            "caseCount": 2112,
+            "mae": 5528.73970092,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.74187516,
+            "smape": 1.39878989,
+            "suppressed": false,
+            "uniqueWorkCount": 169,
+            "wape": 1.70937556,
+            "zeroImputationUsed": false
+          },
+          "已下架|版权有效": {
+            "caseCount": 4046,
+            "mae": 16350.85711353,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 47.90070282,
+            "smape": 1.57238975,
+            "suppressed": false,
+            "uniqueWorkCount": 261,
+            "wape": 48.48075193,
+            "zeroImputationUsed": false
+          }
+        },
+        "sourcePostHoc": {
+          "出版物": {
+            "caseCount": 5015,
+            "mae": 9286.35852543,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.27797653,
+            "smape": 0.96973535,
+            "suppressed": false,
+            "uniqueWorkCount": 514,
+            "wape": 0.74461125,
+            "zeroImputationUsed": false
+          },
+          "网文": {
+            "caseCount": 7208,
+            "mae": 12117.27892866,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 4.42069711,
+            "smape": 1.48101462,
+            "suppressed": false,
+            "uniqueWorkCount": 530,
+            "wape": 4.90459255,
+            "zeroImputationUsed": false
+          }
+        },
+        "sparseIncome": {
+          "False": {
+            "caseCount": 11944,
+            "mae": 11176.81112112,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 1.19577551,
+            "smape": 1.26895513,
+            "suppressed": false,
+            "uniqueWorkCount": 1039,
+            "wape": 1.6639954,
+            "zeroImputationUsed": false
+          },
+          "True": {
+            "caseCount": 279,
+            "mae": 1493.1988964,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 1.40611559,
+            "smape": 1.36908977,
+            "suppressed": false,
+            "uniqueWorkCount": 70,
+            "wape": 3.3022936,
+            "zeroImputationUsed": false
+          }
+        }
+      },
+      "topBands": {
+        "top1": {
+          "caseCount": 93,
+          "mae": 89928.01935986,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.13583734,
+          "smape": 0.54676454,
+          "uniqueWorkCount": 18,
+          "wape": 0.29430098,
+          "zeroImputationUsed": false
+        },
+        "top10": {
+          "caseCount": 888,
+          "mae": 37121.66761174,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.18037025,
+          "smape": 0.70870122,
+          "uniqueWorkCount": 118,
+          "wape": 0.52144883,
+          "zeroImputationUsed": false
+        },
+        "top5": {
+          "caseCount": 472,
+          "mae": 53643.43346928,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.17070639,
+          "smape": 0.63625002,
+          "uniqueWorkCount": 59,
+          "wape": 0.46268644,
+          "zeroImputationUsed": false
+        }
+      }
+    },
+    "C2-R": {
+      "abstention": {
+        "abstainedCaseCount": null,
+        "abstainedUniqueWorkCount": "<10",
+        "abstentionReasonDistribution": null,
+        "scoreableCaseCount": 12223,
+        "servedActualRevenueShareOfScoreableCases": null,
+        "servedCaseCount": null,
+        "servedPredictionNullOnEveryAbstention": true,
+        "suppressed": true,
+        "suppressionReason": "small_abstention_and_complement_protection",
+        "zeroImputationUsed": false
+      },
+      "allScoreable": {
+        "caseCount": 12223,
+        "mae": 7754.48030652,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 0.79261851,
+        "smape": 1.01320019,
+        "uniqueWorkCount": 1044,
+        "wape": 1.17959394,
+        "zeroImputationUsed": false
+      },
+      "highValueAllScoreable": {
+        "caseCount": 888,
+        "mae": 40793.9870647,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 0.28216422,
+        "smape": 0.70249612,
+        "uniqueWorkCount": 118,
+        "wape": 0.57303398,
+        "zeroImputationUsed": false
+      },
+      "highValueServed": {
+        "caseCount": null,
+        "mae": null,
+        "nullPredictionCount": null,
+        "signedAggregateBias": null,
+        "smape": null,
+        "suppressed": true,
+        "suppressionReason": "served_metric_complement_of_small_abstention_cell",
+        "uniqueWorkCount": null,
+        "wape": null,
+        "zeroImputationUsed": false
+      },
+      "horizons": {
+        "12": {
+          "caseCount": 2530,
+          "mae": 9424.06929525,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.70255777,
+          "smape": 1.01967737,
+          "uniqueWorkCount": 871,
+          "wape": 1.04372532,
+          "zeroImputationUsed": false
+        },
+        "18": {
+          "caseCount": 1659,
+          "mae": 15408.30559636,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.94965654,
+          "smape": 1.14770145,
+          "uniqueWorkCount": 773,
+          "wape": 1.30628978,
+          "zeroImputationUsed": false
+        },
+        "24": {
+          "caseCount": 886,
+          "mae": 22032.12906601,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 1.27841157,
+          "smape": 1.15711672,
+          "uniqueWorkCount": 528,
+          "wape": 1.80254509,
+          "zeroImputationUsed": false
+        },
+        "3": {
+          "caseCount": 3574,
+          "mae": 2395.62219014,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.62360602,
+          "smape": 0.96065978,
+          "uniqueWorkCount": 1044,
+          "wape": 0.97860953,
+          "zeroImputationUsed": false
+        },
+        "6": {
+          "caseCount": 3574,
+          "mae": 4839.20493151,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.53130414,
+          "smape": 0.96304477,
+          "uniqueWorkCount": 1044,
+          "wape": 0.9419583,
+          "zeroImputationUsed": false
+        }
+      },
+      "internal80": {
+        "availableCaseCount": 12223,
+        "completeOnAllScoreablePopulation": true,
+        "endpointsPresentInPublicReport": false,
+        "internal80Coverage": 0.87556246,
+        "meanWis": 7047.92502558,
+        "requiredCaseCount": 12223,
+        "standardizedWidth": 2.37396123
+      },
+      "origins": {
+        "2020-12": {
+          "caseCount": 1790,
+          "mae": 12540.36349834,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 1.24268627,
+          "smape": 1.25847279,
+          "uniqueWorkCount": 358,
+          "wape": 1.68999159,
+          "zeroImputationUsed": false
+        },
+        "2021-06": {
+          "caseCount": 2640,
+          "mae": 11905.92742586,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 1.16364198,
+          "smape": 1.07380385,
+          "uniqueWorkCount": 528,
+          "wape": 1.77238296,
+          "zeroImputationUsed": false
+        },
+        "2021-12": {
+          "caseCount": 3092,
+          "mae": 7685.45316353,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.63130275,
+          "smape": 1.11738904,
+          "uniqueWorkCount": 773,
+          "wape": 0.9343268,
+          "zeroImputationUsed": false
+        },
+        "2022-06": {
+          "caseCount": 2613,
+          "mae": 4224.38440954,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.4694227,
+          "smape": 0.77779658,
+          "uniqueWorkCount": 871,
+          "wape": 0.72373629,
+          "zeroImputationUsed": false
+        },
+        "2022-12": {
+          "caseCount": 2088,
+          "mae": 2922.59390638,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.38500296,
+          "smape": 0.86661307,
+          "uniqueWorkCount": 1044,
+          "wape": 0.70547112,
+          "zeroImputationUsed": false
+        }
+      },
+      "served": {
+        "caseCount": null,
+        "mae": null,
+        "nullPredictionCount": null,
+        "signedAggregateBias": null,
+        "smape": null,
+        "suppressed": true,
+        "suppressionReason": "served_metric_complement_of_small_abstention_cell",
+        "uniqueWorkCount": null,
+        "wape": null,
+        "zeroImputationUsed": false
+      },
+      "slices": {
+        "dense": {
+          "False": {
+            "caseCount": 8366,
+            "mae": 6206.34079499,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 11.24054793,
+            "smape": 1.1032546,
+            "suppressed": false,
+            "uniqueWorkCount": 741,
+            "wape": 12.91518235,
+            "zeroImputationUsed": false
+          },
+          "True": {
+            "caseCount": 3857,
+            "mae": 11112.46193821,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.24238037,
+            "smape": 0.81786829,
+            "suppressed": false,
+            "uniqueWorkCount": 470,
+            "wape": 0.56150464,
+            "zeroImputationUsed": false
+          }
+        },
+        "dormant": {
+          "False": {
+            "caseCount": 7032,
+            "mae": 6350.03799689,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.23990024,
+            "smape": 0.93291837,
+            "suppressed": false,
+            "uniqueWorkCount": 787,
+            "wape": 0.57436428,
+            "zeroImputationUsed": false
+          },
+          "True": {
+            "caseCount": 5191,
+            "mae": 9657.01128732,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 17.26836625,
+            "smape": 1.12195415,
+            "suppressed": false,
+            "uniqueWorkCount": 343,
+            "wape": 19.22085807,
+            "zeroImputationUsed": false
+          }
+        },
+        "lifecycle": {
+          "declining": {
+            "caseCount": 1708,
+            "mae": 4058.42403446,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.67999948,
+            "smape": 1.13581639,
+            "suppressed": false,
+            "uniqueWorkCount": 408,
+            "wape": 0.97028862,
+            "zeroImputationUsed": false
+          },
+          "growth": {
+            "caseCount": 1747,
+            "mae": 6190.66898055,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.19641188,
+            "smape": 0.81666583,
+            "suppressed": false,
+            "uniqueWorkCount": 408,
+            "wape": 0.70762968,
+            "zeroImputationUsed": false
+          },
+          "inactive": {
+            "caseCount": 5274,
+            "mae": 9910.82207867,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 7.57439842,
+            "smape": 1.11851372,
+            "suppressed": false,
+            "uniqueWorkCount": 360,
+            "wape": 8.48139434,
+            "zeroImputationUsed": false
+          },
+          "insufficient_history": {
+            "caseCount": 105,
+            "mae": 4702.82273143,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": -1.0,
+            "smape": 1.00952381,
+            "suppressed": false,
+            "uniqueWorkCount": 28,
+            "wape": 1.0,
+            "zeroImputationUsed": false
+          },
+          "long_tail": {
+            "caseCount": 91,
+            "mae": 2.98129331,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": -0.28632107,
+            "smape": 1.29798594,
+            "suppressed": false,
+            "uniqueWorkCount": 28,
+            "wape": 1.04066967,
+            "zeroImputationUsed": false
+          },
+          "rebound": {
+            "caseCount": 904,
+            "mae": 4134.407862,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.36727053,
+            "smape": 0.9209428,
+            "suppressed": false,
+            "uniqueWorkCount": 241,
+            "wape": 1.07470026,
+            "zeroImputationUsed": false
+          },
+          "stable": {
+            "caseCount": 2394,
+            "mae": 8577.64318799,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.17503918,
+            "smape": 0.86130575,
+            "suppressed": false,
+            "uniqueWorkCount": 467,
+            "wape": 0.4296899,
+            "zeroImputationUsed": false
+          }
+        },
+        "longTail": {
+          "False": {
+            "caseCount": 9327,
+            "mae": 10031.56401748,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.80785362,
+            "smape": 1.00212054,
+            "suppressed": false,
+            "uniqueWorkCount": 805,
+            "wape": 1.18336746,
+            "zeroImputationUsed": false
+          },
+          "True": {
+            "caseCount": 2896,
+            "mae": 420.79253989,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": -0.14425457,
+            "smape": 1.04888388,
+            "suppressed": false,
+            "uniqueWorkCount": 421,
+            "wape": 0.94759178,
+            "zeroImputationUsed": false
+          }
+        },
+        "revenueModel": {
+          "buyout_plus_sales": {
+            "caseCount": null,
+            "suppressed": true,
+            "suppressionReason": "complementary_suppression",
+            "uniqueWorkCount": null
+          },
+          "pure_buyout": {
+            "caseCount": 4358,
+            "mae": 11068.70280824,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 65.51871965,
+            "smape": 1.28978767,
+            "suppressed": false,
+            "uniqueWorkCount": 267,
+            "wape": 67.34575449,
+            "zeroImputationUsed": false
+          },
+          "pure_sales_share": {
+            "caseCount": 5683,
+            "mae": 4328.4454004,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.21047831,
+            "smape": 0.86541875,
+            "suppressed": false,
+            "uniqueWorkCount": 643,
+            "wape": 0.54338491,
+            "zeroImputationUsed": false
+          },
+          "unknown_revenue_model": {
+            "caseCount": null,
+            "suppressed": true,
+            "suppressionReason": "primary_small_cell",
+            "uniqueWorkCount": null
+          }
+        },
+        "shelfRightsPostHoc": {
+          "已上架|无限期": {
+            "caseCount": 2113,
+            "mae": 4349.18403104,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.61411478,
+            "smape": 0.88922084,
+            "suppressed": false,
+            "uniqueWorkCount": 224,
+            "wape": 0.72415413,
+            "zeroImputationUsed": false
+          },
+          "已上架|版权已到期": {
+            "caseCount": 191,
+            "mae": 9088.69373875,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.52623464,
+            "smape": 0.89089652,
+            "suppressed": false,
+            "uniqueWorkCount": 29,
+            "wape": 1.02409458,
+            "zeroImputationUsed": false
+          },
+          "已上架|版权有效": {
+            "caseCount": 2874,
+            "mae": 10029.86943037,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.12293091,
+            "smape": 0.79698764,
+            "suppressed": false,
+            "uniqueWorkCount": 283,
+            "wape": 0.49951386,
+            "zeroImputationUsed": false
+          },
+          "已下架|无限期": {
+            "caseCount": 887,
+            "mae": 5589.71958527,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 77.30597902,
+            "smape": 1.26981122,
+            "suppressed": false,
+            "uniqueWorkCount": 78,
+            "wape": 78.24310219,
+            "zeroImputationUsed": false
+          },
+          "已下架|版权已到期": {
+            "caseCount": 2112,
+            "mae": 4143.71113556,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.45209726,
+            "smape": 0.90128341,
+            "suppressed": false,
+            "uniqueWorkCount": 169,
+            "wape": 1.28115247,
+            "zeroImputationUsed": false
+          },
+          "已下架|版权有效": {
+            "caseCount": 4046,
+            "mae": 10213.00111013,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 29.26144708,
+            "smape": 1.2394675,
+            "suppressed": false,
+            "uniqueWorkCount": 261,
+            "wape": 30.28183598,
+            "zeroImputationUsed": false
+          }
+        },
+        "sourcePostHoc": {
+          "出版物": {
+            "caseCount": 5015,
+            "mae": 7618.40155486,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.24495051,
+            "smape": 0.81363235,
+            "suppressed": false,
+            "uniqueWorkCount": 514,
+            "wape": 0.61086889,
+            "zeroImputationUsed": false
+          },
+          "网文": {
+            "caseCount": 7208,
+            "mae": 7849.15773987,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 2.71610101,
+            "smape": 1.15205046,
+            "suppressed": false,
+            "uniqueWorkCount": 530,
+            "wape": 3.17702686,
+            "zeroImputationUsed": false
+          }
+        },
+        "sparseIncome": {
+          "False": {
+            "caseCount": 11944,
+            "mae": 7887.55245175,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.78969073,
+            "smape": 1.00604066,
+            "suppressed": false,
+            "uniqueWorkCount": 1039,
+            "wape": 1.17429299,
+            "zeroImputationUsed": false
+          },
+          "True": {
+            "caseCount": 279,
+            "mae": 2057.65699974,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 2.65445817,
+            "smape": 1.31969996,
+            "suppressed": false,
+            "uniqueWorkCount": 70,
+            "wape": 4.55062454,
+            "zeroImputationUsed": false
+          }
+        }
+      },
+      "topBands": {
+        "top1": {
+          "caseCount": 93,
+          "mae": 110980.88285739,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.20993541,
+          "smape": 0.5371231,
+          "uniqueWorkCount": 18,
+          "wape": 0.36319917,
+          "zeroImputationUsed": false
+        },
+        "top10": {
+          "caseCount": 888,
+          "mae": 40793.9870647,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.28216422,
+          "smape": 0.70249612,
+          "uniqueWorkCount": 118,
+          "wape": 0.57303398,
+          "zeroImputationUsed": false
+        },
+        "top5": {
+          "caseCount": 472,
+          "mae": 62154.4865013,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.26160314,
+          "smape": 0.65207279,
+          "uniqueWorkCount": 59,
+          "wape": 0.53609615,
+          "zeroImputationUsed": false
+        }
+      }
+    }
+  },
+  "nextBoundary": "stop_after_C2R_no_C2_C3_pending_user_review",
+  "pairedBootstrapVsB4": {
+    "C2R": {
+      "percentileLower": -0.38221636,
+      "percentileUpper": -0.1934478,
+      "relativeDeltaMedian": -0.29768598
+    },
+    "caseIidSampling": false,
+    "clusterKeys": [
+      "work",
+      "origin"
+    ],
+    "method": "paired_two_way_pigeonhole_cluster_bootstrap",
+    "pairedAcrossModels": true,
+    "replicatesCompleted": 2000,
+    "seed": 20260714,
+    "statistic": "(replicate_model_wape-replicate_leader_wape)/replicate_leader_wape",
+    "workOriginBlockCount": 3574
+  },
+  "perOriginRouteMetrics": {
+    "2020-12": {
+      "buyout_plus_sales": {
+        "caseCount": null,
+        "signedAggregateBias": null,
+        "suppressed": true,
+        "suppressionReason": "complementary_suppression",
+        "uniqueWorkCount": null,
+        "wape": null
+      },
+      "pure_buyout": {
+        "caseCount": 1050,
+        "mae": 12429.28571429,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 184.94722222,
+        "smape": 1.64532851,
+        "suppressed": false,
+        "uniqueWorkCount": 210,
+        "wape": 186.43928571,
+        "zeroImputationUsed": false
+      },
+      "pure_sales_share": {
+        "caseCount": 540,
+        "mae": 12722.64710162,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 0.24358689,
+        "smape": 0.65511428,
+        "suppressed": false,
+        "uniqueWorkCount": 108,
+        "wape": 0.76372053,
+        "zeroImputationUsed": false
+      },
+      "unknown_revenue_model": {
+        "caseCount": null,
+        "signedAggregateBias": null,
+        "suppressed": true,
+        "suppressionReason": "primary_small_cell",
+        "uniqueWorkCount": null,
+        "wape": null
+      }
+    },
+    "2021-06": {
+      "buyout_plus_sales": {
+        "caseCount": null,
+        "signedAggregateBias": null,
+        "suppressed": true,
+        "suppressionReason": "complementary_suppression",
+        "uniqueWorkCount": null,
+        "wape": null
+      },
+      "pure_buyout": {
+        "caseCount": 1155,
+        "mae": 14191.79865601,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 55.48121769,
+        "smape": 1.46084682,
+        "suppressed": false,
+        "uniqueWorkCount": 231,
+        "wape": 57.25997746,
+        "zeroImputationUsed": false
+      },
+      "pure_sales_share": {
+        "caseCount": 1090,
+        "mae": 5370.42629172,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 0.85176381,
+        "smape": 0.7707008,
+        "suppressed": false,
+        "uniqueWorkCount": 218,
+        "wape": 1.26222631,
+        "zeroImputationUsed": false
+      },
+      "unknown_revenue_model": {
+        "caseCount": null,
+        "signedAggregateBias": null,
+        "suppressed": true,
+        "suppressionReason": "primary_small_cell",
+        "uniqueWorkCount": null,
+        "wape": null
+      }
+    },
+    "2021-12": {
+      "buyout_plus_sales": {
+        "caseCount": null,
+        "signedAggregateBias": null,
+        "suppressed": true,
+        "suppressionReason": "complementary_suppression",
+        "uniqueWorkCount": null,
+        "wape": null
+      },
+      "pure_buyout": {
+        "caseCount": 884,
+        "mae": 12192.38742494,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 58.01705824,
+        "smape": 1.37785257,
+        "suppressed": false,
+        "uniqueWorkCount": 221,
+        "wape": 59.87816935,
+        "zeroImputationUsed": false
+      },
+      "pure_sales_share": {
+        "caseCount": 1556,
+        "mae": 4239.12026765,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 0.09336199,
+        "smape": 0.99984044,
+        "suppressed": false,
+        "uniqueWorkCount": 389,
+        "wape": 0.39221403,
+        "zeroImputationUsed": false
+      },
+      "unknown_revenue_model": {
+        "caseCount": null,
+        "signedAggregateBias": null,
+        "suppressed": true,
+        "suppressionReason": "primary_small_cell",
+        "uniqueWorkCount": null,
+        "wape": null
+      }
+    },
+    "2022-06": {
+      "buyout_plus_sales": {
+        "caseCount": null,
+        "signedAggregateBias": null,
+        "suppressed": true,
+        "suppressionReason": "complementary_suppression",
+        "uniqueWorkCount": null,
+        "wape": null
+      },
+      "pure_buyout": {
+        "caseCount": 771,
+        "mae": 8098.35219126,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 32.68794189,
+        "smape": 0.88197147,
+        "suppressed": false,
+        "uniqueWorkCount": 257,
+        "wape": 34.68794189,
+        "zeroImputationUsed": false
+      },
+      "pure_sales_share": {
+        "caseCount": 1317,
+        "mae": 1869.02652001,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 0.01405691,
+        "smape": 0.75075516,
+        "suppressed": false,
+        "uniqueWorkCount": 439,
+        "wape": 0.25630985,
+        "zeroImputationUsed": false
+      },
+      "unknown_revenue_model": {
+        "caseCount": null,
+        "signedAggregateBias": null,
+        "suppressed": true,
+        "suppressionReason": "primary_small_cell",
+        "uniqueWorkCount": null,
+        "wape": null
+      }
+    },
+    "2022-12": {
+      "buyout_plus_sales": {
+        "caseCount": null,
+        "signedAggregateBias": null,
+        "suppressed": true,
+        "suppressionReason": "complementary_suppression",
+        "uniqueWorkCount": null,
+        "wape": null
+      },
+      "pure_buyout": {
+        "caseCount": 498,
+        "mae": 3560.70154121,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": null,
+        "smape": 0.6184739,
+        "suppressed": false,
+        "uniqueWorkCount": 249,
+        "wape": null,
+        "zeroImputationUsed": false
+      },
+      "pure_sales_share": {
+        "caseCount": 1180,
+        "mae": 2387.27292739,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 0.32246018,
+        "smape": 0.99987533,
+        "suppressed": false,
+        "uniqueWorkCount": 590,
+        "wape": 0.54021495,
+        "zeroImputationUsed": false
+      },
+      "unknown_revenue_model": {
+        "caseCount": null,
+        "signedAggregateBias": null,
+        "suppressed": true,
+        "suppressionReason": "primary_small_cell",
+        "uniqueWorkCount": null,
+        "wape": null
+      }
+    }
+  },
+  "privacy": {
+    "aggregateOnly": true,
+    "deidentified": true,
+    "predictionIntervalEndpointsPresent": false,
+    "privatePathsPresent": false,
+    "rawIncomeRowsPresent": false,
+    "smallCellsComplementarilySuppressed": true,
+    "workOrChannelIdentifiersPresent": false
+  },
+  "relativeComparisons": {
+    "B0b": {
+      "horizonWapeRelativeImprovement": {
+        "12": 0.30734002,
+        "18": 0.30511426,
+        "24": 0.34154352,
+        "3": 0.26023076,
+        "6": 0.28357306
+      },
+      "internal80StandardizedWidthRelativeRegression": 0.04359357,
+      "internal80WisRelativeImprovement": 0.26219386,
+      "overallSignedBiasDifference": -0.30975137,
+      "overallWapeRelativeImprovement": 0.30597162,
+      "topBandWapeRelativeImprovement": {
+        "top1": 0.15291646,
+        "top10": -0.03325029,
+        "top5": -0.05095772
+      }
+    },
+    "B1": {
+      "horizonWapeRelativeImprovement": {
+        "12": 0.36055678,
+        "18": 0.38186705,
+        "24": 0.46015021,
+        "3": 0.31164983,
+        "6": 0.32451563
+      },
+      "internal80StandardizedWidthRelativeRegression": -0.00259138,
+      "internal80WisRelativeImprovement": 0.34728879,
+      "overallSignedBiasDifference": -0.68681997,
+      "overallWapeRelativeImprovement": 0.37986643,
+      "topBandWapeRelativeImprovement": {
+        "top1": 0.59497981,
+        "top10": 0.2861206,
+        "top5": 0.32463875
+      }
+    },
+    "B3": {
+      "horizonWapeRelativeImprovement": {
+        "12": 0.30319044,
+        "18": 0.29829918,
+        "24": 0.36530885,
+        "3": 0.25290549,
+        "6": 0.27004349
+      },
+      "internal80StandardizedWidthRelativeRegression": 0.07190736,
+      "internal80WisRelativeImprovement": 0.26374448,
+      "overallSignedBiasDifference": -0.44215265,
+      "overallWapeRelativeImprovement": 0.30590482,
+      "topBandWapeRelativeImprovement": {
+        "top1": 0.16008279,
+        "top10": -0.07799094,
+        "top5": -0.09278584
+      }
+    },
+    "B4": {
+      "horizonWapeRelativeImprovement": {
+        "12": 0.30040408,
+        "18": 0.28230436,
+        "24": 0.32024371,
+        "3": 0.26207719,
+        "6": 0.27618139
+      },
+      "internal80StandardizedWidthRelativeRegression": 0.05001503,
+      "internal80WisRelativeImprovement": 0.24243688,
+      "overallSignedBiasDifference": -0.40348724,
+      "overallWapeRelativeImprovement": 0.29220156,
+      "topBandWapeRelativeImprovement": {
+        "top1": -0.23410794,
+        "top10": -0.09892658,
+        "top5": -0.15865974
+      }
+    }
+  },
+  "releaseAuthorized": false,
+  "routeSelection": [
+    {
+      "biasFeasibleCandidateCount": 0,
+      "candidateSpaceCount": 38,
+      "fallbackAppliedToRoute": true,
+      "fallbackCaseCount": 2410,
+      "fallbackCaseCountSuppressed": false,
+      "innerDistinctScoreOrigins": 0,
+      "innerScoreableCaseCount": 0,
+      "outerOrigin": "2020-12",
+      "rejectionReasonDistribution": {
+        "insufficient_inner_evidence": 38
+      },
+      "route": "pure_sales_share",
+      "sameOrLaterOuterTruthRead": false,
+      "selectedCandidateId": "single:B4_channel_point",
+      "selectedWeights": {
+        "B4_channel_point": 1.0
+      },
+      "selectionStatus": "frozen_fallback_insufficient_inner_evidence"
+    },
+    {
+      "biasFeasibleCandidateCount": 0,
+      "candidateSpaceCount": 38,
+      "fallbackAppliedToRoute": true,
+      "fallbackCaseCount": null,
+      "fallbackCaseCountSuppressed": true,
+      "innerDistinctScoreOrigins": 0,
+      "innerScoreableCaseCount": 0,
+      "outerOrigin": "2020-12",
+      "rejectionReasonDistribution": {
+        "insufficient_inner_evidence": 38
+      },
+      "route": "buyout_plus_sales",
+      "sameOrLaterOuterTruthRead": false,
+      "selectedCandidateId": "single:B4_channel_point",
+      "selectedWeights": {
+        "B4_channel_point": 1.0
+      },
+      "selectionStatus": "frozen_fallback_insufficient_inner_evidence"
+    },
+    {
+      "biasFeasibleCandidateCount": 1,
+      "candidateSpaceCount": 1,
+      "fallbackAppliedToRoute": false,
+      "fallbackCaseCount": 0,
+      "fallbackCaseCountSuppressed": false,
+      "innerDistinctScoreOrigins": 0,
+      "innerScoreableCaseCount": 0,
+      "outerOrigin": "2020-12",
+      "rejectionReasonDistribution": {},
+      "route": "pure_buyout",
+      "sameOrLaterOuterTruthRead": false,
+      "selectedCandidateId": "pure_buyout_event_cycle_v1",
+      "selectedWeights": {},
+      "selectionStatus": "frozen_route_policy"
+    },
+    {
+      "biasFeasibleCandidateCount": 1,
+      "candidateSpaceCount": 1,
+      "fallbackAppliedToRoute": false,
+      "fallbackCaseCount": 0,
+      "fallbackCaseCountSuppressed": false,
+      "innerDistinctScoreOrigins": 0,
+      "innerScoreableCaseCount": 0,
+      "outerOrigin": "2020-12",
+      "rejectionReasonDistribution": {},
+      "route": "unknown_revenue_model",
+      "sameOrLaterOuterTruthRead": false,
+      "selectedCandidateId": "unknown_structural_zero_abstain",
+      "selectedWeights": {},
+      "selectionStatus": "frozen_route_policy"
+    },
+    {
+      "biasFeasibleCandidateCount": 0,
+      "candidateSpaceCount": 38,
+      "fallbackAppliedToRoute": true,
+      "fallbackCaseCount": 2160,
+      "fallbackCaseCountSuppressed": false,
+      "innerDistinctScoreOrigins": 1,
+      "innerScoreableCaseCount": 216,
+      "outerOrigin": "2021-06",
+      "rejectionReasonDistribution": {
+        "insufficient_inner_evidence": 38
+      },
+      "route": "pure_sales_share",
+      "sameOrLaterOuterTruthRead": false,
+      "selectedCandidateId": "single:B4_channel_point",
+      "selectedWeights": {
+        "B4_channel_point": 1.0
+      },
+      "selectionStatus": "frozen_fallback_insufficient_inner_evidence"
+    },
+    {
+      "biasFeasibleCandidateCount": 0,
+      "candidateSpaceCount": 38,
+      "fallbackAppliedToRoute": true,
+      "fallbackCaseCount": null,
+      "fallbackCaseCountSuppressed": true,
+      "innerDistinctScoreOrigins": 1,
+      "innerScoreableCaseCount": 80,
+      "outerOrigin": "2021-06",
+      "rejectionReasonDistribution": {
+        "insufficient_inner_evidence": 38
+      },
+      "route": "buyout_plus_sales",
+      "sameOrLaterOuterTruthRead": false,
+      "selectedCandidateId": "single:B4_channel_point",
+      "selectedWeights": {
+        "B4_channel_point": 1.0
+      },
+      "selectionStatus": "frozen_fallback_insufficient_inner_evidence"
+    },
+    {
+      "biasFeasibleCandidateCount": 1,
+      "candidateSpaceCount": 1,
+      "fallbackAppliedToRoute": false,
+      "fallbackCaseCount": 0,
+      "fallbackCaseCountSuppressed": false,
+      "innerDistinctScoreOrigins": 0,
+      "innerScoreableCaseCount": 0,
+      "outerOrigin": "2021-06",
+      "rejectionReasonDistribution": {},
+      "route": "pure_buyout",
+      "sameOrLaterOuterTruthRead": false,
+      "selectedCandidateId": "pure_buyout_event_cycle_v1",
+      "selectedWeights": {},
+      "selectionStatus": "frozen_route_policy"
+    },
+    {
+      "biasFeasibleCandidateCount": 1,
+      "candidateSpaceCount": 1,
+      "fallbackAppliedToRoute": false,
+      "fallbackCaseCount": 0,
+      "fallbackCaseCountSuppressed": false,
+      "innerDistinctScoreOrigins": 0,
+      "innerScoreableCaseCount": 0,
+      "outerOrigin": "2021-06",
+      "rejectionReasonDistribution": {},
+      "route": "unknown_revenue_model",
+      "sameOrLaterOuterTruthRead": false,
+      "selectedCandidateId": "unknown_structural_zero_abstain",
+      "selectedWeights": {},
+      "selectionStatus": "frozen_route_policy"
+    },
+    {
+      "biasFeasibleCandidateCount": 0,
+      "candidateEvaluationDigest": "9bb6b712b0d19f1f658674fd9b998bffd4474dc8bcd9aeab8a5fed71065726e2",
+      "candidateSpaceCount": 38,
+      "fallbackAppliedToRoute": true,
+      "fallbackCaseCount": 2540,
+      "fallbackCaseCountSuppressed": false,
+      "innerDistinctScoreOrigins": 2,
+      "innerScoreableCaseCount": 760,
+      "outerOrigin": "2021-12",
+      "rejectionReasonDistribution": {
+        "high_value_bias": 33,
+        "horizon_bias": 38,
+        "overall_bias": 33
+      },
+      "route": "pure_sales_share",
+      "sameOrLaterOuterTruthRead": false,
+      "selectedCandidateId": "single:B4_channel_point",
+      "selectedWeights": {
+        "B4_channel_point": 1.0
+      },
+      "selectionStatus": "frozen_fallback_no_bias_feasible_candidate"
+    },
+    {
+      "biasFeasibleCandidateCount": 0,
+      "candidateEvaluationDigest": "3dc9790ecaa221d789681506a01f1e19483787d8efcb5ce1f31de7a2a6032f05",
+      "candidateSpaceCount": 38,
+      "fallbackAppliedToRoute": true,
+      "fallbackCaseCount": null,
+      "fallbackCaseCountSuppressed": true,
+      "innerDistinctScoreOrigins": 2,
+      "innerScoreableCaseCount": 276,
+      "outerOrigin": "2021-12",
+      "rejectionReasonDistribution": {
+        "high_value_bias": 38,
+        "horizon_bias": 38,
+        "overall_bias": 33
+      },
+      "route": "buyout_plus_sales",
+      "sameOrLaterOuterTruthRead": false,
+      "selectedCandidateId": "single:B4_channel_point",
+      "selectedWeights": {
+        "B4_channel_point": 1.0
+      },
+      "selectionStatus": "frozen_fallback_no_bias_feasible_candidate"
+    },
+    {
+      "biasFeasibleCandidateCount": 1,
+      "candidateSpaceCount": 1,
+      "fallbackAppliedToRoute": false,
+      "fallbackCaseCount": 0,
+      "fallbackCaseCountSuppressed": false,
+      "innerDistinctScoreOrigins": 0,
+      "innerScoreableCaseCount": 0,
+      "outerOrigin": "2021-12",
+      "rejectionReasonDistribution": {},
+      "route": "pure_buyout",
+      "sameOrLaterOuterTruthRead": false,
+      "selectedCandidateId": "pure_buyout_event_cycle_v1",
+      "selectedWeights": {},
+      "selectionStatus": "frozen_route_policy"
+    },
+    {
+      "biasFeasibleCandidateCount": 1,
+      "candidateSpaceCount": 1,
+      "fallbackAppliedToRoute": false,
+      "fallbackCaseCount": 0,
+      "fallbackCaseCountSuppressed": false,
+      "innerDistinctScoreOrigins": 0,
+      "innerScoreableCaseCount": 0,
+      "outerOrigin": "2021-12",
+      "rejectionReasonDistribution": {},
+      "route": "unknown_revenue_model",
+      "sameOrLaterOuterTruthRead": false,
+      "selectedCandidateId": "unknown_structural_zero_abstain",
+      "selectedWeights": {},
+      "selectionStatus": "frozen_route_policy"
+    },
+    {
+      "biasFeasibleCandidateCount": 3,
+      "candidateEvaluationDigest": "9aeeb577e2caebd4a835b882c633e05b901c475e79a25a79fedbba74275a7402",
+      "candidateSpaceCount": 38,
+      "fallbackAppliedToRoute": false,
+      "fallbackCaseCount": 0,
+      "fallbackCaseCountSuppressed": false,
+      "innerDistinctScoreOrigins": 3,
+      "innerScoreableCaseCount": 1864,
+      "outerOrigin": "2022-06",
+      "rejectionReasonDistribution": {
+        "high_value_bias": 31,
+        "horizon_bias": 35,
+        "overall_bias": 35
+      },
+      "route": "pure_sales_share",
+      "sameOrLaterOuterTruthRead": false,
+      "selectedCandidateId": "single:zero_aware_median_12",
+      "selectedWeights": {
+        "zero_aware_median_12": 1.0
+      },
+      "selectionStatus": "bias_feasible_lexicographic_minimum"
+    },
+    {
+      "biasFeasibleCandidateCount": 0,
+      "candidateEvaluationDigest": "55288ea2c8376f4acdcc0081242cf2fb22dcc2fe26c92e7cd5a1c993681a2074",
+      "candidateSpaceCount": 38,
+      "fallbackAppliedToRoute": true,
+      "fallbackCaseCount": null,
+      "fallbackCaseCountSuppressed": true,
+      "innerDistinctScoreOrigins": 3,
+      "innerScoreableCaseCount": 718,
+      "outerOrigin": "2022-06",
+      "rejectionReasonDistribution": {
+        "high_value_bias": 12,
+        "horizon_bias": 38,
+        "overall_bias": 14
+      },
+      "route": "buyout_plus_sales",
+      "sameOrLaterOuterTruthRead": false,
+      "selectedCandidateId": "single:B4_channel_point",
+      "selectedWeights": {
+        "B4_channel_point": 1.0
+      },
+      "selectionStatus": "frozen_fallback_no_bias_feasible_candidate"
+    },
+    {
+      "biasFeasibleCandidateCount": 1,
+      "candidateSpaceCount": 1,
+      "fallbackAppliedToRoute": false,
+      "fallbackCaseCount": 0,
+      "fallbackCaseCountSuppressed": false,
+      "innerDistinctScoreOrigins": 0,
+      "innerScoreableCaseCount": 0,
+      "outerOrigin": "2022-06",
+      "rejectionReasonDistribution": {},
+      "route": "pure_buyout",
+      "sameOrLaterOuterTruthRead": false,
+      "selectedCandidateId": "pure_buyout_event_cycle_v1",
+      "selectedWeights": {},
+      "selectionStatus": "frozen_route_policy"
+    },
+    {
+      "biasFeasibleCandidateCount": 1,
+      "candidateSpaceCount": 1,
+      "fallbackAppliedToRoute": false,
+      "fallbackCaseCount": 0,
+      "fallbackCaseCountSuppressed": false,
+      "innerDistinctScoreOrigins": 0,
+      "innerScoreableCaseCount": 0,
+      "outerOrigin": "2022-06",
+      "rejectionReasonDistribution": {},
+      "route": "unknown_revenue_model",
+      "sameOrLaterOuterTruthRead": false,
+      "selectedCandidateId": "unknown_structural_zero_abstain",
+      "selectedWeights": {},
+      "selectionStatus": "frozen_route_policy"
+    },
+    {
+      "biasFeasibleCandidateCount": 0,
+      "candidateEvaluationDigest": "95d40948d1e2bcf20223258965003c1d699c0e0440e0f4da78a7dcf0e8da14a7",
+      "candidateSpaceCount": 38,
+      "fallbackAppliedToRoute": true,
+      "fallbackCaseCount": 1966,
+      "fallbackCaseCountSuppressed": false,
+      "innerDistinctScoreOrigins": 4,
+      "innerScoreableCaseCount": 3457,
+      "outerOrigin": "2022-12",
+      "rejectionReasonDistribution": {
+        "high_value_bias": 32,
+        "horizon_bias": 38,
+        "overall_bias": 35
+      },
+      "route": "pure_sales_share",
+      "sameOrLaterOuterTruthRead": false,
+      "selectedCandidateId": "single:B4_channel_point",
+      "selectedWeights": {
+        "B4_channel_point": 1.0
+      },
+      "selectionStatus": "frozen_fallback_no_bias_feasible_candidate"
+    },
+    {
+      "biasFeasibleCandidateCount": 2,
+      "candidateEvaluationDigest": "e60b36bccdeae6bb26abc1bbd1b90b244a86e456098ab65dfe2e8012d74ebb67",
+      "candidateSpaceCount": 38,
+      "fallbackAppliedToRoute": false,
+      "fallbackCaseCount": 0,
+      "fallbackCaseCountSuppressed": false,
+      "innerDistinctScoreOrigins": 4,
+      "innerScoreableCaseCount": 1346,
+      "outerOrigin": "2022-12",
+      "rejectionReasonDistribution": {
+        "high_value_bias": 22,
+        "horizon_bias": 36,
+        "overall_bias": 19
+      },
+      "route": "buyout_plus_sales",
+      "sameOrLaterOuterTruthRead": false,
+      "selectedCandidateId": "blend:B4_channel_point@0.50+zero_aware_median_12@0.50",
+      "selectedWeights": {
+        "B4_channel_point": 0.5,
+        "zero_aware_median_12": 0.5
+      },
+      "selectionStatus": "bias_feasible_lexicographic_minimum"
+    },
+    {
+      "biasFeasibleCandidateCount": 1,
+      "candidateSpaceCount": 1,
+      "fallbackAppliedToRoute": false,
+      "fallbackCaseCount": 0,
+      "fallbackCaseCountSuppressed": false,
+      "innerDistinctScoreOrigins": 0,
+      "innerScoreableCaseCount": 0,
+      "outerOrigin": "2022-12",
+      "rejectionReasonDistribution": {},
+      "route": "pure_buyout",
+      "sameOrLaterOuterTruthRead": false,
+      "selectedCandidateId": "pure_buyout_event_cycle_v1",
+      "selectedWeights": {},
+      "selectionStatus": "frozen_route_policy"
+    },
+    {
+      "biasFeasibleCandidateCount": 1,
+      "candidateSpaceCount": 1,
+      "fallbackAppliedToRoute": false,
+      "fallbackCaseCount": 0,
+      "fallbackCaseCountSuppressed": false,
+      "innerDistinctScoreOrigins": 0,
+      "innerScoreableCaseCount": 0,
+      "outerOrigin": "2022-12",
+      "rejectionReasonDistribution": {},
+      "route": "unknown_revenue_model",
+      "sameOrLaterOuterTruthRead": false,
+      "selectedCandidateId": "unknown_structural_zero_abstain",
+      "selectedWeights": {},
+      "selectionStatus": "frozen_route_policy"
+    }
+  ],
+  "routeSpecificMetrics": {
+    "buyout_plus_sales": {
+      "suppressed": true,
+      "suppressionReason": "complementary_suppression"
+    },
+    "pure_buyout": {
+      "caseCount": 4358,
+      "mae": 11068.70280824,
+      "nullPredictionCount": 0,
+      "signedAggregateBias": 65.51871965,
+      "smape": 1.28978767,
+      "suppressed": false,
+      "uniqueWorkCount": 267,
+      "wape": 67.34575449,
+      "zeroImputationUsed": false
+    },
+    "pure_sales_share": {
+      "caseCount": 5683,
+      "mae": 4328.4454004,
+      "nullPredictionCount": 0,
+      "signedAggregateBias": 0.21047831,
+      "smape": 0.86541875,
+      "suppressed": false,
+      "uniqueWorkCount": 643,
+      "wape": 0.54338491,
+      "zeroImputationUsed": false
+    },
+    "unknown_revenue_model": {
+      "suppressed": true,
+      "suppressionReason": "primary_small_cell"
+    }
+  },
+  "schema": "m2.c2r_development_validation.v1",
+  "seals": {
+    "deferred60MonthLabelsOpened": false,
+    "embargoShadowOpened": false,
+    "finalHoldoutOpened": false
+  },
+  "structuralValidation": {
+    "C2ROwnFrozenIntervalProtocolPassed": true,
+    "caseKeysAndActualsMatchB4": true,
+    "channelAggregationReconciled": true,
+    "designCheckpointAncestor": true,
+    "finalHoldoutEmbargoAnd60MonthSealed": true,
+    "heldOutcomeFieldsAbsentAtLock": true,
+    "predictionLockedBeforeTruthJoin": true,
+    "productOutputFieldsExact": true,
+    "publicPredictionIntervalEndpointsAbsent": true,
+    "rawPredictionCompleteOnAllScoreable": true,
+    "samePredictAsOfEntryUsedForBacktestAndForward": true,
+    "scoreabilityAndServingStateMatchB4": true,
+    "servedNullIffAbstained": true,
+    "syntheticFuturePerturbationPassed": true
+  },
+  "version": "M2-C2R-development-validation-v1"
+}

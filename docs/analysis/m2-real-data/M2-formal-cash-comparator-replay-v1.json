@@ -1,0 +1,1593 @@
+{
+  "comparatorMetrics": {
+    "B0b": {
+      "businessCoverage": {
+        "endToEndBusinessGap": {
+          "mayBeNamedModelWape": false,
+          "normalizedAbsoluteGap": 0.60464482,
+          "nullServedPointTreatment": "unserved_cash_exposure_not_model_zero",
+          "signedAggregateGap": -0.09716858
+        },
+        "forecastableCashShareOfLedgerCash": 0.93710792,
+        "modelPopulationForecastableCashCoverage": 0.96871997,
+        "routeAbstainedCaseShare": 0.35768633,
+        "routeAbstainedForecastableCashShare": 0.03128003,
+        "routeAbstainedWorkCount": 268,
+        "routeAbstainedWorkShare": 0.25670498,
+        "scoreableForecastableCashActual": 82206415.6984,
+        "scoreableTotalLedgerCashActual": 87723530.8518,
+        "scoreableUncommittedBuyoutSurpriseActual": 5517115.1534,
+        "servedForecastableCashCoverage": 0.96871997,
+        "surpriseCashShareOfLedgerCash": 0.06289208
+      },
+      "caseState": {
+        "businessAbstainedModelPopulationCaseCount": 0,
+        "frozenCaseCount": 18615,
+        "modelPopulationCaseCount": 7851,
+        "modelPopulationWorkCount": 824,
+        "pureBuyoutCommitmentCaseCount": 0,
+        "pureBuyoutNoCommitmentCaseCount": 4358,
+        "rawPredictionCaseCount": 14041,
+        "routeAbstainedScoreableCaseCount": 4372,
+        "servedCaseCount": 7851,
+        "statisticallyScoreableCaseCount": 12223,
+        "zeroImputationUsed": false
+      },
+      "channel": {
+        "byRoute": {
+          "buyout_plus_sales": {
+            "aggregateMatchedChannelSignedBias": 0.23882381,
+            "aggregateMatchedChannelWape": 0.9544867,
+            "allWorkActualsStrictlyReconciled": true,
+            "allWorkPointsStrictlyReconciled": true,
+            "channelMetricIsWorkLevelModelWape": false,
+            "identifiersPresent": false,
+            "matchedComponentCaseCount": 11521,
+            "matchedForecastableCashShare": 0.77027095,
+            "maximumChannelSumToWorkPointAbsoluteDifference": 1.2e-07,
+            "maximumTruthComponentSumToWorkActualAbsoluteDifference": 0.0,
+            "predictedComponentCount": 11521,
+            "predictedWithoutTruthComponentCount": 0,
+            "truthWithoutPredictionCash": 7895011.8407,
+            "truthWithoutPredictionComponentCount": 18411,
+            "workCaseCount": 2168
+          },
+          "pure_sales_share": {
+            "aggregateMatchedChannelSignedBias": 0.15318159,
+            "aggregateMatchedChannelWape": 0.67747342,
+            "allWorkActualsStrictlyReconciled": true,
+            "allWorkPointsStrictlyReconciled": true,
+            "channelMetricIsWorkLevelModelWape": false,
+            "identifiersPresent": false,
+            "matchedComponentCaseCount": 14998,
+            "matchedForecastableCashShare": 0.88895666,
+            "maximumChannelSumToWorkPointAbsoluteDifference": 1.2e-07,
+            "maximumTruthComponentSumToWorkActualAbsoluteDifference": 0.0,
+            "predictedComponentCount": 14998,
+            "predictedWithoutTruthComponentCount": 0,
+            "truthWithoutPredictionCash": 5026751.24449999,
+            "truthWithoutPredictionComponentCount": 10412,
+            "workCaseCount": 5683
+          }
+        },
+        "overall": {
+          "aggregateMatchedChannelSignedBias": 0.18716416,
+          "aggregateMatchedChannelWape": 0.78742283,
+          "allWorkActualsStrictlyReconciled": true,
+          "allWorkPointsStrictlyReconciled": true,
+          "channelMetricIsWorkLevelModelWape": false,
+          "identifiersPresent": false,
+          "matchedComponentCaseCount": 26519,
+          "matchedForecastableCashShare": 0.83773763,
+          "maximumChannelSumToWorkPointAbsoluteDifference": 1.2e-07,
+          "maximumTruthComponentSumToWorkActualAbsoluteDifference": 0.0,
+          "predictedComponentCount": 26519,
+          "predictedWithoutTruthComponentCount": 0,
+          "truthWithoutPredictionCash": 12921763.08520001,
+          "truthWithoutPredictionComponentCount": 28823,
+          "workCaseCount": 7851
+        }
+      },
+      "highValue": {
+        "caseCount": 838,
+        "mae": 37323.03435299,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 0.02411108,
+        "smape": 0.65161277,
+        "uniqueWorkCount": 106,
+        "wape": 0.49475731,
+        "zeroImputationUsed": false
+      },
+      "highValueServed": {
+        "caseCount": 838,
+        "mae": 37323.03435299,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 0.02411108,
+        "smape": 0.65161277,
+        "uniqueWorkCount": 106,
+        "wape": 0.49475731,
+        "zeroImputationUsed": false
+      },
+      "horizons": {
+        "12": {
+          "caseCount": 1608,
+          "mae": 7117.47159803,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": -0.0302248,
+          "smape": 0.83904881,
+          "uniqueWorkCount": 643,
+          "wape": 0.50576154,
+          "zeroImputationUsed": false
+        },
+        "18": {
+          "caseCount": 995,
+          "mae": 12941.06764696,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.06996625,
+          "smape": 0.90717518,
+          "uniqueWorkCount": 556,
+          "wape": 0.6665236,
+          "zeroImputationUsed": false
+        },
+        "24": {
+          "caseCount": 444,
+          "mae": 20974.74126259,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.06809033,
+          "smape": 0.81446188,
+          "uniqueWorkCount": 301,
+          "wape": 0.88038134,
+          "zeroImputationUsed": false
+        },
+        "3": {
+          "caseCount": 2402,
+          "mae": 1713.24295008,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": -0.03655782,
+          "smape": 0.82976767,
+          "uniqueWorkCount": 824,
+          "wape": 0.47035799,
+          "zeroImputationUsed": false
+        },
+        "6": {
+          "caseCount": 2402,
+          "mae": 3840.07622486,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": -0.08189102,
+          "smape": 0.85491948,
+          "uniqueWorkCount": 824,
+          "wape": 0.50236105,
+          "zeroImputationUsed": false
+        }
+      },
+      "internal80": {
+        "availableCaseCount": 7851,
+        "completeOnModelPopulation": true,
+        "endpointsPresentInPublicReport": false,
+        "internal80Coverage": 0.85173863,
+        "meanWis": 5499.47914859,
+        "requiredCaseCount": 7851,
+        "standardizedWidth": 0.85084489
+      },
+      "modelPopulation": {
+        "caseCount": 7851,
+        "mae": 5983.07405644,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": -0.0054679,
+        "smape": 0.84830842,
+        "uniqueWorkCount": 824,
+        "wape": 0.58984794,
+        "zeroImputationUsed": false
+      },
+      "origins": {
+        "2020-12": {
+          "caseCount": 740,
+          "mae": 17505.71554693,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.27732199,
+          "smape": 0.86731381,
+          "uniqueWorkCount": 148,
+          "wape": 0.98045532,
+          "zeroImputationUsed": false
+        },
+        "2021-06": {
+          "caseCount": 1480,
+          "mae": 8758.21505783,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": -0.26743111,
+          "smape": 0.73075222,
+          "uniqueWorkCount": 296,
+          "wape": 0.7429085,
+          "zeroImputationUsed": false
+        },
+        "2021-12": {
+          "caseCount": 2204,
+          "mae": 5880.25471598,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.046415,
+          "smape": 0.96373926,
+          "uniqueWorkCount": 551,
+          "wape": 0.51319462,
+          "zeroImputationUsed": false
+        },
+        "2022-06": {
+          "caseCount": 1839,
+          "mae": 2629.14447741,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": -0.05192231,
+          "smape": 0.77704307,
+          "uniqueWorkCount": 613,
+          "wape": 0.32079652,
+          "zeroImputationUsed": false
+        },
+        "2022-12": {
+          "caseCount": 1588,
+          "mae": 2053.93484813,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.02045301,
+          "smape": 0.87133524,
+          "uniqueWorkCount": 794,
+          "wape": 0.37706605,
+          "zeroImputationUsed": false
+        }
+      },
+      "routes": {
+        "buyout_plus_sales": {
+          "caseCount": 2168,
+          "mae": 11279.20351049,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": -0.04577001,
+          "smape": 0.91046857,
+          "uniqueWorkCount": 214,
+          "wape": 0.7115377,
+          "zeroImputationUsed": false
+        },
+        "pure_sales_share": {
+          "caseCount": 5683,
+          "mae": 3962.66077888,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.02512845,
+          "smape": 0.82459503,
+          "uniqueWorkCount": 643,
+          "wape": 0.49746499,
+          "zeroImputationUsed": false
+        }
+      },
+      "segments": {
+        "lifecycle": {
+          "unknown": {
+            "caseCount": 7851,
+            "mae": 5983.07405644,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": -0.0054679,
+            "smape": 0.84830842,
+            "suppressed": false,
+            "uniqueWorkCount": 824,
+            "wape": 0.58984794,
+            "zeroImputationUsed": false
+          }
+        },
+        "sourcePostHoc": {
+          "出版物": {
+            "caseCount": 4591,
+            "mae": 8130.12831196,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": -0.0080636,
+            "smape": 0.84063145,
+            "suppressed": false,
+            "uniqueWorkCount": 493,
+            "wape": 0.597645,
+            "zeroImputationUsed": false
+          },
+          "网文": {
+            "caseCount": 3260,
+            "mae": 2959.41574752,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.00396721,
+            "smape": 0.85911975,
+            "suppressed": false,
+            "uniqueWorkCount": 331,
+            "wape": 0.56150638,
+            "zeroImputationUsed": false
+          }
+        }
+      },
+      "served": {
+        "caseCount": 7851,
+        "mae": 5983.07405644,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": -0.0054679,
+        "smape": 0.84830842,
+        "uniqueWorkCount": 824,
+        "wape": 0.58984794,
+        "zeroImputationUsed": false
+      },
+      "topBands": {
+        "top1": {
+          "caseCount": 80,
+          "mae": 112230.25618874,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": -0.0101926,
+          "smape": 0.63543087,
+          "uniqueWorkCount": 17,
+          "wape": 0.31594659,
+          "zeroImputationUsed": false
+        },
+        "top10": {
+          "caseCount": 838,
+          "mae": 37323.03435299,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.02411108,
+          "smape": 0.65161277,
+          "uniqueWorkCount": 106,
+          "wape": 0.49475731,
+          "zeroImputationUsed": false
+        },
+        "top5": {
+          "caseCount": 447,
+          "mae": 54571.49996445,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.03091934,
+          "smape": 0.61142385,
+          "uniqueWorkCount": 54,
+          "wape": 0.44576054,
+          "zeroImputationUsed": false
+        }
+      }
+    },
+    "B1": {
+      "businessCoverage": {
+        "endToEndBusinessGap": {
+          "mayBeNamedModelWape": false,
+          "normalizedAbsoluteGap": 0.78152398,
+          "nullServedPointTreatment": "unserved_cash_exposure_not_model_zero",
+          "signedAggregateGap": 0.24821124
+        },
+        "forecastableCashShareOfLedgerCash": 0.93710792,
+        "modelPopulationForecastableCashCoverage": 0.96871997,
+        "routeAbstainedCaseShare": 0.35768633,
+        "routeAbstainedForecastableCashShare": 0.03128003,
+        "routeAbstainedWorkCount": 268,
+        "routeAbstainedWorkShare": 0.25670498,
+        "scoreableForecastableCashActual": 82206415.6984,
+        "scoreableTotalLedgerCashActual": 87723530.8518,
+        "scoreableUncommittedBuyoutSurpriseActual": 5517115.1534,
+        "servedForecastableCashCoverage": 0.96871997,
+        "surpriseCashShareOfLedgerCash": 0.06289208
+      },
+      "caseState": {
+        "businessAbstainedModelPopulationCaseCount": 0,
+        "frozenCaseCount": 18615,
+        "modelPopulationCaseCount": 7851,
+        "modelPopulationWorkCount": 824,
+        "pureBuyoutCommitmentCaseCount": 0,
+        "pureBuyoutNoCommitmentCaseCount": 4358,
+        "rawPredictionCaseCount": 14041,
+        "routeAbstainedScoreableCaseCount": 4372,
+        "servedCaseCount": 7851,
+        "statisticallyScoreableCaseCount": 12223,
+        "zeroImputationUsed": false
+      },
+      "channel": {
+        "byRoute": {
+          "buyout_plus_sales": {
+            "aggregateMatchedChannelSignedBias": 0.92805398,
+            "aggregateMatchedChannelWape": 1.62066326,
+            "allWorkActualsStrictlyReconciled": true,
+            "allWorkPointsStrictlyReconciled": true,
+            "channelMetricIsWorkLevelModelWape": false,
+            "identifiersPresent": false,
+            "matchedComponentCaseCount": 11521,
+            "matchedForecastableCashShare": 0.77027095,
+            "maximumChannelSumToWorkPointAbsoluteDifference": 8e-08,
+            "maximumTruthComponentSumToWorkActualAbsoluteDifference": 0.0,
+            "predictedComponentCount": 11521,
+            "predictedWithoutTruthComponentCount": 0,
+            "truthWithoutPredictionCash": 7895011.8407,
+            "truthWithoutPredictionComponentCount": 18411,
+            "workCaseCount": 2168
+          },
+          "pure_sales_share": {
+            "aggregateMatchedChannelSignedBias": 0.45269496,
+            "aggregateMatchedChannelWape": 0.82442074,
+            "allWorkActualsStrictlyReconciled": true,
+            "allWorkPointsStrictlyReconciled": true,
+            "channelMetricIsWorkLevelModelWape": false,
+            "identifiersPresent": false,
+            "matchedComponentCaseCount": 14998,
+            "matchedForecastableCashShare": 0.88895666,
+            "maximumChannelSumToWorkPointAbsoluteDifference": 8e-08,
+            "maximumTruthComponentSumToWorkActualAbsoluteDifference": 0.0,
+            "predictedComponentCount": 14998,
+            "predictedWithoutTruthComponentCount": 0,
+            "truthWithoutPredictionCash": 5026751.24449999,
+            "truthWithoutPredictionComponentCount": 10412,
+            "workCaseCount": 5683
+          }
+        },
+        "overall": {
+          "aggregateMatchedChannelSignedBias": 0.64131601,
+          "aggregateMatchedChannelWape": 1.14045756,
+          "allWorkActualsStrictlyReconciled": true,
+          "allWorkPointsStrictlyReconciled": true,
+          "channelMetricIsWorkLevelModelWape": false,
+          "identifiersPresent": false,
+          "matchedComponentCaseCount": 26519,
+          "matchedForecastableCashShare": 0.83773763,
+          "maximumChannelSumToWorkPointAbsoluteDifference": 8e-08,
+          "maximumTruthComponentSumToWorkActualAbsoluteDifference": 0.0,
+          "predictedComponentCount": 26519,
+          "predictedWithoutTruthComponentCount": 0,
+          "truthWithoutPredictionCash": 12921763.08520001,
+          "truthWithoutPredictionComponentCount": 28823,
+          "workCaseCount": 7851
+        }
+      },
+      "highValue": {
+        "caseCount": 838,
+        "mae": 56039.7668472,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 0.45056761,
+        "smape": 0.68872139,
+        "uniqueWorkCount": 106,
+        "wape": 0.7428679,
+        "zeroImputationUsed": false
+      },
+      "highValueServed": {
+        "caseCount": 838,
+        "mae": 56039.7668472,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 0.45056761,
+        "smape": 0.68872139,
+        "uniqueWorkCount": 106,
+        "wape": 0.7428679,
+        "zeroImputationUsed": false
+      },
+      "horizons": {
+        "12": {
+          "caseCount": 1608,
+          "mae": 8899.02682475,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.26642901,
+          "smape": 0.89026048,
+          "uniqueWorkCount": 643,
+          "wape": 0.63235735,
+          "zeroImputationUsed": false
+        },
+        "18": {
+          "caseCount": 995,
+          "mae": 17531.74782367,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.50379527,
+          "smape": 0.94866382,
+          "uniqueWorkCount": 556,
+          "wape": 0.90296442,
+          "zeroImputationUsed": false
+        },
+        "24": {
+          "caseCount": 444,
+          "mae": 35644.27758807,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.90032702,
+          "smape": 0.87714366,
+          "uniqueWorkCount": 301,
+          "wape": 1.49611175,
+          "zeroImputationUsed": false
+        },
+        "3": {
+          "caseCount": 2402,
+          "mae": 2073.17320682,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.20730668,
+          "smape": 0.9035495,
+          "uniqueWorkCount": 824,
+          "wape": 0.56917414,
+          "zeroImputationUsed": false
+        },
+        "6": {
+          "caseCount": 2402,
+          "mae": 4449.25313366,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.15050776,
+          "smape": 0.89117652,
+          "uniqueWorkCount": 824,
+          "wape": 0.58205394,
+          "zeroImputationUsed": false
+        }
+      },
+      "internal80": {
+        "availableCaseCount": 7851,
+        "completeOnModelPopulation": true,
+        "endpointsPresentInPublicReport": false,
+        "internal80Coverage": 0.85199338,
+        "meanWis": 7441.04902793,
+        "requiredCaseCount": 7851,
+        "standardizedWidth": 0.98729484
+      },
+      "modelPopulation": {
+        "caseCount": 7851,
+        "mae": 8055.87205931,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 0.37499219,
+        "smape": 0.90126647,
+        "uniqueWorkCount": 824,
+        "wape": 0.79419701,
+        "zeroImputationUsed": false
+      },
+      "origins": {
+        "2020-12": {
+          "caseCount": 740,
+          "mae": 37835.1597078,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 1.65888972,
+          "smape": 0.89907894,
+          "uniqueWorkCount": 148,
+          "wape": 2.11906125,
+          "zeroImputationUsed": false
+        },
+        "2021-06": {
+          "caseCount": 1480,
+          "mae": 9496.95737091,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.01084095,
+          "smape": 0.79380104,
+          "uniqueWorkCount": 296,
+          "wape": 0.80557172,
+          "zeroImputationUsed": false
+        },
+        "2021-12": {
+          "caseCount": 2204,
+          "mae": 5688.14092577,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.19899143,
+          "smape": 0.9793743,
+          "uniqueWorkCount": 551,
+          "wape": 0.49642803,
+          "zeroImputationUsed": false
+        },
+        "2022-06": {
+          "caseCount": 1839,
+          "mae": 2593.32102991,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.07878213,
+          "smape": 0.86963188,
+          "uniqueWorkCount": 613,
+          "wape": 0.31642551,
+          "zeroImputationUsed": false
+        },
+        "2022-12": {
+          "caseCount": 1588,
+          "mae": 2447.95747516,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.17835011,
+          "smape": 0.93067071,
+          "uniqueWorkCount": 794,
+          "wape": 0.44940163,
+          "zeroImputationUsed": false
+        }
+      },
+      "routes": {
+        "buyout_plus_sales": {
+          "caseCount": 2168,
+          "mae": 16744.16724017,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.48512398,
+          "smape": 0.93967634,
+          "uniqueWorkCount": 214,
+          "wape": 1.05628967,
+          "zeroImputationUsed": false
+        },
+        "pure_sales_share": {
+          "caseCount": 5683,
+          "mae": 4741.38605683,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.29138286,
+          "smape": 0.88661354,
+          "uniqueWorkCount": 643,
+          "wape": 0.5952247,
+          "zeroImputationUsed": false
+        }
+      },
+      "segments": {
+        "lifecycle": {
+          "unknown": {
+            "caseCount": 7851,
+            "mae": 8055.87205931,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.37499219,
+            "smape": 0.90126647,
+            "suppressed": false,
+            "uniqueWorkCount": 824,
+            "wape": 0.79419701,
+            "zeroImputationUsed": false
+          }
+        },
+        "sourcePostHoc": {
+          "出版物": {
+            "caseCount": 4591,
+            "mae": 8692.02339342,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.21387478,
+            "smape": 0.86847215,
+            "suppressed": false,
+            "uniqueWorkCount": 493,
+            "wape": 0.63894986,
+            "zeroImputationUsed": false
+          },
+          "网文": {
+            "caseCount": 3260,
+            "mae": 7159.99145352,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.96063958,
+            "smape": 0.94745012,
+            "suppressed": false,
+            "uniqueWorkCount": 331,
+            "wape": 1.35850493,
+            "zeroImputationUsed": false
+          }
+        }
+      },
+      "served": {
+        "caseCount": 7851,
+        "mae": 8055.87205931,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 0.37499219,
+        "smape": 0.90126647,
+        "uniqueWorkCount": 824,
+        "wape": 0.79419701,
+        "zeroImputationUsed": false
+      },
+      "topBands": {
+        "top1": {
+          "caseCount": 80,
+          "mae": 278465.35642906,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.6303349,
+          "smape": 0.65900347,
+          "uniqueWorkCount": 17,
+          "wape": 0.78392567,
+          "zeroImputationUsed": false
+        },
+        "top10": {
+          "caseCount": 838,
+          "mae": 56039.7668472,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.45056761,
+          "smape": 0.68872139,
+          "uniqueWorkCount": 106,
+          "wape": 0.7428679,
+          "zeroImputationUsed": false
+        },
+        "top5": {
+          "caseCount": 447,
+          "mae": 89301.68376974,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.48243234,
+          "smape": 0.6417969,
+          "uniqueWorkCount": 54,
+          "wape": 0.72944974,
+          "zeroImputationUsed": false
+        }
+      }
+    },
+    "B3": {
+      "businessCoverage": {
+        "endToEndBusinessGap": {
+          "mayBeNamedModelWape": false,
+          "normalizedAbsoluteGap": 0.60108166,
+          "nullServedPointTreatment": "unserved_cash_exposure_not_model_zero",
+          "signedAggregateGap": 0.02410572
+        },
+        "forecastableCashShareOfLedgerCash": 0.93710792,
+        "modelPopulationForecastableCashCoverage": 0.96871997,
+        "routeAbstainedCaseShare": 0.35768633,
+        "routeAbstainedForecastableCashShare": 0.03128003,
+        "routeAbstainedWorkCount": 268,
+        "routeAbstainedWorkShare": 0.25670498,
+        "scoreableForecastableCashActual": 82206415.6984,
+        "scoreableTotalLedgerCashActual": 87723530.8518,
+        "scoreableUncommittedBuyoutSurpriseActual": 5517115.1534,
+        "servedForecastableCashCoverage": 0.96871997,
+        "surpriseCashShareOfLedgerCash": 0.06289208
+      },
+      "caseState": {
+        "businessAbstainedModelPopulationCaseCount": 0,
+        "frozenCaseCount": 18615,
+        "modelPopulationCaseCount": 7851,
+        "modelPopulationWorkCount": 824,
+        "pureBuyoutCommitmentCaseCount": 0,
+        "pureBuyoutNoCommitmentCaseCount": 4358,
+        "rawPredictionCaseCount": 14041,
+        "routeAbstainedScoreableCaseCount": 4372,
+        "servedCaseCount": 7851,
+        "statisticallyScoreableCaseCount": 12223,
+        "zeroImputationUsed": false
+      },
+      "channel": {
+        "byRoute": {
+          "buyout_plus_sales": {
+            "aggregateMatchedChannelSignedBias": 0.30914595,
+            "aggregateMatchedChannelWape": 1.01363768,
+            "allWorkActualsStrictlyReconciled": true,
+            "allWorkPointsStrictlyReconciled": true,
+            "channelMetricIsWorkLevelModelWape": false,
+            "identifiersPresent": false,
+            "matchedComponentCaseCount": 11521,
+            "matchedForecastableCashShare": 0.77027095,
+            "maximumChannelSumToWorkPointAbsoluteDifference": 1.2e-07,
+            "maximumTruthComponentSumToWorkActualAbsoluteDifference": 0.0,
+            "predictedComponentCount": 11521,
+            "predictedWithoutTruthComponentCount": 0,
+            "truthWithoutPredictionCash": 7895011.8407,
+            "truthWithoutPredictionComponentCount": 18411,
+            "workCaseCount": 2168
+          },
+          "pure_sales_share": {
+            "aggregateMatchedChannelSignedBias": 0.37129083,
+            "aggregateMatchedChannelWape": 0.76642018,
+            "allWorkActualsStrictlyReconciled": true,
+            "allWorkPointsStrictlyReconciled": true,
+            "channelMetricIsWorkLevelModelWape": false,
+            "identifiersPresent": false,
+            "matchedComponentCaseCount": 14998,
+            "matchedForecastableCashShare": 0.88895666,
+            "maximumChannelSumToWorkPointAbsoluteDifference": 1.3e-07,
+            "maximumTruthComponentSumToWorkActualAbsoluteDifference": 0.0,
+            "predictedComponentCount": 14998,
+            "predictedWithoutTruthComponentCount": 0,
+            "truthWithoutPredictionCash": 5026751.24449999,
+            "truthWithoutPredictionComponentCount": 10412,
+            "workCaseCount": 5683
+          }
+        },
+        "overall": {
+          "aggregateMatchedChannelSignedBias": 0.34663193,
+          "aggregateMatchedChannelWape": 0.86454334,
+          "allWorkActualsStrictlyReconciled": true,
+          "allWorkPointsStrictlyReconciled": true,
+          "channelMetricIsWorkLevelModelWape": false,
+          "identifiersPresent": false,
+          "matchedComponentCaseCount": 26519,
+          "matchedForecastableCashShare": 0.83773763,
+          "maximumChannelSumToWorkPointAbsoluteDifference": 1.3e-07,
+          "maximumTruthComponentSumToWorkActualAbsoluteDifference": 0.0,
+          "predictedComponentCount": 26519,
+          "predictedWithoutTruthComponentCount": 0,
+          "truthWithoutPredictionCash": 12921763.08520001,
+          "truthWithoutPredictionComponentCount": 28823,
+          "workCaseCount": 7851
+        }
+      },
+      "highValue": {
+        "caseCount": 838,
+        "mae": 35586.64638442,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 0.14068836,
+        "smape": 0.63594603,
+        "uniqueWorkCount": 106,
+        "wape": 0.4717396,
+        "zeroImputationUsed": false
+      },
+      "highValueServed": {
+        "caseCount": 838,
+        "mae": 35586.64638442,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 0.14068836,
+        "smape": 0.63594603,
+        "uniqueWorkCount": 106,
+        "wape": 0.4717396,
+        "zeroImputationUsed": false
+      },
+      "horizons": {
+        "12": {
+          "caseCount": 1608,
+          "mae": 6989.9914104,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.09095233,
+          "smape": 0.86093043,
+          "uniqueWorkCount": 643,
+          "wape": 0.4967029,
+          "zeroImputationUsed": false
+        },
+        "18": {
+          "caseCount": 995,
+          "mae": 12581.99376403,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.20213716,
+          "smape": 0.91548381,
+          "uniqueWorkCount": 556,
+          "wape": 0.64802966,
+          "zeroImputationUsed": false
+        },
+        "24": {
+          "caseCount": 444,
+          "mae": 23474.86457574,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.29777782,
+          "smape": 0.80091293,
+          "uniqueWorkCount": 301,
+          "wape": 0.98532003,
+          "zeroImputationUsed": false
+        },
+        "3": {
+          "caseCount": 2402,
+          "mae": 1665.99839002,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.07444572,
+          "smape": 0.85766245,
+          "uniqueWorkCount": 824,
+          "wape": 0.45738735,
+          "zeroImputationUsed": false
+        },
+        "6": {
+          "caseCount": 2402,
+          "mae": 3653.79428771,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.02389738,
+          "smape": 0.8515694,
+          "uniqueWorkCount": 824,
+          "wape": 0.47799154,
+          "zeroImputationUsed": false
+        }
+      },
+      "internal80": {
+        "availableCaseCount": 7851,
+        "completeOnModelPopulation": true,
+        "endpointsPresentInPublicReport": false,
+        "internal80Coverage": 0.85441345,
+        "meanWis": 5490.44739076,
+        "requiredCaseCount": 7851,
+        "standardizedWidth": 0.79572265
+      },
+      "modelPopulation": {
+        "caseCount": 7851,
+        "mae": 5981.40005944,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 0.12812424,
+        "smape": 0.86058627,
+        "uniqueWorkCount": 824,
+        "wape": 0.58968291,
+        "zeroImputationUsed": false
+      },
+      "origins": {
+        "2020-12": {
+          "caseCount": 740,
+          "mae": 20161.08814465,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.53142442,
+          "smape": 0.79066256,
+          "uniqueWorkCount": 148,
+          "wape": 1.1291767,
+          "zeroImputationUsed": false
+        },
+        "2021-06": {
+          "caseCount": 1480,
+          "mae": 8947.36383612,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": -0.09431473,
+          "smape": 0.74838855,
+          "uniqueWorkCount": 296,
+          "wape": 0.75895289,
+          "zeroImputationUsed": false
+        },
+        "2021-12": {
+          "caseCount": 2204,
+          "mae": 4802.36219263,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.10914098,
+          "smape": 0.9747386,
+          "uniqueWorkCount": 551,
+          "wape": 0.41912239,
+          "zeroImputationUsed": false
+        },
+        "2022-06": {
+          "caseCount": 1839,
+          "mae": 2549.60794122,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.06882355,
+          "smape": 0.82496413,
+          "uniqueWorkCount": 613,
+          "wape": 0.31109183,
+          "zeroImputationUsed": false
+        },
+        "2022-12": {
+          "caseCount": 1588,
+          "mae": 2220.10887011,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.1195239,
+          "smape": 0.880557,
+          "uniqueWorkCount": 794,
+          "wape": 0.40757266,
+          "zeroImputationUsed": false
+        }
+      },
+      "routes": {
+        "buyout_plus_sales": {
+          "caseCount": 2168,
+          "mae": 10068.01584664,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.0083971,
+          "smape": 0.89384156,
+          "uniqueWorkCount": 214,
+          "wape": 0.63513109,
+          "zeroImputationUsed": false
+        },
+        "pure_sales_share": {
+          "caseCount": 5683,
+          "mae": 4422.40251824,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.21901812,
+          "smape": 0.84789975,
+          "uniqueWorkCount": 643,
+          "wape": 0.55518011,
+          "zeroImputationUsed": false
+        }
+      },
+      "segments": {
+        "lifecycle": {
+          "unknown": {
+            "caseCount": 7851,
+            "mae": 5981.40005944,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.12812424,
+            "smape": 0.86058627,
+            "suppressed": false,
+            "uniqueWorkCount": 824,
+            "wape": 0.58968291,
+            "zeroImputationUsed": false
+          }
+        },
+        "sourcePostHoc": {
+          "出版物": {
+            "caseCount": 4591,
+            "mae": 7519.53981714,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.09171265,
+            "smape": 0.82527885,
+            "suppressed": false,
+            "uniqueWorkCount": 493,
+            "wape": 0.5527607,
+            "zeroImputationUsed": false
+          },
+          "网文": {
+            "caseCount": 3260,
+            "mae": 3815.26520435,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.26047712,
+            "smape": 0.91030908,
+            "suppressed": false,
+            "uniqueWorkCount": 331,
+            "wape": 0.72389145,
+            "zeroImputationUsed": false
+          }
+        }
+      },
+      "served": {
+        "caseCount": 7851,
+        "mae": 5981.40005944,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 0.12812424,
+        "smape": 0.86058627,
+        "uniqueWorkCount": 824,
+        "wape": 0.58968291,
+        "zeroImputationUsed": false
+      },
+      "topBands": {
+        "top1": {
+          "caseCount": 80,
+          "mae": 113529.75310409,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.16305455,
+          "smape": 0.57474415,
+          "uniqueWorkCount": 17,
+          "wape": 0.31960488,
+          "zeroImputationUsed": false
+        },
+        "top10": {
+          "caseCount": 838,
+          "mae": 35586.64638442,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.14068836,
+          "smape": 0.63594603,
+          "uniqueWorkCount": 106,
+          "wape": 0.4717396,
+          "zeroImputationUsed": false
+        },
+        "top5": {
+          "caseCount": 447,
+          "mae": 52181.18547147,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.14546847,
+          "smape": 0.56844481,
+          "uniqueWorkCount": 54,
+          "wape": 0.42623555,
+          "zeroImputationUsed": false
+        }
+      }
+    },
+    "B4": {
+      "businessCoverage": {
+        "endToEndBusinessGap": {
+          "mayBeNamedModelWape": false,
+          "normalizedAbsoluteGap": 0.5704838,
+          "nullServedPointTreatment": "unserved_cash_exposure_not_model_zero",
+          "signedAggregateGap": -0.01131025
+        },
+        "forecastableCashShareOfLedgerCash": 0.93710792,
+        "modelPopulationForecastableCashCoverage": 0.96871997,
+        "routeAbstainedCaseShare": 0.35768633,
+        "routeAbstainedForecastableCashShare": 0.03128003,
+        "routeAbstainedWorkCount": 268,
+        "routeAbstainedWorkShare": 0.25670498,
+        "scoreableForecastableCashActual": 82206415.6984,
+        "scoreableTotalLedgerCashActual": 87723530.8518,
+        "scoreableUncommittedBuyoutSurpriseActual": 5517115.1534,
+        "servedForecastableCashCoverage": 0.96871997,
+        "surpriseCashShareOfLedgerCash": 0.06289208
+      },
+      "caseState": {
+        "businessAbstainedModelPopulationCaseCount": 0,
+        "frozenCaseCount": 18615,
+        "modelPopulationCaseCount": 7851,
+        "modelPopulationWorkCount": 824,
+        "pureBuyoutCommitmentCaseCount": 0,
+        "pureBuyoutNoCommitmentCaseCount": 4358,
+        "rawPredictionCaseCount": 14041,
+        "routeAbstainedScoreableCaseCount": 4372,
+        "servedCaseCount": 7851,
+        "statisticallyScoreableCaseCount": 12223,
+        "zeroImputationUsed": false
+      },
+      "channel": {
+        "byRoute": {
+          "buyout_plus_sales": {
+            "aggregateMatchedChannelSignedBias": 0.31030536,
+            "aggregateMatchedChannelWape": 1.02600511,
+            "allWorkActualsStrictlyReconciled": true,
+            "allWorkPointsStrictlyReconciled": true,
+            "channelMetricIsWorkLevelModelWape": false,
+            "identifiersPresent": false,
+            "matchedComponentCaseCount": 11521,
+            "matchedForecastableCashShare": 0.77027095,
+            "maximumChannelSumToWorkPointAbsoluteDifference": 1.1e-07,
+            "maximumTruthComponentSumToWorkActualAbsoluteDifference": 0.0,
+            "predictedComponentCount": 11521,
+            "predictedWithoutTruthComponentCount": 0,
+            "truthWithoutPredictionCash": 7895011.8407,
+            "truthWithoutPredictionComponentCount": 18411,
+            "workCaseCount": 2168
+          },
+          "pure_sales_share": {
+            "aggregateMatchedChannelSignedBias": 0.29332415,
+            "aggregateMatchedChannelWape": 0.7028019,
+            "allWorkActualsStrictlyReconciled": true,
+            "allWorkPointsStrictlyReconciled": true,
+            "channelMetricIsWorkLevelModelWape": false,
+            "identifiersPresent": false,
+            "matchedComponentCaseCount": 14998,
+            "matchedForecastableCashShare": 0.88895666,
+            "maximumChannelSumToWorkPointAbsoluteDifference": 1.1e-07,
+            "maximumTruthComponentSumToWorkActualAbsoluteDifference": 0.0,
+            "predictedComponentCount": 14998,
+            "predictedWithoutTruthComponentCount": 0,
+            "truthWithoutPredictionCash": 5026751.24449999,
+            "truthWithoutPredictionComponentCount": 10412,
+            "workCaseCount": 5683
+          }
+        },
+        "overall": {
+          "aggregateMatchedChannelSignedBias": 0.30006224,
+          "aggregateMatchedChannelWape": 0.83108456,
+          "allWorkActualsStrictlyReconciled": true,
+          "allWorkPointsStrictlyReconciled": true,
+          "channelMetricIsWorkLevelModelWape": false,
+          "identifiersPresent": false,
+          "matchedComponentCaseCount": 26519,
+          "matchedForecastableCashShare": 0.83773763,
+          "maximumChannelSumToWorkPointAbsoluteDifference": 1.1e-07,
+          "maximumTruthComponentSumToWorkActualAbsoluteDifference": 0.0,
+          "predictedComponentCount": 26519,
+          "predictedWithoutTruthComponentCount": 0,
+          "truthWithoutPredictionCash": 12921763.08520001,
+          "truthWithoutPredictionComponentCount": 28823,
+          "workCaseCount": 7851
+        }
+      },
+      "highValue": {
+        "caseCount": 838,
+        "mae": 34822.69193225,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 0.12053375,
+        "smape": 0.63165475,
+        "uniqueWorkCount": 106,
+        "wape": 0.46161256,
+        "zeroImputationUsed": false
+      },
+      "highValueServed": {
+        "caseCount": 838,
+        "mae": 34822.69193225,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 0.12053375,
+        "smape": 0.63165475,
+        "uniqueWorkCount": 106,
+        "wape": 0.46161256,
+        "zeroImputationUsed": false
+      },
+      "horizons": {
+        "12": {
+          "caseCount": 1608,
+          "mae": 6905.23971964,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.08235395,
+          "smape": 0.88994324,
+          "uniqueWorkCount": 643,
+          "wape": 0.49068052,
+          "zeroImputationUsed": false
+        },
+        "18": {
+          "caseCount": 995,
+          "mae": 11766.04028633,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.15506318,
+          "smape": 0.93038568,
+          "uniqueWorkCount": 556,
+          "wape": 0.60600436,
+          "zeroImputationUsed": false
+        },
+        "24": {
+          "caseCount": 444,
+          "mae": 18882.54334908,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.08781557,
+          "smape": 0.79784221,
+          "uniqueWorkCount": 301,
+          "wape": 0.79256467,
+          "zeroImputationUsed": false
+        },
+        "3": {
+          "caseCount": 2402,
+          "mae": 1725.29955182,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.08276225,
+          "smape": 0.89670621,
+          "uniqueWorkCount": 824,
+          "wape": 0.47366804,
+          "zeroImputationUsed": false
+        },
+        "6": {
+          "caseCount": 2402,
+          "mae": 3737.44099534,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.03181732,
+          "smape": 0.89522543,
+          "uniqueWorkCount": 824,
+          "wape": 0.48893425,
+          "zeroImputationUsed": false
+        }
+      },
+      "internal80": {
+        "availableCaseCount": 7851,
+        "completeOnModelPopulation": true,
+        "endpointsPresentInPublicReport": false,
+        "internal80Coverage": 0.84931856,
+        "meanWis": 5083.9383291,
+        "requiredCaseCount": 7851,
+        "standardizedWidth": 0.85006062
+      },
+      "modelPopulation": {
+        "caseCount": 7851,
+        "mae": 5644.65515162,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 0.08911106,
+        "smape": 0.89354531,
+        "uniqueWorkCount": 824,
+        "wape": 0.55648454,
+        "zeroImputationUsed": false
+      },
+      "origins": {
+        "2020-12": {
+          "caseCount": 740,
+          "mae": 10962.94197495,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": -0.05028284,
+          "smape": 0.71794902,
+          "uniqueWorkCount": 148,
+          "wape": 0.61400945,
+          "zeroImputationUsed": false
+        },
+        "2021-06": {
+          "caseCount": 1480,
+          "mae": 9636.34020923,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.0120419,
+          "smape": 0.76742144,
+          "uniqueWorkCount": 296,
+          "wape": 0.81739476,
+          "zeroImputationUsed": false
+        },
+        "2021-12": {
+          "caseCount": 2204,
+          "mae": 5658.15132527,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.17403297,
+          "smape": 1.01160292,
+          "uniqueWorkCount": 551,
+          "wape": 0.49381072,
+          "zeroImputationUsed": false
+        },
+        "2022-06": {
+          "caseCount": 1839,
+          "mae": 2848.7711643,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.11662958,
+          "smape": 0.86666397,
+          "uniqueWorkCount": 613,
+          "wape": 0.3475944,
+          "zeroImputationUsed": false
+        },
+        "2022-12": {
+          "caseCount": 1588,
+          "mae": 2665.22124194,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.16160826,
+          "smape": 0.96019543,
+          "uniqueWorkCount": 794,
+          "wape": 0.4892874,
+          "zeroImputationUsed": false
+        }
+      },
+      "routes": {
+        "buyout_plus_sales": {
+          "caseCount": 2168,
+          "mae": 9753.64302551,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.00929016,
+          "smape": 0.86882153,
+          "uniqueWorkCount": 214,
+          "wape": 0.61529918,
+          "zeroImputationUsed": false
+        },
+        "pure_sales_share": {
+          "caseCount": 5683,
+          "mae": 4077.12291326,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.14970912,
+          "smape": 0.90297715,
+          "uniqueWorkCount": 643,
+          "wape": 0.51183435,
+          "zeroImputationUsed": false
+        }
+      },
+      "segments": {
+        "lifecycle": {
+          "unknown": {
+            "caseCount": 7851,
+            "mae": 5644.65515162,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.08911106,
+            "smape": 0.89354531,
+            "suppressed": false,
+            "uniqueWorkCount": 824,
+            "wape": 0.55648454,
+            "zeroImputationUsed": false
+          }
+        },
+        "sourcePostHoc": {
+          "出版物": {
+            "caseCount": 4591,
+            "mae": 7459.80133433,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.08264505,
+            "smape": 0.87538384,
+            "suppressed": false,
+            "uniqueWorkCount": 493,
+            "wape": 0.54836933,
+            "zeroImputationUsed": false
+          },
+          "网文": {
+            "caseCount": 3260,
+            "mae": 3088.41707652,
+            "nullPredictionCount": 0,
+            "signedAggregateBias": 0.11261445,
+            "smape": 0.91912178,
+            "suppressed": false,
+            "uniqueWorkCount": 331,
+            "wape": 0.58598252,
+            "zeroImputationUsed": false
+          }
+        }
+      },
+      "served": {
+        "caseCount": 7851,
+        "mae": 5644.65515162,
+        "nullPredictionCount": 0,
+        "signedAggregateBias": 0.08911106,
+        "smape": 0.89354531,
+        "uniqueWorkCount": 824,
+        "wape": 0.55648454,
+        "zeroImputationUsed": false
+      },
+      "topBands": {
+        "top1": {
+          "caseCount": 80,
+          "mae": 64466.32250584,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.02301964,
+          "smape": 0.31061378,
+          "uniqueWorkCount": 17,
+          "wape": 0.18148328,
+          "zeroImputationUsed": false
+        },
+        "top10": {
+          "caseCount": 838,
+          "mae": 34822.69193225,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.12053375,
+          "smape": 0.63165475,
+          "uniqueWorkCount": 106,
+          "wape": 0.46161256,
+          "zeroImputationUsed": false
+        },
+        "top5": {
+          "caseCount": 447,
+          "mae": 48766.66800336,
+          "nullPredictionCount": 0,
+          "signedAggregateBias": 0.10636444,
+          "smape": 0.55997765,
+          "uniqueWorkCount": 54,
+          "wape": 0.39834449,
+          "zeroImputationUsed": false
+        }
+      }
+    }
+  },
+  "comparatorSelection": {
+    "B0aSelectionEligible": false,
+    "empiricalWapeLeader": "B4",
+    "evidence": {
+      "B0b": {
+        "allFourConditions": false,
+        "bootstrapCiEntirelyInsideEquivalenceRegion": false,
+        "bootstrapRelativeCi": {
+          "lower": -0.17222959,
+          "upper": 0.42277639
+        },
+        "noTop10OrHorizonRegressionOverTwoPercent": false,
+        "relativeWapeDifference": 0.05995387,
+        "relativeWapeWithinOnePercent": false,
+        "signedBiasDifferenceWithinTwoPoints": false,
+        "top10AndHorizonRegressions": {
+          "horizon_12": 0.0307349,
+          "horizon_18": 0.099866,
+          "horizon_24": 0.11080064,
+          "horizon_3": -0.00698812,
+          "horizon_6": 0.02746136,
+          "top10": 0.0718021
+        }
+      },
+      "B1": {
+        "allFourConditions": false,
+        "bootstrapCiEntirelyInsideEquivalenceRegion": false,
+        "bootstrapRelativeCi": {
+          "lower": -0.08538756,
+          "upper": 2.0639175
+        },
+        "noTop10OrHorizonRegressionOverTwoPercent": false,
+        "relativeWapeDifference": 0.42716815,
+        "relativeWapeWithinOnePercent": false,
+        "signedBiasDifferenceWithinTwoPoints": false,
+        "top10AndHorizonRegressions": {
+          "horizon_12": 0.28873539,
+          "horizon_18": 0.49002956,
+          "horizon_24": 0.88768414,
+          "horizon_3": 0.20163087,
+          "horizon_6": 0.19045441,
+          "top10": 0.60928876
+        }
+      },
+      "B3": {
+        "allFourConditions": false,
+        "bootstrapCiEntirelyInsideEquivalenceRegion": false,
+        "bootstrapRelativeCi": {
+          "lower": -0.18014963,
+          "upper": 0.66304452
+        },
+        "noTop10OrHorizonRegressionOverTwoPercent": false,
+        "relativeWapeDifference": 0.0596573,
+        "relativeWapeWithinOnePercent": false,
+        "signedBiasDifferenceWithinTwoPoints": false,
+        "top10AndHorizonRegressions": {
+          "horizon_12": 0.01227353,
+          "horizon_18": 0.06934818,
+          "horizon_24": 0.24320459,
+          "horizon_3": -0.03437152,
+          "horizon_6": -0.02238074,
+          "top10": 0.02193841
+        }
+      },
+      "B4": {
+        "allFourConditions": true,
+        "bootstrapCiEntirelyInsideEquivalenceRegion": true,
+        "bootstrapRelativeCi": {
+          "lower": 0.0,
+          "upper": 0.0
+        },
+        "noTop10OrHorizonRegressionOverTwoPercent": true,
+        "relativeWapeDifference": 0.0,
+        "relativeWapeWithinOnePercent": true,
+        "signedBiasDifferenceWithinTwoPoints": true,
+        "top10AndHorizonRegressions": {
+          "horizon_12": 0.0,
+          "horizon_18": 0.0,
+          "horizon_24": 0.0,
+          "horizon_3": 0.0,
+          "horizon_6": 0.0,
+          "top10": 0.0
+        }
+      }
+    },
+    "legacyTargetMetricsUsedForSelection": false,
+    "primaryPerformanceComparator": "B4",
+    "selectionReason": "empirical_leader_no_simpler_strict_equivalent",
+    "strictEquivalentSet": [
+      "B4"
+    ]
+  },
+  "decisionStatus": "not_for_formal_decision",
+  "formalDecisionAuthorized": false,
+  "integrity": {
+    "B4FactorEligibleRoutesSalesOnly": true,
+    "B4FoldEvidence": {
+      "2020-12": {
+        "passes": 2,
+        "trainingBlockCount": 9,
+        "trainingCaseCount": 589,
+        "trainingMaximumBillMonth": "2020-12",
+        "trainingMaximumLabelAvailableAsOf": "2020-12",
+        "trainingMaximumSourceAvailableAsOf": "2020-12",
+        "trainingMaximumTargetEnd": "2020-12",
+        "trainingOriginCount": 3
+      },
+      "2021-06": {
+        "passes": 3,
+        "trainingBlockCount": 14,
+        "trainingCaseCount": 1100,
+        "trainingMaximumBillMonth": "2021-06",
+        "trainingMaximumLabelAvailableAsOf": "2021-06",
+        "trainingMaximumSourceAvailableAsOf": "2021-06",
+        "trainingMaximumTargetEnd": "2021-06",
+        "trainingOriginCount": 4
+      },
+      "2021-12": {
+        "passes": 3,
+        "trainingBlockCount": 19,
+        "trainingCaseCount": 2030,
+        "trainingMaximumBillMonth": "2021-12",
+        "trainingMaximumLabelAvailableAsOf": "2021-12",
+        "trainingMaximumSourceAvailableAsOf": "2021-12",
+        "trainingMaximumTargetEnd": "2021-12",
+        "trainingOriginCount": 5
+      },
+      "2022-06": {
+        "passes": 3,
+        "trainingBlockCount": 24,
+        "trainingCaseCount": 3580,
+        "trainingMaximumBillMonth": "2022-06",
+        "trainingMaximumLabelAvailableAsOf": "2022-06",
+        "trainingMaximumSourceAvailableAsOf": "2022-06",
+        "trainingMaximumTargetEnd": "2022-06",
+        "trainingOriginCount": 6
+      },
+      "2022-12": {
+        "passes": 2,
+        "trainingBlockCount": 29,
+        "trainingCaseCount": 5725,
+        "trainingMaximumBillMonth": "2022-12",
+        "trainingMaximumLabelAvailableAsOf": "2022-12",
+        "trainingMaximumSourceAvailableAsOf": "2022-12",
+        "trainingMaximumTargetEnd": "2022-12",
+        "trainingOriginCount": 7
+      }
+    },
+    "aggregateActualConservationDifference": -0.0,
+    "caseKeyFingerprint": "ce8e4bcfb23335523077b367ff82b05b1663ea541ae954c719ef3eceee34c578",
+    "formalB4FoldFactorIdentityPassed": true,
+    "formalPredictionLockedBeforeTruthJoin": true,
+    "freshLegacyIdentityPointParityPassed": true,
+    "futurePerturbationInvariant": true,
+    "legacyPureBuyoutPointsDiscardedAfterFreshReplay": true,
+    "maximumPerCaseActualConservationDifference": 0.0,
+    "modelPopulationKeyFingerprint": "02a218fc058e4dadc397437d64a77d298ef47f2933e7063dc78c2e3ff6b98000",
+    "nonPureBuyoutActualDifference": 0.0,
+    "oldToNewBridgeBalanceDifference": 0.0,
+    "outcomeFieldsAbsentAtFormalLock": true,
+    "predictionLockCount": 6
+  },
+  "language": "zh-CN",
+  "methodologyAndLimitations": {
+    "B0aRole": "historical_audit_only",
+    "B0aSelectionEligible": false,
+    "internal80Role": "coverage_WIS_and_overconfidence_audit_only",
+    "legacyTargetComparatorSelectionEligible": false,
+    "predictionIntervalEndpointsPublic": false,
+    "sourceAndCurrentLifecycleSlicesPostHocOnly": true,
+    "visualizationOmissionReason": "精确审计表比图形更适合核对人口、阈值与守恒。"
+  },
+  "nextBoundary": "Gate_B_before_C2R1",
+  "pairedWorkOriginBootstrap": {
+    "caseIidSampling": false,
+    "clusterDefinition": "deidentified_work_x_origin",
+    "comparisons": {
+      "B0b": {
+        "percentileLower": -0.17222959,
+        "percentileUpper": 0.42277639,
+        "relativeDeltaMedian": 0.04719331
+      },
+      "B1": {
+        "percentileLower": -0.08538756,
+        "percentileUpper": 2.0639175,
+        "relativeDeltaMedian": 0.33142985
+      },
+      "B3": {
+        "percentileLower": -0.18014963,
+        "percentileUpper": 0.66304452,
+        "relativeDeltaMedian": 0.02314769
+      },
+      "B4": {
+        "percentileLower": 0.0,
+        "percentileUpper": 0.0,
+        "relativeDeltaMedian": 0.0
+      }
+    },
+    "method": "paired_two_way_pigeonhole_cluster_bootstrap",
+    "pairedAcrossModels": true,
+    "replicatesCompleted": 2000,
+    "seed": 20260714,
+    "workOriginBlockCount": 2402
+  },
+  "privacy": {
+    "aggregateOnly": true,
+    "authorIdentifiersPresent": false,
+    "channelIdentifiersPresent": false,
+    "deidentified": true,
+    "predictionIntervalEndpointsPresent": false,
+    "privatePathsPresent": false,
+    "rawRowsPresent": false,
+    "smallCellsComplementarilySuppressed": true,
+    "workIdentifiersPresent": false
+  },
+  "releaseAuthorized": false,
+  "routeAbstentionAudit": {
+    "intervalAvailableCaseCount": 0,
+    "pureBuyoutWithoutCommitmentScoreableCaseCount": 4358,
+    "rawAndServedNullOnEveryCase": true,
+    "zeroImputationUsed": false
+  },
+  "schema": "m2.formal_cash_comparator_replay.public.v1",
+  "scopeAndDefinitions": {
+    "actualField": "forecastableCashActual",
+    "developmentCaseCountPerComparator": 18615,
+    "formalModelPopulationCaseCount": 7851,
+    "formalModelPopulationWorkCount": 824,
+    "incomeFactCount": 192872,
+    "modelPopulationPredicate": "statisticallyScoreable && modelPredictionAvailable && !routeAbstained",
+    "sameCaseKeysAcrossComparators": true,
+    "sameModelPopulationKeysAcrossComparators": true,
+    "scoreabilityAndBusinessEligibilityFrozen": true,
+    "standardWorkCount": 3053,
+    "statisticallyScoreableCaseCount": 12223
+  },
+  "seals": {
+    "deferred60MonthLabelsOpened": false,
+    "embargoShadowOpened": false,
+    "finalHoldoutOpened": false
+  },
+  "technicalSummary": {
+    "C2R1TrainingStarted": false,
+    "formalCashReplayComplete": true,
+    "legacyTargetMetricsUsedForSelection": false,
+    "primaryComparator": "B4",
+    "pureBuyoutNullScoredAsZero": false
+  },
+  "version": "M2-formal-cash-comparator-replay-v1"
+}

@@ -1,0 +1,114 @@
+{
+  "aggregateMatchedChannelSignedBias": 1.15343046,
+  "aggregateMatchedChannelWape": 1.54011356,
+  "allWorkForecastsStrictlyReconciled": true,
+  "channelConcentrationMeanLargestShare": 0.90557316,
+  "decisionStatus": "not_for_formal_decision",
+  "deidentifiedPerChannelSignedBiasDistribution": {
+    "deidentifiedChannelCount": 49,
+    "p10": -0.64106177,
+    "p50": 0.75805526,
+    "p90": 15.0218748,
+    "suppressed": false
+  },
+  "finalHoldoutOpened": false,
+  "knownComponentTruthIsAReconciliationAuditNotACompletenessClaim": true,
+  "knownTruthWithoutPredictedComponentCount": 2615,
+  "matchedChannelActualRevenueShareOfScoreableWorkActual": 0.83244783,
+  "matchedComponentMetricsByRoute": {
+    "buyout_plus_sales": {
+      "aggregateMatchedChannelSignedBias": null,
+      "aggregateMatchedChannelWape": null,
+      "matchedComponentCaseCount": null,
+      "suppressed": true,
+      "suppressionReason": "complementary_suppression"
+    },
+    "pure_buyout": {
+      "aggregateMatchedChannelSignedBias": 271.25731844,
+      "aggregateMatchedChannelWape": 272.97795336,
+      "matchedComponentCaseCount": 4567,
+      "suppressed": false
+    },
+    "pure_sales_share": {
+      "aggregateMatchedChannelSignedBias": 0.36168429,
+      "aggregateMatchedChannelWape": 0.74685138,
+      "matchedComponentCaseCount": 14998,
+      "suppressed": false
+    },
+    "unknown_revenue_model": {
+      "aggregateMatchedChannelSignedBias": null,
+      "aggregateMatchedChannelWape": null,
+      "matchedComponentCaseCount": null,
+      "suppressed": true,
+      "suppressionReason": "primary_small_cell"
+    }
+  },
+  "maximumChannelSumToWorkAbsoluteDifference": 0.0,
+  "maximumKnownComponentActualToWorkActualDifference": 602867.4278,
+  "perOriginChannelAudit": {
+    "2020-12": {
+      "aggregateMatchedChannelSignedBias": 1.79989274,
+      "aggregateMatchedChannelWape": 2.72220231,
+      "allWorkForecastsStrictlyReconciled": true,
+      "channelComponentCount": 4235,
+      "matchedComponentCaseCount": 4235,
+      "maximumChannelSumToWorkAbsoluteDifference": 0.0,
+      "seasonalNaive12FallbackChannelComponentCount": 1285,
+      "shortHistoryFallbackChannelComponentCount": 980,
+      "smallPositiveCountsSuppressed": false,
+      "suppressed": false
+    },
+    "2021-06": {
+      "aggregateMatchedChannelSignedBias": 2.35945629,
+      "aggregateMatchedChannelWape": 2.75365955,
+      "allWorkForecastsStrictlyReconciled": true,
+      "channelComponentCount": 6290,
+      "matchedComponentCaseCount": 6290,
+      "maximumChannelSumToWorkAbsoluteDifference": 0.0,
+      "seasonalNaive12FallbackChannelComponentCount": 2070,
+      "shortHistoryFallbackChannelComponentCount": 535,
+      "smallPositiveCountsSuppressed": false,
+      "suppressed": false
+    },
+    "2021-12": {
+      "aggregateMatchedChannelSignedBias": 0.7803104,
+      "aggregateMatchedChannelWape": 1.10101398,
+      "allWorkForecastsStrictlyReconciled": true,
+      "channelComponentCount": 7624,
+      "matchedComponentCaseCount": 7624,
+      "maximumChannelSumToWorkAbsoluteDifference": 0.0,
+      "seasonalNaive12FallbackChannelComponentCount": 1912,
+      "shortHistoryFallbackChannelComponentCount": 1048,
+      "smallPositiveCountsSuppressed": false,
+      "suppressed": false
+    },
+    "2022-06": {
+      "aggregateMatchedChannelSignedBias": 0.65247739,
+      "aggregateMatchedChannelWape": 0.78829186,
+      "allWorkForecastsStrictlyReconciled": true,
+      "channelComponentCount": 6831,
+      "matchedComponentCaseCount": 6831,
+      "maximumChannelSumToWorkAbsoluteDifference": 0.0,
+      "seasonalNaive12FallbackChannelComponentCount": 1395,
+      "shortHistoryFallbackChannelComponentCount": 516,
+      "smallPositiveCountsSuppressed": false,
+      "suppressed": false
+    },
+    "2022-12": {
+      "aggregateMatchedChannelSignedBias": 0.50486414,
+      "aggregateMatchedChannelWape": 0.7868228,
+      "allWorkForecastsStrictlyReconciled": true,
+      "channelComponentCount": 6106,
+      "matchedComponentCaseCount": 6106,
+      "maximumChannelSumToWorkAbsoluteDifference": 0.0,
+      "seasonalNaive12FallbackChannelComponentCount": 1478,
+      "shortHistoryFallbackChannelComponentCount": 742,
+      "smallPositiveCountsSuppressed": false,
+      "suppressed": false
+    }
+  },
+  "predictedComponentWithoutMatchedTruthCount": 0,
+  "schema": "m2.c2r_channel_reconciliation.v1",
+  "scoreableChannelComponentCaseCount": 31086,
+  "trueChannelNamesPresent": false
+}
