@@ -177,27 +177,46 @@ def public_value(value: Any) -> Any:
 def _checkout_identity_decision(
     *,
     branch: str,
-    allow_trusted_pr_merge_ref: bool,
+    allow_trusted_ci_checkout: bool,
     github_actions: str,
     event_name: str,
     head_ref: str,
     base_ref: str,
+    github_ref: str,
+    github_repository: str,
     github_sha: str,
     head_sha: str,
     parent_shas: Sequence[str],
     remote_head_sha: str,
+    remote_main_sha: str,
 ) -> str | None:
-    """Accept the named branch or its exact GitHub-generated PR merge ref."""
+    """Accept the named branch or an exact synthetic-only GitHub CI checkout."""
 
     if branch == BRANCH:
         return "named_branch"
+    if (
+        allow_trusted_ci_checkout
+        and branch == "main"
+        and github_actions == "true"
+        and event_name == "push"
+        and head_ref == ""
+        and base_ref == ""
+        and github_ref == "refs/heads/main"
+        and github_repository == "KAtOReNA7/system"
+        and github_sha == head_sha
+        and remote_main_sha == head_sha
+    ):
+        return "trusted_main_push"
     if not (
-        allow_trusted_pr_merge_ref
+        allow_trusted_ci_checkout
         and branch == ""
         and github_actions == "true"
         and event_name == "pull_request"
         and head_ref == BRANCH
         and base_ref == "main"
+        and github_ref.startswith("refs/pull/")
+        and github_ref.endswith("/merge")
+        and github_repository == "KAtOReNA7/system"
         and github_sha == head_sha
         and len(parent_shas) == 2
         and parent_shas[1] == remote_head_sha
@@ -212,23 +231,37 @@ def _checkout_boundary_self_test() -> dict[str, bool]:
     remote_head_sha = "c" * 40
     trusted = {
         "branch": "",
-        "allow_trusted_pr_merge_ref": True,
+        "allow_trusted_ci_checkout": True,
         "github_actions": "true",
         "event_name": "pull_request",
         "head_ref": BRANCH,
         "base_ref": "main",
+        "github_ref": "refs/pull/2/merge",
+        "github_repository": "KAtOReNA7/system",
         "github_sha": merge_sha,
         "head_sha": merge_sha,
         "parent_shas": (base_sha, remote_head_sha),
         "remote_head_sha": remote_head_sha,
+        "remote_main_sha": base_sha,
+    }
+    trusted_main = {
+        **trusted,
+        "branch": "main",
+        "event_name": "push",
+        "head_ref": "",
+        "base_ref": "",
+        "github_ref": "refs/heads/main",
+        "remote_main_sha": merge_sha,
     }
     checks = {
         "namedBranchAccepted": _checkout_identity_decision(
-            **{**trusted, "branch": BRANCH, "allow_trusted_pr_merge_ref": False}
+            **{**trusted, "branch": BRANCH, "allow_trusted_ci_checkout": False}
         )
         == "named_branch",
         "exactPullRequestMergeRefAccepted": _checkout_identity_decision(**trusted)
         == "trusted_pr_merge_ref",
+        "exactMainPushAccepted": _checkout_identity_decision(**trusted_main)
+        == "trusted_main_push",
         "detachedCheckoutRejectedOutsideActions": _checkout_identity_decision(
             **{**trusted, "github_actions": "false"}
         )
@@ -241,8 +274,24 @@ def _checkout_boundary_self_test() -> dict[str, bool]:
             **{**trusted, "parent_shas": (base_sha, "d" * 40)}
         )
         is None,
+        "mainPushRejectedOutsideActions": _checkout_identity_decision(
+            **{**trusted_main, "github_actions": "false"}
+        )
+        is None,
+        "mainPushWrongRemoteRejected": _checkout_identity_decision(
+            **{**trusted_main, "remote_main_sha": "d" * 40}
+        )
+        is None,
+        "wrongRepositoryRejected": _checkout_identity_decision(
+            **{**trusted_main, "github_repository": "other/system"}
+        )
+        is None,
         "formalModeDetachedCheckoutRejected": _checkout_identity_decision(
-            **{**trusted, "allow_trusted_pr_merge_ref": False}
+            **{**trusted, "allow_trusted_ci_checkout": False}
+        )
+        is None,
+        "formalModeMainPushRejected": _checkout_identity_decision(
+            **{**trusted_main, "allow_trusted_ci_checkout": False}
         )
         is None,
     }
@@ -251,7 +300,7 @@ def _checkout_boundary_self_test() -> dict[str, bool]:
     return checks
 
 
-def require_boundaries(*, allow_trusted_pr_merge_ref: bool = False) -> str:
+def require_boundaries(*, allow_trusted_ci_checkout: bool = False) -> str:
     branch = run_git("branch", "--show-current")
     if branch == BRANCH:
         checkout_identity = "named_branch"
@@ -261,22 +310,26 @@ def require_boundaries(*, allow_trusted_pr_merge_ref: bool = False) -> str:
         remote_head_sha = run_git(
             "rev-parse", f"origin/{BRANCH}", check=False
         )
+        remote_main_sha = run_git("rev-parse", "origin/main", check=False)
         checkout_identity = _checkout_identity_decision(
             branch=branch,
-            allow_trusted_pr_merge_ref=allow_trusted_pr_merge_ref,
+            allow_trusted_ci_checkout=allow_trusted_ci_checkout,
             github_actions=os.environ.get("GITHUB_ACTIONS", ""),
             event_name=os.environ.get("GITHUB_EVENT_NAME", ""),
             head_ref=os.environ.get("GITHUB_HEAD_REF", ""),
             base_ref=os.environ.get("GITHUB_BASE_REF", ""),
+            github_ref=os.environ.get("GITHUB_REF", ""),
+            github_repository=os.environ.get("GITHUB_REPOSITORY", ""),
             github_sha=os.environ.get("GITHUB_SHA", ""),
             head_sha=head_sha,
             parent_shas=tuple(revision[1:]),
             remote_head_sha=remote_head_sha,
+            remote_main_sha=remote_main_sha,
         )
         if checkout_identity is None:
             raise FormalReplayError(
-                f"formal-cash comparator must run on {BRANCH} or its exact "
-                "GitHub pull-request merge ref"
+                f"formal-cash comparator must run on {BRANCH} or an exact "
+                "synthetic-only GitHub PR/main CI checkout"
             )
     contract = formal.load_spec()
     if any(value is not False for value in contract["seals"].values()):
@@ -2589,7 +2642,7 @@ def verify_c2r1_authorization() -> dict[str, Any]:
 
 
 def preflight() -> dict[str, Any]:
-    checkout_boundary = require_boundaries(allow_trusted_pr_merge_ref=True)
+    checkout_boundary = require_boundaries(allow_trusted_ci_checkout=True)
     contract = formal.load_spec()
     synthetic = formal.synthetic_self_test()
     formal_future = formal.future_perturbation_self_test()
