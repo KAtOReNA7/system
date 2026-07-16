@@ -1,0 +1,449 @@
+{
+  "activitySegments": {
+    "dense": {
+      "B4": {
+        "signedAggregateBias": 0.1130458,
+        "wape": 0.50114802
+      },
+      "B4LowerAbsoluteErrorCaseCount": 1140,
+      "C2R1": {
+        "signedAggregateBias": 0.0483417,
+        "wape": 0.5330256
+      },
+      "C2R1LowerAbsoluteErrorCaseCount": 1866,
+      "C2R1RelativeWapeDeltaVsB4": 0.06360912,
+      "caseCount": 5174,
+      "equalAbsoluteErrorCaseCount": 2168,
+      "uniqueWorkCount": 617
+    },
+    "dormant": {
+      "B4": {
+        "signedAggregateBias": -0.99972006,
+        "wape": 1.00018361
+      },
+      "B4LowerAbsoluteErrorCaseCount": 81,
+      "C2R1": {
+        "signedAggregateBias": -0.99686731,
+        "wape": 1.00275899
+      },
+      "C2R1LowerAbsoluteErrorCaseCount": 30,
+      "C2R1RelativeWapeDeltaVsB4": 0.00257491,
+      "caseCount": 833,
+      "equalAbsoluteErrorCaseCount": 722,
+      "uniqueWorkCount": 76
+    },
+    "intermittent": {
+      "B4": {
+        "signedAggregateBias": 0.15116105,
+        "wape": 1.16402041
+      },
+      "B4LowerAbsoluteErrorCaseCount": 408,
+      "C2R1": {
+        "signedAggregateBias": 0.13716401,
+        "wape": 1.13733041
+      },
+      "C2R1LowerAbsoluteErrorCaseCount": 543,
+      "C2R1RelativeWapeDeltaVsB4": -0.02292916,
+      "caseCount": 1844,
+      "equalAbsoluteErrorCaseCount": 893,
+      "uniqueWorkCount": 367
+    }
+  },
+  "conclusions": {
+    "B4MandatoryFallbackRegion": [
+      "dense",
+      "dormant",
+      "horizon_18",
+      "top10_until_earlier_origin_guard_passes"
+    ],
+    "auditMaySelectOuterCandidateDirectly": false,
+    "candidateOverrideOpportunity": [
+      "intermittent"
+    ],
+    "highValueFallbackRegion": "top10_until_frozen_guard_passes",
+    "newChannelResidualExposurePresent": true,
+    "unsafeToSegmentAutomatically": [
+      "segment:intermittent:aggregate_opportunity_not_origin_stable"
+    ]
+  },
+  "decisionStatus": "not_for_formal_decision",
+  "formalDecisionAuthorized": false,
+  "horizons": {
+    "12": {
+      "B4": {
+        "signedAggregateBias": 0.08235395,
+        "wape": 0.49068052
+      },
+      "B4LowerAbsoluteErrorCaseCount": 314,
+      "C2R1": {
+        "signedAggregateBias": 0.02190846,
+        "wape": 0.52624051
+      },
+      "C2R1LowerAbsoluteErrorCaseCount": 430,
+      "C2R1RelativeWapeDeltaVsB4": 0.07247077,
+      "caseCount": 1608,
+      "equalAbsoluteErrorCaseCount": 864,
+      "uniqueWorkCount": 643
+    },
+    "18": {
+      "B4": {
+        "signedAggregateBias": 0.15506318,
+        "wape": 0.60600436
+      },
+      "B4LowerAbsoluteErrorCaseCount": 141,
+      "C2R1": {
+        "signedAggregateBias": 0.06343995,
+        "wape": 0.67003003
+      },
+      "C2R1LowerAbsoluteErrorCaseCount": 206,
+      "C2R1RelativeWapeDeltaVsB4": 0.10565216,
+      "caseCount": 995,
+      "equalAbsoluteErrorCaseCount": 648,
+      "uniqueWorkCount": 556
+    },
+    "24": {
+      "B4": {
+        "signedAggregateBias": 0.08781557,
+        "wape": 0.79256467
+      },
+      "B4LowerAbsoluteErrorCaseCount": 0,
+      "C2R1": {
+        "signedAggregateBias": 0.08781557,
+        "wape": 0.79256467
+      },
+      "C2R1LowerAbsoluteErrorCaseCount": 0,
+      "C2R1RelativeWapeDeltaVsB4": 0.0,
+      "caseCount": 444,
+      "equalAbsoluteErrorCaseCount": 444,
+      "uniqueWorkCount": 301
+    },
+    "3": {
+      "B4": {
+        "signedAggregateBias": 0.08276225,
+        "wape": 0.47366804
+      },
+      "B4LowerAbsoluteErrorCaseCount": 572,
+      "C2R1": {
+        "signedAggregateBias": 0.0209541,
+        "wape": 0.47923478
+      },
+      "C2R1LowerAbsoluteErrorCaseCount": 910,
+      "C2R1RelativeWapeDeltaVsB4": 0.01175242,
+      "caseCount": 2402,
+      "equalAbsoluteErrorCaseCount": 920,
+      "uniqueWorkCount": 824
+    },
+    "6": {
+      "B4": {
+        "signedAggregateBias": 0.03181732,
+        "wape": 0.48893425
+      },
+      "B4LowerAbsoluteErrorCaseCount": 602,
+      "C2R1": {
+        "signedAggregateBias": -0.0270821,
+        "wape": 0.49366929
+      },
+      "C2R1LowerAbsoluteErrorCaseCount": 893,
+      "C2R1RelativeWapeDeltaVsB4": 0.00968439,
+      "caseCount": 2402,
+      "equalAbsoluteErrorCaseCount": 907,
+      "uniqueWorkCount": 824
+    }
+  },
+  "innerOriginStability": {
+    "dense": {
+      "C2R1OriginWinCount": 4,
+      "C2R1OriginWinShare": 0.8,
+      "originCount": 5,
+      "stableC2R1WinRegion": true
+    },
+    "dormant": {
+      "C2R1OriginWinCount": 0,
+      "C2R1OriginWinShare": 0.0,
+      "originCount": 5,
+      "stableC2R1WinRegion": false
+    },
+    "intermittent": {
+      "C2R1OriginWinCount": 3,
+      "C2R1OriginWinShare": 0.6,
+      "originCount": 5,
+      "stableC2R1WinRegion": false
+    }
+  },
+  "knownAndFutureChannelExposure": {
+    "absoluteResidualCash": 12922215.0812,
+    "futureOrOtherChannelCashPresent": {
+      "B4": {
+        "signedAggregateBias": 0.00499289,
+        "wape": 0.64681656
+      },
+      "B4LowerAbsoluteErrorCaseCount": 420,
+      "C2R1": {
+        "signedAggregateBias": -0.00818242,
+        "wape": 0.6449494
+      },
+      "C2R1LowerAbsoluteErrorCaseCount": 486,
+      "C2R1RelativeWapeDeltaVsB4": -0.00288669,
+      "caseCount": 2578,
+      "equalAbsoluteErrorCaseCount": 1672,
+      "uniqueWorkCount": 350
+    },
+    "noFutureOrOtherChannelCash": {
+      "B4": {
+        "signedAggregateBias": 0.21112158,
+        "wape": 0.42546499
+      },
+      "B4LowerAbsoluteErrorCaseCount": 1209,
+      "C2R1": {
+        "signedAggregateBias": 0.0837602,
+        "wape": 0.49516699
+      },
+      "C2R1LowerAbsoluteErrorCaseCount": 1953,
+      "C2R1RelativeWapeDeltaVsB4": 0.16382545,
+      "caseCount": 5273,
+      "equalAbsoluteErrorCaseCount": 2111,
+      "uniqueWorkCount": 719
+    },
+    "signedResidualCash": 12921763.0852
+  },
+  "origins": {
+    "2020-12": {
+      "B4": {
+        "signedAggregateBias": -0.05028284,
+        "wape": 0.61400945
+      },
+      "B4LowerAbsoluteErrorCaseCount": 6,
+      "C2R1": {
+        "signedAggregateBias": -0.05028284,
+        "wape": 0.61400945
+      },
+      "C2R1LowerAbsoluteErrorCaseCount": 6,
+      "C2R1RelativeWapeDeltaVsB4": -0.0,
+      "caseCount": 740,
+      "equalAbsoluteErrorCaseCount": 728,
+      "uniqueWorkCount": 148
+    },
+    "2021-06": {
+      "B4": {
+        "signedAggregateBias": 0.0120419,
+        "wape": 0.81739476
+      },
+      "B4LowerAbsoluteErrorCaseCount": 3,
+      "C2R1": {
+        "signedAggregateBias": 0.0120419,
+        "wape": 0.81739476
+      },
+      "C2R1LowerAbsoluteErrorCaseCount": 3,
+      "C2R1RelativeWapeDeltaVsB4": 0.0,
+      "caseCount": 1480,
+      "equalAbsoluteErrorCaseCount": 1474,
+      "uniqueWorkCount": 296
+    },
+    "2021-12": {
+      "B4": {
+        "signedAggregateBias": 0.17403297,
+        "wape": 0.49381072
+      },
+      "B4LowerAbsoluteErrorCaseCount": 576,
+      "C2R1": {
+        "signedAggregateBias": 0.02217025,
+        "wape": 0.60300745
+      },
+      "C2R1LowerAbsoluteErrorCaseCount": 817,
+      "C2R1RelativeWapeDeltaVsB4": 0.22113076,
+      "caseCount": 2204,
+      "equalAbsoluteErrorCaseCount": 811,
+      "uniqueWorkCount": 551
+    },
+    "2022-06": {
+      "B4": {
+        "signedAggregateBias": 0.11662958,
+        "wape": 0.3475944
+      },
+      "B4LowerAbsoluteErrorCaseCount": 518,
+      "C2R1": {
+        "signedAggregateBias": 0.09482351,
+        "wape": 0.3450208
+      },
+      "C2R1LowerAbsoluteErrorCaseCount": 669,
+      "C2R1RelativeWapeDeltaVsB4": -0.00740402,
+      "caseCount": 1839,
+      "equalAbsoluteErrorCaseCount": 652,
+      "uniqueWorkCount": 613
+    },
+    "2022-12": {
+      "B4": {
+        "signedAggregateBias": 0.16160826,
+        "wape": 0.4892874
+      },
+      "B4LowerAbsoluteErrorCaseCount": 526,
+      "C2R1": {
+        "signedAggregateBias": 0.09267387,
+        "wape": 0.42667377
+      },
+      "C2R1LowerAbsoluteErrorCaseCount": 944,
+      "C2R1RelativeWapeDeltaVsB4": -0.12796902,
+      "caseCount": 1588,
+      "equalAbsoluteErrorCaseCount": 118,
+      "uniqueWorkCount": 794
+    }
+  },
+  "overall": {
+    "B4": {
+      "signedAggregateBias": 0.08911106,
+      "wape": 0.55648454
+    },
+    "B4LowerAbsoluteErrorCaseCount": 1629,
+    "C2R1": {
+      "signedAggregateBias": 0.02933805,
+      "wape": 0.58382425
+    },
+    "C2R1LowerAbsoluteErrorCaseCount": 2439,
+    "C2R1RelativeWapeDeltaVsB4": 0.04912932,
+    "caseCount": 7851,
+    "equalAbsoluteErrorCaseCount": 3783,
+    "uniqueWorkCount": 824
+  },
+  "privacy": {
+    "aggregateOnly": true,
+    "complementarySuppressionApplied": true,
+    "identifiersPresent": false,
+    "predictionIntervalEndpointsPresent": false,
+    "realChannelNamesPresent": false
+  },
+  "releaseAuthorized": false,
+  "routes": {
+    "buyout_plus_sales": {
+      "B4": {
+        "signedAggregateBias": 0.00929016,
+        "wape": 0.61529918
+      },
+      "B4LowerAbsoluteErrorCaseCount": 149,
+      "C2R1": {
+        "signedAggregateBias": 0.007762,
+        "wape": 0.61426075
+      },
+      "C2R1LowerAbsoluteErrorCaseCount": 274,
+      "C2R1RelativeWapeDeltaVsB4": -0.00168768,
+      "caseCount": 2168,
+      "equalAbsoluteErrorCaseCount": 1745,
+      "uniqueWorkCount": 214
+    },
+    "pure_sales_share": {
+      "B4": {
+        "signedAggregateBias": 0.14970912,
+        "wape": 0.51183435
+      },
+      "B4LowerAbsoluteErrorCaseCount": 1480,
+      "C2R1": {
+        "signedAggregateBias": 0.04571805,
+        "wape": 0.56071783
+      },
+      "C2R1LowerAbsoluteErrorCaseCount": 2165,
+      "C2R1RelativeWapeDeltaVsB4": 0.09550644,
+      "caseCount": 5683,
+      "equalAbsoluteErrorCaseCount": 2038,
+      "uniqueWorkCount": 643
+    }
+  },
+  "schema": "m2.c2_opportunity_audit.v1",
+  "scope": {
+    "frozenCaseCount": 18615,
+    "inputFingerprintMatched": true,
+    "modelPopulationCaseCount": 7851,
+    "outerResultsUsedToMoveSegmentThresholds": false,
+    "sameActuals": true,
+    "sameCaseKeys": true,
+    "sameModelPopulation": true
+  },
+  "seals": {
+    "deferred60MonthLabelsOpened": false,
+    "embargoShadowOpened": false,
+    "finalHoldoutOpened": false
+  },
+  "sourcePostHoc": {
+    "出版物": {
+      "B4": {
+        "signedAggregateBias": 0.08264505,
+        "wape": 0.54836933
+      },
+      "B4LowerAbsoluteErrorCaseCount": 1046,
+      "C2R1": {
+        "signedAggregateBias": 0.01508844,
+        "wape": 0.58705927
+      },
+      "C2R1LowerAbsoluteErrorCaseCount": 1489,
+      "C2R1RelativeWapeDeltaVsB4": 0.07055453,
+      "caseCount": 4591,
+      "equalAbsoluteErrorCaseCount": 2056,
+      "uniqueWorkCount": 493
+    },
+    "网文": {
+      "B4": {
+        "signedAggregateBias": 0.11261445,
+        "wape": 0.58598252
+      },
+      "B4LowerAbsoluteErrorCaseCount": 583,
+      "C2R1": {
+        "signedAggregateBias": 0.08113412,
+        "wape": 0.57206527
+      },
+      "C2R1LowerAbsoluteErrorCaseCount": 950,
+      "C2R1RelativeWapeDeltaVsB4": -0.02375028,
+      "caseCount": 3260,
+      "equalAbsoluteErrorCaseCount": 1727,
+      "uniqueWorkCount": 331
+    }
+  },
+  "topBands": {
+    "top1": {
+      "B4": {
+        "signedAggregateBias": 0.02301964,
+        "wape": 0.18148328
+      },
+      "B4LowerAbsoluteErrorCaseCount": 10,
+      "C2R1": {
+        "signedAggregateBias": -0.10510408,
+        "wape": 0.2769234
+      },
+      "C2R1LowerAbsoluteErrorCaseCount": 15,
+      "C2R1RelativeWapeDeltaVsB4": 0.52588936,
+      "caseCount": 80,
+      "equalAbsoluteErrorCaseCount": 55,
+      "uniqueWorkCount": 17
+    },
+    "top10": {
+      "B4": {
+        "signedAggregateBias": 0.12053375,
+        "wape": 0.46161256
+      },
+      "B4LowerAbsoluteErrorCaseCount": 132,
+      "C2R1": {
+        "signedAggregateBias": 0.05184117,
+        "wape": 0.49976049
+      },
+      "C2R1LowerAbsoluteErrorCaseCount": 202,
+      "C2R1RelativeWapeDeltaVsB4": 0.08264059,
+      "caseCount": 838,
+      "equalAbsoluteErrorCaseCount": 504,
+      "uniqueWorkCount": 106
+    },
+    "top5": {
+      "B4": {
+        "signedAggregateBias": 0.10636444,
+        "wape": 0.39834449
+      },
+      "B4LowerAbsoluteErrorCaseCount": 61,
+      "C2R1": {
+        "signedAggregateBias": 0.03582549,
+        "wape": 0.45015246
+      },
+      "C2R1LowerAbsoluteErrorCaseCount": 85,
+      "C2R1RelativeWapeDeltaVsB4": 0.13005822,
+      "caseCount": 447,
+      "equalAbsoluteErrorCaseCount": 301,
+      "uniqueWorkCount": 54
+    }
+  },
+  "version": "v1"
+}

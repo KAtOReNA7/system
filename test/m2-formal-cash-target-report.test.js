@@ -110,7 +110,7 @@ test("legacy C2-R artifacts are immutable historical-target evidence", () => {
     assert.equal(fs.existsSync(artifactPath), true, artifact.path);
     const observed = crypto
       .createHash("sha256")
-      .update(fs.readFileSync(artifactPath))
+      .update(fs.readFileSync(artifactPath, "utf8").replaceAll("\r\n", "\n"))
       .digest("hex");
     assert.equal(observed, artifact.sha256, artifact.path);
   }

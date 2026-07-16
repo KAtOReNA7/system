@@ -1,0 +1,303 @@
+{
+  "activitySegmentation": {
+    "calendarZeroFill": true,
+    "currentLifecycleFeatureAllowed": false,
+    "currentRatingRiskRightsShelfFeatureAllowed": false,
+    "dense": {
+      "maximumLargestPositiveMonthShareTrailing12": 0.5,
+      "maximumZeroMonthsTrailing12": 3,
+      "minimumObservedCompleteMonths": 12,
+      "minimumPositiveMonthsTrailing12": 9,
+      "minimumPositiveMonthsTrailing6": 5,
+      "mustNotBeDormant": true
+    },
+    "dormant": {
+      "minimumHistoricalPositiveMonths": 1,
+      "minimumTrailingConsecutiveZeroMonths": 6
+    },
+    "history": "sales_cash_from_first_as_of_sales_channel_observation_through_cutoff",
+    "intermittent": {
+      "definition": "not_dense_and_not_dormant",
+      "shortHistoryOrNoPositiveEvidenceFallback": "B4",
+      "shortHistoryOrNoPositiveEvidenceOverrideAllowed": false
+    },
+    "mixedBuyoutEventMonthsExcluded": true,
+    "segmentReasonRequired": true,
+    "sourceRightsShelfWithoutHistoricalSnapshotPolicy": "postHocSegmentOnly",
+    "thresholdsMayChangeAfterOuterResults": false,
+    "unit": "work_x_origin",
+    "zeroAbsoluteTolerance": 0.0
+  },
+  "businessCoverageDecision": {
+    "bothMet": "PASS",
+    "fullLibraryForecastableCashCoverageMinimum": 0.9,
+    "mayAuthorizeRelease": false,
+    "mayMoveModelPopulation": false,
+    "missingOrInvalidEvidence": "FAIL",
+    "top10ForecastableCashCoverageMinimum": 0.9,
+    "validEvidenceButBelowEitherThreshold": "CONDITIONAL"
+  },
+  "candidateSpace": {
+    "anchor": "B4",
+    "anchorWeights": [
+      0.25,
+      0.5,
+      0.75
+    ],
+    "candidateSpaceMayChangeAfterResults": false,
+    "dense": {
+      "candidateCount": 37,
+      "components": [
+        "seasonal_naive_12",
+        "damped_trend_18",
+        "ets_like_level_trend",
+        "zero_aware_recent_mean_12",
+        "winsorized_robust_mean_18",
+        "recency_weighted_mean_18"
+      ],
+      "formula": "anchorWeight * B4 + (1 - anchorWeight) * denseComponent + residualScale * other_or_new_channel_residual"
+    },
+    "dormant": {
+      "candidateCount": 5,
+      "components": [
+        "B4",
+        "legal_zero_cash",
+        "earlier_origin_reactivation"
+      ],
+      "nullToZeroAllowed": false,
+      "reactivationCurrentOrOuterTruthAllowed": false
+    },
+    "intermittent": {
+      "candidateCount": 37,
+      "components": [
+        "B3",
+        "croston",
+        "croston_sba",
+        "tsb",
+        "adida",
+        "transparent_hurdle"
+      ],
+      "formula": "anchorWeight * B4 + (1 - anchorWeight) * intermittentComponent + residualScale * other_or_new_channel_residual",
+      "positiveOnlyMedianAllowed": false,
+      "secondHorizonMultiplicationAllowed": false,
+      "zeroMonthsRetained": true
+    },
+    "otherOrNewChannelResidualScales": [
+      0.0,
+      1.0
+    ],
+    "parameters": {
+      "adidaAggregationMonths": 3,
+      "crostonAlpha": 0.2,
+      "dampedTrendWindowMonths": 18,
+      "etsAlpha": 0.3,
+      "etsBeta": 0.1,
+      "etsDamping": 0.8,
+      "hurdleBetaPriorPositive": 1.0,
+      "hurdleBetaPriorZero": 1.0,
+      "hurdleWindowMonths": 24,
+      "minimumChannelHistoryMonthsBeforeOverride": 6,
+      "reactivationBetaPriorPositive": 1.0,
+      "reactivationBetaPriorZero": 9.0,
+      "reactivationWinsorUpperQuantile": 0.95,
+      "recencyDecay": 0.9,
+      "recencyWindowMonths": 18,
+      "robustWindowMonths": 18,
+      "seasonalLagMonths": 12,
+      "shortHistoryFallback": "B4_channel_component",
+      "trendDamping": 0.5,
+      "tsbProbabilityAlpha": 0.2,
+      "tsbSizeAlpha": 0.2,
+      "winsorLowerQuantile": 0.1,
+      "winsorUpperQuantile": 0.9,
+      "zeroAwareWindowMonths": 12
+    },
+    "postHocOuterResultScalingAllowed": false,
+    "totalSegmentCandidateCount": 79
+  },
+  "decisionStatus": "not_for_formal_decision",
+  "featureBoundary": {
+    "currentRatingRiskRightsShelfUsed": false,
+    "cutoffOnly": true,
+    "postHocReportingSlicesMayAffectPrediction": false,
+    "sourceWithoutHistoricalSnapshotUsed": false,
+    "spikeCandidateAutomaticallyDecayed": false
+  },
+  "formalCashBoundary": {
+    "buyoutMonthlyEquivalentIncluded": false,
+    "futureBuyoutProbabilityModelPresent": false,
+    "historicalBuyoutCyclePredictionPresent": false,
+    "mixedExcludesUncommittedFutureBuyout": true,
+    "pureBuyoutNoCommitment": "null_abstain"
+  },
+  "formalDecisionAuthorized": false,
+  "highValueGuard": {
+    "absoluteSignedBiasMayWorsen": false,
+    "bands": [
+      "top1",
+      "top5",
+      "top10"
+    ],
+    "definition": "cutoff_trailing_12_signed_revenue_rank_across_3053_works",
+    "eachHorizonRelativeWapeRegressionMaximum": 0.02,
+    "fallbackField": "highValueGuardFallbackToB4",
+    "insufficientOrFailedEvidenceFallback": "B4",
+    "minimumEarlierOriginWinShare": 0.7,
+    "minimumEarlierOrigins": 2,
+    "minimumEarlierTop10Cases": 30,
+    "minimumRelativeWapeImprovement": 0.01,
+    "outerBandActualAllowed": false
+  },
+  "nextBoundary": "Gate_C_before_C2_outer_replay",
+  "otherOrNewChannelResidual": {
+    "allowedAsOfFeatures": [
+      "route",
+      "activitySegment",
+      "horizon",
+      "knownChannelCountBucket",
+      "knownChannelConcentrationBucket"
+    ],
+    "componentId": "other_or_new_channel_residual",
+    "fitEvidence": "strictly_earlier_development_origins_with_labels_available_by_prediction_origin",
+    "hierarchy": [
+      "route_x_segment_x_horizon_x_channel_count_x_concentration",
+      "route_x_segment_x_horizon",
+      "route_x_horizon",
+      "horizon",
+      "global"
+    ],
+    "knownChannelCashMayBeDuplicated": false,
+    "meaning": "generic_future_sales_cash_without_a_cutoff_known_channel_component",
+    "minimumFineGroupCases": 30,
+    "minimumHorizonCases": 200,
+    "minimumRouteHorizonCases": 100,
+    "minimumSegmentGroupCases": 50,
+    "noEarlierEvidenceValue": 0.0,
+    "outerTruthAllowed": false,
+    "realChannelIdentityPredicted": false,
+    "requiredReconciliation": "known_channel_points + other_or_new_channel_residual + cutoff_confirmed_receivables == work_point",
+    "shrinkagePriorWeight": 30,
+    "sourceFeatureExclusionReason": "historical_source_snapshot_not_available_for_all_cutoffs",
+    "sourceFeatureUsed": false,
+    "winsorUpperQuantile": 0.95,
+    "workSpecificFutureChannelMemoryAllowed": false
+  },
+  "outerDevelopmentExecuted": false,
+  "predictionInterval": {
+    "endpointsPresent": false,
+    "internalOnly": true,
+    "reportedMetrics": [
+      "coverage",
+      "WIS",
+      "standardized_width"
+    ]
+  },
+  "primaryComparator": "B4",
+  "privacy": {
+    "aggregateOnly": true,
+    "complementarySuppressionMinimumWorks": 10,
+    "predictionIntervalEndpointsAllowed": false,
+    "privatePathsAllowed": false,
+    "publicReportsChinese": true,
+    "rawIncomeRowsAllowed": false,
+    "workAuthorRealChannelIdentifiersAllowed": false
+  },
+  "productBoundary": {
+    "fields": [
+      "pointForecast",
+      "annualBreakdown",
+      "confidence",
+      "limitation"
+    ],
+    "predictionIntervalEndpointsAllowed": false,
+    "scenarioFieldsAllowed": false,
+    "singlePointOnly": true
+  },
+  "qualityGate": {
+    "P0Maximum": 0,
+    "P1Maximum": 0,
+    "P2FactAuditOnly": true,
+    "absoluteBiasMaximum": {
+      "eachHorizon": 0.15,
+      "highValue": 0.1,
+      "overall": 0.1,
+      "served": 0.1
+    },
+    "allConditionsRequired": true,
+    "automaticOperationalActionCountMaximum": 0,
+    "conditionCount": 25,
+    "highValueGuardRequired": true,
+    "internal80CoverageInclusive": [
+      0.75,
+      0.85
+    ],
+    "overallWapeMaximum": 0.6,
+    "populationReductionAllowed": false,
+    "relativeToB4": {
+      "horizon12ImprovementMinimum": 0.03,
+      "horizon18RegressionMaximum": 0.02,
+      "horizon24RegressionMaximum": 0.02,
+      "horizon3ImprovementMinimum": 0.03,
+      "horizon6ImprovementMinimum": 0.03,
+      "internalWisImprovementMinimum": 0.05,
+      "maximumConsecutiveOriginsRegressingOverFivePercent": 2,
+      "outerOriginWinShareMinimum": 0.7,
+      "standardizedWidthRegressionMaximum": 0.1,
+      "top10ImprovementMinimum": 0.05,
+      "top1RegressionMaximum": 0.05,
+      "top5RegressionMaximum": 0.05
+    },
+    "residualDuplicateCashAllowed": false,
+    "thresholdsMayChangeAfterResults": false
+  },
+  "releaseAuthorized": false,
+  "routes": {
+    "buyout_plus_sales": "sales_cash_only_plus_cutoff_confirmed_receivables",
+    "oneTimeSeriesModelAcrossAllRevenueModelsAllowed": false,
+    "pure_buyoutWithoutCutoffCommitment": {
+      "abstentionReason": "uncommitted_future_buyout_not_forecastable",
+      "rawModelPrediction": null,
+      "routeAbstained": true,
+      "servedPrediction": null,
+      "zeroMayReplaceNull": false
+    },
+    "pure_sales_share": "as_of_known_channel_points_plus_generic_residual",
+    "unknown_revenue_model": "route_abstain_null"
+  },
+  "samePredictAsOfEntryForReplayAndServing": true,
+  "schema": "m2.c2_model_design.v1",
+  "seals": {
+    "deferred60MonthLabelsOpened": false,
+    "embargoShadowOpened": false,
+    "finalHoldoutOpened": false
+  },
+  "selection": {
+    "biasFeasibility": {
+      "eachHorizonAbsoluteMaximum": 0.15,
+      "overallAbsoluteMaximum": 0.1
+    },
+    "eachHorizonRelativeWapeRegressionMaximum": 0.02,
+    "evidence": "strictly_earlier_nested_development_origins_only",
+    "highValueAbsoluteBiasWorseningMaximum": 0.0,
+    "highValueRelativeWapeRegressionMaximum": 0.0,
+    "minimumEarlierOrigins": 2,
+    "minimumEarlierSegmentCases": 100,
+    "noFeasibleOrInsufficientEvidenceFallback": "B4",
+    "orderedObjective": [
+      "signed_bias_feasibility",
+      "minimum_wape",
+      "high_value_safety",
+      "horizon_safety",
+      "minimum_complexity"
+    ],
+    "thresholdsMayMoveAfterResults": false,
+    "tieBreak": [
+      "fewer_non_anchor_components",
+      "fewer_parameters",
+      "candidate_id_lexical"
+    ],
+    "unit": "outer_origin_x_activity_segment",
+    "wapePracticalEquivalenceRelativeMaximum": 0.01
+  },
+  "version": "v1"
+}

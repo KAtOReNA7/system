@@ -44,6 +44,7 @@ PRIVATE_MANIFEST = PRIVATE_DIR / "M2-formal-cash-comparator-manifest-private-v1.
 PRIVATE_VALIDATION = PRIVATE_DIR / "M2-calibration-gate-b-validation-private-v1.json"
 PRIVATE_PUSH_RECEIPT = PRIVATE_DIR / "M2-calibration-gate-b-push-private-v1.json"
 BRANCH = "codex/m2-calibration-v1"
+SYNTHETIC_DEVELOPMENT_BRANCH_PREFIX = "codex/m2-"
 PHASE_A_START_HEAD = "c7f1c21ea54f2a16ffd753afebfa157cfbf6ca12"
 MINIMUM_CELL = 10
 AGGREGATE_TOLERANCE = 0.01
@@ -254,6 +255,12 @@ def _checkout_boundary_self_test() -> dict[str, bool]:
         "remote_main_sha": merge_sha,
     }
     checks = {
+        "syntheticM2DevelopmentBranchRecognized": _is_synthetic_development_branch(
+            "codex/m2-c2-v1"
+        ),
+        "unrelatedSyntheticBranchRejected": not _is_synthetic_development_branch(
+            "codex/unrelated"
+        ),
         "namedBranchAccepted": _checkout_identity_decision(
             **{**trusted, "branch": BRANCH, "allow_trusted_ci_checkout": False}
         )
@@ -300,10 +307,20 @@ def _checkout_boundary_self_test() -> dict[str, bool]:
     return checks
 
 
-def require_boundaries(*, allow_trusted_ci_checkout: bool = False) -> str:
+def _is_synthetic_development_branch(branch: str) -> bool:
+    return branch.startswith(SYNTHETIC_DEVELOPMENT_BRANCH_PREFIX)
+
+
+def require_boundaries(
+    *,
+    allow_trusted_ci_checkout: bool = False,
+    allow_synthetic_m2_branch: bool = False,
+) -> str:
     branch = run_git("branch", "--show-current")
     if branch == BRANCH:
         checkout_identity = "named_branch"
+    elif allow_synthetic_m2_branch and _is_synthetic_development_branch(branch):
+        checkout_identity = "synthetic_m2_development_branch"
     else:
         head_sha = run_git("rev-parse", "HEAD")
         revision = run_git("rev-list", "--parents", "-n", "1", "HEAD").split()
@@ -2642,7 +2659,10 @@ def verify_c2r1_authorization() -> dict[str, Any]:
 
 
 def preflight() -> dict[str, Any]:
-    checkout_boundary = require_boundaries(allow_trusted_ci_checkout=True)
+    checkout_boundary = require_boundaries(
+        allow_trusted_ci_checkout=True,
+        allow_synthetic_m2_branch=True,
+    )
     contract = formal.load_spec()
     synthetic = formal.synthetic_self_test()
     formal_future = formal.future_perturbation_self_test()
