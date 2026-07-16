@@ -291,6 +291,12 @@ A spike rule first creates a candidate for evidence review. It must distinguish 
 
 The latest user decision supersedes every prior future-buyout point rule. It requires the formal-cash target correction and audit to complete before C2-R.1 may be retrained or tuned. No automatic C2-R.1 training follows this correction, and C2/C3 remain outside scope. Every result remains `not_for_formal_decision` until Chinese business sampling and explicit user approval.
 
+### 2026-07-16 formal-cash comparator and C2-R.1 development checkpoint
+
+After separate user authorization, formal-cash B0b/B1/B3/B4 were replayed on the unchanged 18,615 development cases and the common 7,851-case primary model population. B4 is the frozen formal-cash primary comparator. Gate B passed 14/14 only after its Phase A commit was pushed and the complete validation suite was rerun on the remotely confirmed commit tree. The non-overlapping surprise audit uses a stable identity only within the frozen authority revision; it reports 168 unique ledger facts, 1,442,698.00 cash, and 114 involved works without re-labeling the 466 overlapping windows as a full-library share.
+
+C2-R.1 then ran under `calibration-spec-c2r1-v1`, using 45 pre-registered transparent channel candidates, strictly earlier-origin route selection, zero-retaining sales histories, B4 fallback, and no future-buyout cycle, probability, amortization, or post-hoc outer scaling. It preserved the 7,851-case model population and produced overall WAPE 0.58382425 and signed aggregate bias +0.02933805, but passed only 13 of 23 acceptance conditions and is therefore `FAIL`. This failure must not be relabeled as conditional approval. C2/C3, final holdout, embargo shadow, deferred 60-month labels, business approval, release, and M3 remain unauthorized.
+
 M2-A designs the object model and fixture checks. M2-C/M2-D require real historical data readiness.
 
 ## 13. Version and Invalidation Rules

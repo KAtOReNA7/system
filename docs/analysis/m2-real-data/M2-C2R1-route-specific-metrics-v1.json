@@ -1,0 +1,79 @@
+{
+  "candidateDecision": "FAIL",
+  "decisionStatus": "not_for_formal_decision",
+  "excludesUncommittedFutureBuyout": true,
+  "futureBuyoutProbabilityModelPresent": false,
+  "language": "zh-CN",
+  "primaryComparatorSalesRoutes": {
+    "buyout_plus_sales": {
+      "caseCount": 2168,
+      "mae": 9753.64302551,
+      "nullPredictionCount": 0,
+      "signedAggregateBias": 0.00929016,
+      "smape": 0.86882153,
+      "uniqueWorkCount": 214,
+      "wape": 0.61529918,
+      "zeroImputationUsed": false
+    },
+    "pure_sales_share": {
+      "caseCount": 5683,
+      "mae": 4077.12291326,
+      "nullPredictionCount": 0,
+      "signedAggregateBias": 0.14970912,
+      "smape": 0.90297715,
+      "uniqueWorkCount": 643,
+      "wape": 0.51183435,
+      "zeroImputationUsed": false
+    }
+  },
+  "privacy": {
+    "aggregateOnly": true,
+    "authorIdentifiersPresent": false,
+    "channelIdentifiersPresent": false,
+    "deidentified": true,
+    "predictionIntervalEndpointsPresent": false,
+    "privatePathsPresent": false,
+    "rawRowsPresent": false,
+    "workIdentifiersPresent": false
+  },
+  "pureBuyoutAbstention": {
+    "abstentionReason": "uncommitted_future_buyout_not_forecastable",
+    "commitmentCaseCount": 0,
+    "rawAndServedNull": true,
+    "scoreableCaseCount": 4358,
+    "zeroImputationUsed": false
+  },
+  "salesRoutes": {
+    "buyout_plus_sales": {
+      "caseCount": 2168,
+      "mae": 9737.18195945,
+      "nullPredictionCount": 0,
+      "signedAggregateBias": 0.007762,
+      "smape": 0.87253163,
+      "uniqueWorkCount": 214,
+      "wape": 0.61426075,
+      "zeroImputationUsed": false
+    },
+    "pure_sales_share": {
+      "caseCount": 5683,
+      "mae": 4466.51442583,
+      "nullPredictionCount": 0,
+      "signedAggregateBias": 0.04571805,
+      "smape": 0.87570722,
+      "uniqueWorkCount": 643,
+      "wape": 0.56071783,
+      "zeroImputationUsed": false
+    }
+  },
+  "schema": "m2.c2r1.route_metrics.public.v1",
+  "seals": {
+    "deferred60MonthLabelsOpened": false,
+    "embargoShadowOpened": false,
+    "finalHoldoutOpened": false
+  },
+  "unknownRevenueModel": {
+    "fallbackToBestRouteUsed": false,
+    "withoutExplicitAsOfSalesEvidence": "route_abstain_null"
+  },
+  "version": "M2-C2R1-route-specific-metrics-v1"
+}

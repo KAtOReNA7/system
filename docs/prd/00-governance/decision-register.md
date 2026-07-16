@@ -2,6 +2,7 @@
 
 | 决策 | 状态 | 当前结论 | ADR |
 |---|---|---|---|
+| DEC-009 | 已完成（development FAIL） | formal-cash comparator 在固定 7851-case 模型人口上冻结 B4，Gate B 14/14；C2-R.1 的 45 候选 development 验证为 13/23、结论 FAIL，继续 `not_for_formal_decision`，不授权 C2/C3、final holdout 或 release | `docs/analysis/m2-real-data/M2-C2R1-development-validation-v1.md` |
 | DEC-008 | 已冻结（formal cash target） | M2 正式点值只预测未来实销现金与 cutoff 时已确认、可审计的未来应收；pure-buyout 无未来买断应收时必须 abstain/null，其他 route 仍计入所有 cutoff-confirmed future receivables；买断月均等效值仅用于评级和历史价值 | `docs/analysis/m2-real-data/M2-formal-cash-forecast-target-decision-v1.md` |
 | DEC-001 | 已确认 | 评估尝试状态仅保留成功、失败 | ADR-0001 |
 | DEC-002 | 已确认 | 标准作品上线时间取所有业务形态最早首笔实销月 | ADR-0002 |

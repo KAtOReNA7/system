@@ -4,9 +4,13 @@ import test from "node:test";
 
 test("v1.1 backtest integrity audit self-test is no-real-data and validates cutoff safeguards", () => {
   const output = execFileSync(
-    "python",
-    ["scripts/m2-real-data/run_m2_v1_1_backtest_integrity_audit.py", "--fixture-self-test"],
-    { encoding: "utf8" }
+    process.execPath,
+    [
+      "scripts/run-codex-python.mjs",
+      "scripts/m2-real-data/run_m2_v1_1_backtest_integrity_audit.py",
+      "--fixture-self-test",
+    ],
+    { encoding: "utf8" },
   );
   const result = JSON.parse(output);
 

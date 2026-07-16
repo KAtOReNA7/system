@@ -1,0 +1,191 @@
+{
+  "acceptance": {
+    "P0Maximum": 0,
+    "P1Maximum": 0,
+    "P2FactAuditOnly": true,
+    "absoluteBiasMaximum": {
+      "eachHorizon": 0.15,
+      "highValue": 0.1,
+      "overall": 0.1,
+      "served": 0.1
+    },
+    "allConditionsRequired": true,
+    "automaticOperationalActionCountMaximum": 0,
+    "internal80CoverageInclusive": [
+      0.75,
+      0.85
+    ],
+    "overallWapeMaximum": 0.6,
+    "populationReductionToImproveMetricsAllowed": false,
+    "relativeToPrimaryComparator": {
+      "horizon12ImprovementMinimum": 0.03,
+      "horizon18RegressionMaximum": 0.02,
+      "horizon24RegressionMaximum": 0.02,
+      "horizon3ImprovementMinimum": 0.03,
+      "horizon6ImprovementMinimum": 0.03,
+      "internalWisImprovementMinimum": 0.05,
+      "maximumConsecutiveOriginsRegressingOverFivePercent": 2,
+      "outerOriginWinShareMinimum": 0.7,
+      "standardizedWidthRegressionMaximum": 0.1,
+      "top10ImprovementMinimum": 0.05,
+      "top1RegressionMaximum": 0.05,
+      "top5RegressionMaximum": 0.05
+    }
+  },
+  "candidateSpace": {
+    "blendExpansion": {
+      "anchor": "B4",
+      "anchorWeights": [
+        0.25,
+        0.5,
+        0.75
+      ],
+      "formula": "anchorWeight * B4 + (1 - anchorWeight) * partner",
+      "partners": [
+        "B0b",
+        "B1",
+        "B3",
+        "trailing_mean_3",
+        "trailing_mean_6",
+        "trailing_mean_12",
+        "seasonal_naive_12",
+        "zero_aware_recent_mean_18",
+        "winsorized_robust_mean_18",
+        "damped_trend_18",
+        "recency_weighted_mean_18"
+      ]
+    },
+    "candidateCount": 45,
+    "candidateSpaceMayChangeAfterResults": false,
+    "postHocOuterResultScalingAllowed": false,
+    "primitiveParameters": {
+      "dampedTrendWindowMonths": 18,
+      "minimumHistoryMonthsBeforePrimitive": 6,
+      "recencyDecay": 0.9,
+      "recencyWindowMonths": 18,
+      "robustWindowMonths": 18,
+      "seasonalLagMonths": 12,
+      "shortHistoryFallback": "B4_channel_component",
+      "trailingMeanWindows": [
+        3,
+        6,
+        12
+      ],
+      "trendDamping": 0.5,
+      "winsorLowerQuantile": 0.1,
+      "winsorUpperQuantile": 0.9,
+      "zeroAwareWindowMonths": 18
+    },
+    "singleComponents": [
+      "B0b",
+      "B1",
+      "B3",
+      "B4",
+      "trailing_mean_3",
+      "trailing_mean_6",
+      "trailing_mean_12",
+      "seasonal_naive_12",
+      "zero_aware_recent_mean_18",
+      "winsorized_robust_mean_18",
+      "damped_trend_18",
+      "recency_weighted_mean_18"
+    ]
+  },
+  "candidateSpecFrozenBeforePrivateDataRead": true,
+  "decisionStatus": "not_for_formal_decision",
+  "formalCashTarget": {
+    "buyoutMonthlyEquivalentBoundary": {
+      "historicalValueOnly": true,
+      "notCashForecast": true,
+      "notIncludedInFutureCashRevenue": true,
+      "ratingContextOnly": true
+    },
+    "buyoutMonthlyEquivalentIncluded": false,
+    "formula": "futureSalesCashForecast + cutoffConfirmedFutureReceivables",
+    "futureBuyoutProbabilityModelIncluded": false,
+    "historicalBuyoutCycleIncluded": false,
+    "primaryActual": "forecastableCashActual",
+    "receivedBuyoutAmortizationIncluded": false,
+    "uncommittedFutureBuyoutIncluded": false
+  },
+  "formalDecisionAuthorized": false,
+  "futureBuyoutProbabilityModelPresent": false,
+  "language": "zh-CN",
+  "legacyC2RBuyoutCycleImported": false,
+  "phaseBinding": {
+    "formalCashComparatorBundleDigest": "b903a39adb8d498b1b2419cde6bd816a022cd09b28977d4792406db39372820b",
+    "formalCashComparatorSpecDigest": "845e052dc4ef969aa5c3f9fea828b746f9712ce9356bb7281338480754f7fd71",
+    "gateBAllTrue": true,
+    "gateBDigestAtAuthorization": "a9e9e9a7c31638547a04c8acaffc4de77875f5ee7e96431164e7aefeac7ba031",
+    "phaseACheckpoint": "127c07cac9d1822e235d993066bcbf9fd28efd29",
+    "remotePhaseACheckpointVerified": true
+  },
+  "positiveOnlyMedianPresent": false,
+  "postHocOuterScalingPresent": false,
+  "privacy": {
+    "aggregateOnly": true,
+    "authorIdentifiersPresent": false,
+    "channelIdentifiersPresent": false,
+    "deidentified": true,
+    "predictionIntervalEndpointsPresent": false,
+    "privatePathsPresent": false,
+    "rawRowsPresent": false,
+    "workIdentifiersPresent": false
+  },
+  "releaseAuthorized": false,
+  "routeContract": {
+    "buyout_plus_sales": {
+      "excludesUncommittedFutureBuyout": true,
+      "historicalBuyoutEventMonthsZeroedBeforeSalesPrimitive": true,
+      "prediction": "sales_and_mixed_channel_cash_only_then_cutoff_confirmed_receivables"
+    },
+    "pure_buyout": {
+      "abstentionReason": "uncommitted_future_buyout_not_forecastable",
+      "futureBuyoutModelAllowed": false,
+      "withoutCutoffCommitment": "route_abstain_null",
+      "zeroMayReplaceNull": false
+    },
+    "pure_sales_share": {
+      "positiveOnlyMedianAllowed": false,
+      "prediction": "independent_as_of_channel_points_then_strict_sum",
+      "zeroIncomeMonthsRetained": true
+    },
+    "unknown_revenue_model": {
+      "abstentionReason": "unknown_revenue_model",
+      "bestPerformingRouteFallbackAllowed": false,
+      "withoutExplicitAsOfSalesComponentEvidence": "route_abstain_null"
+    }
+  },
+  "schema": "m2.c2r1.design.public.v1",
+  "seals": {
+    "deferred60MonthLabelsOpened": false,
+    "embargoShadowOpened": false,
+    "finalHoldoutOpened": false
+  },
+  "selection": {
+    "biasFeasibility": {
+      "eachHorizonAbsoluteMaximum": 0.15,
+      "highValueAbsoluteMaximum": 0.1,
+      "overallAbsoluteMaximum": 0.1
+    },
+    "evidence": "strictly_earlier_development_origins_only",
+    "minimumEarlierOrigins": 2,
+    "minimumEarlierRouteCases": 100,
+    "noFeasibleOrInsufficientEvidenceFallback": "B4",
+    "objective": {
+      "absoluteBiasWeight": 0.15,
+      "meanHorizonWapeWeight": 0.2,
+      "overallWapeWeight": 0.45,
+      "top10WapeWeight": 0.2
+    },
+    "thresholdsMayMoveAfterResults": false,
+    "tieBreak": [
+      "fewer_components",
+      "fewer_parameters",
+      "candidate_id_lexical"
+    ],
+    "unit": "outer_origin_x_revenue_route"
+  },
+  "specDigest": "923ea7ef0f59d6d209aef6d0b6240d265eea3a334cdb3fe3a273937adb3a595a",
+  "version": "M2-C2R1-design-v1"
+}

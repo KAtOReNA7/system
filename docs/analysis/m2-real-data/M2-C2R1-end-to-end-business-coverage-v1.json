@@ -1,0 +1,132 @@
+{
+  "businessObservation": {
+    "belowThresholdBehavior": "conditional_only_never_formal_approval",
+    "forecastableCashShareMinimumRecommended": 0.9,
+    "forecastableCashShareObserved": 0.7396468495203204,
+    "forecastableCashShareObservedPass": false,
+    "mayAuthorizeRelease": false,
+    "top10ForecastableCashCoverageMinimum": 0.9,
+    "top10ForecastableCashCoverageObserved": 0.7594125279899511,
+    "top10ForecastableCashCoverageObservedPass": false
+  },
+  "candidateDecision": "FAIL",
+  "completePopulation": {
+    "cashCoverage": {
+      "amountConservationDifference": 0.0,
+      "classifierExposureIsCommitmentFact": false,
+      "classifierExposureShareOfLedgerCash": 0.26035315047967955,
+      "forecastableCashActual": 93783254.66,
+      "forecastableCashShareOfLedgerCash": 0.7396468495203204,
+      "totalLedgerCashActual": 126794638.17,
+      "uncommittedBuyoutClassifierExposureActual": 33011383.51
+    },
+    "decisionStatus": "not_for_formal_decision",
+    "formalDecisionAuthorized": false,
+    "highValuePureBuyoutAbstention": {
+      "definition": "top10_complete_month_ledger_ranking_and_latest_route_post_hoc",
+      "postHocOnly": true,
+      "workCount": 60
+    },
+    "language": "zh-CN",
+    "observationGates": {
+      "belowThresholdBehavior": "conditional_only_never_formal_approval",
+      "forecastableCashShareMinimumRecommended": 0.9,
+      "forecastableCashShareObserved": 0.7396468495203204,
+      "forecastableCashShareObservedPass": false,
+      "mayAuthorizeRelease": false,
+      "top10ForecastableCashCoverageMinimum": 0.9,
+      "top10ForecastableCashCoverageObserved": 0.7594125279899511,
+      "top10ForecastableCashCoverageObservedPass": false
+    },
+    "privacy": {
+      "aggregateOnly": true,
+      "channelIdentifiersPresent": false,
+      "deidentified": true,
+      "predictionIntervalEndpointsPresent": false,
+      "privatePathsPresent": false,
+      "rawRowsPresent": false,
+      "workIdentifiersPresent": false
+    },
+    "releaseAuthorized": false,
+    "routeAbstentionPostHoc": {
+      "forecastableCashShare": 0.0,
+      "latestRouteIsPostHocNotHistoricalFeature": true,
+      "ledgerCashShare": 0.1735993447542199,
+      "workCount": 306,
+      "workShare": 0.10022928267278088
+    },
+    "schema": "m2.formal_cash_population_business_coverage.public.v1",
+    "scope": {
+      "completeIncomeFactCount": 192869,
+      "firstCompleteMonth": "2017-06",
+      "latestCompleteMonth": "2026-04",
+      "nonOverlappingWorkLevelAggregation": true,
+      "postHocOnly": true,
+      "standardWorkCount": 3053
+    },
+    "seals": {
+      "deferred60MonthLabelsOpened": false,
+      "embargoShadowOpened": false,
+      "finalHoldoutOpened": false
+    },
+    "topBands": {
+      "top1": {
+        "forecastableCashCoverage": 0.784825777206678,
+        "rankingBuiltBeforeModelOrServingFilter": true,
+        "workCount": 31
+      },
+      "top10": {
+        "forecastableCashCoverage": 0.7594125279899511,
+        "rankingBuiltBeforeModelOrServingFilter": true,
+        "workCount": 306
+      },
+      "top5": {
+        "forecastableCashCoverage": 0.7743196465159894,
+        "rankingBuiltBeforeModelOrServingFilter": true,
+        "workCount": 153
+      }
+    },
+    "version": "M2-formal-cash-population-business-coverage-v1"
+  },
+  "decisionStatus": "not_for_formal_decision",
+  "developmentBusinessCoverage": {
+    "endToEndBusinessGap": {
+      "mayBeNamedModelWape": false,
+      "normalizedAbsoluteGap": 0.59588471,
+      "nullServedPointTreatment": "unserved_cash_exposure_not_model_zero",
+      "signedAggregateGap": -0.0655719
+    },
+    "forecastableCashShareOfLedgerCash": 0.93710792,
+    "modelPopulationForecastableCashCoverage": 0.96871997,
+    "routeAbstainedCaseShare": 0.35768633,
+    "routeAbstainedForecastableCashShare": 0.03128003,
+    "routeAbstainedWorkCount": 268,
+    "routeAbstainedWorkShare": 0.25670498,
+    "scoreableForecastableCashActual": 82206415.6984,
+    "scoreableTotalLedgerCashActual": 87723530.8518,
+    "scoreableUncommittedBuyoutSurpriseActual": 5517115.1534,
+    "servedForecastableCashCoverage": 0.96871997,
+    "surpriseCashShareOfLedgerCash": 0.06289208
+  },
+  "endToEndBusinessGapMayBeNamedModelWape": false,
+  "language": "zh-CN",
+  "observationGateMayAuthorizeFormalApproval": false,
+  "privacy": {
+    "aggregateOnly": true,
+    "authorIdentifiersPresent": false,
+    "channelIdentifiersPresent": false,
+    "deidentified": true,
+    "predictionIntervalEndpointsPresent": false,
+    "privatePathsPresent": false,
+    "rawRowsPresent": false,
+    "workIdentifiersPresent": false
+  },
+  "schema": "m2.c2r1.end_to_end_business_coverage.public.v1",
+  "seals": {
+    "deferred60MonthLabelsOpened": false,
+    "embargoShadowOpened": false,
+    "finalHoldoutOpened": false
+  },
+  "surpriseCashHidden": false,
+  "version": "M2-C2R1-end-to-end-business-coverage-v1"
+}
