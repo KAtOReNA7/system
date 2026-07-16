@@ -20,8 +20,17 @@ function read(name) {
   return JSON.parse(fs.readFileSync(path.join(reportDir, name), "utf8"));
 }
 
-function sha256(file) {
-  return crypto.createHash("sha256").update(fs.readFileSync(file)).digest("hex");
+function gitCanonicalSha256(file) {
+  const relative = path.relative(root, file).split(path.sep).join("/");
+  const clean = spawnSync("git", ["diff", "--quiet", "HEAD", "--", relative], {
+    cwd: root,
+  });
+  assert.equal(clean.status, 0, `${relative} has local semantic changes`);
+  const blob = spawnSync("git", ["cat-file", "blob", `HEAD:${relative}`], {
+    cwd: root,
+  });
+  assert.equal(blob.status, 0, blob.stderr?.toString("utf8"));
+  return crypto.createHash("sha256").update(blob.stdout).digest("hex");
 }
 
 function run(...args) {
@@ -121,22 +130,22 @@ test("C2 correction changes only the residual gate and leaves model decision FAI
   assert.equal(validation.M3Started, false);
 });
 
-test("Gate C-bound sources remain byte-identical and public verification passes", () => {
+test("Gate C-bound Git blobs remain canonical and public verification passes", () => {
   const frozen = amendment.frozenPhaseA;
   assert.equal(
-    sha256(path.join(root, "src/domain/oldProductEvaluation/calibrationSpec.c2.v1.amendment.json")),
+    gitCanonicalSha256(path.join(root, "src/domain/oldProductEvaluation/calibrationSpec.c2.v1.amendment.json")),
     frozen.baseSpecSha256,
   );
   assert.equal(
-    sha256(path.join(root, "scripts/m2-real-data/m2_calibration_c2_v1.py")),
+    gitCanonicalSha256(path.join(root, "scripts/m2-real-data/m2_calibration_c2_v1.py")),
     frozen.c2CoreSha256,
   );
   assert.equal(
-    sha256(path.join(root, "scripts/m2-real-data/run_m2_c2_development_validation.py")),
+    gitCanonicalSha256(path.join(root, "scripts/m2-real-data/run_m2_c2_development_validation.py")),
     frozen.c2RunnerSha256,
   );
   assert.equal(
-    sha256(path.join(reportDir, "M2-calibration-gate-c-v1.json")),
+    gitCanonicalSha256(path.join(reportDir, "M2-calibration-gate-c-v1.json")),
     frozen.gateCReportSha256,
   );
   const gate = read("M2-calibration-gate-c-v1.json");

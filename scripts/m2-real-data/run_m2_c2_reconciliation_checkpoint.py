@@ -61,6 +61,33 @@ def sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def git_canonical_blob_sha256(path: Path) -> str:
+    """Hash the LF-preserving Git blob after confirming no semantic worktree diff."""
+
+    relative = path.relative_to(ROOT).as_posix()
+    clean = subprocess.run(
+        ["git", "diff", "--quiet", "HEAD", "--", relative],
+        cwd=ROOT,
+        check=False,
+    )
+    if clean.returncode != 0:
+        raise ReconciliationCheckpointError(
+            f"Gate C-bound source has local changes: {relative}"
+        )
+    blob = subprocess.run(
+        ["git", "cat-file", "blob", f"HEAD:{relative}"],
+        cwd=ROOT,
+        check=False,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    if blob.returncode != 0:
+        raise ReconciliationCheckpointError(
+            f"Gate C-bound Git blob is unavailable: {relative}"
+        )
+    return hashlib.sha256(blob.stdout).hexdigest()
+
+
 def canonical_digest(value: Any) -> str:
     payload = json.dumps(
         value,
@@ -113,7 +140,7 @@ def verify_frozen_phase_a(amendment: Mapping[str, Any]) -> None:
         GATE_C_PATH: frozen["gateCReportSha256"],
     }
     for path, digest in expected.items():
-        if not path.is_file() or sha256(path) != digest:
+        if not path.is_file() or git_canonical_blob_sha256(path) != digest:
             raise ReconciliationCheckpointError(
                 f"Gate C-bound source changed: {path.relative_to(ROOT).as_posix()}"
             )

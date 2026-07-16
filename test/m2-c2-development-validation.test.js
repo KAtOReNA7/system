@@ -127,14 +127,20 @@ test("C2 public artifacts are Chinese, aggregate-only, and omit PI endpoints", (
   }
 });
 
-test("ignored C2 cases, manifest, and Chinese workbook remain untracked", (context) => {
+test("ignored C2 evidence remains untracked and is verified when complete", (context) => {
   const manifestPath = path.join(privateDir, "M2-C2-development-manifest-private-v1.json");
-  if (!fs.existsSync(manifestPath)) {
-    context.skip("ignored C2 development evidence is unavailable on this machine");
-    return;
-  }
   const casesPath = path.join(privateDir, "M2-C2-development-cases-private-v1.ndjson");
   const workbookPath = path.join(privateDir, "M2-C2-中文业务抽检工作簿-private-v1.xlsx");
+  const privateArtifacts = [casesPath, manifestPath, workbookPath];
+  for (const file of privateArtifacts) {
+    const relative = path.relative(root, file);
+    assert.equal(git("check-ignore", "--quiet", "--", relative).status, 0, relative);
+    assert.equal(git("ls-files", "--error-unmatch", "--", relative).status, 1, relative);
+  }
+  if (!privateArtifacts.every((file) => fs.existsSync(file))) {
+    context.skip("ignored C2 development evidence is incomplete on this machine");
+    return;
+  }
   const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
   assert.equal(manifest.schema, "m2.c2_development_manifest.private.v1");
   assert.equal(manifest.privateCaseCount, 18615);
@@ -142,11 +148,6 @@ test("ignored C2 cases, manifest, and Chinese workbook remain untracked", (conte
   assert.equal(manifest.privateCaseSha256, sha256(casesPath));
   assert.equal(manifest.privateWorkbookSha256, sha256(workbookPath));
   assert.equal(manifest.tracked, false);
-  for (const file of [casesPath, manifestPath, workbookPath]) {
-    const relative = path.relative(root, file);
-    assert.equal(git("check-ignore", "--quiet", "--", relative).status, 0, relative);
-    assert.equal(git("ls-files", "--error-unmatch", "--", relative).status, 1, relative);
-  }
 });
 
 test("C2 decisions do not authorize C3, release, or M3", (context) => {

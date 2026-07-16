@@ -226,6 +226,19 @@ def _checkout_identity_decision(
     return "trusted_pr_merge_ref"
 
 
+def _is_clean_local_main_checkout(
+    *, branch: str, head_sha: str, remote_main_sha: str, worktree_status: str
+) -> bool:
+    """Allow only a clean local main that is exactly synchronized with origin/main."""
+
+    return (
+        branch == "main"
+        and bool(head_sha)
+        and head_sha == remote_main_sha
+        and worktree_status == ""
+    )
+
+
 def _checkout_boundary_self_test() -> dict[str, bool]:
     merge_sha = "a" * 40
     base_sha = "b" * 40
@@ -269,6 +282,24 @@ def _checkout_boundary_self_test() -> dict[str, bool]:
         == "trusted_pr_merge_ref",
         "exactMainPushAccepted": _checkout_identity_decision(**trusted_main)
         == "trusted_main_push",
+        "cleanLocalMainAccepted": _is_clean_local_main_checkout(
+            branch="main",
+            head_sha=merge_sha,
+            remote_main_sha=merge_sha,
+            worktree_status="",
+        ),
+        "dirtyLocalMainRejected": not _is_clean_local_main_checkout(
+            branch="main",
+            head_sha=merge_sha,
+            remote_main_sha=merge_sha,
+            worktree_status=" M test/example.test.js",
+        ),
+        "divergedLocalMainRejected": not _is_clean_local_main_checkout(
+            branch="main",
+            head_sha=merge_sha,
+            remote_main_sha="d" * 40,
+            worktree_status="",
+        ),
         "detachedCheckoutRejectedOutsideActions": _checkout_identity_decision(
             **{**trusted, "github_actions": "false"}
         )
@@ -315,6 +346,7 @@ def require_boundaries(
     *,
     allow_trusted_ci_checkout: bool = False,
     allow_synthetic_m2_branch: bool = False,
+    allow_clean_local_main: bool = False,
 ) -> str:
     branch = run_git("branch", "--show-current")
     if branch == BRANCH:
@@ -328,25 +360,33 @@ def require_boundaries(
             "rev-parse", f"origin/{BRANCH}", check=False
         )
         remote_main_sha = run_git("rev-parse", "origin/main", check=False)
-        checkout_identity = _checkout_identity_decision(
+        if allow_clean_local_main and _is_clean_local_main_checkout(
             branch=branch,
-            allow_trusted_ci_checkout=allow_trusted_ci_checkout,
-            github_actions=os.environ.get("GITHUB_ACTIONS", ""),
-            event_name=os.environ.get("GITHUB_EVENT_NAME", ""),
-            head_ref=os.environ.get("GITHUB_HEAD_REF", ""),
-            base_ref=os.environ.get("GITHUB_BASE_REF", ""),
-            github_ref=os.environ.get("GITHUB_REF", ""),
-            github_repository=os.environ.get("GITHUB_REPOSITORY", ""),
-            github_sha=os.environ.get("GITHUB_SHA", ""),
             head_sha=head_sha,
-            parent_shas=tuple(revision[1:]),
-            remote_head_sha=remote_head_sha,
             remote_main_sha=remote_main_sha,
-        )
+            worktree_status=run_git("status", "--porcelain"),
+        ):
+            checkout_identity = "clean_local_main"
+        else:
+            checkout_identity = _checkout_identity_decision(
+                branch=branch,
+                allow_trusted_ci_checkout=allow_trusted_ci_checkout,
+                github_actions=os.environ.get("GITHUB_ACTIONS", ""),
+                event_name=os.environ.get("GITHUB_EVENT_NAME", ""),
+                head_ref=os.environ.get("GITHUB_HEAD_REF", ""),
+                base_ref=os.environ.get("GITHUB_BASE_REF", ""),
+                github_ref=os.environ.get("GITHUB_REF", ""),
+                github_repository=os.environ.get("GITHUB_REPOSITORY", ""),
+                github_sha=os.environ.get("GITHUB_SHA", ""),
+                head_sha=head_sha,
+                parent_shas=tuple(revision[1:]),
+                remote_head_sha=remote_head_sha,
+                remote_main_sha=remote_main_sha,
+            )
         if checkout_identity is None:
             raise FormalReplayError(
                 f"formal-cash comparator must run on {BRANCH} or an exact "
-                "synthetic-only GitHub PR/main CI checkout"
+                "synthetic-only clean local main or GitHub PR/main CI checkout"
             )
     contract = formal.load_spec()
     if any(value is not False for value in contract["seals"].values()):
@@ -2662,6 +2702,7 @@ def preflight() -> dict[str, Any]:
     checkout_boundary = require_boundaries(
         allow_trusted_ci_checkout=True,
         allow_synthetic_m2_branch=True,
+        allow_clean_local_main=True,
     )
     contract = formal.load_spec()
     synthetic = formal.synthetic_self_test()
