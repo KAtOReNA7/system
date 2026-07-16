@@ -20,15 +20,37 @@ async function request(path, options = {}) {
   await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
   const { port } = server.address();
   try {
-    const response = await fetch(`http://127.0.0.1:${port}${path}`, {
-      headers: { accept: "application/json", ...(options.headers ?? {}) },
-      ...options
+    return await new Promise((resolve, reject) => {
+      const clientRequest = http.request({
+        hostname: "127.0.0.1",
+        port,
+        path,
+        method: options.method ?? "GET",
+        headers: { accept: "application/json", ...(options.headers ?? {}) }
+      }, (response) => {
+        let responseBody = "";
+        response.setEncoding("utf8");
+        response.on("data", (chunk) => {
+          responseBody += chunk;
+        });
+        response.on("end", () => {
+          try {
+            resolve({
+              statusCode: response.statusCode,
+              requestId: response.headers["x-request-id"] ?? null,
+              body: JSON.parse(responseBody)
+            });
+          } catch (error) {
+            reject(error);
+          }
+        });
+      });
+      clientRequest.on("error", reject);
+      if (options.body !== undefined) {
+        clientRequest.write(options.body);
+      }
+      clientRequest.end();
     });
-    return {
-      statusCode: response.status,
-      requestId: response.headers.get("x-request-id"),
-      body: await response.json()
-    };
   } finally {
     await new Promise((resolve) => server.close(resolve));
   }

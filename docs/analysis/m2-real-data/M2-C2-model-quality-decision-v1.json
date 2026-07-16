@@ -1,0 +1,75 @@
+{
+  "acceptance": {
+    "allPassed": false,
+    "conditionCount": 25,
+    "conditions": {
+      "P0_equals_0": true,
+      "P1_equals_0": true,
+      "P2_is_fact_audit_only": true,
+      "at_least_70pct_origins_beat_B4": false,
+      "each_horizon_absolute_bias_at_most_15pct": false,
+      "high_value_absolute_bias_at_most_10pct": false,
+      "high_value_guard_active": true,
+      "horizon_12_wape_improves_at_least_3pct": false,
+      "horizon_18_wape_regression_at_most_2pct": true,
+      "horizon_24_wape_regression_at_most_2pct": true,
+      "horizon_3_wape_improves_at_least_3pct": false,
+      "horizon_6_wape_improves_at_least_3pct": false,
+      "internal_80_coverage_between_75_and_85pct": false,
+      "internal_WIS_improves_at_least_5pct": false,
+      "model_population_unchanged": true,
+      "no_automatic_operational_actions": true,
+      "no_three_consecutive_origins_regress_over_5pct": true,
+      "overall_absolute_bias_at_most_10pct": true,
+      "overall_wape_at_most_0_60": true,
+      "residual_does_not_duplicate_cash": false,
+      "served_absolute_bias_at_most_10pct": true,
+      "standardized_width_regression_at_most_10pct": true,
+      "top10_wape_improves_at_least_5pct": false,
+      "top1_wape_regression_at_most_5pct": true,
+      "top5_wape_regression_at_most_5pct": true
+    },
+    "evidence": {
+      "horizonRelativeWapeVsB4": {
+        "12": 0.0014618,
+        "18": 0.00516685,
+        "24": 0.0,
+        "3": -0.00401668,
+        "6": -0.00252022
+      },
+      "internalWisImprovementVsB4": -0.00054683,
+      "maximumConsecutiveOriginsRegressingOverFivePercent": 0,
+      "originRelativeWapeVsB4": {
+        "2020-12": -0.0,
+        "2021-06": 0.0,
+        "2021-12": 0.00513284,
+        "2022-06": 0.0,
+        "2022-12": -0.00627532
+      },
+      "originWinShare": 0.2,
+      "standardizedWidthRelativeDeltaVsB4": 0.00164385,
+      "topBandRelativeWapeVsB4": {
+        "top1": 0.0,
+        "top10": -0.0,
+        "top5": -0.0
+      }
+    },
+    "modelQualityDecision": "FAIL",
+    "passedConditionCount": 15,
+    "thresholdsChangedAfterResults": false
+  },
+  "decisionStatus": "not_for_formal_decision",
+  "formalDecisionAuthorized": false,
+  "modelPopulationCaseCount": 7851,
+  "modelPopulationWorkCount": 824,
+  "modelQualityDecision": "FAIL",
+  "populationMoved": false,
+  "primaryComparator": "B4",
+  "releaseAuthorized": false,
+  "schema": "m2.c2_model_quality_decision.v1",
+  "seals": {
+    "deferred60MonthLabelsOpened": false,
+    "embargoShadowOpened": false,
+    "finalHoldoutOpened": false
+  }
+}
