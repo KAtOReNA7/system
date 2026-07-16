@@ -23,6 +23,14 @@ jobs:
           # Calibration contracts verify files against frozen historical commits.
           fetch-depth: 0
 
+      # GitHub checks out pull_request merge refs in detached-HEAD mode. The
+      # synthetic M2 preflights accept a named codex/m2-* development checkout,
+      # so attach the already-checked-out merge commit to a fixed local branch.
+      # This preserves merge-result testing and does not affect main push runs.
+      - name: Normalize M2 pull request checkout identity
+        if: ${{ github.event_name == 'pull_request' && startsWith(github.head_ref, 'codex/m2-') }}
+        run: git switch -c codex/m2-ci-merge-checkout
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
