@@ -174,9 +174,110 @@ def public_value(value: Any) -> Any:
     return value
 
 
-def require_boundaries() -> None:
-    if run_git("branch", "--show-current") != BRANCH:
-        raise FormalReplayError(f"formal-cash comparator must run on {BRANCH}")
+def _checkout_identity_decision(
+    *,
+    branch: str,
+    allow_trusted_pr_merge_ref: bool,
+    github_actions: str,
+    event_name: str,
+    head_ref: str,
+    base_ref: str,
+    github_sha: str,
+    head_sha: str,
+    parent_shas: Sequence[str],
+    remote_head_sha: str,
+) -> str | None:
+    """Accept the named branch or its exact GitHub-generated PR merge ref."""
+
+    if branch == BRANCH:
+        return "named_branch"
+    if not (
+        allow_trusted_pr_merge_ref
+        and branch == ""
+        and github_actions == "true"
+        and event_name == "pull_request"
+        and head_ref == BRANCH
+        and base_ref == "main"
+        and github_sha == head_sha
+        and len(parent_shas) == 2
+        and parent_shas[1] == remote_head_sha
+    ):
+        return None
+    return "trusted_pr_merge_ref"
+
+
+def _checkout_boundary_self_test() -> dict[str, bool]:
+    merge_sha = "a" * 40
+    base_sha = "b" * 40
+    remote_head_sha = "c" * 40
+    trusted = {
+        "branch": "",
+        "allow_trusted_pr_merge_ref": True,
+        "github_actions": "true",
+        "event_name": "pull_request",
+        "head_ref": BRANCH,
+        "base_ref": "main",
+        "github_sha": merge_sha,
+        "head_sha": merge_sha,
+        "parent_shas": (base_sha, remote_head_sha),
+        "remote_head_sha": remote_head_sha,
+    }
+    checks = {
+        "namedBranchAccepted": _checkout_identity_decision(
+            **{**trusted, "branch": BRANCH, "allow_trusted_pr_merge_ref": False}
+        )
+        == "named_branch",
+        "exactPullRequestMergeRefAccepted": _checkout_identity_decision(**trusted)
+        == "trusted_pr_merge_ref",
+        "detachedCheckoutRejectedOutsideActions": _checkout_identity_decision(
+            **{**trusted, "github_actions": "false"}
+        )
+        is None,
+        "wrongHeadBranchRejected": _checkout_identity_decision(
+            **{**trusted, "head_ref": "codex/other"}
+        )
+        is None,
+        "wrongMergeSecondParentRejected": _checkout_identity_decision(
+            **{**trusted, "parent_shas": (base_sha, "d" * 40)}
+        )
+        is None,
+        "formalModeDetachedCheckoutRejected": _checkout_identity_decision(
+            **{**trusted, "allow_trusted_pr_merge_ref": False}
+        )
+        is None,
+    }
+    if not all(checks.values()):
+        raise FormalReplayError("formal-cash checkout boundary self-test failed")
+    return checks
+
+
+def require_boundaries(*, allow_trusted_pr_merge_ref: bool = False) -> str:
+    branch = run_git("branch", "--show-current")
+    if branch == BRANCH:
+        checkout_identity = "named_branch"
+    else:
+        head_sha = run_git("rev-parse", "HEAD")
+        revision = run_git("rev-list", "--parents", "-n", "1", "HEAD").split()
+        remote_head_sha = run_git(
+            "rev-parse", f"origin/{BRANCH}", check=False
+        )
+        checkout_identity = _checkout_identity_decision(
+            branch=branch,
+            allow_trusted_pr_merge_ref=allow_trusted_pr_merge_ref,
+            github_actions=os.environ.get("GITHUB_ACTIONS", ""),
+            event_name=os.environ.get("GITHUB_EVENT_NAME", ""),
+            head_ref=os.environ.get("GITHUB_HEAD_REF", ""),
+            base_ref=os.environ.get("GITHUB_BASE_REF", ""),
+            github_sha=os.environ.get("GITHUB_SHA", ""),
+            head_sha=head_sha,
+            parent_shas=tuple(revision[1:]),
+            remote_head_sha=remote_head_sha,
+        )
+        if checkout_identity is None:
+            raise FormalReplayError(
+                f"formal-cash comparator must run on {BRANCH} or its exact "
+                "GitHub pull-request merge ref"
+            )
     contract = formal.load_spec()
     if any(value is not False for value in contract["seals"].values()):
         raise FormalReplayError("formal-cash comparator seal is open")
@@ -192,6 +293,7 @@ def require_boundaries() -> None:
             raise FormalReplayError(f"private formal comparator role is tracked: {path.name}")
     if phase.tracked_private_artifacts():
         raise FormalReplayError("a private calibration artifact is tracked")
+    return checkout_identity
 
 
 def _role_templates(
@@ -2487,7 +2589,7 @@ def verify_c2r1_authorization() -> dict[str, Any]:
 
 
 def preflight() -> dict[str, Any]:
-    require_boundaries()
+    checkout_boundary = require_boundaries(allow_trusted_pr_merge_ref=True)
     contract = formal.load_spec()
     synthetic = formal.synthetic_self_test()
     formal_future = formal.future_perturbation_self_test()
@@ -2495,6 +2597,8 @@ def preflight() -> dict[str, Any]:
     return {
         "status": "passed",
         "mode": "synthetic-only",
+        "checkoutBoundary": checkout_boundary,
+        "checkoutBoundarySelfTest": _checkout_boundary_self_test(),
         "specDigest": formal.canonical_digest(contract),
         "synthetic": synthetic,
         "futurePerturbation": future,
