@@ -1,0 +1,748 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://katorena.local/schemas/m2-v2/external-evidence-v0.1.schema.json",
+  "title": "M2 v2 External Evidence Claim",
+  "description": "V2-A architecture contract for one immutable, as-of external evidence claim. It is not an authorization to acquire external data.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "evidenceId",
+    "evidenceVersion",
+    "standardWorkId",
+    "evidenceType",
+    "claimKey",
+    "entityResolution",
+    "structuredValue",
+    "source",
+    "provider",
+    "extraction",
+    "timestamps",
+    "confidence",
+    "contradiction",
+    "predictiveUse",
+    "admissibility",
+    "governance"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "m2.v2.external-evidence.v0.1"
+    },
+    "evidenceId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+    },
+    "evidenceVersion": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "standardWorkId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "evidenceType": {
+      "enum": [
+        "author_identity",
+        "original_work_performance",
+        "search_interest",
+        "social_signal",
+        "ranking_signal",
+        "adaptation_event",
+        "publication_event",
+        "award_event",
+        "official_notice"
+      ]
+    },
+    "claimKey": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_.-]{2,127}$"
+    },
+    "entityResolution": {
+      "$ref": "#/$defs/entityResolution"
+    },
+    "structuredValue": {
+      "$ref": "#/$defs/structuredValue"
+    },
+    "unit": {
+      "type": ["string", "null"],
+      "maxLength": 64
+    },
+    "source": {
+      "$ref": "#/$defs/source"
+    },
+    "provider": {
+      "$ref": "#/$defs/provider"
+    },
+    "extraction": {
+      "$ref": "#/$defs/extraction"
+    },
+    "timestamps": {
+      "$ref": "#/$defs/timestamps"
+    },
+    "confidence": {
+      "$ref": "#/$defs/confidence"
+    },
+    "contradiction": {
+      "$ref": "#/$defs/contradiction"
+    },
+    "predictiveUse": {
+      "enum": ["prediction_allowed", "explanation_only", "prohibited"]
+    },
+    "admissibility": {
+      "$ref": "#/$defs/admissibility"
+    },
+    "governance": {
+      "$ref": "#/$defs/governance"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "predictiveUse": { "const": "prediction_allowed" }
+        },
+        "required": ["predictiveUse"]
+      },
+      "then": {
+        "properties": {
+          "entityResolution": {
+            "allOf": [
+              { "$ref": "#/$defs/entityResolution" },
+              {
+                "properties": {
+                  "status": { "const": "resolved" },
+                  "work": {
+                    "allOf": [
+                      { "$ref": "#/$defs/entityMatch" },
+                      { "properties": { "status": { "const": "resolved" } } }
+                    ]
+                  },
+                  "author": {
+                    "allOf": [
+                      { "$ref": "#/$defs/entityMatch" },
+                      { "properties": { "status": { "enum": ["resolved", "not_applicable"] } } }
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          "timestamps": {
+            "allOf": [
+              { "$ref": "#/$defs/timestamps" },
+              {
+                "properties": {
+                  "availableAtStatus": { "const": "known" },
+                  "availableAt": { "type": "string", "format": "date-time" }
+                }
+              }
+            ]
+          },
+          "confidence": {
+            "allOf": [
+              { "$ref": "#/$defs/confidence" },
+              {
+                "properties": {
+                  "tier": { "enum": ["high", "medium"] },
+                  "entity": { "type": "number", "minimum": 0.8 },
+                  "source": { "type": "number", "minimum": 0.8 },
+                  "extraction": { "type": "number", "minimum": 0.8 },
+                  "freshness": { "type": "number", "minimum": 0.8 },
+                  "overall": { "type": "number", "minimum": 0.8 }
+                }
+              }
+            ]
+          },
+          "contradiction": {
+            "allOf": [
+              { "$ref": "#/$defs/contradiction" },
+              {
+                "properties": {
+                  "status": { "enum": ["none", "resolved"] },
+                  "currentClaimDisposition": { "enum": ["not_applicable", "winner"] }
+                }
+              }
+            ]
+          },
+          "admissibility": {
+            "allOf": [
+              { "$ref": "#/$defs/admissibility" },
+              { "properties": { "status": { "const": "accepted_prediction_candidate" } } }
+            ]
+          },
+          "source": {
+            "allOf": [
+              { "$ref": "#/$defs/source" },
+              {
+                "properties": {
+                  "sourceTier": { "enum": ["authoritative", "reliable_secondary"] },
+                  "sourceClass": {
+                    "enum": [
+                      "official_structured_api",
+                      "official_page",
+                      "authorized_structured_api",
+                      "licensed_aggregate",
+                      "permitted_public_page"
+                    ]
+                  },
+                  "sourceTermsClass": { "enum": ["structured_facts_allowed", "short_excerpt_allowed"] },
+                  "sourceLocator": { "type": "string", "minLength": 1 }
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "predictiveUse": { "const": "prediction_allowed" },
+          "evidenceType": { "const": "author_identity" }
+        },
+        "required": ["predictiveUse", "evidenceType"]
+      },
+      "then": {
+        "properties": {
+          "entityResolution": {
+            "allOf": [
+              { "$ref": "#/$defs/entityResolution" },
+              {
+                "properties": {
+                  "author": {
+                    "allOf": [
+                      { "$ref": "#/$defs/entityMatch" },
+                      { "properties": { "status": { "const": "resolved" } } }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "predictiveUse": { "const": "prediction_allowed" } },
+        "required": ["predictiveUse"]
+      },
+      "then": {
+        "properties": {
+          "structuredValue": {
+            "allOf": [
+              { "$ref": "#/$defs/structuredValue" },
+              { "properties": { "valueType": { "enum": ["number", "integer", "boolean", "category", "date", "datetime"] } } }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "predictiveUse": { "const": "explanation_only" } }, "required": ["predictiveUse"] },
+      "then": {
+        "properties": {
+          "admissibility": {
+            "allOf": [
+              { "$ref": "#/$defs/admissibility" },
+              { "properties": { "status": { "const": "accepted_explanation_only" } } }
+            ]
+          },
+          "source": {
+            "allOf": [
+              { "$ref": "#/$defs/source" },
+              {
+                "properties": {
+                  "sourceTier": { "enum": ["authoritative", "reliable_secondary", "weak_secondary"] },
+                  "sourceTermsClass": { "enum": ["structured_facts_allowed", "short_excerpt_allowed", "metadata_only"] },
+                  "sourceLocator": { "type": "string", "minLength": 1 }
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "source": {
+            "anyOf": [
+              { "properties": { "sourceTier": { "const": "prohibited" } }, "required": ["sourceTier"] },
+              { "properties": { "sourceTermsClass": { "enum": ["prohibited", "review_required"] } }, "required": ["sourceTermsClass"] }
+            ]
+          }
+        },
+        "required": ["source"]
+      },
+      "then": {
+        "properties": {
+          "predictiveUse": { "const": "prohibited" },
+          "admissibility": {
+            "allOf": [
+              { "$ref": "#/$defs/admissibility" },
+              { "properties": { "status": { "const": "excluded" } } }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "predictiveUse": { "const": "prohibited" } }, "required": ["predictiveUse"] },
+      "then": {
+        "properties": {
+          "admissibility": {
+            "allOf": [
+              { "$ref": "#/$defs/admissibility" },
+              { "properties": { "status": { "const": "excluded" } } }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "admissibility": {
+            "properties": { "status": { "enum": ["accepted_prediction_candidate", "accepted_explanation_only"] } },
+            "required": ["status"]
+          }
+        },
+        "required": ["admissibility"]
+      },
+      "then": {
+        "properties": {
+          "source": {
+            "allOf": [
+              { "$ref": "#/$defs/source" },
+              { "properties": { "sourceLocator": { "type": "string", "minLength": 1 } } }
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "entityResolution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "work", "author", "overallConfidence", "resolutionVersion"],
+      "properties": {
+        "status": { "enum": ["resolved", "ambiguous", "unresolved"] },
+        "work": { "$ref": "#/$defs/entityMatch" },
+        "author": { "$ref": "#/$defs/entityMatch" },
+        "overallConfidence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "resolutionVersion": { "type": "string", "minLength": 1, "maxLength": 128 }
+      }
+    },
+    "entityMatch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "method",
+        "confidence",
+        "candidateCount",
+        "selectedEntityKeyHash",
+        "candidateSetDigest",
+        "runnerUpMargin",
+        "acceptanceThreshold",
+        "ambiguityReason",
+        "alternateCandidateHashes",
+        "sourceEvidenceIds",
+        "normalizationVersion",
+        "policyVersion",
+        "resolverInputDigest",
+        "evaluatedAt"
+      ],
+      "properties": {
+        "status": { "enum": ["resolved", "ambiguous", "unresolved", "not_applicable"] },
+        "method": {
+          "enum": [
+            "authoritative_identifier",
+            "deterministic_exact_match",
+            "deterministic_composite_match",
+            "model_assisted_policy_accepted",
+            "unresolved",
+            "not_applicable"
+          ]
+        },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "candidateCount": { "type": "integer", "minimum": 0 },
+        "selectedEntityKeyHash": { "type": ["string", "null"], "pattern": "^sha256:[a-f0-9]{64}$" },
+        "candidateSetDigest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+        "runnerUpMargin": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+        "acceptanceThreshold": { "type": "number", "minimum": 0, "maximum": 1 },
+        "ambiguityReason": { "type": ["string", "null"], "maxLength": 512 },
+        "alternateCandidateHashes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+        },
+        "sourceEvidenceIds": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1, "maxLength": 128 }
+        },
+        "normalizationVersion": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "policyVersion": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "resolverInputDigest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+        "evaluatedAt": { "type": "string", "format": "date-time" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "resolved" } }, "required": ["status"] },
+          "then": {
+            "properties": {
+              "selectedEntityKeyHash": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+              "method": {
+                "enum": ["authoritative_identifier", "deterministic_exact_match", "deterministic_composite_match", "model_assisted_policy_accepted"]
+              }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "status": { "enum": ["ambiguous", "unresolved"] } }, "required": ["status"] },
+          "then": { "properties": { "selectedEntityKeyHash": { "type": "null" } } }
+        },
+        {
+          "if": { "properties": { "status": { "const": "not_applicable" } }, "required": ["status"] },
+          "then": {
+            "properties": {
+              "method": { "const": "not_applicable" },
+              "selectedEntityKeyHash": { "type": "null" },
+              "candidateCount": { "const": 0 }
+            }
+          }
+        }
+      ]
+    },
+    "structuredValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["valueType", "value"],
+      "properties": {
+        "valueType": {
+          "enum": ["number", "integer", "boolean", "category", "date", "datetime", "text"]
+        },
+        "value": {
+          "type": ["number", "integer", "boolean", "string"],
+          "maxLength": 2048
+        },
+        "normalizedValue": {
+          "type": ["number", "integer", "boolean", "string", "null"],
+          "maxLength": 2048
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "valueType": { "const": "number" } }, "required": ["valueType"] },
+          "then": { "properties": { "value": { "type": "number" } } }
+        },
+        {
+          "if": { "properties": { "valueType": { "const": "integer" } }, "required": ["valueType"] },
+          "then": { "properties": { "value": { "type": "integer" } } }
+        },
+        {
+          "if": { "properties": { "valueType": { "const": "boolean" } }, "required": ["valueType"] },
+          "then": { "properties": { "value": { "type": "boolean" } } }
+        },
+        {
+          "if": { "properties": { "valueType": { "enum": ["category", "text"] } }, "required": ["valueType"] },
+          "then": { "properties": { "value": { "type": "string", "maxLength": 2048 } } }
+        },
+        {
+          "if": { "properties": { "valueType": { "const": "date" } }, "required": ["valueType"] },
+          "then": { "properties": { "value": { "type": "string", "format": "date" } } }
+        },
+        {
+          "if": { "properties": { "valueType": { "const": "datetime" } }, "required": ["valueType"] },
+          "then": { "properties": { "value": { "type": "string", "format": "date-time" } } }
+        }
+      ]
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourceTier", "sourceClass", "sourceTermsClass", "sourceName", "sourceDomain", "sourceRecordKey", "sourceOriginKey", "sourceLineageDigest", "sourceLocator"],
+      "properties": {
+        "sourceTier": {
+          "enum": ["authoritative", "reliable_secondary", "weak_secondary", "prohibited"]
+        },
+        "sourceClass": {
+          "enum": [
+            "official_structured_api",
+            "official_page",
+            "authorized_structured_api",
+            "licensed_aggregate",
+            "permitted_public_page",
+            "search_index"
+          ]
+        },
+        "sourceTermsClass": {
+          "enum": [
+            "structured_facts_allowed",
+            "short_excerpt_allowed",
+            "metadata_only",
+            "prohibited",
+            "review_required"
+          ]
+        },
+        "sourceName": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "sourceDomain": { "type": "string", "minLength": 1, "maxLength": 253 },
+        "sourceRecordKey": { "type": "string", "minLength": 1, "maxLength": 512 },
+        "sourceOriginKey": { "type": "string", "minLength": 1, "maxLength": 512 },
+        "sourceLineageDigest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+        "sourceLocator": {
+          "type": ["string", "null"],
+          "maxLength": 2048,
+          "pattern": "^(https://|urn:[a-z0-9][a-z0-9-]*:)"
+        },
+        "jurisdiction": { "type": ["string", "null"], "maxLength": 64 }
+      }
+    },
+    "provider": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["providerId", "providerVersion", "queryId", "retrievalId"],
+      "properties": {
+        "providerId": { "type": "string", "pattern": "^[a-z][a-z0-9_.-]{2,127}$" },
+        "providerVersion": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "queryId": { "type": "string", "minLength": 8, "maxLength": 128 },
+        "retrievalId": { "type": "string", "minLength": 8, "maxLength": 128 }
+      }
+    },
+    "extraction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["extractionId", "extractorType", "modelId", "promptVersion", "schemaVersion"],
+      "properties": {
+        "extractionId": { "type": "string", "minLength": 8, "maxLength": 128 },
+        "extractorType": { "enum": ["deterministic", "llm_structured_extraction"] },
+        "modelId": { "type": ["string", "null"], "maxLength": 128 },
+        "promptVersion": { "type": ["string", "null"], "maxLength": 128 },
+        "schemaVersion": { "const": "m2.v2.external-evidence.v0.1" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "extractorType": { "const": "llm_structured_extraction" } }, "required": ["extractorType"] },
+          "then": {
+            "properties": {
+              "modelId": { "type": "string", "minLength": 1 },
+              "promptVersion": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "extractorType": { "const": "deterministic" } }, "required": ["extractorType"] },
+          "then": {
+            "properties": {
+              "modelId": { "type": "null" },
+              "promptVersion": { "type": "null" }
+            }
+          }
+        }
+      ]
+    },
+    "timestamps": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["eventTime", "publishedAt", "firstObservedAt", "availableAtStatus", "availableAt", "availableAtBasis", "availableAtDerivationVersion", "capturedAt"],
+      "properties": {
+        "eventTime": { "type": ["string", "null"], "format": "date-time" },
+        "publishedAt": { "type": ["string", "null"], "format": "date-time" },
+        "firstObservedAt": { "type": "string", "format": "date-time" },
+        "availableAtStatus": { "enum": ["known", "unknown"] },
+        "availableAt": { "type": ["string", "null"], "format": "date-time" },
+        "availableAtBasis": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "availableAtDerivationVersion": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "capturedAt": { "type": "string", "format": "date-time" },
+        "validFrom": { "type": ["string", "null"], "format": "date-time" },
+        "validTo": { "type": ["string", "null"], "format": "date-time" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "availableAtStatus": { "const": "known" } }, "required": ["availableAtStatus"] },
+          "then": { "properties": { "availableAt": { "type": "string", "format": "date-time" } } }
+        },
+        {
+          "if": { "properties": { "availableAtStatus": { "const": "unknown" } }, "required": ["availableAtStatus"] },
+          "then": { "properties": { "availableAt": { "type": "null" } } }
+        }
+      ]
+    },
+    "confidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["entity", "source", "extraction", "freshness", "overall", "tier", "method"],
+      "properties": {
+        "entity": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+        "source": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+        "extraction": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+        "freshness": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+        "overall": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+        "tier": { "enum": ["high", "medium", "low", "unavailable"] },
+        "method": { "const": "minimum_required_components_v1" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "tier": { "const": "high" } }, "required": ["tier"] },
+          "then": {
+            "properties": {
+              "entity": { "type": "number", "minimum": 0.9 },
+              "source": { "type": "number", "minimum": 0.9 },
+              "extraction": { "type": "number", "minimum": 0.9 },
+              "freshness": { "type": "number", "minimum": 0.9 },
+              "overall": { "type": "number", "minimum": 0.9 }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "tier": { "const": "medium" } }, "required": ["tier"] },
+          "then": {
+            "properties": {
+              "entity": { "type": "number", "minimum": 0.8 },
+              "source": { "type": "number", "minimum": 0.8 },
+              "extraction": { "type": "number", "minimum": 0.8 },
+              "freshness": { "type": "number", "minimum": 0.8 },
+              "overall": { "type": "number", "minimum": 0.8, "exclusiveMaximum": 0.9 }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "tier": { "const": "low" } }, "required": ["tier"] },
+          "then": {
+            "properties": {
+              "entity": { "type": "number" },
+              "source": { "type": "number" },
+              "extraction": { "type": "number" },
+              "freshness": { "type": "number" },
+              "overall": { "type": "number", "minimum": 0, "exclusiveMaximum": 0.8 }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "tier": { "const": "unavailable" } }, "required": ["tier"] },
+          "then": {
+            "properties": { "overall": { "type": "null" } },
+            "anyOf": [
+              { "properties": { "entity": { "type": "null" } } },
+              { "properties": { "source": { "type": "null" } } },
+              { "properties": { "extraction": { "type": "null" } } },
+              { "properties": { "freshness": { "type": "null" } } }
+            ]
+          }
+        }
+      ]
+    },
+    "contradiction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "groupId", "conflictingEvidenceIds", "resolutionRule", "winnerEvidenceId", "resolutionVersion", "resolvedAt", "currentClaimDisposition"],
+      "properties": {
+        "status": { "enum": ["none", "detected", "resolved", "unresolved", "superseded"] },
+        "groupId": { "type": ["string", "null"], "maxLength": 128 },
+        "conflictingEvidenceIds": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "maxLength": 128 }
+        },
+        "resolutionRule": { "type": ["string", "null"], "maxLength": 128 },
+        "winnerEvidenceId": { "type": ["string", "null"], "maxLength": 128 },
+        "resolutionVersion": { "type": ["string", "null"], "maxLength": 128 },
+        "resolvedAt": { "type": ["string", "null"], "format": "date-time" },
+        "currentClaimDisposition": { "enum": ["winner", "loser", "not_applicable"] }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "none" } }, "required": ["status"] },
+          "then": {
+            "properties": {
+              "groupId": { "type": "null" },
+              "conflictingEvidenceIds": { "maxItems": 0 },
+              "winnerEvidenceId": { "type": "null" },
+              "resolutionVersion": { "type": "null" },
+              "resolvedAt": { "type": "null" },
+              "currentClaimDisposition": { "const": "not_applicable" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "status": { "const": "resolved" } }, "required": ["status"] },
+          "then": {
+            "properties": {
+              "groupId": { "type": "string", "minLength": 1 },
+              "winnerEvidenceId": { "type": "string", "minLength": 1 },
+              "resolutionRule": { "type": "string", "minLength": 1 },
+              "resolutionVersion": { "type": "string", "minLength": 1 },
+              "resolvedAt": { "type": "string", "format": "date-time" },
+              "currentClaimDisposition": { "enum": ["winner", "loser"] }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "status": { "enum": ["detected", "unresolved"] } }, "required": ["status"] },
+          "then": {
+            "properties": {
+              "groupId": { "type": "string", "minLength": 1 },
+              "winnerEvidenceId": { "type": "null" },
+              "resolvedAt": { "type": "null" },
+              "currentClaimDisposition": { "const": "not_applicable" }
+            }
+          }
+        }
+      ]
+    },
+    "admissibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "exclusionReasons", "policyVersion"],
+      "properties": {
+        "status": { "enum": ["accepted_prediction_candidate", "accepted_explanation_only", "excluded"] },
+        "exclusionReasons": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^[a-z][a-z0-9_.-]{2,127}$" }
+        },
+        "policyVersion": { "type": "string", "minLength": 1, "maxLength": 128 }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "enum": ["accepted_prediction_candidate", "accepted_explanation_only"] } }, "required": ["status"] },
+          "then": { "properties": { "exclusionReasons": { "maxItems": 0 } } }
+        },
+        {
+          "if": { "properties": { "status": { "const": "excluded" } }, "required": ["status"] },
+          "then": { "properties": { "exclusionReasons": { "minItems": 1 } } }
+        }
+      ]
+    },
+    "governance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "providerPolicyVersion",
+        "sourcePolicyVersion",
+        "confidencePolicyVersion",
+        "createdAt",
+        "contentDigest"
+      ],
+      "properties": {
+        "schemaVersion": { "const": "m2.v2.external-evidence.v0.1" },
+        "providerPolicyVersion": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "sourcePolicyVersion": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "confidencePolicyVersion": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "contentDigest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+        "excerptDigest": { "type": ["string", "null"], "pattern": "^sha256:[a-f0-9]{64}$" },
+        "restrictedSnapshotRef": {
+          "type": ["string", "null"],
+          "maxLength": 512,
+          "pattern": "^snapshot:[A-Za-z0-9._:-]+$"
+        }
+      }
+    }
+  }
+}

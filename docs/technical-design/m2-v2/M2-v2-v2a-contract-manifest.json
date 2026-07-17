@@ -1,0 +1,166 @@
+{
+  "schemaVersion": "m2.v2.v2a-contract-manifest.v1",
+  "phase": "V2-A",
+  "status": "architecture_contract_frozen",
+  "decisionStatus": "not_for_formal_decision",
+  "generatedAt": "2026-07-17T08:00:00.000Z",
+  "authority": {
+    "containsBusinessCode": false,
+    "containsMigration": false,
+    "trainsModel": false,
+    "startsC4": false,
+    "entersM3": false,
+    "changesB4": false,
+    "changesFormalResult": false,
+    "opensFinalHoldout": false,
+    "authorizesExternalAcquisition": false,
+    "authorizesRelease": false
+  },
+  "subsequentAuthorization": {
+    "authorizedAt": "2026-07-17",
+    "effectiveAfter": [
+      "v2a_checkpoint_merged_with_merge_commit",
+      "origin_main_ci_success"
+    ],
+    "scope": "V2-B_external_evidence_pilot_only",
+    "targetBranch": "codex/m2-v2-evidence-pilot-v1",
+    "allowsProspectiveExternalAcquisition": true,
+    "allowsPrivateIgnoredPilotStore": true,
+    "allowsModelTraining": false,
+    "allowsV2C": false,
+    "allowsV2D": false,
+    "allowsC4": false,
+    "allowsM3": false,
+    "allowsRelease": false
+  },
+  "frozenDecisions": {
+    "heads": [
+      "cash_forecast",
+      "commercial_value",
+      "trend",
+      "risk",
+      "explanation"
+    ],
+    "cashTarget": "future_sales_cash_plus_cutoff_confirmed_receivables",
+    "uncommittedFutureBuyout": "excluded",
+    "pureBuyoutWithoutCommitment": "null_abstain",
+    "currencyStorage": "integer_cents",
+    "productForecastSurface": [
+      "single_point_forecast",
+      "annual_breakdown",
+      "confidence",
+      "limitations"
+    ],
+    "internalIntervalUse": "calibration_coverage_and_wis_only",
+    "externalEvidenceAccess": "offline_policy_controlled_as_of_snapshot_only",
+    "humanBaselineUse": "evaluation_only_never_model_feature",
+    "externalEvidenceDefaultUse": "prohibited_until_allowlisted",
+    "currentComparator": "B4",
+    "currentDecision": "not_for_formal_decision"
+  },
+  "documents": [
+    {
+      "path": "docs/prd/m2-v2/M2-forecast-intelligence-v2-prd-v0.1.md",
+      "role": "product_requirements",
+      "sha256": "f209bbc02638c6d25743183baa991f1c290f3cfa57c704c06a5930c3ffff2a1f"
+    },
+    {
+      "path": "docs/prd/m2-v2/M2-v2-data-policy-v0.1.md",
+      "role": "data_usage_policy",
+      "sha256": "913b7e89408f9ee33ed810a56232b171a9e4550be77f3b24156f696e9efdbbbc"
+    },
+    {
+      "path": "docs/prd/m2-v2/M2-v2-human-baseline-prd-v0.1.md",
+      "role": "human_baseline_requirements",
+      "sha256": "8ba291f4359d636c32c5648d420bbb868f274ca7aa389a07436f70bc8bb6ecfa"
+    },
+    {
+      "path": "docs/prd/m2-v2/M2-v2-v2a-traceability-v0.1.md",
+      "role": "requirements_traceability",
+      "sha256": "19e08593f50c3160b2c03b546b32f3277f9ea33c196b16bb875350d76333dec7"
+    },
+    {
+      "path": "docs/prd/m2-v2/README.md",
+      "role": "prd_index",
+      "sha256": "928cd56f565c020701d49ce0fd32ab134ea1835bedf3a2ceef534f4b26db6cde"
+    },
+    {
+      "path": "docs/technical-design/m2-v2/M2-v2-api-contract-v0.1.md",
+      "role": "api_contract",
+      "sha256": "0a5d6715d723f22dd97f1e168dd7b1593def16e2058040ec4e1ccdcef87febcc"
+    },
+    {
+      "path": "docs/technical-design/m2-v2/M2-v2-db-contract-v0.1.md",
+      "role": "database_logical_contract",
+      "sha256": "1d61e10505fe94ab66ae56f7fe06b8ce31b1234677a2f4cf35df436afcb58baf"
+    },
+    {
+      "path": "docs/technical-design/m2-v2/M2-v2-export-contract-v0.1.md",
+      "role": "export_contract",
+      "sha256": "bc72e0fe205163ac84c207435b6471045a71ff41345ec9321ab918d350f3db0c"
+    },
+    {
+      "path": "docs/technical-design/m2-v2/M2-v2-external-evidence.schema.json",
+      "role": "external_evidence_json_schema",
+      "sha256": "8fb571aa41bb99075e0bab01fab489f5b07a713f8e436c4f02ed1486da9129df"
+    },
+    {
+      "path": "docs/technical-design/m2-v2/M2-v2-external-evidence-layer-v0.1.md",
+      "role": "external_evidence_architecture",
+      "sha256": "ccbbeac556a78238530e884468ac7a4741d0783bb3f0b69ce20d80ca0af4b760"
+    },
+    {
+      "path": "docs/technical-design/m2-v2/M2-v2-field-dictionary-v0.1.md",
+      "role": "cross_surface_field_dictionary",
+      "sha256": "12c0e8ab669806b90f8aa17f3e3cb452613a61c5c617b8ee4ad938da3b640830"
+    },
+    {
+      "path": "docs/technical-design/m2-v2/M2-v2-result.schema.json",
+      "role": "serving_result_json_schema",
+      "sha256": "15278e641234dd290a1e4e5f45483d08302354f1e3efe6344df87303c7641f4d"
+    },
+    {
+      "path": "docs/technical-design/m2-v2/M2-v2-system-architecture-v0.1.md",
+      "role": "system_architecture",
+      "sha256": "e81d4bb21065ad437a02df0f4411cf8a69e8dec2b1a5d57124af211d54c9ce5c"
+    },
+    {
+      "path": "docs/technical-design/m2-v2/README.md",
+      "role": "technical_design_index",
+      "sha256": "5ded1dee59c2d8961f6ed1553123846add4e86efe2d482abeaebfd5ccd921003"
+    }
+  ],
+  "plannedContractTests": [
+    "AT-M2V2-CASH-001",
+    "AT-M2V2-VALUE-001",
+    "AT-M2V2-TREND-001",
+    "AT-M2V2-EVIDENCE-001",
+    "AT-M2V2-RISK-001",
+    "AT-M2V2-EXPLAIN-001",
+    "AT-M2V2-DATA-001",
+    "AT-M2V2-HUMAN-001",
+    "AT-M2V2-API-001",
+    "AT-M2V2-DB-001",
+    "AT-M2V2-EXPORT-001",
+    "AT-M2V2-PRIVACY-001",
+    "AT-M2V2-GOV-001"
+  ],
+  "pendingBeforeV2B": [
+    "freeze_pilot_sample_seed_strata_and_population_digest_before_retrieval",
+    "freeze_query_page_cost_latency_retry_cache_and_freshness_budgets",
+    "publish_provider_source_terms_and_legal_allowlist_versions",
+    "pass_synthetic_provider_entity_time_conflict_privacy_resume_and_gate_tests",
+    "resolve_authorized_private_identity_input_and_runtime_provider_or_fail_closed"
+  ],
+  "pendingBeforeV2C": [
+    "freeze_human_baseline_sample_manifest_reviewer_protocol_and_metric_plan",
+    "obtain_separate_V2C_authorization"
+  ],
+  "pendingBeforeV2D": [
+    "freeze_commercial_value_truth_definition_weights_and_policy",
+    "freeze_trend_definition_and_thresholds",
+    "pre_register_model_feature_manifest_and_evaluation_plan",
+    "obtain_separate_model_training_authorization"
+  ],
+  "stopCondition": "Freeze and merge V2-A documentation only. The separately authorized V2-B pilot may begin on its named branch only after the checkpoint merge and successful origin/main CI; no training, V2-C, V2-D, C4, final holdout, release, or M3."
+}

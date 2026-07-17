@@ -1,0 +1,146 @@
+{
+  "schema": "m2.v2.final-recommendation.v1",
+  "generatedAt": "2026-07-17",
+  "decisionStatus": "research_only_not_for_formal_decision",
+  "evidenceRefs": [
+    "docs/analysis/m2-v2/M2-v2-current-system-audit.json",
+    "docs/analysis/m2-v2/M2-v2-b4-limitation-analysis.json",
+    "docs/analysis/m2-v2/M2-v2-human-baseline-analysis.json",
+    "docs/analysis/m2-v2/M2-v2-external-intelligence-research.json",
+    "docs/analysis/m2-v2/M2-v2-algorithm-roadmap.json",
+    "docs/analysis/m2-v2/M2-v2-prd-gap-analysis.json"
+  ],
+  "answers": {
+    "question1_b4FormalRelease": {
+      "answer": "NO",
+      "reasons": [
+        "high_value_bias_gate_failed",
+        "horizon_18_bias_gate_failed",
+        "business_coverage_gate_failed",
+        "final_holdout_sealed",
+        "business_sampling_and_explicit_approval_missing",
+        "formal_serving_runtime_missing",
+        "database_api_export_contract_stale"
+      ]
+    },
+    "question2_startM2V2": {
+      "answer": "YES",
+      "scope": "prd_evidence_pilot_human_baseline_and_prospective_shadow_only",
+      "startsC4": false,
+      "trainsModel": false
+    },
+    "question3_rankedTechnicalRoute": [
+      {
+        "rank": 1,
+        "route": "B4_plus_external_intelligence_plus_tree_residual_and_llm_evidence_processor"
+      },
+      {
+        "rank": 2,
+        "route": "bayesian_hierarchical_forecasting_benchmark"
+      },
+      {
+        "rank": 3,
+        "route": "defer_tft_deepar_nbeats_patchtst"
+      }
+    ],
+    "question4_tools": {
+      "searchAgent": "YES_WITH_GUARDRAILS",
+      "chromeAutomation": "CONDITIONAL_EXCEPTION_PATH",
+      "gptWebOrOpenAIWebSearch": "YES_FOR_RESEARCH_AND_SECONDARY_EXTRACTION",
+      "externalApi": "YES_VIA_PROVIDER_ABSTRACTION",
+      "newAlgorithmLibraries": "LATER_AFTER_DATA_AND_PREREGISTRATION_GATES"
+    },
+    "question5_newData": {
+      "mandatoryAutomatic": [
+        "source_discovery_and_urls",
+        "public_entity_resolution",
+        "search_ranking_and_trend_snapshots",
+        "adaptation_publication_award_and_public_events",
+        "availableAt_reliability_freshness_and_contradiction",
+        "provider_and_evidence_snapshot_metadata"
+      ],
+      "mandatoryInternalRoles": [
+        "cutoff_as_of_buyout_commitment_snapshot",
+        "confirmed_receivable_amount_time_status_and_evidence",
+        "historical_state_snapshots_if_used",
+        "trend_truth",
+        "commercial_value_truth"
+      ],
+      "optionalFuture": [
+        "licensed_social_aggregates",
+        "longer_market_indices",
+        "public_reviews_and_reputation",
+        "comparable_work_and_author_graph",
+        "finer_public_channel_signals"
+      ]
+    }
+  },
+  "currentCapability": {
+    "authoritativeWorks": 3053,
+    "authoritativeIncomeFacts": 192872,
+    "formalCashModelCases": 7851,
+    "formalCashModelWorks": 824,
+    "b4Wape": 0.55648454,
+    "b4SignedBias": 0.08911106,
+    "c3Decision": "MODEL_FAIL_BUSINESS_COVERAGE_CONDITIONAL",
+    "formalServingReady": false
+  },
+  "rootCauseAssessment": {
+    "modelQualityDirectEvidence": "A_model_structure_on_served_sales",
+    "modelQualityLeadingUnprovenHypothesis": "B_information_gap",
+    "releaseCoverageProvenBlocker": "D_data_and_business_coverage",
+    "targetStatus": "C_formal_cash_fixed_and_commercial_value_scope_still_missing",
+    "abstainedCasesIncludedInModelWape": false
+  },
+  "developmentReadinessGates": {
+    "GateA": "13_of_13_PASS_not_model_approval",
+    "GateB": "14_of_14_PASS_not_model_approval",
+    "GateC": "14_of_14_PASS_not_model_approval",
+    "GateD": "14_of_14_PASS_not_model_approval"
+  },
+  "humanBaseline": {
+    "humanOutperformsB4Proven": false,
+    "routineManualInputRequired": false,
+    "recommended": [
+      "120_to_200_retrospective_blind_work_origin_blocks",
+      "2_to_3_reviewers",
+      "same_cutoff_evidence_case_keys_and_horizons",
+      "approximately_150_work_prospective_shadow",
+      "paired_work_origin_metrics_and_inter_rater_reliability"
+    ]
+  },
+  "prdChanges": [
+    "independent_commercial_value_target_and_truth",
+    "trend_truth_and_metrics",
+    "rank_and_topk_accuracy",
+    "human_vs_ai_baseline",
+    "driver_evidence_schema_and_faithfulness",
+    "external_evidence_coverage",
+    "cost_latency_refresh_drift_fallback_and_reproducibility",
+    "unified_current_formal_cash_point_only_contract",
+    "point_only_database_api_export_and_tests",
+    "m2_requirement_traceability"
+  ],
+  "nextGates": [
+    { "id": "V2-A", "action": "current_contract_and_truth_definition", "training": false },
+    { "id": "V2-B", "action": "100_to_200_work_evidence_pilot", "training": false },
+    { "id": "V2-C", "action": "prospective_shadow_and_human_baseline", "training": false },
+    { "id": "V2-D", "action": "preregistered_algorithm_ablation", "requiresNewAuthorization": true },
+    { "id": "V2-E", "action": "business_and_formal_decision", "requiresExplicitApproval": true }
+  ],
+  "sealsAndBoundaries": {
+    "finalHoldout": "sealed",
+    "embargoShadow": "sealed",
+    "deferred60MonthLabels": "sealed",
+    "startsC4": false,
+    "changesB4": false,
+    "trainsNewModel": false,
+    "entersM3": false,
+    "releases": false
+  },
+  "privacy": {
+    "containsPrivateRows": false,
+    "containsPrivateBusinessIdentifiers": false,
+    "containsPredictionIntervalEndpoints": false
+  }
+}

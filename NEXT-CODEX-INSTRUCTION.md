@@ -4,7 +4,11 @@
 
 当前入口是：
 
-`复核已完成的 Gate C 与 C2 FAIL/业务覆盖 CONDITIONAL 证据；停在 C3 与 final holdout 前，等待用户明确授权，不得重复训练 C2、进入 C3/M3、打开 final holdout 或 release`
+`V2-A 架构合同 checkpoint 合入并确认 main CI 后，进入 codex/m2-v2-evidence-pilot-v1 执行 V2-B External Evidence Pilot；不得重复 C3、训练模型、开发 C4、打开 final holdout、进入 M3 或 release`
+
+2026-07-17 最新状态：C1、legacy C2-R、C2-R.1、C2、C3 均已完成 development 且结论 `FAIL`。C3-A overall WAPE 0.55394517、signed bias +0.08273913，业务覆盖 `CONDITIONAL`。B4 未 release，继续作为 comparator/fallback。M2 v2 V2-A 已完成五头 PRD、字段字典、External Evidence、Human Baseline、API/DB/export、schema 与 traceability；下一步只允许 V2-B prospective evidence pilot。
+
+V2-B 自动从完整 3053 作品 authority population 抽取固定样本，只评估检索、实体解析、来源/时间/矛盾、覆盖、成本和复现。不得要求运营逐作品补外部信息；缺少授权 private 身份源或 provider 时必须 runner/bootstrap/tests 完成后 fail-closed，不得伪造作品、作者或证据。V2-B PR 只创建，不自动合并。
 
 2026-07-15 用户已冻结新的最高优先级业务口径：M2 正式点值只预测未来实销现金与 cutoff 时已确认且可审计的未来应收。未承诺买断、历史周期猜测、概率模型、已到账款未来摊销和 `buyoutMonthlyEquivalent` 不得进入现金预测。legacy-target C2-R development 已完成但结果为 `FAIL`，只保留为历史目标口径证据，不是 formal-cash 指标，也不得与 C2-R.1 直接比较。
 
@@ -29,7 +33,7 @@
 - Phase A checkpoint `879fbd0a951ce6d465082321b38f965b14815935` 已 push；推送后 runtime receipt 已核对真实远端 SHA、重跑全部验证并独立复算 Gate A，所有条件为 true。
 - C1 transparent ensemble 已按 8 个组件、148 个候选和 nested expanding-origin 完成 development validation；5 个 outer origin 均没有 bias-feasible candidate，使用预注册 fallback，未放宽任何 gate。
 - C1 all-scoreable WAPE / signed bias 为 3.8502 / +3.5114，高价值 WAPE / bias 为 2.9538 / +2.7188，内部 80% coverage 为 0.8302；相对 B4 overall WAPE 回退 131.02%，bootstrap 相对差 95% CI 为 [0.0531, 4.5434]。19 项验收仅 5 项通过，结论为 `FAIL`。
-- C1 结构验证、同 case-key、无泄漏、future perturbation、raw/served/abstention、C1-only interval 和脱敏契约全部通过；legacy-target C2-R 随后已执行但结论为 `FAIL`，旧 development 写入口已 fail-closed，只保留历史验证入口。formal-cash comparator、Gate B 和 C2-R.1 development 已完成；C2-R.1 结论同样为 `FAIL`。Gate C 与 C2 development 也已完成，C2 结论为 `FAIL`、业务覆盖为 `CONDITIONAL`。C3 未开始；final holdout、embargo 和 60 月标签仍 sealed，状态保持 `not_for_formal_decision`。
+- C1 结构验证、同 case-key、无泄漏、future perturbation、raw/served/abstention、C1-only interval 和脱敏契约全部通过；legacy-target C2-R、formal-cash C2-R.1、C2 与 C3 均已执行且结论 `FAIL`，业务覆盖为 `CONDITIONAL`。final holdout、embargo 和 60 月标签仍 sealed，状态保持 `not_for_formal_decision`。
 - 作者、版权开始、版权到期、作品状态和音频版权状态已按用户确认口径完成本地文件级 staging 收口，禁止依据旧 gap 报告重新生成待办。
 - 用户最终分类标签基础表已固定：3053 部作品，出版物 1195 部、网文 1858 部，分类与标签人工缺口为 0；private 明细不进入版本控制。
 - 最终表修正 836 部作品，固定 387 部作品、532 个标签赋值；新增分类和标签已进入受控词表 `2026-07-10-user-confirmed-v2`。
@@ -105,7 +109,7 @@
 
 优先执行：
 
-`停在已验证的 C2 FAIL checkpoint，先报告 Gate C、C2 25 项 gate、渠道残差、高价值保护和业务覆盖双判定；等待用户明确授权下一动作，不得重复训练 C2、进入 C3、打开 final holdout、release 或进入 M3`
+`该段为历史 C2 checkpoint，不再是当前入口；C3 已完成且 FAIL，禁止重复进入。当前入口以本文顶部 V2-A/V2-B 指令为准。`
 
 执行要求：
 
@@ -113,7 +117,7 @@
 2. 只使用最终 3053 部权威基础信息、最终 mapping 和 192872 条收入事实；不得重新清洗或覆盖已确认基础字段，除非发现可证明的工程错误并先报告。
 3. 将旧 v1.1 作为被拒绝的 B0a 历史锚点；faithful B0b、B1、B2、B3、B4 使用已冻结的 12223 个 scoreable keys。不得恢复 forecastabilityStatus 混合口径，不得把 abstained served null 按 0 计入模型 WAPE。
 4. 生成中文、可读、Git 忽略的业务验证表，以及不含真实作品明细的可提交聚合报告；测试结果主要信息必须中文化。
-5. C1、legacy-target C2-R、formal-cash C2-R.1 与 C2 均已完成并 FAIL；不得重复训练、改 gate、进入 C3、打开 final holdout 或 release。下一算法动作必须由用户在复核 Gate C、C2 渠道残差、高价值保护、25 项 gate 和业务覆盖双判定后另行明确授权。M2 输出继续禁止自动运营建议或资源投入动作字段。
+5. C1、legacy-target C2-R、formal-cash C2-R.1、C2 与 C3 均已完成并 FAIL；不得重复训练、改 gate、重复进入 C3、打开 final holdout 或 release。当前只允许 V2-B evidence pilot，不是算法动作。M2 输出继续禁止自动运营建议或资源投入动作字段。
 
 ## 当前允许做的事
 

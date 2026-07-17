@@ -19,6 +19,17 @@ v0.2 将 v0.1 的业务汇总稿改造成更适合 Codex 长期维护的文档�
 
 当前仓库处于 **authorized local real-data development mode**。允许读取用户提供的本地真实数据和 `data/**`，允许使用本地开发数据库、本地 Docker/PostgreSQL、本地 migration、真实数据导入、严格对账、回测和算法校准。仍禁止提交原始账单、台账、私有 Excel/CSV/JSON、`.env`、`.pgpass`、数据库 dump、临时数据库文件或敏感明细；仍禁止连接远端生产、共享、staging-like 或未明确授权的数据库。
 
+### 2026-07-17 M2 v2 当前入口
+
+- C1、legacy C2-R、C2-R.1、C2 和 C3 均已完成 development 且结论为 `FAIL`；不得重复进入 C3。
+- B4 继续作为 formal-cash comparator、fallback 与安全锚点，但未获正式发布批准。
+- final holdout、embargo shadow 和 deferred 60-month labels 仍 sealed；所有结果保持 `not_for_formal_decision`，未 release，未进入 M3。
+- M2 Forecast Intelligence v2 的 V2-A 架构合同已完成：五头 PRD、字段字典、External Evidence Layer、Human Baseline、API/DB/export、JSON Schema 与 traceability 已统一。
+- 下一入口是独立的 **V2-B External Evidence Pilot**：只评估 prospective evidence 的覆盖、实体解析、来源/时点/矛盾、成本和复现；不训练模型，不开发 C4，不改变 B4。
+- V2-B 必须自动检索；不得要求运营逐作品补外部信息。缺少授权 private 身份源或 provider 时必须 fail-closed，不得伪造作品、作者或证据。
+
+权威入口：`docs/prd/m2-v2/README.md`、`docs/technical-design/m2-v2/README.md`、`docs/analysis/m2-v2/M2-v2-final-recommendation.md`。
+
 当前远端 `main` 已包含 M1/M2 本地开发 checkpoint：
 
 - M1 dual-source 主数据补全链路已形成文件级 limited local staging apply 证据；该 staging 不写正式主数据，不等同于正式主数据验收。
@@ -122,7 +133,7 @@ M2 正式 point forecast 已冻结为未来账单现金：未来实销现金，�
 
 当前权威输入没有历史 cutoff commitment as-of 数据角色，因此后来发生的买断只能进入 `uncommittedBuyoutSurpriseActual`，不能事后恢复为已承诺。冻结 development universe 的 scoreable 重叠 case-window 聚合为：`forecastableCashActual=82206415.70`、`uncommittedBuyoutSurpriseActual=5517115.15`、`totalLedgerCashActual=87723530.85`。case key、eligibility 和所有 sealed labels 未改变。
 
-legacy-target C2-R development 已完成但结论为 `FAIL`，其结果继续作为历史目标口径证据，不是 formal-cash 指标，也不得与 C2-R.1 直接比较；旧 development 写入口现已 fail-closed，只保留历史验证入口。2026-07-16 formal-cash comparator replay 已在 7851 个固定模型人口 case 上冻结 B4 为 primary，Gate B 经远端 checkpoint 后验证为 14/14；随后获授权的 C2-R.1 development 使用 45 个预冻结透明候选完成训练与验证，overall WAPE 0.5838、signed bias +2.93%，23 项验收通过 13 项，结论为 `FAIL`。C2 的 79 个候选、as-of 活跃度分层、generic residual、高价值保护和选择顺序已在 Phase A checkpoint 后由 Gate C 14/14 授权；development overall WAPE 0.55695480、signed bias +9.289130%。货币 reconciliation checkpoint 已将 0.01 元量化后的差额转换为整数分并要求精确为 0，原始 0.00000011 元浮点差仅作诊断；25 项验收通过数由 15 修正为 16，`modelQualityDecision=FAIL` 不变。全库/Top10 forecastable cash coverage 为 73.96%/75.94%，`businessCoverageDecision=CONDITIONAL`，总体为 `MODEL_FAIL_BUSINESS_COVERAGE_CONDITIONAL`。C3 未开始；所有结果仍为 `not_for_formal_decision`，final holdout、embargo shadow 和 deferred 60-month labels 仍 sealed，未 release，未进入 M3。
+legacy-target C2-R development 已完成但结论为 `FAIL`，其结果继续作为历史目标口径证据，不是 formal-cash 指标，也不得与 C2-R.1 直接比较；旧 development 写入口现已 fail-closed，只保留历史验证入口。2026-07-16 formal-cash comparator replay 已在 7851 个固定模型人口 case 上冻结 B4 为 primary，Gate B 经远端 checkpoint 后验证为 14/14；随后获授权的 C2-R.1 development 使用 45 个预冻结透明候选完成训练与验证，overall WAPE 0.5838、signed bias +2.93%，23 项验收通过 13 项，结论为 `FAIL`。C2 的 79 个候选、as-of 活跃度分层、generic residual、高价值保护和选择顺序已在 Phase A checkpoint 后由 Gate C 14/14 授权；development overall WAPE 0.55695480、signed bias +9.289130%。货币 reconciliation checkpoint 已将 0.01 元量化后的差额转换为整数分并要求精确为 0，原始 0.00000011 元浮点差仅作诊断；25 项验收通过数由 15 修正为 16，`modelQualityDecision=FAIL` 不变。全库/Top10 forecastable cash coverage 为 73.96%/75.94%，`businessCoverageDecision=CONDITIONAL`。C3-A 随后完成 development，overall WAPE 0.55394517、signed bias +8.273913%，模型质量 `FAIL`、业务覆盖 `CONDITIONAL`，组合结论仍为 `MODEL_FAIL_BUSINESS_COVERAGE_CONDITIONAL`。所有结果继续 `not_for_formal_decision`；final holdout、embargo shadow 和 deferred 60-month labels 仍 sealed，未 release，未进入 C4 或 M3。
 
 正式现金口径证据：
 

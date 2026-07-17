@@ -1,0 +1,133 @@
+{
+  "schema": "m2.v2.b4-limitation-analysis.v1",
+  "generatedAt": "2026-07-17",
+  "decisionStatus": "research_only_not_for_formal_decision",
+  "evidenceRefs": [
+    "docs/analysis/m2-real-data/M2-formal-cash-comparator-replay-v1.json",
+    "docs/analysis/m2-real-data/M2-formal-cash-population-business-coverage-v1.json",
+    "scripts/m2-real-data/m2_calibration_v1.py",
+    "scripts/m2-real-data/m2_calibration_v1_2.py",
+    "scripts/m2-real-data/m2_formal_cash_comparator_v1.py",
+    "src/domain/oldProductEvaluation/calibrationSpec.v1.2.amendment.json"
+  ],
+  "identity": {
+    "name": "B4_formula_switched_legacy_variant",
+    "role": "formal_cash_primary_comparator_and_fallback",
+    "formalServingRuntime": false,
+    "implementationLayer": "local_calibration_scripts"
+  },
+  "formula": {
+    "monthlyLevel": "max(mean(last12), trimmedMean(last24), 0.4 * median(allPositiveMonths))",
+    "forecast": "monthlyLevel * horizon * lifecycleFactor",
+    "postProcessing": [
+      "low_revenue_cap",
+      "per_sales_channel_forecast_then_sum",
+      "formal_cash_decorator",
+      "pure_buyout_without_commitment_null_abstention"
+    ],
+    "monthlyPath": "approximately_flat",
+    "horizonScaling": "approximately_linear"
+  },
+  "uses": [
+    "cutoff_monthly_revenue_history",
+    "sales_channel_history",
+    "first_observed_month",
+    "business_form",
+    "lifecycle",
+    "batch_cluster",
+    "horizon"
+  ],
+  "doesNotUse": [
+    "author_hierarchy",
+    "category_or_tag_hierarchy",
+    "work_identity",
+    "external_search_or_social_signals",
+    "adaptation_or_publication_signals",
+    "current_state_without_as_of_snapshot",
+    "post_cutoff_outcome"
+  ],
+  "metrics": {
+    "overall": {
+      "wape": 0.55648454,
+      "signedBias": 0.08911106,
+      "mae": 5644.65515162,
+      "smape": 0.89354531
+    },
+    "highValue": {
+      "wape": 0.46161256,
+      "signedBias": 0.12053375
+    },
+    "horizons": {
+      "3": { "wape": 0.47366804, "signedBias": 0.08276225 },
+      "6": { "wape": 0.48893425, "signedBias": 0.03181732 },
+      "12": { "wape": 0.49068052, "signedBias": 0.08235395 },
+      "18": { "wape": 0.60600436, "signedBias": 0.15506318 },
+      "24": { "wape": 0.79256467, "signedBias": 0.08781557 }
+    },
+    "internalIntervalAudit": {
+      "nominalCoverage": 0.8,
+      "observedCoverage": 0.84931856,
+      "wis": 5083.9383291,
+      "externalEndpointsAllowed": false
+    },
+    "coverage": {
+      "fullLibraryForecastableCash": 0.7396468495,
+      "top10ForecastableCash": 0.759412528,
+      "required": 0.9
+    }
+  },
+  "strengths": [
+    "deterministic",
+    "low_complexity",
+    "auditable",
+    "stable_fallback",
+    "shared_case_universe",
+    "formal_cash_safe_after_decorator"
+  ],
+  "rootCauseAssessment": {
+    "A_modelStructure": {
+      "severity": "material_on_served_sales",
+      "evidence": "flat_path_coarse_lifecycle_linear_horizon"
+    },
+    "B_informationGap": {
+      "severity": "leading_unproven_incremental_hypothesis",
+      "evidence": "no_external_as_of_features_or_hierarchical_context",
+      "causalUpliftProven": false
+    },
+    "C_targetDefinition": {
+      "severity": "legacy_fixed_current_scope_gap",
+      "evidence": "formal_cash_fixed_legacy_buyout_error_but_value_target_missing"
+    },
+    "D_dataCoverage": {
+      "severity": "release_blocker",
+      "evidence": "824_of_3053_model_works_and_missing_commitment_snapshots",
+      "includedInModelWape": false
+    }
+  },
+  "releaseBlockers": [
+    "high_value_bias_gate_failed",
+    "horizon_18_bias_gate_failed",
+    "business_coverage_gate_failed",
+    "final_holdout_sealed",
+    "business_sampling_and_approval_missing",
+    "formal_serving_runtime_missing",
+    "database_api_export_contract_stale"
+  ],
+  "recommendedV2Role": [
+    "cash_anchor",
+    "primary_comparator",
+    "missing_evidence_fallback",
+    "historical_inertia_explanation_baseline",
+    "shadow_safety_floor"
+  ],
+  "decisions": {
+    "formalRelease": "NO",
+    "deleteOrReplaceImmediately": "NO",
+    "preserveAsComparator": "YES"
+  },
+  "privacy": {
+    "containsPrivateRows": false,
+    "containsPrivateBusinessIdentifiers": false,
+    "containsPredictionIntervalEndpoints": false
+  }
+}

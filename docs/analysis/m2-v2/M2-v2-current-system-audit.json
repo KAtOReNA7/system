@@ -1,0 +1,205 @@
+{
+  "schema": "m2.v2.current-system-audit.v1",
+  "generatedAt": "2026-07-17",
+  "language": "zh-CN",
+  "decisionStatus": "research_only_not_for_formal_decision",
+  "git": {
+    "branchAtAuditStart": "codex/m2-m2-finalization-v1",
+    "headAtAuditStart": "bffc28c69f45821231e9f43862cb7cf40c14b84a",
+    "headMatchedUpstream": true,
+    "worktreeCleanAtStart": true
+  },
+  "evidenceRefs": {
+    "governance": [
+      "README.md",
+      "AGENTS.md",
+      "NEXT-CODEX-INSTRUCTION.md",
+      "docs/prd/00-governance/scope.md",
+      "docs/prd/00-governance/document-status.md",
+      "docs/prd/00-governance/traceability.md",
+      "docs/prd/00-governance/decision-register.md"
+    ],
+    "m1DataPrd": [
+      "docs/prd/10-data-foundation/bill-import.md",
+      "docs/prd/10-data-foundation/data-quality.md",
+      "docs/prd/10-data-foundation/work-master-data.md",
+      "docs/prd/10-data-foundation/channel-master-data.md",
+      "docs/prd/10-data-foundation/classification-and-tags.md"
+    ],
+    "m2M3PrdAndDesign": [
+      "docs/prd/05-老品评估.md",
+      "docs/prd/20-evaluation/M2-old-product-evaluation-prd-v0.1.md",
+      "docs/prd/20-evaluation/common-evaluation-rules.md",
+      "docs/prd/30-new-product-evaluation/M3-restart-prd-v0.2.md",
+      "docs/technical-design/M3-external-evidence-design-v0.1.md",
+      "docs/api/M2-old-product-evaluation-api-contract-v0.1.md",
+      "docs/product/M2-old-product-evaluation-pages-v0.1.md",
+      "docs/validation/M2-old-product-evaluation-test-plan-v0.1.md",
+      "docs/technical-design/M2-old-product-evaluation-data-model-v0.1.md"
+    ],
+    "calibrationAndDecisions": [
+      "src/domain/oldProductEvaluation/calibrationSpec.v1.2.amendment.json",
+      "src/domain/oldProductEvaluation/calibrationSpec.c2r.v1.1.amendment.json",
+      "src/domain/oldProductEvaluation/calibrationSpec.c2.v1.amendment.json",
+      "src/domain/oldProductEvaluation/calibrationSpec.c3.v1.amendment.json",
+      "docs/analysis/m2-real-data/M2-calibration-gate-a-v1.json",
+      "docs/analysis/m2-real-data/M2-calibration-gate-b-v1.json",
+      "docs/analysis/m2-real-data/M2-calibration-gate-c-v1.json",
+      "docs/analysis/m2-real-data/M2-calibration-gate-d-v1.json",
+      "docs/analysis/m2-real-data/M2-C1-development-validation-v1.json",
+      "docs/analysis/m2-real-data/M2-C2R1-development-validation-v1.json",
+      "docs/analysis/m2-real-data/M2-C2-development-validation-v1.json",
+      "docs/analysis/m2-real-data/M2-C3-development-validation-v1.json"
+    ]
+  },
+  "scope": {
+    "standardWorks": 3053,
+    "incomeFacts": 192872,
+    "completeMonthIncomeFacts": 192869,
+    "developmentCases": 18615,
+    "statisticallyScoreableCases": 12223,
+    "statisticallyScoreableWorks": 1044,
+    "formalCashModelCases": 7851,
+    "formalCashModelWorks": 824
+  },
+  "formalCashContract": {
+    "formula": "futureSalesCashForecast + cutoffConfirmedFutureReceivables",
+    "excluded": [
+      "uncommitted_future_buyout",
+      "historical_cycle_guess",
+      "buyout_probability_times_amount",
+      "received_buyout_amortization",
+      "buyoutMonthlyEquivalent"
+    ],
+    "pureBuyoutWithoutCommitment": {
+      "rawModelPrediction": null,
+      "servedPrediction": null,
+      "routeAbstained": true,
+      "reason": "uncommitted_future_buyout_not_forecastable"
+    }
+  },
+  "formalOutput": {
+    "allowed": [
+      "one_point_forecast",
+      "annual_breakdown",
+      "confidence",
+      "limitations",
+      "lifecycle",
+      "rating_and_rationale",
+      "risk",
+      "fact_based_review_prompt"
+    ],
+    "forbidden": [
+      "optimistic_scenario",
+      "pessimistic_scenario",
+      "high_base_low",
+      "prediction_interval_endpoints",
+      "automated_operating_action"
+    ]
+  },
+  "modelResults": {
+    "B4": {
+      "target": "formal_cash",
+      "wape": 0.55648454,
+      "signedBias": 0.08911106,
+      "role": "primary_comparator_and_fallback",
+      "releaseEligible": false
+    },
+    "C1": {
+      "target": "historical_target",
+      "wape": 3.8501573,
+      "signedBias": 3.51137048,
+      "passed": 5,
+      "total": 19,
+      "decision": "FAIL"
+    },
+    "legacyC2R": {
+      "target": "legacy_c2r_v1_monthly_equivalent",
+      "wape": 1.1796,
+      "signedBias": 0.7926,
+      "decision": "FAIL",
+      "formalCashMetricEligible": false
+    },
+    "C2R1": {
+      "target": "formal_cash",
+      "wape": 0.58382425,
+      "signedBias": 0.02933805,
+      "passed": 13,
+      "total": 23,
+      "decision": "FAIL"
+    },
+    "C2": {
+      "target": "formal_cash",
+      "wape": 0.5569548,
+      "signedBias": 0.0928913,
+      "passed": 16,
+      "total": 25,
+      "decision": "FAIL",
+      "businessCoverageDecision": "CONDITIONAL"
+    },
+    "C3A": {
+      "target": "formal_cash",
+      "wape": 0.55394517,
+      "signedBias": 0.08273913,
+      "passed": 15,
+      "total": 25,
+      "decision": "MODEL_FAIL_BUSINESS_COVERAGE_CONDITIONAL",
+      "C3S": "SKIPPED_NO_STRICTLY_EARLIER_ACTIVATION_EVIDENCE"
+    }
+  },
+  "developmentReadinessGates": {
+    "GateA": { "passed": 13, "total": 13, "authorizedStage": "C1", "modelPass": false },
+    "GateB": { "passed": 14, "total": 14, "authorizedStage": "C2R1", "modelPass": false },
+    "GateC": { "passed": 14, "total": 14, "authorizedStage": "C2", "modelPass": false },
+    "GateD": { "passed": 14, "total": 14, "authorizedStage": "C3", "modelPass": false }
+  },
+  "b4BlockingMetrics": {
+    "horizon18SignedBias": 0.15506318,
+    "highValueSignedBias": 0.12053375,
+    "fullLibraryForecastableCashCoverage": 0.7396468495,
+    "top10ForecastableCashCoverage": 0.759412528,
+    "requiredCoverage": 0.9
+  },
+  "implementationAudit": {
+    "b4FormalServingRuntimeExists": false,
+    "formalCashSafetyImplementedAsDecorator": true,
+    "databaseStillHasThreeScenarioFields": true,
+    "exportStillHasThreeScenarioFields": true,
+    "fixtureEngineStillHasThreeScenarios": true,
+    "pointOnlyEndToEndIntegrationTestExists": false
+  },
+  "testStrengths": [
+    "as_of_and_future_perturbation_invariance",
+    "case_key_actual_scoreability_prediction_parity",
+    "raw_served_abstention_null_not_zero",
+    "work_origin_block_bootstrap",
+    "prediction_lock_digest_receipt_and_seals",
+    "public_artifact_privacy",
+    "formal_cash_conservation_and_integer_cent_reconciliation"
+  ],
+  "testGaps": [
+    "ci_does_not_replay_private_authoritative_facts",
+    "no_b4_formal_serving_integration",
+    "no_real_commitment_receivable_path",
+    "no_trend_rank_value_explanation_metrics",
+    "no_external_evidence_as_of_and_provider_fallback_tests",
+    "no_reproducible_python_dependency_manifest"
+  ],
+  "seals": {
+    "finalHoldout": "sealed",
+    "embargoShadow": "sealed",
+    "deferred60MonthLabels": "sealed"
+  },
+  "decisions": {
+    "b4FormalRelease": "NO",
+    "startM2V2ResearchAndShadowStage": "YES",
+    "startC4": "NO",
+    "enterM3": "NO",
+    "release": "NO"
+  },
+  "privacy": {
+    "containsPrivateRows": false,
+    "containsWorkOrChannelIdentifiers": false,
+    "containsPredictionIntervalEndpoints": false
+  }
+}

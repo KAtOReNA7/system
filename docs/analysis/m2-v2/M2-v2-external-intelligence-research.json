@@ -1,0 +1,155 @@
+{
+  "schema": "m2.v2.external-intelligence-research.v1",
+  "generatedAt": "2026-07-17",
+  "decisionStatus": "research_only_not_for_formal_decision",
+  "projectEvidenceRefs": [
+    "docs/prd/05-老品评估.md",
+    "docs/technical-design/M3-external-evidence-design-v0.1.md",
+    "docs/technical-design/M3-research-assist-workflow-v0.1.md"
+  ],
+  "feasibility": {
+    "technical": "YES",
+    "directHistoricalTrainingNow": "NO",
+    "automation": "YES_WITH_GUARDRAILS",
+    "stability": "CONDITIONAL",
+    "cost": "PILOT_REQUIRED",
+    "legal": "SPECIALIST_REVIEW_REQUIRED",
+    "formalServingDependencyNow": "NO"
+  },
+  "criticalConstraint": {
+    "name": "as_of_replayability",
+    "rule": "evidence.availableAt <= prediction.cutoff",
+    "missingAvailableAt": "exclude_from_historical_feature",
+    "currentWebPageMayBackfillHistoricalCutoff": false
+  },
+  "pipeline": [
+    "entity_resolution",
+    "query_planning",
+    "provider_abstraction",
+    "search_or_structured_api",
+    "permitted_page_acquisition_and_cache",
+    "llm_structured_extraction",
+    "schema_source_time_validation",
+    "contradiction_freshness_reliability",
+    "external_evidence_store",
+    "as_of_feature_view",
+    "shadow_evaluation"
+  ],
+  "llmBoundary": {
+    "allowed": [
+      "query_planning",
+      "source_discovery",
+      "schema_constrained_fact_extraction",
+      "contradiction_summary",
+      "evidence_based_ip_value_and_risk_scoring",
+      "chinese_explanation"
+    ],
+    "forbidden": [
+      "direct_revenue_prediction",
+      "unsupported_fact_generation",
+      "use_of_model_memory_as_source",
+      "automatic_operating_action"
+    ]
+  },
+  "minimumEvidenceFields": [
+    "evidenceId",
+    "workEntityKey",
+    "evidenceType",
+    "sourceDomain",
+    "sourceUrl",
+    "queryTemplateVersion",
+    "queryHash",
+    "observedAt",
+    "eventAt",
+    "availableAt",
+    "shortExcerptHash",
+    "contentDigest",
+    "retrievalMetadata",
+    "sourceLocator",
+    "restrictedSnapshotRefWhenSourceTermsAllow",
+    "structuredFacts",
+    "reliability",
+    "freshness",
+    "confidence",
+    "contradictionStatus",
+    "extractionModelVersion",
+    "sourceTermsClass",
+    "limitations"
+  ],
+  "providerStrategy": {
+    "searchApi": "PRIMARY_AUTOMATED_ENTRY",
+    "structuredExternalApi": "PREFERRED_WHEN_APPROVED",
+    "chromeOrBrowserAutomation": "EXCEPTION_AND_HUMAN_SUPERVISED",
+    "gptWebOrOpenAIWebSearch": "RESEARCH_AND_SECONDARY_EXTRACTION",
+    "agentWorkflow": "RECOMMENDED_WITH_HARD_BUDGET_AND_FAIL_CLOSED",
+    "singleVendorBinding": false
+  },
+  "agentGuardrails": [
+    "per_work_and_type_budget",
+    "domain_allowlist_and_denylist",
+    "maximum_queries_and_pages",
+    "timeout_retry_circuit_breaker",
+    "prompt_model_provider_version_lock",
+    "full_audit_log",
+    "fail_closed_and_b4_fallback",
+    "no_login_payment_interaction_or_publication"
+  ],
+  "refreshPolicy": {
+    "top10HighValueOrActiveEvent": "monthly_or_event_triggered",
+    "activeDense": "quarterly",
+    "ordinaryIntermittent": "quarterly_to_semiannual",
+    "longTailDormant": "semiannual_or_event_triggered",
+    "identityAndLongLivedFacts": "change_triggered"
+  },
+  "costModel": {
+    "fullRefreshExampleQueriesAtFourTemplates": 12212,
+    "formula": "queryCalls*providerUnitPrice + extractedPages*extractionTokenCost + retries + storageAndMonitoring",
+    "fixedCostClaimAllowedBeforePilot": false
+  },
+  "coverageMetrics": [
+    "work_evidence_coverage",
+    "evidence_type_coverage",
+    "as_of_eligible_coverage",
+    "entity_resolution_success_rate",
+    "authoritative_source_share",
+    "fresh_evidence_share",
+    "contradiction_and_unresolved_rate",
+    "provider_failure_and_fallback_rate",
+    "median_query_page_token_cost",
+    "evidence_to_feature_conversion_rate",
+    "pre_registered_incremental_value_over_b4",
+    "coverage_by_value_tail_and_revenue_model"
+  ],
+  "phases": [
+    { "id": "E0", "name": "contract_and_legal_review", "training": false },
+    { "id": "E1", "name": "100_to_200_work_evidence_pilot", "training": false },
+    { "id": "E2", "name": "prospective_shadow_snapshots", "training": false },
+    { "id": "E3", "name": "pre_registered_feature_ablation", "requiresAsOfHistory": true },
+    { "id": "E4", "name": "human_and_business_validation", "formalDecision": false }
+  ],
+  "officialReferences": [
+    "https://developers.google.com/custom-search/v1/overview",
+    "https://learn.microsoft.com/en-us/lifecycle/announcements/bing-search-api-retirement",
+    "https://platform.openai.com/docs/quickstart/make-your-first-api-request",
+    "https://developer.chrome.com/docs/devtools/protocol-monitor",
+    "https://playwright.dev/docs/actionability",
+    "https://www.ietf.org/rfc/rfc9309.html",
+    "https://www.npc.gov.cn/npc/c2/c30834/202108/t20210820_313088.html",
+    "https://app.www.gov.cn/govdata/gov/202409/30/520076/article.html",
+    "https://www.cac.gov.cn/2023-07/13/c_1690898326795531.htm",
+    "https://www.cac.gov.cn/2025-03/14/c_1743654684782215.htm"
+  ],
+  "boundaries": {
+    "changesFormalCashTarget": false,
+    "predictsUncommittedBuyout": false,
+    "startsC4": false,
+    "opensFinalHoldout": false,
+    "entersM3": false,
+    "releases": false
+  },
+  "privacy": {
+    "storesWholeWebPagesByDefault": false,
+    "containsPrivateRows": false,
+    "containsPrivateBusinessIdentifiers": false
+  }
+}

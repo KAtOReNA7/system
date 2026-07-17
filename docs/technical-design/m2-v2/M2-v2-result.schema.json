@@ -1,0 +1,548 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://katorena.local/schemas/m2-v2/result-v0.1.schema.json",
+  "title": "M2 Forecast Intelligence v2 Serving Result",
+  "description": "Public product/API/export semantic contract for a V2-A research-only result. Internal raw predictions and PI endpoints are deliberately absent.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "resultId",
+    "standardWorkId",
+    "cutoffMonth",
+    "resultStatus",
+    "decisionStatus",
+    "forecast",
+    "commercialValue",
+    "trend",
+    "risks",
+    "explanation",
+    "evidenceSummary",
+    "governance"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "m2.v2.serving-result.v0.1" },
+    "resultId": { "type": "string", "minLength": 8, "maxLength": 128 },
+    "standardWorkId": { "type": "string", "minLength": 1, "maxLength": 128 },
+    "cutoffMonth": { "type": "string", "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$" },
+    "resultStatus": { "enum": ["current", "historical", "invalidated"] },
+    "decisionStatus": { "enum": ["research_only", "not_for_formal_decision"] },
+    "forecast": { "$ref": "#/$defs/forecast" },
+    "commercialValue": { "$ref": "#/$defs/commercialValue" },
+    "trend": { "$ref": "#/$defs/trend" },
+    "risks": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/risk" }
+    },
+    "explanation": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/explanationDriver" }
+    },
+    "evidenceSummary": { "$ref": "#/$defs/evidenceSummary" },
+    "governance": { "$ref": "#/$defs/governance" }
+  },
+  "$defs": {
+    "confidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["level", "basisCodes"],
+      "properties": {
+        "level": { "enum": ["high", "medium", "low", "unavailable"] },
+        "basisCodes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^[a-z][a-z0-9_.-]{2,127}$" }
+        }
+      }
+    },
+    "annualAmount": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["year", "amountCents"],
+      "properties": {
+        "year": { "type": "integer", "minimum": 2000, "maximum": 2200 },
+        "amountCents": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "forecast": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "statisticallyScoreable",
+        "modelPredictionAvailable",
+        "businessServingEligible",
+        "abstained",
+        "abstentionReason",
+        "pointBasis",
+        "pointForecastCents",
+        "currency",
+        "annualBreakdown",
+        "confidence",
+        "limitations",
+        "excludesUncommittedFutureBuyout"
+      ],
+      "properties": {
+        "statisticallyScoreable": { "type": "boolean" },
+        "modelPredictionAvailable": { "type": "boolean" },
+        "businessServingEligible": { "type": "boolean" },
+        "abstained": { "type": "boolean" },
+        "abstentionReason": { "type": ["string", "null"], "maxLength": 256 },
+        "pointBasis": {
+          "enum": [
+            "unavailable",
+            "sales_model",
+            "sales_model_plus_confirmed_receivable",
+            "confirmed_receivable_only"
+          ]
+        },
+        "pointForecastCents": { "type": ["integer", "null"], "minimum": 0 },
+        "currency": { "const": "CNY" },
+        "annualBreakdown": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/annualAmount" }
+        },
+        "confidence": { "$ref": "#/$defs/confidence" },
+        "limitations": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1, "maxLength": 512 }
+        },
+        "excludesUncommittedFutureBuyout": { "const": true }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "abstained": { "const": true } },
+            "required": ["abstained"]
+          },
+          "then": {
+            "properties": {
+              "businessServingEligible": { "const": false },
+              "pointBasis": { "const": "unavailable" },
+              "pointForecastCents": { "type": "null" },
+              "annualBreakdown": { "maxItems": 0 },
+              "abstentionReason": { "type": "string", "minLength": 1 },
+              "confidence": {
+                "allOf": [
+                  { "$ref": "#/$defs/confidence" },
+                  { "properties": { "level": { "const": "unavailable" } } }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "abstained": { "const": false } },
+            "required": ["abstained"]
+          },
+          "then": {
+            "properties": {
+              "businessServingEligible": { "const": true },
+              "pointBasis": {
+                "enum": ["sales_model", "sales_model_plus_confirmed_receivable", "confirmed_receivable_only"]
+              },
+              "pointForecastCents": { "type": "integer", "minimum": 0 },
+              "confidence": {
+                "allOf": [
+                  { "$ref": "#/$defs/confidence" },
+                  { "properties": { "level": { "enum": ["high", "medium", "low"] } } }
+                ]
+              },
+              "abstentionReason": { "type": "null" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "pointBasis": { "const": "confirmed_receivable_only" } }, "required": ["pointBasis"] },
+          "then": { "properties": { "modelPredictionAvailable": { "const": false } } }
+        },
+        {
+          "if": {
+            "properties": { "pointBasis": { "enum": ["sales_model", "sales_model_plus_confirmed_receivable"] } },
+            "required": ["pointBasis"]
+          },
+          "then": { "properties": { "modelPredictionAvailable": { "const": true } } }
+        }
+      ]
+    },
+    "dimensionScore": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "score", "provenanceRefs"],
+      "properties": {
+        "code": {
+          "enum": [
+            "cash_outlook",
+            "persistence",
+            "demand_momentum",
+            "rights_usability",
+            "evidence_strength",
+            "risk_adjustment"
+          ]
+        },
+        "score": { "type": ["number", "null"], "minimum": 0, "maximum": 100 },
+        "provenanceRefs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/provenanceRef" }
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "score": { "type": "number" } }, "required": ["score"] },
+          "then": { "properties": { "provenanceRefs": { "minItems": 1 } } }
+        },
+        {
+          "if": { "properties": { "score": { "type": "null" } }, "required": ["score"] },
+          "then": { "properties": { "provenanceRefs": { "maxItems": 0 } } }
+        }
+      ]
+    },
+    "commercialValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "methodType",
+        "score",
+        "rankPercentile",
+        "dimensionScores",
+        "confidence",
+        "limitations",
+        "policyVersion",
+        "truthDefinitionVersion"
+      ],
+      "properties": {
+        "status": { "enum": ["unavailable", "assessment_only", "validated_for_shadow"] },
+        "methodType": { "enum": ["transparent_policy_assessment", "predictive_outcome_model", "unavailable"] },
+        "score": { "type": ["number", "null"], "minimum": 0, "maximum": 100 },
+        "rankPercentile": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+        "dimensionScores": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/dimensionScore" }
+        },
+        "confidence": { "$ref": "#/$defs/confidence" },
+        "limitations": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1, "maxLength": 512 }
+        },
+        "policyVersion": { "type": ["string", "null"], "maxLength": 128 },
+        "truthDefinitionVersion": { "type": ["string", "null"], "maxLength": 128 }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "status": { "const": "unavailable" } },
+            "required": ["status"]
+          },
+          "then": {
+            "properties": {
+              "methodType": { "const": "unavailable" },
+              "score": { "type": "null" },
+              "rankPercentile": { "type": "null" },
+              "dimensionScores": {
+                "items": {
+                  "allOf": [
+                    { "$ref": "#/$defs/dimensionScore" },
+                    { "properties": { "score": { "type": "null" } } }
+                  ]
+                }
+              },
+              "confidence": {
+                "allOf": [
+                  { "$ref": "#/$defs/confidence" },
+                  { "properties": { "level": { "const": "unavailable" } } }
+                ]
+              },
+              "limitations": { "minItems": 1 },
+              "policyVersion": { "type": "null" },
+              "truthDefinitionVersion": { "type": "null" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "status": { "enum": ["assessment_only", "validated_for_shadow"] } },
+            "required": ["status"]
+          },
+          "then": {
+            "properties": {
+              "methodType": { "enum": ["transparent_policy_assessment", "predictive_outcome_model"] },
+              "score": { "type": "number", "minimum": 0, "maximum": 100 },
+              "dimensionScores": {
+                "minItems": 6,
+                "maxItems": 6,
+                "items": {
+                  "allOf": [
+                    { "$ref": "#/$defs/dimensionScore" },
+                    {
+                      "properties": {
+                        "score": { "type": "number", "minimum": 0, "maximum": 100 },
+                        "provenanceRefs": { "minItems": 1 }
+                      }
+                    }
+                  ]
+                },
+                "allOf": [
+                  { "contains": { "properties": { "code": { "const": "cash_outlook" } }, "required": ["code"] }, "minContains": 1 },
+                  { "contains": { "properties": { "code": { "const": "persistence" } }, "required": ["code"] }, "minContains": 1 },
+                  { "contains": { "properties": { "code": { "const": "demand_momentum" } }, "required": ["code"] }, "minContains": 1 },
+                  { "contains": { "properties": { "code": { "const": "rights_usability" } }, "required": ["code"] }, "minContains": 1 },
+                  { "contains": { "properties": { "code": { "const": "evidence_strength" } }, "required": ["code"] }, "minContains": 1 },
+                  { "contains": { "properties": { "code": { "const": "risk_adjustment" } }, "required": ["code"] }, "minContains": 1 }
+                ]
+              },
+              "confidence": {
+                "allOf": [
+                  { "$ref": "#/$defs/confidence" },
+                  { "properties": { "level": { "enum": ["high", "medium", "low"] } } }
+                ]
+              },
+              "policyVersion": { "type": "string", "minLength": 1 },
+              "truthDefinitionVersion": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      ]
+    },
+    "trend": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "label", "horizonMonths", "unavailabilityReason", "confidence", "evidenceRefs", "limitations", "trendDefinitionVersion"],
+      "properties": {
+        "status": { "enum": ["unavailable", "assessment_only", "validated_for_shadow"] },
+        "label": { "type": ["string", "null"], "enum": ["rising", "stable", "declining", null] },
+        "horizonMonths": { "type": ["integer", "null"], "minimum": 1, "maximum": 60 },
+        "unavailabilityReason": {
+          "type": ["string", "null"],
+          "enum": ["definition_not_approved", "insufficient_history", "not_applicable_no_sales", "evidence_unavailable", null]
+        },
+        "confidence": { "$ref": "#/$defs/confidence" },
+        "evidenceRefs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/provenanceRef" }
+        },
+        "limitations": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1, "maxLength": 512 }
+        },
+        "trendDefinitionVersion": { "type": ["string", "null"], "maxLength": 128 }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "status": { "const": "unavailable" } },
+            "required": ["status"]
+          },
+          "then": {
+            "properties": {
+              "label": { "type": "null" },
+              "horizonMonths": { "type": "null" },
+              "unavailabilityReason": {
+                "enum": ["definition_not_approved", "insufficient_history", "not_applicable_no_sales", "evidence_unavailable"]
+              },
+              "confidence": {
+                "allOf": [
+                  { "$ref": "#/$defs/confidence" },
+                  { "properties": { "level": { "const": "unavailable" } } }
+                ]
+              },
+              "evidenceRefs": { "maxItems": 0 },
+              "limitations": { "minItems": 1 },
+              "trendDefinitionVersion": { "type": "null" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "status": { "enum": ["assessment_only", "validated_for_shadow"] } },
+            "required": ["status"]
+          },
+          "then": {
+            "properties": {
+              "label": { "enum": ["rising", "stable", "declining"] },
+              "horizonMonths": { "type": "integer", "minimum": 1, "maximum": 60 },
+              "unavailabilityReason": { "type": "null" },
+              "confidence": {
+                "allOf": [
+                  { "$ref": "#/$defs/confidence" },
+                  { "properties": { "level": { "enum": ["high", "medium", "low"] } } }
+                ]
+              },
+              "evidenceRefs": { "minItems": 1 },
+              "trendDefinitionVersion": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      ]
+    },
+    "risk": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["riskId", "riskCode", "severity", "affectedHead", "evidenceRefs", "rationale", "limitation"],
+      "properties": {
+        "riskId": { "type": "string", "minLength": 8, "maxLength": 128 },
+        "riskCode": { "type": "string", "pattern": "^[a-z][a-z0-9_.-]{2,127}$" },
+        "severity": { "enum": ["low", "medium", "high"] },
+        "affectedHead": { "enum": ["cash_forecast", "commercial_value", "trend", "overall"] },
+        "evidenceRefs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/provenanceRef" }
+        },
+        "rationale": { "type": "string", "minLength": 1, "maxLength": 1000 },
+        "limitation": { "type": "string", "minLength": 1, "maxLength": 1000 }
+      }
+    },
+    "explanationDriver": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["driverId", "driverType", "direction", "strengthBand", "affectedHead", "evidenceRefs", "asOf", "text", "limitations"],
+      "properties": {
+        "driverId": { "type": "string", "minLength": 8, "maxLength": 128 },
+        "driverType": { "enum": ["internal_fact", "external_evidence", "model_attribution", "policy_rule"] },
+        "direction": { "enum": ["up", "down", "neutral", "uncertain"] },
+        "strengthBand": { "enum": ["weak", "medium", "strong", "unknown"] },
+        "affectedHead": { "enum": ["cash_forecast", "commercial_value", "trend", "risk", "overall"] },
+        "evidenceRefs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/provenanceRef" }
+        },
+        "asOf": { "type": "string", "format": "date-time" },
+        "text": { "type": "string", "minLength": 1, "maxLength": 1000 },
+        "limitations": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1, "maxLength": 512 }
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "driverType": { "const": "internal_fact" } }, "required": ["driverType"] },
+          "then": { "properties": { "evidenceRefs": { "contains": { "properties": { "refType": { "const": "internal_snapshot" } } } } } }
+        },
+        {
+          "if": { "properties": { "driverType": { "const": "external_evidence" } }, "required": ["driverType"] },
+          "then": { "properties": { "evidenceRefs": { "contains": { "properties": { "refType": { "const": "external_evidence" } } } } }
+          }
+        },
+        {
+          "if": { "properties": { "driverType": { "const": "policy_rule" } }, "required": ["driverType"] },
+          "then": { "properties": { "evidenceRefs": { "contains": { "properties": { "refType": { "const": "policy_rule" } } } } }
+          }
+        },
+        {
+          "if": { "properties": { "driverType": { "const": "model_attribution" } }, "required": ["driverType"] },
+          "then": { "properties": { "evidenceRefs": { "contains": { "properties": { "refType": { "const": "model_attribution" } } } } }
+          }
+        }
+      ]
+    },
+    "provenanceRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["refType", "refId", "snapshotId", "asOf"],
+      "properties": {
+        "refType": { "enum": ["external_evidence", "internal_snapshot", "policy_rule", "model_attribution"] },
+        "refId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "snapshotId": { "type": ["string", "null"], "maxLength": 128 },
+        "asOf": { "type": "string", "format": "date-time" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "refType": { "enum": ["external_evidence", "internal_snapshot"] } }, "required": ["refType"] },
+          "then": { "properties": { "snapshotId": { "type": "string", "minLength": 1 } } }
+        }
+      ]
+    },
+    "evidenceSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "snapshotId",
+        "totalClaims",
+        "predictionAllowedClaims",
+        "explanationOnlyClaims",
+        "unresolvedConflictCount",
+        "coverageLevel",
+        "providerPolicyVersion",
+        "sourcePolicyVersion",
+        "confidencePolicyVersion"
+      ],
+      "properties": {
+        "snapshotId": { "type": ["string", "null"], "maxLength": 128 },
+        "totalClaims": { "type": "integer", "minimum": 0 },
+        "predictionAllowedClaims": { "type": "integer", "minimum": 0 },
+        "explanationOnlyClaims": { "type": "integer", "minimum": 0 },
+        "unresolvedConflictCount": { "type": "integer", "minimum": 0 },
+        "coverageLevel": { "enum": ["none", "partial", "sufficient"] },
+        "providerPolicyVersion": { "type": ["string", "null"], "maxLength": 128 },
+        "sourcePolicyVersion": { "type": ["string", "null"], "maxLength": 128 },
+        "confidencePolicyVersion": { "type": ["string", "null"], "maxLength": 128 }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "totalClaims": { "const": 0 } }, "required": ["totalClaims"] },
+          "then": {
+            "properties": {
+              "snapshotId": { "type": "null" },
+              "predictionAllowedClaims": { "const": 0 },
+              "explanationOnlyClaims": { "const": 0 },
+              "unresolvedConflictCount": { "const": 0 },
+              "coverageLevel": { "const": "none" },
+              "providerPolicyVersion": { "type": "null" },
+              "sourcePolicyVersion": { "type": "null" },
+              "confidencePolicyVersion": { "type": "null" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "totalClaims": { "type": "integer", "minimum": 1 } }, "required": ["totalClaims"] },
+          "then": {
+            "properties": {
+              "snapshotId": { "type": "string", "minLength": 1 },
+              "coverageLevel": { "enum": ["partial", "sufficient"] },
+              "providerPolicyVersion": { "type": "string", "minLength": 1 },
+              "sourcePolicyVersion": { "type": "string", "minLength": 1 },
+              "confidencePolicyVersion": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      ]
+    },
+    "governance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "modelVersion",
+        "b4ComparatorVersion",
+        "cashInputSnapshotId",
+        "cashInputSnapshotVersion",
+        "evidenceSnapshotVersion",
+        "resultSchemaVersion",
+        "dataPolicyVersion",
+        "valuePolicyVersion",
+        "trendDefinitionVersion",
+        "createdAt",
+        "notForFormalDecision"
+      ],
+      "properties": {
+        "modelVersion": { "type": ["string", "null"], "maxLength": 128 },
+        "b4ComparatorVersion": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "cashInputSnapshotId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "cashInputSnapshotVersion": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "evidenceSnapshotVersion": { "type": ["string", "null"], "maxLength": 128 },
+        "resultSchemaVersion": { "const": "m2.v2.serving-result.v0.1" },
+        "dataPolicyVersion": { "const": "m2.v2.data-policy.v0.1" },
+        "valuePolicyVersion": { "type": ["string", "null"], "maxLength": 128 },
+        "trendDefinitionVersion": { "type": ["string", "null"], "maxLength": 128 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "notForFormalDecision": { "const": true }
+      }
+    }
+  }
+}
