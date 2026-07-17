@@ -54,7 +54,8 @@ function Invoke-SevenZipSecure {
         [string]$Executable,
         [string[]]$Arguments,
         [Security.SecureString]$Password,
-        [string]$WorkingDirectory
+        [string]$WorkingDirectory,
+        [switch]$IncludePasswordSwitch
     )
 
     $bstr = [IntPtr]::Zero
@@ -66,7 +67,8 @@ function Invoke-SevenZipSecure {
         $startInfo = New-Object System.Diagnostics.ProcessStartInfo
         $startInfo.FileName = $Executable
         $startInfo.WorkingDirectory = $WorkingDirectory
-        $startInfo.Arguments = (($Arguments + @("-p")) -join " ")
+        $nativeArguments = if ($IncludePasswordSwitch) { $Arguments + @("-p") } else { $Arguments }
+        $startInfo.Arguments = ($nativeArguments -join " ")
         $startInfo.UseShellExecute = $false
         $startInfo.RedirectStandardInput = $true
         $startInfo.RedirectStandardOutput = $true
@@ -284,7 +286,7 @@ try {
 
     $passwordPlain = New-RandomPassword
     $passwordSecure = ConvertTo-Secure $passwordPlain
-    Invoke-SevenZipSecure -Executable $resolvedSevenZip -WorkingDirectory $stagingRoot -Password $passwordSecure -Arguments @(
+    Invoke-SevenZipSecure -Executable $resolvedSevenZip -WorkingDirectory $stagingRoot -Password $passwordSecure -IncludePasswordSwitch -Arguments @(
         "a",
         "-t7z",
         "-mhe=on",
