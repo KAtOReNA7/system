@@ -2,10 +2,10 @@
 
 ## 状态
 
-- 阶段：`V2_A_ARCHITECTURE_CONTRACT_READY_FOR_REVIEW`
+- 阶段：`V2_B_EXTERNAL_EVIDENCE_PILOT_PREREGISTERED`
 - 决策状态：`not_for_formal_decision`
 - 发布状态：未批准
-- 实现状态：设计完成，未实现
+- 实现状态：V2-A 已合并；V2-B pilot framework 已实现，尚无授权 provider 结果
 - 数据状态：未采集 V2 外部证据，未建立 Human baseline
 
 本目录完成用户于 2026-07-17 授权的 M2 Forecast Intelligence v2 Architecture Phase 文档工作。它不修改当前 M2 正式结果，不替代 B4，不授权训练、C4、final holdout、release 或 M3。
@@ -24,6 +24,7 @@
 | `M2-v2-data-policy-v0.1.md` | 自动获取、禁止人工输入、解释专用和预测可用边界 |
 | `M2-v2-human-baseline-prd-v0.1.md` | Human-vs-AI 抽样、reviewer 流程、指标与防泄漏规则 |
 | `M2-v2-v2a-traceability-v0.1.md` | 需求到设计、未来测试和门禁的追踪矩阵 |
+| `M2-v2-evidence-pilot-prd-v0.1.md/json` | V2-B evidence-only pilot scope、population、预算和 gate |
 
 技术设计位于 `docs/technical-design/m2-v2/`。
 

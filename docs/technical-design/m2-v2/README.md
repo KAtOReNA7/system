@@ -2,11 +2,11 @@
 
 ## 状态
 
-- 阶段：V2-A Architecture
-- 状态：`DESIGN_ONLY_NOT_IMPLEMENTED`
+- 阶段：V2-B External Evidence Pilot
+- 状态：`PILOT_FRAMEWORK_PREREGISTERED`
 - decision：`not_for_formal_decision`
 - migration：无
-- runtime：无
+- runtime：仅本地 private file-store pilot；不含正式 API/DB
 - model training：无
 
 ## 文档
@@ -22,6 +22,9 @@
 | `M2-v2-export-contract-v0.1.md` | canonical JSON/Excel export 设计 |
 | `M2-v2-result.schema.json` | V2 结果 JSON Schema |
 | `M2-v2-v2a-contract-manifest.json` | V2-A 文档和边界 manifest |
+| `M2-v2-evidence-pilot-design-v0.1.md/json` | V2-B sampler、query、entity、store、resume/report 设计 |
+| `M2-v2-provider-policy-v0.1.md/json` | provider-neutral adapter、预算、fallback 和 browser 边界 |
+| `M2-v2-source-allowlist-v0.1.md/json` | source tier/terms 与显式域名 fail-closed allowlist |
 
 ## 设计优先级
 

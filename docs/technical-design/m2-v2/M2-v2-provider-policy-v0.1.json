@@ -1,0 +1,107 @@
+{
+  "schema": "m2.v2.provider-policy.v0.1",
+  "status": "pre_registered_fail_closed",
+  "providerNeutral": true,
+  "precedence": [
+    "structured_search",
+    "web_search",
+    "official_page_fetch",
+    "controlled_browser_fetch",
+    "no_provider_available"
+  ],
+  "registry": [
+    {
+      "mode": "structured_search",
+      "enabled": false,
+      "reason": "no_authorized_runtime_adapter_or_credentials",
+      "networkAccess": true
+    },
+    {
+      "mode": "web_search",
+      "enabled": false,
+      "reason": "no_authorized_runtime_adapter_or_credentials",
+      "networkAccess": true
+    },
+    {
+      "mode": "official_page_fetch",
+      "enabled": false,
+      "reason": "requires_upstream_allowlisted_locator_and_terms_approval",
+      "networkAccess": true
+    },
+    {
+      "mode": "controlled_browser_fetch",
+      "enabled": false,
+      "reason": "disabled_by_default_and_no_approved_domain_exception",
+      "networkAccess": true
+    },
+    {
+      "mode": "no_provider_available",
+      "enabled": true,
+      "reason": "fail_closed_bootstrap",
+      "networkAccess": false
+    }
+  ],
+  "requestContract": {
+    "required": [
+      "providerId",
+      "evidenceType",
+      "entityQuery",
+      "queryTemplateVersion",
+      "queryHash",
+      "budget",
+      "allowedDomains",
+      "blockedDomains",
+      "timeoutMs"
+    ],
+    "privateQueryFieldsAllowed": ["work_title", "author_byline"],
+    "privateQueryFieldsProhibited": ["internal_work_id", "revenue", "rating", "rights", "risk", "business_status"]
+  },
+  "responseContract": {
+    "required": [
+      "providerId",
+      "providerVersion",
+      "requestId",
+      "queryId",
+      "queryHash",
+      "capturedAt",
+      "status",
+      "cost",
+      "latency",
+      "results",
+      "sourceTermsClass",
+      "receiptDigest"
+    ],
+    "responseIsEvidence": false
+  },
+  "budgets": {
+    "maxQueriesPerWork": 8,
+    "maxResultsPerQuery": 10,
+    "maxPagesPerWork": 6,
+    "maxTotalCostCny": 400,
+    "maxCostPerWorkCny": 2.5,
+    "maxCostPerQueryCny": 0.3
+  },
+  "fallback": {
+    "automaticUnapprovedProviderSwitch": false,
+    "automaticBrowserFallback": false,
+    "noProviderStatus": "blocked_no_provider",
+    "fabricateResults": false
+  },
+  "browserRules": {
+    "defaultEnabled": false,
+    "allowlistedOnly": true,
+    "bypassLoginCaptchaPaywallRobots": false,
+    "saveFullPage": false
+  },
+  "retry": {
+    "transientOnly": true,
+    "maxAttempts": 2,
+    "rateLimitOrCostCapStopsImmediately": true
+  },
+  "credentials": {
+    "git": false,
+    "logs": false,
+    "evidence": false,
+    "publicReport": false
+  }
+}

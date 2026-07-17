@@ -1,0 +1,86 @@
+{
+  "schema": "m2.v2.evidence-pilot-prd.v0.1",
+  "status": "frozen_before_external_retrieval",
+  "phase": "V2-B",
+  "authority": {
+    "authorized": true,
+    "scope": "external_evidence_layer_pilot_only",
+    "notForFormalDecision": true,
+    "modelTrainingAuthorized": false,
+    "b4ChangeAuthorized": false,
+    "finalHoldoutAuthorized": false,
+    "releaseAuthorized": false,
+    "v2COrLaterAuthorized": false,
+    "m3Authorized": false
+  },
+  "objectives": [
+    "retrieval_coverage",
+    "entity_resolution",
+    "source_reliability",
+    "evidence_available_time",
+    "freshness",
+    "contradiction_detection",
+    "structured_extraction",
+    "citation_completeness",
+    "cost_latency",
+    "provider_fallback",
+    "reproducibility"
+  ],
+  "nonObjectives": [
+    "income_model_uplift",
+    "new_forecast_model",
+    "human_vs_ai",
+    "commercial_value_model",
+    "release_readiness"
+  ],
+  "population": {
+    "authorityWorkCount": 3053,
+    "targetSampleCount": 160,
+    "allowedSampleRange": [120, 200],
+    "uniqueWorksRequired": true,
+    "fixedSeed": "20260717",
+    "resamplingAfterResults": false,
+    "privateImmutableManifestRequired": true
+  },
+  "requiredCoverageDimensions": [
+    "publication_web_original",
+    "top1_top5_top10_middle_long_tail",
+    "pure_sales_mixed_pure_buyout",
+    "dense_intermittent_dormant",
+    "high_value",
+    "identity_ambiguity_risk",
+    "expected_evidence_rich_sparse"
+  ],
+  "retrievalBudget": {
+    "maxQueriesPerWork": 8,
+    "maxResultsPerQuery": 10,
+    "maxPagesPerWork": 6,
+    "defaultPlannedQueriesPerWork": 4,
+    "recursiveSearchAllowed": false
+  },
+  "providerModes": [
+    "structured_search",
+    "web_search",
+    "official_page_fetch",
+    "controlled_browser_fetch",
+    "no_provider_available"
+  ],
+  "failClosed": {
+    "missingProviderStatus": "blocked_no_provider",
+    "fabricatedEvidenceAllowed": false,
+    "browserFallbackAutomatic": false,
+    "unresolvedEntityPredictionUse": false,
+    "unknownAvailableAtPredictionUse": false,
+    "unresolvedConflictPredictionUse": false,
+    "unapprovedSourcePredictionUse": false
+  },
+  "outputs": {
+    "public": "deidentified_aggregate_only",
+    "private": "ignored_file_store",
+    "publicIdentifiersAllowed": false,
+    "rawPageAllowed": false,
+    "shortExcerpt": "private_only_when_source_terms_allow"
+  },
+  "decisionValues": ["PILOT_PASS", "PILOT_CONDITIONAL", "PILOT_FAIL"],
+  "stopCondition": "Create an unmerged V2-B PR and wait for user review; do not start V2-C, V2-D, C4, M3, model training, holdout, or release."
+}
