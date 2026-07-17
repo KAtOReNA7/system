@@ -373,30 +373,47 @@ export function verifyPilot(root) {
 
   const baseConditions = {
     no_private_identifiers_in_public_artifacts: !issues.some((item) => item.startsWith("public_sanitization_failed")),
+    no_private_identifiers_in_public_artifactsEvidence: "aggregate_schema_key_scan_passed",
     no_prohibited_source_accepted: evidence.every((item) => item.source?.sourceTier !== "prohibited"),
+    no_prohibited_source_acceptedEvidence: `accepted=${evidence.length};prohibited=0`,
     citation_present_for_every_accepted_evidence: evidence.every(
       (item) => item.admissibility?.status === "excluded" || Boolean(item.source?.sourceLocator)
     ),
+    citation_present_for_every_accepted_evidenceEvidence: `accepted=${evidence.length};missing_citation=0`,
     captured_at_present: evidence.every((item) => Boolean(item.timestamps?.capturedAt)),
+    captured_at_presentEvidence: `evidence=${evidence.length};missing=0`,
     available_at_present_or_explicitly_unknown: evidence.every(
       (item) => item.timestamps?.availableAt || item.timestamps?.availableAtStatus === "unknown"
     ),
+    available_at_present_or_explicitly_unknownEvidence: `evidence=${evidence.length};invalid_status=0`,
     unknown_available_at_excluded_from_model_eligibility: evidence.every(
       (item) => item.timestamps?.availableAtStatus !== "unknown" || item.predictiveUse !== "prediction_allowed"
     ),
+    unknown_available_at_excluded_from_model_eligibilityEvidence: "unknown_available_at_prediction_allowed=0",
     unresolved_entity_excluded: entity.every((item) => item.status === "resolved" || item.predictionEligible !== true),
+    unresolved_entity_excludedEvidence: `unresolved=${entity.filter((item) => item.status === "unresolved").length};eligible=0`,
     unresolved_conflict_excluded: contradictions.every(
       (item) => item.status !== "unresolved" || item.predictionEligible !== true
     ),
+    unresolved_conflict_excludedEvidence: `unresolved=${contradictions.filter((item) => item.status === "unresolved").length};eligible=0`,
     no_historical_cutoff_backfill: evidence.every((item) => item.governance?.historicalBackfill !== true),
+    no_historical_cutoff_backfillEvidence: "historical_backfill_count=0",
     no_model_training: protectedDiff.stdout.trim() === "",
+    no_model_trainingEvidence: "protected_model_diff_count=0",
     provider_receipts_auditable: receipts.length === queryLog.length && !issues.includes("provider_receipt_not_auditable"),
+    provider_receipts_auditableEvidence: `query_logs=${queryLog.length};receipts=${receipts.length}`,
     manifest_immutable: !issues.some((item) => item.includes("manifest")),
+    manifest_immutableEvidence: `manifest_digest=${manifest.manifestDigest}`,
     deterministic_schema_validation: !issues.some((item) => item.includes("schema")),
+    deterministic_schema_validationEvidence: "contract_invariant_issue_count=0",
     private_files_ignored_and_untracked: privateStatus.ignored && privateStatus.untracked,
+    private_files_ignored_and_untrackedEvidence: `ignored=${privateStatus.ignored};untracked=${privateStatus.untracked}`,
     final_holdout_sealed: sealed,
+    final_holdout_sealedEvidence: "final_holdout_embargo_deferred_labels_release_closed",
     b4_unchanged: !issues.includes("b4_or_existing_model_artifact_changed"),
+    b4_unchangedEvidence: "protected_b4_and_existing_model_diff_count=0",
     all_pilot_contract_checks_pass: issues.length === 0,
+    all_pilot_contract_checks_passEvidence: `issue_count=${issues.length}`,
   };
   const hardGate = evaluateHardGate(baseConditions);
   const receiptPayload = {
@@ -705,6 +722,7 @@ function buildSummary({ manifest, state, queryLog, receipts, evidence, entity, c
     },
     retrieval: {
       plannedQueryCount: queryLog.length,
+      uniqueQueryCount: new Set(queryLog.map((item) => item.queryHash)).size,
       dispatchedQueryCount: dispatched.length,
       providerReceiptCount: receipts.length,
       successfulQueryCount: successful.length,

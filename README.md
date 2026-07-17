@@ -25,10 +25,10 @@ v0.2 将 v0.1 的业务汇总稿改造成更适合 Codex 长期维护的文档�
 - B4 继续作为 formal-cash comparator、fallback 与安全锚点，但未获正式发布批准。
 - final holdout、embargo shadow 和 deferred 60-month labels 仍 sealed；所有结果保持 `not_for_formal_decision`，未 release，未进入 M3。
 - M2 Forecast Intelligence v2 的 V2-A 架构合同已完成：五头 PRD、字段字典、External Evidence Layer、Human Baseline、API/DB/export、JSON Schema 与 traceability 已统一。
-- 下一入口是独立的 **V2-B External Evidence Pilot**：只评估 prospective evidence 的覆盖、实体解析、来源/时点/矛盾、成本和复现；不训练模型，不开发 C4，不改变 B4。
-- V2-B 必须自动检索；不得要求运营逐作品补外部信息。缺少授权 private 身份源或 provider 时必须 fail-closed，不得伪造作品、作者或证据。
+- **V2-B External Evidence Pilot framework 与 fail-closed checkpoint 已完成**：从 3053 部冻结 160 部 immutable 样本，640 个计划 query、0 次外部派发、0 result/page/evidence；resume 640/640 cache hit，17/17 安全/审计硬门通过。
+- 当前没有授权 runtime provider 和经条款/法律批准的域名，故执行状态为 `blocked_no_provider`、结论 `PILOT_CONDITIONAL`、V2-C readiness=`NOT_READY`。下一入口只能是 provider/source governance 后在同一 manifest 上 resume；不得重抽样、要求运营逐作品补信息、训练模型或进入 V2-C/V2-D/C4/M3。
 
-权威入口：`docs/prd/m2-v2/README.md`、`docs/technical-design/m2-v2/README.md`、`docs/analysis/m2-v2/M2-v2-final-recommendation.md`。
+权威入口：`docs/prd/m2-v2/README.md`、`docs/technical-design/m2-v2/README.md`、`docs/analysis/m2-v2/M2-v2-evidence-pilot-summary-v0.1.md`、`docs/analysis/m2-v2/M2-v2-evidence-pilot-gate-v0.1.json`。
 
 当前远端 `main` 已包含 M1/M2 本地开发 checkpoint：
 

@@ -5,8 +5,8 @@
 - 阶段：`V2_B_EXTERNAL_EVIDENCE_PILOT_PREREGISTERED`
 - 决策状态：`not_for_formal_decision`
 - 发布状态：未批准
-- 实现状态：V2-A 已合并；V2-B pilot framework 已实现，尚无授权 provider 结果
-- 数据状态：未采集 V2 外部证据，未建立 Human baseline
+- 实现状态：V2-A 已合并；V2-B framework/fail-closed execution 已完成，判 `PILOT_CONDITIONAL`
+- 数据状态：160 部 manifest 已冻结；无授权 provider，0 外部 evidence，未建立 Human baseline
 
 本目录完成用户于 2026-07-17 授权的 M2 Forecast Intelligence v2 Architecture Phase 文档工作。它不修改当前 M2 正式结果，不替代 B4，不授权训练、C4、final holdout、release 或 M3。
 

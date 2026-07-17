@@ -2,6 +2,7 @@
 
 | 决策 | 状态 | 当前结论 | ADR |
 |---|---|---|---|
+| DEC-012 | 已完成（V2-B fail-closed checkpoint） | 160 部 immutable 样本与 evidence pilot framework 已冻结；当前没有授权 runtime provider 或获批域名，640 个计划 query 均未外发，0 result/page/evidence。17/17 安全/审计硬门通过，但 usability 不可验证，判 `PILOT_CONDITIONAL`、V2-C `NOT_READY`；只允许 provider/source governance 后在同一 manifest 上 resume，V2-B PR 不自动合并 | `docs/analysis/m2-v2/M2-v2-evidence-pilot-summary-v0.1.md` |
 | DEC-011 | 已授权（V2-B evidence pilot only） | M2 v2 V2-A 五头 PRD、字段字典、External Evidence、Human Baseline、API/DB/export、schema 和 traceability 作为架构 checkpoint；普通 merge 并确认 main CI 后只允许执行 V2-B prospective evidence pilot。V2-B 不训练模型、不改变 B4、不打开 final holdout、不进入 V2-C/V2-D/C4/M3、不 release；缺 provider/private 身份源时 fail-closed | `docs/prd/m2-v2/README.md` |
 | DEC-010 | 已完成（C3 development FAIL） | C3-A overall WAPE 0.55394517、signed bias +0.08273913，模型质量 FAIL、业务覆盖 CONDITIONAL；B4 继续为 comparator/fallback。C3 不得重复执行，所有 seals 保持关闭，结果 `not_for_formal_decision` | `docs/analysis/m2-real-data/M2-C3-development-validation-v1.md` |
 | DEC-009 | 已完成（历史 development checkpoint） | formal-cash comparator 在固定 7851-case 模型人口上冻结 B4，Gate B 14/14；C2-R.1 的 45 候选 development 验证为 13/23、结论 FAIL。后续 C2/C3 的授权和结果由 DEC-010/011 现行化；final holdout 与 release 始终未授权 | `docs/analysis/m2-real-data/M2-C2R1-development-validation-v1.md` |

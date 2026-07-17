@@ -1,0 +1,166 @@
+{
+  "schema": "m2.v2.evidence-pilot-summary.v0.1",
+  "status": "not_for_formal_decision",
+  "pilotExecutionStatus": "blocked_no_provider",
+  "branchScope": "V2_B_EXTERNAL_EVIDENCE_PILOT_ONLY",
+  "sample": {
+    "target": 160,
+    "actual": 160,
+    "population": 3053,
+    "unique": true,
+    "seed": "20260717",
+    "selectionAlgorithmVersion": "m2-v2-balanced-greedy-v0.1",
+    "manifestDigest": "f85308436328bd056e27025407f45aa840cd5cc07e4e7ad9fe0eec4a2d8a3020",
+    "aggregateStrata": {
+      "sourceType": {
+        "publication": 74,
+        "web_original": 86
+      },
+      "revenueBand": {
+        "top5": 20,
+        "long_tail": 55,
+        "top1": 12,
+        "middle": 53,
+        "top10": 20
+      },
+      "revenueModel": {
+        "buyout_plus_sales": 29,
+        "pure_sales_share": 98,
+        "pure_buyout": 28,
+        "unknown_revenue_model": 5
+      },
+      "activity": {
+        "dense": 73,
+        "dormant": 47,
+        "intermittent": 40
+      },
+      "ambiguityRisk": {
+        "high": 68,
+        "low": 32,
+        "medium": 60
+      },
+      "evidencePrior": {
+        "rich": 64,
+        "sparse": 36,
+        "mixed": 60
+      },
+      "highValue": {
+        "true": 52,
+        "false": 108
+      }
+    },
+    "allEffectiveTargetsAchieved": true
+  },
+  "provider": {
+    "mode": "no_provider_available",
+    "providerId": "no_provider_available",
+    "providerVersion": "v0.1",
+    "availability": "unavailable",
+    "fallbackUsed": true,
+    "fallbackReason": "no_authorized_runtime_provider_or_approved_domain_entry"
+  },
+  "retrieval": {
+    "plannedQueryCount": 640,
+    "uniqueQueryCount": 626,
+    "dispatchedQueryCount": 0,
+    "providerReceiptCount": 640,
+    "successfulQueryCount": 0,
+    "resultCount": 0,
+    "pageCount": 0,
+    "querySuccessRate": null,
+    "providerFailureRate": null,
+    "providerUnavailableRate": 1,
+    "pageFetchSuccessRate": null,
+    "cacheHitCount": 640,
+    "cacheHitRate": 1
+  },
+  "entityResolution": {
+    "resolved": 0,
+    "unresolved": 160,
+    "ambiguous": 0,
+    "resolutionRate": 0,
+    "confidence": {
+      "high": 0,
+      "medium": 0,
+      "low": 0,
+      "unavailable": 160
+    },
+    "aliasMatchCount": 0,
+    "sameNameConflictCount": 0,
+    "preRegisteredHighAmbiguityCount": 68
+  },
+  "evidence": {
+    "acceptedCount": 0,
+    "evidencePerWork": 0,
+    "validEvidenceWorkCount": 0,
+    "validEvidenceWorkCoverage": 0,
+    "highValueSampleCount": 52,
+    "highValueValidEvidenceWorkCount": 0,
+    "highValueValidEvidenceCoverage": 0,
+    "categoryCounts": {
+      "author_identity": 0,
+      "original_work_performance": 0,
+      "search_interest": 0,
+      "social_signal": 0,
+      "ranking_signal": 0,
+      "adaptation_event": 0,
+      "publication_event": 0,
+      "award_event": 0,
+      "official_notice": 0
+    },
+    "categoryCoverage": {
+      "author_identity": 0,
+      "original_work_performance": 0,
+      "search_interest": 0,
+      "social_signal": 0,
+      "ranking_signal": 0,
+      "adaptation_event": 0,
+      "publication_event": 0,
+      "award_event": 0,
+      "official_notice": 0
+    }
+  },
+  "quality": {
+    "citationCompleteness": null,
+    "availableAtCompleteness": null,
+    "eventTimeCompleteness": null,
+    "allowlistCompliance": null,
+    "conflictRate": null,
+    "unresolvedConflictRate": null,
+    "staleEvidenceRate": null,
+    "prohibitedSourceCount": 0,
+    "historicalBackfillCount": 0
+  },
+  "reproducibility": {
+    "status": "not_evaluable_no_evidence",
+    "fixedSubsampleCount": 20,
+    "queryPlanAgreement": 1,
+    "claimAgreement": null,
+    "structuredValueAgreement": null,
+    "sourceOverlap": null,
+    "confidenceDrift": null,
+    "contradictionDrift": null
+  },
+  "costLatency": {
+    "totalCostCny": 0,
+    "perWorkCostCny": 0,
+    "perQueryCostCny": null,
+    "p50LatencyMs": null,
+    "p90LatencyMs": null,
+    "estimatedFullLibraryRefreshCostCny": null,
+    "estimatedMonthlyRefreshCostCny": null,
+    "estimationStatus": "not_evaluable_no_provider"
+  },
+  "boundaries": {
+    "modelTrainingPerformed": false,
+    "b4Changed": false,
+    "finalHoldoutOpened": false,
+    "embargoShadowOpened": false,
+    "deferred60MonthLabelsOpened": false,
+    "v2CStarted": false,
+    "v2DStarted": false,
+    "c4Started": false,
+    "m3Started": false,
+    "released": false
+  }
+}

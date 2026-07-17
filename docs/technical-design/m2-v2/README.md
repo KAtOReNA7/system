@@ -3,7 +3,7 @@
 ## 状态
 
 - 阶段：V2-B External Evidence Pilot
-- 状态：`PILOT_FRAMEWORK_PREREGISTERED`
+- 状态：`PILOT_CONDITIONAL_BLOCKED_NO_PROVIDER`
 - decision：`not_for_formal_decision`
 - migration：无
 - runtime：仅本地 private file-store pilot；不含正式 API/DB

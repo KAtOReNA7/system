@@ -1,0 +1,28 @@
+{
+  "schema": "m2.v2.evidence-pilot-next-step.v0.1",
+  "decision": "PILOT_CONDITIONAL",
+  "recommendation": "DO_NOT_START_V2_C",
+  "blockers": [
+    "provide_an_authorized_auditable_runtime_search_provider",
+    "approve_at_least_one_domain_entry_after_terms_and_legal_review",
+    "rerun_the_same_immutable_sample_without_resampling"
+  ],
+  "permittedNextAction": "provider_and_source_governance_only_then_resume_same_manifest",
+  "prohibitedNextActions": [
+    "model_training",
+    "B4_change",
+    "final_holdout_open",
+    "V2_C",
+    "V2_D",
+    "C4",
+    "M3",
+    "release"
+  ],
+  "humanInputRequiredNow": false,
+  "futureHumanReviewScope": [
+    "entity_match",
+    "evidence_accuracy",
+    "source_trust",
+    "conflict_handling"
+  ]
+}

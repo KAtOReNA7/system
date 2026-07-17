@@ -19,9 +19,11 @@
 - C3-A overall WAPE 0.55394517、signed bias +0.08273913，`modelQualityDecision=FAIL`、`businessCoverageDecision=CONDITIONAL`；B4 继续作为 comparator/fallback，未获 release 批准。
 - final holdout、embargo shadow、deferred 60-month labels 均 sealed；所有结果 `not_for_formal_decision`，未进入 C4 或 M3，未 release。
 - M2 Forecast Intelligence v2 V2-A 架构合同已完成并进入 checkpoint：五头 PRD、字段字典、External Evidence、Human Baseline、API/DB/export、JSON Schema、traceability 和 manifest。
-- 用户已授权在 V2-A checkpoint 普通 merge 且 main CI 通过后，从新分支执行 V2-B External Evidence Pilot。V2-B 只测 prospective evidence 覆盖、实体解析、来源/时间/矛盾、成本和复现，不训练模型、不改变 B4。
-- 不得要求运营逐作品补外部信息。缺少授权 private 身份源或 provider 时必须完成 runner/bootstrap/tests 并 fail-closed，禁止伪造作品、作者或 evidence。
+- V2-B 已按固定 seed 从 3053 部权威人口冻结 160 部 private immutable 样本；最终 manifest digest 为 `f85308436328bd056e27025407f45aa840cd5cc07e4e7ad9fe0eec4a2d8a3020`，全部预注册 effective target 达成。检索前 sampler aggregate QA 曾修正持续 stress bonus；旧 attempt 私下保留，修正前 provider dispatch/search result 均为 0，最终 manifest 禁止再次更换。
+- 当前无授权 runtime provider 凭证且 source allowlist 没有经条款/法律批准的域名；V2-B 因而 fail-closed 为 `blocked_no_provider`：640 个计划 query、0 dispatch、0 result、0 page、0 evidence，resume 为 640/640 cache hit。17/17 安全/审计硬门通过，但 usability 未验证，结论 `PILOT_CONDITIONAL`、V2-C readiness=`NOT_READY`。
+- 不得要求运营逐作品补外部信息。下一步只允许 provider/source governance 后在同一 manifest 上 resume；不得把 0 evidence 表述为没有外部信号，不得进入 V2-C/V2-D/C4/M3。
 - V2-B private manifest、query log、receipt、evidence、review pack 与 cache 只能写入 Git 忽略的 `data/private-output/m2-v2-evidence-pilot/`，禁止提交。
+- V2-B 公开证据见 `docs/analysis/m2-v2/M2-v2-evidence-pilot-summary-v0.1.md`、`M2-v2-evidence-pilot-gate-v0.1.json` 和 `M2-v2-evidence-pilot-next-step-v0.1.md`；所有结果仍 `not_for_formal_decision`，未训练模型、未改变 B4、未打开任何 seal、未 release。
 
 ## 当前项目状态快照
 

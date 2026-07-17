@@ -4,11 +4,11 @@
 
 当前入口是：
 
-`V2-A 架构合同 checkpoint 合入并确认 main CI 后，进入 codex/m2-v2-evidence-pilot-v1 执行 V2-B External Evidence Pilot；不得重复 C3、训练模型、开发 C4、打开 final holdout、进入 M3 或 release`
+`审阅 codex/m2-v2-evidence-pilot-v1 的 V2-B PILOT_CONDITIONAL checkpoint；在 provider/source governance 获批前不得进入 V2-C、重复 C3、训练模型、开发 C4、打开 final holdout、进入 M3 或 release`
 
-2026-07-17 最新状态：C1、legacy C2-R、C2-R.1、C2、C3 均已完成 development 且结论 `FAIL`。C3-A overall WAPE 0.55394517、signed bias +0.08273913，业务覆盖 `CONDITIONAL`。B4 未 release，继续作为 comparator/fallback。M2 v2 V2-A 已完成五头 PRD、字段字典、External Evidence、Human Baseline、API/DB/export、schema 与 traceability；下一步只允许 V2-B prospective evidence pilot。
+2026-07-17 最新状态：C1、legacy C2-R、C2-R.1、C2、C3 均已完成 development 且结论 `FAIL`。C3-A overall WAPE 0.55394517、signed bias +0.08273913，业务覆盖 `CONDITIONAL`。B4 未 release，继续作为 comparator/fallback。M2 v2 V2-A 已合并；V2-B framework、固定样本、private store、resume/cache、synthetic tests 与公开报告已完成。
 
-V2-B 自动从完整 3053 作品 authority population 抽取固定样本，只评估检索、实体解析、来源/时间/矛盾、覆盖、成本和复现。不得要求运营逐作品补外部信息；缺少授权 private 身份源或 provider 时必须 runner/bootstrap/tests 完成后 fail-closed，不得伪造作品、作者或证据。V2-B PR 只创建，不自动合并。
+V2-B 已从完整 3053 作品 authority population 冻结 160 部样本，manifest digest `f85308436328bd056e27025407f45aa840cd5cc07e4e7ad9fe0eec4a2d8a3020`。当前无授权 runtime provider/获批域名，640 个计划 query 全部未外发，result/page/evidence 均为 0；resume 640/640 cache hit，17/17 硬门通过，结论 `PILOT_CONDITIONAL`、V2-C readiness=`NOT_READY`。不得重抽样或把空 evidence 当负面事实；V2-B PR 只创建，不自动合并。
 
 2026-07-15 用户已冻结新的最高优先级业务口径：M2 正式点值只预测未来实销现金与 cutoff 时已确认且可审计的未来应收。未承诺买断、历史周期猜测、概率模型、已到账款未来摊销和 `buyoutMonthlyEquivalent` 不得进入现金预测。legacy-target C2-R development 已完成但结果为 `FAIL`，只保留为历史目标口径证据，不是 formal-cash 指标，也不得与 C2-R.1 直接比较。
 
