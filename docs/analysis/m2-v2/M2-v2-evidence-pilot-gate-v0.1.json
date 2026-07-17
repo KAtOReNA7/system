@@ -85,9 +85,9 @@
         "evidence": "protected_b4_and_existing_model_diff_count=0"
       },
       {
-        "id": "all_pilot_contract_checks_pass",
+        "id": "all_tests_pass",
         "passed": true,
-        "evidence": "issue_count=0"
+        "evidence": "commands=6;passed=6"
       }
     ],
     "passedCount": 17,

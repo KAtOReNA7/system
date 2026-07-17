@@ -391,6 +391,8 @@ test("public result artifacts, when generated, remain aggregate-only and non-for
   assert.equal(summary.boundaries.finalHoldoutOpened, false);
   assert.equal(gate.notForFormalDecision, true);
   assert.equal(gate.releaseAuthorized, false);
+  assert.equal(gate.hardGate.conditions.at(-1).id, "all_tests_pass");
+  assert.match(gate.hardGate.conditions.at(-1).evidence, /^commands=6;passed=6$/u);
 });
 
 function read(relative) {

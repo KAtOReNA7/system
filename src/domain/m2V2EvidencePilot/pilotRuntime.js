@@ -50,8 +50,18 @@ const PRIVATE_FILES = Object.freeze({
   state: "execution-state-private-v0.1.json",
   review: "M2-v2-evidence-pilot-review-pack-private-v0.1.json",
   verification: "verification-receipt-private-v0.1.json",
+  fullValidation: "full-validation-receipt-private-v0.1.json",
   samplingCorrection: "sampling-correction-ledger-private-v0.1.json",
 });
+
+const FULL_VALIDATION_COMMANDS = Object.freeze([
+  ["npm", "run", "check:no-real-data"],
+  ["npm", "run", "lint"],
+  ["npm", "run", "build"],
+  ["npm", "test"],
+  ["npm", "run", "smoke"],
+  ["npm", "run", "test:e2e"],
+]);
 
 const SAMPLE_TARGETS = Object.freeze({
   "sourceType:publication": 60,
@@ -371,6 +381,10 @@ export function verifyPilot(root) {
   const privateStatus = privateStoreStatus(absoluteRoot);
   if (!privateStatus.ignored || !privateStatus.untracked) issues.push("private_store_not_ignored_or_untracked");
 
+  const fullValidation = runFullProjectValidation(absoluteRoot);
+  atomicWriteJson(join(privateStore, PRIVATE_FILES.fullValidation), fullValidation);
+  if (!fullValidation.allPassed) issues.push("full_project_validation_failed");
+
   const baseConditions = {
     no_private_identifiers_in_public_artifacts: !issues.some((item) => item.startsWith("public_sanitization_failed")),
     no_private_identifiers_in_public_artifactsEvidence: "aggregate_schema_key_scan_passed",
@@ -412,8 +426,8 @@ export function verifyPilot(root) {
     final_holdout_sealedEvidence: "final_holdout_embargo_deferred_labels_release_closed",
     b4_unchanged: !issues.includes("b4_or_existing_model_artifact_changed"),
     b4_unchangedEvidence: "protected_b4_and_existing_model_diff_count=0",
-    all_pilot_contract_checks_pass: issues.length === 0,
-    all_pilot_contract_checks_passEvidence: `issue_count=${issues.length}`,
+    all_tests_pass: fullValidation.allPassed,
+    all_tests_passEvidence: `commands=${fullValidation.commandCount};passed=${fullValidation.passedCount}`,
   };
   const hardGate = evaluateHardGate(baseConditions);
   const receiptPayload = {
@@ -424,6 +438,7 @@ export function verifyPilot(root) {
     stateDigest: state.stateDigest,
     issues,
     hardGate,
+    fullValidation,
     privateStatus,
     protectedDiffPaths: protectedDiff.stdout.trim() ? protectedDiff.stdout.trim().split(/\r?\n/u) : [],
   };
@@ -431,6 +446,43 @@ export function verifyPilot(root) {
   atomicWriteJson(join(privateStore, PRIVATE_FILES.verification), verification);
   if (issues.length) throw new Error(`pilot_verification_failed:${issues.join(",")}`);
   return verification;
+}
+
+function runFullProjectValidation(root) {
+  const startedAt = new Date().toISOString();
+  const npmEntrypoint = process.env.npm_execpath;
+  if (!npmEntrypoint) throw new Error("npm_execpath_required_for_full_project_validation");
+  const results = FULL_VALIDATION_COMMANDS.map((command) => {
+    const commandStarted = Date.now();
+    const result = spawnSync(process.execPath, [npmEntrypoint, ...command.slice(1)], {
+      cwd: root,
+      encoding: "utf8",
+      env: process.env,
+      maxBuffer: 50 * 1024 * 1024,
+      windowsHide: true,
+    });
+    return {
+      command: command.join(" "),
+      exitCode: result.status ?? -1,
+      signal: result.signal ?? null,
+      spawnErrorCode: result.error?.code ?? null,
+      durationMs: Date.now() - commandStarted,
+      stdoutDigest: sha256(result.stdout ?? ""),
+      stderrDigest: sha256(result.stderr ?? ""),
+      passed: result.status === 0,
+    };
+  });
+  const payload = {
+    schema: "m2.v2.evidence-pilot-full-validation-receipt.v0.1",
+    privateOnly: true,
+    startedAt,
+    completedAt: new Date().toISOString(),
+    commandCount: results.length,
+    passedCount: results.filter((item) => item.passed).length,
+    allPassed: results.every((item) => item.passed),
+    results,
+  };
+  return { ...payload, validationDigest: sha256(payload) };
 }
 
 export function writePublicReports(root) {

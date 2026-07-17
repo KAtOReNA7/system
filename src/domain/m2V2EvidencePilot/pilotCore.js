@@ -49,7 +49,7 @@ export const HARD_GATE_IDS = Object.freeze([
   "private_files_ignored_and_untracked",
   "final_holdout_sealed",
   "b4_unchanged",
-  "all_pilot_contract_checks_pass",
+  "all_tests_pass",
 ]);
 
 const FORBIDDEN_PUBLIC_KEYS = new Set([
