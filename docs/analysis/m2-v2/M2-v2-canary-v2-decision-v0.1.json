@@ -1,0 +1,162 @@
+{
+  "schema": "m2.v2.canary-v2-decision.v0.1",
+  "status": "not_for_formal_decision",
+  "generatedAt": "2026-07-17T21:35:05.663Z",
+  "immutableBindings": {
+    "canaryManifestDigest": "883a0c8054d71029e2f1d385e9bc98ff4dbcccfc8659ee3764cc128e1a640248",
+    "executionManifestDigest": "ec3103d8eca9376dee4a17130f0820e1cca144e6df66d837cad862aa39ebd240",
+    "failedSamplesReplaced": false
+  },
+  "boundaries": {
+    "full160Executed": false,
+    "v2CStarted": false,
+    "v2DStarted": false,
+    "modelTrainingPerformed": false,
+    "b4Changed": false,
+    "finalHoldoutOpened": false,
+    "c4Started": false,
+    "m3Started": false,
+    "released": false,
+    "pullRequest7MustRemainDraftOpen": true
+  },
+  "gateItems": [
+    {
+      "id": "resolved_rate",
+      "threshold": 0.8,
+      "observed": {
+        "gpt-5.6-luna": 0,
+        "gpt-5.6-terra": 0
+      },
+      "passed": false
+    },
+    {
+      "id": "accepted_evidence_coverage",
+      "threshold": 0.6,
+      "observed": {
+        "gpt-5.6-luna": 0,
+        "gpt-5.6-terra": 0
+      },
+      "passed": false
+    },
+    {
+      "id": "high_value_coverage",
+      "threshold": 0.75,
+      "observed": {
+        "gpt-5.6-luna": 0,
+        "gpt-5.6-terra": 0
+      },
+      "passed": false
+    },
+    {
+      "id": "citation_alignment",
+      "threshold": 1,
+      "observed": {
+        "gpt-5.6-luna": 0,
+        "gpt-5.6-terra": 0
+      },
+      "passed": false
+    },
+    {
+      "id": "available_at_completeness",
+      "threshold": 0.8,
+      "observed": {
+        "gpt-5.6-luna": 0,
+        "gpt-5.6-terra": 0
+      },
+      "passed": false
+    },
+    {
+      "id": "prohibited_source",
+      "threshold": 0,
+      "observed": 0,
+      "passed": true
+    },
+    {
+      "id": "historical_backfill",
+      "threshold": 0,
+      "observed": 0,
+      "passed": true
+    },
+    {
+      "id": "repeat_claim_agreement",
+      "threshold": 0.8,
+      "observed": {
+        "gpt-5.6-luna": 0,
+        "gpt-5.6-terra": 0
+      },
+      "passed": false
+    },
+    {
+      "id": "token_cost_acceptable",
+      "threshold": {
+        "maxTotalTokens": 1800000,
+        "maxAverageTokensPerDispatchedRequest": 30000,
+        "tokenUsageCompletenessRequired": true
+      },
+      "observed": {
+        "gpt-5.6-luna": {
+          "tokenUsageComplete": false,
+          "totalTokens": null,
+          "averageTokensPerDispatchedRequest": null
+        },
+        "gpt-5.6-terra": {
+          "tokenUsageComplete": true,
+          "totalTokens": 122357,
+          "averageTokensPerDispatchedRequest": 8157.133333333333
+        }
+      },
+      "passed": false
+    },
+    {
+      "id": "repository_tests",
+      "threshold": "all_required_commands_pass",
+      "observed": {
+        "checkNoRealData": {
+          "status": "PASS"
+        },
+        "lint": {
+          "status": "PASS",
+          "checkedJavaScriptFiles": 206
+        },
+        "build": {
+          "status": "PASS",
+          "checkedJavaScriptFiles": 206
+        },
+        "npmTest": {
+          "status": "PASS",
+          "v2b4PretestPassed": 4,
+          "repositoryTestPassed": 749,
+          "failed": 0
+        },
+        "smoke": {
+          "status": "PASS",
+          "mode": "fixture",
+          "realDataImported": false,
+          "formalDatabaseConnected": false
+        },
+        "e2e": {
+          "status": "PASS",
+          "passed": 13,
+          "failed": 0
+        }
+      },
+      "passed": true,
+      "postExecution": true
+    }
+  ],
+  "passedCount": 3,
+  "totalCount": 10,
+  "finalDecision": "CANARY_CONDITIONAL",
+  "full160Authorized": false,
+  "blockers": [
+    "resolved_rate",
+    "accepted_evidence_coverage",
+    "high_value_coverage",
+    "citation_alignment",
+    "available_at_completeness",
+    "repeat_claim_agreement",
+    "token_cost_acceptable"
+  ],
+  "modelSelectionPerformed": false,
+  "modelTrainingPerformed": false
+}
