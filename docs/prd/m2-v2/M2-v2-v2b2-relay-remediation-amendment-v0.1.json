@@ -1,0 +1,120 @@
+{
+  "schema": "m2.v2.v2b2-relay-remediation-amendment.v0.1",
+  "status": "frozen_before_v2b2_live_calls",
+  "effectiveDate": "2026-07-17",
+  "scope": "V2-B.2 relay compatibility remediation and paired model benchmark only",
+  "historicalReclassification": {
+    "providerConnectivity": "PASS",
+    "providerConnectivityNumerator": 49,
+    "providerConnectivityDenominator": 60,
+    "providerContractCompatibility": "FAIL",
+    "localStrictSuccessNumerator": 12,
+    "localStrictSuccessDenominator": 60,
+    "relaySuccessLocalContractFailureCount": 37,
+    "providerOrRequestFailureCount": 11,
+    "modelEvidenceQuality": "NOT_EVALUATED",
+    "fullPilotAuthorized": false
+  },
+  "immutableBindings": {
+    "parentManifestDigest": "f85308436328bd056e27025407f45aa840cd5cc07e4e7ad9fe0eec4a2d8a3020",
+    "parentSampleCount": 160,
+    "canarySampleCount": 10,
+    "reuseExistingCanaryManifest": true,
+    "seedChangeAllowed": false,
+    "sampleReplacementAllowed": false,
+    "failedWorkReplacementAllowed": false
+  },
+  "adapter": {
+    "version": "m2-v2-relay-v2b2-v0.1",
+    "searchStage": {
+      "webSearchEnabled": true,
+      "strictJsonSchemaEnabled": false,
+      "maxOutputTokens": 700
+    },
+    "extractionStage": {
+      "webSearchEnabled": false,
+      "strictJsonSchemaEnabled": true,
+      "maxOutputTokens": 1200,
+      "sourceReference": "stage_1_citation_id_only",
+      "claimSupportRule": "bounded_verbatim_claim_text_must_align_to_the_cited_stage_1_span"
+    },
+    "automaticRetryCount": 0,
+    "rawResponsePersisted": false,
+    "sanitizedShapeFingerprintRequired": true,
+    "requestedReturnedModelBindingRequired": true
+  },
+  "benchmark": {
+    "models": [
+      "gpt-5.6-luna",
+      "gpt-5.6-terra"
+    ],
+    "works": 10,
+    "logicalTasksPerWork": 1,
+    "logicalTaskPlan": "one frozen merged external-evidence intent per existing canary work",
+    "stagesPerLogicalTask": 2,
+    "maximumPhysicalRequests": 40,
+    "sameWorks": true,
+    "sameOrderPolicy": "sha256-balanced arm order by logical task",
+    "samePromptSchemaTokenTimeoutRetry": true,
+    "completeCaseDeletionAllowed": false,
+    "replacementAllowed": false
+  },
+  "gates": {
+    "historicalReclassificationComplete": true,
+    "minimumConnectivityRatePerArm": 0.8,
+    "minimumSearchContractRatePerArm": 0.8,
+    "minimumExtractionContractRatePerArm": 0.8,
+    "minimumCitationBoundWorkRatePerArm": 0.8,
+    "minimumPairedEvaluableWorks": 8,
+    "modelBindingRateRequired": 1,
+    "relayConfigurationBindingRequired": true,
+    "usageAndLatencyMissingMayNotWinEfficiencyTiebreak": true,
+    "qualityPriority": [
+      "citation_claim_support_unverified_count_ascending",
+      "citation_lineage_error_count_ascending",
+      "entity_identity_error_count_ascending",
+      "schema_validation_issue_count_ascending",
+      "valid_evidence_work_count_descending",
+      "entity_resolved_work_count_descending",
+      "citation_bound_evidence_count_descending",
+      "timestamp_completeness_descending",
+      "end_to_end_contract_success_count_descending",
+      "observed_tokens_ascending",
+      "latency_p90_ascending"
+    ],
+    "upgradeModelMinimumComplementaryWins": 2,
+    "upgradeModelMayAddErrors": false,
+    "sourceAllowlistAffectsModelQualityGate": false,
+    "emptyAllowlistMayBeCalledModelFailure": false
+  },
+  "canaryRerun": {
+    "authorizedOnlyAfterAllCompatibilityAndModelGatesPass": true,
+    "reuseExistingTenWorks": true,
+    "reuseExistingSixtyLogicalTasks": true,
+    "singleFrozenDefaultModel": true,
+    "stagesPerLogicalTask": 2,
+    "maximumPhysicalRequests": 120,
+    "automaticRetryCount": 0,
+    "legacyCacheReusable": false
+  },
+  "taskBudget": {
+    "benchmarkMaximumPhysicalRequests": 40,
+    "canaryMaximumPhysicalRequests": 120,
+    "totalMaximumPhysicalRequests": 160,
+    "retryRequestsIncluded": true
+  },
+  "boundaries": {
+    "fullPilotAuthorized": false,
+    "full160ExecutionAuthorizedByThisRun": false,
+    "full160Executed": false,
+    "v2CStarted": false,
+    "v2DStarted": false,
+    "incomeModelTrainingPerformed": false,
+    "b4Changed": false,
+    "finalHoldoutOpened": false,
+    "c4Started": false,
+    "m3Started": false,
+    "released": false,
+    "pullRequest7MustRemainDraftOpen": true
+  }
+}
