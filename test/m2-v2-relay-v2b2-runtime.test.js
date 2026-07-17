@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import {
+  existsSync,
   mkdirSync,
   mkdtempSync,
   readFileSync,
@@ -17,8 +18,11 @@ import {
 import { sha256 } from "../src/domain/m2V2EvidencePilot/pilotCore.js";
 import {
   V2B2_BENCHMARK_PHYSICAL_REQUEST_CAP,
+  V2B2_BOUNDARIES,
   V2B2_CANARY_PHYSICAL_REQUEST_CAP,
   V2B2_MODELS,
+  V2B2_PRIVATE_FILES,
+  V2B2_PUBLIC_REPORTS,
   assertV2B2BenchmarkManifest,
   assertV2B2CanaryManifest,
   auditLegacyV2B2Receipts,
@@ -26,9 +30,17 @@ import {
   buildV2B2CanaryPhysicalPlan,
   deriveV2B2BenchmarkManifest,
   deriveV2B2CanaryManifest,
+  deriveV2B2PublicReportBundle,
   evaluateV2B2Benchmark,
+  evaluateV2B2Canary,
   executeV2B2PhysicalPlan,
   freezeV2B2ModelDecision,
+  resumeV2B2Benchmark,
+  resumeV2B2Canary,
+  runV2B2Benchmark,
+  runV2B2Canary,
+  verifyV2B2,
+  writeV2B2PublicReports,
 } from "../src/domain/m2V2EvidencePilot/v2b2Runtime.js";
 
 test("V2-B.2 benchmark reuses the exact frozen ten works without resampling and isolates model/stage keys", () => {
@@ -88,6 +100,7 @@ test("physical execution checkpoints and resumes without a second dispatch", asy
     root: directory,
     namespace: "benchmark",
     manifestDigest: manifest.benchmarkManifestDigest,
+    runtimeBindingDigest: manifest.relayBindingDigest,
     plan,
     physicalRequestCap: 40,
     ...paths,
@@ -99,11 +112,15 @@ test("physical execution checkpoints and resumes without a second dispatch", asy
   assert.equal(first.state.dispatchedPhysicalRequestCount, 40);
   assert.equal(first.receipts.every((item) => item.retryCount === 0), true);
   assert.equal(first.receipts.every((item) => item.fullPilotAuthorized === false), true);
+  const stateBytesBeforeResume = readFileSync(paths.statePath, "utf8");
+  const cacheBytesBeforeResume = readFileSync(paths.cachePath, "utf8");
+  const receiptsBytesBeforeResume = readFileSync(paths.receiptsPath, "utf8");
 
   const second = await executeV2B2PhysicalPlan({
     root: directory,
     namespace: "benchmark",
     manifestDigest: manifest.benchmarkManifestDigest,
+    runtimeBindingDigest: manifest.relayBindingDigest,
     plan,
     physicalRequestCap: 40,
     ...paths,
@@ -114,6 +131,52 @@ test("physical execution checkpoints and resumes without a second dispatch", asy
   assert.equal(dispatchCount, 40);
   assert.deepEqual(second.receipts.map((item) => item.receiptDigest), first.receipts.map((item) => item.receiptDigest));
   assert.equal(Object.keys(second.cache.entries).length, 40);
+  assert.equal(readFileSync(paths.statePath, "utf8"), stateBytesBeforeResume);
+  assert.equal(readFileSync(paths.cachePath, "utf8"), cacheBytesBeforeResume);
+  assert.equal(readFileSync(paths.receiptsPath, "utf8"), receiptsBytesBeforeResume);
+
+  const corruptCache = JSON.parse(cacheBytesBeforeResume);
+  delete corruptCache.entries[plan[0].requestKey];
+  writeFileSync(paths.cachePath, `${JSON.stringify(corruptCache, null, 2)}\n`, "utf8");
+  await assert.rejects(
+    executeV2B2PhysicalPlan({
+      root: directory,
+      namespace: "benchmark",
+      manifestDigest: manifest.benchmarkManifestDigest,
+      runtimeBindingDigest: manifest.relayBindingDigest,
+      plan,
+      physicalRequestCap: 40,
+      ...paths,
+      stageExecutor,
+      now: monotonicClock(),
+      resume: true,
+    }),
+    /v2b2_completed_state_cache_parity_invalid/u,
+  );
+  assert.equal(dispatchCount, 40);
+
+  const partialState = JSON.parse(stateBytesBeforeResume);
+  partialState.executionStatus = "running";
+  partialState.completedPhysicalReceiptCount = 39;
+  partialState.cacheEntryCount = 39;
+  partialState.stateDigest = digestWithout(partialState, "stateDigest");
+  writeFileSync(paths.statePath, `${JSON.stringify(partialState, null, 2)}\n`, "utf8");
+  await assert.rejects(
+    executeV2B2PhysicalPlan({
+      root: directory,
+      namespace: "benchmark",
+      manifestDigest: manifest.benchmarkManifestDigest,
+      runtimeBindingDigest: manifest.relayBindingDigest,
+      plan,
+      physicalRequestCap: 40,
+      ...paths,
+      stageExecutor,
+      now: monotonicClock(),
+      resume: true,
+    }),
+    /v2b2_reservation_without_cache_receipt/u,
+  );
+  assert.equal(dispatchCount, 40);
 });
 
 test("Terra/Luna gate requires paired >=8, per-stage >=80%, citation-bound >=80%, and exact model binding", async (context) => {
@@ -126,6 +189,7 @@ test("Terra/Luna gate requires paired >=8, per-stage >=80%, citation-bound >=80%
     root: directory,
     namespace: "benchmark",
     manifestDigest: manifest.benchmarkManifestDigest,
+    runtimeBindingDigest: manifest.relayBindingDigest,
     plan,
     physicalRequestCap: 40,
     ...executionPaths(directory, "valid"),
@@ -150,11 +214,19 @@ test("Terra/Luna gate requires paired >=8, per-stage >=80%, citation-bound >=80%
     assert.equal(evaluation.models[model].citationBoundWorkRate, 1);
     assert.equal(evaluation.models[model].modelBindingMismatchCount, 0);
   }
+  const repeatedEvaluation = evaluateV2B2Benchmark({
+    manifest,
+    plan,
+    receipts: execution.receipts,
+    sourceAllowlist: { approvedDomainEntries: [] },
+  });
+  assert.deepEqual(repeatedEvaluation, evaluation);
 
   const badExecution = await executeV2B2PhysicalPlan({
     root: directory,
     namespace: "benchmark_bad_binding",
     manifestDigest: manifest.benchmarkManifestDigest,
+    runtimeBindingDigest: manifest.relayBindingDigest,
     plan,
     physicalRequestCap: 40,
     ...executionPaths(directory, "bad"),
@@ -176,6 +248,193 @@ test("Terra/Luna gate requires paired >=8, per-stage >=80%, citation-bound >=80%
   assert.equal(bad.modelQualityGate.passed, false);
 });
 
+test("provider connectivity uses dispatched requests only and rejects impossible undispatched observations", async (context) => {
+  const directory = mkdtempSync(join(tmpdir(), "m2-v2b2-connectivity-"));
+  context.after(() => rmSync(directory, { recursive: true, force: true }));
+  const { parent, canary } = syntheticFrozenBinding();
+  const manifest = deriveV2B2BenchmarkManifest(parent, canary, bindingOptions(parent));
+  const plan = buildV2B2BenchmarkPhysicalPlan(manifest);
+  const searchesByModel = new Map(V2B2_MODELS.map((model) => [model, 0]));
+  const execution = await executeV2B2PhysicalPlan({
+    root: directory,
+    namespace: "connectivity",
+    manifestDigest: manifest.benchmarkManifestDigest,
+    runtimeBindingDigest: manifest.relayBindingDigest,
+    plan,
+    physicalRequestCap: 40,
+    ...executionPaths(directory, "connectivity"),
+    stageExecutor: async ({ item }) => {
+      if (item.stage !== "search") return successfulStageResult(item);
+      const ordinal = searchesByModel.get(item.model);
+      searchesByModel.set(item.model, ordinal + 1);
+      if (ordinal >= 3) return successfulStageResult(item);
+      return {
+        ...successfulStageResult(item),
+        returnedModelId: null,
+        modelBindingVerified: false,
+        providerConnectivityPassed: false,
+        providerContractCompatible: false,
+        status: "transport_error",
+      };
+    },
+    now: monotonicClock(),
+  });
+  const evaluation = evaluateV2B2Benchmark({
+    manifest,
+    plan,
+    receipts: execution.receipts,
+    sourceAllowlist: { approvedDomainEntries: [] },
+  });
+  assert.equal(evaluation.providerConnectivity.status, "PASS");
+  assert.equal(evaluation.providerContractCompatibility.status, "FAIL");
+  for (const model of V2B2_MODELS) {
+    assert.equal(evaluation.models[model].dispatchedPhysicalRequestCount, 17);
+    assert.equal(evaluation.models[model].providerConnectivityCount, 14);
+    assert.equal(evaluation.models[model].dependencyBlockedCount, 3);
+    assert.equal(evaluation.models[model].providerConnectivityRate, 14 / 17);
+  }
+
+  const impossible = execution.receipts.map((item, index) => index === 0
+    ? redigest({ ...item, dispatched: false, providerConnectivityPassed: true })
+    : item);
+  assert.throws(
+    () => evaluateV2B2Benchmark({ manifest, plan, receipts: impossible, sourceAllowlist: { approvedDomainEntries: [] } }),
+    /v2b2_undispatched_receipt_cannot_observe_provider/u,
+  );
+});
+
+test("canary evaluation is receipt-bound, deterministic, and keeps dependency blocks out of connectivity denominator", async (context) => {
+  const directory = mkdtempSync(join(tmpdir(), "m2-v2b2-canary-evaluation-"));
+  context.after(() => rmSync(directory, { recursive: true, force: true }));
+  const { parent, canary } = syntheticFrozenBinding();
+  const benchmark = deriveV2B2BenchmarkManifest(parent, canary, bindingOptions(parent));
+  const benchmarkPlan = buildV2B2BenchmarkPhysicalPlan(benchmark);
+  const benchmarkExecution = await executeV2B2PhysicalPlan({
+    root: directory,
+    namespace: "canary_parent",
+    manifestDigest: benchmark.benchmarkManifestDigest,
+    runtimeBindingDigest: benchmark.relayBindingDigest,
+    plan: benchmarkPlan,
+    physicalRequestCap: 40,
+    ...executionPaths(directory, "canary-parent"),
+    stageExecutor: async ({ item }) => successfulStageResult(item),
+    now: monotonicClock(),
+  });
+  const benchmarkEvaluation = evaluateV2B2Benchmark({
+    manifest: benchmark,
+    plan: benchmarkPlan,
+    receipts: benchmarkExecution.receipts,
+    sourceAllowlist: { approvedDomainEntries: [] },
+  });
+  const decision = freezeV2B2ModelDecision(directory, benchmarkEvaluation, { frozenAt: "2026-07-17T00:00:00.100Z" });
+  const manifest = deriveV2B2CanaryManifest(parent, canary, benchmark, decision, bindingOptions(parent));
+  const plan = buildV2B2CanaryPhysicalPlan(manifest);
+  const canaryPaths = executionPaths(directory, "canary");
+  let canaryDispatchCount = 0;
+  const execution = await executeV2B2PhysicalPlan({
+    root: directory,
+    namespace: "canary_v0.2",
+    manifestDigest: manifest.canaryV02ManifestDigest,
+    runtimeBindingDigest: manifest.relayBindingDigest,
+    plan,
+    physicalRequestCap: 120,
+    ...canaryPaths,
+    stageExecutor: async ({ item }) => {
+      canaryDispatchCount += 1;
+      return successfulStageResult(item);
+    },
+    now: monotonicClock(),
+  });
+  assert.equal(canaryDispatchCount, 120);
+  const first = evaluateV2B2Canary({ manifest, plan, receipts: execution.receipts, sourceAllowlist: { approvedDomainEntries: [] } });
+  const resumed = await executeV2B2PhysicalPlan({
+    root: directory,
+    namespace: "canary_v0.2",
+    manifestDigest: manifest.canaryV02ManifestDigest,
+    runtimeBindingDigest: manifest.relayBindingDigest,
+    plan,
+    physicalRequestCap: 120,
+    ...canaryPaths,
+    stageExecutor: async ({ item }) => {
+      canaryDispatchCount += 1;
+      return successfulStageResult(item);
+    },
+    now: monotonicClock(),
+    resume: true,
+  });
+  assert.equal(canaryDispatchCount, 120);
+  const second = evaluateV2B2Canary({ manifest, plan, receipts: resumed.receipts, sourceAllowlist: { approvedDomainEntries: [] } });
+  assert.deepEqual(second, first);
+
+  writeFileSync(
+    join(directory, V2B2_PRIVATE_FILES.benchmarkManifest),
+    `${JSON.stringify(benchmark, null, 2)}\n`,
+    "utf8",
+  );
+  writeFileSync(
+    join(directory, V2B2_PRIVATE_FILES.benchmarkEvaluation),
+    `${JSON.stringify(benchmarkEvaluation, null, 2)}\n`,
+    "utf8",
+  );
+  const tamperedBenchmarkReceipts = benchmarkExecution.receipts.map((item, index) => index === 0
+    ? redigest({ ...item, latencyMs: item.latencyMs + 1 })
+    : item);
+  writeFileSync(
+    join(directory, V2B2_PRIVATE_FILES.benchmarkReceipts),
+    `${tamperedBenchmarkReceipts.map((item) => JSON.stringify(item)).join("\n")}\n`,
+    "utf8",
+  );
+  let forbiddenCanaryDispatchCount = 0;
+  await assert.rejects(
+    runV2B2Canary(directory, {
+      privateRelative: ".",
+      skipIgnoreCheck: true,
+      parentManifest: parent,
+      canaryManifest: canary,
+      expectedParentManifestDigest: parent.manifestDigest,
+      sourceAllowlist: { approvedDomainEntries: [] },
+      runtimeBindingDigest: benchmark.relayBindingDigest,
+      stageExecutor: async ({ item }) => {
+        forbiddenCanaryDispatchCount += 1;
+        return successfulStageResult(item);
+      },
+    }),
+    /v2b2_benchmark_receipt_evaluation_parity_failed/u,
+  );
+  assert.equal(forbiddenCanaryDispatchCount, 0);
+
+  const blockedKeys = new Set(plan.filter((item) => item.stage === "search").slice(0, 18).map((item) => item.logicalTaskKey));
+  const degraded = execution.receipts.map((item) => {
+    if (!blockedKeys.has(item.logicalTaskKey)) return item;
+    if (item.stage === "search") {
+      return redigest({
+        ...item,
+        returnedModelId: null,
+        modelBindingVerified: false,
+        providerConnectivityPassed: false,
+        providerContractCompatible: false,
+        status: "transport_error",
+      });
+    }
+    return redigest({
+      ...item,
+      returnedModelId: null,
+      modelBindingVerified: false,
+      dispatched: false,
+      providerConnectivityPassed: false,
+      providerContractCompatible: false,
+      status: "blocked_search_dependency",
+    });
+  });
+  const degradedEvaluation = evaluateV2B2Canary({ manifest, plan, receipts: degraded, sourceAllowlist: { approvedDomainEntries: [] } });
+  assert.equal(degradedEvaluation.providerConnectivity.status, "PASS");
+  assert.equal(degradedEvaluation.providerConnectivity.dispatchedCount, 102);
+  assert.equal(degradedEvaluation.providerConnectivity.connectedCount, 84);
+  assert.equal(degradedEvaluation.providerConnectivity.denominator, 102);
+  assert.equal(degradedEvaluation.providerConnectivity.dependencyBlockedCount, 18);
+  assert.equal(degradedEvaluation.providerContractCompatibility.status, "FAIL");
+});
+
 test("quality-first decision freezes a default, requires two complementary upgrade wins, and never authorizes full 160", async (context) => {
   const directory = mkdtempSync(join(tmpdir(), "m2-v2b2-decision-"));
   context.after(() => rmSync(directory, { recursive: true, force: true }));
@@ -186,6 +445,7 @@ test("quality-first decision freezes a default, requires two complementary upgra
     root: directory,
     namespace: "decision",
     manifestDigest: manifest.benchmarkManifestDigest,
+    runtimeBindingDigest: manifest.relayBindingDigest,
     plan,
     physicalRequestCap: 40,
     ...executionPaths(directory, "decision"),
@@ -264,6 +524,7 @@ test("unresolved entity candidates never count as paired usable work", async (co
     root: directory,
     namespace: "unresolved",
     manifestDigest: manifest.benchmarkManifestDigest,
+    runtimeBindingDigest: manifest.relayBindingDigest,
     plan,
     physicalRequestCap: 40,
     ...executionPaths(directory, "unresolved"),
@@ -355,6 +616,331 @@ test("legacy audit records 12/37/11 while declaring raw paths and returned model
   assert.equal(matrix.rows.length, 60);
   assert.ok(matrix.rows.every((item) => item.returnedModelId === "not_reconstructable"));
   assert.ok(matrix.rows.every((item) => item.notReconstructable.includes("annotation_paths")));
+});
+
+test("public report bundle is terminal, aggregate-only, and refuses incomplete benchmark state", () => {
+  const aggregate = {
+    schema: "m2.v2.v2b2.aggregate-report.v0.1",
+    status: "not_for_formal_decision",
+    terminalEvidenceAt: "2026-07-17T00:00:00.000Z",
+    historicalCanaryReclassification: {
+      providerConnectivity: "PASS",
+      providerContractCompatibility: "FAIL",
+      modelEvidenceQuality: "NOT_EVALUATED",
+      relayDeclaredSuccessCount: 49,
+      localStrictSuccessCount: 12,
+      relaySuccessLocalContractFailureCount: 37,
+      providerOrRequestFailureCount: 11,
+      annotationResponseCount: 1,
+      annotationObjectCount: 4,
+      legacyRawShapeUnobservable: true,
+    },
+    immutableBindings: {
+      parentManifestDigest: "a".repeat(64),
+      canaryV01ManifestDigest: "b".repeat(64),
+      sampleCount: 10,
+      sampleChanged: false,
+      seedChanged: false,
+      failedSamplesReplaced: false,
+    },
+    benchmark: {
+      providerConnectivity: { status: "FAIL", threshold: 0.8 },
+      providerContractCompatibility: { status: "FAIL", threshold: 0.8 },
+      modelEvidenceQuality: { status: "NOT_EVALUATED", pairedEvaluableWorkCount: 0 },
+      sourceGovernance: { status: "BLOCKED_EMPTY_ALLOWLIST", acceptedEvidenceCount: 0 },
+      qualityScope: "pre_governance_local_citation_span_and_exact_entity_support_not_independent_source_truth",
+      modelAggregates: Object.fromEntries(V2B2_MODELS.map((model) => [model, {
+        searchContractRate: 0,
+        extractionContractRate: 0,
+        validEvidenceWorkCount: 0,
+        claimSupportUnverifiedCount: 0,
+        entityIdentityErrorCount: 0,
+        totalTokens: null,
+        latencyP90Ms: null,
+      }])),
+    },
+    modelDecision: {
+      status: "BLOCKED",
+      defaultModel: null,
+      upgradeModel: null,
+      canaryRerunAuthorized: false,
+      blockers: ["compatibility_gate_failed", "model_quality_gate_failed"],
+    },
+    canaryV02: { status: "NOT_RUN" },
+    boundaries: { ...V2B2_BOUNDARIES },
+  };
+  const bundle = deriveV2B2PublicReportBundle(aggregate, { generatedAt: "2026-07-17T00:00:00.000Z" });
+  assert.equal(bundle.terminal.terminalStatus, "STOPPED_BENCHMARK_GATE_BLOCKED");
+  assert.equal(bundle.canary.executed, false);
+  assert.equal(bundle.terminal.fullPilotAuthorized, false);
+  assert.equal(JSON.stringify(bundle).includes("standardWorkId"), false);
+  assert.equal(JSON.stringify(bundle).includes("sourceUrl"), false);
+  assert.throws(
+    () => deriveV2B2PublicReportBundle({ ...aggregate, benchmark: { status: "NOT_RUN" } }),
+    /v2b2_public_report_benchmark_not_complete/u,
+  );
+  assert.throws(
+    () => deriveV2B2PublicReportBundle({
+      ...aggregate,
+      modelDecision: {
+        status: "FROZEN",
+        defaultModel: "gpt-5.6-terra",
+        upgradeModel: null,
+        qualityRuleVersion: "m2-v2-v2b2-quality-first-lexicographic-v0.1",
+        canaryRerunAuthorized: true,
+      },
+    }),
+    /v2b2_public_report_authorized_canary_not_complete/u,
+  );
+  assert.throws(
+    () => deriveV2B2PublicReportBundle({
+      ...aggregate,
+      boundaries: { ...aggregate.boundaries, fullPilotAuthorized: true },
+    }),
+    /v2b2_public_report_boundaries_invalid/u,
+  );
+  assert.throws(
+    () => deriveV2B2PublicReportBundle({
+      ...aggregate,
+      canaryV02: {
+        providerConnectivity: {
+          status: "PASS",
+          connectedCount: 120,
+          dispatchedCount: 120,
+          denominator: 120,
+          plannedPhysicalRequestCount: 120,
+          dependencyBlockedCount: 0,
+        },
+        providerContractCompatibility: {
+          status: "PASS",
+          compatibleCount: 120,
+          denominator: 120,
+          searchContractRate: 1,
+          extractionContractRate: 1,
+          modelBindingMismatchCount: 0,
+        },
+        modelEvidenceQuality: {
+          status: "EVALUATED",
+          usableWorkCount: 10,
+          citationBoundWorkRate: 1,
+          citationBoundEvidenceCount: 10,
+          unsupportedCitationReferenceCount: 0,
+          claimSupportUnverifiedCount: 0,
+          entityIdentityErrorCount: 0,
+        },
+        sourceGovernance: {
+          status: "BLOCKED_EMPTY_ALLOWLIST",
+          approvedDomainEntryCount: 0,
+          acceptedEvidenceCount: 0,
+          modelQualityIndependentOfGovernance: true,
+        },
+        qualityScope: "pre_governance_local_citation_span_and_exact_entity_support_not_independent_source_truth",
+        canaryTechnicalStatus: "TECHNICAL_PASS",
+      },
+    }),
+    /v2b2_public_report_blocked_decision_has_canary/u,
+  );
+  assert.throws(
+    () => deriveV2B2PublicReportBundle({
+      ...aggregate,
+      benchmark: { ...aggregate.benchmark, privateLeak: "https://private.invalid/query" },
+    }),
+    /v2b2_public_benchmark_unknown_field/u,
+  );
+});
+
+test("verification re-derives benchmark evidence and public report bundle writes deterministically", async (context) => {
+  const root = mkdtempSync(join(tmpdir(), "m2-v2b2-verification-"));
+  context.after(() => rmSync(root, { recursive: true, force: true }));
+  const privateRelative = "private";
+  const privateStore = join(root, privateRelative);
+  const legacyRelative = "legacy/receipts.ndjson";
+  mkdirSync(join(root, "legacy"), { recursive: true });
+  const legacyReceipts = [
+    ...Array.from({ length: 12 }, (_, index) => legacyReceipt(index, "strict")),
+    ...Array.from({ length: 37 }, (_, index) => legacyReceipt(index + 12, "schema")),
+    ...Array.from({ length: 11 }, (_, index) => legacyReceipt(index + 49, "failure")),
+  ];
+  legacyReceipts[12].citations = Array.from({ length: 4 }, (_, index) => ({
+    url: `https://example${index}.invalid`,
+    title: `synthetic-${index}`,
+  }));
+  writeFileSync(join(root, legacyRelative), `${legacyReceipts.map((item) => JSON.stringify(item)).join("\n")}\n`, "utf8");
+  auditLegacyV2B2Receipts(root, {
+    receiptsRelative: legacyRelative,
+    privateRelative,
+    skipIgnoreCheck: true,
+    generatedAt: "2026-07-17T00:00:00.000Z",
+  });
+
+  const { parent, canary } = syntheticFrozenBinding();
+  const manifest = deriveV2B2BenchmarkManifest(parent, canary, bindingOptions(parent));
+  const plan = buildV2B2BenchmarkPhysicalPlan(manifest);
+  mkdirSync(privateStore, { recursive: true });
+  writeFileSync(
+    join(privateStore, V2B2_PRIVATE_FILES.benchmarkManifest),
+    `${JSON.stringify(manifest, null, 2)}\n`,
+    "utf8",
+  );
+  const execution = await executeV2B2PhysicalPlan({
+    root,
+    namespace: "benchmark",
+    manifestDigest: manifest.benchmarkManifestDigest,
+    runtimeBindingDigest: manifest.relayBindingDigest,
+    plan,
+    physicalRequestCap: 40,
+    cachePath: join(privateStore, V2B2_PRIVATE_FILES.benchmarkCache),
+    statePath: join(privateStore, V2B2_PRIVATE_FILES.benchmarkState),
+    receiptsPath: join(privateStore, V2B2_PRIVATE_FILES.benchmarkReceipts),
+    stageExecutor: async ({ item }) => ({
+      ...successfulStageResult(item),
+      providerContractCompatible: false,
+      status: "search_contract_failure",
+    }),
+    now: monotonicClock(),
+  });
+  const evaluation = evaluateV2B2Benchmark({
+    manifest,
+    plan,
+    receipts: execution.receipts,
+    sourceAllowlist: { approvedDomainEntries: [] },
+  });
+  writeFileSync(
+    join(privateStore, V2B2_PRIVATE_FILES.benchmarkEvaluation),
+    `${JSON.stringify(evaluation, null, 2)}\n`,
+    "utf8",
+  );
+  const decision = freezeV2B2ModelDecision(privateStore, evaluation, { frozenAt: "2026-07-17T00:00:00.100Z" });
+  assert.equal(decision.status, "BLOCKED");
+  const options = {
+    privateRelative,
+    skipIgnoreCheck: true,
+    parentManifest: parent,
+    canaryManifest: canary,
+    expectedParentManifestDigest: parent.manifestDigest,
+    receiptsRelative: legacyRelative,
+    sourceAllowlist: { approvedDomainEntries: [] },
+  };
+  const verified = verifyV2B2(root, options);
+  assert.equal(verified.allPassed, true, verified.issues.join(","));
+  const matrixPath = join(privateStore, V2B2_PRIVATE_FILES.responseShapeMatrix);
+  const matrixBytes = readFileSync(matrixPath, "utf8");
+  const tamperedMatrix = JSON.parse(matrixBytes);
+  tamperedMatrix.rows[0].citationCount = 1;
+  tamperedMatrix.matrixDigest = digestWithout(tamperedMatrix, "matrixDigest");
+  writeFileSync(matrixPath, `${JSON.stringify(tamperedMatrix, null, 2)}\n`, "utf8");
+  const matrixTamperCheck = verifyV2B2(root, options);
+  assert.equal(matrixTamperCheck.allPassed, false);
+  assert.equal(matrixTamperCheck.issues.some((item) => item.includes("v2b2_response_shape_matrix_contract_invalid")), true);
+  writeFileSync(matrixPath, matrixBytes, "utf8");
+  const first = writeV2B2PublicReports(root, options);
+  assert.equal(first.bundle.terminal.terminalStatus, "STOPPED_BENCHMARK_GATE_BLOCKED");
+  assert.equal(first.bundle.terminal.canaryOutcome.executed, false);
+  const firstBytes = Object.values(V2B2_PUBLIC_REPORTS).map((relative) => {
+    const path = join(root, relative);
+    assert.equal(existsSync(path), true);
+    return readFileSync(path, "utf8");
+  });
+  writeV2B2PublicReports(root, options);
+  const secondBytes = Object.values(V2B2_PUBLIC_REPORTS).map((relative) => readFileSync(join(root, relative), "utf8"));
+  assert.deepEqual(secondBytes, firstBytes);
+
+  const persistedReceipts = readFileSync(join(privateStore, V2B2_PRIVATE_FILES.benchmarkReceipts), "utf8")
+    .split(/\r?\n/u)
+    .filter(Boolean)
+    .map((line) => JSON.parse(line));
+  persistedReceipts[0] = redigest({
+    ...persistedReceipts[0],
+    usage: { ...persistedReceipts[0].usage, totalTokens: persistedReceipts[0].usage.totalTokens + 1 },
+  });
+  writeFileSync(
+    join(privateStore, V2B2_PRIVATE_FILES.benchmarkReceipts),
+    `${persistedReceipts.map((item) => JSON.stringify(item)).join("\n")}\n`,
+    "utf8",
+  );
+  const tampered = verifyV2B2(root, options);
+  assert.equal(tampered.allPassed, false);
+  assert.equal(tampered.issues.some((item) => item.includes("v2b2_benchmark_receipt_evaluation_parity_failed")), true);
+});
+
+test("benchmark and canary runners resume byte-for-byte without redispatch", async (context) => {
+  const root = mkdtempSync(join(tmpdir(), "m2-v2b2-runner-resume-"));
+  context.after(() => rmSync(root, { recursive: true, force: true }));
+  const { parent, canary } = syntheticFrozenBinding();
+  const privateRelative = "private";
+  const clock = monotonicClock();
+  let benchmarkDispatchCount = 0;
+  const sharedOptions = {
+    privateRelative,
+    skipIgnoreCheck: true,
+    parentManifest: parent,
+    canaryManifest: canary,
+    expectedParentManifestDigest: parent.manifestDigest,
+    sourceAllowlist: { approvedDomainEntries: [] },
+    relayBindingDigest: "c".repeat(64),
+    runtimeBindingDigest: "c".repeat(64),
+    createdAt: "2026-07-17T00:00:00.000Z",
+    now: clock,
+  };
+  const firstBenchmark = await runV2B2Benchmark(root, {
+    ...sharedOptions,
+    stageExecutor: async ({ item }) => {
+      benchmarkDispatchCount += 1;
+      return successfulStageResult(item);
+    },
+  });
+  assert.equal(benchmarkDispatchCount, 40);
+  assert.equal(firstBenchmark.decision.status, "FROZEN");
+  const privateStore = join(root, privateRelative);
+  const benchmarkBytes = Object.fromEntries([
+    V2B2_PRIVATE_FILES.benchmarkState,
+    V2B2_PRIVATE_FILES.benchmarkCache,
+    V2B2_PRIVATE_FILES.benchmarkReceipts,
+    V2B2_PRIVATE_FILES.benchmarkEvaluation,
+    V2B2_PRIVATE_FILES.modelDecision,
+  ].map((name) => [name, readFileSync(join(privateStore, name), "utf8")]));
+  const resumedBenchmark = await resumeV2B2Benchmark(root, {
+    ...sharedOptions,
+    stageExecutor: async ({ item }) => {
+      benchmarkDispatchCount += 1;
+      return successfulStageResult(item);
+    },
+  });
+  assert.equal(benchmarkDispatchCount, 40);
+  assert.deepEqual(resumedBenchmark.evaluation, firstBenchmark.evaluation);
+  assert.deepEqual(resumedBenchmark.decision, firstBenchmark.decision);
+  for (const [name, bytes] of Object.entries(benchmarkBytes)) {
+    assert.equal(readFileSync(join(privateStore, name), "utf8"), bytes);
+  }
+
+  let canaryDispatchCount = 0;
+  const firstCanary = await runV2B2Canary(root, {
+    ...sharedOptions,
+    stageExecutor: async ({ item }) => {
+      canaryDispatchCount += 1;
+      return successfulStageResult(item);
+    },
+  });
+  assert.equal(canaryDispatchCount, 120);
+  const canaryBytes = Object.fromEntries([
+    V2B2_PRIVATE_FILES.canaryManifest,
+    V2B2_PRIVATE_FILES.canaryState,
+    V2B2_PRIVATE_FILES.canaryCache,
+    V2B2_PRIVATE_FILES.canaryReceipts,
+    V2B2_PRIVATE_FILES.canaryEvaluation,
+  ].map((name) => [name, readFileSync(join(privateStore, name), "utf8")]));
+  const resumedCanary = await resumeV2B2Canary(root, {
+    ...sharedOptions,
+    stageExecutor: async ({ item }) => {
+      canaryDispatchCount += 1;
+      return successfulStageResult(item);
+    },
+  });
+  assert.equal(canaryDispatchCount, 120);
+  assert.deepEqual(resumedCanary.evaluation, firstCanary.evaluation);
+  for (const [name, bytes] of Object.entries(canaryBytes)) {
+    assert.equal(readFileSync(join(privateStore, name), "utf8"), bytes);
+  }
 });
 
 function successfulStageResult(item) {
@@ -519,4 +1105,10 @@ function digestWithout(value, key) {
   const clone = structuredClone(value);
   delete clone[key];
   return sha256(clone);
+}
+
+function redigest(value) {
+  const payload = structuredClone(value);
+  delete payload.receiptDigest;
+  return { ...payload, receiptDigest: sha256(payload) };
 }

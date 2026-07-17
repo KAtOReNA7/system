@@ -55,6 +55,27 @@ const SEARCH_MAX_OUTPUT_TOKENS = 700;
 const EXTRACTION_MAX_OUTPUT_TOKENS = 1_200;
 const MODEL_CONTRACT_RATE_MINIMUM = 0.8;
 const RESPONSE_LIMIT_BYTES = 2 * 1024 * 1024;
+const BENCHMARK_QUALITY_SCOPE = "pre_governance_local_citation_span_and_exact_entity_support_not_independent_source_truth";
+const EXPECTED_LEGACY_CLASSIFICATION_COUNTS = Object.freeze({
+  local_strict_success: 12,
+  relay_success_local_schema_failure: 37,
+  provider_or_request_failure: 11,
+});
+
+export const V2B2_BOUNDARIES = Object.freeze({
+  fullPilotAuthorized: false,
+  full160ExecutionAuthorizedByThisRun: false,
+  full160Executed: false,
+  v2CStarted: false,
+  v2DStarted: false,
+  incomeModelTrainingPerformed: false,
+  b4Changed: false,
+  finalHoldoutOpened: false,
+  c4Started: false,
+  m3Started: false,
+  released: false,
+  pullRequest7MustRemainDraftOpen: true,
+});
 
 export const V2B2_PRIVATE_FILES = Object.freeze({
   responseShapeMatrix: "relay-response-shape-matrix-private-v0.1.json",
@@ -70,6 +91,19 @@ export const V2B2_PRIVATE_FILES = Object.freeze({
   canaryReceipts: "canary-v0.2-receipts-private-v0.1.ndjson",
   canaryEvaluation: "canary-v0.2-evaluation-private-v0.1.json",
   verification: "v2-b2-verification-private-v0.1.json",
+});
+
+export const V2B2_PUBLIC_REPORTS = Object.freeze({
+  remediationJson: "docs/analysis/m2-v2/M2-v2-v2b2-relay-remediation-summary-v0.1.json",
+  remediationMarkdown: "docs/analysis/m2-v2/M2-v2-v2b2-relay-remediation-summary-v0.1.md",
+  benchmarkJson: "docs/analysis/m2-v2/M2-v2-v2b2-terra-luna-benchmark-v0.1.json",
+  benchmarkMarkdown: "docs/analysis/m2-v2/M2-v2-v2b2-terra-luna-benchmark-v0.1.md",
+  routingJson: "docs/analysis/m2-v2/M2-v2-v2b2-model-routing-decision-v0.1.json",
+  routingMarkdown: "docs/analysis/m2-v2/M2-v2-v2b2-model-routing-decision-v0.1.md",
+  canaryJson: "docs/analysis/m2-v2/M2-v2-v2b2-canary-rerun-v0.2.json",
+  canaryMarkdown: "docs/analysis/m2-v2/M2-v2-v2b2-canary-rerun-v0.2.md",
+  terminalJson: "docs/analysis/m2-v2/M2-v2-v2b2-terminal-decision-v0.1.json",
+  terminalMarkdown: "docs/analysis/m2-v2/M2-v2-v2b2-terminal-decision-v0.1.md",
 });
 
 const LEGACY_NOT_RECONSTRUCTABLE = Object.freeze([
@@ -428,13 +462,18 @@ export async function runV2B2Benchmark(root, options = {}) {
     now: options.now,
     runtimeBindingDigest,
   });
-  const evaluation = evaluateV2B2Benchmark({
+  const evaluationCandidate = evaluateV2B2Benchmark({
     manifest,
     plan,
     receipts: execution.receipts,
     sourceAllowlist: readSourceAllowlist(absoluteRoot, options),
   });
-  atomicWriteJson(join(privateStore, V2B2_PRIVATE_FILES.benchmarkEvaluation), evaluation);
+  const evaluation = persistImmutableEvaluation(
+    join(privateStore, V2B2_PRIVATE_FILES.benchmarkEvaluation),
+    evaluationCandidate,
+    "v2b2_benchmark_evaluation_digest_invalid",
+    "v2b2_benchmark_evaluation_changed_after_completion",
+  );
   const decision = freezeV2B2ModelDecision(privateStore, evaluation, options);
   return { manifest, ...execution, evaluation, decision };
 }
@@ -495,8 +534,22 @@ export async function executeV2B2PhysicalPlan(options) {
       }, "stateDigest");
   assertExecutionContainerBinding(cache, state, { namespace, manifestDigest, physicalRequestCap, plan, runtimeBindingDigest });
   if (stateExisted) assertDigest(state, "stateDigest", "v2b2_execution_state_digest_invalid");
-
+  if (stateExisted && options.resume !== true) throw new Error("v2b2_execution_state_exists_use_resume");
+  const planKeySet = new Set(plan.map((item) => item.requestKey));
+  if (Object.keys(cache.entries).some((key) => !planKeySet.has(key))) throw new Error("v2b2_cache_contains_unknown_request");
   const taskByPhysicalKey = new Map(plan.map((item) => [item.requestKey, item]));
+  if (stateExisted && state.executionStatus === "completed") {
+    const receipts = assertCompletedExecutionParity({
+      cache,
+      state,
+      plan,
+      receiptsPath,
+      manifestDigest,
+      runtimeBindingDigest,
+    });
+    return { cache, state, receipts, taskByPhysicalKey };
+  }
+
   for (const item of plan) {
     const cached = cache.entries[item.requestKey];
     if (cached) {
@@ -518,6 +571,7 @@ export async function executeV2B2PhysicalPlan(options) {
       checkpointExecution(cachePath, statePath, receiptsPath, cache, state, plan, now);
       continue;
     }
+    if (prior) throw new Error("v2b2_reservation_without_cache_receipt");
 
     if (Object.keys(state.reservations).length >= physicalRequestCap) throw new Error("v2b2_physical_request_cap_reached");
     const dependency = item.stage === "extraction"
@@ -688,11 +742,13 @@ export function createRelayStageExecutor(options = {}) {
   };
 }
 
-export function evaluateV2B2Benchmark({ manifest, plan, receipts, sourceAllowlist }) {
+export function evaluateV2B2Benchmark({ manifest, plan, receipts, sourceAllowlist, evaluatedAt = null }) {
   if (manifest.plannedPhysicalRequestCount !== plan.length || receipts.length !== plan.length) {
     throw new Error("v2b2_benchmark_evaluation_population_mismatch");
   }
-  for (const [index, item] of plan.entries()) assertPhysicalReceipt(receipts[index], item, manifest.benchmarkManifestDigest);
+  for (const [index, item] of plan.entries()) {
+    assertPhysicalReceipt(receipts[index], item, manifest.benchmarkManifestDigest, manifest.relayBindingDigest);
+  }
   const perModel = Object.fromEntries(V2B2_MODELS.map((model) => {
     const armReceipts = receipts.filter((item) => item.requestedModelId === model);
     const search = armReceipts.filter((item) => item.stage === "search");
@@ -707,7 +763,10 @@ export function evaluateV2B2Benchmark({ manifest, plan, receipts, sourceAllowlis
     )).map((item) => item.logicalTaskKey));
     const resolvedWorkKeys = unique(extraction.filter((item) => item.entityResolved === true).map((item) => item.logicalTaskKey));
     const dispatched = armReceipts.filter((item) => item.dispatched === true);
-    const connected = armReceipts.filter((item) => item.providerConnectivityPassed === true);
+    const connected = dispatched.filter((item) => item.providerConnectivityPassed === true);
+    const dependencyBlockedCount = armReceipts.filter((item) => (
+      item.dispatched === false && item.status === "blocked_search_dependency"
+    )).length;
     const contract = armReceipts.filter((item) => item.providerContractCompatible === true);
     const bindingMismatchCount = armReceipts.filter((item) => item.dispatched === true && item.modelBindingVerified !== true).length;
     const unsupportedCitationReferenceCount = sum(extraction.map((item) => lineageUnsupportedCount(item.lineage)));
@@ -741,7 +800,7 @@ export function evaluateV2B2Benchmark({ manifest, plan, receipts, sourceAllowlis
     const latencyP50Ms = percentile(dispatched.map((item) => Number(item.latencyMs)).filter(Number.isFinite), 0.5);
     const latencyObservedRequestCount = dispatched.filter((item) => Number.isFinite(item.latencyMs)).length;
     const latencyComplete = latencyObservedRequestCount === dispatched.length;
-    const connectivityRate = ratio(connected.length, armReceipts.length);
+    const connectivityRate = ratio(connected.length, dispatched.length);
     const contractRate = ratio(contract.length, armReceipts.length);
     const compatibleEligible = armReceipts.length === 20
       && bindingMismatchCount === 0
@@ -758,6 +817,7 @@ export function evaluateV2B2Benchmark({ manifest, plan, receipts, sourceAllowlis
       dispatchedPhysicalRequestCount: dispatched.length,
       providerConnectivityCount: connected.length,
       providerConnectivityRate: connectivityRate,
+      dependencyBlockedCount,
       providerContractCompatibleCount: contract.length,
       providerContractCompatibleRate: contractRate,
       searchContractSuccessCount,
@@ -821,14 +881,21 @@ export function evaluateV2B2Benchmark({ manifest, plan, receipts, sourceAllowlis
     schema: "m2.v2.v2b2.terra-luna-benchmark-evaluation.v0.1",
     privateOnly: true,
     benchmarkManifestDigest: manifest.benchmarkManifestDigest,
-    evaluatedAt: new Date().toISOString(),
+    evaluatedAt: resolveEvaluationTimestamp(evaluatedAt, receipts),
     population: {
       workCount: manifest.sampleCount,
       modelArmCount: manifest.logicalTaskCount,
       plannedPhysicalRequestCount: plan.length,
       failedSamplesReplaced: false,
     },
-    providerConnectivity: { status: connectivityPassed ? "PASS" : "FAIL", threshold: MODEL_CONTRACT_RATE_MINIMUM },
+    receiptSetDigest: receiptSetDigest(receipts),
+    providerConnectivity: {
+      status: connectivityPassed ? "PASS" : "FAIL",
+      threshold: MODEL_CONTRACT_RATE_MINIMUM,
+      dispatchedCount: sum(Object.values(perModel).map((item) => item.dispatchedPhysicalRequestCount)),
+      connectedCount: sum(Object.values(perModel).map((item) => item.providerConnectivityCount)),
+      dependencyBlockedCount: sum(Object.values(perModel).map((item) => item.dependencyBlockedCount)),
+    },
     providerContractCompatibility: { status: contractPassed ? "PASS" : "FAIL", threshold: MODEL_CONTRACT_RATE_MINIMUM },
     compatibilityGate: { passed: compatibilityPassed },
     modelEvidenceQuality: {
@@ -853,16 +920,25 @@ export function freezeV2B2ModelDecision(privateStore, evaluation, options = {}) 
   if (existsSync(path)) {
     const existing = readJson(path);
     assertDigest(existing, "decisionDigest", "v2b2_model_decision_digest_invalid");
-    if (existing.evaluationDigest !== evaluation.evaluationDigest) throw new Error("v2b2_model_decision_evaluation_mismatch");
+    const expected = deriveV2B2ModelDecision(evaluation, { frozenAt: existing.frozenAt });
+    if (canonicalJson(existing) !== canonicalJson(expected)) throw new Error("v2b2_model_decision_content_mismatch");
     return existing;
   }
+  const decision = deriveV2B2ModelDecision(evaluation, options);
+  atomicWriteJson(path, decision);
+  return decision;
+}
+
+export function deriveV2B2ModelDecision(evaluation, options = {}) {
+  const frozenAt = options.frozenAt ?? new Date().toISOString();
+  if (!isIsoTimestamp(frozenAt)) throw new Error("v2b2_model_decision_frozen_at_invalid");
   if (evaluation.compatibilityGate?.passed !== true || evaluation.modelQualityGate?.passed !== true) {
     const blockedPayload = {
       schema: "m2.v2.v2b2.model-decision-blocked.v0.1",
       privateOnly: true,
       immutable: true,
       status: "BLOCKED",
-      frozenAt: options.frozenAt ?? new Date().toISOString(),
+      frozenAt,
       evaluationDigest: evaluation.evaluationDigest,
       defaultModel: null,
       upgradeModel: null,
@@ -873,9 +949,7 @@ export function freezeV2B2ModelDecision(privateStore, evaluation, options = {}) 
         ...(evaluation.modelQualityGate?.passed ? [] : ["model_quality_gate_failed"]),
       ],
     };
-    const blocked = withDigest(blockedPayload, "decisionDigest");
-    atomicWriteJson(path, blocked);
-    return blocked;
+    return withDigest(blockedPayload, "decisionDigest");
   }
   const left = evaluation.models[V2B2_MODELS[0]];
   const right = evaluation.models[V2B2_MODELS[1]];
@@ -893,7 +967,7 @@ export function freezeV2B2ModelDecision(privateStore, evaluation, options = {}) 
     privateOnly: true,
     immutable: true,
     status: "FROZEN",
-    frozenAt: options.frozenAt ?? new Date().toISOString(),
+    frozenAt,
     evaluationDigest: evaluation.evaluationDigest,
     qualityRuleVersion: "m2-v2-v2b2-quality-first-lexicographic-v0.1",
     qualityOrder: [
@@ -918,9 +992,7 @@ export function freezeV2B2ModelDecision(privateStore, evaluation, options = {}) 
     canaryModelPolicy: "single_frozen_default_model",
     fullPilotAuthorized: false,
   };
-  const decision = withDigest(payload, "decisionDigest");
-  atomicWriteJson(path, decision);
-  return decision;
+  return withDigest(payload, "decisionDigest");
 }
 
 export function deriveV2B2CanaryManifest(parent, canary, benchmarkManifest, modelDecision, options = {}) {
@@ -1062,24 +1134,52 @@ export function buildV2B2CanaryPhysicalPlan(manifest) {
   return plan;
 }
 
+function loadVerifiedV2B2BenchmarkCheckpoint(absoluteRoot, privateStore, binding, options = {}) {
+  const benchmarkManifest = readJson(join(privateStore, V2B2_PRIVATE_FILES.benchmarkManifest));
+  assertV2B2BenchmarkManifest(benchmarkManifest, binding.parent, binding.canary, options);
+  const plan = buildV2B2BenchmarkPhysicalPlan(benchmarkManifest);
+  const receipts = readNdjson(join(privateStore, V2B2_PRIVATE_FILES.benchmarkReceipts));
+  const benchmarkEvaluation = readJson(join(privateStore, V2B2_PRIVATE_FILES.benchmarkEvaluation));
+  assertDigest(benchmarkEvaluation, "evaluationDigest", "v2b2_benchmark_evaluation_digest_invalid");
+  if (
+    benchmarkEvaluation.schema !== "m2.v2.v2b2.terra-luna-benchmark-evaluation.v0.1"
+    || benchmarkEvaluation.privateOnly !== true
+    || benchmarkEvaluation.benchmarkManifestDigest !== benchmarkManifest.benchmarkManifestDigest
+    || benchmarkEvaluation.fullPilotAuthorized !== false
+  ) throw new Error("v2b2_benchmark_evaluation_contract_invalid");
+  const recomputedEvaluation = evaluateV2B2Benchmark({
+    manifest: benchmarkManifest,
+    plan,
+    receipts,
+    sourceAllowlist: readSourceAllowlist(absoluteRoot, options),
+    evaluatedAt: benchmarkEvaluation.evaluatedAt,
+  });
+  if (canonicalJson(benchmarkEvaluation) !== canonicalJson(recomputedEvaluation)) {
+    throw new Error("v2b2_benchmark_receipt_evaluation_parity_failed");
+  }
+  const modelDecision = readJson(join(privateStore, V2B2_PRIVATE_FILES.modelDecision));
+  assertDigest(modelDecision, "decisionDigest", "v2b2_model_decision_digest_invalid");
+  const recomputedDecision = deriveV2B2ModelDecision(benchmarkEvaluation, { frozenAt: modelDecision.frozenAt });
+  if (canonicalJson(modelDecision) !== canonicalJson(recomputedDecision)) {
+    throw new Error("v2b2_model_decision_evaluation_parity_failed");
+  }
+  return { benchmarkManifest, benchmarkEvaluation, modelDecision, plan, receipts };
+}
+
 export async function runV2B2Canary(root, options = {}) {
   const absoluteRoot = resolve(root);
   const privateStore = ensurePrivateStore(absoluteRoot, options);
   const binding = loadFrozenBinding(absoluteRoot, options);
-  const benchmarkManifest = readJson(join(privateStore, V2B2_PRIVATE_FILES.benchmarkManifest));
-  const benchmarkEvaluation = readJson(join(privateStore, V2B2_PRIVATE_FILES.benchmarkEvaluation));
-  const modelDecision = readJson(join(privateStore, V2B2_PRIVATE_FILES.modelDecision));
-  assertV2B2BenchmarkManifest(benchmarkManifest, binding.parent, binding.canary, options);
+  const checkpoint = loadVerifiedV2B2BenchmarkCheckpoint(absoluteRoot, privateStore, binding, options);
+  const { benchmarkManifest, benchmarkEvaluation, modelDecision } = checkpoint;
   const runtimeBindingDigest = options.runtimeBindingDigest
     ?? (options.stageExecutor ? benchmarkManifest.relayBindingDigest : loadRelayConfiguration(absoluteRoot, options.env).bindingDigest);
   if (runtimeBindingDigest !== benchmarkManifest.relayBindingDigest) throw new Error("v2b2_relay_binding_changed_after_freeze");
-  assertDigest(benchmarkEvaluation, "evaluationDigest", "v2b2_benchmark_evaluation_digest_invalid");
   if (
     benchmarkEvaluation.compatibilityGate?.passed !== true
     || benchmarkEvaluation.modelQualityGate?.passed !== true
     || modelDecision.canaryRerunAuthorized !== true
   ) throw new Error("v2b2_canary_rerun_gate_failed");
-  assertDigest(modelDecision, "decisionDigest", "v2b2_model_decision_digest_invalid");
   const frozen = freezeCanaryManifest(privateStore, binding, benchmarkManifest, modelDecision, options);
   const manifest = frozen.manifest;
   const plan = buildV2B2CanaryPhysicalPlan(manifest);
@@ -1099,20 +1199,35 @@ export async function runV2B2Canary(root, options = {}) {
     now: options.now,
     runtimeBindingDigest,
   });
-  const evaluation = evaluateV2B2Canary({
+  const evaluationCandidate = evaluateV2B2Canary({
     manifest,
     plan,
     receipts: execution.receipts,
     sourceAllowlist: readSourceAllowlist(absoluteRoot, options),
   });
-  atomicWriteJson(join(privateStore, V2B2_PRIVATE_FILES.canaryEvaluation), evaluation);
+  const evaluation = persistImmutableEvaluation(
+    join(privateStore, V2B2_PRIVATE_FILES.canaryEvaluation),
+    evaluationCandidate,
+    "v2b2_canary_evaluation_digest_invalid",
+    "v2b2_canary_evaluation_changed_after_completion",
+  );
   return { manifest, ...execution, evaluation, fullPilotAuthorized: false };
 }
 
-export function evaluateV2B2Canary({ manifest, plan, receipts, sourceAllowlist }) {
+export async function resumeV2B2Canary(root, options = {}) {
+  return runV2B2Canary(root, { ...options, resume: true });
+}
+
+export function evaluateV2B2Canary({ manifest, plan, receipts, sourceAllowlist, evaluatedAt = null }) {
   if (plan.length !== 120 || receipts.length !== 120) throw new Error("v2b2_canary_evaluation_population_invalid");
+  for (const [index, item] of plan.entries()) {
+    assertPhysicalReceipt(receipts[index], item, manifest.canaryV02ManifestDigest, manifest.relayBindingDigest);
+  }
   const dispatched = receipts.filter((item) => item.dispatched === true);
-  const connected = receipts.filter((item) => item.providerConnectivityPassed === true);
+  const connected = dispatched.filter((item) => item.providerConnectivityPassed === true);
+  const dependencyBlockedCount = receipts.filter((item) => (
+    item.dispatched === false && item.status === "blocked_search_dependency"
+  )).length;
   const compatible = receipts.filter((item) => item.providerContractCompatible === true);
   const extraction = receipts.filter((item) => item.stage === "extraction");
   const search = receipts.filter((item) => item.stage === "search");
@@ -1144,17 +1259,21 @@ export function evaluateV2B2Canary({ manifest, plan, receipts, sourceAllowlist }
     schema: "m2.v2.v2b2.canary-v0.2-evaluation.v0.1",
     privateOnly: true,
     canaryV02ManifestDigest: manifest.canaryV02ManifestDigest,
-    evaluatedAt: new Date().toISOString(),
+    evaluatedAt: resolveEvaluationTimestamp(evaluatedAt, receipts),
     population: {
       workCount: manifest.sampleCount,
       logicalTaskCount: manifest.logicalTaskCount,
       plannedPhysicalRequestCount: manifest.plannedPhysicalRequestCount,
       failedSamplesReplaced: false,
     },
+    receiptSetDigest: receiptSetDigest(receipts),
     providerConnectivity: {
-      status: ratio(connected.length, receipts.length) >= MODEL_CONTRACT_RATE_MINIMUM ? "PASS" : "FAIL",
+      status: ratio(connected.length, dispatched.length) >= MODEL_CONTRACT_RATE_MINIMUM ? "PASS" : "FAIL",
       connectedCount: connected.length,
-      denominator: receipts.length,
+      dispatchedCount: dispatched.length,
+      denominator: dispatched.length,
+      plannedPhysicalRequestCount: receipts.length,
+      dependencyBlockedCount,
     },
     providerContractCompatibility: {
       status: searchContractRate >= MODEL_CONTRACT_RATE_MINIMUM
@@ -1195,6 +1314,7 @@ export function verifyV2B2(root, options = {}) {
   const absoluteRoot = resolve(root);
   const privateStore = ensurePrivateStore(absoluteRoot, options);
   const binding = loadFrozenBinding(absoluteRoot, options);
+  const sourceAllowlist = readSourceAllowlist(absoluteRoot, options);
   const issues = [];
   let benchmarkManifest = null;
   let benchmarkEvaluation = null;
@@ -1202,27 +1322,81 @@ export function verifyV2B2(root, options = {}) {
   let canaryManifest = null;
   let canaryEvaluation = null;
   let responseShapeMatrix = null;
+  let responseShapeMatrixVerified = false;
+  let benchmarkManifestVerified = false;
+  let benchmarkEvaluationVerified = false;
+  let modelDecisionVerified = false;
+  let canaryManifestVerified = false;
+  let canaryEvaluationVerified = false;
   try {
-    responseShapeMatrix = readJson(join(privateStore, V2B2_PRIVATE_FILES.responseShapeMatrix));
-    assertDigest(responseShapeMatrix, "matrixDigest", "v2b2_response_shape_matrix_digest_invalid");
-    if (responseShapeMatrix.sourceReceiptCount !== 60 || responseShapeMatrix.legacyRawShapeUnobservable !== true) {
+    const candidate = readJson(join(privateStore, V2B2_PRIVATE_FILES.responseShapeMatrix));
+    assertDigest(candidate, "matrixDigest", "v2b2_response_shape_matrix_digest_invalid");
+    const legacySourcePath = join(absoluteRoot, options.receiptsRelative ?? V2B2_LEGACY_RECEIPTS_RELATIVE);
+    const legacyReceipts = readNdjson(legacySourcePath);
+    const classified = normalizeLegacyClassification(classifyLegacyCanaryReceipts(legacyReceipts), legacyReceipts);
+    const derivedClassificationCounts = countBy(classified.byIndex, (item) => item);
+    const rowClassificationCounts = countBy(candidate.rows ?? [], (item) => item.classification);
+    if (
+      candidate.sourceReceiptCount !== 60
+      || legacyReceipts.length !== 60
+      || candidate.sourceReceiptFileDigest !== sha256(readFileSync(legacySourcePath))
+      || candidate.legacyRawShapeUnobservable !== true
+      || candidate.rawResponseAvailableCount !== 0
+      || candidate.returnedModelIdentityVerifiable !== false
+      || candidate.annotationResponseCount !== 1
+      || candidate.annotationCount !== 4
+      || !Array.isArray(candidate.rows)
+      || candidate.rows.length !== 60
+      || candidate.rows.filter((row) => row.citationCount > 0).length !== candidate.annotationResponseCount
+      || sum(candidate.rows.map((row) => row.citationCount)) !== candidate.annotationCount
+      || canonicalJson(candidate.classificationCounts) !== canonicalJson(EXPECTED_LEGACY_CLASSIFICATION_COUNTS)
+      || canonicalJson(derivedClassificationCounts) !== canonicalJson(EXPECTED_LEGACY_CLASSIFICATION_COUNTS)
+      || canonicalJson(rowClassificationCounts) !== canonicalJson(EXPECTED_LEGACY_CLASSIFICATION_COUNTS)
+      || candidate.rows.some((row, index) => (
+        row.ordinal !== index + 1
+        || row.sourceReceiptDigest !== safeDigest(legacyReceipts[index]?.receiptDigest)
+        || row.citationCount !== (Array.isArray(legacyReceipts[index]?.citations) ? legacyReceipts[index].citations.length : 0)
+      ))
+    ) {
       throw new Error("v2b2_response_shape_matrix_contract_invalid");
     }
+    responseShapeMatrix = candidate;
+    responseShapeMatrixVerified = true;
   } catch (error) {
     issues.push(errorMessage(error, "v2b2_response_shape_matrix_unverifiable"));
   }
   try {
-    benchmarkManifest = readJson(join(privateStore, V2B2_PRIVATE_FILES.benchmarkManifest));
-    assertV2B2BenchmarkManifest(benchmarkManifest, binding.parent, binding.canary, options);
-    if (buildV2B2BenchmarkPhysicalPlan(benchmarkManifest).length !== 40) throw new Error("v2b2_benchmark_plan_count_invalid");
+    const candidate = readJson(join(privateStore, V2B2_PRIVATE_FILES.benchmarkManifest));
+    assertV2B2BenchmarkManifest(candidate, binding.parent, binding.canary, options);
+    if (buildV2B2BenchmarkPhysicalPlan(candidate).length !== 40) throw new Error("v2b2_benchmark_plan_count_invalid");
+    benchmarkManifest = candidate;
+    benchmarkManifestVerified = true;
   } catch (error) {
     issues.push(errorMessage(error, "v2b2_benchmark_manifest_unverifiable"));
   }
   if (existsSync(join(privateStore, V2B2_PRIVATE_FILES.benchmarkEvaluation))) {
     try {
-      benchmarkEvaluation = readJson(join(privateStore, V2B2_PRIVATE_FILES.benchmarkEvaluation));
-      assertDigest(benchmarkEvaluation, "evaluationDigest", "v2b2_benchmark_evaluation_digest_invalid");
-      if (benchmarkEvaluation.fullPilotAuthorized !== false) throw new Error("v2b2_full_pilot_authorization_detected");
+      if (!benchmarkManifest) throw new Error("v2b2_benchmark_evaluation_without_valid_manifest");
+      const candidate = readJson(join(privateStore, V2B2_PRIVATE_FILES.benchmarkEvaluation));
+      assertDigest(candidate, "evaluationDigest", "v2b2_benchmark_evaluation_digest_invalid");
+      if (
+        candidate.schema !== "m2.v2.v2b2.terra-luna-benchmark-evaluation.v0.1"
+        || candidate.privateOnly !== true
+        || candidate.benchmarkManifestDigest !== benchmarkManifest.benchmarkManifestDigest
+        || candidate.fullPilotAuthorized !== false
+      ) throw new Error("v2b2_benchmark_evaluation_contract_invalid");
+      const plan = buildV2B2BenchmarkPhysicalPlan(benchmarkManifest);
+      const receipts = readNdjson(join(privateStore, V2B2_PRIVATE_FILES.benchmarkReceipts));
+      const recomputed = evaluateV2B2Benchmark({
+        manifest: benchmarkManifest,
+        plan,
+        receipts,
+        sourceAllowlist,
+        evaluatedAt: candidate.evaluatedAt,
+      });
+      if (canonicalJson(candidate) !== canonicalJson(recomputed)) throw new Error("v2b2_benchmark_receipt_evaluation_parity_failed");
+      benchmarkEvaluation = candidate;
+      benchmarkEvaluationVerified = true;
     } catch (error) {
       issues.push(errorMessage(error, "v2b2_benchmark_evaluation_unverifiable"));
     }
@@ -1231,18 +1405,16 @@ export function verifyV2B2(root, options = {}) {
   }
   if (existsSync(join(privateStore, V2B2_PRIVATE_FILES.modelDecision))) {
     try {
-      modelDecision = readJson(join(privateStore, V2B2_PRIVATE_FILES.modelDecision));
-      assertDigest(modelDecision, "decisionDigest", "v2b2_model_decision_digest_invalid");
-      if (modelDecision.privateOnly !== true || modelDecision.immutable !== true || !["FROZEN", "BLOCKED"].includes(modelDecision.status)) {
+      if (!benchmarkEvaluation) throw new Error("v2b2_model_decision_without_verified_evaluation");
+      const candidate = readJson(join(privateStore, V2B2_PRIVATE_FILES.modelDecision));
+      assertDigest(candidate, "decisionDigest", "v2b2_model_decision_digest_invalid");
+      if (candidate.privateOnly !== true || candidate.immutable !== true || !["FROZEN", "BLOCKED"].includes(candidate.status)) {
         throw new Error("v2b2_model_decision_contract_invalid");
       }
-      if (modelDecision.status === "BLOCKED" && (modelDecision.defaultModel !== null || modelDecision.canaryRerunAuthorized !== false)) {
-        throw new Error("v2b2_blocked_model_decision_not_fail_closed");
-      }
-      if (modelDecision.fullPilotAuthorized !== false) throw new Error("v2b2_full_pilot_authorization_detected");
-      if (benchmarkEvaluation && modelDecision.evaluationDigest !== benchmarkEvaluation.evaluationDigest) {
-        throw new Error("v2b2_model_decision_evaluation_mismatch");
-      }
+      const recomputed = deriveV2B2ModelDecision(benchmarkEvaluation, { frozenAt: candidate.frozenAt });
+      if (canonicalJson(candidate) !== canonicalJson(recomputed)) throw new Error("v2b2_model_decision_evaluation_parity_failed");
+      modelDecision = candidate;
+      modelDecisionVerified = true;
     } catch (error) {
       issues.push(errorMessage(error, "v2b2_model_decision_unverifiable"));
     }
@@ -1252,20 +1424,40 @@ export function verifyV2B2(root, options = {}) {
   if (existsSync(join(privateStore, V2B2_PRIVATE_FILES.canaryManifest))) {
     try {
       if (!benchmarkManifest || !modelDecision) throw new Error("v2b2_canary_missing_parent_decision");
-      canaryManifest = readJson(join(privateStore, V2B2_PRIVATE_FILES.canaryManifest));
-      assertV2B2CanaryManifest(canaryManifest, binding.parent, binding.canary, benchmarkManifest, modelDecision, options);
-      if (buildV2B2CanaryPhysicalPlan(canaryManifest).length !== 120) throw new Error("v2b2_canary_plan_count_invalid");
+      const candidate = readJson(join(privateStore, V2B2_PRIVATE_FILES.canaryManifest));
+      assertV2B2CanaryManifest(candidate, binding.parent, binding.canary, benchmarkManifest, modelDecision, options);
+      if (buildV2B2CanaryPhysicalPlan(candidate).length !== 120) throw new Error("v2b2_canary_plan_count_invalid");
+      canaryManifest = candidate;
+      canaryManifestVerified = true;
     } catch (error) {
       issues.push(errorMessage(error, "v2b2_canary_manifest_unverifiable"));
     }
   }
   if (existsSync(join(privateStore, V2B2_PRIVATE_FILES.canaryEvaluation))) {
     try {
-      canaryEvaluation = readJson(join(privateStore, V2B2_PRIVATE_FILES.canaryEvaluation));
-      assertDigest(canaryEvaluation, "evaluationDigest", "v2b2_canary_evaluation_digest_invalid");
+      if (!canaryManifest) throw new Error("v2b2_canary_evaluation_without_valid_manifest");
+      const candidate = readJson(join(privateStore, V2B2_PRIVATE_FILES.canaryEvaluation));
+      assertDigest(candidate, "evaluationDigest", "v2b2_canary_evaluation_digest_invalid");
+      if (
+        candidate.schema !== "m2.v2.v2b2.canary-v0.2-evaluation.v0.1"
+        || candidate.privateOnly !== true
+        || candidate.canaryV02ManifestDigest !== canaryManifest.canaryV02ManifestDigest
+      ) throw new Error("v2b2_canary_evaluation_contract_invalid");
       for (const field of ["fullPilotAuthorized", "full160ExecutionAuthorizedByThisRun", "full160Executed"]) {
-        if (canaryEvaluation[field] !== false) throw new Error(`v2b2_${field}_must_be_false`);
+        if (candidate[field] !== false) throw new Error(`v2b2_${field}_must_be_false`);
       }
+      const plan = buildV2B2CanaryPhysicalPlan(canaryManifest);
+      const receipts = readNdjson(join(privateStore, V2B2_PRIVATE_FILES.canaryReceipts));
+      const recomputed = evaluateV2B2Canary({
+        manifest: canaryManifest,
+        plan,
+        receipts,
+        sourceAllowlist,
+        evaluatedAt: candidate.evaluatedAt,
+      });
+      if (canonicalJson(candidate) !== canonicalJson(recomputed)) throw new Error("v2b2_canary_receipt_evaluation_parity_failed");
+      canaryEvaluation = candidate;
+      canaryEvaluationVerified = true;
     } catch (error) {
       issues.push(errorMessage(error, "v2b2_canary_evaluation_unverifiable"));
     }
@@ -1273,7 +1465,14 @@ export function verifyV2B2(root, options = {}) {
   if (modelDecision?.status === "FROZEN" && (!canaryManifest || !canaryEvaluation)) {
     issues.push("v2b2_authorized_canary_rerun_incomplete");
   }
-  if (modelDecision?.status === "BLOCKED" && (canaryManifest || canaryEvaluation)) {
+  const anyCanaryArtifact = [
+    V2B2_PRIVATE_FILES.canaryManifest,
+    V2B2_PRIVATE_FILES.canaryCache,
+    V2B2_PRIVATE_FILES.canaryState,
+    V2B2_PRIVATE_FILES.canaryReceipts,
+    V2B2_PRIVATE_FILES.canaryEvaluation,
+  ].some((name) => existsSync(join(privateStore, name)));
+  if (modelDecision?.status === "BLOCKED" && anyCanaryArtifact) {
     issues.push("v2b2_canary_artifact_present_after_blocked_gate");
   }
   const resultPayload = {
@@ -1283,12 +1482,12 @@ export function verifyV2B2(root, options = {}) {
     parentManifestDigest: binding.parent.manifestDigest,
     canaryV01ManifestDigest: binding.canary.canaryManifestDigest,
     originalManifestAndSeedUnchanged: true,
-    responseShapeMatrixVerified: Boolean(responseShapeMatrix),
-    benchmarkManifestVerified: Boolean(benchmarkManifest),
-    benchmarkEvaluationVerified: Boolean(benchmarkEvaluation),
-    modelDecisionVerified: Boolean(modelDecision),
-    canaryManifestVerified: Boolean(canaryManifest),
-    canaryEvaluationVerified: Boolean(canaryEvaluation),
+    responseShapeMatrixVerified,
+    benchmarkManifestVerified,
+    benchmarkEvaluationVerified,
+    modelDecisionVerified,
+    canaryManifestVerified,
+    canaryEvaluationVerified,
     benchmarkPhysicalRequestCap: 40,
     canaryPhysicalRequestCap: 120,
     retryCount: 0,
@@ -1312,16 +1511,19 @@ export function buildV2B2AggregateReport(root, options = {}) {
   const report = {
     schema: "m2.v2.v2b2.aggregate-report.v0.1",
     status: "not_for_formal_decision",
+    terminalEvidenceAt: canary?.evaluatedAt ?? decision?.frozenAt ?? benchmark?.evaluatedAt ?? null,
     historicalCanaryReclassification: {
       providerConnectivity: "PASS",
       providerContractCompatibility: "FAIL",
       modelEvidenceQuality: "NOT_EVALUATED",
-      relayDeclaredSuccessCount: 49,
-      localStrictSuccessCount: 12,
-      relaySuccessLocalContractFailureCount: 37,
-      providerOrRequestFailureCount: 11,
-      annotationCount: matrix?.annotationCount ?? 4,
-      legacyRawShapeUnobservable: matrix?.legacyRawShapeUnobservable ?? true,
+      relayDeclaredSuccessCount: (matrix?.classificationCounts?.local_strict_success ?? 0)
+        + (matrix?.classificationCounts?.relay_success_local_schema_failure ?? 0),
+      localStrictSuccessCount: matrix?.classificationCounts?.local_strict_success ?? 0,
+      relaySuccessLocalContractFailureCount: matrix?.classificationCounts?.relay_success_local_schema_failure ?? 0,
+      providerOrRequestFailureCount: matrix?.classificationCounts?.provider_or_request_failure ?? 0,
+      annotationResponseCount: matrix?.annotationResponseCount ?? 0,
+      annotationObjectCount: matrix?.annotationCount ?? 0,
+      legacyRawShapeUnobservable: matrix?.legacyRawShapeUnobservable === true,
     },
     immutableBindings: {
       parentManifestDigest: binding.parent.manifestDigest,
@@ -1332,48 +1534,296 @@ export function buildV2B2AggregateReport(root, options = {}) {
       failedSamplesReplaced: false,
     },
     benchmark: benchmark ? {
-      providerConnectivity: benchmark.providerConnectivity,
-      providerContractCompatibility: benchmark.providerContractCompatibility,
-      modelEvidenceQuality: benchmark.modelEvidenceQuality,
-      qualityScope: "pre_governance_local_citation_span_and_exact_entity_support_not_independent_source_truth",
-      sourceGovernance: benchmark.sourceGovernance,
+      providerConnectivity: publicBenchmarkConnectivity(benchmark.providerConnectivity),
+      providerContractCompatibility: publicBenchmarkContractCompatibility(benchmark.providerContractCompatibility),
+      modelEvidenceQuality: publicBenchmarkModelEvidenceQuality(benchmark.modelEvidenceQuality),
+      qualityScope: BENCHMARK_QUALITY_SCOPE,
+      sourceGovernance: publicSourceGovernance(benchmark.sourceGovernance, "benchmark"),
       modelAggregates: Object.fromEntries(V2B2_MODELS.map((model) => [model, publicModelMetrics(benchmark.models?.[model])])),
     } : { status: "NOT_RUN" },
     modelDecision: decision?.status === "FROZEN" ? {
       status: decision.status,
-      defaultModel: decision.defaultModel,
-      upgradeModel: decision.upgradeModel,
-      qualityRuleVersion: decision.qualityRuleVersion,
-      canaryRerunAuthorized: decision.canaryRerunAuthorized,
+      defaultModel: requireV2B2ModelOrNull(decision.defaultModel, false),
+      upgradeModel: requireV2B2ModelOrNull(decision.upgradeModel, true),
+      qualityRuleVersion: requireExactString(
+        decision.qualityRuleVersion,
+        "m2-v2-v2b2-quality-first-lexicographic-v0.1",
+        "v2b2_public_model_decision_quality_rule_invalid",
+      ),
+      canaryRerunAuthorized: decision.canaryRerunAuthorized === true,
     } : {
       status: decision?.status ?? "NOT_FROZEN",
       defaultModel: null,
       upgradeModel: null,
       canaryRerunAuthorized: false,
-      blockers: Array.isArray(decision?.blockers) ? decision.blockers : [],
+      blockers: publicDecisionBlockers(decision?.blockers),
     },
     canaryV02: canary ? {
-      providerConnectivity: canary.providerConnectivity,
-      providerContractCompatibility: canary.providerContractCompatibility,
-      modelEvidenceQuality: canary.modelEvidenceQuality,
-      sourceGovernance: canary.sourceGovernance,
-      canaryTechnicalStatus: canary.canaryTechnicalStatus,
+      providerConnectivity: publicCanaryConnectivity(canary.providerConnectivity),
+      providerContractCompatibility: publicCanaryContractCompatibility(canary.providerContractCompatibility),
+      modelEvidenceQuality: publicCanaryModelEvidenceQuality(canary.modelEvidenceQuality),
+      sourceGovernance: publicSourceGovernance(canary.sourceGovernance, "canary"),
+      qualityScope: BENCHMARK_QUALITY_SCOPE,
+      canaryTechnicalStatus: requireEnum(canary.canaryTechnicalStatus, ["TECHNICAL_PASS", "TECHNICAL_FAIL"], "v2b2_public_canary_status_invalid"),
     } : { status: "NOT_RUN" },
-    boundaries: {
-      fullPilotAuthorized: false,
-      full160Executed: false,
-      v2CStarted: false,
-      v2DStarted: false,
-      modelTrainingPerformed: false,
-      b4Changed: false,
-      finalHoldoutOpened: false,
-      c4Started: false,
-      m3Started: false,
-      released: false,
-    },
+    boundaries: { ...V2B2_BOUNDARIES },
   };
   assertPublicSanitized(report);
   return report;
+}
+
+export function deriveV2B2PublicReportBundle(aggregate, options = {}) {
+  assertPublicSanitized(aggregate);
+  assertV2B2PublicAggregateContract(aggregate);
+  if (aggregate?.benchmark?.status === "NOT_RUN" || !aggregate?.benchmark?.providerConnectivity) {
+    throw new Error("v2b2_public_report_benchmark_not_complete");
+  }
+  if (!["FROZEN", "BLOCKED"].includes(aggregate?.modelDecision?.status)) {
+    throw new Error("v2b2_public_report_model_decision_not_terminal");
+  }
+  if (aggregate.modelDecision.status === "FROZEN" && aggregate?.canaryV02?.status === "NOT_RUN") {
+    throw new Error("v2b2_public_report_authorized_canary_not_complete");
+  }
+  if (aggregate.modelDecision.status === "FROZEN" && aggregate.modelDecision.canaryRerunAuthorized !== true) {
+    throw new Error("v2b2_public_report_frozen_decision_not_canary_authorized");
+  }
+  if (aggregate.modelDecision.status === "BLOCKED" && aggregate?.canaryV02?.status !== "NOT_RUN") {
+    throw new Error("v2b2_public_report_blocked_decision_has_canary");
+  }
+  if (canonicalJson(aggregate.boundaries) !== canonicalJson(V2B2_BOUNDARIES)) {
+    throw new Error("v2b2_public_report_boundaries_invalid");
+  }
+  const generatedAt = options.generatedAt ?? aggregate.terminalEvidenceAt;
+  if (typeof generatedAt !== "string" || !Number.isFinite(Date.parse(generatedAt))) {
+    throw new Error("v2b2_public_report_terminal_evidence_timestamp_missing");
+  }
+  const common = {
+    status: "not_for_formal_decision",
+    generatedAt,
+    immutableBindings: aggregate.immutableBindings,
+    boundaries: aggregate.boundaries,
+  };
+  const remediation = {
+    schema: "m2.v2.v2b2.relay-remediation-summary.v0.1",
+    ...common,
+    historicalCanaryReclassification: aggregate.historicalCanaryReclassification,
+    adapterContract: {
+      adapterVersion: V2B2_ADAPTER_VERSION,
+      promptVersion: V2B2_PROMPT_VERSION,
+      schemaVersion: V2B2_SCHEMA_VERSION,
+      searchAndExtractionSeparated: true,
+      searchMaximumOutputTokens: SEARCH_MAX_OUTPUT_TOKENS,
+      extractionMaximumOutputTokens: EXTRACTION_MAX_OUTPUT_TOKENS,
+      automaticRetryCount: 0,
+      citationJoin: "citation_id_plus_bounded_span_claim_support",
+      requestedReturnedModelBindingRequired: true,
+      rawResponsePersisted: false,
+    },
+    benchmarkGate: {
+      providerConnectivity: aggregate.benchmark.providerConnectivity,
+      providerContractCompatibility: aggregate.benchmark.providerContractCompatibility,
+      modelEvidenceQuality: aggregate.benchmark.modelEvidenceQuality,
+      qualityScope: aggregate.benchmark.qualityScope,
+    },
+  };
+  const benchmark = {
+    schema: "m2.v2.v2b2.terra-luna-fair-benchmark.v0.1",
+    ...common,
+    fairness: {
+      sameFrozenTenWorks: true,
+      sameSeed: true,
+      failedSamplesReplaced: false,
+      firstModelOrderBalanced: "5/5",
+      physicalRequestCap: 40,
+      automaticRetryCount: 0,
+    },
+    result: aggregate.benchmark,
+  };
+  const routing = {
+    schema: "m2.v2.v2b2.model-routing-decision.v0.1",
+    ...common,
+    decision: aggregate.modelDecision,
+    policy: {
+      qualityFirst: true,
+      upgradeMinimumComplementaryWins: 2,
+      upgradeMayAddErrors: false,
+      telemetryOnlyBreaksQualityTies: true,
+    },
+  };
+  const canaryExecuted = aggregate?.canaryV02?.status !== "NOT_RUN";
+  const canary = {
+    schema: "m2.v2.v2b2.canary-rerun.v0.2",
+    ...common,
+    executed: canaryExecuted,
+    executionBasis: canaryExecuted ? "compatibility_and_model_gates_passed" : "benchmark_gate_blocked",
+    result: aggregate.canaryV02,
+    originalFixedTenWorksReused: true,
+    originalSixtyLogicalTasksReused: canaryExecuted,
+    physicalRequestCap: 120,
+    automaticRetryCount: 0,
+  };
+  const terminalStatus = aggregate.modelDecision.status === "BLOCKED"
+    ? "STOPPED_BENCHMARK_GATE_BLOCKED"
+    : aggregate.canaryV02.canaryTechnicalStatus === "TECHNICAL_PASS"
+      ? "STOPPED_CANARY_TECHNICAL_PASS_FULL_PILOT_UNAUTHORIZED"
+      : "STOPPED_CANARY_TECHNICAL_FAIL";
+  const terminal = {
+    schema: "m2.v2.v2b2.terminal-decision.v0.1",
+    ...common,
+    terminalStatus,
+    benchmarkGate: {
+      providerConnectivity: aggregate.benchmark.providerConnectivity,
+      providerContractCompatibility: aggregate.benchmark.providerContractCompatibility,
+      modelEvidenceQuality: aggregate.benchmark.modelEvidenceQuality,
+      qualityScope: aggregate.benchmark.qualityScope,
+      sourceGovernance: aggregate.benchmark.sourceGovernance,
+    },
+    modelRouting: aggregate.modelDecision,
+    canaryOutcome: {
+      executed: canaryExecuted,
+      technicalStatus: canaryExecuted ? aggregate.canaryV02.canaryTechnicalStatus : "NOT_RUN_GATE_BLOCKED",
+      providerConnectivity: canaryExecuted ? aggregate.canaryV02.providerConnectivity : null,
+      providerContractCompatibility: canaryExecuted ? aggregate.canaryV02.providerContractCompatibility : null,
+      modelEvidenceQuality: canaryExecuted ? aggregate.canaryV02.modelEvidenceQuality : null,
+      sourceGovernance: canaryExecuted ? aggregate.canaryV02.sourceGovernance : null,
+      qualityScope: canaryExecuted ? aggregate.canaryV02.qualityScope : null,
+    },
+    fullPilotAuthorized: false,
+    nextStep: "stop_no_full_160_no_v2c_v2d_c4_m3_release",
+  };
+  const bundle = { remediation, benchmark, routing, canary, terminal };
+  assertPublicSanitized(bundle);
+  return bundle;
+}
+
+export function writeV2B2PublicReports(root, options = {}) {
+  const absoluteRoot = resolve(root);
+  const verification = verifyV2B2(absoluteRoot, options);
+  if (verification.allPassed !== true) {
+    throw new Error(`v2b2_public_report_verification_failed:${verification.issues.join(",")}`);
+  }
+  const aggregate = buildV2B2AggregateReport(absoluteRoot, options);
+  const bundle = deriveV2B2PublicReportBundle(aggregate, options);
+  const markdown = {
+    remediation: renderRemediationMarkdown(bundle.remediation),
+    benchmark: renderBenchmarkMarkdown(bundle.benchmark),
+    routing: renderRoutingMarkdown(bundle.routing),
+    canary: renderCanaryMarkdown(bundle.canary),
+    terminal: renderTerminalMarkdown(bundle.terminal),
+  };
+  for (const value of Object.values(bundle)) assertPublicSanitized(value);
+  for (const value of Object.values(markdown)) assertV2B2PublicMarkdownSafe(value);
+  const documents = [
+    [V2B2_PUBLIC_REPORTS.remediationJson, `${JSON.stringify(bundle.remediation, null, 2)}\n`],
+    [V2B2_PUBLIC_REPORTS.benchmarkJson, `${JSON.stringify(bundle.benchmark, null, 2)}\n`],
+    [V2B2_PUBLIC_REPORTS.routingJson, `${JSON.stringify(bundle.routing, null, 2)}\n`],
+    [V2B2_PUBLIC_REPORTS.canaryJson, `${JSON.stringify(bundle.canary, null, 2)}\n`],
+    [V2B2_PUBLIC_REPORTS.terminalJson, `${JSON.stringify(bundle.terminal, null, 2)}\n`],
+    [V2B2_PUBLIC_REPORTS.remediationMarkdown, markdown.remediation],
+    [V2B2_PUBLIC_REPORTS.benchmarkMarkdown, markdown.benchmark],
+    [V2B2_PUBLIC_REPORTS.routingMarkdown, markdown.routing],
+    [V2B2_PUBLIC_REPORTS.canaryMarkdown, markdown.canary],
+    [V2B2_PUBLIC_REPORTS.terminalMarkdown, markdown.terminal],
+  ].map(([relative, value]) => [join(absoluteRoot, relative), value]);
+  atomicWriteBundle(documents);
+  return { aggregate, bundle, markdown, publicReports: V2B2_PUBLIC_REPORTS };
+}
+
+function renderRemediationMarkdown(value) {
+  const historical = value.historicalCanaryReclassification;
+  return `# M2 v2 V2-B.2 Relay Remediation Summary v0.1
+
+- status: \`${value.status}\`
+- provider connectivity: \`${historical.providerConnectivity}\` (${historical.relayDeclaredSuccessCount}/60)
+- provider contract compatibility: \`${historical.providerContractCompatibility}\` (${historical.localStrictSuccessCount}/60 locally strict)
+- model evidence quality: \`${historical.modelEvidenceQuality}\`
+- annotation-bearing responses observed: ${historical.annotationResponseCount}
+- normalized annotation objects observed: ${historical.annotationObjectCount}
+- legacy raw response shape observable: \`${historical.legacyRawShapeUnobservable ? "false" : "true"}\`
+- search/extraction separated: \`${value.adapterContract.searchAndExtractionSeparated}\`
+- output token caps: search ${value.adapterContract.searchMaximumOutputTokens}, extraction ${value.adapterContract.extractionMaximumOutputTokens}
+- automatic retries: ${value.adapterContract.automaticRetryCount}
+- full pilot authorized: \`false\`
+
+37 relay-success/local-schema failures are contract failures, not evidence that Terra search quality failed. Empty source governance acceptance cannot be interpreted as no external signal.
+`;
+}
+
+function renderBenchmarkMarkdown(value) {
+  const models = value.result.modelAggregates ?? {};
+  const rows = V2B2_MODELS.map((model) => {
+    const metric = models[model] ?? {};
+    return `| ${model} | ${formatMetric(metric.searchContractRate)} | ${formatMetric(metric.extractionContractRate)} | ${metric.validEvidenceWorkCount ?? 0} | ${metric.claimSupportUnverifiedCount ?? 0} | ${metric.entityIdentityErrorCount ?? 0} | ${metric.totalTokens ?? "n/a"} | ${metric.latencyP90Ms ?? "n/a"} |`;
+  }).join("\n");
+  return `# M2 v2 V2-B.2 Terra/Luna Fair Benchmark v0.1
+
+- status: \`${value.status}\`
+- provider connectivity: \`${value.result.providerConnectivity.status}\`
+- provider contract compatibility: \`${value.result.providerContractCompatibility.status}\`
+- model evidence quality: \`${value.result.modelEvidenceQuality.status}\`
+- quality scope: ${value.result.qualityScope}
+- frozen same-work benchmark: 10 works, 20 model arms, at most 40 physical requests, zero retries
+
+| model | search contract | extraction contract | valid works | unsupported claim spans | entity errors | total tokens | p90 ms |
+|---|---:|---:|---:|---:|---:|---:|---:|
+${rows}
+
+Source allowlist governance is evaluated separately and cannot be used to relabel model quality. All results remain \`not_for_formal_decision\`.
+`;
+}
+
+function renderRoutingMarkdown(value) {
+  const decision = value.decision;
+  return `# M2 v2 V2-B.2 Model Routing Decision v0.1
+
+- status: \`${decision.status}\`
+- default model: \`${decision.defaultModel ?? "null"}\`
+- upgrade model: \`${decision.upgradeModel ?? "null"}\`
+- canary rerun authorized: \`${decision.canaryRerunAuthorized}\`
+- blockers: ${(decision.blockers ?? []).map((item) => `\`${item}\``).join(", ") || "none"}
+- full pilot authorized: \`false\`
+
+Selection is quality-first. Token and latency may only break a quality tie, and missing telemetry never counts as zero.
+`;
+}
+
+function renderCanaryMarkdown(value) {
+  return `# M2 v2 V2-B.2 Canary Rerun v0.2
+
+- executed: \`${value.executed}\`
+- execution basis: \`${value.executionBasis}\`
+- fixed 10-work sample reused: \`${value.originalFixedTenWorksReused}\`
+- original 60 logical tasks reused: \`${value.originalSixtyLogicalTasksReused}\`
+- physical request cap: ${value.physicalRequestCap}
+- automatic retries: ${value.automaticRetryCount}
+- technical status: \`${value.result.canaryTechnicalStatus ?? value.result.status}\`
+- quality scope: ${value.result.qualityScope ?? "not evaluated"}
+- full pilot authorized: \`false\`
+`;
+}
+
+function renderTerminalMarkdown(value) {
+  return `# M2 v2 V2-B.2 Terminal Decision v0.1
+
+- terminal status: \`${value.terminalStatus}\`
+- benchmark provider connectivity: \`${value.benchmarkGate.providerConnectivity.status}\`
+- benchmark provider contract compatibility: \`${value.benchmarkGate.providerContractCompatibility.status}\`
+- benchmark model evidence quality: \`${value.benchmarkGate.modelEvidenceQuality.status}\`
+- benchmark quality scope: ${value.benchmarkGate.qualityScope}
+- default model: \`${value.modelRouting.defaultModel ?? "null"}\`
+- upgrade model: \`${value.modelRouting.upgradeModel ?? "null"}\`
+- canary executed: \`${value.canaryOutcome.executed}\`
+- canary technical status: \`${value.canaryOutcome.technicalStatus}\`
+- canary quality scope: ${value.canaryOutcome.qualityScope ?? "not evaluated"}
+- full pilot authorized: \`false\`
+- next step: \`${value.nextStep}\`
+
+No full 160, V2-C/V2-D, income-model training, B4 change, final holdout, C4/M3, release, or PR merge is authorized by this result.
+`;
+}
+
+function formatMetric(value) {
+  return Number.isFinite(value) ? Number(value).toFixed(4) : "n/a";
 }
 
 function freezeBenchmarkManifest(privateStore, binding, options) {
@@ -1652,6 +2102,35 @@ function assertExecutionContainerBinding(cache, state, { namespace, manifestDige
   if (state.fullPilotAuthorized !== false) throw new Error("v2b2_full_pilot_must_remain_unauthorized");
 }
 
+function assertCompletedExecutionParity({ cache, state, plan, receiptsPath, manifestDigest, runtimeBindingDigest }) {
+  const cacheKeys = Object.keys(cache.entries);
+  if (
+    state.completedPhysicalReceiptCount !== plan.length
+    || state.cacheEntryCount !== plan.length
+    || cacheKeys.length !== plan.length
+    || Object.keys(state.reservations ?? {}).length !== plan.length
+    || !existsSync(receiptsPath)
+  ) throw new Error("v2b2_completed_state_cache_parity_invalid");
+  const receipts = plan.map((item) => {
+    const receipt = cache.entries[item.requestKey];
+    if (!receipt) throw new Error("v2b2_completed_state_cache_parity_invalid");
+    assertPhysicalReceipt(receipt, item, manifestDigest, runtimeBindingDigest);
+    const reservation = state.reservations[item.requestKey];
+    if (
+      !reservation
+      || reservation.receiptDigest !== receipt.receiptDigest
+      || !["completed", "blocked_dependency", "indeterminate_after_crash"].includes(reservation.status)
+    ) throw new Error("v2b2_completed_state_reservation_parity_invalid");
+    return receipt;
+  });
+  if (state.dispatchedPhysicalRequestCount !== receipts.filter((item) => item.dispatched === true).length) {
+    throw new Error("v2b2_completed_state_dispatch_count_invalid");
+  }
+  const persisted = readNdjson(receiptsPath);
+  if (canonicalJson(persisted) !== canonicalJson(receipts)) throw new Error("v2b2_completed_receipt_file_parity_invalid");
+  return receipts;
+}
+
 function finalizeSuppliedReceipt(value, item, manifestDigest, capturedAt, runtimeBindingDigest) {
   const payload = {
     schema: "m2.v2.v2b2.physical-receipt.v0.1",
@@ -1715,6 +2194,22 @@ function assertPhysicalReceipt(receipt, item, manifestDigest, runtimeBindingDige
     throw new Error("v2b2_physical_receipt_version_binding_mismatch");
   }
   if (receipt.retryCount !== 0 || receipt.fullPilotAuthorized !== false) throw new Error("v2b2_physical_receipt_retry_or_authorization_invalid");
+  if (
+    typeof receipt.dispatched !== "boolean"
+    || typeof receipt.providerConnectivityPassed !== "boolean"
+    || typeof receipt.providerContractCompatible !== "boolean"
+    || typeof receipt.modelBindingVerified !== "boolean"
+    || !isIsoTimestamp(receipt.capturedAt)
+  ) throw new Error("v2b2_physical_receipt_observation_contract_invalid");
+  if (!receipt.dispatched && (receipt.providerConnectivityPassed || receipt.providerContractCompatible || receipt.modelBindingVerified)) {
+    throw new Error("v2b2_undispatched_receipt_cannot_observe_provider");
+  }
+  if (receipt.providerContractCompatible && !receipt.providerConnectivityPassed) {
+    throw new Error("v2b2_contract_compatible_without_connectivity");
+  }
+  if (receipt.modelBindingVerified !== Boolean(receipt.returnedModelId && receipt.returnedModelId === receipt.requestedModelId)) {
+    throw new Error("v2b2_physical_receipt_model_binding_flag_invalid");
+  }
   if (receipt.rawResponsePersisted !== false || receipt.authorizationHeaderPersisted !== false || receipt.apiKeyPersisted !== false) {
     throw new Error("v2b2_physical_receipt_security_contract_invalid");
   }
@@ -1842,12 +2337,268 @@ function lineageUnsupportedCount(lineage) {
   ) ?? 0;
 }
 
+function resolveEvaluationTimestamp(supplied, receipts) {
+  const timestamps = receipts.map((item) => {
+    if (!isIsoTimestamp(item?.capturedAt)) throw new Error("v2b2_receipt_captured_at_invalid");
+    return Date.parse(item.capturedAt);
+  });
+  if (!timestamps.length) throw new Error("v2b2_evaluation_receipts_empty");
+  const derived = new Date(Math.max(...timestamps)).toISOString();
+  if (supplied !== null && supplied !== undefined) {
+    if (!isIsoTimestamp(supplied) || new Date(supplied).toISOString() !== derived) {
+      throw new Error("v2b2_evaluated_at_not_receipt_bound");
+    }
+  }
+  return derived;
+}
+
+function receiptSetDigest(receipts) {
+  return sha256(receipts.map((item) => ({
+    requestKey: item.requestKey,
+    receiptDigest: item.receiptDigest,
+  })));
+}
+
+function persistImmutableEvaluation(path, candidate, digestError, changedError) {
+  if (!existsSync(path)) {
+    atomicWriteJson(path, candidate);
+    return candidate;
+  }
+  const existing = readJson(path);
+  assertDigest(existing, "evaluationDigest", digestError);
+  if (canonicalJson(existing) !== canonicalJson(candidate)) throw new Error(changedError);
+  return existing;
+}
+
+function assertV2B2PublicAggregateContract(value) {
+  assertExactObjectKeys(value, [
+    "schema",
+    "status",
+    "terminalEvidenceAt",
+    "historicalCanaryReclassification",
+    "immutableBindings",
+    "benchmark",
+    "modelDecision",
+    "canaryV02",
+    "boundaries",
+  ], "v2b2_public_aggregate_unknown_field");
+  if (value?.schema !== "m2.v2.v2b2.aggregate-report.v0.1" || value?.status !== "not_for_formal_decision") {
+    throw new Error("v2b2_public_aggregate_schema_invalid");
+  }
+  if (!isIsoTimestamp(value.terminalEvidenceAt)) throw new Error("v2b2_public_aggregate_terminal_time_invalid");
+  const historical = value.historicalCanaryReclassification;
+  assertExactObjectKeys(historical, [
+    "providerConnectivity",
+    "providerContractCompatibility",
+    "modelEvidenceQuality",
+    "relayDeclaredSuccessCount",
+    "localStrictSuccessCount",
+    "relaySuccessLocalContractFailureCount",
+    "providerOrRequestFailureCount",
+    "annotationResponseCount",
+    "annotationObjectCount",
+    "legacyRawShapeUnobservable",
+  ], "v2b2_public_historical_unknown_field");
+  if (
+    historical?.providerConnectivity !== "PASS"
+    || historical?.providerContractCompatibility !== "FAIL"
+    || historical?.modelEvidenceQuality !== "NOT_EVALUATED"
+    || historical?.relayDeclaredSuccessCount !== 49
+    || historical?.localStrictSuccessCount !== 12
+    || historical?.relaySuccessLocalContractFailureCount !== 37
+    || historical?.providerOrRequestFailureCount !== 11
+    || historical?.annotationResponseCount !== 1
+    || historical?.annotationObjectCount !== 4
+    || historical?.legacyRawShapeUnobservable !== true
+  ) throw new Error("v2b2_public_aggregate_historical_reclassification_invalid");
+  if (value.benchmark?.status !== "NOT_RUN") {
+    assertExactObjectKeys(value.benchmark, [
+      "providerConnectivity",
+      "providerContractCompatibility",
+      "modelEvidenceQuality",
+      "qualityScope",
+      "sourceGovernance",
+      "modelAggregates",
+    ], "v2b2_public_benchmark_unknown_field");
+    if (value.benchmark?.qualityScope !== BENCHMARK_QUALITY_SCOPE) throw new Error("v2b2_public_aggregate_quality_scope_invalid");
+    requireEnum(value.benchmark?.providerConnectivity?.status, ["PASS", "FAIL"], "v2b2_public_benchmark_connectivity_status_invalid");
+    requireEnum(value.benchmark?.providerContractCompatibility?.status, ["PASS", "FAIL"], "v2b2_public_benchmark_contract_status_invalid");
+    requireEnum(value.benchmark?.modelEvidenceQuality?.status, ["EVALUATED", "NOT_EVALUATED"], "v2b2_public_benchmark_quality_status_invalid");
+  }
+  if (value.modelDecision?.status === "FROZEN") {
+    assertExactObjectKeys(value.modelDecision, [
+      "status",
+      "defaultModel",
+      "upgradeModel",
+      "qualityRuleVersion",
+      "canaryRerunAuthorized",
+    ], "v2b2_public_model_decision_unknown_field");
+    requireV2B2ModelOrNull(value.modelDecision.defaultModel, false);
+    requireV2B2ModelOrNull(value.modelDecision.upgradeModel, true);
+  } else if (value.modelDecision?.status === "BLOCKED") {
+    assertExactObjectKeys(value.modelDecision, [
+      "status",
+      "defaultModel",
+      "upgradeModel",
+      "canaryRerunAuthorized",
+      "blockers",
+    ], "v2b2_public_model_decision_unknown_field");
+    publicDecisionBlockers(value.modelDecision.blockers);
+  }
+  if (value.canaryV02?.status === "NOT_RUN") {
+    assertExactObjectKeys(value.canaryV02, ["status"], "v2b2_public_canary_unknown_field");
+  } else {
+    assertExactObjectKeys(value.canaryV02, [
+      "providerConnectivity",
+      "providerContractCompatibility",
+      "modelEvidenceQuality",
+      "sourceGovernance",
+      "qualityScope",
+      "canaryTechnicalStatus",
+    ], "v2b2_public_canary_unknown_field");
+    if (value.canaryV02?.qualityScope !== BENCHMARK_QUALITY_SCOPE) {
+      throw new Error("v2b2_public_canary_quality_scope_invalid");
+    }
+  }
+  return true;
+}
+
+function assertExactObjectKeys(value, expected, message) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) throw new Error(message);
+  const actual = Object.keys(value).sort();
+  const required = [...expected].sort();
+  if (canonicalJson(actual) !== canonicalJson(required)) throw new Error(message);
+  return true;
+}
+
+function publicBenchmarkConnectivity(value = {}) {
+  return {
+    status: requireEnum(value.status, ["PASS", "FAIL"], "v2b2_public_benchmark_connectivity_status_invalid"),
+    threshold: requireExactNumber(value.threshold, MODEL_CONTRACT_RATE_MINIMUM, "v2b2_public_benchmark_connectivity_threshold_invalid"),
+    dispatchedCount: requireNonnegativeInteger(value.dispatchedCount, "v2b2_public_benchmark_dispatched_count_invalid"),
+    connectedCount: requireNonnegativeInteger(value.connectedCount, "v2b2_public_benchmark_connected_count_invalid"),
+    dependencyBlockedCount: requireNonnegativeInteger(value.dependencyBlockedCount, "v2b2_public_benchmark_dependency_count_invalid"),
+  };
+}
+
+function publicBenchmarkContractCompatibility(value = {}) {
+  return {
+    status: requireEnum(value.status, ["PASS", "FAIL"], "v2b2_public_benchmark_contract_status_invalid"),
+    threshold: requireExactNumber(value.threshold, MODEL_CONTRACT_RATE_MINIMUM, "v2b2_public_benchmark_contract_threshold_invalid"),
+  };
+}
+
+function publicBenchmarkModelEvidenceQuality(value = {}) {
+  return {
+    status: requireEnum(value.status, ["EVALUATED", "NOT_EVALUATED"], "v2b2_public_benchmark_quality_status_invalid"),
+    pairedEvaluableWorkCount: requireNonnegativeInteger(value.pairedEvaluableWorkCount, "v2b2_public_benchmark_paired_count_invalid"),
+    pairedEvaluableWorkMinimum: requireExactNumber(value.pairedEvaluableWorkMinimum, 8, "v2b2_public_benchmark_paired_minimum_invalid"),
+  };
+}
+
+function publicCanaryConnectivity(value = {}) {
+  return {
+    status: requireEnum(value.status, ["PASS", "FAIL"], "v2b2_public_canary_connectivity_status_invalid"),
+    connectedCount: requireNonnegativeInteger(value.connectedCount, "v2b2_public_canary_connected_count_invalid"),
+    dispatchedCount: requireNonnegativeInteger(value.dispatchedCount, "v2b2_public_canary_dispatched_count_invalid"),
+    denominator: requireNonnegativeInteger(value.denominator, "v2b2_public_canary_connectivity_denominator_invalid"),
+    plannedPhysicalRequestCount: requireExactNumber(value.plannedPhysicalRequestCount, 120, "v2b2_public_canary_planned_count_invalid"),
+    dependencyBlockedCount: requireNonnegativeInteger(value.dependencyBlockedCount, "v2b2_public_canary_dependency_count_invalid"),
+  };
+}
+
+function publicCanaryContractCompatibility(value = {}) {
+  return {
+    status: requireEnum(value.status, ["PASS", "FAIL"], "v2b2_public_canary_contract_status_invalid"),
+    compatibleCount: requireNonnegativeInteger(value.compatibleCount, "v2b2_public_canary_compatible_count_invalid"),
+    denominator: requireExactNumber(value.denominator, 120, "v2b2_public_canary_contract_denominator_invalid"),
+    searchContractRate: requireNullableRate(value.searchContractRate, "v2b2_public_canary_search_rate_invalid"),
+    extractionContractRate: requireNullableRate(value.extractionContractRate, "v2b2_public_canary_extraction_rate_invalid"),
+    modelBindingMismatchCount: requireNonnegativeInteger(value.modelBindingMismatchCount, "v2b2_public_canary_binding_mismatch_count_invalid"),
+  };
+}
+
+function publicCanaryModelEvidenceQuality(value = {}) {
+  return {
+    status: requireEnum(value.status, ["EVALUATED", "NOT_EVALUATED"], "v2b2_public_canary_quality_status_invalid"),
+    usableWorkCount: requireNonnegativeInteger(value.usableWorkCount, "v2b2_public_canary_usable_work_count_invalid"),
+    citationBoundWorkRate: requireNullableRate(value.citationBoundWorkRate, "v2b2_public_canary_citation_rate_invalid"),
+    citationBoundEvidenceCount: requireNonnegativeInteger(value.citationBoundEvidenceCount, "v2b2_public_canary_evidence_count_invalid"),
+    unsupportedCitationReferenceCount: requireNonnegativeInteger(value.unsupportedCitationReferenceCount, "v2b2_public_canary_unsupported_reference_count_invalid"),
+    claimSupportUnverifiedCount: requireNonnegativeInteger(value.claimSupportUnverifiedCount, "v2b2_public_canary_claim_support_count_invalid"),
+    entityIdentityErrorCount: requireNonnegativeInteger(value.entityIdentityErrorCount, "v2b2_public_canary_entity_error_count_invalid"),
+  };
+}
+
+function publicSourceGovernance(value = {}, mode) {
+  const statuses = mode === "benchmark"
+    ? ["ALLOWLIST_PRESENT_NOT_USED_FOR_MODEL_SELECTION", "BLOCKED_EMPTY_ALLOWLIST"]
+    : ["ALLOWLIST_PRESENT", "BLOCKED_EMPTY_ALLOWLIST"];
+  return {
+    status: requireEnum(value.status, statuses, "v2b2_public_source_governance_status_invalid"),
+    approvedDomainEntryCount: requireNonnegativeInteger(value.approvedDomainEntryCount, "v2b2_public_allowlist_count_invalid"),
+    acceptedEvidenceCount: requireExactNumber(value.acceptedEvidenceCount, 0, "v2b2_public_accepted_evidence_count_invalid"),
+    modelQualityIndependentOfGovernance: value.modelQualityIndependentOfGovernance === true,
+  };
+}
+
+function publicDecisionBlockers(value) {
+  const allowed = new Set(["compatibility_gate_failed", "model_quality_gate_failed"]);
+  const blockers = Array.isArray(value) ? unique(value.map(String)) : [];
+  if (blockers.some((item) => !allowed.has(item))) throw new Error("v2b2_public_model_decision_blocker_invalid");
+  return blockers;
+}
+
+function requireV2B2ModelOrNull(value, allowNull) {
+  if (allowNull && value === null) return null;
+  if (!V2B2_MODELS.includes(value)) throw new Error("v2b2_public_model_id_invalid");
+  return value;
+}
+
+function requireEnum(value, allowed, message) {
+  if (!allowed.includes(value)) throw new Error(message);
+  return value;
+}
+
+function requireExactString(value, expected, message) {
+  if (value !== expected) throw new Error(message);
+  return value;
+}
+
+function requireExactNumber(value, expected, message) {
+  if (value !== expected) throw new Error(message);
+  return value;
+}
+
+function requireNonnegativeInteger(value, message) {
+  if (!Number.isInteger(value) || value < 0) throw new Error(message);
+  return value;
+}
+
+function requireNullableRate(value, message) {
+  if (value === null) return null;
+  if (!Number.isFinite(value) || value < 0 || value > 1) throw new Error(message);
+  return value;
+}
+
+function assertV2B2PublicMarkdownSafe(value) {
+  if (typeof value !== "string") throw new Error("v2b2_public_markdown_not_string");
+  if (/(?:https?:\/\/|www\.|data[\\/]private-output|\.env|[A-Za-z]:\\)/iu.test(value)) {
+    throw new Error("v2b2_public_markdown_sensitive_value_detected");
+  }
+  for (const token of ["standardWorkId", "sourceUrl", "queryText", "workTitle", "authorByline"]) {
+    if (value.includes(token)) throw new Error("v2b2_public_markdown_private_token_detected");
+  }
+  return true;
+}
+
 function publicModelMetrics(value = {}) {
   return {
     plannedPhysicalRequestCount: value.plannedPhysicalRequestCount ?? 0,
     dispatchedPhysicalRequestCount: value.dispatchedPhysicalRequestCount ?? 0,
     providerConnectivityCount: value.providerConnectivityCount ?? 0,
     providerConnectivityRate: value.providerConnectivityRate ?? null,
+    dependencyBlockedCount: value.dependencyBlockedCount ?? 0,
     providerContractCompatibleCount: value.providerContractCompatibleCount ?? 0,
     providerContractCompatibleRate: value.providerContractCompatibleRate ?? null,
     searchContractSuccessCount: value.searchContractSuccessCount ?? 0,
@@ -2046,6 +2797,12 @@ function assertDigest(value, key, message) {
   if (typeof actual !== "string" || actual !== sha256(payload)) throw new Error(message);
 }
 
+function isIsoTimestamp(value) {
+  return typeof value === "string"
+    && Number.isFinite(Date.parse(value))
+    && new Date(value).toISOString() === value;
+}
+
 function atomicWriteJson(path, value) {
   atomicWriteText(path, `${JSON.stringify(value, null, 2)}\n`);
 }
@@ -2075,6 +2832,56 @@ function atomicWriteText(path, value) {
   } else {
     renameSync(temporary, path);
   }
+}
+
+function atomicWriteBundle(documents) {
+  const nonce = `${process.pid}-${Date.now()}`;
+  const entries = documents.map(([path, value], index) => ({
+    path,
+    value,
+    temporary: `${path}.bundle-tmp-${nonce}-${index}`,
+    backup: `${path}.bundle-backup-${nonce}-${index}`,
+    backedUp: false,
+    installed: false,
+  }));
+  let committed = false;
+  try {
+    for (const entry of entries) {
+      mkdirSync(dirname(entry.path), { recursive: true });
+      writeFileSync(entry.temporary, entry.value, "utf8");
+    }
+    for (const entry of entries) {
+      if (existsSync(entry.path)) {
+        renameSync(entry.path, entry.backup);
+        entry.backedUp = true;
+      }
+    }
+    for (const entry of entries) {
+      renameSync(entry.temporary, entry.path);
+      entry.installed = true;
+    }
+    committed = true;
+  } catch (error) {
+    for (const entry of [...entries].reverse()) {
+      if (entry.installed && existsSync(entry.path)) rmSync(entry.path, { force: true });
+      if (entry.backedUp && existsSync(entry.backup)) renameSync(entry.backup, entry.path);
+    }
+    throw error;
+  } finally {
+    for (const entry of entries) {
+      removeFileBestEffort(entry.temporary);
+      if (committed) removeFileBestEffort(entry.backup);
+    }
+  }
+}
+
+function removeFileBestEffort(path) {
+  try {
+    if (existsSync(path)) rmSync(path, { force: true });
+  } catch {
+    return false;
+  }
+  return true;
 }
 
 function readJson(path) {

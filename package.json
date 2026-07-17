@@ -185,6 +185,7 @@
     "m2:v2:v2b2:benchmark": "node scripts/m2-v2-evidence-pilot/run_m2_v2_b2_relay_remediation.mjs benchmark",
     "m2:v2:v2b2:resume": "node scripts/m2-v2-evidence-pilot/run_m2_v2_b2_relay_remediation.mjs resume",
     "m2:v2:v2b2:canary": "node scripts/m2-v2-evidence-pilot/run_m2_v2_b2_relay_remediation.mjs canary",
+    "m2:v2:v2b2:canary-resume": "node scripts/m2-v2-evidence-pilot/run_m2_v2_b2_relay_remediation.mjs canary-resume",
     "m2:v2:v2b2:verify": "node scripts/m2-v2-evidence-pilot/run_m2_v2_b2_relay_remediation.mjs verify",
     "m2:v2:v2b2:report": "node scripts/m2-v2-evidence-pilot/run_m2_v2_b2_relay_remediation.mjs report"
   },
