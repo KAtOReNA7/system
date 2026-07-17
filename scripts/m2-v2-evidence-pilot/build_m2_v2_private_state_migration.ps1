@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
-    [string]$RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "../..")).Path,
+    [string]$RepoRoot,
 
     [string]$OutputDirectory,
 
@@ -11,6 +11,10 @@ param(
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
+
+if (-not $RepoRoot) {
+    $RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "../..")).Path
+}
 
 $AllowedEnvNames = @(
     "OPENAI_API_KEY",
