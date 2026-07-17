@@ -97,6 +97,35 @@ function Write-Utf8NoBom([string]$Path, [string]$Content) {
     [IO.File]::WriteAllText($Path, $Content, (New-Object Text.UTF8Encoding($false)))
 }
 
+function Copy-TreeWithoutReparsePoints {
+    param(
+        [string]$Source,
+        [string]$Destination
+    )
+
+    $sourceFull = [IO.Path]::GetFullPath($Source).TrimEnd('\')
+    $directories = @(Get-ChildItem -LiteralPath $sourceFull -Recurse -Directory -Force)
+    $safeDirectories = @($directories | Where-Object { -not ($_.Attributes -band [IO.FileAttributes]::ReparsePoint) } | Sort-Object { $_.FullName.Length })
+    foreach ($directory in $safeDirectories) {
+        $relative = $directory.FullName.Substring($sourceFull.Length).TrimStart('\')
+        New-Item -ItemType Directory -Path (Join-Path $Destination $relative) -Force | Out-Null
+    }
+
+    $files = @(Get-ChildItem -LiteralPath $sourceFull -Recurse -File -Force | Where-Object { -not ($_.Attributes -band [IO.FileAttributes]::ReparsePoint) })
+    foreach ($file in $files) {
+        $relative = $file.FullName.Substring($sourceFull.Length).TrimStart('\')
+        $target = Join-Path $Destination $relative
+        New-Item -ItemType Directory -Path (Split-Path $target -Parent) -Force | Out-Null
+        Copy-Item -LiteralPath $file.FullName -Destination $target -Force
+    }
+
+    return [ordered]@{
+        copiedFileCount = $files.Count
+        excludedReparseDirectoryCount = @($directories | Where-Object { $_.Attributes -band [IO.FileAttributes]::ReparsePoint }).Count
+        excludedReparseFileCount = @(Get-ChildItem -LiteralPath $sourceFull -Recurse -File -Force | Where-Object { $_.Attributes -band [IO.FileAttributes]::ReparsePoint }).Count
+    }
+}
+
 function Assert-OutsideRepository([string]$Candidate, [string]$Repository) {
     $candidateFull = [IO.Path]::GetFullPath($Candidate).TrimEnd('\') + '\'
     $repoFull = [IO.Path]::GetFullPath($Repository).TrimEnd('\') + '\'
@@ -199,7 +228,7 @@ New-Item -ItemType Directory -Path $toolsDir -Force | Out-Null
 $passwordPlain = $null
 $passwordSecure = $null
 try {
-    Get-ChildItem -LiteralPath $privateRoot -Force | Copy-Item -Destination $payloadPrivate -Recurse -Force
+    $copyAudit = Copy-TreeWithoutReparsePoints -Source $privateRoot -Destination $payloadPrivate
     $envFragment = Join-Path $payloadEnvDir "m2-v2-evidence.env.private"
     Write-Utf8NoBom $envFragment (($managedLines -join [Environment]::NewLine) + [Environment]::NewLine)
 
@@ -235,6 +264,8 @@ try {
             unrelatedPrivateOutputIncluded = $false
             privateInputIncluded = $false
             databaseBackupIncluded = $false
+            reparseDirectoriesExcluded = $copyAudit.excludedReparseDirectoryCount
+            reparseFilesExcluded = $copyAudit.excludedReparseFileCount
         }
         entries = $entries
         payloadFileCount = $entries.Count
@@ -300,6 +331,8 @@ try {
         passwordTransport = "secure_stdin_not_process_arguments"
         payloadFileCount = $entries.Count
         payloadBytes = $manifest.payloadBytes
+        excludedReparseDirectoryCount = $copyAudit.excludedReparseDirectoryCount
+        excludedReparseFileCount = $copyAudit.excludedReparseFileCount
         sourceBranch = $branch
         sourceCommit = $commit
         recoveryKeyStoredSeparately = $true
@@ -321,6 +354,8 @@ try {
         recoveryKeyPath = $keyPath
         archiveSha256 = $archiveHash
         payloadFileCount = $entries.Count
+        excludedReparseDirectoryCount = $copyAudit.excludedReparseDirectoryCount
+        excludedReparseFileCount = $copyAudit.excludedReparseFileCount
         encryption = "7z_aes256_header_encrypted"
         passwordPrinted = $false
         passwordInProcessArguments = $false

@@ -22,7 +22,8 @@
     "unrelatedPrivateOutputIncluded": false,
     "privateInputIncluded": false,
     "databaseBackupIncluded": false,
-    "rawLedgerOrWorkbookIncluded": false
+    "rawLedgerOrWorkbookIncluded": false,
+    "reparsePointsFollowed": false
   },
   "encryption": {
     "format": "7z",

@@ -18,6 +18,7 @@ Git 只承载代码、测试、脱敏报告和公共配置。M2 v2 evidence pilo
 - `data/private-input/**`；
 - 与 M2 v2 evidence pilot 无关的 private output；
 - 数据库 dump、原始账单、台账或历史工作簿；
+- 指向仓库外缓存或依赖目录的 symlink、junction 和其他 reparse point；
 - Git object、stash、浏览器状态、Cookie 或 Authorization header。
 
 ## 加密与密钥边界
