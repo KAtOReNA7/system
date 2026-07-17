@@ -1,0 +1,114 @@
+{
+  "schema": "m2.v2.human-baseline-analysis.v1",
+  "generatedAt": "2026-07-17",
+  "decisionStatus": "research_only_not_for_formal_decision",
+  "evidenceRefs": [
+    "docs/analysis/m2-real-data/M2-v1.1-after-staging-operator-validation-summary-v1.md",
+    "docs/analysis/m2-real-data/M2-rating-standard-v3-operator-validation-summary-v1.md",
+    "docs/analysis/m2-real-data/M2-rating-standard-v4-operator-validation-summary-v1.md",
+    "docs/analysis/m2-real-data/M2-post-foundation-review-decision-apply-summary-v1.md",
+    "docs/prd/05-老品评估.md"
+  ],
+  "currentEvidenceConclusion": {
+    "humanOutperformsB4Proven": false,
+    "numericHumanForecastBaselineExists": false,
+    "qualitativeOperatorReviewExists": true,
+    "existingReviewCanBeUsedAsNumericBaseline": false
+  },
+  "confirmedHumanInformation": [
+    "historical_revenue_and_recent_trend",
+    "lifecycle_and_backtest_direction",
+    "recent_12_month_scale",
+    "spike_and_rights_risk",
+    "revenue_model_and_buyout_sales_boundary",
+    "work_status_audio_rights_status_and_rights_term_facts",
+    "qualitative_forecast_trust"
+  ],
+  "hypothesizedButUnprovenInformation": [
+    "category_and_tags_for_numeric_forecasting",
+    "external_hot_events",
+    "author_influence",
+    "original_work_performance",
+    "search_and_social_heat",
+    "adaptation_information",
+    "market_trend"
+  ],
+  "forbiddenOrUnfitInformation": [
+    "post_cutoff_income",
+    "later_buyout_or_event_outcomes",
+    "current_state_without_historical_snapshot",
+    "uncommitted_buyout_probability_or_cycle_guess",
+    "unattributed_temporary_experience",
+    "unstable_or_unlicensed_source",
+    "llm_direct_revenue_prediction",
+    "post_result_feature_or_threshold_selection"
+  ],
+  "missingBaselineElements": [
+    "human_point_forecast_at_cutoff",
+    "same_case_keys_and_horizons",
+    "same_evidence_snapshot",
+    "blind_random_sampling",
+    "reviewer_experience_and_time",
+    "human_wape_bias_mae_rank_trend_metrics",
+    "inter_rater_reliability"
+  ],
+  "recommendedProtocol": {
+    "phase1": {
+      "name": "retrospective_blind_replay",
+      "suggestedWorkOriginBlocks": "120-200",
+      "horizonsAreRepeatedObservationsWithinBlock": true,
+      "reviewersPerCase": "2-3",
+      "sameCutoffAndEvidence": true,
+      "b4HiddenDuringIndependentForecast": true
+    },
+    "phase2": {
+      "name": "prospective_shadow",
+      "suggestedWorks": 150,
+      "initialHorizonsMonths": [3, 6, 12],
+      "opensFinalHoldout": false,
+      "affectsServing": false
+    },
+    "strata": [
+      "high_value",
+      "ordinary",
+      "long_tail",
+      "dormant",
+      "intermittent",
+      "pure_sales",
+      "mixed",
+      "pure_buyout"
+    ],
+    "humanFields": [
+      "point_forecast",
+      "annual_breakdown",
+      "trend",
+      "commercial_value_score_or_rank",
+      "confidence",
+      "limitations",
+      "evidence_ids",
+      "drivers",
+      "abstention_reason",
+      "reviewer_timestamp_and_duration"
+    ],
+    "metrics": {
+      "cash": ["WAPE", "signed_bias", "MAE", "SMAPE"],
+      "rank": ["Spearman", "Kendall", "NDCG", "TopK_precision", "TopK_recall"],
+      "trend": ["macro_F1", "balanced_accuracy", "confusion_matrix"],
+      "coverage": ["served_work_share", "served_revenue_share", "top1_top5_top10_share", "abstention_reasons"],
+      "agreement": ["ICC", "weighted_kappa", "Krippendorff_alpha"],
+      "cost": ["median_time_per_case", "review_rate", "dispute_rate"]
+    },
+    "bootstrapUnit": "work_x_origin"
+  },
+  "routineManualInputRequired": false,
+  "humanRoles": [
+    "finite_human_vs_ai_baseline",
+    "source_whitelist_and_conflict_sampling",
+    "high_risk_low_confidence_validation",
+    "pre_release_chinese_business_sampling_and_approval"
+  ],
+  "privacy": {
+    "containsPrivateRows": false,
+    "containsPrivateBusinessIdentifiers": false
+  }
+}

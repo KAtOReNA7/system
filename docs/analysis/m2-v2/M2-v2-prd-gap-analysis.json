@@ -1,0 +1,129 @@
+{
+  "schema": "m2.v2.prd-gap-analysis.v1",
+  "generatedAt": "2026-07-17",
+  "decisionStatus": "research_only_not_for_formal_decision",
+  "evidenceRefs": [
+    "docs/prd/20-evaluation/M2-old-product-evaluation-prd-v0.1.md",
+    "docs/prd/20-evaluation/common-evaluation-rules.md",
+    "docs/analysis/m2-real-data/M2-formal-cash-forecast-target-decision-v1.md",
+    "docs/analysis/m2-real-data/M2-C3-terminal-model-route-summary-v1.md",
+    "docs/api/M2-old-product-evaluation-api-contract-v0.1.md",
+    "docs/product/M2-old-product-evaluation-pages-v0.1.md",
+    "docs/validation/M2-old-product-evaluation-test-plan-v0.1.md",
+    "docs/technical-design/M2-old-product-evaluation-data-model-v0.1.md"
+  ],
+  "currentProductGoal": [
+    "historical_revenue_analysis",
+    "lifecycle_identification",
+    "future_ledger_cash_point_forecast",
+    "rating",
+    "risk",
+    "fact_based_review_prompts",
+    "backtest_and_version_audit"
+  ],
+  "gaps": [
+    { "id": "G1", "name": "commercial_value_has_no_independent_target_or_truth", "severity": "HIGH" },
+    { "id": "G2", "name": "trend_has_no_accuracy_contract", "severity": "HIGH" },
+    { "id": "G3", "name": "topk_coverage_is_not_rank_accuracy", "severity": "HIGH" },
+    { "id": "G4", "name": "human_vs_ai_baseline_missing", "severity": "HIGH" },
+    { "id": "G5", "name": "explanation_driver_schema_and_faithfulness_missing", "severity": "MEDIUM_HIGH" },
+    { "id": "G6", "name": "external_information_intent_not_in_current_input_contract", "severity": "HIGH" },
+    { "id": "G7", "name": "external_evidence_coverage_metrics_missing", "severity": "HIGH" },
+    { "id": "G8", "name": "complex_model_cost_latency_drift_fallback_gates_missing", "severity": "MEDIUM" },
+    { "id": "G9", "name": "unified_current_technical_contract_missing", "severity": "CRITICAL" },
+    { "id": "G10", "name": "m2_traceability_incomplete", "severity": "MEDIUM_HIGH" }
+  ],
+  "staleConflicts": [
+    "three_scenarios_vs_point_only",
+    "operating_suggestions_vs_fact_only_prompts",
+    "legacy_buyout_cycle_vs_formal_cash_null_abstention",
+    "failed_formal_result_vs_no_formal_result_on_failure",
+    "c2_c3_not_started_vs_completed_fail",
+    "3054_vs_authoritative_3053",
+    "stale_database_api_export_vs_current_contract"
+  ],
+  "v2Draft": {
+    "positioning": "old_product_commercial_intelligence_with_formal_cash_anchor",
+    "objectives": ["forecast", "trend", "commercial_value", "explanation", "risk"],
+    "forecastContract": {
+      "target": "formal_cash_unchanged",
+      "output": ["one_point", "annual_breakdown", "confidence", "limitations"],
+      "b4Role": "anchor_and_fallback"
+    },
+    "trend": {
+      "labels": ["rising", "stable", "declining"],
+      "requiresIndependentTruth": true
+    },
+    "commercialValue": {
+      "requiresIndependentVersionedLabel": true,
+      "mayNotIncludeUncommittedBuyoutAsCash": true,
+      "truthSource": "independent_future_outcome_or_pre_frozen_independently_collected_business_rubric",
+      "sameEvidenceMayDefineLabelAndBeModelInput": false,
+      "outputs": ["score", "rank_percentile", "dimension_scores", "confidence"]
+    },
+    "explanation": {
+      "driverFields": ["type", "direction", "strength_band", "evidence_ids", "as_of"]
+    },
+    "risk": {
+      "automatedOperatingAction": false
+    }
+  },
+  "metrics": {
+    "cash": ["WAPE", "signed_bias", "MAE", "SMAPE", "horizon_stability", "block_bootstrap", "internal_coverage_WIS"],
+    "rankAndValue": ["Spearman", "Kendall", "NDCG_at_K", "TopK_precision_recall", "value_capture", "rank_stability", "score_calibration"],
+    "trend": ["macro_F1", "balanced_accuracy", "class_precision_recall", "confusion_matrix", "transition_stability"],
+    "evidence": ["work_type_as_of_coverage", "entity_resolution", "authoritative_fresh_share", "contradiction", "provider_fallback", "cost", "incremental_value"],
+    "human": ["same_cutoff_case_key_metrics", "inter_rater_reliability", "time_and_cost"]
+  },
+  "mandatoryAutomaticData": [
+    "external_source_discovery_and_url",
+    "public_author_ip_original_identity_resolution",
+    "search_ranking_and_public_trend_snapshots",
+    "adaptation_publication_award_and_public_events",
+    "reliability_freshness_availableAt_contradiction",
+    "provider_and_evidence_snapshot_metadata"
+  ],
+  "mandatoryInternalRoles": [
+    "cutoff_as_of_buyout_commitment_snapshot",
+    "confirmed_amount_time_expected_settlement_and_evidence",
+    "historical_state_snapshots_if_used_as_features",
+    "versioned_trend_truth",
+    "versioned_commercial_value_truth"
+  ],
+  "optionalFutureData": [
+    "licensed_social_aggregates",
+    "longer_market_and_category_indices",
+    "public_reviews_and_reputation",
+    "comparable_work_and_author_network",
+    "finer_public_channel_signals"
+  ],
+  "gates": [
+    "V2_A_prd_contract_readiness",
+    "V2_B_evidence_pilot",
+    "V2_C_prospective_shadow",
+    "V2_D_preregistered_algorithm_experiment",
+    "V2_E_formal_decision"
+  ],
+  "priorities": [
+    "unified_current_m2_technical_contract",
+    "non_bypassable_formal_cash_serving_contract",
+    "trend_and_value_truth",
+    "external_evidence_schema_and_as_of_snapshots",
+    "human_vs_ai_baseline",
+    "point_only_database_api_export_and_integration_tests",
+    "training_authorization_only_after_readiness"
+  ],
+  "nonGoals": [
+    "start_C4",
+    "change_B4_or_current_results",
+    "enter_M3",
+    "predict_uncommitted_buyout",
+    "llm_direct_cash_prediction",
+    "routine_manual_completion_dependency",
+    "automatic_release"
+  ],
+  "privacy": {
+    "containsPrivateRows": false,
+    "containsPrivateBusinessIdentifiers": false
+  }
+}

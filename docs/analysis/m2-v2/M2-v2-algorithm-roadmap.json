@@ -1,0 +1,137 @@
+{
+  "schema": "m2.v2.algorithm-roadmap.v1",
+  "generatedAt": "2026-07-17",
+  "decisionStatus": "research_only_not_for_formal_decision",
+  "projectEvidenceRefs": [
+    "docs/analysis/m2-real-data/M2-C1-development-validation-v1.json",
+    "docs/analysis/m2-real-data/M2-C2R1-development-validation-v1.json",
+    "docs/analysis/m2-real-data/M2-C2-development-validation-v1.json",
+    "docs/analysis/m2-real-data/M2-C3-development-validation-v1.json",
+    "src/domain/oldProductEvaluation/calibrationSpec.c3.v1.amendment.json"
+  ],
+  "ranking": [
+    {
+      "rank": 1,
+      "route": "A+E+F",
+      "name": "B4_anchor_plus_external_evidence_plus_tree_residual",
+      "status": "RECOMMENDED_FOR_FUTURE_PREREGISTERED_RESEARCH_NOT_TRAINING"
+    },
+    {
+      "rank": 2,
+      "route": "C",
+      "name": "bayesian_hierarchical_forecasting",
+      "status": "RECOMMENDED_AS_INDEPENDENT_BENCHMARK"
+    },
+    {
+      "rank": 3,
+      "route": "B_D",
+      "name": "tft_deepar_nbeats_patchtst",
+      "status": "DEFER_UNTIL_LONGER_DENSER_MULTIVARIATE_PANEL"
+    }
+  ],
+  "commonBoundaries": [
+    "formal_cash_target_unchanged",
+    "no_uncommitted_buyout_prediction",
+    "pure_buyout_without_commitment_null_abstention",
+    "same_case_keys_origins_seeds_and_seals",
+    "pre_register_before_final_holdout",
+    "one_external_point_forecast_only",
+    "internal_interval_audit_only",
+    "report_all_scoreable_served_and_abstention",
+    "b4_comparator_and_fallback_preserved"
+  ],
+  "routes": {
+    "A": {
+      "fit": "MEDIUM_HIGH_AFTER_INFORMATION_LAYER",
+      "libraries": ["CatBoost", "LightGBM", "XGBoost"],
+      "preferredFirstLibrary": "CatBoost",
+      "candidateTargets": [
+        "log1p_actual_minus_log1p_b4",
+        "bounded_scale_normalized_signed_residual",
+        "zero_positive_hurdle_plus_positive_residual",
+        "bounded_correction_factor"
+      ],
+      "rawActualOverB4RecommendedWithoutGuard": false,
+      "explainability": ["ablation", "permutation_importance", "SHAP", "evidence_ids", "correction_direction"],
+      "expectedImprovement": "UNKNOWN_MUST_PASS_FROZEN_GATES_AND_BLOCK_BOOTSTRAP"
+    },
+    "B": {
+      "model": "Temporal_Fusion_Transformer",
+      "fit": "LOW_NOW",
+      "reasons": [
+        "824_formal_cash_works",
+        "short_sparse_intermittent_series",
+        "no_historical_external_covariates",
+        "large_tuning_and_leakage_surface"
+      ],
+      "decision": "DEFER"
+    },
+    "C": {
+      "model": "Bayesian_hierarchical_forecasting",
+      "fit": "MEDIUM_HIGH",
+      "candidateHierarchy": ["author", "category", "work", "revenue_model"],
+      "candidateStructure": ["hurdle", "partial_pooling", "b4_offset_or_prior", "external_time_varying_covariate"],
+      "expectedImprovement": "LIKELY_STABILITY_BIAS_AND_LONG_TAIL_NOT_GUARANTEED_OVERALL_WAPE"
+    },
+    "D": {
+      "models": ["DeepAR", "N-BEATS", "PatchTST"],
+      "fit": "LOW_TO_MEDIUM_NOW",
+      "decision": "DEFER",
+      "reason": "current_panel_is_short_sparse_and_product_does_not_expose_probability_endpoints"
+    },
+    "E": {
+      "model": "LLM_judge_and_structured_features",
+      "fit": "HIGH_AS_EVIDENCE_PROCESSOR",
+      "directRevenuePredictionAllowed": false,
+      "decision": "RECOMMEND"
+    },
+    "F": {
+      "model": "agent_search_and_browser_research_layer",
+      "fit": "HIGH_AS_DATA_AND_GOVERNANCE_LAYER",
+      "searchApiPrimary": true,
+      "browserAutomationPrimary": false,
+      "decision": "RECOMMEND_PILOT_AND_SHADOW"
+    }
+  },
+  "ablationOrder": [
+    "B4_unchanged",
+    "internal_only_tree_residual",
+    "external_only",
+    "internal_plus_external",
+    "bayesian_hierarchy",
+    "simple_model_combination_only_after_gate",
+    "deep_models_last"
+  ],
+  "newRuntimeRequirementsBeforeTraining": [
+    "python_version",
+    "dependency_lockfile",
+    "artifact_checksums",
+    "deterministic_seeds_and_threads",
+    "resource_and_duration_limits",
+    "serialization_and_compatibility",
+    "sbom_license_and_vulnerability_scan",
+    "b4_only_fallback_mode"
+  ],
+  "references": [
+    "https://catboost.ai/docs/en/features/categorical-features",
+    "https://catboost.ai/docs/en/concepts/algorithm-main-stages_cat-to-numberic",
+    "https://lightgbm.readthedocs.io/en/stable/Parameters.html",
+    "https://lightgbm.readthedocs.io/en/latest/Features.html",
+    "https://xgboost.readthedocs.io/en/stable/contrib/featuremap.html",
+    "https://arxiv.org/abs/1912.09363",
+    "https://arxiv.org/abs/1704.04110",
+    "https://arxiv.org/abs/1905.10437",
+    "https://arxiv.org/abs/2211.14730"
+  ],
+  "execution": {
+    "startsC4": false,
+    "trainsNewModel": false,
+    "changesB4": false,
+    "opensFinalHoldout": false,
+    "entersM3": false
+  },
+  "privacy": {
+    "containsPrivateRows": false,
+    "containsPrivateBusinessIdentifiers": false
+  }
+}
