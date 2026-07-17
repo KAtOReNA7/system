@@ -30,6 +30,8 @@ Git 只承载代码、测试、脱敏报告和公共配置。M2 v2 evidence pilo
 - recovery key 文件必须位于仓库和迁移包目录之外，并与加密包分开传输；
 - 迁移包、sidecar、receipt 和 recovery key 均不得放入仓库目录。
 
+自动化恢复测试只允许在系统临时目录下的固定验证目标使用进程级临时环境变量；正式仓库恢复不开放该通道，仍必须使用 `Read-Host -AsSecureString`。
+
 ## 新电脑恢复
 
 先从远端恢复公共状态：

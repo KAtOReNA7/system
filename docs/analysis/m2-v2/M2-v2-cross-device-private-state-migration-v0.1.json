@@ -33,7 +33,8 @@
     "passwordTransport": "stdin",
     "passwordInProcessArguments": false,
     "passwordPrinted": false,
-    "recoveryKeyStoredSeparately": true
+    "recoveryKeyStoredSeparately": true,
+    "nonInteractiveValidationRestrictedToTemporaryTarget": true
   },
   "integrity": {
     "outerArchiveSha256": true,

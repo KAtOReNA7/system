@@ -10,6 +10,8 @@ param(
 
     [string]$SevenZipPath = "C:\Program Files\7-Zip\7z.exe",
 
+    [string]$ValidationPasswordEnvironmentVariable,
+
     [switch]$Force
 )
 
@@ -175,7 +177,28 @@ if ($LASTEXITCODE -ne 0) {
     throw "migration_private_output_not_ignored"
 }
 
-$password = Read-Host "请输入迁移包密码（输入不会回显）" -AsSecureString
+$password = $null
+if ($ValidationPasswordEnvironmentVariable) {
+    if ($ValidationPasswordEnvironmentVariable -ne "M2_V2_MIGRATION_VALIDATION_PASSWORD") {
+        throw "migration_validation_password_environment_name_invalid"
+    }
+    $tempPrefix = [IO.Path]::GetFullPath([IO.Path]::GetTempPath()).TrimEnd('\') + '\'
+    $repoFull = [IO.Path]::GetFullPath($resolvedRepo)
+    if (-not $repoFull.StartsWith($tempPrefix, [StringComparison]::OrdinalIgnoreCase) -or
+        -not (Split-Path -Leaf $repoFull).StartsWith("m2-v2-migration-restore-validation-")) {
+        throw "migration_noninteractive_password_requires_temp_validation_target"
+    }
+    $validationPassword = [Environment]::GetEnvironmentVariable($ValidationPasswordEnvironmentVariable, "Process")
+    if ([string]::IsNullOrWhiteSpace($validationPassword)) {
+        throw "migration_validation_password_environment_missing"
+    }
+    $password = ConvertTo-SecureString -String $validationPassword -AsPlainText -Force
+    [Environment]::SetEnvironmentVariable($ValidationPasswordEnvironmentVariable, $null, "Process")
+    $validationPassword = $null
+}
+else {
+    $password = Read-Host "请输入迁移包密码（输入不会回显）" -AsSecureString
+}
 $extractRoot = Join-Path ([IO.Path]::GetTempPath()) ("m2-v2-private-restore-" + [guid]::NewGuid().ToString("N"))
 New-Item -ItemType Directory -Path $extractRoot | Out-Null
 
