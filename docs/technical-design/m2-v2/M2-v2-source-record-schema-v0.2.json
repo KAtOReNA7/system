@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "m2.v2.evidence-source-record.v0.2",
+  "title": "M2 v2 Provider-neutral Source Record v0.2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "sourceId",
+    "queryId",
+    "title",
+    "url",
+    "domain",
+    "snippet",
+    "providerScore",
+    "searchProvider",
+    "providerRequestId",
+    "capturedAt",
+    "availableAt",
+    "availableAtBasis",
+    "eventTime",
+    "sourceTypeCandidate",
+    "providerReceiptRef",
+    "researchOnly",
+    "modelEligible"
+  ],
+  "properties": {
+    "schema": {
+      "const": "m2.v2.evidence-source-record.v0.2"
+    },
+    "sourceId": {
+      "type": "string",
+      "pattern": "^src_[a-f0-9]{32}$"
+    },
+    "queryId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 300
+    },
+    "url": {
+      "type": "string",
+      "pattern": "^https://"
+    },
+    "domain": {
+      "type": "string",
+      "minLength": 1
+    },
+    "snippet": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    },
+    "providerScore": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "searchProvider": {
+      "type": "string",
+      "minLength": 1
+    },
+    "providerRequestId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "capturedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "availableAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "availableAtBasis": {
+      "const": "first_observed_by_system"
+    },
+    "eventTime": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "sourceTypeCandidate": {
+      "type": "string"
+    },
+    "providerReceiptRef": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "researchOnly": {
+      "const": true
+    },
+    "modelEligible": {
+      "const": false
+    }
+  },
+  "x-invariants": {
+    "availableAtEqualsCapturedAt": true,
+    "historicalBackfillAllowed": false,
+    "sourceIdDerivedFromCanonicalUrl": true,
+    "modelGeneratedUrlAllowed": false,
+    "full160Authorized": false
+  }
+}
