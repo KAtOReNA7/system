@@ -106,8 +106,13 @@ export class TavilyStructuredSearchProviderV2B5 {
     });
     return {
       ...normalized,
+      dispatched: response.dispatchAttempted !== false,
       includeUsageUnsupported: response.includeUsageUnsupported,
       transportStatus: response.status,
+      transportFailureCategory: response.transportFailureCategory,
+      dnsAttempted: response.dnsAttempted,
+      dnsSuccess: response.dnsSuccess,
+      tlsSuccess: response.tlsSuccess,
       responseDigest: response.responseDigest,
       responseByteLength: response.responseByteLength,
     };
@@ -271,13 +276,37 @@ function buildCandidateObservation(result, meta = {}) {
 }
 
 export function classifyV2B5TavilyProviderDecision(result) {
+  if (result?.dispatched === false) return "BLOCKED_EGRESS_PERMISSION";
   if (result?.contractValid === true && result?.sourceRecordCount > 0) return "READY";
   const status = result?.providerReceipt?.httpStatus;
   if ([401, 403].includes(status)) return "BLOCKED_AUTH";
+  if (status === 429) return "BLOCKED_RATE_LIMIT";
   if (Number.isInteger(status) && status >= 400 && status < 500 && ![408, 429].includes(status)) return "BLOCKED_CONTRACT";
   if (Number.isInteger(status) && status >= 200 && status < 300) return "BLOCKED_CONTRACT";
+  if (result?.transportFailureCategory === "dns") return "BLOCKED_DNS";
+  if (result?.transportFailureCategory === "tls") return "BLOCKED_TLS";
   if (result?.providerConnectivityPassed !== true) return "BLOCKED_TRANSPORT";
   return "BLOCKED_CONTRACT";
+}
+
+export function validateV2B5TavilyCapabilityState(capability) {
+  const decision = capability?.tavilyProviderDecision;
+  const result = capability?.finalResult ?? {};
+  const httpStatus = Number.isInteger(result.httpStatus)
+    ? result.httpStatus : result.providerReceipt?.httpStatus ?? null;
+  const issues = [];
+  if (decision === "BLOCKED_EGRESS_PERMISSION" && result.dispatched !== false) issues.push("egress_dispatch_must_be_false");
+  if (decision === "BLOCKED_DNS" && !(result.dnsAttempted === true && result.dnsSuccess === false)) issues.push("dns_attempt_or_result_invalid");
+  if (decision === "BLOCKED_TLS" && !(result.dispatched === true && result.tlsSuccess === false)) issues.push("tls_dispatch_or_result_invalid");
+  if (decision === "BLOCKED_TRANSPORT" && !(result.dispatched === true && httpStatus === null)) issues.push("transport_dispatch_or_http_status_invalid");
+  if (decision === "BLOCKED_AUTH" && !(result.dispatched === true && [401, 403].includes(httpStatus))) issues.push("auth_dispatch_or_http_status_invalid");
+  if (decision === "BLOCKED_RATE_LIMIT" && !(result.dispatched === true && httpStatus === 429)) issues.push("rate_limit_dispatch_or_http_status_invalid");
+  if (decision === "BLOCKED_CONTRACT" && !(result.dispatched === true && result.httpSuccess === true && result.contractValid === false)) issues.push("contract_dispatch_or_result_invalid");
+  if (decision === "READY" && !(result.dispatched === true && result.httpSuccess === true && result.contractValid === true)) issues.push("ready_dispatch_or_result_invalid");
+  if (!["BLOCKED_EGRESS_PERMISSION", "BLOCKED_DNS", "BLOCKED_TLS", "BLOCKED_TRANSPORT", "BLOCKED_AUTH", "BLOCKED_RATE_LIMIT", "BLOCKED_CONTRACT", "READY"].includes(decision)) {
+    issues.push("capability_state_unknown");
+  }
+  return { valid: issues.length === 0, issues };
 }
 
 export async function dispatchV2B5TavilyRequest(options) {
@@ -291,6 +320,7 @@ export async function dispatchV2B5TavilyRequest(options) {
   let bytes = Buffer.alloc(0);
   let json = null;
   let transportError = null;
+  let transportFailureCategory = null;
   try {
     response = await fetchImpl(`${normalizeBaseUrl(options.baseUrl)}/search`, {
       method: "POST",
@@ -310,6 +340,7 @@ export async function dispatchV2B5TavilyRequest(options) {
     }
   } catch (error) {
     transportError = safeToken(error?.name ?? error?.message) ?? "transport_error";
+    transportFailureCategory = classifyTransportFailure(error);
   } finally {
     clearTimeout(timeout);
   }
@@ -343,8 +374,25 @@ export async function dispatchV2B5TavilyRequest(options) {
     providerResponseTime: finiteNonnegative(json?.response_time),
     usageCredits: extractUsageCredits(json),
     includeUsageUnsupported,
+    dispatchAttempted: transportFailureCategory !== "egress_permission",
+    transportFailureCategory,
+    dnsAttempted: transportFailureCategory !== "egress_permission",
+    dnsSuccess: transportFailureCategory === "dns" ? false
+      : transportFailureCategory === "egress_permission" ? null : true,
+    tlsSuccess: transportFailureCategory === "tls" ? false
+      : transportFailureCategory === "dns" || transportFailureCategory === "egress_permission" ? null : true,
     rawResponsePersisted: false,
   };
+}
+
+function classifyTransportFailure(error) {
+  const code = String(error?.cause?.code ?? error?.code ?? "").toLocaleUpperCase("en-US");
+  const name = String(error?.name ?? "").toLocaleUpperCase("en-US");
+  if (["EACCES", "EPERM"].includes(code) || name === "SECURITYERROR") return "egress_permission";
+  if (["ENOTFOUND", "EAI_AGAIN", "EAI_FAIL", "WSAHOST_NOT_FOUND"].includes(code)) return "dns";
+  if (/(?:TLS|SSL|CERT|CERTIFICATE|UNABLE_TO_VERIFY|SELF_SIGNED)/u.test(code)
+    || /(?:TLS|SSL|CERTIFICATE)/u.test(name)) return "tls";
+  return "transport";
 }
 
 function extractUsageCredits(json) {

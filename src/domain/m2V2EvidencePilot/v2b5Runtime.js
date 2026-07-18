@@ -33,6 +33,7 @@ import {
   TavilyStructuredSearchProviderV2B5,
   buildV2B5TavilyCacheDescriptor,
   classifyV2B5TavilyProviderDecision,
+  validateV2B5TavilyCapabilityState,
 } from "./tavilySearchProviderV2B5.js";
 import {
   OpenAICompatibleRelayExtractionProviderV2B5,
@@ -77,11 +78,16 @@ const FILES = Object.freeze({
   pretest: "pretest-receipt-private-v0.1.json",
   validation: "full-validation-receipt-private-v0.1.json",
   verifier: "verification-receipt-private-v0.1.json",
+  egressDiagnostic: "egress-permission-diagnostic-private-v0.1.json",
 });
 
 const PUBLIC_REPORTS = Object.freeze({
-  capabilityJson: "docs/analysis/m2-v2/M2-v2-tavily-capability-report-v0.1.json",
-  capabilityMarkdown: "docs/analysis/m2-v2/M2-v2-tavily-capability-report-v0.1.md",
+  diagnosticJson: "docs/analysis/m2-v2/M2-v2-egress-permission-diagnostic-v0.1.json",
+  diagnosticMarkdown: "docs/analysis/m2-v2/M2-v2-egress-permission-diagnostic-v0.1.md",
+  capabilityJson: "docs/analysis/m2-v2/M2-v2-tavily-capability-report-v0.2.json",
+  capabilityMarkdown: "docs/analysis/m2-v2/M2-v2-tavily-capability-report-v0.2.md",
+  capabilityLegacyJson: "docs/analysis/m2-v2/M2-v2-tavily-capability-report-v0.1.json",
+  capabilityLegacyMarkdown: "docs/analysis/m2-v2/M2-v2-tavily-capability-report-v0.1.md",
   benchmarkJson: "docs/analysis/m2-v2/M2-v2-luna-terra-extraction-benchmark-v0.1.json",
   benchmarkMarkdown: "docs/analysis/m2-v2/M2-v2-luna-terra-extraction-benchmark-v0.1.md",
   executionJson: "docs/analysis/m2-v2/M2-v2-canary-v3-execution-summary-v0.1.json",
@@ -90,8 +96,12 @@ const PUBLIC_REPORTS = Object.freeze({
   qualityMarkdown: "docs/analysis/m2-v2/M2-v2-canary-v3-quality-report-v0.1.md",
   decisionJson: "docs/analysis/m2-v2/M2-v2-canary-v3-decision-v0.1.json",
   decisionMarkdown: "docs/analysis/m2-v2/M2-v2-canary-v3-decision-v0.1.md",
-  nextStepJson: "docs/analysis/m2-v2/M2-v2-v2b5-next-step-v0.1.json",
-  nextStepMarkdown: "docs/analysis/m2-v2/M2-v2-v2b5-next-step-v0.1.md",
+  resumeJson: "docs/analysis/m2-v2/M2-v2-v2b5-resume-summary-v0.1.json",
+  resumeMarkdown: "docs/analysis/m2-v2/M2-v2-v2b5-resume-summary-v0.1.md",
+  nextStepJson: "docs/analysis/m2-v2/M2-v2-v2b5-next-step-v0.2.json",
+  nextStepMarkdown: "docs/analysis/m2-v2/M2-v2-v2b5-next-step-v0.2.md",
+  nextStepLegacyJson: "docs/analysis/m2-v2/M2-v2-v2b5-next-step-v0.1.json",
+  nextStepLegacyMarkdown: "docs/analysis/m2-v2/M2-v2-v2b5-next-step-v0.1.md",
 });
 
 export function checkAndFreezeV2B5(root, options = {}) {
@@ -135,10 +145,22 @@ export async function runV2B5(root, options = {}) {
   const relayCachePath = join(privateStore, FILES.relayCache);
   const bindings = configurationBindings(config);
   const stateAlreadyExists = existsSync(statePath);
-  const state = stateAlreadyExists ? readJson(statePath) : newExecutionState(frozen, bindings);
+  let state = stateAlreadyExists ? readJson(statePath) : newExecutionState(frozen, bindings);
   if (stateAlreadyExists && options.resume !== true) throw new Error("v2b5_existing_execution_requires_resume");
   const tavilyCache = existsSync(tavilyCachePath) ? readJson(tavilyCachePath) : newCache("tavily", frozen, bindings);
   const relayCache = existsSync(relayCachePath) ? readJson(relayCachePath) : newCache("relay", frozen, bindings);
+  const existingCapabilityPath = join(privateStore, FILES.capability);
+  const existingCapability = existsSync(existingCapabilityPath) ? readJson(existingCapabilityPath) : null;
+  const migration = migrateV2B5LegacyCapabilityState(
+    state,
+    existingCapability,
+    options.now?.() ?? new Date().toISOString(),
+  );
+  state = migration.state;
+  if (migration.migrated) {
+    atomicWriteJson(statePath, state);
+    atomicWriteJson(existingCapabilityPath, migration.capability);
+  }
   assertExecutionContainers(state, tavilyCache, relayCache, frozen, bindings);
   reconcileIndeterminateReservations(state, tavilyCache, relayCache, options.now?.() ?? new Date().toISOString());
   checkpointExecution(privateStore, state, tavilyCache, relayCache);
@@ -291,7 +313,7 @@ export function recordV2B5ExecutionBlock(root, reason = "external_dispatch_not_p
   const pretest = runTargetedPretest(root);
   state.pretestsPassed = pretest.allPassed;
   state.executionStatus = "blocked_provider_capability";
-  state.tavilyProviderDecision = "BLOCKED_TRANSPORT";
+  state.tavilyProviderDecision = "BLOCKED_EGRESS_PERMISSION";
   state.canaryExecuted = false;
   state.externalDispatchBlockedBeforeExecution = true;
   const context = {
@@ -309,6 +331,23 @@ export function recordV2B5ExecutionBlock(root, reason = "external_dispatch_not_p
   };
   checkpointExecution(frozen.privateStore, state, tavilyCache, relayCache);
   atomicWriteJson(join(frozen.privateStore, FILES.pretest), pretest);
+  const capability = buildV2B5ExecutionBlockCapability(bindings, reason);
+  atomicWriteJson(join(frozen.privateStore, FILES.capability), capability);
+  const canaryEvaluation = blockedCanaryEvaluation(frozen.canaryManifest, reason);
+  const result = finalizePrivateArtifacts(context, {
+    capability,
+    benchmarkEvaluation: null,
+    searchRuns: [],
+    canaryEvaluation,
+  });
+  writeV2B5PublicReports(root, result);
+  return result;
+}
+
+export function buildV2B5ExecutionBlockCapability(bindings, reason = "external_dispatch_not_permitted_by_execution_environment") {
+  if (reason !== "external_dispatch_not_permitted_by_execution_environment") {
+    throw new Error("v2b5_execution_block_reason_invalid");
+  }
   const capability = {
     schema: "m2.v2.tavily-capability.v0.1",
     privateOnly: true,
@@ -316,8 +355,8 @@ export function recordV2B5ExecutionBlock(root, reason = "external_dispatch_not_p
     includeUsageSupported: null,
     compatibilityRetryUsed: false,
     attemptCount: 0,
-    tavilyProviderDecision: "BLOCKED_TRANSPORT",
-    tavilyBindingDigest: bindings.tavily,
+    tavilyProviderDecision: "BLOCKED_EGRESS_PERMISSION",
+    tavilyBindingDigest: bindings?.tavily ?? null,
     executionBlockedBeforeDispatch: true,
     blockerReason: reason,
     finalResult: {
@@ -326,9 +365,11 @@ export function recordV2B5ExecutionBlock(root, reason = "external_dispatch_not_p
       phase: "capability",
       runKind: "synthetic",
       dispatched: false,
-      httpSuccess: false,
-      providerConnectivityPassed: false,
-      contractValid: false,
+      httpSuccess: null,
+      httpStatus: null,
+      providerConnectivityPassed: null,
+      providerContractCompatibility: "NOT_EVALUATED",
+      contractValid: null,
       status: "blocked_before_dispatch",
       sourceRecords: [],
       sourceRecordCount: 0,
@@ -342,18 +383,14 @@ export function recordV2B5ExecutionBlock(root, reason = "external_dispatch_not_p
       full160Authorized: false,
     },
     apiKeyPersisted: false,
+    providerConnectivity: "NOT_EVALUATED",
+    providerContract: "NOT_EVALUATED",
+    providerContractCompatibility: "NOT_EVALUATED",
     full160Authorized: false,
   };
-  atomicWriteJson(join(frozen.privateStore, FILES.capability), capability);
-  const canaryEvaluation = blockedCanaryEvaluation(frozen.canaryManifest, reason);
-  const result = finalizePrivateArtifacts(context, {
-    capability,
-    benchmarkEvaluation: null,
-    searchRuns: [],
-    canaryEvaluation,
-  });
-  writeV2B5PublicReports(root, result);
-  return result;
+  const stateInvariantValidation = validateV2B5TavilyCapabilityState(capability);
+  if (!stateInvariantValidation.valid) throw new Error("v2b5_execution_block_capability_invalid");
+  return { ...capability, stateInvariantValidation };
 }
 
 async function runCapabilityProbe(context) {
@@ -394,7 +431,7 @@ async function runCapabilityProbe(context) {
     });
   }
   context.state.includeUsageSupported = includeUsageSupported;
-  return {
+  const capability = {
     schema: "m2.v2.tavily-capability.v0.1",
     privateOnly: true,
     syntheticQueryOnly: true,
@@ -408,6 +445,44 @@ async function runCapabilityProbe(context) {
     apiKeyPersisted: false,
     full160Authorized: false,
   };
+  const stateInvariantValidation = validateV2B5TavilyCapabilityState(capability);
+  if (!stateInvariantValidation.valid) {
+    throw new Error(`v2b5_capability_state_invalid:${stateInvariantValidation.issues.join(",")}`);
+  }
+  return { ...capability, stateInvariantValidation };
+}
+
+export function migrateV2B5LegacyCapabilityState(stateInput, capabilityInput, migratedAt = new Date().toISOString()) {
+  const state = structuredClone(stateInput);
+  const capability = capabilityInput ? structuredClone(capabilityInput) : null;
+  const dispatchAttempted = capability?.finalResult?.dispatched === true;
+  const legacyPreDispatchBlockedTransport = dispatchAttempted === false
+    && capability?.tavilyProviderDecision === "BLOCKED_TRANSPORT"
+    && (capability?.executionBlockedBeforeDispatch === true
+      || state?.externalDispatchBlockedBeforeExecution === true);
+  if (!legacyPreDispatchBlockedTransport) return { state, capability, migrated: false };
+  const migration = {
+    schema: "m2.v2.v2b5-capability-state-migration.v0.1",
+    migrationVersion: "v2b5-egress-semantics-v0.1",
+    migratedAt,
+    reason: "legacy_pre_dispatch_blocked_transport_reclassified",
+    oldValue: "BLOCKED_TRANSPORT",
+    newValue: "BLOCKED_EGRESS_PERMISSION",
+  };
+  state.tavilyProviderDecision = "BLOCKED_EGRESS_PERMISSION";
+  state.capabilityStateMigration = migration;
+  capability.tavilyProviderDecision = "BLOCKED_EGRESS_PERMISSION";
+  capability.legacyTavilyProviderDecision = "BLOCKED_TRANSPORT";
+  capability.capabilityStateMigration = migration;
+  capability.providerConnectivity = "NOT_EVALUATED";
+  capability.providerContract = "NOT_EVALUATED";
+  capability.providerContractCompatibility = "NOT_EVALUATED";
+  capability.finalResult.httpStatus = null;
+  capability.finalResult.httpSuccess = null;
+  capability.finalResult.providerConnectivityPassed = null;
+  capability.finalResult.providerContractCompatibility = "NOT_EVALUATED";
+  capability.finalResult.contractValid = null;
+  return { state, capability, migrated: true };
 }
 
 async function runSearchPopulation(context, input) {
@@ -510,6 +585,11 @@ async function executeTavilyQuery(context, input) {
       cacheKey: descriptor.cacheKey,
       retryCount: input.retryCount ?? 0,
     });
+    const providerHttpStatus = providerResult.providerReceipt?.httpStatus ?? null;
+    const httpExchangeSucceeded = Number.isInteger(providerHttpStatus)
+      && ((providerHttpStatus >= 200 && providerHttpStatus < 300)
+        || (providerHttpStatus >= 400 && providerHttpStatus < 500
+          && ![401, 403, 408, 429].includes(providerHttpStatus)));
     result = {
       schema: "m2.v2.tavily-query-execution.v0.1",
       privateOnly: true,
@@ -521,8 +601,9 @@ async function executeTavilyQuery(context, input) {
       executionNamespace: input.executionNamespace,
       cacheKey: descriptor.cacheKey,
       cacheHit: false,
-      dispatched: true,
-      httpSuccess: providerResult.providerConnectivityPassed === true,
+      dispatched: providerResult.dispatched !== false,
+      httpStatus: providerHttpStatus,
+      httpSuccess: httpExchangeSucceeded,
       providerConnectivityPassed: providerResult.providerConnectivityPassed === true,
       contractValid: providerResult.contractValid === true,
       status: providerResult.status,
@@ -535,6 +616,10 @@ async function executeTavilyQuery(context, input) {
       responseReceivedAt: providerResult.providerReceipt?.responseReceivedAt ?? context.now(),
       providerReceipt: providerResult.providerReceipt,
       includeUsageUnsupported: providerResult.includeUsageUnsupported === true,
+      transportFailureCategory: providerResult.transportFailureCategory ?? null,
+      dnsAttempted: providerResult.dnsAttempted ?? null,
+      dnsSuccess: providerResult.dnsSuccess ?? null,
+      tlsSuccess: providerResult.tlsSuccess ?? null,
       issues: providerResult.issues,
       rawResponsePersisted: false,
       full160Authorized: false,
@@ -543,7 +628,8 @@ async function executeTavilyQuery(context, input) {
     result = buildTavilyExceptionResult(input, descriptor, error, context.now());
   }
   context.tavilyCache.entries[descriptor.cacheKey] = result;
-  completePhysicalRequest(context, "tavily", physicalKey, result);
+  if (result.dispatched === false) cancelPredispatchReservation(context, "tavily", physicalKey);
+  else completePhysicalRequest(context, "tavily", physicalKey, result);
   return result;
 }
 
@@ -918,6 +1004,8 @@ export function readV2B5Results(root) {
   const sourceRecords = readNdjson(join(privateStore, FILES.sourceRecords));
   const evidenceRecords = readNdjson(join(privateStore, FILES.evidenceRecords));
   const privateWorkbookPath = join(root, V2B5_PRIVATE_WORKBOOK_RELATIVE);
+  const egressDiagnostic = existsSync(join(privateStore, FILES.egressDiagnostic))
+    ? readJson(join(privateStore, FILES.egressDiagnostic)) : null;
   return {
     privateStore,
     capability,
@@ -930,7 +1018,30 @@ export function readV2B5Results(root) {
     evidenceRecords,
     privateWorkbookExists: existsSync(privateWorkbookPath),
     privateWorkbookRelativePath: V2B5_PRIVATE_WORKBOOK_RELATIVE,
+    egressDiagnostic,
   };
+}
+
+export function recordV2B5EgressDiagnostic(root, input) {
+  const privateStore = ensurePrivateStore(root);
+  const payload = {
+    schema: "m2.v2.egress-permission-diagnostic.v0.1",
+    privateOnly: true,
+    checkedAt: isIsoTimestamp(input?.checkedAt) ? input.checkedAt : new Date().toISOString(),
+    dnsSucceeded: input?.dnsSucceeded === true,
+    dnsAddressCount: Number.isInteger(input?.dnsAddressCount) && input.dnsAddressCount >= 0 ? input.dnsAddressCount : 0,
+    dnsErrorType: safeToken(input?.dnsErrorType ?? "none"),
+    tcp443Succeeded: input?.tcp443Succeeded === true,
+    tcpErrorType: safeToken(input?.tcpErrorType ?? "none"),
+    proxyVariablePresence: Object.fromEntries(["HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY", "NO_PROXY"]
+      .map((name) => [name, input?.proxyVariablePresence?.[name] === true])),
+    clientEgressPermission: input?.clientEgressPermission === "BLOCKED" ? "BLOCKED" : "ALLOWED",
+    fullIpPersisted: false,
+    proxyValuePersisted: false,
+    full160Authorized: false,
+  };
+  atomicWriteJson(join(privateStore, FILES.egressDiagnostic), payload);
+  return payload;
 }
 
 export function writeV2B5PublicReports(root, supplied = null) {
@@ -938,8 +1049,12 @@ export function writeV2B5PublicReports(root, supplied = null) {
   const bundle = buildPublicReportBundle(results);
   const privateDenyTokens = collectPrivateDenyTokens(root, results);
   const outputs = {
+    [PUBLIC_REPORTS.diagnosticJson]: `${JSON.stringify(bundle.diagnostic, null, 2)}\n`,
+    [PUBLIC_REPORTS.diagnosticMarkdown]: renderDiagnosticMarkdown(bundle.diagnostic),
     [PUBLIC_REPORTS.capabilityJson]: `${JSON.stringify(bundle.capability, null, 2)}\n`,
     [PUBLIC_REPORTS.capabilityMarkdown]: renderCapabilityMarkdown(bundle.capability),
+    [PUBLIC_REPORTS.capabilityLegacyJson]: `${JSON.stringify(bundle.capability, null, 2)}\n`,
+    [PUBLIC_REPORTS.capabilityLegacyMarkdown]: renderCapabilityMarkdown(bundle.capability),
     [PUBLIC_REPORTS.benchmarkJson]: `${JSON.stringify(bundle.benchmark, null, 2)}\n`,
     [PUBLIC_REPORTS.benchmarkMarkdown]: `${renderBenchmarkMarkdown(bundle.benchmark).trimEnd()}\n- 模型证据质量: ${bundle.benchmark.modelEvidenceQuality}\n`,
     [PUBLIC_REPORTS.executionJson]: `${JSON.stringify(bundle.execution, null, 2)}\n`,
@@ -948,8 +1063,12 @@ export function writeV2B5PublicReports(root, supplied = null) {
     [PUBLIC_REPORTS.qualityMarkdown]: renderQualityMarkdown(bundle.quality),
     [PUBLIC_REPORTS.decisionJson]: `${JSON.stringify(bundle.decision, null, 2)}\n`,
     [PUBLIC_REPORTS.decisionMarkdown]: renderDecisionMarkdown(bundle.decision),
+    [PUBLIC_REPORTS.resumeJson]: `${JSON.stringify(bundle.resume, null, 2)}\n`,
+    [PUBLIC_REPORTS.resumeMarkdown]: renderResumeMarkdown(bundle.resume),
     [PUBLIC_REPORTS.nextStepJson]: `${JSON.stringify(bundle.nextStep, null, 2)}\n`,
     [PUBLIC_REPORTS.nextStepMarkdown]: renderNextStepMarkdown(bundle.nextStep),
+    [PUBLIC_REPORTS.nextStepLegacyJson]: `${JSON.stringify(bundle.nextStep, null, 2)}\n`,
+    [PUBLIC_REPORTS.nextStepLegacyMarkdown]: renderNextStepMarkdown(bundle.nextStep),
   };
   for (const [relative, content] of Object.entries(outputs)) {
     assertPublicV2B5Sanitized(content, privateDenyTokens);
@@ -1046,6 +1165,8 @@ export function verifyV2B5(root) {
   let results = null;
   try { results = readV2B5Results(root); } catch (error) { issues.push(`private_results_unreadable:${safeToken(error?.message)}`); }
   if (results) {
+    const capabilityValidation = validateV2B5TavilyCapabilityState(results.capability);
+    if (!capabilityValidation.valid) issues.push(...capabilityValidation.issues.map((issue) => `capability_state:${issue}`));
     if (results.state?.tavily?.physicalRequestCount > V2B5_TAVILY_REQUEST_CAP) issues.push("tavily_request_cap_exceeded");
     if (results.state?.relay?.physicalRequestCount > V2B5_RELAY_REQUEST_CAP) issues.push("relay_request_cap_exceeded");
     if (results.canaryEvaluation?.full160Authorized !== false) issues.push("full160_authorization_invariant_failed");
@@ -1110,18 +1231,47 @@ function buildPublicReportBundle(results) {
   const benchmark = results.benchmarkEvaluation;
   const canary = results.canaryEvaluation;
   const usage = results.usageLedger ?? {};
+  const diagnostic = {
+    schema: "m2.v2.egress-permission-diagnostic-public-report.v0.1",
+    status: "not_for_formal_decision",
+    checkedAt: results.egressDiagnostic?.checkedAt ?? null,
+    dnsSucceeded: results.egressDiagnostic?.dnsSucceeded === true,
+    dnsAddressCount: results.egressDiagnostic?.dnsAddressCount ?? 0,
+    dnsErrorType: results.egressDiagnostic?.dnsErrorType ?? "none",
+    tcp443Succeeded: results.egressDiagnostic?.tcp443Succeeded === true,
+    tcpErrorType: results.egressDiagnostic?.tcpErrorType ?? "none",
+    proxyVariablePresence: results.egressDiagnostic?.proxyVariablePresence ?? {},
+    clientEgressPermission: results.egressDiagnostic?.clientEgressPermission ?? "NOT_EVALUATED",
+    fullIpPersisted: false,
+    proxyValuePersisted: false,
+    full160Authorized: false,
+  };
+  const providerDecision = results.capability?.tavilyProviderDecision ?? "BLOCKED_CONTRACT";
+  const httpStatus = Number.isInteger(capabilityResult.providerReceipt?.httpStatus)
+    ? capabilityResult.providerReceipt.httpStatus : null;
+  const capabilitySemantics = capabilityStatusSemantics(providerDecision);
   const capabilityReport = {
-    schema: "m2.v2.tavily-capability-public-report.v0.1",
+    schema: "m2.v2.tavily-capability-public-report.v0.2",
     status: "not_for_formal_decision",
     provider: V2B5_TAVILY_PROVIDER_ID,
     providerMode: "structured_search_only",
     relaySearchProviderStatus: "retired",
-    tavilyProviderDecision: results.capability?.tavilyProviderDecision ?? "BLOCKED_CONTRACT",
+    tavilyProviderDecision: providerDecision,
     includeUsageSupported: results.capability?.includeUsageSupported ?? null,
     compatibilityRetryUsed: results.capability?.compatibilityRetryUsed === true,
     dispatchAttempted: capabilityResult.dispatched === true,
+    dnsAttempted: capabilityResult.dnsAttempted ?? null,
+    dnsSuccess: capabilityResult.dnsSuccess ?? null,
+    tlsSuccess: capabilityResult.tlsSuccess ?? null,
     blockerCategory: results.capability?.executionBlockedBeforeDispatch === true
       ? "execution_environment_external_dispatch_blocked" : null,
+    httpStatus,
+    errorType: capabilityResult.providerReceipt?.errorCode ?? (capabilityResult.issues?.[0] ?? "none"),
+    apiKeyAuthenticated: httpStatus !== null && ![401, 403].includes(httpStatus),
+    providerConnectivity: results.capability?.providerConnectivity ?? capabilitySemantics.providerConnectivity,
+    providerContract: results.capability?.providerContract ?? results.capability?.providerContractCompatibility
+      ?? capabilitySemantics.providerContractCompatibility,
+    providerContractCompatibility: results.capability?.providerContractCompatibility ?? capabilitySemantics.providerContractCompatibility,
     httpSuccess: capabilityResult.httpSuccess === true,
     contractValid: capabilityResult.contractValid === true,
     resultCount: capabilityResult.resultCount ?? 0,
@@ -1204,7 +1354,7 @@ function buildPublicReportBundle(results) {
     released: false,
   };
   const nextStep = {
-    schema: "m2.v2.v2b5-next-step.v0.1",
+    schema: "m2.v2.v2b5-next-step.v0.2",
     status: "not_for_formal_decision",
     currentDecision: decision.decision,
     instruction: decision.decision === "CANARY_PASS"
@@ -1215,7 +1365,35 @@ function buildPublicReportBundle(results) {
     full160Authorized: false,
     prohibitedNextPhases: ["full160", "V2-C", "V2-D", "C4", "M3", "release"],
   };
-  return { capability: capabilityReport, benchmark: benchmarkReport, execution, quality, decision, nextStep };
+  const resume = {
+    schema: "m2.v2.v2b5-resume-summary.v0.1",
+    status: "not_for_formal_decision",
+    resumeAttempted: (results.state?.capabilityAttemptCount ?? 0) > 0,
+    executionStatus: results.state?.executionStatus ?? "unknown",
+    capabilityDecision: providerDecision,
+    legacyStateMigrationApplied: Boolean(results.state?.capabilityStateMigration),
+    manifestsPreserved: Boolean(results.state?.benchmarkManifestDigest && results.state?.canaryManifestDigest),
+    tavilyPhysicalRequestCount: results.state?.tavily?.physicalRequestCount ?? 0,
+    relayPhysicalRequestCount: results.state?.relay?.physicalRequestCount ?? 0,
+    sourceRecordCount: results.sourceRecords?.length ?? 0,
+    benchmarkExecuted: Boolean(benchmark),
+    canaryExecuted: canary?.executed === true,
+    canaryDecision: canary?.decision ?? "CANARY_BLOCKED",
+    full160Authorized: false,
+  };
+  return { diagnostic, capability: capabilityReport, benchmark: benchmarkReport, execution, quality, decision, resume, nextStep };
+}
+
+function capabilityStatusSemantics(decision) {
+  if (decision === "READY") return { providerConnectivity: "PASS", providerContractCompatibility: "PASS" };
+  if (decision === "BLOCKED_CONTRACT") return { providerConnectivity: "PASS", providerContractCompatibility: "FAIL" };
+  if (["BLOCKED_AUTH", "BLOCKED_RATE_LIMIT"].includes(decision)) {
+    return { providerConnectivity: "PASS", providerContractCompatibility: "NOT_EVALUATED" };
+  }
+  if (["BLOCKED_DNS", "BLOCKED_TLS", "BLOCKED_TRANSPORT"].includes(decision)) {
+    return { providerConnectivity: "FAIL", providerContractCompatibility: "NOT_EVALUATED" };
+  }
+  return { providerConnectivity: "NOT_EVALUATED", providerContractCompatibility: "NOT_EVALUATED" };
 }
 
 function publicCanaryMetrics(metrics) {
@@ -1304,7 +1482,11 @@ function publicBenchmarkMetrics(metrics) {
 }
 
 function renderCapabilityMarkdown(report) {
-  return `# M2 v2 Tavily Capability Report v0.1\n\n## 结论\n\nTavily 独立 Search Provider 判定为 **${report.tavilyProviderDecision}**；relay Search Provider 已退役，relay 仅保留 Extraction。\n\n- dispatch attempted: ${report.dispatchAttempted}\n- blocker category: ${report.blockerCategory ?? "none"}\n- synthetic capability: ${report.contractValid ? "通过" : "未通过"}\n- HTTP success: ${report.httpSuccess}\n- structured result count: ${report.resultCount}\n- include_usage supported: ${String(report.includeUsageSupported)}\n- usage credits: ${report.usageCreditsStatus}\n- API Key configured: ${report.apiKeyConfigured}\n- API Key persisted: false\n- full160Authorized: false\n- status: \`not_for_formal_decision\`\n`;
+  return `# M2 v2 Tavily Capability Report v0.2\n\n## 结论\n\nTavily 独立 Search Provider 判定为 **${report.tavilyProviderDecision}**；relay 仅保留 Extraction。\n\n- dispatch attempted: ${report.dispatchAttempted}\n- HTTP status: ${report.httpStatus ?? "none"}\n- error type: ${report.errorType}\n- API Key authenticated: ${report.apiKeyAuthenticated}\n- provider connectivity: ${report.providerConnectivity}\n- provider contract compatibility: ${report.providerContractCompatibility}\n- structured result count: ${report.resultCount}\n- include_usage supported: ${String(report.includeUsageSupported)}\n- API Key persisted: false\n- full160Authorized: false\n- status: \`not_for_formal_decision\`\n`;
+}
+
+function renderDiagnosticMarkdown(report) {
+  return `# M2 v2 Egress Permission Diagnostic v0.1\n\n- DNS succeeded: ${report.dnsSucceeded}\n- DNS address count: ${report.dnsAddressCount}\n- DNS error type: ${report.dnsErrorType}\n- TCP 443 succeeded: ${report.tcp443Succeeded}\n- TCP error type: ${report.tcpErrorType}\n- client egress permission: ${report.clientEgressPermission}\n- full IP persisted: false\n- proxy value persisted: false\n- full160Authorized: false\n- status: \`not_for_formal_decision\`\n`;
 }
 
 function renderBenchmarkMarkdown(report) {
@@ -1327,7 +1509,11 @@ function renderDecisionMarkdown(report) {
 }
 
 function renderNextStepMarkdown(report) {
-  return `# M2 v2 V2-B.5 Next Step v0.1\n\n## 当前边界\n\n${report.instruction}\n\n- current decision: ${report.currentDecision}\n- full160Authorized: false\n- 禁止后续阶段: ${report.prohibitedNextPhases.join(", ")}\n- status: \`not_for_formal_decision\`\n`;
+  return `# M2 v2 V2-B.5 Next Step v0.2\n\n## 当前边界\n\n${report.instruction}\n\n- current decision: ${report.currentDecision}\n- full160Authorized: false\n- 禁止后续阶段: ${report.prohibitedNextPhases.join(", ")}\n- status: \`not_for_formal_decision\`\n`;
+}
+
+function renderResumeMarkdown(report) {
+  return `# M2 v2 V2-B.5 Resume Summary v0.1\n\n- resume attempted: ${report.resumeAttempted}\n- execution status: ${report.executionStatus}\n- capability decision: ${report.capabilityDecision}\n- legacy state migration applied: ${report.legacyStateMigrationApplied}\n- manifests preserved: ${report.manifestsPreserved}\n- Tavily physical requests: ${report.tavilyPhysicalRequestCount}/40\n- relay physical requests: ${report.relayPhysicalRequestCount}/40\n- Source Record count: ${report.sourceRecordCount}\n- benchmark executed: ${report.benchmarkExecuted}\n- canary executed: ${report.canaryExecuted}\n- canary decision: ${report.canaryDecision}\n- full160Authorized: false\n- status: \`not_for_formal_decision\`\n`;
 }
 
 function buildCanaryV3Manifest(frozen, createdAt) {
@@ -1505,6 +1691,17 @@ function completePhysicalRequest(context, provider, physicalKey, result) {
   reservation.status = "completed";
   reservation.completedAt = context.now();
   reservation.resultDigest = sha256(result);
+  checkpointExecution(context.privateStore, context.state, context.tavilyCache, context.relayCache);
+}
+
+function cancelPredispatchReservation(context, provider, physicalKey) {
+  const budget = context.state[provider];
+  const reservation = budget.reservations[physicalKey];
+  if (!reservation || reservation.ordinal !== budget.physicalRequestCount) {
+    throw new Error(`v2b5_${provider}_predispatch_reservation_order_invalid`);
+  }
+  delete budget.reservations[physicalKey];
+  budget.physicalRequestCount -= 1;
   checkpointExecution(context.privateStore, context.state, context.tavilyCache, context.relayCache);
 }
 
@@ -2032,4 +2229,6 @@ export const __test = Object.freeze({
   digestWithout,
   loadV2B5Configuration,
   publicBenchmarkMetrics,
+  migrateV2B5LegacyCapabilityState,
+  buildV2B5ExecutionBlockCapability,
 });

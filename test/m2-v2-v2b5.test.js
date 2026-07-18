@@ -29,7 +29,9 @@ import {
   buildV2B5TavilyCacheDescriptor,
   buildV2B5TavilySearchPayload,
   classifyV2B5TavilyProviderDecision,
+  dispatchV2B5TavilyRequest,
   normalizeV2B5TavilySearchResponse,
+  validateV2B5TavilyCapabilityState,
 } from "../src/domain/m2V2EvidencePilot/tavilySearchProviderV2B5.js";
 import { OpenAICompatibleRelayExtractionProviderV2B5 } from "../src/domain/m2V2EvidencePilot/relayExtractionProviderV2B5.js";
 import {
@@ -122,6 +124,66 @@ test("Tavily 400 is contract-blocked rather than transport-blocked", () => {
   assert.equal(classifyV2B5TavilyProviderDecision(result), "BLOCKED_CONTRACT");
 });
 
+test("Tavily capability classification preserves dispatch and HTTP invariants", () => {
+  const result = (overrides = {}) => ({
+    dispatched: true,
+    contractValid: false,
+    sourceRecordCount: 0,
+    providerConnectivityPassed: false,
+    providerReceipt: { httpStatus: null },
+    ...overrides,
+  });
+  assert.equal(classifyV2B5TavilyProviderDecision(result({ dispatched: false })), "BLOCKED_EGRESS_PERMISSION");
+  assert.equal(classifyV2B5TavilyProviderDecision(result({ transportFailureCategory: "dns" })), "BLOCKED_DNS");
+  assert.equal(classifyV2B5TavilyProviderDecision(result({ transportFailureCategory: "tls" })), "BLOCKED_TLS");
+  assert.equal(classifyV2B5TavilyProviderDecision(result()), "BLOCKED_TRANSPORT");
+  assert.equal(classifyV2B5TavilyProviderDecision(result({ providerReceipt: { httpStatus: 403 } })), "BLOCKED_AUTH");
+  assert.equal(classifyV2B5TavilyProviderDecision(result({ providerReceipt: { httpStatus: 429 } })), "BLOCKED_RATE_LIMIT");
+  assert.equal(classifyV2B5TavilyProviderDecision(result({ providerReceipt: { httpStatus: 200 }, providerConnectivityPassed: true })), "BLOCKED_CONTRACT");
+  assert.equal(classifyV2B5TavilyProviderDecision(result({ contractValid: true, sourceRecordCount: 1, providerReceipt: { httpStatus: 200 }, providerConnectivityPassed: true })), "READY");
+});
+
+test("all Tavily capability states have machine-verifiable invariants", () => {
+  const valid = [
+    ["BLOCKED_EGRESS_PERMISSION", { dispatched: false, httpStatus: null }],
+    ["BLOCKED_DNS", { dispatched: true, dnsAttempted: true, dnsSuccess: false, httpStatus: null }],
+    ["BLOCKED_TLS", { dispatched: true, tlsSuccess: false, httpStatus: null }],
+    ["BLOCKED_TRANSPORT", { dispatched: true, httpStatus: null }],
+    ["BLOCKED_AUTH", { dispatched: true, httpStatus: 401 }],
+    ["BLOCKED_RATE_LIMIT", { dispatched: true, httpStatus: 429 }],
+    ["BLOCKED_CONTRACT", { dispatched: true, httpStatus: 200, httpSuccess: true, contractValid: false }],
+    ["READY", { dispatched: true, httpStatus: 200, httpSuccess: true, contractValid: true }],
+  ];
+  for (const [decision, finalResult] of valid) {
+    assert.deepEqual(validateV2B5TavilyCapabilityState({ tavilyProviderDecision: decision, finalResult }), { valid: true, issues: [] }, decision);
+  }
+  assert.equal(validateV2B5TavilyCapabilityState({ tavilyProviderDecision: "BLOCKED_TRANSPORT", finalResult: { dispatched: false, httpStatus: null } }).valid, false);
+  assert.equal(validateV2B5TavilyCapabilityState({ tavilyProviderDecision: "BLOCKED_AUTH", finalResult: { dispatched: true, httpStatus: 429 } }).valid, false);
+});
+
+test("Tavily transport diagnostics distinguish DNS, TLS, and client egress denial", async () => {
+  async function diagnose(code, name = "TypeError") {
+    return dispatchV2B5TavilyRequest({
+      fetchImpl: async () => { const error = new Error("synthetic"); error.name = name; error.cause = { code }; throw error; },
+      baseUrl: "https://api.tavily.com",
+      apiKey: "synthetic-key",
+      projectId: "synthetic",
+      payload: buildV2B5TavilySearchPayload({ query: "OpenAI API documentation", maxResults: 3, includeUsage: true }),
+      timeoutMs: 1_000,
+    });
+  }
+  const dns = await diagnose("ENOTFOUND");
+  const tls = await diagnose("CERT_HAS_EXPIRED");
+  const denied = await diagnose("EACCES");
+  assert.equal(dns.transportFailureCategory, "dns");
+  assert.equal(dns.dispatchAttempted, true);
+  assert.equal(tls.transportFailureCategory, "tls");
+  assert.equal(tls.dispatchAttempted, true);
+  assert.equal(denied.transportFailureCategory, "egress_permission");
+  assert.equal(denied.dispatchAttempted, false);
+  assert.equal(JSON.stringify([dns, tls, denied]).includes("synthetic-key"), false);
+});
+
 test("Tavily request payload is minimal and excludes answer/raw content", () => {
   const payload = buildV2B5TavilySearchPayload({ query: "OpenAI API documentation", maxResults: 3, includeUsage: true });
   assert.deepEqual(payload, {
@@ -189,6 +251,7 @@ test("Tavily cache invalidates on execution namespace and parameters", () => {
   const resultsChanged = buildV2B5TavilyCacheDescriptor({ ...base, maxResults: 3 });
   assert.notEqual(first.cacheKey, namespaceChanged.cacheKey);
   assert.notEqual(first.cacheKey, resultsChanged.cacheKey);
+  assert.equal(first.cacheKey, buildV2B5TavilyCacheDescriptor(base).cacheKey);
   assert.equal(first.sourceRecordSchemaVersion, V2B5_SOURCE_RECORD_SCHEMA);
 });
 
@@ -495,9 +558,11 @@ test("blocked public reports preserve manifest verification and explicitly avoid
   const canaryManifestDigest = "c".repeat(64);
   const bundle = runtimeTest.buildPublicReportBundle({
     capability: {
-      tavilyProviderDecision: "BLOCKED_TRANSPORT",
+      tavilyProviderDecision: "BLOCKED_EGRESS_PERMISSION",
       executionBlockedBeforeDispatch: true,
-      finalResult: { dispatched: false },
+      providerConnectivity: "NOT_EVALUATED",
+      providerContractCompatibility: "NOT_EVALUATED",
+      finalResult: { dispatched: false, httpStatus: null },
     },
     benchmarkEvaluation: null,
     canaryEvaluation: runtimeTest.blockedCanaryEvaluation(
@@ -517,6 +582,58 @@ test("blocked public reports preserve manifest verification and explicitly avoid
   assert.equal(bundle.benchmark.modelEvidenceQuality, "NOT_EVALUATED");
   assert.equal(bundle.benchmark.executed, false);
   assert.equal(bundle.benchmark.extractionBenchmarkDecision, "BLOCKED");
+  assert.equal(bundle.capability.tavilyProviderDecision, "BLOCKED_EGRESS_PERMISSION");
+  assert.equal(bundle.capability.dispatchAttempted, false);
+  assert.equal(bundle.capability.providerConnectivity, "NOT_EVALUATED");
+  assert.equal(bundle.capability.providerContract, "NOT_EVALUATED");
+  assert.equal(bundle.capability.providerContractCompatibility, "NOT_EVALUATED");
+});
+
+test("block capability can only record pre-dispatch egress permission", () => {
+  const capability = runtimeTest.buildV2B5ExecutionBlockCapability(
+    { tavily: "a".repeat(64) },
+    "external_dispatch_not_permitted_by_execution_environment",
+  );
+  assert.equal(capability.tavilyProviderDecision, "BLOCKED_EGRESS_PERMISSION");
+  assert.equal(capability.finalResult.dispatched, false);
+  assert.equal(capability.finalResult.httpStatus, null);
+  assert.equal(capability.providerConnectivity, "NOT_EVALUATED");
+  assert.equal(capability.providerContract, "NOT_EVALUATED");
+  assert.equal(capability.providerContractCompatibility, "NOT_EVALUATED");
+  assert.deepEqual(capability.stateInvariantValidation, { valid: true, issues: [] });
+  assert.throws(() => runtimeTest.buildV2B5ExecutionBlockCapability({}, "transport_error"), /block_reason_invalid/u);
+});
+
+test("legacy pre-dispatch transport state migrates once without changing budgets or manifests", () => {
+  const state = {
+    tavilyProviderDecision: "BLOCKED_TRANSPORT",
+    externalDispatchBlockedBeforeExecution: true,
+    benchmarkManifestDigest: "a".repeat(64),
+    canaryManifestDigest: "b".repeat(64),
+    tavily: { cap: 40, physicalRequestCount: 0, reservations: {} },
+    relay: { cap: 40, physicalRequestCount: 0, reservations: {} },
+  };
+  const capability = {
+    tavilyProviderDecision: "BLOCKED_TRANSPORT",
+    executionBlockedBeforeDispatch: true,
+    finalResult: { dispatched: false, httpSuccess: false, providerConnectivityPassed: false, contractValid: false },
+  };
+  const migrated = runtimeTest.migrateV2B5LegacyCapabilityState(state, capability, NOW);
+  assert.equal(migrated.migrated, true);
+  assert.equal(migrated.state.tavilyProviderDecision, "BLOCKED_EGRESS_PERMISSION");
+  assert.equal(migrated.capability.legacyTavilyProviderDecision, "BLOCKED_TRANSPORT");
+  assert.equal(migrated.capability.providerConnectivity, "NOT_EVALUATED");
+  assert.equal(migrated.capability.providerContractCompatibility, "NOT_EVALUATED");
+  assert.equal(migrated.capability.finalResult.dispatched, false);
+  assert.equal(migrated.capability.finalResult.httpStatus, null);
+  assert.deepEqual(migrated.state.tavily, state.tavily);
+  assert.deepEqual(migrated.state.relay, state.relay);
+  assert.equal(migrated.state.benchmarkManifestDigest, state.benchmarkManifestDigest);
+  assert.equal(migrated.state.canaryManifestDigest, state.canaryManifestDigest);
+  const repeated = runtimeTest.migrateV2B5LegacyCapabilityState(migrated.state, migrated.capability, "2026-07-18T01:00:00.000Z");
+  assert.equal(repeated.migrated, false);
+  assert.deepEqual(repeated.state, migrated.state);
+  assert.deepEqual(repeated.capability, migrated.capability);
 });
 
 test("runtime configuration is fail closed and keeps both request caps", () => {
