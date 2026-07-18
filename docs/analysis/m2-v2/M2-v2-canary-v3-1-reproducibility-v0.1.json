@@ -1,0 +1,71 @@
+{
+  "schema": "m2.v2.canary-v3-1-reproducibility-public.v0.1",
+  "status": "not_for_formal_decision",
+  "full160Authorized": false,
+  "expectedPairCount": 5,
+  "meanRepeatSourceOverlap": 0.3450793650793651,
+  "medianRepeatSourceOverlap": 0.2,
+  "exactSourceSetCount": 0,
+  "sameSourceClaimAgreement": 0.6733333333333333,
+  "sameSourceEvaluableCount": 5,
+  "endToEndSemanticClaimAgreement": 0.2,
+  "endToEndEvaluableCount": 5,
+  "contributionDecomposition": {
+    "sourceSetChangedPairCount": 5,
+    "sameSourceExtractionChangedPairCount": 3,
+    "canonicalizationOnlyPairCount": 1,
+    "claimAdded": 2,
+    "claimMissing": 1,
+    "structuredValueChanged": 6,
+    "confidenceOnlyChanged": 1,
+    "conflictStatusChanged": 0,
+    "eventTimeChanged": 0
+  },
+  "perPair": [
+    {
+      "anonymousPairId": "pair_1",
+      "sourceOverlap": 0.5,
+      "exactSourceSet": false,
+      "sameSourceAgreement": 0.2,
+      "sameSourceStatus": "evaluable",
+      "endToEndSemanticAgreement": 0,
+      "endToEndStatus": "evaluable"
+    },
+    {
+      "anonymousPairId": "pair_2",
+      "sourceOverlap": 0.2,
+      "exactSourceSet": false,
+      "sameSourceAgreement": 1,
+      "sameSourceStatus": "evaluable",
+      "endToEndSemanticAgreement": 0,
+      "endToEndStatus": "evaluable"
+    },
+    {
+      "anonymousPairId": "pair_3",
+      "sourceOverlap": 0.1111111111111111,
+      "exactSourceSet": false,
+      "sameSourceAgreement": 1,
+      "sameSourceStatus": "evaluable",
+      "endToEndSemanticAgreement": 0,
+      "endToEndStatus": "evaluable"
+    },
+    {
+      "anonymousPairId": "pair_4",
+      "sourceOverlap": 0.2,
+      "exactSourceSet": false,
+      "sameSourceAgreement": 0.6666666666666666,
+      "sameSourceStatus": "evaluable",
+      "endToEndSemanticAgreement": 0,
+      "endToEndStatus": "evaluable"
+    },
+    {
+      "anonymousPairId": "pair_5",
+      "sourceOverlap": 0.7142857142857143,
+      "exactSourceSet": false,
+      "sameSourceAgreement": 0.5,
+      "sameSourceStatus": "evaluable",
+      "endToEndSemanticAgreement": 1,
+      "endToEndStatus": "evaluable"
+    }
+  ]
+}

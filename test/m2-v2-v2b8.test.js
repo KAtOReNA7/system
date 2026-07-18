@@ -25,6 +25,10 @@ import {
   selectDeterministicV2B8Sources,
   validateV2B8FallbackPlan,
 } from "../src/domain/m2V2EvidencePilot/v2b8Stability.js";
+import {
+  buildV2B8ExtractionPayload,
+  validateV2B8ExtractionPayload,
+} from "../src/domain/m2V2EvidencePilot/v2b8Runtime.js";
 
 const root = process.cwd();
 
@@ -115,6 +119,12 @@ test("V2-B.8 extracts an explicit temporal date from supporting snippet", () => 
   assert.equal(time.extractionSucceeded, true);
 });
 
+test("V2-B.8 does not borrow publication dates for non-temporal identity claims", () => {
+  const time = extractV2B8EventTime({ claimType: "work_identity", structuredValue: structured("测试作品"), eventTime: null }, [source(1, undefined, "测试作品", "测试作者 2014年出版")]);
+  assert.deepEqual(pickTime(time), [null, "unknown"]);
+  assert.equal(time.eventTimeBasis, "unknown");
+});
+
 test("V2-B.8 completion contradiction is excluded from pilot usability", () => {
   const completed = canonicalizeV2B8Claim(claim("completion_status", "已完结", "c1"), { work: { title: "作品" }, sourceRecords: [source(1)] });
   const ongoing = canonicalizeV2B8Claim(claim("completion_status", "连载中", "c2"), { work: { title: "作品" }, sourceRecords: [source(1)] });
@@ -156,6 +166,28 @@ test("V2-B.8 gates retain frozen quality thresholds and never authorize full160"
   assert.equal(V2B8_GATE_THRESHOLDS.unknownPublicWebClaimShare, 0.4);
   const timeContract = JSON.parse(readFileSync(join(root, "docs/technical-design/m2-v2/M2-v2-event-time-conflict-contract-v0.2.json"), "utf8"));
   assert.equal(timeContract.full160Authorized, false);
+});
+
+test("V2-B.8 extraction payload is Terra-only, strict, source-bound and stable-core capped", () => {
+  const payload = buildV2B8ExtractionPayload({
+    work: { title: "测试作品", author: "测试作者", sourceType: "publication" },
+    sourceRecords: [source(1)],
+  });
+  assert.equal(payload.model, "gpt-5.6-terra");
+  assert.equal(payload.text.format.type, "json_schema");
+  assert.equal(payload.text.format.strict, true);
+  assert.equal(payload.store, false);
+  assert.equal(Object.hasOwn(payload, "reasoning"), false);
+  assert.equal(Object.hasOwn(payload, "tools"), false);
+  assert.match(payload.input, /at most 10 claims/u);
+  assert.doesNotMatch(payload.input, /https?:\/\//u);
+});
+
+test("V2-B.8 extraction projection rejects URLs and private runtime identifiers", () => {
+  const projected = [{ sourceId: source(1).sourceId, title: "标题", domain: "example1.com", snippet: "摘要", capturedAt: "2026-07-18T00:00:00.000Z", availableAt: "2026-07-18T00:00:00.000Z" }];
+  const payload = buildV2B8ExtractionPayload({ work: { title: "测试作品", author: "测试作者", sourceType: "publication" }, sourceRecords: [source(1)] });
+  assert.equal(validateV2B8ExtractionPayload(payload, { records: projected }).valid, true);
+  assert.doesNotMatch(JSON.stringify(payload), /canarySlotId|identityDigest|providerReceiptRef|providerScore/iu);
 });
 
 function source(index, url = `https://example${index}.com/item`, title = "测试作品", snippet = "测试作者 公开内容", score = 0.5) {

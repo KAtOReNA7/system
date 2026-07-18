@@ -1,0 +1,22 @@
+{
+  "schema": "m2.v2.event-time-conflict-audit-public.v0.1",
+  "status": "not_for_formal_decision",
+  "full160Authorized": false,
+  "explicitTemporalClaimCount": 32,
+  "explicitTemporalExtractionRate": 1,
+  "eventTimePrecisionCounts": {
+    "unknown": 53,
+    "month": 9,
+    "year": 7,
+    "day": 16
+  },
+  "eventTimeBasisCounts": {
+    "unknown": 53,
+    "explicit_source_snippet": 18,
+    "explicit_structured_value": 14
+  },
+  "unresolvedConflictCount": 2,
+  "unresolvedConflictPilotCount": 0,
+  "validMultiEditionCount": 3,
+  "conflictClaimsExcludedFromPilot": true
+}

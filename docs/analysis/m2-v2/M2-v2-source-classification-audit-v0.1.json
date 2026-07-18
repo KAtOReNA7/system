@@ -1,0 +1,30 @@
+{
+  "schema": "m2.v2.source-classification-audit-public.v0.1",
+  "status": "not_for_formal_decision",
+  "full160Authorized": false,
+  "sourceCategories": {
+    "official_publisher": 20,
+    "community_review": 2,
+    "unknown_public_web": 40,
+    "catalog_or_encyclopedia": 14,
+    "official_platform": 7,
+    "retailer": 3,
+    "search_index": 1,
+    "mainstream_media": 1,
+    "official_author": 0,
+    "government_or_registry": 0,
+    "prohibited": 0
+  },
+  "claimSupportCategories": {
+    "official_publisher": 18,
+    "retailer": 4,
+    "catalog_or_encyclopedia": 24,
+    "community_review": 1,
+    "official_platform": 1
+  },
+  "unknownPublicWebClaimShare": 0,
+  "prohibitedAcceptedCount": 0,
+  "categoryCount": 11,
+  "selectionDeterministic": true,
+  "maximumPerHost": 2
+}

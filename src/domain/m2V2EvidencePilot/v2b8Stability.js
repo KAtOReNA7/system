@@ -43,6 +43,10 @@ const TEMPORAL_CLAIM_TYPES = new Set([
   "completion_status",
   "adaptation_event",
   "award_event",
+  "ranking_signal",
+  "rating_signal",
+  "search_heat_signal",
+  "market_signal",
 ]);
 
 export function classifyV2B8QueryExecution(execution) {
@@ -198,6 +202,16 @@ export function normalizeV2B8Text(value) {
 }
 
 export function extractV2B8EventTime(claim, sourceRecords = []) {
+  const temporal = TEMPORAL_CLAIM_TYPES.has(claim?.claimType);
+  if (!temporal) {
+    return {
+      eventTime: null,
+      eventTimePrecision: "unknown",
+      eventTimeBasis: "unknown",
+      explicitTemporalText: false,
+      extractionSucceeded: true,
+    };
+  }
   const direct = parseDateValue(claim?.eventTime);
   if (direct) return { ...direct, eventTimeBasis: "explicit_structured_value", explicitTemporalText: true, extractionSucceeded: true };
   const active = activeStructuredValue(claim?.structuredValue);
@@ -211,7 +225,6 @@ export function extractV2B8EventTime(claim, sourceRecords = []) {
     const title = parseDateValue(source?.title);
     if (title) return { ...title, eventTimeBasis: "explicit_source_title", explicitTemporalText: true, extractionSucceeded: true };
   }
-  const temporal = TEMPORAL_CLAIM_TYPES.has(claim?.claimType);
   const explicitTemporalText = temporal && [active, ...sourceRecords.flatMap((source) => [source.title, source.snippet])].some(hasDateText);
   return {
     eventTime: null,

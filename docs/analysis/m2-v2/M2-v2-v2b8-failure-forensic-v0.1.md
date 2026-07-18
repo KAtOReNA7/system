@@ -6,7 +6,7 @@
 - HTTP 成功但合同无效：4
 - transport / auth-rate-limit / crash：0 / 0 / 0
 - repeat 来源 overlap mean/median：70.95% / 71.43%；exact：2/5
-- 旧 raw / canonical semantic agreement：27.00% / 43.00%
+- 旧 raw / canonical semantic agreement：27.00% / 58.71%
 - source-set changed pairs：5/5
 - same-source stability：重放前未评估，不以 0 冒充。
 - 结论：需要 deterministic fallback、source selection、same-source extraction 与 canonical semantic comparison。
