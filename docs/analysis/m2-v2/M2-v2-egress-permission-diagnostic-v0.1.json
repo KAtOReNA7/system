@@ -1,0 +1,20 @@
+{
+  "schema": "m2.v2.egress-permission-diagnostic-public-report.v0.1",
+  "status": "not_for_formal_decision",
+  "checkedAt": "2026-07-18T05:13:05.942Z",
+  "dnsSucceeded": true,
+  "dnsAddressCount": 3,
+  "dnsErrorType": "none",
+  "tcp443Succeeded": true,
+  "tcpErrorType": "none",
+  "proxyVariablePresence": {
+    "HTTP_PROXY": true,
+    "HTTPS_PROXY": true,
+    "ALL_PROXY": true,
+    "NO_PROXY": false
+  },
+  "clientEgressPermission": "ALLOWED",
+  "fullIpPersisted": false,
+  "proxyValuePersisted": false,
+  "full160Authorized": false
+}

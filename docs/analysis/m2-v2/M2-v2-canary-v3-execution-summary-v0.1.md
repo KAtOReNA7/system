@@ -6,8 +6,8 @@
 
 - primary works: 0
 - repeat works: 0
-- Tavily physical requests: 0/40
-- relay physical requests: 0/40
+- Tavily physical requests: 9/40
+- relay physical requests: 9/40
 - default extraction model: none
 - escalation model: none
 - browser / relay search used: false

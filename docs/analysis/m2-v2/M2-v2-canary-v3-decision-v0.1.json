@@ -5,7 +5,8 @@
   "safetyPassed": false,
   "usabilityPassed": false,
   "blockerIds": [
-    "external_dispatch_blocked_before_tavily_capability"
+    "at_least_one_extraction_model_safe",
+    "default_escalation_frozen"
   ],
   "nextStep": "resolve_provider_or_pre_gate_blocker",
   "privateWorkbookGenerated": false,

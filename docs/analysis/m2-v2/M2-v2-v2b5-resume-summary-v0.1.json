@@ -1,0 +1,16 @@
+{
+  "schema": "m2.v2.v2b5-resume-summary.v0.1",
+  "status": "not_for_formal_decision",
+  "resumeAttempted": true,
+  "executionStatus": "blocked_canary_pre_gate",
+  "capabilityDecision": "READY",
+  "legacyStateMigrationApplied": true,
+  "manifestsPreserved": true,
+  "tavilyPhysicalRequestCount": 9,
+  "relayPhysicalRequestCount": 9,
+  "sourceRecordCount": 42,
+  "benchmarkExecuted": true,
+  "canaryExecuted": false,
+  "canaryDecision": "CANARY_BLOCKED",
+  "full160Authorized": false
+}

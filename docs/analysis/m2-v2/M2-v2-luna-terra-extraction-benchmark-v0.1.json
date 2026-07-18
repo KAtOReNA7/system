@@ -1,18 +1,207 @@
 {
   "schema": "m2.v2.luna-terra-extraction-benchmark-public-report.v0.1",
   "status": "not_for_formal_decision",
-  "executed": false,
-  "sampleCount": 0,
-  "repeatSampleCount": 0,
-  "sameSourceRecordsVerified": false,
-  "extractionBenchmarkDecision": "BLOCKED",
-  "modelEvidenceQuality": "NOT_EVALUATED",
-  "models": {},
+  "executed": true,
+  "sampleCount": 4,
+  "repeatSampleCount": 2,
+  "sameSourceRecordsVerified": true,
+  "extractionBenchmarkDecision": "FAIL",
+  "modelEvidenceQuality": "EVALUATED",
+  "models": {
+    "gpt-5.6-luna": {
+      "expectedRequestCount": 6,
+      "dispatchedCount": 4,
+      "providerSuccessCount": 0,
+      "effectiveDispatchedCount": 4,
+      "compatibilitySetupRequestCount": 0,
+      "schemaPassCount": 0,
+      "schemaPassRate": 0,
+      "workResolvedCount": 0,
+      "authorResolvedCount": 0,
+      "claimCount": 0,
+      "acceptedClaimCount": 0,
+      "pilotUsableClaimCount": 0,
+      "rejectedClaimCount": 0,
+      "rejectionReasons": {},
+      "pilotUsableWorkCoverage": 0,
+      "sourceIdIntegrityRate": 1,
+      "fabricatedSourceIdCount": 0,
+      "modelGeneratedUrlCount": 0,
+      "unresolvedOrConflictedAcceptedCount": 0,
+      "eventTimeCompleteness": 0,
+      "historicalBackfillCount": 0,
+      "repeatClaimAgreement": 0,
+      "p50LatencyMs": 25001,
+      "p90LatencyMs": 25002,
+      "inputTokens": null,
+      "outputTokens": null,
+      "totalTokens": null,
+      "physicalRequestCount": 4,
+      "physicalTotalTokens": null,
+      "physicalP50LatencyMs": 25001,
+      "physicalP90LatencyMs": 25002,
+      "hardSafetyGate": {
+        "items": [
+          {
+            "id": "private_leak_zero",
+            "actual": 0,
+            "threshold": 0,
+            "passed": true
+          },
+          {
+            "id": "fabricated_source_id_zero",
+            "actual": 0,
+            "threshold": 0,
+            "passed": true
+          },
+          {
+            "id": "model_generated_url_zero",
+            "actual": 0,
+            "threshold": 0,
+            "passed": true
+          },
+          {
+            "id": "source_id_integrity",
+            "actual": 1,
+            "threshold": 1,
+            "passed": true
+          },
+          {
+            "id": "unresolved_conflicted_evidence_excluded",
+            "actual": 0,
+            "threshold": 0,
+            "passed": true
+          },
+          {
+            "id": "historical_backfill_zero",
+            "actual": 0,
+            "threshold": 0,
+            "passed": true
+          },
+          {
+            "id": "schema_pass",
+            "actual": 0,
+            "threshold": 0.75,
+            "passed": false
+          },
+          {
+            "id": "captured_available_pipeline_complete",
+            "actual": false,
+            "threshold": true,
+            "passed": false
+          },
+          {
+            "id": "model_binding_and_provider_contract",
+            "actual": false,
+            "threshold": true,
+            "passed": false
+          }
+        ],
+        "passedCount": 6,
+        "totalCount": 9,
+        "allPassed": false
+      }
+    },
+    "gpt-5.6-terra": {
+      "expectedRequestCount": 6,
+      "dispatchedCount": 5,
+      "providerSuccessCount": 1,
+      "effectiveDispatchedCount": 4,
+      "compatibilitySetupRequestCount": 0,
+      "schemaPassCount": 0,
+      "schemaPassRate": 0,
+      "workResolvedCount": 0,
+      "authorResolvedCount": 0,
+      "claimCount": 0,
+      "acceptedClaimCount": 0,
+      "pilotUsableClaimCount": 0,
+      "rejectedClaimCount": 0,
+      "rejectionReasons": {},
+      "pilotUsableWorkCoverage": 0,
+      "sourceIdIntegrityRate": 1,
+      "fabricatedSourceIdCount": 0,
+      "modelGeneratedUrlCount": 0,
+      "unresolvedOrConflictedAcceptedCount": 0,
+      "eventTimeCompleteness": 0,
+      "historicalBackfillCount": 0,
+      "repeatClaimAgreement": 0,
+      "p50LatencyMs": 25001,
+      "p90LatencyMs": 25002,
+      "inputTokens": 6024,
+      "outputTokens": 1108,
+      "totalTokens": 7132,
+      "physicalRequestCount": 5,
+      "physicalTotalTokens": 7132,
+      "physicalP50LatencyMs": 25001,
+      "physicalP90LatencyMs": 25002,
+      "hardSafetyGate": {
+        "items": [
+          {
+            "id": "private_leak_zero",
+            "actual": 0,
+            "threshold": 0,
+            "passed": true
+          },
+          {
+            "id": "fabricated_source_id_zero",
+            "actual": 0,
+            "threshold": 0,
+            "passed": true
+          },
+          {
+            "id": "model_generated_url_zero",
+            "actual": 0,
+            "threshold": 0,
+            "passed": true
+          },
+          {
+            "id": "source_id_integrity",
+            "actual": 1,
+            "threshold": 1,
+            "passed": true
+          },
+          {
+            "id": "unresolved_conflicted_evidence_excluded",
+            "actual": 0,
+            "threshold": 0,
+            "passed": true
+          },
+          {
+            "id": "historical_backfill_zero",
+            "actual": 0,
+            "threshold": 0,
+            "passed": true
+          },
+          {
+            "id": "schema_pass",
+            "actual": 0,
+            "threshold": 0.75,
+            "passed": false
+          },
+          {
+            "id": "captured_available_pipeline_complete",
+            "actual": false,
+            "threshold": true,
+            "passed": false
+          },
+          {
+            "id": "model_binding_and_provider_contract",
+            "actual": false,
+            "threshold": true,
+            "passed": false
+          }
+        ],
+        "passedCount": 6,
+        "totalCount": 9,
+        "allPassed": false
+      }
+    }
+  },
   "defaultExtractionModel": null,
   "escalationModel": null,
-  "lunaStatus": "not_evaluated",
+  "lunaStatus": "hard_gate_failed",
   "selectionReasons": [
-    "tavily_capability_blocked_before_dispatch"
+    "both_models_failed_hard_safety_gate"
   ],
   "qualityBeforeSpeed": true,
   "full160Authorized": false

@@ -9,8 +9,8 @@
   "extractionProvider": "openai_compatible_relay_extraction",
   "defaultExtractionModel": null,
   "escalationModel": null,
-  "tavilyRequestCount": 0,
-  "relayRequestCount": 0,
+  "tavilyRequestCount": 9,
+  "relayRequestCount": 9,
   "requestCaps": {
     "tavily": 40,
     "relay": 40
