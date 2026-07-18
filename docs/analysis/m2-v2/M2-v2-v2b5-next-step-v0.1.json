@@ -1,0 +1,15 @@
+{
+  "schema": "m2.v2.v2b5-next-step.v0.1",
+  "status": "not_for_formal_decision",
+  "currentDecision": "CANARY_BLOCKED",
+  "instruction": "当前执行环境禁止第三方真实数据调度；未发送任何请求。更换获准执行环境后从同一冻结 manifest 继续，不得启动 full160。",
+  "full160Authorized": false,
+  "prohibitedNextPhases": [
+    "full160",
+    "V2-C",
+    "V2-D",
+    "C4",
+    "M3",
+    "release"
+  ]
+}

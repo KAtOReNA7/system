@@ -1,0 +1,19 @@
+{
+  "schema": "m2.v2.canary-v3-decision.v0.1",
+  "status": "not_for_formal_decision",
+  "decision": "CANARY_BLOCKED",
+  "safetyPassed": false,
+  "usabilityPassed": false,
+  "blockerIds": [
+    "external_dispatch_blocked_before_tavily_capability"
+  ],
+  "nextStep": "resolve_provider_or_pre_gate_blocker",
+  "privateWorkbookGenerated": false,
+  "full160Authorized": false,
+  "modelTrainingPerformed": false,
+  "b4Changed": false,
+  "finalHoldoutOpened": false,
+  "enteredV2COrV2D": false,
+  "enteredC4OrM3": false,
+  "released": false
+}

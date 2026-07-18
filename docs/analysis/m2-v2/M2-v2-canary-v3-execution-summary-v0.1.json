@@ -1,0 +1,20 @@
+{
+  "schema": "m2.v2.canary-v3-execution-summary.v0.1",
+  "status": "not_for_formal_decision",
+  "canaryExecuted": false,
+  "fixedManifestUnchanged": true,
+  "primaryWorkCount": 0,
+  "repeatWorkCount": 0,
+  "searchProvider": "tavily_structured_search",
+  "extractionProvider": "openai_compatible_relay_extraction",
+  "defaultExtractionModel": null,
+  "escalationModel": null,
+  "tavilyRequestCount": 0,
+  "relayRequestCount": 0,
+  "requestCaps": {
+    "tavily": 40,
+    "relay": 40
+  },
+  "noBrowserOrRelaySearchUsed": true,
+  "full160Authorized": false
+}

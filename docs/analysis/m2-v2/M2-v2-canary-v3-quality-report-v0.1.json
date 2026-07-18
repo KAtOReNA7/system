@@ -1,0 +1,13 @@
+{
+  "schema": "m2.v2.canary-v3-quality-report.v0.1",
+  "status": "not_for_formal_decision",
+  "metrics": null,
+  "safetyGates": [],
+  "usabilityGates": [],
+  "researchCandidateRegistryCount": 0,
+  "realDomainsDisclosed": false,
+  "researchApprovedCount": 0,
+  "modelEligibleCount": 0,
+  "privateWorkbookGenerated": false,
+  "full160Authorized": false
+}

@@ -1,0 +1,19 @@
+{
+  "schema": "m2.v2.luna-terra-extraction-benchmark-public-report.v0.1",
+  "status": "not_for_formal_decision",
+  "executed": false,
+  "sampleCount": 0,
+  "repeatSampleCount": 0,
+  "sameSourceRecordsVerified": false,
+  "extractionBenchmarkDecision": "BLOCKED",
+  "modelEvidenceQuality": "NOT_EVALUATED",
+  "models": {},
+  "defaultExtractionModel": null,
+  "escalationModel": null,
+  "lunaStatus": "not_evaluated",
+  "selectionReasons": [
+    "tavily_capability_blocked_before_dispatch"
+  ],
+  "qualityBeforeSpeed": true,
+  "full160Authorized": false
+}
