@@ -5,9 +5,9 @@
 - capability decision: READY
 - legacy state migration applied: true
 - manifests preserved: true
-- Tavily physical requests: 9/40
-- relay physical requests: 9/40
-- Source Record count: 42
+- Tavily physical requests: 14/40
+- relay physical requests: 25/40
+- Source Record count: 67
 - benchmark executed: true
 - canary executed: false
 - canary decision: CANARY_BLOCKED

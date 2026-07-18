@@ -4,15 +4,15 @@
   "executed": true,
   "sampleCount": 4,
   "repeatSampleCount": 2,
-  "sameSourceRecordsVerified": true,
+  "sameSourceRecordsVerified": false,
   "extractionBenchmarkDecision": "FAIL",
   "modelEvidenceQuality": "EVALUATED",
   "models": {
     "gpt-5.6-luna": {
       "expectedRequestCount": 6,
-      "dispatchedCount": 4,
+      "dispatchedCount": 11,
       "providerSuccessCount": 0,
-      "effectiveDispatchedCount": 4,
+      "effectiveDispatchedCount": 5,
       "compatibilitySetupRequestCount": 0,
       "schemaPassCount": 0,
       "schemaPassRate": 0,
@@ -36,7 +36,7 @@
       "inputTokens": null,
       "outputTokens": null,
       "totalTokens": null,
-      "physicalRequestCount": 4,
+      "physicalRequestCount": 11,
       "physicalTotalTokens": null,
       "physicalP50LatencyMs": 25001,
       "physicalP90LatencyMs": 25002,
@@ -104,12 +104,12 @@
     },
     "gpt-5.6-terra": {
       "expectedRequestCount": 6,
-      "dispatchedCount": 5,
-      "providerSuccessCount": 1,
-      "effectiveDispatchedCount": 4,
+      "dispatchedCount": 13,
+      "providerSuccessCount": 4,
+      "effectiveDispatchedCount": 5,
       "compatibilitySetupRequestCount": 0,
-      "schemaPassCount": 0,
-      "schemaPassRate": 0,
+      "schemaPassCount": 1,
+      "schemaPassRate": 0.16666666666666666,
       "workResolvedCount": 0,
       "authorResolvedCount": 0,
       "claimCount": 0,
@@ -125,14 +125,14 @@
       "eventTimeCompleteness": 0,
       "historicalBackfillCount": 0,
       "repeatClaimAgreement": 0,
-      "p50LatencyMs": 25001,
+      "p50LatencyMs": 25000,
       "p90LatencyMs": 25002,
-      "inputTokens": 6024,
-      "outputTokens": 1108,
-      "totalTokens": 7132,
-      "physicalRequestCount": 5,
-      "physicalTotalTokens": 7132,
-      "physicalP50LatencyMs": 25001,
+      "inputTokens": 26474,
+      "outputTokens": 3172,
+      "totalTokens": 29646,
+      "physicalRequestCount": 13,
+      "physicalTotalTokens": 29646,
+      "physicalP50LatencyMs": 25000,
       "physicalP90LatencyMs": 25002,
       "hardSafetyGate": {
         "items": [
@@ -174,7 +174,7 @@
           },
           {
             "id": "schema_pass",
-            "actual": 0,
+            "actual": 0.16666666666666666,
             "threshold": 0.75,
             "passed": false
           },
@@ -199,9 +199,9 @@
   },
   "defaultExtractionModel": null,
   "escalationModel": null,
-  "lunaStatus": "hard_gate_failed",
+  "lunaStatus": "fairness_gate_failed",
   "selectionReasons": [
-    "both_models_failed_hard_safety_gate"
+    "same_source_records_not_verified"
   ],
   "qualityBeforeSpeed": true,
   "full160Authorized": false

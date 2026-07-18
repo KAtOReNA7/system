@@ -1,7 +1,7 @@
 {
   "schema": "m2.v2.egress-permission-diagnostic-public-report.v0.1",
   "status": "not_for_formal_decision",
-  "checkedAt": "2026-07-18T05:13:05.942Z",
+  "checkedAt": "2026-07-18T05:50:47.756Z",
   "dnsSucceeded": true,
   "dnsAddressCount": 3,
   "dnsErrorType": "none",

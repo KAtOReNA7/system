@@ -6,7 +6,8 @@
   "usabilityPassed": false,
   "blockerIds": [
     "at_least_one_extraction_model_safe",
-    "default_escalation_frozen"
+    "default_escalation_frozen",
+    "tavily_budget_for_canary"
   ],
   "nextStep": "resolve_provider_or_pre_gate_blocker",
   "privateWorkbookGenerated": false,
