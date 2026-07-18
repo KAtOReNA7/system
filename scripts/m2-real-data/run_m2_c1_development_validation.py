@@ -1828,8 +1828,10 @@ def verify_development_evidence(
 
 
 def preflight() -> dict[str, Any]:
-    if run_git("branch", "--show-current") != BRANCH:
-        raise C1ValidationError(f"C1 must run on {BRANCH}")
+    # This mode is synthetic-only and performs no private read or write.  Keep
+    # the exact-branch/Gate-A checks on development and verification modes, but
+    # allow a clean read-only checkout (including main or a PR merge checkout)
+    # to reproduce the contract preflight on a new machine.
     spec, _v1_1, amendment = v12.load_and_validate_contract()
     candidates = v12.enumerate_c1_candidates(amendment)
     history = [float(value) for value in range(1, 13)]
@@ -1866,6 +1868,7 @@ def preflight() -> dict[str, Any]:
     return {
         "status": "passed",
         "mode": "synthetic-only",
+        "checkoutPolicy": "branch_independent_read_only_synthetic",
         "checks": checks,
         "futurePerturbation": future,
         "seals": seals,

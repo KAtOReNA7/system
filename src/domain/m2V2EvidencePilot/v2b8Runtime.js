@@ -9,6 +9,13 @@ import {
 import { spawnSync } from "node:child_process";
 import { dirname, join } from "node:path";
 import { canonicalJson, sha256 } from "./pilotCore.js";
+import {
+  commitAtomicRequestCheckpoint,
+  evaluateGitBoundaryCommandResult,
+  receiptWasCacheHit,
+  validateReceiptEnvelope,
+  withReceiptRuntimeView,
+} from "./integrityState.js";
 import { buildV2B5ExtractionSchemaFormat } from "./extractionV2B5.js";
 import {
   buildV2B5SourceRecordSet,
@@ -51,8 +58,10 @@ import {
   V2B8_WORKBOOK_RELATIVE,
   assertPublicV2B8Sanitized,
   checkAndFreezeV2B8Contract,
+  readV2B8FrozenContract,
 } from "./v2b8Contract.js";
 import {
+  V2B8_CONFLICT_FAMILIES,
   V2B8_SOURCE_CATEGORIES,
   auditV2B8Conflicts,
   buildV2B8FallbackPlan,
@@ -81,6 +90,8 @@ const PUBLIC_REPORTS = Object.freeze({
   nextStepJson: "docs/analysis/m2-v2/M2-v2-v2b8-next-step-v0.1.json",
   nextStepMarkdown: "docs/analysis/m2-v2/M2-v2-v2b8-next-step-v0.1.md",
 });
+
+const INTEGRITY_VALIDATION_RECEIPT_RELATIVE = "data/private-output/m2-v2-integrity-remediation/full-validation-receipt-private-v0.1.json";
 
 const CLAIM_CAPS = Object.freeze({
   work_identity: 1,
@@ -230,7 +241,7 @@ export async function runV2B8(root, options = {}) {
     const attempts = [primary];
     if (isRepairable(primary) && state.relay.repairCount < V2B8_MAX_REPAIRS && state.relay.physicalRequestCount < V2B8_RELAY_REQUEST_CAP) {
       const repair = await executeExtractionAttempt(context, { work, searchRun, attemptKind: "repair", repairIssues: repairIssueCodes(primary) });
-      if (repair.cacheHit !== true) state.relay.repairCount += 1;
+      if (!receiptWasCacheHit(repair)) state.relay.repairCount += 1;
       checkpoint(context);
       physicalReceipts.push(repair);
       attempts.push(repair);
@@ -291,6 +302,12 @@ function searchRun(runKind, work, ordinal, selected, set, sourceOrigin) {
     sourceRecordSetDigest: set.sourceRecordSetDigest,
     sourceCategoriesById: selected.sourceCategoriesById,
     categoryCounts: selected.categoryCounts,
+    categoryLimit: selected.categoryLimit,
+    categoryDiversityTarget: selected.categoryDiversityTarget,
+    categoryDiversityAchieved: selected.categoryDiversityAchieved,
+    identityReservationApplied: selected.identityReservationApplied,
+    reservedIdentitySourceIds: selected.reservedIdentitySourceIds,
+    sourceSelectionLimitations: selected.limitations,
     prohibitedSourceCount: selected.prohibitedCount,
     duplicateSourceCount: selected.duplicateCount,
     domainDiversityCount: selected.domainDiversityCount,
@@ -363,7 +380,9 @@ function indeterminateTavilyResult(plan, cacheKey) {
 async function executeExtractionAttempt(context, input) {
   const descriptor = { namespace: V2B8_NAMESPACE, runKind: input.searchRun.runKind, canarySlotId: input.work.canarySlotId, model: V2B8_MODEL_ID, attemptKind: input.attemptKind, sourceRecordSetDigest: input.searchRun.sourceRecordSetDigest, adapterVersion: V2B6_ADAPTER_VERSION, extractionMode: "full", structuredMode: "server_strict", schemaVersion: "m2.v2.evidence-extraction-output.v0.2", promptVersion: "stable-core-extraction-v0.3", repairIssuesDigest: sha256(input.repairIssues ?? []) };
   const cacheKey = sha256(descriptor);
-  if (context.relayCache.entries[cacheKey]) return { ...context.relayCache.entries[cacheKey], cacheHit: true };
+  if (context.relayCache.entries[cacheKey]) {
+    return withReceiptRuntimeView(context.relayCache.entries[cacheKey], { cacheHit: true });
+  }
   const payload = buildV2B8ExtractionPayload({ work: input.work, sourceRecords: input.searchRun.sourceRecords, repairIssues: input.repairIssues });
   const physicalKey = `relay:${cacheKey}`;
   const priorReservation = context.state.relay.reservations[physicalKey];
@@ -393,22 +412,128 @@ function selectEffectiveReceipt(physicalReceipts, logical) {
   const repair = physicalReceipts.find((receipt) => receipt.attemptKind === "repair") ?? null;
   const success = (receipt) => receipt?.modelBindingVerified === true && receipt?.providerContractCompatible === true && receipt?.normalizedResponse?.contractValid === true;
   const selected = success(repair) ? repair : success(primary) ? primary : repair ?? primary;
-  const canonical = selected?.normalizedResponse ? canonicalizeResponse(selected.normalizedResponse, logical.work, logical.searchRun) : null;
+  const canonical = selected?.normalizedResponse ? canonicalizeResponse(selected.normalizedResponse, logical.work, logical.searchRun, {
+    classificationEvidenceBySourceId: logical.classificationEvidenceBySourceId,
+  }) : null;
   const payload = { schema: "m2.v2.v2b8-extraction-effective-receipt.v0.1", privateOnly: true, phase: "canary_v3_1_effective", executionNamespace: V2B8_NAMESPACE, runKind: logical.searchRun.runKind, canarySlotId: logical.work.canarySlotId, requestedModelId: V2B8_MODEL_ID, returnedModelId: selected?.returnedModelId ?? null, modelBindingStatus: selected?.modelBindingStatus ?? "unreported", modelBindingVerified: selected?.modelBindingVerified === true, providerContractCompatible: selected?.providerContractCompatible === true, adapterVersion: V2B6_ADAPTER_VERSION, extractionMode: "full", structuredMode: "server_strict", timeoutMs: V2B8_TIMEOUT_MS, sourceRecordSetDigest: logical.searchRun.sourceRecordSetDigest, schemaVersion: "m2.v2.evidence-extraction-output.v0.2", physicalRequestCount: physicalReceipts.length, physicalReceiptDigests: physicalReceipts.map((receipt) => receipt.receiptDigest), selectedAttemptKind: selected?.attemptKind ?? null, dispatched: physicalReceipts.some((receipt) => receipt.dispatched === true), timedOut: physicalReceipts.some((receipt) => receipt.timedOut === true), latencyMs: nullableSum(physicalReceipts.map((receipt) => receipt.latencyMs)), usage: sumUsage(physicalReceipts.map((receipt) => receipt.usage)), normalizedResponse: canonical, status: selected?.status ?? "missing", searchToolUsed: false, tavilyRequestUsed: false, canaryExecuted: true, full160Authorized: false };
   return { ...payload, receiptDigest: sha256(payload) };
 }
 
-function canonicalizeResponse(response, work, searchRun) {
+function canonicalizeResponse(response, work, searchRun, options = {}) {
+  const canonical = (response.claims ?? []).map((claim) => canonicalizeV2B8Claim(
+    { ...claim, runKind: searchRun.runKind, canarySlotId: work.canarySlotId },
+    { work, sourceRecords: searchRun.sourceRecords, classificationEvidenceBySourceId: options.classificationEvidenceBySourceId },
+  ));
+  const audited = auditV2B8Conflicts(canonical);
   const counts = new Map();
   const capped = [];
-  for (const claim of response.claims ?? []) {
+  for (const claim of audited.claims) {
     const count = counts.get(claim.claimType) ?? 0;
-    if (count >= (CLAIM_CAPS[claim.claimType] ?? 0) || capped.length >= 10) continue;
+    if (count >= (CLAIM_CAPS[claim.claimType] ?? 0)) continue;
     counts.set(claim.claimType, count + 1);
-    capped.push(canonicalizeV2B8Claim({ ...claim, runKind: searchRun.runKind, canarySlotId: work.canarySlotId }, { work, sourceRecords: searchRun.sourceRecords }));
+    capped.push(claim);
   }
-  const audit = auditV2B8Conflicts(capped);
-  return { ...response, claims: audit.claims, acceptedClaimCount: audit.claims.filter((claim) => claim.accepted).length, pilotUsableClaimCount: audit.claims.filter((claim) => claim.pilotUsable).length, rejectedClaimCount: audit.claims.filter((claim) => !claim.accepted).length, v2b8ConflictAudit: { conflicts: audit.conflicts, limitations: audit.limitations, unresolvedConflictCount: audit.unresolvedConflictCount, validMultiEditionCount: audit.validMultiEditionCount }, claimCapApplied: true, claimCountBeforeCap: response.claims?.length ?? 0, claimCountAfterCap: audit.claims.length };
+  const sourceIds = new Set(searchRun.sourceRecords.map((source) => source.sourceId));
+  const claimReferences = capped.flatMap((claim) => claim.supportingSourceIds ?? []);
+  const entityReferences = [
+    ...(response.entityResolution?.work?.supportingSourceIds ?? []),
+    ...(response.entityResolution?.author?.supportingSourceIds ?? []),
+  ];
+  const sourceReferences = [...claimReferences, ...entityReferences];
+  const mappedSourceIdReferenceCount = sourceReferences.filter((sourceId) => sourceIds.has(sourceId)).length;
+  const unresolvedOrConflictedAccepted = capped.filter((claim) => claim.accepted === true && (
+    !["high", "medium"].includes(claim.entityResolution?.work?.status)
+      || !["none", "resolved"].includes(claim.contradictionStatus)
+  ));
+  return {
+    ...response,
+    claims: capped,
+    acceptedClaimCount: capped.filter((claim) => claim.accepted).length,
+    pilotUsableClaimCount: capped.filter((claim) => claim.pilotUsable).length,
+    rejectedClaimCount: capped.filter((claim) => !claim.accepted).length,
+    sourceIdReferenceCount: sourceReferences.length,
+    mappedSourceIdReferenceCount,
+    sourceIdIntegrityRate: requiredRatio(mappedSourceIdReferenceCount, sourceReferences.length),
+    fabricatedSourceIdCount: new Set(sourceReferences.filter((sourceId) => !sourceIds.has(sourceId))).size,
+    historicalBackfillCount: capped.filter((claim) => claim.historicalBackfillDetected === true).length,
+    unresolvedOrConflictedEvidenceExcluded: unresolvedOrConflictedAccepted.length === 0,
+    v2b8ConflictAudit: { conflicts: audited.conflicts, limitations: audited.limitations, unresolvedConflictCount: audited.unresolvedConflictCount, validMultiEditionCount: audited.validMultiEditionCount, declaredConflictFamilies: audited.declaredConflictFamilies, conflictFamilyCoverage: audited.conflictFamilyCoverage },
+    claimCapApplied: true,
+    claimCountBeforeCap: response.claims?.length ?? 0,
+    claimCountAfterCap: capped.length,
+    claimCapExcludedCount: Math.max(0, audited.claims.length - capped.length),
+    conflictedClaimsRetainedBeyondCaps: 0,
+    preCapConflictClaimKeyCount: new Set(audited.conflicts.flatMap((conflict) => conflict.claimKeys ?? [])).size,
+    restatementAggregatesRecomputed: true,
+  };
+}
+
+export function recanonicalizeV2B8EffectiveReceipts(input) {
+  const manifest = input?.manifest;
+  const primarySearch = Array.isArray(input?.primarySearch) ? input.primarySearch : [];
+  const repeatSearch = Array.isArray(input?.repeatSearch) ? input.repeatSearch : [];
+  if (!Array.isArray(manifest?.sample)) throw new Error("v2b8_restatement_manifest_invalid");
+  const physicalReceiptsProvided = Array.isArray(input?.physicalReceipts);
+  if (!physicalReceiptsProvided) {
+    return (Array.isArray(input?.effectiveReceipts) ? input.effectiveReceipts : []).map((receipt) => ({
+      ...receipt,
+      normalizedResponse: null,
+      restatementStatus: "NOT_EVALUABLE_EFFECTIVE_RECEIPT_LACKS_PRE_CAP_CLAIMS",
+      restatementContractVersion: "v2b8-integrity-remediation-v0.1",
+    }));
+  }
+  const logicalRuns = [
+    ...primarySearch.map((searchRun) => ({ searchRun, runKind: "primary" })),
+    ...repeatSearch.map((searchRun) => ({ searchRun, runKind: "fresh_repeat" })),
+    ...(manifest.repeatSample ?? []).map((repeat) => ({
+      searchRun: primarySearch.find((run) => run.canarySlotId === repeat.canarySlotId),
+      runKind: "same_source",
+    })),
+  ];
+  return logicalRuns.map(({ searchRun, runKind }) => {
+    const work = manifest.sample.find((item) => item.canarySlotId === searchRun?.canarySlotId);
+    if (!work || !searchRun || !Array.isArray(searchRun.sourceRecords)) {
+      return {
+        runKind,
+        canarySlotId: searchRun?.canarySlotId ?? null,
+        normalizedResponse: null,
+        restatementStatus: "NOT_EVALUABLE_MISSING_MANIFEST_OR_SOURCE_BINDING",
+        restatementContractVersion: "v2b8-integrity-remediation-v0.1",
+      };
+    }
+    const candidates = input.physicalReceipts.map((receipt) => {
+      if (receipt?.schema !== "receipt-envelope-v0.2") return { payload: receipt, digest: receipt?.receiptDigest ?? sha256(receipt) };
+      const validation = validateReceiptEnvelope(receipt);
+      return validation.valid ? { payload: receipt.receiptPayload, digest: receipt.receiptDigest } : null;
+    }).filter(Boolean);
+    const matching = candidates.filter(({ payload }) => (
+      payload.runKind === runKind && payload.canarySlotId === searchRun.canarySlotId
+    ));
+    const attempts = matching.map(({ payload, digest }) => ({ ...payload, receiptDigest: payload.receiptDigest ?? digest }));
+    if (!attempts.length) {
+      return {
+        runKind,
+        canarySlotId: searchRun.canarySlotId,
+        normalizedResponse: null,
+        restatementStatus: "NOT_EVALUABLE_PHYSICAL_RECEIPT_MISSING",
+        restatementContractVersion: "v2b8-integrity-remediation-v0.1",
+      };
+    }
+    const receipt = selectEffectiveReceipt(attempts, { work, searchRun: { ...searchRun, runKind }, classificationEvidenceBySourceId: input.classificationEvidenceBySourceId });
+    return {
+      ...receipt,
+      restatementStatus: receipt.normalizedResponse ? "RECANONICALIZED_OFFLINE_FROM_PHYSICAL_RECEIPT" : "NOT_EVALUABLE_PHYSICAL_RECEIPT_INVALID",
+      restatementContractVersion: "v2b8-integrity-remediation-v0.1",
+      sourcePhysicalReceiptDigests: matching.map(({ digest }) => digest),
+      sourcePhysicalResponseDigests: attempts.map((attempt) => sha256(attempt.normalizedResponse ?? null)),
+      restatedNormalizedResponseDigest: receipt.normalizedResponse ? sha256(receipt.normalizedResponse) : null,
+    };
+  });
+}
+
+export function evaluateV2B8RestatementInputs(input) {
+  const effectiveReceipts = recanonicalizeV2B8EffectiveReceipts(input);
+  return evaluateV2B8Canary({ ...input, effectiveReceipts });
 }
 
 function isRepairable(receipt) {
@@ -441,13 +566,22 @@ export function evaluateV2B8Canary(input) {
   const repeatQuerySuccessCount = repeatQueries.filter((query) => query.contractValid === true).length;
   const querySuccessCount = oldSuccessCount + fallbackSuccessCount + repeatQuerySuccessCount;
   const queryDenominator = oldSuccessCount + fallbackQueries.length + repeatQueries.length;
-  const correctedOriginalSuccessRate = ratio(oldSuccessCount + fallbackSuccessCount, oldSuccessCount + fallbackQueries.length);
-  const querySuccessRate = ratio(querySuccessCount, queryDenominator);
+  const manifestSampleComplete = manifest?.sample?.length === 10 && manifest?.repeatSample?.length === 5;
+  const querySampleComplete = oldQueries.length > 0
+    && fallbackQueries.length === oldQueries.filter((query) => query.contractValid !== true).length
+    && repeatQueries.length === manifest?.repeatSample?.length;
+  const correctedOriginalSuccessRate = requiredRatio(oldSuccessCount + fallbackSuccessCount, oldSuccessCount + fallbackQueries.length);
+  const querySuccessRate = querySampleComplete ? requiredRatio(querySuccessCount, queryDenominator) : null;
   const primarySourceWorks = primarySearch.filter((run) => run.sourceRecords.length > 0);
   const primarySchema = primary.filter(effectiveSchemaPass);
   const repeatSchema = repeat.filter(effectiveSchemaPass);
   const allLogical = [...primary, ...repeat, ...same];
-  const noTimeoutRate = ratio(allLogical.filter((receipt) => receipt.timedOut !== true).length, 20);
+  const primaryReceiptComplete = primary.length === 10;
+  const repeatReceiptComplete = repeat.length === 5;
+  const sameReceiptComplete = same.length === 5;
+  const logicalSampleComplete = primaryReceiptComplete && repeatReceiptComplete && sameReceiptComplete;
+  const primarySearchComplete = manifestSampleComplete && primarySearch.length === 10;
+  const noTimeoutRate = requiredSampleRatio(allLogical.filter((receipt) => receipt.timedOut !== true).length, 20, allLogical.length, 20);
   const resolved = primary.filter((receipt) => ["high", "medium"].includes(receipt.normalizedResponse?.entityResolution?.work?.status));
   const primaryPilot = primary.filter((receipt) => (receipt.normalizedResponse?.pilotUsableClaimCount ?? 0) > 0);
   const highValueSlots = new Set(manifest.sample.filter((work) => work.highValue === true).map((work) => work.canarySlotId));
@@ -458,58 +592,72 @@ export function evaluateV2B8Canary(input) {
   const acceptedClaims = allClaims.filter((claim) => claim.accepted === true);
   const allSources = [...primarySearch, ...repeatSearch].flatMap((run) => run.sourceRecords);
   const reproducibility = buildReproducibility(manifest, primarySearch, repeatSearch, primary, repeat, same);
-  const sourceCategories = countBy(allSources, classifyV2B8Source);
+  const sourceCategories = countBy(allSources, (source) => classifyV2B8Source(source, input.classificationEvidenceBySourceId?.[source.sourceId]));
   for (const category of V2B8_SOURCE_CATEGORIES) sourceCategories[category] ??= 0;
   const claimCategories = countBy(pilotClaims, (claim) => claim.sourceSupportClass ?? "unknown_public_web");
-  const unknownClaimShare = ratio(claimCategories.unknown_public_web ?? 0, pilotClaims.length);
+  const unknownClaimShare = requiredRatio(claimCategories.unknown_public_web ?? 0, pilotClaims.length);
   const explicitTemporalClaims = allClaims.filter((claim) => claim.explicitTemporalText === true);
-  const explicitTimeExtractionRate = explicitTemporalClaims.length
-    ? ratio(explicitTemporalClaims.filter((claim) => claim.eventTimeExtractionSucceeded === true).length, explicitTemporalClaims.length) : 1;
+  const explicitTimeExtractionRate = requiredRatio(
+    explicitTemporalClaims.filter((claim) => claim.eventTimeExtractionSucceeded === true).length,
+    explicitTemporalClaims.length,
+  );
   const unresolvedConflictCount = sum(allLogical.map((receipt) => receipt.normalizedResponse?.v2b8ConflictAudit?.unresolvedConflictCount));
   const unresolvedConflictPilotCount = allClaims.filter((claim) => claim.pilotUsable === true && claim.contradictionStatus === "unresolved").length;
+  const eventTimeProvenanceMissingCount = allClaims.filter((claim) => claim.eventTime && (!claim.eventTimeSourceId || !claim.eventTimeEvidenceSpanDigest)).length;
+  const conflictFamilyCoverageComplete = allLogical.every((receipt) => V2B8_CONFLICT_FAMILIES.every(
+    (family) => receipt.normalizedResponse?.v2b8ConflictAudit?.conflictFamilyCoverage?.[family] === true,
+  ));
   const weakUnsupportedRatingReviewCount = allClaims.filter((claim) => claim.pilotUsable === true && (claim.claimType === "review_signal" || claim.claimType === "rating_signal" && (!claim.normalizedStructuredValue?.platform || !claim.normalizedStructuredValue?.scale))).length;
   const sourceReferenceCount = sum(allLogical.map((receipt) => receipt.normalizedResponse?.sourceIdReferenceCount));
   const mappedReferenceCount = sum(allLogical.map((receipt) => receipt.normalizedResponse?.mappedSourceIdReferenceCount));
-  const sourceIntegrity = sourceReferenceCount ? mappedReferenceCount / sourceReferenceCount : allLogical.length === 20 ? 1 : 0;
-  const capturedCompleteness = ratio(allSources.filter((source) => isIsoTimestamp(source.capturedAt)).length, allSources.length);
-  const availableCompleteness = ratio(allSources.filter((source) => isIsoTimestamp(source.availableAt)).length, allSources.length);
+  const sourceIntegrity = requiredRatio(mappedReferenceCount, sourceReferenceCount);
+  const capturedCompleteness = requiredRatio(allSources.filter((source) => isIsoTimestamp(source.capturedAt)).length, allSources.length);
+  const availableCompleteness = requiredRatio(allSources.filter((source) => isIsoTimestamp(source.availableAt)).length, allSources.length);
+  const sourceWorkCoverage = primarySearchComplete ? requiredRatio(primarySourceWorks.length, 10) : null;
+  const primarySchemaPassRate = requiredSampleRatio(primarySchema.length, 10, primary.length, 10);
+  const repeatSchemaPassRate = requiredSampleRatio(repeatSchema.length, 5, repeat.length, 5);
+  const workResolvedRate = requiredSampleRatio(resolved.length, 10, primary.length, 10);
+  const pilotUsableWorkCoverage = requiredSampleRatio(primaryPilot.length, 10, primary.length, 10);
+  const highValueCoverage = manifestSampleComplete ? requiredRatio(highValuePilot.length, highValueSlots.size) : null;
   const prohibitedAcceptedCount = allClaims.filter((claim) => claim.accepted === true && (claim.supportingSourceIds ?? []).some((sourceId) => {
     const source = allSources.find((item) => item.sourceId === sourceId);
     return source && classifyV2B5ProhibitedSource(source).prohibited;
   })).length;
   const bindingMismatchCount = physicalReceipts.filter((receipt) => receipt.modelBindingStatus === "mismatch").length;
-  const gitBoundary = input.gitBoundary ?? { b4Unchanged: true, holdoutSealed: true };
+  const gitBoundary = input.gitBoundary ?? {};
   const safetyItems = [
-    gate("private_leak_zero", sum(allLogical.map((receipt) => receipt.normalizedResponse?.privateLeakCount)), 0, equal),
-    gate("prohibited_source_accepted_zero", prohibitedAcceptedCount, 0, equal),
-    gate("fabricated_source_id_zero", sum(allLogical.map((receipt) => receipt.normalizedResponse?.fabricatedSourceIdCount)), 0, equal),
-    gate("model_generated_url_zero", sum(allLogical.map((receipt) => receipt.normalizedResponse?.modelGeneratedUrlCount)), 0, equal),
-    gate("historical_backfill_zero", sum(allLogical.map((receipt) => receipt.normalizedResponse?.historicalBackfillCount)), 0, equal),
+    gate("private_leak_zero", sum(allLogical.map((receipt) => receipt.normalizedResponse?.privateLeakCount)), 0, equal, logicalSampleComplete),
+    gate("prohibited_source_accepted_zero", prohibitedAcceptedCount, 0, equal, logicalSampleComplete),
+    gate("fabricated_source_id_zero", sum(allLogical.map((receipt) => receipt.normalizedResponse?.fabricatedSourceIdCount)), 0, equal, logicalSampleComplete),
+    gate("model_generated_url_zero", sum(allLogical.map((receipt) => receipt.normalizedResponse?.modelGeneratedUrlCount)), 0, equal, logicalSampleComplete),
+    gate("historical_backfill_zero", sum(allLogical.map((receipt) => receipt.normalizedResponse?.historicalBackfillCount)), 0, equal, logicalSampleComplete),
     gate("source_id_integrity", sourceIntegrity, 1, equal),
     gate("captured_at_complete", capturedCompleteness, 1, equal),
     gate("available_at_complete", availableCompleteness, 1, equal),
-    gate("unresolved_conflicted_pilot_zero", unresolvedConflictPilotCount, 0, equal),
+    gate("unresolved_conflicted_pilot_zero", unresolvedConflictPilotCount, 0, equal, logicalSampleComplete),
     gate("explicit_temporal_extraction_complete", explicitTimeExtractionRate, 1, equal),
-    gate("manifest_unchanged", input.manifestUnchanged === true, true, equal),
-    gate("b4_unchanged", gitBoundary.b4Unchanged === true, true, equal),
-    gate("final_holdout_sealed", gitBoundary.holdoutSealed === true, true, equal),
-    gate("all_tests_pass", input.allTestsPassed === true, true, equal),
+    gate("event_time_provenance_complete", eventTimeProvenanceMissingCount, 0, equal, logicalSampleComplete),
+    gate("conflict_family_coverage_complete", conflictFamilyCoverageComplete, true, equal, logicalSampleComplete),
+    gate("manifest_unchanged", input.manifestUnchanged === true, true, equal, manifestSampleComplete && typeof input.manifestUnchanged === "boolean"),
+    gate("b4_unchanged", gitBoundary.b4Unchanged === true, true, equal, typeof gitBoundary.b4Unchanged === "boolean"),
+    gate("final_holdout_sealed", gitBoundary.holdoutSealed === true, true, equal, typeof gitBoundary.holdoutSealed === "boolean"),
+    gate("all_tests_pass", input.allTestsPassed === true, true, equal, typeof input.allTestsPassed === "boolean"),
   ];
   const qualityItems = [
     gate("query_success_rate", querySuccessRate, V2B8_GATE_THRESHOLDS.querySuccessRate, atLeast),
-    gate("source_record_work_coverage", ratio(primarySourceWorks.length, 10), V2B8_GATE_THRESHOLDS.sourceRecordWorkCoverage, atLeast),
-    gate("mean_repeat_source_overlap", reproducibility.meanRepeatSourceOverlap, V2B8_GATE_THRESHOLDS.meanRepeatSourceOverlap, atLeast),
-    gate("primary_schema_pass_rate", ratio(primarySchema.length, 10), V2B8_GATE_THRESHOLDS.primarySchemaPassRate, atLeast),
-    gate("repeat_schema_pass_rate", ratio(repeatSchema.length, 5), V2B8_GATE_THRESHOLDS.repeatSchemaPassRate, atLeast),
+    gate("source_record_work_coverage", sourceWorkCoverage, V2B8_GATE_THRESHOLDS.sourceRecordWorkCoverage, atLeast),
+    gate("mean_repeat_source_overlap", reproducibility.meanRepeatSourceOverlap, V2B8_GATE_THRESHOLDS.meanRepeatSourceOverlap, atLeast, manifestSampleComplete),
+    gate("primary_schema_pass_rate", primarySchemaPassRate, V2B8_GATE_THRESHOLDS.primarySchemaPassRate, atLeast),
+    gate("repeat_schema_pass_rate", repeatSchemaPassRate, V2B8_GATE_THRESHOLDS.repeatSchemaPassRate, atLeast),
     gate("no_timeout_rate", noTimeoutRate, V2B8_GATE_THRESHOLDS.noTimeoutRate, atLeast),
-    gate("work_resolved_rate", ratio(resolved.length, 10), V2B8_GATE_THRESHOLDS.workResolvedRate, atLeast),
-    gate("pilot_usable_work_coverage", ratio(primaryPilot.length, 10), V2B8_GATE_THRESHOLDS.pilotUsableWorkCoverage, atLeast),
-    gate("high_value_coverage", ratio(highValuePilot.length, highValueSlots.size), V2B8_GATE_THRESHOLDS.highValueCoverage, atLeast),
-    gate("same_source_claim_agreement", reproducibility.sameSourceClaimAgreement, V2B8_GATE_THRESHOLDS.sameSourceClaimAgreement, evaluableAtLeast(reproducibility.sameSourceEvaluableCount, 5)),
-    gate("end_to_end_semantic_claim_agreement", reproducibility.endToEndSemanticClaimAgreement, V2B8_GATE_THRESHOLDS.endToEndSemanticClaimAgreement, evaluableAtLeast(reproducibility.endToEndEvaluableCount, 5)),
-    gate("weak_unsupported_rating_review_zero", weakUnsupportedRatingReviewCount, 0, equal),
+    gate("work_resolved_rate", workResolvedRate, V2B8_GATE_THRESHOLDS.workResolvedRate, atLeast),
+    gate("pilot_usable_work_coverage", pilotUsableWorkCoverage, V2B8_GATE_THRESHOLDS.pilotUsableWorkCoverage, atLeast),
+    gate("high_value_coverage", highValueCoverage, V2B8_GATE_THRESHOLDS.highValueCoverage, atLeast),
+    gate("same_source_claim_agreement", reproducibility.sameSourceClaimAgreement, V2B8_GATE_THRESHOLDS.sameSourceClaimAgreement, atLeast, reproducibility.sameSourceEvaluableCount === 5),
+    gate("end_to_end_semantic_claim_agreement", reproducibility.endToEndSemanticClaimAgreement, V2B8_GATE_THRESHOLDS.endToEndSemanticClaimAgreement, atLeast, reproducibility.endToEndEvaluableCount === 5),
+    gate("weak_unsupported_rating_review_zero", weakUnsupportedRatingReviewCount, 0, equal, logicalSampleComplete),
     gate("unknown_public_web_claim_share", unknownClaimShare, V2B8_GATE_THRESHOLDS.unknownPublicWebClaimShare, atMost),
-    gate("model_binding_mismatch_zero", bindingMismatchCount, 0, equal),
+    gate("model_binding_mismatch_zero", bindingMismatchCount, 0, equal, logicalSampleComplete),
   ];
   const safetyPassed = safetyItems.every((item) => item.passed);
   const qualityPassed = qualityItems.every((item) => item.passed);
@@ -524,12 +672,12 @@ export function evaluateV2B8Canary(input) {
     repeatDigest: V2B7_REPEAT_DIGEST,
     sourceBundleDigest: V2B7_SOURCE_BUNDLE_DIGEST,
     metrics: {
-      search: { oldLogicalQueryCount: oldQueries.length, oldSuccessCount, failedQueryFallbackCount: fallbackQueries.length, fallbackSuccessCount, correctedOriginalSuccessRate, independentRepeatQueryCount: repeatQueries.length, independentRepeatSuccessCount: repeatQuerySuccessCount, querySuccessCount, queryDenominator, querySuccessRate, providerErrorCount: fallbackQueries.concat(repeatQueries).filter((query) => query.httpSuccess !== true).length, sourceRecordWorkCount: primarySourceWorks.length, sourceRecordWorkCoverage: ratio(primarySourceWorks.length, 10), totalSelectedSourceRecordCount: allSources.length },
-      extraction: { model: V2B8_MODEL_ID, primaryLogicalCount: 10, repeatLogicalCount: 5, sameSourceLogicalCount: 5, primarySchemaPassCount: primarySchema.length, primarySchemaPassRate: ratio(primarySchema.length, 10), repeatSchemaPassCount: repeatSchema.length, repeatSchemaPassRate: ratio(repeatSchema.length, 5), sameSourceSchemaPassCount: same.filter(effectiveSchemaPass).length, noTimeoutCount: allLogical.filter((receipt) => receipt.timedOut !== true).length, noTimeoutRate, bindingMismatchCount },
-      entity: { resolvedCount: resolved.length, unresolvedCount: primary.filter((receipt) => receipt.normalizedResponse?.entityResolution?.work?.status === "unresolved").length, ambiguousCount: primary.filter((receipt) => receipt.normalizedResponse?.entityResolution?.work?.status === "ambiguous").length, resolvedRate: ratio(resolved.length, 10), confidence: average(primary.map((receipt) => receipt.normalizedResponse?.entityResolution?.work?.confidence).filter(Number.isFinite)) },
-      evidence: { candidateCount: allClaims.length, acceptedCount: acceptedClaims.length, pilotUsableCount: pilotClaims.length, rejectedCount: allClaims.filter((claim) => claim.accepted !== true).length, rejectionReasons: countMany(allClaims.flatMap((claim) => claim.rejectionReasons ?? [])), primaryCandidateCount: primaryClaims.length, primaryPilotUsableCount: primaryClaims.filter((claim) => claim.pilotUsable).length, pilotUsableWorkCount: primaryPilot.length, pilotUsableWorkCoverage: ratio(primaryPilot.length, 10), highValueWorkCount: highValueSlots.size, highValuePilotUsableWorkCount: highValuePilot.length, highValueCoverage: ratio(highValuePilot.length, highValueSlots.size), weakUnsupportedRatingReviewCount },
-      timeConflict: { explicitTemporalClaimCount: explicitTemporalClaims.length, explicitTemporalExtractionRate: explicitTimeExtractionRate, eventTimePrecisionCounts: countBy(allClaims, (claim) => claim.eventTimePrecision ?? "unknown"), eventTimeBasisCounts: countBy(allClaims, (claim) => claim.eventTimeBasis ?? "unknown"), unresolvedConflictCount, unresolvedConflictPilotCount, validMultiEditionCount: sum(allLogical.map((receipt) => receipt.normalizedResponse?.v2b8ConflictAudit?.validMultiEditionCount)) },
-      sourceClassification: { sourceCategories, claimSupportCategories: claimCategories, unknownPublicWebClaimShare: unknownClaimShare, prohibitedAcceptedCount },
+      search: { oldLogicalQueryCount: oldQueries.length, oldSuccessCount, failedQueryFallbackCount: fallbackQueries.length, fallbackSuccessCount, correctedOriginalSuccessRate, independentRepeatQueryCount: repeatQueries.length, independentRepeatSuccessCount: repeatQuerySuccessCount, querySuccessCount, queryDenominator, querySuccessRate, providerErrorCount: fallbackQueries.concat(repeatQueries).filter((query) => query.httpSuccess !== true).length, sourceRecordWorkCount: primarySourceWorks.length, sourceRecordWorkCoverage: sourceWorkCoverage, totalSelectedSourceRecordCount: allSources.length },
+      extraction: { model: V2B8_MODEL_ID, primaryLogicalCount: primary.length, repeatLogicalCount: repeat.length, sameSourceLogicalCount: same.length, primarySchemaPassCount: primarySchema.length, primarySchemaPassRate, repeatSchemaPassCount: repeatSchema.length, repeatSchemaPassRate, sameSourceSchemaPassCount: same.filter(effectiveSchemaPass).length, noTimeoutCount: allLogical.filter((receipt) => receipt.timedOut !== true).length, noTimeoutRate, bindingMismatchCount },
+      entity: { resolvedCount: resolved.length, unresolvedCount: primary.filter((receipt) => receipt.normalizedResponse?.entityResolution?.work?.status === "unresolved").length, ambiguousCount: primary.filter((receipt) => receipt.normalizedResponse?.entityResolution?.work?.status === "ambiguous").length, resolvedRate: workResolvedRate, confidence: average(primary.map((receipt) => receipt.normalizedResponse?.entityResolution?.work?.confidence).filter(Number.isFinite)) },
+      evidence: { candidateCount: allClaims.length, acceptedCount: acceptedClaims.length, pilotUsableCount: pilotClaims.length, rejectedCount: allClaims.filter((claim) => claim.accepted !== true).length, rejectionReasons: countMany(allClaims.flatMap((claim) => claim.rejectionReasons ?? [])), primaryCandidateCount: primaryClaims.length, primaryPilotUsableCount: primaryClaims.filter((claim) => claim.pilotUsable).length, pilotUsableWorkCount: primaryPilot.length, pilotUsableWorkCoverage, highValueWorkCount: highValueSlots.size, highValuePilotUsableWorkCount: highValuePilot.length, highValueCoverage, weakUnsupportedRatingReviewCount },
+      timeConflict: { explicitTemporalClaimCount: explicitTemporalClaims.length, explicitTemporalExtractionRate: explicitTimeExtractionRate, eventTimePrecisionCounts: countBy(allClaims, (claim) => claim.eventTimePrecision ?? "unknown"), eventTimeBasisCounts: countBy(allClaims, (claim) => claim.eventTimeBasis ?? "unknown"), eventTimeProvenanceCompleteCount: allClaims.filter((claim) => claim.eventTime && claim.eventTimeSourceId && claim.eventTimeEvidenceSpanDigest).length, eventTimeProvenanceMissingCount: allClaims.filter((claim) => claim.eventTime && (!claim.eventTimeSourceId || !claim.eventTimeEvidenceSpanDigest)).length, unresolvedConflictCount, unresolvedConflictPilotCount, validMultiEditionCount: sum(allLogical.map((receipt) => receipt.normalizedResponse?.v2b8ConflictAudit?.validMultiEditionCount)), declaredConflictFamilies: [...V2B8_CONFLICT_FAMILIES], conflictFamilyCoverage: Object.fromEntries(V2B8_CONFLICT_FAMILIES.map((family) => [family, allLogical.every((receipt) => receipt.normalizedResponse?.v2b8ConflictAudit?.conflictFamilyCoverage?.[family] === true)])) },
+      sourceClassification: { sourceCategories, claimSupportCategories: claimCategories, unknownPublicWebClaimShare: unknownClaimShare, prohibitedAcceptedCount, categoryDiversityTarget: Math.max(0, ...primarySearch.map((run) => Number(run.categoryDiversityTarget ?? 0))), minimumCategoryDiversityAchieved: primarySearch.length ? Math.min(...primarySearch.map((run) => Number(run.categoryDiversityAchieved ?? Object.keys(run.categoryCounts ?? {}).length))) : null, identityReservationAppliedWorkCount: primarySearch.filter((run) => run.identityReservationApplied === true).length, selectionLimitations: countMany(primarySearch.flatMap((run) => run.sourceSelectionLimitations ?? [])) },
       citationGovernance: { sourceIdReferenceCount: sourceReferenceCount, mappedSourceIdReferenceCount: mappedReferenceCount, sourceIdIntegrityRate: sourceIntegrity, capturedAtCompleteness: capturedCompleteness, availableAtCompleteness: availableCompleteness, researchApprovedCount: allClaims.filter((claim) => claim.researchApproved).length, modelEligibleCount: allClaims.filter((claim) => claim.modelEligible).length },
       reproducibility,
     },
@@ -606,14 +754,14 @@ function buildUsage(state, fallbackQueries, repeatSearch, physicalReceipts) {
 }
 
 export function readV2B8Results(root) {
-  const frozen = checkAndFreezeV2B8Contract(root);
+  const frozen = readV2B8FrozenContract(root);
   const fallbackQueries = readJson(join(frozen.privateStore, V2B8_FILES.fallbackSearch)).queries;
   const primarySearch = readJson(join(frozen.privateStore, V2B8_FILES.primarySearch)).runs;
   const repeatSearch = readJson(join(frozen.privateStore, V2B8_FILES.repeatSearch)).runs;
   const receipts = readNdjson(join(frozen.privateStore, V2B8_FILES.relayReceipts));
   return {
     ...frozen,
-    state: readJson(join(frozen.privateStore, V2B8_FILES.state)),
+    state: frozen.state,
     fallbackQueries,
     primarySearch,
     repeatSearch,
@@ -679,7 +827,7 @@ function publicReportBundle(results) {
   const common = { status: "not_for_formal_decision", full160Authorized: false };
   const canonical = { schema: "m2.v2.claim-canonicalization-audit-public.v0.1", ...common, deterministic: true, llmJudgeUsed: false, candidateClaimCount: metrics.evidence.candidateCount, pilotUsableClaimCount: metrics.evidence.pilotUsableCount, maximumClaimsPerWork: 10, weakUnsupportedRatingReviewCount: metrics.evidence.weakUnsupportedRatingReviewCount, sameSourceClaimAgreement: metrics.reproducibility.sameSourceClaimAgreement, endToEndSemanticClaimAgreement: metrics.reproducibility.endToEndSemanticClaimAgreement, contributionDecomposition: metrics.reproducibility.contributions };
   const timeConflict = { schema: "m2.v2.event-time-conflict-audit-public.v0.1", ...common, ...metrics.timeConflict, conflictClaimsExcludedFromPilot: metrics.timeConflict.unresolvedConflictPilotCount === 0 };
-  const sourceClassification = { schema: "m2.v2.source-classification-audit-public.v0.1", ...common, ...metrics.sourceClassification, categoryCount: V2B8_SOURCE_CATEGORIES.length, selectionDeterministic: true, maximumPerHost: 2 };
+  const sourceClassification = { schema: "m2.v2.source-classification-audit-public.v0.1", ...common, ...metrics.sourceClassification, categoryCount: V2B8_SOURCE_CATEGORIES.length, selectionDeterministic: true, maximumPerHost: 2, maximumPerCategory: 2 };
   const execution = { schema: "m2.v2.canary-v3-1-execution-summary-public.v0.1", ...common, startSha: V2B8_START_SHA, phaseACommit: results.state.phaseACommit ?? null, manifestDigest: V2B7_CANARY_MANIFEST_DIGEST, repeatDigest: V2B7_REPEAT_DIGEST, sourceBundleDigest: V2B7_SOURCE_BUNDLE_DIGEST, fixedPrimaryWorkCount: 10, fixedRepeatWorkCount: 5, failedSamplesReplaced: false, fallbackQueryCount: results.fallbackQueries.length, newTavilyPhysicalRequestCount: results.state.tavily.physicalRequestCount, cumulativeTavilyPhysicalRequestCount: results.usage.tavily.cumulativePhysicalRequestCount, newRelayPhysicalRequestCount: results.state.relay.physicalRequestCount, cumulativeRelayPhysicalRequestCount: results.usage.relay.cumulativePhysicalRequestCount, repairCount: results.state.relay.repairCount, model: V2B8_MODEL_ID, route: "full/server_strict", search: metrics.search, extraction: metrics.extraction, entity: metrics.entity, evidence: metrics.evidence, usage: results.usage, noBrowserComputerUseOrRelaySearch: true, modelTrainingPerformed: false };
   const reproducibility = { schema: "m2.v2.canary-v3-1-reproducibility-public.v0.1", ...common, expectedPairCount: 5, meanRepeatSourceOverlap: metrics.reproducibility.meanRepeatSourceOverlap, medianRepeatSourceOverlap: metrics.reproducibility.medianRepeatSourceOverlap, exactSourceSetCount: metrics.reproducibility.exactSourceSetCount, sameSourceClaimAgreement: metrics.reproducibility.sameSourceClaimAgreement, sameSourceEvaluableCount: metrics.reproducibility.sameSourceEvaluableCount, endToEndSemanticClaimAgreement: metrics.reproducibility.endToEndSemanticClaimAgreement, endToEndEvaluableCount: metrics.reproducibility.endToEndEvaluableCount, contributionDecomposition: metrics.reproducibility.contributions, perPair: metrics.reproducibility.perPair.map((pair) => ({ anonymousPairId: pair.anonymousPairId, sourceOverlap: pair.sourceOverlap, exactSourceSet: pair.exactSourceSet, sameSourceAgreement: pair.sameSourceAgreement, sameSourceStatus: pair.sameSourceStatus, endToEndSemanticAgreement: pair.endToEndSemanticAgreement, endToEndStatus: pair.endToEndStatus })) };
   const decision = { schema: "m2.v2.canary-v3-1-decision-public.v0.1", ...common, canaryDecision: results.evaluation.decision, safetyPassed: results.evaluation.safetyPassed, qualityPassed: results.evaluation.qualityPassed, blockerIds: results.evaluation.blockerIds, safetyGates: results.evaluation.safetyGates, qualityGates: results.evaluation.qualityGates, nextStep: results.evaluation.nextStep, privateWorkbookGenerated: results.workbookExists, privateWorkbookVerificationPassed: workbookVerificationPassed(results.workbookVerification), modelTrainingPerformed: false, sampleReplaced: false, b4Changed: false, finalHoldoutOpened: false, enteredV2COrV2D: false, enteredC4OrM3: false, released: false };
@@ -705,10 +853,11 @@ export function runV2B8FullValidation(root, options = {}) {
     ["npm", ["run", "smoke"]],
     ["npm", ["run", "test:e2e"]],
     ["npm", ["run", "m2:v2:v2b5:verify"]],
+    ["npm", ["run", "m2:v2:v2b6:verify"]],
     ["npm", ["run", "m2:v2:v2b7:verify"]],
-    ["npm", ["run", "m2:v2:v2b8:check"]],
-    ["npm", ["run", "m2:v2:v2b8:resume"]],
-    ["npm", ["run", "m2:v2:v2b8:report"]],
+    ["npm", ["run", "m2:v2:v2b8:verify"]],
+    ["npm", ["run", "test:m2-v2:integrity-synthetic"]],
+    ["npm", ["run", "test:secret-guard"]],
   ];
   const rows = [];
   for (const [program, args] of commands) {
@@ -721,17 +870,19 @@ export function runV2B8FullValidation(root, options = {}) {
     rows.push({ command: [program, ...args].join(" "), startedAt, completedAt: new Date().toISOString(), durationMs: Date.now() - started, exitCode: result.status, passed: result.status === 0, stdoutDigest: sha256(String(result.stdout ?? "")), stderrDigest: sha256(String(result.stderr ?? "")), rawOutputPersisted: false });
     if (result.status !== 0) break;
   }
-  const payload = { schema: "m2.v2.v2b8-full-validation-receipt-private.v0.1", privateOnly: true, completedAt: new Date().toISOString(), expectedCommandCount: commands.length, executedCommandCount: rows.length, allPassed: rows.length === commands.length && rows.every((row) => row.passed), commands: rows, full160Authorized: false };
+  const payload = { schema: "m2.v2.integrity-remediation-full-validation-receipt-private.v0.1", privateOnly: true, completedAt: new Date().toISOString(), expectedCommandCount: commands.length, executedCommandCount: rows.length, allPassed: rows.length === commands.length && rows.every((row) => row.passed), commands: rows, providerCommandsExecuted: 0, full160Authorized: false };
   const receipt = { ...payload, receiptDigest: sha256(payload) };
-  atomicWriteJson(join(root, V2B8_PRIVATE_RELATIVE, V2B8_FILES.validation), receipt);
+  atomicWriteJson(join(root, INTEGRITY_VALIDATION_RECEIPT_RELATIVE), receipt);
   return receipt;
 }
 
-export function verifyV2B8(root, options = {}) {
-  const validation = options.runFullValidation === true ? runV2B8FullValidation(root, options) : null;
-  if (validation) rebuildV2B8DerivedArtifacts(root);
+export function verifyV2B8(root) {
   const results = readV2B8Results(root);
   const issues = [];
+  const gitBoundary = auditGitBoundary(root);
+  if (!gitBoundary.auditSucceeded) issues.push("git_boundary_audit_failed");
+  if (!gitBoundary.b4Unchanged) issues.push("b4_boundary_changed_or_unverified");
+  if (!gitBoundary.holdoutSealed) issues.push("holdout_boundary_changed_or_unverified");
   if (results.state.tavily.physicalRequestCount > V2B8_TAVILY_REQUEST_CAP) issues.push("tavily_cap_exceeded");
   if (results.state.relay.physicalRequestCount > V2B8_RELAY_REQUEST_CAP || results.state.relay.repairCount > V2B8_MAX_REPAIRS) issues.push("relay_cap_exceeded");
   for (const provider of ["tavily", "relay"]) if (Object.keys(results.state[provider].reservations ?? {}).length !== results.state[provider].physicalRequestCount) issues.push(`${provider}_reservation_count_mismatch`);
@@ -748,10 +899,8 @@ export function verifyV2B8(root, options = {}) {
     if (!existsSync(join(root, relative))) issues.push(`public_report_missing:${relative}`);
     else { try { assertPublicV2B8Sanitized(readFileSync(join(root, relative), "utf8")); } catch (error) { issues.push(safeToken(error?.message)); } }
   }
-  if (validation && !validation.allPassed) issues.push("full_validation_failed");
-  const payload = { schema: "m2.v2.v2b8-verification-receipt-private.v0.1", privateOnly: true, verifiedAt: new Date().toISOString(), allPassed: issues.length === 0, issues: unique(issues), newTavilyPhysicalRequestCount: results.state.tavily.physicalRequestCount, cumulativeTavilyPhysicalRequestCount: results.usage.tavily.cumulativePhysicalRequestCount, newRelayPhysicalRequestCount: results.state.relay.physicalRequestCount, cumulativeRelayPhysicalRequestCount: results.usage.relay.cumulativePhysicalRequestCount, decision: results.evaluation.decision, full160Authorized: false };
+  const payload = { schema: "m2.v2.v2b8-verification-verdict.v0.2", allPassed: issues.length === 0, issues: unique(issues), newTavilyPhysicalRequestCount: results.state.tavily.physicalRequestCount, cumulativeTavilyPhysicalRequestCount: results.usage.tavily.cumulativePhysicalRequestCount, newRelayPhysicalRequestCount: results.state.relay.physicalRequestCount, cumulativeRelayPhysicalRequestCount: results.usage.relay.cumulativePhysicalRequestCount, decision: results.evaluation.decision, full160Authorized: false };
   const receipt = { ...payload, receiptDigest: sha256(payload) };
-  atomicWriteJson(join(results.privateStore, V2B8_FILES.verification), receipt);
   return receipt;
 }
 
@@ -760,11 +909,11 @@ function renderCanonicalAudit(report) {
 }
 
 function renderTimeConflictAudit(report) {
-  return `# M2 v2 Event Time / Conflict 审计 v0.1\n\n- 明确时间 claim：${report.explicitTemporalClaimCount}\n- 明确时间提取率：${percent(report.explicitTemporalExtractionRate)}\n- eventTime precision：${JSON.stringify(report.eventTimePrecisionCounts)}\n- eventTime basis：${JSON.stringify(report.eventTimeBasisCounts)}\n- unresolved conflict：${report.unresolvedConflictCount}；仍 pilotUsable：${report.unresolvedConflictPilotCount}\n- 合法多 edition/format：${report.validMultiEditionCount}\n- full160Authorized：false\n`;
+  return `# M2 v2 Event Time / Conflict 审计 v0.1\n\n- 明确时间 claim：${report.explicitTemporalClaimCount}\n- 明确时间提取率：${percent(report.explicitTemporalExtractionRate)}\n- eventTime precision：${JSON.stringify(report.eventTimePrecisionCounts)}\n- eventTime basis：${JSON.stringify(report.eventTimeBasisCounts)}\n- eventTime provenance complete / missing：${report.eventTimeProvenanceCompleteCount} / ${report.eventTimeProvenanceMissingCount}\n- conflict family coverage：${JSON.stringify(report.conflictFamilyCoverage)}\n- unresolved conflict：${report.unresolvedConflictCount}；仍 pilotUsable：${report.unresolvedConflictPilotCount}\n- 合法多 edition/format：${report.validMultiEditionCount}\n- full160Authorized：false\n`;
 }
 
 function renderSourceClassification(report) {
-  return `# M2 v2 Source Classification 审计 v0.1\n\n- 类别数：${report.categoryCount}\n- Source Record 分类：${JSON.stringify(report.sourceCategories)}\n- claim support 分类：${JSON.stringify(report.claimSupportCategories)}\n- unknown public web claim share：${percent(report.unknownPublicWebClaimShare)}\n- prohibited accepted：${report.prohibitedAcceptedCount}\n- selection deterministic：${report.selectionDeterministic}；单 host 上限：${report.maximumPerHost}\n- full160Authorized：false\n`;
+  return `# M2 v2 Source Classification 审计 v0.1\n\n- 类别数：${report.categoryCount}\n- Source Record 分类：${JSON.stringify(report.sourceCategories)}\n- claim support 分类：${JSON.stringify(report.claimSupportCategories)}\n- unknown public web claim share：${percent(report.unknownPublicWebClaimShare)}\n- prohibited accepted：${report.prohibitedAcceptedCount}\n- selection deterministic：${report.selectionDeterministic}；单 host / category 上限：${report.maximumPerHost} / ${report.maximumPerCategory}\n- category diversity target / minimum achieved：${report.categoryDiversityTarget} / ${report.minimumCategoryDiversityAchieved ?? "N/A"}\n- identity reservation works：${report.identityReservationAppliedWorkCount}；limitations：${JSON.stringify(report.selectionLimitations)}\n- full160Authorized：false\n`;
 }
 
 function renderExecution(report) {
@@ -776,7 +925,10 @@ function renderReproducibility(report) {
 }
 
 function renderDecision(report) {
-  return `# M2 v2 固定 Canary v3.1 决策 v0.1\n\n## 决策\n\n**${report.canaryDecision}**\n\n- safety / quality：${report.safetyPassed} / ${report.qualityPassed}\n- blockers：${report.blockerIds.length ? report.blockerIds.join(", ") : "none"}\n- nextStep：\`${report.nextStep}\`\n- private workbook：${report.privateWorkbookGenerated ? "已生成" : "未生成"}；验证：${report.privateWorkbookVerificationPassed}\n- 未训练模型；未替换样本；B4 unchanged；holdout sealed；未进入 V2-C/V2-D/C4/M3；未 release。\n- full160Authorized：false\n`;
+  const gates = [...(report.safetyGates ?? []), ...(report.qualityGates ?? [])]
+    .map((gate) => `  - ${gate.id}: ${gate.status === "NOT_EVALUABLE" ? "N/A (gate failed: not evaluable)" : `${String(gate.value)} (${gate.status})`}`)
+    .join("\n");
+  return `# M2 v2 固定 Canary v3.1 决策 v0.1\n\n## 决策\n\n**${report.canaryDecision}**\n\n- safety / quality：${report.safetyPassed} / ${report.qualityPassed}\n- blockers：${report.blockerIds.length ? report.blockerIds.join(", ") : "none"}\n- gate status：\n${gates}\n- nextStep：\`${report.nextStep}\`\n- private workbook：${report.privateWorkbookGenerated ? "已生成" : "未生成"}；验证：${report.privateWorkbookVerificationPassed}\n- 未训练模型；未替换样本；B4 unchanged；holdout sealed；未进入 V2-C/V2-D/C4/M3；未 release。\n- full160Authorized：false\n`;
 }
 
 function renderNextStep(report) {
@@ -812,8 +964,7 @@ function loadConfiguration(root, suppliedEnv = null) {
 
 function auditGitBoundary(root) {
   const result = spawnSync("git", ["diff", "--name-only", V2B8_START_SHA, "--"], { cwd: root, encoding: "utf8", windowsHide: true });
-  const paths = String(result.stdout ?? "").split(/\r?\n/u).filter(Boolean);
-  return { b4Unchanged: !paths.some((path) => /oldProductEvaluation|formal-cash|calibrationSpec|B4/iu.test(path)), holdoutSealed: !paths.some((path) => /holdout|embargo|deferred.*label/iu.test(path)) };
+  return evaluateGitBoundaryCommandResult(result);
 }
 
 function persistenceContext(results, root) {
@@ -865,6 +1016,22 @@ function reconcileReservations(state, tavilyCache, relayCache, timestamp) {
 }
 
 function checkpoint(context) {
+  commitAtomicRequestCheckpoint(context.root, {
+    scope: "v2b8",
+    createdAt: context.now(),
+    state: context.state,
+    caches: { tavily: context.tavilyCache, relay: context.relayCache },
+    receipts: Object.values(context.relayCache?.entries ?? {}),
+    adapterVersion: V2B6_ADAPTER_VERSION,
+    manifestBindings: {
+      manifestDigest: V2B7_CANARY_MANIFEST_DIGEST,
+      repeatDigest: V2B7_REPEAT_DIGEST,
+      sourceBundleDigest: V2B7_SOURCE_BUNDLE_DIGEST,
+      contractDigest: context.frozen?.contract?.contractDigest ?? null,
+    },
+  });
+  // Compatibility mirrors are written only after the immutable snapshot and
+  // current binding commit. Loaders treat the bound snapshot as authoritative.
   atomicWriteJson(join(context.privateStore, V2B8_FILES.state), context.state);
   atomicWriteJson(join(context.privateStore, V2B8_FILES.tavilyCache), context.tavilyCache);
   atomicWriteJson(join(context.privateStore, V2B8_FILES.relayCache), context.relayCache);
@@ -951,15 +1118,28 @@ function atomicWriteText(path, value) {
   return value;
 }
 
-function gate(id, actual, threshold, predicate) {
-  return { id, actual, threshold, passed: predicate(actual, threshold) };
+function gate(id, actual, threshold, predicate, contextEvaluable = true) {
+  const evaluable = contextEvaluable === true
+    && actual !== null
+    && actual !== undefined
+    && (typeof actual !== "number" || Number.isFinite(actual));
+  const value = evaluable ? actual : null;
+  const passed = evaluable && predicate(value, threshold);
+  return {
+    id,
+    status: evaluable ? (passed ? "PASS" : "FAIL") : "NOT_EVALUABLE",
+    value,
+    actual: value,
+    threshold,
+    passed,
+  };
 }
 
 function equal(actual, threshold) { return actual === threshold; }
 function atLeast(actual, threshold) { return Number.isFinite(actual) && actual >= threshold; }
 function atMost(actual, threshold) { return Number.isFinite(actual) && actual <= threshold; }
-function evaluableAtLeast(count, expected) { return (actual, threshold) => count === expected && atLeast(actual, threshold); }
-function ratio(numerator, denominator) { return denominator ? numerator / denominator : 0; }
+function requiredRatio(numerator, denominator) { return Number.isFinite(numerator) && Number.isFinite(denominator) && denominator > 0 ? numerator / denominator : null; }
+function requiredSampleRatio(numerator, denominator, observedCount, expectedCount) { return observedCount === expectedCount ? requiredRatio(numerator, denominator) : null; }
 function sum(values) { return values.reduce((total, value) => total + Number(value ?? 0), 0); }
 function nullableSum(values) { const finite = values.filter(Number.isFinite); return finite.length ? sum(finite) : null; }
 function average(values) { const finite = values.filter(Number.isFinite); return finite.length ? sum(finite) / finite.length : null; }
@@ -977,4 +1157,7 @@ export const __test = Object.freeze({
   canonicalizeResponse,
   collectFailedV2B7Queries,
   projectExtractionSources,
+  gate,
+  requiredRatio,
+  requiredSampleRatio,
 });

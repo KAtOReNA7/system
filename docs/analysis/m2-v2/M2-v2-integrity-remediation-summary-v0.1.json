@@ -1,0 +1,49 @@
+{
+  "schema": "m2.v2.integrity-remediation-summary-public.v0.1",
+  "status": "completed_pending_external_review",
+  "classification": "public_sanitized_not_for_formal_decision",
+  "generatedAt": "2026-07-18",
+  "historicalDecision": {
+    "stage": "V2-B.8",
+    "decision": "CANARY_CONDITIONAL",
+    "reportRetained": true,
+    "reportOverwritten": false
+  },
+  "currentRestatement": {
+    "contract": "integrity_remediation_v0.1",
+    "mode": "offline_from_existing_authoritative_materials",
+    "decision": "CANARY_FAIL",
+    "full160Authorized": false
+  },
+  "remediation": {
+    "verifierReadonlyIdempotency": "completed",
+    "receiptCacheRuntimeSeparation": "completed",
+    "atomicStateBinding": "completed",
+    "offlinePrivateStateRecovery": "completed",
+    "b8FailClosedContractRepair": "completed",
+    "requiredLocalValidation": "completed",
+    "wholeProjectAuditCoverage": "100_percent_recorded_in_private_audit_v0.2",
+    "prBodyUtf8RoundTrip": "recorded_in_private_closeout_evidence"
+  },
+  "closeout": {
+    "prNumber": 7,
+    "requiredPrState": "draft_open_unmerged",
+    "externalReview": "pending_user_handoff",
+    "nextDevelopmentReadiness": "NOT_AUTHORIZED"
+  },
+  "boundaries": {
+    "providerRequestDelta": 0,
+    "canaryExecuted": false,
+    "full160Executed": false,
+    "modelTrainingPerformed": false,
+    "b4Changed": false,
+    "formalCashChanged": false,
+    "holdoutOpened": false,
+    "enteredV2C": false,
+    "enteredV2D": false,
+    "enteredC4": false,
+    "enteredM3": false,
+    "releasePerformed": false,
+    "prMerged": false
+  }
+}

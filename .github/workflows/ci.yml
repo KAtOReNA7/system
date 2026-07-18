@@ -15,6 +15,9 @@ jobs:
       M1_DATABASE_URL: ""
       M1_DATABASE_READONLY_URL: ""
       M1_DATABASE_BACKGROUND_URL: ""
+      OPENAI_API_KEY: ""
+      TAVILY_API_KEY: ""
+      M2_V2_EVIDENCE_API_BASE_URL: ""
 
     steps:
       - name: Checkout
@@ -37,6 +40,11 @@ jobs:
           node-version: 24
           cache: npm
 
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
       - name: Install dependencies
         run: npm ci
 
@@ -58,10 +66,81 @@ jobs:
       - name: Test
         run: npm test
 
+      - name: Synthetic verifier contract
+        run: npm run test:m2-v2:integrity-synthetic
+
+      - name: Synthetic secret guard
+        run: npm run test:secret-guard
+
       # Default smoke mode is fixture-only and does not connect to PostgreSQL.
       - name: Smoke
         run: npm run smoke
 
       # Admin E2E starts an in-process local HTTP server with no database URLs.
+      - name: Admin E2E
+        run: npm run test:e2e
+
+  verify-windows:
+    runs-on: windows-latest
+    env:
+      M1_APP_ENV: ci
+      M1_DATABASE_URL: ""
+      M1_DATABASE_READONLY_URL: ""
+      M1_DATABASE_BACKGROUND_URL: ""
+      OPENAI_API_KEY: ""
+      TAVILY_API_KEY: ""
+      M2_V2_EVIDENCE_API_BASE_URL: ""
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Normalize M2 pull request checkout identity
+        if: ${{ github.event_name == 'pull_request' && startsWith(github.head_ref, 'codex/m2-') }}
+        run: git switch -c codex/m2-ci-merge-checkout
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Python test dependencies
+        run: python -m pip install --disable-pip-version-check --no-input numpy==2.5.1 pandas==3.0.3
+
+      - name: Install Playwright Chromium
+        run: npx playwright install chromium
+
+      - name: Check for real data and secrets
+        run: npm run check:no-real-data
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+      - name: Test
+        run: npm test
+
+      - name: Synthetic verifier contract
+        run: npm run test:m2-v2:integrity-synthetic
+
+      - name: Synthetic secret guard
+        run: npm run test:secret-guard
+
+      - name: Smoke
+        run: npm run smoke
+
       - name: Admin E2E
         run: npm run test:e2e

@@ -58,6 +58,11 @@ async function hashAndCountLines(filePath) {
   return { sha256: hash.digest("hex"), lineCount };
 }
 
+function gitCanonicalLfSha256(filePath) {
+  const canonical = readFileSync(filePath, "utf8").replace(/\r\n?/gu, "\n");
+  return createHash("sha256").update(canonical, "utf8").digest("hex");
+}
+
 test("v1.2 freezes faithful B0b and renames the switched formula to B4", () => {
   assert.equal(spec.modelIdentity.B0b.id, "B0b_v1_1_leakage_free_replay");
   assert.equal(spec.modelIdentity.B4.id, "B4_formula_switched_legacy_variant");
@@ -738,10 +743,7 @@ test("generated formula manifest binds every cited source to its historical Git 
       createHash("sha256").update(shown.stdout).digest("hex"),
       source.historicalBlobSha256,
     );
-    assert.equal(
-      createHash("sha256").update(readFileSync(path.join(root, source.path))).digest("hex"),
-      source.historicalBlobSha256,
-    );
+    assert.equal(gitCanonicalLfSha256(path.join(root, source.path)), source.historicalBlobSha256);
   }
 });
 
@@ -789,7 +791,7 @@ print(v12.canonical_digest(json.loads(open('src/domain/oldProductEvaluation/cali
     const absolutePath = path.join(root, ...relativePath.split("/"));
     assert.equal(existsSync(absolutePath), true, relativePath);
     assert.equal(
-      createHash("sha256").update(readFileSync(absolutePath)).digest("hex"),
+      gitCanonicalLfSha256(absolutePath),
       expected,
       relativePath,
     );

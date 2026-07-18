@@ -66,9 +66,7 @@ try {
     const result = writeV2B7PublicReports(root, rebuilt);
     print({ command, status: "ok", publicReportCount: result.publicReports.length, full160Authorized: false });
   } else if (command === "verify") {
-    const result = verifyV2B7(root, {
-      onProgress: (progress) => console.error(JSON.stringify({ command, progress })),
-    });
+    const result = verifyV2B7(root);
     print({ command, status: result.allPassed ? "ok" : "failed", ...result });
     if (!result.allPassed) process.exitCode = 1;
   } else {

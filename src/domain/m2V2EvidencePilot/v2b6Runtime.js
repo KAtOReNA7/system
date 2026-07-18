@@ -8,6 +8,12 @@ import {
 import { dirname, join } from "node:path";
 import { canonicalJson, sha256 } from "./pilotCore.js";
 import {
+  commitAtomicRequestCheckpoint,
+  readCurrentRequestStateSnapshot,
+  validateFrozenSourceBundleDigest,
+  withReceiptRuntimeView,
+} from "./integrityState.js";
+import {
   buildV2B5SourceRecordSet,
   validateV2B5SourceRecord,
 } from "./sourceRecordV2B5.js";
@@ -138,15 +144,23 @@ export async function runV2B6(root, options = {}) {
 }
 
 export function readV2B6Results(root) {
-  const frozen = checkAndFreezeV2B6(root);
-  const readOptional = (name) => existsSync(join(frozen.privateStore, name)) ? readJson(join(frozen.privateStore, name)) : null;
+  const privateStore = join(root, V2B6_PRIVATE_RELATIVE);
+  const atomicSnapshot = readCurrentRequestStateSnapshot(root, { scope: "v2b6" });
+  if (atomicSnapshot.present && !atomicSnapshot.valid) {
+    throw new Error(`v2b6_atomic_binding_invalid:${atomicSnapshot.issues.join(",")}`);
+  }
+  const readOptional = (name) => existsSync(join(privateStore, name)) ? readJson(join(privateStore, name)) : null;
   return {
-    forensic: frozen.forensic,
-    bundle: frozen.bundle,
+    forensic: {
+      failureMatrix: readJson(join(privateStore, FILES.failureMatrix)),
+      shapeSkeleton: readJson(join(privateStore, FILES.shapeSkeleton)),
+    },
+    bundle: readJson(join(privateStore, FILES.sourceBundle)),
     profile: readOptional(FILES.profile),
     evaluation: readOptional(FILES.evaluation),
     usage: readOptional(FILES.usage),
-    state: readJson(join(frozen.privateStore, FILES.state)),
+    state: atomicSnapshot.present ? atomicSnapshot.members.state : readJson(join(privateStore, FILES.state)),
+    atomicBinding: atomicSnapshot,
   };
 }
 
@@ -155,6 +169,7 @@ export function verifyV2B6(root) {
   const issues = [];
   if (results.bundle.workCount !== 4 || results.bundle.repeatWorkCount !== 2) issues.push("source_bundle_population_invalid");
   if (results.bundle.newTavilyPhysicalRequestCount !== 0) issues.push("new_tavily_request_detected");
+  if (!validateFrozenSourceBundleDigest(results.bundle).valid) issues.push("source_bundle_digest_invalid");
   if (!results.profile) issues.push("capability_profile_missing");
   if (!results.evaluation) issues.push("benchmark_evaluation_missing");
   if (results.state.physicalRelayRequestCount > V2B6_RELAY_REQUEST_CAP) issues.push("relay_request_cap_exceeded");
@@ -172,10 +187,8 @@ export function verifyV2B6(root) {
     .map((relative) => readFileSync(join(root, relative), "utf8"))
     .filter((content) => !isPublicSafe(content, results.bundle)).length;
   if (publicLeakCount) issues.push("public_private_token_leak");
-  const receipt = {
-    schema: "m2.v2.v2b6-verification-receipt.v0.1",
-    privateOnly: true,
-    verifiedAt: new Date().toISOString(),
+  const receiptPayload = {
+    schema: "m2.v2.v2b6-verification-verdict.v0.2",
     allPassed: issues.length === 0,
     issues,
     publicLeakCount,
@@ -187,8 +200,7 @@ export function verifyV2B6(root) {
     canaryExecuted: false,
     full160Authorized: false,
   };
-  atomicWriteJson(join(root, V2B6_PRIVATE_RELATIVE, FILES.verification), receipt);
-  return receipt;
+  return { ...receiptPayload, receiptDigest: sha256(receiptPayload) };
 }
 
 export function writeV2B6PublicReports(root, supplied = null) {
@@ -355,7 +367,13 @@ async function executeSplitLogical(context, profile, model, modelProfile, logica
 async function dispatchCached(context, descriptor, payload) {
   const cacheKey = sha256(descriptor);
   const cached = context.cache.entries[cacheKey];
-  if (cached) return { response: cached.response, receipt: cached.receipt, cacheHit: true };
+  if (cached) {
+    return {
+      response: cached.response,
+      receipt: withReceiptRuntimeView(cached.receipt, { cacheHit: true }),
+      cacheHit: true,
+    };
+  }
   if (context.state.physicalRelayRequestCount >= V2B6_RELAY_REQUEST_CAP) throw new Error("v2b6_relay_request_cap_exhausted");
   context.state.physicalRelayRequestCount += 1;
   context.state.reservations[cacheKey] = { status: "in_progress", reservedAt: context.now(), descriptor };
@@ -990,6 +1008,18 @@ function reconcileInProgress(context) {
 }
 
 function checkpoint(context) {
+  commitAtomicRequestCheckpoint(context.root, {
+    scope: "v2b6",
+    createdAt: context.now(),
+    state: context.state,
+    caches: { relay: context.cache },
+    receipts: context.receipts,
+    adapterVersion: V2B6_ADAPTER_VERSION,
+    manifestBindings: {
+      sourceBundleDigest: context.bundle?.sourceBundleDigest ?? null,
+      contractDigest: context.state?.sourceBundleDigest ?? null,
+    },
+  });
   atomicWriteJson(context.statePath, context.state);
   atomicWriteJson(context.cachePath, context.cache);
   writeNdjson(join(context.privateStore, FILES.receipts), context.receipts);

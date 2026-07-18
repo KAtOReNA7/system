@@ -9,6 +9,11 @@ import { dirname, join } from "node:path";
 import { spawnSync } from "node:child_process";
 import { canonicalJson, sha256 } from "./pilotCore.js";
 import {
+  commitAtomicRequestCheckpoint,
+  readCurrentRequestStateSnapshot,
+  withReceiptRuntimeView,
+} from "./integrityState.js";
+import {
   V2B5_SOURCE_RECORD_SCHEMA,
   buildV2B5SourceRecordSet,
   mergeAndLimitV2B5SourceRecords,
@@ -137,6 +142,23 @@ export function checkAndFreezeV2B5(root, options = {}) {
   };
 }
 
+export function readV2B5FrozenState(root) {
+  const privateStore = join(root, V2B5_PRIVATE_RELATIVE);
+  const frozenCanary = readJson(join(root, V2B5_FROZEN_CANARY_RELATIVE));
+  assertFrozenCanaryManifest(frozenCanary);
+  const benchmarkManifest = readJson(join(privateStore, FILES.benchmarkManifest));
+  const canaryManifest = readJson(join(privateStore, FILES.canaryManifest));
+  const policyValidation = validateV2B5SourceGovernancePolicy(V2B5_DEFAULT_SOURCE_GOVERNANCE_POLICY);
+  if (!policyValidation.valid) throw new Error(`v2b5_governance_invalid:${policyValidation.issues.join(",")}`);
+  return {
+    privateStore,
+    frozenCanary,
+    benchmarkManifest,
+    canaryManifest,
+    policy: V2B5_DEFAULT_SOURCE_GOVERNANCE_POLICY,
+  };
+}
+
 export async function runV2B5(root, options = {}) {
   const frozen = checkAndFreezeV2B5(root, options);
   const privateStore = frozen.privateStore;
@@ -164,7 +186,7 @@ export async function runV2B5(root, options = {}) {
   }
   assertExecutionContainers(state, tavilyCache, relayCache, frozen, bindings);
   reconcileIndeterminateReservations(state, tavilyCache, relayCache, options.now?.() ?? new Date().toISOString());
-  checkpointExecution(privateStore, state, tavilyCache, relayCache);
+  checkpointExecution(root, privateStore, state, tavilyCache, relayCache);
   const tavily = new TavilyStructuredSearchProviderV2B5({
     baseUrl: config.tavily.baseUrl,
     apiKey: config.tavily.apiKey,
@@ -207,7 +229,7 @@ export async function runV2B5(root, options = {}) {
   const pretest = runTargetedPretest(root);
   atomicWriteJson(join(privateStore, FILES.pretest), pretest);
   state.pretestsPassed = pretest.allPassed;
-  checkpointExecution(privateStore, state, tavilyCache, relayCache);
+  checkpointExecution(root, privateStore, state, tavilyCache, relayCache);
 
   const capability = await runCapabilityProbe(context);
   atomicWriteJson(join(privateStore, FILES.capability), capability);
@@ -215,7 +237,7 @@ export async function runV2B5(root, options = {}) {
   if (capability.tavilyProviderDecision !== "READY") {
     state.executionStatus = "blocked_provider_capability";
     state.canaryExecuted = false;
-    checkpointExecution(privateStore, state, tavilyCache, relayCache);
+    checkpointExecution(root, privateStore, state, tavilyCache, relayCache);
     const result = finalizePrivateArtifacts(context, { capability, benchmarkEvaluation: null, searchRuns: [], canaryEvaluation: blockedCanaryEvaluation(frozen.canaryManifest, capability.tavilyProviderDecision) });
     writeV2B5PublicReports(root, result);
     return result;
@@ -243,14 +265,14 @@ export async function runV2B5(root, options = {}) {
   state.benchmarkDecision = benchmarkEvaluation.extractionBenchmarkDecision;
   state.defaultExtractionModel = benchmarkEvaluation.defaultExtractionModel;
   state.escalationModel = benchmarkEvaluation.escalationModel;
-  checkpointExecution(privateStore, state, tavilyCache, relayCache);
+  checkpointExecution(root, privateStore, state, tavilyCache, relayCache);
 
   const preGate = evaluateCanaryPreGate(context, capability, benchmarkSearchRuns, benchmarkEvaluation);
   state.canaryPreGate = preGate;
   if (!preGate.allPassed) {
     state.executionStatus = "blocked_canary_pre_gate";
     state.canaryExecuted = false;
-    checkpointExecution(privateStore, state, tavilyCache, relayCache);
+    checkpointExecution(root, privateStore, state, tavilyCache, relayCache);
     const result = finalizePrivateArtifacts(context, {
       capability,
       benchmarkEvaluation,
@@ -283,7 +305,7 @@ export async function runV2B5(root, options = {}) {
   const canaryRelayReceipts = await runCanaryExtractions(context, canarySearchRuns, benchmarkEvaluation);
   state.canaryExecuted = true;
   state.executionStatus = "canary_completed_validation_pending";
-  checkpointExecution(privateStore, state, tavilyCache, relayCache);
+  checkpointExecution(root, privateStore, state, tavilyCache, relayCache);
   const canaryEvaluation = evaluateV2B5Canary({
     manifest: frozen.canaryManifest,
     searchRuns: canarySearchRuns,
@@ -350,7 +372,7 @@ export async function runV2B5CapabilityAuditProbe(root, options = {}) {
   if (migration.migrated) atomicWriteJson(capabilityPath, migration.capability);
   assertExecutionContainers(state, tavilyCache, relayCache, frozen, bindings);
   reconcileIndeterminateReservations(state, tavilyCache, relayCache, options.now?.() ?? new Date().toISOString());
-  checkpointExecution(privateStore, state, tavilyCache, relayCache);
+  checkpointExecution(root, privateStore, state, tavilyCache, relayCache);
   const tavily = new TavilyStructuredSearchProviderV2B5({
     baseUrl: config.tavily.baseUrl,
     apiKey: config.tavily.apiKey,
@@ -381,7 +403,7 @@ export async function runV2B5CapabilityAuditProbe(root, options = {}) {
   atomicWriteJson(capabilityPath, capability);
   appendCapabilityHistory(privateStore, [priorCapability, capability].filter(Boolean));
   state.tavilyProviderDecision = capability.tavilyProviderDecision;
-  checkpointExecution(privateStore, state, tavilyCache, relayCache);
+  checkpointExecution(root, privateStore, state, tavilyCache, relayCache);
   return { capability, state };
 }
 
@@ -416,7 +438,7 @@ export function recordV2B5ExecutionBlock(root, reason = "external_dispatch_not_p
     now: () => new Date().toISOString(),
     onProgress: () => {},
   };
-  checkpointExecution(frozen.privateStore, state, tavilyCache, relayCache);
+  checkpointExecution(root, frozen.privateStore, state, tavilyCache, relayCache);
   atomicWriteJson(join(frozen.privateStore, FILES.pretest), pretest);
   const capability = buildV2B5ExecutionBlockCapability(bindings, reason);
   atomicWriteJson(join(frozen.privateStore, FILES.capability), capability);
@@ -490,7 +512,7 @@ async function runCapabilityProbe(context, options = {}) {
   }
   context.state.capabilityAttemptCount = (context.state.capabilityAttemptCount ?? 0) + 1;
   const capabilityAttempt = context.state.capabilityAttemptCount;
-  checkpointExecution(context.privateStore, context.state, context.tavilyCache, context.relayCache);
+  checkpointExecution(context.root, context.privateStore, context.state, context.tavilyCache, context.relayCache);
   const first = await executeTavilyQuery(context, {
     queryId: "synthetic_openai_api_documentation",
     queryText: "OpenAI API documentation",
@@ -663,7 +685,7 @@ async function executeTavilyQuery(context, input) {
   if (context.state.tavily.reservations[physicalKey]) {
     const indeterminate = buildIndeterminateTavilyResult(input, descriptor, context.state.tavily.reservations[physicalKey]);
     context.tavilyCache.entries[descriptor.cacheKey] = indeterminate;
-    checkpointExecution(context.privateStore, context.state, context.tavilyCache, context.relayCache);
+    checkpointExecution(context.root, context.privateStore, context.state, context.tavilyCache, context.relayCache);
     if (context.resume === true && input.phase !== "capability" && !input.resumeRetryOf) {
       return executeTavilyQuery(context, {
         ...input,
@@ -852,12 +874,12 @@ async function executeRelayExtraction(context, input) {
     if (context.resume === true && input.attemptKind === "primary" && cached.providerConnectivityPassed !== true) {
       return executeRelayExtraction(context, { ...input, attemptKind: "transport_retry" });
     }
-    return { ...cached, cacheHit: true };
+    return withReceiptRuntimeView(cached, { cacheHit: true });
   }
   if (!sourceRecords.length) {
     const blocked = buildBlockedRelayReceipt(input, sourceRecordSetDigest, "source_records_missing", context.now());
     context.relayCache.entries[cacheKey] = blocked;
-    checkpointExecution(context.privateStore, context.state, context.tavilyCache, context.relayCache);
+    checkpointExecution(context.root, context.privateStore, context.state, context.tavilyCache, context.relayCache);
     return blocked;
   }
   const physicalKey = `relay:${cacheKey}`;
@@ -869,7 +891,7 @@ async function executeRelayExtraction(context, input) {
     }
     const indeterminate = buildBlockedRelayReceipt(input, sourceRecordSetDigest, "prior_reservation_indeterminate", context.now());
     context.relayCache.entries[cacheKey] = indeterminate;
-    checkpointExecution(context.privateStore, context.state, context.tavilyCache, context.relayCache);
+    checkpointExecution(context.root, context.privateStore, context.state, context.tavilyCache, context.relayCache);
     if (context.resume === true && input.attemptKind === "primary") {
       return executeRelayExtraction(context, { ...input, attemptKind: "transport_retry" });
     }
@@ -930,12 +952,12 @@ async function executeRelayExtraction(context, input) {
 
 async function executeReasoningCompatibilityRetry(context, input, sourceRecords, sourceRecordSetDigest, cacheKey) {
   const existing = context.relayCache.entries[cacheKey];
-  if (existing) return { ...existing, cacheHit: true };
+  if (existing) return withReceiptRuntimeView(existing, { cacheHit: true });
   const retryKey = `relay:${sha256({ cacheKey, reasoningParameterIncluded: false })}`;
   if (context.state.relay.reservations[retryKey]) {
     const indeterminate = buildBlockedRelayReceipt(input, sourceRecordSetDigest, "reasoning_retry_indeterminate_after_crash", context.now());
     context.relayCache.entries[cacheKey] = indeterminate;
-    checkpointExecution(context.privateStore, context.state, context.tavilyCache, context.relayCache);
+    checkpointExecution(context.root, context.privateStore, context.state, context.tavilyCache, context.relayCache);
     return indeterminate;
   }
   reservePhysicalRequest(context, "relay", retryKey, {
@@ -1099,12 +1121,16 @@ export function buildV2B5PrivateWorkbookRows(evidenceRecords, sourceRecords) {
 }
 
 export function readV2B5Results(root) {
-  const privateStore = ensurePrivateStore(root);
+  const privateStore = join(root, V2B5_PRIVATE_RELATIVE);
+  const atomicSnapshot = readCurrentRequestStateSnapshot(root, { scope: "v2b5" });
+  if (atomicSnapshot.present && !atomicSnapshot.valid) {
+    throw new Error(`v2b5_atomic_binding_invalid:${atomicSnapshot.issues.join(",")}`);
+  }
   const capability = readJson(join(privateStore, FILES.capability));
   const benchmarkEvaluation = existsSync(join(privateStore, FILES.benchmarkEvaluation))
     ? readJson(join(privateStore, FILES.benchmarkEvaluation)) : null;
   const canaryEvaluation = readJson(join(privateStore, FILES.canaryEvaluation));
-  const state = readJson(join(privateStore, FILES.state));
+  const state = atomicSnapshot.present ? atomicSnapshot.members.state : readJson(join(privateStore, FILES.state));
   const registry = existsSync(join(privateStore, FILES.registry)) ? readJson(join(privateStore, FILES.registry)) : emptyRegistry();
   const usageLedger = existsSync(join(privateStore, FILES.usageLedger)) ? readJson(join(privateStore, FILES.usageLedger)) : null;
   const sourceRecords = readNdjson(join(privateStore, FILES.sourceRecords));
@@ -1125,6 +1151,7 @@ export function readV2B5Results(root) {
     privateWorkbookExists: existsSync(privateWorkbookPath),
     privateWorkbookRelativePath: V2B5_PRIVATE_WORKBOOK_RELATIVE,
     egressDiagnostic,
+    atomicBinding: atomicSnapshot,
   };
 }
 
@@ -1269,7 +1296,9 @@ export function runV2B5FullValidation(root, options = {}) {
 export function verifyV2B5(root) {
   const issues = [];
   let results = null;
+  let frozen = null;
   try { results = readV2B5Results(root); } catch (error) { issues.push(`private_results_unreadable:${safeToken(error?.message)}`); }
+  try { frozen = readV2B5FrozenState(root); } catch (error) { issues.push(`frozen_state_unreadable:${safeToken(error?.message)}`); }
   if (results) {
     const capabilityValidation = validateV2B5TavilyCapabilityState(results.capability);
     if (!capabilityValidation.valid) issues.push(...capabilityValidation.issues.map((issue) => `capability_state:${issue}`));
@@ -1305,10 +1334,9 @@ export function verifyV2B5(root) {
       issues.push("private_workbook_not_ignored_or_is_tracked");
     }
   }
-  const frozen = checkAndFreezeV2B5(root);
-  if (digestWithExcludedKeys(frozen.benchmarkManifest, "benchmarkManifestDigest", ["createdAt"])
+  if (frozen && digestWithExcludedKeys(frozen.benchmarkManifest, "benchmarkManifestDigest", ["createdAt"])
     !== frozen.benchmarkManifest.benchmarkManifestDigest) issues.push("benchmark_manifest_digest_invalid");
-  if (digestWithout(frozen.canaryManifest, "manifestDigest") !== frozen.canaryManifest.manifestDigest) issues.push("canary_v3_manifest_digest_invalid");
+  if (frozen && digestWithout(frozen.canaryManifest, "manifestDigest") !== frozen.canaryManifest.manifestDigest) issues.push("canary_v3_manifest_digest_invalid");
   if (!privateStoreIgnoredAndUntracked(root)) issues.push("private_store_not_ignored_or_tracked");
   for (const relative of Object.values(PUBLIC_REPORTS)) {
     if (!existsSync(join(root, relative))) issues.push(`public_report_missing:${relative}`);
@@ -1317,9 +1345,7 @@ export function verifyV2B5(root) {
     }
   }
   const resultPayload = {
-    schema: "m2.v2.v2b5-verification-receipt.v0.1",
-    privateOnly: true,
-    verifiedAt: new Date().toISOString(),
+    schema: "m2.v2.v2b5-verification-verdict.v0.2",
     allPassed: issues.length === 0,
     issues: unique(issues),
     tavilyPhysicalRequestCount: results?.state?.tavily?.physicalRequestCount ?? null,
@@ -1328,7 +1354,6 @@ export function verifyV2B5(root) {
     full160Authorized: false,
   };
   const result = { ...resultPayload, receiptDigest: sha256(resultPayload) };
-  atomicWriteJson(join(frozen.privateStore, FILES.verifier), result);
   return result;
 }
 
@@ -1788,7 +1813,7 @@ function reservePhysicalRequest(context, provider, physicalKey, metadata) {
     ordinal: budget.physicalRequestCount,
     ...metadata,
   };
-  checkpointExecution(context.privateStore, context.state, context.tavilyCache, context.relayCache);
+  checkpointExecution(context.root, context.privateStore, context.state, context.tavilyCache, context.relayCache);
 }
 
 function completePhysicalRequest(context, provider, physicalKey, result) {
@@ -1797,7 +1822,7 @@ function completePhysicalRequest(context, provider, physicalKey, result) {
   reservation.status = "completed";
   reservation.completedAt = context.now();
   reservation.resultDigest = sha256(result);
-  checkpointExecution(context.privateStore, context.state, context.tavilyCache, context.relayCache);
+  checkpointExecution(context.root, context.privateStore, context.state, context.tavilyCache, context.relayCache);
 }
 
 function cancelPredispatchReservation(context, provider, physicalKey) {
@@ -1808,7 +1833,7 @@ function cancelPredispatchReservation(context, provider, physicalKey) {
   }
   delete budget.reservations[physicalKey];
   budget.physicalRequestCount -= 1;
-  checkpointExecution(context.privateStore, context.state, context.tavilyCache, context.relayCache);
+  checkpointExecution(context.root, context.privateStore, context.state, context.tavilyCache, context.relayCache);
 }
 
 function reconcileIndeterminateReservations(state, tavilyCache, relayCache, timestamp) {
@@ -1832,7 +1857,20 @@ function remainingBudget(state, provider) {
   return state[provider].cap - state[provider].physicalRequestCount;
 }
 
-function checkpointExecution(privateStore, state, tavilyCache, relayCache) {
+function checkpointExecution(root, privateStore, state, tavilyCache, relayCache) {
+  commitAtomicRequestCheckpoint(root, {
+    scope: "v2b5",
+    state,
+    caches: { tavily: tavilyCache, relay: relayCache },
+    receipts: Object.values(relayCache?.entries ?? {}),
+    adapterVersion: V2B5_EXTRACTION_ADAPTER_VERSION,
+    manifestBindings: {
+      benchmarkManifestDigest: state.benchmarkManifestDigest,
+      canaryManifestDigest: state.canaryManifestDigest,
+      tavilyBindingDigest: state.tavilyBindingDigest,
+      relayBindingDigest: state.relayBindingDigest,
+    },
+  });
   atomicWriteJson(join(privateStore, FILES.state), state);
   atomicWriteJson(join(privateStore, FILES.tavilyCache), tavilyCache);
   atomicWriteJson(join(privateStore, FILES.relayCache), relayCache);

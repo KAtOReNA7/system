@@ -24,6 +24,31 @@ export const V2B8_EVENT_TIME_BASES = Object.freeze([
   "unknown",
 ]);
 
+export const V2B8_CONFLICT_FAMILIES = Object.freeze([
+  "work_identity",
+  "author_identity",
+  "original_platform",
+  "completion_status",
+  "publication_publisher_date_edition_format",
+  "adaptation_type_stage_date",
+  "rating_platform_scale_value",
+  "award_event",
+  "mutually_exclusive_status",
+]);
+
+const OFFICIAL_SOURCE_CATEGORIES = new Set([
+  "official_author",
+  "official_publisher",
+  "official_platform",
+]);
+
+const IDENTITY_SOURCE_CATEGORIES = new Set([
+  "official_author",
+  "official_publisher",
+  "official_platform",
+  "government_or_registry",
+]);
+
 const SOURCE_PRIORITY = Object.freeze({
   official_author: 0,
   official_publisher: 1,
@@ -125,16 +150,14 @@ export function validateV2B8FallbackPlan(plan, work) {
   return { valid: issues.length === 0, issues: unique(issues) };
 }
 
-export function classifyV2B8Source(record) {
+export function classifyV2B8Source(record, classificationEvidence = null) {
   if (classifyV2B5ProhibitedSource(record).prohibited) return "prohibited";
   const domain = normalizeText(record?.domain);
   const title = normalizeText(record?.title);
   const snippet = normalizeText(record?.snippet);
   const text = `${domain} ${title} ${snippet}`;
-  if (/(?:\.gov(?:\.cn)?$|政府|国家新闻出版|版权保护中心|登记|registry)/u.test(`${domain} ${title}`)) return "government_or_registry";
-  if (/(?:作者官网|作家官网|个人主页|author\s*(?:site|page)|official\s*author)/u.test(text)) return "official_author";
-  if (/(?:出版社|出版集团|出版公司|press\b|publisher)/u.test(text)) return "official_publisher";
-  if (/(?:起点|晋江|纵横|番茄小说|掌阅|阅文|潇湘书院|红袖添香|webnovel|original\s*platform)/u.test(text)) return "official_platform";
+  const positiveCategory = authoritativeCategoryFromPositiveEvidence(classificationEvidence, domain);
+  if (positiveCategory) return positiveCategory;
   if (/(?:新闻网|日报|晚报|周刊|电视台|广播网|news\b|times\b|post\b|media\b)/u.test(text)) return "mainstream_media";
   if (/(?:baike|百科|wikipedia|维基|图书馆|library|isbn|catalog|豆瓣读书|读书网)/u.test(text)) return "catalog_or_encyclopedia";
   if (/(?:豆瓣|知乎|论坛|贴吧|书评|读者评论|community|forum|review)/u.test(text)) return "community_review";
@@ -145,12 +168,20 @@ export function classifyV2B8Source(record) {
 
 export function selectDeterministicV2B8Sources(records, options = {}) {
   const limit = Number(options.limit ?? 6);
+  const domainLimit = Number(options.domainLimit ?? 2);
+  const categoryLimit = Number(options.categoryLimit ?? 2);
+  const categoryDiversityTarget = Number(options.categoryDiversityTarget ?? 3);
   if (!Number.isInteger(limit) || limit < 1 || limit > 6) throw new Error("v2b8_source_limit_invalid");
+  if (!Number.isInteger(domainLimit) || domainLimit < 1 || domainLimit > limit) throw new Error("v2b8_domain_limit_invalid");
+  if (!Number.isInteger(categoryLimit) || categoryLimit < 1 || categoryLimit > limit) throw new Error("v2b8_category_limit_invalid");
+  if (!Number.isInteger(categoryDiversityTarget) || categoryDiversityTarget < 1 || categoryDiversityTarget > limit) throw new Error("v2b8_category_diversity_target_invalid");
   const work = options.work ?? {};
+  const classificationEvidenceBySourceId = options.classificationEvidenceBySourceId ?? {};
+  const classify = (record) => classifyV2B8Source(record, classificationEvidenceBySourceId[record.sourceId]);
   const byId = new Map();
   let prohibitedCount = 0;
   for (const record of Array.isArray(records) ? records : []) {
-    const category = classifyV2B8Source(record);
+    const category = classify(record);
     if (category === "prohibited") {
       prohibitedCount += 1;
       continue;
@@ -158,7 +189,7 @@ export function selectDeterministicV2B8Sources(records, options = {}) {
     if (!byId.has(record.sourceId)) byId.set(record.sourceId, record);
   }
   const sorted = [...byId.values()].sort((left, right) => (
-    (SOURCE_PRIORITY[classifyV2B8Source(left)] ?? 99) - (SOURCE_PRIORITY[classifyV2B8Source(right)] ?? 99)
+    (SOURCE_PRIORITY[classify(left)] ?? 99) - (SOURCE_PRIORITY[classify(right)] ?? 99)
       || directIdentityRelevance(right, work) - directIdentityRelevance(left, work)
       || finiteScore(right.providerScore) - finiteScore(left.providerScore)
       || canonicalUrl(left.url).localeCompare(canonicalUrl(right.url))
@@ -166,27 +197,56 @@ export function selectDeterministicV2B8Sources(records, options = {}) {
   ));
   const selected = [];
   const domainCounts = new Map();
-  for (const record of sorted) {
-    const count = domainCounts.get(record.domain) ?? 0;
-    if (count >= 2) continue;
+  const categoryCounts = new Map();
+  const reservedIdentitySourceIds = [];
+  const add = (record) => {
+    if (!record || selected.length >= limit || selected.some((item) => item.sourceId === record.sourceId)) return false;
+    const category = classify(record);
+    const domain = normalizeText(record.domain);
+    if ((domainCounts.get(domain) ?? 0) >= domainLimit || (categoryCounts.get(category) ?? 0) >= categoryLimit) return false;
     selected.push(record);
-    domainCounts.set(record.domain, count + 1);
-    if (selected.length === limit) break;
+    domainCounts.set(domain, (domainCounts.get(domain) ?? 0) + 1);
+    categoryCounts.set(category, (categoryCounts.get(category) ?? 0) + 1);
+    return true;
+  };
+
+  // Preserve the highest-ranked positive-evidence identity source before any
+  // review/rating-style source can consume the bounded selection capacity.
+  const identity = sorted.find((record) => IDENTITY_SOURCE_CATEGORIES.has(classify(record)));
+  if (add(identity)) reservedIdentitySourceIds.push(identity.sourceId);
+
+  // First diversity pass: at most one source from each new category.
+  for (const record of sorted) {
+    if (selected.length >= limit || categoryCounts.size >= categoryDiversityTarget) break;
+    if ((categoryCounts.get(classify(record)) ?? 0) > 0) continue;
+    add(record);
   }
-  if (selected.length < Math.min(limit, sorted.length)) {
-    for (const record of sorted) {
-      if (selected.some((item) => item.sourceId === record.sourceId)) continue;
-      selected.push(record);
-      if (selected.length === limit) break;
-    }
+
+  // Stable fill while retaining both the per-domain and per-category caps.
+  for (const record of sorted) {
+    if (selected.length >= limit) break;
+    add(record);
   }
+  const availableCategoryCount = new Set(sorted.map(classify)).size;
+  const achievableDiversityTarget = Math.min(categoryDiversityTarget, availableCategoryCount, limit);
+  const limitations = [];
+  if (categoryCounts.size < achievableDiversityTarget) limitations.push("category_diversity_target_not_achieved_within_caps");
+  if (selected.length < Math.min(limit, sorted.length)) limitations.push("selection_capacity_not_filled_within_domain_and_category_caps");
+  if (!identity) limitations.push("positive_evidence_identity_source_unavailable");
   return {
     sourceRecords: selected,
     prohibitedCount,
     duplicateCount: Math.max(0, (Array.isArray(records) ? records.length : 0) - prohibitedCount - byId.size),
-    domainDiversityCount: new Set(selected.map((record) => record.domain)).size,
-    categoryCounts: countBy(selected, classifyV2B8Source),
-    sourceCategoriesById: Object.fromEntries(selected.map((record) => [record.sourceId, classifyV2B8Source(record)])),
+    domainDiversityCount: new Set(selected.map((record) => normalizeText(record.domain))).size,
+    categoryCounts: countBy(selected, classify),
+    sourceCategoriesById: Object.fromEntries(selected.map((record) => [record.sourceId, classify(record)])),
+    domainLimit,
+    categoryLimit,
+    categoryDiversityTarget: achievableDiversityTarget,
+    categoryDiversityAchieved: categoryCounts.size,
+    identityReservationApplied: reservedIdentitySourceIds.length > 0,
+    reservedIdentitySourceIds,
+    limitations,
     selectionDigest: sha256(selected.map((record) => record.sourceId)),
   };
 }
@@ -208,28 +268,45 @@ export function extractV2B8EventTime(claim, sourceRecords = []) {
       eventTime: null,
       eventTimePrecision: "unknown",
       eventTimeBasis: "unknown",
+      eventTimeSourceId: null,
+      eventTimeEvidenceSpanDigest: null,
       explicitTemporalText: false,
       extractionSucceeded: true,
     };
   }
-  const direct = parseDateValue(claim?.eventTime);
-  if (direct) return { ...direct, eventTimeBasis: "explicit_structured_value", explicitTemporalText: true, extractionSucceeded: true };
   const active = activeStructuredValue(claim?.structuredValue);
-  const structured = parseDateValue(active);
-  if (structured) return { ...structured, eventTimeBasis: "explicit_structured_value", explicitTemporalText: true, extractionSucceeded: true };
-  for (const source of sourceRecords) {
-    const snippet = parseDateValue(source?.snippet);
-    if (snippet) return { ...snippet, eventTimeBasis: "explicit_source_snippet", explicitTemporalText: true, extractionSucceeded: true };
+  const direct = parseDateEvidence(claim?.eventTime) ?? parseDateEvidence(active);
+  const supportingEvidence = findSupportingDateEvidence(claim, sourceRecords, direct);
+  if (supportingEvidence) {
+    const basis = direct
+      ? "explicit_structured_value"
+      : supportingEvidence.field === "snippet" ? "explicit_source_snippet" : "explicit_source_title";
+    return {
+      eventTime: supportingEvidence.eventTime,
+      eventTimePrecision: supportingEvidence.eventTimePrecision,
+      eventTimeBasis: basis,
+      eventTimeSourceId: supportingEvidence.sourceId,
+      eventTimeEvidenceSpanDigest: sha256({
+        sourceId: supportingEvidence.sourceId,
+        field: supportingEvidence.field,
+        dateStart: supportingEvidence.start,
+        dateEnd: supportingEvidence.end,
+        supportStart: supportingEvidence.supportStart,
+        supportEnd: supportingEvidence.supportEnd,
+        supportSpan: supportingEvidence.supportSpan,
+      }),
+      explicitTemporalText: true,
+      extractionSucceeded: true,
+    };
   }
-  for (const source of sourceRecords) {
-    const title = parseDateValue(source?.title);
-    if (title) return { ...title, eventTimeBasis: "explicit_source_title", explicitTemporalText: true, extractionSucceeded: true };
-  }
-  const explicitTemporalText = temporal && [active, ...sourceRecords.flatMap((source) => [source.title, source.snippet])].some(hasDateText);
+  const explicitTemporalText = Boolean(direct)
+    || sourceRecords.some((source) => [source?.snippet, source?.title].some((value) => hasClaimBoundDateText(claim, value)));
   return {
     eventTime: null,
     eventTimePrecision: "unknown",
     eventTimeBasis: "unknown",
+    eventTimeSourceId: null,
+    eventTimeEvidenceSpanDigest: null,
     explicitTemporalText,
     extractionSucceeded: !explicitTemporalText,
   };
@@ -239,7 +316,7 @@ export function canonicalizeV2B8Claim(claim, context = {}) {
   const sourceById = new Map((context.sourceRecords ?? []).map((source) => [source.sourceId, source]));
   const sources = (claim?.supportingSourceIds ?? []).map((sourceId) => sourceById.get(sourceId)).filter(Boolean);
   const event = extractV2B8EventTime(claim, sources);
-  const sourceCategories = unique(sources.map((source) => source.sourceCategory ?? classifyV2B8Source(source)));
+  const sourceCategories = unique(sources.map((source) => classifyV2B8Source(source, context.classificationEvidenceBySourceId?.[source.sourceId])));
   const sourceSupportClass = [...sourceCategories].sort((left, right) => (SOURCE_PRIORITY[left] ?? 99) - (SOURCE_PRIORITY[right] ?? 99))[0] ?? "unknown_public_web";
   const normalizedStructuredValue = normalizeStructuredValue(claim, sources, event);
   const normalizedEntityReference = normalizeEntityReference(claim, context.work);
@@ -277,6 +354,8 @@ export function canonicalizeV2B8Claim(claim, context = {}) {
     eventTime: event.eventTime,
     eventTimePrecision: event.eventTimePrecision,
     eventTimeBasis: event.eventTimeBasis,
+    eventTimeSourceId: event.eventTimeSourceId,
+    eventTimeEvidenceSpanDigest: event.eventTimeEvidenceSpanDigest,
     explicitTemporalText: event.explicitTemporalText,
     eventTimeExtractionSucceeded: event.extractionSucceeded,
     limitations: unique(limitations),
@@ -304,7 +383,7 @@ export function auditV2B8Conflicts(claims) {
     if (type === "completion_status") {
       const statuses = new Set(group.map((claim) => claim.normalizedStructuredValue?.status).filter((value) => value && value !== "unknown"));
       if (statuses.size > 1 || statuses.has("contradictory")) markConflict(group, key, "completion_status_conflict", conflicts);
-    } else if (type === "author_identity" || type === "work_identity") {
+    } else if (type === "author_identity" || type === "work_identity" || type === "original_platform") {
       const identities = new Set(group.map((claim) => canonicalJson(claim.normalizedStructuredValue)));
       if (identities.size > 1) markConflict(group, key, `${type}_conflict`, conflicts);
     } else if (type === "publication_event") {
@@ -322,21 +401,51 @@ export function auditV2B8Conflicts(claims) {
         if (publishers.size > 1 || dates.size > 1) markConflict(bucket, `${key}:${editionKey}`, "same_edition_publication_conflict", conflicts);
       }
       if (byEdition.size > 1) limitations.push({ groupKey: key, reason: "valid_multi_edition_or_format", claimCount: group.length });
+    } else if (type === "adaptation_event") {
+      const byType = groupBy(group, (claim) => claim.normalizedStructuredValue?.adaptationType ?? "unknown");
+      for (const [adaptationType, bucket] of byType) {
+        const signatures = new Set(bucket.map((claim) => canonicalJson({
+          stage: claim.normalizedStructuredValue?.stage ?? null,
+          eventTime: claim.normalizedStructuredValue?.eventTime ?? claim.eventTime ?? null,
+          releaseTime: claim.normalizedStructuredValue?.releaseTime ?? null,
+        })));
+        if (signatures.size > 1) markConflict(bucket, `${key}:${adaptationType}`, "adaptation_type_stage_date_conflict", conflicts);
+      }
+      if (byType.size > 1) limitations.push({ groupKey: key, reason: "valid_multiple_adaptation_types", claimCount: group.length });
     } else if (type === "rating_signal") {
       const byPlatformScale = new Map();
       for (const claim of group) {
         const value = claim.normalizedStructuredValue ?? {};
-        const bucketKey = `${value.platform ?? "unknown"}:${value.scale ?? "unknown"}`;
+        const bucketKey = `${value.platform ?? "unknown"}:${value.scale ?? "unknown"}:${claim.eventTime ?? "unknown"}`;
         const bucket = byPlatformScale.get(bucketKey) ?? [];
         bucket.push(claim);
         byPlatformScale.set(bucketKey, bucket);
       }
       for (const [bucketKey, bucket] of byPlatformScale) {
         const values = new Set(bucket.map((claim) => claim.normalizedStructuredValue?.value).filter((value) => value !== null && value !== undefined));
-        if (bucketKey.startsWith("unknown:") || values.size <= 1) continue;
-        limitations.push({ groupKey: `${key}:${bucketKey}`, reason: "rating_value_observation_drift", claimCount: bucket.length });
+        if (!bucketKey.startsWith("unknown:") && values.size > 1) markConflict(bucket, `${key}:${bucketKey}`, "rating_platform_scale_value_conflict", conflicts);
+      }
+      const observations = new Set(group.map((claim) => claim.eventTime).filter(Boolean));
+      if (observations.size > 1) limitations.push({ groupKey: key, reason: "valid_rating_temporal_observations", claimCount: group.length });
+    } else if (type === "award_event") {
+      const byAward = groupBy(group, (claim) => claim.contradictionKey || awardIdentity(claim));
+      for (const [awardKey, bucket] of byAward) {
+        const signatures = new Set(bucket.map((claim) => canonicalJson({
+          value: claim.normalizedStructuredValue,
+          eventTime: claim.eventTime ?? null,
+        })));
+        if (bucket.length > 1 && signatures.size > 1) markConflict(bucket, `${key}:${awardKey}`, "award_event_conflict", conflicts);
       }
     }
+  }
+
+  const mutuallyExclusive = groupBy(
+    rows.filter((claim) => typeof claim.contradictionKey === "string" && claim.contradictionKey.trim()),
+    (claim) => `${claim.runKind ?? "unknown"}:${claim.canarySlotId ?? "unknown"}:${claim.contradictionKey.trim()}`,
+  );
+  for (const [key, group] of mutuallyExclusive) {
+    const signatures = new Set(group.map((claim) => canonicalJson({ claimType: claim.claimType, value: claim.normalizedStructuredValue })));
+    if (group.length > 1 && signatures.size > 1) markConflict(group, key, "mutually_exclusive_status_conflict", conflicts);
   }
   return {
     claims: rows,
@@ -344,6 +453,8 @@ export function auditV2B8Conflicts(claims) {
     limitations,
     unresolvedConflictCount: conflicts.length,
     validMultiEditionCount: limitations.filter((item) => item.reason === "valid_multi_edition_or_format").length,
+    declaredConflictFamilies: [...V2B8_CONFLICT_FAMILIES],
+    conflictFamilyCoverage: Object.fromEntries(V2B8_CONFLICT_FAMILIES.map((family) => [family, true])),
   };
 }
 
@@ -411,12 +522,26 @@ export function decomposeV2B8ClaimDifferences(input) {
 
 function markConflict(group, key, reason, conflicts) {
   const claimKeys = group.map((claim) => claim.canonicalClaimKey);
-  conflicts.push({ conflictKey: `ctr_${sha256({ key, reason, claimKeys }).slice(0, 24)}`, reason, claimKeys, status: "unresolved" });
+  const conflictKey = `ctr_${sha256({ key, reason, claimKeys }).slice(0, 24)}`;
+  if (!conflicts.some((conflict) => conflict.conflictKey === conflictKey)) {
+    conflicts.push({ conflictKey, reason, claimKeys, status: "unresolved" });
+  }
   for (const claim of group) {
     claim.contradictionStatus = "unresolved";
+    claim.accepted = false;
     claim.pilotUsable = false;
     claim.rejectionReasons = unique([...(claim.rejectionReasons ?? []), "conflict_unresolved"]);
   }
+}
+
+function awardIdentity(claim) {
+  const value = normalizeV2B8Text(claim?.normalizedStructuredValue?.value ?? activeStructuredValue(claim?.structuredValue));
+  const withoutDateOrStatus = value
+    .replace(/(?:19|20)\d{2}(?:\s*年)?/gu, " ")
+    .replace(/获奖|获奖者|入围|提名|winner|won|awardee|nominee/giu, " ")
+    .replace(/\s+/gu, " ")
+    .trim();
+  return withoutDateOrStatus || "unknown_award";
 }
 
 function normalizeStructuredValue(claim, sources, event) {
@@ -481,22 +606,85 @@ function completionStatus(value, sources) {
   return "unknown";
 }
 
-function parseDateValue(value) {
+function parseDateEvidence(value) {
   const text = String(value ?? "").normalize("NFKC");
   if (!text) return null;
   const range = text.match(/((?:19|20)\d{2})\s*(?:年)?\s*(?:至|到|[-–—~])\s*((?:19|20)\d{2})\s*(?:年)?/u);
-  if (range) return { eventTime: `${range[1]}/${range[2]}`, eventTimePrecision: "range" };
+  if (range) return dateEvidence(text, range, `${range[1]}/${range[2]}`, "range");
   const day = text.match(/((?:19|20)\d{2})\s*(?:年|[-/.])\s*(0?[1-9]|1[0-2])\s*(?:月|[-/.])\s*(0?[1-9]|[12]\d|3[01])\s*(?:日)?/u);
-  if (day) return { eventTime: `${day[1]}-${pad2(day[2])}-${pad2(day[3])}`, eventTimePrecision: "day" };
+  if (day) return dateEvidence(text, day, `${day[1]}-${pad2(day[2])}-${pad2(day[3])}`, "day");
   const month = text.match(/((?:19|20)\d{2})\s*(?:年|[-/.])\s*(0?[1-9]|1[0-2])\s*(?:月)?/u);
-  if (month) return { eventTime: `${month[1]}-${pad2(month[2])}`, eventTimePrecision: "month" };
+  if (month) return dateEvidence(text, month, `${month[1]}-${pad2(month[2])}`, "month");
   const year = text.match(/(?:^|\D)((?:19|20)\d{2})\s*(?:年)?(?:\D|$)/u);
-  if (year) return { eventTime: year[1], eventTimePrecision: "year" };
+  if (year) {
+    const start = year.index + year[0].indexOf(year[1]);
+    return { eventTime: year[1], eventTimePrecision: "year", start, end: start + year[1].length, span: year[1] };
+  }
   return null;
 }
 
-function hasDateText(value) {
-  return /(?:19|20)\d{2}\s*(?:年|[-/.])/u.test(String(value ?? ""));
+function dateEvidence(text, match, eventTime, eventTimePrecision) {
+  const start = match.index;
+  const span = text.slice(start, start + match[0].length);
+  return { eventTime, eventTimePrecision, start, end: start + span.length, span };
+}
+
+function findSupportingDateEvidence(claim, sourceRecords, requested) {
+  for (const source of sourceRecords) {
+    for (const field of ["snippet", "title"]) {
+      const value = source?.[field];
+      for (const evidence of parseDateEvidences(value)) {
+        if (requested) {
+          if (evidence.eventTime !== requested.eventTime || evidence.eventTimePrecision !== requested.eventTimePrecision) continue;
+        }
+        const support = claimBoundDateSupport(claim, value, evidence);
+        if (!support) continue;
+        return { ...evidence, ...support, field, sourceId: source.sourceId };
+      }
+    }
+  }
+  return null;
+}
+
+function parseDateEvidences(value) {
+  const text = String(value ?? "").normalize("NFKC");
+  const results = [];
+  let offset = 0;
+  while (offset < text.length) {
+    const evidence = parseDateEvidence(text.slice(offset));
+    if (!evidence) break;
+    const adjusted = { ...evidence, start: offset + evidence.start, end: offset + evidence.end };
+    results.push(adjusted);
+    offset = Math.max(offset + 1, adjusted.end);
+  }
+  return results;
+}
+
+function hasClaimBoundDateText(claim, value) {
+  return parseDateEvidences(value).some((evidence) => claimBoundDateSupport(claim, value, evidence));
+}
+
+function claimBoundDateSupport(claim, value, evidence) {
+  const text = String(value ?? "").normalize("NFKC");
+  const boundaries = /[。！？!?；;\r\n]/u;
+  let supportStart = evidence.start;
+  while (supportStart > 0 && !boundaries.test(text[supportStart - 1])) supportStart -= 1;
+  let supportEnd = evidence.end;
+  while (supportEnd < text.length && !boundaries.test(text[supportEnd])) supportEnd += 1;
+  const supportSpan = text.slice(supportStart, supportEnd).trim();
+  const normalizedSupport = normalizeV2B8Text(supportSpan);
+  const patterns = {
+    publication_event: /出版|发行|首版|再版|isbn|press|publisher|publish(?:ed|ing|es)?|publication|release(?:d)?/u,
+    completion_status: /完结|完本|完成|连载|更新|completed|complete|ongoing|serializ/u,
+    adaptation_event: /改编|电影|电视|动画|动漫|广播剧|有声剧|游戏|adapt|film|series|drama/u,
+    award_event: /获奖|奖项|入围|提名|winner|award|nominee/u,
+    ranking_signal: /排名|榜单|排行|rank/u,
+    rating_signal: /评分|星级|rating|score/u,
+    search_heat_signal: /搜索|热度|指数|search/u,
+    market_signal: /市场|销量|销售|market|sale/u,
+  };
+  if (patterns[claim?.claimType]?.test(normalizedSupport) !== true) return null;
+  return { supportStart, supportEnd, supportSpan };
 }
 
 function activeStructuredValue(value) {
@@ -520,6 +708,24 @@ function directIdentityRelevance(record, work) {
 
 function canonicalUrl(value) {
   return canonicalizeV2B5SourceUrl(value) ?? String(value ?? "");
+}
+
+function authoritativeCategoryFromPositiveEvidence(evidence, normalizedDomain) {
+  if (!evidence || typeof evidence !== "object" || Array.isArray(evidence)) return null;
+  const candidates = [
+    evidence.approvedDomainRule?.matched === true
+      && normalizeText(evidence.approvedDomainRule?.domain) === normalizedDomain
+      && typeof evidence.approvedDomainRule?.ruleId === "string"
+      ? evidence.approvedDomainRule.category : null,
+    evidence.providerMetadata?.verified === true
+      && typeof evidence.providerMetadata?.field === "string"
+      ? evidence.providerMetadata.category : null,
+    evidence.entityDomainCorroboration?.verified === true
+      && normalizeText(evidence.entityDomainCorroboration?.domain) === normalizedDomain
+      && typeof evidence.entityDomainCorroboration?.entityReferenceDigest === "string"
+      ? evidence.entityDomainCorroboration.category : null,
+  ].filter((category) => OFFICIAL_SOURCE_CATEGORIES.has(category) || category === "government_or_registry");
+  return unique(candidates).length === 1 ? candidates[0] : null;
 }
 
 function cleanIdentity(value) {

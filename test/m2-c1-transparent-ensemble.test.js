@@ -63,6 +63,11 @@ function sha256(file) {
   return crypto.createHash("sha256").update(fs.readFileSync(file)).digest("hex");
 }
 
+function gitCanonicalLfSha256(file) {
+  const canonical = fs.readFileSync(file, "utf8").replace(/\r\n?/gu, "\n");
+  return crypto.createHash("sha256").update(canonical, "utf8").digest("hex");
+}
+
 test("C1 uses the shared v1.2 predict_as_of entry for held and forward points", () => {
   assert.match(core, /if model_id == "C1":/u);
   assert.match(core, /def _predict_c1_as_of\(/u);
@@ -263,7 +268,7 @@ test("ignored C1 cases and manifest round-trip and remain untracked", (context) 
   assert.equal(manifest.privateCaseRowCount, 18615);
   assert.equal(manifest.scoreableCaseCount, 12223);
   assert.equal(manifest.caseEvidenceSha256, sha256(privateCasesPath));
-  assert.equal(manifest.publicReportSha256, sha256(reportPath));
+  assert.equal(manifest.publicReportSha256, gitCanonicalLfSha256(reportPath));
   assert.equal(manifest.privateWorkbookSha256, sha256(privateWorkbookPath));
   assert.equal(manifest.tracked, false);
   for (const file of [privateCasesPath, privateManifestPath, privateWorkbookPath]) {

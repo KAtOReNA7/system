@@ -7,6 +7,10 @@ import {
 } from "node:fs";
 import { dirname, join } from "node:path";
 import { canonicalJson, sha256 } from "./pilotCore.js";
+import {
+  readCurrentRequestStateSnapshot,
+  validateFrozenSourceBundleDigest,
+} from "./integrityState.js";
 import { V2B6_ADAPTER_VERSION } from "./relayExtractionAdapterV2B6.js";
 import { V2B5_EXTRACTION_OUTPUT_SCHEMA_VERSION } from "./extractionV2B5.js";
 import {
@@ -159,6 +163,29 @@ export function checkAndFreezeV2B7Contract(root, options = {}) {
   return { original, manifest, bundle, privateStore, privateContract, state, publicContract, invariant };
 }
 
+export function readV2B7FrozenContract(root) {
+  const original = readJson(join(root, V2B7_ORIGINAL_MANIFEST_RELATIVE));
+  const manifest = readJson(join(root, V2B7_MANIFEST_RELATIVE));
+  const bundle = readJson(join(root, V2B7_BUNDLE_RELATIVE));
+  const b5State = readJson(join(root, V2B7_B5_STATE_RELATIVE));
+  const b6State = readJson(join(root, V2B7_B6_STATE_RELATIVE));
+  const invariant = evaluateV2B7FreezeInvariants({ original, manifest, bundle, b5State, b6State });
+  if (!invariant.allPassed) throw new Error(`v2b7_freeze_invariant_failed:${invariant.issues.join(",")}`);
+  const privateStore = join(root, V2B7_PRIVATE_RELATIVE);
+  const privateContract = readJson(join(privateStore, PRIVATE_FILES.contract));
+  if (digestWithout(privateContract, "contractDigest") !== privateContract.contractDigest) {
+    throw new Error("v2b7_private_contract_digest_invalid");
+  }
+  const atomicSnapshot = readCurrentRequestStateSnapshot(root, { scope: "v2b7" });
+  if (atomicSnapshot.present && !atomicSnapshot.valid) {
+    throw new Error(`v2b7_atomic_binding_invalid:${atomicSnapshot.issues.join(",")}`);
+  }
+  const state = atomicSnapshot.present ? atomicSnapshot.members.state : readJson(join(privateStore, PRIVATE_FILES.state));
+  assertExecutionState(state, privateContract, b5State, b6State);
+  const publicContract = readJson(join(root, V2B7_PUBLIC_CONTRACT_JSON));
+  return { original, manifest, bundle, privateStore, privateContract, state, publicContract, invariant, atomicBinding: atomicSnapshot };
+}
+
 export function evaluateV2B7FreezeInvariants(input) {
   const issues = [];
   const original = input.original;
@@ -179,7 +206,8 @@ export function evaluateV2B7FreezeInvariants(input) {
     .sort((left, right) => left.canarySlotId.localeCompare(right.canarySlotId));
   if (sha256(repeatProjection) !== V2B7_REPEAT_DIGEST) issues.push("repeat_digest_invalid");
   if (bundle?.workCount !== 4 || bundle?.sourceRecordCount !== 24
-    || bundle?.sourceBundleDigest !== V2B7_SOURCE_BUNDLE_DIGEST) issues.push("source_bundle_contract_invalid");
+    || bundle?.sourceBundleDigest !== V2B7_SOURCE_BUNDLE_DIGEST
+    || !validateFrozenSourceBundleDigest(bundle).valid) issues.push("source_bundle_contract_invalid");
   const overlap = buildOverlapMapping(manifest, bundle);
   if (overlap.length !== 4 || sha256(overlap) !== V2B7_OVERLAP_MAPPING_DIGEST) issues.push("benchmark_overlap_invalid");
   if (input.b5State?.tavily?.physicalRequestCount !== 14 || input.b5State?.relay?.physicalRequestCount !== 25) issues.push("v2b5_prior_counter_changed");

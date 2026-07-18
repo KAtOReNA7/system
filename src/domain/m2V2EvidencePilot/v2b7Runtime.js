@@ -10,6 +10,12 @@ import { spawnSync } from "node:child_process";
 import { dirname, join } from "node:path";
 import { canonicalJson, sha256 } from "./pilotCore.js";
 import {
+  commitAtomicRequestCheckpoint,
+  evaluateGitBoundaryCommandResult,
+  receiptWasCacheHit,
+  withReceiptRuntimeView,
+} from "./integrityState.js";
+import {
   buildV2B5ExtractionSchemaFormat,
 } from "./extractionV2B5.js";
 import {
@@ -52,6 +58,7 @@ import {
   buildV2B7WorkQueries,
   checkAndFreezeV2B7Contract,
   evaluateV2B7FreezeInvariants,
+  readV2B7FrozenContract,
   validateV2B7OutboundQueryPlans,
 } from "./v2b7Contract.js";
 
@@ -285,7 +292,7 @@ export async function runV2B7(root, options = {}) {
       && state.relay.physicalRequestCount < V2B7_RELAY_REQUEST_CAP) {
       const repairIssues = repairIssueCodes(primary);
       const repair = await executeExtractionAttempt(context, { work, searchRun, attemptKind: "repair", repairIssues });
-      state.relay.repairCount += repair.cacheHit === true ? 0 : 1;
+      state.relay.repairCount += receiptWasCacheHit(repair) ? 0 : 1;
       checkpoint(context);
       physicalReceipts.push(repair);
       attempts.push(repair);
@@ -538,14 +545,14 @@ export function evaluateV2B7Reproducibility(input) {
 }
 
 export function readV2B7Results(root) {
-  const frozen = checkAndFreezeV2B7Contract(root);
+  const frozen = readV2B7FrozenContract(root);
   const privateStore = frozen.privateStore;
   const primarySearch = readJson(join(privateStore, PRIVATE_FILES.primarySearch)).runs;
   const repeatSearch = readJson(join(privateStore, PRIVATE_FILES.repeatSearch)).runs;
   const receipts = readNdjson(join(privateStore, PRIVATE_FILES.relayReceipts));
   return {
     ...frozen,
-    state: readJson(join(privateStore, PRIVATE_FILES.state)),
+    state: frozen.state,
     primarySearch,
     repeatSearch,
     physicalReceipts: receipts.filter((receipt) => receipt.schema === "m2.v2.relay-extraction-receipt.v0.2"),
@@ -641,22 +648,13 @@ export function recordV2B7WorkbookVerification(root, details) {
   return receipt;
 }
 
-export function verifyV2B7(root, options = {}) {
-  const validation = options.skipFullValidation === true ? null : runV2B7FullValidation(root, options);
-  let results = readV2B7Results(root);
-  if (validation) {
-    const context = runtimeContextForPersistence(results, root);
-    evaluateAndPersist(context, {
-      primarySearch: results.primarySearch,
-      repeatSearch: results.repeatSearch,
-      physicalReceipts: results.physicalReceipts,
-      effectiveReceipts: results.effectiveReceipts,
-      allTestsPassed: validation.allPassed,
-    });
-    results = readV2B7Results(root);
-    writeV2B7PublicReports(root, results);
-  }
+export function verifyV2B7(root) {
+  const results = readV2B7Results(root);
   const issues = [];
+  const gitBoundary = auditGitBoundary(root);
+  if (!gitBoundary.auditSucceeded) issues.push("git_boundary_audit_failed");
+  if (!gitBoundary.b4Unchanged) issues.push("b4_boundary_changed_or_unverified");
+  if (!gitBoundary.holdoutSealed) issues.push("holdout_boundary_changed_or_unverified");
   const invariant = evaluateV2B7FreezeInvariants({
     original: results.original,
     manifest: results.manifest,
@@ -689,11 +687,8 @@ export function verifyV2B7(root, options = {}) {
       try { assertPublicV2B7Sanitized(readFileSync(join(root, relative), "utf8")); } catch (error) { issues.push(safeToken(error?.message)); }
     }
   }
-  if (validation && !validation.allPassed) issues.push("full_validation_failed");
   const payload = {
-    schema: "m2.v2.v2b7-verification-receipt-private.v0.1",
-    privateOnly: true,
-    verifiedAt: new Date().toISOString(),
+    schema: "m2.v2.v2b7-verification-verdict.v0.2",
     allPassed: issues.length === 0,
     issues: unique(issues),
     newTavilyPhysicalRequestCount: results.state.tavily.physicalRequestCount,
@@ -704,7 +699,6 @@ export function verifyV2B7(root, options = {}) {
     full160Authorized: false,
   };
   const receipt = { ...payload, receiptDigest: sha256(payload) };
-  atomicWriteJson(join(results.privateStore, PRIVATE_FILES.verification), receipt);
   return receipt;
 }
 
@@ -901,7 +895,7 @@ async function executeExtractionAttempt(context, input) {
   };
   const cacheKey = sha256(descriptor);
   const cached = context.relayCache.entries[cacheKey];
-  if (cached) return { ...cached, cacheHit: true };
+  if (cached) return withReceiptRuntimeView(cached, { cacheHit: true });
   const payload = buildV2B7ExtractionPayload({ work: input.work, sourceRecords: input.searchRun.sourceRecords, repairIssues: input.repairIssues });
   const physicalKey = `relay:${cacheKey}`;
   const existingReservation = context.state.relay.reservations[physicalKey];
@@ -1386,6 +1380,20 @@ function reconcileIndeterminateReservations(state, tavilyCache, relayCache, time
 }
 
 function checkpoint(context) {
+  commitAtomicRequestCheckpoint(context.root, {
+    scope: "v2b7",
+    createdAt: context.now(),
+    state: context.state,
+    caches: { tavily: context.tavilyCache, relay: context.relayCache },
+    receipts: Object.values(context.relayCache?.entries ?? {}),
+    adapterVersion: V2B6_ADAPTER_VERSION,
+    manifestBindings: {
+      manifestDigest: V2B7_CANARY_MANIFEST_DIGEST,
+      repeatDigest: V2B7_REPEAT_DIGEST,
+      sourceBundleDigest: V2B7_SOURCE_BUNDLE_DIGEST,
+      contractDigest: context.frozen?.privateContract?.contractDigest ?? null,
+    },
+  });
   atomicWriteJson(join(context.privateStore, PRIVATE_FILES.state), context.state);
   atomicWriteJson(join(context.privateStore, PRIVATE_FILES.tavilyCache), context.tavilyCache);
   atomicWriteJson(join(context.privateStore, PRIVATE_FILES.relayCache), context.relayCache);
@@ -1404,10 +1412,7 @@ function searchArtifact(runKind, runs) {
 
 function auditGitBoundary(root) {
   const result = spawnSync("git", ["diff", "--name-only", V2B7_START_SHA, "--"], { cwd: root, encoding: "utf8", windowsHide: true });
-  const paths = String(result.stdout ?? "").split(/\r?\n/u).filter(Boolean);
-  const b4Changed = paths.some((path) => /oldProductEvaluation|formal-cash|calibrationSpec|B4/iu.test(path));
-  const holdoutChanged = paths.some((path) => /holdout|embargo|deferred.*label/iu.test(path));
-  return { b4Unchanged: !b4Changed, holdoutSealed: !holdoutChanged };
+  return evaluateGitBoundaryCommandResult(result);
 }
 
 function nextStepForDecision(decision) {

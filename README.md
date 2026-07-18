@@ -1,5 +1,13 @@
 # 有声书产品收入评估与年度目标系统 PRD v0.2
 
+## 2026-07-18 M2 v2 当前权威入口
+
+- V2-A 架构合同已完成；V2-B.1 至 V2-B.8 均为保留的历史 checkpoint。V2-B.8 原始 Canary v3.1 结论仍为 `CANARY_CONDITIONAL`；修复后合同的离线 restatement 当前结论为 `CANARY_FAIL`，`full160Authorized=false`。
+- verifier 只读/幂等、receipt/cache/state/counter 原子绑定、B8 fail-closed 合同缺口、private derived state 离线恢复与本轮全量验证已经完成。版本化结论见 `M2-v2-integrity-remediation-summary-v0.1`；100% 复审和 PR roundtrip 细节仅保存在 Git ignored private 审计角色中。
+- 当前权威导航为 `docs/analysis/m2-v2/M2-v2-current-state-index-v0.1.md`。历史报告继续保留，但不能作为当前执行指令；原 V2-B.8 报告不得被静默覆盖。
+- B4 未改变，继续仅作为 comparator/fallback，未 release；formal-cash target 与 pure-buyout null abstention 未改变；final holdout、embargo shadow、deferred labels 仍 sealed。
+- PR #7 必须保持 Draft/open/unmerged，等待外部审查。V2-C、V2-D、C4、M3 formal、模型训练、Canary 重跑、full160、release 和 PR merge 均未授权；`nextDevelopmentReadiness=NOT_AUTHORIZED`。
+
 **状态：M1/M2 本地真实数据开发 checkpoint**
 **确认日期：2026-07-13**
 **面向读者：运营、Codex、开发与测试**
@@ -19,7 +27,7 @@ v0.2 将 v0.1 的业务汇总稿改造成更适合 Codex 长期维护的文档�
 
 当前仓库处于 **authorized local real-data development mode**。允许读取用户提供的本地真实数据和 `data/**`，允许使用本地开发数据库、本地 Docker/PostgreSQL、本地 migration、真实数据导入、严格对账、回测和算法校准。仍禁止提交原始账单、台账、私有 Excel/CSV/JSON、`.env`、`.pgpass`、数据库 dump、临时数据库文件或敏感明细；仍禁止连接远端生产、共享、staging-like 或未明确授权的数据库。
 
-### 2026-07-17 M2 v2 当前入口
+### 2026-07-17 M2 v2 历史入口（已被上方 2026-07-18 入口替代）
 
 - C1、legacy C2-R、C2-R.1、C2 和 C3 均已完成 development 且结论为 `FAIL`；不得重复进入 C3。
 - B4 继续作为 formal-cash comparator、fallback 与安全锚点，但未获正式发布批准。

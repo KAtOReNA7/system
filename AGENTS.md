@@ -1,5 +1,13 @@
 # Codex 工作规则
 
+## 2026-07-18 M2 v2 完整性修复入口（最高优先）
+
+- V2-A 已完成；V2-B.1 至 V2-B.8 均是历史 checkpoint。V2-B.8 Canary v3.1 原始业务结论保持 `CANARY_CONDITIONAL`；修复合同的离线 restatement 当前结论为 `CANARY_FAIL`，`full160Authorized=false`。
+- verifier 只读/幂等、receipt/cache/state/counter 原子绑定、B8 合同缺口修复、从既有 immutable/append-only 材料离线恢复 private derived state 以及完整性复审已经收口。public 结论以版本化 remediation summary 与 restatement 为准，审计细节以 Git ignored private audit v0.2 和 PR roundtrip receipt 为准。
+- 禁止任何外部 provider 请求，禁止 Canary/run/resume/full160、模型训练、B4/formal-cash 修改、holdout、V2-C/V2-D、C4、M3 formal、release 或 PR merge。
+- 当前导航以 `docs/analysis/m2-v2/M2-v2-current-state-index-v0.1.md` 为准。历史报告不得删除或静默覆盖，也不得作为新授权。
+- `nextDevelopmentReadiness=NOT_AUTHORIZED`。必须停在 Draft/open/unmerged PR #7，等待用户安排外部审查；不得把修复完成解释为下一阶段授权。
+
 ## 当前模式
 
 项目从 2026-06-22 起进入 **authorized local real-data development mode**。
@@ -13,7 +21,7 @@
 
 本地真实数据开发结果不自动等于正式发布审批结果。
 
-## 2026-07-17 M2 v2 最新入口（覆盖下方历史状态句）
+## 2026-07-17 M2 v2 历史入口（已被上方 2026-07-18 入口替代）
 
 - C1、legacy C2-R、C2-R.1、C2、C3 均已完成 development 且结论为 `FAIL`；禁止重复进入 C3。
 - C3-A overall WAPE 0.55394517、signed bias +0.08273913，`modelQualityDecision=FAIL`、`businessCoverageDecision=CONDITIONAL`；B4 继续作为 comparator/fallback，未获 release 批准。

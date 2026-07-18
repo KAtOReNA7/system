@@ -2,13 +2,14 @@
 
 ## 状态
 
-- 阶段：`V2_B_EXTERNAL_EVIDENCE_PILOT_PREREGISTERED`
+- 阶段：`V2_B_INTEGRITY_REMEDIATION_COMPLETE_PENDING_EXTERNAL_REVIEW`
 - 决策状态：`not_for_formal_decision`
 - 发布状态：未批准
-- 实现状态：V2-A 已合并；V2-B framework/fail-closed execution 已完成，判 `PILOT_CONDITIONAL`
-- 数据状态：160 部 manifest 已冻结；无授权 provider，0 外部 evidence，未建立 Human baseline
+- 实现状态：V2-A 已完成；V2-B.1 至 V2-B.8 为历史 checkpoint；V2-B.8 原始业务结论为 `CANARY_CONDITIONAL`，修复合同的离线 restatement 为 `CANARY_FAIL`
+- 完整性状态：verifier/private-state 修复、离线恢复、全量验证与 100% 复审已经收口；结果以版本化 summary、restatement 和 current-state index 为准
+- 扩量状态：`full160Authorized=false`；V2-C/V2-D 未开始
 
-本目录完成用户于 2026-07-17 授权的 M2 Forecast Intelligence v2 Architecture Phase 文档工作。它不修改当前 M2 正式结果，不替代 B4，不授权训练、C4、final holdout、release 或 M3。
+本目录保留 M2 Forecast Intelligence v2 从 V2-A 到 V2-B.8 的权威产品合同与历史 checkpoint。当前导航见 `docs/analysis/m2-v2/M2-v2-current-state-index-v0.1.md`；完整性修复已完成并停在 Draft/open/unmerged PR #7 等待外部审查。它不修改当前 M2 正式结果，不替代 B4，也不授权训练、full160、V2-C/V2-D、C4、final holdout、release 或 M3。
 
 ## 权威边界
 

@@ -35,7 +35,7 @@ try {
     writeV2B8PublicReports(root);
     print(summary(command, results));
   } else if (command === "verify") {
-    const receipt = verifyV2B8(root, { runFullValidation: true, onProgress: progress });
+    const receipt = verifyV2B8(root);
     const results = readV2B8Results(root);
     print({ ...summary(command, results), status: receipt.allPassed ? "ok" : "failed", verificationIssues: receipt.issues });
     if (!receipt.allPassed) process.exitCode = 1;

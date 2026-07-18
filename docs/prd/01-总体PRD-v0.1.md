@@ -1,5 +1,7 @@
 # 01. 总体 PRD v0.1
 
+> **历史 PRD / 已被替代。** 本文件中的三情景、预测区间、自动运营建议与资源投入等级不属于当前正式合同。M2 当前以 `docs/prd/m2-v2/M2-forecast-intelligence-v2-prd-v0.1.md`、formal-cash 决策和 current-state index 为准；M3 以 `docs/prd/30-new-product-evaluation/M3-restart-prd-v0.2.md` 为准。保留本文仅用于追溯，不构成执行授权。
+
 ## 1. 项目背景
 
 公司已有多年有声书实销账单，但账单存在重复、渠道更名、分册拆分、负数冲抵、结算延迟和基础信息缺失等问题。运营需要一套以真实账单为基础、能够持续回测和校准的产品分析系统，用于：

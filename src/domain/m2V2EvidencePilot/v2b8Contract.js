@@ -1,6 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { canonicalJson, sha256 } from "./pilotCore.js";
+import { readCurrentRequestStateSnapshot } from "./integrityState.js";
 import {
   V2B7_BUNDLE_RELATIVE,
   V2B7_CANARY_MANIFEST_DIGEST,
@@ -79,7 +80,13 @@ export function checkAndFreezeV2B8Contract(root, options = {}) {
   const manifest = readJson(join(root, V2B7_MANIFEST_RELATIVE));
   const bundle = readJson(join(root, V2B7_BUNDLE_RELATIVE));
   const v2b7Store = join(root, V2B8_V2B7_PRIVATE_RELATIVE);
-  const v2b7State = readJson(join(v2b7Store, "v2b7-execution-state-private-v0.1.json"));
+  const v2b7AtomicSnapshot = readCurrentRequestStateSnapshot(root, { scope: "v2b7" });
+  if (v2b7AtomicSnapshot.present && !v2b7AtomicSnapshot.valid) {
+    throw new Error(`v2b8_v2b7_atomic_binding_invalid:${v2b7AtomicSnapshot.issues.join(",")}`);
+  }
+  const v2b7State = v2b7AtomicSnapshot.present
+    ? v2b7AtomicSnapshot.members.state
+    : readJson(join(v2b7Store, "v2b7-execution-state-private-v0.1.json"));
   const b5State = readJson(join(root, "data/private-output/m2-v2-evidence-pilot/v2-b5-independent-search-canary/v2b5-execution-state-private-v0.1.json"));
   const b6State = readJson(join(root, "data/private-output/m2-v2-evidence-pilot/v2-b6-extraction-remediation/v2b6-execution-state-private-v0.1.json"));
   const original = readJson(join(root, "data/private-output/m2-v2-evidence-pilot/canary-v0.1/canary-manifest-private-v0.1.json"));
@@ -166,6 +173,40 @@ export function checkAndFreezeV2B8Contract(root, options = {}) {
   atomicWriteJson(join(privateStore, V2B8_FILES.forensic), { ...forensic.private, privateOnly: true, full160Authorized: false });
   writePhaseAPublicArtifacts(root, forensic.public);
   return { manifest, bundle, v2b7, v2b7State, privateStore, contract, state, forensic, invariant };
+}
+
+export function readV2B8FrozenContract(root) {
+  const manifest = readJson(join(root, V2B7_MANIFEST_RELATIVE));
+  const bundle = readJson(join(root, V2B7_BUNDLE_RELATIVE));
+  const v2b7Store = join(root, V2B8_V2B7_PRIVATE_RELATIVE);
+  const v2b7State = readJson(join(v2b7Store, "v2b7-execution-state-private-v0.1.json"));
+  const b5State = readJson(join(root, "data/private-output/m2-v2-evidence-pilot/v2-b5-independent-search-canary/v2b5-execution-state-private-v0.1.json"));
+  const b6State = readJson(join(root, "data/private-output/m2-v2-evidence-pilot/v2-b6-extraction-remediation/v2b6-execution-state-private-v0.1.json"));
+  const original = readJson(join(root, "data/private-output/m2-v2-evidence-pilot/canary-v0.1/canary-manifest-private-v0.1.json"));
+  const invariant = evaluateV2B7FreezeInvariants({ original, manifest, bundle, b5State, b6State });
+  if (!invariant.allPassed || manifest.manifestDigest !== V2B7_CANARY_MANIFEST_DIGEST
+    || manifest.repeatDigest && manifest.repeatDigest !== V2B7_REPEAT_DIGEST
+    || bundle.sourceBundleDigest !== V2B7_SOURCE_BUNDLE_DIGEST) {
+    throw new Error(`v2b8_frozen_inputs_invalid:${invariant.issues.join(",")}`);
+  }
+  if (v2b7State.canaryExecuted !== true || v2b7State.full160Authorized !== false
+    || v2b7State.tavily.physicalRequestCount !== 22 || v2b7State.relay.physicalRequestCount !== 15) {
+    throw new Error("v2b8_v2b7_state_invalid");
+  }
+  const v2b7 = readV2B7Private(v2b7Store);
+  const forensic = buildV2B8Forensic(v2b7, manifest);
+  const privateStore = join(root, V2B8_PRIVATE_RELATIVE);
+  const contract = readJson(join(privateStore, V2B8_FILES.contract));
+  if (digestWithout(contract, "contractDigest") !== contract.contractDigest) {
+    throw new Error("v2b8_private_contract_digest_invalid");
+  }
+  const atomicSnapshot = readCurrentRequestStateSnapshot(root, { scope: "v2b8" });
+  if (atomicSnapshot.present && !atomicSnapshot.valid) {
+    throw new Error(`v2b8_atomic_binding_invalid:${atomicSnapshot.issues.join(",")}`);
+  }
+  const state = atomicSnapshot.present ? atomicSnapshot.members.state : readJson(join(privateStore, V2B8_FILES.state));
+  assertState(state, contract);
+  return { manifest, bundle, v2b7, v2b7State, privateStore, contract, state, forensic, invariant, atomicBinding: atomicSnapshot };
 }
 
 export function buildV2B8Forensic(v2b7, manifest) {
