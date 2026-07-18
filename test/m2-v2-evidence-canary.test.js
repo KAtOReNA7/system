@@ -360,7 +360,11 @@ test("generated public canary reports, when present, are aggregate-only and neve
     [CANARY_PUBLIC_REPORTS.decisionMarkdown, renderDecisionMarkdown(bySchema.get("m2.v2.canary-decision.v0.1"))],
   ];
   for (const [relativePath, expected] of markdownPairs) {
-    assert.equal(fs.readFileSync(path.join(root, relativePath), "utf8"), expected);
+    const actualCanonicalLf = fs
+      .readFileSync(path.join(root, relativePath), "utf8")
+      .replace(/\r\n?/gu, "\n");
+    const expectedCanonicalLf = expected.replace(/\r\n?/gu, "\n");
+    assert.equal(actualCanonicalLf, expectedCanonicalLf);
   }
 });
 
