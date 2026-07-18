@@ -182,6 +182,14 @@ test("git boundary command failures fail closed", () => {
   assert.equal(changed.auditSucceeded, true);
   assert.equal(changed.b4Unchanged, false);
   assert.equal(changed.holdoutSealed, false);
+
+  const evidenceStageOnly = evaluateGitBoundaryCommandResult({
+    status: 0,
+    stdout: "src/domain/m2V2EvidencePilot/v2b4Runtime.js\n",
+    error: null,
+  });
+  assert.equal(evidenceStageOnly.b4Unchanged, true);
+  assert.equal(evidenceStageOnly.holdoutSealed, true);
 });
 
 test("current atomic binding validates every scoped raw-file digest", () => {

@@ -1,12 +1,14 @@
-# M2 v2 当前状态索引 v0.1
+# M2 v2 状态索引 v0.1（历史，已被 v0.2 替代）
 
-状态：`current`
+状态：`historical / superseded / not authorization`
 
 分类：public sanitized；`not_for_formal_decision`
 
 更新日期：2026-07-18
 
-## 当前结论
+本文件只保留 v0.1 时点的状态快照，不再是 current authority，也不授权 provider、resume、Canary、full160 或任何新开发。当前唯一索引为 `docs/analysis/m2-v2/M2-v2-current-state-index-v0.2.md`；以下“当前”与 lifecycle=`current` 均仅表示 v0.1 快照当时的标记。
+
+## v0.1 快照结论（历史）
 
 - V2-A：完成并作为冻结架构基础。
 - V2-B.1–B.8：均保留为历史 checkpoint，不得删除或改写为当前授权。
@@ -15,7 +17,7 @@
 - 收口证据：100% 全项目复审与 PR body UTF-8 roundtrip 记录在 Git ignored private 审计角色中；PR #7 保持 Draft/open/unmerged，等待外部审查。
 - `full160Authorized=false`；`nextDevelopmentReadiness=NOT_AUTHORIZED`。
 
-权威顺序为：用户最新明确决策 → current approved PRD → decision register → technical contract → current schema/API/test → development report → historical report。
+当前权威顺序由 v0.2 index 给出；本文件中的旧顺序只作历史追溯。
 
 ## 状态映射
 

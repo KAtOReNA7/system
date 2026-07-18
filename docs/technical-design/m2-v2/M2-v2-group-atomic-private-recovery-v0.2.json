@@ -1,6 +1,6 @@
 {
   "schema": "m2.v2.group-atomic-private-recovery-public.v0.2",
-  "status": "frozen_before_implementation",
+  "status": "IMPLEMENTED_AND_SYNTHETICALLY_VERIFIED",
   "classification": "public_sanitized_not_for_formal_decision",
   "allowedSources": [
     "immutable_manifests",
@@ -32,5 +32,15 @@
     "sameInputRerun": "verified_no_op",
     "counterDeltaOnRerun": 0
   },
-  "faultInjection": ["each_staging_gate", "each_promotion_step", "binding_write", "receipt_write", "rollback"]
+  "faultInjection": ["each_staging_gate", "each_promotion_step", "binding_write", "receipt_write", "rollback"],
+  "verificationScope": {
+    "syntheticBoundaryTests": "verified",
+    "realPrivateMigrationClaimed": false,
+    "exactHeadCiClaimed": false,
+    "publicRestatementClaimed": false
+  },
+  "authorization": {
+    "full160Authorized": false,
+    "nextDevelopmentReadiness": "NOT_AUTHORIZED"
+  }
 }

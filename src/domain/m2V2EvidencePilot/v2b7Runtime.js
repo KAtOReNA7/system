@@ -13,6 +13,7 @@ import {
   commitAtomicRequestCheckpoint,
   evaluateGitBoundaryCommandResult,
   receiptWasCacheHit,
+  validateVerifierRequestIntegrity,
   withReceiptRuntimeView,
 } from "./integrityState.js";
 import {
@@ -37,6 +38,13 @@ import {
   dispatchV2B6RelayRequest,
   normalizeV2B6BenchmarkResponse,
 } from "./relayExtractionAdapterV2B6.js";
+import { assertProviderExecutionReadiness, bindProviderTransport } from "./providerTransportSecurity.js";
+import { inspectV2B6ProviderCacheReadiness } from "./v2b6SafeCache.js";
+import { verifyIndependentWorkbookObject } from "./workbookIndependentVerifier.js";
+import {
+  appendRuntimeRequestEvent,
+  assertRuntimeRequestLedgerState,
+} from "./requestEventLedger.js";
 import {
   V2B7_BUNDLE_RELATIVE,
   V2B7_CANARY_MANIFEST_DIGEST,
@@ -62,6 +70,19 @@ import {
   validateV2B7OutboundQueryPlans,
 } from "./v2b7Contract.js";
 
+const V2B7_REQUEST_LEDGER_STAGE = "v2b7";
+const V2B7_VERIFIER_ATOMIC_ROLES = Object.freeze([
+  "state",
+  "cacheIndex",
+  "receiptIndex",
+  "requestLedger",
+  "counters",
+  "receiptEnvelopes",
+  "recoveredDerivedState",
+  "effectiveReceipts",
+  "recoveredEvaluation",
+]);
+
 export const V2B7_WORKBOOK_RELATIVE = "data/private-output/m2-v2-evidence-pilot/canary-v3/M2-v2-canary-v3-private-review-workbook-v0.2.xlsx";
 
 const PRIVATE_FILES = Object.freeze({
@@ -78,7 +99,7 @@ const PRIVATE_FILES = Object.freeze({
   evaluation: "canary-v3-evaluation-private-v0.2.json",
   validation: "canary-v3-full-validation-receipt-private-v0.1.json",
   verification: "canary-v3-verification-receipt-private-v0.1.json",
-  workbookVerification: "canary-v3-workbook-verification-private-v0.1.json",
+  workbookVerification: "canary-v3-workbook-verification-private-v0.2.json",
 });
 
 const PUBLIC_REPORTS = Object.freeze({
@@ -228,11 +249,16 @@ export function selectV2B7EffectiveReceipt(physicalReceipts, logical) {
 export async function runV2B7(root, options = {}) {
   const frozen = checkAndFreezeV2B7Contract(root, options);
   const config = loadV2B7Configuration(root, options.env);
+  assertProviderExecutionReadiness({
+    ...inspectV2B6ProviderCacheReadiness(root),
+    providerHostBindingVerified: true,
+  });
   const privateStore = frozen.privateStore;
   const statePath = join(privateStore, PRIVATE_FILES.state);
   const tavilyCachePath = join(privateStore, PRIVATE_FILES.tavilyCache);
   const relayCachePath = join(privateStore, PRIVATE_FILES.relayCache);
   const state = readJson(statePath);
+  assertRuntimeRequestLedgerState(state, V2B7_REQUEST_LEDGER_STAGE);
   if (state.pretestsPassed !== true) throw new Error("v2b7_pretests_not_passed");
   if (state.canaryExecuted === true && options.resume !== true) throw new Error("v2b7_completed_execution_requires_resume_or_report");
   if (["search_in_progress", "extraction_in_progress"].includes(state.phase) && options.resume !== true) throw new Error("v2b7_incomplete_execution_requires_resume");
@@ -626,21 +652,33 @@ export function writeV2B7PublicReports(root, supplied = null) {
   return { publicReports: Object.keys(outputs), bundle };
 }
 
-export function recordV2B7WorkbookVerification(root, details) {
-  const frozen = checkAndFreezeV2B7Contract(root);
+export function recordV2B7WorkbookVerification(root) {
+  const frozen = readV2B7FrozenContract(root);
   const workbookPath = join(root, V2B7_WORKBOOK_RELATIVE);
+  const actual = verifyIndependentWorkbookObject(root, V2B7_WORKBOOK_RELATIVE);
   const payload = {
-    schema: "m2.v2.v2b7-workbook-verification-private.v0.1",
+    schema: "m2.v2.v2b7-workbook-verification-private.v0.2",
     privateOnly: true,
     verifiedAt: new Date().toISOString(),
     exists: existsSync(workbookPath),
-    zipSignatureValid: existsSync(workbookPath) && readFileSync(workbookPath).subarray(0, 2).toString("ascii") === "PK",
-    byteLength: existsSync(workbookPath) ? statSync(workbookPath).size : 0,
-    sheetCount: details.sheetCount,
-    formulaErrorCount: details.formulaErrorCount,
-    visualRenderVerified: details.visualRenderVerified === true,
+    verificationBasis: actual.verificationBasis,
+    generatorAssertionsTrusted: actual.generatorAssertionsTrusted,
+    independentObjectVerified: actual.passed,
+    verificationIssues: actual.issues,
+    workbookSha256: actual.workbookSha256 ?? null,
+    zipSignatureValid: actual.verificationBasis === "xlsx_zip_xml_actual_object" && actual.workbookSha256 != null,
+    byteLength: actual.workbookByteLength ?? 0,
+    sheetCount: actual.sheetCount ?? 0,
+    formulaCount: actual.formulaCount ?? 0,
+    formulaHyperlinkCount: actual.formulaHyperlinkCount ?? 0,
+    nativeHyperlinkCount: actual.nativeHyperlinkCount ?? actual.hyperlinkCount ?? 0,
+    formulaErrorCount: actual.formulaErrorCount ?? actual.cachedFormulaErrorCount ?? 0,
+    dataValidationCount: actual.dataValidationCount ?? actual.validationCount ?? 0,
+    visualRenderVerified: false,
+    visualReviewAttested: false,
+    visualReviewStatus: "NOT_PERFORMED",
     ignoredAndUntracked: privatePathIgnoredAndUntracked(root, V2B7_WORKBOOK_RELATIVE),
-    containsPrivateRows: details.containsPrivateRows === true,
+    containsPrivateRows: null,
     full160Authorized: false,
   };
   const receipt = { ...payload, receiptDigest: sha256(payload) };
@@ -649,6 +687,14 @@ export function recordV2B7WorkbookVerification(root, details) {
 }
 
 export function verifyV2B7(root) {
+  const requestIntegrity = validateVerifierRequestIntegrity(root, {
+    scope: V2B7_REQUEST_LEDGER_STAGE,
+    eventStage: V2B7_REQUEST_LEDGER_STAGE,
+    requiredAtomicRoles: V2B7_VERIFIER_ATOMIC_ROLES,
+    legacyStateRelativePath: `${V2B7_PRIVATE_RELATIVE}/${PRIVATE_FILES.state}`,
+    requireClosedBinding: true,
+  });
+  if (!requestIntegrity.valid) return v2b7RequestIntegrityFailure(requestIntegrity);
   const results = readV2B7Results(root);
   const issues = [];
   const gitBoundary = auditGitBoundary(root);
@@ -677,8 +723,10 @@ export function verifyV2B7(root) {
   const pilotCount = results.evidenceRecords.filter((record) => record.pilotUsable === true).length;
   if (pilotCount > 0) {
     if (!results.workbookExists) issues.push("required_workbook_missing");
-    if (results.workbookVerification?.zipSignatureValid !== true || results.workbookVerification?.formulaErrorCount !== 0
-      || results.workbookVerification?.visualRenderVerified !== true || results.workbookVerification?.ignoredAndUntracked !== true) issues.push("workbook_verification_failed");
+    if (results.workbookVerification?.independentObjectVerified !== true
+      || results.workbookVerification?.generatorAssertionsTrusted !== false
+      || results.workbookVerification?.zipSignatureValid !== true || results.workbookVerification?.formulaErrorCount !== 0
+      || results.workbookVerification?.ignoredAndUntracked !== true) issues.push("workbook_verification_failed");
   }
   if (!privateStoreIgnoredAndUntracked(root)) issues.push("private_store_not_ignored_or_untracked");
   for (const relative of Object.values(PUBLIC_REPORTS)) {
@@ -696,10 +744,37 @@ export function verifyV2B7(root) {
     newRelayPhysicalRequestCount: results.state.relay.physicalRequestCount,
     cumulativeRelayPhysicalRequestCount: results.state.priorCounters.cumulativeRelay + results.state.relay.physicalRequestCount,
     decision: results.evaluation.decision,
+    requestStateBindingVerified: true,
+    requestEventLedgerVerified: requestIntegrity.requestEventLedgerVerified,
+    requestCounterReplayVerified: requestIntegrity.requestCounterReplayVerified,
+    currentClosedBindingVerified: requestIntegrity.closedBindingPresent
+      ? requestIntegrity.closedBindingVerified
+      : null,
     full160Authorized: false,
   };
   const receipt = { ...payload, receiptDigest: sha256(payload) };
   return receipt;
+}
+
+function v2b7RequestIntegrityFailure(integrity) {
+  const payload = {
+    schema: "m2.v2.v2b7-verification-verdict.v0.2",
+    allPassed: false,
+    issues: integrity.issues.map((issue) => `request_integrity:${issue}`),
+    newTavilyPhysicalRequestCount: null,
+    cumulativeTavilyPhysicalRequestCount: null,
+    newRelayPhysicalRequestCount: null,
+    cumulativeRelayPhysicalRequestCount: null,
+    decision: null,
+    requestStateBindingVerified: false,
+    requestEventLedgerVerified: integrity.requestEventLedgerVerified === true,
+    requestCounterReplayVerified: integrity.requestCounterReplayVerified === true,
+    currentClosedBindingVerified: integrity.closedBindingPresent
+      ? integrity.closedBindingVerified
+      : null,
+    full160Authorized: false,
+  };
+  return { ...payload, receiptDigest: sha256(payload) };
 }
 
 function loadV2B7Configuration(root, suppliedEnv = null) {
@@ -711,12 +786,16 @@ function loadV2B7Configuration(root, suppliedEnv = null) {
     },
     relay: {
       baseUrl: String(env.OPENAI_BASE_URL ?? env.M2_V2_EVIDENCE_API_BASE_URL ?? "").trim().replace(/\/+$/u, ""),
+      approvedHost: String(env.M2_V2_APPROVED_RELAY_HOST ?? "").trim().toLocaleLowerCase("en-US"),
       apiKey: String(env.OPENAI_API_KEY ?? ""),
     },
   };
   if (env.M2_V2_SEARCH_PROVIDER !== "tavily_structured_search") throw new Error("v2b7_search_provider_invalid");
   if (config.tavily.baseUrl !== "https://api.tavily.com" || !config.tavily.apiKey) throw new Error("v2b7_tavily_configuration_incomplete");
-  if (!/^https:\/\//u.test(config.relay.baseUrl) || !config.relay.apiKey) throw new Error("v2b7_relay_configuration_incomplete");
+  if (!config.relay.baseUrl || !config.relay.approvedHost || !config.relay.apiKey) throw new Error("v2b7_relay_configuration_incomplete");
+  const transport = bindProviderTransport(config.relay);
+  config.relay.baseUrl = transport.baseUrl;
+  config.relay.approvedHost = transport.approvedHost;
   return config;
 }
 
@@ -803,14 +882,20 @@ async function executeTavilyQuery(context, plan) {
     maxResults: 6,
     includeUsage: false,
   });
-  const cached = context.tavilyCache.entries[descriptor.cacheKey];
-  if (cached) return { ...cached, cacheHit: true };
   const physicalKey = `tavily:${descriptor.cacheKey}`;
+  const cached = context.tavilyCache.entries[descriptor.cacheKey];
+  if (cached) {
+    recordCacheHit(context, "tavily", physicalKey, descriptor, cached);
+    return { ...cached, cacheHit: true };
+  }
   reserveRequest(context, "tavily", physicalKey, {
     cacheKey: descriptor.cacheKey,
     runKind: plan.runKind,
     queryId: plan.queryId,
+    logicalKey: descriptor.cacheKey,
+    requestDigest: sha256({ provider: "tavily", descriptor }),
   });
+  markRequestDispatched(context, "tavily", physicalKey);
   let result;
   try {
     const providerResult = await context.tavily.search({
@@ -894,10 +979,13 @@ async function executeExtractionAttempt(context, input) {
     repairIssuesDigest: sha256(input.repairIssues ?? []),
   };
   const cacheKey = sha256(descriptor);
-  const cached = context.relayCache.entries[cacheKey];
-  if (cached) return withReceiptRuntimeView(cached, { cacheHit: true });
-  const payload = buildV2B7ExtractionPayload({ work: input.work, sourceRecords: input.searchRun.sourceRecords, repairIssues: input.repairIssues });
   const physicalKey = `relay:${cacheKey}`;
+  const cached = context.relayCache.entries[cacheKey];
+  if (cached) {
+    recordCacheHit(context, "relay", physicalKey, descriptor, cached);
+    return withReceiptRuntimeView(cached, { cacheHit: true });
+  }
+  const payload = buildV2B7ExtractionPayload({ work: input.work, sourceRecords: input.searchRun.sourceRecords, repairIssues: input.repairIssues });
   const existingReservation = context.state.relay.reservations[physicalKey];
   if (existingReservation?.status === "indeterminate_after_crash") {
     return persistExtractionReceipt(context, input, descriptor, cacheKey, physicalKey, payload, {
@@ -914,15 +1002,19 @@ async function executeExtractionAttempt(context, input) {
       responseDigest: null,
       responseByteLength: 0,
       rawResponsePersisted: false,
-    });
+    }, false);
   }
-  reserveRequest(context, "relay", physicalKey, { cacheKey, ...descriptor });
-  context.state.relay.reservations[physicalKey].status = "dispatch_started";
-  context.state.relay.reservations[physicalKey].dispatchStartedAt = context.now();
-  checkpoint(context);
+  reserveRequest(context, "relay", physicalKey, {
+    cacheKey,
+    ...descriptor,
+    logicalKey: cacheKey,
+    requestDigest: sha256({ provider: "relay", descriptor, payloadDigest: sha256(payload) }),
+  });
+  markRequestDispatched(context, "relay", physicalKey);
   const response = await dispatchV2B6RelayRequest({
     fetchImpl: context.fetchImpl,
     baseUrl: context.config.relay.baseUrl,
+    approvedHost: context.config.relay.approvedHost,
     apiKey: context.config.relay.apiKey,
     payload,
     timeoutMs: V2B7_TIMEOUT_MS,
@@ -930,7 +1022,7 @@ async function executeExtractionAttempt(context, input) {
   return persistExtractionReceipt(context, input, descriptor, cacheKey, physicalKey, payload, response);
 }
 
-function persistExtractionReceipt(context, input, descriptor, cacheKey, physicalKey, payload, response) {
+function persistExtractionReceipt(context, input, descriptor, cacheKey, physicalKey, payload, response, complete = true) {
   const normalizedResponse = normalizeV2B6BenchmarkResponse(response.json, {
     sourceRecords: input.searchRun.sourceRecords,
     work: input.work,
@@ -969,7 +1061,8 @@ function persistExtractionReceipt(context, input, descriptor, cacheKey, physical
   };
   const receipt = { ...receiptPayload, receiptDigest: sha256(receiptPayload) };
   context.relayCache.entries[cacheKey] = receipt;
-  completeRequest(context, "relay", physicalKey, receipt);
+  if (complete) completeRequest(context, "relay", physicalKey, receipt);
+  else checkpoint(context);
   return receipt;
 }
 
@@ -1083,9 +1176,11 @@ function buildPublicReportBundle(results) {
     extractionDecision: results.evaluation.extractionDecision,
     evidenceUsabilityDecision: results.evaluation.evidenceUsabilityDecision,
     privateWorkbookGenerated: results.workbookExists === true,
-    privateWorkbookVerificationPassed: results.workbookVerification?.zipSignatureValid === true
+    privateWorkbookVerificationPassed: results.workbookVerification?.independentObjectVerified === true
+      && results.workbookVerification?.generatorAssertionsTrusted === false
+      && results.workbookVerification?.zipSignatureValid === true
       && results.workbookVerification?.formulaErrorCount === 0
-      && results.workbookVerification?.visualRenderVerified === true,
+      && results.workbookVerification?.ignoredAndUntracked === true,
     researchApprovedCount: 0,
     modelEligibleCount: 0,
   };
@@ -1347,16 +1442,48 @@ function reserveRequest(context, provider, physicalKey, metadata) {
   const budget = context.state[provider];
   if (budget.physicalRequestCount >= budget.cap) throw new Error(`v2b7_${provider}_request_cap_reached`);
   if (budget.reservations[physicalKey]) throw new Error(`v2b7_${provider}_reservation_exists`);
+  const reservedAt = context.now();
+  const logicalKey = metadata.logicalKey ?? physicalKey;
+  const requestDigest = metadata.requestDigest ?? sha256({ stage: V2B7_REQUEST_LEDGER_STAGE, provider, physicalKey });
+  appendRuntimeRequestEvent(context.state, {
+    timestamp: reservedAt, provider, stage: V2B7_REQUEST_LEDGER_STAGE, logicalKey, physicalKey,
+    eventType: "planned", requestDigest, receiptDigest: null,
+  });
   budget.physicalRequestCount += 1;
-  budget.reservations[physicalKey] = { status: "reserved_before_dispatch", reservedAt: context.now(), ordinal: budget.physicalRequestCount, ...metadata };
+  budget.reservations[physicalKey] = {
+    status: "reserved_before_dispatch",
+    reservedAt,
+    ordinal: budget.physicalRequestCount,
+    logicalKey,
+    requestDigest,
+    ...metadata,
+  };
+  appendRuntimeRequestEvent(context.state, {
+    timestamp: reservedAt, provider, stage: V2B7_REQUEST_LEDGER_STAGE, logicalKey, physicalKey,
+    eventType: "reserved", requestDigest, receiptDigest: null,
+  });
+  checkpoint(context);
+}
+
+function markRequestDispatched(context, provider, physicalKey) {
+  const reservation = context.state[provider].reservations[physicalKey];
+  if (!reservation || reservation.status !== "reserved_before_dispatch") {
+    throw new Error(`v2b7_${provider}_reservation_not_dispatchable`);
+  }
+  const timestamp = context.now();
+  reservation.status = "dispatch_started";
+  reservation.dispatchStartedAt = timestamp;
+  appendReservationEvent(context.state, provider, physicalKey, reservation, "dispatched", timestamp, null);
   checkpoint(context);
 }
 
 function completeRequest(context, provider, physicalKey, result) {
   const reservation = context.state[provider].reservations[physicalKey];
   if (!reservation) throw new Error(`v2b7_${provider}_reservation_missing`);
+  const timestamp = context.now();
+  appendReservationEvent(context.state, provider, physicalKey, reservation, "completed", timestamp, resultDigest(result));
   reservation.status = "completed";
-  reservation.completedAt = context.now();
+  reservation.completedAt = timestamp;
   reservation.resultDigest = sha256(result);
   checkpoint(context);
 }
@@ -1365,27 +1492,65 @@ function reconcileIndeterminateReservations(state, tavilyCache, relayCache, time
   for (const [provider, cache] of [["tavily", tavilyCache], ["relay", relayCache]]) {
     for (const [physicalKey, reservation] of Object.entries(state[provider].reservations ?? {})) {
       if (!["reserved_before_dispatch", "dispatch_started"].includes(reservation.status)) continue;
-      if (provider === "relay" && reservation.status === "reserved_before_dispatch" && !reservation.dispatchStartedAt
-        && reservation.ordinal === state[provider].physicalRequestCount) {
-        delete state[provider].reservations[physicalKey];
-        state[provider].physicalRequestCount -= 1;
-        continue;
-      }
       const result = cache.entries[reservation.cacheKey];
-      reservation.status = result ? "completed_recovered" : "indeterminate_after_crash";
+      if (result && reservation.status === "dispatch_started") {
+        appendReservationEvent(state, provider, physicalKey, reservation, "completed", timestamp, resultDigest(result));
+        reservation.status = "completed_recovered";
+      } else {
+        appendReservationEvent(state, provider, physicalKey, reservation, "indeterminate", timestamp, null);
+        reservation.status = "indeterminate_after_crash";
+      }
       reservation.completedAt = timestamp;
       if (result) reservation.resultDigest = sha256(result);
     }
   }
 }
 
+function recordCacheHit(context, provider, physicalKey, request, result) {
+  const timestamp = context.now();
+  const logicalKey = `cache-hit:${sha256({ physicalKey, sequence: context.state.requestEventLedger.length + 1 })}`;
+  const requestDigest = sha256({ stage: V2B7_REQUEST_LEDGER_STAGE, provider, request });
+  appendRuntimeRequestEvent(context.state, {
+    timestamp, provider, stage: V2B7_REQUEST_LEDGER_STAGE, logicalKey, physicalKey,
+    eventType: "planned", requestDigest, receiptDigest: null,
+  });
+  appendRuntimeRequestEvent(context.state, {
+    timestamp, provider, stage: V2B7_REQUEST_LEDGER_STAGE, logicalKey, physicalKey,
+    eventType: "cache_hit_observed", requestDigest, receiptDigest: resultDigest(result),
+  });
+  checkpoint(context);
+}
+
+function appendReservationEvent(state, provider, physicalKey, reservation, eventType, timestamp, receiptDigest) {
+  appendRuntimeRequestEvent(state, {
+    timestamp,
+    provider,
+    stage: V2B7_REQUEST_LEDGER_STAGE,
+    logicalKey: reservation.logicalKey ?? reservation.cacheKey ?? physicalKey,
+    physicalKey,
+    eventType,
+    requestDigest: reservation.requestDigest ?? sha256({ stage: V2B7_REQUEST_LEDGER_STAGE, provider, physicalKey }),
+    receiptDigest,
+  });
+}
+
+function resultDigest(result) {
+  for (const digest of [result?.receiptDigest, result?.providerReceipt?.receiptDigest, result?.receipt?.receiptDigest]) {
+    if (/^[a-f0-9]{64}$/u.test(String(digest ?? ""))) return digest;
+  }
+  return sha256(result);
+}
+
 function checkpoint(context) {
+  assertRuntimeRequestLedgerState(context.state, V2B7_REQUEST_LEDGER_STAGE);
   commitAtomicRequestCheckpoint(context.root, {
     scope: "v2b7",
     createdAt: context.now(),
     state: context.state,
     caches: { tavily: context.tavilyCache, relay: context.relayCache },
     receipts: Object.values(context.relayCache?.entries ?? {}),
+    requestLedger: context.state.requestEventLedger,
+    counters: context.state.requestCounters,
     adapterVersion: V2B6_ADAPTER_VERSION,
     manifestBindings: {
       manifestDigest: V2B7_CANARY_MANIFEST_DIGEST,

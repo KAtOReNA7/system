@@ -11,6 +11,7 @@ import { canonicalJson, sha256 } from "./pilotCore.js";
 import {
   commitAtomicRequestCheckpoint,
   readCurrentRequestStateSnapshot,
+  validateVerifierRequestIntegrity,
   withReceiptRuntimeView,
 } from "./integrityState.js";
 import {
@@ -44,6 +45,13 @@ import {
   OpenAICompatibleRelayExtractionProviderV2B5,
   V2B5_RELAY_EXTRACTION_PROVIDER_ID,
 } from "./relayExtractionProviderV2B5.js";
+import { assertProviderExecutionReadiness, bindProviderTransport } from "./providerTransportSecurity.js";
+import { inspectV2B6ProviderCacheReadiness } from "./v2b6SafeCache.js";
+import {
+  appendRuntimeRequestEvent,
+  assertRuntimeRequestLedgerState,
+  initializeRuntimeRequestLedgerState,
+} from "./requestEventLedger.js";
 import {
   V2B5_MODELS,
   buildV2B5BenchmarkManifest,
@@ -61,6 +69,17 @@ export const V2B5_RELAY_REQUEST_CAP = 40;
 export const V2B5_PRIVATE_RELATIVE = "data/private-output/m2-v2-evidence-pilot/v2-b5-independent-search-canary";
 export const V2B5_FROZEN_CANARY_RELATIVE = "data/private-output/m2-v2-evidence-pilot/canary-v0.1/canary-manifest-private-v0.1.json";
 export const V2B5_PRIVATE_WORKBOOK_RELATIVE = "data/private-output/m2-v2-evidence-pilot/canary-v3/M2-v2-canary-v3-private-review-workbook-v0.1.xlsx";
+
+const V2B5_REQUEST_LEDGER_STAGE = "v2b5";
+const V2B5_VERIFIER_ATOMIC_ROLES = Object.freeze([
+  "state",
+  "cacheIndex",
+  "receiptIndex",
+  "requestLedger",
+  "counters",
+  "receiptEnvelopes",
+  "recoveredDerivedState",
+]);
 
 const FILES = Object.freeze({
   state: "v2b5-execution-state-private-v0.1.json",
@@ -163,12 +182,17 @@ export async function runV2B5(root, options = {}) {
   const frozen = checkAndFreezeV2B5(root, options);
   const privateStore = frozen.privateStore;
   const config = loadV2B5Configuration(root, options.env);
+  assertProviderExecutionReadiness({
+    ...inspectV2B6ProviderCacheReadiness(root),
+    providerHostBindingVerified: true,
+  });
   const statePath = join(privateStore, FILES.state);
   const tavilyCachePath = join(privateStore, FILES.tavilyCache);
   const relayCachePath = join(privateStore, FILES.relayCache);
   const bindings = configurationBindings(config);
   const stateAlreadyExists = existsSync(statePath);
   let state = stateAlreadyExists ? readJson(statePath) : newExecutionState(frozen, bindings);
+  assertRuntimeRequestLedgerState(state, V2B5_REQUEST_LEDGER_STAGE);
   if (stateAlreadyExists && options.resume !== true) throw new Error("v2b5_existing_execution_requires_resume");
   const tavilyCache = existsSync(tavilyCachePath) ? readJson(tavilyCachePath) : newCache("tavily", frozen, bindings);
   const relayCache = existsSync(relayCachePath) ? readJson(relayCachePath) : newCache("relay", frozen, bindings);
@@ -200,6 +224,7 @@ export async function runV2B5(root, options = {}) {
   });
   const relay = new OpenAICompatibleRelayExtractionProviderV2B5({
     baseUrl: config.relay.baseUrl,
+    approvedHost: config.relay.approvedHost,
     apiKey: config.relay.apiKey,
     timeoutMs: config.relay.timeoutMs,
     fetchImpl: options.fetchImpl,
@@ -359,6 +384,7 @@ export async function runV2B5CapabilityAuditProbe(root, options = {}) {
     throw new Error("v2b5_capability_audit_requires_existing_state");
   }
   let state = readJson(statePath);
+  assertRuntimeRequestLedgerState(state, V2B5_REQUEST_LEDGER_STAGE);
   const tavilyCache = readJson(tavilyCachePath);
   const relayCache = readJson(relayCachePath);
   const bindings = configurationBindings(config);
@@ -668,8 +694,10 @@ async function executeTavilyQuery(context, input) {
     includeUsage: input.includeUsage === true,
     executionNamespace: input.executionNamespace,
   });
+  const physicalKey = `tavily:${descriptor.cacheKey}`;
   const cached = context.tavilyCache.entries[descriptor.cacheKey];
   if (cached) {
+    recordCacheHit(context, "tavily", physicalKey, descriptor, cached);
     if (context.resume === true && input.phase !== "capability" && cached.contractValid !== true
       && (cached.providerReceipt?.retryCount ?? 0) < 1 && !input.resumeRetryOf) {
       return executeTavilyQuery(context, {
@@ -681,7 +709,6 @@ async function executeTavilyQuery(context, input) {
     }
     return { ...cached, cacheHit: true };
   }
-  const physicalKey = `tavily:${descriptor.cacheKey}`;
   if (context.state.tavily.reservations[physicalKey]) {
     const indeterminate = buildIndeterminateTavilyResult(input, descriptor, context.state.tavily.reservations[physicalKey]);
     context.tavilyCache.entries[descriptor.cacheKey] = indeterminate;
@@ -701,7 +728,10 @@ async function executeTavilyQuery(context, input) {
     phase: input.phase,
     runKind: input.runKind,
     queryId: input.queryId,
+    logicalKey: descriptor.cacheKey,
+    requestDigest: sha256({ provider: "tavily", descriptor }),
   });
+  markPhysicalRequestDispatched(context, "tavily", physicalKey);
   let result;
   try {
     const providerResult = await context.tavily.search({
@@ -756,7 +786,7 @@ async function executeTavilyQuery(context, input) {
     result = buildTavilyExceptionResult(input, descriptor, error, context.now());
   }
   context.tavilyCache.entries[descriptor.cacheKey] = result;
-  if (result.dispatched === false) cancelPredispatchReservation(context, "tavily", physicalKey);
+  if (result.dispatched === false) retainPredispatchReservation(context, "tavily", physicalKey, result);
   else completePhysicalRequest(context, "tavily", physicalKey, result);
   return result;
 }
@@ -869,8 +899,10 @@ async function executeRelayExtraction(context, input) {
     repairIssuesDigest: sha256(input.repairIssues ?? []),
   };
   const cacheKey = sha256(logical);
+  const physicalKey = `relay:${cacheKey}`;
   if (context.relayCache.entries[cacheKey]) {
     const cached = context.relayCache.entries[cacheKey];
+    recordCacheHit(context, "relay", physicalKey, logical, cached);
     if (context.resume === true && input.attemptKind === "primary" && cached.providerConnectivityPassed !== true) {
       return executeRelayExtraction(context, { ...input, attemptKind: "transport_retry" });
     }
@@ -882,7 +914,6 @@ async function executeRelayExtraction(context, input) {
     checkpointExecution(context.root, context.privateStore, context.state, context.tavilyCache, context.relayCache);
     return blocked;
   }
-  const physicalKey = `relay:${cacheKey}`;
   if (context.state.relay.reservations[physicalKey]) {
     const compatibilityReceipt = context.relayCache.entries[`compatibility_${cacheKey}`];
     if (compatibilityReceipt?.reasoningParameterUnsupported === true) {
@@ -904,7 +935,10 @@ async function executeRelayExtraction(context, input) {
     canarySlotId: input.work?.canarySlotId,
     model: input.model,
     attemptKind: input.attemptKind,
+    logicalKey: cacheKey,
+    requestDigest: sha256({ provider: "relay", logical }),
   });
+  markPhysicalRequestDispatched(context, "relay", physicalKey);
   context.onProgress({ phase: input.phase, stage: "extraction", runKind: input.runKind, canarySlotId: input.work?.canarySlotId, model: input.model, attemptKind: input.attemptKind });
   let receipt;
   try {
@@ -952,8 +986,11 @@ async function executeRelayExtraction(context, input) {
 
 async function executeReasoningCompatibilityRetry(context, input, sourceRecords, sourceRecordSetDigest, cacheKey) {
   const existing = context.relayCache.entries[cacheKey];
-  if (existing) return withReceiptRuntimeView(existing, { cacheHit: true });
   const retryKey = `relay:${sha256({ cacheKey, reasoningParameterIncluded: false })}`;
+  if (existing) {
+    recordCacheHit(context, "relay", retryKey, { cacheKey, reasoningParameterIncluded: false }, existing);
+    return withReceiptRuntimeView(existing, { cacheHit: true });
+  }
   if (context.state.relay.reservations[retryKey]) {
     const indeterminate = buildBlockedRelayReceipt(input, sourceRecordSetDigest, "reasoning_retry_indeterminate_after_crash", context.now());
     context.relayCache.entries[cacheKey] = indeterminate;
@@ -967,7 +1004,11 @@ async function executeReasoningCompatibilityRetry(context, input, sourceRecords,
     canarySlotId: input.work?.canarySlotId,
     model: input.model,
     attemptKind: "reasoning_compatibility_retry",
+    compatibilityRetry: true,
+    logicalKey: sha256({ cacheKey, attemptKind: "reasoning_compatibility_retry" }),
+    requestDigest: sha256({ provider: "relay", cacheKey, reasoningParameterIncluded: false }),
   });
+  markPhysicalRequestDispatched(context, "relay", retryKey);
   let receipt;
   try {
     receipt = await context.relay.extract({
@@ -1294,6 +1335,14 @@ export function runV2B5FullValidation(root, options = {}) {
 }
 
 export function verifyV2B5(root) {
+  const requestIntegrity = validateVerifierRequestIntegrity(root, {
+    scope: V2B5_REQUEST_LEDGER_STAGE,
+    eventStage: V2B5_REQUEST_LEDGER_STAGE,
+    requiredAtomicRoles: V2B5_VERIFIER_ATOMIC_ROLES,
+    legacyStateRelativePath: `${V2B5_PRIVATE_RELATIVE}/${FILES.state}`,
+    requireClosedBinding: true,
+  });
+  if (!requestIntegrity.valid) return v2b5RequestIntegrityFailure(requestIntegrity);
   const issues = [];
   let results = null;
   let frozen = null;
@@ -1351,10 +1400,35 @@ export function verifyV2B5(root) {
     tavilyPhysicalRequestCount: results?.state?.tavily?.physicalRequestCount ?? null,
     relayPhysicalRequestCount: results?.state?.relay?.physicalRequestCount ?? null,
     finalDecision: results?.canaryEvaluation?.decision ?? null,
+    requestStateBindingVerified: true,
+    requestEventLedgerVerified: requestIntegrity.requestEventLedgerVerified,
+    requestCounterReplayVerified: requestIntegrity.requestCounterReplayVerified,
+    currentClosedBindingVerified: requestIntegrity.closedBindingPresent
+      ? requestIntegrity.closedBindingVerified
+      : null,
     full160Authorized: false,
   };
   const result = { ...resultPayload, receiptDigest: sha256(resultPayload) };
   return result;
+}
+
+function v2b5RequestIntegrityFailure(integrity) {
+  const payload = {
+    schema: "m2.v2.v2b5-verification-verdict.v0.2",
+    allPassed: false,
+    issues: integrity.issues.map((issue) => `request_integrity:${issue}`),
+    tavilyPhysicalRequestCount: null,
+    relayPhysicalRequestCount: null,
+    finalDecision: null,
+    requestStateBindingVerified: false,
+    requestEventLedgerVerified: integrity.requestEventLedgerVerified === true,
+    requestCounterReplayVerified: integrity.requestCounterReplayVerified === true,
+    currentClosedBindingVerified: integrity.closedBindingPresent
+      ? integrity.closedBindingVerified
+      : null,
+    full160Authorized: false,
+  };
+  return { ...payload, receiptDigest: sha256(payload) };
 }
 
 function buildPublicReportBundle(results) {
@@ -1705,6 +1779,7 @@ function loadV2B5Configuration(root, suppliedEnv = null) {
   };
   const relay = {
     baseUrl: String(env.OPENAI_BASE_URL ?? env.M2_V2_EVIDENCE_API_BASE_URL ?? "").trim().replace(/\/+$/u, ""),
+    approvedHost: String(env.M2_V2_APPROVED_RELAY_HOST ?? "").trim().toLocaleLowerCase("en-US"),
     apiKey: String(env.OPENAI_API_KEY ?? ""),
     timeoutMs: 25_000,
     reasoningEffort: String(env.M2_V2_EXTRACTION_REASONING_EFFORT ?? "low"),
@@ -1712,7 +1787,10 @@ function loadV2B5Configuration(root, suppliedEnv = null) {
   if (env.M2_V2_SEARCH_PROVIDER !== V2B5_TAVILY_PROVIDER_ID) throw new Error("v2b5_search_provider_config_invalid");
   if (!/^https:\/\/api\.tavily\.com$/u.test(tavily.baseUrl) || !tavily.apiKey) throw new Error("v2b5_tavily_configuration_incomplete");
   if (tavily.topic !== "general" || tavily.searchDepth !== "basic" || tavily.maxResults !== 6 || tavily.country !== "china") throw new Error("v2b5_tavily_parameter_config_invalid");
-  if (!/^https:\/\//u.test(relay.baseUrl) || !relay.apiKey) throw new Error("v2b5_relay_configuration_incomplete");
+  if (!relay.baseUrl || !relay.approvedHost || !relay.apiKey) throw new Error("v2b5_relay_configuration_incomplete");
+  const transport = bindProviderTransport(relay);
+  relay.baseUrl = transport.baseUrl;
+  relay.approvedHost = transport.approvedHost;
   if (Number(env.M2_V2_TAVILY_MAX_REQUESTS ?? 40) !== V2B5_TAVILY_REQUEST_CAP
     || Number(env.M2_V2_RELAY_EXTRACTION_MAX_REQUESTS ?? 40) !== V2B5_RELAY_REQUEST_CAP) throw new Error("v2b5_request_cap_config_invalid");
   return { tavily, relay };
@@ -1730,7 +1808,7 @@ function publicConfigurationProjection(config) {
 }
 
 function newExecutionState(frozen, bindings) {
-  return {
+  return initializeRuntimeRequestLedgerState({
     schema: "m2.v2.v2b5-execution-state.v0.1",
     privateOnly: true,
     createdAt: new Date().toISOString(),
@@ -1747,7 +1825,7 @@ function newExecutionState(frozen, bindings) {
     full160Authorized: false,
     tavily: budgetState(V2B5_TAVILY_REQUEST_CAP),
     relay: budgetState(V2B5_RELAY_REQUEST_CAP),
-  };
+  });
 }
 
 function budgetState(cap) {
@@ -1766,6 +1844,7 @@ function newCache(kind, frozen, bindings) {
 }
 
 function assertExecutionContainers(state, tavilyCache, relayCache, frozen, bindings) {
+  assertRuntimeRequestLedgerState(state, V2B5_REQUEST_LEDGER_STAGE);
   for (const item of [state, tavilyCache, relayCache]) {
     if (item.benchmarkManifestDigest !== frozen.benchmarkManifest.benchmarkManifestDigest
       || item.canaryManifestDigest !== frozen.canaryManifest.manifestDigest) throw new Error("v2b5_execution_container_manifest_mismatch");
@@ -1806,46 +1885,89 @@ function reservePhysicalRequest(context, provider, physicalKey, metadata) {
   const budget = context.state[provider];
   if (budget.physicalRequestCount >= budget.cap) throw new Error(`v2b5_${provider}_request_cap_reached`);
   if (budget.reservations[physicalKey]) throw new Error(`v2b5_${provider}_request_already_reserved`);
+  const reservedAt = context.now();
+  const logicalKey = metadata.logicalKey ?? physicalKey;
+  const requestDigest = metadata.requestDigest ?? sha256({ stage: V2B5_REQUEST_LEDGER_STAGE, provider, physicalKey });
+  appendRuntimeRequestEvent(context.state, {
+    timestamp: reservedAt,
+    provider,
+    stage: V2B5_REQUEST_LEDGER_STAGE,
+    logicalKey,
+    physicalKey,
+    eventType: "planned",
+    requestDigest,
+    receiptDigest: null,
+  });
   budget.physicalRequestCount += 1;
   budget.reservations[physicalKey] = {
     status: "reserved_before_dispatch",
-    reservedAt: context.now(),
+    reservedAt,
     ordinal: budget.physicalRequestCount,
+    logicalKey,
+    requestDigest,
     ...metadata,
   };
+  appendRuntimeRequestEvent(context.state, {
+    timestamp: reservedAt,
+    provider,
+    stage: V2B5_REQUEST_LEDGER_STAGE,
+    logicalKey,
+    physicalKey,
+    eventType: metadata.compatibilityRetry === true ? "compatibility_retry_reserved" : "reserved",
+    requestDigest,
+    receiptDigest: null,
+  });
+  checkpointExecution(context.root, context.privateStore, context.state, context.tavilyCache, context.relayCache);
+}
+
+function markPhysicalRequestDispatched(context, provider, physicalKey) {
+  const reservation = context.state[provider].reservations[physicalKey];
+  if (!reservation || reservation.status !== "reserved_before_dispatch") {
+    throw new Error(`v2b5_${provider}_reservation_not_dispatchable`);
+  }
+  const dispatchedAt = context.now();
+  reservation.status = "dispatch_started";
+  reservation.dispatchStartedAt = dispatchedAt;
+  appendReservationEvent(context.state, provider, physicalKey, reservation, "dispatched", dispatchedAt, null);
   checkpointExecution(context.root, context.privateStore, context.state, context.tavilyCache, context.relayCache);
 }
 
 function completePhysicalRequest(context, provider, physicalKey, result) {
   const reservation = context.state[provider].reservations[physicalKey];
   if (!reservation) throw new Error(`v2b5_${provider}_reservation_missing`);
+  const completedAt = context.now();
+  const receiptDigest = resultDigest(result);
+  appendReservationEvent(context.state, provider, physicalKey, reservation, "completed", completedAt, receiptDigest);
   reservation.status = "completed";
-  reservation.completedAt = context.now();
+  reservation.completedAt = completedAt;
   reservation.resultDigest = sha256(result);
   checkpointExecution(context.root, context.privateStore, context.state, context.tavilyCache, context.relayCache);
 }
 
-function cancelPredispatchReservation(context, provider, physicalKey) {
+function retainPredispatchReservation(context, provider, physicalKey, result) {
   const budget = context.state[provider];
   const reservation = budget.reservations[physicalKey];
-  if (!reservation || reservation.ordinal !== budget.physicalRequestCount) {
-    throw new Error(`v2b5_${provider}_predispatch_reservation_order_invalid`);
-  }
-  delete budget.reservations[physicalKey];
-  budget.physicalRequestCount -= 1;
+  if (!reservation) throw new Error(`v2b5_${provider}_predispatch_reservation_missing`);
+  const completedAt = context.now();
+  appendReservationEvent(context.state, provider, physicalKey, reservation, "indeterminate", completedAt, null);
+  reservation.status = "indeterminate_after_crash";
+  reservation.completedAt = completedAt;
+  reservation.resultDigest = sha256(result);
   checkpointExecution(context.root, context.privateStore, context.state, context.tavilyCache, context.relayCache);
 }
 
 function reconcileIndeterminateReservations(state, tavilyCache, relayCache, timestamp) {
   for (const [provider, cache] of [["tavily", tavilyCache], ["relay", relayCache]]) {
-    for (const reservation of Object.values(state[provider].reservations)) {
-      if (reservation.status !== "reserved_before_dispatch") continue;
+    for (const [physicalKey, reservation] of Object.entries(state[provider].reservations)) {
+      if (!["reserved_before_dispatch", "dispatch_started"].includes(reservation.status)) continue;
       const present = cache.entries[reservation.cacheKey];
-      if (present) {
+      if (present && reservation.status === "dispatch_started") {
+        appendReservationEvent(state, provider, physicalKey, reservation, "completed", timestamp, resultDigest(present));
         reservation.status = "completed_recovered";
         reservation.completedAt = timestamp;
         reservation.resultDigest = sha256(present);
       } else {
+        appendReservationEvent(state, provider, physicalKey, reservation, "indeterminate", timestamp, null);
         reservation.status = "indeterminate_after_crash";
         reservation.completedAt = timestamp;
       }
@@ -1853,16 +1975,54 @@ function reconcileIndeterminateReservations(state, tavilyCache, relayCache, time
   }
 }
 
+function recordCacheHit(context, provider, physicalKey, request, result) {
+  const timestamp = context.now();
+  const logicalKey = `cache-hit:${sha256({ physicalKey, sequence: context.state.requestEventLedger.length + 1 })}`;
+  const requestDigest = sha256({ stage: V2B5_REQUEST_LEDGER_STAGE, provider, request });
+  appendRuntimeRequestEvent(context.state, {
+    timestamp, provider, stage: V2B5_REQUEST_LEDGER_STAGE, logicalKey, physicalKey,
+    eventType: "planned", requestDigest, receiptDigest: null,
+  });
+  appendRuntimeRequestEvent(context.state, {
+    timestamp, provider, stage: V2B5_REQUEST_LEDGER_STAGE, logicalKey, physicalKey,
+    eventType: "cache_hit_observed", requestDigest, receiptDigest: resultDigest(result),
+  });
+  checkpointExecution(context.root, context.privateStore, context.state, context.tavilyCache, context.relayCache);
+}
+
+function appendReservationEvent(state, provider, physicalKey, reservation, eventType, timestamp, receiptDigest) {
+  appendRuntimeRequestEvent(state, {
+    timestamp,
+    provider,
+    stage: V2B5_REQUEST_LEDGER_STAGE,
+    logicalKey: reservation.logicalKey ?? reservation.cacheKey ?? physicalKey,
+    physicalKey,
+    eventType,
+    requestDigest: reservation.requestDigest ?? sha256({ stage: V2B5_REQUEST_LEDGER_STAGE, provider, physicalKey }),
+    receiptDigest,
+  });
+}
+
+function resultDigest(result) {
+  for (const digest of [result?.receiptDigest, result?.providerReceipt?.receiptDigest, result?.receipt?.receiptDigest]) {
+    if (/^[a-f0-9]{64}$/u.test(String(digest ?? ""))) return digest;
+  }
+  return sha256(result);
+}
+
 function remainingBudget(state, provider) {
   return state[provider].cap - state[provider].physicalRequestCount;
 }
 
 function checkpointExecution(root, privateStore, state, tavilyCache, relayCache) {
+  assertRuntimeRequestLedgerState(state, V2B5_REQUEST_LEDGER_STAGE);
   commitAtomicRequestCheckpoint(root, {
     scope: "v2b5",
     state,
     caches: { tavily: tavilyCache, relay: relayCache },
     receipts: Object.values(relayCache?.entries ?? {}),
+    requestLedger: state.requestEventLedger,
+    counters: state.requestCounters,
     adapterVersion: V2B5_EXTRACTION_ADAPTER_VERSION,
     manifestBindings: {
       benchmarkManifestDigest: state.benchmarkManifestDigest,
@@ -2187,11 +2347,13 @@ export function assertPublicV2B5Sanitized(content, privateDenyTokens = []) {
     '"snippet"',
     "OPENAI_API_KEY",
     "TAVILY_API_KEY",
-    "Authorization",
     "sk-",
     "tvly-",
   ];
   for (const token of forbidden) if (content.includes(token)) throw new Error(`v2b5_public_privacy_token:${token}`);
+  if (/\bauthorization\s*[:=]\s*["']?\s*(?:bearer|basic)\b/iu.test(content)) {
+    throw new Error("v2b5_public_authorization_header_forbidden");
+  }
   if (/https?:\/\//iu.test(content)) throw new Error("v2b5_public_external_url_forbidden");
   if (/\b(?:[A-Za-z0-9-]+\.)+(?:com|cn|net|org|io|ai|co|gov|edu|xyz|top|info|me|app|dev)\b/iu.test(content)) throw new Error("v2b5_public_bare_domain_forbidden");
   if (/[A-Za-z]:[\\/]/u.test(content)) throw new Error("v2b5_public_absolute_path_forbidden");

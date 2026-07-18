@@ -1,6 +1,8 @@
 # M2 v2 Append-only Request Event Ledger 合同 v0.1
 
-状态：`frozen_before_implementation`；public sanitized；`not_for_formal_decision`。
+状态：`IMPLEMENTED_AND_SYNTHETICALLY_VERIFIED`；public sanitized；`not_for_formal_decision`。
+
+实现范围：append-only chain、replay counter 与 no-rollback 边界已由 synthetic tests 验证。本合同不声称真实 private migration、exact-head CI 或 public restatement 已完成；`full160Authorized=false`，`nextDevelopmentReadiness=NOT_AUTHORIZED`。
 
 每个 request event 包含 eventId、sequence、timestamp、provider/stage、logical/physical key、eventType、request/receipt digest、previousEventDigest 和 eventDigest。事件至少覆盖 planned、reserved、dispatched、completed、indeterminate、cache-hit observed 与 compatibility retry reserved。
 

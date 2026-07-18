@@ -1,18 +1,20 @@
 import {
   existsSync,
+  lstatSync,
   mkdirSync,
   readFileSync,
   renameSync,
-  statSync,
   writeFileSync,
 } from "node:fs";
+import { createHash } from "node:crypto";
 import { spawnSync } from "node:child_process";
-import { dirname, join } from "node:path";
+import { dirname, isAbsolute, join, resolve, sep } from "node:path";
 import { canonicalJson, sha256 } from "./pilotCore.js";
 import {
   commitAtomicRequestCheckpoint,
   evaluateGitBoundaryCommandResult,
   receiptWasCacheHit,
+  validateClosedAtomicRequestBinding,
   validateReceiptEnvelope,
   withReceiptRuntimeView,
 } from "./integrityState.js";
@@ -37,8 +39,21 @@ import {
   dispatchV2B6RelayRequest,
   normalizeV2B6BenchmarkResponse,
 } from "./relayExtractionAdapterV2B6.js";
+import { assertProviderExecutionReadiness, bindProviderTransport } from "./providerTransportSecurity.js";
+import { inspectV2B6ProviderCacheReadiness } from "./v2b6SafeCache.js";
 import {
+  assertIndependentWorkbookHyperlinkLineage,
+  deriveIndependentWorkbookHyperlinkLineage,
+  verifyIndependentWorkbookObject,
+} from "./workbookIndependentVerifier.js";
+import {
+  appendRuntimeRequestEvent,
+  assertRuntimeRequestLedgerState,
+} from "./requestEventLedger.js";
+import {
+  V2B7_BUNDLE_RELATIVE,
   V2B7_CANARY_MANIFEST_DIGEST,
+  V2B7_MANIFEST_RELATIVE,
   V2B7_REPEAT_DIGEST,
   V2B7_SOURCE_BUNDLE_DIGEST,
   evaluateV2B7FreezeInvariants,
@@ -60,6 +75,7 @@ import {
   checkAndFreezeV2B8Contract,
   readV2B8FrozenContract,
 } from "./v2b8Contract.js";
+
 import {
   V2B8_CONFLICT_FAMILIES,
   V2B8_SOURCE_CATEGORIES,
@@ -73,6 +89,8 @@ import {
   decomposeV2B8ClaimDifferences,
   selectDeterministicV2B8Sources,
 } from "./v2b8Stability.js";
+
+const V2B8_REQUEST_LEDGER_STAGE = "v2b8";
 
 const PUBLIC_REPORTS = Object.freeze({
   canonicalJson: "docs/analysis/m2-v2/M2-v2-claim-canonicalization-v0.1.json",
@@ -92,6 +110,18 @@ const PUBLIC_REPORTS = Object.freeze({
 });
 
 const INTEGRITY_VALIDATION_RECEIPT_RELATIVE = "data/private-output/m2-v2-integrity-remediation/full-validation-receipt-private-v0.1.json";
+
+const V2B8_DERIVED_EVALUATION_SCHEMA = "m2.v2.v2b8-derived-evaluation-private.v0.3";
+const V2B8_EFFECTIVE_RECEIPT_INDEX_SCHEMA = "m2.v2.v2b8-effective-receipt-index-private.v0.2";
+const V2B8_CLOSED_BINDING_RELATIVE = "data/private-output/m2-v2-integrity-remediation/request-state-binding-private-v0.2.json";
+const V2B8_FROZEN_UPSTREAM_PATHS = Object.freeze([
+  V2B7_MANIFEST_RELATIVE,
+  V2B7_BUNDLE_RELATIVE,
+  "data/private-output/m2-v2-evidence-pilot/v2b7-canary-v3/v2b7-execution-state-private-v0.1.json",
+  "data/private-output/m2-v2-evidence-pilot/v2b7-canary-v3/canary-v3-primary-search-private-v0.2.json",
+  "data/private-output/m2-v2-evidence-pilot/v2b7-canary-v3/canary-v3-repeat-search-private-v0.2.json",
+  "data/private-output/m2-v2-evidence-pilot/v2b7-canary-v3/canary-v3-evidence-records-private-v0.2.ndjson",
+]);
 
 const CLAIM_CAPS = Object.freeze({
   work_identity: 1,
@@ -165,10 +195,15 @@ export function validateV2B8ExtractionPayload(payload, context = {}) {
 export async function runV2B8(root, options = {}) {
   const frozen = checkAndFreezeV2B8Contract(root, options);
   const config = loadConfiguration(root, options.env);
+  assertProviderExecutionReadiness({
+    ...inspectV2B6ProviderCacheReadiness(root),
+    providerHostBindingVerified: true,
+  });
   const statePath = join(frozen.privateStore, V2B8_FILES.state);
   const tavilyCachePath = join(frozen.privateStore, V2B8_FILES.tavilyCache);
   const relayCachePath = join(frozen.privateStore, V2B8_FILES.relayCache);
   const state = readJson(statePath);
+  assertRuntimeRequestLedgerState(state, V2B8_REQUEST_LEDGER_STAGE);
   state.priorCumulativeTavily ??= frozen.contract.budgets.priorCumulativeTavilyCount;
   state.priorCumulativeRelay ??= frozen.contract.budgets.priorCumulativeRelayCount;
   state.phaseACommit ??= "c184a81d11a0bed3e083e35153924231c8ee870c";
@@ -320,14 +355,22 @@ async function executeTavilyQuery(context, plan) {
   assertV2B5TavilyOutboundQuery(plan.queryText);
   const countryKey = plan.country === null ? "none" : "china";
   const descriptor = buildV2B5TavilyCacheDescriptor({ queryDigest: sha256(plan.queryText), executionNamespace: plan.executionNamespace, baseUrl: context.config.tavily.baseUrl, searchDepth: "basic", topic: "general", country: countryKey, maxResults: 6, includeUsage: false });
-  if (context.tavilyCache.entries[descriptor.cacheKey]) return { ...context.tavilyCache.entries[descriptor.cacheKey], cacheHit: true };
   const physicalKey = `tavily:${descriptor.cacheKey}`;
+  if (context.tavilyCache.entries[descriptor.cacheKey]) {
+    const cached = context.tavilyCache.entries[descriptor.cacheKey];
+    recordCacheHit(context, "tavily", physicalKey, descriptor, cached);
+    return { ...cached, cacheHit: true };
+  }
   const priorReservation = context.state.tavily.reservations[physicalKey];
   if (priorReservation?.status === "indeterminate_after_crash") return indeterminateTavilyResult(plan, descriptor.cacheKey);
-  reserveRequest(context, "tavily", physicalKey, { cacheKey: descriptor.cacheKey, runKind: plan.runKind, queryId: plan.queryId });
-  context.state.tavily.reservations[physicalKey].status = "dispatch_started";
-  context.state.tavily.reservations[physicalKey].dispatchStartedAt = context.now();
-  checkpoint(context);
+  reserveRequest(context, "tavily", physicalKey, {
+    cacheKey: descriptor.cacheKey,
+    runKind: plan.runKind,
+    queryId: plan.queryId,
+    logicalKey: descriptor.cacheKey,
+    requestDigest: sha256({ provider: "tavily", descriptor }),
+  });
+  markRequestDispatched(context, "tavily", physicalKey);
   let result;
   try {
     const payload = { query: plan.queryText, topic: "general", search_depth: "basic", max_results: 6, include_answer: false, include_raw_content: false, auto_parameters: false };
@@ -380,18 +423,23 @@ function indeterminateTavilyResult(plan, cacheKey) {
 async function executeExtractionAttempt(context, input) {
   const descriptor = { namespace: V2B8_NAMESPACE, runKind: input.searchRun.runKind, canarySlotId: input.work.canarySlotId, model: V2B8_MODEL_ID, attemptKind: input.attemptKind, sourceRecordSetDigest: input.searchRun.sourceRecordSetDigest, adapterVersion: V2B6_ADAPTER_VERSION, extractionMode: "full", structuredMode: "server_strict", schemaVersion: "m2.v2.evidence-extraction-output.v0.2", promptVersion: "stable-core-extraction-v0.3", repairIssuesDigest: sha256(input.repairIssues ?? []) };
   const cacheKey = sha256(descriptor);
+  const physicalKey = `relay:${cacheKey}`;
   if (context.relayCache.entries[cacheKey]) {
-    return withReceiptRuntimeView(context.relayCache.entries[cacheKey], { cacheHit: true });
+    const cached = context.relayCache.entries[cacheKey];
+    recordCacheHit(context, "relay", physicalKey, descriptor, cached);
+    return withReceiptRuntimeView(cached, { cacheHit: true });
   }
   const payload = buildV2B8ExtractionPayload({ work: input.work, sourceRecords: input.searchRun.sourceRecords, repairIssues: input.repairIssues });
-  const physicalKey = `relay:${cacheKey}`;
   const priorReservation = context.state.relay.reservations[physicalKey];
   if (priorReservation?.status === "indeterminate_after_crash") return persistExtractionReceipt(context, input, descriptor, cacheKey, physicalKey, payload, { json: null, requestStartedAt: priorReservation.dispatchStartedAt ?? priorReservation.reservedAt, responseReceivedAt: context.now(), latencyMs: null, timeoutMs: V2B8_TIMEOUT_MS, timedOut: false, httpStatus: null, httpOk: false, status: "indeterminate_after_crash", contentTypeClass: "none", responseDigest: null, responseByteLength: 0, rawResponsePersisted: false }, false);
-  reserveRequest(context, "relay", physicalKey, { cacheKey, ...descriptor });
-  context.state.relay.reservations[physicalKey].status = "dispatch_started";
-  context.state.relay.reservations[physicalKey].dispatchStartedAt = context.now();
-  checkpoint(context);
-  const response = await dispatchV2B6RelayRequest({ fetchImpl: context.fetchImpl, baseUrl: context.config.relay.baseUrl, apiKey: context.config.relay.apiKey, payload, timeoutMs: V2B8_TIMEOUT_MS });
+  reserveRequest(context, "relay", physicalKey, {
+    cacheKey,
+    ...descriptor,
+    logicalKey: cacheKey,
+    requestDigest: sha256({ provider: "relay", descriptor, payloadDigest: sha256(payload) }),
+  });
+  markRequestDispatched(context, "relay", physicalKey);
+  const response = await dispatchV2B6RelayRequest({ fetchImpl: context.fetchImpl, baseUrl: context.config.relay.baseUrl, approvedHost: context.config.relay.approvedHost, apiKey: context.config.relay.apiKey, payload, timeoutMs: V2B8_TIMEOUT_MS });
   return persistExtractionReceipt(context, input, descriptor, cacheKey, physicalKey, payload, response, true);
 }
 
@@ -457,7 +505,18 @@ function canonicalizeResponse(response, work, searchRun, options = {}) {
     fabricatedSourceIdCount: new Set(sourceReferences.filter((sourceId) => !sourceIds.has(sourceId))).size,
     historicalBackfillCount: capped.filter((claim) => claim.historicalBackfillDetected === true).length,
     unresolvedOrConflictedEvidenceExcluded: unresolvedOrConflictedAccepted.length === 0,
-    v2b8ConflictAudit: { conflicts: audited.conflicts, limitations: audited.limitations, unresolvedConflictCount: audited.unresolvedConflictCount, validMultiEditionCount: audited.validMultiEditionCount, declaredConflictFamilies: audited.declaredConflictFamilies, conflictFamilyCoverage: audited.conflictFamilyCoverage },
+    v2b8ConflictAudit: {
+      conflicts: audited.conflicts,
+      limitations: audited.limitations,
+      unresolvedConflictCount: audited.unresolvedConflictCount,
+      validMultiEditionCount: audited.validMultiEditionCount,
+      declaredConflictFamilies: audited.declaredConflictFamilies,
+      conflictFamilyCoverage: audited.conflictFamilyCoverage,
+      conflictFamilyResults: audited.conflictFamilyResults,
+      applicableFamilyCount: audited.applicableFamilyCount,
+      conflictAuditStatus: audited.conflictAuditStatus,
+      passed: audited.passed,
+    },
     claimCapApplied: true,
     claimCountBeforeCap: response.claims?.length ?? 0,
     claimCountAfterCap: capped.length,
@@ -550,6 +609,7 @@ function repairIssueCodes(receipt) {
 }
 
 export function evaluateV2B8Canary(input) {
+  const currentContract = input.evaluationContract === "current_v0.3";
   const manifest = input.manifest;
   const fallbackQueries = input.fallbackQueries ?? [];
   const primarySearch = input.primarySearch ?? [];
@@ -592,7 +652,9 @@ export function evaluateV2B8Canary(input) {
   const acceptedClaims = allClaims.filter((claim) => claim.accepted === true);
   const allSources = [...primarySearch, ...repeatSearch].flatMap((run) => run.sourceRecords);
   const reproducibility = buildReproducibility(manifest, primarySearch, repeatSearch, primary, repeat, same);
-  const sourceCategories = countBy(allSources, (source) => classifyV2B8Source(source, input.classificationEvidenceBySourceId?.[source.sourceId]));
+  const sourceCategories = countBy(allSources, (source) => currentContract
+    ? classifyV2B8Source(source, input.classificationEvidenceBySourceId?.[source.sourceId])
+    : classifyV2B8SourceHistorical(source));
   for (const category of V2B8_SOURCE_CATEGORIES) sourceCategories[category] ??= 0;
   const claimCategories = countBy(pilotClaims, (claim) => claim.sourceSupportClass ?? "unknown_public_web");
   const unknownClaimShare = requiredRatio(claimCategories.unknown_public_web ?? 0, pilotClaims.length);
@@ -603,10 +665,27 @@ export function evaluateV2B8Canary(input) {
   );
   const unresolvedConflictCount = sum(allLogical.map((receipt) => receipt.normalizedResponse?.v2b8ConflictAudit?.unresolvedConflictCount));
   const unresolvedConflictPilotCount = allClaims.filter((claim) => claim.pilotUsable === true && claim.contradictionStatus === "unresolved").length;
-  const eventTimeProvenanceMissingCount = allClaims.filter((claim) => claim.eventTime && (!claim.eventTimeSourceId || !claim.eventTimeEvidenceSpanDigest)).length;
-  const conflictFamilyCoverageComplete = allLogical.every((receipt) => V2B8_CONFLICT_FAMILIES.every(
-    (family) => receipt.normalizedResponse?.v2b8ConflictAudit?.conflictFamilyCoverage?.[family] === true,
-  ));
+  const eventTimeProvenanceMissingCount = allClaims.filter((claim) => claim.eventTime && (
+    !claim.eventTimeSourceId
+      || !claim.eventTimeEvidenceSpanDigest
+      || currentContract && (
+        !claim.eventTimeClauseDigest
+        || !Number.isInteger(claim.eventTimeSpanStart)
+        || !Number.isInteger(claim.eventTimeSpanEnd)
+        || claim.eventTimeSpanStart < 0
+        || claim.eventTimeSpanEnd <= claim.eventTimeSpanStart
+        || !Number.isInteger(claim.eventKeywordSpan?.start)
+        || !Number.isInteger(claim.eventKeywordSpan?.end)
+        || claim.eventKeywordSpan.start < 0
+        || claim.eventKeywordSpan.end <= claim.eventKeywordSpan.start
+      )
+  )).length;
+  const conflictAggregate = currentContract ? aggregateV2B8ConflictApplicability(allLogical) : null;
+  const conflictFamilyCoverageComplete = currentContract
+    ? conflictAggregate.passed
+    : allLogical.every((receipt) => V2B8_CONFLICT_FAMILIES.every(
+      (family) => receipt.normalizedResponse?.v2b8ConflictAudit?.conflictFamilyCoverage?.[family] === true,
+    ));
   const weakUnsupportedRatingReviewCount = allClaims.filter((claim) => claim.pilotUsable === true && (claim.claimType === "review_signal" || claim.claimType === "rating_signal" && (!claim.normalizedStructuredValue?.platform || !claim.normalizedStructuredValue?.scale))).length;
   const sourceReferenceCount = sum(allLogical.map((receipt) => receipt.normalizedResponse?.sourceIdReferenceCount));
   const mappedReferenceCount = sum(allLogical.map((receipt) => receipt.normalizedResponse?.mappedSourceIdReferenceCount));
@@ -636,8 +715,10 @@ export function evaluateV2B8Canary(input) {
     gate("available_at_complete", availableCompleteness, 1, equal),
     gate("unresolved_conflicted_pilot_zero", unresolvedConflictPilotCount, 0, equal, logicalSampleComplete),
     gate("explicit_temporal_extraction_complete", explicitTimeExtractionRate, 1, equal),
-    gate("event_time_provenance_complete", eventTimeProvenanceMissingCount, 0, equal, logicalSampleComplete),
-    gate("conflict_family_coverage_complete", conflictFamilyCoverageComplete, true, equal, logicalSampleComplete),
+    ...(currentContract ? [
+      gate("event_time_provenance_complete", eventTimeProvenanceMissingCount, 0, equal, logicalSampleComplete),
+      gate("conflict_family_coverage_complete", conflictFamilyCoverageComplete, true, equal, logicalSampleComplete),
+    ] : []),
     gate("manifest_unchanged", input.manifestUnchanged === true, true, equal, manifestSampleComplete && typeof input.manifestUnchanged === "boolean"),
     gate("b4_unchanged", gitBoundary.b4Unchanged === true, true, equal, typeof gitBoundary.b4Unchanged === "boolean"),
     gate("final_holdout_sealed", gitBoundary.holdoutSealed === true, true, equal, typeof gitBoundary.holdoutSealed === "boolean"),
@@ -661,11 +742,15 @@ export function evaluateV2B8Canary(input) {
   ];
   const safetyPassed = safetyItems.every((item) => item.passed);
   const qualityPassed = qualityItems.every((item) => item.passed);
+  const reportedSafetyItems = currentContract ? safetyItems : safetyItems.map(historicalGateProjection);
+  const reportedQualityItems = currentContract ? qualityItems : qualityItems.map(historicalGateProjection);
   const validationPending = input.allTestsPassed !== true && input.validationPending === true;
   const providerBlocked = input.providerBlocked === true;
   const decision = providerBlocked || validationPending ? "CANARY_BLOCKED" : !safetyPassed ? "CANARY_FAIL" : qualityPassed ? "CANARY_PASS" : "CANARY_CONDITIONAL";
   return {
-    schema: "m2.v2.v2b8-canary-v3-1-evaluation-private.v0.1",
+    schema: currentContract
+      ? "m2.v2.v2b8-canary-v3-1-evaluation-private.v0.3"
+      : "m2.v2.v2b8-canary-v3-1-evaluation-private.v0.1",
     privateOnly: true,
     evaluatedAt: input.evaluatedAt ?? new Date().toISOString(),
     manifestDigest: V2B7_CANARY_MANIFEST_DIGEST,
@@ -676,17 +761,46 @@ export function evaluateV2B8Canary(input) {
       extraction: { model: V2B8_MODEL_ID, primaryLogicalCount: primary.length, repeatLogicalCount: repeat.length, sameSourceLogicalCount: same.length, primarySchemaPassCount: primarySchema.length, primarySchemaPassRate, repeatSchemaPassCount: repeatSchema.length, repeatSchemaPassRate, sameSourceSchemaPassCount: same.filter(effectiveSchemaPass).length, noTimeoutCount: allLogical.filter((receipt) => receipt.timedOut !== true).length, noTimeoutRate, bindingMismatchCount },
       entity: { resolvedCount: resolved.length, unresolvedCount: primary.filter((receipt) => receipt.normalizedResponse?.entityResolution?.work?.status === "unresolved").length, ambiguousCount: primary.filter((receipt) => receipt.normalizedResponse?.entityResolution?.work?.status === "ambiguous").length, resolvedRate: workResolvedRate, confidence: average(primary.map((receipt) => receipt.normalizedResponse?.entityResolution?.work?.confidence).filter(Number.isFinite)) },
       evidence: { candidateCount: allClaims.length, acceptedCount: acceptedClaims.length, pilotUsableCount: pilotClaims.length, rejectedCount: allClaims.filter((claim) => claim.accepted !== true).length, rejectionReasons: countMany(allClaims.flatMap((claim) => claim.rejectionReasons ?? [])), primaryCandidateCount: primaryClaims.length, primaryPilotUsableCount: primaryClaims.filter((claim) => claim.pilotUsable).length, pilotUsableWorkCount: primaryPilot.length, pilotUsableWorkCoverage, highValueWorkCount: highValueSlots.size, highValuePilotUsableWorkCount: highValuePilot.length, highValueCoverage, weakUnsupportedRatingReviewCount },
-      timeConflict: { explicitTemporalClaimCount: explicitTemporalClaims.length, explicitTemporalExtractionRate: explicitTimeExtractionRate, eventTimePrecisionCounts: countBy(allClaims, (claim) => claim.eventTimePrecision ?? "unknown"), eventTimeBasisCounts: countBy(allClaims, (claim) => claim.eventTimeBasis ?? "unknown"), eventTimeProvenanceCompleteCount: allClaims.filter((claim) => claim.eventTime && claim.eventTimeSourceId && claim.eventTimeEvidenceSpanDigest).length, eventTimeProvenanceMissingCount: allClaims.filter((claim) => claim.eventTime && (!claim.eventTimeSourceId || !claim.eventTimeEvidenceSpanDigest)).length, unresolvedConflictCount, unresolvedConflictPilotCount, validMultiEditionCount: sum(allLogical.map((receipt) => receipt.normalizedResponse?.v2b8ConflictAudit?.validMultiEditionCount)), declaredConflictFamilies: [...V2B8_CONFLICT_FAMILIES], conflictFamilyCoverage: Object.fromEntries(V2B8_CONFLICT_FAMILIES.map((family) => [family, allLogical.every((receipt) => receipt.normalizedResponse?.v2b8ConflictAudit?.conflictFamilyCoverage?.[family] === true)])) },
-      sourceClassification: { sourceCategories, claimSupportCategories: claimCategories, unknownPublicWebClaimShare: unknownClaimShare, prohibitedAcceptedCount, categoryDiversityTarget: Math.max(0, ...primarySearch.map((run) => Number(run.categoryDiversityTarget ?? 0))), minimumCategoryDiversityAchieved: primarySearch.length ? Math.min(...primarySearch.map((run) => Number(run.categoryDiversityAchieved ?? Object.keys(run.categoryCounts ?? {}).length))) : null, identityReservationAppliedWorkCount: primarySearch.filter((run) => run.identityReservationApplied === true).length, selectionLimitations: countMany(primarySearch.flatMap((run) => run.sourceSelectionLimitations ?? [])) },
+      timeConflict: {
+        explicitTemporalClaimCount: explicitTemporalClaims.length,
+        explicitTemporalExtractionRate: explicitTimeExtractionRate,
+        eventTimePrecisionCounts: countBy(allClaims, (claim) => claim.eventTimePrecision ?? "unknown"),
+        eventTimeBasisCounts: countBy(allClaims, (claim) => claim.eventTimeBasis ?? "unknown"),
+        unresolvedConflictCount,
+        unresolvedConflictPilotCount,
+        validMultiEditionCount: sum(allLogical.map((receipt) => receipt.normalizedResponse?.v2b8ConflictAudit?.validMultiEditionCount)),
+        ...(currentContract ? {
+          eventTimeProvenanceCompleteCount: allClaims.filter((claim) => claim.eventTime).length - eventTimeProvenanceMissingCount,
+          eventTimeProvenanceMissingCount,
+          declaredConflictFamilies: [...V2B8_CONFLICT_FAMILIES],
+          conflictFamilyCoverage: Object.fromEntries(V2B8_CONFLICT_FAMILIES.map((family) => [family, conflictAggregate.familyResults[family].executed])),
+          conflictFamilyResults: conflictAggregate.familyResults,
+          applicableFamilyCount: conflictAggregate.applicableFamilyCount,
+          conflictAuditStatus: conflictAggregate.conflictAuditStatus,
+          passed: conflictAggregate.passed,
+        } : {}),
+      },
+      sourceClassification: {
+        sourceCategories,
+        claimSupportCategories: claimCategories,
+        unknownPublicWebClaimShare: unknownClaimShare,
+        prohibitedAcceptedCount,
+        ...(currentContract ? {
+          categoryDiversityTarget: Math.max(0, ...primarySearch.map((run) => Number(run.categoryDiversityTarget ?? 0))),
+          minimumCategoryDiversityAchieved: primarySearch.length ? Math.min(...primarySearch.map((run) => Number(run.categoryDiversityAchieved ?? Object.keys(run.categoryCounts ?? {}).length))) : null,
+          identityReservationAppliedWorkCount: primarySearch.filter((run) => run.identityReservationApplied === true).length,
+          selectionLimitations: countMany(primarySearch.flatMap((run) => run.sourceSelectionLimitations ?? [])),
+        } : {}),
+      },
       citationGovernance: { sourceIdReferenceCount: sourceReferenceCount, mappedSourceIdReferenceCount: mappedReferenceCount, sourceIdIntegrityRate: sourceIntegrity, capturedAtCompleteness: capturedCompleteness, availableAtCompleteness: availableCompleteness, researchApprovedCount: allClaims.filter((claim) => claim.researchApproved).length, modelEligibleCount: allClaims.filter((claim) => claim.modelEligible).length },
       reproducibility,
     },
-    safetyGates: safetyItems,
-    qualityGates: qualityItems,
+    safetyGates: reportedSafetyItems,
+    qualityGates: reportedQualityItems,
     safetyPassed,
     qualityPassed,
     decision,
-    blockerIds: [...safetyItems, ...qualityItems].filter((item) => !item.passed).map((item) => item.id),
+    blockerIds: [...reportedSafetyItems, ...reportedQualityItems].filter((item) => !item.passed).map((item) => item.id),
     nextStep: decision === "CANARY_PASS" ? "stop_and_request_separate_full160_authorization" : decision === "CANARY_CONDITIONAL" ? "review_private_pack_and_repair_quality_without_scaling" : decision === "CANARY_FAIL" ? "repair_safety_contract_without_scaling" : "resolve_provider_or_validation_blocker",
     modelTrainingPerformed: false,
     sampleReplaced: false,
@@ -697,6 +811,39 @@ export function evaluateV2B8Canary(input) {
     released: false,
     full160Authorized: false,
     notForFormalDecision: true,
+  };
+}
+
+function aggregateV2B8ConflictApplicability(logicalReceipts) {
+  const familyResults = Object.fromEntries(V2B8_CONFLICT_FAMILIES.map((family) => {
+    const rows = logicalReceipts
+      .map((receipt) => receipt.normalizedResponse?.v2b8ConflictAudit?.conflictFamilyResults?.[family])
+      .filter((row) => row && typeof row === "object");
+    const evidenceCount = sum(rows.map((row) => row.evidenceCount));
+    const conflictCount = sum(rows.map((row) => row.conflictCount));
+    const unresolvedCount = sum(rows.map((row) => row.unresolvedCount));
+    const applicable = evidenceCount > 0;
+    const applicableRows = rows.filter((row) => Number(row.evidenceCount ?? 0) > 0);
+    const executed = applicable && applicableRows.length > 0 && applicableRows.every((row) => row.executed === true);
+    return [family, {
+      applicable,
+      executed,
+      evidenceCount,
+      conflictCount,
+      unresolvedCount,
+      passed: applicable && executed && unresolvedCount === 0,
+    }];
+  }));
+  const applicableRows = Object.values(familyResults).filter((row) => row.applicable);
+  const applicableFamilyCount = applicableRows.length;
+  const conflictAuditStatus = applicableFamilyCount === 0
+    ? "NOT_EVALUABLE"
+    : applicableRows.every((row) => row.passed) ? "PASS" : "FAIL";
+  return {
+    familyResults,
+    applicableFamilyCount,
+    conflictAuditStatus,
+    passed: conflictAuditStatus === "PASS",
   };
 }
 
@@ -835,10 +982,44 @@ function publicReportBundle(results) {
   return { canonical, timeConflict, sourceClassification, execution, reproducibility, decision, nextStep };
 }
 
-export function recordV2B8WorkbookVerification(root, details) {
-  const frozen = checkAndFreezeV2B8Contract(root);
+export function recordV2B8WorkbookVerification(root) {
+  const frozen = readV2B8FrozenContract(root);
   const workbookPath = join(root, V2B8_WORKBOOK_RELATIVE);
-  const payload = { schema: "m2.v2.v2b8-workbook-verification-private.v0.1", privateOnly: true, verifiedAt: new Date().toISOString(), exists: existsSync(workbookPath), zipSignatureValid: existsSync(workbookPath) && readFileSync(workbookPath).subarray(0, 2).toString("ascii") === "PK", byteLength: existsSync(workbookPath) ? statSync(workbookPath).size : 0, sheetCount: details.sheetCount, sheetNames: details.sheetNames ?? [], formulaErrorCount: details.formulaErrorCount, hyperlinkFormulaCount: details.hyperlinkFormulaCount, invalidHyperlinkCount: details.invalidHyperlinkCount, dropdownValidationCount: details.dropdownValidationCount, visualRenderVerified: details.visualRenderVerified === true, renderedSheetCount: details.renderedSheetCount, ignoredAndUntracked: privatePathIgnoredAndUntracked(root, V2B8_WORKBOOK_RELATIVE), containsPrivateRows: details.containsPrivateRows === true, priorityReviewRowCount: details.priorityReviewRowCount, containsSecretOrRevenueFields: details.containsSecretOrRevenueFields === true, full160Authorized: false };
+  const actual = verifyIndependentWorkbookObject(root, V2B8_WORKBOOK_RELATIVE, {
+    profile: "m2-v2-canary-v3-review-v0.4",
+  });
+  const hyperlinkTargetLineage = deriveIndependentWorkbookHyperlinkLineage(actual);
+  const payload = {
+    schema: "m2.v2.v2b8-workbook-verification-private.v0.3",
+    privateOnly: true,
+    verifiedAt: new Date().toISOString(),
+    exists: existsSync(workbookPath),
+    verificationBasis: actual.verificationBasis,
+    generatorAssertionsTrusted: actual.generatorAssertionsTrusted,
+    independentObjectVerified: actual.passed,
+    verificationIssues: actual.issues,
+    workbookSha256: actual.workbookSha256 ?? null,
+    byteLength: actual.workbookByteLength ?? 0,
+    sheetCount: actual.sheetCount ?? 0,
+    sheetNames: actual.sheetNames ?? [],
+    rowCounts: actual.rowCounts ?? {},
+    formulaCount: actual.formulaCount ?? 0,
+    formulaErrorCount: actual.formulaErrorCount ?? actual.cachedFormulaErrorCount ?? 0,
+    cachedFormulaErrors: actual.cachedFormulaErrors ?? [],
+    formulaHyperlinkCount: actual.formulaHyperlinkCount ?? 0,
+    hyperlinkCount: actual.hyperlinkCount ?? actual.nativeHyperlinkCount ?? 0,
+    hyperlinkTargetLineage,
+    validationCount: actual.validationCount ?? actual.dataValidationCount ?? 0,
+    forbiddenValueCount: actual.forbiddenValueCount ?? 0,
+    internalIdCount: actual.internalIdCount ?? 0,
+    incomeValueCount: actual.incomeValueCount ?? 0,
+    secretCount: actual.secretCount ?? actual.secretPatternMatchCount ?? 0,
+    externalLinkCount: actual.externalLinkCount ?? actual.externalWorkbookLinkCount ?? 0,
+    visualReviewAttested: false,
+    visualReviewStatus: "NOT_HUMAN_ATTESTED",
+    ignoredAndUntracked: privatePathIgnoredAndUntracked(root, V2B8_WORKBOOK_RELATIVE),
+    full160Authorized: false,
+  };
   const receipt = { ...payload, receiptDigest: sha256(payload) };
   atomicWriteJson(join(frozen.privateStore, V2B8_FILES.workbookVerification), receipt);
   return receipt;
@@ -876,10 +1057,63 @@ export function runV2B8FullValidation(root, options = {}) {
   return receipt;
 }
 
-export function verifyV2B8(root) {
-  const results = readV2B8Results(root);
+export function recomputeV2B8HistoricalEvaluation(results, options = {}) {
+  const gitBoundary = options.gitBoundary ?? auditGitBoundary(options.root ?? results.root);
+  return evaluateV2B8Canary({
+    manifest: results.manifest,
+    v2b7: results.v2b7,
+    fallbackQueries: results.fallbackQueries,
+    primarySearch: results.primarySearch,
+    repeatSearch: results.repeatSearch,
+    physicalReceipts: results.physicalReceipts,
+    effectiveReceipts: results.effectiveReceipts,
+    allTestsPassed: options.allTestsPassed ?? true,
+    manifestUnchanged: options.manifestUnchanged ?? (
+      results.invariant?.allPassed === true
+      && results.manifest?.manifestDigest === V2B7_CANARY_MANIFEST_DIGEST
+      && results.bundle?.sourceBundleDigest === V2B7_SOURCE_BUNDLE_DIGEST
+    ),
+    gitBoundary,
+    validationPending: options.validationPending ?? false,
+    providerBlocked: options.providerBlocked === true,
+    evaluatedAt: options.evaluatedAt ?? results.evaluation?.evaluatedAt,
+  });
+}
+
+export function recomputeV2B8CurrentRestatedEvaluation(results, physicalReceiptEnvelopes, options = {}) {
+  const gitBoundary = options.gitBoundary ?? auditGitBoundary(options.root ?? results.root);
+  const effectiveReceipts = recanonicalizeV2B8EffectiveReceipts({
+    manifest: results.manifest,
+    primarySearch: results.primarySearch,
+    repeatSearch: results.repeatSearch,
+    physicalReceipts: physicalReceiptEnvelopes,
+  });
+  return evaluateV2B8Canary({
+    evaluationContract: "current_v0.3",
+    manifest: results.manifest,
+    v2b7: results.v2b7,
+    fallbackQueries: results.fallbackQueries,
+    primarySearch: results.primarySearch,
+    repeatSearch: results.repeatSearch,
+    physicalReceipts: physicalReceiptEnvelopes.map((envelope) => envelope.receiptPayload),
+    effectiveReceipts,
+    allTestsPassed: options.allTestsPassed ?? true,
+    manifestUnchanged: options.manifestUnchanged ?? (
+      results.invariant?.allPassed === true
+      && results.manifest?.manifestDigest === V2B7_CANARY_MANIFEST_DIGEST
+      && results.bundle?.sourceBundleDigest === V2B7_SOURCE_BUNDLE_DIGEST
+    ),
+    gitBoundary,
+    validationPending: options.validationPending ?? false,
+    providerBlocked: options.providerBlocked === true,
+    evaluatedAt: options.evaluatedAt,
+  });
+}
+
+export function verifyV2B8(root, options = {}) {
+  const results = options.results ?? readV2B8Results(root);
   const issues = [];
-  const gitBoundary = auditGitBoundary(root);
+  const gitBoundary = options.gitBoundary ?? auditGitBoundary(root);
   if (!gitBoundary.auditSucceeded) issues.push("git_boundary_audit_failed");
   if (!gitBoundary.b4Unchanged) issues.push("b4_boundary_changed_or_unverified");
   if (!gitBoundary.holdoutSealed) issues.push("holdout_boundary_changed_or_unverified");
@@ -899,9 +1133,410 @@ export function verifyV2B8(root) {
     if (!existsSync(join(root, relative))) issues.push(`public_report_missing:${relative}`);
     else { try { assertPublicV2B8Sanitized(readFileSync(join(root, relative), "utf8")); } catch (error) { issues.push(safeToken(error?.message)); } }
   }
-  const payload = { schema: "m2.v2.v2b8-verification-verdict.v0.2", allPassed: issues.length === 0, issues: unique(issues), newTavilyPhysicalRequestCount: results.state.tavily.physicalRequestCount, cumulativeTavilyPhysicalRequestCount: results.usage.tavily.cumulativePhysicalRequestCount, newRelayPhysicalRequestCount: results.state.relay.physicalRequestCount, cumulativeRelayPhysicalRequestCount: results.usage.relay.cumulativePhysicalRequestCount, decision: results.evaluation.decision, full160Authorized: false };
+
+  const closedBinding = validateClosedAtomicRequestBinding(root, {
+    bindingRelativePath: options.bindingRelativePath ?? V2B8_CLOSED_BINDING_RELATIVE,
+    scope: "v2b8",
+    eventStage: "v2b8",
+  });
+  if (!closedBinding.valid) issues.push(...closedBinding.issues.map((issue) => `current_binding:${issue}`));
+  const current = closedBinding.valid
+    ? verifyV2B8BoundCurrentState(root, results, closedBinding, {
+      bindingRelativePath: options.bindingRelativePath ?? V2B8_CLOSED_BINDING_RELATIVE,
+      gitBoundary,
+    })
+    : failedV2B8CurrentVerification(closedBinding);
+  issues.push(...current.issues);
+
+  const historicalDecision = closedBinding.historicalDecision ?? results.evaluation?.decision ?? null;
+  const currentRestatedDecision = closedBinding.currentRestatedDecision ?? null;
+  const payload = {
+    schema: "m2.v2.v2b8-verification-verdict.v0.3",
+    allPassed: issues.length === 0,
+    issues: unique(issues),
+    newTavilyPhysicalRequestCount: results.state.tavily.physicalRequestCount,
+    cumulativeTavilyPhysicalRequestCount: results.usage.tavily.cumulativePhysicalRequestCount,
+    newRelayPhysicalRequestCount: results.state.relay.physicalRequestCount,
+    cumulativeRelayPhysicalRequestCount: results.usage.relay.cumulativePhysicalRequestCount,
+    decision: currentRestatedDecision,
+    historicalDecision,
+    historicalEvaluationVerified: current.historicalEvaluationVerified,
+    currentRestatedDecision,
+    currentRestatementVerified: current.currentRestatementVerified,
+    effectiveReceiptsVerified: current.effectiveReceiptsVerified,
+    currentAuthorityDigestVerified: current.currentAuthorityDigestVerified,
+    transactionBindingVerified: closedBinding.valid,
+    providerRequestDelta: 0,
+    full160Authorized: false,
+  };
   const receipt = { ...payload, receiptDigest: sha256(payload) };
   return receipt;
+}
+
+function verifyV2B8BoundCurrentState(root, results, closedBinding, options) {
+  const issues = [];
+  let members;
+  try {
+    members = readV2B8ClosedMembers(root, options.bindingRelativePath);
+  } catch (error) {
+    return failedV2B8CurrentVerification(closedBinding, [safeToken(error?.message)]);
+  }
+
+  const derived = parseRequiredJsonMember(members, "derived_evaluation", issues);
+  const effectiveIndex = parseRequiredJsonMember(members, "effective_receipt_index", issues);
+  const frozenUpstream = parseRequiredJsonMember(members, "frozen_upstream_digests", issues);
+  const immutableManifests = parseRequiredJsonMember(members, "immutable_manifests", issues);
+  const publicReportDigests = parseRequiredJsonMember(members, "contract_bound_public_report_digests", issues);
+  const executionContract = parseRequiredJsonMember(members, "execution_contract", issues);
+  const currentRestatement = parseRequiredJsonMember(members, "current_restatement", issues);
+
+  validateDerivedEvaluationDocument(derived, issues);
+  validateEffectiveReceiptIndexDocument(effectiveIndex, issues);
+  validateArtifactIndexShape(frozenUpstream, "frozen_upstream_digests", issues);
+  validateArtifactIndexShape(immutableManifests, "immutable_manifests", issues);
+  validateArtifactIndexShape(publicReportDigests, "contract_bound_public_report_digests", issues);
+  if (executionContract && canonicalJson(executionContract) !== canonicalJson(results.contract)) {
+    issues.push("current_execution_contract_mismatch");
+  }
+
+  validateRequiredArtifactPaths(frozenUpstream, V2B8_FROZEN_UPSTREAM_PATHS, "frozen_upstream", issues);
+  validateRequiredArtifactPaths(immutableManifests, [V2B7_MANIFEST_RELATIVE], "immutable_manifest", issues);
+  validateRequiredArtifactPaths(publicReportDigests, Object.values(PUBLIC_REPORTS), "public_report_digest", issues);
+  validateFrozenV2B7CanonicalDigests(results, issues);
+
+  const envelopeResult = readAndValidateV2B8EffectiveEnvelopes(root, results, effectiveIndex, members, issues);
+  validateV2B8DerivedInputDigests(root, derived, members, issues);
+
+  let historicalEvaluationVerified = false;
+  let currentEvaluationVerified = false;
+  if (derived) {
+    const historicalRecomputed = recomputeV2B8HistoricalEvaluation(results, {
+      root,
+      gitBoundary: options.gitBoundary,
+      evaluatedAt: derived.historicalEvaluation?.evaluatedAt,
+    });
+    historicalEvaluationVerified = canonicalJson(historicalRecomputed) === canonicalJson(derived.historicalEvaluation)
+      && canonicalJson(results.evaluation) === canonicalJson(derived.historicalEvaluation)
+      && derived.historicalEvaluation?.decision === "CANARY_CONDITIONAL"
+      && closedBinding.historicalDecision === "CANARY_CONDITIONAL";
+    if (!historicalEvaluationVerified) issues.push("historical_evaluation_recompute_mismatch");
+
+    if (envelopeResult.valid) {
+      const currentRecomputed = recomputeV2B8CurrentRestatedEvaluation(results, envelopeResult.envelopes, {
+        root,
+        gitBoundary: options.gitBoundary,
+        evaluatedAt: derived.currentRestatedEvaluation?.evaluatedAt,
+      });
+      currentEvaluationVerified = canonicalJson(currentRecomputed) === canonicalJson(derived.currentRestatedEvaluation)
+        && derived.currentRestatedEvaluation?.decision === closedBinding.currentRestatedDecision;
+      if (!currentEvaluationVerified) issues.push("current_restatement_evaluation_recompute_mismatch");
+      const evaluationDigest = currentRestatement?.restatedContract?.evaluationDigest;
+      if (evaluationDigest !== sha256(currentRecomputed)) issues.push("current_restatement_evaluation_digest_mismatch");
+    }
+  }
+
+  const currentAuthorityDigestVerified = closedBinding.currentAuthorityDigestVerified === true;
+  const effectiveReceiptsVerified = closedBinding.effectiveReceiptsVerified === true && envelopeResult.valid;
+  const currentRestatementVerified = closedBinding.currentRestatementVerified === true && currentEvaluationVerified;
+  return {
+    issues: unique(issues),
+    historicalEvaluationVerified,
+    currentRestatementVerified,
+    effectiveReceiptsVerified,
+    currentAuthorityDigestVerified,
+  };
+}
+
+function failedV2B8CurrentVerification(binding, extraIssues = []) {
+  return {
+    issues: unique(extraIssues),
+    historicalEvaluationVerified: false,
+    currentRestatementVerified: false,
+    effectiveReceiptsVerified: false,
+    currentAuthorityDigestVerified: binding?.currentAuthorityDigestVerified === true,
+  };
+}
+
+function readV2B8ClosedMembers(root, bindingRelativePath) {
+  const bindingRead = readGovernedFile(root, bindingRelativePath);
+  const binding = JSON.parse(bindingRead.bytes.toString("utf8"));
+  if (!Array.isArray(binding?.members)) throw new Error("v2b8_closed_binding_members_invalid");
+  const members = new Map();
+  for (const descriptor of binding.members) {
+    const role = String(descriptor?.role ?? "");
+    if (!/^[a-z][a-z0-9_]{1,80}$/u.test(role) || members.has(role)) {
+      throw new Error("v2b8_closed_binding_role_invalid");
+    }
+    const read = readGovernedFile(root, descriptor.path);
+    if (read.byteDigest !== descriptor.byteDigest) throw new Error(`v2b8_closed_member_digest_mismatch:${role}`);
+    members.set(role, { role, path: read.relativePath, bytes: read.bytes, byteDigest: read.byteDigest });
+  }
+  return members;
+}
+
+function parseRequiredJsonMember(members, role, issues) {
+  const member = members.get(role);
+  if (!member) {
+    issues.push(`current_member_missing:${role}`);
+    return null;
+  }
+  try {
+    return JSON.parse(member.bytes.toString("utf8"));
+  } catch {
+    issues.push(`current_member_json_invalid:${role}`);
+    return null;
+  }
+}
+
+function validateDerivedEvaluationDocument(document, issues) {
+  const expectedKeys = [
+    "currentRestatedEvaluation",
+    "full160Authorized",
+    "historicalEvaluation",
+    "inputDigests",
+    "privateOnly",
+    "providerRequestDelta",
+    "schema",
+  ];
+  if (!isPlainObject(document) || !hasExactKeys(document, expectedKeys)) {
+    issues.push("derived_evaluation_shape_invalid");
+    return;
+  }
+  if (document.schema !== V2B8_DERIVED_EVALUATION_SCHEMA || document.privateOnly !== true
+    || document.providerRequestDelta !== 0 || document.full160Authorized !== false) {
+    issues.push("derived_evaluation_contract_invalid");
+  }
+  if (!isPlainObject(document.historicalEvaluation) || !isPlainObject(document.currentRestatedEvaluation)) {
+    issues.push("derived_evaluation_payload_invalid");
+  }
+  if (!isPlainObject(document.inputDigests)
+    || !hasExactKeys(document.inputDigests, ["effectiveReceiptIndex", "manifest", "requestEventLedger", "sourceBundle"])
+    || Object.values(document.inputDigests).some((value) => !/^[a-f0-9]{64}$/u.test(String(value ?? "")))) {
+    issues.push("derived_evaluation_input_digests_invalid");
+  }
+}
+
+function validateEffectiveReceiptIndexDocument(document, issues) {
+  if (!isPlainObject(document)
+    || !hasExactKeys(document, ["entries", "full160Authorized", "privateOnly", "schema"])
+    || document.schema !== V2B8_EFFECTIVE_RECEIPT_INDEX_SCHEMA
+    || document.privateOnly !== true
+    || document.full160Authorized !== false
+    || !Array.isArray(document.entries)) {
+    issues.push("effective_receipt_index_contract_invalid");
+  }
+}
+
+function validateArtifactIndexShape(document, role, issues) {
+  if (!isPlainObject(document)
+    || !hasExactKeys(document, ["entries", "full160Authorized", "privateOnly", "schema"])
+    || typeof document.schema !== "string"
+    || document.privateOnly !== true
+    || document.full160Authorized !== false
+    || !Array.isArray(document.entries)) {
+    issues.push(`${role}_shape_invalid`);
+    return;
+  }
+  for (const [index, entry] of document.entries.entries()) {
+    if (!isPlainObject(entry)
+      || !hasExactKeys(entry, ["byteDigest", "path"])
+      || !isSafeRelativePath(entry.path)
+      || !/^[a-f0-9]{64}$/u.test(String(entry.byteDigest ?? ""))) {
+      issues.push(`${role}_entry_${index + 1}_invalid`);
+    }
+  }
+}
+
+function validateRequiredArtifactPaths(document, requiredPaths, label, issues) {
+  const paths = new Set((document?.entries ?? []).map((entry) => normalizeRelative(entry?.path)));
+  for (const required of requiredPaths) {
+    if (!paths.has(normalizeRelative(required))) issues.push(`${label}_missing:${normalizeRelative(required)}`);
+  }
+}
+
+function validateFrozenV2B7CanonicalDigests(results, issues) {
+  const checks = [
+    ["v2b7_state", results.contract?.v2b7StateDigest, sha256(results.v2b7State)],
+    ["v2b7_primary_search", results.contract?.v2b7PrimarySearchDigest, sha256(results.v2b7?.primarySearch)],
+    ["v2b7_repeat_search", results.contract?.v2b7RepeatSearchDigest, sha256(results.v2b7?.repeatSearch)],
+    ["v2b7_evidence", results.contract?.v2b7EvidenceDigest, sha256(results.v2b7?.evidenceRecords)],
+  ];
+  for (const [label, expected, actual] of checks) {
+    if (expected !== actual) issues.push(`frozen_${label}_canonical_digest_mismatch`);
+  }
+  if (results.contract?.manifestDigest !== V2B7_CANARY_MANIFEST_DIGEST
+    || results.contract?.repeatDigest !== V2B7_REPEAT_DIGEST
+    || results.contract?.sourceBundleDigest !== V2B7_SOURCE_BUNDLE_DIGEST) {
+    issues.push("frozen_v2b7_contract_digest_mismatch");
+  }
+}
+
+function readAndValidateV2B8EffectiveEnvelopes(root, results, document, members, issues) {
+  if (!Array.isArray(document?.entries)) return { valid: false, envelopes: [] };
+  const receiptIndex = parseJsonOrNdjsonMember(members, "receipt_index", issues);
+  const receiptEntries = Array.isArray(receiptIndex) ? receiptIndex : receiptIndex?.entries;
+  if (!Array.isArray(receiptEntries)) {
+    issues.push("effective_receipt_receipt_index_invalid");
+    return { valid: false, envelopes: [] };
+  }
+  const receiptReferences = new Set(receiptEntries.map((entry) => (
+    `${normalizeRelative(entry?.path)}#${Number(entry?.lineNumber)}#${entry?.receiptDigest}`
+  )));
+  const expectedRuns = expectedV2B8LogicalRuns(results);
+  if (document.entries.length !== expectedRuns.length) issues.push("effective_receipt_index_denominator_invalid");
+  const envelopes = [];
+  const seenLogical = new Set();
+  const seenReferences = new Set();
+  for (const [index, entry] of document.entries.entries()) {
+    const label = `effective_receipt_entry_${index + 1}`;
+    if (!isPlainObject(entry)
+      || !hasExactKeys(entry, ["canarySlotId", "lineNumber", "logicalKey", "path", "receiptDigest", "runKind"])
+      || !isSafeRelativePath(entry.path)
+      || !Number.isInteger(entry.lineNumber)
+      || entry.lineNumber < 1
+      || !/^[a-f0-9]{64}$/u.test(String(entry.receiptDigest ?? ""))) {
+      issues.push(`${label}_invalid`);
+      continue;
+    }
+    const expected = expectedRuns[index];
+    if (!expected || entry.runKind !== expected.runKind || entry.canarySlotId !== expected.canarySlotId) {
+      issues.push(`${label}_logical_order_or_identity_mismatch`);
+    }
+    const expectedLogicalKey = sha256({ runKind: entry.runKind, canarySlotId: entry.canarySlotId });
+    if (entry.logicalKey !== expectedLogicalKey || seenLogical.has(entry.logicalKey)) {
+      issues.push(`${label}_logical_key_invalid_or_duplicate`);
+    }
+    seenLogical.add(entry.logicalKey);
+    const reference = `${normalizeRelative(entry.path)}#${entry.lineNumber}#${entry.receiptDigest}`;
+    if (!receiptReferences.has(reference)) issues.push(`${label}_not_bound_by_receipt_index`);
+    if (seenReferences.has(reference)) issues.push(`${label}_receipt_reference_duplicate`);
+    seenReferences.add(reference);
+    let envelope;
+    try { envelope = readJsonLineReference(root, entry.path, entry.lineNumber); } catch (error) {
+      issues.push(`${label}_${safeToken(error?.message)}`);
+      continue;
+    }
+    const validation = validateReceiptEnvelope(envelope);
+    if (!validation.valid) {
+      issues.push(...validation.issues.map((issue) => `${label}_${issue}`));
+      continue;
+    }
+    if (envelope.receiptDigest !== entry.receiptDigest) issues.push(`${label}_digest_mismatch`);
+    const payload = envelope.receiptPayload;
+    if (payload?.logicalExtractionKey !== entry.logicalKey
+      || payload?.runKind !== entry.runKind
+      || payload?.canarySlotId !== entry.canarySlotId) {
+      issues.push(`${label}_envelope_logical_binding_mismatch`);
+    }
+    if (expected?.sourceRecordSetDigest !== payload?.sourceRecordSetDigest) {
+      issues.push(`${label}_source_record_set_binding_mismatch`);
+    }
+    if (payload?.requestedModelId !== V2B8_MODEL_ID) issues.push(`${label}_model_binding_invalid`);
+    envelopes.push(envelope);
+  }
+  return { valid: issues.length === 0 && envelopes.length === expectedRuns.length, envelopes };
+}
+
+function parseJsonOrNdjsonMember(members, role, issues) {
+  const member = members.get(role);
+  if (!member) {
+    issues.push(`current_member_missing:${role}`);
+    return null;
+  }
+  const text = member.bytes.toString("utf8");
+  try { return JSON.parse(text); } catch {
+    try { return text.split(/\r?\n/u).filter(Boolean).map((line) => JSON.parse(line)); } catch {
+      issues.push(`current_member_json_or_ndjson_invalid:${role}`);
+      return null;
+    }
+  }
+}
+
+function expectedV2B8LogicalRuns(results) {
+  return [
+    ...(results.primarySearch ?? []).map((run) => ({
+      runKind: "primary",
+      canarySlotId: run.canarySlotId,
+      sourceRecordSetDigest: run.sourceRecordSetDigest,
+    })),
+    ...(results.repeatSearch ?? []).map((run) => ({
+      runKind: "fresh_repeat",
+      canarySlotId: run.canarySlotId,
+      sourceRecordSetDigest: run.sourceRecordSetDigest,
+    })),
+    ...(results.manifest?.repeatSample ?? []).map((repeat) => {
+      const primary = (results.primarySearch ?? []).find((run) => run.canarySlotId === repeat.canarySlotId);
+      return {
+        runKind: "same_source",
+        canarySlotId: repeat.canarySlotId,
+        sourceRecordSetDigest: primary?.sourceRecordSetDigest,
+      };
+    }),
+  ];
+}
+
+function validateV2B8DerivedInputDigests(root, document, members, issues) {
+  if (!isPlainObject(document?.inputDigests)) return;
+  const expected = {
+    manifest: readGovernedFile(root, V2B7_MANIFEST_RELATIVE).byteDigest,
+    sourceBundle: readGovernedFile(root, V2B7_BUNDLE_RELATIVE).byteDigest,
+    effectiveReceiptIndex: members.get("effective_receipt_index")?.byteDigest,
+    requestEventLedger: members.get("request_event_ledger")?.byteDigest,
+  };
+  for (const [role, digest] of Object.entries(expected)) {
+    if (document.inputDigests[role] !== digest) issues.push(`derived_input_digest_mismatch:${role}`);
+  }
+}
+
+function readJsonLineReference(root, relativePath, lineNumber) {
+  const read = readGovernedFile(root, relativePath);
+  const lines = read.bytes.toString("utf8").split(/\r?\n/u).filter(Boolean);
+  if (lineNumber > lines.length) throw new Error("receipt_line_missing");
+  return JSON.parse(lines[lineNumber - 1]);
+}
+
+function readGovernedFile(root, relativePath) {
+  if (!isSafeRelativePath(relativePath)) throw new Error("governed_path_invalid");
+  const absoluteRoot = resolve(root);
+  const normalized = normalizeRelative(relativePath);
+  const absolutePath = resolve(absoluteRoot, normalized);
+  if (absolutePath !== absoluteRoot && !absolutePath.startsWith(`${absoluteRoot}${sep}`)) {
+    throw new Error("governed_path_escape");
+  }
+  let cursor = absolutePath;
+  while (cursor !== absoluteRoot) {
+    if (!existsSync(cursor)) throw new Error("governed_file_missing");
+    if (lstatSync(cursor).isSymbolicLink()) throw new Error("governed_reparse_forbidden");
+    cursor = dirname(cursor);
+  }
+  if (!lstatSync(absolutePath).isFile()) throw new Error("governed_regular_file_required");
+  const bytes = readFileSync(absolutePath);
+  return {
+    relativePath: normalized,
+    bytes,
+    byteDigest: createHash("sha256").update(bytes).digest("hex"),
+  };
+}
+
+function isSafeRelativePath(value) {
+  const path = normalizeRelative(value);
+  return Boolean(path)
+    && !isAbsolute(path)
+    && !/^[A-Za-z]:/u.test(path)
+    && !path.startsWith("//")
+    && !path.split("/").some((part) => !part || part === "." || part === "..");
+}
+
+function normalizeRelative(value) {
+  return String(value ?? "").replace(/\\/gu, "/");
+}
+
+function hasExactKeys(value, keys) {
+  return canonicalJson(Object.keys(value).sort()) === canonicalJson([...keys].sort());
+}
+
+function isPlainObject(value) {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
 
 function renderCanonicalAudit(report) {
@@ -955,10 +1590,13 @@ function projectExtractionSources(sourceRecords) {
 
 function loadConfiguration(root, suppliedEnv = null) {
   const env = suppliedEnv ?? { ...readEnvFile(join(root, ".env.local")), ...process.env };
-  const config = { tavily: { baseUrl: String(env.M2_V2_TAVILY_BASE_URL ?? "https://api.tavily.com").trim().replace(/\/+$/u, ""), apiKey: String(env.TAVILY_API_KEY ?? "") }, relay: { baseUrl: String(env.OPENAI_BASE_URL ?? env.M2_V2_EVIDENCE_API_BASE_URL ?? "").trim().replace(/\/+$/u, ""), apiKey: String(env.OPENAI_API_KEY ?? "") } };
+  const config = { tavily: { baseUrl: String(env.M2_V2_TAVILY_BASE_URL ?? "https://api.tavily.com").trim().replace(/\/+$/u, ""), apiKey: String(env.TAVILY_API_KEY ?? "") }, relay: { baseUrl: String(env.OPENAI_BASE_URL ?? env.M2_V2_EVIDENCE_API_BASE_URL ?? "").trim().replace(/\/+$/u, ""), approvedHost: String(env.M2_V2_APPROVED_RELAY_HOST ?? "").trim().toLocaleLowerCase("en-US"), apiKey: String(env.OPENAI_API_KEY ?? "") } };
   if (env.M2_V2_SEARCH_PROVIDER !== "tavily_structured_search") throw new Error("v2b8_search_provider_invalid");
   if (config.tavily.baseUrl !== "https://api.tavily.com" || !config.tavily.apiKey) throw new Error("v2b8_tavily_configuration_incomplete");
-  if (!/^https:\/\//u.test(config.relay.baseUrl) || !config.relay.apiKey) throw new Error("v2b8_relay_configuration_incomplete");
+  if (!config.relay.baseUrl || !config.relay.approvedHost || !config.relay.apiKey) throw new Error("v2b8_relay_configuration_incomplete");
+  const transport = bindProviderTransport(config.relay);
+  config.relay.baseUrl = transport.baseUrl;
+  config.relay.approvedHost = transport.approvedHost;
   return config;
 }
 
@@ -984,16 +1622,48 @@ function reserveRequest(context, provider, physicalKey, metadata) {
   const budget = context.state[provider];
   if (budget.physicalRequestCount >= budget.cap) throw new Error(`v2b8_${provider}_request_cap_reached`);
   if (budget.reservations[physicalKey]) throw new Error(`v2b8_${provider}_reservation_exists`);
+  const reservedAt = context.now();
+  const logicalKey = metadata.logicalKey ?? physicalKey;
+  const requestDigest = metadata.requestDigest ?? sha256({ stage: V2B8_REQUEST_LEDGER_STAGE, provider, physicalKey });
+  appendRuntimeRequestEvent(context.state, {
+    timestamp: reservedAt, provider, stage: V2B8_REQUEST_LEDGER_STAGE, logicalKey, physicalKey,
+    eventType: "planned", requestDigest, receiptDigest: null,
+  });
   budget.physicalRequestCount += 1;
-  budget.reservations[physicalKey] = { status: "reserved_before_dispatch", reservedAt: context.now(), ordinal: budget.physicalRequestCount, ...metadata };
+  budget.reservations[physicalKey] = {
+    status: "reserved_before_dispatch",
+    reservedAt,
+    ordinal: budget.physicalRequestCount,
+    logicalKey,
+    requestDigest,
+    ...metadata,
+  };
+  appendRuntimeRequestEvent(context.state, {
+    timestamp: reservedAt, provider, stage: V2B8_REQUEST_LEDGER_STAGE, logicalKey, physicalKey,
+    eventType: "reserved", requestDigest, receiptDigest: null,
+  });
+  checkpoint(context);
+}
+
+function markRequestDispatched(context, provider, physicalKey) {
+  const reservation = context.state[provider].reservations[physicalKey];
+  if (!reservation || reservation.status !== "reserved_before_dispatch") {
+    throw new Error(`v2b8_${provider}_reservation_not_dispatchable`);
+  }
+  const timestamp = context.now();
+  reservation.status = "dispatch_started";
+  reservation.dispatchStartedAt = timestamp;
+  appendReservationEvent(context.state, provider, physicalKey, reservation, "dispatched", timestamp, null);
   checkpoint(context);
 }
 
 function completeRequest(context, provider, physicalKey, result) {
   const reservation = context.state[provider].reservations[physicalKey];
   if (!reservation) throw new Error(`v2b8_${provider}_reservation_missing`);
+  const timestamp = context.now();
+  appendReservationEvent(context.state, provider, physicalKey, reservation, "completed", timestamp, resultDigest(result));
   reservation.status = "completed";
-  reservation.completedAt = context.now();
+  reservation.completedAt = timestamp;
   reservation.resultDigest = sha256(result);
   checkpoint(context);
 }
@@ -1002,26 +1672,65 @@ function reconcileReservations(state, tavilyCache, relayCache, timestamp) {
   for (const [provider, cache] of [["tavily", tavilyCache], ["relay", relayCache]]) {
     for (const [physicalKey, reservation] of Object.entries(state[provider].reservations ?? {})) {
       if (!["reserved_before_dispatch", "dispatch_started"].includes(reservation.status)) continue;
-      if (reservation.status === "reserved_before_dispatch" && !reservation.dispatchStartedAt && reservation.ordinal === state[provider].physicalRequestCount) {
-        delete state[provider].reservations[physicalKey];
-        state[provider].physicalRequestCount -= 1;
-        continue;
-      }
       const result = cache.entries[reservation.cacheKey];
-      reservation.status = result ? "completed_recovered" : "indeterminate_after_crash";
+      if (result && reservation.status === "dispatch_started") {
+        appendReservationEvent(state, provider, physicalKey, reservation, "completed", timestamp, resultDigest(result));
+        reservation.status = "completed_recovered";
+      } else {
+        appendReservationEvent(state, provider, physicalKey, reservation, "indeterminate", timestamp, null);
+        reservation.status = "indeterminate_after_crash";
+      }
       reservation.completedAt = timestamp;
       if (result) reservation.resultDigest = sha256(result);
     }
   }
 }
 
+function recordCacheHit(context, provider, physicalKey, request, result) {
+  const timestamp = context.now();
+  const logicalKey = `cache-hit:${sha256({ physicalKey, sequence: context.state.requestEventLedger.length + 1 })}`;
+  const requestDigest = sha256({ stage: V2B8_REQUEST_LEDGER_STAGE, provider, request });
+  appendRuntimeRequestEvent(context.state, {
+    timestamp, provider, stage: V2B8_REQUEST_LEDGER_STAGE, logicalKey, physicalKey,
+    eventType: "planned", requestDigest, receiptDigest: null,
+  });
+  appendRuntimeRequestEvent(context.state, {
+    timestamp, provider, stage: V2B8_REQUEST_LEDGER_STAGE, logicalKey, physicalKey,
+    eventType: "cache_hit_observed", requestDigest, receiptDigest: resultDigest(result),
+  });
+  checkpoint(context);
+}
+
+function appendReservationEvent(state, provider, physicalKey, reservation, eventType, timestamp, receiptDigest) {
+  appendRuntimeRequestEvent(state, {
+    timestamp,
+    provider,
+    stage: V2B8_REQUEST_LEDGER_STAGE,
+    logicalKey: reservation.logicalKey ?? reservation.cacheKey ?? physicalKey,
+    physicalKey,
+    eventType,
+    requestDigest: reservation.requestDigest ?? sha256({ stage: V2B8_REQUEST_LEDGER_STAGE, provider, physicalKey }),
+    receiptDigest,
+  });
+}
+
+function resultDigest(result) {
+  for (const digest of [result?.receiptDigest, result?.providerReceipt?.receiptDigest, result?.receipt?.receiptDigest]) {
+    if (/^[a-f0-9]{64}$/u.test(String(digest ?? ""))) return digest;
+  }
+  return sha256(result);
+}
+
 function checkpoint(context) {
+  assertRuntimeRequestLedgerState(context.state, V2B8_REQUEST_LEDGER_STAGE);
   commitAtomicRequestCheckpoint(context.root, {
     scope: "v2b8",
     createdAt: context.now(),
     state: context.state,
     caches: { tavily: context.tavilyCache, relay: context.relayCache },
     receipts: Object.values(context.relayCache?.entries ?? {}),
+    requestLedger: context.state.requestEventLedger,
+    counters: context.state.requestCounters,
     adapterVersion: V2B6_ADAPTER_VERSION,
     manifestBindings: {
       manifestDigest: V2B7_CANARY_MANIFEST_DIGEST,
@@ -1048,7 +1757,42 @@ function privatePathIgnoredAndUntracked(root, relative) {
 }
 
 function workbookVerificationPassed(receipt) {
-  return receipt?.zipSignatureValid === true && receipt?.sheetCount === 4 && receipt?.formulaErrorCount === 0 && receipt?.invalidHyperlinkCount === 0 && receipt?.dropdownValidationCount > 0 && receipt?.visualRenderVerified === true && receipt?.renderedSheetCount === 4 && receipt?.ignoredAndUntracked === true && receipt?.containsSecretOrRevenueFields === false;
+  if (!isPlainObject(receipt) || receipt.schema !== "m2.v2.v2b8-workbook-verification-private.v0.3") return false;
+  const expectedKeys = [
+    "byteLength", "cachedFormulaErrors", "exists", "externalLinkCount", "forbiddenValueCount",
+    "formulaCount", "formulaErrorCount", "formulaHyperlinkCount", "full160Authorized",
+    "generatorAssertionsTrusted", "hyperlinkCount", "hyperlinkTargetLineage", "ignoredAndUntracked",
+    "incomeValueCount", "independentObjectVerified", "internalIdCount", "privateOnly", "receiptDigest",
+    "rowCounts", "schema", "secretCount", "sheetCount", "sheetNames", "validationCount",
+    "verificationBasis", "verificationIssues", "verifiedAt", "visualReviewAttested", "visualReviewStatus",
+    "workbookSha256",
+  ].sort();
+  if (canonicalJson(Object.keys(receipt).sort()) !== canonicalJson(expectedKeys)
+    || /https?:\/\//iu.test(JSON.stringify(receipt))) return false;
+  const { receiptDigest, ...payload } = receipt;
+  if (!/^[a-f0-9]{64}$/u.test(String(receiptDigest ?? "")) || receiptDigest !== sha256(payload)) return false;
+  try {
+    assertIndependentWorkbookHyperlinkLineage(receipt.hyperlinkTargetLineage, {
+      expectedOccurrenceCount: receipt.hyperlinkCount,
+    });
+  } catch {
+    return false;
+  }
+  return receipt.independentObjectVerified === true
+    && receipt?.generatorAssertionsTrusted === false
+    && receipt?.verificationBasis === "xlsx_zip_xml_actual_object"
+    && receipt?.sheetCount === 4
+    && receipt?.formulaErrorCount === 0
+    && receipt?.formulaHyperlinkCount === 0
+    && receipt?.hyperlinkCount === 115
+    && receipt?.validationCount >= 3
+    && receipt?.forbiddenValueCount === 0
+    && receipt?.internalIdCount === 0
+    && receipt?.incomeValueCount === 0
+    && receipt?.secretCount === 0
+    && receipt?.externalLinkCount === 0
+    && receipt?.visualReviewAttested === false
+    && receipt?.ignoredAndUntracked === true;
 }
 
 function effectiveSchemaPass(receipt) {
@@ -1135,6 +1879,41 @@ function gate(id, actual, threshold, predicate, contextEvaluable = true) {
   };
 }
 
+function historicalGateProjection(item) {
+  return {
+    id: item.id,
+    actual: item.actual,
+    threshold: item.threshold,
+    passed: item.passed,
+  };
+}
+
+// Compatibility classifier for the immutable v2b8-historical-v0.1 contract.
+// It intentionally preserves the original heuristic semantics so the old
+// CANARY_CONDITIONAL snapshot can be independently reproduced without treating
+// those semantics as current authority.
+function classifyV2B8SourceHistorical(record) {
+  if (classifyV2B5ProhibitedSource(record).prohibited) return "prohibited";
+  const domain = normalizeHistoricalClassifierText(record?.domain);
+  const title = normalizeHistoricalClassifierText(record?.title);
+  const snippet = normalizeHistoricalClassifierText(record?.snippet);
+  const text = `${domain} ${title} ${snippet}`;
+  if (/(?:\.gov(?:\.cn)?$|政府|国家新闻出版|版权保护中心|登记|registry)/u.test(`${domain} ${title}`)) return "government_or_registry";
+  if (/(?:作者官网|作家官网|个人主页|author\s*(?:site|page)|official\s*author)/u.test(text)) return "official_author";
+  if (/(?:出版社|出版集团|出版公司|press\b|publisher)/u.test(text)) return "official_publisher";
+  if (/(?:起点|晋江|纵横|番茄小说|掌阅|阅文|潇湘书院|红袖添香|webnovel|original\s*platform)/u.test(text)) return "official_platform";
+  if (/(?:新闻网|日报|晚报|周刊|电视台|广播网|news\b|times\b|post\b|media\b)/u.test(text)) return "mainstream_media";
+  if (/(?:baike|百科|wikipedia|维基|图书馆|library|isbn|catalog|豆瓣读书|读书网)/u.test(text)) return "catalog_or_encyclopedia";
+  if (/(?:豆瓣|知乎|论坛|贴吧|书评|读者评论|community|forum|review)/u.test(text)) return "community_review";
+  if (/(?:京东|当当|亚马逊|天猫|淘宝|商城|购书|retail|amazon|jd\.com)/u.test(text)) return "retailer";
+  if (/(?:baidu|bing|sogou|so\.com|search|搜索)/u.test(`${domain} ${title}`)) return "search_index";
+  return "unknown_public_web";
+}
+
+function normalizeHistoricalClassifierText(value) {
+  return String(value ?? "").normalize("NFKC").trim().replace(/\s+/gu, " ").toLocaleLowerCase("en-US");
+}
+
 function equal(actual, threshold) { return actual === threshold; }
 function atLeast(actual, threshold) { return Number.isFinite(actual) && actual >= threshold; }
 function atMost(actual, threshold) { return Number.isFinite(actual) && actual <= threshold; }
@@ -1160,4 +1939,5 @@ export const __test = Object.freeze({
   gate,
   requiredRatio,
   requiredSampleRatio,
+  workbookVerificationPassed,
 });

@@ -1,6 +1,8 @@
 # M2 v2 Migration Set Integrity 与 Rollback 合同 v0.2
 
-状态：`frozen_before_implementation`；public sanitized；`not_for_formal_decision`。
+状态：`IMPLEMENTED_AND_SYNTHETICALLY_VERIFIED`；public sanitized；`not_for_formal_decision`。
+
+实现范围：normalized unique paths、exact set、reparse/hardlink checks、verified-member copy 与 rollback fault points 已由 synthetic tests 验证。本合同不声称真实 private migration、exact-head CI 或 public restatement 已完成；`full160Authorized=false`，`nextDevelopmentReadiness=NOT_AUTHORIZED`。
 
 Manifest normalized paths 必须平台大小写语义明确且唯一；拒绝空路径、绝对路径、`..`、drive/UNC 逃逸。解压后 `actual file set == manifest file set`，不得只比较 count；只逐个复制已验证 manifest 成员，不复制整棵 payload tree。
 

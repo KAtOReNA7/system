@@ -1,8 +1,17 @@
 {
   "schemaVersion": "m2-v2-current-state-index-v0.1",
-  "status": "current",
+  "status": "superseded",
+  "historicalStatusAtPublication": "current",
   "classification": "public_sanitized_not_for_formal_decision",
   "updatedAt": "2026-07-18",
+  "lifecycle": {
+    "historical": true,
+    "superseded": true,
+    "notAuthorization": true,
+    "currentAuthority": false,
+    "supersededBy": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.2.json"
+  },
+  "snapshotFieldInterpretation": "fields named current or lifecycle=current are historical v0.1 snapshot values only",
   "authorityOrder": [
     "latest_explicit_user_decision",
     "current_approved_prd",
@@ -14,6 +23,7 @@
   ],
   "historicalV2B8Decision": "CANARY_CONDITIONAL",
   "currentDecision": "CANARY_FAIL",
+  "currentDecisionFieldScope": "historical_v0.1_snapshot_not_current_authority",
   "full160Authorized": false,
   "nextDevelopmentReadiness": "NOT_AUTHORIZED",
   "entries": [

@@ -5,7 +5,7 @@
 - V2-A 已完成；V2-B.1 至 V2-B.8 均是历史 checkpoint。V2-B.8 Canary v3.1 原始业务结论保持 `CANARY_CONDITIONAL`；修复合同的离线 restatement 当前结论为 `CANARY_FAIL`，`full160Authorized=false`。
 - verifier 只读/幂等、receipt/cache/state/counter 原子绑定、B8 合同缺口修复、从既有 immutable/append-only 材料离线恢复 private derived state 以及完整性复审已经收口。public 结论以版本化 remediation summary 与 restatement 为准，审计细节以 Git ignored private audit v0.2 和 PR roundtrip receipt 为准。
 - 禁止任何外部 provider 请求，禁止 Canary/run/resume/full160、模型训练、B4/formal-cash 修改、holdout、V2-C/V2-D、C4、M3 formal、release 或 PR merge。
-- 当前导航以 `docs/analysis/m2-v2/M2-v2-current-state-index-v0.1.md` 为准。历史报告不得删除或静默覆盖，也不得作为新授权。
+- 当前导航以 `docs/analysis/m2-v2/M2-v2-current-state-index-v0.2.md` 为准。历史报告不得删除或静默覆盖，也不得作为新授权。
 - `nextDevelopmentReadiness=NOT_AUTHORIZED`。必须停在 Draft/open/unmerged PR #7，等待用户安排外部审查；不得把修复完成解释为下一阶段授权。
 
 ## 当前模式

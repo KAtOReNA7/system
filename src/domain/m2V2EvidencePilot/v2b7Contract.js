@@ -11,6 +11,7 @@ import {
   readCurrentRequestStateSnapshot,
   validateFrozenSourceBundleDigest,
 } from "./integrityState.js";
+import { initializeRuntimeRequestLedgerState } from "./requestEventLedger.js";
 import { V2B6_ADAPTER_VERSION } from "./relayExtractionAdapterV2B6.js";
 import { V2B5_EXTRACTION_OUTPUT_SCHEMA_VERSION } from "./extractionV2B5.js";
 import {
@@ -263,11 +264,13 @@ export function assertPublicV2B7Sanitized(content) {
     '"identityDigest"',
     "OPENAI_API_KEY",
     "TAVILY_API_KEY",
-    "Authorization",
     "sk-",
     "tvly-",
   ];
   for (const token of forbidden) if (content.includes(token)) throw new Error(`v2b7_public_privacy_token:${token}`);
+  if (/\bauthorization\s*[:=]\s*["']?\s*(?:bearer|basic)\b/iu.test(content)) {
+    throw new Error("v2b7_public_authorization_header_forbidden");
+  }
   if (/https?:\/\//iu.test(content)) throw new Error("v2b7_public_url_forbidden");
   if (/[A-Za-z]:[\\/]/u.test(content)) throw new Error("v2b7_public_absolute_path_forbidden");
   return true;
@@ -387,7 +390,7 @@ function buildOverlapMapping(manifest, bundle) {
 }
 
 function newExecutionState(contract, b5State, b6State, createdAt) {
-  return {
+  return initializeRuntimeRequestLedgerState({
     schema: "m2.v2.v2b7-execution-state-private.v0.1",
     privateOnly: true,
     createdAt,
@@ -403,7 +406,7 @@ function newExecutionState(contract, b5State, b6State, createdAt) {
     canaryExecuted: false,
     full160Authorized: false,
     priorStateDigests: { b5: sha256(b5State), b6: sha256(b6State) },
-  };
+  });
 }
 
 function assertExecutionState(state, contract, b5State, b6State) {

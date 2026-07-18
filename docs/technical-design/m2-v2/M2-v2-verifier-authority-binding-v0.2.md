@@ -1,6 +1,8 @@
 # M2 v2 Verifier Authority 与 Closed Binding 合同 v0.2
 
-状态：`frozen_before_implementation`；public sanitized；`not_for_formal_decision`。
+状态：`IMPLEMENTED_AND_SYNTHETICALLY_VERIFIED`；public sanitized；`not_for_formal_decision`。
+
+实现范围：current/historical authority separation、exact closed roles、digest recomputation 与 fail-closed fault cases 已由 synthetic tests 验证。本合同不声称真实 private migration、exact-head CI 或 public restatement 已完成；`full160Authorized=false`，`nextDevelopmentReadiness=NOT_AUTHORIZED`。
 
 ## Current authority
 

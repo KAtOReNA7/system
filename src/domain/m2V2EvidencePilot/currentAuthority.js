@@ -1,0 +1,295 @@
+import { createHash } from "node:crypto";
+import { existsSync, lstatSync, readFileSync } from "node:fs";
+import { basename, isAbsolute, relative, resolve, sep } from "node:path";
+
+export const CURRENT_AUTHORITY_SCHEMA = "m2.v2.current-authority-private.v0.2";
+export const DEFAULT_CURRENT_STATE_INDEX_RELATIVE = "docs/analysis/m2-v2/M2-v2-current-state-index-v0.2.json";
+export const DEFAULT_CURRENT_RESTATEMENT_RELATIVE = "docs/analysis/m2-v2/M2-v2-canary-v3-1-integrity-restatement-v0.3.json";
+
+/**
+ * Read the two versioned current-authority artifacts without writing anything.
+ * Historical entries are reported for audit, but are never considered when
+ * selecting the current decision.
+ */
+export function readCurrentAuthority(root, options = {}) {
+  const absoluteRoot = resolve(root);
+  let indexRelativePath;
+  try {
+    indexRelativePath = normalizeGovernedRelativePath(
+      options.indexRelativePath ?? DEFAULT_CURRENT_STATE_INDEX_RELATIVE,
+    );
+  } catch {
+    return invalidAuthority(["current_state_index_path_invalid"]);
+  }
+  const indexRead = readAuthorityFile(absoluteRoot, indexRelativePath, "current_state_index");
+  if (!indexRead.valid) return invalidAuthority(indexRead.issues, { indexRelativePath });
+
+  const binding = extractCurrentRestatementBinding(indexRead.value);
+  let restatementRelativePath;
+  try {
+    restatementRelativePath = normalizeGovernedRelativePath(
+      options.restatementRelativePath
+        ?? binding.artifact
+        ?? DEFAULT_CURRENT_RESTATEMENT_RELATIVE,
+    );
+  } catch {
+    return invalidAuthority(["current_restatement_path_invalid"], {
+      indexRelativePath,
+      indexDigest: indexRead.byteDigest,
+    });
+  }
+  const restatementRead = readAuthorityFile(absoluteRoot, restatementRelativePath, "current_restatement");
+  if (!restatementRead.valid) {
+    return invalidAuthority(restatementRead.issues, {
+      indexRelativePath,
+      indexDigest: indexRead.byteDigest,
+      restatementRelativePath,
+    });
+  }
+
+  return validateCurrentAuthorityDocuments({
+    index: indexRead.value,
+    restatement: restatementRead.value,
+    indexRelativePath,
+    indexByteDigest: indexRead.byteDigest,
+    restatementRelativePath,
+    restatementByteDigest: restatementRead.byteDigest,
+  });
+}
+
+export function validateCurrentAuthorityDocuments(input) {
+  const issues = [];
+  const index = input?.index;
+  const restatement = input?.restatement;
+  const indexRelativePath = safeNormalizedPath(input?.indexRelativePath, issues, "current_state_index_path_invalid");
+  const restatementRelativePath = safeNormalizedPath(
+    input?.restatementRelativePath,
+    issues,
+    "current_restatement_path_invalid",
+  );
+  const indexByteDigest = requiredDigest(input?.indexByteDigest, issues, "current_state_index_digest_invalid");
+  const restatementByteDigest = requiredDigest(
+    input?.restatementByteDigest,
+    issues,
+    "current_restatement_digest_invalid",
+  );
+
+  if (!isPlainObject(index)) issues.push("current_state_index_invalid");
+  if (!isPlainObject(restatement)) issues.push("current_restatement_invalid");
+  if (!isPlainObject(index?.currentAuthority)) issues.push("current_authority_binding_missing");
+
+  const binding = extractCurrentRestatementBinding(index);
+  if (!binding.artifact) issues.push("current_restatement_binding_artifact_missing");
+  else if (restatementRelativePath && normalizeComparablePath(binding.artifact) !== restatementRelativePath) {
+    issues.push("current_restatement_binding_artifact_mismatch");
+  }
+  if (!isDigest(binding.digest)) issues.push("current_restatement_binding_digest_missing");
+  else if (restatementByteDigest && binding.digest !== restatementByteDigest) {
+    issues.push("current_restatement_binding_digest_mismatch");
+  }
+
+  if (!/^m2-v2-current-state-index-v0\.2$/u.test(String(index?.schemaVersion ?? ""))) {
+    issues.push("current_state_index_schema_invalid");
+  }
+  if (index?.status !== "current") issues.push("current_state_index_status_invalid");
+  if (!/^m2\.v2\.canary-v3\.1-integrity-restatement-public\.v0\.3$/u.test(String(restatement?.schema ?? ""))) {
+    issues.push("current_restatement_schema_invalid");
+  }
+
+  const historicalDecision = explicitHistoricalDecision(index, restatement);
+  const currentRestatedDecision = explicitCurrentDecision(index, restatement);
+  const restatedDecision = restatement?.restatedContract?.decision ?? restatement?.currentRestatedDecision ?? null;
+  const restatedHistoricalDecision = restatement?.historicalContract?.decision ?? restatement?.historicalDecision ?? null;
+  if (!validDecision(historicalDecision)) issues.push("historical_decision_missing");
+  if (!validDecision(currentRestatedDecision)) issues.push("current_restated_decision_missing");
+  if (historicalDecision && restatedHistoricalDecision !== historicalDecision) {
+    issues.push("historical_decision_mismatch");
+  }
+  if (currentRestatedDecision && restatedDecision !== currentRestatedDecision) {
+    issues.push("current_restated_decision_mismatch");
+  }
+  if (currentRestatedDecision === historicalDecision) issues.push("historical_decision_used_as_current");
+
+  const restatementFull160Authorized = restatement?.restatedContract?.full160Authorized
+    ?? restatement?.full160Authorized
+    ?? restatement?.authorization?.full160Authorized;
+  if (index?.full160Authorized !== false || restatementFull160Authorized !== false) {
+    issues.push("full160_authorization_not_fail_closed");
+  }
+  const restatementReadiness = restatement?.nextDevelopmentReadiness
+    ?? restatement?.authorization?.nextDevelopmentReadiness
+    ?? restatement?.boundaries?.nextDevelopmentReadiness;
+  if (index?.nextDevelopmentReadiness !== "NOT_AUTHORIZED") {
+    issues.push("next_development_readiness_not_fail_closed");
+  }
+  if (restatementReadiness !== undefined && restatementReadiness !== "NOT_AUTHORIZED") {
+    issues.push("restatement_readiness_not_fail_closed");
+  }
+  if (restatement?.providerRequestDelta !== 0) issues.push("provider_request_delta_nonzero");
+
+  const historicalArtifacts = extractHistoricalArtifacts(index);
+  const mapPayload = {
+    schema: CURRENT_AUTHORITY_SCHEMA,
+    currentAuthorityArtifact: indexRelativePath,
+    currentAuthorityDigest: indexByteDigest,
+    currentRestatementArtifact: restatementRelativePath,
+    currentRestatementDigest: restatementByteDigest,
+    historicalArtifacts,
+    historicalDecision: historicalDecision ?? null,
+    currentRestatedDecision: currentRestatedDecision ?? null,
+    full160Authorized: false,
+    nextDevelopmentReadiness: "NOT_AUTHORIZED",
+  };
+  return {
+    valid: issues.length === 0,
+    issues: [...new Set(issues)],
+    authorityMap: mapPayload,
+    historicalDecision: historicalDecision ?? null,
+    currentRestatedDecision: issues.length === 0 ? currentRestatedDecision : null,
+    full160Authorized: false,
+    nextDevelopmentReadiness: "NOT_AUTHORIZED",
+    currentAuthorityDigestVerified: issues.length === 0,
+    currentRestatementVerified: issues.length === 0,
+  };
+}
+
+function explicitHistoricalDecision(index, restatement) {
+  void restatement;
+  return index?.historicalV2B8Decision ?? null;
+}
+
+function explicitCurrentDecision(index, restatement) {
+  void restatement;
+  return index?.currentDecision ?? null;
+}
+
+function extractCurrentRestatementBinding(index) {
+  const source = isPlainObject(index?.currentAuthority) ? index.currentAuthority : {};
+  return {
+    artifact: source.currentRestatementArtifact
+      ?? source.restatementArtifact
+      ?? null,
+    digest: source.currentRestatementDigest
+      ?? source.restatementDigest
+      ?? null,
+  };
+}
+
+function extractHistoricalArtifacts(index) {
+  if (Array.isArray(index?.historicalArtifacts)) {
+    return index.historicalArtifacts.filter(validHistoricalArtifact).map((value) => cloneJson(value));
+  }
+  if (!Array.isArray(index?.entries)) return [];
+  return index.entries
+    .filter((entry) => ["historical", "superseded"].includes(entry?.lifecycle)
+      || String(entry?.status ?? "").includes("historical"))
+    .map((entry) => ({
+      artifact: String(entry.artifact ?? ""),
+      version: String(entry.version ?? ""),
+      decision: validDecision(entry.decision) ? entry.decision : null,
+      lifecycle: String(entry.lifecycle ?? "historical"),
+    }));
+}
+
+function validHistoricalArtifact(value) {
+  return isPlainObject(value) && typeof value.artifact === "string" && value.artifact.length > 0;
+}
+
+function invalidAuthority(issues, context = {}) {
+  return {
+    valid: false,
+    issues: [...new Set(issues)],
+    authorityMap: {
+      schema: CURRENT_AUTHORITY_SCHEMA,
+      currentAuthorityArtifact: context.indexRelativePath ?? null,
+      currentAuthorityDigest: context.indexDigest ?? null,
+      currentRestatementArtifact: context.restatementRelativePath ?? null,
+      currentRestatementDigest: null,
+      historicalArtifacts: [],
+      historicalDecision: null,
+      currentRestatedDecision: null,
+      full160Authorized: false,
+      nextDevelopmentReadiness: "NOT_AUTHORIZED",
+    },
+    historicalDecision: null,
+    currentRestatedDecision: null,
+    full160Authorized: false,
+    nextDevelopmentReadiness: "NOT_AUTHORIZED",
+    currentAuthorityDigestVerified: false,
+    currentRestatementVerified: false,
+  };
+}
+
+function readAuthorityFile(root, relativePath, role) {
+  let path;
+  try { path = resolveGovernedPath(root, relativePath); } catch {
+    return { valid: false, issues: [`${role}_path_invalid`] };
+  }
+  if (!existsSync(path)) return { valid: false, issues: [`${role}_missing`] };
+  const stat = lstatSync(path);
+  if (stat.isSymbolicLink() || !stat.isFile()) return { valid: false, issues: [`${role}_file_invalid`] };
+  const bytes = readFileSync(path);
+  let value;
+  try { value = JSON.parse(bytes.toString("utf8")); } catch {
+    return { valid: false, issues: [`${role}_json_invalid`] };
+  }
+  return { valid: true, issues: [], value, byteDigest: createHash("sha256").update(bytes).digest("hex") };
+}
+
+function normalizeGovernedRelativePath(value) {
+  const path = String(value ?? "").trim().replace(/\\/gu, "/");
+  if (!path || isAbsolute(path) || /^[A-Za-z]:/u.test(path) || path.startsWith("//")) {
+    throw new Error("authority_path_invalid");
+  }
+  if (path.split("/").some((part) => !part || part === "." || part === "..")) {
+    throw new Error("authority_path_invalid");
+  }
+  return path;
+}
+
+function safeNormalizedPath(value, issues, issue) {
+  try { return normalizeGovernedRelativePath(value); } catch {
+    issues.push(issue);
+    return null;
+  }
+}
+
+function normalizeComparablePath(value) {
+  try { return normalizeGovernedRelativePath(value); } catch { return null; }
+}
+
+function resolveGovernedPath(root, relativePath) {
+  const normalized = normalizeGovernedRelativePath(relativePath);
+  const absolute = resolve(root, normalized);
+  if (absolute !== root && !absolute.startsWith(`${root}${sep}`)) throw new Error("authority_path_escape");
+  if (relative(root, absolute).split(sep).includes("..")) throw new Error("authority_path_escape");
+  return absolute;
+}
+
+function requiredDigest(value, issues, issue) {
+  if (!isDigest(value)) {
+    issues.push(issue);
+    return null;
+  }
+  return value;
+}
+
+function isDigest(value) {
+  return typeof value === "string" && /^[a-f0-9]{64}$/u.test(value);
+}
+
+function validDecision(value) {
+  return typeof value === "string" && /^[A-Z][A-Z0-9_:-]{2,100}$/u.test(value);
+}
+
+function cloneJson(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
+function isPlainObject(value) {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
+export function currentAuthorityArtifactName(path) {
+  return basename(normalizeGovernedRelativePath(path));
+}

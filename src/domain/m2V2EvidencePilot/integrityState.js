@@ -14,11 +14,36 @@ import {
   writeSync,
 } from "node:fs";
 import { dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
+import { validateCurrentAuthorityDocuments } from "./currentAuthority.js";
+import {
+  REQUEST_COUNTER_FIELDS,
+  REQUEST_EVENT_SCHEMA,
+  validateRequestEventLedger,
+} from "./requestEventLedger.js";
 
 export const RECEIPT_ENVELOPE_SCHEMA = "receipt-envelope-v0.2";
 export const ATOMIC_BINDING_SCHEMA = "m2.v2.request-state-atomic-binding.v0.1";
 export const CURRENT_REQUEST_STATE_BINDING_RELATIVE = "data/private-output/m2-v2-integrity-remediation/request-state-binding-private-v0.1.json";
 export const REQUEST_STATE_TRANSACTION_ROOT_RELATIVE = "data/private-output/m2-v2-integrity-remediation/request-state-transactions";
+export const CLOSED_ATOMIC_BINDING_SCHEMA = "m2.v2.request-state-atomic-binding.v0.2";
+export const CLOSED_ATOMIC_TRANSACTION_SCHEMA = "m2.v2.request-state-transaction.v0.2";
+export const CURRENT_CLOSED_REQUEST_STATE_BINDING_RELATIVE = "data/private-output/m2-v2-integrity-remediation/request-state-binding-private-v0.2.json";
+export const CLOSED_ATOMIC_MEMBER_ROLES = Object.freeze([
+  "state",
+  "cache_index",
+  "receipt_index",
+  "request_event_ledger",
+  "counter_projection",
+  "transaction_manifest",
+  "execution_contract",
+  "immutable_manifests",
+  "frozen_upstream_digests",
+  "derived_evaluation",
+  "effective_receipt_index",
+  "current_authority",
+  "current_restatement",
+  "contract_bound_public_report_digests",
+]);
 
 const receiptRuntimeViews = new WeakMap();
 
@@ -185,7 +210,10 @@ export function evaluateGitBoundaryCommandResult(result) {
     };
   }
   const paths = String(result.stdout ?? "").split(/\r?\n/u).filter(Boolean).sort();
-  const b4Unchanged = !paths.some((path) => /oldProductEvaluation|formal-cash|calibrationSpec|B4/iu.test(path));
+  const b4Unchanged = !paths.some((path) => (
+    /oldProductEvaluation|formal-cash|calibrationSpec/iu.test(path)
+      || /(?:^|[\/_.-])b4(?:$|[\/_.-])/iu.test(path)
+  ));
   const holdoutSealed = !paths.some((path) => /holdout|embargo|deferred.*label/iu.test(path));
   return {
     auditSucceeded: true,
@@ -476,6 +504,128 @@ export function readCurrentRequestStateSnapshot(root, options = {}) {
   return { ...validation, binding, members };
 }
 
+/**
+ * Read-only integrity gate used by historical public verifiers. A legacy
+ * compatibility state is never authoritative by itself: the scoped atomic
+ * binding must be present, bind the exact pre-registered role set, and bind a
+ * replayable request ledger plus its counter projection. When the current
+ * closed binding exists, it is also required to validate in full.
+ */
+export function validateVerifierRequestIntegrity(root, options = {}) {
+  const issues = [];
+  const scope = String(options.scope ?? "");
+  if (!/^[A-Za-z0-9._:-]{1,200}$/u.test(scope)) {
+    return verifierIntegrityResult(["request_state_scope_invalid"]);
+  }
+  const eventStage = String(options.eventStage ?? scope);
+  const requiredAtomicRoles = uniqueStrings(options.requiredAtomicRoles ?? [
+    "state",
+    "cacheIndex",
+    "receiptIndex",
+    "requestLedger",
+    "counters",
+  ]).sort();
+  let snapshot = null;
+  try { snapshot = readCurrentRequestStateSnapshot(root, { scope }); } catch {
+    issues.push("request_state_binding_unreadable");
+  }
+  if (!snapshot) return verifierIntegrityResult(issues);
+  if (!snapshot.present) issues.push("request_state_binding_missing");
+  else if (!snapshot.valid) issues.push(...snapshot.issues.map((issue) => `request_state_binding:${issue}`));
+
+  let replay = null;
+  if (snapshot.present && snapshot.valid) {
+    const atomicRoles = Object.keys(snapshot.binding?.scopeMembers?.[scope] ?? {}).sort();
+    if (canonicalJson(atomicRoles) !== canonicalJson(requiredAtomicRoles)) {
+      const missing = requiredAtomicRoles.filter((role) => !atomicRoles.includes(role));
+      const extra = atomicRoles.filter((role) => !requiredAtomicRoles.includes(role));
+      if (missing.length) issues.push(`request_state_roles_missing:${missing.join("+")}`);
+      if (extra.length) issues.push(`request_state_roles_extra:${extra.join("+")}`);
+    }
+    if (snapshot.memberCount !== requiredAtomicRoles.length) issues.push("request_state_member_count_mismatch");
+
+    const ledgerResult = validateVerifierLedger(snapshot.members?.requestLedger, eventStage);
+    if (!ledgerResult.valid) issues.push(...ledgerResult.issues.map((issue) => `request_event_ledger:${issue}`));
+    else replay = ledgerResult.replay;
+
+    const counterResult = validateVerifierCounterProjection(
+      snapshot.members?.counters,
+      snapshot.members?.requestLedger,
+      replay,
+      scope,
+      snapshot.transactionId,
+    );
+    if (!counterResult.valid) issues.push(...counterResult.issues.map((issue) => `request_counters:${issue}`));
+
+    const state = snapshot.members?.state;
+    if (!isPlainObject(state)) issues.push("request_state_member_invalid");
+    else if (replay) {
+      if (isPlainObject(state.requestCounters)
+        && canonicalJson(state.requestCounters) !== canonicalJson(replay.counters)) {
+        issues.push("request_state_counter_replay_mismatch");
+      }
+      if (Array.isArray(state.requestEventLedger)
+        && canonicalJson(state.requestEventLedger) !== canonicalJson(snapshot.members.requestLedger)) {
+        issues.push("request_state_ledger_binding_mismatch");
+      }
+      const physicalCount = verifierPhysicalRequestCount(state);
+      if (physicalCount !== null && physicalCount !== replay.counters.reserved) {
+        issues.push("request_state_physical_reservation_replay_mismatch");
+      }
+    }
+
+    const legacyStateRelativePath = options.legacyStateRelativePath;
+    if (legacyStateRelativePath) {
+      let legacyPath;
+      try { legacyPath = resolveGovernedPath(resolve(root), legacyStateRelativePath); } catch {
+        issues.push("legacy_state_path_invalid");
+      }
+      if (legacyPath) {
+        if (!existsSync(legacyPath) || !isRegularGovernedFile(resolve(root), legacyPath)) {
+          issues.push("legacy_state_mirror_missing_or_invalid");
+        } else {
+          try {
+            const legacyState = JSON.parse(readFileSync(legacyPath, "utf8"));
+            if (canonicalJson(legacyState) !== canonicalJson(snapshot.members?.state)) {
+              issues.push("legacy_state_mirror_stale");
+            }
+          } catch {
+            issues.push("legacy_state_mirror_unreadable");
+          }
+        }
+      }
+    }
+  }
+
+  const closed = validateClosedAtomicRequestBinding(root, {
+    scope: options.closedScope ?? "v2b8",
+    eventStage: options.closedEventStage ?? "v2b8",
+  });
+  if (closed.present) {
+    if (!closed.valid) issues.push(...closed.issues.map((issue) => `current_closed_binding:${issue}`));
+    else {
+      if (closed.memberCount !== CLOSED_ATOMIC_MEMBER_ROLES.length) issues.push("current_closed_binding_member_count_mismatch");
+      if (closed.currentRestatementVerified !== true) issues.push("current_closed_binding_restatement_unverified");
+      if (closed.currentAuthorityDigestVerified !== true) issues.push("current_closed_binding_authority_digest_unverified");
+      if (closed.effectiveReceiptsVerified !== true) issues.push("current_closed_binding_effective_receipts_unverified");
+    }
+  } else if (options.requireClosedBinding === true) {
+    issues.push("current_closed_binding_missing");
+  }
+
+  return verifierIntegrityResult(issues, {
+    scope,
+    transactionId: snapshot.transactionId ?? null,
+    bindingDigest: snapshot.bindingDigest ?? null,
+    requestEventLedgerVerified: replay !== null,
+    requestCounterReplayVerified: replay !== null
+      && !issues.some((issue) => issue.startsWith("request_counters:")),
+    closedBindingPresent: closed.present === true,
+    closedBindingVerified: closed.present === true ? closed.valid === true : null,
+    replay,
+  });
+}
+
 export function hashGovernedPrivateState(root, options = {}) {
   const absoluteRoot = resolve(root);
   const relativeRoots = uniqueStrings(options.relativePaths ?? options.relativeRoots ?? []);
@@ -545,6 +695,461 @@ export function validateCurrentRequestStateBinding(root, options = {}) {
     memberCount: descriptors.length,
     transactionId: stage?.transactionId ?? binding.currentTransactionId ?? null,
     bindingDigest: binding.bindingDigest ?? null,
+  };
+}
+
+/**
+ * Build the v0.2 closed binding. Unlike the compatibility v0.1 binding, this
+ * accepts exactly the declared role set and never accepts caller-supplied
+ * digests as proof: the verifier below always re-reads every bound file.
+ */
+export function createClosedAtomicRequestBinding(input) {
+  if (!isPlainObject(input)) throw new Error("closed_atomic_binding_input_invalid");
+  const requiredRoles = normalizeClosedRoleSet(input.requiredRoles ?? CLOSED_ATOMIC_MEMBER_ROLES);
+  const members = normalizeClosedDescriptors(input.members, requiredRoles);
+  const payload = {
+    schema: CLOSED_ATOMIC_BINDING_SCHEMA,
+    privateOnly: true,
+    scope: requiredToken(input.scope, "closed_atomic_scope_invalid"),
+    transactionId: requiredToken(input.transactionId, "closed_atomic_transaction_id_invalid"),
+    members,
+  };
+  return { ...payload, bindingDigest: sha256(payload) };
+}
+
+export function buildClosedAtomicTransactionManifest(input) {
+  if (!isPlainObject(input)) throw new Error("closed_atomic_transaction_input_invalid");
+  const requiredRoles = normalizeClosedRoleSet(input.requiredRoles ?? CLOSED_ATOMIC_MEMBER_ROLES)
+    .filter((role) => role !== "transaction_manifest");
+  const members = normalizeClosedDescriptors(input.members, requiredRoles);
+  const payload = {
+    schema: CLOSED_ATOMIC_TRANSACTION_SCHEMA,
+    privateOnly: true,
+    scope: requiredToken(input.scope, "closed_atomic_scope_invalid"),
+    transactionId: requiredToken(input.transactionId, "closed_atomic_transaction_id_invalid"),
+    createdAt: requiredTimestamp(input.createdAt),
+    members,
+  };
+  return { ...payload, manifestDigest: sha256(payload) };
+}
+
+/**
+ * Read-only verification for a complete closed transaction. Missing binding
+ * is invalid, every role/file digest is re-read, and all projections are
+ * checked against the append-only ledger and immutable receipt envelopes.
+ */
+export function validateClosedAtomicRequestBinding(root, options = {}) {
+  const absoluteRoot = resolve(root);
+  const requiredRoles = normalizeClosedRoleSet(options.requiredRoles ?? CLOSED_ATOMIC_MEMBER_ROLES);
+  const bindingRelativePath = options.bindingRelativePath ?? CURRENT_CLOSED_REQUEST_STATE_BINDING_RELATIVE;
+  let bindingPath;
+  try { bindingPath = resolveGovernedPath(absoluteRoot, bindingRelativePath); } catch {
+    return closedBindingResult(["closed_binding_path_invalid"]);
+  }
+  if (!existsSync(bindingPath)) return closedBindingResult(["closed_binding_missing"], { present: false });
+  if (!isRegularGovernedFile(absoluteRoot, bindingPath)) {
+    return closedBindingResult(["closed_binding_file_invalid"]);
+  }
+
+  let binding;
+  try { binding = JSON.parse(readFileSync(bindingPath, "utf8")); } catch {
+    return closedBindingResult(["closed_binding_unreadable"]);
+  }
+  if (!isPlainObject(binding)) return closedBindingResult(["closed_binding_invalid"]);
+  const issues = [];
+  if (binding.schema !== CLOSED_ATOMIC_BINDING_SCHEMA) issues.push("closed_binding_schema_invalid");
+  if (binding.privateOnly !== true) issues.push("closed_binding_private_boundary_invalid");
+  if (!/^[A-Za-z0-9._:-]{1,200}$/u.test(String(binding.scope ?? ""))) issues.push("closed_binding_scope_invalid");
+  if (options.scope && binding.scope !== options.scope) issues.push("closed_binding_scope_mismatch");
+  if (!/^[A-Za-z0-9._:-]{1,200}$/u.test(String(binding.transactionId ?? ""))) {
+    issues.push("closed_binding_transaction_id_invalid");
+  }
+  const { bindingDigest, ...bindingPayload } = binding;
+  if (bindingDigest !== sha256(bindingPayload)) issues.push("closed_binding_digest_invalid");
+
+  let descriptors = [];
+  try { descriptors = normalizeClosedDescriptors(binding.members, requiredRoles); } catch (error) {
+    issues.push(String(error?.message ?? "closed_binding_members_invalid"));
+  }
+  const members = new Map();
+  for (const descriptor of descriptors) {
+    const read = readClosedMember(absoluteRoot, descriptor);
+    if (!read.valid) {
+      issues.push(...read.issues);
+      continue;
+    }
+    members.set(descriptor.role, { ...descriptor, ...read });
+  }
+
+  validateClosedTransactionManifest(binding, requiredRoles, members, issues);
+  const ledger = parseClosedMember(members.get("request_event_ledger"), "request_event_ledger", issues, true);
+  const ledgerValidation = Array.isArray(ledger)
+    ? validateRequestEventLedger(ledger, { stage: options.eventStage })
+    : { valid: false, issues: ["ledger_not_array"], replay: null };
+  if (!ledgerValidation.valid) {
+    issues.push(...ledgerValidation.issues.map((issue) => `request_event_ledger:${issue}`));
+  }
+
+  const counterDocument = parseClosedMember(members.get("counter_projection"), "counter_projection", issues);
+  const counterProjection = isPlainObject(counterDocument?.counters) ? counterDocument.counters : counterDocument;
+  if (ledgerValidation.valid && canonicalJson(counterProjection) !== canonicalJson(ledgerValidation.replay.counters)) {
+    issues.push("counter_projection_replay_mismatch");
+  }
+  const state = parseClosedMember(members.get("state"), "state", issues);
+  if (!isPlainObject(state?.requestCounters)) issues.push("state_request_counters_missing");
+  else if (ledgerValidation.valid
+    && canonicalJson(state.requestCounters) !== canonicalJson(ledgerValidation.replay.counters)) {
+    issues.push("state_request_counters_replay_mismatch");
+  }
+
+  const receiptIndex = parseClosedMember(members.get("receipt_index"), "receipt_index", issues, true);
+  const receiptIssueStart = issues.length;
+  const receiptDigests = validateClosedReceiptIndex(absoluteRoot, receiptIndex, issues);
+  const receiptIndexVerified = receiptDigests !== null && issues.length === receiptIssueStart;
+  const cacheIndex = parseClosedMember(members.get("cache_index"), "cache_index", issues);
+  validateClosedCacheIndex(cacheIndex, receiptDigests, issues);
+  const effectiveReceiptIndex = parseClosedMember(
+    members.get("effective_receipt_index"),
+    "effective_receipt_index",
+    issues,
+    true,
+  );
+  const effectiveReceiptIssueStart = issues.length;
+  validateEffectiveReceiptIndex(effectiveReceiptIndex, receiptDigests, issues);
+  const effectiveReceiptIndexVerified = issues.length === effectiveReceiptIssueStart;
+
+  for (const role of ["immutable_manifests", "frozen_upstream_digests", "contract_bound_public_report_digests"]) {
+    const document = parseClosedMember(members.get(role), role, issues);
+    validateBoundArtifactIndex(absoluteRoot, document, role, issues);
+  }
+
+  let authority = null;
+  const currentAuthority = parseClosedMember(members.get("current_authority"), "current_authority", issues);
+  const currentRestatement = parseClosedMember(members.get("current_restatement"), "current_restatement", issues);
+  if (currentAuthority && currentRestatement) {
+    authority = validateCurrentAuthorityDocuments({
+      index: currentAuthority,
+      restatement: currentRestatement,
+      indexRelativePath: members.get("current_authority")?.path,
+      indexByteDigest: members.get("current_authority")?.actualByteDigest,
+      restatementRelativePath: members.get("current_restatement")?.path,
+      restatementByteDigest: members.get("current_restatement")?.actualByteDigest,
+    });
+    if (!authority.valid) issues.push(...authority.issues.map((issue) => `current_authority:${issue}`));
+  }
+
+  const closedTransactionVerified = issues.length === 0;
+  return closedBindingResult(issues, {
+    present: true,
+    transactionId: binding.transactionId ?? null,
+    bindingDigest: binding.bindingDigest ?? null,
+    memberCount: descriptors.length,
+    historicalDecision: authority?.historicalDecision ?? null,
+    currentRestatedDecision: authority?.currentRestatedDecision ?? null,
+    currentRestatementVerified: closedTransactionVerified && authority?.currentRestatementVerified === true,
+    currentAuthorityDigestVerified: closedTransactionVerified && authority?.currentAuthorityDigestVerified === true,
+    effectiveReceiptsVerified: closedTransactionVerified && receiptIndexVerified && effectiveReceiptIndexVerified,
+    full160Authorized: false,
+    nextDevelopmentReadiness: "NOT_AUTHORIZED",
+    replay: ledgerValidation.valid ? ledgerValidation.replay : null,
+  });
+}
+
+function normalizeClosedRoleSet(values) {
+  if (!Array.isArray(values) || values.length === 0) throw new Error("closed_atomic_roles_invalid");
+  const roles = values.map((value) => String(value));
+  if (roles.some((role) => !/^[a-z][a-z0-9_]{1,80}$/u.test(role))) throw new Error("closed_atomic_role_invalid");
+  if (new Set(roles).size !== roles.length) throw new Error("closed_atomic_role_duplicate");
+  return [...roles].sort();
+}
+
+function normalizeClosedDescriptors(values, requiredRoles) {
+  if (!Array.isArray(values)) throw new Error("closed_atomic_members_invalid");
+  const descriptors = values.map((value) => {
+    if (!isPlainObject(value)) throw new Error("closed_atomic_member_invalid");
+    const role = String(value.role ?? "");
+    const path = normalizeRelativePath(String(value.path ?? "").replace(/\\/gu, "/"));
+    const byteDigest = String(value.byteDigest ?? "");
+    if (!/^[a-z][a-z0-9_]{1,80}$/u.test(role)) throw new Error("closed_atomic_member_role_invalid");
+    if (!path || isAbsolute(path) || /^[A-Za-z]:/u.test(path) || path.startsWith("//")
+      || path.split("/").some((part) => !part || part === "." || part === "..")) {
+      throw new Error(`closed_atomic_member_path_invalid:${role}`);
+    }
+    if (!/^[a-f0-9]{64}$/u.test(byteDigest)) throw new Error(`closed_atomic_member_digest_invalid:${role}`);
+    return { role, path, byteDigest };
+  }).sort((left, right) => left.role.localeCompare(right.role));
+  if (new Set(descriptors.map((descriptor) => descriptor.role)).size !== descriptors.length) {
+    throw new Error("closed_atomic_member_role_duplicate");
+  }
+  if (new Set(descriptors.map((descriptor) => descriptor.path.toLocaleLowerCase("en-US"))).size !== descriptors.length) {
+    throw new Error("closed_atomic_member_path_duplicate");
+  }
+  const actualRoles = descriptors.map((descriptor) => descriptor.role).sort();
+  if (canonicalJson(actualRoles) !== canonicalJson([...requiredRoles].sort())) {
+    const missing = requiredRoles.filter((role) => !actualRoles.includes(role));
+    const extra = actualRoles.filter((role) => !requiredRoles.includes(role));
+    if (missing.length) throw new Error(`closed_atomic_roles_missing:${missing.join("+")}`);
+    throw new Error(`closed_atomic_roles_extra:${extra.join("+")}`);
+  }
+  return descriptors;
+}
+
+function readClosedMember(root, descriptor) {
+  let path;
+  try { path = resolveGovernedPath(root, descriptor.path); } catch {
+    return { valid: false, issues: [`closed_member_path_invalid:${descriptor.role}`] };
+  }
+  if (!existsSync(path) || !isRegularGovernedFile(root, path)) {
+    return { valid: false, issues: [`closed_member_missing_or_reparse:${descriptor.role}`] };
+  }
+  const bytes = readFileSync(path);
+  const actualByteDigest = createHash("sha256").update(bytes).digest("hex");
+  if (actualByteDigest !== descriptor.byteDigest) {
+    return { valid: false, issues: [`closed_member_digest_mismatch:${descriptor.role}`] };
+  }
+  return { valid: true, issues: [], bytes, actualByteDigest };
+}
+
+function validateClosedTransactionManifest(binding, requiredRoles, members, issues) {
+  const member = members.get("transaction_manifest");
+  const manifest = parseClosedMember(member, "transaction_manifest", issues);
+  if (!isPlainObject(manifest)) return;
+  if (manifest.schema !== CLOSED_ATOMIC_TRANSACTION_SCHEMA) issues.push("transaction_manifest_schema_invalid");
+  if (manifest.privateOnly !== true) issues.push("transaction_manifest_private_boundary_invalid");
+  if (manifest.scope !== binding.scope) issues.push("transaction_manifest_scope_mismatch");
+  if (manifest.transactionId !== binding.transactionId) issues.push("transaction_manifest_id_mismatch");
+  const { manifestDigest, ...payload } = manifest;
+  if (manifestDigest !== sha256(payload)) issues.push("transaction_manifest_digest_invalid");
+  let descriptors;
+  try {
+    descriptors = normalizeClosedDescriptors(
+      manifest.members,
+      requiredRoles.filter((role) => role !== "transaction_manifest"),
+    );
+  } catch (error) {
+    issues.push(String(error?.message ?? "transaction_manifest_members_invalid"));
+    return;
+  }
+  const bindingDescriptors = [...members.values()]
+    .filter((descriptor) => descriptor.role !== "transaction_manifest")
+    .map(({ role, path, byteDigest }) => ({ role, path, byteDigest }))
+    .sort((left, right) => left.role.localeCompare(right.role));
+  if (canonicalJson(descriptors) !== canonicalJson(bindingDescriptors)) {
+    issues.push("transaction_manifest_member_binding_mismatch");
+  }
+}
+
+function parseClosedMember(member, role, issues, allowNdjson = false) {
+  if (!member?.bytes) return null;
+  const text = member.bytes.toString("utf8");
+  try { return JSON.parse(text); } catch {
+    if (allowNdjson) {
+      try { return text.split(/\r?\n/u).filter(Boolean).map((line) => JSON.parse(line)); } catch { /* fail below */ }
+    }
+    issues.push(`closed_member_json_invalid:${role}`);
+    return null;
+  }
+}
+
+function validateClosedReceiptIndex(root, document, issues) {
+  const entries = Array.isArray(document) ? document : document?.entries;
+  if (!Array.isArray(entries)) {
+    issues.push("receipt_index_entries_invalid");
+    return null;
+  }
+  const digests = new Set();
+  const references = new Set();
+  for (const [index, entry] of entries.entries()) {
+    const label = `receipt_index_entry_${index + 1}`;
+    if (!isPlainObject(entry) || !/^[a-f0-9]{64}$/u.test(String(entry.receiptDigest ?? ""))) {
+      issues.push(`${label}:invalid`);
+      continue;
+    }
+    let relativePath;
+    try { relativePath = normalizeClosedReferencePath(entry.path); } catch {
+      issues.push(`${label}:path_invalid`);
+      continue;
+    }
+    const lineNumber = entry.lineNumber === undefined ? null : Number(entry.lineNumber);
+    if (lineNumber !== null && (!Number.isInteger(lineNumber) || lineNumber < 1)) {
+      issues.push(`${label}:line_number_invalid`);
+      continue;
+    }
+    const referenceKey = `${relativePath}#${lineNumber ?? "json"}`.toLocaleLowerCase("en-US");
+    if (references.has(referenceKey)) issues.push(`${label}:duplicate_reference`);
+    references.add(referenceKey);
+    const envelope = readReceiptEnvelopeReference(root, relativePath, lineNumber, label, issues);
+    if (!envelope) continue;
+    const validation = validateReceiptEnvelope(envelope);
+    if (!validation.valid) {
+      issues.push(...validation.issues.map((issue) => `${label}:${issue}`));
+      continue;
+    }
+    if (entry.receiptDigest !== envelope.receiptDigest) issues.push(`${label}:receipt_digest_mismatch`);
+    if (digests.has(envelope.receiptDigest)) issues.push(`${label}:receipt_digest_duplicate`);
+    digests.add(envelope.receiptDigest);
+  }
+  return digests;
+}
+
+function readReceiptEnvelopeReference(root, relativePath, lineNumber, label, issues) {
+  let path;
+  try { path = resolveGovernedPath(root, relativePath); } catch {
+    issues.push(`${label}:receipt_path_escape`);
+    return null;
+  }
+  if (!existsSync(path) || !isRegularGovernedFile(root, path)) {
+    issues.push(`${label}:receipt_file_missing_or_reparse`);
+    return null;
+  }
+  const text = readFileSync(path, "utf8");
+  if (lineNumber !== null) {
+    const lines = text.split(/\r?\n/u).filter(Boolean);
+    if (lineNumber > lines.length) {
+      issues.push(`${label}:receipt_line_missing`);
+      return null;
+    }
+    try { return JSON.parse(lines[lineNumber - 1]); } catch {
+      issues.push(`${label}:receipt_line_invalid`);
+      return null;
+    }
+  }
+  try {
+    const value = JSON.parse(text);
+    if (Array.isArray(value)) {
+      if (value.length !== 1) {
+        issues.push(`${label}:receipt_line_number_required`);
+        return null;
+      }
+      return value[0];
+    }
+    return value;
+  } catch {
+    const lines = text.split(/\r?\n/u).filter(Boolean);
+    if (lines.length !== 1) {
+      issues.push(`${label}:receipt_line_number_required`);
+      return null;
+    }
+    try { return JSON.parse(lines[0]); } catch {
+      issues.push(`${label}:receipt_json_invalid`);
+      return null;
+    }
+  }
+}
+
+function validateClosedCacheIndex(document, receiptDigests, issues) {
+  if (!isPlainObject(document) || !Array.isArray(document.entries)) {
+    issues.push("cache_index_entries_invalid");
+    return;
+  }
+  const allowed = ["adapterVersion", "logicalKey", "physicalKey", "receiptDigest", "transactionId"].sort();
+  for (const [index, entry] of document.entries.entries()) {
+    const label = `cache_index_entry_${index + 1}`;
+    if (!isPlainObject(entry)) {
+      issues.push(`${label}:invalid`);
+      continue;
+    }
+    if (canonicalJson(Object.keys(entry).sort()) !== canonicalJson(allowed)) issues.push(`${label}:not_reference_only`);
+    if (!/^[a-f0-9]{64}$/u.test(String(entry.receiptDigest ?? ""))) issues.push(`${label}:receipt_digest_invalid`);
+    else if (!receiptDigests?.has(entry.receiptDigest)) issues.push(`${label}:receipt_not_recomputed`);
+    if (containsForbiddenCachePayload(entry)) issues.push(`${label}:raw_response_present`);
+  }
+}
+
+function validateEffectiveReceiptIndex(document, receiptDigests, issues) {
+  const entries = Array.isArray(document) ? document : document?.entries;
+  if (!Array.isArray(entries)) {
+    issues.push("effective_receipt_index_entries_invalid");
+    return;
+  }
+  for (const [index, entry] of entries.entries()) {
+    const digest = isPlainObject(entry) ? entry.receiptDigest : entry;
+    if (!/^[a-f0-9]{64}$/u.test(String(digest ?? "")) || !receiptDigests?.has(digest)) {
+      issues.push(`effective_receipt_index_entry_${index + 1}:unverified`);
+    }
+  }
+}
+
+function validateBoundArtifactIndex(root, document, role, issues) {
+  if (!isPlainObject(document) || !Array.isArray(document.entries)) {
+    issues.push(`${role}_entries_invalid`);
+    return;
+  }
+  const paths = new Set();
+  for (const [index, entry] of document.entries.entries()) {
+    const label = `${role}_entry_${index + 1}`;
+    if (!isPlainObject(entry) || !/^[a-f0-9]{64}$/u.test(String(entry.byteDigest ?? ""))) {
+      issues.push(`${label}:invalid`);
+      continue;
+    }
+    let path;
+    try { path = normalizeClosedReferencePath(entry.path); } catch {
+      issues.push(`${label}:path_invalid`);
+      continue;
+    }
+    const key = path.toLocaleLowerCase("en-US");
+    if (paths.has(key)) issues.push(`${label}:duplicate_path`);
+    paths.add(key);
+    let absolute;
+    try { absolute = resolveGovernedPath(root, path); } catch {
+      issues.push(`${label}:path_escape`);
+      continue;
+    }
+    if (!existsSync(absolute) || !isRegularGovernedFile(root, absolute)) {
+      issues.push(`${label}:missing_or_reparse`);
+      continue;
+    }
+    if (digestFile(absolute) !== entry.byteDigest) issues.push(`${label}:digest_mismatch`);
+  }
+}
+
+function containsForbiddenCachePayload(value) {
+  if (Array.isArray(value)) return value.some(containsForbiddenCachePayload);
+  if (!isPlainObject(value)) return false;
+  const forbidden = new Set(["body", "json", "providerResponse", "rawJson", "rawResponse", "receipt", "receiptPayload", "response"]);
+  return Object.entries(value).some(([key, child]) => forbidden.has(key) || containsForbiddenCachePayload(child));
+}
+
+function normalizeClosedReferencePath(value) {
+  const path = String(value ?? "").replace(/\\/gu, "/");
+  if (!path || isAbsolute(path) || /^[A-Za-z]:/u.test(path) || path.startsWith("//")
+    || path.split("/").some((part) => !part || part === "." || part === "..")) {
+    throw new Error("closed_reference_path_invalid");
+  }
+  return path;
+}
+
+function isRegularGovernedFile(root, path) {
+  const absoluteRoot = resolve(root);
+  const absolutePath = resolve(path);
+  if (absolutePath !== absoluteRoot && !absolutePath.startsWith(`${absoluteRoot}${sep}`)) return false;
+  let cursor = absolutePath;
+  while (cursor !== absoluteRoot) {
+    if (!existsSync(cursor)) return false;
+    const stat = lstatSync(cursor);
+    if (stat.isSymbolicLink()) return false;
+    cursor = dirname(cursor);
+  }
+  return lstatSync(absolutePath).isFile();
+}
+
+function closedBindingResult(issues, values = {}) {
+  const uniqueIssues = [...new Set(issues)];
+  return {
+    present: values.present ?? true,
+    valid: uniqueIssues.length === 0,
+    issues: uniqueIssues,
+    memberCount: values.memberCount ?? 0,
+    transactionId: values.transactionId ?? null,
+    bindingDigest: values.bindingDigest ?? null,
+    historicalDecision: values.historicalDecision ?? null,
+    currentRestatedDecision: values.currentRestatedDecision ?? null,
+    currentRestatementVerified: values.currentRestatementVerified === true,
+    currentAuthorityDigestVerified: values.currentAuthorityDigestVerified === true,
+    effectiveReceiptsVerified: values.effectiveReceiptsVerified === true,
+    full160Authorized: false,
+    nextDevelopmentReadiness: "NOT_AUTHORIZED",
+    replay: values.replay ?? null,
   };
 }
 
@@ -801,13 +1406,158 @@ function normalizeCounterDimension(value) {
   return {
     planned: "planned",
     reserved: "reserved",
+    compatibilityretryreserved: "reserved",
     dispatched: "dispatched",
     completed: "completed",
     indeterminate: "indeterminate",
     providerfailed: "providerFailed",
     contractfailed: "contractFailed",
     cachehit: "cacheHit",
+    cachehitobserved: "cacheHit",
   }[token] ?? null;
+}
+
+function validateVerifierLedger(ledger, eventStage) {
+  if (!Array.isArray(ledger)) return { valid: false, issues: ["ledger_not_array"], replay: null };
+  if (ledger.length === 0 || ledger.every((entry) => entry?.schema === REQUEST_EVENT_SCHEMA)) {
+    return validateRequestEventLedger(ledger, { stage: eventStage });
+  }
+  const issues = [];
+  const expectedKeys = [
+    "cacheHit",
+    "completed",
+    "dispatched",
+    "indeterminate",
+    "ledgerOrdinal",
+    "planned",
+    "privateOnly",
+    "provider",
+    "requestRef",
+    "reservationDigest",
+    "reserved",
+    "schema",
+    "sourceStatus",
+    "stage",
+  ].sort();
+  const reservationDigests = new Set();
+  const providerOrdinals = new Map();
+  for (const [index, entry] of ledger.entries()) {
+    const label = `entry_${index + 1}`;
+    if (!isPlainObject(entry)) {
+      issues.push(`${label}:not_object`);
+      continue;
+    }
+    if (canonicalJson(Object.keys(entry).sort()) !== canonicalJson(expectedKeys)) issues.push(`${label}:key_set_invalid`);
+    if (entry.schema !== "m2.v2.request-ledger-entry-private.v0.1") issues.push(`${label}:schema_invalid`);
+    if (entry.privateOnly !== true) issues.push(`${label}:private_boundary_invalid`);
+    if (entry.stage !== eventStage) issues.push(`${label}:stage_mismatch`);
+    if (!/^[A-Za-z0-9._:-]{1,200}$/u.test(String(entry.provider ?? ""))) issues.push(`${label}:provider_invalid`);
+    const providerOrdinal = (providerOrdinals.get(entry.provider) ?? 0) + 1;
+    providerOrdinals.set(entry.provider, providerOrdinal);
+    if (entry.ledgerOrdinal !== providerOrdinal) issues.push(`${label}:ordinal_invalid`);
+    if (typeof entry.requestRef !== "string" || entry.requestRef.length < 1 || entry.requestRef.length > 500
+      || /[\r\n\u0000]/u.test(entry.requestRef)) issues.push(`${label}:request_ref_invalid`);
+    if (!/^[a-f0-9]{64}$/u.test(String(entry.reservationDigest ?? ""))) issues.push(`${label}:reservation_digest_invalid`);
+    else if (reservationDigests.has(entry.reservationDigest)) issues.push(`${label}:reservation_digest_duplicate`);
+    else reservationDigests.add(entry.reservationDigest);
+    if (typeof entry.sourceStatus !== "string" || entry.sourceStatus.length < 1 || entry.sourceStatus.length > 200
+      || /[\r\n\u0000]/u.test(entry.sourceStatus)) issues.push(`${label}:source_status_invalid`);
+    for (const flag of ["planned", "reserved", "dispatched", "completed", "indeterminate", "cacheHit"]) {
+      if (typeof entry[flag] !== "boolean") issues.push(`${label}:${flag}_not_boolean`);
+    }
+    if (entry.planned !== true) issues.push(`${label}:not_planned`);
+    if (entry.dispatched === true && entry.reserved !== true) issues.push(`${label}:dispatch_without_reservation`);
+    if (entry.completed === true && entry.dispatched !== true) issues.push(`${label}:completion_without_dispatch`);
+    if (entry.completed === true && entry.indeterminate === true) issues.push(`${label}:terminal_status_conflict`);
+    if (entry.cacheHit === true && (entry.dispatched === true || entry.completed === true || entry.indeterminate === true)) {
+      issues.push(`${label}:cache_hit_physical_status_conflict`);
+    }
+  }
+  const counters = issues.length === 0 ? recomputeRequestCounters(ledger) : null;
+  return {
+    valid: issues.length === 0,
+    issues: uniqueStrings(issues),
+    replay: counters ? {
+      counters,
+      physicalReservationCount: counters.reserved,
+      reservations: null,
+      lastEventDigest: null,
+    } : null,
+  };
+}
+
+function validateVerifierCounterProjection(document, ledger, replay, scope, transactionId) {
+  const issues = [];
+  if (!replay) return { valid: false, issues: ["ledger_replay_unavailable"] };
+  let counters = document;
+  if (isPlainObject(document?.counters)) {
+    counters = document.counters;
+    const expectedKeys = [
+      "byProvider",
+      "counters",
+      "privateOnly",
+      "recomputedFromAppendOnlyLedger",
+      "schema",
+      "stage",
+      "transactionId",
+    ].sort();
+    if (canonicalJson(Object.keys(document).sort()) !== canonicalJson(expectedKeys)) issues.push("document_key_set_invalid");
+    if (document.schema !== "m2.v2.request-counters-private.v0.1") issues.push("document_schema_invalid");
+    if (document.privateOnly !== true || document.recomputedFromAppendOnlyLedger !== true) issues.push("document_provenance_invalid");
+    if (document.stage !== scope) issues.push("document_stage_mismatch");
+    if (document.transactionId !== transactionId) issues.push("document_transaction_id_mismatch");
+    if (!isPlainObject(document.byProvider)) issues.push("by_provider_invalid");
+    else {
+      const ledgerProviders = uniqueStrings((ledger ?? []).map((entry) => entry?.provider));
+      for (const provider of ledgerProviders) {
+        if (!isPlainObject(document.byProvider[provider])) {
+          issues.push(`by_provider_missing:${provider}`);
+          continue;
+        }
+        const expected = recomputeRequestCounters(ledger.filter((entry) => entry?.provider === provider));
+        if (canonicalJson(document.byProvider[provider]) !== canonicalJson(expected)) {
+          issues.push(`by_provider_replay_mismatch:${provider}`);
+        }
+      }
+      for (const [provider, projection] of Object.entries(document.byProvider)) {
+        const expected = recomputeRequestCounters(ledger.filter((entry) => entry?.provider === provider));
+        if (canonicalJson(projection) !== canonicalJson(expected)) issues.push(`by_provider_extra_or_stale:${provider}`);
+      }
+    }
+  }
+  if (!isPlainObject(counters)
+    || canonicalJson(Object.keys(counters).sort()) !== canonicalJson([...REQUEST_COUNTER_FIELDS].sort())) {
+    issues.push("counter_key_set_invalid");
+  } else if (canonicalJson(counters) !== canonicalJson(replay.counters)) {
+    issues.push("counter_replay_mismatch");
+  }
+  return { valid: issues.length === 0, issues: uniqueStrings(issues) };
+}
+
+function verifierPhysicalRequestCount(state) {
+  if (Number.isInteger(state?.physicalRelayRequestCount) && state.physicalRelayRequestCount >= 0) {
+    return state.physicalRelayRequestCount;
+  }
+  const tavily = state?.tavily?.physicalRequestCount;
+  const relay = state?.relay?.physicalRequestCount;
+  if (Number.isInteger(tavily) && tavily >= 0 && Number.isInteger(relay) && relay >= 0) return tavily + relay;
+  return null;
+}
+
+function verifierIntegrityResult(issues, details = {}) {
+  const normalized = uniqueStrings(issues);
+  return {
+    valid: normalized.length === 0,
+    issues: normalized,
+    scope: details.scope ?? null,
+    transactionId: details.transactionId ?? null,
+    bindingDigest: details.bindingDigest ?? null,
+    requestEventLedgerVerified: details.requestEventLedgerVerified === true,
+    requestCounterReplayVerified: details.requestCounterReplayVerified === true,
+    closedBindingPresent: details.closedBindingPresent === true,
+    closedBindingVerified: details.closedBindingVerified ?? null,
+    replay: details.replay ?? null,
+  };
 }
 
 function bindingDescriptors(binding, scope) {

@@ -1,6 +1,6 @@
 {
   "schema": "m2.v2.migration-set-integrity-public.v0.2",
-  "status": "frozen_before_implementation",
+  "status": "IMPLEMENTED_AND_SYNTHETICALLY_VERIFIED",
   "classification": "public_sanitized_not_for_formal_decision",
   "manifestPathRules": {
     "normalizedUnique": true,
@@ -19,5 +19,15 @@
     "rollbackCapable": true,
     "partialStateMayBecomeCurrent": false
   },
-  "faultInjection": ["before_private_rename", "after_private_rename", "before_env_write", "after_env_write", "before_git_check", "before_receipt_write"]
+  "faultInjection": ["before_private_rename", "after_private_rename", "before_env_write", "after_env_write", "before_git_check", "before_receipt_write"],
+  "verificationScope": {
+    "syntheticBoundaryTests": "verified",
+    "realPrivateMigrationClaimed": false,
+    "exactHeadCiClaimed": false,
+    "publicRestatementClaimed": false
+  },
+  "authorization": {
+    "full160Authorized": false,
+    "nextDevelopmentReadiness": "NOT_AUTHORIZED"
+  }
 }

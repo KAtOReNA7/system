@@ -2,6 +2,7 @@ import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "
 import { dirname, join } from "node:path";
 import { canonicalJson, sha256 } from "./pilotCore.js";
 import { readCurrentRequestStateSnapshot } from "./integrityState.js";
+import { initializeRuntimeRequestLedgerState } from "./requestEventLedger.js";
 import {
   V2B7_BUNDLE_RELATIVE,
   V2B7_CANARY_MANIFEST_DIGEST,
@@ -28,7 +29,7 @@ export const V2B8_RELAY_REQUEST_CAP = 24;
 export const V2B8_MAX_REPAIRS = 4;
 export const V2B8_PRIVATE_RELATIVE = "data/private-output/m2-v2-evidence-pilot/v2b8-canary-stability";
 export const V2B8_V2B7_PRIVATE_RELATIVE = "data/private-output/m2-v2-evidence-pilot/v2b7-canary-v3";
-export const V2B8_WORKBOOK_RELATIVE = "data/private-output/m2-v2-evidence-pilot/canary-v3-1/M2-v2-canary-v3-private-review-workbook-v0.3.xlsx";
+export const V2B8_WORKBOOK_RELATIVE = "data/private-output/m2-v2-evidence-pilot/canary-v3-1/M2-v2-canary-v3-private-review-workbook-v0.4.xlsx";
 
 export const V2B8_GATE_THRESHOLDS = Object.freeze({
   querySuccessRate: 0.8,
@@ -62,7 +63,7 @@ export const V2B8_FILES = Object.freeze({
   usage: "canary-v3-1-usage-ledger-private-v0.1.json",
   validation: "canary-v3-1-full-validation-receipt-private-v0.1.json",
   verification: "canary-v3-1-verification-receipt-private-v0.1.json",
-  workbookVerification: "canary-v3-1-workbook-verification-private-v0.1.json",
+  workbookVerification: "canary-v3-1-workbook-verification-private-v0.3.json",
 });
 
 const PUBLIC = Object.freeze({
@@ -310,7 +311,6 @@ export function assertPublicV2B8Sanitized(content) {
     "data/private-output",
     "OPENAI_API_KEY",
     "TAVILY_API_KEY",
-    "Authorization",
     "sk-",
     "tvly-",
     "canarySlotId",
@@ -318,6 +318,9 @@ export function assertPublicV2B8Sanitized(content) {
     "providerReceipt",
   ];
   for (const token of forbidden) if (content.includes(token)) throw new Error(`v2b8_public_privacy_token:${token}`);
+  if (/\bauthorization\s*[:=]\s*["']?\s*(?:bearer|basic)\b/iu.test(content)) {
+    throw new Error("v2b8_public_authorization_header_forbidden");
+  }
   if (/https?:\/\//iu.test(content)) throw new Error("v2b8_public_url_forbidden");
   if (/[A-Za-z]:[\\/]/u.test(content)) throw new Error("v2b8_public_absolute_path_forbidden");
   return true;
@@ -407,7 +410,7 @@ function readV2B7Private(store) {
 }
 
 function newState(contract, createdAt) {
-  return {
+  return initializeRuntimeRequestLedgerState({
     schema: "m2.v2.v2b8-execution-state-private.v0.1",
     privateOnly: true,
     createdAt,
@@ -421,7 +424,7 @@ function newState(contract, createdAt) {
     pretestsPassed: false,
     canaryExecuted: false,
     full160Authorized: false,
-  };
+  });
 }
 
 function assertState(state, contract) {

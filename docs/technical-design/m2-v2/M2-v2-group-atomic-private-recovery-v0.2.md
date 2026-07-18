@@ -1,6 +1,8 @@
 # M2 v2 Group-atomic Private Recovery 合同 v0.2
 
-状态：`frozen_before_implementation`；public sanitized；`not_for_formal_decision`。
+状态：`IMPLEMENTED_AND_SYNTHETICALLY_VERIFIED`；public sanitized；`not_for_formal_decision`。
+
+实现范围：closed staging、group-atomic promotion、rollback 与 same-input no-op 已由 synthetic fault-injection tests 验证。本合同不声称真实 private migration、exact-head CI 或 public restatement 已完成；`full160Authorized=false`，`nextDevelopmentReadiness=NOT_AUTHORIZED`。
 
 Recovery source 仅限 immutable manifests、append-only provider receipts、Source Records、evidence records、request event ledger 和 frozen execution contracts；public 报告不得作为恢复源。
 

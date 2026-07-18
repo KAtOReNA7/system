@@ -1,8 +1,16 @@
 {
   "schema": "m2.v2.canary-v3-1-decision-public.v0.1",
-  "status": "not_for_formal_decision",
+  "status": "historical_original_retained_superseded_not_current_authorization",
+  "historicalStatusAtCheckpoint": "not_for_formal_decision",
+  "lifecycle": {
+    "historical": true,
+    "superseded": true,
+    "notCurrentAuthorization": true,
+    "currentAuthority": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.2.json"
+  },
   "full160Authorized": false,
   "canaryDecision": "CANARY_CONDITIONAL",
+  "canaryDecisionScope": "historical_original_v2b8_decision_only",
   "safetyPassed": true,
   "qualityPassed": false,
   "blockerIds": [
@@ -183,6 +191,7 @@
     }
   ],
   "nextStep": "review_private_pack_and_repair_quality_without_scaling",
+  "nextStepFieldScope": "historical_superseded_not_authorized_now",
   "privateWorkbookGenerated": true,
   "privateWorkbookVerificationPassed": true,
   "modelTrainingPerformed": false,

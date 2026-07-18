@@ -10,6 +10,7 @@ import { canonicalJson, sha256 } from "./pilotCore.js";
 import {
   commitAtomicRequestCheckpoint,
   readCurrentRequestStateSnapshot,
+  validateVerifierRequestIntegrity,
   validateFrozenSourceBundleDigest,
   withReceiptRuntimeView,
 } from "./integrityState.js";
@@ -37,15 +38,40 @@ import {
   parseV2B6StructuredResponse,
   resolveV2B6TimeoutMs,
 } from "./relayExtractionAdapterV2B6.js";
+import { assertProviderExecutionReadiness, bindProviderTransport } from "./providerTransportSecurity.js";
+import {
+  buildV2B6SafeCacheEntry,
+  newV2B6SafeCache,
+  inspectV2B6ProviderCacheReadiness,
+  restoreV2B6SafeCacheEntry,
+  validateV2B6SafeCache,
+} from "./v2b6SafeCache.js";
+import {
+  appendRuntimeRequestEvent,
+  assertRuntimeRequestLedgerState,
+  initializeRuntimeRequestLedgerState,
+} from "./requestEventLedger.js";
 
 export const V2B6_PRIVATE_RELATIVE = "data/private-output/m2-v2-evidence-pilot/v2-b6-extraction-remediation";
 export const V2B6_SOURCE_RELATIVE = "data/private-output/m2-v2-evidence-pilot/v2-b5-independent-search-canary";
 export const V2B6_RELAY_REQUEST_CAP = 40;
 export const V2B6_MODELS = Object.freeze(["gpt-5.6-luna", "gpt-5.6-terra"]);
 
+const V2B6_REQUEST_LEDGER_STAGE = "v2b6";
+const V2B6_VERIFIER_ATOMIC_ROLES = Object.freeze([
+  "state",
+  "cacheIndex",
+  "receiptIndex",
+  "requestLedger",
+  "counters",
+  "receiptEnvelopes",
+  "recoveredDerivedState",
+]);
+
 const FILES = Object.freeze({
   state: "v2b6-execution-state-private-v0.1.json",
-  cache: "v2b6-request-cache-private-v0.1.json",
+  cache: "v2b6-request-cache-private-v0.2.json",
+  legacyCache: "v2b6-request-cache-private-v0.1.json",
   failureMatrix: "extraction-failure-matrix-private-v0.1.json",
   shapeSkeleton: "response-shape-skeleton-private-v0.1.json",
   sourceBundle: "benchmark-source-bundle-private-v0.2.json",
@@ -69,6 +95,10 @@ const PUBLIC = Object.freeze({
 export function checkAndFreezeV2B6(root, options = {}) {
   const privateStore = join(root, V2B6_PRIVATE_RELATIVE);
   mkdirSync(privateStore, { recursive: true });
+  const cachePath = join(privateStore, FILES.cache);
+  if (existsSync(join(privateStore, FILES.legacyCache)) && !existsSync(cachePath)) {
+    throw new Error("v2b6_legacy_raw_cache_requires_quarantine_migration");
+  }
   const sourceStore = join(root, V2B6_SOURCE_RELATIVE);
   const sourceState = readJson(join(sourceStore, "v2b5-execution-state-private-v0.1.json"));
   const oldReceipts = readNdjson(join(sourceStore, "relay-extraction-receipts-private-v0.1.ndjson"));
@@ -91,7 +121,9 @@ export function checkAndFreezeV2B6(root, options = {}) {
   const state = existsSync(statePath) ? readJson(statePath) : newState(sourceState, bundle, config);
   assertState(state, sourceState, bundle, config);
   atomicWriteJson(statePath, state);
-  if (!existsSync(join(privateStore, FILES.cache))) atomicWriteJson(join(privateStore, FILES.cache), { schema: "m2.v2.v2b6-request-cache.v0.1", privateOnly: true, entries: {} });
+  if (!existsSync(cachePath)) atomicWriteJson(cachePath, newV2B6SafeCache());
+  const cacheValidation = validateV2B6SafeCache(readJson(cachePath));
+  if (!cacheValidation.valid) throw new Error(`v2b6_safe_cache_invalid:${cacheValidation.issues.join(",")}`);
   return {
     privateStore,
     sourceStore,
@@ -105,6 +137,10 @@ export function checkAndFreezeV2B6(root, options = {}) {
 export async function runV2B6(root, options = {}) {
   const frozen = checkAndFreezeV2B6(root, options);
   const config = loadConfig(root, options.env);
+  assertProviderExecutionReadiness({
+    ...inspectV2B6ProviderCacheReadiness(root),
+    providerHostBindingVerified: true,
+  });
   const context = {
     root,
     ...frozen,
@@ -117,6 +153,8 @@ export async function runV2B6(root, options = {}) {
     cache: readJson(join(frozen.privateStore, FILES.cache)),
     receipts: readNdjson(join(frozen.privateStore, FILES.receipts)),
   };
+  const cacheValidation = validateV2B6SafeCache(context.cache);
+  if (!cacheValidation.valid) throw new Error(`v2b6_safe_cache_invalid:${cacheValidation.issues.join(",")}`);
   reconcileInProgress(context);
   const profile = await runCapabilityMatrix(context);
   atomicWriteJson(join(context.privateStore, FILES.profile), profile);
@@ -159,14 +197,27 @@ export function readV2B6Results(root) {
     profile: readOptional(FILES.profile),
     evaluation: readOptional(FILES.evaluation),
     usage: readOptional(FILES.usage),
+    cache: readOptional(FILES.cache),
+    legacyCachePresent: existsSync(join(privateStore, FILES.legacyCache)),
     state: atomicSnapshot.present ? atomicSnapshot.members.state : readJson(join(privateStore, FILES.state)),
     atomicBinding: atomicSnapshot,
   };
 }
 
 export function verifyV2B6(root) {
+  const requestIntegrity = validateVerifierRequestIntegrity(root, {
+    scope: V2B6_REQUEST_LEDGER_STAGE,
+    eventStage: V2B6_REQUEST_LEDGER_STAGE,
+    requiredAtomicRoles: V2B6_VERIFIER_ATOMIC_ROLES,
+    legacyStateRelativePath: `${V2B6_PRIVATE_RELATIVE}/${FILES.state}`,
+    requireClosedBinding: true,
+  });
+  if (!requestIntegrity.valid) return v2b6RequestIntegrityFailure(requestIntegrity);
   const results = readV2B6Results(root);
   const issues = [];
+  const cacheValidation = results.cache ? validateV2B6SafeCache(results.cache) : { valid: false, issues: ["safe_cache_missing"] };
+  if (!cacheValidation.valid) issues.push(...cacheValidation.issues.map((issue) => `safe_cache:${issue}`));
+  if (results.legacyCachePresent) issues.push("legacy_raw_cache_not_quarantined");
   if (results.bundle.workCount !== 4 || results.bundle.repeatWorkCount !== 2) issues.push("source_bundle_population_invalid");
   if (results.bundle.newTavilyPhysicalRequestCount !== 0) issues.push("new_tavily_request_detected");
   if (!validateFrozenSourceBundleDigest(results.bundle).valid) issues.push("source_bundle_digest_invalid");
@@ -197,10 +248,45 @@ export function verifyV2B6(root) {
     tavilyPhysicalRequestCountAfter: results.state.tavilyPhysicalRequestCountAfter,
     newTavilyPhysicalRequestCount: 0,
     relayPhysicalRequestCount: results.state.physicalRelayRequestCount,
+    legacyMutableCacheCount: results.legacyCachePresent ? 1 : 0,
+    rawResponseCurrentCacheCount: cacheValidation.issues.filter((issue) => /forbidden_key|secret_like|safety_flags/u.test(issue)).length,
+    safeCacheActualObjectVerified: cacheValidation.valid,
+    requestStateBindingVerified: true,
+    requestEventLedgerVerified: requestIntegrity.requestEventLedgerVerified,
+    requestCounterReplayVerified: requestIntegrity.requestCounterReplayVerified,
+    currentClosedBindingVerified: requestIntegrity.closedBindingPresent
+      ? requestIntegrity.closedBindingVerified
+      : null,
     canaryExecuted: false,
     full160Authorized: false,
   };
   return { ...receiptPayload, receiptDigest: sha256(receiptPayload) };
+}
+
+function v2b6RequestIntegrityFailure(integrity) {
+  const payload = {
+    schema: "m2.v2.v2b6-verification-verdict.v0.2",
+    allPassed: false,
+    issues: integrity.issues.map((issue) => `request_integrity:${issue}`),
+    publicLeakCount: null,
+    sourceBundleDigest: null,
+    tavilyPhysicalRequestCountBefore: null,
+    tavilyPhysicalRequestCountAfter: null,
+    newTavilyPhysicalRequestCount: null,
+    relayPhysicalRequestCount: null,
+    legacyMutableCacheCount: null,
+    rawResponseCurrentCacheCount: null,
+    safeCacheActualObjectVerified: false,
+    requestStateBindingVerified: false,
+    requestEventLedgerVerified: integrity.requestEventLedgerVerified === true,
+    requestCounterReplayVerified: integrity.requestCounterReplayVerified === true,
+    currentClosedBindingVerified: integrity.closedBindingPresent
+      ? integrity.closedBindingVerified
+      : null,
+    canaryExecuted: false,
+    full160Authorized: false,
+  };
+  return { ...payload, receiptDigest: sha256(payload) };
 }
 
 export function writeV2B6PublicReports(root, supplied = null) {
@@ -366,22 +452,72 @@ async function executeSplitLogical(context, profile, model, modelProfile, logica
 
 async function dispatchCached(context, descriptor, payload) {
   const cacheKey = sha256(descriptor);
+  const physicalKey = `relay:${cacheKey}`;
   const cached = context.cache.entries[cacheKey];
   if (cached) {
+    const restored = restoreV2B6SafeCacheEntry(cached);
+    recordCacheHit(context, physicalKey, descriptor, cached);
     return {
-      response: cached.response,
-      receipt: withReceiptRuntimeView(cached.receipt, { cacheHit: true }),
+      response: restored.response,
+      receipt: withReceiptRuntimeView(restored.receipt, { cacheHit: true }),
       cacheHit: true,
     };
   }
   if (context.state.physicalRelayRequestCount >= V2B6_RELAY_REQUEST_CAP) throw new Error("v2b6_relay_request_cap_exhausted");
+  const reservedAt = context.now();
+  const logicalKey = cacheKey;
+  const requestDigest = sha256({ provider: "relay", descriptor, payloadDigest: sha256(payload) });
+  appendRuntimeRequestEvent(context.state, {
+    timestamp: reservedAt,
+    provider: "relay",
+    stage: V2B6_REQUEST_LEDGER_STAGE,
+    logicalKey,
+    physicalKey,
+    eventType: "planned",
+    requestDigest,
+    receiptDigest: null,
+  });
   context.state.physicalRelayRequestCount += 1;
-  context.state.reservations[cacheKey] = { status: "in_progress", reservedAt: context.now(), descriptor };
+  context.state.reservations[cacheKey] = {
+    status: "reserved_before_dispatch",
+    reservedAt,
+    descriptor,
+    logicalKey,
+    physicalKey,
+    requestDigest,
+  };
+  appendRuntimeRequestEvent(context.state, {
+    timestamp: reservedAt,
+    provider: "relay",
+    stage: V2B6_REQUEST_LEDGER_STAGE,
+    logicalKey,
+    physicalKey,
+    eventType: descriptor.phase === "capability" && descriptor.testId === "E1" && descriptor.structuredMode === "local_json"
+      ? "compatibility_retry_reserved"
+      : "reserved",
+    requestDigest,
+    receiptDigest: null,
+  });
   checkpoint(context);
   context.onProgress({ phase: descriptor.phase, model: descriptor.model, testId: descriptor.testId ?? null, stage: descriptor.stage ?? null, physicalRequestCount: context.state.physicalRelayRequestCount });
+  const dispatchedAt = context.now();
+  context.state.reservations[cacheKey].status = "dispatch_started";
+  context.state.reservations[cacheKey].dispatchStartedAt = dispatchedAt;
+  appendRuntimeRequestEvent(context.state, {
+    timestamp: dispatchedAt,
+    provider: "relay",
+    stage: V2B6_REQUEST_LEDGER_STAGE,
+    logicalKey,
+    physicalKey,
+    eventType: "dispatched",
+    requestDigest,
+    receiptDigest: null,
+  });
+  checkpoint(context);
   const response = await dispatchV2B6RelayRequest({
     fetchImpl: context.fetchImpl,
     baseUrl: context.config.baseUrl,
+    approvedHost: context.config.approvedHost,
     apiKey: context.config.apiKey,
     timeoutMs: context.config.timeoutMs,
     payload,
@@ -403,12 +539,23 @@ async function dispatchCached(context, descriptor, payload) {
     structuredMode: descriptor.structuredMode,
     approvedAliases: context.config.approvedAliases,
   });
-  const stored = { response, receipt };
+  const stored = buildV2B6SafeCacheEntry(response, receipt);
   context.cache.entries[cacheKey] = stored;
-  context.state.reservations[cacheKey] = { ...context.state.reservations[cacheKey], status: "completed", completedAt: context.now(), receiptDigest: receipt.receiptDigest };
+  const completedAt = context.now();
+  appendRuntimeRequestEvent(context.state, {
+    timestamp: completedAt,
+    provider: "relay",
+    stage: V2B6_REQUEST_LEDGER_STAGE,
+    logicalKey,
+    physicalKey,
+    eventType: "completed",
+    requestDigest,
+    receiptDigest: receipt.receiptDigest,
+  });
+  context.state.reservations[cacheKey] = { ...context.state.reservations[cacheKey], status: "completed", completedAt, receiptDigest: receipt.receiptDigest };
   context.receipts.push(receipt);
   checkpoint(context);
-  return { ...stored, cacheHit: false };
+  return { response, receipt, cacheHit: false };
 }
 
 export function evaluateV2B6Benchmark(input) {
@@ -948,8 +1095,10 @@ function renderMarkdown(key, report) {
 function loadConfig(root, suppliedEnv) {
   const env = { ...readEnvFile(join(root, ".env.local")), ...process.env, ...(suppliedEnv ?? {}) };
   const baseUrl = String(env.OPENAI_BASE_URL ?? "").trim().replace(/\/+$/u, "");
+  const approvedHost = String(env.M2_V2_APPROVED_RELAY_HOST ?? "").trim().toLocaleLowerCase("en-US");
   const apiKey = String(env.OPENAI_API_KEY ?? "").trim();
-  if (!baseUrl || !apiKey) throw new Error("v2b6_relay_configuration_incomplete");
+  if (!baseUrl || !approvedHost || !apiKey) throw new Error("v2b6_relay_configuration_incomplete");
+  const transport = bindProviderTransport({ baseUrl, approvedHost });
   const approvedAliases = {};
   const oldPath = join(root, V2B6_SOURCE_RELATIVE, "relay-extraction-receipts-private-v0.1.ndjson");
   for (const receipt of readNdjson(oldPath)) {
@@ -959,10 +1108,11 @@ function loadConfig(root, suppliedEnv) {
     approvedAliases[receipt.requestedModelId] = unique(rows);
   }
   return {
-    baseUrl,
+    baseUrl: transport.baseUrl,
+    approvedHost: transport.approvedHost,
     apiKey,
     timeoutMs: resolveV2B6TimeoutMs(env.M2_V2_RELAY_EXTRACTION_TIMEOUT_MS),
-    relayBindingDigest: sha256({ baseUrl, apiKeyDigest: sha256(apiKey) }),
+    relayBindingDigest: sha256({ baseUrl: transport.baseUrl, approvedHost: transport.approvedHost, apiKeyDigest: sha256(apiKey) }),
     approvedAliases,
   };
 }
@@ -972,7 +1122,7 @@ function publicConfig(config) {
 }
 
 function newState(sourceState, bundle, config) {
-  return {
+  return initializeRuntimeRequestLedgerState({
     schema: "m2.v2.v2b6-execution-state.v0.1",
     privateOnly: true,
     createdAt: new Date().toISOString(),
@@ -987,10 +1137,11 @@ function newState(sourceState, bundle, config) {
     newTavilyPhysicalRequestCount: 0,
     canaryExecuted: false,
     full160Authorized: false,
-  };
+  });
 }
 
 function assertState(state, sourceState, bundle, config) {
+  assertRuntimeRequestLedgerState(state, V2B6_REQUEST_LEDGER_STAGE);
   if (state.sourceBundleDigest !== bundle.sourceBundleDigest) throw new Error("v2b6_state_bundle_mismatch");
   if (state.relayBindingDigest !== config.relayBindingDigest) throw new Error("v2b6_state_relay_binding_mismatch");
   if (state.timeoutMs !== config.timeoutMs) throw new Error("v2b6_state_timeout_mismatch");
@@ -1001,19 +1152,63 @@ function assertState(state, sourceState, bundle, config) {
 }
 
 function reconcileInProgress(context) {
-  for (const reservation of Object.values(context.state.reservations)) {
-    if (reservation.status === "in_progress") reservation.status = "indeterminate_after_crash";
+  for (const [cacheKey, reservation] of Object.entries(context.state.reservations)) {
+    if (!["in_progress", "reserved_before_dispatch", "dispatch_started"].includes(reservation.status)) continue;
+    const timestamp = context.now();
+    const physicalKey = reservation.physicalKey ?? `relay:${cacheKey}`;
+    const logicalKey = reservation.logicalKey ?? cacheKey;
+    const requestDigest = reservation.requestDigest ?? sha256({ stage: V2B6_REQUEST_LEDGER_STAGE, provider: "relay", physicalKey });
+    const cached = context.cache.entries[cacheKey];
+    if (reservation.status === "dispatch_started" && cached) {
+      appendRuntimeRequestEvent(context.state, {
+        timestamp, provider: "relay", stage: V2B6_REQUEST_LEDGER_STAGE, logicalKey, physicalKey,
+        eventType: "completed", requestDigest, receiptDigest: cacheEntryReceiptDigest(cached),
+      });
+      reservation.status = "completed_recovered";
+      reservation.completedAt = timestamp;
+      reservation.receiptDigest = cacheEntryReceiptDigest(cached);
+    } else {
+      appendRuntimeRequestEvent(context.state, {
+        timestamp, provider: "relay", stage: V2B6_REQUEST_LEDGER_STAGE, logicalKey, physicalKey,
+        eventType: "indeterminate", requestDigest, receiptDigest: null,
+      });
+      reservation.status = "indeterminate_after_crash";
+      reservation.completedAt = timestamp;
+    }
   }
   checkpoint(context);
 }
 
+function recordCacheHit(context, physicalKey, descriptor, cached) {
+  const timestamp = context.now();
+  const logicalKey = `cache-hit:${sha256({ physicalKey, sequence: context.state.requestEventLedger.length + 1 })}`;
+  const requestDigest = sha256({ provider: "relay", descriptor });
+  appendRuntimeRequestEvent(context.state, {
+    timestamp, provider: "relay", stage: V2B6_REQUEST_LEDGER_STAGE, logicalKey, physicalKey,
+    eventType: "planned", requestDigest, receiptDigest: null,
+  });
+  appendRuntimeRequestEvent(context.state, {
+    timestamp, provider: "relay", stage: V2B6_REQUEST_LEDGER_STAGE, logicalKey, physicalKey,
+    eventType: "cache_hit_observed", requestDigest, receiptDigest: cacheEntryReceiptDigest(cached),
+  });
+  checkpoint(context);
+}
+
+function cacheEntryReceiptDigest(entry) {
+  const digest = entry?.receipt?.receiptDigest;
+  return /^[a-f0-9]{64}$/u.test(String(digest ?? "")) ? digest : sha256(entry);
+}
+
 function checkpoint(context) {
+  assertRuntimeRequestLedgerState(context.state, V2B6_REQUEST_LEDGER_STAGE);
   commitAtomicRequestCheckpoint(context.root, {
     scope: "v2b6",
     createdAt: context.now(),
     state: context.state,
     caches: { relay: context.cache },
     receipts: context.receipts,
+    requestLedger: context.state.requestEventLedger,
+    counters: context.state.requestCounters,
     adapterVersion: V2B6_ADAPTER_VERSION,
     manifestBindings: {
       sourceBundleDigest: context.bundle?.sourceBundleDigest ?? null,

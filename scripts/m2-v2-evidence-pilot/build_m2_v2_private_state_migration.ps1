@@ -19,12 +19,25 @@ if (-not $RepoRoot) {
 $AllowedEnvNames = @(
     "OPENAI_API_KEY",
     "OPENAI_BASE_URL",
+    "TAVILY_API_KEY",
     "M2_V2_EVIDENCE_API_BASE_URL",
     "M2_V2_EVIDENCE_PROVIDER",
     "M2_V2_PILOT_COST_MODE",
     "M2_V2_PILOT_MAX_REQUESTS",
-    "M2_V2_PROVIDER_PROBE_MAX_REQUESTS"
+    "M2_V2_PROVIDER_PROBE_MAX_REQUESTS",
+    "M2_V2_SEARCH_PROVIDER",
+    "M2_V2_TAVILY_BASE_URL",
+    "M2_V2_TAVILY_TOPIC",
+    "M2_V2_TAVILY_SEARCH_DEPTH",
+    "M2_V2_TAVILY_MAX_RESULTS",
+    "M2_V2_TAVILY_COUNTRY",
+    "M2_V2_TAVILY_PROJECT",
+    "M2_V2_TAVILY_MAX_REQUESTS",
+    "M2_V2_RELAY_EXTRACTION_MAX_REQUESTS",
+    "M2_V2_RELAY_EXTRACTION_TIMEOUT_MS"
 )
+
+$RequiredEnvNames = @("OPENAI_API_KEY", "TAVILY_API_KEY")
 
 function Quote-NativeArgument([string]$Value) {
     if ($Value.IndexOf('"') -ge 0) {
@@ -136,6 +149,18 @@ function Assert-OutsideRepository([string]$Candidate, [string]$Repository) {
     }
 }
 
+function Assert-SeparateDirectories([string]$First, [string]$Second) {
+    $firstFull = [IO.Path]::GetFullPath($First).TrimEnd('\')
+    $secondFull = [IO.Path]::GetFullPath($Second).TrimEnd('\')
+    $firstPrefix = $firstFull + '\'
+    $secondPrefix = $secondFull + '\'
+    if ($firstFull.Equals($secondFull, [StringComparison]::OrdinalIgnoreCase) -or
+        $firstPrefix.StartsWith($secondPrefix, [StringComparison]::OrdinalIgnoreCase) -or
+        $secondPrefix.StartsWith($firstPrefix, [StringComparison]::OrdinalIgnoreCase)) {
+        throw "migration_recovery_key_directory_not_separate"
+    }
+}
+
 function Set-KeyFileAcl([string]$Path) {
     $identity = [Security.Principal.WindowsIdentity]::GetCurrent().Name
     $security = New-Object Security.AccessControl.FileSecurity
@@ -163,6 +188,7 @@ $outputFull = [IO.Path]::GetFullPath($OutputDirectory)
 $keyDirectoryFull = [IO.Path]::GetFullPath($RecoveryKeyDirectory)
 Assert-OutsideRepository $outputFull $resolvedRepo
 Assert-OutsideRepository $keyDirectoryFull $resolvedRepo
+Assert-SeparateDirectories $outputFull $keyDirectoryFull
 New-Item -ItemType Directory -Path $outputFull -Force | Out-Null
 New-Item -ItemType Directory -Path $keyDirectoryFull -Force | Out-Null
 
@@ -205,15 +231,25 @@ if ($trackedPrivate.Count -ne 0) {
 
 $envLines = Get-Content -LiteralPath $envLocal -Encoding UTF8
 $managedLines = New-Object System.Collections.Generic.List[string]
+$managedNames = New-Object System.Collections.Generic.List[string]
 foreach ($name in $AllowedEnvNames) {
     $matches = @($envLines | Where-Object { $_ -match ('^\s*' + [regex]::Escape($name) + '\s*=') })
-    if ($matches.Count -ne 1) {
-        throw "migration_required_env_value_missing_or_duplicate"
+    if ($matches.Count -gt 1) {
+        throw "migration_env_value_duplicate"
+    }
+    if ($matches.Count -eq 0) {
+        continue
     }
     if ($matches[0] -match '^\s*[A-Za-z_][A-Za-z0-9_]*\s*=\s*$') {
         throw "migration_required_env_value_empty"
     }
     $managedLines.Add($matches[0])
+    $managedNames.Add($name)
+}
+foreach ($name in $RequiredEnvNames) {
+    if (-not $managedNames.Contains($name)) {
+        throw "migration_required_env_value_missing"
+    }
 }
 
 $stagingRoot = Join-Path ([IO.Path]::GetTempPath()) ("m2-v2-private-migration-build-" + [guid]::NewGuid().ToString("N"))
@@ -251,9 +287,24 @@ try {
             sha256 = (Get-FileHash -LiteralPath $file.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
         })
     }
+    $controlEntries = New-Object System.Collections.Generic.List[object]
+    $controlFiles = @(
+        Get-ChildItem -LiteralPath $toolsDir -Recurse -File -Force
+        Get-Item -LiteralPath (Join-Path $stagingRoot "README-new-computer.md")
+    ) | Sort-Object FullName
+    foreach ($file in $controlFiles) {
+        $relative = $file.FullName.Substring($stagingRoot.Length).TrimStart('\').Replace('\', '/')
+        $controlEntries.Add([ordered]@{
+            relativePath = $relative
+            role = if ($relative.StartsWith("tools/")) { "migration_tool" } else { "migration_readme" }
+            sensitive = $false
+            sizeBytes = $file.Length
+            sha256 = (Get-FileHash -LiteralPath $file.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+        })
+    }
 
     $manifest = [ordered]@{
-        schema = "m2.v2.private-state-migration-manifest.v0.1"
+        schema = "m2.v2.private-state-migration-manifest.v0.2"
         privateOnly = $true
         createdAtUtc = (Get-Date).ToUniversalTime().ToString("o")
         sourceGit = [ordered]@{
@@ -261,7 +312,8 @@ try {
             commit = $commit
         }
         scope = [ordered]@{
-            environmentVariableNames = $AllowedEnvNames
+            environmentVariableNames = $managedNames
+            environmentVariableAllowlistVersion = "m2-v2-private-migration-env-v0.2"
             privateStateRole = "data/private-output/m2-v2-evidence-pilot"
             unrelatedPrivateOutputIncluded = $false
             privateInputIncluded = $false
@@ -270,8 +322,10 @@ try {
             reparseFilesExcluded = $copyAudit.excludedReparseFileCount
         }
         entries = $entries
+        controlEntries = $controlEntries
         payloadFileCount = $entries.Count
         payloadBytes = ($payloadFiles | Measure-Object Length -Sum).Sum
+        controlFileCount = $controlEntries.Count
     }
     $manifestPath = Join-Path $metadataDir "migration-manifest.private.json"
     Write-Utf8NoBom $manifestPath (($manifest | ConvertTo-Json -Depth 8) + [Environment]::NewLine)
@@ -323,7 +377,7 @@ try {
     Set-KeyFileAcl $keyPath
 
     $receipt = [ordered]@{
-        schema = "m2.v2.private-state-migration-receipt.v0.1"
+        schema = "m2.v2.private-state-migration-receipt.v0.2"
         status = "ready_for_manual_transfer"
         createdAtUtc = (Get-Date).ToUniversalTime().ToString("o")
         archiveFileName = $archiveName
@@ -337,7 +391,9 @@ try {
         excludedReparseFileCount = $copyAudit.excludedReparseFileCount
         sourceBranch = $branch
         sourceCommit = $commit
-        recoveryKeyStoredSeparately = $true
+        recoveryKeyDirectorySeparationVerified = $true
+        separateTransferVerified = $false
+        operatorSeparateTransferRequired = $true
         gitTracked = $false
         evidenceQueriesExecuted = 0
     }
@@ -361,6 +417,8 @@ try {
         encryption = "7z_aes256_header_encrypted"
         passwordPrinted = $false
         passwordInProcessArguments = $false
+        recoveryKeyDirectorySeparationVerified = $true
+        separateTransferVerified = $false
         gitTrackedPrivateCount = 0
         evidenceQueriesExecuted = 0
     } | ConvertTo-Json -Compress

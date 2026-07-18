@@ -1,6 +1,6 @@
 {
   "schema": "m2.v2.verifier-authority-binding-public.v0.2",
-  "status": "frozen_before_implementation",
+  "status": "IMPLEMENTED_AND_SYNTHETICALLY_VERIFIED",
   "classification": "public_sanitized_not_for_formal_decision",
   "currentAuthority": {
     "allowedRoles": ["current_state_index", "current_integrity_restatement"],
@@ -61,5 +61,11 @@
   "authorization": {
     "full160Authorized": false,
     "nextDevelopmentReadiness": "NOT_AUTHORIZED"
+  },
+  "verificationScope": {
+    "syntheticBoundaryTests": "verified",
+    "realPrivateMigrationClaimed": false,
+    "exactHeadCiClaimed": false,
+    "publicRestatementClaimed": false
   }
 }

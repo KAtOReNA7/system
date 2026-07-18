@@ -1,6 +1,6 @@
 {
   "schema": "m2.v2.append-only-request-ledger-public.v0.1",
-  "status": "frozen_before_implementation",
+  "status": "IMPLEMENTED_AND_SYNTHETICALLY_VERIFIED",
   "classification": "public_sanitized_not_for_formal_decision",
   "eventFields": [
     "eventId",
@@ -42,5 +42,15 @@
     "indeterminateDeletion": false,
     "historicalSnapshotRetained": true
   },
-  "requiredTests": ["crash", "duplicate", "cache_hit", "retry", "indeterminate", "no_rollback", "replay", "chain_tamper", "monotonic_counter"]
+  "requiredTests": ["crash", "duplicate", "cache_hit", "retry", "indeterminate", "no_rollback", "replay", "chain_tamper", "monotonic_counter"],
+  "verificationScope": {
+    "syntheticBoundaryTests": "verified",
+    "realPrivateMigrationClaimed": false,
+    "exactHeadCiClaimed": false,
+    "publicRestatementClaimed": false
+  },
+  "authorization": {
+    "full160Authorized": false,
+    "nextDevelopmentReadiness": "NOT_AUTHORIZED"
+  }
 }

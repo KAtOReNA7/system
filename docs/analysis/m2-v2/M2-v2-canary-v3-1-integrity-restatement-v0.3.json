@@ -1,0 +1,138 @@
+{
+  "schema": "m2.v2.canary-v3.1-integrity-restatement-public.v0.3",
+  "status": "not_for_formal_decision",
+  "generatedAt": "2026-07-18",
+  "historicalReportRetained": true,
+  "historicalReportOverwritten": false,
+  "recomputationMode": "offline_from_immutable_and_append_only_private_inputs",
+  "providerRequestDelta": 0,
+  "frozenBindings": {
+    "fixedCanaryManifestDigest": "4288ad6130fe34da6f56f361604d44f1124313b3b3f4fc98b870570333d65f23",
+    "repeatDigest": "e3be6282451c02d6a630aeec322951d62fc477ca9e27d0f9cc2db0fc68e471fc",
+    "sourceBundleDigest": "d68896763b2a7b63afd3580c623e06cd72eaa9432b396dd3e9e62b6a50f643df",
+    "manifestChanged": false,
+    "sampleReplaced": false
+  },
+  "historicalContract": {
+    "version": "v2b8-historical-v0.1",
+    "independentlyRecomputed": true,
+    "search": {
+      "successfulQueries": 26,
+      "queryDenominator": 27,
+      "successRate": 0.9629629629629629,
+      "coveredWorks": 10,
+      "sourceRecordCount": 88
+    },
+    "entity": {
+      "resolved": 9,
+      "unresolved": 1
+    },
+    "evidence": {
+      "candidate": 85,
+      "accepted": 52,
+      "pilotUsable": 48,
+      "rejected": 33
+    },
+    "citation": {
+      "preRemediationReferences": 230,
+      "preRemediationMappedReferences": 230
+    },
+    "time": {
+      "explicitTemporalClaims": 32,
+      "temporalClaimDenominator": 32,
+      "explicitTemporalExtractionRate": 1
+    },
+    "reproducibility": {
+      "meanRepeatSourceOverlap": 0.3450793650793651,
+      "sameSourceClaimAgreement": 0.6733333333333333,
+      "freshSemanticClaimAgreement": 0.2
+    },
+    "decision": "CANARY_CONDITIONAL",
+    "full160Authorized": false
+  },
+  "restatedContract": {
+    "version": "v2b8-integrity-remediation-v0.3",
+    "evaluationSchema": "m2.v2.v2b8-canary-v3-1-evaluation-private.v0.3",
+    "evaluatedAt": "2026-07-18T16:01:00.000Z",
+    "evaluationDigest": "4d506076b0da438bc5a90f40bec6e52d559a3c18b31eedd1c48647f1203536c3",
+    "repairsApplied": [
+      "zero_denominator_fail_closed",
+      "positive_evidence_source_classification",
+      "enforced_domain_and_source_category_diversity",
+      "claim_clause_and_span_bound_event_time",
+      "applicability_derived_conflict_family_audit",
+      "edition_and_stage_aware_conflict_detection"
+    ],
+    "search": {
+      "successfulQueries": 26,
+      "queryDenominator": 27,
+      "successRate": 0.9629629629629629,
+      "coveredWorks": 10,
+      "sourceRecordCount": 88
+    },
+    "entity": {
+      "resolved": 9,
+      "unresolved": 1
+    },
+    "evidence": {
+      "candidate": 85,
+      "accepted": 51,
+      "pilotUsable": 46,
+      "rejected": 34
+    },
+    "citation": {
+      "postRemediationReferences": 226,
+      "postRemediationMappedReferences": 226,
+      "alignmentRate": 1
+    },
+    "time": {
+      "temporalClaimDenominator": 21,
+      "eventTimeExtractionCount": 10,
+      "explicitTemporalExtractionRate": 0.47619047619047616,
+      "eventTimeProvenanceMissingCount": 0
+    },
+    "conflict": {
+      "declaredFamilyCount": 9,
+      "applicableFamilyCount": 7,
+      "nonApplicableFamilyCount": 2,
+      "unresolvedConflictCount": 3,
+      "auditStatus": "FAIL",
+      "passed": false
+    },
+    "reproducibility": {
+      "meanRepeatSourceOverlap": 0.3450793650793651,
+      "sameSourceClaimAgreement": 0.6833333333333333,
+      "freshSemanticClaimAgreement": 0.2
+    },
+    "failedGateIds": [
+      "explicit_temporal_extraction_complete",
+      "conflict_family_coverage_complete",
+      "mean_repeat_source_overlap",
+      "same_source_claim_agreement",
+      "end_to_end_semantic_claim_agreement"
+    ],
+    "decision": "CANARY_FAIL",
+    "full160Authorized": false
+  },
+  "deltas": {
+    "candidate": 0,
+    "accepted": -1,
+    "pilotUsable": -2,
+    "rejected": 1,
+    "sameSourceClaimAgreement": 0.010000000000000009,
+    "freshSemanticClaimAgreement": 0
+  },
+  "nextDevelopmentReadiness": "NOT_AUTHORIZED",
+  "boundaries": {
+    "canaryExecuted": false,
+    "full160Executed": false,
+    "modelTrainingPerformed": false,
+    "b4Changed": false,
+    "formalCashTargetChanged": false,
+    "finalHoldoutOpened": false,
+    "enteredV2COrV2D": false,
+    "enteredC4OrM3": false,
+    "released": false,
+    "prMerged": false
+  }
+}

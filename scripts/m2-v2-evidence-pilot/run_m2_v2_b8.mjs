@@ -37,7 +37,20 @@ try {
   } else if (command === "verify") {
     const receipt = verifyV2B8(root);
     const results = readV2B8Results(root);
-    print({ ...summary(command, results), status: receipt.allPassed ? "ok" : "failed", verificationIssues: receipt.issues });
+    print({
+      ...summary(command, results),
+      status: receipt.allPassed ? "ok" : "failed",
+      decision: receipt.currentRestatedDecision,
+      historicalDecision: receipt.historicalDecision,
+      historicalEvaluationVerified: receipt.historicalEvaluationVerified,
+      currentRestatedDecision: receipt.currentRestatedDecision,
+      currentRestatementVerified: receipt.currentRestatementVerified,
+      effectiveReceiptsVerified: receipt.effectiveReceiptsVerified,
+      currentAuthorityDigestVerified: receipt.currentAuthorityDigestVerified,
+      transactionBindingVerified: receipt.transactionBindingVerified,
+      providerRequestDelta: receipt.providerRequestDelta,
+      verificationIssues: receipt.issues,
+    });
     if (!receipt.allPassed) process.exitCode = 1;
   } else {
     throw new Error(`v2b8_command_invalid:${command}`);
@@ -49,6 +62,12 @@ try {
     error: error instanceof Error ? error.message : "unknown_error",
     newTavilyPhysicalRequestCount: 0,
     newRelayPhysicalRequestCount: 0,
+    historicalDecision: null,
+    historicalEvaluationVerified: false,
+    currentRestatedDecision: null,
+    currentRestatementVerified: false,
+    effectiveReceiptsVerified: false,
+    currentAuthorityDigestVerified: false,
     full160Authorized: false,
   }));
   process.exitCode = 1;
