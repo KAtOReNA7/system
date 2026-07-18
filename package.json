@@ -196,6 +196,7 @@
     "m2:v2:v2b4:verify": "node scripts/m2-v2-evidence-pilot/run_m2_v2_b4_canary.mjs verify",
     "m2:v2:v2b5:check": "node scripts/m2-v2-evidence-pilot/run_m2_v2_b5.mjs check",
     "m2:v2:v2b5:run": "node scripts/m2-v2-evidence-pilot/run_m2_v2_b5.mjs run",
+    "m2:v2:v2b5:probe": "node scripts/m2-v2-evidence-pilot/run_m2_v2_b5.mjs probe",
     "m2:v2:v2b5:resume": "node scripts/m2-v2-evidence-pilot/run_m2_v2_b5.mjs resume",
     "m2:v2:v2b5:block": "node scripts/m2-v2-evidence-pilot/run_m2_v2_b5.mjs block",
     "m2:v2:v2b5:validate": "node scripts/m2-v2-evidence-pilot/run_m2_v2_b5.mjs validate",

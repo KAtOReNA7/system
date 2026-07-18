@@ -62,6 +62,7 @@ const FILES = Object.freeze({
   tavilyCache: "tavily-cache-private-v0.1.json",
   relayCache: "relay-extraction-cache-private-v0.1.json",
   capability: "tavily-capability-receipt-private-v0.1.json",
+  capabilityHistory: "tavily-capability-history-private-v0.1.json",
   benchmarkManifest: "luna-terra-benchmark-manifest-private-v0.1.json",
   benchmarkSearch: "luna-terra-benchmark-search-private-v0.1.json",
   benchmarkEvaluation: "luna-terra-benchmark-evaluation-private-v0.1.json",
@@ -197,6 +198,12 @@ export async function runV2B5(root, options = {}) {
     onProgress: options.onProgress ?? (() => {}),
   };
 
+  if (options.resume === true && canReuseV2B5TerminalPreGateResult(state, privateStore)) {
+    const existingResults = readV2B5Results(root);
+    writeV2B5PublicReports(root, existingResults);
+    return existingResults;
+  }
+
   const pretest = runTargetedPretest(root);
   atomicWriteJson(join(privateStore, FILES.pretest), pretest);
   state.pretestsPassed = pretest.allPassed;
@@ -298,6 +305,86 @@ export async function runV2B5(root, options = {}) {
   return result;
 }
 
+export function canReuseV2B5TerminalPreGateResult(state, privateStore) {
+  if (state?.executionStatus !== "blocked_canary_pre_gate"
+    || state?.tavilyProviderDecision !== "READY"
+    || state?.canaryExecuted !== false) return false;
+  for (const name of [FILES.capability, FILES.benchmarkEvaluation, FILES.canaryEvaluation]) {
+    if (!existsSync(join(privateStore, name))) return false;
+  }
+  try {
+    const capability = readJson(join(privateStore, FILES.capability));
+    const benchmark = readJson(join(privateStore, FILES.benchmarkEvaluation));
+    const canary = readJson(join(privateStore, FILES.canaryEvaluation));
+    return capability.tavilyProviderDecision === "READY"
+      && benchmark.extractionBenchmarkDecision === "FAIL"
+      && canary.executed === false
+      && canary.decision === "CANARY_BLOCKED";
+  } catch {
+    return false;
+  }
+}
+
+export async function runV2B5CapabilityAuditProbe(root, options = {}) {
+  const frozen = checkAndFreezeV2B5(root, options);
+  const privateStore = frozen.privateStore;
+  const config = loadV2B5Configuration(root, options.env);
+  const statePath = join(privateStore, FILES.state);
+  const tavilyCachePath = join(privateStore, FILES.tavilyCache);
+  const relayCachePath = join(privateStore, FILES.relayCache);
+  const capabilityPath = join(privateStore, FILES.capability);
+  if (!existsSync(statePath) || !existsSync(tavilyCachePath) || !existsSync(relayCachePath)) {
+    throw new Error("v2b5_capability_audit_requires_existing_state");
+  }
+  let state = readJson(statePath);
+  const tavilyCache = readJson(tavilyCachePath);
+  const relayCache = readJson(relayCachePath);
+  const bindings = configurationBindings(config);
+  const priorCapability = existsSync(capabilityPath) ? readJson(capabilityPath) : null;
+  const migration = migrateV2B5LegacyCapabilityState(
+    state,
+    priorCapability,
+    options.now?.() ?? new Date().toISOString(),
+  );
+  state = migration.state;
+  if (migration.migrated) atomicWriteJson(capabilityPath, migration.capability);
+  assertExecutionContainers(state, tavilyCache, relayCache, frozen, bindings);
+  reconcileIndeterminateReservations(state, tavilyCache, relayCache, options.now?.() ?? new Date().toISOString());
+  checkpointExecution(privateStore, state, tavilyCache, relayCache);
+  const tavily = new TavilyStructuredSearchProviderV2B5({
+    baseUrl: config.tavily.baseUrl,
+    apiKey: config.tavily.apiKey,
+    topic: config.tavily.topic,
+    searchDepth: config.tavily.searchDepth,
+    maxResults: config.tavily.maxResults,
+    country: config.tavily.country,
+    projectId: config.tavily.projectId,
+    timeoutMs: config.tavily.timeoutMs,
+    fetchImpl: options.fetchImpl,
+  });
+  const context = {
+    root,
+    privateStore,
+    frozen,
+    config,
+    state,
+    tavilyCache,
+    relayCache,
+    tavily,
+    relay: null,
+    bindings,
+    resume: true,
+    now: options.now ?? (() => new Date().toISOString()),
+    onProgress: options.onProgress ?? (() => {}),
+  };
+  const capability = await runCapabilityProbe(context, { forceAuditProbe: true });
+  atomicWriteJson(capabilityPath, capability);
+  appendCapabilityHistory(privateStore, [priorCapability, capability].filter(Boolean));
+  state.tavilyProviderDecision = capability.tavilyProviderDecision;
+  checkpointExecution(privateStore, state, tavilyCache, relayCache);
+  return { capability, state };
+}
+
 export function recordV2B5ExecutionBlock(root, reason = "external_dispatch_not_permitted_by_execution_environment") {
   if (reason !== "external_dispatch_not_permitted_by_execution_environment") {
     throw new Error("v2b5_execution_block_reason_invalid");
@@ -393,9 +480,9 @@ export function buildV2B5ExecutionBlockCapability(bindings, reason = "external_d
   return { ...capability, stateInvariantValidation };
 }
 
-async function runCapabilityProbe(context) {
+async function runCapabilityProbe(context, options = {}) {
   const existingPath = join(context.privateStore, FILES.capability);
-  if (existsSync(existingPath)) {
+  if (options.forceAuditProbe !== true && existsSync(existingPath)) {
     const existing = readJson(existingPath);
     if (existing.schema === "m2.v2.tavily-capability.v0.1" && existing.finalResult
       && existing.tavilyBindingDigest === context.bindings.tavily
@@ -450,6 +537,25 @@ async function runCapabilityProbe(context) {
     throw new Error(`v2b5_capability_state_invalid:${stateInvariantValidation.issues.join(",")}`);
   }
   return { ...capability, stateInvariantValidation };
+}
+
+function appendCapabilityHistory(privateStore, capabilities) {
+  const path = join(privateStore, FILES.capabilityHistory);
+  const existing = existsSync(path) ? readJson(path) : {
+    schema: "m2.v2.tavily-capability-history.v0.1",
+    privateOnly: true,
+    entries: [],
+  };
+  const seen = new Set(existing.entries.map((entry) => sha256(entry)));
+  for (const capability of capabilities) {
+    const digest = sha256(capability);
+    if (!seen.has(digest)) {
+      existing.entries.push(capability);
+      seen.add(digest);
+    }
+  }
+  atomicWriteJson(path, existing);
+  return existing;
 }
 
 export function migrateV2B5LegacyCapabilityState(stateInput, capabilityInput, migratedAt = new Date().toISOString()) {
@@ -2231,4 +2337,5 @@ export const __test = Object.freeze({
   publicBenchmarkMetrics,
   migrateV2B5LegacyCapabilityState,
   buildV2B5ExecutionBlockCapability,
+  canReuseV2B5TerminalPreGateResult,
 });

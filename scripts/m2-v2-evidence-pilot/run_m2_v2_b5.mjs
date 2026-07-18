@@ -7,6 +7,7 @@ import {
   readV2B5Results,
   recordV2B5ExecutionBlock,
   runV2B5,
+  runV2B5CapabilityAuditProbe,
   runV2B5FullValidation,
   verifyV2B5,
   writeV2B5PublicReports,
@@ -29,6 +30,20 @@ try {
       relayApiKeyConfigured: result.config.relayApiKeyConfigured,
       tavilyRequestCap: V2B5_TAVILY_REQUEST_CAP,
       relayRequestCap: V2B5_RELAY_REQUEST_CAP,
+      full160Authorized: false,
+    });
+  } else if (command === "probe") {
+    const result = await runV2B5CapabilityAuditProbe(root);
+    print({
+      command,
+      status: "ok",
+      tavilyProviderDecision: result.capability.tavilyProviderDecision,
+      dispatchAttempted: result.capability.finalResult?.dispatched === true,
+      httpStatus: result.capability.finalResult?.providerReceipt?.httpStatus ?? null,
+      contractValid: result.capability.finalResult?.contractValid === true,
+      resultCount: result.capability.finalResult?.resultCount ?? 0,
+      tavilyPhysicalRequestCount: result.state.tavily.physicalRequestCount,
+      relayPhysicalRequestCount: result.state.relay.physicalRequestCount,
       full160Authorized: false,
     });
   } else if (command === "run" || command === "resume") {

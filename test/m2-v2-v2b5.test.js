@@ -1,4 +1,7 @@
 import assert from "node:assert/strict";
+import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
+import { tmpdir } from "node:os";
 import test from "node:test";
 import { canonicalJson, sha256 } from "../src/domain/m2V2EvidencePilot/pilotCore.js";
 import {
@@ -253,6 +256,31 @@ test("Tavily cache invalidates on execution namespace and parameters", () => {
   assert.notEqual(first.cacheKey, resultsChanged.cacheKey);
   assert.equal(first.cacheKey, buildV2B5TavilyCacheDescriptor(base).cacheKey);
   assert.equal(first.sourceRecordSchemaVersion, V2B5_SOURCE_RECORD_SCHEMA);
+});
+
+test("capability audit command is distinct from block and resume commands", () => {
+  const scripts = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8")).scripts;
+  assert.match(scripts["m2:v2:v2b5:probe"], /run_m2_v2_b5\.mjs probe/u);
+  assert.doesNotMatch(scripts["m2:v2:v2b5:probe"], /block/u);
+  assert.notEqual(scripts["m2:v2:v2b5:probe"], scripts["m2:v2:v2b5:resume"]);
+});
+
+test("completed pre-gate FAIL is terminal and reusable without provider retry", () => {
+  const dir = mkdtempSync(join(tmpdir(), "v2b5-terminal-"));
+  mkdirSync(dir, { recursive: true });
+  writeFileSync(join(dir, "tavily-capability-receipt-private-v0.1.json"), JSON.stringify({ tavilyProviderDecision: "READY" }));
+  writeFileSync(join(dir, "luna-terra-benchmark-evaluation-private-v0.1.json"), JSON.stringify({ extractionBenchmarkDecision: "FAIL" }));
+  writeFileSync(join(dir, "canary-v3-evaluation-private-v0.1.json"), JSON.stringify({ executed: false, decision: "CANARY_BLOCKED" }));
+  assert.equal(runtimeTest.canReuseV2B5TerminalPreGateResult({
+    executionStatus: "blocked_canary_pre_gate",
+    tavilyProviderDecision: "READY",
+    canaryExecuted: false,
+  }, dir), true);
+  assert.equal(runtimeTest.canReuseV2B5TerminalPreGateResult({
+    executionStatus: "blocked_canary_pre_gate",
+    tavilyProviderDecision: "READY",
+    canaryExecuted: true,
+  }, dir), false);
 });
 
 test("hard request caps remain 40 for both providers", () => {
