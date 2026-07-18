@@ -219,12 +219,11 @@ export function restoreVerifiedPrivateStateMigration(options) {
   const envEntry = verification.entries.find((entry) => entry.relativePath === ENV_PATH);
   if (!envEntry) throw new Error("migration_env_fragment_missing");
   const envValues = parseEnvFragment(envEntry.sourcePath, declaredEnvNames);
-  assertGitBoundary(targetRoot);
-
   const destinationPrivate = join(targetRoot, "data", "private-output", "m2-v2-evidence-pilot");
   const envDestination = join(targetRoot, ".env.local");
-  assertNoLinksOrReparse(targetRoot, dirname(destinationPrivate));
-  assertNoLinksOrReparse(targetRoot, dirname(envDestination));
+  assertNoLinksOrReparse(targetRoot, destinationPrivate);
+  assertNoLinksOrReparse(targetRoot, envDestination);
+  assertGitBoundary(targetRoot);
   const mergedEnv = buildMergedEnv(envDestination, envValues, declaredEnvNames);
   const privateEntries = verification.entries.filter((entry) => entry.relativePath.startsWith(PRIVATE_PREFIX));
   if (privateEntries.length === 0) throw new Error("migration_private_payload_empty");

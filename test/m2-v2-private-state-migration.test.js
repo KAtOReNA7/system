@@ -184,6 +184,55 @@ test("migration rejects a reparse ancestor in the target and protects fault inje
   assert.equal(MIGRATION_ALLOWED_ENV_NAMES.includes("M2_V2_TAVILY_BASE_URL"), true);
 });
 
+test("migration rejects reparse points at each final target", () => {
+  const privateFixture = makeMigrationFixture();
+  try {
+    const outside = join(privateFixture.base, "outside-evidence-pilot");
+    mkdirSync(outside);
+    mkdirSync(join(privateFixture.targetRoot, "data", "private-output"), { recursive: true });
+    symlinkSync(outside, join(privateFixture.targetRoot, "data", "private-output", "m2-v2-evidence-pilot"), "junction");
+    assert.throws(() => restoreVerifiedPrivateStateMigration({
+      extractRoot: privateFixture.extractRoot,
+      targetRepoRoot: privateFixture.targetRoot,
+      manifest: privateFixture.manifest,
+      force: true,
+    }), /reparse/u);
+  } finally {
+    privateFixture.cleanup();
+  }
+
+  const envFixture = makeMigrationFixture();
+  try {
+    const outside = join(envFixture.base, "outside.env");
+    write(outside, "UNRELATED_SETTING=outside\n");
+    symlinkSync(outside, join(envFixture.targetRoot, ".env.local"), "file");
+    assert.throws(() => restoreVerifiedPrivateStateMigration({
+      extractRoot: envFixture.extractRoot,
+      targetRepoRoot: envFixture.targetRoot,
+      manifest: envFixture.manifest,
+      force: true,
+    }), /reparse/u);
+  } finally {
+    envFixture.cleanup();
+  }
+});
+
+test("migration keeps the git-ignore boundary fail closed after reparse validation", () => {
+  const fixture = makeMigrationFixture();
+  try {
+    write(join(fixture.targetRoot, ".gitignore"), ".env.*\n");
+    assert.throws(() => restoreVerifiedPrivateStateMigration({
+      extractRoot: fixture.extractRoot,
+      targetRepoRoot: fixture.targetRoot,
+      manifest: fixture.manifest,
+      force: true,
+    }), /git_ignore_boundary/u);
+    assert.equal(existsSync(join(fixture.targetRoot, "data", "private-output", "m2-v2-evidence-pilot", "state.json")), false);
+  } finally {
+    fixture.cleanup();
+  }
+});
+
 test("migration rollback restores originally absent private and environment targets", () => {
   const fixture = makeMigrationFixture();
   try {
