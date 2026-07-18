@@ -1,0 +1,189 @@
+{
+  "schema": "m2.v2.pr7-p1-remediation-pre-registration-public.v0.1",
+  "status": "frozen_before_implementation",
+  "classification": "public_sanitized_not_for_formal_decision",
+  "generatedAt": "2026-07-18",
+  "reviewedHead": "a472d1092a0c9184f45cea3dad5e6bfb9b95a3e9",
+  "base": "d81b952e37dd43365c0091cdd6665e69d8d39a7e",
+  "scope": {
+    "p1Required": 13,
+    "p1MayBeMergedOrDowngraded": false,
+    "directlyCoupledP2": [
+      "PR7-P2-001",
+      "PR7-P2-002",
+      "PR7-P2-003",
+      "PR7-P2-004",
+      "PR7-P2-005",
+      "PR7-P2-006",
+      "PR7-P2-008",
+      "PR7-P2-009",
+      "PR7-P2-013",
+      "PR7-P2-016"
+    ]
+  },
+  "findings": [
+    {
+      "findingId": "PR7-P1-001",
+      "affectedFiles": ["private authority audit generator", "current-state index", "integrity restatement"],
+      "rootCause": "historical conditional was accepted as a current-decision predicate",
+      "plannedFix": "bind current authority only to the versioned current index and current restatement digest",
+      "tests": ["historical conditional rejected as current", "missing current authority fails", "current digest drift fails", "OR predicate fails"],
+      "privateMigration": "regenerate authority audit v0.3 without overwriting v0.2",
+      "publicArtifact": "M2-v2-current-state-index-v0.2",
+      "acceptanceGate": "historicalDecision and currentRestatedDecision are distinct and current roles are digest-bound",
+      "status": "planned"
+    },
+    {
+      "findingId": "PR7-P1-002",
+      "affectedFiles": ["integrityState.js", "v2b8Contract.js", "v2b8Runtime.js"],
+      "rootCause": "the default verifier reads the historical evaluation and omits current-restatement roles",
+      "plannedFix": "verify and return historical evaluation plus current restatement, effective receipts, current authority and frozen upstream bindings",
+      "tests": ["missing restatement fails", "tampered restatement fails", "historical-only state fails", "verifier remains read-only"],
+      "privateMigration": "bind restatement/current authority roles in the current B8 transaction",
+      "publicArtifact": "M2-v2-verifier-authority-binding-v0.2",
+      "acceptanceGate": "B8 verifier exits zero only when currentRestatementVerified=true",
+      "status": "planned"
+    },
+    {
+      "findingId": "PR7-P1-003",
+      "affectedFiles": ["integrityState.js", "B5-B8 runtimes and verifiers"],
+      "rootCause": "transaction projections did not enforce an exact closed member set or recompute every derived binding",
+      "plannedFix": "define per-stage exact roles and recompute cache, receipt, ledger, counter, state, evaluation and upstream digests",
+      "tests": ["state/cache/receipt/ledger/counter/extra/missing/upstream/restatement/derived tamper all fail"],
+      "privateMigration": "rebuild closed transaction bindings from existing authoritative local material",
+      "publicArtifact": "M2-v2-verifier-authority-binding-v0.2",
+      "acceptanceGate": "all fault-injection cases fail closed through public verifier entrypoints",
+      "status": "planned"
+    },
+    {
+      "findingId": "PR7-P1-004",
+      "affectedFiles": ["integrityState.js", "B5/B7/B8 reservation paths"],
+      "rootCause": "request ledger was reconstructed from mutable reservations and reserved budget could be rolled back",
+      "plannedFix": "use a chained append-only request-event ledger and derive all counters by replay",
+      "tests": ["crash", "duplicate", "cache hit", "retry", "indeterminate", "no rollback", "chain tamper", "monotonic replay"],
+      "privateMigration": "derive a legacy event ledger without deleting indeterminate or resetting counters",
+      "publicArtifact": "M2-v2-append-only-request-ledger-v0.1",
+      "acceptanceGate": "ledger chain and replayed counters equal bound state counters",
+      "status": "planned"
+    },
+    {
+      "findingId": "PR7-P1-005",
+      "affectedFiles": ["offline recovery tooling", "private transaction roles"],
+      "rootCause": "recovery promoted files individually and trusted declared gates without an all-role verified staging transaction",
+      "plannedFix": "build a closed staging set, run real gates, then use rollback-capable group promotion",
+      "tests": ["first run", "second no-op", "each promotion fault point", "rollback", "before/after counters"],
+      "privateMigration": "recover only from immutable manifests, append-only receipts, source/evidence records, ledger and frozen contracts",
+      "publicArtifact": "M2-v2-group-atomic-private-recovery-v0.2",
+      "acceptanceGate": "partial state can never become current and rerun is a verified no-op",
+      "status": "planned"
+    },
+    {
+      "findingId": "PR7-P1-006",
+      "affectedFiles": ["restore_m2_v2_private_state_migration.ps1"],
+      "rootCause": "manifest paths were not unique and only file counts were compared before whole-tree copy",
+      "plannedFix": "normalize unique paths, require exact actual/manifest set equality, reject reparse/hardlink anomalies and copy only verified entries",
+      "tests": ["duplicate entry hiding unlisted payload", "extra/missing payload", "path escape", "reparse ancestor"],
+      "privateMigration": "none beyond a truthful fault-injection receipt",
+      "publicArtifact": "M2-v2-migration-set-integrity-v0.2",
+      "acceptanceGate": "actual file set equals manifest file set and only verified members are copied",
+      "status": "planned"
+    },
+    {
+      "findingId": "PR7-P1-007",
+      "affectedFiles": ["restore_m2_v2_private_state_migration.ps1"],
+      "rootCause": "private state was promoted before env/tracking checks and failures had no rollback",
+      "plannedFix": "perform all checks before promotion and promote private/env state in one rollback-capable transaction",
+      "tests": ["fault before/after private rename", "fault before/after env write", "fault before Git check", "fault before receipt"],
+      "privateMigration": "record failure and rollback receipts without exposing secrets",
+      "publicArtifact": "M2-v2-migration-set-integrity-v0.2",
+      "acceptanceGate": "every injected failure restores the original current state and env bytes",
+      "status": "planned"
+    },
+    {
+      "findingId": "PR7-P1-008",
+      "affectedFiles": ["relayExtractionAdapterV2B6.js", "v2b6Runtime.js", "current B6 cache"],
+      "rootCause": "the cache persisted the adapter response including raw JSON while receipts asserted otherwise",
+      "plannedFix": "persist only a normalized safe projection and verify the stored object rather than a caller flag",
+      "tests": ["raw JSON rejected", "safe projection cache hit preserved", "receipt truth matches stored object"],
+      "privateMigration": "forensic classify, quarantine legacy raw entries and create old/new digest receipt",
+      "publicArtifact": "M2-v2-PR7-P1-remediation-summary-v0.1",
+      "acceptanceGate": "rawResponseCurrentCacheCount=0 and legacyMutableCacheCount=0",
+      "status": "planned"
+    },
+    {
+      "findingId": "PR7-P1-009",
+      "affectedFiles": ["v2b8Stability.js", "v2b8Runtime.js"],
+      "rootCause": "event time selected the first date in a sentence containing a matching keyword",
+      "plannedFix": "bind date and event keyword to a clause/span or return null when ambiguous",
+      "tests": ["publication then award", "adaptation then release", "multiple editions", "rating versus publication", "range", "no date", "precision", "planned versus actual"],
+      "privateMigration": "offline restatement from existing immutable evidence only",
+      "publicArtifact": "M2-v2-event-time-clause-binding-v0.3",
+      "acceptanceGate": "all adversarial multi-event cases bind the correct clause or fail closed",
+      "status": "planned"
+    },
+    {
+      "findingId": "PR7-P1-010",
+      "affectedFiles": ["v2b8Stability.js", "v2b8Runtime.js"],
+      "rootCause": "all conflict families were marked covered and mutually-exclusive checks trusted model contradiction keys",
+      "plannedFix": "derive applicability/execution from local canonical claims and perform edition-aware independent conflict detection",
+      "tests": ["empty input not evaluable", "missing contradiction key", "mutually exclusive status", "edition/date/stage non-conflict", "unresolved ambiguity"],
+      "privateMigration": "offline conflict recomputation from existing records",
+      "publicArtifact": "M2-v2-conflict-applicability-v0.3",
+      "acceptanceGate": "coverage counts only applicable executed families and required N/A fails closed",
+      "status": "planned"
+    },
+    {
+      "findingId": "PR7-P1-011",
+      "affectedFiles": ["B7/B8 contract tests", "package.json", "CI"],
+      "rootCause": "tests called write-capable freeze APIs against process.cwd() when real ignored manifests existed",
+      "plannedFix": "use synthetic temporary roots for every write-capable test and prove repository content and metadata invariance",
+      "tests": ["tracked/private content digest unchanged", "tracked/private metadata digest unchanged", "Git status unchanged"],
+      "privateMigration": "test-isolation proof only",
+      "publicArtifact": "M2-v2-PR7-P1-remediation-summary-v0.1",
+      "acceptanceGate": "npm test changes zero governed bytes and zero mtimes",
+      "status": "planned"
+    },
+    {
+      "findingId": "PR7-P1-012",
+      "affectedFiles": ["all executable relay/provider adapters and payload builders"],
+      "rootCause": "early paths accepted insecure/mismatched endpoints and did not force Responses store=false",
+      "plannedFix": "enforce approved HTTPS host binding, redirect validation and store=false before dispatch",
+      "tests": ["http/userinfo/host/redirect/store missing/store true reject", "approved HTTPS passes", "key absent from errors"],
+      "privateMigration": "none; synthetic-only validation and future-provider hard gate",
+      "publicArtifact": "M2-v2-provider-transport-retention-v0.1",
+      "acceptanceGate": "unsafe requests fail before fetch and approved synthetic HTTPS keeps store=false",
+      "status": "planned"
+    },
+    {
+      "findingId": "PR7-P1-013",
+      "affectedFiles": ["workbook verifier", "historical workbook lineage"],
+      "rootCause": "structural and privacy facts were accepted from caller assertions instead of parsed from XLSX",
+      "plannedFix": "independently parse workbook ZIP/XML, calculate all structure/privacy facts and separate human visual attestation",
+      "tests": ["dummy PK fails", "hidden/external/custom XML rejected", "formula/cache/hyperlink/validation counts derived", "forbidden values detected"],
+      "privateMigration": "generate v0.4 workbook with native hyperlink relationships from existing evidence only",
+      "publicArtifact": "M2-v2-workbook-independent-verification-v0.1",
+      "acceptanceGate": "verifier derives every structural fact and visualReviewAttested is never automatic",
+      "status": "planned"
+    }
+  ],
+  "boundaries": {
+    "providerRequestDelta": 0,
+    "canaryAuthorized": false,
+    "full160Authorized": false,
+    "modelTrainingAuthorized": false,
+    "b4ChangeAuthorized": false,
+    "formalCashChangeAuthorized": false,
+    "holdoutOpenAuthorized": false,
+    "releaseAuthorized": false,
+    "mergeAuthorized": false,
+    "nextDevelopmentReadiness": "NOT_AUTHORIZED"
+  },
+  "completionRequires": {
+    "p0": 0,
+    "p1": 0,
+    "linuxCi": "pass",
+    "windowsCi": "pass",
+    "prState": "draft_open_unmerged",
+    "nextStep": "NEW_HEAD_INCREMENTAL_INDEPENDENT_REVIEW_REQUIRED"
+  }
+}

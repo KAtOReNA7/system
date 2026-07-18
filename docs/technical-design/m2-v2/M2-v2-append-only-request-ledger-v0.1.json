@@ -1,0 +1,46 @@
+{
+  "schema": "m2.v2.append-only-request-ledger-public.v0.1",
+  "status": "frozen_before_implementation",
+  "classification": "public_sanitized_not_for_formal_decision",
+  "eventFields": [
+    "eventId",
+    "sequence",
+    "timestamp",
+    "provider",
+    "stage",
+    "logicalKey",
+    "physicalKey",
+    "eventType",
+    "requestDigest",
+    "receiptDigest",
+    "previousEventDigest",
+    "eventDigest"
+  ],
+  "eventTypes": [
+    "planned",
+    "reserved",
+    "dispatched",
+    "completed",
+    "indeterminate",
+    "cache_hit_observed",
+    "compatibility_retry_reserved"
+  ],
+  "invariants": {
+    "sequenceStrictlyMonotonic": true,
+    "digestChainRequired": true,
+    "reservedBudgetRollbackAllowed": false,
+    "reservationDeletionAllowed": false,
+    "cacheHitRecordedAsEvent": true,
+    "indeterminatePreserved": true,
+    "countersDerivedOnlyByReplay": true,
+    "stateCountersEqualReplay": true
+  },
+  "legacyMigration": {
+    "sources": ["existing_request_material", "immutable_provider_receipts"],
+    "providerResponseFabrication": false,
+    "counterReset": false,
+    "indeterminateDeletion": false,
+    "historicalSnapshotRetained": true
+  },
+  "requiredTests": ["crash", "duplicate", "cache_hit", "retry", "indeterminate", "no_rollback", "replay", "chain_tamper", "monotonic_counter"]
+}

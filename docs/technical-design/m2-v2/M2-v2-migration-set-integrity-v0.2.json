@@ -1,0 +1,23 @@
+{
+  "schema": "m2.v2.migration-set-integrity-public.v0.2",
+  "status": "frozen_before_implementation",
+  "classification": "public_sanitized_not_for_formal_decision",
+  "manifestPathRules": {
+    "normalizedUnique": true,
+    "platformCaseNormalizationExplicit": true,
+    "dotDotRejected": true,
+    "absoluteRejected": true,
+    "driveOrUncEscapeRejected": true,
+    "emptyRejected": true
+  },
+  "setRule": "actual_file_set_equals_manifest_file_set",
+  "copyRule": "copy_verified_manifest_members_only",
+  "reparseRules": ["file_reparse_rejected", "ancestor_reparse_rejected", "junction_rejected", "symlink_rejected", "hardlink_anomaly_rejected", "destination_ancestor_reparse_rejected"],
+  "prePromotionChecks": ["manifest", "hash", "path", "reparse", "git_ignore", "env_template", "secret_exclusion", "destination_conflict"],
+  "transaction": {
+    "privateAndEnvUnified": true,
+    "rollbackCapable": true,
+    "partialStateMayBecomeCurrent": false
+  },
+  "faultInjection": ["before_private_rename", "after_private_rename", "before_env_write", "after_env_write", "before_git_check", "before_receipt_write"]
+}

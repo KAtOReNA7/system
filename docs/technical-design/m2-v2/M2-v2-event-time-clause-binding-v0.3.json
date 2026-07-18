@@ -1,0 +1,17 @@
+{
+  "schema": "m2.v2.event-time-clause-binding-public.v0.3",
+  "status": "frozen_before_implementation",
+  "classification": "public_sanitized_not_for_formal_decision",
+  "requiredFields": ["eventTime", "eventTimePrecision", "eventTimeBasis", "eventTimeSourceId", "eventTimeClauseDigest", "eventTimeSpanStart", "eventTimeSpanEnd", "eventKeywordSpan"],
+  "bindingRules": {
+    "sameClause": true,
+    "explicitGrammarOrPunctuationNeighborhoodAllowed": true,
+    "structuredValueDirectSupportAllowed": true,
+    "multipleDatesMatchedByEventFamily": true,
+    "ambiguousReturnsNull": true,
+    "firstDateFallbackAllowed": false
+  },
+  "adversarialFixtures": ["publication_then_award", "adaptation_then_release", "multiple_edition_dates", "rating_date_vs_publication", "time_range", "no_date", "day_month_year_precision", "negated_planned_actual_event"],
+  "offlineRestatementOnly": true,
+  "providerRequestDelta": 0
+}

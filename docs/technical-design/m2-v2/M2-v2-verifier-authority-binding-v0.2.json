@@ -1,0 +1,65 @@
+{
+  "schema": "m2.v2.verifier-authority-binding-public.v0.2",
+  "status": "frozen_before_implementation",
+  "classification": "public_sanitized_not_for_formal_decision",
+  "currentAuthority": {
+    "allowedRoles": ["current_state_index", "current_integrity_restatement"],
+    "historicalDecisionMaySatisfyCurrent": false,
+    "missingOrDigestMismatch": "fail_closed"
+  },
+  "b8RequiredResult": [
+    "historicalDecision",
+    "historicalEvaluationVerified",
+    "currentRestatedDecision",
+    "currentRestatementVerified",
+    "effectiveReceiptsVerified",
+    "currentAuthorityDigestVerified",
+    "full160Authorized"
+  ],
+  "closedMemberRoles": [
+    "state",
+    "cache_index",
+    "receipt_index",
+    "request_event_ledger",
+    "counter_projection",
+    "transaction_manifest",
+    "execution_contract",
+    "immutable_manifests",
+    "frozen_upstream_digests",
+    "derived_evaluation",
+    "effective_receipt_index",
+    "current_authority",
+    "current_restatement",
+    "contract_bound_public_report_digests"
+  ],
+  "rules": {
+    "exactRoleSet": true,
+    "extraRoleRejected": true,
+    "missingRoleRejected": true,
+    "receiptDigestsRecomputedFromStoredReceipts": true,
+    "cacheIndexRecomputed": true,
+    "ledgerReplayed": true,
+    "countersDerivedOnlyFromLedger": true,
+    "legacyMirrorsVerifiedWhenConsumed": true,
+    "derivedEvaluationRecomputed": true,
+    "upstreamDigestsRecomputed": true,
+    "verifierReadOnly": true,
+    "providerRequestDelta": 0
+  },
+  "faultInjectionRequired": [
+    "state_tamper",
+    "cache_tamper",
+    "receipt_tamper",
+    "ledger_event_deleted",
+    "counter_tamper",
+    "extra_role",
+    "missing_role",
+    "upstream_digest_tamper",
+    "restatement_tamper",
+    "derived_ndjson_tamper"
+  ],
+  "authorization": {
+    "full160Authorized": false,
+    "nextDevelopmentReadiness": "NOT_AUTHORIZED"
+  }
+}

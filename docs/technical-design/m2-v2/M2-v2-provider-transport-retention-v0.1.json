@@ -1,0 +1,28 @@
+{
+  "schema": "m2.v2.provider-transport-retention-public.v0.1",
+  "status": "frozen_before_implementation",
+  "classification": "public_sanitized_not_for_formal_decision",
+  "scope": ["all_executable_search_routes", "all_executable_relay_routes", "all_responses_payload_builders"],
+  "endpointRules": {
+    "parsedWithUrl": true,
+    "protocol": "https:",
+    "userinfoAllowed": false,
+    "fragmentAllowed": false,
+    "localhostOrPrivateIpAllowed": false,
+    "syntheticAdapterException": "explicit_in_memory_test_adapter_only",
+    "approvedConfiguredHostBindingRequired": true,
+    "redirectProtocolAndHostRevalidated": true
+  },
+  "bearerRule": "attach_only_after_endpoint_binding_passes",
+  "responsesRetention": {
+    "store": false,
+    "missingOrTrue": "fail_before_dispatch"
+  },
+  "errorRule": "api_key_and_authorization_never_in_error_or_log",
+  "futureProviderHardGate": {
+    "legacyMutableCacheCount": 0,
+    "rawResponseCurrentCacheCount": 0,
+    "providerHostBindingVerified": true
+  },
+  "tests": ["http_rejected", "userinfo_rejected", "host_mismatch_rejected", "redirect_mismatch_rejected", "store_missing_rejected", "store_true_rejected", "approved_https_passes", "key_not_in_error"]
+}

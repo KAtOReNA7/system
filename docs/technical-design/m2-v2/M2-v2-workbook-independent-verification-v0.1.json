@@ -1,0 +1,24 @@
+{
+  "schema": "m2.v2.workbook-independent-verification-public.v0.1",
+  "status": "frozen_before_implementation",
+  "classification": "public_sanitized_not_for_formal_decision",
+  "parsedParts": ["workbook", "worksheet_xml", "relationships", "shared_strings", "formulas", "cached_values", "data_validations", "hyperlinks", "styles", "hidden_sheets", "external_links", "defined_names", "custom_xml"],
+  "derivedFacts": ["sheetNames", "rowCounts", "formulaCount", "formulaErrorCount", "cachedFormulaErrors", "hyperlinkCount", "hyperlinkTargets", "validationCount", "forbiddenValueCount", "internalIdCount", "incomeValueCount", "secretCount", "externalLinkCount"],
+  "callerAssertionsAcceptedAsFacts": false,
+  "visualReview": {
+    "independentHumanAttestation": true,
+    "default": false,
+    "structuralVerifierMaySetTrue": false
+  },
+  "historicalWorkbook": {
+    "retained": true,
+    "overwritten": false
+  },
+  "newWorkbook": {
+    "version": "v0.4",
+    "offlineExistingEvidenceOnly": true,
+    "nativeHyperlinkRelationships": true,
+    "hyperlinkFormulasAllowed": false,
+    "providerRequestDelta": 0
+  }
+}
