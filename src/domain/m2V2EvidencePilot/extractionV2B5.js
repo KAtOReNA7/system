@@ -148,6 +148,10 @@ export function validateV2B5ExtractionOutput(value) {
   return { valid: issues.length === 0, issues: unique(issues) };
 }
 
+export function buildV2B5ExtractionSchemaFormat() {
+  return extractionJsonSchemaFormat();
+}
+
 export function normalizeV2B5ExtractionResponse(json, context = {}) {
   const sourceRecords = Array.isArray(context.sourceRecords) ? context.sourceRecords : [];
   const sourceSet = buildV2B5SourceRecordSet(sourceRecords);

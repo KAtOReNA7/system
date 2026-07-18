@@ -1,0 +1,16 @@
+{
+  "schema": "m2.v2.v2b7-next-step-public.v0.1",
+  "status": "not_for_formal_decision",
+  "full160Authorized": false,
+  "currentDecision": "CANARY_CONDITIONAL",
+  "nextStep": "review_failure_modes_before_any_scale_up",
+  "scaleUpPerformed": false,
+  "prohibitedNextPhases": [
+    "full160",
+    "V2-C",
+    "V2-D",
+    "C4",
+    "M3",
+    "release"
+  ]
+}

@@ -215,7 +215,9 @@ export function recordV2B7Pretest(root, input) {
   const receipt = { ...payload, receiptDigest: sha256(payload) };
   atomicWriteJson(join(result.privateStore, PRIVATE_FILES.pretest), receipt);
   result.state.pretestsPassed = receipt.allPassed;
-  result.state.phase = receipt.allPassed ? "phase_a_frozen" : "phase_a_pretest_failed";
+  if (result.state.canaryExecuted !== true && !["search_in_progress", "extraction_in_progress"].includes(result.state.phase)) {
+    result.state.phase = receipt.allPassed ? "phase_a_frozen" : "phase_a_pretest_failed";
+  }
   atomicWriteJson(join(result.privateStore, PRIVATE_FILES.state), result.state);
   return receipt;
 }
