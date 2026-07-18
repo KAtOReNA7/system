@@ -9,7 +9,7 @@
 - 完整性状态：verifier/private-state 修复、离线恢复、全量验证与 100% 复审已经收口；结果以版本化 summary、restatement 和 current-state index 为准
 - 扩量状态：`full160Authorized=false`；V2-C/V2-D 未开始
 
-本目录保留 M2 Forecast Intelligence v2 从 V2-A 到 V2-B.8 的权威产品合同与历史 checkpoint。当前导航见 `docs/analysis/m2-v2/M2-v2-current-state-index-v0.1.md`；完整性修复已完成并停在 Draft/open/unmerged PR #7 等待外部审查。它不修改当前 M2 正式结果，不替代 B4，也不授权训练、full160、V2-C/V2-D、C4、final holdout、release 或 M3。
+本目录保留 M2 Forecast Intelligence v2 从 V2-A 到 V2-B.8 的产品合同与历史 checkpoint。当前导航只见 `docs/analysis/m2-v2/M2-v2-current-state-index-v0.2.md`；旧 index、旧 NEXT/next-step、旧 decision 和 PRD 授权语句均为 `historical / superseded / not authorization`。PR #7 必须保持 Draft/open/unmerged。它不修改当前 M2 正式结果，不替代 B4，也不授权 provider、Canary、训练、full160、V2-C/V2-D、C4、final holdout、release 或 M3。
 
 ## 权威边界
 
@@ -49,4 +49,4 @@
 - 任何模型训练、C4、final holdout 或 release；
 - migration、API、repository、页面或导出实现。
 
-因此 V2-A 的文档包已就绪。用户已于 2026-07-17 授权在 V2-A checkpoint 合入并确认 main CI 后启动 V2-B External Evidence Pilot；该授权只覆盖 evidence pilot，不覆盖模型训练、V2-C/V2-D、C4、final holdout、release 或 M3。
+因此 V2-A 的文档包已就绪。2026-07-17 的用户指令曾历史性授权在 V2-A checkpoint 合入并确认 main CI 后启动 V2-B External Evidence Pilot；该授权已经执行并被 V2-B.2–B.8 与后续完整性修复 supersede，只作追溯，**不构成当前 provider、resume、Canary 或任何新执行授权**。当前授权边界只由 current-state-index-v0.2 与用户最新明确指令给出。

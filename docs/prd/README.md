@@ -10,7 +10,7 @@
 | 待数据验证 | `60-validation/pending-data-decisions.md` |
 | 验收 | `70-acceptance/` |
 
-当前阶段说明：M2 的 3053 部权威范围、238 条业务复核与隔离本地 formal execution 已完成严格对账；旧 v1.1 conditional 已被拒绝，C1、legacy C2-R、C2-R.1、C2、C3 均为 development `FAIL`。M2 v2 V2-A 已完成，V2-B.1–B.8 为历史 checkpoint，B.8 原始决定仍为 `CANARY_CONDITIONAL`；完整性修复后合同的离线 restatement 为 `CANARY_FAIL`。完整性修复与复审已经收口，PR #7 等待外部审查；`full160Authorized=false`、`nextDevelopmentReadiness=NOT_AUTHORIZED`。M3 formal 仍暂缓。
+当前阶段说明：M2 的 3053 部权威范围、238 条业务复核与隔离本地 formal execution 已完成严格对账；旧 v1.1 conditional 已被拒绝，C1、legacy C2-R、C2-R.1、C2、C3 均为 development `FAIL`。M2 v2 V2-A 已完成，V2-B.1–B.8 为历史 checkpoint，B.8 原始决定仍为 `CANARY_CONDITIONAL`；完整性修复后合同的离线 restatement 为 `CANARY_FAIL`。所有历史授权标记均为 `historical / superseded / not authorization`；当前只以 `docs/analysis/m2-v2/M2-v2-current-state-index-v0.2.md` 为导航。PR #7 保持 Draft/open/unmerged；`full160Authorized=false`、`nextDevelopmentReadiness=NOT_AUTHORIZED`。M3 formal 仍暂缓。
 
 ## 单一事实来源原则
 

@@ -4,7 +4,7 @@
 
 - V2-A 架构合同已完成；V2-B.1 至 V2-B.8 均为保留的历史 checkpoint。V2-B.8 原始 Canary v3.1 结论仍为 `CANARY_CONDITIONAL`；修复后合同的离线 restatement 当前结论为 `CANARY_FAIL`，`full160Authorized=false`。
 - verifier 只读/幂等、receipt/cache/state/counter 原子绑定、B8 fail-closed 合同缺口、private derived state 离线恢复与本轮全量验证已经完成。版本化结论见 `M2-v2-integrity-remediation-summary-v0.1`；100% 复审和 PR roundtrip 细节仅保存在 Git ignored private 审计角色中。
-- 当前权威导航为 `docs/analysis/m2-v2/M2-v2-current-state-index-v0.1.md`。历史报告继续保留，但不能作为当前执行指令；原 V2-B.8 报告不得被静默覆盖。
+- 当前权威导航为 `docs/analysis/m2-v2/M2-v2-current-state-index-v0.2.md`。v0.1 index 与历史报告继续保留为 `historical / superseded / not authorization`，不能作为当前执行指令；原 V2-B.8 报告不得被静默覆盖。
 - B4 未改变，继续仅作为 comparator/fallback，未 release；formal-cash target 与 pure-buyout null abstention 未改变；final holdout、embargo shadow、deferred labels 仍 sealed。
 - PR #7 必须保持 Draft/open/unmerged，等待外部审查。V2-C、V2-D、C4、M3 formal、模型训练、Canary 重跑、full160、release 和 PR merge 均未授权；`nextDevelopmentReadiness=NOT_AUTHORIZED`。
 
@@ -34,7 +34,7 @@ v0.2 将 v0.1 的业务汇总稿改造成更适合 Codex 长期维护的文档�
 - final holdout、embargo shadow 和 deferred 60-month labels 仍 sealed；所有结果保持 `not_for_formal_decision`，未 release，未进入 M3。
 - M2 Forecast Intelligence v2 的 V2-A 架构合同已完成：五头 PRD、字段字典、External Evidence Layer、Human Baseline、API/DB/export、JSON Schema 与 traceability 已统一。
 - **V2-B External Evidence Pilot framework 与 fail-closed checkpoint 已完成**：从 3053 部冻结 160 部 immutable 样本，640 个计划 query、0 次外部派发、0 result/page/evidence；resume 640/640 cache hit，17/17 安全/审计硬门通过。
-- 当前没有授权 runtime provider 和经条款/法律批准的域名，故执行状态为 `blocked_no_provider`、结论 `PILOT_CONDITIONAL`、V2-C readiness=`NOT_READY`。下一入口只能是 provider/source governance 后在同一 manifest 上 resume；不得重抽样、要求运营逐作品补信息、训练模型或进入 V2-C/V2-D/C4/M3。
+- `blocked_no_provider`、`PILOT_CONDITIONAL` 与“provider/source governance 后 resume”是 V2-B.1 的历史 checkpoint 记录，已被 B.2–B.8 和后续完整性修复 supersede，不构成当前 provider 或 resume 授权。当前只服从 current-state-index-v0.2；不得重抽样、要求运营逐作品补信息、调用 provider、训练模型或进入 V2-C/V2-D/C4/M3。
 
 权威入口：`docs/prd/m2-v2/README.md`、`docs/technical-design/m2-v2/README.md`、`docs/analysis/m2-v2/M2-v2-evidence-pilot-summary-v0.1.md`、`docs/analysis/m2-v2/M2-v2-evidence-pilot-gate-v0.1.json`。
 

@@ -290,6 +290,7 @@ test("relay adapter persists neither API key nor Authorization header nor raw re
   let observedBody = null;
   const adapter = new OpenAICompatibleRelayCanaryAdapter({
     baseUrl: "https://relay.example/v1",
+    approvedHost: "relay.example",
     apiKey: secret,
     model: "synthetic-model",
     fetchImpl: async (_url, options) => {
@@ -323,6 +324,7 @@ test("relay adapter persists neither API key nor Authorization header nor raw re
   assert.equal(receipt.apiKeyPersisted, false);
   assert.doesNotMatch(serializedReceipt, new RegExp(secret, "u"));
   assert.doesNotMatch(observedBody, /internal-work-secret|identity-secret/iu);
+  assert.equal(JSON.parse(observedBody).store, false);
 });
 
 test("calibration seal contract reads the frozen C3 boolean fields without opening them", () => {

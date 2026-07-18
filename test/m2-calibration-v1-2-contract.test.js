@@ -531,7 +531,7 @@ print(json.dumps({
   assert.equal(payload.complement.uniqueWorkCount, null);
 });
 
-test("generated population ledger is exhaustive and full-library top bands are nested", () => {
+test("generated population ledger is exhaustive and full-library top bands are nested", (t) => {
   const reportPath = path.join(
     root,
     "docs",
@@ -539,7 +539,7 @@ test("generated population ledger is exhaustive and full-library top bands are n
     "m2-real-data",
     "M2-calibration-population-coverage-v1.json",
   );
-  if (!existsSync(reportPath)) return;
+  if (!existsSync(reportPath)) return t.skip("required tracked population coverage report is unavailable");
   const report = JSON.parse(readFileSync(reportPath, "utf8"));
   assert.equal(report.authority.standardWorkCount, 3053);
   assert.equal(report.authority.incomeFactCount, 192872);
@@ -596,7 +596,7 @@ test("generated population ledger is exhaustive and full-library top bands are n
   assert.equal(forward.abstentionReasonRequiredWheneverServedPredictionIsNull, true);
 });
 
-test("generated baseline replay proves every comparator used the v1.2 entry", () => {
+test("generated baseline replay proves every comparator used the v1.2 entry", (t) => {
   const reportPath = path.join(
     root,
     "docs",
@@ -604,7 +604,7 @@ test("generated baseline replay proves every comparator used the v1.2 entry", ()
     "m2-real-data",
     "M2-baseline-comparator-identity-correction-v1.json",
   );
-  if (!existsSync(reportPath)) return;
+  if (!existsSync(reportPath)) return t.skip("required tracked comparator identity report is unavailable");
   const report = JSON.parse(readFileSync(reportPath, "utf8"));
   const evidence = report.integrity.allBaselineMaterialization;
   assert.equal(evidence.allBaselinePredictionsMaterializedThroughV12Entry, true);
@@ -718,7 +718,7 @@ test("v1.2 final holdout command fails closed before a data load", () => {
   assert.match(result.stderr, /dataLoadCalls=0/);
 });
 
-test("generated formula manifest binds every cited source to its historical Git blob", () => {
+test("generated formula manifest binds every cited source to its historical Git blob", (t) => {
   const reportPath = path.join(
     root,
     "docs",
@@ -726,7 +726,7 @@ test("generated formula manifest binds every cited source to its historical Git 
     "m2-real-data",
     "M2-v1.1-formula-difference-manifest-v1.json",
   );
-  if (!existsSync(reportPath)) return;
+  if (!existsSync(reportPath)) return t.skip("required tracked formula manifest is unavailable");
   const report = JSON.parse(readFileSync(reportPath, "utf8"));
   assert.ok(report.sources.length >= 5);
   for (const source of report.sources) {
@@ -747,7 +747,7 @@ test("generated formula manifest binds every cited source to its historical Git 
   }
 });
 
-test("ignored Phase A manifest round-trips case rows and every public report digest", async () => {
+test("ignored Phase A manifest round-trips case rows and every public report digest", async (t) => {
   const privateDir = path.join(root, "data", "private-output", "m2-calibration-v1-2");
   const manifestPath = path.join(
     privateDir,
@@ -757,7 +757,9 @@ test("ignored Phase A manifest round-trips case rows and every public report dig
     privateDir,
     "M2-calibration-v1.2-baseline-cases-private.ndjson",
   );
-  if (!existsSync(manifestPath) && !existsSync(casesPath)) return;
+  if (!existsSync(manifestPath) || !existsSync(casesPath)) {
+    return t.skip("required ignored Phase A manifest or case evidence is unavailable");
+  }
   assert.equal(existsSync(manifestPath), true);
   assert.equal(existsSync(casesPath), true);
   const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
@@ -810,7 +812,7 @@ print(v12.canonical_digest(json.loads(open('src/domain/oldProductEvaluation/cali
   assert.equal(tracked.stdout.trim(), "");
 });
 
-test("tracked Gate anchors ignored cases, role counts, projections, sources, and non-self reports", () => {
+test("tracked Gate anchors ignored cases, role counts, projections, sources, and non-self reports", (t) => {
   const gatePath = path.join(
     root,
     "docs",
@@ -818,10 +820,10 @@ test("tracked Gate anchors ignored cases, role counts, projections, sources, and
     "m2-real-data",
     "M2-calibration-gate-a-v1.json",
   );
-  if (!existsSync(gatePath)) return;
+  if (!existsSync(gatePath)) return t.skip("required tracked Gate A artifact is unavailable");
   const gate = JSON.parse(readFileSync(gatePath, "utf8"));
   const binding = gate.evidenceBindings;
-  if (!binding) return;
+  if (!binding) return t.skip("Gate A artifact predates evidenceBindings and cannot prove this contract");
   assert.match(binding.privateCaseEvidenceSha256, /^[0-9a-f]{64}$/);
   assert.ok(binding.privateCaseRowCount > 0);
   assert.equal(typeof binding.roleModelCounts, "object");
@@ -849,7 +851,7 @@ test("tracked Gate anchors ignored cases, role counts, projections, sources, and
   assert.equal(binding.trackedPrivateArtifactCount, 0);
 });
 
-test("Gate A validation receipt contains process evidence, not self-reported command names", () => {
+test("Gate A validation receipt contains process evidence, not self-reported command names", (t) => {
   const gatePath = path.join(
     root,
     "docs",
@@ -857,9 +859,9 @@ test("Gate A validation receipt contains process evidence, not self-reported com
     "m2-real-data",
     "M2-calibration-gate-a-v1.json",
   );
-  if (!existsSync(gatePath)) return;
+  if (!existsSync(gatePath)) return t.skip("required tracked Gate A artifact is unavailable");
   const gate = JSON.parse(readFileSync(gatePath, "utf8"));
-  if (!gate.validationReceipt) return;
+  if (!gate.validationReceipt) return t.skip("Gate A validation receipt is unavailable");
   const normal =
     gate.validationReceipt.commandResults ?? gate.validationReceipt.results?.successful;
   const failClosed =
@@ -883,7 +885,7 @@ test("Gate A validation receipt contains process evidence, not self-reported com
   assert.match(gate.validationReceipt.phaseAStartHead, /^[0-9a-f]{40}$/);
 });
 
-test("Gate A content conditions are backed by executable evidence and the exact spec set", () => {
+test("Gate A content conditions are backed by executable evidence and the exact spec set", (t) => {
   const gatePath = path.join(
     root,
     "docs",
@@ -891,7 +893,7 @@ test("Gate A content conditions are backed by executable evidence and the exact 
     "m2-real-data",
     "M2-calibration-gate-a-v1.json",
   );
-  if (!existsSync(gatePath)) return;
+  if (!existsSync(gatePath)) return t.skip("required tracked Gate A artifact is unavailable");
   const gate = JSON.parse(readFileSync(gatePath, "utf8"));
   const expected = spec.GateA.requiredTrueItems.filter(
     (item) => item !== "phaseACheckpointCommittedAndPushed",

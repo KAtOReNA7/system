@@ -1,11 +1,13 @@
 # 决策登记表
 
+M2 v2 当前授权与停止边界只由用户最新明确指令和 `docs/analysis/m2-v2/M2-v2-current-state-index-v0.2.md` 给出。下列 DEC-011–014 均保留为历史决策链；其中出现的“已授权”“当前”或 next step 不构成 provider、resume、Canary、full160 或新开发授权。
+
 | 决策 | 状态 | 当前结论 | ADR |
 |---|---|---|---|
-| DEC-014 | 已完成，等待外部审查（M2 v2 完整性修复） | verifier 只读/幂等、atomic binding、B8 fail-closed 合同、private derived state 离线恢复与本轮全量验证已经收口。100% 全项目复审与 PR roundtrip 细节保存在 Git ignored private 审计角色；PR #7 保持 Draft/open/unmerged，`nextDevelopmentReadiness=NOT_AUTHORIZED` | `docs/analysis/m2-v2/M2-v2-integrity-remediation-summary-v0.1.md` |
-| DEC-013 | 历史原始决定 + 当前 restatement | V2-B.1 至 V2-B.8 全部保留为历史 checkpoint；V2-B.8 原始结论仍为 `CANARY_CONDITIONAL`。修复合同的离线 restatement 为 `CANARY_FAIL`、`full160Authorized=false`；不得启动 provider、Canary、模型训练、V2-C/V2-D、holdout 或 release | `docs/analysis/m2-v2/M2-v2-canary-v3-1-integrity-restatement-v0.2.md` |
+| DEC-014 | 历史收口声明（已被 PR #7 独立外审修复轮 supersede） | v0.1 summary 记录当时的 verifier/private-state 收口声明；独立外审随后识别 merge blockers，因此该行只作历史追溯、`not authorization`。当前状态只见 current-state-index-v0.2；PR #7 保持 Draft/open/unmerged，`nextDevelopmentReadiness=NOT_AUTHORIZED` | `docs/analysis/m2-v2/M2-v2-integrity-remediation-summary-v0.1.md` |
+| DEC-013 | 历史原始决定 + 已被后续修复轮 supersede 的 restatement v0.2 | V2-B.1 至 V2-B.8 全部保留为历史 checkpoint；V2-B.8 原始结论仍为 `CANARY_CONDITIONAL`。v0.2 restatement 的 `CANARY_FAIL` 只保留为版本化历史，不是当前授权；当前 restatement/authority 只经 current-state-index-v0.2 解析。`full160Authorized=false` | `docs/analysis/m2-v2/M2-v2-canary-v3-1-integrity-restatement-v0.2.md` |
 | DEC-012 | 历史（V2-B initial fail-closed checkpoint） | 当时冻结 160 部 immutable 样本与 evidence pilot framework，640 个计划 query 未外发，判 `PILOT_CONDITIONAL`、V2-C `NOT_READY`。该 checkpoint 后续已由 B.2–B.8 推进替代；其 provider resume 句不构成当前授权，当前以 DEC-013/014 为准 | `docs/analysis/m2-v2/M2-v2-evidence-pilot-summary-v0.1.md` |
-| DEC-011 | 已授权（V2-B evidence pilot only） | M2 v2 V2-A 五头 PRD、字段字典、External Evidence、Human Baseline、API/DB/export、schema 和 traceability 作为架构 checkpoint；普通 merge 并确认 main CI 后只允许执行 V2-B prospective evidence pilot。V2-B 不训练模型、不改变 B4、不打开 final holdout、不进入 V2-C/V2-D/C4/M3、不 release；缺 provider/private 身份源时 fail-closed | `docs/prd/m2-v2/README.md` |
+| DEC-011 | 历史授权（V2-B evidence pilot only；已执行并 superseded） | 2026-07-17 指令曾授权 V2-B prospective evidence pilot；该授权已执行并被 B.2–B.8/完整性修复 supersede，只作历史追溯，`not authorization`，不得据此调用 provider 或 resume。V2-B 从未授权训练、B4 变更、final holdout、V2-C/V2-D/C4/M3 或 release | `docs/prd/m2-v2/README.md` |
 | DEC-010 | 已完成（C3 development FAIL） | C3-A overall WAPE 0.55394517、signed bias +0.08273913，模型质量 FAIL、业务覆盖 CONDITIONAL；B4 继续为 comparator/fallback。C3 不得重复执行，所有 seals 保持关闭，结果 `not_for_formal_decision` | `docs/analysis/m2-real-data/M2-C3-development-validation-v1.md` |
 | DEC-009 | 已完成（历史 development checkpoint） | formal-cash comparator 在固定 7851-case 模型人口上冻结 B4，Gate B 14/14；C2-R.1 的 45 候选 development 验证为 13/23、结论 FAIL。后续 C2/C3 的授权和结果由 DEC-010/011 现行化；final holdout 与 release 始终未授权 | `docs/analysis/m2-real-data/M2-C2R1-development-validation-v1.md` |
 | DEC-008 | 已冻结（formal cash target） | M2 正式点值只预测未来实销现金与 cutoff 时已确认、可审计的未来应收；pure-buyout 无未来买断应收时必须 abstain/null，其他 route 仍计入所有 cutoff-confirmed future receivables；买断月均等效值仅用于评级和历史价值 | `docs/analysis/m2-real-data/M2-formal-cash-forecast-target-decision-v1.md` |

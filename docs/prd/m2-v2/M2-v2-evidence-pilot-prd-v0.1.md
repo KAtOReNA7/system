@@ -1,10 +1,12 @@
 # M2 v2 External Evidence Pilot PRD v0.1
 
+> **Historical / superseded / not authorization.** 本 PRD 记录 2026-07-17 已执行的 V2-B evidence-pilot 历史授权与冻结合同；该授权已被 V2-B.2–B.8 和后续完整性修复 supersede，不授权当前 provider、resume、Canary、full160 或新开发。当前只以 `docs/analysis/m2-v2/M2-v2-current-state-index-v0.2.md` 与用户最新明确指令为准。
+
 ## 结论与边界
 
 V2-B 只验证 External Evidence Layer 的可获得性、可审计性和稳定性，不验证收入模型 uplift，也不改变 B4 或任何既有结果。全部结果为 `not_for_formal_decision`。
 
-本轮允许实现 provider-neutral 框架、固定样本、private file store、synthetic tests 和真实 provider pilot；不允许训练模型、开发 C4、打开 final holdout/embargo/60-month labels、进入 V2-C/V2-D/M3 或 release。
+历史 V2-B 授权当时允许实现 provider-neutral 框架、固定样本、private file store、synthetic tests 和 provider pilot；该句只描述当时范围，现已 superseded，**不是当前 provider 调用或 resume 授权**。模型训练、C4、final holdout/embargo/60-month labels、V2-C/V2-D/M3 与 release 始终不在该授权范围内。
 
 ## Pilot 目标
 

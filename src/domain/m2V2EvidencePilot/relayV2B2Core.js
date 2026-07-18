@@ -42,6 +42,7 @@ export function buildV2B2SearchPayload(task, explicitModel = null) {
       `query_intent: ${intent}`,
     ].join("\n"),
     tools: [{ type: "web_search" }],
+    store: false,
     max_output_tokens: boundedInteger(input.maxOutputTokens, 700, 128, 700),
   };
 }
@@ -78,6 +79,7 @@ export function buildV2B2ExtractionPayload(task, explicitModel = null, explicitS
       sourceIndex,
     ].join("\n"),
     text: { format: extractionJsonSchemaFormat() },
+    store: false,
     max_output_tokens: boundedInteger(input.maxOutputTokens, 1_200, 256, 1_200),
   };
 }

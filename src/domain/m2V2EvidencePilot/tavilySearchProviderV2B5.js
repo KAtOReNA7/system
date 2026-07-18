@@ -1,6 +1,10 @@
 import { performance } from "node:perf_hooks";
 import { canonicalJson, sha256 } from "./pilotCore.js";
 import {
+  assertNoProviderRedirect,
+  bindProviderSearchTransport,
+} from "./providerTransportSecurity.js";
+import {
   V2B5_SOURCE_RECORD_ADAPTER_VERSION,
   V2B5_SOURCE_RECORD_SCHEMA,
   normalizeTavilyResultToV2B5SourceRecord,
@@ -11,6 +15,7 @@ export const V2B5_TAVILY_ADAPTER_VERSION = "m2-v2-tavily-search-adapter-v0.1";
 export const V2B5_TAVILY_RECEIPT_SCHEMA = "m2.v2.tavily-provider-receipt.v0.1";
 export const V2B5_TAVILY_DEFAULTS = Object.freeze({
   baseUrl: "https://api.tavily.com",
+  approvedHost: "api.tavily.com",
   topic: "general",
   searchDepth: "basic",
   maxResults: 6,
@@ -312,6 +317,10 @@ export function validateV2B5TavilyCapabilityState(capability) {
 export async function dispatchV2B5TavilyRequest(options) {
   const fetchImpl = options.fetchImpl ?? globalThis.fetch;
   if (typeof fetchImpl !== "function") throw new Error("v2b5_tavily_fetch_unavailable");
+  const transport = bindProviderSearchTransport({
+    baseUrl: options.baseUrl,
+    approvedHost: V2B5_TAVILY_DEFAULTS.approvedHost,
+  });
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), options.timeoutMs ?? 30_000);
   const requestStartedAt = new Date().toISOString();
@@ -322,7 +331,7 @@ export async function dispatchV2B5TavilyRequest(options) {
   let transportError = null;
   let transportFailureCategory = null;
   try {
-    response = await fetchImpl(`${normalizeBaseUrl(options.baseUrl)}/search`, {
+    response = await fetchImpl(transport.endpointUrl, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${options.apiKey}`,
@@ -333,13 +342,15 @@ export async function dispatchV2B5TavilyRequest(options) {
       },
       body: JSON.stringify(options.payload),
       signal: controller.signal,
+      redirect: transport.redirect,
     });
+    assertNoProviderRedirect(response, transport.endpointUrl);
     bytes = Buffer.from(await response.arrayBuffer());
     if (bytes.length <= RESPONSE_LIMIT_BYTES) {
       try { json = JSON.parse(bytes.toString("utf8")); } catch { json = null; }
     }
   } catch (error) {
-    transportError = safeToken(error?.name ?? error?.message) ?? "transport_error";
+    transportError = safeToken(error?.code ?? error?.name ?? error?.message) ?? "transport_error";
     transportFailureCategory = classifyTransportFailure(error);
   } finally {
     clearTimeout(timeout);

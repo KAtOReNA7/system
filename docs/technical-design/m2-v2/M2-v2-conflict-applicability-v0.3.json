@@ -1,6 +1,6 @@
 {
   "schema": "m2.v2.conflict-applicability-public.v0.3",
-  "status": "frozen_before_implementation",
+  "status": "IMPLEMENTED_AND_SYNTHETICALLY_VERIFIED",
   "classification": "public_sanitized_not_for_formal_decision",
   "perFamilyFields": ["applicable", "executed", "evidenceCount", "conflictCount", "unresolvedCount", "passed"],
   "emptyInput": {
@@ -16,5 +16,15 @@
     "limitationRecorded": true,
     "ambiguousRelation": "unresolved"
   },
-  "adversarialFixtures": ["empty_input", "missing_contradiction_key", "different_keys_same_exclusive_status", "different_editions", "adaptation_stage_and_date", "rating_scales", "ambiguous_relation"]
+  "adversarialFixtures": ["empty_input", "missing_contradiction_key", "different_keys_same_exclusive_status", "different_editions", "adaptation_stage_and_date", "rating_scales", "ambiguous_relation"],
+  "verificationScope": {
+    "syntheticBoundaryTests": "verified",
+    "realPrivateMigrationClaimed": false,
+    "exactHeadCiClaimed": false,
+    "publicRestatementClaimed": false
+  },
+  "authorization": {
+    "full160Authorized": false,
+    "nextDevelopmentReadiness": "NOT_AUTHORIZED"
+  }
 }

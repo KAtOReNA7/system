@@ -1,8 +1,17 @@
 {
   "schema": "m2.v2.v2b5-next-step.v0.2",
-  "status": "not_for_formal_decision",
+  "status": "historical_superseded_not_current_authorization",
+  "historicalStatusAtCheckpoint": "not_for_formal_decision",
+  "lifecycle": {
+    "historical": true,
+    "superseded": true,
+    "notCurrentAuthorization": true,
+    "currentAuthority": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.2.json"
+  },
   "currentDecision": "CANARY_BLOCKED",
+  "currentDecisionFieldScope": "historical_v2b5_checkpoint_only",
   "instruction": "先修复报告中的失败或条件门；不得启动 full160。",
+  "instructionFieldScope": "historical_superseded_not_authorized_now",
   "full160Authorized": false,
   "prohibitedNextPhases": [
     "full160",

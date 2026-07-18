@@ -1,9 +1,18 @@
 {
   "schema": "m2.v2.v2b8-next-step-public.v0.1",
-  "status": "not_for_formal_decision",
+  "status": "historical_superseded_not_current_authorization",
+  "historicalStatusAtCheckpoint": "not_for_formal_decision",
+  "lifecycle": {
+    "historical": true,
+    "superseded": true,
+    "notCurrentAuthorization": true,
+    "currentAuthority": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.2.json"
+  },
   "full160Authorized": false,
   "currentDecision": "CANARY_CONDITIONAL",
+  "currentDecisionFieldScope": "historical_v2b8_checkpoint_only",
   "nextStep": "review_private_pack_and_repair_quality_without_scaling",
+  "nextStepFieldScope": "historical_superseded_not_authorized_now",
   "scaleUpPerformed": false,
   "prohibitedNextPhases": [
     "full160",

@@ -6,12 +6,14 @@
 
 当前权威导航：
 
-1. `docs/analysis/m2-v2/M2-v2-current-state-index-v0.1.md`
+1. `docs/analysis/m2-v2/M2-v2-current-state-index-v0.2.md`
 2. `docs/analysis/m2-v2/M2-v2-integrity-remediation-summary-v0.1.md`
-3. `docs/analysis/m2-v2/M2-v2-canary-v3-1-integrity-restatement-v0.2.md`
+3. `docs/analysis/m2-v2/M2-v2-canary-v3-1-integrity-restatement-v0.3.md`
 4. `docs/technical-design/m2-v2/M2-v2-verifier-readonly-contract-v0.1.md`
 5. `docs/technical-design/m2-v2/M2-v2-private-state-recovery-contract-v0.1.md`
 6. `docs/technical-design/m2-v2/M2-v2-request-state-atomic-binding-v0.1.md`
+
+所有 v0.1 current-state index、旧 NEXT/next-step、旧 decision、V2-B PRD 中的授权语句都只保留为 `historical / superseded / not authorization`；不得据此调用 provider、resume 或开始任何后续阶段。
 
 ## 冻结状态
 

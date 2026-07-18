@@ -16,7 +16,7 @@
 - `M2-v2-private-state-recovery-contract-v0.1.md/json`
 - `M2-v2-request-state-atomic-binding-v0.1.md/json`
 
-V2-B.1 至 V2-B.8 运行时与报告均保留作历史证据；当前状态与 supersession 关系统一由 `docs/analysis/m2-v2/M2-v2-current-state-index-v0.1.md` 给出。
+V2-B.1 至 V2-B.8 运行时与报告均保留作历史证据，不构成当前授权；当前状态与 supersession 关系统一由 `docs/analysis/m2-v2/M2-v2-current-state-index-v0.2.md` 给出，v0.1 index 已 superseded。
 
 ## 文档
 

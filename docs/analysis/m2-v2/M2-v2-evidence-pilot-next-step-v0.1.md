@@ -1,10 +1,12 @@
 # M2 v2 External Evidence Pilot 下一步 v0.1
 
+> **Historical / superseded / not authorization.** 以下 provider/governance/resume 动作只记录 V2-B.1 当时的 next-step 建议，已被 B.2–B.8 与完整性修复 supersede；不得作为当前 provider、resume 或新开发授权。当前只见 current-state-index-v0.2。
+
 ## 决策
 
-当前为 **PILOT_CONDITIONAL**，建议 **DO NOT START V2-C**。
+该历史 checkpoint 当时为 **PILOT_CONDITIONAL**，建议 **DO NOT START V2-C**。
 
-## 解除阻断的最小动作
+## 当时记录的解除阻断动作（已 superseded，不得执行）
 
 1. 提供一个具备查询审计、receipt、成本和 resume/cache 能力的授权 runtime provider；
 2. 对至少一个实际域名完成条款与法律评审，并把批准记录写入 versioned allowlist；

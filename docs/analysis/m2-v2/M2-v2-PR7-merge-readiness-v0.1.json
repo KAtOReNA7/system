@@ -1,0 +1,16 @@
+{
+  "schema": "m2.v2.pr7-merge-readiness-public.v0.1",
+  "status": "not_ready_pending_incremental_independent_review",
+  "classification": "public_sanitized_not_for_formal_decision",
+  "generatedAt": "2026-07-18",
+  "remediationScope": { "p1Closed": 13, "directlyCoupledP2Closed": 10 },
+  "currentDecision": "CANARY_FAIL",
+  "historicalDecisionPreserved": "CANARY_CONDITIONAL",
+  "p0KnownAfterRemediation": 0,
+  "p1KnownAfterRemediation": 0,
+  "mergeRecommendation": "WITHHELD",
+  "prRequiredState": "draft_open_unmerged",
+  "nextStep": "NEW_HEAD_INCREMENTAL_INDEPENDENT_REVIEW_REQUIRED",
+  "full160Authorized": false,
+  "nextDevelopmentReadiness": "NOT_AUTHORIZED"
+}

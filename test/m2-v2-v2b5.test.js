@@ -423,7 +423,7 @@ test("fabricated sourceId, model URL, unresolved entity, and conflict are reject
 });
 
 test("relay Extraction provider advertises no search or browser capability", () => {
-  const provider = new OpenAICompatibleRelayExtractionProviderV2B5({ baseUrl: "https://relay.example.com/v1", apiKey: "synthetic" });
+  const provider = new OpenAICompatibleRelayExtractionProviderV2B5({ baseUrl: "https://relay.example.com/v1", approvedHost: "relay.example.com", apiKey: "synthetic" });
   assert.deepEqual(provider.capabilities(), {
     provider: "openai_compatible_relay_extraction",
     providerVersion: "m2-v2-relay-extraction-adapter-v0.1",
@@ -923,6 +923,7 @@ function validRuntimeEnv() {
     M2_V2_EXTRACTION_REASONING_EFFORT: "low",
     TAVILY_API_KEY: "synthetic-tavily",
     OPENAI_BASE_URL: "https://relay.example.com/v1",
+    M2_V2_APPROVED_RELAY_HOST: "relay.example.com",
     OPENAI_API_KEY: "synthetic-relay",
   };
 }

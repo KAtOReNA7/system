@@ -34,6 +34,11 @@ import {
   normalizeEntityText,
   sha256,
 } from "./pilotCore.js";
+import {
+  assertNoProviderRedirect,
+  assertResponsesRetention,
+  bindProviderTransport,
+} from "./providerTransportSecurity.js";
 
 export const V2B2_PRIVATE_RELATIVE = "data/private-output/m2-v2-evidence-pilot/v2-b2-relay-remediation";
 export const V2B2_PARENT_MANIFEST_RELATIVE = "data/private-output/m2-v2-evidence-pilot/pilot-manifest-private-v0.1.json";
@@ -654,6 +659,7 @@ export function createRelayStageExecutor(options = {}) {
     const response = await dispatchRelayResponse({
       fetchImpl,
       baseUrl: configuration.baseUrl,
+      approvedHost: configuration.approvedHost,
       apiKey: configuration.apiKey,
       payload,
       timeoutMs,
@@ -1899,7 +1905,9 @@ function buildExtractionPayload(item, priorSearchReceipt) {
   });
 }
 
-async function dispatchRelayResponse({ fetchImpl, baseUrl, apiKey, payload, timeoutMs }) {
+async function dispatchRelayResponse({ fetchImpl, baseUrl, approvedHost, apiKey, payload, timeoutMs }) {
+  const transport = bindProviderTransport({ baseUrl, approvedHost });
+  assertResponsesRetention(payload);
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
   const started = performance.now();
@@ -1909,7 +1917,7 @@ async function dispatchRelayResponse({ fetchImpl, baseUrl, apiKey, payload, time
   let json = null;
   let transportError = null;
   try {
-    response = await fetchImpl(`${baseUrl}/responses`, {
+    response = await fetchImpl(transport.endpointUrl, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${apiKey}`,
@@ -1919,7 +1927,9 @@ async function dispatchRelayResponse({ fetchImpl, baseUrl, apiKey, payload, time
       },
       body: JSON.stringify(payload),
       signal: controller.signal,
+      redirect: transport.redirect,
     });
+    assertNoProviderRedirect(response, transport.endpointUrl);
     bytes = Buffer.from(await response.arrayBuffer());
     if (bytes.length <= RESPONSE_LIMIT_BYTES) {
       try {
@@ -1929,7 +1939,7 @@ async function dispatchRelayResponse({ fetchImpl, baseUrl, apiKey, payload, time
       }
     }
   } catch (error) {
-    transportError = { name: safeErrorToken(error?.name), code: safeErrorToken(error?.cause?.code) };
+    transportError = { name: safeErrorToken(error?.name), code: safeErrorToken(error?.code ?? error?.cause?.code) };
   } finally {
     clearTimeout(timeout);
   }
@@ -2638,21 +2648,23 @@ function publicModelMetrics(value = {}) {
 function loadRelayConfiguration(root, suppliedEnv = null) {
   const env = suppliedEnv ?? { ...readEnvLocal(join(root, ".env.local")), ...process.env };
   const baseUrl = normalizeBaseUrl(env.OPENAI_BASE_URL ?? env.M2_V2_EVIDENCE_API_BASE_URL);
+  const approvedHost = String(env.M2_V2_APPROVED_RELAY_HOST ?? "").trim().toLocaleLowerCase("en-US");
   const apiKey = String(env.OPENAI_API_KEY ?? "");
   if (env.M2_V2_EVIDENCE_PROVIDER && env.M2_V2_EVIDENCE_PROVIDER !== "openai_compatible_relay") {
     throw new Error("v2b2_provider_mode_invalid");
   }
-  if (!baseUrl || !apiKey) throw new Error("v2b2_relay_configuration_incomplete");
+  if (!baseUrl || !approvedHost || !apiKey) throw new Error("v2b2_relay_configuration_incomplete");
+  const transport = bindProviderTransport({ baseUrl, approvedHost });
   const bindingDigest = sha256({
     providerId: "openai_compatible_relay",
     endpointPath: "/responses",
-    baseUrlDigest: sha256(baseUrl),
+    baseUrlDigest: sha256(transport.baseUrl),
     models: V2B2_MODELS,
     adapterVersion: V2B2_ADAPTER_VERSION,
     promptVersion: V2B2_PROMPT_VERSION,
     schemaVersion: V2B2_SCHEMA_VERSION,
   });
-  return { baseUrl, apiKey, bindingDigest };
+  return { baseUrl: transport.baseUrl, approvedHost: transport.approvedHost, apiKey, bindingDigest };
 }
 
 function readSourceAllowlist(root, options = {}) {

@@ -1,6 +1,6 @@
 {
   "schema": "m2.v2.provider-transport-retention-public.v0.1",
-  "status": "frozen_before_implementation",
+  "status": "IMPLEMENTED_AND_SYNTHETICALLY_VERIFIED",
   "classification": "public_sanitized_not_for_formal_decision",
   "scope": ["all_executable_search_routes", "all_executable_relay_routes", "all_responses_payload_builders"],
   "endpointRules": {
@@ -24,5 +24,16 @@
     "rawResponseCurrentCacheCount": 0,
     "providerHostBindingVerified": true
   },
-  "tests": ["http_rejected", "userinfo_rejected", "host_mismatch_rejected", "redirect_mismatch_rejected", "store_missing_rejected", "store_true_rejected", "approved_https_passes", "key_not_in_error"]
+  "tests": ["http_rejected", "userinfo_rejected", "host_mismatch_rejected", "redirect_mismatch_rejected", "store_missing_rejected", "store_true_rejected", "approved_https_passes", "key_not_in_error"],
+  "verificationScope": {
+    "syntheticBoundaryTests": "verified",
+    "realPrivateMigrationClaimed": false,
+    "exactHeadCiClaimed": false,
+    "publicRestatementClaimed": false
+  },
+  "authorization": {
+    "providerDispatchAuthorized": false,
+    "full160Authorized": false,
+    "nextDevelopmentReadiness": "NOT_AUTHORIZED"
+  }
 }

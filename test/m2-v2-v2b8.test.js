@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
-import { existsSync, readFileSync } from "node:fs";
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { join } from "node:path";
 import test from "node:test";
 import { sourceIdForV2B5Url } from "../src/domain/m2V2EvidencePilot/sourceRecordV2B5.js";
@@ -11,7 +12,6 @@ import {
   V2B8_NAMESPACE,
   V2B8_RELAY_REQUEST_CAP,
   V2B8_TAVILY_REQUEST_CAP,
-  checkAndFreezeV2B8Contract,
 } from "../src/domain/m2V2EvidencePilot/v2b8Contract.js";
 import {
   V2B8_CONFLICT_FAMILIES,
@@ -35,20 +35,11 @@ import {
   validateV2B8ExtractionPayload,
 } from "../src/domain/m2V2EvidencePilot/v2b8Runtime.js";
 
-const root = process.cwd();
+const root = fileURLToPath(new URL("..", import.meta.url));
 
 test("V2-B.8 freezes the existing manifest, repeat and bundle with new request caps", () => {
-  const privateManifest = join(root, "data/private-output/m2-v2-evidence-pilot/v2-b5-independent-search-canary/canary-v3-manifest-private-v0.1.json");
-  if (existsSync(privateManifest)) {
-    const frozen = checkAndFreezeV2B8Contract(root, { now: () => "2026-07-18T09:00:00.000Z" });
-    assert.equal(frozen.contract.manifestDigest, "4288ad6130fe34da6f56f361604d44f1124313b3b3f4fc98b870570333d65f23");
-    assert.equal(frozen.contract.repeatDigest, "e3be6282451c02d6a630aeec322951d62fc477ca9e27d0f9cc2db0fc68e471fc");
-    assert.equal(frozen.contract.sourceBundleDigest, "d68896763b2a7b63afd3580c623e06cd72eaa9432b396dd3e9e62b6a50f643df");
-    assert.equal(frozen.contract.noSampleReplacement, true);
-  } else {
-    const contract = JSON.parse(readFileSync(join(root, "docs/technical-design/m2-v2/M2-v2-source-selection-contract-v0.1.json"), "utf8"));
-    assert.equal(contract.sampleReplacementAllowed, false);
-  }
+  const contract = JSON.parse(readFileSync(join(root, "docs/technical-design/m2-v2/M2-v2-source-selection-contract-v0.1.json"), "utf8"));
+  assert.equal(contract.sampleReplacementAllowed, false);
   assert.equal(V2B8_NAMESPACE, "v2b8-canary-stability");
   assert.equal(V2B8_MODEL_ID, "gpt-5.6-terra");
   assert.equal(V2B8_TAVILY_REQUEST_CAP, 12);
@@ -143,6 +134,94 @@ test("V2-B.8 extracts an explicit temporal date from supporting snippet", () => 
   assert.equal(time.eventTimePrecision, "year");
   assert.equal(time.eventTimeBasis, "explicit_source_snippet");
   assert.equal(time.extractionSucceeded, true);
+  assert.match(time.eventTimeClauseDigest, /^[a-f0-9]{64}$/u);
+  assert.equal(Number.isInteger(time.eventTimeSpanStart), true);
+  assert.equal(Number.isInteger(time.eventTimeSpanEnd), true);
+  assert.equal(Number.isInteger(time.eventKeywordSpan?.start), true);
+  assert.equal(Number.isInteger(time.eventKeywordSpan?.end), true);
+});
+
+test("V2-B.8 event time binds date and event keyword within the same clause", () => {
+  const record = source(88, undefined, "history", "The work was published in 2020, and won the award in 2022.");
+  const award = extractV2B8EventTime({ claimType: "award_event", structuredValue: structured("won award") }, [record]);
+  assert.equal(award.eventTime, "2022");
+  const wrongDate = extractV2B8EventTime({ claimType: "award_event", structuredValue: structured("2020") }, [record]);
+  assert.equal(wrongDate.eventTime, null);
+  assert.equal(wrongDate.eventTimeClauseDigest, null);
+  assert.equal(wrongDate.eventKeywordSpan, null);
+});
+
+test("V2-B.8 EventTime selects the requested edition instead of the first publication date", () => {
+  const record = source(
+    91,
+    undefined,
+    "edition history",
+    "The first edition was published in 2018; the second edition was published in 2021.",
+  );
+  const result = extractV2B8EventTime(
+    { claimType: "publication_event", structuredValue: structured("second edition published in 2021") },
+    [record],
+  );
+  assert.equal(result.eventTime, "2021");
+  assert.equal(result.eventTimePrecision, "year");
+  assert.equal(result.extractionSucceeded, true);
+});
+
+test("V2-B.8 EventTime binds rating observation date instead of publication date", () => {
+  const record = source(
+    92,
+    undefined,
+    "rating history",
+    "The work was published in 2019; its platform rating was recorded in 2023.",
+  );
+  const result = extractV2B8EventTime(
+    { claimType: "rating_signal", structuredValue: structured("platform rating recorded in 2023") },
+    [record],
+  );
+  assert.equal(result.eventTime, "2023");
+  assert.equal(result.eventTimePrecision, "year");
+  assert.equal(result.extractionSucceeded, true);
+});
+
+test("V2-B.8 EventTime distinguishes adaptation announcement from later release", () => {
+  const record = source(
+    93,
+    undefined,
+    "adaptation history",
+    "The adaptation was announced in 2020; the film was released in 2022.",
+  );
+  const result = extractV2B8EventTime(
+    { claimType: "adaptation_event", structuredValue: structured("film released in 2022") },
+    [record],
+  );
+  assert.equal(result.eventTime, "2022");
+  assert.equal(result.extractionSucceeded, true);
+});
+
+test("V2-B.8 EventTime returns null when the supporting clause has no date", () => {
+  const record = source(94, undefined, "adaptation", "A film adaptation has been announced.");
+  const result = extractV2B8EventTime(
+    { claimType: "adaptation_event", structuredValue: structured("film adaptation announced") },
+    [record],
+  );
+  assert.equal(result.eventTime, null);
+  assert.equal(result.eventTimePrecision, "unknown");
+  assert.equal(result.explicitTemporalText, false);
+  assert.equal(result.extractionSucceeded, true);
+});
+
+test("V2-B.8 returns null rather than taking the first of ambiguous same-family dates", () => {
+  const record = source(89, undefined, "award history", "Nominated for the award in 2020, won the award in 2022.");
+  const result = extractV2B8EventTime({ claimType: "award_event", structuredValue: structured("award history") }, [record]);
+  assert.equal(result.eventTime, null);
+  assert.equal(result.explicitTemporalText, true);
+  assert.equal(result.extractionSucceeded, false);
+});
+
+test("V2-B.8 does not treat a planned date as the actual event date", () => {
+  const record = source(90, undefined, "adaptation history", "The film was planned for release in 2020, and released in 2022.");
+  const result = extractV2B8EventTime({ claimType: "adaptation_event", structuredValue: structured("film released") }, [record]);
+  assert.equal(result.eventTime, "2022");
 });
 
 test("V2-B.8 does not borrow publication dates for non-temporal identity claims", () => {
@@ -237,6 +316,7 @@ test("V2-B.8 required gates fail closed when a denominator or sample is missing"
   assert.equal(missingSample.passed, false);
 
   const evaluation = evaluateV2B8Canary({
+    evaluationContract: "current_v0.3",
     manifest: { sample: [], repeatSample: [] },
     v2b7: { primarySearch: { runs: [] }, repeatSearch: { runs: [] } },
     primarySearch: [],
@@ -339,20 +419,49 @@ test("V2-B.8 conflict audit covers every declared family and rejects unresolved 
     conflictClaim("completion_status", { status: "ongoing" }, "c2"),
     conflictClaim("publication_event", { publisher: "publisher-a", publicationDate: "2020", edition: "first", format: "print" }, "p1"),
     conflictClaim("publication_event", { publisher: "publisher-b", publicationDate: "2020", edition: "first", format: "print" }, "p2"),
-    conflictClaim("adaptation_event", { adaptationType: "film", stage: "started", eventTime: "2021" }, "d1"),
-    conflictClaim("adaptation_event", { adaptationType: "film", stage: "released", eventTime: "2021" }, "d2"),
+    conflictClaim("adaptation_event", { adaptationType: "film", stage: "released", eventTime: "2021" }, "d1"),
+    conflictClaim("adaptation_event", { adaptationType: "film", stage: "released", eventTime: "2022" }, "d2"),
     conflictClaim("rating_signal", { platform: "ratings", scale: 10, value: 7 }, "r1", { eventTime: "2022" }),
     conflictClaim("rating_signal", { platform: "ratings", scale: 10, value: 8 }, "r2", { eventTime: "2022" }),
     conflictClaim("award_event", { value: "award winner" }, "g1", { contradictionKey: "award-2023" }),
     conflictClaim("award_event", { value: "award nominee" }, "g2", { contradictionKey: "award-2023" }),
     conflictClaim("market_signal", { value: "active" }, "m1", { contradictionKey: "exclusive-status" }),
-    conflictClaim("search_heat_signal", { value: "inactive" }, "m2", { contradictionKey: "exclusive-status" }),
+    conflictClaim("market_signal", { value: "inactive" }, "m2", { contradictionKey: "exclusive-status" }),
   ];
   const result = auditV2B8Conflicts(rows);
   assert.deepEqual(result.declaredConflictFamilies, [...V2B8_CONFLICT_FAMILIES]);
   assert.equal(V2B8_CONFLICT_FAMILIES.every((family) => result.conflictFamilyCoverage[family] === true), true);
   assert.equal(result.conflicts.length >= V2B8_CONFLICT_FAMILIES.length, true);
   assert.equal(result.claims.every((item) => item.accepted === false && item.pilotUsable === false), true);
+});
+
+test("V2-B.8 conflict coverage is NOT_EVALUABLE for empty evidence", () => {
+  const result = auditV2B8Conflicts([]);
+  assert.equal(result.applicableFamilyCount, 0);
+  assert.equal(result.conflictAuditStatus, "NOT_EVALUABLE");
+  assert.equal(result.passed, false);
+  assert.equal(Object.values(result.conflictFamilyResults).every((row) => (
+    row.applicable === false
+      && row.executed === false
+      && row.evidenceCount === 0
+      && row.conflictCount === 0
+      && row.unresolvedCount === 0
+      && row.passed === false
+  )), true);
+});
+
+test("V2-B.8 ignores provider contradiction keys and permits adaptation stage progression", () => {
+  const untrustedKey = auditV2B8Conflicts([
+    conflictClaim("market_signal", { value: "active" }, "x1", { contradictionKey: "provider-says-conflict" }),
+    conflictClaim("search_heat_signal", { value: "inactive" }, "x2", { contradictionKey: "provider-says-conflict" }),
+  ]);
+  assert.equal(untrustedKey.conflicts.length, 0);
+  const progression = auditV2B8Conflicts([
+    conflictClaim("adaptation_event", { adaptationType: "film", stage: "started", eventTime: "2020" }, "s1"),
+    conflictClaim("adaptation_event", { adaptationType: "film", stage: "released", eventTime: "2022" }, "s2"),
+  ]);
+  assert.equal(progression.conflicts.length, 0);
+  assert.equal(progression.limitations.some((row) => row.reason === "valid_adaptation_stage_progression"), true);
 });
 
 test("V2-B.8 keeps distinct editions as a limitation instead of an automatic conflict", () => {

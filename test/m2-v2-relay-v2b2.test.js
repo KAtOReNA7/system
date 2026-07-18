@@ -148,6 +148,7 @@ test("real stage executor binds returned model, exact entity and locally support
     env: {
       M2_V2_EVIDENCE_PROVIDER: "openai_compatible_relay",
       OPENAI_BASE_URL: "https://relay.example/v1",
+      M2_V2_APPROVED_RELAY_HOST: "relay.example",
       OPENAI_API_KEY: "synthetic-test-key",
     },
     fetchImpl: async () => responseFrom(bodies.shift()),

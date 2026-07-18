@@ -1,0 +1,79 @@
+{
+  "schema": "m2.v2.pr7-p1-remediation-summary-public.v0.1",
+  "status": "remediation_implemented_pending_incremental_independent_review",
+  "classification": "public_sanitized_not_for_formal_decision",
+  "generatedAt": "2026-07-18",
+  "externalReviewHead": "a472d1092a0c9184f45cea3dad5e6bfb9b95a3e9",
+  "base": "d81b952e37dd43365c0091cdd6665e69d8d39a7e",
+  "phaseACommit": "48df34d7b38b9eccc48eca24051c12a184806fad",
+  "scope": {
+    "requiredP1": 13,
+    "closedP1": 13,
+    "directlyCoupledP2": 10,
+    "closedDirectlyCoupledP2": 10
+  },
+  "findings": [
+    { "findingId": "PR7-P1-001", "status": "closed", "control": "current authority is version-and-digest bound; historical and current decisions are separate" },
+    { "findingId": "PR7-P1-002", "status": "closed", "control": "B8 verifies historical evaluation, current restatement, effective receipts and current authority" },
+    { "findingId": "PR7-P1-003", "status": "closed", "control": "closed exact-role transaction bindings reject missing, extra, stale and derived-member drift" },
+    { "findingId": "PR7-P1-004", "status": "closed", "control": "request events are chained and append-only; counters are replayed without rollback" },
+    { "findingId": "PR7-P1-005", "status": "closed", "control": "offline recovery stages and verifies the complete group before rollback-capable promotion" },
+    { "findingId": "PR7-P1-006", "status": "closed", "control": "migration requires normalized unique paths and exact manifest-to-tree set equality" },
+    { "findingId": "PR7-P1-007", "status": "closed", "control": "migration checks precede promotion and every injected failure rolls back private and environment bytes" },
+    { "findingId": "PR7-P1-008", "status": "closed", "control": "B6 persists and verifies only normalized safe cache projections" },
+    { "findingId": "PR7-P1-009", "status": "closed", "control": "EventTime is bound to a local clause or span and ambiguous cases fail closed" },
+    { "findingId": "PR7-P1-010", "status": "closed", "control": "conflict applicability and execution are derived locally with edition, date and stage awareness" },
+    { "findingId": "PR7-P1-011", "status": "closed", "control": "write-capable tests use synthetic roots and the default suite has a content, metadata and Git-status isolation proof" },
+    { "findingId": "PR7-P1-012", "status": "closed", "control": "all executable provider paths enforce approved HTTPS host and redirect binding plus Responses store=false before dispatch" },
+    { "findingId": "PR7-P1-013", "status": "closed", "control": "workbook facts are independently derived from OOXML and visual review is never auto-attested" }
+  ],
+  "directlyCoupledP2": [
+    { "findingId": "PR7-P2-001", "status": "closed", "control": "pre-registration count-versus-percentage erratum is versioned" },
+    { "findingId": "PR7-P2-002", "status": "closed", "control": "historical v0.1 pairs are restored; later semantics remain separately versioned" },
+    { "findingId": "PR7-P2-003", "status": "closed", "control": "all five remediation semantics are explicit public contracts" },
+    { "findingId": "PR7-P2-004", "status": "closed", "control": "historical authorization markers are locally superseded without deleting history" },
+    { "findingId": "PR7-P2-005", "status": "closed", "control": "public-data guard is case-aware, size-bounded and fail-closed for binary/text ambiguity" },
+    { "findingId": "PR7-P2-006", "status": "closed", "control": "required artifact absence fails instead of becoming a successful skip" },
+    { "findingId": "PR7-P2-008", "status": "closed", "control": "migration receipt language and search-provider environment allowlist are truthful" },
+    { "findingId": "PR7-P2-009", "status": "closed", "control": "read-only proof covers transaction and public-report roles" },
+    { "findingId": "PR7-P2-013", "status": "closed", "control": "conflict adaptation is date, edition and stage aware" },
+    { "findingId": "PR7-P2-016", "status": "closed", "control": "legacy mutable cache is retired before any future provider readiness can pass" }
+  ],
+  "authority": {
+    "historicalDecision": "CANARY_CONDITIONAL",
+    "currentRestatedDecision": "CANARY_FAIL",
+    "currentRestatement": "M2-v2-canary-v3-1-integrity-restatement-v0.3",
+    "currentStateIndex": "M2-v2-current-state-index-v0.2",
+    "evaluationDigest": "4d506076b0da438bc5a90f40bec6e52d559a3c18b31eedd1c48647f1203536c3"
+  },
+  "offlineRecovery": {
+    "physicalRequestEnvelopes": 29,
+    "cacheHits": 1,
+    "requestEvents": 118,
+    "requestCounters": { "planned": 30, "reserved": 29, "dispatched": 29, "completed": 29, "cacheHit": 1, "indeterminate": 0 },
+    "closedBindingRoles": 14,
+    "secondRun": "ALREADY_CURRENT_NOOP"
+  },
+  "cache": {
+    "rawResponseCurrentCacheCount": 0,
+    "legacyMutableCacheCount": 0,
+    "futureProviderReadinessFailsUnlessSafeCacheVerified": true
+  },
+  "boundaries": {
+    "providerRequestDelta": 0,
+    "canaryExecuted": false,
+    "full160Authorized": false,
+    "modelTrainingAuthorized": false,
+    "b4ChangeAuthorized": false,
+    "formalCashChangeAuthorized": false,
+    "holdoutOpenAuthorized": false,
+    "releaseAuthorized": false,
+    "mergeAuthorized": false,
+    "nextDevelopmentReadiness": "NOT_AUTHORIZED"
+  },
+  "handoff": {
+    "mergeReadiness": "NOT_READY_PENDING_INCREMENTAL_INDEPENDENT_REVIEW",
+    "prMustRemain": "draft_open_unmerged",
+    "nextStep": "NEW_HEAD_INCREMENTAL_INDEPENDENT_REVIEW_REQUIRED"
+  }
+}

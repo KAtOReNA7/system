@@ -1,5 +1,12 @@
 {
   "schema": "m2.v2.evidence-pilot-next-step.v0.1",
+  "status": "historical_superseded_not_current_authorization",
+  "lifecycle": {
+    "historical": true,
+    "superseded": true,
+    "notCurrentAuthorization": true,
+    "currentAuthority": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.2.json"
+  },
   "decision": "PILOT_CONDITIONAL",
   "recommendation": "DO_NOT_START_V2_C",
   "blockers": [
@@ -8,6 +15,7 @@
     "rerun_the_same_immutable_sample_without_resampling"
   ],
   "permittedNextAction": "provider_and_source_governance_only_then_resume_same_manifest",
+  "permittedNextActionFieldScope": "historical_checkpoint_only_superseded_not_authorized_now",
   "prohibitedNextActions": [
     "model_training",
     "B4_change",

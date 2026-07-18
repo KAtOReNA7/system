@@ -159,5 +159,5 @@
 | provider/source/legal pilot policy approved | pending in V2-B pre-registration |
 | value/trend policy approved | pending before V2-D |
 | Human baseline sample/reviewer policy approved | pending before V2-C |
-| V2-B authorized | yes, by the subsequent user instruction dated 2026-07-17; V2-A package itself does not authorize acquisition, and execution starts only after V2-A checkpoint merge |
+| V2-B authorized | historical only: yes under the subsequent 2026-07-17 instruction; that authority was executed and superseded by V2-B.2–B.8/remediation, is not current acquisition/provider/resume authority, and current authorization is defined only by current-state-index-v0.2 plus the latest explicit user instruction |
 | C4/model/final holdout/release/M3 authorized | no |

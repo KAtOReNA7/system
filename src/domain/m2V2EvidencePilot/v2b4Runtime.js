@@ -23,6 +23,11 @@ import {
   validateV2B3SourceGovernancePolicy,
 } from "./evidencePipelineV2B3.js";
 import { canonicalJson, normalizeEntityText, sha256 } from "./pilotCore.js";
+import {
+  assertNoProviderRedirect,
+  assertResponsesRetention,
+  bindProviderTransport,
+} from "./providerTransportSecurity.js";
 
 export const V2B4_MODELS = Object.freeze(["gpt-5.6-luna", "gpt-5.6-terra"]);
 export const V2B4_PRIVATE_RELATIVE = "data/private-output/m2-v2-evidence-pilot/v2-b4-real-evidence-canary";
@@ -636,6 +641,7 @@ async function executePhysicalRequest(item, context) {
   const response = await dispatchRelayResponse({
     fetchImpl,
     baseUrl: relay.baseUrl,
+    approvedHost: relay.approvedHost,
     apiKey: relay.apiKey,
     payload,
     timeoutMs: item.stage === "search" ? manifest.requestPolicy.searchTimeoutMs : manifest.requestPolicy.extractionTimeoutMs,
@@ -702,8 +708,10 @@ async function executePhysicalRequest(item, context) {
   });
 }
 
-async function dispatchRelayResponse({ fetchImpl, baseUrl, apiKey, payload, timeoutMs }) {
+async function dispatchRelayResponse({ fetchImpl, baseUrl, approvedHost, apiKey, payload, timeoutMs }) {
   if (typeof fetchImpl !== "function") throw new Error("v2b4_fetch_unavailable");
+  const transport = bindProviderTransport({ baseUrl, approvedHost });
+  assertResponsesRetention(payload);
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
   const started = performance.now();
@@ -713,7 +721,7 @@ async function dispatchRelayResponse({ fetchImpl, baseUrl, apiKey, payload, time
   let json = null;
   let transportError = null;
   try {
-    response = await fetchImpl(`${baseUrl}/responses`, {
+    response = await fetchImpl(transport.endpointUrl, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${apiKey}`,
@@ -723,13 +731,15 @@ async function dispatchRelayResponse({ fetchImpl, baseUrl, apiKey, payload, time
       },
       body: JSON.stringify(payload),
       signal: controller.signal,
+      redirect: transport.redirect,
     });
+    assertNoProviderRedirect(response, transport.endpointUrl);
     bytes = Buffer.from(await response.arrayBuffer());
     if (bytes.length <= RESPONSE_LIMIT_BYTES) {
       try { json = JSON.parse(bytes.toString("utf8")); } catch { json = null; }
     }
   } catch (error) {
-    transportError = safeErrorToken(error?.name ?? error?.message) ?? "transport_error";
+    transportError = safeErrorToken(error?.code ?? error?.name ?? error?.message) ?? "transport_error";
   } finally {
     clearTimeout(timeout);
   }
@@ -1397,19 +1407,21 @@ function identityProjection(value) {
 function loadRelayConfiguration(root, suppliedEnv = null) {
   const env = suppliedEnv ?? { ...readEnvLocal(join(root, ".env.local")), ...process.env };
   const baseUrl = String(env.OPENAI_BASE_URL ?? env.M2_V2_EVIDENCE_API_BASE_URL ?? "").trim().replace(/\/+$/u, "");
+  const approvedHost = String(env.M2_V2_APPROVED_RELAY_HOST ?? "").trim().toLocaleLowerCase("en-US");
   const apiKey = String(env.OPENAI_API_KEY ?? "");
   if (env.M2_V2_EVIDENCE_PROVIDER && env.M2_V2_EVIDENCE_PROVIDER !== "openai_compatible_relay") throw new Error("v2b4_provider_mode_invalid");
-  if (!/^https:\/\//u.test(baseUrl) || !apiKey) throw new Error("v2b4_relay_configuration_incomplete");
+  if (!baseUrl || !approvedHost || !apiKey) throw new Error("v2b4_relay_configuration_incomplete");
+  const transport = bindProviderTransport({ baseUrl, approvedHost });
   const bindingDigest = sha256({
     providerId: "openai_compatible_relay",
     endpointPath: "/responses",
-    baseUrlDigest: sha256(baseUrl),
+    baseUrlDigest: sha256(transport.baseUrl),
     models: [...V2B4_MODELS],
     pipelineVersion: V2B3_PIPELINE_VERSION,
     sourceRecordSchema: V2B3_SOURCE_RECORD_SCHEMA,
     extractionSchema: V2B3_EXTRACTION_SCHEMA,
   });
-  return { baseUrl, apiKey, bindingDigest };
+  return { baseUrl: transport.baseUrl, approvedHost: transport.approvedHost, apiKey, bindingDigest };
 }
 
 function extractUsage(json) {

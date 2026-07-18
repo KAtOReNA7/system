@@ -29,6 +29,7 @@ import {
 } from "./canaryCore.js";
 import { OpenAICompatibleRelayCanaryAdapter } from "./openAiCompatibleRelayAdapter.js";
 import { assertPublicSanitized, canonicalJson, sha256 } from "./pilotCore.js";
+import { bindProviderTransport } from "./providerTransportSecurity.js";
 
 export const PRIVATE_CANARY_RELATIVE = "data/private-output/m2-v2-evidence-pilot/canary-v0.1";
 export const PARENT_MANIFEST_RELATIVE = "data/private-output/m2-v2-evidence-pilot/pilot-manifest-private-v0.1.json";
@@ -141,6 +142,7 @@ export async function runCanary(root, options = {}) {
   if (requestCap !== CANARY_REQUEST_CAP) throw new Error("canary_env_request_cap_must_equal_100");
   const adapter = options.adapter ?? new OpenAICompatibleRelayCanaryAdapter({
     baseUrl: config.baseUrl,
+    approvedHost: config.approvedHost,
     apiKey: config.apiKey,
     model: config.model,
     compatibilityReceiptDigest: config.binding.compatibilityReceiptDigest,
@@ -640,6 +642,7 @@ function assertAdapterMatchesBinding(adapter, binding) {
     || adapter?.mode !== binding.providerMode
     || adapter?.model !== binding.model
     || adapter?.baseUrlDigest !== binding.baseUrlDigest
+    || adapter?.approvedHost !== binding.approvedHost
     || adapter?.compatibilityReceiptDigest !== binding.compatibilityReceiptDigest
   ) throw new Error("canary_adapter_runtime_binding_mismatch");
 }
@@ -1451,7 +1454,7 @@ function loadRelayConfiguration(root, options = {}) {
   const baseUrl = binding.baseUrl;
   const apiKey = String(env.OPENAI_API_KEY ?? "");
   if (options.requireApiKey !== false && !apiKey) throw new Error("canary_relay_env_incomplete");
-  return { env, compatibility, binding, baseUrl, apiKey, model: binding.model };
+  return { env, compatibility, binding, baseUrl, approvedHost: binding.approvedHost, apiKey, model: binding.model };
 }
 
 export function validateCompatibilityReceipt(receipt, env = {}) {
@@ -1506,18 +1509,21 @@ export function validateCompatibilityReceipt(receipt, env = {}) {
 
   if (env.M2_V2_EVIDENCE_PROVIDER !== "openai_compatible_relay") throw new Error("canary_provider_mode_invalid");
   const receiptBaseUrl = normalizeBaseUrl(receipt.baseUrl);
+  const approvedHost = String(env.M2_V2_APPROVED_RELAY_HOST ?? "").trim().toLocaleLowerCase("en-US");
   const configuredBaseUrls = [env.OPENAI_BASE_URL, env.M2_V2_EVIDENCE_API_BASE_URL]
     .filter((value) => String(value ?? "").trim())
     .map(normalizeBaseUrl);
   if (!receiptBaseUrl || configuredBaseUrls.length === 0 || configuredBaseUrls.some((value) => value !== receiptBaseUrl)) {
     throw new Error("canary_compatibility_base_url_binding_mismatch");
   }
+  const transport = bindProviderTransport({ baseUrl: receiptBaseUrl, approvedHost });
   return Object.freeze({
     providerId: "openai_compatible_relay",
     providerVersion: "canary-v0.1",
     providerMode: "web_search",
-    baseUrl: receiptBaseUrl,
-    baseUrlDigest: sha256(receiptBaseUrl),
+    baseUrl: transport.baseUrl,
+    approvedHost: transport.approvedHost,
+    baseUrlDigest: sha256(transport.baseUrl),
     model,
     compatibilityReceiptDigest: receiptDigest,
   });

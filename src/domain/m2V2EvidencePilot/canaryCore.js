@@ -168,6 +168,7 @@ export function buildRelayRequestPayload(task, model) {
     input,
     tools: [{ type: "web_search" }],
     text: { format: canaryJsonSchemaFormat() },
+    store: false,
     max_output_tokens: 1800,
   };
   assertOutboundPayload(payload, task);
@@ -175,6 +176,9 @@ export function buildRelayRequestPayload(task, model) {
 }
 
 export function assertOutboundPayload(payload, task = {}) {
+  if (!Object.hasOwn(payload ?? {}, "store") || payload.store !== false) {
+    throw new Error("canary_responses_store_must_be_false");
+  }
   const serialized = JSON.stringify(payload);
   for (const token of PROHIBITED_OUTBOUND_TOKENS) {
     if (serialized.toLocaleLowerCase("en-US").includes(token.toLocaleLowerCase("en-US"))) {

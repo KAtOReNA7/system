@@ -38,7 +38,7 @@ test("PR7 P1 remediation preregistration freezes all 13 findings without downgra
 test("PR7 P1 remediation contracts are frozen before implementation", () => {
   for (const relative of contractPaths) {
     const contract = readJson(relative);
-    assert.equal(contract.status, "frozen_before_implementation", relative);
+    assert.equal(contract.status, "IMPLEMENTED_AND_SYNTHETICALLY_VERIFIED", relative);
     assert.equal(contract.classification, "public_sanitized_not_for_formal_decision", relative);
   }
 });

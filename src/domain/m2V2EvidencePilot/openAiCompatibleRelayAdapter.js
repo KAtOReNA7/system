@@ -1,6 +1,11 @@
 import { performance } from "node:perf_hooks";
 import { buildRelayRequestPayload, parseRelayResponse } from "./canaryCore.js";
 import { canonicalJson, sha256 } from "./pilotCore.js";
+import {
+  assertNoProviderRedirect,
+  assertResponsesRetention,
+  bindProviderTransport,
+} from "./providerTransportSecurity.js";
 
 const RESPONSE_LIMIT_BYTES = 2 * 1024 * 1024;
 
@@ -9,7 +14,12 @@ export class OpenAICompatibleRelayCanaryAdapter {
     this.providerId = "openai_compatible_relay";
     this.providerVersion = "canary-v0.1";
     this.mode = "web_search";
-    this.baseUrl = normalizeBaseUrl(options.baseUrl);
+    this.transport = bindProviderTransport({
+      baseUrl: options.baseUrl,
+      approvedHost: options.approvedHost,
+    });
+    this.baseUrl = this.transport.baseUrl;
+    this.approvedHost = this.transport.approvedHost;
     this.baseUrlDigest = sha256(this.baseUrl);
     this.apiKey = String(options.apiKey ?? "");
     this.model = String(options.model ?? "");
@@ -22,6 +32,7 @@ export class OpenAICompatibleRelayCanaryAdapter {
 
   async execute(task) {
     const payload = buildRelayRequestPayload(task, this.model);
+    assertResponsesRetention(payload);
     const requestBody = JSON.stringify(payload);
     const startedAt = new Date().toISOString();
     const started = performance.now();
@@ -33,7 +44,7 @@ export class OpenAICompatibleRelayCanaryAdapter {
     let transportError = null;
 
     try {
-      response = await this.fetchImpl(`${this.baseUrl}/responses`, {
+      response = await this.fetchImpl(this.transport.endpointUrl, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${this.apiKey}`,
@@ -43,7 +54,9 @@ export class OpenAICompatibleRelayCanaryAdapter {
         },
         body: requestBody,
         signal: controller.signal,
+        redirect: this.transport.redirect,
       });
+      assertNoProviderRedirect(response, this.transport.endpointUrl);
       responseBytes = Buffer.from(await response.arrayBuffer());
       if (responseBytes.length <= RESPONSE_LIMIT_BYTES) {
         try {
@@ -53,7 +66,7 @@ export class OpenAICompatibleRelayCanaryAdapter {
         }
       }
     } catch (error) {
-      transportError = { name: safeToken(error?.name), code: safeToken(error?.cause?.code) };
+      transportError = { name: safeToken(error?.name), code: safeToken(error?.code ?? error?.cause?.code) };
     } finally {
       clearTimeout(timeout);
     }
@@ -127,10 +140,6 @@ export class OpenAICompatibleRelayCanaryAdapter {
 function providerReportedCostCny(json) {
   const value = Number(json?.usage?.cost_cny ?? json?.usage?.cost?.cny);
   return Number.isFinite(value) && value >= 0 ? value : null;
-}
-
-function normalizeBaseUrl(value) {
-  return String(value ?? "").trim().replace(/\/+$/u, "");
 }
 
 function safeToken(value) {

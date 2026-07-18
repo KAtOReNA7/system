@@ -1,8 +1,10 @@
 # M2 v2 V2-B.2 Relay Adapter Remediation Amendment v0.1
 
+> **Historical / superseded / not authorization.** 本 amendment 的授权已在 V2-B.2 历史 checkpoint 中执行，随后被 V2-B.3–B.8 与完整性修复 supersede；不得据此调用 provider、重跑 Canary 或 resume。当前只以 current-state-index-v0.2 与用户最新明确指令为准。
+
 ## 决策
 
-本 amendment 只授权 V2-B.2 relay 兼容修复、Terra/Luna 公平 benchmark，以及在全部前置 gate 通过后的固定 10-work canary 重跑。它不授权 full 160、V2-C/V2-D、收入模型训练、B4 变更、final holdout、C4/M3 或 release。
+本 amendment 当时只授权 V2-B.2 relay 兼容修复、Terra/Luna 公平 benchmark，以及在全部前置 gate 通过后的固定 10-work canary 重跑；该句只记录历史范围，不构成当前授权。它从未授权 full 160、V2-C/V2-D、收入模型训练、B4 变更、final holdout、C4/M3 或 release。
 
 上一轮 60 次 Terra 调用重新分类为：provider connectivity `PASS`（49/60）、provider contract compatibility `FAIL`（本地严格合同仅 12/60）、model evidence quality `NOT_EVALUATED`、full pilot authorized `false`。37 次 relay-success/local-failure 全部属于判别联合非活动字段未置空，不能据此判定 Terra 搜索能力失败；0 accepted evidence 也不得解释为 0 external signal。
 

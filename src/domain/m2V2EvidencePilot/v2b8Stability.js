@@ -74,6 +74,19 @@ const TEMPORAL_CLAIM_TYPES = new Set([
   "market_signal",
 ]);
 
+const EVENT_KEYWORD_PATTERNS = Object.freeze({
+  publication_event: /出版|发行|首版|再版|isbn|press|publisher|publish(?:ed|ing|es)?|publication|release(?:d)?/iu,
+  completion_status: /完结|完本|完成|连载|更新|completed|complete|ongoing|serializ/iu,
+  adaptation_event: /改编|电影|电视|动画|动漫|广播剧|有声剧|游戏|启动|立项|签约|开机|拍摄|制作|上映|播出|发布|adapt|film|series|drama|release(?:d)?|premiere|production/iu,
+  award_event: /获奖|奖项|入围|提名|winner|award|nominee/iu,
+  ranking_signal: /排名|榜单|排行|rank/iu,
+  rating_signal: /评分|星级|rating|score/iu,
+  search_heat_signal: /搜索|热度|指数|search/iu,
+  market_signal: /市场|销量|销售|market|sale/iu,
+});
+
+const EVENT_CLAUSE_BOUNDARY = /[。！？!?；;，,\r\n]/u;
+
 export function classifyV2B8QueryExecution(execution) {
   if (execution?.contractValid === true) return "success_contract_valid";
   const status = String(execution?.status ?? "").toLowerCase();
@@ -269,6 +282,10 @@ export function extractV2B8EventTime(claim, sourceRecords = []) {
       eventTimePrecision: "unknown",
       eventTimeBasis: "unknown",
       eventTimeSourceId: null,
+      eventTimeClauseDigest: null,
+      eventTimeSpanStart: null,
+      eventTimeSpanEnd: null,
+      eventKeywordSpan: null,
       eventTimeEvidenceSpanDigest: null,
       explicitTemporalText: false,
       extractionSucceeded: true,
@@ -286,6 +303,16 @@ export function extractV2B8EventTime(claim, sourceRecords = []) {
       eventTimePrecision: supportingEvidence.eventTimePrecision,
       eventTimeBasis: basis,
       eventTimeSourceId: supportingEvidence.sourceId,
+      eventTimeClauseDigest: sha256({
+        sourceId: supportingEvidence.sourceId,
+        field: supportingEvidence.field,
+        clauseStart: supportingEvidence.supportStart,
+        clauseEnd: supportingEvidence.supportEnd,
+        clause: supportingEvidence.supportSpan,
+      }),
+      eventTimeSpanStart: supportingEvidence.start,
+      eventTimeSpanEnd: supportingEvidence.end,
+      eventKeywordSpan: supportingEvidence.eventKeywordSpan,
       eventTimeEvidenceSpanDigest: sha256({
         sourceId: supportingEvidence.sourceId,
         field: supportingEvidence.field,
@@ -306,6 +333,10 @@ export function extractV2B8EventTime(claim, sourceRecords = []) {
     eventTimePrecision: "unknown",
     eventTimeBasis: "unknown",
     eventTimeSourceId: null,
+    eventTimeClauseDigest: null,
+    eventTimeSpanStart: null,
+    eventTimeSpanEnd: null,
+    eventKeywordSpan: null,
     eventTimeEvidenceSpanDigest: null,
     explicitTemporalText,
     extractionSucceeded: !explicitTemporalText,
@@ -355,6 +386,10 @@ export function canonicalizeV2B8Claim(claim, context = {}) {
     eventTimePrecision: event.eventTimePrecision,
     eventTimeBasis: event.eventTimeBasis,
     eventTimeSourceId: event.eventTimeSourceId,
+    eventTimeClauseDigest: event.eventTimeClauseDigest,
+    eventTimeSpanStart: event.eventTimeSpanStart,
+    eventTimeSpanEnd: event.eventTimeSpanEnd,
+    eventKeywordSpan: event.eventKeywordSpan,
     eventTimeEvidenceSpanDigest: event.eventTimeEvidenceSpanDigest,
     explicitTemporalText: event.explicitTemporalText,
     eventTimeExtractionSucceeded: event.extractionSucceeded,
@@ -368,7 +403,7 @@ export function canonicalizeV2B8Claim(claim, context = {}) {
 }
 
 export function auditV2B8Conflicts(claims) {
-  const rows = claims.map((claim) => ({ ...claim }));
+  const rows = (Array.isArray(claims) ? claims : []).map((claim) => ({ ...claim }));
   const conflicts = [];
   const limitations = [];
   const groups = new Map();
@@ -382,10 +417,10 @@ export function auditV2B8Conflicts(claims) {
     const type = group[0]?.claimType;
     if (type === "completion_status") {
       const statuses = new Set(group.map((claim) => claim.normalizedStructuredValue?.status).filter((value) => value && value !== "unknown"));
-      if (statuses.size > 1 || statuses.has("contradictory")) markConflict(group, key, "completion_status_conflict", conflicts);
+      if (statuses.size > 1 || statuses.has("contradictory")) markConflict(group, key, "completion_status_conflict", conflicts, "completion_status");
     } else if (type === "author_identity" || type === "work_identity" || type === "original_platform") {
       const identities = new Set(group.map((claim) => canonicalJson(claim.normalizedStructuredValue)));
-      if (identities.size > 1) markConflict(group, key, `${type}_conflict`, conflicts);
+      if (identities.size > 1) markConflict(group, key, `${type}_conflict`, conflicts, type);
     } else if (type === "publication_event") {
       const byEdition = new Map();
       for (const claim of group) {
@@ -398,18 +433,22 @@ export function auditV2B8Conflicts(claims) {
       for (const [editionKey, bucket] of byEdition) {
         const publishers = new Set(bucket.map((claim) => claim.normalizedStructuredValue?.publisher).filter(Boolean));
         const dates = new Set(bucket.map((claim) => claim.normalizedStructuredValue?.publicationDate).filter(Boolean));
-        if (publishers.size > 1 || dates.size > 1) markConflict(bucket, `${key}:${editionKey}`, "same_edition_publication_conflict", conflicts);
+        if (publishers.size > 1 || dates.size > 1) markConflict(bucket, `${key}:${editionKey}`, "same_edition_publication_conflict", conflicts, "publication_publisher_date_edition_format");
       }
       if (byEdition.size > 1) limitations.push({ groupKey: key, reason: "valid_multi_edition_or_format", claimCount: group.length });
     } else if (type === "adaptation_event") {
       const byType = groupBy(group, (claim) => claim.normalizedStructuredValue?.adaptationType ?? "unknown");
       for (const [adaptationType, bucket] of byType) {
-        const signatures = new Set(bucket.map((claim) => canonicalJson({
-          stage: claim.normalizedStructuredValue?.stage ?? null,
-          eventTime: claim.normalizedStructuredValue?.eventTime ?? claim.eventTime ?? null,
-          releaseTime: claim.normalizedStructuredValue?.releaseTime ?? null,
-        })));
-        if (signatures.size > 1) markConflict(bucket, `${key}:${adaptationType}`, "adaptation_type_stage_date_conflict", conflicts);
+        const byStage = groupBy(bucket, (claim) => claim.normalizedStructuredValue?.stage ?? "unknown");
+        for (const [stage, stageBucket] of byStage) {
+          const dates = new Set(stageBucket.map((claim) => (
+            claim.normalizedStructuredValue?.eventTime ?? claim.eventTime ?? claim.normalizedStructuredValue?.releaseTime ?? null
+          )).filter(Boolean));
+          if (stageBucket.length > 1 && dates.size > 1) {
+            markConflict(stageBucket, `${key}:${adaptationType}:${stage}`, "same_adaptation_type_stage_date_conflict", conflicts, "adaptation_type_stage_date");
+          }
+        }
+        if (byStage.size > 1) limitations.push({ groupKey: `${key}:${adaptationType}`, reason: "valid_adaptation_stage_progression", claimCount: bucket.length });
       }
       if (byType.size > 1) limitations.push({ groupKey: key, reason: "valid_multiple_adaptation_types", claimCount: group.length });
     } else if (type === "rating_signal") {
@@ -423,30 +462,51 @@ export function auditV2B8Conflicts(claims) {
       }
       for (const [bucketKey, bucket] of byPlatformScale) {
         const values = new Set(bucket.map((claim) => claim.normalizedStructuredValue?.value).filter((value) => value !== null && value !== undefined));
-        if (!bucketKey.startsWith("unknown:") && values.size > 1) markConflict(bucket, `${key}:${bucketKey}`, "rating_platform_scale_value_conflict", conflicts);
+        if (!bucketKey.startsWith("unknown:") && values.size > 1) markConflict(bucket, `${key}:${bucketKey}`, "rating_platform_scale_value_conflict", conflicts, "rating_platform_scale_value");
       }
       const observations = new Set(group.map((claim) => claim.eventTime).filter(Boolean));
       if (observations.size > 1) limitations.push({ groupKey: key, reason: "valid_rating_temporal_observations", claimCount: group.length });
     } else if (type === "award_event") {
-      const byAward = groupBy(group, (claim) => claim.contradictionKey || awardIdentity(claim));
+      const byAward = groupBy(group, awardIdentity);
       for (const [awardKey, bucket] of byAward) {
         const signatures = new Set(bucket.map((claim) => canonicalJson({
           value: claim.normalizedStructuredValue,
           eventTime: claim.eventTime ?? null,
         })));
-        if (bucket.length > 1 && signatures.size > 1) markConflict(bucket, `${key}:${awardKey}`, "award_event_conflict", conflicts);
+        if (bucket.length > 1 && signatures.size > 1) markConflict(bucket, `${key}:${awardKey}`, "award_event_conflict", conflicts, "award_event");
       }
     }
   }
 
   const mutuallyExclusive = groupBy(
-    rows.filter((claim) => typeof claim.contradictionKey === "string" && claim.contradictionKey.trim()),
-    (claim) => `${claim.runKind ?? "unknown"}:${claim.canarySlotId ?? "unknown"}:${claim.contradictionKey.trim()}`,
+    rows.filter((claim) => canonicalExclusiveStatus(claim) !== null),
+    (claim) => `${claim.runKind ?? "unknown"}:${claim.canarySlotId ?? "unknown"}:canonical_status:${claim.claimType ?? "unknown"}`,
   );
   for (const [key, group] of mutuallyExclusive) {
-    const signatures = new Set(group.map((claim) => canonicalJson({ claimType: claim.claimType, value: claim.normalizedStructuredValue })));
-    if (group.length > 1 && signatures.size > 1) markConflict(group, key, "mutually_exclusive_status_conflict", conflicts);
+    const statuses = new Set(group.map(canonicalExclusiveStatus));
+    if (statuses.has("positive") && statuses.has("negative")) {
+      markConflict(group, key, "mutually_exclusive_status_conflict", conflicts, "mutually_exclusive_status");
+    }
   }
+  const familyResults = Object.fromEntries(V2B8_CONFLICT_FAMILIES.map((family) => {
+    const evidenceCount = conflictFamilyEvidenceCount(family, rows);
+    const familyConflicts = conflicts.filter((conflict) => conflict.family === family);
+    const applicable = evidenceCount > 0;
+    const executed = applicable;
+    const unresolvedCount = familyConflicts.filter((conflict) => conflict.status === "unresolved").length;
+    return [family, {
+      applicable,
+      executed,
+      evidenceCount,
+      conflictCount: familyConflicts.length,
+      unresolvedCount,
+      passed: applicable && executed && unresolvedCount === 0,
+    }];
+  }));
+  const applicableFamilyCount = Object.values(familyResults).filter((row) => row.applicable).length;
+  const conflictAuditStatus = applicableFamilyCount === 0
+    ? "NOT_EVALUABLE"
+    : conflicts.some((conflict) => conflict.status === "unresolved") ? "FAIL" : "PASS";
   return {
     claims: rows,
     conflicts,
@@ -454,7 +514,11 @@ export function auditV2B8Conflicts(claims) {
     unresolvedConflictCount: conflicts.length,
     validMultiEditionCount: limitations.filter((item) => item.reason === "valid_multi_edition_or_format").length,
     declaredConflictFamilies: [...V2B8_CONFLICT_FAMILIES],
-    conflictFamilyCoverage: Object.fromEntries(V2B8_CONFLICT_FAMILIES.map((family) => [family, true])),
+    conflictFamilyResults: familyResults,
+    applicableFamilyCount,
+    conflictAuditStatus,
+    passed: conflictAuditStatus === "PASS",
+    conflictFamilyCoverage: Object.fromEntries(V2B8_CONFLICT_FAMILIES.map((family) => [family, familyResults[family].executed])),
   };
 }
 
@@ -520,11 +584,11 @@ export function decomposeV2B8ClaimDifferences(input) {
   };
 }
 
-function markConflict(group, key, reason, conflicts) {
+function markConflict(group, key, reason, conflicts, family) {
   const claimKeys = group.map((claim) => claim.canonicalClaimKey);
   const conflictKey = `ctr_${sha256({ key, reason, claimKeys }).slice(0, 24)}`;
   if (!conflicts.some((conflict) => conflict.conflictKey === conflictKey)) {
-    conflicts.push({ conflictKey, reason, claimKeys, status: "unresolved" });
+    conflicts.push({ conflictKey, family, reason, claimKeys, status: "unresolved" });
   }
   for (const claim of group) {
     claim.contradictionStatus = "unresolved";
@@ -532,6 +596,32 @@ function markConflict(group, key, reason, conflicts) {
     claim.pilotUsable = false;
     claim.rejectionReasons = unique([...(claim.rejectionReasons ?? []), "conflict_unresolved"]);
   }
+}
+
+function canonicalExclusiveStatus(claim) {
+  const raw = claim?.normalizedStructuredValue?.status
+    ?? claim?.normalizedStructuredValue?.value
+    ?? activeStructuredValue(claim?.structuredValue);
+  if (typeof raw === "boolean") return raw ? "positive" : "negative";
+  const value = normalizeV2B8Text(raw);
+  if (/^(?:active|available|enabled|yes|true|valid|有效|可用|启用|存在)$/u.test(value)) return "positive";
+  if (/^(?:inactive|unavailable|disabled|no|false|invalid|无效|不可用|停用|不存在)$/u.test(value)) return "negative";
+  return null;
+}
+
+function conflictFamilyEvidenceCount(family, claims) {
+  const types = {
+    work_identity: new Set(["work_identity"]),
+    author_identity: new Set(["author_identity"]),
+    original_platform: new Set(["original_platform"]),
+    completion_status: new Set(["completion_status"]),
+    publication_publisher_date_edition_format: new Set(["publication_event"]),
+    adaptation_type_stage_date: new Set(["adaptation_event"]),
+    rating_platform_scale_value: new Set(["rating_signal"]),
+    award_event: new Set(["award_event"]),
+  };
+  if (family === "mutually_exclusive_status") return claims.filter((claim) => canonicalExclusiveStatus(claim) !== null).length;
+  return claims.filter((claim) => types[family]?.has(claim.claimType)).length;
 }
 
 function awardIdentity(claim) {
@@ -630,6 +720,7 @@ function dateEvidence(text, match, eventTime, eventTimePrecision) {
 }
 
 function findSupportingDateEvidence(claim, sourceRecords, requested) {
+  const matches = [];
   for (const source of sourceRecords) {
     for (const field of ["snippet", "title"]) {
       const value = source?.[field];
@@ -639,11 +730,21 @@ function findSupportingDateEvidence(claim, sourceRecords, requested) {
         }
         const support = claimBoundDateSupport(claim, value, evidence);
         if (!support) continue;
-        return { ...evidence, ...support, field, sourceId: source.sourceId };
+        matches.push({ ...evidence, ...support, field, sourceId: source.sourceId });
       }
     }
   }
-  return null;
+  if (!matches.length) return null;
+  if (!requested) {
+    const distinctTimes = new Set(matches.map((item) => `${item.eventTime}:${item.eventTimePrecision}`));
+    if (distinctTimes.size !== 1) return null;
+  }
+  return matches.sort((left, right) => (
+    String(left.sourceId).localeCompare(String(right.sourceId))
+      || left.field.localeCompare(right.field)
+      || left.start - right.start
+      || left.end - right.end
+  ))[0];
 }
 
 function parseDateEvidences(value) {
@@ -666,25 +767,41 @@ function hasClaimBoundDateText(claim, value) {
 
 function claimBoundDateSupport(claim, value, evidence) {
   const text = String(value ?? "").normalize("NFKC");
-  const boundaries = /[。！？!?；;\r\n]/u;
   let supportStart = evidence.start;
-  while (supportStart > 0 && !boundaries.test(text[supportStart - 1])) supportStart -= 1;
+  while (supportStart > 0 && !EVENT_CLAUSE_BOUNDARY.test(text[supportStart - 1])) supportStart -= 1;
   let supportEnd = evidence.end;
-  while (supportEnd < text.length && !boundaries.test(text[supportEnd])) supportEnd += 1;
+  while (supportEnd < text.length && !EVENT_CLAUSE_BOUNDARY.test(text[supportEnd])) supportEnd += 1;
   const supportSpan = text.slice(supportStart, supportEnd).trim();
-  const normalizedSupport = normalizeV2B8Text(supportSpan);
-  const patterns = {
-    publication_event: /出版|发行|首版|再版|isbn|press|publisher|publish(?:ed|ing|es)?|publication|release(?:d)?/u,
-    completion_status: /完结|完本|完成|连载|更新|completed|complete|ongoing|serializ/u,
-    adaptation_event: /改编|电影|电视|动画|动漫|广播剧|有声剧|游戏|adapt|film|series|drama/u,
-    award_event: /获奖|奖项|入围|提名|winner|award|nominee/u,
-    ranking_signal: /排名|榜单|排行|rank/u,
-    rating_signal: /评分|星级|rating|score/u,
-    search_heat_signal: /搜索|热度|指数|search/u,
-    market_signal: /市场|销量|销售|market|sale/u,
+  const normalizedClause = normalizeV2B8Text(supportSpan);
+  const normalizedClaimValue = normalizeV2B8Text(activeStructuredValue(claim?.structuredValue));
+  const tentative = /计划|拟于|预计|预定|planned|expected|scheduled|proposed/iu;
+  const negated = /(?:未曾|尚未|没有|取消|not|never|cancelled|canceled)/iu;
+  if (tentative.test(normalizedClause) && !tentative.test(normalizedClaimValue)) return null;
+  if (negated.test(normalizedClause) && !negated.test(normalizedClaimValue)) return null;
+  const pattern = EVENT_KEYWORD_PATTERNS[claim?.claimType];
+  if (!pattern) return null;
+  const keywordPattern = new RegExp(pattern.source, pattern.flags.includes("g") ? pattern.flags : `${pattern.flags}g`);
+  const keywords = [...text.slice(supportStart, supportEnd).matchAll(keywordPattern)].map((match) => ({
+    start: supportStart + match.index,
+    end: supportStart + match.index + match[0].length,
+  }));
+  if (!keywords.length) return null;
+  const keyword = keywords.sort((left, right) => (
+    spanDistance(left, evidence) - spanDistance(right, evidence)
+      || left.start - right.start
+  ))[0];
+  return {
+    supportStart,
+    supportEnd,
+    supportSpan,
+    eventKeywordSpan: { start: keyword.start, end: keyword.end },
   };
-  if (patterns[claim?.claimType]?.test(normalizedSupport) !== true) return null;
-  return { supportStart, supportEnd, supportSpan };
+}
+
+function spanDistance(left, right) {
+  if (left.end <= right.start) return right.start - left.end;
+  if (right.end <= left.start) return left.start - right.end;
+  return 0;
 }
 
 function activeStructuredValue(value) {

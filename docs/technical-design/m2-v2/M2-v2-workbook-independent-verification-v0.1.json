@@ -1,10 +1,20 @@
 {
   "schema": "m2.v2.workbook-independent-verification-public.v0.1",
-  "status": "frozen_before_implementation",
+  "status": "IMPLEMENTED_AND_SYNTHETICALLY_VERIFIED",
   "classification": "public_sanitized_not_for_formal_decision",
   "parsedParts": ["workbook", "worksheet_xml", "relationships", "shared_strings", "formulas", "cached_values", "data_validations", "hyperlinks", "styles", "hidden_sheets", "external_links", "defined_names", "custom_xml"],
   "derivedFacts": ["sheetNames", "rowCounts", "formulaCount", "formulaErrorCount", "cachedFormulaErrors", "hyperlinkCount", "hyperlinkTargets", "validationCount", "forbiddenValueCount", "internalIdCount", "incomeValueCount", "secretCount", "externalLinkCount"],
   "callerAssertionsAcceptedAsFacts": false,
+  "b8ReceiptLineage": {
+    "schema": "m2.v2.v2b8-workbook-verification-private.v0.3",
+    "source": "independent_xlsx_relationship_parse_only",
+    "persistedTargetFacts": ["protocol", "targetMode", "relationshipType", "targetDigest", "occurrenceCount"],
+    "rawTargetsPersisted": false,
+    "hostValuesPersisted": false,
+    "stableLineageDigestRequired": true,
+    "occurrenceCountMustEqualHyperlinkCount": true,
+    "callerAggregateMayReplaceLineage": false
+  },
   "visualReview": {
     "independentHumanAttestation": true,
     "default": false,
@@ -20,5 +30,16 @@
     "nativeHyperlinkRelationships": true,
     "hyperlinkFormulasAllowed": false,
     "providerRequestDelta": 0
+  },
+  "verificationScope": {
+    "syntheticBoundaryTests": "verified",
+    "realPrivateMigrationClaimed": false,
+    "exactHeadCiClaimed": false,
+    "publicRestatementClaimed": false,
+    "realWorkbookVisualAttestationClaimed": false
+  },
+  "authorization": {
+    "full160Authorized": false,
+    "nextDevelopmentReadiness": "NOT_AUTHORIZED"
   }
 }

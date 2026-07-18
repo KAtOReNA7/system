@@ -1,7 +1,14 @@
 {
   "schema": "m2.v2.v2b2-relay-remediation-amendment.v0.1",
-  "status": "frozen_before_v2b2_live_calls",
+  "status": "historical_superseded_not_current_authorization",
+  "historicalStatusAtFreeze": "frozen_before_v2b2_live_calls",
   "effectiveDate": "2026-07-17",
+  "lifecycle": {
+    "historical": true,
+    "superseded": true,
+    "notCurrentAuthorization": true,
+    "supersededBy": "V2-B.3 through V2-B.8 and current-state-index-v0.2"
+  },
   "scope": "V2-B.2 relay compatibility remediation and paired model benchmark only",
   "historicalReclassification": {
     "providerConnectivity": "PASS",

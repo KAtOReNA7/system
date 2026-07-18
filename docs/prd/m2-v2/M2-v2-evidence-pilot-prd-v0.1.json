@@ -1,9 +1,20 @@
 {
   "schema": "m2.v2.evidence-pilot-prd.v0.1",
-  "status": "frozen_before_external_retrieval",
+  "status": "historical_superseded_not_current_authorization",
+  "historicalStatusAtFreeze": "frozen_before_external_retrieval",
   "phase": "V2-B",
+  "lifecycle": {
+    "historical": true,
+    "superseded": true,
+    "notCurrentAuthorization": true,
+    "supersededBy": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.2.json"
+  },
   "authority": {
     "authorized": true,
+    "authorizedFieldScope": "historical_v2b_evidence_pilot_only",
+    "historicalAuthorizationExecuted": true,
+    "currentAuthorization": false,
+    "notAuthorizationForProviderResumeOrNewExecution": true,
     "scope": "external_evidence_layer_pilot_only",
     "notForFormalDecision": true,
     "modelTrainingAuthorized": false,
@@ -82,5 +93,6 @@
     "shortExcerpt": "private_only_when_source_terms_allow"
   },
   "decisionValues": ["PILOT_PASS", "PILOT_CONDITIONAL", "PILOT_FAIL"],
-  "stopCondition": "Create an unmerged V2-B PR and wait for user review; do not start V2-C, V2-D, C4, M3, model training, holdout, or release."
+  "stopCondition": "Create an unmerged V2-B PR and wait for user review; do not start V2-C, V2-D, C4, M3, model training, holdout, or release.",
+  "stopConditionFieldScope": "historical_v2b_contract_only_superseded_not_current_authorization"
 }

@@ -214,6 +214,7 @@ function compatibilityEnv() {
   return {
     OPENAI_BASE_URL: BASE_URL,
     M2_V2_EVIDENCE_API_BASE_URL: BASE_URL,
+    M2_V2_APPROVED_RELAY_HOST: new URL(BASE_URL).host,
     M2_V2_EVIDENCE_PROVIDER: "openai_compatible_relay",
   };
 }

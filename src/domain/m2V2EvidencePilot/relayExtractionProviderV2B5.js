@@ -1,6 +1,11 @@
 import { performance } from "node:perf_hooks";
 import { sha256 } from "./pilotCore.js";
 import {
+  assertNoProviderRedirect,
+  assertResponsesRetention,
+  bindProviderTransport,
+} from "./providerTransportSecurity.js";
+import {
   V2B5_EXTRACTION_ADAPTER_VERSION,
   buildV2B5ExtractionPayload,
   extractV2B5ResponseStatus,
@@ -19,7 +24,9 @@ export class OpenAICompatibleRelayExtractionProviderV2B5 {
     this.provider = V2B5_RELAY_EXTRACTION_PROVIDER_ID;
     this.providerVersion = V2B5_EXTRACTION_ADAPTER_VERSION;
     this.mode = "evidence_extraction_only";
-    this.baseUrl = normalizeBaseUrl(options.baseUrl);
+    this.transport = bindProviderTransport({ baseUrl: options.baseUrl, approvedHost: options.approvedHost });
+    this.baseUrl = this.transport.baseUrl;
+    this.approvedHost = this.transport.approvedHost;
     this.apiKey = String(options.apiKey ?? "");
     this.timeoutMs = boundedInteger(options.timeoutMs, 25_000, 1_000, 60_000);
     this.fetchImpl = options.fetchImpl ?? globalThis.fetch;
@@ -53,6 +60,7 @@ export class OpenAICompatibleRelayExtractionProviderV2B5 {
     const response = await dispatchV2B5RelayExtractionRequest({
       fetchImpl: this.fetchImpl,
       baseUrl: this.baseUrl,
+      approvedHost: this.approvedHost,
       apiKey: this.apiKey,
       payload,
       timeoutMs: this.timeoutMs,
@@ -122,6 +130,8 @@ export class OpenAICompatibleRelayExtractionProviderV2B5 {
 export async function dispatchV2B5RelayExtractionRequest(options) {
   const fetchImpl = options.fetchImpl ?? globalThis.fetch;
   if (typeof fetchImpl !== "function") throw new Error("v2b5_relay_fetch_unavailable");
+  const transport = bindProviderTransport({ baseUrl: options.baseUrl, approvedHost: options.approvedHost });
+  assertResponsesRetention(options.payload);
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), options.timeoutMs ?? 25_000);
   const requestStartedAt = new Date().toISOString();
@@ -131,7 +141,7 @@ export async function dispatchV2B5RelayExtractionRequest(options) {
   let json = null;
   let transportError = null;
   try {
-    response = await fetchImpl(`${normalizeBaseUrl(options.baseUrl)}/responses`, {
+    response = await fetchImpl(transport.endpointUrl, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${options.apiKey}`,
@@ -141,13 +151,15 @@ export async function dispatchV2B5RelayExtractionRequest(options) {
       },
       body: JSON.stringify(options.payload),
       signal: controller.signal,
+      redirect: transport.redirect,
     });
+    assertNoProviderRedirect(response, transport.endpointUrl);
     bytes = Buffer.from(await response.arrayBuffer());
     if (bytes.length <= RESPONSE_LIMIT_BYTES) {
       try { json = JSON.parse(bytes.toString("utf8")); } catch { json = null; }
     }
   } catch (error) {
-    transportError = safeToken(error?.name ?? error?.message) ?? "transport_error";
+    transportError = safeToken(error?.code ?? error?.name ?? error?.message) ?? "transport_error";
   } finally {
     clearTimeout(timeout);
   }
@@ -193,10 +205,6 @@ function classifyContentType(value) {
   if (type.includes("json")) return "json";
   if (type.includes("html")) return "html";
   return type ? "other" : "unavailable";
-}
-
-function normalizeBaseUrl(value) {
-  return String(value ?? "").trim().replace(/\/+$/u, "");
 }
 
 function safeToken(value) {

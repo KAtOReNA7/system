@@ -16,6 +16,24 @@
   ],
   "explicitTemporalClaimExtractionRequired": true,
   "explicitTemporalClaimExtractionThreshold": 1,
+  "requiredGateEvaluation": {
+    "zeroDenominatorStatus": "NOT_EVALUABLE",
+    "zeroDenominatorPassed": false,
+    "zeroDenominatorMaySatisfyRequiredGate": false,
+    "numeratorAndDenominatorReported": true
+  },
+  "eventTimeLineage": {
+    "supportingClaimSourceRequired": true,
+    "eventTimeSourceIdRequiredWhenEventTimePresent": true,
+    "sameSupportingClauseOrSpanRequired": true,
+    "eventTimeClauseDigestRequiredWhenEventTimePresent": true,
+    "eventTimeSpanRequiredWhenEventTimePresent": true,
+    "eventKeywordSpanRequiredWhenEventTimePresent": true,
+    "eventTimeBasisRequired": true,
+    "eventTimePrecisionRequired": true,
+    "ambiguousBinding": "null",
+    "firstDateFallbackAllowed": false
+  },
   "conflictTypes": [
     "publication_version",
     "publisher",
@@ -25,6 +43,27 @@
     "identity_edition",
     "author_identity"
   ],
+  "declaredConflictFamilies": [
+    "work_identity",
+    "author_identity",
+    "original_platform",
+    "completion_status",
+    "publication_publisher_date_edition_format",
+    "adaptation_type_stage_date",
+    "rating_platform_scale_value",
+    "award_event",
+    "mutually_exclusive_status"
+  ],
+  "conflictApplicability": {
+    "perFamilyApplicabilityDerivedFromLocalCanonicalClaims": true,
+    "onlyApplicableExecutedFamiliesCountAsCovered": true,
+    "allDeclaredFamiliesAudited": true,
+    "modelContradictionKeyTrusted": false,
+    "emptyInputCoverage": "NOT_EVALUABLE",
+    "emptyInputRequiredGatePassed": false,
+    "unresolvedAmbiguityPassed": false,
+    "editionAware": true
+  },
   "multiEditionAutoConflict": false,
   "unresolvedConflictPilotUsable": false,
   "full160Authorized": false

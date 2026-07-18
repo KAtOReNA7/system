@@ -13,6 +13,25 @@
   ],
   "maximumPerSourceHost": 2,
   "domainCapException": "insufficient_total_sources",
+  "positiveSourceClassification": {
+    "positiveEvidenceRequired": true,
+    "missingPositiveEvidenceClassification": "unknown",
+    "missingPositiveEvidenceMayBePromoted": false,
+    "nameOrLabelAloneIsPositiveEvidence": false,
+    "supportMustBindToSelectedSourceRecord": true
+  },
+  "diversityEnforcement": {
+    "domainDiversityRequired": true,
+    "categoryDiversityRequired": true,
+    "categoryDerivedFromPositiveSourceEvidence": true,
+    "categoryLabelSelfDeclarationTrusted": false,
+    "selectionMustUseDistinctAvailableCategories": true,
+    "domainCapExceptionDoesNotWaiveCategoryAudit": true,
+    "requiredGateWithZeroApplicableSources": {
+      "status": "NOT_EVALUABLE",
+      "passed": false
+    }
+  },
   "categoryDiversityRequired": true,
   "ratingReviewCannotDisplaceIdentityOfficial": true,
   "sampleReplacementAllowed": false,

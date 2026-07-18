@@ -1,6 +1,11 @@
 import { performance } from "node:perf_hooks";
 import { canonicalJson, sha256 } from "./pilotCore.js";
 import {
+  assertNoProviderRedirect,
+  assertResponsesRetention,
+  bindProviderTransport,
+} from "./providerTransportSecurity.js";
+import {
   V2B5_CLAIM_TYPES,
   V2B5_EXTRACTION_OUTPUT_SCHEMA_VERSION,
   buildV2B5ExtractionPayload,
@@ -250,6 +255,8 @@ export function normalizeV2B6BenchmarkResponse(json, context) {
 export async function dispatchV2B6RelayRequest(options) {
   const fetchImpl = options.fetchImpl ?? globalThis.fetch;
   if (typeof fetchImpl !== "function") throw new Error("v2b6_relay_fetch_unavailable");
+  const transport = bindProviderTransport({ baseUrl: options.baseUrl, approvedHost: options.approvedHost });
+  assertResponsesRetention(options.payload);
   const timeoutMs = resolveV2B6TimeoutMs(options.timeoutMs);
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
@@ -260,7 +267,7 @@ export async function dispatchV2B6RelayRequest(options) {
   let json = null;
   let transportError = null;
   try {
-    response = await fetchImpl(`${normalizeBaseUrl(options.baseUrl)}/responses`, {
+    response = await fetchImpl(transport.endpointUrl, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${options.apiKey}`,
@@ -270,13 +277,15 @@ export async function dispatchV2B6RelayRequest(options) {
       },
       body: JSON.stringify(options.payload),
       signal: controller.signal,
+      redirect: transport.redirect,
     });
+    assertNoProviderRedirect(response, transport.endpointUrl);
     bytes = Buffer.from(await response.arrayBuffer());
     if (bytes.length <= RESPONSE_LIMIT_BYTES) {
       try { json = JSON.parse(bytes.toString("utf8")); } catch { json = null; }
     }
   } catch (error) {
-    transportError = safeToken(error?.name ?? error?.message) ?? "transport_error";
+    transportError = safeToken(error?.code ?? error?.name ?? error?.message) ?? "transport_error";
   } finally {
     clearTimeout(timeout);
   }
@@ -627,10 +636,6 @@ function classifyContentType(value) {
   if (type.includes("json")) return "json";
   if (type.includes("html")) return "html";
   return type ? "other" : "unavailable";
-}
-
-function normalizeBaseUrl(value) {
-  return String(value ?? "").trim().replace(/\/+$/u, "");
 }
 
 function cleanText(value, limit) {

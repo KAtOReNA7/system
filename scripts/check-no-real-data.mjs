@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
@@ -14,6 +15,15 @@ const POSTGRES_PROTOCOL = ["postgres", "://"].join("");
 const POSTGRESQL_PROTOCOL = ["postgresql", "://"].join("");
 const WINDOWS_POSTGRES_DATA = ["C:", "\\", "Program Files", "\\", "PostgreSQL", "\\", "16", "\\", "data"].join("");
 const PROJECT_DATA_DIRECTORY = ["D:", "\\", "porject", "\\", "system", "\\", "data"].join("");
+const REVIEWED_PUBLIC_BINARY_SHA256 = new Map([
+  ["docs/analysis/m1-master-data/assets/master-coverage.png", "fb29bff5b194e9bc7403806c2f3a586dc41b4e1fd5cb288b3bcff4163d886142"],
+  ["docs/analysis/m1-master-data/assets/ops-confirmation-groups.png", "d94a52a754e377f3686096b6b634d5d0afb8b32b8fa91782e85e4a9768d24dd9"],
+  ["docs/analysis/m1-master-data/assets/required-field-gaps.png", "32b833ae344dcae74f9c9362b0ea1c9dbd7677b901b1a7c5ada6f2010d66a0a1"],
+  ["docs/analysis/m1-real-bills/assets/amount-sign-count.png", "b007cd7d996b29931f9be790bf7da126b1617a493b16d3a6743f73177588e201"],
+  ["docs/analysis/m1-real-bills/assets/issue-candidate-count.png", "025510e1aeb2148fdb8a2ba13e9b19bd17b5d9fa691151d694d7c7776a7cd231"],
+  ["docs/analysis/m1-real-bills/assets/monthly-row-count.png", "63c740d5f6582396b4323e15bf88b0817c6b4a27ce65458522799906e3adfd50"],
+  ["docs/analysis/m1-real-bills/assets/work-id-format.png", "bcfca44010d0517598469045a722db636e754e8e1b2431b440e504fa14a0b812"]
+]);
 
 function runGit(args, options = {}) {
   return execFileSync("git", args, {
@@ -43,7 +53,7 @@ function basename(path) {
 }
 
 function isEnvFile(path) {
-  const name = basename(path);
+  const name = basename(path).toLowerCase();
   return name === ".env" || (name.startsWith(".env.") && name !== ".env.example");
 }
 
@@ -56,8 +66,17 @@ function shouldScanContent(path) {
   );
 }
 
-function isProbablyText(buffer) {
-  return !buffer.includes(0);
+function sha256Buffer(buffer) {
+  return createHash("sha256").update(buffer).digest("hex");
+}
+
+function decodeUtf8(buffer) {
+  return new TextDecoder("utf-8", { fatal: true }).decode(buffer);
+}
+
+function isReviewedPublicBinary(path, buffer) {
+  const expected = REVIEWED_PUBLIC_BINARY_SHA256.get(path.toLowerCase());
+  return Boolean(expected) && sha256Buffer(buffer) === expected;
 }
 
 function collectCandidateEntries() {
@@ -88,12 +107,13 @@ function collectCandidateEntries() {
 
 const pathRules = [
   { label: "environment_file", test: isEnvFile },
-  { label: "pgpass_file", test: (path) => basename(path) === ".pgpass" },
-  { label: "private_data_path", test: (path) => pathSegments(path).includes("data") },
+  { label: "pgpass_file", test: (path) => basename(path).toLowerCase() === ".pgpass" },
+  { label: "private_data_path", test: (path) => pathSegments(path).some((segment) => segment.toLowerCase() === "data") },
   { label: "excel_workbook", test: (path) => /\.xlsx?$/iu.test(path) },
-  { label: "channel_sales_summary", test: (path) => path.includes(CHANNEL_SALES_SUMMARY) },
-  { label: "formal_mapping_candidate", test: (path) => path.includes(FORMAL_MAPPING_CANDIDATE) },
-  { label: "local_rehearsal_detail", test: (path) => path.includes(LOCAL_REHEARSAL_DETAIL) }
+  { label: "provider_raw_response_file", test: (path) => /(?:^|\/)(?:response|raw[-_.]?response)(?:\.[^/]*)?$/iu.test(path) },
+  { label: "channel_sales_summary", test: (path) => path.toLowerCase().includes(CHANNEL_SALES_SUMMARY.toLowerCase()) },
+  { label: "formal_mapping_candidate", test: (path) => path.toLowerCase().includes(FORMAL_MAPPING_CANDIDATE.toLowerCase()) },
+  { label: "local_rehearsal_detail", test: (path) => path.toLowerCase().includes(LOCAL_REHEARSAL_DETAIL.toLowerCase()) }
 ];
 
 function normalizedValue(rawValue) {
@@ -186,24 +206,51 @@ function checkPath(entry, violations) {
 function readEntryBuffer(root, entry) {
   if (entry.source === "index") {
     try {
-      return runGit(["show", `:${entry.path}`], { encoding: "buffer" });
+      return { buffer: runGit(["show", `:${entry.path}`], { encoding: "buffer" }), failure: null };
     } catch {
-      return null;
+      return { buffer: null, failure: "index_blob_unreadable" };
     }
   }
   const fullPath = join(root, entry.path);
-  if (!existsSync(fullPath)) return null;
-  const stat = statSync(fullPath);
-  if (!stat.isFile() || stat.size > MAX_TEXT_BYTES) return null;
-  return readFileSync(fullPath);
+  if (!existsSync(fullPath)) return { buffer: null, failure: "worktree_file_missing" };
+  try {
+    const stat = statSync(fullPath);
+    if (!stat.isFile()) return { buffer: null, failure: "non_regular_file" };
+    if (stat.size > MAX_TEXT_BYTES) return { buffer: null, failure: "oversized_file_unscanned" };
+    return { buffer: readFileSync(fullPath), failure: null };
+  } catch {
+    return { buffer: null, failure: "worktree_file_unreadable" };
+  }
 }
 
 function checkContent(root, entry, violations) {
   if (!shouldScanContent(entry.path)) return;
-  const buffer = readEntryBuffer(root, entry);
-  if (!buffer || buffer.length > MAX_TEXT_BYTES || !isProbablyText(buffer)) return;
+  const loaded = readEntryBuffer(root, entry);
+  if (loaded.failure) {
+    violations.push({ type: "content", rule: loaded.failure, path: entry.path, source: entry.source });
+    return;
+  }
+  const buffer = loaded.buffer;
+  if (!buffer || buffer.length > MAX_TEXT_BYTES) {
+    violations.push({ type: "content", rule: "content_read_incomplete", path: entry.path, source: entry.source });
+    return;
+  }
+  if (buffer.includes(0)) {
+    if (!isReviewedPublicBinary(entry.path, buffer)) {
+      violations.push({ type: "content", rule: "unreviewed_binary_content", path: entry.path, source: entry.source });
+    }
+    return;
+  }
 
-  const lines = buffer.toString("utf8").split(/\r?\n/u);
+  let text;
+  try {
+    text = decodeUtf8(buffer);
+  } catch {
+    violations.push({ type: "content", rule: "invalid_utf8_content", path: entry.path, source: entry.source });
+    return;
+  }
+
+  const lines = text.split(/\r?\n/u);
   lines.forEach((line, index) => {
     for (const rule of staticContentRules) {
       if (rule.test(line)) {
