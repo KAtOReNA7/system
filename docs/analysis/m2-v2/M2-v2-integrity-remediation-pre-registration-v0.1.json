@@ -1,0 +1,113 @@
+{
+  "schema": "m2.v2.integrity-remediation-pre-registration.v0.1",
+  "status": "frozen_before_implementation",
+  "frozenDate": "2026-07-18",
+  "branch": "codex/m2-v2-evidence-pilot-v1",
+  "startingHead": "cc15b134ae9b309081926940a530d0a1f0a13ddc",
+  "baseHead": "d81b952e37dd43365c0091cdd6665e69d8d39a7e",
+  "pullRequest": {
+    "number": 7,
+    "draft": true,
+    "open": true,
+    "mergeAuthorized": false
+  },
+  "startingAudit": {
+    "trackedCoverage": {
+      "audited": 1555,
+      "total": 1555,
+      "rate": 1
+    },
+    "findingCounts": {
+      "P0": 0,
+      "P1": 13,
+      "P2": 21,
+      "P3": 6
+    },
+    "auditCompletenessDecision": "PASS",
+    "projectIntegrityDecision": "FAIL",
+    "instructionDriftDecision": "MATERIAL_DRIFT_REMEDIABLE",
+    "preAuditMetricIntegrityDecision": "PASS",
+    "privateStateIntegrityDecision": "FAIL",
+    "pr7MergeReadiness": "NOT_READY_REMEDIATION_REQUIRED",
+    "nextDevelopmentReadiness": "NOT_AUTHORIZED"
+  },
+  "frozenBaseline": {
+    "search": {
+      "successfulQueries": 26,
+      "totalQueries": 27,
+      "successRate": 0.962963,
+      "worksCovered": 10,
+      "totalWorks": 10,
+      "sourceRecords": 88
+    },
+    "entity": {
+      "resolved": 9,
+      "unresolved": 1
+    },
+    "evidence": {
+      "candidate": 85,
+      "accepted": 52,
+      "rejected": 33,
+      "coveragePercent": 48
+    },
+    "citation": {
+      "preRepairAligned": 230,
+      "preRepairTotal": 230,
+      "postRepairAligned": 226,
+      "postRepairTotal": 226
+    },
+    "temporal": {
+      "complete": 32,
+      "total": 32
+    },
+    "agreement": {
+      "sourceOverlap": 0.345079,
+      "sameSourceClaimAgreement": 0.673333,
+      "freshClaimAgreement": 0.2
+    },
+    "decision": "CANARY_CONDITIONAL",
+    "full160Authorized": false
+  },
+  "preRegisteredRemediation": [
+    "preserve_read_only_forensic_backup",
+    "classify_polluted_private_state",
+    "make_b5_b6_b7_b8_verifiers_read_only_and_idempotent",
+    "introduce_receipt_envelope_v0_2_and_migrate_runtime_only_digest_drift",
+    "bind_state_cache_receipts_ledger_and_counters_atomically",
+    "repair_five_b8_contract_gaps",
+    "offline_rebuild_from_authoritative_inputs",
+    "recompute_frozen_and_restated_metrics",
+    "prove_two_run_governed_hash_stability",
+    "strengthen_default_tests_secret_guard_and_windows_ci",
+    "repair_current_state_documents_and_pull_request_body",
+    "complete_a_new_100_percent_project_audit"
+  ],
+  "b8ContractRepairs": [
+    "zero_denominator_required_gate_is_not_evaluable_and_not_passed",
+    "source_classification_requires_positive_evidence",
+    "source_selection_enforces_category_diversity",
+    "event_time_requires_supporting_claim_source_and_span_provenance",
+    "conflict_audit_covers_all_declared_claim_families"
+  ],
+  "prohibitions": {
+    "providerRequests": 0,
+    "canaryExecution": false,
+    "full160": false,
+    "modelTraining": false,
+    "sampleReplacement": false,
+    "counterReset": false,
+    "holdoutAccess": false,
+    "release": false,
+    "merge": false,
+    "nextDevelopment": false
+  },
+  "commitPlan": [
+    "chore(m2-v2): freeze integrity remediation contracts",
+    "fix(m2-v2): make verifiers read-only and recover private state"
+  ],
+  "restatementPolicy": {
+    "overwriteHistoricalReports": false,
+    "versionedRestatementRequired": true,
+    "explainContractDrivenDifferences": true
+  }
+}

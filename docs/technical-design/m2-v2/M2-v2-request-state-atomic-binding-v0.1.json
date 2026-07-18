@@ -1,0 +1,98 @@
+{
+  "schema": "m2.v2.request-state-atomic-binding.v0.1",
+  "status": "frozen_before_remediation",
+  "receiptEnvelope": {
+    "schemaVersion": "receipt-envelope-v0.2",
+    "immutablePayloadFields": [
+      "requestIdentity",
+      "requestPayloadDigest",
+      "responsePayloadDigest",
+      "providerStatus",
+      "providerRequestId",
+      "usage",
+      "createdAt"
+    ],
+    "runtimeViewFields": [
+      "cacheHit",
+      "readAt",
+      "selectedAsEffective"
+    ],
+    "receiptDigestBasis": "canonical_immutable_payload_only",
+    "runtimeViewDigestBasis": "canonical_runtime_view_only",
+    "runtimeFieldsMayMutateReceiptPayload": false,
+    "legacyReceiptDeletionAllowed": false
+  },
+  "cacheHit": {
+    "returnShape": {
+      "receiptRef": "sha256_reference_to_immutable_receipt_payload",
+      "runtimeView": {
+        "cacheHit": true
+      }
+    },
+    "copyThenModifyReceipt": false,
+    "changeReceiptDigest": false,
+    "cacheStoresReceiptDigestReferenceOnly": true
+  },
+  "requestLedger": {
+    "appendOnly": true,
+    "counterDimensions": [
+      "planned",
+      "reserved",
+      "dispatched",
+      "completed",
+      "indeterminate",
+      "providerFailed",
+      "contractFailed",
+      "cacheHit"
+    ],
+    "countersMustRecomputeFromLedger": true,
+    "stateCounterMayBeSoleAuthority": false,
+    "reservedBudgetMayBeRolledBack": false
+  },
+  "transactionManifest": {
+    "fields": [
+      "transactionId",
+      "stateDigest",
+      "cacheIndexDigest",
+      "receiptIndexDigest",
+      "requestLedgerDigest",
+      "counterDigest",
+      "manifestBindings",
+      "createdAt"
+    ],
+    "bindingDigest": "sha256_of_canonical_manifest_without_binding_digest",
+    "commitOrder": [
+      "write_temporary_members",
+      "flush_and_close",
+      "verify_member_digests",
+      "atomically_rename_members",
+      "commit_transaction_manifest_last"
+    ]
+  },
+  "failureSemantics": {
+    "previousTransactionRemainsCurrent": true,
+    "partialTransactionMayBecomeCurrent": false,
+    "indeterminateRequestRemainsRecorded": true,
+    "requestCounterReset": false
+  },
+  "staleDigestMigration": {
+    "eligibleDifference": "runtime_view_fields_only",
+    "requiredRecordFields": [
+      "oldDigest",
+      "newDigest",
+      "reason",
+      "immutablePayloadDigest",
+      "runtimeFieldsRemoved",
+      "migratedAt",
+      "migrationVersion"
+    ],
+    "nonRuntimeDifferenceAction": "stop_and_raise_integrity_finding"
+  },
+  "verification": {
+    "allMemberDigestsRequired": true,
+    "allManifestBindingsRequired": true,
+    "counterLedgerParityRequired": true,
+    "cacheReceiptReferenceParityRequired": true,
+    "noProviderRequired": true
+  }
+}

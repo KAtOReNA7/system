@@ -1,0 +1,97 @@
+{
+  "schema": "m2.v2.private-state-recovery-contract.v0.1",
+  "status": "frozen_before_remediation",
+  "classification": [
+    "authoritative_immutable",
+    "authoritative_append_only",
+    "derived_rebuildable",
+    "derived_corrupted",
+    "audit_only",
+    "secret_excluded"
+  ],
+  "requiredBackup": {
+    "beforeAnyRecoveryWrite": true,
+    "preserveRelativePaths": true,
+    "memberFields": [
+      "relativePath",
+      "size",
+      "sha256"
+    ],
+    "readOnly": true,
+    "immutableManifest": true,
+    "excludedRoles": [
+      "local_environment",
+      "provider_credential"
+    ],
+    "trackedByGit": false
+  },
+  "authoritativeInputs": [
+    "immutable_manifest",
+    "append_only_provider_receipt",
+    "source_record",
+    "evidence_record",
+    "request_ledger",
+    "frozen_public_contract",
+    "prior_integrity_audit"
+  ],
+  "forbiddenInputs": [
+    "provider_call",
+    "new_search_result",
+    "new_extraction_result",
+    "modified_sample",
+    "reset_counter",
+    "opened_holdout",
+    "unverified_derived_state"
+  ],
+  "recoveryOutputs": [
+    "derived_state",
+    "cache_index",
+    "effective_receipt_view",
+    "request_counter_projection",
+    "decision_projection",
+    "transaction_binding",
+    "versioned_restatement",
+    "recovery_receipt"
+  ],
+  "staging": {
+    "isolatedRole": "integrity_recovery_staging",
+    "neverCurrentUntilAllGatesPass": true,
+    "providerRequests": 0,
+    "sampleReplacement": false,
+    "counterReset": false
+  },
+  "validationGates": [
+    "backup_complete",
+    "authoritative_inputs_digest_valid",
+    "append_only_receipts_preserved",
+    "immutable_manifests_unchanged",
+    "request_ledger_reconciled",
+    "baseline_metrics_exactly_recomputed",
+    "new_contract_metrics_recomputed",
+    "all_bindings_valid",
+    "synthetic_verifier_contract_passed",
+    "staging_verifier_passed"
+  ],
+  "commit": {
+    "strategy": "atomic_rename_after_all_gates",
+    "preservePreviousCurrent": true,
+    "preserveForensicBackup": true,
+    "preserveMigrationReceipt": true,
+    "partialStateMayBecomeCurrent": false
+  },
+  "idempotency": {
+    "sameAuthoritativeInputsSameGovernedOutputs": true,
+    "secondRecoveryChangesGovernedHashes": false
+  },
+  "rollback": {
+    "onAnyFailure": "retain_previous_current_and_quarantine_partial_staging",
+    "deleteAuditEvidence": false,
+    "silentlyOverwriteHistoricalReport": false
+  },
+  "decisionBoundary": {
+    "full160Authorized": false,
+    "nextDevelopmentAuthorized": false,
+    "releaseAuthorized": false,
+    "notForFormalDecision": true
+  }
+}

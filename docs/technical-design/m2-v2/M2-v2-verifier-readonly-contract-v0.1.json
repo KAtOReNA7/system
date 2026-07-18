@@ -1,0 +1,76 @@
+{
+  "schema": "m2.v2.verifier-readonly-contract.v0.1",
+  "status": "frozen_before_remediation",
+  "commands": [
+    "m2:v2:v2b5:verify",
+    "m2:v2:v2b6:verify",
+    "m2:v2:v2b7:verify",
+    "m2:v2:v2b8:verify"
+  ],
+  "commandSeparation": {
+    "verify": "read_existing_inputs_and_return_a_deterministic_verdict",
+    "report": "materialize_a_versioned_report_only_when_explicitly_requested",
+    "runOrResume": "perform_authorized_runtime_work_only_when_explicitly_requested",
+    "verifyReceipt": "optionally_write_only_to_the_integrity_audit_receipt_role"
+  },
+  "allowedVerifyEffects": [
+    "read_files",
+    "allocate_memory",
+    "write_stdout",
+    "write_stderr",
+    "set_exit_code"
+  ],
+  "forbiddenVerifyEffects": [
+    "create_file",
+    "modify_file",
+    "delete_file",
+    "rename_file",
+    "change_file_metadata",
+    "mutate_cache",
+    "mutate_receipt",
+    "mutate_counter",
+    "mutate_manifest",
+    "call_provider",
+    "invoke_run_resume_or_report"
+  ],
+  "governedPrivateStateRoles": [
+    "immutable_manifest",
+    "append_only_receipt",
+    "source_record",
+    "evidence_record",
+    "derived_state",
+    "cache_index",
+    "effective_receipt_index",
+    "request_ledger",
+    "request_counter",
+    "decision_artifact",
+    "review_workbook_input"
+  ],
+  "auditReceiptBoundary": {
+    "defaultVerifyWritesReceipt": false,
+    "separateCommandRequired": true,
+    "allowedOutputRole": "integrity_audit_receipt",
+    "receiptIsExcludedFromGovernedStateHash": true
+  },
+  "determinism": {
+    "wallClockInVerdict": false,
+    "randomness": false,
+    "network": false,
+    "sameInputsSameStdout": true,
+    "sameInputsSameExitCode": true
+  },
+  "proof": {
+    "hashAlgorithm": "sha256",
+    "canonicalPathForm": "repository_relative_forward_slash",
+    "snapshotMembers": "all_existing_files_in_governed_private_state_roles",
+    "requiredSequence": [
+      "snapshot_before",
+      "verify_once",
+      "snapshot_after_once",
+      "verify_twice",
+      "snapshot_after_twice"
+    ],
+    "passRule": "all_three_snapshot_digests_and_member_manifests_are_identical"
+  },
+  "failureMode": "fail_closed_without_writing"
+}
