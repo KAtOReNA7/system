@@ -1,0 +1,20 @@
+{
+  "schema": "m2.v2.source-selection-contract-public.v0.1",
+  "status": "not_for_formal_decision",
+  "deterministic": true,
+  "maximumSourcesPerWorkQuery": 6,
+  "sortOrder": [
+    "non_prohibited",
+    "official_publisher_platform",
+    "direct_identity_relevance",
+    "provider_score",
+    "canonical_resource_lexical",
+    "source_id_lexical"
+  ],
+  "maximumPerSourceHost": 2,
+  "domainCapException": "insufficient_total_sources",
+  "categoryDiversityRequired": true,
+  "ratingReviewCannotDisplaceIdentityOfficial": true,
+  "sampleReplacementAllowed": false,
+  "full160Authorized": false
+}

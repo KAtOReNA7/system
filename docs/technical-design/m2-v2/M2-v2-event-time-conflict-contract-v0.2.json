@@ -1,0 +1,31 @@
+{
+  "schema": "m2.v2.event-time-conflict-contract-public.v0.2",
+  "status": "not_for_formal_decision",
+  "eventTimePrecisions": [
+    "day",
+    "month",
+    "year",
+    "range",
+    "unknown"
+  ],
+  "eventTimeBases": [
+    "explicit_structured_value",
+    "explicit_source_snippet",
+    "explicit_source_title",
+    "unknown"
+  ],
+  "explicitTemporalClaimExtractionRequired": true,
+  "explicitTemporalClaimExtractionThreshold": 1,
+  "conflictTypes": [
+    "publication_version",
+    "publisher",
+    "completion",
+    "adaptation_stage",
+    "rating_platform_scale",
+    "identity_edition",
+    "author_identity"
+  ],
+  "multiEditionAutoConflict": false,
+  "unresolvedConflictPilotUsable": false,
+  "full160Authorized": false
+}

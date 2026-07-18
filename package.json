@@ -7,7 +7,7 @@
     "node": ">=20"
   },
   "scripts": {
-    "pretest": "node --test test/m2-v2-v2b4-canary.test.js test/m2-v2-v2b5.test.js test/m2-v2-v2b6.test.js test/m2-v2-v2b7-contract.test.js test/m2-v2-v2b7.test.js",
+    "pretest": "node --test --test-concurrency=1 test/m2-v2-v2b4-canary.test.js test/m2-v2-v2b5.test.js test/m2-v2-v2b6.test.js test/m2-v2-v2b7-contract.test.js test/m2-v2-v2b7.test.js test/m2-v2-v2b8.test.js",
     "dev": "node --watch src/server.js",
     "start": "node src/server.js",
     "db:check": "node src/cli/check-db.js",
@@ -210,7 +210,12 @@
     "m2:v2:v2b7:run": "node scripts/m2-v2-evidence-pilot/run_m2_v2_b7.mjs run",
     "m2:v2:v2b7:resume": "node scripts/m2-v2-evidence-pilot/run_m2_v2_b7.mjs resume",
     "m2:v2:v2b7:report": "node scripts/m2-v2-evidence-pilot/run_m2_v2_b7.mjs report",
-    "m2:v2:v2b7:verify": "node scripts/m2-v2-evidence-pilot/run_m2_v2_b7.mjs verify"
+    "m2:v2:v2b7:verify": "node scripts/m2-v2-evidence-pilot/run_m2_v2_b7.mjs verify",
+    "m2:v2:v2b8:check": "node scripts/m2-v2-evidence-pilot/run_m2_v2_b8.mjs check",
+    "m2:v2:v2b8:run": "node scripts/m2-v2-evidence-pilot/run_m2_v2_b8.mjs run",
+    "m2:v2:v2b8:resume": "node scripts/m2-v2-evidence-pilot/run_m2_v2_b8.mjs resume",
+    "m2:v2:v2b8:verify": "node scripts/m2-v2-evidence-pilot/run_m2_v2_b8.mjs verify",
+    "m2:v2:v2b8:report": "node scripts/m2-v2-evidence-pilot/run_m2_v2_b8.mjs report"
   },
   "dependencies": {
     "pg": "^8.16.3"
