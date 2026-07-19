@@ -16,11 +16,8 @@ import {
 import { basename, dirname, relative, resolve, sep } from "node:path";
 import { tmpdir } from "node:os";
 
-import {
-  buildV2B6SafeCacheEntry,
-  newV2B6SafeCache,
-  validateV2B6SafeCache,
-} from "./v2b6SafeCache.js";
+import { canonicalJson, sha256 } from "./pilotCore.js";
+import { parseV2B6StructuredResponse } from "./relayExtractionAdapterV2B6.js";
 
 export const V2B6_LEGACY_CACHE_RELATIVE = "data/private-output/m2-v2-evidence-pilot/v2-b6-extraction-remediation/v2b6-request-cache-private-v0.1.json";
 export const V2B6_SAFE_CACHE_RELATIVE = "data/private-output/m2-v2-evidence-pilot/v2-b6-extraction-remediation/v2b6-request-cache-private-v0.2.json";
@@ -53,7 +50,7 @@ export function migrateV2B6RawCache(rootInput, options = {}) {
       throw new Error("v2b6_raw_cache_migration_incomplete");
     }
     const cache = readJson(safePath);
-    const validation = validateV2B6SafeCache(cache);
+    const validation = validateHistoricalV02Cache(cache);
     if (!validation.valid) throw new Error(`v2b6_safe_cache_invalid:${validation.issues.join(",")}`);
     const receipt = readJson(receiptPath);
     if (receipt.oldDigest !== sha256File(quarantinePath)
@@ -71,7 +68,7 @@ export function migrateV2B6RawCache(rootInput, options = {}) {
   const legacyBytes = readFileSync(legacyPath);
   const legacy = parseLegacyCache(legacyBytes);
   const safeCache = buildSafeCache(legacy);
-  const validation = validateV2B6SafeCache(safeCache);
+  const validation = validateHistoricalV02Cache(safeCache);
   if (!validation.valid) throw new Error(`v2b6_safe_cache_invalid:${validation.issues.join(",")}`);
   const safeBytes = jsonBytes(safeCache);
   const classification = classifyLegacyCache(legacy);
@@ -124,7 +121,7 @@ export function migrateV2B6RawCache(rootInput, options = {}) {
     if (sha256File(quarantinePath) !== oldDigest || sha256File(safePath) !== newDigest) {
       throw new Error("v2b6_raw_cache_post_promotion_digest_mismatch");
     }
-    const currentValidation = validateV2B6SafeCache(readJson(safePath));
+    const currentValidation = validateHistoricalV02Cache(readJson(safePath));
     if (!currentValidation.valid) throw new Error("v2b6_raw_cache_post_promotion_validation_failed");
     markReadOnly(quarantinePath);
     injectFault(options, "receipt_before");
@@ -154,12 +151,60 @@ export function classifyLegacyV2B6Cache(legacyInput) {
 }
 
 function buildSafeCache(legacy) {
-  const cache = newV2B6SafeCache();
+  const cache = { schema: "m2.v2.v2b6-request-cache.v0.2", privateOnly: true, rawResponsePersisted: false, entries: {} };
   for (const [key, entry] of Object.entries(legacy.entries).sort(([left], [right]) => left.localeCompare(right))) {
     if (!/^[a-f0-9]{64}$/u.test(key)) throw new Error("v2b6_legacy_cache_key_invalid");
-    cache.entries[key] = buildV2B6SafeCacheEntry(entry.response, entry.receipt);
+    cache.entries[key] = buildHistoricalV02Entry(entry.response, entry.receipt);
   }
   return cache;
+}
+
+// Historical v0.1 -> v0.2 compatibility is retained only until B3-B retires
+// this promotion route. Provider readiness treats every v0.2 current cache as
+// unsafe; no B3 authority is issued from this representation.
+function buildHistoricalV02Entry(response, receipt) {
+  const parsed = parseV2B6StructuredResponse(response?.json);
+  const safeReplay = parsed.value
+    ? { kind: "structured_value", value: structuredClone(parsed.value) }
+    : { kind: "no_replay_value", value: null };
+  const payload = {
+    schema: "m2.v2.v2b6-request-cache-entry.v0.2",
+    rawResponsePersisted: false,
+    responseMetadata: {
+      requestStartedAt: response?.requestStartedAt ?? null,
+      responseReceivedAt: response?.responseReceivedAt ?? null,
+      latencyMs: response?.latencyMs ?? null,
+      timeoutMs: response?.timeoutMs ?? null,
+      timedOut: response?.timedOut === true,
+      httpStatus: response?.httpStatus ?? null,
+      httpOk: response?.httpOk === true,
+      status: response?.status ?? null,
+      contentTypeClass: response?.contentTypeClass ?? null,
+      responseDigest: response?.responseDigest ?? null,
+      responseByteLength: response?.responseByteLength ?? null,
+    },
+    safeReplay,
+    receipt: structuredClone(receipt),
+  };
+  return { ...payload, entryDigest: sha256(payload) };
+}
+
+function validateHistoricalV02Cache(cache) {
+  const issues = [];
+  const rootKeys = ["entries", "privateOnly", "rawResponsePersisted", "schema"];
+  if (!cache || typeof cache !== "object" || Array.isArray(cache)
+    || canonicalJson(Object.keys(cache).sort()) !== canonicalJson(rootKeys)
+    || cache.schema !== "m2.v2.v2b6-request-cache.v0.2"
+    || cache.privateOnly !== true || cache.rawResponsePersisted !== false
+    || !cache.entries || typeof cache.entries !== "object" || Array.isArray(cache.entries)) {
+    issues.push("historical_v02_cache_invalid");
+  }
+  for (const entry of Object.values(cache?.entries ?? {})) {
+    if (entry?.schema !== "m2.v2.v2b6-request-cache-entry.v0.2" || entry?.rawResponsePersisted !== false) issues.push("historical_v02_entry_invalid");
+    const { entryDigest, ...payload } = entry ?? {};
+    if (entryDigest !== sha256(payload)) issues.push("historical_v02_entry_digest_invalid");
+  }
+  return { valid: issues.length === 0, issues };
 }
 
 function parseLegacyCache(bytes) {

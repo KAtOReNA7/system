@@ -14,7 +14,7 @@ import {
 } from "../src/domain/m2V2EvidencePilot/v2b6RawCacheMigration.js";
 import { validateV2B6SafeCache } from "../src/domain/m2V2EvidencePilot/v2b6SafeCache.js";
 
-test("B6 raw cache migration quarantines bytes and installs only safe projections", () => withRoot((root) => {
+test("historical B6 v0.2 migration remains reproducible but is rejected as a current v0.3 cache", () => withRoot((root) => {
   seedLegacy(root);
   const first = migrateV2B6RawCache(root, { skipGitBoundary: true });
   assert.equal(first.status, "MIGRATED");
@@ -23,7 +23,8 @@ test("B6 raw cache migration quarantines bytes and installs only safe projection
   assert.equal(first.rawResponseCurrentCacheCountAfter, 0);
   assert.equal(first.providerRequestDelta, 0);
   const safe = readJson(root, V2B6_SAFE_CACHE_RELATIVE);
-  assert.equal(validateV2B6SafeCache(safe).valid, true);
+  assert.equal(safe.schema, "m2.v2.v2b6-request-cache.v0.2");
+  assert.equal(validateV2B6SafeCache(safe).valid, false);
   assert.equal(hasForbiddenResponseKey(safe), false);
   assert.equal(readJson(root, V2B6_RAW_CACHE_RECEIPT_RELATIVE).legacyProviderJsonEntryCount, 1);
   assert.equal(readJson(root, V2B6_RAW_CACHE_QUARANTINE_RELATIVE).schema, "m2.v2.v2b6-request-cache.v0.1");
