@@ -75,9 +75,12 @@
     "independentReadonlyQualityGate": "READY"
   },
   "formalReadonlyProof": {
-    "status": "NOT_RUN_UNTIL_TRACKED_CORE_COMMITMENT_IS_PUSHED",
+    "status": "NOT_RUN_PENDING_B6_GRAPH_POPULATION",
     "claimableResultRecorded": false,
-    "reason": "FORMAL_LOADER_REQUIRES_ALL_CONTROL_AND_SOURCE_BYTES_TO_EQUAL_TRACKED_HEAD"
+    "reasons": [
+      "FORMAL_LOADER_REQUIRES_ALL_CONTROL_AND_SOURCE_BYTES_TO_EQUAL_TRACKED_HEAD",
+      "FOUR_GRAPH_BOUND_VNEXT_PUBLIC_AUTHORITY_PATHS_ARE_NOT_POPULATED_BEFORE_B6"
+    ]
   },
   "sideEffectBoundary": {
     "providerRequestDelta": 0,

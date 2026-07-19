@@ -37,6 +37,6 @@ No provider request or database connection occurred. Provider request delta and 
 
 ## Deliberate non-claims
 
-The formal claimable readonly proof is not recorded in this candidate document because its loader requires the core commitment and every control/source byte to exist at the tracked HEAD. It may be executed only after this document commit is ordinarily pushed and the exact remote HEAD is revalidated.
+The formal claimable readonly proof is not recorded in this candidate document. Its loader requires the core commitment and every control/source byte to exist at the tracked HEAD, and the canonical graph additionally requires four graph-bound vNext public authority paths. Those public paths are intentionally not populated before the separately gated B6 offline regeneration and atomic promotion. B1 must not create placeholders, substitute predecessor paths, or claim a smaller scope.
 
 B6 private offline rebuild and atomic promotion are `NOT_RUN`; B7 is `NOT_RUN`; B8 is `NOT_AUTHORIZED_NOT_RUN`; independent closure review is `NOT_RUN`. No current-authority activation, Canary, full160, model training, holdout opening, mark-ready, PR merge, or release is claimed or authorized.
