@@ -1,0 +1,15 @@
+{
+  "schema": "m2.v2.tracked-core-commitment-public.v0.1",
+  "graphSchemaVersion": "m2.v2.canonical-authority-graph.v0.3",
+  "roleRegistryDigestSha256": "4d2e31ce31b207ab952ca0bea754424bfcecd8ecd8682933bf6cd45293a46a4c",
+  "expectedGraphCoreDigestSha256": "0ab337288066343cb7ceae7804847c84b334ae5e8249a3717a6140801969c190",
+  "sourceExactHead": "350ecbd434831a517d97ef7f15ea3e4f9f34bf72",
+  "supersessionLineage": [
+    {
+      "role": "authority_graph",
+      "predecessorPath": "docs/technical-design/m2-v2/M2-v2-verifier-authority-binding-v0.2.json",
+      "predecessorDigestSha256": "080994f6ec8c8a4d236be09873de206ed9f452225df6190e27bb3e366e13e120",
+      "successorPath": "docs/technical-design/m2-v2/M2-v2-verifier-authority-binding-v0.3.json"
+    }
+  ]
+}
