@@ -1,5 +1,13 @@
 # 有声书产品收入评估与年度目标系统 PRD v0.2
 
+## 2026-07-20 PR #7 S1 当前进度
+
+- PR #7 的 B3 closing correction 已在 exact HEAD `a945ed3a22fbc86e8ca381db9124fc0927461ec7` 完成；CI run `29704510651` 的 Linux job `88239115427` 与 Windows job `88239115429` 均成功。
+- 当前批次状态为：B0 `COMPLETE`，B1/B2 `COMPLETE_PENDING_B8`，B3 `COMPLETE_CORRECTED_PENDING_B8`。S1 task 的 `currentBatch` 仍为 `B3`；`nextBatch=B4`，但 B4 尚未开始，必须由新的明确指令启动。
+- B3 已将 preflight、local validation 与 Linux/Windows CI 显式绑定到 `--batch-id=B3`；canonical gate 为 `npm run test:m2-v2:b3-safe-cache-provider`。B3 registry 21/21、canonical tests 35/35、default skips 0、provider/DB/external access 均为 0。
+- `PR7-P1-008` 与 `PR7-P2-016` 仍为 `OPEN`，candidate status 为 `CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW`。全部 10 个 finding 仍等待独立 B8 review；不得声明 `CLOSED`。
+- PR #7 必须继续保持 Draft/open/unmerged。`currentDecision=CANARY_FAIL`、`full160Authorized=false`、`modelTrainingAuthorized=false`、`mergeAuthorized=false`、`nextDevelopmentReadiness=NOT_AUTHORIZED` 保持不变。
+
 ## 2026-07-18 M2 v2 当前权威入口
 
 - V2-A 架构合同已完成；V2-B.1 至 V2-B.8 均为保留的历史 checkpoint。V2-B.8 原始 Canary v3.1 结论仍为 `CANARY_CONDITIONAL`；修复后合同的离线 restatement 当前结论为 `CANARY_FAIL`，`full160Authorized=false`。

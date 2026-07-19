@@ -1,9 +1,10 @@
 # Codex 工作规则
 
-## 2026-07-19 PR #7 S1 分层修复入口（当前最高优先）
+## 2026-07-20 PR #7 S1 分层修复入口（当前最高优先）
 
 - 7 项 S0 开发支持基线已在 exact HEAD `badbf453e1e99ba87cc3064601e480a09ff1b149` 完成并通过 Linux/Windows CI；`supportSharpeningStopCriteriaReached=true`。
-- 用户已单独授权在 `codex/m2-v2-evidence-pilot-v1` 上实施 PR #7 的 B0–B7 分层 S1 修复；B3 的 A/B/C checkpoint 已分别在 exact remote HEAD `f64a08dba248374b581caf5e3c550401afb6785f`、`149ce6264ed3c52c279144234f36c3182d8fc4ac`、`a8eb73f3907a1b593d04cb6dcf0fbb90ace3d0ce` 通过 Linux/Windows CI，B3-D 为当前 integration checkpoint。B3 final exact-head CI 成功前禁止进入 B4；B4 仍须新的显式开始。
+- 用户已单独授权在 `codex/m2-v2-evidence-pilot-v1` 上实施 PR #7 的 B0–B7 分层 S1 修复。B3 closing correction 已在 exact remote HEAD `a945ed3a22fbc86e8ca381db9124fc0927461ec7` 完成；CI run `29704510651` 的 Linux job `88239115427` 与 Windows job `88239115429` 均成功。B3 状态为 `COMPLETE_CORRECTED_PENDING_B8`，S1 task 的 `currentBatch` 保持 `B3`，`nextBatch=B4`；B4 尚未开始且必须由新的明确指令启动。后续 docs-only progress sync 不改变该 B3 authoritative checkpoint，也不得解释为 B4 授权。
+- B3 correction 已强制 preflight/local validation 显式传入 `--batch-id`，Linux/Windows CI 均绑定 `--batch-id=B3`；canonical command 为 `npm run test:m2-v2:b3-safe-cache-provider`，B3 registry 21/21、canonical tests 35/35、default skips 0，`providerRequestDelta=0`、数据库连接 0、真实外部访问 0、产品 runtime 变更 0。
 - open-finding 状态以 `docs/analysis/m2-v2/M2-v2-PR7-open-findings-status-v0.1.md` 为增量 overlay：5 个 P1 与 5 个直接耦合 P2 当前仍全部 `OPEN`。B0–B7 最多只能形成 `CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW`，不得由本代理执行 B8 或声明 `CLOSED`。
 - 本轮允许按附件冻结的范围修改 `src/domain/m2V2EvidencePilot/**`、配套测试、合同、CI 与公开治理文档，并在 B6 进行 provider-free 离线重建和原子 supersession；历史/private immutable 产物不得覆盖。
 - 禁止 provider、数据库、Canary/full160、模型训练、holdout、B8、mark ready、PR merge 或 release。`currentDecision=CANARY_FAIL`、`mergeAuthorized=false`、`full160Authorized=false`、`modelTrainingAuthorized=false`、`nextDevelopmentReadiness=NOT_AUTHORIZED` 保持不变，除非 B6 的版本化离线重算真实得出不同 current decision；即便变化也不自动授权下游阶段。
