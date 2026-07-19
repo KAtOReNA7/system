@@ -407,12 +407,23 @@ test("tracked-only source binding requires the complete GitHub-hosted exact-head
   assert.equal(evaluateTrackedOnlySourcePolicy(trusted, { ...scope, actualHead: "0".repeat(40) }), false);
 });
 
-test("B2 overlay remains OPEN and cannot claim independent closure or downstream authority", () => {
+test("B2 checkpoint overlay remains OPEN and leaves B3 behind an explicit-start gate", () => {
   assert.equal(validateS1Overlay(overlay), true);
   assert.equal(overlay.currentBatch, "B2");
-  assert.equal(overlay.nextAllowedPhase, "S1_PHASED_REMEDIATION_B2");
+  assert.deepEqual(overlay.batchStatuses, {
+    B0: "COMPLETE",
+    B1: "COMPLETE_PENDING_B8",
+    B2: "COMPLETE_PENDING_B8",
+  });
+  assert.equal(overlay.nextBatch, "B3");
+  assert.equal(overlay.nextAllowedPhase, "B3_REQUIRES_EXPLICIT_START");
+  assert.equal(overlay.findingsRemainOpen, true);
+  assert.equal(overlay.independentReviewPerformed, false);
   for (const [field, value] of [
+    ["nextBatch", "B4"],
+    ["findingsRemainOpen", false],
     ["findingClosureStatus", "CLOSED"],
+    ["independentReviewPerformed", true],
     ["independentReviewStatus", "PASSED"],
     ["b8Authorized", true],
     ["mergeAuthorized", true],
@@ -425,6 +436,11 @@ test("B2 overlay remains OPEN and cannot claim independent closure or downstream
     const invalid = { ...overlay, [field]: value };
     assert.throws(() => validateS1Overlay(invalid), /overlay_governance_mismatch/u, field);
   }
+  const invalidBatchStatuses = {
+    ...overlay,
+    batchStatuses: { ...overlay.batchStatuses, B2: "COMPLETE" },
+  };
+  assert.throws(() => validateS1Overlay(invalidBatchStatuses), /overlay_governance_mismatch/u);
   const unknown = { ...overlay, remotePass: true };
   assert.throws(() => validateS1Overlay(unknown), /overlay_fields_invalid/u);
 });

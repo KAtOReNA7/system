@@ -1,51 +1,48 @@
-# M2 v2 External Evidence Pilot checkpoint — PR #7
+# M2 v2 External Evidence Pilot checkpoint - PR #7
 
-## 当前 S1 边界
+## Current S1 boundary
 
-本 PR 保留 V2-A 完成后的 V2-B.1–B.8 历史 checkpoint 和既有修复证据。针对 exact product HEAD `627f74c6b9b2365ee4403c613ea9689748b76541` 的增量独立外审识别出 5 项 P1 与 5 项直接耦合 P2；这 10 项 finding 当前全部为 `OPEN`。
+PR #7 remains Draft/open/unmerged. The incremental independent review against product HEAD `627f74c6b9b2365ee4403c613ea9689748b76541` identified five P1 and five directly coupled P2 findings. All 10 findings remain `OPEN`.
 
-- S0：`COMPLETE`，exact HEAD `badbf453e1e99ba87cc3064601e480a09ff1b149`
-- S1：仅授权 B0–B7 分阶段实施；当前 batch 为 `B2`
-- Finding closure status：`OPEN`
-- Independent review status：`NOT_REVIEWED`
-- B8：未执行，且不属于本轮代理授权
-- V2-B.8 Canary v3.1 历史结论：`CANARY_CONDITIONAL`
-- 当前离线 integrity restatement：`CANARY_FAIL`；这不是新 Canary
+- B0: `COMPLETE`
+- B1: `COMPLETE_PENDING_B8`
+- B2: `COMPLETE_PENDING_B8`
+- `nextBatch=B3`; B3 requires a new explicit start and has not begun
+- Independent review: `NOT_REVIEWED`
+- Historical decision: `CANARY_CONDITIONAL`
+- Current offline integrity restatement: `CANARY_FAIL`
 - `full160Authorized=false`
 - `modelTrainingAuthorized=false`
 - `mergeAuthorized=false`
 - `nextDevelopmentReadiness=NOT_AUTHORIZED`
 
-B0–B7 的实现结果即使通过本地与远端检查，最高也只能记录为 `CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW`。只有新的独立 B8 外审可以把 finding 判定为 `CLOSED`。
+B0-B7 implementation evidence may reach only `CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW`. Only a new independent B8 review may determine `CLOSED`.
 
 ## Open findings
 
-- P1：`PR7-P1-003`、`PR7-P1-006`、`PR7-P1-008`、`PR7-P1-009`、`PR7-P1-013`
-- Direct P2：`PR7-P2-006`、`PR7-P2-008`、`PR7-P2-009`、`PR7-P2-013`、`PR7-P2-016`
+- P1: `PR7-P1-003`, `PR7-P1-006`, `PR7-P1-008`, `PR7-P1-009`, `PR7-P1-013`
+- Direct P2: `PR7-P2-006`, `PR7-P2-008`, `PR7-P2-009`, `PR7-P2-013`, `PR7-P2-016`
 
 ## Phased checkpoints
 
-| Batch | Exact HEAD | Linux CI | Windows CI | Status |
+| Batch | Exact evidence HEAD | Linux CI | Windows CI | Status |
 |---|---|---|---|---|
 | S0 | `badbf453e1e99ba87cc3064601e480a09ff1b149` | run `29680155024`, job `88174725443`, success | run `29680155024`, job `88174725459`, success | `COMPLETE` |
 | B0 | `013b83a561ca02983e356e384d0a700934db5238` | run `29686443115`, job `88191400688`, success | run `29686443115`, job `88191400695`, success | `COMPLETE` |
-| B1 | `66eecbc57c4186ad61df8152ef38b5f28300f130` | run `29692415607`, job `88207352223`, success | run `29692415607`, job `88207352209`, success | `COMPLETE` |
-| B2 | pending ordinary checkpoint push | `PENDING` | `PENDING` | `IN_PROGRESS` |
-| B3–B7 | — | — | — | `NOT_STARTED` |
+| B1 | `66eecbc57c4186ad61df8152ef38b5f28300f130` | run `29692415607`, job `88207352223`, success | run `29692415607`, job `88207352209`, success | `COMPLETE_PENDING_B8` |
+| B2 | `5cf20d9fb4af567763982f1f0882fbd29b7c6d25` | runs `29698400478` / `29699010272`, jobs `88223025635` / `88224732239`, success | runs `29698400478` / `29699010272`, jobs `88223025642` / `88224732234`, success | `COMPLETE_PENDING_B8` |
+| B3-B7 | - | - | - | `NOT_STARTED` |
 
-Each B0–B7 row must bind the ordinary-pushed exact remote HEAD and its own Linux/Windows CI. A prior batch's CI cannot be reused for a later batch.
+B2 comprises two ordinary commits, five changed files, 15/15 registered acceptance cases, 31/31 migration tests, and 1130/1130 full tests. Its integration-only checkpoint commit is bound to a final exact-head CI receipt after ordinary push.
 
-## B0–B7 implementation scope
+## Finding candidate status
 
-- B0 freezes shared authority, migration, cache/provider, event/conflict, workbook/test, and current-authority contracts.
-- B1–B5 implement the five paired remediation groups and their planned adversarial cases.
-- B6 performs provider-free offline regeneration and atomic supersession from existing immutable/append-only material only.
-- B7 runs the full regression, boundary, artifact, and handoff gates.
+| Findings | Batch | Finding status | Candidate status |
+|---|---|---|---|
+| `PR7-P1-003`, `PR7-P2-009` | B1 | `OPEN` | `CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW` |
+| `PR7-P1-006`, `PR7-P2-008` | B2 | `OPEN` | `CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW` |
+| Remaining six findings | B3-B7 | `OPEN` | `NOT_STARTED` |
 
-The 89 planned cases must enter the default synthetic test profile with zero unexpected/default skips. Native-only cases remain explicit: Linux 87 cases, Windows 88 cases, with 86 shared across both platforms.
+## Safety and governance boundary
 
-## 安全与治理边界
-
-本轮不得调用 provider、连接数据库、执行 Canary/full160、训练模型、打开 holdout、执行 B8、mark ready、merge 或 release。不得新增第三方依赖，不得 rebase、squash、amend、force push，且不得覆盖历史或 private immutable artifacts。
-
-PR #7 必须保持 `Draft/open/unmerged`，merge 状态保持 `WITHHELD`。本轮分阶段修复不构成模型训练、下一开发阶段或发布授权。
+Provider access, database access, Canary/full160, model training, holdout, B8, mark-ready, merge, and release remain prohibited. The current decision and authorization gates remain unchanged.

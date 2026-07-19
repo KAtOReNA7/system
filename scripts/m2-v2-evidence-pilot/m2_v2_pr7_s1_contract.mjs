@@ -1921,11 +1921,14 @@ export function validateS1Overlay(overlay) {
     "schema", "reviewedHead", "s1StartingHead", "branch", "openP1", "openDirectP2",
     "openFindingIds", "historicalDecision", "currentDecision", "s0Status",
     "supportSharpeningStopCriteriaReached", "findingRemediationAuthorized", "authorizedBatches",
-    "currentBatch", "nextAllowedPhase", "openFindings", "findingClosureStatus",
+    "currentBatch", "batchStatuses", "nextBatch", "nextAllowedPhase", "openFindings",
+    "findingsRemainOpen", "findingClosureStatus", "independentReviewPerformed",
     "independentReviewStatus", "b8Authorized", "mergeAuthorized", "full160Authorized",
     "modelTrainingAuthorized", "releaseAuthorized", "nextDevelopmentReadiness",
     "remediationComplete", "pullRequestState",
   ], "overlay");
+  assertPlainObject(overlay.batchStatuses, "overlay_batch_statuses_must_be_object");
+  assertExactFields(overlay.batchStatuses, ["B0", "B1", "B2"], "overlay_batch_statuses");
   assertSameStringSet(overlay.openFindingIds, S1_FINDING_IDS, "overlay_finding_ids_mismatch");
   assertExactArray(overlay.authorizedBatches, S1_BATCHES, "overlay_authorized_batches_mismatch");
   const valid = overlay.schema === "m2.v2.pr7.open-findings-status.v0.1"
@@ -1940,9 +1943,15 @@ export function validateS1Overlay(overlay) {
     && overlay.supportSharpeningStopCriteriaReached === true
     && overlay.findingRemediationAuthorized === true
     && overlay.currentBatch === "B2"
-    && overlay.nextAllowedPhase === "S1_PHASED_REMEDIATION_B2"
+    && overlay.batchStatuses.B0 === "COMPLETE"
+    && overlay.batchStatuses.B1 === "COMPLETE_PENDING_B8"
+    && overlay.batchStatuses.B2 === "COMPLETE_PENDING_B8"
+    && overlay.nextBatch === "B3"
+    && overlay.nextAllowedPhase === "B3_REQUIRES_EXPLICIT_START"
     && overlay.openFindings === 10
+    && overlay.findingsRemainOpen === true
     && overlay.findingClosureStatus === "OPEN"
+    && overlay.independentReviewPerformed === false
     && overlay.independentReviewStatus === "NOT_REVIEWED"
     && overlay.b8Authorized === false
     && overlay.mergeAuthorized === false

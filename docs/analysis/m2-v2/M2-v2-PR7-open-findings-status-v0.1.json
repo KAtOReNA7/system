@@ -33,9 +33,17 @@
     "B7"
   ],
   "currentBatch": "B2",
-  "nextAllowedPhase": "S1_PHASED_REMEDIATION_B2",
+  "batchStatuses": {
+    "B0": "COMPLETE",
+    "B1": "COMPLETE_PENDING_B8",
+    "B2": "COMPLETE_PENDING_B8"
+  },
+  "nextBatch": "B3",
+  "nextAllowedPhase": "B3_REQUIRES_EXPLICIT_START",
   "openFindings": 10,
+  "findingsRemainOpen": true,
   "findingClosureStatus": "OPEN",
+  "independentReviewPerformed": false,
   "independentReviewStatus": "NOT_REVIEWED",
   "b8Authorized": false,
   "mergeAuthorized": false,
