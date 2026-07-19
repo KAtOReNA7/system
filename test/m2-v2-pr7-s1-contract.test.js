@@ -71,6 +71,7 @@ test("S1 task binds exact git anchors, B0-B7-only DAG, four source groups, regis
   assert.equal(taskManifest.findingHead, "627f74c6b9b2365ee4403c613ea9689748b76541");
   assert.equal(taskManifest.baseSha, "d81b952e37dd43365c0091cdd6665e69d8d39a7e");
   assert.deepEqual(taskManifest.authorizedBatches, S1_BATCHES);
+  assert.equal(taskManifest.currentBatch, "B1");
   assert.equal(taskManifest.batchDag.independentReviewBatchAuthorized, false);
   assert.equal(taskManifest.requiredSourceEvidence.length, 4);
   assert.deepEqual(taskManifest.historicalImmutableArtifacts.map((binding) => binding.path), S1_HISTORICAL_PATHS);
@@ -190,7 +191,7 @@ test("receipt schema enforces exact success and failure envelopes plus the S1 fa
     schema: "m2.v2.pr7.s1-preflight-receipt.v0.1",
     passed: false,
     generatedAt: "2026-07-19T00:00:00.000Z",
-    batchId: "B0",
+    batchId: taskManifest.currentBatch,
     actualHead: "0".repeat(40),
     checks: {},
     executions: [],
@@ -406,8 +407,10 @@ test("tracked-only source binding requires the complete GitHub-hosted exact-head
   assert.equal(evaluateTrackedOnlySourcePolicy(trusted, { ...scope, actualHead: "0".repeat(40) }), false);
 });
 
-test("B0 overlay remains OPEN and cannot claim independent closure or downstream authority", () => {
+test("B1 overlay remains OPEN and cannot claim independent closure or downstream authority", () => {
   assert.equal(validateS1Overlay(overlay), true);
+  assert.equal(overlay.currentBatch, "B1");
+  assert.equal(overlay.nextAllowedPhase, "S1_PHASED_REMEDIATION_B1");
   for (const [field, value] of [
     ["findingClosureStatus", "CLOSED"],
     ["independentReviewStatus", "PASSED"],
@@ -685,7 +688,7 @@ function validSuccessReceipt() {
     schema: "m2.v2.pr7.s1-preflight-receipt.v0.1",
     passed: true,
     generatedAt: "2026-07-19T00:00:00.000Z",
-    batchId: "B0",
+    batchId: taskManifest.currentBatch,
     actualHead: taskManifest.startingHead,
     actualBranch: taskManifest.branchPolicy.directImplementationBranch,
     startingHead: taskManifest.startingHead,
@@ -802,7 +805,7 @@ function validPrivateSourceEvidence() {
 function validFallback() {
   return {
     eventId: "S1-FB-TEST-001",
-    batchId: "B0",
+    batchId: taskManifest.currentBatch,
     timestamp: "2026-07-19T00:00:00.000Z",
     task: "synthetic fallback contract validation",
     preferredExecutable: "rg",

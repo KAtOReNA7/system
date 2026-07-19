@@ -44,7 +44,7 @@ main();
 function main() {
   const generatedAt = new Date().toISOString();
   let actualHead = "0".repeat(40);
-  let batchId = "B0";
+  let batchId = "B1";
   let failureStage = "argument_and_task_contract";
   try {
     const options = parseArguments(process.argv.slice(2));
@@ -204,7 +204,7 @@ function main() {
 function parseArguments(args) {
   const options = {
     expectedHead: null,
-    batchId: "B0",
+    batchId: "B1",
     commandId: "s1.doctor",
     receipt: null,
     root: null,

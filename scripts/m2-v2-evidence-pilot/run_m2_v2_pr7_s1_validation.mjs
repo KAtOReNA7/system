@@ -33,7 +33,7 @@ await main();
 
 async function main() {
   const generatedAt = new Date().toISOString();
-  let options = { batchId: "B0", receipt: null };
+  let options = { batchId: "B1", receipt: null };
   let actualHead = safeGitHead();
   let failureStage = "argument_and_registry_contract";
   const executions = [];
@@ -146,7 +146,7 @@ async function main() {
       schema: "m2.v2.pr7.s1-local-validation-receipt.v0.1",
       passed: false,
       generatedAt,
-      batchId: options.batchId ?? "B0",
+      batchId: options.batchId ?? "B1",
       actualHead,
       checks: {},
       executions,
@@ -161,7 +161,7 @@ async function main() {
 }
 
 function parseArguments(args) {
-  const options = { expectedHead: null, batchId: "B0", receipt: null };
+  const options = { expectedHead: null, batchId: "B1", receipt: null };
   for (let index = 0; index < args.length; index += 1) {
     const argument = args[index];
     const equals = argument.indexOf("=");

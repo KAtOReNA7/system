@@ -2,7 +2,7 @@
 
 ## 2026-07-19 PR #7 S1 B0–B7 增量边界
 
-7 项 S0 开发支持基线已经在 exact HEAD `badbf453e1e99ba87cc3064601e480a09ff1b149` 完成。用户现已单独授权直接在 `codex/m2-v2-evidence-pilot-v1` 上按 B0–B7 分层实施 10 项 open finding 的 S1 修复、provider-free 离线重建、显式原子提交、普通 push 与 exact-head 双平台 CI checkpoint。当前 batch 为 `B0`；未通过本 batch Linux/Windows CI 前不得进入 B1。
+7 项 S0 开发支持基线已经在 exact HEAD `badbf453e1e99ba87cc3064601e480a09ff1b149` 完成。用户现已单独授权直接在 `codex/m2-v2-evidence-pilot-v1` 上按 B0–B7 分层实施 10 项 open finding 的 S1 修复、provider-free 离线重建、显式原子提交、普通 push 与 exact-head 双平台 CI checkpoint。B0 已在 exact remote HEAD `013b83a561ca02983e356e384d0a700934db5238` 完成，CI run `29686443115` 的 Linux job `88191400688` 与 Windows job `88191400695` 均成功；当前 batch 为 `B1`，未通过本 batch Linux/Windows CI 前不得进入 B2。
 
 10 项 finding 当前仍全部 `OPEN`。B0–B7 通过后最高只能写 `CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW`；B8 独立外审不属于本轮授权，本代理不得声明任何 finding 已独立 `CLOSED`。
 
@@ -38,7 +38,7 @@
 - 依次实施 B0、B1、B2、B3、B4、B5、B6、B7；B1–B5 虽在设计 DAG 中可并行，本轮仍必须按附件的 checkpoint 顺序执行。
 - 修改冻结范围内的产品代码、测试、版本化合同、CI 与公开治理文档；B6 只从既有 immutable/append-only 材料进行 provider-free 离线重建并原子晋升新的 derived state。
 - 每个完成的原子 commit 使用显式路径暂存并立即普通 push 到现有分支；每个 batch 保存 exact remote HEAD、Linux/Windows CI 与 provider delta 证据。
-- 在 B0 与 B7 同步 PR 正文，并在中间 checkpoint 更新动态表；PR 始终保持 Draft/open/unmerged。
+- 仅更新 tracked checkpoint 动态表；本轮不得更新 PR 正文，PR 始终保持 Draft/open/unmerged。
 
 ## 当前禁止
 
