@@ -28,6 +28,7 @@ import {
   renderQualityMarkdown,
 } from "../src/domain/m2V2EvidencePilot/canaryRuntime.js";
 import { assertPublicSanitized, sha256 } from "../src/domain/m2V2EvidencePilot/pilotCore.js";
+import { requireRegisteredArtifacts } from "./helpers/m2V2RequiredArtifacts.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -334,12 +335,9 @@ test("calibration seal contract reads the frozen C3 boolean fields without openi
   assert.equal(calibrationSealsAreClosed({}), false);
 });
 
-test("generated public canary reports, when present, are aggregate-only and never authorize full 160", (context) => {
+test("generated public canary reports, when present, are aggregate-only and never authorize full 160", () => {
   const paths = Object.values(CANARY_PUBLIC_REPORTS).filter((item) => item.endsWith(".json"));
-  if (!paths.every((item) => fs.existsSync(path.join(root, item)))) {
-    context.skip("canary reports are generated after the real canary and validation complete");
-    return;
-  }
+  requireRegisteredArtifacts(root, ["CANARY_EXECUTION_JSON", "CANARY_QUALITY_JSON", "CANARY_DECISION_JSON"]);
   const reports = paths.map((item) => JSON.parse(fs.readFileSync(path.join(root, item), "utf8")));
   for (const report of reports) assert.equal(assertPublicSanitized(report), true);
   const decision = reports.find((item) => item.schema === "m2.v2.canary-decision.v0.1");

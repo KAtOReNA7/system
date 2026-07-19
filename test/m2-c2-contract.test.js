@@ -4,6 +4,7 @@ import fs from "node:fs";
 import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
+import { requireRegisteredArtifact, requireRegisteredArtifacts } from "./helpers/m2V2RequiredArtifacts.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const python = "scripts/run-codex-python.mjs";
@@ -164,12 +165,9 @@ test("C2 final-holdout command fails closed before any loader", () => {
   assert.doesNotMatch(result.stderr, /loading locked|loading authorized/iu);
 });
 
-test("Gate C has exactly 14 frozen transitions when Phase A exists", (context) => {
+test("Gate C has exactly 14 frozen transitions when Phase A exists", () => {
   const gatePath = path.join(reportDir, "M2-calibration-gate-c-v1.json");
-  if (!fs.existsSync(gatePath)) {
-    context.skip("C2 Phase A has not been generated on this machine");
-    return;
-  }
+  requireRegisteredArtifact(root, "C2_GATE_C_JSON", { expectedPath: gatePath });
   const gate = JSON.parse(fs.readFileSync(gatePath, "utf8"));
   assert.deepEqual(
     Object.keys(gate.conditions).sort(),
@@ -203,12 +201,14 @@ test("Gate C has exactly 14 frozen transitions when Phase A exists", (context) =
   }
 });
 
-test("C2 Phase A public reports are Chinese, deidentified, and endpoint-free", (context) => {
+test("C2 Phase A public reports are Chinese, deidentified, and endpoint-free", () => {
   const names = ["M2-C2-opportunity-audit-v1", "M2-C2-model-design-v1"];
-  if (!fs.existsSync(path.join(reportDir, `${names[0]}.json`))) {
-    context.skip("C2 Phase A has not been generated on this machine");
-    return;
-  }
+  requireRegisteredArtifacts(root, [
+    "C2_OPPORTUNITY_AUDIT_JSON",
+    "C2_OPPORTUNITY_AUDIT_MD",
+    "C2_MODEL_DESIGN_JSON",
+    "C2_MODEL_DESIGN_MD",
+  ]);
   for (const name of names) {
     const jsonText = fs.readFileSync(path.join(reportDir, `${name}.json`), "utf8");
     const markdown = fs.readFileSync(path.join(reportDir, `${name}.md`), "utf8");

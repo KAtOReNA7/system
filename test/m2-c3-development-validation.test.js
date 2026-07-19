@@ -4,6 +4,7 @@ import fs from "node:fs";
 import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
+import { requireRegisteredArtifact } from "./helpers/m2V2RequiredArtifacts.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const python = "scripts/run-codex-python.mjs";
@@ -38,11 +39,8 @@ function read(name) {
   return JSON.parse(fs.readFileSync(file, "utf8"));
 }
 
-function validationOrSkip(context) {
-  if (!fs.existsSync(validationPath)) {
-    context.skip("C3 development replay has not been generated yet");
-    return null;
-  }
+function readRequiredValidation() {
+  requireRegisteredArtifact(root, "C3_DEVELOPMENT_VALIDATION_JSON", { expectedPath: validationPath });
   return JSON.parse(fs.readFileSync(validationPath, "utf8"));
 }
 
@@ -76,9 +74,8 @@ test("C3 pre-development state is Gate-D-denied and its private role is ignored"
   assert.match(`${result.stdout}\n${result.stderr}`.replaceAll(" ", ""), /dataLoadCalls=0/iu);
 });
 
-test("C3 development preserves 18615/12223/7851/824 and prediction integrity", (context) => {
-  const report = validationOrSkip(context);
-  if (!report) return;
+test("C3 development preserves 18615/12223/7851/824 and prediction integrity", () => {
+  const report = readRequiredValidation();
   assert.equal(report.schema, "m2.c3_development_validation.v1");
   assert.equal(report.decisionStatus, "not_for_formal_decision");
   assert.equal(report.formalDecisionAuthorized, false);
@@ -103,9 +100,8 @@ test("C3 development preserves 18615/12223/7851/824 and prediction integrity", (
   assert.match(report.predictionIntegrity.predictionProjectionDigest, /^[0-9a-f]{64}$/u);
 });
 
-test("C3 compares A/B/C and conditionally S with the frozen comparator bundle", (context) => {
-  const report = validationOrSkip(context);
-  if (!report) return;
+test("C3 compares A/B/C and conditionally S with the frozen comparator bundle", () => {
+  const report = readRequiredValidation();
   for (const id of ["C3-A", "C3-B", "C3-C"]) {
     assert.equal(report.candidateResults[id].status, "executed", id);
     assert.equal(report.candidateResults[id].outerActualUsedForRuleCreation, false, id);
@@ -134,9 +130,8 @@ test("C3 compares A/B/C and conditionally S with the frozen comparator bundle", 
   assert.ok(["C3-A", "C3-S"].includes(report.finalModel));
 });
 
-test("C3 reports complete metric cuts, model behavior, and internal intervals", (context) => {
-  const report = validationOrSkip(context);
-  if (!report) return;
+test("C3 reports complete metric cuts, model behavior, and internal intervals", () => {
+  const report = readRequiredValidation();
   assertMetricSet(report.metrics.overall, "metrics.overall");
   for (const horizon of [3, 6, 12, 18, 24]) {
     assertMetricSet(report.metrics.byHorizon[String(horizon)], `metrics.byHorizon.${horizon}`);
@@ -172,9 +167,8 @@ test("C3 reports complete metric cuts, model behavior, and internal intervals", 
   assert.match(report.modelBehavior.deterministicDigest, /^[0-9a-f]{64}$/u);
 });
 
-test("C3 formal-cash and training boundaries remain fail-closed", (context) => {
-  const report = validationOrSkip(context);
-  if (!report) return;
+test("C3 formal-cash and training boundaries remain fail-closed", () => {
+  const report = readRequiredValidation();
   assert.equal(report.formalCashIntegrity.targetUnchanged, true);
   assert.equal(report.formalCashIntegrity.pureBuyoutWithoutCommitment.rawModelPrediction, null);
   assert.equal(report.formalCashIntegrity.pureBuyoutWithoutCommitment.servedPrediction, null);
@@ -193,9 +187,8 @@ test("C3 formal-cash and training boundaries remain fail-closed", (context) => {
   assert.equal(report.trainingIntegrity.futureInformationUsed, false);
 });
 
-test("C3 keeps the unchanged acceptance gates and independent decisions", (context) => {
-  const report = validationOrSkip(context);
-  if (!report) return;
+test("C3 keeps the unchanged acceptance gates and independent decisions", () => {
+  const report = readRequiredValidation();
   const spec = JSON.parse(
     fs.readFileSync(
       path.join(root, "src/domain/oldProductEvaluation/calibrationSpec.c3.v1.amendment.json"),
@@ -220,9 +213,8 @@ test("C3 keeps the unchanged acceptance gates and independent decisions", (conte
   assert.equal(report.releaseAuthorized, false);
 });
 
-test("C3 public artifacts are Chinese, aggregate-only, and terminal on model failure", (context) => {
-  const report = validationOrSkip(context);
-  if (!report) return;
+test("C3 public artifacts are Chinese, aggregate-only, and terminal on model failure", () => {
+  const report = readRequiredValidation();
   const names = [
     "M2-C3-opportunity-audit-v1",
     "M2-C3-feature-manifest-v1",
@@ -259,19 +251,20 @@ test("C3 public artifacts are Chinese, aggregate-only, and terminal on model fai
 test("C3 private evidence, when present, remains ignored and untracked", () => {
   assertPrivateRoleIgnoredAndUntracked();
   const privateDir = path.join(root, privateRelative);
-  if (!fs.existsSync(privateDir)) return;
-  const pending = [privateDir];
-  while (pending.length > 0) {
-    const current = pending.pop();
-    for (const entry of fs.readdirSync(current, { withFileTypes: true })) {
-      const absolute = path.join(current, entry.name);
-      if (entry.isDirectory()) {
-        pending.push(absolute);
-        continue;
+  if (fs.existsSync(privateDir)) {
+    const pending = [privateDir];
+    while (pending.length > 0) {
+      const current = pending.pop();
+      for (const entry of fs.readdirSync(current, { withFileTypes: true })) {
+        const absolute = path.join(current, entry.name);
+        if (entry.isDirectory()) {
+          pending.push(absolute);
+          continue;
+        }
+        const relative = path.relative(root, absolute);
+        assert.equal(git("check-ignore", "--quiet", "--", relative).status, 0, relative);
+        assert.equal(git("ls-files", "--error-unmatch", "--", relative).status, 1, relative);
       }
-      const relative = path.relative(root, absolute);
-      assert.equal(git("check-ignore", "--quiet", "--", relative).status, 0, relative);
-      assert.equal(git("ls-files", "--error-unmatch", "--", relative).status, 1, relative);
     }
   }
 });
