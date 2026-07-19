@@ -98,8 +98,8 @@
       "testFile": "test/m2-v2-v2b6-cache-v0-3-candidate.test.js",
       "platforms": ["linux", "windows"],
       "providerAllowed": false,
-      "implementationStatus": "B3_B_PENDING",
-      "executionStatus": "PENDING"
+      "implementationStatus": "B3_B_IMPLEMENTED",
+      "executionStatus": "PASS"
     },
     {
       "caseId": "PR7-P1-008-profile-pass",

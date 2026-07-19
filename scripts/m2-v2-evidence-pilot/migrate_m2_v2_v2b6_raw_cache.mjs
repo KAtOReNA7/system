@@ -1,19 +1,24 @@
 #!/usr/bin/env node
 import { resolve } from "node:path";
 
-import { migrateV2B6RawCache } from "../../src/domain/m2V2EvidencePilot/v2b6RawCacheMigration.js";
+import { writeV2B6CacheV03Candidate } from "../../src/domain/m2V2EvidencePilot/v2b6RawCacheMigration.js";
 
 try {
-  const root = resolve(process.argv[2] ?? process.cwd());
-  const result = migrateV2B6RawCache(root);
+  const args = process.argv.slice(2);
+  const rootArg = args.find((value) => !value.startsWith("--"));
+  const root = resolve(rootArg ?? process.cwd());
+  const outputArg = args.find((value) => value.startsWith("--output="));
+  if (!outputArg) throw new Error("v2b6_cache_v03_candidate_output_required");
+  const result = writeV2B6CacheV03Candidate(root, { outputRelativePath: outputArg.slice("--output=".length) });
   process.stdout.write(`${JSON.stringify({
     status: result.status,
-    legacyEntryCount: result.legacyEntryCount,
-    currentSafeEntryCount: result.currentSafeEntryCount,
-    legacyMutableCacheCountAfter: result.legacyMutableCacheCountAfter,
-    rawResponseCurrentCacheCountAfter: result.rawResponseCurrentCacheCountAfter,
+    writeStatus: result.writeStatus,
+    sourceCount: result.sourceCount,
+    migratedCount: result.migratedCount,
+    quarantinedCount: result.quarantinedCount,
+    rejectedCount: result.rejectedCount,
     providerRequestDelta: result.providerRequestDelta,
-    quarantineReadOnly: result.quarantineReadOnly === true,
+    currentPromotionPerformed: result.currentPromotionPerformed,
   })}\n`);
 } catch (error) {
   const code = String(error?.message ?? "v2b6_raw_cache_migration_failed")
