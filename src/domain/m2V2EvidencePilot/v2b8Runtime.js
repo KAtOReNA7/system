@@ -252,7 +252,7 @@ export async function runV2B8(root, options = {}) {
     tavilyCache,
     relayCache,
     config,
-    fetchImpl: options.fetchImpl ?? globalThis.fetch,
+    fetchImpl: options.fetchImpl,
     now: options.now ?? (() => new Date().toISOString()),
     onProgress: options.onProgress ?? (() => {}),
   };

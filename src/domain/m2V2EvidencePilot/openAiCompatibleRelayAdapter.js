@@ -6,6 +6,7 @@ import {
   assertResponsesRetention,
   bindProviderTransport,
 } from "./providerTransportSecurity.js";
+import { rejectRetiredProviderRoute } from "./providerDispatchCapability.js";
 
 const RESPONSE_LIMIT_BYTES = 2 * 1024 * 1024;
 
@@ -25,12 +26,13 @@ export class OpenAICompatibleRelayCanaryAdapter {
     this.model = String(options.model ?? "");
     this.compatibilityReceiptDigest = String(options.compatibilityReceiptDigest ?? "") || null;
     this.timeoutMs = Number(options.timeoutMs ?? 60_000);
-    this.fetchImpl = options.fetchImpl ?? globalThis.fetch;
+    this.fetchImpl = options.fetchImpl;
     if (!this.baseUrl || !this.apiKey || !this.model) throw new Error("canary_relay_configuration_incomplete");
     if (typeof this.fetchImpl !== "function") throw new Error("canary_fetch_unavailable");
   }
 
   async execute(task) {
+    rejectRetiredProviderRoute();
     const payload = buildRelayRequestPayload(task, this.model);
     assertResponsesRetention(payload);
     const requestBody = JSON.stringify(payload);

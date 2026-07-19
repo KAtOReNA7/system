@@ -39,6 +39,7 @@ import {
   assertResponsesRetention,
   bindProviderTransport,
 } from "./providerTransportSecurity.js";
+import { rejectRetiredProviderRoute } from "./providerDispatchCapability.js";
 
 export const V2B2_PRIVATE_RELATIVE = "data/private-output/m2-v2-evidence-pilot/v2-b2-relay-remediation";
 export const V2B2_PARENT_MANIFEST_RELATIVE = "data/private-output/m2-v2-evidence-pilot/pilot-manifest-private-v0.1.json";
@@ -649,7 +650,7 @@ export async function executeV2B2PhysicalPlan(options) {
 
 export function createRelayStageExecutor(options = {}) {
   const configuration = loadRelayConfiguration(options.root, options.env);
-  const fetchImpl = options.fetchImpl ?? globalThis.fetch;
+  const fetchImpl = options.fetchImpl;
   if (typeof fetchImpl !== "function") throw new Error("v2b2_fetch_unavailable");
   return async ({ item, priorSearchReceipt, manifestDigest }) => {
     const payload = item.stage === "search"
@@ -1906,6 +1907,7 @@ function buildExtractionPayload(item, priorSearchReceipt) {
 }
 
 async function dispatchRelayResponse({ fetchImpl, baseUrl, approvedHost, apiKey, payload, timeoutMs }) {
+  rejectRetiredProviderRoute();
   const transport = bindProviderTransport({ baseUrl, approvedHost });
   assertResponsesRetention(payload);
   const controller = new AbortController();

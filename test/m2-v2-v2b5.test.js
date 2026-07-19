@@ -164,27 +164,19 @@ test("all Tavily capability states have machine-verifiable invariants", () => {
   assert.equal(validateV2B5TavilyCapabilityState({ tavilyProviderDecision: "BLOCKED_AUTH", finalResult: { dispatched: true, httpStatus: 429 } }).valid, false);
 });
 
-test("Tavily transport diagnostics distinguish DNS, TLS, and client egress denial", async () => {
-  async function diagnose(code, name = "TypeError") {
-    return dispatchV2B5TavilyRequest({
-      fetchImpl: async () => { const error = new Error("synthetic"); error.name = name; error.cause = { code }; throw error; },
+test("Tavily transport diagnostics cannot bypass the lowest-sink capability", async () => {
+  let fetchCount = 0;
+  for (const code of ["ENOTFOUND", "CERT_HAS_EXPIRED", "EACCES"]) {
+    await assert.rejects(dispatchV2B5TavilyRequest({
+      fetchImpl: async () => { fetchCount += 1; const error = new Error("synthetic"); error.cause = { code }; throw error; },
       baseUrl: "https://api.tavily.com",
       apiKey: "synthetic-key",
       projectId: "synthetic",
       payload: buildV2B5TavilySearchPayload({ query: "OpenAI API documentation", maxResults: 3, includeUsage: true }),
       timeoutMs: 1_000,
-    });
+    }), /provider_execution_capability_missing/u);
   }
-  const dns = await diagnose("ENOTFOUND");
-  const tls = await diagnose("CERT_HAS_EXPIRED");
-  const denied = await diagnose("EACCES");
-  assert.equal(dns.transportFailureCategory, "dns");
-  assert.equal(dns.dispatchAttempted, true);
-  assert.equal(tls.transportFailureCategory, "tls");
-  assert.equal(tls.dispatchAttempted, true);
-  assert.equal(denied.transportFailureCategory, "egress_permission");
-  assert.equal(denied.dispatchAttempted, false);
-  assert.equal(JSON.stringify([dns, tls, denied]).includes("synthetic-key"), false);
+  assert.equal(fetchCount, 0);
 });
 
 test("Tavily request payload is minimal and excludes answer/raw content", () => {
@@ -423,7 +415,10 @@ test("fabricated sourceId, model URL, unresolved entity, and conflict are reject
 });
 
 test("relay Extraction provider advertises no search or browser capability", () => {
-  const provider = new OpenAICompatibleRelayExtractionProviderV2B5({ baseUrl: "https://relay.example.com/v1", approvedHost: "relay.example.com", apiKey: "synthetic" });
+  const provider = new OpenAICompatibleRelayExtractionProviderV2B5({
+    baseUrl: "https://relay.example.com/v1", approvedHost: "relay.example.com", apiKey: "synthetic",
+    fetchImpl: async () => { throw new Error("must_not_run"); },
+  });
   assert.deepEqual(provider.capabilities(), {
     provider: "openai_compatible_relay_extraction",
     providerVersion: "m2-v2-relay-extraction-adapter-v0.1",

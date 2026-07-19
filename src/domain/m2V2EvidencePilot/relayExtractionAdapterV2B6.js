@@ -1,5 +1,6 @@
 import { performance } from "node:perf_hooks";
 import { canonicalJson, sha256 } from "./pilotCore.js";
+import { consumeProviderDispatchCapability } from "./providerDispatchCapability.js";
 import {
   assertNoProviderRedirect,
   assertResponsesRetention,
@@ -253,8 +254,13 @@ export function normalizeV2B6BenchmarkResponse(json, context) {
 }
 
 export async function dispatchV2B6RelayRequest(options) {
-  const fetchImpl = options.fetchImpl ?? globalThis.fetch;
-  if (typeof fetchImpl !== "function") throw new Error("v2b6_relay_fetch_unavailable");
+  const fetchImpl = options.fetchImpl;
+  consumeProviderDispatchCapability(options.capability, {
+    ...(options.capabilityScope ?? {}),
+    sinkId: "sink_v2b6_relay_request",
+    requestPayload: options.payload,
+    fetchImpl,
+  });
   const transport = bindProviderTransport({ baseUrl: options.baseUrl, approvedHost: options.approvedHost });
   assertResponsesRetention(options.payload);
   const timeoutMs = resolveV2B6TimeoutMs(options.timeoutMs);

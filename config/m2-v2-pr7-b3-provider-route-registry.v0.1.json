@@ -1,0 +1,195 @@
+{
+  "schema": "m2.v2.pr7.b3-provider-route-registry.v0.1",
+  "sourceContract": "docs/technical-design/m2-v2/M2-v2-provider-transport-retention-v0.2.json",
+  "providerCapableExportCount": 6,
+  "lowestSinkCount": 6,
+  "capabilityScopeFields": [
+    "routeId",
+    "sinkId",
+    "phase",
+    "physicalRequestIdentityDigestSha256",
+    "canonicalRootIdentityDigestSha256",
+    "transactionId",
+    "transactionBindingDigestSha256",
+    "safeCacheDigestSha256",
+    "transportPolicyDigestSha256"
+  ],
+  "sinks": [
+    {
+      "sinkId": "sink_openai_compatible_canary_execute",
+      "sourcePath": "src/domain/m2V2EvidencePilot/openAiCompatibleRelayAdapter.js",
+      "symbol": "OpenAICompatibleRelayCanaryAdapter.execute",
+      "transportKind": "relay_fetch",
+      "legacyStatus": "RETIRED_HARD_FAIL"
+    },
+    {
+      "sinkId": "sink_v2b2_dispatch_relay_response",
+      "sourcePath": "src/domain/m2V2EvidencePilot/v2b2Runtime.js",
+      "symbol": "dispatchRelayResponse",
+      "transportKind": "relay_fetch",
+      "legacyStatus": "RETIRED_HARD_FAIL"
+    },
+    {
+      "sinkId": "sink_v2b4_dispatch_relay_response",
+      "sourcePath": "src/domain/m2V2EvidencePilot/v2b4Runtime.js",
+      "symbol": "dispatchRelayResponse",
+      "transportKind": "relay_fetch",
+      "legacyStatus": "RETIRED_HARD_FAIL"
+    },
+    {
+      "sinkId": "sink_v2b5_relay_extraction",
+      "sourcePath": "src/domain/m2V2EvidencePilot/relayExtractionProviderV2B5.js",
+      "symbol": "dispatchV2B5RelayExtractionRequest",
+      "transportKind": "relay_fetch",
+      "legacyStatus": "ACTIVE_CAPABILITY_REQUIRED"
+    },
+    {
+      "sinkId": "sink_v2b5_tavily_search",
+      "sourcePath": "src/domain/m2V2EvidencePilot/tavilySearchProviderV2B5.js",
+      "symbol": "dispatchV2B5TavilyRequest",
+      "transportKind": "search_fetch",
+      "legacyStatus": "ACTIVE_CAPABILITY_REQUIRED"
+    },
+    {
+      "sinkId": "sink_v2b6_relay_request",
+      "sourcePath": "src/domain/m2V2EvidencePilot/relayExtractionAdapterV2B6.js",
+      "symbol": "dispatchV2B6RelayRequest",
+      "transportKind": "relay_fetch",
+      "legacyStatus": "ACTIVE_CAPABILITY_REQUIRED"
+    }
+  ],
+  "routes": [
+    {
+      "routeId": "v2b5_runtime_search",
+      "providerClass": "structured_search",
+      "phase": "v2b5",
+      "exportedEntrypoints": ["runV2B5"],
+      "lowestSink": "sink_v2b5_tavily_search",
+      "transportKind": "search_fetch",
+      "allowedHostPolicy": "fixed_https_separately_approved_host",
+      "cacheReadinessRole": "current_safe_cache_v0.3_exact_projection",
+      "capabilityScopeFields": "registry_root_scope",
+      "legacyStatus": "ACTIVE_CAPABILITY_REQUIRED"
+    },
+    {
+      "routeId": "v2b5_runtime_relay",
+      "providerClass": "relay_extraction",
+      "phase": "v2b5",
+      "exportedEntrypoints": ["runV2B5"],
+      "lowestSink": "sink_v2b5_relay_extraction",
+      "transportKind": "relay_fetch",
+      "allowedHostPolicy": "fixed_https_separately_approved_host",
+      "cacheReadinessRole": "current_safe_cache_v0.3_exact_projection",
+      "capabilityScopeFields": "registry_root_scope",
+      "legacyStatus": "ACTIVE_CAPABILITY_REQUIRED"
+    },
+    {
+      "routeId": "v2b5_capability_audit_probe",
+      "providerClass": "structured_search_probe",
+      "phase": "v2b5",
+      "exportedEntrypoints": ["runV2B5CapabilityAuditProbe"],
+      "lowestSink": "sink_v2b5_tavily_search",
+      "transportKind": "probe_fetch",
+      "allowedHostPolicy": "fixed_https_separately_approved_host",
+      "cacheReadinessRole": "current_safe_cache_v0.3_exact_projection",
+      "capabilityScopeFields": "registry_root_scope",
+      "legacyStatus": "ACTIVE_CAPABILITY_REQUIRED"
+    },
+    {
+      "routeId": "v2b6_relay_extraction",
+      "providerClass": "relay_extraction",
+      "phase": "v2b6",
+      "exportedEntrypoints": ["runV2B6"],
+      "lowestSink": "sink_v2b6_relay_request",
+      "transportKind": "relay_fetch",
+      "allowedHostPolicy": "fixed_https_separately_approved_host",
+      "cacheReadinessRole": "current_safe_cache_v0.3_exact_projection",
+      "capabilityScopeFields": "registry_root_scope",
+      "legacyStatus": "ACTIVE_CAPABILITY_REQUIRED"
+    },
+    {
+      "routeId": "v2b7_search",
+      "providerClass": "structured_search",
+      "phase": "v2b7",
+      "exportedEntrypoints": ["runV2B7"],
+      "lowestSink": "sink_v2b5_tavily_search",
+      "transportKind": "search_fetch",
+      "allowedHostPolicy": "fixed_https_separately_approved_host",
+      "cacheReadinessRole": "current_safe_cache_v0.3_exact_projection",
+      "capabilityScopeFields": "registry_root_scope",
+      "legacyStatus": "ACTIVE_CAPABILITY_REQUIRED"
+    },
+    {
+      "routeId": "v2b7_relay",
+      "providerClass": "relay_extraction",
+      "phase": "v2b7",
+      "exportedEntrypoints": ["runV2B7"],
+      "lowestSink": ["sink_v2b5_relay_extraction", "sink_v2b6_relay_request"],
+      "transportKind": "relay_fetch",
+      "allowedHostPolicy": "fixed_https_separately_approved_host",
+      "cacheReadinessRole": "current_safe_cache_v0.3_exact_projection",
+      "capabilityScopeFields": "registry_root_scope",
+      "legacyStatus": "ACTIVE_CAPABILITY_REQUIRED"
+    },
+    {
+      "routeId": "v2b8_search",
+      "providerClass": "structured_search",
+      "phase": "v2b8",
+      "exportedEntrypoints": ["runV2B8"],
+      "lowestSink": "sink_v2b5_tavily_search",
+      "transportKind": "search_fetch",
+      "allowedHostPolicy": "fixed_https_separately_approved_host",
+      "cacheReadinessRole": "current_safe_cache_v0.3_exact_projection",
+      "capabilityScopeFields": "registry_root_scope",
+      "legacyStatus": "ACTIVE_CAPABILITY_REQUIRED"
+    },
+    {
+      "routeId": "v2b8_relay",
+      "providerClass": "relay_extraction",
+      "phase": "v2b8",
+      "exportedEntrypoints": ["runV2B8"],
+      "lowestSink": ["sink_v2b5_relay_extraction", "sink_v2b6_relay_request"],
+      "transportKind": "relay_fetch",
+      "allowedHostPolicy": "fixed_https_separately_approved_host",
+      "cacheReadinessRole": "current_safe_cache_v0.3_exact_projection",
+      "capabilityScopeFields": "registry_root_scope",
+      "legacyStatus": "ACTIVE_CAPABILITY_REQUIRED"
+    },
+    {
+      "routeId": "legacy_canary",
+      "providerClass": "legacy_relay_canary",
+      "phase": "legacy_canary",
+      "exportedEntrypoints": ["OpenAICompatibleRelayCanaryAdapter"],
+      "lowestSink": "sink_openai_compatible_canary_execute",
+      "transportKind": "relay_fetch",
+      "allowedHostPolicy": "none_retired",
+      "cacheReadinessRole": "none_retired",
+      "capabilityScopeFields": "none_retired",
+      "legacyStatus": "RETIRED_HARD_FAIL"
+    },
+    {
+      "routeId": "legacy_v2b2",
+      "providerClass": "legacy_relay_runtime",
+      "phase": "v2b2",
+      "exportedEntrypoints": ["createRelayStageExecutor", "runV2B2Benchmark", "runV2B2Canary"],
+      "lowestSink": "sink_v2b2_dispatch_relay_response",
+      "transportKind": "relay_fetch",
+      "allowedHostPolicy": "none_retired",
+      "cacheReadinessRole": "none_retired",
+      "capabilityScopeFields": "none_retired",
+      "legacyStatus": "RETIRED_HARD_FAIL"
+    },
+    {
+      "routeId": "legacy_v2b4",
+      "providerClass": "legacy_relay_runtime",
+      "phase": "v2b4",
+      "exportedEntrypoints": ["runV2B4Canary"],
+      "lowestSink": "sink_v2b4_dispatch_relay_response",
+      "transportKind": "relay_fetch",
+      "allowedHostPolicy": "none_retired",
+      "cacheReadinessRole": "none_retired",
+      "capabilityScopeFields": "none_retired",
+      "legacyStatus": "RETIRED_HARD_FAIL"
+    }
+  ]
+}

@@ -28,6 +28,7 @@ import {
   assertResponsesRetention,
   bindProviderTransport,
 } from "./providerTransportSecurity.js";
+import { rejectRetiredProviderRoute } from "./providerDispatchCapability.js";
 
 export const V2B4_MODELS = Object.freeze(["gpt-5.6-luna", "gpt-5.6-terra"]);
 export const V2B4_PRIVATE_RELATIVE = "data/private-output/m2-v2-evidence-pilot/v2-b4-real-evidence-canary";
@@ -259,7 +260,7 @@ export async function runV2B4Canary(root, options = {}) {
       cachePath,
       statePath,
       receiptsPath,
-      fetchImpl: options.fetchImpl ?? globalThis.fetch,
+      fetchImpl: options.fetchImpl,
       now: options.now ?? (() => new Date().toISOString()),
     });
     options.onProgress?.({
@@ -281,7 +282,7 @@ export async function runV2B4Canary(root, options = {}) {
       cachePath,
       statePath,
       receiptsPath,
-      fetchImpl: options.fetchImpl ?? globalThis.fetch,
+      fetchImpl: options.fetchImpl,
       now: options.now ?? (() => new Date().toISOString()),
     });
     options.onProgress?.({
@@ -709,6 +710,7 @@ async function executePhysicalRequest(item, context) {
 }
 
 async function dispatchRelayResponse({ fetchImpl, baseUrl, approvedHost, apiKey, payload, timeoutMs }) {
+  rejectRetiredProviderRoute();
   if (typeof fetchImpl !== "function") throw new Error("v2b4_fetch_unavailable");
   const transport = bindProviderTransport({ baseUrl, approvedHost });
   assertResponsesRetention(payload);

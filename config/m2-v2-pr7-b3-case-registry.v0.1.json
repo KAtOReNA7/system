@@ -122,8 +122,8 @@
       "testFile": "test/m2-v2-provider-transport-security.test.js",
       "platforms": ["linux", "windows"],
       "providerAllowed": false,
-      "implementationStatus": "B3_C_PENDING",
-      "executionStatus": "PENDING"
+      "implementationStatus": "B3_C_IMPLEMENTED",
+      "executionStatus": "PASS"
     },
     {
       "caseId": "PR7-P2-016-tavily-no-cap",
@@ -134,8 +134,8 @@
       "testFile": "test/m2-v2-provider-transport-security.test.js",
       "platforms": ["linux", "windows"],
       "providerAllowed": false,
-      "implementationStatus": "B3_C_PENDING",
-      "executionStatus": "PENDING"
+      "implementationStatus": "B3_C_IMPLEMENTED",
+      "executionStatus": "PASS"
     },
     {
       "caseId": "PR7-P2-016-probe-no-cap",
@@ -146,8 +146,8 @@
       "testFile": "test/m2-v2-provider-transport-security.test.js",
       "platforms": ["linux", "windows"],
       "providerAllowed": false,
-      "implementationStatus": "B3_C_PENDING",
-      "executionStatus": "PENDING"
+      "implementationStatus": "B3_C_IMPLEMENTED",
+      "executionStatus": "PASS"
     },
     {
       "caseId": "PR7-P2-016-forged-cap",
@@ -158,8 +158,8 @@
       "testFile": "test/m2-v2-provider-transport-security.test.js",
       "platforms": ["linux", "windows"],
       "providerAllowed": false,
-      "implementationStatus": "B3_C_PENDING",
-      "executionStatus": "PENDING"
+      "implementationStatus": "B3_C_IMPLEMENTED",
+      "executionStatus": "PASS"
     },
     {
       "caseId": "PR7-P2-016-stale-reused",
@@ -170,8 +170,8 @@
       "testFile": "test/m2-v2-provider-transport-security.test.js",
       "platforms": ["linux", "windows"],
       "providerAllowed": false,
-      "implementationStatus": "B3_C_PENDING",
-      "executionStatus": "PENDING"
+      "implementationStatus": "B3_C_IMPLEMENTED",
+      "executionStatus": "PASS"
     },
     {
       "caseId": "PR7-P2-016-wrong-scope",
@@ -182,8 +182,8 @@
       "testFile": "test/m2-v2-provider-transport-security.test.js",
       "platforms": ["linux", "windows"],
       "providerAllowed": false,
-      "implementationStatus": "B3_C_PENDING",
-      "executionStatus": "PENDING"
+      "implementationStatus": "B3_C_IMPLEMENTED",
+      "executionStatus": "PASS"
     },
     {
       "caseId": "PR7-P2-016-cache-mutated",
@@ -194,8 +194,8 @@
       "testFile": "test/m2-v2-provider-transport-security.test.js",
       "platforms": ["linux", "windows"],
       "providerAllowed": false,
-      "implementationStatus": "B3_C_PENDING",
-      "executionStatus": "PENDING"
+      "implementationStatus": "B3_C_IMPLEMENTED",
+      "executionStatus": "PASS"
     },
     {
       "caseId": "PR7-P2-016-legacy-retired",
@@ -206,8 +206,8 @@
       "testFile": "test/m2-v2-provider-transport-security.test.js",
       "platforms": ["linux", "windows"],
       "providerAllowed": false,
-      "implementationStatus": "B3_C_PENDING",
-      "executionStatus": "PENDING"
+      "implementationStatus": "B3_C_IMPLEMENTED",
+      "executionStatus": "PASS"
     },
     {
       "caseId": "PR7-P2-016-synthetic-pass",
@@ -218,8 +218,8 @@
       "testFile": "test/m2-v2-provider-transport-security.test.js",
       "platforms": ["linux", "windows"],
       "providerAllowed": false,
-      "implementationStatus": "B3_C_PENDING",
-      "executionStatus": "PENDING"
+      "implementationStatus": "B3_C_IMPLEMENTED",
+      "executionStatus": "PASS"
     },
     {
       "caseId": "B3-P1-008-getter-own-data",

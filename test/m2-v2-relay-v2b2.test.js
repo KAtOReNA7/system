@@ -141,8 +141,9 @@ test("legacy relay success is revalidated instead of treated as model evidence q
   ]), ["local_strict_success", "relay_success_local_schema_failure", "provider_or_request_failure"]);
 });
 
-test("real stage executor binds returned model, exact entity and locally supported citation claim", async () => {
+test("legacy V2B2 stage executor is retired before caller transport", async () => {
   const bodies = [responsesSearchFixture()];
+  let fetchCount = 0;
   const executor = createRelayStageExecutor({
     root: ".",
     env: {
@@ -151,7 +152,7 @@ test("real stage executor binds returned model, exact entity and locally support
       M2_V2_APPROVED_RELAY_HOST: "relay.example",
       OPENAI_API_KEY: "synthetic-test-key",
     },
-    fetchImpl: async () => responseFrom(bodies.shift()),
+    fetchImpl: async () => { fetchCount += 1; return responseFrom(bodies.shift()); },
   });
   const baseItem = {
     requestKey: "a".repeat(64),
@@ -166,27 +167,11 @@ test("real stage executor binds returned model, exact entity and locally support
     sourceType: "publication",
     queryText: "verify public evidence",
   };
-  const search = await executor({ item: { ...baseItem, stage: "search" }, manifestDigest: "d".repeat(64) });
-  assert.equal(search.status, "success");
-  assert.equal(search.modelBindingVerified, true);
-  const citationId = search.normalizedResponse.citationRegistry[0].citationId;
-  bodies.push({
-    model: "gpt-5.6-terra",
-    status: "completed",
-    output: [{ type: "message", content: [{ type: "output_text", text: JSON.stringify(structuredFixture(citationId)) }] }],
-    usage: { input_tokens: 20, output_tokens: 10, total_tokens: 30 },
-  });
-  const extraction = await executor({
-    item: { ...baseItem, requestKey: "e".repeat(64), stage: "extraction" },
-    priorSearchReceipt: search,
-    manifestDigest: "d".repeat(64),
-  });
-  assert.equal(extraction.status, "success");
-  assert.equal(extraction.providerContractCompatible, true);
-  assert.equal(extraction.entityResolved, true);
-  assert.equal(extraction.entityIdentityErrorCount, 0);
-  assert.equal(extraction.claimSupportUnverifiedCount, 0);
-  assert.equal(extraction.usableEvidenceCount, 1);
+  await assert.rejects(
+    executor({ item: { ...baseItem, stage: "search" }, manifestDigest: "d".repeat(64) }),
+    /historical_provider_execution_retired/u,
+  );
+  assert.equal(fetchCount, 0);
 });
 
 function responsesSearchFixture() {

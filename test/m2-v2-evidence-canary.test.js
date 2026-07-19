@@ -286,7 +286,7 @@ test("canary decision is conditional for governance or cost gaps and fail for a 
   assert.ok(invariantFail.blockers.includes("all_hard_invariants_pass"));
 });
 
-test("relay adapter persists neither API key nor Authorization header nor raw response", async () => {
+test("legacy relay adapter hard-fails before constructing or dispatching a request", async () => {
   const secret = "synthetic-secret-not-a-real-key";
   let observedBody = null;
   const adapter = new OpenAICompatibleRelayCanaryAdapter({
@@ -317,15 +317,9 @@ test("relay adapter persists neither API key nor Authorization header nor raw re
     sourceType: "publication",
     queryText: "合成作品甲 合成作者甲 官方",
   };
-  const receipt = await adapter.execute(task);
-  const serializedReceipt = JSON.stringify(receipt);
-  assert.equal(receipt.status, "success");
-  assert.equal(receipt.rawResponsePersisted, false);
-  assert.equal(receipt.authorizationHeaderPersisted, false);
-  assert.equal(receipt.apiKeyPersisted, false);
-  assert.doesNotMatch(serializedReceipt, new RegExp(secret, "u"));
-  assert.doesNotMatch(observedBody, /internal-work-secret|identity-secret/iu);
-  assert.equal(JSON.parse(observedBody).store, false);
+  await assert.rejects(adapter.execute(task), /historical_provider_execution_retired/u);
+  assert.equal(observedBody, null);
+  assert.doesNotMatch(String(observedBody), new RegExp(secret, "u"));
 });
 
 test("calibration seal contract reads the frozen C3 boolean fields without opening them", () => {

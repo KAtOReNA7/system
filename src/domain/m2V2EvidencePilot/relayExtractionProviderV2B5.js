@@ -1,5 +1,6 @@
 import { performance } from "node:perf_hooks";
 import { sha256 } from "./pilotCore.js";
+import { consumeProviderDispatchCapability } from "./providerDispatchCapability.js";
 import {
   assertNoProviderRedirect,
   assertResponsesRetention,
@@ -29,7 +30,7 @@ export class OpenAICompatibleRelayExtractionProviderV2B5 {
     this.approvedHost = this.transport.approvedHost;
     this.apiKey = String(options.apiKey ?? "");
     this.timeoutMs = boundedInteger(options.timeoutMs, 25_000, 1_000, 60_000);
-    this.fetchImpl = options.fetchImpl ?? globalThis.fetch;
+    this.fetchImpl = options.fetchImpl;
     if (!this.baseUrl || !this.apiKey) throw new Error("v2b5_relay_configuration_incomplete");
     if (typeof this.fetchImpl !== "function") throw new Error("v2b5_relay_fetch_unavailable");
   }
@@ -128,8 +129,13 @@ export class OpenAICompatibleRelayExtractionProviderV2B5 {
 }
 
 export async function dispatchV2B5RelayExtractionRequest(options) {
-  const fetchImpl = options.fetchImpl ?? globalThis.fetch;
-  if (typeof fetchImpl !== "function") throw new Error("v2b5_relay_fetch_unavailable");
+  const fetchImpl = options.fetchImpl;
+  consumeProviderDispatchCapability(options.capability, {
+    ...(options.capabilityScope ?? {}),
+    sinkId: "sink_v2b5_relay_extraction",
+    requestPayload: options.payload,
+    fetchImpl,
+  });
   const transport = bindProviderTransport({ baseUrl: options.baseUrl, approvedHost: options.approvedHost });
   assertResponsesRetention(options.payload);
   const controller = new AbortController();

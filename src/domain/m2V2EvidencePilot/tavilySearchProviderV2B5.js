@@ -1,5 +1,6 @@
 import { performance } from "node:perf_hooks";
 import { canonicalJson, sha256 } from "./pilotCore.js";
+import { consumeProviderDispatchCapability } from "./providerDispatchCapability.js";
 import {
   assertNoProviderRedirect,
   bindProviderSearchTransport,
@@ -43,7 +44,7 @@ export class TavilyStructuredSearchProviderV2B5 {
     this.country = options.country ?? V2B5_TAVILY_DEFAULTS.country;
     this.projectId = options.projectId ?? V2B5_TAVILY_DEFAULTS.projectId;
     this.timeoutMs = boundedInteger(options.timeoutMs, V2B5_TAVILY_DEFAULTS.timeoutMs, 1_000, 60_000);
-    this.fetchImpl = options.fetchImpl ?? globalThis.fetch;
+    this.fetchImpl = options.fetchImpl;
     if (!this.apiKey) throw new Error("v2b5_tavily_api_key_missing");
     if (this.baseUrl !== V2B5_TAVILY_DEFAULTS.baseUrl) throw new Error("v2b5_tavily_base_url_invalid");
     if (typeof this.fetchImpl !== "function") throw new Error("v2b5_tavily_fetch_unavailable");
@@ -315,8 +316,13 @@ export function validateV2B5TavilyCapabilityState(capability) {
 }
 
 export async function dispatchV2B5TavilyRequest(options) {
-  const fetchImpl = options.fetchImpl ?? globalThis.fetch;
-  if (typeof fetchImpl !== "function") throw new Error("v2b5_tavily_fetch_unavailable");
+  const fetchImpl = options.fetchImpl;
+  consumeProviderDispatchCapability(options.capability, {
+    ...(options.capabilityScope ?? {}),
+    sinkId: "sink_v2b5_tavily_search",
+    requestPayload: options.payload,
+    fetchImpl,
+  });
   const transport = bindProviderSearchTransport({
     baseUrl: options.baseUrl,
     approvedHost: V2B5_TAVILY_DEFAULTS.approvedHost,
