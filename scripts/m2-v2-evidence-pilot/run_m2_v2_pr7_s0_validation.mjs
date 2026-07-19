@@ -12,6 +12,7 @@ import { dirname, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   assertS0ExternalEnvironmentEmpty,
+  parseMachineFailureEvidence,
   parseTapFailureEvidence,
   resolveRegisteredCommand,
   sha256,
@@ -210,7 +211,7 @@ function appendNodeOption(current, option) {
 
 function publicExecution(execution) {
   const failureEvidence = parseTapFailureEvidence(execution.stdout, execution.stderr);
-  const machineFailure = parseMachineFailure(execution.stdout);
+  const machineFailure = parseMachineFailureEvidence(execution.stdout);
   return {
     commandId: execution.commandId,
     registryExecutable: execution.registryExecutable,
@@ -229,21 +230,6 @@ function publicExecution(execution) {
     failureEvidence,
     machineFailure,
   };
-}
-
-function parseMachineFailure(stdout) {
-  try {
-    const payload = JSON.parse(String(stdout ?? "").trim());
-    if (payload?.passed !== false) return null;
-    return {
-      schema: typeof payload.schema === "string" ? payload.schema : null,
-      failureStage: typeof payload.failureStage === "string" ? payload.failureStage : null,
-      errorCode: typeof payload.error?.code === "string" ? payload.error.code : null,
-      reasonCode: typeof payload.error?.reasonCode === "string" ? payload.error.reasonCode : null,
-    };
-  } catch {
-    return null;
-  }
 }
 
 function parseJsonOutput(output) {

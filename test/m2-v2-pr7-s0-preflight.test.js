@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 import {
   evaluatePreflightFacts,
   FALLBACK_EVENT_FIELDS,
+  parseMachineFailureEvidence,
   parseJsonUtf8Strict,
   resolveRegisteredCommand,
   sha256,
@@ -252,6 +253,75 @@ test("preflight source cannot hardcode live PR or CI success", () => {
     "utf8",
   );
   assert.doesNotMatch(source, /ciRunId|verifyWindows|verify-windows=success|remote[^\n]*success/iu);
+});
+
+test("outer validation projects bounded isolation failure evidence without raw child output", () => {
+  const canary = "RAW_CHILD_CANARY_MUST_NOT_LEAK_7f9c";
+  const stdout = JSON.stringify({
+    schema: canary,
+    passed: false,
+    failureStage: canary,
+    error: { code: canary, reasonCode: canary },
+    childCompleted: true,
+    childPassed: false,
+    childExitCode: 1,
+    childSignal: canary,
+    childErrorCode: canary,
+    timedOut: false,
+    defaultTestChainInvocationCount: 1,
+    defaultTestTotalSkips: 0,
+    defaultTestSkipSummaryPresent: true,
+    defaultTestSkipIdentityCountMatchesSummary: true,
+    providerRequestDelta: 0,
+    trackedContentUnchanged: true,
+    trackedMetadataUnchanged: false,
+    childFailureEvidence: {
+      failedTestIdentities: ["S0-05 synthetic named child failure", canary],
+      failedTestIdentityCount: 2,
+      failedTestIdentitiesTruncated: false,
+      tapSummary: { tests: 43, pass: 42, fail: 1, cancelled: 0, skipped: 0, todo: 0 },
+      stdoutBytes: 1234,
+      stdoutSha256: "1".repeat(64),
+      stderrBytes: 0,
+      stderrSha256: "2".repeat(64),
+      rawStdout: canary,
+    },
+    receiptError: {
+      code: canary,
+      reasonCode: canary,
+      messageDigest: "3".repeat(64),
+    },
+    rawStdout: canary,
+    rawStderr: canary,
+  });
+  const summary = parseMachineFailureEvidence(stdout);
+  assert.deepEqual(summary.childFailureEvidence.failedTestIdentityDigests, [
+    sha256("S0-05 synthetic named child failure"),
+    sha256(canary),
+  ]);
+  assert.deepEqual(summary.childFailureEvidence.failedTestCategories, ["S0-05", "UNCLASSIFIED"]);
+  assert.deepEqual(summary.childFailureEvidence.tapSummary, {
+    tests: 43,
+    pass: 42,
+    fail: 1,
+    cancelled: 0,
+    skipped: 0,
+    todo: 0,
+  });
+  assert.deepEqual(summary.failedChecks, ["childPassed", "trackedMetadataUnchanged"]);
+  assert.equal(summary.childExitCode, 1);
+  assert.equal(summary.providerRequestDelta, 0);
+  assert.equal(summary.schemaCategory, "UNKNOWN");
+  assert.equal(summary.failureStageCategory, "UNKNOWN");
+  assert.equal(summary.errorCodeCategory, "UNKNOWN");
+  assert.equal(summary.reasonCodeSha256, sha256(canary));
+  assert.equal(summary.childSignalCategory, "UNKNOWN");
+  assert.equal(summary.childErrorCodeCategory, "UNKNOWN");
+  assert.equal(summary.receiptError.codeCategory, "UNKNOWN");
+  assert.equal(summary.receiptError.reasonCodeSha256, sha256(canary));
+  assert.doesNotMatch(JSON.stringify(summary), new RegExp(canary, "u"));
+  assert.equal(parseMachineFailureEvidence("not-json"), null);
+  assert.equal(parseMachineFailureEvidence(JSON.stringify({ passed: true })), null);
 });
 
 function validFallback(overrides = {}) {

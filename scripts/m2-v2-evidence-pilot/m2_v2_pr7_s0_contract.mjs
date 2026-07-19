@@ -364,6 +364,48 @@ export function parseTapFailureEvidence(stdout, stderr = "") {
   };
 }
 
+export function parseMachineFailureEvidence(stdout) {
+  let payload;
+  try {
+    payload = JSON.parse(String(stdout ?? "").trim());
+  } catch {
+    return null;
+  }
+  if (!payload || payload.passed !== false) return null;
+
+  const failedChecks = MACHINE_FAILURE_BOOLEAN_CHECKS
+    .filter((field) => payload[field] === false);
+  if (Number.isSafeInteger(payload.defaultTestChainInvocationCount)
+      && payload.defaultTestChainInvocationCount !== 1) {
+    failedChecks.push("defaultTestChainInvocationCount");
+  }
+  if (Number.isSafeInteger(payload.defaultTestTotalSkips) && payload.defaultTestTotalSkips !== 0) {
+    failedChecks.push("defaultTestTotalSkips");
+  }
+  if (Number.isSafeInteger(payload.providerRequestDelta) && payload.providerRequestDelta !== 0) {
+    failedChecks.push("providerRequestDelta");
+  }
+
+  return {
+    schemaCategory: safeMachineCategory(payload.schema, MACHINE_SCHEMAS),
+    failureStageCategory: safeMachineCategory(payload.failureStage, MACHINE_FAILURE_STAGES),
+    errorCodeCategory: safeMachineCategory(payload.error?.code, MACHINE_ERROR_CODES),
+    reasonCodeSha256: safeMachineStringDigest(payload.error?.reasonCode),
+    childExitCode: safeMachineInteger(payload.childExitCode),
+    childSignalCategory: safeMachineCategory(payload.childSignal, MACHINE_SIGNALS),
+    childErrorCodeCategory: safeMachineCategory(payload.childErrorCode, MACHINE_ERROR_CODES),
+    timedOut: safeMachineBoolean(payload.timedOut),
+    defaultTestChainInvocationCount: safeMachineInteger(payload.defaultTestChainInvocationCount),
+    defaultTestTotalSkips: safeMachineInteger(payload.defaultTestTotalSkips),
+    defaultTestSkipSummaryPresent: safeMachineBoolean(payload.defaultTestSkipSummaryPresent),
+    defaultTestSkipIdentityCountMatchesSummary: safeMachineBoolean(payload.defaultTestSkipIdentityCountMatchesSummary),
+    providerRequestDelta: safeMachineInteger(payload.providerRequestDelta),
+    failedChecks: [...new Set(failedChecks)].sort(),
+    childFailureEvidence: summarizeChildFailureEvidence(payload.childFailureEvidence),
+    receiptError: summarizeReceiptError(payload.receiptError),
+  };
+}
+
 export function validateJsonSchema(value, schema, rootSchema = schema, path = "$") {
   if (schema.$ref) {
     if (!schema.$ref.startsWith("#/") || rootSchema === undefined) throw new Error(`json_schema_ref_unsupported_${path}`);
@@ -429,6 +471,131 @@ function sortObjectKeys(value) {
   if (Array.isArray(value)) return value.map(sortObjectKeys);
   if (!value || typeof value !== "object" || Object.getPrototypeOf(value) !== Object.prototype) return value;
   return Object.fromEntries(Object.keys(value).sort().map((key) => [key, sortObjectKeys(value[key])]));
+}
+
+const MACHINE_FAILURE_BOOLEAN_CHECKS = Object.freeze([
+  "beforePrecedesFirstDefaultTest",
+  "childCompleted",
+  "childPassed",
+  "defaultTestSkipIdentityCountMatchesSummary",
+  "defaultTestSkipSummaryPresent",
+  "gitStatusUnchanged",
+  "governedPrivateContentUnchanged",
+  "governedPrivateMetadataUnchanged",
+  "nonIgnoredUntrackedContentUnchanged",
+  "nonIgnoredUntrackedMetadataUnchanged",
+  "receiptWrittenAfterComparison",
+  "systemRefsUnchanged",
+  "trackedContentUnchanged",
+  "trackedMetadataUnchanged",
+  "userRefsUnchanged",
+]);
+
+const MACHINE_SCHEMAS = Object.freeze([
+  "m2.v2.default-test-isolation-proof.v0.3",
+  "m2.v2.pr7.s0-preflight-receipt.v0.1",
+]);
+
+const MACHINE_FAILURE_STAGES = Object.freeze([
+  "after_snapshot_failed",
+  "argument_and_task_contract",
+  "before_snapshot_failed",
+  "invalid_arguments",
+  "preflight_failed",
+  "repository_and_governance_gates",
+  "success_receipt_schema_validation",
+]);
+
+const MACHINE_ERROR_CODES = Object.freeze([
+  "EACCES",
+  "ENOENT",
+  "EPERM",
+  "ETIMEDOUT",
+  "UNSPECIFIED",
+]);
+
+const MACHINE_SIGNALS = Object.freeze([
+  "SIGABRT",
+  "SIGINT",
+  "SIGKILL",
+  "SIGTERM",
+]);
+
+function summarizeChildFailureEvidence(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  const identities = Array.isArray(value.failedTestIdentities)
+    ? value.failedTestIdentities
+      .filter((identity) => typeof identity === "string")
+      .slice(0, 50)
+      .map((identity) => identity.replace(/[\r\n\t]+/gu, " ").trim().slice(0, 240))
+      .filter(Boolean)
+    : [];
+  const tapSummary = {};
+  for (const field of ["tests", "pass", "fail", "cancelled", "skipped", "todo"]) {
+    tapSummary[field] = safeNonnegativeMachineInteger(value.tapSummary?.[field]);
+  }
+  return {
+    failedTestIdentityDigests: identities.map((identity) => sha256(identity)),
+    failedTestCategories: [...new Set(identities.map(classifyFailureIdentity))].sort(),
+    failedTestIdentityCount: safeNonnegativeMachineInteger(value.failedTestIdentityCount),
+    failedTestIdentitiesTruncated: safeMachineBoolean(value.failedTestIdentitiesTruncated),
+    tapSummary,
+    stdoutBytes: safeNonnegativeMachineInteger(value.stdoutBytes),
+    stdoutSha256: safeMachineSha(value.stdoutSha256),
+    stderrBytes: safeNonnegativeMachineInteger(value.stderrBytes),
+    stderrSha256: safeMachineSha(value.stderrSha256),
+  };
+}
+
+function summarizeReceiptError(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  return {
+    codeCategory: safeMachineCategory(value.code, MACHINE_ERROR_CODES),
+    reasonCodeSha256: safeMachineStringDigest(value.reasonCode),
+    messageDigest: safeMachineSha(value.messageDigest),
+  };
+}
+
+function classifyFailureIdentity(value) {
+  const explicit = value.match(/\bS0-(0[1-7])\b/u);
+  if (explicit) return `S0-${explicit[1]}`;
+  for (const [pattern, category] of [
+    [/m2-v2-(?:pr7-s0-preflight|test-isolation)/u, "S0-01"],
+    [/m2-v2-required-artifact/u, "S0-02"],
+    [/m2-v2-no-external-sentinel/u, "S0-03"],
+    [/m2-v2-pr7-s0-authority-cache/u, "S0-04"],
+    [/m2-v2-filesystem-fixture-s0/u, "S0-05"],
+    [/m2-v2-ooxml-corpus-s0/u, "S0-06"],
+    [/m2-v2-event-conflict-corpus/u, "S0-07"],
+  ]) {
+    if (pattern.test(value)) return category;
+  }
+  return "UNCLASSIFIED";
+}
+
+function safeMachineCategory(value, allowed) {
+  if (value === null || value === undefined) return null;
+  return typeof value === "string" && allowed.includes(value) ? value : "UNKNOWN";
+}
+
+function safeMachineStringDigest(value) {
+  return typeof value === "string" && value !== "" ? sha256(value) : null;
+}
+
+function safeMachineInteger(value) {
+  return Number.isSafeInteger(value) ? value : null;
+}
+
+function safeNonnegativeMachineInteger(value) {
+  return Number.isSafeInteger(value) && value >= 0 ? value : null;
+}
+
+function safeMachineBoolean(value) {
+  return typeof value === "boolean" ? value : null;
+}
+
+function safeMachineSha(value) {
+  return typeof value === "string" && /^[0-9a-f]{64}$/u.test(value) ? value : null;
 }
 
 function decodeUtf8Strict(value) {
