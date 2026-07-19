@@ -1,10 +1,13 @@
 import { createHash } from "node:crypto";
 import { existsSync, lstatSync, readFileSync } from "node:fs";
 import { basename, isAbsolute, relative, resolve, sep } from "node:path";
+import { verifyTrackedCoreCommitmentV0_1 } from "./authorityGraph.js";
 
 export const CURRENT_AUTHORITY_SCHEMA = "m2.v2.current-authority-private.v0.2";
 export const DEFAULT_CURRENT_STATE_INDEX_RELATIVE = "docs/analysis/m2-v2/M2-v2-current-state-index-v0.2.json";
 export const DEFAULT_CURRENT_RESTATEMENT_RELATIVE = "docs/analysis/m2-v2/M2-v2-canary-v3-1-integrity-restatement-v0.3.json";
+export const NEXT_CURRENT_STATE_INDEX_RELATIVE = "docs/analysis/m2-v2/M2-v2-current-state-index-v0.3.json";
+export const NEXT_CURRENT_RESTATEMENT_RELATIVE = "docs/analysis/m2-v2/M2-v2-canary-v3-1-integrity-restatement-v0.4.json";
 
 /**
  * Read the two versioned current-authority artifacts without writing anything.
@@ -47,6 +50,32 @@ export function readCurrentAuthority(root, options = {}) {
     });
   }
 
+  let trackedCoreCommitmentRead = null;
+  if (indexRead.value?.schemaVersion === "m2-v2-current-state-index-v0.3") {
+    const commitmentPath = indexRead.value?.currentAuthority?.trackedCoreCommitmentPath;
+    let commitmentRelativePath;
+    try { commitmentRelativePath = normalizeGovernedRelativePath(commitmentPath); } catch {
+      return invalidAuthority(["tracked_core_commitment_path_invalid"], {
+        indexRelativePath,
+        indexDigest: indexRead.byteDigest,
+        restatementRelativePath,
+      });
+    }
+    trackedCoreCommitmentRead = readAuthorityFile(
+      absoluteRoot,
+      commitmentRelativePath,
+      "tracked_core_commitment",
+    );
+    if (!trackedCoreCommitmentRead.valid) {
+      return invalidAuthority(trackedCoreCommitmentRead.issues, {
+        indexRelativePath,
+        indexDigest: indexRead.byteDigest,
+        restatementRelativePath,
+      });
+    }
+    trackedCoreCommitmentRead.relativePath = commitmentRelativePath;
+  }
+
   return validateCurrentAuthorityDocuments({
     index: indexRead.value,
     restatement: restatementRead.value,
@@ -54,6 +83,10 @@ export function readCurrentAuthority(root, options = {}) {
     indexByteDigest: indexRead.byteDigest,
     restatementRelativePath,
     restatementByteDigest: restatementRead.byteDigest,
+    graph: options.graph,
+    trackedCoreCommitment: trackedCoreCommitmentRead?.value,
+    trackedCoreCommitmentRelativePath: trackedCoreCommitmentRead?.relativePath,
+    trackedCoreCommitmentByteDigest: trackedCoreCommitmentRead?.byteDigest,
   });
 }
 
@@ -61,6 +94,7 @@ export function validateCurrentAuthorityDocuments(input) {
   const issues = [];
   const index = input?.index;
   const restatement = input?.restatement;
+  const authorityVersion = index?.schemaVersion === "m2-v2-current-state-index-v0.3" ? "v0.3" : "v0.2";
   const indexRelativePath = safeNormalizedPath(input?.indexRelativePath, issues, "current_state_index_path_invalid");
   const restatementRelativePath = safeNormalizedPath(
     input?.restatementRelativePath,
@@ -88,11 +122,16 @@ export function validateCurrentAuthorityDocuments(input) {
     issues.push("current_restatement_binding_digest_mismatch");
   }
 
-  if (!/^m2-v2-current-state-index-v0\.2$/u.test(String(index?.schemaVersion ?? ""))) {
+  if (!/^m2-v2-current-state-index-v0\.(?:2|3)$/u.test(String(index?.schemaVersion ?? ""))) {
     issues.push("current_state_index_schema_invalid");
   }
-  if (index?.status !== "current") issues.push("current_state_index_status_invalid");
-  if (!/^m2\.v2\.canary-v3\.1-integrity-restatement-public\.v0\.3$/u.test(String(restatement?.schema ?? ""))) {
+  if (authorityVersion === "v0.3" ? index?.status !== "current_digest_bound" : index?.status !== "current") {
+    issues.push("current_state_index_status_invalid");
+  }
+  const expectedRestatementSchema = authorityVersion === "v0.3"
+    ? "m2.v2.canary-v3.1-integrity-restatement-public.v0.4"
+    : "m2.v2.canary-v3.1-integrity-restatement-public.v0.3";
+  if (restatement?.schema !== expectedRestatementSchema) {
     issues.push("current_restatement_schema_invalid");
   }
 
@@ -113,8 +152,12 @@ export function validateCurrentAuthorityDocuments(input) {
   const restatementFull160Authorized = restatement?.restatedContract?.full160Authorized
     ?? restatement?.full160Authorized
     ?? restatement?.authorization?.full160Authorized;
-  if (index?.full160Authorized !== false || restatementFull160Authorized !== false) {
+  if (index?.full160Authorized !== false
+    || (authorityVersion === "v0.2" && restatementFull160Authorized !== false)) {
     issues.push("full160_authorization_not_fail_closed");
+  }
+  if (authorityVersion === "v0.3" && index?.modelTrainingAuthorized !== false) {
+    issues.push("model_training_authorization_not_fail_closed");
   }
   const restatementReadiness = restatement?.nextDevelopmentReadiness
     ?? restatement?.authorization?.nextDevelopmentReadiness
@@ -125,7 +168,16 @@ export function validateCurrentAuthorityDocuments(input) {
   if (restatementReadiness !== undefined && restatementReadiness !== "NOT_AUTHORIZED") {
     issues.push("restatement_readiness_not_fail_closed");
   }
-  if (restatement?.providerRequestDelta !== 0) issues.push("provider_request_delta_nonzero");
+  const providerRequestDelta = authorityVersion === "v0.3"
+    ? restatement?.unchangedBoundaries?.providerRequestDelta
+    : restatement?.providerRequestDelta;
+  if (providerRequestDelta !== 0) issues.push("provider_request_delta_nonzero");
+
+  let coreBinding = null;
+  if (authorityVersion === "v0.3") {
+    coreBinding = validateV03CoreBinding(input, index, restatement);
+    if (!coreBinding.valid) issues.push(...coreBinding.issues);
+  }
 
   const historicalArtifacts = extractHistoricalArtifacts(index);
   const mapPayload = {
@@ -134,6 +186,9 @@ export function validateCurrentAuthorityDocuments(input) {
     currentAuthorityDigest: indexByteDigest,
     currentRestatementArtifact: restatementRelativePath,
     currentRestatementDigest: restatementByteDigest,
+    graphDigestSha256: coreBinding?.graphDigestSha256 ?? null,
+    trackedCoreCommitmentArtifact: coreBinding?.trackedCoreCommitmentRelativePath ?? null,
+    trackedCoreCommitmentDigest: coreBinding?.trackedCoreCommitmentByteDigest ?? null,
     historicalArtifacts,
     historicalDecision: historicalDecision ?? null,
     currentRestatedDecision: currentRestatedDecision ?? null,
@@ -150,6 +205,52 @@ export function validateCurrentAuthorityDocuments(input) {
     nextDevelopmentReadiness: "NOT_AUTHORIZED",
     currentAuthorityDigestVerified: issues.length === 0,
     currentRestatementVerified: issues.length === 0,
+    canonicalAuthorityGraphVerified: authorityVersion === "v0.3" && coreBinding?.valid === true && issues.length === 0,
+    trackedCoreCommitmentVerified: authorityVersion === "v0.3" && coreBinding?.commitmentVerified === true && issues.length === 0,
+  };
+}
+
+function validateV03CoreBinding(input, index, restatement) {
+  const issues = [];
+  const current = index?.currentAuthority;
+  const graph = input?.graph;
+  const commitment = input?.trackedCoreCommitment;
+  const commitmentPath = safeNormalizedPath(
+    input?.trackedCoreCommitmentRelativePath,
+    issues,
+    "tracked_core_commitment_path_invalid",
+  );
+  const commitmentDigest = requiredDigest(
+    input?.trackedCoreCommitmentByteDigest,
+    issues,
+    "tracked_core_commitment_digest_invalid",
+  );
+  if (!isPlainObject(current)) issues.push("current_authority_binding_missing");
+  if (commitmentPath && current?.trackedCoreCommitmentPath !== commitmentPath) {
+    issues.push("tracked_core_commitment_path_mismatch");
+  }
+  if (commitmentDigest && current?.trackedCoreCommitmentDigestSha256 !== commitmentDigest) {
+    issues.push("tracked_core_commitment_digest_mismatch");
+  }
+  const commitmentCheck = verifyTrackedCoreCommitmentV0_1(commitment, graph);
+  if (!commitmentCheck.valid) issues.push("tracked_core_commitment_mismatch");
+  const graphDigest = graph?.graphDigestSha256 ?? null;
+  if (!isDigest(graphDigest)
+    || current?.graphDigestSha256 !== graphDigest
+    || restatement?.authorityBindings?.graphDigestSha256 !== graphDigest) {
+    issues.push("canonical_authority_graph_binding_mismatch");
+  }
+  if (index?.sourceExactHead !== commitment?.sourceExactHead
+    || restatement?.sourceExactHead !== commitment?.sourceExactHead) {
+    issues.push("tracked_core_commitment_source_head_mismatch");
+  }
+  return {
+    valid: issues.length === 0,
+    issues: [...new Set(issues)],
+    graphDigestSha256: graphDigest,
+    trackedCoreCommitmentRelativePath: commitmentPath,
+    trackedCoreCommitmentByteDigest: commitmentDigest,
+    commitmentVerified: commitmentCheck.valid,
   };
 }
 
@@ -166,10 +267,12 @@ function explicitCurrentDecision(index, restatement) {
 function extractCurrentRestatementBinding(index) {
   const source = isPlainObject(index?.currentAuthority) ? index.currentAuthority : {};
   return {
-    artifact: source.currentRestatementArtifact
+    artifact: source.currentRestatementPath
+      ?? source.currentRestatementArtifact
       ?? source.restatementArtifact
       ?? null,
-    digest: source.currentRestatementDigest
+    digest: source.currentRestatementDigestSha256
+      ?? source.currentRestatementDigest
       ?? source.restatementDigest
       ?? null,
   };

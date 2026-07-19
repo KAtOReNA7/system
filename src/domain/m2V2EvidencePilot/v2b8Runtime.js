@@ -11,6 +11,10 @@ import { spawnSync } from "node:child_process";
 import { dirname, isAbsolute, join, resolve, sep } from "node:path";
 import { canonicalJson, sha256 } from "./pilotCore.js";
 import {
+  buildAuthorityDerivedInputBindings,
+  verifyCanonicalDerivedInputBindings,
+} from "./authorityGraph.js";
+import {
   commitAtomicRequestCheckpoint,
   evaluateGitBoundaryCommandResult,
   receiptWasCacheHit,
@@ -138,6 +142,29 @@ const CLAIM_CAPS = Object.freeze({
   review_signal: 0,
   other: 0,
 });
+
+/**
+ * Pure B8 bridge for the canonical authority graph. This does not rebuild or
+ * persist derived state; B6 supplies the exact input digests and later binds
+ * the returned records into its candidate transaction.
+ */
+export function buildV2B8CanonicalDerivedAuthorityBindings(input) {
+  return buildAuthorityDerivedInputBindings(input);
+}
+
+export function validateV2B8CanonicalDerivedAuthorityBindings(document, evidence = {}) {
+  const derivedInputBindings = document?.authorityInputBindings;
+  const result = verifyCanonicalDerivedInputBindings({
+    ...evidence,
+    derivedInputBindings,
+  });
+  return {
+    ...result,
+    authorityInputBindings: Array.isArray(derivedInputBindings)
+      ? JSON.parse(canonicalJson(derivedInputBindings))
+      : null,
+  };
+}
 
 const REPAIRABLE = [/strict_json_parse_failed/u, /structured_json_not_found/u, /exact_keys|keys_invalid|unexpected_key|missing_key/u, /enum|status_invalid|claim_type_invalid|value_type_invalid/u, /required|missing/u, /source_id.*(?:format|invalid)|supporting_source_ids_invalid/u, /schema_version_invalid/u];
 const NON_REPAIRABLE = [/private_leak/u, /fabricated_source/u, /model_generated_url/u, /historical_backfill/u, /entity.*(?:unresolved|ambiguous|support)/u, /conflict|contradiction/u, /prohibited_source/u, /claim_exceeds|unsupported_claim/u, /time_missing|event_time/u];

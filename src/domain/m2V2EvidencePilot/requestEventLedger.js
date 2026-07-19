@@ -150,6 +150,44 @@ export function replayRequestEventLedger(ledgerInput, options = {}) {
   return cloneJson(validation.replay);
 }
 
+/**
+ * Produce the sole canonical request-fact projection consumed by the v0.3
+ * authority graph. It deliberately includes completed physical dispatches,
+ * including non-effective receipts, and never infers completion from cache or
+ * mutable state.
+ */
+export function projectCanonicalRequestAuthority(ledgerInput, options = {}) {
+  const validation = validateRequestEventLedger(ledgerInput, options);
+  if (!validation.valid) throw new Error(`request_event_ledger_invalid:${validation.issues.join(",")}`);
+  const logicalRequests = [];
+  const logicalKeys = new Set();
+  const completedPhysicalDispatches = [];
+  const physicalKeys = new Set();
+  for (const event of ledgerInput) {
+    if (event.eventType === "planned" && !logicalKeys.has(event.logicalKey)) {
+      logicalKeys.add(event.logicalKey);
+      logicalRequests.push({ logicalKey: event.logicalKey, firstPlannedSequence: event.sequence });
+    }
+    if (event.eventType !== "completed") continue;
+    if (!isDigest(event.receiptDigest)) throw new Error("request_completed_receipt_digest_missing");
+    if (physicalKeys.has(event.physicalKey)) throw new Error("request_completed_physical_identity_duplicate");
+    physicalKeys.add(event.physicalKey);
+    completedPhysicalDispatches.push({
+      logicalKey: event.logicalKey,
+      physicalKey: event.physicalKey,
+      receiptDigest: event.receiptDigest,
+      completedSequence: event.sequence,
+    });
+  }
+  return {
+    schema: "m2.v2.canonical-request-authority-projection.v0.1",
+    orderedLedgerDigestSha256: sha256(ledgerInput),
+    counters: cloneJson(validation.replay.counters),
+    logicalRequests,
+    completedPhysicalDispatches,
+  };
+}
+
 export function emptyRequestCounters() {
   return Object.fromEntries(REQUEST_COUNTER_FIELDS.map((field) => [field, 0]));
 }

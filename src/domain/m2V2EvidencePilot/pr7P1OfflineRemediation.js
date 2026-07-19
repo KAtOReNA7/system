@@ -15,6 +15,11 @@ import {
   validateReceiptEnvelope,
 } from "./integrityState.js";
 import { validateCurrentAuthorityDocuments } from "./currentAuthority.js";
+import {
+  buildTrackedCoreCommitmentV0_1,
+  deriveCanonicalAuthorityGraphV0_3,
+  verifyCanonicalAuthorityGraph,
+} from "./authorityGraph.js";
 import { canonicalJson, sha256 } from "./pilotCore.js";
 import { promoteOfflineRecoveryGroup } from "./privateStateRecovery.js";
 import {
@@ -42,6 +47,7 @@ export const PR7_P1_OFFLINE_REMEDIATION_SCHEMA = "m2.v2.pr7-p1-offline-remediati
 export const PR7_P1_REMEDIATION_ROOT_RELATIVE = "data/private-output/m2-v2-pr7-p1-remediation";
 export const PR7_P1_RECOVERY_TRANSACTION_ROOT_RELATIVE = `${PR7_P1_REMEDIATION_ROOT_RELATIVE}/recovery-transactions`;
 export const PR7_P1_TRANSACTION_IDENTITY = "m2-v2-pr7-p1-offline-authority-v0.3";
+export const PR7_S1_CANONICAL_AUTHORITY_CANDIDATE_SCHEMA = "m2.v2.pr7-s1-canonical-authority-candidate.private.v0.1";
 
 export const PR7_P1_CURRENT_AUTHORITY_RELATIVE = "docs/analysis/m2-v2/M2-v2-current-state-index-v0.2.json";
 export const PR7_P1_CURRENT_RESTATEMENT_RELATIVE = "docs/analysis/m2-v2/M2-v2-canary-v3-1-integrity-restatement-v0.3.json";
@@ -95,6 +101,46 @@ const RECOVERY_ROLE_REGISTRY = Object.freeze({
   requiredRoles: [...GENERATED_CLOSED_ROLES, ...RECOVERY_AUXILIARY_ROLES],
   optionalRoles: [],
 });
+
+/**
+ * Construct and verify the B6 authority candidate entirely in memory. The
+ * caller remains responsible for versioned persistence and atomic promotion;
+ * this function cannot mutate historical or governed-private state.
+ */
+export function buildPr7S1CanonicalAuthorityCandidate(input) {
+  if (!isPlainObject(input)) throw new Error("pr7_s1_authority_candidate_input_invalid");
+  const graph = deriveCanonicalAuthorityGraphV0_3({
+    physicalMappings: input.physicalMappings,
+    selectionDecisions: input.selectionDecisions,
+  });
+  const trackedCoreCommitment = buildTrackedCoreCommitmentV0_1({
+    graph,
+    sourceExactHead: input.sourceExactHead,
+    supersessionLineage: input.supersessionLineage,
+  });
+  const verification = verifyCanonicalAuthorityGraph({
+    graph,
+    evidence: input.evidence,
+    trackedCoreCommitment,
+  });
+  if (!verification.valid) {
+    throw new Error(`pr7_s1_authority_candidate_invalid:${verification.issues.join(",")}`);
+  }
+  return {
+    schema: PR7_S1_CANONICAL_AUTHORITY_CANDIDATE_SCHEMA,
+    privateOnly: true,
+    graph,
+    trackedCoreCommitment,
+    verification: {
+      allPassed: true,
+      graphDigestSha256: verification.graphDigestSha256,
+      roleRegistryDigestSha256: verification.roleRegistryDigestSha256,
+      expectedGraphCoreDigestSha256: verification.expectedGraphCoreDigestSha256,
+    },
+    providerRequestDelta: 0,
+    promoted: false,
+  };
+}
 
 /**
  * Read and recompute the remediation inputs without mutating private state.

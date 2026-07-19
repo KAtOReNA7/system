@@ -14,6 +14,10 @@ import {
   writeSync,
 } from "node:fs";
 import { dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
+import {
+  CANONICAL_AUTHORITY_NODE_IDS,
+  verifyCanonicalAuthorityGraph,
+} from "./authorityGraph.js";
 import { validateCurrentAuthorityDocuments } from "./currentAuthority.js";
 import {
   REQUEST_COUNTER_FIELDS,
@@ -44,6 +48,7 @@ export const CLOSED_ATOMIC_MEMBER_ROLES = Object.freeze([
   "current_restatement",
   "contract_bound_public_report_digests",
 ]);
+export const CANONICAL_AUTHORITY_MEMBER_ROLES = Object.freeze([...CANONICAL_AUTHORITY_NODE_IDS]);
 
 const receiptRuntimeViews = new WeakMap();
 
@@ -734,6 +739,17 @@ export function buildClosedAtomicTransactionManifest(input) {
 }
 
 /**
+ * Lowest side-effect-free integration point for the v0.3 authority graph.
+ * Historical v0.2 closed bindings remain readable, but they cannot satisfy
+ * this projection unless a caller supplies the complete canonical evidence.
+ */
+export function validateCanonicalAuthorityProjection(input, options = {}) {
+  return verifyCanonicalAuthorityGraph(input, {
+    requireCoreCommitment: options.requireCoreCommitment !== false,
+  });
+}
+
+/**
  * Read-only verification for a complete closed transaction. Missing binding
  * is invalid, every role/file digest is re-read, and all projections are
  * checked against the append-only ledger and immutable receipt envelopes.
@@ -838,6 +854,16 @@ export function validateClosedAtomicRequestBinding(root, options = {}) {
     if (!authority.valid) issues.push(...authority.issues.map((issue) => `current_authority:${issue}`));
   }
 
+  let canonicalAuthority = null;
+  if (options.canonicalAuthorityInput !== undefined) {
+    canonicalAuthority = validateCanonicalAuthorityProjection(options.canonicalAuthorityInput, {
+      requireCoreCommitment: options.requireCoreCommitment !== false,
+    });
+    if (!canonicalAuthority.valid) {
+      issues.push(...canonicalAuthority.issues.map((issue) => `canonical_authority:${issue}`));
+    }
+  }
+
   const closedTransactionVerified = issues.length === 0;
   return closedBindingResult(issues, {
     present: true,
@@ -849,6 +875,8 @@ export function validateClosedAtomicRequestBinding(root, options = {}) {
     currentRestatementVerified: closedTransactionVerified && authority?.currentRestatementVerified === true,
     currentAuthorityDigestVerified: closedTransactionVerified && authority?.currentAuthorityDigestVerified === true,
     effectiveReceiptsVerified: closedTransactionVerified && receiptIndexVerified && effectiveReceiptIndexVerified,
+    canonicalAuthorityVerified: closedTransactionVerified && canonicalAuthority?.valid === true,
+    canonicalAuthorityGraphDigestSha256: canonicalAuthority?.graphDigestSha256 ?? null,
     full160Authorized: false,
     nextDevelopmentReadiness: "NOT_AUTHORIZED",
     replay: ledgerValidation.valid ? ledgerValidation.replay : null,
@@ -1147,6 +1175,8 @@ function closedBindingResult(issues, values = {}) {
     currentRestatementVerified: values.currentRestatementVerified === true,
     currentAuthorityDigestVerified: values.currentAuthorityDigestVerified === true,
     effectiveReceiptsVerified: values.effectiveReceiptsVerified === true,
+    canonicalAuthorityVerified: values.canonicalAuthorityVerified === true,
+    canonicalAuthorityGraphDigestSha256: values.canonicalAuthorityGraphDigestSha256 ?? null,
     full160Authorized: false,
     nextDevelopmentReadiness: "NOT_AUTHORIZED",
     replay: values.replay ?? null,
