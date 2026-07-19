@@ -1340,6 +1340,19 @@ function assertContainedPath(repositoryRoot, absolutePath) {
   }
 }
 
+function canonicalHostNativeRoot(requestedRoot) {
+  if (process.platform !== "win32") return requestedRoot;
+  try {
+    return realpathSync.native(requestedRoot);
+  } catch (error) {
+    fail(
+      READONLY_PROOF_REASON.metadataChangedOrUnsupported,
+      "Windows host-native repository root cannot be canonicalized",
+      { code: typeof error?.code === "string" ? error.code : "UNKNOWN" },
+    );
+  }
+}
+
 function windowsPathKey(value) {
   return path.resolve(value).normalize("NFC").toLocaleUpperCase("en-US");
 }
@@ -1897,14 +1910,18 @@ function normalizeSnapshotOptions(options = {}, synthetic = false) {
 
 function snapshotReadonlyScopeV0_2Internal(scope, options = {}, synthetic = false) {
   assertObject(scope, "scope");
-  const repositoryRoot = path.resolve(options.repositoryRoot ?? process.cwd());
+  const requestedRoot = path.resolve(options.repositoryRoot ?? process.cwd());
+  const repositoryRoot = options.observer
+    ? requestedRoot
+    : canonicalHostNativeRoot(requestedRoot);
   const nativeContext = options.observer
     ? null
     : collectDefaultNativeContext(repositoryRoot, scope.members);
   const observations = [];
   for (const member of scope.members) {
     if (member.discoveryKind === "USER_REPOSITORY_REFS") {
-      const refEntries = (options.gitRefObserver ?? defaultGitRefObserver)(repositoryRoot, member);
+      const refRoot = options.gitRefObserver ? requestedRoot : repositoryRoot;
+      const refEntries = (options.gitRefObserver ?? defaultGitRefObserver)(refRoot, member);
       observations.push(...observeRefs(member, refEntries));
       continue;
     }

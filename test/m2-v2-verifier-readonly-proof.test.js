@@ -13,6 +13,7 @@ import {
 import {
   compareReadonlySnapshotsV0_2,
   deriveReadonlyScopeV0_2,
+  READONLY_PROOF_REASON,
   runReadonlyProofV0_2,
   snapshotHostNativeReadonlyScopeV0_2ForTests,
   snapshotReadonlyScopeV0_2,
@@ -518,6 +519,65 @@ test("default observer emits exact native metadata for a system-temp directory a
         assert.match(observation.metadata.mountId, /^\d+$/u);
       }
     }
+  } finally {
+    rmSync(temporaryRoot, { recursive: true, force: true });
+  }
+});
+
+test("default host-native observer still rejects parent traversal outside its canonical root", () => {
+  const temporaryRoot = mkdtempSync(path.join(tmpdir(), "m2-v2-readonly-native-outside-"));
+  try {
+    const scope = {
+      sourceGraphDigestSha256: "a".repeat(64),
+      members: [{
+        authorityRole: "immutable_inputs",
+        scopeMemberClass: "transaction_roots",
+        memberKind: "FILE",
+        repositoryRelativePath: "../outside-native-member.txt",
+        memberIdentity: "b".repeat(64),
+      }],
+    };
+    assert.throws(
+      () => snapshotHostNativeReadonlyScopeV0_2ForTests(scope, { repositoryRoot: temporaryRoot }),
+      (error) => error?.reason === READONLY_PROOF_REASON.pathSetChanged,
+    );
+  } finally {
+    rmSync(temporaryRoot, { recursive: true, force: true });
+  }
+});
+
+test("injected git-ref observer retains the requested lexical root", () => {
+  const temporaryRoot = mkdtempSync(path.join(tmpdir(), "m2-v2-readonly-ref-root-"));
+  try {
+    let observedRoot = null;
+    const scope = {
+      sourceGraphDigestSha256: "a".repeat(64),
+      members: [{
+        authorityRole: "current_authority",
+        scopeMemberClass: "user_repository_refs",
+        memberKind: "GIT_REF",
+        repositoryRelativePath: "refs/*",
+        discoveryKind: "USER_REPOSITORY_REFS",
+        memberIdentity: "b".repeat(64),
+      }],
+    };
+    const snapshot = snapshotSyntheticReadonlyScopeV0_2ForTests(scope, {
+      repositoryRoot: temporaryRoot,
+      gitRefObserver(repositoryRoot) {
+        observedRoot = repositoryRoot;
+        return [{
+          refName: "refs/heads/synthetic",
+          objectType: "commit",
+          targetOid: "c".repeat(40),
+          symbolicTarget: "",
+        }];
+      },
+    });
+    assert.equal(observedRoot, path.resolve(temporaryRoot));
+    assert.equal(snapshot.claimable, false);
+    assert.deepEqual(snapshot.observations.map((entry) => entry.repositoryRelativePath), [
+      "refs/heads/synthetic",
+    ]);
   } finally {
     rmSync(temporaryRoot, { recursive: true, force: true });
   }
