@@ -257,8 +257,18 @@ export function createNoExternalSentinel(options = {}) {
   const env = options.env ?? process.env;
   const allowExternal = options.allowExternal === true;
   const counterFile = options.counterFile ?? env.M2_V2_S0_PROVIDER_COUNTER_FILE ?? null;
+  const databaseCounterFile =
+    options.databaseCounterFile ?? env.M2_V2_S0_DATABASE_COUNTER_FILE ?? null;
+  const installCounterFile =
+    options.installCounterFile ?? env.M2_V2_S0_SENTINEL_INSTALL_COUNTER_FILE ?? null;
   assertExternalEnvironmentEmpty(env);
   const initialProviderCounter = counterFile ? readProviderCounter(counterFile) : 0;
+  const initialDatabaseCounter = databaseCounterFile
+    ? readProviderCounter(databaseCounterFile)
+    : 0;
+  const initialInstallCounter = installCounterFile
+    ? readProviderCounter(installCounterFile)
+    : 0;
   const counters = {
     attemptedExternalFetchCount: 0,
     actualExternalFetchCount: 0,
@@ -297,6 +307,11 @@ export function createNoExternalSentinel(options = {}) {
     incrementProviderCounterAtomic(counterFile);
   }
 
+  function incrementDatabaseCounterBeforeConnection() {
+    if (!databaseCounterFile) return;
+    incrementProviderCounterAtomic(databaseCounterFile);
+  }
+
   function denyOrAllowExternal(kind, invoke) {
     counters.attemptedExternalFetchCount += 1;
     if (!allowExternal) throw new Error(`s0_external_transport_blocked:${kind}`);
@@ -319,6 +334,7 @@ export function createNoExternalSentinel(options = {}) {
     if (looksLikeDatabasePort(target.port)) {
       counters.attemptedDbConnectCount += 1;
       if (!allowExternal) throw new Error(`s0_database_connect_blocked:${kind}`);
+      incrementDatabaseCounterBeforeConnection();
       counters.actualDbConnectCount += 1;
       return invoke();
     }
@@ -352,6 +368,7 @@ export function createNoExternalSentinel(options = {}) {
 
   function install() {
     if (installed) throw new Error("s0_no_external_sentinel_already_installed");
+    if (installCounterFile) incrementProviderCounterAtomic(installCounterFile);
     installed = true;
     globalThis.fetch = function guardedFetch(input, init) {
       const url = input instanceof URL ? input : new URL(typeof input === "string" ? input : input?.url);
@@ -457,16 +474,27 @@ export function createNoExternalSentinel(options = {}) {
   function guardDbConnect(connect) {
     counters.attemptedDbConnectCount += 1;
     if (!allowExternal) throw new Error("s0_database_connect_blocked:pg.Client.connect");
+    incrementDatabaseCounterBeforeConnection();
     counters.actualDbConnectCount += 1;
     return connect();
   }
 
   function snapshot() {
     const currentProviderCounter = counterFile ? readProviderCounter(counterFile) : initialProviderCounter;
+    const currentDatabaseCounter = databaseCounterFile
+      ? readProviderCounter(databaseCounterFile)
+      : initialDatabaseCounter;
+    const currentInstallCounter = installCounterFile
+      ? readProviderCounter(installCounterFile)
+      : initialInstallCounter;
     return Object.freeze({
       ...counters,
       providerRequestDelta: currentProviderCounter - initialProviderCounter,
+      databaseConnectionDelta: currentDatabaseCounter - initialDatabaseCounter,
+      sentinelInstallDelta: currentInstallCounter - initialInstallCounter,
       providerCounterFileConfigured: Boolean(counterFile),
+      databaseCounterFileConfigured: Boolean(databaseCounterFile),
+      installCounterFileConfigured: Boolean(installCounterFile),
     });
   }
 
