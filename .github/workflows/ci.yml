@@ -81,11 +81,14 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: S0 doctor and first isolated default test chain
+      - name: S1 focused contract validation
+        run: npm run test:m2-v2:s1-focused
+
+      - name: S1 preflight and first isolated default test chain
         if: ${{ github.event_name == 'pull_request' }}
         env:
           EXPECTED_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-        run: npm run m2:v2:pr7:s0:validate:local -- --expected-head=$EXPECTED_HEAD_SHA
+        run: npm run m2:v2:pr7:s1:validate:local -- --expected-head=$EXPECTED_HEAD_SHA --batch-id=B0
 
       - name: First isolated default test chain for non-PR pushes
         if: ${{ github.event_name != 'pull_request' }}
@@ -203,11 +206,14 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: S0 doctor and first isolated default test chain
+      - name: S1 focused contract validation
+        run: npm run test:m2-v2:s1-focused
+
+      - name: S1 preflight and first isolated default test chain
         if: ${{ github.event_name == 'pull_request' }}
         env:
           EXPECTED_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-        run: npm run m2:v2:pr7:s0:validate:local -- --expected-head=$env:EXPECTED_HEAD_SHA
+        run: npm run m2:v2:pr7:s1:validate:local -- --expected-head=$env:EXPECTED_HEAD_SHA --batch-id=B0
 
       - name: First isolated default test chain for non-PR pushes
         if: ${{ github.event_name != 'pull_request' }}

@@ -1,0 +1,1865 @@
+{
+  "schema": "m2.v2.pr7-s1-case-registry.v0.1",
+  "status": "PLANNED_NOT_EXECUTED",
+  "sourcePlanSha256": "62684bc4ff1f2be98f51ac2f661e7e416698c02c278dc43a0eafefa6fb6a2525",
+  "normalizedCasesCanonicalSha256": "1559a40b1b10c7b9a87a9e93637a9640b720087c4b916637e2243d59096ecd70",
+  "canonicalization": "sha256(JSON.stringify(recursive-key-sorted normalized cases))",
+  "counts": {
+    "total": 89,
+    "default": 89,
+    "linux": 87,
+    "windows": 88,
+    "categories": {
+      "EXISTING_BYPASS": 14,
+      "ADJACENT_VARIANT": 23,
+      "FAIL_CLOSED_NEGATIVE": 38,
+      "POSITIVE_CONTROL": 14
+    },
+    "secondaryVerifierRequired": 30,
+    "corrections": 3
+  },
+  "findingCounts": {
+    "PR7-P1-003": 9,
+    "PR7-P2-009": 9,
+    "PR7-P1-006": 7,
+    "PR7-P2-008": 8,
+    "PR7-P1-008": 9,
+    "PR7-P2-016": 9,
+    "PR7-P1-009": 8,
+    "PR7-P2-013": 8,
+    "PR7-P1-013": 12,
+    "PR7-P2-006": 10
+  },
+  "corrections": [
+    {
+      "caseId": "PR7-P2-008-short-case",
+      "sourceFieldShape": {
+        "proposedTestFile": "array",
+        "platforms": "string"
+      },
+      "normalizedFieldShape": {
+        "proposedTestFile": "string",
+        "platforms": "array"
+      },
+      "proposedTestFile": "test/m2-v2-private-state-migration.test.js",
+      "platforms": [
+        "windows"
+      ]
+    },
+    {
+      "caseId": "PR7-P2-008-unc-unstable",
+      "sourceFieldShape": {
+        "proposedTestFile": "array",
+        "platforms": "string"
+      },
+      "normalizedFieldShape": {
+        "proposedTestFile": "string",
+        "platforms": "array"
+      },
+      "proposedTestFile": "test/m2-v2-private-state-migration.test.js",
+      "platforms": [
+        "windows"
+      ]
+    },
+    {
+      "caseId": "PR7-P2-008-posix-link-mount",
+      "sourceFieldShape": {
+        "proposedTestFile": "array",
+        "platforms": "string"
+      },
+      "normalizedFieldShape": {
+        "proposedTestFile": "string",
+        "platforms": "array"
+      },
+      "proposedTestFile": "test/m2-v2-private-state-migration.test.js",
+      "platforms": [
+        "linux"
+      ]
+    }
+  ],
+  "executionPolicy": {
+    "caseStatus": "PLANNED_NOT_EXECUTED",
+    "providerAllowed": false,
+    "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+    "mustEnterDefaultNpmTest": true
+  },
+  "cases": [
+    {
+      "caseId": "PR7-P1-003-mirror-fallback",
+      "findingId": "PR7-P1-003",
+      "category": "EXISTING_BYPASS",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "tamper fallback mirror and rebind bytes",
+      "expectedResult": "FAIL",
+      "expectedErrorOrReason": "authority_unclassified_consumed_object",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-authority-graph.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": true
+    },
+    {
+      "caseId": "PR7-P1-003-duplicate-physical",
+      "findingId": "PR7-P1-003",
+      "category": "EXISTING_BYPASS",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "duplicate physical cache mapping and fully rebind all local digests",
+      "expectedResult": "FAIL",
+      "expectedErrorOrReason": "graph_physical_mapping_not_bijective",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-authority-graph.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": true
+    },
+    {
+      "caseId": "PR7-P1-003-missing-noneffective",
+      "findingId": "PR7-P1-003",
+      "category": "EXISTING_BYPASS",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "delete one non-effective receipt/cache row and fully rebind",
+      "expectedResult": "FAIL",
+      "expectedErrorOrReason": "ledger_completed_receipt_set_mismatch",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-authority-graph.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": true
+    },
+    {
+      "caseId": "PR7-P1-003-swap-receipt",
+      "findingId": "PR7-P1-003",
+      "category": "ADJACENT_VARIANT",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "swap receipt digests between two physical keys",
+      "expectedResult": "FAIL",
+      "expectedErrorOrReason": "graph_tuple_semantic_mismatch",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-authority-graph.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": true
+    },
+    {
+      "caseId": "PR7-P1-003-effective-duplicate",
+      "findingId": "PR7-P1-003",
+      "category": "ADJACENT_VARIANT",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "duplicate effective receipt or change order",
+      "expectedResult": "FAIL",
+      "expectedErrorOrReason": "effective_index_not_unique_ordered_subset",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-authority-graph.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": true
+    },
+    {
+      "caseId": "PR7-P1-003-counter-drift",
+      "findingId": "PR7-P1-003",
+      "category": "FAIL_CLOSED_NEGATIVE",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "change counter/state but rebind digest",
+      "expectedResult": "FAIL",
+      "expectedErrorOrReason": "counter_projection_ledger_mismatch",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-authority-graph.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": true
+    },
+    {
+      "caseId": "PR7-P1-003-derived-omit",
+      "findingId": "PR7-P1-003",
+      "category": "FAIL_CLOSED_NEGATIVE",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "omit or add a derived input digest",
+      "expectedResult": "FAIL",
+      "expectedErrorOrReason": "derived_input_role_set_invalid",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-authority-graph.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": true
+    },
+    {
+      "caseId": "PR7-P1-003-alternate-graph",
+      "findingId": "PR7-P1-003",
+      "category": "FAIL_CLOSED_NEGATIVE",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "point outer binding at alternate self-consistent graph",
+      "expectedResult": "FAIL",
+      "expectedErrorOrReason": "tracked_core_commitment_mismatch",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-authority-graph.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": true
+    },
+    {
+      "caseId": "PR7-P1-003-canonical-pass",
+      "findingId": "PR7-P1-003",
+      "category": "POSITIVE_CONTROL",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "unmodified v0.3 graph with one cache hit",
+      "expectedResult": "PASS",
+      "expectedErrorOrReason": "none",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-authority-graph.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": true
+    },
+    {
+      "caseId": "PR7-P2-009-scope-member",
+      "findingId": "PR7-P2-009",
+      "category": "EXISTING_BYPASS",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "omit one bound member from proof scope",
+      "expectedResult": "FAIL",
+      "expectedErrorOrReason": "readonly_scope_role_set_mismatch",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-verifier-readonly-proof.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": true
+    },
+    {
+      "caseId": "PR7-P2-009-scope-transaction",
+      "findingId": "PR7-P2-009",
+      "category": "ADJACENT_VARIANT",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "omit transaction root",
+      "expectedResult": "FAIL",
+      "expectedErrorOrReason": "readonly_scope_missing_transaction",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-verifier-readonly-proof.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": true
+    },
+    {
+      "caseId": "PR7-P2-009-scope-authority",
+      "findingId": "PR7-P2-009",
+      "category": "ADJACENT_VARIANT",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "omit current authority or restatement",
+      "expectedResult": "FAIL",
+      "expectedErrorOrReason": "readonly_scope_missing_current_authority",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-verifier-readonly-proof.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": true
+    },
+    {
+      "caseId": "PR7-P2-009-scope-report",
+      "findingId": "PR7-P2-009",
+      "category": "ADJACENT_VARIANT",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "omit one bound public report",
+      "expectedResult": "FAIL",
+      "expectedErrorOrReason": "readonly_scope_missing_public_report",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-verifier-readonly-proof.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": true
+    },
+    {
+      "caseId": "PR7-P2-009-path-drift",
+      "findingId": "PR7-P2-009",
+      "category": "FAIL_CLOSED_NEGATIVE",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "add/delete/rename transaction member during verifier run",
+      "expectedResult": "FAIL",
+      "expectedErrorOrReason": "readonly_path_set_changed",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-verifier-readonly-proof.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": true
+    },
+    {
+      "caseId": "PR7-P2-009-metadata-drift",
+      "findingId": "PR7-P2-009",
+      "category": "FAIL_CLOSED_NEGATIVE",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "restore bytes after write but metadata changes",
+      "expectedResult": "FAIL_OR_EVIDENCE_GAP",
+      "expectedErrorOrReason": "readonly_metadata_changed_or_unsupported",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-verifier-readonly-proof.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": true
+    },
+    {
+      "caseId": "PR7-P2-009-link-alias",
+      "findingId": "PR7-P2-009",
+      "category": "FAIL_CLOSED_NEGATIVE",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "replace member with symlink/junction",
+      "expectedResult": "FAIL",
+      "expectedErrorOrReason": "readonly_scope_link_forbidden",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-verifier-readonly-proof.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": true
+    },
+    {
+      "caseId": "PR7-P2-009-self-reference",
+      "findingId": "PR7-P2-009",
+      "category": "FAIL_CLOSED_NEGATIVE",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "include proof output in its own scope",
+      "expectedResult": "FAIL",
+      "expectedErrorOrReason": "readonly_proof_self_reference",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-verifier-readonly-proof.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": true
+    },
+    {
+      "caseId": "PR7-P2-009-stable-pass",
+      "findingId": "PR7-P2-009",
+      "category": "POSITIVE_CONTROL",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "two verifier passes preserve exact graph manifests",
+      "expectedResult": "PASS",
+      "expectedErrorOrReason": "none",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-verifier-readonly-proof.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": true
+    },
+    {
+      "caseId": "PR7-P1-006-v01-extra-root",
+      "findingId": "PR7-P1-006",
+      "category": "EXISTING_BYPASS",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "v0.1 archive has unlisted root control member",
+      "expectedResult": "FAIL",
+      "expectedErrorOrReason": "migration_archive_set_mismatch",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-private-state-migration.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P1-006-v01-control",
+      "findingId": "PR7-P1-006",
+      "category": "ADJACENT_VARIANT",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "v0.1 missing/duplicate control member",
+      "expectedResult": "FAIL",
+      "expectedErrorOrReason": "migration_control_set_invalid",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-private-state-migration.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P1-006-source-junction",
+      "findingId": "PR7-P1-006",
+      "category": "EXISTING_BYPASS",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "v0.2 source root is a junction",
+      "expectedResult": "FAIL",
+      "expectedErrorOrReason": "migration_source_reparse_forbidden",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-private-state-migration.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P1-006-ancestor-junction",
+      "findingId": "PR7-P1-006",
+      "category": "ADJACENT_VARIANT",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "ancestor or nested source component is junction",
+      "expectedResult": "FAIL",
+      "expectedErrorOrReason": "migration_ancestor_reparse_forbidden",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-private-state-migration.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P1-006-collision",
+      "findingId": "PR7-P1-006",
+      "category": "FAIL_CLOSED_NEGATIVE",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "archive casefold/NFC duplicate or link entry",
+      "expectedResult": "FAIL",
+      "expectedErrorOrReason": "migration_member_name_collision_or_link",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-private-state-migration.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P1-006-bomb",
+      "findingId": "PR7-P1-006",
+      "category": "FAIL_CLOSED_NEGATIVE",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "oversize/high-ratio archive member",
+      "expectedResult": "FAIL",
+      "expectedErrorOrReason": "migration_archive_budget_exceeded",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-private-state-migration.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P1-006-v03-pass",
+      "findingId": "PR7-P1-006",
+      "category": "POSITIVE_CONTROL",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "clean v0.3 package exact set and identities",
+      "expectedResult": "PASS",
+      "expectedErrorOrReason": "none",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-private-state-migration.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P2-008-same-target",
+      "findingId": "PR7-P2-008",
+      "category": "EXISTING_BYPASS",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "two junction aliases resolve to same endpoint",
+      "expectedResult": "FAIL",
+      "expectedErrorOrReason": "migration_directory_identity_collision",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-private-state-migration.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P2-008-ancestor-alias",
+      "findingId": "PR7-P2-008",
+      "category": "ADJACENT_VARIANT",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "output is key ancestor or descendant via alias",
+      "expectedResult": "FAIL",
+      "expectedErrorOrReason": "migration_directory_ancestor_relation",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-private-state-migration.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P2-008-short-case",
+      "findingId": "PR7-P2-008",
+      "category": "ADJACENT_VARIANT",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "Windows short/long or case alias",
+      "expectedResult": "FAIL",
+      "expectedErrorOrReason": "migration_directory_identity_collision",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-private-state-migration.test.js",
+      "platforms": [
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P2-008-unc-unstable",
+      "findingId": "PR7-P2-008",
+      "category": "FAIL_CLOSED_NEGATIVE",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "UNC share cannot return stable file ID",
+      "expectedResult": "FAIL",
+      "expectedErrorOrReason": "migration_stable_identity_unavailable",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-private-state-migration.test.js",
+      "platforms": [
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P2-008-posix-link-mount",
+      "findingId": "PR7-P2-008",
+      "category": "FAIL_CLOSED_NEGATIVE",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "POSIX symlink/bind mount in chain",
+      "expectedResult": "FAIL",
+      "expectedErrorOrReason": "migration_link_or_mount_forbidden",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-private-state-migration.test.js",
+      "platforms": [
+        "linux"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P2-008-toctou-swap",
+      "findingId": "PR7-P2-008",
+      "category": "FAIL_CLOSED_NEGATIVE",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "swap link/object between copy and key write",
+      "expectedResult": "FAIL",
+      "expectedErrorOrReason": "migration_identity_changed",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-private-state-migration.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P2-008-receipt-tamper",
+      "findingId": "PR7-P2-008",
+      "category": "FAIL_CLOSED_NEGATIVE",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "mutate identity digest in receipt",
+      "expectedResult": "FAIL",
+      "expectedErrorOrReason": "migration_identity_receipt_invalid",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-private-state-migration.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P2-008-distinct-pass",
+      "findingId": "PR7-P2-008",
+      "category": "POSITIVE_CONTROL",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "three distinct stable objects revalidate across phases",
+      "expectedResult": "PASS",
+      "expectedErrorOrReason": "none",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-private-state-migration.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P1-008-unknown-top",
+      "findingId": "PR7-P1-008",
+      "category": "EXISTING_BYPASS",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "unknown top-level provider field",
+      "expectedResult": "FAIL",
+      "expectedErrorOrReason": "safe_projection_unknown_field",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-v2b6-safe-cache.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P1-008-unknown-nested",
+      "findingId": "PR7-P1-008",
+      "category": "ADJACENT_VARIANT",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "unknown nested claim/entity field",
+      "expectedResult": "FAIL",
+      "expectedErrorOrReason": "safe_projection_nested_keys_invalid",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-v2b6-safe-cache.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P1-008-cross-profile",
+      "findingId": "PR7-P1-008",
+      "category": "ADJACENT_VARIANT",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "E3 payload stored under E2 descriptor",
+      "expectedResult": "FAIL",
+      "expectedErrorOrReason": "safe_projection_profile_mismatch",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-v2b6-safe-cache.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P1-008-oversize-depth",
+      "findingId": "PR7-P1-008",
+      "category": "FAIL_CLOSED_NEGATIVE",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "oversize string/array/depth/cardinality",
+      "expectedResult": "FAIL",
+      "expectedErrorOrReason": "safe_projection_budget_exceeded",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-v2b6-safe-cache.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P1-008-raw-alias",
+      "findingId": "PR7-P1-008",
+      "category": "FAIL_CLOSED_NEGATIVE",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "case/alias secret or raw-response-shaped key",
+      "expectedResult": "FAIL",
+      "expectedErrorOrReason": "safe_projection_forbidden_content",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-v2b6-safe-cache.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P1-008-digest-tamper",
+      "findingId": "PR7-P1-008",
+      "category": "FAIL_CLOSED_NEGATIVE",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "projection/descriptor/receipt digest mismatch",
+      "expectedResult": "FAIL",
+      "expectedErrorOrReason": "safe_cache_digest_invalid",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-v2b6-safe-cache.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P1-008-legacy-current",
+      "findingId": "PR7-P1-008",
+      "category": "FAIL_CLOSED_NEGATIVE",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "v0.2 cache exists at current provider path",
+      "expectedResult": "FAIL",
+      "expectedErrorOrReason": "provider_current_cache_schema_not_safe",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-v2b6-safe-cache.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P1-008-migration-noop",
+      "findingId": "PR7-P1-008",
+      "category": "POSITIVE_CONTROL",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "v0.2 classifiable entries migrate to v0.3 twice",
+      "expectedResult": "PASS",
+      "expectedErrorOrReason": "none",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-v2b6-safe-cache.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P1-008-profile-pass",
+      "findingId": "PR7-P1-008",
+      "category": "POSITIVE_CONTROL",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "each exact profile round-trips semantic projection",
+      "expectedResult": "PASS",
+      "expectedErrorOrReason": "none",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-v2b6-safe-cache.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P2-016-relay-no-cap",
+      "findingId": "PR7-P2-016",
+      "category": "EXISTING_BYPASS",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "call relay sink without capability",
+      "expectedResult": "FAIL_FETCH0",
+      "expectedErrorOrReason": "provider_execution_capability_missing",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-provider-transport-security.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P2-016-tavily-no-cap",
+      "findingId": "PR7-P2-016",
+      "category": "ADJACENT_VARIANT",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "call Tavily sink without capability",
+      "expectedResult": "FAIL_FETCH0",
+      "expectedErrorOrReason": "provider_execution_capability_missing",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-provider-transport-security.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P2-016-probe-no-cap",
+      "findingId": "PR7-P2-016",
+      "category": "EXISTING_BYPASS",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "run B5 capability audit without capability",
+      "expectedResult": "FAIL_FETCH0",
+      "expectedErrorOrReason": "provider_execution_capability_missing",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-provider-transport-security.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P2-016-forged-cap",
+      "findingId": "PR7-P2-016",
+      "category": "FAIL_CLOSED_NEGATIVE",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "plain look-alike/frozen capability object",
+      "expectedResult": "FAIL_FETCH0",
+      "expectedErrorOrReason": "provider_execution_capability_invalid",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-provider-transport-security.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P2-016-stale-reused",
+      "findingId": "PR7-P2-016",
+      "category": "FAIL_CLOSED_NEGATIVE",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "stale or second use token",
+      "expectedResult": "FAIL_FETCH0",
+      "expectedErrorOrReason": "provider_execution_capability_consumed_or_stale",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-provider-transport-security.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P2-016-wrong-scope",
+      "findingId": "PR7-P2-016",
+      "category": "FAIL_CLOSED_NEGATIVE",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "wrong root/route/host/adapter/transaction",
+      "expectedResult": "FAIL_FETCH0",
+      "expectedErrorOrReason": "provider_execution_capability_scope_mismatch",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-provider-transport-security.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P2-016-cache-mutated",
+      "findingId": "PR7-P2-016",
+      "category": "FAIL_CLOSED_NEGATIVE",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "cache bytes change after issuance",
+      "expectedResult": "FAIL_FETCH0",
+      "expectedErrorOrReason": "provider_cache_changed_after_capability",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-provider-transport-security.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P2-016-legacy-retired",
+      "findingId": "PR7-P2-016",
+      "category": "FAIL_CLOSED_NEGATIVE",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "invoke B2/B4/legacy canary run",
+      "expectedResult": "FAIL_FETCH0",
+      "expectedErrorOrReason": "historical_provider_execution_retired",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-provider-transport-security.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P2-016-synthetic-pass",
+      "findingId": "PR7-P2-016",
+      "category": "POSITIVE_CONTROL",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "valid temp safe cache and one-shot capability reaches fake fetch once",
+      "expectedResult": "PASS_FAKE_FETCH1",
+      "expectedErrorOrReason": "none",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-provider-transport-security.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P1-009-published-award",
+      "findingId": "PR7-P1-009",
+      "category": "EXISTING_BYPASS",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "published 2020 and won award 2022; request award 2020",
+      "expectedResult": "FAIL_CLOSED_NULL",
+      "expectedErrorOrReason": "event_date_predicate_mismatch",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-event-tuple.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P1-009-chinese-coordination",
+      "findingId": "PR7-P1-009",
+      "category": "ADJACENT_VARIANT",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "2020年出版并于2022年获奖",
+      "expectedResult": "FAIL_CLOSED_NULL",
+      "expectedErrorOrReason": "event_date_predicate_mismatch",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-event-tuple.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P1-009-multi-punctuation",
+      "findingId": "PR7-P1-009",
+      "category": "ADJACENT_VARIANT",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "same events with comma/semicolon variants",
+      "expectedResult": "DETERMINISTIC_TUPLES",
+      "expectedErrorOrReason": "none_or_ambiguity",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-event-tuple.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P1-009-nominee-winner",
+      "findingId": "PR7-P1-009",
+      "category": "ADJACENT_VARIANT",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "nominee 2020 and winner 2022 under generic award claim",
+      "expectedResult": "FAIL_CLOSED_NULL",
+      "expectedErrorOrReason": "event_predicate_ambiguous",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-event-tuple.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P1-009-planned-actual",
+      "findingId": "PR7-P1-009",
+      "category": "FAIL_CLOSED_NEGATIVE",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "announced/planned and actual dates",
+      "expectedResult": "FAIL_CLOSED_OR_DISTINCT",
+      "expectedErrorOrReason": "event_status_ambiguous",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-event-tuple.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P1-009-direct-unbound",
+      "findingId": "PR7-P1-009",
+      "category": "FAIL_CLOSED_NEGATIVE",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "structured date lacks source tuple",
+      "expectedResult": "FAIL_CLOSED_NULL",
+      "expectedErrorOrReason": "event_source_binding_missing",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-event-tuple.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P1-009-span-tamper",
+      "findingId": "PR7-P1-009",
+      "category": "FAIL_CLOSED_NEGATIVE",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "mutate source/span/profile digest",
+      "expectedResult": "FAIL",
+      "expectedErrorOrReason": "event_tuple_digest_invalid",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-event-tuple.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P1-009-award-2022-pass",
+      "findingId": "PR7-P1-009",
+      "category": "POSITIVE_CONTROL",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "request 2022 award in exact sentence",
+      "expectedResult": "PASS_EVENT_2022",
+      "expectedErrorOrReason": "none",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-event-tuple.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P2-013-distinct-studios",
+      "findingId": "PR7-P2-013",
+      "category": "EXISTING_BYPASS",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "same type/stage, different studios and dates",
+      "expectedResult": "NO_CONFLICT",
+      "expectedErrorOrReason": "distinct_production_or_edition",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-event-tuple.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P2-013-distinct-editions",
+      "findingId": "PR7-P2-013",
+      "category": "ADJACENT_VARIANT",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "same organization, different edition identities",
+      "expectedResult": "NO_CONFLICT",
+      "expectedErrorOrReason": "distinct_production_or_edition",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-event-tuple.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P2-013-missing-identity",
+      "findingId": "PR7-P2-013",
+      "category": "FAIL_CLOSED_NEGATIVE",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "type/stage/date present, stable identity absent",
+      "expectedResult": "NOT_EVALUABLE",
+      "expectedErrorOrReason": "insufficient_identity",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-event-tuple.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P2-013-same-identity-conflict",
+      "findingId": "PR7-P2-013",
+      "category": "POSITIVE_CONTROL",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "same stable production/stage, disjoint dates",
+      "expectedResult": "CONFLICT_REJECT",
+      "expectedErrorOrReason": "unresolved_conflict",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-event-tuple.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P2-013-valid-progression",
+      "findingId": "PR7-P2-013",
+      "category": "POSITIVE_CONTROL",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "announced then released in chronological order",
+      "expectedResult": "NO_CONFLICT",
+      "expectedErrorOrReason": "valid_stage_progression",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-event-tuple.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P2-013-invalid-progression",
+      "findingId": "PR7-P2-013",
+      "category": "FAIL_CLOSED_NEGATIVE",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "released before announced for same identity",
+      "expectedResult": "CONFLICT_REJECT",
+      "expectedErrorOrReason": "unresolved_stage_conflict",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-event-tuple.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P2-013-neighbor-identity",
+      "findingId": "PR7-P2-013",
+      "category": "ADJACENT_VARIANT",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "identity appears only in adjacent event",
+      "expectedResult": "NOT_EVALUABLE",
+      "expectedErrorOrReason": "identity_not_event_local",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-event-tuple.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P2-013-different-subject",
+      "findingId": "PR7-P2-013",
+      "category": "POSITIVE_CONTROL",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "different subject identities",
+      "expectedResult": "NO_COMPARISON",
+      "expectedErrorOrReason": "separate_scope",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-event-tuple.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P1-013-docprops",
+      "findingId": "PR7-P1-013",
+      "category": "EXISTING_BYPASS",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "secret-shaped text in docProps/custom.xml",
+      "expectedResult": "FAIL",
+      "expectedErrorOrReason": "ooxml_part_forbidden_or_secret",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-workbook-independent-verifier.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": true
+    },
+    {
+      "caseId": "PR7-P1-013-comments",
+      "findingId": "PR7-P1-013",
+      "category": "ADJACENT_VARIANT",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "legacy/threaded comments/persons content",
+      "expectedResult": "FAIL",
+      "expectedErrorOrReason": "ooxml_part_forbidden",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-workbook-independent-verifier.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": true
+    },
+    {
+      "caseId": "PR7-P1-013-drawing-chart",
+      "findingId": "PR7-P1-013",
+      "category": "ADJACENT_VARIANT",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "drawing/chart/VML text or relation",
+      "expectedResult": "FAIL",
+      "expectedErrorOrReason": "ooxml_part_forbidden",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-workbook-independent-verifier.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": true
+    },
+    {
+      "caseId": "PR7-P1-013-media-embedded",
+      "findingId": "PR7-P1-013",
+      "category": "FAIL_CLOSED_NEGATIVE",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "media/OLE/ActiveX/embedding/printer part",
+      "expectedResult": "FAIL",
+      "expectedErrorOrReason": "ooxml_high_risk_part_forbidden",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-workbook-independent-verifier.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": true
+    },
+    {
+      "caseId": "PR7-P1-013-header-footer",
+      "findingId": "PR7-P1-013",
+      "category": "ADJACENT_VARIANT",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "nonempty worksheet header/footer",
+      "expectedResult": "FAIL",
+      "expectedErrorOrReason": "ooxml_unhandled_content_channel",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-workbook-independent-verifier.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": true
+    },
+    {
+      "caseId": "PR7-P1-013-external",
+      "findingId": "PR7-P1-013",
+      "category": "FAIL_CLOSED_NEGATIVE",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "externalLink or non-hyperlink external target",
+      "expectedResult": "FAIL",
+      "expectedErrorOrReason": "ooxml_external_relationship_forbidden",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-workbook-independent-verifier.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": true
+    },
+    {
+      "caseId": "PR7-P1-013-unknown-orphan",
+      "findingId": "PR7-P1-013",
+      "category": "FAIL_CLOSED_NEGATIVE",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "unknown reachable or orphan part/relation/content type",
+      "expectedResult": "FAIL",
+      "expectedErrorOrReason": "ooxml_graph_not_closed",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-workbook-independent-verifier.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": true
+    },
+    {
+      "caseId": "PR7-P1-013-zip-path-duplicate",
+      "findingId": "PR7-P1-013",
+      "category": "FAIL_CLOSED_NEGATIVE",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "traversal/backslash/case/NFC duplicate/special attrs",
+      "expectedResult": "FAIL",
+      "expectedErrorOrReason": "ooxml_zip_member_invalid",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-workbook-independent-verifier.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": true
+    },
+    {
+      "caseId": "PR7-P1-013-zip-bomb",
+      "findingId": "PR7-P1-013",
+      "category": "FAIL_CLOSED_NEGATIVE",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "encrypted/high ratio/per-entry oversized archive",
+      "expectedResult": "FAIL",
+      "expectedErrorOrReason": "ooxml_zip_budget_exceeded",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-workbook-independent-verifier.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": true
+    },
+    {
+      "caseId": "PR7-P1-013-xml-bomb",
+      "findingId": "PR7-P1-013",
+      "category": "FAIL_CLOSED_NEGATIVE",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "DTD/entity/depth/element/text bomb",
+      "expectedResult": "FAIL",
+      "expectedErrorOrReason": "ooxml_xml_policy_violation",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-workbook-independent-verifier.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": true
+    },
+    {
+      "caseId": "PR7-P1-013-wrapper-forge",
+      "findingId": "PR7-P1-013",
+      "category": "FAIL_CLOSED_NEGATIVE",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "JS wrapper receives forged counts/digests/schema",
+      "expectedResult": "FAIL",
+      "expectedErrorOrReason": "workbook_verification_receipt_invalid",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-workbook-independent-verifier.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": true
+    },
+    {
+      "caseId": "PR7-P1-013-structural-pass",
+      "findingId": "PR7-P1-013",
+      "category": "POSITIVE_CONTROL",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "valid current 18-part structural clone",
+      "expectedResult": "PASS",
+      "expectedErrorOrReason": "none",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/m2-v2-workbook-independent-verifier.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": true
+    },
+    {
+      "caseId": "PR7-P2-006-missing-population",
+      "findingId": "PR7-P2-006",
+      "category": "EXISTING_BYPASS",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "delete tracked population coverage report",
+      "expectedResult": "FAIL_ZERO_SKIP",
+      "expectedErrorOrReason": "required_tracked_artifact_missing",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/test-artifact-policy.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P2-006-missing-comparator",
+      "findingId": "PR7-P2-006",
+      "category": "ADJACENT_VARIANT",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "delete tracked comparator report",
+      "expectedResult": "FAIL_ZERO_SKIP",
+      "expectedErrorOrReason": "required_tracked_artifact_missing",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/test-artifact-policy.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P2-006-missing-gate",
+      "findingId": "PR7-P2-006",
+      "category": "ADJACENT_VARIANT",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "delete tracked Gate A/C/D report",
+      "expectedResult": "FAIL_ZERO_SKIP",
+      "expectedErrorOrReason": "required_tracked_artifact_missing",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/test-artifact-policy.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P2-006-missing-pointer",
+      "findingId": "PR7-P2-006",
+      "category": "FAIL_CLOSED_NEGATIVE",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "keep file but remove required evidenceBindings/validationReceipt",
+      "expectedResult": "FAIL_ZERO_SKIP",
+      "expectedErrorOrReason": "required_json_pointer_missing",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/test-artifact-policy.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P2-006-missing-v2-report",
+      "findingId": "PR7-P2-006",
+      "category": "ADJACENT_VARIANT",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "delete tracked V2 pilot/canary report",
+      "expectedResult": "FAIL_ZERO_SKIP",
+      "expectedErrorOrReason": "required_tracked_artifact_missing",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/test-artifact-policy.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P2-006-optional-absent",
+      "findingId": "PR7-P2-006",
+      "category": "POSITIVE_CONTROL",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "ignored optional private role absent",
+      "expectedResult": "DEFAULT_PASS_OPTIONAL_PROFILE_ABSENT",
+      "expectedErrorOrReason": "optional_private_absent",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/test-artifact-policy.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P2-006-unknown-skip",
+      "findingId": "PR7-P2-006",
+      "category": "FAIL_CLOSED_NEGATIVE",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "inject unregistered t.skip",
+      "expectedResult": "FAIL",
+      "expectedErrorOrReason": "unexpected_skip_identity",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/test-artifact-policy.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P2-006-offset-skip",
+      "findingId": "PR7-P2-006",
+      "category": "FAIL_CLOSED_NEGATIVE",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "one optional present offsets one required skip count",
+      "expectedResult": "FAIL",
+      "expectedErrorOrReason": "unexpected_skip_identity",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/test-artifact-policy.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P2-006-return-continue",
+      "findingId": "PR7-P2-006",
+      "category": "FAIL_CLOSED_NEGATIVE",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "inject if missing return/continue",
+      "expectedResult": "FAIL",
+      "expectedErrorOrReason": "fail_open_test_precondition",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/test-artifact-policy.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    },
+    {
+      "caseId": "PR7-P2-006-zero-skip-pass",
+      "findingId": "PR7-P2-006",
+      "category": "POSITIVE_CONTROL",
+      "fixtureSource": "synthetic temp root derived from exact contract shapes; no real private payload",
+      "mutationOrInput": "exact-head default suite with registry-complete tracked artifacts",
+      "expectedResult": "PASS_ZERO_SKIP",
+      "expectedErrorOrReason": "none",
+      "existingTestGap": "Current suite lacks this adversarial control through the public/lowest entrypoint.",
+      "proposedTestFile": "test/test-artifact-policy.test.js",
+      "platforms": [
+        "linux",
+        "windows"
+      ],
+      "providerAllowed": false,
+      "privateStateAllowed": "SYNTHETIC_TEMP_ONLY",
+      "isolationRequirement": "fresh temp root; record before/after digests; providerRequestDelta=0; no network",
+      "mustEnterDefaultNpmTest": true,
+      "secondaryVerifierRequired": false
+    }
+  ]
+}

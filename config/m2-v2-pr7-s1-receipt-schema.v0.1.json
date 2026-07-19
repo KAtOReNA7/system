@@ -1,0 +1,531 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "m2.v2.pr7.s1-receipt-schema.v0.1",
+  "title": "M2 v2 PR7 S1 preflight, local-validation, checkpoint, and fallback-event receipt schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "passed",
+    "generatedAt",
+    "batchId",
+    "actualHead",
+    "checks",
+    "executions",
+    "fallbackEvents"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "type": "object",
+        "required": [
+          "passed"
+        ],
+        "properties": {
+          "passed": {
+            "const": true
+          }
+        }
+      },
+      "then": {
+        "type": "object",
+        "required": [
+          "actualBranch",
+          "startingHead",
+          "findingHead",
+          "baseSha",
+          "selectedCommandId",
+          "taskManifestSha256",
+          "commandRegistrySha256",
+          "contractRegistrySha256",
+          "caseRegistrySha256",
+          "receiptSchemaSha256",
+          "sourceEvidence",
+          "externalEnvironment",
+          "capabilities"
+        ],
+        "properties": {
+          "checks": {
+            "minProperties": 1
+          },
+          "externalEnvironment": {
+            "minItems": 18,
+            "maxItems": 18
+          }
+        },
+        "not": {
+          "anyOf": [
+            { "required": ["failureStage"] },
+            { "required": ["error"] }
+          ]
+        }
+      },
+      "else": {
+        "type": "object",
+        "required": [
+          "failureStage",
+          "error"
+        ],
+        "not": {
+          "anyOf": [
+            { "required": ["actualBranch"] },
+            { "required": ["selectedCommandId"] },
+            { "required": ["sourceEvidence"] },
+            { "required": ["externalEnvironment"] },
+            { "required": ["capabilities"] }
+          ]
+        }
+      }
+    }
+  ],
+  "properties": {
+    "schema": {
+      "enum": [
+        "m2.v2.pr7.s1-preflight-receipt.v0.1",
+        "m2.v2.pr7.s1-local-validation-receipt.v0.1"
+      ]
+    },
+    "passed": {
+      "type": "boolean"
+    },
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "batchId": {
+      "enum": [
+        "B0",
+        "B1",
+        "B2",
+        "B3",
+        "B4",
+        "B5",
+        "B6",
+        "B7"
+      ]
+    },
+    "actualHead": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "actualBranch": {
+      "type": "string",
+      "minLength": 1
+    },
+    "startingHead": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "findingHead": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "baseSha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "selectedCommandId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "taskManifestSha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "commandRegistrySha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "contractRegistrySha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "caseRegistrySha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "receiptSchemaSha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "sourceEvidence": {
+      "$ref": "#/$defs/sourceEvidence"
+    },
+    "externalEnvironment": {
+      "type": "array",
+      "minItems": 18,
+      "maxItems": 18,
+      "items": {
+        "$ref": "#/$defs/externalEnvironmentEntry"
+      }
+    },
+    "capabilities": {
+      "$ref": "#/$defs/capabilities"
+    },
+    "checks": {
+      "$ref": "#/$defs/checks"
+    },
+    "executions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/execution"
+      }
+    },
+    "fallbackEvents": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/fallbackEvent"
+      }
+    },
+    "failureStage": {
+      "type": "string",
+      "minLength": 1
+    },
+    "error": {
+      "$ref": "#/$defs/error"
+    }
+  },
+  "$defs": {
+    "capabilities": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "node",
+        "git",
+        "python",
+        "powershell"
+      ],
+      "properties": {
+        "node": {
+          "$ref": "#/$defs/capability"
+        },
+        "git": {
+          "$ref": "#/$defs/capability"
+        },
+        "python": {
+          "$ref": "#/$defs/capability"
+        },
+        "powershell": {
+          "$ref": "#/$defs/capability"
+        }
+      }
+    },
+    "capability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "available",
+        "version"
+      ],
+      "properties": {
+        "available": {
+          "const": true
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "checks": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "expectedHeadMatches": { "type": "boolean" },
+        "baseAncestorOfFindingHead": { "type": "boolean" },
+        "findingHeadAncestorOfStartingHead": { "type": "boolean" },
+        "startingHeadAncestorOfActualHead": { "type": "boolean" },
+        "branchAllowed": { "type": "boolean" },
+        "trackedSourceClean": { "type": "boolean" },
+        "nonIgnoredUntrackedClean": { "type": "boolean" },
+        "externalEnvironmentEmpty": { "type": "boolean" },
+        "outputPathIgnored": { "type": "boolean" },
+        "noPrivatePathStaged": { "type": "boolean" },
+        "sourceEvidenceAuthentic": { "type": "boolean" },
+        "commandRegistryValid": { "type": "boolean" },
+        "receiptSchemaValid": { "type": "boolean" },
+        "contractRegistryValid": { "type": "boolean" },
+        "caseRegistryValid": { "type": "boolean" },
+        "historicalImmutableArtifactsValid": { "type": "boolean" },
+        "capabilitiesPresent": { "type": "boolean" },
+        "currentGovernanceValid": { "type": "boolean" },
+        "preflightPassed": { "type": "boolean" },
+        "isolationPassed": { "type": "boolean" },
+        "actualHeadMatchesExpected": { "type": "boolean" },
+        "defaultTestChainInvocationCount": { "type": "integer" },
+        "defaultTestTotalSkips": { "type": "integer" },
+        "defaultTestSkipSummaryPresent": { "type": "boolean" },
+        "defaultTestSkipIdentityCountMatchesSummary": { "type": "boolean" },
+        "providerRequestDelta": { "type": "integer" },
+        "databaseConnections": { "type": "integer", "minimum": 0 },
+        "actualExternalFetchCount": { "type": "integer", "minimum": 0 },
+        "trackedContentUnchanged": { "type": "boolean" },
+        "trackedMetadataUnchanged": { "type": "boolean" },
+        "governedPrivateContentUnchanged": { "type": "boolean" },
+        "governedPrivateMetadataUnchanged": { "type": "boolean" },
+        "gitStatusUnchanged": { "type": "boolean" },
+        "nonIgnoredUntrackedContentUnchanged": { "type": "boolean" },
+        "nonIgnoredUntrackedMetadataUnchanged": { "type": "boolean" },
+        "userRefsUnchanged": { "type": "boolean" },
+        "systemRefsUnchanged": { "type": "boolean" }
+      }
+    },
+    "sourceEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "sourceCount",
+        "manifestDigestBindingSha256",
+        "privateEvidencePresent"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "RECOMPUTED_PRIVATE_EVIDENCE_VERIFIED",
+            "BOUND_TO_TRACKED_MANIFEST_CI"
+          ]
+        },
+        "sourceCount": {
+          "const": 4
+        },
+        "manifestDigestBindingSha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "privateEvidencePresent": {
+          "type": "boolean"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "RECOMPUTED_PRIVATE_EVIDENCE_VERIFIED"
+              }
+            },
+            "required": ["status"]
+          },
+          "then": {
+            "properties": {
+              "privateEvidencePresent": {
+                "const": true
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "privateEvidencePresent": {
+                "const": false
+              }
+            }
+          }
+        }
+      ]
+    },
+    "externalEnvironmentEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "present",
+        "empty"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "present": {
+          "type": "boolean"
+        },
+        "empty": {
+          "const": true
+        }
+      }
+    },
+    "execution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "commandId",
+        "passed",
+        "exitCode",
+        "durationMs",
+        "stdoutBytes",
+        "stdoutSha256",
+        "stderrBytes",
+        "stderrSha256",
+        "failureSummary"
+      ],
+      "properties": {
+        "commandId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "passed": {
+          "type": "boolean"
+        },
+        "exitCode": {
+          "type": "integer"
+        },
+        "durationMs": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "stdoutBytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "stdoutSha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "stderrBytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "stderrSha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "failureSummary": {
+          "type": "object"
+        }
+      }
+    },
+    "fallbackEvent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventId",
+        "batchId",
+        "timestamp",
+        "task",
+        "preferredExecutable",
+        "preferredArgv",
+        "failureClass",
+        "failureMessageSanitized",
+        "replacementExecutable",
+        "replacementArgv",
+        "semanticEquivalence",
+        "coverageDifference",
+        "sideEffectDifference",
+        "securityDifference",
+        "confidenceImpact",
+        "disposition"
+      ],
+      "properties": {
+        "eventId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "batchId": {
+          "enum": [
+            "B0",
+            "B1",
+            "B2",
+            "B3",
+            "B4",
+            "B5",
+            "B6",
+            "B7"
+          ]
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "task": {
+          "type": "string",
+          "minLength": 1
+        },
+        "preferredExecutable": {
+          "type": "string",
+          "minLength": 1
+        },
+        "preferredArgv": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "failureClass": {
+          "type": "string",
+          "minLength": 1
+        },
+        "failureMessageSanitized": {
+          "type": "string",
+          "minLength": 1
+        },
+        "replacementExecutable": {
+          "type": "string",
+          "minLength": 1
+        },
+        "replacementArgv": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "semanticEquivalence": {
+          "type": "string",
+          "minLength": 1
+        },
+        "coverageDifference": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sideEffectDifference": {
+          "type": "string",
+          "minLength": 1
+        },
+        "securityDifference": {
+          "type": "string",
+          "minLength": 1
+        },
+        "confidenceImpact": {
+          "type": "string",
+          "minLength": 1
+        },
+        "disposition": {
+          "enum": [
+            "USED_SEMANTICALLY_EQUIVALENT",
+            "USED_SCOPE_EQUIVALENT",
+            "REJECTED_NO_EQUIVALENT",
+            "EXPECTED_NO_MATCH"
+          ]
+        }
+      }
+    },
+    "error": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "code",
+        "reasonCode",
+        "messageDigest"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "code": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reasonCode": {
+          "type": "string",
+          "minLength": 1
+        },
+        "messageDigest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    }
+  }
+}
