@@ -1,0 +1,236 @@
+{
+  "schema": "m2.v2.event-time-clause-binding-public.v0.4",
+  "status": "PROPOSED_NOT_CURRENT",
+  "classification": "public_sanitized_not_for_formal_decision",
+  "sourceExactHead": "badbf453e1e99ba87cc3064601e480a09ff1b149",
+  "findingIds": ["PR7-P1-009", "PR7-P2-013"],
+  "lineage": {
+    "supersedes": ["m2.v2.event-time-clause-binding-public.v0.3", "m2.v2.conflict-applicability-public.v0.3"],
+    "historicalArtifactsImmutable": true,
+    "inPlaceOverwriteAllowed": false,
+    "activationBatch": "B6"
+  },
+  "canonicalEventTuple": {
+    "schema": "m2.v2.canonical-event-tuple.v0.1",
+    "exactFields": ["tupleVersion", "parserProfileVersion", "sourceDocumentIdSafe", "sentenceSpan", "clauseSpan", "predicateSpan", "dateSpan", "eventPredicate", "eventRole", "eventDate", "dateRole", "organizationIdentity", "productionIdentity", "editionIdentity", "stage", "status", "subjectIdentity", "ambiguity", "limitation", "sourceDigest", "tupleDigest"],
+    "fieldTypes": {
+      "tupleVersion": "exact_m2.v2.canonical-event-tuple.v0.1",
+      "parserProfileVersion": "nonempty_safe_token_max_120",
+      "sourceDocumentIdSafe": "nonempty_safe_token_max_240",
+      "sentenceSpan": "span",
+      "clauseSpan": "span",
+      "predicateSpan": "span",
+      "dateSpan": "span_or_null",
+      "eventPredicate": "event_predicate",
+      "eventRole": "event_role_enum",
+      "eventDate": "event_date",
+      "dateRole": "date_role_enum",
+      "organizationIdentity": "identity",
+      "productionIdentity": "identity",
+      "editionIdentity": "identity",
+      "stage": "stage_enum",
+      "status": "status_enum",
+      "subjectIdentity": "identity",
+      "ambiguity": "ambiguity",
+      "limitation": "ordered_unique_limitation_array",
+      "sourceDigest": "sha256",
+      "tupleDigest": "sha256"
+    },
+    "unknownFieldsRejected": true,
+    "spanSchema": {
+      "exactFields": ["start", "end", "digestSha256"],
+      "fieldTypes": {"start": "nonnegative_integer", "end": "positive_integer_greater_than_start", "digestSha256": "sha256"},
+      "unknownFieldsRejected": true,
+      "offsetUnit": "unicode_code_points_in_bound_source_document",
+      "endExclusive": true,
+      "rawTextPersistedInTrackedFixture": false,
+      "containment": "predicate_and_nonnull_date_within_clause_within_sentence"
+    },
+    "eventPredicateSchema": {
+      "exactFields": ["family", "kind"],
+      "fieldTypes": {"family": "event_family_enum", "kind": "predicate_kind_enum"},
+      "eventFamilyEnum": ["PUBLICATION", "AWARD", "PRODUCTION", "RELEASE", "OTHER"],
+      "predicateKindEnum": ["PLAN", "PUBLISH", "NOMINATE", "AWARD", "WIN", "PRODUCE", "RELEASE", "COMPLETE", "CANCEL", "OTHER"],
+      "unknownFieldsRejected": true,
+      "stageOrStatusAllowedInsidePredicate": false,
+      "canonicalStageLocation": "tuple.stage",
+      "canonicalStatusLocation": "tuple.status"
+    },
+    "eventRoleSchema": {
+      "type": "enum",
+      "values": ["PRIMARY_ASSERTION", "SUPPORTING_ASSERTION", "NEGATED_ASSERTION", "PLANNED_ASSERTION", "HISTORICAL_CONTEXT"]
+    },
+    "dateRoleSchema": {
+      "type": "enum",
+      "values": ["EVENT_OCCURRENCE", "PLANNED_DATE", "PUBLICATION_DATE", "NOMINATION_DATE", "AWARD_DATE", "RELEASE_DATE", "COMPLETION_DATE", "UNKNOWN"]
+    },
+    "stageSchema": {
+      "type": "enum",
+      "values": ["PLANNED", "NOMINATED", "PUBLISHED", "AWARDED", "WON", "PRODUCED", "RELEASED", "COMPLETED", "CANCELLED", "UNKNOWN"]
+    },
+    "statusSchema": {
+      "type": "enum",
+      "values": ["ASSERTED_ACTUAL", "ASSERTED_PLANNED", "NEGATED", "UNCERTAIN", "CANCELLED", "UNKNOWN"]
+    },
+    "identitySchema": {
+      "exactFields": ["status", "canonicalIdentityDigestSha256"],
+      "fieldTypes": {"status": "identity_status_enum", "canonicalIdentityDigestSha256": "sha256_or_null"},
+      "statusValues": ["KNOWN", "MISSING", "AMBIGUOUS", "NOT_APPLICABLE"],
+      "knownRequiresDigest": true,
+      "nonKnownRequiresNullDigest": true,
+      "unknownFieldsRejected": true,
+      "rawPrivateIdentityPersistedInTrackedFixture": false
+    },
+    "eventDateSchema": {
+      "exactFields": ["value", "intervalStart", "intervalEnd", "precision", "timezoneBasis"],
+      "fieldTypes": {"value": "iso8601_partial_or_rfc3339_or_null", "intervalStart": "rfc3339_or_calendar_boundary_or_null", "intervalEnd": "rfc3339_or_calendar_boundary_or_null", "precision": "precision_enum", "timezoneBasis": "timezone_basis_enum"},
+      "precisionEnum": ["YEAR", "MONTH", "DAY", "INSTANT", "INTERVAL", "UNKNOWN"],
+      "timezoneBasisEnum": ["UTC", "SOURCE_EXPLICIT_OFFSET", "CALENDAR_DATE_NO_TIMEZONE", "UNKNOWN"],
+      "unknownFieldsRejected": true,
+      "nullabilityRules": [
+        "UNKNOWN_requires_value_intervalStart_intervalEnd_null_and_timezoneBasis_UNKNOWN",
+        "YEAR_MONTH_DAY_require_value_and_closed_calendar_interval_and_CALENDAR_DATE_NO_TIMEZONE",
+        "INSTANT_requires_rfc3339_value_equal_intervalStart_equal_intervalEnd_and_explicit_timezone",
+        "INTERVAL_requires_nonnull_intervalStart_intervalEnd_with_start_not_after_end"
+      ],
+      "calendarIntervalSemantics": "half_open_utc_independent_calendar_bounds_for_declared_precision",
+      "timezoneInferenceAllowed": false
+    },
+    "dateSpanConsistency": {
+      "knownEventDateRequiresNonNullDateSpan": true,
+      "unknownEventDateRequiresNullDateSpan": true,
+      "dateSpanDigestMustBindEventDateLexeme": true
+    },
+    "ambiguitySchema": {
+      "exactFields": ["status", "codes", "evaluable"],
+      "fieldTypes": {"status": "ambiguity_status_enum", "codes": "ordered_unique_ambiguity_code_array", "evaluable": "boolean"},
+      "statusEnum": ["NONE", "PRESENT"],
+      "codeEnum": ["MULTIPLE_DATES", "MULTIPLE_PREDICATES", "MULTIPLE_IDENTITIES", "MISSING_DATE", "MISSING_IDENTITY", "CROSS_SENTENCE_UNSUPPORTED", "UNSUPPORTED_STAGE", "OTHER"],
+      "noneRequiresEmptyCodesAndEvaluableTrue": true,
+      "unknownFieldsRejected": true
+    },
+    "limitationRecordSchema": {
+      "exactFields": ["code", "severity", "detailDigestSha256"],
+      "fieldTypes": {"code": "limitation_code_enum", "severity": "severity_enum", "detailDigestSha256": "sha256_or_null"},
+      "codeEnum": ["NO_DATE", "AMBIGUOUS_DATE", "IDENTITY_MISSING", "IDENTITY_AMBIGUOUS", "CROSS_SENTENCE_UNSUPPORTED", "UNSUPPORTED_RELATION", "SOURCE_SPAN_INCOMPLETE"],
+      "severityEnum": ["INFO", "NOT_EVALUABLE", "FAIL_CLOSED"],
+      "unknownFieldsRejected": true
+    },
+    "digestBasis": "canonical_tuple_without_tupleDigest",
+    "sourceDigestMustBindAllSpans": true
+  },
+  "stageStatusCompatibilityTable": [
+    {"status": "ASSERTED_PLANNED", "allowedStages": ["PLANNED"], "allowedEventRoles": ["PLANNED_ASSERTION"]},
+    {"status": "ASSERTED_ACTUAL", "allowedStages": ["NOMINATED", "PUBLISHED", "AWARDED", "WON", "PRODUCED", "RELEASED", "COMPLETED"], "allowedEventRoles": ["PRIMARY_ASSERTION", "SUPPORTING_ASSERTION", "HISTORICAL_CONTEXT"]},
+    {"status": "NEGATED", "allowedStages": ["PLANNED", "NOMINATED", "PUBLISHED", "AWARDED", "WON", "PRODUCED", "RELEASED", "COMPLETED", "CANCELLED"], "allowedEventRoles": ["NEGATED_ASSERTION"]},
+    {"status": "UNCERTAIN", "allowedStages": ["PLANNED", "NOMINATED", "PUBLISHED", "AWARDED", "WON", "PRODUCED", "RELEASED", "COMPLETED", "UNKNOWN"], "allowedEventRoles": ["PRIMARY_ASSERTION", "SUPPORTING_ASSERTION", "HISTORICAL_CONTEXT"]},
+    {"status": "CANCELLED", "allowedStages": ["CANCELLED"], "allowedEventRoles": ["PRIMARY_ASSERTION", "SUPPORTING_ASSERTION", "HISTORICAL_CONTEXT"]},
+    {"status": "UNKNOWN", "allowedStages": ["UNKNOWN"], "allowedEventRoles": ["PRIMARY_ASSERTION", "SUPPORTING_ASSERTION", "HISTORICAL_CONTEXT"]}
+  ],
+  "stageStatusCompatibilityRule": {
+    "rowSchemaExactFields": ["status", "allowedStages", "allowedEventRoles"],
+    "unknownFieldsRejected": true,
+    "exactlyOneRowPerStatus": true,
+    "unlistedCombination": "FAIL_CLOSED"
+  },
+  "dateBindingRules": {
+    "sameEventClauseAndPredicateRequired": true,
+    "borrowDateFromOtherEventInSentenceAllowed": false,
+    "coordinationAndPunctuationResolvedExplicitly": true,
+    "crossSentenceBindingSupported": false,
+    "crossSentenceInputAction": "UNSUPPORTED_FAIL_CLOSED",
+    "noDateResult": "NOT_EVALUABLE",
+    "ambiguousDateResult": "NOT_EVALUABLE",
+    "firstDateFallbackAllowed": false,
+    "semanticDistinctions": ["PLANNED_NOT_EQUAL_ACTUAL", "NOMINATED_NOT_EQUAL_WON", "PUBLISHED_NOT_EQUAL_AWARDED"],
+    "spanDigestRecomputed": true,
+    "spanTamperAction": "FAIL_CLOSED"
+  },
+  "stageProgressionTableSchema": {
+    "exactFields": ["eventFamily", "fromStage", "toStage", "relation", "timeRequirement"],
+    "unknownFieldsRejected": true,
+    "relationEnum": ["SAME_STAGE", "VALID_FORWARD", "INVALID_REVERSE", "UNSUPPORTED"],
+    "timeRequirementEnum": ["OVERLAP_FOR_CONSISTENCY", "NONDECREASING", "NOT_APPLICABLE"]
+  },
+  "stageProgressionTable": [
+    {"eventFamily": "PUBLICATION", "fromStage": "PLANNED", "toStage": "PUBLISHED", "relation": "VALID_FORWARD", "timeRequirement": "NONDECREASING"},
+    {"eventFamily": "PUBLICATION", "fromStage": "PUBLISHED", "toStage": "PLANNED", "relation": "INVALID_REVERSE", "timeRequirement": "NONDECREASING"},
+    {"eventFamily": "AWARD", "fromStage": "NOMINATED", "toStage": "AWARDED", "relation": "VALID_FORWARD", "timeRequirement": "NONDECREASING"},
+    {"eventFamily": "AWARD", "fromStage": "NOMINATED", "toStage": "WON", "relation": "VALID_FORWARD", "timeRequirement": "NONDECREASING"},
+    {"eventFamily": "AWARD", "fromStage": "AWARDED", "toStage": "NOMINATED", "relation": "INVALID_REVERSE", "timeRequirement": "NONDECREASING"},
+    {"eventFamily": "AWARD", "fromStage": "WON", "toStage": "NOMINATED", "relation": "INVALID_REVERSE", "timeRequirement": "NONDECREASING"},
+    {"eventFamily": "PRODUCTION", "fromStage": "PLANNED", "toStage": "PRODUCED", "relation": "VALID_FORWARD", "timeRequirement": "NONDECREASING"},
+    {"eventFamily": "PRODUCTION", "fromStage": "PRODUCED", "toStage": "COMPLETED", "relation": "VALID_FORWARD", "timeRequirement": "NONDECREASING"},
+    {"eventFamily": "PRODUCTION", "fromStage": "COMPLETED", "toStage": "PLANNED", "relation": "INVALID_REVERSE", "timeRequirement": "NONDECREASING"},
+    {"eventFamily": "RELEASE", "fromStage": "PLANNED", "toStage": "RELEASED", "relation": "VALID_FORWARD", "timeRequirement": "NONDECREASING"},
+    {"eventFamily": "RELEASE", "fromStage": "RELEASED", "toStage": "PLANNED", "relation": "INVALID_REVERSE", "timeRequirement": "NONDECREASING"}
+  ],
+  "stageProgressionDefaults": {
+    "identicalKnownStage": {"relation": "SAME_STAGE", "timeRequirement": "OVERLAP_FOR_CONSISTENCY"},
+    "unlistedPair": {"relation": "UNSUPPORTED", "decision": "NOT_EVALUABLE"},
+    "unknownStage": {"relation": "UNSUPPORTED", "decision": "NOT_EVALUABLE"}
+  },
+  "conflictApplicability": {
+    "schema": "m2.v2.conflict-applicability-public.v0.4",
+    "statusUntilB6Promotion": "PROPOSED_NOT_CURRENT",
+    "requiredComparability": ["event_family", "asserted_evaluable_status", "organization_when_required", "production_identity", "edition_identity_when_relevant", "stage_relation", "subject_identity"],
+    "relationRuleSchema": {
+      "exactFields": ["priority", "ruleId", "conditionKey", "decision", "conflict", "requiredFamilyPass"],
+      "unknownFieldsRejected": true,
+      "conditionKeyEnum": ["DIFFERENT_SUBJECT", "STATUS_NOT_ASSERTED_EVALUABLE", "MISSING_EVENT_FAMILY_OR_STAGE", "MISSING_OR_AMBIGUOUS_REQUIRED_IDENTITY", "DIFFERENT_PRODUCTION_OR_EDITION", "SAME_IDENTITY_SAME_STAGE_OVERLAPPING_INTERVAL", "SAME_IDENTITY_SAME_STAGE_DISJOINT_INTERVAL", "SAME_IDENTITY_VALID_STAGE_TIME_PROGRESSION", "SAME_IDENTITY_INVALID_STAGE_TIME_ORDER", "UNSUPPORTED_STAGE_RELATION"],
+      "decisionEnum": ["SEPARATE_SCOPE", "NOT_EVALUABLE", "NO_CONFLICT", "CONSISTENT", "UNRESOLVED_CONFLICT", "VALID_STAGE_PROGRESSION", "UNRESOLVED_STAGE_CONFLICT"]
+    },
+    "relationDecisionTable": [
+      {"priority": 1, "ruleId": "different_subject", "conditionKey": "DIFFERENT_SUBJECT", "decision": "SEPARATE_SCOPE", "conflict": false, "requiredFamilyPass": true},
+      {"priority": 2, "ruleId": "status_not_asserted_evaluable", "conditionKey": "STATUS_NOT_ASSERTED_EVALUABLE", "decision": "NOT_EVALUABLE", "conflict": false, "requiredFamilyPass": false},
+      {"priority": 3, "ruleId": "missing_family_or_stage", "conditionKey": "MISSING_EVENT_FAMILY_OR_STAGE", "decision": "NOT_EVALUABLE", "conflict": false, "requiredFamilyPass": false},
+      {"priority": 4, "ruleId": "identity_incomplete", "conditionKey": "MISSING_OR_AMBIGUOUS_REQUIRED_IDENTITY", "decision": "NOT_EVALUABLE", "conflict": false, "requiredFamilyPass": false},
+      {"priority": 5, "ruleId": "different_production_or_edition", "conditionKey": "DIFFERENT_PRODUCTION_OR_EDITION", "decision": "NO_CONFLICT", "conflict": false, "requiredFamilyPass": true},
+      {"priority": 6, "ruleId": "same_stage_overlap", "conditionKey": "SAME_IDENTITY_SAME_STAGE_OVERLAPPING_INTERVAL", "decision": "CONSISTENT", "conflict": false, "requiredFamilyPass": true},
+      {"priority": 7, "ruleId": "same_stage_disjoint", "conditionKey": "SAME_IDENTITY_SAME_STAGE_DISJOINT_INTERVAL", "decision": "UNRESOLVED_CONFLICT", "conflict": true, "requiredFamilyPass": false},
+      {"priority": 8, "ruleId": "valid_progression", "conditionKey": "SAME_IDENTITY_VALID_STAGE_TIME_PROGRESSION", "decision": "VALID_STAGE_PROGRESSION", "conflict": false, "requiredFamilyPass": true},
+      {"priority": 9, "ruleId": "invalid_progression", "conditionKey": "SAME_IDENTITY_INVALID_STAGE_TIME_ORDER", "decision": "UNRESOLVED_STAGE_CONFLICT", "conflict": true, "requiredFamilyPass": false},
+      {"priority": 10, "ruleId": "unsupported_relation", "conditionKey": "UNSUPPORTED_STAGE_RELATION", "decision": "NOT_EVALUABLE", "conflict": false, "requiredFamilyPass": false}
+    ],
+    "firstMatchingPriorityRuleWins": true,
+    "noMatchingRule": "NOT_EVALUABLE",
+    "distinctProductionOrEditionMayConflict": false,
+    "missingIdentityMayBeConflict": false
+  },
+  "eventEvaluationV0_4": {
+    "schema": "m2.v2.event-evaluation-private.v0.4",
+    "exactFields": ["schema", "evaluationIdSha256", "leftTupleDigestSha256", "rightTupleDigestSha256", "decision", "conflict", "requiredFamilyPass", "reasonCode", "matchedRuleId", "identityComparison", "stageComparison", "timeComparison", "evaluationDigestSha256"],
+    "fieldTypes": {"schema": "exact_string", "evaluationIdSha256": "sha256", "leftTupleDigestSha256": "sha256", "rightTupleDigestSha256": "sha256", "decision": "decision_enum", "conflict": "boolean", "requiredFamilyPass": "boolean", "reasonCode": "reason_code_enum", "matchedRuleId": "rule_id_or_null", "identityComparison": "exact_object", "stageComparison": "exact_object", "timeComparison": "exact_object", "evaluationDigestSha256": "sha256"},
+    "unknownFieldsRejected": true,
+    "decisionEnum": ["SEPARATE_SCOPE", "NOT_EVALUABLE", "NO_CONFLICT", "CONSISTENT", "UNRESOLVED_CONFLICT", "VALID_STAGE_PROGRESSION", "UNRESOLVED_STAGE_CONFLICT"],
+    "reasonCodeEnum": ["DIFFERENT_SUBJECT", "STATUS_NOT_ASSERTED_EVALUABLE", "MISSING_EVENT_FAMILY_OR_STAGE", "MISSING_OR_AMBIGUOUS_REQUIRED_IDENTITY", "DIFFERENT_PRODUCTION_OR_EDITION", "SAME_STAGE_OVERLAP", "SAME_STAGE_DISJOINT", "VALID_STAGE_TIME_PROGRESSION", "INVALID_STAGE_TIME_ORDER", "UNSUPPORTED_STAGE_RELATION", "CROSS_SENTENCE_UNSUPPORTED"],
+    "identityComparisonSchema": {"exactFields": ["subject", "organization", "production", "edition"], "valueEnum": ["SAME", "DIFFERENT", "MISSING", "AMBIGUOUS", "NOT_REQUIRED"], "unknownFieldsRejected": true},
+    "stageComparisonSchema": {"exactFields": ["eventFamily", "leftStage", "rightStage", "relation"], "relationEnum": ["SAME_STAGE", "VALID_FORWARD", "INVALID_REVERSE", "UNSUPPORTED"], "unknownFieldsRejected": true},
+    "timeComparisonSchema": {"exactFields": ["relation", "leftPrecision", "rightPrecision"], "relationEnum": ["OVERLAP", "DISJOINT", "NONDECREASING", "REVERSED", "MISSING", "AMBIGUOUS"], "unknownFieldsRejected": true},
+    "decisionConflictAndRequiredFamilyPassMustEqualMatchedRule": true,
+    "digestBasis": "canonical_object_without_evaluationDigestSha256"
+  },
+  "restatementBinding": {
+    "schema": "m2.v2.canary-v3.1-integrity-restatement-public.v0.4",
+    "statusUntilB6Promotion": "PROPOSED_NOT_CURRENT",
+    "evaluationSetDigestRequired": true,
+    "eventContractDigestRequired": true,
+    "currentDecisionMayBeAssumedBeforeB6": false
+  },
+  "offlinePolicy": {"candidateTuplesAndEvaluationsOnlyBeforeB6": true, "currentMetricsRecomputedInB4": false, "b6ResultMayBeAssumed": false, "providerRequestDeltaRequired": 0},
+  "verificationScope": {"contractFrozen": true, "implementationClaimed": false, "currentRestatementClaimed": false, "exactHeadCiClaimed": false, "independentReviewClaimed": false},
+  "authorization": {
+    "currentDecision": "CANARY_FAIL",
+    "providerDispatchAuthorized": false,
+    "databaseConnectionsAuthorized": false,
+    "canaryAuthorized": false,
+    "full160Authorized": false,
+    "modelTrainingAuthorized": false,
+    "holdoutAccessAuthorized": false,
+    "independentReviewBatchB8Authorized": false,
+    "markReadyAuthorized": false,
+    "nextDevelopmentReadiness": "NOT_AUTHORIZED",
+    "mergeAuthorized": false,
+    "releaseAuthorized": false
+  }
+}

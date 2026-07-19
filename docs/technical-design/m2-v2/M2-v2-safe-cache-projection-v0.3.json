@@ -1,0 +1,252 @@
+{
+  "schema": "m2.v2.safe-cache-projection-public.v0.3",
+  "status": "PROPOSED_NOT_CURRENT",
+  "classification": "public_sanitized_not_for_formal_decision",
+  "sourceExactHead": "badbf453e1e99ba87cc3064601e480a09ff1b149",
+  "findingIds": ["PR7-P1-008"],
+  "lineage": {
+    "supersedes": "m2.v2.v2b6-safe-cache-private.v0.2",
+    "historicalArtifactsImmutable": true,
+    "inPlaceOverwriteAllowed": false,
+    "v0_2Policy": "AUDIT_ONLY_CURRENT_BLOCKED",
+    "v0_3ActivationBatch": "B6"
+  },
+  "entrySchema": {
+    "schema": "m2.v2.v2b6-safe-cache-private.v0.3",
+    "exactFields": [
+      "schema",
+      "physicalRequestIdentityDigestSha256",
+      "receiptDigestSha256",
+      "projectionProfile",
+      "projectionValue",
+      "projectionDigestSha256",
+      "replayable",
+      "sourceContractDigestSha256"
+    ],
+    "unknownFieldsRejected": true,
+    "receiptReferenceOnly": true,
+    "rawReceiptOrProviderObjectAllowed": false,
+    "digestBasis": "canonical_exact_semantic_projection"
+  },
+  "profiles": [
+    {
+      "profile": "capability_e0_ok/v1",
+      "phases": ["capability_E0", "plain"],
+      "exactTopLevelKeys": ["ok"],
+      "requiredValues": {"ok": true},
+      "unknownPolicy": "REJECT"
+    },
+    {
+      "profile": "capability_e1_minimal/v1",
+      "phases": ["capability_E1"],
+      "exactTopLevelKeys": ["ok"],
+      "requiredValues": {"ok": true},
+      "unknownPolicy": "REJECT"
+    },
+    {
+      "profile": "capability_e2_entity/v1",
+      "phases": ["capability_E2", "split_entity"],
+      "exactTopLevelKeys": ["schemaVersion", "entityResolution", "limitations"],
+      "entityResolutionExactKeys": [
+        "queryIdentityDigestSha256",
+        "canonicalEntityIdentityDigestSha256",
+        "resolutionStatus",
+        "confidenceClass"
+      ],
+      "schemaVersionExactValue": "capability_e2_entity/v1",
+      "resolutionStatusValues": ["RESOLVED", "AMBIGUOUS", "NOT_RESOLVED", "NOT_APPLICABLE"],
+      "confidenceClassValues": ["HIGH", "MEDIUM", "LOW", "NOT_APPLICABLE"],
+      "digestFieldsFormat": "lowercase_hex_64_or_null_only_when_status_not_resolved_or_not_applicable",
+      "limitationsExactRecord": {
+        "exactFields": ["code", "scope", "detailSafe"],
+        "codePattern": "^[A-Z0-9_]{1,64}$",
+        "scopeValues": ["ENTITY", "SOURCE", "REQUEST"],
+        "detailSafeMaxBytesUtf8": 1024,
+        "maximumRecords": 64,
+        "unknownFieldsRejected": true
+      },
+      "unknownPolicy": "REJECT"
+    },
+    {
+      "profile": "capability_e3_claims/v1",
+      "phases": ["capability_E3", "split_claims"],
+      "exactTopLevelKeys": ["claims", "contradictions", "limitations"],
+      "claimExactKeys": [
+        "claimType",
+        "subjectIdentityDigestSha256",
+        "predicate",
+        "structuredValue",
+        "sourceBindingDigestSha256",
+        "limitations"
+      ],
+      "claimFieldPolicy": {
+        "claimTypePattern": "^[a-z][a-z0-9_]{0,63}$",
+        "predicatePattern": "^[a-z][a-z0-9_]{0,63}$",
+        "digestFieldsFormat": "lowercase_hex_64",
+        "maximumClaims": 256,
+        "maximumClaimLimitations": 32
+      },
+      "structuredValueVariants": [
+        {"kind": "NULL", "exactFields": ["kind", "value"], "valueConstraint": "null"},
+        {"kind": "BOOLEAN", "exactFields": ["kind", "value"], "valueConstraint": "boolean"},
+        {"kind": "NUMBER", "exactFields": ["kind", "value"], "valueConstraint": "finite_number"},
+        {"kind": "STRING", "exactFields": ["kind", "value"], "valueConstraint": "nfc_utf8_max_4096_bytes"},
+        {"kind": "STRING_ARRAY", "exactFields": ["kind", "value"], "valueConstraint": "maximum_128_unique_nfc_strings_each_max_1024_bytes"},
+        {"kind": "EXACT_OBJECT", "exactFields": ["kind", "schemaId", "value"], "valueConstraint": "schemaId_must_resolve_to_tracked_digest_bound_exact_schema"}
+      ],
+      "structuredValueUnknownFieldsRejected": true,
+      "contradictionRecord": {
+        "exactFields": ["leftClaimDigestSha256", "rightClaimDigestSha256", "relation", "limitationCodes"],
+        "relationValues": ["DIRECT_CONTRADICTION", "SCOPE_MISMATCH", "TEMPORAL_MISMATCH", "NOT_COMPARABLE"],
+        "maximumRecords": 256,
+        "unknownFieldsRejected": true
+      },
+      "limitationsExactRecord": {
+        "exactFields": ["code", "scope", "detailSafe"],
+        "codePattern": "^[A-Z0-9_]{1,64}$",
+        "scopeValues": ["CLAIM", "CONTRADICTION", "SOURCE", "REQUEST"],
+        "detailSafeMaxBytesUtf8": 1024,
+        "maximumRecords": 128,
+        "unknownFieldsRejected": true
+      },
+      "unknownPolicy": "REJECT"
+    },
+    {
+      "profile": "extraction_full_v0.2",
+      "phases": ["capability_E4", "benchmark_full"],
+      "exactContract": "m2.v2.extraction-contract.v0.2",
+      "exactContractPath": "docs/technical-design/m2-v2/M2-v2-extraction-contract-v0.2.json",
+      "exactContractPortableSha256": "a8ca34642d958c7fc03753b82b8c9de6f8eb777b199f864f61a51f1815bfe4d2",
+      "portableDigestNormalization": "utf8_crlf_to_lf_only_no_other_byte_change",
+      "canonicalizedBeforePersistence": true,
+      "unknownPolicy": "REJECT"
+    },
+    {
+      "profile": "no_replay/v1",
+      "phases": ["error", "non_json", "oversize", "unclassifiable"],
+      "exactProjectionValue": null,
+      "replayable": false,
+      "unknownPolicy": "REJECT_AND_QUARANTINE"
+    }
+  ],
+  "commonProjectionPolicy": {
+    "unknownTopLevelKey": "REJECT",
+    "unknownNestedKey": "REJECT",
+    "crossProfileValue": "REJECT",
+    "prototypeKeys": ["__proto__", "prototype", "constructor"],
+    "prototypeKeyAction": "REJECT",
+    "maxDepth": 12,
+    "maxStringBytesUtf8": 16384,
+    "maxArrayItems": 512,
+    "maxObjectKeys": 256,
+    "maxSerializedBytesUtf8": 1048576,
+    "nonFiniteNumberAction": "REJECT",
+    "semanticNormalizationBeforePersistence": true,
+    "replayUsesCanonicalProjectionOnly": true
+  },
+  "forbiddenContent": {
+    "secretShapedKeyFragments": [
+      "api_key",
+      "apikey",
+      "authorization",
+      "bearer",
+      "password",
+      "secret",
+      "token"
+    ],
+    "rawProviderKeyFragments": [
+      "raw_response",
+      "rawresponse",
+      "response_body",
+      "responsebody",
+      "headers",
+      "request_body",
+      "requestbody"
+    ],
+    "keyComparison": "unicode_nfc_ascii_case_fold_and_separator_elision",
+    "matchedContentAction": "REJECT_AND_NOT_REPLAYABLE",
+    "arbitraryParsedObjectCloneAllowed": false
+  },
+  "offlineMigration": {
+    "sourceFormat": "v0.2",
+    "targetFormat": "v0.3",
+    "providerFree": true,
+    "steps": [
+      "classify_against_exact_profile",
+      "normalize_semantics",
+      "project_exact_keys",
+      "quarantine_unclassifiable",
+      "validate_complete_candidate",
+      "emit_exact_receipt"
+    ],
+    "rollbackOnAnyFailure": true,
+    "secondIdenticalRun": "VERIFIED_NO_OP",
+    "promotionBeforeB6Allowed": false,
+    "providerRequestDeltaRequired": 0,
+    "partitionManifest": {
+      "schema": "m2.v2.safe-cache-migration-partition.private.v0.3",
+      "exactFields": ["schema", "sourceCacheDigestSha256", "sourceEntrySetDigestSha256", "outcomes", "outcomeSetDigestSha256"],
+      "outcomeRecordExactFields": ["sourceEntryDigestSha256", "sourcePhysicalRequestIdentityDigestSha256", "outcome", "projectionProfile", "targetEntryDigestSha256", "quarantineRecordDigestSha256", "reasonCode"],
+      "outcomeValues": ["PROJECTED", "QUARANTINED"],
+      "projectedRequires": ["projectionProfile", "targetEntryDigestSha256"],
+      "quarantinedRequires": ["quarantineRecordDigestSha256", "reasonCode"],
+      "oppositeOutcomeFieldsMustBeNull": true,
+      "sourceEntryDigestUnique": true,
+      "everySourceEntryExactlyOnce": true,
+      "noTargetOrQuarantineDigestDuplicate": true,
+      "outcomeOrder": "ascending_source_entry_digest_sha256",
+      "sourceEntrySetExactEqualityRequired": true,
+      "unknownFieldsRejected": true
+    },
+    "quarantineRecord": {
+      "schema": "m2.v2.safe-cache-quarantine-record.private.v0.3",
+      "exactFields": ["schema", "sourceEntryDigestSha256", "reasonCode", "detectedProfile", "safeMetadataDigestSha256", "rawContentPersisted", "recordDigestSha256"],
+      "reasonCodeValues": ["UNKNOWN_PROFILE", "UNKNOWN_FIELD", "CROSS_PROFILE", "PROTOTYPE_KEY", "LIMIT_EXCEEDED", "SECRET_SHAPED", "RAW_PROVIDER_SHAPED", "INVALID_SEMANTICS", "DIGEST_MISMATCH"],
+      "rawContentPersistedRequired": false,
+      "digestBasis": "canonical_record_without_recordDigestSha256",
+      "unknownFieldsRejected": true
+    }
+  },
+  "migrationReceipt": {
+    "schema": "m2.v2.safe-cache-migration-receipt.private.v0.3",
+    "exactFields": [
+      "schema",
+      "sourceCacheDigestSha256",
+      "targetCacheDigestSha256",
+      "profileRegistryDigestSha256",
+      "sourceEntryCount",
+      "projectedEntryCount",
+      "quarantinedEntryCount",
+      "quarantineDigestSha256",
+      "partitionManifestDigestSha256",
+      "sourceEntrySetDigestSha256",
+      "outcomeSetDigestSha256",
+      "providerRequestDelta",
+      "result"
+    ],
+    "unknownFieldsRejected": true,
+    "rawProviderBytesPersisted": false
+  },
+  "verificationScope": {
+    "contractFrozen": true,
+    "implementationClaimed": false,
+    "realCacheMigrationClaimed": false,
+    "currentPromotionClaimed": false,
+    "exactHeadCiClaimed": false,
+    "independentReviewClaimed": false
+  },
+  "authorization": {
+    "currentDecision": "CANARY_FAIL",
+    "providerDispatchAuthorized": false,
+    "databaseConnectionsAuthorized": false,
+    "canaryAuthorized": false,
+    "full160Authorized": false,
+    "modelTrainingAuthorized": false,
+    "holdoutAccessAuthorized": false,
+    "independentReviewBatchB8Authorized": false,
+    "markReadyAuthorized": false,
+    "nextDevelopmentReadiness": "NOT_AUTHORIZED",
+    "mergeAuthorized": false,
+    "releaseAuthorized": false
+  }
+}

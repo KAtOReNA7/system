@@ -1,0 +1,264 @@
+{
+  "schema": "m2.v2.migration-set-integrity-public.v0.3",
+  "status": "PROPOSED_NOT_CURRENT",
+  "classification": "public_sanitized_not_for_formal_decision",
+  "sourceExactHead": "badbf453e1e99ba87cc3064601e480a09ff1b149",
+  "findingIds": ["PR7-P1-006", "PR7-P2-008"],
+  "lineage": {
+    "supersedes": "m2.v2.migration-set-integrity-public.v0.2",
+    "historicalArtifactsImmutable": true,
+    "inPlaceOverwriteAllowed": false
+  },
+  "formatCompatibility": [
+    {
+      "format": "v0.1",
+      "inspectAllowed": true,
+      "repackageToV0_3Allowed": true,
+      "directRestoreAllowed": false,
+      "autoPromotionAllowed": false,
+      "reason": "whole_archive_control_set_and_link_free_provenance_not_provable"
+    },
+    {
+      "format": "v0.2",
+      "inspectAllowed": true,
+      "repackageToV0_3Allowed": true,
+      "directRestoreAllowed": false,
+      "autoPromotionAllowed": false,
+      "reason": "native_source_identity_and_builder_provenance_not_provable"
+    },
+    {
+      "format": "v0.3",
+      "inspectAllowed": true,
+      "repackageToV0_3Allowed": true,
+      "directRestoreAllowed": true,
+      "autoPromotionAllowed": true,
+      "reason": "only_format_with_exact_archive_set_and_native_identity_receipt"
+    }
+  ],
+  "v0_3Package": {
+    "schema": "m2.v2.private-state-migration-package.v0.3",
+    "manifestExactFields": [
+      "schema",
+      "packageId",
+      "sourceExactHead",
+      "policyDigestSha256",
+      "archiveMembers",
+      "payloadRoles",
+      "identityReceiptDigestSha256",
+      "createdAt",
+      "manifestDigestSha256"
+    ],
+    "unknownManifestFieldsRejected": true,
+    "archiveMemberRecord": {
+      "exactFields": ["canonicalPath", "memberKind", "payloadRole", "compressionMethod", "crc32", "compressedBytes", "uncompressedBytes", "contentSha256", "unixMode"],
+      "memberKindValues": ["REGULAR_FILE", "DIRECTORY"],
+      "compressionMethodValues": ["STORE", "DEFLATE"],
+      "crc32Format": "lowercase_hex_8",
+      "sha256Format": "lowercase_hex_64",
+      "unixModePolicy": "REGULAR_0644_OR_DIRECTORY_0755_NO_TYPE_ALIAS",
+      "unknownFieldsRejected": true
+    },
+    "payloadRoleRecord": {
+      "exactFields": ["roleId", "required", "minimumCardinality", "maximumCardinality", "memberPaths"],
+      "memberPathsSemantics": "SORTED_UNIQUE_EXACT_SUBSET_OF_ARCHIVE_MEMBERS",
+      "cardinalitySemantics": "NONNEGATIVE_INTEGER_AND_MAXIMUM_NULL_ONLY_WHEN_UNBOUNDED",
+      "unknownFieldsRejected": true
+    },
+    "manifestDigestBasis": {
+      "algorithm": "sha256",
+      "canonicalization": "recursive_sorted_object_keys_array_order_preserved_compact_utf8",
+      "excludedFields": ["manifestDigestSha256"],
+      "manifestMemberContentSha256UsesCanonicalManifestWithManifestDigestBlank": true,
+      "selfReferenceProhibited": true
+    },
+    "wholeArchiveExactSet": {
+      "manifestExpectedMembersEqualsArchiveActualMembers": true,
+      "payloadAndControlMembersIncluded": true,
+      "directoryEntriesIncludedWhenPresent": true,
+      "extraControlMemberAllowed": false,
+      "missingMemberAllowed": false,
+      "temporaryResidueAllowed": false
+    },
+    "zipStructurePolicy": {
+      "singleEndOfCentralDirectoryRequired": true,
+      "archivePrefixBytesAllowed": false,
+      "archiveTrailingBytesAllowed": false,
+      "centralDirectoryAndLocalHeaderExactAgreement": true,
+      "localRecordDataRangesMayOverlap": false,
+      "duplicateRawFilenameBytesRejected": true,
+      "utf8FlagRequired": true,
+      "legacyCodePageFilenameAllowed": false,
+      "unicodePathExtraFieldMustMatchUtf8Name": true,
+      "supportedCompressionMethods": ["STORE", "DEFLATE"],
+      "zip64AllowedOnlyWhenCanonicalAndWithinBudgets": true,
+      "dataDescriptorAllowedOnlyWhenFlaggedAndMatchingCentralDirectory": true,
+      "crc32MustMatchInflatedBytes": true,
+      "contentSha256MustMatchInflatedBytes": true,
+      "externalAttributesMustMatchDeclaredMemberKindAndUnixMode": true,
+      "encryptedOrStrongEncryptionFlagsRejected": true,
+      "multiDiskArchiveRejected": true,
+      "archiveCommentAllowed": false,
+      "perEntryExtraFieldBytesBoundedByPathBudget": true
+    },
+    "memberPathPolicy": {
+      "canonicalForm": "nfc_posix_relative",
+      "absoluteRejected": true,
+      "dotDotRejected": true,
+      "backslashRejected": true,
+      "driveOrUncRejected": true,
+      "nulOrAdsOrDeviceNamespaceRejected": true,
+      "reservedOrTrailingDotSpaceAliasRejected": true,
+      "duplicateNormalizedPathRejected": true,
+      "caseFoldCollisionRejected": true,
+      "nfcCollisionRejected": true,
+      "specialOrLinkMemberRejected": true,
+      "encryptedMemberRejected": true
+    },
+    "archiveBudgets": {
+      "maxEntryCount": 100000,
+      "maxPathLengthBytes": 1024,
+      "maxPerEntryCompressedBytes": 536870912,
+      "maxPerEntryUncompressedBytes": 2147483648,
+      "maxTotalCompressedBytes": 8589934592,
+      "maxTotalUncompressedBytes": 17179869184,
+      "maxCompressionRatio": 200
+    }
+  },
+  "pathIdentityPolicy": {
+    "schema": "m2.v2.migration-path-identity.v0.1",
+    "operations": [
+      "resolveSafeDirectory",
+      "assertSeparated",
+      "inspectAncestorChain",
+      "verifyStableIdentity",
+      "enumerateNoFollow"
+    ],
+    "walk": {
+      "absoluteNfcBeforeInspection": true,
+      "everyAncestorInspected": true,
+      "finalObjectInspected": true,
+      "noFollow": true,
+      "specialTypeRejected": true,
+      "identityPinnedBeforeEnumeration": true,
+      "identityRevalidatedBeforeCopyArchiveKeyWriteAndReceipt": true,
+      "replaceAfterEnumerationRejected": true
+    },
+    "windows": {
+      "nativeIdentity": ["volumeSerialNumber", "fileId128", "finalPathDigestSha256"],
+      "reparseTagInspected": true,
+      "junctionRejected": true,
+      "ancestorReparseRejected": true,
+      "finalReparseRejected": true,
+      "uncShortNameAndCaseAliasesResolved": true,
+      "powershell51Required": true,
+      "nativeWindowsExecutionRequired": true
+    },
+    "posix": {
+      "nativeIdentity": ["device", "inode", "mode", "resolvedPathDigestSha256"],
+      "symlinkRejected": true,
+      "ancestorSymlinkRejected": true,
+      "bindOrMountAliasRejected": true,
+      "noFollowEnumerationRequired": true,
+      "nativeLinuxExecutionRequired": true
+    },
+    "separation": {
+      "repositoryOutputAndKeyEndpointsDistinct": true,
+      "endpointEqualsOtherAncestorRejected": true,
+      "sharedPhysicalTargetRejected": true,
+      "identityDriftAction": "ROLLBACK_AND_FAIL"
+    }
+  },
+  "identityReceipt": {
+    "schema": "m2.v2.migration-path-identity-receipt.private.v0.1",
+    "exactFields": [
+      "schema",
+      "policyDigestSha256",
+      "sourceIdentityDigestSha256",
+      "destinationIdentityDigestSha256",
+      "ancestorSetDigestSha256",
+      "evidenceSetDigestSha256",
+      "platformEvidence",
+      "archiveMemberSetDigestSha256",
+      "manifestDigestSha256",
+      "platform",
+      "result"
+    ],
+    "absolutePathsPersisted": false,
+    "keysOrSecretsPersisted": false,
+    "platformValues": ["WINDOWS_POWERSHELL_5_1_NATIVE", "LINUX_NATIVE"],
+    "resultValues": ["PASS", "FAIL", "VERIFIED_NO_OP", "ROLLED_BACK"],
+    "platformEvidenceSchema": {
+      "exactFields": ["recordType", "records"],
+      "recordTypeValues": ["WINDOWS_NATIVE_IDENTITY", "POSIX_NATIVE_IDENTITY"],
+      "recordsType": "nonempty_ordered_exact_evidence_record_array",
+      "recordTypeMustMatchReceiptPlatform": true,
+      "recordsMustUseMatchingEvidenceRecordSchema": true,
+      "unknownFieldsRejected": true
+    },
+    "windowsEvidenceRecord": {
+      "exactFields": ["stage", "endpointRole", "ancestorIndex", "attributes", "reparseTag", "volumeSerialNumber", "fileId128", "finalPathDigestSha256"],
+      "stageValues": ["BEFORE_ENUMERATION", "BEFORE_COPY", "BEFORE_ARCHIVE", "BEFORE_KEY_WRITE", "BEFORE_RECEIPT", "AFTER_OPERATION"],
+      "endpointRoleValues": ["REPOSITORY", "SOURCE", "OUTPUT", "KEY", "STAGING"],
+      "reparseTagMustBeZeroForAcceptedObject": true,
+      "identityTuple": ["volumeSerialNumber", "fileId128", "finalPathDigestSha256"],
+      "unknownFieldsRejected": true
+    },
+    "posixEvidenceRecord": {
+      "exactFields": ["stage", "endpointRole", "ancestorIndex", "device", "inode", "mode", "mountId", "resolvedPathDigestSha256", "noFollowVerified"],
+      "stageValues": ["BEFORE_ENUMERATION", "BEFORE_COPY", "BEFORE_ARCHIVE", "BEFORE_KEY_WRITE", "BEFORE_RECEIPT", "AFTER_OPERATION"],
+      "endpointRoleValues": ["REPOSITORY", "SOURCE", "OUTPUT", "KEY", "STAGING"],
+      "identityTuple": ["mountId", "device", "inode", "mode", "resolvedPathDigestSha256"],
+      "noFollowVerifiedRequired": true,
+      "unknownFieldsRejected": true
+    },
+    "evidenceSetRules": {
+      "everyAncestorAndFinalObjectAtEveryApplicableStage": true,
+      "prePostIdentityTupleExactEqualityRequired": true,
+      "endpointPhysicalIdentitySetsDisjoint": true,
+      "platformEvidenceRecordsPersistedInReceipt": true,
+      "evidenceSetDigestMustMatchCanonicalPlatformEvidence": true,
+      "evidenceSetDigestIncludedInAncestorSetDigestSha256": true
+    },
+    "unknownFieldsRejected": true
+  },
+  "nativeExecutionMatrix": [
+    {"platform": "WINDOWS_POWERSHELL_5_1_NATIVE", "runner": "windows-native-powershell-5.1", "requiredCases": ["reparse_tag", "junction", "ancestor_alias", "short_name", "case_alias", "unc_alias", "replace_after_enumeration", "distinct_pass"], "missingDisposition": "FAIL"},
+    {"platform": "LINUX_NATIVE", "runner": "linux-native", "requiredCases": ["symlink", "ancestor_symlink", "bind_mount_alias", "mount_id_drift", "replace_after_enumeration", "no_follow", "distinct_pass"], "missingDisposition": "FAIL"}
+  ],
+  "nativeExecutionMatrixRecordExactFields": ["platform", "runner", "requiredCases", "missingDisposition"],
+  "builderAndRestorer": {
+    "nativePolicyEngineOwnsValidation": true,
+    "powershellIsThinWrapper": true,
+    "prewalkNoFollow": true,
+    "fullValidationBeforeExtraction": true,
+    "extractToNewStagingOnly": true,
+    "atomicPromotion": true,
+    "rollbackOnAnyFailure": true,
+    "secondIdenticalRun": "VERIFIED_NO_OP",
+    "faultMayEmitSuccessReceipt": false,
+    "partialStateMayBecomeCurrent": false
+  },
+  "verificationScope": {
+    "contractFrozen": true,
+    "implementationClaimed": false,
+    "realPrivateMigrationClaimed": false,
+    "nativeWindowsExecutionClaimed": false,
+    "nativeLinuxExecutionClaimed": false,
+    "exactHeadCiClaimed": false,
+    "independentReviewClaimed": false
+  },
+  "authorization": {
+    "currentDecision": "CANARY_FAIL",
+    "providerDispatchAuthorized": false,
+    "databaseConnectionsAuthorized": false,
+    "canaryAuthorized": false,
+    "full160Authorized": false,
+    "modelTrainingAuthorized": false,
+    "holdoutAccessAuthorized": false,
+    "independentReviewBatchB8Authorized": false,
+    "markReadyAuthorized": false,
+    "nextDevelopmentReadiness": "NOT_AUTHORIZED",
+    "mergeAuthorized": false,
+    "releaseAuthorized": false
+  }
+}
