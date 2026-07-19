@@ -32,14 +32,25 @@
     "B6",
     "B7"
   ],
-  "currentBatch": "B2",
+  "currentBatch": "B3",
   "batchStatuses": {
     "B0": "COMPLETE",
     "B1": "COMPLETE_PENDING_B8",
-    "B2": "COMPLETE_PENDING_B8"
+    "B2": "COMPLETE_PENDING_B8",
+    "B3": "COMPLETE_PENDING_B8"
   },
-  "nextBatch": "B3",
-  "nextAllowedPhase": "B3_REQUIRES_EXPLICIT_START",
+  "nextBatch": "B4",
+  "nextAllowedPhase": "B4_REQUIRES_EXPLICIT_START",
+  "candidateFindingStatuses": {
+    "PR7-P1-008": {
+      "findingStatus": "OPEN",
+      "candidateStatus": "CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW"
+    },
+    "PR7-P2-016": {
+      "findingStatus": "OPEN",
+      "candidateStatus": "CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW"
+    }
+  },
   "openFindings": 10,
   "findingsRemainOpen": true,
   "findingClosureStatus": "OPEN",

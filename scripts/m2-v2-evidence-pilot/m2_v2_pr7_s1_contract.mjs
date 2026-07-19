@@ -1921,14 +1921,20 @@ export function validateS1Overlay(overlay) {
     "schema", "reviewedHead", "s1StartingHead", "branch", "openP1", "openDirectP2",
     "openFindingIds", "historicalDecision", "currentDecision", "s0Status",
     "supportSharpeningStopCriteriaReached", "findingRemediationAuthorized", "authorizedBatches",
-    "currentBatch", "batchStatuses", "nextBatch", "nextAllowedPhase", "openFindings",
+    "currentBatch", "batchStatuses", "nextBatch", "nextAllowedPhase", "candidateFindingStatuses", "openFindings",
     "findingsRemainOpen", "findingClosureStatus", "independentReviewPerformed",
     "independentReviewStatus", "b8Authorized", "mergeAuthorized", "full160Authorized",
     "modelTrainingAuthorized", "releaseAuthorized", "nextDevelopmentReadiness",
     "remediationComplete", "pullRequestState",
   ], "overlay");
   assertPlainObject(overlay.batchStatuses, "overlay_batch_statuses_must_be_object");
-  assertExactFields(overlay.batchStatuses, ["B0", "B1", "B2"], "overlay_batch_statuses");
+  assertExactFields(overlay.batchStatuses, ["B0", "B1", "B2", "B3"], "overlay_batch_statuses");
+  assertPlainObject(overlay.candidateFindingStatuses, "overlay_candidate_statuses_must_be_object");
+  assertExactFields(overlay.candidateFindingStatuses, ["PR7-P1-008", "PR7-P2-016"], "overlay_candidate_statuses");
+  for (const findingId of ["PR7-P1-008", "PR7-P2-016"]) {
+    assertPlainObject(overlay.candidateFindingStatuses[findingId], `overlay_${findingId}_candidate_status_must_be_object`);
+    assertExactFields(overlay.candidateFindingStatuses[findingId], ["findingStatus", "candidateStatus"], `overlay_${findingId}_candidate_status`);
+  }
   assertSameStringSet(overlay.openFindingIds, S1_FINDING_IDS, "overlay_finding_ids_mismatch");
   assertExactArray(overlay.authorizedBatches, S1_BATCHES, "overlay_authorized_batches_mismatch");
   const valid = overlay.schema === "m2.v2.pr7.open-findings-status.v0.1"
@@ -1942,12 +1948,17 @@ export function validateS1Overlay(overlay) {
     && overlay.s0Status === "COMPLETE"
     && overlay.supportSharpeningStopCriteriaReached === true
     && overlay.findingRemediationAuthorized === true
-    && overlay.currentBatch === "B2"
+    && overlay.currentBatch === "B3"
     && overlay.batchStatuses.B0 === "COMPLETE"
     && overlay.batchStatuses.B1 === "COMPLETE_PENDING_B8"
     && overlay.batchStatuses.B2 === "COMPLETE_PENDING_B8"
-    && overlay.nextBatch === "B3"
-    && overlay.nextAllowedPhase === "B3_REQUIRES_EXPLICIT_START"
+    && overlay.batchStatuses.B3 === "COMPLETE_PENDING_B8"
+    && overlay.nextBatch === "B4"
+    && overlay.nextAllowedPhase === "B4_REQUIRES_EXPLICIT_START"
+    && ["PR7-P1-008", "PR7-P2-016"].every((findingId) => (
+      overlay.candidateFindingStatuses[findingId].findingStatus === "OPEN"
+      && overlay.candidateFindingStatuses[findingId].candidateStatus === "CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW"
+    ))
     && overlay.openFindings === 10
     && overlay.findingsRemainOpen === true
     && overlay.findingClosureStatus === "OPEN"

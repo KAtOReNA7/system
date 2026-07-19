@@ -3,7 +3,7 @@
 ## 2026-07-19 PR #7 S1 分层修复入口（当前最高优先）
 
 - 7 项 S0 开发支持基线已在 exact HEAD `badbf453e1e99ba87cc3064601e480a09ff1b149` 完成并通过 Linux/Windows CI；`supportSharpeningStopCriteriaReached=true`。
-- 用户已单独授权在 `codex/m2-v2-evidence-pilot-v1` 上实施 PR #7 的 B0–B7 分层 S1 修复；B1 已在 exact remote HEAD `66eecbc57c4186ad61df8152ef38b5f28300f130` 完成，CI run `29692415607` 的 Linux job `88207352223` 与 Windows job `88207352209` 均成功；当前 batch 为 `B2`。每个 batch 必须普通 push，并在该 exact remote HEAD 的 Linux/Windows CI 成功后才能进入下一 batch。
+- 用户已单独授权在 `codex/m2-v2-evidence-pilot-v1` 上实施 PR #7 的 B0–B7 分层 S1 修复；B3 的 A/B/C checkpoint 已分别在 exact remote HEAD `f64a08dba248374b581caf5e3c550401afb6785f`、`149ce6264ed3c52c279144234f36c3182d8fc4ac`、`a8eb73f3907a1b593d04cb6dcf0fbb90ace3d0ce` 通过 Linux/Windows CI，B3-D 为当前 integration checkpoint。B3 final exact-head CI 成功前禁止进入 B4；B4 仍须新的显式开始。
 - open-finding 状态以 `docs/analysis/m2-v2/M2-v2-PR7-open-findings-status-v0.1.md` 为增量 overlay：5 个 P1 与 5 个直接耦合 P2 当前仍全部 `OPEN`。B0–B7 最多只能形成 `CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW`，不得由本代理执行 B8 或声明 `CLOSED`。
 - 本轮允许按附件冻结的范围修改 `src/domain/m2V2EvidencePilot/**`、配套测试、合同、CI 与公开治理文档，并在 B6 进行 provider-free 离线重建和原子 supersession；历史/private immutable 产物不得覆盖。
 - 禁止 provider、数据库、Canary/full160、模型训练、holdout、B8、mark ready、PR merge 或 release。`currentDecision=CANARY_FAIL`、`mergeAuthorized=false`、`full160Authorized=false`、`modelTrainingAuthorized=false`、`nextDevelopmentReadiness=NOT_AUTHORIZED` 保持不变，除非 B6 的版本化离线重算真实得出不同 current decision；即便变化也不自动授权下游阶段。

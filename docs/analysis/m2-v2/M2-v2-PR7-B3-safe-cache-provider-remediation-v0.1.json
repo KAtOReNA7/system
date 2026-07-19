@@ -1,0 +1,103 @@
+{
+  "schema": "m2.v2.pr7.b3-safe-cache-provider-remediation-public.v0.1",
+  "batch": "B3",
+  "classification": "public_sanitized_not_for_formal_decision",
+  "startingHead": "dbc2d5ccbebfc758cab0c1e155cd3d6c52fc2ef2",
+  "status": "COMPLETE_PENDING_B8",
+  "subStages": {
+    "B3-A": {
+      "status": "PASS",
+      "exactHead": "f64a08dba248374b581caf5e3c550401afb6785f",
+      "ciRunId": 29701357684,
+      "linuxJobId": 88230837593,
+      "windowsJobId": 88230837585
+    },
+    "B3-B": {
+      "status": "PASS",
+      "exactHead": "149ce6264ed3c52c279144234f36c3182d8fc4ac",
+      "ciRunId": 29701847354,
+      "linuxJobId": 88232081347,
+      "windowsJobId": 88232081327
+    },
+    "B3-C": {
+      "status": "PASS",
+      "exactHead": "a8eb73f3907a1b593d04cb6dcf0fbb90ace3d0ce",
+      "ciRunId": 29702460165,
+      "linuxJobId": 88233712230,
+      "windowsJobId": 88233712267
+    },
+    "B3-D": {
+      "status": "TRACKED_INTEGRATION_CHECKPOINT_REQUIRES_EXACT_HEAD_CI",
+      "exactHeadBinding": "THIS_TRACKED_COMMIT_AS_RECORDED_BY_PRIVATE_RECEIPT_AND_PR_BODY"
+    }
+  },
+  "safeCache": {
+    "schema": "m2.v2.v2b6-request-cache.v0.3",
+    "profileCount": 6,
+    "exactSemanticProjectionOnly": true,
+    "unknownFieldsRejected": true,
+    "resourceLimitsEnforced": true,
+    "rawProviderBytesRejected": true,
+    "candidateMigration": {
+      "sourceEntryCount": 19,
+      "migratedEntryCount": 14,
+      "quarantinedEntryCount": 5,
+      "rejectedEntryCount": 0,
+      "secondRun": "VERIFIED_IDENTICAL_CANDIDATE",
+      "currentPromotionPerformed": false
+    }
+  },
+  "providerBoundary": {
+    "providerCapableExportCount": 6,
+    "classifiedRouteCount": 11,
+    "lowestSinkCount": 6,
+    "coveredLowestSinkCount": 6,
+    "legacyActiveRouteCount": 0,
+    "oneShotOpaqueCapability": true,
+    "scopeBindings": [
+      "route",
+      "sink",
+      "phase",
+      "physicalRequestIdentity",
+      "B1ClosedTransaction",
+      "B2CanonicalFilesystemRoot",
+      "safeCacheDigest",
+      "transportPolicyDigest"
+    ],
+    "globalFetchFallback": false,
+    "providerDispatchAuthorized": false
+  },
+  "caseCoverage": {
+    "planningRequired": 18,
+    "planningExecuted": 18,
+    "boundedAdjacent": 3,
+    "registryTotal": 21,
+    "registryPassed": 21,
+    "skipped": 0
+  },
+  "findings": {
+    "PR7-P1-008": {
+      "findingStatus": "OPEN",
+      "candidateStatus": "CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW"
+    },
+    "PR7-P2-016": {
+      "findingStatus": "OPEN",
+      "candidateStatus": "CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW"
+    }
+  },
+  "unchangedBoundary": {
+    "providerCalls": 0,
+    "providerRequestDelta": 0,
+    "actualExternalFetchCount": 0,
+    "databaseConnections": 0,
+    "currentDecision": "CANARY_FAIL",
+    "full160Authorized": false,
+    "modelTrainingAuthorized": false,
+    "mergeAuthorized": false,
+    "nextDevelopmentReadiness": "NOT_AUTHORIZED"
+  },
+  "independentReviewPerformed": false,
+  "closureClaimed": false,
+  "nextBatch": "B4",
+  "nextBatchStarted": false
+}

@@ -407,20 +407,27 @@ test("tracked-only source binding requires the complete GitHub-hosted exact-head
   assert.equal(evaluateTrackedOnlySourcePolicy(trusted, { ...scope, actualHead: "0".repeat(40) }), false);
 });
 
-test("B2 checkpoint overlay remains OPEN and leaves B3 behind an explicit-start gate", () => {
+test("B3 checkpoint overlay remains OPEN and leaves B4 behind an explicit-start gate", () => {
   assert.equal(validateS1Overlay(overlay), true);
-  assert.equal(overlay.currentBatch, "B2");
+  assert.equal(overlay.currentBatch, "B3");
   assert.deepEqual(overlay.batchStatuses, {
     B0: "COMPLETE",
     B1: "COMPLETE_PENDING_B8",
     B2: "COMPLETE_PENDING_B8",
+    B3: "COMPLETE_PENDING_B8",
   });
-  assert.equal(overlay.nextBatch, "B3");
-  assert.equal(overlay.nextAllowedPhase, "B3_REQUIRES_EXPLICIT_START");
+  assert.equal(overlay.nextBatch, "B4");
+  assert.equal(overlay.nextAllowedPhase, "B4_REQUIRES_EXPLICIT_START");
+  for (const findingId of ["PR7-P1-008", "PR7-P2-016"]) {
+    assert.deepEqual(overlay.candidateFindingStatuses[findingId], {
+      findingStatus: "OPEN",
+      candidateStatus: "CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW",
+    });
+  }
   assert.equal(overlay.findingsRemainOpen, true);
   assert.equal(overlay.independentReviewPerformed, false);
   for (const [field, value] of [
-    ["nextBatch", "B4"],
+    ["nextBatch", "B5"],
     ["findingsRemainOpen", false],
     ["findingClosureStatus", "CLOSED"],
     ["independentReviewPerformed", true],
@@ -438,7 +445,7 @@ test("B2 checkpoint overlay remains OPEN and leaves B3 behind an explicit-start 
   }
   const invalidBatchStatuses = {
     ...overlay,
-    batchStatuses: { ...overlay.batchStatuses, B2: "COMPLETE" },
+    batchStatuses: { ...overlay.batchStatuses, B3: "COMPLETE" },
   };
   assert.throws(() => validateS1Overlay(invalidBatchStatuses), /overlay_governance_mismatch/u);
   const unknown = { ...overlay, remotePass: true };
