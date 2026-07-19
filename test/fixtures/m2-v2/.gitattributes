@@ -1,0 +1,4 @@
+# Preserve raw-byte digest and canonical JSON bindings for the S0-07 golden corpus.
+event-conflict-golden-corpus.manifest.v0.1.json text eol=lf
+event-conflict-golden-corpus.schema.v0.1.json text eol=lf
+event-conflict-golden-corpus.v0.1.json text eol=lf
