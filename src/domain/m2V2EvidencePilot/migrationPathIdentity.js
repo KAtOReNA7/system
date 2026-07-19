@@ -4,8 +4,9 @@ import { isAbsolute, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { sha256 } from "./pilotCore.js";
+import { MIGRATION_ARCHIVE_V0_3_POLICY_DIGEST_SHA256 } from "./migrationArchiveV0_3.js";
 
-export const MIGRATION_IDENTITY_IMPLEMENTATION_STATUS = "PARTIAL_NOT_INTEGRATED";
+export const MIGRATION_IDENTITY_IMPLEMENTATION_STATUS = "ACCEPTANCE_COMPLETE_NOT_INTEGRATED";
 export const MIGRATION_NATIVE_OBSERVATION_SCHEMA =
   "m2.v2.migration-path-native-observation.private.v0.1";
 export const MIGRATION_IDENTITY_SNAPSHOT_SCHEMA =
@@ -41,6 +42,24 @@ const IDENTITY_SET_DIGEST_BASIS_SCHEMA =
   "m2.v2.migration-path-identity-set-digest-basis.private.v0.1";
 const SEPARATION_RESULT_SCHEMA =
   "m2.v2.migration-path-separation-result.private.v0.1";
+const IDENTITY_RECEIPT_SCHEMA =
+  "m2.v2.migration-path-identity-receipt.private.v0.1";
+const IDENTITY_RECEIPT_FIELDS = Object.freeze([
+  "schema",
+  "policyDigestSha256",
+  "sourceIdentityDigestSha256",
+  "destinationIdentityDigestSha256",
+  "ancestorSetDigestSha256",
+  "evidenceSetDigestSha256",
+  "platformEvidence",
+  "archiveMemberSetDigestSha256",
+  "manifestDigestSha256",
+  "platform",
+  "result",
+]);
+const PLATFORM_EVIDENCE_FIELDS = Object.freeze(["recordType", "records"]);
+const IDENTITY_RECEIPT_RESULTS = new Set(["PASS", "FAIL", "VERIFIED_NO_OP", "ROLLED_BACK"]);
+const DESTINATION_ROLES = new Set(["OUTPUT", "KEY", "STAGING"]);
 const WINDOWS_DIRECTORY_ATTRIBUTE = 0x00000010;
 const WINDOWS_REPARSE_ATTRIBUTE = 0x00000400;
 const POSIX_FILE_TYPE_MASK = 0o170000n;
@@ -75,6 +94,7 @@ const POSIX_RECORD_FIELDS = Object.freeze([
 const ENDPOINT_ROLE_ORDER = new Map(
   MIGRATION_IDENTITY_ENDPOINT_ROLES.map((value, index) => [value, index]),
 );
+const STAGE_ORDER = new Map(MIGRATION_IDENTITY_STAGES.map((value, index) => [value, index]));
 const migrationPathSetCapabilityState = new WeakMap();
 const WINDOWS_OBSERVER = fileURLToPath(new URL(
   "../../../scripts/m2-v2-evidence-pilot/inspect_m2_v2_migration_identity_windows.ps1",
@@ -165,6 +185,54 @@ export function captureMigrationPathSet(options = {}) {
 
 export function assertSeparated(identityCapability) {
   const normalized = requireMigrationPathSetCapability(identityCapability);
+  return assertSeparatedIdentitySet(normalized);
+}
+
+export function buildMigrationIdentityReceipt(options = {}) {
+  assertPlainObject(options, "migration_identity_receipt_builder_input_invalid");
+  assertExactFields(options, [
+    "identityCapabilities",
+    "archiveMemberSetDigestSha256",
+    "manifestDigestSha256",
+    "result",
+  ], "migration_identity_receipt_builder_input_invalid");
+  if (!Array.isArray(options.identityCapabilities) || options.identityCapabilities.length === 0
+      || !DIGEST_PATTERN.test(String(options.archiveMemberSetDigestSha256 ?? ""))
+      || !DIGEST_PATTERN.test(String(options.manifestDigestSha256 ?? ""))
+      || !IDENTITY_RECEIPT_RESULTS.has(options.result)) {
+    throw new Error("migration_identity_receipt_builder_input_invalid");
+  }
+  const identitySets = options.identityCapabilities
+    .map((capability) => requireMigrationPathSetCapability(capability))
+    .sort(compareIdentitySets);
+  assertIdentitySetSequence(identitySets);
+  const platformEvidence = platformEvidenceFromIdentitySets(identitySets);
+  const digests = identityReceiptDigests(identitySets, platformEvidence);
+  return validateMigrationIdentityReceipt({
+    schema: IDENTITY_RECEIPT_SCHEMA,
+    policyDigestSha256: MIGRATION_ARCHIVE_V0_3_POLICY_DIGEST_SHA256,
+    sourceIdentityDigestSha256: digests.sourceIdentityDigestSha256,
+    destinationIdentityDigestSha256: digests.destinationIdentityDigestSha256,
+    ancestorSetDigestSha256: digests.ancestorSetDigestSha256,
+    evidenceSetDigestSha256: digests.evidenceSetDigestSha256,
+    platformEvidence,
+    archiveMemberSetDigestSha256: options.archiveMemberSetDigestSha256,
+    manifestDigestSha256: options.manifestDigestSha256,
+    platform: identitySets[0].platform,
+    result: options.result,
+  });
+}
+
+export function validateMigrationIdentityReceipt(receipt) {
+  try {
+    return deepFreeze(normalizeMigrationIdentityReceipt(receipt));
+  } catch (error) {
+    if (error?.message === "migration_stable_identity_unavailable") throw error;
+    throw new Error("migration_identity_receipt_invalid");
+  }
+}
+
+function assertSeparatedIdentitySet(normalized) {
   const finalRecords = normalized.snapshots.map((snapshot) => ({
     endpointRole: snapshot.endpointRole,
     record: snapshot.records.at(-1),
@@ -208,6 +276,10 @@ export function assertSeparated(identityCapability) {
 export function verifyStableIdentity(beforeIdentityCapability, afterIdentityCapability) {
   const before = requireMigrationPathSetCapability(beforeIdentityCapability);
   const after = requireMigrationPathSetCapability(afterIdentityCapability);
+  return verifyStableIdentitySets(before, after);
+}
+
+function verifyStableIdentitySets(before, after) {
   if (before.platform !== after.platform || before.snapshots.length !== after.snapshots.length) {
     throw new Error("migration_identity_changed");
   }
@@ -228,6 +300,182 @@ export function verifyStableIdentity(beforeIdentityCapability, afterIdentityCapa
     }
   }
   return true;
+}
+
+function normalizeMigrationIdentityReceipt(receipt) {
+  assertPlainObject(receipt, "migration_identity_receipt_invalid");
+  assertExactFields(receipt, IDENTITY_RECEIPT_FIELDS, "migration_identity_receipt_invalid");
+  if (receipt.schema !== IDENTITY_RECEIPT_SCHEMA
+      || receipt.policyDigestSha256 !== MIGRATION_ARCHIVE_V0_3_POLICY_DIGEST_SHA256
+      || !MIGRATION_IDENTITY_PLATFORMS.includes(receipt.platform)
+      || !IDENTITY_RECEIPT_RESULTS.has(receipt.result)
+      || ![
+        receipt.sourceIdentityDigestSha256,
+        receipt.destinationIdentityDigestSha256,
+        receipt.ancestorSetDigestSha256,
+        receipt.evidenceSetDigestSha256,
+        receipt.archiveMemberSetDigestSha256,
+        receipt.manifestDigestSha256,
+      ].every((value) => DIGEST_PATTERN.test(String(value ?? "")))) {
+    throw new Error("migration_identity_receipt_invalid");
+  }
+  assertPlainObject(receipt.platformEvidence, "migration_identity_receipt_invalid");
+  assertExactFields(
+    receipt.platformEvidence,
+    PLATFORM_EVIDENCE_FIELDS,
+    "migration_identity_receipt_invalid",
+  );
+  const expectedRecordType = receipt.platform === "WINDOWS_POWERSHELL_5_1_NATIVE"
+    ? "WINDOWS_NATIVE_IDENTITY"
+    : "POSIX_NATIVE_IDENTITY";
+  if (receipt.platformEvidence.recordType !== expectedRecordType
+      || !Array.isArray(receipt.platformEvidence.records)
+      || receipt.platformEvidence.records.length === 0) {
+    throw new Error("migration_identity_receipt_invalid");
+  }
+  const records = receipt.platformEvidence.records.map((record) => normalizeEvidenceRecord(
+    record,
+    receipt.platform,
+    record?.endpointRole,
+    record?.stage,
+    record?.ancestorIndex,
+  ));
+  const canonicalRecords = [...records].sort(compareEvidenceRecords);
+  if (records.some((record, index) => (
+    stableStringify(record) !== stableStringify(canonicalRecords[index])
+  ))) throw new Error("migration_identity_receipt_invalid");
+  const identitySets = identitySetsFromEvidence(receipt.platform, records);
+  assertIdentitySetSequence(identitySets);
+  const platformEvidence = {
+    recordType: expectedRecordType,
+    records,
+  };
+  const digests = identityReceiptDigests(identitySets, platformEvidence);
+  for (const field of [
+    "sourceIdentityDigestSha256",
+    "destinationIdentityDigestSha256",
+    "ancestorSetDigestSha256",
+    "evidenceSetDigestSha256",
+  ]) {
+    if (receipt[field] !== digests[field]) throw new Error("migration_identity_receipt_invalid");
+  }
+  return {
+    schema: IDENTITY_RECEIPT_SCHEMA,
+    policyDigestSha256: receipt.policyDigestSha256,
+    sourceIdentityDigestSha256: receipt.sourceIdentityDigestSha256,
+    destinationIdentityDigestSha256: receipt.destinationIdentityDigestSha256,
+    ancestorSetDigestSha256: receipt.ancestorSetDigestSha256,
+    evidenceSetDigestSha256: receipt.evidenceSetDigestSha256,
+    platformEvidence,
+    archiveMemberSetDigestSha256: receipt.archiveMemberSetDigestSha256,
+    manifestDigestSha256: receipt.manifestDigestSha256,
+    platform: receipt.platform,
+    result: receipt.result,
+  };
+}
+
+function assertIdentitySetSequence(identitySets) {
+  if (identitySets.length === 0) throw new Error("migration_identity_receipt_invalid");
+  const platforms = new Set(identitySets.map((identitySet) => identitySet.platform));
+  const stages = identitySets.map((identitySet) => identitySet.stage);
+  if (platforms.size !== 1 || new Set(stages).size !== stages.length) {
+    throw new Error("migration_identity_receipt_invalid");
+  }
+  for (const identitySet of identitySets) assertSeparatedIdentitySet(identitySet);
+  for (const identitySet of identitySets.slice(1)) {
+    verifyStableIdentitySets(identitySets[0], identitySet);
+  }
+  const roles = new Set(identitySets[0].snapshots.map((snapshot) => snapshot.endpointRole));
+  if (!roles.has("SOURCE") || !roles.has("OUTPUT") || !roles.has("KEY")) {
+    throw new Error("migration_identity_receipt_invalid");
+  }
+}
+
+function platformEvidenceFromIdentitySets(identitySets) {
+  const platform = identitySets[0].platform;
+  return {
+    recordType: platform === "WINDOWS_POWERSHELL_5_1_NATIVE"
+      ? "WINDOWS_NATIVE_IDENTITY"
+      : "POSIX_NATIVE_IDENTITY",
+    records: identitySets.flatMap((identitySet) => identitySet.snapshots.flatMap(
+      (snapshot) => snapshot.records,
+    )).sort(compareEvidenceRecords),
+  };
+}
+
+function identitySetsFromEvidence(platform, records) {
+  const byStage = new Map();
+  for (const record of records) {
+    const byRole = byStage.get(record.stage) ?? new Map();
+    const roleRecords = byRole.get(record.endpointRole) ?? [];
+    if (record.ancestorIndex !== roleRecords.length) {
+      throw new Error("migration_identity_receipt_invalid");
+    }
+    roleRecords.push(record);
+    byRole.set(record.endpointRole, roleRecords);
+    byStage.set(record.stage, byRole);
+  }
+  return [...byStage.entries()].map(([stage, byRole]) => {
+    const snapshots = [...byRole.entries()].map(([endpointRole, roleRecords]) => {
+      const snapshot = {
+        schema: MIGRATION_IDENTITY_SNAPSHOT_SCHEMA,
+        platform,
+        stage,
+        endpointRole,
+        records: roleRecords,
+      };
+      assertSafeDirectorySnapshot(snapshot);
+      return snapshot;
+    }).sort(compareSnapshots);
+    const basis = { schema: IDENTITY_SET_DIGEST_BASIS_SCHEMA, platform, stage, snapshots };
+    return {
+      schema: MIGRATION_IDENTITY_SET_SCHEMA,
+      platform,
+      stage,
+      snapshots,
+      identitySetDigestSha256: sha256(basis),
+    };
+  }).sort(compareIdentitySets);
+}
+
+function identityReceiptDigests(identitySets, platformEvidence) {
+  const first = identitySets[0];
+  const sourceSnapshots = first.snapshots.filter((snapshot) => snapshot.endpointRole === "SOURCE");
+  const destinationSnapshots = first.snapshots.filter(
+    (snapshot) => DESTINATION_ROLES.has(snapshot.endpointRole),
+  );
+  if (sourceSnapshots.length !== 1 || destinationSnapshots.length < 2) {
+    throw new Error("migration_identity_receipt_invalid");
+  }
+  const evidenceSetDigestSha256 = sha256(platformEvidence);
+  return {
+    sourceIdentityDigestSha256: sha256(identityDigestBasis(first.platform, sourceSnapshots)),
+    destinationIdentityDigestSha256: sha256(identityDigestBasis(
+      first.platform,
+      destinationSnapshots,
+    )),
+    ancestorSetDigestSha256: sha256({
+      schema: "m2.v2.migration-path-ancestor-set-digest-basis.private.v0.1",
+      platform: first.platform,
+      evidenceSetDigestSha256,
+      records: platformEvidence.records,
+    }),
+    evidenceSetDigestSha256,
+  };
+}
+
+function identityDigestBasis(platform, snapshots) {
+  return {
+    schema: "m2.v2.migration-path-role-identity-digest-basis.private.v0.1",
+    platform,
+    snapshots: snapshots.map((snapshot) => ({
+      endpointRole: snapshot.endpointRole,
+      records: snapshot.records.map((record) => ({
+        ancestorIndex: record.ancestorIndex,
+        stableIdentity: stableIdentityTuple(platform, record),
+      })),
+    })),
+  };
 }
 
 function requireMigrationPathSetCapability(capability) {
@@ -362,6 +610,10 @@ function normalizeEvidenceRecord(record, platform, endpointRole, stage, ancestor
         || !DIGEST_PATTERN.test(record.finalPathDigestSha256)) {
       throw new Error("migration_native_observer_output_invalid");
     }
+    if (record.volumeSerialNumber === "0000000000000000"
+        || record.fileId128 === "00000000000000000000000000000000") {
+      throw new Error("migration_stable_identity_unavailable");
+    }
     return {
       stage: record.stage,
       endpointRole: record.endpointRole,
@@ -378,6 +630,9 @@ function normalizeEvidenceRecord(record, platform, endpointRole, stage, ancestor
   )) || !DIGEST_PATTERN.test(record.resolvedPathDigestSha256)
       || record.noFollowVerified !== true) {
     throw new Error("migration_native_observer_output_invalid");
+  }
+  if (record.device === "0" || record.inode === "0") {
+    throw new Error("migration_stable_identity_unavailable");
   }
   return {
     stage: record.stage,
@@ -501,6 +756,16 @@ function compareSnapshots(left, right) {
   return ENDPOINT_ROLE_ORDER.get(left.endpointRole) - ENDPOINT_ROLE_ORDER.get(right.endpointRole);
 }
 
+function compareIdentitySets(left, right) {
+  return STAGE_ORDER.get(left.stage) - STAGE_ORDER.get(right.stage);
+}
+
+function compareEvidenceRecords(left, right) {
+  return STAGE_ORDER.get(left.stage) - STAGE_ORDER.get(right.stage)
+    || ENDPOINT_ROLE_ORDER.get(left.endpointRole) - ENDPOINT_ROLE_ORDER.get(right.endpointRole)
+    || left.ancestorIndex - right.ancestorIndex;
+}
+
 function nativePlatformForHost() {
   if (process.platform === "win32") return "WINDOWS_POWERSHELL_5_1_NATIVE";
   if (process.platform === "linux") return "LINUX_NATIVE";
@@ -558,6 +823,16 @@ function deepFreeze(value) {
   }
   for (const child of Object.values(value)) deepFreeze(child);
   return Object.freeze(value);
+}
+
+function stableStringify(value) {
+  return JSON.stringify(sortObjectKeys(value));
+}
+
+function sortObjectKeys(value) {
+  if (Array.isArray(value)) return value.map(sortObjectKeys);
+  if (!isPlainObject(value)) return value;
+  return Object.fromEntries(Object.keys(value).sort().map((key) => [key, sortObjectKeys(value[key])]));
 }
 
 function isPlainObject(value) {

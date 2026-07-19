@@ -23,17 +23,17 @@ test("migration identity exports only bounded native snapshot and capability ope
     "MIGRATION_IDENTITY_STAGES",
     "MIGRATION_NATIVE_OBSERVATION_SCHEMA",
     "assertSeparated",
+    "buildMigrationIdentityReceipt",
     "captureMigrationPathSet",
     "resolveSafeDirectory",
+    "validateMigrationIdentityReceipt",
     "verifyStableIdentity",
   ]);
   assert.equal(
     migrationIdentity.MIGRATION_IDENTITY_IMPLEMENTATION_STATUS,
-    "PARTIAL_NOT_INTEGRATED",
+    "ACCEPTANCE_COMPLETE_NOT_INTEGRATED",
   );
   for (const unsafeName of [
-    "buildMigrationIdentityReceipt",
-    "validateMigrationIdentityReceipt",
     "executePinnedMigrationOperation",
     "openPinnedMigrationIdentitySession",
     "createMigrationPathSetCapability",
@@ -49,7 +49,7 @@ test("migration identity exports only bounded native snapshot and capability ope
   }), /migration_identity_options_invalid/u);
 });
 
-test("migration identity authority accepts only genuine host-native opaque capabilities", () => {
+test("PR7-P2-008-same-target, PR7-P2-008-ancestor-alias, PR7-P2-008-distinct-pass, PR7-P2-008-unc-unstable, and PR7-P2-008-receipt-tamper", () => {
   const root = createWorkspaceRoot("capability");
   try {
     const repository = join(root, "repository");
@@ -87,6 +87,18 @@ test("migration identity authority accepts only genuine host-native opaque capab
     assert.equal(JSON.stringify(before), "{}");
     assert.equal(migrationIdentity.assertSeparated(before).sourceInsideRepository, true);
 
+    const sameTarget = migrationIdentity.captureMigrationPathSet({
+      endpoints: [
+        { path: output, endpointRole: "OUTPUT" },
+        { path: output, endpointRole: "KEY" },
+      ],
+      stage: "BEFORE_KEY_WRITE",
+    });
+    assert.throws(
+      () => migrationIdentity.assertSeparated(sameTarget),
+      /migration_directory_identity_collision/u,
+    );
+
     const stable = migrationIdentity.captureMigrationPathSet({
       endpoints: [
         { path: repository, endpointRole: "REPOSITORY" },
@@ -98,6 +110,35 @@ test("migration identity authority accepts only genuine host-native opaque capab
       stage: "BEFORE_COPY",
     });
     assert.equal(migrationIdentity.verifyStableIdentity(before, stable), true);
+    const identityReceipt = migrationIdentity.buildMigrationIdentityReceipt({
+      identityCapabilities: [before, stable],
+      archiveMemberSetDigestSha256: "a".repeat(64),
+      manifestDigestSha256: "b".repeat(64),
+      result: "PASS",
+    });
+    assert.deepEqual(
+      migrationIdentity.validateMigrationIdentityReceipt(identityReceipt),
+      identityReceipt,
+    );
+    assert.equal(Object.isFrozen(identityReceipt), true);
+    assert.equal(JSON.stringify(identityReceipt).includes(root), false);
+
+    const tamperedReceipt = structuredClone(identityReceipt);
+    tamperedReceipt.evidenceSetDigestSha256 = "c".repeat(64);
+    assert.throws(
+      () => migrationIdentity.validateMigrationIdentityReceipt(tamperedReceipt),
+      /migration_identity_receipt_invalid/u,
+    );
+    const unstableReceipt = structuredClone(identityReceipt);
+    if (unstableReceipt.platform === "WINDOWS_POWERSHELL_5_1_NATIVE") {
+      unstableReceipt.platformEvidence.records[0].fileId128 = "0".repeat(32);
+    } else {
+      unstableReceipt.platformEvidence.records[0].inode = "0";
+    }
+    assert.throws(
+      () => migrationIdentity.validateMigrationIdentityReceipt(unstableReceipt),
+      /migration_stable_identity_unavailable/u,
+    );
 
     const forgedPlain = {
       schema: migrationIdentity.MIGRATION_IDENTITY_SET_SCHEMA,
@@ -141,7 +182,7 @@ test("migration identity authority accepts only genuine host-native opaque capab
   }
 });
 
-test("migration identity native observation rejects link ancestors and physical aliases", () => {
+test("PR7-P2-008-short-case and PR7-P2-008-posix-link-mount", () => {
   assertSupportedNativePlatform();
   const root = createWorkspaceRoot("aliases");
   try {
@@ -192,7 +233,7 @@ test("migration identity native observation rejects link ancestors and physical 
   }
 });
 
-test("migration identity genuine capabilities detect native object replacement", () => {
+test("PR7-P2-008-toctou-swap", () => {
   assertSupportedNativePlatform();
   const root = createWorkspaceRoot("drift");
   try {
