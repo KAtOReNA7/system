@@ -338,7 +338,7 @@ export function validateS1TaskManifest(manifest, bindings = {}) {
   }
   validateBranchPolicy(manifest.branchPolicy);
   assertExactArray(manifest.authorizedBatches, S1_BATCHES, "authorized_batches_mismatch");
-  if (manifest.currentBatch !== "B1") throw new Error("current_batch_must_be_b1");
+  if (manifest.currentBatch !== "B2") throw new Error("current_batch_must_be_b2");
   validateBatchDag(manifest.batchDag);
   assertExactArray(manifest.allowedPathClasses, EXPECTED_ALLOWED_PATH_CLASSES, "allowed_path_classes_invalid");
   assertExactArray(manifest.prohibitedActions, EXPECTED_PROHIBITED_ACTIONS, "prohibited_actions_invalid");
@@ -1939,8 +1939,8 @@ export function validateS1Overlay(overlay) {
     && overlay.s0Status === "COMPLETE"
     && overlay.supportSharpeningStopCriteriaReached === true
     && overlay.findingRemediationAuthorized === true
-    && overlay.currentBatch === "B1"
-    && overlay.nextAllowedPhase === "S1_PHASED_REMEDIATION_B1"
+    && overlay.currentBatch === "B2"
+    && overlay.nextAllowedPhase === "S1_PHASED_REMEDIATION_B2"
     && overlay.openFindings === 10
     && overlay.findingClosureStatus === "OPEN"
     && overlay.independentReviewStatus === "NOT_REVIEWED"

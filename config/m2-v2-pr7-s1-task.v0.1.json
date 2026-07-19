@@ -23,7 +23,7 @@
     "B6",
     "B7"
   ],
-  "currentBatch": "B1",
+  "currentBatch": "B2",
   "batchDag": {
     "nodes": [
       "B0",

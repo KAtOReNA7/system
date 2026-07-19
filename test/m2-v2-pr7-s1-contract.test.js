@@ -71,7 +71,7 @@ test("S1 task binds exact git anchors, B0-B7-only DAG, four source groups, regis
   assert.equal(taskManifest.findingHead, "627f74c6b9b2365ee4403c613ea9689748b76541");
   assert.equal(taskManifest.baseSha, "d81b952e37dd43365c0091cdd6665e69d8d39a7e");
   assert.deepEqual(taskManifest.authorizedBatches, S1_BATCHES);
-  assert.equal(taskManifest.currentBatch, "B1");
+  assert.equal(taskManifest.currentBatch, "B2");
   assert.equal(taskManifest.batchDag.independentReviewBatchAuthorized, false);
   assert.equal(taskManifest.requiredSourceEvidence.length, 4);
   assert.deepEqual(taskManifest.historicalImmutableArtifacts.map((binding) => binding.path), S1_HISTORICAL_PATHS);
@@ -407,10 +407,10 @@ test("tracked-only source binding requires the complete GitHub-hosted exact-head
   assert.equal(evaluateTrackedOnlySourcePolicy(trusted, { ...scope, actualHead: "0".repeat(40) }), false);
 });
 
-test("B1 overlay remains OPEN and cannot claim independent closure or downstream authority", () => {
+test("B2 overlay remains OPEN and cannot claim independent closure or downstream authority", () => {
   assert.equal(validateS1Overlay(overlay), true);
-  assert.equal(overlay.currentBatch, "B1");
-  assert.equal(overlay.nextAllowedPhase, "S1_PHASED_REMEDIATION_B1");
+  assert.equal(overlay.currentBatch, "B2");
+  assert.equal(overlay.nextAllowedPhase, "S1_PHASED_REMEDIATION_B2");
   for (const [field, value] of [
     ["findingClosureStatus", "CLOSED"],
     ["independentReviewStatus", "PASSED"],

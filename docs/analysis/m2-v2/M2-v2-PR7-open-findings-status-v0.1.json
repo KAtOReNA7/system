@@ -32,8 +32,8 @@
     "B6",
     "B7"
   ],
-  "currentBatch": "B1",
-  "nextAllowedPhase": "S1_PHASED_REMEDIATION_B1",
+  "currentBatch": "B2",
+  "nextAllowedPhase": "S1_PHASED_REMEDIATION_B2",
   "openFindings": 10,
   "findingClosureStatus": "OPEN",
   "independentReviewStatus": "NOT_REVIEWED",

@@ -5,7 +5,7 @@
 本 PR 保留 V2-A 完成后的 V2-B.1–B.8 历史 checkpoint 和既有修复证据。针对 exact product HEAD `627f74c6b9b2365ee4403c613ea9689748b76541` 的增量独立外审识别出 5 项 P1 与 5 项直接耦合 P2；这 10 项 finding 当前全部为 `OPEN`。
 
 - S0：`COMPLETE`，exact HEAD `badbf453e1e99ba87cc3064601e480a09ff1b149`
-- S1：仅授权 B0–B7 分阶段实施；当前 batch 为 `B1`
+- S1：仅授权 B0–B7 分阶段实施；当前 batch 为 `B2`
 - Finding closure status：`OPEN`
 - Independent review status：`NOT_REVIEWED`
 - B8：未执行，且不属于本轮代理授权
@@ -29,8 +29,9 @@ B0–B7 的实现结果即使通过本地与远端检查，最高也只能记录
 |---|---|---|---|---|
 | S0 | `badbf453e1e99ba87cc3064601e480a09ff1b149` | run `29680155024`, job `88174725443`, success | run `29680155024`, job `88174725459`, success | `COMPLETE` |
 | B0 | `013b83a561ca02983e356e384d0a700934db5238` | run `29686443115`, job `88191400688`, success | run `29686443115`, job `88191400695`, success | `COMPLETE` |
-| B1 | pending ordinary checkpoint push | `PENDING` | `PENDING` | `IN_PROGRESS` |
-| B2–B7 | — | — | — | `NOT_STARTED` |
+| B1 | `66eecbc57c4186ad61df8152ef38b5f28300f130` | run `29692415607`, job `88207352223`, success | run `29692415607`, job `88207352209`, success | `COMPLETE` |
+| B2 | pending ordinary checkpoint push | `PENDING` | `PENDING` | `IN_PROGRESS` |
+| B3–B7 | — | — | — | `NOT_STARTED` |
 
 Each B0–B7 row must bind the ordinary-pushed exact remote HEAD and its own Linux/Windows CI. A prior batch's CI cannot be reused for a later batch.
 

@@ -12,7 +12,7 @@ This overlay records the current S1 phased-remediation boundary. It does not sup
 - S0 status: `COMPLETE`
 - Support sharpening stop criteria reached: `true`
 - Finding remediation authorized: `true`, limited to B0–B7
-- Current batch: `B1`
+- Current batch: `B2`
 - Finding closure status: `OPEN`
 - Independent review status: `NOT_REVIEWED`
 - B8 authorized for this agent: `false`
@@ -23,6 +23,6 @@ This overlay records the current S1 phased-remediation boundary. It does not sup
 - Next development readiness: `NOT_AUTHORIZED`
 - PR state required: `Draft/open/unmerged`
 
-All 10 findings remain `OPEN` at B1. B0 completed at exact remote HEAD `013b83a561ca02983e356e384d0a700934db5238`; CI run `29686443115` passed on Linux job `88191400688` and Windows job `88191400695`. A B0–B7 implementation may move an individual finding only as far as `CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW`; only a new independent B8 review may determine `CLOSED`.
+All 10 findings remain `OPEN` at B2. B1 completed at exact remote HEAD `66eecbc57c4186ad61df8152ef38b5f28300f130`; CI run `29692415607` passed on Linux job `88207352223` and Windows job `88207352209`. A B0–B7 implementation may move an individual finding only as far as `CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW`; only a new independent B8 review may determine `CLOSED`.
 
 Every batch must be bound to an ordinary-pushed exact remote HEAD and successful Linux/Windows CI before the next batch starts. Provider, database, Canary/full160, model training, holdout, B8, mark-ready, merge, and release remain prohibited.

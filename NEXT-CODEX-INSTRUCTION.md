@@ -2,7 +2,7 @@
 
 ## 2026-07-19 PR #7 S1 B0–B7 增量边界
 
-7 项 S0 开发支持基线已经在 exact HEAD `badbf453e1e99ba87cc3064601e480a09ff1b149` 完成。用户现已单独授权直接在 `codex/m2-v2-evidence-pilot-v1` 上按 B0–B7 分层实施 10 项 open finding 的 S1 修复、provider-free 离线重建、显式原子提交、普通 push 与 exact-head 双平台 CI checkpoint。B0 已在 exact remote HEAD `013b83a561ca02983e356e384d0a700934db5238` 完成，CI run `29686443115` 的 Linux job `88191400688` 与 Windows job `88191400695` 均成功；当前 batch 为 `B1`，未通过本 batch Linux/Windows CI 前不得进入 B2。
+7 项 S0 开发支持基线已经在 exact HEAD `badbf453e1e99ba87cc3064601e480a09ff1b149` 完成。用户现已单独授权直接在 `codex/m2-v2-evidence-pilot-v1` 上按 B0–B7 分层实施 10 项 open finding 的 S1 修复、provider-free 离线重建、显式原子提交、普通 push 与 exact-head 双平台 CI checkpoint。B1 已在 exact remote HEAD `66eecbc57c4186ad61df8152ef38b5f28300f130` 完成，CI run `29692415607` 的 Linux job `88207352223` 与 Windows job `88207352209` 均成功；当前 batch 为 `B2`，未通过本 batch Linux/Windows CI 前不得进入 B3。
 
 10 项 finding 当前仍全部 `OPEN`。B0–B7 通过后最高只能写 `CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW`；B8 独立外审不属于本轮授权，本代理不得声明任何 finding 已独立 `CLOSED`。
 

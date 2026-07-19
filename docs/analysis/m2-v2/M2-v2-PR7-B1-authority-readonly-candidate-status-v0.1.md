@@ -40,7 +40,7 @@ No provider request or database connection occurred. Provider request delta and 
 
 The first B1 checkpoint candidate at `07b92ac1155d643df5a25387f1e32ff22f0fa6c3` ran as GitHub Actions run `29691288926`. Linux job `88204375867` succeeded. Windows job `88204375873` failed because the native collector expanded a system-temp short path to its long-path identity before a lexical containment check, producing a false `scope member escapes repository root` result.
 
-That failed run is not a completed checkpoint. The fail-closed repair is tracked at `29d3f3f871c0e5fedc995f33f9e64ffd61deae44`; final B1 checkpoint status remains pending until this candidate record is ordinary-pushed and both Linux and Windows CI succeed on that new exact remote HEAD.
+That failed run is not a completed checkpoint. The fail-closed repair is tracked at `29d3f3f871c0e5fedc995f33f9e64ffd61deae44`. The final B1 exact remote HEAD is `66eecbc57c4186ad61df8152ef38b5f28300f130`; GitHub Actions run `29692415607` completed successfully on Linux job `88207352223` and Windows job `88207352209`. This satisfies the B1-to-B2 entry gate without changing either finding from `OPEN`.
 
 ## Deliberate non-claims
 
