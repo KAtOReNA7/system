@@ -210,7 +210,12 @@ test("isolation CLI rejects a nonempty inherited provider environment without ec
     fixture,
     [process.execPath, "-e", "process.exit(0)"],
     [],
-    { OPENAI_API_KEY: secretCanary },
+    {
+      OPENAI_API_KEY: secretCanary,
+      // Exercise the isolation CLI's own fail-closed preflight even when the
+      // parent default chain is already protected by the preload sentinel.
+      M2_V2_S0_SENTINEL_AUTO_INSTALL: "0",
+    },
   );
 
   assert.equal(result.status, 1);
