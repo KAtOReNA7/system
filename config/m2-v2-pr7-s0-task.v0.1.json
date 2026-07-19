@@ -1,0 +1,106 @@
+{
+  "schema": "m2.v2.pr7.s0-task.v0.1",
+  "repository": "KAtOReNA7/system",
+  "pullRequest": 7,
+  "startingHead": "627f74c6b9b2365ee4403c613ea9689748b76541",
+  "baseSha": "d81b952e37dd43365c0091cdd6665e69d8d39a7e",
+  "allowedBranches": [
+    "codex/m2-v2-evidence-pilot-v1",
+    "codex/pr7-s0-support-foundation-627f74",
+    "codex/m2-ci-exact-head"
+  ],
+  "allowedPathClasses": [
+    "config/m2-v2-pr7-s0-*.json",
+    "config/m2-v2-test-artifact-registry.v0.1.json",
+    "config/m2-v2-pr7-python-toolchain.v0.1.json",
+    "scripts/m2-v2-evidence-pilot/*s0*",
+    "scripts/m2-v2-evidence-pilot/check_m2_v2_required_artifacts.mjs",
+    "scripts/m2-v2-evidence-pilot/check_m2_v2_test_skip_policy.mjs",
+    "scripts/m2-v2-evidence-pilot/verify_m2_v2_test_isolation.mjs",
+    "scripts/m2-v2-evidence-pilot/inspect_m2_v2_reparse_point.ps1",
+    "test/helpers/m2V2*S0*.js",
+    "test/helpers/m2V2RequiredArtifacts.js",
+    "test/helpers/m2V2NoExternalSentinel.js",
+    "test/helpers/m2V2ZipCentralDirectory.js",
+    "test/fixtures/m2-v2/*",
+    "test/m2-v2*s0*.test.js",
+    "test/m2-v2-required-artifact-registry.test.js",
+    "test/m2-v2-no-external-sentinel.test.js",
+    "required-artifact fail-open removals in existing test/*.test.js",
+    "package.json",
+    ".github/workflows/ci.yml",
+    "AGENTS.md",
+    "NEXT-CODEX-INSTRUCTION.md",
+    "docs/analysis/m2-v2/M2-v2-PR7-open-findings-status-v0.1.*"
+  ],
+  "prohibitedActions": [
+    "modify src/domain/m2V2EvidencePilot/**",
+    "implement S1, S2, S3, or any open-finding product remediation",
+    "add or install dependencies or system tools",
+    "invoke provider, Canary, run, resume, full160, training, or downstream phases",
+    "connect to any database",
+    "modify existing governed-private content or file metadata",
+    "commit private input/output",
+    "amend, rebase, force push, update PR body, mark ready, or merge PR #7"
+  ],
+  "providerPolicy": {
+    "mode": "forbidden",
+    "allowedTransport": "deterministic fake transport and loopback test server only",
+    "requiredRequestDelta": 0
+  },
+  "databasePolicy": {
+    "mode": "forbidden",
+    "allowedConnections": 0
+  },
+  "networkPolicy": {
+    "implementationAndTests": "no non-loopback network",
+    "gitRemote": "ordinary non-force push of codex/m2-v2-evidence-pilot-v1 only",
+    "github": "read-only PR and CI verification only"
+  },
+  "privateStatePolicy": {
+    "existingGovernedPrivate": "content_and_file_metadata_immutable",
+    "newOutputRoot": "data/private-output/m2-v2-pr7-s0-support-implementation-627f74",
+    "newOutputMustBeIgnored": true
+  },
+  "gitPolicy": {
+    "supportBranch": "codex/pr7-s0-support-foundation-627f74",
+    "integrationBranch": "codex/m2-v2-evidence-pilot-v1",
+    "minimumLogicalCommitGroups": 7,
+    "integrationMode": "ordinary_no_ff_merge",
+    "pushMode": "ordinary_non_force",
+    "stashPolicy": "untouched"
+  },
+  "commandRegistry": "config/m2-v2-pr7-s0-command-registry.v0.1.json",
+  "commandRegistryDigest": "d465ee0d8162786a42cea4cb5385859cae2477b3ed8cf784a23a3fb95f485548",
+  "requiredSourceEvidence": [
+    {
+      "sourceId": "independentReview",
+      "reportSha256": "e5ceba89d1b1fdd573f4f8296636ab9fb9c297eae7f28c8bd1c023abb2bfcc13",
+      "receiptDigest": "3a7d922b57d31547b2d6d646e186c42cc6b98c494d27922bb917af53f38febde"
+    },
+    {
+      "sourceId": "planning",
+      "reportSha256": "2fc541e023e000901c7d55222b0d947ccc856835060fcf317a5fb604f01dc6f7",
+      "receiptDigest": "cf9d420ba667038f9a9f672f9ba8f75eca0ca667204bda886a97e268fbca479f"
+    },
+    {
+      "sourceId": "supportAudit",
+      "reportSha256": "f79d625d695250230e11a2788637b6298daac86c456297c1ae4da769e25f0cd6",
+      "receiptDigest": "8d7e95e7ab88b56e0ea1bb6698e52887041ea7fecd9ce2167de30d7d2c11d872"
+    }
+  ],
+  "receiptSchema": {
+    "path": "config/m2-v2-pr7-s0-receipt-schema.v0.1.json",
+    "sha256": "8ff4215b4319d6923af3767b82cba7a93526bc385fe6e3e61092fc05dbd3b02b"
+  },
+  "governance": {
+    "historicalDecision": "CANARY_CONDITIONAL",
+    "currentDecision": "CANARY_FAIL",
+    "openFindings": 10,
+    "findingRemediationAuthorized": false,
+    "mergeAuthorized": false,
+    "full160Authorized": false,
+    "nextDevelopmentReadiness": "NOT_AUTHORIZED",
+    "releaseAuthorized": false
+  }
+}

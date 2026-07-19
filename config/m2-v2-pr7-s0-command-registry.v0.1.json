@@ -1,0 +1,223 @@
+{
+  "schema": "m2.v2.pr7.s0-command-registry.v0.1",
+  "commands": [
+    {
+      "commandId": "s0.doctor",
+      "purpose": "Read-only exact-head and governance preflight",
+      "platform": "all",
+      "executable": "node",
+      "argv": [
+        "scripts/m2-v2-evidence-pilot/check_m2_v2_pr7_s0_preflight.mjs"
+      ],
+      "cwd": ".",
+      "networkPolicy": "forbidden",
+      "providerPolicy": "forbidden",
+      "databasePolicy": "forbidden",
+      "mutability": "read_only",
+      "requiredInputs": [
+        "config/m2-v2-pr7-s0-task.v0.1.json",
+        "config/m2-v2-pr7-s0-command-registry.v0.1.json"
+      ],
+      "optionalInputs": [
+        "data/private-output/m2-v2-pr7-s0-support-implementation-627f74/s0-source-evidence-authenticity-private-v0.1.json"
+      ],
+      "timeoutSeconds": 120,
+      "skipPolicy": "forbidden",
+      "isolationGroup": "preflight",
+      "receiptRole": "s0_preflight"
+    },
+    {
+      "commandId": "s0.validate.local",
+      "purpose": "Run the seven local S0 support gates without provider or database access",
+      "platform": "all",
+      "executable": "node",
+      "argv": [
+        "scripts/m2-v2-evidence-pilot/run_m2_v2_pr7_s0_validation.mjs"
+      ],
+      "cwd": ".",
+      "networkPolicy": "loopback_test_only",
+      "providerPolicy": "forbidden",
+      "databasePolicy": "forbidden",
+      "mutability": "system_temp_and_new_ignored_receipts_only",
+      "requiredInputs": [
+        "config/m2-v2-pr7-s0-command-registry.v0.1.json"
+      ],
+      "optionalInputs": [],
+      "timeoutSeconds": 3600,
+      "skipPolicy": "forbidden",
+      "isolationGroup": "s0_local_validation",
+      "receiptRole": "s0_local_validation"
+    },
+    {
+      "commandId": "s0.default.isolated",
+      "purpose": "Execute the default test chain exactly once between repository snapshots",
+      "platform": "all",
+      "executable": "node",
+      "argv": [
+        "scripts/m2-v2-evidence-pilot/verify_m2_v2_test_isolation.mjs"
+      ],
+      "cwd": ".",
+      "networkPolicy": "loopback_test_only",
+      "providerPolicy": "forbidden",
+      "databasePolicy": "forbidden",
+      "mutability": "new_ignored_receipt_only",
+      "requiredInputs": [
+        "package.json"
+      ],
+      "optionalInputs": [],
+      "timeoutSeconds": 3600,
+      "skipPolicy": "zero_default_skips",
+      "isolationGroup": "default_test_chain",
+      "receiptRole": "first_run_isolation"
+    },
+    {
+      "commandId": "s0.artifacts.default",
+      "purpose": "Require every default-profile test artifact",
+      "platform": "all",
+      "executable": "node",
+      "argv": [
+        "scripts/m2-v2-evidence-pilot/check_m2_v2_required_artifacts.mjs",
+        "--profile=default"
+      ],
+      "cwd": ".",
+      "networkPolicy": "forbidden",
+      "providerPolicy": "forbidden",
+      "databasePolicy": "forbidden",
+      "mutability": "read_only",
+      "requiredInputs": [
+        "config/m2-v2-test-artifact-registry.v0.1.json"
+      ],
+      "optionalInputs": [],
+      "timeoutSeconds": 120,
+      "skipPolicy": "forbidden",
+      "isolationGroup": "s0_02",
+      "receiptRole": "required_artifacts"
+    },
+    {
+      "commandId": "s0.artifacts.optional-private",
+      "purpose": "Report the four explicitly optional private artifact identities",
+      "platform": "all",
+      "executable": "node",
+      "argv": [
+        "scripts/m2-v2-evidence-pilot/check_m2_v2_required_artifacts.mjs",
+        "--profile=optional-private"
+      ],
+      "cwd": ".",
+      "networkPolicy": "forbidden",
+      "providerPolicy": "forbidden",
+      "databasePolicy": "forbidden",
+      "mutability": "read_only",
+      "requiredInputs": [
+        "config/m2-v2-test-artifact-registry.v0.1.json"
+      ],
+      "optionalInputs": [
+        "data/private-output"
+      ],
+      "timeoutSeconds": 120,
+      "skipPolicy": "explicit_optional_status_only",
+      "isolationGroup": "s0_02_optional",
+      "receiptRole": "optional_private_inventory"
+    },
+    {
+      "commandId": "s0.skips.default",
+      "purpose": "Assert zero skips in the default test profile",
+      "platform": "all",
+      "executable": "node",
+      "argv": [
+        "scripts/m2-v2-evidence-pilot/check_m2_v2_test_skip_policy.mjs",
+        "--profile=default"
+      ],
+      "cwd": ".",
+      "networkPolicy": "forbidden",
+      "providerPolicy": "forbidden",
+      "databasePolicy": "forbidden",
+      "mutability": "read_only",
+      "requiredInputs": [
+        "test"
+      ],
+      "optionalInputs": [],
+      "timeoutSeconds": 120,
+      "skipPolicy": "zero_default_skips",
+      "isolationGroup": "s0_02",
+      "receiptRole": "skip_policy"
+    },
+    {
+      "commandId": "s0.focused.artifacts-external",
+      "purpose": "Run S0-02 artifact and S0-03 external-sentinel focused tests",
+      "platform": "all",
+      "executable": "node",
+      "argv": [
+        "--test",
+        "--test-concurrency=1",
+        "test/m2-v2-required-artifact-registry.test.js",
+        "test/m2-v2-no-external-sentinel.test.js"
+      ],
+      "cwd": ".",
+      "networkPolicy": "loopback_test_only",
+      "providerPolicy": "sentinel_blocked",
+      "databasePolicy": "sentinel_blocked",
+      "mutability": "system_temp_only",
+      "requiredInputs": [
+        "test/m2-v2-required-artifact-registry.test.js",
+        "test/m2-v2-no-external-sentinel.test.js"
+      ],
+      "optionalInputs": [],
+      "timeoutSeconds": 300,
+      "skipPolicy": "forbidden",
+      "isolationGroup": "s0_02_s0_03",
+      "receiptRole": "focused_test"
+    },
+    {
+      "commandId": "s0.focused.authority-event",
+      "purpose": "Run S0-04 authority/cache/proof and S0-07 event corpus focused tests",
+      "platform": "all",
+      "executable": "node",
+      "argv": [
+        "--test",
+        "--test-concurrency=1",
+        "test/m2-v2-pr7-s0-authority-cache-proof-fixtures.test.js",
+        "test/m2-v2-event-conflict-corpus-determinism.test.js"
+      ],
+      "cwd": ".",
+      "networkPolicy": "forbidden",
+      "providerPolicy": "forbidden",
+      "databasePolicy": "forbidden",
+      "mutability": "system_temp_only",
+      "requiredInputs": [
+        "test/m2-v2-pr7-s0-authority-cache-proof-fixtures.test.js",
+        "test/m2-v2-event-conflict-corpus-determinism.test.js"
+      ],
+      "optionalInputs": [],
+      "timeoutSeconds": 300,
+      "skipPolicy": "forbidden",
+      "isolationGroup": "s0_04_s0_07",
+      "receiptRole": "focused_test"
+    },
+    {
+      "commandId": "s0.focused.filesystem-ooxml",
+      "purpose": "Run S0-05 native identity and S0-06 deterministic OPC focused tests",
+      "platform": "all",
+      "executable": "node",
+      "argv": [
+        "--test",
+        "--test-concurrency=1",
+        "test/m2-v2-filesystem-fixture-s0.test.js",
+        "test/m2-v2-ooxml-corpus-s0.test.js"
+      ],
+      "cwd": ".",
+      "networkPolicy": "forbidden",
+      "providerPolicy": "forbidden",
+      "databasePolicy": "forbidden",
+      "mutability": "system_temp_only",
+      "requiredInputs": [
+        "test/m2-v2-filesystem-fixture-s0.test.js",
+        "test/m2-v2-ooxml-corpus-s0.test.js"
+      ],
+      "optionalInputs": [],
+      "timeoutSeconds": 300,
+      "skipPolicy": "forbidden",
+      "isolationGroup": "s0_05_s0_06",
+      "receiptRole": "focused_test"
+    }
+  ]
+}

@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import {
   existsSync,
   lstatSync,
+  mkdtempSync,
   mkdirSync,
   readFileSync,
   readlinkSync,
@@ -14,12 +15,21 @@ import {
 } from "node:fs";
 import { dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
 import { spawnSync } from "node:child_process";
+import { tmpdir } from "node:os";
+import { pathToFileURL } from "node:url";
 import { fileURLToPath } from "node:url";
+import {
+  evaluateIsolationOrdering,
+  parseTapSkipEvidence,
+} from "./m2_v2_pr7_s0_contract.mjs";
 
 const repositoryRoot = resolve(fileURLToPath(new URL("../..", import.meta.url)));
-const DEFAULT_PRIVATE_ROOTS = ["data/private-output"];
+const DEFAULT_PRIVATE_ROOTS = ["data/private-input", "data/private-output"];
 const DEFAULT_TIMEOUT_MS = 30 * 60 * 1000;
-const RECEIPT_ROOT = "data/private-output/m2-v2-pr7-p1-remediation";
+const RECEIPT_ROOTS = [
+  "data/private-output/m2-v2-pr7-p1-remediation",
+  "data/private-output/m2-v2-pr7-s0-support-implementation-627f74",
+];
 
 main();
 
@@ -47,38 +57,42 @@ function main() {
     return;
   }
 
+  const eventSequence = [];
+  const counterDirectory = mkdtempSync(join(tmpdir(), "m2-v2-s0-provider-counter-"));
+  const providerCounterPath = join(counterDirectory, "provider-counter.txt");
+  writeFileSync(providerCounterPath, "0\n", { encoding: "utf8", flag: "wx" });
+  const providerCounterBefore = readProviderCounter(providerCounterPath);
   let before;
   try {
     before = captureRepositoryState({ root, privateRoots });
+    eventSequence.push(sequenceEvent("before_snapshot_complete", eventSequence.length + 1));
   } catch (error) {
+    rmSync(counterDirectory, { recursive: true, force: true });
     emitFailure("before_snapshot_failed", error);
     return;
   }
 
+  eventSequence.push(sequenceEvent("default_test_start", eventSequence.length + 1));
+  const childEnvironment = defaultChildEnvironment({ root, providerCounterPath });
   const child = spawnSync(command[0], command.slice(1), {
     cwd: root,
-    env: {
-      ...process.env,
-      NODE_ENV: "test",
-      OPENAI_API_KEY: "",
-      OPENAI_BASE_URL: "",
-      TAVILY_API_KEY: "",
-      M2_V2_EVIDENCE_API_BASE_URL: "",
-      M2_V2_EVIDENCE_APPROVED_HOST: "",
-      M2_V2_APPROVED_RELAY_HOST: "",
-      M2_V2_EVIDENCE_PROVIDER: "",
-      M2_V2_SEARCH_PROVIDER: "",
-      M2_V2_TAVILY_BASE_URL: "",
-    },
-    stdio: "ignore",
+    env: childEnvironment,
+    encoding: "utf8",
+    stdio: ["ignore", "pipe", "pipe"],
+    maxBuffer: 64 * 1024 * 1024,
     timeout: timeoutMs,
     windowsHide: true,
   });
+  eventSequence.push(sequenceEvent("default_test_finish", eventSequence.length + 1));
 
   let after;
+  let providerCounterAfter;
   try {
+    providerCounterAfter = readProviderCounter(providerCounterPath);
     after = captureRepositoryState({ root, privateRoots });
+    eventSequence.push(sequenceEvent("after_snapshot_complete", eventSequence.length + 1));
   } catch (error) {
+    rmSync(counterDirectory, { recursive: true, force: true });
     emitFailure("after_snapshot_failed", error, {
       childExitCode: child.status,
       childSignal: child.signal ?? null,
@@ -87,19 +101,38 @@ function main() {
   }
 
   const comparisons = compareStates(before, after);
+  const ordering = evaluateIsolationOrdering({
+    events: eventSequence,
+    defaultTestChainInvocationCount: 1,
+  });
+  const skipEvidence = parseTapSkipEvidence(`${child.stdout ?? ""}\n${child.stderr ?? ""}`);
+  const providerRequestDelta = providerCounterAfter - providerCounterBefore;
   const childCompleted = child.status !== null && child.signal === null && !child.error;
   const childPassed = childCompleted && child.status === 0;
-  const passed = childPassed && Object.values(comparisons).every(Boolean);
+  const skipPolicyPassed = options.syntheticFixture || skipEvidence.totalSkips === 0;
+  const passed = childPassed
+    && skipPolicyPassed
+    && providerRequestDelta === 0
+    && Object.values(comparisons).every(Boolean);
   const result = {
-    schema: "m2.v2.default-test-isolation-proof.v0.2",
+    schema: "m2.v2.default-test-isolation-proof.v0.3",
     passed,
     proofScope: options.syntheticFixture ? "synthetic_fixture" : "full_npm_test",
+    events: eventSequence,
+    ...ordering,
     childCompleted,
     childPassed,
     childExitCode: child.status,
     childSignal: child.signal ?? null,
     childErrorCode: child.error?.code ?? null,
     timedOut: child.error?.code === "ETIMEDOUT" || child.signal === "SIGTERM",
+    defaultTestTotalSkips: skipEvidence.totalSkips,
+    defaultTestSkipIdentities: skipEvidence.identities,
+    defaultTestSkipSummaryPresent: skipEvidence.summaryPresent,
+    defaultTestSkipIdentityCountMatchesSummary: skipEvidence.identityCountMatchesSummary,
+    providerCounterBefore,
+    providerCounterAfter,
+    providerRequestDelta,
     ...comparisons,
     before: publicSnapshot(before),
     after: publicSnapshot(after),
@@ -118,6 +151,8 @@ function main() {
       result.receiptError = sanitizeError(error);
     }
   }
+
+  rmSync(counterDirectory, { recursive: true, force: true });
 
   process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
   if (!result.passed) process.exitCode = 1;
@@ -175,6 +210,52 @@ function defaultTestCommand() {
   return ["npm", "test"];
 }
 
+function defaultChildEnvironment({ root, providerCounterPath }) {
+  const sentinelPath = join(root, "test/helpers/m2V2NoExternalSentinel.js");
+  const sentinelOption = existsSync(sentinelPath)
+    ? `--import=${pathToFileURL(sentinelPath).href}`
+    : "";
+  const nodeOptions = [String(process.env.NODE_OPTIONS ?? "").trim(), sentinelOption]
+    .filter(Boolean)
+    .join(" ");
+  return {
+    ...process.env,
+    NODE_ENV: "test",
+    NODE_OPTIONS: nodeOptions,
+    M2_V2_S0_SENTINEL_AUTO_INSTALL: "1",
+    M2_V2_S0_PROVIDER_COUNTER_FILE: providerCounterPath,
+    OPENAI_API_KEY: "",
+    OPENAI_BASE_URL: "",
+    TAVILY_API_KEY: "",
+    M2_V2_EVIDENCE_API_BASE_URL: "",
+    M2_V2_EVIDENCE_APPROVED_HOST: "",
+    M2_V2_APPROVED_RELAY_HOST: "",
+    M2_V2_EVIDENCE_PROVIDER: "",
+    M2_V2_SEARCH_PROVIDER: "",
+    M2_V2_TAVILY_BASE_URL: "",
+    M1_DATABASE_URL: "",
+    M1_DATABASE_READONLY_URL: "",
+    M1_DATABASE_BACKGROUND_URL: "",
+    DATABASE_URL: "",
+    PGHOST: "",
+    PGPORT: "",
+    PGDATABASE: "",
+    PGUSER: "",
+    PGPASSWORD: "",
+  };
+}
+
+function readProviderCounter(path) {
+  const raw = readFileSync(path, "utf8").trim();
+  const parsed = raw.startsWith("{") ? JSON.parse(raw).providerCalls : Number(raw);
+  if (!Number.isSafeInteger(parsed) || parsed < 0) throw new Error("provider_counter_must_be_nonnegative_integer");
+  return parsed;
+}
+
+function sequenceEvent(eventId, sequence) {
+  return { eventId, sequence, recordedAt: new Date().toISOString() };
+}
+
 function assertSyntheticOverridesAreExplicit(options, root, command, privateRoots) {
   const defaults = {
     root: repositoryRoot,
@@ -204,16 +285,50 @@ function captureRepositoryState({ root, privateRoots }) {
   const nonIgnoredUntracked = snapshotPaths(root, nonIgnoredUntrackedPaths);
   const privateState = snapshotRoots(root, privateRoots);
   const gitStatusRaw = runGit(root, ["status", "--porcelain=v2", "--untracked-files=all", "-z"]);
+  const refs = snapshotRefs(root);
 
   return {
     tracked,
     privateState,
     nonIgnoredUntracked,
+    refs,
     gitStatus: {
       entryCount: parseNullSeparated(gitStatusRaw).length,
       digest: sha256(Buffer.from(gitStatusRaw, "utf8")),
     },
   };
+}
+
+function snapshotRefs(root) {
+  const raw = runGit(root, ["for-each-ref", "--format=%(refname)%09%(objectname)%09%(symref)"]);
+  const lines = raw.split(/\r?\n/u).filter(Boolean);
+  const userRows = [];
+  const systemRows = [];
+  for (const line of lines) {
+    const fields = line.split("\t");
+    if (fields.length !== 3) throw new Error("git_ref_snapshot_shape_invalid");
+    const row = {
+      ref: fields[0],
+      object: fields[1],
+      symref: fields[2],
+    };
+    if (isSystemManagedRef(row.ref)) systemRows.push(row);
+    else userRows.push(row);
+  }
+  return {
+    classification: {
+      systemPrefixes: ["refs/codex/", "refs/worktree/"],
+      defaultClass: "user",
+    },
+    userCount: userRows.length,
+    userDigest: sha256(userRows),
+    systemCount: systemRows.length,
+    systemDigest: sha256(systemRows),
+  };
+}
+
+function isSystemManagedRef(ref) {
+  return ref.startsWith("refs/codex/") || ref.startsWith("refs/worktree/");
 }
 
 function snapshotPaths(root, paths) {
@@ -315,6 +430,8 @@ function compareStates(before, after) {
       before.nonIgnoredUntracked.contentDigest === after.nonIgnoredUntracked.contentDigest,
     nonIgnoredUntrackedMetadataUnchanged:
       before.nonIgnoredUntracked.metadataDigest === after.nonIgnoredUntracked.metadataDigest,
+    userRefsUnchanged: before.refs.userDigest === after.refs.userDigest,
+    systemRefsUnchanged: before.refs.systemDigest === after.refs.systemDigest,
   };
 }
 
@@ -334,13 +451,18 @@ function publicSnapshot(state) {
     nonIgnoredUntrackedEntryCount: state.nonIgnoredUntracked.entryCount,
     nonIgnoredUntrackedContentDigest: state.nonIgnoredUntracked.contentDigest,
     nonIgnoredUntrackedMetadataDigest: state.nonIgnoredUntracked.metadataDigest,
+    userRefCount: state.refs.userCount,
+    userRefDigest: state.refs.userDigest,
+    systemRefCount: state.refs.systemCount,
+    systemRefDigest: state.refs.systemDigest,
+    refClassification: state.refs.classification,
   };
 }
 
 function writeReceiptAfterComparison({ root, receipt, result }) {
   const receiptPath = resolveInside(root, receipt);
-  const allowedRoot = resolveInside(root, RECEIPT_ROOT);
-  if (!isInside(allowedRoot, receiptPath) || receiptPath === allowedRoot) {
+  const allowedRoots = RECEIPT_ROOTS.map((path) => resolveInside(root, path));
+  if (!allowedRoots.some((allowedRoot) => isInside(allowedRoot, receiptPath))) {
     throw new Error("receipt_must_be_file_under_ignored_remediation_root");
   }
   const relativeReceipt = normalizePath(relative(root, receiptPath));
@@ -400,7 +522,7 @@ function normalizePath(path) {
 
 function emitFailure(stage, error, extra = {}) {
   process.stdout.write(`${JSON.stringify({
-    schema: "m2.v2.default-test-isolation-proof.v0.2",
+    schema: "m2.v2.default-test-isolation-proof.v0.3",
     passed: false,
     failureStage: stage,
     error: sanitizeError(error),

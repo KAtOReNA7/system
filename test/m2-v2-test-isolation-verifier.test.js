@@ -12,6 +12,7 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
+import { evaluateIsolationOrdering } from "../scripts/m2-v2-evidence-pilot/m2_v2_pr7_s0_contract.mjs";
 
 const repositoryRoot = resolve(fileURLToPath(new URL("..", import.meta.url)));
 const verifierPath = join(
@@ -72,6 +73,20 @@ test("synthetic isolation proof detects governed private mutation without disclo
   assert.equal(result.combinedOutput.includes("state.json"), false);
 });
 
+test("synthetic isolation proof detects governed private-input mutation", () => {
+  const fixture = createFixture();
+  const command = [
+    process.execPath,
+    "-e",
+    "require('node:fs').appendFileSync('data/private-input/input.json', 'changed')",
+  ];
+  const result = runVerifier(fixture, command);
+
+  assert.equal(result.status, 1);
+  assert.equal(result.payload.governedPrivateContentUnchanged, false);
+  assert.equal(result.payload.governedPrivateMetadataUnchanged, false);
+});
+
 test("synthetic isolation proof detects content mutation of an existing nonignored untracked file", () => {
   const fixture = createFixture({ withUntrackedFile: true });
   const command = [
@@ -103,6 +118,59 @@ test("child failure output is suppressed and the verifier fails closed", () => {
   assert.equal(result.combinedOutput.includes(childCanary), false);
 });
 
+test("synthetic isolation proof detects full user-ref mutation", () => {
+  const fixture = createFixture();
+  const command = [
+    process.execPath,
+    "-e",
+    "require('node:child_process').execFileSync('git', ['tag', 'isolation-ref-mutation'])",
+  ];
+  const result = runVerifier(fixture, command);
+
+  assert.equal(result.status, 1);
+  assert.equal(result.payload.userRefsUnchanged, false);
+  assert.equal(result.payload.systemRefsUnchanged, true);
+});
+
+test("synthetic isolation proof detects provider counter mutation", () => {
+  const fixture = createFixture();
+  const command = [
+    process.execPath,
+    "-e",
+    "require('node:fs').writeFileSync(process.env.M2_V2_S0_PROVIDER_COUNTER_FILE, '1\\n')",
+  ];
+  const result = runVerifier(fixture, command);
+
+  assert.equal(result.status, 1);
+  assert.equal(result.payload.providerCounterBefore, 0);
+  assert.equal(result.payload.providerCounterAfter, 1);
+  assert.equal(result.payload.providerRequestDelta, 1);
+});
+
+test("isolation ordering rejects a before snapshot recorded after test start", () => {
+  assert.throws(() => evaluateIsolationOrdering({
+    defaultTestChainInvocationCount: 1,
+    events: [
+      { eventId: "default_test_start", sequence: 1 },
+      { eventId: "before_snapshot_complete", sequence: 2 },
+      { eventId: "default_test_finish", sequence: 3 },
+      { eventId: "after_snapshot_complete", sequence: 4 },
+    ],
+  }), /before_snapshot_does_not_precede_default_test/u);
+});
+
+test("isolation ordering rejects two default test chain invocations", () => {
+  assert.throws(() => evaluateIsolationOrdering({
+    defaultTestChainInvocationCount: 2,
+    events: [
+      { eventId: "before_snapshot_complete", sequence: 1 },
+      { eventId: "default_test_start", sequence: 2 },
+      { eventId: "default_test_finish", sequence: 3 },
+      { eventId: "after_snapshot_complete", sequence: 4 },
+    ],
+  }), /default_test_chain_invocation_count_must_equal_one/u);
+});
+
 test("optional ignored receipt is written only after a successful comparison", () => {
   const fixture = createFixture();
   const receipt = "data/private-output/m2-v2-pr7-p1-remediation/isolation-proof.json";
@@ -128,9 +196,11 @@ test("optional ignored receipt is written only after a successful comparison", (
 function createFixture({ withUntrackedFile = false } = {}) {
   const fixture = mkdtempSync(join(tmpdir(), "m2-v2-isolation-synthetic-"));
   fixtures.add(fixture);
+  mkdirSync(join(fixture, "data/private-input"), { recursive: true });
   mkdirSync(join(fixture, "data/private-output"), { recursive: true });
-  writeFileSync(join(fixture, ".gitignore"), "data/private-output/\n", "utf8");
+  writeFileSync(join(fixture, ".gitignore"), "data/private-input/\ndata/private-output/\n", "utf8");
   writeFileSync(join(fixture, "tracked.txt"), "tracked\n", "utf8");
+  writeFileSync(join(fixture, "data/private-input/input.json"), "{\"input\":\"synthetic\"}\n", "utf8");
   writeFileSync(join(fixture, "data/private-output/state.json"), "{\"state\":\"synthetic\"}\n", "utf8");
   git(fixture, ["init", "--quiet"]);
   git(fixture, ["config", "user.name", "Isolation Test"]);
@@ -147,6 +217,8 @@ function runVerifier(fixture, command, extraArgs = []) {
     "--synthetic-fixture",
     "--root",
     fixture,
+    "--private-root",
+    "data/private-input",
     "--private-root",
     "data/private-output",
     "--command-json",
@@ -176,6 +248,8 @@ function assertAllComparisons(payload, expected) {
     "gitStatusUnchanged",
     "nonIgnoredUntrackedContentUnchanged",
     "nonIgnoredUntrackedMetadataUnchanged",
+    "userRefsUnchanged",
+    "systemRefsUnchanged",
   ]) {
     assert.equal(payload[field], expected, field);
   }
