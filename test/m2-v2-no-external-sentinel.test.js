@@ -6,6 +6,7 @@ import net from "node:net";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
+import { promisify } from "node:util";
 import pg from "pg";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import {
@@ -100,6 +101,28 @@ test("S0-03 child-process network helpers are denied before process creation", a
       /s0_child_network_helper_blocked:spawnSync/u,
     );
     assert.equal(sentinel.snapshot().actualExternalFetchCount, 0);
+  });
+});
+
+test("S0-03 child-process guards preserve Node promisify contracts without a network bypass", async () => {
+  await withInstalledNoExternalSentinel({ env: emptyExternalEnv() }, async () => {
+    const execFileAsync = promisify(childProcess.execFile);
+    const execAsync = promisify(childProcess.exec);
+    assert.equal(Object.getOwnPropertyDescriptor(childProcess.execFile, promisify.custom)?.configurable, false);
+    assert.equal(Object.getOwnPropertyDescriptor(childProcess.exec, promisify.custom)?.configurable, false);
+    const pendingResult = execFileAsync(process.execPath, ["-e", "process.stdout.write('PROMISIFY_OK')"]);
+    assert.equal(typeof pendingResult.child?.pid, "number");
+    const result = await pendingResult;
+    assert.equal(result.stdout, "PROMISIFY_OK");
+    assert.equal(result.stderr, "");
+    await assert.rejects(
+      execFileAsync("curl", ["https://example.invalid/"]),
+      /s0_child_network_helper_blocked:execFile/u,
+    );
+    await assert.rejects(
+      execAsync("curl https://example.invalid/"),
+      /s0_child_network_helper_blocked:exec/u,
+    );
   });
 });
 

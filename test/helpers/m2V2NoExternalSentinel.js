@@ -7,6 +7,7 @@ import https from "node:https";
 import net from "node:net";
 import tls from "node:tls";
 import { syncBuiltinESMExports } from "node:module";
+import { promisify } from "node:util";
 import pg from "pg";
 
 export const M2_V2_S0_SENTINEL_GLOBAL = Symbol.for("m2.v2.pr7.s0.noExternalSentinel.v0.1");
@@ -330,6 +331,25 @@ export function createNoExternalSentinel(options = {}) {
     return original.call(thisArg, executable, argv, ...rest);
   }
 
+  function preserveGuardedPromisify(wrapper, original, guard) {
+    const originalPromisified = original[promisify.custom];
+    if (typeof originalPromisified !== "function") return wrapper;
+    Object.defineProperty(wrapper, promisify.custom, {
+      configurable: false,
+      enumerable: false,
+      writable: false,
+      value: (...args) => {
+        try {
+          guard(...args);
+          return originalPromisified(...args);
+        } catch (error) {
+          return Promise.reject(error);
+        }
+      },
+    });
+    return wrapper;
+  }
+
   function install() {
     if (installed) throw new Error("s0_no_external_sentinel_already_installed");
     installed = true;
@@ -361,12 +381,28 @@ export function createNoExternalSentinel(options = {}) {
     }
     childProcess.spawn = function guardedSpawn(executable, argv = [], ...rest) { return guardedChild("spawn", originals.spawn, this, executable, argv, rest); };
     childProcess.spawnSync = function guardedSpawnSync(executable, argv = [], ...rest) { return guardedChild("spawnSync", originals.spawnSync, this, executable, argv, rest); };
-    childProcess.execFile = function guardedExecFile(executable, argv = [], ...rest) { return guardedChild("execFile", originals.execFile, this, executable, argv, rest); };
+    childProcess.execFile = preserveGuardedPromisify(
+      function guardedExecFile(executable, argv = [], ...rest) {
+        return guardedChild("execFile", originals.execFile, this, executable, argv, rest);
+      },
+      originals.execFile,
+      (executable, argv = []) => {
+        if (looksLikeNetworkHelper(executable, argv)) throw new Error("s0_child_network_helper_blocked:execFile");
+      },
+    );
     childProcess.execFileSync = function guardedExecFileSync(executable, argv = [], ...rest) { return guardedChild("execFileSync", originals.execFileSync, this, executable, argv, rest); };
-    childProcess.exec = function guardedExec(command, ...rest) {
-      if (/https?:\/\/|\b(?:curl|wget|psql|pg_isready|tavily|openai)\b/iu.test(String(command))) throw new Error("s0_child_network_helper_blocked:exec");
-      return originals.exec.call(this, command, ...rest);
-    };
+    childProcess.exec = preserveGuardedPromisify(
+      function guardedExec(command, ...rest) {
+        if (/https?:\/\/|\b(?:curl|wget|psql|pg_isready|tavily|openai)\b/iu.test(String(command))) throw new Error("s0_child_network_helper_blocked:exec");
+        return originals.exec.call(this, command, ...rest);
+      },
+      originals.exec,
+      (command) => {
+        if (/https?:\/\/|\b(?:curl|wget|psql|pg_isready|tavily|openai)\b/iu.test(String(command))) {
+          throw new Error("s0_child_network_helper_blocked:exec");
+        }
+      },
+    );
     childProcess.execSync = function guardedExecSync(command, ...rest) {
       if (/https?:\/\/|\b(?:curl|wget|psql|pg_isready|tavily|openai)\b/iu.test(String(command))) throw new Error("s0_child_network_helper_blocked:execSync");
       return originals.execSync.call(this, command, ...rest);
