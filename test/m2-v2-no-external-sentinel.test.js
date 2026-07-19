@@ -2,9 +2,11 @@ import assert from "node:assert/strict";
 import childProcess from "node:child_process";
 import fs from "node:fs";
 import http from "node:http";
+import net from "node:net";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
+import pg from "pg";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import {
   DATABASE_ENV_NAMES,
@@ -16,6 +18,7 @@ import {
   createSyntheticCapabilityFoundation,
   readProviderCounter,
   validateProviderRouteInventory,
+  withInstalledNoExternalSentinel,
 } from "./helpers/m2V2NoExternalSentinel.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -43,10 +46,11 @@ test("S0-03 route inventory binds all six direct fetch sinks and their test entr
 
 test("S0-03 global fetch, direct HTTP/HTTPS and known provider hosts fail before transport", async () => {
   await withCounter(async (counterFile) => {
-    const sentinel = createNoExternalSentinel({ env: emptyExternalEnv(), counterFile });
-    sentinel.install();
-    try {
-      assert.notEqual(globalThis.fetch, sentinel.originalFetch);
+    const fetchBeforeInstall = globalThis.fetch;
+    await withInstalledNoExternalSentinel({ env: emptyExternalEnv(), counterFile }, async (sentinel) => {
+      assert.notEqual(globalThis.fetch, fetchBeforeInstall);
+      assert.equal(Object.hasOwn(sentinel, "originalFetch"), false);
+      assert.equal(Object.hasOwn(sentinel, "restore"), false);
       await assert.rejects(async () => globalThis.fetch("https://api.openai.com/v1/responses"), /s0_external_transport_blocked:fetch/u);
       assert.throws(() => http.request("http://example.invalid/"), /s0_external_transport_blocked:http\.request/u);
       const https = await import("node:https");
@@ -56,40 +60,47 @@ test("S0-03 global fetch, direct HTTP/HTTPS and known provider hosts fail before
       assert.equal(snapshot.actualExternalFetchCount, 0);
       assert.equal(snapshot.providerRequestDelta, 0);
       assert.equal(readProviderCounter(counterFile), 0);
-    } finally {
-      sentinel.restore();
-    }
+    });
   });
 });
 
-test("S0-03 DB aliases and direct pg-style connect attempts fail before connect", () => {
+test("S0-03 DB aliases and real pg Client.connect fail before transport", async () => {
   assert.throws(
     () => assertExternalEnvironmentEmpty(emptyExternalEnv({ DATABASE_URL: "present-but-not-printed" })),
     /s0_external_env_nonempty:DATABASE_URL/u,
   );
-  const sentinel = createNoExternalSentinel({ env: emptyExternalEnv() });
-  let connectCalled = false;
-  assert.throws(
-    () => sentinel.guardDbConnect(() => { connectCalled = true; }),
-    /s0_database_connect_blocked:pg\.Client\.connect/u,
-  );
-  assert.equal(connectCalled, false);
-  assert.equal(sentinel.snapshot().attemptedDbConnectCount, 1);
-  assert.equal(sentinel.snapshot().actualDbConnectCount, 0);
+  let acceptedConnections = 0;
+  const server = net.createServer((socket) => {
+    acceptedConnections += 1;
+    socket.destroy();
+  });
+  await new Promise((resolve, reject) => {
+    server.once("error", reject);
+    server.listen(0, "127.0.0.1", resolve);
+  });
+  try {
+    await withInstalledNoExternalSentinel({ env: emptyExternalEnv() }, async (sentinel) => {
+      const address = server.address();
+      const client = new pg.Client({ host: "127.0.0.1", port: address.port, database: "synthetic" });
+      assert.throws(() => client.connect(), /s0_database_connect_blocked:pg\.Client\.connect/u);
+      await new Promise((resolve) => setImmediate(resolve));
+      assert.equal(acceptedConnections, 0);
+      assert.equal(sentinel.snapshot().attemptedDbConnectCount, 1);
+      assert.equal(sentinel.snapshot().actualDbConnectCount, 0);
+    });
+  } finally {
+    await new Promise((resolve, reject) => server.close((error) => error ? reject(error) : resolve()));
+  }
 });
 
-test("S0-03 child-process network helpers are denied before process creation", () => {
-  const sentinel = createNoExternalSentinel({ env: emptyExternalEnv() });
-  sentinel.install();
-  try {
+test("S0-03 child-process network helpers are denied before process creation", async () => {
+  await withInstalledNoExternalSentinel({ env: emptyExternalEnv() }, async (sentinel) => {
     assert.throws(
       () => childProcess.spawnSync("curl", ["https://example.invalid/"]),
       /s0_child_network_helper_blocked:spawnSync/u,
     );
     assert.equal(sentinel.snapshot().actualExternalFetchCount, 0);
-  } finally {
-    sentinel.restore();
-  }
+  });
 });
 
 test("S0-03 fake transports are route-bound positive controls and never increment the provider counter", async () => {
@@ -143,19 +154,18 @@ test("S0-03 loopback in-process HTTP is allowed without provider-counter movemen
       server.listen(0, "127.0.0.1", resolve);
     });
     const address = server.address();
-    const sentinel = createNoExternalSentinel({ env: emptyExternalEnv(), counterFile });
-    sentinel.install();
     try {
-      const response = await globalThis.fetch(`http://127.0.0.1:${address.port}/health`);
-      assert.equal(response.status, 200);
-      assert.deepEqual(await response.json(), { ok: true });
-      const snapshot = sentinel.snapshot();
-      assert.equal(snapshot.loopbackCount, 1);
-      assert.equal(snapshot.actualExternalFetchCount, 0);
-      assert.equal(snapshot.providerRequestDelta, 0);
-      assert.equal(readProviderCounter(counterFile), 0);
+      await withInstalledNoExternalSentinel({ env: emptyExternalEnv(), counterFile }, async (sentinel) => {
+        const response = await globalThis.fetch(`http://127.0.0.1:${address.port}/health`);
+        assert.equal(response.status, 200);
+        assert.deepEqual(await response.json(), { ok: true });
+        const snapshot = sentinel.snapshot();
+        assert.equal(snapshot.loopbackCount, 1);
+        assert.equal(snapshot.actualExternalFetchCount, 0);
+        assert.equal(snapshot.providerRequestDelta, 0);
+        assert.equal(readProviderCounter(counterFile), 0);
+      });
     } finally {
-      sentinel.restore();
       await new Promise((resolve, reject) => server.close((error) => error ? reject(error) : resolve()));
     }
   });
@@ -163,11 +173,19 @@ test("S0-03 loopback in-process HTTP is allowed without provider-counter movemen
 
 test("S0-03 helper auto-installs only under the explicit Node preload env", async () => {
   await withCounter(async (counterFile) => {
-    assert.equal(globalThis[M2_V2_S0_SENTINEL_GLOBAL] ?? null, null);
+    const inheritedHandle = globalThis[M2_V2_S0_SENTINEL_GLOBAL] ?? null;
+    if (process.env.M2_V2_S0_SENTINEL_AUTO_INSTALL === "1") {
+      assert.equal(inheritedHandle?.isInstalled(), true);
+      assert.equal(typeof inheritedHandle.restore, "undefined");
+      assert.equal(typeof inheritedHandle.originalFetch, "undefined");
+    } else {
+      assert.equal(inheritedHandle, null);
+    }
     const helperUrl = pathToFileURL(path.join(root, "test/helpers/m2V2NoExternalSentinel.js")).href;
     const script = `
       const value = globalThis[Symbol.for('m2.v2.pr7.s0.noExternalSentinel.v0.1')];
       if (!value || !value.isInstalled()) process.exit(17);
+      if (typeof value.restore !== 'undefined' || typeof value.originalFetch !== 'undefined') process.exit(19);
       const snapshot = value.snapshot();
       if (snapshot.providerRequestDelta !== 0) process.exit(18);
       process.stdout.write('AUTO_SENTINEL_OK');

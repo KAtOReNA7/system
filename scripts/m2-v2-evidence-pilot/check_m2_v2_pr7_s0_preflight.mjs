@@ -25,6 +25,10 @@ const TASK_MANIFEST = "config/m2-v2-pr7-s0-task.v0.1.json";
 const SOURCE_EVIDENCE = "data/private-output/m2-v2-pr7-s0-support-implementation-627f74/s0-source-evidence-authenticity-private-v0.1.json";
 const STATUS_OVERLAY = "docs/analysis/m2-v2/M2-v2-PR7-open-findings-status-v0.1.json";
 const OUTPUT_ROOT = "data/private-output/m2-v2-pr7-s0-support-implementation-627f74";
+const FAILURE_RECEIPT_SCHEMA = JSON.parse(readFileSync(
+  resolve(repositoryRoot, "config/m2-v2-pr7-s0-receipt-schema.v0.1.json"),
+  "utf8",
+));
 const EXTERNAL_ENV_NAMES = Object.freeze([
   "OPENAI_API_KEY",
   "OPENAI_BASE_URL",
@@ -51,6 +55,7 @@ main();
 function main() {
   const generatedAt = new Date().toISOString();
   let actualHead = "0000000000000000000000000000000000000000";
+  let failureStage = "argument_and_task_contract";
   try {
     const options = parseArguments(process.argv.slice(2));
     const root = resolve(options.root ?? repositoryRoot);
@@ -71,6 +76,7 @@ function main() {
     const selectedCommand = resolveRegisteredCommand(registry, options.commandId);
     if (options.fallbackId !== null) throw new Error("unknown_fallback_id");
 
+    failureStage = "repository_and_governance_gates";
     actualHead = git(root, ["rev-parse", "HEAD"]).trim();
     if (!/^[0-9a-f]{40}$/u.test(options.expectedHead ?? "")) {
       throw new Error("expected_head_is_required_and_must_be_full_sha");
@@ -108,6 +114,7 @@ function main() {
       currentGovernanceValid: validateOverlay(overlay),
     };
     const checks = evaluatePreflightFacts(facts);
+    failureStage = "success_receipt_schema_validation";
     const receipt = {
       schema: "m2.v2.pr7.s0-preflight-receipt.v0.1",
       passed: true,
@@ -134,10 +141,12 @@ function main() {
       passed: false,
       generatedAt,
       actualHead,
+      failureStage,
       checks: {},
       fallbackEvents: [],
       error: sanitizeError(error),
     };
+    validateJsonSchema(receipt, FAILURE_RECEIPT_SCHEMA);
     process.stdout.write(`${JSON.stringify(receipt, null, 2)}\n`);
     process.exitCode = 1;
   }
@@ -284,9 +293,11 @@ function normalizePath(path) {
 }
 
 function sanitizeError(error) {
+  const message = String(error?.message ?? error);
   return {
     name: error instanceof Error ? error.name : "Error",
-    code: typeof error?.code === "string" ? error.code : null,
-    messageDigest: sha256(String(error?.message ?? error)),
+    code: typeof error?.code === "string" && error.code ? error.code : "UNSPECIFIED",
+    reasonCode: message.replace(/[^A-Za-z0-9_.:-]+/gu, "_").slice(0, 160) || "unspecified_failure",
+    messageDigest: sha256(message),
   };
 }

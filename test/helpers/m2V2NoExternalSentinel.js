@@ -7,6 +7,7 @@ import https from "node:https";
 import net from "node:net";
 import tls from "node:tls";
 import { syncBuiltinESMExports } from "node:module";
+import pg from "pg";
 
 export const M2_V2_S0_SENTINEL_GLOBAL = Symbol.for("m2.v2.pr7.s0.noExternalSentinel.v0.1");
 
@@ -86,6 +87,7 @@ export const PROVIDER_ROUTE_INVENTORY = Object.freeze([
 ]);
 
 const ROUTE_IDS = new Set(PROVIDER_ROUTE_INVENTORY.map((item) => item.routeId));
+const RESTORE_HANDLES = new WeakMap();
 
 function sanitizedToken(value) {
   return String(value ?? "").replace(/[\r\n\t]+/gu, " ").slice(0, 160);
@@ -284,6 +286,8 @@ export function createNoExternalSentinel(options = {}) {
     execFileSync: childProcess.execFileSync,
     exec: childProcess.exec,
     execSync: childProcess.execSync,
+    pgClientConnect: pg.Client.prototype.connect,
+    pgPoolConnect: pg.Pool.prototype.connect,
   };
   let installed = false;
 
@@ -367,6 +371,14 @@ export function createNoExternalSentinel(options = {}) {
       if (/https?:\/\/|\b(?:curl|wget|psql|pg_isready|tavily|openai)\b/iu.test(String(command))) throw new Error("s0_child_network_helper_blocked:execSync");
       return originals.execSync.call(this, command, ...rest);
     };
+    pg.Client.prototype.connect = function guardedPgClientConnect() {
+      counters.attemptedDbConnectCount += 1;
+      throw new Error("s0_database_connect_blocked:pg.Client.connect");
+    };
+    pg.Pool.prototype.connect = function guardedPgPoolConnect() {
+      counters.attemptedDbConnectCount += 1;
+      throw new Error("s0_database_connect_blocked:pg.Pool.connect");
+    };
     syncBuiltinESMExports();
     return api;
   }
@@ -392,6 +404,8 @@ export function createNoExternalSentinel(options = {}) {
     childProcess.execFileSync = originals.execFileSync;
     childProcess.exec = originals.exec;
     childProcess.execSync = originals.execSync;
+    pg.Client.prototype.connect = originals.pgClientConnect;
+    pg.Pool.prototype.connect = originals.pgPoolConnect;
     syncBuiltinESMExports();
     installed = false;
   }
@@ -422,14 +436,24 @@ export function createNoExternalSentinel(options = {}) {
 
   const api = Object.freeze({
     install,
-    restore,
     snapshot,
     createFakeFetch,
     guardDbConnect,
     isInstalled: () => installed,
-    originalFetch: originals.fetch,
   });
+  RESTORE_HANDLES.set(api, restore);
   return api;
+}
+
+export async function withInstalledNoExternalSentinel(options, callback) {
+  if (typeof callback !== "function") throw new Error("s0_no_external_callback_required");
+  const sentinel = createNoExternalSentinel(options);
+  sentinel.install();
+  try {
+    return await callback(sentinel);
+  } finally {
+    RESTORE_HANDLES.get(sentinel)();
+  }
 }
 
 export function getAutoInstalledSentinel() {
@@ -440,8 +464,12 @@ if (process.env.M2_V2_S0_SENTINEL_AUTO_INSTALL === "1") {
   if (!globalThis[M2_V2_S0_SENTINEL_GLOBAL]) {
     const sentinel = createNoExternalSentinel({ env: process.env });
     sentinel.install();
+    const autoInstalledHandle = Object.freeze({
+      isInstalled: sentinel.isInstalled,
+      snapshot: sentinel.snapshot,
+    });
     Object.defineProperty(globalThis, M2_V2_S0_SENTINEL_GLOBAL, {
-      value: sentinel,
+      value: autoInstalledHandle,
       configurable: false,
       enumerable: false,
       writable: false,

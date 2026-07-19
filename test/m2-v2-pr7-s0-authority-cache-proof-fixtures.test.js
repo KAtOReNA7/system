@@ -151,6 +151,27 @@ test("S0-04 proof-scope foundation covers self-exclusion and all six fault trans
         `${entry.caseId}:unexpected_change:${change}`,
       );
     }
+    assert.equal(
+      entry.baseCaseId,
+      entry.expectedValid ? null : "proof-scope.self-output-exclusion.v0.1",
+      `${entry.caseId}:base_case_binding`,
+    );
+    const expectedPaths = entry.proofScope.expectedAuthorityDerivedPathSet;
+    const observedPaths = entry.proofScope.members.map((member) => member.relativePath).sort();
+    const expectedOnly = expectedPaths.filter((path) => !observedPaths.includes(path));
+    const observedOnly = observedPaths.filter((path) => !expectedPaths.includes(path));
+    if (entry.reasonCode === "MISSING_SCOPE_MEMBER") {
+      assert.equal(expectedOnly.length, 1);
+      assert.equal(observedOnly.length, 0);
+    } else if (entry.reasonCode === "EXTRA_SCOPE_MEMBER") {
+      assert.equal(expectedOnly.length, 0);
+      assert.equal(observedOnly.length, 1);
+    } else if (entry.reasonCode === "SCOPE_MEMBER_RENAMED") {
+      assert.equal(expectedOnly.length, 1);
+      assert.equal(observedOnly.length, 1);
+    } else {
+      assert.deepEqual(observedPaths, expectedPaths, `${entry.caseId}:path_set_anchor`);
+    }
   }
   const selfExclusion = cases.find((entry) => entry.caseId === "proof-scope.self-output-exclusion.v0.1");
   assert.deepEqual(selfExclusion.proofScope.selfOutputExclusions, [authority.proofOutputPath]);

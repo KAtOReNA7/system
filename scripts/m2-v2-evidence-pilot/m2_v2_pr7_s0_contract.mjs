@@ -1,4 +1,6 @@
 import { createHash } from "node:crypto";
+import { existsSync } from "node:fs";
+import { win32 } from "node:path";
 
 export const FALLBACK_DISPOSITIONS = Object.freeze([
   "USED_SEMANTICALLY_EQUIVALENT",
@@ -44,6 +46,27 @@ export const COMMAND_FIELDS = Object.freeze([
   "receiptRole",
 ]);
 
+export const S0_EXTERNAL_ENV_NAMES = Object.freeze([
+  "OPENAI_API_KEY",
+  "OPENAI_BASE_URL",
+  "TAVILY_API_KEY",
+  "M2_V2_EVIDENCE_API_BASE_URL",
+  "M2_V2_EVIDENCE_APPROVED_HOST",
+  "M2_V2_APPROVED_RELAY_HOST",
+  "M2_V2_EVIDENCE_PROVIDER",
+  "M2_V2_SEARCH_PROVIDER",
+  "M2_V2_TAVILY_BASE_URL",
+  "M1_DATABASE_URL",
+  "M1_DATABASE_READONLY_URL",
+  "M1_DATABASE_BACKGROUND_URL",
+  "DATABASE_URL",
+  "PGHOST",
+  "PGPORT",
+  "PGDATABASE",
+  "PGUSER",
+  "PGPASSWORD",
+]);
+
 export function sha256(value) {
   const bytes = Buffer.isBuffer(value) ? value : Buffer.from(String(value), "utf8");
   return createHash("sha256").update(bytes).digest("hex");
@@ -57,6 +80,36 @@ export function canonicalReceiptDigest(receipt) {
   const copy = structuredClone(receipt);
   delete copy.receiptDigest;
   return sha256(stableStringify(copy));
+}
+
+export function assertS0ExternalEnvironmentEmpty(env = process.env) {
+  const nonemptyNames = S0_EXTERNAL_ENV_NAMES
+    .filter((name) => String(env[name] ?? "") !== "")
+    .sort();
+  if (nonemptyNames.length > 0) {
+    throw new Error(`s0_external_environment_nonempty:${nonemptyNames.join(",")}`);
+  }
+  return S0_EXTERNAL_ENV_NAMES.map((name) => ({
+    name,
+    present: Object.hasOwn(env, name),
+    empty: true,
+  }));
+}
+
+export function resolveDefaultNpmTestCommand({
+  platform = process.platform,
+  nodeExecutable = process.execPath,
+  npmExecPath = process.env.npm_execpath,
+  pathExists = existsSync,
+} = {}) {
+  if (platform !== "win32") return ["npm", "test"];
+  const explicitNpmCli = String(npmExecPath ?? "").trim();
+  if (explicitNpmCli && pathExists(explicitNpmCli)) {
+    return [nodeExecutable, explicitNpmCli, "test"];
+  }
+  const bundledNpmCli = win32.join(win32.dirname(nodeExecutable), "node_modules", "npm", "bin", "npm-cli.js");
+  if (pathExists(bundledNpmCli)) return [nodeExecutable, bundledNpmCli, "test"];
+  throw new Error("windows_npm_cli_unavailable_without_shell");
 }
 
 export function validateFallbackEvent(event) {
@@ -276,6 +329,32 @@ export function parseTapSkipEvidence(output) {
   };
 }
 
+export function parseTapFailureEvidence(stdout, stderr = "") {
+  const combined = `${String(stdout ?? "")}\n${String(stderr ?? "")}`;
+  const failedTestIdentities = [];
+  for (const line of combined.split(/\r?\n/u)) {
+    const match = line.match(/^\s*not ok\s+\d+\s+-\s+(.+?)(?:\s+#\s*(?:SKIP|TODO).*)?\s*$/iu);
+    if (!match) continue;
+    const name = match[1].replace(/[\r\n\t]+/gu, " ").trim().slice(0, 240);
+    if (name && !failedTestIdentities.includes(name)) failedTestIdentities.push(name);
+  }
+  const summary = {};
+  for (const field of ["tests", "pass", "fail", "cancelled", "skipped", "todo"]) {
+    const matches = [...combined.matchAll(new RegExp(`^#\\s*${field}\\s+(\\d+)\\s*$`, "gimu"))];
+    summary[field] = matches.reduce((total, match) => total + Number(match[1]), 0);
+  }
+  return {
+    failedTestIdentities: failedTestIdentities.slice(0, 50),
+    failedTestIdentityCount: failedTestIdentities.length,
+    failedTestIdentitiesTruncated: failedTestIdentities.length > 50,
+    tapSummary: summary,
+    stdoutBytes: Buffer.byteLength(String(stdout ?? "")),
+    stdoutSha256: sha256(Buffer.from(String(stdout ?? ""))),
+    stderrBytes: Buffer.byteLength(String(stderr ?? "")),
+    stderrSha256: sha256(Buffer.from(String(stderr ?? ""))),
+  };
+}
+
 export function validateJsonSchema(value, schema, rootSchema = schema, path = "$") {
   if (schema.$ref) {
     if (!schema.$ref.startsWith("#/") || rootSchema === undefined) throw new Error(`json_schema_ref_unsupported_${path}`);
@@ -283,8 +362,24 @@ export function validateJsonSchema(value, schema, rootSchema = schema, path = "$
     if (!target) throw new Error(`json_schema_ref_missing_${path}`);
     return validateJsonSchema(value, target, rootSchema, path);
   }
+  if (Object.hasOwn(schema, "const") && !Object.is(schema.const, value)) {
+    throw new Error(`json_schema_const_${path}`);
+  }
   if (schema.enum && !schema.enum.some((candidate) => Object.is(candidate, value))) {
     throw new Error(`json_schema_enum_${path}`);
+  }
+  for (const childSchema of schema.allOf ?? []) {
+    validateJsonSchema(value, childSchema, rootSchema, path);
+  }
+  if (schema.if) {
+    let conditionMatches = true;
+    try {
+      validateJsonSchema(value, schema.if, rootSchema, path);
+    } catch {
+      conditionMatches = false;
+    }
+    if (conditionMatches && schema.then) validateJsonSchema(value, schema.then, rootSchema, path);
+    if (!conditionMatches && schema.else) validateJsonSchema(value, schema.else, rootSchema, path);
   }
   if (schema.type) assertJsonType(value, schema.type, path);
   if (schema.type === "object") {

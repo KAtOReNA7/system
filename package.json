@@ -7,6 +7,7 @@
     "node": ">=20"
   },
   "scripts": {
+    "pretest": "npm run test:m2-v2:s0-default-extension",
     "dev": "node --watch src/server.js",
     "start": "node src/server.js",
     "db:check": "node src/cli/check-db.js",
@@ -20,6 +21,13 @@
     "test:m2-v2:provider-security": "node --test --test-concurrency=1 test/m2-v2-provider-transport-security.test.js test/m2-v2-v2b6-safe-cache.test.js",
     "test:m2-v2:workbook-verifier": "node --test --test-concurrency=1 test/m2-v2-workbook-independent-verifier.test.js",
     "test:m2-v2:test-isolation": "node scripts/m2-v2-evidence-pilot/verify_m2_v2_test_isolation.mjs",
+    "m2:v2:pr7:s0:doctor": "node scripts/m2-v2-evidence-pilot/check_m2_v2_pr7_s0_preflight.mjs",
+    "m2:v2:pr7:s0:validate:local": "node scripts/m2-v2-evidence-pilot/run_m2_v2_pr7_s0_validation.mjs",
+    "test:m2-v2:s0-focused": "node --test --test-concurrency=1 test/m2-v2-pr7-s0-preflight.test.js test/m2-v2-test-isolation-verifier.test.js test/m2-v2-required-artifact-registry.test.js test/m2-v2-no-external-sentinel.test.js test/m2-v2-pr7-s0-authority-cache-proof-fixtures.test.js test/m2-v2-event-conflict-corpus-determinism.test.js test/m2-v2-filesystem-fixture-s0.test.js test/m2-v2-ooxml-corpus-s0.test.js",
+    "test:m2-v2:s0-default-extension": "node --test --test-concurrency=1 test/m2-v2-pr7-s0-preflight.test.js test/m2-v2-required-artifact-registry.test.js test/m2-v2-no-external-sentinel.test.js test/m2-v2-pr7-s0-authority-cache-proof-fixtures.test.js test/m2-v2-event-conflict-corpus-determinism.test.js test/m2-v2-filesystem-fixture-s0.test.js test/m2-v2-ooxml-corpus-s0.test.js",
+    "test:m2-v2:s0-required-artifacts": "node scripts/m2-v2-evidence-pilot/check_m2_v2_required_artifacts.mjs --profile=default",
+    "test:m2-v2:s0-zero-skips": "node scripts/m2-v2-evidence-pilot/check_m2_v2_test_skip_policy.mjs --profile=default",
+    "test:m2-v2:s0-optional-private": "node scripts/m2-v2-evidence-pilot/check_m2_v2_required_artifacts.mjs --profile=optional-private",
     "test:m2-v2:v2b8-current-verifier": "node --test --test-concurrency=1 test/m2-v2-v2b8-current-verifier.test.js",
     "test:m2-v2:authority-ledger-binding": "node --test --test-concurrency=1 test/m2-v2-current-authority.test.js test/m2-v2-request-event-ledger.test.js test/m2-v2-closed-atomic-binding.test.js",
     "test:m2-v2:live-runtime-ledger": "node --test --test-concurrency=1 test/m2-v2-live-runtime-request-ledger.test.js",

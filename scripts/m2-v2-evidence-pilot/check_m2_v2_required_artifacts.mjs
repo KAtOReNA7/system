@@ -43,6 +43,7 @@ export function checkRequiredArtifacts({ root = process.cwd(), profile = "defaul
       requiredSiteCount: registrySummary.requiredSiteCount,
       optionalSiteCount: registrySummary.optionalSiteCount,
       totalTestSkips: 0,
+      skipEvidenceRole: "DECLARED_PROFILE_POLICY_ONLY",
       unknownSkipIds: 0,
       requiredArtifactSkips: 0,
     };
@@ -55,6 +56,7 @@ export function checkRequiredArtifacts({ root = process.cwd(), profile = "defaul
     artifactCount: registry.artifacts.filter((item) => item.profiles.includes("optional-private")).length,
     optionalPrivateIdentities: optionalResults,
     totalTestSkips: 0,
+    skipEvidenceRole: "DECLARED_PROFILE_POLICY_ONLY",
     unknownSkipIds: 0,
     requiredArtifactSkips: 0,
   };

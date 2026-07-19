@@ -88,9 +88,38 @@ test("tracked JSON Schema validates a success receipt strictly", () => {
     fallbackEvents: [],
   };
   assert.equal(validateJsonSchema(receipt, receiptSchema), true);
+  const missingSuccessBinding = { ...receipt };
+  delete missingSuccessBinding.commandRegistrySha256;
+  assert.throws(
+    () => validateJsonSchema(missingSuccessBinding, receiptSchema),
+    /json_schema_required/u,
+  );
   assert.throws(
     () => validateJsonSchema({ ...receipt, hardcodedRemoteSuccess: true }, receiptSchema),
     /json_schema_unknown/u,
+  );
+
+  const failureReceipt = {
+    schema: "m2.v2.pr7.s0-preflight-receipt.v0.1",
+    passed: false,
+    generatedAt: "2026-07-19T00:00:00.000Z",
+    actualHead: "0".repeat(40),
+    failureStage: "repository_and_governance_gates",
+    checks: {},
+    fallbackEvents: [],
+    error: {
+      name: "Error",
+      code: "UNSPECIFIED",
+      reasonCode: "preflight_gate_failed_expectedHeadMatches",
+      messageDigest: "0".repeat(64),
+    },
+  };
+  assert.equal(validateJsonSchema(failureReceipt, receiptSchema), true);
+  const missingFailureReason = structuredClone(failureReceipt);
+  delete missingFailureReason.error.reasonCode;
+  assert.throws(
+    () => validateJsonSchema(missingFailureReason, receiptSchema),
+    /json_schema_required/u,
   );
 });
 

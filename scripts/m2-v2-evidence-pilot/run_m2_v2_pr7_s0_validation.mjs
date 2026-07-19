@@ -11,6 +11,8 @@ import {
 import { dirname, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
+  assertS0ExternalEnvironmentEmpty,
+  parseTapFailureEvidence,
   resolveRegisteredCommand,
   sha256,
   stableStringify,
@@ -36,6 +38,7 @@ function main() {
     if (!/^[0-9a-f]{40}$/u.test(options.expectedHead ?? "")) {
       throw new Error("expected_head_is_required_and_must_be_full_sha");
     }
+    assertS0ExternalEnvironmentEmpty(process.env);
     actualHead = runGit(["rev-parse", "HEAD"]).trim();
     if (actualHead !== options.expectedHead) throw new Error("expected_head_mismatch");
 
@@ -62,6 +65,8 @@ function main() {
     const isolation = parseJsonOutput(isolationExecution.stdout);
     if (isolation.defaultTestChainInvocationCount !== 1
         || isolation.defaultTestTotalSkips !== 0
+        || isolation.defaultTestSkipSummaryPresent !== true
+        || isolation.defaultTestSkipIdentityCountMatchesSummary !== true
         || isolation.providerRequestDelta !== 0
         || isolation.userRefsUnchanged !== true
         || isolation.governedPrivateContentUnchanged !== true
@@ -86,6 +91,9 @@ function main() {
       passed: s0Gates.every((entry) => entry.passed),
       defaultTestChainInvocationCount: isolation.defaultTestChainInvocationCount,
       defaultTestTotalSkips: isolation.defaultTestTotalSkips,
+      defaultTestSkipSummaryPresent: isolation.defaultTestSkipSummaryPresent,
+      defaultTestSkipIdentityCountMatchesSummary: isolation.defaultTestSkipIdentityCountMatchesSummary,
+      defaultTestSkipIdentities: isolation.defaultTestSkipIdentities,
       providerRequestDelta: isolation.providerRequestDelta,
       databaseConnections: 0,
       s0Gates,
@@ -146,6 +154,7 @@ function executeRegistered(command, extraArgv) {
     cwd: root,
     env: {
       ...process.env,
+      NODE_OPTIONS: appendNodeOption(process.env.NODE_OPTIONS, "--test-reporter=tap"),
       OPENAI_API_KEY: "",
       OPENAI_BASE_URL: "",
       TAVILY_API_KEY: "",
@@ -174,7 +183,8 @@ function executeRegistered(command, extraArgv) {
   const stderr = child.stderr ?? "";
   return {
     commandId: command.commandId,
-    executable: command.executable,
+    registryExecutable: command.executable,
+    actualExecutable: executable,
     argv: [...command.argv, ...extraArgv],
     startedAt,
     durationMs: Date.now() - started,
@@ -192,10 +202,19 @@ function resolveExecutable(executable) {
   return executable;
 }
 
+function appendNodeOption(current, option) {
+  const normalized = String(current ?? "").trim();
+  if (normalized.includes(option)) return normalized;
+  return [normalized, option].filter(Boolean).join(" ");
+}
+
 function publicExecution(execution) {
+  const failureEvidence = parseTapFailureEvidence(execution.stdout, execution.stderr);
+  const machineFailure = parseMachineFailure(execution.stdout);
   return {
     commandId: execution.commandId,
-    executable: execution.executable,
+    registryExecutable: execution.registryExecutable,
+    actualExecutable: execution.actualExecutable,
     argv: execution.argv,
     startedAt: execution.startedAt,
     durationMs: execution.durationMs,
@@ -207,7 +226,24 @@ function publicExecution(execution) {
     stdoutSha256: sha256(Buffer.from(execution.stdout)),
     stderrBytes: Buffer.byteLength(execution.stderr),
     stderrSha256: sha256(Buffer.from(execution.stderr)),
+    failureEvidence,
+    machineFailure,
   };
+}
+
+function parseMachineFailure(stdout) {
+  try {
+    const payload = JSON.parse(String(stdout ?? "").trim());
+    if (payload?.passed !== false) return null;
+    return {
+      schema: typeof payload.schema === "string" ? payload.schema : null,
+      failureStage: typeof payload.failureStage === "string" ? payload.failureStage : null,
+      errorCode: typeof payload.error?.code === "string" ? payload.error.code : null,
+      reasonCode: typeof payload.error?.reasonCode === "string" ? payload.error.reasonCode : null,
+    };
+  } catch {
+    return null;
+  }
 }
 
 function parseJsonOutput(output) {

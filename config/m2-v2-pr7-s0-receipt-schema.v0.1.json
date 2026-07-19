@@ -9,17 +9,44 @@
     "passed",
     "generatedAt",
     "actualHead",
-    "actualBranch",
-    "startingHead",
-    "baseSha",
-    "selectedCommandId",
-    "taskManifestSha256",
-    "commandRegistrySha256",
-    "sourceEvidence",
-    "externalEnvironment",
-    "capabilities",
     "checks",
     "fallbackEvents"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "type": "object",
+        "required": [
+          "passed"
+        ],
+        "properties": {
+          "passed": {
+            "const": true
+          }
+        }
+      },
+      "then": {
+        "type": "object",
+        "required": [
+          "actualBranch",
+          "startingHead",
+          "baseSha",
+          "selectedCommandId",
+          "taskManifestSha256",
+          "commandRegistrySha256",
+          "sourceEvidence",
+          "externalEnvironment",
+          "capabilities"
+        ]
+      },
+      "else": {
+        "type": "object",
+        "required": [
+          "failureStage",
+          "error"
+        ]
+      }
+    }
   ],
   "properties": {
     "schema": {
@@ -90,6 +117,38 @@
     },
     "capabilities": {
       "type": "object"
+    },
+    "failureStage": {
+      "type": "string",
+      "minLength": 1
+    },
+    "error": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "code",
+        "reasonCode",
+        "messageDigest"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "code": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reasonCode": {
+          "type": "string",
+          "minLength": 1
+        },
+        "messageDigest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
     },
     "checks": {
       "type": "object"

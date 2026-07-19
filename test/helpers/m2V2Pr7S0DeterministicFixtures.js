@@ -338,20 +338,15 @@ export function buildProofScopeFixtureCases(authorityFixture = buildAuthorityFix
     proofCase("proof-scope.self-output-exclusion.v0.1", true, "SELF_OUTPUT_EXCLUDED", base, []),
     proofCase("proof-scope.missing-member.v0.1", false, "MISSING_SCOPE_MEMBER", mutateProof(base, (scope) => {
       scope.members.shift();
-      scope.expectedAuthorityDerivedPathSet.shift();
-    }), ["expectedAuthorityDerivedPathSet", "members"]),
+    }), ["members"]),
     proofCase("proof-scope.extra-member.v0.1", false, "EXTRA_SCOPE_MEMBER", mutateProof(base, (scope) => {
       scope.members.push(syntheticScopeMember("authority/extra-scope-member.json"));
       scope.members.sort(compareScopeMembers);
-      scope.expectedAuthorityDerivedPathSet.push("authority/extra-scope-member.json");
-      scope.expectedAuthorityDerivedPathSet.sort();
-    }), ["expectedAuthorityDerivedPathSet", "members"]),
+    }), ["members"]),
     proofCase("proof-scope.rename.v0.1", false, "SCOPE_MEMBER_RENAMED", mutateProof(base, (scope) => {
       scope.members[0].relativePath = "authority/renamed-member.json";
-      scope.expectedAuthorityDerivedPathSet[0] = "authority/renamed-member.json";
-      scope.expectedAuthorityDerivedPathSet.sort();
       scope.members.sort(compareScopeMembers);
-    }), ["expectedAuthorityDerivedPathSet", "members"]),
+    }), ["members"]),
     proofCase("proof-scope.content-mutation.v0.1", false, "SCOPE_CONTENT_MUTATED", mutateProof(base, (scope) => {
       scope.members[0].contentSha256 = "f".repeat(64);
     }), ["members"]),
@@ -495,13 +490,15 @@ function nestedObject(depth) {
 }
 
 function proofCase(caseId, expectedValid, reasonCode, proofScope, expectedChangedPrefixes) {
+  const baseCaseId = expectedValid ? null : "proof-scope.self-output-exclusion.v0.1";
   return {
     caseId,
     expectedValid,
     reasonCode,
+    baseCaseId,
     expectedChangedPrefixes,
     proofScope,
-    caseDigest: sha256(canonicalJson({ caseId, expectedValid, reasonCode, expectedChangedPrefixes, proofScope })),
+    caseDigest: sha256(canonicalJson({ caseId, expectedValid, reasonCode, baseCaseId, expectedChangedPrefixes, proofScope })),
   };
 }
 

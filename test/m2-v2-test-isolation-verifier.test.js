@@ -12,7 +12,11 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
-import { evaluateIsolationOrdering } from "../scripts/m2-v2-evidence-pilot/m2_v2_pr7_s0_contract.mjs";
+import {
+  evaluateIsolationOrdering,
+  parseTapSkipEvidence,
+  resolveDefaultNpmTestCommand,
+} from "../scripts/m2-v2-evidence-pilot/m2_v2_pr7_s0_contract.mjs";
 
 const repositoryRoot = resolve(fileURLToPath(new URL("..", import.meta.url)));
 const verifierPath = join(
@@ -36,6 +40,10 @@ test("synthetic isolation proof passes when every observed state is unchanged", 
   assert.equal(result.payload.passed, true);
   assert.equal(result.payload.proofScope, "synthetic_fixture");
   assert.equal(result.payload.childPassed, true);
+  assert.equal(result.payload.defaultTestCommand.actualExecutable, process.execPath);
+  assert.deepEqual(result.payload.defaultTestCommand.argv, ["<synthetic-command-redacted>"]);
+  assert.equal(result.payload.defaultTestCommand.argvCount, 2);
+  assert.equal(result.payload.defaultTestCommand.syntheticArgvRedacted, true);
   assertAllComparisons(result.payload, true);
 });
 
@@ -115,7 +123,55 @@ test("child failure output is suppressed and the verifier fails closed", () => {
   assert.equal(result.status, 1);
   assert.equal(result.payload.passed, false);
   assert.equal(result.payload.childExitCode, 7);
+  assert.equal(result.payload.childFailureEvidence.stdoutBytes > 0, true);
+  assert.match(result.payload.childFailureEvidence.stdoutSha256, /^[0-9a-f]{64}$/u);
   assert.equal(result.combinedOutput.includes(childCanary), false);
+});
+
+test("runtime skip evidence requires TAP summary and exact identities", () => {
+  const zero = parseTapSkipEvidence("TAP version 13\n1..1\n# tests 1\n# pass 1\n# fail 0\n# skipped 0\n");
+  assert.equal(zero.summaryPresent, true);
+  assert.equal(zero.totalSkips, 0);
+  assert.equal(zero.identityCountMatchesSummary, true);
+
+  const skipped = parseTapSkipEvidence("TAP version 13\nok 1 - dynamic case # SKIP synthetic reason\n1..1\n# skipped 1\n");
+  assert.equal(skipped.totalSkips, 1);
+  assert.deepEqual(skipped.identities, [{ name: "dynamic case", reason: "synthetic reason" }]);
+  assert.equal(skipped.identityCountMatchesSummary, true);
+
+  const specReporter = parseTapSkipEvidence("﹣ dynamic case (synthetic reason)\nℹ skipped 1\n");
+  assert.equal(specReporter.summaryPresent, false);
+  assert.equal(specReporter.totalSkips, 0);
+});
+
+test("Windows default test command resolves npm through Node without shell or npm.cmd", () => {
+  const explicit = resolveDefaultNpmTestCommand({
+    platform: "win32",
+    nodeExecutable: "C:\\Node\\node.exe",
+    npmExecPath: "C:\\npm\\npm-cli.js",
+    pathExists: (path) => path === "C:\\npm\\npm-cli.js",
+  });
+  assert.deepEqual(explicit, ["C:\\Node\\node.exe", "C:\\npm\\npm-cli.js", "test"]);
+
+  const bundled = resolveDefaultNpmTestCommand({
+    platform: "win32",
+    nodeExecutable: "C:\\Node\\node.exe",
+    npmExecPath: "",
+    pathExists: (path) => path.endsWith("node_modules\\npm\\bin\\npm-cli.js"),
+  });
+  assert.equal(bundled[0], "C:\\Node\\node.exe");
+  assert.match(bundled[1], /node_modules\\npm\\bin\\npm-cli\.js$/u);
+  assert.equal(bundled.includes("npm.cmd"), false);
+
+  assert.throws(
+    () => resolveDefaultNpmTestCommand({
+      platform: "win32",
+      nodeExecutable: "C:\\Node\\node.exe",
+      npmExecPath: "",
+      pathExists: () => false,
+    }),
+    /windows_npm_cli_unavailable_without_shell/u,
+  );
 });
 
 test("synthetic isolation proof detects full user-ref mutation", () => {
@@ -145,6 +201,21 @@ test("synthetic isolation proof detects provider counter mutation", () => {
   assert.equal(result.payload.providerCounterBefore, 0);
   assert.equal(result.payload.providerCounterAfter, 1);
   assert.equal(result.payload.providerRequestDelta, 1);
+});
+
+test("isolation CLI rejects a nonempty inherited provider environment without echoing its value", () => {
+  const fixture = createFixture();
+  const secretCanary = "S0_ENV_VALUE_MUST_NOT_APPEAR";
+  const result = runVerifier(
+    fixture,
+    [process.execPath, "-e", "process.exit(0)"],
+    [],
+    { OPENAI_API_KEY: secretCanary },
+  );
+
+  assert.equal(result.status, 1);
+  assert.equal(result.payload.failureStage, "preflight_failed");
+  assert.equal(result.combinedOutput.includes(secretCanary), false);
 });
 
 test("isolation ordering rejects a before snapshot recorded after test start", () => {
@@ -211,7 +282,7 @@ function createFixture({ withUntrackedFile = false } = {}) {
   return fixture;
 }
 
-function runVerifier(fixture, command, extraArgs = []) {
+function runVerifier(fixture, command, extraArgs = [], environment = {}) {
   const child = spawnSync(process.execPath, [
     verifierPath,
     "--synthetic-fixture",
@@ -226,6 +297,7 @@ function runVerifier(fixture, command, extraArgs = []) {
     ...extraArgs,
   ], {
     cwd: repositoryRoot,
+    env: { ...process.env, ...environment },
     encoding: "utf8",
     maxBuffer: 4 * 1024 * 1024,
     windowsHide: true,

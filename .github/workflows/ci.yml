@@ -15,6 +15,12 @@ jobs:
       M1_DATABASE_URL: ""
       M1_DATABASE_READONLY_URL: ""
       M1_DATABASE_BACKGROUND_URL: ""
+      DATABASE_URL: ""
+      PGHOST: ""
+      PGPORT: ""
+      PGDATABASE: ""
+      PGUSER: ""
+      PGPASSWORD: ""
       OPENAI_API_KEY: ""
       OPENAI_BASE_URL: ""
       TAVILY_API_KEY: ""
@@ -75,8 +81,15 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Test
-        run: npm test
+      - name: S0 doctor and first isolated default test chain
+        if: ${{ github.event_name == 'pull_request' }}
+        env:
+          EXPECTED_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: npm run m2:v2:pr7:s0:validate:local -- --expected-head=$EXPECTED_HEAD_SHA
+
+      - name: First isolated default test chain for non-PR pushes
+        if: ${{ github.event_name != 'pull_request' }}
+        run: npm run test:m2-v2:test-isolation
 
       - name: Synthetic verifier contract
         run: npm run test:m2-v2:integrity-synthetic
@@ -114,9 +127,6 @@ jobs:
       - name: Synthetic isolation verifier fault injection
         run: node --test --test-concurrency=1 test/m2-v2-test-isolation-verifier.test.js
 
-      - name: Full-suite test isolation proof
-        run: npm run test:m2-v2:test-isolation
-
       # Default smoke mode is fixture-only and does not connect to PostgreSQL.
       - name: Smoke
         run: npm run smoke
@@ -132,6 +142,12 @@ jobs:
       M1_DATABASE_URL: ""
       M1_DATABASE_READONLY_URL: ""
       M1_DATABASE_BACKGROUND_URL: ""
+      DATABASE_URL: ""
+      PGHOST: ""
+      PGPORT: ""
+      PGDATABASE: ""
+      PGUSER: ""
+      PGPASSWORD: ""
       OPENAI_API_KEY: ""
       OPENAI_BASE_URL: ""
       TAVILY_API_KEY: ""
@@ -187,8 +203,15 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Test
-        run: npm test
+      - name: S0 doctor and first isolated default test chain
+        if: ${{ github.event_name == 'pull_request' }}
+        env:
+          EXPECTED_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: npm run m2:v2:pr7:s0:validate:local -- --expected-head=$env:EXPECTED_HEAD_SHA
+
+      - name: First isolated default test chain for non-PR pushes
+        if: ${{ github.event_name != 'pull_request' }}
+        run: npm run test:m2-v2:test-isolation
 
       - name: Synthetic verifier contract
         run: npm run test:m2-v2:integrity-synthetic
@@ -225,9 +248,6 @@ jobs:
 
       - name: Synthetic isolation verifier fault injection
         run: node --test --test-concurrency=1 test/m2-v2-test-isolation-verifier.test.js
-
-      - name: Full-suite test isolation proof
-        run: npm run test:m2-v2:test-isolation
 
       - name: Smoke
         run: npm run smoke

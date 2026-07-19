@@ -91,7 +91,7 @@
   ],
   "receiptSchema": {
     "path": "config/m2-v2-pr7-s0-receipt-schema.v0.1.json",
-    "sha256": "8ff4215b4319d6923af3767b82cba7a93526bc385fe6e3e61092fc05dbd3b02b"
+    "sha256": "c3b27565447d7c42c98fc801e8c1b32fdd98361189624e7cac39d33f3b3450d9"
   },
   "governance": {
     "historicalDecision": "CANARY_CONDITIONAL",

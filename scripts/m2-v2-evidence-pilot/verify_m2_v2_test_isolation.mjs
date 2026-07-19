@@ -19,8 +19,11 @@ import { tmpdir } from "node:os";
 import { pathToFileURL } from "node:url";
 import { fileURLToPath } from "node:url";
 import {
+  assertS0ExternalEnvironmentEmpty,
   evaluateIsolationOrdering,
+  parseTapFailureEvidence,
   parseTapSkipEvidence,
+  resolveDefaultNpmTestCommand,
 } from "./m2_v2_pr7_s0_contract.mjs";
 
 const repositoryRoot = resolve(fileURLToPath(new URL("../..", import.meta.url)));
@@ -51,6 +54,7 @@ function main() {
 
   try {
     assertSyntheticOverridesAreExplicit(options, root, command, privateRoots);
+    assertS0ExternalEnvironmentEmpty(process.env);
     assertGitRepository(root);
   } catch (error) {
     emitFailure("preflight_failed", error);
@@ -106,10 +110,15 @@ function main() {
     defaultTestChainInvocationCount: 1,
   });
   const skipEvidence = parseTapSkipEvidence(`${child.stdout ?? ""}\n${child.stderr ?? ""}`);
+  const childFailureEvidence = parseTapFailureEvidence(child.stdout, child.stderr);
   const providerRequestDelta = providerCounterAfter - providerCounterBefore;
   const childCompleted = child.status !== null && child.signal === null && !child.error;
   const childPassed = childCompleted && child.status === 0;
-  const skipPolicyPassed = options.syntheticFixture || skipEvidence.totalSkips === 0;
+  const skipPolicyPassed = options.syntheticFixture || (
+    skipEvidence.totalSkips === 0
+    && skipEvidence.summaryPresent
+    && skipEvidence.identityCountMatchesSummary
+  );
   const passed = childPassed
     && skipPolicyPassed
     && providerRequestDelta === 0
@@ -118,6 +127,13 @@ function main() {
     schema: "m2.v2.default-test-isolation-proof.v0.3",
     passed,
     proofScope: options.syntheticFixture ? "synthetic_fixture" : "full_npm_test",
+    defaultTestCommand: {
+      actualExecutable: command[0],
+      argv: options.syntheticFixture ? ["<synthetic-command-redacted>"] : command.slice(1),
+      argvCount: command.length - 1,
+      argvDigest: sha256(command.slice(1)),
+      syntheticArgvRedacted: options.syntheticFixture,
+    },
     events: eventSequence,
     ...ordering,
     childCompleted,
@@ -125,6 +141,7 @@ function main() {
     childExitCode: child.status,
     childSignal: child.signal ?? null,
     childErrorCode: child.error?.code ?? null,
+    childFailureEvidence,
     timedOut: child.error?.code === "ETIMEDOUT" || child.signal === "SIGTERM",
     defaultTestTotalSkips: skipEvidence.totalSkips,
     defaultTestSkipIdentities: skipEvidence.identities,
@@ -200,14 +217,7 @@ function requireValue(args, index, flag) {
 }
 
 function defaultTestCommand() {
-  if (process.platform === "win32") {
-    const npmExecutable = String(process.env.npm_execpath ?? "").trim();
-    if (npmExecutable && existsSync(npmExecutable)) {
-      return [process.execPath, npmExecutable, "test"];
-    }
-    return ["npm.cmd", "test"];
-  }
-  return ["npm", "test"];
+  return resolveDefaultNpmTestCommand();
 }
 
 function defaultChildEnvironment({ root, providerCounterPath }) {
@@ -215,9 +225,8 @@ function defaultChildEnvironment({ root, providerCounterPath }) {
   const sentinelOption = existsSync(sentinelPath)
     ? `--import=${pathToFileURL(sentinelPath).href}`
     : "";
-  const nodeOptions = [String(process.env.NODE_OPTIONS ?? "").trim(), sentinelOption]
-    .filter(Boolean)
-    .join(" ");
+  let nodeOptions = appendNodeOption(String(process.env.NODE_OPTIONS ?? ""), "--test-reporter=tap");
+  nodeOptions = appendNodeOption(nodeOptions, sentinelOption);
   return {
     ...process.env,
     NODE_ENV: "test",
@@ -243,6 +252,12 @@ function defaultChildEnvironment({ root, providerCounterPath }) {
     PGUSER: "",
     PGPASSWORD: "",
   };
+}
+
+function appendNodeOption(current, option) {
+  const normalized = String(current ?? "").trim();
+  if (!option || normalized.includes(option)) return normalized;
+  return [normalized, option].filter(Boolean).join(" ");
 }
 
 function readProviderCounter(path) {

@@ -6,7 +6,7 @@
 
 ## 当前唯一入口
 
-`codex/m2-v2-evidence-pilot-v1` 上的 M2 v2 完整性修复与 private state 离线恢复已经收口。当前没有获批的下一开发任务；不要把任何历史 C2/C3、V2-B provider 或 M3 段落当成执行授权。
+`codex/m2-v2-evidence-pilot-v1` 上的 M2 v2 完整性修复与 private state 离线恢复已经收口。除本轮明确限定的 PR #7 S0 开发支持任务外，当前没有获批的下一开发任务；S0 完成后必须停止。不要把任何历史 C2/C3、V2-B provider 或 M3 段落当成执行授权。
 
 当前权威导航：
 
