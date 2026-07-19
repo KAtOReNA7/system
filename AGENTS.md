@@ -1,11 +1,13 @@
 # Codex 工作规则
 
-## 2026-07-19 PR #7 S0 开发支持入口（当前最高优先）
+## 2026-07-19 PR #7 S1 分层修复入口（当前最高优先）
 
-- 当前唯一获批的工程范围是 PR #7 的 7 项 S0 开发支持基线；S0 只提供独立可执行的测试、fixture、preflight、隔离与 CI 支持，不属于 10 个 open finding 的产品修复。
-- open-finding 状态以 `docs/analysis/m2-v2/M2-v2-PR7-open-findings-status-v0.1.md` 为增量 overlay：5 个 P1 与 5 个直接耦合 P2 仍全部 `OPEN`，`currentDecision=CANARY_FAIL`。
-- 禁止修改 `src/domain/m2V2EvidencePilot/**`，禁止 S1、provider、数据库、Canary/full160、训练、PR 正文更新、mark ready 或 merge PR #7。
-- S0 验证通过也只意味着 support foundation 可在 Linux/Windows 独立执行；`findingRemediationAuthorized=false`、`mergeAuthorized=false`、`full160Authorized=false`、`nextDevelopmentReadiness=NOT_AUTHORIZED` 保持不变。
+- 7 项 S0 开发支持基线已在 exact HEAD `badbf453e1e99ba87cc3064601e480a09ff1b149` 完成并通过 Linux/Windows CI；`supportSharpeningStopCriteriaReached=true`。
+- 用户已单独授权在 `codex/m2-v2-evidence-pilot-v1` 上实施 PR #7 的 B0–B7 分层 S1 修复；当前 batch 为 `B0`。每个 batch 必须普通 push，并在该 exact remote HEAD 的 Linux/Windows CI 成功后才能进入下一 batch。
+- open-finding 状态以 `docs/analysis/m2-v2/M2-v2-PR7-open-findings-status-v0.1.md` 为增量 overlay：5 个 P1 与 5 个直接耦合 P2 当前仍全部 `OPEN`。B0–B7 最多只能形成 `CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW`，不得由本代理执行 B8 或声明 `CLOSED`。
+- 本轮允许按附件冻结的范围修改 `src/domain/m2V2EvidencePilot/**`、配套测试、合同、CI 与公开治理文档，并在 B6 进行 provider-free 离线重建和原子 supersession；历史/private immutable 产物不得覆盖。
+- 禁止 provider、数据库、Canary/full160、模型训练、holdout、B8、mark ready、PR merge 或 release。`currentDecision=CANARY_FAIL`、`mergeAuthorized=false`、`full160Authorized=false`、`modelTrainingAuthorized=false`、`nextDevelopmentReadiness=NOT_AUTHORIZED` 保持不变，除非 B6 的版本化离线重算真实得出不同 current decision；即便变化也不自动授权下游阶段。
+- 禁止 rebase、squash、amend、force push、`git add .`、`git add -A` 或触碰 stash。任一 source evidence 摘要不一致、remote drift、non-fast-forward、真实外部访问、新依赖需求、原生平台验证不可用、workbook 无确定性路径、private promotion 失败或 `providerRequestDelta != 0` 都必须立即停止并输出 `BLOCKED`。
 
 ## 2026-07-18 M2 v2 完整性修复入口（最高优先）
 

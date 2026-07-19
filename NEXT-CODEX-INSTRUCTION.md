@@ -1,12 +1,14 @@
 # 下一步交给 Codex 的指令
 
-## 2026-07-19 PR #7 S0 增量边界
+## 2026-07-19 PR #7 S1 B0–B7 增量边界
 
-当前增量任务只授权建立并验证 7 项 S0 开发支持基线。S0 不是 finding remediation；`docs/analysis/m2-v2/M2-v2-PR7-open-findings-status-v0.1.md` 所列 5 个 P1 与 5 个直接耦合 P2 仍全部 `OPEN`。禁止自动进入 S1、修改 `src/domain/m2V2EvidencePilot/**`、调用 provider/数据库/Canary/full160、训练、更新 PR 正文、mark ready 或 merge PR #7。即使 S0 全部通过，也必须停止并等待用户单独授权。
+7 项 S0 开发支持基线已经在 exact HEAD `badbf453e1e99ba87cc3064601e480a09ff1b149` 完成。用户现已单独授权直接在 `codex/m2-v2-evidence-pilot-v1` 上按 B0–B7 分层实施 10 项 open finding 的 S1 修复、provider-free 离线重建、显式原子提交、普通 push 与 exact-head 双平台 CI checkpoint。当前 batch 为 `B0`；未通过本 batch Linux/Windows CI 前不得进入 B1。
+
+10 项 finding 当前仍全部 `OPEN`。B0–B7 通过后最高只能写 `CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW`；B8 独立外审不属于本轮授权，本代理不得声明任何 finding 已独立 `CLOSED`。
 
 ## 当前唯一入口
 
-`codex/m2-v2-evidence-pilot-v1` 上的 M2 v2 完整性修复与 private state 离线恢复已经收口。除本轮明确限定的 PR #7 S0 开发支持任务外，当前没有获批的下一开发任务；S0 完成后必须停止。不要把任何历史 C2/C3、V2-B provider 或 M3 段落当成执行授权。
+`codex/m2-v2-evidence-pilot-v1` 上的历史完整性修复、private state 离线恢复与 S0 支持基线均已收口。本轮唯一新增授权是 PR #7 的 B0–B7 S1 分层修复；不要把任何历史 C2/C3、V2-B provider、B8 外审或 M3 段落当成执行授权。
 
 当前权威导航：
 
@@ -33,9 +35,10 @@
 
 ## 当前允许
 
-- 保持 PR #7 为 Draft/open/unmerged，并由用户安排外部审查。
-- 只读查看版本化 public 收口文档和 Git ignored private 审计证据。
-- 在用户另行明确授权后，按新的自包含指令开始新的工作；修复完成本身不构成授权。
+- 依次实施 B0、B1、B2、B3、B4、B5、B6、B7；B1–B5 虽在设计 DAG 中可并行，本轮仍必须按附件的 checkpoint 顺序执行。
+- 修改冻结范围内的产品代码、测试、版本化合同、CI 与公开治理文档；B6 只从既有 immutable/append-only 材料进行 provider-free 离线重建并原子晋升新的 derived state。
+- 每个完成的原子 commit 使用显式路径暂存并立即普通 push 到现有分支；每个 batch 保存 exact remote HEAD、Linux/Windows CI 与 provider delta 证据。
+- 在 B0 与 B7 同步 PR 正文，并在中间 checkpoint 更新动态表；PR 始终保持 Draft/open/unmerged。
 
 ## 当前禁止
 
@@ -46,9 +49,10 @@
 - 禁止打开 final holdout、embargo 或 deferred labels。
 - 禁止进入 V2-C、V2-D、C4 或 M3 formal。
 - 禁止 release，禁止 merge PR #7。
+- 禁止同一代理执行 B8 独立外审、把 candidate 状态写成 `CLOSED`，或把修复结果解释为训练/下一阶段授权。
 - 禁止提交 private input/output、receipts、workbook、环境文件、密钥或敏感明细。
-- 禁止使用 `git add .`、stash、rebase、force push 或删除审计证据。
+- 禁止使用 `git add .`、`git add -A`、stash、rebase、squash、amend、force push 或删除/覆盖历史审计证据。
 
 ## 完成边界
 
-完整性修复已经按版本化 summary、restatement、最终 private audit v0.2 与 PR roundtrip 证据收口。现在必须停止并等待用户将 Draft/open PR #7 交给外部审查；`nextDevelopmentReadiness=NOT_AUTHORIZED`，不得顺势开始下一开发阶段。
+只有 B0–B7 全部通过本地门禁、逐批普通 push、逐批 exact-head Linux/Windows CI、89/89 case 覆盖、`providerRequestDelta=0`、B6 原子晋升与最终边界比较后，才能交接给新的独立 B8 外审。即使达到该边界，`mergeAuthorized=false`、`full160Authorized=false`、`modelTrainingAuthorized=false`、`nextDevelopmentReadiness=NOT_AUTHORIZED` 仍保持不变。

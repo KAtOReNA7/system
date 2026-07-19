@@ -1,6 +1,8 @@
 {
   "schema": "m2.v2.pr7.open-findings-status.v0.1",
   "reviewedHead": "627f74c6b9b2365ee4403c613ea9689748b76541",
+  "s1StartingHead": "badbf453e1e99ba87cc3064601e480a09ff1b149",
+  "branch": "codex/m2-v2-evidence-pilot-v1",
   "openP1": 5,
   "openDirectP2": 5,
   "openFindingIds": [
@@ -17,13 +19,30 @@
   ],
   "historicalDecision": "CANARY_CONDITIONAL",
   "currentDecision": "CANARY_FAIL",
+  "s0Status": "COMPLETE",
+  "supportSharpeningStopCriteriaReached": true,
+  "findingRemediationAuthorized": true,
+  "authorizedBatches": [
+    "B0",
+    "B1",
+    "B2",
+    "B3",
+    "B4",
+    "B5",
+    "B6",
+    "B7"
+  ],
+  "currentBatch": "B0",
+  "nextAllowedPhase": "S1_PHASED_REMEDIATION_B0",
+  "openFindings": 10,
+  "findingClosureStatus": "OPEN",
+  "independentReviewStatus": "NOT_REVIEWED",
+  "b8Authorized": false,
   "mergeAuthorized": false,
   "full160Authorized": false,
-  "nextDevelopmentReadiness": "NOT_AUTHORIZED",
-  "nextAllowedPhase": "S0_SUPPORT_IMPLEMENTATION",
-  "s0Status": "IMPLEMENTED_PENDING_VALIDATION",
-  "openFindings": 10,
-  "findingRemediationAuthorized": false,
+  "modelTrainingAuthorized": false,
   "releaseAuthorized": false,
-  "remediationComplete": false
+  "nextDevelopmentReadiness": "NOT_AUTHORIZED",
+  "remediationComplete": false,
+  "pullRequestState": "DRAFT_OPEN_UNMERGED"
 }
