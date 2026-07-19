@@ -16,6 +16,8 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import test from "node:test";
 
+import "./m2-v2-migration-path-identity.test.js";
+
 import {
   MIGRATION_ALLOWED_ENV_NAMES,
   normalizeMigrationManifestPath,
