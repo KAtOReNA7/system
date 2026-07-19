@@ -338,7 +338,7 @@ export function validateS1TaskManifest(manifest, bindings = {}) {
   }
   validateBranchPolicy(manifest.branchPolicy);
   assertExactArray(manifest.authorizedBatches, S1_BATCHES, "authorized_batches_mismatch");
-  if (manifest.currentBatch !== "B2") throw new Error("current_batch_must_be_b2");
+  if (manifest.currentBatch !== "B3") throw new Error("current_batch_must_be_b3");
   validateBatchDag(manifest.batchDag);
   assertExactArray(manifest.allowedPathClasses, EXPECTED_ALLOWED_PATH_CLASSES, "allowed_path_classes_invalid");
   assertExactArray(manifest.prohibitedActions, EXPECTED_PROHIBITED_ACTIONS, "prohibited_actions_invalid");

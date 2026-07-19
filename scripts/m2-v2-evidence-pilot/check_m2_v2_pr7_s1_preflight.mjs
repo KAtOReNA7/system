@@ -44,7 +44,7 @@ main();
 function main() {
   const generatedAt = new Date().toISOString();
   let actualHead = "0".repeat(40);
-  let batchId = "B2";
+  let batchId = null;
   let failureStage = "argument_and_task_contract";
   try {
     const options = parseArguments(process.argv.slice(2));
@@ -187,7 +187,7 @@ function main() {
       schema: "m2.v2.pr7.s1-preflight-receipt.v0.1",
       passed: false,
       generatedAt,
-      batchId,
+      batchId: failureBatchId(batchId),
       actualHead,
       checks: {},
       executions: [],
@@ -204,7 +204,7 @@ function main() {
 function parseArguments(args) {
   const options = {
     expectedHead: null,
-    batchId: "B2",
+    batchId: null,
     commandId: "s1.doctor",
     receipt: null,
     root: null,
@@ -229,8 +229,14 @@ function parseArguments(args) {
     const key = flag.slice(2).replace(/-([a-z])/gu, (_match, letter) => letter.toUpperCase());
     options[key] = value;
   }
+  if (options.batchId === null) throw new Error("batch_id_is_required");
   if (!S1_BATCHES.includes(options.batchId)) throw new Error("batch_id_not_authorized");
   return options;
+}
+
+function failureBatchId(value) {
+  if (S1_BATCHES.includes(value)) return value;
+  return parseJsonUtf8Strict(readFileSync(resolve(repositoryRoot, TASK_MANIFEST))).currentBatch;
 }
 
 function assertOverridesAuthorized(options, root) {

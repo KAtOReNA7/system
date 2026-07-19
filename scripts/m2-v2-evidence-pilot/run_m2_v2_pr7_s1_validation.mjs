@@ -33,7 +33,7 @@ await main();
 
 async function main() {
   const generatedAt = new Date().toISOString();
-  let options = { batchId: "B2", receipt: null };
+  let options = { expectedHead: null, batchId: null, receipt: null };
   let actualHead = safeGitHead();
   let failureStage = "argument_and_registry_contract";
   const executions = [];
@@ -146,7 +146,7 @@ async function main() {
       schema: "m2.v2.pr7.s1-local-validation-receipt.v0.1",
       passed: false,
       generatedAt,
-      batchId: options.batchId ?? "B2",
+      batchId: failureBatchId(options.batchId),
       actualHead,
       checks: {},
       executions,
@@ -161,7 +161,7 @@ async function main() {
 }
 
 function parseArguments(args) {
-  const options = { expectedHead: null, batchId: "B2", receipt: null };
+  const options = { expectedHead: null, batchId: null, receipt: null };
   for (let index = 0; index < args.length; index += 1) {
     const argument = args[index];
     const equals = argument.indexOf("=");
@@ -172,8 +172,14 @@ function parseArguments(args) {
     const key = flag.slice(2).replace(/-([a-z])/gu, (_match, letter) => letter.toUpperCase());
     options[key] = value;
   }
+  if (options.batchId === null) throw new Error("batch_id_is_required");
   if (!S1_BATCHES.includes(options.batchId)) throw new Error("batch_id_not_authorized");
   return options;
+}
+
+function failureBatchId(value) {
+  if (S1_BATCHES.includes(value)) return value;
+  return parseJsonUtf8Strict(readFileSync(resolve(root, "config/m2-v2-pr7-s1-task.v0.1.json"))).currentBatch;
 }
 
 function executeRegistered(command, extraArgv, { preserveExternalEnvironment }) {

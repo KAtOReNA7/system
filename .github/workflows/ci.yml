@@ -91,7 +91,7 @@ jobs:
         if: ${{ github.event_name == 'pull_request' }}
         env:
           EXPECTED_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-        run: npm run m2:v2:pr7:s1:validate:local -- --expected-head=$EXPECTED_HEAD_SHA --batch-id=B2
+        run: npm run m2:v2:pr7:s1:validate:local -- --expected-head=$EXPECTED_HEAD_SHA --batch-id=B3
 
       - name: First isolated default test chain for non-PR pushes
         if: ${{ github.event_name != 'pull_request' }}
@@ -121,8 +121,8 @@ jobs:
       - name: Synthetic migration integrity
         run: npm run test:m2-v2:migration-integrity
 
-      - name: Provider transport and safe-cache security
-        run: npm run test:m2-v2:provider-security
+      - name: B3 safe-cache and provider-boundary validation
+        run: npm run test:m2-v2:b3-safe-cache-provider
 
       - name: Independent workbook verification
         run: npm run test:m2-v2:workbook-verifier
@@ -219,7 +219,7 @@ jobs:
         if: ${{ github.event_name == 'pull_request' }}
         env:
           EXPECTED_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-        run: npm run m2:v2:pr7:s1:validate:local -- --expected-head=$env:EXPECTED_HEAD_SHA --batch-id=B2
+        run: npm run m2:v2:pr7:s1:validate:local -- --expected-head=$env:EXPECTED_HEAD_SHA --batch-id=B3
 
       - name: First isolated default test chain for non-PR pushes
         if: ${{ github.event_name != 'pull_request' }}
@@ -249,8 +249,8 @@ jobs:
       - name: Synthetic migration integrity
         run: npm run test:m2-v2:migration-integrity
 
-      - name: Provider transport and safe-cache security
-        run: npm run test:m2-v2:provider-security
+      - name: B3 safe-cache and provider-boundary validation
+        run: npm run test:m2-v2:b3-safe-cache-provider
 
       - name: Independent workbook verification
         run: npm run test:m2-v2:workbook-verifier

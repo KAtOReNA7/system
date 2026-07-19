@@ -49,6 +49,8 @@ const receiptSchema = parseJsonUtf8Strict(bytes.receipt);
 const contractRegistry = parseJsonUtf8Strict(bytes.contract);
 const caseRegistry = parseJsonUtf8Strict(bytes.cases);
 const overlay = parseJsonUtf8Strict(bytes.overlay);
+const packageJson = parseJsonUtf8Strict(read("package.json"));
+const workflowSource = read(".github/workflows/ci.yml").toString("utf8");
 const historicalBytes = new Map(taskManifest.historicalImmutableArtifacts.map((binding) => [
   binding.path,
   read(binding.path),
@@ -71,7 +73,7 @@ test("S1 task binds exact git anchors, B0-B7-only DAG, four source groups, regis
   assert.equal(taskManifest.findingHead, "627f74c6b9b2365ee4403c613ea9689748b76541");
   assert.equal(taskManifest.baseSha, "d81b952e37dd43365c0091cdd6665e69d8d39a7e");
   assert.deepEqual(taskManifest.authorizedBatches, S1_BATCHES);
-  assert.equal(taskManifest.currentBatch, "B2");
+  assert.equal(taskManifest.currentBatch, "B3");
   assert.equal(taskManifest.batchDag.independentReviewBatchAuthorized, false);
   assert.equal(taskManifest.requiredSourceEvidence.length, 4);
   assert.deepEqual(taskManifest.historicalImmutableArtifacts.map((binding) => binding.path), S1_HISTORICAL_PATHS);
@@ -667,10 +669,63 @@ test("preflight and local runner contain no hardcoded remote PASS claim", () => 
   assert.equal(runnerSource.indexOf('resolveRegisteredCommand(registry, "s1.doctor")')
     < runnerSource.indexOf('resolveRegisteredCommand(registry, "s1.default.isolated")'), true);
   assert.equal((runnerSource.match(/executeRegistered\(isolationCommand/gu) ?? []).length, 1);
+  assert.equal(preflightSource.includes('batchId: "B2"'), false);
+  assert.equal(preflightSource.includes('let batchId = "B2"'), false);
+  assert.equal(runnerSource.includes('batchId: "B2"'), false);
+  assert.equal(runnerSource.includes('?? "B2"'), false);
+  assert.equal(runnerSource.includes('`--batch-id=${options.batchId}`'), true);
   assert.throws(
     () => assertNoHardcodedRemotePass(["verify" + "Windows=success"]),
     /hardcoded_remote_pass_forbidden/u,
   );
+});
+
+test("B3 batch identity is explicit and missing or stale batch IDs fail at runtime", () => {
+  const head = gitText(["rev-parse", "HEAD"]);
+  const b3 = runJson("scripts/m2-v2-evidence-pilot/check_m2_v2_pr7_s1_preflight.mjs", [
+    `--expected-head=${head}`, "--batch-id=B3",
+  ]);
+  assert.equal(b3.receipt.batchId, "B3");
+  assert.notEqual(b3.receipt.error?.reasonCode, "batch_id_does_not_match_frozen_task_batch");
+
+  const b2 = runJson("scripts/m2-v2-evidence-pilot/check_m2_v2_pr7_s1_preflight.mjs", [
+    `--expected-head=${head}`, "--batch-id=B2",
+  ]);
+  assert.equal(b2.status, 1);
+  assert.equal(b2.receipt.passed, false);
+  assert.equal(b2.receipt.error.reasonCode, "batch_id_does_not_match_frozen_task_batch");
+
+  const missingPreflight = runJson("scripts/m2-v2-evidence-pilot/check_m2_v2_pr7_s1_preflight.mjs", [
+    `--expected-head=${head}`,
+  ]);
+  assert.equal(missingPreflight.status, 1);
+  assert.equal(missingPreflight.receipt.batchId, "B3");
+  assert.equal(missingPreflight.receipt.error.reasonCode, "batch_id_is_required");
+
+  const missingValidation = runJson("scripts/m2-v2-evidence-pilot/run_m2_v2_pr7_s1_validation.mjs", [
+    `--expected-head=${head}`,
+  ]);
+  assert.equal(missingValidation.status, 1);
+  assert.equal(missingValidation.receipt.batchId, "B3");
+  assert.equal(missingValidation.receipt.error.reasonCode, "batch_id_is_required");
+});
+
+test("canonical B3 command, default suite, and both CI jobs bind the same explicit gate", () => {
+  const canonical = [
+    "node --test --test-concurrency=1",
+    "test/m2-v2-pr7-b3-provider-route-registry.test.js",
+    "test/m2-v2-provider-transport-security.test.js",
+    "test/m2-v2-v2b6-safe-cache.test.js",
+    "test/m2-v2-v2b6-raw-cache-migration.test.js",
+  ].join(" ");
+  assert.equal(packageJson.scripts["test:m2-v2:b3-safe-cache-provider"], canonical);
+  assert.equal(packageJson.scripts["test:m2-v2:provider-security"], "npm run test:m2-v2:b3-safe-cache-provider");
+  assert.equal(packageJson.scripts.pretest, "npm run test:m2-v2:s0-default-extension");
+  assert.equal((packageJson.scripts["test:m2-v2:s0-default-extension"].match(/test\/m2-v2-pr7-b3-provider-route-registry\.test\.js/gu) ?? []).length, 1);
+  assert.equal((workflowSource.match(/--batch-id=B3/gu) ?? []).length, 2);
+  assert.equal((workflowSource.match(/--batch-id=B2/gu) ?? []).length, 0);
+  assert.equal((workflowSource.match(/name: B3 safe-cache and provider-boundary validation/gu) ?? []).length, 2);
+  assert.equal((workflowSource.match(/run: npm run test:m2-v2:b3-safe-cache-provider/gu) ?? []).length, 2);
 });
 
 function taskBindings() {
@@ -854,6 +909,21 @@ function gitNull(argv) {
   const child = spawnSync("git", argv, { cwd: root, encoding: "utf8", windowsHide: true });
   if (child.status !== 0) throw new Error("git_ls_files_failed");
   return child.stdout.split("\0").filter(Boolean).map((path) => path.replaceAll("\\", "/"));
+}
+
+function gitText(argv) {
+  const child = spawnSync("git", argv, { cwd: root, encoding: "utf8", windowsHide: true });
+  if (child.status !== 0) throw new Error("git_command_failed");
+  return child.stdout.trim();
+}
+
+function runJson(path, argv) {
+  const child = spawnSync(process.execPath, [path, ...argv], {
+    cwd: root,
+    encoding: "utf8",
+    windowsHide: true,
+  });
+  return { status: child.status, receipt: JSON.parse(child.stdout) };
 }
 
 function gitShow(head, path) {
