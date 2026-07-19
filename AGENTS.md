@@ -1,5 +1,12 @@
 # Codex 工作规则
 
+## 2026-07-19 PR #7 S0 开发支持入口（当前最高优先）
+
+- 当前唯一获批的工程范围是 PR #7 的 7 项 S0 开发支持基线；S0 只提供独立可执行的测试、fixture、preflight、隔离与 CI 支持，不属于 10 个 open finding 的产品修复。
+- open-finding 状态以 `docs/analysis/m2-v2/M2-v2-PR7-open-findings-status-v0.1.md` 为增量 overlay：5 个 P1 与 5 个直接耦合 P2 仍全部 `OPEN`，`currentDecision=CANARY_FAIL`。
+- 禁止修改 `src/domain/m2V2EvidencePilot/**`，禁止 S1、provider、数据库、Canary/full160、训练、PR 正文更新、mark ready 或 merge PR #7。
+- S0 验证通过也只意味着 support foundation 可在 Linux/Windows 独立执行；`findingRemediationAuthorized=false`、`mergeAuthorized=false`、`full160Authorized=false`、`nextDevelopmentReadiness=NOT_AUTHORIZED` 保持不变。
+
 ## 2026-07-18 M2 v2 完整性修复入口（最高优先）
 
 - V2-A 已完成；V2-B.1 至 V2-B.8 均是历史 checkpoint。V2-B.8 Canary v3.1 原始业务结论保持 `CANARY_CONDITIONAL`；修复合同的离线 restatement 当前结论为 `CANARY_FAIL`，`full160Authorized=false`。

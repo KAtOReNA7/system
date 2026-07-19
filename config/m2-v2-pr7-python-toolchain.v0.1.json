@@ -1,0 +1,68 @@
+{
+  "schema": "m2.v2.pr7.s0.python-toolchain.v0.1",
+  "scope": "S0-06_SYNTHETIC_OOXML_CORPUS_ONLY",
+  "canonicalRuntime": {
+    "implementation": "CPython",
+    "supportedPythonRange": ">=3.11,<3.14",
+    "supportedMinorVersions": [
+      "3.11",
+      "3.12",
+      "3.13"
+    ],
+    "ciLinuxMinorVersion": "3.13",
+    "ciWindowsMinorVersion": "3.13",
+    "stdlibOnly": true,
+    "openpyxlRequired": false,
+    "requiredStandardLibraryModules": [
+      "argparse",
+      "base64",
+      "binascii",
+      "hashlib",
+      "json",
+      "pathlib",
+      "struct",
+      "sys",
+      "zipfile",
+      "xml.etree.ElementTree"
+    ]
+  },
+  "generator": {
+    "path": "scripts/m2-v2-evidence-pilot/build_m2_v2_ooxml_corpus.py",
+    "seed": "m2-v2-pr7-s0-ooxml-v0.1",
+    "expectedCaseCount": 38,
+    "expectedPositiveCaseCount": 6,
+    "expectedNegativeCaseCount": 32,
+    "expectedCorpusDigest": "1273ba822eac3ee5d01e0443c3a6f75fd15a258e2bc17676bcdf3fb8754cf156",
+    "trackedBinaryFixtures": false,
+    "governedWorkbookReadByGenerator": false
+  },
+  "metadataInventory": {
+    "mode": "--inventory-workbook <path> --inventory-output <private-json-path>",
+    "outputSchema": "m2.v2.pr7.s0.current-workbook-opc-inventory.private.v0.1",
+    "worksheetPayloadDecompressed": false,
+    "sharedStringsPayloadDecompressed": false,
+    "relationshipTargetsPersisted": false,
+    "partDigestRole": "compressed-payload-sha256",
+    "policyDecisionMade": false
+  },
+  "determinismContract": {
+    "localDigestMustEqualExpected": true,
+    "ciLinuxDigestMustEqualExpected": true,
+    "ciWindowsDigestMustEqualExpected": true,
+    "fixedZipMetadata": true,
+    "fixedEntryOrder": true,
+    "fixedPathEncoding": "UTF-8",
+    "fixedXmlEncoding": "UTF-8",
+    "fixedLineEnding": "LF",
+    "fixedJsonKeyOrder": true
+  },
+  "governance": {
+    "supportOnly": true,
+    "productVerifierModified": false,
+    "policyDecisionMade": false,
+    "privateBusinessContentAllowed": false,
+    "networkAllowed": false,
+    "providerAllowed": false,
+    "databaseAllowed": false
+  }
+}

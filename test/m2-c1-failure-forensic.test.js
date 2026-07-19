@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 import test from "node:test";
+import { requireRegisteredArtifact } from "./helpers/m2V2RequiredArtifacts.js";
 
 const root = process.cwd();
 const reportPath = path.join(
@@ -36,11 +37,8 @@ test("C1 forensic preflight proves units, weights, and sparse positive-median in
   assert.equal(Object.values(payload.checks).every(Boolean), true);
 });
 
-test("C1 forensic report freezes FAIL without changing the candidate or gate", (context) => {
-  if (!fs.existsSync(reportPath)) {
-    context.skip("C1 forensic report has not been generated on this machine");
-    return;
-  }
+test("C1 forensic report freezes FAIL without changing the candidate or gate", () => {
+  requireRegisteredArtifact(root, "C1_FAILURE_REPORT_JSON", { expectedPath: reportPath });
   const report = JSON.parse(fs.readFileSync(reportPath, "utf8"));
   assert.equal(report.schema, "m2.c1_failure_root_cause.v1");
   assert.equal(report.engineeringErrorFound, false);
@@ -51,11 +49,8 @@ test("C1 forensic report freezes FAIL without changing the candidate or gate", (
   assert.equal(report.implementationChecks.channelWorkDoubleCountingFound, false);
 });
 
-test("C1 fallback attribution covers all origins and all 148 candidates", (context) => {
-  if (!fs.existsSync(reportPath)) {
-    context.skip("C1 forensic report has not been generated on this machine");
-    return;
-  }
+test("C1 fallback attribution covers all origins and all 148 candidates", () => {
+  requireRegisteredArtifact(root, "C1_FAILURE_REPORT_JSON", { expectedPath: reportPath });
   const report = JSON.parse(fs.readFileSync(reportPath, "utf8"));
   assert.equal(report.fallbackAttribution.length, 5);
   for (const origin of report.fallbackAttribution) {
@@ -68,11 +63,8 @@ test("C1 fallback attribution covers all origins and all 148 candidates", (conte
   }
 });
 
-test("C1 forensic public report is aggregate-only and all seals remain closed", (context) => {
-  if (!fs.existsSync(reportPath)) {
-    context.skip("C1 forensic report has not been generated on this machine");
-    return;
-  }
+test("C1 forensic public report is aggregate-only and all seals remain closed", () => {
+  requireRegisteredArtifact(root, "C1_FAILURE_REPORT_JSON", { expectedPath: reportPath });
   const report = JSON.parse(fs.readFileSync(reportPath, "utf8"));
   assert.equal(report.decisionStatus, "not_for_formal_decision");
   assert.deepEqual(report.seals, {

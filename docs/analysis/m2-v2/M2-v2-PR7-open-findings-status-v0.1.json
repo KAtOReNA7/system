@@ -1,0 +1,29 @@
+{
+  "schema": "m2.v2.pr7.open-findings-status.v0.1",
+  "reviewedHead": "627f74c6b9b2365ee4403c613ea9689748b76541",
+  "openP1": 5,
+  "openDirectP2": 5,
+  "openFindingIds": [
+    "PR7-P1-003",
+    "PR7-P1-006",
+    "PR7-P1-008",
+    "PR7-P1-009",
+    "PR7-P1-013",
+    "PR7-P2-006",
+    "PR7-P2-008",
+    "PR7-P2-009",
+    "PR7-P2-013",
+    "PR7-P2-016"
+  ],
+  "historicalDecision": "CANARY_CONDITIONAL",
+  "currentDecision": "CANARY_FAIL",
+  "mergeAuthorized": false,
+  "full160Authorized": false,
+  "nextDevelopmentReadiness": "NOT_AUTHORIZED",
+  "nextAllowedPhase": "S0_SUPPORT_IMPLEMENTATION",
+  "s0Status": "IMPLEMENTED_PENDING_VALIDATION",
+  "openFindings": 10,
+  "findingRemediationAuthorized": false,
+  "releaseAuthorized": false,
+  "remediationComplete": false
+}

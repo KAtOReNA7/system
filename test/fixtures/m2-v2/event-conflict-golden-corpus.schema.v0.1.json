@@ -1,0 +1,248 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "m2.v2.pr7.s0-event-conflict-golden-corpus.schema.v0.1",
+  "title": "PR7 S0 EventTime and conflict golden corpus",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "corpusId",
+    "privateOnly",
+    "seed",
+    "findingMap",
+    "cases"
+  ],
+  "properties": {
+    "schema": {
+      "const": "m2.v2.pr7.s0-event-conflict-golden-corpus.v0.1"
+    },
+    "corpusId": {
+      "const": "pr7-s0-event-conflict-synthetic-v0.1"
+    },
+    "privateOnly": {
+      "const": false
+    },
+    "seed": {
+      "const": "pr7-s0-event-conflict-seed-v0.1"
+    },
+    "findingMap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "PR7-P1-009",
+        "PR7-P2-013"
+      ],
+      "properties": {
+        "PR7-P1-009": {
+          "type": "string",
+          "minLength": 1
+        },
+        "PR7-P2-013": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 15,
+      "items": {
+        "$ref": "#/$defs/case"
+      }
+    }
+  },
+  "$defs": {
+    "nullableString": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "span": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "start",
+        "end",
+        "text"
+      ],
+      "properties": {
+        "start": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "end": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "case": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "caseId",
+        "language",
+        "sourceText",
+        "sentenceSpans",
+        "clauseSpans",
+        "eventPredicate",
+        "eventRole",
+        "eventDate",
+        "dateSpan",
+        "organization",
+        "productionIdentity",
+        "editionIdentity",
+        "stage",
+        "ambiguity",
+        "limitation",
+        "expectedRelation",
+        "reasonCode",
+        "covers",
+        "findingIds"
+      ],
+      "properties": {
+        "caseId": {
+          "type": "string",
+          "pattern": "^EC-[0-9]{3}$"
+        },
+        "language": {
+          "enum": [
+            "zh",
+            "en",
+            "mixed"
+          ]
+        },
+        "sourceText": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sentenceSpans": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/span"
+          }
+        },
+        "clauseSpans": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/span"
+          }
+        },
+        "eventPredicate": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "eventRole": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "enum": [
+              "SIGNING",
+              "ADAPTATION",
+              "PRODUCTION",
+              "RELEASE"
+            ]
+          }
+        },
+        "eventDate": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "dateSpan": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/span"
+          }
+        },
+        "organization": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/nullableString"
+          }
+        },
+        "productionIdentity": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/nullableString"
+          }
+        },
+        "editionIdentity": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/nullableString"
+          }
+        },
+        "stage": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "enum": [
+              "CONTRACT",
+              "ADAPTATION",
+              "PRODUCTION",
+              "RELEASE"
+            ]
+          }
+        },
+        "ambiguity": {
+          "type": "boolean"
+        },
+        "limitation": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "expectedRelation": {
+          "enum": [
+            "TRUE_CONFLICT",
+            "FALSE_CONFLICT",
+            "NOT_EVALUABLE",
+            "AMBIGUOUS"
+          ]
+        },
+        "reasonCode": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9_]*$"
+        },
+        "covers": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9_]*$"
+          }
+        },
+        "findingIds": {
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "PR7-P1-009",
+              "PR7-P2-013"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

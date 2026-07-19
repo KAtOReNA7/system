@@ -4,6 +4,11 @@ import fs from "node:fs";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 import test from "node:test";
+import {
+  inspectOptionalPrivateIdentity,
+  requireRegisteredArtifact,
+  requireRegisteredArtifacts,
+} from "./helpers/m2V2RequiredArtifacts.js";
 
 const root = process.cwd();
 const specPath = path.join(
@@ -146,11 +151,8 @@ test("C1 final-holdout mode fails closed before a data load", () => {
   assert.doesNotMatch(result.stderr, /loading the authorized/iu);
 });
 
-test("development report stays non-formal, sealed, and aggregate-only", (context) => {
-  if (!fs.existsSync(reportPath)) {
-    context.skip("C1 development report has not been generated yet");
-    return;
-  }
+test("development report stays non-formal, sealed, and aggregate-only", () => {
+  requireRegisteredArtifact(root, "C1_DEVELOPMENT_REPORT_JSON", { expectedPath: reportPath });
   const report = JSON.parse(fs.readFileSync(reportPath, "utf8"));
   assert.equal(report.schema, "m2.c1_development_validation.v1");
   assert.equal(report.decisionStatus, "not_for_formal_decision");
@@ -166,11 +168,8 @@ test("development report stays non-formal, sealed, and aggregate-only", (context
   assert.equal(report.privacy.predictionIntervalEndpointsPresent, false);
 });
 
-test("generated C1 report uses the exact frozen case populations", (context) => {
-  if (!fs.existsSync(reportPath)) {
-    context.skip("C1 development report has not been generated yet");
-    return;
-  }
+test("generated C1 report uses the exact frozen case populations", () => {
+  requireRegisteredArtifact(root, "C1_DEVELOPMENT_REPORT_JSON", { expectedPath: reportPath });
   const report = JSON.parse(fs.readFileSync(reportPath, "utf8"));
   assert.equal(report.developmentPopulation.expectedCaseCount, 18615);
   assert.equal(report.developmentPopulation.scoreableCaseCount, 12223);
@@ -180,11 +179,8 @@ test("generated C1 report uses the exact frozen case populations", (context) => 
   assert.equal(report.structuralValidation.zeroImputationDisabled, true);
 });
 
-test("all five outer origins have one preregistered global candidate", (context) => {
-  if (!fs.existsSync(reportPath)) {
-    context.skip("C1 development report has not been generated yet");
-    return;
-  }
+test("all five outer origins have one preregistered global candidate", () => {
+  requireRegisteredArtifact(root, "C1_DEVELOPMENT_REPORT_JSON", { expectedPath: reportPath });
   const report = JSON.parse(fs.readFileSync(reportPath, "utf8"));
   assert.equal(report.outerOriginCandidateSelection.length, 5);
   for (const selection of report.outerOriginCandidateSelection) {
@@ -198,11 +194,8 @@ test("all five outer origins have one preregistered global candidate", (context)
   }
 });
 
-test("served metrics remain complementarily suppressed in the public report", (context) => {
-  if (!fs.existsSync(reportPath)) {
-    context.skip("C1 development report has not been generated yet");
-    return;
-  }
+test("served metrics remain complementarily suppressed in the public report", () => {
+  requireRegisteredArtifact(root, "C1_DEVELOPMENT_REPORT_JSON", { expectedPath: reportPath });
   const report = JSON.parse(fs.readFileSync(reportPath, "utf8"));
   assert.equal(report.metrics.C1.served.suppressed, true);
   assert.equal(report.metrics.C1.served.wape, null);
@@ -211,11 +204,8 @@ test("served metrics remain complementarily suppressed in the public report", (c
   assert.equal(report.acceptance.evidence.servedBiasProtectedByComplementarySuppression, true);
 });
 
-test("public C1 artifacts contain no identifiers, private paths, or PI endpoints", (context) => {
-  if (!fs.existsSync(reportPath)) {
-    context.skip("C1 development report has not been generated yet");
-    return;
-  }
+test("public C1 artifacts contain no identifiers, private paths, or PI endpoints", () => {
+  requireRegisteredArtifacts(root, ["C1_DEVELOPMENT_REPORT_JSON", "C1_DEVELOPMENT_REPORT_MD"]);
   const text = `${fs.readFileSync(reportPath, "utf8")}\n${fs.readFileSync(reportMarkdownPath, "utf8")}`.toLowerCase();
   for (const forbidden of [
     "data/private",
@@ -233,11 +223,8 @@ test("public C1 artifacts contain no identifiers, private paths, or PI endpoints
   assert.doesNotMatch(text, /[a-z]:[\\/]/u);
 });
 
-test("C1 public outputs retain one point, annual breakdown, confidence, and limitations only", (context) => {
-  if (!fs.existsSync(reportPath)) {
-    context.skip("C1 development report has not been generated yet");
-    return;
-  }
+test("C1 public outputs retain one point, annual breakdown, confidence, and limitations only", () => {
+  requireRegisteredArtifact(root, "C1_DEVELOPMENT_REPORT_JSON", { expectedPath: reportPath });
   const report = JSON.parse(fs.readFileSync(reportPath, "utf8"));
   assert.equal(report.issueAndProductBoundary.publicOutputFieldsExact, true);
   assert.equal(report.issueAndProductBoundary.singlePointForecastOnly, true);
@@ -245,11 +232,8 @@ test("C1 public outputs retain one point, annual breakdown, confidence, and limi
   assert.equal(report.issueAndProductBoundary.automaticOperatingActionFieldCount, 0);
 });
 
-test("C1 acceptance reports every fixed gate without relaxing thresholds", (context) => {
-  if (!fs.existsSync(reportPath)) {
-    context.skip("C1 development report has not been generated yet");
-    return;
-  }
+test("C1 acceptance reports every fixed gate without relaxing thresholds", () => {
+  requireRegisteredArtifact(root, "C1_DEVELOPMENT_REPORT_JSON", { expectedPath: reportPath });
   const report = JSON.parse(fs.readFileSync(reportPath, "utf8"));
   assert.equal(Object.keys(report.acceptance.conditions).length, 19);
   assert.equal(report.acceptance.thresholdsChangedAfterResults, false);
@@ -258,24 +242,25 @@ test("C1 acceptance reports every fixed gate without relaxing thresholds", (cont
   assert.equal(report.C1DevelopmentResult, expected ? "PASS" : "FAIL");
 });
 
-test("ignored C1 cases and manifest round-trip and remain untracked", (context) => {
-  if (!fs.existsSync(privateManifestPath)) {
-    context.skip("ignored C1 evidence is unavailable on this machine");
-    return;
-  }
-  const manifest = JSON.parse(fs.readFileSync(privateManifestPath, "utf8"));
-  assert.equal(manifest.schema, "m2.c1_development_private_manifest.v1");
-  assert.equal(manifest.privateCaseRowCount, 18615);
-  assert.equal(manifest.scoreableCaseCount, 12223);
-  assert.equal(manifest.caseEvidenceSha256, sha256(privateCasesPath));
-  assert.equal(manifest.publicReportSha256, gitCanonicalLfSha256(reportPath));
-  assert.equal(manifest.privateWorkbookSha256, sha256(privateWorkbookPath));
-  assert.equal(manifest.tracked, false);
-  for (const file of [privateCasesPath, privateManifestPath, privateWorkbookPath]) {
-    assert.equal(git("check-ignore", "--quiet", "--", file).status, 0, file);
-    assert.equal(git("ls-files", "--error-unmatch", "--", file).status, 1, file);
-  }
-});
+if (process.env.M2_V2_TEST_PROFILE === "optional-private") {
+  test("ignored C1 cases and manifest round-trip and remain untracked", (context) => {
+    const optional = inspectOptionalPrivateIdentity(root, "OPT-C1");
+    context.diagnostic(JSON.stringify(optional));
+    if (optional.status === "OPTIONAL_PRIVATE_ABSENT") return;
+    const manifest = JSON.parse(fs.readFileSync(privateManifestPath, "utf8"));
+    assert.equal(manifest.schema, "m2.c1_development_private_manifest.v1");
+    assert.equal(manifest.privateCaseRowCount, 18615);
+    assert.equal(manifest.scoreableCaseCount, 12223);
+    assert.equal(manifest.caseEvidenceSha256, sha256(privateCasesPath));
+    assert.equal(manifest.publicReportSha256, gitCanonicalLfSha256(reportPath));
+    assert.equal(manifest.privateWorkbookSha256, sha256(privateWorkbookPath));
+    assert.equal(manifest.tracked, false);
+    for (const file of [privateCasesPath, privateManifestPath, privateWorkbookPath]) {
+      assert.equal(git("check-ignore", "--quiet", "--", file).status, 0, file);
+      assert.equal(git("ls-files", "--error-unmatch", "--", file).status, 1, file);
+    }
+  });
+}
 
 test("the C1 verifier independently recomputes metrics and acceptance", () => {
   assert.match(runner, /def verify_development_evidence\(/u);
@@ -286,11 +271,8 @@ test("the C1 verifier independently recomputes metrics and acceptance", () => {
   assert.match(runner, /C1 acceptance decision does not independently recompute/u);
 });
 
-test("C1 does not authorize C2-R, C2, C3, release, or M3", (context) => {
-  if (!fs.existsSync(reportPath)) {
-    context.skip("C1 development report has not been generated yet");
-    return;
-  }
+test("C1 does not authorize C2-R, C2, C3, release, or M3", () => {
+  requireRegisteredArtifact(root, "C1_DEVELOPMENT_REPORT_JSON", { expectedPath: reportPath });
   const report = JSON.parse(fs.readFileSync(reportPath, "utf8"));
   assert.match(report.nextBoundary, /^stop_after_C1_/u);
   assert.equal(report.releaseAuthorized, false);

@@ -1,8 +1,12 @@
 # 下一步交给 Codex 的指令
 
+## 2026-07-19 PR #7 S0 增量边界
+
+当前增量任务只授权建立并验证 7 项 S0 开发支持基线。S0 不是 finding remediation；`docs/analysis/m2-v2/M2-v2-PR7-open-findings-status-v0.1.md` 所列 5 个 P1 与 5 个直接耦合 P2 仍全部 `OPEN`。禁止自动进入 S1、修改 `src/domain/m2V2EvidencePilot/**`、调用 provider/数据库/Canary/full160、训练、更新 PR 正文、mark ready 或 merge PR #7。即使 S0 全部通过，也必须停止并等待用户单独授权。
+
 ## 当前唯一入口
 
-`codex/m2-v2-evidence-pilot-v1` 上的 M2 v2 完整性修复与 private state 离线恢复已经收口。当前没有获批的下一开发任务；不要把任何历史 C2/C3、V2-B provider 或 M3 段落当成执行授权。
+`codex/m2-v2-evidence-pilot-v1` 上的 M2 v2 完整性修复与 private state 离线恢复已经收口。除本轮明确限定的 PR #7 S0 开发支持任务外，当前没有获批的下一开发任务；S0 完成后必须停止。不要把任何历史 C2/C3、V2-B provider 或 M3 段落当成执行授权。
 
 当前权威导航：
 

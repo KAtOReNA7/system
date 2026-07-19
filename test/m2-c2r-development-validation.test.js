@@ -4,6 +4,7 @@ import fs from "node:fs";
 import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
+import { requireRegisteredArtifact } from "./helpers/m2V2RequiredArtifacts.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const runner = "scripts/m2-real-data/run_m2_c2r_development_validation.py";
@@ -94,11 +95,8 @@ test("legacy-target C2-R development write entry remains fail-closed", () => {
   assert.match(`${result.stdout}\n${result.stderr}`, /superseded|fail-closed/i);
 });
 
-test("C2-R report preserves case keys, scoring states, and sealed truth", (t) => {
-  if (!fs.existsSync(reportPath)) {
-    t.skip("C2-R development report has not been generated on this machine");
-    return;
-  }
+test("C2-R report preserves case keys, scoring states, and sealed truth", () => {
+  requireRegisteredArtifact(root, "C2R_DEVELOPMENT_VALIDATION_JSON", { expectedPath: reportPath });
   const report = JSON.parse(fs.readFileSync(reportPath, "utf8"));
   assert.equal(report.decisionStatus, "not_for_formal_decision");
   assert.equal(report.structuralValidation.caseKeysAndActualsMatchB4, true);
@@ -124,11 +122,8 @@ test("C2-R report preserves case keys, scoring states, and sealed truth", (t) =>
   assert.equal(report.releaseAuthorized, false);
 });
 
-test("C2-R public route cells apply primary and complementary suppression", (t) => {
-  if (!fs.existsSync(routingPath)) {
-    t.skip("C2-R routing report has not been generated on this machine");
-    return;
-  }
+test("C2-R public route cells apply primary and complementary suppression", () => {
+  requireRegisteredArtifact(root, "C2R_ROUTING_JSON", { expectedPath: routingPath });
   const routing = JSON.parse(fs.readFileSync(routingPath, "utf8"));
   for (const grid of [
     routing.perOriginRouteDistribution,
@@ -150,11 +145,8 @@ test("C2-R public route cells apply primary and complementary suppression", (t) 
   }
 });
 
-test("C2-R public channel report is deidentified and coverage-qualified", (t) => {
-  if (!fs.existsSync(channelPath)) {
-    t.skip("C2-R channel report has not been generated on this machine");
-    return;
-  }
+test("C2-R public channel report is deidentified and coverage-qualified", () => {
+  requireRegisteredArtifact(root, "C2R_CHANNEL_JSON", { expectedPath: channelPath });
   const channel = JSON.parse(fs.readFileSync(channelPath, "utf8"));
   assert.equal(channel.trueChannelNamesPresent, false);
   assert.equal(

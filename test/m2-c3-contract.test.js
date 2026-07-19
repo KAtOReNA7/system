@@ -4,6 +4,7 @@ import fs from "node:fs";
 import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
+import { requireRegisteredArtifact } from "./helpers/m2V2RequiredArtifacts.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const python = "scripts/run-codex-python.mjs";
@@ -263,12 +264,9 @@ test("C3 sealed-label commands fail closed before any data loader", () => {
   }
 });
 
-test("Gate D preserves the exact 14-step order and never authorizes before push", (context) => {
+test("Gate D preserves the exact 14-step order and never authorizes before push", () => {
   const gatePath = path.join(reportDir, "M2-calibration-gate-d-v1.json");
-  if (!fs.existsSync(gatePath)) {
-    context.skip("C3 Phase A has not been generated on this machine");
-    return;
-  }
+  requireRegisteredArtifact(root, "C3_GATE_D_JSON", { expectedPath: gatePath });
   const gate = JSON.parse(fs.readFileSync(gatePath, "utf8"));
   assert.deepEqual(gate.conditionOrder, expectedGateConditions);
   assert.deepEqual(new Set(Object.keys(gate.conditions)), new Set(expectedGateConditions));

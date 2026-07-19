@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
+import { requireRegisteredArtifact } from "./helpers/m2V2RequiredArtifacts.js";
 import {
   EVIDENCE_SCHEMA_VERSION,
   HARD_GATE_IDS,
@@ -374,13 +375,11 @@ test("V2-A evidence JSON Schema still exposes provider/time/confidence/conflict/
   assert.equal(schema.properties.schemaVersion.const, EVIDENCE_SCHEMA_VERSION);
 });
 
-test("public result artifacts, when generated, remain aggregate-only and non-formal", (context) => {
+test("public result artifacts, when generated, remain aggregate-only and non-formal", () => {
   const summaryPath = path.join(root, "docs/analysis/m2-v2/M2-v2-evidence-pilot-summary-v0.1.json");
   const gatePath = path.join(root, "docs/analysis/m2-v2/M2-v2-evidence-pilot-gate-v0.1.json");
-  if (!fs.existsSync(summaryPath) || !fs.existsSync(gatePath)) {
-    context.skip("pilot result reports are generated only after the frozen framework checkpoint");
-    return;
-  }
+  requireRegisteredArtifact(root, "PILOT_SUMMARY_JSON", { expectedPath: summaryPath });
+  requireRegisteredArtifact(root, "PILOT_GATE_JSON", { expectedPath: gatePath });
   const summary = JSON.parse(fs.readFileSync(summaryPath, "utf8"));
   const gate = JSON.parse(fs.readFileSync(gatePath, "utf8"));
   assert.equal(assertPublicSanitized(summary), true);
