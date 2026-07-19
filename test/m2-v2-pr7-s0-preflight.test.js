@@ -6,8 +6,10 @@ import { fileURLToPath } from "node:url";
 import {
   evaluatePreflightFacts,
   FALLBACK_EVENT_FIELDS,
+  parseJsonUtf8Strict,
   resolveRegisteredCommand,
   sha256,
+  sha256PortableText,
   validateCommandRegistry,
   validateFallbackEvent,
   validateFallbackLedger,
@@ -44,10 +46,48 @@ test("S0 task manifest binds the exact registry, receipt schema, sources, and go
   assert.equal(validateTaskManifest(taskManifest, { registryBytes, receiptSchemaBytes: schemaBytes }), true);
   assert.equal(taskManifest.startingHead, "627f74c6b9b2365ee4403c613ea9689748b76541");
   assert.equal(taskManifest.baseSha, "d81b952e37dd43365c0091cdd6665e69d8d39a7e");
-  assert.equal(taskManifest.commandRegistryDigest, sha256(registryBytes));
-  assert.equal(taskManifest.receiptSchema.sha256, sha256(schemaBytes));
+  assert.equal(taskManifest.commandRegistryDigest, sha256PortableText(registryBytes));
+  assert.equal(taskManifest.receiptSchema.sha256, sha256PortableText(schemaBytes));
   assert.equal(taskManifest.governance.openFindings, 10);
   assert.equal(taskManifest.governance.findingRemediationAuthorized, false);
+});
+
+test("S0 text bindings normalize checkout CRLF only and remain content-sensitive", () => {
+  const taskCrlf = withCrlf(taskBytes);
+  const registryCrlf = withCrlf(registryBytes);
+  const schemaCrlf = withCrlf(schemaBytes);
+  assert.equal(sha256PortableText(taskCrlf), sha256PortableText(taskBytes));
+  assert.equal(sha256PortableText(registryCrlf), taskManifest.commandRegistryDigest);
+  assert.equal(sha256PortableText(schemaCrlf), taskManifest.receiptSchema.sha256);
+  assert.deepEqual(parseJsonUtf8Strict(taskCrlf), taskManifest);
+  assert.equal(validateTaskManifest(taskManifest, {
+    registryBytes: registryCrlf,
+    receiptSchemaBytes: schemaCrlf,
+  }), true);
+
+  const changedRegistry = Buffer.from(
+    registryCrlf.toString("utf8").replace('"purpose":', '"purpose" :'),
+    "utf8",
+  );
+  assert.throws(
+    () => validateTaskManifest(taskManifest, {
+      registryBytes: changedRegistry,
+      receiptSchemaBytes: schemaCrlf,
+    }),
+    /command_registry_digest_mismatch/u,
+  );
+
+  const registryWithLoneCr = Buffer.concat([registryBytes, Buffer.from("\r")]);
+  assert.notEqual(sha256PortableText(registryWithLoneCr), taskManifest.commandRegistryDigest);
+
+  const registryWithBom = Buffer.concat([Buffer.from([0xef, 0xbb, 0xbf]), registryBytes]);
+  assert.notEqual(sha256PortableText(registryWithBom), taskManifest.commandRegistryDigest);
+  assert.throws(() => parseJsonUtf8Strict(registryWithBom));
+
+  const invalidTaskBytes = Buffer.from(taskBytes);
+  invalidTaskBytes[invalidTaskBytes.indexOf(Buffer.from("prohibitedActions"))] = 0xff;
+  assert.throws(() => parseJsonUtf8Strict(invalidTaskBytes));
+  assert.throws(() => sha256PortableText(Buffer.from([0xff])));
 });
 
 test("S0 command registry is strict, argv-based, unique, and rejects unknown commands", () => {
@@ -79,8 +119,8 @@ test("tracked JSON Schema validates a success receipt strictly", () => {
     startingHead: taskManifest.startingHead,
     baseSha: taskManifest.baseSha,
     selectedCommandId: "s0.doctor",
-    taskManifestSha256: sha256(taskBytes),
-    commandRegistrySha256: sha256(registryBytes),
+    taskManifestSha256: sha256PortableText(taskBytes),
+    commandRegistrySha256: sha256PortableText(registryBytes),
     sourceEvidence: {},
     externalEnvironment: [],
     capabilities: {},
@@ -233,4 +273,8 @@ function validFallback(overrides = {}) {
     disposition: "USED_SEMANTICALLY_EQUIVALENT",
     ...overrides,
   };
+}
+
+function withCrlf(bytes) {
+  return Buffer.from(bytes.toString("utf8").replace(/(?<!\r)\n/gu, "\r\n"), "utf8");
 }

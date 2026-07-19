@@ -72,6 +72,15 @@ export function sha256(value) {
   return createHash("sha256").update(bytes).digest("hex");
 }
 
+export function sha256PortableText(value) {
+  const text = decodeUtf8Strict(value);
+  return sha256(text.replaceAll("\r\n", "\n"));
+}
+
+export function parseJsonUtf8Strict(value) {
+  return JSON.parse(decodeUtf8Strict(value));
+}
+
 export function stableStringify(value) {
   return JSON.stringify(sortObjectKeys(value));
 }
@@ -222,13 +231,13 @@ export function validateTaskManifest(manifest, { registryBytes, receiptSchemaByt
     assertSha(source.reportSha256, "source_report_sha_invalid");
     assertSha(source.receiptDigest, "source_receipt_digest_invalid");
   }
-  if (registryBytes && sha256(registryBytes) !== manifest.commandRegistryDigest) {
+  if (registryBytes && sha256PortableText(registryBytes) !== manifest.commandRegistryDigest) {
     throw new Error("command_registry_digest_mismatch");
   }
   assertPlainObject(manifest.receiptSchema, "receipt_schema_binding_must_be_object");
   assertExactFields(manifest.receiptSchema, ["path", "sha256"], "receipt_schema_binding");
   assertSha(manifest.receiptSchema.sha256, "receipt_schema_sha_invalid");
-  if (receiptSchemaBytes && sha256(receiptSchemaBytes) !== manifest.receiptSchema.sha256) {
+  if (receiptSchemaBytes && sha256PortableText(receiptSchemaBytes) !== manifest.receiptSchema.sha256) {
     throw new Error("receipt_schema_digest_mismatch");
   }
   const governance = manifest.governance;
@@ -420,6 +429,11 @@ function sortObjectKeys(value) {
   if (Array.isArray(value)) return value.map(sortObjectKeys);
   if (!value || typeof value !== "object" || Object.getPrototypeOf(value) !== Object.prototype) return value;
   return Object.fromEntries(Object.keys(value).sort().map((key) => [key, sortObjectKeys(value[key])]));
+}
+
+function decodeUtf8Strict(value) {
+  const bytes = Buffer.isBuffer(value) ? value : Buffer.from(String(value), "utf8");
+  return new TextDecoder("utf-8", { fatal: true, ignoreBOM: true }).decode(bytes);
 }
 
 function assertExactFields(value, fields, prefix) {

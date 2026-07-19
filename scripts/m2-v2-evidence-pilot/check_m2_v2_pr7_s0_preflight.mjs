@@ -12,8 +12,10 @@ import { dirname, isAbsolute, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   evaluatePreflightFacts,
+  parseJsonUtf8Strict,
   resolveRegisteredCommand,
   sha256,
+  sha256PortableText,
   validateCommandRegistry,
   validateJsonSchema,
   validateSourceAuthenticityBinding,
@@ -64,13 +66,13 @@ function main() {
     }
     const taskPath = resolveInside(root, options.taskManifest ?? TASK_MANIFEST);
     const taskBytes = readFileSync(taskPath);
-    const task = JSON.parse(taskBytes.toString("utf8"));
+    const task = parseJsonUtf8Strict(taskBytes);
     const registryPath = resolveInside(root, task.commandRegistry);
     const registryBytes = readFileSync(registryPath);
-    const registry = JSON.parse(registryBytes.toString("utf8"));
+    const registry = parseJsonUtf8Strict(registryBytes);
     const receiptSchemaPath = resolveInside(root, task.receiptSchema.path);
     const receiptSchemaBytes = readFileSync(receiptSchemaPath);
-    const receiptSchema = JSON.parse(receiptSchemaBytes.toString("utf8"));
+    const receiptSchema = parseJsonUtf8Strict(receiptSchemaBytes);
     validateTaskManifest(task, { registryBytes, receiptSchemaBytes });
     const registrySummary = validateCommandRegistry(registry);
     const selectedCommand = resolveRegisteredCommand(registry, options.commandId);
@@ -92,10 +94,10 @@ function main() {
 
     const sourceEvidencePath = resolveInside(root, options.sourceEvidence ?? SOURCE_EVIDENCE);
     const privateEvidence = existsSync(sourceEvidencePath)
-      ? JSON.parse(readFileSync(sourceEvidencePath, "utf8"))
+      ? parseJsonUtf8Strict(readFileSync(sourceEvidencePath))
       : null;
     const sourceBinding = validateSourceAuthenticityBinding(task.requiredSourceEvidence, privateEvidence);
-    const overlay = JSON.parse(readFileSync(resolveInside(root, STATUS_OVERLAY), "utf8"));
+    const overlay = parseJsonUtf8Strict(readFileSync(resolveInside(root, STATUS_OVERLAY)));
     const capabilities = captureCapabilities();
     const outputIgnored = gitStatus(root, ["check-ignore", "--quiet", "--", `${OUTPUT_ROOT}/.preflight-probe`]) === 0;
     const facts = {
@@ -109,7 +111,7 @@ function main() {
       noPrivatePathStaged: stagedPaths.every((path) => !/^data\/private-(?:input|output)(?:\/|$)/u.test(normalizePath(path))),
       sourceEvidenceAuthentic: sourceBinding.sourceCount === 3,
       commandRegistryValid: registrySummary.commandCount > 0 && selectedCommand.commandId === options.commandId,
-      receiptSchemaValid: sha256(receiptSchemaBytes) === task.receiptSchema.sha256,
+      receiptSchemaValid: sha256PortableText(receiptSchemaBytes) === task.receiptSchema.sha256,
       capabilitiesPresent: Object.values(capabilities).every((capability) => capability.available),
       currentGovernanceValid: validateOverlay(overlay),
     };
@@ -124,8 +126,8 @@ function main() {
       startingHead: task.startingHead,
       baseSha: task.baseSha,
       selectedCommandId: selectedCommand.commandId,
-      taskManifestSha256: sha256(taskBytes),
-      commandRegistrySha256: sha256(registryBytes),
+      taskManifestSha256: sha256PortableText(taskBytes),
+      commandRegistrySha256: sha256PortableText(registryBytes),
       sourceEvidence: sourceBinding,
       externalEnvironment,
       capabilities,
