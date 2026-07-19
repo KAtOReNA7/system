@@ -1,5 +1,6 @@
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { attestFormalReadonlyRequestV0_2 } from "./prove_m2_v2_verifier_readonly.mjs";
 import {
   V2B5_RELAY_REQUEST_CAP,
   V2B5_TAVILY_REQUEST_CAP,
@@ -93,6 +94,7 @@ try {
     print({ command, status: "ok", publicReportCount: result.publicReports.length, full160Authorized: false });
   } else if (command === "verify") {
     const result = verifyV2B5(root);
+    const readonlyAttestation = loadReadonlyAttestation();
     print({
       command,
       status: result.allPassed ? "ok" : "failed",
@@ -101,6 +103,7 @@ try {
       issues: result.issues,
       finalDecision: result.finalDecision,
       full160Authorized: false,
+      ...readonlyAttestation,
     });
     if (!result.allPassed) process.exitCode = 1;
   } else {
@@ -118,4 +121,9 @@ try {
 
 function print(value) {
   console.log(JSON.stringify(value));
+}
+
+function loadReadonlyAttestation() {
+  const requestPath = process.env.M2_V2_READONLY_FORMAL_REQUEST_PATH;
+  return requestPath ? attestFormalReadonlyRequestV0_2(requestPath) : {};
 }

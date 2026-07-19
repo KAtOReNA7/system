@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { spawnSync } from "node:child_process";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { attestFormalReadonlyRequestV0_2 } from "./prove_m2_v2_verifier_readonly.mjs";
 import { checkAndFreezeV2B8Contract, recordV2B8Pretest } from "../../src/domain/m2V2EvidencePilot/v2b8Contract.js";
 import {
   readV2B8Results,
@@ -50,6 +51,7 @@ try {
       transactionBindingVerified: receipt.transactionBindingVerified,
       providerRequestDelta: receipt.providerRequestDelta,
       verificationIssues: receipt.issues,
+      ...loadReadonlyAttestation(),
     });
     if (!receipt.allPassed) process.exitCode = 1;
   } else {
@@ -79,6 +81,11 @@ function digest(value) {
 
 function print(value) {
   console.log(JSON.stringify(value));
+}
+
+function loadReadonlyAttestation() {
+  const requestPath = process.env.M2_V2_READONLY_FORMAL_REQUEST_PATH;
+  return requestPath ? attestFormalReadonlyRequestV0_2(requestPath) : {};
 }
 
 function progress(value) {

@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { spawnSync } from "node:child_process";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { attestFormalReadonlyRequestV0_2 } from "./prove_m2_v2_verifier_readonly.mjs";
 import {
   checkAndFreezeV2B7Contract,
   recordV2B7Pretest,
@@ -67,7 +68,12 @@ try {
     print({ command, status: "ok", publicReportCount: result.publicReports.length, full160Authorized: false });
   } else if (command === "verify") {
     const result = verifyV2B7(root);
-    print({ command, status: result.allPassed ? "ok" : "failed", ...result });
+    print({
+      command,
+      status: result.allPassed ? "ok" : "failed",
+      ...result,
+      ...loadReadonlyAttestation(),
+    });
     if (!result.allPassed) process.exitCode = 1;
   } else {
     throw new Error(`unsupported_command:${command}`);
@@ -90,4 +96,9 @@ function digest(value) {
 
 function print(value) {
   console.log(JSON.stringify(value));
+}
+
+function loadReadonlyAttestation() {
+  const requestPath = process.env.M2_V2_READONLY_FORMAL_REQUEST_PATH;
+  return requestPath ? attestFormalReadonlyRequestV0_2(requestPath) : {};
 }
