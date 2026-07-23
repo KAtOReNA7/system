@@ -86,7 +86,7 @@ formal root 不再导入 fixture repository 或测试目录。四个运行所需
 
 ## 6. 验证与授权边界
 
-首次一般化 CI 在两个旧 HEAD 暴露了两项真实可移植性缺口：Windows checkout 的 CRLF 使确定性 JSON 字节比较误报漂移；historical formal-cash synthetic preflight 只认识旧命名分支或 GitHub merge ref，不认识 CI 明确 checkout 的 exact PR head。修正后，前者只归一化 CRLF/LF 而不放宽 JSON 内容，后者新增 `trusted_pr_head`，但必须证明本地 HEAD 等于 `refs/remotes/origin/<GITHUB_HEAD_REF>`，仍保持 fail-closed。聚焦回归 17/17 通过。
+首次一般化 CI 暴露了三项真实可移植性缺口：Windows checkout 的 CRLF 使确定性 JSON 字节比较误报漂移；historical formal-cash synthetic preflight 只认识旧命名分支或 GitHub merge ref，不认识 CI 明确 checkout 的 exact PR head；main push 同样按 commit SHA detached checkout，但旧边界要求当前分支名必须为 `main`。修正后，JSON verifier 只归一化 CRLF/LF 而不放宽内容；`trusted_pr_head` 必须证明本地 HEAD 等于 `refs/remotes/origin/<GITHUB_HEAD_REF>`；`trusted_main_push` 无论 named/detached 都必须证明 `HEAD == GITHUB_SHA == origin/main`。三者仍保持 fail-closed。
 
 最终治理工作树验证结果：
 

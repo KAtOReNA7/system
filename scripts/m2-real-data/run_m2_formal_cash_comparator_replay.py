@@ -198,7 +198,7 @@ def _checkout_identity_decision(
         return "named_branch"
     if (
         allow_trusted_ci_checkout
-        and branch == "main"
+        and branch in {"", "main"}
         and github_actions == "true"
         and event_name == "push"
         and head_ref == ""
@@ -282,6 +282,10 @@ def _checkout_boundary_self_test() -> dict[str, bool]:
         "github_ref": "refs/heads/main",
         "remote_main_sha": merge_sha,
     }
+    trusted_detached_main = {
+        **trusted_main,
+        "branch": "",
+    }
     trusted_head = {
         **trusted,
         "github_sha": merge_sha,
@@ -310,6 +314,14 @@ def _checkout_boundary_self_test() -> dict[str, bool]:
         is None,
         "exactMainPushAccepted": _checkout_identity_decision(**trusted_main)
         == "trusted_main_push",
+        "exactDetachedMainPushAccepted": _checkout_identity_decision(
+            **trusted_detached_main
+        )
+        == "trusted_main_push",
+        "detachedMainPushWrongRemoteRejected": _checkout_identity_decision(
+            **{**trusted_detached_main, "remote_main_sha": "d" * 40}
+        )
+        is None,
         "cleanLocalMainAccepted": _is_clean_local_main_checkout(
             branch="main",
             head_sha=merge_sha,
