@@ -1,5 +1,17 @@
 # Codex 工作规则
 
+## 用户常驻协作要求（已固化，无需重复下达）
+
+- 本节汇总用户在历次任务中反复提出的仓库协作要求。后续用户只需说明本轮目标、业务选择和新增授权；无需再次要求“检查远端并同步、核对本地进度、清理过时分支、全库查重、评估方向、保护 private、运行验证或更新进度”。Codex 每次仓库任务都应自动执行这些基线动作。
+- 开始任务时先运行只读基线：`git fetch origin --prune`、工作区/当前分支/upstream/`origin/main`、ahead/behind、开放 PR、exact-head CI 和 worktree。工作区干净且仅可快进时才允许 `pull --ff-only`；发现 remote drift、non-fast-forward 或不明本地修改时先停止并报告。
+- 默认只维护 `main` 与一条当前活动开发分支；审查合并状态、独有提交和引用后，才可删除已合并、已替代或失效分支。不得自动 rebase、squash、amend、force push、触碰 stash，禁止 `git add .` 和 `git add -A`。
+- 实现前必须用 `rg` 检索入口、调用方、测试和已有 canonical 实现；同时检查失效代码、完全重复文件、平行 runtime/runner/adapter、重复 package scripts、产品与 fixture 边界、工具链复现性、默认测试覆盖及 CI 重复执行。先给出 predecessor/successor/退役门禁，再删除历史入口。
+- 每次进度审计都要区分“已实现”“已验证”“已授权”“可发布”：报告 exact HEAD、远端同步状态、CI、开放 finding、当前 batch/next batch、模型和业务 gate、private capability、禁止事项。历史报告和 development 结果不得被改称当前授权或正式发布结论。
+- 核心协作能力必须 private-independent：clone、`npm ci`、`npm run doctor:dev`、lint、build、公开/合成测试、smoke 和本地 fixture 启动不得依赖 Git ignored private artifact、provider key 或数据库。缺少 private 只阻断所属 capability；用 `npm run doctor:capability -- <capability-id>` 盘点，再按 canonical verifier 验证。
+- private 原始数据、receipt、派生产物、材料、密钥、连接串和 dump 禁止提交、伪造或从公开摘要反推。跨电脑恢复必须使用能力分包、加密、逐文件摘要校验和原子恢复；Git 只保存公开代码、schema、脱敏 commitment、恢复合同与 doctor。任何“文件存在”只表示库存存在，不等于真实性验证通过或执行获授权。
+- 修改完成后按本文件“验证规则”执行对应门禁，明确列出通过、失败和未运行项；不能用旧 CI、部分测试或 private 文件存在替代当前工作树验证。
+- 审计或清理请求本身不扩大业务授权。任何新 batch、provider、数据库、Canary/full160、模型训练、holdout、B8、mark ready、merge、release 或 M3 formal 都必须继续满足下方最新门禁和单独授权。
+
 ## 2026-07-23 分支与代码收敛规则（固定执行）
 
 - 默认只保留 `main` 和一条当前活动开发分支。PR #7 关闭或合并前，M2 的唯一活动分支是 `codex/m2-v2-evidence-pilot-v1`；B4–B7、文档同步、CI 修复、checkpoint 和同一 PR 的返工都继续使用该分支，禁止再建立同任务子分支。只有用户明确要求独立 PR，或现有分支确实无法安全承载且已先说明原因和退出条件时，才允许新建分支。

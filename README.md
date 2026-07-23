@@ -1,40 +1,63 @@
 # 有声书产品收入评估与年度目标系统 PRD v0.2
 
-## 2026-07-23 全库审读与多电脑协同入口（当前最高优先）
+## 2026-07-23 全库审读与多电脑协同入口（v0.2 当前入口）
 
 全库结构、冗余代码、运行/开发效率、M2 算法方向和多电脑 private state 的当前审计见：
 
-- `docs/analysis/m2-v2/M2-repository-code-convergence-and-portable-development-audit-v0.1.md`
+- `docs/analysis/m2-v2/M2-repository-code-convergence-and-portable-development-audit-v0.2.md`
 
-该文档给出三类清单：
+v0.2 保留 v0.1 作为历史输入，并纠正两项会影响后续执行的旧结论：
 
-1. 可直接收敛的完全重复文件和 package aliases；
-2. 必须先建立 canonical successor 才能退役的历史 runtime/runner；
-3. 各开发 capability 所需的本地工具、private artifact、当前电脑存在状态和恢复方案。
+1. 当前 S1 validator 会重新读取 `reportPath`、`receiptPath`，重算 report SHA-256 和 canonical receipt digest；它不是只信任 receipt 自我声明。
+2. private artifact 的“本机存在/缺失”是运行时库存状态，不应写成仓库长期事实；核心开发必须始终与 private capability 解耦。
 
 审计结论不是批量删除授权。PR #7 收口前，只允许处理当前已授权批次、修复跨电脑制品恢复和准备后续 cleanup；不得据此运行 provider、数据库、Canary/full160、模型训练、holdout、B8、merge、release 或 M3 formal。
+
+新电脑的公开核心开发入口：
+
+```bash
+git pull --ff-only
+npm ci
+npm run doctor:dev
+npm run check:no-real-data
+npm run lint
+npm run build
+npm test
+npm run smoke
+```
+
+`doctor:dev` 不读取或要求任何 private 文件。只有需要某项受控能力时才运行：
+
+```bash
+npm run doctor:capability -- m2-pr7-s1
+npm run doctor:capability -- m2-v2-current-state
+npm run doctor:capability -- m2-algorithm-authoritative-input
+npm run doctor:capability -- m3-private-materials
+```
+
+能力目录由 `config/development-capability-catalog.v0.1.json` 声明。缺少 private artifact 只阻断所属能力，不得阻断普通代码、文档、公开测试或 fixture 本地启动；存在也只表示可进入 canonical validation，不表示真实性已验证或获得执行授权。
 
 ### 当前电脑能做什么
 
 | 能力 | 当前状态 | 说明 |
 |---|---|---|
 | Git/代码/文档全库审读 | 可执行 | 可以继续做引用扫描、重复检测、调用图、文档和 synthetic fixture 工作 |
-| `check:no-real-data`、lint、build、默认测试 | 可执行 | 审读文档已通过这些门禁；默认测试 1150/1150、0 skipped |
+| `check:no-real-data`、lint、build、默认测试 | 可执行 | 本轮工作树验证通过；默认测试 1157/1157、0 skipped |
 | 产品 runtime、测试和 CI 收敛设计 | 可准备 | 可以形成 patch/计划，但 PR #7 收口前不批量删除历史证据 |
-| M2 权威算法输入盘点 | 可执行 | 当前电脑已有 formal execution facts/cache 和主要 v1.1/v1.2/formal-cash/C2 私有输入角色；是否运行新算法仍需另行授权 |
-| PR #7 S1 本地 doctor/validation | `BLOCKED` | 缺少下述 S1 authenticity private package |
+| M2 权威算法输入盘点 | 按机器动态盘点 | 使用 capability doctor 只检查最小角色；运行新算法仍需另行授权 |
+| PR #7 S1 本地 doctor/validation | 按机器动态盘点 | 先运行 capability doctor；只有原 S1 preflight 能作真实性判定 |
 | provider、数据库、Canary/full160、训练、holdout、B8、merge/release | 禁止 | 缺文件不扩大业务授权 |
-| M3 private/formal | 禁止 | 3–5 组材料当前未提供，且 M3 formal 未授权 |
+| M3 private/formal | 禁止 | private 材料按机器动态盘点；M3 formal 未授权 |
 
-当前唯一直接阻断文件为：
+S1 capability 的受控 private role 为：
 
 ```text
 data/private-output/m2-v2-pr7-s1-remediation-badbf45/s1-source-evidence-authenticity-private-v0.1.json
 ```
 
-不得手工拼装该 JSON。当前 validator 只核对 receipt 自身声明，不能单独证明其引用的底层 report/receipt 字节真实存在；授权电脑必须提供完整、可重新计算的 authenticity package。
+不得手工拼装该 JSON。当前 validator 会重新读取其引用的底层 report/receipt 并重算摘要；跨电脑恢复仍必须提供完整、可重新计算的 authenticity package，不能只复制单个 JSON。
 
-### 有 private state 的授权电脑需要提供什么
+### 缺少 private state 时，授权电脑需要提供什么
 
 第一优先级是 `m2-pr7-s1` 加密包，至少包含：
 
@@ -83,7 +106,7 @@ npm run check:no-real-data
 npm run lint
 npm run build
 npm test
-Get-Content -Encoding utf8 docs/analysis/m2-v2/M2-repository-code-convergence-and-portable-development-audit-v0.1.md
+Get-Content -Encoding utf8 docs/analysis/m2-v2/M2-repository-code-convergence-and-portable-development-audit-v0.2.md
 ```
 
 然后只读检查当前批次和 S1 private 前置：
@@ -99,8 +122,8 @@ npm run m2:v2:pr7:s1:doctor -- --expected-head=$head --batch-id=$($task.currentB
 
 执行全库审读建议时按以下顺序：
 
-1. 先完成 private capability catalog、恢复/验证和 S1 validator 的真实性修复；
-2. 再完成已授权的 PR #7 B4–B7 最小收口；
+1. capability catalog 已完成；后续独立实现加密 bundle 的构建、恢复和验证，S1 validator 保持当前重算语义；
+2. 只有在每批获得新的明确启动指令后，才完成 PR #7 B4–B7 最小收口；
 3. PR #7 收口后建立独立 cleanup PR，处理完全重复 migration/docs/package aliases；
 4. 再建立 M2 current algorithm canonical core，把 C1–C3 变为 archive-only；
 5. 最后才申请新的算法训练、业务抽检和 holdout 授权。
