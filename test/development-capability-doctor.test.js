@@ -35,7 +35,12 @@ test("catalog defines one private-free core capability and scoped private capabi
     ],
   );
   const core = catalog.capabilities.find((capability) => capability.id === "core-dev");
+  const s1 = catalog.capabilities.find((capability) => capability.id === "m2-pr7-s1");
   assert.deepEqual(core.requiredPrivateArtifacts, []);
+  assert.equal(s1.privateBundle.payloadFileCount, 9);
+  assert.equal(s1.privateBundle.environmentIncluded, false);
+  assert.equal(s1.privateBundle.providerCredentialsIncluded, false);
+  assert.equal(s1.privateBundle.databaseCredentialsIncluded, false);
   assert.equal(catalog.principles.missingPrivateArtifactsBlockOnlyOwningCapability, true);
 });
 
@@ -105,6 +110,7 @@ test("default install, development, validation, and start commands do not invoke
     assert.equal(typeof command, "string", `missing package script ${scriptName}`);
     assert.doesNotMatch(command, /doctor:capability|data[\\/]private-(?:input|output)/u);
   }
+  assert.match(packageJson.scripts.test, /node --test --test-concurrency=4/u);
 });
 
 test("private capability roots remain ignored by the repository policy", () => {

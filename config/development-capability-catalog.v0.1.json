@@ -63,6 +63,19 @@
       "canonicalValidationCommands": [
         "npm run m2:v2:pr7:s1:doctor -- --expected-head=<exact-head> --batch-id=<explicitly-authorized-batch>"
       ],
+      "privateBundle": {
+        "schema": "development.private-capability-bundle-policy.v0.1",
+        "capabilityId": "m2-pr7-s1",
+        "payloadFileCount": 9,
+        "environmentIncluded": false,
+        "providerCredentialsIncluded": false,
+        "databaseCredentialsIncluded": false,
+        "sourceAndTargetExactHeadRequired": true,
+        "sourceAndTargetTrackedWorktreeCleanRequired": true,
+        "buildCommand": "npm run m2:v2:private-capability:build -- -BatchId <explicitly-authorized-batch> -OutputDirectory <outside-repository> -RecoveryKeyDirectory <separate-directory>",
+        "verifyCommand": "npm run m2:v2:private-capability:verify -- -ArchivePath <archive>",
+        "restoreCommand": "npm run m2:v2:private-capability:restore -- -ArchivePath <archive> -TargetRepoRoot <repository>"
+      },
       "recovery": "Restore the complete verified encrypted capability bundle from an authorized machine, then run the canonical S1 doctor. Never reconstruct, weaken, or commit the private receipt.",
       "authorization": "EXPLICIT_BATCH_AUTHORIZATION_REQUIRED"
     },

@@ -15,6 +15,7 @@ import {
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import test from "node:test";
+import { fileURLToPath } from "node:url";
 
 import "./m2-v2-migration-archive-v0-3.test.js";
 import "./m2-v2-migration-path-identity.test.js";
@@ -25,6 +26,14 @@ import {
   restoreVerifiedPrivateStateMigration,
   validateMigrationPayloadSet,
 } from "../src/domain/m2V2EvidencePilot/privateStateMigration.js";
+import {
+  M2_PR7_S1_AUTHENTICITY_PATH,
+  PRIVATE_CAPABILITY_MANIFEST_PATH,
+  createM2Pr7S1CapabilityBundleStage,
+  normalizePrivateCapabilityRepositoryPath,
+  restoreM2Pr7S1CapabilityBundle,
+  validateM2Pr7S1CapabilityBundlePayload,
+} from "../src/domain/m2V2EvidencePilot/privateCapabilityBundle.js";
 
 test("migration manifest rejects path aliases, traversal, absolute paths, and duplicate-plus-unlisted payload attacks", () => {
   for (const value of ["", "../escape", "payload/../escape", "payload//env/file", "payload/./env/file", "C:\\escape", "\\\\server\\share", "/absolute"]) {
@@ -265,6 +274,234 @@ test("PowerShell migration entrypoints delegate verified promotion and make key 
   assert.doesNotMatch(restore, /Copy-Item\s+-Destination\s+\$restoreStage\s+-Recurse/gu);
 });
 
+test("PowerShell S1 capability entrypoints encrypt the exact bundle and never request environment credentials", () => {
+  const build = readFileSync(new URL("../scripts/m2-v2-evidence-pilot/build_development_private_capability_bundle.ps1", import.meta.url), "utf8");
+  const verify = readFileSync(new URL("../scripts/m2-v2-evidence-pilot/verify_development_private_capability_bundle.ps1", import.meta.url), "utf8");
+  const restore = readFileSync(new URL("../scripts/m2-v2-evidence-pilot/restore_development_private_capability_bundle.ps1", import.meta.url), "utf8");
+  assert.match(build, /prepare_development_private_capability_bundle\.mjs/u);
+  assert.match(build, /m2:v2:pr7:s1:doctor/u);
+  assert.match(build, /--batch-id=\$BatchId/u);
+  assert.match(build, /-mhe=on/u);
+  assert.match(build, /passwordTransport = "secure_stdin_not_process_arguments"/u);
+  assert.match(build, /recoveryKeyDirectorySeparationVerified = \$true/u);
+  assert.match(verify, /Get-FileHash/u);
+  assert.match(restore, /apply_development_private_capability_bundle\.mjs/u);
+  assert.doesNotMatch(
+    `${build}\n${restore}`,
+    /OPENAI_API_KEY|TAVILY_API_KEY|DATABASE_URL|\.env\.local/u,
+  );
+});
+
+test("S1 capability prepare and apply CLIs preserve the same verified contract", () => {
+  const fixture = makePrivateCapabilityFixture();
+  const cliStage = join(fixture.base, "cli-stage");
+  try {
+    const prepare = spawnSync(process.execPath, [
+      fileURLToPath(new URL("../scripts/m2-v2-evidence-pilot/prepare_development_private_capability_bundle.mjs", import.meta.url)),
+      "--capability-id",
+      "m2-pr7-s1",
+      "--repo-root",
+      fixture.sourceRoot,
+      "--staging-root",
+      cliStage,
+      "--source-commit",
+      fixture.sourceCommit,
+    ], { encoding: "utf8", windowsHide: true });
+    assert.equal(prepare.status, 0, prepare.stderr);
+    assert.equal(JSON.parse(prepare.stdout).payloadFileCount, 9);
+
+    const apply = spawnSync(process.execPath, [
+      fileURLToPath(new URL("../scripts/m2-v2-evidence-pilot/apply_development_private_capability_bundle.mjs", import.meta.url)),
+      "--extract-root",
+      cliStage,
+      "--target-repo-root",
+      fixture.targetRoot,
+    ], { encoding: "utf8", windowsHide: true });
+    assert.equal(apply.status, 0, apply.stderr);
+    const result = JSON.parse(apply.stdout);
+    assert.equal(result.status, "restored");
+    assert.equal(result.environmentIncluded, false);
+    assert.equal(result.providerRequestDelta, 0);
+  } finally {
+    fixture.cleanup();
+  }
+});
+
+test("S1 private capability bundle stages the exact nine-file closure without environment or credentials", () => {
+  const fixture = makePrivateCapabilityFixture();
+  try {
+    assert.equal(fixture.stageResult.status, "staged");
+    assert.equal(fixture.stageResult.payloadFileCount, 9);
+    assert.equal(fixture.stageResult.environmentIncluded, false);
+    assert.equal(fixture.stageResult.providerCredentialsIncluded, false);
+    assert.equal(fixture.stageResult.databaseCredentialsIncluded, false);
+    assert.equal(existsSync(join(fixture.stageRoot, "payload", ".env.local")), false);
+    const verification = validateM2Pr7S1CapabilityBundlePayload({
+      extractRoot: fixture.stageRoot,
+      manifest: fixture.manifest,
+    });
+    assert.equal(verification.payloadFileCount, 9);
+    assert.equal(verification.providerRequestDelta, 0);
+    assert.deepEqual(
+      verification.entries.map((entry) => entry.role).sort(),
+      [
+        "s1_source_authenticity",
+        ...Array(4).fill("s1_source_receipt"),
+        ...Array(4).fill("s1_source_report"),
+      ].sort(),
+    );
+  } finally {
+    fixture.cleanup();
+  }
+});
+
+test("S1 private capability bundle rejects tampering, extra files, and unsafe paths", () => {
+  for (const value of [
+    "",
+    "../escape",
+    "data/private-output/../escape",
+    "data/private-output//file",
+    "C:\\escape",
+    "\\\\server\\share",
+    "/absolute",
+    "config/private.json",
+  ]) {
+    assert.throws(
+      () => normalizePrivateCapabilityRepositoryPath(value, { platform: "win32" }),
+      /private_capability_path/u,
+    );
+  }
+
+  const tampered = makePrivateCapabilityFixture();
+  try {
+    const report = tampered.manifest.entries.find(
+      (entry) => entry.role === "s1_source_report",
+    );
+    write(
+      join(tampered.stageRoot, ...report.payloadRelativePath.split("/")),
+      "tampered\n",
+    );
+    assert.throws(
+      () => validateM2Pr7S1CapabilityBundlePayload({
+        extractRoot: tampered.stageRoot,
+        manifest: tampered.manifest,
+      }),
+      /payload_integrity_mismatch/u,
+    );
+  } finally {
+    tampered.cleanup();
+  }
+
+  const extra = makePrivateCapabilityFixture();
+  try {
+    write(join(extra.stageRoot, "payload", "data", "private-output", "extra.json"), "{}\n");
+    assert.throws(
+      () => validateM2Pr7S1CapabilityBundlePayload({
+        extractRoot: extra.stageRoot,
+        manifest: extra.manifest,
+      }),
+      /archive_exact_set_mismatch/u,
+    );
+  } finally {
+    extra.cleanup();
+  }
+});
+
+test("S1 private capability bundle restores atomically, refuses conflicts, supports force, and reruns as a no-op", () => {
+  const fixture = makePrivateCapabilityFixture();
+  try {
+    const restored = restoreM2Pr7S1CapabilityBundle({
+      extractRoot: fixture.stageRoot,
+      targetRepoRoot: fixture.targetRoot,
+      manifest: fixture.manifest,
+    });
+    assert.equal(restored.status, "restored");
+    assert.equal(restored.providerRequestDelta, 0);
+    assert.equal(restored.databaseConnections, 0);
+    assert.equal(restored.secretValuesPersistedInReceipt, false);
+    assert.equal(existsSync(join(fixture.targetRoot, ".env.local")), false);
+    for (const entry of fixture.manifest.entries) {
+      assert.equal(
+        sha256(readFileSync(join(fixture.targetRoot, ...entry.repositoryRelativePath.split("/")))),
+        entry.sha256,
+      );
+    }
+    const second = restoreM2Pr7S1CapabilityBundle({
+      extractRoot: fixture.stageRoot,
+      targetRepoRoot: fixture.targetRoot,
+      manifest: fixture.manifest,
+    });
+    assert.equal(second.status, "already_restored_noop");
+
+    const report = fixture.manifest.entries.find(
+      (entry) => entry.role === "s1_source_report",
+    );
+    const targetReport = join(
+      fixture.targetRoot,
+      ...report.repositoryRelativePath.split("/"),
+    );
+    write(targetReport, "local conflict\n");
+    assert.throws(
+      () => restoreM2Pr7S1CapabilityBundle({
+        extractRoot: fixture.stageRoot,
+        targetRepoRoot: fixture.targetRoot,
+        manifest: fixture.manifest,
+      }),
+      /destination_exists_use_force/u,
+    );
+    const forced = restoreM2Pr7S1CapabilityBundle({
+      extractRoot: fixture.stageRoot,
+      targetRepoRoot: fixture.targetRoot,
+      manifest: fixture.manifest,
+      force: true,
+    });
+    assert.equal(forced.status, "restored");
+    assert.equal(sha256(readFileSync(targetReport)), report.sha256);
+  } finally {
+    fixture.cleanup();
+  }
+});
+
+test("S1 private capability bundle rolls back partial promotion and requires an exact clean target HEAD", () => {
+  const fixture = makePrivateCapabilityFixture();
+  try {
+    assert.throws(
+      () => restoreM2Pr7S1CapabilityBundle({
+        extractRoot: fixture.stageRoot,
+        targetRepoRoot: fixture.targetRoot,
+        manifest: fixture.manifest,
+        force: true,
+        faultAt: "after_first_promotion",
+      }),
+      /restore_rolled_back/u,
+    );
+    for (const entry of fixture.manifest.entries) {
+      assert.equal(
+        existsSync(join(fixture.targetRoot, ...entry.repositoryRelativePath.split("/"))),
+        false,
+      );
+    }
+    assert.equal(restoreM2Pr7S1CapabilityBundle({
+      extractRoot: fixture.stageRoot,
+      targetRepoRoot: fixture.targetRoot,
+      manifest: fixture.manifest,
+      force: true,
+    }).status, "restored");
+
+    write(join(fixture.targetRoot, "package.json"), "{\"private\":false}\n");
+    assert.throws(
+      () => restoreM2Pr7S1CapabilityBundle({
+        extractRoot: fixture.stageRoot,
+        targetRepoRoot: fixture.targetRoot,
+        manifest: fixture.manifest,
+      }),
+      /tracked_worktree_not_clean/u,
+    );
+  } finally {
+    fixture.cleanup();
+  }
+});
+
 function makeMigrationFixture(options = {}) {
   const base = mkdtempSync(join(tmpdir(), "m2-v2-migration-fixture-"));
   const targetRoot = mkdtempSync(join(tmpdir(), "m2-v2-migration-restore-validation-"));
@@ -305,6 +542,103 @@ function makeMigrationFixture(options = {}) {
   };
 }
 
+function makePrivateCapabilityFixture() {
+  const base = mkdtempSync(join(tmpdir(), "m2-v2-capability-bundle-fixture-"));
+  const sourceRoot = join(base, "source");
+  const stageRoot = join(base, "stage");
+  const targetRoot = mkdtempSync(join(tmpdir(), "m2-v2-capability-restore-validation-"));
+  rmSync(targetRoot, { recursive: true, force: true });
+  mkdirSync(sourceRoot, { recursive: true });
+  write(join(sourceRoot, "package.json"), "{\"private\":true}\n");
+  write(join(sourceRoot, ".gitignore"), "**/data/\n");
+
+  const sourceIds = ["independentReview", "planning", "supportAudit", "s0Implementation"];
+  const expectedSources = sourceIds.map((sourceId) => {
+    const reportPath = `data/private-output/synthetic/${sourceId}-report.md`;
+    const receiptPath = `data/private-output/synthetic/${sourceId}-receipt.json`;
+    const reportBytes = Buffer.from(`# ${sourceId}\nsynthetic evidence\n`, "utf8");
+    const receipt = {
+      schema: "synthetic.s1-source-receipt.v0.1",
+      sourceId,
+      passed: true,
+      providerRequestDelta: 0,
+    };
+    receipt.receiptDigest = canonicalReceiptDigestForTest(receipt);
+    write(join(sourceRoot, ...reportPath.split("/")), reportBytes);
+    write(join(sourceRoot, ...receiptPath.split("/")), `${JSON.stringify(receipt, null, 2)}\n`);
+    return {
+      sourceId,
+      reportPath,
+      receiptPath,
+      reportSha256: sha256(reportBytes),
+      receiptDigest: receipt.receiptDigest,
+    };
+  });
+  const requiredSourceEvidence = expectedSources.map((source) => ({
+    sourceId: source.sourceId,
+    reportSha256: source.reportSha256,
+    receiptDigest: source.receiptDigest,
+  }));
+  write(
+    join(sourceRoot, "config", "m2-v2-pr7-s1-task.v0.1.json"),
+    `${JSON.stringify({ requiredSourceEvidence }, null, 2)}\n`,
+  );
+  runGit(["init", "-q", sourceRoot]);
+  runGit(["-C", sourceRoot, "config", "user.name", "Synthetic Test"]);
+  runGit(["-C", sourceRoot, "config", "user.email", "synthetic@example.invalid"]);
+  runGit(["-C", sourceRoot, "add", ".gitignore", "package.json", "config/m2-v2-pr7-s1-task.v0.1.json"]);
+  runGit(["-C", sourceRoot, "commit", "-q", "-m", "synthetic public baseline"]);
+  const sourceCommit = runGit(["-C", sourceRoot, "rev-parse", "HEAD"]).trim();
+
+  const authenticity = {
+    schema: "m2.v2.pr7.s1-source-evidence-authenticity.private.v0.1",
+    privateOnly: true,
+    generatedAt: "2026-07-23T00:00:00.000Z",
+    canonicalization: "recursive-key-sorted compact JSON; array order preserved; UTF-8 SHA-256",
+    manifestDigestBindingSha256: sha256(Buffer.from(stableStringifyForTest(requiredSourceEvidence))),
+    status: "PASS",
+    sources: expectedSources.map((source) => ({
+      sourceId: source.sourceId,
+      reportExpectedSha256: source.reportSha256,
+      reportActualSha256: source.reportSha256,
+      reportPath: source.reportPath,
+      receiptExpectedDigest: source.receiptDigest,
+      receiptClaimedDigest: source.receiptDigest,
+      receiptRecomputedDigest: source.receiptDigest,
+      receiptPath: source.receiptPath,
+      matches: true,
+    })),
+  };
+  write(
+    join(sourceRoot, ...M2_PR7_S1_AUTHENTICITY_PATH.split("/")),
+    `${JSON.stringify(authenticity, null, 2)}\n`,
+  );
+  const clone = spawnSync("git", ["clone", "-q", sourceRoot, targetRoot], { encoding: "utf8" });
+  assert.equal(clone.status, 0, clone.stderr);
+  const stageResult = createM2Pr7S1CapabilityBundleStage({
+    repoRoot: sourceRoot,
+    stagingRoot: stageRoot,
+    sourceCommit,
+  });
+  const manifest = JSON.parse(readFileSync(
+    join(stageRoot, ...PRIVATE_CAPABILITY_MANIFEST_PATH.split("/")),
+    "utf8",
+  ));
+  return {
+    base,
+    sourceRoot,
+    stageRoot,
+    targetRoot,
+    sourceCommit,
+    manifest,
+    stageResult,
+    cleanup() {
+      rmSync(base, { recursive: true, force: true });
+      rmSync(targetRoot, { recursive: true, force: true });
+    },
+  };
+}
+
 function withEntry(manifest, entry) {
   const result = structuredClone(manifest);
   result.entries.push(entry);
@@ -331,4 +665,28 @@ function write(path, content) {
 
 function sha256(value) {
   return createHash("sha256").update(value).digest("hex");
+}
+
+function canonicalReceiptDigestForTest(receipt) {
+  const copy = structuredClone(receipt);
+  delete copy.receiptDigest;
+  return sha256(Buffer.from(stableStringifyForTest(copy), "utf8"));
+}
+
+function stableStringifyForTest(value) {
+  return JSON.stringify(sortKeysForTest(value));
+}
+
+function sortKeysForTest(value) {
+  if (Array.isArray(value)) return value.map(sortKeysForTest);
+  if (!value || typeof value !== "object") return value;
+  return Object.fromEntries(
+    Object.keys(value).sort().map((key) => [key, sortKeysForTest(value[key])]),
+  );
+}
+
+function runGit(args) {
+  const result = spawnSync("git", args, { encoding: "utf8", windowsHide: true });
+  assert.equal(result.status, 0, result.stderr);
+  return result.stdout;
 }

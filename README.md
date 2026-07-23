@@ -355,6 +355,33 @@ CI 显式将 `M1_APP_ENV` 设为 `ci`，并将 `M1_DATABASE_URL`、`M1_DATABASE_
 - M2 本地正式持久化、审计和 prepared export 已实现；v1.1 conditional 已被用户拒绝，必须完成新算法校准和新一轮验收后才能重新申请 release，且任何本地执行都不代表生产部署或生产审批。
 - v0.1 原文和早期 gap 报告仅用于历史追溯，不得重新作为当前人工待办入口。
 
+# M2 PR #7 S1 private capability bundle
+
+普通新电脑开发不需要任何 private 文件：
+
+```bash
+git pull --ff-only
+npm ci
+npm run doctor:dev
+npm run check:no-real-data
+npm run lint
+npm run build
+npm test
+npm run smoke
+```
+
+只有继续已授权的 `m2-pr7-s1` 离线批次时，才需要从授权电脑生成并恢复 capability-scoped encrypted bundle。该包固定包含 authenticity receipt、4 个 report 和 4 个原始 receipt，不包含 `.env.local`、provider key 或数据库凭据。
+
+构建与恢复入口：
+
+```powershell
+npm run m2:v2:private-capability:build -- -BatchId <explicitly-authorized-batch> -OutputDirectory <outside-repository> -RecoveryKeyDirectory <separate-directory>
+npm run m2:v2:private-capability:verify -- -ArchivePath <archive>
+npm run m2:v2:private-capability:restore -- -ArchivePath <archive> -TargetRepoRoot <repository>
+```
+
+构建端和恢复端必须位于相同 exact HEAD 且 tracked worktree 干净。恢复后继续运行 capability doctor 和原 S1 canonical doctor；恢复成功不自动授权下一 batch。完整合同见 `docs/analysis/m2-v2/M2-v2-private-capability-bundle-v0.1.md`。
+
 # M3 Private Completion Pack Recovery
 
 After a new machine runs `git pull origin main`, ignored private materials and completion packs are intentionally absent. README/AGENTS never record machine-specific absolute paths and never promise that ignored artifacts exist on every computer.

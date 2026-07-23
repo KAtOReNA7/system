@@ -94,6 +94,7 @@ v0.1 是另一台电脑在旧 HEAD 和不同本地库存下形成的历史审计
 - 146 个 `.test.js` 中，默认 `test` 直接列出 133 个；`pretest` 扩展后覆盖 141 个。
 - 5 个没有进入默认链：admin E2E、migration archive、migration path identity、public verifier request integrity、workbook lineage。它们可能属于 E2E/专项合同，但应由 registry 明确，而不是靠人工记忆。
 - PR CI 只运行一条完整 default chain；其前后仍重复运行约 21 个 focused tests。不要误称为“两次完整测试”，但应减少已包含测试的重复。
+- 本轮实际复现了 Windows 默认无界并发下两个不同 Python 子进程偶发无 stderr 退出；两项单测均可独立通过。默认 `node --test` 已显式限制为 `--test-concurrency=4`，完整复跑 1162/1162 通过。该修复只收敛调度资源竞争，未改变测试内容；长字符串和 registry 问题仍待独立处理。
 
 建议拆为 `test:unit`、`test:current-contract`、`test:archive`、`test:e2e`、`test:private`，由一个 registry 生成平台矩阵，避免长字符串和漏测。
 
@@ -181,28 +182,31 @@ npm run m2:v2:pr7:s1:doctor -- --expected-head=<exact-head> --batch-id=<explicit
 
 若 private role 缺失，只报告对应能力被阻断。不得通过提交、手工拼装、放宽 digest 或把 private 内容改名为 public 来解决。
 
-### 7.3 仍待实施
+### 7.3 `m2-pr7-s1` 私有能力包已实施
 
-doctor 解决的是“核心开发不被 private 阻断”和“明确缺什么”，不是 private 分发本身。后续独立 portability PR 应：
+第一期 capability-scoped bundle 已覆盖 `m2-pr7-s1`：
 
-1. 扩展现有 AES-256/header-encrypted 迁移工具为 capability-scoped bundle；
-2. bundle 内逐文件记录 repository-relative path、size、SHA-256、schema 和 source commit；
-3. archive 与 recovery key 分开传输，restore 使用 staging + verify + atomic promote；
-4. provider key、数据库凭据、原始业务数据和 dump 永不进入 Git 或普通 bundle；
-5. Git 只保存 schema、公开 commitment、bundle ID/外层 digest 和验证合同；
-6. 先覆盖 `m2-pr7-s1`，再按授权覆盖 current-state 和 algorithm-input；M3 独立处理。
+1. 包内固定为 authenticity receipt、其引用的 4 个 report 和 4 个原始 receipt，共 9 个文件；
+2. manifest 逐文件绑定 repository-relative path、role、source identity、size、SHA-256、exact-set digest、source commit 和 tracked source-evidence manifest digest；
+3. 构建端和恢复端都要求相同 exact HEAD 与干净 tracked worktree；
+4. restore 在 Git ignore/untracked 门禁、路径/reparse/hardlink、逐文件摘要、tracked manifest 绑定和 exact-set 校验后，使用 transaction staging、逐文件 promotion 与失败回滚；
+5. 外层使用 AES-256 header-encrypted 7z、SHA-256 sidecar，以及与 archive 分目录保存的 recovery key；
+6. 包不包含 `.env.local`、provider key、数据库凭据、原始业务数据或 dump，receipt 也不持久化 secret 值；
+7. 原 `m2-v2-evidence-pilot/**` migration 保留为历史 provider-state 迁移入口，不再作为 S1 最小协作包。
+
+公开操作合同见 `docs/analysis/m2-v2/M2-v2-private-capability-bundle-v0.1.md`。后续如要覆盖 current-state 或 algorithm-input，仍需分别授权和定义独立 capability；M3 继续独立处理。
 
 ## 8. 建议执行顺序
 
 | 优先级 | 工作 | 边界 |
 |---|---|---|
-| P0 已完成 | public capability catalog + doctor + tests + 协作文档 | 不读取/提交 private，不启动 B4 |
+| P0 已完成 | public capability catalog + doctor + `m2-pr7-s1` 九文件加密能力包 + tests + 协作文档 | 不读取/提交 private，不启动 B4 |
 | P0 待授权 | PR #7 B4–B7 最小收口 | 每批需明确授权；不新增平行 runtime |
 | P1 | toolchain lock、全量 JS/MJS 检查、测试 registry | 独立 cleanup/toolchain PR |
 | P1 | fixture/formal composition 分离、point-only serving | 不改变模型结论或 release 状态 |
 | P1 | 删除 80+8 完全重复副本和无语义 aliases | 引用为 0、successor 明确、全套验证 |
 | P2 | `m2-current` algorithm core 与覆盖诊断 | 新授权；同一 case/comparator/seals |
-| P2 | capability encrypted bundle/restore | 不迁移 secrets，不把 private 放 Git |
+| P2 | 扩展 current-state / algorithm-input capability bundle | 另行授权；不迁移 secrets，不把 private 放 Git |
 
 ## 9. 删除与替代门禁
 
