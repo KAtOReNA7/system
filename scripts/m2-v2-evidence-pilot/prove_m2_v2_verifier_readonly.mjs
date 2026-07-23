@@ -295,7 +295,8 @@ function readTrackedBytesExact(repositoryRoot, repositoryRelativePath) {
       { path: normalized, status: error?.status ?? null },
     );
   }
-  if (!Buffer.isBuffer(headBytes) || !workingBytes.equals(headBytes)) {
+  if (!Buffer.isBuffer(headBytes)
+      || !trackedCheckoutContentMatchesHead(workingBytes, headBytes)) {
     fail(
       READONLY_PROOF_REASON.metadataChangedOrUnsupported,
       `formal control differs from the tracked HEAD blob: ${normalized}`,
@@ -307,6 +308,16 @@ function readTrackedBytesExact(repositoryRoot, repositoryRelativePath) {
     );
   }
   return workingBytes;
+}
+
+export function trackedCheckoutContentMatchesHead(workingBytes, headBytes) {
+  if (!Buffer.isBuffer(workingBytes) || !Buffer.isBuffer(headBytes)) return false;
+  if (workingBytes.equals(headBytes)) return true;
+  try {
+    return sha256PortableText(workingBytes) === sha256PortableText(headBytes);
+  } catch {
+    return false;
+  }
 }
 
 function readTrackedJsonExact(repositoryRoot, repositoryRelativePath) {

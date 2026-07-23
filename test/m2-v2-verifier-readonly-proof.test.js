@@ -17,6 +17,7 @@ import {
   runReadonlyProofV0_2,
   snapshotHostNativeReadonlyScopeV0_2ForTests,
   snapshotReadonlyScopeV0_2,
+  trackedCheckoutContentMatchesHead,
   runSyntheticReadonlyProofV0_2ForTests,
   snapshotSyntheticReadonlyScopeV0_2ForTests,
 } from "../scripts/m2-v2-evidence-pilot/prove_m2_v2_verifier_readonly.mjs";
@@ -44,6 +45,24 @@ const expectedCaseIds = [
   "PR7-P2-009-self-reference",
   "PR7-P2-009-stable-pass",
 ];
+
+test("formal tracked controls accept checkout CRLF only and reject semantic or binary drift", () => {
+  const head = Buffer.from("{\n  \"ok\": true\n}\n", "utf8");
+  const windowsCheckout = Buffer.from("{\r\n  \"ok\": true\r\n}\r\n", "utf8");
+  assert.equal(trackedCheckoutContentMatchesHead(head, head), true);
+  assert.equal(trackedCheckoutContentMatchesHead(windowsCheckout, head), true);
+  assert.equal(
+    trackedCheckoutContentMatchesHead(
+      Buffer.from("{\r\n  \"ok\": false\r\n}\r\n", "utf8"),
+      head,
+    ),
+    false,
+  );
+  assert.equal(
+    trackedCheckoutContentMatchesHead(Buffer.from([0xff, 0x00]), Buffer.from([0xfe, 0x00])),
+    false,
+  );
+});
 
 test("PR7-P2-009 registry exact set is fully exercised with no skip path", () => {
   assert.deepEqual([...casesById.keys()].sort(), [...expectedCaseIds].sort());
