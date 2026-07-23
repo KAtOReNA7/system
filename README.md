@@ -1,5 +1,110 @@
 # 有声书产品收入评估与年度目标系统 PRD v0.2
 
+## 2026-07-23 全库审读与多电脑协同入口（当前最高优先）
+
+全库结构、冗余代码、运行/开发效率、M2 算法方向和多电脑 private state 的当前审计见：
+
+- `docs/analysis/m2-v2/M2-repository-code-convergence-and-portable-development-audit-v0.1.md`
+
+该文档给出三类清单：
+
+1. 可直接收敛的完全重复文件和 package aliases；
+2. 必须先建立 canonical successor 才能退役的历史 runtime/runner；
+3. 各开发 capability 所需的本地工具、private artifact、当前电脑存在状态和恢复方案。
+
+审计结论不是批量删除授权。PR #7 收口前，只允许处理当前已授权批次、修复跨电脑制品恢复和准备后续 cleanup；不得据此运行 provider、数据库、Canary/full160、模型训练、holdout、B8、merge、release 或 M3 formal。
+
+### 当前电脑能做什么
+
+| 能力 | 当前状态 | 说明 |
+|---|---|---|
+| Git/代码/文档全库审读 | 可执行 | 可以继续做引用扫描、重复检测、调用图、文档和 synthetic fixture 工作 |
+| `check:no-real-data`、lint、build、默认测试 | 可执行 | 审读文档已通过这些门禁；默认测试 1150/1150、0 skipped |
+| 产品 runtime、测试和 CI 收敛设计 | 可准备 | 可以形成 patch/计划，但 PR #7 收口前不批量删除历史证据 |
+| M2 权威算法输入盘点 | 可执行 | 当前电脑已有 formal execution facts/cache 和主要 v1.1/v1.2/formal-cash/C2 私有输入角色；是否运行新算法仍需另行授权 |
+| PR #7 S1 本地 doctor/validation | `BLOCKED` | 缺少下述 S1 authenticity private package |
+| provider、数据库、Canary/full160、训练、holdout、B8、merge/release | 禁止 | 缺文件不扩大业务授权 |
+| M3 private/formal | 禁止 | 3–5 组材料当前未提供，且 M3 formal 未授权 |
+
+当前唯一直接阻断文件为：
+
+```text
+data/private-output/m2-v2-pr7-s1-remediation-badbf45/s1-source-evidence-authenticity-private-v0.1.json
+```
+
+不得手工拼装该 JSON。当前 validator 只核对 receipt 自身声明，不能单独证明其引用的底层 report/receipt 字节真实存在；授权电脑必须提供完整、可重新计算的 authenticity package。
+
+### 有 private state 的授权电脑需要提供什么
+
+第一优先级是 `m2-pr7-s1` 加密包，至少包含：
+
+1. `s1-source-evidence-authenticity-private-v0.1.json`；
+2. 该 receipt 引用的 4 个 report；
+3. 该 receipt 引用的 4 个原始 receipt；
+4. 包内 manifest：逐文件 repository-relative path、size、SHA-256 和 source commit；
+5. AES-256 header-encrypted archive；
+6. archive 外层 SHA-256 sidecar；
+7. 与 archive 分开传输的密码/recovery key。
+
+四个 source identity 必须是 `independentReview`、`planning`、`supportAudit`、`s0Implementation`。冻结摘要以 `config/m2-v2-pr7-s1-task.v0.1.json` 为准，不能从公开摘要手工伪造 private evidence。
+
+B6 前还要检查以下 private capability roots 是否完整；缺失时一并从原电脑通过独立加密包恢复：
+
+```text
+data/private-output/m2-v2-evidence-pilot/**
+data/private-output/m2-v2-integrity-remediation/**
+data/private-output/m2-v2-pr7-p1-remediation/**
+data/private-output/m2-v2-pr7-s1-remediation-badbf45/**
+```
+
+不要提供或提交：
+
+- provider API keys；
+- `.env.local` 全量内容；
+- 数据库密码或连接串；
+- 原始账单、台账、作品明细、数据库 dump；
+- 浏览器 Cookie、Authorization header；
+- 未加密 private archive；
+- Git stash 或 Git object。
+
+当前工作是 provider-free、DB-free 的 PR #7 离线修复。现有 `build_m2_v2_private_state_migration.ps1` 只覆盖 `m2-v2-evidence-pilot/**`，不能被当作完整的 PR7 S1/B6 迁移包；应按审计文档把它扩展为 capability-based bundle 后再长期使用。
+
+### 授权电脑同步后的执行顺序
+
+在有 private state 的电脑上：
+
+```powershell
+git fetch origin --prune
+git switch codex/m2-v2-evidence-pilot-v1
+git pull --ff-only origin codex/m2-v2-evidence-pilot-v1
+git status --short
+npm ci
+npm run check:no-real-data
+npm run lint
+npm run build
+npm test
+Get-Content -Encoding utf8 docs/analysis/m2-v2/M2-repository-code-convergence-and-portable-development-audit-v0.1.md
+```
+
+然后只读检查当前批次和 S1 private 前置：
+
+```powershell
+$task = Get-Content -Raw -Encoding utf8 config/m2-v2-pr7-s1-task.v0.1.json | ConvertFrom-Json
+$head = git rev-parse HEAD
+Test-Path data/private-output/m2-v2-pr7-s1-remediation-badbf45/s1-source-evidence-authenticity-private-v0.1.json
+npm run m2:v2:pr7:s1:doctor -- --expected-head=$head --batch-id=$($task.currentBatch)
+```
+
+如果 doctor 因 source evidence 缺失或摘要不一致失败，应停止代码实施并准备上述加密包；不得修改 expected digest、降低门禁或制作自我声明式 receipt。doctor 通过也只证明对应批次前置满足，不自动授权下一批次或审计文档中的批量删除。
+
+执行全库审读建议时按以下顺序：
+
+1. 先完成 private capability catalog、恢复/验证和 S1 validator 的真实性修复；
+2. 再完成已授权的 PR #7 B4–B7 最小收口；
+3. PR #7 收口后建立独立 cleanup PR，处理完全重复 migration/docs/package aliases；
+4. 再建立 M2 current algorithm canonical core，把 C1–C3 变为 archive-only；
+5. 最后才申请新的算法训练、业务抽检和 holdout 授权。
+
 ## 2026-07-20 PR #7 S1 当前进度
 
 - PR #7 的 B3 closing correction 已在 exact HEAD `a945ed3a22fbc86e8ca381db9124fc0927461ec7` 完成；CI run `29704510651` 的 Linux job `88239115427` 与 Windows job `88239115429` 均成功。
