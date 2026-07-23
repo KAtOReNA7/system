@@ -53,7 +53,7 @@ test("Responses payloads fail closed unless store is explicitly false", () => {
   assert.throws(() => assertResponsesRetention({ model: "synthetic", store: true }), /provider_responses_store_must_be_false/u);
 });
 
-test("registered relay, search and probe sinks reject missing capability before transport", async () => {
+test("PR7-P2-016-relay-no-cap, PR7-P2-016-tavily-no-cap, and PR7-P2-016-probe-no-cap reject before transport", async () => {
   let fetchCount = 0;
   const fetchImpl = async () => { fetchCount += 1; throw new Error("must_not_run"); };
   await assert.rejects(dispatchV2B6RelayRequest({ fetchImpl, payload: SAFE_PAYLOAD }), /provider_execution_capability_missing/u);
@@ -67,7 +67,7 @@ test("registered relay, search and probe sinks reject missing capability before 
   assert.equal(fetchCount, 0);
 });
 
-test("forged, serialized, cloned and prototype-cloned capabilities have no authority", async () => {
+test("PR7-P2-016-forged-cap: forged, serialized, cloned and prototype-cloned capabilities have no authority", async () => {
   let fetchCount = 0;
   const fetchImpl = async () => { fetchCount += 1; };
   const payload = buildV2B5TavilySearchPayload({ query: "Synthetic documentation" });
@@ -80,7 +80,7 @@ test("forged, serialized, cloned and prototype-cloned capabilities have no autho
   assert.equal(fetchCount, 0);
 });
 
-test("capability is route, phase, request and root scoped", async () => {
+test("PR7-P2-016-wrong-scope: capability is route, phase, request and root scoped", async () => {
   const fixture = trackedFixture();
   const other = trackedFixture({ marker: "other" });
   const payload = buildV2B5TavilySearchPayload({ query: "Synthetic scoped request" });
@@ -105,7 +105,7 @@ test("capability is route, phase, request and root scoped", async () => {
   }
 });
 
-test("serialized or shallow-cloned issued capability is rejected and unused original becomes stale", async () => {
+test("PR7-P2-016-stale-reused: issued capability is one-shot and becomes stale", async () => {
   const fixture = trackedFixture();
   const payload = buildV2B5TavilySearchPayload({ query: "Synthetic clone request" });
   let captured;
@@ -128,7 +128,7 @@ test("serialized or shallow-cloned issued capability is rejected and unused orig
   }), /provider_execution_capability_consumed_or_stale/u);
 });
 
-test("safe-cache mutation after issue rejects before fake transport", async () => {
+test("PR7-P2-016-cache-mutated: safe-cache mutation after issue rejects before fake transport", async () => {
   const fixture = trackedFixture();
   const payload = buildV2B5TavilySearchPayload({ query: "Synthetic cache mutation" });
   let fetchCount = 0;
@@ -166,7 +166,7 @@ test("physical root replacement after issue rejects before fake transport", asyn
   assert.equal(fetchCount, 0);
 });
 
-test("valid capability is consumed before one fake transport and cannot be reused", async () => {
+test("PR7-P2-016-synthetic-pass: valid capability reaches fake transport exactly once", async () => {
   const fixture = trackedFixture();
   const payload = buildV2B5TavilySearchPayload({ query: "Synthetic one shot" });
   let fetchCount = 0;
@@ -185,7 +185,7 @@ test("valid capability is consumed before one fake transport and cannot be reuse
   assert.equal(fetchCount, 1);
 });
 
-test("retired canary route hard-fails before caller transport", async () => {
+test("PR7-P2-016-legacy-retired: retired canary route hard-fails before caller transport", async () => {
   let fetchCount = 0;
   const adapter = new OpenAICompatibleRelayCanaryAdapter({
     baseUrl: "https://relay.example/v1", approvedHost: "relay.example",

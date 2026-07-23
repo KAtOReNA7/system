@@ -1,9 +1,17 @@
 {
   "schema": "m2.v2.pr7-b6-offline-authority-promotion.v0.1",
-  "status": "PROMOTED_PENDING_EXACT_HEAD_CI",
+  "status": "COMPLETE_PENDING_B8",
   "classification": "public_sanitized_not_for_formal_decision",
   "branch": "codex/m2-v2-evidence-pilot-v1",
   "batchId": "B6",
+  "exactHeadCi": {
+    "head": "3e79ce654cd335129005d3916f25f5bf8a2bef7d",
+    "runId": 30030360312,
+    "linuxJobId": 89285146244,
+    "windowsJobId": 89285146296,
+    "linuxConclusion": "SUCCESS",
+    "windowsConclusion": "SUCCESS"
+  },
   "predecessorBatch": {
     "batchId": "B5",
     "exactHead": "8804cd508f8e30d90dfc6f429e0b49ab6cae647c",
@@ -64,7 +72,7 @@
     "lintPassed": true,
     "buildPassed": true,
     "smokePassed": true,
-    "exactHeadS1Validation": "PENDING_CLEAN_COMMIT"
+    "exactHeadS1Validation": "PASSED_AT_3e79ce654cd335129005d3916f25f5bf8a2bef7d"
   },
   "boundaries": {
     "providerRequestDelta": 0,

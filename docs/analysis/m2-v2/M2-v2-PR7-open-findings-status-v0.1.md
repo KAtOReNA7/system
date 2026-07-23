@@ -33,9 +33,12 @@ This overlay records the current S1 phased-remediation boundary. It does not sup
 | B4-implementation | `65bee39e012e013d4e4347076fc24757f7bcc9f9` | run `30021984333`, job `89256777608`, success | run `30021984333`, job `89256777664`, success | `PASS` |
 | B4-integration | this tracked integration commit | exact-head CI bound in the private receipt and PR body | exact-head CI bound in the private receipt and PR body | `COMPLETE_PENDING_B8` after exact-head CI |
 | B5 | `8804cd508f8e30d90dfc6f429e0b49ab6cae647c` | run `30025925006`, job `89270240561`, success | run `30025925006`, job `89270240691`, success | `COMPLETE_PENDING_B8` |
-| B6 | this tracked implementation commit | pending exact-head CI | pending exact-head CI | `PROMOTED_PENDING_EXACT_HEAD_CI` |
+| B6 | `3e79ce654cd335129005d3916f25f5bf8a2bef7d` | run `30030360312`, job `89285146244`, success | run `30030360312`, job `89285146296`, success | `COMPLETE_PENDING_B8` |
+| B7 | this tracked implementation commit | pending exact-head CI | pending exact-head CI | `REGRESSION_COMPLETE_PENDING_EXACT_HEAD_CI` |
 
 B2 comprises two ordinary commits, five changed files, 15/15 registered acceptance cases, 31/31 migration tests, and 1130/1130 full tests. The integration-only checkpoint commit is bound separately to its final exact-head CI receipt and the live PR body.
+
+B7 adds executable case-identity accounting over the frozen 89-case registry. The native matrix requires 87 Linux and 88 Windows cases with a 89-case union; the local Windows run passed 88/88 identities and 161 tests with zero skip.
 
 B3 implements exact safe-cache projections, a provider-free deterministic v0.3 candidate migration, and one-shot lowest-sink provider capabilities with all legacy routes retired. It covers 18/18 planning cases plus 3 bounded adjacent cases; no current promotion or external access occurred. B4 covers 16/16 frozen cases plus the 35-test V2-B.8 regression suite, and its implementation exact-head Linux/Windows CI passed. B5 implements the package-complete v0.2 verifier and all 22 frozen workbook/artifact-policy cases; its exact-head Linux/Windows CI passed. B6 deterministically rebuilt and strictly verified the vNext workbook, recomputed current authority without provider access, atomically promoted a 14-role transaction and proved the repeat execution is `ALREADY_CURRENT_NOOP`.
 

@@ -91,7 +91,7 @@ jobs:
         if: ${{ github.event_name == 'pull_request' }}
         env:
           EXPECTED_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-        run: npm run m2:v2:pr7:s1:validate:local -- --expected-head=$EXPECTED_HEAD_SHA --batch-id=B6
+        run: npm run m2:v2:pr7:s1:validate:local -- --expected-head=$EXPECTED_HEAD_SHA --batch-id=B7
 
       - name: First isolated default test chain for non-PR pushes
         if: ${{ github.event_name != 'pull_request' }}
@@ -132,6 +132,9 @@ jobs:
 
       - name: B6 provider-free authority and atomic promotion validation
         run: npm run test:m2-v2:b6-offline-authority
+
+      - name: B7 full 89-case registry regression
+        run: npm run test:m2-v2:b7-full-regression
 
       - name: Independent workbook verification
         run: npm run test:m2-v2:workbook-verifier
@@ -228,7 +231,7 @@ jobs:
         if: ${{ github.event_name == 'pull_request' }}
         env:
           EXPECTED_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-        run: npm run m2:v2:pr7:s1:validate:local -- --expected-head=$env:EXPECTED_HEAD_SHA --batch-id=B6
+        run: npm run m2:v2:pr7:s1:validate:local -- --expected-head=$env:EXPECTED_HEAD_SHA --batch-id=B7
 
       - name: First isolated default test chain for non-PR pushes
         if: ${{ github.event_name != 'pull_request' }}
@@ -269,6 +272,9 @@ jobs:
 
       - name: B6 provider-free authority and atomic promotion validation
         run: npm run test:m2-v2:b6-offline-authority
+
+      - name: B7 full 89-case registry regression
+        run: npm run test:m2-v2:b7-full-regression
 
       - name: Independent workbook verification
         run: npm run test:m2-v2:workbook-verifier

@@ -33,7 +33,7 @@ const DATA_DESCRIPTOR_FLAG = 0x0008;
 const REGULAR_POSIX_MODE = 0o100644;
 const DIRECTORY_POSIX_MODE = 0o040755;
 
-test("v0.3 archive writer is deterministic and issues only an opaque archive capability", () => {
+test("PR7-P1-006-v03-pass: v0.3 archive writer is deterministic and issues only an opaque archive capability", () => {
   const options = validBuilderOptions();
   const first = buildCanonicalMigrationArchiveV0_3(options);
   const second = buildCanonicalMigrationArchiveV0_3(options);
@@ -298,7 +298,7 @@ test("raw verifier rejects prefix, trailing bytes, malformed ZIP64, overlap, and
   );
 });
 
-test("raw verifier rejects exact-set, reserved-control, path collision, traversal, and link attacks", () => {
+test("PR7-P1-006-v01-extra-root, PR7-P1-006-v01-control, and PR7-P1-006-collision fail closed", () => {
   assert.throws(
     () => verifyMigrationArchiveV0_3(makeArchiveFixture({ extraActualMember: true }).archiveBytes),
     /migration_archive_set_mismatch/u,
@@ -385,7 +385,7 @@ test("manifest parser rejects duplicate or unknown keys and enforces digest, rol
   );
 });
 
-test("raw budgets reject high-ratio data before inflate and UTF-8/extra-field aliases fail closed", () => {
+test("PR7-P1-006-bomb: raw budgets reject high-ratio data before inflate and aliases fail closed", () => {
   assert.throws(
     () => verifyMigrationArchiveV0_3(makeArchiveFixture({
       method: "DEFLATE",

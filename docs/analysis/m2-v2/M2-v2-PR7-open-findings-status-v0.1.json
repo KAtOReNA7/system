@@ -32,7 +32,7 @@
     "B6",
     "B7"
   ],
-  "currentBatch": "B6",
+  "currentBatch": "B7",
   "batchStatuses": {
     "B0": "COMPLETE",
     "B1": "COMPLETE_PENDING_B8",
@@ -40,10 +40,11 @@
     "B3": "COMPLETE_PENDING_B8",
     "B4": "COMPLETE_PENDING_B8",
     "B5": "COMPLETE_PENDING_B8",
-    "B6": "PROMOTED_PENDING_EXACT_HEAD_CI"
+    "B6": "COMPLETE_PENDING_B8",
+    "B7": "REGRESSION_COMPLETE_PENDING_EXACT_HEAD_CI"
   },
-  "nextBatch": "B7",
-  "nextAllowedPhase": "B7_AUTHORIZED_AFTER_B6_EXACT_HEAD_CI",
+  "nextBatch": "B8",
+  "nextAllowedPhase": "B8_AUTHORIZED_INDEPENDENT_REVIEW_AFTER_B7_EXACT_HEAD_CI",
   "candidateFindingStatuses": {
     "PR7-P1-003": {
       "findingStatus": "OPEN",

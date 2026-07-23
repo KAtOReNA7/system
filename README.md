@@ -137,9 +137,10 @@ npm run m2:v2:pr7:s1:doctor -- --expected-head=$head --batch-id=$($task.currentB
 ## 2026-07-23 PR #7 S1 当前进度
 
 - PR #7 的 B3 closing correction 已在 exact HEAD `a945ed3a22fbc86e8ca381db9124fc0927461ec7` 完成；CI run `29704510651` 的 Linux job `88239115427` 与 Windows job `88239115429` 均成功。
-- 当前批次状态为：B0 `COMPLETE`，B1/B2 `COMPLETE_PENDING_B8`，B3 `COMPLETE_CORRECTED_PENDING_B8`，B4 `COMPLETE_PENDING_B8`。S1 task 的 `currentBatch=B4`；`nextBatch=B5`，但 B5 尚未开始，必须由新的明确指令启动。
+- 当前批次状态为：B0 `COMPLETE`，B1–B6 `COMPLETE_PENDING_B8`，B7 `REGRESSION_COMPLETE_PENDING_EXACT_HEAD_CI`。S1 task 的 `currentBatch=B7`、`nextBatch=B8`；B8 已获授权，但必须由独立 reviewer 执行。
 - B3 已将 preflight、local validation 与 Linux/Windows CI 显式绑定到 `--batch-id=B3`；canonical gate 为 `npm run test:m2-v2:b3-safe-cache-provider`。B3 registry 21/21、canonical tests 35/35、default skips 0、provider/DB/external access 均为 0。
 - B4 implementation exact HEAD `65bee39e012e013d4e4347076fc24757f7bcc9f9` 已通过 run `30021984333` 的 Linux job `89256777608` 与 Windows job `89256777664`；canonical gate 为 `npm run test:m2-v2:b4-event-tuple`，16/16 frozen cases、52/52 canonical tests、default skips 0、provider/DB/external access 均为 0。
+- B6 exact HEAD `3e79ce654cd335129005d3916f25f5bf8a2bef7d` 已通过 run `30030360312` 的 Linux job `89285146244` 与 Windows job `89285146296`。B7 canonical gate 为 `npm run test:m2-v2:b7-full-regression`；本地 Windows 已通过 88/88 原生案例、161 tests、zero skip，等待 B7 exact-head 双平台 CI。
 - `PR7-P1-008`、`PR7-P2-016`、`PR7-P1-009` 与 `PR7-P2-013` 仍为 `OPEN`，candidate status 为 `CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW`。全部 10 个 finding 仍等待独立 B8 review；不得声明 `CLOSED`。
 - PR #7 必须继续保持 Draft/open/unmerged。`currentDecision=CANARY_FAIL`、`full160Authorized=false`、`modelTrainingAuthorized=false`、`mergeAuthorized=false`、`nextDevelopmentReadiness=NOT_AUTHORIZED` 保持不变。
 

@@ -61,7 +61,7 @@ test("migration manifest rejects path aliases, traversal, absolute paths, and du
   }
 });
 
-test("migration manifest rejects file symlinks, parent symlinks, and hardlinks", () => {
+test("PR7-P1-006-source-junction and PR7-P1-006-ancestor-junction reject linked migration sources", () => {
   const symlinkFixture = makeMigrationFixture();
   try {
     const target = symlinkFixture.privateFile;

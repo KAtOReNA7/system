@@ -10,8 +10,9 @@ PR #7 remains Draft/open/unmerged. The incremental independent review against pr
 - B3: `COMPLETE_PENDING_B8`
 - B4: `COMPLETE_PENDING_B8`
 - B5: `COMPLETE_PENDING_B8`
-- B6: `PROMOTED_PENDING_EXACT_HEAD_CI`
-- `currentBatch=B6`; B5–B8 were explicitly authorized on 2026-07-24
+- B6: `COMPLETE_PENDING_B8`
+- B7: `REGRESSION_COMPLETE_PENDING_EXACT_HEAD_CI`
+- `currentBatch=B7`; B5–B8 were explicitly authorized on 2026-07-24
 - Independent review: `NOT_REVIEWED`
 - Independent B8 review authorized: `true`; self-review and self-closure remain forbidden
 - Historical decision: `CANARY_CONDITIONAL`
@@ -44,8 +45,8 @@ B0-B7 implementation evidence may reach only `CANDIDATE_CLOSED_PENDING_INDEPENDE
 | B4-implementation | `65bee39e012e013d4e4347076fc24757f7bcc9f9` | run `30021984333`, job `89256777608`, success | run `30021984333`, job `89256777664`, success | `PASS` |
 | B4-integration | this tracked integration commit | exact-head CI bound in the private receipt and PR body | exact-head CI bound in the private receipt and PR body | `COMPLETE_PENDING_B8` after exact-head CI |
 | B5 | `8804cd508f8e30d90dfc6f429e0b49ab6cae647c` | run `30025925006`, job `89270240561`, success | run `30025925006`, job `89270240691`, success | `COMPLETE_PENDING_B8` |
-| B6 | this tracked implementation commit | pending exact-head CI | pending exact-head CI | `PROMOTED_PENDING_EXACT_HEAD_CI` |
-| B7 | - | - | - | `AUTHORIZED_PENDING_B6_EXACT_HEAD_CI` |
+| B6 | `3e79ce654cd335129005d3916f25f5bf8a2bef7d` | run `30030360312`, job `89285146244`, success | run `30030360312`, job `89285146296`, success | `COMPLETE_PENDING_B8` |
+| B7 | this tracked implementation commit | pending exact-head CI | pending exact-head CI | `REGRESSION_COMPLETE_PENDING_EXACT_HEAD_CI` |
 | B8 | - | - | - | `AUTHORIZED_PENDING_INDEPENDENT_REVIEW` |
 
 B2 comprises two ordinary commits, five changed files, 15/15 registered acceptance cases, 31/31 migration tests, and 1130/1130 full tests. Its integration-only checkpoint commit is bound to a final exact-head CI receipt after ordinary push.

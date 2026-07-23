@@ -338,7 +338,7 @@ export function validateS1TaskManifest(manifest, bindings = {}) {
   }
   validateBranchPolicy(manifest.branchPolicy);
   assertExactArray(manifest.authorizedBatches, S1_BATCHES, "authorized_batches_mismatch");
-  if (manifest.currentBatch !== "B6") throw new Error("current_batch_must_be_b6");
+  if (manifest.currentBatch !== "B7") throw new Error("current_batch_must_be_b7");
   validateBatchDag(manifest.batchDag);
   assertExactArray(manifest.allowedPathClasses, EXPECTED_ALLOWED_PATH_CLASSES, "allowed_path_classes_invalid");
   assertExactArray(manifest.prohibitedActions, EXPECTED_PROHIBITED_ACTIONS, "prohibited_actions_invalid");
@@ -1941,7 +1941,7 @@ export function validateS1Overlay(overlay) {
   assertPlainObject(overlay.batchStatuses, "overlay_batch_statuses_must_be_object");
   assertExactFields(
     overlay.batchStatuses,
-    ["B0", "B1", "B2", "B3", "B4", "B5", "B6"],
+    ["B0", "B1", "B2", "B3", "B4", "B5", "B6", "B7"],
     "overlay_batch_statuses",
   );
   assertPlainObject(overlay.candidateFindingStatuses, "overlay_candidate_statuses_must_be_object");
@@ -1967,16 +1967,17 @@ export function validateS1Overlay(overlay) {
     && overlay.s0Status === "COMPLETE"
     && overlay.supportSharpeningStopCriteriaReached === true
     && overlay.findingRemediationAuthorized === true
-    && overlay.currentBatch === "B6"
+    && overlay.currentBatch === "B7"
     && overlay.batchStatuses.B0 === "COMPLETE"
     && overlay.batchStatuses.B1 === "COMPLETE_PENDING_B8"
     && overlay.batchStatuses.B2 === "COMPLETE_PENDING_B8"
     && overlay.batchStatuses.B3 === "COMPLETE_PENDING_B8"
     && overlay.batchStatuses.B4 === "COMPLETE_PENDING_B8"
     && overlay.batchStatuses.B5 === "COMPLETE_PENDING_B8"
-    && overlay.batchStatuses.B6 === "PROMOTED_PENDING_EXACT_HEAD_CI"
-    && overlay.nextBatch === "B7"
-    && overlay.nextAllowedPhase === "B7_AUTHORIZED_AFTER_B6_EXACT_HEAD_CI"
+    && overlay.batchStatuses.B6 === "COMPLETE_PENDING_B8"
+    && overlay.batchStatuses.B7 === "REGRESSION_COMPLETE_PENDING_EXACT_HEAD_CI"
+    && overlay.nextBatch === "B8"
+    && overlay.nextAllowedPhase === "B8_AUTHORIZED_INDEPENDENT_REVIEW_AFTER_B7_EXACT_HEAD_CI"
     && S1_FINDING_IDS.every((findingId) => (
       overlay.candidateFindingStatuses[findingId].findingStatus === "OPEN"
       && overlay.candidateFindingStatuses[findingId].candidateStatus === "CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW"

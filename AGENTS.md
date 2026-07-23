@@ -2,7 +2,7 @@
 
 ## 2026-07-24 PR #7 B5–B8 授权与执行入口（当前最高优先）
 
-- 用户已明确授权继续执行 B5、B6、B7，并授权启动 B8 独立复审。B5 已在 exact HEAD `8804cd508f8e30d90dfc6f429e0b49ab6cae647c` 通过 Linux/Windows CI；B6 已完成本地 provider-free 原子 promotion 与第二次 `ALREADY_CURRENT_NOOP`，当前为 `PROMOTED_PENDING_EXACT_HEAD_CI`，`currentBatch=B6`、`nextBatch=B7`。后续批次仍须依次满足本地门禁、原子提交、普通推送、remote exact-head 与 Linux/Windows CI。
+- 用户已明确授权继续执行 B5、B6、B7，并授权启动 B8 独立复审。B6 已在 exact HEAD `3e79ce654cd335129005d3916f25f5bf8a2bef7d` 通过 run `30030360312` 的 Linux job `89285146244` 与 Windows job `89285146296`；B7 已完成本地全 registry 回归，Windows 88/88 原生案例、161 tests、zero skip，当前为 `REGRESSION_COMPLETE_PENDING_EXACT_HEAD_CI`，`currentBatch=B7`、`nextBatch=B8`。后续仍须完成 B7 原子提交、普通推送、remote exact-head 与 Linux/Windows CI，再由独立 reviewer 执行 B8。
 - B8 授权不取消独立性要求：实施 B0–B7 的同一代理不得自审后声明 finding `CLOSED`。B0–B7 的最高状态仍为 `CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW`；只有独立 B8 reviewer 可以给出复审结论。
 - B5 必须严格执行 OOXML/OPC v0.2 package-complete verifier 与 default required-artifact/zero-skip 策略。历史 private workbook 不得覆盖；若严格校验失败，只能在 B6 使用 immutable/append-only private 输入和确定性 generator 在受权的新 ignored output root 中生成 vNext。
 - B6 只允许 provider-free 离线重建、确定性 workbook vNext、derived authority recomputation 与原子 supersession；不得调用 provider、数据库、Canary/full160、训练、holdout 或 M3。

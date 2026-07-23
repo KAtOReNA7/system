@@ -73,7 +73,7 @@ test("S1 task binds exact git anchors, B0-B7-only DAG, four source groups, regis
   assert.equal(taskManifest.findingHead, "627f74c6b9b2365ee4403c613ea9689748b76541");
   assert.equal(taskManifest.baseSha, "d81b952e37dd43365c0091cdd6665e69d8d39a7e");
   assert.deepEqual(taskManifest.authorizedBatches, S1_BATCHES);
-  assert.equal(taskManifest.currentBatch, "B6");
+  assert.equal(taskManifest.currentBatch, "B7");
   assert.equal(taskManifest.batchDag.independentReviewBatchAuthorized, true);
   assert.equal(taskManifest.requiredSourceEvidence.length, 4);
   assert.deepEqual(taskManifest.historicalImmutableArtifacts.map((binding) => binding.path), S1_HISTORICAL_PATHS);
@@ -410,9 +410,9 @@ test("tracked-only source binding requires the complete GitHub-hosted exact-head
   assert.equal(evaluateTrackedOnlySourcePolicy(trusted, { ...scope, actualHead: "0".repeat(40) }), false);
 });
 
-test("B6 promoted overlay remains OPEN and preserves independent B8 review", () => {
+test("B7 regression overlay remains OPEN and preserves independent B8 review", () => {
   assert.equal(validateS1Overlay(overlay), true);
-  assert.equal(overlay.currentBatch, "B6");
+  assert.equal(overlay.currentBatch, "B7");
   assert.deepEqual(overlay.batchStatuses, {
     B0: "COMPLETE",
     B1: "COMPLETE_PENDING_B8",
@@ -420,10 +420,11 @@ test("B6 promoted overlay remains OPEN and preserves independent B8 review", () 
     B3: "COMPLETE_PENDING_B8",
     B4: "COMPLETE_PENDING_B8",
     B5: "COMPLETE_PENDING_B8",
-    B6: "PROMOTED_PENDING_EXACT_HEAD_CI",
+    B6: "COMPLETE_PENDING_B8",
+    B7: "REGRESSION_COMPLETE_PENDING_EXACT_HEAD_CI",
   });
-  assert.equal(overlay.nextBatch, "B7");
-  assert.equal(overlay.nextAllowedPhase, "B7_AUTHORIZED_AFTER_B6_EXACT_HEAD_CI");
+  assert.equal(overlay.nextBatch, "B8");
+  assert.equal(overlay.nextAllowedPhase, "B8_AUTHORIZED_INDEPENDENT_REVIEW_AFTER_B7_EXACT_HEAD_CI");
   for (const findingId of S1_FINDING_IDS) {
     assert.deepEqual(overlay.candidateFindingStatuses[findingId], {
       findingStatus: "OPEN",
@@ -433,7 +434,7 @@ test("B6 promoted overlay remains OPEN and preserves independent B8 review", () 
   assert.equal(overlay.findingsRemainOpen, true);
   assert.equal(overlay.independentReviewPerformed, false);
   for (const [field, value] of [
-    ["nextBatch", "B6"],
+    ["nextBatch", "B7"],
     ["findingsRemainOpen", false],
     ["findingClosureStatus", "CLOSED"],
     ["independentReviewPerformed", true],
@@ -684,13 +685,13 @@ test("preflight and local runner contain no hardcoded remote PASS claim", () => 
   );
 });
 
-test("B6 batch identity is explicit and missing or stale batch IDs fail at runtime", () => {
+test("B7 batch identity is explicit and missing or stale batch IDs fail at runtime", () => {
   const head = gitText(["rev-parse", "HEAD"]);
-  const b6 = runJson("scripts/m2-v2-evidence-pilot/check_m2_v2_pr7_s1_preflight.mjs", [
-    `--expected-head=${head}`, "--batch-id=B6",
+  const b7 = runJson("scripts/m2-v2-evidence-pilot/check_m2_v2_pr7_s1_preflight.mjs", [
+    `--expected-head=${head}`, "--batch-id=B7",
   ]);
-  assert.equal(b6.receipt.batchId, "B6");
-  assert.notEqual(b6.receipt.error?.reasonCode, "batch_id_does_not_match_frozen_task_batch");
+  assert.equal(b7.receipt.batchId, "B7");
+  assert.notEqual(b7.receipt.error?.reasonCode, "batch_id_does_not_match_frozen_task_batch");
 
   const b5 = runJson("scripts/m2-v2-evidence-pilot/check_m2_v2_pr7_s1_preflight.mjs", [
     `--expected-head=${head}`, "--batch-id=B5",
@@ -703,18 +704,18 @@ test("B6 batch identity is explicit and missing or stale batch IDs fail at runti
     `--expected-head=${head}`,
   ]);
   assert.equal(missingPreflight.status, 1);
-  assert.equal(missingPreflight.receipt.batchId, "B6");
+  assert.equal(missingPreflight.receipt.batchId, "B7");
   assert.equal(missingPreflight.receipt.error.reasonCode, "batch_id_is_required");
 
   const missingValidation = runJson("scripts/m2-v2-evidence-pilot/run_m2_v2_pr7_s1_validation.mjs", [
     `--expected-head=${head}`,
   ]);
   assert.equal(missingValidation.status, 1);
-  assert.equal(missingValidation.receipt.batchId, "B6");
+  assert.equal(missingValidation.receipt.batchId, "B7");
   assert.equal(missingValidation.receipt.error.reasonCode, "batch_id_is_required");
 });
 
-test("canonical B3-B6 commands remain wired while both CI jobs bind B6", () => {
+test("canonical B3-B7 commands remain wired while both CI jobs bind B7", () => {
   const canonical = [
     "node --test --test-concurrency=1",
     "test/m2-v2-pr7-b3-provider-route-registry.test.js",
@@ -740,8 +741,13 @@ test("canonical B3-B6 commands remain wired while both CI jobs bind B6", () => {
     packageJson.scripts["test:m2-v2:b6-offline-authority"],
     "node --test --test-concurrency=1 test/m2-v2-pr7-p1-offline-remediation.test.js test/m2-v2-v2b8-current-verifier.test.js test/m2-v2-current-authority.test.js test/m2-v2-integrity-state.test.js test/m2-v2-closed-atomic-binding.test.js",
   );
+  assert.equal(
+    packageJson.scripts["test:m2-v2:b7-full-regression"],
+    "node scripts/m2-v2-evidence-pilot/run_m2_v2_pr7_b7_full_regression.mjs",
+  );
   assert.equal((packageJson.scripts["test:m2-v2:s0-default-extension"].match(/test\/m2-v2-pr7-b3-provider-route-registry\.test\.js/gu) ?? []).length, 1);
-  assert.equal((workflowSource.match(/--batch-id=B6/gu) ?? []).length, 2);
+  assert.equal((workflowSource.match(/--batch-id=B7/gu) ?? []).length, 2);
+  assert.equal((workflowSource.match(/--batch-id=B6/gu) ?? []).length, 0);
   assert.equal((workflowSource.match(/--batch-id=B5/gu) ?? []).length, 0);
   assert.equal((workflowSource.match(/--batch-id=B4/gu) ?? []).length, 0);
   assert.equal((workflowSource.match(/--batch-id=B3/gu) ?? []).length, 0);
@@ -753,6 +759,8 @@ test("canonical B3-B6 commands remain wired while both CI jobs bind B6", () => {
   assert.equal((workflowSource.match(/run: npm run test:m2-v2:b5-workbook-artifact/gu) ?? []).length, 2);
   assert.equal((workflowSource.match(/name: B6 provider-free authority and atomic promotion validation/gu) ?? []).length, 2);
   assert.equal((workflowSource.match(/run: npm run test:m2-v2:b6-offline-authority/gu) ?? []).length, 2);
+  assert.equal((workflowSource.match(/name: B7 full 89-case registry regression/gu) ?? []).length, 2);
+  assert.equal((workflowSource.match(/run: npm run test:m2-v2:b7-full-regression/gu) ?? []).length, 2);
 });
 
 function taskBindings() {

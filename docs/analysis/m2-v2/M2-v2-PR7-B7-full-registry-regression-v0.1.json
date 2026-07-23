@@ -1,0 +1,87 @@
+{
+  "schema": "m2.v2.pr7-b7-full-registry-regression.v0.1",
+  "status": "REGRESSION_COMPLETE_PENDING_EXACT_HEAD_CI",
+  "classification": "public_sanitized_not_for_formal_decision",
+  "branch": "codex/m2-v2-evidence-pilot-v1",
+  "batchId": "B7",
+  "predecessorBatch": {
+    "batchId": "B6",
+    "exactHead": "3e79ce654cd335129005d3916f25f5bf8a2bef7d",
+    "ciRunId": 30030360312,
+    "linuxJobId": 89285146244,
+    "windowsJobId": 89285146296,
+    "status": "COMPLETE_PENDING_B8"
+  },
+  "registry": {
+    "path": "config/m2-v2-pr7-s1-case-registry.v0.1.json",
+    "sha256": "b39b0e2334b9952c4610f4e2ea6dc4de3bdf7ade060ea1d9831b0fc994e0ecb3",
+    "registeredCaseCount": 89,
+    "linuxCaseCount": 87,
+    "windowsCaseCount": 88,
+    "secondaryVerifierRequiredCaseCount": 30,
+    "defaultProfileCaseCount": 89,
+    "defaultSkipCount": 0
+  },
+  "canonicalRegression": {
+    "command": "npm run test:m2-v2:b7-full-regression",
+    "runner": "scripts/m2-v2-evidence-pilot/run_m2_v2_pr7_b7_full_regression.mjs",
+    "testFileCount": 9,
+    "requiresExactPassingCaseIdentity": true,
+    "rejectsMissingCaseIdentity": true,
+    "rejectsUnexpectedCaseIdentity": true,
+    "rejectsOutOfPlatformCaseIdentity": true,
+    "rejectsFailedOrSkippedTests": true
+  },
+  "localWindowsValidation": {
+    "platformExpectedCaseCount": 88,
+    "platformPassedCaseCount": 88,
+    "passedTestCount": 161,
+    "failedTestCount": 0,
+    "skippedTestCount": 0,
+    "missingCaseIds": [],
+    "outOfPlatformCaseIds": [],
+    "unexpectedCaseIds": []
+  },
+  "localRepositoryValidation": {
+    "s1ContractTestsPassed": 24,
+    "s1ContractTestsTotal": 24,
+    "defaultTestsPassed": 1182,
+    "defaultTestsTotal": 1182,
+    "defaultSkipCount": 0,
+    "checkNoRealDataPassed": true,
+    "lintPassed": true,
+    "buildPassed": true,
+    "smokePassed": true
+  },
+  "exactHeadCi": {
+    "status": "PENDING_B7_CLEAN_COMMIT",
+    "requiredPlatforms": [
+      "linux",
+      "windows"
+    ],
+    "unionCaseCountRequired": 89
+  },
+  "boundaries": {
+    "providerAllowed": false,
+    "providerRequestDelta": 0,
+    "databaseConnections": 0,
+    "actualExternalFetchCount": 0,
+    "privateStatePolicy": "SYNTHETIC_TEMP_ONLY",
+    "canaryExecuted": false,
+    "full160Executed": false,
+    "modelTrainingPerformed": false,
+    "holdoutOpened": false,
+    "productRuntimeChanged": false
+  },
+  "governance": {
+    "openFindings": 10,
+    "findingsRemainOpen": true,
+    "maximumCandidateStatus": "CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW",
+    "independentReviewPerformed": false,
+    "b8Authorized": true,
+    "mergeAuthorized": false,
+    "releaseAuthorized": false,
+    "nextBatch": "B8",
+    "nextDevelopmentReadiness": "NOT_AUTHORIZED"
+  }
+}

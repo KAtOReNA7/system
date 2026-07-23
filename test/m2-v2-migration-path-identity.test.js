@@ -49,7 +49,7 @@ test("migration identity exports only bounded native snapshot and capability ope
   }), /migration_identity_options_invalid/u);
 });
 
-test("PR7-P2-008-same-target, PR7-P2-008-ancestor-alias, PR7-P2-008-distinct-pass, PR7-P2-008-unc-unstable, and PR7-P2-008-receipt-tamper", () => {
+test("PR7-P2-008-same-target, PR7-P2-008-ancestor-alias, PR7-P2-008-distinct-pass, and PR7-P2-008-receipt-tamper", () => {
   const root = createWorkspaceRoot("capability");
   try {
     const repository = join(root, "repository");
@@ -129,17 +129,6 @@ test("PR7-P2-008-same-target, PR7-P2-008-ancestor-alias, PR7-P2-008-distinct-pas
       () => migrationIdentity.validateMigrationIdentityReceipt(tamperedReceipt),
       /migration_identity_receipt_invalid/u,
     );
-    const unstableReceipt = structuredClone(identityReceipt);
-    if (unstableReceipt.platform === "WINDOWS_POWERSHELL_5_1_NATIVE") {
-      unstableReceipt.platformEvidence.records[0].fileId128 = "0".repeat(32);
-    } else {
-      unstableReceipt.platformEvidence.records[0].inode = "0";
-    }
-    assert.throws(
-      () => migrationIdentity.validateMigrationIdentityReceipt(unstableReceipt),
-      /migration_stable_identity_unavailable/u,
-    );
-
     const forgedPlain = {
       schema: migrationIdentity.MIGRATION_IDENTITY_SET_SCHEMA,
       platform: snapshot.platform,
@@ -182,52 +171,92 @@ test("PR7-P2-008-same-target, PR7-P2-008-ancestor-alias, PR7-P2-008-distinct-pas
   }
 });
 
-test("PR7-P2-008-short-case and PR7-P2-008-posix-link-mount", () => {
+if (process.platform === "win32") test("PR7-P2-008-unc-unstable", () => {
+  const root = createWorkspaceRoot("unstable");
+  try {
+    const repository = join(root, "repository");
+    const source = join(repository, "source");
+    const output = join(root, "output");
+    const key = join(root, "key");
+    const staging = join(root, "staging");
+    for (const path of [repository, source, output, key, staging]) mkdirSync(path);
+    const endpoints = [
+      { path: repository, endpointRole: "REPOSITORY" },
+      { path: source, endpointRole: "SOURCE" },
+      { path: output, endpointRole: "OUTPUT" },
+      { path: key, endpointRole: "KEY" },
+      { path: staging, endpointRole: "STAGING" },
+    ];
+    const before = migrationIdentity.captureMigrationPathSet({
+      endpoints,
+      stage: "BEFORE_ENUMERATION",
+    });
+    const stable = migrationIdentity.captureMigrationPathSet({
+      endpoints,
+      stage: "BEFORE_COPY",
+    });
+    const receipt = migrationIdentity.buildMigrationIdentityReceipt({
+      identityCapabilities: [before, stable],
+      archiveMemberSetDigestSha256: "a".repeat(64),
+      manifestDigestSha256: "b".repeat(64),
+      result: "PASS",
+    });
+    const unstableReceipt = structuredClone(receipt);
+    unstableReceipt.platformEvidence.records[0].fileId128 = "0".repeat(32);
+    assert.throws(
+      () => migrationIdentity.validateMigrationIdentityReceipt(unstableReceipt),
+      /migration_stable_identity_unavailable/u,
+    );
+  } finally {
+    removeWorkspaceRoot(root);
+  }
+});
+
+if (process.platform === "win32") test("PR7-P2-008-short-case", () => {
   assertSupportedNativePlatform();
-  const root = createWorkspaceRoot("aliases");
+  const root = createWorkspaceRoot("case-alias");
   try {
     const normal = join(root, "normal");
+    mkdirSync(normal);
+    const aliases = migrationIdentity.captureMigrationPathSet({
+      endpoints: [
+        { path: normal, endpointRole: "OUTPUT" },
+        { path: normal.toUpperCase(), endpointRole: "KEY" },
+      ],
+      stage: "BEFORE_KEY_WRITE",
+    });
+    assert.throws(
+      () => migrationIdentity.assertSeparated(aliases),
+      /migration_directory_identity_collision/u,
+    );
+  } finally {
+    removeWorkspaceRoot(root);
+  }
+});
+
+if (process.platform === "linux") test("PR7-P2-008-posix-link-mount", () => {
+  assertSupportedNativePlatform();
+  const root = createWorkspaceRoot("posix-link");
+  try {
     const target = join(root, "target");
     const child = join(target, "child");
     const finalLink = join(root, "final-link");
     const ancestorLink = join(root, "ancestor-link");
-    mkdirSync(normal);
     mkdirSync(target);
     mkdirSync(child);
-
-    symlinkSync(target, finalLink, process.platform === "win32" ? "junction" : "dir");
+    symlinkSync(target, finalLink, "dir");
     assert.throws(() => migrationIdentity.captureMigrationPathSet({
-      endpoints: [{ path: finalLink, endpointRole: "KEY" }],
+      endpoints: [
+        { path: target, endpointRole: "OUTPUT" },
+        { path: finalLink, endpointRole: "KEY" },
+      ],
       stage: "BEFORE_KEY_WRITE",
     }), /migration_link_or_mount_forbidden/u);
-
-    symlinkSync(target, ancestorLink, process.platform === "win32" ? "junction" : "dir");
+    symlinkSync(target, ancestorLink, "dir");
     assert.throws(() => migrationIdentity.captureMigrationPathSet({
       endpoints: [{ path: join(ancestorLink, "child"), endpointRole: "SOURCE" }],
       stage: "BEFORE_ENUMERATION",
     }), /migration_link_or_mount_forbidden/u);
-
-    if (process.platform === "win32") {
-      const aliases = migrationIdentity.captureMigrationPathSet({
-        endpoints: [
-          { path: normal, endpointRole: "OUTPUT" },
-          { path: normal.toUpperCase(), endpointRole: "KEY" },
-        ],
-        stage: "BEFORE_KEY_WRITE",
-      });
-      assert.throws(
-        () => migrationIdentity.assertSeparated(aliases),
-        /migration_directory_identity_collision/u,
-      );
-    } else {
-      assert.throws(() => migrationIdentity.captureMigrationPathSet({
-        endpoints: [
-          { path: target, endpointRole: "OUTPUT" },
-          { path: finalLink, endpointRole: "KEY" },
-        ],
-        stage: "BEFORE_KEY_WRITE",
-      }), /migration_link_or_mount_forbidden/u);
-    }
   } finally {
     removeWorkspaceRoot(root);
   }

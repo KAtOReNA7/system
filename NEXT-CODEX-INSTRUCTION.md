@@ -2,7 +2,7 @@
 
 ## 2026-07-19 PR #7 S1 B0–B7 增量边界
 
-7 项 S0 开发支持基线已经在 exact HEAD `badbf453e1e99ba87cc3064601e480a09ff1b149` 完成。用户现已单独授权直接在 `codex/m2-v2-evidence-pilot-v1` 上按 B0–B7 分层实施 10 项 open finding 的 S1 修复、provider-free 离线重建、显式原子提交、普通 push 与 exact-head 双平台 CI checkpoint。B5 已在 exact HEAD `8804cd508f8e30d90dfc6f429e0b49ab6cae647c` 通过 Linux/Windows CI。B6 已完成本地 provider-free 原子 promotion 与幂等 no-op 证明，当前为 `PROMOTED_PENDING_EXACT_HEAD_CI`；`currentBatch=B6`、`nextBatch=B7`。B8 已获授权，但只能由独立 reviewer 执行。
+7 项 S0 开发支持基线已经在 exact HEAD `badbf453e1e99ba87cc3064601e480a09ff1b149` 完成。用户现已单独授权直接在 `codex/m2-v2-evidence-pilot-v1` 上按 B0–B7 分层实施 10 项 open finding 的 S1 修复、provider-free 离线重建、显式原子提交、普通 push 与 exact-head 双平台 CI checkpoint。B6 已在 exact HEAD `3e79ce654cd335129005d3916f25f5bf8a2bef7d` 通过 run `30030360312` 的 Linux/Windows CI。B7 已完成本地全 registry 回归，Windows 88/88 原生案例、161 tests、zero skip；当前为 `REGRESSION_COMPLETE_PENDING_EXACT_HEAD_CI`，`currentBatch=B7`、`nextBatch=B8`。B8 已获授权，但只能由独立 reviewer 执行。
 
 10 项 finding 当前仍全部 `OPEN`。B0–B7 通过后最高只能写 `CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW`；B8 独立外审已经授权，但实施代理不得自审或声明任何 finding 已独立 `CLOSED`。
 
