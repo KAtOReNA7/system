@@ -1,33 +1,50 @@
 import { spawnSync } from "node:child_process";
-import { readdirSync, statSync } from "node:fs";
-import { join } from "node:path";
+import {
+  listProjectJavaScriptFiles,
+  listTrackedJavaScriptFiles
+} from "./project-inventory.mjs";
 
-const roots = ["src", "test", "tools/node", "tools/dev-smoke", "public/admin"];
-const files = [];
-
-function collectJavaScriptFiles(directory) {
-  for (const entry of readdirSync(directory)) {
-    const fullPath = join(directory, entry);
-    const stat = statSync(fullPath);
-    if (stat.isDirectory()) {
-      collectJavaScriptFiles(fullPath);
-    } else if (entry.endsWith(".js") || entry.endsWith(".mjs")) {
-      files.push(fullPath);
-    }
+const args = new Set(process.argv.slice(2));
+const allowedArgs = new Set(["--json"]);
+for (const arg of args) {
+  if (!allowedArgs.has(arg)) {
+    console.error(`unknown_argument:${arg}`);
+    process.exit(2);
   }
 }
 
-for (const root of roots) {
-  collectJavaScriptFiles(root);
+const files = listProjectJavaScriptFiles();
+const trackedFiles = listTrackedJavaScriptFiles();
+if (files.length === 0) {
+  console.error("tracked_javascript_inventory_empty");
+  process.exit(1);
 }
 
 for (const file of files) {
   const result = spawnSync(process.execPath, ["--check", file], {
-    stdio: "inherit"
+    stdio: args.has("--json") ? "pipe" : "inherit",
+    encoding: "utf8",
+    windowsHide: true
   });
   if (result.status !== 0) {
+    if (args.has("--json")) {
+      process.stderr.write(result.stderr || result.stdout || "");
+    }
     process.exit(result.status ?? 1);
   }
 }
 
-console.log(`Checked ${files.length} JavaScript files.`);
+if (args.has("--json")) {
+  console.log(
+    JSON.stringify({
+      status: "PASS",
+      projectJavaScriptFileCount: files.length,
+      trackedJavaScriptFileCount: trackedFiles.length,
+      files
+    })
+  );
+} else {
+  console.log(
+    `Checked all ${files.length} tracked and nonignored JavaScript files.`
+  );
+}

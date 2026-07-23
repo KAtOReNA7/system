@@ -1,0 +1,30 @@
+{
+  "schema": "project.build-entrypoints.v0.1",
+  "requiredTrackedFiles": [
+    "src/server.js",
+    "src/http/app.js",
+    "src/config.js",
+    "public/admin/index.html",
+    "public/admin/app.js",
+    "public/admin/app.css"
+  ],
+  "importChecks": [
+    {
+      "path": "src/http/app.js",
+      "requiredExports": [
+        "createApp"
+      ]
+    },
+    {
+      "path": "src/config.js",
+      "requiredExports": [
+        "ConfigError",
+        "loadConfig"
+      ]
+    }
+  ],
+  "packageEntrypoints": {
+    "start": "src/server.js",
+    "dev": "src/server.js"
+  }
+}

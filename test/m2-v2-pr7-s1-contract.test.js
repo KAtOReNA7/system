@@ -4,6 +4,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
+import { filesForTestProfile } from "../tools/node/project-inventory.mjs";
 import {
   S1_BATCHES,
   S1_EXTERNAL_ENV_NAMES,
@@ -729,10 +730,16 @@ test("canonical B3-B7 commands remain wired while both CI jobs bind B7", () => {
     packageJson.scripts["test:m2-v2:b4-event-tuple"],
     "node --test --test-concurrency=1 test/m2-v2-event-tuple.test.js test/m2-v2-v2b8.test.js",
   );
-  assert.equal(
-    packageJson.scripts.pretest,
-    "npm run test:m2-v2:s0-default-extension && npm run test:m2-v2:b4-event-tuple && npm run test:m2-v2:b5-workbook-artifact",
-  );
+  assert.equal(packageJson.scripts.pretest, undefined);
+  const defaultTests = filesForTestProfile("default").files;
+  for (const path of [
+    "test/m2-v2-pr7-s0-preflight.test.js",
+    "test/m2-v2-event-tuple.test.js",
+    "test/m2-v2-workbook-independent-verifier.test.js",
+    "test/test-artifact-policy.test.js",
+  ]) {
+    assert.equal(defaultTests.includes(path), true, path);
+  }
   assert.equal(
     packageJson.scripts["test:m2-v2:b5-workbook-artifact"],
     "node --test --test-concurrency=1 test/m2-v2-workbook-independent-verifier.test.js test/test-artifact-policy.test.js",
