@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { basename, resolve } from "node:path";
 
 export const TEST_REGISTRY_PATH = "config/test-registry.v0.1.json";
@@ -20,6 +20,7 @@ export function listTrackedFiles(patterns, { root = process.cwd() } = {}) {
     .split("\0")
     .filter(Boolean)
     .map(normalizePath)
+    .filter((path) => existsSync(resolve(root, path)))
     .sort();
 }
 
@@ -48,6 +49,7 @@ export function listProjectFiles(patterns, { root = process.cwd() } = {}) {
       .split("\0")
       .filter(Boolean)
       .map(normalizePath)
+      .filter((path) => existsSync(resolve(root, path)))
   )].sort();
 }
 

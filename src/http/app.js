@@ -1,6 +1,13 @@
 import crypto from "node:crypto";
 import { checkDatabaseHealth } from "../db/health.js";
-import { AppError, badRequest, formalDataBlocked, notFound, publicErrorBody } from "../errors.js";
+import {
+  AppError,
+  badRequest,
+  fixtureOnly,
+  formalDataBlocked,
+  notFound,
+  publicErrorBody
+} from "../errors.js";
 import { parsePagination, parsePositiveInteger } from "./pagination.js";
 import { listJobs, getJobById } from "../repositories/jobRepository.js";
 import {
@@ -8,49 +15,9 @@ import {
   getMappingVersionById
 } from "../repositories/mappingVersionRepository.js";
 import {
-  getM2OldProductEvaluationById,
-  getM2OldProductEvaluationOverview,
-  getM2OldProductBacktestById,
-  listM2OldProductAlgorithmVersions,
-  listM2OldProductBacktests,
-  listM2OldProductEvaluations,
-  listM2OldProductReadinessGaps
-} from "../repositories/oldProductEvaluationFixtureRepository.js";
-import {
-  getM2AdvisoryReviewSummaryFixture,
-  getM2BlockingReviewItemById,
-  listM2BlockingReviewItems,
-  simulateM2BlockingReviewAction
-} from "../repositories/m2BlockingReviewFixtureRepository.js";
-import {
-  createM2EvaluationTaskFixture,
-  getM2EvaluationTaskFixtureById,
-  listM2EvaluationTaskFixtures,
-  simulateM2EvaluationTaskAction
-} from "../repositories/m2EvaluationTaskFixtureRepository.js";
-import {
-  createM2ExportFixture,
-  getM2ExportFixtureById,
-  listM2ExportFixtures,
-  simulateM2ExportAction
-} from "../repositories/m2ExportFixtureRepository.js";
-import {
   getM2FormalEvaluationExportById,
   listM2FormalEvaluationExports
 } from "../repositories/m2EvaluationExportRepository.js";
-import {
-  createM3NewProductBacktestAnchorFixture,
-  evaluateM3NewProductMaterialFixture,
-  getM3NewProductMaterialAuthorRankingFixture,
-  getM3NewProductMaterialComparablesFixture,
-  getM3NewProductMaterialExternalEvidenceFixture,
-  getM3NewProductMaterialFixtureById,
-  getM3NewProductMaterialResearchQuestionsFixture,
-  getM3NewProductMaterialWorkflowFixture,
-  getM3NewProductDryRunReviewFixture,
-  listM3NewProductMaterialFixtures,
-  parseM3NewProductMaterialFixture
-} from "../repositories/newProductEvaluationFixtureRepository.js";
 import { getSystemStatus } from "../repositories/systemRepository.js";
 import { getWorkById, listWorks } from "../repositories/workRepository.js";
 import { serveAdminAsset } from "./staticAdmin.js";
@@ -58,6 +25,11 @@ import { serveAdminAsset } from "./staticAdmin.js";
 const M2_FIXTURE_TASKS_PATH = `/api/m2/fixture/${["evaluation", "tasks"].join("-")}`;
 const M2_ADVISORY_SUMMARY_PATH = "/api/m2/fixture/advisory-reviews/summary";
 const M2_FIXTURE_EXPORTS_PATH = "/api/m2/fixture/exports";
+const fixtureRuntimeDisabled = () => {
+  throw fixtureOnly(
+    "Fixture endpoints are disabled in the formal composition root; use the explicit fixture server for local synthetic development."
+  );
+};
 
 function sendJson(response, statusCode, body, requestId) {
   response.writeHead(statusCode, {
@@ -83,64 +55,67 @@ export function createApp(config, options = {}) {
     listJobs: options.listJobs ?? listJobs,
     getJobById: options.getJobById ?? getJobById,
     getM2OldProductEvaluationOverview:
-      options.getM2OldProductEvaluationOverview ?? getM2OldProductEvaluationOverview,
+      options.getM2OldProductEvaluationOverview ?? fixtureRuntimeDisabled,
     listM2OldProductEvaluations:
-      options.listM2OldProductEvaluations ?? listM2OldProductEvaluations,
+      options.listM2OldProductEvaluations ?? fixtureRuntimeDisabled,
     getM2OldProductEvaluationById:
-      options.getM2OldProductEvaluationById ?? getM2OldProductEvaluationById,
+      options.getM2OldProductEvaluationById ?? fixtureRuntimeDisabled,
     listM2OldProductReadinessGaps:
-      options.listM2OldProductReadinessGaps ?? listM2OldProductReadinessGaps,
+      options.listM2OldProductReadinessGaps ?? fixtureRuntimeDisabled,
     listM2OldProductAlgorithmVersions:
-      options.listM2OldProductAlgorithmVersions ?? listM2OldProductAlgorithmVersions,
-    listM2OldProductBacktests: options.listM2OldProductBacktests ?? listM2OldProductBacktests,
+      options.listM2OldProductAlgorithmVersions ?? fixtureRuntimeDisabled,
+    listM2OldProductBacktests:
+      options.listM2OldProductBacktests ?? fixtureRuntimeDisabled,
     getM2OldProductBacktestById:
-      options.getM2OldProductBacktestById ?? getM2OldProductBacktestById,
+      options.getM2OldProductBacktestById ?? fixtureRuntimeDisabled,
     listM2BlockingReviewItems:
-      options.listM2BlockingReviewItems ?? listM2BlockingReviewItems,
+      options.listM2BlockingReviewItems ?? fixtureRuntimeDisabled,
     getM2BlockingReviewItemById:
-      options.getM2BlockingReviewItemById ?? getM2BlockingReviewItemById,
+      options.getM2BlockingReviewItemById ?? fixtureRuntimeDisabled,
     simulateM2BlockingReviewAction:
-      options.simulateM2BlockingReviewAction ?? simulateM2BlockingReviewAction,
+      options.simulateM2BlockingReviewAction ?? fixtureRuntimeDisabled,
     getM2AdvisoryReviewSummaryFixture:
-      options.getM2AdvisoryReviewSummaryFixture ?? getM2AdvisoryReviewSummaryFixture,
+      options.getM2AdvisoryReviewSummaryFixture ?? fixtureRuntimeDisabled,
     listM2EvaluationTaskFixtures:
-      options.listM2EvaluationTaskFixtures ?? listM2EvaluationTaskFixtures,
+      options.listM2EvaluationTaskFixtures ?? fixtureRuntimeDisabled,
     getM2EvaluationTaskFixtureById:
-      options.getM2EvaluationTaskFixtureById ?? getM2EvaluationTaskFixtureById,
+      options.getM2EvaluationTaskFixtureById ?? fixtureRuntimeDisabled,
     createM2EvaluationTaskFixture:
-      options.createM2EvaluationTaskFixture ?? createM2EvaluationTaskFixture,
+      options.createM2EvaluationTaskFixture ?? fixtureRuntimeDisabled,
     simulateM2EvaluationTaskAction:
-      options.simulateM2EvaluationTaskAction ?? simulateM2EvaluationTaskAction,
-    listM2ExportFixtures: options.listM2ExportFixtures ?? listM2ExportFixtures,
-    getM2ExportFixtureById: options.getM2ExportFixtureById ?? getM2ExportFixtureById,
-    createM2ExportFixture: options.createM2ExportFixture ?? createM2ExportFixture,
-    simulateM2ExportAction: options.simulateM2ExportAction ?? simulateM2ExportAction,
+      options.simulateM2EvaluationTaskAction ?? fixtureRuntimeDisabled,
+    listM2ExportFixtures: options.listM2ExportFixtures ?? fixtureRuntimeDisabled,
+    getM2ExportFixtureById:
+      options.getM2ExportFixtureById ?? fixtureRuntimeDisabled,
+    createM2ExportFixture: options.createM2ExportFixture ?? fixtureRuntimeDisabled,
+    simulateM2ExportAction:
+      options.simulateM2ExportAction ?? fixtureRuntimeDisabled,
     listM2FormalEvaluationExports:
       options.listM2FormalEvaluationExports ?? listM2FormalEvaluationExports,
     getM2FormalEvaluationExportById:
       options.getM2FormalEvaluationExportById ?? getM2FormalEvaluationExportById,
     listM3NewProductMaterialFixtures:
-      options.listM3NewProductMaterialFixtures ?? listM3NewProductMaterialFixtures,
+      options.listM3NewProductMaterialFixtures ?? fixtureRuntimeDisabled,
     getM3NewProductMaterialFixtureById:
-      options.getM3NewProductMaterialFixtureById ?? getM3NewProductMaterialFixtureById,
+      options.getM3NewProductMaterialFixtureById ?? fixtureRuntimeDisabled,
     parseM3NewProductMaterialFixture:
-      options.parseM3NewProductMaterialFixture ?? parseM3NewProductMaterialFixture,
+      options.parseM3NewProductMaterialFixture ?? fixtureRuntimeDisabled,
     evaluateM3NewProductMaterialFixture:
-      options.evaluateM3NewProductMaterialFixture ?? evaluateM3NewProductMaterialFixture,
+      options.evaluateM3NewProductMaterialFixture ?? fixtureRuntimeDisabled,
     getM3NewProductMaterialComparablesFixture:
-      options.getM3NewProductMaterialComparablesFixture ?? getM3NewProductMaterialComparablesFixture,
+      options.getM3NewProductMaterialComparablesFixture ?? fixtureRuntimeDisabled,
     getM3NewProductMaterialAuthorRankingFixture:
-      options.getM3NewProductMaterialAuthorRankingFixture ?? getM3NewProductMaterialAuthorRankingFixture,
+      options.getM3NewProductMaterialAuthorRankingFixture ?? fixtureRuntimeDisabled,
     getM3NewProductMaterialExternalEvidenceFixture:
-      options.getM3NewProductMaterialExternalEvidenceFixture ?? getM3NewProductMaterialExternalEvidenceFixture,
+      options.getM3NewProductMaterialExternalEvidenceFixture ?? fixtureRuntimeDisabled,
     getM3NewProductMaterialResearchQuestionsFixture:
-      options.getM3NewProductMaterialResearchQuestionsFixture ?? getM3NewProductMaterialResearchQuestionsFixture,
+      options.getM3NewProductMaterialResearchQuestionsFixture ?? fixtureRuntimeDisabled,
     getM3NewProductMaterialWorkflowFixture:
-      options.getM3NewProductMaterialWorkflowFixture ?? getM3NewProductMaterialWorkflowFixture,
+      options.getM3NewProductMaterialWorkflowFixture ?? fixtureRuntimeDisabled,
     getM3NewProductDryRunReviewFixture:
-      options.getM3NewProductDryRunReviewFixture ?? getM3NewProductDryRunReviewFixture,
+      options.getM3NewProductDryRunReviewFixture ?? fixtureRuntimeDisabled,
     createM3NewProductBacktestAnchorFixture:
-      options.createM3NewProductBacktestAnchorFixture ?? createM3NewProductBacktestAnchorFixture
+      options.createM3NewProductBacktestAnchorFixture ?? fixtureRuntimeDisabled
   };
 
   return async function app(request, response) {

@@ -1,12 +1,12 @@
 import http from "node:http";
 import { loadConfig } from "./config.js";
-import { createApp } from "./http/app.js";
+import { createFixtureApp } from "./http/fixtureApp.js";
 import { publicErrorBody } from "./errors.js";
 
-function start() {
+function startFixtureServer() {
   try {
     const config = loadConfig();
-    const server = http.createServer(createApp(config));
+    const server = http.createServer(createFixtureApp(config));
 
     server.listen(config.port, "127.0.0.1", () => {
       console.log(
@@ -14,7 +14,7 @@ function start() {
           status: "started",
           service: config.service,
           environment: config.appEnv,
-          composition: "formal",
+          composition: "fixture",
           host: "127.0.0.1",
           port: config.port
         })
@@ -26,4 +26,4 @@ function start() {
   }
 }
 
-start();
+startFixtureServer();

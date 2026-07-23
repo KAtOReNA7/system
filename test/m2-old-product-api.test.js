@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import http from "node:http";
 import test from "node:test";
-import { createApp } from "../src/http/app.js";
+import { createFixtureApp } from "../src/http/fixtureApp.js";
 import {
   expectedM2OldProductCoverage,
   forbiddenM2OldProductOutputTokens
@@ -20,7 +20,7 @@ const baseConfig = {
 };
 
 async function request(path, options = {}) {
-  const app = createApp(baseConfig);
+  const app = createFixtureApp(baseConfig);
   const server = http.createServer(app);
   const port = await listenOnFetchSafePort(server);
   try {

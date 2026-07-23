@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import http from "node:http";
 import test from "node:test";
-import { createApp } from "../src/http/app.js";
+import { createFixtureApp } from "../src/http/fixtureApp.js";
 
 const baseConfig = {
   service: "m1-audiobook-evaluation",
@@ -15,7 +15,7 @@ const baseConfig = {
 };
 
 async function request(path, options = {}) {
-  const app = createApp(baseConfig);
+  const app = createFixtureApp(baseConfig);
   const server = http.createServer(app);
   await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
   const { port } = server.address();

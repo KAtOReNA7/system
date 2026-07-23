@@ -13,7 +13,7 @@ import {
 import {
   M2_FORMAL_READINESS_FIXTURE_ITEMS,
   getM2FormalReadinessFixture
-} from "./fixtures/m2FormalReadinessGate.fixture.js";
+} from "../src/fixtures/m2FormalReadinessGate.fixture.js";
 
 const execFileAsync = promisify(execFile);
 const cliScript = "scripts/check-m2-formal-readiness-fixture.mjs";

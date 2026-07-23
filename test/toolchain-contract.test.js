@@ -138,6 +138,6 @@ test("build manifest imports public application composition without starting ser
   );
 
   assert.equal(result.status, "PASS");
-  assert.equal(result.requiredTrackedFileCount, 6);
-  assert.equal(result.importCheckCount, 2);
+  assert.equal(result.requiredTrackedFileCount, 8);
+  assert.equal(result.importCheckCount, 3);
 });

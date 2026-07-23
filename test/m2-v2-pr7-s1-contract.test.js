@@ -716,7 +716,7 @@ test("B7 batch identity is explicit and missing or stale batch IDs fail at runti
   assert.equal(missingValidation.receipt.error.reasonCode, "batch_id_is_required");
 });
 
-test("canonical B3-B7 commands remain wired while both CI jobs bind B7", () => {
+test("canonical B3-B7 commands remain reproducible after the PR7-only CI gate is retired", () => {
   const canonical = [
     "node --test --test-concurrency=1",
     "test/m2-v2-pr7-b3-provider-route-registry.test.js",
@@ -753,21 +753,10 @@ test("canonical B3-B7 commands remain wired while both CI jobs bind B7", () => {
     "node scripts/m2-v2-evidence-pilot/run_m2_v2_pr7_b7_full_regression.mjs",
   );
   assert.equal((packageJson.scripts["test:m2-v2:s0-default-extension"].match(/test\/m2-v2-pr7-b3-provider-route-registry\.test\.js/gu) ?? []).length, 1);
-  assert.equal((workflowSource.match(/--batch-id=B7/gu) ?? []).length, 2);
-  assert.equal((workflowSource.match(/--batch-id=B6/gu) ?? []).length, 0);
-  assert.equal((workflowSource.match(/--batch-id=B5/gu) ?? []).length, 0);
-  assert.equal((workflowSource.match(/--batch-id=B4/gu) ?? []).length, 0);
-  assert.equal((workflowSource.match(/--batch-id=B3/gu) ?? []).length, 0);
-  assert.equal((workflowSource.match(/name: B3 safe-cache and provider-boundary validation/gu) ?? []).length, 2);
-  assert.equal((workflowSource.match(/run: npm run test:m2-v2:b3-safe-cache-provider/gu) ?? []).length, 2);
-  assert.equal((workflowSource.match(/name: B4 event tuple and conflict applicability validation/gu) ?? []).length, 2);
-  assert.equal((workflowSource.match(/run: npm run test:m2-v2:b4-event-tuple/gu) ?? []).length, 2);
-  assert.equal((workflowSource.match(/name: B5 workbook and required-artifact policy validation/gu) ?? []).length, 2);
-  assert.equal((workflowSource.match(/run: npm run test:m2-v2:b5-workbook-artifact/gu) ?? []).length, 2);
-  assert.equal((workflowSource.match(/name: B6 provider-free authority and atomic promotion validation/gu) ?? []).length, 2);
-  assert.equal((workflowSource.match(/run: npm run test:m2-v2:b6-offline-authority/gu) ?? []).length, 2);
-  assert.equal((workflowSource.match(/name: B7 full 89-case registry regression/gu) ?? []).length, 2);
-  assert.equal((workflowSource.match(/run: npm run test:m2-v2:b7-full-regression/gu) ?? []).length, 2);
+  assert.equal((workflowSource.match(/m2:v2:pr7:s1:validate:local/gu) ?? []).length, 0);
+  assert.equal((workflowSource.match(/codex\/m2-ci-exact-head/gu) ?? []).length, 0);
+  assert.equal((workflowSource.match(/name: Public default test registry/gu) ?? []).length, 2);
+  assert.equal((workflowSource.match(/run: npm test/gu) ?? []).length, 2);
 });
 
 function taskBindings() {

@@ -8,8 +8,9 @@
     "node": ">=24 <25"
   },
   "scripts": {
-    "dev": "node --watch src/server.js",
+    "dev": "node --watch src/fixtureServer.js",
     "start": "node src/server.js",
+    "start:fixture": "node src/fixtureServer.js",
     "doctor:dev": "node scripts/check-development-capability.mjs --capability=core-dev",
     "doctor:capability": "node scripts/check-development-capability.mjs",
     "m2:v2:private-capability:prepare": "node scripts/m2-v2-evidence-pilot/prepare_development_private_capability_bundle.mjs",

@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import http from "node:http";
 import { after, before, test } from "node:test";
 import { chromium } from "playwright";
-import { createApp } from "../../src/http/app.js";
+import { createFixtureApp } from "../../src/http/fixtureApp.js";
 
 const FORBIDDEN_WRITE_CONTROL_WORDS = [
   "导入",
@@ -104,7 +104,7 @@ async function openPage(path, options = {}) {
 }
 
 before(async () => {
-  server = http.createServer(createApp(baseConfig));
+  server = http.createServer(createFixtureApp(baseConfig));
   await listen(server);
   browser = await chromium.launch();
 });

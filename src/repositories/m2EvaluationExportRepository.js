@@ -84,9 +84,7 @@ export async function getM2FormalEvaluationExportById(config, standardWorkId) {
            r.rating_score AS "ratingScore",
            r.lifecycle,
            r.lifecycle_confidence AS "lifecycleConfidence",
-           r.forecast_base_total AS "forecastBaseTotal",
-           r.forecast_optimistic_total AS "forecastOptimisticTotal",
-           r.forecast_pessimistic_total AS "forecastPessimisticTotal",
+           r.forecast_base_total AS "forecastPointEstimate",
            r.risk_level AS "riskLevel",
            r.formal_evaluation_allowed AS "formalEvaluationAllowed",
            r.not_for_formal_decision AS "notForFormalDecision",
@@ -129,7 +127,7 @@ export async function getM2FormalEvaluationExportById(config, standardWorkId) {
         candidateVersion: exportPackage.candidateVersion,
         exportPackage: sanitizeExportPackage(exportPackage),
         releaseGate,
-        item: toExportDetail(item),
+        item: toM2FormalExportDetail(item),
         rawRowsWritten: false,
         secretsWritten: false,
         operatingSuggestionsIncluded: false
@@ -361,16 +359,15 @@ function toExportSummary(row) {
   };
 }
 
-function toExportDetail(row) {
+export function toM2FormalExportDetail(row) {
   return {
     ...toExportSummary(row),
     ratingScore: Number(row.ratingScore ?? 0),
     lifecycleConfidence: row.lifecycleConfidence,
-    forecastBaseTotal: row.forecastBaseTotal === null ? null : Number(row.forecastBaseTotal),
-    forecastOptimisticTotal:
-      row.forecastOptimisticTotal === null ? null : Number(row.forecastOptimisticTotal),
-    forecastPessimisticTotal:
-      row.forecastPessimisticTotal === null ? null : Number(row.forecastPessimisticTotal),
+    forecastPointEstimate:
+      row.forecastPointEstimate === null ? null : Number(row.forecastPointEstimate),
+    pointEstimateOnly: true,
+    scenarioFieldsIncluded: false,
     risks: row.risks ?? [],
     snapshot: sanitizeSnapshot(row.snapshot)
   };

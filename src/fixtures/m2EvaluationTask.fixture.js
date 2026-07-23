@@ -1,7 +1,7 @@
-import { createEvaluationTask, transitionEvaluationTask } from "../../src/domain/oldProductEvaluation/evaluationTaskWorkflow.js";
+import { createEvaluationTask, transitionEvaluationTask } from "../domain/oldProductEvaluation/evaluationTaskWorkflow.js";
 import {
   M2_FORMAL_PERSISTENCE_CANDIDATE_VERSION
-} from "../../src/domain/oldProductEvaluation/formalPersistenceSchema.js";
+} from "../domain/oldProductEvaluation/formalPersistenceSchema.js";
 import {
   M2_BLOCKING_REVIEW_FIXTURE_ITEMS
 } from "./m2BlockingReviewWorkflow.fixture.js";

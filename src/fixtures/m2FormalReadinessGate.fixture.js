@@ -1,4 +1,4 @@
-import { M2_FORMAL_PERSISTENCE_CANDIDATE_VERSION } from "../../src/domain/oldProductEvaluation/formalPersistenceSchema.js";
+import { M2_FORMAL_PERSISTENCE_CANDIDATE_VERSION } from "../domain/oldProductEvaluation/formalPersistenceSchema.js";
 
 const READY_BASE = Object.freeze({
   candidateVersion: M2_FORMAL_PERSISTENCE_CANDIDATE_VERSION,

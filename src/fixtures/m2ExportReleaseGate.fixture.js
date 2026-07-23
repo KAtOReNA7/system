@@ -1,8 +1,8 @@
 import {
   buildExportPackage,
   transitionReleaseGate
-} from "../../src/domain/oldProductEvaluation/exportReleaseGate.js";
-import { M2_FORMAL_PERSISTENCE_CANDIDATE_VERSION } from "../../src/domain/oldProductEvaluation/formalPersistenceSchema.js";
+} from "../domain/oldProductEvaluation/exportReleaseGate.js";
+import { M2_FORMAL_PERSISTENCE_CANDIDATE_VERSION } from "../domain/oldProductEvaluation/formalPersistenceSchema.js";
 import { M2_BLOCKING_REVIEW_FIXTURE_ITEMS } from "./m2BlockingReviewWorkflow.fixture.js";
 import { getM2FormalReadinessFixture } from "./m2FormalReadinessGate.fixture.js";
 

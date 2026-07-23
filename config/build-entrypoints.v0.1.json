@@ -2,7 +2,9 @@
   "schema": "project.build-entrypoints.v0.1",
   "requiredTrackedFiles": [
     "src/server.js",
+    "src/fixtureServer.js",
     "src/http/app.js",
+    "src/http/fixtureApp.js",
     "src/config.js",
     "public/admin/index.html",
     "public/admin/app.js",
@@ -16,6 +18,12 @@
       ]
     },
     {
+      "path": "src/http/fixtureApp.js",
+      "requiredExports": [
+        "createFixtureApp"
+      ]
+    },
+    {
       "path": "src/config.js",
       "requiredExports": [
         "ConfigError",
@@ -25,6 +33,7 @@
   ],
   "packageEntrypoints": {
     "start": "src/server.js",
-    "dev": "src/server.js"
+    "start:fixture": "src/fixtureServer.js",
+    "dev": "src/fixtureServer.js"
   }
 }
