@@ -73,7 +73,7 @@ test("S1 task binds exact git anchors, B0-B7-only DAG, four source groups, regis
   assert.equal(taskManifest.findingHead, "627f74c6b9b2365ee4403c613ea9689748b76541");
   assert.equal(taskManifest.baseSha, "d81b952e37dd43365c0091cdd6665e69d8d39a7e");
   assert.deepEqual(taskManifest.authorizedBatches, S1_BATCHES);
-  assert.equal(taskManifest.currentBatch, "B3");
+  assert.equal(taskManifest.currentBatch, "B4");
   assert.equal(taskManifest.batchDag.independentReviewBatchAuthorized, false);
   assert.equal(taskManifest.requiredSourceEvidence.length, 4);
   assert.deepEqual(taskManifest.historicalImmutableArtifacts.map((binding) => binding.path), S1_HISTORICAL_PATHS);
@@ -409,9 +409,9 @@ test("tracked-only source binding requires the complete GitHub-hosted exact-head
   assert.equal(evaluateTrackedOnlySourcePolicy(trusted, { ...scope, actualHead: "0".repeat(40) }), false);
 });
 
-test("B3 checkpoint overlay remains OPEN and leaves B4 behind an explicit-start gate", () => {
+test("B4 entry overlay remains OPEN while B4 remediation is in progress", () => {
   assert.equal(validateS1Overlay(overlay), true);
-  assert.equal(overlay.currentBatch, "B3");
+  assert.equal(overlay.currentBatch, "B4");
   assert.deepEqual(overlay.batchStatuses, {
     B0: "COMPLETE",
     B1: "COMPLETE_PENDING_B8",
@@ -419,7 +419,7 @@ test("B3 checkpoint overlay remains OPEN and leaves B4 behind an explicit-start 
     B3: "COMPLETE_PENDING_B8",
   });
   assert.equal(overlay.nextBatch, "B4");
-  assert.equal(overlay.nextAllowedPhase, "B4_REQUIRES_EXPLICIT_START");
+  assert.equal(overlay.nextAllowedPhase, "S1_PHASED_REMEDIATION_B4");
   for (const findingId of ["PR7-P1-008", "PR7-P2-016"]) {
     assert.deepEqual(overlay.candidateFindingStatuses[findingId], {
       findingStatus: "OPEN",
@@ -680,37 +680,37 @@ test("preflight and local runner contain no hardcoded remote PASS claim", () => 
   );
 });
 
-test("B3 batch identity is explicit and missing or stale batch IDs fail at runtime", () => {
+test("B4 batch identity is explicit and missing or stale batch IDs fail at runtime", () => {
   const head = gitText(["rev-parse", "HEAD"]);
+  const b4 = runJson("scripts/m2-v2-evidence-pilot/check_m2_v2_pr7_s1_preflight.mjs", [
+    `--expected-head=${head}`, "--batch-id=B4",
+  ]);
+  assert.equal(b4.receipt.batchId, "B4");
+  assert.notEqual(b4.receipt.error?.reasonCode, "batch_id_does_not_match_frozen_task_batch");
+
   const b3 = runJson("scripts/m2-v2-evidence-pilot/check_m2_v2_pr7_s1_preflight.mjs", [
     `--expected-head=${head}`, "--batch-id=B3",
   ]);
-  assert.equal(b3.receipt.batchId, "B3");
-  assert.notEqual(b3.receipt.error?.reasonCode, "batch_id_does_not_match_frozen_task_batch");
-
-  const b2 = runJson("scripts/m2-v2-evidence-pilot/check_m2_v2_pr7_s1_preflight.mjs", [
-    `--expected-head=${head}`, "--batch-id=B2",
-  ]);
-  assert.equal(b2.status, 1);
-  assert.equal(b2.receipt.passed, false);
-  assert.equal(b2.receipt.error.reasonCode, "batch_id_does_not_match_frozen_task_batch");
+  assert.equal(b3.status, 1);
+  assert.equal(b3.receipt.passed, false);
+  assert.equal(b3.receipt.error.reasonCode, "batch_id_does_not_match_frozen_task_batch");
 
   const missingPreflight = runJson("scripts/m2-v2-evidence-pilot/check_m2_v2_pr7_s1_preflight.mjs", [
     `--expected-head=${head}`,
   ]);
   assert.equal(missingPreflight.status, 1);
-  assert.equal(missingPreflight.receipt.batchId, "B3");
+  assert.equal(missingPreflight.receipt.batchId, "B4");
   assert.equal(missingPreflight.receipt.error.reasonCode, "batch_id_is_required");
 
   const missingValidation = runJson("scripts/m2-v2-evidence-pilot/run_m2_v2_pr7_s1_validation.mjs", [
     `--expected-head=${head}`,
   ]);
   assert.equal(missingValidation.status, 1);
-  assert.equal(missingValidation.receipt.batchId, "B3");
+  assert.equal(missingValidation.receipt.batchId, "B4");
   assert.equal(missingValidation.receipt.error.reasonCode, "batch_id_is_required");
 });
 
-test("canonical B3 command, default suite, and both CI jobs bind the same explicit gate", () => {
+test("canonical B3 regression command remains wired while both CI jobs bind B4", () => {
   const canonical = [
     "node --test --test-concurrency=1",
     "test/m2-v2-pr7-b3-provider-route-registry.test.js",
@@ -722,8 +722,8 @@ test("canonical B3 command, default suite, and both CI jobs bind the same explic
   assert.equal(packageJson.scripts["test:m2-v2:provider-security"], "npm run test:m2-v2:b3-safe-cache-provider");
   assert.equal(packageJson.scripts.pretest, "npm run test:m2-v2:s0-default-extension");
   assert.equal((packageJson.scripts["test:m2-v2:s0-default-extension"].match(/test\/m2-v2-pr7-b3-provider-route-registry\.test\.js/gu) ?? []).length, 1);
-  assert.equal((workflowSource.match(/--batch-id=B3/gu) ?? []).length, 2);
-  assert.equal((workflowSource.match(/--batch-id=B2/gu) ?? []).length, 0);
+  assert.equal((workflowSource.match(/--batch-id=B4/gu) ?? []).length, 2);
+  assert.equal((workflowSource.match(/--batch-id=B3/gu) ?? []).length, 0);
   assert.equal((workflowSource.match(/name: B3 safe-cache and provider-boundary validation/gu) ?? []).length, 2);
   assert.equal((workflowSource.match(/run: npm run test:m2-v2:b3-safe-cache-provider/gu) ?? []).length, 2);
 });

@@ -338,7 +338,7 @@ export function validateS1TaskManifest(manifest, bindings = {}) {
   }
   validateBranchPolicy(manifest.branchPolicy);
   assertExactArray(manifest.authorizedBatches, S1_BATCHES, "authorized_batches_mismatch");
-  if (manifest.currentBatch !== "B3") throw new Error("current_batch_must_be_b3");
+  if (manifest.currentBatch !== "B4") throw new Error("current_batch_must_be_b4");
   validateBatchDag(manifest.batchDag);
   assertExactArray(manifest.allowedPathClasses, EXPECTED_ALLOWED_PATH_CLASSES, "allowed_path_classes_invalid");
   assertExactArray(manifest.prohibitedActions, EXPECTED_PROHIBITED_ACTIONS, "prohibited_actions_invalid");
@@ -1948,13 +1948,13 @@ export function validateS1Overlay(overlay) {
     && overlay.s0Status === "COMPLETE"
     && overlay.supportSharpeningStopCriteriaReached === true
     && overlay.findingRemediationAuthorized === true
-    && overlay.currentBatch === "B3"
+    && overlay.currentBatch === "B4"
     && overlay.batchStatuses.B0 === "COMPLETE"
     && overlay.batchStatuses.B1 === "COMPLETE_PENDING_B8"
     && overlay.batchStatuses.B2 === "COMPLETE_PENDING_B8"
     && overlay.batchStatuses.B3 === "COMPLETE_PENDING_B8"
     && overlay.nextBatch === "B4"
-    && overlay.nextAllowedPhase === "B4_REQUIRES_EXPLICIT_START"
+    && overlay.nextAllowedPhase === "S1_PHASED_REMEDIATION_B4"
     && ["PR7-P1-008", "PR7-P2-016"].every((findingId) => (
       overlay.candidateFindingStatuses[findingId].findingStatus === "OPEN"
       && overlay.candidateFindingStatuses[findingId].candidateStatus === "CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW"

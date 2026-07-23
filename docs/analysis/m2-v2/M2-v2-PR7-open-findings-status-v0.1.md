@@ -31,7 +31,7 @@ This overlay records the current S1 phased-remediation boundary. It does not sup
 
 B2 comprises two ordinary commits, five changed files, 15/15 registered acceptance cases, 31/31 migration tests, and 1130/1130 full tests. The integration-only checkpoint commit is bound separately to its final exact-head CI receipt and the live PR body.
 
-B3 implements exact safe-cache projections, a provider-free deterministic v0.3 candidate migration, and one-shot lowest-sink provider capabilities with all legacy routes retired. It covers 18/18 planning cases plus 3 bounded adjacent cases; no current promotion or external access occurred. `nextBatch=B4`, but B4 requires a new explicit start and has not begun.
+B3 implements exact safe-cache projections, a provider-free deterministic v0.3 candidate migration, and one-shot lowest-sink provider capabilities with all legacy routes retired. It covers 18/18 planning cases plus 3 bounded adjacent cases; no current promotion or external access occurred. B4 was explicitly authorized on 2026-07-23 and is now in progress; no B4 finding has been marked candidate-closed at entry.
 
 ## Finding candidate-status rows
 
@@ -40,6 +40,7 @@ B3 implements exact safe-cache projections, a provider-free deterministic v0.3 c
 | `PR7-P1-003`, `PR7-P2-009` | B1 | `OPEN` | `CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW` |
 | `PR7-P1-006`, `PR7-P2-008` | B2 | `OPEN` | `CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW` |
 | `PR7-P1-008`, `PR7-P2-016` | B3 | `OPEN` | `CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW` |
-| `PR7-P1-009`, `PR7-P1-013`, `PR7-P2-006`, `PR7-P2-013` | B4-B7 | `OPEN` | `NOT_STARTED` |
+| `PR7-P1-009`, `PR7-P2-013` | B4 | `OPEN` | `IN_PROGRESS` |
+| `PR7-P1-013`, `PR7-P2-006` | B5-B7 | `OPEN` | `NOT_STARTED` |
 
 All 10 findings remain `OPEN`. Only a new independent B8 review may determine `CLOSED`. Provider, database, Canary/full160, model training, holdout, B8, mark-ready, merge, and release remain prohibited.

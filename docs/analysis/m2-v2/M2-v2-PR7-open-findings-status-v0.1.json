@@ -32,7 +32,7 @@
     "B6",
     "B7"
   ],
-  "currentBatch": "B3",
+  "currentBatch": "B4",
   "batchStatuses": {
     "B0": "COMPLETE",
     "B1": "COMPLETE_PENDING_B8",
@@ -40,7 +40,7 @@
     "B3": "COMPLETE_PENDING_B8"
   },
   "nextBatch": "B4",
-  "nextAllowedPhase": "B4_REQUIRES_EXPLICIT_START",
+  "nextAllowedPhase": "S1_PHASED_REMEDIATION_B4",
   "candidateFindingStatuses": {
     "PR7-P1-008": {
       "findingStatus": "OPEN",

@@ -4,7 +4,7 @@
 
 该工具用于在多台电脑之间恢复 `m2-pr7-s1` 所需的最小 private evidence closure，避免缺少 `s1-source-evidence-authenticity-private-v0.1.json` 时误以为整个项目无法开发。
 
-普通 clone、安装、lint、build、公开/合成测试、smoke 和 fixture 启动始终不依赖本能力包。缺包只阻断 `m2-pr7-s1` capability；能力包存在或恢复成功也不授予 B4、provider、数据库、Canary/full160、训练、holdout、B8、merge、release 或 M3 formal 权限。
+普通 clone、安装、lint、build、公开/合成测试、smoke 和 fixture 启动始终不依赖本能力包。缺包只阻断 `m2-pr7-s1` capability；能力包存在或恢复成功不授予任何 batch、provider、数据库、Canary/full160、训练、holdout、B8、merge、release 或 M3 formal 权限。B4 的 2026-07-23 授权来自用户的独立明确指令，与能力包是否存在无关。
 
 ## 固定内容
 
@@ -46,7 +46,7 @@ npm run m2:v2:private-capability:build -- `
   -RecoveryKeyDirectory E:\separate-key-channel
 ```
 
-`B3` 仅是当前已完成 checkpoint 的示例，不表示可以据此启动 B4。构建器先执行带 `--expected-head` 和 `--batch-id` 的 S1 doctor，再生成 AES-256 header-encrypted archive、外层 SHA-256 sidecar、脱敏 transport receipt 和单独 recovery key。密码不进入进程参数，也不打印到标准输出。
+`B3` 仅是已完成 checkpoint 的历史示例，不表示可以据此启动任何后续 batch。构建器先执行带 `--expected-head` 和 `--batch-id` 的 S1 doctor，再生成 AES-256 header-encrypted archive、外层 SHA-256 sidecar、脱敏 transport receipt 和单独 recovery key。密码不进入进程参数，也不打印到标准输出。
 
 archive 与 recovery key 必须通过两个独立渠道传输；工具只能验证目录分离，不能替操作人声明已完成分渠道传输。
 
