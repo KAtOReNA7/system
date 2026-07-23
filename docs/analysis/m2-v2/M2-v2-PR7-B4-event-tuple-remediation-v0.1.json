@@ -9,7 +9,18 @@
     "windowsJobId": 89251992368,
     "status": "PASS"
   },
-  "status": "IMPLEMENTED_LOCAL_PENDING_EXACT_HEAD_CI",
+  "implementationHead": "65bee39e012e013d4e4347076fc24757f7bcc9f9",
+  "implementationCi": {
+    "runId": 30021984333,
+    "linuxJobId": 89256777608,
+    "windowsJobId": 89256777664,
+    "status": "PASS"
+  },
+  "integrationCheckpoint": {
+    "status": "TRACKED_INTEGRATION_CHECKPOINT_REQUIRES_EXACT_HEAD_CI",
+    "exactHeadBinding": "THIS_TRACKED_COMMIT_AS_RECORDED_BY_PRIVATE_RECEIPT_AND_PR_BODY"
+  },
+  "status": "COMPLETE_PENDING_B8",
   "canonicalRuntime": "src/domain/m2V2EvidencePilot/v2b8Stability.js",
   "parallelRuntimeAdded": false,
   "eventBinding": {
@@ -52,11 +63,11 @@
   "findings": {
     "PR7-P1-009": {
       "findingStatus": "OPEN",
-      "candidateStatus": "IN_PROGRESS_PENDING_EXACT_HEAD_CI"
+      "candidateStatus": "CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW"
     },
     "PR7-P2-013": {
       "findingStatus": "OPEN",
-      "candidateStatus": "IN_PROGRESS_PENDING_EXACT_HEAD_CI"
+      "candidateStatus": "CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW"
     }
   },
   "unchangedBoundary": {
@@ -73,6 +84,6 @@
   },
   "independentReviewPerformed": false,
   "closureClaimed": false,
-  "nextBatch": "B4",
+  "nextBatch": "B5",
   "b5Started": false
 }

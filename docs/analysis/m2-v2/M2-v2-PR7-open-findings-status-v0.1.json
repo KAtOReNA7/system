@@ -37,16 +37,25 @@
     "B0": "COMPLETE",
     "B1": "COMPLETE_PENDING_B8",
     "B2": "COMPLETE_PENDING_B8",
-    "B3": "COMPLETE_PENDING_B8"
+    "B3": "COMPLETE_PENDING_B8",
+    "B4": "COMPLETE_PENDING_B8"
   },
-  "nextBatch": "B4",
-  "nextAllowedPhase": "S1_PHASED_REMEDIATION_B4",
+  "nextBatch": "B5",
+  "nextAllowedPhase": "B5_REQUIRES_EXPLICIT_START",
   "candidateFindingStatuses": {
     "PR7-P1-008": {
       "findingStatus": "OPEN",
       "candidateStatus": "CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW"
     },
     "PR7-P2-016": {
+      "findingStatus": "OPEN",
+      "candidateStatus": "CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW"
+    },
+    "PR7-P1-009": {
+      "findingStatus": "OPEN",
+      "candidateStatus": "CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW"
+    },
+    "PR7-P2-013": {
       "findingStatus": "OPEN",
       "candidateStatus": "CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW"
     }

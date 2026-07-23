@@ -122,18 +122,19 @@ npm run m2:v2:pr7:s1:doctor -- --expected-head=$head --batch-id=$($task.currentB
 
 执行全库审读建议时按以下顺序：
 
-1. capability catalog 已完成；后续独立实现加密 bundle 的构建、恢复和验证，S1 validator 保持当前重算语义；
-2. 只有在每批获得新的明确启动指令后，才完成 PR #7 B4–B7 最小收口；
+1. capability catalog 与加密 bundle 的构建、恢复、验证已完成；S1 validator 保持当前重算语义；
+2. B4 已完成候选收口；只有在每批获得新的明确启动指令后，才继续 PR #7 B5–B7；
 3. PR #7 收口后建立独立 cleanup PR，处理完全重复 migration/docs/package aliases；
 4. 再建立 M2 current algorithm canonical core，把 C1–C3 变为 archive-only；
 5. 最后才申请新的算法训练、业务抽检和 holdout 授权。
 
-## 2026-07-20 PR #7 S1 当前进度
+## 2026-07-23 PR #7 S1 当前进度
 
 - PR #7 的 B3 closing correction 已在 exact HEAD `a945ed3a22fbc86e8ca381db9124fc0927461ec7` 完成；CI run `29704510651` 的 Linux job `88239115427` 与 Windows job `88239115429` 均成功。
-- 当前批次状态为：B0 `COMPLETE`，B1/B2 `COMPLETE_PENDING_B8`，B3 `COMPLETE_CORRECTED_PENDING_B8`。S1 task 的 `currentBatch` 仍为 `B3`；`nextBatch=B4`，但 B4 尚未开始，必须由新的明确指令启动。
+- 当前批次状态为：B0 `COMPLETE`，B1/B2 `COMPLETE_PENDING_B8`，B3 `COMPLETE_CORRECTED_PENDING_B8`，B4 `COMPLETE_PENDING_B8`。S1 task 的 `currentBatch=B4`；`nextBatch=B5`，但 B5 尚未开始，必须由新的明确指令启动。
 - B3 已将 preflight、local validation 与 Linux/Windows CI 显式绑定到 `--batch-id=B3`；canonical gate 为 `npm run test:m2-v2:b3-safe-cache-provider`。B3 registry 21/21、canonical tests 35/35、default skips 0、provider/DB/external access 均为 0。
-- `PR7-P1-008` 与 `PR7-P2-016` 仍为 `OPEN`，candidate status 为 `CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW`。全部 10 个 finding 仍等待独立 B8 review；不得声明 `CLOSED`。
+- B4 implementation exact HEAD `65bee39e012e013d4e4347076fc24757f7bcc9f9` 已通过 run `30021984333` 的 Linux job `89256777608` 与 Windows job `89256777664`；canonical gate 为 `npm run test:m2-v2:b4-event-tuple`，16/16 frozen cases、52/52 canonical tests、default skips 0、provider/DB/external access 均为 0。
+- `PR7-P1-008`、`PR7-P2-016`、`PR7-P1-009` 与 `PR7-P2-013` 仍为 `OPEN`，candidate status 为 `CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW`。全部 10 个 finding 仍等待独立 B8 review；不得声明 `CLOSED`。
 - PR #7 必须继续保持 Draft/open/unmerged。`currentDecision=CANARY_FAIL`、`full160Authorized=false`、`modelTrainingAuthorized=false`、`mergeAuthorized=false`、`nextDevelopmentReadiness=NOT_AUTHORIZED` 保持不变。
 
 ## 2026-07-18 M2 v2 当前权威入口

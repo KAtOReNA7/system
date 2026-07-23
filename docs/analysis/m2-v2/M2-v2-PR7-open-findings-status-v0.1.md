@@ -28,10 +28,12 @@ This overlay records the current S1 phased-remediation boundary. It does not sup
 | B3-B | `149ce6264ed3c52c279144234f36c3182d8fc4ac` | run `29701847354`, job `88232081347`, success | run `29701847354`, job `88232081327`, success | `PASS` |
 | B3-C | `a8eb73f3907a1b593d04cb6dcf0fbb90ace3d0ce` | run `29702460165`, job `88233712230`, success | run `29702460165`, job `88233712267`, success | `PASS` |
 | B3-D | this tracked integration commit | exact-head CI bound in the private receipt and PR body | exact-head CI bound in the private receipt and PR body | `COMPLETE_PENDING_B8` after exact-head CI |
+| B4-implementation | `65bee39e012e013d4e4347076fc24757f7bcc9f9` | run `30021984333`, job `89256777608`, success | run `30021984333`, job `89256777664`, success | `PASS` |
+| B4-integration | this tracked integration commit | exact-head CI bound in the private receipt and PR body | exact-head CI bound in the private receipt and PR body | `COMPLETE_PENDING_B8` after exact-head CI |
 
 B2 comprises two ordinary commits, five changed files, 15/15 registered acceptance cases, 31/31 migration tests, and 1130/1130 full tests. The integration-only checkpoint commit is bound separately to its final exact-head CI receipt and the live PR body.
 
-B3 implements exact safe-cache projections, a provider-free deterministic v0.3 candidate migration, and one-shot lowest-sink provider capabilities with all legacy routes retired. It covers 18/18 planning cases plus 3 bounded adjacent cases; no current promotion or external access occurred. B4 was explicitly authorized on 2026-07-23; its event tuple implementation covers 16/16 frozen cases and is pending exact-head CI. No B4 finding is candidate-closed yet.
+B3 implements exact safe-cache projections, a provider-free deterministic v0.3 candidate migration, and one-shot lowest-sink provider capabilities with all legacy routes retired. It covers 18/18 planning cases plus 3 bounded adjacent cases; no current promotion or external access occurred. B4 covers 16/16 frozen cases plus the 35-test V2-B.8 regression suite, and its implementation exact-head Linux/Windows CI passed. `nextBatch=B5`, but B5 requires a new explicit start and has not begun.
 
 ## Finding candidate-status rows
 
@@ -40,7 +42,7 @@ B3 implements exact safe-cache projections, a provider-free deterministic v0.3 c
 | `PR7-P1-003`, `PR7-P2-009` | B1 | `OPEN` | `CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW` |
 | `PR7-P1-006`, `PR7-P2-008` | B2 | `OPEN` | `CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW` |
 | `PR7-P1-008`, `PR7-P2-016` | B3 | `OPEN` | `CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW` |
-| `PR7-P1-009`, `PR7-P2-013` | B4 | `OPEN` | `IN_PROGRESS` |
+| `PR7-P1-009`, `PR7-P2-013` | B4 | `OPEN` | `CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW` |
 | `PR7-P1-013`, `PR7-P2-006` | B5-B7 | `OPEN` | `NOT_STARTED` |
 
 All 10 findings remain `OPEN`. Only a new independent B8 review may determine `CLOSED`. Provider, database, Canary/full160, model training, holdout, B8, mark-ready, merge, and release remain prohibited.

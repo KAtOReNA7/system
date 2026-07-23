@@ -409,7 +409,7 @@ test("tracked-only source binding requires the complete GitHub-hosted exact-head
   assert.equal(evaluateTrackedOnlySourcePolicy(trusted, { ...scope, actualHead: "0".repeat(40) }), false);
 });
 
-test("B4 entry overlay remains OPEN while B4 remediation is in progress", () => {
+test("B4 completion overlay remains OPEN and leaves B5 behind an explicit-start gate", () => {
   assert.equal(validateS1Overlay(overlay), true);
   assert.equal(overlay.currentBatch, "B4");
   assert.deepEqual(overlay.batchStatuses, {
@@ -417,10 +417,11 @@ test("B4 entry overlay remains OPEN while B4 remediation is in progress", () => 
     B1: "COMPLETE_PENDING_B8",
     B2: "COMPLETE_PENDING_B8",
     B3: "COMPLETE_PENDING_B8",
+    B4: "COMPLETE_PENDING_B8",
   });
-  assert.equal(overlay.nextBatch, "B4");
-  assert.equal(overlay.nextAllowedPhase, "S1_PHASED_REMEDIATION_B4");
-  for (const findingId of ["PR7-P1-008", "PR7-P2-016"]) {
+  assert.equal(overlay.nextBatch, "B5");
+  assert.equal(overlay.nextAllowedPhase, "B5_REQUIRES_EXPLICIT_START");
+  for (const findingId of ["PR7-P1-008", "PR7-P1-009", "PR7-P2-013", "PR7-P2-016"]) {
     assert.deepEqual(overlay.candidateFindingStatuses[findingId], {
       findingStatus: "OPEN",
       candidateStatus: "CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW",
@@ -429,7 +430,7 @@ test("B4 entry overlay remains OPEN while B4 remediation is in progress", () => 
   assert.equal(overlay.findingsRemainOpen, true);
   assert.equal(overlay.independentReviewPerformed, false);
   for (const [field, value] of [
-    ["nextBatch", "B5"],
+    ["nextBatch", "B6"],
     ["findingsRemainOpen", false],
     ["findingClosureStatus", "CLOSED"],
     ["independentReviewPerformed", true],
@@ -447,7 +448,7 @@ test("B4 entry overlay remains OPEN while B4 remediation is in progress", () => 
   }
   const invalidBatchStatuses = {
     ...overlay,
-    batchStatuses: { ...overlay.batchStatuses, B3: "COMPLETE" },
+    batchStatuses: { ...overlay.batchStatuses, B4: "COMPLETE" },
   };
   assert.throws(() => validateS1Overlay(invalidBatchStatuses), /overlay_governance_mismatch/u);
   const unknown = { ...overlay, remotePass: true };

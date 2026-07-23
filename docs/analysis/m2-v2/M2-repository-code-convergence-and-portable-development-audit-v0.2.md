@@ -8,7 +8,7 @@
 - 偏离部分：证据 runtime、版本化 runner、历史重放和报告层持续扩张，而当前产品入口、point-only serving、工具链复现和算法覆盖仍未收口。
 - M2 算法方向没有“目标定义错误”；当前错误是把多个开发失败版本继续当作迭代主线。C1、C2-R、C2-R.1、C2、C3 应冻结为历史失败证据，B4 只保留为 comparator/fallback。
 - 下一阶段不应直接升级复杂模型。应先建立唯一的 current algorithm core，修复权威输入/覆盖、产品 serving 合同和失败切片，再在同一 formal-cash universe 上比较受约束的 tabular residual 与 hierarchical benchmark。
-- PR #7 当前仍是 Draft/open/unmerged，B3 为 `COMPLETE_CORRECTED_PENDING_B8`。用户已于 2026-07-23 另行明确启动 B4；该授权不包含 B5–B8。
+- PR #7 当前仍是 Draft/open/unmerged，B3 为 `COMPLETE_CORRECTED_PENDING_B8`，B4 为 `COMPLETE_PENDING_B8`；`nextBatch=B5`，B5–B8 尚未授权。
 
 ## 2. 审计基线
 
@@ -201,7 +201,7 @@ npm run m2:v2:pr7:s1:doctor -- --expected-head=<exact-head> --batch-id=<explicit
 | 优先级 | 工作 | 边界 |
 |---|---|---|
 | P0 已完成 | public capability catalog + doctor + `m2-pr7-s1` 九文件加密能力包 + tests + 协作文档 | 不读取/提交 private，不启动 B4 |
-| P0 进行中 | PR #7 B4 最小收口 | 仅 `PR7-P1-009`、`PR7-P2-013`；不新增平行 runtime |
+| P0 已完成 | PR #7 B4 最小收口 | `PR7-P1-009`、`PR7-P2-013` 达到 candidate-closed；未新增平行 runtime |
 | P0 待授权 | PR #7 B5–B7 最小收口 | 每批需明确授权；不新增平行 runtime |
 | P1 | toolchain lock、全量 JS/MJS 检查、测试 registry | 独立 cleanup/toolchain PR |
 | P1 | fixture/formal composition 分离、point-only serving | 不改变模型结论或 release 状态 |

@@ -1928,10 +1928,14 @@ export function validateS1Overlay(overlay) {
     "remediationComplete", "pullRequestState",
   ], "overlay");
   assertPlainObject(overlay.batchStatuses, "overlay_batch_statuses_must_be_object");
-  assertExactFields(overlay.batchStatuses, ["B0", "B1", "B2", "B3"], "overlay_batch_statuses");
+  assertExactFields(overlay.batchStatuses, ["B0", "B1", "B2", "B3", "B4"], "overlay_batch_statuses");
   assertPlainObject(overlay.candidateFindingStatuses, "overlay_candidate_statuses_must_be_object");
-  assertExactFields(overlay.candidateFindingStatuses, ["PR7-P1-008", "PR7-P2-016"], "overlay_candidate_statuses");
-  for (const findingId of ["PR7-P1-008", "PR7-P2-016"]) {
+  assertExactFields(
+    overlay.candidateFindingStatuses,
+    ["PR7-P1-008", "PR7-P1-009", "PR7-P2-013", "PR7-P2-016"],
+    "overlay_candidate_statuses",
+  );
+  for (const findingId of ["PR7-P1-008", "PR7-P1-009", "PR7-P2-013", "PR7-P2-016"]) {
     assertPlainObject(overlay.candidateFindingStatuses[findingId], `overlay_${findingId}_candidate_status_must_be_object`);
     assertExactFields(overlay.candidateFindingStatuses[findingId], ["findingStatus", "candidateStatus"], `overlay_${findingId}_candidate_status`);
   }
@@ -1953,9 +1957,10 @@ export function validateS1Overlay(overlay) {
     && overlay.batchStatuses.B1 === "COMPLETE_PENDING_B8"
     && overlay.batchStatuses.B2 === "COMPLETE_PENDING_B8"
     && overlay.batchStatuses.B3 === "COMPLETE_PENDING_B8"
-    && overlay.nextBatch === "B4"
-    && overlay.nextAllowedPhase === "S1_PHASED_REMEDIATION_B4"
-    && ["PR7-P1-008", "PR7-P2-016"].every((findingId) => (
+    && overlay.batchStatuses.B4 === "COMPLETE_PENDING_B8"
+    && overlay.nextBatch === "B5"
+    && overlay.nextAllowedPhase === "B5_REQUIRES_EXPLICIT_START"
+    && ["PR7-P1-008", "PR7-P1-009", "PR7-P2-013", "PR7-P2-016"].every((findingId) => (
       overlay.candidateFindingStatuses[findingId].findingStatus === "OPEN"
       && overlay.candidateFindingStatuses[findingId].candidateStatus === "CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW"
     ))
