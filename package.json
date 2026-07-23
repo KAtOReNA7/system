@@ -74,6 +74,8 @@
     "compare:m2:old-products:calibration": "node scripts/run-m2-old-product-fixture-evaluation.mjs --compare-profiles",
     "evaluate:m2:real-data:dev": "node scripts/run-codex-python.mjs scripts/m2-real-data/run_authorized_real_data_development.py",
     "evaluate:m2:state-machine": "node scripts/m2-real-data/run_m2_state_machine_evaluation.mjs",
+    "diagnose:m2:current": "node scripts/m2-current/run_m2_current_public_diagnostics.mjs",
+    "verify:m2:current": "node scripts/m2-current/run_m2_current_public_diagnostics.mjs --verify",
     "import:m2:real-data:local-db": "node scripts/m2-real-data/run_authorized_real_data_db_import.mjs --clear",
     "review:m2:candidate-b:local": "node scripts/m2-real-data/run_candidate_b_review_workflow.mjs",
     "review:m2:candidate-b:export-pack": "node scripts/m2-real-data/run_candidate_b_review_decision_apply.mjs --export-pack",

@@ -1,0 +1,43 @@
+{
+  "schema": "m2.current.config.v0.1",
+  "stage": "public_diagnostic_scaffold",
+  "target": "future_bill_cash",
+  "primaryComparator": "B4_formula_switched_legacy_variant",
+  "allowedHorizons": [3, 6, 12, 18, 24],
+  "activitySegments": ["dense", "intermittent", "dormant"],
+  "frozenPopulation": {
+    "libraryWorkCount": 3053,
+    "modelWorkCount": 824,
+    "modelCaseCount": 7851
+  },
+  "thresholds": {
+    "fullLibraryForecastableCashCoverageMinimum": 0.9,
+    "top10ForecastableCashCoverageMinimum": 0.9,
+    "overallAbsoluteBiasMaximum": 0.1,
+    "eachHorizonAbsoluteBiasMaximum": 0.15,
+    "pairedCiRequired": true
+  },
+  "publicSources": {
+    "limitation": "docs/analysis/m2-v2/M2-v2-b4-limitation-analysis.json",
+    "coverage": "docs/analysis/m2-real-data/M2-formal-cash-population-business-coverage-v1.json",
+    "terminal": "docs/analysis/m2-real-data/M2-C3-terminal-model-route-summary-v1.json",
+    "modelDecision": "docs/analysis/m2-real-data/M2-C3-model-quality-decision-v1.json",
+    "businessDecision": "docs/analysis/m2-real-data/M2-C3-business-coverage-decision-v1.json",
+    "segments": "docs/analysis/m2-real-data/M2-C2-activity-segment-route-manifest-v1.json"
+  },
+  "publicOutput": "docs/analysis/m2-current/M2-current-public-diagnostic-baseline-v0.1.json",
+  "archiveOnlyDevelopmentRoutes": ["C1", "C2-R", "C2-R.1", "C2", "C3"],
+  "sealsMustRemainClosed": [
+    "finalHoldoutOpened",
+    "embargoShadowOpened",
+    "deferred60MonthLabelsOpened"
+  ],
+  "authorizations": {
+    "provider": false,
+    "database": false,
+    "modelTraining": false,
+    "holdout": false,
+    "release": false,
+    "m3Formal": false
+  }
+}
