@@ -1,0 +1,97 @@
+{
+  "schema": "m2.v2.pr7-b8-independent-closure.v0.1",
+  "status": "B8_COMPLETE",
+  "classification": "public_sanitized_not_for_formal_decision",
+  "reviewedHead": "d2f92cd03bc9d82672676298d04daed765c4ce8a",
+  "branch": "codex/m2-v2-evidence-pilot-v1",
+  "independentReview": {
+    "status": "PASS",
+    "decision": "B8_PASS_ALL_FINDINGS_CLOSABLE",
+    "reviewerParticipatedInImplementation": false,
+    "reviewerModifiedRepository": false,
+    "residualP0": 0,
+    "residualP1": 0,
+    "residualP2": 0
+  },
+  "exactHeadCi": {
+    "runId": 30034932174,
+    "conclusion": "SUCCESS",
+    "linuxJobId": 89300399550,
+    "windowsJobId": 89300399537
+  },
+  "formalReadonlyProof": {
+    "claimable": true,
+    "allPassed": true,
+    "invocationCount": 2,
+    "scopeSpecificationCount": 140,
+    "observedMemberCount": 145,
+    "memberSetDigestSha256": "82a0e9ec2df0feabdc9f6f9d42f3fd50e77271bbf85d2acaadab756e972ffd86",
+    "sourceGraphDigestSha256": "085c08ad1f1032551ca47be46d0e38b743c89da6788347a5c79c79efd0901d2e",
+    "transactionId": "recovery-f15e033dc333e86e836d638c5578289f61bf9838",
+    "currentBindingDigestSha256": "a478bd515e8733428796348665c140523f1d4b5d8dbd8a5dd6cbb15653409168",
+    "proofDigestSha256": "656bed1f2c903927f1d4a7a6861477c189eaf3f2a001f9e03ba9038ede0fcd7d",
+    "providerRequestDelta": 0,
+    "databaseConnectionDelta": 0,
+    "trackedCheckout": {
+      "uniquePathCount": 121,
+      "rawByteExactCount": 111,
+      "portableCrlfExactCount": 10,
+      "semanticOrBinaryMismatchCount": 0
+    }
+  },
+  "regression": {
+    "registeredCaseCount": 89,
+    "crossPlatformUnionPassed": 89,
+    "secondaryVerifierRequiredCaseCount": 30,
+    "linux": {
+      "applicableCases": 87,
+      "passedCases": 87,
+      "testCount": 161,
+      "failed": 0,
+      "skipped": 0
+    },
+    "windows": {
+      "applicableCases": 88,
+      "passedCases": 88,
+      "testCount": 162,
+      "failed": 0,
+      "skipped": 0
+    },
+    "independentLocalDefaultTest": {
+      "testCount": 1185,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "findingClosureStatus": "CLOSED",
+  "openFindings": 0,
+  "closedFindings": 10,
+  "closedFindingIds": [
+    "PR7-P1-003",
+    "PR7-P1-006",
+    "PR7-P1-008",
+    "PR7-P1-009",
+    "PR7-P1-013",
+    "PR7-P2-006",
+    "PR7-P2-008",
+    "PR7-P2-009",
+    "PR7-P2-013",
+    "PR7-P2-016"
+  ],
+  "boundaries": {
+    "historicalDecision": "CANARY_CONDITIONAL",
+    "currentDecision": "CANARY_FAIL",
+    "nextDevelopmentReadiness": "NOT_AUTHORIZED",
+    "providerExecuted": false,
+    "databaseConnected": false,
+    "canaryExecuted": false,
+    "full160Executed": false,
+    "modelTrainingPerformed": false,
+    "holdoutOpened": false,
+    "markReadyAuthorized": false,
+    "mergeAuthorized": false,
+    "releaseAuthorized": false,
+    "m3FormalAuthorized": false,
+    "pullRequestState": "DRAFT_OPEN_UNMERGED"
+  }
+}

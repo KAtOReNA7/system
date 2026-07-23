@@ -1,5 +1,14 @@
 # Codex 工作规则
 
+## 2026-07-24 PR #7 B8 独立复审闭环（当前最高优先）
+
+- 独立 reviewer 已对 exact HEAD `d2f92cd03bc9d82672676298d04daed765c4ce8a` 完成重复 B8 全量复审，结论为 `B8_PASS_ALL_FINDINGS_CLOSABLE`；reviewer 未参与修复实现且未修改仓库。
+- exact-head CI run `30034932174` 完整成功：Linux job `89300399550`、Windows job `89300399537`；B7 双平台并集覆盖 89/89，30/30 secondary-verifier-required cases 覆盖，zero fail/skip。
+- formal claimable readonly proof 已独立核验：canonical verifier 连续执行 2 次、`claimable=true`、140 个 scope specifications、145 个 observed members、三份 host-native snapshot 一致、`providerRequestDelta=0`、`databaseConnectionDelta=0`。
+- 10 项 finding 已由独立裁决允许迁移并通过版本化 successor 记录为 `CLOSED`；B0–B8 均为 `COMPLETE`。当前入口为 `docs/analysis/m2-v2/M2-v2-PR7-findings-closure-status-v0.2.md` 与 `M2-v2-PR7-B8-independent-closure-v0.1.md`。旧 open-findings、B6/B7 和首轮失败报告仅作历史证据，不得覆盖。
+- PR #7 必须继续保持 Draft/open/unmerged；不得 mark ready、merge 或 release。`currentDecision=CANARY_FAIL`、`nextDevelopmentReadiness=NOT_AUTHORIZED`、`mergeAuthorized=false`、`full160Authorized=false`、`modelTrainingAuthorized=false` 均保持不变。
+- 全盘审计的下一工程项是独立 cleanup/toolchain PR，但不得混入 PR #7。只有 PR #7 经外部 review 并明确获准合并、其 head 进入 `origin/main` 后，才可从更新后的 `main` 建立该独立 PR；在此之前只允许只读准备，不得新开同任务分支或把 cleanup 追加到当前分支。
+
 ## 2026-07-24 PR #7 B8 首轮独立复审返工入口（当前最高优先）
 
 - B7 implementation exact HEAD `4663fce6b656a7269bb624b9e2d74629bab999df` 已通过 CI run `30032162656`：Linux job `89291086145` 为 87/87，Windows job `89291086079` 为 88/88，两平台并集覆盖 89/89，均为 zero fail/skip。

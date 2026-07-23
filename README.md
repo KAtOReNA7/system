@@ -2,9 +2,14 @@
 
 ## 2026-07-24 PR #7 当前执行状态
 
-用户已授权 B5–B8。B5 已在 exact HEAD `8804cd508f8e30d90dfc6f429e0b49ab6cae647c` 通过双平台 CI；B6 已完成本地 provider-free 离线重建、确定性 workbook vNext、14-role 原子 supersession 和幂等 no-op 证明，当前等待 B6 exact-head 双平台 CI。随后依次进入 B7 全注册表回归和 B8 独立复审。B8 必须由独立 reviewer 执行，实施代理不得自审并关闭 finding。
+B0–B8 已全部完成。独立 reviewer 对 exact HEAD `d2f92cd03bc9d82672676298d04daed765c4ce8a` 的裁决为 `B8_PASS_ALL_FINDINGS_CLOSABLE`；exact-head CI run `30034932174` 的 Linux job `89300399550` 与 Windows job `89300399537` 完整成功。10 个 finding 已由版本化 closure successor 记录为 `CLOSED`。
 
-当前 10 个 finding 仍全部 `OPEN`，PR #7 仍为 Draft/open/unmerged。provider、数据库、Canary/full160、模型训练、holdout、mark ready、merge、release 和 M3 formal 仍未授权。
+当前导航见：
+
+- `docs/analysis/m2-v2/M2-v2-PR7-findings-closure-status-v0.2.md`
+- `docs/analysis/m2-v2/M2-v2-PR7-B8-independent-closure-v0.1.md`
+
+PR #7 仍为 Draft/open/unmerged。finding 闭环不授权 provider、数据库、Canary/full160、模型训练、holdout、mark ready、merge、release 或 M3 formal；`currentDecision=CANARY_FAIL`、`nextDevelopmentReadiness=NOT_AUTHORIZED` 保持不变。
 
 ## 2026-07-23 全库审读与多电脑协同入口（v0.2 当前入口）
 

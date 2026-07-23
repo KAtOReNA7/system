@@ -1,5 +1,20 @@
 # 下一步交给 Codex 的指令
 
+## 2026-07-24 B8 独立复审已闭环
+
+独立 reviewer 已在 exact HEAD `d2f92cd03bc9d82672676298d04daed765c4ce8a` 完成重复 B8，结论为 `B8_PASS_ALL_FINDINGS_CLOSABLE`。CI run `30034932174` 的 Linux/Windows jobs 均成功；10 项 finding 已由版本化 successor 记录为 `CLOSED`，B0–B8 全部 `COMPLETE`。
+
+当前入口：
+
+1. `docs/analysis/m2-v2/M2-v2-PR7-findings-closure-status-v0.2.md`
+2. `docs/analysis/m2-v2/M2-v2-PR7-B8-independent-closure-v0.1.md`
+3. `docs/analysis/m2-v2/M2-v2-current-state-index-v0.3.json`
+4. `docs/analysis/m2-v2/M2-v2-PR7-B6-offline-authority-promotion-v0.1.md`
+
+PR #7 继续保持 Draft/open/unmerged；不得 mark ready、merge 或 release。全盘审计的下一工程项是独立 cleanup/toolchain PR，但必须等 PR #7 经外部 review、明确获准合并且其 head 进入 `origin/main` 后，才能从更新后的 `main` 建立。不得把 cleanup 混入当前 PR。
+
+`currentDecision=CANARY_FAIL`、`nextDevelopmentReadiness=NOT_AUTHORIZED`、`mergeAuthorized=false`、`full160Authorized=false`、`modelTrainingAuthorized=false` 均保持不变。
+
 ## 2026-07-24 B8 首轮独立复审返工
 
 B7 implementation exact HEAD `4663fce6b656a7269bb624b9e2d74629bab999df` 已通过 run `30032162656` 的 Linux/Windows CI。首轮独立 B8 结论为 `B8_FAIL_REMEDIATION_REQUIRED`：canonical no-argument verifier/current-authority reader 仍指向 predecessor authority，且 B6 graph population 后缺少 formal claimable readonly proof。
