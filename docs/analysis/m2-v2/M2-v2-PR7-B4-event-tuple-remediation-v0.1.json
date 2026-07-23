@@ -1,0 +1,78 @@
+{
+  "schema": "m2.v2.pr7.b4-event-tuple-remediation-public.v0.1",
+  "batch": "B4",
+  "classification": "public_sanitized_not_for_formal_decision",
+  "entryHead": "1107c2a15a39e1b035022c0810e296ff493f3e01",
+  "entryCi": {
+    "runId": 30020602325,
+    "linuxJobId": 89251992130,
+    "windowsJobId": 89251992368,
+    "status": "PASS"
+  },
+  "status": "IMPLEMENTED_LOCAL_PENDING_EXACT_HEAD_CI",
+  "canonicalRuntime": "src/domain/m2V2EvidencePilot/v2b8Stability.js",
+  "parallelRuntimeAdded": false,
+  "eventBinding": {
+    "contract": "m2.v2.event-time-clause-binding.v0.4",
+    "contractStatus": "PROPOSED_NOT_CURRENT",
+    "nearestEventPredicateRequired": true,
+    "crossEventDateBorrowingAllowed": false,
+    "firstDateFallbackAllowed": false,
+    "stableFailureReasons": [
+      "event_date_predicate_mismatch",
+      "event_predicate_ambiguous",
+      "event_status_ambiguous",
+      "event_source_binding_missing"
+    ],
+    "tupleSourceAndSpanDigestsRecomputed": true,
+    "tupleUnknownFieldsRejected": true
+  },
+  "conflictApplicability": {
+    "contract": "m2.v2.conflict-applicability-public.v0.4",
+    "contractStatus": "PROPOSED_NOT_CURRENT",
+    "fixedPriorityRuleCount": 10,
+    "stableSubjectRequired": true,
+    "stableProductionOrEditionIdentityRequiredWhenRelevant": true,
+    "missingIdentityMayBecomeConflict": false,
+    "differentProductionOrEditionMayConflict": false,
+    "sameIdentitySameStageDisjointIntervalIsConflict": true,
+    "validStageProgressionIsConflict": false,
+    "invalidStageTimeOrderIsConflict": true
+  },
+  "caseCoverage": {
+    "planningRequired": 16,
+    "planningExecuted": 16,
+    "planningPassed": 16,
+    "canonicalTestCount": 52,
+    "canonicalTestPassed": 52,
+    "skipped": 0,
+    "defaultNpmTestWired": true,
+    "linuxWindowsCiWired": true
+  },
+  "findings": {
+    "PR7-P1-009": {
+      "findingStatus": "OPEN",
+      "candidateStatus": "IN_PROGRESS_PENDING_EXACT_HEAD_CI"
+    },
+    "PR7-P2-013": {
+      "findingStatus": "OPEN",
+      "candidateStatus": "IN_PROGRESS_PENDING_EXACT_HEAD_CI"
+    }
+  },
+  "unchangedBoundary": {
+    "providerCalls": 0,
+    "providerRequestDelta": 0,
+    "actualExternalFetchCount": 0,
+    "databaseConnections": 0,
+    "currentPromotionPerformed": false,
+    "currentDecision": "CANARY_FAIL",
+    "full160Authorized": false,
+    "modelTrainingAuthorized": false,
+    "mergeAuthorized": false,
+    "nextDevelopmentReadiness": "NOT_AUTHORIZED"
+  },
+  "independentReviewPerformed": false,
+  "closureClaimed": false,
+  "nextBatch": "B4",
+  "b5Started": false
+}

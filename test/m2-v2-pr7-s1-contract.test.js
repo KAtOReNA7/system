@@ -710,7 +710,7 @@ test("B4 batch identity is explicit and missing or stale batch IDs fail at runti
   assert.equal(missingValidation.receipt.error.reasonCode, "batch_id_is_required");
 });
 
-test("canonical B3 regression command remains wired while both CI jobs bind B4", () => {
+test("canonical B3 and B4 commands remain wired while both CI jobs bind B4", () => {
   const canonical = [
     "node --test --test-concurrency=1",
     "test/m2-v2-pr7-b3-provider-route-registry.test.js",
@@ -720,12 +720,21 @@ test("canonical B3 regression command remains wired while both CI jobs bind B4",
   ].join(" ");
   assert.equal(packageJson.scripts["test:m2-v2:b3-safe-cache-provider"], canonical);
   assert.equal(packageJson.scripts["test:m2-v2:provider-security"], "npm run test:m2-v2:b3-safe-cache-provider");
-  assert.equal(packageJson.scripts.pretest, "npm run test:m2-v2:s0-default-extension");
+  assert.equal(
+    packageJson.scripts["test:m2-v2:b4-event-tuple"],
+    "node --test --test-concurrency=1 test/m2-v2-event-tuple.test.js test/m2-v2-v2b8.test.js",
+  );
+  assert.equal(
+    packageJson.scripts.pretest,
+    "npm run test:m2-v2:s0-default-extension && npm run test:m2-v2:b4-event-tuple",
+  );
   assert.equal((packageJson.scripts["test:m2-v2:s0-default-extension"].match(/test\/m2-v2-pr7-b3-provider-route-registry\.test\.js/gu) ?? []).length, 1);
   assert.equal((workflowSource.match(/--batch-id=B4/gu) ?? []).length, 2);
   assert.equal((workflowSource.match(/--batch-id=B3/gu) ?? []).length, 0);
   assert.equal((workflowSource.match(/name: B3 safe-cache and provider-boundary validation/gu) ?? []).length, 2);
   assert.equal((workflowSource.match(/run: npm run test:m2-v2:b3-safe-cache-provider/gu) ?? []).length, 2);
+  assert.equal((workflowSource.match(/name: B4 event tuple and conflict applicability validation/gu) ?? []).length, 2);
+  assert.equal((workflowSource.match(/run: npm run test:m2-v2:b4-event-tuple/gu) ?? []).length, 2);
 });
 
 function taskBindings() {

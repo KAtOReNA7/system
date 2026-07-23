@@ -87,6 +87,117 @@ const EVENT_KEYWORD_PATTERNS = Object.freeze({
 
 const EVENT_CLAUSE_BOUNDARY = /[。！？!?；;，,\r\n]/u;
 
+const V2B8_EVENT_TUPLE_FIELDS = Object.freeze([
+  "tupleVersion",
+  "parserProfileVersion",
+  "sourceDocumentIdSafe",
+  "sentenceSpan",
+  "clauseSpan",
+  "predicateSpan",
+  "dateSpan",
+  "eventPredicate",
+  "eventRole",
+  "eventDate",
+  "dateRole",
+  "organizationIdentity",
+  "productionIdentity",
+  "editionIdentity",
+  "stage",
+  "status",
+  "subjectIdentity",
+  "ambiguity",
+  "limitation",
+  "sourceDigest",
+  "tupleDigest",
+]);
+
+const V2B8_EVENT_FAMILIES = new Set(["PUBLICATION", "AWARD", "PRODUCTION", "RELEASE", "OTHER"]);
+const V2B8_PREDICATE_KINDS = new Set([
+  "PLAN", "PUBLISH", "NOMINATE", "AWARD", "WIN", "PRODUCE", "RELEASE", "COMPLETE", "CANCEL", "OTHER",
+]);
+const V2B8_EVENT_ROLES = new Set([
+  "PRIMARY_ASSERTION", "SUPPORTING_ASSERTION", "NEGATED_ASSERTION", "PLANNED_ASSERTION", "HISTORICAL_CONTEXT",
+]);
+const V2B8_DATE_ROLES = new Set([
+  "EVENT_OCCURRENCE", "PLANNED_DATE", "PUBLICATION_DATE", "NOMINATION_DATE", "AWARD_DATE",
+  "RELEASE_DATE", "COMPLETION_DATE", "UNKNOWN",
+]);
+const V2B8_EVENT_STAGES = new Set([
+  "PLANNED", "NOMINATED", "PUBLISHED", "AWARDED", "WON", "PRODUCED", "RELEASED", "COMPLETED",
+  "CANCELLED", "UNKNOWN",
+]);
+const V2B8_EVENT_STATUSES = new Set([
+  "ASSERTED_ACTUAL", "ASSERTED_PLANNED", "NEGATED", "UNCERTAIN", "CANCELLED", "UNKNOWN",
+]);
+const V2B8_IDENTITY_STATUSES = new Set(["KNOWN", "MISSING", "AMBIGUOUS", "NOT_APPLICABLE"]);
+const V2B8_AMBIGUITY_CODES = new Set([
+  "MULTIPLE_DATES", "MULTIPLE_PREDICATES", "MULTIPLE_IDENTITIES", "MISSING_DATE", "MISSING_IDENTITY",
+  "CROSS_SENTENCE_UNSUPPORTED", "UNSUPPORTED_STAGE", "OTHER",
+]);
+const V2B8_LIMITATION_CODES = new Set([
+  "NO_DATE", "AMBIGUOUS_DATE", "IDENTITY_MISSING", "IDENTITY_AMBIGUOUS",
+  "CROSS_SENTENCE_UNSUPPORTED", "UNSUPPORTED_RELATION", "SOURCE_SPAN_INCOMPLETE",
+]);
+const V2B8_LIMITATION_SEVERITIES = new Set(["INFO", "NOT_EVALUABLE", "FAIL_CLOSED"]);
+const V2B8_ASSERTED_EVALUABLE_STATUSES = new Set(["ASSERTED_ACTUAL", "ASSERTED_PLANNED"]);
+
+const V2B8_STAGE_STATUS_COMPATIBILITY = Object.freeze({
+  ASSERTED_PLANNED: {
+    stages: new Set(["PLANNED"]),
+    roles: new Set(["PLANNED_ASSERTION"]),
+  },
+  ASSERTED_ACTUAL: {
+    stages: new Set(["NOMINATED", "PUBLISHED", "AWARDED", "WON", "PRODUCED", "RELEASED", "COMPLETED"]),
+    roles: new Set(["PRIMARY_ASSERTION", "SUPPORTING_ASSERTION", "HISTORICAL_CONTEXT"]),
+  },
+  NEGATED: {
+    stages: new Set([
+      "PLANNED", "NOMINATED", "PUBLISHED", "AWARDED", "WON", "PRODUCED", "RELEASED", "COMPLETED", "CANCELLED",
+    ]),
+    roles: new Set(["NEGATED_ASSERTION"]),
+  },
+  UNCERTAIN: {
+    stages: new Set([
+      "PLANNED", "NOMINATED", "PUBLISHED", "AWARDED", "WON", "PRODUCED", "RELEASED", "COMPLETED", "UNKNOWN",
+    ]),
+    roles: new Set(["PRIMARY_ASSERTION", "SUPPORTING_ASSERTION", "HISTORICAL_CONTEXT"]),
+  },
+  CANCELLED: {
+    stages: new Set(["CANCELLED"]),
+    roles: new Set(["PRIMARY_ASSERTION", "SUPPORTING_ASSERTION", "HISTORICAL_CONTEXT"]),
+  },
+  UNKNOWN: {
+    stages: new Set(["UNKNOWN"]),
+    roles: new Set(["PRIMARY_ASSERTION", "SUPPORTING_ASSERTION", "HISTORICAL_CONTEXT"]),
+  },
+});
+
+const V2B8_STAGE_PROGRESSION = new Map([
+  ["PUBLICATION:PLANNED:PUBLISHED", "VALID_FORWARD"],
+  ["PUBLICATION:PUBLISHED:PLANNED", "INVALID_REVERSE"],
+  ["AWARD:NOMINATED:AWARDED", "VALID_FORWARD"],
+  ["AWARD:NOMINATED:WON", "VALID_FORWARD"],
+  ["AWARD:AWARDED:NOMINATED", "INVALID_REVERSE"],
+  ["AWARD:WON:NOMINATED", "INVALID_REVERSE"],
+  ["PRODUCTION:PLANNED:PRODUCED", "VALID_FORWARD"],
+  ["PRODUCTION:PRODUCED:COMPLETED", "VALID_FORWARD"],
+  ["PRODUCTION:COMPLETED:PLANNED", "INVALID_REVERSE"],
+  ["RELEASE:PLANNED:RELEASED", "VALID_FORWARD"],
+  ["RELEASE:RELEASED:PLANNED", "INVALID_REVERSE"],
+]);
+
+const V2B8_EVENT_PREDICATE_DEFINITIONS = Object.freeze([
+  { family: "AWARD", kind: "NOMINATE", pattern: /(?:提名|入围|nominated|nominee)(?:\s+(?:for\s+)?(?:the\s+)?award)?/giu },
+  { family: "AWARD", kind: "WIN", pattern: /(?:获奖|获奖者|won|winner)(?:\s+(?:the\s+)?award)?/giu },
+  { family: "PUBLICATION", kind: "PUBLISH", pattern: /(?:出版|发行|首版|再版|published|publication)/giu },
+  { family: "RELEASE", kind: "RELEASE", pattern: /(?:上映|播出|发布|released|premiere)/giu },
+  { family: "PRODUCTION", kind: "PLAN", pattern: /(?:计划|拟于|预计|预定|宣布|announced|planned|scheduled|proposed)/giu },
+  { family: "PRODUCTION", kind: "PRODUCE", pattern: /(?:启动|立项|签约|开机|拍摄|制作|produced|production)/giu },
+  { family: "PRODUCTION", kind: "COMPLETE", pattern: /(?:完成|完结|completed|complete)/giu },
+  { family: "PRODUCTION", kind: "CANCEL", pattern: /(?:取消|cancelled|canceled)/giu },
+  { family: "AWARD", kind: "AWARD", pattern: /(?:奖项|awarded|award)/giu },
+]);
+
 export function classifyV2B8QueryExecution(execution) {
   if (execution?.contractValid === true) return "success_contract_valid";
   const status = String(execution?.status ?? "").toLowerCase();
@@ -289,11 +400,13 @@ export function extractV2B8EventTime(claim, sourceRecords = []) {
       eventTimeEvidenceSpanDigest: null,
       explicitTemporalText: false,
       extractionSucceeded: true,
+      failureReason: null,
     };
   }
   const active = activeStructuredValue(claim?.structuredValue);
   const direct = parseDateEvidence(claim?.eventTime) ?? parseDateEvidence(active);
-  const supportingEvidence = findSupportingDateEvidence(claim, sourceRecords, direct);
+  const binding = findSupportingDateEvidence(claim, sourceRecords, direct);
+  const supportingEvidence = binding.match;
   if (supportingEvidence) {
     const basis = direct
       ? "explicit_structured_value"
@@ -324,10 +437,13 @@ export function extractV2B8EventTime(claim, sourceRecords = []) {
       }),
       explicitTemporalText: true,
       extractionSucceeded: true,
+      failureReason: null,
     };
   }
   const explicitTemporalText = Boolean(direct)
-    || sourceRecords.some((source) => [source?.snippet, source?.title].some((value) => hasClaimBoundDateText(claim, value)));
+    || sourceRecords.some((source) => [source?.snippet, source?.title].some((value) => (
+      hasClaimBoundDateText(claim, value) || hasPotentialClaimDateText(claim, value)
+    )));
   return {
     eventTime: null,
     eventTimePrecision: "unknown",
@@ -340,6 +456,256 @@ export function extractV2B8EventTime(claim, sourceRecords = []) {
     eventTimeEvidenceSpanDigest: null,
     explicitTemporalText,
     extractionSucceeded: !explicitTemporalText,
+    failureReason: explicitTemporalText ? binding.failureReason : null,
+  };
+}
+
+export function buildV2B8CanonicalIdentity(value, status = value ? "KNOWN" : "MISSING") {
+  if (!V2B8_IDENTITY_STATUSES.has(status)) throw new Error("event_identity_status_invalid");
+  const normalized = normalizeV2B8Text(value);
+  if (status === "KNOWN" && !normalized) throw new Error("event_identity_digest_required");
+  if (status !== "KNOWN" && normalized) throw new Error("event_identity_value_forbidden");
+  return {
+    status,
+    canonicalIdentityDigestSha256: status === "KNOWN" ? sha256(normalized) : null,
+  };
+}
+
+export function buildV2B8EventDate(value) {
+  const evidence = parseDateEvidence(value);
+  if (!evidence) {
+    return {
+      value: null,
+      intervalStart: null,
+      intervalEnd: null,
+      precision: "UNKNOWN",
+      timezoneBasis: "UNKNOWN",
+    };
+  }
+  if (evidence.eventTimePrecision === "year") {
+    const year = Number(evidence.eventTime);
+    return {
+      value: evidence.eventTime,
+      intervalStart: `${year}-01-01`,
+      intervalEnd: `${year + 1}-01-01`,
+      precision: "YEAR",
+      timezoneBasis: "CALENDAR_DATE_NO_TIMEZONE",
+    };
+  }
+  if (evidence.eventTimePrecision === "month") {
+    const [yearText, monthText] = evidence.eventTime.split("-");
+    const year = Number(yearText);
+    const month = Number(monthText);
+    const nextYear = month === 12 ? year + 1 : year;
+    const nextMonth = month === 12 ? 1 : month + 1;
+    return {
+      value: evidence.eventTime,
+      intervalStart: `${yearText}-${monthText}-01`,
+      intervalEnd: `${nextYear}-${pad2(nextMonth)}-01`,
+      precision: "MONTH",
+      timezoneBasis: "CALENDAR_DATE_NO_TIMEZONE",
+    };
+  }
+  if (evidence.eventTimePrecision === "day") {
+    const instant = new Date(`${evidence.eventTime}T00:00:00.000Z`);
+    if (Number.isNaN(instant.getTime()) || instant.toISOString().slice(0, 10) !== evidence.eventTime) {
+      throw new Error("event_date_invalid");
+    }
+    const next = new Date(instant.getTime() + 86_400_000).toISOString().slice(0, 10);
+    return {
+      value: evidence.eventTime,
+      intervalStart: evidence.eventTime,
+      intervalEnd: next,
+      precision: "DAY",
+      timezoneBasis: "CALENDAR_DATE_NO_TIMEZONE",
+    };
+  }
+  const [startYearText, endYearText] = evidence.eventTime.split("/");
+  const startYear = Number(startYearText);
+  const endYear = Number(endYearText);
+  if (startYear > endYear) throw new Error("event_date_invalid");
+  return {
+    value: evidence.eventTime,
+    intervalStart: `${startYear}-01-01`,
+    intervalEnd: `${endYear + 1}-01-01`,
+    precision: "INTERVAL",
+    timezoneBasis: "CALENDAR_DATE_NO_TIMEZONE",
+  };
+}
+
+export function buildV2B8CanonicalEventTuple(input) {
+  assertExactObjectFields(input, [
+    "parserProfileVersion", "sourceDocumentIdSafe", "sourceDocument", "sentenceSpan", "clauseSpan",
+    "predicateSpan", "dateSpan", "eventPredicate", "eventRole", "eventDate", "dateRole",
+    "organizationIdentity", "productionIdentity", "editionIdentity", "stage", "status",
+    "subjectIdentity", "ambiguity", "limitation",
+  ], "event_tuple_input_fields_invalid");
+  if (!safeToken(input.parserProfileVersion, 120)) throw new Error("event_parser_profile_invalid");
+  if (!safeToken(input.sourceDocumentIdSafe, 240)) throw new Error("event_source_document_id_invalid");
+  if (typeof input.sourceDocument !== "string" || input.sourceDocument.length === 0) {
+    throw new Error("event_source_document_invalid");
+  }
+  const tupleWithoutDigest = {
+    tupleVersion: "m2.v2.canonical-event-tuple.v0.1",
+    parserProfileVersion: input.parserProfileVersion,
+    sourceDocumentIdSafe: input.sourceDocumentIdSafe,
+    sentenceSpan: bindEventSpan(input.sourceDocument, input.sentenceSpan),
+    clauseSpan: bindEventSpan(input.sourceDocument, input.clauseSpan),
+    predicateSpan: bindEventSpan(input.sourceDocument, input.predicateSpan),
+    dateSpan: input.dateSpan === null ? null : bindEventSpan(input.sourceDocument, input.dateSpan),
+    eventPredicate: structuredClone(input.eventPredicate),
+    eventRole: input.eventRole,
+    eventDate: structuredClone(input.eventDate),
+    dateRole: input.dateRole,
+    organizationIdentity: structuredClone(input.organizationIdentity),
+    productionIdentity: structuredClone(input.productionIdentity),
+    editionIdentity: structuredClone(input.editionIdentity),
+    stage: input.stage,
+    status: input.status,
+    subjectIdentity: structuredClone(input.subjectIdentity),
+    ambiguity: structuredClone(input.ambiguity),
+    limitation: structuredClone(input.limitation),
+    sourceDigest: sha256(input.sourceDocument),
+  };
+  const tuple = { ...tupleWithoutDigest, tupleDigest: sha256(tupleWithoutDigest) };
+  validateV2B8CanonicalEventTuple(tuple, input.sourceDocument);
+  return tuple;
+}
+
+export function validateV2B8CanonicalEventTuple(tuple, sourceDocument) {
+  assertExactObjectFields(tuple, V2B8_EVENT_TUPLE_FIELDS, "event_tuple_fields_invalid");
+  if (tuple.tupleVersion !== "m2.v2.canonical-event-tuple.v0.1") throw new Error("event_tuple_version_invalid");
+  if (!safeToken(tuple.parserProfileVersion, 120)) throw new Error("event_parser_profile_invalid");
+  if (!safeToken(tuple.sourceDocumentIdSafe, 240)) throw new Error("event_source_document_id_invalid");
+  if (!isSha256(tuple.sourceDigest)) throw new Error("event_source_digest_invalid");
+  const tupleWithoutDigest = { ...tuple };
+  delete tupleWithoutDigest.tupleDigest;
+  if (!isSha256(tuple.tupleDigest) || sha256(tupleWithoutDigest) !== tuple.tupleDigest) {
+    throw new Error("event_tuple_digest_invalid");
+  }
+  validateEventPredicate(tuple.eventPredicate);
+  if (!V2B8_EVENT_ROLES.has(tuple.eventRole)) throw new Error("event_role_invalid");
+  if (!V2B8_DATE_ROLES.has(tuple.dateRole)) throw new Error("event_date_role_invalid");
+  if (!V2B8_EVENT_STAGES.has(tuple.stage)) throw new Error("event_stage_invalid");
+  if (!V2B8_EVENT_STATUSES.has(tuple.status)) throw new Error("event_status_invalid");
+  const compatibility = V2B8_STAGE_STATUS_COMPATIBILITY[tuple.status];
+  if (!compatibility?.stages.has(tuple.stage) || !compatibility.roles.has(tuple.eventRole)) {
+    throw new Error("event_stage_status_role_incompatible");
+  }
+  for (const identity of [
+    tuple.organizationIdentity, tuple.productionIdentity, tuple.editionIdentity, tuple.subjectIdentity,
+  ]) {
+    validateEventIdentity(identity);
+  }
+  validateEventAmbiguity(tuple.ambiguity);
+  validateEventLimitations(tuple.limitation);
+  validateV2B8EventDate(tuple.eventDate);
+  if (tuple.eventDate.precision === "UNKNOWN") {
+    if (tuple.dateSpan !== null || tuple.dateRole !== "UNKNOWN") throw new Error("event_unknown_date_binding_invalid");
+  } else if (tuple.dateSpan === null) {
+    throw new Error("event_known_date_span_missing");
+  }
+  validateEventSpanShape(tuple.sentenceSpan);
+  validateEventSpanShape(tuple.clauseSpan);
+  validateEventSpanShape(tuple.predicateSpan);
+  if (tuple.dateSpan !== null) validateEventSpanShape(tuple.dateSpan);
+  if (!spanContains(tuple.sentenceSpan, tuple.clauseSpan)
+      || !spanContains(tuple.clauseSpan, tuple.predicateSpan)
+      || (tuple.dateSpan !== null && !spanContains(tuple.clauseSpan, tuple.dateSpan))) {
+    throw new Error("event_span_containment_invalid");
+  }
+  if (sourceDocument !== undefined) {
+    if (typeof sourceDocument !== "string" || sha256(sourceDocument) !== tuple.sourceDigest) {
+      throw new Error("event_source_digest_invalid");
+    }
+    for (const span of [
+      tuple.sentenceSpan, tuple.clauseSpan, tuple.predicateSpan, ...(tuple.dateSpan ? [tuple.dateSpan] : []),
+    ]) {
+      if (span.end > [...sourceDocument].length
+          || sha256(codePointSlice(sourceDocument, span.start, span.end)) !== span.digestSha256) {
+        throw new Error("event_span_digest_invalid");
+      }
+    }
+    if (tuple.dateSpan !== null) {
+      const boundDate = buildV2B8EventDate(codePointSlice(sourceDocument, tuple.dateSpan.start, tuple.dateSpan.end));
+      if (canonicalJson(boundDate) !== canonicalJson(tuple.eventDate)) {
+        throw new Error("event_date_span_value_mismatch");
+      }
+    }
+  }
+  return true;
+}
+
+export function evaluateV2B8EventTupleConflict(leftTuple, rightTuple) {
+  validateV2B8CanonicalEventTuple(leftTuple);
+  validateV2B8CanonicalEventTuple(rightTuple);
+  const identityComparison = {
+    subject: compareEventIdentity(leftTuple.subjectIdentity, rightTuple.subjectIdentity, true),
+    organization: compareEventIdentity(
+      leftTuple.organizationIdentity,
+      rightTuple.organizationIdentity,
+      eventOrganizationRequired(leftTuple.eventPredicate.family, rightTuple.eventPredicate.family),
+    ),
+    production: compareEventIdentity(
+      leftTuple.productionIdentity,
+      rightTuple.productionIdentity,
+      eventProductionRequired(leftTuple.eventPredicate.family, rightTuple.eventPredicate.family),
+    ),
+    edition: compareEventIdentity(
+      leftTuple.editionIdentity,
+      rightTuple.editionIdentity,
+      eventEditionRequired(leftTuple.eventPredicate.family, rightTuple.eventPredicate.family),
+    ),
+  };
+  const sameFamily = leftTuple.eventPredicate.family === rightTuple.eventPredicate.family;
+  const stageRelation = !sameFamily || leftTuple.stage === "UNKNOWN" || rightTuple.stage === "UNKNOWN"
+    ? "UNSUPPORTED"
+    : leftTuple.stage === rightTuple.stage
+      ? "SAME_STAGE"
+      : V2B8_STAGE_PROGRESSION.get(
+        `${leftTuple.eventPredicate.family}:${leftTuple.stage}:${rightTuple.stage}`,
+      ) ?? "UNSUPPORTED";
+  const timeRelation = compareEventIntervals(leftTuple.eventDate, rightTuple.eventDate, stageRelation);
+  const stageComparison = {
+    eventFamily: sameFamily ? leftTuple.eventPredicate.family : "OTHER",
+    leftStage: leftTuple.stage,
+    rightStage: rightTuple.stage,
+    relation: stageRelation,
+  };
+  const timeComparison = {
+    relation: timeRelation,
+    leftPrecision: leftTuple.eventDate.precision,
+    rightPrecision: rightTuple.eventDate.precision,
+  };
+  const rule = selectEventConflictRule({
+    leftTuple,
+    rightTuple,
+    identityComparison,
+    sameFamily,
+    stageRelation,
+    timeRelation,
+  });
+  const evaluationWithoutDigest = {
+    schema: "m2.v2.event-evaluation-private.v0.4",
+    evaluationIdSha256: sha256({
+      schema: "m2.v2.event-evaluation-private.v0.4",
+      leftTupleDigestSha256: leftTuple.tupleDigest,
+      rightTupleDigestSha256: rightTuple.tupleDigest,
+    }),
+    leftTupleDigestSha256: leftTuple.tupleDigest,
+    rightTupleDigestSha256: rightTuple.tupleDigest,
+    decision: rule.decision,
+    conflict: rule.conflict,
+    requiredFamilyPass: rule.requiredFamilyPass,
+    reasonCode: rule.reasonCode,
+    matchedRuleId: rule.ruleId,
+    identityComparison,
+    stageComparison,
+    timeComparison,
+  };
+  return {
+    ...evaluationWithoutDigest,
+    evaluationDigestSha256: sha256(evaluationWithoutDigest),
   };
 }
 
@@ -393,6 +759,7 @@ export function canonicalizeV2B8Claim(claim, context = {}) {
     eventTimeEvidenceSpanDigest: event.eventTimeEvidenceSpanDigest,
     explicitTemporalText: event.explicitTemporalText,
     eventTimeExtractionSucceeded: event.extractionSucceeded,
+    eventTimeFailureReason: event.failureReason,
     limitations: unique(limitations),
     rejectionReasons: unique(rejectionReasons),
     pilotUsable,
@@ -721,30 +1088,53 @@ function dateEvidence(text, match, eventTime, eventTimePrecision) {
 
 function findSupportingDateEvidence(claim, sourceRecords, requested) {
   const matches = [];
+  const rejectedReasons = [];
+  let requestedDateObserved = false;
   for (const source of sourceRecords) {
     for (const field of ["snippet", "title"]) {
       const value = source?.[field];
       for (const evidence of parseDateEvidences(value)) {
         if (requested) {
           if (evidence.eventTime !== requested.eventTime || evidence.eventTimePrecision !== requested.eventTimePrecision) continue;
+          requestedDateObserved = true;
         }
-        const support = claimBoundDateSupport(claim, value, evidence);
-        if (!support) continue;
-        matches.push({ ...evidence, ...support, field, sourceId: source.sourceId });
+        const support = analyzeClaimBoundDateSupport(claim, value, evidence);
+        if (!support.supported) {
+          if (support.failureReason) rejectedReasons.push(support.failureReason);
+          continue;
+        }
+        matches.push({ ...evidence, ...support.binding, field, sourceId: source.sourceId });
       }
     }
   }
-  if (!matches.length) return null;
+  if (!matches.length) {
+    const failureReason = rejectedReasons.includes("event_date_predicate_mismatch")
+      ? "event_date_predicate_mismatch"
+      : requested && !requestedDateObserved
+        ? "event_source_binding_missing"
+        : rejectedReasons[0] ?? "event_source_binding_missing";
+    return { match: null, failureReason };
+  }
   if (!requested) {
     const distinctTimes = new Set(matches.map((item) => `${item.eventTime}:${item.eventTimePrecision}`));
-    if (distinctTimes.size !== 1) return null;
+    if (distinctTimes.size !== 1) {
+      const kinds = new Set(matches.map((item) => item.eventPredicate?.kind).filter(Boolean));
+      const plannedAndActual = matches.some((item) => item.eventPredicate?.kind === "PLAN")
+        && matches.some((item) => item.eventPredicate?.kind !== "PLAN");
+      return {
+        match: null,
+        failureReason: plannedAndActual
+          ? "event_status_ambiguous"
+          : kinds.size > 1 ? "event_predicate_ambiguous" : "event_date_ambiguous",
+      };
+    }
   }
-  return matches.sort((left, right) => (
+  return { match: matches.sort((left, right) => (
     String(left.sourceId).localeCompare(String(right.sourceId))
       || left.field.localeCompare(right.field)
       || left.start - right.start
       || left.end - right.end
-  ))[0];
+  ))[0], failureReason: null };
 }
 
 function parseDateEvidences(value) {
@@ -762,10 +1152,16 @@ function parseDateEvidences(value) {
 }
 
 function hasClaimBoundDateText(claim, value) {
-  return parseDateEvidences(value).some((evidence) => claimBoundDateSupport(claim, value, evidence));
+  return parseDateEvidences(value).some((evidence) => analyzeClaimBoundDateSupport(claim, value, evidence).supported);
 }
 
-function claimBoundDateSupport(claim, value, evidence) {
+function hasPotentialClaimDateText(claim, value) {
+  const text = String(value ?? "").normalize("NFKC");
+  const pattern = EVENT_KEYWORD_PATTERNS[claim?.claimType];
+  return Boolean(pattern) && parseDateEvidences(text).length > 0 && pattern.test(text);
+}
+
+function analyzeClaimBoundDateSupport(claim, value, evidence) {
   const text = String(value ?? "").normalize("NFKC");
   let supportStart = evidence.start;
   while (supportStart > 0 && !EVENT_CLAUSE_BOUNDARY.test(text[supportStart - 1])) supportStart -= 1;
@@ -776,26 +1172,365 @@ function claimBoundDateSupport(claim, value, evidence) {
   const normalizedClaimValue = normalizeV2B8Text(activeStructuredValue(claim?.structuredValue));
   const tentative = /计划|拟于|预计|预定|planned|expected|scheduled|proposed/iu;
   const negated = /(?:未曾|尚未|没有|取消|not|never|cancelled|canceled)/iu;
-  if (tentative.test(normalizedClause) && !tentative.test(normalizedClaimValue)) return null;
-  if (negated.test(normalizedClause) && !negated.test(normalizedClaimValue)) return null;
+  if (tentative.test(normalizedClause) && !tentative.test(normalizedClaimValue)) {
+    return { supported: false, failureReason: "event_status_ambiguous" };
+  }
+  if (negated.test(normalizedClause) && !negated.test(normalizedClaimValue)) {
+    return { supported: false, failureReason: "event_status_ambiguous" };
+  }
   const pattern = EVENT_KEYWORD_PATTERNS[claim?.claimType];
-  if (!pattern) return null;
+  if (!pattern) return { supported: false, failureReason: "event_predicate_missing" };
   const keywordPattern = new RegExp(pattern.source, pattern.flags.includes("g") ? pattern.flags : `${pattern.flags}g`);
   const keywords = [...text.slice(supportStart, supportEnd).matchAll(keywordPattern)].map((match) => ({
     start: supportStart + match.index,
     end: supportStart + match.index + match[0].length,
   }));
-  if (!keywords.length) return null;
+  if (!keywords.length) return { supported: false, failureReason: "event_predicate_missing" };
+  const predicates = eventPredicatesInSpan(text, supportStart, supportEnd);
+  const nearestPredicates = nearestEventPredicates(predicates, evidence);
+  const expectedFamilies = claimEventFamilies(claim?.claimType);
+  if (nearestPredicates.length > 0
+      && !nearestPredicates.some((predicate) => expectedFamilies.has(predicate.family))) {
+    return { supported: false, failureReason: "event_date_predicate_mismatch" };
+  }
+  const expectedKinds = claimEventKinds(normalizedClaimValue);
+  if (expectedKinds.size > 0 && nearestPredicates.length > 0
+      && !nearestPredicates.some((predicate) => expectedKinds.has(predicate.kind))) {
+    return { supported: false, failureReason: "event_date_predicate_mismatch" };
+  }
+  if (nearestPredicates.length > 1) {
+    const identities = new Set(nearestPredicates.map((predicate) => `${predicate.family}:${predicate.kind}`));
+    if (identities.size > 1) return { supported: false, failureReason: "event_predicate_ambiguous" };
+  }
   const keyword = keywords.sort((left, right) => (
     spanDistance(left, evidence) - spanDistance(right, evidence)
       || left.start - right.start
   ))[0];
   return {
-    supportStart,
-    supportEnd,
-    supportSpan,
-    eventKeywordSpan: { start: keyword.start, end: keyword.end },
+    supported: true,
+    failureReason: null,
+    binding: {
+      supportStart,
+      supportEnd,
+      supportSpan,
+      eventKeywordSpan: { start: keyword.start, end: keyword.end },
+      eventPredicate: nearestPredicates[0] ?? null,
+    },
   };
+}
+
+function eventPredicatesInSpan(text, start, end) {
+  const matches = [];
+  const segment = text.slice(start, end);
+  for (const definition of V2B8_EVENT_PREDICATE_DEFINITIONS) {
+    const pattern = new RegExp(definition.pattern.source, definition.pattern.flags);
+    for (const match of segment.matchAll(pattern)) {
+      matches.push({
+        family: definition.family,
+        kind: definition.kind,
+        start: start + match.index,
+        end: start + match.index + match[0].length,
+      });
+    }
+  }
+  return matches
+    .sort((left, right) => left.start - right.start || right.end - left.end || left.family.localeCompare(right.family))
+    .filter((candidate, index, sorted) => !sorted.slice(0, index).some((accepted) => (
+      candidate.start >= accepted.start && candidate.end <= accepted.end
+    )));
+}
+
+function nearestEventPredicates(predicates, evidence) {
+  if (!predicates.length) return [];
+  const minimum = Math.min(...predicates.map((predicate) => spanDistance(predicate, evidence)));
+  return predicates.filter((predicate) => spanDistance(predicate, evidence) === minimum);
+}
+
+function claimEventFamilies(claimType) {
+  if (claimType === "publication_event") return new Set(["PUBLICATION"]);
+  if (claimType === "award_event") return new Set(["AWARD"]);
+  if (claimType === "adaptation_event") return new Set(["PRODUCTION", "RELEASE"]);
+  return new Set(["OTHER"]);
+}
+
+function claimEventKinds(value) {
+  const kinds = new Set();
+  const normalized = normalizeV2B8Text(value);
+  if (/提名|入围|nominated|nominee/iu.test(normalized)) kinds.add("NOMINATE");
+  if (/获奖|winner|won/iu.test(normalized)) kinds.add("WIN");
+  if (/出版|发行|首版|再版|published|publication/iu.test(normalized)) kinds.add("PUBLISH");
+  if (/上映|播出|发布|released|premiere/iu.test(normalized)) kinds.add("RELEASE");
+  if (/计划|拟于|预计|预定|宣布|announced|planned|scheduled|proposed/iu.test(normalized)) kinds.add("PLAN");
+  if (/启动|立项|签约|开机|拍摄|制作|produced|production/iu.test(normalized)) kinds.add("PRODUCE");
+  if (/完成|完结|completed|complete/iu.test(normalized)) kinds.add("COMPLETE");
+  if (/取消|cancelled|canceled/iu.test(normalized)) kinds.add("CANCEL");
+  return kinds;
+}
+
+function assertExactObjectFields(value, fields, reason) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) throw new Error(reason);
+  const actual = Object.keys(value).sort();
+  const expected = [...fields].sort();
+  if (canonicalJson(actual) !== canonicalJson(expected)) throw new Error(reason);
+}
+
+function safeToken(value, maximumLength) {
+  return typeof value === "string"
+    && value.length > 0
+    && value.length <= maximumLength
+    && /^[A-Za-z0-9._:/-]+$/u.test(value);
+}
+
+function isSha256(value) {
+  return typeof value === "string" && /^[a-f0-9]{64}$/u.test(value);
+}
+
+function bindEventSpan(sourceDocument, span) {
+  assertExactObjectFields(span, ["start", "end"], "event_span_input_fields_invalid");
+  if (!Number.isInteger(span.start) || !Number.isInteger(span.end) || span.start < 0 || span.end <= span.start
+      || span.end > [...sourceDocument].length) {
+    throw new Error("event_span_bounds_invalid");
+  }
+  return {
+    start: span.start,
+    end: span.end,
+    digestSha256: sha256(codePointSlice(sourceDocument, span.start, span.end)),
+  };
+}
+
+function codePointSlice(value, start, end) {
+  return [...value].slice(start, end).join("");
+}
+
+function validateEventSpanShape(span) {
+  assertExactObjectFields(span, ["start", "end", "digestSha256"], "event_span_fields_invalid");
+  if (!Number.isInteger(span.start) || !Number.isInteger(span.end) || span.start < 0 || span.end <= span.start
+      || !isSha256(span.digestSha256)) {
+    throw new Error("event_span_shape_invalid");
+  }
+}
+
+function spanContains(outer, inner) {
+  return outer.start <= inner.start && outer.end >= inner.end;
+}
+
+function validateEventPredicate(predicate) {
+  assertExactObjectFields(predicate, ["family", "kind"], "event_predicate_fields_invalid");
+  if (!V2B8_EVENT_FAMILIES.has(predicate.family) || !V2B8_PREDICATE_KINDS.has(predicate.kind)) {
+    throw new Error("event_predicate_invalid");
+  }
+}
+
+function validateEventIdentity(identity) {
+  assertExactObjectFields(
+    identity,
+    ["status", "canonicalIdentityDigestSha256"],
+    "event_identity_fields_invalid",
+  );
+  if (!V2B8_IDENTITY_STATUSES.has(identity.status)) throw new Error("event_identity_status_invalid");
+  if (identity.status === "KNOWN") {
+    if (!isSha256(identity.canonicalIdentityDigestSha256)) throw new Error("event_identity_digest_required");
+  } else if (identity.canonicalIdentityDigestSha256 !== null) {
+    throw new Error("event_identity_digest_forbidden");
+  }
+}
+
+function validateEventAmbiguity(ambiguity) {
+  assertExactObjectFields(ambiguity, ["status", "codes", "evaluable"], "event_ambiguity_fields_invalid");
+  if (!["NONE", "PRESENT"].includes(ambiguity.status)
+      || !Array.isArray(ambiguity.codes)
+      || typeof ambiguity.evaluable !== "boolean"
+      || ambiguity.codes.some((code) => !V2B8_AMBIGUITY_CODES.has(code))
+      || new Set(ambiguity.codes).size !== ambiguity.codes.length) {
+    throw new Error("event_ambiguity_invalid");
+  }
+  if (ambiguity.status === "NONE" && (ambiguity.codes.length !== 0 || ambiguity.evaluable !== true)) {
+    throw new Error("event_ambiguity_invalid");
+  }
+  if (ambiguity.status === "PRESENT" && (ambiguity.codes.length === 0 || ambiguity.evaluable !== false)) {
+    throw new Error("event_ambiguity_invalid");
+  }
+}
+
+function validateEventLimitations(limitations) {
+  if (!Array.isArray(limitations)) throw new Error("event_limitation_invalid");
+  const seen = new Set();
+  for (const limitation of limitations) {
+    assertExactObjectFields(
+      limitation,
+      ["code", "severity", "detailDigestSha256"],
+      "event_limitation_fields_invalid",
+    );
+    if (!V2B8_LIMITATION_CODES.has(limitation.code)
+        || !V2B8_LIMITATION_SEVERITIES.has(limitation.severity)
+        || (limitation.detailDigestSha256 !== null && !isSha256(limitation.detailDigestSha256))) {
+      throw new Error("event_limitation_invalid");
+    }
+    const identity = canonicalJson(limitation);
+    if (seen.has(identity)) throw new Error("event_limitation_duplicate");
+    seen.add(identity);
+  }
+}
+
+function validateV2B8EventDate(eventDate) {
+  assertExactObjectFields(
+    eventDate,
+    ["value", "intervalStart", "intervalEnd", "precision", "timezoneBasis"],
+    "event_date_fields_invalid",
+  );
+  const precision = eventDate.precision;
+  const timezone = eventDate.timezoneBasis;
+  if (!["YEAR", "MONTH", "DAY", "INSTANT", "INTERVAL", "UNKNOWN"].includes(precision)
+      || !["UTC", "SOURCE_EXPLICIT_OFFSET", "CALENDAR_DATE_NO_TIMEZONE", "UNKNOWN"].includes(timezone)) {
+    throw new Error("event_date_enum_invalid");
+  }
+  if (precision === "UNKNOWN") {
+    if (eventDate.value !== null || eventDate.intervalStart !== null || eventDate.intervalEnd !== null
+        || timezone !== "UNKNOWN") {
+      throw new Error("event_date_unknown_invalid");
+    }
+    return;
+  }
+  if (typeof eventDate.value !== "string"
+      || typeof eventDate.intervalStart !== "string"
+      || typeof eventDate.intervalEnd !== "string"
+      || eventDate.intervalStart > eventDate.intervalEnd) {
+    throw new Error("event_date_bounds_invalid");
+  }
+  if (["YEAR", "MONTH", "DAY"].includes(precision) && timezone !== "CALENDAR_DATE_NO_TIMEZONE") {
+    throw new Error("event_date_timezone_invalid");
+  }
+  if (precision === "YEAR" && !/^(?:19|20)\d{2}$/u.test(eventDate.value)) throw new Error("event_date_value_invalid");
+  if (precision === "MONTH" && !/^(?:19|20)\d{2}-(?:0[1-9]|1[0-2])$/u.test(eventDate.value)) {
+    throw new Error("event_date_value_invalid");
+  }
+  if (precision === "DAY" && !/^(?:19|20)\d{2}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\d|3[01])$/u.test(eventDate.value)) {
+    throw new Error("event_date_value_invalid");
+  }
+  if (["YEAR", "MONTH", "DAY"].includes(precision)) {
+    const expected = buildV2B8EventDate(eventDate.value);
+    if (expected.precision !== precision
+        || expected.intervalStart !== eventDate.intervalStart
+        || expected.intervalEnd !== eventDate.intervalEnd
+        || expected.timezoneBasis !== eventDate.timezoneBasis) {
+      throw new Error("event_date_calendar_bounds_invalid");
+    }
+  }
+  if (precision === "INTERVAL") {
+    const match = eventDate.value.match(/^((?:19|20)\d{2})\/((?:19|20)\d{2})$/u);
+    if (!match
+        || Number(match[1]) > Number(match[2])
+        || eventDate.intervalStart !== `${match[1]}-01-01`
+        || eventDate.intervalEnd !== `${Number(match[2]) + 1}-01-01`
+        || timezone !== "CALENDAR_DATE_NO_TIMEZONE") {
+      throw new Error("event_date_interval_invalid");
+    }
+  }
+  if (precision === "INSTANT") {
+    if (!/(?:Z|[+-]\d{2}:\d{2})$/u.test(eventDate.value)
+        || eventDate.value !== eventDate.intervalStart
+        || eventDate.value !== eventDate.intervalEnd
+        || !["UTC", "SOURCE_EXPLICIT_OFFSET"].includes(timezone)) {
+      throw new Error("event_date_instant_invalid");
+    }
+  }
+}
+
+function compareEventIdentity(left, right, required) {
+  if (!required && left.status === "NOT_APPLICABLE" && right.status === "NOT_APPLICABLE") return "NOT_REQUIRED";
+  if (left.status === "AMBIGUOUS" || right.status === "AMBIGUOUS") return "AMBIGUOUS";
+  if (left.status !== "KNOWN" || right.status !== "KNOWN") return required ? "MISSING" : "NOT_REQUIRED";
+  return left.canonicalIdentityDigestSha256 === right.canonicalIdentityDigestSha256 ? "SAME" : "DIFFERENT";
+}
+
+function eventOrganizationRequired(leftFamily, rightFamily) {
+  return leftFamily === rightFamily && ["PUBLICATION", "PRODUCTION", "RELEASE"].includes(leftFamily);
+}
+
+function eventProductionRequired(leftFamily, rightFamily) {
+  return leftFamily === rightFamily && ["PRODUCTION", "RELEASE"].includes(leftFamily);
+}
+
+function eventEditionRequired(leftFamily, rightFamily) {
+  return leftFamily === "PUBLICATION" && rightFamily === "PUBLICATION";
+}
+
+function compareEventIntervals(left, right, stageRelation) {
+  if (left.precision === "UNKNOWN" || right.precision === "UNKNOWN") return "MISSING";
+  if (stageRelation === "SAME_STAGE") {
+    const overlaps = left.intervalStart === right.intervalStart
+      || (left.intervalStart < right.intervalEnd && right.intervalStart < left.intervalEnd);
+    return overlaps ? "OVERLAP" : "DISJOINT";
+  }
+  return left.intervalStart <= right.intervalStart ? "NONDECREASING" : "REVERSED";
+}
+
+function selectEventConflictRule({
+  leftTuple,
+  rightTuple,
+  identityComparison,
+  sameFamily,
+  stageRelation,
+  timeRelation,
+}) {
+  if (identityComparison.subject === "DIFFERENT") {
+    return eventConflictRule("different_subject", "SEPARATE_SCOPE", false, true, "DIFFERENT_SUBJECT");
+  }
+  if (!V2B8_ASSERTED_EVALUABLE_STATUSES.has(leftTuple.status)
+      || !V2B8_ASSERTED_EVALUABLE_STATUSES.has(rightTuple.status)
+      || leftTuple.ambiguity.evaluable !== true
+      || rightTuple.ambiguity.evaluable !== true) {
+    return eventConflictRule(
+      "status_not_asserted_evaluable", "NOT_EVALUABLE", false, false, "STATUS_NOT_ASSERTED_EVALUABLE",
+    );
+  }
+  if (!sameFamily || leftTuple.stage === "UNKNOWN" || rightTuple.stage === "UNKNOWN") {
+    return eventConflictRule(
+      "missing_family_or_stage", "NOT_EVALUABLE", false, false, "MISSING_EVENT_FAMILY_OR_STAGE",
+    );
+  }
+  const requiredIdentities = [
+    identityComparison.subject,
+    identityComparison.organization,
+    identityComparison.production,
+    identityComparison.edition,
+  ];
+  if (requiredIdentities.some((comparison) => comparison === "MISSING" || comparison === "AMBIGUOUS")) {
+    return eventConflictRule(
+      "identity_incomplete", "NOT_EVALUABLE", false, false, "MISSING_OR_AMBIGUOUS_REQUIRED_IDENTITY",
+    );
+  }
+  if ([identityComparison.organization, identityComparison.production, identityComparison.edition].includes("DIFFERENT")) {
+    return eventConflictRule(
+      "different_production_or_edition", "NO_CONFLICT", false, true, "DIFFERENT_PRODUCTION_OR_EDITION",
+    );
+  }
+  if (stageRelation === "SAME_STAGE" && timeRelation === "OVERLAP") {
+    return eventConflictRule("same_stage_overlap", "CONSISTENT", false, true, "SAME_STAGE_OVERLAP");
+  }
+  if (stageRelation === "SAME_STAGE" && timeRelation === "DISJOINT") {
+    return eventConflictRule(
+      "same_stage_disjoint", "UNRESOLVED_CONFLICT", true, false, "SAME_STAGE_DISJOINT",
+    );
+  }
+  if (stageRelation === "VALID_FORWARD" && timeRelation === "NONDECREASING") {
+    return eventConflictRule(
+      "valid_progression", "VALID_STAGE_PROGRESSION", false, true, "VALID_STAGE_TIME_PROGRESSION",
+    );
+  }
+  if (stageRelation === "INVALID_REVERSE"
+      || (stageRelation === "VALID_FORWARD" && timeRelation === "REVERSED")) {
+    return eventConflictRule(
+      "invalid_progression", "UNRESOLVED_STAGE_CONFLICT", true, false, "INVALID_STAGE_TIME_ORDER",
+    );
+  }
+  return eventConflictRule(
+    "unsupported_relation", "NOT_EVALUABLE", false, false, "UNSUPPORTED_STAGE_RELATION",
+  );
+}
+
+function eventConflictRule(ruleId, decision, conflict, requiredFamilyPass, reasonCode) {
+  return { ruleId, decision, conflict, requiredFamilyPass, reasonCode };
 }
 
 function spanDistance(left, right) {

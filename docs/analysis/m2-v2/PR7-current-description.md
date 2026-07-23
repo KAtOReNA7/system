@@ -8,7 +8,7 @@ PR #7 remains Draft/open/unmerged. The incremental independent review against pr
 - B1: `COMPLETE_PENDING_B8`
 - B2: `COMPLETE_PENDING_B8`
 - B3: `COMPLETE_PENDING_B8`
-- `currentBatch=B4`; B4 was explicitly authorized on 2026-07-23 and is in progress
+- `currentBatch=B4`; B4 was explicitly authorized on 2026-07-23 and is implemented locally pending exact-head CI
 - Independent review: `NOT_REVIEWED`
 - Historical decision: `CANARY_CONDITIONAL`
 - Current offline integrity restatement: `CANARY_FAIL`
@@ -36,7 +36,8 @@ B0-B7 implementation evidence may reach only `CANDIDATE_CLOSED_PENDING_INDEPENDE
 | B3-B | `149ce6264ed3c52c279144234f36c3182d8fc4ac` | run `29701847354`, job `88232081347`, success | run `29701847354`, job `88232081327`, success | `PASS` |
 | B3-C | `a8eb73f3907a1b593d04cb6dcf0fbb90ace3d0ce` | run `29702460165`, job `88233712230`, success | run `29702460165`, job `88233712267`, success | `PASS` |
 | B3-D | this tracked integration commit | exact-head CI bound in the private receipt and PR body | exact-head CI bound in the private receipt and PR body | `COMPLETE_PENDING_B8` after exact-head CI |
-| B4 | entry checkpoint pending | exact-head CI pending | exact-head CI pending | `IN_PROGRESS` |
+| B4-entry | `1107c2a15a39e1b035022c0810e296ff493f3e01` | run `30020602325`, job `89251992130`, success | run `30020602325`, job `89251992368`, success | `PASS` |
+| B4-implementation | this implementation commit | exact-head CI pending | exact-head CI pending | `IN_PROGRESS` |
 | B5-B7 | - | - | - | `NOT_STARTED` |
 
 B2 comprises two ordinary commits, five changed files, 15/15 registered acceptance cases, 31/31 migration tests, and 1130/1130 full tests. Its integration-only checkpoint commit is bound to a final exact-head CI receipt after ordinary push.

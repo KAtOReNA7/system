@@ -124,6 +124,9 @@ jobs:
       - name: B3 safe-cache and provider-boundary validation
         run: npm run test:m2-v2:b3-safe-cache-provider
 
+      - name: B4 event tuple and conflict applicability validation
+        run: npm run test:m2-v2:b4-event-tuple
+
       - name: Independent workbook verification
         run: npm run test:m2-v2:workbook-verifier
 
@@ -251,6 +254,9 @@ jobs:
 
       - name: B3 safe-cache and provider-boundary validation
         run: npm run test:m2-v2:b3-safe-cache-provider
+
+      - name: B4 event tuple and conflict applicability validation
+        run: npm run test:m2-v2:b4-event-tuple
 
       - name: Independent workbook verification
         run: npm run test:m2-v2:workbook-verifier

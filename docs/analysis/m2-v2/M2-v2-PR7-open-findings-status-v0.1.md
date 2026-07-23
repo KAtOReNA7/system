@@ -31,7 +31,7 @@ This overlay records the current S1 phased-remediation boundary. It does not sup
 
 B2 comprises two ordinary commits, five changed files, 15/15 registered acceptance cases, 31/31 migration tests, and 1130/1130 full tests. The integration-only checkpoint commit is bound separately to its final exact-head CI receipt and the live PR body.
 
-B3 implements exact safe-cache projections, a provider-free deterministic v0.3 candidate migration, and one-shot lowest-sink provider capabilities with all legacy routes retired. It covers 18/18 planning cases plus 3 bounded adjacent cases; no current promotion or external access occurred. B4 was explicitly authorized on 2026-07-23 and is now in progress; no B4 finding has been marked candidate-closed at entry.
+B3 implements exact safe-cache projections, a provider-free deterministic v0.3 candidate migration, and one-shot lowest-sink provider capabilities with all legacy routes retired. It covers 18/18 planning cases plus 3 bounded adjacent cases; no current promotion or external access occurred. B4 was explicitly authorized on 2026-07-23; its event tuple implementation covers 16/16 frozen cases and is pending exact-head CI. No B4 finding is candidate-closed yet.
 
 ## Finding candidate-status rows
 
