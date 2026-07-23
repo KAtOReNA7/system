@@ -116,7 +116,7 @@ test("synthetic preflight proves formal route state and future invariance withou
   assert.ok(
     [
       "named_branch",
-      "synthetic_m2_development_branch",
+      "synthetic_repository_development_branch",
       "clean_local_main",
       "trusted_pr_head",
       "trusted_pr_merge_ref",

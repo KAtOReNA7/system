@@ -1,0 +1,117 @@
+{
+  "schemaVersion": "m2-v2-current-state-index-v0.5",
+  "classification": "public_sanitized_not_for_formal_decision",
+  "updatedAt": "2026-07-24",
+  "purpose": "current_repository_governance_portable_development_and_m2_direction",
+  "supersedesGovernanceIndex": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.4.md",
+  "cryptographicAuthority": {
+    "preserved": true,
+    "schemaVersion": "m2-v2-current-state-index-v0.3",
+    "path": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.3.json",
+    "reason": "PR7 immutable verifier binding remains unchanged"
+  },
+  "repositoryLifecycle": {
+    "mainBaselineBeforePortableCloseout": "b5b9b6f6737b83c59a9e5c5ba53a02fe96833b80",
+    "pr7": {
+      "state": "MERGED",
+      "mergeCommit": "91dee993058d80ab36085ec0d3176b7ad154527e",
+      "branchDeleted": true
+    },
+    "pr8": {
+      "state": "MERGED",
+      "mergeCommit": "3b47cf583a4e737f45500d405cb4e7380f6a747d",
+      "branchDeleted": true
+    },
+    "pr9": {
+      "state": "MERGED",
+      "mergeCommit": "b5b9b6f6737b83c59a9e5c5ba53a02fe96833b80",
+      "branchDeleted": true
+    },
+    "openPullRequestsAtAudit": 0,
+    "activeLongLivedBranch": "main"
+  },
+  "portableDevelopment": {
+    "corePrivateIndependent": true,
+    "node": ">=24 <25",
+    "npm": "11.13.0",
+    "python": ">=3.11 <3.14",
+    "referenceAndCiPython": "3.13",
+    "formalStartPrivateIndependent": true,
+    "fixtureStartPrivateIndependent": true,
+    "missingS1PrivateAuthenticityBlocksCoreDevelopment": false,
+    "baselineMainFreshClonePublicBaselineVerified": true,
+    "portableCloseoutExactCommitFreshClone": "PENDING_POST_COMMIT_VALIDATION",
+    "continuousCommands": [
+      "npm run doctor:dev",
+      "npm run check:no-real-data",
+      "npm run lint",
+      "npm run build",
+      "npm test",
+      "npm run smoke",
+      "npm run smoke:portable-start",
+      "npm run test:e2e",
+      "npm run verify:m2:current"
+    ]
+  },
+  "repositoryConvergence": {
+    "trackedFilesAtAudit": 1699,
+    "exactDuplicateTrackedBlobGroupsAtAudit": 0,
+    "exactPackageScriptAliasGroupsAtAudit": 0,
+    "formalFixtureCompositionSeparated": true,
+    "formalExportPointOnly": true,
+    "commandLifecycleRegistry": "config/command-lifecycle.v0.1.json",
+    "commandLifecycle": {
+      "currentPublic": 20,
+      "archiveOnly": 182,
+      "restrictedLocal": 49,
+      "historyDispatcher": 1
+    },
+    "lineEndingPolicy": ".gitattributes"
+  },
+  "m2CurrentDiagnostic": {
+    "status": "BASELINE_ONLY_BLOCKED",
+    "source": "public_aggregate_evidence_only",
+    "authoritativeWorks": 3053,
+    "modelWorks": 824,
+    "formalCashCases": 7851,
+    "modelWorkShare": 0.2698984605,
+    "forecastableCashCoverage": 0.7396468495,
+    "top10Coverage": 0.759412528,
+    "requiredCoverage": 0.9,
+    "b4": {
+      "wape": 0.55648454,
+      "signedBias": 0.08911106,
+      "role": "comparator_fallback"
+    },
+    "c3a": {
+      "wape": 0.553945169,
+      "signedBias": 0.08273913,
+      "decision": "FAIL"
+    },
+    "directionAssessment": {
+      "businessProblemWrong": false,
+      "governanceWrong": false,
+      "historicalEngineeringSequenceDrifted": true,
+      "currentDirection": "coverage_and_failure_slices_before_constrained_candidate_comparison"
+    }
+  },
+  "currentDecision": "CANARY_FAIL",
+  "nextDevelopmentReadiness": "NOT_AUTHORIZED",
+  "authorizations": {
+    "provider": false,
+    "database": false,
+    "canary": false,
+    "full160": false,
+    "modelTraining": false,
+    "finalHoldout": false,
+    "release": false,
+    "m3Formal": false
+  },
+  "currentHumanAndAgentEntryPoints": [
+    "README.md",
+    "AGENTS.md",
+    "NEXT-CODEX-INSTRUCTION.md",
+    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.5.md",
+    "docs/analysis/m2-v2/M2-repository-code-convergence-and-portable-development-audit-v0.4.md"
+  ]
+}

@@ -123,8 +123,16 @@ function evaluateTool(tool, toolProbe) {
   }
   const version = parseVersion(probed.versionText);
   let compatible = true;
+  if (tool.exactVersion !== undefined) {
+    const exactVersion = parseVersion(tool.exactVersion);
+    compatible = version !== null
+      && exactVersion !== null
+      && version.major === exactVersion.major
+      && version.minor === exactVersion.minor
+      && version.patch === exactVersion.patch;
+  }
   if (tool.minimumMajor !== undefined) {
-    compatible = version !== null && version.major >= tool.minimumMajor;
+    compatible = compatible && version !== null && version.major >= tool.minimumMajor;
   }
   if (
     compatible
@@ -162,6 +170,7 @@ function evaluateTool(tool, toolProbe) {
       ? `${version.major}.${version.minor}.${version.patch}`
       : probed.versionText || "unknown",
     recommended: tool.recommended ?? tool.recommendedMajor ?? null,
+    required: tool.exactVersion ?? null,
   };
 }
 

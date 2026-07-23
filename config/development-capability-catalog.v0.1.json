@@ -20,13 +20,16 @@
         {
           "id": "node",
           "runtime": "node",
-          "minimumMajor": 20,
+          "minimumMajor": 24,
+          "maximumMajor": 24,
           "recommendedMajor": 24
         },
         {
           "id": "npm",
           "command": "npm",
-          "versionArgs": ["--version"]
+          "versionArgs": ["--version"],
+          "exactVersion": "11.13.0",
+          "recommended": "11.13.0"
         },
         {
           "id": "python",

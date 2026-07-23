@@ -20,7 +20,11 @@ const CATALOG_PATH = path.join(
 const catalog = loadCapabilityCatalog(CATALOG_PATH);
 const availableToolProbe = (tool) => ({
   present: true,
-  versionText: tool.id === "python" ? "Python 3.13.0" : "24.0.0",
+  versionText: tool.id === "python"
+    ? "Python 3.13.0"
+    : tool.id === "npm"
+      ? "11.13.0"
+      : "24.0.0",
 });
 
 test("catalog defines one private-free core capability and scoped private capabilities", () => {
@@ -36,12 +40,55 @@ test("catalog defines one private-free core capability and scoped private capabi
   );
   const core = catalog.capabilities.find((capability) => capability.id === "core-dev");
   const s1 = catalog.capabilities.find((capability) => capability.id === "m2-pr7-s1");
+  const nodeTool = core.requiredTools.find((tool) => tool.id === "node");
+  const npmTool = core.requiredTools.find((tool) => tool.id === "npm");
   assert.deepEqual(core.requiredPrivateArtifacts, []);
+  assert.equal(nodeTool.minimumMajor, 24);
+  assert.equal(nodeTool.maximumMajor, 24);
+  assert.equal(npmTool.exactVersion, "11.13.0");
   assert.equal(s1.privateBundle.payloadFileCount, 9);
   assert.equal(s1.privateBundle.environmentIncluded, false);
   assert.equal(s1.privateBundle.providerCredentialsIncluded, false);
   assert.equal(s1.privateBundle.databaseCredentialsIncluded, false);
   assert.equal(catalog.principles.missingPrivateArtifactsBlockOnlyOwningCapability, true);
+});
+
+test("core doctor rejects Node and npm versions outside the repository contract", () => {
+  const result = evaluateCapability(catalog, "core-dev", {
+    repoRoot: REPO_ROOT,
+    artifactExists: () => false,
+    toolProbe: (tool) => ({
+      present: true,
+      versionText: tool.id === "node"
+        ? "v20.19.0"
+        : tool.id === "npm"
+          ? "10.8.2"
+          : tool.id === "python"
+            ? "Python 3.13.0"
+            : "2.54.0",
+    }),
+  });
+
+  assert.equal(result.status, "BLOCKED_MISSING_OR_INCOMPATIBLE_TOOL");
+  assert.deepEqual(result.unavailableTools, ["node", "npm"]);
+});
+
+test("core doctor enforces the exact npm patch version", () => {
+  const result = evaluateCapability(catalog, "core-dev", {
+    repoRoot: REPO_ROOT,
+    artifactExists: () => false,
+    toolProbe: (tool) => ({
+      present: true,
+      versionText: tool.id === "npm"
+        ? "11.13.1"
+        : tool.id === "python"
+          ? "Python 3.13.0"
+          : "24.0.0",
+    }),
+  });
+
+  assert.equal(result.status, "BLOCKED_MISSING_OR_INCOMPATIBLE_TOOL");
+  assert.deepEqual(result.unavailableTools, ["npm"]);
 });
 
 test("core development stays ready without probing any private path", () => {

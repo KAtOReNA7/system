@@ -64,6 +64,7 @@ test("package scripts use distinct lint/build contracts and registry test entryp
 
   assert.notEqual(packageJson.scripts.lint, packageJson.scripts.build);
   assert.match(packageJson.scripts.lint, /check-package-scripts\.mjs/);
+  assert.match(packageJson.scripts.lint, /check-command-lifecycle\.mjs/);
   assert.match(packageJson.scripts.build, /check-build\.mjs/);
   assert.equal(
     packageJson.scripts.test,
@@ -106,13 +107,20 @@ test("all package Python commands use the repository launcher", () => {
 
 test("Node, Python and CI analysis dependencies are explicitly pinned", () => {
   const packageJson = readJson("package.json");
+  const capabilityCatalog = readJson("config/development-capability-catalog.v0.1.json");
   const workflow = readFileSync(".github/workflows/ci.yml", "utf8");
   const requirements = readFileSync("requirements-ci.txt", "utf8")
     .trim()
     .split(/\r?\n/);
 
   assert.equal(packageJson.engines.node, ">=24 <25");
-  assert.match(packageJson.packageManager, /^npm@11\./);
+  assert.equal(packageJson.packageManager, "npm@11.13.0");
+  const coreCapability = capabilityCatalog.capabilities.find(({ id }) => id === "core-dev");
+  const nodeTool = coreCapability.requiredTools.find(({ id }) => id === "node");
+  const npmTool = coreCapability.requiredTools.find(({ id }) => id === "npm");
+  assert.equal(nodeTool.minimumMajor, 24);
+  assert.equal(nodeTool.maximumMajor, 24);
+  assert.equal(npmTool.exactVersion, "11.13.0");
   assert.equal(readFileSync(".nvmrc", "utf8").trim(), "24");
   assert.equal(readFileSync(".python-version", "utf8").trim(), "3.13");
   assert.deepEqual(requirements, [
@@ -123,9 +131,54 @@ test("Node, Python and CI analysis dependencies are explicitly pinned", () => {
   assert.match(workflow, /node-version: 24/g);
   assert.match(workflow, /python-version: "3\.13"/g);
   assert.equal(
+    workflow.match(/npm install --global npm@11\.13\.0/g)?.length,
+    2
+  );
+  assert.equal(
+    workflow.match(/npm run doctor:dev/g)?.length,
+    2
+  );
+  assert.equal(
+    workflow.match(/npm run smoke:portable-start/g)?.length,
+    2
+  );
+  assert.equal(
+    workflow.match(/npm run verify:m2:current/g)?.length,
+    2
+  );
+  assert.equal(
     workflow.match(/-r requirements-ci\.txt/g)?.length,
     2
   );
+  const attributes = readFileSync(".gitattributes", "utf8");
+  for (const rule of [
+    "*.js text eol=lf",
+    "*.mjs text eol=lf",
+    "*.json text eol=lf",
+    "*.py text eol=lf",
+    "*.yml text eol=lf",
+    "*.ps1 text eol=lf",
+  ]) {
+    const escapedRule = rule.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    assert.match(attributes, new RegExp(`^${escapedRule}$`, "m"));
+  }
+});
+
+test("package command lifecycle separates current, archive, and restricted entrypoints", () => {
+  const result = JSON.parse(
+    execFileSync(
+      process.execPath,
+      ["tools/node/check-command-lifecycle.mjs", "--json"],
+      { encoding: "utf8", windowsHide: true }
+    )
+  );
+
+  assert.equal(result.status, "PASS");
+  assert.equal(result.scriptCount, result.classifiedCount);
+  assert.ok(result.counts["current-public"] >= 20);
+  assert.ok(result.counts["archive-only"] > result.counts["current-public"]);
+  assert.ok(result.counts["restricted-local"] > 0);
+  assert.equal(result.counts["history-dispatcher"], 1);
 });
 
 test("build manifest imports public application composition without starting server", () => {

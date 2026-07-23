@@ -1,244 +1,132 @@
 # Codex 工作规则
 
-## 2026-07-24 PR #7 合并与全盘修正入口（当前最高优先）
+## 当前唯一入口
 
-- PR #7 已在独立 B8 复审、exact-head Linux/Windows CI 和用户明确授权后，以普通 merge 合入 `main`；merge commit 为 `91dee993058d80ab36085ec0d3176b7ad154527e`。旧开发分支 `codex/m2-v2-evidence-pilot-v1` 已在本地和远端删除。
-- 全盘复盘 v0.2 的工程修正由独立 PR #8 `codex/m2-repository-convergence-toolchain` 承载。当前已完成：Node/Python/npm 可移植工具链、全量 JS/MJS 清单、测试 registry、formal/fixture composition 分离、point-only formal export、80 份 migration 副本与 8 份文档副本退役、无语义 npm alias 收敛、冗余回归门禁，以及 public-only `m2-current` 诊断核心。
-- 当前导航为 `docs/analysis/m2-v2/M2-v2-current-state-index-v0.4.md` / `.json`；全盘复盘实施结论见 `docs/analysis/m2-v2/M2-repository-code-convergence-and-portable-development-audit-v0.3.md`。v0.3 cryptographic current-authority JSON 继续供 PR #7 verifier 使用，不得因治理索引升级而重写。
-- 用户已授权 PR #8 接受外部 review、mark ready 和普通 merge。Codex 应在当前工作树全量验证、远端双平台 CI 和可见 review 反馈处理完成后自动合并、同步 `main` 并删除活动分支，无需再次请求相同授权。
-- PR #7 合并和 PR #8 工程修正不改变业务结论：`currentDecision=CANARY_FAIL`、`nextDevelopmentReadiness=NOT_AUTHORIZED`、`full160Authorized=false`、`modelTrainingAuthorized=false`。provider、数据库、Canary/full160、训练、final holdout、release 和 M3 formal 均未获授权。
-- 公开核心开发必须 private-independent。新电脑执行 clone/pull、`npm ci`、`npm run doctor:dev`、lint、build、默认测试、smoke、`npm run verify:m2:current` 和 fixture 启动时，不得要求 `s1-source-evidence-authenticity-private-v0.1.json` 或任何 Git ignored private artifact。
-- 下方所有把 PR #7 描述为 Draft/open/unmerged、禁止 merge 或把 v0.2 作为唯一导航的段落，均是历史 checkpoint，仅供追溯；本节与用户最新明确指令优先。
-
-## 2026-07-24 PR #7 B8 独立复审闭环（历史 checkpoint）
-
-- 独立 reviewer 已对 exact HEAD `d2f92cd03bc9d82672676298d04daed765c4ce8a` 完成重复 B8 全量复审，结论为 `B8_PASS_ALL_FINDINGS_CLOSABLE`；reviewer 未参与修复实现且未修改仓库。
-- exact-head CI run `30034932174` 完整成功：Linux job `89300399550`、Windows job `89300399537`；B7 双平台并集覆盖 89/89，30/30 secondary-verifier-required cases 覆盖，zero fail/skip。
-- formal claimable readonly proof 已独立核验：canonical verifier 连续执行 2 次、`claimable=true`、140 个 scope specifications、145 个 observed members、三份 host-native snapshot 一致、`providerRequestDelta=0`、`databaseConnectionDelta=0`。
-- 10 项 finding 已由独立裁决允许迁移并通过版本化 successor 记录为 `CLOSED`；B0–B8 均为 `COMPLETE`。当前入口为 `docs/analysis/m2-v2/M2-v2-PR7-findings-closure-status-v0.2.md` 与 `M2-v2-PR7-B8-independent-closure-v0.1.md`。旧 open-findings、B6/B7 和首轮失败报告仅作历史证据，不得覆盖。
-- PR #7 必须继续保持 Draft/open/unmerged；不得 mark ready、merge 或 release。`currentDecision=CANARY_FAIL`、`nextDevelopmentReadiness=NOT_AUTHORIZED`、`mergeAuthorized=false`、`full160Authorized=false`、`modelTrainingAuthorized=false` 均保持不变。
-- 全盘审计的下一工程项是独立 cleanup/toolchain PR，但不得混入 PR #7。只有 PR #7 经外部 review 并明确获准合并、其 head 进入 `origin/main` 后，才可从更新后的 `main` 建立该独立 PR；在此之前只允许只读准备，不得新开同任务分支或把 cleanup 追加到当前分支。
-
-## 2026-07-24 PR #7 B8 首轮独立复审返工入口（当前最高优先）
-
-- B7 implementation exact HEAD `4663fce6b656a7269bb624b9e2d74629bab999df` 已通过 CI run `30032162656`：Linux job `89291086145` 为 87/87，Windows job `89291086079` 为 88/88，两平台并集覆盖 89/89，均为 zero fail/skip。
-- 首轮独立 B8 对上述 HEAD 的结论是 `B8_FAIL_REMEDIATION_REQUIRED`，不得迁移任何 finding 到 `CLOSED`。阻断项为 canonical verifier/current-authority reader 仍默认读取 predecessor authority，以及 B6 graph population 后尚未记录 formal claimable readonly proof。
-- 当前允许并要求自动完成 B7 closing correction：默认 closed binding 必须指向 B6 current pointer；无参 current-authority reader 必须选择 v0.3/v0.4 并验证 B6 graph/core commitment；legacy authority 只能显式历史重放，禁止自动 fallback。
-- clean exact HEAD 后必须运行 `npm run m2:v2:pr7:b8:readonly-proof`。该证明必须对 canonical `m2:v2:v2b8:verify` 连续执行两次，`claimable=true`、三次 host-native snapshot 一致、`providerRequestDelta=0`、`databaseConnectionDelta=0`、zero issue。详细 proof 仅写 Git ignored private output，不得提交。
-- correction 必须依次完成显式路径提交、普通 push、remote exact-head、Linux/Windows CI，再交给未参与实现的独立 reviewer 重做 B8。复审 PASS 前 10 项 finding 全部保持 `OPEN`。
-- 仍禁止 provider、数据库、Canary/full160、模型训练、holdout、mark ready、PR merge、release 与 M3 formal；`currentDecision=CANARY_FAIL`、`nextDevelopmentReadiness=NOT_AUTHORIZED` 不变。
-
-## 2026-07-24 PR #7 B5–B8 授权与执行入口（当前最高优先）
-
-- 用户已明确授权继续执行 B5、B6、B7，并授权启动 B8 独立复审。B6 已在 exact HEAD `3e79ce654cd335129005d3916f25f5bf8a2bef7d` 通过 run `30030360312` 的 Linux job `89285146244` 与 Windows job `89285146296`；B7 已完成本地全 registry 回归，Windows 88/88 原生案例、161 tests、zero skip，当前为 `REGRESSION_COMPLETE_PENDING_EXACT_HEAD_CI`，`currentBatch=B7`、`nextBatch=B8`。后续仍须完成 B7 原子提交、普通推送、remote exact-head 与 Linux/Windows CI，再由独立 reviewer 执行 B8。
-- B8 授权不取消独立性要求：实施 B0–B7 的同一代理不得自审后声明 finding `CLOSED`。B0–B7 的最高状态仍为 `CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW`；只有独立 B8 reviewer 可以给出复审结论。
-- B5 必须严格执行 OOXML/OPC v0.2 package-complete verifier 与 default required-artifact/zero-skip 策略。历史 private workbook 不得覆盖；若严格校验失败，只能在 B6 使用 immutable/append-only private 输入和确定性 generator 在受权的新 ignored output root 中生成 vNext。
-- B6 只允许 provider-free 离线重建、确定性 workbook vNext、derived authority recomputation 与原子 supersession；不得调用 provider、数据库、Canary/full160、训练、holdout 或 M3。
-- B7 必须执行完整 89-case registry、默认测试零 skip、只读/权威图/迁移/transport/workbook 全回归，并形成交给 B8 的脱敏审查包。
-- provider、数据库、Canary/full160、模型训练、holdout、mark ready、PR merge、release 与 M3 formal 仍未授权。B8 授权仅限独立复审，不授权合并或发布。
-- 技术 fail-closed 与任务流程停止必须分开：无效 private candidate 永远不得成为 current，恢复器必须回滚 pointer、隔离失败 transaction 并保持历史 immutable；但可安全回滚的 verifier 子门禁失败不再自动结束整轮任务。
-- 当失败后可以确认 current pointer 未改变或已完整恢复、`providerRequestDelta=0`、数据库连接与真实外部访问均为 0、authoritative source digest 未漂移时，Codex 必须自动定位具体子门禁、修正 canonical 实现、运行聚焦测试并从完整原子 promotion 重新执行；无需用户逐次重新授权或发送“继续”。
-- 只有出现以下重要事件才停止并请求用户介入：pointer/rollback 状态不明确或无法恢复、immutable/source evidence 摘要漂移、真实 provider/数据库/外部访问、`providerRequestDelta != 0`、remote drift/non-fast-forward、新依赖或原生平台验证不可用、workbook 无确定性路径，或继续修复必须改变业务结论/扩大到未授权阶段。普通的 schema/version/shape/digest-field 兼容错误不属于人工阻断。
+- PR #7、PR #8、PR #9 均已合入 `main`；已合并分支不得继续作为开发入口。
+- 当前仓库治理导航为：
+  - `docs/analysis/m2-v2/M2-v2-current-state-index-v0.5.md`
+  - `docs/analysis/m2-v2/M2-repository-code-convergence-and-portable-development-audit-v0.4.md`
+  - `docs/analysis/m2-current/M2-current-public-diagnostic-baseline-v0.1.md`
+- PR #7 cryptographic authority 继续由不可变的
+  `docs/analysis/m2-v2/M2-v2-current-state-index-v0.3.json` 提供；治理索引不得改写该绑定。
+- 历史 B0–B8、C1–C3、旧 PR 状态和旧授权记录只用于审计追溯，不是当前执行指令。
 
 ## 用户常驻协作要求（已固化，无需重复下达）
 
-- 本节汇总用户在历次任务中反复提出的仓库协作要求。后续用户只需说明本轮目标、业务选择和新增授权；无需再次要求“检查远端并同步、核对本地进度、清理过时分支、全库查重、评估方向、保护 private、运行验证或更新进度”。Codex 每次仓库任务都应自动执行这些基线动作。
-- 开始任务时先运行只读基线：`git fetch origin --prune`、工作区/当前分支/upstream/`origin/main`、ahead/behind、开放 PR、exact-head CI 和 worktree。工作区干净且仅可快进时才允许 `pull --ff-only`；发现 remote drift、non-fast-forward 或不明本地修改时先停止并报告。
-- 默认只维护 `main` 与一条当前活动开发分支；审查合并状态、独有提交和引用后，才可删除已合并、已替代或失效分支。不得自动 rebase、squash、amend、force push、触碰 stash，禁止 `git add .` 和 `git add -A`。
-- 实现前必须用 `rg` 检索入口、调用方、测试和已有 canonical 实现；同时检查失效代码、完全重复文件、平行 runtime/runner/adapter、重复 package scripts、产品与 fixture 边界、工具链复现性、默认测试覆盖及 CI 重复执行。先给出 predecessor/successor/退役门禁，再删除历史入口。
-- 每次进度审计都要区分“已实现”“已验证”“已授权”“可发布”：报告 exact HEAD、远端同步状态、CI、开放 finding、当前 batch/next batch、模型和业务 gate、private capability、禁止事项。历史报告和 development 结果不得被改称当前授权或正式发布结论。
-- 核心协作能力必须 private-independent：clone、`npm ci`、`npm run doctor:dev`、lint、build、公开/合成测试、smoke 和本地 fixture 启动不得依赖 Git ignored private artifact、provider key 或数据库。缺少 private 只阻断所属 capability；用 `npm run doctor:capability -- <capability-id>` 盘点，再按 canonical verifier 验证。
-- private 原始数据、receipt、派生产物、材料、密钥、连接串和 dump 禁止提交、伪造或从公开摘要反推。跨电脑恢复必须使用能力分包、加密、逐文件摘要校验和原子恢复；Git 只保存公开代码、schema、脱敏 commitment、恢复合同与 doctor。任何“文件存在”只表示库存存在，不等于真实性验证通过或执行获授权。
-- 修改完成后按本文件“验证规则”执行对应门禁，明确列出通过、失败和未运行项；不能用旧 CI、部分测试或 private 文件存在替代当前工作树验证。
-- 审计或清理请求本身不扩大业务授权。任何新 batch、provider、数据库、Canary/full160、模型训练、holdout、B8、mark ready、merge、release 或 M3 formal 都必须继续满足下方最新门禁和单独授权。
+以下要求适用于每次仓库任务。用户以后只需说明本轮目标、业务选择和新增授权，无需重复要求远端同步、进度核对、分支清理、全库查重、方向判断、private 隔离或基础验证。
 
-## 2026-07-23 分支与代码收敛规则（授权状态已被 2026-07-24 入口替代）
+1. 开始任务时自动执行只读基线：
+   - `git fetch origin --prune`
+   - 检查工作区、当前分支、upstream、`origin/main`、ahead/behind、开放 PR、CI 和 worktree
+   - 只有工作区干净且可快进时才允许 `pull --ff-only`
+2. 默认只维护 `main` 和一条当前活动分支。删除分支前必须确认已合并、无独有提交且不再被 PR/worktree 引用。
+3. 实现前使用 `rg` 检索入口、调用方、测试和 canonical 实现；检查失效代码、重复文件、平行 runtime/runner/adapter、重复 package scripts、产品/fixture 边界和 CI 重复。
+4. 进度报告必须区分“已实现、已验证、已授权、可发布”，并报告 exact HEAD、远端状态、CI、开放 finding、private capability 和业务 gate。
+5. 核心开发必须 private-independent。缺少 private 只能阻断所属 capability，不能阻断 clone、安装、lint、build、公共测试、smoke、公共 M2 诊断或本地服务器启动。
+6. 修改后按本文件验证规则运行门禁；不得以旧 CI、部分测试或 private 文件存在代替当前工作树验证。
+7. 审计、清理和代码整理不自动扩大 provider、数据库、训练、holdout、release 或 M3 formal 授权。
 
-- 默认只保留 `main` 和一条当前活动开发分支。PR #7 关闭或合并前，M2 的唯一活动分支是 `codex/m2-v2-evidence-pilot-v1`；B4–B7、文档同步、CI 修复、checkpoint 和同一 PR 的返工都继续使用该分支，禁止再建立同任务子分支。只有用户明确要求独立 PR，或现有分支确实无法安全承载且已先说明原因和退出条件时，才允许新建分支。
-- 每次开始仓库任务时，Codex 自动执行远端获取和状态核对，不再要求用户重复给出 Git 命令：至少检查工作区、当前分支、upstream、`origin/main`、ahead/behind、开放 PR 和 worktree；使用 `git fetch origin --prune` 获取引用，只有在工作区干净且可快进时才 `ff-only` 同步。禁止为了“同步”而自动 rebase、squash、force push 或制造额外 merge。
-- 同一时间只保留一个 M2 开放 PR。PR 合并并确认其 head 已进入 `origin/main` 后，应在同一收尾任务中删除对应本地和远端开发分支，并清理已经失效的 worktree 登记；不得把已合并分支继续当作开发入口。未合并分支只有在逐项核对独有提交和文件差异、确认已被替代或不再适用并留下通俗说明后，才可舍弃。
-- 分支治理、同步和代码整理不扩大业务授权。当前 PR #7 仍是 Draft/open/unmerged；本条所记录的 B4-only 授权已被上方 2026-07-24 B5–B8 授权入口替代。provider、数据库、Canary/full160、模型训练、holdout、mark ready、PR merge、release 和 M3 仍不能因“减少分支”而自动执行。
-- 新增实现前必须先用 `rg` 检索现有入口、调用方和测试。provider transport、extraction normalization、source governance、request ledger、safe cache、authority/current state、workbook verification、路径与摘要校验等同一职责只能有一个 canonical 可执行实现；新代码默认扩展该实现，不得复制成平行 runtime/provider/adapter。
-- 只有冻结 schema、不可变审计重放或兼容性边界确实要求时，才允许保留版本化实现。此时必须在 registry 或 current-authority 入口明确 predecessor、successor、canonical route 和退役条件；旧入口必须在同一批次删除、改为薄兼容层或明确变为 non-routable。历史报告、冻结合同和审计 fixture 可以保留，但不得继续充当当前 runtime authority。
-- 每个后续 M2 批次原则上不得增加同职责的可执行文件数量。若审计约束导致暂时无法减少，必须在批次说明中列出重复点、保留理由、唯一当前入口和下一删除节点；禁止以新增版本文件代替修改 canonical 实现。
-- PR 准备合并前必须同时报告：分支相对 `origin/main` 的状态、开放 finding/门禁、重复实现检查、被删除或退役的入口、仍保留的历史文件及原因，以及规定验证结果。没有这些证据不得把 PR 标为 ready 或请求合并。
+## 多电脑开发基线
 
-## 2026-07-20 PR #7 S1 分层修复入口（历史入口，授权状态已被 2026-07-24 入口替代）
+新电脑只依赖 GitHub 中的公开仓库内容和明确的工具链，不依赖任何 Git ignored private artifact：
 
-- 7 项 S0 开发支持基线已在 exact HEAD `badbf453e1e99ba87cc3064601e480a09ff1b149` 完成并通过 Linux/Windows CI；`supportSharpeningStopCriteriaReached=true`。
-- 用户已单独授权在 `codex/m2-v2-evidence-pilot-v1` 上实施 PR #7 的 B0–B7 分层 S1 修复。B3 closing correction 已在 exact remote HEAD `a945ed3a22fbc86e8ca381db9124fc0927461ec7` 完成。用户于 2026-07-23 明确启动的 B4 已在 implementation exact HEAD `65bee39e012e013d4e4347076fc24757f7bcc9f9` 完成；CI run `30021984333` 的 Linux job `89256777608` 与 Windows job `89256777664` 均成功。本条的 B4/B5 授权状态是历史快照；当前批次与授权以最上方 2026-07-24 入口为准。
-- B3 correction 已强制 preflight/local validation 显式传入 `--batch-id`，Linux/Windows CI 均绑定 `--batch-id=B3`；canonical command 为 `npm run test:m2-v2:b3-safe-cache-provider`，B3 registry 21/21、canonical tests 35/35、default skips 0，`providerRequestDelta=0`、数据库连接 0、真实外部访问 0、产品 runtime 变更 0。
-- B4 直接扩展唯一 canonical `src/domain/m2V2EvidencePilot/v2b8Stability.js`，没有新增平行 runtime；canonical command 为 `npm run test:m2-v2:b4-event-tuple`，16/16 frozen cases、52/52 canonical tests、default skips 0，`providerRequestDelta=0`、数据库连接 0、真实外部访问 0。`PR7-P1-009` 与 `PR7-P2-013` 仍为 `OPEN`，仅达到 `CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW`；v0.4 event/evaluation 合同仍为 `PROPOSED_NOT_CURRENT`，未做 current restatement promotion。
-- open-finding 状态以 `docs/analysis/m2-v2/M2-v2-PR7-open-findings-status-v0.1.md` 为增量 overlay：5 个 P1 与 5 个直接耦合 P2 当前仍全部 `OPEN`。B0–B7 最多只能形成 `CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW`，不得由本代理执行 B8 或声明 `CLOSED`。
-- 本轮允许按附件冻结的范围修改 `src/domain/m2V2EvidencePilot/**`、配套测试、合同、CI 与公开治理文档，并在 B6 进行 provider-free 离线重建和原子 supersession；历史/private immutable 产物不得覆盖。
-- 禁止 provider、数据库、Canary/full160、模型训练、holdout、B8、mark ready、PR merge 或 release。`currentDecision=CANARY_FAIL`、`mergeAuthorized=false`、`full160Authorized=false`、`modelTrainingAuthorized=false`、`nextDevelopmentReadiness=NOT_AUTHORIZED` 保持不变，除非 B6 的版本化离线重算真实得出不同 current decision；即便变化也不自动授权下游阶段。
-- 禁止 rebase、squash、amend、force push、`git add .`、`git add -A` 或触碰 stash。任一 source evidence 摘要不一致、remote drift、non-fast-forward、真实外部访问、新依赖需求、原生平台验证不可用、workbook 无确定性路径、private promotion 回滚/指针状态不明确或 `providerRequestDelta != 0` 都必须立即停止并输出 `BLOCKED`。已确认完整回滚且无外部副作用的 verifier 子门禁失败按上方 2026-07-24 自动修复与重试规则继续处理。
+```bash
+git clone <repository-url>
+cd system
+npm ci
+npm run doctor:dev
+npm run check:no-real-data
+npm run lint
+npm run build
+npm test
+npm run smoke
+npm run smoke:portable-start
+npm run verify:m2:current
+```
 
-## 2026-07-18 M2 v2 完整性修复入口（最高优先）
+工具链合同：
 
-- V2-A 已完成；V2-B.1 至 V2-B.8 均是历史 checkpoint。V2-B.8 Canary v3.1 原始业务结论保持 `CANARY_CONDITIONAL`；修复合同的离线 restatement 当前结论为 `CANARY_FAIL`，`full160Authorized=false`。
-- verifier 只读/幂等、receipt/cache/state/counter 原子绑定、B8 合同缺口修复、从既有 immutable/append-only 材料离线恢复 private derived state 以及完整性复审已经收口。public 结论以版本化 remediation summary 与 restatement 为准，审计细节以 Git ignored private audit v0.2 和 PR roundtrip receipt 为准。
-- 禁止任何外部 provider 请求，禁止 Canary/run/resume/full160、模型训练、B4/formal-cash 修改、holdout、V2-C/V2-D、C4、M3 formal、release 或 PR merge。
-- 当前导航以 `docs/analysis/m2-v2/M2-v2-current-state-index-v0.2.md` 为准。历史报告不得删除或静默覆盖，也不得作为新授权。
-- `nextDevelopmentReadiness=NOT_AUTHORIZED`。必须停在 Draft/open/unmerged PR #7，等待用户安排外部审查；不得把修复完成解释为下一阶段授权。
+- Node：24.x
+- npm：11.13.0
+- Python：3.11–3.13；reference/CI 为 3.13
+- GitHub CI：Linux 与 Windows 均使用相同公共门禁
 
-## 当前模式
+`npm start` 启动 formal composition；`npm run start:fixture` 启动 synthetic fixture composition。两者在无 private、无数据库条件下都必须能启动并通过 `/health`。
 
-项目从 2026-06-22 起进入 **authorized local real-data development mode**。
+## Private capability 边界
 
-本地开发允许：
+- `data/private-input/**`、`data/private-output/**`、原始账单、台账、材料、private receipt/workbook、密钥、连接串、dump、`.env` 和 `.pgpass` 禁止提交。
+- 禁止伪造 private 文件、从公开聚合摘要反推 private 内容或降低真实性 verifier。
+- 使用 `npm run doctor:capability -- <capability-id>` 盘点能力；文件存在只表示库存存在，不等于真实性通过或执行获授权。
+- `s1-source-evidence-authenticity-private-v0.1.json` 只属于已退役 PR #7 的历史审计 capability。缺少它不得影响核心开发。
+- 必须跨电脑恢复受控 private capability 时，只能使用 capability-scoped 加密包、逐文件摘要和原子恢复；环境变量、provider key 和数据库凭据不得进入包。
+- M3 private completion pack 继续保持 Git ignored。缺少 3–5 份用户材料时必须停止该 capability，不得制造材料或补全值。
 
-- 读取用户提供的本地真实数据，包括 `data/**`。
-- 使用本地开发数据库和本地 Docker/PostgreSQL。
-- 为本地开发新增或修改 `db/migrations/`。
-- 在本地执行 migration、导入、严格对账、回测和算法校准。
+## 命令生命周期
 
-本地真实数据开发结果不自动等于正式发布审批结果。
+`config/command-lifecycle.v0.1.json` 是 package scripts 生命周期的 canonical registry：
 
-## 2026-07-17 M2 v2 历史入口（已被上方 2026-07-18 入口替代）
+- `current-public`：普通新开发和持续集成可以使用。
+- `archive-only`：仅用于历史审计重放，不是新开发模板，不授予任何业务权限。
+- `restricted-local`：需要所属 private/local capability 和单独授权。
+- 历史命令因不可变审计兼容继续保留；人工需要历史重放时使用：
 
-- C1、legacy C2-R、C2-R.1、C2、C3 均已完成 development 且结论为 `FAIL`；禁止重复进入 C3。
-- C3-A overall WAPE 0.55394517、signed bias +0.08273913，`modelQualityDecision=FAIL`、`businessCoverageDecision=CONDITIONAL`；B4 继续作为 comparator/fallback，未获 release 批准。
-- final holdout、embargo shadow、deferred 60-month labels 均 sealed；所有结果 `not_for_formal_decision`，未进入 C4 或 M3，未 release。
-- M2 Forecast Intelligence v2 V2-A 架构合同已完成并进入 checkpoint：五头 PRD、字段字典、External Evidence、Human Baseline、API/DB/export、JSON Schema、traceability 和 manifest。
-- V2-B 已按固定 seed 从 3053 部权威人口冻结 160 部 private immutable 样本；最终 manifest digest 为 `f85308436328bd056e27025407f45aa840cd5cc07e4e7ad9fe0eec4a2d8a3020`，全部预注册 effective target 达成。检索前 sampler aggregate QA 曾修正持续 stress bonus；旧 attempt 私下保留，修正前 provider dispatch/search result 均为 0，最终 manifest 禁止再次更换。
-- 当前无授权 runtime provider 凭证且 source allowlist 没有经条款/法律批准的域名；V2-B 因而 fail-closed 为 `blocked_no_provider`：640 个计划 query、0 dispatch、0 result、0 page、0 evidence，resume 为 640/640 cache hit。17/17 安全/审计硬门通过，但 usability 未验证，结论 `PILOT_CONDITIONAL`、V2-C readiness=`NOT_READY`。
-- 不得要求运营逐作品补外部信息。下一步只允许 provider/source governance 后在同一 manifest 上 resume；不得把 0 evidence 表述为没有外部信号，不得进入 V2-C/V2-D/C4/M3。
-- V2-B private manifest、query log、receipt、evidence、review pack 与 cache 只能写入 Git 忽略的 `data/private-output/m2-v2-evidence-pilot/`，禁止提交。
-- V2-B 公开证据见 `docs/analysis/m2-v2/M2-v2-evidence-pilot-summary-v0.1.md`、`M2-v2-evidence-pilot-gate-v0.1.json` 和 `M2-v2-evidence-pilot-next-step-v0.1.md`；所有结果仍 `not_for_formal_decision`，未训练模型、未改变 B4、未打开任何 seal、未 release。
+```bash
+npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
+```
 
-## 当前项目状态快照
+不得复制历史 runner 创建新的平行路线。新 M2 实现必须扩展 `src/domain/m2Current/**` 的 canonical core。
 
-- 远端 `main` 已包含 M1/M2 本地开发 checkpoint：dual-source limited local staging、M2 v1.1 conditional forecastability、收入模式识别、货架/版权状态推断、rating-standard-v3 单一前台评级、风险/复核提示和自动运营建议主输出移除。
-- M1 dual-source staging 是文件级本地 staging，不写正式主数据，不等于正式主数据验收完成。
-- 用户已于 2026-07-13 明确拒绝 M2 v1.1 conditional 作为最终上线预测算法；该版本只能作为历史校准证据，不得 release，也不得作为 M3 输入。rating-standard-v3 仍是当前评级边界，但不改变预测算法被拒绝的事实。
-- 2026-07-08 本地五源重清洗已完成：账单、数字版权台账、原创全库、原创全库2、授权汇总台账、授权关系仪表板合并后，作者、版权开始、版权到期三个核心字段已形成本地文件级 staging 候选。该候选覆盖 3053 个账单作品、9159 个核心字段，其中 8729 个字段为高置信直接通过，430 个字段为用户确认填写；仍未写正式主数据，private 输出不进入版本控制。
-- 2026-07-09 状态类字段已完成本地文件级 staging：作品状态和音频版权状态覆盖 3053 个账单作品、6106 个状态字段；作品状态分布为已上架 2410、已下架 643；音频版权状态分布为版权有效 2238、无限期 487、版权已到期 328。该结果仍未写正式主数据。
-- 2026-07-10 分类树和辅助标签口径已更新：历史三级分类新增先秦、汉、三国、南北朝、隋、唐、五代十国、宋、元、明、清、近代史；辅助标签新增国家组，仍与一级、二级、三级分类分开管理。
-- 用户已完成分类与辅助标签人工核对：257 部人工分类和 51 部辅助标签核对均已应用到本地文件级 staging。3053 部作品分类路径全部有效，其中系统自动 2796 部、用户确认 257 部；正式主数据仍未写入。
-- 用户已完成 19 条国家标签核对：采用 6 条、不采用 13 条；当前本地辅助标签结果覆盖 57 部作品、127 个标签赋值。
-- 作者、版权开始、版权到期、作品状态和音频版权状态已按用户确认口径完成本地文件级 staging 收口，不再进入当前人工补表；历史基础字段补表入口已废弃，禁止继续使用。
-- 用户已完成并明确确认分类与标签最终基础大表，覆盖 3053 部作品，出版物 1195、网文 1858，分类与标签人工缺口为 0。private 明细不进入版本控制。
-- 最终大表相对系统预填基线修正 836 部作品，固定 387 部作品、532 个辅助标签赋值；新增科普、教辅、诗歌和 11 个辅助标签已进入受控词表 `2026-07-10-user-confirmed-v2`。
-- 用户已确认表中 2 个作者显示变化属于误操作；系统已恢复此前已收口作者值，未进入固定结果，也不会进入提交。当前没有作者人工待办，禁止据此重开全量作者补表。
-- 2026-07-10 已完成 3054/3053 范围对账：1 个账单独有身份是已确认标准作品的历史分册，已在内存中归并；192872 行账单和收入金额全部保留，账单/基础表/评估范围均为 3053 部。
-- 最终基础表重算后，收入模式为纯实销 2578、纯买断 287、买断+实销 183、unknown 5；前台评级为 S+ 38、S 117、A 84、B 358、C 152、D 356、E 1948，无意外回归。
-- 按 Excel 底层完整金额精度重算，到期但仍有收入复核桶为 146，版权有效但收入稀疏复核桶为 92；用户已完成全部 238 条确认，系统已校验并应用，待确认数为 0。
-- 逐作品 private 正式基础信息输入覆盖 3053 部并通过内容契约；当前作品状态为已上架 2298、已下架 755，音频版权状态为版权有效 2250、无限期 473、版权已到期 330。238 条用户决定全部通过，保留 139 条事实型复核提示。
-- 2026-07-13 已在隔离本地 PostgreSQL 16 执行 Flyway `0071.020`，完成 3053 部正式基础信息版本、192872 条收入事实/projection、active mapping、3053 条 evaluation/input snapshot、task/audit 和 prepared export；严格对账全部通过，运营建议数为 0。
-- v1.1 仍是 `CONDITIONAL PASS`：WAPE 0.6409、baseline 0.7043、coverage 0.5769、P0/P1/P2=0/0/473、可预测收入覆盖 0.7788、true blocked 收入占比 0.2038。算法仍 `is_formal=false`，export 仍 `prepared`，最终 release 未批准。
-- 用户已拒绝上述 v1.1 conditional 和 prepared export；禁止后续 Codex 自动批准、release 或通过改写状态绕过该决定。
-- 2026-07-15 `calibration-spec-v1.2-amendment` 已修正 baseline 身份和比较规则：faithful B0b 是旧 v1.1 Model E（A/B/C/D selector）的无泄漏、as-of、route-aware 重放；此前误称 B0b 的切换公式现命名为 `B4_formula_switched_legacy_variant`。B0a 仍只作历史审计，不能参与选择。
-- v1.2 development replay 中每个 baseline 均为 18615 个 case，其中 statistically scoreable 12223、覆盖 1044/3053 部作品；所有 scoreable case 均保留 raw prediction，abstained 的 served prediction 为 null，`zeroImputationUsed=false`。
-- v1.2 all-scoreable WAPE / signed bias 为：faithful B0b 1.6996 / +1.1024，B1 1.9022 / +1.4794，B2 1.8640 / +1.4497，B3 1.6995 / +1.2348，B4 1.6666 / +1.1961；所有 baseline 均未通过最终候选 bias gate。
-- practical-equivalence 已由旧 OR 规则改为四项严格 AND：WAPE 相对差绝对值不超过 1%、paired work×origin block-bootstrap 95% CI 完整落在 [-1%, +1%]、signed bias 差不超过 2 个百分点、top10 与各核心 horizon 回退不超过 2%。按该规则仅 B4 与经验 leader 等价，primary performance comparator 锁定为 B4；B1、B3 与 faithful B0b 继续组成固定 comparator bundle。
-- 完整人口报告以 3053 部作品和 192872 条权威收入事实为范围，以截至 2026-04 的 192869 条完整月事实计算非重叠全库收入覆盖：scoreable 1044 部、历史 unscoreable 2009 部；小样本继续互补抑制，完整总量分母不抑制。
-- v1.2 重放已证明 B0b/B1/B2/B3/B4 全部经同一 `predict_as_of` 入口重新 materialize，旧 checkpoint numeric point 只作锁后审计对账；case-key/actual/scoreable/raw prediction parity、future perturbation invariance、scoreable/served/abstention 契约与逐 fold prediction lock 均通过。公开 JSON/Markdown 不含作品或渠道标识、private 路径、原始行或 PI endpoints；scoreable/served 互补作品数小于 10 时，served 精确数量与收入覆盖做互补抑制。
-- Phase A comparator checkpoint `879fbd0a951ce6d465082321b38f965b14815935` 已正常 push；推送后的独立 runtime receipt 已复跑全套验证、核对真实远端 SHA 并重新计算 Gate A，全部条件为 true。该收据保持 Git 忽略且只授权本次 C1 development。
-- C1 transparent ensemble development 已按冻结的 8 个组件、148 个候选、nested expanding-origin 和 B4 primary comparator 完成。每个 outer origin 的 bias-feasible candidate 均为 0；前两个 origin 因 earlier-origin 证据不足使用预注册 fallback，后三个 origin 因没有 bias-feasible candidate 使用同一 fallback，未移动候选空间或阈值。
-- C1 在相同 18615/12223 case universe 上的 all-scoreable WAPE / signed bias 为 3.8502 / +3.5114，高价值 WAPE / bias 为 2.9538 / +2.7188，内部 80% coverage 为 0.8302；相对 B4 overall WAPE 回退 131.02%，paired work×origin bootstrap 相对差 95% CI 为 [0.0531, 4.5434]。19 项验收仅 coverage、P0=0、P1=0、P2 事实边界和无自动运营动作 5 项通过，结论明确为 `FAIL`。
-- C1 的 case-key/actual/state parity、raw/served/abstention、同一 `predict_as_of`、prediction lock、future perturbation、C1 自有 earlier-residual 区间和脱敏产物契约均通过；失败是模型质量失败，不是泄漏或计分失败。后续 legacy-target C2-R、formal-cash C2-R.1、C2 和 C3 均已完成且结论 `FAIL`；C3-A overall WAPE 0.55394517、signed bias +0.08273913。final holdout、embargo shadow 和 deferred 60-month labels 均未打开，所有结果保持 `not_for_formal_decision`。
-- 当前 3053 部基础信息、分类标签、状态、238 条业务决定和 192872 条收入事实是后续 M2 最终上线算法的权威输入。不得退回旧补表、旧 3054 口径或较早 private candidate 覆盖该版本。
-- M2 正式输出不再包含自动运营建议或资源投入动作；只允许风险和事实型复核提示。历史 fixture/prototype 建议字段不得进入当前正式结果、页面或导出。
-- 146 个到期仍有收入样本和 92 个版权有效但收入稀疏样本已经完成中文 private 确认、校验和应用；不得依据旧报告重新生成这些人工待办。
-- `data/private-output/**` 中的 private Excel/CSV/JSON 只供本地查看和用户填写，禁止提交。
-- 当前 `main` 保留 M3 parallel planning 边界、实施方案摘要与非正式 fixture/prototype 测试能力；不代表 M3 formal execution 已开始，也不包含正式 M3 发布能力。
-- 当前未进入 M3 formal execution；用户已明确暂缓 3 至 5 份代表性选题材料，待 M2 两类复核和正式链路彻底收口后再准备。M3 formal execution 仍需后续单独明确授权。
+## M2 当前方向
 
-## M2 正式现金目标校正（2026-07-15）
+- 正式目标继续是未来账单现金：未来实销现金，加 cutoff 时已签署、确认且可审计的未来现金承诺。
+- 未承诺未来买断、概率乘金额、历史买断摊销和 `buyoutMonthlyEquivalent` 不得进入正式现金预测。
+- `buyoutMonthlyEquivalent` 只允许作为 rating/historical context，并保持 `notCashForecast=true`。
+- 无 cutoff 承诺的 pure-buyout 必须 null abstain，禁止使用 0 或月均等效值冒充预测。
+- B4 只作 comparator/fallback，不是 release approval。
+- C1、legacy C2-R、C2-R.1、C2、C3 均为历史 development `FAIL`，不得重复进入或复制其 runner。
+- 当前公共诊断为 `BASELINE_ONLY_BLOCKED`：
+  - 3,053 部权威作品，824 部 model works，7,851 个 formal-cash cases
+  - 全库现金覆盖率 0.7396468495，Top10 覆盖率 0.759412528，门槛 0.90
+  - B4 WAPE/bias 0.55648454 / 0.08911106
+  - C3-A WAPE/bias 0.553945169 / 0.08273913，结论仍为 `FAIL`
+- 当前正确工程顺序是 coverage 和失败切片优先，再进行受约束候选比较；禁止继续优先堆叠 evidence runtime、历史 runner 或未经批准的模型复杂度。
 
-- 用户已冻结 M2 正式预测对象为未来账单现金：未来实销现金，加 cutoff 时已签署/确认且可审计的未来买断应收或其他已确认现金。未承诺未来买断、历史周期推测、概率乘金额、已到账买断摊销和 `buyoutMonthlyEquivalent` 均不得进入正式现金预测。
-- `buyoutMonthlyEquivalent` 只保留为历史价值和评级上下文，必须同时标记 `ratingContextOnly=true`、`historicalValueOnly=true`、`notCashForecast=true`、`notIncludedInFutureCashRevenue=true`。
-- 当前 3053 部/192872 条权威输入和 replay adapter 没有独立、可审计的 `cash_commitment_snapshots` as-of 数据角色。因此历史后来发生的买断不得回填成 cutoff 已承诺；纯买断无 cutoff 承诺时必须 route abstain，raw/served/future cash forecast 均为 null，禁止用 0 或月均等效值冒充预测。
-- formal-cash target correction 保持冻结的 18615/12223 development case universe、scoreability、business eligibility 和所有 seals 不变。scoreable 重叠 case-window 聚合为：`forecastableCashActual=82206415.70`、`uncommittedBuyoutSurpriseActual=5517115.15`、`totalLedgerCashActual=87723530.85`；466 个 case window 有正 surprise，占 total ledger cash 0.06289208。三套 actual 逐 case 和聚合守恒。
-- 旧目标到新目标桥接确认：旧目标 actual 为 80351261.34；pure-buyout case 改用正式现金口径后加入 2571419.36 forecastable cash，并移除 716265.00 legacy pure-buyout target，新减旧为 1855154.36。legacy-target C2-R 已完成但结论为 `FAIL`；旧结果只能作为历史目标口径证据，不能改称 formal-cash 指标，也不能在新目标 replay 前与 C2-R.1 直接比较。
-- `calibration-spec-c2r-v1.1-amendment`、正式现金内核、as-of 审计、三套 actual、桥接和自动测试已建立。formal-cash B0b/B1/B3/B4 replay 在共同 7851-case 模型人口上冻结 B4 为 primary；Gate B 在 Phase A checkpoint push 后 14/14 通过。C2-R.1、C2 与 C3 均已执行且 `FAIL`；全库/Top10 forecastable cash coverage 0.73964685/0.75941253，业务覆盖结论 `CONDITIONAL`。final holdout、embargo shadow、deferred 60-month labels 仍 sealed，状态保持 `not_for_formal_decision`，未 release，未进入 C4/M3。
+当前业务 gate 保持：
 
-证据文件：
+- `currentDecision=CANARY_FAIL`
+- `nextDevelopmentReadiness=NOT_AUTHORIZED`
+- `full160Authorized=false`
+- `modelTrainingAuthorized=false`
+- final holdout、embargo shadow、deferred labels 均 sealed
+- provider、远端/共享/staging-like 数据库、Canary/full160、训练、release、M3 formal 均未授权
 
-- `docs/analysis/m2-real-data/M2-formal-cash-forecast-target-decision-v1.md`
-- `src/domain/oldProductEvaluation/calibrationSpec.c2r.v1.1.amendment.json`
-- `docs/analysis/m2-real-data/M2-C2R1-formal-cash-target-separation-v1.md`
-- `docs/analysis/m2-real-data/M2-C2R1-buyout-commitment-as-of-audit-v1.md`
-- `docs/analysis/m2-real-data/M2-C2R1-old-target-new-target-bridge-v1.md`
-- `docs/analysis/m2-real-data/M2-C2R-legacy-target-supersession-v1.md`
-- `docs/analysis/m2-real-data/M2-formal-cash-comparator-replay-v1.md`
-- `docs/analysis/m2-real-data/M2-surprise-buyout-unique-impact-audit-v1.md`
-- `docs/analysis/m2-real-data/M2-calibration-gate-b-v1.json`
-- `docs/analysis/m2-real-data/M2-C2R1-development-validation-v1.md`
-- `src/domain/oldProductEvaluation/calibrationSpec.c2.v1.amendment.json`
-- `docs/analysis/m2-real-data/M2-calibration-gate-c-v1.json`
-- `docs/analysis/m2-real-data/M2-C2-development-validation-v1.md`
-- `docs/analysis/m2-real-data/M2-C2-model-quality-decision-v1.md`
-- `docs/analysis/m2-real-data/M2-C2-business-coverage-decision-v1.md`
+## Git 与提交规则
 
-## M2 后续补全信息提醒
-
-任何 M3 设计、实现或评估前，必须先提醒用户：M2 隔离本地正式执行已完成，旧 v1.1 conditional 已被用户拒绝；C1、legacy C2-R、C2-R.1、C2 和 C3 development 均明确 FAIL，业务覆盖为 CONDITIONAL。legacy C2-R 不具备 formal-cash 指标资格；业务抽检、final holdout、正式验收和 release 均未完成，当前只授权 V2-B evidence pilot，不授权 M3。
-
-| 数据项 | 当前缺口/状态 | 影响 |
-|---|---:|---|
-| 作者 | 缺口 0；已写入隔离本地 active 正式基础信息版本 | 不再生成作者补表 |
-| 版权开始 | 缺口 0；已写入 active 正式基础信息版本与 input snapshot | 不再进入分类与标签核对表 |
-| 版权到期 | 缺口 0；受控期限语义已由 `0071.020` 保真持久化 | 不得改回 date-only 或静默置空 |
-| 一级分类 | 出版物 1195、网文 1858；人工缺口 0 | 已写入隔离本地 active 分类版本 |
-| 二级分类 | 3053 部均已固定；人工缺口 0 | 已写入隔离本地 active 分类版本 |
-| 三级分类 | 3053 部均已固定；新增科普、教辅、诗歌已进入受控词表 | 已写入隔离本地 active 分类版本 |
-| 辅助标签 | 387 部作品、532 个标签赋值已固定；人工缺口 0 | 已写入隔离本地正式基础信息关联 |
-| 特殊属性标签 | 当前 M1/M2 人工收口不启用独立字段；只有后续明确新增规则和版本时才单独治理 | 不阻断本轮分类与标签人工收口 |
-| 作品状态 | 已上架 2298、已下架 755；已写入隔离本地 active 正式基础信息版本 | 可支撑 DB-backed M2 评估 |
-| 音频版权状态 | 版权有效 2250、无限期 473、版权已到期 330；期限/状态冲突 0 | 已写入隔离本地 active 正式基础信息版本 |
-| 到期但仍有收入样本 | 146 条已全部确认并应用，待确认 0 | 保留事实型审计/复核提示，不再构成人工数据阻断 |
-| 版权有效但收入稀疏样本 | 92 条已全部确认并应用，待确认 0 | 状态决定已进入 private 输入候选，不再构成人工数据阻断 |
-
-证据文件：
-
-- `docs/analysis/m2-real-data/M2-local-candidate-closeout-v1.md`
-- `docs/analysis/m2-real-data/M2-classification-aux-tag-local-staging-summary-v1.md`
-- `docs/analysis/m2-real-data/M2-classification-tag-foundation-local-closeout-v1.md`
-- `docs/analysis/m2-real-data/M1-M2-post-foundation-project-status-v1.md`
-- `docs/analysis/m2-real-data/M2-formal-local-execution-summary-v1.md`
-- `docs/analysis/m3/M3-parallel-planning-boundary-v1.md`
-
-早期 master-data/copyright gap 报告只用于历史追溯，不得据此重新生成当前人工任务。
-
-## M3 当前门禁
-
-- 本地和远端 M3 状态必须先确认 clean：`HEAD` 应等于 `origin/main`，工作区不能有非本轮变更。
-- 当前允许准备 M3 开发计划、字段清单、接口依赖、fixture/prototype 方案和测试计划。
-- M2 隔离本地正式执行与严格对账已完成；旧 export 仅为 `prepared` 且已被用户拒绝。C1、legacy C2-R、C2-R.1、C2、C3 development 均为 FAIL；业务抽检、final holdout、明确批准和 release 前禁止进入 M3 formal execution。
-- 禁止把 M2 local candidate、v1.1 conditional、rating-standard-v3/v4/v4.2 或 private 任务包当作 formal M3 输入。
-- 禁止开放 M3 正式 task/export/write API；M2 正式 task/export/release/audit 已获授权，但只能在前置门禁通过后实施。
-- 禁止退回较早分类候选覆盖用户最终固定基础表；当前未启用独立特殊属性标签字段，不得在没有新规则的情况下重新制造人工阻断。
-
-## 禁止事项
-
+- 禁止 rebase、squash、amend、force push。
+- 禁止触碰 stash，包括应用、删除、改写或清理。
+- 禁止 `git add .` 和 `git add -A`；所有暂存必须使用显式路径。
+- 技术线与运营线不得混提交；发现非本轮修改必须报告并避免混入。
 - 禁止连接远端生产、共享、staging-like 或未明确授权的数据库。
-- 禁止提交原始账单、台账、私有 Excel/CSV、候选包、临时数据库文件、数据库 dump 或敏感明细。
-- 禁止打印或提交 `.env`、`.pgpass`、密钥、连接串密码。
-- 禁止 `git add .`。
-- 禁止触碰 stash，包含清理、应用、删除或改写 stash。
-- 禁止把本地真实数据开发候选、v1.1 conditional、rating-standard-v3 或 private 任务包表述为最终正式发布审批结果。
-
-## 提交规则
-
-- 所有提交必须显式路径，禁止使用隐式批量添加。
-- 技术线与运营线产物不得混提交。
-- 工作区有非本轮文件时，必须报告；提交前必须确认范围，不能混入无关文件。
+- 禁止把本地真实数据候选、历史 conditional、rating standard 或 private pack 表述为正式发布结果。
 
 ## 验证规则
 
 修改代码后必须运行：
 
 ```bash
+npm run doctor:dev
 npm run check:no-real-data
 npm run lint
 npm run build
 npm test
 npm run smoke
+npm run smoke:portable-start
+npm run test:e2e
+npm run verify:m2:current
 ```
 
-如只改文档，也至少运行：
+只改文档也至少运行：
 
 ```bash
 npm run check:no-real-data
@@ -247,18 +135,13 @@ npm run build
 npm test
 ```
 
-任何失败不得伪造通过，必须如实报告失败命令、失败原因和未验证项。
-# M3 Private Completion Pack Recovery Rule
+涉及跨电脑开发、工具链、private 解耦、启动入口或 CI 时，还必须在一个没有 `data/private-input`、`data/private-output` 和环境凭据的全新克隆中运行完整公共基线。
 
-M3 private field completion packs are ignored local output and must not be committed. README/AGENTS must not record machine-specific absolute paths or promise that ignored private artifacts exist on every computer. To restore the workflow after cloning or pulling on a new machine, use:
+任何失败不得伪造通过；必须报告失败命令、原因和未验证项。
 
-```bash
-git pull origin main
-npm ci
-npm run check:no-real-data
-npm run m3:private-completion-bootstrap
-```
+## M3 边界
 
-The bootstrap reads only from the Git-ignored private input role and writes only to the Git-ignored private output role. It requires 3 to 5 private materials. If the private input is missing or incomplete, it must stop and tell the user to provide materials; it must not fabricate private material or completion fields.
-
-Do not commit private input, private output, completion packs, original Word/PDF/PPT/image/spreadsheet materials, true titles, authors, material text, webpage full text, database credentials, `.env`, `.pgpass`, dumps or temporary database files. Applying a filled pack with `npm run m3:field-completion-apply` requires separate user authorization and is not M3 formal execution.
+- M2 旧 v1.1 conditional 已被用户拒绝；C1–C3 全部失败，业务覆盖仍为 CONDITIONAL。
+- 当前可以保留和维护 M3 synthetic fixture/prototype，但不得解释为 M3 formal execution。
+- M3 formal task/export/write API、真实材料应用、正式回测和 release 必须等待 M2 质量、业务抽检、final holdout 和发布授权。
+- `npm run m3:field-completion-apply` 需要单独用户授权，且不等于 M3 formal execution。
