@@ -20,6 +20,12 @@ from pathlib import Path
 from urllib.parse import urlparse
 from xml.etree import ElementTree as ET
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from workbook_package_verifier_v02 import (
+    PROFILE as PACKAGE_COMPLETE_PROFILE,
+    inspect_package_complete,
+)
+
 MAIN = "http://schemas.openxmlformats.org/spreadsheetml/2006/main"
 REL = "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
 PKG_REL = "http://schemas.openxmlformats.org/package/2006/relationships"
@@ -622,14 +628,33 @@ def main() -> int:
     parser.add_argument("workbook", type=Path)
     parser.add_argument("--expect-sheet", action="append", default=[])
     parser.add_argument("--forbidden-token", action="append", default=[])
-    parser.add_argument("--profile", choices=["m2-v2-canary-v3-review-v0.4"])
-    args = parser.parse_args()
-    result = inspect_workbook(
-        args.workbook,
-        tuple(args.expect_sheet),
-        tuple(args.forbidden_token),
-        args.profile,
+    parser.add_argument(
+        "--profile",
+        choices=["m2-v2-canary-v3-review-v0.4", PACKAGE_COMPLETE_PROFILE],
     )
+    args = parser.parse_args()
+    if args.profile == PACKAGE_COMPLETE_PROFILE:
+        repository_root = Path(__file__).resolve().parents[2]
+        try:
+            base = inspect_workbook(
+                args.workbook,
+                tuple(args.expect_sheet),
+                tuple(args.forbidden_token),
+                None,
+            )
+        except (ET.ParseError, KeyError, OSError, RuntimeError, ValueError, zipfile.BadZipFile):
+            # The package-complete verifier owns the fail-closed verdict.  A
+            # malformed adversarial object must still produce its exact v0.2
+            # receipt instead of escaping through the legacy fact extractor.
+            base = {}
+        result = inspect_package_complete(args.workbook, repository_root, base)
+    else:
+        result = inspect_workbook(
+            args.workbook,
+            tuple(args.expect_sheet),
+            tuple(args.forbidden_token),
+            args.profile,
+        )
     json.dump(result, sys.stdout, ensure_ascii=False, indent=2)
     sys.stdout.write("\n")
     return 0 if result["passed"] else 1

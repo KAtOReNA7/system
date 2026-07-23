@@ -1,0 +1,64 @@
+{
+  "schema": "m2.v2.pr7-b5-workbook-artifact-remediation.v0.1",
+  "status": "IMPLEMENTED_PENDING_EXACT_HEAD_CI",
+  "classification": "public_sanitized_not_for_formal_decision",
+  "branch": "codex/m2-v2-evidence-pilot-v1",
+  "batchId": "B5",
+  "findingIds": [
+    "PR7-P1-013",
+    "PR7-P2-006"
+  ],
+  "implementation": {
+    "canonicalVerifier": "scripts/m2-v2-evidence-pilot/verify_m2_v2_workbook.py",
+    "strictProfile": "m2-v2-pr7-s1-b5-strict-v0.2",
+    "packageCompleteModule": "scripts/m2-v2-evidence-pilot/workbook_package_verifier_v02.py",
+    "parallelProductRuntimeAdded": false,
+    "newDependencyAdded": false,
+    "historicalArtifactOverwritten": false
+  },
+  "frozenCaseValidation": {
+    "workbookCasesPassed": 12,
+    "workbookCasesTotal": 12,
+    "artifactPolicyCasesPassed": 10,
+    "artifactPolicyCasesTotal": 10,
+    "canonicalTestsPassed": 27,
+    "canonicalTestsTotal": 27,
+    "defaultTestsPassed": 1176,
+    "defaultTestsTotal": 1176,
+    "defaultSkipCount": 0,
+    "providerRequestDelta": 0,
+    "databaseConnections": 0,
+    "actualExternalFetchCount": 0
+  },
+  "boundHistoricalWorkbookReverification": {
+    "workbookSha256": "c5e15ef291fa9f498c6b597c4ad00e89182edc850a6eda6fb90b9e50b5f0b521",
+    "policyDigestSha256": "5c91dbdbc68e330e108426f48fd717cf0b531c371b12dfa53898360c1dfdd934",
+    "packageMemberSetDigestSha256": "e2538a655b12922caca7f383bd1c858b127364ebbe6d6cc895cc67cdd594e077",
+    "contentTypeGraphDigestSha256": "167ea17cb76c5c28392aa65dcc2421f806c48bfb8099a36fc9fdab6e818b3a93",
+    "relationshipGraphDigestSha256": "2cb918578e6dced2e6a0697450fe3c11c54313d35858cd8ad1bc28d8fa4bc5ff",
+    "partDecisionDigestSha256": "5ef43e6910b271cd80b611db9a597f38407ba68338c1d6c1c0a8adc1139b9860",
+    "partCount": 9,
+    "derivedFactCount": 12,
+    "issueCount": 10,
+    "reasonCodes": [
+      "ooxml_xml_policy_violation",
+      "ooxml_zip_member_invalid"
+    ],
+    "passed": false,
+    "visualReviewAttested": false,
+    "providerRequestDelta": 0,
+    "actualExternalFetchCount": 0,
+    "disposition": "REBUILD_VNEXT_IN_B6_FROM_EXISTING_IMMUTABLE_APPEND_ONLY_PRIVATE_INPUT"
+  },
+  "governance": {
+    "findingStatus": "OPEN",
+    "maximumCandidateStatus": "CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW",
+    "b8Authorized": true,
+    "independentReviewPerformed": false,
+    "mergeAuthorized": false,
+    "full160Authorized": false,
+    "modelTrainingAuthorized": false,
+    "releaseAuthorized": false,
+    "nextDevelopmentReadiness": "NOT_AUTHORIZED"
+  }
+}

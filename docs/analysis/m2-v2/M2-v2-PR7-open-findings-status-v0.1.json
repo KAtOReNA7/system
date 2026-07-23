@@ -32,16 +32,17 @@
     "B6",
     "B7"
   ],
-  "currentBatch": "B4",
+  "currentBatch": "B5",
   "batchStatuses": {
     "B0": "COMPLETE",
     "B1": "COMPLETE_PENDING_B8",
     "B2": "COMPLETE_PENDING_B8",
     "B3": "COMPLETE_PENDING_B8",
-    "B4": "COMPLETE_PENDING_B8"
+    "B4": "COMPLETE_PENDING_B8",
+    "B5": "IN_PROGRESS"
   },
   "nextBatch": "B5",
-  "nextAllowedPhase": "B5_REQUIRES_EXPLICIT_START",
+  "nextAllowedPhase": "B5_AUTHORIZED_IN_PROGRESS",
   "candidateFindingStatuses": {
     "PR7-P1-008": {
       "findingStatus": "OPEN",
@@ -65,7 +66,7 @@
   "findingClosureStatus": "OPEN",
   "independentReviewPerformed": false,
   "independentReviewStatus": "NOT_REVIEWED",
-  "b8Authorized": false,
+  "b8Authorized": true,
   "mergeAuthorized": false,
   "full160Authorized": false,
   "modelTrainingAuthorized": false,

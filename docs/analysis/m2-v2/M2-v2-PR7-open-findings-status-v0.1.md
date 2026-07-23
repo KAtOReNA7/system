@@ -1,6 +1,6 @@
 # PR #7 open-finding status overlay v0.1
 
-This overlay records the current S1 phased-remediation boundary. It does not supersede the versioned current-state index, independently close a finding, authorize B8, authorize PR merge, or authorize any downstream phase.
+This overlay records the current S1 phased-remediation boundary. It does not supersede the versioned current-state index, independently close a finding, authorize PR merge, or authorize any downstream phase. The user authorized B5-B8 on 2026-07-24, but B8 remains an independent-review-only batch and cannot be self-performed by the implementing agent.
 
 - Reviewed product head: `627f74c6b9b2365ee4403c613ea9689748b76541`
 - S1 starting head after S0: `badbf453e1e99ba87cc3064601e480a09ff1b149`
@@ -12,7 +12,8 @@ This overlay records the current S1 phased-remediation boundary. It does not sup
 - S0 status: `COMPLETE`
 - Finding closure status: `OPEN`
 - Independent review status: `NOT_REVIEWED`
-- B8, merge, full160, model training, and release authorized: `false`
+- B8 independent review authorized: `true`
+- Merge, full160, model training, and release authorized: `false`
 - Next development readiness: `NOT_AUTHORIZED`
 - PR state required: `Draft/open/unmerged`
 
@@ -30,10 +31,11 @@ This overlay records the current S1 phased-remediation boundary. It does not sup
 | B3-D | this tracked integration commit | exact-head CI bound in the private receipt and PR body | exact-head CI bound in the private receipt and PR body | `COMPLETE_PENDING_B8` after exact-head CI |
 | B4-implementation | `65bee39e012e013d4e4347076fc24757f7bcc9f9` | run `30021984333`, job `89256777608`, success | run `30021984333`, job `89256777664`, success | `PASS` |
 | B4-integration | this tracked integration commit | exact-head CI bound in the private receipt and PR body | exact-head CI bound in the private receipt and PR body | `COMPLETE_PENDING_B8` after exact-head CI |
+| B5 | this tracked implementation commit | pending exact-head CI | pending exact-head CI | `IMPLEMENTED_PENDING_EXACT_HEAD_CI` |
 
 B2 comprises two ordinary commits, five changed files, 15/15 registered acceptance cases, 31/31 migration tests, and 1130/1130 full tests. The integration-only checkpoint commit is bound separately to its final exact-head CI receipt and the live PR body.
 
-B3 implements exact safe-cache projections, a provider-free deterministic v0.3 candidate migration, and one-shot lowest-sink provider capabilities with all legacy routes retired. It covers 18/18 planning cases plus 3 bounded adjacent cases; no current promotion or external access occurred. B4 covers 16/16 frozen cases plus the 35-test V2-B.8 regression suite, and its implementation exact-head Linux/Windows CI passed. `nextBatch=B5`, but B5 requires a new explicit start and has not begun.
+B3 implements exact safe-cache projections, a provider-free deterministic v0.3 candidate migration, and one-shot lowest-sink provider capabilities with all legacy routes retired. It covers 18/18 planning cases plus 3 bounded adjacent cases; no current promotion or external access occurred. B4 covers 16/16 frozen cases plus the 35-test V2-B.8 regression suite, and its implementation exact-head Linux/Windows CI passed. B5 implements the package-complete v0.2 verifier and all 22 frozen workbook/artifact-policy cases; exact-head CI and the B6 deterministic private vNext rebuild remain pending.
 
 ## Finding candidate-status rows
 
@@ -43,6 +45,6 @@ B3 implements exact safe-cache projections, a provider-free deterministic v0.3 c
 | `PR7-P1-006`, `PR7-P2-008` | B2 | `OPEN` | `CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW` |
 | `PR7-P1-008`, `PR7-P2-016` | B3 | `OPEN` | `CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW` |
 | `PR7-P1-009`, `PR7-P2-013` | B4 | `OPEN` | `CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW` |
-| `PR7-P1-013`, `PR7-P2-006` | B5-B7 | `OPEN` | `NOT_STARTED` |
+| `PR7-P1-013`, `PR7-P2-006` | B5 | `OPEN` | `IMPLEMENTED_PENDING_EXACT_HEAD_CI_AND_B6_REBUILD` |
 
-All 10 findings remain `OPEN`. Only a new independent B8 review may determine `CLOSED`. Provider, database, Canary/full160, model training, holdout, B8, mark-ready, merge, and release remain prohibited.
+All 10 findings remain `OPEN`. Only an independent B8 review may determine `CLOSED`; B8 is authorized but self-review is prohibited. Provider, database, Canary/full160, model training, holdout, mark-ready, merge, and release remain prohibited.

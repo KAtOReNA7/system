@@ -1,6 +1,7 @@
-import { lstatSync } from "node:fs";
+import { lstatSync, readFileSync } from "node:fs";
 import { isAbsolute, join, relative, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import { canonicalJson, sha256 } from "./pilotCore.js";
 
 const VERIFIER_RELATIVE = "scripts/m2-v2-evidence-pilot/verify_m2_v2_workbook.py";
@@ -17,6 +18,11 @@ const REQUIRED_COUNT_FIELDS = Object.freeze([
 ]);
 const SHA256 = /^[a-f0-9]{64}$/u;
 export const WORKBOOK_HYPERLINK_LINEAGE_SCHEMA = "m2.v2.workbook-hyperlink-lineage-private.v0.1";
+export const WORKBOOK_PACKAGE_COMPLETE_SCHEMA = "m2.v2.independent-workbook-verification.v0.2";
+export const WORKBOOK_PACKAGE_COMPLETE_PROFILE = "m2-v2-pr7-s1-b5-strict-v0.2";
+export const PR7_B5_WORKBOOK_RELATIVE = "data/private-output/m2-v2-evidence-pilot/canary-v3/M2-v2-canary-v3-private-review-workbook-v0.2.xlsx";
+const PR7_B5_WORKBOOK_CONTRACT_RELATIVE =
+  "docs/technical-design/m2-v2/M2-v2-workbook-independent-verification-v0.2.json";
 
 export function verifyIndependentWorkbookObject(root, workbookRelative, options = {}) {
   const absoluteRoot = resolve(root);
@@ -64,6 +70,9 @@ export function verifyIndependentWorkbookObject(root, workbookRelative, options 
 }
 
 export function assertIndependentWorkbookVerification(value) {
+  if (value?.schema === WORKBOOK_PACKAGE_COMPLETE_SCHEMA) {
+    return assertPackageCompleteWorkbookVerification(value);
+  }
   if (value?.schema !== "m2.v2.independent-workbook-verification.v0.1") {
     throw new Error("workbook_verifier_schema_invalid");
   }
@@ -99,6 +108,89 @@ export function assertIndependentWorkbookVerification(value) {
   if (!Array.isArray(value.hyperlinkTargets)
     || value.hyperlinkTargets.some((item) => !isSafeHyperlinkTarget(item))) {
     throw new Error("workbook_verifier_hyperlink_target_contract_invalid");
+  }
+  return true;
+}
+
+export function verifyPr7B5WorkbookCandidate(root) {
+  const absoluteRoot = resolve(root);
+  const contract = JSON.parse(readFileSync(join(absoluteRoot, PR7_B5_WORKBOOK_CONTRACT_RELATIVE), "utf8"));
+  const binding = contract?.candidateWorkbookBinding;
+  const relativePath = PR7_B5_WORKBOOK_RELATIVE.normalize("NFC").replaceAll("\\", "/");
+  if (binding?.authorityRole !== "current_governed_private_review_workbook"
+    || binding.repositoryRelativePathDigestSha256 !== sha256Text(relativePath)
+    || binding.workbookSha256 !== sha256Buffer(readFileSync(join(absoluteRoot, ...relativePath.split("/"))))) {
+    throw new Error("workbook_candidate_binding_mismatch");
+  }
+  const receipt = verifyIndependentWorkbookObject(absoluteRoot, relativePath, {
+    profile: WORKBOOK_PACKAGE_COMPLETE_PROFILE,
+  });
+  if (receipt.workbookSha256 !== binding.workbookSha256) {
+    throw new Error("workbook_candidate_receipt_digest_mismatch");
+  }
+  return receipt;
+}
+
+export function assertPackageCompleteWorkbookVerification(value) {
+  if (!isPlainObject(value)) throw new Error("workbook_verification_receipt_invalid");
+  const exact = [
+    "actualExternalFetchCount",
+    "contentTypeGraphDigestSha256",
+    "derivedFacts",
+    "hyperlinkLineage",
+    "issues",
+    "packageMemberSetDigestSha256",
+    "partDecisionDigestSha256",
+    "partDecisions",
+    "passed",
+    "policyDigestSha256",
+    "profileVersion",
+    "providerRequestDelta",
+    "relationshipGraphDigestSha256",
+    "schema",
+    "visualReviewAttested",
+    "workbookSha256",
+  ].sort();
+  if (canonicalJson(Object.keys(value).sort()) !== canonicalJson(exact)) {
+    throw new Error("workbook_verification_receipt_invalid");
+  }
+  if (value.schema !== WORKBOOK_PACKAGE_COMPLETE_SCHEMA
+    || value.profileVersion !== WORKBOOK_PACKAGE_COMPLETE_PROFILE
+    || !SHA256.test(value.workbookSha256)
+    || !SHA256.test(value.policyDigestSha256)
+    || !SHA256.test(value.packageMemberSetDigestSha256)
+    || !SHA256.test(value.contentTypeGraphDigestSha256)
+    || !SHA256.test(value.relationshipGraphDigestSha256)
+    || !SHA256.test(value.partDecisionDigestSha256)
+    || typeof value.passed !== "boolean"
+    || value.visualReviewAttested !== false
+    || value.providerRequestDelta !== 0
+    || value.actualExternalFetchCount !== 0
+    || !Array.isArray(value.partDecisions)
+    || !Array.isArray(value.derivedFacts)
+    || !Array.isArray(value.hyperlinkLineage)
+    || !Array.isArray(value.issues)) {
+    throw new Error("workbook_verification_receipt_invalid");
+  }
+  if (value.partDecisionDigestSha256 !== sha256(value.partDecisions)) {
+    throw new Error("workbook_verification_receipt_invalid");
+  }
+  assertSortedExactRecords(value.partDecisions, [
+    "contentSha256", "contentType", "decision", "handlerId", "justificationCode",
+    "partClass", "partNameDigestSha256",
+  ], "partNameDigestSha256");
+  assertSortedExactRecords(value.derivedFacts, [
+    "factId", "factType", "sourcePartSetDigestSha256", "value", "valueType",
+  ], "factId");
+  assertSortedExactRecords(value.hyperlinkLineage, [
+    "occurrenceCount", "protocol", "relationshipType", "targetDigest", "targetMode",
+  ], "targetDigest");
+  assertSortedExactRecords(value.issues, [
+    "issueId", "partNameDigestSha256", "reasonCode", "relationIdDigestSha256",
+    "safeDetail", "severity",
+  ], "issueId");
+  if (value.passed !== (value.issues.length === 0)) {
+    throw new Error("workbook_verification_receipt_invalid");
   }
   return true;
 }
@@ -221,4 +313,26 @@ function isSafeHyperlinkTarget(value) {
 
 function isPlainObject(value) {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
+function assertSortedExactRecords(values, keys, sortField) {
+  const expectedKeys = [...keys].sort();
+  for (const value of values) {
+    if (!isPlainObject(value)
+      || canonicalJson(Object.keys(value).sort()) !== canonicalJson(expectedKeys)) {
+      throw new Error("workbook_verification_receipt_invalid");
+    }
+  }
+  const sorted = [...values].sort((left, right) => String(left[sortField]).localeCompare(String(right[sortField])));
+  if (canonicalJson(sorted) !== canonicalJson(values)) {
+    throw new Error("workbook_verification_receipt_invalid");
+  }
+}
+
+function sha256Text(value) {
+  return sha256Buffer(Buffer.from(value, "utf8"));
+}
+
+function sha256Buffer(value) {
+  return createHash("sha256").update(value).digest("hex");
 }

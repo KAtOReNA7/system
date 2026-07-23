@@ -235,7 +235,7 @@ const EXPECTED_ALLOWED_PATH_CLASSES = Object.freeze([
 ]);
 
 const EXPECTED_PROHIBITED_ACTIONS = Object.freeze([
-  "execute B8 or independently close any finding",
+  "execute B8 without an independent reviewer or self-close any finding",
   "invoke a real provider or any non-loopback implementation/test transport",
   "connect to any database",
   "run Canary, full160, model training, or holdout",
@@ -338,7 +338,7 @@ export function validateS1TaskManifest(manifest, bindings = {}) {
   }
   validateBranchPolicy(manifest.branchPolicy);
   assertExactArray(manifest.authorizedBatches, S1_BATCHES, "authorized_batches_mismatch");
-  if (manifest.currentBatch !== "B4") throw new Error("current_batch_must_be_b4");
+  if (manifest.currentBatch !== "B5") throw new Error("current_batch_must_be_b5");
   validateBatchDag(manifest.batchDag);
   assertExactArray(manifest.allowedPathClasses, EXPECTED_ALLOWED_PATH_CLASSES, "allowed_path_classes_invalid");
   assertExactArray(manifest.prohibitedActions, EXPECTED_PROHIBITED_ACTIONS, "prohibited_actions_invalid");
@@ -1928,7 +1928,7 @@ export function validateS1Overlay(overlay) {
     "remediationComplete", "pullRequestState",
   ], "overlay");
   assertPlainObject(overlay.batchStatuses, "overlay_batch_statuses_must_be_object");
-  assertExactFields(overlay.batchStatuses, ["B0", "B1", "B2", "B3", "B4"], "overlay_batch_statuses");
+  assertExactFields(overlay.batchStatuses, ["B0", "B1", "B2", "B3", "B4", "B5"], "overlay_batch_statuses");
   assertPlainObject(overlay.candidateFindingStatuses, "overlay_candidate_statuses_must_be_object");
   assertExactFields(
     overlay.candidateFindingStatuses,
@@ -1952,14 +1952,15 @@ export function validateS1Overlay(overlay) {
     && overlay.s0Status === "COMPLETE"
     && overlay.supportSharpeningStopCriteriaReached === true
     && overlay.findingRemediationAuthorized === true
-    && overlay.currentBatch === "B4"
+    && overlay.currentBatch === "B5"
     && overlay.batchStatuses.B0 === "COMPLETE"
     && overlay.batchStatuses.B1 === "COMPLETE_PENDING_B8"
     && overlay.batchStatuses.B2 === "COMPLETE_PENDING_B8"
     && overlay.batchStatuses.B3 === "COMPLETE_PENDING_B8"
     && overlay.batchStatuses.B4 === "COMPLETE_PENDING_B8"
+    && overlay.batchStatuses.B5 === "IN_PROGRESS"
     && overlay.nextBatch === "B5"
-    && overlay.nextAllowedPhase === "B5_REQUIRES_EXPLICIT_START"
+    && overlay.nextAllowedPhase === "B5_AUTHORIZED_IN_PROGRESS"
     && ["PR7-P1-008", "PR7-P1-009", "PR7-P2-013", "PR7-P2-016"].every((findingId) => (
       overlay.candidateFindingStatuses[findingId].findingStatus === "OPEN"
       && overlay.candidateFindingStatuses[findingId].candidateStatus === "CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW"
@@ -1969,7 +1970,7 @@ export function validateS1Overlay(overlay) {
     && overlay.findingClosureStatus === "OPEN"
     && overlay.independentReviewPerformed === false
     && overlay.independentReviewStatus === "NOT_REVIEWED"
-    && overlay.b8Authorized === false
+    && overlay.b8Authorized === true
     && overlay.mergeAuthorized === false
     && overlay.full160Authorized === false
     && overlay.modelTrainingAuthorized === false
@@ -2335,7 +2336,7 @@ function validateBatchDag(dag) {
   assertPlainObject(dag, "batch_dag_must_be_object");
   assertExactFields(dag, ["nodes", "edges", "independentReviewBatchAuthorized"], "batch_dag");
   assertExactArray(dag.nodes, S1_BATCHES, "batch_dag_nodes_mismatch");
-  if (dag.independentReviewBatchAuthorized !== false) throw new Error("b8_must_not_be_authorized");
+  if (dag.independentReviewBatchAuthorized !== true) throw new Error("b8_authorization_must_be_recorded");
   if (!Array.isArray(dag.edges) || dag.edges.length !== 7) throw new Error("batch_dag_edge_count_mismatch");
   const expectedEdges = S1_BATCHES.slice(0, -1).map((from, index) => ({ from, to: S1_BATCHES[index + 1] }));
   if (stableStringify(dag.edges) !== stableStringify(expectedEdges)) throw new Error("batch_dag_edges_mismatch");
@@ -2439,7 +2440,7 @@ function validateGovernance(governance) {
       || governance.providerDispatchAuthorized !== false
       || governance.databaseConnectionsAuthorized !== false
       || governance.canaryAuthorized !== false
-      || governance.b8Authorized !== false
+      || governance.b8Authorized !== true
       || governance.markReadyAuthorized !== false
       || governance.mergeAuthorized !== false
       || governance.full160Authorized !== false

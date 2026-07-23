@@ -1,5 +1,14 @@
 # Codex 工作规则
 
+## 2026-07-24 PR #7 B5–B8 授权与执行入口（当前最高优先）
+
+- 用户已明确授权继续执行 B5、B6、B7，并授权启动 B8 独立复审；当前从 `currentBatch=B5` 开始，后续批次仍须依次满足本地门禁、原子提交、普通推送、remote exact-head 与 Linux/Windows CI。
+- B8 授权不取消独立性要求：实施 B0–B7 的同一代理不得自审后声明 finding `CLOSED`。B0–B7 的最高状态仍为 `CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW`；只有独立 B8 reviewer 可以给出复审结论。
+- B5 必须严格执行 OOXML/OPC v0.2 package-complete verifier 与 default required-artifact/zero-skip 策略。历史 private workbook 不得覆盖；若严格校验失败，只能在 B6 使用 immutable/append-only private 输入和确定性 generator 在受权的新 ignored output root 中生成 vNext。
+- B6 只允许 provider-free 离线重建、确定性 workbook vNext、derived authority recomputation 与原子 supersession；不得调用 provider、数据库、Canary/full160、训练、holdout 或 M3。
+- B7 必须执行完整 89-case registry、默认测试零 skip、只读/权威图/迁移/transport/workbook 全回归，并形成交给 B8 的脱敏审查包。
+- provider、数据库、Canary/full160、模型训练、holdout、mark ready、PR merge、release 与 M3 formal 仍未授权。B8 授权仅限独立复审，不授权合并或发布。
+
 ## 用户常驻协作要求（已固化，无需重复下达）
 
 - 本节汇总用户在历次任务中反复提出的仓库协作要求。后续用户只需说明本轮目标、业务选择和新增授权；无需再次要求“检查远端并同步、核对本地进度、清理过时分支、全库查重、评估方向、保护 private、运行验证或更新进度”。Codex 每次仓库任务都应自动执行这些基线动作。

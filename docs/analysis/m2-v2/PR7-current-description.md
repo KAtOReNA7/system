@@ -9,8 +9,10 @@ PR #7 remains Draft/open/unmerged. The incremental independent review against pr
 - B2: `COMPLETE_PENDING_B8`
 - B3: `COMPLETE_PENDING_B8`
 - B4: `COMPLETE_PENDING_B8`
-- `currentBatch=B4`; `nextBatch=B5`, and B5 requires a new explicit start
+- B5: `IN_PROGRESS`
+- `currentBatch=B5`; B5–B8 were explicitly authorized on 2026-07-24
 - Independent review: `NOT_REVIEWED`
+- Independent B8 review authorized: `true`; self-review and self-closure remain forbidden
 - Historical decision: `CANARY_CONDITIONAL`
 - Current offline integrity restatement: `CANARY_FAIL`
 - `full160Authorized=false`
@@ -40,7 +42,9 @@ B0-B7 implementation evidence may reach only `CANDIDATE_CLOSED_PENDING_INDEPENDE
 | B4-entry | `1107c2a15a39e1b035022c0810e296ff493f3e01` | run `30020602325`, job `89251992130`, success | run `30020602325`, job `89251992368`, success | `PASS` |
 | B4-implementation | `65bee39e012e013d4e4347076fc24757f7bcc9f9` | run `30021984333`, job `89256777608`, success | run `30021984333`, job `89256777664`, success | `PASS` |
 | B4-integration | this tracked integration commit | exact-head CI bound in the private receipt and PR body | exact-head CI bound in the private receipt and PR body | `COMPLETE_PENDING_B8` after exact-head CI |
-| B5-B7 | - | - | - | `NOT_STARTED` |
+| B5 | this tracked implementation commit | pending exact-head CI | pending exact-head CI | `IMPLEMENTED_PENDING_EXACT_HEAD_CI` |
+| B6-B7 | - | - | - | `AUTHORIZED_NOT_STARTED` |
+| B8 | - | - | - | `AUTHORIZED_PENDING_INDEPENDENT_REVIEW` |
 
 B2 comprises two ordinary commits, five changed files, 15/15 registered acceptance cases, 31/31 migration tests, and 1130/1130 full tests. Its integration-only checkpoint commit is bound to a final exact-head CI receipt after ordinary push.
 
@@ -54,8 +58,8 @@ B3 implements exact safe-cache projections, a provider-free deterministic v0.3 c
 | `PR7-P1-006`, `PR7-P2-008` | B2 | `OPEN` | `CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW` |
 | `PR7-P1-008`, `PR7-P2-016` | B3 | `OPEN` | `CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW` |
 | `PR7-P1-009`, `PR7-P2-013` | B4 | `OPEN` | `CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW` |
-| `PR7-P1-013`, `PR7-P2-006` | B5-B7 | `OPEN` | `NOT_STARTED` |
+| `PR7-P1-013`, `PR7-P2-006` | B5 | `OPEN` | `IMPLEMENTED_PENDING_EXACT_HEAD_CI_AND_B6_REBUILD` |
 
 ## Safety and governance boundary
 
-Provider access, database access, Canary/full160, model training, holdout, B8, mark-ready, merge, and release remain prohibited. The current decision and authorization gates remain unchanged.
+Provider access, database access, Canary/full160, model training, holdout, mark-ready, merge, and release remain prohibited. B8 is authorized only as an independent review and does not authorize self-review, finding closure by the implementing agent, merge, or release. The current decision and downstream authorization gates remain unchanged.

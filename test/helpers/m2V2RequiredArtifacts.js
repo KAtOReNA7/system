@@ -312,7 +312,9 @@ export function inspectOptionalPrivateIdentity(root, optionalId, options = {}) {
       artifact,
       absolute,
       exists: fs.existsSync(absolute),
-      gitRole: gitRole(root, artifact.path),
+      gitRole: options.gitRoleResolver
+        ? options.gitRoleResolver(root, artifact.path)
+        : gitRole(root, artifact.path),
     };
   });
   for (const status of statuses) assert.equal(status.gitRole, "IGNORED_UNTRACKED", `optional:git_role:${optionalId}:${status.artifact.artifactId}`);

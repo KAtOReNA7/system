@@ -23,7 +23,7 @@
     "B6",
     "B7"
   ],
-  "currentBatch": "B4",
+  "currentBatch": "B5",
   "batchDag": {
     "nodes": [
       "B0",
@@ -65,7 +65,7 @@
         "to": "B7"
       }
     ],
-    "independentReviewBatchAuthorized": false
+    "independentReviewBatchAuthorized": true
   },
   "allowedPathClasses": [
     "config/m2-v2-pr7-s1-*.json",
@@ -83,7 +83,7 @@
     "new versioned ignored private output under the authorized S1 root during B6 only"
   ],
   "prohibitedActions": [
-    "execute B8 or independently close any finding",
+    "execute B8 without an independent reviewer or self-close any finding",
     "invoke a real provider or any non-loopback implementation/test transport",
     "connect to any database",
     "run Canary, full160, model training, or holdout",
@@ -297,7 +297,7 @@
     "providerDispatchAuthorized": false,
     "databaseConnectionsAuthorized": false,
     "canaryAuthorized": false,
-    "b8Authorized": false,
+    "b8Authorized": true,
     "markReadyAuthorized": false,
     "mergeAuthorized": false,
     "full160Authorized": false,

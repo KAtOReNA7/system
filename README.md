@@ -1,5 +1,11 @@
 # 有声书产品收入评估与年度目标系统 PRD v0.2
 
+## 2026-07-24 PR #7 当前执行状态
+
+用户已授权 B5–B8。当前批次为 B5；B5 正在实施并等待 exact-head 双平台 CI，随后依次进入 B6 provider-free 离线重建与原子 supersession、B7 全注册表回归、B8 独立复审。B8 必须由独立 reviewer 执行，实施代理不得自审并关闭 finding。
+
+当前 10 个 finding 仍全部 `OPEN`，PR #7 仍为 Draft/open/unmerged。provider、数据库、Canary/full160、模型训练、holdout、mark ready、merge、release 和 M3 formal 仍未授权。
+
 ## 2026-07-23 全库审读与多电脑协同入口（v0.2 当前入口）
 
 全库结构、冗余代码、运行/开发效率、M2 算法方向和多电脑 private state 的当前审计见：

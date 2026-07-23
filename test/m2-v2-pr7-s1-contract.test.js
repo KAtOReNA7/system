@@ -73,8 +73,8 @@ test("S1 task binds exact git anchors, B0-B7-only DAG, four source groups, regis
   assert.equal(taskManifest.findingHead, "627f74c6b9b2365ee4403c613ea9689748b76541");
   assert.equal(taskManifest.baseSha, "d81b952e37dd43365c0091cdd6665e69d8d39a7e");
   assert.deepEqual(taskManifest.authorizedBatches, S1_BATCHES);
-  assert.equal(taskManifest.currentBatch, "B4");
-  assert.equal(taskManifest.batchDag.independentReviewBatchAuthorized, false);
+  assert.equal(taskManifest.currentBatch, "B5");
+  assert.equal(taskManifest.batchDag.independentReviewBatchAuthorized, true);
   assert.equal(taskManifest.requiredSourceEvidence.length, 4);
   assert.deepEqual(taskManifest.historicalImmutableArtifacts.map((binding) => binding.path), S1_HISTORICAL_PATHS);
   assert.equal(taskManifest.privateStatePolicy.newOutputRoot, "data/private-output/m2-v2-pr7-s1-remediation-badbf45");
@@ -311,7 +311,7 @@ test("task gates reject each registry drift and all prohibited authority expansi
   }
   for (const mutate of [
     (value) => { value.authorizedBatches.push("B8"); },
-    (value) => { value.batchDag.independentReviewBatchAuthorized = true; },
+    (value) => { value.batchDag.independentReviewBatchAuthorized = false; },
     (value) => { value.providerPolicy.mode = "allowed"; },
     (value) => { value.databasePolicy.allowedConnections = 1; },
     (value) => { value.privateStatePolicy.overwriteHistoricalAllowed = true; },
@@ -321,6 +321,7 @@ test("task gates reject each registry drift and all prohibited authority expansi
     (value) => { value.governance.providerDispatchAuthorized = true; },
     (value) => { value.governance.databaseConnectionsAuthorized = true; },
     (value) => { value.governance.canaryAuthorized = true; },
+    (value) => { value.governance.b8Authorized = false; },
     (value) => { value.governance.markReadyAuthorized = true; },
     (value) => { value.governance.mergeAuthorized = true; },
     (value) => { value.governance.full160Authorized = true; },
@@ -409,18 +410,19 @@ test("tracked-only source binding requires the complete GitHub-hosted exact-head
   assert.equal(evaluateTrackedOnlySourcePolicy(trusted, { ...scope, actualHead: "0".repeat(40) }), false);
 });
 
-test("B4 completion overlay remains OPEN and leaves B5 behind an explicit-start gate", () => {
+test("B5 authorized in-progress overlay remains OPEN and preserves independent B8 review", () => {
   assert.equal(validateS1Overlay(overlay), true);
-  assert.equal(overlay.currentBatch, "B4");
+  assert.equal(overlay.currentBatch, "B5");
   assert.deepEqual(overlay.batchStatuses, {
     B0: "COMPLETE",
     B1: "COMPLETE_PENDING_B8",
     B2: "COMPLETE_PENDING_B8",
     B3: "COMPLETE_PENDING_B8",
     B4: "COMPLETE_PENDING_B8",
+    B5: "IN_PROGRESS",
   });
   assert.equal(overlay.nextBatch, "B5");
-  assert.equal(overlay.nextAllowedPhase, "B5_REQUIRES_EXPLICIT_START");
+  assert.equal(overlay.nextAllowedPhase, "B5_AUTHORIZED_IN_PROGRESS");
   for (const findingId of ["PR7-P1-008", "PR7-P1-009", "PR7-P2-013", "PR7-P2-016"]) {
     assert.deepEqual(overlay.candidateFindingStatuses[findingId], {
       findingStatus: "OPEN",
@@ -435,7 +437,7 @@ test("B4 completion overlay remains OPEN and leaves B5 behind an explicit-start 
     ["findingClosureStatus", "CLOSED"],
     ["independentReviewPerformed", true],
     ["independentReviewStatus", "PASSED"],
-    ["b8Authorized", true],
+    ["b8Authorized", false],
     ["mergeAuthorized", true],
     ["full160Authorized", true],
     ["modelTrainingAuthorized", true],
@@ -681,37 +683,37 @@ test("preflight and local runner contain no hardcoded remote PASS claim", () => 
   );
 });
 
-test("B4 batch identity is explicit and missing or stale batch IDs fail at runtime", () => {
+test("B5 batch identity is explicit and missing or stale batch IDs fail at runtime", () => {
   const head = gitText(["rev-parse", "HEAD"]);
+  const b5 = runJson("scripts/m2-v2-evidence-pilot/check_m2_v2_pr7_s1_preflight.mjs", [
+    `--expected-head=${head}`, "--batch-id=B5",
+  ]);
+  assert.equal(b5.receipt.batchId, "B5");
+  assert.notEqual(b5.receipt.error?.reasonCode, "batch_id_does_not_match_frozen_task_batch");
+
   const b4 = runJson("scripts/m2-v2-evidence-pilot/check_m2_v2_pr7_s1_preflight.mjs", [
     `--expected-head=${head}`, "--batch-id=B4",
   ]);
-  assert.equal(b4.receipt.batchId, "B4");
-  assert.notEqual(b4.receipt.error?.reasonCode, "batch_id_does_not_match_frozen_task_batch");
-
-  const b3 = runJson("scripts/m2-v2-evidence-pilot/check_m2_v2_pr7_s1_preflight.mjs", [
-    `--expected-head=${head}`, "--batch-id=B3",
-  ]);
-  assert.equal(b3.status, 1);
-  assert.equal(b3.receipt.passed, false);
-  assert.equal(b3.receipt.error.reasonCode, "batch_id_does_not_match_frozen_task_batch");
+  assert.equal(b4.status, 1);
+  assert.equal(b4.receipt.passed, false);
+  assert.equal(b4.receipt.error.reasonCode, "batch_id_does_not_match_frozen_task_batch");
 
   const missingPreflight = runJson("scripts/m2-v2-evidence-pilot/check_m2_v2_pr7_s1_preflight.mjs", [
     `--expected-head=${head}`,
   ]);
   assert.equal(missingPreflight.status, 1);
-  assert.equal(missingPreflight.receipt.batchId, "B4");
+  assert.equal(missingPreflight.receipt.batchId, "B5");
   assert.equal(missingPreflight.receipt.error.reasonCode, "batch_id_is_required");
 
   const missingValidation = runJson("scripts/m2-v2-evidence-pilot/run_m2_v2_pr7_s1_validation.mjs", [
     `--expected-head=${head}`,
   ]);
   assert.equal(missingValidation.status, 1);
-  assert.equal(missingValidation.receipt.batchId, "B4");
+  assert.equal(missingValidation.receipt.batchId, "B5");
   assert.equal(missingValidation.receipt.error.reasonCode, "batch_id_is_required");
 });
 
-test("canonical B3 and B4 commands remain wired while both CI jobs bind B4", () => {
+test("canonical B3-B5 commands remain wired while both CI jobs bind B5", () => {
   const canonical = [
     "node --test --test-concurrency=1",
     "test/m2-v2-pr7-b3-provider-route-registry.test.js",
@@ -727,15 +729,22 @@ test("canonical B3 and B4 commands remain wired while both CI jobs bind B4", () 
   );
   assert.equal(
     packageJson.scripts.pretest,
-    "npm run test:m2-v2:s0-default-extension && npm run test:m2-v2:b4-event-tuple",
+    "npm run test:m2-v2:s0-default-extension && npm run test:m2-v2:b4-event-tuple && npm run test:m2-v2:b5-workbook-artifact",
+  );
+  assert.equal(
+    packageJson.scripts["test:m2-v2:b5-workbook-artifact"],
+    "node --test --test-concurrency=1 test/m2-v2-workbook-independent-verifier.test.js test/test-artifact-policy.test.js",
   );
   assert.equal((packageJson.scripts["test:m2-v2:s0-default-extension"].match(/test\/m2-v2-pr7-b3-provider-route-registry\.test\.js/gu) ?? []).length, 1);
-  assert.equal((workflowSource.match(/--batch-id=B4/gu) ?? []).length, 2);
+  assert.equal((workflowSource.match(/--batch-id=B5/gu) ?? []).length, 2);
+  assert.equal((workflowSource.match(/--batch-id=B4/gu) ?? []).length, 0);
   assert.equal((workflowSource.match(/--batch-id=B3/gu) ?? []).length, 0);
   assert.equal((workflowSource.match(/name: B3 safe-cache and provider-boundary validation/gu) ?? []).length, 2);
   assert.equal((workflowSource.match(/run: npm run test:m2-v2:b3-safe-cache-provider/gu) ?? []).length, 2);
   assert.equal((workflowSource.match(/name: B4 event tuple and conflict applicability validation/gu) ?? []).length, 2);
   assert.equal((workflowSource.match(/run: npm run test:m2-v2:b4-event-tuple/gu) ?? []).length, 2);
+  assert.equal((workflowSource.match(/name: B5 workbook and required-artifact policy validation/gu) ?? []).length, 2);
+  assert.equal((workflowSource.match(/run: npm run test:m2-v2:b5-workbook-artifact/gu) ?? []).length, 2);
 });
 
 function taskBindings() {
