@@ -1,0 +1,46 @@
+{
+  "schema": "m2.v2.canary-v3.1-integrity-restatement-public.v0.4",
+  "sourceExactHead": "350ecbd434831a517d97ef7f15ea3e4f9f34bf72",
+  "historicalDecision": "CANARY_CONDITIONAL",
+  "historicalEvaluationVerified": true,
+  "currentRestatedDecision": "CANARY_FAIL",
+  "currentRestatementVerified": true,
+  "currentDecisionComputation": {
+    "evaluationDigestSha256": "f4036bc67d4aa0b42460f7f5934bdee7221c233be536943239dfa11edf7f416c",
+    "arithmeticInputsDigestSha256": "7ceb74c70dea2c885f50302d4accc276f09533d9cbf6c38eea6c77d5f8a09900",
+    "semanticInputsDigestSha256": "4e470707552bfc558ede20cf7ce4f2386fefbea9cd19d2c035506e1a5defcd3e",
+    "thresholdProfileDigestSha256": "c68f6bf9d3bb2ecad5923a42f811e830a11dfaa10d720d892ca7f4adf9e9d21f",
+    "arithmeticRecomputed": true,
+    "semanticGatesRecomputed": true,
+    "recomputedDecision": "CANARY_FAIL",
+    "decisionRuleDigestSha256": "22f143a2840890902ecc17c80670ee53a9733680f9f7e9021a08fbb132c6bc03"
+  },
+  "unchangedBoundaries": {
+    "providerRequestDelta": 0,
+    "databaseConnections": 0,
+    "actualExternalFetchCount": 0,
+    "canaryExecuted": false,
+    "full160Executed": false,
+    "modelTrainingPerformed": false,
+    "holdoutOpened": false,
+    "releasePerformed": false,
+    "prMerged": false
+  },
+  "status": "current_digest_bound",
+  "classification": "public_sanitized_not_for_formal_decision",
+  "authorityBindings": {
+    "graphDigestSha256": "085c08ad1f1032551ca47be46d0e38b743c89da6788347a5c79c79efd0901d2e",
+    "derivedEvaluationDigestSha256": "f4036bc67d4aa0b42460f7f5934bdee7221c233be536943239dfa11edf7f416c",
+    "executionContractDigestSha256": "b09d81e5b33326aff7f3e0291c053c2700110537c6aed6240c31b53208c0f8f5",
+    "eventSemanticsProfileDigestSha256": "aa882e05dce3aa834f2112cdd8d06e22b8a5b04d401b43fcc6630033e65975eb",
+    "trackedCoreCommitmentDigestSha256": "f1d8a52250296f044e894a63caeff4e1625b244f36c7279875bfe61322899d26"
+  },
+  "supersession": {
+    "predecessorPath": "docs/analysis/m2-v2/M2-v2-canary-v3-1-integrity-restatement-v0.3.json",
+    "predecessorDigestSha256": "1ec7dcccf1ba29f08ab58226f7aac724f60c1870c7bcd6c32ce98b4cb6c6562a",
+    "transactionId": "recovery-f15e033dc333e86e836d638c5578289f61bf9838",
+    "transactionDigestSha256": "2252c4bb0f206cdb43a1479e7b91b59eec0fbaac36c4440acb8b182e4b8f7916",
+    "reason": "B6_PROVIDER_FREE_ATOMIC_PROMOTION"
+  },
+  "restatementDigestSha256": "19cc2b095cd649b7ee7a7c46544e9ef7c86b933053d538237cb6bd999c18742e"
+}

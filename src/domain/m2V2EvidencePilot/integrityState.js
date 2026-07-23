@@ -217,7 +217,10 @@ export function evaluateGitBoundaryCommandResult(result) {
   const paths = String(result.stdout ?? "").split(/\r?\n/u).filter(Boolean).sort();
   const b4Unchanged = !paths.some((path) => (
     /oldProductEvaluation|formal-cash|calibrationSpec/iu.test(path)
-      || /(?:^|[\/_.-])b4(?:$|[\/_.-])/iu.test(path)
+      || (
+        /(?:^|\/)(?:docs|scripts|test)\/(?:analysis\/)?m2-real-data\//iu.test(path)
+        && /(?:^|[\/_.-])b4(?:$|[\/_.-])/iu.test(path)
+      )
   ));
   const holdoutSealed = !paths.some((path) => /holdout|embargo|deferred.*label/iu.test(path));
   return {
@@ -834,29 +837,62 @@ export function validateClosedAtomicRequestBinding(root, options = {}) {
   validateEffectiveReceiptIndex(effectiveReceiptIndex, receiptDigests, issues);
   const effectiveReceiptIndexVerified = issues.length === effectiveReceiptIssueStart;
 
+  let contractBoundAuthorityGraph = null;
   for (const role of ["immutable_manifests", "frozen_upstream_digests", "contract_bound_public_report_digests"]) {
     const document = parseClosedMember(members.get(role), role, issues);
     validateBoundArtifactIndex(absoluteRoot, document, role, issues);
+    if (role === "contract_bound_public_report_digests") {
+      contractBoundAuthorityGraph = document?.canonicalAuthorityGraph ?? null;
+    }
   }
 
   let authority = null;
   const currentAuthority = parseClosedMember(members.get("current_authority"), "current_authority", issues);
   const currentRestatement = parseClosedMember(members.get("current_restatement"), "current_restatement", issues);
   if (currentAuthority && currentRestatement) {
+    const isV03Authority = currentAuthority?.schemaVersion === "m2-v2-current-state-index-v0.3";
+    const commitment = isV03Authority
+      ? readCurrentTrackedCommitment(
+        absoluteRoot,
+        currentAuthority?.currentAuthority?.trackedCoreCommitmentPath,
+        issues,
+      )
+      : null;
     authority = validateCurrentAuthorityDocuments({
       index: currentAuthority,
       restatement: currentRestatement,
+      root: absoluteRoot,
       indexRelativePath: members.get("current_authority")?.path,
       indexByteDigest: members.get("current_authority")?.actualByteDigest,
       restatementRelativePath: members.get("current_restatement")?.path,
       restatementByteDigest: members.get("current_restatement")?.actualByteDigest,
+      ...(isV03Authority ? {
+        graph: contractBoundAuthorityGraph,
+        trackedCoreCommitment: commitment?.value,
+        trackedCoreCommitmentRelativePath: commitment?.relativePath,
+        trackedCoreCommitmentByteDigest: commitment?.byteDigest,
+      } : {}),
     });
     if (!authority.valid) issues.push(...authority.issues.map((issue) => `current_authority:${issue}`));
+    if (isV03Authority && (currentAuthority?.supersession?.transactionId !== binding.transactionId
+      || currentRestatement?.supersession?.transactionId !== binding.transactionId)) {
+      issues.push("current_authority_transaction_id_mismatch");
+    }
   }
 
   let canonicalAuthority = null;
-  if (options.canonicalAuthorityInput !== undefined) {
-    canonicalAuthority = validateCanonicalAuthorityProjection(options.canonicalAuthorityInput, {
+  const canonicalAuthorityInput = options.canonicalAuthorityInput
+    ?? (contractBoundAuthorityGraph ? {
+      graph: contractBoundAuthorityGraph,
+      evidence: options.canonicalAuthorityEvidence,
+      trackedCoreCommitment: readCurrentTrackedCommitment(
+        absoluteRoot,
+        currentAuthority?.currentAuthority?.trackedCoreCommitmentPath,
+        [],
+      )?.value,
+    } : undefined);
+  if (canonicalAuthorityInput !== undefined && canonicalAuthorityInput.evidence !== undefined) {
+    canonicalAuthority = validateCanonicalAuthorityProjection(canonicalAuthorityInput, {
       requireCoreCommitment: options.requireCoreCommitment !== false,
     });
     if (!canonicalAuthority.valid) {
@@ -1128,6 +1164,26 @@ function validateBoundArtifactIndex(root, document, role, issues) {
       continue;
     }
     if (digestFile(absolute) !== entry.byteDigest) issues.push(`${label}:digest_mismatch`);
+  }
+}
+
+function readCurrentTrackedCommitment(root, relativePath, issues) {
+  try {
+    const normalized = normalizeClosedReferencePath(relativePath);
+    const absolute = resolveGovernedPath(root, normalized);
+    if (!existsSync(absolute) || !isRegularGovernedFile(root, absolute)) {
+      issues.push("tracked_core_commitment_missing_or_reparse");
+      return null;
+    }
+    const bytes = readFileSync(absolute);
+    return {
+      relativePath: normalized,
+      byteDigest: createHash("sha256").update(bytes).digest("hex"),
+      value: JSON.parse(bytes.toString("utf8")),
+    };
+  } catch {
+    issues.push("tracked_core_commitment_invalid");
+    return null;
   }
 }
 

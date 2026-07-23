@@ -190,6 +190,24 @@ test("git boundary command failures fail closed", () => {
   });
   assert.equal(evidenceStageOnly.b4Unchanged, true);
   assert.equal(evidenceStageOnly.holdoutSealed, true);
+
+  const pr7BatchDocs = evaluateGitBoundaryCommandResult({
+    status: 0,
+    stdout: [
+      "docs/analysis/m2-v2/M2-v2-PR7-B4-event-tuple-remediation-v0.1.json",
+      "scripts/m2-v2-evidence-pilot/run_m2_v2_b4_canary.mjs",
+    ].join("\n"),
+    error: null,
+  });
+  assert.equal(pr7BatchDocs.b4Unchanged, true);
+  assert.equal(pr7BatchDocs.holdoutSealed, true);
+
+  const comparatorB4 = evaluateGitBoundaryCommandResult({
+    status: 0,
+    stdout: "docs/analysis/m2-real-data/M2-B4-comparator-v1.json\n",
+    error: null,
+  });
+  assert.equal(comparatorB4.b4Unchanged, false);
 });
 
 test("current atomic binding validates every scoped raw-file digest", () => {

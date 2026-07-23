@@ -1,9 +1,17 @@
 {
   "schema": "m2.v2.pr7-b5-workbook-artifact-remediation.v0.1",
-  "status": "IMPLEMENTED_PENDING_EXACT_HEAD_CI",
+  "status": "COMPLETE_PENDING_B8",
   "classification": "public_sanitized_not_for_formal_decision",
   "branch": "codex/m2-v2-evidence-pilot-v1",
   "batchId": "B5",
+  "exactHeadCi": {
+    "head": "8804cd508f8e30d90dfc6f429e0b49ab6cae647c",
+    "runId": 30025925006,
+    "linuxJobId": 89270240561,
+    "windowsJobId": 89270240691,
+    "linuxConclusion": "SUCCESS",
+    "windowsConclusion": "SUCCESS"
+  },
   "findingIds": [
     "PR7-P1-013",
     "PR7-P2-006"

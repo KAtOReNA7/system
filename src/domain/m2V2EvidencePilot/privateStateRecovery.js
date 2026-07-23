@@ -46,7 +46,7 @@ export function promoteOfflineRecoveryGroup(options) {
   if (typeof options.evaluateGates !== "function" || typeof options.validateCandidate !== "function") {
     throw new Error("recovery_real_gate_and_validator_required");
   }
-  const sourceSetDigest = sha256Json(sources.map(({ role, relativePath, byteDigest }) => ({ role, relativePath, byteDigest })));
+  const sourceSetDigest = computeOfflineRecoverySourceSetDigest(sources);
   const contractDigest = requireDigest(options.contractDigest, "recovery_contract_digest_invalid");
   const transactionRootRelative = normalizeRelative(options.transactionRootRelative
     ?? "data/private-output/m2-v2-pr7-p1-remediation/recovery-transactions");
@@ -56,7 +56,11 @@ export function promoteOfflineRecoveryGroup(options) {
   let members;
   if (typeof options.buildMembers === "function") {
     const transactionIdentity = requiredTransactionIdentity(options.transactionIdentity);
-    transactionId = `recovery-${sha256Json({ sourceSetDigest, contractDigest, transactionIdentity }).slice(0, 40)}`;
+    transactionId = deriveOfflineRecoveryTransactionId({
+      sourceSetDigest,
+      contractDigest,
+      transactionIdentity,
+    });
     const finalDirectoryRelative = `${transactionRootRelative}/${transactionId}`;
     members = normalizeMembers(options.buildMembers({
       root,
@@ -324,6 +328,37 @@ function validateAuthoritativeSources(root, sources) {
   return normalized.sort((left, right) => `${left.role}:${left.relativePath}`.localeCompare(`${right.role}:${right.relativePath}`));
 }
 
+export function computeOfflineRecoverySourceSetDigest(sources) {
+  if (!Array.isArray(sources) || sources.length === 0) {
+    throw new Error("recovery_authoritative_sources_required");
+  }
+  const normalized = sources.map((source) => ({
+    role: String(source?.role ?? ""),
+    relativePath: normalizeRelative(source?.relativePath),
+    byteDigest: requireDigest(source?.byteDigest, "recovery_source_digest_invalid"),
+  })).sort((left, right) => (
+    `${left.role}:${left.relativePath}`.localeCompare(`${right.role}:${right.relativePath}`)
+  ));
+  return sha256Json(normalized);
+}
+
+export function deriveOfflineRecoveryTransactionId(input) {
+  const sourceSetDigest = requireDigest(
+    input?.sourceSetDigest,
+    "recovery_source_set_digest_invalid",
+  );
+  const contractDigest = requireDigest(
+    input?.contractDigest,
+    "recovery_contract_digest_invalid",
+  );
+  const transactionIdentity = requiredTransactionIdentity(input?.transactionIdentity);
+  return `recovery-${sha256Json({
+    sourceSetDigest,
+    contractDigest,
+    transactionIdentity,
+  }).slice(0, 40)}`;
+}
+
 function normalizeRoleRegistry(value) {
   const requiredRoles = uniqueRoles(value?.requiredRoles, "recovery_required_roles_invalid");
   const optionalRoles = uniqueRoles(value?.optionalRoles ?? [], "recovery_optional_roles_invalid");
@@ -385,7 +420,15 @@ function assertExactPersistedMembers(actual, expected) {
 }
 
 function assertValidation(result, code) {
-  if (!result || result.valid !== true || (Array.isArray(result.issues) && result.issues.length > 0)) throw new Error(code);
+  if (!result || result.valid !== true || (Array.isArray(result.issues) && result.issues.length > 0)) {
+    const safeIssues = Array.isArray(result?.issues)
+      ? result.issues
+        .map((value) => String(value).replace(/[^A-Za-z0-9_.:+-]/gu, "_").slice(0, 160))
+        .filter(Boolean)
+        .slice(0, 40)
+      : [];
+    throw new Error(safeIssues.length ? `${code}:${safeIssues.join(",")}` : code);
+  }
 }
 
 function assertGates(value) {

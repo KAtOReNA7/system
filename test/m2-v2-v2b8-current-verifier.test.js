@@ -16,6 +16,7 @@ import { sourceIdForV2B5Url } from "../src/domain/m2V2EvidencePilot/sourceRecord
 import {
   recomputeV2B8CurrentRestatedEvaluation,
   recomputeV2B8HistoricalEvaluation,
+  selectV2B8CurrentRestatementEvaluationDigest,
   verifyV2B8,
 } from "../src/domain/m2V2EvidencePilot/v2b8Runtime.js";
 import {
@@ -64,6 +65,32 @@ test("B8 verifier recomputes historical/current evaluations and returns explicit
   assert.equal(verdict.full160Authorized, false);
 });
 
+test("B8 verifier accepts the exact v0.3 public-report index authority extension", () => {
+  const fixture = buildFixture({ authorityGraph: true });
+  const verdict = verifyFixture(fixture);
+  assert.equal(verdict.allPassed, true, verdict.issues.join(","));
+});
+
+test("B8 restatement evaluation digest selection is schema-exact", () => {
+  const oldDigest = "a".repeat(64);
+  const nextDigest = "b".repeat(64);
+  assert.equal(selectV2B8CurrentRestatementEvaluationDigest({
+    schema: "m2.v2.canary-v3.1-integrity-restatement-public.v0.3",
+    restatedContract: { evaluationDigest: oldDigest },
+    currentDecisionComputation: { evaluationDigestSha256: nextDigest },
+  }), oldDigest);
+  assert.equal(selectV2B8CurrentRestatementEvaluationDigest({
+    schema: "m2.v2.canary-v3.1-integrity-restatement-public.v0.4",
+    restatedContract: { evaluationDigest: oldDigest },
+    currentDecisionComputation: { evaluationDigestSha256: nextDigest },
+  }), nextDigest);
+  assert.equal(selectV2B8CurrentRestatementEvaluationDigest({
+    schema: "m2.v2.canary-v3.1-integrity-restatement-public.v0.5",
+    restatedContract: { evaluationDigest: oldDigest },
+    currentDecisionComputation: { evaluationDigestSha256: nextDigest },
+  }), null);
+});
+
 test("B8 public verifier fails closed on bound derived-evaluation tamper", () => {
   const fixture = buildFixture();
   writeFileSync(join(fixture.root, fixture.rolePaths.derived_evaluation), "tampered\n");
@@ -101,7 +128,7 @@ test("B8 public verifier fails closed on effective receipt and frozen upstream t
   assert.ok(upstreamVerdict.issues.some((issue) => issue.includes("frozen_upstream_digests")));
 });
 
-function buildFixture() {
+function buildFixture(options = {}) {
   const root = mkdtempSync(join(tmpdir(), "m2-v2-v2b8-current-verifier-"));
   roots.push(root);
   spawnSync("git", ["init", "-q"], { cwd: root, windowsHide: true });
@@ -361,7 +388,17 @@ function buildFixture() {
     effective_receipt_index: effectiveIndex,
     current_authority: authority,
     current_restatement: restatement,
-    contract_bound_public_report_digests: artifactIndex("m2.v2.v2b8-public-report-digests-private.v0.2", publicReports),
+    contract_bound_public_report_digests: {
+      ...artifactIndex(
+        options.authorityGraph
+          ? "m2.v2.v2b8-contract-bound-public-report-digests-private.v0.3"
+          : "m2.v2.v2b8-public-report-digests-private.v0.2",
+        publicReports,
+      ),
+      ...(options.authorityGraph ? {
+        canonicalAuthorityGraph: { schema: "synthetic-canonical-authority-graph-v0.3" },
+      } : {}),
+    },
   };
 
   const rolePaths = {};

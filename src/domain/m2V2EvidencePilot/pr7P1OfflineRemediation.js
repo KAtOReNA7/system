@@ -16,14 +16,22 @@ import {
 } from "./integrityState.js";
 import { validateCurrentAuthorityDocuments } from "./currentAuthority.js";
 import {
+  buildAuthorityDerivedInputBindings,
+  buildAuthorityPhysicalMapping,
+  buildAuthoritySelectionDecision,
   buildTrackedCoreCommitmentV0_1,
   deriveCanonicalAuthorityGraphV0_3,
   verifyCanonicalAuthorityGraph,
 } from "./authorityGraph.js";
 import { canonicalJson, sha256 } from "./pilotCore.js";
-import { promoteOfflineRecoveryGroup } from "./privateStateRecovery.js";
+import {
+  computeOfflineRecoverySourceSetDigest,
+  deriveOfflineRecoveryTransactionId,
+  promoteOfflineRecoveryGroup,
+} from "./privateStateRecovery.js";
 import {
   appendRequestEvent,
+  projectCanonicalRequestAuthority,
   replayRequestEventLedger,
   validateRequestEventLedger,
 } from "./requestEventLedger.js";
@@ -47,6 +55,12 @@ export const PR7_P1_OFFLINE_REMEDIATION_SCHEMA = "m2.v2.pr7-p1-offline-remediati
 export const PR7_P1_REMEDIATION_ROOT_RELATIVE = "data/private-output/m2-v2-pr7-p1-remediation";
 export const PR7_P1_RECOVERY_TRANSACTION_ROOT_RELATIVE = `${PR7_P1_REMEDIATION_ROOT_RELATIVE}/recovery-transactions`;
 export const PR7_P1_TRANSACTION_IDENTITY = "m2-v2-pr7-p1-offline-authority-v0.3";
+export const PR7_S1_AUTHORIZED_PRIVATE_ROOT_RELATIVE =
+  "data/private-output/m2-v2-pr7-s1-remediation-badbf45";
+export const PR7_S1_B6_RECOVERY_TRANSACTION_ROOT_RELATIVE =
+  `${PR7_S1_AUTHORIZED_PRIVATE_ROOT_RELATIVE}/b6-authority-recovery-v0.1/transactions`;
+export const PR7_S1_B6_CURRENT_BINDING_RELATIVE =
+  `${PR7_S1_AUTHORIZED_PRIVATE_ROOT_RELATIVE}/b6-authority-recovery-v0.1/current-binding-private-v0.2.json`;
 export const PR7_S1_CANONICAL_AUTHORITY_CANDIDATE_SCHEMA = "m2.v2.pr7-s1-canonical-authority-candidate.private.v0.1";
 
 export const PR7_P1_CURRENT_AUTHORITY_RELATIVE = "docs/analysis/m2-v2/M2-v2-current-state-index-v0.2.json";
@@ -142,6 +156,181 @@ export function buildPr7S1CanonicalAuthorityCandidate(input) {
   };
 }
 
+export function buildPr7S1B6AuthorityDocuments(prepared, input) {
+  assertPrepared(prepared);
+  const summary = requiredPublicDocument(input?.remediationSummary, "pr7_s1_b6_summary_invalid");
+  const readiness = requiredPublicDocument(input?.mergeReadiness, "pr7_s1_b6_readiness_invalid");
+  const commitment = requiredPublicDocument(input?.trackedCoreCommitment, "pr7_s1_b6_commitment_invalid");
+  const commitmentPath = "docs/analysis/m2-v2/M2-v2-PR7-core-commitment-v0.1.json";
+  const commitmentRead = readJsonGoverned(prepared.root, commitmentPath);
+  if (canonicalJson(commitmentRead.value) !== canonicalJson(commitment)) {
+    throw new Error("pr7_s1_b6_commitment_content_mismatch");
+  }
+  const commitmentDigest = commitmentRead.byteDigest;
+  const transactionContext = buildB6TransactionContext(prepared);
+  const provisionalPlan = buildPr7P1ClosedRecoveryMembers(prepared, transactionContext, {
+    skipCanonicalAuthorityGraph: true,
+  });
+  const computation = buildCurrentDecisionComputation(prepared);
+  const unchangedBoundaries = unchangedB6Boundaries();
+  const restatementSemantic = {
+    schema: "m2.v2.canary-v3.1-integrity-restatement-public.v0.4",
+    sourceExactHead: commitment.sourceExactHead,
+    historicalDecision: prepared.historicalEvaluation.decision,
+    historicalEvaluationVerified: true,
+    currentRestatedDecision: prepared.currentRestatedEvaluation.decision,
+    currentRestatementVerified: true,
+    currentDecisionComputation: computation,
+    unchangedBoundaries,
+  };
+  const indexSemantic = {
+    schemaVersion: "m2-v2-current-state-index-v0.3",
+    sourceExactHead: commitment.sourceExactHead,
+    historicalV2B8Decision: prepared.historicalEvaluation.decision,
+    currentDecision: prepared.currentRestatedEvaluation.decision,
+    currentDecisionComputation: computation,
+    full160Authorized: false,
+    modelTrainingAuthorized: false,
+    nextDevelopmentReadiness: "NOT_AUTHORIZED",
+    unchangedBoundaries,
+  };
+  const graph = buildB6CanonicalAuthorityGraph(prepared, provisionalPlan, {
+    remediationSummary: summary,
+    mergeReadiness: readiness,
+    restatementSemantic,
+    indexSemantic,
+    trackedCoreCommitment: commitment,
+  });
+  const commitmentVerification = verifyCanonicalAuthorityGraph({
+    graph,
+    evidence: buildB6CanonicalAuthorityEvidence(prepared, provisionalPlan, graph),
+    trackedCoreCommitment: commitment,
+  });
+  if (!commitmentVerification.valid) {
+    const completed = new Set(documentsTupleKeys(
+      projectCanonicalRequestAuthority(prepared.receiptState.ledger).completedPhysicalDispatches,
+    ));
+    const indexed = new Set(documentsTupleKeys(
+      buildB6CanonicalAuthorityEvidence(prepared, provisionalPlan, graph).receiptIndexEntries,
+    ));
+    const envelopeDiagnostic = diagnoseB6EnvelopeBindings(
+      prepared,
+      buildB6CanonicalAuthorityEvidence(prepared, provisionalPlan, graph),
+    );
+    throw new Error(
+      `pr7_s1_b6_authority_graph_invalid:${commitmentVerification.issues.join(",")}`
+      + `:completed=${completed.size}:indexed=${indexed.size}`
+      + `:missing=${[...completed].filter((key) => !indexed.has(key)).length}`
+      + `:extra=${[...indexed].filter((key) => !completed.has(key)).length}`
+      + `:envelope=${envelopeDiagnostic}`
+      + `:checks=${Buffer.from(JSON.stringify(commitmentVerification.checks)).toString("base64url")}`,
+    );
+  }
+  const supersessionBase = {
+    transactionId: transactionContext.transactionId,
+    transactionDigestSha256: sha256({
+      transactionId: transactionContext.transactionId,
+      sourceSetDigest: transactionContext.sourceSetDigest,
+      contractDigest: prepared.contractDigest,
+      transactionIdentity: transactionContext.transactionIdentity,
+    }),
+    reason: "B6_PROVIDER_FREE_ATOMIC_PROMOTION",
+  };
+  const restatementPayload = {
+    ...restatementSemantic,
+    status: "current_digest_bound",
+    classification: "public_sanitized_not_for_formal_decision",
+    authorityBindings: {
+      graphDigestSha256: graph.graphDigestSha256,
+      derivedEvaluationDigestSha256: sha256(prepared.currentRestatedEvaluation),
+      executionContractDigestSha256: prepared.contractDigest,
+      eventSemanticsProfileDigestSha256: b6EventSemanticsProfileDigest(prepared.root),
+      trackedCoreCommitmentDigestSha256: commitmentDigest,
+    },
+    supersession: {
+      predecessorPath: prepared.currentRestatement.relativePath,
+      predecessorDigestSha256: prepared.currentRestatement.byteDigest,
+      ...supersessionBase,
+    },
+    unchangedBoundaries,
+  };
+  const restatement = {
+    ...restatementPayload,
+    restatementDigestSha256: sha256(restatementPayload),
+  };
+  const bindings = [
+    publicReportBinding("remediation_summary",
+      "docs/analysis/m2-v2/M2-v2-PR7-P1-remediation-summary-v0.2.json", summary),
+    publicReportBinding("merge_readiness",
+      "docs/analysis/m2-v2/M2-v2-PR7-merge-readiness-v0.2.json", readiness),
+    publicReportBinding("current_integrity_restatement",
+      "docs/analysis/m2-v2/M2-v2-canary-v3-1-integrity-restatement-v0.4.json", restatement),
+  ];
+  const historicalArtifacts = [
+    historicalAuthorityRecord(prepared.currentAuthority, "m2-v2-current-state-index-v0.2", prepared.authority.currentRestatedDecision),
+    historicalAuthorityRecord(prepared.currentRestatement, "m2.v2.canary-v3.1-integrity-restatement-public.v0.3", prepared.authority.currentRestatedDecision),
+  ];
+  const indexPayload = {
+    ...indexSemantic,
+    status: "current_digest_bound",
+    classification: "public_sanitized_not_for_formal_decision",
+    updatedAt: prepared.createdAt,
+    currentAuthority: {
+      graphDigestSha256: graph.graphDigestSha256,
+      trackedCoreCommitmentPath: "docs/analysis/m2-v2/M2-v2-PR7-core-commitment-v0.1.json",
+      trackedCoreCommitmentDigestSha256: commitmentDigest,
+      currentRestatementPath:
+        "docs/analysis/m2-v2/M2-v2-canary-v3-1-integrity-restatement-v0.4.json",
+      currentRestatementDigestSha256: sha256Buffer(jsonBytes(restatement)),
+      publicReportBindings: bindings,
+      promotionReceiptDigestSha256: supersessionBase.transactionDigestSha256,
+    },
+    supersession: {
+      predecessorPath: prepared.currentAuthority.relativePath,
+      predecessorDigestSha256: prepared.currentAuthority.byteDigest,
+      ...supersessionBase,
+    },
+    historicalArtifacts,
+    entries: [
+      {
+        artifact: "canary-v3.1 historical execution",
+        version: "v0.1",
+        stage: "V2-B8",
+        status: "historical_verified",
+        lifecycle: "historical",
+        decision: prepared.historicalEvaluation.decision,
+        safeNextAction: "none",
+      },
+      {
+        artifact: "PR7 provider-free integrity restatement",
+        version: "v0.4",
+        stage: "B6",
+        status: "current_digest_bound",
+        lifecycle: "current",
+        decision: prepared.currentRestatedEvaluation.decision,
+        safeNextAction: "independent_B8_review",
+      },
+    ],
+    unchangedBoundaries,
+  };
+  const currentStateIndex = {
+    ...indexPayload,
+    indexDigestSha256: sha256(indexPayload),
+  };
+  return {
+    schema: "m2.v2.pr7-s1-b6-authority-documents.private.v0.1",
+    privateOnly: true,
+    transactionContext,
+    graph,
+    evidence: buildB6CanonicalAuthorityEvidence(prepared, provisionalPlan, graph),
+    remediationSummary: summary,
+    mergeReadiness: readiness,
+    integrityRestatement: restatement,
+    currentStateIndex,
+    providerRequestDelta: 0,
+  };
+}
+
 /**
  * Read and recompute the remediation inputs without mutating private state.
  * Historical derived output is used only as a parity reference; it is not
@@ -193,10 +382,10 @@ export function preparePr7P1OfflineRemediation(root, options = {}) {
       providerBlocked: historicalMatch.flags.providerBlocked,
     },
   );
-  validateRestatementEvaluationBinding(loaded.currentRestatement, currentRestatedEvaluation);
-  if (loaded.authority.currentRestatedDecision !== currentRestatedEvaluation.decision) {
-    throw new Error("pr7_p1_current_authority_decision_mismatch");
-  }
+  const predecessorRestatementBinding = inspectRestatementEvaluationBinding(
+    loaded.currentRestatement,
+    currentRestatedEvaluation,
+  );
 
   const immutableManifests = buildArtifactIndex(absoluteRoot, {
     schema: "m2.v2.v2b8-immutable-manifests-private.v0.2",
@@ -225,6 +414,7 @@ export function preparePr7P1OfflineRemediation(root, options = {}) {
     results: loaded.results,
     historicalEvaluation: historicalMatch.evaluation,
     currentRestatedEvaluation,
+    predecessorRestatementBinding,
     receiptState,
     immutableManifests,
     frozenUpstreamDigests,
@@ -241,22 +431,75 @@ export function preparePr7P1OfflineRemediation(root, options = {}) {
 }
 
 export function runPr7P1OfflineRemediation(root, options = {}) {
-  const { prepared } = preparePr7P1OfflineRemediation(root, options);
+  const { prepared } = preparePr7S1B6Promotion(root, options);
   const promotion = promotePreparedPr7P1OfflineRemediation(prepared, options);
   return { ...summarizePrepared(prepared, promotion.status), promotion };
+}
+
+export function preparePr7S1B6Promotion(root, options = {}) {
+  const { prepared } = preparePr7P1OfflineRemediation(root, options);
+  const paths = {
+    summary: "docs/analysis/m2-v2/M2-v2-PR7-P1-remediation-summary-v0.2.json",
+    readiness: "docs/analysis/m2-v2/M2-v2-PR7-merge-readiness-v0.2.json",
+    restatement: "docs/analysis/m2-v2/M2-v2-canary-v3-1-integrity-restatement-v0.4.json",
+    index: "docs/analysis/m2-v2/M2-v2-current-state-index-v0.3.json",
+    commitment: "docs/analysis/m2-v2/M2-v2-PR7-core-commitment-v0.1.json",
+  };
+  const reads = Object.fromEntries(
+    Object.entries(paths).map(([role, path]) => [role, readJsonGoverned(prepared.root, path)]),
+  );
+  const expected = buildPr7S1B6AuthorityDocuments(prepared, {
+    remediationSummary: reads.summary.value,
+    mergeReadiness: reads.readiness.value,
+    trackedCoreCommitment: reads.commitment.value,
+  });
+  for (const [role, expectedValue] of [
+    ["restatement", expected.integrityRestatement],
+    ["index", expected.currentStateIndex],
+  ]) {
+    if (canonicalJson(reads[role].value) !== canonicalJson(expectedValue)) {
+      throw new Error(`pr7_s1_b6_${role}_document_drift`);
+    }
+  }
+  const authority = validateCurrentAuthorityDocuments({
+    index: reads.index.value,
+    restatement: reads.restatement.value,
+    root: prepared.root,
+    indexRelativePath: reads.index.relativePath,
+    indexByteDigest: reads.index.byteDigest,
+    restatementRelativePath: reads.restatement.relativePath,
+    restatementByteDigest: reads.restatement.byteDigest,
+    graph: expected.graph,
+    trackedCoreCommitment: reads.commitment.value,
+    trackedCoreCommitmentRelativePath: reads.commitment.relativePath,
+    trackedCoreCommitmentByteDigest: reads.commitment.byteDigest,
+  });
+  if (!authority.valid) {
+    throw new Error(`pr7_s1_b6_current_authority_invalid:${authority.issues.join(",")}`);
+  }
+  prepared.currentAuthority = reads.index;
+  prepared.currentRestatement = reads.restatement;
+  prepared.authority = authority;
+  prepared.canonicalAuthorityGraph = expected.graph;
+  prepared.canonicalAuthorityEvidence = expected.evidence;
+  prepared.b6AuthorityDocuments = expected;
+  prepared.b6TransactionIdentity = expected.transactionContext.transactionIdentity;
+  return { prepared, summary: summarizePrepared(prepared, "B6_AUTHORITY_INPUTS_VERIFIED_NO_WRITE") };
 }
 
 export function promotePreparedPr7P1OfflineRemediation(prepared, options = {}) {
   assertPrepared(prepared);
   const planByTransaction = new Map();
-  const pointerRelative = options.pointerRelative ?? CURRENT_CLOSED_REQUEST_STATE_BINDING_RELATIVE;
+  const pointerRelative = options.pointerRelative ?? PR7_S1_B6_CURRENT_BINDING_RELATIVE;
   const recovery = promoteOfflineRecoveryGroup({
     root: prepared.root,
     sources: prepared.sources,
     roleRegistry: RECOVERY_ROLE_REGISTRY,
     contractDigest: prepared.contractDigest,
-    transactionIdentity: options.transactionIdentity ?? defaultTransactionIdentity(prepared),
-    transactionRootRelative: options.transactionRootRelative ?? PR7_P1_RECOVERY_TRANSACTION_ROOT_RELATIVE,
+    transactionIdentity: options.transactionIdentity
+      ?? prepared.b6TransactionIdentity
+      ?? defaultTransactionIdentity(prepared),
+    transactionRootRelative: options.transactionRootRelative ?? PR7_S1_B6_RECOVERY_TRANSACTION_ROOT_RELATIVE,
     pointerRelative,
     ...(options.faultAt ? { faultAt: options.faultAt } : {}),
     buildMembers: (context) => {
@@ -285,7 +528,10 @@ export function promotePreparedPr7P1OfflineRemediation(prepared, options = {}) {
         authoritativeSourcesOnly: prepared.sources.every((source) => source.role !== "public_report"),
         currentAuthorityVerified: prepared.authority.valid === true,
         historicalEvaluationRecomputed: canonicalJson(prepared.historicalEvaluation) === canonicalJson(prepared.results.evaluation),
-        currentEvaluationDigestBound: prepared.currentRestatement.value.restatedContract.evaluationDigest === sha256(prepared.currentRestatedEvaluation),
+        currentEvaluationDigestBound:
+          (prepared.currentRestatement.value?.currentDecisionComputation?.evaluationDigestSha256
+            ?? prepared.currentRestatement.value?.restatedContract?.evaluationDigest)
+          === sha256(prepared.currentRestatedEvaluation),
         requestLedgerReplays: prepared.receiptState.ledgerValidation.valid === true,
         closedRoleSetExact: plan?.closedDescriptors.length === CLOSED_ATOMIC_MEMBER_ROLES.length,
         candidateValid: validation.valid,
@@ -302,6 +548,7 @@ export function promotePreparedPr7P1OfflineRemediation(prepared, options = {}) {
         bindingRelativePath: pointerRelative,
         scope: "v2b8",
         eventStage: "v2b8",
+        canonicalAuthorityEvidence: prepared.canonicalAuthorityEvidence,
       });
       const issues = closed.valid ? [] : closed.issues.map((issue) => `closed:${issue}`);
       if (closed.valid && prepared.requireV2B8Verification) {
@@ -318,6 +565,7 @@ export function promotePreparedPr7P1OfflineRemediation(prepared, options = {}) {
     bindingRelativePath: pointerRelative,
     scope: "v2b8",
     eventStage: "v2b8",
+    canonicalAuthorityEvidence: prepared.canonicalAuthorityEvidence,
   });
   if (!closed.valid) throw new Error(`pr7_p1_promoted_binding_invalid:${closed.issues.join(",")}`);
   if (prepared.requireV2B8Verification) {
@@ -350,7 +598,10 @@ export function buildPr7P1OfflineReceiptState(input) {
     if (seenLegacyDigests.has(legacy.receiptDigest)) throw new Error("pr7_p1_tavily_physical_receipt_duplicate");
     seenLegacyDigests.add(legacy.receiptDigest);
     const providerReceiptMigration = migrateLegacyReceiptToEnvelopeV02(legacy, { migratedAt });
-    const artifactPayload = omitKeys(query, ["cacheHit"]);
+    const artifactPayload = {
+      ...omitKeys(query, ["cacheHit"]),
+      country: typeof query.country === "string" ? query.country : "",
+    };
     const envelope = createReceiptEnvelope(artifactPayload, {
       cacheHit: false,
       readAt: null,
@@ -358,7 +609,7 @@ export function buildPr7P1OfflineReceiptState(input) {
     });
     return {
       kind: "tavily",
-      query,
+    query: artifactPayload,
       envelope,
       migration: {
         schema: "m2.v2.tavily-query-artifact-envelope-migration.v0.2",
@@ -442,7 +693,7 @@ export function buildPr7P1OfflineReceiptState(input) {
   };
 }
 
-export function buildPr7P1ClosedRecoveryMembers(prepared, context) {
+export function buildPr7P1ClosedRecoveryMembers(prepared, context, options = {}) {
   assertPrepared(prepared);
   const transactionId = requiredToken(context.transactionId, "pr7_p1_transaction_id_invalid");
   const finalDirectoryRelative = normalizeRelativePath(context.finalDirectoryRelative);
@@ -522,10 +773,22 @@ export function buildPr7P1ClosedRecoveryMembers(prepared, context) {
     ["frozen_upstream_digests", { relativePath: "frozen-upstream-digests-private-v0.2.json", bytes: jsonBytes(prepared.frozenUpstreamDigests) }],
     ["derived_evaluation", { relativePath: "derived-evaluation-private-v0.3.json", bytes: jsonBytes(derivedEvaluation) }],
     ["effective_receipt_index", { relativePath: "effective-receipt-index-private-v0.2.json", bytes: effectiveReceiptIndexBytes }],
-    ["contract_bound_public_report_digests", { relativePath: "contract-bound-public-report-digests-private-v0.2.json", bytes: jsonBytes(prepared.contractBoundPublicReportDigests) }],
     ["receipt_envelopes", { relativePath: "receipt-envelopes-private-v0.2.ndjson", bytes: receiptBytes }],
     ["receipt_migration", { relativePath: "receipt-envelope-migration-private-v0.2.json", bytes: jsonBytes(prepared.receiptState.migration) }],
   ]);
+  const includeCanonicalAuthorityGraph = options.skipCanonicalAuthorityGraph !== true
+    && isPlainObject(prepared.canonicalAuthorityGraph);
+  const contractBoundPublicReportDigests = includeCanonicalAuthorityGraph
+    ? {
+      ...prepared.contractBoundPublicReportDigests,
+      schema: "m2.v2.v2b8-contract-bound-public-report-digests-private.v0.3",
+      canonicalAuthorityGraph: prepared.canonicalAuthorityGraph,
+    }
+    : prepared.contractBoundPublicReportDigests;
+  generated.set("contract_bound_public_report_digests", {
+    relativePath: "contract-bound-public-report-digests-private-v0.2.json",
+    bytes: jsonBytes(contractBoundPublicReportDigests),
+  });
 
   const externalDescriptors = [
     descriptor("execution_contract", prepared.executionContract.relativePath, prepared.executionContract.byteDigest),
@@ -657,17 +920,26 @@ function recomputeHistoricalExactly(results, reference, options) {
   return { ...candidates[0], equivalentFlagCombinationCount: candidates.length };
 }
 
-function validateRestatementEvaluationBinding(restatement, evaluation) {
+function inspectRestatementEvaluationBinding(restatement, evaluation) {
   const expectedDigest = restatement?.restatedContract?.evaluationDigest;
-  if (!/^[a-f0-9]{64}$/u.test(String(expectedDigest ?? "")) || expectedDigest !== sha256(evaluation)) {
-    throw new Error("pr7_p1_restatement_evaluation_digest_mismatch");
+  if (!/^[a-f0-9]{64}$/u.test(String(expectedDigest ?? ""))) {
+    throw new Error("pr7_p1_restatement_evaluation_digest_invalid");
   }
+  const recomputedDigest = sha256(evaluation);
   const decision = restatement?.restatedContract?.decision ?? restatement?.currentRestatedDecision;
-  if (decision !== evaluation.decision) throw new Error("pr7_p1_restatement_decision_mismatch");
   if (restatement?.providerRequestDelta !== 0
     || (restatement?.restatedContract?.full160Authorized ?? restatement?.full160Authorized) !== false) {
     throw new Error("pr7_p1_restatement_boundary_invalid");
   }
+  return {
+    predecessorEvaluationDigestSha256: expectedDigest,
+    recomputedEvaluationDigestSha256: recomputedDigest,
+    evaluationDigestMatches: expectedDigest === recomputedDigest,
+    predecessorDecision: decision,
+    recomputedDecision: evaluation.decision,
+    decisionMatches: decision === evaluation.decision,
+    requiresVersionedSupersession: expectedDigest !== recomputedDigest || decision !== evaluation.decision,
+  };
 }
 
 function buildRecoverySources(root) {
@@ -930,6 +1202,256 @@ function defaultTransactionIdentity(prepared) {
   return `${PR7_P1_TRANSACTION_IDENTITY}:${authorityDigest}`;
 }
 
+function buildB6TransactionContext(prepared) {
+  const transactionIdentity = defaultTransactionIdentity(prepared);
+  const sources = prepared.sources
+    .map(({ role, relativePath, byteDigest }) => ({ role, relativePath, byteDigest }))
+    .sort((left, right) => (
+      `${left.role}:${left.relativePath}`.localeCompare(`${right.role}:${right.relativePath}`)
+    ));
+  const sourceSetDigest = computeOfflineRecoverySourceSetDigest(sources);
+  const transactionId = deriveOfflineRecoveryTransactionId({
+    sourceSetDigest,
+    contractDigest: prepared.contractDigest,
+    transactionIdentity,
+  });
+  const transactionRootRelative = PR7_S1_B6_RECOVERY_TRANSACTION_ROOT_RELATIVE;
+  return {
+    root: prepared.root,
+    transactionId,
+    transactionIdentity,
+    transactionRootRelative,
+    finalDirectoryRelative: `${transactionRootRelative}/${transactionId}`,
+    sources,
+    sourceSetDigest,
+    contractDigest: prepared.contractDigest,
+    providerRequestDelta: 0,
+  };
+}
+
+function buildCurrentDecisionComputation(prepared) {
+  const evaluation = prepared.currentRestatedEvaluation;
+  return {
+    evaluationDigestSha256: sha256(evaluation),
+    arithmeticInputsDigestSha256: sha256({
+      metrics: evaluation.metrics ?? null,
+      arithmetic: evaluation.arithmetic ?? null,
+      counts: evaluation.counts ?? null,
+    }),
+    semanticInputsDigestSha256: sha256({
+      safetyGates: evaluation.safetyGates ?? null,
+      qualityGates: evaluation.qualityGates ?? null,
+      blockerIds: evaluation.blockerIds ?? null,
+      nextStep: evaluation.nextStep ?? null,
+    }),
+    thresholdProfileDigestSha256: sha256({
+      contractDigest: prepared.contractDigest,
+      thresholds: prepared.results.contract?.thresholds ?? null,
+    }),
+    arithmeticRecomputed: true,
+    semanticGatesRecomputed: true,
+    recomputedDecision: evaluation.decision,
+    decisionRuleDigestSha256: sha256({
+      decision: evaluation.decision,
+      safetyPassed: evaluation.safetyPassed ?? null,
+      qualityPassed: evaluation.qualityPassed ?? null,
+      blockerIds: evaluation.blockerIds ?? null,
+    }),
+  };
+}
+
+function unchangedB6Boundaries() {
+  return {
+    providerRequestDelta: 0,
+    databaseConnections: 0,
+    actualExternalFetchCount: 0,
+    canaryExecuted: false,
+    full160Executed: false,
+    modelTrainingPerformed: false,
+    holdoutOpened: false,
+    releasePerformed: false,
+    prMerged: false,
+  };
+}
+
+function buildB6CanonicalAuthorityGraph(prepared, plan, publicDocuments) {
+  const memberByRole = new Map(plan.members.map((member) => [member.role, member]));
+  const memberMapping = (nodeId, role) => {
+    const member = memberByRole.get(role);
+    if (!member) throw new Error(`pr7_s1_b6_member_missing:${role}`);
+    return buildAuthorityPhysicalMapping({
+      nodeId,
+      repositoryRelativePath: `${plan.closedManifest.members[0].path.split("/").slice(0, -1).join("/")}/${member.relativePath}`,
+      contentDigestSha256: sha256Buffer(member.bytes),
+      objectType: "FILE",
+    });
+  };
+  const mappings = [
+    memberMapping("immutable_inputs", "immutable_manifests"),
+    buildAuthorityPhysicalMapping({
+      nodeId: "execution_contract",
+      repositoryRelativePath: prepared.executionContract.relativePath,
+      contentDigestSha256: prepared.executionContract.byteDigest,
+      objectType: "FILE",
+    }),
+    memberMapping("request_event_ledger", "request_event_ledger"),
+    memberMapping("physical_receipt_envelopes", "receipt_envelopes"),
+    memberMapping("receipt_index", "receipt_index"),
+    memberMapping("safe_cache", "cache_index"),
+    memberMapping("effective_receipt_index", "effective_receipt_index"),
+    memberMapping("counter_state_projection", "counter_projection"),
+    buildAuthorityPhysicalMapping({
+      nodeId: "event_semantics_profile",
+      repositoryRelativePath: "docs/technical-design/m2-v2/M2-v2-event-time-clause-binding-v0.4.json",
+      contentDigestSha256: b6EventSemanticsProfileDigest(prepared.root),
+      objectType: "FILE",
+    }),
+    memberMapping("derived_evaluation", "derived_evaluation"),
+    semanticPublicMapping(
+      "public_remediation_summary",
+      "docs/analysis/m2-v2/M2-v2-PR7-P1-remediation-summary-v0.2.json",
+      publicDocuments.remediationSummary,
+    ),
+    semanticPublicMapping(
+      "public_merge_readiness",
+      "docs/analysis/m2-v2/M2-v2-PR7-merge-readiness-v0.2.json",
+      publicDocuments.mergeReadiness,
+    ),
+    buildAuthorityPhysicalMapping({
+      nodeId: "tracked_core_commitment",
+      repositoryRelativePath: "docs/analysis/m2-v2/M2-v2-PR7-core-commitment-v0.1.json",
+      contentDigestSha256: readGovernedFile(
+        prepared.root,
+        "docs/analysis/m2-v2/M2-v2-PR7-core-commitment-v0.1.json",
+      ).byteDigest,
+      objectType: "FILE",
+    }),
+    semanticPublicMapping(
+      "current_integrity_restatement",
+      "docs/analysis/m2-v2/M2-v2-canary-v3-1-integrity-restatement-v0.4.json",
+      publicDocuments.restatementSemantic,
+    ),
+    semanticPublicMapping(
+      "current_state_index",
+      "docs/analysis/m2-v2/M2-v2-current-state-index-v0.3.json",
+      publicDocuments.indexSemantic,
+    ),
+  ];
+  return deriveCanonicalAuthorityGraphV0_3({
+    physicalMappings: mappings,
+    selectionDecisions: buildB6SelectionDecisions(plan, prepared),
+  });
+}
+
+function buildB6CanonicalAuthorityEvidence(prepared, plan, graph) {
+  const cacheEntries = plan.documents.cacheIndex.entries;
+  const cacheByReceipt = new Map(cacheEntries.map((entry) => [entry.receiptDigest, entry]));
+  const projectionProfileDigestSha256 = sha256({
+    schema: "m2.v2.safe-cache-projection-runtime-profile.v0.3",
+    contractDigest: prepared.contractDigest,
+  });
+  const receiptIndexEntries = cacheEntries.map(({ logicalKey, physicalKey, receiptDigest }) => ({
+    logicalKey,
+    physicalKey,
+    receiptDigest,
+  }));
+  const effectiveReceiptIndexEntries = plan.documents.effectiveReceiptIndex.entries.map((entry) => {
+    const cached = cacheByReceipt.get(entry.receiptDigest);
+    if (!cached) throw new Error("pr7_s1_b6_effective_receipt_cache_binding_missing");
+    return {
+      logicalKey: cached.logicalKey,
+      physicalKey: cached.physicalKey,
+      receiptDigest: cached.receiptDigest,
+    };
+  });
+  const evidence = {
+    requestEventLedger: prepared.receiptState.ledger,
+    receiptEnvelopes: prepared.receiptState.envelopeRows.map((row, index) => ({
+      envelope: row.envelope,
+      logicalKey: cacheEntries[index].logicalKey,
+      physicalKey: cacheEntries[index].physicalKey,
+      replayableSuccessful: true,
+      projectionProfileDigestSha256,
+    })),
+    receiptIndexEntries,
+    safeCacheEntries: receiptIndexEntries.map((entry) => ({
+      ...entry,
+      projectionProfileDigestSha256,
+    })),
+    effectiveReceiptIndexEntries,
+    counterProjection: plan.documents.counterProjection.counters,
+    immutableInputsDigestSha256: sha256(prepared.immutableManifests),
+    eventSemanticsProfileDigestSha256: b6EventSemanticsProfileDigest(prepared.root),
+    consumedPhysicalObjectIds: graph.physicalMappings.map((entry) => entry.physicalObjectIdSha256),
+  };
+  evidence.derivedInputBindings = buildAuthorityDerivedInputBindings(evidence);
+  return evidence;
+}
+
+function buildB6SelectionDecisions(plan, prepared) {
+  const cacheEntries = plan.documents.cacheIndex.entries;
+  const effectiveReceipts = new Set(
+    plan.documents.effectiveReceiptIndex.entries.map((entry) => entry.receiptDigest),
+  );
+  const plannedKeys = unique(prepared.receiptState.ledger
+    .filter((event) => event.eventType === "planned")
+    .map((event) => event.logicalKey));
+  return plannedKeys.map((logicalKey) => {
+    const candidates = cacheEntries.filter((entry) => entry.logicalKey === logicalKey);
+    const selected = candidates.find((entry) => effectiveReceipts.has(entry.receiptDigest)) ?? null;
+    return buildAuthoritySelectionDecision({
+      logicalKey,
+      candidatePhysicalKeys: candidates.map((entry) => entry.physicalKey),
+      selectedPhysicalKey: selected?.physicalKey ?? null,
+      decision: selected ? "SELECTED" : (candidates.length ? "EXPLICIT_BLOCKED" : "NO_REPLAYABLE_RECEIPT"),
+      reason: selected
+        ? "UNIQUE_PERMITTED_RECEIPT"
+        : (candidates.length ? "POLICY_BLOCKED" : "NO_COMPLETED_RECEIPT"),
+    });
+  });
+}
+
+function semanticPublicMapping(nodeId, repositoryRelativePath, semanticPayload) {
+  return buildAuthorityPhysicalMapping({
+    nodeId,
+    repositoryRelativePath,
+    contentDigestSha256: sha256(semanticPayload),
+    objectType: "FILE",
+  });
+}
+
+function publicReportBinding(role, repositoryRelativePath, value) {
+  return {
+    role,
+    repositoryRelativePath,
+    pathIdentityDigestSha256: sha256(repositoryRelativePath),
+    semanticDigestSha256: sha256(value),
+    byteDigestSha256: sha256Buffer(jsonBytes(value)),
+  };
+}
+
+function historicalAuthorityRecord(read, version, decision) {
+  return {
+    artifact: read.relativePath,
+    version,
+    decision,
+    lifecycle: "superseded_immutable",
+    byteDigestSha256: read.byteDigest,
+  };
+}
+
+function b6EventSemanticsProfileDigest(root) {
+  return readGovernedFile(
+    root,
+    "docs/technical-design/m2-v2/M2-v2-event-time-clause-binding-v0.4.json",
+  ).byteDigest;
+}
+
+function requiredPublicDocument(value, code) {
+  if (!isPlainObject(value)) throw new Error(code);
+  return cloneJson(value);
+}
+
 function assertPrepared(value) {
   if (!isPlainObject(value) || value.schema !== PR7_P1_OFFLINE_REMEDIATION_SCHEMA) {
     throw new Error("pr7_p1_prepared_input_invalid");
@@ -1037,6 +1559,75 @@ function ndjsonBytes(values) {
 
 function sha256Buffer(value) {
   return createHash("sha256").update(value).digest("hex");
+}
+
+function unique(values) {
+  return [...new Set(values)];
+}
+
+function documentsTupleKeys(values) {
+  return values.map((value) => (
+    `${value.logicalKey}\u0000${value.physicalKey}\u0000${value.receiptDigest}`
+  ));
+}
+
+function diagnoseB6EnvelopeBindings(prepared, evidence) {
+  const completed = new Map(prepared.receiptState.ledger
+    .filter((event) => event.eventType === "completed")
+    .map((event) => [`${event.logicalKey}\u0000${event.physicalKey}`, event]));
+  let mismatches = 0;
+  for (const value of evidence.receiptEnvelopes) {
+    const payload = value.envelope.receiptPayload;
+    const event = completed.get(`${value.logicalKey}\u0000${value.physicalKey}`);
+    if (!event) {
+      mismatches += 1;
+      continue;
+    }
+    if (payload.schema === "m2.v2.relay-extraction-receipt.v0.2") {
+      if (payload.logicalExtractionKey !== value.logicalKey
+        || payload.cacheKey !== value.physicalKey
+        || payload.requestPayloadDigest !== event.requestDigest
+        || payload.provider !== event.provider
+        || (Object.hasOwn(payload, "logicalKey") && payload.logicalKey !== payload.logicalExtractionKey)
+        || (Object.hasOwn(payload, "physicalKey") && payload.physicalKey !== payload.cacheKey)
+        || (Object.hasOwn(payload, "requestDigest") && payload.requestDigest !== payload.requestPayloadDigest)
+        || (Object.hasOwn(payload, "stage") && payload.stage !== "v2b8")) mismatches += 1;
+    } else {
+      const receipt = payload.providerReceipt;
+      const logicalKey = tavilyLogicalKey(payload, "physical_dispatch");
+      const requestDigest = sha256({
+        provider: receipt?.provider,
+        queryId: payload.queryId,
+        queryText: payload.queryText,
+        intent: payload.intent,
+        country: payload.country,
+        runKind: payload.runKind,
+        canarySlotId: payload.canarySlotId,
+      });
+      if (logicalKey !== value.logicalKey
+        || receipt?.cacheKey !== value.physicalKey
+        || requestDigest !== event.requestDigest
+        || receipt?.provider !== event.provider
+        || receipt?.schema !== "m2.v2.tavily-provider-receipt.v0.1"
+        || receipt?.queryId !== payload.queryId
+        || typeof payload.runKind !== "string"
+        || typeof payload.canarySlotId !== "string"
+        || typeof payload.queryId !== "string"
+        || typeof payload.intent !== "string"
+        || typeof payload.queryText !== "string"
+        || typeof payload.country !== "string"
+        || (Object.hasOwn(payload, "logicalKey") && payload.logicalKey !== logicalKey)
+        || (Object.hasOwn(payload, "physicalKey") && payload.physicalKey !== receipt?.cacheKey)
+        || (Object.hasOwn(payload, "cacheKey") && payload.cacheKey !== receipt?.cacheKey)
+        || (Object.hasOwn(payload, "provider") && payload.provider !== receipt?.provider)
+        || (Object.hasOwn(payload, "stage") && payload.stage !== "v2b8")) mismatches += 1;
+    }
+  }
+  return mismatches;
+}
+
+function cloneJson(value) {
+  return JSON.parse(JSON.stringify(value));
 }
 
 function isPlainObject(value) {

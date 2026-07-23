@@ -63,8 +63,8 @@
       "contractId": "authority_binding_v0_3",
       "machinePath": "docs/technical-design/m2-v2/M2-v2-verifier-authority-binding-v0.3.json",
       "narrativePath": "docs/technical-design/m2-v2/M2-v2-verifier-authority-binding-v0.3.md",
-      "machineSha256": "3725835834dbd7fea174f5179e2ffb37d801c9973d8bc5c6a5ec2e08ae43c16d",
-      "narrativeSha256": "73b2a0a4a00d6268574031c22b04dbb478c0b79575d7d1285bfaff3972cecbf1",
+      "machineSha256": "ab7b908a7928bba7e149e3b0b0c907381b7ca7fa33a43d654d44430afb306cc3",
+      "narrativeSha256": "b05de52d5f8d0c97514b8e0e39768e949c7369bfe90a8396e32260e4c4b4e0a2",
       "schema": "m2.v2.verifier-authority-binding-public.v0.3",
       "declaredSchemas": [
         "m2.v2.verifier-authority-binding-public.v0.3",

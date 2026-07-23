@@ -2,7 +2,7 @@
 import { resolve } from "node:path";
 
 import {
-  preparePr7P1OfflineRemediation,
+  preparePr7S1B6Promotion,
   runPr7P1OfflineRemediation,
 } from "../../src/domain/m2V2EvidencePilot/pr7P1OfflineRemediation.js";
 
@@ -23,7 +23,7 @@ const root = resolve(args.root ?? process.cwd());
 try {
   const result = args.promote
     ? runPr7P1OfflineRemediation(root)
-    : preparePr7P1OfflineRemediation(root).summary;
+    : preparePr7S1B6Promotion(root).summary;
   process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
 } catch (error) {
   process.stderr.write(`${JSON.stringify({
@@ -59,4 +59,3 @@ function safeIssue(error) {
     .replace(/[^A-Za-z0-9_.:+-]/gu, "_")
     .slice(0, 240);
 }
-

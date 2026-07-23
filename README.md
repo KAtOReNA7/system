@@ -2,7 +2,7 @@
 
 ## 2026-07-24 PR #7 当前执行状态
 
-用户已授权 B5–B8。当前批次为 B5；B5 正在实施并等待 exact-head 双平台 CI，随后依次进入 B6 provider-free 离线重建与原子 supersession、B7 全注册表回归、B8 独立复审。B8 必须由独立 reviewer 执行，实施代理不得自审并关闭 finding。
+用户已授权 B5–B8。B5 已在 exact HEAD `8804cd508f8e30d90dfc6f429e0b49ab6cae647c` 通过双平台 CI；B6 已完成本地 provider-free 离线重建、确定性 workbook vNext、14-role 原子 supersession 和幂等 no-op 证明，当前等待 B6 exact-head 双平台 CI。随后依次进入 B7 全注册表回归和 B8 独立复审。B8 必须由独立 reviewer 执行，实施代理不得自审并关闭 finding。
 
 当前 10 个 finding 仍全部 `OPEN`，PR #7 仍为 Draft/open/unmerged。provider、数据库、Canary/full160、模型训练、holdout、mark ready、merge、release 和 M3 formal 仍未授权。
 
@@ -17,7 +17,7 @@ v0.2 保留 v0.1 作为历史输入，并纠正两项会影响后续执行的旧
 1. 当前 S1 validator 会重新读取 `reportPath`、`receiptPath`，重算 report SHA-256 和 canonical receipt digest；它不是只信任 receipt 自我声明。
 2. private artifact 的“本机存在/缺失”是运行时库存状态，不应写成仓库长期事实；核心开发必须始终与 private capability 解耦。
 
-审计结论不是批量删除授权。PR #7 收口前，只允许处理当前已授权批次、修复跨电脑制品恢复和准备后续 cleanup；不得据此运行 provider、数据库、Canary/full160、模型训练、holdout、B8、merge、release 或 M3 formal。
+审计结论不是批量删除授权。PR #7 收口前，只允许处理当前已授权批次、修复跨电脑制品恢复和准备后续 cleanup；不得据此运行 provider、数据库、Canary/full160、模型训练、holdout、merge、release 或 M3 formal。B8 已由用户另行授权，但仅限独立 reviewer 执行。
 
 新电脑的公开核心开发入口：
 

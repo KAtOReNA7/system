@@ -214,9 +214,9 @@ const EXPECTED_PROVIDER_SINKS_SHA256 = "2df3c73886173db09c9db71e0471ce019c693e32
 const EXPECTED_PROVIDER_ROUTES_SHA256 = "f24e754f0cd00fcba3370420f7b53ea77d1f32dd4a5b51fa0a62ed236ba84bf5";
 const EXPECTED_EVENT_DECISION_TABLE_SHA256 = "cc2aaf691c0ccdce1767b9612c687516ffdaef5b0b97521ca5d88bcdf1bc2289";
 const EXPECTED_WORKBOOK_RELATIONSHIPS_SHA256 = "e9fe206d76ca7d7ec196488e9c8e8c0dca3527384b8c533e405499573b1581bc";
-const EXPECTED_CONTRACT_ENTRIES_SHA256 = "d601a618fb559cd7144e36a89e16def1afaf941b082b41c1651b4424ea568fa8";
+const EXPECTED_CONTRACT_ENTRIES_SHA256 = "530b17ed8df116ecffdf7dd6fbaf596650438f1f35ff7e4b9e3f9156286bacea";
 const EXPECTED_VERSION_GRAPH_EDGES_SHA256 = "88a6bbe0117d2b89607a8690cf1b01bc5268d3940fcb7b7c48b8e765c878d59b";
-const EXPECTED_CONTRACT_REGISTRY_CANONICAL_SHA256 = "ec365942c20cfa1056081ccba6f0b18a65cd871cd577bf09827f1605e66bc99f";
+const EXPECTED_CONTRACT_REGISTRY_CANONICAL_SHA256 = "bbc2213108035385a1eca553857b2dcae57ce1fec806f4d96bced2d1fbf44574";
 
 const EXPECTED_ALLOWED_PATH_CLASSES = Object.freeze([
   "config/m2-v2-pr7-s1-*.json",
@@ -243,7 +243,7 @@ const EXPECTED_PROHIBITED_ACTIONS = Object.freeze([
   "overwrite historical tracked or governed-private immutable artifacts",
   "rebase, squash, amend, force push, git add dot, or git add -A",
   "mark PR ready, merge PR, or release",
-  "continue after source evidence, remote, native-platform, workbook, promotion, or provider-counter failure",
+  "continue after source evidence, remote, native-platform, workbook, unrolled-back promotion, or provider-counter failure",
 ]);
 
 export const S1_LOCAL_VALIDATION_CHECK_FIELDS = Object.freeze([
@@ -338,7 +338,7 @@ export function validateS1TaskManifest(manifest, bindings = {}) {
   }
   validateBranchPolicy(manifest.branchPolicy);
   assertExactArray(manifest.authorizedBatches, S1_BATCHES, "authorized_batches_mismatch");
-  if (manifest.currentBatch !== "B5") throw new Error("current_batch_must_be_b5");
+  if (manifest.currentBatch !== "B6") throw new Error("current_batch_must_be_b6");
   validateBatchDag(manifest.batchDag);
   assertExactArray(manifest.allowedPathClasses, EXPECTED_ALLOWED_PATH_CLASSES, "allowed_path_classes_invalid");
   assertExactArray(manifest.prohibitedActions, EXPECTED_PROHIBITED_ACTIONS, "prohibited_actions_invalid");
@@ -678,6 +678,17 @@ function validateAuthorityCurrentDefinitions(document) {
     "role", "repositoryRelativePath", "pathIdentityDigestSha256", "semanticDigestSha256",
     "byteDigestSha256",
   ], "semantic_current_index_report_binding_schema");
+  if (index.publicReportBindingSchema.cardinality
+        !== "exactly_one_per_non_self_public_report_registry_role"
+      || index.publicReportBindingSchema.selfRoleExcluded !== "current_state_index"
+      || index.publicReportBindingSchema.byteSelfHashRequired !== false) {
+    throw new Error("semantic_current_index_self_binding_policy_invalid");
+  }
+  assertExactArray(index.publicReportBindingSchema.selfBindingControls, [
+    "indexDigestSha256",
+    "closed_transaction_member_byte_digest",
+    "canonical_authority_semantic_mapping",
+  ], "semantic_current_index_self_binding_controls_invalid");
 
   const restatement = document.integrityRestatementV0_4;
   assertPlainObject(restatement, "semantic_restatement_definition_must_be_object");
@@ -1928,14 +1939,18 @@ export function validateS1Overlay(overlay) {
     "remediationComplete", "pullRequestState",
   ], "overlay");
   assertPlainObject(overlay.batchStatuses, "overlay_batch_statuses_must_be_object");
-  assertExactFields(overlay.batchStatuses, ["B0", "B1", "B2", "B3", "B4", "B5"], "overlay_batch_statuses");
+  assertExactFields(
+    overlay.batchStatuses,
+    ["B0", "B1", "B2", "B3", "B4", "B5", "B6"],
+    "overlay_batch_statuses",
+  );
   assertPlainObject(overlay.candidateFindingStatuses, "overlay_candidate_statuses_must_be_object");
   assertExactFields(
     overlay.candidateFindingStatuses,
-    ["PR7-P1-008", "PR7-P1-009", "PR7-P2-013", "PR7-P2-016"],
+    S1_FINDING_IDS,
     "overlay_candidate_statuses",
   );
-  for (const findingId of ["PR7-P1-008", "PR7-P1-009", "PR7-P2-013", "PR7-P2-016"]) {
+  for (const findingId of S1_FINDING_IDS) {
     assertPlainObject(overlay.candidateFindingStatuses[findingId], `overlay_${findingId}_candidate_status_must_be_object`);
     assertExactFields(overlay.candidateFindingStatuses[findingId], ["findingStatus", "candidateStatus"], `overlay_${findingId}_candidate_status`);
   }
@@ -1952,16 +1967,17 @@ export function validateS1Overlay(overlay) {
     && overlay.s0Status === "COMPLETE"
     && overlay.supportSharpeningStopCriteriaReached === true
     && overlay.findingRemediationAuthorized === true
-    && overlay.currentBatch === "B5"
+    && overlay.currentBatch === "B6"
     && overlay.batchStatuses.B0 === "COMPLETE"
     && overlay.batchStatuses.B1 === "COMPLETE_PENDING_B8"
     && overlay.batchStatuses.B2 === "COMPLETE_PENDING_B8"
     && overlay.batchStatuses.B3 === "COMPLETE_PENDING_B8"
     && overlay.batchStatuses.B4 === "COMPLETE_PENDING_B8"
-    && overlay.batchStatuses.B5 === "IN_PROGRESS"
-    && overlay.nextBatch === "B5"
-    && overlay.nextAllowedPhase === "B5_AUTHORIZED_IN_PROGRESS"
-    && ["PR7-P1-008", "PR7-P1-009", "PR7-P2-013", "PR7-P2-016"].every((findingId) => (
+    && overlay.batchStatuses.B5 === "COMPLETE_PENDING_B8"
+    && overlay.batchStatuses.B6 === "PROMOTED_PENDING_EXACT_HEAD_CI"
+    && overlay.nextBatch === "B7"
+    && overlay.nextAllowedPhase === "B7_AUTHORIZED_AFTER_B6_EXACT_HEAD_CI"
+    && S1_FINDING_IDS.every((findingId) => (
       overlay.candidateFindingStatuses[findingId].findingStatus === "OPEN"
       && overlay.candidateFindingStatuses[findingId].candidateStatus === "CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW"
     ))

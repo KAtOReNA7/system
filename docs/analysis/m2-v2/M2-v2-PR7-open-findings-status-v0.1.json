@@ -32,18 +32,27 @@
     "B6",
     "B7"
   ],
-  "currentBatch": "B5",
+  "currentBatch": "B6",
   "batchStatuses": {
     "B0": "COMPLETE",
     "B1": "COMPLETE_PENDING_B8",
     "B2": "COMPLETE_PENDING_B8",
     "B3": "COMPLETE_PENDING_B8",
     "B4": "COMPLETE_PENDING_B8",
-    "B5": "IN_PROGRESS"
+    "B5": "COMPLETE_PENDING_B8",
+    "B6": "PROMOTED_PENDING_EXACT_HEAD_CI"
   },
-  "nextBatch": "B5",
-  "nextAllowedPhase": "B5_AUTHORIZED_IN_PROGRESS",
+  "nextBatch": "B7",
+  "nextAllowedPhase": "B7_AUTHORIZED_AFTER_B6_EXACT_HEAD_CI",
   "candidateFindingStatuses": {
+    "PR7-P1-003": {
+      "findingStatus": "OPEN",
+      "candidateStatus": "CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW"
+    },
+    "PR7-P1-006": {
+      "findingStatus": "OPEN",
+      "candidateStatus": "CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW"
+    },
     "PR7-P1-008": {
       "findingStatus": "OPEN",
       "candidateStatus": "CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW"
@@ -53,6 +62,22 @@
       "candidateStatus": "CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW"
     },
     "PR7-P1-009": {
+      "findingStatus": "OPEN",
+      "candidateStatus": "CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW"
+    },
+    "PR7-P1-013": {
+      "findingStatus": "OPEN",
+      "candidateStatus": "CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW"
+    },
+    "PR7-P2-006": {
+      "findingStatus": "OPEN",
+      "candidateStatus": "CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW"
+    },
+    "PR7-P2-008": {
+      "findingStatus": "OPEN",
+      "candidateStatus": "CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW"
+    },
+    "PR7-P2-009": {
       "findingStatus": "OPEN",
       "candidateStatus": "CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW"
     },

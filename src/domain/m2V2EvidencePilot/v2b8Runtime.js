@@ -1257,7 +1257,7 @@ function verifyV2B8BoundCurrentState(root, results, closedBinding, options) {
       currentEvaluationVerified = canonicalJson(currentRecomputed) === canonicalJson(derived.currentRestatedEvaluation)
         && derived.currentRestatedEvaluation?.decision === closedBinding.currentRestatedDecision;
       if (!currentEvaluationVerified) issues.push("current_restatement_evaluation_recompute_mismatch");
-      const evaluationDigest = currentRestatement?.restatedContract?.evaluationDigest;
+      const evaluationDigest = selectV2B8CurrentRestatementEvaluationDigest(currentRestatement);
       if (evaluationDigest !== sha256(currentRecomputed)) issues.push("current_restatement_evaluation_digest_mismatch");
     }
   }
@@ -1272,6 +1272,17 @@ function verifyV2B8BoundCurrentState(root, results, closedBinding, options) {
     effectiveReceiptsVerified,
     currentAuthorityDigestVerified,
   };
+}
+
+export function selectV2B8CurrentRestatementEvaluationDigest(document) {
+  if (!isPlainObject(document)) return null;
+  if (document.schema === "m2.v2.canary-v3.1-integrity-restatement-public.v0.4") {
+    return document.currentDecisionComputation?.evaluationDigestSha256 ?? null;
+  }
+  if (document.schema === "m2.v2.canary-v3.1-integrity-restatement-public.v0.3") {
+    return document.restatedContract?.evaluationDigest ?? null;
+  }
+  return null;
 }
 
 function failedV2B8CurrentVerification(binding, extraIssues = []) {
@@ -1355,12 +1366,19 @@ function validateEffectiveReceiptIndexDocument(document, issues) {
 }
 
 function validateArtifactIndexShape(document, role, issues) {
+  const baseKeys = ["entries", "full160Authorized", "privateOnly", "schema"];
+  const isAuthorityGraphVersion = role === "contract_bound_public_report_digests"
+    && document?.schema === "m2.v2.v2b8-contract-bound-public-report-digests-private.v0.3";
+  const expectedKeys = isAuthorityGraphVersion
+    ? [...baseKeys, "canonicalAuthorityGraph"]
+    : baseKeys;
   if (!isPlainObject(document)
-    || !hasExactKeys(document, ["entries", "full160Authorized", "privateOnly", "schema"])
+    || !hasExactKeys(document, expectedKeys)
     || typeof document.schema !== "string"
     || document.privateOnly !== true
     || document.full160Authorized !== false
-    || !Array.isArray(document.entries)) {
+    || !Array.isArray(document.entries)
+    || (isAuthorityGraphVersion && !isPlainObject(document.canonicalAuthorityGraph))) {
     issues.push(`${role}_shape_invalid`);
     return;
   }

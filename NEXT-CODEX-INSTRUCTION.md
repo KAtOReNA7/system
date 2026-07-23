@@ -2,9 +2,9 @@
 
 ## 2026-07-19 PR #7 S1 B0–B7 增量边界
 
-7 项 S0 开发支持基线已经在 exact HEAD `badbf453e1e99ba87cc3064601e480a09ff1b149` 完成。用户现已单独授权直接在 `codex/m2-v2-evidence-pilot-v1` 上按 B0–B7 分层实施 10 项 open finding 的 S1 修复、provider-free 离线重建、显式原子提交、普通 push 与 exact-head 双平台 CI checkpoint。B3 已完成；用户于 2026-07-23 明确启动的 B4 也已完成 implementation 并通过 exact-head Linux/Windows CI。当前 `currentBatch=B4`、`nextBatch=B5`；B5–B8 仍需新的明确授权。
+7 项 S0 开发支持基线已经在 exact HEAD `badbf453e1e99ba87cc3064601e480a09ff1b149` 完成。用户现已单独授权直接在 `codex/m2-v2-evidence-pilot-v1` 上按 B0–B7 分层实施 10 项 open finding 的 S1 修复、provider-free 离线重建、显式原子提交、普通 push 与 exact-head 双平台 CI checkpoint。B5 已在 exact HEAD `8804cd508f8e30d90dfc6f429e0b49ab6cae647c` 通过 Linux/Windows CI。B6 已完成本地 provider-free 原子 promotion 与幂等 no-op 证明，当前为 `PROMOTED_PENDING_EXACT_HEAD_CI`；`currentBatch=B6`、`nextBatch=B7`。B8 已获授权，但只能由独立 reviewer 执行。
 
-10 项 finding 当前仍全部 `OPEN`。B0–B7 通过后最高只能写 `CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW`；B8 独立外审不属于本轮授权，本代理不得声明任何 finding 已独立 `CLOSED`。
+10 项 finding 当前仍全部 `OPEN`。B0–B7 通过后最高只能写 `CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW`；B8 独立外审已经授权，但实施代理不得自审或声明任何 finding 已独立 `CLOSED`。
 
 ## 当前唯一入口
 
@@ -12,9 +12,9 @@
 
 当前权威导航：
 
-1. `docs/analysis/m2-v2/M2-v2-current-state-index-v0.2.md`
-2. `docs/analysis/m2-v2/M2-v2-integrity-remediation-summary-v0.1.md`
-3. `docs/analysis/m2-v2/M2-v2-canary-v3-1-integrity-restatement-v0.3.md`
+1. `docs/analysis/m2-v2/M2-v2-current-state-index-v0.3.json`
+2. `docs/analysis/m2-v2/M2-v2-PR7-B6-offline-authority-promotion-v0.1.md`
+3. `docs/analysis/m2-v2/M2-v2-canary-v3-1-integrity-restatement-v0.4.json`
 4. `docs/technical-design/m2-v2/M2-v2-verifier-readonly-contract-v0.1.md`
 5. `docs/technical-design/m2-v2/M2-v2-private-state-recovery-contract-v0.1.md`
 6. `docs/technical-design/m2-v2/M2-v2-request-state-atomic-binding-v0.1.md`

@@ -17,6 +17,10 @@ import { validateCurrentAuthorityDocuments } from "../src/domain/m2V2EvidencePil
 import { CURRENT_CLOSED_REQUEST_STATE_BINDING_RELATIVE } from "../src/domain/m2V2EvidencePilot/integrityState.js";
 import { sha256 } from "../src/domain/m2V2EvidencePilot/pilotCore.js";
 import {
+  computeOfflineRecoverySourceSetDigest,
+  deriveOfflineRecoveryTransactionId,
+} from "../src/domain/m2V2EvidencePilot/privateStateRecovery.js";
+import {
   PR7_P1_OFFLINE_REMEDIATION_SCHEMA,
   buildPr7P1ClosedRecoveryMembers,
   buildPr7P1OfflineReceiptState,
@@ -47,6 +51,78 @@ test("offline adapter migrates only physical receipts and records a cache hit wi
   assert.equal(state.providerRequestDelta, 0);
   assert.equal(state.migration.entries.length, 2);
   assert.equal(state.migration.entries.every((entry) => !Object.hasOwn(entry, "receiptPayload")), true);
+});
+
+test("B6 preview and recovery runtime share one transaction-id derivation contract", () => {
+  const sources = [
+    {
+      role: "source_record",
+      relativePath: "private/source.ndjson",
+      byteDigest: "b".repeat(64),
+    },
+    {
+      role: "immutable_manifest",
+      relativePath: "private/manifest.json",
+      byteDigest: "a".repeat(64),
+    },
+  ];
+  const sourceSetDigest = computeOfflineRecoverySourceSetDigest(sources);
+  const input = {
+    sourceSetDigest,
+    contractDigest: "c".repeat(64),
+    transactionIdentity: "synthetic-b6-authority-v0.1",
+  };
+  assert.equal(
+    deriveOfflineRecoveryTransactionId(input),
+    `recovery-${createHash("sha256")
+      .update(JSON.stringify(input))
+      .digest("hex")
+      .slice(0, 40)}`,
+  );
+  assert.equal(
+    computeOfflineRecoverySourceSetDigest([...sources].reverse()),
+    sourceSetDigest,
+  );
+});
+
+test("B6 authority graph uses a versioned artifact-index extension without changing v0.2", () => {
+  const root = makeRoot();
+  try {
+    const prepared = makePrepared(root, "authority-graph-version");
+    const legacy = buildPr7P1ClosedRecoveryMembers(prepared, {
+      transactionId: "recovery-synthetic-v02",
+      finalDirectoryRelative: "governed/recovery-synthetic-v02",
+    });
+    const legacyMember = legacy.members.find(
+      (member) => member.role === "contract_bound_public_report_digests",
+    );
+    const legacyDocument = JSON.parse(legacyMember.bytes.toString("utf8"));
+    assert.equal(
+      legacyDocument.schema,
+      prepared.contractBoundPublicReportDigests.schema,
+    );
+    assert.equal(Object.hasOwn(legacyDocument, "canonicalAuthorityGraph"), false);
+
+    prepared.canonicalAuthorityGraph = { schema: "synthetic-authority-graph-v0.3" };
+    const extended = buildPr7P1ClosedRecoveryMembers(prepared, {
+      transactionId: "recovery-synthetic-v03",
+      finalDirectoryRelative: "governed/recovery-synthetic-v03",
+    });
+    const extendedMember = extended.members.find(
+      (member) => member.role === "contract_bound_public_report_digests",
+    );
+    const extendedDocument = JSON.parse(extendedMember.bytes.toString("utf8"));
+    assert.equal(
+      extendedDocument.schema,
+      "m2.v2.v2b8-contract-bound-public-report-digests-private.v0.3",
+    );
+    assert.deepEqual(
+      extendedDocument.canonicalAuthorityGraph,
+      prepared.canonicalAuthorityGraph,
+    );
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
 });
 
 test("offline adapter builds an exact 14-role transaction and promotes it as a metadata-stable no-op", () => {
@@ -284,4 +360,3 @@ function writeFile(root, relativePath, content) {
 function sha256File(path) {
   return createHash("sha256").update(readFileSync(path)).digest("hex");
 }
-

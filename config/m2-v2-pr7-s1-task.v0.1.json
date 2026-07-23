@@ -23,7 +23,7 @@
     "B6",
     "B7"
   ],
-  "currentBatch": "B5",
+  "currentBatch": "B6",
   "batchDag": {
     "nodes": [
       "B0",
@@ -91,7 +91,7 @@
     "overwrite historical tracked or governed-private immutable artifacts",
     "rebase, squash, amend, force push, git add dot, or git add -A",
     "mark PR ready, merge PR, or release",
-    "continue after source evidence, remote, native-platform, workbook, promotion, or provider-counter failure"
+    "continue after source evidence, remote, native-platform, workbook, unrolled-back promotion, or provider-counter failure"
   ],
   "providerPolicy": {
     "mode": "forbidden",
@@ -142,7 +142,7 @@
     },
     "contractRegistry": {
       "path": "config/m2-v2-pr7-s1-contract-registry.v0.1.json",
-      "sha256": "d6f7d8f1feae06082bc54d898e81103b040d758703b061b428035c5e77764ce2"
+      "sha256": "cdc001a0e7cf89c24d3efd662fdb9a2b52d3cb128226774f6cdcf427605cd86a"
     },
     "caseRegistry": {
       "path": "config/m2-v2-pr7-s1-case-registry.v0.1.json",

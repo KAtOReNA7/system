@@ -1,0 +1,19 @@
+{
+  "schema": "m2.v2.pr7-merge-readiness-public.v0.2",
+  "status": "NOT_READY_PENDING_INDEPENDENT_REVIEW",
+  "classification": "public_sanitized_not_for_formal_decision",
+  "batchId": "B6",
+  "candidateImplementationCompleteThrough": "B6",
+  "currentDecision": "CANARY_FAIL",
+  "requiredNextBatch": "B7",
+  "independentReviewRequired": true,
+  "independentReviewPerformed": false,
+  "findingsRemainOpen": true,
+  "markReadyAuthorized": false,
+  "mergeAuthorized": false,
+  "releaseAuthorized": false,
+  "providerRequestDelta": 0,
+  "full160Authorized": false,
+  "modelTrainingAuthorized": false,
+  "nextDevelopmentReadiness": "NOT_AUTHORIZED"
+}

@@ -2,12 +2,15 @@
 
 ## 2026-07-24 PR #7 B5–B8 授权与执行入口（当前最高优先）
 
-- 用户已明确授权继续执行 B5、B6、B7，并授权启动 B8 独立复审；当前从 `currentBatch=B5` 开始，后续批次仍须依次满足本地门禁、原子提交、普通推送、remote exact-head 与 Linux/Windows CI。
+- 用户已明确授权继续执行 B5、B6、B7，并授权启动 B8 独立复审。B5 已在 exact HEAD `8804cd508f8e30d90dfc6f429e0b49ab6cae647c` 通过 Linux/Windows CI；B6 已完成本地 provider-free 原子 promotion 与第二次 `ALREADY_CURRENT_NOOP`，当前为 `PROMOTED_PENDING_EXACT_HEAD_CI`，`currentBatch=B6`、`nextBatch=B7`。后续批次仍须依次满足本地门禁、原子提交、普通推送、remote exact-head 与 Linux/Windows CI。
 - B8 授权不取消独立性要求：实施 B0–B7 的同一代理不得自审后声明 finding `CLOSED`。B0–B7 的最高状态仍为 `CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW`；只有独立 B8 reviewer 可以给出复审结论。
 - B5 必须严格执行 OOXML/OPC v0.2 package-complete verifier 与 default required-artifact/zero-skip 策略。历史 private workbook 不得覆盖；若严格校验失败，只能在 B6 使用 immutable/append-only private 输入和确定性 generator 在受权的新 ignored output root 中生成 vNext。
 - B6 只允许 provider-free 离线重建、确定性 workbook vNext、derived authority recomputation 与原子 supersession；不得调用 provider、数据库、Canary/full160、训练、holdout 或 M3。
 - B7 必须执行完整 89-case registry、默认测试零 skip、只读/权威图/迁移/transport/workbook 全回归，并形成交给 B8 的脱敏审查包。
 - provider、数据库、Canary/full160、模型训练、holdout、mark ready、PR merge、release 与 M3 formal 仍未授权。B8 授权仅限独立复审，不授权合并或发布。
+- 技术 fail-closed 与任务流程停止必须分开：无效 private candidate 永远不得成为 current，恢复器必须回滚 pointer、隔离失败 transaction 并保持历史 immutable；但可安全回滚的 verifier 子门禁失败不再自动结束整轮任务。
+- 当失败后可以确认 current pointer 未改变或已完整恢复、`providerRequestDelta=0`、数据库连接与真实外部访问均为 0、authoritative source digest 未漂移时，Codex 必须自动定位具体子门禁、修正 canonical 实现、运行聚焦测试并从完整原子 promotion 重新执行；无需用户逐次重新授权或发送“继续”。
+- 只有出现以下重要事件才停止并请求用户介入：pointer/rollback 状态不明确或无法恢复、immutable/source evidence 摘要漂移、真实 provider/数据库/外部访问、`providerRequestDelta != 0`、remote drift/non-fast-forward、新依赖或原生平台验证不可用、workbook 无确定性路径，或继续修复必须改变业务结论/扩大到未授权阶段。普通的 schema/version/shape/digest-field 兼容错误不属于人工阻断。
 
 ## 用户常驻协作要求（已固化，无需重复下达）
 
@@ -21,27 +24,27 @@
 - 修改完成后按本文件“验证规则”执行对应门禁，明确列出通过、失败和未运行项；不能用旧 CI、部分测试或 private 文件存在替代当前工作树验证。
 - 审计或清理请求本身不扩大业务授权。任何新 batch、provider、数据库、Canary/full160、模型训练、holdout、B8、mark ready、merge、release 或 M3 formal 都必须继续满足下方最新门禁和单独授权。
 
-## 2026-07-23 分支与代码收敛规则（固定执行）
+## 2026-07-23 分支与代码收敛规则（授权状态已被 2026-07-24 入口替代）
 
 - 默认只保留 `main` 和一条当前活动开发分支。PR #7 关闭或合并前，M2 的唯一活动分支是 `codex/m2-v2-evidence-pilot-v1`；B4–B7、文档同步、CI 修复、checkpoint 和同一 PR 的返工都继续使用该分支，禁止再建立同任务子分支。只有用户明确要求独立 PR，或现有分支确实无法安全承载且已先说明原因和退出条件时，才允许新建分支。
 - 每次开始仓库任务时，Codex 自动执行远端获取和状态核对，不再要求用户重复给出 Git 命令：至少检查工作区、当前分支、upstream、`origin/main`、ahead/behind、开放 PR 和 worktree；使用 `git fetch origin --prune` 获取引用，只有在工作区干净且可快进时才 `ff-only` 同步。禁止为了“同步”而自动 rebase、squash、force push 或制造额外 merge。
 - 同一时间只保留一个 M2 开放 PR。PR 合并并确认其 head 已进入 `origin/main` 后，应在同一收尾任务中删除对应本地和远端开发分支，并清理已经失效的 worktree 登记；不得把已合并分支继续当作开发入口。未合并分支只有在逐项核对独有提交和文件差异、确认已被替代或不再适用并留下通俗说明后，才可舍弃。
-- 分支治理、同步和代码整理不扩大业务授权。当前 PR #7 仍是 Draft/open/unmerged；用户已于 2026-07-23 单独授权 S1 B4，B5–B8 仍需新的明确启动指令。provider、数据库、Canary/full160、模型训练、holdout、B8、mark ready、PR merge、release 和 M3 继续服从下方门禁，不能因“减少分支”而自动执行。
+- 分支治理、同步和代码整理不扩大业务授权。当前 PR #7 仍是 Draft/open/unmerged；本条所记录的 B4-only 授权已被上方 2026-07-24 B5–B8 授权入口替代。provider、数据库、Canary/full160、模型训练、holdout、mark ready、PR merge、release 和 M3 仍不能因“减少分支”而自动执行。
 - 新增实现前必须先用 `rg` 检索现有入口、调用方和测试。provider transport、extraction normalization、source governance、request ledger、safe cache、authority/current state、workbook verification、路径与摘要校验等同一职责只能有一个 canonical 可执行实现；新代码默认扩展该实现，不得复制成平行 runtime/provider/adapter。
 - 只有冻结 schema、不可变审计重放或兼容性边界确实要求时，才允许保留版本化实现。此时必须在 registry 或 current-authority 入口明确 predecessor、successor、canonical route 和退役条件；旧入口必须在同一批次删除、改为薄兼容层或明确变为 non-routable。历史报告、冻结合同和审计 fixture 可以保留，但不得继续充当当前 runtime authority。
 - 每个后续 M2 批次原则上不得增加同职责的可执行文件数量。若审计约束导致暂时无法减少，必须在批次说明中列出重复点、保留理由、唯一当前入口和下一删除节点；禁止以新增版本文件代替修改 canonical 实现。
 - PR 准备合并前必须同时报告：分支相对 `origin/main` 的状态、开放 finding/门禁、重复实现检查、被删除或退役的入口、仍保留的历史文件及原因，以及规定验证结果。没有这些证据不得把 PR 标为 ready 或请求合并。
 
-## 2026-07-20 PR #7 S1 分层修复入口（当前最高优先）
+## 2026-07-20 PR #7 S1 分层修复入口（历史入口，授权状态已被 2026-07-24 入口替代）
 
 - 7 项 S0 开发支持基线已在 exact HEAD `badbf453e1e99ba87cc3064601e480a09ff1b149` 完成并通过 Linux/Windows CI；`supportSharpeningStopCriteriaReached=true`。
-- 用户已单独授权在 `codex/m2-v2-evidence-pilot-v1` 上实施 PR #7 的 B0–B7 分层 S1 修复。B3 closing correction 已在 exact remote HEAD `a945ed3a22fbc86e8ca381db9124fc0927461ec7` 完成。用户于 2026-07-23 明确启动的 B4 已在 implementation exact HEAD `65bee39e012e013d4e4347076fc24757f7bcc9f9` 完成；CI run `30021984333` 的 Linux job `89256777608` 与 Windows job `89256777664` 均成功。B4 状态为 `COMPLETE_PENDING_B8`，S1 task 的 `currentBatch=B4`、`nextBatch=B5`；B5–B8 未获本轮授权。
+- 用户已单独授权在 `codex/m2-v2-evidence-pilot-v1` 上实施 PR #7 的 B0–B7 分层 S1 修复。B3 closing correction 已在 exact remote HEAD `a945ed3a22fbc86e8ca381db9124fc0927461ec7` 完成。用户于 2026-07-23 明确启动的 B4 已在 implementation exact HEAD `65bee39e012e013d4e4347076fc24757f7bcc9f9` 完成；CI run `30021984333` 的 Linux job `89256777608` 与 Windows job `89256777664` 均成功。本条的 B4/B5 授权状态是历史快照；当前批次与授权以最上方 2026-07-24 入口为准。
 - B3 correction 已强制 preflight/local validation 显式传入 `--batch-id`，Linux/Windows CI 均绑定 `--batch-id=B3`；canonical command 为 `npm run test:m2-v2:b3-safe-cache-provider`，B3 registry 21/21、canonical tests 35/35、default skips 0，`providerRequestDelta=0`、数据库连接 0、真实外部访问 0、产品 runtime 变更 0。
 - B4 直接扩展唯一 canonical `src/domain/m2V2EvidencePilot/v2b8Stability.js`，没有新增平行 runtime；canonical command 为 `npm run test:m2-v2:b4-event-tuple`，16/16 frozen cases、52/52 canonical tests、default skips 0，`providerRequestDelta=0`、数据库连接 0、真实外部访问 0。`PR7-P1-009` 与 `PR7-P2-013` 仍为 `OPEN`，仅达到 `CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW`；v0.4 event/evaluation 合同仍为 `PROPOSED_NOT_CURRENT`，未做 current restatement promotion。
 - open-finding 状态以 `docs/analysis/m2-v2/M2-v2-PR7-open-findings-status-v0.1.md` 为增量 overlay：5 个 P1 与 5 个直接耦合 P2 当前仍全部 `OPEN`。B0–B7 最多只能形成 `CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW`，不得由本代理执行 B8 或声明 `CLOSED`。
 - 本轮允许按附件冻结的范围修改 `src/domain/m2V2EvidencePilot/**`、配套测试、合同、CI 与公开治理文档，并在 B6 进行 provider-free 离线重建和原子 supersession；历史/private immutable 产物不得覆盖。
 - 禁止 provider、数据库、Canary/full160、模型训练、holdout、B8、mark ready、PR merge 或 release。`currentDecision=CANARY_FAIL`、`mergeAuthorized=false`、`full160Authorized=false`、`modelTrainingAuthorized=false`、`nextDevelopmentReadiness=NOT_AUTHORIZED` 保持不变，除非 B6 的版本化离线重算真实得出不同 current decision；即便变化也不自动授权下游阶段。
-- 禁止 rebase、squash、amend、force push、`git add .`、`git add -A` 或触碰 stash。任一 source evidence 摘要不一致、remote drift、non-fast-forward、真实外部访问、新依赖需求、原生平台验证不可用、workbook 无确定性路径、private promotion 失败或 `providerRequestDelta != 0` 都必须立即停止并输出 `BLOCKED`。
+- 禁止 rebase、squash、amend、force push、`git add .`、`git add -A` 或触碰 stash。任一 source evidence 摘要不一致、remote drift、non-fast-forward、真实外部访问、新依赖需求、原生平台验证不可用、workbook 无确定性路径、private promotion 回滚/指针状态不明确或 `providerRequestDelta != 0` 都必须立即停止并输出 `BLOCKED`。已确认完整回滚且无外部副作用的 verifier 子门禁失败按上方 2026-07-24 自动修复与重试规则继续处理。
 
 ## 2026-07-18 M2 v2 完整性修复入口（最高优先）
 

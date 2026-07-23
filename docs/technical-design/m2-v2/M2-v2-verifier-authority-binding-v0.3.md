@@ -8,7 +8,7 @@ Canonical graph 顶层、node、edge、physical mapping、selection decision、r
 
 Exact nodes 覆盖 immutable inputs、execution contract、request ledger、physical receipt envelopes、receipt index、safe cache、effective index、counter projection、event profile、derived evaluation、remediation summary、merge readiness、tracked core commitment、current restatement 和 current-state index。B5–B8 每个 runtime consumer 都列出 exact consumed node set，`fallbackAllowed=false`。每个 physical object/path identity 只可映射一个 node/role；unclassified mirror、hidden fallback、duplicate physical mapping 和 orphan 均拒绝。
 
-Public report role set 精确为 remediation summary、merge readiness、current integrity restatement 与 current-state index；每个 role 绑定唯一 repository-relative NFC/forward-slash/case-exact path、path identity、semantic digest 和 byte digest。
+Public report role set 精确为 remediation summary、merge readiness、current integrity restatement 与 current-state index；每个 role 在 canonical graph 中绑定唯一 repository-relative NFC/forward-slash/case-exact path、path identity 与 authority-independent semantic digest。前三个非 self role 还由 current-state index 的 `publicReportBindings` 绑定 byte digest。`current_state_index` 不要求不可能收敛的自身 byte-hash；它改由自身 `indexDigestSha256`、closed transaction member byte digest 与 canonical graph 的 authority-independent semantic mapping 三重绑定。
 
 ## Exact relations 与 selection
 
@@ -20,7 +20,7 @@ Completed ledger events、immutable receipt envelopes 和 receipt-index rows 按
 
 Tracked non-sensitive core commitment 的 exact fields 为 schema、graph version、role-registry digest、expected graph-core digest、source exact HEAD 与 supersession lineage。未来独立 B8 receipt 当前不存在，不得伪造。若 threat model 要抵抗同时改写 repository 与独立 evidence 的主体，需要另行 reviewer-controlled key；本合同不引入长期 key。
 
-本合同实际定义 current-state index v0.3 与 integrity restatement v0.4 的 exact top-level fields、types、nested authority/supersession bindings、unknown-key rejection 和 digest basis。两者都保持 `PROPOSED_NOT_CURRENT` 到 B6。Current decision 必须从 bound derived evaluation 重新计算 arithmetic inputs、semantic gates 与 threshold profile；字段值必须等于 recomputed decision。缺失计算输入时 `INDETERMINATE` 并 fail closed；historical decision 或 caller assertion 不得复制为 current。Supersession 必须绑定 predecessor path/digest 与新 transaction/promotion receipt，保留旧 artifact，禁止 OR fallback。
+本合同实际定义 current-state index v0.3 与 integrity restatement v0.4 的 exact top-level fields、types、nested authority/supersession bindings、unknown-key rejection 和 digest basis。两者都保持 `PROPOSED_NOT_CURRENT` 到 B6。Current index 的 `publicReportBindings` 精确包含三个非 self public roles；`current_state_index` 的自身 byte binding 只存在于 closed atomic transaction，禁止构造递归 self-hash。Current decision 必须从 bound derived evaluation 重新计算 arithmetic inputs、semantic gates 与 threshold profile；字段值必须等于 recomputed decision。缺失计算输入时 `INDETERMINATE` 并 fail closed；historical decision 或 caller assertion 不得复制为 current。Supersession 必须绑定 predecessor path/digest 与新 transaction/promotion receipt，保留旧 artifact，禁止 OR fallback。
 
 ## Authorization boundary
 

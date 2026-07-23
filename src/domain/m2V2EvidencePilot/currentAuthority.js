@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { existsSync, lstatSync, readFileSync } from "node:fs";
 import { basename, isAbsolute, relative, resolve, sep } from "node:path";
 import { verifyTrackedCoreCommitmentV0_1 } from "./authorityGraph.js";
+import { sha256 as sha256Value } from "./pilotCore.js";
 
 export const CURRENT_AUTHORITY_SCHEMA = "m2.v2.current-authority-private.v0.2";
 export const DEFAULT_CURRENT_STATE_INDEX_RELATIVE = "docs/analysis/m2-v2/M2-v2-current-state-index-v0.2.json";
@@ -177,6 +178,8 @@ export function validateCurrentAuthorityDocuments(input) {
   if (authorityVersion === "v0.3") {
     coreBinding = validateV03CoreBinding(input, index, restatement);
     if (!coreBinding.valid) issues.push(...coreBinding.issues);
+    issues.push(...validateV03DocumentDigests(index, restatement));
+    issues.push(...validateV03PublicReportBindings(input, index));
   }
 
   const historicalArtifacts = extractHistoricalArtifacts(index);
@@ -252,6 +255,66 @@ function validateV03CoreBinding(input, index, restatement) {
     trackedCoreCommitmentByteDigest: commitmentDigest,
     commitmentVerified: commitmentCheck.valid,
   };
+}
+
+function validateV03DocumentDigests(index, restatement) {
+  const issues = [];
+  const { indexDigestSha256, ...indexPayload } = isPlainObject(index) ? index : {};
+  const { restatementDigestSha256, ...restatementPayload } = isPlainObject(restatement) ? restatement : {};
+  if (!isDigest(indexDigestSha256) || indexDigestSha256 !== sha256Json(indexPayload)) {
+    issues.push("current_state_index_semantic_digest_mismatch");
+  }
+  if (!isDigest(restatementDigestSha256)
+    || restatementDigestSha256 !== sha256Json(restatementPayload)) {
+    issues.push("current_restatement_semantic_digest_mismatch");
+  }
+  if (index?.currentDecisionComputation?.evaluationDigestSha256
+    !== restatement?.currentDecisionComputation?.evaluationDigestSha256
+    || index?.currentDecisionComputation?.recomputedDecision !== index?.currentDecision
+    || restatement?.currentDecisionComputation?.recomputedDecision !== index?.currentDecision) {
+    issues.push("current_decision_computation_binding_mismatch");
+  }
+  if (index?.supersession?.transactionId !== restatement?.supersession?.transactionId
+    || index?.supersession?.transactionDigestSha256
+      !== restatement?.supersession?.transactionDigestSha256
+    || index?.currentAuthority?.promotionReceiptDigestSha256
+      !== index?.supersession?.transactionDigestSha256) {
+    issues.push("current_supersession_binding_mismatch");
+  }
+  return issues;
+}
+
+function validateV03PublicReportBindings(input, index) {
+  const issues = [];
+  const expected = [
+    ["remediation_summary", "docs/analysis/m2-v2/M2-v2-PR7-P1-remediation-summary-v0.2.json"],
+    ["merge_readiness", "docs/analysis/m2-v2/M2-v2-PR7-merge-readiness-v0.2.json"],
+    ["current_integrity_restatement", "docs/analysis/m2-v2/M2-v2-canary-v3-1-integrity-restatement-v0.4.json"],
+  ];
+  const bindings = index?.currentAuthority?.publicReportBindings;
+  if (!Array.isArray(bindings) || bindings.length !== expected.length) {
+    return ["current_public_report_binding_set_invalid"];
+  }
+  const root = input?.root ? resolve(input.root) : null;
+  for (const [role, path] of expected) {
+    const binding = bindings.find((entry) => entry?.role === role);
+    if (!binding
+      || binding.repositoryRelativePath !== path
+      || binding.pathIdentityDigestSha256 !== sha256Json(path)
+      || !isDigest(binding.semanticDigestSha256)
+      || !isDigest(binding.byteDigestSha256)) {
+      issues.push("current_public_report_binding_invalid");
+      continue;
+    }
+    if (root) {
+      const read = readAuthorityFile(root, path, "current_public_report");
+      if (!read.valid || read.byteDigest !== binding.byteDigestSha256
+        || sha256Json(read.value) !== binding.semanticDigestSha256) {
+        issues.push("current_public_report_binding_invalid");
+      }
+    }
+  }
+  return issues;
 }
 
 function explicitHistoricalDecision(index, restatement) {
@@ -379,6 +442,10 @@ function requiredDigest(value, issues, issue) {
 
 function isDigest(value) {
   return typeof value === "string" && /^[a-f0-9]{64}$/u.test(value);
+}
+
+function sha256Json(value) {
+  return sha256Value(value);
 }
 
 function validDecision(value) {

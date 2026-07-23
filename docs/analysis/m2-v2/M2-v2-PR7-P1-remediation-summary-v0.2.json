@@ -1,0 +1,22 @@
+{
+  "schema": "m2.v2.pr7-p1-remediation-summary-public.v0.2",
+  "status": "CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW",
+  "classification": "public_sanitized_not_for_formal_decision",
+  "batchId": "B6",
+  "historicalDecision": "CANARY_CONDITIONAL",
+  "currentDecision": "CANARY_FAIL",
+  "currentEvaluationDigestSha256": "f4036bc67d4aa0b42460f7f5934bdee7221c233be536943239dfa11edf7f416c",
+  "predecessorEvaluationDigestSha256": "4d506076b0da438bc5a90f40bec6e52d559a3c18b31eedd1c48647f1203536c3",
+  "providerRequestDelta": 0,
+  "databaseConnections": 0,
+  "actualExternalFetchCount": 0,
+  "canaryExecuted": false,
+  "full160Executed": false,
+  "modelTrainingPerformed": false,
+  "holdoutOpened": false,
+  "findingsRemainOpen": true,
+  "independentReviewPerformed": false,
+  "mergeAuthorized": false,
+  "releaseAuthorized": false,
+  "nextDevelopmentReadiness": "NOT_AUTHORIZED"
+}
