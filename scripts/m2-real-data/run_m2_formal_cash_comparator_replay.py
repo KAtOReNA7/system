@@ -190,6 +190,7 @@ def _checkout_identity_decision(
     parent_shas: Sequence[str],
     remote_head_sha: str,
     remote_main_sha: str,
+    remote_event_head_sha: str = "",
 ) -> str | None:
     """Accept the named branch or an exact synthetic-only GitHub CI checkout."""
 
@@ -208,6 +209,20 @@ def _checkout_identity_decision(
         and remote_main_sha == head_sha
     ):
         return "trusted_main_push"
+    if (
+        allow_trusted_ci_checkout
+        and branch == ""
+        and github_actions == "true"
+        and event_name == "pull_request"
+        and head_ref != ""
+        and base_ref == "main"
+        and github_ref.startswith("refs/pull/")
+        and github_ref.endswith("/merge")
+        and github_repository == "KAtOReNA7/system"
+        and head_sha != ""
+        and head_sha == remote_event_head_sha
+    ):
+        return "trusted_pr_head"
     if not (
         allow_trusted_ci_checkout
         and branch == ""
@@ -267,6 +282,13 @@ def _checkout_boundary_self_test() -> dict[str, bool]:
         "github_ref": "refs/heads/main",
         "remote_main_sha": merge_sha,
     }
+    trusted_head = {
+        **trusted,
+        "github_sha": merge_sha,
+        "head_sha": remote_head_sha,
+        "parent_shas": ("e" * 40,),
+        "remote_event_head_sha": remote_head_sha,
+    }
     checks = {
         "syntheticM2DevelopmentBranchRecognized": _is_synthetic_development_branch(
             "codex/m2-c2-v1"
@@ -280,6 +302,12 @@ def _checkout_boundary_self_test() -> dict[str, bool]:
         == "named_branch",
         "exactPullRequestMergeRefAccepted": _checkout_identity_decision(**trusted)
         == "trusted_pr_merge_ref",
+        "exactPullRequestHeadAccepted": _checkout_identity_decision(**trusted_head)
+        == "trusted_pr_head",
+        "exactPullRequestHeadWrongRemoteRejected": _checkout_identity_decision(
+            **{**trusted_head, "remote_event_head_sha": "d" * 40}
+        )
+        is None,
         "exactMainPushAccepted": _checkout_identity_decision(**trusted_main)
         == "trusted_main_push",
         "cleanLocalMainAccepted": _is_clean_local_main_checkout(
@@ -368,12 +396,23 @@ def require_boundaries(
         ):
             checkout_identity = "clean_local_main"
         else:
+            event_head_ref = os.environ.get("GITHUB_HEAD_REF", "")
+            remote_event_head_sha = (
+                run_git(
+                    "rev-parse",
+                    "--verify",
+                    f"refs/remotes/origin/{event_head_ref}^{{commit}}",
+                    check=False,
+                )
+                if event_head_ref
+                else ""
+            )
             checkout_identity = _checkout_identity_decision(
                 branch=branch,
                 allow_trusted_ci_checkout=allow_trusted_ci_checkout,
                 github_actions=os.environ.get("GITHUB_ACTIONS", ""),
                 event_name=os.environ.get("GITHUB_EVENT_NAME", ""),
-                head_ref=os.environ.get("GITHUB_HEAD_REF", ""),
+                head_ref=event_head_ref,
                 base_ref=os.environ.get("GITHUB_BASE_REF", ""),
                 github_ref=os.environ.get("GITHUB_REF", ""),
                 github_repository=os.environ.get("GITHUB_REPOSITORY", ""),
@@ -382,6 +421,7 @@ def require_boundaries(
                 parent_shas=tuple(revision[1:]),
                 remote_head_sha=remote_head_sha,
                 remote_main_sha=remote_main_sha,
+                remote_event_head_sha=remote_event_head_sha,
             )
         if checkout_identity is None:
             raise FormalReplayError(

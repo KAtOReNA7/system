@@ -8,7 +8,7 @@ import {
   M2_EXPORT_RELEASE_GATE_CASES,
   M2_EXPORT_RELEASE_GATE_DATASET,
   M2_EXPORT_RELEASE_GATE_FIXTURE_PACKAGES
-} from "../../test/fixtures/m2ExportReleaseGate.fixture.js";
+} from "../fixtures/m2ExportReleaseGate.fixture.js";
 
 const ALLOWED_QUERY_KEYS = new Set([
   "page",

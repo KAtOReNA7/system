@@ -118,6 +118,7 @@ test("synthetic preflight proves formal route state and future invariance withou
       "named_branch",
       "synthetic_m2_development_branch",
       "clean_local_main",
+      "trusted_pr_head",
       "trusted_pr_merge_ref",
       "trusted_main_push",
     ].includes(payload.checkoutBoundary),

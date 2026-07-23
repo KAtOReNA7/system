@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import http from "node:http";
 import test from "node:test";
-import { createApp } from "../src/http/app.js";
+import { createFixtureApp } from "../src/http/fixtureApp.js";
 import {
   createEvaluationTask,
   summarizeEvaluationTasks,
@@ -18,7 +18,7 @@ import {
   FORBIDDEN_M2_EVALUATION_TASK_TOKENS,
   M2_EVALUATION_TASK_CREATION_CASES,
   M2_EVALUATION_TASK_FIXTURE_TASKS
-} from "./fixtures/m2EvaluationTask.fixture.js";
+} from "../src/fixtures/m2EvaluationTask.fixture.js";
 
 const baseConfig = {
   service: "m1-audiobook-evaluation",
@@ -34,7 +34,7 @@ const baseConfig = {
 const fixtureTaskPath = `/api/m2/fixture/${["evaluation", "tasks"].join("-")}`;
 
 async function request(path, options = {}) {
-  const app = createApp(baseConfig);
+  const app = createFixtureApp(baseConfig);
   const server = http.createServer(app);
   await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
   const { port } = server.address();

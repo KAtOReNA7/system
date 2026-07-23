@@ -2,7 +2,7 @@ import {
   evaluateFormalReadiness,
   summarizeFormalReadiness
 } from "../src/domain/oldProductEvaluation/formalReadinessGate.js";
-import { M2_FORMAL_READINESS_FIXTURE_ITEMS } from "../test/fixtures/m2FormalReadinessGate.fixture.js";
+import { M2_FORMAL_READINESS_FIXTURE_ITEMS } from "../src/fixtures/m2FormalReadinessGate.fixture.js";
 
 const results = M2_FORMAL_READINESS_FIXTURE_ITEMS.map((item) => ({
   caseId: item.caseId,

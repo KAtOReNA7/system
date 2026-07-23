@@ -1,0 +1,99 @@
+{
+  "schema": "m2.current.public_diagnostic_report.v0.1",
+  "decisionStatus": "not_for_formal_decision",
+  "directionAssessment": {
+    "businessProblemWrong": false,
+    "governanceWrong": false,
+    "engineeringSequenceDrifted": true,
+    "nextPriority": "coverage_and_runtime_contract_before_model_complexity"
+  },
+  "evidence": {
+    "schema": "m2.current.public_evidence.v0.1",
+    "decisionStatus": "not_for_formal_decision",
+    "population": {
+      "libraryWorkCount": 3053,
+      "modelWorkCount": 824,
+      "modelCaseCount": 7851,
+      "modelWorkShare": 0.2698984605306256
+    },
+    "coverage": {
+      "fullLibrary": 0.7396468495203204,
+      "top1": 0.784825777206678,
+      "top5": 0.7743196465159894,
+      "top10": 0.7594125279899511,
+      "required": 0.9
+    },
+    "segments": {
+      "dense": {
+        "caseCount": 5174,
+        "workCount": 617,
+        "wape": 0.50166443,
+        "signedBias": 0.11719696
+      },
+      "dormant": {
+        "caseCount": 833,
+        "workCount": 76,
+        "wape": 1.00018361,
+        "signedBias": -0.99972006
+      },
+      "intermittent": {
+        "caseCount": 1844,
+        "workCount": 367,
+        "wape": 1.16402041,
+        "signedBias": 0.15116105
+      }
+    },
+    "b4": {
+      "decision": "PRIMARY_COMPARATOR_NOT_RELEASE_APPROVAL",
+      "signedAggregateBias": 0.08911106,
+      "target": "formal_cash",
+      "wape": 0.55648454
+    },
+    "lastCandidate": {
+      "decision": "FAIL",
+      "finalModel": "C3-A",
+      "signedAggregateBias": 0.08273912976841973,
+      "target": "formal_cash",
+      "wape": 0.5539451692408673
+    },
+    "modelQualityDecision": "FAIL",
+    "businessCoverageDecision": "CONDITIONAL",
+    "seals": {
+      "finalHoldoutOpened": false,
+      "embargoShadowOpened": false,
+      "deferred60MonthLabelsOpened": false
+    },
+    "sourceBoundary": {
+      "aggregateOnly": true,
+      "privateRowsRead": false,
+      "databaseConnected": false,
+      "providerCalled": false
+    }
+  },
+  "gate": {
+    "schema": "m2.current.diagnostic_gate.v0.1",
+    "status": "BASELINE_ONLY_BLOCKED",
+    "blockers": [
+      "full_library_cash_coverage_below_90pct",
+      "top10_cash_coverage_below_90pct",
+      "latest_model_quality_failed",
+      "business_coverage_not_passed",
+      "current_candidate_not_evaluated",
+      "final_holdout_sealed",
+      "business_sampling_and_approval_missing"
+    ],
+    "developmentDirection": "coverage_first_then_constrained_candidate_comparison",
+    "candidateSelectionAuthorized": false,
+    "modelTrainingAuthorized": false,
+    "holdoutAuthorized": false,
+    "releaseAuthorized": false,
+    "m3FormalAuthorized": false
+  },
+  "nextDiagnostics": [
+    "preserve_same_7851_case_and_B4_comparator_identity",
+    "measure_3_6_12_18_24_month_horizons",
+    "measure_dense_intermittent_dormant_slices",
+    "measure_full_library_top1_top5_top10_cash_coverage",
+    "require_paired_origin_horizon_confidence_intervals"
+  ]
+}

@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import http from "node:http";
 import test from "node:test";
-import { createApp } from "../src/http/app.js";
+import { createFixtureApp } from "../src/http/fixtureApp.js";
 import {
   buildExportPackage,
   evaluateExportEligibility,
@@ -20,7 +20,7 @@ import {
   M2_EXPORT_RELEASE_GATE_CASES,
   M2_EXPORT_RELEASE_GATE_FIXTURE_PACKAGES,
   M2_EXPORT_RELEASE_GATE_FLOW_FIXTURES
-} from "./fixtures/m2ExportReleaseGate.fixture.js";
+} from "../src/fixtures/m2ExportReleaseGate.fixture.js";
 
 const baseConfig = {
   service: "m1-audiobook-evaluation",
@@ -43,7 +43,7 @@ const fetchBlockedPorts = new Set([
 ]);
 
 async function request(path, options = {}) {
-  const app = createApp(baseConfig);
+  const app = createFixtureApp(baseConfig);
   const server = http.createServer(app);
   const port = await listenOnFetchSafePort(server);
   try {

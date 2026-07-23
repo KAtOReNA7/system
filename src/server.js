@@ -14,6 +14,7 @@ function start() {
           status: "started",
           service: config.service,
           environment: config.appEnv,
+          composition: "formal",
           host: "127.0.0.1",
           port: config.port
         })

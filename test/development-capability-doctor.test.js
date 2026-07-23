@@ -110,7 +110,10 @@ test("default install, development, validation, and start commands do not invoke
     assert.equal(typeof command, "string", `missing package script ${scriptName}`);
     assert.doesNotMatch(command, /doctor:capability|data[\\/]private-(?:input|output)/u);
   }
-  assert.match(packageJson.scripts.test, /node --test --test-concurrency=4/u);
+  assert.equal(
+    packageJson.scripts.test,
+    "node tools/node/run-test-registry.mjs default",
+  );
 });
 
 test("private capability roots remain ignored by the repository policy", () => {

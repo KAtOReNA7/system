@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { execFileSync, spawnSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import test from "node:test";
+import { filesForTestProfile } from "../tools/node/project-inventory.mjs";
 
 const BASE_SPEC_PATH = "src/domain/oldProductEvaluation/calibrationSpec.v1.json";
 const AMENDMENT_PATH =
@@ -746,7 +747,11 @@ test("package scripts expose only the frozen correction preflight, development, 
     scripts["replay:m2:calibration-scoring-correction:final-holdout"],
     `node ${PYTHON_RUNNER_PATH} ${CORRECTION_RUNNER_PATH} --run-final-holdout`
   );
-  assert.match(scripts.test, /test\/m2-calibration-v1-1-contract\.test\.js/);
+  assert.ok(
+    filesForTestProfile("default").files.includes(
+      "test/m2-calibration-v1-1-contract.test.js",
+    ),
+  );
 });
 
 test("v1.1 kernels compile, synthetic preflight passes, and final holdout fails closed", () => {

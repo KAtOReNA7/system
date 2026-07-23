@@ -1,0 +1,127 @@
+{
+  "schema": "project.test-registry.v0.1",
+  "description": "Every tracked *.test.js file must match exactly one suite. Profiles select suites without hand-maintained command-line file lists.",
+  "suites": [
+    {
+      "id": "e2e",
+      "match": {
+        "pathPrefixes": [
+          "test/e2e/"
+        ]
+      }
+    },
+    {
+      "id": "archive",
+      "match": {
+        "exactPaths": [
+          "test/m2-v2-migration-archive-v0-3.test.js",
+          "test/m2-v2-migration-path-identity.test.js"
+        ]
+      }
+    },
+    {
+      "id": "private",
+      "match": {
+        "exactPaths": [
+          "test/check-no-real-data.test.js",
+          "test/development-capability-doctor.test.js"
+        ],
+        "pathPrefixes": [],
+        "basenameIncludes": [
+          "-private-"
+        ]
+      }
+    },
+    {
+      "id": "current-contract",
+      "match": {
+        "exactPaths": [
+          "test/test-artifact-policy.test.js"
+        ],
+        "pathPrefixes": [
+          "test/m2-v2-"
+        ],
+        "excludeExactPaths": [
+          "test/m2-v2-migration-archive-v0-3.test.js",
+          "test/m2-v2-migration-path-identity.test.js"
+        ],
+        "excludeBasenameIncludes": [
+          "-private-"
+        ]
+      }
+    },
+    {
+      "id": "unit",
+      "match": {
+        "pathPrefixes": [
+          "test/"
+        ],
+        "excludeExactPaths": [
+          "test/check-no-real-data.test.js",
+          "test/development-capability-doctor.test.js",
+          "test/m2-v2-migration-archive-v0-3.test.js",
+          "test/m2-v2-migration-path-identity.test.js",
+          "test/test-artifact-policy.test.js"
+        ],
+        "excludePathPrefixes": [
+          "test/e2e/",
+          "test/m2-v2-"
+        ],
+        "excludeBasenameIncludes": [
+          "-private-"
+        ]
+      }
+    }
+  ],
+  "profiles": {
+    "default": {
+      "suites": [
+        "unit",
+        "current-contract",
+        "archive",
+        "private"
+      ],
+      "concurrency": 4
+    },
+    "unit": {
+      "suites": [
+        "unit"
+      ],
+      "concurrency": 4
+    },
+    "current-contract": {
+      "suites": [
+        "current-contract"
+      ],
+      "concurrency": 1
+    },
+    "archive": {
+      "suites": [
+        "archive"
+      ],
+      "concurrency": 1
+    },
+    "private": {
+      "suites": [
+        "private"
+      ],
+      "concurrency": 1
+    },
+    "e2e": {
+      "suites": [
+        "e2e"
+      ],
+      "concurrency": 1
+    },
+    "all": {
+      "suites": [
+        "unit",
+        "current-contract",
+        "archive",
+        "private",
+        "e2e"
+      ],
+      "concurrency": 4
+    }
+  }
+}

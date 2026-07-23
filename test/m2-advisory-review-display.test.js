@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import http from "node:http";
 import test from "node:test";
-import { createApp } from "../src/http/app.js";
+import { createFixtureApp } from "../src/http/fixtureApp.js";
 import {
   buildAdvisoryDisplayModel,
   groupAdvisoryReasons,
@@ -15,7 +15,7 @@ import {
   listM2BlockingReviewItems
 } from "../src/repositories/m2BlockingReviewFixtureRepository.js";
 import { getM2EvaluationTaskFixtureById } from "../src/repositories/m2EvaluationTaskFixtureRepository.js";
-import { M2_BLOCKING_REVIEW_FIXTURE_ITEMS } from "./fixtures/m2BlockingReviewWorkflow.fixture.js";
+import { M2_BLOCKING_REVIEW_FIXTURE_ITEMS } from "../src/fixtures/m2BlockingReviewWorkflow.fixture.js";
 
 const baseConfig = {
   service: "m1-audiobook-evaluation",
@@ -29,7 +29,7 @@ const baseConfig = {
 };
 
 async function request(path) {
-  const app = createApp(baseConfig);
+  const app = createFixtureApp(baseConfig);
   const server = http.createServer(app);
   await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
   const { port } = server.address();

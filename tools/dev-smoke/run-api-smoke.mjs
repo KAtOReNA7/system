@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import http from "node:http";
 import { loadConfig } from "../../src/config.js";
 import { createApp } from "../../src/http/app.js";
+import { createFixtureApp as createFixtureHttpApp } from "../../src/http/fixtureApp.js";
 import {
   syntheticJobs,
   syntheticMappingVersions,
@@ -31,7 +32,7 @@ function createFixtureApp() {
     }
   };
 
-  return createApp(config, {
+  return createFixtureHttpApp(config, {
     getSystemStatus: async () => ({
       state: "schema_initialized",
       mappingVersionReady: false,

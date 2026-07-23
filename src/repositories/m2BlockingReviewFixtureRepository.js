@@ -13,7 +13,7 @@ import {
 import {
   M2_BLOCKING_REVIEW_DATASET,
   M2_BLOCKING_REVIEW_FIXTURE_ITEMS
-} from "../../test/fixtures/m2BlockingReviewWorkflow.fixture.js";
+} from "../fixtures/m2BlockingReviewWorkflow.fixture.js";
 
 const ALLOWED_QUERY_KEYS = new Set([
   "page",

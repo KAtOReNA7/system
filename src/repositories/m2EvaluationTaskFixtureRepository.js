@@ -10,7 +10,7 @@ import {
   M2_EVALUATION_TASK_DATASET,
   M2_EVALUATION_TASK_FIXTURE_TASKS,
   M2_EVALUATION_TASK_MIXED_BATCH
-} from "../../test/fixtures/m2EvaluationTask.fixture.js";
+} from "../fixtures/m2EvaluationTask.fixture.js";
 
 const ALLOWED_QUERY_KEYS = new Set([
   "page",
