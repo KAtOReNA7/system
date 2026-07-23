@@ -28,7 +28,7 @@ v0.2 提出的仓库级 P0/P1 修正和安全范围内的 P2 诊断基础已完�
 | 删除无语义 aliases | 删除 8 个命令别名；保留具备独立参数或治理语义的入口 | package script contract |
 | 建立 current core | 新建 case/target/metrics/comparator/gate/report/loader 和 deterministic public snapshot | `verify:m2:current` |
 
-本 PR 相对 PR #7 merge base 涉及 149 个文件，净变化约 `+2,317 / -3,549`。其中大量删除来自 80 份逐字节相同 migration 副本；正式 migrations、历史报告、seals、PR #7 immutable binding 和 private artifacts 均未删除或改写。
+本 PR 相对 PR #7 merge base 的规模约为 150 个变更文件、`+2.4k / -3.6k`；最终精确统计以 PR #8 的 exact-head API 为准。其中大量删除来自 80 份逐字节相同 migration 副本；正式 migrations、历史报告、seals、PR #7 immutable binding 和 private artifacts 均未删除或改写。
 
 ## 3. 可移植开发结论
 
