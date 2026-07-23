@@ -1,6 +1,28 @@
 # 下一步交给 Codex 的指令
 
-## 2026-07-24 B8 独立复审已闭环
+## 2026-07-24 当前唯一执行入口
+
+PR #7 已通过独立 B8 复审和双平台 CI，并以普通 merge 合入 `main`；merge commit 为 `91dee993058d80ab36085ec0d3176b7ad154527e`，旧分支已删除。当前只继续 PR #8 `codex/m2-repository-convergence-toolchain` 的全盘复盘修正。
+
+PR #8 已完成工程实现，剩余动作按顺序自动执行：
+
+1. 更新 AGENTS、README、当前状态索引和审计收口；
+2. 在当前工作树执行 no-real-data、doctor、lint、build、默认测试、smoke、E2E 和 `verify:m2:current`；
+3. 显式路径提交并普通 push，等待 exact-head Linux/Windows CI；
+4. 接受并处理可见外部 review 反馈，mark ready；
+5. 普通 merge，快进同步本地 `main`，删除已合并开发分支并确认工作区干净。
+
+用户已授权上述 review、ready 和 merge，不需要再次询问。只有 remote drift/non-fast-forward、不可恢复的验证失败、外部 review 的实质性阻断，或必须扩大到 provider、数据库、训练、holdout、release、M3 formal 时才停止。
+
+当前权威导航为：
+
+1. `docs/analysis/m2-v2/M2-v2-current-state-index-v0.4.md`
+2. `docs/analysis/m2-v2/M2-repository-code-convergence-and-portable-development-audit-v0.3.md`
+3. `docs/analysis/m2-current/M2-current-public-diagnostic-baseline-v0.1.md`
+
+`currentDecision=CANARY_FAIL`、`nextDevelopmentReadiness=NOT_AUTHORIZED`、`full160Authorized=false`、`modelTrainingAuthorized=false` 不变。下方所有关于 PR #7 仍为 Draft、禁止 merge 或 B0–B8 尚待执行的内容均为历史 checkpoint，不再是当前任务入口。
+
+## 2026-07-24 B8 独立复审已闭环（历史 checkpoint）
 
 独立 reviewer 已在 exact HEAD `d2f92cd03bc9d82672676298d04daed765c4ce8a` 完成重复 B8，结论为 `B8_PASS_ALL_FINDINGS_CLOSABLE`。CI run `30034932174` 的 Linux/Windows jobs 均成功；10 项 finding 已由版本化 successor 记录为 `CLOSED`，B0–B8 全部 `COMPLETE`。
 

@@ -1,0 +1,105 @@
+{
+  "schemaVersion": "m2-v2-current-state-index-v0.4",
+  "classification": "public_sanitized_not_for_formal_decision",
+  "updatedAt": "2026-07-24",
+  "purpose": "repository_governance_and_development_navigation",
+  "cryptographicAuthority": {
+    "preserved": true,
+    "schemaVersion": "m2-v2-current-state-index-v0.3",
+    "path": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.3.json",
+    "reason": "PR7 immutable verifier binding remains unchanged"
+  },
+  "repositoryLifecycle": {
+    "pr7": {
+      "state": "MERGED",
+      "mergeStrategy": "merge_commit",
+      "mergeCommit": "91dee993058d80ab36085ec0d3176b7ad154527e",
+      "independentReviewDecision": "B8_PASS_ALL_FINDINGS_CLOSABLE",
+      "findingsClosed": 10,
+      "branchDeleted": true
+    },
+    "pr8": {
+      "number": 8,
+      "url": "https://github.com/KAtOReNA7/system/pull/8",
+      "branch": "codex/m2-repository-convergence-toolchain",
+      "purpose": "repository_convergence_toolchain_runtime_and_m2_current_diagnostics",
+      "mergeAuthorizedByUser": true,
+      "mergeCondition": "current_head_local_validation_and_remote_linux_windows_ci_and_review_feedback_resolved"
+    }
+  },
+  "currentDecision": "CANARY_FAIL",
+  "nextDevelopmentReadiness": "NOT_AUTHORIZED",
+  "authorizations": {
+    "repositoryMaintenancePrReady": true,
+    "repositoryMaintenancePrMerge": true,
+    "provider": false,
+    "database": false,
+    "canary": false,
+    "full160": false,
+    "modelTraining": false,
+    "finalHoldout": false,
+    "release": false,
+    "m3Formal": false
+  },
+  "portableDevelopment": {
+    "corePrivateIndependent": true,
+    "requiredNode": ">=24 <25",
+    "requiredNpm": "11.13.0",
+    "supportedPython": ">=3.11 <3.14",
+    "referenceAndCiPython": "3.13",
+    "missingS1PrivateAuthenticityBlocksCoreDevelopment": false,
+    "formalStartCommand": "npm start",
+    "fixtureStartCommand": "npm run start:fixture"
+  },
+  "repositoryConvergence": {
+    "trackedJsMjsInventory": "complete_with_explicit_exemptions",
+    "testRegistryProfiles": [
+      "default",
+      "e2e",
+      "archive",
+      "private"
+    ],
+    "formalFixtureCompositionSeparated": true,
+    "formalExportPointOnly": true,
+    "removedPromotedMigrationCopies": 80,
+    "redirectedDuplicateArchiveDocuments": 8,
+    "removedNoSemanticScriptAliases": 8,
+    "exactDuplicateTrackedDocumentGroupsAfterChange": 0
+  },
+  "m2CurrentDiagnostic": {
+    "status": "BASELINE_ONLY_BLOCKED",
+    "source": "public_aggregate_evidence_only",
+    "authoritativeWorks": 3053,
+    "modelWorks": 824,
+    "formalCashCases": 7851,
+    "modelWorkShare": 0.2698984605,
+    "forecastableCashCoverage": 0.7396468495,
+    "top10Coverage": 0.759412528,
+    "requiredCoverage": 0.9,
+    "b4": {
+      "wape": 0.55648454,
+      "signedBias": 0.08911106,
+      "role": "comparator_fallback"
+    },
+    "c3a": {
+      "wape": 0.553945169,
+      "signedBias": 0.08273913,
+      "decision": "FAIL"
+    },
+    "blockers": [
+      "coverage_below_threshold",
+      "existing_candidate_quality_failed",
+      "no_current_candidate_authorized",
+      "final_holdout_sealed",
+      "business_sampling_incomplete"
+    ]
+  },
+  "supersession": {
+    "governancePredecessors": [
+      "docs/analysis/m2-v2/M2-v2-current-state-index-v0.2.md",
+      "docs/analysis/m2-v2/M2-v2-current-state-index-v0.3.json"
+    ],
+    "auditPlan": "docs/analysis/m2-v2/M2-repository-code-convergence-and-portable-development-audit-v0.2.md",
+    "auditCloseout": "docs/analysis/m2-v2/M2-repository-code-convergence-and-portable-development-audit-v0.3.md"
+  }
+}

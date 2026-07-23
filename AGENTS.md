@@ -1,6 +1,16 @@
 # Codex 工作规则
 
-## 2026-07-24 PR #7 B8 独立复审闭环（当前最高优先）
+## 2026-07-24 PR #7 合并与全盘修正入口（当前最高优先）
+
+- PR #7 已在独立 B8 复审、exact-head Linux/Windows CI 和用户明确授权后，以普通 merge 合入 `main`；merge commit 为 `91dee993058d80ab36085ec0d3176b7ad154527e`。旧开发分支 `codex/m2-v2-evidence-pilot-v1` 已在本地和远端删除。
+- 全盘复盘 v0.2 的工程修正由独立 PR #8 `codex/m2-repository-convergence-toolchain` 承载。当前已完成：Node/Python/npm 可移植工具链、全量 JS/MJS 清单、测试 registry、formal/fixture composition 分离、point-only formal export、80 份 migration 副本与 8 份文档副本退役、无语义 npm alias 收敛、冗余回归门禁，以及 public-only `m2-current` 诊断核心。
+- 当前导航为 `docs/analysis/m2-v2/M2-v2-current-state-index-v0.4.md` / `.json`；全盘复盘实施结论见 `docs/analysis/m2-v2/M2-repository-code-convergence-and-portable-development-audit-v0.3.md`。v0.3 cryptographic current-authority JSON 继续供 PR #7 verifier 使用，不得因治理索引升级而重写。
+- 用户已授权 PR #8 接受外部 review、mark ready 和普通 merge。Codex 应在当前工作树全量验证、远端双平台 CI 和可见 review 反馈处理完成后自动合并、同步 `main` 并删除活动分支，无需再次请求相同授权。
+- PR #7 合并和 PR #8 工程修正不改变业务结论：`currentDecision=CANARY_FAIL`、`nextDevelopmentReadiness=NOT_AUTHORIZED`、`full160Authorized=false`、`modelTrainingAuthorized=false`。provider、数据库、Canary/full160、训练、final holdout、release 和 M3 formal 均未获授权。
+- 公开核心开发必须 private-independent。新电脑执行 clone/pull、`npm ci`、`npm run doctor:dev`、lint、build、默认测试、smoke、`npm run verify:m2:current` 和 fixture 启动时，不得要求 `s1-source-evidence-authenticity-private-v0.1.json` 或任何 Git ignored private artifact。
+- 下方所有把 PR #7 描述为 Draft/open/unmerged、禁止 merge 或把 v0.2 作为唯一导航的段落，均是历史 checkpoint，仅供追溯；本节与用户最新明确指令优先。
+
+## 2026-07-24 PR #7 B8 独立复审闭环（历史 checkpoint）
 
 - 独立 reviewer 已对 exact HEAD `d2f92cd03bc9d82672676298d04daed765c4ce8a` 完成重复 B8 全量复审，结论为 `B8_PASS_ALL_FINDINGS_CLOSABLE`；reviewer 未参与修复实现且未修改仓库。
 - exact-head CI run `30034932174` 完整成功：Linux job `89300399550`、Windows job `89300399537`；B7 双平台并集覆盖 89/89，30/30 secondary-verifier-required cases 覆盖，zero fail/skip。

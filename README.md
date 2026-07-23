@@ -1,6 +1,34 @@
 # 有声书产品收入评估与年度目标系统 PRD v0.2
 
-## 2026-07-24 PR #7 当前执行状态
+## 2026-07-24 当前仓库入口
+
+PR #7 已通过独立 B8 复审和 Linux/Windows CI，并以普通 merge 合入 `main`，merge commit 为 `91dee993058d80ab36085ec0d3176b7ad154527e`。10 项 finding 均已关闭，旧开发分支已删除。当前独立 PR #8 承载全盘复盘 v0.2 的工程收敛：可移植工具链、测试 registry、formal/fixture runtime 分离、point-only formal export、可证明冗余删除，以及 public-only `m2-current` 诊断核心。
+
+当前导航：
+
+- `docs/analysis/m2-v2/M2-v2-current-state-index-v0.4.md`
+- `docs/analysis/m2-v2/M2-repository-code-convergence-and-portable-development-audit-v0.3.md`
+- `docs/analysis/m2-current/M2-current-public-diagnostic-baseline-v0.1.md`
+
+新电脑的公开开发基线不依赖任何 private 文件：
+
+```bash
+git pull --ff-only
+npm ci
+npm run doctor:dev
+npm run check:no-real-data
+npm run lint
+npm run build
+npm test
+npm run smoke
+npm run verify:m2:current
+```
+
+`npm start` 只启动 formal composition；需要合成 fixture 时显式使用 `npm run start:fixture`。缺少 `s1-source-evidence-authenticity-private-v0.1.json` 只会阻断已退役 PR #7 的对应历史验证能力，不会阻断安装、构建、公开测试、smoke、M2 公共诊断或 fixture 开发。
+
+工程收敛不改变业务授权：当前仍为 `currentDecision=CANARY_FAIL`、`nextDevelopmentReadiness=NOT_AUTHORIZED`；provider、数据库、Canary/full160、模型训练、final holdout、release 和 M3 formal 均未授权。下方把 PR #7 描述为 Draft/open/unmerged 或把旧索引称为当前唯一入口的段落，均保留为历史 checkpoint。
+
+## 2026-07-24 PR #7 执行状态（历史 checkpoint）
 
 B0–B8 已全部完成。独立 reviewer 对 exact HEAD `d2f92cd03bc9d82672676298d04daed765c4ce8a` 的裁决为 `B8_PASS_ALL_FINDINGS_CLOSABLE`；exact-head CI run `30034932174` 的 Linux job `89300399550` 与 Windows job `89300399537` 完整成功。10 个 finding 已由版本化 closure successor 记录为 `CLOSED`。
 
