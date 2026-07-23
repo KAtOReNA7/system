@@ -1,5 +1,16 @@
 # Codex 工作规则
 
+## 2026-07-23 分支与代码收敛规则（固定执行）
+
+- 默认只保留 `main` 和一条当前活动开发分支。PR #7 关闭或合并前，M2 的唯一活动分支是 `codex/m2-v2-evidence-pilot-v1`；B4–B7、文档同步、CI 修复、checkpoint 和同一 PR 的返工都继续使用该分支，禁止再建立同任务子分支。只有用户明确要求独立 PR，或现有分支确实无法安全承载且已先说明原因和退出条件时，才允许新建分支。
+- 每次开始仓库任务时，Codex 自动执行远端获取和状态核对，不再要求用户重复给出 Git 命令：至少检查工作区、当前分支、upstream、`origin/main`、ahead/behind、开放 PR 和 worktree；使用 `git fetch origin --prune` 获取引用，只有在工作区干净且可快进时才 `ff-only` 同步。禁止为了“同步”而自动 rebase、squash、force push 或制造额外 merge。
+- 同一时间只保留一个 M2 开放 PR。PR 合并并确认其 head 已进入 `origin/main` 后，应在同一收尾任务中删除对应本地和远端开发分支，并清理已经失效的 worktree 登记；不得把已合并分支继续当作开发入口。未合并分支只有在逐项核对独有提交和文件差异、确认已被替代或不再适用并留下通俗说明后，才可舍弃。
+- 分支治理、同步和代码整理不扩大业务授权。当前 PR #7 仍是 Draft/open/unmerged；B4 仍需新的明确启动指令。provider、数据库、Canary/full160、模型训练、holdout、B8、mark ready、PR merge、release 和 M3 继续服从下方门禁，不能因“减少分支”而自动执行。
+- 新增实现前必须先用 `rg` 检索现有入口、调用方和测试。provider transport、extraction normalization、source governance、request ledger、safe cache、authority/current state、workbook verification、路径与摘要校验等同一职责只能有一个 canonical 可执行实现；新代码默认扩展该实现，不得复制成平行 runtime/provider/adapter。
+- 只有冻结 schema、不可变审计重放或兼容性边界确实要求时，才允许保留版本化实现。此时必须在 registry 或 current-authority 入口明确 predecessor、successor、canonical route 和退役条件；旧入口必须在同一批次删除、改为薄兼容层或明确变为 non-routable。历史报告、冻结合同和审计 fixture 可以保留，但不得继续充当当前 runtime authority。
+- 每个后续 M2 批次原则上不得增加同职责的可执行文件数量。若审计约束导致暂时无法减少，必须在批次说明中列出重复点、保留理由、唯一当前入口和下一删除节点；禁止以新增版本文件代替修改 canonical 实现。
+- PR 准备合并前必须同时报告：分支相对 `origin/main` 的状态、开放 finding/门禁、重复实现检查、被删除或退役的入口、仍保留的历史文件及原因，以及规定验证结果。没有这些证据不得把 PR 标为 ready 或请求合并。
+
 ## 2026-07-20 PR #7 S1 分层修复入口（当前最高优先）
 
 - 7 项 S0 开发支持基线已在 exact HEAD `badbf453e1e99ba87cc3064601e480a09ff1b149` 完成并通过 Linux/Windows CI；`supportSharpeningStopCriteriaReached=true`。
