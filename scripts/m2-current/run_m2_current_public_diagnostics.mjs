@@ -17,7 +17,9 @@ const report = buildM2CurrentPublicDiagnosticReport(
 const output = `${JSON.stringify(report, null, 2)}\n`;
 
 if (process.argv.includes("--verify")) {
-  if (readFileSync(config.publicOutput, "utf8") !== output) {
+  const trackedOutput = readFileSync(config.publicOutput, "utf8")
+    .replaceAll("\r\n", "\n");
+  if (trackedOutput !== output) {
     throw new Error("m2_current_public_diagnostic_output_drift");
   }
   process.stdout.write("M2 current public diagnostic output verified.\n");
