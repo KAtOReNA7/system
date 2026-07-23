@@ -725,7 +725,7 @@ test("canonical B3-B7 commands remain reproducible after the PR7-only CI gate is
     "test/m2-v2-v2b6-raw-cache-migration.test.js",
   ].join(" ");
   assert.equal(packageJson.scripts["test:m2-v2:b3-safe-cache-provider"], canonical);
-  assert.equal(packageJson.scripts["test:m2-v2:provider-security"], "npm run test:m2-v2:b3-safe-cache-provider");
+  assert.equal(packageJson.scripts["test:m2-v2:provider-security"], undefined);
   assert.equal(
     packageJson.scripts["test:m2-v2:b4-event-tuple"],
     "node --test --test-concurrency=1 test/m2-v2-event-tuple.test.js test/m2-v2-v2b8.test.js",
