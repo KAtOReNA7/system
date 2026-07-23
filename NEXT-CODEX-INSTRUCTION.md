@@ -1,5 +1,11 @@
 # 下一步交给 Codex 的指令
 
+## 2026-07-24 B8 首轮独立复审返工
+
+B7 implementation exact HEAD `4663fce6b656a7269bb624b9e2d74629bab999df` 已通过 run `30032162656` 的 Linux/Windows CI。首轮独立 B8 结论为 `B8_FAIL_REMEDIATION_REQUIRED`：canonical no-argument verifier/current-authority reader 仍指向 predecessor authority，且 B6 graph population 后缺少 formal claimable readonly proof。
+
+当前继续使用 `codex/m2-v2-evidence-pilot-v1` 完成 closing correction。必须修正 canonical current 路由、在 clean exact HEAD 运行 `npm run m2:v2:pr7:b8:readonly-proof`、完成全量验证和双平台 CI，然后由独立 reviewer 重做 B8。复审 PASS 前不得关闭 finding、mark ready、merge 或 release。
+
 ## 2026-07-19 PR #7 S1 B0–B7 增量边界
 
 7 项 S0 开发支持基线已经在 exact HEAD `badbf453e1e99ba87cc3064601e480a09ff1b149` 完成。用户现已单独授权直接在 `codex/m2-v2-evidence-pilot-v1` 上按 B0–B7 分层实施 10 项 open finding 的 S1 修复、provider-free 离线重建、显式原子提交、普通 push 与 exact-head 双平台 CI checkpoint。B6 已在 exact HEAD `3e79ce654cd335129005d3916f25f5bf8a2bef7d` 通过 run `30030360312` 的 Linux/Windows CI。B7 已完成本地全 registry 回归，Windows 88/88 原生案例、161 tests、zero skip；当前为 `REGRESSION_COMPLETE_PENDING_EXACT_HEAD_CI`，`currentBatch=B7`、`nextBatch=B8`。B8 已获授权，但只能由独立 reviewer 执行。

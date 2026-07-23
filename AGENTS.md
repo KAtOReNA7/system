@@ -1,5 +1,14 @@
 # Codex 工作规则
 
+## 2026-07-24 PR #7 B8 首轮独立复审返工入口（当前最高优先）
+
+- B7 implementation exact HEAD `4663fce6b656a7269bb624b9e2d74629bab999df` 已通过 CI run `30032162656`：Linux job `89291086145` 为 87/87，Windows job `89291086079` 为 88/88，两平台并集覆盖 89/89，均为 zero fail/skip。
+- 首轮独立 B8 对上述 HEAD 的结论是 `B8_FAIL_REMEDIATION_REQUIRED`，不得迁移任何 finding 到 `CLOSED`。阻断项为 canonical verifier/current-authority reader 仍默认读取 predecessor authority，以及 B6 graph population 后尚未记录 formal claimable readonly proof。
+- 当前允许并要求自动完成 B7 closing correction：默认 closed binding 必须指向 B6 current pointer；无参 current-authority reader 必须选择 v0.3/v0.4 并验证 B6 graph/core commitment；legacy authority 只能显式历史重放，禁止自动 fallback。
+- clean exact HEAD 后必须运行 `npm run m2:v2:pr7:b8:readonly-proof`。该证明必须对 canonical `m2:v2:v2b8:verify` 连续执行两次，`claimable=true`、三次 host-native snapshot 一致、`providerRequestDelta=0`、`databaseConnectionDelta=0`、zero issue。详细 proof 仅写 Git ignored private output，不得提交。
+- correction 必须依次完成显式路径提交、普通 push、remote exact-head、Linux/Windows CI，再交给未参与实现的独立 reviewer 重做 B8。复审 PASS 前 10 项 finding 全部保持 `OPEN`。
+- 仍禁止 provider、数据库、Canary/full160、模型训练、holdout、mark ready、PR merge、release 与 M3 formal；`currentDecision=CANARY_FAIL`、`nextDevelopmentReadiness=NOT_AUTHORIZED` 不变。
+
 ## 2026-07-24 PR #7 B5–B8 授权与执行入口（当前最高优先）
 
 - 用户已明确授权继续执行 B5、B6、B7，并授权启动 B8 独立复审。B6 已在 exact HEAD `3e79ce654cd335129005d3916f25f5bf8a2bef7d` 通过 run `30030360312` 的 Linux job `89285146244` 与 Windows job `89285146296`；B7 已完成本地全 registry 回归，Windows 88/88 原生案例、161 tests、zero skip，当前为 `REGRESSION_COMPLETE_PENDING_EXACT_HEAD_CI`，`currentBatch=B7`、`nextBatch=B8`。后续仍须完成 B7 原子提交、普通推送、remote exact-head 与 Linux/Windows CI，再由独立 reviewer 执行 B8。

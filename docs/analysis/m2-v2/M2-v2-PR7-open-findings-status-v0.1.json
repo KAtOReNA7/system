@@ -41,10 +41,10 @@
     "B4": "COMPLETE_PENDING_B8",
     "B5": "COMPLETE_PENDING_B8",
     "B6": "COMPLETE_PENDING_B8",
-    "B7": "REGRESSION_COMPLETE_PENDING_EXACT_HEAD_CI"
+    "B7": "CLOSING_CORRECTION_PENDING_EXACT_HEAD_CI"
   },
   "nextBatch": "B8",
-  "nextAllowedPhase": "B8_AUTHORIZED_INDEPENDENT_REVIEW_AFTER_B7_EXACT_HEAD_CI",
+  "nextAllowedPhase": "B8_REPEAT_INDEPENDENT_REVIEW_AFTER_B7_CORRECTION_EXACT_HEAD_CI",
   "candidateFindingStatuses": {
     "PR7-P1-003": {
       "findingStatus": "OPEN",
@@ -90,8 +90,8 @@
   "openFindings": 10,
   "findingsRemainOpen": true,
   "findingClosureStatus": "OPEN",
-  "independentReviewPerformed": false,
-  "independentReviewStatus": "NOT_REVIEWED",
+  "independentReviewPerformed": true,
+  "independentReviewStatus": "FIRST_PASS_FAILED_CANONICAL_POINTER_ROUTING",
   "b8Authorized": true,
   "mergeAuthorized": false,
   "full160Authorized": false,

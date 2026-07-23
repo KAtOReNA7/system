@@ -12,6 +12,9 @@ import {
   deriveCanonicalAuthorityGraphV0_3,
 } from "../src/domain/m2V2EvidencePilot/authorityGraph.js";
 import {
+  CURRENT_CLOSED_REQUEST_STATE_BINDING_RELATIVE,
+  LEGACY_CURRENT_RESTATEMENT_RELATIVE,
+  LEGACY_CURRENT_STATE_INDEX_RELATIVE,
   readCurrentAuthority,
   validateCurrentAuthorityDocuments,
 } from "../src/domain/m2V2EvidencePilot/currentAuthority.js";
@@ -204,6 +207,57 @@ test("v0.3 current authority binds exactly three non-self public reports", () =>
   };
   const result = validateCurrentAuthorityDocuments(input);
   assert.equal(result.valid, true, result.issues.join(","));
+
+  const graphMemberPath = "data/private-output/current-authority-test/contract-bound-public-report-digests-private-v0.3.json";
+  writeJson(join(root, graphMemberPath), {
+    schema: "m2.v2.v2b8-contract-bound-public-report-digests-private.v0.3",
+    canonicalAuthorityGraph: fixture.graph,
+  });
+  const bindingPayload = {
+    schema: "m2.v2.request-state-atomic-binding.v0.2",
+    privateOnly: true,
+    scope: "v2b8",
+    transactionId,
+    members: [{
+      role: "contract_bound_public_report_digests",
+      path: graphMemberPath,
+      byteDigest: digestFile(join(root, graphMemberPath)),
+    }],
+  };
+  writeJson(join(root, CURRENT_CLOSED_REQUEST_STATE_BINDING_RELATIVE), {
+    ...bindingPayload,
+    bindingDigest: sha256(bindingPayload),
+  });
+  const legacyRestatement = {
+    schema: "m2.v2.canary-v3.1-integrity-restatement-public.v0.3",
+    providerRequestDelta: 0,
+    historicalContract: { decision: "CANARY_CONDITIONAL" },
+    restatedContract: { decision: "CANARY_FAIL", full160Authorized: false },
+    nextDevelopmentReadiness: "NOT_AUTHORIZED",
+  };
+  writeJson(join(root, LEGACY_CURRENT_RESTATEMENT_RELATIVE), legacyRestatement);
+  writeJson(join(root, LEGACY_CURRENT_STATE_INDEX_RELATIVE), {
+    schemaVersion: "m2-v2-current-state-index-v0.2",
+    status: "current",
+    historicalV2B8Decision: "CANARY_CONDITIONAL",
+    currentDecision: "CANARY_FAIL",
+    full160Authorized: false,
+    nextDevelopmentReadiness: "NOT_AUTHORIZED",
+    currentAuthority: {
+      currentRestatementArtifact: LEGACY_CURRENT_RESTATEMENT_RELATIVE,
+      currentRestatementDigest: digestFile(join(root, LEGACY_CURRENT_RESTATEMENT_RELATIVE)),
+    },
+    entries: [],
+  });
+  const defaultResult = readCurrentAuthority(root);
+  assert.equal(defaultResult.valid, true, defaultResult.issues.join(","));
+  assert.equal(defaultResult.canonicalAuthorityGraphVerified, true);
+  assert.equal(defaultResult.authorityMap.currentAuthorityArtifact, paths.index);
+
+  rmSync(join(root, CURRENT_CLOSED_REQUEST_STATE_BINDING_RELATIVE));
+  const noFallbackResult = readCurrentAuthority(root);
+  assert.equal(noFallbackResult.valid, false);
+  assert.ok(noFallbackResult.issues.includes("current_closed_binding_missing"));
 
   const selfBound = structuredClone(index);
   selfBound.currentAuthority.publicReportBindings.push({

@@ -11,9 +11,9 @@ PR #7 remains Draft/open/unmerged. The incremental independent review against pr
 - B4: `COMPLETE_PENDING_B8`
 - B5: `COMPLETE_PENDING_B8`
 - B6: `COMPLETE_PENDING_B8`
-- B7: `REGRESSION_COMPLETE_PENDING_EXACT_HEAD_CI`
+- B7: `CLOSING_CORRECTION_PENDING_EXACT_HEAD_CI`
 - `currentBatch=B7`; B5–B8 were explicitly authorized on 2026-07-24
-- Independent review: `NOT_REVIEWED`
+- Independent review: `FIRST_PASS_FAILED_CANONICAL_POINTER_ROUTING`; repeat review pending correction CI
 - Independent B8 review authorized: `true`; self-review and self-closure remain forbidden
 - Historical decision: `CANARY_CONDITIONAL`
 - Current offline integrity restatement: `CANARY_FAIL`
@@ -23,6 +23,8 @@ PR #7 remains Draft/open/unmerged. The incremental independent review against pr
 - `nextDevelopmentReadiness=NOT_AUTHORIZED`
 
 B0-B7 implementation evidence may reach only `CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW`. Only a new independent B8 review may determine `CLOSED`.
+
+The first independent B8 pass on `4663fce6b656a7269bb624b9e2d74629bab999df` returned `B8_FAIL_REMEDIATION_REQUIRED`: canonical no-argument consumers still selected predecessor authority and the post-B6 formal claimable readonly proof had not been recorded. The closing correction is implemented locally; exact-head CI, the formal proof, and a repeated independent review remain pending.
 
 ## Open findings
 
@@ -46,7 +48,8 @@ B0-B7 implementation evidence may reach only `CANDIDATE_CLOSED_PENDING_INDEPENDE
 | B4-integration | this tracked integration commit | exact-head CI bound in the private receipt and PR body | exact-head CI bound in the private receipt and PR body | `COMPLETE_PENDING_B8` after exact-head CI |
 | B5 | `8804cd508f8e30d90dfc6f429e0b49ab6cae647c` | run `30025925006`, job `89270240561`, success | run `30025925006`, job `89270240691`, success | `COMPLETE_PENDING_B8` |
 | B6 | `3e79ce654cd335129005d3916f25f5bf8a2bef7d` | run `30030360312`, job `89285146244`, success | run `30030360312`, job `89285146296`, success | `COMPLETE_PENDING_B8` |
-| B7 | this tracked implementation commit | pending exact-head CI | pending exact-head CI | `REGRESSION_COMPLETE_PENDING_EXACT_HEAD_CI` |
+| B7 implementation | `4663fce6b656a7269bb624b9e2d74629bab999df` | run `30032162656`, job `89291086145`, success | run `30032162656`, job `89291086079`, success | `PASS` |
+| B7 closing correction | this tracked correction commit | pending exact-head CI | pending exact-head CI | `CLOSING_CORRECTION_PENDING_EXACT_HEAD_CI` |
 | B8 | - | - | - | `AUTHORIZED_PENDING_INDEPENDENT_REVIEW` |
 
 B2 comprises two ordinary commits, five changed files, 15/15 registered acceptance cases, 31/31 migration tests, and 1130/1130 full tests. Its integration-only checkpoint commit is bound to a final exact-head CI receipt after ordinary push.

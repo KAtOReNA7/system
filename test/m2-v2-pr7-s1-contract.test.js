@@ -421,10 +421,10 @@ test("B7 regression overlay remains OPEN and preserves independent B8 review", (
     B4: "COMPLETE_PENDING_B8",
     B5: "COMPLETE_PENDING_B8",
     B6: "COMPLETE_PENDING_B8",
-    B7: "REGRESSION_COMPLETE_PENDING_EXACT_HEAD_CI",
+    B7: "CLOSING_CORRECTION_PENDING_EXACT_HEAD_CI",
   });
   assert.equal(overlay.nextBatch, "B8");
-  assert.equal(overlay.nextAllowedPhase, "B8_AUTHORIZED_INDEPENDENT_REVIEW_AFTER_B7_EXACT_HEAD_CI");
+  assert.equal(overlay.nextAllowedPhase, "B8_REPEAT_INDEPENDENT_REVIEW_AFTER_B7_CORRECTION_EXACT_HEAD_CI");
   for (const findingId of S1_FINDING_IDS) {
     assert.deepEqual(overlay.candidateFindingStatuses[findingId], {
       findingStatus: "OPEN",
@@ -432,12 +432,12 @@ test("B7 regression overlay remains OPEN and preserves independent B8 review", (
     });
   }
   assert.equal(overlay.findingsRemainOpen, true);
-  assert.equal(overlay.independentReviewPerformed, false);
+  assert.equal(overlay.independentReviewPerformed, true);
   for (const [field, value] of [
     ["nextBatch", "B7"],
     ["findingsRemainOpen", false],
     ["findingClosureStatus", "CLOSED"],
-    ["independentReviewPerformed", true],
+    ["independentReviewPerformed", false],
     ["independentReviewStatus", "PASSED"],
     ["b8Authorized", false],
     ["mergeAuthorized", true],

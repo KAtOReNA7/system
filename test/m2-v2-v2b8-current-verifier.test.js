@@ -7,8 +7,10 @@ import { spawnSync } from "node:child_process";
 import test from "node:test";
 import {
   buildClosedAtomicTransactionManifest,
+  CURRENT_CLOSED_REQUEST_STATE_BINDING_RELATIVE,
   createClosedAtomicRequestBinding,
   createReceiptEnvelope,
+  LEGACY_CLOSED_REQUEST_STATE_BINDING_RELATIVE,
 } from "../src/domain/m2V2EvidencePilot/integrityState.js";
 import { sha256 } from "../src/domain/m2V2EvidencePilot/pilotCore.js";
 import { appendRequestEvent, replayRequestEventLedger } from "../src/domain/m2V2EvidencePilot/requestEventLedger.js";
@@ -69,6 +71,31 @@ test("B8 verifier accepts the exact v0.3 public-report index authority extension
   const fixture = buildFixture({ authorityGraph: true });
   const verdict = verifyFixture(fixture);
   assert.equal(verdict.allPassed, true, verdict.issues.join(","));
+});
+
+test("B8 canonical verifier selects the B6 current pointer and never falls back to the legacy binding", () => {
+  const fixture = buildFixture({ bindingPath: CURRENT_CLOSED_REQUEST_STATE_BINDING_RELATIVE });
+  writeJson(join(fixture.root, LEGACY_CLOSED_REQUEST_STATE_BINDING_RELATIVE), {
+    schema: "stale-legacy-binding",
+  });
+  const verdict = verifyV2B8(fixture.root, {
+    results: fixture.results,
+    gitBoundary,
+  });
+  assert.equal(verdict.allPassed, true, verdict.issues.join(","));
+  assert.equal(verdict.transactionBindingVerified, true);
+  assert.equal(verdict.currentRestatementVerified, true);
+});
+
+test("B8 canonical verifier fails closed when only the legacy binding is present", () => {
+  const fixture = buildFixture({ bindingPath: LEGACY_CLOSED_REQUEST_STATE_BINDING_RELATIVE });
+  const verdict = verifyV2B8(fixture.root, {
+    results: fixture.results,
+    gitBoundary,
+  });
+  assert.equal(verdict.allPassed, false);
+  assert.equal(verdict.transactionBindingVerified, false);
+  assert.ok(verdict.issues.some((issue) => issue === "current_binding:closed_binding_missing"));
 });
 
 test("B8 restatement evaluation digest selection is schema-exact", () => {
@@ -435,7 +462,8 @@ function buildFixture(options = {}) {
       byteDigest: digestFile(join(root, rolePaths.transaction_manifest)),
     }],
   });
-  const bindingPath = "data/private-output/m2-v2-integrity-remediation/request-state-binding-private-v0.2.json";
+  const bindingPath = options.bindingPath
+    ?? LEGACY_CLOSED_REQUEST_STATE_BINDING_RELATIVE;
   writeJson(join(root, bindingPath), binding);
   return {
     root,

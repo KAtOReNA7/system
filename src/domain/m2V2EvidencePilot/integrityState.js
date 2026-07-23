@@ -18,7 +18,15 @@ import {
   CANONICAL_AUTHORITY_NODE_IDS,
   verifyCanonicalAuthorityGraph,
 } from "./authorityGraph.js";
-import { validateCurrentAuthorityDocuments } from "./currentAuthority.js";
+import {
+  CURRENT_CLOSED_REQUEST_STATE_BINDING_RELATIVE,
+  LEGACY_CLOSED_REQUEST_STATE_BINDING_RELATIVE,
+  validateCurrentAuthorityDocuments,
+} from "./currentAuthority.js";
+export {
+  CURRENT_CLOSED_REQUEST_STATE_BINDING_RELATIVE,
+  LEGACY_CLOSED_REQUEST_STATE_BINDING_RELATIVE,
+};
 import {
   REQUEST_COUNTER_FIELDS,
   REQUEST_EVENT_SCHEMA,
@@ -31,7 +39,6 @@ export const CURRENT_REQUEST_STATE_BINDING_RELATIVE = "data/private-output/m2-v2
 export const REQUEST_STATE_TRANSACTION_ROOT_RELATIVE = "data/private-output/m2-v2-integrity-remediation/request-state-transactions";
 export const CLOSED_ATOMIC_BINDING_SCHEMA = "m2.v2.request-state-atomic-binding.v0.2";
 export const CLOSED_ATOMIC_TRANSACTION_SCHEMA = "m2.v2.request-state-transaction.v0.2";
-export const CURRENT_CLOSED_REQUEST_STATE_BINDING_RELATIVE = "data/private-output/m2-v2-integrity-remediation/request-state-binding-private-v0.2.json";
 export const CLOSED_ATOMIC_MEMBER_ROLES = Object.freeze([
   "state",
   "cache_index",

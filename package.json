@@ -255,7 +255,8 @@
     "m2:v2:v2b8:run": "node scripts/m2-v2-evidence-pilot/run_m2_v2_b8.mjs run",
     "m2:v2:v2b8:resume": "node scripts/m2-v2-evidence-pilot/run_m2_v2_b8.mjs resume",
     "m2:v2:v2b8:verify": "node scripts/m2-v2-evidence-pilot/run_m2_v2_b8.mjs verify",
-    "m2:v2:v2b8:report": "node scripts/m2-v2-evidence-pilot/run_m2_v2_b8.mjs report"
+    "m2:v2:v2b8:report": "node scripts/m2-v2-evidence-pilot/run_m2_v2_b8.mjs report",
+    "m2:v2:pr7:b8:readonly-proof": "node scripts/m2-v2-evidence-pilot/run_m2_v2_pr7_b8_readonly_proof.mjs"
   },
   "dependencies": {
     "pg": "^8.16.3"

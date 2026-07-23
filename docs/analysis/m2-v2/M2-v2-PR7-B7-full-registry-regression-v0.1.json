@@ -1,6 +1,6 @@
 {
   "schema": "m2.v2.pr7-b7-full-registry-regression.v0.1",
-  "status": "REGRESSION_COMPLETE_PENDING_EXACT_HEAD_CI",
+  "status": "CLOSING_CORRECTION_PENDING_EXACT_HEAD_CI",
   "classification": "public_sanitized_not_for_formal_decision",
   "branch": "codex/m2-v2-evidence-pilot-v1",
   "batchId": "B7",
@@ -54,12 +54,46 @@
     "smokePassed": true
   },
   "exactHeadCi": {
-    "status": "PENDING_B7_CLEAN_COMMIT",
+    "status": "SUCCESS",
+    "exactHead": "4663fce6b656a7269bb624b9e2d74629bab999df",
+    "runId": 30032162656,
+    "linuxJobId": 89291086145,
+    "linuxCaseCount": 87,
+    "windowsJobId": 89291086079,
+    "windowsCaseCount": 88,
     "requiredPlatforms": [
       "linux",
       "windows"
     ],
     "unionCaseCountRequired": 89
+  },
+  "closingCorrection": {
+    "reason": "Independent B8 review found that the canonical no-argument V2-B.8 verifier and current-authority reader still selected predecessor authority, and that the post-B6 formal claimable readonly proof was not recorded.",
+    "legacyBindingReplay": "EXPLICIT_PATH_ONLY",
+    "canonicalCurrentPointer": "data/private-output/m2-v2-pr7-s1-remediation-badbf45/b6-authority-recovery-v0.1/current-binding-private-v0.2.json",
+    "canonicalVerifierPassedLocally": true,
+    "currentRestatementVerified": true,
+    "transactionBindingVerified": true,
+    "canonicalAuthorityReaderPassedLocally": true,
+    "formalReadonlyProofStatus": "PENDING_CLEAN_EXACT_HEAD_EXECUTION",
+    "providerRequestDelta": 0,
+    "status": "PENDING_CORRECTION_EXACT_HEAD_CI_AND_REPEAT_INDEPENDENT_REVIEW",
+    "localValidation": {
+      "b6FocusedPassed": 44,
+      "b6FocusedTotal": 44,
+      "s1ContractPassed": 24,
+      "s1ContractTotal": 24,
+      "b7WindowsApplicablePassed": 88,
+      "b7WindowsApplicableTotal": 88,
+      "b7PassedTests": 161,
+      "defaultTestsPassed": 1184,
+      "defaultTestsTotal": 1184,
+      "skipCount": 0,
+      "checkNoRealDataPassed": true,
+      "lintPassed": true,
+      "buildPassed": true,
+      "smokePassed": true
+    }
   },
   "boundaries": {
     "providerAllowed": false,
@@ -77,7 +111,8 @@
     "openFindings": 10,
     "findingsRemainOpen": true,
     "maximumCandidateStatus": "CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW",
-    "independentReviewPerformed": false,
+    "independentReviewPerformed": true,
+    "independentReviewStatus": "FIRST_PASS_FAILED_CANONICAL_POINTER_ROUTING",
     "b8Authorized": true,
     "mergeAuthorized": false,
     "releaseAuthorized": false,

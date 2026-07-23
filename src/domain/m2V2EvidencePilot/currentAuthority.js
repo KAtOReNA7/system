@@ -5,10 +5,16 @@ import { verifyTrackedCoreCommitmentV0_1 } from "./authorityGraph.js";
 import { sha256 as sha256Value } from "./pilotCore.js";
 
 export const CURRENT_AUTHORITY_SCHEMA = "m2.v2.current-authority-private.v0.2";
-export const DEFAULT_CURRENT_STATE_INDEX_RELATIVE = "docs/analysis/m2-v2/M2-v2-current-state-index-v0.2.json";
-export const DEFAULT_CURRENT_RESTATEMENT_RELATIVE = "docs/analysis/m2-v2/M2-v2-canary-v3-1-integrity-restatement-v0.3.json";
-export const NEXT_CURRENT_STATE_INDEX_RELATIVE = "docs/analysis/m2-v2/M2-v2-current-state-index-v0.3.json";
-export const NEXT_CURRENT_RESTATEMENT_RELATIVE = "docs/analysis/m2-v2/M2-v2-canary-v3-1-integrity-restatement-v0.4.json";
+export const LEGACY_CURRENT_STATE_INDEX_RELATIVE = "docs/analysis/m2-v2/M2-v2-current-state-index-v0.2.json";
+export const LEGACY_CURRENT_RESTATEMENT_RELATIVE = "docs/analysis/m2-v2/M2-v2-canary-v3-1-integrity-restatement-v0.3.json";
+export const DEFAULT_CURRENT_STATE_INDEX_RELATIVE = "docs/analysis/m2-v2/M2-v2-current-state-index-v0.3.json";
+export const DEFAULT_CURRENT_RESTATEMENT_RELATIVE = "docs/analysis/m2-v2/M2-v2-canary-v3-1-integrity-restatement-v0.4.json";
+export const NEXT_CURRENT_STATE_INDEX_RELATIVE = DEFAULT_CURRENT_STATE_INDEX_RELATIVE;
+export const NEXT_CURRENT_RESTATEMENT_RELATIVE = DEFAULT_CURRENT_RESTATEMENT_RELATIVE;
+export const LEGACY_CLOSED_REQUEST_STATE_BINDING_RELATIVE =
+  "data/private-output/m2-v2-integrity-remediation/request-state-binding-private-v0.2.json";
+export const CURRENT_CLOSED_REQUEST_STATE_BINDING_RELATIVE =
+  "data/private-output/m2-v2-pr7-s1-remediation-badbf45/b6-authority-recovery-v0.1/current-binding-private-v0.2.json";
 
 /**
  * Read the two versioned current-authority artifacts without writing anything.
@@ -77,14 +83,31 @@ export function readCurrentAuthority(root, options = {}) {
     trackedCoreCommitmentRead.relativePath = commitmentRelativePath;
   }
 
+  let graph = options.graph;
+  if (indexRead.value?.schemaVersion === "m2-v2-current-state-index-v0.3" && graph === undefined) {
+    const graphRead = readCanonicalCurrentAuthorityGraph(
+      absoluteRoot,
+      options.bindingRelativePath ?? CURRENT_CLOSED_REQUEST_STATE_BINDING_RELATIVE,
+    );
+    if (!graphRead.valid) {
+      return invalidAuthority(graphRead.issues, {
+        indexRelativePath,
+        indexDigest: indexRead.byteDigest,
+        restatementRelativePath,
+      });
+    }
+    graph = graphRead.graph;
+  }
+
   return validateCurrentAuthorityDocuments({
     index: indexRead.value,
     restatement: restatementRead.value,
+    root: absoluteRoot,
     indexRelativePath,
     indexByteDigest: indexRead.byteDigest,
     restatementRelativePath,
     restatementByteDigest: restatementRead.byteDigest,
-    graph: options.graph,
+    graph,
     trackedCoreCommitment: trackedCoreCommitmentRead?.value,
     trackedCoreCommitmentRelativePath: trackedCoreCommitmentRead?.relativePath,
     trackedCoreCommitmentByteDigest: trackedCoreCommitmentRead?.byteDigest,
@@ -383,7 +406,53 @@ function invalidAuthority(issues, context = {}) {
     nextDevelopmentReadiness: "NOT_AUTHORIZED",
     currentAuthorityDigestVerified: false,
     currentRestatementVerified: false,
+    canonicalAuthorityGraphVerified: false,
+    trackedCoreCommitmentVerified: false,
   };
+}
+
+export function readCanonicalCurrentAuthorityGraph(
+  root,
+  bindingRelativePath = CURRENT_CLOSED_REQUEST_STATE_BINDING_RELATIVE,
+) {
+  let normalizedBindingPath;
+  try {
+    normalizedBindingPath = normalizeGovernedRelativePath(bindingRelativePath);
+  } catch {
+    return { valid: false, issues: ["current_closed_binding_path_invalid"] };
+  }
+  const bindingRead = readAuthorityFile(root, normalizedBindingPath, "current_closed_binding");
+  if (!bindingRead.valid) return bindingRead;
+  const binding = bindingRead.value;
+  const { bindingDigest, ...bindingPayload } = isPlainObject(binding) ? binding : {};
+  if (binding?.schema !== "m2.v2.request-state-atomic-binding.v0.2"
+      || binding?.privateOnly !== true
+      || binding?.scope !== "v2b8"
+      || bindingDigest !== sha256Json(bindingPayload)
+      || !Array.isArray(binding?.members)) {
+    return { valid: false, issues: ["current_closed_binding_invalid"] };
+  }
+  const descriptors = binding.members.filter(
+    (entry) => entry?.role === "contract_bound_public_report_digests",
+  );
+  if (descriptors.length !== 1
+      || !isDigest(descriptors[0]?.byteDigest)) {
+    return { valid: false, issues: ["current_authority_graph_member_invalid"] };
+  }
+  let memberPath;
+  try {
+    memberPath = normalizeGovernedRelativePath(descriptors[0].path);
+  } catch {
+    return { valid: false, issues: ["current_authority_graph_member_path_invalid"] };
+  }
+  const memberRead = readAuthorityFile(root, memberPath, "current_authority_graph_member");
+  if (!memberRead.valid) return memberRead;
+  if (memberRead.byteDigest !== descriptors[0].byteDigest
+      || memberRead.value?.schema !== "m2.v2.v2b8-contract-bound-public-report-digests-private.v0.3"
+      || !isPlainObject(memberRead.value?.canonicalAuthorityGraph)) {
+    return { valid: false, issues: ["current_authority_graph_member_invalid"] };
+  }
+  return { valid: true, issues: [], graph: memberRead.value.canonicalAuthorityGraph };
 }
 
 function readAuthorityFile(root, relativePath, role) {

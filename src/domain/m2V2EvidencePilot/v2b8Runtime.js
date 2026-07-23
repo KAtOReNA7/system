@@ -16,6 +16,7 @@ import {
 } from "./authorityGraph.js";
 import {
   commitAtomicRequestCheckpoint,
+  CURRENT_CLOSED_REQUEST_STATE_BINDING_RELATIVE,
   evaluateGitBoundaryCommandResult,
   receiptWasCacheHit,
   validateClosedAtomicRequestBinding,
@@ -117,7 +118,6 @@ const INTEGRITY_VALIDATION_RECEIPT_RELATIVE = "data/private-output/m2-v2-integri
 
 const V2B8_DERIVED_EVALUATION_SCHEMA = "m2.v2.v2b8-derived-evaluation-private.v0.3";
 const V2B8_EFFECTIVE_RECEIPT_INDEX_SCHEMA = "m2.v2.v2b8-effective-receipt-index-private.v0.2";
-const V2B8_CLOSED_BINDING_RELATIVE = "data/private-output/m2-v2-integrity-remediation/request-state-binding-private-v0.2.json";
 const V2B8_FROZEN_UPSTREAM_PATHS = Object.freeze([
   V2B7_MANIFEST_RELATIVE,
   V2B7_BUNDLE_RELATIVE,
@@ -1162,14 +1162,14 @@ export function verifyV2B8(root, options = {}) {
   }
 
   const closedBinding = validateClosedAtomicRequestBinding(root, {
-    bindingRelativePath: options.bindingRelativePath ?? V2B8_CLOSED_BINDING_RELATIVE,
+    bindingRelativePath: options.bindingRelativePath ?? CURRENT_CLOSED_REQUEST_STATE_BINDING_RELATIVE,
     scope: "v2b8",
     eventStage: "v2b8",
   });
   if (!closedBinding.valid) issues.push(...closedBinding.issues.map((issue) => `current_binding:${issue}`));
   const current = closedBinding.valid
     ? verifyV2B8BoundCurrentState(root, results, closedBinding, {
-      bindingRelativePath: options.bindingRelativePath ?? V2B8_CLOSED_BINDING_RELATIVE,
+      bindingRelativePath: options.bindingRelativePath ?? CURRENT_CLOSED_REQUEST_STATE_BINDING_RELATIVE,
       gitBoundary,
     })
     : failedV2B8CurrentVerification(closedBinding);

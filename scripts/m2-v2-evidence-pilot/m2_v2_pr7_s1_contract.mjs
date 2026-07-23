@@ -1975,9 +1975,9 @@ export function validateS1Overlay(overlay) {
     && overlay.batchStatuses.B4 === "COMPLETE_PENDING_B8"
     && overlay.batchStatuses.B5 === "COMPLETE_PENDING_B8"
     && overlay.batchStatuses.B6 === "COMPLETE_PENDING_B8"
-    && overlay.batchStatuses.B7 === "REGRESSION_COMPLETE_PENDING_EXACT_HEAD_CI"
+    && overlay.batchStatuses.B7 === "CLOSING_CORRECTION_PENDING_EXACT_HEAD_CI"
     && overlay.nextBatch === "B8"
-    && overlay.nextAllowedPhase === "B8_AUTHORIZED_INDEPENDENT_REVIEW_AFTER_B7_EXACT_HEAD_CI"
+    && overlay.nextAllowedPhase === "B8_REPEAT_INDEPENDENT_REVIEW_AFTER_B7_CORRECTION_EXACT_HEAD_CI"
     && S1_FINDING_IDS.every((findingId) => (
       overlay.candidateFindingStatuses[findingId].findingStatus === "OPEN"
       && overlay.candidateFindingStatuses[findingId].candidateStatus === "CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW"
@@ -1985,8 +1985,8 @@ export function validateS1Overlay(overlay) {
     && overlay.openFindings === 10
     && overlay.findingsRemainOpen === true
     && overlay.findingClosureStatus === "OPEN"
-    && overlay.independentReviewPerformed === false
-    && overlay.independentReviewStatus === "NOT_REVIEWED"
+    && overlay.independentReviewPerformed === true
+    && overlay.independentReviewStatus === "FIRST_PASS_FAILED_CANONICAL_POINTER_ROUTING"
     && overlay.b8Authorized === true
     && overlay.mergeAuthorized === false
     && overlay.full160Authorized === false

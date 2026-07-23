@@ -1,0 +1,59 @@
+{
+  "schema": "m2.v2.pr7-b8-first-review-remediation-public.v0.1",
+  "status": "IMPLEMENTED_PENDING_EXACT_HEAD_CI_FORMAL_PROOF_AND_REPEAT_INDEPENDENT_REVIEW",
+  "classification": "public_sanitized_not_for_formal_decision",
+  "firstIndependentReview": {
+    "reviewedHead": "4663fce6b656a7269bb624b9e2d74629bab999df",
+    "decision": "B8_FAIL_REMEDIATION_REQUIRED",
+    "p0Count": 0,
+    "newP1Count": 1,
+    "existingP2EvidenceGapCount": 1,
+    "findingClosureApplied": false
+  },
+  "remediation": {
+    "canonicalClosedBinding": {
+      "legacyRoute": "EXPLICIT_HISTORICAL_REPLAY_ONLY",
+      "currentRoute": "B6_CURRENT_POINTER",
+      "canonicalVerifierPassedLocally": true,
+      "currentRestatementVerified": true,
+      "transactionBindingVerified": true
+    },
+    "canonicalAuthorityReader": {
+      "defaultIndexSchema": "m2-v2-current-state-index-v0.3",
+      "defaultRestatementSchema": "m2.v2.canary-v3.1-integrity-restatement-public.v0.4",
+      "loadsGraphFromDigestBoundB6CurrentTransaction": true,
+      "legacyFallbackAllowed": false,
+      "canonicalAuthorityGraphVerifiedLocally": true,
+      "trackedCoreCommitmentVerifiedLocally": true
+    },
+    "formalReadonlyProof": {
+      "canonicalCommand": "npm run m2:v2:pr7:b8:readonly-proof",
+      "verifierCommandId": "m2:v2:v2b8:verify",
+      "requiredInvocationCount": 2,
+      "claimableRequired": true,
+      "providerRequestDeltaRequired": 0,
+      "databaseConnectionDeltaRequired": 0,
+      "status": "PENDING_CLEAN_EXACT_HEAD_EXECUTION"
+    }
+  },
+  "boundaries": {
+    "currentDecision": "CANARY_FAIL",
+    "providerRequestDelta": 0,
+    "databaseConnections": 0,
+    "actualExternalFetchCount": 0,
+    "canaryExecuted": false,
+    "full160Executed": false,
+    "modelTrainingPerformed": false,
+    "holdoutOpened": false,
+    "markReadyAuthorized": false,
+    "mergeAuthorized": false,
+    "releaseAuthorized": false,
+    "nextDevelopmentReadiness": "NOT_AUTHORIZED"
+  },
+  "governance": {
+    "openFindings": 10,
+    "findingsRemainOpen": true,
+    "repeatIndependentReviewRequired": true,
+    "findingClosureStatus": "OPEN"
+  }
+}

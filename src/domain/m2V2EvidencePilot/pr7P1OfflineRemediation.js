@@ -60,7 +60,7 @@ export const PR7_S1_AUTHORIZED_PRIVATE_ROOT_RELATIVE =
 export const PR7_S1_B6_RECOVERY_TRANSACTION_ROOT_RELATIVE =
   `${PR7_S1_AUTHORIZED_PRIVATE_ROOT_RELATIVE}/b6-authority-recovery-v0.1/transactions`;
 export const PR7_S1_B6_CURRENT_BINDING_RELATIVE =
-  `${PR7_S1_AUTHORIZED_PRIVATE_ROOT_RELATIVE}/b6-authority-recovery-v0.1/current-binding-private-v0.2.json`;
+  CURRENT_CLOSED_REQUEST_STATE_BINDING_RELATIVE;
 export const PR7_S1_CANONICAL_AUTHORITY_CANDIDATE_SCHEMA = "m2.v2.pr7-s1-canonical-authority-candidate.private.v0.1";
 
 export const PR7_P1_CURRENT_AUTHORITY_RELATIVE = "docs/analysis/m2-v2/M2-v2-current-state-index-v0.2.json";
