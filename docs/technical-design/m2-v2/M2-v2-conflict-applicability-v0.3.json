@@ -1,0 +1,30 @@
+{
+  "schema": "m2.v2.conflict-applicability-public.v0.3",
+  "status": "IMPLEMENTED_AND_SYNTHETICALLY_VERIFIED",
+  "classification": "public_sanitized_not_for_formal_decision",
+  "perFamilyFields": ["applicable", "executed", "evidenceCount", "conflictCount", "unresolvedCount", "passed"],
+  "emptyInput": {
+    "applicableFamilies": 0,
+    "coverage": "NOT_EVALUABLE",
+    "requiredGatePassed": false
+  },
+  "modelContradictionKeyTrusted": false,
+  "localDetectionFamilies": ["work_identity", "author_identity", "original_platform", "completion_status", "publication_publisher_date_edition_format", "adaptation_type_stage_date", "rating_platform_scale_value", "award_event", "mutually_exclusive_status"],
+  "editionAware": {
+    "differentEditionFormatOrDateAutomaticallyConflicts": false,
+    "editionRelationRecorded": true,
+    "limitationRecorded": true,
+    "ambiguousRelation": "unresolved"
+  },
+  "adversarialFixtures": ["empty_input", "missing_contradiction_key", "different_keys_same_exclusive_status", "different_editions", "adaptation_stage_and_date", "rating_scales", "ambiguous_relation"],
+  "verificationScope": {
+    "syntheticBoundaryTests": "verified",
+    "realPrivateMigrationClaimed": false,
+    "exactHeadCiClaimed": false,
+    "publicRestatementClaimed": false
+  },
+  "authorization": {
+    "full160Authorized": false,
+    "nextDevelopmentReadiness": "NOT_AUTHORIZED"
+  }
+}

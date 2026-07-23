@@ -1,0 +1,128 @@
+{
+  "schema": "m2.v2.evidence-pilot-pre-registration.v0.1",
+  "status": "frozen_before_external_retrieval",
+  "frozenDate": "2026-07-17",
+  "baseCommit": "d81b952e37dd43365c0091cdd6665e69d8d39a7e",
+  "sample": {
+    "populationCount": 3053,
+    "sampleCount": 160,
+    "seed": "20260717",
+    "selectionAlgorithmVersion": "m2-v2-balanced-greedy-v0.1",
+    "tieBreak": "sha256(seed+standard_work_reference)",
+    "persistentStressBonusAfterTargetReached": false,
+    "privateManifestRole": "m2_v2_evidence_pilot_private_manifest",
+    "resampleAfterRetrieval": false,
+    "targets": {
+      "sourceType:publication": 60,
+      "sourceType:web_original": 60,
+      "revenueBand:top1": 12,
+      "revenueBand:top5": 20,
+      "revenueBand:top10": 20,
+      "revenueBand:middle": 45,
+      "revenueBand:long_tail": 55,
+      "revenueModel:pure_sales_share": 60,
+      "revenueModel:pure_buyout": 24,
+      "revenueModel:buyout_plus_sales": 24,
+      "revenueModel:unknown_revenue_model": 5,
+      "activity:dense": 35,
+      "activity:intermittent": 35,
+      "activity:dormant": 35,
+      "ambiguityRisk:high": 20,
+      "evidencePrior:rich": 35,
+      "evidencePrior:sparse": 35
+    },
+    "infeasibleTargetRule": "effective_target=min(pre_registered_target,population_available); select all available and disclose"
+  },
+  "privateManifestBinding": {
+    "finalManifestDigest": "f85308436328bd056e27025407f45aa840cd5cc07e4e7ad9fe0eec4a2d8a3020",
+    "sampleCount": 160,
+    "completeIncomeFactCount": 192869,
+    "aggregateStrata": {
+      "sourceType": { "publication": 74, "web_original": 86 },
+      "revenueBand": { "top1": 12, "top5": 20, "top10": 20, "middle": 53, "long_tail": 55 },
+      "revenueModel": {
+        "pure_sales_share": 98,
+        "pure_buyout": 28,
+        "buyout_plus_sales": 29,
+        "unknown_revenue_model": 5
+      },
+      "activity": { "dense": 73, "intermittent": 40, "dormant": 47 },
+      "ambiguityRisk": { "high": 68, "medium": 60, "low": 32 },
+      "evidencePrior": { "rich": 64, "mixed": 60, "sparse": 36 },
+      "highValue": { "true": 52, "false": 108 }
+    },
+    "allEffectiveTargetsAchieved": true,
+    "preRetrievalCorrectionAudit": {
+      "priorManifestDigest": "8a8908496055edc2e2d689f94be5d2604b0b72680381279c7a1d08829dfeb11d",
+      "reason": "persistent_high_ambiguity_bonus_detected_by_aggregate_preflight",
+      "retrievalObservedBeforeCorrection": false,
+      "providerDispatchCountBeforeCorrection": 0,
+      "searchResultCountBeforeCorrection": 0,
+      "priorManifestRetainedPrivate": true
+    }
+  },
+  "strataDefinitions": {
+    "revenueBand": "exclusive complete-history rank bands: top1, next-to-top5, next-to-top10, rank10-50 middle, bottom50 long_tail",
+    "activity": "positive-income months in the latest 12 complete months: dense>=9, intermittent=1..8, dormant=0",
+    "highValue": "revenueBand in top1/top5/top10",
+    "revenueModel": "frozen post-foundation model-independent business classification",
+    "ambiguityRisk": "pre-retrieval identity duplicate/short-name/missing-or-multiple-byline heuristic",
+    "evidencePrior": "pre-retrieval heuristic only; never relabeled from retrieval outcome"
+  },
+  "provider": {
+    "policyVersion": "m2.v2.provider-policy.v0.1",
+    "sourceAllowlistVersion": "m2.v2.source-allowlist.v0.1",
+    "providerSelectionMayChangeAfterResults": false,
+    "unapprovedFallback": false,
+    "noProviderStatus": "blocked_no_provider"
+  },
+  "queryBudget": {
+    "plannedQueriesPerWork": 4,
+    "maxQueriesPerWork": 8,
+    "maxResultsPerQuery": 10,
+    "maxPagesPerWork": 6,
+    "maxTotalCostCny": 400,
+    "maxCostPerWorkCny": 2.5,
+    "maxCostPerQueryCny": 0.3
+  },
+  "prospectiveTimeRule": {
+    "historicalBackfill": false,
+    "eligibleTime": "max(availableAt,firstObservedAt,capturedAt)",
+    "unknownAvailableAtPredictionEligible": false,
+    "currentEvidenceMayEnterB4C1C2C3Replay": false
+  },
+  "reproducibility": {
+    "fixedSubsampleCount": 20,
+    "selection": "first_20_by_sha256(seed+identity_digest)",
+    "metrics": [
+      "claim_agreement",
+      "structured_value_agreement",
+      "source_overlap",
+      "confidence_drift",
+      "contradiction_drift"
+    ]
+  },
+  "usabilityThresholds": {
+    "validEvidenceWorkCoverage": 0.6,
+    "highValueValidEvidenceCoverage": 0.75,
+    "entityResolutionRate": 0.8,
+    "querySuccessRate": 0.8,
+    "citationCompleteness": 1.0,
+    "allowlistCompliance": 1.0,
+    "reproducibilityClaimAgreement": 0.8,
+    "reproducibilitySourceOverlap": 0.7
+  },
+  "decision": {
+    "PILOT_PASS": "all_17_hard_gates_and_all_usability_thresholds_pass",
+    "PILOT_CONDITIONAL": "all_hard_gates_pass_but_provider_coverage_cost_source_stability_or_reproducibility_is_insufficient",
+    "PILOT_FAIL": "any_safety_leakage_identity_source_or_audit_hard_gate_fails"
+  },
+  "antiGaming": [
+    "no_resampling_after_results",
+    "no_threshold_change_after_results",
+    "no_manual_evidence_completion",
+    "no_model_uplift_metric",
+    "no_holdout_access",
+    "no_zero_or_missing_evidence_as_negative_fact"
+  ]
+}

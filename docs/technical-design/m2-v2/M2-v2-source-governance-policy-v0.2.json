@@ -1,0 +1,29 @@
+{
+  "schema": "m2.v2.source-governance-policy.v0.2",
+  "status": "fail_closed_contract_ready",
+  "effectiveDate": "2026-07-18",
+  "researchAllowlist": {
+    "purpose": "pilot_research_only",
+    "explicitDomainEntryRequired": true,
+    "approvedDomainEntries": []
+  },
+  "modelAllowlist": {
+    "purpose": "model_eligibility",
+    "defaultEmpty": true,
+    "explicitDomainEntryRequired": true,
+    "approvedDomainEntries": []
+  },
+  "promotionRule": {
+    "researchApprovalDoesNotImplyModelApproval": true,
+    "explicitModelApprovalRequired": true,
+    "automaticPromotionForbidden": true
+  },
+  "modelEligibilityRule": {
+    "sourceIdRequired": true,
+    "citationRequired": true,
+    "availableAtRequired": true,
+    "entityResolvedRequired": true,
+    "contradictionStatusRequired": "none"
+  },
+  "decisionStatus": "not_for_formal_decision"
+}

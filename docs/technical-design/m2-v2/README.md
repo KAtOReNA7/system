@@ -2,12 +2,21 @@
 
 ## 状态
 
-- 阶段：V2-A Architecture
-- 状态：`DESIGN_ONLY_NOT_IMPLEMENTED`
+- 阶段：V2-B Verifier / Private State Integrity Remediation
+- 状态：原 V2-B.8 `CANARY_CONDITIONAL`；完整性修复状态以版本化 summary 与复审 v0.2 为准
 - decision：`not_for_formal_decision`
 - migration：无
-- runtime：无
+- runtime：仅离线、Git ignored private state 修复与只读验证；不含 provider、正式 API/DB 或业务扩量
 - model training：无
+- full160：未授权
+
+当前修复合同：
+
+- `M2-v2-verifier-readonly-contract-v0.1.md/json`
+- `M2-v2-private-state-recovery-contract-v0.1.md/json`
+- `M2-v2-request-state-atomic-binding-v0.1.md/json`
+
+V2-B.1 至 V2-B.8 运行时与报告均保留作历史证据，不构成当前授权；当前状态与 supersession 关系统一由 `docs/analysis/m2-v2/M2-v2-current-state-index-v0.2.md` 给出，v0.1 index 已 superseded。
 
 ## 文档
 
@@ -22,6 +31,9 @@
 | `M2-v2-export-contract-v0.1.md` | canonical JSON/Excel export 设计 |
 | `M2-v2-result.schema.json` | V2 结果 JSON Schema |
 | `M2-v2-v2a-contract-manifest.json` | V2-A 文档和边界 manifest |
+| `M2-v2-evidence-pilot-design-v0.1.md/json` | V2-B sampler、query、entity、store、resume/report 设计 |
+| `M2-v2-provider-policy-v0.1.md/json` | provider-neutral adapter、预算、fallback 和 browser 边界 |
+| `M2-v2-source-allowlist-v0.1.md/json` | source tier/terms 与显式域名 fail-closed allowlist |
 
 ## 设计优先级
 

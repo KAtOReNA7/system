@@ -1,0 +1,67 @@
+{
+  "schema": "m2.v2.canary-v3-reproducibility-report-public.v0.1",
+  "status": "not_for_formal_decision",
+  "full160Authorized": false,
+  "expectedPairCount": 5,
+  "meanSourceOverlap": 0.7095238095238094,
+  "medianSourceOverlap": 0.7142857142857143,
+  "exactSourceSetMatchCount": 2,
+  "claimAgreement": 0.36,
+  "claimAgreementEvaluableCount": 5,
+  "claimAgreementNotEvaluableCount": 0,
+  "structuredValueAgreement": 0.51,
+  "confidenceDrift": 0.000833333333333334,
+  "contradictionDriftCount": 1,
+  "perPair": [
+    {
+      "anonymousPairId": "repeat_1",
+      "sourceOverlap": 0.5,
+      "exactSourceSetMatch": false,
+      "pilotUsableClaimAgreement": 0,
+      "pilotUsableClaimAgreementStatus": "evaluable",
+      "structuredValueAgreement": 0.25,
+      "confidenceDrift": null,
+      "contradictionDrift": 0
+    },
+    {
+      "anonymousPairId": "repeat_2",
+      "sourceOverlap": 0.7142857142857143,
+      "exactSourceSetMatch": false,
+      "pilotUsableClaimAgreement": 0.4,
+      "pilotUsableClaimAgreementStatus": "evaluable",
+      "structuredValueAgreement": 0.4,
+      "confidenceDrift": 0,
+      "contradictionDrift": 0
+    },
+    {
+      "anonymousPairId": "repeat_3",
+      "sourceOverlap": 0.3333333333333333,
+      "exactSourceSetMatch": false,
+      "pilotUsableClaimAgreement": 0,
+      "pilotUsableClaimAgreementStatus": "evaluable",
+      "structuredValueAgreement": 0.5,
+      "confidenceDrift": null,
+      "contradictionDrift": 0
+    },
+    {
+      "anonymousPairId": "repeat_4",
+      "sourceOverlap": 1,
+      "exactSourceSetMatch": true,
+      "pilotUsableClaimAgreement": 0.6,
+      "pilotUsableClaimAgreementStatus": "evaluable",
+      "structuredValueAgreement": 0.6,
+      "confidenceDrift": 0,
+      "contradictionDrift": 0
+    },
+    {
+      "anonymousPairId": "repeat_5",
+      "sourceOverlap": 1,
+      "exactSourceSetMatch": true,
+      "pilotUsableClaimAgreement": 0.8,
+      "pilotUsableClaimAgreementStatus": "evaluable",
+      "structuredValueAgreement": 0.8,
+      "confidenceDrift": 0.0025000000000000022,
+      "contradictionDrift": 1
+    }
+  ]
+}

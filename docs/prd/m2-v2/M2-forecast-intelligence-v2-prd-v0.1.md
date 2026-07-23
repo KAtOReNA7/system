@@ -350,7 +350,7 @@ V2-A 文档本身不等于：
 - model authorized；
 - formal decision/release。
 
-后续用户指令可以独立授权下一阶段而不改变上述 V2-A authority。用户已于 2026-07-17 授权在 V2-A checkpoint 合入并确认 main CI 后启动 V2-B，授权记录见 decision register DEC-011。
+后续用户指令可以独立授权下一阶段而不改变上述 V2-A authority。2026-07-17 指令曾授权在 V2-A checkpoint 合入并确认 main CI 后启动 V2-B，记录见 decision register DEC-011；该授权已经执行并被 V2-B.2–B.8 与后续完整性修复 supersede，仅作历史追溯，**不构成当前 provider、resume、Canary 或新开发授权**。当前只以 current-state-index-v0.2 与用户最新明确指令为准。
 
 ### V2-B：Evidence pilot
 

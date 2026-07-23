@@ -1,0 +1,35 @@
+{
+  "schema": "m2.v2.claim-canonicalization-contract-public.v0.1",
+  "status": "not_for_formal_decision",
+  "deterministic": true,
+  "llmJudgeUsed": false,
+  "canonicalKeyFields": [
+    "claimType",
+    "normalizedStructuredValue",
+    "normalizedEventTime",
+    "eventTimePrecision",
+    "normalizedEntityReference",
+    "sourceSupportClass"
+  ],
+  "textNormalization": [
+    "unicode_nfkc",
+    "case",
+    "width",
+    "punctuation",
+    "whitespace",
+    "book_marks",
+    "common_date",
+    "numeric_string"
+  ],
+  "identityEditionAware": true,
+  "ratingRequiresPlatformScale": true,
+  "reviewSignalPilotUsableByDefault": false,
+  "completionStatuses": [
+    "ongoing",
+    "completed",
+    "unknown",
+    "contradictory"
+  ],
+  "maxClaimsPerWork": 10,
+  "full160Authorized": false
+}

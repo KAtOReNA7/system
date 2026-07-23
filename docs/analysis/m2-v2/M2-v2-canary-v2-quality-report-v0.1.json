@@ -1,0 +1,264 @@
+{
+  "schema": "m2.v2.canary-v2-quality-report.v0.1",
+  "status": "not_for_formal_decision",
+  "generatedAt": "2026-07-17T21:35:05.663Z",
+  "immutableBindings": {
+    "canaryManifestDigest": "883a0c8054d71029e2f1d385e9bc98ff4dbcccfc8659ee3764cc128e1a640248",
+    "executionManifestDigest": "ec3103d8eca9376dee4a17130f0820e1cca144e6df66d837cad862aa39ebd240",
+    "failedSamplesReplaced": false
+  },
+  "boundaries": {
+    "full160Executed": false,
+    "v2CStarted": false,
+    "v2DStarted": false,
+    "modelTrainingPerformed": false,
+    "b4Changed": false,
+    "finalHoldoutOpened": false,
+    "c4Started": false,
+    "m3Started": false,
+    "released": false,
+    "pullRequest7MustRemainDraftOpen": true
+  },
+  "modelAggregates": {
+    "gpt-5.6-luna": {
+      "search": {
+        "plannedQueries": 10,
+        "dispatchedQueries": 10,
+        "providerResponseCount": 10,
+        "providerConnectivityRate": 1,
+        "webSearchObservedCount": 10,
+        "successCount": 0,
+        "successRate": 0,
+        "providerErrorCount": 0,
+        "modelBindingMismatchCount": 0,
+        "resultCount": 0,
+        "resultWorkCount": 0,
+        "sourceRecordMissingCount": 10,
+        "repeatPlannedQueries": 5,
+        "repeatDispatchedQueries": 5,
+        "repeatProviderErrorCount": 1,
+        "allRunProviderErrorCount": 1,
+        "allRunWebSearchObservedCount": 14,
+        "allRunSuccessCount": 0,
+        "allRunResultCount": 0,
+        "failureReasonCounts": {
+          "search_contract_failure": 10
+        }
+      },
+      "extraction": {
+        "plannedRequests": 10,
+        "dispatchedRequests": 0,
+        "providerResponseCount": 0,
+        "dependencyBlockedCount": 10,
+        "contractSuccessCount": 0,
+        "contractSuccessRate": 0,
+        "failureReasonCounts": {
+          "blocked_search_dependency": 10
+        }
+      },
+      "entity": {
+        "resolved": 0,
+        "unresolved": 10,
+        "ambiguous": 0,
+        "resolvedRate": 0,
+        "confidenceObservedCount": 0,
+        "meanConfidence": null,
+        "medianConfidence": null
+      },
+      "evidence": {
+        "candidateCount": 0,
+        "acceptedCount": 0,
+        "rejectedCount": 0,
+        "rejectionReasonCounts": {},
+        "acceptedEvidenceWorkCount": 0,
+        "acceptedEvidenceCoverage": 0,
+        "highValueWorkCount": 6,
+        "highValueAcceptedWorkCount": 0,
+        "highValueCoverage": 0,
+        "researchEligibleCount": 0,
+        "modelEligibleCount": 0
+      },
+      "citation": {
+        "acceptedEvidenceCount": 0,
+        "alignedCount": 0,
+        "alignmentRate": 0,
+        "alignmentEvaluable": false,
+        "sourceMappedCount": 0,
+        "sourceMappingRate": 0,
+        "sourceMappingEvaluable": false
+      },
+      "time": {
+        "sourceRecordCount": 0,
+        "capturedAtCount": 0,
+        "capturedAtCompleteness": 0,
+        "receiptCount": 30,
+        "receiptCapturedAtCount": 30,
+        "receiptCapturedAtCompleteness": 1,
+        "acceptedEvidenceCount": 0,
+        "availableAtCount": 0,
+        "availableAtCompleteness": 0,
+        "eventTimeCount": 0,
+        "eventTimeCompleteness": 0,
+        "historicalBackfillCount": 0
+      },
+      "governance": {
+        "researchAllowlistStatus": "empty_fail_closed",
+        "prohibitedSourceDomainCount": 0,
+        "unresolvedConflictCount": 0,
+        "implicitPromotionUsed": false
+      },
+      "reproducibility": {
+        "repeatWorkCount": 5,
+        "evaluableWorkCount": 0,
+        "agreedWorkCount": 0,
+        "claimAgreementRate": 0,
+        "meanJaccardAmongEvaluable": null
+      },
+      "cost": {
+        "plannedRequestCount": 30,
+        "dispatchedRequestCount": 15,
+        "usageObservedRequestCount": 14,
+        "usageMissingRequestCount": 1,
+        "tokenUsageComplete": false,
+        "observedInputTokens": 74476,
+        "observedOutputTokens": 45350,
+        "observedTotalTokens": 119826,
+        "totalTokens": null,
+        "averageTokensPerDispatchedRequest": null,
+        "tokenBudgetAcceptable": false,
+        "latencyP50Ms": 28018,
+        "latencyP90Ms": 41721,
+        "estimatedRelayCost": null,
+        "estimatedRelayCostStatus": "not_estimable_no_provider_pricing"
+      }
+    },
+    "gpt-5.6-terra": {
+      "search": {
+        "plannedQueries": 10,
+        "dispatchedQueries": 10,
+        "providerResponseCount": 10,
+        "providerConnectivityRate": 1,
+        "webSearchObservedCount": 10,
+        "successCount": 0,
+        "successRate": 0,
+        "providerErrorCount": 0,
+        "modelBindingMismatchCount": 0,
+        "resultCount": 0,
+        "resultWorkCount": 0,
+        "sourceRecordMissingCount": 10,
+        "repeatPlannedQueries": 5,
+        "repeatDispatchedQueries": 5,
+        "repeatProviderErrorCount": 0,
+        "allRunProviderErrorCount": 0,
+        "allRunWebSearchObservedCount": 15,
+        "allRunSuccessCount": 0,
+        "allRunResultCount": 0,
+        "failureReasonCounts": {
+          "search_contract_failure": 10
+        }
+      },
+      "extraction": {
+        "plannedRequests": 10,
+        "dispatchedRequests": 0,
+        "providerResponseCount": 0,
+        "dependencyBlockedCount": 10,
+        "contractSuccessCount": 0,
+        "contractSuccessRate": 0,
+        "failureReasonCounts": {
+          "blocked_search_dependency": 10
+        }
+      },
+      "entity": {
+        "resolved": 0,
+        "unresolved": 10,
+        "ambiguous": 0,
+        "resolvedRate": 0,
+        "confidenceObservedCount": 0,
+        "meanConfidence": null,
+        "medianConfidence": null
+      },
+      "evidence": {
+        "candidateCount": 0,
+        "acceptedCount": 0,
+        "rejectedCount": 0,
+        "rejectionReasonCounts": {},
+        "acceptedEvidenceWorkCount": 0,
+        "acceptedEvidenceCoverage": 0,
+        "highValueWorkCount": 6,
+        "highValueAcceptedWorkCount": 0,
+        "highValueCoverage": 0,
+        "researchEligibleCount": 0,
+        "modelEligibleCount": 0
+      },
+      "citation": {
+        "acceptedEvidenceCount": 0,
+        "alignedCount": 0,
+        "alignmentRate": 0,
+        "alignmentEvaluable": false,
+        "sourceMappedCount": 0,
+        "sourceMappingRate": 0,
+        "sourceMappingEvaluable": false
+      },
+      "time": {
+        "sourceRecordCount": 0,
+        "capturedAtCount": 0,
+        "capturedAtCompleteness": 0,
+        "receiptCount": 30,
+        "receiptCapturedAtCount": 30,
+        "receiptCapturedAtCompleteness": 1,
+        "acceptedEvidenceCount": 0,
+        "availableAtCount": 0,
+        "availableAtCompleteness": 0,
+        "eventTimeCount": 0,
+        "eventTimeCompleteness": 0,
+        "historicalBackfillCount": 0
+      },
+      "governance": {
+        "researchAllowlistStatus": "empty_fail_closed",
+        "prohibitedSourceDomainCount": 0,
+        "unresolvedConflictCount": 0,
+        "implicitPromotionUsed": false
+      },
+      "reproducibility": {
+        "repeatWorkCount": 5,
+        "evaluableWorkCount": 0,
+        "agreedWorkCount": 0,
+        "claimAgreementRate": 0,
+        "meanJaccardAmongEvaluable": null
+      },
+      "cost": {
+        "plannedRequestCount": 30,
+        "dispatchedRequestCount": 15,
+        "usageObservedRequestCount": 15,
+        "usageMissingRequestCount": 0,
+        "tokenUsageComplete": true,
+        "observedInputTokens": 79798,
+        "observedOutputTokens": 42559,
+        "observedTotalTokens": 122357,
+        "totalTokens": 122357,
+        "averageTokensPerDispatchedRequest": 8157.133333333333,
+        "tokenBudgetAcceptable": true,
+        "latencyP50Ms": 21762,
+        "latencyP90Ms": 23900,
+        "estimatedRelayCost": null,
+        "estimatedRelayCostStatus": "not_estimable_no_provider_pricing"
+      }
+    }
+  },
+  "governance": {
+    "policySchema": "m2.v2.source-governance-policy.v0.2",
+    "researchAllowlistStatus": "empty_fail_closed",
+    "researchApprovedDomainCount": 0,
+    "modelAllowlistStatus": "empty_by_default",
+    "modelApprovedDomainCount": 0,
+    "prohibitedSourceDomainCount": 0,
+    "implicitPromotionUsed": false
+  },
+  "costPolicy": {
+    "relayCostMode": "request_cap_only",
+    "monetaryPricingAvailable": false,
+    "estimatedRelayCost": null,
+    "estimatedRelayCostStatus": "not_estimable_no_provider_pricing",
+    "officialOpenAIPricingUsedForRelay": false
+  }
+}

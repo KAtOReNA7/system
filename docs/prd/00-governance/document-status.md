@@ -1,4 +1,6 @@
-# 文档状态清单
+# M1 文档状态清单
+
+本清单仅覆盖下表所列 M1/共享基础 PRD，不是全仓库 current-state index。M2 v2 的历史原始决定、当前 restatement 与停止边界统一见 `docs/analysis/m2-v2/M2-v2-current-state-index-v0.2.md`；v0.1 index 为 `historical / superseded / not authorization`。
 
 | 文档 | 状态 | 权威范围 |
 |---|---|---|

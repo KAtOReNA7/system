@@ -1,0 +1,74 @@
+{
+  "schema": "m2.v2.v2b2.terminal-decision.v0.1",
+  "status": "not_for_formal_decision",
+  "generatedAt": "2026-07-17T19:44:14.421Z",
+  "immutableBindings": {
+    "parentManifestDigest": "f85308436328bd056e27025407f45aa840cd5cc07e4e7ad9fe0eec4a2d8a3020",
+    "canaryV01ManifestDigest": "883a0c8054d71029e2f1d385e9bc98ff4dbcccfc8659ee3764cc128e1a640248",
+    "sampleCount": 10,
+    "sampleChanged": false,
+    "seedChanged": false,
+    "failedSamplesReplaced": false
+  },
+  "boundaries": {
+    "fullPilotAuthorized": false,
+    "full160ExecutionAuthorizedByThisRun": false,
+    "full160Executed": false,
+    "v2CStarted": false,
+    "v2DStarted": false,
+    "incomeModelTrainingPerformed": false,
+    "b4Changed": false,
+    "finalHoldoutOpened": false,
+    "c4Started": false,
+    "m3Started": false,
+    "released": false,
+    "pullRequest7MustRemainDraftOpen": true
+  },
+  "terminalStatus": "STOPPED_BENCHMARK_GATE_BLOCKED",
+  "benchmarkGate": {
+    "providerConnectivity": {
+      "status": "FAIL",
+      "threshold": 0.8,
+      "dispatchedCount": 38,
+      "connectedCount": 26,
+      "dependencyBlockedCount": 2
+    },
+    "providerContractCompatibility": {
+      "status": "FAIL",
+      "threshold": 0.8
+    },
+    "modelEvidenceQuality": {
+      "status": "NOT_EVALUATED",
+      "pairedEvaluableWorkCount": 0,
+      "pairedEvaluableWorkMinimum": 8
+    },
+    "qualityScope": "pre_governance_local_citation_span_and_exact_entity_support_not_independent_source_truth",
+    "sourceGovernance": {
+      "status": "BLOCKED_EMPTY_ALLOWLIST",
+      "approvedDomainEntryCount": 0,
+      "acceptedEvidenceCount": 0,
+      "modelQualityIndependentOfGovernance": true
+    }
+  },
+  "modelRouting": {
+    "status": "BLOCKED",
+    "defaultModel": null,
+    "upgradeModel": null,
+    "canaryRerunAuthorized": false,
+    "blockers": [
+      "compatibility_gate_failed",
+      "model_quality_gate_failed"
+    ]
+  },
+  "canaryOutcome": {
+    "executed": false,
+    "technicalStatus": "NOT_RUN_GATE_BLOCKED",
+    "providerConnectivity": null,
+    "providerContractCompatibility": null,
+    "modelEvidenceQuality": null,
+    "sourceGovernance": null,
+    "qualityScope": null
+  },
+  "fullPilotAuthorized": false,
+  "nextStep": "stop_no_full_160_no_v2c_v2d_c4_m3_release"
+}

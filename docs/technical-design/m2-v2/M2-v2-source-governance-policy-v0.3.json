@@ -1,0 +1,38 @@
+{
+  "schema": "m2.v2.source-governance-policy.v0.3",
+  "status": "prospective_pilot_only",
+  "effectiveDate": "2026-07-18",
+  "sourceRecordSchema": "m2.v2.evidence-source-record.v0.2",
+  "approvedPilotSearchProviders": [
+    "tavily_structured_search"
+  ],
+  "pilotUsable": {
+    "termsReviewMayBePending": true,
+    "legalReviewMayBePending": true,
+    "researchOnlyRequired": true,
+    "modelEligibleRequired": false,
+    "historicalBackfillAllowed": false
+  },
+  "researchAllowlist": {
+    "purpose": "future_prospective_shadow",
+    "approvedDomainEntries": [],
+    "automaticApprovalForbidden": true
+  },
+  "modelAllowlist": {
+    "purpose": "future_model_training",
+    "defaultEmpty": true,
+    "approvedDomainEntries": [],
+    "automaticApprovalForbidden": true
+  },
+  "promotionRule": {
+    "pilotUsableDoesNotImplyResearchApproval": true,
+    "researchApprovalDoesNotImplyModelApproval": true,
+    "automaticPromotionForbidden": true
+  },
+  "currentRunInvariants": {
+    "researchApproved": false,
+    "modelEligible": false,
+    "notForFormalDecision": true,
+    "full160Authorized": false
+  }
+}

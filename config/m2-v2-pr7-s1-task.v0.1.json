@@ -1,0 +1,309 @@
+{
+  "schema": "m2.v2.pr7.s1-task.v0.1",
+  "repository": "KAtOReNA7/system",
+  "pullRequest": 7,
+  "startingHead": "badbf453e1e99ba87cc3064601e480a09ff1b149",
+  "findingHead": "627f74c6b9b2365ee4403c613ea9689748b76541",
+  "baseSha": "d81b952e37dd43365c0091cdd6665e69d8d39a7e",
+  "branchPolicy": {
+    "directImplementationBranch": "codex/m2-v2-evidence-pilot-v1",
+    "ciAttachAlias": "codex/m2-ci-exact-head",
+    "allowedBranches": [
+      "codex/m2-v2-evidence-pilot-v1",
+      "codex/m2-ci-exact-head"
+    ]
+  },
+  "authorizedBatches": [
+    "B0",
+    "B1",
+    "B2",
+    "B3",
+    "B4",
+    "B5",
+    "B6",
+    "B7"
+  ],
+  "currentBatch": "B7",
+  "batchDag": {
+    "nodes": [
+      "B0",
+      "B1",
+      "B2",
+      "B3",
+      "B4",
+      "B5",
+      "B6",
+      "B7"
+    ],
+    "edges": [
+      {
+        "from": "B0",
+        "to": "B1"
+      },
+      {
+        "from": "B1",
+        "to": "B2"
+      },
+      {
+        "from": "B2",
+        "to": "B3"
+      },
+      {
+        "from": "B3",
+        "to": "B4"
+      },
+      {
+        "from": "B4",
+        "to": "B5"
+      },
+      {
+        "from": "B5",
+        "to": "B6"
+      },
+      {
+        "from": "B6",
+        "to": "B7"
+      }
+    ],
+    "independentReviewBatchAuthorized": true
+  },
+  "allowedPathClasses": [
+    "config/m2-v2-pr7-s1-*.json",
+    "src/domain/m2V2EvidencePilot/**",
+    "scripts/m2-v2-evidence-pilot/**",
+    "test/helpers/m2V2*",
+    "test/fixtures/m2-v2/**",
+    "test/m2-v2*.test.js",
+    "docs/technical-design/m2-v2/**",
+    "docs/analysis/m2-v2/**",
+    "package.json",
+    ".github/workflows/ci.yml",
+    "AGENTS.md",
+    "NEXT-CODEX-INSTRUCTION.md",
+    "new versioned ignored private output under the authorized S1 root during B6 only"
+  ],
+  "prohibitedActions": [
+    "execute B8 without an independent reviewer or self-close any finding",
+    "invoke a real provider or any non-loopback implementation/test transport",
+    "connect to any database",
+    "run Canary, full160, model training, or holdout",
+    "add a dependency or install/upgrade a system tool",
+    "overwrite historical tracked or governed-private immutable artifacts",
+    "rebase, squash, amend, force push, git add dot, or git add -A",
+    "mark PR ready, merge PR, or release",
+    "continue after source evidence, remote, native-platform, workbook, unrolled-back promotion, or provider-counter failure"
+  ],
+  "providerPolicy": {
+    "mode": "forbidden",
+    "allowedTransport": "deterministic_fake_and_loopback_only",
+    "requiredRequestDelta": 0
+  },
+  "databasePolicy": {
+    "mode": "forbidden",
+    "allowedConnections": 0
+  },
+  "networkPolicy": {
+    "implementationAndTests": "no_non_loopback_network",
+    "gitRemote": "ordinary_non_force_fast_forward_push_only",
+    "github": "pr_body_sync_and_exact_head_ci_verification_only"
+  },
+  "privateStatePolicy": {
+    "existingHistorical": "content_and_file_metadata_immutable",
+    "newOutputRoot": "data/private-output/m2-v2-pr7-s1-remediation-badbf45",
+    "newOutputMustBeIgnored": true,
+    "b6NewVersionedDerivedOnly": true,
+    "atomicPromotionRequired": true,
+    "overwriteHistoricalAllowed": false
+  },
+  "gitPolicy": {
+    "directBranch": "codex/m2-v2-evidence-pilot-v1",
+    "pushMode": "ordinary_non_force",
+    "fastForwardOnly": true,
+    "maxCompletedAtomicCommitsUnpushed": 1,
+    "perAtomicCommitPushRequired": true,
+    "perBatchRemoteExactHeadRequired": true,
+    "perBatchLinuxWindowsCiRequired": true,
+    "stashPolicy": "untouched",
+    "prohibitedHistoryRewrites": [
+      "force_push",
+      "rebase",
+      "squash",
+      "amend"
+    ]
+  },
+  "registries": {
+    "commandRegistry": {
+      "path": "config/m2-v2-pr7-s1-command-registry.v0.1.json",
+      "sha256": "b3d302127880ab5f45ebf675a11fe6287c8f9e2e36d362f7a48f2bae439c3bb2"
+    },
+    "receiptSchema": {
+      "path": "config/m2-v2-pr7-s1-receipt-schema.v0.1.json",
+      "sha256": "58a263a62a81979f11865ac2e93e6ad334233a201ead6de73b6636611a7c1c05"
+    },
+    "contractRegistry": {
+      "path": "config/m2-v2-pr7-s1-contract-registry.v0.1.json",
+      "sha256": "cdc001a0e7cf89c24d3efd662fdb9a2b52d3cb128226774f6cdcf427605cd86a"
+    },
+    "caseRegistry": {
+      "path": "config/m2-v2-pr7-s1-case-registry.v0.1.json",
+      "sha256": "b39b0e2334b9952c4610f4e2ea6dc4de3bdf7ade060ea1d9831b0fc994e0ecb3"
+    }
+  },
+  "requiredSourceEvidence": [
+    {
+      "sourceId": "independentReview",
+      "reportSha256": "e5ceba89d1b1fdd573f4f8296636ab9fb9c297eae7f28c8bd1c023abb2bfcc13",
+      "receiptDigest": "3a7d922b57d31547b2d6d646e186c42cc6b98c494d27922bb917af53f38febde"
+    },
+    {
+      "sourceId": "planning",
+      "reportSha256": "2fc541e023e000901c7d55222b0d947ccc856835060fcf317a5fb604f01dc6f7",
+      "receiptDigest": "cf9d420ba667038f9a9f672f9ba8f75eca0ca667204bda886a97e268fbca479f"
+    },
+    {
+      "sourceId": "supportAudit",
+      "reportSha256": "f79d625d695250230e11a2788637b6298daac86c456297c1ae4da769e25f0cd6",
+      "receiptDigest": "8d7e95e7ab88b56e0ea1bb6698e52887041ea7fecd9ce2167de30d7d2c11d872"
+    },
+    {
+      "sourceId": "s0Implementation",
+      "reportSha256": "9c97aa423dd2297abedbcd9157d39a2cfb063f29e96fed8c9adaba63436bc51a",
+      "receiptDigest": "a63152d9656e365383476eb27fd4f714dbd7cccae73c052e324de62c5ebd35cc"
+    }
+  ],
+  "historicalImmutableArtifacts": [
+    {
+      "path": "config/m2-v2-test-artifact-registry.v0.1.json",
+      "sha256": "c7385ea4ff18e5aaa35704273a8fe80a8118a1aa408b97a18e4b0ecb90beb0f0",
+      "baselineHead": "badbf453e1e99ba87cc3064601e480a09ff1b149",
+      "immutable": true
+    },
+    {
+      "path": "docs/technical-design/m2-v2/M2-v2-verifier-authority-binding-v0.2.json",
+      "sha256": "080994f6ec8c8a4d236be09873de206ed9f452225df6190e27bb3e366e13e120",
+      "baselineHead": "badbf453e1e99ba87cc3064601e480a09ff1b149",
+      "immutable": true
+    },
+    {
+      "path": "docs/technical-design/m2-v2/M2-v2-verifier-authority-binding-v0.2.md",
+      "sha256": "68e6379edf201ea4be7a8a80036c34ce34f2b8277e0029c6950970e999f01beb",
+      "baselineHead": "badbf453e1e99ba87cc3064601e480a09ff1b149",
+      "immutable": true
+    },
+    {
+      "path": "docs/technical-design/m2-v2/M2-v2-verifier-readonly-contract-v0.1.json",
+      "sha256": "2e10298484f2b70a688064442d6b80e66f6515287c6b542e0d4d4bd6741e0ed5",
+      "baselineHead": "badbf453e1e99ba87cc3064601e480a09ff1b149",
+      "immutable": true
+    },
+    {
+      "path": "docs/technical-design/m2-v2/M2-v2-verifier-readonly-contract-v0.1.md",
+      "sha256": "b406a531f290a2d09e6b383ea80d421ff7bcb83335a790fd9f74b1de6836d2c3",
+      "baselineHead": "badbf453e1e99ba87cc3064601e480a09ff1b149",
+      "immutable": true
+    },
+    {
+      "path": "docs/technical-design/m2-v2/M2-v2-migration-set-integrity-v0.2.json",
+      "sha256": "631706c074a704eeaae275b1a01da0e240fc69d1fc1b3d71175666ba8b0ab7ea",
+      "baselineHead": "badbf453e1e99ba87cc3064601e480a09ff1b149",
+      "immutable": true
+    },
+    {
+      "path": "docs/technical-design/m2-v2/M2-v2-migration-set-integrity-v0.2.md",
+      "sha256": "9277287827276ce9e152adb08c2c1385d23590a6cb778ea6a960df9a22371d12",
+      "baselineHead": "badbf453e1e99ba87cc3064601e480a09ff1b149",
+      "immutable": true
+    },
+    {
+      "path": "docs/technical-design/m2-v2/M2-v2-provider-transport-retention-v0.1.json",
+      "sha256": "b95e4f6cd719acdd16f97460868d4544d035e36977165fc16d4774ed14e1ee1f",
+      "baselineHead": "badbf453e1e99ba87cc3064601e480a09ff1b149",
+      "immutable": true
+    },
+    {
+      "path": "docs/technical-design/m2-v2/M2-v2-provider-transport-retention-v0.1.md",
+      "sha256": "1352440dfd7a7594f83d62a2ab9f80798afd6d3ca13058babf0af956f7efc50d",
+      "baselineHead": "badbf453e1e99ba87cc3064601e480a09ff1b149",
+      "immutable": true
+    },
+    {
+      "path": "docs/technical-design/m2-v2/M2-v2-event-time-clause-binding-v0.3.json",
+      "sha256": "8c645e38f80fb3556665bb13eee6fa0354770a3e4f3c88a5cc3e03a2febde469",
+      "baselineHead": "badbf453e1e99ba87cc3064601e480a09ff1b149",
+      "immutable": true
+    },
+    {
+      "path": "docs/technical-design/m2-v2/M2-v2-event-time-clause-binding-v0.3.md",
+      "sha256": "1448f66f1517ce7c4af1b4c37283af27ccb9fa954242e70beff76447ad83f61c",
+      "baselineHead": "badbf453e1e99ba87cc3064601e480a09ff1b149",
+      "immutable": true
+    },
+    {
+      "path": "docs/technical-design/m2-v2/M2-v2-conflict-applicability-v0.3.json",
+      "sha256": "34ff0bb283fec61103ff3adfdf572704e47b21ccae93d2f0c8a5912a1c5902c8",
+      "baselineHead": "badbf453e1e99ba87cc3064601e480a09ff1b149",
+      "immutable": true
+    },
+    {
+      "path": "docs/technical-design/m2-v2/M2-v2-conflict-applicability-v0.3.md",
+      "sha256": "15a6fe8da4745fa40625b37e98fc19345f78d006ac9514b39b3772f8d26295cb",
+      "baselineHead": "badbf453e1e99ba87cc3064601e480a09ff1b149",
+      "immutable": true
+    },
+    {
+      "path": "docs/technical-design/m2-v2/M2-v2-workbook-independent-verification-v0.1.json",
+      "sha256": "b1dee8d6dbbb2dc1f7be007542de4f0898efccc02f6ea6113fc28cef9a9cc825",
+      "baselineHead": "badbf453e1e99ba87cc3064601e480a09ff1b149",
+      "immutable": true
+    },
+    {
+      "path": "docs/technical-design/m2-v2/M2-v2-workbook-independent-verification-v0.1.md",
+      "sha256": "9a43808a76b0016690f21a8737d9cb6ca19997afa68013962e816106fa943a38",
+      "baselineHead": "badbf453e1e99ba87cc3064601e480a09ff1b149",
+      "immutable": true
+    },
+    {
+      "path": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.2.json",
+      "sha256": "933bc73cfa818d99b5c88769713f3301006f70b1fedbefa1da378ce18d5493ff",
+      "baselineHead": "badbf453e1e99ba87cc3064601e480a09ff1b149",
+      "immutable": true
+    },
+    {
+      "path": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.2.md",
+      "sha256": "ba30050865744e83791c70859f44ded30d4c691cc4a8051dc99021c6344a0c11",
+      "baselineHead": "badbf453e1e99ba87cc3064601e480a09ff1b149",
+      "immutable": true
+    },
+    {
+      "path": "docs/analysis/m2-v2/M2-v2-canary-v3-1-integrity-restatement-v0.3.json",
+      "sha256": "1ec7dcccf1ba29f08ab58226f7aac724f60c1870c7bcd6c32ce98b4cb6c6562a",
+      "baselineHead": "badbf453e1e99ba87cc3064601e480a09ff1b149",
+      "immutable": true
+    },
+    {
+      "path": "docs/analysis/m2-v2/M2-v2-canary-v3-1-integrity-restatement-v0.3.md",
+      "sha256": "0b5c53f9a4240cd47b58298eb56d6a4acbe63b32927b7179cfda7eb1e0521017",
+      "baselineHead": "badbf453e1e99ba87cc3064601e480a09ff1b149",
+      "immutable": true
+    }
+  ],
+  "governance": {
+    "historicalDecision": "CANARY_CONDITIONAL",
+    "currentDecision": "CANARY_FAIL",
+    "openFindings": 10,
+    "findingRemediationAuthorized": true,
+    "maximumImplementationStatus": "CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW",
+    "independentReviewPerformed": false,
+    "providerDispatchAuthorized": false,
+    "databaseConnectionsAuthorized": false,
+    "canaryAuthorized": false,
+    "b8Authorized": true,
+    "markReadyAuthorized": false,
+    "mergeAuthorized": false,
+    "full160Authorized": false,
+    "modelTrainingAuthorized": false,
+    "holdoutAuthorized": false,
+    "releaseAuthorized": false,
+    "nextDevelopmentReadiness": "NOT_AUTHORIZED"
+  }
+}

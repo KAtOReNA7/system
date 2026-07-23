@@ -1,0 +1,109 @@
+{
+  "schema": "m2.v2.evidence-pilot-design.v0.1",
+  "status": "frozen_before_external_retrieval",
+  "components": [
+    "private_population_loader",
+    "deterministic_stratified_sampler",
+    "query_planner",
+    "provider_registry_and_adapter",
+    "entity_resolver",
+    "source_policy_gate",
+    "evidence_validator",
+    "contradiction_resolver",
+    "private_file_store",
+    "resume_cache",
+    "public_sanitizer",
+    "pilot_gate_and_reporter"
+  ],
+  "dataFlow": [
+    "authorized_private_identity_and_history",
+    "immutable_sample_manifest",
+    "controlled_query_plan",
+    "provider_receipt",
+    "entity_resolution",
+    "source_time_confidence_conflict_gate",
+    "private_evidence_snapshot",
+    "deidentified_aggregate_report"
+  ],
+  "privateInputRoles": [
+    "formal_execution_identity_and_complete_history",
+    "complete_income_facts",
+    "post_foundation_revenue_model_and_classification"
+  ],
+  "sample": {
+    "algorithm": "balanced_greedy_minimum_coverage_then_seeded_hash_tiebreak",
+    "algorithmVersion": "m2-v2-balanced-greedy-v0.1",
+    "seed": "20260717",
+    "size": 160,
+    "manifestImmutable": true,
+    "manifestPrivate": true,
+    "resultsMayChangeSample": false
+  },
+  "queryPlanner": {
+    "templateVersion": "m2-v2-query-template-v0.1",
+    "defaultCategories": [
+      "work_identity_and_source",
+      "author_identity_and_recent_activity",
+      "adaptation_publication_award",
+      "original_platform_and_ranking"
+    ],
+    "maxQueriesPerWork": 8,
+    "maxResultsPerQuery": 10,
+    "maxPagesPerWork": 6,
+    "allowedIdentityFields": ["work_title", "author_byline"],
+    "internalFieldsProhibited": true
+  },
+  "entityResolution": {
+    "workAndAuthorSeparate": true,
+    "titleOnlySameNameMatchAllowed": false,
+    "authoritativeIdentifierAccepted": true,
+    "compositeExactMatchAccepted": true,
+    "alternateCandidatesStoredAsHash": true,
+    "ambiguousOrUnresolvedFailClosed": true
+  },
+  "timeSemantics": {
+    "eventTime": "event_occurrence",
+    "availableAt": "earliest_provable_public_availability",
+    "firstObservedAt": "first_system_observation",
+    "capturedAt": "current_retrieval_time",
+    "eligibleTimeFormula": "max(availableAt,firstObservedAt,capturedAt)",
+    "historicalBackfill": false,
+    "v2BUse": "prospective_only"
+  },
+  "confidence": {
+    "formula": "min(entityMatchConfidence,sourceReliability,extractionConfidence,freshnessScore)",
+    "predictionMinimum": 0.8,
+    "highMinimum": 0.9,
+    "missingComponent": "unavailable"
+  },
+  "contradiction": {
+    "groupKey": "standardWorkId+claimKey+overlappingEffectiveInterval",
+    "sameTierConflict": "unresolved",
+    "authoritativePrecedence": true,
+    "searchIndexMayResolveAlone": false,
+    "llmMayChooseWinner": false
+  },
+  "storage": {
+    "implementation": "local_private_file_store",
+    "migration": false,
+    "appendOrImmutableArtifacts": true,
+    "checkpointResume": true,
+    "cache": true,
+    "fullPageDefault": false,
+    "gitTracked": false
+  },
+  "commands": [
+    "m2:v2:evidence-pilot:check",
+    "m2:v2:evidence-pilot",
+    "m2:v2:evidence-pilot:resume",
+    "m2:v2:evidence-pilot:verify",
+    "m2:v2:evidence-pilot:report"
+  ],
+  "crashSafety": {
+    "atomicFileWrites": true,
+    "resumeFromCache": true,
+    "browserRequired": false,
+    "browserDefaultDisabled": true,
+    "longOutputContainsPrivateRows": false
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "schema": "m2.v2.v2b5-search-provider-contract.v0.1",
+  "status": "not_for_formal_decision",
+  "effectiveDate": "2026-07-18",
+  "searchProvider": {
+    "id": "tavily_structured_search",
+    "mode": "structured_search_only",
+    "endpointPath": "/search",
+    "capabilityQueryScope": "synthetic_only",
+    "maximumPhysicalRequests": 40
+  },
+  "relayProvider": {
+    "searchStatus": "retired",
+    "allowedMode": "evidence_extraction_only",
+    "maximumPhysicalRequests": 40,
+    "searchToolsAllowed": false
+  },
+  "searchDefaults": {
+    "topic": "general",
+    "searchDepth": "basic",
+    "maximumResults": 6,
+    "includeAnswer": false,
+    "includeRawContent": false,
+    "country": "china",
+    "autoParameters": false
+  },
+  "perWork": {
+    "maximumQueries": 2,
+    "maximumSourceRecords": 6,
+    "recursiveSearchAllowed": false,
+    "pageFetchAllowed": false
+  },
+  "providerDecisions": [
+    "READY",
+    "BLOCKED_AUTH",
+    "BLOCKED_CONTRACT",
+    "BLOCKED_TRANSPORT"
+  ],
+  "resume": {
+    "reserveBeforeDispatch": true,
+    "indeterminateRequestConsumesBudget": true,
+    "successfulPhysicalSlotRedispatched": false,
+    "primaryAndRepeatNamespacesSeparated": true
+  },
+  "invariants": {
+    "full160Authorized": false,
+    "modelTrainingPerformed": false,
+    "b4Changed": false,
+    "finalHoldoutOpened": false
+  }
+}

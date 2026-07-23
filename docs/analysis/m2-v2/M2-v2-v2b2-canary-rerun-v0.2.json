@@ -1,0 +1,36 @@
+{
+  "schema": "m2.v2.v2b2.canary-rerun.v0.2",
+  "status": "not_for_formal_decision",
+  "generatedAt": "2026-07-17T19:44:14.421Z",
+  "immutableBindings": {
+    "parentManifestDigest": "f85308436328bd056e27025407f45aa840cd5cc07e4e7ad9fe0eec4a2d8a3020",
+    "canaryV01ManifestDigest": "883a0c8054d71029e2f1d385e9bc98ff4dbcccfc8659ee3764cc128e1a640248",
+    "sampleCount": 10,
+    "sampleChanged": false,
+    "seedChanged": false,
+    "failedSamplesReplaced": false
+  },
+  "boundaries": {
+    "fullPilotAuthorized": false,
+    "full160ExecutionAuthorizedByThisRun": false,
+    "full160Executed": false,
+    "v2CStarted": false,
+    "v2DStarted": false,
+    "incomeModelTrainingPerformed": false,
+    "b4Changed": false,
+    "finalHoldoutOpened": false,
+    "c4Started": false,
+    "m3Started": false,
+    "released": false,
+    "pullRequest7MustRemainDraftOpen": true
+  },
+  "executed": false,
+  "executionBasis": "benchmark_gate_blocked",
+  "result": {
+    "status": "NOT_RUN"
+  },
+  "originalFixedTenWorksReused": true,
+  "originalSixtyLogicalTasksReused": false,
+  "physicalRequestCap": 120,
+  "automaticRetryCount": 0
+}

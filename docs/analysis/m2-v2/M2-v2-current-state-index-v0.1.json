@@ -1,0 +1,186 @@
+{
+  "schemaVersion": "m2-v2-current-state-index-v0.1",
+  "status": "superseded",
+  "historicalStatusAtPublication": "current",
+  "classification": "public_sanitized_not_for_formal_decision",
+  "updatedAt": "2026-07-18",
+  "lifecycle": {
+    "historical": true,
+    "superseded": true,
+    "notAuthorization": true,
+    "currentAuthority": false,
+    "supersededBy": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.2.json"
+  },
+  "snapshotFieldInterpretation": "fields named current or lifecycle=current are historical v0.1 snapshot values only",
+  "authorityOrder": [
+    "latest_explicit_user_decision",
+    "current_approved_prd",
+    "decision_register",
+    "technical_contract",
+    "current_schema_api_test",
+    "development_report",
+    "historical_report"
+  ],
+  "historicalV2B8Decision": "CANARY_CONDITIONAL",
+  "currentDecision": "CANARY_FAIL",
+  "currentDecisionFieldScope": "historical_v0.1_snapshot_not_current_authority",
+  "full160Authorized": false,
+  "nextDevelopmentReadiness": "NOT_AUTHORIZED",
+  "entries": [
+    {
+      "artifact": "M2-v2 V2-A contract manifest",
+      "version": "v0.1",
+      "stage": "V2-A",
+      "status": "complete",
+      "lifecycle": "current",
+      "supersededBy": null,
+      "decision": "architecture_contract_complete",
+      "safeNextAction": "preserve_as_frozen_foundation"
+    },
+    {
+      "artifact": "M2-v2 evidence pilot initial checkpoint",
+      "version": "v0.1",
+      "stage": "V2-B.1",
+      "status": "historical_checkpoint",
+      "lifecycle": "superseded",
+      "supersededBy": "V2-B.2 through V2-B.8",
+      "decision": "PILOT_CONDITIONAL",
+      "safeNextAction": "none_historical_only"
+    },
+    {
+      "artifact": "M2-v2 relay remediation checkpoint",
+      "version": "v0.1",
+      "stage": "V2-B.2",
+      "status": "historical_checkpoint",
+      "lifecycle": "superseded",
+      "supersededBy": "V2-B.3",
+      "decision": "contract_compatibility_failed_at_checkpoint",
+      "safeNextAction": "none_historical_only"
+    },
+    {
+      "artifact": "M2-v2 evidence pipeline repair",
+      "version": "v0.1",
+      "stage": "V2-B.3",
+      "status": "historical_checkpoint",
+      "lifecycle": "superseded",
+      "supersededBy": "V2-B.4",
+      "decision": "pipeline_contract_repaired",
+      "safeNextAction": "none_historical_only"
+    },
+    {
+      "artifact": "M2-v2 real evidence Canary v2",
+      "version": "v0.1",
+      "stage": "V2-B.4",
+      "status": "historical_checkpoint",
+      "lifecycle": "superseded",
+      "supersededBy": "V2-B.5",
+      "decision": "CANARY_CONDITIONAL",
+      "safeNextAction": "none_historical_only"
+    },
+    {
+      "artifact": "M2-v2 provider separation checkpoint",
+      "version": "v0.1",
+      "stage": "V2-B.5",
+      "status": "historical_checkpoint",
+      "lifecycle": "superseded",
+      "supersededBy": "V2-B.6",
+      "decision": "historical_capability_and_resume_checkpoint",
+      "safeNextAction": "none_historical_only"
+    },
+    {
+      "artifact": "M2-v2 extraction remediation benchmark",
+      "version": "v0.1",
+      "stage": "V2-B.6",
+      "status": "historical_checkpoint",
+      "lifecycle": "superseded",
+      "supersededBy": "V2-B.7",
+      "decision": "benchmark_gate_passed_at_checkpoint",
+      "safeNextAction": "none_historical_only"
+    },
+    {
+      "artifact": "M2-v2 fixed Canary v3",
+      "version": "v0.2",
+      "stage": "V2-B.7",
+      "status": "historical_checkpoint",
+      "lifecycle": "superseded",
+      "supersededBy": "V2-B.8 Canary v3.1",
+      "decision": "CANARY_CONDITIONAL",
+      "safeNextAction": "none_historical_only"
+    },
+    {
+      "artifact": "M2-v2 Canary v3.1 original decision",
+      "version": "v0.1",
+      "stage": "V2-B.8",
+      "status": "historical_original_retained",
+      "lifecycle": "historical",
+      "supersededBy": "M2-v2-canary-v3-1-integrity-restatement-v0.2",
+      "decision": "CANARY_CONDITIONAL",
+      "safeNextAction": "integrity_restatement_only_no_scale"
+    },
+    {
+      "artifact": "M2-v2 integrity remediation pre-registration",
+      "version": "v0.1",
+      "stage": "integrity_remediation",
+      "status": "fulfilled",
+      "lifecycle": "current",
+      "supersededBy": null,
+      "decision": "remediation_scope_completed",
+      "safeNextAction": "preserve_contract_evidence"
+    },
+    {
+      "artifact": "M2-v2 verifier/private recovery/atomic binding contracts",
+      "version": "v0.1",
+      "stage": "integrity_remediation",
+      "status": "implemented_and_verified",
+      "lifecycle": "current",
+      "supersededBy": null,
+      "decision": "contract_verification_complete",
+      "safeNextAction": "preserve_as_frozen_contract"
+    },
+    {
+      "artifact": "M2-v2 Canary v3.1 integrity restatement",
+      "version": "v0.2",
+      "stage": "integrity_remediation",
+      "status": "complete",
+      "lifecycle": "current",
+      "supersededBy": null,
+      "decision": "CANARY_FAIL",
+      "safeNextAction": "stop_no_scale"
+    },
+    {
+      "artifact": "M2-v2 integrity remediation summary",
+      "version": "v0.1",
+      "stage": "integrity_remediation",
+      "status": "completed_pending_external_review",
+      "lifecycle": "current",
+      "supersededBy": null,
+      "decision": "remediation_complete",
+      "safeNextAction": "wait_for_external_review"
+    },
+    {
+      "artifact": "M2-v2 whole-project audit and PR roundtrip",
+      "version": "v0.2",
+      "stage": "integrity_remediation",
+      "status": "private_closeout_evidence",
+      "lifecycle": "current",
+      "supersededBy": null,
+      "decision": "recorded_in_git_ignored_audit_role",
+      "safeNextAction": "do_not_publish_private_details"
+    }
+  ],
+  "unchangedBoundaries": {
+    "providerRequestDelta": 0,
+    "canaryExecuted": false,
+    "full160Executed": false,
+    "modelTrainingPerformed": false,
+    "b4Changed": false,
+    "formalCashChanged": false,
+    "holdoutOpened": false,
+    "enteredV2C": false,
+    "enteredV2D": false,
+    "enteredC4": false,
+    "enteredM3": false,
+    "releasePerformed": false,
+    "prMerged": false
+  }
+}

@@ -1,0 +1,99 @@
+{
+  "schema": "m2.v2.pr7-b6-offline-authority-promotion.v0.1",
+  "status": "COMPLETE_PENDING_B8",
+  "classification": "public_sanitized_not_for_formal_decision",
+  "branch": "codex/m2-v2-evidence-pilot-v1",
+  "batchId": "B6",
+  "exactHeadCi": {
+    "head": "3e79ce654cd335129005d3916f25f5bf8a2bef7d",
+    "runId": 30030360312,
+    "linuxJobId": 89285146244,
+    "windowsJobId": 89285146296,
+    "linuxConclusion": "SUCCESS",
+    "windowsConclusion": "SUCCESS"
+  },
+  "predecessorBatch": {
+    "batchId": "B5",
+    "exactHead": "8804cd508f8e30d90dfc6f429e0b49ab6cae647c",
+    "ciRunId": 30025925006,
+    "linuxJobId": 89270240561,
+    "windowsJobId": 89270240691,
+    "status": "COMPLETE_PENDING_B8"
+  },
+  "deterministicWorkbookVNext": {
+    "workbookSha256": "ecb1fee2223d4315b1d91c61a237adead57e87e03c59ced577d34d299182f982",
+    "reviewRowCount": 53,
+    "externalHyperlinkTargetDigestRecordCount": 18,
+    "strictPackageVerifierPassed": true,
+    "deterministicRepeatMatched": true,
+    "historicalWorkbookOverwritten": false,
+    "visualReviewAttested": false
+  },
+  "offlineRecomputation": {
+    "historicalDecision": "CANARY_CONDITIONAL",
+    "currentDecision": "CANARY_FAIL",
+    "currentEvaluationDigestSha256": "f4036bc67d4aa0b42460f7f5934bdee7221c233be536943239dfa11edf7f416c",
+    "physicalReceiptCount": 29,
+    "tavilyPhysicalReceiptCount": 9,
+    "relayPhysicalReceiptCount": 20,
+    "cacheHitObservationCount": 1,
+    "requestEventCount": 118,
+    "plannedCount": 30,
+    "reservedCount": 29,
+    "dispatchedCount": 29,
+    "completedCount": 29,
+    "cacheHitCount": 1
+  },
+  "atomicPromotion": {
+    "transactionId": "recovery-f15e033dc333e86e836d638c5578289f61bf9838",
+    "sourceSetDigestSha256": "e3af3d106951bade6bf408a8fa02d9effb4ddc6e8459bd370e8a07fdebab470d",
+    "memberSetDigestSha256": "c755c3d14235c5dc8db24d3d38eeb7812cc74ea18daf10165967f1edfc118f7c",
+    "bindingDigestSha256": "a478bd515e8733428796348665c140523f1d4b5d8dbd8a5dd6cbb15653409168",
+    "closedMemberCount": 14,
+    "firstExecutionStatus": "PROMOTED",
+    "secondExecutionStatus": "ALREADY_CURRENT_NOOP",
+    "pointerAndManifestTransactionMatch": true
+  },
+  "compatibilityCorrections": [
+    "single recovery transaction-id derivation contract",
+    "v0.2 and v0.3 contract-bound public-report index exact-shape separation",
+    "schema-exact v0.3 and v0.4 current-restatement evaluation digest selection",
+    "current-state index non-self public-report byte-binding contract"
+  ],
+  "localValidation": {
+    "s1ContractTestsPassed": 24,
+    "s1ContractTestsTotal": 24,
+    "b6CanonicalTestsPassed": 42,
+    "b6CanonicalTestsTotal": 42,
+    "defaultTestsPassed": 1181,
+    "defaultTestsTotal": 1181,
+    "defaultSkipCount": 0,
+    "checkNoRealDataPassed": true,
+    "lintPassed": true,
+    "buildPassed": true,
+    "smokePassed": true,
+    "exactHeadS1Validation": "PASSED_AT_3e79ce654cd335129005d3916f25f5bf8a2bef7d"
+  },
+  "boundaries": {
+    "providerRequestDelta": 0,
+    "databaseConnections": 0,
+    "actualExternalFetchCount": 0,
+    "canaryExecuted": false,
+    "full160Executed": false,
+    "modelTrainingPerformed": false,
+    "holdoutOpened": false,
+    "productRuntimeChanged": false,
+    "historicalPrivateArtifactOverwritten": false
+  },
+  "governance": {
+    "openFindings": 10,
+    "findingsRemainOpen": true,
+    "maximumCandidateStatus": "CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW",
+    "independentReviewPerformed": false,
+    "b8Authorized": true,
+    "mergeAuthorized": false,
+    "releaseAuthorized": false,
+    "nextBatch": "B7",
+    "nextDevelopmentReadiness": "NOT_AUTHORIZED"
+  }
+}

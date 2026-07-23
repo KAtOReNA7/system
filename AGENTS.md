@@ -1,5 +1,77 @@
 # Codex 工作规则
 
+## 2026-07-24 PR #7 B8 独立复审闭环（当前最高优先）
+
+- 独立 reviewer 已对 exact HEAD `d2f92cd03bc9d82672676298d04daed765c4ce8a` 完成重复 B8 全量复审，结论为 `B8_PASS_ALL_FINDINGS_CLOSABLE`；reviewer 未参与修复实现且未修改仓库。
+- exact-head CI run `30034932174` 完整成功：Linux job `89300399550`、Windows job `89300399537`；B7 双平台并集覆盖 89/89，30/30 secondary-verifier-required cases 覆盖，zero fail/skip。
+- formal claimable readonly proof 已独立核验：canonical verifier 连续执行 2 次、`claimable=true`、140 个 scope specifications、145 个 observed members、三份 host-native snapshot 一致、`providerRequestDelta=0`、`databaseConnectionDelta=0`。
+- 10 项 finding 已由独立裁决允许迁移并通过版本化 successor 记录为 `CLOSED`；B0–B8 均为 `COMPLETE`。当前入口为 `docs/analysis/m2-v2/M2-v2-PR7-findings-closure-status-v0.2.md` 与 `M2-v2-PR7-B8-independent-closure-v0.1.md`。旧 open-findings、B6/B7 和首轮失败报告仅作历史证据，不得覆盖。
+- PR #7 必须继续保持 Draft/open/unmerged；不得 mark ready、merge 或 release。`currentDecision=CANARY_FAIL`、`nextDevelopmentReadiness=NOT_AUTHORIZED`、`mergeAuthorized=false`、`full160Authorized=false`、`modelTrainingAuthorized=false` 均保持不变。
+- 全盘审计的下一工程项是独立 cleanup/toolchain PR，但不得混入 PR #7。只有 PR #7 经外部 review 并明确获准合并、其 head 进入 `origin/main` 后，才可从更新后的 `main` 建立该独立 PR；在此之前只允许只读准备，不得新开同任务分支或把 cleanup 追加到当前分支。
+
+## 2026-07-24 PR #7 B8 首轮独立复审返工入口（当前最高优先）
+
+- B7 implementation exact HEAD `4663fce6b656a7269bb624b9e2d74629bab999df` 已通过 CI run `30032162656`：Linux job `89291086145` 为 87/87，Windows job `89291086079` 为 88/88，两平台并集覆盖 89/89，均为 zero fail/skip。
+- 首轮独立 B8 对上述 HEAD 的结论是 `B8_FAIL_REMEDIATION_REQUIRED`，不得迁移任何 finding 到 `CLOSED`。阻断项为 canonical verifier/current-authority reader 仍默认读取 predecessor authority，以及 B6 graph population 后尚未记录 formal claimable readonly proof。
+- 当前允许并要求自动完成 B7 closing correction：默认 closed binding 必须指向 B6 current pointer；无参 current-authority reader 必须选择 v0.3/v0.4 并验证 B6 graph/core commitment；legacy authority 只能显式历史重放，禁止自动 fallback。
+- clean exact HEAD 后必须运行 `npm run m2:v2:pr7:b8:readonly-proof`。该证明必须对 canonical `m2:v2:v2b8:verify` 连续执行两次，`claimable=true`、三次 host-native snapshot 一致、`providerRequestDelta=0`、`databaseConnectionDelta=0`、zero issue。详细 proof 仅写 Git ignored private output，不得提交。
+- correction 必须依次完成显式路径提交、普通 push、remote exact-head、Linux/Windows CI，再交给未参与实现的独立 reviewer 重做 B8。复审 PASS 前 10 项 finding 全部保持 `OPEN`。
+- 仍禁止 provider、数据库、Canary/full160、模型训练、holdout、mark ready、PR merge、release 与 M3 formal；`currentDecision=CANARY_FAIL`、`nextDevelopmentReadiness=NOT_AUTHORIZED` 不变。
+
+## 2026-07-24 PR #7 B5–B8 授权与执行入口（当前最高优先）
+
+- 用户已明确授权继续执行 B5、B6、B7，并授权启动 B8 独立复审。B6 已在 exact HEAD `3e79ce654cd335129005d3916f25f5bf8a2bef7d` 通过 run `30030360312` 的 Linux job `89285146244` 与 Windows job `89285146296`；B7 已完成本地全 registry 回归，Windows 88/88 原生案例、161 tests、zero skip，当前为 `REGRESSION_COMPLETE_PENDING_EXACT_HEAD_CI`，`currentBatch=B7`、`nextBatch=B8`。后续仍须完成 B7 原子提交、普通推送、remote exact-head 与 Linux/Windows CI，再由独立 reviewer 执行 B8。
+- B8 授权不取消独立性要求：实施 B0–B7 的同一代理不得自审后声明 finding `CLOSED`。B0–B7 的最高状态仍为 `CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW`；只有独立 B8 reviewer 可以给出复审结论。
+- B5 必须严格执行 OOXML/OPC v0.2 package-complete verifier 与 default required-artifact/zero-skip 策略。历史 private workbook 不得覆盖；若严格校验失败，只能在 B6 使用 immutable/append-only private 输入和确定性 generator 在受权的新 ignored output root 中生成 vNext。
+- B6 只允许 provider-free 离线重建、确定性 workbook vNext、derived authority recomputation 与原子 supersession；不得调用 provider、数据库、Canary/full160、训练、holdout 或 M3。
+- B7 必须执行完整 89-case registry、默认测试零 skip、只读/权威图/迁移/transport/workbook 全回归，并形成交给 B8 的脱敏审查包。
+- provider、数据库、Canary/full160、模型训练、holdout、mark ready、PR merge、release 与 M3 formal 仍未授权。B8 授权仅限独立复审，不授权合并或发布。
+- 技术 fail-closed 与任务流程停止必须分开：无效 private candidate 永远不得成为 current，恢复器必须回滚 pointer、隔离失败 transaction 并保持历史 immutable；但可安全回滚的 verifier 子门禁失败不再自动结束整轮任务。
+- 当失败后可以确认 current pointer 未改变或已完整恢复、`providerRequestDelta=0`、数据库连接与真实外部访问均为 0、authoritative source digest 未漂移时，Codex 必须自动定位具体子门禁、修正 canonical 实现、运行聚焦测试并从完整原子 promotion 重新执行；无需用户逐次重新授权或发送“继续”。
+- 只有出现以下重要事件才停止并请求用户介入：pointer/rollback 状态不明确或无法恢复、immutable/source evidence 摘要漂移、真实 provider/数据库/外部访问、`providerRequestDelta != 0`、remote drift/non-fast-forward、新依赖或原生平台验证不可用、workbook 无确定性路径，或继续修复必须改变业务结论/扩大到未授权阶段。普通的 schema/version/shape/digest-field 兼容错误不属于人工阻断。
+
+## 用户常驻协作要求（已固化，无需重复下达）
+
+- 本节汇总用户在历次任务中反复提出的仓库协作要求。后续用户只需说明本轮目标、业务选择和新增授权；无需再次要求“检查远端并同步、核对本地进度、清理过时分支、全库查重、评估方向、保护 private、运行验证或更新进度”。Codex 每次仓库任务都应自动执行这些基线动作。
+- 开始任务时先运行只读基线：`git fetch origin --prune`、工作区/当前分支/upstream/`origin/main`、ahead/behind、开放 PR、exact-head CI 和 worktree。工作区干净且仅可快进时才允许 `pull --ff-only`；发现 remote drift、non-fast-forward 或不明本地修改时先停止并报告。
+- 默认只维护 `main` 与一条当前活动开发分支；审查合并状态、独有提交和引用后，才可删除已合并、已替代或失效分支。不得自动 rebase、squash、amend、force push、触碰 stash，禁止 `git add .` 和 `git add -A`。
+- 实现前必须用 `rg` 检索入口、调用方、测试和已有 canonical 实现；同时检查失效代码、完全重复文件、平行 runtime/runner/adapter、重复 package scripts、产品与 fixture 边界、工具链复现性、默认测试覆盖及 CI 重复执行。先给出 predecessor/successor/退役门禁，再删除历史入口。
+- 每次进度审计都要区分“已实现”“已验证”“已授权”“可发布”：报告 exact HEAD、远端同步状态、CI、开放 finding、当前 batch/next batch、模型和业务 gate、private capability、禁止事项。历史报告和 development 结果不得被改称当前授权或正式发布结论。
+- 核心协作能力必须 private-independent：clone、`npm ci`、`npm run doctor:dev`、lint、build、公开/合成测试、smoke 和本地 fixture 启动不得依赖 Git ignored private artifact、provider key 或数据库。缺少 private 只阻断所属 capability；用 `npm run doctor:capability -- <capability-id>` 盘点，再按 canonical verifier 验证。
+- private 原始数据、receipt、派生产物、材料、密钥、连接串和 dump 禁止提交、伪造或从公开摘要反推。跨电脑恢复必须使用能力分包、加密、逐文件摘要校验和原子恢复；Git 只保存公开代码、schema、脱敏 commitment、恢复合同与 doctor。任何“文件存在”只表示库存存在，不等于真实性验证通过或执行获授权。
+- 修改完成后按本文件“验证规则”执行对应门禁，明确列出通过、失败和未运行项；不能用旧 CI、部分测试或 private 文件存在替代当前工作树验证。
+- 审计或清理请求本身不扩大业务授权。任何新 batch、provider、数据库、Canary/full160、模型训练、holdout、B8、mark ready、merge、release 或 M3 formal 都必须继续满足下方最新门禁和单独授权。
+
+## 2026-07-23 分支与代码收敛规则（授权状态已被 2026-07-24 入口替代）
+
+- 默认只保留 `main` 和一条当前活动开发分支。PR #7 关闭或合并前，M2 的唯一活动分支是 `codex/m2-v2-evidence-pilot-v1`；B4–B7、文档同步、CI 修复、checkpoint 和同一 PR 的返工都继续使用该分支，禁止再建立同任务子分支。只有用户明确要求独立 PR，或现有分支确实无法安全承载且已先说明原因和退出条件时，才允许新建分支。
+- 每次开始仓库任务时，Codex 自动执行远端获取和状态核对，不再要求用户重复给出 Git 命令：至少检查工作区、当前分支、upstream、`origin/main`、ahead/behind、开放 PR 和 worktree；使用 `git fetch origin --prune` 获取引用，只有在工作区干净且可快进时才 `ff-only` 同步。禁止为了“同步”而自动 rebase、squash、force push 或制造额外 merge。
+- 同一时间只保留一个 M2 开放 PR。PR 合并并确认其 head 已进入 `origin/main` 后，应在同一收尾任务中删除对应本地和远端开发分支，并清理已经失效的 worktree 登记；不得把已合并分支继续当作开发入口。未合并分支只有在逐项核对独有提交和文件差异、确认已被替代或不再适用并留下通俗说明后，才可舍弃。
+- 分支治理、同步和代码整理不扩大业务授权。当前 PR #7 仍是 Draft/open/unmerged；本条所记录的 B4-only 授权已被上方 2026-07-24 B5–B8 授权入口替代。provider、数据库、Canary/full160、模型训练、holdout、mark ready、PR merge、release 和 M3 仍不能因“减少分支”而自动执行。
+- 新增实现前必须先用 `rg` 检索现有入口、调用方和测试。provider transport、extraction normalization、source governance、request ledger、safe cache、authority/current state、workbook verification、路径与摘要校验等同一职责只能有一个 canonical 可执行实现；新代码默认扩展该实现，不得复制成平行 runtime/provider/adapter。
+- 只有冻结 schema、不可变审计重放或兼容性边界确实要求时，才允许保留版本化实现。此时必须在 registry 或 current-authority 入口明确 predecessor、successor、canonical route 和退役条件；旧入口必须在同一批次删除、改为薄兼容层或明确变为 non-routable。历史报告、冻结合同和审计 fixture 可以保留，但不得继续充当当前 runtime authority。
+- 每个后续 M2 批次原则上不得增加同职责的可执行文件数量。若审计约束导致暂时无法减少，必须在批次说明中列出重复点、保留理由、唯一当前入口和下一删除节点；禁止以新增版本文件代替修改 canonical 实现。
+- PR 准备合并前必须同时报告：分支相对 `origin/main` 的状态、开放 finding/门禁、重复实现检查、被删除或退役的入口、仍保留的历史文件及原因，以及规定验证结果。没有这些证据不得把 PR 标为 ready 或请求合并。
+
+## 2026-07-20 PR #7 S1 分层修复入口（历史入口，授权状态已被 2026-07-24 入口替代）
+
+- 7 项 S0 开发支持基线已在 exact HEAD `badbf453e1e99ba87cc3064601e480a09ff1b149` 完成并通过 Linux/Windows CI；`supportSharpeningStopCriteriaReached=true`。
+- 用户已单独授权在 `codex/m2-v2-evidence-pilot-v1` 上实施 PR #7 的 B0–B7 分层 S1 修复。B3 closing correction 已在 exact remote HEAD `a945ed3a22fbc86e8ca381db9124fc0927461ec7` 完成。用户于 2026-07-23 明确启动的 B4 已在 implementation exact HEAD `65bee39e012e013d4e4347076fc24757f7bcc9f9` 完成；CI run `30021984333` 的 Linux job `89256777608` 与 Windows job `89256777664` 均成功。本条的 B4/B5 授权状态是历史快照；当前批次与授权以最上方 2026-07-24 入口为准。
+- B3 correction 已强制 preflight/local validation 显式传入 `--batch-id`，Linux/Windows CI 均绑定 `--batch-id=B3`；canonical command 为 `npm run test:m2-v2:b3-safe-cache-provider`，B3 registry 21/21、canonical tests 35/35、default skips 0，`providerRequestDelta=0`、数据库连接 0、真实外部访问 0、产品 runtime 变更 0。
+- B4 直接扩展唯一 canonical `src/domain/m2V2EvidencePilot/v2b8Stability.js`，没有新增平行 runtime；canonical command 为 `npm run test:m2-v2:b4-event-tuple`，16/16 frozen cases、52/52 canonical tests、default skips 0，`providerRequestDelta=0`、数据库连接 0、真实外部访问 0。`PR7-P1-009` 与 `PR7-P2-013` 仍为 `OPEN`，仅达到 `CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW`；v0.4 event/evaluation 合同仍为 `PROPOSED_NOT_CURRENT`，未做 current restatement promotion。
+- open-finding 状态以 `docs/analysis/m2-v2/M2-v2-PR7-open-findings-status-v0.1.md` 为增量 overlay：5 个 P1 与 5 个直接耦合 P2 当前仍全部 `OPEN`。B0–B7 最多只能形成 `CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW`，不得由本代理执行 B8 或声明 `CLOSED`。
+- 本轮允许按附件冻结的范围修改 `src/domain/m2V2EvidencePilot/**`、配套测试、合同、CI 与公开治理文档，并在 B6 进行 provider-free 离线重建和原子 supersession；历史/private immutable 产物不得覆盖。
+- 禁止 provider、数据库、Canary/full160、模型训练、holdout、B8、mark ready、PR merge 或 release。`currentDecision=CANARY_FAIL`、`mergeAuthorized=false`、`full160Authorized=false`、`modelTrainingAuthorized=false`、`nextDevelopmentReadiness=NOT_AUTHORIZED` 保持不变，除非 B6 的版本化离线重算真实得出不同 current decision；即便变化也不自动授权下游阶段。
+- 禁止 rebase、squash、amend、force push、`git add .`、`git add -A` 或触碰 stash。任一 source evidence 摘要不一致、remote drift、non-fast-forward、真实外部访问、新依赖需求、原生平台验证不可用、workbook 无确定性路径、private promotion 回滚/指针状态不明确或 `providerRequestDelta != 0` 都必须立即停止并输出 `BLOCKED`。已确认完整回滚且无外部副作用的 verifier 子门禁失败按上方 2026-07-24 自动修复与重试规则继续处理。
+
+## 2026-07-18 M2 v2 完整性修复入口（最高优先）
+
+- V2-A 已完成；V2-B.1 至 V2-B.8 均是历史 checkpoint。V2-B.8 Canary v3.1 原始业务结论保持 `CANARY_CONDITIONAL`；修复合同的离线 restatement 当前结论为 `CANARY_FAIL`，`full160Authorized=false`。
+- verifier 只读/幂等、receipt/cache/state/counter 原子绑定、B8 合同缺口修复、从既有 immutable/append-only 材料离线恢复 private derived state 以及完整性复审已经收口。public 结论以版本化 remediation summary 与 restatement 为准，审计细节以 Git ignored private audit v0.2 和 PR roundtrip receipt 为准。
+- 禁止任何外部 provider 请求，禁止 Canary/run/resume/full160、模型训练、B4/formal-cash 修改、holdout、V2-C/V2-D、C4、M3 formal、release 或 PR merge。
+- 当前导航以 `docs/analysis/m2-v2/M2-v2-current-state-index-v0.2.md` 为准。历史报告不得删除或静默覆盖，也不得作为新授权。
+- `nextDevelopmentReadiness=NOT_AUTHORIZED`。必须停在 Draft/open/unmerged PR #7，等待用户安排外部审查；不得把修复完成解释为下一阶段授权。
+
 ## 当前模式
 
 项目从 2026-06-22 起进入 **authorized local real-data development mode**。
@@ -13,15 +85,17 @@
 
 本地真实数据开发结果不自动等于正式发布审批结果。
 
-## 2026-07-17 M2 v2 最新入口（覆盖下方历史状态句）
+## 2026-07-17 M2 v2 历史入口（已被上方 2026-07-18 入口替代）
 
 - C1、legacy C2-R、C2-R.1、C2、C3 均已完成 development 且结论为 `FAIL`；禁止重复进入 C3。
 - C3-A overall WAPE 0.55394517、signed bias +0.08273913，`modelQualityDecision=FAIL`、`businessCoverageDecision=CONDITIONAL`；B4 继续作为 comparator/fallback，未获 release 批准。
 - final holdout、embargo shadow、deferred 60-month labels 均 sealed；所有结果 `not_for_formal_decision`，未进入 C4 或 M3，未 release。
 - M2 Forecast Intelligence v2 V2-A 架构合同已完成并进入 checkpoint：五头 PRD、字段字典、External Evidence、Human Baseline、API/DB/export、JSON Schema、traceability 和 manifest。
-- 用户已授权在 V2-A checkpoint 普通 merge 且 main CI 通过后，从新分支执行 V2-B External Evidence Pilot。V2-B 只测 prospective evidence 覆盖、实体解析、来源/时间/矛盾、成本和复现，不训练模型、不改变 B4。
-- 不得要求运营逐作品补外部信息。缺少授权 private 身份源或 provider 时必须完成 runner/bootstrap/tests 并 fail-closed，禁止伪造作品、作者或 evidence。
+- V2-B 已按固定 seed 从 3053 部权威人口冻结 160 部 private immutable 样本；最终 manifest digest 为 `f85308436328bd056e27025407f45aa840cd5cc07e4e7ad9fe0eec4a2d8a3020`，全部预注册 effective target 达成。检索前 sampler aggregate QA 曾修正持续 stress bonus；旧 attempt 私下保留，修正前 provider dispatch/search result 均为 0，最终 manifest 禁止再次更换。
+- 当前无授权 runtime provider 凭证且 source allowlist 没有经条款/法律批准的域名；V2-B 因而 fail-closed 为 `blocked_no_provider`：640 个计划 query、0 dispatch、0 result、0 page、0 evidence，resume 为 640/640 cache hit。17/17 安全/审计硬门通过，但 usability 未验证，结论 `PILOT_CONDITIONAL`、V2-C readiness=`NOT_READY`。
+- 不得要求运营逐作品补外部信息。下一步只允许 provider/source governance 后在同一 manifest 上 resume；不得把 0 evidence 表述为没有外部信号，不得进入 V2-C/V2-D/C4/M3。
 - V2-B private manifest、query log、receipt、evidence、review pack 与 cache 只能写入 Git 忽略的 `data/private-output/m2-v2-evidence-pilot/`，禁止提交。
+- V2-B 公开证据见 `docs/analysis/m2-v2/M2-v2-evidence-pilot-summary-v0.1.md`、`M2-v2-evidence-pilot-gate-v0.1.json` 和 `M2-v2-evidence-pilot-next-step-v0.1.md`；所有结果仍 `not_for_formal_decision`，未训练模型、未改变 B4、未打开任何 seal、未 release。
 
 ## 当前项目状态快照
 

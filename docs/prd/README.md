@@ -3,14 +3,14 @@
 | 项目 | 内容 |
 |---|---|
 | 当前版本 | v0.2 |
-| 当前阶段 | M2 两类复核桶待用户确认；M2 formal 操作已授权但尚未执行；M3 暂缓 |
-| 最后确认 | 2026-07-13 |
+| 当前阶段 | M2 本地正式执行与 238 条复核已收口；M2 v2 完整性修复已完成并等待外部审查；M3 formal 暂缓 |
+| 最后确认 | 2026-07-18 |
 | 权威规则 | 各领域专项文档中带稳定 `REQ-*` 编号的条目 |
 | 决策历史 | `docs/decisions/ADR-*.md` |
 | 待数据验证 | `60-validation/pending-data-decisions.md` |
 | 验收 | `70-acceptance/` |
 
-当前阶段说明：M2 的 3053 部本地候选可用于授权范围内的重算与复核。用户已明确授权正式主数据写入、正式基础信息版本/输入快照、mapping activation、formal evaluation 及正式 task/export/release/audit，但这些操作必须在 146/92 两类复核桶确认和逐作品 private 输入内容契约通过后按顺序执行。`REQ-M2-OUTPUT-001` 已冻结为 M2 不输出自动运营建议或资源投入动作。M3 代表性材料和 formal execution 均暂缓，等待 M2 流程彻底收口。
+当前阶段说明：M2 的 3053 部权威范围、238 条业务复核与隔离本地 formal execution 已完成严格对账；旧 v1.1 conditional 已被拒绝，C1、legacy C2-R、C2-R.1、C2、C3 均为 development `FAIL`。M2 v2 V2-A 已完成，V2-B.1–B.8 为历史 checkpoint，B.8 原始决定仍为 `CANARY_CONDITIONAL`；完整性修复后合同的离线 restatement 为 `CANARY_FAIL`。所有历史授权标记均为 `historical / superseded / not authorization`；当前只以 `docs/analysis/m2-v2/M2-v2-current-state-index-v0.2.md` 为导航。PR #7 保持 Draft/open/unmerged；`full160Authorized=false`、`nextDevelopmentReadiness=NOT_AUTHORIZED`。M3 formal 仍暂缓。
 
 ## 单一事实来源原则
 

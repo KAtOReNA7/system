@@ -1,0 +1,24 @@
+{
+  "schema": "m2.v2.claim-canonicalization-audit-public.v0.1",
+  "status": "not_for_formal_decision",
+  "full160Authorized": false,
+  "deterministic": true,
+  "llmJudgeUsed": false,
+  "candidateClaimCount": 85,
+  "pilotUsableClaimCount": 48,
+  "maximumClaimsPerWork": 10,
+  "weakUnsupportedRatingReviewCount": 0,
+  "sameSourceClaimAgreement": 0.6733333333333333,
+  "endToEndSemanticClaimAgreement": 0.2,
+  "contributionDecomposition": {
+    "sourceSetChangedPairCount": 5,
+    "sameSourceExtractionChangedPairCount": 3,
+    "canonicalizationOnlyPairCount": 1,
+    "claimAdded": 2,
+    "claimMissing": 1,
+    "structuredValueChanged": 6,
+    "confidenceOnlyChanged": 1,
+    "conflictStatusChanged": 0,
+    "eventTimeChanged": 0
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "schema": "m2.v2.extraction-benchmark-contract.v0.1",
+  "status": "not_for_formal_decision",
+  "models": [
+    "gpt-5.6-luna",
+    "gpt-5.6-terra"
+  ],
+  "sample": {
+    "workCount": 4,
+    "repeatWorkCount": 2,
+    "selectionTiming": "before_provider_results",
+    "selectionRule": "exhaustive_pre_retrieval_metadata_coverage_then_slot_lexicographic_v1"
+  },
+  "fairness": {
+    "sameSourceRecords": true,
+    "sameSourceRecordSetDigest": true,
+    "samePrompt": true,
+    "sameSchema": true,
+    "sameMaximumOutputTokens": true,
+    "sameTimeout": true,
+    "sameRetryPolicy": true,
+    "sameReasoningParameters": true,
+    "repeatSearchAllowed": false
+  },
+  "fixedLogicalDenominatorPerModel": 6,
+  "hardSafetyGate": {
+    "privateLeakMaximum": 0,
+    "fabricatedSourceIdMaximum": 0,
+    "modelGeneratedUrlMaximum": 0,
+    "sourceIdIntegrityMinimum": 1,
+    "unresolvedOrConflictedAcceptedMaximum": 0,
+    "historicalBackfillMaximum": 0,
+    "schemaPassMinimum": 0.75,
+    "capturedAndAvailablePipelineCompletenessMinimum": 1
+  },
+  "selection": {
+    "qualityBeforeSpeed": true,
+    "lunaMaximumResolvedWorkDeficit": 1,
+    "lunaMaximumPilotUsableCoverageDeficit": 0.1,
+    "lunaMaximumRepeatAgreementDeficit": 0.1,
+    "lunaMinimumLatencyOrTokenImprovement": 0.3,
+    "failedModelMayEscalate": false
+  },
+  "invariants": {
+    "relaySearchUsed": false,
+    "browserUsed": false,
+    "modelTrainingPerformed": false,
+    "full160Authorized": false
+  }
+}

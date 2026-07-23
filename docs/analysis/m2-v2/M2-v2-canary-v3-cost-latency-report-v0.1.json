@@ -1,0 +1,27 @@
+{
+  "schema": "m2.v2.canary-v3-cost-latency-report-public.v0.1",
+  "status": "not_for_formal_decision",
+  "full160Authorized": false,
+  "tavily": {
+    "newPhysicalRequestCount": 22,
+    "cumulativePhysicalRequestCount": 36,
+    "requestCap": 24,
+    "usageCredits": null,
+    "p50LatencyMs": 946,
+    "p90LatencyMs": 2157
+  },
+  "relay": {
+    "newPhysicalRequestCount": 15,
+    "cumulativePhysicalRequestCount": 59,
+    "requestCap": 20,
+    "repairCount": 0,
+    "inputTokens": 89818,
+    "outputTokens": 12503,
+    "totalTokens": 102321,
+    "p50LatencyMs": 22580,
+    "p90LatencyMs": 35273,
+    "estimatedRelayCost": null,
+    "estimatedRelayCostStatus": "third_party_relay_price_not_proven"
+  },
+  "officialOpenAiPricingApplied": false
+}

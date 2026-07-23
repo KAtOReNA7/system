@@ -1,0 +1,31 @@
+{
+  "schema": "m2.v2.v2b8-failure-forensic-public.v0.1",
+  "status": "not_for_formal_decision",
+  "queryCount": 22,
+  "queryFailureClassification": {
+    "success_contract_valid": 17,
+    "http_success_contract_invalid": 4,
+    "http_success_zero_result": 1
+  },
+  "failedQueryCount": 5,
+  "repeatPairCount": 5,
+  "meanSourceOverlap": 0.7095238095238094,
+  "medianSourceOverlap": 0.7142857142857143,
+  "exactSourceSetCount": 2,
+  "currentSemanticClaimAgreement": 0.63,
+  "currentRawClaimAgreement": 0.26999999999999996,
+  "contributions": {
+    "sourceSetChangedPairCount": 5,
+    "sameSourceExtractionChangedPairCount": null,
+    "canonicalizationOnlyPairCount": 3,
+    "claimAdded": 3,
+    "claimMissing": 5,
+    "structuredValueChanged": 0,
+    "confidenceOnlyChanged": 1,
+    "conflictStatusChanged": 0,
+    "eventTimeChanged": 0
+  },
+  "sameSourceExtractionStabilityStatus": "not_evaluated_before_v2b8_replay",
+  "primaryRepeatSourceInstabilityObserved": true,
+  "full160Authorized": false
+}

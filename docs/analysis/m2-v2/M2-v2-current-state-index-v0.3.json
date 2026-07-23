@@ -1,0 +1,108 @@
+{
+  "schemaVersion": "m2-v2-current-state-index-v0.3",
+  "sourceExactHead": "350ecbd434831a517d97ef7f15ea3e4f9f34bf72",
+  "historicalV2B8Decision": "CANARY_CONDITIONAL",
+  "currentDecision": "CANARY_FAIL",
+  "currentDecisionComputation": {
+    "evaluationDigestSha256": "f4036bc67d4aa0b42460f7f5934bdee7221c233be536943239dfa11edf7f416c",
+    "arithmeticInputsDigestSha256": "7ceb74c70dea2c885f50302d4accc276f09533d9cbf6c38eea6c77d5f8a09900",
+    "semanticInputsDigestSha256": "4e470707552bfc558ede20cf7ce4f2386fefbea9cd19d2c035506e1a5defcd3e",
+    "thresholdProfileDigestSha256": "c68f6bf9d3bb2ecad5923a42f811e830a11dfaa10d720d892ca7f4adf9e9d21f",
+    "arithmeticRecomputed": true,
+    "semanticGatesRecomputed": true,
+    "recomputedDecision": "CANARY_FAIL",
+    "decisionRuleDigestSha256": "22f143a2840890902ecc17c80670ee53a9733680f9f7e9021a08fbb132c6bc03"
+  },
+  "full160Authorized": false,
+  "modelTrainingAuthorized": false,
+  "nextDevelopmentReadiness": "NOT_AUTHORIZED",
+  "unchangedBoundaries": {
+    "providerRequestDelta": 0,
+    "databaseConnections": 0,
+    "actualExternalFetchCount": 0,
+    "canaryExecuted": false,
+    "full160Executed": false,
+    "modelTrainingPerformed": false,
+    "holdoutOpened": false,
+    "releasePerformed": false,
+    "prMerged": false
+  },
+  "status": "current_digest_bound",
+  "classification": "public_sanitized_not_for_formal_decision",
+  "updatedAt": "2026-07-18T16:01:00.000Z",
+  "currentAuthority": {
+    "graphDigestSha256": "085c08ad1f1032551ca47be46d0e38b743c89da6788347a5c79c79efd0901d2e",
+    "trackedCoreCommitmentPath": "docs/analysis/m2-v2/M2-v2-PR7-core-commitment-v0.1.json",
+    "trackedCoreCommitmentDigestSha256": "f1d8a52250296f044e894a63caeff4e1625b244f36c7279875bfe61322899d26",
+    "currentRestatementPath": "docs/analysis/m2-v2/M2-v2-canary-v3-1-integrity-restatement-v0.4.json",
+    "currentRestatementDigestSha256": "5847c6b6a879884a7bde7e6a0cbc0e7755ddba3c01ec6f15c2e725fe6b5775f4",
+    "publicReportBindings": [
+      {
+        "role": "remediation_summary",
+        "repositoryRelativePath": "docs/analysis/m2-v2/M2-v2-PR7-P1-remediation-summary-v0.2.json",
+        "pathIdentityDigestSha256": "b951505b818a5694954cd893e1857618eb44c7167cbe455b36d3af2c752f91ae",
+        "semanticDigestSha256": "5dae73c0fb66e28d5849a79fbcc9e262433e7aac19f2263b437a82d2152d898b",
+        "byteDigestSha256": "852a060de791d9778fe0736d8324df0f79f4914be098ab380356ea2c3946e1eb"
+      },
+      {
+        "role": "merge_readiness",
+        "repositoryRelativePath": "docs/analysis/m2-v2/M2-v2-PR7-merge-readiness-v0.2.json",
+        "pathIdentityDigestSha256": "35b245d1e44b1bf924c227f24ce45e8837e5131d8011494f3d600e35b115f30a",
+        "semanticDigestSha256": "44007131f67194356f070b75809e5253c18915a139a5a3538c72cd356c1922a1",
+        "byteDigestSha256": "9a863d9529688d799377bd8fa2f38bb5198aa0e6edd2fb2a480a0c65775ebb09"
+      },
+      {
+        "role": "current_integrity_restatement",
+        "repositoryRelativePath": "docs/analysis/m2-v2/M2-v2-canary-v3-1-integrity-restatement-v0.4.json",
+        "pathIdentityDigestSha256": "697c49dc60720d2dca98db59433e54e0cdfb30c521f95b48d757756c9de759b3",
+        "semanticDigestSha256": "9363bae490143cc490e88a5e3ea17c146e99a158472c333aec6fd612aee10065",
+        "byteDigestSha256": "5847c6b6a879884a7bde7e6a0cbc0e7755ddba3c01ec6f15c2e725fe6b5775f4"
+      }
+    ],
+    "promotionReceiptDigestSha256": "2252c4bb0f206cdb43a1479e7b91b59eec0fbaac36c4440acb8b182e4b8f7916"
+  },
+  "supersession": {
+    "predecessorPath": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.2.json",
+    "predecessorDigestSha256": "933bc73cfa818d99b5c88769713f3301006f70b1fedbefa1da378ce18d5493ff",
+    "transactionId": "recovery-f15e033dc333e86e836d638c5578289f61bf9838",
+    "transactionDigestSha256": "2252c4bb0f206cdb43a1479e7b91b59eec0fbaac36c4440acb8b182e4b8f7916",
+    "reason": "B6_PROVIDER_FREE_ATOMIC_PROMOTION"
+  },
+  "historicalArtifacts": [
+    {
+      "artifact": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.2.json",
+      "version": "m2-v2-current-state-index-v0.2",
+      "decision": "CANARY_FAIL",
+      "lifecycle": "superseded_immutable",
+      "byteDigestSha256": "933bc73cfa818d99b5c88769713f3301006f70b1fedbefa1da378ce18d5493ff"
+    },
+    {
+      "artifact": "docs/analysis/m2-v2/M2-v2-canary-v3-1-integrity-restatement-v0.3.json",
+      "version": "m2.v2.canary-v3.1-integrity-restatement-public.v0.3",
+      "decision": "CANARY_FAIL",
+      "lifecycle": "superseded_immutable",
+      "byteDigestSha256": "1ec7dcccf1ba29f08ab58226f7aac724f60c1870c7bcd6c32ce98b4cb6c6562a"
+    }
+  ],
+  "entries": [
+    {
+      "artifact": "canary-v3.1 historical execution",
+      "version": "v0.1",
+      "stage": "V2-B8",
+      "status": "historical_verified",
+      "lifecycle": "historical",
+      "decision": "CANARY_CONDITIONAL",
+      "safeNextAction": "none"
+    },
+    {
+      "artifact": "PR7 provider-free integrity restatement",
+      "version": "v0.4",
+      "stage": "B6",
+      "status": "current_digest_bound",
+      "lifecycle": "current",
+      "decision": "CANARY_FAIL",
+      "safeNextAction": "independent_B8_review"
+    }
+  ],
+  "indexDigestSha256": "d7c7f0ef9f963da3e9095a30647795273d30bd0931ff4298ab9bc13a1ad37a51"
+}

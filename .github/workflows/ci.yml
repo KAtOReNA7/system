@@ -15,6 +15,21 @@ jobs:
       M1_DATABASE_URL: ""
       M1_DATABASE_READONLY_URL: ""
       M1_DATABASE_BACKGROUND_URL: ""
+      DATABASE_URL: ""
+      PGHOST: ""
+      PGPORT: ""
+      PGDATABASE: ""
+      PGUSER: ""
+      PGPASSWORD: ""
+      OPENAI_API_KEY: ""
+      OPENAI_BASE_URL: ""
+      TAVILY_API_KEY: ""
+      M2_V2_EVIDENCE_API_BASE_URL: ""
+      M2_V2_EVIDENCE_APPROVED_HOST: ""
+      M2_V2_APPROVED_RELAY_HOST: ""
+      M2_V2_EVIDENCE_PROVIDER: ""
+      M2_V2_SEARCH_PROVIDER: ""
+      M2_V2_TAVILY_BASE_URL: ""
 
     steps:
       - name: Checkout
@@ -22,14 +37,9 @@ jobs:
         with:
           # Calibration contracts verify files against frozen historical commits.
           fetch-depth: 0
-
-      # GitHub checks out pull_request merge refs in detached-HEAD mode. The
-      # synthetic M2 preflights accept a named codex/m2-* development checkout,
-      # so attach the already-checked-out merge commit to a fixed local branch.
-      # This preserves merge-result testing and does not affect main push runs.
-      - name: Normalize M2 pull request checkout identity
-        if: ${{ github.event_name == 'pull_request' && startsWith(github.head_ref, 'codex/m2-') }}
-        run: git switch -c codex/m2-ci-merge-checkout
+          # PR remediation must be evaluated at the contributor's exact HEAD,
+          # not at a synthetic GitHub merge ref.
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -37,11 +47,27 @@ jobs:
           node-version: 24
           cache: npm
 
+      - name: Verify exact event head
+        env:
+          EXPECTED_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: node -e "const {execFileSync}=require('node:child_process');const actual=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();if(actual!==process.env.EXPECTED_HEAD_SHA)throw new Error('checkout_is_not_exact_event_head')"
+
+      # Some synthetic preflights require a codex/m2-* branch identity. Attach
+      # the already-verified exact HEAD without creating a merge commit.
+      - name: Attach exact M2 pull request head to local branch
+        if: ${{ github.event_name == 'pull_request' && startsWith(github.head_ref, 'codex/m2-') }}
+        run: git switch -c codex/m2-ci-exact-head
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
       - name: Install dependencies
         run: npm ci
 
       - name: Install Python test dependencies
-        run: python -m pip install --disable-pip-version-check --no-input numpy==2.5.1 pandas==3.0.3
+        run: python -m pip install --disable-pip-version-check --no-input numpy==2.5.1 pandas==3.0.3 openpyxl==3.1.5
 
       - name: Install Playwright Chromium
         run: npx playwright install chromium
@@ -55,13 +81,212 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Test
-        run: npm test
+      - name: S1 focused contract validation
+        run: npm run test:m2-v2:s1-focused
+
+      - name: B1 authority graph and readonly proof validation
+        run: npm run test:m2-v2:b1-authority
+
+      - name: S1 preflight and first isolated default test chain
+        if: ${{ github.event_name == 'pull_request' }}
+        env:
+          EXPECTED_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: npm run m2:v2:pr7:s1:validate:local -- --expected-head=$EXPECTED_HEAD_SHA --batch-id=B7
+
+      - name: First isolated default test chain for non-PR pushes
+        if: ${{ github.event_name != 'pull_request' }}
+        run: npm run test:m2-v2:test-isolation
+
+      - name: Synthetic verifier contract
+        run: npm run test:m2-v2:integrity-synthetic
+
+      - name: Synthetic secret guard
+        run: npm run test:secret-guard
+
+      - name: PR7 P1 remediation contract
+        run: npm run test:m2-v2:pr7-p1-remediation
+
+      - name: Authority ledger and closed-binding integrity
+        run: node --test --test-concurrency=1 test/m2-v2-current-authority.test.js test/m2-v2-request-event-ledger.test.js test/m2-v2-closed-atomic-binding.test.js test/m2-v2-v2b6-raw-cache-migration.test.js
+
+      - name: Live runtime request-ledger integration
+        run: npm run test:m2-v2:live-runtime-ledger
+
+      - name: Offline remediation transaction adapter
+        run: npm run test:m2-v2:offline-remediation
+
+      - name: Synthetic private recovery fault injection
+        run: npm run test:m2-v2:private-recovery
+
+      - name: Synthetic migration integrity
+        run: npm run test:m2-v2:migration-integrity
+
+      - name: B3 safe-cache and provider-boundary validation
+        run: npm run test:m2-v2:b3-safe-cache-provider
+
+      - name: B4 event tuple and conflict applicability validation
+        run: npm run test:m2-v2:b4-event-tuple
+
+      - name: B5 workbook and required-artifact policy validation
+        run: npm run test:m2-v2:b5-workbook-artifact
+
+      - name: B6 provider-free authority and atomic promotion validation
+        run: npm run test:m2-v2:b6-offline-authority
+
+      - name: B7 full 89-case registry regression
+        run: npm run test:m2-v2:b7-full-regression
+
+      - name: Independent workbook verification
+        run: npm run test:m2-v2:workbook-verifier
+
+      - name: B8 current-authority verifier
+        run: npm run test:m2-v2:v2b8-current-verifier
+
+      - name: Synthetic isolation verifier fault injection
+        run: node --test --test-concurrency=1 test/m2-v2-test-isolation-verifier.test.js
 
       # Default smoke mode is fixture-only and does not connect to PostgreSQL.
       - name: Smoke
         run: npm run smoke
 
       # Admin E2E starts an in-process local HTTP server with no database URLs.
+      - name: Admin E2E
+        run: npm run test:e2e
+
+  verify-windows:
+    runs-on: windows-latest
+    env:
+      M1_APP_ENV: ci
+      M1_DATABASE_URL: ""
+      M1_DATABASE_READONLY_URL: ""
+      M1_DATABASE_BACKGROUND_URL: ""
+      DATABASE_URL: ""
+      PGHOST: ""
+      PGPORT: ""
+      PGDATABASE: ""
+      PGUSER: ""
+      PGPASSWORD: ""
+      OPENAI_API_KEY: ""
+      OPENAI_BASE_URL: ""
+      TAVILY_API_KEY: ""
+      M2_V2_EVIDENCE_API_BASE_URL: ""
+      M2_V2_EVIDENCE_APPROVED_HOST: ""
+      M2_V2_APPROVED_RELAY_HOST: ""
+      M2_V2_EVIDENCE_PROVIDER: ""
+      M2_V2_SEARCH_PROVIDER: ""
+      M2_V2_TAVILY_BASE_URL: ""
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Verify exact event head
+        env:
+          EXPECTED_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: node -e "const {execFileSync}=require('node:child_process');const actual=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();if(actual!==process.env.EXPECTED_HEAD_SHA)throw new Error('checkout_is_not_exact_event_head')"
+
+      - name: Attach exact M2 pull request head to local branch
+        if: ${{ github.event_name == 'pull_request' && startsWith(github.head_ref, 'codex/m2-') }}
+        run: git switch -c codex/m2-ci-exact-head
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Python test dependencies
+        run: python -m pip install --disable-pip-version-check --no-input numpy==2.5.1 pandas==3.0.3 openpyxl==3.1.5
+
+      - name: Install Playwright Chromium
+        run: npx playwright install chromium
+
+      - name: Check for real data and secrets
+        run: npm run check:no-real-data
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+      - name: S1 focused contract validation
+        run: npm run test:m2-v2:s1-focused
+
+      - name: B1 authority graph and readonly proof validation
+        run: npm run test:m2-v2:b1-authority
+
+      - name: S1 preflight and first isolated default test chain
+        if: ${{ github.event_name == 'pull_request' }}
+        env:
+          EXPECTED_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: npm run m2:v2:pr7:s1:validate:local -- --expected-head=$env:EXPECTED_HEAD_SHA --batch-id=B7
+
+      - name: First isolated default test chain for non-PR pushes
+        if: ${{ github.event_name != 'pull_request' }}
+        run: npm run test:m2-v2:test-isolation
+
+      - name: Synthetic verifier contract
+        run: npm run test:m2-v2:integrity-synthetic
+
+      - name: Synthetic secret guard
+        run: npm run test:secret-guard
+
+      - name: PR7 P1 remediation contract
+        run: npm run test:m2-v2:pr7-p1-remediation
+
+      - name: Authority ledger and closed-binding integrity
+        run: node --test --test-concurrency=1 test/m2-v2-current-authority.test.js test/m2-v2-request-event-ledger.test.js test/m2-v2-closed-atomic-binding.test.js test/m2-v2-v2b6-raw-cache-migration.test.js
+
+      - name: Live runtime request-ledger integration
+        run: npm run test:m2-v2:live-runtime-ledger
+
+      - name: Offline remediation transaction adapter
+        run: npm run test:m2-v2:offline-remediation
+
+      - name: Synthetic private recovery fault injection
+        run: npm run test:m2-v2:private-recovery
+
+      - name: Synthetic migration integrity
+        run: npm run test:m2-v2:migration-integrity
+
+      - name: B3 safe-cache and provider-boundary validation
+        run: npm run test:m2-v2:b3-safe-cache-provider
+
+      - name: B4 event tuple and conflict applicability validation
+        run: npm run test:m2-v2:b4-event-tuple
+
+      - name: B5 workbook and required-artifact policy validation
+        run: npm run test:m2-v2:b5-workbook-artifact
+
+      - name: B6 provider-free authority and atomic promotion validation
+        run: npm run test:m2-v2:b6-offline-authority
+
+      - name: B7 full 89-case registry regression
+        run: npm run test:m2-v2:b7-full-regression
+
+      - name: Independent workbook verification
+        run: npm run test:m2-v2:workbook-verifier
+
+      - name: B8 current-authority verifier
+        run: npm run test:m2-v2:v2b8-current-verifier
+
+      - name: Synthetic isolation verifier fault injection
+        run: node --test --test-concurrency=1 test/m2-v2-test-isolation-verifier.test.js
+
+      - name: Smoke
+        run: npm run smoke
+
       - name: Admin E2E
         run: npm run test:e2e

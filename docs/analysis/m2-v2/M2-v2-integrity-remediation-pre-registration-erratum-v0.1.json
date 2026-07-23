@@ -1,0 +1,19 @@
+{
+  "schema": "m2.v2.integrity-remediation-pre-registration-erratum-public.v0.1",
+  "status": "historical_erratum_not_authorization",
+  "classification": "public_sanitized_not_for_formal_decision",
+  "appliesTo": "M2-v2-integrity-remediation-pre-registration-v0.1",
+  "corrections": [
+    {
+      "field": "historicalBaseline.evidence.pilotUsable",
+      "incorrectRendering": "48 percent",
+      "correctValue": 48,
+      "correctUnit": "claim_count",
+      "denominator": 85,
+      "derivedShare": 0.5647058823529412
+    }
+  ],
+  "historicalArtifactOverwritten": false,
+  "full160Authorized": false,
+  "nextDevelopmentReadiness": "NOT_AUTHORIZED"
+}

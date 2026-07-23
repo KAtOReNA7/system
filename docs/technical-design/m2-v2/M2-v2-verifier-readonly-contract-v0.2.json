@@ -1,0 +1,200 @@
+{
+  "schema": "m2.v2.verifier-readonly-contract.v0.2",
+  "status": "PROPOSED_NOT_CURRENT",
+  "classification": "public_sanitized_not_for_formal_decision",
+  "sourceExactHead": "badbf453e1e99ba87cc3064601e480a09ff1b149",
+  "findingIds": ["PR7-P2-009"],
+  "lineage": {
+    "supersedes": "m2.v2.verifier-readonly-contract.v0.1",
+    "historicalArtifactsImmutable": true,
+    "inPlaceOverwriteAllowed": false,
+    "compatibility": "v0.1_receipts_are_historical_scope_incomplete"
+  },
+  "commands": [
+    "m2:v2:v2b5:verify",
+    "m2:v2:v2b6:verify",
+    "m2:v2:v2b7:verify",
+    "m2:v2:v2b8:verify"
+  ],
+  "claim": {
+    "allowed": "PERSISTENT_CONTENT_METADATA_PATH_REF_INVARIANCE",
+    "transientWriteAndRestoreExcluded": false,
+    "transientZeroWriteClaimAllowed": false,
+    "sameInputsSameVerdictRequired": true
+  },
+  "commandSeparation": {
+    "verify": "read_existing_inputs_and_return_deterministic_verdict",
+    "report": "materialize_versioned_report_only_when_explicitly_requested",
+    "runOrResume": "perform_authorized_runtime_work_only_when_explicitly_requested",
+    "proveReadonly": "snapshot_graph_derived_scope_and_execute_verify_without_governed_writes"
+  },
+  "allowedVerifyEffects": [
+    "read_files",
+    "allocate_memory",
+    "write_stdout",
+    "write_stderr",
+    "set_exit_code"
+  ],
+  "forbiddenVerifyEffects": [
+    "create_file",
+    "modify_file",
+    "delete_file",
+    "rename_file",
+    "change_file_metadata",
+    "mutate_cache",
+    "mutate_receipt",
+    "mutate_counter",
+    "mutate_manifest",
+    "mutate_current_pointer",
+    "call_provider",
+    "connect_database",
+    "invoke_run_resume_or_report"
+  ],
+  "scopeDerivation": {
+    "sourceSchema": "m2.v2.canonical-authority-graph.v0.3",
+    "manualSubsetAllowed": false,
+    "exactRoleAndMemberSetRequired": true,
+    "roleToScopeMemberMapping": [
+      {"authorityRole": "immutable_inputs", "scopeMemberClasses": ["transaction_roots", "user_repository_refs"], "cardinality": "EXACT_GRAPH_DECLARED_SET"},
+      {"authorityRole": "execution_contract", "scopeMemberClasses": ["required_v0_2_and_vnext_paths", "tracked_verifier_sources"], "cardinality": "EXACT_GRAPH_DECLARED_SET"},
+      {"authorityRole": "request_event_ledger", "scopeMemberClasses": ["private_derived_members"], "cardinality": "EXACTLY_ONE_ORDERED_LEDGER"},
+      {"authorityRole": "physical_receipt_envelopes", "scopeMemberClasses": ["private_derived_members"], "cardinality": "EXACT_GRAPH_DECLARED_SET"},
+      {"authorityRole": "receipt_index", "scopeMemberClasses": ["private_derived_members"], "cardinality": "EXACTLY_ONE"},
+      {"authorityRole": "safe_cache", "scopeMemberClasses": ["private_derived_members"], "cardinality": "EXACTLY_ONE"},
+      {"authorityRole": "effective_receipt_index", "scopeMemberClasses": ["private_derived_members"], "cardinality": "EXACTLY_ONE"},
+      {"authorityRole": "counter_state_projection", "scopeMemberClasses": ["provider_counter"], "cardinality": "EXACTLY_ONE"},
+      {"authorityRole": "event_semantics_profile", "scopeMemberClasses": ["required_v0_2_and_vnext_paths"], "cardinality": "EXACTLY_ONE"},
+      {"authorityRole": "derived_evaluation", "scopeMemberClasses": ["private_derived_members"], "cardinality": "EXACTLY_ONE_CURRENT"},
+      {"authorityRole": "public_remediation_summary", "scopeMemberClasses": ["public_reports"], "cardinality": "EXACTLY_ONE"},
+      {"authorityRole": "public_merge_readiness", "scopeMemberClasses": ["public_reports"], "cardinality": "EXACTLY_ONE"},
+      {"authorityRole": "tracked_core_commitment", "scopeMemberClasses": ["public_reports", "required_v0_2_and_vnext_paths"], "cardinality": "EXACTLY_ONE"},
+      {"authorityRole": "current_integrity_restatement", "scopeMemberClasses": ["public_reports", "current_integrity_restatement"], "cardinality": "EXACTLY_ONE"},
+      {"authorityRole": "current_state_index", "scopeMemberClasses": ["public_reports", "current_state_index", "current_pointer"], "cardinality": "EXACTLY_ONE"}
+    ],
+    "mappingRecordExactFields": ["authorityRole", "scopeMemberClasses", "cardinality"],
+    "authorityRoleSetMustEqualCanonicalGraphNodeIdSet": true,
+    "scopeMemberClassesMustBeNonemptyUniqueKnownValues": true,
+    "everyRequiredRoleClassMustBeCovered": true,
+    "mappingUnknownFieldsRejected": true,
+    "requiredRoleClasses": [
+      "transaction_roots",
+      "current_pointer",
+      "public_reports",
+      "current_state_index",
+      "current_integrity_restatement",
+      "required_v0_2_and_vnext_paths",
+      "tracked_verifier_sources",
+      "private_derived_members",
+      "user_repository_refs",
+      "provider_counter"
+    ],
+    "requiredObservations": [
+      "repository_relative_path",
+      "file_content_sha256",
+      "byte_length",
+      "member_set_digest_sha256",
+      "metadata_fingerprint",
+      "object_identity",
+      "link_or_reparse_type",
+      "reference_target_digest"
+    ],
+    "scopeMemberRecord": {
+      "exactFields": [
+        "authorityRole",
+        "scopeMemberClass",
+        "memberKind",
+        "repositoryRelativePath",
+        "contentSha256",
+        "byteLength",
+        "memberSetDigestSha256",
+        "metadata",
+        "objectIdentity",
+        "linkOrReparseType",
+        "referenceTargetDigestSha256"
+      ],
+      "memberKindValues": ["FILE", "DIRECTORY", "GIT_REF", "COUNTER"],
+      "repositoryRelativePathForm": "nfc_forward_slash_no_dot_segments",
+      "directoryMemberSet": "SORTED_EXACT_NO_FOLLOW_CHILD_NAME_KIND_IDENTITY_TUPLES",
+      "referenceTargetDigestBasis": "canonical_ref_name_object_type_and_target_oid_or_declared_pointer_target",
+      "unknownFieldsRejected": true
+    },
+    "metadataSchemas": {
+      "windows": {
+        "exactFields": ["platform", "attributes", "creationTimeUtcFiletime", "lastWriteTimeUtcFiletime", "reparseTag", "volumeSerialNumber", "fileId128", "finalPathDigestSha256"],
+        "platform": "WINDOWS_NATIVE",
+        "reparseTagRequiredForEveryAncestorAndFinalObject": true,
+        "unknownFieldsRejected": true
+      },
+      "posix": {
+        "exactFields": ["platform", "device", "inode", "mode", "uid", "gid", "size", "mtimeNs", "ctimeNs", "mountId", "resolvedPathDigestSha256"],
+        "platform": "POSIX_NATIVE",
+        "lstatNoFollowRequiredForEveryAncestorAndFinalObject": true,
+        "unknownFieldsRejected": true
+      },
+      "gitRef": {
+        "exactFields": ["platform", "refName", "objectType", "targetOid"],
+        "platform": "GIT",
+        "symbolicRefTargetIncludedWhenPresent": true,
+        "unknownFieldsRejected": true
+      }
+    },
+    "linkPolicy": "NO_FOLLOW_AND_FAIL_ON_UNDECLARED_ALIAS",
+    "unknownOrUnobservableMetadata": "FAIL_WITH_EVIDENCE_GAP"
+  },
+  "selfExclusions": {
+    "proofOutputExcluded": true,
+    "proofOutputDescendantsExcluded": true,
+    "newOutputChildParentDirectoryMtimeExcluded": true,
+    "otherParentMetadataExcluded": false,
+    "exclusionSetMustBeDeclaredBeforeFirstSnapshot": true,
+    "exclusionMayRemoveGovernedMember": false,
+    "exactExclusionRecordFields": ["repositoryRelativePath", "memberKind", "reason", "allowedObservationDifference"],
+    "allowedReasons": ["PROOF_OUTPUT_SELF", "PROOF_OUTPUT_DESCENDANT", "NEW_OUTPUT_CHILD_PARENT_DIRECTORY_MTIME_ONLY"],
+    "allowedObservationDifferenceForParent": ["mtime"],
+    "pathMustBeOutsideGovernedMemberSetOrExactNewProofOutput": true,
+    "unknownExclusionFieldsRejected": true
+  },
+  "proof": {
+    "schema": "m2.v2.verifier-readonly-proof-public.v0.2",
+    "hashAlgorithm": "sha256",
+    "canonicalPathForm": "repository_relative_forward_slash",
+    "totalVerifierInvocations": 2,
+    "snapshotIds": ["before", "after_invocation_1", "after_invocation_2"],
+    "requiredSequence": [
+      "derive_exact_scope_from_authority_graph",
+      "declare_exact_self_exclusions",
+      "snapshot_before",
+      "invoke_verifier_1",
+      "snapshot_after_invocation_1",
+      "invoke_verifier_2",
+      "snapshot_after_invocation_2",
+      "compare_scope_content_metadata_path_ref_and_counter"
+    ],
+    "passRule": "exact_scope_and_all_persistent_observations_equal_across_all_snapshots",
+    "proofOutputMayEnterOwnScope": false,
+    "providerRequestDeltaRequired": 0,
+    "databaseConnectionsRequired": 0
+  },
+  "failureMode": "FAIL_CLOSED_WITHOUT_WRITING",
+  "verificationScope": {
+    "contractFrozen": true,
+    "implementationClaimed": false,
+    "realPrivateProofClaimed": false,
+    "exactHeadCiClaimed": false,
+    "independentReviewClaimed": false
+  },
+  "authorization": {
+    "currentDecision": "CANARY_FAIL",
+    "providerDispatchAuthorized": false,
+    "databaseConnectionsAuthorized": false,
+    "canaryAuthorized": false,
+    "full160Authorized": false,
+    "modelTrainingAuthorized": false,
+    "holdoutAccessAuthorized": false,
+    "independentReviewBatchB8Authorized": false,
+    "markReadyAuthorized": false,
+    "nextDevelopmentReadiness": "NOT_AUTHORIZED",
+    "mergeAuthorized": false,
+    "releaseAuthorized": false
+  }
+}

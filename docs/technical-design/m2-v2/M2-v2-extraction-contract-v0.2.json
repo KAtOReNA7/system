@@ -1,0 +1,47 @@
+{
+  "schema": "m2.v2.evidence-extraction.v0.2",
+  "input": {
+    "role": "validated_source_records_only",
+    "fields": [
+      "sourceId",
+      "title",
+      "url",
+      "domain",
+      "snippet",
+      "citation",
+      "capturedAt",
+      "providerReceipt"
+    ],
+    "webSearchAllowed": false,
+    "researchNoteAllowed": false
+  },
+  "output": {
+    "fields": [
+      "claim",
+      "claimType",
+      "structuredValue",
+      "sourceIds",
+      "confidence",
+      "eventTime",
+      "availableAt",
+      "entityResolution",
+      "contradictionStatus"
+    ],
+    "additionalPropertiesAllowed": false
+  },
+  "citationAdapters": [
+    "openai_responses_annotation",
+    "relay_nested_citation",
+    "web_search_source_record_mapping"
+  ],
+  "rules": {
+    "urlInOutputTextRequired": false,
+    "missingSourceId": "reject",
+    "unknownSourceId": "reject",
+    "missingCitation": "reject",
+    "unknownTimeMustBeNull": true,
+    "missingAvailableAt": "accepted_but_modelEligible_false",
+    "researchApprovalImpliesModelApproval": false
+  },
+  "decisionStatus": "not_for_formal_decision"
+}

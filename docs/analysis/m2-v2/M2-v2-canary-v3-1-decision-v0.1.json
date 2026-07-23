@@ -1,0 +1,204 @@
+{
+  "schema": "m2.v2.canary-v3-1-decision-public.v0.1",
+  "status": "historical_original_retained_superseded_not_current_authorization",
+  "historicalStatusAtCheckpoint": "not_for_formal_decision",
+  "lifecycle": {
+    "historical": true,
+    "superseded": true,
+    "notCurrentAuthorization": true,
+    "currentAuthority": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.2.json"
+  },
+  "full160Authorized": false,
+  "canaryDecision": "CANARY_CONDITIONAL",
+  "canaryDecisionScope": "historical_original_v2b8_decision_only",
+  "safetyPassed": true,
+  "qualityPassed": false,
+  "blockerIds": [
+    "mean_repeat_source_overlap",
+    "same_source_claim_agreement",
+    "end_to_end_semantic_claim_agreement"
+  ],
+  "safetyGates": [
+    {
+      "id": "private_leak_zero",
+      "actual": 0,
+      "threshold": 0,
+      "passed": true
+    },
+    {
+      "id": "prohibited_source_accepted_zero",
+      "actual": 0,
+      "threshold": 0,
+      "passed": true
+    },
+    {
+      "id": "fabricated_source_id_zero",
+      "actual": 0,
+      "threshold": 0,
+      "passed": true
+    },
+    {
+      "id": "model_generated_url_zero",
+      "actual": 0,
+      "threshold": 0,
+      "passed": true
+    },
+    {
+      "id": "historical_backfill_zero",
+      "actual": 0,
+      "threshold": 0,
+      "passed": true
+    },
+    {
+      "id": "source_id_integrity",
+      "actual": 1,
+      "threshold": 1,
+      "passed": true
+    },
+    {
+      "id": "captured_at_complete",
+      "actual": 1,
+      "threshold": 1,
+      "passed": true
+    },
+    {
+      "id": "available_at_complete",
+      "actual": 1,
+      "threshold": 1,
+      "passed": true
+    },
+    {
+      "id": "unresolved_conflicted_pilot_zero",
+      "actual": 0,
+      "threshold": 0,
+      "passed": true
+    },
+    {
+      "id": "explicit_temporal_extraction_complete",
+      "actual": 1,
+      "threshold": 1,
+      "passed": true
+    },
+    {
+      "id": "manifest_unchanged",
+      "actual": true,
+      "threshold": true,
+      "passed": true
+    },
+    {
+      "id": "b4_unchanged",
+      "actual": true,
+      "threshold": true,
+      "passed": true
+    },
+    {
+      "id": "final_holdout_sealed",
+      "actual": true,
+      "threshold": true,
+      "passed": true
+    },
+    {
+      "id": "all_tests_pass",
+      "actual": true,
+      "threshold": true,
+      "passed": true
+    }
+  ],
+  "qualityGates": [
+    {
+      "id": "query_success_rate",
+      "actual": 0.9629629629629629,
+      "threshold": 0.8,
+      "passed": true
+    },
+    {
+      "id": "source_record_work_coverage",
+      "actual": 1,
+      "threshold": 1,
+      "passed": true
+    },
+    {
+      "id": "mean_repeat_source_overlap",
+      "actual": 0.3450793650793651,
+      "threshold": 0.7,
+      "passed": false
+    },
+    {
+      "id": "primary_schema_pass_rate",
+      "actual": 1,
+      "threshold": 0.9,
+      "passed": true
+    },
+    {
+      "id": "repeat_schema_pass_rate",
+      "actual": 1,
+      "threshold": 0.9,
+      "passed": true
+    },
+    {
+      "id": "no_timeout_rate",
+      "actual": 1,
+      "threshold": 0.9,
+      "passed": true
+    },
+    {
+      "id": "work_resolved_rate",
+      "actual": 0.9,
+      "threshold": 0.8,
+      "passed": true
+    },
+    {
+      "id": "pilot_usable_work_coverage",
+      "actual": 0.9,
+      "threshold": 0.8,
+      "passed": true
+    },
+    {
+      "id": "high_value_coverage",
+      "actual": 1,
+      "threshold": 1,
+      "passed": true
+    },
+    {
+      "id": "same_source_claim_agreement",
+      "actual": 0.6733333333333333,
+      "threshold": 0.8,
+      "passed": false
+    },
+    {
+      "id": "end_to_end_semantic_claim_agreement",
+      "actual": 0.2,
+      "threshold": 0.8,
+      "passed": false
+    },
+    {
+      "id": "weak_unsupported_rating_review_zero",
+      "actual": 0,
+      "threshold": 0,
+      "passed": true
+    },
+    {
+      "id": "unknown_public_web_claim_share",
+      "actual": 0,
+      "threshold": 0.4,
+      "passed": true
+    },
+    {
+      "id": "model_binding_mismatch_zero",
+      "actual": 0,
+      "threshold": 0,
+      "passed": true
+    }
+  ],
+  "nextStep": "review_private_pack_and_repair_quality_without_scaling",
+  "nextStepFieldScope": "historical_superseded_not_authorized_now",
+  "privateWorkbookGenerated": true,
+  "privateWorkbookVerificationPassed": true,
+  "modelTrainingPerformed": false,
+  "sampleReplaced": false,
+  "b4Changed": false,
+  "finalHoldoutOpened": false,
+  "enteredV2COrV2D": false,
+  "enteredC4OrM3": false,
+  "released": false
+}

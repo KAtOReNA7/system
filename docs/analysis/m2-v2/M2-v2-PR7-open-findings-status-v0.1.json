@@ -1,0 +1,103 @@
+{
+  "schema": "m2.v2.pr7.open-findings-status.v0.1",
+  "reviewedHead": "627f74c6b9b2365ee4403c613ea9689748b76541",
+  "s1StartingHead": "badbf453e1e99ba87cc3064601e480a09ff1b149",
+  "branch": "codex/m2-v2-evidence-pilot-v1",
+  "openP1": 5,
+  "openDirectP2": 5,
+  "openFindingIds": [
+    "PR7-P1-003",
+    "PR7-P1-006",
+    "PR7-P1-008",
+    "PR7-P1-009",
+    "PR7-P1-013",
+    "PR7-P2-006",
+    "PR7-P2-008",
+    "PR7-P2-009",
+    "PR7-P2-013",
+    "PR7-P2-016"
+  ],
+  "historicalDecision": "CANARY_CONDITIONAL",
+  "currentDecision": "CANARY_FAIL",
+  "s0Status": "COMPLETE",
+  "supportSharpeningStopCriteriaReached": true,
+  "findingRemediationAuthorized": true,
+  "authorizedBatches": [
+    "B0",
+    "B1",
+    "B2",
+    "B3",
+    "B4",
+    "B5",
+    "B6",
+    "B7"
+  ],
+  "currentBatch": "B7",
+  "batchStatuses": {
+    "B0": "COMPLETE",
+    "B1": "COMPLETE_PENDING_B8",
+    "B2": "COMPLETE_PENDING_B8",
+    "B3": "COMPLETE_PENDING_B8",
+    "B4": "COMPLETE_PENDING_B8",
+    "B5": "COMPLETE_PENDING_B8",
+    "B6": "COMPLETE_PENDING_B8",
+    "B7": "CLOSING_CORRECTION_PENDING_EXACT_HEAD_CI"
+  },
+  "nextBatch": "B8",
+  "nextAllowedPhase": "B8_REPEAT_INDEPENDENT_REVIEW_AFTER_B7_CORRECTION_EXACT_HEAD_CI",
+  "candidateFindingStatuses": {
+    "PR7-P1-003": {
+      "findingStatus": "OPEN",
+      "candidateStatus": "CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW"
+    },
+    "PR7-P1-006": {
+      "findingStatus": "OPEN",
+      "candidateStatus": "CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW"
+    },
+    "PR7-P1-008": {
+      "findingStatus": "OPEN",
+      "candidateStatus": "CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW"
+    },
+    "PR7-P2-016": {
+      "findingStatus": "OPEN",
+      "candidateStatus": "CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW"
+    },
+    "PR7-P1-009": {
+      "findingStatus": "OPEN",
+      "candidateStatus": "CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW"
+    },
+    "PR7-P1-013": {
+      "findingStatus": "OPEN",
+      "candidateStatus": "CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW"
+    },
+    "PR7-P2-006": {
+      "findingStatus": "OPEN",
+      "candidateStatus": "CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW"
+    },
+    "PR7-P2-008": {
+      "findingStatus": "OPEN",
+      "candidateStatus": "CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW"
+    },
+    "PR7-P2-009": {
+      "findingStatus": "OPEN",
+      "candidateStatus": "CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW"
+    },
+    "PR7-P2-013": {
+      "findingStatus": "OPEN",
+      "candidateStatus": "CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW"
+    }
+  },
+  "openFindings": 10,
+  "findingsRemainOpen": true,
+  "findingClosureStatus": "OPEN",
+  "independentReviewPerformed": true,
+  "independentReviewStatus": "FIRST_PASS_FAILED_CANONICAL_POINTER_ROUTING",
+  "b8Authorized": true,
+  "mergeAuthorized": false,
+  "full160Authorized": false,
+  "modelTrainingAuthorized": false,
+  "releaseAuthorized": false,
+  "nextDevelopmentReadiness": "NOT_AUTHORIZED",
+  "remediationComplete": false,
+  "pullRequestState": "DRAFT_OPEN_UNMERGED"
+}

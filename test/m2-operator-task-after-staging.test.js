@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
-import { existsSync, readFileSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import test from "node:test";
+import { inspectOptionalPrivateIdentity } from "./helpers/m2V2RequiredArtifacts.js";
 
 function readJson(path) {
   return JSON.parse(readFileSync(path, "utf8"));
@@ -20,10 +21,13 @@ test("M2 after-staging operator task summary requires standard_work_id feedback 
   assert.equal(summary.gitignored, true);
 });
 
-test(
-  "M2 after-staging private operator source contains standard_work_id and private columns",
-  { skip: !existsSync("data/private-output/m2-business-review/m2-v1.1-30-work-operator-task-pack-cn-after-dual-source-staging-v2-source.json") },
-  () => {
+if (process.env.M2_V2_TEST_PROFILE === "optional-private") {
+  test(
+    "M2 after-staging private operator source contains standard_work_id and private columns",
+    (context) => {
+    const optional = inspectOptionalPrivateIdentity(process.cwd(), "OPT-M2-OPERATOR");
+    context.diagnostic(JSON.stringify(optional));
+    if (optional.status === "OPTIONAL_PRIVATE_ABSENT") return;
     const source = readJson("data/private-output/m2-business-review/m2-v1.1-30-work-operator-task-pack-cn-after-dual-source-staging-v2-source.json");
     const taskSheet = source.sheets.find((sheet) => sheet.name === "01_运营任务卡");
     assert.ok(taskSheet);
@@ -43,8 +47,9 @@ test(
     assert.ok("风险" in firstRealRow);
     assert.ok("运营建议" in firstRealRow);
     assert.ok("辅助原始forecastOutputType" in firstRealRow);
-  }
-);
+    },
+  );
+}
 
 test("M2 after-staging random 20 summary separates copyright-term and operating-window forecasts", () => {
   const summary = readJson("docs/analysis/m2-real-data/M2-random-20-year-evaluation-after-dual-source-staging-v2-summary.json").payload;

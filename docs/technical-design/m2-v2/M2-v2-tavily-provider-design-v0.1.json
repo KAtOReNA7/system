@@ -1,0 +1,53 @@
+{
+  "schema": "m2.v2.tavily-provider-design.v0.1",
+  "status": "not_for_formal_decision",
+  "providerId": "tavily_structured_search",
+  "adapterVersion": "m2-v2-tavily-search-adapter-v0.1",
+  "sourceRecordSchema": "m2.v2.evidence-source-record.v0.2",
+  "request": {
+    "method": "POST",
+    "path": "/search",
+    "authorizationPersisted": false,
+    "answerUsed": false,
+    "rawContentUsed": false,
+    "maximumResults": 6,
+    "timeoutMs": 30000
+  },
+  "capability": {
+    "syntheticOnly": true,
+    "includeUsageCompatibilityRetries": 1,
+    "nonCompatibilityRetries": 0
+  },
+  "response": {
+    "requiredResultFields": [
+      "title",
+      "url",
+      "content",
+      "score"
+    ],
+    "maximumResponseBytes": 2097152,
+    "rawResponsePersisted": false,
+    "htmlAccepted": false
+  },
+  "cacheKeyFields": [
+    "provider",
+    "baseUrl",
+    "queryDigest",
+    "searchDepth",
+    "topic",
+    "country",
+    "maxResults",
+    "includeUsage",
+    "providerAdapterVersion",
+    "sourceRecordAdapterVersion",
+    "sourceRecordSchemaVersion",
+    "executionNamespace"
+  ],
+  "budget": {
+    "maximumPhysicalRequests": 40,
+    "reserveBeforeDispatch": true,
+    "compatibilityRetryConsumesBudget": true,
+    "indeterminateConsumesBudget": true
+  },
+  "full160Authorized": false
+}

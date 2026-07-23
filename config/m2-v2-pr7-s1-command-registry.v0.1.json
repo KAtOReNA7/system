@@ -1,0 +1,116 @@
+{
+  "schema": "m2.v2.pr7.s1-command-registry.v0.1",
+  "commands": [
+    {
+      "commandId": "s1.doctor",
+      "purpose": "Fail-closed exact-head, source-evidence, governance, registry, and immutable-history preflight for S1 B0-B7",
+      "platform": "all",
+      "executable": "node",
+      "argv": [
+        "scripts/m2-v2-evidence-pilot/check_m2_v2_pr7_s1_preflight.mjs"
+      ],
+      "cwd": ".",
+      "networkPolicy": "forbidden",
+      "providerPolicy": "forbidden",
+      "databasePolicy": "forbidden",
+      "mutability": "read_only",
+      "requiredInputs": [
+        "config/m2-v2-pr7-s1-task.v0.1.json",
+        "config/m2-v2-pr7-s1-command-registry.v0.1.json",
+        "config/m2-v2-pr7-s1-receipt-schema.v0.1.json",
+        "config/m2-v2-pr7-s1-contract-registry.v0.1.json",
+        "config/m2-v2-pr7-s1-case-registry.v0.1.json",
+        "docs/analysis/m2-v2/M2-v2-PR7-open-findings-status-v0.1.json"
+      ],
+      "optionalInputs": [
+        "data/private-output/m2-v2-pr7-s1-remediation-badbf45/s1-source-evidence-authenticity-private-v0.1.json"
+      ],
+      "timeoutSeconds": 180,
+      "skipPolicy": "forbidden",
+      "isolationGroup": "s1_preflight",
+      "receiptRole": "s1_preflight"
+    },
+    {
+      "commandId": "s1.contracts",
+      "purpose": "Validate exact S1 contracts, registries, immutable-history bindings, DAG, and all fail-closed negative gates",
+      "platform": "all",
+      "executable": "node",
+      "argv": [
+        "--test",
+        "--test-concurrency=1",
+        "test/m2-v2-pr7-s1-contract.test.js"
+      ],
+      "cwd": ".",
+      "networkPolicy": "forbidden",
+      "providerPolicy": "forbidden",
+      "databasePolicy": "forbidden",
+      "mutability": "system_temp_only",
+      "requiredInputs": [
+        "config/m2-v2-pr7-s1-task.v0.1.json",
+        "config/m2-v2-pr7-s1-command-registry.v0.1.json",
+        "config/m2-v2-pr7-s1-receipt-schema.v0.1.json",
+        "config/m2-v2-pr7-s1-contract-registry.v0.1.json",
+        "config/m2-v2-pr7-s1-case-registry.v0.1.json",
+        "test/m2-v2-pr7-s1-contract.test.js"
+      ],
+      "optionalInputs": [],
+      "timeoutSeconds": 300,
+      "skipPolicy": "forbidden",
+      "isolationGroup": "s1_contracts",
+      "receiptRole": "s1_contract_validation"
+    },
+    {
+      "commandId": "s1.default.isolated",
+      "purpose": "Run the complete default npm test chain exactly once between repository and governed-private snapshots",
+      "platform": "all",
+      "executable": "node",
+      "argv": [
+        "scripts/m2-v2-evidence-pilot/verify_m2_v2_test_isolation.mjs"
+      ],
+      "cwd": ".",
+      "networkPolicy": "loopback_test_only",
+      "providerPolicy": "sentinel_blocked_and_counted",
+      "databasePolicy": "forbidden",
+      "mutability": "system_temp_only",
+      "requiredInputs": [
+        "package.json",
+        "scripts/m2-v2-evidence-pilot/verify_m2_v2_test_isolation.mjs"
+      ],
+      "optionalInputs": [
+        "data/private-input",
+        "data/private-output"
+      ],
+      "timeoutSeconds": 3600,
+      "skipPolicy": "zero_default_skips",
+      "isolationGroup": "s1_default_test_chain",
+      "receiptRole": "s1_default_test_isolation"
+    },
+    {
+      "commandId": "s1.validate.local",
+      "purpose": "Run S1 preflight before one isolated default test chain and emit a bounded provider-free local receipt",
+      "platform": "all",
+      "executable": "node",
+      "argv": [
+        "scripts/m2-v2-evidence-pilot/run_m2_v2_pr7_s1_validation.mjs"
+      ],
+      "cwd": ".",
+      "networkPolicy": "loopback_test_only",
+      "providerPolicy": "sentinel_blocked_and_counted",
+      "databasePolicy": "forbidden",
+      "mutability": "system_temp_and_new_ignored_receipt_only",
+      "requiredInputs": [
+        "config/m2-v2-pr7-s1-command-registry.v0.1.json",
+        "config/m2-v2-pr7-s1-receipt-schema.v0.1.json",
+        "scripts/m2-v2-evidence-pilot/check_m2_v2_pr7_s1_preflight.mjs",
+        "scripts/m2-v2-evidence-pilot/verify_m2_v2_test_isolation.mjs"
+      ],
+      "optionalInputs": [
+        "data/private-output/m2-v2-pr7-s1-remediation-badbf45"
+      ],
+      "timeoutSeconds": 3900,
+      "skipPolicy": "zero_default_skips",
+      "isolationGroup": "s1_local_validation",
+      "receiptRole": "s1_local_validation"
+    }
+  ]
+}

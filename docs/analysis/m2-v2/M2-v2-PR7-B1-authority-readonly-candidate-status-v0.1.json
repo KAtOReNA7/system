@@ -1,0 +1,114 @@
+{
+  "schema": "m2.v2.pr7.b1-authority-readonly-candidate-status-public.v0.1",
+  "batchId": "B1",
+  "implementationEvidenceHead": "29d3f3f871c0e5fedc995f33f9e64ffd61deae44",
+  "candidateStatus": "IMPLEMENTED_NOT_CLOSED_PENDING_B7_AND_INDEPENDENT_REVIEW",
+  "maximumAuthority": "CANDIDATE_ONLY_PROPOSED_NOT_CURRENT",
+  "findings": [
+    {
+      "findingId": "PR7-P1-003",
+      "severity": "P1",
+      "status": "OPEN",
+      "candidateImplementationStatus": "IMPLEMENTED_NOT_CLOSED"
+    },
+    {
+      "findingId": "PR7-P2-009",
+      "severity": "P2",
+      "status": "OPEN",
+      "candidateImplementationStatus": "IMPLEMENTED_NOT_CLOSED"
+    }
+  ],
+  "contractStatus": [
+    {
+      "path": "docs/technical-design/m2-v2/M2-v2-verifier-authority-binding-v0.3.json",
+      "status": "PROPOSED_NOT_CURRENT"
+    },
+    {
+      "path": "docs/technical-design/m2-v2/M2-v2-verifier-readonly-contract-v0.2.json",
+      "status": "PROPOSED_NOT_CURRENT"
+    }
+  ],
+  "trackedCoreCommitment": {
+    "path": "docs/analysis/m2-v2/M2-v2-PR7-core-commitment-v0.1.json",
+    "byteSha256": "f1d8a52250296f044e894a63caeff4e1625b244f36c7279875bfe61322899d26",
+    "sourceExactHead": "350ecbd434831a517d97ef7f15ea3e4f9f34bf72",
+    "graphSchemaVersion": "m2.v2.canonical-authority-graph.v0.3",
+    "roleRegistryDigestSha256": "4d2e31ce31b207ab952ca0bea754424bfcecd8ecd8682933bf6cd45293a46a4c",
+    "expectedGraphCoreDigestSha256": "0ab337288066343cb7ceae7804847c84b334ae5e8249a3717a6140801969c190"
+  },
+  "registeredCaseCoverage": {
+    "total": 18,
+    "unexpectedDefaultSkips": 0,
+    "linux": 18,
+    "windows": 18,
+    "secondaryVerifier": 18,
+    "defaultProfile": 18,
+    "byFinding": [
+      {
+        "findingId": "PR7-P1-003",
+        "total": 9,
+        "linux": 9,
+        "windows": 9,
+        "secondaryVerifier": 9,
+        "defaultProfile": 9
+      },
+      {
+        "findingId": "PR7-P2-009",
+        "total": 9,
+        "linux": 9,
+        "windows": 9,
+        "secondaryVerifier": 9,
+        "defaultProfile": 9
+      }
+    ]
+  },
+  "localValidation": {
+    "focused": "PASS_45_OF_45_ZERO_SKIP_ZERO_TODO",
+    "expanded": "HISTORICAL_PASS_145_OF_145_AT_B65F379D5EC7B11660BD54F5529EEC5D720D0C4C_SCOPE_AND_COMMAND_NOT_RECORDED_NOT_UNIQUELY_RECONSTRUCTABLE",
+    "defaultPretest": "PASS_50_OF_50_ZERO_SKIP_ZERO_TODO",
+    "defaultMain": "PASS_1113_OF_1113_ZERO_SKIP_ZERO_TODO",
+    "lint": "PASS_273_FILES",
+    "build": "PASS_273_FILES",
+    "noRealData": "PASS_1697_PATHS",
+    "secretGuard": "PASS_7_OF_7",
+    "smoke": "PASS_FIXTURE_NO_DATABASE",
+    "independentReadonlyQualityGate": "READY"
+  },
+  "checkpointCiHistory": {
+    "firstCheckpointHead": "07b92ac1155d643df5a25387f1e32ff22f0fa6c3",
+    "runId": 29691288926,
+    "linux": "SUCCESS_JOB_88204375867",
+    "windows": "FAILURE_JOB_88204375873_NATIVE_TEMP_SHORT_LONG_ALIAS_FALSE_CONTAINMENT",
+    "repairHead": "29d3f3f871c0e5fedc995f33f9e64ffd61deae44",
+    "repairReview": "INDEPENDENT_READY_NO_CONTAINMENT_OR_ALIAS_WEAKENING",
+    "finalExactHeadCi": "SUCCESS_HEAD_66EECBC57C4186AD61DF8152EF38B5F28300F130_RUN_29692415607_LINUX_JOB_88207352223_WINDOWS_JOB_88207352209"
+  },
+  "formalReadonlyProof": {
+    "status": "NOT_RUN_PENDING_B6_GRAPH_POPULATION",
+    "claimableResultRecorded": false,
+    "reasons": [
+      "FORMAL_LOADER_REQUIRES_ALL_CONTROL_AND_SOURCE_BYTES_TO_EQUAL_TRACKED_HEAD",
+      "FOUR_GRAPH_BOUND_VNEXT_PUBLIC_AUTHORITY_PATHS_ARE_NOT_POPULATED_BEFORE_B6"
+    ]
+  },
+  "sideEffectBoundary": {
+    "providerRequestDelta": 0,
+    "databaseConnections": 0,
+    "providerCalled": false,
+    "databaseConnected": false,
+    "canaryRun": false,
+    "full160Run": false,
+    "modelTrainingRun": false,
+    "holdoutOpened": false
+  },
+  "downstreamStatus": {
+    "privateOfflineRebuild": "NOT_RUN",
+    "privateAtomicPromotion": "NOT_RUN",
+    "B7": "NOT_RUN",
+    "B8": "NOT_AUTHORIZED_NOT_RUN",
+    "independentReview": "NOT_RUN",
+    "currentAuthorityActivation": "NOT_PERFORMED",
+    "pullRequestMerge": "WITHHELD"
+  },
+  "closureClaimed": false
+}

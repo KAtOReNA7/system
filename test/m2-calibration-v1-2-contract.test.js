@@ -5,6 +5,11 @@ import { createReadStream, readFileSync, existsSync } from "node:fs";
 import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
+import {
+  inspectOptionalPrivateIdentity,
+  requireRegisteredArtifact,
+  requireRegisteredArtifacts,
+} from "./helpers/m2V2RequiredArtifacts.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const specPath = path.join(
@@ -56,6 +61,11 @@ async function hashAndCountLines(filePath) {
     }
   }
   return { sha256: hash.digest("hex"), lineCount };
+}
+
+function gitCanonicalLfSha256(filePath) {
+  const canonical = readFileSync(filePath, "utf8").replace(/\r\n?/gu, "\n");
+  return createHash("sha256").update(canonical, "utf8").digest("hex");
 }
 
 test("v1.2 freezes faithful B0b and renames the switched formula to B4", () => {
@@ -534,7 +544,7 @@ test("generated population ledger is exhaustive and full-library top bands are n
     "m2-real-data",
     "M2-calibration-population-coverage-v1.json",
   );
-  if (!existsSync(reportPath)) return;
+  requireRegisteredArtifact(root, "CALIBRATION_POPULATION_COVERAGE_JSON", { expectedPath: reportPath });
   const report = JSON.parse(readFileSync(reportPath, "utf8"));
   assert.equal(report.authority.standardWorkCount, 3053);
   assert.equal(report.authority.incomeFactCount, 192872);
@@ -599,7 +609,7 @@ test("generated baseline replay proves every comparator used the v1.2 entry", ()
     "m2-real-data",
     "M2-baseline-comparator-identity-correction-v1.json",
   );
-  if (!existsSync(reportPath)) return;
+  requireRegisteredArtifact(root, "BASELINE_COMPARATOR_IDENTITY_JSON", { expectedPath: reportPath });
   const report = JSON.parse(readFileSync(reportPath, "utf8"));
   const evidence = report.integrity.allBaselineMaterialization;
   assert.equal(evidence.allBaselinePredictionsMaterializedThroughV12Entry, true);
@@ -721,7 +731,7 @@ test("generated formula manifest binds every cited source to its historical Git 
     "m2-real-data",
     "M2-v1.1-formula-difference-manifest-v1.json",
   );
-  if (!existsSync(reportPath)) return;
+  requireRegisteredArtifact(root, "V11_FORMULA_DIFFERENCE_MANIFEST_JSON", { expectedPath: reportPath });
   const report = JSON.parse(readFileSync(reportPath, "utf8"));
   assert.ok(report.sources.length >= 5);
   for (const source of report.sources) {
@@ -738,14 +748,12 @@ test("generated formula manifest binds every cited source to its historical Git 
       createHash("sha256").update(shown.stdout).digest("hex"),
       source.historicalBlobSha256,
     );
-    assert.equal(
-      createHash("sha256").update(readFileSync(path.join(root, source.path))).digest("hex"),
-      source.historicalBlobSha256,
-    );
+    assert.equal(gitCanonicalLfSha256(path.join(root, source.path)), source.historicalBlobSha256);
   }
 });
 
-test("ignored Phase A manifest round-trips case rows and every public report digest", async () => {
+if (process.env.M2_V2_TEST_PROFILE === "optional-private") {
+test("ignored Phase A manifest round-trips case rows and every public report digest", async (t) => {
   const privateDir = path.join(root, "data", "private-output", "m2-calibration-v1-2");
   const manifestPath = path.join(
     privateDir,
@@ -755,7 +763,9 @@ test("ignored Phase A manifest round-trips case rows and every public report dig
     privateDir,
     "M2-calibration-v1.2-baseline-cases-private.ndjson",
   );
-  if (!existsSync(manifestPath) && !existsSync(casesPath)) return;
+  const optional = inspectOptionalPrivateIdentity(root, "OPT-CALIBRATION-PHASE-A");
+  t.diagnostic(JSON.stringify(optional));
+  if (optional.status === "OPTIONAL_PRIVATE_ABSENT") return;
   assert.equal(existsSync(manifestPath), true);
   assert.equal(existsSync(casesPath), true);
   const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
@@ -789,7 +799,7 @@ print(v12.canonical_digest(json.loads(open('src/domain/oldProductEvaluation/cali
     const absolutePath = path.join(root, ...relativePath.split("/"));
     assert.equal(existsSync(absolutePath), true, relativePath);
     assert.equal(
-      createHash("sha256").update(readFileSync(absolutePath)).digest("hex"),
+      gitCanonicalLfSha256(absolutePath),
       expected,
       relativePath,
     );
@@ -807,6 +817,7 @@ print(v12.canonical_digest(json.loads(open('src/domain/oldProductEvaluation/cali
   assert.equal(tracked.status, 0, tracked.stderr);
   assert.equal(tracked.stdout.trim(), "");
 });
+}
 
 test("tracked Gate anchors ignored cases, role counts, projections, sources, and non-self reports", () => {
   const gatePath = path.join(
@@ -816,10 +827,9 @@ test("tracked Gate anchors ignored cases, role counts, projections, sources, and
     "m2-real-data",
     "M2-calibration-gate-a-v1.json",
   );
-  if (!existsSync(gatePath)) return;
+  requireRegisteredArtifact(root, "CALIBRATION_GATE_A_JSON", { expectedPath: gatePath });
   const gate = JSON.parse(readFileSync(gatePath, "utf8"));
   const binding = gate.evidenceBindings;
-  if (!binding) return;
   assert.match(binding.privateCaseEvidenceSha256, /^[0-9a-f]{64}$/);
   assert.ok(binding.privateCaseRowCount > 0);
   assert.equal(typeof binding.roleModelCounts, "object");
@@ -855,9 +865,8 @@ test("Gate A validation receipt contains process evidence, not self-reported com
     "m2-real-data",
     "M2-calibration-gate-a-v1.json",
   );
-  if (!existsSync(gatePath)) return;
+  requireRegisteredArtifact(root, "CALIBRATION_GATE_A_JSON", { expectedPath: gatePath });
   const gate = JSON.parse(readFileSync(gatePath, "utf8"));
-  if (!gate.validationReceipt) return;
   const normal =
     gate.validationReceipt.commandResults ?? gate.validationReceipt.results?.successful;
   const failClosed =
@@ -889,7 +898,7 @@ test("Gate A content conditions are backed by executable evidence and the exact 
     "m2-real-data",
     "M2-calibration-gate-a-v1.json",
   );
-  if (!existsSync(gatePath)) return;
+  requireRegisteredArtifact(root, "CALIBRATION_GATE_A_JSON", { expectedPath: gatePath });
   const gate = JSON.parse(readFileSync(gatePath, "utf8"));
   const expected = spec.GateA.requiredTrueItems.filter(
     (item) => item !== "phaseACheckpointCommittedAndPushed",
@@ -939,8 +948,13 @@ test("generated public reports remain deidentified and exclude interval endpoint
     "M2-calibration-ready-for-modeling-v1.json",
     "M2-calibration-gate-a-v1.json",
   ].map((name) => path.join(root, "docs", "analysis", "m2-real-data", name));
+  requireRegisteredArtifacts(root, [
+    "BASELINE_COMPARATOR_IDENTITY_JSON",
+    "CALIBRATION_POPULATION_COVERAGE_JSON",
+    "CALIBRATION_READY_FOR_MODELING_JSON",
+    "CALIBRATION_GATE_A_JSON",
+  ]);
   for (const reportPath of paths) {
-    if (!existsSync(reportPath)) continue;
     const text = readFileSync(reportPath, "utf8").toLowerCase();
     assert.doesNotMatch(text, /data[\\/]private|private-output/);
     assert.doesNotMatch(text, /predictionintervalendpoint|internalintervalendpointspresent\"\s*:\s*true/);

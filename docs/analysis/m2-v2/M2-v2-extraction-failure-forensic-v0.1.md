@@ -1,0 +1,25 @@
+# M2 v2 V2-B.6 Extraction Failure Forensic v0.1
+
+Status: `not_for_formal_decision`
+
+This artifact is a sanitized, prospective pilot checkpoint. It contains no work title, author, query, URL, snippet, raw response body, private identifier, or credential.
+
+```json
+{
+  "schema": "m2.v2.extraction-failure-forensic-public.v0.1",
+  "status": "not_for_formal_decision",
+  "canaryExecuted": false,
+  "full160Authorized": false,
+  "legacyReceiptCount": 29,
+  "categoryCounts": {
+    "input_or_bundle_missing": 4,
+    "timeout_at_25000ms": 20,
+    "strict_schema_validation_failure": 3,
+    "contract_success": 1,
+    "prior_reservation_indeterminate": 1
+  },
+  "timeoutBoundaryRule": "25000_plus_or_minus_250_ms_without_http_excluded_from_model_latency_and_schema_quality",
+  "rawResponsePersisted": false,
+  "conclusion": "legacy_25s_timeout_and_contract_shape_failures_are_separated_from_model_quality"
+}
+```

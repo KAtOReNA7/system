@@ -1,0 +1,47 @@
+# M2 v2 Relay Extraction Adapter v0.2
+
+Status: `not_for_formal_decision`
+
+This artifact is a sanitized, prospective pilot checkpoint. It contains no work title, author, query, URL, snippet, raw response body, private identifier, or credential.
+
+```json
+{
+  "schema": "m2.v2.relay-extraction-adapter-design.v0.2",
+  "status": "not_for_formal_decision",
+  "canaryExecuted": false,
+  "full160Authorized": false,
+  "adapterVersion": "m2-v2-relay-extraction-adapter-v0.2",
+  "timeoutEnvironmentVariable": "M2_V2_RELAY_EXTRACTION_TIMEOUT_MS",
+  "timeoutDefaultMs": 120000,
+  "timeoutRangeMs": [
+    30000,
+    180000
+  ],
+  "reasoningDefault": "omitted",
+  "supportedCarriers": [
+    "output_parsed",
+    "output_text",
+    "output_content_text",
+    "choices_message_content",
+    "nested_response_root",
+    "single_fenced_json_with_whitespace_only_outside"
+  ],
+  "structuredModes": [
+    "server_strict",
+    "local_json"
+  ],
+  "extractionModes": [
+    "full",
+    "split"
+  ],
+  "bindingStatuses": [
+    "exact",
+    "approved_alias",
+    "unreported",
+    "mismatch"
+  ],
+  "repairLimitPerStage": 1,
+  "searchToolsAllowed": false,
+  "rawResponsePersisted": false
+}
+```

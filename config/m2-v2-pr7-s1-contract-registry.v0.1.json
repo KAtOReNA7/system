@@ -1,0 +1,284 @@
+{
+  "schema": "m2.v2.pr7-s1-contract-registry.v0.1",
+  "status": "PROPOSED_NOT_CURRENT",
+  "sourceExactHead": "badbf453e1e99ba87cc3064601e480a09ff1b149",
+  "classification": "public_sanitized_not_for_formal_decision",
+  "historicalArtifactPolicy": {
+    "immutable": true,
+    "inPlaceOverwriteAllowed": false,
+    "supersessionMustBeExplicit": true
+  },
+  "historicalBaselines": {
+    "digestAlgorithm": "sha256",
+    "trackedArtifacts": [
+      {"path": "config/m2-v2-test-artifact-registry.v0.1.json", "sha256": "c7385ea4ff18e5aaa35704273a8fe80a8118a1aa408b97a18e4b0ecb90beb0f0"},
+      {"path": "docs/technical-design/m2-v2/M2-v2-verifier-authority-binding-v0.2.json", "sha256": "080994f6ec8c8a4d236be09873de206ed9f452225df6190e27bb3e366e13e120"},
+      {"path": "docs/technical-design/m2-v2/M2-v2-verifier-authority-binding-v0.2.md", "sha256": "68e6379edf201ea4be7a8a80036c34ce34f2b8277e0029c6950970e999f01beb"},
+      {"path": "docs/technical-design/m2-v2/M2-v2-verifier-readonly-contract-v0.1.json", "sha256": "2e10298484f2b70a688064442d6b80e66f6515287c6b542e0d4d4bd6741e0ed5"},
+      {"path": "docs/technical-design/m2-v2/M2-v2-verifier-readonly-contract-v0.1.md", "sha256": "b406a531f290a2d09e6b383ea80d421ff7bcb83335a790fd9f74b1de6836d2c3"},
+      {"path": "docs/technical-design/m2-v2/M2-v2-migration-set-integrity-v0.2.json", "sha256": "631706c074a704eeaae275b1a01da0e240fc69d1fc1b3d71175666ba8b0ab7ea"},
+      {"path": "docs/technical-design/m2-v2/M2-v2-migration-set-integrity-v0.2.md", "sha256": "9277287827276ce9e152adb08c2c1385d23590a6cb778ea6a960df9a22371d12"},
+      {"path": "docs/technical-design/m2-v2/M2-v2-provider-transport-retention-v0.1.json", "sha256": "b95e4f6cd719acdd16f97460868d4544d035e36977165fc16d4774ed14e1ee1f"},
+      {"path": "docs/technical-design/m2-v2/M2-v2-provider-transport-retention-v0.1.md", "sha256": "1352440dfd7a7594f83d62a2ab9f80798afd6d3ca13058babf0af956f7efc50d"},
+      {"path": "docs/technical-design/m2-v2/M2-v2-event-time-clause-binding-v0.3.json", "sha256": "8c645e38f80fb3556665bb13eee6fa0354770a3e4f3c88a5cc3e03a2febde469"},
+      {"path": "docs/technical-design/m2-v2/M2-v2-event-time-clause-binding-v0.3.md", "sha256": "1448f66f1517ce7c4af1b4c37283af27ccb9fa954242e70beff76447ad83f61c"},
+      {"path": "docs/technical-design/m2-v2/M2-v2-conflict-applicability-v0.3.json", "sha256": "34ff0bb283fec61103ff3adfdf572704e47b21ccae93d2f0c8a5912a1c5902c8"},
+      {"path": "docs/technical-design/m2-v2/M2-v2-conflict-applicability-v0.3.md", "sha256": "15a6fe8da4745fa40625b37e98fc19345f78d006ac9514b39b3772f8d26295cb"},
+      {"path": "docs/technical-design/m2-v2/M2-v2-workbook-independent-verification-v0.1.json", "sha256": "b1dee8d6dbbb2dc1f7be007542de4f0898efccc02f6ea6113fc28cef9a9cc825"},
+      {"path": "docs/technical-design/m2-v2/M2-v2-workbook-independent-verification-v0.1.md", "sha256": "9a43808a76b0016690f21a8737d9cb6ca19997afa68013962e816106fa943a38"},
+      {"path": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.2.json", "sha256": "933bc73cfa818d99b5c88769713f3301006f70b1fedbefa1da378ce18d5493ff"},
+      {"path": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.2.md", "sha256": "ba30050865744e83791c70859f44ded30d4c691cc4a8051dc99021c6344a0c11"},
+      {"path": "docs/analysis/m2-v2/M2-v2-canary-v3-1-integrity-restatement-v0.3.json", "sha256": "1ec7dcccf1ba29f08ab58226f7aac724f60c1870c7bcd6c32ce98b4cb6c6562a"},
+      {"path": "docs/analysis/m2-v2/M2-v2-canary-v3-1-integrity-restatement-v0.3.md", "sha256": "0b5c53f9a4240cd47b58298eb56d6a4acbe63b32927b7179cfda7eb1e0521017"}
+    ],
+    "safeCachePredecessor": {
+      "schema": "m2.v2.v2b6-safe-cache-private.v0.2",
+      "trackedPublicArtifactPresent": false,
+      "disposition": "IDENTIFIER_ONLY_NO_TRACKED_PUBLIC_BASELINE"
+    }
+  },
+  "caseRegistry": {
+    "path": "config/m2-v2-pr7-s1-case-registry.v0.1.json",
+    "schema": "m2.v2.pr7-s1-case-registry.v0.1",
+    "statusRequiredAtB0": "PLANNED_NOT_EXECUTED",
+    "requiredCaseCount": 89,
+    "defaultProfileCaseCount": 89,
+    "defaultSkips": 0,
+    "optionalPrivateProfileSeparate": true
+  },
+  "findingIds": [
+    "PR7-P1-003",
+    "PR7-P2-009",
+    "PR7-P1-006",
+    "PR7-P2-008",
+    "PR7-P1-008",
+    "PR7-P2-016",
+    "PR7-P1-009",
+    "PR7-P2-013",
+    "PR7-P1-013",
+    "PR7-P2-006"
+  ],
+  "contracts": [
+    {
+      "contractId": "authority_binding_v0_3",
+      "machinePath": "docs/technical-design/m2-v2/M2-v2-verifier-authority-binding-v0.3.json",
+      "narrativePath": "docs/technical-design/m2-v2/M2-v2-verifier-authority-binding-v0.3.md",
+      "machineSha256": "ab7b908a7928bba7e149e3b0b0c907381b7ca7fa33a43d654d44430afb306cc3",
+      "narrativeSha256": "b05de52d5f8d0c97514b8e0e39768e949c7369bfe90a8396e32260e4c4b4e0a2",
+      "schema": "m2.v2.verifier-authority-binding-public.v0.3",
+      "declaredSchemas": [
+        "m2.v2.verifier-authority-binding-public.v0.3",
+        "m2.v2.canonical-authority-graph.v0.3",
+        "m2.v2.tracked-core-commitment-public.v0.1"
+      ],
+      "schemaDefinitions": [
+        {"schema": "m2.v2.verifier-authority-binding-public.v0.3", "definitionPointer": "", "discriminatorPointer": "/schema", "definitionKind": "TOP_LEVEL_CONTRACT"},
+        {"schema": "m2.v2.canonical-authority-graph.v0.3", "definitionPointer": "/canonicalAuthorityGraph", "discriminatorPointer": "/canonicalAuthorityGraph/schema", "definitionKind": "NESTED_EXACT_SCHEMA"},
+        {"schema": "m2.v2.tracked-core-commitment-public.v0.1", "definitionPointer": "/trackedCoreCommitment", "discriminatorPointer": "/trackedCoreCommitment/schema", "definitionKind": "NESTED_EXACT_SCHEMA"}
+      ],
+      "status": "PROPOSED_NOT_CURRENT",
+      "batch": "B1",
+      "findingIds": ["PR7-P1-003"],
+      "supersedes": ["m2.v2.verifier-authority-binding-public.v0.2"]
+    },
+    {
+      "contractId": "verifier_readonly_v0_2",
+      "machinePath": "docs/technical-design/m2-v2/M2-v2-verifier-readonly-contract-v0.2.json",
+      "narrativePath": "docs/technical-design/m2-v2/M2-v2-verifier-readonly-contract-v0.2.md",
+      "machineSha256": "4e191355e32afbddc1e7fbb6709983218a04a20f0e5a8125438c2b3a27566cae",
+      "narrativeSha256": "22a8b9426f051c023ea711645323e33e566c228c32999a2590b7bdf30de966f2",
+      "schema": "m2.v2.verifier-readonly-contract.v0.2",
+      "declaredSchemas": [
+        "m2.v2.verifier-readonly-contract.v0.2",
+        "m2.v2.verifier-readonly-proof-public.v0.2"
+      ],
+      "schemaDefinitions": [
+        {"schema": "m2.v2.verifier-readonly-contract.v0.2", "definitionPointer": "", "discriminatorPointer": "/schema", "definitionKind": "TOP_LEVEL_CONTRACT"},
+        {"schema": "m2.v2.verifier-readonly-proof-public.v0.2", "definitionPointer": "/proof", "discriminatorPointer": "/proof/schema", "definitionKind": "NESTED_EXACT_SCHEMA"}
+      ],
+      "status": "PROPOSED_NOT_CURRENT",
+      "batch": "B1",
+      "findingIds": ["PR7-P2-009"],
+      "supersedes": ["m2.v2.verifier-readonly-contract.v0.1"]
+    },
+    {
+      "contractId": "migration_set_integrity_v0_3",
+      "machinePath": "docs/technical-design/m2-v2/M2-v2-migration-set-integrity-v0.3.json",
+      "narrativePath": "docs/technical-design/m2-v2/M2-v2-migration-set-integrity-v0.3.md",
+      "machineSha256": "ca622afb98c223e3e1c5d97d35ac64c805065395f172f6237f9078d36a757163",
+      "narrativeSha256": "a593e654d517929ace0bbb7d072996b2ca8e870923ffd2f458296095200d50e8",
+      "schema": "m2.v2.migration-set-integrity-public.v0.3",
+      "declaredSchemas": [
+        "m2.v2.migration-set-integrity-public.v0.3",
+        "m2.v2.private-state-migration-package.v0.3",
+        "m2.v2.migration-path-identity.v0.1",
+        "m2.v2.migration-path-identity-receipt.private.v0.1"
+      ],
+      "schemaDefinitions": [
+        {"schema": "m2.v2.migration-set-integrity-public.v0.3", "definitionPointer": "", "discriminatorPointer": "/schema", "definitionKind": "TOP_LEVEL_CONTRACT"},
+        {"schema": "m2.v2.private-state-migration-package.v0.3", "definitionPointer": "/v0_3Package", "discriminatorPointer": "/v0_3Package/schema", "definitionKind": "NESTED_EXACT_SCHEMA"},
+        {"schema": "m2.v2.migration-path-identity.v0.1", "definitionPointer": "/pathIdentityPolicy", "discriminatorPointer": "/pathIdentityPolicy/schema", "definitionKind": "NESTED_EXACT_SCHEMA"},
+        {"schema": "m2.v2.migration-path-identity-receipt.private.v0.1", "definitionPointer": "/identityReceipt", "discriminatorPointer": "/identityReceipt/schema", "definitionKind": "NESTED_EXACT_SCHEMA"}
+      ],
+      "status": "PROPOSED_NOT_CURRENT",
+      "batch": "B2",
+      "findingIds": ["PR7-P1-006", "PR7-P2-008"],
+      "supersedes": ["m2.v2.migration-set-integrity-public.v0.2"]
+    },
+    {
+      "contractId": "safe_cache_projection_v0_3",
+      "machinePath": "docs/technical-design/m2-v2/M2-v2-safe-cache-projection-v0.3.json",
+      "narrativePath": "docs/technical-design/m2-v2/M2-v2-safe-cache-projection-v0.3.md",
+      "machineSha256": "9fd6342c6516fde1c19ed22fe68cc136e773aa2479fd80f375d2a56f47142912",
+      "narrativeSha256": "3ce6f4a0b8a1ac9a0f358f0ee7f2f1f14a55157ddc47ff85432a32336d046417",
+      "schema": "m2.v2.safe-cache-projection-public.v0.3",
+      "declaredSchemas": [
+        "m2.v2.safe-cache-projection-public.v0.3",
+        "m2.v2.v2b6-safe-cache-private.v0.3",
+        "m2.v2.safe-cache-migration-partition.private.v0.3",
+        "m2.v2.safe-cache-quarantine-record.private.v0.3",
+        "m2.v2.safe-cache-migration-receipt.private.v0.3"
+      ],
+      "schemaDefinitions": [
+        {"schema": "m2.v2.safe-cache-projection-public.v0.3", "definitionPointer": "", "discriminatorPointer": "/schema", "definitionKind": "TOP_LEVEL_CONTRACT"},
+        {"schema": "m2.v2.v2b6-safe-cache-private.v0.3", "definitionPointer": "/entrySchema", "discriminatorPointer": "/entrySchema/schema", "definitionKind": "NESTED_EXACT_SCHEMA"},
+        {"schema": "m2.v2.safe-cache-migration-partition.private.v0.3", "definitionPointer": "/offlineMigration/partitionManifest", "discriminatorPointer": "/offlineMigration/partitionManifest/schema", "definitionKind": "NESTED_EXACT_SCHEMA"},
+        {"schema": "m2.v2.safe-cache-quarantine-record.private.v0.3", "definitionPointer": "/offlineMigration/quarantineRecord", "discriminatorPointer": "/offlineMigration/quarantineRecord/schema", "definitionKind": "NESTED_EXACT_SCHEMA"},
+        {"schema": "m2.v2.safe-cache-migration-receipt.private.v0.3", "definitionPointer": "/migrationReceipt", "discriminatorPointer": "/migrationReceipt/schema", "definitionKind": "NESTED_EXACT_SCHEMA"}
+      ],
+      "status": "PROPOSED_NOT_CURRENT",
+      "batch": "B3",
+      "findingIds": ["PR7-P1-008"],
+      "supersedes": ["m2.v2.v2b6-safe-cache-private.v0.2"]
+    },
+    {
+      "contractId": "provider_transport_v0_2",
+      "machinePath": "docs/technical-design/m2-v2/M2-v2-provider-transport-retention-v0.2.json",
+      "narrativePath": "docs/technical-design/m2-v2/M2-v2-provider-transport-retention-v0.2.md",
+      "machineSha256": "41f8db38796bb892cecfcacb9d7715bfa3b2c8c282ac168a68f121848130209a",
+      "narrativeSha256": "58ae1431d99405cf5212b7a20bf15bcf8df2b77327d724754fa834a71a2e7abc",
+      "schema": "m2.v2.provider-transport-retention-public.v0.2",
+      "declaredSchemas": [
+        "m2.v2.provider-transport-retention-public.v0.2",
+        "m2.v2.provider-transport-capability.v0.2"
+      ],
+      "schemaDefinitions": [
+        {"schema": "m2.v2.provider-transport-retention-public.v0.2", "definitionPointer": "", "discriminatorPointer": "/schema", "definitionKind": "TOP_LEVEL_CONTRACT"},
+        {"schema": "m2.v2.provider-transport-capability.v0.2", "definitionPointer": "/oneShotCapability", "discriminatorPointer": "/oneShotCapability/schema", "definitionKind": "NESTED_EXACT_SCHEMA"}
+      ],
+      "status": "PROPOSED_NOT_CURRENT",
+      "batch": "B3",
+      "findingIds": ["PR7-P2-016"],
+      "supersedes": ["m2.v2.provider-transport-retention-public.v0.1"]
+    },
+    {
+      "contractId": "event_time_clause_binding_v0_4",
+      "machinePath": "docs/technical-design/m2-v2/M2-v2-event-time-clause-binding-v0.4.json",
+      "narrativePath": "docs/technical-design/m2-v2/M2-v2-event-time-clause-binding-v0.4.md",
+      "machineSha256": "aa882e05dce3aa834f2112cdd8d06e22b8a5b04d401b43fcc6630033e65975eb",
+      "narrativeSha256": "3cfe03694c245275ace4dd1e3f173bde0b68e58eb78e7c7ef38140b59cdde2f0",
+      "schema": "m2.v2.event-time-clause-binding-public.v0.4",
+      "declaredSchemas": [
+        "m2.v2.event-time-clause-binding-public.v0.4",
+        "m2.v2.canonical-event-tuple.v0.1",
+        "m2.v2.conflict-applicability-public.v0.4",
+        "m2.v2.event-evaluation-private.v0.4"
+      ],
+      "schemaDefinitions": [
+        {"schema": "m2.v2.event-time-clause-binding-public.v0.4", "definitionPointer": "", "discriminatorPointer": "/schema", "definitionKind": "TOP_LEVEL_CONTRACT"},
+        {"schema": "m2.v2.canonical-event-tuple.v0.1", "definitionPointer": "/canonicalEventTuple", "discriminatorPointer": "/canonicalEventTuple/schema", "definitionKind": "NESTED_EXACT_SCHEMA"},
+        {"schema": "m2.v2.conflict-applicability-public.v0.4", "definitionPointer": "/conflictApplicability", "discriminatorPointer": "/conflictApplicability/schema", "definitionKind": "NESTED_EXACT_SCHEMA"},
+        {"schema": "m2.v2.event-evaluation-private.v0.4", "definitionPointer": "/eventEvaluationV0_4", "discriminatorPointer": "/eventEvaluationV0_4/schema", "definitionKind": "NESTED_EXACT_SCHEMA"}
+      ],
+      "status": "PROPOSED_NOT_CURRENT",
+      "batch": "B4",
+      "findingIds": ["PR7-P1-009", "PR7-P2-013"],
+      "supersedes": [
+        "m2.v2.event-time-clause-binding-public.v0.3",
+        "m2.v2.conflict-applicability-public.v0.3"
+      ]
+    },
+    {
+      "contractId": "workbook_independent_verification_v0_2",
+      "machinePath": "docs/technical-design/m2-v2/M2-v2-workbook-independent-verification-v0.2.json",
+      "narrativePath": "docs/technical-design/m2-v2/M2-v2-workbook-independent-verification-v0.2.md",
+      "machineSha256": "5c91dbdbc68e330e108426f48fd717cf0b531c371b12dfa53898360c1dfdd934",
+      "narrativeSha256": "f57b9c3e5c890d5d1f29f41dbe9e6b1dd1845bcedd676f5fc414694fbb7c331c",
+      "schema": "m2.v2.workbook-independent-verification-public.v0.2",
+      "declaredSchemas": [
+        "m2.v2.workbook-independent-verification-public.v0.2",
+        "m2.v2.ooxml-part-policy.v0.2",
+        "m2.v2.independent-workbook-verification.v0.2"
+      ],
+      "schemaDefinitions": [
+        {"schema": "m2.v2.workbook-independent-verification-public.v0.2", "definitionPointer": "", "discriminatorPointer": "/schema", "definitionKind": "TOP_LEVEL_CONTRACT"},
+        {"schema": "m2.v2.ooxml-part-policy.v0.2", "definitionPointer": "/packageInventory", "discriminatorPointer": "/packageInventory/schema", "definitionKind": "NESTED_EXACT_SCHEMA"},
+        {"schema": "m2.v2.independent-workbook-verification.v0.2", "definitionPointer": "/verificationReceipt", "discriminatorPointer": "/verificationReceipt/schema", "definitionKind": "NESTED_EXACT_SCHEMA"}
+      ],
+      "status": "PROPOSED_NOT_CURRENT",
+      "batch": "B5",
+      "findingIds": ["PR7-P1-013", "PR7-P2-006"],
+      "supersedes": ["m2.v2.workbook-independent-verification-public.v0.1"]
+    }
+  ],
+  "plannedCurrentAuthority": {
+    "activationBatch": "B6",
+    "activationCondition": "provider_free_candidate_validated_and_atomically_promoted",
+    "currentStateIndex": {
+      "schema": "m2-v2-current-state-index-v0.3",
+      "path": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.3.json",
+      "status": "PROPOSED_NOT_CURRENT",
+      "definitionContractId": "authority_binding_v0_3",
+      "definitionPointer": "/currentStateIndexV0_3",
+      "discriminatorPointer": "/currentStateIndexV0_3/schemaVersion"
+    },
+    "integrityRestatement": {
+      "schema": "m2.v2.canary-v3.1-integrity-restatement-public.v0.4",
+      "path": "docs/analysis/m2-v2/M2-v2-canary-v3-1-integrity-restatement-v0.4.json",
+      "status": "PROPOSED_NOT_CURRENT",
+      "definitionContractId": "authority_binding_v0_3",
+      "definitionPointer": "/integrityRestatementV0_4",
+      "discriminatorPointer": "/integrityRestatementV0_4/schema"
+    },
+    "preB6CurrentStateIndex": "m2-v2-current-state-index-v0.2",
+    "preB6IntegrityRestatement": "m2.v2.canary-v3.1-integrity-restatement-public.v0.3",
+    "historicalVersionsRemainImmutable": true
+  },
+  "versionGraph": {
+    "acyclicRequired": true,
+    "nodeResolution": "CONTRACT_DECLARED_SCHEMAS_PLUS_PLANNED_CURRENT_AUTHORITY_PLUS_EXPLICIT_HISTORICAL_SCHEMAS",
+    "everyTargetResolvedByExactlyOneRegistryNode": true,
+    "edges": [
+      {"from": "m2.v2.verifier-authority-binding-public.v0.2", "to": "m2.v2.verifier-authority-binding-public.v0.3"},
+      {"from": "m2.v2.verifier-readonly-contract.v0.1", "to": "m2.v2.verifier-readonly-contract.v0.2"},
+      {"from": "m2.v2.migration-set-integrity-public.v0.2", "to": "m2.v2.migration-set-integrity-public.v0.3"},
+      {"from": "m2.v2.v2b6-safe-cache-private.v0.2", "to": "m2.v2.v2b6-safe-cache-private.v0.3"},
+      {"from": "m2.v2.provider-transport-retention-public.v0.1", "to": "m2.v2.provider-transport-retention-public.v0.2"},
+      {"from": "m2.v2.event-time-clause-binding-public.v0.3", "to": "m2.v2.event-time-clause-binding-public.v0.4"},
+      {"from": "m2.v2.conflict-applicability-public.v0.3", "to": "m2.v2.conflict-applicability-public.v0.4"},
+      {"from": "m2.v2.workbook-independent-verification-public.v0.1", "to": "m2.v2.workbook-independent-verification-public.v0.2"},
+      {"from": "m2-v2-current-state-index-v0.2", "to": "m2-v2-current-state-index-v0.3"},
+      {"from": "m2.v2.canary-v3.1-integrity-restatement-public.v0.3", "to": "m2.v2.canary-v3.1-integrity-restatement-public.v0.4"}
+    ]
+  },
+  "openFindingState": {
+    "implementationAgentMaximumStatus": "CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW",
+    "currentStatusAtB0": "OPEN",
+    "independentStatus": "NOT_REVIEWED",
+    "closedClaimsAllowed": false
+  },
+  "authorization": {
+    "currentDecision": "CANARY_FAIL",
+    "providerDispatchAuthorized": false,
+    "databaseConnectionsAuthorized": false,
+    "canaryAuthorized": false,
+    "full160Authorized": false,
+    "modelTrainingAuthorized": false,
+    "holdoutAccessAuthorized": false,
+    "independentReviewBatchB8Authorized": false,
+    "markReadyAuthorized": false,
+    "nextDevelopmentReadiness": "NOT_AUTHORIZED",
+    "mergeAuthorized": false,
+    "releaseAuthorized": false
+  }
+}

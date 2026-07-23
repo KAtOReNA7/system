@@ -1,0 +1,96 @@
+{
+  "schemaVersion": "m2-v2-current-state-index-v0.2",
+  "status": "current",
+  "classification": "public_sanitized_not_for_formal_decision",
+  "updatedAt": "2026-07-18",
+  "historicalV2B8Decision": "CANARY_CONDITIONAL",
+  "currentDecision": "CANARY_FAIL",
+  "full160Authorized": false,
+  "nextDevelopmentReadiness": "NOT_AUTHORIZED",
+  "currentAuthority": {
+    "currentRestatementArtifact": "docs/analysis/m2-v2/M2-v2-canary-v3-1-integrity-restatement-v0.3.json",
+    "currentRestatementDigest": "1ec7dcccf1ba29f08ab58226f7aac724f60c1870c7bcd6c32ce98b4cb6c6562a"
+  },
+  "historicalArtifacts": [
+    {
+      "artifact": "docs/analysis/m2-v2/M2-v2-canary-v3-1-decision-v0.1.json",
+      "version": "v0.1",
+      "decision": "CANARY_CONDITIONAL",
+      "lifecycle": "historical_original_retained"
+    },
+    {
+      "artifact": "docs/analysis/m2-v2/M2-v2-canary-v3-1-integrity-restatement-v0.2.json",
+      "version": "v0.2",
+      "decision": "CANARY_FAIL",
+      "lifecycle": "superseded_semantically_invalid_restatement"
+    },
+    {
+      "artifact": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.1.json",
+      "version": "v0.1",
+      "decision": "CANARY_FAIL",
+      "lifecycle": "superseded_index"
+    }
+  ],
+  "entries": [
+    {
+      "artifact": "M2-v2 V2-A architecture contracts",
+      "version": "v0.1",
+      "stage": "V2-A",
+      "status": "complete_frozen_foundation",
+      "lifecycle": "current",
+      "decision": "architecture_contract_complete",
+      "safeNextAction": "preserve_only"
+    },
+    {
+      "artifact": "M2-v2 V2-B.1 through V2-B.7 checkpoints",
+      "version": "historical",
+      "stage": "V2-B",
+      "status": "historical_checkpoints",
+      "lifecycle": "historical",
+      "decision": "not_current_authority",
+      "safeNextAction": "none_historical_only"
+    },
+    {
+      "artifact": "M2-v2 Canary v3.1 original decision",
+      "version": "v0.1",
+      "stage": "V2-B.8",
+      "status": "historical_original_retained",
+      "lifecycle": "historical",
+      "decision": "CANARY_CONDITIONAL",
+      "safeNextAction": "none_historical_only"
+    },
+    {
+      "artifact": "M2-v2 Canary v3.1 integrity restatement",
+      "version": "v0.3",
+      "stage": "PR7_integrity_remediation",
+      "status": "current_digest_bound",
+      "lifecycle": "current",
+      "decision": "CANARY_FAIL",
+      "safeNextAction": "stop_no_scale"
+    },
+    {
+      "artifact": "PR7 P1 remediation",
+      "version": "v0.1",
+      "stage": "PR7_integrity_remediation",
+      "status": "pending_new_head_incremental_independent_review",
+      "lifecycle": "current",
+      "decision": "review_required_before_merge_recommendation",
+      "safeNextAction": "NEW_HEAD_INCREMENTAL_INDEPENDENT_REVIEW_REQUIRED"
+    }
+  ],
+  "unchangedBoundaries": {
+    "providerRequestDelta": 0,
+    "canaryExecuted": false,
+    "full160Executed": false,
+    "modelTrainingPerformed": false,
+    "b4Changed": false,
+    "formalCashChanged": false,
+    "holdoutOpened": false,
+    "enteredV2C": false,
+    "enteredV2D": false,
+    "enteredC4": false,
+    "enteredM3": false,
+    "releasePerformed": false,
+    "prMerged": false
+  }
+}

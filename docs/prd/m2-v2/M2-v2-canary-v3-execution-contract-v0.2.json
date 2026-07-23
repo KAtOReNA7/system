@@ -1,0 +1,120 @@
+{
+  "schema": "m2.v2.canary-v3-execution-contract-public.v0.2",
+  "status": "not_for_formal_decision",
+  "frozenAt": "2026-07-18T08:17:11.279Z",
+  "startSha": "19f6ae871be90785710d42c385234ba8b3cc7a49",
+  "executionNamespace": "v2b7-canary-v3",
+  "population": {
+    "manifestDigest": "4288ad6130fe34da6f56f361604d44f1124313b3b3f4fc98b870570333d65f23",
+    "parentCanaryManifestDigest": "883a0c8054d71029e2f1d385e9bc98ff4dbcccfc8659ee3764cc128e1a640248",
+    "sampleCount": 10,
+    "repeatCount": 5,
+    "repeatDigest": "e3be6282451c02d6a630aeec322951d62fc477ca9e27d0f9cc2db0fc68e471fc",
+    "failedSamplesReplaced": false
+  },
+  "frozenSourceBundle": {
+    "bundleDigest": "d68896763b2a7b63afd3580c623e06cd72eaa9432b396dd3e9e62b6a50f643df",
+    "workCount": 4,
+    "sourceRecordCount": 24,
+    "benchmarkCanaryOverlapCount": 4,
+    "overlapMappingDigest": "47dc97f3d066c9f0a188f30d0670bb6a6e790b4fb0811560b00d2bf074567ab8",
+    "primarySearchReusedWithoutDispatch": true
+  },
+  "search": {
+    "provider": "tavily_structured_search",
+    "queryTemplates": {
+      "identity": "\"<title>\" \"<author>\" 作品 作者",
+      "publicationEvidence": "\"<title>\" \"<author>\" 原作 平台 评分 榜单 热度 改编 出版 出版社 出版",
+      "webOriginalEvidence": "\"<title>\" \"<author>\" 原作 平台 评分 榜单 热度 改编 出版 原作 连载 完结"
+    },
+    "topic": "general",
+    "searchDepth": "basic",
+    "country": "china",
+    "maxResultsPerQuery": 6,
+    "maxSourceRecordsPerWork": 6,
+    "includeAnswer": false,
+    "includeRawContent": false,
+    "autoParameters": false,
+    "repeatSearchIndependent": true
+  },
+  "routing": {
+    "defaultModel": "gpt-5.6-terra",
+    "escalationModel": "gpt-5.6-terra",
+    "lunaStatus": "blocked_not_used",
+    "extractionMode": "full",
+    "structuredMode": "server_strict",
+    "adapterVersion": "m2-v2-relay-extraction-adapter-v0.2",
+    "extractionSchemaVersion": "m2.v2.evidence-extraction-output.v0.2",
+    "sourceRecordSchemaVersion": "m2.v2.evidence-source-record.v0.2",
+    "timeoutMs": 120000,
+    "maxOutputTokens": 1600,
+    "reasoningParameterIncluded": false,
+    "store": false,
+    "toolsIncluded": false,
+    "relaySearchUsed": false
+  },
+  "repairPolicy": {
+    "maximumRepairsPerLogicalRequest": 1,
+    "maximumRepairsTotal": 5,
+    "allowedTriggers": [
+      "schema_parse",
+      "exact_field",
+      "enum",
+      "missing_required",
+      "source_id_format"
+    ],
+    "forbiddenTriggers": [
+      "unresolved_entity",
+      "evidence_conflict",
+      "prohibited_source",
+      "unsupported_claim",
+      "missing_time"
+    ],
+    "sameSourceRecordsModelAndSchemaRequired": true
+  },
+  "requestBudgets": {
+    "tavilyNewPhysicalRequestCap": 24,
+    "tavilyPrimaryReuseCount": 4,
+    "tavilyRemainingPrimaryCap": 12,
+    "tavilyRepeatCap": 10,
+    "tavilyCompatibilityReserve": 2,
+    "relayNewPhysicalRequestCap": 20,
+    "relayPrimaryLogicalCount": 10,
+    "relayRepeatLogicalCount": 5,
+    "relayRepairCap": 5,
+    "priorCountersPreserved": true,
+    "priorCumulativeTavilyPhysicalRequestCount": 14,
+    "priorCumulativeRelayPhysicalRequestCount": 44,
+    "reservationPersistedBeforeDispatch": true
+  },
+  "gateThresholds": {
+    "logicalTavilySuccessRate": 0.8,
+    "sourceRecordWorkCoverage": 0.8,
+    "primarySchemaPassRate": 0.9,
+    "workResolvedRate": 0.8,
+    "pilotUsableWorkCoverage": 0.6,
+    "highValueCoverage": 0.75,
+    "repeatClaimAgreement": 0.8,
+    "repeatSourceOverlap": 0.7,
+    "noTimeoutRate": 0.9,
+    "modelBindingMismatchCount": 0
+  },
+  "safetyGate": {
+    "allRequired": true,
+    "itemCount": 14,
+    "full160AuthorizedOnPass": false
+  },
+  "outputBoundary": {
+    "publicSanitizedAggregateOnly": true,
+    "publicWorksAuthorsQueriesUrlsDomainsSnippetsForbidden": true,
+    "providerReceiptsAndEvidencePrivateOnly": true,
+    "rawResponsesPersisted": false
+  },
+  "modelTrainingPerformed": false,
+  "b4Changed": false,
+  "finalHoldoutOpened": false,
+  "enteredV2COrV2D": false,
+  "enteredC4OrM3": false,
+  "released": false,
+  "full160Authorized": false
+}

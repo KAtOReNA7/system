@@ -1,0 +1,70 @@
+{
+  "schema": "m2.v2.cross-device-private-state-migration-contract.v0.1",
+  "status": "not_for_formal_decision",
+  "purpose": "manual_cross_device_continuation",
+  "gitScope": {
+    "codeTestsSanitizedDocsAndPublicConfigOnly": true,
+    "privateStateTracked": false,
+    "archiveTracked": false,
+    "recoveryKeyTracked": false
+  },
+  "encryptedPayload": {
+    "environmentVariableNames": [
+      "OPENAI_API_KEY",
+      "OPENAI_BASE_URL",
+      "M2_V2_EVIDENCE_API_BASE_URL",
+      "M2_V2_EVIDENCE_PROVIDER",
+      "M2_V2_PILOT_COST_MODE",
+      "M2_V2_PILOT_MAX_REQUESTS",
+      "M2_V2_PROVIDER_PROBE_MAX_REQUESTS"
+    ],
+    "privateStateRole": "data/private-output/m2-v2-evidence-pilot",
+    "unrelatedPrivateOutputIncluded": false,
+    "privateInputIncluded": false,
+    "databaseBackupIncluded": false,
+    "rawLedgerOrWorkbookIncluded": false,
+    "reparsePointsFollowed": false
+  },
+  "encryption": {
+    "format": "7z",
+    "algorithm": "AES-256",
+    "headerEncrypted": true,
+    "passwordPrompt": "PowerShell SecureString",
+    "passwordTransport": "stdin",
+    "passwordInProcessArguments": false,
+    "passwordPrinted": false,
+    "recoveryKeyStoredSeparately": true,
+    "nonInteractiveValidationRestrictedToTemporaryTarget": true
+  },
+  "integrity": {
+    "outerArchiveSha256": true,
+    "privateManifestPerFileSha256": true,
+    "perFileSizeCheck": true,
+    "payloadCompletenessCheck": true,
+    "pathTraversalRejected": true,
+    "outOfScopePayloadRejected": true
+  },
+  "restore": {
+    "mergeManagedEnvironmentOnly": true,
+    "preserveUnrelatedTargetEnvironment": true,
+    "existingPrivateStateFailsClosed": true,
+    "forceCreatesBackupBeforeRestore": true,
+    "temporaryPlaintextRemoved": true,
+    "gitIgnoreVerifiedBeforeWrite": true,
+    "gitTrackedPrivateCountRequired": 0
+  },
+  "boundaries": {
+    "evidenceQueryExecuted": false,
+    "full160Executed": false,
+    "modelTrainingPerformed": false,
+    "b4Changed": false,
+    "prdBusinessDefinitionChanged": false,
+    "gateChanged": false,
+    "finalHoldoutOpened": false,
+    "v2CStarted": false,
+    "v2DStarted": false,
+    "c4Started": false,
+    "m3Started": false,
+    "released": false
+  }
+}

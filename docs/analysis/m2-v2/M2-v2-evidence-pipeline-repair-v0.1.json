@@ -1,0 +1,68 @@
+{
+  "schema": "m2.v2.evidence-pipeline-repair-report.v0.1",
+  "phase": "V2-B.3",
+  "status": "contract_repaired_repository_validation_passed",
+  "decisionStatus": "not_for_formal_decision",
+  "priorTerminalFacts": {
+    "lunaSearchContract": "9/10",
+    "terraSearchContract": "9/10",
+    "lunaExtractionContract": "0/10",
+    "terraExtractionContract": "0/10",
+    "providerConnectivity": "FAIL",
+    "providerContractCompatibility": "FAIL",
+    "modelEvidenceQuality": "NOT_EVALUATED"
+  },
+  "repair": {
+    "searchOutput": "source_records_only",
+    "searchGeneratesFinalClaim": false,
+    "extractionInput": "source_records_only",
+    "extractionUsesWebSearch": false,
+    "urlInOutputTextRequired": false,
+    "sourceIdMapping": "canonical_url_sha256",
+    "citationIdMapping": "canonical_url_sha256",
+    "missingSourceId": "reject",
+    "missingCitation": "reject",
+    "missingAvailableAt": "modelEligible_false"
+  },
+  "governance": {
+    "researchAllowlistRole": "pilot_research_only",
+    "modelAllowlistRole": "model_eligibility",
+    "researchAllowlistDefaultCount": 0,
+    "modelAllowlistDefaultCount": 0,
+    "implicitPromotionAllowed": false
+  },
+  "execution": {
+    "providerDispatchCount": 0,
+    "benchmarkRerun": false,
+    "canaryRerun": false,
+    "full160": false,
+    "modelTraining": false,
+    "modelSelection": false
+  },
+  "verification": {
+    "checkNoRealData": "PASS",
+    "lint": "PASS",
+    "build": "PASS",
+    "npmTest": {
+      "status": "PASS",
+      "passed": 749,
+      "failed": 0
+    },
+    "e2e": {
+      "status": "PASS",
+      "passed": 13,
+      "failed": 0
+    },
+    "smoke": "PASS"
+  },
+  "boundaries": {
+    "b4Changed": false,
+    "v2cStarted": false,
+    "v2dStarted": false,
+    "c4Started": false,
+    "m3Started": false,
+    "finalHoldoutOpened": false,
+    "release": false,
+    "pr7MustRemainDraftOpen": true
+  }
+}

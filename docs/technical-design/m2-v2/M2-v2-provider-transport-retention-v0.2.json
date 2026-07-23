@@ -1,0 +1,155 @@
+{
+  "schema": "m2.v2.provider-transport-retention-public.v0.2",
+  "status": "PROPOSED_NOT_CURRENT",
+  "classification": "public_sanitized_not_for_formal_decision",
+  "sourceExactHead": "badbf453e1e99ba87cc3064601e480a09ff1b149",
+  "findingIds": ["PR7-P2-016"],
+  "lineage": {
+    "supersedes": "m2.v2.provider-transport-retention-public.v0.1",
+    "historicalArtifactsImmutable": true,
+    "inPlaceOverwriteAllowed": false,
+    "legacyRoutes": "RETIRED_HARD_FAIL_BEFORE_TRANSPORT"
+  },
+  "sinkRegistrySchema": {
+    "exactFields": ["sinkId", "sourcePath", "symbol", "fetchExpression", "status", "allowedRouteIds"],
+    "unknownFieldsRejected": true,
+    "statusEnum": ["ACTIVE_CAPABILITY_REQUIRED", "RETIRED_HARD_FAIL"],
+    "sourcePathForm": "repository_relative_nfc_forward_slash_case_exact",
+    "sinkIdUnique": true,
+    "sourcePathAndSymbolUnique": true
+  },
+  "sinkRegistry": [
+    {
+      "sinkId": "sink_openai_compatible_canary_execute",
+      "sourcePath": "src/domain/m2V2EvidencePilot/openAiCompatibleRelayAdapter.js",
+      "symbol": "OpenAICompatibleRelayCanaryAdapter.execute",
+      "fetchExpression": "this.fetchImpl(this.transport.endpointUrl)",
+      "status": "RETIRED_HARD_FAIL",
+      "allowedRouteIds": ["legacy_canary"]
+    },
+    {
+      "sinkId": "sink_v2b2_dispatch_relay_response",
+      "sourcePath": "src/domain/m2V2EvidencePilot/v2b2Runtime.js",
+      "symbol": "dispatchRelayResponse",
+      "fetchExpression": "fetchImpl(transport.endpointUrl)",
+      "status": "RETIRED_HARD_FAIL",
+      "allowedRouteIds": ["legacy_v2b2"]
+    },
+    {
+      "sinkId": "sink_v2b4_dispatch_relay_response",
+      "sourcePath": "src/domain/m2V2EvidencePilot/v2b4Runtime.js",
+      "symbol": "dispatchRelayResponse",
+      "fetchExpression": "fetchImpl(transport.endpointUrl)",
+      "status": "RETIRED_HARD_FAIL",
+      "allowedRouteIds": ["legacy_v2b4"]
+    },
+    {
+      "sinkId": "sink_v2b5_relay_extraction",
+      "sourcePath": "src/domain/m2V2EvidencePilot/relayExtractionProviderV2B5.js",
+      "symbol": "dispatchV2B5RelayExtractionRequest",
+      "fetchExpression": "fetchImpl(transport.endpointUrl)",
+      "status": "ACTIVE_CAPABILITY_REQUIRED",
+      "allowedRouteIds": ["v2b5_runtime_relay", "v2b7_relay", "v2b8_relay"]
+    },
+    {
+      "sinkId": "sink_v2b5_tavily_search",
+      "sourcePath": "src/domain/m2V2EvidencePilot/tavilySearchProviderV2B5.js",
+      "symbol": "dispatchV2B5TavilyRequest",
+      "fetchExpression": "fetchImpl(transport.endpointUrl)",
+      "status": "ACTIVE_CAPABILITY_REQUIRED",
+      "allowedRouteIds": ["v2b5_runtime_search", "v2b5_capability_audit_probe", "v2b7_search", "v2b8_search"]
+    },
+    {
+      "sinkId": "sink_v2b6_relay_request",
+      "sourcePath": "src/domain/m2V2EvidencePilot/relayExtractionAdapterV2B6.js",
+      "symbol": "dispatchV2B6RelayRequest",
+      "fetchExpression": "fetchImpl(transport.endpointUrl)",
+      "status": "ACTIVE_CAPABILITY_REQUIRED",
+      "allowedRouteIds": ["v2b6_relay_extraction", "v2b7_relay", "v2b8_relay"]
+    }
+  ],
+  "routeRegistrySchema": {
+    "exactFields": ["routeId", "entrypoints", "sinkIds", "status"],
+    "unknownFieldsRejected": true,
+    "statusEnum": ["ACTIVE_CAPABILITY_REQUIRED", "RETIRED_HARD_FAIL"],
+    "sinkIdsMustReferenceExactSinkRegistry": true,
+    "entrypointMayNotReplaceSinkAuthorization": true
+  },
+  "routeRegistry": [
+    {"routeId": "v2b5_runtime_search", "entrypoints": ["runV2B5"], "sinkIds": ["sink_v2b5_tavily_search"], "status": "ACTIVE_CAPABILITY_REQUIRED"},
+    {"routeId": "v2b5_runtime_relay", "entrypoints": ["runV2B5"], "sinkIds": ["sink_v2b5_relay_extraction"], "status": "ACTIVE_CAPABILITY_REQUIRED"},
+    {"routeId": "v2b5_capability_audit_probe", "entrypoints": ["runV2B5CapabilityAuditProbe"], "sinkIds": ["sink_v2b5_tavily_search"], "status": "ACTIVE_CAPABILITY_REQUIRED"},
+    {"routeId": "v2b6_relay_extraction", "entrypoints": ["runV2B6"], "sinkIds": ["sink_v2b6_relay_request"], "status": "ACTIVE_CAPABILITY_REQUIRED"},
+    {"routeId": "v2b7_search", "entrypoints": ["runV2B7"], "sinkIds": ["sink_v2b5_tavily_search"], "status": "ACTIVE_CAPABILITY_REQUIRED"},
+    {"routeId": "v2b7_relay", "entrypoints": ["runV2B7"], "sinkIds": ["sink_v2b5_relay_extraction", "sink_v2b6_relay_request"], "status": "ACTIVE_CAPABILITY_REQUIRED"},
+    {"routeId": "v2b8_search", "entrypoints": ["runV2B8"], "sinkIds": ["sink_v2b5_tavily_search"], "status": "ACTIVE_CAPABILITY_REQUIRED"},
+    {"routeId": "v2b8_relay", "entrypoints": ["runV2B8"], "sinkIds": ["sink_v2b5_relay_extraction", "sink_v2b6_relay_request"], "status": "ACTIVE_CAPABILITY_REQUIRED"},
+    {"routeId": "legacy_canary", "entrypoints": ["runCanary"], "sinkIds": ["sink_openai_compatible_canary_execute"], "status": "RETIRED_HARD_FAIL"},
+    {"routeId": "legacy_v2b2", "entrypoints": ["runV2B2Benchmark", "runV2B2Canary"], "sinkIds": ["sink_v2b2_dispatch_relay_response"], "status": "RETIRED_HARD_FAIL"},
+    {"routeId": "legacy_v2b4", "entrypoints": ["runV2B4Canary"], "sinkIds": ["sink_v2b4_dispatch_relay_response"], "status": "RETIRED_HARD_FAIL"}
+  ],
+  "registryClosureRules": {
+    "exactSinkCount": 6,
+    "sourceScanCovers": ["globalThis.fetch", "fetchImpl", "this.fetchImpl", "http_request", "https_request", "net_connect", "tls_connect"],
+    "anyUnregisteredFetchOrConnectSink": "FAIL_CLOSED",
+    "anyActiveRouteReferencingRetiredSink": "FAIL_CLOSED",
+    "anyRetiredRouteReachingFetchOrConnect": "FAIL_CLOSED",
+    "anyActiveSinkWithoutCapabilityConsumption": "FAIL_CLOSED",
+    "routeAndSinkRegistriesMustBeBidirectionallyConsistent": true
+  },
+  "oneShotCapability": {
+    "schema": "m2.v2.provider-transport-capability.v0.2",
+    "serializationAllowed": false,
+    "ownership": "MODULE_PRIVATE_WEAKSET",
+    "forgableFromPlainObject": false,
+    "singleUse": true,
+    "issuedImmediatelyBeforeSink": true,
+    "consumedByLowestSink": true,
+    "scopeBindings": ["routeId", "sinkId", "physicalRequestIdentityDigestSha256", "canonicalRootIdentityDigestSha256", "safeCacheDigestSha256", "transportPolicyDigestSha256"],
+    "sinkReinspection": ["capability_ownership", "unused_state", "exact_route", "exact_sink", "exact_physical_request", "current_root_identity", "current_safe_cache_digest", "current_transport_policy_digest"],
+    "reject": ["missing", "forged", "stale", "reused", "wrong_route", "wrong_sink", "wrong_request", "wrong_root", "wrong_cache", "cache_mutated_after_issue", "policy_mutated_after_issue"],
+    "rejectionOccursBeforeFetchOrConnect": true
+  },
+  "endpointAndRetentionRules": {
+    "parsedWithUrl": true,
+    "protocol": "https:",
+    "approvedConfiguredHostBindingRequired": true,
+    "userinfoAllowed": false,
+    "fragmentAllowed": false,
+    "localhostOrPrivateIpAllowedForRealTransport": false,
+    "redirectProtocolAndHostRevalidated": true,
+    "bearerAttachedOnlyAfterAllBindingChecks": true,
+    "responsesStore": false,
+    "missingOrTrueStore": "FAIL_BEFORE_DISPATCH",
+    "secretSafeErrorsRequired": true
+  },
+  "testTransportPolicy": {
+    "allowed": ["fake_fetch", "loopback", "s0_no_external_sentinel"],
+    "realExternalAttempt": "BLOCKED_EXTERNAL_ATTEMPT",
+    "blockedAttemptStillCountsAsAttempt": true,
+    "actualExternalFetchCountRequired": 0,
+    "providerRequestDeltaRequired": 0
+  },
+  "futureProviderHardGate": {
+    "legacyMutableCacheCount": 0,
+    "rawResponseCurrentCacheCount": 0,
+    "providerHostBindingVerified": true,
+    "allSinkCapabilitiesVerified": true,
+    "authorizationStillRequiredSeparately": true
+  },
+  "verificationScope": {"contractFrozen": true, "implementationClaimed": false, "realProviderCallClaimed": false, "exactHeadCiClaimed": false, "independentReviewClaimed": false},
+  "authorization": {
+    "currentDecision": "CANARY_FAIL",
+    "providerDispatchAuthorized": false,
+    "databaseConnectionsAuthorized": false,
+    "canaryAuthorized": false,
+    "full160Authorized": false,
+    "modelTrainingAuthorized": false,
+    "holdoutAccessAuthorized": false,
+    "independentReviewBatchB8Authorized": false,
+    "markReadyAuthorized": false,
+    "nextDevelopmentReadiness": "NOT_AUTHORIZED",
+    "mergeAuthorized": false,
+    "releaseAuthorized": false
+  }
+}

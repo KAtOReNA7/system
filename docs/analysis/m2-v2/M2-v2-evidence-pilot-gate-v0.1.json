@@ -1,0 +1,146 @@
+{
+  "schema": "m2.v2.evidence-pilot-gate.v0.1",
+  "decision": "PILOT_CONDITIONAL",
+  "pilotExecutionStatus": "blocked_no_provider",
+  "hardGate": {
+    "conditions": [
+      {
+        "id": "no_private_identifiers_in_public_artifacts",
+        "passed": true,
+        "evidence": "aggregate_schema_key_scan_passed"
+      },
+      {
+        "id": "no_prohibited_source_accepted",
+        "passed": true,
+        "evidence": "accepted=0;prohibited=0"
+      },
+      {
+        "id": "citation_present_for_every_accepted_evidence",
+        "passed": true,
+        "evidence": "accepted=0;missing_citation=0"
+      },
+      {
+        "id": "captured_at_present",
+        "passed": true,
+        "evidence": "evidence=0;missing=0"
+      },
+      {
+        "id": "available_at_present_or_explicitly_unknown",
+        "passed": true,
+        "evidence": "evidence=0;invalid_status=0"
+      },
+      {
+        "id": "unknown_available_at_excluded_from_model_eligibility",
+        "passed": true,
+        "evidence": "unknown_available_at_prediction_allowed=0"
+      },
+      {
+        "id": "unresolved_entity_excluded",
+        "passed": true,
+        "evidence": "unresolved=160;eligible=0"
+      },
+      {
+        "id": "unresolved_conflict_excluded",
+        "passed": true,
+        "evidence": "unresolved=0;eligible=0"
+      },
+      {
+        "id": "no_historical_cutoff_backfill",
+        "passed": true,
+        "evidence": "historical_backfill_count=0"
+      },
+      {
+        "id": "no_model_training",
+        "passed": true,
+        "evidence": "protected_model_diff_count=0"
+      },
+      {
+        "id": "provider_receipts_auditable",
+        "passed": true,
+        "evidence": "query_logs=640;receipts=640"
+      },
+      {
+        "id": "manifest_immutable",
+        "passed": true,
+        "evidence": "manifest_digest=f85308436328bd056e27025407f45aa840cd5cc07e4e7ad9fe0eec4a2d8a3020"
+      },
+      {
+        "id": "deterministic_schema_validation",
+        "passed": true,
+        "evidence": "contract_invariant_issue_count=0"
+      },
+      {
+        "id": "private_files_ignored_and_untracked",
+        "passed": true,
+        "evidence": "ignored=true;untracked=true"
+      },
+      {
+        "id": "final_holdout_sealed",
+        "passed": true,
+        "evidence": "final_holdout_embargo_deferred_labels_release_closed"
+      },
+      {
+        "id": "b4_unchanged",
+        "passed": true,
+        "evidence": "protected_b4_and_existing_model_diff_count=0"
+      },
+      {
+        "id": "all_tests_pass",
+        "passed": true,
+        "evidence": "commands=6;passed=6"
+      }
+    ],
+    "passedCount": 17,
+    "totalCount": 17,
+    "allPassed": true
+  },
+  "usabilityThresholds": {
+    "validEvidenceWorkCoverage": 0.6,
+    "highValueValidEvidenceCoverage": 0.75,
+    "entityResolutionRate": 0.8,
+    "querySuccessRate": 0.8,
+    "citationCompleteness": 1,
+    "allowlistCompliance": 1,
+    "reproducibilityClaimAgreement": 0.8,
+    "reproducibilitySourceOverlap": 0.7
+  },
+  "usability": {
+    "values": {
+      "validEvidenceWorkCoverage": 0,
+      "highValueValidEvidenceCoverage": 0,
+      "entityResolutionRate": 0,
+      "querySuccessRate": null,
+      "citationCompleteness": null,
+      "allowlistCompliance": null,
+      "reproducibilityClaimAgreement": null,
+      "reproducibilitySourceOverlap": null
+    },
+    "conditions": {
+      "validEvidenceWorkCoverage": false,
+      "highValueValidEvidenceCoverage": false,
+      "entityResolutionRate": false,
+      "querySuccessRate": false,
+      "citationCompleteness": false,
+      "allowlistCompliance": false,
+      "reproducibilityClaimAgreement": false,
+      "reproducibilitySourceOverlap": false
+    },
+    "failed": [
+      "validEvidenceWorkCoverage",
+      "highValueValidEvidenceCoverage",
+      "entityResolutionRate",
+      "querySuccessRate",
+      "citationCompleteness",
+      "allowlistCompliance",
+      "reproducibilityClaimAgreement",
+      "reproducibilitySourceOverlap"
+    ],
+    "allPassed": false
+  },
+  "prospectiveShadowReadiness": "NOT_READY",
+  "notForFormalDecision": true,
+  "finalHoldoutSealed": true,
+  "b4Unchanged": true,
+  "modelTrainingPerformed": false,
+  "releaseAuthorized": false
+}

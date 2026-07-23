@@ -2,13 +2,14 @@
 
 ## 状态
 
-- 阶段：`V2_A_ARCHITECTURE_CONTRACT_READY_FOR_REVIEW`
+- 阶段：`V2_B_INTEGRITY_REMEDIATION_COMPLETE_PENDING_EXTERNAL_REVIEW`
 - 决策状态：`not_for_formal_decision`
 - 发布状态：未批准
-- 实现状态：设计完成，未实现
-- 数据状态：未采集 V2 外部证据，未建立 Human baseline
+- 实现状态：V2-A 已完成；V2-B.1 至 V2-B.8 为历史 checkpoint；V2-B.8 原始业务结论为 `CANARY_CONDITIONAL`，修复合同的离线 restatement 为 `CANARY_FAIL`
+- 完整性状态：verifier/private-state 修复、离线恢复、全量验证与 100% 复审已经收口；结果以版本化 summary、restatement 和 current-state index 为准
+- 扩量状态：`full160Authorized=false`；V2-C/V2-D 未开始
 
-本目录完成用户于 2026-07-17 授权的 M2 Forecast Intelligence v2 Architecture Phase 文档工作。它不修改当前 M2 正式结果，不替代 B4，不授权训练、C4、final holdout、release 或 M3。
+本目录保留 M2 Forecast Intelligence v2 从 V2-A 到 V2-B.8 的产品合同与历史 checkpoint。当前导航只见 `docs/analysis/m2-v2/M2-v2-current-state-index-v0.2.md`；旧 index、旧 NEXT/next-step、旧 decision 和 PRD 授权语句均为 `historical / superseded / not authorization`。PR #7 必须保持 Draft/open/unmerged。它不修改当前 M2 正式结果，不替代 B4，也不授权 provider、Canary、训练、full160、V2-C/V2-D、C4、final holdout、release 或 M3。
 
 ## 权威边界
 
@@ -24,6 +25,7 @@
 | `M2-v2-data-policy-v0.1.md` | 自动获取、禁止人工输入、解释专用和预测可用边界 |
 | `M2-v2-human-baseline-prd-v0.1.md` | Human-vs-AI 抽样、reviewer 流程、指标与防泄漏规则 |
 | `M2-v2-v2a-traceability-v0.1.md` | 需求到设计、未来测试和门禁的追踪矩阵 |
+| `M2-v2-evidence-pilot-prd-v0.1.md/json` | V2-B evidence-only pilot scope、population、预算和 gate |
 
 技术设计位于 `docs/technical-design/m2-v2/`。
 
@@ -47,4 +49,4 @@
 - 任何模型训练、C4、final holdout 或 release；
 - migration、API、repository、页面或导出实现。
 
-因此 V2-A 的文档包已就绪。用户已于 2026-07-17 授权在 V2-A checkpoint 合入并确认 main CI 后启动 V2-B External Evidence Pilot；该授权只覆盖 evidence pilot，不覆盖模型训练、V2-C/V2-D、C4、final holdout、release 或 M3。
+因此 V2-A 的文档包已就绪。2026-07-17 的用户指令曾历史性授权在 V2-A checkpoint 合入并确认 main CI 后启动 V2-B External Evidence Pilot；该授权已经执行并被 V2-B.2–B.8 与后续完整性修复 supersede，只作追溯，**不构成当前 provider、resume、Canary 或任何新执行授权**。当前授权边界只由 current-state-index-v0.2 与用户最新明确指令给出。

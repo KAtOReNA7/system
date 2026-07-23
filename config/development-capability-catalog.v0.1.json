@@ -1,0 +1,169 @@
+{
+  "schemaVersion": "development-capability-catalog.v0.1",
+  "catalogVersion": "2026-07-23",
+  "principles": {
+    "coreDevelopmentMustNotRequirePrivateArtifacts": true,
+    "missingPrivateArtifactsBlockOnlyOwningCapability": true,
+    "privateArtifactsMustNotBeCommittedOrFabricated": true,
+    "capabilityAvailabilityDoesNotGrantExecutionAuthorization": true
+  },
+  "capabilities": [
+    {
+      "id": "core-dev",
+      "description": "Clone, install, inspect, lint, build, run public tests, smoke-test, and start the local fixture application.",
+      "requiredTools": [
+        {
+          "id": "git",
+          "command": "git",
+          "versionArgs": ["--version"]
+        },
+        {
+          "id": "node",
+          "runtime": "node",
+          "minimumMajor": 20,
+          "recommendedMajor": 24
+        },
+        {
+          "id": "npm",
+          "command": "npm",
+          "versionArgs": ["--version"]
+        },
+        {
+          "id": "python",
+          "command": "python",
+          "versionArgs": ["--version"],
+          "minimumMajor": 3,
+          "minimumMinor": 11,
+          "maximumMajor": 3,
+          "maximumMinor": 13,
+          "recommended": "3.13"
+        }
+      ],
+      "requiredPrivateArtifacts": [],
+      "canonicalValidationCommands": [
+        "npm run check:no-real-data",
+        "npm run lint",
+        "npm run build",
+        "npm test",
+        "npm run smoke"
+      ],
+      "authorization": "NORMAL_REPOSITORY_DEVELOPMENT"
+    },
+    {
+      "id": "m2-pr7-s1",
+      "description": "Run the authorized PR #7 S1 batch preflight and its batch-specific offline validation.",
+      "requiredTools": [],
+      "requiredPrivateArtifacts": [
+        {
+          "role": "s1-source-evidence-authenticity",
+          "kind": "file",
+          "path": "data/private-output/m2-v2-pr7-s1-remediation-badbf45/s1-source-evidence-authenticity-private-v0.1.json"
+        }
+      ],
+      "canonicalValidationCommands": [
+        "npm run m2:v2:pr7:s1:doctor -- --expected-head=<exact-head> --batch-id=<explicitly-authorized-batch>"
+      ],
+      "privateBundle": {
+        "schema": "development.private-capability-bundle-policy.v0.1",
+        "capabilityId": "m2-pr7-s1",
+        "payloadFileCount": 9,
+        "environmentIncluded": false,
+        "providerCredentialsIncluded": false,
+        "databaseCredentialsIncluded": false,
+        "sourceAndTargetExactHeadRequired": true,
+        "sourceAndTargetTrackedWorktreeCleanRequired": true,
+        "buildCommand": "npm run m2:v2:private-capability:build -- -BatchId <explicitly-authorized-batch> -OutputDirectory <outside-repository> -RecoveryKeyDirectory <separate-directory>",
+        "verifyCommand": "npm run m2:v2:private-capability:verify -- -ArchivePath <archive>",
+        "restoreCommand": "npm run m2:v2:private-capability:restore -- -ArchivePath <archive> -TargetRepoRoot <repository>"
+      },
+      "recovery": "Restore the complete verified encrypted capability bundle from an authorized machine, then run the canonical S1 doctor. Never reconstruct, weaken, or commit the private receipt.",
+      "authorization": "EXPLICIT_BATCH_AUTHORIZATION_REQUIRED"
+    },
+    {
+      "id": "m2-v2-current-state",
+      "description": "Inspect the locally restored M2 v2 evidence, integrity, and PR #7 recovery roles before a separately authorized offline operation.",
+      "requiredTools": [],
+      "requiredPrivateArtifacts": [
+        {
+          "role": "evidence-pilot-state",
+          "kind": "directory",
+          "path": "data/private-output/m2-v2-evidence-pilot"
+        },
+        {
+          "role": "integrity-remediation-state",
+          "kind": "directory",
+          "path": "data/private-output/m2-v2-integrity-remediation"
+        },
+        {
+          "role": "pr7-p1-remediation-state",
+          "kind": "directory",
+          "path": "data/private-output/m2-v2-pr7-p1-remediation"
+        },
+        {
+          "role": "pr7-s1-remediation-state",
+          "kind": "directory",
+          "path": "data/private-output/m2-v2-pr7-s1-remediation-badbf45"
+        }
+      ],
+      "canonicalValidationCommands": [
+        "npm run doctor:capability -- m2-v2-current-state"
+      ],
+      "recovery": "Restore and verify capability-scoped encrypted bundles. Directory presence is inventory only; the relevant canonical verifier remains authoritative.",
+      "authorization": "SEPARATE_OPERATION_AUTHORIZATION_REQUIRED"
+    },
+    {
+      "id": "m2-algorithm-authoritative-input",
+      "description": "Inventory the minimum authoritative local inputs for a future, separately authorized M2 algorithm study.",
+      "requiredTools": [],
+      "requiredPrivateArtifacts": [
+        {
+          "role": "formal-execution-payload",
+          "kind": "file",
+          "path": "data/private-output/m2-formal-execution/m2-formal-execution-payload-v1.json"
+        },
+        {
+          "role": "formal-income-facts",
+          "kind": "file",
+          "path": "data/private-output/m2-formal-execution/m2-formal-income-facts-v1.ndjson"
+        },
+        {
+          "role": "formal-model-input-cache",
+          "kind": "file",
+          "path": "data/private-output/m2-formal-execution/m2-formal-model-input-cache-v1.pkl"
+        },
+        {
+          "role": "formal-cash-comparator-cases",
+          "kind": "file",
+          "path": "data/private-output/m2-formal-cash-comparator-v1/M2-formal-cash-comparator-cases-private-v1.ndjson"
+        },
+        {
+          "role": "formal-cash-comparator-manifest",
+          "kind": "file",
+          "path": "data/private-output/m2-formal-cash-comparator-v1/M2-formal-cash-comparator-manifest-private-v1.json"
+        }
+      ],
+      "canonicalValidationCommands": [
+        "npm run doctor:capability -- m2-algorithm-authoritative-input"
+      ],
+      "recovery": "Restore only from a verified encrypted authoritative-input bundle. Do not regenerate historical private inputs from public summaries.",
+      "authorization": "NEW_ALGORITHM_AUTHORIZATION_REQUIRED"
+    },
+    {
+      "id": "m3-private-materials",
+      "description": "Bootstrap the ignored M3 completion workflow after 3 to 5 user-provided private materials are present.",
+      "requiredTools": [],
+      "requiredPrivateArtifacts": [
+        {
+          "role": "m3-private-input",
+          "kind": "directory",
+          "path": "data/private-input/m3-material-dry-run"
+        }
+      ],
+      "canonicalValidationCommands": [
+        "npm run m3:private-completion-bootstrap"
+      ],
+      "recovery": "Ask the user to provide 3 to 5 private materials through the ignored input role. Never fabricate or commit them.",
+      "authorization": "PRIVATE_BOOTSTRAP_ONLY_APPLY_REQUIRES_SEPARATE_AUTHORIZATION"
+    }
+  ]
+}

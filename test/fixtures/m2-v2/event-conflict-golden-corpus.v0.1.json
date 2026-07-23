@@ -1,0 +1,1089 @@
+{
+  "schema": "m2.v2.pr7.s0-event-conflict-golden-corpus.v0.1",
+  "corpusId": "pr7-s0-event-conflict-synthetic-v0.1",
+  "privateOnly": false,
+  "seed": "pr7-s0-event-conflict-seed-v0.1",
+  "findingMap": {
+    "PR7-P1-009": "EventTime tuple and span foundation cases",
+    "PR7-P2-013": "organization/production/edition/stage conflict identity foundation cases"
+  },
+  "cases": [
+    {
+      "caseId": "EC-001",
+      "language": "zh",
+      "sourceText": "示例机构甲于2024年1月2日签约示例制作甲；示例机构甲于2024年2月3日发行示例制作甲。",
+      "sentenceSpans": [
+        {
+          "start": 0,
+          "end": 46,
+          "text": "示例机构甲于2024年1月2日签约示例制作甲；示例机构甲于2024年2月3日发行示例制作甲。"
+        }
+      ],
+      "clauseSpans": [
+        {
+          "start": 0,
+          "end": 23,
+          "text": "示例机构甲于2024年1月2日签约示例制作甲；"
+        },
+        {
+          "start": 23,
+          "end": 46,
+          "text": "示例机构甲于2024年2月3日发行示例制作甲。"
+        }
+      ],
+      "eventPredicate": [
+        "签约",
+        "发行"
+      ],
+      "eventRole": [
+        "SIGNING",
+        "RELEASE"
+      ],
+      "eventDate": [
+        "2024-01-02",
+        "2024-02-03"
+      ],
+      "dateSpan": [
+        {
+          "start": 6,
+          "end": 15,
+          "text": "2024年1月2日"
+        },
+        {
+          "start": 29,
+          "end": 38,
+          "text": "2024年2月3日"
+        }
+      ],
+      "organization": [
+        "SYNTH_ORG_A",
+        "SYNTH_ORG_A"
+      ],
+      "productionIdentity": [
+        "SYNTH_PRODUCTION_A",
+        "SYNTH_PRODUCTION_A"
+      ],
+      "editionIdentity": [
+        "SYNTH_EDITION_A",
+        "SYNTH_EDITION_A"
+      ],
+      "stage": [
+        "CONTRACT",
+        "RELEASE"
+      ],
+      "ambiguity": false,
+      "limitation": "Different event roles are not compared as one conflict.",
+      "expectedRelation": "FALSE_CONFLICT",
+      "reasonCode": "DIFFERENT_STAGE",
+      "covers": [
+        "FALSE_CONFLICT",
+        "RELEASE_RELATION",
+        "SIGNING_RELATION",
+        "ZH_PUNCTUATION"
+      ],
+      "findingIds": [
+        "PR7-P1-009",
+        "PR7-P2-013"
+      ]
+    },
+    {
+      "caseId": "EC-002",
+      "language": "en",
+      "sourceText": "Synthetic Org A signed Production A on 2024-01-02; it released Edition A on 2024-02-03.",
+      "sentenceSpans": [
+        {
+          "start": 0,
+          "end": 87,
+          "text": "Synthetic Org A signed Production A on 2024-01-02; it released Edition A on 2024-02-03."
+        }
+      ],
+      "clauseSpans": [
+        {
+          "start": 0,
+          "end": 50,
+          "text": "Synthetic Org A signed Production A on 2024-01-02;"
+        },
+        {
+          "start": 51,
+          "end": 87,
+          "text": "it released Edition A on 2024-02-03."
+        }
+      ],
+      "eventPredicate": [
+        "signed",
+        "released"
+      ],
+      "eventRole": [
+        "SIGNING",
+        "RELEASE"
+      ],
+      "eventDate": [
+        "2024-01-02",
+        "2024-02-03"
+      ],
+      "dateSpan": [
+        {
+          "start": 39,
+          "end": 49,
+          "text": "2024-01-02"
+        },
+        {
+          "start": 76,
+          "end": 86,
+          "text": "2024-02-03"
+        }
+      ],
+      "organization": [
+        "SYNTH_ORG_A",
+        "SYNTH_ORG_A"
+      ],
+      "productionIdentity": [
+        "SYNTH_PRODUCTION_A",
+        "SYNTH_PRODUCTION_A"
+      ],
+      "editionIdentity": [
+        "SYNTH_EDITION_A",
+        "SYNTH_EDITION_A"
+      ],
+      "stage": [
+        "CONTRACT",
+        "RELEASE"
+      ],
+      "ambiguity": false,
+      "limitation": "Pronoun resolution is supplied as an expected tuple, not parsed here.",
+      "expectedRelation": "FALSE_CONFLICT",
+      "reasonCode": "DIFFERENT_STAGE",
+      "covers": [
+        "EN_PUNCTUATION"
+      ],
+      "findingIds": [
+        "PR7-P1-009",
+        "PR7-P2-013"
+      ]
+    },
+    {
+      "caseId": "EC-003",
+      "language": "mixed",
+      "sourceText": "示例机构甲 adapted 示例制作甲 on 2024-03-04；随后发行于2024年4月5日。",
+      "sentenceSpans": [
+        {
+          "start": 0,
+          "end": 49,
+          "text": "示例机构甲 adapted 示例制作甲 on 2024-03-04；随后发行于2024年4月5日。"
+        }
+      ],
+      "clauseSpans": [
+        {
+          "start": 0,
+          "end": 34,
+          "text": "示例机构甲 adapted 示例制作甲 on 2024-03-04；"
+        },
+        {
+          "start": 34,
+          "end": 49,
+          "text": "随后发行于2024年4月5日。"
+        }
+      ],
+      "eventPredicate": [
+        "adapted",
+        "发行"
+      ],
+      "eventRole": [
+        "ADAPTATION",
+        "RELEASE"
+      ],
+      "eventDate": [
+        "2024-03-04",
+        "2024-04-05"
+      ],
+      "dateSpan": [
+        {
+          "start": 23,
+          "end": 33,
+          "text": "2024-03-04"
+        },
+        {
+          "start": 39,
+          "end": 48,
+          "text": "2024年4月5日"
+        }
+      ],
+      "organization": [
+        "SYNTH_ORG_A",
+        null
+      ],
+      "productionIdentity": [
+        "SYNTH_PRODUCTION_A",
+        "SYNTH_PRODUCTION_A"
+      ],
+      "editionIdentity": [
+        null,
+        null
+      ],
+      "stage": [
+        "ADAPTATION",
+        "RELEASE"
+      ],
+      "ambiguity": true,
+      "limitation": "The second event omits an explicit organization.",
+      "expectedRelation": "AMBIGUOUS",
+      "reasonCode": "ORGANIZATION_UNRESOLVED",
+      "covers": [
+        "ADAPTATION_RELATION",
+        "AMBIGUOUS",
+        "MIXED_LANGUAGE"
+      ],
+      "findingIds": [
+        "PR7-P1-009",
+        "PR7-P2-013"
+      ]
+    },
+    {
+      "caseId": "EC-004",
+      "language": "zh",
+      "sourceText": "示例机构甲于2024年5月1日签约并于2024年5月2日制作示例制作甲。",
+      "sentenceSpans": [
+        {
+          "start": 0,
+          "end": 36,
+          "text": "示例机构甲于2024年5月1日签约并于2024年5月2日制作示例制作甲。"
+        }
+      ],
+      "clauseSpans": [
+        {
+          "start": 0,
+          "end": 36,
+          "text": "示例机构甲于2024年5月1日签约并于2024年5月2日制作示例制作甲。"
+        }
+      ],
+      "eventPredicate": [
+        "签约",
+        "制作"
+      ],
+      "eventRole": [
+        "SIGNING",
+        "PRODUCTION"
+      ],
+      "eventDate": [
+        "2024-05-01",
+        "2024-05-02"
+      ],
+      "dateSpan": [
+        {
+          "start": 6,
+          "end": 15,
+          "text": "2024年5月1日"
+        },
+        {
+          "start": 19,
+          "end": 28,
+          "text": "2024年5月2日"
+        }
+      ],
+      "organization": [
+        "SYNTH_ORG_A",
+        "SYNTH_ORG_A"
+      ],
+      "productionIdentity": [
+        "SYNTH_PRODUCTION_A",
+        "SYNTH_PRODUCTION_A"
+      ],
+      "editionIdentity": [
+        null,
+        null
+      ],
+      "stage": [
+        "CONTRACT",
+        "PRODUCTION"
+      ],
+      "ambiguity": false,
+      "limitation": null,
+      "expectedRelation": "FALSE_CONFLICT",
+      "reasonCode": "DIFFERENT_STAGE",
+      "covers": [
+        "PRODUCTION_RELATION",
+        "SAME_SENTENCE_TWO_EVENTS_TWO_DATES"
+      ],
+      "findingIds": [
+        "PR7-P1-009",
+        "PR7-P2-013"
+      ]
+    },
+    {
+      "caseId": "EC-005",
+      "language": "zh",
+      "sourceText": "示例机构甲于2024年5月3日签约并制作示例制作甲。",
+      "sentenceSpans": [
+        {
+          "start": 0,
+          "end": 26,
+          "text": "示例机构甲于2024年5月3日签约并制作示例制作甲。"
+        }
+      ],
+      "clauseSpans": [
+        {
+          "start": 0,
+          "end": 26,
+          "text": "示例机构甲于2024年5月3日签约并制作示例制作甲。"
+        }
+      ],
+      "eventPredicate": [
+        "签约",
+        "制作"
+      ],
+      "eventRole": [
+        "SIGNING",
+        "PRODUCTION"
+      ],
+      "eventDate": [
+        "2024-05-03",
+        null
+      ],
+      "dateSpan": [
+        {
+          "start": 6,
+          "end": 15,
+          "text": "2024年5月3日"
+        }
+      ],
+      "organization": [
+        "SYNTH_ORG_A",
+        "SYNTH_ORG_A"
+      ],
+      "productionIdentity": [
+        "SYNTH_PRODUCTION_A",
+        "SYNTH_PRODUCTION_A"
+      ],
+      "editionIdentity": [
+        null,
+        null
+      ],
+      "stage": [
+        "CONTRACT",
+        "PRODUCTION"
+      ],
+      "ambiguity": true,
+      "limitation": "One date cannot be assigned to both events without a parser decision.",
+      "expectedRelation": "AMBIGUOUS",
+      "reasonCode": "DATE_ROLE_AMBIGUOUS",
+      "covers": [
+        "SAME_SENTENCE_TWO_EVENTS_ONE_DATE"
+      ],
+      "findingIds": [
+        "PR7-P1-009",
+        "PR7-P2-013"
+      ]
+    },
+    {
+      "caseId": "EC-006",
+      "language": "zh",
+      "sourceText": "示例机构甲完成制作。发行日期为2024年6月7日。",
+      "sentenceSpans": [
+        {
+          "start": 0,
+          "end": 10,
+          "text": "示例机构甲完成制作。"
+        },
+        {
+          "start": 10,
+          "end": 25,
+          "text": "发行日期为2024年6月7日。"
+        }
+      ],
+      "clauseSpans": [
+        {
+          "start": 0,
+          "end": 10,
+          "text": "示例机构甲完成制作。"
+        },
+        {
+          "start": 10,
+          "end": 25,
+          "text": "发行日期为2024年6月7日。"
+        }
+      ],
+      "eventPredicate": [
+        "制作",
+        "发行"
+      ],
+      "eventRole": [
+        "PRODUCTION",
+        "RELEASE"
+      ],
+      "eventDate": [
+        null,
+        "2024-06-07"
+      ],
+      "dateSpan": [
+        {
+          "start": 15,
+          "end": 24,
+          "text": "2024年6月7日"
+        }
+      ],
+      "organization": [
+        "SYNTH_ORG_A",
+        null
+      ],
+      "productionIdentity": [
+        "SYNTH_PRODUCTION_A",
+        null
+      ],
+      "editionIdentity": [
+        null,
+        null
+      ],
+      "stage": [
+        "PRODUCTION",
+        "RELEASE"
+      ],
+      "ambiguity": true,
+      "limitation": "Cross-sentence date attachment requires explicit identity evidence.",
+      "expectedRelation": "NOT_EVALUABLE",
+      "reasonCode": "CROSS_SENTENCE_IDENTITY_MISSING",
+      "covers": [
+        "CROSS_SENTENCE_DATE",
+        "NOT_EVALUABLE"
+      ],
+      "findingIds": [
+        "PR7-P1-009",
+        "PR7-P2-013"
+      ]
+    },
+    {
+      "caseId": "EC-007",
+      "language": "zh",
+      "sourceText": "示例机构甲发行示例制作甲（2024年7月8日）。",
+      "sentenceSpans": [
+        {
+          "start": 0,
+          "end": 24,
+          "text": "示例机构甲发行示例制作甲（2024年7月8日）。"
+        }
+      ],
+      "clauseSpans": [
+        {
+          "start": 0,
+          "end": 24,
+          "text": "示例机构甲发行示例制作甲（2024年7月8日）。"
+        }
+      ],
+      "eventPredicate": [
+        "发行"
+      ],
+      "eventRole": [
+        "RELEASE"
+      ],
+      "eventDate": [
+        "2024-07-08"
+      ],
+      "dateSpan": [
+        {
+          "start": 13,
+          "end": 22,
+          "text": "2024年7月8日"
+        }
+      ],
+      "organization": [
+        "SYNTH_ORG_A"
+      ],
+      "productionIdentity": [
+        "SYNTH_PRODUCTION_A"
+      ],
+      "editionIdentity": [
+        "SYNTH_EDITION_A"
+      ],
+      "stage": [
+        "RELEASE"
+      ],
+      "ambiguity": false,
+      "limitation": null,
+      "expectedRelation": "NOT_EVALUABLE",
+      "reasonCode": "SINGLE_EVENT",
+      "covers": [
+        "PARENTHETICAL_DATE"
+      ],
+      "findingIds": [
+        "PR7-P1-009",
+        "PR7-P2-013"
+      ]
+    },
+    {
+      "caseId": "EC-008",
+      "language": "zh",
+      "sourceText": "里程碑：签约—2024年1月1日；制作—2024年2月2日；发行—2024年3月3日。",
+      "sentenceSpans": [
+        {
+          "start": 0,
+          "end": 43,
+          "text": "里程碑：签约—2024年1月1日；制作—2024年2月2日；发行—2024年3月3日。"
+        }
+      ],
+      "clauseSpans": [
+        {
+          "start": 0,
+          "end": 17,
+          "text": "里程碑：签约—2024年1月1日；"
+        },
+        {
+          "start": 17,
+          "end": 30,
+          "text": "制作—2024年2月2日；"
+        },
+        {
+          "start": 30,
+          "end": 43,
+          "text": "发行—2024年3月3日。"
+        }
+      ],
+      "eventPredicate": [
+        "签约",
+        "制作",
+        "发行"
+      ],
+      "eventRole": [
+        "SIGNING",
+        "PRODUCTION",
+        "RELEASE"
+      ],
+      "eventDate": [
+        "2024-01-01",
+        "2024-02-02",
+        "2024-03-03"
+      ],
+      "dateSpan": [
+        {
+          "start": 7,
+          "end": 16,
+          "text": "2024年1月1日"
+        },
+        {
+          "start": 20,
+          "end": 29,
+          "text": "2024年2月2日"
+        },
+        {
+          "start": 33,
+          "end": 42,
+          "text": "2024年3月3日"
+        }
+      ],
+      "organization": [
+        null,
+        null,
+        null
+      ],
+      "productionIdentity": [
+        "SYNTH_PRODUCTION_A",
+        "SYNTH_PRODUCTION_A",
+        "SYNTH_PRODUCTION_A"
+      ],
+      "editionIdentity": [
+        null,
+        null,
+        null
+      ],
+      "stage": [
+        "CONTRACT",
+        "PRODUCTION",
+        "RELEASE"
+      ],
+      "ambiguity": false,
+      "limitation": "Organization is intentionally absent from this list fixture.",
+      "expectedRelation": "FALSE_CONFLICT",
+      "reasonCode": "DIFFERENT_STAGE",
+      "covers": [
+        "LIST_DATE"
+      ],
+      "findingIds": [
+        "PR7-P1-009",
+        "PR7-P2-013"
+      ]
+    },
+    {
+      "caseId": "EC-009",
+      "language": "zh",
+      "sourceText": "示例制作甲的制作期为2024年1月1日至2024年3月31日。",
+      "sentenceSpans": [
+        {
+          "start": 0,
+          "end": 31,
+          "text": "示例制作甲的制作期为2024年1月1日至2024年3月31日。"
+        }
+      ],
+      "clauseSpans": [
+        {
+          "start": 0,
+          "end": 31,
+          "text": "示例制作甲的制作期为2024年1月1日至2024年3月31日。"
+        }
+      ],
+      "eventPredicate": [
+        "制作期"
+      ],
+      "eventRole": [
+        "PRODUCTION"
+      ],
+      "eventDate": [
+        "2024-01-01/2024-03-31"
+      ],
+      "dateSpan": [
+        {
+          "start": 10,
+          "end": 30,
+          "text": "2024年1月1日至2024年3月31日"
+        }
+      ],
+      "organization": [
+        null
+      ],
+      "productionIdentity": [
+        "SYNTH_PRODUCTION_A"
+      ],
+      "editionIdentity": [
+        null
+      ],
+      "stage": [
+        "PRODUCTION"
+      ],
+      "ambiguity": false,
+      "limitation": "A range is one temporal value, not two point events.",
+      "expectedRelation": "NOT_EVALUABLE",
+      "reasonCode": "DATE_RANGE_SINGLE_EVENT",
+      "covers": [
+        "RANGE_DATE"
+      ],
+      "findingIds": [
+        "PR7-P1-009",
+        "PR7-P2-013"
+      ]
+    },
+    {
+      "caseId": "EC-010",
+      "language": "zh",
+      "sourceText": "示例机构甲将在日期待定时发行示例制作甲。",
+      "sentenceSpans": [
+        {
+          "start": 0,
+          "end": 20,
+          "text": "示例机构甲将在日期待定时发行示例制作甲。"
+        }
+      ],
+      "clauseSpans": [
+        {
+          "start": 0,
+          "end": 20,
+          "text": "示例机构甲将在日期待定时发行示例制作甲。"
+        }
+      ],
+      "eventPredicate": [
+        "发行"
+      ],
+      "eventRole": [
+        "RELEASE"
+      ],
+      "eventDate": [
+        null
+      ],
+      "dateSpan": [],
+      "organization": [
+        "SYNTH_ORG_A"
+      ],
+      "productionIdentity": [
+        "SYNTH_PRODUCTION_A"
+      ],
+      "editionIdentity": [
+        null
+      ],
+      "stage": [
+        "RELEASE"
+      ],
+      "ambiguity": false,
+      "limitation": "No auditable date is present.",
+      "expectedRelation": "NOT_EVALUABLE",
+      "reasonCode": "UNKNOWN_DATE",
+      "covers": [
+        "UNKNOWN_DATE"
+      ],
+      "findingIds": [
+        "PR7-P1-009",
+        "PR7-P2-013"
+      ]
+    },
+    {
+      "caseId": "EC-011",
+      "language": "zh",
+      "sourceText": "示例机构甲于2024年8月1日发行示例制作甲；示例机构乙于2024年8月2日发行示例制作甲。",
+      "sentenceSpans": [
+        {
+          "start": 0,
+          "end": 46,
+          "text": "示例机构甲于2024年8月1日发行示例制作甲；示例机构乙于2024年8月2日发行示例制作甲。"
+        }
+      ],
+      "clauseSpans": [
+        {
+          "start": 0,
+          "end": 23,
+          "text": "示例机构甲于2024年8月1日发行示例制作甲；"
+        },
+        {
+          "start": 23,
+          "end": 46,
+          "text": "示例机构乙于2024年8月2日发行示例制作甲。"
+        }
+      ],
+      "eventPredicate": [
+        "发行",
+        "发行"
+      ],
+      "eventRole": [
+        "RELEASE",
+        "RELEASE"
+      ],
+      "eventDate": [
+        "2024-08-01",
+        "2024-08-02"
+      ],
+      "dateSpan": [
+        {
+          "start": 6,
+          "end": 15,
+          "text": "2024年8月1日"
+        },
+        {
+          "start": 29,
+          "end": 38,
+          "text": "2024年8月2日"
+        }
+      ],
+      "organization": [
+        "SYNTH_ORG_A",
+        "SYNTH_ORG_B"
+      ],
+      "productionIdentity": [
+        "SYNTH_PRODUCTION_A",
+        "SYNTH_PRODUCTION_A"
+      ],
+      "editionIdentity": [
+        "SYNTH_EDITION_A",
+        "SYNTH_EDITION_A"
+      ],
+      "stage": [
+        "RELEASE",
+        "RELEASE"
+      ],
+      "ambiguity": false,
+      "limitation": null,
+      "expectedRelation": "FALSE_CONFLICT",
+      "reasonCode": "DIFFERENT_ORGANIZATION",
+      "covers": [
+        "DIFFERENT_ORGANIZATION"
+      ],
+      "findingIds": [
+        "PR7-P1-009",
+        "PR7-P2-013"
+      ]
+    },
+    {
+      "caseId": "EC-012",
+      "language": "zh",
+      "sourceText": "示例机构甲于2024年9月1日发行示例制作甲；示例机构甲于2024年9月2日发行示例制作乙。",
+      "sentenceSpans": [
+        {
+          "start": 0,
+          "end": 46,
+          "text": "示例机构甲于2024年9月1日发行示例制作甲；示例机构甲于2024年9月2日发行示例制作乙。"
+        }
+      ],
+      "clauseSpans": [
+        {
+          "start": 0,
+          "end": 23,
+          "text": "示例机构甲于2024年9月1日发行示例制作甲；"
+        },
+        {
+          "start": 23,
+          "end": 46,
+          "text": "示例机构甲于2024年9月2日发行示例制作乙。"
+        }
+      ],
+      "eventPredicate": [
+        "发行",
+        "发行"
+      ],
+      "eventRole": [
+        "RELEASE",
+        "RELEASE"
+      ],
+      "eventDate": [
+        "2024-09-01",
+        "2024-09-02"
+      ],
+      "dateSpan": [
+        {
+          "start": 6,
+          "end": 15,
+          "text": "2024年9月1日"
+        },
+        {
+          "start": 29,
+          "end": 38,
+          "text": "2024年9月2日"
+        }
+      ],
+      "organization": [
+        "SYNTH_ORG_A",
+        "SYNTH_ORG_A"
+      ],
+      "productionIdentity": [
+        "SYNTH_PRODUCTION_A",
+        "SYNTH_PRODUCTION_B"
+      ],
+      "editionIdentity": [
+        "SYNTH_EDITION_A",
+        "SYNTH_EDITION_B"
+      ],
+      "stage": [
+        "RELEASE",
+        "RELEASE"
+      ],
+      "ambiguity": false,
+      "limitation": null,
+      "expectedRelation": "FALSE_CONFLICT",
+      "reasonCode": "DIFFERENT_PRODUCTION",
+      "covers": [
+        "SAME_ORGANIZATION_DIFFERENT_PRODUCTION"
+      ],
+      "findingIds": [
+        "PR7-P1-009",
+        "PR7-P2-013"
+      ]
+    },
+    {
+      "caseId": "EC-013",
+      "language": "zh",
+      "sourceText": "示例制作甲第一版于2024年10月1日发行；示例制作甲第二版于2024年10月2日发行。",
+      "sentenceSpans": [
+        {
+          "start": 0,
+          "end": 44,
+          "text": "示例制作甲第一版于2024年10月1日发行；示例制作甲第二版于2024年10月2日发行。"
+        }
+      ],
+      "clauseSpans": [
+        {
+          "start": 0,
+          "end": 22,
+          "text": "示例制作甲第一版于2024年10月1日发行；"
+        },
+        {
+          "start": 22,
+          "end": 44,
+          "text": "示例制作甲第二版于2024年10月2日发行。"
+        }
+      ],
+      "eventPredicate": [
+        "发行",
+        "发行"
+      ],
+      "eventRole": [
+        "RELEASE",
+        "RELEASE"
+      ],
+      "eventDate": [
+        "2024-10-01",
+        "2024-10-02"
+      ],
+      "dateSpan": [
+        {
+          "start": 9,
+          "end": 19,
+          "text": "2024年10月1日"
+        },
+        {
+          "start": 31,
+          "end": 41,
+          "text": "2024年10月2日"
+        }
+      ],
+      "organization": [
+        null,
+        null
+      ],
+      "productionIdentity": [
+        "SYNTH_PRODUCTION_A",
+        "SYNTH_PRODUCTION_A"
+      ],
+      "editionIdentity": [
+        "SYNTH_EDITION_1",
+        "SYNTH_EDITION_2"
+      ],
+      "stage": [
+        "RELEASE",
+        "RELEASE"
+      ],
+      "ambiguity": false,
+      "limitation": null,
+      "expectedRelation": "FALSE_CONFLICT",
+      "reasonCode": "DIFFERENT_EDITION",
+      "covers": [
+        "SAME_PRODUCTION_DIFFERENT_EDITION"
+      ],
+      "findingIds": [
+        "PR7-P1-009",
+        "PR7-P2-013"
+      ]
+    },
+    {
+      "caseId": "EC-014",
+      "language": "zh",
+      "sourceText": "示例机构甲于2024年11月1日制作示例制作甲；示例机构甲于2024年11月2日发行示例制作甲。",
+      "sentenceSpans": [
+        {
+          "start": 0,
+          "end": 48,
+          "text": "示例机构甲于2024年11月1日制作示例制作甲；示例机构甲于2024年11月2日发行示例制作甲。"
+        }
+      ],
+      "clauseSpans": [
+        {
+          "start": 0,
+          "end": 24,
+          "text": "示例机构甲于2024年11月1日制作示例制作甲；"
+        },
+        {
+          "start": 24,
+          "end": 48,
+          "text": "示例机构甲于2024年11月2日发行示例制作甲。"
+        }
+      ],
+      "eventPredicate": [
+        "制作",
+        "发行"
+      ],
+      "eventRole": [
+        "PRODUCTION",
+        "RELEASE"
+      ],
+      "eventDate": [
+        "2024-11-01",
+        "2024-11-02"
+      ],
+      "dateSpan": [
+        {
+          "start": 6,
+          "end": 16,
+          "text": "2024年11月1日"
+        },
+        {
+          "start": 30,
+          "end": 40,
+          "text": "2024年11月2日"
+        }
+      ],
+      "organization": [
+        "SYNTH_ORG_A",
+        "SYNTH_ORG_A"
+      ],
+      "productionIdentity": [
+        "SYNTH_PRODUCTION_A",
+        "SYNTH_PRODUCTION_A"
+      ],
+      "editionIdentity": [
+        "SYNTH_EDITION_A",
+        "SYNTH_EDITION_A"
+      ],
+      "stage": [
+        "PRODUCTION",
+        "RELEASE"
+      ],
+      "ambiguity": false,
+      "limitation": null,
+      "expectedRelation": "FALSE_CONFLICT",
+      "reasonCode": "DIFFERENT_STAGE",
+      "covers": [
+        "DIFFERENT_STAGE"
+      ],
+      "findingIds": [
+        "PR7-P1-009",
+        "PR7-P2-013"
+      ]
+    },
+    {
+      "caseId": "EC-015",
+      "language": "zh",
+      "sourceText": "示例机构甲称示例制作甲第一版于2024年12月1日发行；同一机构又称该版本于2024年12月2日发行。",
+      "sentenceSpans": [
+        {
+          "start": 0,
+          "end": 51,
+          "text": "示例机构甲称示例制作甲第一版于2024年12月1日发行；同一机构又称该版本于2024年12月2日发行。"
+        }
+      ],
+      "clauseSpans": [
+        {
+          "start": 0,
+          "end": 28,
+          "text": "示例机构甲称示例制作甲第一版于2024年12月1日发行；"
+        },
+        {
+          "start": 28,
+          "end": 51,
+          "text": "同一机构又称该版本于2024年12月2日发行。"
+        }
+      ],
+      "eventPredicate": [
+        "发行",
+        "发行"
+      ],
+      "eventRole": [
+        "RELEASE",
+        "RELEASE"
+      ],
+      "eventDate": [
+        "2024-12-01",
+        "2024-12-02"
+      ],
+      "dateSpan": [
+        {
+          "start": 15,
+          "end": 25,
+          "text": "2024年12月1日"
+        },
+        {
+          "start": 38,
+          "end": 48,
+          "text": "2024年12月2日"
+        }
+      ],
+      "organization": [
+        "SYNTH_ORG_A",
+        "SYNTH_ORG_A"
+      ],
+      "productionIdentity": [
+        "SYNTH_PRODUCTION_A",
+        "SYNTH_PRODUCTION_A"
+      ],
+      "editionIdentity": [
+        "SYNTH_EDITION_1",
+        "SYNTH_EDITION_1"
+      ],
+      "stage": [
+        "RELEASE",
+        "RELEASE"
+      ],
+      "ambiguity": false,
+      "limitation": "The corpus supplies co-reference as expected data; no parser is implemented.",
+      "expectedRelation": "TRUE_CONFLICT",
+      "reasonCode": "SAME_IDENTITY_DIFFERENT_DATE",
+      "covers": [
+        "TRUE_CONFLICT"
+      ],
+      "findingIds": [
+        "PR7-P1-009",
+        "PR7-P2-013"
+      ]
+    }
+  ]
+}

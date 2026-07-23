@@ -1,5 +1,162 @@
 # 有声书产品收入评估与年度目标系统 PRD v0.2
 
+## 2026-07-24 PR #7 当前执行状态
+
+B0–B8 已全部完成。独立 reviewer 对 exact HEAD `d2f92cd03bc9d82672676298d04daed765c4ce8a` 的裁决为 `B8_PASS_ALL_FINDINGS_CLOSABLE`；exact-head CI run `30034932174` 的 Linux job `89300399550` 与 Windows job `89300399537` 完整成功。10 个 finding 已由版本化 closure successor 记录为 `CLOSED`。
+
+当前导航见：
+
+- `docs/analysis/m2-v2/M2-v2-PR7-findings-closure-status-v0.2.md`
+- `docs/analysis/m2-v2/M2-v2-PR7-B8-independent-closure-v0.1.md`
+
+PR #7 仍为 Draft/open/unmerged。finding 闭环不授权 provider、数据库、Canary/full160、模型训练、holdout、mark ready、merge、release 或 M3 formal；`currentDecision=CANARY_FAIL`、`nextDevelopmentReadiness=NOT_AUTHORIZED` 保持不变。
+
+## 2026-07-23 全库审读与多电脑协同入口（v0.2 当前入口）
+
+全库结构、冗余代码、运行/开发效率、M2 算法方向和多电脑 private state 的当前审计见：
+
+- `docs/analysis/m2-v2/M2-repository-code-convergence-and-portable-development-audit-v0.2.md`
+
+v0.2 保留 v0.1 作为历史输入，并纠正两项会影响后续执行的旧结论：
+
+1. 当前 S1 validator 会重新读取 `reportPath`、`receiptPath`，重算 report SHA-256 和 canonical receipt digest；它不是只信任 receipt 自我声明。
+2. private artifact 的“本机存在/缺失”是运行时库存状态，不应写成仓库长期事实；核心开发必须始终与 private capability 解耦。
+
+审计结论不是批量删除授权。PR #7 收口前，只允许处理当前已授权批次、修复跨电脑制品恢复和准备后续 cleanup；不得据此运行 provider、数据库、Canary/full160、模型训练、holdout、merge、release 或 M3 formal。B8 已由用户另行授权，但仅限独立 reviewer 执行。
+
+新电脑的公开核心开发入口：
+
+```bash
+git pull --ff-only
+npm ci
+npm run doctor:dev
+npm run check:no-real-data
+npm run lint
+npm run build
+npm test
+npm run smoke
+```
+
+`doctor:dev` 不读取或要求任何 private 文件。只有需要某项受控能力时才运行：
+
+```bash
+npm run doctor:capability -- m2-pr7-s1
+npm run doctor:capability -- m2-v2-current-state
+npm run doctor:capability -- m2-algorithm-authoritative-input
+npm run doctor:capability -- m3-private-materials
+```
+
+能力目录由 `config/development-capability-catalog.v0.1.json` 声明。缺少 private artifact 只阻断所属能力，不得阻断普通代码、文档、公开测试或 fixture 本地启动；存在也只表示可进入 canonical validation，不表示真实性已验证或获得执行授权。
+
+### 当前电脑能做什么
+
+| 能力 | 当前状态 | 说明 |
+|---|---|---|
+| Git/代码/文档全库审读 | 可执行 | 可以继续做引用扫描、重复检测、调用图、文档和 synthetic fixture 工作 |
+| `check:no-real-data`、lint、build、默认测试 | 可执行 | 本轮工作树验证通过；默认测试 1157/1157、0 skipped |
+| 产品 runtime、测试和 CI 收敛设计 | 可准备 | 可以形成 patch/计划，但 PR #7 收口前不批量删除历史证据 |
+| M2 权威算法输入盘点 | 按机器动态盘点 | 使用 capability doctor 只检查最小角色；运行新算法仍需另行授权 |
+| PR #7 S1 本地 doctor/validation | 按机器动态盘点 | 先运行 capability doctor；只有原 S1 preflight 能作真实性判定 |
+| provider、数据库、Canary/full160、训练、holdout、B8、merge/release | 禁止 | 缺文件不扩大业务授权 |
+| M3 private/formal | 禁止 | private 材料按机器动态盘点；M3 formal 未授权 |
+
+S1 capability 的受控 private role 为：
+
+```text
+data/private-output/m2-v2-pr7-s1-remediation-badbf45/s1-source-evidence-authenticity-private-v0.1.json
+```
+
+不得手工拼装该 JSON。当前 validator 会重新读取其引用的底层 report/receipt 并重算摘要；跨电脑恢复仍必须提供完整、可重新计算的 authenticity package，不能只复制单个 JSON。
+
+### 缺少 private state 时，授权电脑需要提供什么
+
+第一优先级是 `m2-pr7-s1` 加密包，至少包含：
+
+1. `s1-source-evidence-authenticity-private-v0.1.json`；
+2. 该 receipt 引用的 4 个 report；
+3. 该 receipt 引用的 4 个原始 receipt；
+4. 包内 manifest：逐文件 repository-relative path、size、SHA-256 和 source commit；
+5. AES-256 header-encrypted archive；
+6. archive 外层 SHA-256 sidecar；
+7. 与 archive 分开传输的密码/recovery key。
+
+四个 source identity 必须是 `independentReview`、`planning`、`supportAudit`、`s0Implementation`。冻结摘要以 `config/m2-v2-pr7-s1-task.v0.1.json` 为准，不能从公开摘要手工伪造 private evidence。
+
+B6 前还要检查以下 private capability roots 是否完整；缺失时一并从原电脑通过独立加密包恢复：
+
+```text
+data/private-output/m2-v2-evidence-pilot/**
+data/private-output/m2-v2-integrity-remediation/**
+data/private-output/m2-v2-pr7-p1-remediation/**
+data/private-output/m2-v2-pr7-s1-remediation-badbf45/**
+```
+
+不要提供或提交：
+
+- provider API keys；
+- `.env.local` 全量内容；
+- 数据库密码或连接串；
+- 原始账单、台账、作品明细、数据库 dump；
+- 浏览器 Cookie、Authorization header；
+- 未加密 private archive；
+- Git stash 或 Git object。
+
+当前工作是 provider-free、DB-free 的 PR #7 离线修复。现有 `build_m2_v2_private_state_migration.ps1` 只覆盖 `m2-v2-evidence-pilot/**`，不能被当作完整的 PR7 S1/B6 迁移包；应按审计文档把它扩展为 capability-based bundle 后再长期使用。
+
+### 授权电脑同步后的执行顺序
+
+在有 private state 的电脑上：
+
+```powershell
+git fetch origin --prune
+git switch codex/m2-v2-evidence-pilot-v1
+git pull --ff-only origin codex/m2-v2-evidence-pilot-v1
+git status --short
+npm ci
+npm run check:no-real-data
+npm run lint
+npm run build
+npm test
+Get-Content -Encoding utf8 docs/analysis/m2-v2/M2-repository-code-convergence-and-portable-development-audit-v0.2.md
+```
+
+然后只读检查当前批次和 S1 private 前置：
+
+```powershell
+$task = Get-Content -Raw -Encoding utf8 config/m2-v2-pr7-s1-task.v0.1.json | ConvertFrom-Json
+$head = git rev-parse HEAD
+Test-Path data/private-output/m2-v2-pr7-s1-remediation-badbf45/s1-source-evidence-authenticity-private-v0.1.json
+npm run m2:v2:pr7:s1:doctor -- --expected-head=$head --batch-id=$($task.currentBatch)
+```
+
+如果 doctor 因 source evidence 缺失或摘要不一致失败，应停止代码实施并准备上述加密包；不得修改 expected digest、降低门禁或制作自我声明式 receipt。doctor 通过也只证明对应批次前置满足，不自动授权下一批次或审计文档中的批量删除。
+
+执行全库审读建议时按以下顺序：
+
+1. capability catalog 与加密 bundle 的构建、恢复、验证已完成；S1 validator 保持当前重算语义；
+2. B4 已完成候选收口；只有在每批获得新的明确启动指令后，才继续 PR #7 B5–B7；
+3. PR #7 收口后建立独立 cleanup PR，处理完全重复 migration/docs/package aliases；
+4. 再建立 M2 current algorithm canonical core，把 C1–C3 变为 archive-only；
+5. 最后才申请新的算法训练、业务抽检和 holdout 授权。
+
+## 2026-07-23 PR #7 S1 当前进度
+
+- PR #7 的 B3 closing correction 已在 exact HEAD `a945ed3a22fbc86e8ca381db9124fc0927461ec7` 完成；CI run `29704510651` 的 Linux job `88239115427` 与 Windows job `88239115429` 均成功。
+- 当前批次状态为：B0 `COMPLETE`，B1–B6 `COMPLETE_PENDING_B8`，B7 `REGRESSION_COMPLETE_PENDING_EXACT_HEAD_CI`。S1 task 的 `currentBatch=B7`、`nextBatch=B8`；B8 已获授权，但必须由独立 reviewer 执行。
+- B3 已将 preflight、local validation 与 Linux/Windows CI 显式绑定到 `--batch-id=B3`；canonical gate 为 `npm run test:m2-v2:b3-safe-cache-provider`。B3 registry 21/21、canonical tests 35/35、default skips 0、provider/DB/external access 均为 0。
+- B4 implementation exact HEAD `65bee39e012e013d4e4347076fc24757f7bcc9f9` 已通过 run `30021984333` 的 Linux job `89256777608` 与 Windows job `89256777664`；canonical gate 为 `npm run test:m2-v2:b4-event-tuple`，16/16 frozen cases、52/52 canonical tests、default skips 0、provider/DB/external access 均为 0。
+- B6 exact HEAD `3e79ce654cd335129005d3916f25f5bf8a2bef7d` 已通过 run `30030360312` 的 Linux job `89285146244` 与 Windows job `89285146296`。B7 canonical gate 为 `npm run test:m2-v2:b7-full-regression`；本地 Windows 已通过 88/88 原生案例、161 tests、zero skip，等待 B7 exact-head 双平台 CI。
+- `PR7-P1-008`、`PR7-P2-016`、`PR7-P1-009` 与 `PR7-P2-013` 仍为 `OPEN`，candidate status 为 `CANDIDATE_CLOSED_PENDING_INDEPENDENT_REVIEW`。全部 10 个 finding 仍等待独立 B8 review；不得声明 `CLOSED`。
+- PR #7 必须继续保持 Draft/open/unmerged。`currentDecision=CANARY_FAIL`、`full160Authorized=false`、`modelTrainingAuthorized=false`、`mergeAuthorized=false`、`nextDevelopmentReadiness=NOT_AUTHORIZED` 保持不变。
+
+## 2026-07-18 M2 v2 当前权威入口
+
+- V2-A 架构合同已完成；V2-B.1 至 V2-B.8 均为保留的历史 checkpoint。V2-B.8 原始 Canary v3.1 结论仍为 `CANARY_CONDITIONAL`；修复后合同的离线 restatement 当前结论为 `CANARY_FAIL`，`full160Authorized=false`。
+- verifier 只读/幂等、receipt/cache/state/counter 原子绑定、B8 fail-closed 合同缺口、private derived state 离线恢复与本轮全量验证已经完成。版本化结论见 `M2-v2-integrity-remediation-summary-v0.1`；100% 复审和 PR roundtrip 细节仅保存在 Git ignored private 审计角色中。
+- 当前权威导航为 `docs/analysis/m2-v2/M2-v2-current-state-index-v0.2.md`。v0.1 index 与历史报告继续保留为 `historical / superseded / not authorization`，不能作为当前执行指令；原 V2-B.8 报告不得被静默覆盖。
+- B4 未改变，继续仅作为 comparator/fallback，未 release；formal-cash target 与 pure-buyout null abstention 未改变；final holdout、embargo shadow、deferred labels 仍 sealed。
+- PR #7 必须保持 Draft/open/unmerged，等待外部审查。V2-C、V2-D、C4、M3 formal、模型训练、Canary 重跑、full160、release 和 PR merge 均未授权；`nextDevelopmentReadiness=NOT_AUTHORIZED`。
+
 **状态：M1/M2 本地真实数据开发 checkpoint**
 **确认日期：2026-07-13**
 **面向读者：运营、Codex、开发与测试**
@@ -19,16 +176,16 @@ v0.2 将 v0.1 的业务汇总稿改造成更适合 Codex 长期维护的文档�
 
 当前仓库处于 **authorized local real-data development mode**。允许读取用户提供的本地真实数据和 `data/**`，允许使用本地开发数据库、本地 Docker/PostgreSQL、本地 migration、真实数据导入、严格对账、回测和算法校准。仍禁止提交原始账单、台账、私有 Excel/CSV/JSON、`.env`、`.pgpass`、数据库 dump、临时数据库文件或敏感明细；仍禁止连接远端生产、共享、staging-like 或未明确授权的数据库。
 
-### 2026-07-17 M2 v2 当前入口
+### 2026-07-17 M2 v2 历史入口（已被上方 2026-07-18 入口替代）
 
 - C1、legacy C2-R、C2-R.1、C2 和 C3 均已完成 development 且结论为 `FAIL`；不得重复进入 C3。
 - B4 继续作为 formal-cash comparator、fallback 与安全锚点，但未获正式发布批准。
 - final holdout、embargo shadow 和 deferred 60-month labels 仍 sealed；所有结果保持 `not_for_formal_decision`，未 release，未进入 M3。
 - M2 Forecast Intelligence v2 的 V2-A 架构合同已完成：五头 PRD、字段字典、External Evidence Layer、Human Baseline、API/DB/export、JSON Schema 与 traceability 已统一。
-- 下一入口是独立的 **V2-B External Evidence Pilot**：只评估 prospective evidence 的覆盖、实体解析、来源/时点/矛盾、成本和复现；不训练模型，不开发 C4，不改变 B4。
-- V2-B 必须自动检索；不得要求运营逐作品补外部信息。缺少授权 private 身份源或 provider 时必须 fail-closed，不得伪造作品、作者或证据。
+- **V2-B External Evidence Pilot framework 与 fail-closed checkpoint 已完成**：从 3053 部冻结 160 部 immutable 样本，640 个计划 query、0 次外部派发、0 result/page/evidence；resume 640/640 cache hit，17/17 安全/审计硬门通过。
+- `blocked_no_provider`、`PILOT_CONDITIONAL` 与“provider/source governance 后 resume”是 V2-B.1 的历史 checkpoint 记录，已被 B.2–B.8 和后续完整性修复 supersede，不构成当前 provider 或 resume 授权。当前只服从 current-state-index-v0.2；不得重抽样、要求运营逐作品补信息、调用 provider、训练模型或进入 V2-C/V2-D/C4/M3。
 
-权威入口：`docs/prd/m2-v2/README.md`、`docs/technical-design/m2-v2/README.md`、`docs/analysis/m2-v2/M2-v2-final-recommendation.md`。
+权威入口：`docs/prd/m2-v2/README.md`、`docs/technical-design/m2-v2/README.md`、`docs/analysis/m2-v2/M2-v2-evidence-pilot-summary-v0.1.md`、`docs/analysis/m2-v2/M2-v2-evidence-pilot-gate-v0.1.json`。
 
 当前远端 `main` 已包含 M1/M2 本地开发 checkpoint：
 
@@ -210,6 +367,33 @@ CI 显式将 `M1_APP_ENV` 设为 `ci`，并将 `M1_DATABASE_URL`、`M1_DATABASE_
 - local candidate、private dry-run 和 fixture prototype 均不自动转为 formal approval。
 - M2 本地正式持久化、审计和 prepared export 已实现；v1.1 conditional 已被用户拒绝，必须完成新算法校准和新一轮验收后才能重新申请 release，且任何本地执行都不代表生产部署或生产审批。
 - v0.1 原文和早期 gap 报告仅用于历史追溯，不得重新作为当前人工待办入口。
+
+# M2 PR #7 S1 private capability bundle
+
+普通新电脑开发不需要任何 private 文件：
+
+```bash
+git pull --ff-only
+npm ci
+npm run doctor:dev
+npm run check:no-real-data
+npm run lint
+npm run build
+npm test
+npm run smoke
+```
+
+只有继续已授权的 `m2-pr7-s1` 离线批次时，才需要从授权电脑生成并恢复 capability-scoped encrypted bundle。该包固定包含 authenticity receipt、4 个 report 和 4 个原始 receipt，不包含 `.env.local`、provider key 或数据库凭据。
+
+构建与恢复入口：
+
+```powershell
+npm run m2:v2:private-capability:build -- -BatchId <explicitly-authorized-batch> -OutputDirectory <outside-repository> -RecoveryKeyDirectory <separate-directory>
+npm run m2:v2:private-capability:verify -- -ArchivePath <archive>
+npm run m2:v2:private-capability:restore -- -ArchivePath <archive> -TargetRepoRoot <repository>
+```
+
+构建端和恢复端必须位于相同 exact HEAD 且 tracked worktree 干净。恢复后继续运行 capability doctor 和原 S1 canonical doctor；恢复成功不自动授权下一 batch。完整合同见 `docs/analysis/m2-v2/M2-v2-private-capability-bundle-v0.1.md`。
 
 # M3 Private Completion Pack Recovery
 

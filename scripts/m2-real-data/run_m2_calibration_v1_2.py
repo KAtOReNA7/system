@@ -4567,7 +4567,10 @@ def verify_gate_a_after_push() -> dict[str, Any]:
 
 
 def preflight() -> dict[str, Any]:
-    require_branch()
+    # Synthetic preflight reads neither the private case role nor any Gate A
+    # receipt.  Write-capable and evidence-verification modes retain their
+    # exact authorized-branch checks; this read-only mode is intentionally
+    # reproducible from a clean main/upstream or PR merge checkout.
     require_private_boundaries()
     spec, _v1_1, amendment = v12.load_and_validate_contract()
     synthetic = v12.synthetic_self_test()
@@ -4577,6 +4580,7 @@ def preflight() -> dict[str, Any]:
     return {
         "status": "passed",
         "mode": "synthetic-only",
+        "checkoutPolicy": "branch_independent_read_only_synthetic",
         "specDigest": v12.canonical_digest(amendment),
         "synthetic": synthetic,
         "practicalEquivalenceBoundary": practical,

@@ -218,5 +218,5 @@ Human baseline 回答：
 - power simulation：未运行；
 - batch：未创建；
 - Human-vs-B4 结论：不存在；
-- V2-B evidence pilot：已由用户另行授权，但不运行 Human baseline；
+- V2-B evidence pilot：历史上曾由用户另行授权且当时不运行 Human baseline；该授权已执行并 superseded，只作追溯，不构成当前 provider/resume 授权；
 - V2-C/Human baseline：未授权。

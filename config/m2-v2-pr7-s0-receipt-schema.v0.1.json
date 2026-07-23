@@ -1,0 +1,256 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "m2.v2.pr7.s0-receipt-schema.v0.1",
+  "title": "M2 v2 PR7 S0 machine receipt and fallback-event schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "passed",
+    "generatedAt",
+    "actualHead",
+    "checks",
+    "fallbackEvents"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "type": "object",
+        "required": [
+          "passed"
+        ],
+        "properties": {
+          "passed": {
+            "const": true
+          }
+        }
+      },
+      "then": {
+        "type": "object",
+        "required": [
+          "actualBranch",
+          "startingHead",
+          "baseSha",
+          "selectedCommandId",
+          "taskManifestSha256",
+          "commandRegistrySha256",
+          "sourceEvidence",
+          "externalEnvironment",
+          "capabilities"
+        ]
+      },
+      "else": {
+        "type": "object",
+        "required": [
+          "failureStage",
+          "error"
+        ]
+      }
+    }
+  ],
+  "properties": {
+    "schema": {
+      "type": "string",
+      "minLength": 1
+    },
+    "passed": {
+      "type": "boolean"
+    },
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "actualHead": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "actualBranch": {
+      "type": "string",
+      "minLength": 1
+    },
+    "startingHead": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "baseSha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "selectedCommandId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "taskManifestSha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "commandRegistrySha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "sourceEvidence": {
+      "type": "object"
+    },
+    "externalEnvironment": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "present",
+          "empty"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "present": {
+            "type": "boolean"
+          },
+          "empty": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "capabilities": {
+      "type": "object"
+    },
+    "failureStage": {
+      "type": "string",
+      "minLength": 1
+    },
+    "error": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "code",
+        "reasonCode",
+        "messageDigest"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "code": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reasonCode": {
+          "type": "string",
+          "minLength": 1
+        },
+        "messageDigest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "checks": {
+      "type": "object"
+    },
+    "fallbackEvents": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/fallbackEvent"
+      }
+    }
+  },
+  "$defs": {
+    "fallbackEvent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventId",
+        "timestamp",
+        "task",
+        "preferredExecutable",
+        "preferredArgv",
+        "failureClass",
+        "failureMessageSanitized",
+        "replacementExecutable",
+        "replacementArgv",
+        "semanticEquivalence",
+        "coverageDifference",
+        "sideEffectDifference",
+        "securityDifference",
+        "confidenceImpact",
+        "disposition"
+      ],
+      "properties": {
+        "eventId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "task": {
+          "type": "string",
+          "minLength": 1
+        },
+        "preferredExecutable": {
+          "type": "string",
+          "minLength": 1
+        },
+        "preferredArgv": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "failureClass": {
+          "type": "string",
+          "minLength": 1
+        },
+        "failureMessageSanitized": {
+          "type": "string",
+          "minLength": 1
+        },
+        "replacementExecutable": {
+          "type": "string",
+          "minLength": 1
+        },
+        "replacementArgv": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "semanticEquivalence": {
+          "type": "string",
+          "minLength": 1
+        },
+        "coverageDifference": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sideEffectDifference": {
+          "type": "string",
+          "minLength": 1
+        },
+        "securityDifference": {
+          "type": "string",
+          "minLength": 1
+        },
+        "confidenceImpact": {
+          "type": "string",
+          "minLength": 1
+        },
+        "disposition": {
+          "enum": [
+            "USED_SEMANTICALLY_EQUIVALENT",
+            "USED_SCOPE_EQUIVALENT",
+            "REJECTED_NO_EQUIVALENT",
+            "EXPECTED_NO_MATCH"
+          ]
+        }
+      }
+    }
+  }
+}

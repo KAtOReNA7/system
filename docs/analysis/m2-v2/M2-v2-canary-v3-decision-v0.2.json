@@ -1,0 +1,23 @@
+{
+  "schema": "m2.v2.canary-v3-decision-public.v0.2",
+  "status": "not_for_formal_decision",
+  "full160Authorized": false,
+  "searchDecision": "FAIL",
+  "extractionDecision": "PASS",
+  "evidenceUsabilityDecision": "CONDITIONAL",
+  "canaryDecision": "CANARY_CONDITIONAL",
+  "safetyPassed": true,
+  "usabilityPassed": false,
+  "blockerIds": [
+    "logical_tavily_success_rate",
+    "repeat_claim_agreement"
+  ],
+  "nextStep": "review_failure_modes_before_any_scale_up",
+  "privateWorkbookGenerated": true,
+  "modelTrainingPerformed": false,
+  "b4Changed": false,
+  "finalHoldoutOpened": false,
+  "enteredV2COrV2D": false,
+  "enteredC4OrM3": false,
+  "released": false
+}

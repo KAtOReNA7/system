@@ -1,0 +1,162 @@
+{
+  "schema": "m2.v2.canary-decision.v0.1",
+  "status": "not_for_formal_decision",
+  "decision": "CANARY_CONDITIONAL",
+  "conditions": [
+    {
+      "id": "provider_request_success_rate",
+      "value": 0.2,
+      "threshold": 0.8,
+      "passed": false
+    },
+    {
+      "id": "supplemental_provider_binding_proven",
+      "value": false,
+      "threshold": true,
+      "passed": false
+    },
+    {
+      "id": "entity_resolution_rate",
+      "value": 0,
+      "threshold": 0.8,
+      "passed": false
+    },
+    {
+      "id": "citation_alignment",
+      "value": null,
+      "threshold": 1,
+      "passed": false
+    },
+    {
+      "id": "accepted_evidence_positive",
+      "value": 0,
+      "threshold": 1,
+      "passed": false
+    },
+    {
+      "id": "no_historical_backfill",
+      "value": 0,
+      "threshold": 0,
+      "passed": true
+    },
+    {
+      "id": "no_prohibited_source_accepted",
+      "value": 0,
+      "threshold": 0,
+      "passed": true
+    },
+    {
+      "id": "no_private_leak",
+      "value": 0,
+      "threshold": 0,
+      "passed": true
+    },
+    {
+      "id": "relay_cost_below_budget",
+      "value": null,
+      "threshold": 25,
+      "passed": false
+    },
+    {
+      "id": "repeat_population_evaluable",
+      "value": 5,
+      "threshold": 5,
+      "passed": true
+    },
+    {
+      "id": "repeat_claim_consistency",
+      "value": 0,
+      "threshold": 0.8,
+      "passed": false
+    },
+    {
+      "id": "all_hard_invariants_pass",
+      "value": 0,
+      "threshold": 0,
+      "passed": true
+    },
+    {
+      "id": "all_tests_pass",
+      "value": true,
+      "threshold": true,
+      "passed": true
+    }
+  ],
+  "hardSafetyAllPassed": true,
+  "allConditionsPassed": false,
+  "blockers": [
+    "provider_request_success_rate",
+    "supplemental_provider_binding_proven",
+    "entity_resolution_rate",
+    "citation_alignment",
+    "accepted_evidence_positive",
+    "relay_cost_below_budget",
+    "repeat_claim_consistency"
+  ],
+  "allowFull160Pilot": false,
+  "full160Readiness": "NOT_READY",
+  "full160ExecutionAuthorizedByThisRun": false,
+  "recommendation": "STOP_BEFORE_FULL_160",
+  "modelRecommendation": "NO_MODEL_SWITCH_DECISION_IN_THIS_CANARY; LUNA_SYNTHETIC_NOT_COMPARABLE; RETEST_REQUIRES_SEPARATE_FULL_CAPABILITY_AND_CITATION_GATE",
+  "auditStatus": {
+    "privateArtifactsIgnoredAndUntracked": true,
+    "publicPrivacyLeakCount": 0,
+    "reviewWorkbookPresentAndXlsxContainerValid": true
+  },
+  "taskRequestAccounting": {
+    "evidenceCanaryRequestCount": 60,
+    "realWorkRequestCount": 60,
+    "supplementalSyntheticRequestCount": 3,
+    "totalProviderRequestCountThisTask": 63,
+    "taskRequestCap": 100,
+    "withinTaskRequestCap": true,
+    "realWorkDisclosureApprovalCap": 60,
+    "realWorkCallsWithinApproval": true,
+    "supplementalSyntheticOnly": true,
+    "contentIntegrityPassed": true,
+    "providerBindingProven": false,
+    "supplementalProviderBindingProven": false,
+    "providerBindingLimitation": "supplemental_receipt_lacks_provider_base_url_and_compatibility_binding",
+    "eligibleForModelDecision": false,
+    "canaryUsageObservedRequestCount": 51,
+    "canaryUsageMissingRequestCount": 9,
+    "canaryTokenUsageComplete": false,
+    "canaryObservedInputTokens": 1236059,
+    "canaryObservedOutputTokens": 129200,
+    "canaryObservedTotalTokens": 1365259,
+    "canaryInputTokens": null,
+    "canaryOutputTokens": null,
+    "canaryTotalTokens": null,
+    "supplementalUsageObservedRequestCount": 3,
+    "supplementalUsageMissingRequestCount": 0,
+    "supplementalTokenUsageComplete": true,
+    "supplementalInputTokens": 38988,
+    "supplementalOutputTokens": 525,
+    "supplementalTotalTokens": 39513,
+    "taskUsageObservedRequestCount": 54,
+    "taskUsageMissingRequestCount": 9,
+    "taskTokenUsageComplete": false,
+    "taskObservedInputTokens": 1275047,
+    "taskObservedOutputTokens": 129725,
+    "taskObservedTotalTokens": 1404772,
+    "taskInputTokens": null,
+    "taskOutputTokens": null,
+    "taskTotalTokens": null,
+    "taskEstimatedRelayCostCny": null,
+    "taskPricingStatus": "provider_pricing_unavailable",
+    "officialOpenAiPricingAssumed": false
+  },
+  "boundaries": {
+    "notForFormalDecision": true,
+    "full160Executed": false,
+    "modelTrainingPerformed": false,
+    "b4Changed": false,
+    "prdChanged": false,
+    "finalHoldoutOpened": false,
+    "v2CStarted": false,
+    "v2DStarted": false,
+    "c4Started": false,
+    "m3Started": false,
+    "released": false
+  }
+}

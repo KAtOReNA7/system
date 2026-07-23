@@ -1,0 +1,410 @@
+{
+  "schema": "m2.v2.workbook-independent-verification-public.v0.2",
+  "status": "PROPOSED_NOT_CURRENT",
+  "classification": "public_sanitized_not_for_formal_decision",
+  "sourceExactHead": "badbf453e1e99ba87cc3064601e480a09ff1b149",
+  "findingIds": ["PR7-P1-013", "PR7-P2-006"],
+  "lineage": {
+    "supersedes": "m2.v2.workbook-independent-verification-public.v0.1",
+    "historicalArtifactsImmutable": true,
+    "inPlaceOverwriteAllowed": false,
+    "oldReceiptCompletenessClaimAllowed": false
+  },
+  "packageInventory": {
+    "schema": "m2.v2.ooxml-part-policy.v0.2",
+    "enumerateEveryZipMember": true,
+    "parseContentTypesDefaultsAndOverrides": true,
+    "parseEveryRelationshipPartAndEdge": true,
+    "deriveReachableAndOrphanSets": true,
+    "normalizeEveryMemberPath": true,
+    "recordCompressedAndUncompressedSizes": true,
+    "rejectEncryption": true,
+    "rejectDuplicateOrCollision": true,
+    "exactGraphClosureRequired": true,
+    "worksheetOnlyInspectionAllowed": false
+  },
+  "candidateWorkbookBinding": {
+    "exactFields": ["authorityRole", "repositoryRelativePathDigestSha256", "workbookSha256"],
+    "authorityRole": "current_governed_private_review_workbook",
+    "repositoryRelativePathDigestSha256": "13b6dffdc6d8b116f6fe062d38c5bc2edbc5b36a525441ee75b36607152816be",
+    "pathDigestBasis": "nfc_repository_relative_forward_slash_utf8",
+    "workbookSha256": "c5e15ef291fa9f498c6b597c4ad00e89182edc850a6eda6fb90b9e50b5f0b521",
+    "workbookSha256Format": "lowercase_hex_64",
+    "pathAndDigestMustMatchSingleGraphMember": true,
+    "callerOverrideAllowed": false,
+    "unknownFieldsRejected": true
+  },
+  "opcRegistry": {
+    "contentTypes": [
+      {"partClass": "package_relationships", "nameRule": "extension:rels", "contentType": "application/vnd.openxmlformats-package.relationships+xml", "cardinality": "EXACT_ACTUAL_RELATIONSHIP_PART_SET"},
+      {"partClass": "current_profile_xml_default", "nameRule": "extension:xml_resolves_only_unoverridden_xl_workbook", "contentType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml", "cardinality": "EXACTLY_ONE_DEFAULT_DECLARATION"},
+      {"partClass": "workbook", "nameRule": "exact:/xl/workbook.xml", "contentType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml", "cardinality": "EXACTLY_ONE"},
+      {"partClass": "worksheet", "nameRule": "regex:^/xl/worksheets/sheet[1-9][0-9]*[.]xml$", "contentType": "application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml", "cardinality": "ONE_OR_MORE"},
+      {"partClass": "shared_strings", "nameRule": "exact:/xl/sharedStrings.xml", "contentType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sharedStrings+xml", "cardinality": "ZERO_OR_ONE"},
+      {"partClass": "styles", "nameRule": "exact:/xl/styles.xml", "contentType": "application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml", "cardinality": "EXACTLY_ONE"},
+      {"partClass": "theme", "nameRule": "regex:^/xl/theme/theme[1-9][0-9]*[.]xml$", "contentType": "application/vnd.openxmlformats-officedocument.theme+xml", "cardinality": "ZERO_OR_ONE"},
+      {"partClass": "table", "nameRule": "regex:^/xl/tables/table[1-9][0-9]*[.]xml$", "contentType": "application/vnd.openxmlformats-officedocument.spreadsheetml.table+xml", "cardinality": "ZERO_OR_MORE"},
+      {"partClass": "core_properties", "nameRule": "exact:/docProps/core.xml", "contentType": "application/vnd.openxmlformats-package.core-properties+xml", "cardinality": "ZERO_OR_ONE"},
+      {"partClass": "extended_properties", "nameRule": "exact:/docProps/app.xml", "contentType": "application/vnd.openxmlformats-officedocument.extended-properties+xml", "cardinality": "ZERO_OR_ONE"}
+    ],
+    "contentTypeRecordExactFields": ["partClass", "nameRule", "contentType", "cardinality"],
+    "relationshipTypes": [
+      {"relationId": "office_document", "uri": "http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument", "sourceClass": "PACKAGE_ROOT", "targetClass": "workbook", "cardinality": "EXACTLY_ONE", "targetMode": "Internal"},
+      {"relationId": "core_properties", "uri": "http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties", "sourceClass": "PACKAGE_ROOT", "targetClass": "core_properties", "cardinality": "ZERO_OR_ONE", "targetMode": "Internal"},
+      {"relationId": "extended_properties", "uri": "http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties", "sourceClass": "PACKAGE_ROOT", "targetClass": "extended_properties", "cardinality": "ZERO_OR_ONE", "targetMode": "Internal"},
+      {"relationId": "worksheet", "uri": "http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet", "sourceClass": "workbook", "targetClass": "worksheet", "cardinality": "ONE_OR_MORE_EXACT_SHEET_ID_MAP", "targetMode": "Internal"},
+      {"relationId": "shared_strings", "uri": "http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings", "sourceClass": "workbook", "targetClass": "shared_strings", "cardinality": "ZERO_OR_ONE", "targetMode": "Internal"},
+      {"relationId": "styles", "uri": "http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles", "sourceClass": "workbook", "targetClass": "styles", "cardinality": "EXACTLY_ONE", "targetMode": "Internal"},
+      {"relationId": "theme", "uri": "http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme", "sourceClass": "workbook", "targetClass": "theme", "cardinality": "ZERO_OR_ONE", "targetMode": "Internal"},
+      {"relationId": "table", "uri": "http://schemas.openxmlformats.org/officeDocument/2006/relationships/table", "sourceClass": "worksheet", "targetClass": "table", "cardinality": "ZERO_OR_MORE_EXACT_TABLEPART_MAP", "targetMode": "Internal"},
+      {"relationId": "hyperlink", "uri": "http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink", "sourceClass": "worksheet", "targetClass": "EXTERNAL_URI", "cardinality": "ZERO_OR_MORE", "targetMode": "External"}
+    ],
+    "relationshipTypeRecordExactFields": ["relationId", "uri", "sourceClass", "targetClass", "cardinality", "targetMode"],
+    "requiredRoots": [
+      {"member": "[Content_Types].xml", "cardinality": "EXACTLY_ONE"},
+      {"member": "_rels/.rels", "cardinality": "EXACTLY_ONE"},
+      {"member": "xl/workbook.xml", "cardinality": "EXACTLY_ONE"},
+      {"relationId": "office_document", "cardinality": "EXACTLY_ONE"}
+    ],
+    "targetResolution": {
+      "internal": "OPC_PACK_URI_RELATIVE_TO_SOURCE_PART_OR_SINGLE_LEADING_SLASH_PACKAGE_ABSOLUTE_THEN_NFC_POSIX_NORMALIZE",
+      "packageAbsoluteSingleLeadingSlashAllowed": true,
+      "filesystemDriveUncOrSchemeAbsoluteAllowed": false,
+      "percentEncodedSlashBackslashDotSegmentAllowed": false,
+      "fragmentAllowedForInternalRelationship": false,
+      "targetMustResolveToExactlyOneRegisteredPart": true,
+      "relationshipIdUniqueWithinPart": true,
+      "duplicateSemanticEdgeAllowed": false,
+      "orphanPartAllowed": false
+    },
+    "unknownContentTypeRelationPartOrCardinality": "REJECTED"
+  },
+  "partDecisionEnum": [
+    "HANDLED_AND_SCANNED",
+    "HANDLED_METADATA_ONLY_WITH_JUSTIFICATION",
+    "REJECTED"
+  ],
+  "defaultDecision": "REJECTED",
+  "unknownButAllowedDecisionExists": false,
+  "partPolicy": [
+    {
+      "category": "content_types_and_all_relationships",
+      "decision": "HANDLED_AND_SCANNED",
+      "requirements": ["unique_canonical_names_and_ids", "internal_target_exists", "exact_known_relation_type", "graph_closure"]
+    },
+    {
+      "category": "workbook_worksheets_shared_strings_styles_theme_tables",
+      "decision": "HANDLED_AND_SCANNED",
+      "requirements": ["exact_content_type", "all_text_tail_and_attributes_scanned", "semantic_handler", "resource_bounds"]
+    },
+    {
+      "category": "feature_property_bag",
+      "decision": "REJECTED",
+      "requirements": ["future_versioned_exact_namespace_and_semantic_handler_required"]
+    },
+    {
+      "category": "doc_properties_core_and_app",
+      "decision": "HANDLED_AND_SCANNED",
+      "requirements": ["exact_content_type", "all_text_tail_and_attributes_scanned", "exact_key_policy", "resource_bounds"]
+    },
+    {
+      "category": "ordinary_external_hyperlink_relationship",
+      "decision": "HANDLED_METADATA_ONLY_WITH_JUSTIFICATION",
+      "requirements": ["static_validation_only", "safe_scheme", "no_credentials", "bounded_count_and_length", "digest_only_lineage", "no_external_access"]
+    },
+    {
+      "category": "doc_properties_custom",
+      "decision": "REJECTED",
+      "requirements": ["future_versioned_full_scan_handler_required"]
+    },
+    {
+      "category": "comments_threaded_comments_persons",
+      "decision": "REJECTED",
+      "requirements": ["future_versioned_handler_required"]
+    },
+    {
+      "category": "drawings_charts_vml_media",
+      "decision": "REJECTED",
+      "requirements": ["opaque_or_linked_binary_privacy_not_proven"]
+    },
+    {
+      "category": "pivots_slicers_connections_query_external_data",
+      "decision": "REJECTED",
+      "requirements": ["no_current_business_need"]
+    },
+    {
+      "category": "external_links_embeddings_ole_activex_ctrlprops_printer_settings",
+      "decision": "REJECTED",
+      "requirements": ["active_external_or_binary_channel"]
+    },
+    {
+      "category": "custom_xml_item_properties_and_relationships",
+      "decision": "REJECTED",
+      "requirements": ["unhandled_content_channel"]
+    },
+    {
+      "category": "vba_macros_xlm_binary_signatures_thumbnails_unknown_or_orphan",
+      "decision": "REJECTED",
+      "requirements": ["macro_binary_unknown_or_unreachable_channel"]
+    }
+  ],
+  "worksheetChannelPolicy": {
+    "handled": [
+      "cells",
+      "formulas_and_cached_values",
+      "shared_and_inline_strings",
+      "data_validations",
+      "native_hyperlinks",
+      "styles",
+      "visibility",
+      "defined_names"
+    ],
+    "rejectedUnlessVersionedHandlerExists": [
+      "header_footer",
+      "legacy_or_threaded_comments",
+      "drawing",
+      "chart",
+      "vml",
+      "media",
+      "pivot",
+      "external_data"
+    ]
+  },
+  "externalHyperlinkPolicy": {
+    "relationshipType": "hyperlink",
+    "targetMode": "External",
+    "allowedSchemes": ["http", "https", "mailto"],
+    "usernameOrPasswordAllowed": false,
+    "maxTargetLengthBytesUtf8": 4096,
+    "maxHyperlinkCount": 10000,
+    "fileUncJavascriptDataOrCustomSchemeAllowed": false,
+    "fetchAllowed": false,
+    "dnsAllowed": false,
+    "redirectAllowed": false,
+    "externalContentLoadAllowed": false,
+    "rawTargetOrHostPersisted": false
+  },
+  "resourceBudgets": {
+    "maxEntryCount": 256,
+    "maxPathLengthBytes": 512,
+    "maxPerEntryCompressedBytes": 67108864,
+    "maxPerEntryUncompressedBytes": 134217728,
+    "maxTotalCompressedBytes": 134217728,
+    "maxTotalUncompressedBytes": 268435456,
+    "maxCompressionRatio": 200,
+    "maxXmlBytesPerPart": 67108864,
+    "maxXmlDepth": 128,
+    "maxXmlElementsPerPart": 2000000,
+    "maxXmlAttributesPerElement": 256,
+    "maxXmlTextBytesPerPart": 67108864,
+    "maxRelationshipCount": 20000,
+    "maxHyperlinkCount": 10000,
+    "maxHyperlinkLengthBytesUtf8": 4096
+  },
+  "xmlPolicy": {
+    "dtdAllowed": false,
+    "entityDeclarationAllowed": false,
+    "externalEntityAllowed": false,
+    "processingInstructionAllowed": false,
+    "networkResolverAllowed": false,
+    "xincludeAllowed": false,
+    "namespaceUndeclarationAllowed": false,
+    "duplicateExpandedAttributeAllowed": false,
+    "encodingValues": ["UTF-8", "UTF-16LE", "UTF-16BE"],
+    "bomAndDeclarationMustAgree": true,
+    "boundedStreamingOrPreflightRequired": true,
+    "namespaceRegistry": [
+      "http://schemas.openxmlformats.org/spreadsheetml/2006/main",
+      "http://schemas.openxmlformats.org/officeDocument/2006/relationships",
+      "http://schemas.openxmlformats.org/package/2006/relationships",
+      "http://schemas.openxmlformats.org/package/2006/content-types",
+      "http://schemas.openxmlformats.org/package/2006/metadata/core-properties",
+      "http://purl.org/dc/elements/1.1/",
+      "http://purl.org/dc/terms/",
+      "http://purl.org/dc/dcmitype/",
+      "http://www.w3.org/2001/XMLSchema-instance",
+      "http://schemas.openxmlformats.org/officeDocument/2006/extended-properties",
+      "http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes",
+      "http://schemas.openxmlformats.org/drawingml/2006/main",
+      "http://www.w3.org/XML/1998/namespace"
+    ],
+    "namespaceAliases": {
+      "spreadsheetml": "http://schemas.openxmlformats.org/spreadsheetml/2006/main",
+      "office-document-relationships": "http://schemas.openxmlformats.org/officeDocument/2006/relationships",
+      "package-relationships": "http://schemas.openxmlformats.org/package/2006/relationships",
+      "content-types": "http://schemas.openxmlformats.org/package/2006/content-types",
+      "core-properties": "http://schemas.openxmlformats.org/package/2006/metadata/core-properties",
+      "dc": "http://purl.org/dc/elements/1.1/",
+      "dcterms": "http://purl.org/dc/terms/",
+      "dcmitype": "http://purl.org/dc/dcmitype/",
+      "xsi": "http://www.w3.org/2001/XMLSchema-instance",
+      "extended-properties": "http://schemas.openxmlformats.org/officeDocument/2006/extended-properties",
+      "doc-props-vtypes": "http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes",
+      "drawingml": "http://schemas.openxmlformats.org/drawingml/2006/main",
+      "xml": "http://www.w3.org/XML/1998/namespace"
+    },
+    "elementAttributeRegistries": [
+      {"partClass": "workbook", "rootExpandedName": "spreadsheetml:workbook", "allowedElementLocalNames": ["workbook", "fileVersion", "workbookPr", "bookViews", "workbookView", "sheets", "sheet", "definedNames", "definedName", "calcPr"], "allowedAttributeLocalNames": ["name", "sheetId", "id", "state", "activeTab", "firstSheet", "showSheetTabs", "date1904", "calcId", "fullCalcOnLoad", "forceFullCalc"]},
+      {"partClass": "worksheet", "rootExpandedName": "spreadsheetml:worksheet", "allowedElementLocalNames": ["worksheet", "sheetPr", "dimension", "sheetViews", "sheetView", "selection", "sheetFormatPr", "cols", "col", "sheetData", "row", "c", "f", "v", "is", "t", "mergeCells", "mergeCell", "hyperlinks", "hyperlink", "dataValidations", "dataValidation", "formula1", "formula2", "pageMargins", "tableParts", "tablePart"], "allowedAttributeLocalNames": ["ref", "r", "s", "t", "ht", "customHeight", "min", "max", "width", "customWidth", "count", "sqref", "type", "allowBlank", "showErrorMessage", "showInputMessage", "operator", "id", "defaultRowHeight", "showGridLines", "workbookViewId", "hidden", "left", "right", "top", "bottom", "header", "footer"]},
+      {"partClass": "shared_strings", "rootExpandedName": "spreadsheetml:sst", "allowedElementLocalNames": ["sst", "si", "t", "r", "rPr"], "allowedAttributeLocalNames": ["count", "uniqueCount", "space"]},
+      {"partClass": "styles", "rootExpandedName": "spreadsheetml:styleSheet", "allowedElementLocalNames": ["styleSheet", "numFmts", "numFmt", "fonts", "font", "b", "fills", "fill", "borders", "border", "cellStyleXfs", "cellXfs", "xf", "cellStyles", "cellStyle", "dxfs", "tableStyles", "alignment", "protection", "name", "sz", "color", "family", "scheme", "patternFill", "fgColor", "bgColor", "left", "right", "top", "bottom", "diagonal"], "allowedAttributeLocalNames": ["count", "numFmtId", "formatCode", "fontId", "fillId", "borderId", "xfId", "applyNumberFormat", "applyFont", "applyFill", "applyBorder", "applyAlignment", "name", "builtinId", "val", "rgb", "theme", "tint", "patternType", "style", "defaultTableStyle", "defaultPivotStyle", "wrapText"]},
+      {"partClass": "table", "rootExpandedName": "spreadsheetml:table", "allowedElementLocalNames": ["table", "autoFilter", "tableColumns", "tableColumn", "tableStyleInfo"], "allowedAttributeLocalNames": ["id", "name", "displayName", "ref", "totalsRowShown", "count", "showFirstColumn", "showLastColumn", "showRowStripes", "showColumnStripes"]},
+      {"partClass": "theme", "rootExpandedName": "drawingml:theme", "allowedElementLocalNames": ["theme", "themeElements", "clrScheme", "dk1", "lt1", "dk2", "lt2", "accent1", "accent2", "accent3", "accent4", "accent5", "accent6", "hlink", "folHlink", "sysClr", "srgbClr", "tint", "shade", "satMod", "lumMod", "alpha", "fontScheme", "majorFont", "minorFont", "latin", "ea", "cs", "fmtScheme", "fillStyleLst", "solidFill", "gradFill", "gsLst", "gs", "lin", "lnStyleLst", "ln", "prstDash", "effectStyleLst", "effectStyle", "effectLst", "outerShdw", "bgFillStyleLst"], "allowedAttributeLocalNames": ["name", "val", "lastClr", "typeface", "pos", "ang", "scaled", "w", "blurRad", "dist", "dir"]},
+      {"partClass": "core_properties", "rootExpandedName": "core-properties:coreProperties", "allowedElementLocalNames": ["coreProperties", "title", "subject", "creator", "keywords", "description", "lastModifiedBy", "created", "modified"], "allowedAttributeLocalNames": ["type", "lang"]},
+      {"partClass": "extended_properties", "rootExpandedName": "extended-properties:Properties", "allowedElementLocalNames": ["Properties", "Application", "AppVersion", "Company", "Theme"], "allowedAttributeLocalNames": []},
+      {"partClass": "content_types", "rootExpandedName": "content-types:Types", "allowedElementLocalNames": ["Types", "Default", "Override"], "allowedAttributeLocalNames": ["Extension", "ContentType", "PartName"]},
+      {"partClass": "relationships", "rootExpandedName": "package-relationships:Relationships", "allowedElementLocalNames": ["Relationships", "Relationship"], "allowedAttributeLocalNames": ["Id", "Type", "Target", "TargetMode"]}
+    ],
+    "elementAttributeRegistryRecordExactFields": ["partClass", "rootExpandedName", "allowedElementLocalNames", "allowedAttributeLocalNames"],
+    "rootExpandedNameForm": "registered_namespace_alias_colon_local_name",
+    "rootExpandedNameAliasMustResolveExactly": true,
+    "partNamespaceRules": [
+      {"partClass": "workbook", "allowedElementNamespaceAliases": ["spreadsheetml"], "allowedAttributeNamespaceAliases": ["UNQUALIFIED", "office-document-relationships", "xml"]},
+      {"partClass": "worksheet", "allowedElementNamespaceAliases": ["spreadsheetml"], "allowedAttributeNamespaceAliases": ["UNQUALIFIED", "office-document-relationships", "xml"]},
+      {"partClass": "shared_strings", "allowedElementNamespaceAliases": ["spreadsheetml"], "allowedAttributeNamespaceAliases": ["UNQUALIFIED", "xml"]},
+      {"partClass": "styles", "allowedElementNamespaceAliases": ["spreadsheetml"], "allowedAttributeNamespaceAliases": ["UNQUALIFIED"]},
+      {"partClass": "table", "allowedElementNamespaceAliases": ["spreadsheetml"], "allowedAttributeNamespaceAliases": ["UNQUALIFIED"]},
+      {"partClass": "theme", "allowedElementNamespaceAliases": ["drawingml"], "allowedAttributeNamespaceAliases": ["UNQUALIFIED"]},
+      {"partClass": "core_properties", "allowedElementNamespaceAliases": ["core-properties", "dc", "dcterms"], "allowedAttributeNamespaceAliases": ["UNQUALIFIED", "xsi", "xml"]},
+      {"partClass": "extended_properties", "allowedElementNamespaceAliases": ["extended-properties", "doc-props-vtypes"], "allowedAttributeNamespaceAliases": ["UNQUALIFIED"]},
+      {"partClass": "content_types", "allowedElementNamespaceAliases": ["content-types"], "allowedAttributeNamespaceAliases": ["UNQUALIFIED"]},
+      {"partClass": "relationships", "allowedElementNamespaceAliases": ["package-relationships"], "allowedAttributeNamespaceAliases": ["UNQUALIFIED"]}
+    ],
+    "partNamespaceRuleRecordExactFields": ["partClass", "allowedElementNamespaceAliases", "allowedAttributeNamespaceAliases"],
+    "exactlyOneNamespaceRulePerElementAttributeRegistryPartClass": true,
+    "unknownNamespaceElementOrAttribute": "REJECTED",
+    "knownButWrongPartNamespaceElementOrAttribute": "REJECTED",
+    "allTextTailAndAttributeValuesScanned": true
+  },
+  "zipStructurePolicy": {
+    "singleEndOfCentralDirectoryRequired": true,
+    "archivePrefixBytesAllowed": false,
+    "archiveTrailingBytesAllowed": false,
+    "archiveCommentAllowed": false,
+    "multiDiskArchiveAllowed": false,
+    "centralDirectoryAndLocalHeaderExactAgreement": true,
+    "localRecordDataRangesMayOverlap": false,
+    "duplicateRawFilenameBytesRejected": true,
+    "utf8FlagRequired": true,
+    "legacyCodePageFilenameAllowed": false,
+    "unicodePathExtraFieldMustMatchUtf8Name": true,
+    "canonicalMemberPathForm": "nfc_posix_relative_no_leading_slash_no_dot_segments",
+    "absoluteDriveUncBackslashDotDotOrNulMemberNameRejected": true,
+    "caseFoldOrNfcMemberCollisionRejected": true,
+    "supportedCompressionMethods": ["STORE", "DEFLATE"],
+    "zip64AllowedOnlyWhenCanonicalAndWithinBudgets": true,
+    "dataDescriptorAllowedOnlyWhenFlaggedAndMatchingCentralDirectory": true,
+    "crc32MustMatchInflatedBytes": true,
+    "externalAttributesMayEncodeLinkDeviceOrSpecial": false,
+    "encryptedOrStrongEncryptionFlagsRejected": true
+  },
+  "verificationReceipt": {
+    "schema": "m2.v2.independent-workbook-verification.v0.2",
+    "exactFields": [
+      "schema",
+      "workbookSha256",
+      "profileVersion",
+      "policyDigestSha256",
+      "packageMemberSetDigestSha256",
+      "contentTypeGraphDigestSha256",
+      "relationshipGraphDigestSha256",
+      "partDecisionDigestSha256",
+      "partDecisions",
+      "derivedFacts",
+      "hyperlinkLineage",
+      "issues",
+      "passed",
+      "visualReviewAttested",
+      "providerRequestDelta",
+      "actualExternalFetchCount"
+    ],
+    "unknownFieldsRejected": true,
+    "derivedFactsRecord": {
+      "exactFields": ["factId", "factType", "valueType", "value", "sourcePartSetDigestSha256"],
+      "factTypePattern": "^[A-Z0-9_]{1,64}$",
+      "valueTypeValues": ["BOOLEAN", "INTEGER", "SAFE_STRING", "DIGEST"],
+      "valueConstraints": {"BOOLEAN": "boolean", "INTEGER": "safe_integer", "SAFE_STRING": "nfc_utf8_max_4096_bytes", "DIGEST": "lowercase_hex_64"},
+      "maximumRecords": 10000,
+      "unknownFieldsRejected": true
+    },
+    "issueRecord": {
+      "exactFields": ["issueId", "severity", "reasonCode", "partNameDigestSha256", "relationIdDigestSha256", "safeDetail"],
+      "severityValues": ["ERROR", "WARNING", "INFO"],
+      "safeDetailMaxBytesUtf8": 1024,
+      "maximumRecords": 10000,
+      "unknownFieldsRejected": true
+    },
+    "partDecisionRecord": {
+      "exactFields": ["partNameDigestSha256", "partClass", "contentType", "decision", "justificationCode", "handlerId", "contentSha256"],
+      "decisionValues": ["HANDLED_AND_SCANNED", "HANDLED_METADATA_ONLY_WITH_JUSTIFICATION", "REJECTED"],
+      "metadataOnlyRequiresNonemptyJustificationCode": true,
+      "handledRequiresRegisteredHandlerId": true,
+      "maximumRecords": 256,
+      "unknownFieldsRejected": true,
+      "boundBy": "partDecisionDigestSha256"
+    },
+    "generatorAssertionsTrusted": false,
+    "visualReviewDefault": false,
+    "structuralVerifierMayAttestVisualReview": false,
+    "hyperlinkLineageExactFields": ["protocol", "targetMode", "relationshipType", "targetDigest", "occurrenceCount"],
+    "hyperlinkLineageContainer": "ARRAY_SORTED_BY_TARGET_DIGEST",
+    "hyperlinkLineageMaximumRecords": 10000,
+    "hyperlinkLineageUnknownFieldsRejected": true,
+    "derivedFactsContainer": "ARRAY_SORTED_BY_FACT_ID",
+    "issuesContainer": "ARRAY_SORTED_BY_ISSUE_ID",
+    "partDecisionsContainerRequiredForDigestRecomputation": true,
+    "rawTargetsOrHostsPersisted": false,
+    "providerRequestDeltaRequired": 0,
+    "actualExternalFetchCountRequired": 0
+  },
+  "currentWorkbookPolicy": {
+    "firstAction": "STRICT_REVERIFY_EXISTING_WORKBOOK",
+    "onPass": "EMIT_NEW_VERSIONED_RECEIPT_WITHOUT_REBUILD",
+    "onFail": "EMIT_EXACT_SAFE_REASON_WITHOUT_POLICY_DOWNGRADE",
+    "manualEditAllowed": false,
+    "rebuildAllowedOnlyWithDeterministicImmutableInputDerivedGenerator": true,
+    "withoutGenerator": "BLOCKED_WORKBOOK_REGENERATOR_REQUIRED"
+  },
+  "testArtifactPolicy": {
+    "defaultPublicProfile": {
+      "requiredArtifactMissing": "NONZERO_EXIT",
+      "requiredJsonPointerMissing": "NONZERO_EXIT",
+      "hiddenEarlyReturnAllowed": false,
+      "requiredSkipAllowed": false,
+      "totalSkipsRequired": 0,
+      "unknownSkipsRequired": 0
+    },
+    "optionalPrivateProfile": {
+      "separateFromDefault": true,
+      "ids": [
+        "OPT-C1",
+        "OPT-C2",
+        "OPT-CALIBRATION-PHASE-A",
+        "OPT-M2-OPERATOR"
+      ],
+      "absenceMaySkipDefaultTest": false
+    }
+  },
+  "verificationScope": {
+    "contractFrozen": true,
+    "implementationClaimed": false,
+    "realWorkbookStrictResultClaimed": false,
+    "newReceiptClaimed": false,
+    "exactHeadCiClaimed": false,
+    "independentReviewClaimed": false
+  },
+  "authorization": {
+    "currentDecision": "CANARY_FAIL",
+    "providerDispatchAuthorized": false,
+    "databaseConnectionsAuthorized": false,
+    "canaryAuthorized": false,
+    "full160Authorized": false,
+    "modelTrainingAuthorized": false,
+    "holdoutAccessAuthorized": false,
+    "independentReviewBatchB8Authorized": false,
+    "markReadyAuthorized": false,
+    "nextDevelopmentReadiness": "NOT_AUTHORIZED",
+    "mergeAuthorized": false,
+    "releaseAuthorized": false
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "schema": "m2.v2.group-atomic-private-recovery-public.v0.2",
+  "status": "IMPLEMENTED_AND_SYNTHETICALLY_VERIFIED",
+  "classification": "public_sanitized_not_for_formal_decision",
+  "allowedSources": [
+    "immutable_manifests",
+    "append_only_provider_receipts",
+    "source_records",
+    "evidence_records",
+    "request_event_ledger",
+    "frozen_execution_contracts"
+  ],
+  "publicReportsMayBeRecoverySource": false,
+  "stagingGates": [
+    "exact_role_set",
+    "all_digests_recomputed",
+    "real_gates_executed",
+    "transaction_binding_verified",
+    "stage_verifier_passed",
+    "provider_request_delta_zero",
+    "git_tracking_safe",
+    "env_target_safe"
+  ],
+  "promotion": {
+    "currentBackedUpBeforePromotion": true,
+    "groupAtomic": true,
+    "rollbackOnAnyFailure": true,
+    "partialStateMayBecomeCurrent": false
+  },
+  "idempotency": {
+    "firstRun": "success",
+    "sameInputRerun": "verified_no_op",
+    "counterDeltaOnRerun": 0
+  },
+  "faultInjection": ["each_staging_gate", "each_promotion_step", "binding_write", "receipt_write", "rollback"],
+  "verificationScope": {
+    "syntheticBoundaryTests": "verified",
+    "realPrivateMigrationClaimed": false,
+    "exactHeadCiClaimed": false,
+    "publicRestatementClaimed": false
+  },
+  "authorization": {
+    "full160Authorized": false,
+    "nextDevelopmentReadiness": "NOT_AUTHORIZED"
+  }
+}

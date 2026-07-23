@@ -1,0 +1,58 @@
+{
+  "schema": "m2.v2.source-allowlist.v0.1",
+  "status": "frozen_empty_fail_closed_pending_terms_and_legal_review",
+  "effectiveDate": "2026-07-17",
+  "explicitDomainEntryRequired": true,
+  "approvedDomainEntries": [],
+  "sourceTiers": {
+    "authoritative": [
+      "official_platform",
+      "official_author_publisher_producer_page",
+      "government_or_authoritative_publication_record"
+    ],
+    "reliable_secondary": [
+      "traceable_reputable_media",
+      "mainstream_platform_public_page",
+      "traceable_ranking"
+    ],
+    "weak_secondary": ["aggregator", "reprint", "incomplete_page"],
+    "prohibited": [
+      "unsourced_generated_content",
+      "seo_spam",
+      "unauthorized_personal_data",
+      "login_private_data",
+      "unauditable_summary"
+    ]
+  },
+  "sourceTermsClasses": [
+    "structured_facts_allowed",
+    "short_excerpt_allowed",
+    "metadata_only",
+    "review_required",
+    "prohibited"
+  ],
+  "predictionCandidateRule": {
+    "allowedTiers": ["authoritative", "reliable_secondary"],
+    "allowedTermsClasses": ["structured_facts_allowed", "short_excerpt_allowed"],
+    "entityResolvedRequired": true,
+    "availableAtKnownRequired": true,
+    "conflictResolvedRequired": true,
+    "explicitApprovedDomainRequired": true
+  },
+  "searchIndexRule": {
+    "discoveryOnly": true,
+    "mayResolveConflictAlone": false,
+    "mayCreateAcceptedFactAlone": false
+  },
+  "blockedConditions": [
+    "unknown_terms",
+    "review_required_without_approval",
+    "authentication_required",
+    "captcha_or_paywall",
+    "robots_or_terms_disallow",
+    "personal_sensitive_data",
+    "full_page_storage_required",
+    "domain_not_in_approved_entries"
+  ],
+  "currentDecision": "no_real_source_is_approved_for_acquisition_or_prediction_use"
+}
