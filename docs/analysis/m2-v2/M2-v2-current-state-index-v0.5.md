@@ -28,6 +28,8 @@ PR #7 cryptographic current-authority 仍由不可变的 `M2-v2-current-state-in
 
 全新 GitHub 克隆在不存在 `data/private-input`、`data/private-output`、S1 authenticity receipt、provider key 和数据库的条件下，通过了安装、doctor、lint、build、1324 项默认测试、smoke、13 项 E2E、M2 public diagnostics，以及 formal/fixture 两种服务器启动。
 
+portable closeout exact commit `3c029a12bec44d79853675b4febde7de5213e9fd` 又在独立 clone 中重复通过更新后的 1,327 项默认测试和 13 项 E2E；private input/output 在验收前后均不存在。
+
 持续基线为：
 
 ```bash

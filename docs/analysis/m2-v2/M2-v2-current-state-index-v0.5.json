@@ -40,7 +40,22 @@
     "fixtureStartPrivateIndependent": true,
     "missingS1PrivateAuthenticityBlocksCoreDevelopment": false,
     "baselineMainFreshClonePublicBaselineVerified": true,
-    "portableCloseoutExactCommitFreshClone": "PENDING_POST_COMMIT_VALIDATION",
+    "portableCloseoutExactCommitFreshClone": {
+      "verified": true,
+      "commit": "3c029a12bec44d79853675b4febde7de5213e9fd",
+      "privateInputPresentBeforeOrAfter": false,
+      "privateOutputPresentBeforeOrAfter": false,
+      "defaultTests": {
+        "passed": 1327,
+        "failed": 0,
+        "skipped": 0
+      },
+      "e2e": {
+        "passed": 13,
+        "failed": 0,
+        "skipped": 0
+      }
+    },
     "continuousCommands": [
       "npm run doctor:dev",
       "npm run check:no-real-data",

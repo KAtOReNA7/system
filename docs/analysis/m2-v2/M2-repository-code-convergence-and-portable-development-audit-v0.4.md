@@ -112,4 +112,13 @@ private 缺失导致核心项目不能启动的问题本身已经修复。复审
 
 全量测试首次暴露历史 formal-cash synthetic preflight 只接受 `codex/m2-*`、旧命名分支或 CI，拒绝普通 `codex/*` 维护分支。修正后，只有 synthetic-only preflight 接受任意 Codex feature branch；Phase A、private、final-holdout 和正式写入入口没有放宽，final-holdout fail-closed 测试继续通过。
 
-提交后的 exact commit 还必须在没有 `data/private-input`、`data/private-output` 和环境凭据的全新 clone 中重复完整公共基线；最终交付不得仅依赖当前工作树结果。
+实现提交 `3c029a12bec44d79853675b4febde7de5213e9fd` 已在独立 clone 中重复完整公共基线。该 clone 在验证前后均不存在 `data/private-input` 或 `data/private-output`，并再次得到：
+
+- doctor `READY`
+- no-real-data、lint、build 通过
+- 默认测试 1,327/1,327，0 fail、0 skip
+- smoke 和 formal/fixture portable start 通过
+- E2E 13/13，0 fail、0 skip
+- M2 public diagnostic snapshot 通过
+
+因此多电脑结论不再仅依赖原工作树或历史 CI，而有 exact committed tree 的无-private clone 证据。
