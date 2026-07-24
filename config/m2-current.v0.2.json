@@ -27,6 +27,33 @@
       "seed": 20260724
     }
   },
+  "evaluationPolicy": {
+    "humanNumericBaselineRequired": false,
+    "businessSampleRole": "post_hoc_error_diagnostic_only",
+    "finalHumanAcceptanceMode": "result_acceptance_after_technical_gates",
+    "nextDevelopmentReadiness": "AUTOMATED_BACKTEST_AND_BUSINESS_COVERAGE_REQUIRED",
+    "monthlyRollingOriginRequired": true,
+    "separateCashOccurrenceAndPositiveAmountRequired": true,
+    "automatedComparators": [
+      "zero",
+      "seasonal_naive",
+      "SBA",
+      "TSB",
+      "ADIDA"
+    ],
+    "requiredMetrics": [
+      "WAPE",
+      "signed_bias",
+      "MASE",
+      "RMSSE"
+    ],
+    "requiredCoverageViews": [
+      "eligibility",
+      "cash_observability",
+      "served",
+      "abstention"
+    ]
+  },
   "candidate": {
     "id": "M2-current-hierarchical-robust-calibration-v0.2",
     "scaleFactors": [

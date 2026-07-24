@@ -81,6 +81,9 @@ export function buildM2CurrentContract(config) {
   if (pairedBootstrap.confidence !== 0.95) {
     throw new Error("m2_current_paired_bootstrap_confidence_invalid");
   }
+  const evaluationPolicy = config.schema === "m2.current.config.v0.2"
+    ? buildEvaluationPolicy(config.evaluationPolicy)
+    : null;
   const candidate = {
     id: exactString(config.candidate?.id, "candidate_id"),
     scaleFactors: uniqueFiniteNumbers(
@@ -167,9 +170,85 @@ export function buildM2CurrentContract(config) {
     population: Object.freeze(population),
     thresholds: Object.freeze(thresholds),
     pairedBootstrap: Object.freeze(pairedBootstrap),
+    evaluationPolicy,
     candidate: Object.freeze(candidate),
     businessSample,
     authorizations: Object.freeze(authorizations)
+  });
+}
+
+function buildEvaluationPolicy(value) {
+  const businessSampleRole = exactString(
+    value?.businessSampleRole,
+    "evaluation_policy_business_sample_role"
+  );
+  if (businessSampleRole !== "post_hoc_error_diagnostic_only") {
+    throw new Error("m2_current_evaluation_policy_business_sample_role_invalid");
+  }
+  const finalHumanAcceptanceMode = exactString(
+    value?.finalHumanAcceptanceMode,
+    "evaluation_policy_final_human_acceptance_mode"
+  );
+  if (
+    finalHumanAcceptanceMode
+    !== "result_acceptance_after_technical_gates"
+  ) {
+    throw new Error(
+      "m2_current_evaluation_policy_final_human_acceptance_mode_invalid"
+    );
+  }
+  const nextDevelopmentReadiness = exactString(
+    value?.nextDevelopmentReadiness,
+    "evaluation_policy_next_development_readiness"
+  );
+  if (
+    nextDevelopmentReadiness
+    !== "AUTOMATED_BACKTEST_AND_BUSINESS_COVERAGE_REQUIRED"
+  ) {
+    throw new Error(
+      "m2_current_evaluation_policy_next_development_readiness_invalid"
+    );
+  }
+  if (value?.humanNumericBaselineRequired !== false) {
+    throw new Error(
+      "m2_current_evaluation_policy_human_numeric_baseline_must_be_false"
+    );
+  }
+  if (value?.monthlyRollingOriginRequired !== true) {
+    throw new Error(
+      "m2_current_evaluation_policy_monthly_rolling_origin_required"
+    );
+  }
+  if (value?.separateCashOccurrenceAndPositiveAmountRequired !== true) {
+    throw new Error(
+      "m2_current_evaluation_policy_two_part_diagnostic_required"
+    );
+  }
+  return Object.freeze({
+    humanNumericBaselineRequired: false,
+    businessSampleRole,
+    finalHumanAcceptanceMode,
+    nextDevelopmentReadiness,
+    monthlyRollingOriginRequired: true,
+    separateCashOccurrenceAndPositiveAmountRequired: true,
+    automatedComparators: Object.freeze(
+      uniqueStrings(
+        value?.automatedComparators,
+        "evaluation_policy_automated_comparators"
+      )
+    ),
+    requiredMetrics: Object.freeze(
+      uniqueStrings(
+        value?.requiredMetrics,
+        "evaluation_policy_required_metrics"
+      )
+    ),
+    requiredCoverageViews: Object.freeze(
+      uniqueStrings(
+        value?.requiredCoverageViews,
+        "evaluation_policy_required_coverage_views"
+      )
+    )
   });
 }
 

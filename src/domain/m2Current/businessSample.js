@@ -195,16 +195,18 @@ function buildPublicReport(rows, fullPopulation, contract) {
         "a_few_large_reactivations_dominate_and_are_not_identifiable_from_allowed_features"
     },
     humanReview: {
-      status: "PENDING",
-      allowedOutcomes: [
-        "reasonable",
-        "acceptable_with_limitation",
-        "model_issue",
-        "data_issue",
-        "cash_route_issue"
-      ],
-      privateWorkbookRequired: true,
-      resultMayNotBeUsedToRetuneTheSameCases: true
+      status: "NOT_REQUIRED_BY_USER_DECISION",
+      numericForecastRequired: false,
+      privateWorkbookRequired: false,
+      sampleRole: contract.evaluationPolicy.businessSampleRole,
+      suitableForRepresentativeAcceptance: false,
+      reason:
+        "stress_rows_are_selected_with_actuals_and_the_sample_is_for_error_diagnosis",
+      finalAcceptance: {
+        status: "DEFERRED_UNTIL_TECHNICAL_GATES_PASS",
+        mode: contract.evaluationPolicy.finalHumanAcceptanceMode,
+        allowedOutcomes: ["accept", "accept_with_limits", "reject"]
+      }
     },
     boundaries: {
       aggregateOnly: true,

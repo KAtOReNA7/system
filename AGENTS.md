@@ -4,9 +4,9 @@
 
 - PR #7、PR #8、PR #9、PR #10、PR #11 均已合入 `main`；已合并分支不得继续作为开发入口。
 - 当前仓库治理导航为：
-  - `docs/analysis/m2-v2/M2-v2-current-state-index-v0.7.md`
+  - `docs/analysis/m2-v2/M2-v2-current-state-index-v0.8.md`
   - `docs/analysis/m2-v2/M2-repository-code-convergence-and-portable-development-audit-v0.4.md`
-  - `docs/analysis/m2-current/M2-current-reliable-model-development-v0.2.md`
+  - `docs/analysis/m2-current/M2-current-reliable-model-development-v0.3.md`
 - PR #7 cryptographic authority 继续由不可变的
   `docs/analysis/m2-v2/M2-v2-current-state-index-v0.3.json` 提供；治理索引不得改写该绑定。
 - 历史 B0–B8、C1–C3、旧 PR 状态和旧授权记录只用于审计追溯，不是当前执行指令。
@@ -99,63 +99,53 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
   case 且相对 segment fallback 的 training WAPE 至少改善 1% 时才采用 group scale；
   dormant 在没有可识别 as-of 信号时必须回退 B4。
 - eligibility、cash observability 和 served coverage 必须继续分开报告。2,229 部非模型作品的原因 ledger 已在本地 private output 穷尽对账；不得为提高比例移动 824/7,851 冻结人口。
-- 120 部唯一作品的确定性业务抽样已生成，人工复核仍为 `PENDING`。当前正确工程
-  顺序是复核已冻结样本，再单独补可审计 commitment snapshot；禁止继续堆叠
-  evidence runtime、复制历史 runner 或扩建候选家族。
+- 120 部唯一作品的确定性抽样保留为 post-hoc 误差诊断：其中 60 部为代表性
+  样本、30 部为最大低估、30 部为最大高估。stress 样本使用 actual 选取，因此
+  不适合充当代表性业务验收，更不得要求人工预测金额。
+- 用户已于 2026-07-24 明确取消独立人工数值预测基线和强制逐行复核。人工只在
+  技术门禁通过后查看最终结果，并做 `accept`、`accept_with_limits` 或 `reject`
+  的小规模结果验收；人工不与模型比赛，也不为当前 120 部样本填写预测值。
 
 当前业务 gate 保持：
 
 - `currentDecision=CANARY_FAIL`
-- `nextDevelopmentReadiness=BUSINESS_SAMPLE_REVIEW_REQUIRED`
+- `nextDevelopmentReadiness=AUTOMATED_BACKTEST_AND_BUSINESS_COVERAGE_REQUIRED`
 - `full160Authorized=false`
 - `modelTrainingAuthorized=true` 仅限复现上述 exact v0.2 candidate
 - final holdout、embargo shadow、deferred labels 均 sealed
 - provider、远端/共享/staging-like 数据库、Canary/full160、新候选家族、release、M3 formal 均未授权
 
-## M2 当前执行队列（2026-07-24 已启动）
+## M2 当前执行队列（2026-07-24 已调整）
 
 以下顺序是当前仓库任务的默认优先级。除非用户明确改变业务方向或新增授权，否则
-不得跳过前置项，也不得以继续调参、扩建 evidence runtime 或复制历史 runner 代替。
+不得以继续调参、扩建 evidence runtime、复制历史 runner 或重新引入人工预测竞赛代替。
 
-1. 冻结 120 部唯一作品样本并完成人工业务复核。
-   - 受控明细角色固定为
-     `data/private-output/m2-current-quality/M2-current-business-sample-private-v0.2.ndjson`。
-   - 该文件必须保持 Git ignored，不得向公开文档复制作品标识、明细预测或 actual。
-   - 只允许填写 `reviewOutcome`、`reviewReasonCode` 和 `reviewerNote`；
-     `reviewOutcome` 必须属于
-     `reasonable`、`acceptable_with_limitation`、`model_issue`、`data_issue`
-     或 `cash_route_issue`。
-   - 同一批复核结果不得用于重新调节 v0.2。
-2. 建立同 cutoff 的独立人工预测基线。
-   - 人工预测必须在揭示 B4、v0.1、v0.2 和 actual 前完成。
-   - 人工只能使用预测 cutoff 时可取得的资料，并记录点预测、合理区间、
-     information cutoff、预测时间和 reviewer role。
-   - 现有含模型值和 actual 的业务复核明细不能冒充盲视人工预测。
-   - 若同一人同时负责盲视预测和业务复核，必须先完成并锁定盲视预测，再打开
-     含模型值和 actual 的业务复核明细；本队列编号表示项目交付优先级，不表示
-     同一 reviewer 的信息揭示顺序。
-3. 冻结 exact v0.2；停止 scale、group 和候选家族搜索。
+1. 冻结 exact v0.2；停止 scale、group 和候选家族搜索。
+2. 建立自动化评价合同和可复现基线：
+   - 增加月度 rolling origin；
+   - 同人口比较全零、seasonal naive、SBA、TSB、ADIDA、B4、v0.1 和 v0.2；
+   - 分开评估现金是否发生与发生后的正金额；
+   - 同时报告 WAPE、signed bias、MASE、RMSSE，并按 horizon、segment 和 route 切片；
+   - eligibility、cash observability、served coverage 和 abstention 分开报告。
+3. 使用 120 部冻结样本的公开聚合仅诊断误差集中、route 和数据问题，不要求用户
+   填写人工预测或逐行复核，不用该偏置样本充当代表性验收。
 4. 从业务源单独补充 cutoff 时已签署、确认且可审计的 commitment snapshot。
    未承诺买断不得进入正式现金预测，pure-buyout 无承诺时继续 null abstain。
-5. 完成上述输入后，先设计并冻结下一轮评价合同，再申请新候选授权。评价合同应覆盖：
-   - 更多月度 rolling origin；
-   - 全零、seasonal naive、SBA、TSB、ADIDA；
-   - 现金发生概率与正金额分别评估；
-   - MASE/RMSSE、发生概率校准、正现金 case 命中率、概率区间和业务损失；
-   - eligibility、cash observability、served coverage 和 abstention 分开报告。
-6. 新候选若获单独授权，只能扩展 `src/domain/m2Current/**`，优先研究正常销售现金的
+5. 新候选若获单独授权，只能扩展 `src/domain/m2Current/**`，优先研究正常销售现金的
    two-part/hurdle、严格 as-of 特征、全局共享与非负层级协调；不得让未承诺买断进入
    概率金额模型。
-7. 先完成“人工、v0.1、v0.2、简单基线”的同人口比较，再决定是否申请 final holdout。
-8. final holdout、embargo shadow、deferred labels、provider、数据库、Canary/full160、
+6. 自动化技术门禁通过后，再以小规模代表性结果让人工做最终接受、有限接受或拒绝；
+   不要求人工预测数值，也不使用 120 部 stress 混合样本替代最终验收样本。
+7. final holdout、embargo shadow、deferred labels、provider、数据库、Canary/full160、
    release 和 M3 formal 在收到各自明确授权前继续 sealed/禁止。
 
 当前启动状态：
 
-- 已实现：v0.2、120 部冻结样本和 private review 字段已生成。
+- 已实现：v0.2 和 120 部冻结 post-hoc 误差诊断样本。
 - 已验证：本机 `m2-algorithm-authoritative-input` capability 库存可用；这不等于新算法授权。
-- 执行中：120 部人工业务复核。
-- 等待业务输入：盲视人工预测、复核填写和 commitment snapshot。
+- 执行中：自动化 rolling-origin、简单基线和业务覆盖评价合同。
+- 不再等待：盲视人工预测、120 部逐行复核或三张人工填写模板。
+- 仅在真实材料存在时等待：cutoff 时已签署、确认且可审计的 commitment snapshot。
 - 未授权：新候选训练、final holdout 及所有既有业务 gate 外的动作。
 
 ## Git 与提交规则

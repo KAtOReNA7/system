@@ -79,10 +79,6 @@ const privateReasonLedgerPath = path.join(
   privateDirectory,
   "M2-current-model-eligibility-reasons-private-v0.2.ndjson"
 );
-const privateBusinessSamplePath = path.join(
-  privateDirectory,
-  "M2-current-business-sample-private-v0.2.ndjson"
-);
 const publicPath = path.join(root, config.publicSources.candidate);
 const publicBusinessSamplePath = path.join(
   root,
@@ -318,6 +314,9 @@ const publicReport = {
   businessSample: {
     publicReport: config.publicSources.businessSample,
     workCount: businessSample.publicReport.sampleDesign.workCount,
+    evaluationRole: contract.evaluationPolicy.businessSampleRole,
+    humanNumericBaselineRequired:
+      contract.evaluationPolicy.humanNumericBaselineRequired,
     humanReviewStatus: businessSample.publicReport.humanReview.status
   },
   acceptance: {
@@ -373,16 +372,8 @@ const privateText = candidate.rows.map((row) => JSON.stringify({
 })).join("\n") + "\n";
 await writeFile(privateRowsPath, privateText, "utf8");
 const prettyPublic = `${JSON.stringify(publicReport, null, 2)}\n`;
-const privateBusinessSampleText = businessSample.privateRows
-  .map((row) => JSON.stringify(row))
-  .join("\n") + "\n";
 const prettyBusinessSamplePublic =
   `${JSON.stringify(businessSample.publicReport, null, 2)}\n`;
-await writeFile(
-  privateBusinessSamplePath,
-  privateBusinessSampleText,
-  "utf8"
-);
 await writeFile(privateManifestPath, `${JSON.stringify({
   schema: "m2.current.reliable_candidate.private_manifest.v0.2",
   tracked: false,
@@ -392,8 +383,8 @@ await writeFile(privateManifestPath, `${JSON.stringify({
   privateEligibilityReasonRowCount: eligibilityLedger.length,
   privateEligibilityReasonSha256: sha256(privateReasonLedgerText),
   privateEligibilityReasonCounts: eligibilityReasonCounts,
-  privateBusinessSampleRowCount: businessSample.privateRows.length,
-  privateBusinessSampleSha256: sha256(privateBusinessSampleText),
+  businessSampleRole: contract.evaluationPolicy.businessSampleRole,
+  privateBusinessSampleWritten: false,
   publicReportSha256: sha256(prettyPublic),
   publicBusinessSampleSha256: sha256(prettyBusinessSamplePublic),
   finalHoldoutOpened: false,

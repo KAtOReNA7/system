@@ -5,7 +5,35 @@
     "businessProblemWrong": false,
     "governanceWrong": false,
     "engineeringSequenceDrifted": false,
-    "nextPriority": "human_review_current_business_sample_and_acquire_commitment_snapshots"
+    "retiredSequence": "human_numeric_baseline_and_mandatory_business_sample_review",
+    "nextPriority": "automated_backtest_baselines_and_business_coverage"
+  },
+  "evaluationPolicy": {
+    "humanNumericBaselineRequired": false,
+    "businessSampleRole": "post_hoc_error_diagnostic_only",
+    "finalHumanAcceptanceMode": "result_acceptance_after_technical_gates",
+    "nextDevelopmentReadiness": "AUTOMATED_BACKTEST_AND_BUSINESS_COVERAGE_REQUIRED",
+    "monthlyRollingOriginRequired": true,
+    "separateCashOccurrenceAndPositiveAmountRequired": true,
+    "automatedComparators": [
+      "zero",
+      "seasonal_naive",
+      "SBA",
+      "TSB",
+      "ADIDA"
+    ],
+    "requiredMetrics": [
+      "WAPE",
+      "signed_bias",
+      "MASE",
+      "RMSSE"
+    ],
+    "requiredCoverageViews": [
+      "eligibility",
+      "cash_observability",
+      "served",
+      "abstention"
+    ]
   },
   "evidence": {
     "schema": "m2.current.public_evidence.v0.2",
@@ -294,16 +322,21 @@
         "interpretation": "a_few_large_reactivations_dominate_and_are_not_identifiable_from_allowed_features"
       },
       "humanReview": {
-        "status": "PENDING",
-        "allowedOutcomes": [
-          "reasonable",
-          "acceptable_with_limitation",
-          "model_issue",
-          "data_issue",
-          "cash_route_issue"
-        ],
-        "privateWorkbookRequired": true,
-        "resultMayNotBeUsedToRetuneTheSameCases": true
+        "status": "NOT_REQUIRED_BY_USER_DECISION",
+        "numericForecastRequired": false,
+        "privateWorkbookRequired": false,
+        "sampleRole": "post_hoc_error_diagnostic_only",
+        "suitableForRepresentativeAcceptance": false,
+        "reason": "stress_rows_are_selected_with_actuals_and_the_sample_is_for_error_diagnosis",
+        "finalAcceptance": {
+          "status": "DEFERRED_UNTIL_TECHNICAL_GATES_PASS",
+          "mode": "result_acceptance_after_technical_gates",
+          "allowedOutcomes": [
+            "accept",
+            "accept_with_limits",
+            "reject"
+          ]
+        }
       },
       "boundaries": {
         "aggregateOnly": true,
@@ -1347,7 +1380,9 @@
     "businessSample": {
       "publicReport": "docs/analysis/m2-current/M2-current-business-sample-diagnostic-v0.2.json",
       "workCount": 120,
-      "humanReviewStatus": "PENDING"
+      "evaluationRole": "post_hoc_error_diagnostic_only",
+      "humanNumericBaselineRequired": false,
+      "humanReviewStatus": "NOT_REQUIRED_BY_USER_DECISION"
     },
     "acceptance": {
       "overallAbsoluteBiasPassed": true,
@@ -1394,9 +1429,13 @@
     "m3FormalAuthorized": false
   },
   "nextDiagnostics": [
-    "complete_human_review_of_frozen_current_business_sample",
-    "prepare_auditable_commitment_snapshot_role_for_cash_observability",
+    "implement_monthly_rolling_origin_evaluation",
+    "compare_zero_seasonal_naive_sba_tsb_and_adida_baselines",
+    "separate_cash_occurrence_from_positive_cash_amount_diagnostics",
+    "report_wape_bias_mase_rmsse_by_horizon_segment_and_route",
+    "report_eligibility_observability_served_coverage_and_abstention_separately",
+    "accept_only_real_auditable_commitment_snapshots",
     "keep_final_holdout_sealed_until_separate_authorization",
-    "do_not_use_post_hoc_status_to_predict_dormant_reactivation"
+    "defer_small_human_result_acceptance_until_technical_gates_pass"
   ]
 }

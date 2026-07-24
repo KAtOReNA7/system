@@ -10,16 +10,17 @@
 - PR #10：M2 current canonical core、portable development 和 v0.1 候选收敛，已合并。
 - PR #11：M2 current v0.2 可靠预测候选和 120 部冻结业务样本，已合并。
 - 当前业务结论：`currentDecision=CANARY_FAIL`。
-- 当前开发 readiness：`nextDevelopmentReadiness=BUSINESS_SAMPLE_REVIEW_REQUIRED`。
-- v0.2 可靠预测候选和 120 部确定性业务样本已完成；人工业务复核仍为
-  `PENDING`。provider、Canary/full160、final holdout、release 和 M3 formal
-  均未授权。
+- 当前开发 readiness：
+  `nextDevelopmentReadiness=AUTOMATED_BACKTEST_AND_BUSINESS_COVERAGE_REQUIRED`。
+- v0.2 可靠预测候选和 120 部确定性误差诊断样本已完成。独立人工数值预测和
+  强制逐行复核已取消；人工只在技术门禁通过后做最终结果验收。provider、
+  Canary/full160、final holdout、release 和 M3 formal 均未授权。
 
 当前导航：
 
-- `docs/analysis/m2-v2/M2-v2-current-state-index-v0.7.md`
+- `docs/analysis/m2-v2/M2-v2-current-state-index-v0.8.md`
 - `docs/analysis/m2-v2/M2-repository-code-convergence-and-portable-development-audit-v0.4.md`
-- `docs/analysis/m2-current/M2-current-reliable-model-development-v0.2.md`
+- `docs/analysis/m2-current/M2-current-reliable-model-development-v0.3.md`
 - `AGENTS.md`
 
 历史 PR、B0–B8、C1–C3 和旧授权记录保留在 `docs/analysis/` 中，只用于审计追溯，不是当前开发入口。
@@ -156,46 +157,39 @@ M2 的正式预测对象是未来账单现金。正式边界保持：
 
 v0.2 在 overall、全部 horizon 和相对 B4 paired CI 上通过，并把总体偏差降至接近零；
 dormant 切片仍没有改善，全库现金可观察性也仍不足。120 部唯一作品的确定性业务
-样本已经生成，下一步是完成人工复核，并单独取得可审计 commitment snapshot；
-不得继续复制 C1–C3 runner、堆叠 evidence runtime 或扩建候选家族。
+样本只保留作 post-hoc 误差诊断，不再要求人工预测或逐行填写。下一步转为自动化
+rolling-origin、简单基线、two-part 诊断和业务覆盖分析；不得继续复制 C1–C3
+runner、堆叠 evidence runtime 或无授权扩建候选家族。
 
 ## M2 当前执行队列
 
-本队列已于 2026-07-24 启动。它替代继续调节 v0.2 scale、扩建 evidence runtime
-或复制历史 runner 的开发方式。必须按顺序完成前置项，不得跳过人工复核直接训练
-新候选或打开 final holdout。
+本队列已于 2026-07-24 按用户判断调整。三张人工填写模板不再是开发依赖，也不再
+以人工与模型的数值竞赛作为质量标准。
 
-1. **人工复核冻结样本（执行中）**
-   - 固定使用已生成的 120 部唯一作品，不增加、替换或重抽样。
-   - 本机受控明细角色为
-     `data/private-output/m2-current-quality/M2-current-business-sample-private-v0.2.ndjson`；
-     文件必须保持 Git ignored。
-   - 对每行填写 `reviewOutcome`、`reviewReasonCode` 和 `reviewerNote`。
-     `reviewOutcome` 只允许
-     `reasonable`、`acceptable_with_limitation`、`model_issue`、`data_issue`
-     或 `cash_route_issue`。
-   - 同一批复核结果不得再次用于调节 v0.2。
-2. **建立独立人工预测基线（等待业务人员）**
-   - 人工必须只看到与模型相同 cutoff 时可取得的资料；填写预测后才可揭示
-     B4、v0.1、v0.2 和 actual。
-   - 至少记录人工点预测、合理区间、资料 cutoff、预测时间和复核角色。
-   - 现有业务复核明细含模型值和 actual，只用于模型合理性复核，不能冒充盲视人工基线。
-   - 若同一人同时承担两项工作，实际填写时必须先完成并保存盲视人工预测，再打开
-     含模型值和 actual 的业务复核文件；本节编号是项目交付优先级，不是信息揭示顺序。
-3. **冻结 v0.2（已执行）**
+1. **冻结 v0.2（已执行）**
    - `M2-current-hierarchical-robust-calibration-v0.2` 保持当前 exact 规则；
      不继续搜索 scale、group 或候选家族。
-4. **补充可审计输入（等待业务源）**
+2. **建立自动化评价合同（当前优先）**
+   - 增加月度 rolling origin；
+   - 同人口比较全零、seasonal naive、SBA、TSB、ADIDA、B4、v0.1 和 v0.2；
+   - 分开评价现金发生概率和发生后的正金额；
+   - 报告 WAPE、signed bias、MASE、RMSSE，以及 horizon、segment、route、
+     eligibility、cash observability、served coverage 和 abstention 切片。
+3. **保留 120 部样本为误差诊断**
+   - 其中 60 部代表性、30 部最大低估、30 部最大高估；
+   - stress 行依赖 actual 选取，因此不适合做人类盲视预测或代表性验收；
+   - 用户无需填写人工预测值、逐行复核结果或原三张模板。
+4. **补充可审计输入（仅真实材料存在时）**
    - 单独准备 cutoff 时已签署、确认且可审计的 commitment snapshot。
    - 未承诺买断不得通过概率乘金额进入正式预测；pure-buyout 无承诺时继续
      `null abstain`。
 5. **下一轮算法研究（尚未授权执行）**
-   - 增加月度 rolling origin；
-   - 建立全零、seasonal naive、SBA、TSB 和 ADIDA 基线；
    - 预先冻结“销售现金发生概率 + 正金额”的 two-part/hurdle 设计；
    - 评估严格 as-of 业务特征、概率区间、全局模型和非负层级协调。
 6. **决策门禁**
-   - 先比较人工、v0.1、v0.2 和简单基线，再由用户决定是否授权新候选开发。
+   - 先通过自动化评价和业务覆盖门禁，再由用户决定是否授权新候选开发。
+   - 技术门禁通过后，只让人工对小规模代表性最终结果做接受、有限接受或拒绝，
+     不要求人工提供预测金额。
    - final holdout、embargo shadow、provider、数据库、Canary/full160、release
      和 M3 formal 继续保持未授权。
 

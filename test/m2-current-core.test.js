@@ -592,7 +592,20 @@ test("business sample is deterministic, unique and aggregate-only", () => {
     dormant: 3,
     intermittent: 3
   });
-  assert.equal(first.publicReport.humanReview.status, "PENDING");
+  assert.equal(
+    first.publicReport.humanReview.status,
+    "NOT_REQUIRED_BY_USER_DECISION"
+  );
+  assert.equal(first.publicReport.humanReview.numericForecastRequired, false);
+  assert.equal(first.publicReport.humanReview.privateWorkbookRequired, false);
+  assert.equal(
+    first.publicReport.humanReview.sampleRole,
+    "post_hoc_error_diagnostic_only"
+  );
+  assert.equal(
+    first.publicReport.humanReview.suitableForRepresentativeAcceptance,
+    false
+  );
   assert.equal(
     first.publicReport.sampleDesign.representativeSelectionUsesActual,
     false
@@ -666,6 +679,11 @@ test("public diagnostic CLI is reproducible and aggregate-only", () => {
   assert.equal(report.schema, "m2.current.public_diagnostic_report.v0.3");
   assert.equal(report.directionAssessment.engineeringSequenceDrifted, false);
   assert.equal(
+    report.directionAssessment.retiredSequence,
+    "human_numeric_baseline_and_mandatory_business_sample_review"
+  );
+  assert.equal(report.evaluationPolicy.humanNumericBaselineRequired, false);
+  assert.equal(
     report.evidence.currentCandidate.candidateId,
     "M2-current-hierarchical-robust-calibration-v0.2"
   );
@@ -674,7 +692,10 @@ test("public diagnostic CLI is reproducible and aggregate-only", () => {
     0.5111496562935863
   );
   assert.equal(report.evidence.businessSample.sampleDesign.workCount, 120);
-  assert.equal(report.evidence.businessSample.humanReview.status, "PENDING");
+  assert.equal(
+    report.evidence.businessSample.humanReview.status,
+    "NOT_REQUIRED_BY_USER_DECISION"
+  );
   assert.equal(report.gate.candidateOverallGatesPassed, true);
   assert.equal(report.gate.candidateDevelopmentQualityPassed, false);
   assert.equal(
@@ -712,6 +733,14 @@ test("current config grants candidate development but no downstream authority", 
   assert.equal(currentConfig.authorizations.holdout, false);
   assert.equal(currentConfig.authorizations.release, false);
   assert.equal(currentConfig.authorizations.m3Formal, false);
+  assert.equal(
+    currentContract.evaluationPolicy.nextDevelopmentReadiness,
+    "AUTOMATED_BACKTEST_AND_BUSINESS_COVERAGE_REQUIRED"
+  );
+  assert.equal(
+    currentContract.evaluationPolicy.humanNumericBaselineRequired,
+    false
+  );
   assert.equal(
     currentConfig.primaryComparator,
     "B4_formula_switched_legacy_variant"

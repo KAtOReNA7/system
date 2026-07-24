@@ -10,9 +10,9 @@ PR #7、PR #8、PR #9 和 PR #10 均已合并，旧 PR 分支不得继续作为�
 
 当前权威导航：
 
-1. `docs/analysis/m2-v2/M2-v2-current-state-index-v0.7.md`
+1. `docs/analysis/m2-v2/M2-v2-current-state-index-v0.8.md`
 2. `docs/analysis/m2-v2/M2-repository-code-convergence-and-portable-development-audit-v0.4.md`
-3. `docs/analysis/m2-current/M2-current-reliable-model-development-v0.2.md`
+3. `docs/analysis/m2-current/M2-current-reliable-model-development-v0.3.md`
 4. `AGENTS.md`
 
 ## 当前开发状态
@@ -26,10 +26,10 @@ PR #7、PR #8、PR #9 和 PR #10 均已合并，旧 PR 分支不得继续作为�
 当前业务状态：
 
 - `currentDecision=CANARY_FAIL`
-- `nextDevelopmentReadiness=BUSINESS_SAMPLE_REVIEW_REQUIRED`
+- `nextDevelopmentReadiness=AUTOMATED_BACKTEST_AND_BUSINESS_COVERAGE_REQUIRED`
 - `full160Authorized=false`
 - exact v0.2 candidate development replay 和 120 部确定性样本已完成
-- 人工业务复核仍为 `PENDING`
+- 120 部样本只用于 post-hoc 误差诊断；人工数值预测和强制逐行复核已取消
 - final holdout、embargo shadow、deferred labels 均 sealed
 
 ## 下一项 M2 工作的正确方向
@@ -42,10 +42,17 @@ PR #7、PR #8、PR #9 和 PR #10 均已合并，旧 PR 分支不得继续作为�
 
 下一步固定为：
 
-1. 人工复核已经冻结的 120 部业务样本，不新增候选家族或重抽样。
-2. 单独设计可审计 commitment snapshot，解决不可观察现金，不得由算法猜测未承诺买断。
-3. dormant 在没有新的 as-of 可用信息前保持 B4 fallback，不得使用当前 shelf/rights 状态回填历史 origin。
-4. 业务抽检通过且用户另行授权后，才申请 final holdout。
+1. 建立月度 rolling-origin 自动评价，并同人口比较全零、seasonal naive、SBA、
+   TSB、ADIDA、B4、v0.1 和 v0.2。
+2. 分开诊断现金发生与正金额，报告 WAPE、bias、MASE、RMSSE 及 horizon、
+   segment、route、coverage、abstention 切片。
+3. 120 部样本只保留为误差诊断，不要求用户填写预测金额、逐行复核或三张模板。
+4. 单独接收真实、cutoff 时已签署确认且可审计的 commitment snapshot；不得由
+   算法猜测未承诺买断。
+5. dormant 在没有新的 as-of 可用信息前保持 B4 fallback，不得使用当前
+   shelf/rights 状态回填历史 origin。
+6. 自动技术门禁通过后，人工只做小规模最终结果接受/有限接受/拒绝；获得单独授权
+   后才可打开 final holdout。
 
 没有新授权时，只能继续公共诊断、fixture、工具链、文档和仓库维护，不得调用 provider、数据库、Canary/full160、holdout、release 或 M3 formal。
 

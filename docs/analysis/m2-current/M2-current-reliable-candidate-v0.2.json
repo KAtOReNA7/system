@@ -1018,7 +1018,9 @@
   "businessSample": {
     "publicReport": "docs/analysis/m2-current/M2-current-business-sample-diagnostic-v0.2.json",
     "workCount": 120,
-    "humanReviewStatus": "PENDING"
+    "evaluationRole": "post_hoc_error_diagnostic_only",
+    "humanNumericBaselineRequired": false,
+    "humanReviewStatus": "NOT_REQUIRED_BY_USER_DECISION"
   },
   "acceptance": {
     "overallAbsoluteBiasPassed": true,
