@@ -13,7 +13,9 @@ export function loadM2CurrentPublicEvidence(sources, config) {
   requireSchema(sources?.segments, "m2.c2_activity_segment_route_manifest.v1");
   requireSchema(sources?.development, "m2.c3_development_validation.v1");
   requireSchema(sources?.population, "m2.calibration_population_coverage.v1");
-  const currentCandidateSchema = config.schema === "m2.current.config.v0.5"
+  const currentCandidateSchema = config.schema === "m2.current.config.v0.6"
+    ? "m2.current.sales_share_candidate.public.v0.6"
+    : config.schema === "m2.current.config.v0.5"
     ? "m2.current.multi_resolution_candidate.public.v0.5"
     : config.schema === "m2.current.config.v0.4"
       ? "m2.current.global_distributional_candidate.public.v0.4"
@@ -26,7 +28,9 @@ export function loadM2CurrentPublicEvidence(sources, config) {
   if (config.schema !== "m2.current.config.v0.1") {
     requireSchema(
       sources?.previousCandidate,
-      config.schema === "m2.current.config.v0.5"
+      config.schema === "m2.current.config.v0.6"
+        ? "m2.current.multi_resolution_candidate.public.v0.5"
+        : config.schema === "m2.current.config.v0.5"
         ? "m2.current.global_distributional_candidate.public.v0.4"
         : config.schema === "m2.current.config.v0.4"
           ? "m2.current.occurrence_amount_candidate.public.v0.3"
@@ -45,13 +49,16 @@ export function loadM2CurrentPublicEvidence(sources, config) {
     [
       "m2.current.config.v0.3",
       "m2.current.config.v0.4",
-      "m2.current.config.v0.5"
+      "m2.current.config.v0.5",
+      "m2.current.config.v0.6"
     ]
       .includes(config.schema)
   ) {
     requireSchema(
       sources?.automatedEvaluation,
-      config.schema === "m2.current.config.v0.5"
+      config.schema === "m2.current.config.v0.6"
+        ? "m2.current.automated_evaluation.public.v0.4"
+        : config.schema === "m2.current.config.v0.5"
         ? "m2.current.automated_evaluation.public.v0.3"
         : config.schema === "m2.current.config.v0.4"
           ? "m2.current.automated_evaluation.public.v0.2"
@@ -106,13 +113,21 @@ export function loadM2CurrentPublicEvidence(sources, config) {
     throw new Error("m2_current_model_eligibility_reason_ledger_drift");
   }
   const candidateCaseCount = Number(
-    ["m2.current.config.v0.4", "m2.current.config.v0.5"]
+    [
+      "m2.current.config.v0.4",
+      "m2.current.config.v0.5",
+      "m2.current.config.v0.6"
+    ]
       .includes(config.schema)
       ? sources.candidate.scope.frozenDecisionCaseCount
       : sources.candidate.scope.caseCount
   );
   const candidateWorkCount = Number(
-    ["m2.current.config.v0.4", "m2.current.config.v0.5"]
+    [
+      "m2.current.config.v0.4",
+      "m2.current.config.v0.5",
+      "m2.current.config.v0.6"
+    ]
       .includes(config.schema)
       ? sources.candidate.scope.frozenDecisionWorkCount
       : sources.candidate.scope.uniqueWorkCount
@@ -139,10 +154,13 @@ export function loadM2CurrentPublicEvidence(sources, config) {
     sources.coverage.observationGates.top10ForecastableCashCoverageMinimum
   );
   if (
-    observedCoverageThreshold
-      !== contract.thresholds.fullLibraryForecastableCashCoverageMinimum
-    || observedTop10Threshold
-      !== contract.thresholds.top10ForecastableCashCoverageMinimum
+    config.schema !== "m2.current.config.v0.6"
+    && (
+      observedCoverageThreshold
+        !== contract.thresholds.fullLibraryForecastableCashCoverageMinimum
+      || observedTop10Threshold
+        !== contract.thresholds.top10ForecastableCashCoverageMinimum
+    )
   ) {
     throw new Error("m2_current_coverage_threshold_drift");
   }
@@ -158,7 +176,9 @@ export function loadM2CurrentPublicEvidence(sources, config) {
   }
 
   return {
-    schema: config.schema === "m2.current.config.v0.5"
+    schema: config.schema === "m2.current.config.v0.6"
+      ? "m2.current.public_evidence.v0.6"
+      : config.schema === "m2.current.config.v0.5"
       ? "m2.current.public_evidence.v0.5"
       : config.schema === "m2.current.config.v0.4"
         ? "m2.current.public_evidence.v0.4"
@@ -183,12 +203,39 @@ export function loadM2CurrentPublicEvidence(sources, config) {
         top5: sources.coverage.topBands.top5.forecastableCashCoverage,
         top10: sources.coverage.topBands.top10.forecastableCashCoverage,
         fullLibraryRequired:
-          contract.thresholds.fullLibraryForecastableCashCoverageMinimum,
+          config.schema === "m2.current.config.v0.6"
+            ? null
+            : contract.thresholds.fullLibraryForecastableCashCoverageMinimum,
         top10Required:
-          contract.thresholds.top10ForecastableCashCoverageMinimum,
+          config.schema === "m2.current.config.v0.6"
+            ? null
+            : contract.thresholds.top10ForecastableCashCoverageMinimum,
         uncommittedCashShare:
           sources.coverage.cashCoverage.classifierExposureShareOfLedgerCash
       },
+      targetClassification: config.schema === "m2.current.config.v0.6"
+        ? {
+          frozenClassificationUncertainCashShare:
+            sources.candidate.targetMigration.frozenTargetIsolation
+              .classificationUncertainCashShare,
+          denseClassificationUncertainCashShare:
+            sources.candidate.targetMigration.denseTargetIsolation
+              .classificationUncertainCashShare,
+          maximumAllowed:
+            contract.thresholds.maximumClassificationUncertainCashShare,
+          passed:
+            sources.candidate.acceptance.targetClassificationPassed
+        }
+        : null,
+      economicScope: config.schema === "m2.current.config.v0.6"
+        ? {
+          fullLibraryHistoricalForecastableShareOfLedgerCash:
+            sources.coverage.cashCoverage.forecastableCashShareOfLedgerCash,
+          modelTarget:
+            "sales_share_cash_only",
+          allCompanyCashCoverageClaimed: false
+        }
+        : null,
       modelEligibility: {
         eligibleWorkCount: contract.population.modelWorkCount,
         excludedWorkCount:
@@ -237,14 +284,16 @@ export function loadM2CurrentPublicEvidence(sources, config) {
       candidateId: sources.candidate.candidateId,
       comparison: [
         "m2.current.config.v0.4",
-        "m2.current.config.v0.5"
+        "m2.current.config.v0.5",
+        "m2.current.config.v0.6"
       ].includes(config.schema)
         ? sources.candidate.pointComparisonToPrevious.comparison
         : sources.candidate.comparison,
       byHorizon: sources.candidate.byHorizon,
       pairedCi: [
         "m2.current.config.v0.4",
-        "m2.current.config.v0.5"
+        "m2.current.config.v0.5",
+        "m2.current.config.v0.6"
       ].includes(config.schema)
         ? sources.candidate.pointComparisonToPrevious.pairedCi
         : sources.candidate.pairedCi,
@@ -255,7 +304,8 @@ export function loadM2CurrentPublicEvidence(sources, config) {
         candidateId: sources.previousCandidate.candidateId,
         comparison: [
           "m2.current.config.v0.4",
-          "m2.current.config.v0.5"
+          "m2.current.config.v0.5",
+          "m2.current.config.v0.6"
         ].includes(config.schema)
           ? sources.candidate.pointComparisonToPrevious
           : sources.candidate.previousCandidateComparison
@@ -266,7 +316,8 @@ export function loadM2CurrentPublicEvidence(sources, config) {
       [
         "m2.current.config.v0.3",
         "m2.current.config.v0.4",
-        "m2.current.config.v0.5"
+        "m2.current.config.v0.5",
+        "m2.current.config.v0.6"
       ]
         .includes(config.schema)
       ? {

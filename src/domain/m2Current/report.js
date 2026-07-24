@@ -10,10 +10,13 @@ export function buildM2CurrentPublicDiagnosticReport(
   const gate = evaluateM2CurrentDiagnosticGate(evidence, candidate, config);
   const compact = [
     "m2.current.config.v0.4",
-    "m2.current.config.v0.5"
+    "m2.current.config.v0.5",
+    "m2.current.config.v0.6"
   ].includes(config.schema);
   return {
-    schema: config.schema === "m2.current.config.v0.5"
+    schema: config.schema === "m2.current.config.v0.6"
+      ? "m2.current.public_diagnostic_report.v0.7"
+      : config.schema === "m2.current.config.v0.5"
       ? "m2.current.public_diagnostic_report.v0.6"
       : config.schema === "m2.current.config.v0.4"
         ? "m2.current.public_diagnostic_report.v0.5"
@@ -27,14 +30,21 @@ export function buildM2CurrentPublicDiagnosticReport(
       businessProblemWrong: false,
       governanceWrong: false,
       engineeringSequenceDrifted:
-        config.schema === "m2.current.config.v0.5",
+        [
+          "m2.current.config.v0.5",
+          "m2.current.config.v0.6"
+        ].includes(config.schema),
       priorInstructionAssessment:
-        config.schema === "m2.current.config.v0.5"
+        config.schema === "m2.current.config.v0.6"
+          ? "buyout_isolation_was_directionally_correct_but_current_labels_were_already_equivalent_so_accuracy_did_not_change"
+          : config.schema === "m2.current.config.v0.5"
           ? "directionally_correct_evaluation_but_over_specified_algorithm_families_before_signal_and_decision_grain"
           : "not_reassessed",
       retiredSequence:
         "human_numeric_baseline_and_120_work_business_sample_skipped",
-      nextPriority: config.schema === "m2.current.config.v0.5"
+      nextPriority: config.schema === "m2.current.config.v0.6"
+        ? "resolve_tiny_target_classification_uncertainty_then_add_auditable_work_level_sales_signals_and_independent_validation"
+        : config.schema === "m2.current.config.v0.5"
         ? "independent_portfolio_validation_then_auditable_work_level_signals"
         : config.schema === "m2.current.config.v0.4"
           ? "auditable_as_of_signals_and_absolute_quality_before_holdout"
@@ -46,12 +56,16 @@ export function buildM2CurrentPublicDiagnosticReport(
     gate,
     nextDiagnostics: [
       "keep_dense_monthly_rolling_origin_and_strong_baselines_as_mandatory_regression_checks",
-      "improve_cash_observability_without_moving_the_frozen_model_population",
+      config.schema === "m2.current.config.v0.6"
+        ? "resolve_sales_share_target_classification_uncertainty_without_moving_the_frozen_population"
+        : "improve_cash_observability_without_moving_the_frozen_model_population",
       "keep_occurrence_and_positive_amount_diagnostics_separate",
+      "keep_all_buyout_cash_outside_training_backtest_and_forecast_output",
+      "report_sales_share_target_completeness_and_company_cash_economic_scope_separately",
       "report_work_portfolio_origin_and_origin_horizon_resolution_separately",
       "require_dense_monthly_results_to_confirm_sparse_authority_results",
       "treat_portfolio_development_pass_as_distinct_from_full_M2_maturity",
-      "accept_only_real_auditable_commitment_snapshots",
+      "keep_commitments_in_the_non_model_billing_audit_layer",
       "do_not_promote_global_or_distributional_families_that_fail_nested_gates",
       "use_risk_coverage_business_loss_and_FVA_before_any_automation_claim",
       "keep_final_holdout_sealed_until_separate_authorization",

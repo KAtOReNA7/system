@@ -223,33 +223,33 @@ function buildFrontRatingDisplayV4(normalized, parts) {
   let rating = historical.rating;
   let ratingBasis = "historical";
   let ratingIncludesBuyout = false;
-  let nextCycleForecastPolicy = "formal_cash_forecast_separate_from_rating";
+  let nextCycleForecastPolicy = "sales_share_cash_forecast_separate_from_rating";
   const reasons = [];
 
   if (revenueModel === "pure_buyout") {
     rating = buyout.rating && buyout.rating !== "not_applicable" ? buyout.rating : historical.rating;
     ratingBasis = "buyout_monthly_sales_equivalent";
     ratingIncludesBuyout = true;
-    nextCycleForecastPolicy = "pure_buyout_cash_forecast_requires_cutoff_confirmed_receivable";
+    nextCycleForecastPolicy = "pure_buyout_outside_m2_forecast_scope";
     reasons.push("\u8be5\u4f5c\u54c1\u4e3a\u7eaf\u4e70\u65ad\uff1b\u8bc4\u7ea7\u6309\u4e70\u65ad\u91d1\u989d\u5728\u4e1a\u52a1\u5468\u671f\u5185\u6298\u7b97\u7684\u6708\u5747\u5b9e\u9500\u7b49\u4ef7\u8ba1\u7b97");
     reasons.push(`buyoutEquivalentMonthlySales=${round(buyout.equivalentMonthlySales ?? 0, 2)}, amortizationYears=${buyout.amortizationYears}`);
     if (buyout.previousBuyoutMonthlySalesEquivalent != null) {
       reasons.push(`previousBuyoutMonthlySalesEquivalent=${round(buyout.previousBuyoutMonthlySalesEquivalent, 2)}\uff0c\u4ec5\u7528\u4e8e\u5386\u53f2\u4ef7\u503c\u548c\u8bc4\u7ea7\u6bd4\u8f83\uff0c\u4e0d\u7528\u4e8e\u672a\u6765\u73b0\u91d1\u9884\u6d4b`);
     }
-    reasons.push("\u672a\u6765\u73b0\u91d1\u4ec5\u53ef\u8ba1\u5165 cutoff \u65f6\u5df2\u7b7e\u7f72\u6216\u5df2\u786e\u8ba4\u4e14\u53ef\u5ba1\u8ba1\u7684\u5e94\u6536\uff1b\u65e0\u627f\u8bfa\u65f6\u4e0d\u8f93\u51fa 0 \u5192\u5145\u9884\u6d4b");
+    reasons.push("\u7eaf\u4e70\u65ad\u5df2\u79fb\u51fa M2 \u9884\u6d4b\u8303\u56f4\uff1b\u65e0\u8bba\u662f\u5426\u5df2\u7b7e\u7f72\u6216\u786e\u8ba4\uff0c\u90fd\u53ea\u8fdb\u5165\u6a21\u578b\u5916\u8d26\u5355/\u5ba1\u8ba1\u5c42\uff0c\u9884\u6d4b\u4fdd\u6301 null");
     if (offShelfOrExpired) reasons.push("\u5f53\u524d\u8fd0\u8425\u4ecd\u53d6\u51b3\u4e8e\u7248\u6743/\u4e0a\u67b6\u72b6\u6001");
   } else if (revenueModel === "buyout_plus_sales") {
     const mixed = buildMixedSalesWithBuyoutRating(sales, buyout, historical.rating);
     rating = mixed.rating;
     ratingBasis = "current_sales_with_buyout_allocation";
     ratingIncludesBuyout = mixed.includesBuyout;
-    nextCycleForecastPolicy = "mixed_cash_forecast_sales_plus_cutoff_confirmed_receivables_only";
+    nextCycleForecastPolicy = "mixed_forecast_sales_share_cash_only";
     reasons.push(
       `\u4e70\u65ad+\u5b9e\u9500\u524d\u53f0\u8bc4\u7ea7\u4f7f\u7528\u5f53\u524d\u5b9e\u9500\u6708\u5747=${round(sales.monthlyAmount ?? 0, 2)}`
         + `\uff0c\u53e0\u52a0\u4e70\u65ad\u6298\u7b97\u6708\u5747=${round(buyout.equivalentMonthlySales ?? 0, 2)}`
         + `\uff0c\u5408\u8ba1\u6708\u5747=${round(mixed.combinedMonthlySalesEquivalent ?? 0, 2)}`
     );
-    reasons.push("\u6b63\u5f0f\u672a\u6765\u73b0\u91d1\u53ea\u5305\u542b\u5b9e\u9500\u548c cutoff \u65f6\u5df2\u786e\u8ba4\u4e14\u53ef\u5ba1\u8ba1\u7684\u5e94\u6536\uff0c\u4e0d\u9884\u6d4b\u672a\u627f\u8bfa\u7684\u540e\u7eed\u4e70\u65ad");
+    reasons.push("\u6b63\u5f0f\u9884\u6d4b\u53ea\u5305\u542b\u5206\u6210\u6536\u5165\uff1b\u5168\u90e8\u4e70\u65ad\u53ca\u5176\u5df2\u786e\u8ba4\u5e94\u6536\u90fd\u5728\u6a21\u578b\u5916\u8d26\u5355/\u5ba1\u8ba1\u5c42");
   } else if (!offShelfOrExpired && activeRights && sales.rating && sales.rating !== "not_applicable") {
     rating = sales.rating;
     ratingBasis = "current_sales";

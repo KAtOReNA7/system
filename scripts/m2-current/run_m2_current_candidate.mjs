@@ -50,7 +50,13 @@ import {
 import {
   evaluateM2CurrentAutomationPolicy
 } from "../../src/domain/m2Current/automation.js";
-import { assertM2CurrentModelCaseRoute } from "../../src/domain/m2Current/route.js";
+import {
+  assertM2CurrentModelCaseRoute,
+  assertM2CurrentSalesShareModelCaseRoute
+} from "../../src/domain/m2Current/route.js";
+import {
+  loadM2CurrentConfigSync
+} from "./load_m2_current_config.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const config = JSON.parse(
@@ -62,12 +68,17 @@ const nextConfig = JSON.parse(
 const resolutionConfig = JSON.parse(
   await readFile(path.join(root, "config/m2-current.v0.5.json"), "utf8")
 );
+const salesShareConfig = loadM2CurrentConfigSync(
+  root,
+  "config/m2-current.v0.6.json"
+);
 const previousConfig = JSON.parse(
   await readFile(path.join(root, "config/m2-current.v0.2.json"), "utf8")
 );
 const contract = buildM2CurrentContract(config);
 const nextContract = buildM2CurrentContract(nextConfig);
 const resolutionContract = buildM2CurrentContract(resolutionConfig);
+const salesShareContract = buildM2CurrentContract(salesShareConfig);
 const previousContract = buildM2CurrentContract(previousConfig);
 const populationReport = JSON.parse(
   await readFile(path.join(root, config.publicSources.population), "utf8")
@@ -76,6 +87,7 @@ if (
   !contract.authorizations.modelTraining
   || !nextContract.authorizations.modelTraining
   || !resolutionContract.authorizations.modelTraining
+  || !salesShareContract.authorizations.modelTraining
 ) {
   throw new Error("m2_current_candidate_development_not_authorized");
 }
@@ -88,6 +100,9 @@ if (
   || resolutionContract.authorizations.newCandidateFamilyDevelopment
   || resolutionContract.authorizations.holdout
   || resolutionContract.authorizations.release
+  || salesShareContract.authorizations.newCandidateFamilyDevelopment
+  || salesShareContract.authorizations.holdout
+  || salesShareContract.authorizations.release
 ) {
   throw new Error("m2_current_candidate_forbidden_authorization_scope");
 }
@@ -728,6 +743,13 @@ const denseHistoryText = await readFile(
   ),
   "utf8"
 );
+const frozenSalesShareTargetText = await readFile(
+  path.join(
+    denseDirectory,
+    "M2-current-sales-share-frozen-cases-private-v0.1.ndjson"
+  ),
+  "utf8"
+);
 const denseManifest = JSON.parse(await readFile(
   path.join(
     denseDirectory,
@@ -735,7 +757,12 @@ const denseManifest = JSON.parse(await readFile(
   ),
   "utf8"
 ));
-verifyDenseManifest(denseManifest, denseCaseText, denseHistoryText);
+verifyDenseManifest(
+  denseManifest,
+  denseCaseText,
+  denseHistoryText,
+  frozenSalesShareTargetText
+);
 const denseHistoryByKey = new Map(parseNdjson(denseHistoryText).map(
   (row) => [row.historyKey, row]
 ));
@@ -1329,8 +1356,404 @@ await writeFile(
   "utf8"
 );
 
+const frozenSalesShareTargets = parseNdjson(frozenSalesShareTargetText);
+const frozenSalesShareByKey = new Map(
+  frozenSalesShareTargets.map((row) => [
+    caseKey({
+      standardWorkId: row.caseKey.standardWorkId,
+      origin: row.caseKey.origin,
+      horizonMonths: row.caseKey.horizonMonths,
+      route: row.caseKey.route
+    }),
+    row
+  ])
+);
+if (
+  frozenSalesShareTargets.length !== salesShareContract.population.modelCaseCount
+  || frozenSalesShareByKey.size !== frozenSalesShareTargets.length
+) {
+  throw new Error("m2_current_sales_share_frozen_target_population_drift");
+}
+const salesShareWorkRows = nextCandidateRows.map((row) => {
+  const target = frozenSalesShareByKey.get(caseKey(row));
+  if (!target) {
+    throw new Error("m2_current_sales_share_frozen_target_join_failed");
+  }
+  assertM2CurrentSalesShareModelCaseRoute({
+    revenueModel: row.route,
+    origin: row.origin
+  });
+  return {
+    ...row,
+    actual: Number(target.salesShareCashActual),
+    legacyForecastableCashActual:
+      Number(target.legacyForecastableCashActual),
+    isolatedBuyoutCashActual:
+      Number(target.isolatedBuyoutCashActual),
+    isolatedOtherCashActual:
+      Number(target.isolatedOtherCashActual),
+    totalLedgerCashActual:
+      Number(target.totalLedgerCashActual),
+    classificationUncertainCashActual:
+      Number(target.classificationUncertainCashActual)
+  };
+});
+const salesShareB4Rows = evaluatedB4Rows.map((row) => {
+  const target = frozenSalesShareByKey.get(caseKey(row));
+  if (!target) {
+    throw new Error("m2_current_sales_share_b4_target_join_failed");
+  }
+  return {
+    ...row,
+    actual: Number(target.salesShareCashActual)
+  };
+});
+const salesShareDenseCases = denseCases.map((row) => ({
+  ...row,
+  actual: Number(row.salesShareCashActual)
+}));
+const salesShareComparison = compareM2CurrentCandidateToB4(
+  salesShareWorkRows,
+  salesShareB4Rows,
+  salesShareContract
+);
+const salesSharePairedCi = pairedWorkOriginBootstrap(
+  salesShareWorkRows,
+  salesShareB4Rows,
+  salesShareContract
+);
+const salesShareByHorizon = scoreM2CurrentSlices(
+  salesShareWorkRows,
+  "horizonMonths"
+);
+const salesShareBySegment = scoreM2CurrentSlices(
+  salesShareWorkRows,
+  "segment"
+);
+const salesShareAuthorityResolution = evaluateM2CurrentResolution(
+  salesShareWorkRows,
+  {
+    bootstrapIterations: salesShareContract.pairedBootstrap.iterations,
+    bootstrapSeed: salesShareContract.pairedBootstrap.seed
+  }
+);
+const salesShareDenseBaselineEvaluation =
+  buildM2CurrentAutomatedBaselineEvaluation(
+    salesShareDenseCases,
+    historyRows,
+    salesShareContract
+  );
+const salesShareDenseChampion = buildM2CurrentRollingBaselineChampion(
+  salesShareDenseBaselineEvaluation.rowsByBaseline,
+  {
+    minimumTrainingRows:
+      salesShareContract.development.modelDevelopment.minimumTrainingRows
+  }
+);
+const salesShareDenseResolution = evaluateM2CurrentResolution(
+  salesShareDenseChampion.rows,
+  {
+    bootstrapIterations: salesShareContract.pairedBootstrap.iterations,
+    bootstrapSeed: salesShareContract.pairedBootstrap.seed
+  }
+);
+const salesSharePortfolioReconstruction =
+  buildM2CurrentPortfolioReconstruction(
+    salesShareDenseCases,
+    salesShareContract.development.portfolioReconstruction
+  );
+const {
+  privateValidationRows: salesSharePortfolioPrivateRows,
+  privateSeasonalNaiveRows: salesSharePortfolioPrivateComparatorRows,
+  ...publicSalesSharePortfolio
+} = salesSharePortfolioReconstruction;
+const frozenTargetIsolation = summarizeSalesShareTarget(
+  frozenSalesShareTargets,
+  "legacyForecastableCashActual"
+);
+const denseTargetIsolation = summarizeSalesShareTarget(
+  denseCases,
+  "actual"
+);
+const targetClassificationPassed = (
+  frozenTargetIsolation.classificationUncertainCashShare
+    <= salesShareContract.thresholds
+      .maximumClassificationUncertainCashShare
+  && denseTargetIsolation.classificationUncertainCashShare
+    <= salesShareContract.thresholds
+      .maximumClassificationUncertainCashShare
+);
+const salesShareWorkQualityPassed = (
+  salesShareComparison.candidate.wape
+    <= salesShareContract.thresholds.developmentWapeMaximum
+  && Math.abs(salesShareComparison.candidate.signedBias)
+    <= salesShareContract.thresholds.overallAbsoluteBiasMaximum
+  && salesShareContract.allowedHorizonValues.every((horizon) => (
+    Math.abs(salesShareByHorizon[horizon].signedBias)
+      <= salesShareContract.thresholds.eachHorizonAbsoluteBiasMaximum
+  ))
+  && salesShareContract.activitySegmentValues.every((segment) => (
+    salesShareBySegment[segment].wape
+      <= salesShareContract.thresholds.eachSegmentWapeMaximum
+    && Math.abs(salesShareBySegment[segment].signedBias)
+      <= salesShareContract.thresholds.eachSegmentAbsoluteBiasMaximum
+  ))
+  && salesSharePairedCi.upper95
+    < salesShareContract.thresholds.pairedRelativeWapeUpperMaximum
+);
+const salesSharePortfolioPassed =
+  publicSalesSharePortfolio.allPortfolioDevelopmentGatesPassed;
+const salesShareAcceptance = {
+  targetContractMigrated: true,
+  allBuyoutExcludedFromTrainingLabels: true,
+  allBuyoutExcludedFromBacktestMetrics: true,
+  allBuyoutExcludedFromForecastOutput: true,
+  targetPartitionConservationPassed:
+    frozenTargetIsolation.maximumAbsoluteConservationDifference
+      <= salesShareContract.thresholds.targetPartitionConservationTolerance
+    && denseTargetIsolation.maximumAbsoluteConservationDifference
+      <= salesShareContract.thresholds.targetPartitionConservationTolerance,
+  targetClassificationPassed,
+  workLevelDevelopmentPassed: salesShareWorkQualityPassed,
+  portfolioDevelopmentBacktestPassed: salesSharePortfolioPassed,
+  fullM2MaturityPassed: false,
+  allCurrentDevelopmentConditionsPassed: false,
+  developmentDecision:
+    salesSharePortfolioPassed ? "PORTFOLIO_ONLY_PASS" : "FAIL",
+  finalHoldoutOpened: false,
+  releaseAuthorized: false
+};
+const salesShareStatus = salesSharePortfolioPassed
+  ? "SALES_SHARE_TARGET_MIGRATED_PORTFOLIO_DEVELOPMENT_PASS_WORK_LEVEL_BLOCKED"
+  : "SALES_SHARE_TARGET_MIGRATED_DEVELOPMENT_FAIL_BLOCKED";
+const salesShareMaturityAssessment = {
+  matureDataPredictionCapability: false,
+  targetContractCorrected: true,
+  highAccuracyPortfolioDevelopmentBacktestAvailable:
+    salesSharePortfolioPassed,
+  permittedClaim:
+    "sales_share_only_portfolio_development_backtest",
+  prohibitedClaims: [
+    "buyout_forecast",
+    "mature_work_level_forecasting",
+    "independently_validated_production_forecast",
+    "release_ready",
+    "full_company_cash_coverage"
+  ],
+  reasons: [
+    "work_level_WAPE_above_0_30",
+    "intermittent_and_dormant_segments_failed",
+    "portfolio_candidate_selected_on_development_data",
+    "final_holdout_sealed"
+  ]
+};
+const salesShareAutomatedEvaluation = {
+  schema: "m2.current.automated_evaluation.public.v0.4",
+  decisionStatus: "not_for_formal_decision",
+  targetContract: {
+    target: salesShareConfig.target,
+    definition:
+      "future_revenue_share_cash_only_excluding_all_buyout_and_identified_non_sales_cash",
+    buyoutTreatment:
+      "isolated_from_training_labels_backtest_metrics_and_forecast_output",
+    confirmedBuyoutTreatment: "isolated_non_model_billing_audit_layer",
+    pureBuyoutTreatment: "null_abstain_outside_M2_forecast_scope",
+    amountConservation:
+      "salesShareCashActual+isolatedBuyoutCashActual+isolatedOtherCashActual=totalLedgerCashActual"
+  },
+  authoritativeFrozenEvaluation: {
+    caseCount: salesShareWorkRows.length,
+    workCount: new Set(
+      salesShareWorkRows.map((row) => row.standardWorkId)
+    ).size,
+    originCount: new Set(
+      salesShareWorkRows.map((row) => row.origin)
+    ).size,
+    originCadence: "frozen_sparse_semiannual",
+    finalHoldoutOpened: false,
+    comparisonToPrevious: salesShareComparison,
+    comparisonToB4: salesShareComparison,
+    multiResolution: salesShareAuthorityResolution,
+    cashAndErrorConcentration:
+      summarizeM2CurrentCashConcentration(salesShareWorkRows),
+    targetIsolation: frozenTargetIsolation,
+    interpretation:
+      "same_frozen_cases_relabelled_to_sales_share_only_without_moving_population"
+  },
+  denseMonthlyDevelopmentDiagnostic: {
+    role: "secondary_development_diagnostic",
+    decisionPopulationMoved: false,
+    workCount: denseManifest.workCount,
+    originCount: denseManifest.originCount,
+    materializedCaseCount: denseManifest.caseRowCount,
+    labelStatusCounts: denseLabelPartition.counts,
+    abstention: salesShareDenseBaselineEvaluation.routePolicy,
+    rollingBaselineChampion: {
+      overall: salesShareDenseChampion.overall,
+      byOrigin: salesShareDenseChampion.byOrigin,
+      bySegment: salesShareDenseChampion.bySegment,
+      selections: salesShareDenseChampion.selections
+    },
+    existingChampionMultiResolution: salesShareDenseResolution,
+    portfolioReconstruction: publicSalesSharePortfolio,
+    targetIsolation: denseTargetIsolation
+  },
+  automation: {
+    decision: "AUTOMATION_BLOCKED",
+    gates: {
+      targetPartitionConservationPassed:
+        salesShareAcceptance.targetPartitionConservationPassed,
+      targetClassificationPassed,
+      workLevelDevelopmentPassed: salesShareWorkQualityPassed,
+      portfolioDevelopmentBacktestPassed: salesSharePortfolioPassed,
+      independentHoldoutPassed: false
+    },
+    automationAuthorized: false,
+    releaseAuthorized: false
+  },
+  maturityAssessment: salesShareMaturityAssessment,
+  retiredHumanPredictionSample:
+    nextAutomatedEvaluation.retiredHumanPredictionSample,
+  boundaries: nextAutomatedEvaluation.boundaries
+};
+const salesSharePublicReport = {
+  schema: "m2.current.sales_share_candidate.public.v0.6",
+  version: "M2-current-sales-share-candidate-v0.6",
+  candidateId: salesShareConfig.candidate.id,
+  decisionStatus: "not_for_formal_decision",
+  status: salesShareStatus,
+  target: salesShareConfig.target,
+  primaryComparator: salesShareConfig.primaryComparator,
+  targetMigration: {
+    previousTarget: resolutionConfig.target,
+    currentTarget: salesShareConfig.target,
+    contractChangedByUserDecision: true,
+    modelFamilyChanged: false,
+    frozenPopulationMoved: false,
+    frozenTargetIsolation,
+    denseTargetIsolation
+  },
+  scope: {
+    frozenDecisionCaseCount: salesShareWorkRows.length,
+    frozenDecisionWorkCount: new Set(
+      salesShareWorkRows.map((row) => row.standardWorkId)
+    ).size,
+    frozenDecisionOriginCount: new Set(
+      salesShareWorkRows.map((row) => row.origin)
+    ).size,
+    denseDiagnosticCaseCount: denseManifest.caseRowCount,
+    denseDiagnosticOriginCount: denseManifest.originCount,
+    portfolioEvaluationOriginCount:
+      publicSalesSharePortfolio.candidate.originCount,
+    portfolioEvaluationCellCount:
+      publicSalesSharePortfolio.candidate.originHorizonCellCount,
+    populationMoved: false
+  },
+  pointComparisonToPrevious: {
+    comparison: salesShareComparison,
+    pairedCi: salesSharePairedCi,
+    interpretation:
+      "same_work_level_candidate_predictions_rescored_against_sales_share_only_actuals"
+  },
+  pointComparisonToB4: {
+    comparison: salesShareComparison,
+    pairedCi: salesSharePairedCi
+  },
+  byHorizon: salesShareByHorizon,
+  bySegment: salesShareBySegment,
+  pairedCi: salesSharePairedCi,
+  multiResolution: {
+    workLevelFallbackCandidateId: nextConfig.candidate.id,
+    authoritativeSparseOriginDiagnostic: salesShareAuthorityResolution,
+    denseMonthlyExistingChampionDiagnostic: salesShareDenseResolution,
+    portfolioReconstruction: publicSalesSharePortfolio,
+    cashAndErrorConcentration:
+      summarizeM2CurrentCashConcentration(salesShareWorkRows)
+  },
+  maturityAssessment: salesShareMaturityAssessment,
+  automation: salesShareAutomatedEvaluation.automation,
+  acceptance: salesShareAcceptance,
+  developmentAuthorization: {
+    modelTraining: true,
+    newCandidateFamilyDevelopment: false,
+    finalHoldout: false,
+    release: false,
+    m3Formal: false
+  },
+  humanEvaluation: {
+    numericForecastRequired: false,
+    sample120Required: false,
+    sample120Replayed: false,
+    role: "post_gate_quality_assurance_only"
+  },
+  privacy: {
+    aggregateOnly: true,
+    workIdentifiersPresent: false,
+    privatePathsPresent: false,
+    rawRowsPresent: false
+  }
+};
+const salesSharePublicText =
+  `${JSON.stringify(salesSharePublicReport, null, 2)}\n`;
+const salesShareAutomatedText =
+  `${JSON.stringify(salesShareAutomatedEvaluation, null, 2)}\n`;
+const salesSharePortfolioPrivateText =
+  salesSharePortfolioPrivateRows.map((row) => JSON.stringify({
+    ...row,
+    seasonalNaivePointEstimate:
+      salesSharePortfolioPrivateComparatorRows.find((candidateRow) => (
+        candidateRow.origin === row.origin
+        && candidateRow.horizonMonths === row.horizonMonths
+      ))?.pointEstimate
+  })).join("\n") + "\n";
+const salesSharePortfolioPrivatePath = path.join(
+  privateDirectory,
+  "M2-current-sales-share-portfolio-cells-private-v0.6.ndjson"
+);
+const salesSharePortfolioPrivateManifestPath = path.join(
+  privateDirectory,
+  "M2-current-sales-share-portfolio-manifest-private-v0.6.json"
+);
+await writeFile(
+  salesSharePortfolioPrivatePath,
+  salesSharePortfolioPrivateText,
+  "utf8"
+);
+await writeFile(
+  salesSharePortfolioPrivateManifestPath,
+  `${JSON.stringify({
+    schema: "m2.current.sales_share_portfolio.private_manifest.v0.6",
+    tracked: false,
+    decisionStatus: "not_for_formal_decision",
+    targetPolicy: "sales_share_cash_only",
+    privateCellRowCount: salesSharePortfolioPrivateRows.length,
+    privateCellSha256: sha256(salesSharePortfolioPrivateText),
+    frozenTargetSha256: sha256(frozenSalesShareTargetText),
+    publicCandidateSha256: sha256(salesSharePublicText),
+    publicAutomatedEvaluationSha256:
+      sha256(salesShareAutomatedText),
+    providerCalled: false,
+    databaseConnected: false,
+    finalHoldoutOpened: false,
+    embargoShadowOpened: false,
+    deferred60MonthLabelsOpened: false,
+    releaseAuthorized: false
+  }, null, 2)}\n`,
+  "utf8"
+);
+await writeFile(
+  path.join(root, salesShareConfig.publicSources.candidate),
+  salesSharePublicText,
+  "utf8"
+);
+await writeFile(
+  path.join(root, salesShareConfig.publicSources.automatedEvaluation),
+  salesShareAutomatedText,
+  "utf8"
+);
+
 process.stdout.write(`${JSON.stringify({
-  candidateId: resolutionConfig.candidate.id,
+  candidateId: salesShareConfig.candidate.id,
   caseCount: candidate.rows.length,
   workCount: publicReport.scope.uniqueWorkCount,
   candidateWape: nextComparison.candidate.wape,
@@ -1349,6 +1772,16 @@ process.stdout.write(`${JSON.stringify({
   portfolioForecastValueAdded:
     publicPortfolioReconstruction.forecastValueAdded,
   portfolioDevelopmentPassed,
+  salesShareTargetMigrated: true,
+  salesShareWorkWape: salesShareComparison.candidate.wape,
+  salesShareWorkBias: salesShareComparison.candidate.signedBias,
+  salesSharePortfolioWape:
+    publicSalesSharePortfolio.candidate.overall.wape,
+  salesSharePortfolioBias:
+    publicSalesSharePortfolio.candidate.overall.signedBias,
+  salesSharePortfolioDevelopmentPassed: salesSharePortfolioPassed,
+  frozenTargetIsolation,
+  denseTargetIsolation,
   fullM2MaturityPassed: false,
   automatedEvaluationBaselines:
     Object.keys(denseBaselineEvaluation.baselines),
@@ -1580,10 +2013,114 @@ function strongestBaselineRows(rowsByBaseline) {
   ))[0].rows;
 }
 
-function verifyDenseManifest(manifest, caseText, historyText) {
+function summarizeSalesShareTarget(rows, legacyActualField) {
+  const values = rows.map((row) => ({
+    legacy: Number(row[legacyActualField]),
+    salesShare: Number(row.salesShareCashActual),
+    buyout: Number(row.isolatedBuyoutCashActual),
+    other: Number(row.isolatedOtherCashActual),
+    total: Number(row.totalLedgerCashActual),
+    uncertain: Number(row.classificationUncertainCashActual)
+  }));
+  if (
+    values.length === 0
+    || values.some((row) => Object.values(row).some(
+      (value) => !Number.isFinite(value)
+    ))
+  ) {
+    throw new Error("m2_current_sales_share_target_audit_invalid");
+  }
+  const sum = (field) => values.reduce(
+    (total, row) => total + row[field],
+    0
+  );
+  const totalAbsoluteCash = values.reduce(
+    (total, row) => total + Math.abs(row.total),
+    0
+  );
+  const conservationDifferences = values.map(
+    (row) => row.salesShare + row.buyout + row.other - row.total
+  );
+  return {
+    caseCount: values.length,
+    targetChangedCaseCount: values.filter(
+      (row) => Math.abs(row.legacy - row.salesShare) > 0.000001
+    ).length,
+    legacyForecastableCashCaseSum: sum("legacy"),
+    salesShareCashCaseSum: sum("salesShare"),
+    isolatedBuyoutCashCaseSum: sum("buyout"),
+    isolatedOtherCashCaseSum: sum("other"),
+    totalLedgerCashCaseSum: sum("total"),
+    salesShareEconomicShareOfCaseLedgerCash:
+      sum("total") === 0 ? null : sum("salesShare") / sum("total"),
+    classificationUncertainCashShare:
+      totalAbsoluteCash === 0
+        ? 0
+        : values.reduce(
+          (total, row) => total + Math.abs(row.uncertain),
+          0
+        ) / totalAbsoluteCash,
+    classificationUncertainCaseCount:
+      values.filter((row) => row.uncertain !== 0).length,
+    classificationUncertainCashCaseSum: sum("uncertain"),
+    classificationUncertainAbsoluteCashCaseSum:
+      values.reduce(
+        (total, row) => total + Math.abs(row.uncertain),
+        0
+      ),
+    maximumAbsoluteConservationDifference: Math.max(
+      ...conservationDifferences.map(Math.abs)
+    ),
+    legacyDistribution: distributionSummary(
+      values.map((row) => row.legacy)
+    ),
+    salesShareDistribution: distributionSummary(
+      values.map((row) => row.salesShare)
+    ),
+    overlappingCaseSumsNotFullLibraryEconomicTotals: true
+  };
+}
+
+function distributionSummary(values) {
+  const ordered = [...values].sort((a, b) => a - b);
+  const mean = values.reduce((sum, value) => sum + value, 0) / values.length;
+  const variance = values.reduce(
+    (sum, value) => sum + (value - mean) ** 2,
+    0
+  ) / values.length;
+  return {
+    zeroShare: values.filter((value) => value === 0).length / values.length,
+    positiveShare: values.filter((value) => value > 0).length / values.length,
+    mean,
+    standardDeviation: Math.sqrt(variance),
+    coefficientOfVariation:
+      mean === 0 ? null : Math.sqrt(variance) / Math.abs(mean),
+    p50: quantile(ordered, 0.5),
+    p90: quantile(ordered, 0.9),
+    p99: quantile(ordered, 0.99)
+  };
+}
+
+function quantile(ordered, probability) {
+  const index = (ordered.length - 1) * probability;
+  const lower = Math.floor(index);
+  const upper = Math.ceil(index);
+  if (lower === upper) {
+    return ordered[lower];
+  }
+  const weight = index - lower;
+  return ordered[lower] * (1 - weight) + ordered[upper] * weight;
+}
+
+function verifyDenseManifest(
+  manifest,
+  caseText,
+  historyText,
+  frozenSalesShareTargetText
+) {
   if (
     manifest.schema
-      !== "m2.current.dense_development.private_manifest.v0.1"
+      !== "m2.current.dense_development.private_manifest.v0.2"
     || manifest.tracked !== false
     || manifest.decisionStatus !== "not_for_formal_decision"
     || manifest.role !== "secondary_development_diagnostic"
@@ -1592,8 +2129,14 @@ function verifyDenseManifest(manifest, caseText, historyText) {
     || manifest.originCount !== 25
     || manifest.caseRowCount !== parseNdjson(caseText).length
     || manifest.historyRowCount !== parseNdjson(historyText).length
+    || manifest.frozenSalesShareTargetRowCount
+      !== parseNdjson(frozenSalesShareTargetText).length
     || manifest.caseSha256 !== sha256(caseText)
     || manifest.historySha256 !== sha256(historyText)
+    || manifest.frozenSalesShareTargetSha256
+      !== sha256(frozenSalesShareTargetText)
+    || manifest.targetPolicy !== "sales_share_cash_only"
+    || manifest.allBuyoutExcludedFromForecast !== true
     || manifest.providerCalled !== false
     || manifest.databaseConnected !== false
     || manifest.finalHoldoutOpened !== false

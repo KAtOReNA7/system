@@ -36,12 +36,18 @@ import {
   buildM2CurrentAutomatedBaselineEvaluation
 } from "../src/domain/m2Current/baselines.js";
 import {
-  resolveM2CurrentCashRoute
+  resolveM2CurrentCashRoute,
+  resolveM2CurrentSalesShareRoute
 } from "../src/domain/m2Current/route.js";
 import {
   buildM2CurrentFormalCashTarget,
-  serveM2CurrentPointForecast
+  buildM2CurrentSalesShareTarget,
+  serveM2CurrentPointForecast,
+  serveM2CurrentSalesSharePointForecast
 } from "../src/domain/m2Current/target.js";
+import {
+  loadM2CurrentConfigSync
+} from "../scripts/m2-current/load_m2_current_config.mjs";
 
 function publicSources() {
   return Object.fromEntries(
@@ -55,11 +61,22 @@ const contract = buildM2CurrentContract(config);
 const currentConfig = readJson("config/m2-current.v0.3.json");
 const currentContract = buildM2CurrentContract(currentConfig);
 const nextConfig = readJson("config/m2-current.v0.5.json");
+const salesShareConfig = loadM2CurrentConfigSync(
+  process.cwd(),
+  "config/m2-current.v0.6.json"
+);
 const reliableConfig = readJson("config/m2-current.v0.2.json");
 
 function currentPublicSources() {
   return Object.fromEntries(
     Object.entries(currentConfig.publicSources)
+      .map(([role, file]) => [role, readJson(file)])
+  );
+}
+
+function salesSharePublicSources() {
+  return Object.fromEntries(
+    Object.entries(salesShareConfig.publicSources)
       .map(([role, file]) => [role, readJson(file)])
   );
 }
@@ -168,6 +185,25 @@ test("formal cash target conserves three actual roles", () => {
   );
 });
 
+test("current sales-share target isolates all buyout and non-sales cash", () => {
+  assert.deepEqual(
+    buildM2CurrentSalesShareTarget({
+      salesShareCashActual: 80,
+      isolatedBuyoutCashActual: 20,
+      isolatedOtherCashActual: 15
+    }),
+    {
+      salesShareCashActual: 80,
+      isolatedBuyoutCashActual: 20,
+      isolatedOtherCashActual: 15,
+      totalLedgerCashActual: 115,
+      allBuyoutExcludedFromForecast: true,
+      commitmentCashExcludedFromForecast: true,
+      targetPolicy: "sales_share_cash_only"
+    }
+  );
+});
+
 test("pure buyout without an as-of commitment abstains instead of serving zero", () => {
   const forecast = serveM2CurrentPointForecast({
     businessForm: "pure_buyout",
@@ -266,6 +302,33 @@ test("pure buyout is outside numeric modeling without cutoff evidence", () => {
   assert.equal(abstention.buyoutMonthlyEquivalentAllowed, false);
   assert.equal(committed.pointEstimate, 2500);
   assert.equal(committed.forecastScope, "cutoff_confirmed_commitment_only");
+});
+
+test("sales-share-only policy excludes even confirmed buyout cash", () => {
+  const route = resolveM2CurrentSalesShareRoute({
+    standardWorkId: "SYN-WORK-1",
+    revenueModel: "pure_buyout",
+    origin: "2022-12",
+    horizonMonths: 3,
+    commitment: {
+      outstandingAmount: 2500
+    }
+  });
+  const forecast = serveM2CurrentSalesSharePointForecast({
+    businessForm: "pure_buyout",
+    commitmentKnownAsOfCutoff: true,
+    committedFutureCashPoint: 2500
+  });
+  const mixed = resolveM2CurrentSalesShareRoute({
+    revenueModel: "buyout_plus_sales"
+  });
+
+  assert.equal(route.pointEstimate, null);
+  assert.equal(route.abstentionReason, "buyout_outside_m2_forecast_scope");
+  assert.equal(forecast.pointEstimate, null);
+  assert.equal(forecast.abstentionReason, "buyout_outside_m2_forecast_scope");
+  assert.equal(mixed.forecastScope, "sales_share_cash_only");
+  assert.equal(mixed.served, true);
 });
 
 test("automated evaluator runs rolling-origin intermittent baselines", () => {
@@ -756,10 +819,10 @@ test("public diagnostic CLI is reproducible and aggregate-only", () => {
     ["scripts/m2-current/run_m2_current_public_diagnostics.mjs"],
     { encoding: "utf8", windowsHide: true }
   );
-  const report = readJson(nextConfig.publicOutput);
+  const report = readJson(salesShareConfig.publicOutput);
   const text = JSON.stringify(report);
 
-  assert.equal(report.schema, "m2.current.public_diagnostic_report.v0.6");
+  assert.equal(report.schema, "m2.current.public_diagnostic_report.v0.7");
   assert.equal(report.directionAssessment.engineeringSequenceDrifted, true);
   assert.equal(
     report.directionAssessment.retiredSequence,
@@ -768,7 +831,7 @@ test("public diagnostic CLI is reproducible and aggregate-only", () => {
   assert.equal(report.evaluationPolicy.humanNumericBaselineRequired, false);
   assert.equal(
     report.evidence.currentCandidate.candidateId,
-    "M2-current-multi-resolution-revenue-service-v0.5"
+    "M2-current-sales-share-revenue-service-v0.6"
   );
   assert.ok(report.evidence.currentCandidate.comparison.candidate.wape > 0);
   assert.equal(
@@ -785,7 +848,20 @@ test("public diagnostic CLI is reproducible and aggregate-only", () => {
   assert.equal(report.gate.candidateDevelopmentQualityPassed, false);
   assert.equal(
     report.gate.status,
-    "PORTFOLIO_DEVELOPMENT_BACKTEST_PASS_WORK_LEVEL_BLOCKED"
+    "SALES_SHARE_TARGET_MIGRATED_PORTFOLIO_DEVELOPMENT_PASS_WORK_LEVEL_BLOCKED"
+  );
+  assert.equal(
+    report.evidence.coverage.economicScope.modelTarget,
+    "sales_share_cash_only"
+  );
+  assert.equal(
+    report.evidence.coverage.economicScope.allCompanyCashCoverageClaimed,
+    false
+  );
+  assert.ok(
+    report.gate.blockers.includes(
+      "sales_share_target_classification_uncertainty_unresolved"
+    )
   );
   assert.ok(
     report.gate.blockers.includes(
@@ -804,6 +880,23 @@ test("public diagnostic CLI is reproducible and aggregate-only", () => {
       { encoding: "utf8", windowsHide: true }
     ).trim(),
     "M2 current public diagnostic output verified."
+  );
+});
+
+test("sales-share evidence treats historical total-cash coverage as disclosure", () => {
+  const sources = salesSharePublicSources();
+  sources.coverage.observationGates
+    .fullLibraryForecastableCashCoverageMinimum = 0.123;
+  sources.coverage.observationGates
+    .top10ForecastableCashCoverageMinimum = 0.456;
+
+  const evidence = loadM2CurrentPublicEvidence(sources, salesShareConfig);
+
+  assert.equal(evidence.coverage.cashObservability.fullLibraryRequired, null);
+  assert.equal(evidence.coverage.cashObservability.top10Required, null);
+  assert.equal(
+    evidence.coverage.economicScope.allCompanyCashCoverageClaimed,
+    false
   );
 });
 

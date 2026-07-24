@@ -1,5 +1,9 @@
 # M2 成熟度复核与多粒度收入预测重构 v0.6
 
+> 历史检查点：本报告记录 2026-07-24 的旧 formal-cash 目标。当前目标已由
+> `M2-sales-share-only-target-decision-v0.1.md` 改为纯分成收入；当前状态请
+> 以 `M2-v2-current-state-index-v0.12.md` 和 v0.6/v0.7 JSON 证据为准。
+
 日期：2026-07-24
 状态：`PORTFOLIO_DEVELOPMENT_BACKTEST_PASS_WORK_LEVEL_BLOCKED`
 决策性质：development evidence；不是 final holdout、release 或生产授权

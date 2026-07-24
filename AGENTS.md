@@ -4,9 +4,11 @@
 
 - PR #7、PR #8、PR #9、PR #10、PR #11、PR #12、PR #13 均已合入 `main`；已合并分支不得继续作为开发入口。
 - 当前仓库治理导航为：
-  - `docs/analysis/m2-v2/M2-v2-current-state-index-v0.11.md`
+  - `docs/analysis/m2-v2/M2-v2-current-state-index-v0.12.md`
   - `docs/analysis/m2-v2/M2-repository-code-convergence-and-portable-development-audit-v0.4.md`
   - `docs/analysis/m2-current/M2-current-maturity-reconstruction-v0.6.md`
+  - `docs/analysis/m2-current/M2-sales-share-only-target-decision-v0.1.md`
+  - `docs/analysis/m2-current/M2-sales-share-model-full-audit-and-research-v0.1.md`
 - PR #7 cryptographic authority 继续由不可变的
   `docs/analysis/m2-v2/M2-v2-current-state-index-v0.3.json` 提供；治理索引不得改写该绑定。
 - 历史 B0–B8、C1–C3、旧 PR 状态和旧授权记录只用于审计追溯，不是当前执行指令。
@@ -79,20 +81,25 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
 
 ## M2 当前方向
 
-- 正式目标继续是未来账单现金：未来实销现金，加 cutoff 时已签署、确认且可审计的未来现金承诺。
-- 未承诺未来买断、概率乘金额、历史买断摊销和 `buyoutMonthlyEquivalent` 不得进入正式现金预测。
+- 2026-07-25 用户已将正式目标改为**未来分成收入现金**。全部买断现金都在预测范围外，包括 cutoff 时已签署、确认、可审计的买断应收。
+- 买断及其他已识别非分成现金只进入独立账单/审计层，不得进入特征、训练标签、回测指标、点预测、区间或年度预测明细。
+- 当前实际值必须守恒：
+  `salesShareCashActual + isolatedBuyoutCashActual + isolatedOtherCashActual = totalLedgerCashActual`。
+- 分成目标内部完整性与“分成现金占公司全部账单现金的经济比例”必须分开报告；后者不是模型覆盖率门禁。
 - `buyoutMonthlyEquivalent` 只允许作为 rating/historical context，并保持 `notCashForecast=true`。
-- 无 strict cutoff commitment 的 pure-buyout 必须 null abstain，禁止使用 0 或月均等效值冒充预测。
-- commitment 必须 exact-work、已签署、已确认、cutoff 前可得、可审计，且预计入账月位于 horizon。
+- pure-buyout 无论是否有 commitment 都必须 null abstain，原因为
+  `buyout_outside_m2_forecast_scope`；禁止使用 0、承诺金额或月均等效值冒充预测。
+- commitment snapshot 只可用于模型外账单/审计 capability，不再是 M2 开发、启动或预测依赖。
 - B4 只作 comparator/fallback，不是 release approval。
 - C1、legacy C2-R、C2-R.1、C2、C3 均为历史 development `FAIL`，不得重复进入或复制其 runner。
 - 2026-07-24 用户已授权并完成 R0–R5 及本轮多粒度组合模型本地 development
   复验；授权只覆盖冻结 development case 和本机已验证 authority cache，不包含
   provider、数据库、final holdout、release 或 M3 formal。
 - 当前公共诊断为
-  `PORTFOLIO_DEVELOPMENT_BACKTEST_PASS_WORK_LEVEL_BLOCKED`：
+  `SALES_SHARE_TARGET_MIGRATED_PORTFOLIO_DEVELOPMENT_PASS_WORK_LEVEL_BLOCKED`：
   - 3,053 部权威作品，824 部 model works，7,851 个 formal-cash cases
-  - 全库现金覆盖率 0.7396468495，Top10 覆盖率 0.759412528，门槛 0.90
+  - 历史全账单中旧 forecastable cash 经济占比 0.7396468495、Top10 为
+    0.759412528；在新目标下仅作公司经济范围披露，不再作为分成模型覆盖率门禁
   - v0.3 WAPE/bias 0.50557140 / -0.01198958；v0.2 为
     0.51114966 / -0.00586227；B4 为 0.55648454 / 0.08910997
   - v0.4 gated result WAPE/bias 0.50557140 / -0.01198958；它在五个 outer
@@ -112,19 +119,31 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
     [0.08500048, 0.13717581]，bias 95% CI 为
     [-0.09940077, 0.02145806]；区间门禁通过但仍是 development evidence
   - v0.5 是 development backtest，不是独立 holdout；cell APE p90 为
-    0.28366167，作品级 WAPE、intermittent/dormant、cash observability 和
+    0.28366167，作品级 WAPE、intermittent/dormant、target classification 和
     final holdout 仍阻断完整 M2 成熟声明
   - global hurdle GLM、Tweedie boosting、hurdle GBM、MinT 和受约束 ensemble
     均未通过 nested gate；继续堆叠同类模型不是当前优先级
+  - v0.6 在不移动 824/7,851 人口和不改变预测值的条件下迁移到
+    `future_sales_share_cash`；7,851 个冻结 case 和 56,856 个逐月 case
+    的数值标签变化数均为 0，因此 WAPE、bias 与分布规律性均未改善
+  - v0.6 在重叠冻结 case 中隔离买断现金 4,800,850.1534，在逐月重叠 case
+    中隔离 11,578,794.9998；这些是重叠 case 求和，不是全库经济总额
+  - 分成目标分类不确定现金占比在冻结/逐月 case 中分别为
+    0.0000027284304597 / 0.0000028651436157；严格零容忍分类门禁未通过
 - 当前 development champion 仍为
   `M2-current-occurrence-amount-calibration-v0.3`。v0.4 只是在严格门禁拒绝所有
   challenger 后返回 v0.3，不能表述为候选升级。
 - 当前 portfolio development candidate 为
   `M2-current-multi-resolution-revenue-service-v0.5`；只允许用于组合层
   development backtest 结论，不得下放为作品级预测、自动化或 release。
+- 当前业务目标候选为
+  `M2-current-sales-share-revenue-service-v0.6`；它是目标合同迁移和同人口
+  复验，不是新模型家族，也不构成精度升级。
 - zero、seasonal naive、classic Croston、SBA、TSB、ADIDA、B4 和 v0.3 已进入
   同人口自动回归；基线不得因表现较弱而删除。
-- eligibility、cash observability 和 served coverage 必须继续分开报告。2,229 部非模型作品的原因 ledger 已在本地 private output 穷尽对账；不得为提高比例移动 824/7,851 冻结人口。
+- eligibility、target classification、served coverage 和 company-cash
+  economic scope 必须继续分开报告。2,229 部非模型作品的原因 ledger 已在
+  本地 private output 穷尽对账；不得为提高比例移动 824/7,851 冻结人口。
 - 用户已明确取消并要求跳过 120 部人工预估/复核。不得重建、重放或生成替代
   样本；旧 JSON 仅是历史审计 artifact，不是 current 配置、runner、loader、
   readiness 或验收依赖。
@@ -135,13 +154,13 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
 
 - `currentDecision=CANARY_FAIL`
 - `automationDecision=AUTOMATION_BLOCKED`
-- `nextDevelopmentReadiness=PORTFOLIO_INDEPENDENT_VALIDATION_AND_WORK_LEVEL_SIGNAL_REQUIRED`
+- `nextDevelopmentReadiness=SALES_SHARE_TARGET_VALIDATION_AND_WORK_LEVEL_SIGNAL_REQUIRED`
 - `full160Authorized=false`
 - 本轮多粒度重构研究授权已执行完毕；默认不得继续在同一 development 窗口调参
 - final holdout、embargo shadow、deferred labels 均 sealed
 - provider、远端/共享/staging-like 数据库、Canary/full160、release、M3 formal 均未授权
 
-## M2 当前执行队列（2026-07-24 多粒度重构后）
+## M2 当前执行队列（2026-07-25 分成收入目标迁移后）
 
 以下顺序是当前仓库任务的默认优先级。除非用户明确改变业务方向或新增授权，否则
 不得以继续调参、扩建 evidence runtime、复制历史 runner 或重新引入 120 部人工评估代替。
@@ -149,19 +168,22 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
 1. 保持 exact v0.3/v0.4 作品级 fallback；不得把 v0.5 portfolio 结果分配回作品。
 2. 保持三个分辨率同时报告：作品 case、origin 组合、origin×horizon 组合；任何
    稀疏权威结果都必须由逐月 origin 结果交叉检查。
-3. 下一次组合模型评价必须使用未参与本轮选择的 later-origin/final holdout；
+3. 先穷尽对账极小的 target-classification uncertainty；不得把不确定现金静默
+   归入分成或买断，也不得通过容差掩盖。
+4. 下一次组合模型评价必须使用未参与本轮选择的 later-origin/final holdout；
    未获单独授权前继续 sealed，不得在当前 2022 development 窗口继续调参。
-4. 只接收 cutoff 时真实可得、可审计、可版本化、exact-work 的新信号：
-   commitment snapshot、sales historical availability、合同/可售/渠道状态。
-5. 先建立 intermittent/dormant occurrence 与 positive amount 的数据缺口
+5. 只接收 cutoff 时真实可得、可审计、可版本化、exact-work 的分成预测信号：
+   sales historical availability、合同可售状态、渠道状态；commitment 不得作为
+   分成预测信号。
+6. 先建立 intermittent/dormant occurrence 与 positive amount 的数据缺口
    ledger，并量化每个信号的 work/origin 覆盖；无历史 snapshot 的 current
    状态不得回填。
-6. 新信号先通过 25-origin 次级诊断，再回到 7,851-case 权威人口做 nested
+7. 新信号先通过 25-origin 次级诊断，再回到 7,851-case 权威人口做 nested
    challenger；不移动冻结人口，不剔除困难 case，不将 null 计为 0。
-7. 只有绝对质量、segment、risk–coverage 和业务损失均通过，才申请 final
+8. 只有绝对质量、segment、risk–coverage 和业务损失均通过，才申请 final
    holdout；失败时继续 fallback，不得用新模型数量替代证据质量。
-8. 120 部人工评估继续完全跳过。人工只在技术门禁通过后做 post-gate QA。
-9. final holdout、embargo shadow、deferred labels、provider、数据库、
+9. 120 部人工评估继续完全跳过。人工只在技术门禁通过后做 post-gate QA。
+10. final holdout、embargo shadow、deferred labels、provider、数据库、
    Canary/full160、release 和 M3 formal 在收到各自明确授权前继续 sealed/禁止。
 
 当前启动状态：
@@ -173,8 +195,9 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
   作品级 challenger 均失败并安全回退 v0.3；portfolio v0.5 development
   backtest 通过，但完整 M2 成熟度未通过。
 - 已退役：120 部人工评估的 current 依赖；不重建、不重放。
-- 下一输入：组合层未参与选择的 later-origin/final holdout，或作品层真实的
-  cutoff as-of signal 与 cash observability 数据；不存在时保持阻断。
+- 下一输入：target-classification uncertainty 对账、组合层未参与选择的
+  later-origin/final holdout，或作品层真实的 cutoff as-of 分成信号；不存在时
+  保持阻断。
 - 未授权：final holdout 及所有既有业务 gate 外的动作。
 
 ## Git 与提交规则

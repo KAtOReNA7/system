@@ -82,7 +82,7 @@ test("buyout plus sales current rating adds current cycle buyout allocation", ()
   assert.equal(result.ratingBasis, "current_sales_with_buyout_allocation");
   assert.equal(
     result.nextCycleForecastPolicy,
-    "mixed_cash_forecast_sales_plus_cutoff_confirmed_receivables_only",
+    "mixed_forecast_sales_share_cash_only",
   );
   assert.equal(result.buyoutMonthlyEquivalent, 2500);
   assert.deepEqual(result.buyoutMonthlyEquivalentBoundary, {

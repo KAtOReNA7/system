@@ -5,8 +5,14 @@ import { loadM2CurrentPublicEvidence } from "../../src/domain/m2Current/loader.j
 import {
   buildM2CurrentPublicDiagnosticReport
 } from "../../src/domain/m2Current/report.js";
+import {
+  loadM2CurrentConfigSync
+} from "./load_m2_current_config.mjs";
 
-const config = readJson("config/m2-current.v0.5.json");
+const config = loadM2CurrentConfigSync(
+  process.cwd(),
+  "config/m2-current.v0.6.json"
+);
 const sources = Object.fromEntries(
   Object.entries(config.publicSources)
     .map(([role, file]) => [role, readJson(file)])

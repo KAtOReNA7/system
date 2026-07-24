@@ -7,6 +7,9 @@ import {
   buildM2CurrentPortfolioReconstruction,
   evaluateM2CurrentResolution
 } from "../src/domain/m2Current/portfolio.js";
+import {
+  loadM2CurrentConfigSync
+} from "../scripts/m2-current/load_m2_current_config.mjs";
 
 test("v0.5 separates portfolio development evidence from full M2 maturity", () => {
   const config = readJson("config/m2-current.v0.5.json");
@@ -26,6 +29,48 @@ test("v0.5 separates portfolio development evidence from full M2 maturity", () =
   assert.equal(contract.authorizations.newCandidateFamilyDevelopment, false);
   assert.equal(contract.authorizations.holdout, false);
   assert.equal(contract.authorizations.release, false);
+});
+
+test("v0.6 migrates the target to sales-share cash without opening authority", () => {
+  const config = loadM2CurrentConfigSync(
+    process.cwd(),
+    "config/m2-current.v0.6.json"
+  );
+  const contract = buildM2CurrentContract(config);
+  const candidate = readJson(
+    "docs/analysis/m2-current/M2-current-sales-share-candidate-v0.6.json"
+  );
+
+  assert.equal(contract.schema, "m2.current.config.v0.6");
+  assert.equal(config.target, "future_sales_share_cash");
+  assert.equal(
+    contract.evaluationPolicy.nextDevelopmentReadiness,
+    "SALES_SHARE_TARGET_VALIDATION_AND_WORK_LEVEL_SIGNAL_REQUIRED"
+  );
+  assert.equal(
+    contract.thresholds.maximumClassificationUncertainCashShare,
+    0
+  );
+  assert.equal(candidate.targetMigration.frozenTargetIsolation.caseCount, 7851);
+  assert.equal(
+    candidate.targetMigration.frozenTargetIsolation.targetChangedCaseCount,
+    0
+  );
+  assert.equal(
+    candidate.acceptance.allBuyoutExcludedFromTrainingLabels,
+    true
+  );
+  assert.equal(candidate.acceptance.targetClassificationPassed, false);
+  assert.equal(candidate.acceptance.fullM2MaturityPassed, false);
+  assert.equal(contract.authorizations.holdout, false);
+  assert.equal(contract.authorizations.release, false);
+});
+
+test("current config inheritance is confined to JSON under config", () => {
+  assert.throws(
+    () => loadM2CurrentConfigSync(process.cwd(), "../package.json"),
+    /m2_current_config_path_invalid/u
+  );
 });
 
 test("resolution scoring exposes cancellation instead of hiding work error", () => {

@@ -1,5 +1,8 @@
 # M2 current R0–R5 评估与开发复验 v0.5
 
+> 历史检查点：当前正式目标已于 2026-07-25 改为纯分成收入。当前入口为
+> `M2-v2-current-state-index-v0.12.md`。
+
 日期：2026-07-24
 状态：`CANDIDATE_DEVELOPMENT_FAIL_BLOCKED`
 用途：冻结 development 诊断；不是 final holdout、Canary 或 release 结论

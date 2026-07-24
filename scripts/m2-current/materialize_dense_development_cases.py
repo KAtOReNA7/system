@@ -46,6 +46,9 @@ OUTPUT_DIR = ROOT / "data" / "private-output" / "m2-current-dense"
 CASE_OUTPUT = OUTPUT_DIR / "M2-current-dense-cases-private-v0.1.ndjson"
 HISTORY_OUTPUT = OUTPUT_DIR / "M2-current-dense-history-private-v0.1.ndjson"
 MANIFEST_OUTPUT = OUTPUT_DIR / "M2-current-dense-manifest-private-v0.1.json"
+FROZEN_TARGET_OUTPUT = (
+    OUTPUT_DIR / "M2-current-sales-share-frozen-cases-private-v0.1.ndjson"
+)
 SALES_ROUTES = frozenset({"pure_sales_share", "buyout_plus_sales"})
 
 
@@ -57,7 +60,7 @@ def digest_bytes(value: bytes) -> str:
     return hashlib.sha256(value).hexdigest()
 
 
-def read_current_work_ids() -> set[str]:
+def read_current_cases() -> tuple[set[str], list[dict[str, Any]]]:
     if not CURRENT_PRIVATE.is_file() or not CURRENT_MANIFEST.is_file():
         raise DenseMaterializationError(
             "current v0.3 private candidate authority is missing"
@@ -74,12 +77,23 @@ def read_current_work_ids() -> set[str]:
             "current v0.3 private candidate authority differs"
         )
     work_ids: set[str] = set()
+    cases: list[dict[str, Any]] = []
     count = 0
     for line in private_bytes.decode("utf-8").splitlines():
         if not line:
             continue
         row = json.loads(line)
-        work_ids.add(str(row["caseKey"]["standardWorkId"]))
+        case_key = row["caseKey"]
+        work_ids.add(str(case_key["standardWorkId"]))
+        cases.append(
+            {
+                "standardWorkId": str(case_key["standardWorkId"]),
+                "origin": str(case_key["origin"]),
+                "horizonMonths": int(case_key["horizonMonths"]),
+                "route": str(case_key["route"]),
+                "labelAvailableAsOf": str(row["labelAvailableAsOf"]),
+            }
+        )
         count += 1
     if (
         count != int(manifest["privateCaseRowCount"])
@@ -88,7 +102,7 @@ def read_current_work_ids() -> set[str]:
         raise DenseMaterializationError(
             "current v0.3 private candidate population differs"
         )
-    return work_ids
+    return work_ids, cases
 
 
 def month_range(first: str, last: str, step: int) -> Iterable[str]:
@@ -125,7 +139,7 @@ def run() -> dict[str, Any]:
         or dense["labelAvailableThrough"] != "2023-06"
     ):
         raise DenseMaterializationError("dense development boundary differs")
-    work_ids = read_current_work_ids()
+    work_ids, frozen_cases = read_current_cases()
     calibration_spec, _v11, _v12 = v12.load_and_validate_contract()
     c2_spec = c2.load_spec()
     works_list, _posthoc, input_evidence = legacy.load_authorized_works(
@@ -142,6 +156,7 @@ def run() -> dict[str, Any]:
         )
     case_rows: list[dict[str, Any]] = []
     history_rows: list[dict[str, Any]] = []
+    frozen_target_rows: list[dict[str, Any]] = []
     route_counts: dict[str, int] = {}
     segment_counts: dict[str, int] = {}
     for origin in month_range(
@@ -187,7 +202,7 @@ def run() -> dict[str, Any]:
                 target_end = base.add_months(origin, int(horizon))
                 if target_end > dense["labelAvailableThrough"]:
                     continue
-                actuals = cash.build_formal_cash_actuals(
+                actuals = cash.build_sales_share_cash_actuals(
                     work,
                     origin,
                     int(horizon),
@@ -208,6 +223,21 @@ def run() -> dict[str, Any]:
                         "segment": segment,
                         "historyKey": history_key,
                         "actual": float(actuals["forecastableCashActual"]),
+                        "salesShareCashActual": float(
+                            actuals["salesShareCashActual"]
+                        ),
+                        "isolatedBuyoutCashActual": float(
+                            actuals["isolatedBuyoutCashActual"]
+                        ),
+                        "isolatedOtherCashActual": float(
+                            actuals["isolatedOtherCashActual"]
+                        ),
+                        "totalLedgerCashActual": float(
+                            actuals["totalLedgerCashActual"]
+                        ),
+                        "classificationUncertainCashActual": float(
+                            actuals["classificationUncertainCashActual"]
+                        ),
                         "uncommittedBuyoutSurpriseActual": float(
                             actuals["uncommittedBuyoutSurpriseActual"]
                         ),
@@ -216,7 +246,7 @@ def run() -> dict[str, Any]:
                         "abstentionReason": (
                             None
                             if served
-                            else "uncommitted_future_buyout_not_forecastable"
+                            else "buyout_outside_m2_forecast_scope"
                             if route == "pure_buyout"
                             else "unknown_revenue_model"
                         ),
@@ -224,13 +254,57 @@ def run() -> dict[str, Any]:
                         "deferred60MonthLabelsOpened": False,
                     }
                 )
+    for case in frozen_cases:
+        work = works[case["standardWorkId"]]
+        actuals = cash.build_sales_share_cash_actuals(
+            work,
+            case["origin"],
+            case["horizonMonths"],
+            case["route"],
+            calibration_spec,
+            label_available_as_of=case["labelAvailableAsOf"],
+        )
+        frozen_target_rows.append(
+            {
+                "caseKey": {
+                    "standardWorkId": case["standardWorkId"],
+                    "origin": case["origin"],
+                    "horizonMonths": case["horizonMonths"],
+                    "route": case["route"],
+                },
+                "labelAvailableAsOf": case["labelAvailableAsOf"],
+                "legacyForecastableCashActual": float(
+                    actuals["forecastableCashActual"]
+                ),
+                "salesShareCashActual": float(
+                    actuals["salesShareCashActual"]
+                ),
+                "isolatedBuyoutCashActual": float(
+                    actuals["isolatedBuyoutCashActual"]
+                ),
+                "isolatedOtherCashActual": float(
+                    actuals["isolatedOtherCashActual"]
+                ),
+                "totalLedgerCashActual": float(
+                    actuals["totalLedgerCashActual"]
+                ),
+                "classificationUncertainCashActual": float(
+                    actuals["classificationUncertainCashActual"]
+                ),
+                "allBuyoutExcludedFromForecast": True,
+            }
+        )
     case_bytes, case_count = encode_ndjson(case_rows)
     history_bytes, history_count = encode_ndjson(history_rows)
+    frozen_target_bytes, frozen_target_count = encode_ndjson(
+        frozen_target_rows
+    )
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     CASE_OUTPUT.write_bytes(case_bytes)
     HISTORY_OUTPUT.write_bytes(history_bytes)
+    FROZEN_TARGET_OUTPUT.write_bytes(frozen_target_bytes)
     manifest = {
-        "schema": "m2.current.dense_development.private_manifest.v0.1",
+        "schema": "m2.current.dense_development.private_manifest.v0.2",
         "tracked": False,
         "decisionStatus": "not_for_formal_decision",
         "role": "secondary_development_diagnostic",
@@ -249,6 +323,10 @@ def run() -> dict[str, Any]:
         "caseSha256": digest_bytes(case_bytes),
         "historyRowCount": history_count,
         "historySha256": digest_bytes(history_bytes),
+        "frozenSalesShareTargetRowCount": frozen_target_count,
+        "frozenSalesShareTargetSha256": digest_bytes(frozen_target_bytes),
+        "targetPolicy": "sales_share_cash_only",
+        "allBuyoutExcludedFromForecast": True,
         "routeCountsByWorkOrigin": dict(sorted(route_counts.items())),
         "segmentCountsByWorkOrigin": dict(sorted(segment_counts.items())),
         "inputFingerprint": input_evidence["inputFingerprint"],

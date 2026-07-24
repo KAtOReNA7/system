@@ -8,10 +8,16 @@ export function evaluateM2CurrentDiagnosticGate(
   const contract = buildM2CurrentContract(config);
   const blockers = [];
   const observability = evidence.coverage.cashObservability;
-  if (observability.fullLibrary < observability.fullLibraryRequired) {
+  if (
+    observability.fullLibraryRequired !== null
+    && observability.fullLibrary < observability.fullLibraryRequired
+  ) {
     blockers.push("full_library_cash_observability_below_threshold");
   }
-  if (observability.top10 < observability.top10Required) {
+  if (
+    observability.top10Required !== null
+    && observability.top10 < observability.top10Required
+  ) {
     blockers.push("top10_cash_observability_below_threshold");
   }
   if (evidence.coverage.modelEligibility.reasonLedgerStatus !== "AVAILABLE") {
@@ -23,15 +29,25 @@ export function evaluateM2CurrentDiagnosticGate(
   if (!candidate && evidence.modelQualityDecision !== "PASS") {
     blockers.push("latest_model_quality_failed");
   }
-  if (evidence.businessCoverageDecision !== "PASS") {
+  if (
+    contract.schema !== "m2.current.config.v0.6"
+    && evidence.businessCoverageDecision !== "PASS"
+  ) {
     blockers.push("business_coverage_not_passed");
+  }
+  if (
+    contract.schema === "m2.current.config.v0.6"
+    && evidence.coverage.targetClassification?.passed !== true
+  ) {
+    blockers.push("sales_share_target_classification_uncertainty_unresolved");
   }
   if (!candidate) {
     blockers.push("current_candidate_not_evaluated");
   } else {
     const comparison = [
       "m2.current.config.v0.4",
-      "m2.current.config.v0.5"
+      "m2.current.config.v0.5",
+      "m2.current.config.v0.6"
     ].includes(contract.schema)
       ? candidate.pointComparisonToPrevious?.comparison
       : candidate.comparison;
@@ -107,7 +123,8 @@ export function evaluateM2CurrentDiagnosticGate(
     if (
       [
         "m2.current.config.v0.4",
-        "m2.current.config.v0.5"
+        "m2.current.config.v0.5",
+        "m2.current.config.v0.6"
       ].includes(contract.schema)
       && candidate.acceptance?.allCurrentDevelopmentConditionsPassed !== true
     ) {
@@ -124,13 +141,19 @@ export function evaluateM2CurrentDiagnosticGate(
       blockers.push("candidate_dormant_segment_not_improved");
     }
     if (
-      contract.schema === "m2.current.config.v0.5"
+      [
+        "m2.current.config.v0.5",
+        "m2.current.config.v0.6"
+      ].includes(contract.schema)
       && candidate.acceptance?.portfolioDevelopmentBacktestPassed !== true
     ) {
       blockers.push("portfolio_development_backtest_failed");
     }
     if (
-      contract.schema === "m2.current.config.v0.5"
+      [
+        "m2.current.config.v0.5",
+        "m2.current.config.v0.6"
+      ].includes(contract.schema)
       && candidate.acceptance?.fullM2MaturityPassed !== true
     ) {
       blockers.push("full_m2_maturity_not_established");
@@ -141,7 +164,8 @@ export function evaluateM2CurrentDiagnosticGate(
     [
       "m2.current.config.v0.3",
       "m2.current.config.v0.4",
-      "m2.current.config.v0.5"
+      "m2.current.config.v0.5",
+      "m2.current.config.v0.6"
     ]
       .includes(contract.schema)
   ) {
@@ -172,11 +196,16 @@ export function evaluateM2CurrentDiagnosticGate(
   return {
     schema: "m2.current.diagnostic_gate.v0.1",
     status: (
-      contract.schema === "m2.current.config.v0.5"
+      [
+        "m2.current.config.v0.5",
+        "m2.current.config.v0.6"
+      ].includes(contract.schema)
       && candidate?.acceptance?.portfolioDevelopmentBacktestPassed === true
       && !candidateDevelopmentQualityPassed
     )
-      ? "PORTFOLIO_DEVELOPMENT_BACKTEST_PASS_WORK_LEVEL_BLOCKED"
+      ? contract.schema === "m2.current.config.v0.6"
+        ? "SALES_SHARE_TARGET_MIGRATED_PORTFOLIO_DEVELOPMENT_PASS_WORK_LEVEL_BLOCKED"
+        : "PORTFOLIO_DEVELOPMENT_BACKTEST_PASS_WORK_LEVEL_BLOCKED"
       : candidateDevelopmentQualityPassed
       ? "CANDIDATE_DEVELOPMENT_PASS_BLOCKED"
       : candidateOverallGatesPassed
@@ -185,7 +214,9 @@ export function evaluateM2CurrentDiagnosticGate(
         ? "CANDIDATE_DEVELOPMENT_FAIL_BLOCKED"
         : "BASELINE_ONLY_BLOCKED",
     blockers: [...new Set(blockers)],
-    developmentDirection: contract.schema === "m2.current.config.v0.5"
+    developmentDirection: contract.schema === "m2.current.config.v0.6"
+      ? "sales_share_target_classification_then_auditable_work_level_signals_and_independent_validation"
+      : contract.schema === "m2.current.config.v0.5"
       ? "independent_portfolio_validation_and_auditable_work_level_signals"
       : contract.schema === "m2.current.config.v0.4"
         ? "auditable_as_of_signal_and_cash_observability_before_new_model_work"
