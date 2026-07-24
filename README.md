@@ -11,16 +11,17 @@
 - PR #11：M2 current v0.2 可靠预测候选和 120 部冻结业务样本，已合并。
 - 当前业务结论：`currentDecision=CANARY_FAIL`。
 - 当前开发 readiness：
-  `nextDevelopmentReadiness=AUTOMATED_BACKTEST_AND_BUSINESS_COVERAGE_REQUIRED`。
-- v0.2 可靠预测候选和 120 部确定性误差诊断样本已完成。独立人工数值预测和
-  强制逐行复核已取消；人工只在技术门禁通过后做最终结果验收。provider、
+  `nextDevelopmentReadiness=BUSINESS_COVERAGE_AND_ABSOLUTE_QUALITY_REQUIRED`。
+- v0.3 two-part development candidate、rolling-origin 自动评价和五个强制
+  sanity baseline 已完成。120 部人工预估/复核清单已从 current 执行链退役；
+  人工只在技术门禁通过后做 post-gate quality assurance。provider、
   Canary/full160、final holdout、release 和 M3 formal 均未授权。
 
 当前导航：
 
-- `docs/analysis/m2-v2/M2-v2-current-state-index-v0.8.md`
+- `docs/analysis/m2-v2/M2-v2-current-state-index-v0.9.md`
 - `docs/analysis/m2-v2/M2-repository-code-convergence-and-portable-development-audit-v0.4.md`
-- `docs/analysis/m2-current/M2-current-reliable-model-development-v0.3.md`
+- `docs/analysis/m2-current/M2-current-automated-model-development-v0.4.md`
 - `AGENTS.md`
 
 历史 PR、B0–B8、C1–C3 和旧授权记录保留在 `docs/analysis/` 中，只用于审计追溯，不是当前开发入口。
@@ -151,45 +152,40 @@ M2 的正式预测对象是未来账单现金。正式边界保持：
 | 全库 / Top10 cash coverage | 73.96% / 75.94% |
 | coverage 门槛 | 90% |
 | B4 WAPE / bias | 0.55648454 / 0.08911106 |
-| current candidate WAPE / bias | 0.51114966 / -0.00586227 |
-| relative WAPE / paired 95% CI | -8.15% / [-15.75%, -2.91%] |
+| v0.2 WAPE / bias | 0.51114966 / -0.00586227 |
+| v0.3 WAPE / bias | 0.50557140 / -0.01198958 |
+| v0.3 vs v0.2 / paired 95% CI | -1.09% / [-3.71%, -0.02%] |
+| v0.3 vs B4 / paired 95% CI | -9.15% / [-16.71%, -3.23%] |
+| development WAPE 门槛 | 0.30（未通过） |
 | current candidate decision | `PARTIAL_PASS` |
 
-v0.2 在 overall、全部 horizon 和相对 B4 paired CI 上通过，并把总体偏差降至接近零；
-dormant 切片仍没有改善，全库现金可观察性也仍不足。120 部唯一作品的确定性业务
-样本只保留作 post-hoc 误差诊断，不再要求人工预测或逐行填写。下一步转为自动化
-rolling-origin、简单基线、two-part 诊断和业务覆盖分析；不得继续复制 C1–C3
-runner、堆叠 evidence runtime 或无授权扩建候选家族。
+v0.3 在冻结 development case 上相对 v0.2 有小幅且 paired CI 不穿零的改善，
+但绝对 WAPE 仍约 50.56%；intermittent WAPE 约 90.73%，dormant WAPE/bias
+约 100.02% / -99.97%。它还不能替代人工业务判断，更不是 release 证据。
+120 部旧 JSON 仅保留历史追溯，不再参与配置、runner、loader、readiness 或验收。
 
 ## M2 当前执行队列
 
-本队列已于 2026-07-24 按用户判断调整。三张人工填写模板不再是开发依赖，也不再
-以人工与模型的数值竞赛作为质量标准。
+本队列已于 2026-07-24 按用户判断调整。人工预测竞赛和 120 部清单均已取消。
 
-1. **冻结 v0.2（已执行）**
-   - `M2-current-hierarchical-robust-calibration-v0.2` 保持当前 exact 规则；
-     不继续搜索 scale、group 或候选家族。
-2. **建立自动化评价合同（当前优先）**
-   - 增加月度 rolling origin；
-   - 同人口比较全零、seasonal naive、SBA、TSB、ADIDA、B4、v0.1 和 v0.2；
-   - 分开评价现金发生概率和发生后的正金额；
+1. **自动化评价与 v0.3（已执行）**
+   - 月度 rolling-origin，同人口比较 zero、seasonal naive、SBA、TSB、ADIDA、
+     B4、v0.2 和 v0.3；
+   - 分开评价现金发生与正金额；
    - 报告 WAPE、signed bias、MASE、RMSSE，以及 horizon、segment、route、
-     eligibility、cash observability、served coverage 和 abstention 切片。
-3. **保留 120 部样本为误差诊断**
-   - 其中 60 部代表性、30 部最大低估、30 部最大高估；
-   - stress 行依赖 actual 选取，因此不适合做人类盲视预测或代表性验收；
-   - 用户无需填写人工预测值、逐行复核结果或原三张模板。
-4. **补充可审计输入（仅真实材料存在时）**
+     eligibility、cash observability、served coverage 和 abstention。
+2. **质量结论**
+   - v0.3 相对 v0.2 改善约 1.09%，但绝对 WAPE 和 segment 门禁失败；
+   - 不得将 `PARTIAL_PASS` 表述为可替代人工、可打开 holdout 或可发布。
+3. **补充可审计输入（仅真实材料存在时）**
    - 单独准备 cutoff 时已签署、确认且可审计的 commitment snapshot。
    - 未承诺买断不得通过概率乘金额进入正式预测；pure-buyout 无承诺时继续
      `null abstain`。
-5. **下一轮算法研究（尚未授权执行）**
-   - 预先冻结“销售现金发生概率 + 正金额”的 two-part/hurdle 设计；
-   - 评估严格 as-of 业务特征、概率区间、全局模型和非负层级协调。
-6. **决策门禁**
-   - 先通过自动化评价和业务覆盖门禁，再由用户决定是否授权新候选开发。
-   - 技术门禁通过后，只让人工对小规模代表性最终结果做接受、有限接受或拒绝，
-     不要求人工提供预测金额。
+4. **下一轮研究（需要新授权）**
+   - 优先解决 intermittent/dormant 可识别信号和 cash observability；
+   - 继续严格 as-of、全局共享、非负层级协调，不通过剔除困难 case 美化指标。
+5. **决策门禁**
+   - 技术门禁通过后，人工只做小规模 post-gate quality assurance，不预测金额。
    - final holdout、embargo shadow、provider、数据库、Canary/full160、release
      和 M3 formal 继续保持未授权。
 

@@ -9,22 +9,28 @@ import { fileURLToPath } from "node:url";
 
 import { pairedWorkOriginBootstrap } from "../../src/domain/m2Current/bootstrap.js";
 import {
-  buildM2CurrentReliableCandidate,
-  buildM2CurrentSegmentedCandidate
-} from "../../src/domain/m2Current/candidate.js";
+  attachM2CurrentScaleAndOccurrence,
+  buildM2CurrentAutomatedBaselineEvaluation
+} from "../../src/domain/m2Current/baselines.js";
 import {
-  buildM2CurrentBusinessSample
-} from "../../src/domain/m2Current/businessSample.js";
+  buildM2CurrentOccurrenceAmountCandidate,
+  buildM2CurrentReliableCandidate
+} from "../../src/domain/m2Current/candidate.js";
 import { compareM2CurrentCandidateToB4 } from "../../src/domain/m2Current/comparator.js";
 import { buildM2CurrentContract } from "../../src/domain/m2Current/contract.js";
-import { scoreM2CurrentSlices } from "../../src/domain/m2Current/metrics.js";
+import {
+  scoreM2CurrentEvaluationRows,
+  scoreM2CurrentEvaluationSlices,
+  scoreM2CurrentSlices
+} from "../../src/domain/m2Current/metrics.js";
+import { assertM2CurrentModelCaseRoute } from "../../src/domain/m2Current/route.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const config = JSON.parse(
-  await readFile(path.join(root, "config/m2-current.v0.2.json"), "utf8")
+  await readFile(path.join(root, "config/m2-current.v0.3.json"), "utf8")
 );
 const previousConfig = JSON.parse(
-  await readFile(path.join(root, "config/m2-current.v0.1.json"), "utf8")
+  await readFile(path.join(root, "config/m2-current.v0.2.json"), "utf8")
 );
 const contract = buildM2CurrentContract(config);
 const previousContract = buildM2CurrentContract(previousConfig);
@@ -69,20 +75,20 @@ const privateDirectory = path.join(
 );
 const privateRowsPath = path.join(
   privateDirectory,
-  "M2-current-reliable-candidate-cases-private-v0.2.ndjson"
+  "M2-current-occurrence-amount-candidate-cases-private-v0.3.ndjson"
 );
 const privateManifestPath = path.join(
   privateDirectory,
-  "M2-current-reliable-candidate-manifest-private-v0.2.json"
+  "M2-current-occurrence-amount-candidate-manifest-private-v0.3.json"
 );
 const privateReasonLedgerPath = path.join(
   privateDirectory,
   "M2-current-model-eligibility-reasons-private-v0.2.ndjson"
 );
 const publicPath = path.join(root, config.publicSources.candidate);
-const publicBusinessSamplePath = path.join(
+const publicAutomatedEvaluationPath = path.join(
   root,
-  config.publicSources.businessSample
+  config.publicSources.automatedEvaluation
 );
 
 const comparatorText = await readFile(comparatorPath, "utf8");
@@ -171,14 +177,13 @@ if (
   throw new Error("m2_current_private_eligibility_reason_ledger_drift");
 }
 
-const previousCandidate = buildM2CurrentSegmentedCandidate(
-  comparatorRows,
-  segmentRows,
-  previousContract
-);
-const candidate = buildM2CurrentReliableCandidate(
+const previousCandidate = buildM2CurrentReliableCandidate(
   comparatorRows,
   featureRows,
+  previousContract
+);
+const candidate = buildM2CurrentOccurrenceAmountCandidate(
+  previousCandidate.rows,
   contract
 );
 const previousCandidateByKey = new Map(
@@ -193,12 +198,12 @@ if (
 }
 const comparison = compareM2CurrentCandidateToB4(
   candidate.rows,
-  comparatorRows,
+  previousCandidate.rows,
   contract
 );
 const pairedCi = pairedWorkOriginBootstrap(
   candidate.rows,
-  comparatorRows,
+  previousCandidate.rows,
   contract
 );
 const previousComparison = compareM2CurrentCandidateToB4(
@@ -211,19 +216,46 @@ const pairedCiVsPreviousCandidate = pairedWorkOriginBootstrap(
   previousCandidate.rows,
   contract
 );
-const b4ByHorizon = scoreM2CurrentSlices(comparatorRows, "horizonMonths");
-const b4SegmentRows = comparatorRows.map((row) => ({
+const comparisonToB4 = compareM2CurrentCandidateToB4(
+  candidate.rows,
+  comparatorRows,
+  contract
+);
+const pairedCiToB4 = pairedWorkOriginBootstrap(
+  candidate.rows,
+  comparatorRows,
+  contract
+);
+const previousByHorizon = scoreM2CurrentSlices(
+  previousCandidate.rows,
+  "horizonMonths"
+);
+const previousSegmentRows = previousCandidate.rows.map((row) => ({
   ...row,
   segment: segmentByKey.get(caseKey(row))
 }));
-const b4BySegment = scoreM2CurrentSlices(b4SegmentRows, "segment");
-const b4ByOrigin = scoreM2CurrentSlices(comparatorRows, "origin");
-const pairedByHorizon = pairedSlices(candidate.byHorizon, b4ByHorizon);
-const pairedBySegment = pairedSlices(candidate.bySegment, b4BySegment);
-const pairedByOrigin = pairedSlices(candidate.byOrigin, b4ByOrigin);
+const b4RowsWithSegment = comparatorRows.map((row) => ({
+  ...row,
+  segment: segmentByKey.get(caseKey(row))
+}));
+const previousBySegment = scoreM2CurrentSlices(
+  previousSegmentRows,
+  "segment"
+);
+const previousByOrigin = scoreM2CurrentSlices(
+  previousCandidate.rows,
+  "origin"
+);
+const pairedByHorizon = pairedSlices(candidate.byHorizon, previousByHorizon);
+const pairedBySegment = pairedSlices(candidate.bySegment, previousBySegment);
+const pairedByOrigin = pairedSlices(candidate.byOrigin, previousByOrigin);
 const overallAbsoluteBiasPassed = (
   Math.abs(comparison.candidate.signedBias)
     <= contract.thresholds.overallAbsoluteBiasMaximum
+);
+const developmentWapePassed = (
+  comparison.candidate.wape
+    <= contract.thresholds.developmentWapeMaximum
 );
 const eachHorizonAbsoluteBiasPassed = (
   contract.allowedHorizonValues.every((horizon) => (
@@ -231,24 +263,131 @@ const eachHorizonAbsoluteBiasPassed = (
       <= contract.thresholds.eachHorizonAbsoluteBiasMaximum
   ))
 );
+const eachSegmentWapePassed = contract.activitySegmentValues.every(
+  (segment) => (
+    candidate.bySegment[segment].wape
+      <= contract.thresholds.eachSegmentWapeMaximum
+  )
+);
+const eachSegmentAbsoluteBiasPassed = contract.activitySegmentValues.every(
+  (segment) => (
+    Math.abs(candidate.bySegment[segment].signedBias)
+      <= contract.thresholds.eachSegmentAbsoluteBiasMaximum
+  )
+);
 const pairedRelativeWapeUpperPassed = (
   pairedCi.upper95 < contract.thresholds.pairedRelativeWapeUpperMaximum
 );
-const dormantSegmentImproved = pairedBySegment.dormant.relativeWape < 0;
+const dormantFallbackPolicyPassed = candidate.selections
+  .filter((selection) => selection.segment === "dormant")
+  .every((selection) => (
+    selection.selectedCandidateId === previousConfig.candidate.id
+  ));
 const dormantRows = candidate.rows.filter((row) => row.segment === "dormant");
-const sampleInputRows = candidate.rows.map((row) => ({
-  ...row,
-  comparatorPointEstimate: comparatorByKey.get(caseKey(row)).pointEstimate,
-  previousCandidatePointEstimate:
-    previousCandidateByKey.get(caseKey(row))?.pointEstimate
-}));
-const businessSample = buildM2CurrentBusinessSample(
-  sampleInputRows,
+const factPath = path.join(
+  root,
+  "data/private-output/m2-formal-execution",
+  path.basename(payload.factImport.factFile)
+);
+const factText = await readFile(factPath, "utf8");
+if (sha256(factText) !== payload.factImport.factFileSha256) {
+  throw new Error("m2_current_private_history_digest_mismatch");
+}
+const historyRows = parseNdjson(factText)
+  .filter((row) => row.businessForm === "audio_product")
+  .map((row) => ({
+    standardWorkId: String(row.standardWorkId),
+    month: row.billMonth,
+    amount: Number(row.actualSalesAmount)
+  }));
+const baselineEvaluation = buildM2CurrentAutomatedBaselineEvaluation(
+  candidate.rows.map((row) => ({
+    ...row,
+    revenueModel: row.route
+  })),
+  historyRows,
   contract
 );
+const evaluatedCandidateRows = attachM2CurrentScaleAndOccurrence(
+  candidate.rows,
+  historyRows,
+  (row) => row.occurrenceProbability ?? (row.pointEstimate > 0 ? 1 : 0)
+);
+const evaluatedPreviousRows = attachM2CurrentScaleAndOccurrence(
+  previousCandidate.rows,
+  historyRows,
+  (row) => row.pointEstimate > 0 ? 1 : 0
+);
+const evaluatedB4Rows = attachM2CurrentScaleAndOccurrence(
+  b4RowsWithSegment,
+  historyRows,
+  (row) => row.pointEstimate > 0 ? 1 : 0
+);
+const automatedEvaluation = {
+  schema: "m2.current.automated_evaluation.public.v0.1",
+  decisionStatus: "not_for_formal_decision",
+  scope: {
+    caseCount: candidate.rows.length,
+    workCount: new Set(candidate.rows.map((row) => row.standardWorkId)).size,
+    originCount: new Set(candidate.rows.map((row) => row.origin)).size,
+    horizons: contract.allowedHorizonValues,
+    finalHoldoutOpened: false
+  },
+  design: {
+    monthlyRollingOrigin: true,
+    strictlyAsOfHistory: true,
+    samePopulationComparison: true,
+    occurrenceAndPositiveAmountSeparated: true,
+    metrics: contract.evaluationPolicy.requiredMetrics,
+    humanNumericBaselineUsed: false
+  },
+  decisionThresholds: {
+    developmentWapeMaximum:
+      contract.thresholds.developmentWapeMaximum,
+    observedCandidateWape: comparison.candidate.wape,
+    developmentWapePassed
+  },
+  models: {
+    [candidate.candidateId]: evaluationViews(evaluatedCandidateRows),
+    [previousConfig.candidate.id]: evaluationViews(evaluatedPreviousRows),
+    B4: evaluationViews(evaluatedB4Rows)
+  },
+  simpleBaselines: baselineEvaluation.baselines,
+  coverage: {
+    eligibility: {
+      workCount: contract.population.modelWorkCount,
+      libraryWorkCount: contract.population.libraryWorkCount,
+      workShare:
+        contract.population.modelWorkCount / contract.population.libraryWorkCount
+    },
+    cashObservability: {
+      status: "reported_by_public_business_coverage_authority"
+    },
+    served: {
+      caseCount: candidate.rows.length,
+      caseShareOfFrozenModelPopulation: 1
+    },
+    abstention: baselineEvaluation.routePolicy
+  },
+  retiredHumanPredictionSample: {
+    required: false,
+    currentDependency: false,
+    historicalArtifactOnly:
+      "docs/analysis/m2-current/M2-current-business-sample-diagnostic-v0.2.json"
+  },
+  boundaries: {
+    aggregateOnly: true,
+    identifiersPresent: false,
+    privateRowsPresent: false,
+    providerCalled: false,
+    databaseConnected: false,
+    finalHoldoutOpened: false,
+    releaseAuthorized: false
+  }
+};
 const publicReport = {
-  schema: "m2.current.reliable_candidate.public.v0.2",
-  version: "M2-current-reliable-candidate-v0.2",
+  schema: "m2.current.occurrence_amount_candidate.public.v0.3",
+  version: "M2-current-occurrence-amount-candidate-v0.3",
   decisionStatus: "not_for_formal_decision",
   candidateId: candidate.candidateId,
   target: config.target,
@@ -269,24 +408,25 @@ const publicReport = {
     populationMoved: false
   },
   design: {
-    family: "hierarchical_robust_multiplicative_calibration",
-    dense: "segment_fallback_plus_as_of_spike_candidate_group",
-    intermittent: "segment_fallback_plus_as_of_value_band_group",
-    dormant: contract.candidate.dormantPolicy.mode,
+    family: "occurrence_hazard_plus_conditional_amount_calibration",
+    baseCandidateId: previousConfig.candidate.id,
+    dense: "two_part_rule_when_mature_earlier_gate_passes",
+    intermittent: "two_part_rule_when_mature_earlier_gate_passes",
+    dormant: "base_candidate_fallback",
     strictlyMatureEarlierLabelsOnly: true,
     sameOrLaterOuterTruthRead: false,
     postHocFeatureRead: false,
-    scaleFactors: contract.candidate.scaleFactors,
-    trainingAbsoluteBiasMaximum:
-      contract.candidate.trainingAbsoluteBiasMaximum,
-    groupCalibration: contract.candidate.groupCalibration,
-    dormantPolicy: contract.candidate.dormantPolicy,
+    occurrenceAmount: contract.candidate.occurrenceAmount,
     thresholdMovedAfterResults: false
   },
   selections: candidate.selections,
   comparison,
+  comparisonToB4: {
+    comparison: comparisonToB4,
+    pairedCi: pairedCiToB4
+  },
   previousCandidateComparison: {
-    candidateId: previousConfig.candidate.id,
+    candidateId: previousCandidate.candidateId,
     comparison: previousComparison,
     pairedCi: pairedCiVsPreviousCandidate
   },
@@ -302,7 +442,7 @@ const publicReport = {
       reactivationCandidateActivated: candidate.selections.some(
         (selection) => (
           selection.segment === "dormant"
-          && selection.selectedCandidateId !== "B4"
+          && selection.selectedCandidateId !== previousConfig.candidate.id
         )
       ),
       conclusion:
@@ -311,25 +451,38 @@ const publicReport = {
   },
   byOrigin: pairedByOrigin,
   pairedCi,
-  businessSample: {
-    publicReport: config.publicSources.businessSample,
-    workCount: businessSample.publicReport.sampleDesign.workCount,
-    evaluationRole: contract.evaluationPolicy.businessSampleRole,
-    humanNumericBaselineRequired:
-      contract.evaluationPolicy.humanNumericBaselineRequired,
-    humanReviewStatus: businessSample.publicReport.humanReview.status
+  automatedEvaluation: {
+    publicReport: config.publicSources.automatedEvaluation,
+    humanNumericBaselineRequired: false,
+    businessSampleRequired: false,
+    humanRole: contract.evaluationPolicy.humanRole
   },
   acceptance: {
+    developmentWapePassed,
     overallAbsoluteBiasPassed,
     eachHorizonAbsoluteBiasPassed,
+    eachSegmentWapePassed,
+    eachSegmentAbsoluteBiasPassed,
     pairedRelativeWapeUpperPassed,
-    dormantSegmentImproved,
+    dormantFallbackPolicyPassed,
     allCurrentDevelopmentConditionsPassed:
-      overallAbsoluteBiasPassed
+      developmentWapePassed
+      && overallAbsoluteBiasPassed
       && eachHorizonAbsoluteBiasPassed
+      && eachSegmentWapePassed
+      && eachSegmentAbsoluteBiasPassed
       && pairedRelativeWapeUpperPassed
-      && dormantSegmentImproved,
-    developmentDecision: dormantSegmentImproved ? "PASS" : "PARTIAL_PASS",
+      && dormantFallbackPolicyPassed,
+    developmentDecision:
+      developmentWapePassed
+      && overallAbsoluteBiasPassed
+      && eachHorizonAbsoluteBiasPassed
+      && eachSegmentWapePassed
+      && eachSegmentAbsoluteBiasPassed
+      && pairedRelativeWapeUpperPassed
+      && dormantFallbackPolicyPassed
+        ? "PASS"
+        : "PARTIAL_PASS",
     finalHoldoutOpened: false,
     releaseAuthorized: false
   },
@@ -368,14 +521,14 @@ const privateText = candidate.rows.map((row) => JSON.stringify({
   candidatePointEstimate: row.pointEstimate,
   selectedCandidateId: row.selectedCandidateId,
   selectedFactor: row.selectedFactor,
+  occurrenceProbability: row.occurrenceProbability,
+  conditionalAmountScale: row.conditionalAmountScale,
   labelAvailableAsOf: row.labelAvailableAsOf
 })).join("\n") + "\n";
 await writeFile(privateRowsPath, privateText, "utf8");
 const prettyPublic = `${JSON.stringify(publicReport, null, 2)}\n`;
-const prettyBusinessSamplePublic =
-  `${JSON.stringify(businessSample.publicReport, null, 2)}\n`;
 await writeFile(privateManifestPath, `${JSON.stringify({
-  schema: "m2.current.reliable_candidate.private_manifest.v0.2",
+  schema: "m2.current.occurrence_amount_candidate.private_manifest.v0.3",
   tracked: false,
   decisionStatus: "not_for_formal_decision",
   privateCaseRowCount: candidate.rows.length,
@@ -383,18 +536,20 @@ await writeFile(privateManifestPath, `${JSON.stringify({
   privateEligibilityReasonRowCount: eligibilityLedger.length,
   privateEligibilityReasonSha256: sha256(privateReasonLedgerText),
   privateEligibilityReasonCounts: eligibilityReasonCounts,
-  businessSampleRole: contract.evaluationPolicy.businessSampleRole,
-  privateBusinessSampleWritten: false,
+  humanNumericBaselineUsed: false,
+  businessSampleWritten: false,
+  automatedEvaluationWritten: true,
   publicReportSha256: sha256(prettyPublic),
-  publicBusinessSampleSha256: sha256(prettyBusinessSamplePublic),
+  publicAutomatedEvaluationSha256:
+    sha256(`${JSON.stringify(automatedEvaluation, null, 2)}\n`),
   finalHoldoutOpened: false,
   releaseAuthorized: false
 }, null, 2)}\n`, "utf8");
 await mkdir(path.dirname(publicPath), { recursive: true });
 await writeFile(publicPath, prettyPublic, "utf8");
 await writeFile(
-  publicBusinessSamplePath,
-  prettyBusinessSamplePublic,
+  publicAutomatedEvaluationPath,
+  `${JSON.stringify(automatedEvaluation, null, 2)}\n`,
   "utf8"
 );
 
@@ -403,13 +558,14 @@ process.stdout.write(`${JSON.stringify({
   caseCount: candidate.rows.length,
   workCount: publicReport.scope.uniqueWorkCount,
   candidateWape: comparison.candidate.wape,
-  b4Wape: comparison.b4.wape,
+  baseCandidateWape: comparison.b4.wape,
   relativeWape: comparison.relativeWape,
   candidateSignedBias: comparison.candidate.signedBias,
   pairedCiUpper95: pairedCi.upper95,
   relativeWapeVsPreviousCandidate: previousComparison.relativeWape,
   pairedCiVsPreviousCandidateUpper95: pairedCiVsPreviousCandidate.upper95,
-  businessSampleWorkCount: businessSample.publicReport.sampleDesign.workCount,
+  automatedEvaluationBaselines:
+    Object.keys(automatedEvaluation.simpleBaselines),
   eligibilityReasonLedgerWorkCount: eligibilityLedger.length,
   formalCashRouteExcludedWorkCount: routeExcludedWorkCount,
   acceptance: publicReport.acceptance
@@ -474,6 +630,10 @@ function isDevelopmentB4ModelCase(row) {
 }
 
 function normalizeComparator(row) {
+  assertM2CurrentModelCaseRoute({
+    revenueModel: row.strata?.revenue_model,
+    origin: row.caseKey.origin
+  });
   return {
     standardWorkId: String(row.caseKey.standard_work_id),
     origin: row.caseKey.origin,
@@ -582,6 +742,15 @@ function pairedSlices(candidateSlices, b4Slices) {
       relativeWape: candidateSlices[key].wape / b4Slices[key].wape - 1
     }
   ]));
+}
+
+function evaluationViews(rows) {
+  return {
+    overall: scoreM2CurrentEvaluationRows(rows),
+    byHorizon: scoreM2CurrentEvaluationSlices(rows, "horizonMonths"),
+    bySegment: scoreM2CurrentEvaluationSlices(rows, "segment"),
+    byRoute: scoreM2CurrentEvaluationSlices(rows, "route")
+  };
 }
 
 function sha256(value) {

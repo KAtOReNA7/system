@@ -11,12 +11,10 @@ import {
   pairedWorkOriginBootstrap
 } from "../src/domain/m2Current/bootstrap.js";
 import {
+  buildM2CurrentOccurrenceAmountCandidate,
   buildM2CurrentReliableCandidate,
   buildM2CurrentSegmentedCandidate
 } from "../src/domain/m2Current/candidate.js";
-import {
-  buildM2CurrentBusinessSample
-} from "../src/domain/m2Current/businessSample.js";
 import {
   compareM2CurrentCandidateToB4
 } from "../src/domain/m2Current/comparator.js";
@@ -30,9 +28,16 @@ import {
   loadM2CurrentPublicEvidence
 } from "../src/domain/m2Current/loader.js";
 import {
+  scoreM2CurrentEvaluationRows,
   scoreM2CurrentPointRows,
   scoreM2CurrentSlices
 } from "../src/domain/m2Current/metrics.js";
+import {
+  buildM2CurrentAutomatedBaselineEvaluation
+} from "../src/domain/m2Current/baselines.js";
+import {
+  resolveM2CurrentCashRoute
+} from "../src/domain/m2Current/route.js";
 import {
   buildM2CurrentFormalCashTarget,
   serveM2CurrentPointForecast
@@ -47,8 +52,9 @@ function publicSources() {
 
 const config = readJson("config/m2-current.v0.1.json");
 const contract = buildM2CurrentContract(config);
-const currentConfig = readJson("config/m2-current.v0.2.json");
+const currentConfig = readJson("config/m2-current.v0.3.json");
 const currentContract = buildM2CurrentContract(currentConfig);
+const reliableConfig = readJson("config/m2-current.v0.2.json");
 
 function currentPublicSources() {
   return Object.fromEntries(
@@ -194,6 +200,126 @@ test("point metrics and slice metrics do not use zero imputation", () => {
   assert.throws(
     () => scoreM2CurrentPointRows([row({ pointEstimate: null })]),
     /point_estimate_invalid/u
+  );
+});
+
+test("extended metrics separate occurrence, positive amount and scale quality", () => {
+  const result = scoreM2CurrentEvaluationRows([
+    row({
+      actual: 100,
+      pointEstimate: 80,
+      occurrenceProbability: 0.8,
+      scaleAbsoluteError: 20,
+      scaleSquaredError: 400
+    }),
+    row({
+      standardWorkId: "SYN-WORK-2",
+      actual: 0,
+      pointEstimate: 10,
+      occurrenceProbability: 0.2,
+      scaleAbsoluteError: 10,
+      scaleSquaredError: 100
+    })
+  ]);
+
+  assert.equal(result.wape, 0.3);
+  assert.equal(result.mase, 1);
+  assert.equal(result.rmsse, 1);
+  assert.equal(result.cashOccurrence.observedRate, 0.5);
+  assert.ok(Math.abs(result.cashOccurrence.brier - 0.04) < 1e-12);
+  assert.equal(result.positiveAmount.caseCount, 1);
+});
+
+test("pure buyout is outside numeric modeling without cutoff evidence", () => {
+  const abstention = resolveM2CurrentCashRoute({
+    revenueModel: "pure_buyout",
+    origin: "2022-12"
+  });
+  const committed = resolveM2CurrentCashRoute({
+    revenueModel: "pure_buyout",
+    origin: "2022-12",
+    commitment: {
+      confirmedAsOf: "2022-11",
+      outstandingAmount: 2500,
+      signed: true,
+      confirmed: true,
+      auditable: true
+    }
+  });
+
+  assert.equal(abstention.pointEstimate, null);
+  assert.equal(abstention.abstained, true);
+  assert.equal(
+    abstention.abstentionReason,
+    "uncommitted_future_buyout_not_forecastable"
+  );
+  assert.equal(abstention.buyoutMonthlyEquivalentAllowed, false);
+  assert.equal(committed.pointEstimate, 2500);
+  assert.equal(committed.forecastScope, "cutoff_confirmed_commitment_only");
+});
+
+test("automated evaluator runs rolling-origin intermittent baselines", () => {
+  const histories = Array.from({ length: 30 }, (_, index) => ({
+    standardWorkId: "SYN-WORK-1",
+    month: `${2020 + Math.floor(index / 12)}-${String(
+      index % 12 + 1
+    ).padStart(2, "0")}`,
+    amount: index % 3 === 0 ? 30 : 0
+  }));
+  const result = buildM2CurrentAutomatedBaselineEvaluation(
+    [row({
+      origin: "2022-06",
+      route: "pure_sales_share",
+      revenueModel: "pure_sales_share",
+      actual: 60
+    })],
+    histories,
+    currentContract
+  );
+
+  assert.deepEqual(Object.keys(result.baselines), [
+    "zero",
+    "seasonal_naive",
+    "SBA",
+    "TSB",
+    "ADIDA"
+  ]);
+  assert.equal(result.rollingOrigin.futureActualUsedForPrediction, false);
+  assert.equal(result.routePolicy.scoredCaseCount, 1);
+  assert.equal(result.baselines.TSB.overall.caseCount, 1);
+  assert.equal(result.baselines.TSB.overall.mase !== null, true);
+});
+
+test("two-part candidate activates only from mature earlier labels", () => {
+  const training = Array.from({ length: 100 }, (_, index) => row({
+    standardWorkId: `TRAIN-${index}`,
+    origin: "2020-12",
+    actual: index < 80 ? 100 : 0,
+    pointEstimate: 120,
+    labelAvailableAsOf: "2021-03"
+  }));
+  const outer = row({
+    standardWorkId: "OUTER",
+    origin: "2021-06",
+    actual: 100,
+    pointEstimate: 120,
+    labelAvailableAsOf: "2021-09"
+  });
+  const result = buildM2CurrentOccurrenceAmountCandidate(
+    [...training, outer],
+    currentContract
+  );
+  const selected = result.rows.find(
+    (entry) => entry.standardWorkId === "OUTER"
+  );
+
+  assert.equal(selected.selectedCandidateId.includes("two_part"), true);
+  assert.ok(selected.pointEstimate < selected.baseCandidatePointEstimate);
+  assert.equal(
+    result.selections.every(
+      (selection) => selection.sameOrLaterOuterTruthRead === false
+    ),
+    true
   );
 });
 
@@ -403,12 +529,12 @@ test("segmented candidate uses only labels mature before the outer origin", () =
 
 test("reliable candidate learns group scales only from mature as-of features", () => {
   const testContract = buildM2CurrentContract({
-    ...currentConfig,
+    ...reliableConfig,
     candidate: {
-      ...currentConfig.candidate,
+      ...reliableConfig.candidate,
       scaleFactors: [0.5, 0.75, 1],
       groupCalibration: {
-        ...currentConfig.candidate.groupCalibration,
+        ...reliableConfig.candidate.groupCalibration,
         minimumEarlierCaseCount: 2
       }
     }
@@ -548,73 +674,20 @@ test("reliable candidate learns group scales only from mature as-of features", (
   );
 });
 
-test("business sample is deterministic, unique and aggregate-only", () => {
-  const sampleContract = buildM2CurrentContract({
-    ...currentConfig,
-    businessSample: {
-      seed: 42,
-      representativeWorkCountPerSegment: 1,
-      largestUnderpredictionWorkCountPerSegment: 1,
-      largestOverpredictionWorkCountPerSegment: 1
-    }
-  });
-  const rows = sampleContract.activitySegmentValues.flatMap((segment) => (
-    Array.from({ length: 8 }, (_, index) => {
-      const underprediction = index < 4;
-      return {
-        standardWorkId: `${segment.toUpperCase()}-${index}`,
-        origin: "2022-12",
-        horizonMonths: 3,
-        route: "sales_share",
-        segment,
-        comparatorPointEstimate: 100,
-        previousCandidatePointEstimate: 100,
-        pointEstimate: underprediction ? 50 + index : 150 + index,
-        actual: 100,
-        selectedCandidateId: "synthetic_candidate",
-        selectedFactor: 0.75
-      };
-    })
-  ));
-
-  const first = buildM2CurrentBusinessSample(rows, sampleContract);
-  const second = buildM2CurrentBusinessSample(rows, sampleContract);
-  const publicText = JSON.stringify(first.publicReport);
-
-  assert.deepEqual(first, second);
-  assert.equal(first.privateRows.length, 9);
+test("120-work prediction sample is retired from the current contract", () => {
+  assert.equal(currentContract.evaluationPolicy.businessSampleRequired, false);
   assert.equal(
-    new Set(first.privateRows.map((entry) => entry.standardWorkId)).size,
-    9
+    currentContract.evaluationPolicy.humanRole,
+    "post_gate_quality_assurance_only"
   );
-  assert.deepEqual(first.publicReport.distribution.bySegment, {
-    dense: 3,
-    dormant: 3,
-    intermittent: 3
-  });
-  assert.equal(
-    first.publicReport.humanReview.status,
-    "NOT_REQUIRED_BY_USER_DECISION"
+  assert.equal(currentContract.businessSample, null);
+  assert.deepEqual(
+    currentContract.evaluationPolicy.retiredArtifacts,
+    [
+      "docs/analysis/m2-current/M2-current-business-sample-diagnostic-v0.2.json"
+    ]
   );
-  assert.equal(first.publicReport.humanReview.numericForecastRequired, false);
-  assert.equal(first.publicReport.humanReview.privateWorkbookRequired, false);
-  assert.equal(
-    first.publicReport.humanReview.sampleRole,
-    "post_hoc_error_diagnostic_only"
-  );
-  assert.equal(
-    first.publicReport.humanReview.suitableForRepresentativeAcceptance,
-    false
-  );
-  assert.equal(
-    first.publicReport.sampleDesign.representativeSelectionUsesActual,
-    false
-  );
-  assert.equal(
-    first.publicReport.sampleDesign.stressSelectionUsesActualForDiagnosticOnly,
-    true
-  );
-  assert.doesNotMatch(publicText, /standardWorkId/u);
+  assert.equal("businessSample" in currentConfig.publicSources, false);
 });
 
 test("current config is the runtime authority for population and horizons", () => {
@@ -676,35 +749,36 @@ test("public diagnostic CLI is reproducible and aggregate-only", () => {
   const report = readJson(currentConfig.publicOutput);
   const text = JSON.stringify(report);
 
-  assert.equal(report.schema, "m2.current.public_diagnostic_report.v0.3");
+  assert.equal(report.schema, "m2.current.public_diagnostic_report.v0.4");
   assert.equal(report.directionAssessment.engineeringSequenceDrifted, false);
   assert.equal(
     report.directionAssessment.retiredSequence,
-    "human_numeric_baseline_and_mandatory_business_sample_review"
+    "human_numeric_baseline_and_120_work_business_sample"
   );
   assert.equal(report.evaluationPolicy.humanNumericBaselineRequired, false);
   assert.equal(
     report.evidence.currentCandidate.candidateId,
-    "M2-current-hierarchical-robust-calibration-v0.2"
+    "M2-current-occurrence-amount-calibration-v0.3"
   );
   assert.equal(
     report.evidence.currentCandidate.comparison.candidate.wape,
-    0.5111496562935863
+    0.50557140186362
   );
-  assert.equal(report.evidence.businessSample.sampleDesign.workCount, 120);
   assert.equal(
-    report.evidence.businessSample.humanReview.status,
-    "NOT_REQUIRED_BY_USER_DECISION"
+    report.evidence.retiredBusinessSample.currentDependency,
+    false
+  );
+  assert.equal(report.evidence.businessSample, null);
+  assert.equal(
+    report.evidence.automatedEvaluation.design.monthlyRollingOrigin,
+    true
   );
   assert.equal(report.gate.candidateOverallGatesPassed, true);
   assert.equal(report.gate.candidateDevelopmentQualityPassed, false);
-  assert.equal(
-    report.gate.status,
-    "CANDIDATE_DEVELOPMENT_PARTIAL_BLOCKED"
-  );
+  assert.equal(report.gate.status, "CANDIDATE_DEVELOPMENT_PARTIAL_BLOCKED");
   assert.ok(
     report.gate.blockers.includes(
-      "candidate_dormant_segment_not_improved"
+      "candidate_absolute_wape_above_development_threshold"
     )
   );
   assert.equal(report.gate.releaseAuthorized, false);
@@ -735,7 +809,7 @@ test("current config grants candidate development but no downstream authority", 
   assert.equal(currentConfig.authorizations.m3Formal, false);
   assert.equal(
     currentContract.evaluationPolicy.nextDevelopmentReadiness,
-    "AUTOMATED_BACKTEST_AND_BUSINESS_COVERAGE_REQUIRED"
+    "BUSINESS_COVERAGE_AND_ABSOLUTE_QUALITY_REQUIRED"
   );
   assert.equal(
     currentContract.evaluationPolicy.humanNumericBaselineRequired,
@@ -743,19 +817,17 @@ test("current config grants candidate development but no downstream authority", 
   );
   assert.equal(
     currentConfig.primaryComparator,
-    "B4_formula_switched_legacy_variant"
+    "M2-current-hierarchical-robust-calibration-v0.2"
   );
   assert.equal(
     currentConfig.publicOutput,
-    "docs/analysis/m2-current/M2-current-public-diagnostic-v0.3.json"
+    "docs/analysis/m2-current/M2-current-public-diagnostic-v0.4.json"
   );
-  assert.equal(currentContract.schema, "m2.current.config.v0.2");
+  assert.equal(currentContract.schema, "m2.current.config.v0.3");
   assert.equal(
-    loadM2CurrentPublicEvidence(
-      currentPublicSources(),
-      currentConfig
-    ).businessSample.sampleDesign.workCount,
-    120
+    loadM2CurrentPublicEvidence(currentPublicSources(), currentConfig)
+      .retiredBusinessSample.currentDependency,
+    false
   );
 });
 

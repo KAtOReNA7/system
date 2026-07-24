@@ -130,6 +130,201 @@ export function buildM2CurrentReliableCandidate(
   };
 }
 
+export function buildM2CurrentOccurrenceAmountCandidate(
+  baseCandidateRows,
+  contract
+) {
+  const policy = contract?.candidate?.occurrenceAmount;
+  if (!policy) {
+    throw new Error("m2_current_occurrence_amount_contract_required");
+  }
+  const rows = [...baseCandidateRows].map((row) => ({
+    ...row,
+    pointEstimate: Number(row.pointEstimate),
+    actual: Number(row.actual)
+  })).sort(compareCases);
+  if (rows.length === 0) {
+    throw new Error("m2_current_occurrence_amount_rows_required");
+  }
+  const candidateRows = [];
+  const selections = [];
+  const origins = [...new Set(rows.map((row) => row.origin))].sort();
+  for (const origin of origins) {
+    for (const segment of contract.activitySegmentValues) {
+      const trainingRows = rows.filter((row) => (
+        row.segment === segment
+        && row.origin < origin
+        && requireMonth(row.labelAvailableAsOf, "label_available_as_of")
+          <= origin
+      ));
+      const outerRows = rows.filter((row) => (
+        row.segment === segment && row.origin === origin
+      ));
+      const selection = selectOccurrenceAmountRule(
+        segment,
+        origin,
+        trainingRows,
+        policy
+      );
+      selections.push(selection.evidence);
+      for (const row of outerRows) {
+        candidateRows.push({
+          ...row,
+          baseCandidatePointEstimate: row.pointEstimate,
+          pointEstimate: row.pointEstimate * selection.factor,
+          occurrenceProbability: selection.occurrenceProbability,
+          conditionalAmountScale: selection.conditionalAmountScale,
+          selectedCandidateId: selection.selectedCandidateId,
+          selectedFactor: selection.factor
+        });
+      }
+    }
+  }
+  candidateRows.sort(compareCases);
+  return {
+    candidateId: contract.candidate.id,
+    baseCandidateId: policy.baseCandidateId,
+    rows: candidateRows,
+    selections,
+    bySegment: scoreM2CurrentSlices(candidateRows, "segment"),
+    byOrigin: scoreM2CurrentSlices(candidateRows, "origin"),
+    byHorizon: scoreM2CurrentSlices(candidateRows, "horizonMonths")
+  };
+}
+
+function selectOccurrenceAmountRule(segment, origin, rows, policy) {
+  const baseMetrics = rows.length > 0
+    ? scoreM2CurrentPointRows(rows)
+    : null;
+  const fallback = {
+    factor: 1,
+    occurrenceProbability: null,
+    conditionalAmountScale: null,
+    selectedCandidateId: policy.baseCandidateId
+  };
+  if (!policy.eligibleSegments.includes(segment)) {
+    return occurrenceAmountSelection(
+      segment,
+      origin,
+      rows,
+      fallback,
+      baseMetrics,
+      null,
+      "segment_uses_base_candidate_fallback"
+    );
+  }
+  if (rows.length < policy.minimumEarlierCaseCount) {
+    return occurrenceAmountSelection(
+      segment,
+      origin,
+      rows,
+      fallback,
+      baseMetrics,
+      null,
+      "mature_earlier_evidence_below_minimum"
+    );
+  }
+  const positiveRows = rows.filter((row) => row.actual > 0);
+  const occurrenceProbability = (
+    positiveRows.length
+    + policy.priorStrength * policy.priorOccurrenceProbability
+  ) / (rows.length + policy.priorStrength);
+  const positivePrediction = positiveRows.reduce(
+    (sum, row) => sum + row.pointEstimate,
+    0
+  );
+  if (positiveRows.length === 0 || positivePrediction <= 0) {
+    return occurrenceAmountSelection(
+      segment,
+      origin,
+      rows,
+      fallback,
+      baseMetrics,
+      null,
+      "positive_amount_calibration_unavailable"
+    );
+  }
+  const conditionalAmountScale = positiveRows.reduce(
+    (sum, row) => sum + row.actual,
+    0
+  ) / positivePrediction;
+  const factor = clamp(
+    occurrenceProbability * conditionalAmountScale,
+    policy.minimumFactor,
+    policy.maximumFactor
+  );
+  const challengerMetrics = scoreM2CurrentPointRows(rows.map((row) => ({
+    ...row,
+    pointEstimate: row.pointEstimate * factor
+  })));
+  const relativeWape = challengerMetrics.wape / baseMetrics.wape - 1;
+  if (
+    relativeWape > -policy.minimumRelativeWapeImprovement
+    || Math.abs(challengerMetrics.signedBias)
+      > policy.trainingAbsoluteBiasMaximum
+  ) {
+    return occurrenceAmountSelection(
+      segment,
+      origin,
+      rows,
+      {
+        ...fallback,
+        occurrenceProbability,
+        conditionalAmountScale
+      },
+      baseMetrics,
+      relativeWape,
+      "two_part_rule_did_not_clear_training_improvement_and_bias_gates"
+    );
+  }
+  return occurrenceAmountSelection(
+    segment,
+    origin,
+    rows,
+    {
+      factor,
+      occurrenceProbability,
+      conditionalAmountScale,
+      selectedCandidateId: `${segment}__two_part_occurrence_amount`
+    },
+    challengerMetrics,
+    relativeWape,
+    "two_part_rule_improved_mature_earlier_wape_and_is_bias_safe"
+  );
+}
+
+function occurrenceAmountSelection(
+  segment,
+  origin,
+  rows,
+  rule,
+  metrics,
+  relativeWape,
+  reason
+) {
+  return {
+    ...rule,
+    evidence: {
+      outerOrigin: origin,
+      segment,
+      matureEarlierCaseCount: rows.length,
+      matureEarlierOriginCount: new Set(rows.map((row) => row.origin)).size,
+      positiveEarlierCaseCount: rows.filter((row) => row.actual > 0).length,
+      maximumLabelAvailableAsOf:
+        rows.map((row) => row.labelAvailableAsOf).sort().at(-1) ?? null,
+      selectedCandidateId: rule.selectedCandidateId,
+      selectionReason: reason,
+      selectedFactor: rule.factor,
+      occurrenceProbability: rule.occurrenceProbability,
+      conditionalAmountScale: rule.conditionalAmountScale,
+      trainingMetrics: metrics,
+      relativeWapeToBaseCandidate: relativeWape,
+      sameOrLaterOuterTruthRead: false,
+      postHocFeatureRead: false
+    }
+  };
+}
+
 function selectReliableRules(
   segment,
   origin,
@@ -595,4 +790,8 @@ function compareCases(a, b) {
 
 function factorId(value) {
   return String(Math.round(value * 100)).padStart(3, "0");
+}
+
+function clamp(value, minimum, maximum) {
+  return Math.max(minimum, Math.min(maximum, value));
 }

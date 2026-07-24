@@ -1,0 +1,114 @@
+{
+  "schema": "m2.current.config.v0.3",
+  "stage": "automated_occurrence_amount_candidate_development",
+  "target": "future_bill_cash",
+  "primaryComparator": "M2-current-hierarchical-robust-calibration-v0.2",
+  "previousCandidate": "M2-current-hierarchical-robust-calibration-v0.2",
+  "allowedHorizons": [3, 6, 12, 18, 24],
+  "activitySegments": ["dense", "intermittent", "dormant"],
+  "frozenPopulation": {
+    "libraryWorkCount": 3053,
+    "modelWorkCount": 824,
+    "modelCaseCount": 7851
+  },
+  "thresholds": {
+    "fullLibraryForecastableCashCoverageMinimum": 0.9,
+    "top10ForecastableCashCoverageMinimum": 0.9,
+    "developmentWapeMaximum": 0.3,
+    "overallAbsoluteBiasMaximum": 0.1,
+    "eachHorizonAbsoluteBiasMaximum": 0.15,
+    "eachSegmentWapeMaximum": 0.8,
+    "eachSegmentAbsoluteBiasMaximum": 0.25,
+    "pairedCiRequired": true,
+    "pairedRelativeWapeUpperMaximum": 0
+  },
+  "evaluation": {
+    "pairedBootstrap": {
+      "method": "paired_work_origin_pigeonhole",
+      "confidence": 0.95,
+      "iterations": 2000,
+      "seed": 20260724
+    }
+  },
+  "evaluationPolicy": {
+    "humanNumericBaselineRequired": false,
+    "humanRole": "post_gate_quality_assurance_only",
+    "businessSampleRequired": false,
+    "retiredArtifacts": [
+      "docs/analysis/m2-current/M2-current-business-sample-diagnostic-v0.2.json"
+    ],
+    "finalHumanAcceptanceMode": "result_acceptance_after_technical_gates",
+    "nextDevelopmentReadiness": "BUSINESS_COVERAGE_AND_ABSOLUTE_QUALITY_REQUIRED",
+    "monthlyRollingOriginRequired": true,
+    "separateCashOccurrenceAndPositiveAmountRequired": true,
+    "automatedComparators": [
+      "zero",
+      "seasonal_naive",
+      "SBA",
+      "TSB",
+      "ADIDA"
+    ],
+    "requiredMetrics": [
+      "WAPE",
+      "signed_bias",
+      "MASE",
+      "RMSSE"
+    ],
+    "requiredCoverageViews": [
+      "eligibility",
+      "cash_observability",
+      "served",
+      "abstention"
+    ]
+  },
+  "routePolicy": {
+    "uncommittedPureBuyout": "null_abstain",
+    "buyoutMonthlyEquivalent": "rating_context_only_not_cash_forecast",
+    "buyoutPlusSales": "sales_cash_only_without_cutoff_commitment",
+    "cutoffCommitment": "signed_confirmed_auditable_snapshot_only"
+  },
+  "candidate": {
+    "id": "M2-current-occurrence-amount-calibration-v0.3",
+    "scaleFactors": [1.0],
+    "trainingAbsoluteBiasMaximum": 0.15,
+    "occurrenceAmount": {
+      "baseCandidateId": "M2-current-hierarchical-robust-calibration-v0.2",
+      "eligibleSegments": ["dense", "intermittent"],
+      "minimumEarlierCaseCount": 80,
+      "minimumRelativeWapeImprovement": 0.01,
+      "trainingAbsoluteBiasMaximum": 0.15,
+      "priorStrength": 10,
+      "priorOccurrenceProbability": 0.5,
+      "minimumFactor": 0.3,
+      "maximumFactor": 1.5
+    }
+  },
+  "publicSources": {
+    "limitation": "docs/analysis/m2-v2/M2-v2-b4-limitation-analysis.json",
+    "coverage": "docs/analysis/m2-real-data/M2-formal-cash-population-business-coverage-v1.json",
+    "terminal": "docs/analysis/m2-real-data/M2-C3-terminal-model-route-summary-v1.json",
+    "modelDecision": "docs/analysis/m2-real-data/M2-C3-model-quality-decision-v1.json",
+    "businessDecision": "docs/analysis/m2-real-data/M2-C3-business-coverage-decision-v1.json",
+    "segments": "docs/analysis/m2-real-data/M2-C2-activity-segment-route-manifest-v1.json",
+    "development": "docs/analysis/m2-real-data/M2-C3-development-validation-v1.json",
+    "population": "docs/analysis/m2-real-data/M2-calibration-population-coverage-v1.json",
+    "previousCandidate": "docs/analysis/m2-current/M2-current-reliable-candidate-v0.2.json",
+    "candidate": "docs/analysis/m2-current/M2-current-occurrence-amount-candidate-v0.3.json",
+    "automatedEvaluation": "docs/analysis/m2-current/M2-current-automated-evaluation-v0.1.json"
+  },
+  "publicOutput": "docs/analysis/m2-current/M2-current-public-diagnostic-v0.4.json",
+  "archiveOnlyDevelopmentRoutes": ["C1", "C2-R", "C2-R.1", "C2", "C3"],
+  "sealsMustRemainClosed": [
+    "finalHoldoutOpened",
+    "embargoShadowOpened",
+    "deferred60MonthLabelsOpened"
+  ],
+  "authorizations": {
+    "provider": false,
+    "database": false,
+    "modelTraining": true,
+    "holdout": false,
+    "release": false,
+    "m3Formal": false
+  }
+}

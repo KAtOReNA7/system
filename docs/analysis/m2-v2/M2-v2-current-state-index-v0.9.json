@@ -1,0 +1,110 @@
+{
+  "schemaVersion": "m2-v2-current-state-index-v0.9",
+  "classification": "public_sanitized_not_for_formal_decision",
+  "updatedAt": "2026-07-24",
+  "supersedesGovernanceIndex": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.8.md",
+  "cryptographicAuthority": {
+    "preserved": true,
+    "schemaVersion": "m2-v2-current-state-index-v0.3",
+    "path": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.3.json"
+  },
+  "m2Current": {
+    "status": "CANDIDATE_DEVELOPMENT_PARTIAL_BLOCKED",
+    "decisionStatus": "not_for_formal_decision",
+    "target": "future_bill_cash",
+    "authoritativeWorks": 3053,
+    "modelWorks": 824,
+    "formalCashCases": 7851,
+    "cashObservability": {
+      "fullLibrary": 0.7396468495203204,
+      "top10": 0.7594125279899511,
+      "required": 0.9
+    },
+    "candidate": {
+      "id": "M2-current-occurrence-amount-calibration-v0.3",
+      "baseCandidateId": "M2-current-hierarchical-robust-calibration-v0.2",
+      "decision": "PARTIAL_PASS",
+      "wape": 0.50557140186362,
+      "signedBias": -0.011989577726722772,
+      "developmentWapeMaximum": 0.3,
+      "developmentWapePassed": false,
+      "relativeWapeToBase": -0.01091315304878604,
+      "pairedRelativeWapeToBase95": {
+        "lower": -0.03714631049443047,
+        "upper": -0.00015184251172020252
+      },
+      "relativeWapeToB4": -0.09149065716164695,
+      "pairedRelativeWapeToB495": {
+        "lower": -0.1670954627962227,
+        "upper": -0.03228091380136986
+      },
+      "segmentQuality": {
+        "dense": {
+          "wape": 0.4637293456231139,
+          "signedBias": 0.02439915111437811
+        },
+        "intermittent": {
+          "wape": 0.9073284142904835,
+          "signedBias": -0.15945405112725278
+        },
+        "dormant": {
+          "wape": 1.0001836094171885,
+          "signedBias": -0.9997200647531362
+        }
+      }
+    },
+    "automatedEvaluation": {
+      "monthlyRollingOrigin": true,
+      "samePopulation": true,
+      "comparators": [
+        "zero",
+        "seasonal_naive",
+        "SBA",
+        "TSB",
+        "ADIDA",
+        "B4",
+        "M2-current-hierarchical-robust-calibration-v0.2",
+        "M2-current-occurrence-amount-calibration-v0.3"
+      ],
+      "metrics": ["WAPE", "signed_bias", "MASE", "RMSSE"],
+      "cashOccurrenceAndPositiveAmountSeparated": true
+    },
+    "humanPolicy": {
+      "numericBaselineRequired": false,
+      "businessSampleRequired": false,
+      "role": "post_gate_quality_assurance_only",
+      "retiredHistoricalArtifact":
+        "docs/analysis/m2-current/M2-current-business-sample-diagnostic-v0.2.json"
+    },
+    "pureBuyoutPolicy": {
+      "withoutCutoffCommitment": "null_abstain",
+      "buyoutMonthlyEquivalent": "rating_context_only_not_cash_forecast",
+      "numericPredictionListAllowed": false
+    }
+  },
+  "currentDecision": "CANARY_FAIL",
+  "nextDevelopmentReadiness": "BUSINESS_COVERAGE_AND_ABSOLUTE_QUALITY_REQUIRED",
+  "authorizations": {
+    "exactV03DevelopmentReplay": true,
+    "newCandidateTraining": false,
+    "provider": false,
+    "database": false,
+    "canary": false,
+    "full160": false,
+    "finalHoldout": false,
+    "release": false,
+    "m3Formal": false
+  },
+  "seals": {
+    "finalHoldoutOpened": false,
+    "embargoShadowOpened": false,
+    "deferred60MonthLabelsOpened": false
+  },
+  "currentEntryPoints": [
+    "README.md",
+    "AGENTS.md",
+    "NEXT-CODEX-INSTRUCTION.md",
+    "docs/analysis/m2-current/M2-current-automated-model-development-v0.4.md",
+    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.9.md"
+  ]
+}

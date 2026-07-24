@@ -1,0 +1,706 @@
+{
+  "schema": "m2.current.occurrence_amount_candidate.public.v0.3",
+  "version": "M2-current-occurrence-amount-candidate-v0.3",
+  "decisionStatus": "not_for_formal_decision",
+  "candidateId": "M2-current-occurrence-amount-calibration-v0.3",
+  "target": "future_bill_cash",
+  "primaryComparator": "M2-current-hierarchical-robust-calibration-v0.2",
+  "developmentAuthorization": {
+    "modelTraining": true,
+    "finalHoldout": false,
+    "release": false,
+    "m3Formal": false
+  },
+  "scope": {
+    "caseCount": 7851,
+    "uniqueWorkCount": 824,
+    "originCount": 5,
+    "horizons": [
+      3,
+      6,
+      12,
+      18,
+      24
+    ],
+    "populationMoved": false
+  },
+  "design": {
+    "family": "occurrence_hazard_plus_conditional_amount_calibration",
+    "baseCandidateId": "M2-current-hierarchical-robust-calibration-v0.2",
+    "dense": "two_part_rule_when_mature_earlier_gate_passes",
+    "intermittent": "two_part_rule_when_mature_earlier_gate_passes",
+    "dormant": "base_candidate_fallback",
+    "strictlyMatureEarlierLabelsOnly": true,
+    "sameOrLaterOuterTruthRead": false,
+    "postHocFeatureRead": false,
+    "occurrenceAmount": {
+      "baseCandidateId": "M2-current-hierarchical-robust-calibration-v0.2",
+      "eligibleSegments": [
+        "dense",
+        "intermittent"
+      ],
+      "minimumEarlierCaseCount": 80,
+      "minimumRelativeWapeImprovement": 0.01,
+      "trainingAbsoluteBiasMaximum": 0.15,
+      "priorStrength": 10,
+      "priorOccurrenceProbability": 0.5,
+      "minimumFactor": 0.3,
+      "maximumFactor": 1.5
+    },
+    "thresholdMovedAfterResults": false
+  },
+  "selections": [
+    {
+      "outerOrigin": "2020-12",
+      "segment": "dense",
+      "matureEarlierCaseCount": 0,
+      "matureEarlierOriginCount": 0,
+      "positiveEarlierCaseCount": 0,
+      "maximumLabelAvailableAsOf": null,
+      "selectedCandidateId": "M2-current-hierarchical-robust-calibration-v0.2",
+      "selectionReason": "mature_earlier_evidence_below_minimum",
+      "selectedFactor": 1,
+      "occurrenceProbability": null,
+      "conditionalAmountScale": null,
+      "trainingMetrics": null,
+      "relativeWapeToBaseCandidate": null,
+      "sameOrLaterOuterTruthRead": false,
+      "postHocFeatureRead": false
+    },
+    {
+      "outerOrigin": "2020-12",
+      "segment": "intermittent",
+      "matureEarlierCaseCount": 0,
+      "matureEarlierOriginCount": 0,
+      "positiveEarlierCaseCount": 0,
+      "maximumLabelAvailableAsOf": null,
+      "selectedCandidateId": "M2-current-hierarchical-robust-calibration-v0.2",
+      "selectionReason": "mature_earlier_evidence_below_minimum",
+      "selectedFactor": 1,
+      "occurrenceProbability": null,
+      "conditionalAmountScale": null,
+      "trainingMetrics": null,
+      "relativeWapeToBaseCandidate": null,
+      "sameOrLaterOuterTruthRead": false,
+      "postHocFeatureRead": false
+    },
+    {
+      "outerOrigin": "2020-12",
+      "segment": "dormant",
+      "matureEarlierCaseCount": 0,
+      "matureEarlierOriginCount": 0,
+      "positiveEarlierCaseCount": 0,
+      "maximumLabelAvailableAsOf": null,
+      "selectedCandidateId": "M2-current-hierarchical-robust-calibration-v0.2",
+      "selectionReason": "segment_uses_base_candidate_fallback",
+      "selectedFactor": 1,
+      "occurrenceProbability": null,
+      "conditionalAmountScale": null,
+      "trainingMetrics": null,
+      "relativeWapeToBaseCandidate": null,
+      "sameOrLaterOuterTruthRead": false,
+      "postHocFeatureRead": false
+    },
+    {
+      "outerOrigin": "2021-06",
+      "segment": "dense",
+      "matureEarlierCaseCount": 114,
+      "matureEarlierOriginCount": 1,
+      "positiveEarlierCaseCount": 114,
+      "maximumLabelAvailableAsOf": "2021-06",
+      "selectedCandidateId": "M2-current-hierarchical-robust-calibration-v0.2",
+      "selectionReason": "two_part_rule_did_not_clear_training_improvement_and_bias_gates",
+      "selectedFactor": 1,
+      "occurrenceProbability": 0.9596774193548387,
+      "conditionalAmountScale": 0.9912888194312652,
+      "trainingMetrics": {
+        "caseCount": 114,
+        "wape": 0.48784602813399547,
+        "signedBias": 0.008787732089758242,
+        "zeroImputationUsed": false
+      },
+      "relativeWapeToBaseCandidate": -0.006449743299328015,
+      "sameOrLaterOuterTruthRead": false,
+      "postHocFeatureRead": false
+    },
+    {
+      "outerOrigin": "2021-06",
+      "segment": "intermittent",
+      "matureEarlierCaseCount": 104,
+      "matureEarlierOriginCount": 1,
+      "positiveEarlierCaseCount": 89,
+      "maximumLabelAvailableAsOf": "2021-06",
+      "selectedCandidateId": "intermittent__two_part_occurrence_amount",
+      "selectionReason": "two_part_rule_improved_mature_earlier_wape_and_is_bias_safe",
+      "selectedFactor": 0.644914427833445,
+      "occurrenceProbability": 0.8245614035087719,
+      "conditionalAmountScale": 0.7821302635426886,
+      "trainingMetrics": {
+        "caseCount": 104,
+        "wape": 0.6055377687770628,
+        "signedBias": -0.10112401535607793,
+        "zeroImputationUsed": false
+      },
+      "relativeWapeToBaseCandidate": -0.19053614360138615,
+      "sameOrLaterOuterTruthRead": false,
+      "postHocFeatureRead": false
+    },
+    {
+      "outerOrigin": "2021-06",
+      "segment": "dormant",
+      "matureEarlierCaseCount": 78,
+      "matureEarlierOriginCount": 1,
+      "positiveEarlierCaseCount": 6,
+      "maximumLabelAvailableAsOf": "2021-06",
+      "selectedCandidateId": "M2-current-hierarchical-robust-calibration-v0.2",
+      "selectionReason": "segment_uses_base_candidate_fallback",
+      "selectedFactor": 1,
+      "occurrenceProbability": null,
+      "conditionalAmountScale": null,
+      "trainingMetrics": {
+        "caseCount": 78,
+        "wape": 10.044738870967743,
+        "signedBias": 8.044738870967741,
+        "zeroImputationUsed": false
+      },
+      "relativeWapeToBaseCandidate": null,
+      "sameOrLaterOuterTruthRead": false,
+      "postHocFeatureRead": false
+    },
+    {
+      "outerOrigin": "2021-12",
+      "segment": "dense",
+      "matureEarlierCaseCount": 635,
+      "matureEarlierOriginCount": 2,
+      "positiveEarlierCaseCount": 634,
+      "maximumLabelAvailableAsOf": "2021-12",
+      "selectedCandidateId": "M2-current-hierarchical-robust-calibration-v0.2",
+      "selectionReason": "two_part_rule_did_not_clear_training_improvement_and_bias_gates",
+      "selectedFactor": 1,
+      "occurrenceProbability": 0.9906976744186047,
+      "conditionalAmountScale": 1.3814234989816774,
+      "trainingMetrics": {
+        "caseCount": 635,
+        "wape": 0.6477322993892815,
+        "signedBias": -0.2761079465301027,
+        "zeroImputationUsed": false
+      },
+      "relativeWapeToBaseCandidate": 0.15833159877701086,
+      "sameOrLaterOuterTruthRead": false,
+      "postHocFeatureRead": false
+    },
+    {
+      "outerOrigin": "2021-12",
+      "segment": "intermittent",
+      "matureEarlierCaseCount": 208,
+      "matureEarlierOriginCount": 2,
+      "positiveEarlierCaseCount": 180,
+      "maximumLabelAvailableAsOf": "2021-12",
+      "selectedCandidateId": "intermittent__two_part_occurrence_amount",
+      "selectionReason": "two_part_rule_improved_mature_earlier_wape_and_is_bias_safe",
+      "selectedFactor": 0.9389672910157009,
+      "occurrenceProbability": 0.8486238532110092,
+      "conditionalAmountScale": 1.1064587537374204,
+      "trainingMetrics": {
+        "caseCount": 208,
+        "wape": 0.681276821930272,
+        "signedBias": -0.08897129210822545,
+        "zeroImputationUsed": false
+      },
+      "relativeWapeToBaseCandidate": -0.024116150143702275,
+      "sameOrLaterOuterTruthRead": false,
+      "postHocFeatureRead": false
+    },
+    {
+      "outerOrigin": "2021-12",
+      "segment": "dormant",
+      "matureEarlierCaseCount": 193,
+      "matureEarlierOriginCount": 2,
+      "positiveEarlierCaseCount": 14,
+      "maximumLabelAvailableAsOf": "2021-12",
+      "selectedCandidateId": "M2-current-hierarchical-robust-calibration-v0.2",
+      "selectionReason": "segment_uses_base_candidate_fallback",
+      "selectedFactor": 1,
+      "occurrenceProbability": null,
+      "conditionalAmountScale": null,
+      "trainingMetrics": {
+        "caseCount": 193,
+        "wape": 1.105154039121635,
+        "signedBias": -0.8948459608783649,
+        "zeroImputationUsed": false
+      },
+      "relativeWapeToBaseCandidate": null,
+      "sameOrLaterOuterTruthRead": false,
+      "postHocFeatureRead": false
+    },
+    {
+      "outerOrigin": "2022-06",
+      "segment": "dense",
+      "matureEarlierCaseCount": 1648,
+      "matureEarlierOriginCount": 3,
+      "positiveEarlierCaseCount": 1635,
+      "maximumLabelAvailableAsOf": "2022-06",
+      "selectedCandidateId": "M2-current-hierarchical-robust-calibration-v0.2",
+      "selectionReason": "two_part_rule_did_not_clear_training_improvement_and_bias_gates",
+      "selectedFactor": 1,
+      "occurrenceProbability": 0.9891435464414958,
+      "conditionalAmountScale": 1.1102711525959337,
+      "trainingMetrics": {
+        "caseCount": 1648,
+        "wape": 0.5624338358901589,
+        "signedBias": -0.09899670927707684,
+        "zeroImputationUsed": false
+      },
+      "relativeWapeToBaseCandidate": 0.027723519238082694,
+      "sameOrLaterOuterTruthRead": false,
+      "postHocFeatureRead": false
+    },
+    {
+      "outerOrigin": "2022-06",
+      "segment": "intermittent",
+      "matureEarlierCaseCount": 584,
+      "matureEarlierOriginCount": 3,
+      "positiveEarlierCaseCount": 475,
+      "maximumLabelAvailableAsOf": "2022-06",
+      "selectedCandidateId": "intermittent__two_part_occurrence_amount",
+      "selectionReason": "two_part_rule_improved_mature_earlier_wape_and_is_bias_safe",
+      "selectedFactor": 0.8752338241069528,
+      "occurrenceProbability": 0.8080808080808081,
+      "conditionalAmountScale": 1.083101857332354,
+      "trainingMetrics": {
+        "caseCount": 584,
+        "wape": 0.8042288487679634,
+        "signedBias": -0.13576702044221925,
+        "zeroImputationUsed": false
+      },
+      "relativeWapeToBaseCandidate": -0.03920466812652845,
+      "sameOrLaterOuterTruthRead": false,
+      "postHocFeatureRead": false
+    },
+    {
+      "outerOrigin": "2022-06",
+      "segment": "dormant",
+      "matureEarlierCaseCount": 350,
+      "matureEarlierOriginCount": 3,
+      "positiveEarlierCaseCount": 23,
+      "maximumLabelAvailableAsOf": "2022-06",
+      "selectedCandidateId": "M2-current-hierarchical-robust-calibration-v0.2",
+      "selectionReason": "segment_uses_base_candidate_fallback",
+      "selectedFactor": 1,
+      "occurrenceProbability": null,
+      "conditionalAmountScale": null,
+      "trainingMetrics": {
+        "caseCount": 350,
+        "wape": 1.0343197295356803,
+        "signedBias": -0.9654365601240904,
+        "zeroImputationUsed": false
+      },
+      "relativeWapeToBaseCandidate": null,
+      "sameOrLaterOuterTruthRead": false,
+      "postHocFeatureRead": false
+    },
+    {
+      "outerOrigin": "2022-12",
+      "segment": "dense",
+      "matureEarlierCaseCount": 3165,
+      "matureEarlierOriginCount": 4,
+      "positiveEarlierCaseCount": 3135,
+      "maximumLabelAvailableAsOf": "2022-12",
+      "selectedCandidateId": "M2-current-hierarchical-robust-calibration-v0.2",
+      "selectionReason": "two_part_rule_did_not_clear_training_improvement_and_bias_gates",
+      "selectedFactor": 1,
+      "occurrenceProbability": 0.988976377952756,
+      "conditionalAmountScale": 1.0413007226134037,
+      "trainingMetrics": {
+        "caseCount": 3165,
+        "wape": 0.5024555726679617,
+        "signedBias": -0.039110404554478034,
+        "zeroImputationUsed": false
+      },
+      "relativeWapeToBaseCandidate": 0.004336857137137162,
+      "sameOrLaterOuterTruthRead": false,
+      "postHocFeatureRead": false
+    },
+    {
+      "outerOrigin": "2022-12",
+      "segment": "intermittent",
+      "matureEarlierCaseCount": 1063,
+      "matureEarlierOriginCount": 4,
+      "positiveEarlierCaseCount": 885,
+      "maximumLabelAvailableAsOf": "2022-12",
+      "selectedCandidateId": "intermittent__two_part_occurrence_amount",
+      "selectionReason": "two_part_rule_improved_mature_earlier_wape_and_is_bias_safe",
+      "selectedFactor": 0.9416908777676857,
+      "occurrenceProbability": 0.8294501397949674,
+      "conditionalAmountScale": 1.1353194515109288,
+      "trainingMetrics": {
+        "caseCount": 1063,
+        "wape": 0.8386176460041345,
+        "signedBias": -0.1134803801293267,
+        "zeroImputationUsed": false
+      },
+      "relativeWapeToBaseCandidate": -0.01734666948503294,
+      "sameOrLaterOuterTruthRead": false,
+      "postHocFeatureRead": false
+    },
+    {
+      "outerOrigin": "2022-12",
+      "segment": "dormant",
+      "matureEarlierCaseCount": 575,
+      "matureEarlierOriginCount": 4,
+      "positiveEarlierCaseCount": 53,
+      "maximumLabelAvailableAsOf": "2022-12",
+      "selectedCandidateId": "M2-current-hierarchical-robust-calibration-v0.2",
+      "selectionReason": "segment_uses_base_candidate_fallback",
+      "selectedFactor": 1,
+      "occurrenceProbability": null,
+      "conditionalAmountScale": null,
+      "trainingMetrics": {
+        "caseCount": 575,
+        "wape": 1.0004745674675202,
+        "signedBias": -0.9994134724469375,
+        "zeroImputationUsed": false
+      },
+      "relativeWapeToBaseCandidate": null,
+      "sameOrLaterOuterTruthRead": false,
+      "postHocFeatureRead": false
+    }
+  ],
+  "comparison": {
+    "caseKeyParity": true,
+    "actualParity": true,
+    "candidate": {
+      "caseCount": 7851,
+      "wape": 0.50557140186362,
+      "signedBias": -0.011989577726722772,
+      "zeroImputationUsed": false
+    },
+    "b4": {
+      "caseCount": 7851,
+      "wape": 0.5111496562935863,
+      "signedBias": -0.005862272802777224,
+      "zeroImputationUsed": false
+    },
+    "relativeWape": -0.01091315304878604
+  },
+  "comparisonToB4": {
+    "comparison": {
+      "caseKeyParity": true,
+      "actualParity": true,
+      "candidate": {
+        "caseCount": 7851,
+        "wape": 0.50557140186362,
+        "signedBias": -0.011989577726722772,
+        "zeroImputationUsed": false
+      },
+      "b4": {
+        "caseCount": 7851,
+        "wape": 0.5564845379400507,
+        "signedBias": 0.0891099710777566,
+        "zeroImputationUsed": false
+      },
+      "relativeWape": -0.09149065716164695
+    },
+    "pairedCi": {
+      "schema": "m2.current.paired_bootstrap.v0.1",
+      "method": "paired_work_origin_pigeonhole",
+      "confidence": 0.95,
+      "iterations": 2000,
+      "seed": 20260724,
+      "workCount": 824,
+      "originCount": 5,
+      "caseCount": 7851,
+      "lower95": -0.1670954627962227,
+      "median": -0.09258311240410078,
+      "upper95": -0.03228091380136986
+    }
+  },
+  "previousCandidateComparison": {
+    "candidateId": "M2-current-hierarchical-robust-calibration-v0.2",
+    "comparison": {
+      "caseKeyParity": true,
+      "actualParity": true,
+      "candidate": {
+        "caseCount": 7851,
+        "wape": 0.50557140186362,
+        "signedBias": -0.011989577726722772,
+        "zeroImputationUsed": false
+      },
+      "b4": {
+        "caseCount": 7851,
+        "wape": 0.5111496562935863,
+        "signedBias": -0.005862272802777224,
+        "zeroImputationUsed": false
+      },
+      "relativeWape": -0.01091315304878604
+    },
+    "pairedCi": {
+      "schema": "m2.current.paired_bootstrap.v0.1",
+      "method": "paired_work_origin_pigeonhole",
+      "confidence": 0.95,
+      "iterations": 2000,
+      "seed": 20260724,
+      "workCount": 824,
+      "originCount": 5,
+      "caseCount": 7851,
+      "lower95": -0.03714631049443047,
+      "median": -0.0053351092073692374,
+      "upper95": -0.00015184251172020252
+    }
+  },
+  "byHorizon": {
+    "3": {
+      "candidate": {
+        "caseCount": 2402,
+        "wape": 0.42753232938343244,
+        "signedBias": -0.04217977068928569,
+        "zeroImputationUsed": false
+      },
+      "b4": {
+        "caseCount": 2402,
+        "wape": 0.43044223094235723,
+        "signedBias": -0.038686655319508635,
+        "zeroImputationUsed": false
+      },
+      "relativeWape": -0.0067602603781562465
+    },
+    "6": {
+      "candidate": {
+        "caseCount": 2402,
+        "wape": 0.44567023956294494,
+        "signedBias": -0.0872469820475496,
+        "zeroImputationUsed": false
+      },
+      "b4": {
+        "caseCount": 2402,
+        "wape": 0.44828459108931595,
+        "signedBias": -0.08391813280396518,
+        "zeroImputationUsed": false
+      },
+      "relativeWape": -0.005831901382151505
+    },
+    "12": {
+      "candidate": {
+        "caseCount": 1608,
+        "wape": 0.4385655728761368,
+        "signedBias": -0.023485229903411148,
+        "zeroImputationUsed": false
+      },
+      "b4": {
+        "caseCount": 1608,
+        "wape": 0.44267991857271005,
+        "signedBias": -0.018797290985648293,
+        "zeroImputationUsed": false
+      },
+      "relativeWape": -0.00929417740438454
+    },
+    "18": {
+      "candidate": {
+        "caseCount": 995,
+        "wape": 0.5460211985249114,
+        "signedBias": 0.07125145344081094,
+        "zeroImputationUsed": false
+      },
+      "b4": {
+        "caseCount": 995,
+        "wape": 0.5531686192224384,
+        "signedBias": 0.07872066588894655,
+        "zeroImputationUsed": false
+      },
+      "relativeWape": -0.01292087159169264
+    },
+    "24": {
+      "candidate": {
+        "caseCount": 444,
+        "wape": 0.7435585761504628,
+        "signedBias": 0.01617872594358398,
+        "zeroImputationUsed": false
+      },
+      "b4": {
+        "caseCount": 444,
+        "wape": 0.7567543026496276,
+        "signedBias": 0.029970608087879515,
+        "zeroImputationUsed": false
+      },
+      "relativeWape": -0.01743726656454081
+    }
+  },
+  "bySegment": {
+    "dense": {
+      "candidate": {
+        "caseCount": 5174,
+        "wape": 0.4637293456231139,
+        "signedBias": 0.02439915111437811,
+        "zeroImputationUsed": false
+      },
+      "b4": {
+        "caseCount": 5174,
+        "wape": 0.4637293456231139,
+        "signedBias": 0.02439915111437811,
+        "zeroImputationUsed": false
+      },
+      "relativeWape": 0
+    },
+    "dormant": {
+      "candidate": {
+        "caseCount": 833,
+        "wape": 1.0001836094171885,
+        "signedBias": -0.9997200647531362,
+        "zeroImputationUsed": false
+      },
+      "b4": {
+        "caseCount": 833,
+        "wape": 1.0001836094171885,
+        "signedBias": -0.9997200647531362,
+        "zeroImputationUsed": false
+      },
+      "relativeWape": 0
+    },
+    "intermittent": {
+      "candidate": {
+        "caseCount": 1844,
+        "wape": 0.9073284142904835,
+        "signedBias": -0.15945405112725278,
+        "zeroImputationUsed": false
+      },
+      "b4": {
+        "caseCount": 1844,
+        "wape": 0.9923684440936531,
+        "signedBias": -0.0660437917195283,
+        "zeroImputationUsed": false
+      },
+      "relativeWape": -0.08569400841926011
+    }
+  },
+  "segmentDiagnostics": {
+    "dormant": {
+      "caseCount": 833,
+      "positiveActualCaseCount": 80,
+      "zeroActualCaseCount": 753,
+      "reactivationCandidateActivated": false,
+      "conclusion": "reactivation_cash_is_concentrated_in_a_few_events_without_identifiable_allowed_as_of_signal"
+    }
+  },
+  "byOrigin": {
+    "2020-12": {
+      "candidate": {
+        "caseCount": 740,
+        "wape": 0.6140094477070113,
+        "signedBias": -0.050282836149788956,
+        "zeroImputationUsed": false
+      },
+      "b4": {
+        "caseCount": 740,
+        "wape": 0.6140094477070113,
+        "signedBias": -0.050282836149788956,
+        "zeroImputationUsed": false
+      },
+      "relativeWape": 0
+    },
+    "2021-06": {
+      "candidate": {
+        "caseCount": 1480,
+        "wape": 0.7515729715965059,
+        "signedBias": -0.10196569399899387,
+        "zeroImputationUsed": false
+      },
+      "b4": {
+        "caseCount": 1480,
+        "wape": 0.7728077604221583,
+        "signedBias": -0.0800163282974599,
+        "zeroImputationUsed": false
+      },
+      "relativeWape": -0.027477452884340225
+    },
+    "2021-12": {
+      "candidate": {
+        "caseCount": 2204,
+        "wape": 0.4255205928021749,
+        "signedBias": 0.08387892473187968,
+        "zeroImputationUsed": false
+      },
+      "b4": {
+        "caseCount": 2204,
+        "wape": 0.42807893624131343,
+        "signedBias": 0.08687114918526333,
+        "zeroImputationUsed": false
+      },
+      "relativeWape": -0.005976335723503978
+    },
+    "2022-06": {
+      "candidate": {
+        "caseCount": 1839,
+        "wape": 0.3206637577616982,
+        "signedBias": -0.036134259249722814,
+        "zeroImputationUsed": false
+      },
+      "b4": {
+        "caseCount": 1839,
+        "wape": 0.32097172395957213,
+        "signedBias": -0.034986322952073344,
+        "zeroImputationUsed": false
+      },
+      "relativeWape": -0.0009594807731808652
+    },
+    "2022-12": {
+      "candidate": {
+        "caseCount": 1588,
+        "wape": 0.3996242149605178,
+        "signedBias": -0.009827118638954468,
+        "zeroImputationUsed": false
+      },
+      "b4": {
+        "caseCount": 1588,
+        "wape": 0.4001420020838528,
+        "signedBias": -0.008426180609360531,
+        "zeroImputationUsed": false
+      },
+      "relativeWape": -0.0012940084286040543
+    }
+  },
+  "pairedCi": {
+    "schema": "m2.current.paired_bootstrap.v0.1",
+    "method": "paired_work_origin_pigeonhole",
+    "confidence": 0.95,
+    "iterations": 2000,
+    "seed": 20260724,
+    "workCount": 824,
+    "originCount": 5,
+    "caseCount": 7851,
+    "lower95": -0.03714631049443047,
+    "median": -0.0053351092073692374,
+    "upper95": -0.00015184251172020252
+  },
+  "automatedEvaluation": {
+    "publicReport": "docs/analysis/m2-current/M2-current-automated-evaluation-v0.1.json",
+    "humanNumericBaselineRequired": false,
+    "businessSampleRequired": false,
+    "humanRole": "post_gate_quality_assurance_only"
+  },
+  "acceptance": {
+    "developmentWapePassed": false,
+    "overallAbsoluteBiasPassed": true,
+    "eachHorizonAbsoluteBiasPassed": true,
+    "eachSegmentWapePassed": false,
+    "eachSegmentAbsoluteBiasPassed": false,
+    "pairedRelativeWapeUpperPassed": true,
+    "dormantFallbackPolicyPassed": true,
+    "allCurrentDevelopmentConditionsPassed": false,
+    "developmentDecision": "PARTIAL_PASS",
+    "finalHoldoutOpened": false,
+    "releaseAuthorized": false
+  },
+  "privacy": {
+    "aggregateOnly": true,
+    "workIdentifiersPresent": false,
+    "privatePathsPresent": false,
+    "rawRowsPresent": false
+  },
+  "sourceBoundary": {
+    "privateDevelopmentRowsRead": true,
+    "privateEligibilityReasonLedgerWritten": true,
+    "databaseConnected": false,
+    "providerCalled": false,
+    "finalHoldoutOpened": false
+  }
+}
