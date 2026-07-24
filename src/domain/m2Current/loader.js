@@ -13,8 +13,10 @@ export function loadM2CurrentPublicEvidence(sources, config) {
   requireSchema(sources?.segments, "m2.c2_activity_segment_route_manifest.v1");
   requireSchema(sources?.development, "m2.c3_development_validation.v1");
   requireSchema(sources?.population, "m2.calibration_population_coverage.v1");
-  const currentCandidateSchema = config.schema === "m2.current.config.v0.4"
-    ? "m2.current.global_distributional_candidate.public.v0.4"
+  const currentCandidateSchema = config.schema === "m2.current.config.v0.5"
+    ? "m2.current.multi_resolution_candidate.public.v0.5"
+    : config.schema === "m2.current.config.v0.4"
+      ? "m2.current.global_distributional_candidate.public.v0.4"
     : config.schema === "m2.current.config.v0.3"
       ? "m2.current.occurrence_amount_candidate.public.v0.3"
       : config.schema === "m2.current.config.v0.2"
@@ -24,8 +26,10 @@ export function loadM2CurrentPublicEvidence(sources, config) {
   if (config.schema !== "m2.current.config.v0.1") {
     requireSchema(
       sources?.previousCandidate,
-      config.schema === "m2.current.config.v0.4"
-        ? "m2.current.occurrence_amount_candidate.public.v0.3"
+      config.schema === "m2.current.config.v0.5"
+        ? "m2.current.global_distributional_candidate.public.v0.4"
+        : config.schema === "m2.current.config.v0.4"
+          ? "m2.current.occurrence_amount_candidate.public.v0.3"
         : config.schema === "m2.current.config.v0.3"
           ? "m2.current.reliable_candidate.public.v0.2"
           : "m2.current.segmented_candidate.public.v0.1"
@@ -38,13 +42,19 @@ export function loadM2CurrentPublicEvidence(sources, config) {
     );
   }
   if (
-    ["m2.current.config.v0.3", "m2.current.config.v0.4"]
+    [
+      "m2.current.config.v0.3",
+      "m2.current.config.v0.4",
+      "m2.current.config.v0.5"
+    ]
       .includes(config.schema)
   ) {
     requireSchema(
       sources?.automatedEvaluation,
-      config.schema === "m2.current.config.v0.4"
-        ? "m2.current.automated_evaluation.public.v0.2"
+      config.schema === "m2.current.config.v0.5"
+        ? "m2.current.automated_evaluation.public.v0.3"
+        : config.schema === "m2.current.config.v0.4"
+          ? "m2.current.automated_evaluation.public.v0.2"
         : "m2.current.automated_evaluation.public.v0.1"
     );
   }
@@ -96,12 +106,14 @@ export function loadM2CurrentPublicEvidence(sources, config) {
     throw new Error("m2_current_model_eligibility_reason_ledger_drift");
   }
   const candidateCaseCount = Number(
-    config.schema === "m2.current.config.v0.4"
+    ["m2.current.config.v0.4", "m2.current.config.v0.5"]
+      .includes(config.schema)
       ? sources.candidate.scope.frozenDecisionCaseCount
       : sources.candidate.scope.caseCount
   );
   const candidateWorkCount = Number(
-    config.schema === "m2.current.config.v0.4"
+    ["m2.current.config.v0.4", "m2.current.config.v0.5"]
+      .includes(config.schema)
       ? sources.candidate.scope.frozenDecisionWorkCount
       : sources.candidate.scope.uniqueWorkCount
   );
@@ -146,8 +158,10 @@ export function loadM2CurrentPublicEvidence(sources, config) {
   }
 
   return {
-    schema: config.schema === "m2.current.config.v0.4"
-      ? "m2.current.public_evidence.v0.4"
+    schema: config.schema === "m2.current.config.v0.5"
+      ? "m2.current.public_evidence.v0.5"
+      : config.schema === "m2.current.config.v0.4"
+        ? "m2.current.public_evidence.v0.4"
       : config.schema === "m2.current.config.v0.3"
         ? "m2.current.public_evidence.v0.3"
         : config.schema === "m2.current.config.v0.2"
@@ -221,11 +235,17 @@ export function loadM2CurrentPublicEvidence(sources, config) {
     historicalLastCandidate: sources.terminal.routeResults.C3,
     currentCandidate: {
       candidateId: sources.candidate.candidateId,
-      comparison: config.schema === "m2.current.config.v0.4"
+      comparison: [
+        "m2.current.config.v0.4",
+        "m2.current.config.v0.5"
+      ].includes(config.schema)
         ? sources.candidate.pointComparisonToPrevious.comparison
         : sources.candidate.comparison,
       byHorizon: sources.candidate.byHorizon,
-      pairedCi: config.schema === "m2.current.config.v0.4"
+      pairedCi: [
+        "m2.current.config.v0.4",
+        "m2.current.config.v0.5"
+      ].includes(config.schema)
         ? sources.candidate.pointComparisonToPrevious.pairedCi
         : sources.candidate.pairedCi,
       acceptance: sources.candidate.acceptance
@@ -233,14 +253,21 @@ export function loadM2CurrentPublicEvidence(sources, config) {
     previousCandidate: sources.previousCandidate
       ? {
         candidateId: sources.previousCandidate.candidateId,
-        comparison: config.schema === "m2.current.config.v0.4"
+        comparison: [
+          "m2.current.config.v0.4",
+          "m2.current.config.v0.5"
+        ].includes(config.schema)
           ? sources.candidate.pointComparisonToPrevious
           : sources.candidate.previousCandidateComparison
       }
       : null,
     automatedEvaluation: sources.automatedEvaluation ?? null,
     retiredBusinessSample:
-      ["m2.current.config.v0.3", "m2.current.config.v0.4"]
+      [
+        "m2.current.config.v0.3",
+        "m2.current.config.v0.4",
+        "m2.current.config.v0.5"
+      ]
         .includes(config.schema)
       ? {
         currentDependency: false,

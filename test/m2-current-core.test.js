@@ -54,7 +54,7 @@ const config = readJson("config/m2-current.v0.1.json");
 const contract = buildM2CurrentContract(config);
 const currentConfig = readJson("config/m2-current.v0.3.json");
 const currentContract = buildM2CurrentContract(currentConfig);
-const nextConfig = readJson("config/m2-current.v0.4.json");
+const nextConfig = readJson("config/m2-current.v0.5.json");
 const reliableConfig = readJson("config/m2-current.v0.2.json");
 
 function currentPublicSources() {
@@ -759,8 +759,8 @@ test("public diagnostic CLI is reproducible and aggregate-only", () => {
   const report = readJson(nextConfig.publicOutput);
   const text = JSON.stringify(report);
 
-  assert.equal(report.schema, "m2.current.public_diagnostic_report.v0.5");
-  assert.equal(report.directionAssessment.engineeringSequenceDrifted, false);
+  assert.equal(report.schema, "m2.current.public_diagnostic_report.v0.6");
+  assert.equal(report.directionAssessment.engineeringSequenceDrifted, true);
   assert.equal(
     report.directionAssessment.retiredSequence,
     "human_numeric_baseline_and_120_work_business_sample_skipped"
@@ -768,7 +768,7 @@ test("public diagnostic CLI is reproducible and aggregate-only", () => {
   assert.equal(report.evaluationPolicy.humanNumericBaselineRequired, false);
   assert.equal(
     report.evidence.currentCandidate.candidateId,
-    "M2-current-global-distributional-ensemble-v0.4"
+    "M2-current-multi-resolution-revenue-service-v0.5"
   );
   assert.ok(report.evidence.currentCandidate.comparison.candidate.wape > 0);
   assert.equal(
@@ -783,7 +783,10 @@ test("public diagnostic CLI is reproducible and aggregate-only", () => {
   );
   assert.equal(report.gate.candidateOverallGatesPassed, false);
   assert.equal(report.gate.candidateDevelopmentQualityPassed, false);
-  assert.equal(report.gate.status, "CANDIDATE_DEVELOPMENT_FAIL_BLOCKED");
+  assert.equal(
+    report.gate.status,
+    "PORTFOLIO_DEVELOPMENT_BACKTEST_PASS_WORK_LEVEL_BLOCKED"
+  );
   assert.ok(
     report.gate.blockers.includes(
       "candidate_absolute_wape_above_development_threshold"
