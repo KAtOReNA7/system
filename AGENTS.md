@@ -131,6 +131,9 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
    - 人工只能使用预测 cutoff 时可取得的资料，并记录点预测、合理区间、
      information cutoff、预测时间和 reviewer role。
    - 现有含模型值和 actual 的业务复核明细不能冒充盲视人工预测。
+   - 若同一人同时负责盲视预测和业务复核，必须先完成并锁定盲视预测，再打开
+     含模型值和 actual 的业务复核明细；本队列编号表示项目交付优先级，不表示
+     同一 reviewer 的信息揭示顺序。
 3. 冻结 exact v0.2；停止 scale、group 和候选家族搜索。
 4. 从业务源单独补充 cutoff 时已签署、确认且可审计的 commitment snapshot。
    未承诺买断不得进入正式现金预测，pure-buyout 无承诺时继续 null abstain。
