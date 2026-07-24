@@ -1,17 +1,18 @@
-const ALLOWED_HORIZONS = new Set([3, 6, 12, 18, 24]);
-
-export function buildM2CurrentCaseKey(input) {
+export function buildM2CurrentCaseKey(input, contract) {
   const standardWorkId = requireString(input?.standardWorkId, "standardWorkId");
   const origin = requireOrigin(input?.origin);
   const horizonMonths = Number(input?.horizonMonths);
   const route = requireString(input?.route, "route");
-  if (!ALLOWED_HORIZONS.has(horizonMonths)) {
+  if (!(contract?.allowedHorizons instanceof Set)) {
+    throw new Error("m2_current_contract_required");
+  }
+  if (!contract.allowedHorizons.has(horizonMonths)) {
     throw new Error("m2_current_horizon_not_allowed");
   }
   return `${standardWorkId}|${origin}|${horizonMonths}|${route}`;
 }
 
-export function summarizeM2CurrentCaseUniverse(rows) {
+export function summarizeM2CurrentCaseUniverse(rows, contract) {
   if (!Array.isArray(rows)) {
     throw new Error("m2_current_case_rows_required");
   }
@@ -19,7 +20,7 @@ export function summarizeM2CurrentCaseUniverse(rows) {
   const works = new Set();
   const horizons = new Map();
   for (const row of rows) {
-    const key = buildM2CurrentCaseKey(row);
+    const key = buildM2CurrentCaseKey(row, contract);
     if (keys.has(key)) {
       throw new Error("m2_current_duplicate_case_key");
     }

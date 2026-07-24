@@ -39,6 +39,7 @@ test("test registry classifies every test exactly once", () => {
   for (const suiteId of [
     "unit",
     "current-contract",
+    "historical-m2",
     "archive",
     "private",
     "e2e"
@@ -47,12 +48,16 @@ test("test registry classifies every test exactly once", () => {
   }
 });
 
-test("default test profile covers every non-E2E test without duplicates", () => {
+test("default test profile excludes historical M2 and E2E tests", () => {
   const classified = classifyTrackedTests();
   const selection = filesForTestProfile("default");
-  const expected = classified.trackedTests.filter(
-    (path) => !path.startsWith("test/e2e/")
-  );
+  const excluded = new Set([
+    ...classified.suites.get("historical-m2"),
+    ...classified.suites.get("archive"),
+    ...classified.suites.get("e2e")
+  ]);
+  const expected = classified.trackedTests
+    .filter((path) => !excluded.has(path));
 
   assert.deepEqual(selection.files, expected);
   assert.equal(new Set(selection.files).size, selection.files.length);
@@ -83,6 +88,10 @@ test("package scripts use distinct lint/build contracts and registry test entryp
       new RegExp(`run-test-registry\\.mjs ${profile}$`)
     );
   }
+  assert.equal(
+    packageJson.scripts["test:m2-historical"],
+    "node tools/node/run-test-registry.mjs historical-m2"
+  );
 });
 
 test("all package Python commands use the repository launcher", () => {

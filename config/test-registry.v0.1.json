@@ -29,6 +29,31 @@
         "pathPrefixes": [],
         "basenameIncludes": [
           "-private-"
+        ],
+        "excludePathPrefixes": [
+          "test/m2-v2-"
+        ]
+      }
+    },
+    {
+      "id": "historical-m2",
+      "match": {
+        "pathPrefixes": [
+          "test/m2-v2-"
+        ],
+        "basenameIncludes": [
+          "m2-backtest-integrity-audit",
+          "m2-c1-",
+          "m2-c2-",
+          "m2-c2r",
+          "m2-c3-",
+          "m2-calibrated-parameters",
+          "m2-calibration-",
+          "m2-formal-cash-comparator"
+        ],
+        "excludeExactPaths": [
+          "test/m2-v2-migration-archive-v0-3.test.js",
+          "test/m2-v2-migration-path-identity.test.js"
         ]
       }
     },
@@ -36,17 +61,11 @@
       "id": "current-contract",
       "match": {
         "exactPaths": [
-          "test/test-artifact-policy.test.js"
-        ],
-        "pathPrefixes": [
-          "test/m2-v2-"
-        ],
-        "excludeExactPaths": [
-          "test/m2-v2-migration-archive-v0-3.test.js",
-          "test/m2-v2-migration-path-identity.test.js"
-        ],
-        "excludeBasenameIncludes": [
-          "-private-"
+          "test/m2-current-core.test.js",
+          "test/repository-redundancy-contract.test.js",
+          "test/runtime-composition-contract.test.js",
+          "test/test-artifact-policy.test.js",
+          "test/toolchain-contract.test.js"
         ]
       }
     },
@@ -61,14 +80,26 @@
           "test/development-capability-doctor.test.js",
           "test/m2-v2-migration-archive-v0-3.test.js",
           "test/m2-v2-migration-path-identity.test.js",
-          "test/test-artifact-policy.test.js"
+          "test/m2-current-core.test.js",
+          "test/repository-redundancy-contract.test.js",
+          "test/runtime-composition-contract.test.js",
+          "test/test-artifact-policy.test.js",
+          "test/toolchain-contract.test.js"
         ],
         "excludePathPrefixes": [
           "test/e2e/",
           "test/m2-v2-"
         ],
         "excludeBasenameIncludes": [
-          "-private-"
+          "-private-",
+          "m2-backtest-integrity-audit",
+          "m2-c1-",
+          "m2-c2-",
+          "m2-c2r",
+          "m2-c3-",
+          "m2-calibrated-parameters",
+          "m2-calibration-",
+          "m2-formal-cash-comparator"
         ]
       }
     }
@@ -78,7 +109,6 @@
       "suites": [
         "unit",
         "current-contract",
-        "archive",
         "private"
       ],
       "concurrency": 4
@@ -101,6 +131,12 @@
       ],
       "concurrency": 1
     },
+    "historical-m2": {
+      "suites": [
+        "historical-m2"
+      ],
+      "concurrency": 4
+    },
     "private": {
       "suites": [
         "private"
@@ -117,6 +153,7 @@
       "suites": [
         "unit",
         "current-contract",
+        "historical-m2",
         "archive",
         "private",
         "e2e"

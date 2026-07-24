@@ -4,9 +4,9 @@
 
 - PR #7、PR #8、PR #9 均已合入 `main`；已合并分支不得继续作为开发入口。
 - 当前仓库治理导航为：
-  - `docs/analysis/m2-v2/M2-v2-current-state-index-v0.5.md`
+  - `docs/analysis/m2-v2/M2-v2-current-state-index-v0.6.md`
   - `docs/analysis/m2-v2/M2-repository-code-convergence-and-portable-development-audit-v0.4.md`
-  - `docs/analysis/m2-current/M2-current-public-diagnostic-baseline-v0.1.md`
+  - `docs/analysis/m2-current/M2-current-quality-convergence-v0.1.md`
 - PR #7 cryptographic authority 继续由不可变的
   `docs/analysis/m2-v2/M2-v2-current-state-index-v0.3.json` 提供；治理索引不得改写该绑定。
 - 历史 B0–B8、C1–C3、旧 PR 状态和旧授权记录只用于审计追溯，不是当前执行指令。
@@ -85,21 +85,25 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
 - 无 cutoff 承诺的 pure-buyout 必须 null abstain，禁止使用 0 或月均等效值冒充预测。
 - B4 只作 comparator/fallback，不是 release approval。
 - C1、legacy C2-R、C2-R.1、C2、C3 均为历史 development `FAIL`，不得重复进入或复制其 runner。
-- 当前公共诊断为 `BASELINE_ONLY_BLOCKED`：
+- 2026-07-24 用户已授权本轮本地 current candidate development；授权只覆盖冻结 development case 上的受约束算法开发和复验，不包含 provider、数据库、final holdout、release 或 M3 formal。
+- 当前公共诊断为 `CANDIDATE_DEVELOPMENT_PARTIAL_BLOCKED`：
   - 3,053 部权威作品，824 部 model works，7,851 个 formal-cash cases
   - 全库现金覆盖率 0.7396468495，Top10 覆盖率 0.759412528，门槛 0.90
-  - B4 WAPE/bias 0.55648454 / 0.08911106
-  - C3-A WAPE/bias 0.553945169 / 0.08273913，结论仍为 `FAIL`
-- 当前正确工程顺序是 coverage 和失败切片优先，再进行受约束候选比较；禁止继续优先堆叠 evidence runtime、历史 runner 或未经批准的模型复杂度。
+  - current candidate WAPE/bias 0.53184893 / 0.03680632；B4 为 0.55648454 / 0.08910997
+  - paired work×origin bootstrap 相对 WAPE 95% CI 为 [-0.09463040, -0.01281803]
+  - overall bias、各 horizon bias 和 paired CI 已通过；dormant 未改善，结论为 `PARTIAL_PASS`
+- 新候选固定为 `M2-current-segmented-downward-calibration-v0.1`：dense/intermittent 只能在 0.50–1.00 内向下校准 B4；dormant 只有严格更早成熟证据同时证明 bias 安全和 WAPE 改善时才能启用复活候选，否则必须回退 B4。
+- eligibility、cash observability 和 served coverage 必须继续分开报告。2,229 部非模型作品的原因 ledger 已在本地 private output 穷尽对账；不得为提高比例移动 824/7,851 冻结人口。
+- 当前正确工程顺序是业务抽检 current candidate，再单独补可审计 commitment snapshot；禁止继续堆叠 evidence runtime、复制历史 runner 或扩建候选家族。
 
 当前业务 gate 保持：
 
 - `currentDecision=CANARY_FAIL`
-- `nextDevelopmentReadiness=NOT_AUTHORIZED`
+- `nextDevelopmentReadiness=BUSINESS_SAMPLE_REQUIRED`
 - `full160Authorized=false`
-- `modelTrainingAuthorized=false`
+- `modelTrainingAuthorized=true` 仅限复现上述 exact current candidate
 - final holdout、embargo shadow、deferred labels 均 sealed
-- provider、远端/共享/staging-like 数据库、Canary/full160、训练、release、M3 formal 均未授权
+- provider、远端/共享/staging-like 数据库、Canary/full160、新候选家族、release、M3 formal 均未授权
 
 ## Git 与提交规则
 

@@ -8,9 +8,9 @@ PR #7、PR #8 和 PR #9 均已合并，旧 PR 分支已删除。不得切换到 
 
 当前权威导航：
 
-1. `docs/analysis/m2-v2/M2-v2-current-state-index-v0.5.md`
+1. `docs/analysis/m2-v2/M2-v2-current-state-index-v0.6.md`
 2. `docs/analysis/m2-v2/M2-repository-code-convergence-and-portable-development-audit-v0.4.md`
-3. `docs/analysis/m2-current/M2-current-public-diagnostic-baseline-v0.1.md`
+3. `docs/analysis/m2-current/M2-current-quality-convergence-v0.1.md`
 4. `AGENTS.md`
 
 ## 当前开发状态
@@ -24,22 +24,23 @@ PR #7、PR #8 和 PR #9 均已合并，旧 PR 分支已删除。不得切换到 
 当前业务状态：
 
 - `currentDecision=CANARY_FAIL`
-- `nextDevelopmentReadiness=NOT_AUTHORIZED`
+- `nextDevelopmentReadiness=BUSINESS_SAMPLE_REQUIRED`
 - `full160Authorized=false`
-- `modelTrainingAuthorized=false`
+- exact current candidate development replay 已授权并完成
 - final holdout、embargo shadow、deferred labels 均 sealed
 
 ## 下一项 M2 工作的正确方向
 
-如果用户另行授权新的 M2 算法开发，必须从 `src/domain/m2Current/**` 的 canonical core 继续，并按以下顺序：
+覆盖原因 ledger 和 current candidate 已完成。候选 WAPE 0.53184893、bias +0.03680632，相对 B4 改善 4.43%，paired 95% CI 为 [-9.46%, -1.28%]；5 个 horizon bias 均通过。dormant 没有改善，因此当前结论是 `PARTIAL_PASS`。
 
-1. 解释并缩小 824/3,053 model works 的输入覆盖缺口。
-2. 在同一 7,851-case formal-cash universe 上固定 B4 comparator。
-3. 分别诊断 dense、intermittent、dormant、horizon 和 TopK。
-4. 只比较受约束、可解释的候选；不得复制历史 runner。
-5. 同时通过 coverage、WAPE、bias、paired CI 和业务抽检后，才申请 final holdout。
+下一步固定为：
 
-没有新的明确授权时，只能继续公共诊断、fixture、工具链、文档和仓库维护，不得调用 provider、数据库、训练、Canary/full160、holdout、release 或 M3 formal。
+1. 对 exact current candidate 做脱敏业务抽检，不新增候选家族。
+2. 单独设计可审计 commitment snapshot，解决不可观察现金，不得由算法猜测未承诺买断。
+3. dormant 在没有新的 as-of 可用信息前保持 B4 fallback，不得使用当前 shelf/rights 状态回填历史 origin。
+4. 业务抽检通过且用户另行授权后，才申请 final holdout。
+
+没有新授权时，只能继续公共诊断、fixture、工具链、文档和仓库维护，不得调用 provider、数据库、Canary/full160、holdout、release 或 M3 formal。
 
 ## 新电脑基线
 

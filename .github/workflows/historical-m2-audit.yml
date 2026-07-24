@@ -1,0 +1,104 @@
+name: Historical M2 Audit
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - ".github/workflows/historical-m2-audit.yml"
+      - "config/test-registry.v0.1.json"
+      - "src/domain/m2V2EvidencePilot/**"
+      - "src/domain/oldProductEvaluation/**"
+      - "scripts/m2-v2-evidence-pilot/**"
+      - "scripts/m2-real-data/**"
+      - "test/m2-v2-*.test.js"
+      - "test/m2-backtest-integrity-audit.test.js"
+      - "test/m2-c1-*.test.js"
+      - "test/m2-c2*.test.js"
+      - "test/m2-c3-*.test.js"
+      - "test/m2-calibrated-parameters.test.js"
+      - "test/m2-calibration-*.test.js"
+      - "test/m2-formal-cash-comparator.test.js"
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/historical-m2-audit.yml"
+      - "config/test-registry.v0.1.json"
+      - "src/domain/m2V2EvidencePilot/**"
+      - "src/domain/oldProductEvaluation/**"
+      - "scripts/m2-v2-evidence-pilot/**"
+      - "scripts/m2-real-data/**"
+      - "test/m2-v2-*.test.js"
+      - "test/m2-backtest-integrity-audit.test.js"
+      - "test/m2-c1-*.test.js"
+      - "test/m2-c2*.test.js"
+      - "test/m2-c3-*.test.js"
+      - "test/m2-calibrated-parameters.test.js"
+      - "test/m2-calibration-*.test.js"
+      - "test/m2-formal-cash-comparator.test.js"
+
+jobs:
+  historical-m2:
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+    runs-on: ${{ matrix.os }}
+    env:
+      M1_APP_ENV: ci
+      M1_DATABASE_URL: ""
+      M1_DATABASE_READONLY_URL: ""
+      M1_DATABASE_BACKGROUND_URL: ""
+      DATABASE_URL: ""
+      PGHOST: ""
+      PGPORT: ""
+      PGDATABASE: ""
+      PGUSER: ""
+      PGPASSWORD: ""
+      OPENAI_API_KEY: ""
+      OPENAI_BASE_URL: ""
+      TAVILY_API_KEY: ""
+      M2_V2_EVIDENCE_API_BASE_URL: ""
+      M2_V2_EVIDENCE_APPROVED_HOST: ""
+      M2_V2_APPROVED_RELAY_HOST: ""
+      M2_V2_EVIDENCE_PROVIDER: ""
+      M2_V2_SEARCH_PROVIDER: ""
+      M2_V2_TAVILY_BASE_URL: ""
+
+    steps:
+      - name: Checkout exact event head
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Pin npm
+        run: npm install --global npm@11.13.0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Python audit dependencies
+        run: python -m pip install --disable-pip-version-check --no-input -r requirements-ci.txt
+
+      - name: Check for real data and secrets
+        run: npm run check:no-real-data
+
+      - name: Historical M2 contracts
+        run: npm run test:m2-historical
+
+      - name: Historical migration archive contracts
+        run: npm run test:archive

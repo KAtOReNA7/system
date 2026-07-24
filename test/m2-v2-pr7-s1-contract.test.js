@@ -732,14 +732,16 @@ test("canonical B3-B7 commands remain reproducible after the PR7-only CI gate is
   );
   assert.equal(packageJson.scripts.pretest, undefined);
   const defaultTests = filesForTestProfile("default").files;
+  const historicalM2Tests = filesForTestProfile("historical-m2").files;
   for (const path of [
     "test/m2-v2-pr7-s0-preflight.test.js",
     "test/m2-v2-event-tuple.test.js",
     "test/m2-v2-workbook-independent-verifier.test.js",
-    "test/test-artifact-policy.test.js",
   ]) {
-    assert.equal(defaultTests.includes(path), true, path);
+    assert.equal(defaultTests.includes(path), false, path);
+    assert.equal(historicalM2Tests.includes(path), true, path);
   }
+  assert.equal(defaultTests.includes("test/test-artifact-policy.test.js"), true);
   assert.equal(
     packageJson.scripts["test:m2-v2:b5-workbook-artifact"],
     "node --test --test-concurrency=1 test/m2-v2-workbook-independent-verifier.test.js test/test-artifact-policy.test.js",

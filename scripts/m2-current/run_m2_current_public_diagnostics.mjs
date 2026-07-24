@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { readFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 
 import { loadM2CurrentPublicEvidence } from "../../src/domain/m2Current/loader.js";
 import {
@@ -12,7 +12,9 @@ const sources = Object.fromEntries(
     .map(([role, file]) => [role, readJson(file)])
 );
 const report = buildM2CurrentPublicDiagnosticReport(
-  loadM2CurrentPublicEvidence(sources)
+  loadM2CurrentPublicEvidence(sources, config),
+  sources.candidate,
+  config
 );
 const output = `${JSON.stringify(report, null, 2)}\n`;
 
@@ -24,7 +26,10 @@ if (process.argv.includes("--verify")) {
   }
   process.stdout.write("M2 current public diagnostic output verified.\n");
 } else {
-  process.stdout.write(output);
+  writeFileSync(config.publicOutput, output, "utf8");
+  process.stdout.write(
+    `M2 current public diagnostic written: ${config.publicOutput}\n`
+  );
 }
 
 function readJson(file) {
