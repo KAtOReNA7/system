@@ -9,19 +9,20 @@
 - PR #9：GitHub Actions exact detached `main` checkout 修复，已合并。
 - PR #10：M2 current canonical core、portable development 和 v0.1 候选收敛，已合并。
 - PR #11：M2 current v0.2 可靠预测候选和 120 部冻结业务样本，已合并。
+- PR #12：M2 current v0.3 自动评价与 120 部 current 依赖退役，已合并。
 - 当前业务结论：`currentDecision=CANARY_FAIL`。
 - 当前开发 readiness：
-  `nextDevelopmentReadiness=BUSINESS_COVERAGE_AND_ABSOLUTE_QUALITY_REQUIRED`。
-- v0.3 two-part development candidate、rolling-origin 自动评价和五个强制
-  sanity baseline 已完成。120 部人工预估/复核清单已从 current 执行链退役；
-  人工只在技术门禁通过后做 post-gate quality assurance。provider、
-  Canary/full160、final holdout、release 和 M3 formal 均未授权。
+  `nextDevelopmentReadiness=AUDITABLE_AS_OF_SIGNAL_AND_CASH_OBSERVABILITY_REQUIRED`。
+- R0–R5 评估已完成；全局 hurdle GLM、Tweedie boosting、hurdle GBM、MinT
+  和 ensemble 均未通过 nested gate，v0.4 安全回退 exact v0.3。120 部人工
+  评估完全跳过。provider、Canary/full160、final holdout、release 和 M3
+  formal 均未授权。
 
 当前导航：
 
-- `docs/analysis/m2-v2/M2-v2-current-state-index-v0.9.md`
+- `docs/analysis/m2-v2/M2-v2-current-state-index-v0.10.md`
 - `docs/analysis/m2-v2/M2-repository-code-convergence-and-portable-development-audit-v0.4.md`
-- `docs/analysis/m2-current/M2-current-automated-model-development-v0.4.md`
+- `docs/analysis/m2-current/M2-current-R0-R5-evaluation-and-development-v0.5.md`
 - `AGENTS.md`
 
 历史 PR、B0–B8、C1–C3 和旧授权记录保留在 `docs/analysis/` 中，只用于审计追溯，不是当前开发入口。
@@ -154,38 +155,39 @@ M2 的正式预测对象是未来账单现金。正式边界保持：
 | B4 WAPE / bias | 0.55648454 / 0.08911106 |
 | v0.2 WAPE / bias | 0.51114966 / -0.00586227 |
 | v0.3 WAPE / bias | 0.50557140 / -0.01198958 |
-| v0.3 vs v0.2 / paired 95% CI | -1.09% / [-3.71%, -0.02%] |
-| v0.3 vs B4 / paired 95% CI | -9.15% / [-16.71%, -3.23%] |
+| v0.4 gated result WAPE / bias | 0.50557140 / -0.01198958 |
+| 25-origin mature cases | 56,856 |
+| monthly baseline champion WAPE / bias | 0.66335800 / -0.30206120 |
+| monthly 80% interval coverage | 0.64363277 |
 | development WAPE 门槛 | 0.30（未通过） |
-| current candidate decision | `PARTIAL_PASS` |
+| automation decision | `AUTOMATION_BLOCKED` |
 
-v0.3 在冻结 development case 上相对 v0.2 有小幅且 paired CI 不穿零的改善，
-但绝对 WAPE 仍约 50.56%；intermittent WAPE 约 90.73%，dormant WAPE/bias
-约 100.02% / -99.97%。它还不能替代人工业务判断，更不是 release 证据。
-120 部旧 JSON 仅保留历史追溯，不再参与配置、runner、loader、readiness 或验收。
+v0.4 与 v0.3 数值相同是因为所有 challenger 被门禁拒绝后 fallback，不是新模型
+打平。绝对 WAPE 仍约 50.56%；intermittent WAPE 约 90.73%，dormant
+WAPE/bias 约 100.02% / -99.97%。这不是 release 证据。120 部旧 JSON 仅保留
+历史追溯，不参与配置、runner、loader、readiness 或验收，也不重建或重放。
 
 ## M2 当前执行队列
 
 本队列已于 2026-07-24 按用户判断调整。人工预测竞赛和 120 部清单均已取消。
 
-1. **自动化评价与 v0.3（已执行）**
-   - 月度 rolling-origin，同人口比较 zero、seasonal naive、SBA、TSB、ADIDA、
-     B4、v0.2 和 v0.3；
-   - 分开评价现金发生与正金额；
-   - 报告 WAPE、signed bias、MASE、RMSSE，以及 horizon、segment、route、
-     eligibility、cash observability、served coverage 和 abstention。
+1. **R0–R5 评价（已执行）**
+   - strict target/route/censor/commitment contract；
+   - 25 个逐月 origin、六个简单基线、nested global model、rolling conformal、
+     MinT、ensemble、risk–coverage、business loss 和 FVA。
 2. **质量结论**
-   - v0.3 相对 v0.2 改善约 1.09%，但绝对 WAPE 和 segment 门禁失败；
-   - 不得将 `PARTIAL_PASS` 表述为可替代人工、可打开 holdout 或可发布。
+   - 三个全局模型和 MinT 均失败；v0.4 在五个 outer origin 回退 exact v0.3；
+   - 不得把 fallback 表述为候选升级、可打开 holdout 或可发布。
 3. **补充可审计输入（仅真实材料存在时）**
-   - 单独准备 cutoff 时已签署、确认且可审计的 commitment snapshot。
-   - 未承诺买断不得通过概率乘金额进入正式预测；pure-buyout 无承诺时继续
-     `null abstain`。
-4. **下一轮研究（需要新授权）**
-   - 优先解决 intermittent/dormant 可识别信号和 cash observability；
-   - 继续严格 as-of、全局共享、非负层级协调，不通过剔除困难 case 美化指标。
+   - exact-work commitment snapshot 和 sales historical availability snapshot；
+   - 合同、可售、发布与渠道状态必须能证明在 cutoff 时可得，禁止事后回填；
+   - pure-buyout 无 strict commitment 时继续 `null abstain`。
+4. **下一轮研究**
+   - 先建立 intermittent/dormant occurrence 与 positive amount 数据缺口 ledger；
+   - 新信号先过 25-origin 诊断，再在 7,851-case 权威人口 nested 复验；
+   - 当前停止新增模型家族和同类调参。
 5. **决策门禁**
-   - 技术门禁通过后，人工只做小规模 post-gate quality assurance，不预测金额。
+   - 120 部人工评估完全跳过；人工只做技术门禁后的 post-gate QA。
    - final holdout、embargo shadow、provider、数据库、Canary/full160、release
      和 M3 formal 继续保持未授权。
 
@@ -199,7 +201,7 @@ npm run verify:m2:current
 `doctor:capability` 只盘点本机库存，不授予训练、新候选或 holdout 权限。没有 private
 capability 的电脑仍可执行全部公共开发基线。
 
-有本机 private capability 且具备对应授权时，复现 exact candidate：
+有本机 private capability 且具备对应授权时，复现当前 R0–R5 development：
 
 ```bash
 npm run doctor:capability -- m2-algorithm-authoritative-input

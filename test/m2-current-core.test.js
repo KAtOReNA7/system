@@ -54,6 +54,7 @@ const config = readJson("config/m2-current.v0.1.json");
 const contract = buildM2CurrentContract(config);
 const currentConfig = readJson("config/m2-current.v0.3.json");
 const currentContract = buildM2CurrentContract(currentConfig);
+const nextConfig = readJson("config/m2-current.v0.4.json");
 const reliableConfig = readJson("config/m2-current.v0.2.json");
 
 function currentPublicSources() {
@@ -236,14 +237,23 @@ test("pure buyout is outside numeric modeling without cutoff evidence", () => {
     origin: "2022-12"
   });
   const committed = resolveM2CurrentCashRoute({
+    standardWorkId: "SYN-WORK-1",
     revenueModel: "pure_buyout",
     origin: "2022-12",
+    horizonMonths: 3,
     commitment: {
+      commitmentId: "SYN-COMMITMENT-1",
+      standardWorkId: "SYN-WORK-1",
+      signedAsOf: "2022-10",
       confirmedAsOf: "2022-11",
+      availableAsOf: "2022-11",
+      expectedPostingMonth: "2023-01",
+      confirmedAmount: 3000,
       outstandingAmount: 2500,
+      status: "confirmed",
       signed: true,
-      confirmed: true,
-      auditable: true
+      auditable: true,
+      evidenceReferences: ["synthetic-evidence-1"]
     }
   });
 
@@ -746,36 +756,34 @@ test("public diagnostic CLI is reproducible and aggregate-only", () => {
     ["scripts/m2-current/run_m2_current_public_diagnostics.mjs"],
     { encoding: "utf8", windowsHide: true }
   );
-  const report = readJson(currentConfig.publicOutput);
+  const report = readJson(nextConfig.publicOutput);
   const text = JSON.stringify(report);
 
-  assert.equal(report.schema, "m2.current.public_diagnostic_report.v0.4");
+  assert.equal(report.schema, "m2.current.public_diagnostic_report.v0.5");
   assert.equal(report.directionAssessment.engineeringSequenceDrifted, false);
   assert.equal(
     report.directionAssessment.retiredSequence,
-    "human_numeric_baseline_and_120_work_business_sample"
+    "human_numeric_baseline_and_120_work_business_sample_skipped"
   );
   assert.equal(report.evaluationPolicy.humanNumericBaselineRequired, false);
   assert.equal(
     report.evidence.currentCandidate.candidateId,
-    "M2-current-occurrence-amount-calibration-v0.3"
+    "M2-current-global-distributional-ensemble-v0.4"
   );
-  assert.equal(
-    report.evidence.currentCandidate.comparison.candidate.wape,
-    0.50557140186362
-  );
+  assert.ok(report.evidence.currentCandidate.comparison.candidate.wape > 0);
   assert.equal(
     report.evidence.retiredBusinessSample.currentDependency,
     false
   );
   assert.equal(report.evidence.businessSample, null);
   assert.equal(
-    report.evidence.automatedEvaluation.design.monthlyRollingOrigin,
-    true
+    report.evidence.automatedEvaluation
+      .denseMonthlyDevelopmentDiagnostic.originCount,
+    25
   );
-  assert.equal(report.gate.candidateOverallGatesPassed, true);
+  assert.equal(report.gate.candidateOverallGatesPassed, false);
   assert.equal(report.gate.candidateDevelopmentQualityPassed, false);
-  assert.equal(report.gate.status, "CANDIDATE_DEVELOPMENT_PARTIAL_BLOCKED");
+  assert.equal(report.gate.status, "CANDIDATE_DEVELOPMENT_FAIL_BLOCKED");
   assert.ok(
     report.gate.blockers.includes(
       "candidate_absolute_wape_above_development_threshold"

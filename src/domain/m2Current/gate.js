@@ -29,7 +29,9 @@ export function evaluateM2CurrentDiagnosticGate(
   if (!candidate) {
     blockers.push("current_candidate_not_evaluated");
   } else {
-    const comparison = candidate.comparison;
+    const comparison = contract.schema === "m2.current.config.v0.4"
+      ? candidate.pointComparisonToPrevious?.comparison
+      : candidate.comparison;
     if (
       comparison?.caseKeyParity !== true
       || comparison?.actualParity !== true
@@ -100,6 +102,11 @@ export function evaluateM2CurrentDiagnosticGate(
       blockers.push("paired_confidence_interval_failed");
     }
     if (
+      contract.schema === "m2.current.config.v0.4"
+      && candidate.acceptance?.allCurrentDevelopmentConditionsPassed !== true
+    ) {
+      blockers.push("candidate_r0_r5_development_conditions_failed");
+    } else if (
       contract.schema === "m2.current.config.v0.3"
       && candidate.acceptance?.dormantFallbackPolicyPassed !== true
     ) {
@@ -112,7 +119,10 @@ export function evaluateM2CurrentDiagnosticGate(
     }
   }
   blockers.push("final_holdout_sealed");
-  if (contract.schema === "m2.current.config.v0.3") {
+  if (
+    ["m2.current.config.v0.3", "m2.current.config.v0.4"]
+      .includes(contract.schema)
+  ) {
     blockers.push("post_gate_quality_assurance_pending");
   } else {
     blockers.push("business_sampling_and_approval_missing");
@@ -147,8 +157,10 @@ export function evaluateM2CurrentDiagnosticGate(
         ? "CANDIDATE_DEVELOPMENT_FAIL_BLOCKED"
         : "BASELINE_ONLY_BLOCKED",
     blockers: [...new Set(blockers)],
-    developmentDirection: contract.schema === "m2.current.config.v0.3"
-      ? "business_cash_observability_then_authorized_sealed_holdout"
+    developmentDirection: contract.schema === "m2.current.config.v0.4"
+      ? "auditable_as_of_signal_and_cash_observability_before_new_model_work"
+      : contract.schema === "m2.current.config.v0.3"
+        ? "business_cash_observability_then_authorized_sealed_holdout"
       : "candidate_business_sampling_then_separate_cash_observability_resolution",
     candidateOverallGatesPassed,
     candidateDevelopmentQualityPassed,
