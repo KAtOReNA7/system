@@ -64,6 +64,304 @@ export function buildM2CurrentSegmentedCandidate(
   };
 }
 
+export function buildM2CurrentReliableCandidate(
+  comparatorRows,
+  featureRows,
+  contract
+) {
+  if (!contract?.candidate?.groupCalibration) {
+    throw new Error("m2_current_reliable_candidate_contract_required");
+  }
+  const comparators = indexComparators(comparatorRows, contract);
+  const features = indexReliableFeatures(featureRows, contract);
+  if (comparators.size !== features.size) {
+    throw new Error("m2_current_reliable_candidate_feature_population_mismatch");
+  }
+  const sourceRows = [...comparators.values()].map((row) => {
+    const key = buildM2CurrentCaseKey(row, contract);
+    const feature = features.get(key);
+    if (!feature) {
+      throw new Error("m2_current_reliable_candidate_feature_case_missing");
+    }
+    return { ...row, ...feature };
+  });
+  sourceRows.sort(compareCases);
+
+  const origins = [...new Set(sourceRows.map((row) => row.origin))].sort();
+  const candidateRows = [];
+  const selections = [];
+  for (const origin of origins) {
+    for (const segment of contract.activitySegmentValues) {
+      const trainingRows = sourceRows.filter((row) => (
+        row.segment === segment
+        && row.origin < origin
+        && requireMonth(row.labelAvailableAsOf, "label_available_as_of") <= origin
+      ));
+      const outerRows = sourceRows.filter((row) => (
+        row.segment === segment && row.origin === origin
+      ));
+      const selected = selectReliableRules(
+        segment,
+        origin,
+        trainingRows,
+        outerRows,
+        contract
+      );
+      selections.push(...selected.publicEvidence);
+      for (const row of outerRows) {
+        const rule = selected.ruleFor(row);
+        candidateRows.push({
+          ...row,
+          pointEstimate: row.pointEstimate * rule.factor,
+          selectedCandidateId: rule.selectedCandidateId,
+          selectedFactor: rule.factor
+        });
+      }
+    }
+  }
+  candidateRows.sort(compareCases);
+  return {
+    candidateId: contract.candidate.id,
+    rows: candidateRows,
+    selections,
+    bySegment: scoreM2CurrentSlices(candidateRows, "segment"),
+    byOrigin: scoreM2CurrentSlices(candidateRows, "origin"),
+    byHorizon: scoreM2CurrentSlices(candidateRows, "horizonMonths")
+  };
+}
+
+function selectReliableRules(
+  segment,
+  origin,
+  trainingRows,
+  outerRows,
+  contract
+) {
+  if (segment === "dormant") {
+    const rule = {
+      factor: 1,
+      selectedCandidateId: "B4"
+    };
+    return {
+      ruleFor: () => rule,
+      publicEvidence: [
+        reliableEvidence({
+          segment,
+          origin,
+          groupFeature: null,
+          groupValue: "all",
+          rows: trainingRows,
+          rule,
+          selectionReason:
+            "dormant_reactivation_signal_not_identifiable_from_allowed_as_of_features",
+          metrics: trainingRows.length > 0
+            ? scoreM2CurrentPointRows(trainingRows)
+            : null,
+          relativeWapeToSegmentFallback: null
+        })
+      ]
+    };
+  }
+  const feature = contract.candidate.groupCalibration
+    .featureBySegment[segment];
+  if (!feature) {
+    throw new Error("m2_current_reliable_candidate_group_feature_missing");
+  }
+  const segmentSelection = selectReliableScale(trainingRows, contract);
+  const segmentRule = {
+    factor: segmentSelection.factor,
+    selectedCandidateId: segmentSelection.factor === 1
+      ? "B4"
+      : `${segment}__segment_scale_${factorId(segmentSelection.factor)}`
+  };
+  const groupValues = [...new Set(outerRows.map(
+    (row) => reliableGroupValue(row, feature, contract)
+  ))].sort();
+  const rules = new Map();
+  const publicEvidence = [];
+  for (const groupValue of groupValues) {
+    const groupRows = trainingRows.filter(
+      (row) => reliableGroupValue(row, feature, contract) === groupValue
+    );
+    const fallbackMetrics = groupRows.length > 0
+      ? scoreM2CurrentPointRows(groupRows.map((row) => ({
+        ...row,
+        pointEstimate: row.pointEstimate * segmentRule.factor
+      })))
+      : null;
+    let rule = segmentRule;
+    let metrics = fallbackMetrics;
+    let relativeWapeToSegmentFallback = null;
+    let selectionReason = trainingRows.length === 0
+      ? "no_mature_earlier_labels"
+      : "group_uses_segment_fallback";
+    if (
+      groupRows.length
+        >= contract.candidate.groupCalibration.minimumEarlierCaseCount
+    ) {
+      const groupSelection = selectReliableScale(groupRows, contract);
+      const groupMetrics = groupSelection.metrics;
+      relativeWapeToSegmentFallback = (
+        groupMetrics.wape / fallbackMetrics.wape - 1
+      );
+      if (
+        relativeWapeToSegmentFallback
+          <= -contract.candidate.groupCalibration
+            .minimumRelativeWapeImprovement
+      ) {
+        rule = {
+          factor: groupSelection.factor,
+          selectedCandidateId: `${segment}__${feature}__${safeId(groupValue)}`
+            + `__scale_${factorId(groupSelection.factor)}`
+        };
+        metrics = groupMetrics;
+        selectionReason =
+          "group_scale_improves_mature_earlier_wape_and_is_bias_safe";
+      } else {
+        selectionReason =
+          "group_scale_does_not_improve_segment_fallback_enough";
+      }
+    } else if (trainingRows.length > 0) {
+      selectionReason = "group_evidence_below_minimum";
+    }
+    rules.set(groupValue, rule);
+    publicEvidence.push(reliableEvidence({
+      segment,
+      origin,
+      groupFeature: feature,
+      groupValue,
+      rows: groupRows,
+      rule,
+      selectionReason,
+      metrics,
+      relativeWapeToSegmentFallback
+    }));
+  }
+  return {
+    ruleFor: (row) => (
+      rules.get(reliableGroupValue(row, feature, contract)) ?? segmentRule
+    ),
+    publicEvidence
+  };
+}
+
+function selectReliableScale(rows, contract) {
+  if (rows.length === 0) {
+    return { factor: 1, metrics: null };
+  }
+  const feasible = contract.candidate.scaleFactors
+    .map((factor) => ({
+      factor,
+      metrics: scoreM2CurrentPointRows(rows.map((row) => ({
+        ...row,
+        pointEstimate: row.pointEstimate * factor
+      })))
+    }))
+    .filter(({ metrics }) => (
+      Math.abs(metrics.signedBias)
+        <= contract.candidate.trainingAbsoluteBiasMaximum
+    ))
+    .sort((a, b) => (
+      a.metrics.wape - b.metrics.wape
+      || Math.abs(a.metrics.signedBias) - Math.abs(b.metrics.signedBias)
+      || b.factor - a.factor
+    ));
+  return feasible[0] ?? {
+    factor: 1,
+    metrics: scoreM2CurrentPointRows(rows)
+  };
+}
+
+function reliableEvidence({
+  segment,
+  origin,
+  groupFeature,
+  groupValue,
+  rows,
+  rule,
+  selectionReason,
+  metrics,
+  relativeWapeToSegmentFallback
+}) {
+  return {
+    outerOrigin: origin,
+    segment,
+    groupFeature,
+    groupValue,
+    matureEarlierCaseCount: rows.length,
+    matureEarlierOriginCount: new Set(rows.map((row) => row.origin)).size,
+    maximumLabelAvailableAsOf:
+      rows.map((row) => row.labelAvailableAsOf).sort().at(-1) ?? null,
+    selectedCandidateId: rule.selectedCandidateId,
+    selectionReason,
+    selectedFactor: rule.factor,
+    trainingMetrics: metrics,
+    relativeWapeToSegmentFallback,
+    sameOrLaterOuterTruthRead: false,
+    postHocFeatureRead: false
+  };
+}
+
+function indexReliableFeatures(rows, contract) {
+  if (!Array.isArray(rows) || rows.length === 0) {
+    throw new Error("m2_current_reliable_candidate_features_required");
+  }
+  const indexed = new Map();
+  for (const row of rows) {
+    const key = buildM2CurrentCaseKey(row, contract);
+    if (!contract.activitySegments.has(row.segment)) {
+      throw new Error("m2_current_reliable_candidate_segment_invalid");
+    }
+    if (
+      row.historicalFeaturePolicy !== "as_of_only"
+      || row.sourceShelfRightsTermPolicy !== "post_hoc_only"
+    ) {
+      throw new Error("m2_current_reliable_candidate_feature_policy_invalid");
+    }
+    if (typeof row.spikeCandidate !== "boolean") {
+      throw new Error("m2_current_reliable_candidate_spike_invalid");
+    }
+    if (
+      typeof row.valueBand !== "string"
+      || !contract.candidate.groupCalibration.allowedValueBands
+        .includes(row.valueBand)
+    ) {
+      throw new Error("m2_current_reliable_candidate_value_band_invalid");
+    }
+    if (indexed.has(key)) {
+      throw new Error("m2_current_reliable_candidate_duplicate_feature_case");
+    }
+    indexed.set(key, {
+      segment: row.segment,
+      spikeCandidate: row.spikeCandidate,
+      valueBand: row.valueBand,
+      historicalFeaturePolicy: row.historicalFeaturePolicy,
+      sourceShelfRightsTermPolicy: row.sourceShelfRightsTermPolicy
+    });
+  }
+  return indexed;
+}
+
+function reliableGroupValue(row, feature, contract) {
+  if (feature === "spike_candidate") {
+    return row.spikeCandidate ? "true" : "false";
+  }
+  if (feature === "value_band") {
+    if (
+      !contract.candidate.groupCalibration.allowedValueBands
+        .includes(row.valueBand)
+    ) {
+      throw new Error("m2_current_reliable_candidate_value_band_invalid");
+    }
+    return row.valueBand;
+  }
+  throw new Error("m2_current_reliable_candidate_group_feature_invalid");
+}
+
+function safeId(value) {
+  return String(value).replaceAll(/[^a-z0-9]+/giu, "_").replaceAll(/^_|_$/gu, "");
+}
+
 function selectSegmentRule(segment, origin, rows, contract) {
   if (rows.length === 0) {
     return fallback(segment, origin, rows, "no_mature_earlier_labels");

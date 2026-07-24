@@ -1,0 +1,71 @@
+{
+  "schema": "m2.current.business_sample.public.v0.2",
+  "decisionStatus": "not_for_formal_decision",
+  "sampleDesign": {
+    "seed": 20260724,
+    "workCount": 120,
+    "caseCount": 120,
+    "uniqueWorkRequired": true,
+    "representativeSelectionUsesActual": false,
+    "stressSelectionUsesActualForDiagnosticOnly": true,
+    "selectedBeforeHumanReview": true
+  },
+  "distribution": {
+    "bySegment": {
+      "dense": 40,
+      "dormant": 40,
+      "intermittent": 40
+    },
+    "bySelectionClass": {
+      "largest_overprediction": 30,
+      "largest_underprediction": 30,
+      "representative": 60
+    },
+    "byHorizon": {
+      "3": 27,
+      "6": 27,
+      "12": 24,
+      "18": 21,
+      "24": 21
+    },
+    "byOrigin": {
+      "2020-12": 25,
+      "2021-06": 12,
+      "2021-12": 30,
+      "2022-06": 20,
+      "2022-12": 33
+    }
+  },
+  "sampledMetrics": {
+    "caseCount": 120,
+    "wape": 0.6381780876181512,
+    "signedBias": -0.08727182668143026,
+    "zeroImputationUsed": false
+  },
+  "dormantReactivationDiagnostic": {
+    "positiveCaseCount": 80,
+    "top1PositiveCashShare": 0.2064112403785059,
+    "top3PositiveCashShare": 0.6192337211355177,
+    "top5PositiveCashShare": 0.7973658315965801,
+    "interpretation": "a_few_large_reactivations_dominate_and_are_not_identifiable_from_allowed_features"
+  },
+  "humanReview": {
+    "status": "PENDING",
+    "allowedOutcomes": [
+      "reasonable",
+      "acceptable_with_limitation",
+      "model_issue",
+      "data_issue",
+      "cash_route_issue"
+    ],
+    "privateWorkbookRequired": true,
+    "resultMayNotBeUsedToRetuneTheSameCases": true
+  },
+  "boundaries": {
+    "aggregateOnly": true,
+    "identifiersPresent": false,
+    "privateRowsTracked": false,
+    "finalHoldoutOpened": false,
+    "releaseAuthorized": false
+  }
+}

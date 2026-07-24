@@ -13,10 +13,20 @@ export function loadM2CurrentPublicEvidence(sources, config) {
   requireSchema(sources?.segments, "m2.c2_activity_segment_route_manifest.v1");
   requireSchema(sources?.development, "m2.c3_development_validation.v1");
   requireSchema(sources?.population, "m2.calibration_population_coverage.v1");
-  requireSchema(
-    sources?.candidate,
-    "m2.current.segmented_candidate.public.v0.1"
-  );
+  const currentCandidateSchema = config.schema === "m2.current.config.v0.2"
+    ? "m2.current.reliable_candidate.public.v0.2"
+    : "m2.current.segmented_candidate.public.v0.1";
+  requireSchema(sources?.candidate, currentCandidateSchema);
+  if (config.schema === "m2.current.config.v0.2") {
+    requireSchema(
+      sources?.previousCandidate,
+      "m2.current.segmented_candidate.public.v0.1"
+    );
+    requireSchema(
+      sources?.businessSample,
+      "m2.current.business_sample.public.v0.2"
+    );
+  }
 
   const segmentCaseCount = Object.values(sources.segments.segments)
     .reduce((sum, segment) => sum + Number(segment.caseCount), 0);
@@ -107,7 +117,9 @@ export function loadM2CurrentPublicEvidence(sources, config) {
   }
 
   return {
-    schema: "m2.current.public_evidence.v0.1",
+    schema: config.schema === "m2.current.config.v0.2"
+      ? "m2.current.public_evidence.v0.2"
+      : "m2.current.public_evidence.v0.1",
     decisionStatus: "not_for_formal_decision",
     population: {
       libraryWorkCount: contract.population.libraryWorkCount,
@@ -181,6 +193,13 @@ export function loadM2CurrentPublicEvidence(sources, config) {
       pairedCi: sources.candidate.pairedCi,
       acceptance: sources.candidate.acceptance
     },
+    previousCandidate: sources.previousCandidate
+      ? {
+        candidateId: sources.previousCandidate.candidateId,
+        comparison: sources.candidate.previousCandidateComparison
+      }
+      : null,
+    businessSample: sources.businessSample ?? null,
     modelQualityDecision: sources.modelDecision.modelQualityDecision,
     businessCoverageDecision: sources.businessDecision.businessCoverageDecision,
     seals: {

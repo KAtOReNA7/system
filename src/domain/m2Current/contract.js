@@ -1,7 +1,10 @@
-const EXPECTED_SCHEMA = "m2.current.config.v0.1";
+const SUPPORTED_SCHEMAS = new Set([
+  "m2.current.config.v0.1",
+  "m2.current.config.v0.2"
+]);
 
 export function buildM2CurrentContract(config) {
-  if (config?.schema !== EXPECTED_SCHEMA) {
+  if (!SUPPORTED_SCHEMAS.has(config?.schema)) {
     throw new Error("m2_current_config_schema_invalid");
   }
 
@@ -89,32 +92,63 @@ export function buildM2CurrentContract(config) {
       config.candidate?.trainingAbsoluteBiasMaximum,
       "candidate_training_absolute_bias_maximum"
     ),
-    dormantReactivation: Object.freeze({
-      blendFactors: uniqueFiniteNumbers(
-        config.candidate?.dormantReactivation?.blendFactors,
-        "candidate_dormant_blend_factors",
-        { minimum: 0, maximum: 1 }
-      ),
-      minimumEarlierOriginCount: positiveInteger(
-        config.candidate?.dormantReactivation?.minimumEarlierOriginCount,
-        "candidate_dormant_minimum_earlier_origin_count"
-      ),
-      minimumEarlierCaseCount: positiveInteger(
-        config.candidate?.dormantReactivation?.minimumEarlierCaseCount,
-        "candidate_dormant_minimum_earlier_case_count"
-      ),
-      minimumRelativeWapeImprovement: unitInterval(
-        config.candidate?.dormantReactivation?.minimumRelativeWapeImprovement,
-        "candidate_dormant_minimum_relative_wape_improvement"
-      )
-    })
+    dormantReactivation: config.schema === "m2.current.config.v0.1"
+      ? Object.freeze({
+        blendFactors: uniqueFiniteNumbers(
+          config.candidate?.dormantReactivation?.blendFactors,
+          "candidate_dormant_blend_factors",
+          { minimum: 0, maximum: 1 }
+        ),
+        minimumEarlierOriginCount: positiveInteger(
+          config.candidate?.dormantReactivation?.minimumEarlierOriginCount,
+          "candidate_dormant_minimum_earlier_origin_count"
+        ),
+        minimumEarlierCaseCount: positiveInteger(
+          config.candidate?.dormantReactivation?.minimumEarlierCaseCount,
+          "candidate_dormant_minimum_earlier_case_count"
+        ),
+        minimumRelativeWapeImprovement: unitInterval(
+          config.candidate?.dormantReactivation?.minimumRelativeWapeImprovement,
+          "candidate_dormant_minimum_relative_wape_improvement"
+        )
+      })
+      : null,
+    groupCalibration: config.schema === "m2.current.config.v0.2"
+      ? buildGroupCalibration(config.candidate?.groupCalibration, activitySegments)
+      : null,
+    dormantPolicy: config.schema === "m2.current.config.v0.2"
+      ? buildDormantPolicy(config.candidate?.dormantPolicy)
+      : null
   };
   if (!candidate.scaleFactors.includes(1)) {
     throw new Error("m2_current_candidate_comparator_factor_required");
   }
-  if (!candidate.dormantReactivation.blendFactors.includes(0)) {
+  if (
+    candidate.dormantReactivation
+    && !candidate.dormantReactivation.blendFactors.includes(0)
+  ) {
     throw new Error("m2_current_candidate_dormant_fallback_required");
   }
+  const businessSample = config.schema === "m2.current.config.v0.2"
+    ? Object.freeze({
+      seed: positiveInteger(
+        config.businessSample?.seed,
+        "business_sample_seed"
+      ),
+      representativeWorkCountPerSegment: positiveInteger(
+        config.businessSample?.representativeWorkCountPerSegment,
+        "business_sample_representative_count"
+      ),
+      largestUnderpredictionWorkCountPerSegment: positiveInteger(
+        config.businessSample?.largestUnderpredictionWorkCountPerSegment,
+        "business_sample_underprediction_count"
+      ),
+      largestOverpredictionWorkCountPerSegment: positiveInteger(
+        config.businessSample?.largestOverpredictionWorkCountPerSegment,
+        "business_sample_overprediction_count"
+      )
+    })
+    : null;
   const authorizations = {
     provider: config.authorizations?.provider === true,
     database: config.authorizations?.database === true,
@@ -125,6 +159,7 @@ export function buildM2CurrentContract(config) {
   };
 
   return Object.freeze({
+    schema: config.schema,
     allowedHorizons: new Set(allowedHorizons),
     allowedHorizonValues: Object.freeze([...allowedHorizons]),
     activitySegments: new Set(activitySegments),
@@ -133,7 +168,59 @@ export function buildM2CurrentContract(config) {
     thresholds: Object.freeze(thresholds),
     pairedBootstrap: Object.freeze(pairedBootstrap),
     candidate: Object.freeze(candidate),
+    businessSample,
     authorizations: Object.freeze(authorizations)
+  });
+}
+
+function buildGroupCalibration(value, activitySegments) {
+  const featureEntries = Object.entries(value?.featureBySegment ?? {});
+  const requiredSegments = activitySegments.filter(
+    (segment) => segment !== "dormant"
+  );
+  if (
+    featureEntries.length !== requiredSegments.length
+    || requiredSegments.some(
+      (segment) => typeof value?.featureBySegment?.[segment] !== "string"
+    )
+  ) {
+    throw new Error("m2_current_group_calibration_features_invalid");
+  }
+  const allowedFeatures = new Set(["spike_candidate", "value_band"]);
+  if (featureEntries.some(([, feature]) => !allowedFeatures.has(feature))) {
+    throw new Error("m2_current_group_calibration_feature_not_allowed");
+  }
+  return Object.freeze({
+    minimumEarlierCaseCount: positiveInteger(
+      value?.minimumEarlierCaseCount,
+      "group_calibration_minimum_case_count"
+    ),
+    minimumRelativeWapeImprovement: unitInterval(
+      value?.minimumRelativeWapeImprovement,
+      "group_calibration_minimum_relative_wape_improvement"
+    ),
+    featureBySegment: Object.freeze({ ...value.featureBySegment }),
+    allowedValueBands: Object.freeze(
+      uniqueStrings(value?.allowedValueBands, "allowed_value_bands")
+    )
+  });
+}
+
+function buildDormantPolicy(value) {
+  const mode = exactString(value?.mode, "dormant_policy_mode");
+  if (mode !== "b4_fallback_until_identifiable_as_of_signal") {
+    throw new Error("m2_current_dormant_policy_mode_invalid");
+  }
+  return Object.freeze({
+    mode,
+    minimumEarlierOriginCount: positiveInteger(
+      value?.minimumEarlierOriginCount,
+      "dormant_policy_minimum_origin_count"
+    ),
+    minimumEarlierCaseCount: positiveInteger(
+      value?.minimumEarlierCaseCount,
+      "dormant_policy_minimum_case_count"
+    )
   });
 }
 

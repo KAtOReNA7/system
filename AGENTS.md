@@ -2,11 +2,11 @@
 
 ## 当前唯一入口
 
-- PR #7、PR #8、PR #9 均已合入 `main`；已合并分支不得继续作为开发入口。
+- PR #7、PR #8、PR #9、PR #10 均已合入 `main`；已合并分支不得继续作为开发入口。
 - 当前仓库治理导航为：
-  - `docs/analysis/m2-v2/M2-v2-current-state-index-v0.6.md`
+  - `docs/analysis/m2-v2/M2-v2-current-state-index-v0.7.md`
   - `docs/analysis/m2-v2/M2-repository-code-convergence-and-portable-development-audit-v0.4.md`
-  - `docs/analysis/m2-current/M2-current-quality-convergence-v0.1.md`
+  - `docs/analysis/m2-current/M2-current-reliable-model-development-v0.2.md`
 - PR #7 cryptographic authority 继续由不可变的
   `docs/analysis/m2-v2/M2-v2-current-state-index-v0.3.json` 提供；治理索引不得改写该绑定。
 - 历史 B0–B8、C1–C3、旧 PR 状态和旧授权记录只用于审计追溯，不是当前执行指令。
@@ -89,19 +89,26 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
 - 当前公共诊断为 `CANDIDATE_DEVELOPMENT_PARTIAL_BLOCKED`：
   - 3,053 部权威作品，824 部 model works，7,851 个 formal-cash cases
   - 全库现金覆盖率 0.7396468495，Top10 覆盖率 0.759412528，门槛 0.90
-  - current candidate WAPE/bias 0.53184893 / 0.03680632；B4 为 0.55648454 / 0.08910997
-  - paired work×origin bootstrap 相对 WAPE 95% CI 为 [-0.09463040, -0.01281803]
+  - current candidate WAPE/bias 0.51114966 / -0.00586227；B4 为 0.55648454 / 0.08910997
+  - paired work×origin bootstrap 相对 B4 WAPE 95% CI 为 [-0.15746081, -0.02908233]
+  - 相对 v0.1 WAPE 点估计改善 3.8919%，但 paired 95% CI
+    [-0.11829766, 0.01051935] 穿过零，不得声称统计确定优于 v0.1
   - overall bias、各 horizon bias 和 paired CI 已通过；dormant 未改善，结论为 `PARTIAL_PASS`
-- 新候选固定为 `M2-current-segmented-downward-calibration-v0.1`：dense/intermittent 只能在 0.50–1.00 内向下校准 B4；dormant 只有严格更早成熟证据同时证明 bias 安全和 WAPE 改善时才能启用复活候选，否则必须回退 B4。
+- 当前候选固定为 `M2-current-hierarchical-robust-calibration-v0.2`：
+  dense/intermittent 先做 segment 校准，只有 as-of group 至少有 80 个严格更早成熟
+  case 且相对 segment fallback 的 training WAPE 至少改善 1% 时才采用 group scale；
+  dormant 在没有可识别 as-of 信号时必须回退 B4。
 - eligibility、cash observability 和 served coverage 必须继续分开报告。2,229 部非模型作品的原因 ledger 已在本地 private output 穷尽对账；不得为提高比例移动 824/7,851 冻结人口。
-- 当前正确工程顺序是业务抽检 current candidate，再单独补可审计 commitment snapshot；禁止继续堆叠 evidence runtime、复制历史 runner 或扩建候选家族。
+- 120 部唯一作品的确定性业务抽样已生成，人工复核仍为 `PENDING`。当前正确工程
+  顺序是复核已冻结样本，再单独补可审计 commitment snapshot；禁止继续堆叠
+  evidence runtime、复制历史 runner 或扩建候选家族。
 
 当前业务 gate 保持：
 
 - `currentDecision=CANARY_FAIL`
-- `nextDevelopmentReadiness=BUSINESS_SAMPLE_REQUIRED`
+- `nextDevelopmentReadiness=BUSINESS_SAMPLE_REVIEW_REQUIRED`
 - `full160Authorized=false`
-- `modelTrainingAuthorized=true` 仅限复现上述 exact current candidate
+- `modelTrainingAuthorized=true` 仅限复现上述 exact v0.2 candidate
 - final holdout、embargo shadow、deferred labels 均 sealed
 - provider、远端/共享/staging-like 数据库、Canary/full160、新候选家族、release、M3 formal 均未授权
 

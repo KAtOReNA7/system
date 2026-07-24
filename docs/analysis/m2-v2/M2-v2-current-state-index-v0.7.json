@@ -1,0 +1,87 @@
+{
+  "schemaVersion": "m2-v2-current-state-index-v0.7",
+  "classification": "public_sanitized_not_for_formal_decision",
+  "updatedAt": "2026-07-24",
+  "supersedesGovernanceIndex": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.6.md",
+  "cryptographicAuthority": {
+    "preserved": true,
+    "schemaVersion": "m2-v2-current-state-index-v0.3",
+    "path": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.3.json"
+  },
+  "m2Current": {
+    "status": "CANDIDATE_DEVELOPMENT_PARTIAL_BLOCKED",
+    "decisionStatus": "not_for_formal_decision",
+    "target": "future_bill_cash",
+    "authoritativeWorks": 3053,
+    "modelWorks": 824,
+    "formalCashCases": 7851,
+    "cashObservability": {
+      "fullLibrary": 0.7396468495203204,
+      "top10": 0.7594125279899511,
+      "required": 0.9
+    },
+    "eligibilityReasons": {
+      "modelEligible": 824,
+      "notObservableAtAnyFrozenDevelopmentOrigin": 1610,
+      "insufficientHistoryAtEveryEligibleOrigin": 399,
+      "formalCashRouteExcluded": 220,
+      "exhaustive": true,
+      "mutuallyExclusive": true
+    },
+    "candidate": {
+      "id": "M2-current-hierarchical-robust-calibration-v0.2",
+      "decision": "PARTIAL_PASS",
+      "wape": 0.5111496562935863,
+      "signedBias": -0.005862272802777224,
+      "b4Wape": 0.5564845379400507,
+      "b4SignedBias": 0.0891099710777566,
+      "relativeWape": -0.08146656116319306,
+      "pairedRelativeWape95": {
+        "lower": -0.1574608105823868,
+        "upper": -0.02908232594537247
+      },
+      "previousCandidate": {
+        "id": "M2-current-segmented-downward-calibration-v0.1",
+        "wape": 0.5318489318801574,
+        "relativeWape": -0.03891946443024019,
+        "pairedRelativeWape95": {
+          "lower": -0.11829765840520558,
+          "upper": 0.010519346339665536
+        }
+      },
+      "overallBiasPassed": true,
+      "eachHorizonBiasPassed": true,
+      "pairedCiToB4Passed": true,
+      "dormantSegmentImproved": false
+    },
+    "businessSample": {
+      "workCount": 120,
+      "uniqueWorks": true,
+      "humanReviewStatus": "PENDING"
+    }
+  },
+  "currentDecision": "CANARY_FAIL",
+  "nextDevelopmentReadiness": "BUSINESS_SAMPLE_REVIEW_REQUIRED",
+  "authorizations": {
+    "currentCandidateDevelopment": true,
+    "provider": false,
+    "database": false,
+    "canary": false,
+    "full160": false,
+    "finalHoldout": false,
+    "release": false,
+    "m3Formal": false
+  },
+  "seals": {
+    "finalHoldoutOpened": false,
+    "embargoShadowOpened": false,
+    "deferred60MonthLabelsOpened": false
+  },
+  "currentEntryPoints": [
+    "README.md",
+    "AGENTS.md",
+    "NEXT-CODEX-INSTRUCTION.md",
+    "docs/analysis/m2-current/M2-current-reliable-model-development-v0.2.md",
+    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.7.md"
+  ]
+}

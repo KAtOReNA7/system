@@ -1,0 +1,102 @@
+# M2 v2 当前状态索引 v0.7
+
+## 当前结论
+
+本索引取代 v0.6 作为仓库治理入口。PR #7 的 cryptographic authority 仍由不可变的
+`M2-v2-current-state-index-v0.3.json` 提供，本文件不改写其绑定。
+
+2026-07-24 已在冻结 authority development population 上完成 M2 current v0.2
+可靠预测模型开发。实现只扩展 `src/domain/m2Current/**`，没有新建 evidence
+runtime、历史 runner 或平行候选流水线。
+
+当前状态：
+
+- `currentDecision=CANARY_FAIL`
+- `nextDevelopmentReadiness=BUSINESS_SAMPLE_REVIEW_REQUIRED`
+- `currentCandidateDecision=PARTIAL_PASS`
+- `currentCandidate=M2-current-hierarchical-robust-calibration-v0.2`
+- `full160Authorized=false`
+- `finalHoldoutAuthorized=false`
+- `releaseAuthorized=false`
+
+## 数据人口
+
+3,053 部权威作品继续冻结为：
+
+| 状态 | 作品数 |
+|---|---:|
+| 冻结模型人口 | 824 |
+| 所有冻结 origin 均不可观察 | 1,610 |
+| 所有可用 origin 均历史不足 | 399 |
+| formal-cash route 排除 | 220 |
+
+模型开发人口为 824 部、7,851 个 formal-cash case。全库和 Top10 现金可观察性仍为
+73.96% 和 75.94%，低于 90%；该问题没有通过移动人口或猜测未承诺现金来掩盖。
+
+## v0.2 candidate
+
+`M2-current-hierarchical-robust-calibration-v0.2` 使用严格成熟 earlier labels，
+dense 按 as-of `spike_candidate`、intermittent 按 as-of `value_band` 做带最小样本
+约束的层级向下校准。dormant 没有可识别 as-of 信号时固定回退 B4。
+
+| 指标 | B4 | v0.1 | v0.2 |
+|---|---:|---:|---:|
+| WAPE | 0.55648454 | 0.53184893 | 0.51114966 |
+| signed bias | +0.08910997 | +0.03680632 | -0.00586227 |
+| 相对 B4 WAPE | — | -4.4270% | -8.1467% |
+
+v0.2 对 B4 的 paired work×origin bootstrap 95% CI 为
+[-15.7461%, -2.9082%]。v0.2 对 v0.1 的点估计改善为 3.8919%，但 paired 95% CI
+[-11.8298%, +1.0519%] 穿过零，因此不得声称 v0.2 已统计确定地优于 v0.1。
+
+overall bias、5 个 horizon bias 和相对 B4 paired CI 均通过；dormant 未改善，
+所以 development 结论仍为 `PARTIAL_PASS`。
+
+## 业务抽样
+
+已生成 120 部唯一作品的确定性 review sample：dense、intermittent、dormant 各
+40 部，其中每 segment 有 20 部代表性、10 部最大低估、10 部最大高估。公开仓库
+只包含聚合分布，private review workbook 保持 Git ignored。
+
+样本的人工业务复核仍为 `PENDING`。这意味着“抽样工具和样本已完成”，不等于
+“业务已经认可候选”。
+
+## 当前入口
+
+公共开发：
+
+```bash
+npm ci
+npm run doctor:dev
+npm run check:no-real-data
+npm run lint
+npm run build
+npm test
+npm run smoke
+npm run smoke:portable-start
+npm run test:e2e
+npm run verify:m2:current
+```
+
+具备 authority input 且获得对应授权时复现 candidate 和 private review workbook：
+
+```bash
+npm run doctor:capability -- m2-algorithm-authoritative-input
+npm run develop:m2:current:candidate
+npm run diagnose:m2:current
+npm run verify:m2:current
+```
+
+## 下一步
+
+1. 人工复核已经冻结的 120 部样本，不再扩建候选家族。
+2. 单独取得 cutoff 时已经签署、确认且可审计的 commitment snapshot。
+3. 没有新的 as-of dormant 信号时继续 B4 fallback。
+4. 业务复核完成后，再由用户决定是否授权 final holdout；当前不得表述为正式模型。
+
+当前证据：
+
+- `docs/analysis/m2-current/M2-current-reliable-model-development-v0.2.md`
+- `docs/analysis/m2-current/M2-current-reliable-candidate-v0.2.json`
+- `docs/analysis/m2-current/M2-current-business-sample-diagnostic-v0.2.json`
+- `docs/analysis/m2-current/M2-current-public-diagnostic-v0.3.json`

@@ -2,15 +2,17 @@
 
 ## 当前唯一入口
 
-PR #7、PR #8 和 PR #9 均已合并，旧 PR 分支已删除。不得切换到 `codex/m2-v2-evidence-pilot-v1` 或 `codex/m2-repository-convergence-toolchain` 继续开发。
+PR #7、PR #8、PR #9 和 PR #10 均已合并，旧 PR 分支不得继续作为开发入口。
+不得切换到 `codex/m2-v2-evidence-pilot-v1` 或
+`codex/m2-repository-convergence-toolchain` 继续开发。
 
 每次任务先按 `AGENTS.md` 自动完成远端同步、工作区/分支/PR/CI/worktree 核对、重复实现检查和 private-independent 基线验证。用户无需重复下达这些共性命令。
 
 当前权威导航：
 
-1. `docs/analysis/m2-v2/M2-v2-current-state-index-v0.6.md`
+1. `docs/analysis/m2-v2/M2-v2-current-state-index-v0.7.md`
 2. `docs/analysis/m2-v2/M2-repository-code-convergence-and-portable-development-audit-v0.4.md`
-3. `docs/analysis/m2-current/M2-current-quality-convergence-v0.1.md`
+3. `docs/analysis/m2-current/M2-current-reliable-model-development-v0.2.md`
 4. `AGENTS.md`
 
 ## 当前开发状态
@@ -24,18 +26,23 @@ PR #7、PR #8 和 PR #9 均已合并，旧 PR 分支已删除。不得切换到 
 当前业务状态：
 
 - `currentDecision=CANARY_FAIL`
-- `nextDevelopmentReadiness=BUSINESS_SAMPLE_REQUIRED`
+- `nextDevelopmentReadiness=BUSINESS_SAMPLE_REVIEW_REQUIRED`
 - `full160Authorized=false`
-- exact current candidate development replay 已授权并完成
+- exact v0.2 candidate development replay 和 120 部确定性样本已完成
+- 人工业务复核仍为 `PENDING`
 - final holdout、embargo shadow、deferred labels 均 sealed
 
 ## 下一项 M2 工作的正确方向
 
-覆盖原因 ledger 和 current candidate 已完成。候选 WAPE 0.53184893、bias +0.03680632，相对 B4 改善 4.43%，paired 95% CI 为 [-9.46%, -1.28%]；5 个 horizon bias 均通过。dormant 没有改善，因此当前结论是 `PARTIAL_PASS`。
+覆盖原因 ledger 和 v0.2 current candidate 已完成。候选 WAPE
+0.51114966、bias -0.00586227，相对 B4 改善 8.15%，paired 95% CI 为
+[-15.75%, -2.91%]；5 个 horizon bias 均通过。相对 v0.1 的 paired CI
+[-11.83%, +1.05%] 穿过零，因此不得声称统计确定优于 v0.1。dormant 没有改善，
+当前结论仍是 `PARTIAL_PASS`。
 
 下一步固定为：
 
-1. 对 exact current candidate 做脱敏业务抽检，不新增候选家族。
+1. 人工复核已经冻结的 120 部业务样本，不新增候选家族或重抽样。
 2. 单独设计可审计 commitment snapshot，解决不可观察现金，不得由算法猜测未承诺买断。
 3. dormant 在没有新的 as-of 可用信息前保持 B4 fallback，不得使用当前 shelf/rights 状态回填历史 origin。
 4. 业务抽检通过且用户另行授权后，才申请 final holdout。
