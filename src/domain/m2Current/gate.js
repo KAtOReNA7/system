@@ -43,6 +43,16 @@ export function evaluateM2CurrentDiagnosticGate(
     ) {
       blockers.push("candidate_overall_bias_failed");
     }
+    if (
+      contract.thresholds.developmentWapeMaximum !== null
+      && (
+        !comparison?.candidate
+        || comparison.candidate.wape
+          > contract.thresholds.developmentWapeMaximum
+      )
+    ) {
+      blockers.push("candidate_absolute_wape_above_development_threshold");
+    }
     const horizonMetrics = candidate.byHorizon;
     if (!horizonMetrics) {
       blockers.push("candidate_horizon_metrics_missing");
@@ -59,23 +69,65 @@ export function evaluateM2CurrentDiagnosticGate(
         }
       }
     }
+    if (contract.thresholds.eachSegmentWapeMaximum !== null) {
+      const segmentMetrics = candidate.bySegment;
+      if (!segmentMetrics) {
+        blockers.push("candidate_segment_metrics_missing");
+      } else {
+        for (const segment of contract.activitySegmentValues) {
+          const metrics = segmentMetrics[segment]?.candidate
+            ?? segmentMetrics[segment];
+          if (
+            !metrics
+            || metrics.wape > contract.thresholds.eachSegmentWapeMaximum
+          ) {
+            blockers.push(`candidate_segment_${segment}_wape_failed`);
+          }
+          if (
+            !metrics
+            || Math.abs(metrics.signedBias)
+              > contract.thresholds.eachSegmentAbsoluteBiasMaximum
+          ) {
+            blockers.push(`candidate_segment_${segment}_bias_failed`);
+          }
+        }
+      }
+    }
     if (
       contract.thresholds.pairedCiRequired
       && !pairedCiPasses(candidate.pairedCi, contract)
     ) {
       blockers.push("paired_confidence_interval_failed");
     }
-    if (candidate.acceptance?.dormantSegmentImproved !== true) {
+    if (
+      contract.schema === "m2.current.config.v0.3"
+      && candidate.acceptance?.dormantFallbackPolicyPassed !== true
+    ) {
+      blockers.push("candidate_dormant_fallback_policy_failed");
+    } else if (
+      contract.schema !== "m2.current.config.v0.3"
+      && candidate.acceptance?.dormantSegmentImproved !== true
+    ) {
       blockers.push("candidate_dormant_segment_not_improved");
     }
   }
   blockers.push("final_holdout_sealed");
-  blockers.push("business_sampling_and_approval_missing");
+  if (contract.schema === "m2.current.config.v0.3") {
+    blockers.push("post_gate_quality_assurance_pending");
+  } else {
+    blockers.push("business_sampling_and_approval_missing");
+  }
   const candidateOverallGatesPassed = candidate !== null && !blockers.some(
     (blocker) => (
       (
         blocker.startsWith("candidate_")
-        && blocker !== "candidate_dormant_segment_not_improved"
+        && !(
+          [
+            "candidate_dormant_segment_not_improved",
+            "candidate_absolute_wape_above_development_threshold"
+          ].includes(blocker)
+          || blocker.startsWith("candidate_segment_")
+        )
       )
       || blocker === "paired_confidence_interval_failed"
     )
@@ -95,8 +147,9 @@ export function evaluateM2CurrentDiagnosticGate(
         ? "CANDIDATE_DEVELOPMENT_FAIL_BLOCKED"
         : "BASELINE_ONLY_BLOCKED",
     blockers: [...new Set(blockers)],
-    developmentDirection:
-      "candidate_business_sampling_then_separate_cash_observability_resolution",
+    developmentDirection: contract.schema === "m2.current.config.v0.3"
+      ? "business_cash_observability_then_authorized_sealed_holdout"
+      : "candidate_business_sampling_then_separate_cash_observability_resolution",
     candidateOverallGatesPassed,
     candidateDevelopmentQualityPassed,
     candidateSelectionAuthorized: contract.authorizations.modelTraining,

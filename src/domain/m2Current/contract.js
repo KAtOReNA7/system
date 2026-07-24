@@ -1,6 +1,7 @@
 const SUPPORTED_SCHEMAS = new Set([
   "m2.current.config.v0.1",
-  "m2.current.config.v0.2"
+  "m2.current.config.v0.2",
+  "m2.current.config.v0.3"
 ]);
 
 export function buildM2CurrentContract(config) {
@@ -43,6 +44,12 @@ export function buildM2CurrentContract(config) {
       config.thresholds?.top10ForecastableCashCoverageMinimum,
       "top10_cash_coverage_minimum"
     ),
+    developmentWapeMaximum: config.schema === "m2.current.config.v0.3"
+      ? unitInterval(
+        config.thresholds?.developmentWapeMaximum,
+        "development_wape_maximum"
+      )
+      : null,
     overallAbsoluteBiasMaximum: unitInterval(
       config.thresholds?.overallAbsoluteBiasMaximum,
       "overall_absolute_bias_maximum"
@@ -51,6 +58,19 @@ export function buildM2CurrentContract(config) {
       config.thresholds?.eachHorizonAbsoluteBiasMaximum,
       "each_horizon_absolute_bias_maximum"
     ),
+    eachSegmentWapeMaximum: config.schema === "m2.current.config.v0.3"
+      ? unitInterval(
+        config.thresholds?.eachSegmentWapeMaximum,
+        "each_segment_wape_maximum"
+      )
+      : null,
+    eachSegmentAbsoluteBiasMaximum:
+      config.schema === "m2.current.config.v0.3"
+        ? unitInterval(
+          config.thresholds?.eachSegmentAbsoluteBiasMaximum,
+          "each_segment_absolute_bias_maximum"
+        )
+        : null,
     pairedCiRequired: config.thresholds?.pairedCiRequired === true,
     pairedRelativeWapeUpperMaximum: finiteNumber(
       config.thresholds?.pairedRelativeWapeUpperMaximum,
@@ -81,6 +101,9 @@ export function buildM2CurrentContract(config) {
   if (pairedBootstrap.confidence !== 0.95) {
     throw new Error("m2_current_paired_bootstrap_confidence_invalid");
   }
+  const evaluationPolicy = config.schema !== "m2.current.config.v0.1"
+    ? buildEvaluationPolicy(config.evaluationPolicy, config.schema)
+    : null;
   const candidate = {
     id: exactString(config.candidate?.id, "candidate_id"),
     scaleFactors: uniqueFiniteNumbers(
@@ -118,6 +141,12 @@ export function buildM2CurrentContract(config) {
       : null,
     dormantPolicy: config.schema === "m2.current.config.v0.2"
       ? buildDormantPolicy(config.candidate?.dormantPolicy)
+      : null,
+    occurrenceAmount: config.schema === "m2.current.config.v0.3"
+      ? buildOccurrenceAmountPolicy(
+        config.candidate?.occurrenceAmount,
+        activitySegments
+      )
       : null
   };
   if (!candidate.scaleFactors.includes(1)) {
@@ -167,9 +196,168 @@ export function buildM2CurrentContract(config) {
     population: Object.freeze(population),
     thresholds: Object.freeze(thresholds),
     pairedBootstrap: Object.freeze(pairedBootstrap),
+    evaluationPolicy,
     candidate: Object.freeze(candidate),
     businessSample,
     authorizations: Object.freeze(authorizations)
+  });
+}
+
+function buildEvaluationPolicy(value, schema) {
+  const finalHumanAcceptanceMode = exactString(
+    value?.finalHumanAcceptanceMode,
+    "evaluation_policy_final_human_acceptance_mode"
+  );
+  if (
+    finalHumanAcceptanceMode
+    !== "result_acceptance_after_technical_gates"
+  ) {
+    throw new Error(
+      "m2_current_evaluation_policy_final_human_acceptance_mode_invalid"
+    );
+  }
+  const nextDevelopmentReadiness = exactString(
+    value?.nextDevelopmentReadiness,
+    "evaluation_policy_next_development_readiness"
+  );
+  const expectedReadiness = schema === "m2.current.config.v0.3"
+    ? "BUSINESS_COVERAGE_AND_ABSOLUTE_QUALITY_REQUIRED"
+    : "AUTOMATED_BACKTEST_AND_BUSINESS_COVERAGE_REQUIRED";
+  if (
+    nextDevelopmentReadiness
+    !== expectedReadiness
+  ) {
+    throw new Error(
+      "m2_current_evaluation_policy_next_development_readiness_invalid"
+    );
+  }
+  if (value?.humanNumericBaselineRequired !== false) {
+    throw new Error(
+      "m2_current_evaluation_policy_human_numeric_baseline_must_be_false"
+    );
+  }
+  if (value?.monthlyRollingOriginRequired !== true) {
+    throw new Error(
+      "m2_current_evaluation_policy_monthly_rolling_origin_required"
+    );
+  }
+  if (value?.separateCashOccurrenceAndPositiveAmountRequired !== true) {
+    throw new Error(
+      "m2_current_evaluation_policy_two_part_diagnostic_required"
+    );
+  }
+  const result = {
+    humanNumericBaselineRequired: false,
+    finalHumanAcceptanceMode,
+    nextDevelopmentReadiness,
+    monthlyRollingOriginRequired: true,
+    separateCashOccurrenceAndPositiveAmountRequired: true,
+    automatedComparators: Object.freeze(
+      uniqueStrings(
+        value?.automatedComparators,
+        "evaluation_policy_automated_comparators"
+      )
+    ),
+    requiredMetrics: Object.freeze(
+      uniqueStrings(
+        value?.requiredMetrics,
+        "evaluation_policy_required_metrics"
+      )
+    ),
+    requiredCoverageViews: Object.freeze(
+      uniqueStrings(
+        value?.requiredCoverageViews,
+        "evaluation_policy_required_coverage_views"
+      )
+    )
+  };
+  if (schema === "m2.current.config.v0.2") {
+    const businessSampleRole = exactString(
+      value?.businessSampleRole,
+      "evaluation_policy_business_sample_role"
+    );
+    if (businessSampleRole !== "post_hoc_error_diagnostic_only") {
+      throw new Error(
+        "m2_current_evaluation_policy_business_sample_role_invalid"
+      );
+    }
+    result.businessSampleRole = businessSampleRole;
+  } else {
+    const humanRole = exactString(
+      value?.humanRole,
+      "evaluation_policy_human_role"
+    );
+    if (humanRole !== "post_gate_quality_assurance_only") {
+      throw new Error("m2_current_evaluation_policy_human_role_invalid");
+    }
+    if (value?.businessSampleRequired !== false) {
+      throw new Error(
+        "m2_current_evaluation_policy_business_sample_must_be_false"
+      );
+    }
+    result.humanRole = humanRole;
+    result.businessSampleRequired = false;
+    result.retiredArtifacts = Object.freeze(
+      uniqueStrings(
+        value?.retiredArtifacts,
+        "evaluation_policy_retired_artifacts"
+      )
+    );
+  }
+  return Object.freeze(result);
+}
+
+function buildOccurrenceAmountPolicy(value, activitySegments) {
+  const eligibleSegments = uniqueStrings(
+    value?.eligibleSegments,
+    "occurrence_amount_eligible_segments"
+  );
+  if (
+    eligibleSegments.some(
+      (segment) => !activitySegments.includes(segment) || segment === "dormant"
+    )
+  ) {
+    throw new Error("m2_current_occurrence_amount_segments_invalid");
+  }
+  const minimumFactor = unitInterval(
+    value?.minimumFactor,
+    "occurrence_amount_minimum_factor"
+  );
+  const maximumFactor = finiteNumber(
+    value?.maximumFactor,
+    "occurrence_amount_maximum_factor"
+  );
+  if (maximumFactor < minimumFactor || maximumFactor > 2) {
+    throw new Error("m2_current_occurrence_amount_factor_range_invalid");
+  }
+  return Object.freeze({
+    baseCandidateId: exactString(
+      value?.baseCandidateId,
+      "occurrence_amount_base_candidate_id"
+    ),
+    eligibleSegments: Object.freeze(eligibleSegments),
+    minimumEarlierCaseCount: positiveInteger(
+      value?.minimumEarlierCaseCount,
+      "occurrence_amount_minimum_earlier_case_count"
+    ),
+    minimumRelativeWapeImprovement: unitInterval(
+      value?.minimumRelativeWapeImprovement,
+      "occurrence_amount_minimum_relative_wape_improvement"
+    ),
+    trainingAbsoluteBiasMaximum: unitInterval(
+      value?.trainingAbsoluteBiasMaximum,
+      "occurrence_amount_training_absolute_bias_maximum"
+    ),
+    priorStrength: positiveInteger(
+      value?.priorStrength,
+      "occurrence_amount_prior_strength"
+    ),
+    priorOccurrenceProbability: unitInterval(
+      value?.priorOccurrenceProbability,
+      "occurrence_amount_prior_occurrence_probability"
+    ),
+    minimumFactor,
+    maximumFactor
   });
 }
 

@@ -77,7 +77,7 @@
     "evaluate:m2:real-data:dev": "node scripts/run-codex-python.mjs scripts/m2-real-data/run_authorized_real_data_development.py",
     "evaluate:m2:state-machine": "node scripts/m2-real-data/run_m2_state_machine_evaluation.mjs",
     "diagnose:m2:current": "node scripts/m2-current/run_m2_current_public_diagnostics.mjs",
-    "develop:m2:current:candidate": "node scripts/m2-current/run_m2_current_segmented_candidate.mjs",
+    "develop:m2:current:candidate": "node scripts/m2-current/run_m2_current_candidate.mjs",
     "verify:m2:current": "node scripts/m2-current/run_m2_current_public_diagnostics.mjs --verify",
     "history:m2": "node scripts/run-historical-command.mjs",
     "import:m2:real-data:local-db": "node scripts/m2-real-data/run_authorized_real_data_db_import.mjs --clear",

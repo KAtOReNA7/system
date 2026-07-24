@@ -2,52 +2,62 @@
 
 ## 当前唯一入口
 
-PR #7、PR #8、PR #9 和 PR #10 均已合并，旧 PR 分支不得继续作为开发入口。
-不得切换到 `codex/m2-v2-evidence-pilot-v1` 或
-`codex/m2-repository-convergence-toolchain` 继续开发。
-
-每次任务先按 `AGENTS.md` 自动完成远端同步、工作区/分支/PR/CI/worktree 核对、重复实现检查和 private-independent 基线验证。用户无需重复下达这些共性命令。
+PR #7–#11 均已合并，旧 PR 分支不得继续作为开发入口。每次任务先按
+`AGENTS.md` 自动完成远端同步、分支/PR/CI/worktree 核对、全库查重和
+private-independent 基线验证；用户无需重复下达这些共性命令。
 
 当前权威导航：
 
-1. `docs/analysis/m2-v2/M2-v2-current-state-index-v0.7.md`
+1. `docs/analysis/m2-v2/M2-v2-current-state-index-v0.9.md`
 2. `docs/analysis/m2-v2/M2-repository-code-convergence-and-portable-development-audit-v0.4.md`
-3. `docs/analysis/m2-current/M2-current-reliable-model-development-v0.2.md`
+3. `docs/analysis/m2-current/M2-current-automated-model-development-v0.4.md`
 4. `AGENTS.md`
 
 ## 当前开发状态
 
-- 核心 clone/install/lint/build/test/smoke/M2 public diagnostics/formal start/fixture start 均必须不依赖 private。
-- Node 24.x、npm 11.13.0、Python 3.11–3.13 是统一工具链合同。
-- package scripts 已按 `current-public`、`archive-only`、`restricted-local` 分类。
-- formal 与 fixture composition 已分离；formal export 保持 point-only。
-- C1、legacy C2-R、C2-R.1、C2、C3 均为历史失败路线，不得复制或重复执行为新候选。
+- 核心 clone/install/lint/build/test/smoke/public diagnostic/start 不依赖 private。
+- formal 与 fixture composition 分离；formal export 保持 point-only。
+- C1、legacy C2-R、C2-R.1、C2、C3 是历史失败路线，不得复制或重跑为新候选。
+- 120 部人工预估/复核清单已取消。旧 JSON 仅供历史审计，不是 current
+  配置、runner、loader、readiness 或验收依赖。
+- 人工只做自动技术门禁后的 post-gate quality assurance，不填写预测金额。
 
 当前业务状态：
 
 - `currentDecision=CANARY_FAIL`
-- `nextDevelopmentReadiness=BUSINESS_SAMPLE_REVIEW_REQUIRED`
+- `nextDevelopmentReadiness=BUSINESS_COVERAGE_AND_ABSOLUTE_QUALITY_REQUIRED`
 - `full160Authorized=false`
-- exact v0.2 candidate development replay 和 120 部确定性样本已完成
-- 人工业务复核仍为 `PENDING`
 - final holdout、embargo shadow、deferred labels 均 sealed
+- provider、数据库、Canary/full160、release、M3 formal 未授权
+
+## v0.3 冻结 development 结论
+
+`M2-current-occurrence-amount-calibration-v0.3` 以 v0.2 为 base，只在严格更早
+成熟 case 上通过 1% WAPE 改善和 bias 门禁时启用 occurrence + conditional
+amount 校准。当前冻结 population 未移动：824 部作品、7,851 个 case、5 个 origin。
+
+- v0.3 WAPE/bias：0.50557140 / -0.01198958
+- v0.2 WAPE/bias：0.51114966 / -0.00586227
+- 相对 v0.2：-1.0913%；paired 95% CI
+  [-0.03714631, -0.00015184]
+- 相对 B4：-9.1491%；paired 95% CI
+  [-0.16709546, -0.03228091]
+- development WAPE 门槛：0.30；未通过
+- intermittent WAPE：0.90733
+- dormant WAPE/bias：1.00018 / -0.99972
+
+因此结论保持 `CANDIDATE_DEVELOPMENT_PARTIAL_BLOCKED`。相对改善真实但很小，
+绝对误差和 segment 质量仍不可用；不得声称已经替代人工或可以发布。
 
 ## 下一项 M2 工作的正确方向
 
-覆盖原因 ledger 和 v0.2 current candidate 已完成。候选 WAPE
-0.51114966、bias -0.00586227，相对 B4 改善 8.15%，paired 95% CI 为
-[-15.75%, -2.91%]；5 个 horizon bias 均通过。相对 v0.1 的 paired CI
-[-11.83%, +1.05%] 穿过零，因此不得声称统计确定优于 v0.1。dormant 没有改善，
-当前结论仍是 `PARTIAL_PASS`。
-
-下一步固定为：
-
-1. 人工复核已经冻结的 120 部业务样本，不新增候选家族或重抽样。
-2. 单独设计可审计 commitment snapshot，解决不可观察现金，不得由算法猜测未承诺买断。
-3. dormant 在没有新的 as-of 可用信息前保持 B4 fallback，不得使用当前 shelf/rights 状态回填历史 origin。
-4. 业务抽检通过且用户另行授权后，才申请 final holdout。
-
-没有新授权时，只能继续公共诊断、fixture、工具链、文档和仓库维护，不得调用 provider、数据库、Canary/full160、holdout、release 或 M3 formal。
+1. 保持 rolling-origin、zero/seasonal naive/SBA/TSB/ADIDA、B4、v0.2、v0.3
+   的同人口回归，不删除弱基线。
+2. 优先解决 intermittent/dormant 的可识别 as-of 信号和 cash observability；
+   不移动冻结人口，不剔除困难 case，不将 null 计为 0。
+3. 只接收真实、cutoff 时已签署、确认且可审计的 commitment snapshot。
+   无承诺 pure-buyout 必须 null abstain，不进入人工或机器数值预估。
+4. 后续新候选、final holdout、provider、数据库和 release 均需各自新增授权。
 
 ## 新电脑基线
 
@@ -64,4 +74,5 @@ npm run test:e2e
 npm run verify:m2:current
 ```
 
-缺少任何 private artifact 时，只能由所属 capability doctor 报告局部阻断；不得把整台电脑判定为无法开发。
+缺少任何 private artifact 时，只能由所属 capability doctor 报告局部阻断；不得把
+整台电脑判定为无法开发。

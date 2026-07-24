@@ -8,17 +8,20 @@
 - PR #8：工具链、runtime、冗余和 M2 current 诊断收敛，已合并。
 - PR #9：GitHub Actions exact detached `main` checkout 修复，已合并。
 - PR #10：M2 current canonical core、portable development 和 v0.1 候选收敛，已合并。
+- PR #11：M2 current v0.2 可靠预测候选和 120 部冻结业务样本，已合并。
 - 当前业务结论：`currentDecision=CANARY_FAIL`。
-- 当前开发 readiness：`nextDevelopmentReadiness=BUSINESS_SAMPLE_REVIEW_REQUIRED`。
-- v0.2 可靠预测候选和 120 部确定性业务样本已完成；人工业务复核仍为
-  `PENDING`。provider、Canary/full160、final holdout、release 和 M3 formal
-  均未授权。
+- 当前开发 readiness：
+  `nextDevelopmentReadiness=BUSINESS_COVERAGE_AND_ABSOLUTE_QUALITY_REQUIRED`。
+- v0.3 two-part development candidate、rolling-origin 自动评价和五个强制
+  sanity baseline 已完成。120 部人工预估/复核清单已从 current 执行链退役；
+  人工只在技术门禁通过后做 post-gate quality assurance。provider、
+  Canary/full160、final holdout、release 和 M3 formal 均未授权。
 
 当前导航：
 
-- `docs/analysis/m2-v2/M2-v2-current-state-index-v0.7.md`
+- `docs/analysis/m2-v2/M2-v2-current-state-index-v0.9.md`
 - `docs/analysis/m2-v2/M2-repository-code-convergence-and-portable-development-audit-v0.4.md`
-- `docs/analysis/m2-current/M2-current-reliable-model-development-v0.2.md`
+- `docs/analysis/m2-current/M2-current-automated-model-development-v0.4.md`
 - `AGENTS.md`
 
 历史 PR、B0–B8、C1–C3 和旧授权记录保留在 `docs/analysis/` 中，只用于审计追溯，不是当前开发入口。
@@ -149,14 +152,52 @@ M2 的正式预测对象是未来账单现金。正式边界保持：
 | 全库 / Top10 cash coverage | 73.96% / 75.94% |
 | coverage 门槛 | 90% |
 | B4 WAPE / bias | 0.55648454 / 0.08911106 |
-| current candidate WAPE / bias | 0.51114966 / -0.00586227 |
-| relative WAPE / paired 95% CI | -8.15% / [-15.75%, -2.91%] |
+| v0.2 WAPE / bias | 0.51114966 / -0.00586227 |
+| v0.3 WAPE / bias | 0.50557140 / -0.01198958 |
+| v0.3 vs v0.2 / paired 95% CI | -1.09% / [-3.71%, -0.02%] |
+| v0.3 vs B4 / paired 95% CI | -9.15% / [-16.71%, -3.23%] |
+| development WAPE 门槛 | 0.30（未通过） |
 | current candidate decision | `PARTIAL_PASS` |
 
-v0.2 在 overall、全部 horizon 和相对 B4 paired CI 上通过，并把总体偏差降至接近零；
-dormant 切片仍没有改善，全库现金可观察性也仍不足。120 部唯一作品的确定性业务
-样本已经生成，下一步是完成人工复核，并单独取得可审计 commitment snapshot；
-不得继续复制 C1–C3 runner、堆叠 evidence runtime 或扩建候选家族。
+v0.3 在冻结 development case 上相对 v0.2 有小幅且 paired CI 不穿零的改善，
+但绝对 WAPE 仍约 50.56%；intermittent WAPE 约 90.73%，dormant WAPE/bias
+约 100.02% / -99.97%。它还不能替代人工业务判断，更不是 release 证据。
+120 部旧 JSON 仅保留历史追溯，不再参与配置、runner、loader、readiness 或验收。
+
+## M2 当前执行队列
+
+本队列已于 2026-07-24 按用户判断调整。人工预测竞赛和 120 部清单均已取消。
+
+1. **自动化评价与 v0.3（已执行）**
+   - 月度 rolling-origin，同人口比较 zero、seasonal naive、SBA、TSB、ADIDA、
+     B4、v0.2 和 v0.3；
+   - 分开评价现金发生与正金额；
+   - 报告 WAPE、signed bias、MASE、RMSSE，以及 horizon、segment、route、
+     eligibility、cash observability、served coverage 和 abstention。
+2. **质量结论**
+   - v0.3 相对 v0.2 改善约 1.09%，但绝对 WAPE 和 segment 门禁失败；
+   - 不得将 `PARTIAL_PASS` 表述为可替代人工、可打开 holdout 或可发布。
+3. **补充可审计输入（仅真实材料存在时）**
+   - 单独准备 cutoff 时已签署、确认且可审计的 commitment snapshot。
+   - 未承诺买断不得通过概率乘金额进入正式预测；pure-buyout 无承诺时继续
+     `null abstain`。
+4. **下一轮研究（需要新授权）**
+   - 优先解决 intermittent/dormant 可识别信号和 cash observability；
+   - 继续严格 as-of、全局共享、非负层级协调，不通过剔除困难 case 美化指标。
+5. **决策门禁**
+   - 技术门禁通过后，人工只做小规模 post-gate quality assurance，不预测金额。
+   - final holdout、embargo shadow、provider、数据库、Canary/full160、release
+     和 M3 formal 继续保持未授权。
+
+启动检查：
+
+```bash
+npm run doctor:capability -- m2-algorithm-authoritative-input
+npm run verify:m2:current
+```
+
+`doctor:capability` 只盘点本机库存，不授予训练、新候选或 holdout 权限。没有 private
+capability 的电脑仍可执行全部公共开发基线。
 
 有本机 private capability 且具备对应授权时，复现 exact candidate：
 
