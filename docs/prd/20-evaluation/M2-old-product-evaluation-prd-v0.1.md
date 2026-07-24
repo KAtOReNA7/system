@@ -1,12 +1,12 @@
 # M2 old-product evaluation PRD v0.1
 
-Status: HISTORICAL M2-A BASELINE WITH 2026-07-15 CALIBRATION V1.2 AND FORMAL-CASH-TARGET ADDENDA
+Status: HISTORICAL M2-A BASELINE WITH 2026-07-25 SALES-SHARE-ONLY TARGET ADDENDUM
 
 This document defines the M2 old-product evaluation scope for design and fixture/synthetic testing. It is based on `docs/prd/05-老品评估.md`, `docs/prd/20-evaluation/common-evaluation-rules.md`, and the M1 closeout audit. M2-A does not authorize formal database access, real data import, `mapping_version` activation, `switch_mapping_version`, or formal old-product evaluation.
 
 The phase statements above and below preserve the original M2-A boundary for historical traceability. For final-algorithm calibration, `src/domain/oldProductEvaluation/calibrationSpec.v1.2.amendment.json` and `docs/analysis/m2-real-data/M2-calibration-v1.2-comparator-identity-decision-v1.md` take precedence for B0b/B4 identity, full-library coverage, practical equivalence, comparator selection, Gate A, and C1. The v1 and v1.1 files remain digest-bound historical checkpoints for every subject not replaced by v1.2. The current authorized work is isolated local calibration only. It does not approve a candidate for formal decision or release and does not authorize C2-R/C2/C3 or M3.
 
-For the formal forecast target, buyout routing, target actuals, metric populations, and related reporting, `src/domain/oldProductEvaluation/calibrationSpec.c2r.v1.1.amendment.json` and `docs/analysis/m2-real-data/M2-formal-cash-forecast-target-decision-v1.md` take precedence over every earlier M2/C2-R rule. Earlier C2-R results remain immutable historical-target evidence and are not formal-cash metric evidence. This target correction does not change the authoritative 3053-work/192872-fact inputs, frozen statistical scoreability or business-serving eligibility, any gate threshold, or any sealed holdout.
+For the current forecast target, buyout routing, target actuals, metric populations, and related reporting, `docs/analysis/m2-current/M2-sales-share-only-target-decision-v0.1.md`, `config/m2-current.v0.6.json`, and `src/domain/m2Current/**` take precedence over every earlier M2/C2-R formal-cash rule. The 2026-07-15 formal-cash decision remains immutable historical evidence only. This current target migration does not change the authoritative 3,053-work population, the frozen 824-work/7,851-case development population, any sealed holdout, or release authority.
 
 ## 1. Positioning
 
@@ -66,8 +66,8 @@ These exclusions describe the historical M2-A phase. Separately authorized isola
 Formal M2 requires the following M1 inputs:
 
 - active current income by standard work, month, channel, and business form;
-- a separately authorized `cash_commitment_snapshots` role for any future committed cash, keyed by standard work, commitment identity, and evidence-availability month, with cash type, signed/confirmed status, confirmed amount, outstanding amount/status at the snapshot, expected posting month, confirmation time, evidence-availability time, and evidence reference; `confirmed_as_of <= available_as_of <= cutoff` is mandatory, and a missing or settled/cancelled record is not a cutoff-known future receivable;
-- a separately authorized truth-only settlement-link role before any historical ledger fact may be reclassified as cutoff-committed actual. Each link must bind one standard work, commitment, unique authoritative ledger fact, cash type, channel component, posting month, amount, and truth-availability time; it is unavailable to prediction, joins only after prediction lock, and may not offset an unrelated buyout event by aggregate amount;
+- an optional, separately authorized `cash_commitment_snapshots` role for the non-model billing/audit layer. It is not a feature, label, prediction component, model-readiness dependency, or cross-computer development dependency;
+- an optional truth-only settlement-link role used only to reconcile the non-model billing/audit ledger. It may not alter the sales-share model target after prediction lock;
 - latest confirmed complete month;
 - standard work identity and confirmed merge relationships;
 - business form first positive sale month;
@@ -135,16 +135,17 @@ The forecast period starts after the latest confirmed complete month and ends at
 - The aliases `optimistic`, `pessimistic`, `high`, `base`, and `low` are prohibited in the current external forecast contract. Historical fixture/prototype fields may remain only as explicitly non-formal regression evidence.
 - Channel-level component forecasts may be calculated internally where required by the frozen route, but only their reconciled work-level point total and annual breakdown enter the external contract.
 - A forecast extending beyond 24 months without qualifying 36/60-month cohort evidence must include the `extrapolated` limitation.
-- An exact rights-end date determines the remaining-month horizon. Perpetual rights use a 60-month planning horizon and the `perpetual_rights_60_month_planning_horizon` limitation. A fully known relative term uses integer calendar months and derives its end month from `rights_start_month + relative_term_months`; when both derivation fields are absent it uses 24 months with `rights_horizon_not_exact`, while a one-field-only or invalid pair fails closed. A year-only end uses no more than the months through December of that year, capped at 24, with the same limitation. For a sales-bearing route whose formal cash model is otherwise available, `expired_unknown_date` produces a zero-month, zero-point forecast with `rights_expired_unknown_date`; it must never become a silent 24-month forecast. Pure-buyout route abstention takes precedence: without an auditable cutoff-known buyout receivable it remains null and must not be converted to zero by the rights rule. Serving validates every snapshot, filters `available_as_of <= origin`, selects the latest available month, de-duplicates identical latest payloads, and fails closed on distinct latest payloads, no eligible snapshot, unknown availability, or invalid term fields. A caller-supplied serving horizon is prohibited. Fixed-horizon backtests do not use the current rights snapshot as a historical feature. No implementation may invent an exact end date.
-- Candidate sales forecasts are fitted only at 3/6/12/18/24 months. A non-core sales horizon up to 24 months uses the smallest core anchor at or above it and scales by `H/anchor`; a sales horizon over 24 months scales the 24-month sales point by `H/24`. The 36/60-month labels are audit-only and must not fit this adapter. A pure-buyout route has no historical-cycle point adapter: it either schedules auditable cutoff-confirmed receivables or abstains with a null point.
+- An exact rights-end date determines the remaining-month horizon. Perpetual rights use a 60-month planning horizon and the `perpetual_rights_60_month_planning_horizon` limitation. A fully known relative term uses integer calendar months and derives its end month from `rights_start_month + relative_term_months`; when both derivation fields are absent it uses 24 months with `rights_horizon_not_exact`, while a one-field-only or invalid pair fails closed. A year-only end uses no more than the months through December of that year, capped at 24, with the same limitation. For a sales-bearing route whose formal cash model is otherwise available, `expired_unknown_date` produces a zero-month, zero-point forecast with `rights_expired_unknown_date`; it must never become a silent 24-month forecast. Pure-buyout route abstention always takes precedence and must not be converted to zero by the rights rule. A caller-supplied serving horizon is prohibited. Fixed-horizon backtests do not use the current rights snapshot as a historical feature. No implementation may invent an exact end date.
+- Candidate sales forecasts are fitted only at 3/6/12/18/24 months. A non-core sales horizon up to 24 months uses the smallest core anchor at or above it and scales by `H/anchor`; a sales horizon over 24 months scales the 24-month sales point by `H/24`. The 36/60-month labels are audit-only and must not fit this adapter. A pure-buyout route always abstains with a null point because buyout is outside the M2 forecast scope.
 
-`REQ-M2-FORMAL-CASH-TARGET-001` is FROZEN as of 2026-07-15:
+`REQ-M2-SALES-SHARE-TARGET-001` supersedes `REQ-M2-FORMAL-CASH-TARGET-001` as of 2026-07-25:
 
-- `futureCashRevenueForecast` predicts future ledger cash, not accounting value, historical value, or an expected future negotiation.
-- Its only allowed components are future sales cash; buyout receivables already signed or confirmed and auditable at the cutoff; and other cash whose amount and expected posting month were confirmed and auditable at the cutoff.
-- Uncommitted future buyout, a next buyout inferred from historical cadence, probability times expected buyout amount, future amortization of already received buyout cash, and `buyoutMonthlyEquivalent` are excluded.
-- Confirmed receivables are added to the sales cash point and allocated to the annual breakdown by expected posting month. They are not subtracted or spread uniformly across the horizon.
-- A ledger occurrence, `businessForm`, classifier-derived buyout event, or evidence that became available after the cutoff is not proof that the cash was committed at the cutoff.
+- `futureSalesShareRevenueForecast` predicts future revenue-share cash only.
+- Every buyout amount is outside the M2 forecast scope, including signed, confirmed, cutoff-known, received, uncommitted, inferred, probability-weighted, amortized, or monthly-equivalent buyout.
+- Identified non-sales commitment cash is also outside the model target. Buyout and other non-sales cash remain in a separate billing/audit ledger and may be reported as historical economic context.
+- Buyout cash must not enter model features, training labels, backtest metrics, point forecasts, intervals, annual forecast breakdowns, or forecast-confidence calculations.
+- The actual partition is `salesShareCashActual + isolatedBuyoutCashActual + isolatedOtherCashActual = totalLedgerCashActual`.
+- Target completeness within revenue-share cash and the revenue-share economic share of total company ledger cash are different metrics and must be reported separately. The latter is not a model-coverage gate.
 
 The following are evaluation or audit metadata, not additional work-level forecast payload fields:
 
@@ -157,9 +158,9 @@ M2-A may use deterministic fixture formulas. M2-C/M2-D must use backtested rules
 
 Final-algorithm candidates must not apply one time-series route to every revenue model:
 
-- `pure_sales_share`: predict each eligible sales channel independently, sum the channel points, and add all future receivables explicitly confirmed and auditable at the cutoff; a cutoff-confirmed buyout receivable is included in cash and creates a route-review fact, but may not be dropped merely to preserve the earlier route label;
-- `pure_buyout`: first determine whether at least one outstanding buyout receivable is signed/confirmed and auditable at the cutoff, independently of the current horizon. If one exists, retain its evidence/status internally, set `modelPredictionAvailable=true` and `routeAbstained=false`, and set `rawModelPrediction` to the sum of cutoff-known outstanding cash expected inside the horizon; `servedPrediction` still depends on business-serving eligibility. A valid commitment expected after a shorter horizon yields an explained numeric zero for that horizon, not an uncommitted abstention. If no buyout receivable exists, set `modelPredictionAvailable=false`, `routeAbstained=true`, `rawModelPrediction=null`, `servedPrediction=null`, and `abstentionReason=uncommitted_future_buyout_not_forecastable`; other confirmed cash alone does not unlock the pure-buyout route, and zero is prohibited;
-- `buyout_plus_sales`: sum the independent sales-channel points and any signed/confirmed cutoff-known future receivables. With no such receivable, forecast sales only and set `excludesUncommittedFutureBuyout=true`;
+- `pure_sales_share`: predict and sum eligible revenue-share channel cash only;
+- `pure_buyout`: always return a null point with `abstentionReason=buyout_outside_m2_forecast_scope`; a known commitment remains available only to the billing/audit layer and never unlocks a model forecast;
+- `buyout_plus_sales`: predict its revenue-share channels only and isolate every buyout amount;
 - an unresolved revenue model must not be silently assigned to any of the three routes and must be reflected in eligibility or limitation according to the pre-registered spec.
 
 ## 9. Rating System
@@ -265,15 +266,16 @@ Historical-target metrics were reported in three explicitly different population
 - signed aggregate bias, fixed as `(sum(pred)-sum(actual))/sum(actual)` for a slice with positive actual revenue;
 - business usability notes.
 
-The formal-cash amendment additionally separates each locked historical target window into:
+The historical formal-cash amendment separated each locked target window into `forecastableCashActual`, `uncommittedBuyoutSurpriseActual`, and `totalLedgerCashActual`. That partition remains replayable but is no longer the current model target. The current sales-share target separates each locked historical target window into:
 
-- `forecastableCashActual`: sales cash actual plus buyout/other cash that has valid cutoff-as-of commitment evidence; this is the actual used by primary point metrics and candidate gates;
-- `uncommittedBuyoutSurpriseActual`: a later ledger buyout that was unknown at the cutoff; this is excluded from model WAPE and bias but must be reported by case count, amount, share of total ledger cash, and business impact;
-- `totalLedgerCashActual`: all final ledger cash in the target window; this is used only for an `endToEndBusinessGap` or equivalent business-coverage audit and must never be named model WAPE.
+- `salesShareCashActual`: revenue-share cash actual, including valid negative refunds or reversals; this is the only actual used by current model metrics and gates;
+- `isolatedBuyoutCashActual`: all classifier-derived buyout cash, whether or not it was committed at cutoff;
+- `isolatedOtherCashActual`: separately identified non-sales cash;
+- `totalLedgerCashActual`: the full ledger total used only for reconciliation and economic-scope disclosure.
 
-Every case must conserve `forecastableCashActual + uncommittedBuyoutSurpriseActual = totalLedgerCashActual`. If historical signing/confirmation and evidence-availability timestamps are absent, a later buyout is surprise cash; it must not be post-hoc restored as cutoff-known. Prediction lock still precedes truth join. The case key, statistical scoreability, and existing business-serving eligibility remain frozen even when the target semantics change.
+Every current case must conserve `salesShareCashActual + isolatedBuyoutCashActual + isolatedOtherCashActual = totalLedgerCashActual`. The case key, prediction, population, and cutoff remain frozen during target migration. A target change must be disclosed separately from a model-family change.
 
-The primary formal-cash model population is `statisticallyScoreable && modelPredictionAvailable && !routeAbstained`, scored with `rawModelPrediction` against `forecastableCashActual`. A scoreable pure-buyout case without a cutoff-known commitment remains in the case universe and abstention/end-to-end reports, but its null raw point is never coerced to zero. This is a narrow target-semantic override of the earlier all-scoreable numeric-raw rule; it is not an eligibility change.
+The current model population is the frozen sales-bearing population scored against `salesShareCashActual`. Pure-buyout works remain in eligibility and economic-scope ledgers but are outside numeric modeling; their null is never coerced to zero.
 
 The frozen bias thresholds do not change: signed aggregate bias must remain within +/-10% for the primary formal-cash model population overall, its served cohort, and its high-value subset, and within +/-15% at each core horizon on that same primary population. A zero-actual slice has undefined signed aggregate bias and must be reported separately rather than treated as a pass. Historical-target all-scoreable bias remains audit evidence only. Before C2-R.1, the fixed comparator bundle must be re-scored against `forecastableCashActual` on `statisticallyScoreable && modelPredictionAvailable && !routeAbstained`; a comparator may not be selected per individual gate.
 
@@ -289,7 +291,11 @@ The v1.1 pre-C1 top10 served-revenue 90% rule remains an audit-only non-regressi
 
 A spike rule first creates a candidate for evidence review. It must distinguish buyout, launch burst, batch proration, settlement lag, and true anomaly; no unconfirmed spike type may trigger automatic attenuation.
 
-The latest user decision supersedes every prior future-buyout point rule. It requires the formal-cash target correction and audit to complete before C2-R.1 may be retrained or tuned. No automatic C2-R.1 training follows this correction, and C2/C3 remain outside scope. Every result remains `not_for_formal_decision` until Chinese business sampling and explicit user approval.
+The 2026-07-25 user decision supersedes every prior future-buyout point rule:
+all buyout is outside M2 forecasting. Current results remain
+`not_for_formal_decision`; the retired 120-work human prediction sample is not
+rebuilt or replayed, and humans provide post-gate QA rather than numeric
+forecasts.
 
 ### 2026-07-16 formal-cash comparator and C2-R.1 development checkpoint
 
@@ -336,7 +342,7 @@ M2-A only defines export consistency tests. It does not implement export.
 
 Current Excel and formal export schemas must not contain scenario or prediction-interval columns. Internal backtest artifacts may retain the 80% interval evidence needed for aggregate coverage and `WIS` calibration, but that evidence is not a work-level formal forecast output.
 
-The exported point is `futureCashRevenueForecast`. A confirmed receivable is assigned to the calendar year of its cutoff-known expected posting month. An uncommitted pure-buyout abstention exports a null point, an empty annual breakdown, `confidence=unavailable`, and the required limitation; it must not export a zero forecast.
+The exported point is `futureSalesShareRevenueForecast`. Its annual breakdown contains revenue-share cash only. A pure-buyout route exports a null point, an empty annual breakdown, `confidence=unavailable`, and `buyout_outside_m2_forecast_scope`; it must not export zero or any confirmed buyout receivable.
 
 ## 15. M2 Does Not Do
 
@@ -374,6 +380,6 @@ M2-A acceptance:
 - Page plan covers overview, list, detail, gaps, backtest/version pages, states, fixture labels, incomplete-month notice, and formal-data blocking.
 - Test plan covers fixture, synthetic, readiness, lifecycle, rating, forecast, backtest, API, page, export, and prohibited-action tests.
 
-Final-algorithm calibration additionally requires the committed pre-registration, untouched final holdout, leakage and future-perturbation invariance tests, B0a audit plus faithful B0b/B1/B2/B3/B4 identical-case replay, routed revenue-model handling, formal-cash target separation, cutoff-as-of commitment audit, old-target-to-new-target bridge, per-case amount conservation, correlated block-bootstrap inference, internal 80% interval calibration, frozen signed-bias gates, long-horizon audit, Chinese business sampling plan, and explicit `not_for_formal_decision` state.
+Final-algorithm calibration additionally requires the committed pre-registration, untouched final holdout, leakage and future-perturbation invariance tests, B0a audit plus faithful B0b/B1/B2/B3/B4 identical-case replay, routed revenue-model handling, sales-share/buyout target separation, old-target-to-new-target bridge, per-case amount conservation, correlated block-bootstrap inference, internal 80% interval calibration, frozen signed-bias gates, long-horizon audit, post-gate human QA, and explicit `not_for_formal_decision` state.
 
 The original M2-A acceptance statement treated M1 readiness as pending. Current foundation readiness is complete, but final M2 algorithm acceptance remains blocked until a pre-registered candidate passes every gate, Chinese business sampling is complete, and the user explicitly approves a later formal decision and release.

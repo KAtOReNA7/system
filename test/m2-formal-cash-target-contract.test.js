@@ -316,6 +316,14 @@ unrelated_actuals = cash.build_formal_cash_actuals(
     calibration_spec,
     label_available_as_of="2020-12",
 )
+sales_share_actuals = cash.build_sales_share_cash_actuals(
+    unrelated_work,
+    ORIGIN,
+    12,
+    route,
+    calibration_spec,
+    label_available_as_of="2020-12",
+)
 
 checks = {
     "pureBuyoutOtherCashOnlyStillAbstains": (
@@ -360,6 +368,15 @@ checks = {
         and unrelated_actuals["forecastableCashActual"] == 1200.0
         and unrelated_actuals["totalLedgerCashActual"] == 2400.0
         and unrelated_actuals["amountConservationDifference"] == 0.0
+    ),
+    "salesShareTargetExcludesCommittedAndUncommittedBuyout": (
+        sales_share_actuals["salesShareCashActual"] == 0.0
+        and sales_share_actuals["isolatedBuyoutCashActual"] == 2400.0
+        and sales_share_actuals["isolatedOtherCashActual"] == 0.0
+        and sales_share_actuals["totalLedgerCashActual"] == 2400.0
+        and sales_share_actuals["salesShareTargetConservationDifference"] == 0.0
+        and sales_share_actuals["allBuyoutExcludedFromForecast"] is True
+        and sales_share_actuals["commitmentCashExcludedFromForecast"] is True
     ),
 }
 print(json.dumps({"checks": checks, "passed": all(checks.values())}))

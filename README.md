@@ -1,6 +1,6 @@
 # 有声书产品收入评估与年度目标系统
 
-这是 M1 数据基础、M2 旧产品正式现金预测与 M3 新产品 synthetic prototype 的统一仓库。当前代码可在不具备任何 private 文件、provider key 或数据库的电脑上完成安装、检查、测试、公共诊断和本地启动。
+这是 M1 数据基础、M2 旧产品分成收入预测与 M3 新产品 synthetic prototype 的统一仓库。当前代码可在不具备任何 private 文件、provider key 或数据库的电脑上完成安装、检查、测试、公共诊断和本地启动。
 
 ## 当前状态
 
@@ -13,18 +13,21 @@
 - PR #13：M2 current R0–R5 全局/概率/层级模型评估与安全 fallback，已合并。
 - 当前业务结论：`currentDecision=CANARY_FAIL`。
 - 当前开发 readiness：
-  `nextDevelopmentReadiness=PORTFOLIO_INDEPENDENT_VALIDATION_AND_WORK_LEVEL_SIGNAL_REQUIRED`。
+  `nextDevelopmentReadiness=SALES_SHARE_TARGET_VALIDATION_AND_WORK_LEVEL_SIGNAL_REQUIRED`。
 - R0–R5 评估已完成；全局 hurdle GLM、Tweedie boosting、hurdle GBM、MinT
   和 ensemble 均未通过 nested gate，v0.4 安全回退 exact v0.3。120 部人工
   评估完全跳过。provider、Canary/full160、final holdout、release 和 M3
-  formal 均未授权。本轮 v0.5 多粒度重构取得 portfolio development backtest
-  WAPE 11.68%，但作品级和完整 M2 成熟度仍未通过。
+  formal 均未授权。v0.6 已把正式目标迁移为纯分成收入并隔离全部买断；
+  portfolio development backtest WAPE 仍为 11.68%，作品级和完整 M2
+  成熟度仍未通过。
 
 当前导航：
 
-- `docs/analysis/m2-v2/M2-v2-current-state-index-v0.11.md`
+- `docs/analysis/m2-v2/M2-v2-current-state-index-v0.12.md`
 - `docs/analysis/m2-v2/M2-repository-code-convergence-and-portable-development-audit-v0.4.md`
 - `docs/analysis/m2-current/M2-current-maturity-reconstruction-v0.6.md`
+- `docs/analysis/m2-current/M2-sales-share-only-target-decision-v0.1.md`
+- `docs/analysis/m2-current/M2-sales-share-model-full-audit-and-research-v0.1.md`
 - `AGENTS.md`
 
 历史 PR、B0–B8、C1–C3 和旧授权记录保留在 `docs/analysis/` 中，只用于审计追溯，不是当前开发入口。
@@ -137,10 +140,11 @@ npm run doctor:capability -- <capability-id>
 
 ## M2 当前方向
 
-M2 的正式预测对象是未来账单现金。正式边界保持：
+M2 的正式预测对象是未来分成收入现金。正式边界为：
 
 - as-of/no-leakage
-- 无承诺 pure-buyout 使用 null abstention
+- 全部买断现金进入模型外账单/审计层，不进入训练、回测或预测
+- pure-buyout 无论是否有 commitment 都使用 null abstention
 - 禁止 null→0
 - B4 仅作 comparator/fallback
 - final holdout 保持 sealed
@@ -152,8 +156,10 @@ M2 的正式预测对象是未来账单现金。正式边界保持：
 | 权威作品 | 3,053 |
 | model works / formal-cash cases | 824 / 7,851 |
 | model work share | 26.99% |
-| 全库 / Top10 cash coverage | 73.96% / 75.94% |
-| coverage 门槛 | 90% |
+| 历史全库 / Top10 旧 cash economic scope | 73.96% / 75.94% |
+| v0.6 冻结 / 逐月目标变化 case | 0 / 0 |
+| v0.6 冻结 / 逐月隔离买断 case 求和 | 4,800,850.15 / 11,578,795.00 |
+| v0.6 冻结 / 逐月分类不确定现金占比 | 0.0002728% / 0.0002865% |
 | B4 WAPE / bias | 0.55648454 / 0.08911106 |
 | v0.2 WAPE / bias | 0.51114966 / -0.00586227 |
 | v0.3 WAPE / bias | 0.50557140 / -0.01198958 |
@@ -182,12 +188,19 @@ development cell 上 WAPE 为 11.68%，较同窗 seasonal naive 改善 44.94%。
 按 origin 聚类 bootstrap 的 WAPE 95% CI 为 8.50%–13.72%，bias 95% CI 为
 -9.94%–2.15%。
 这证明组合预算层已有高准确度 development backtest，但不是独立 holdout：
-作品级 WAPE 仍为 50.56%，cash observability 未达 90%，final holdout 仍 sealed，
-所以当前状态是 `PORTFOLIO_DEVELOPMENT_BACKTEST_PASS_WORK_LEVEL_BLOCKED`。
+作品级 WAPE 仍为 50.56%，极小 target-classification uncertainty 尚未穷尽，
+final holdout 仍 sealed，所以当前状态是
+`SALES_SHARE_TARGET_MIGRATED_PORTFOLIO_DEVELOPMENT_PASS_WORK_LEVEL_BLOCKED`。
+
+买断隔离没有改变当前冻结标签或 WAPE：现有 authority 中没有进入旧目标的
+cutoff-linked 买断/其他承诺现金，旧标签事实上已经等于分成标签。本次迁移的
+价值是固定未来业务语义、去除 private commitment 依赖和防止新数据重新混入
+买断，不是一次精度提升。
 
 ## M2 当前执行队列
 
-本队列已于 2026-07-24 按用户判断调整。人工预测竞赛和 120 部清单均已取消。
+本队列已于 2026-07-25 按用户决定调整。人工预测竞赛和 120 部清单均已取消，
+全部买断已移出 M2 预测目标。
 
 1. **多粒度合同（已执行）**
    - 作品 case、origin 组合和 origin×horizon 组合必须分别报告；

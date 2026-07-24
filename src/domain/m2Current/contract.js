@@ -3,7 +3,8 @@ const SUPPORTED_SCHEMAS = new Set([
   "m2.current.config.v0.2",
   "m2.current.config.v0.3",
   "m2.current.config.v0.4",
-  "m2.current.config.v0.5"
+  "m2.current.config.v0.5",
+  "m2.current.config.v0.6"
 ]);
 
 export function buildM2CurrentContract(config) {
@@ -49,7 +50,8 @@ export function buildM2CurrentContract(config) {
     developmentWapeMaximum: [
       "m2.current.config.v0.3",
       "m2.current.config.v0.4",
-      "m2.current.config.v0.5"
+      "m2.current.config.v0.5",
+      "m2.current.config.v0.6"
     ]
       .includes(config.schema)
       ? unitInterval(
@@ -69,7 +71,8 @@ export function buildM2CurrentContract(config) {
       [
         "m2.current.config.v0.3",
         "m2.current.config.v0.4",
-        "m2.current.config.v0.5"
+        "m2.current.config.v0.5",
+        "m2.current.config.v0.6"
       ]
         .includes(config.schema)
       ? unitInterval(
@@ -81,7 +84,8 @@ export function buildM2CurrentContract(config) {
       [
         "m2.current.config.v0.3",
         "m2.current.config.v0.4",
-        "m2.current.config.v0.5"
+        "m2.current.config.v0.5",
+        "m2.current.config.v0.6"
       ]
         .includes(config.schema)
         ? unitInterval(
@@ -93,7 +97,21 @@ export function buildM2CurrentContract(config) {
     pairedRelativeWapeUpperMaximum: finiteNumber(
       config.thresholds?.pairedRelativeWapeUpperMaximum,
       "paired_relative_wape_upper_maximum"
-    )
+    ),
+    maximumClassificationUncertainCashShare:
+      config.schema === "m2.current.config.v0.6"
+        ? unitInterval(
+          config.thresholds?.maximumClassificationUncertainCashShare,
+          "maximum_classification_uncertain_cash_share"
+        )
+        : null,
+    targetPartitionConservationTolerance:
+      config.schema === "m2.current.config.v0.6"
+        ? positiveFiniteNumber(
+          config.thresholds?.targetPartitionConservationTolerance,
+          "target_partition_conservation_tolerance"
+        )
+        : null
   };
   const pairedBootstrap = {
     method: exactString(
@@ -220,7 +238,8 @@ export function buildM2CurrentContract(config) {
     candidate: Object.freeze(candidate),
     development: [
       "m2.current.config.v0.4",
-      "m2.current.config.v0.5"
+      "m2.current.config.v0.5",
+      "m2.current.config.v0.6"
     ].includes(config.schema)
       ? buildV04DevelopmentPolicy(config.development, config.schema)
       : null,
@@ -246,7 +265,9 @@ function buildEvaluationPolicy(value, schema) {
     value?.nextDevelopmentReadiness,
     "evaluation_policy_next_development_readiness"
   );
-  const expectedReadiness = schema === "m2.current.config.v0.5"
+  const expectedReadiness = schema === "m2.current.config.v0.6"
+    ? "SALES_SHARE_TARGET_VALIDATION_AND_WORK_LEVEL_SIGNAL_REQUIRED"
+    : schema === "m2.current.config.v0.5"
     ? "PORTFOLIO_INDEPENDENT_VALIDATION_AND_WORK_LEVEL_SIGNAL_REQUIRED"
     : schema === "m2.current.config.v0.4"
       ? "AUDITABLE_AS_OF_SIGNAL_AND_CASH_OBSERVABILITY_REQUIRED"
@@ -439,7 +460,10 @@ function buildV04DevelopmentPolicy(value, schema) {
       ),
       businessLoss: Object.freeze({ ...automation.businessLoss })
     }),
-    portfolioReconstruction: schema === "m2.current.config.v0.5"
+    portfolioReconstruction: [
+      "m2.current.config.v0.5",
+      "m2.current.config.v0.6"
+    ].includes(schema)
       ? buildPortfolioReconstructionPolicy(value?.portfolioReconstruction)
       : null
   };
@@ -701,6 +725,14 @@ function nonnegativeInteger(value, name) {
 function unitInterval(value, name) {
   const number = finiteNumber(value, name);
   if (number < 0 || number > 1) {
+    throw new Error(`m2_current_${name}_invalid`);
+  }
+  return number;
+}
+
+function positiveFiniteNumber(value, name) {
+  const number = finiteNumber(value, name);
+  if (number <= 0) {
     throw new Error(`m2_current_${name}_invalid`);
   }
   return number;

@@ -33,7 +33,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           # Calibration contracts verify files against frozen historical commits.
           fetch-depth: 0
@@ -42,7 +42,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 24
           cache: npm
@@ -56,7 +56,7 @@ jobs:
         run: node -e "const {execFileSync}=require('node:child_process');const actual=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();if(actual!==process.env.EXPECTED_HEAD_SHA)throw new Error('checkout_is_not_exact_event_head')"
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.13"
 
@@ -128,13 +128,13 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 24
           cache: npm
@@ -148,7 +148,7 @@ jobs:
         run: node -e "const {execFileSync}=require('node:child_process');const actual=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();if(actual!==process.env.EXPECTED_HEAD_SHA)throw new Error('checkout_is_not_exact_event_head')"
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.13"
 

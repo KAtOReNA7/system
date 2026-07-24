@@ -5,6 +5,8 @@ const FORECASTABLE_SALES_ROUTES = new Set([
 ]);
 
 export function resolveM2CurrentCashRoute(input) {
+  // Historical v0.1-v0.5 replay contract. Current v0.6 callers must use
+  // resolveM2CurrentSalesShareRoute so commitments never enter M2 forecasts.
   const route = String(
     input?.revenueModel
     ?? input?.businessForm
@@ -68,6 +70,7 @@ export function resolveM2CurrentCashRoute(input) {
 }
 
 export function assertM2CurrentModelCaseRoute(input) {
+  // Historical v0.1-v0.5 replay assertion.
   const decision = resolveM2CurrentCashRoute(input);
   if (!decision.served || decision.abstained) {
     throw new Error(
@@ -79,6 +82,68 @@ export function assertM2CurrentModelCaseRoute(input) {
     && decision.forecastScope !== "cutoff_confirmed_commitment_only"
   ) {
     throw new Error("m2_current_pure_buyout_route_policy_invalid");
+  }
+  return decision;
+}
+
+export function resolveM2CurrentSalesShareRoute(input) {
+  const route = String(
+    input?.revenueModel
+    ?? input?.businessForm
+    ?? input?.route
+    ?? ""
+  ).trim();
+  if (route === "") {
+    throw new Error("m2_current_sales_share_route_required");
+  }
+  if (route === "pure_buyout") {
+    return Object.freeze({
+      route,
+      forecastScope: "none",
+      pointEstimate: null,
+      served: false,
+      abstained: true,
+      abstentionReason: "buyout_outside_m2_forecast_scope",
+      buyoutMonthlyEquivalentAllowed: false,
+      notCashForecast: true,
+      allBuyoutExcludedFromForecast: true
+    });
+  }
+  if (!FORECASTABLE_SALES_ROUTES.has(route)) {
+    return Object.freeze({
+      route,
+      forecastScope: "none",
+      pointEstimate: null,
+      served: false,
+      abstained: true,
+      abstentionReason: "unknown_revenue_model",
+      buyoutMonthlyEquivalentAllowed: false,
+      notCashForecast: true,
+      allBuyoutExcludedFromForecast: true
+    });
+  }
+  return Object.freeze({
+    route,
+    forecastScope: "sales_share_cash_only",
+    pointEstimate: null,
+    served: true,
+    abstained: false,
+    abstentionReason: null,
+    buyoutMonthlyEquivalentAllowed: false,
+    notCashForecast: false,
+    allBuyoutExcludedFromForecast: true
+  });
+}
+
+export function assertM2CurrentSalesShareModelCaseRoute(input) {
+  const decision = resolveM2CurrentSalesShareRoute(input);
+  if (!decision.served || decision.abstained) {
+    throw new Error(
+      `m2_current_sales_share_model_case_route_abstained:${decision.abstentionReason}`
+    );
+  }
+  if (decision.forecastScope !== "sales_share_cash_only") {
+    throw new Error("m2_current_sales_share_route_policy_invalid");
   }
   return decision;
 }

@@ -145,7 +145,7 @@ test("previous buyout cycle monthly equivalent remains rating-only history", () 
   assert.equal(result.previousBuyoutMonthlySalesEquivalent, 3000);
   assert.equal(
     result.nextCycleForecastPolicy,
-    "pure_buyout_cash_forecast_requires_cutoff_confirmed_receivable",
+    "pure_buyout_outside_m2_forecast_scope",
   );
   assert.equal(result.buyoutMonthlyEquivalent, result.buyoutEquivalentMonthlySales);
   assert.deepEqual(result.buyoutMonthlyEquivalentBoundary, {

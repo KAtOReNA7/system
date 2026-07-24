@@ -849,6 +849,54 @@ def build_formal_cash_actuals(
     }
 
 
+def build_sales_share_cash_actuals(
+    work: Mapping[str, Any],
+    origin: str,
+    horizon: int,
+    route_at_origin: str,
+    calibration_spec: Mapping[str, Any],
+    label_available_as_of: str,
+) -> dict[str, Any]:
+    """Build the current sales-share-only target and its isolated cash ledger.
+
+    This is a forward-compatible target migration layered on the immutable
+    formal-cash partition above.  Every classifier-derived buyout event is
+    excluded, including an event linked to a cutoff-known commitment.  Any
+    separately identified non-sales commitment is also excluded so the model
+    target contains revenue-share cash only.
+    """
+
+    actuals = build_formal_cash_actuals(
+        work,
+        origin,
+        horizon,
+        route_at_origin,
+        calibration_spec,
+        label_available_as_of,
+    )
+    isolated_buyout = float(actuals["classifierDerivedBuyoutActual"])
+    isolated_other = float(actuals["cutoffCommittedOtherCashActual"])
+    sales_share = float(actuals["salesAndOtherCashActual"]) - isolated_other
+    total = float(actuals["totalLedgerCashActual"])
+    conservation = sales_share + isolated_buyout + isolated_other - total
+    if not math.isclose(
+        conservation, 0.0, rel_tol=0.0, abs_tol=CONSERVATION_TOLERANCE
+    ):
+        raise FormalCashContractError(
+            "sales-share target partition does not conserve ledger cash"
+        )
+    return {
+        **actuals,
+        "salesShareCashActual": round(sales_share, 8),
+        "isolatedBuyoutCashActual": round(isolated_buyout, 8),
+        "isolatedOtherCashActual": round(isolated_other, 8),
+        "salesShareTargetConservationDifference": round(conservation, 8),
+        "allBuyoutExcludedFromForecast": True,
+        "commitmentCashExcludedFromForecast": True,
+        "targetPolicy": "sales_share_cash_only",
+    }
+
+
 def formal_cash_case_key(
     standard_work_id: str, origin: str, horizon: int, route: str
 ) -> tuple[str, str, int, str]:

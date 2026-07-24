@@ -1,0 +1,49 @@
+{
+  "schema": "m2.current.config.v0.6",
+  "extends": "config/m2-current.v0.5.json",
+  "stage": "sales_share_only_target_migration",
+  "target": "future_sales_share_cash",
+  "primaryComparator": "M2-current-occurrence-amount-calibration-v0.3",
+  "previousCandidate": "M2-current-multi-resolution-revenue-service-v0.5",
+  "thresholds": {
+    "maximumClassificationUncertainCashShare": 0,
+    "targetPartitionConservationTolerance": 0.000001
+  },
+  "evaluationPolicy": {
+    "nextDevelopmentReadiness": "SALES_SHARE_TARGET_VALIDATION_AND_WORK_LEVEL_SIGNAL_REQUIRED",
+    "requiredCoverageViews": [
+      "eligibility",
+      "target_classification",
+      "served",
+      "abstention",
+      "economic_scope",
+      "risk_coverage",
+      "decision_resolution"
+    ]
+  },
+  "routePolicy": {
+    "pureBuyout": "outside_m2_forecast_scope_null_abstain",
+    "buyoutPlusSales": "sales_share_cash_only",
+    "cutoffCommitment": "isolated_non_model_billing_audit_layer",
+    "buyoutMonthlyEquivalent": "rating_context_only_not_cash_forecast",
+    "allBuyoutCash": "excluded_from_training_backtest_and_forecast"
+  },
+  "candidate": {
+    "id": "M2-current-sales-share-revenue-service-v0.6"
+  },
+  "publicSources": {
+    "previousCandidate": "docs/analysis/m2-current/M2-current-multi-resolution-candidate-v0.5.json",
+    "candidate": "docs/analysis/m2-current/M2-current-sales-share-candidate-v0.6.json",
+    "automatedEvaluation": "docs/analysis/m2-current/M2-current-automated-evaluation-v0.4.json"
+  },
+  "publicOutput": "docs/analysis/m2-current/M2-current-public-diagnostic-v0.7.json",
+  "authorizations": {
+    "provider": false,
+    "database": false,
+    "modelTraining": true,
+    "newCandidateFamilyDevelopment": false,
+    "holdout": false,
+    "release": false,
+    "m3Formal": false
+  }
+}

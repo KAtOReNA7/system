@@ -2,7 +2,10 @@ import {
   scoreM2CurrentEvaluationRows,
   scoreM2CurrentEvaluationSlices
 } from "./metrics.js";
-import { resolveM2CurrentCashRoute } from "./route.js";
+import {
+  resolveM2CurrentCashRoute,
+  resolveM2CurrentSalesShareRoute
+} from "./route.js";
 
 const BASELINE_IDS = Object.freeze([
   "zero",
@@ -38,7 +41,10 @@ export function buildM2CurrentAutomatedBaselineEvaluation(
   );
   const abstentions = [];
   for (const row of caseRows) {
-    const route = resolveM2CurrentCashRoute({
+    const resolveRoute = contract.schema === "m2.current.config.v0.6"
+      ? resolveM2CurrentSalesShareRoute
+      : resolveM2CurrentCashRoute;
+    const route = resolveRoute({
       route: row.route,
       revenueModel: row.revenueModel,
       origin: row.origin,
@@ -60,7 +66,8 @@ export function buildM2CurrentAutomatedBaselineEvaluation(
       const forecast = forecasts[baselineId];
       rowsByBaseline[baselineId].push({
         ...row,
-        pointEstimate: forecast.pointEstimate + route.commitmentAmount,
+        pointEstimate:
+          forecast.pointEstimate + (route.commitmentAmount ?? 0),
         occurrenceProbability: forecast.occurrenceProbability,
         scaleAbsoluteError: scale.absolute,
         scaleSquaredError: scale.squared

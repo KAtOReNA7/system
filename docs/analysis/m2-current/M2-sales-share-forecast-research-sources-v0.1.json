@@ -1,0 +1,138 @@
+{
+  "schema": "m2.sales_share_forecast.research_sources.v0.1",
+  "researchedAt": "2026-07-25",
+  "scope": "fresh_cross_industry_search_after_repository_audit",
+  "previousRepositoryCitationCheck": {
+    "performed": true,
+    "rule": "Do not use sources already cited by the repository as the evidentiary basis of this review.",
+    "excludedExamples": [
+      "M5 competition paper",
+      "Forecasting Principles and Practice global forecasting summary",
+      "MinT reconciliation paper",
+      "ADIDA paper",
+      "DeepAR paper",
+      "Gneiting and Raftery 2007"
+    ]
+  },
+  "sources": [
+    {
+      "id": "mack-1993-chain-ladder-uncertainty",
+      "domain": "insurance_reserving",
+      "title": "Distribution-free Calculation of the Standard Error of Chain Ladder Reserve Estimates",
+      "url": "https://www.cambridge.org/core/journals/astin-bulletin-journal-of-the-iaa/article/distributionfree-calculation-of-the-standard-error-of-chain-ladder-reserve-estimates/E8D207F9A4DCE30300A76780FE510437",
+      "useForM2": "Treat origin-by-posting-lag maturity as a triangle and publish uncertainty, rather than presenting a point estimate as mature."
+    },
+    {
+      "id": "xie-hong-gefcom2014",
+      "domain": "electricity_load",
+      "title": "GEFCom2014 probabilistic electric load forecasting winning solution",
+      "url": "https://www.sciencedirect.com/science/article/pii/S0169207015001405",
+      "useForM2": "Combine preprocessing, several forecasts, and residual simulation; evaluate an entire predictive distribution on rolling releases."
+    },
+    {
+      "id": "hong-fan-probabilistic-load-tutorial",
+      "domain": "electricity_load",
+      "title": "Probabilistic electric load forecasting: A tutorial review",
+      "url": "https://www.sciencedirect.com/science/article/abs/pii/S0169207015001508",
+      "useForM2": "Separate point, quantile, and density forecasts and judge calibration and value by horizon."
+    },
+    {
+      "id": "haensel-koole-booking-horizon",
+      "domain": "hotel_revenue_management",
+      "title": "Booking horizon forecasting with dynamic updating: A case study of hotel reservation data",
+      "url": "https://www.sciencedirect.com/science/article/pii/S0169207011000100",
+      "useForM2": "Model the cumulative maturation curve and update remaining revenue when new observations arrive."
+    },
+    {
+      "id": "batislam-denizel-filiztekin-customer-base",
+      "domain": "customer_lifetime_value",
+      "title": "Empirical validation and comparison of models for customer base analysis",
+      "url": "https://www.sciencedirect.com/science/article/pii/S0167811607000171",
+      "useForM2": "Model purchase occurrence and latent inactivity separately; validate against repeat-purchase outcomes instead of treating dormancy as an ordinary regression case."
+    },
+    {
+      "id": "athanasopoulos-temporal-hierarchies",
+      "domain": "healthcare_operations",
+      "title": "Forecasting with temporal hierarchies",
+      "url": "https://robjhyndman.com/publications/temporal-hierarchies/",
+      "useForM2": "Reconcile monthly and multi-month horizons so portfolio forecasts remain temporally coherent."
+    },
+    {
+      "id": "ben-taieb-taylor-hyndman-probabilistic-hierarchy",
+      "domain": "electricity_smart_meters",
+      "title": "Coherent Probabilistic Forecasts for Hierarchical Time Series",
+      "url": "https://robjhyndman.com/publications/probhts/",
+      "useForM2": "Reconcile predictive distributions, not only means, across portfolio and work groupings."
+    },
+    {
+      "id": "lauderdale-compound-poisson-gamma",
+      "domain": "dollar_outcomes",
+      "title": "Compound Poisson-Gamma Regression Models for Dollar Outcomes That Are Sometimes Zero",
+      "url": "https://www.cambridge.org/core/journals/political-analysis/article/compound-poissongamma-regression-models-for-dollar-outcomes-that-are-sometimes-zero/21FBA865FCD63ADEB0AD25643DB4141F",
+      "useForM2": "Represent a zero-or-positive dollar total as a random number of positive monetary events; do not log-transform zeros ad hoc."
+    },
+    {
+      "id": "delong-lindholm-wuthrich-tweedie",
+      "domain": "insurance_pricing",
+      "title": "Making Tweedie's compound Poisson model more accessible",
+      "url": "https://link.springer.com/article/10.1007/s13385-021-00264-3",
+      "useForM2": "Use frequency-severity parameterization when event counts and positive cash amounts are auditable."
+    },
+    {
+      "id": "turkmen-januschowski-intermittent-renewal",
+      "domain": "intermittent_demand",
+      "title": "Forecasting intermittent and sparse time series: A unified probabilistic framework via deep renewal processes",
+      "url": "https://journals.plos.org/plosone/article?id=10.1371%2Fjournal.pone.0259764",
+      "useForM2": "Treat time between non-zero events as a stochastic process and compare renewal models to Croston-family baselines."
+    },
+    {
+      "id": "zaffran-adaptive-conformal-time-series",
+      "domain": "electricity_prices",
+      "title": "Adaptive Conformal Predictions for Time Series",
+      "url": "https://arxiv.org/abs/2202.07282",
+      "useForM2": "Calibrate intervals sequentially under dependence and distribution shift; ordinary exchangeable conformal claims are not sufficient."
+    },
+    {
+      "id": "bracher-weighted-interval-score",
+      "domain": "epidemic_forecasting",
+      "title": "Evaluating epidemic forecasts in an interval format",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7880475/",
+      "useForM2": "Score sharpness and coverage together with a proper weighted interval score and stratify by horizon."
+    },
+    {
+      "id": "hyndman-tscv",
+      "domain": "forecast_evaluation",
+      "title": "Time series cross-validation — tsCV",
+      "url": "https://pkg.robjhyndman.com/forecast/reference/tsCV.html",
+      "useForM2": "Use rolling forecast origins and only information available at each origin."
+    },
+    {
+      "id": "diebold-mariano-use-and-abuse",
+      "domain": "econometrics",
+      "title": "Comparing Predictive Accuracy, Twenty Years Later: A Personal Perspective on the Use and Abuse of Diebold-Mariano Tests",
+      "url": "https://www.nber.org/papers/w18391",
+      "useForM2": "Make claims about historical forecast performance, not universal model superiority, and account for dependent loss differentials."
+    },
+    {
+      "id": "saad-time-series-structure-discovery",
+      "domain": "econometric_time_series",
+      "title": "Sequential Monte Carlo Learning for Time Series Structure Discovery",
+      "url": "https://research.google/pubs/sequential-monte-carlo-learning-for-time-series-structure-discovery/",
+      "useForM2": "Treat interpretable trend, seasonality, and change-point structures as candidates and benchmark them against statistical and neural alternatives."
+    },
+    {
+      "id": "google-temporal-fusion-transformer",
+      "domain": "multi_horizon_forecasting",
+      "title": "Temporal Fusion Transformers for Interpretable Multi-horizon Time Series Forecasting",
+      "url": "https://research.google/pubs/temporal-fusion-transformers-for-interpretable-multi-horizon-time-series-forecasting/",
+      "useForM2": "Reserve global neural models for a later challenger that has trustworthy static and time-varying covariates; architecture alone does not repair missing signals."
+    },
+    {
+      "id": "github-actions-node20-deprecation",
+      "domain": "repository_portability",
+      "title": "Deprecation of Node 20 on GitHub Actions runners",
+      "url": "https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/",
+      "useForM2": "Keep public Linux and Windows CI actions on a Node 24 runtime so new machines do not inherit an obsolete action runtime."
+    }
+  ]
+}
