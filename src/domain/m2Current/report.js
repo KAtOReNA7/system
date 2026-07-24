@@ -7,23 +7,25 @@ export function buildM2CurrentPublicDiagnosticReport(
 ) {
   const gate = evaluateM2CurrentDiagnosticGate(evidence, candidate, config);
   return {
-    schema: "m2.current.public_diagnostic_report.v0.2",
+    schema: config.schema === "m2.current.config.v0.2"
+      ? "m2.current.public_diagnostic_report.v0.3"
+      : "m2.current.public_diagnostic_report.v0.2",
     decisionStatus: "not_for_formal_decision",
     directionAssessment: {
       businessProblemWrong: false,
       governanceWrong: false,
-      engineeringSequenceDrifted: true,
+      engineeringSequenceDrifted: false,
       nextPriority:
-        "business_sample_current_candidate_and_resolve_cash_observability"
+        "human_review_current_business_sample_and_acquire_commitment_snapshots"
     },
     evidence,
     candidate,
     gate,
     nextDiagnostics: [
-      "run_deidentified_business_sample_for_current_candidate",
+      "complete_human_review_of_frozen_current_business_sample",
       "prepare_auditable_commitment_snapshot_role_for_cash_observability",
       "keep_final_holdout_sealed_until_separate_authorization",
-      "do_not_expand_candidate_family_before_business_sample"
+      "do_not_use_post_hoc_status_to_predict_dormant_reactivation"
     ]
   };
 }

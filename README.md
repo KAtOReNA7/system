@@ -7,15 +7,18 @@
 - PR #7：M2 v2 evidence pilot 完整性修复，已合并。
 - PR #8：工具链、runtime、冗余和 M2 current 诊断收敛，已合并。
 - PR #9：GitHub Actions exact detached `main` checkout 修复，已合并。
+- PR #10：M2 current canonical core、portable development 和 v0.1 候选收敛，已合并。
 - 当前业务结论：`currentDecision=CANARY_FAIL`。
-- 当前开发 readiness：`nextDevelopmentReadiness=BUSINESS_SAMPLE_REQUIRED`。
-- exact current candidate 的本地 development replay 已获授权并完成；provider、Canary/full160、新候选家族、final holdout、release 和 M3 formal 均未授权。
+- 当前开发 readiness：`nextDevelopmentReadiness=BUSINESS_SAMPLE_REVIEW_REQUIRED`。
+- v0.2 可靠预测候选和 120 部确定性业务样本已完成；人工业务复核仍为
+  `PENDING`。provider、Canary/full160、final holdout、release 和 M3 formal
+  均未授权。
 
 当前导航：
 
-- `docs/analysis/m2-v2/M2-v2-current-state-index-v0.6.md`
+- `docs/analysis/m2-v2/M2-v2-current-state-index-v0.7.md`
 - `docs/analysis/m2-v2/M2-repository-code-convergence-and-portable-development-audit-v0.4.md`
-- `docs/analysis/m2-current/M2-current-quality-convergence-v0.1.md`
+- `docs/analysis/m2-current/M2-current-reliable-model-development-v0.2.md`
 - `AGENTS.md`
 
 历史 PR、B0–B8、C1–C3 和旧授权记录保留在 `docs/analysis/` 中，只用于审计追溯，不是当前开发入口。
@@ -146,11 +149,14 @@ M2 的正式预测对象是未来账单现金。正式边界保持：
 | 全库 / Top10 cash coverage | 73.96% / 75.94% |
 | coverage 门槛 | 90% |
 | B4 WAPE / bias | 0.55648454 / 0.08911106 |
-| current candidate WAPE / bias | 0.53184893 / 0.03680632 |
-| relative WAPE / paired 95% CI | -4.43% / [-9.46%, -1.28%] |
+| current candidate WAPE / bias | 0.51114966 / -0.00586227 |
+| relative WAPE / paired 95% CI | -8.15% / [-15.75%, -2.91%] |
 | current candidate decision | `PARTIAL_PASS` |
 
-受约束候选在 overall、全部 horizon 和 paired CI 上优于 B4，但 dormant 切片没有改善，全库现金可观察性也仍不足。下一步是业务抽检 current candidate，并单独建立可审计 commitment snapshot；不得继续复制 C1–C3 runner、堆叠 evidence runtime 或扩建候选家族。
+v0.2 在 overall、全部 horizon 和相对 B4 paired CI 上通过，并把总体偏差降至接近零；
+dormant 切片仍没有改善，全库现金可观察性也仍不足。120 部唯一作品的确定性业务
+样本已经生成，下一步是完成人工复核，并单独取得可审计 commitment snapshot；
+不得继续复制 C1–C3 runner、堆叠 evidence runtime 或扩建候选家族。
 
 有本机 private capability 且具备对应授权时，复现 exact candidate：
 

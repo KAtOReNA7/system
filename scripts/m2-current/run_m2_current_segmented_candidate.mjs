@@ -8,16 +8,26 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { pairedWorkOriginBootstrap } from "../../src/domain/m2Current/bootstrap.js";
-import { buildM2CurrentSegmentedCandidate } from "../../src/domain/m2Current/candidate.js";
+import {
+  buildM2CurrentReliableCandidate,
+  buildM2CurrentSegmentedCandidate
+} from "../../src/domain/m2Current/candidate.js";
+import {
+  buildM2CurrentBusinessSample
+} from "../../src/domain/m2Current/businessSample.js";
 import { compareM2CurrentCandidateToB4 } from "../../src/domain/m2Current/comparator.js";
 import { buildM2CurrentContract } from "../../src/domain/m2Current/contract.js";
 import { scoreM2CurrentSlices } from "../../src/domain/m2Current/metrics.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const config = JSON.parse(
+  await readFile(path.join(root, "config/m2-current.v0.2.json"), "utf8")
+);
+const previousConfig = JSON.parse(
   await readFile(path.join(root, "config/m2-current.v0.1.json"), "utf8")
 );
 const contract = buildM2CurrentContract(config);
+const previousContract = buildM2CurrentContract(previousConfig);
 const populationReport = JSON.parse(
   await readFile(path.join(root, config.publicSources.population), "utf8")
 );
@@ -59,17 +69,25 @@ const privateDirectory = path.join(
 );
 const privateRowsPath = path.join(
   privateDirectory,
-  "M2-current-segmented-candidate-cases-private-v0.1.ndjson"
+  "M2-current-reliable-candidate-cases-private-v0.2.ndjson"
 );
 const privateManifestPath = path.join(
   privateDirectory,
-  "M2-current-segmented-candidate-manifest-private-v0.1.json"
+  "M2-current-reliable-candidate-manifest-private-v0.2.json"
 );
 const privateReasonLedgerPath = path.join(
   privateDirectory,
-  "M2-current-model-eligibility-reasons-private-v0.1.ndjson"
+  "M2-current-model-eligibility-reasons-private-v0.2.ndjson"
+);
+const privateBusinessSamplePath = path.join(
+  privateDirectory,
+  "M2-current-business-sample-private-v0.2.ndjson"
 );
 const publicPath = path.join(root, config.publicSources.candidate);
+const publicBusinessSamplePath = path.join(
+  root,
+  config.publicSources.businessSample
+);
 
 const comparatorText = await readFile(comparatorPath, "utf8");
 const segmentText = await readFile(segmentPath, "utf8");
@@ -108,6 +126,17 @@ const segmentByKey = new Map(
 const comparatorByKey = new Map(
   comparatorRows.map((row) => [caseKey(row), row])
 );
+const featureRows = comparatorRows.map((row) => ({
+  standardWorkId: row.standardWorkId,
+  origin: row.origin,
+  horizonMonths: row.horizonMonths,
+  route: row.route,
+  segment: segmentByKey.get(caseKey(row)),
+  spikeCandidate: row.strata.spike_candidate,
+  valueBand: row.strata.value_band,
+  historicalFeaturePolicy: row.strata.historicalFeaturePolicy,
+  sourceShelfRightsTermPolicy: row.strata.sourceShelfRightsTermPolicy
+}));
 const payload = JSON.parse(await readFile(payloadPath, "utf8"));
 verifyPrivatePayload(payload, contract);
 const eligibilityLedger = buildEligibilityLedger(
@@ -146,10 +175,18 @@ if (
   throw new Error("m2_current_private_eligibility_reason_ledger_drift");
 }
 
-const candidate = buildM2CurrentSegmentedCandidate(
+const previousCandidate = buildM2CurrentSegmentedCandidate(
   comparatorRows,
   segmentRows,
+  previousContract
+);
+const candidate = buildM2CurrentReliableCandidate(
+  comparatorRows,
+  featureRows,
   contract
+);
+const previousCandidateByKey = new Map(
+  previousCandidate.rows.map((row) => [caseKey(row), row])
 );
 if (
   candidate.rows.length !== contract.population.modelCaseCount
@@ -166,6 +203,16 @@ const comparison = compareM2CurrentCandidateToB4(
 const pairedCi = pairedWorkOriginBootstrap(
   candidate.rows,
   comparatorRows,
+  contract
+);
+const previousComparison = compareM2CurrentCandidateToB4(
+  candidate.rows,
+  previousCandidate.rows,
+  contract
+);
+const pairedCiVsPreviousCandidate = pairedWorkOriginBootstrap(
+  candidate.rows,
+  previousCandidate.rows,
   contract
 );
 const b4ByHorizon = scoreM2CurrentSlices(comparatorRows, "horizonMonths");
@@ -193,9 +240,19 @@ const pairedRelativeWapeUpperPassed = (
 );
 const dormantSegmentImproved = pairedBySegment.dormant.relativeWape < 0;
 const dormantRows = candidate.rows.filter((row) => row.segment === "dormant");
+const sampleInputRows = candidate.rows.map((row) => ({
+  ...row,
+  comparatorPointEstimate: comparatorByKey.get(caseKey(row)).pointEstimate,
+  previousCandidatePointEstimate:
+    previousCandidateByKey.get(caseKey(row))?.pointEstimate
+}));
+const businessSample = buildM2CurrentBusinessSample(
+  sampleInputRows,
+  contract
+);
 const publicReport = {
-  schema: "m2.current.segmented_candidate.public.v0.1",
-  version: "M2-current-segmented-candidate-v0.1",
+  schema: "m2.current.reliable_candidate.public.v0.2",
+  version: "M2-current-reliable-candidate-v0.2",
   decisionStatus: "not_for_formal_decision",
   candidateId: candidate.candidateId,
   target: config.target,
@@ -216,20 +273,27 @@ const publicReport = {
     populationMoved: false
   },
   design: {
-    dense: "bias_feasible_downward_B4_calibration",
-    intermittent: "bias_feasible_downward_B4_calibration",
-    dormant:
-      "earlier_reactivation_blend_only_when_bias_safe_and_materially_better",
+    family: "hierarchical_robust_multiplicative_calibration",
+    dense: "segment_fallback_plus_as_of_spike_candidate_group",
+    intermittent: "segment_fallback_plus_as_of_value_band_group",
+    dormant: contract.candidate.dormantPolicy.mode,
     strictlyMatureEarlierLabelsOnly: true,
     sameOrLaterOuterTruthRead: false,
+    postHocFeatureRead: false,
     scaleFactors: contract.candidate.scaleFactors,
     trainingAbsoluteBiasMaximum:
       contract.candidate.trainingAbsoluteBiasMaximum,
-    dormantReactivation: contract.candidate.dormantReactivation,
+    groupCalibration: contract.candidate.groupCalibration,
+    dormantPolicy: contract.candidate.dormantPolicy,
     thresholdMovedAfterResults: false
   },
   selections: candidate.selections,
   comparison,
+  previousCandidateComparison: {
+    candidateId: previousConfig.candidate.id,
+    comparison: previousComparison,
+    pairedCi: pairedCiVsPreviousCandidate
+  },
   byHorizon: pairedByHorizon,
   bySegment: pairedBySegment,
   segmentDiagnostics: {
@@ -246,11 +310,16 @@ const publicReport = {
         )
       ),
       conclusion:
-        "allowed_mature_as_of_internal_evidence_did_not_support_a_bias_safe_improvement"
+        "reactivation_cash_is_concentrated_in_a_few_events_without_identifiable_allowed_as_of_signal"
     }
   },
   byOrigin: pairedByOrigin,
   pairedCi,
+  businessSample: {
+    publicReport: config.publicSources.businessSample,
+    workCount: businessSample.publicReport.sampleDesign.workCount,
+    humanReviewStatus: businessSample.publicReport.humanReview.status
+  },
   acceptance: {
     overallAbsoluteBiasPassed,
     eachHorizonAbsoluteBiasPassed,
@@ -295,14 +364,27 @@ const privateText = candidate.rows.map((row) => JSON.stringify({
   activitySegment: row.segment,
   actual: row.actual,
   b4PointEstimate: comparatorByKey.get(caseKey(row)).pointEstimate,
+  previousCandidatePointEstimate:
+    previousCandidateByKey.get(caseKey(row))?.pointEstimate,
   candidatePointEstimate: row.pointEstimate,
   selectedCandidateId: row.selectedCandidateId,
+  selectedFactor: row.selectedFactor,
   labelAvailableAsOf: row.labelAvailableAsOf
 })).join("\n") + "\n";
 await writeFile(privateRowsPath, privateText, "utf8");
 const prettyPublic = `${JSON.stringify(publicReport, null, 2)}\n`;
+const privateBusinessSampleText = businessSample.privateRows
+  .map((row) => JSON.stringify(row))
+  .join("\n") + "\n";
+const prettyBusinessSamplePublic =
+  `${JSON.stringify(businessSample.publicReport, null, 2)}\n`;
+await writeFile(
+  privateBusinessSamplePath,
+  privateBusinessSampleText,
+  "utf8"
+);
 await writeFile(privateManifestPath, `${JSON.stringify({
-  schema: "m2.current.segmented_candidate.private_manifest.v0.1",
+  schema: "m2.current.reliable_candidate.private_manifest.v0.2",
   tracked: false,
   decisionStatus: "not_for_formal_decision",
   privateCaseRowCount: candidate.rows.length,
@@ -310,12 +392,20 @@ await writeFile(privateManifestPath, `${JSON.stringify({
   privateEligibilityReasonRowCount: eligibilityLedger.length,
   privateEligibilityReasonSha256: sha256(privateReasonLedgerText),
   privateEligibilityReasonCounts: eligibilityReasonCounts,
+  privateBusinessSampleRowCount: businessSample.privateRows.length,
+  privateBusinessSampleSha256: sha256(privateBusinessSampleText),
   publicReportSha256: sha256(prettyPublic),
+  publicBusinessSampleSha256: sha256(prettyBusinessSamplePublic),
   finalHoldoutOpened: false,
   releaseAuthorized: false
 }, null, 2)}\n`, "utf8");
 await mkdir(path.dirname(publicPath), { recursive: true });
 await writeFile(publicPath, prettyPublic, "utf8");
+await writeFile(
+  publicBusinessSamplePath,
+  prettyBusinessSamplePublic,
+  "utf8"
+);
 
 process.stdout.write(`${JSON.stringify({
   candidateId: candidate.candidateId,
@@ -326,6 +416,9 @@ process.stdout.write(`${JSON.stringify({
   relativeWape: comparison.relativeWape,
   candidateSignedBias: comparison.candidate.signedBias,
   pairedCiUpper95: pairedCi.upper95,
+  relativeWapeVsPreviousCandidate: previousComparison.relativeWape,
+  pairedCiVsPreviousCandidateUpper95: pairedCiVsPreviousCandidate.upper95,
+  businessSampleWorkCount: businessSample.publicReport.sampleDesign.workCount,
   eligibilityReasonLedgerWorkCount: eligibilityLedger.length,
   formalCashRouteExcludedWorkCount: routeExcludedWorkCount,
   acceptance: publicReport.acceptance
@@ -397,7 +490,13 @@ function normalizeComparator(row) {
     route: row.caseKey.route,
     actual: Number(row.forecastableCashActual),
     pointEstimate: Number(row.servedPrediction),
-    labelAvailableAsOf: row.labelAvailableAsOf
+    labelAvailableAsOf: row.labelAvailableAsOf,
+    strata: {
+      spike_candidate: row.strata?.spike_candidate,
+      value_band: row.strata?.value_band,
+      historicalFeaturePolicy: row.strata?.historicalFeaturePolicy,
+      sourceShelfRightsTermPolicy: row.strata?.sourceShelfRightsTermPolicy
+    }
   };
 }
 

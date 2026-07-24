@@ -1,0 +1,141 @@
+{
+  "schema": "m2.current.config.v0.2",
+  "stage": "reliable_candidate_development",
+  "target": "future_bill_cash",
+  "primaryComparator": "B4_formula_switched_legacy_variant",
+  "previousCandidate": "M2-current-segmented-downward-calibration-v0.1",
+  "allowedHorizons": [3, 6, 12, 18, 24],
+  "activitySegments": ["dense", "intermittent", "dormant"],
+  "frozenPopulation": {
+    "libraryWorkCount": 3053,
+    "modelWorkCount": 824,
+    "modelCaseCount": 7851
+  },
+  "thresholds": {
+    "fullLibraryForecastableCashCoverageMinimum": 0.9,
+    "top10ForecastableCashCoverageMinimum": 0.9,
+    "overallAbsoluteBiasMaximum": 0.1,
+    "eachHorizonAbsoluteBiasMaximum": 0.15,
+    "pairedCiRequired": true,
+    "pairedRelativeWapeUpperMaximum": 0
+  },
+  "evaluation": {
+    "pairedBootstrap": {
+      "method": "paired_work_origin_pigeonhole",
+      "confidence": 0.95,
+      "iterations": 2000,
+      "seed": 20260724
+    }
+  },
+  "candidate": {
+    "id": "M2-current-hierarchical-robust-calibration-v0.2",
+    "scaleFactors": [
+      0.5,
+      0.51,
+      0.52,
+      0.53,
+      0.54,
+      0.55,
+      0.56,
+      0.57,
+      0.58,
+      0.59,
+      0.6,
+      0.61,
+      0.62,
+      0.63,
+      0.64,
+      0.65,
+      0.66,
+      0.67,
+      0.68,
+      0.69,
+      0.7,
+      0.71,
+      0.72,
+      0.73,
+      0.74,
+      0.75,
+      0.76,
+      0.77,
+      0.78,
+      0.79,
+      0.8,
+      0.81,
+      0.82,
+      0.83,
+      0.84,
+      0.85,
+      0.86,
+      0.87,
+      0.88,
+      0.89,
+      0.9,
+      0.91,
+      0.92,
+      0.93,
+      0.94,
+      0.95,
+      0.96,
+      0.97,
+      0.98,
+      0.99,
+      1.0
+    ],
+    "trainingAbsoluteBiasMaximum": 0.15,
+    "groupCalibration": {
+      "minimumEarlierCaseCount": 80,
+      "minimumRelativeWapeImprovement": 0.01,
+      "featureBySegment": {
+        "dense": "spike_candidate",
+        "intermittent": "value_band"
+      },
+      "allowedValueBands": [
+        "non_positive",
+        "other_positive",
+        "next_5_percent",
+        "next_4_percent",
+        "top_1_percent"
+      ]
+    },
+    "dormantPolicy": {
+      "mode": "b4_fallback_until_identifiable_as_of_signal",
+      "minimumEarlierOriginCount": 2,
+      "minimumEarlierCaseCount": 100
+    }
+  },
+  "businessSample": {
+    "seed": 20260724,
+    "representativeWorkCountPerSegment": 20,
+    "largestUnderpredictionWorkCountPerSegment": 10,
+    "largestOverpredictionWorkCountPerSegment": 10
+  },
+  "publicSources": {
+    "limitation": "docs/analysis/m2-v2/M2-v2-b4-limitation-analysis.json",
+    "coverage": "docs/analysis/m2-real-data/M2-formal-cash-population-business-coverage-v1.json",
+    "terminal": "docs/analysis/m2-real-data/M2-C3-terminal-model-route-summary-v1.json",
+    "modelDecision": "docs/analysis/m2-real-data/M2-C3-model-quality-decision-v1.json",
+    "businessDecision": "docs/analysis/m2-real-data/M2-C3-business-coverage-decision-v1.json",
+    "segments": "docs/analysis/m2-real-data/M2-C2-activity-segment-route-manifest-v1.json",
+    "development": "docs/analysis/m2-real-data/M2-C3-development-validation-v1.json",
+    "population": "docs/analysis/m2-real-data/M2-calibration-population-coverage-v1.json",
+    "previousCandidate": "docs/analysis/m2-current/M2-current-segmented-candidate-v0.1.json",
+    "candidate": "docs/analysis/m2-current/M2-current-reliable-candidate-v0.2.json",
+    "businessSample": "docs/analysis/m2-current/M2-current-business-sample-diagnostic-v0.2.json"
+  },
+  "publicOutput": "docs/analysis/m2-current/M2-current-public-diagnostic-v0.3.json",
+  "archiveOnlyDevelopmentRoutes": ["C1", "C2-R", "C2-R.1", "C2", "C3"],
+  "sealsMustRemainClosed": [
+    "finalHoldoutOpened",
+    "embargoShadowOpened",
+    "deferred60MonthLabelsOpened"
+  ],
+  "authorizations": {
+    "provider": false,
+    "database": false,
+    "modelTraining": true,
+    "holdout": false,
+    "release": false,
+    "m3Formal": false
+  }
+}
