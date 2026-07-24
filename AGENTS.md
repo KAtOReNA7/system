@@ -2,7 +2,7 @@
 
 ## 当前唯一入口
 
-- PR #7、PR #8、PR #9、PR #10 均已合入 `main`；已合并分支不得继续作为开发入口。
+- PR #7、PR #8、PR #9、PR #10、PR #11 均已合入 `main`；已合并分支不得继续作为开发入口。
 - 当前仓库治理导航为：
   - `docs/analysis/m2-v2/M2-v2-current-state-index-v0.7.md`
   - `docs/analysis/m2-v2/M2-repository-code-convergence-and-portable-development-audit-v0.4.md`
@@ -111,6 +111,49 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
 - `modelTrainingAuthorized=true` 仅限复现上述 exact v0.2 candidate
 - final holdout、embargo shadow、deferred labels 均 sealed
 - provider、远端/共享/staging-like 数据库、Canary/full160、新候选家族、release、M3 formal 均未授权
+
+## M2 当前执行队列（2026-07-24 已启动）
+
+以下顺序是当前仓库任务的默认优先级。除非用户明确改变业务方向或新增授权，否则
+不得跳过前置项，也不得以继续调参、扩建 evidence runtime 或复制历史 runner 代替。
+
+1. 冻结 120 部唯一作品样本并完成人工业务复核。
+   - 受控明细角色固定为
+     `data/private-output/m2-current-quality/M2-current-business-sample-private-v0.2.ndjson`。
+   - 该文件必须保持 Git ignored，不得向公开文档复制作品标识、明细预测或 actual。
+   - 只允许填写 `reviewOutcome`、`reviewReasonCode` 和 `reviewerNote`；
+     `reviewOutcome` 必须属于
+     `reasonable`、`acceptable_with_limitation`、`model_issue`、`data_issue`
+     或 `cash_route_issue`。
+   - 同一批复核结果不得用于重新调节 v0.2。
+2. 建立同 cutoff 的独立人工预测基线。
+   - 人工预测必须在揭示 B4、v0.1、v0.2 和 actual 前完成。
+   - 人工只能使用预测 cutoff 时可取得的资料，并记录点预测、合理区间、
+     information cutoff、预测时间和 reviewer role。
+   - 现有含模型值和 actual 的业务复核明细不能冒充盲视人工预测。
+3. 冻结 exact v0.2；停止 scale、group 和候选家族搜索。
+4. 从业务源单独补充 cutoff 时已签署、确认且可审计的 commitment snapshot。
+   未承诺买断不得进入正式现金预测，pure-buyout 无承诺时继续 null abstain。
+5. 完成上述输入后，先设计并冻结下一轮评价合同，再申请新候选授权。评价合同应覆盖：
+   - 更多月度 rolling origin；
+   - 全零、seasonal naive、SBA、TSB、ADIDA；
+   - 现金发生概率与正金额分别评估；
+   - MASE/RMSSE、发生概率校准、正现金 case 命中率、概率区间和业务损失；
+   - eligibility、cash observability、served coverage 和 abstention 分开报告。
+6. 新候选若获单独授权，只能扩展 `src/domain/m2Current/**`，优先研究正常销售现金的
+   two-part/hurdle、严格 as-of 特征、全局共享与非负层级协调；不得让未承诺买断进入
+   概率金额模型。
+7. 先完成“人工、v0.1、v0.2、简单基线”的同人口比较，再决定是否申请 final holdout。
+8. final holdout、embargo shadow、deferred labels、provider、数据库、Canary/full160、
+   release 和 M3 formal 在收到各自明确授权前继续 sealed/禁止。
+
+当前启动状态：
+
+- 已实现：v0.2、120 部冻结样本和 private review 字段已生成。
+- 已验证：本机 `m2-algorithm-authoritative-input` capability 库存可用；这不等于新算法授权。
+- 执行中：120 部人工业务复核。
+- 等待业务输入：盲视人工预测、复核填写和 commitment snapshot。
+- 未授权：新候选训练、final holdout 及所有既有业务 gate 外的动作。
 
 ## Git 与提交规则
 

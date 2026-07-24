@@ -8,6 +8,7 @@
 - PR #8：工具链、runtime、冗余和 M2 current 诊断收敛，已合并。
 - PR #9：GitHub Actions exact detached `main` checkout 修复，已合并。
 - PR #10：M2 current canonical core、portable development 和 v0.1 候选收敛，已合并。
+- PR #11：M2 current v0.2 可靠预测候选和 120 部冻结业务样本，已合并。
 - 当前业务结论：`currentDecision=CANARY_FAIL`。
 - 当前开发 readiness：`nextDevelopmentReadiness=BUSINESS_SAMPLE_REVIEW_REQUIRED`。
 - v0.2 可靠预测候选和 120 部确定性业务样本已完成；人工业务复核仍为
@@ -157,6 +158,54 @@ v0.2 在 overall、全部 horizon 和相对 B4 paired CI 上通过，并把总�
 dormant 切片仍没有改善，全库现金可观察性也仍不足。120 部唯一作品的确定性业务
 样本已经生成，下一步是完成人工复核，并单独取得可审计 commitment snapshot；
 不得继续复制 C1–C3 runner、堆叠 evidence runtime 或扩建候选家族。
+
+## M2 当前执行队列
+
+本队列已于 2026-07-24 启动。它替代继续调节 v0.2 scale、扩建 evidence runtime
+或复制历史 runner 的开发方式。必须按顺序完成前置项，不得跳过人工复核直接训练
+新候选或打开 final holdout。
+
+1. **人工复核冻结样本（执行中）**
+   - 固定使用已生成的 120 部唯一作品，不增加、替换或重抽样。
+   - 本机受控明细角色为
+     `data/private-output/m2-current-quality/M2-current-business-sample-private-v0.2.ndjson`；
+     文件必须保持 Git ignored。
+   - 对每行填写 `reviewOutcome`、`reviewReasonCode` 和 `reviewerNote`。
+     `reviewOutcome` 只允许
+     `reasonable`、`acceptable_with_limitation`、`model_issue`、`data_issue`
+     或 `cash_route_issue`。
+   - 同一批复核结果不得再次用于调节 v0.2。
+2. **建立独立人工预测基线（等待业务人员）**
+   - 人工必须只看到与模型相同 cutoff 时可取得的资料；填写预测后才可揭示
+     B4、v0.1、v0.2 和 actual。
+   - 至少记录人工点预测、合理区间、资料 cutoff、预测时间和复核角色。
+   - 现有业务复核明细含模型值和 actual，只用于模型合理性复核，不能冒充盲视人工基线。
+3. **冻结 v0.2（已执行）**
+   - `M2-current-hierarchical-robust-calibration-v0.2` 保持当前 exact 规则；
+     不继续搜索 scale、group 或候选家族。
+4. **补充可审计输入（等待业务源）**
+   - 单独准备 cutoff 时已签署、确认且可审计的 commitment snapshot。
+   - 未承诺买断不得通过概率乘金额进入正式预测；pure-buyout 无承诺时继续
+     `null abstain`。
+5. **下一轮算法研究（尚未授权执行）**
+   - 增加月度 rolling origin；
+   - 建立全零、seasonal naive、SBA、TSB 和 ADIDA 基线；
+   - 预先冻结“销售现金发生概率 + 正金额”的 two-part/hurdle 设计；
+   - 评估严格 as-of 业务特征、概率区间、全局模型和非负层级协调。
+6. **决策门禁**
+   - 先比较人工、v0.1、v0.2 和简单基线，再由用户决定是否授权新候选开发。
+   - final holdout、embargo shadow、provider、数据库、Canary/full160、release
+     和 M3 formal 继续保持未授权。
+
+启动检查：
+
+```bash
+npm run doctor:capability -- m2-algorithm-authoritative-input
+npm run verify:m2:current
+```
+
+`doctor:capability` 只盘点本机库存，不授予训练、新候选或 holdout 权限。没有 private
+capability 的电脑仍可执行全部公共开发基线。
 
 有本机 private capability 且具备对应授权时，复现 exact candidate：
 
