@@ -43,6 +43,7 @@
   ],
   "restrictedPrefixes": [
     "doctor:capability",
+    "develop:m2:",
     "m3:",
     "db:",
     "import:",

@@ -15,7 +15,27 @@
     "top10ForecastableCashCoverageMinimum": 0.9,
     "overallAbsoluteBiasMaximum": 0.1,
     "eachHorizonAbsoluteBiasMaximum": 0.15,
-    "pairedCiRequired": true
+    "pairedCiRequired": true,
+    "pairedRelativeWapeUpperMaximum": 0
+  },
+  "evaluation": {
+    "pairedBootstrap": {
+      "method": "paired_work_origin_pigeonhole",
+      "confidence": 0.95,
+      "iterations": 2000,
+      "seed": 20260724
+    }
+  },
+  "candidate": {
+    "id": "M2-current-segmented-downward-calibration-v0.1",
+    "scaleFactors": [0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1.0],
+    "trainingAbsoluteBiasMaximum": 0.15,
+    "dormantReactivation": {
+      "blendFactors": [0, 0.25, 0.5, 0.75, 1],
+      "minimumEarlierOriginCount": 2,
+      "minimumEarlierCaseCount": 100,
+      "minimumRelativeWapeImprovement": 0.05
+    }
   },
   "publicSources": {
     "limitation": "docs/analysis/m2-v2/M2-v2-b4-limitation-analysis.json",
@@ -23,9 +43,12 @@
     "terminal": "docs/analysis/m2-real-data/M2-C3-terminal-model-route-summary-v1.json",
     "modelDecision": "docs/analysis/m2-real-data/M2-C3-model-quality-decision-v1.json",
     "businessDecision": "docs/analysis/m2-real-data/M2-C3-business-coverage-decision-v1.json",
-    "segments": "docs/analysis/m2-real-data/M2-C2-activity-segment-route-manifest-v1.json"
+    "segments": "docs/analysis/m2-real-data/M2-C2-activity-segment-route-manifest-v1.json",
+    "development": "docs/analysis/m2-real-data/M2-C3-development-validation-v1.json",
+    "population": "docs/analysis/m2-real-data/M2-calibration-population-coverage-v1.json",
+    "candidate": "docs/analysis/m2-current/M2-current-segmented-candidate-v0.1.json"
   },
-  "publicOutput": "docs/analysis/m2-current/M2-current-public-diagnostic-baseline-v0.1.json",
+  "publicOutput": "docs/analysis/m2-current/M2-current-public-diagnostic-v0.2.json",
   "archiveOnlyDevelopmentRoutes": ["C1", "C2-R", "C2-R.1", "C2", "C3"],
   "sealsMustRemainClosed": [
     "finalHoldoutOpened",
@@ -35,7 +58,7 @@
   "authorizations": {
     "provider": false,
     "database": false,
-    "modelTraining": false,
+    "modelTraining": true,
     "holdout": false,
     "release": false,
     "m3Formal": false

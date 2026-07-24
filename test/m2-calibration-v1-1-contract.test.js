@@ -747,8 +747,14 @@ test("package scripts expose only the frozen correction preflight, development, 
     scripts["replay:m2:calibration-scoring-correction:final-holdout"],
     `node ${PYTHON_RUNNER_PATH} ${CORRECTION_RUNNER_PATH} --run-final-holdout`
   );
-  assert.ok(
+  assert.equal(
     filesForTestProfile("default").files.includes(
+      "test/m2-calibration-v1-1-contract.test.js",
+    ),
+    false,
+  );
+  assert.ok(
+    filesForTestProfile("historical-m2").files.includes(
       "test/m2-calibration-v1-1-contract.test.js",
     ),
   );

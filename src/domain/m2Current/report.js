@@ -1,24 +1,29 @@
 import { evaluateM2CurrentDiagnosticGate } from "./gate.js";
 
-export function buildM2CurrentPublicDiagnosticReport(evidence) {
-  const gate = evaluateM2CurrentDiagnosticGate(evidence);
+export function buildM2CurrentPublicDiagnosticReport(
+  evidence,
+  candidate,
+  config
+) {
+  const gate = evaluateM2CurrentDiagnosticGate(evidence, candidate, config);
   return {
-    schema: "m2.current.public_diagnostic_report.v0.1",
+    schema: "m2.current.public_diagnostic_report.v0.2",
     decisionStatus: "not_for_formal_decision",
     directionAssessment: {
       businessProblemWrong: false,
       governanceWrong: false,
       engineeringSequenceDrifted: true,
-      nextPriority: "coverage_and_runtime_contract_before_model_complexity"
+      nextPriority:
+        "business_sample_current_candidate_and_resolve_cash_observability"
     },
     evidence,
+    candidate,
     gate,
     nextDiagnostics: [
-      "preserve_same_7851_case_and_B4_comparator_identity",
-      "measure_3_6_12_18_24_month_horizons",
-      "measure_dense_intermittent_dormant_slices",
-      "measure_full_library_top1_top5_top10_cash_coverage",
-      "require_paired_origin_horizon_confidence_intervals"
+      "run_deidentified_business_sample_for_current_candidate",
+      "prepare_auditable_commitment_snapshot_role_for_cash_observability",
+      "keep_final_holdout_sealed_until_separate_authorization",
+      "do_not_expand_candidate_family_before_business_sample"
     ]
   };
 }
