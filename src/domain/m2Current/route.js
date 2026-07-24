@@ -14,7 +14,7 @@ export function resolveM2CurrentCashRoute(input) {
   if (route === "") {
     throw new Error("m2_current_cash_route_required");
   }
-  const commitment = normalizeCommitment(input?.commitment, input?.origin);
+  const commitment = normalizeCommitment(input?.commitment, input);
   if (route === "pure_buyout") {
     if (commitment === null) {
       return Object.freeze({
@@ -83,24 +83,20 @@ export function assertM2CurrentModelCaseRoute(input) {
   return decision;
 }
 
-function normalizeCommitment(value, origin) {
+function normalizeCommitment(value, input) {
   if (value === null || value === undefined) {
     return null;
   }
-  const confirmedAsOf = String(value.confirmedAsOf ?? "").slice(0, 7);
-  const cutoff = String(origin ?? "").slice(0, 7);
-  const outstandingAmount = Number(value.outstandingAmount);
-  if (
-    !/^\d{4}-(?:0[1-9]|1[0-2])$/u.test(confirmedAsOf)
-    || !/^\d{4}-(?:0[1-9]|1[0-2])$/u.test(cutoff)
-    || confirmedAsOf > cutoff
-    || !Number.isFinite(outstandingAmount)
-    || outstandingAmount < 0
-    || value.signed !== true
-    || value.confirmed !== true
-    || value.auditable !== true
-  ) {
+  try {
+    return validateM2CurrentCommitmentSnapshot(value, {
+      standardWorkId: input?.standardWorkId,
+      origin: input?.origin,
+      horizonMonths: input?.horizonMonths
+    });
+  } catch {
     return null;
   }
-  return { outstandingAmount };
 }
+import {
+  validateM2CurrentCommitmentSnapshot
+} from "./dataContract.js";

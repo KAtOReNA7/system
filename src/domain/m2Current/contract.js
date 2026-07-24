@@ -1,7 +1,8 @@
 const SUPPORTED_SCHEMAS = new Set([
   "m2.current.config.v0.1",
   "m2.current.config.v0.2",
-  "m2.current.config.v0.3"
+  "m2.current.config.v0.3",
+  "m2.current.config.v0.4"
 ]);
 
 export function buildM2CurrentContract(config) {
@@ -44,7 +45,8 @@ export function buildM2CurrentContract(config) {
       config.thresholds?.top10ForecastableCashCoverageMinimum,
       "top10_cash_coverage_minimum"
     ),
-    developmentWapeMaximum: config.schema === "m2.current.config.v0.3"
+    developmentWapeMaximum: ["m2.current.config.v0.3", "m2.current.config.v0.4"]
+      .includes(config.schema)
       ? unitInterval(
         config.thresholds?.developmentWapeMaximum,
         "development_wape_maximum"
@@ -58,14 +60,17 @@ export function buildM2CurrentContract(config) {
       config.thresholds?.eachHorizonAbsoluteBiasMaximum,
       "each_horizon_absolute_bias_maximum"
     ),
-    eachSegmentWapeMaximum: config.schema === "m2.current.config.v0.3"
+    eachSegmentWapeMaximum:
+      ["m2.current.config.v0.3", "m2.current.config.v0.4"]
+        .includes(config.schema)
       ? unitInterval(
         config.thresholds?.eachSegmentWapeMaximum,
         "each_segment_wape_maximum"
       )
       : null,
     eachSegmentAbsoluteBiasMaximum:
-      config.schema === "m2.current.config.v0.3"
+      ["m2.current.config.v0.3", "m2.current.config.v0.4"]
+        .includes(config.schema)
         ? unitInterval(
           config.thresholds?.eachSegmentAbsoluteBiasMaximum,
           "each_segment_absolute_bias_maximum"
@@ -182,6 +187,8 @@ export function buildM2CurrentContract(config) {
     provider: config.authorizations?.provider === true,
     database: config.authorizations?.database === true,
     modelTraining: config.authorizations?.modelTraining === true,
+    newCandidateFamilyDevelopment:
+      config.authorizations?.newCandidateFamilyDevelopment === true,
     holdout: config.authorizations?.holdout === true,
     release: config.authorizations?.release === true,
     m3Formal: config.authorizations?.m3Formal === true
@@ -198,6 +205,9 @@ export function buildM2CurrentContract(config) {
     pairedBootstrap: Object.freeze(pairedBootstrap),
     evaluationPolicy,
     candidate: Object.freeze(candidate),
+    development: config.schema === "m2.current.config.v0.4"
+      ? buildV04DevelopmentPolicy(config.development)
+      : null,
     businessSample,
     authorizations: Object.freeze(authorizations)
   });
@@ -220,9 +230,11 @@ function buildEvaluationPolicy(value, schema) {
     value?.nextDevelopmentReadiness,
     "evaluation_policy_next_development_readiness"
   );
-  const expectedReadiness = schema === "m2.current.config.v0.3"
-    ? "BUSINESS_COVERAGE_AND_ABSOLUTE_QUALITY_REQUIRED"
-    : "AUTOMATED_BACKTEST_AND_BUSINESS_COVERAGE_REQUIRED";
+  const expectedReadiness = schema === "m2.current.config.v0.4"
+    ? "AUDITABLE_AS_OF_SIGNAL_AND_CASH_OBSERVABILITY_REQUIRED"
+    : schema === "m2.current.config.v0.3"
+      ? "BUSINESS_COVERAGE_AND_ABSOLUTE_QUALITY_REQUIRED"
+      : "AUTOMATED_BACKTEST_AND_BUSINESS_COVERAGE_REQUIRED";
   if (
     nextDevelopmentReadiness
     !== expectedReadiness
@@ -305,6 +317,111 @@ function buildEvaluationPolicy(value, schema) {
     );
   }
   return Object.freeze(result);
+}
+
+function buildV04DevelopmentPolicy(value) {
+  const denseOrigins = value?.denseOrigins;
+  const modelDevelopment = value?.modelDevelopment;
+  const ensemble = value?.ensemble;
+  const probabilistic = value?.probabilistic;
+  const hierarchy = value?.hierarchy;
+  const automation = value?.automation;
+  if (
+    denseOrigins?.stepMonths !== 1
+    || denseOrigins?.decisionPopulationMoved !== false
+    || denseOrigins?.role !== "secondary_development_diagnostic"
+  ) {
+    throw new Error("m2_current_dense_origin_policy_invalid");
+  }
+  if (
+    !Array.isArray(modelDevelopment?.families)
+    || modelDevelopment.families.length !== 3
+    || modelDevelopment.families.some(
+      (family) => !Array.isArray(family.parameters)
+        || family.parameters.length === 0
+    )
+  ) {
+    throw new Error("m2_current_global_model_policy_invalid");
+  }
+  if (
+    hierarchy?.method !== "MinT"
+    || hierarchy?.nonnegative !== true
+    || probabilistic?.method
+      !== "rolling_split_conformal_residual_quantiles"
+  ) {
+    throw new Error("m2_current_distributional_policy_invalid");
+  }
+  return Object.freeze({
+    denseOrigins: Object.freeze({
+      firstOrigin: exactString(denseOrigins.firstOrigin, "dense_first_origin"),
+      lastOrigin: exactString(denseOrigins.lastOrigin, "dense_last_origin"),
+      stepMonths: 1,
+      horizons: Object.freeze(uniquePositiveIntegers(
+        denseOrigins.horizons,
+        "dense_horizons"
+      )),
+      labelAvailableThrough: exactString(
+        denseOrigins.labelAvailableThrough,
+        "dense_label_available_through"
+      ),
+      decisionPopulationMoved: false,
+      role: denseOrigins.role
+    }),
+    modelDevelopment: Object.freeze({
+      minimumTrainingRows: positiveInteger(
+        modelDevelopment.minimumTrainingRows,
+        "global_minimum_training_rows"
+      ),
+      minimumNestedRelativeWapeImprovement: unitInterval(
+        modelDevelopment.minimumNestedRelativeWapeImprovement,
+        "global_nested_relative_wape_improvement"
+      ),
+      maximumNestedAbsoluteBias: unitInterval(
+        modelDevelopment.maximumNestedAbsoluteBias,
+        "global_nested_absolute_bias"
+      ),
+      families: Object.freeze(modelDevelopment.families.map((family) => (
+        Object.freeze({
+          id: exactString(family.id, "global_family_id"),
+          parameters: Object.freeze(family.parameters.map(
+            (parameters) => Object.freeze({ ...parameters })
+          ))
+        })
+      )))
+    }),
+    ensemble: Object.freeze({
+      weights: Object.freeze(uniqueFiniteNumbers(
+        ensemble.weights,
+        "ensemble_weights",
+        { minimum: 0, maximum: 1 }
+      )),
+      maximumTrainingAbsoluteBias: unitInterval(
+        ensemble.maximumTrainingAbsoluteBias,
+        "ensemble_training_absolute_bias"
+      )
+    }),
+    probabilistic: Object.freeze({
+      quantileProbabilities: Object.freeze(uniqueFiniteNumbers(
+        probabilistic.quantileProbabilities,
+        "probabilistic_quantiles",
+        { minimum: 0, maximum: 1 }
+      )),
+      minimumCalibrationRows: positiveInteger(
+        probabilistic.minimumCalibrationRows,
+        "probabilistic_minimum_calibration_rows"
+      ),
+      method: probabilistic.method
+    }),
+    hierarchy: Object.freeze({ ...hierarchy }),
+    automation: Object.freeze({
+      ...automation,
+      coverageLevels: Object.freeze([...automation.coverageLevels]),
+      quantileProbabilities: Object.freeze(
+        [...automation.quantileProbabilities]
+      ),
+      businessLoss: Object.freeze({ ...automation.businessLoss })
+    })
+  });
 }
 
 function buildOccurrenceAmountPolicy(value, activitySegments) {

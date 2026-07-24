@@ -7,6 +7,7 @@ import { resolveM2CurrentCashRoute } from "./route.js";
 const BASELINE_IDS = Object.freeze([
   "zero",
   "seasonal_naive",
+  "Croston",
   "SBA",
   "TSB",
   "ADIDA"
@@ -20,10 +21,16 @@ export function buildM2CurrentAutomatedBaselineEvaluation(
   if (!Array.isArray(caseRows) || caseRows.length === 0) {
     throw new Error("m2_current_baseline_case_rows_required");
   }
-  const history = buildHistoryIndex(historyRows);
-  const baselineIds = contract?.evaluationPolicy?.automatedComparators
-    ?.filter((id) => BASELINE_IDS.includes(id)) ?? [];
-  if (baselineIds.length !== BASELINE_IDS.length) {
+  const history = buildM2CurrentHistoryIndex(historyRows);
+  const requestedBaselineIds =
+    contract?.evaluationPolicy?.automatedComparators ?? [];
+  const baselineIds = requestedBaselineIds.filter(
+    (id) => BASELINE_IDS.includes(id)
+  );
+  if (
+    baselineIds.length !== requestedBaselineIds.length
+    || baselineIds.length === 0
+  ) {
     throw new Error("m2_current_required_baselines_missing");
   }
   const rowsByBaseline = Object.fromEntries(
@@ -44,7 +51,9 @@ export function buildM2CurrentAutomatedBaselineEvaluation(
       });
       continue;
     }
-    const series = historySeries(history, row.standardWorkId, row.origin);
+    const series = Array.isArray(row.historySeries)
+      ? validateHistorySeries(row.historySeries)
+      : getM2CurrentHistorySeries(history, row.standardWorkId, row.origin);
     const scale = scalingErrors(series);
     const forecasts = forecastBaselines(series, row.horizonMonths);
     for (const baselineId of baselineIds) {
@@ -80,6 +89,7 @@ export function buildM2CurrentAutomatedBaselineEvaluation(
         }];
       })
     ),
+    rowsByBaseline,
     routePolicy: {
       scoredCaseCount: rowsByBaseline[baselineIds[0]].length,
       abstainedCaseCount: abstentions.length,
@@ -90,14 +100,80 @@ export function buildM2CurrentAutomatedBaselineEvaluation(
   };
 }
 
+export function buildM2CurrentRollingBaselineChampion(
+  rowsByBaseline,
+  { minimumTrainingRows = 80 } = {}
+) {
+  const baselineIds = Object.keys(rowsByBaseline).sort();
+  if (
+    baselineIds.length === 0
+    || baselineIds.some((id) => !Array.isArray(rowsByBaseline[id]))
+  ) {
+    throw new Error("m2_current_baseline_champion_rows_required");
+  }
+  const origins = [...new Set(
+    rowsByBaseline[baselineIds[0]].map((row) => row.origin)
+  )].sort();
+  const rows = [];
+  const selections = [];
+  for (const origin of origins) {
+    const candidates = baselineIds.map((baselineId) => {
+      const training = rowsByBaseline[baselineId].filter((row) => (
+        row.origin < origin && row.labelAvailableAsOf <= origin
+      ));
+      return {
+        baselineId,
+        training,
+        metrics: training.length >= minimumTrainingRows
+          ? safePointScore(training)
+          : null
+      };
+    }).filter((entry) => entry.metrics !== null).sort((a, b) => (
+      a.metrics.wape - b.metrics.wape
+      || Math.abs(a.metrics.signedBias) - Math.abs(b.metrics.signedBias)
+      || a.baselineId.localeCompare(b.baselineId)
+    ));
+    const selected = candidates[0] ?? {
+      baselineId: "zero",
+      training: [],
+      metrics: null
+    };
+    const outer = rowsByBaseline[selected.baselineId].filter(
+      (row) => row.origin === origin
+    );
+    rows.push(...outer.map((row) => ({
+      ...row,
+      selectedBaselineId: selected.baselineId
+    })));
+    selections.push({
+      outerOrigin: origin,
+      selectedBaselineId: selected.baselineId,
+      matureEarlierCaseCount: selected.training.length,
+      trainingMetrics: selected.metrics,
+      sameOrLaterOuterTruthRead: false
+    });
+  }
+  return {
+    rows,
+    selections,
+    overall: scoreM2CurrentEvaluationRows(rows),
+    byOrigin: scoreM2CurrentEvaluationSlices(rows, "origin"),
+    bySegment: scoreM2CurrentEvaluationSlices(rows, "segment")
+  };
+}
+
 export function attachM2CurrentScaleAndOccurrence(
   rows,
   historyRows,
   occurrenceProbability
 ) {
-  const history = buildHistoryIndex(historyRows);
+  const history = buildM2CurrentHistoryIndex(historyRows);
   return rows.map((row) => {
-    const series = historySeries(history, row.standardWorkId, row.origin);
+    const series = getM2CurrentHistorySeries(
+      history,
+      row.standardWorkId,
+      row.origin
+    );
     const scale = scalingErrors(series);
     return {
       ...row,
@@ -108,7 +184,7 @@ export function attachM2CurrentScaleAndOccurrence(
   });
 }
 
-function buildHistoryIndex(rows) {
+export function buildM2CurrentHistoryIndex(rows) {
   if (!Array.isArray(rows) || rows.length === 0) {
     throw new Error("m2_current_history_rows_required");
   }
@@ -131,7 +207,7 @@ function buildHistoryIndex(rows) {
   return { byWork, firstMonth };
 }
 
-function historySeries(history, standardWorkId, origin) {
+export function getM2CurrentHistorySeries(history, standardWorkId, origin) {
   const cutoff = normalizeMonth(origin);
   if (history.firstMonth > cutoff) {
     throw new Error("m2_current_history_starts_after_origin");
@@ -157,6 +233,7 @@ function forecastBaselines(series, horizonMonths) {
     );
     return seasonalIndex >= 0 ? nonnegative[seasonalIndex] : 0;
   }).reduce((sum, value) => sum + value, 0);
+  const croston = crostonClassic(nonnegative);
   const sba = crostonSba(nonnegative);
   const tsb = teunterSyntetosBabai(nonnegative);
   const adida = aggregateDisaggregate(nonnegative);
@@ -168,6 +245,10 @@ function forecastBaselines(series, horizonMonths) {
     seasonal_naive: {
       pointEstimate: seasonal,
       occurrenceProbability: seasonal > 0 ? 1 : 0
+    },
+    Croston: {
+      pointEstimate: croston.rate * horizon,
+      occurrenceProbability: croston.occurrenceProbability
     },
     SBA: {
       pointEstimate: sba.rate * horizon,
@@ -184,7 +265,25 @@ function forecastBaselines(series, horizonMonths) {
   };
 }
 
+function crostonClassic(series, alpha = 0.1) {
+  const result = crostonState(series, alpha);
+  return {
+    rate: result.initialized ? result.size / result.interval : 0,
+    occurrenceProbability: result.occurrenceProbability
+  };
+}
+
 function crostonSba(series, alpha = 0.1) {
+  const result = crostonState(series, alpha);
+  return {
+    rate: result.initialized
+      ? (1 - alpha / 2) * result.size / result.interval
+      : 0,
+    occurrenceProbability: result.occurrenceProbability
+  };
+}
+
+function crostonState(series, alpha) {
   let size = 0;
   let interval = 0;
   let elapsed = 0;
@@ -207,11 +306,60 @@ function crostonSba(series, alpha = 0.1) {
     elapsed = 0;
   }
   return {
-    rate: initialized ? (1 - alpha / 2) * size / interval : 0,
+    initialized,
+    size,
+    interval,
     occurrenceProbability: series.length > 0
       ? positiveCount / series.length
       : 0
   };
+}
+
+export function forecastM2CurrentBaselines(series, horizonMonths) {
+  return forecastBaselines(validateHistorySeries(series), horizonMonths);
+}
+
+export function buildM2CurrentHistoryFeatures(
+  series,
+  { horizonMonths, basePointEstimate, segment, route }
+) {
+  const values = validateHistorySeries(series);
+  const nonnegative = values.map((value) => Math.max(0, value));
+  const trailing = (count) => nonnegative.slice(-count);
+  const sum = (items) => items.reduce((total, value) => total + value, 0);
+  const positiveCount = (items) => items.filter((value) => value > 0).length;
+  const lastPositiveIndex = nonnegative.findLastIndex((value) => value > 0);
+  const positiveValues = nonnegative.filter((value) => value > 0);
+  const last3 = trailing(3);
+  const last6 = trailing(6);
+  const last12 = trailing(12);
+  const last24 = trailing(24);
+  return Object.freeze({
+    logBasePoint: Math.log1p(Math.max(0, Number(basePointEstimate) || 0)),
+    logTrailing3: Math.log1p(sum(last3)),
+    logTrailing6: Math.log1p(sum(last6)),
+    logTrailing12: Math.log1p(sum(last12)),
+    logTrailing24: Math.log1p(sum(last24)),
+    occurrence3: positiveCount(last3) / Math.max(1, last3.length),
+    occurrence6: positiveCount(last6) / Math.max(1, last6.length),
+    occurrence12: positiveCount(last12) / Math.max(1, last12.length),
+    occurrence24: positiveCount(last24) / Math.max(1, last24.length),
+    logMeanPositive: Math.log1p(
+      positiveValues.length > 0 ? sum(positiveValues) / positiveValues.length : 0
+    ),
+    monthsSincePositive: lastPositiveIndex < 0
+      ? values.length + 1
+      : values.length - lastPositiveIndex - 1,
+    recentToPriorRatio: (
+      sum(last6) + 1
+    ) / (sum(nonnegative.slice(-12, -6)) + 1),
+    historyMonths: values.length,
+    logHorizon: Math.log(Number(horizonMonths)),
+    segmentDense: segment === "dense" ? 1 : 0,
+    segmentIntermittent: segment === "intermittent" ? 1 : 0,
+    segmentDormant: segment === "dormant" ? 1 : 0,
+    routeMixed: route === "buyout_plus_sales" ? 1 : 0
+  });
 }
 
 function teunterSyntetosBabai(series, alpha = 0.1, beta = 0.1) {
@@ -332,6 +480,24 @@ function finite(value, name) {
   return number;
 }
 
+function validateHistorySeries(values) {
+  if (!Array.isArray(values) || values.length === 0) {
+    throw new Error("m2_current_history_series_required");
+  }
+  return values.map((value) => finite(value, "history_amount"));
+}
+
 function clamp(value, minimum, maximum) {
   return Math.max(minimum, Math.min(maximum, value));
+}
+
+function safePointScore(rows) {
+  try {
+    return scoreM2CurrentEvaluationRows(rows);
+  } catch (error) {
+    if (error?.message === "m2_current_actual_denominator_zero") {
+      return null;
+    }
+    throw error;
+  }
 }

@@ -1,0 +1,269 @@
+#!/usr/bin/env python3
+"""Materialize private monthly M2 development cases from frozen authority.
+
+This adapter reads the already verified local model-input cache.  It never
+connects to a database, calls a provider, opens the final holdout, or writes
+identifiers to tracked output.
+"""
+
+from __future__ import annotations
+
+import hashlib
+import json
+import sys
+from pathlib import Path
+from typing import Any, Iterable, Mapping
+
+
+ROOT = Path(__file__).resolve().parents[2]
+REAL_DATA = ROOT / "scripts" / "m2-real-data"
+if str(REAL_DATA) not in sys.path:
+    sys.path.insert(0, str(REAL_DATA))
+
+import m2_calibration_c2_v1 as c2  # noqa: E402
+import m2_calibration_v1 as base  # noqa: E402
+import m2_calibration_v1_2 as v12  # noqa: E402
+import m2_formal_cash_target_v1 as cash  # noqa: E402
+import run_m2_calibration_baseline_replay as legacy  # noqa: E402
+
+
+CONFIG = ROOT / "config" / "m2-current.v0.4.json"
+CURRENT_PRIVATE = (
+    ROOT
+    / "data"
+    / "private-output"
+    / "m2-current-quality"
+    / "M2-current-occurrence-amount-candidate-cases-private-v0.3.ndjson"
+)
+CURRENT_MANIFEST = (
+    ROOT
+    / "data"
+    / "private-output"
+    / "m2-current-quality"
+    / "M2-current-occurrence-amount-candidate-manifest-private-v0.3.json"
+)
+OUTPUT_DIR = ROOT / "data" / "private-output" / "m2-current-dense"
+CASE_OUTPUT = OUTPUT_DIR / "M2-current-dense-cases-private-v0.1.ndjson"
+HISTORY_OUTPUT = OUTPUT_DIR / "M2-current-dense-history-private-v0.1.ndjson"
+MANIFEST_OUTPUT = OUTPUT_DIR / "M2-current-dense-manifest-private-v0.1.json"
+SALES_ROUTES = frozenset({"pure_sales_share", "buyout_plus_sales"})
+
+
+class DenseMaterializationError(RuntimeError):
+    """The bounded dense development adapter contract was violated."""
+
+
+def digest_bytes(value: bytes) -> str:
+    return hashlib.sha256(value).hexdigest()
+
+
+def read_current_work_ids() -> set[str]:
+    if not CURRENT_PRIVATE.is_file() or not CURRENT_MANIFEST.is_file():
+        raise DenseMaterializationError(
+            "current v0.3 private candidate authority is missing"
+        )
+    private_bytes = CURRENT_PRIVATE.read_bytes()
+    manifest = json.loads(CURRENT_MANIFEST.read_text(encoding="utf-8"))
+    if (
+        manifest.get("schema")
+        != "m2.current.occurrence_amount_candidate.private_manifest.v0.3"
+        or manifest.get("tracked") is not False
+        or manifest.get("privateCaseSha256") != digest_bytes(private_bytes)
+    ):
+        raise DenseMaterializationError(
+            "current v0.3 private candidate authority differs"
+        )
+    work_ids: set[str] = set()
+    count = 0
+    for line in private_bytes.decode("utf-8").splitlines():
+        if not line:
+            continue
+        row = json.loads(line)
+        work_ids.add(str(row["caseKey"]["standardWorkId"]))
+        count += 1
+    if (
+        count != int(manifest["privateCaseRowCount"])
+        or len(work_ids) != 824
+    ):
+        raise DenseMaterializationError(
+            "current v0.3 private candidate population differs"
+        )
+    return work_ids
+
+
+def month_range(first: str, last: str, step: int) -> Iterable[str]:
+    current = first
+    while current <= last:
+        yield current
+        current = base.add_months(current, step)
+
+
+def encode_ndjson(rows: Iterable[Mapping[str, Any]]) -> tuple[bytes, int]:
+    encoded: list[bytes] = []
+    count = 0
+    for row in rows:
+        encoded.append(
+            json.dumps(
+                row,
+                ensure_ascii=False,
+                sort_keys=True,
+                separators=(",", ":"),
+                allow_nan=False,
+            ).encode("utf-8")
+            + b"\n"
+        )
+        count += 1
+    return b"".join(encoded), count
+
+
+def run() -> dict[str, Any]:
+    config = json.loads(CONFIG.read_text(encoding="utf-8"))
+    dense = config["development"]["denseOrigins"]
+    if (
+        dense["stepMonths"] != 1
+        or dense["decisionPopulationMoved"] is not False
+        or dense["labelAvailableThrough"] != "2023-06"
+    ):
+        raise DenseMaterializationError("dense development boundary differs")
+    work_ids = read_current_work_ids()
+    calibration_spec, _v11, _v12 = v12.load_and_validate_contract()
+    c2_spec = c2.load_spec()
+    works_list, _posthoc, input_evidence = legacy.load_authorized_works(
+        calibration_spec
+    )
+    works = {
+        str(work["standard_work_id"]): work
+        for work in works_list
+        if str(work["standard_work_id"]) in work_ids
+    }
+    if set(works) != work_ids:
+        raise DenseMaterializationError(
+            "dense development work population differs"
+        )
+    case_rows: list[dict[str, Any]] = []
+    history_rows: list[dict[str, Any]] = []
+    route_counts: dict[str, int] = {}
+    segment_counts: dict[str, int] = {}
+    for origin in month_range(
+        dense["firstOrigin"],
+        dense["lastOrigin"],
+        int(dense["stepMonths"]),
+    ):
+        for work_id in sorted(works):
+            work = works[work_id]
+            routing = base.route_work_as_of(work, origin, calibration_spec)
+            route = str(routing["route"])
+            segment_state = c2.segment_as_of(
+                work,
+                origin,
+                calibration_spec,
+                c2_spec,
+            )
+            segment = str(segment_state["segment"])
+            history = c2.work_sales_history_as_of(
+                work,
+                origin,
+                calibration_spec,
+            )
+            history_key = f"{work_id}|{origin}"
+            history_rows.append(
+                {
+                    "historyKey": history_key,
+                    "standardWorkId": work_id,
+                    "origin": origin,
+                    "route": route,
+                    "segment": segment,
+                    "historySeries": [
+                        float(value) for value in history["values"]
+                    ],
+                    "historyFirstObservedMonth": history["firstObservedMonth"],
+                    "historyMonthCount": len(history["values"]),
+                    "historyThroughOriginOnly": True,
+                }
+            )
+            route_counts[route] = route_counts.get(route, 0) + 1
+            segment_counts[segment] = segment_counts.get(segment, 0) + 1
+            for horizon in dense["horizons"]:
+                target_end = base.add_months(origin, int(horizon))
+                if target_end > dense["labelAvailableThrough"]:
+                    continue
+                actuals = cash.build_formal_cash_actuals(
+                    work,
+                    origin,
+                    int(horizon),
+                    route,
+                    calibration_spec,
+                    label_available_as_of=target_end,
+                )
+                served = route in SALES_ROUTES
+                case_rows.append(
+                    {
+                        "standardWorkId": work_id,
+                        "origin": origin,
+                        "horizonMonths": int(horizon),
+                        "targetEnd": target_end,
+                        "labelAvailableAsOf": target_end,
+                        "labelStatus": "observed",
+                        "route": route,
+                        "segment": segment,
+                        "historyKey": history_key,
+                        "actual": float(actuals["forecastableCashActual"]),
+                        "uncommittedBuyoutSurpriseActual": float(
+                            actuals["uncommittedBuyoutSurpriseActual"]
+                        ),
+                        "served": served,
+                        "abstained": not served,
+                        "abstentionReason": (
+                            None
+                            if served
+                            else "uncommitted_future_buyout_not_forecastable"
+                            if route == "pure_buyout"
+                            else "unknown_revenue_model"
+                        ),
+                        "finalHoldoutOpened": False,
+                        "deferred60MonthLabelsOpened": False,
+                    }
+                )
+    case_bytes, case_count = encode_ndjson(case_rows)
+    history_bytes, history_count = encode_ndjson(history_rows)
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    CASE_OUTPUT.write_bytes(case_bytes)
+    HISTORY_OUTPUT.write_bytes(history_bytes)
+    manifest = {
+        "schema": "m2.current.dense_development.private_manifest.v0.1",
+        "tracked": False,
+        "decisionStatus": "not_for_formal_decision",
+        "role": "secondary_development_diagnostic",
+        "decisionPopulationMoved": False,
+        "workCount": len(work_ids),
+        "originCount": len(
+            list(
+                month_range(
+                    dense["firstOrigin"],
+                    dense["lastOrigin"],
+                    int(dense["stepMonths"]),
+                )
+            )
+        ),
+        "caseRowCount": case_count,
+        "caseSha256": digest_bytes(case_bytes),
+        "historyRowCount": history_count,
+        "historySha256": digest_bytes(history_bytes),
+        "routeCountsByWorkOrigin": dict(sorted(route_counts.items())),
+        "segmentCountsByWorkOrigin": dict(sorted(segment_counts.items())),
+        "inputFingerprint": input_evidence["inputFingerprint"],
+        "providerCalled": False,
+        "databaseConnected": False,
+        "finalHoldoutOpened": False,
+        "embargoShadowOpened": False,
+        "deferred60MonthLabelsOpened": False,
+    }
+    MANIFEST_OUTPUT.write_text(
+        json.dumps(manifest, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    return manifest
+
+
+if __name__ == "__main__":
+    print(json.dumps(run(), ensure_ascii=False, indent=2))

@@ -2,11 +2,11 @@
 
 ## 当前唯一入口
 
-- PR #7、PR #8、PR #9、PR #10、PR #11 均已合入 `main`；已合并分支不得继续作为开发入口。
+- PR #7、PR #8、PR #9、PR #10、PR #11、PR #12 均已合入 `main`；已合并分支不得继续作为开发入口。
 - 当前仓库治理导航为：
-  - `docs/analysis/m2-v2/M2-v2-current-state-index-v0.9.md`
+  - `docs/analysis/m2-v2/M2-v2-current-state-index-v0.10.md`
   - `docs/analysis/m2-v2/M2-repository-code-convergence-and-portable-development-audit-v0.4.md`
-  - `docs/analysis/m2-current/M2-current-automated-model-development-v0.4.md`
+  - `docs/analysis/m2-current/M2-current-R0-R5-evaluation-and-development-v0.5.md`
 - PR #7 cryptographic authority 继续由不可变的
   `docs/analysis/m2-v2/M2-v2-current-state-index-v0.3.json` 提供；治理索引不得改写该绑定。
 - 历史 B0–B8、C1–C3、旧 PR 状态和旧授权记录只用于审计追溯，不是当前执行指令。
@@ -82,76 +82,78 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
 - 正式目标继续是未来账单现金：未来实销现金，加 cutoff 时已签署、确认且可审计的未来现金承诺。
 - 未承诺未来买断、概率乘金额、历史买断摊销和 `buyoutMonthlyEquivalent` 不得进入正式现金预测。
 - `buyoutMonthlyEquivalent` 只允许作为 rating/historical context，并保持 `notCashForecast=true`。
-- 无 cutoff 承诺的 pure-buyout 必须 null abstain，禁止使用 0 或月均等效值冒充预测。
-- pure-buyout 不进入人工或机器数值预估书单；只有真实 cutoff commitment 才能按承诺金额进入现金范围。
+- 无 strict cutoff commitment 的 pure-buyout 必须 null abstain，禁止使用 0 或月均等效值冒充预测。
+- commitment 必须 exact-work、已签署、已确认、cutoff 前可得、可审计，且预计入账月位于 horizon。
 - B4 只作 comparator/fallback，不是 release approval。
 - C1、legacy C2-R、C2-R.1、C2、C3 均为历史 development `FAIL`，不得重复进入或复制其 runner。
-- 2026-07-24 用户已授权并完成本轮本地 current v0.3 candidate development；授权只覆盖冻结 development case 上的受约束算法开发和复验，不包含 provider、数据库、final holdout、release 或 M3 formal。
-- 当前公共诊断为 `CANDIDATE_DEVELOPMENT_PARTIAL_BLOCKED`：
+- 2026-07-24 用户已授权并完成 R0–R5 本地 development 复验；授权只覆盖冻结
+  development case 和本机已验证 authority cache，不包含 provider、数据库、
+  final holdout、release 或 M3 formal。
+- 当前公共诊断为 `CANDIDATE_DEVELOPMENT_FAIL_BLOCKED`：
   - 3,053 部权威作品，824 部 model works，7,851 个 formal-cash cases
   - 全库现金覆盖率 0.7396468495，Top10 覆盖率 0.759412528，门槛 0.90
   - v0.3 WAPE/bias 0.50557140 / -0.01198958；v0.2 为
     0.51114966 / -0.00586227；B4 为 0.55648454 / 0.08910997
-  - 相对 v0.2 WAPE 点估计改善 1.0913%，paired work×origin 95% CI 为
-    [-0.03714631, -0.00015184]；相对 B4 改善 9.1491%，95% CI 为
-    [-0.16709546, -0.03228091]
+  - v0.4 gated result WAPE/bias 0.50557140 / -0.01198958；它在五个 outer
+    origin 都回退 exact v0.3，不是新模型打平
   - 绝对 WAPE 高于 0.30 development 门槛；intermittent WAPE 0.9073，
     dormant WAPE/bias 1.00018 / -0.99972，均不具备 decision-grade 质量
-  - overall bias、各 horizon bias、相对 v0.2 paired CI 通过；绝对误差和
-    segment 门禁失败，因此只能是 `PARTIAL_PASS`
-- 当前 development candidate 为 `M2-current-occurrence-amount-calibration-v0.3`：
-  以 v0.2 为 base；dense/intermittent 只有在至少 80 个严格更早成熟 case 上
-  two-part occurrence/conditional-amount 规则相对 base 改善至少 1% 且 bias 安全时
-  才启用；dormant 保留 v0.2 fallback 并明确记录其不可用质量。
-- zero、seasonal naive、SBA、TSB、ADIDA 已进入同人口 rolling-origin 自动回归；
-  它们是 sanity baselines，不因弱于 current candidate 而删除。
+  - 25 个逐月 origin 形成 56,856 个成熟 case；rolling baseline champion
+    WAPE/bias 0.66335800 / -0.30206120，80% interval coverage 0.64363277
+  - global hurdle GLM、Tweedie boosting、hurdle GBM、MinT 和受约束 ensemble
+    均未通过 nested gate；继续堆叠同类模型不是当前优先级
+- 当前 development champion 仍为
+  `M2-current-occurrence-amount-calibration-v0.3`。v0.4 只是在严格门禁拒绝所有
+  challenger 后返回 v0.3，不能表述为候选升级。
+- zero、seasonal naive、classic Croston、SBA、TSB、ADIDA、B4 和 v0.3 已进入
+  同人口自动回归；基线不得因表现较弱而删除。
 - eligibility、cash observability 和 served coverage 必须继续分开报告。2,229 部非模型作品的原因 ledger 已在本地 private output 穷尽对账；不得为提高比例移动 824/7,851 冻结人口。
-- 用户已于 2026-07-24 明确取消 120 部人工预估书单、独立人工数值基线和强制
-  逐行复核。旧 120 部 JSON 仅是历史审计 artifact，不是 current 配置、runner、
-  loader、readiness 或验收依赖。
+- 用户已明确取消并要求跳过 120 部人工预估/复核。不得重建、重放或生成替代
+  样本；旧 JSON 仅是历史审计 artifact，不是 current 配置、runner、loader、
+  readiness 或验收依赖。
 - 人工只在自动技术门禁和后续授权通过后做 post-gate quality assurance：
   `accept`、`accept_with_limits` 或 `reject`；人工不提供预测金额，也不与模型比赛。
 
 当前业务 gate 保持：
 
 - `currentDecision=CANARY_FAIL`
-- `nextDevelopmentReadiness=BUSINESS_COVERAGE_AND_ABSOLUTE_QUALITY_REQUIRED`
+- `automationDecision=AUTOMATION_BLOCKED`
+- `nextDevelopmentReadiness=AUDITABLE_AS_OF_SIGNAL_AND_CASH_OBSERVABILITY_REQUIRED`
 - `full160Authorized=false`
-- `modelTrainingAuthorized=true` 仅限复现上述 exact v0.3 development candidate
+- 本轮 R0–R5 新候选研究授权已执行完毕；默认不得继续新增模型家族或同类调参
 - final holdout、embargo shadow、deferred labels 均 sealed
-- provider、远端/共享/staging-like 数据库、Canary/full160、后续新候选家族、release、M3 formal 均未授权
+- provider、远端/共享/staging-like 数据库、Canary/full160、release、M3 formal 均未授权
 
-## M2 当前执行队列（2026-07-24 v0.3 完成后）
+## M2 当前执行队列（2026-07-24 R0–R5 完成后）
 
 以下顺序是当前仓库任务的默认优先级。除非用户明确改变业务方向或新增授权，否则
-不得以继续调参、扩建 evidence runtime、复制历史 runner 或重新引入人工预测竞赛代替。
+不得以继续调参、扩建 evidence runtime、复制历史 runner 或重新引入 120 部人工评估代替。
 
-1. 保持 exact v0.3、rolling-origin、强基线和 two-part 指标可复现；不得将
-   1.09% 的相对改善表述为可发布或可替代人工。
-2. 优先处理业务可观察性与 segment 失效：
-   - 不移动冻结 824/7,851 人口；
-   - 分析 intermittent/dormant 的 occurrence 与 positive amount 误差；
-   - 不以剔除困难 case、null→0 或只报告总体 WAPE 改善指标。
-3. 从业务源单独补充 cutoff 时已签署、确认且可审计的 commitment snapshot。
-   未承诺买断不得进入正式现金预测，pure-buyout 无承诺时继续 null abstain。
-4. 后续新候选若获单独授权，只能扩展 `src/domain/m2Current/**`，优先研究正常销售现金的
-   two-part/hurdle、严格 as-of 特征、全局共享与非负层级协调；不得让未承诺买断进入
-   概率金额模型。
-5. 自动化技术门禁通过后，再让人工做小规模 post-gate quality assurance；
-   不要求人工预测数值，不恢复 120 部 stress 清单。
-6. final holdout、embargo shadow、deferred labels、provider、数据库、Canary/full160、
-   release 和 M3 formal 在收到各自明确授权前继续 sealed/禁止。
+1. 保持 exact v0.3/v0.4 fallback、25-origin 次级诊断、强基线、概率评价、
+   risk–coverage、业务损失和 FVA 可复现。
+2. 只接收 cutoff 时真实可得、可审计、可版本化、exact-work 的新信号：
+   commitment snapshot、sales historical availability、合同/可售/渠道状态。
+3. 先建立 intermittent/dormant occurrence 与 positive amount 的数据缺口
+   ledger，并量化每个信号的 work/origin 覆盖；无历史 snapshot 的 current
+   状态不得回填。
+4. 新信号先通过 25-origin 次级诊断，再回到 7,851-case 权威人口做 nested
+   challenger；不移动冻结人口，不剔除困难 case，不将 null 计为 0。
+5. 只有绝对质量、segment、risk–coverage 和业务损失均通过，才申请 final
+   holdout；失败时继续 fallback，不得用新模型数量替代证据质量。
+6. 120 部人工评估继续完全跳过。人工只在技术门禁通过后做 post-gate QA。
+7. final holdout、embargo shadow、deferred labels、provider、数据库、
+   Canary/full160、release 和 M3 formal 在收到各自明确授权前继续 sealed/禁止。
 
 当前启动状态：
 
-- 已实现：v0.3 two-part candidate、rolling-origin、五个简单基线、WAPE/bias/
-  MASE/RMSSE、occurrence/positive-amount 和 coverage/abstention 分解。
-- 已验证：冻结 development 复验通过完整性与 paired CI，但绝对 WAPE 和
-  segment 质量门禁失败。
-- 已退役：120 部人工预估/复核清单的 current 依赖；历史文件仅供追溯。
-- 不再等待：盲视人工预测、120 部逐行复核或三张人工填写模板。
-- 仅在真实材料存在时等待：cutoff 时已签署、确认且可审计的 commitment snapshot。
-- 未授权：后续新候选训练、final holdout 及所有既有业务 gate 外的动作。
+- 已实现：R0–R5 strict contract、nested evaluator、六个简单基线、三个全局
+  challenger、rolling conformal、MinT、ensemble、risk–coverage、业务损失和 FVA。
+- 已验证：权威 7,851-case 与 25-origin/56,856-case 次级 development 复验；
+  challenger 均失败并安全回退 v0.3。
+- 已退役：120 部人工评估的 current 依赖；不重建、不重放。
+- 下一输入：真实的 cutoff as-of signal 与 cash observability 数据；不存在时
+  保持阻断，不制造或推断。
+- 未授权：final holdout 及所有既有业务 gate 外的动作。
 
 ## Git 与提交规则
 

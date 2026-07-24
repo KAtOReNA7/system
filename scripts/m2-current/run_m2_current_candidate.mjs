@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { spawnSync } from "node:child_process";
 import {
   mkdir,
   readFile,
@@ -10,7 +11,10 @@ import { fileURLToPath } from "node:url";
 import { pairedWorkOriginBootstrap } from "../../src/domain/m2Current/bootstrap.js";
 import {
   attachM2CurrentScaleAndOccurrence,
-  buildM2CurrentAutomatedBaselineEvaluation
+  buildM2CurrentAutomatedBaselineEvaluation,
+  buildM2CurrentHistoryIndex,
+  buildM2CurrentRollingBaselineChampion,
+  getM2CurrentHistorySeries
 } from "../../src/domain/m2Current/baselines.js";
 import {
   buildM2CurrentOccurrenceAmountCandidate,
@@ -19,28 +23,59 @@ import {
 import { compareM2CurrentCandidateToB4 } from "../../src/domain/m2Current/comparator.js";
 import { buildM2CurrentContract } from "../../src/domain/m2Current/contract.js";
 import {
+  buildM2CurrentDenseOriginSchedule,
+  partitionM2CurrentLabels
+} from "../../src/domain/m2Current/dataContract.js";
+import {
+  buildM2CurrentConstrainedEnsemble,
+  buildM2CurrentGlobalModelBakeoff
+} from "../../src/domain/m2Current/evaluator.js";
+import {
+  reconcileM2CurrentSegmentHierarchy
+} from "../../src/domain/m2Current/hierarchy.js";
+import {
   scoreM2CurrentEvaluationRows,
   scoreM2CurrentEvaluationSlices,
+  scoreM2CurrentProbabilisticRows,
   scoreM2CurrentSlices
 } from "../../src/domain/m2Current/metrics.js";
+import {
+  attachM2CurrentConformalQuantiles
+} from "../../src/domain/m2Current/probabilistic.js";
+import {
+  evaluateM2CurrentAutomationPolicy
+} from "../../src/domain/m2Current/automation.js";
 import { assertM2CurrentModelCaseRoute } from "../../src/domain/m2Current/route.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const config = JSON.parse(
   await readFile(path.join(root, "config/m2-current.v0.3.json"), "utf8")
 );
+const nextConfig = JSON.parse(
+  await readFile(path.join(root, "config/m2-current.v0.4.json"), "utf8")
+);
 const previousConfig = JSON.parse(
   await readFile(path.join(root, "config/m2-current.v0.2.json"), "utf8")
 );
 const contract = buildM2CurrentContract(config);
+const nextContract = buildM2CurrentContract(nextConfig);
 const previousContract = buildM2CurrentContract(previousConfig);
 const populationReport = JSON.parse(
   await readFile(path.join(root, config.publicSources.population), "utf8")
 );
-if (!contract.authorizations.modelTraining) {
+if (
+  !contract.authorizations.modelTraining
+  || !nextContract.authorizations.modelTraining
+) {
   throw new Error("m2_current_candidate_development_not_authorized");
 }
-if (contract.authorizations.holdout || contract.authorizations.release) {
+if (
+  nextContract.authorizations.newCandidateFamilyDevelopment
+  || contract.authorizations.holdout
+  || contract.authorizations.release
+  || nextContract.authorizations.holdout
+  || nextContract.authorizations.release
+) {
   throw new Error("m2_current_candidate_forbidden_authorization_scope");
 }
 
@@ -189,6 +224,9 @@ const candidate = buildM2CurrentOccurrenceAmountCandidate(
 const previousCandidateByKey = new Map(
   previousCandidate.rows.map((row) => [caseKey(row), row])
 );
+const currentCandidateByKey = new Map(
+  candidate.rows.map((row) => [caseKey(row), row])
+);
 if (
   candidate.rows.length !== contract.population.modelCaseCount
   || new Set(candidate.rows.map((row) => row.standardWorkId)).size
@@ -323,6 +361,91 @@ const evaluatedB4Rows = attachM2CurrentScaleAndOccurrence(
   historyRows,
   (row) => row.pointEstimate > 0 ? 1 : 0
 );
+const historyIndex = buildM2CurrentHistoryIndex(historyRows);
+const officialBaseRows = evaluatedCandidateRows.map((row) => ({
+  ...row,
+  historySeries: getM2CurrentHistorySeries(
+    historyIndex,
+    row.standardWorkId,
+    row.origin
+  ),
+  targetEnd: addMonths(row.origin, row.horizonMonths)
+}));
+const globalBakeoff = buildM2CurrentGlobalModelBakeoff(
+  officialBaseRows,
+  nextContract.development.modelDevelopment
+);
+const ensemble = buildM2CurrentConstrainedEnsemble(
+  officialBaseRows,
+  globalBakeoff.selectedRows,
+  nextContract.development.ensemble
+);
+const hierarchy = reconcileM2CurrentSegmentHierarchy(ensemble.rows);
+const hierarchySelection = buildM2CurrentConstrainedEnsemble(
+  ensemble.rows,
+  hierarchy.rows,
+  {
+    weights: [0, 1],
+    maximumTrainingAbsoluteBias:
+      nextContract.development.ensemble.maximumTrainingAbsoluteBias
+  }
+);
+const probabilistic = attachM2CurrentConformalQuantiles(
+  hierarchySelection.rows,
+  {
+    probabilities:
+      nextContract.development.probabilistic.quantileProbabilities,
+    minimumCalibrationRows:
+      nextContract.development.probabilistic.minimumCalibrationRows
+  }
+);
+const nextCandidateRows = probabilistic.rows;
+const nextComparison = compareM2CurrentCandidateToB4(
+  nextCandidateRows,
+  officialBaseRows,
+  nextContract
+);
+const nextPairedCi = pairedWorkOriginBootstrap(
+  nextCandidateRows,
+  officialBaseRows,
+  nextContract
+);
+const nextComparisonToB4 = compareM2CurrentCandidateToB4(
+  nextCandidateRows,
+  evaluatedB4Rows,
+  nextContract
+);
+const nextPairedCiToB4 = pairedWorkOriginBootstrap(
+  nextCandidateRows,
+  evaluatedB4Rows,
+  nextContract
+);
+const groupConfidenceIntervals = {
+  bySegment: pairedGroupConfidenceIntervals(
+    nextCandidateRows,
+    officialBaseRows,
+    "segment",
+    nextContract
+  ),
+  byHorizon: pairedGroupConfidenceIntervals(
+    nextCandidateRows,
+    officialBaseRows,
+    "horizonMonths",
+    nextContract
+  )
+};
+const automation = evaluateM2CurrentAutomationPolicy({
+  rows: nextCandidateRows,
+  comparators: {
+    v0_3: officialBaseRows,
+    B4: evaluatedB4Rows,
+    strongestSimpleBaseline: strongestBaselineRows(
+      baselineEvaluation.rowsByBaseline
+    )
+  },
+  policy: nextContract.development.automation,
+  stableImprovement: nextPairedCi.upper95 < 0
+});
 const automatedEvaluation = {
   schema: "m2.current.automated_evaluation.public.v0.1",
   decisionStatus: "not_for_formal_decision",
@@ -553,22 +676,425 @@ await writeFile(
   "utf8"
 );
 
+const denseProcess = spawnSync(
+  process.execPath,
+  [
+    path.join(root, "scripts/run-codex-python.mjs"),
+    path.join(
+      root,
+      "scripts/m2-current/materialize_dense_development_cases.py"
+    )
+  ],
+  {
+    cwd: root,
+    encoding: "utf8",
+    windowsHide: true,
+    maxBuffer: 10 * 1024 * 1024
+  }
+);
+if (denseProcess.status !== 0) {
+  throw new Error(
+    `m2_current_dense_materialization_failed:${denseProcess.stderr}`
+  );
+}
+const denseDirectory = path.join(
+  root,
+  "data/private-output/m2-current-dense"
+);
+const denseCaseText = await readFile(
+  path.join(
+    denseDirectory,
+    "M2-current-dense-cases-private-v0.1.ndjson"
+  ),
+  "utf8"
+);
+const denseHistoryText = await readFile(
+  path.join(
+    denseDirectory,
+    "M2-current-dense-history-private-v0.1.ndjson"
+  ),
+  "utf8"
+);
+const denseManifest = JSON.parse(await readFile(
+  path.join(
+    denseDirectory,
+    "M2-current-dense-manifest-private-v0.1.json"
+  ),
+  "utf8"
+));
+verifyDenseManifest(denseManifest, denseCaseText, denseHistoryText);
+const denseHistoryByKey = new Map(parseNdjson(denseHistoryText).map(
+  (row) => [row.historyKey, row.historySeries]
+));
+const denseCases = parseNdjson(denseCaseText).map((row) => ({
+  ...row,
+  revenueModel: row.route,
+  historySeries: denseHistoryByKey.get(row.historyKey)
+}));
+if (denseCases.some((row) => !Array.isArray(row.historySeries))) {
+  throw new Error("m2_current_dense_history_join_failed");
+}
+const denseSchedule = buildM2CurrentDenseOriginSchedule(
+  nextContract.development.denseOrigins
+);
+const denseLabelPartition = partitionM2CurrentLabels(
+  denseCases,
+  nextContract.development.denseOrigins.labelAvailableThrough
+);
+const denseBaselineEvaluation = buildM2CurrentAutomatedBaselineEvaluation(
+  denseCases,
+  historyRows,
+  nextContract
+);
+const denseChampion = buildM2CurrentRollingBaselineChampion(
+  denseBaselineEvaluation.rowsByBaseline,
+  {
+    minimumTrainingRows:
+      nextContract.development.modelDevelopment.minimumTrainingRows
+  }
+);
+const denseProbabilistic = attachM2CurrentConformalQuantiles(
+  denseChampion.rows,
+  {
+    probabilities:
+      nextContract.development.probabilistic.quantileProbabilities,
+    minimumCalibrationRows:
+      nextContract.development.probabilistic.minimumCalibrationRows
+  }
+);
+
+const nextCandidatePrivateRows = nextCandidateRows.map((row) => ({
+  caseKey: {
+    standardWorkId: row.standardWorkId,
+    origin: row.origin,
+    horizonMonths: row.horizonMonths,
+    route: row.route
+  },
+  segment: row.segment,
+  actual: row.actual,
+  previousCandidatePointEstimate:
+    currentCandidateByKey.get(caseKey(row))?.pointEstimate,
+  candidatePointEstimate: row.pointEstimate,
+  occurrenceProbability: row.occurrenceProbability,
+  quantiles: row.quantiles,
+  ensembleChallengerWeight: row.ensembleChallengerWeight,
+  hierarchyAdjustmentFactor: row.hierarchyAdjustmentFactor,
+  labelAvailableAsOf: row.labelAvailableAsOf
+}));
+const nextCandidatePrivateText = nextCandidatePrivateRows
+  .map((row) => JSON.stringify(row))
+  .join("\n") + "\n";
+const nextCandidatePrivatePath = path.join(
+  privateDirectory,
+  "M2-current-global-distributional-candidate-cases-private-v0.4.ndjson"
+);
+const nextCandidatePrivateManifestPath = path.join(
+  privateDirectory,
+  "M2-current-global-distributional-candidate-manifest-private-v0.4.json"
+);
+
+const nextCandidateAcceptance = {
+  developmentWapePassed:
+    nextComparison.candidate.wape
+      <= nextContract.thresholds.developmentWapeMaximum,
+  overallAbsoluteBiasPassed:
+    Math.abs(nextComparison.candidate.signedBias)
+      <= nextContract.thresholds.overallAbsoluteBiasMaximum,
+  eachHorizonAbsoluteBiasPassed:
+    nextContract.allowedHorizonValues.every((horizon) => (
+      Math.abs(scoreM2CurrentSlices(
+        nextCandidateRows,
+        "horizonMonths"
+      )[horizon].signedBias)
+        <= nextContract.thresholds.eachHorizonAbsoluteBiasMaximum
+    )),
+  eachSegmentWapePassed:
+    nextContract.activitySegmentValues.every((segment) => (
+      scoreM2CurrentSlices(nextCandidateRows, "segment")[segment].wape
+        <= nextContract.thresholds.eachSegmentWapeMaximum
+    )),
+  eachSegmentAbsoluteBiasPassed:
+    nextContract.activitySegmentValues.every((segment) => (
+      Math.abs(
+        scoreM2CurrentSlices(nextCandidateRows, "segment")[segment].signedBias
+      ) <= nextContract.thresholds.eachSegmentAbsoluteBiasMaximum
+    )),
+  stableImprovementVsV03Passed: nextPairedCi.upper95 < 0,
+  central80CalibrationPassed:
+    probabilistic.overall.intervalCoverage.central_80
+      .absoluteCalibrationError
+      <= nextContract.development.automation
+        .maximumCentral80CalibrationError,
+  hierarchyCoherencePassed: hierarchy.allCellsCoherent,
+  denseMonthlyOriginEvaluatorPassed:
+    denseSchedule.origins.length === 25
+      && denseManifest.originCount === 25
+      && denseLabelPartition.counts.invalid === 0
+};
+nextCandidateAcceptance.allCurrentDevelopmentConditionsPassed =
+  Object.values(nextCandidateAcceptance).every(Boolean);
+nextCandidateAcceptance.developmentDecision =
+  nextCandidateAcceptance.allCurrentDevelopmentConditionsPassed
+    ? "PASS"
+    : "FAIL";
+nextCandidateAcceptance.finalHoldoutOpened = false;
+nextCandidateAcceptance.releaseAuthorized = false;
+
+const nextAutomatedEvaluation = {
+  schema: "m2.current.automated_evaluation.public.v0.2",
+  decisionStatus: "not_for_formal_decision",
+  targetContract: {
+    target: nextConfig.target,
+    occurrenceDefinition:
+      "forecastable_cash_actual_strictly_greater_than_zero",
+    negativeCashOccurrenceTreatment:
+      "zero_occurrence_retained_in_amount_error",
+    censoring:
+      "only_observed_labels_available_at_evaluation_cutoff_are_scored",
+    commitmentSnapshot:
+      "same_work_signed_confirmed_available_as_of_cutoff_auditable_and_inside_horizon",
+    uncommittedPureBuyout: "null_abstain"
+  },
+  authoritativeFrozenEvaluation: {
+    caseCount: nextCandidateRows.length,
+    workCount: new Set(
+      nextCandidateRows.map((row) => row.standardWorkId)
+    ).size,
+    originCount: new Set(nextCandidateRows.map((row) => row.origin)).size,
+    originCadence: "semiannual_frozen_authority",
+    finalHoldoutOpened: false,
+    models: {
+      candidate: {
+        id: nextConfig.candidate.id,
+        point: evaluationViews(nextCandidateRows),
+        probabilistic: {
+          overall: probabilistic.overall,
+          byHorizon: probabilistic.byHorizon,
+          bySegment: probabilistic.bySegment
+        }
+      },
+      previousCandidate: {
+        id: config.candidate.id,
+        point: evaluationViews(officialBaseRows)
+      },
+      B4: {
+        point: evaluationViews(evaluatedB4Rows)
+      }
+    },
+    globalModelBakeoff: {
+      design: globalBakeoff.design,
+      families: globalBakeoff.families,
+      selections: globalBakeoff.selections
+    },
+    ensembleSelections: ensemble.selections,
+    hierarchy: {
+      method: hierarchy.method,
+      allCellsCoherent: hierarchy.allCellsCoherent,
+      cells: hierarchy.cells,
+      nestedApplicationSelections: hierarchySelection.selections
+    },
+    comparisonToPrevious: {
+      comparison: nextComparison,
+      pairedCi: nextPairedCi,
+      groupConfidenceIntervals
+    },
+    comparisonToB4: {
+      comparison: nextComparisonToB4,
+      pairedCi: nextPairedCiToB4
+    },
+    simpleBaselines: baselineEvaluation.baselines
+  },
+  denseMonthlyDevelopmentDiagnostic: {
+    role: "secondary_development_diagnostic",
+    decisionPopulationMoved: false,
+    workCount: denseManifest.workCount,
+    originCount: denseManifest.originCount,
+    eligibleOriginHorizonCellCount: denseSchedule.eligibleCellCount,
+    rightCensoredOriginHorizonCellCount:
+      denseSchedule.rightCensoredCellCount,
+    materializedCaseCount: denseManifest.caseRowCount,
+    labelStatusCounts: denseLabelPartition.counts,
+    routeCountsByWorkOrigin: denseManifest.routeCountsByWorkOrigin,
+    segmentCountsByWorkOrigin: denseManifest.segmentCountsByWorkOrigin,
+    baselines: denseBaselineEvaluation.baselines,
+    rollingBaselineChampion: {
+      overall: denseChampion.overall,
+      byOrigin: denseChampion.byOrigin,
+      bySegment: denseChampion.bySegment,
+      selections: denseChampion.selections,
+      probabilistic: {
+        overall: denseProbabilistic.overall,
+        byHorizon: denseProbabilistic.byHorizon,
+        bySegment: denseProbabilistic.bySegment
+      }
+    },
+    abstention: denseBaselineEvaluation.routePolicy
+  },
+  automation,
+  retiredHumanPredictionSample: {
+    required: false,
+    currentDependency: false,
+    replayed: false,
+    skippedByUserDecision: true
+  },
+  boundaries: {
+    aggregateOnly: true,
+    identifiersPresent: false,
+    privateRowsPresent: false,
+    providerCalled: false,
+    databaseConnected: false,
+    finalHoldoutOpened: false,
+    embargoShadowOpened: false,
+    deferred60MonthLabelsOpened: false,
+    releaseAuthorized: false
+  }
+};
+
+const nextPublicReport = {
+  schema: "m2.current.global_distributional_candidate.public.v0.4",
+  version: "M2-current-global-distributional-candidate-v0.4",
+  candidateId: nextConfig.candidate.id,
+  decisionStatus: "not_for_formal_decision",
+  status: nextCandidateAcceptance.allCurrentDevelopmentConditionsPassed
+    ? "CANDIDATE_DEVELOPMENT_PASS_BLOCKED"
+    : "CANDIDATE_DEVELOPMENT_FAIL_BLOCKED",
+  target: nextConfig.target,
+  primaryComparator: nextConfig.primaryComparator,
+  scope: {
+    frozenDecisionCaseCount: nextCandidateRows.length,
+    frozenDecisionWorkCount: new Set(
+      nextCandidateRows.map((row) => row.standardWorkId)
+    ).size,
+    frozenDecisionOriginCount: new Set(
+      nextCandidateRows.map((row) => row.origin)
+    ).size,
+    denseDiagnosticCaseCount: denseManifest.caseRowCount,
+    denseDiagnosticOriginCount: denseManifest.originCount,
+    populationMoved: false
+  },
+  methods: {
+    nestedGlobalFamilies: globalBakeoff.design.families,
+    constrainedEnsemble: true,
+    rollingSplitConformal: true,
+    quantileProbabilities:
+      nextContract.development.probabilistic.quantileProbabilities,
+    hierarchy: hierarchy.method,
+    occurrenceAmountSeparated: true,
+    sameOrLaterOuterTruthRead: false
+  },
+  pointComparisonToPrevious: {
+    comparison: nextComparison,
+    pairedCi: nextPairedCi,
+    groupConfidenceIntervals
+  },
+  byHorizon: scoreM2CurrentSlices(nextCandidateRows, "horizonMonths"),
+  bySegment: scoreM2CurrentSlices(nextCandidateRows, "segment"),
+  pairedCi: nextPairedCi,
+  pointComparisonToB4: {
+    comparison: nextComparisonToB4,
+    pairedCi: nextPairedCiToB4
+  },
+  probabilistic: {
+    overall: probabilistic.overall,
+    byHorizon: probabilistic.byHorizon,
+    bySegment: probabilistic.bySegment
+  },
+  globalModelBakeoff: {
+    families: globalBakeoff.families,
+    selections: globalBakeoff.selections
+  },
+  hierarchy: {
+    allCellsCoherent: hierarchy.allCellsCoherent,
+    method: hierarchy.method,
+    nestedApplicationSelections: hierarchySelection.selections
+  },
+  denseMonthlyDiagnostic: {
+    originCount: denseManifest.originCount,
+    caseCount: denseManifest.caseRowCount,
+    rollingBaselineChampion: denseChampion.overall,
+    probabilistic: denseProbabilistic.overall,
+    abstention: denseBaselineEvaluation.routePolicy,
+    decisionPopulationMoved: false
+  },
+  automation,
+  acceptance: nextCandidateAcceptance,
+  developmentAuthorization: {
+    modelTraining: true,
+    newCandidateFamilyDevelopment: false,
+    finalHoldout: false,
+    release: false,
+    m3Formal: false
+  },
+  humanEvaluation: {
+    numericForecastRequired: false,
+    sample120Required: false,
+    sample120Replayed: false,
+    role: "post_gate_quality_assurance_only"
+  },
+  privacy: {
+    aggregateOnly: true,
+    workIdentifiersPresent: false,
+    privatePathsPresent: false,
+    rawRowsPresent: false
+  }
+};
+
+const nextPublicText = `${JSON.stringify(nextPublicReport, null, 2)}\n`;
+const nextAutomatedText =
+  `${JSON.stringify(nextAutomatedEvaluation, null, 2)}\n`;
+await writeFile(nextCandidatePrivatePath, nextCandidatePrivateText, "utf8");
+await writeFile(
+  nextCandidatePrivateManifestPath,
+  `${JSON.stringify({
+    schema:
+      "m2.current.global_distributional_candidate.private_manifest.v0.4",
+    tracked: false,
+    decisionStatus: "not_for_formal_decision",
+    privateCaseRowCount: nextCandidateRows.length,
+    privateCaseSha256: sha256(nextCandidatePrivateText),
+    denseManifestSha256: sha256(
+      `${JSON.stringify(denseManifest, null, 2)}\n`
+    ),
+    publicCandidateSha256: sha256(nextPublicText),
+    publicAutomatedEvaluationSha256: sha256(nextAutomatedText),
+    providerCalled: false,
+    databaseConnected: false,
+    finalHoldoutOpened: false,
+    embargoShadowOpened: false,
+    deferred60MonthLabelsOpened: false,
+    releaseAuthorized: false
+  }, null, 2)}\n`,
+  "utf8"
+);
+await writeFile(
+  path.join(root, nextConfig.publicSources.candidate),
+  nextPublicText,
+  "utf8"
+);
+await writeFile(
+  path.join(root, nextConfig.publicSources.automatedEvaluation),
+  nextAutomatedText,
+  "utf8"
+);
+
 process.stdout.write(`${JSON.stringify({
-  candidateId: candidate.candidateId,
+  candidateId: nextConfig.candidate.id,
   caseCount: candidate.rows.length,
   workCount: publicReport.scope.uniqueWorkCount,
-  candidateWape: comparison.candidate.wape,
-  baseCandidateWape: comparison.b4.wape,
-  relativeWape: comparison.relativeWape,
-  candidateSignedBias: comparison.candidate.signedBias,
-  pairedCiUpper95: pairedCi.upper95,
-  relativeWapeVsPreviousCandidate: previousComparison.relativeWape,
-  pairedCiVsPreviousCandidateUpper95: pairedCiVsPreviousCandidate.upper95,
+  candidateWape: nextComparison.candidate.wape,
+  baseCandidateWape: nextComparison.b4.wape,
+  relativeWape: nextComparison.relativeWape,
+  candidateSignedBias: nextComparison.candidate.signedBias,
+  pairedCiUpper95: nextPairedCi.upper95,
+  denseMonthlyOriginCount: denseManifest.originCount,
+  denseMonthlyCaseCount: denseManifest.caseRowCount,
+  probabilisticWis: probabilistic.overall.wis,
+  automationDecision: automation.decision,
   automatedEvaluationBaselines:
-    Object.keys(automatedEvaluation.simpleBaselines),
+    Object.keys(denseBaselineEvaluation.baselines),
   eligibilityReasonLedgerWorkCount: eligibilityLedger.length,
   formalCashRouteExcludedWorkCount: routeExcludedWorkCount,
-  acceptance: publicReport.acceptance
+  acceptance: nextCandidateAcceptance
 }, null, 2)}\n`);
 
 function parseNdjson(value) {
@@ -751,6 +1277,79 @@ function evaluationViews(rows) {
     bySegment: scoreM2CurrentEvaluationSlices(rows, "segment"),
     byRoute: scoreM2CurrentEvaluationSlices(rows, "route")
   };
+}
+
+function pairedGroupConfidenceIntervals(
+  candidateRows,
+  comparatorRows,
+  field,
+  currentContract
+) {
+  const values = [...new Set(candidateRows.map(
+    (row) => String(row[field])
+  ))].sort();
+  return Object.fromEntries(values.map((value, index) => {
+    const candidateSubset = candidateRows.filter(
+      (row) => String(row[field]) === value
+    );
+    const keys = new Set(candidateSubset.map(caseKey));
+    const comparatorSubset = comparatorRows.filter(
+      (row) => keys.has(caseKey(row))
+    );
+    return [value, pairedWorkOriginBootstrap(
+      candidateSubset,
+      comparatorSubset,
+      currentContract,
+      {
+        iterations: 500,
+        seed: currentContract.pairedBootstrap.seed + index + 1
+      }
+    )];
+  }));
+}
+
+function strongestBaselineRows(rowsByBaseline) {
+  return Object.entries(rowsByBaseline).map(([id, rows]) => ({
+    id,
+    rows,
+    metrics: scoreM2CurrentEvaluationRows(rows)
+  })).sort((a, b) => (
+    a.metrics.wape - b.metrics.wape
+    || Math.abs(a.metrics.signedBias) - Math.abs(b.metrics.signedBias)
+    || a.id.localeCompare(b.id)
+  ))[0].rows;
+}
+
+function verifyDenseManifest(manifest, caseText, historyText) {
+  if (
+    manifest.schema
+      !== "m2.current.dense_development.private_manifest.v0.1"
+    || manifest.tracked !== false
+    || manifest.decisionStatus !== "not_for_formal_decision"
+    || manifest.role !== "secondary_development_diagnostic"
+    || manifest.decisionPopulationMoved !== false
+    || manifest.workCount !== nextContract.population.modelWorkCount
+    || manifest.originCount !== 25
+    || manifest.caseRowCount !== parseNdjson(caseText).length
+    || manifest.historyRowCount !== parseNdjson(historyText).length
+    || manifest.caseSha256 !== sha256(caseText)
+    || manifest.historySha256 !== sha256(historyText)
+    || manifest.providerCalled !== false
+    || manifest.databaseConnected !== false
+    || manifest.finalHoldoutOpened !== false
+    || manifest.embargoShadowOpened !== false
+    || manifest.deferred60MonthLabelsOpened !== false
+  ) {
+    throw new Error("m2_current_dense_private_manifest_invalid");
+  }
+}
+
+function addMonths(value, count) {
+  const [year, month] = String(value).split("-").map(Number);
+  const ordinal = year * 12 + month - 1 + Number(count);
+  return `${Math.floor(ordinal / 12)}-${String(
+    ordinal % 12 + 1
+  ).padStart(2, "0")}`;
 }
 
 function sha256(value) {

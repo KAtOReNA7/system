@@ -13,18 +13,22 @@ export function loadM2CurrentPublicEvidence(sources, config) {
   requireSchema(sources?.segments, "m2.c2_activity_segment_route_manifest.v1");
   requireSchema(sources?.development, "m2.c3_development_validation.v1");
   requireSchema(sources?.population, "m2.calibration_population_coverage.v1");
-  const currentCandidateSchema = config.schema === "m2.current.config.v0.3"
-    ? "m2.current.occurrence_amount_candidate.public.v0.3"
-    : config.schema === "m2.current.config.v0.2"
-      ? "m2.current.reliable_candidate.public.v0.2"
-      : "m2.current.segmented_candidate.public.v0.1";
+  const currentCandidateSchema = config.schema === "m2.current.config.v0.4"
+    ? "m2.current.global_distributional_candidate.public.v0.4"
+    : config.schema === "m2.current.config.v0.3"
+      ? "m2.current.occurrence_amount_candidate.public.v0.3"
+      : config.schema === "m2.current.config.v0.2"
+        ? "m2.current.reliable_candidate.public.v0.2"
+        : "m2.current.segmented_candidate.public.v0.1";
   requireSchema(sources?.candidate, currentCandidateSchema);
   if (config.schema !== "m2.current.config.v0.1") {
     requireSchema(
       sources?.previousCandidate,
-      config.schema === "m2.current.config.v0.3"
-        ? "m2.current.reliable_candidate.public.v0.2"
-        : "m2.current.segmented_candidate.public.v0.1"
+      config.schema === "m2.current.config.v0.4"
+        ? "m2.current.occurrence_amount_candidate.public.v0.3"
+        : config.schema === "m2.current.config.v0.3"
+          ? "m2.current.reliable_candidate.public.v0.2"
+          : "m2.current.segmented_candidate.public.v0.1"
     );
   }
   if (config.schema === "m2.current.config.v0.2") {
@@ -33,10 +37,15 @@ export function loadM2CurrentPublicEvidence(sources, config) {
       "m2.current.business_sample.public.v0.2"
     );
   }
-  if (config.schema === "m2.current.config.v0.3") {
+  if (
+    ["m2.current.config.v0.3", "m2.current.config.v0.4"]
+      .includes(config.schema)
+  ) {
     requireSchema(
       sources?.automatedEvaluation,
-      "m2.current.automated_evaluation.public.v0.1"
+      config.schema === "m2.current.config.v0.4"
+        ? "m2.current.automated_evaluation.public.v0.2"
+        : "m2.current.automated_evaluation.public.v0.1"
     );
   }
 
@@ -86,11 +95,19 @@ export function loadM2CurrentPublicEvidence(sources, config) {
   ) {
     throw new Error("m2_current_model_eligibility_reason_ledger_drift");
   }
+  const candidateCaseCount = Number(
+    config.schema === "m2.current.config.v0.4"
+      ? sources.candidate.scope.frozenDecisionCaseCount
+      : sources.candidate.scope.caseCount
+  );
+  const candidateWorkCount = Number(
+    config.schema === "m2.current.config.v0.4"
+      ? sources.candidate.scope.frozenDecisionWorkCount
+      : sources.candidate.scope.uniqueWorkCount
+  );
   if (
-    Number(sources.candidate.scope.caseCount)
-      !== contract.population.modelCaseCount
-    || Number(sources.candidate.scope.uniqueWorkCount)
-      !== contract.population.modelWorkCount
+    candidateCaseCount !== contract.population.modelCaseCount
+    || candidateWorkCount !== contract.population.modelWorkCount
     || sources.candidate.scope.populationMoved !== false
   ) {
     throw new Error("m2_current_candidate_population_drift");
@@ -129,11 +146,13 @@ export function loadM2CurrentPublicEvidence(sources, config) {
   }
 
   return {
-    schema: config.schema === "m2.current.config.v0.3"
-      ? "m2.current.public_evidence.v0.3"
-      : config.schema === "m2.current.config.v0.2"
-        ? "m2.current.public_evidence.v0.2"
-        : "m2.current.public_evidence.v0.1",
+    schema: config.schema === "m2.current.config.v0.4"
+      ? "m2.current.public_evidence.v0.4"
+      : config.schema === "m2.current.config.v0.3"
+        ? "m2.current.public_evidence.v0.3"
+        : config.schema === "m2.current.config.v0.2"
+          ? "m2.current.public_evidence.v0.2"
+          : "m2.current.public_evidence.v0.1",
     decisionStatus: "not_for_formal_decision",
     population: {
       libraryWorkCount: contract.population.libraryWorkCount,
@@ -175,9 +194,9 @@ export function loadM2CurrentPublicEvidence(sources, config) {
       },
       served: {
         status: "MEASURED",
-        caseCount: sources.candidate.scope.caseCount,
+        caseCount: candidateCaseCount,
         caseShareOfFrozenModelPopulation: 1,
-        workCount: sources.candidate.scope.uniqueWorkCount,
+        workCount: candidateWorkCount,
         workShareOfFrozenModelPopulation: 1,
         workShareOfLibrary:
           contract.population.modelWorkCount / contract.population.libraryWorkCount,
@@ -202,19 +221,27 @@ export function loadM2CurrentPublicEvidence(sources, config) {
     historicalLastCandidate: sources.terminal.routeResults.C3,
     currentCandidate: {
       candidateId: sources.candidate.candidateId,
-      comparison: sources.candidate.comparison,
+      comparison: config.schema === "m2.current.config.v0.4"
+        ? sources.candidate.pointComparisonToPrevious.comparison
+        : sources.candidate.comparison,
       byHorizon: sources.candidate.byHorizon,
-      pairedCi: sources.candidate.pairedCi,
+      pairedCi: config.schema === "m2.current.config.v0.4"
+        ? sources.candidate.pointComparisonToPrevious.pairedCi
+        : sources.candidate.pairedCi,
       acceptance: sources.candidate.acceptance
     },
     previousCandidate: sources.previousCandidate
       ? {
         candidateId: sources.previousCandidate.candidateId,
-        comparison: sources.candidate.previousCandidateComparison
+        comparison: config.schema === "m2.current.config.v0.4"
+          ? sources.candidate.pointComparisonToPrevious
+          : sources.candidate.previousCandidateComparison
       }
       : null,
     automatedEvaluation: sources.automatedEvaluation ?? null,
-    retiredBusinessSample: config.schema === "m2.current.config.v0.3"
+    retiredBusinessSample:
+      ["m2.current.config.v0.3", "m2.current.config.v0.4"]
+        .includes(config.schema)
       ? {
         currentDependency: false,
         historicalArtifactOnly: true,

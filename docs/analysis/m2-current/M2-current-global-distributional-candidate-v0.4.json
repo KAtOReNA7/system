@@ -1,0 +1,1773 @@
+{
+  "schema": "m2.current.global_distributional_candidate.public.v0.4",
+  "version": "M2-current-global-distributional-candidate-v0.4",
+  "candidateId": "M2-current-global-distributional-ensemble-v0.4",
+  "decisionStatus": "not_for_formal_decision",
+  "status": "CANDIDATE_DEVELOPMENT_FAIL_BLOCKED",
+  "target": "future_bill_cash",
+  "primaryComparator": "M2-current-occurrence-amount-calibration-v0.3",
+  "scope": {
+    "frozenDecisionCaseCount": 7851,
+    "frozenDecisionWorkCount": 824,
+    "frozenDecisionOriginCount": 5,
+    "denseDiagnosticCaseCount": 56856,
+    "denseDiagnosticOriginCount": 25,
+    "populationMoved": false
+  },
+  "methods": {
+    "nestedGlobalFamilies": [
+      "regularized_hurdle_glm",
+      "tweedie_gradient_boosted_stumps",
+      "hurdle_gradient_boosted_stumps"
+    ],
+    "constrainedEnsemble": true,
+    "rollingSplitConformal": true,
+    "quantileProbabilities": [
+      0.05,
+      0.1,
+      0.25,
+      0.5,
+      0.75,
+      0.9,
+      0.95
+    ],
+    "hierarchy": "MinT_diagonal_as_of_covariance_then_nonnegative_projection",
+    "occurrenceAmountSeparated": true,
+    "sameOrLaterOuterTruthRead": false
+  },
+  "pointComparisonToPrevious": {
+    "comparison": {
+      "caseKeyParity": true,
+      "actualParity": true,
+      "candidate": {
+        "caseCount": 7851,
+        "wape": 0.50557140186362,
+        "signedBias": -0.011989577726722772,
+        "zeroImputationUsed": false
+      },
+      "b4": {
+        "caseCount": 7851,
+        "wape": 0.50557140186362,
+        "signedBias": -0.011989577726722772,
+        "zeroImputationUsed": false
+      },
+      "relativeWape": 0
+    },
+    "pairedCi": {
+      "schema": "m2.current.paired_bootstrap.v0.1",
+      "method": "paired_work_origin_pigeonhole",
+      "confidence": 0.95,
+      "iterations": 2000,
+      "seed": 20260724,
+      "workCount": 824,
+      "originCount": 5,
+      "caseCount": 7851,
+      "lower95": 0,
+      "median": 0,
+      "upper95": 0
+    },
+    "groupConfidenceIntervals": {
+      "bySegment": {
+        "dense": {
+          "schema": "m2.current.paired_bootstrap.v0.1",
+          "method": "paired_work_origin_pigeonhole",
+          "confidence": 0.95,
+          "iterations": 500,
+          "seed": 20260725,
+          "workCount": 617,
+          "originCount": 5,
+          "caseCount": 5174,
+          "lower95": 0,
+          "median": 0,
+          "upper95": 0
+        },
+        "dormant": {
+          "schema": "m2.current.paired_bootstrap.v0.1",
+          "method": "paired_work_origin_pigeonhole",
+          "confidence": 0.95,
+          "iterations": 500,
+          "seed": 20260726,
+          "workCount": 76,
+          "originCount": 5,
+          "caseCount": 833,
+          "lower95": 0,
+          "median": 0,
+          "upper95": 0
+        },
+        "intermittent": {
+          "schema": "m2.current.paired_bootstrap.v0.1",
+          "method": "paired_work_origin_pigeonhole",
+          "confidence": 0.95,
+          "iterations": 500,
+          "seed": 20260727,
+          "workCount": 367,
+          "originCount": 5,
+          "caseCount": 1844,
+          "lower95": 0,
+          "median": 0,
+          "upper95": 0
+        }
+      },
+      "byHorizon": {
+        "3": {
+          "schema": "m2.current.paired_bootstrap.v0.1",
+          "method": "paired_work_origin_pigeonhole",
+          "confidence": 0.95,
+          "iterations": 500,
+          "seed": 20260728,
+          "workCount": 824,
+          "originCount": 5,
+          "caseCount": 2402,
+          "lower95": 0,
+          "median": 0,
+          "upper95": 0
+        },
+        "6": {
+          "schema": "m2.current.paired_bootstrap.v0.1",
+          "method": "paired_work_origin_pigeonhole",
+          "confidence": 0.95,
+          "iterations": 500,
+          "seed": 20260729,
+          "workCount": 824,
+          "originCount": 5,
+          "caseCount": 2402,
+          "lower95": 0,
+          "median": 0,
+          "upper95": 0
+        },
+        "12": {
+          "schema": "m2.current.paired_bootstrap.v0.1",
+          "method": "paired_work_origin_pigeonhole",
+          "confidence": 0.95,
+          "iterations": 500,
+          "seed": 20260725,
+          "workCount": 643,
+          "originCount": 4,
+          "caseCount": 1608,
+          "lower95": 0,
+          "median": 0,
+          "upper95": 0
+        },
+        "18": {
+          "schema": "m2.current.paired_bootstrap.v0.1",
+          "method": "paired_work_origin_pigeonhole",
+          "confidence": 0.95,
+          "iterations": 500,
+          "seed": 20260726,
+          "workCount": 556,
+          "originCount": 3,
+          "caseCount": 995,
+          "lower95": 0,
+          "median": 0,
+          "upper95": 0
+        },
+        "24": {
+          "schema": "m2.current.paired_bootstrap.v0.1",
+          "method": "paired_work_origin_pigeonhole",
+          "confidence": 0.95,
+          "iterations": 500,
+          "seed": 20260727,
+          "workCount": 301,
+          "originCount": 2,
+          "caseCount": 444,
+          "lower95": 0,
+          "median": 0,
+          "upper95": 0
+        }
+      }
+    }
+  },
+  "byHorizon": {
+    "3": {
+      "caseCount": 2402,
+      "wape": 0.42753232938343244,
+      "signedBias": -0.04217977068928569,
+      "zeroImputationUsed": false
+    },
+    "6": {
+      "caseCount": 2402,
+      "wape": 0.44567023956294494,
+      "signedBias": -0.0872469820475496,
+      "zeroImputationUsed": false
+    },
+    "12": {
+      "caseCount": 1608,
+      "wape": 0.4385655728761368,
+      "signedBias": -0.023485229903411148,
+      "zeroImputationUsed": false
+    },
+    "18": {
+      "caseCount": 995,
+      "wape": 0.5460211985249114,
+      "signedBias": 0.07125145344081094,
+      "zeroImputationUsed": false
+    },
+    "24": {
+      "caseCount": 444,
+      "wape": 0.7435585761504628,
+      "signedBias": 0.01617872594358398,
+      "zeroImputationUsed": false
+    }
+  },
+  "bySegment": {
+    "dense": {
+      "caseCount": 5174,
+      "wape": 0.4637293456231139,
+      "signedBias": 0.02439915111437811,
+      "zeroImputationUsed": false
+    },
+    "dormant": {
+      "caseCount": 833,
+      "wape": 1.0001836094171885,
+      "signedBias": -0.9997200647531362,
+      "zeroImputationUsed": false
+    },
+    "intermittent": {
+      "caseCount": 1844,
+      "wape": 0.9073284142904835,
+      "signedBias": -0.15945405112725278,
+      "zeroImputationUsed": false
+    }
+  },
+  "pairedCi": {
+    "schema": "m2.current.paired_bootstrap.v0.1",
+    "method": "paired_work_origin_pigeonhole",
+    "confidence": 0.95,
+    "iterations": 2000,
+    "seed": 20260724,
+    "workCount": 824,
+    "originCount": 5,
+    "caseCount": 7851,
+    "lower95": 0,
+    "median": 0,
+    "upper95": 0
+  },
+  "pointComparisonToB4": {
+    "comparison": {
+      "caseKeyParity": true,
+      "actualParity": true,
+      "candidate": {
+        "caseCount": 7851,
+        "wape": 0.50557140186362,
+        "signedBias": -0.011989577726722772,
+        "zeroImputationUsed": false
+      },
+      "b4": {
+        "caseCount": 7851,
+        "wape": 0.5564845379400507,
+        "signedBias": 0.0891099710777566,
+        "zeroImputationUsed": false
+      },
+      "relativeWape": -0.09149065716164695
+    },
+    "pairedCi": {
+      "schema": "m2.current.paired_bootstrap.v0.1",
+      "method": "paired_work_origin_pigeonhole",
+      "confidence": 0.95,
+      "iterations": 2000,
+      "seed": 20260724,
+      "workCount": 824,
+      "originCount": 5,
+      "caseCount": 7851,
+      "lower95": -0.1670954627962227,
+      "median": -0.09258311240410078,
+      "upper95": -0.03228091380136986
+    }
+  },
+  "probabilistic": {
+    "overall": {
+      "caseCount": 7851,
+      "wis": 4366.443388484231,
+      "crpsApproximation": 4366.4433884842565,
+      "meanQuantileScore": 2183.2216942421283,
+      "quantileProbabilities": [
+        0.05,
+        0.1,
+        0.25,
+        0.5,
+        0.75,
+        0.9,
+        0.95
+      ],
+      "intervalCoverage": {
+        "central_90": {
+          "nominal": 0.9,
+          "observed": 0.8954273340975671,
+          "absoluteCalibrationError": 0.004572665902432882
+        },
+        "central_80": {
+          "nominal": 0.8,
+          "observed": 0.8239714686027257,
+          "absoluteCalibrationError": 0.0239714686027257
+        },
+        "central_50": {
+          "nominal": 0.5,
+          "observed": 0.5525410775697364,
+          "absoluteCalibrationError": 0.05254107756973636
+        }
+      }
+    },
+    "byHorizon": {
+      "3": {
+        "caseCount": 2402,
+        "wis": 1354.2637234713175,
+        "crpsApproximation": 1354.2637234713254,
+        "meanQuantileScore": 677.1318617356627,
+        "quantileProbabilities": [
+          0.05,
+          0.1,
+          0.25,
+          0.5,
+          0.75,
+          0.9,
+          0.95
+        ],
+        "intervalCoverage": {
+          "central_90": {
+            "nominal": 0.9,
+            "observed": 0.922564529558701,
+            "absoluteCalibrationError": 0.02256452955870103
+          },
+          "central_80": {
+            "nominal": 0.8,
+            "observed": 0.8680266444629475,
+            "absoluteCalibrationError": 0.06802664446294748
+          },
+          "central_50": {
+            "nominal": 0.5,
+            "observed": 0.5978351373855121,
+            "absoluteCalibrationError": 0.09783513738551208
+          }
+        }
+      },
+      "6": {
+        "caseCount": 2402,
+        "wis": 2982.3697903218085,
+        "crpsApproximation": 2982.3697903218167,
+        "meanQuantileScore": 1491.1848951609084,
+        "quantileProbabilities": [
+          0.05,
+          0.1,
+          0.25,
+          0.5,
+          0.75,
+          0.9,
+          0.95
+        ],
+        "intervalCoverage": {
+          "central_90": {
+            "nominal": 0.9,
+            "observed": 0.9175686927560366,
+            "absoluteCalibrationError": 0.017568692756036564
+          },
+          "central_80": {
+            "nominal": 0.8,
+            "observed": 0.8467943380516236,
+            "absoluteCalibrationError": 0.046794338051623585
+          },
+          "central_50": {
+            "nominal": 0.5,
+            "observed": 0.56744379683597,
+            "absoluteCalibrationError": 0.06744379683597002
+          }
+        }
+      },
+      "12": {
+        "caseCount": 1608,
+        "wis": 5317.728444414924,
+        "crpsApproximation": 5317.72844441492,
+        "meanQuantileScore": 2658.86422220746,
+        "quantileProbabilities": [
+          0.05,
+          0.1,
+          0.25,
+          0.5,
+          0.75,
+          0.9,
+          0.95
+        ],
+        "intervalCoverage": {
+          "central_90": {
+            "nominal": 0.9,
+            "observed": 0.8924129353233831,
+            "absoluteCalibrationError": 0.007587064676616961
+          },
+          "central_80": {
+            "nominal": 0.8,
+            "observed": 0.8059701492537313,
+            "absoluteCalibrationError": 0.005970149253731294
+          },
+          "central_50": {
+            "nominal": 0.5,
+            "observed": 0.5590796019900498,
+            "absoluteCalibrationError": 0.0590796019900498
+          }
+        }
+      },
+      "18": {
+        "caseCount": 995,
+        "wis": 9068.713521147352,
+        "crpsApproximation": 9068.71352114736,
+        "meanQuantileScore": 4534.35676057368,
+        "quantileProbabilities": [
+          0.05,
+          0.1,
+          0.25,
+          0.5,
+          0.75,
+          0.9,
+          0.95
+        ],
+        "intervalCoverage": {
+          "central_90": {
+            "nominal": 0.9,
+            "observed": 0.8241206030150754,
+            "absoluteCalibrationError": 0.07587939698492463
+          },
+          "central_80": {
+            "nominal": 0.8,
+            "observed": 0.7326633165829146,
+            "absoluteCalibrationError": 0.06733668341708543
+          },
+          "central_50": {
+            "nominal": 0.5,
+            "observed": 0.43618090452261304,
+            "absoluteCalibrationError": 0.06381909547738696
+          }
+        }
+      },
+      "24": {
+        "caseCount": 444,
+        "wis": 14166.837952021488,
+        "crpsApproximation": 14166.837952021448,
+        "meanQuantileScore": 7083.418976010724,
+        "quantileProbabilities": [
+          0.05,
+          0.1,
+          0.25,
+          0.5,
+          0.75,
+          0.9,
+          0.95
+        ],
+        "intervalCoverage": {
+          "central_90": {
+            "nominal": 0.9,
+            "observed": 0.7995495495495496,
+            "absoluteCalibrationError": 0.10045045045045042
+          },
+          "central_80": {
+            "nominal": 0.8,
+            "observed": 0.7319819819819819,
+            "absoluteCalibrationError": 0.0680180180180181
+          },
+          "central_50": {
+            "nominal": 0.5,
+            "observed": 0.46396396396396394,
+            "absoluteCalibrationError": 0.03603603603603606
+          }
+        }
+      }
+    },
+    "bySegment": {
+      "dense": {
+        "caseCount": 5174,
+        "wis": 5523.83399234027,
+        "crpsApproximation": 5523.833992340264,
+        "meanQuantileScore": 2761.916996170132,
+        "quantileProbabilities": [
+          0.05,
+          0.1,
+          0.25,
+          0.5,
+          0.75,
+          0.9,
+          0.95
+        ],
+        "intervalCoverage": {
+          "central_90": {
+            "nominal": 0.9,
+            "observed": 0.9016235021260147,
+            "absoluteCalibrationError": 0.0016235021260146976
+          },
+          "central_80": {
+            "nominal": 0.8,
+            "observed": 0.8304986470815616,
+            "absoluteCalibrationError": 0.03049864708156158
+          },
+          "central_50": {
+            "nominal": 0.5,
+            "observed": 0.5224197912640124,
+            "absoluteCalibrationError": 0.02241979126401239
+          }
+        }
+      },
+      "dormant": {
+        "caseCount": 833,
+        "wis": 2299.951790304301,
+        "crpsApproximation": 2299.951790304321,
+        "meanQuantileScore": 1149.9758951521605,
+        "quantileProbabilities": [
+          0.05,
+          0.1,
+          0.25,
+          0.5,
+          0.75,
+          0.9,
+          0.95
+        ],
+        "intervalCoverage": {
+          "central_90": {
+            "nominal": 0.9,
+            "observed": 0.8595438175270108,
+            "absoluteCalibrationError": 0.04045618247298921
+          },
+          "central_80": {
+            "nominal": 0.8,
+            "observed": 0.8535414165666266,
+            "absoluteCalibrationError": 0.05354141656662659
+          },
+          "central_50": {
+            "nominal": 0.5,
+            "observed": 0.843937575030012,
+            "absoluteCalibrationError": 0.343937575030012
+          }
+        }
+      },
+      "intermittent": {
+        "caseCount": 1844,
+        "wis": 2052.478375974743,
+        "crpsApproximation": 2052.4783759747393,
+        "meanQuantileScore": 1026.2391879873696,
+        "quantileProbabilities": [
+          0.05,
+          0.1,
+          0.25,
+          0.5,
+          0.75,
+          0.9,
+          0.95
+        ],
+        "intervalCoverage": {
+          "central_90": {
+            "nominal": 0.9,
+            "observed": 0.8942516268980477,
+            "absoluteCalibrationError": 0.005748373101952309
+          },
+          "central_80": {
+            "nominal": 0.8,
+            "observed": 0.7922993492407809,
+            "absoluteCalibrationError": 0.007700650759219108
+          },
+          "central_50": {
+            "nominal": 0.5,
+            "observed": 0.5054229934924078,
+            "absoluteCalibrationError": 0.005422993492407824
+          }
+        }
+      }
+    }
+  },
+  "globalModelBakeoff": {
+    "families": {
+      "regularized_hurdle_glm": {
+        "overall": {
+          "caseCount": 7851,
+          "wape": 1.1432425163195454,
+          "signedBias": 0.14962976260464608,
+          "zeroImputationUsed": false,
+          "mae": 11596.386456988563,
+          "rmse": 112285.4728727502,
+          "mase": 53.547890777283826,
+          "rmsse": 201.23257803974795,
+          "scaledMetricCoverage": 0.49089287988791236,
+          "cashOccurrence": {
+            "positiveCaseCount": 6697,
+            "zeroOrNegativeCaseCount": 1154,
+            "observedRate": 0.8530123551139982,
+            "probabilityCaseCount": 7851,
+            "brier": 0.05893163384002282
+          },
+          "positiveAmount": {
+            "caseCount": 6697,
+            "wape": 1.1402178527486053,
+            "signedBias": 0.1465990065869819
+          }
+        },
+        "byOrigin": {
+          "2020-12": {
+            "caseCount": 740,
+            "wape": 0.6140094477070113,
+            "signedBias": -0.050282836149788956,
+            "zeroImputationUsed": false,
+            "mae": 10962.941974951047,
+            "rmse": 37163.23961920154,
+            "mase": 75.3144702290906,
+            "rmsse": 84.6906480700922,
+            "scaledMetricCoverage": 0.6554054054054054,
+            "cashOccurrence": {
+              "positiveCaseCount": 532,
+              "zeroOrNegativeCaseCount": 208,
+              "observedRate": 0.7189189189189189,
+              "probabilityCaseCount": 740,
+              "brier": 0.1
+            },
+            "positiveAmount": {
+              "caseCount": 532,
+              "wape": 0.6001214839896205,
+              "signedBias": -0.06417079986717981
+            }
+          },
+          "2021-06": {
+            "caseCount": 1480,
+            "wape": 2.479625831388973,
+            "signedBias": 2.062649969976308,
+            "zeroImputationUsed": false,
+            "mae": 29232.531658802447,
+            "rmse": 140946.91040837966,
+            "mase": 36.153272319820076,
+            "rmsse": 19.664890812844494,
+            "scaledMetricCoverage": 0.5202702702702703,
+            "cashOccurrence": {
+              "positiveCaseCount": 1292,
+              "zeroOrNegativeCaseCount": 188,
+              "observedRate": 0.8729729729729729,
+              "probabilityCaseCount": 1480,
+              "brier": 0.03482312756651075
+            },
+            "positiveAmount": {
+              "caseCount": 1292,
+              "wape": 2.4796121201327175,
+              "signedBias": 2.0626362587200506
+            }
+          },
+          "2021-12": {
+            "caseCount": 2204,
+            "wape": 0.8833587566798131,
+            "signedBias": -0.3307408105980912,
+            "zeroImputationUsed": false,
+            "mae": 10121.64652884842,
+            "rmse": 147163.10534955194,
+            "mase": 22.902833022818662,
+            "rmsse": 61.57656461718822,
+            "scaledMetricCoverage": 0.4482758620689655,
+            "cashOccurrence": {
+              "positiveCaseCount": 1900,
+              "zeroOrNegativeCaseCount": 304,
+              "observedRate": 0.8620689655172413,
+              "probabilityCaseCount": 2204,
+              "brier": 0.06348740470609694
+            },
+            "positiveAmount": {
+              "caseCount": 1900,
+              "wape": 0.8818238962477943,
+              "signedBias": -0.33227567103010597
+            }
+          },
+          "2022-06": {
+            "caseCount": 1839,
+            "wape": 0.7509286138920014,
+            "signedBias": -0.6282206939323328,
+            "zeroImputationUsed": false,
+            "mae": 6154.367880535031,
+            "rmse": 95971.1437791537,
+            "mase": 6.756563663836648,
+            "rmsse": 20.236623945374184,
+            "scaledMetricCoverage": 0.46166394779771613,
+            "cashOccurrence": {
+              "positiveCaseCount": 1647,
+              "zeroOrNegativeCaseCount": 192,
+              "observedRate": 0.8955954323001631,
+              "probabilityCaseCount": 1839,
+              "brier": 0.04128619084369536
+            },
+            "positiveAmount": {
+              "caseCount": 1647,
+              "wape": 0.7500689111306043,
+              "signedBias": -0.6291238304637415
+            }
+          },
+          "2022-12": {
+            "caseCount": 1588,
+            "wape": 0.6983195733837143,
+            "signedBias": -0.6459660635987686,
+            "zeroImputationUsed": false,
+            "mae": 3803.8505512845536,
+            "rmse": 49505.47707200496,
+            "mase": 149.13872930595718,
+            "rmsse": 441.00176840732877,
+            "scaledMetricCoverage": 0.47984886649874053,
+            "cashOccurrence": {
+              "positiveCaseCount": 1326,
+              "zeroOrNegativeCaseCount": 262,
+              "observedRate": 0.8350125944584383,
+              "probabilityCaseCount": 1588,
+              "brier": 0.0763743599154836
+            },
+            "positiveAmount": {
+              "caseCount": 1326,
+              "wape": 0.6976708457682328,
+              "signedBias": -0.6466169123116968
+            }
+          }
+        },
+        "bySegment": {
+          "dense": {
+            "caseCount": 5174,
+            "wape": 1.1527359396908228,
+            "signedBias": 0.19364122466618267,
+            "zeroImputationUsed": false,
+            "mae": 16157.10373304724,
+            "rmse": 137317.6816270858,
+            "mase": 35.4702781193169,
+            "rmsse": 57.82383061934992,
+            "scaledMetricCoverage": 0.5133359103208349,
+            "cashOccurrence": {
+              "positiveCaseCount": 5092,
+              "zeroOrNegativeCaseCount": 82,
+              "observedRate": 0.9841515268650947,
+              "probabilityCaseCount": 5174,
+              "brier": 0.018414865999978266
+            },
+            "positiveAmount": {
+              "caseCount": 5092,
+              "wape": 1.1524662548617837,
+              "signedBias": 0.1933651096641897
+            }
+          },
+          "dormant": {
+            "caseCount": 833,
+            "wape": 1.0003794325822426,
+            "signedBias": -0.9995721511076617,
+            "zeroImputationUsed": false,
+            "mae": 2271.94878877506,
+            "rmse": 26189.023113466803,
+            "mase": 1.3725070634976508,
+            "rmsse": 2.5832992767263923,
+            "scaledMetricCoverage": 0.14765906362545017,
+            "cashOccurrence": {
+              "positiveCaseCount": 80,
+              "zeroOrNegativeCaseCount": 753,
+              "observedRate": 0.09603841536614646,
+              "probabilityCaseCount": 833,
+              "brier": 0.10643186334849833
+            },
+            "positiveAmount": {
+              "caseCount": 80,
+              "wape": 0.9999782517655597,
+              "signedBias": -0.9999733319243446
+            }
+          },
+          "intermittent": {
+            "caseCount": 1844,
+            "wape": 1.0631861642878002,
+            "signedBias": -0.04518160958996589,
+            "zeroImputationUsed": false,
+            "mae": 3011.8449121371427,
+            "rmse": 21502.660707578038,
+            "mase": 104.18204093203359,
+            "rmsse": 370.02147933701724,
+            "scaledMetricCoverage": 0.5829718004338394,
+            "cashOccurrence": {
+              "positiveCaseCount": 1525,
+              "zeroOrNegativeCaseCount": 319,
+              "observedRate": 0.8270065075921909,
+              "probabilityCaseCount": 1844,
+              "brier": 0.15115835055576535
+            },
+            "positiveAmount": {
+              "caseCount": 1525,
+              "wape": 1.0209657694701346,
+              "signedBias": -0.0874024478591465
+            }
+          }
+        },
+        "selections": [
+          {
+            "outerOrigin": "2020-12",
+            "selectedParameters": null,
+            "matureEarlierCaseCount": 0,
+            "innerFoldCount": 0,
+            "nestedValidationWape": null,
+            "nestedValidationSignedBias": null,
+            "baseValidationWape": null,
+            "selectionReason": "mature_earlier_training_rows_below_minimum",
+            "sameOrLaterOuterTruthRead": false
+          },
+          {
+            "outerOrigin": "2021-06",
+            "selectedParameters": {
+              "ridge": 0.1
+            },
+            "matureEarlierCaseCount": 296,
+            "innerFoldCount": 0,
+            "nestedValidationWape": null,
+            "nestedValidationSignedBias": null,
+            "baseValidationWape": null,
+            "selectionReason": "default_parameters_no_eligible_inner_fold",
+            "sameOrLaterOuterTruthRead": false
+          },
+          {
+            "outerOrigin": "2021-12",
+            "selectedParameters": {
+              "ridge": 10
+            },
+            "matureEarlierCaseCount": 1036,
+            "innerFoldCount": 1,
+            "nestedValidationWape": 0.7237129188033605,
+            "nestedValidationSignedBias": -0.5366633221482623,
+            "baseValidationWape": 0.7391607631331645,
+            "selectionReason": "selected_by_inner_rolling_origin",
+            "sameOrLaterOuterTruthRead": false
+          },
+          {
+            "outerOrigin": "2022-06",
+            "selectedParameters": {
+              "ridge": 10
+            },
+            "matureEarlierCaseCount": 2582,
+            "innerFoldCount": 2,
+            "nestedValidationWape": 0.7394886289661281,
+            "nestedValidationSignedBias": -0.4538225877919707,
+            "baseValidationWape": 0.5817554040924877,
+            "selectionReason": "selected_by_inner_rolling_origin",
+            "sameOrLaterOuterTruthRead": false
+          },
+          {
+            "outerOrigin": "2022-12",
+            "selectedParameters": {
+              "ridge": 10
+            },
+            "matureEarlierCaseCount": 4803,
+            "innerFoldCount": 3,
+            "nestedValidationWape": 0.753346259749263,
+            "nestedValidationSignedBias": -0.449452182985905,
+            "baseValidationWape": 0.5010863623895613,
+            "selectionReason": "selected_by_inner_rolling_origin",
+            "sameOrLaterOuterTruthRead": false
+          }
+        ]
+      },
+      "tweedie_gradient_boosted_stumps": {
+        "overall": {
+          "caseCount": 7851,
+          "wape": 3.0116461363817013,
+          "signedBias": 2.470058850856189,
+          "zeroImputationUsed": false,
+          "mae": 30548.384940765358,
+          "rmse": 178187.2243808388,
+          "mase": 62.24539864819696,
+          "rmsse": 208.2766095836609,
+          "scaledMetricCoverage": 0.49089287988791236,
+          "cashOccurrence": {
+            "positiveCaseCount": 6697,
+            "zeroOrNegativeCaseCount": 1154,
+            "observedRate": 0.8530123551139982,
+            "probabilityCaseCount": 7851,
+            "brier": 0.05963698770764734
+          },
+          "positiveAmount": {
+            "caseCount": 6697,
+            "wape": 3.0057522303129374,
+            "signedBias": 2.4641616239849586
+          }
+        },
+        "byOrigin": {
+          "2020-12": {
+            "caseCount": 740,
+            "wape": 0.6140094477070113,
+            "signedBias": -0.050282836149788956,
+            "zeroImputationUsed": false,
+            "mae": 10962.941974951047,
+            "rmse": 37163.23961920154,
+            "mase": 75.3144702290906,
+            "rmsse": 84.6906480700922,
+            "scaledMetricCoverage": 0.6554054054054054,
+            "cashOccurrence": {
+              "positiveCaseCount": 532,
+              "zeroOrNegativeCaseCount": 208,
+              "observedRate": 0.7189189189189189,
+              "probabilityCaseCount": 740,
+              "brier": 0.1
+            },
+            "positiveAmount": {
+              "caseCount": 532,
+              "wape": 0.6001214839896205,
+              "signedBias": -0.06417079986717981
+            }
+          },
+          "2021-06": {
+            "caseCount": 1480,
+            "wape": 4.546483675952393,
+            "signedBias": 4.375268733184269,
+            "zeroImputationUsed": false,
+            "mae": 53598.90444400615,
+            "rmse": 215072.1360781926,
+            "mase": 37.97389472285271,
+            "rmsse": 27.653206929515555,
+            "scaledMetricCoverage": 0.5202702702702703,
+            "cashOccurrence": {
+              "positiveCaseCount": 1292,
+              "zeroOrNegativeCaseCount": 188,
+              "observedRate": 0.8729729729729729,
+              "probabilityCaseCount": 1480,
+              "brier": 0.030238066662972688
+            },
+            "positiveAmount": {
+              "caseCount": 1292,
+              "wape": 4.546483675952389,
+              "signedBias": 4.375268733184264
+            }
+          },
+          "2021-12": {
+            "caseCount": 2204,
+            "wape": 3.0433481503624975,
+            "signedBias": 1.9942049935341712,
+            "zeroImputationUsed": false,
+            "mae": 34871.1030589343,
+            "rmse": 193382.0923404439,
+            "mase": 36.80382459414323,
+            "rmsse": 63.35245571027095,
+            "scaledMetricCoverage": 0.4482758620689655,
+            "cashOccurrence": {
+              "positiveCaseCount": 1900,
+              "zeroOrNegativeCaseCount": 304,
+              "observedRate": 0.8620689655172413,
+              "probabilityCaseCount": 2204,
+              "brier": 0.0700431531121363
+            },
+            "positiveAmount": {
+              "caseCount": 1900,
+              "wape": 3.0398483679978434,
+              "signedBias": 1.9907052111695187
+            }
+          },
+          "2022-06": {
+            "caseCount": 1839,
+            "wape": 3.267204322092268,
+            "signedBias": 3.1052618840770054,
+            "zeroImputationUsed": false,
+            "mae": 26776.949189369625,
+            "rmse": 199088.08006919804,
+            "mase": 17.549434704743483,
+            "rmsse": 24.747576738105064,
+            "scaledMetricCoverage": 0.46166394779771613,
+            "cashOccurrence": {
+              "positiveCaseCount": 1647,
+              "zeroOrNegativeCaseCount": 192,
+              "observedRate": 0.8955954323001631,
+              "probabilityCaseCount": 1839,
+              "brier": 0.044003123149101084
+            },
+            "positiveAmount": {
+              "caseCount": 1647,
+              "wape": 3.2555380985039135,
+              "signedBias": 3.0935905604095146
+            }
+          },
+          "2022-12": {
+            "caseCount": 1588,
+            "wape": 3.0401704694398966,
+            "signedBias": 2.75924752778876,
+            "zeroImputationUsed": false,
+            "mae": 16560.260598371577,
+            "rmse": 124161.69208234207,
+            "mase": 161.2397646051243,
+            "rmsse": 456.2635103730581,
+            "scaledMetricCoverage": 0.47984886649874053,
+            "cashOccurrence": {
+              "positiveCaseCount": 1326,
+              "zeroOrNegativeCaseCount": 262,
+              "observedRate": 0.8350125944584383,
+              "probabilityCaseCount": 1588,
+              "brier": 0.07188967185213893
+            },
+            "positiveAmount": {
+              "caseCount": 1326,
+              "wape": 3.037680362505044,
+              "signedBias": 2.7567569775962255
+            }
+          }
+        },
+        "bySegment": {
+          "dense": {
+            "caseCount": 5174,
+            "wape": 3.025880698606796,
+            "signedBias": 2.5631776197310074,
+            "zeroImputationUsed": false,
+            "mae": 42411.680461986965,
+            "rmse": 215004.0140696887,
+            "mase": 45.31153568200504,
+            "rmsse": 60.003464056388786,
+            "scaledMetricCoverage": 0.5133359103208349,
+            "cashOccurrence": {
+              "positiveCaseCount": 5092,
+              "zeroOrNegativeCaseCount": 82,
+              "observedRate": 0.9841515268650947,
+              "probabilityCaseCount": 5174,
+              "brier": 0.01863301609872897
+            },
+            "positiveAmount": {
+              "caseCount": 5092,
+              "wape": 3.0242044985495387,
+              "signedBias": 2.561498317518377
+            }
+          },
+          "dormant": {
+            "caseCount": 833,
+            "wape": 1.001376789177117,
+            "signedBias": -0.9985400024957481,
+            "zeroImputationUsed": false,
+            "mae": 2274.21387243622,
+            "rmse": 26189.025185680795,
+            "mase": 2.0195813710559487,
+            "rmsse": 2.852470640255257,
+            "scaledMetricCoverage": 0.14765906362545017,
+            "cashOccurrence": {
+              "positiveCaseCount": 80,
+              "zeroOrNegativeCaseCount": 753,
+              "observedRate": 0.09603841536614646,
+              "probabilityCaseCount": 833,
+              "brier": 0.1083276697807813
+            },
+            "positiveAmount": {
+              "caseCount": 80,
+              "wape": 0.9999649020522026,
+              "signedBias": -0.9999518896206626
+            }
+          },
+          "intermittent": {
+            "caseCount": 1844,
+            "wape": 3.5420603406424775,
+            "signedBias": 2.433483774616611,
+            "zeroImputationUsed": false,
+            "mae": 10034.11892835635,
+            "rmse": 71875.39253149729,
+            "mase": 110.97480847451703,
+            "rmsse": 382.91358448485437,
+            "scaledMetricCoverage": 0.5829718004338394,
+            "cashOccurrence": {
+              "positiveCaseCount": 1525,
+              "zeroOrNegativeCaseCount": 319,
+              "observedRate": 0.8270065075921909,
+              "probabilityCaseCount": 1844,
+              "brier": 0.1526929589319566
+            },
+            "positiveAmount": {
+              "caseCount": 1525,
+              "wape": 3.4759917427933114,
+              "signedBias": 2.3674147332323923
+            }
+          }
+        },
+        "selections": [
+          {
+            "outerOrigin": "2020-12",
+            "selectedParameters": null,
+            "matureEarlierCaseCount": 0,
+            "innerFoldCount": 0,
+            "nestedValidationWape": null,
+            "nestedValidationSignedBias": null,
+            "baseValidationWape": null,
+            "selectionReason": "mature_earlier_training_rows_below_minimum",
+            "sameOrLaterOuterTruthRead": false
+          },
+          {
+            "outerOrigin": "2021-06",
+            "selectedParameters": {
+              "power": 1.3,
+              "learningRate": 0.03,
+              "rounds": 30,
+              "ridge": 1
+            },
+            "matureEarlierCaseCount": 296,
+            "innerFoldCount": 0,
+            "nestedValidationWape": null,
+            "nestedValidationSignedBias": null,
+            "baseValidationWape": null,
+            "selectionReason": "default_parameters_no_eligible_inner_fold",
+            "sameOrLaterOuterTruthRead": false
+          },
+          {
+            "outerOrigin": "2021-12",
+            "selectedParameters": {
+              "power": 1.7,
+              "learningRate": 0.05,
+              "rounds": 30,
+              "ridge": 1
+            },
+            "matureEarlierCaseCount": 1036,
+            "innerFoldCount": 1,
+            "nestedValidationWape": 2.221801936486422,
+            "nestedValidationSignedBias": 2.016647326634026,
+            "baseValidationWape": 0.7391607631331645,
+            "selectionReason": "selected_by_inner_rolling_origin",
+            "sameOrLaterOuterTruthRead": false
+          },
+          {
+            "outerOrigin": "2022-06",
+            "selectedParameters": {
+              "power": 1.7,
+              "learningRate": 0.05,
+              "rounds": 30,
+              "ridge": 1
+            },
+            "matureEarlierCaseCount": 2582,
+            "innerFoldCount": 2,
+            "nestedValidationWape": 2.9004850788202066,
+            "nestedValidationSignedBias": 2.321530044941057,
+            "baseValidationWape": 0.5817554040924877,
+            "selectionReason": "selected_by_inner_rolling_origin",
+            "sameOrLaterOuterTruthRead": false
+          },
+          {
+            "outerOrigin": "2022-12",
+            "selectedParameters": {
+              "power": 1.7,
+              "learningRate": 0.05,
+              "rounds": 30,
+              "ridge": 1
+            },
+            "matureEarlierCaseCount": 4803,
+            "innerFoldCount": 3,
+            "nestedValidationWape": 3.100496874297496,
+            "nestedValidationSignedBias": 2.5681158806271864,
+            "baseValidationWape": 0.5010863623895613,
+            "selectionReason": "selected_by_inner_rolling_origin",
+            "sameOrLaterOuterTruthRead": false
+          }
+        ]
+      },
+      "hurdle_gradient_boosted_stumps": {
+        "overall": {
+          "caseCount": 7851,
+          "wape": 0.8651264303700125,
+          "signedBias": -0.7330461513433637,
+          "zeroImputationUsed": false,
+          "mae": 8775.338808272201,
+          "rmse": 101581.75907650305,
+          "mase": 46.427148880259736,
+          "rmsse": 186.78392450490983,
+          "scaledMetricCoverage": 0.49089287988791236,
+          "cashOccurrence": {
+            "positiveCaseCount": 6697,
+            "zeroOrNegativeCaseCount": 1154,
+            "observedRate": 0.8530123551139982,
+            "probabilityCaseCount": 7851,
+            "brier": 0.058067299342858626
+          },
+          "positiveAmount": {
+            "caseCount": 6697,
+            "wape": 0.862059016785653,
+            "signedBias": -0.7361233643000323
+          }
+        },
+        "byOrigin": {
+          "2020-12": {
+            "caseCount": 740,
+            "wape": 0.6140094477070113,
+            "signedBias": -0.050282836149788956,
+            "zeroImputationUsed": false,
+            "mae": 10962.941974951047,
+            "rmse": 37163.23961920154,
+            "mase": 75.3144702290906,
+            "rmsse": 84.6906480700922,
+            "scaledMetricCoverage": 0.6554054054054054,
+            "cashOccurrence": {
+              "positiveCaseCount": 532,
+              "zeroOrNegativeCaseCount": 208,
+              "observedRate": 0.7189189189189189,
+              "probabilityCaseCount": 740,
+              "brier": 0.1
+            },
+            "positiveAmount": {
+              "caseCount": 532,
+              "wape": 0.6001214839896205,
+              "signedBias": -0.06417079986717981
+            }
+          },
+          "2021-06": {
+            "caseCount": 1480,
+            "wape": 0.9443103144486212,
+            "signedBias": -0.9278475452264506,
+            "zeroImputationUsed": false,
+            "mae": 11132.559119772593,
+            "rmse": 44903.082790898705,
+            "mase": 15.168862731419438,
+            "rmsse": 12.735154221057476,
+            "scaledMetricCoverage": 0.5202702702702703,
+            "cashOccurrence": {
+              "positiveCaseCount": 1292,
+              "zeroOrNegativeCaseCount": 188,
+              "observedRate": 0.8729729729729729,
+              "probabilityCaseCount": 1480,
+              "brier": 0.030238066662972688
+            },
+            "positiveAmount": {
+              "caseCount": 1292,
+              "wape": 0.9442788946332615,
+              "signedBias": -0.9278789650418102
+            }
+          },
+          "2021-12": {
+            "caseCount": 2204,
+            "wape": 0.9097604388449165,
+            "signedBias": -0.8669525171258238,
+            "zeroImputationUsed": false,
+            "mae": 10424.16064626837,
+            "rmse": 156501.92715432725,
+            "mase": 22.4660521082608,
+            "rmsse": 60.91225893693867,
+            "scaledMetricCoverage": 0.4482758620689655,
+            "cashOccurrence": {
+              "positiveCaseCount": 1900,
+              "zeroOrNegativeCaseCount": 304,
+              "observedRate": 0.8620689655172413,
+              "probabilityCaseCount": 2204,
+              "brier": 0.06348740470609694
+            },
+            "positiveAmount": {
+              "caseCount": 1900,
+              "wape": 0.9086498610609068,
+              "signedBias": -0.8680630949098336
+            }
+          },
+          "2022-06": {
+            "caseCount": 1839,
+            "wape": 0.9025274744686163,
+            "signedBias": -0.8404317502807148,
+            "zeroImputationUsed": false,
+            "mae": 7396.823076672503,
+            "rmse": 99592.34080744535,
+            "mase": 7.4066448581769295,
+            "rmsse": 20.152553792011464,
+            "scaledMetricCoverage": 0.46166394779771613,
+            "cashOccurrence": {
+              "positiveCaseCount": 1647,
+              "zeroOrNegativeCaseCount": 192,
+              "observedRate": 0.8955954323001631,
+              "probabilityCaseCount": 1839,
+              "brier": 0.04128619084369536
+            },
+            "positiveAmount": {
+              "caseCount": 1647,
+              "wape": 0.9009467097451497,
+              "signedBias": -0.8420674062981687
+            }
+          },
+          "2022-12": {
+            "caseCount": 1588,
+            "wape": 0.8934969109804762,
+            "signedBias": -0.8049511442190473,
+            "zeroImputationUsed": false,
+            "mae": 4867.010530630779,
+            "rmse": 54890.43775692796,
+            "mase": 134.17058852055814,
+            "rmsse": 407.99929285612194,
+            "scaledMetricCoverage": 0.47984886649874053,
+            "cashOccurrence": {
+              "positiveCaseCount": 1326,
+              "zeroOrNegativeCaseCount": 262,
+              "observedRate": 0.8350125944584383,
+              "probabilityCaseCount": 1588,
+              "brier": 0.0763743599154836
+            },
+            "positiveAmount": {
+              "caseCount": 1326,
+              "wape": 0.8925323072129056,
+              "signedBias": -0.8059184279035448
+            }
+          }
+        },
+        "bySegment": {
+          "dense": {
+            "caseCount": 5174,
+            "wape": 0.8688088514824435,
+            "signedBias": -0.7460389178438441,
+            "zeroImputationUsed": false,
+            "mae": 12177.493781755844,
+            "rmse": 124357.99812869304,
+            "mase": 29.720701625802022,
+            "rmsse": 56.91528244917605,
+            "scaledMetricCoverage": 0.5133359103208349,
+            "cashOccurrence": {
+              "positiveCaseCount": 5092,
+              "zeroOrNegativeCaseCount": 82,
+              "observedRate": 0.9841515268650947,
+              "probabilityCaseCount": 5174,
+              "brier": 0.018551476331210452
+            },
+            "positiveAmount": {
+              "caseCount": 5092,
+              "wape": 0.8686154862599784,
+              "signedBias": -0.7462431096825841
+            }
+          },
+          "dormant": {
+            "caseCount": 833,
+            "wape": 1.0006681757439924,
+            "signedBias": -0.9992544228891159,
+            "zeroImputationUsed": false,
+            "mae": 2272.6045496346287,
+            "rmse": 26189.000442229746,
+            "mase": 1.813356719943325,
+            "rmsse": 2.687683096095631,
+            "scaledMetricCoverage": 0.14765906362545017,
+            "cashOccurrence": {
+              "positiveCaseCount": 80,
+              "zeroOrNegativeCaseCount": 753,
+              "observedRate": 0.09603841536614646,
+              "probabilityCaseCount": 833,
+              "brier": 0.10510492911463301
+            },
+            "positiveAmount": {
+              "caseCount": 80,
+              "wape": 0.99998496785145,
+              "signedBias": -0.9999376307816584
+            }
+          },
+          "intermittent": {
+            "caseCount": 1844,
+            "wape": 0.7649171207064375,
+            "signedBias": -0.45626198052769995,
+            "zeroImputationUsed": false,
+            "mae": 2166.894016862548,
+            "rmse": 15209.016914442074,
+            "mase": 92.80837710682606,
+            "rmsse": 342.16092383212174,
+            "scaledMetricCoverage": 0.5829718004338394,
+            "cashOccurrence": {
+              "positiveCaseCount": 1525,
+              "zeroOrNegativeCaseCount": 319,
+              "observedRate": 0.8270065075921909,
+              "probabilityCaseCount": 1844,
+              "brier": 0.14769448083004838
+            },
+            "positiveAmount": {
+              "caseCount": 1525,
+              "wape": 0.7210870775385531,
+              "signedBias": -0.5000925122822584
+            }
+          }
+        },
+        "selections": [
+          {
+            "outerOrigin": "2020-12",
+            "selectedParameters": null,
+            "matureEarlierCaseCount": 0,
+            "innerFoldCount": 0,
+            "nestedValidationWape": null,
+            "nestedValidationSignedBias": null,
+            "baseValidationWape": null,
+            "selectionReason": "mature_earlier_training_rows_below_minimum",
+            "sameOrLaterOuterTruthRead": false
+          },
+          {
+            "outerOrigin": "2021-06",
+            "selectedParameters": {
+              "learningRate": 0.03,
+              "rounds": 30,
+              "ridge": 1
+            },
+            "matureEarlierCaseCount": 296,
+            "innerFoldCount": 0,
+            "nestedValidationWape": null,
+            "nestedValidationSignedBias": null,
+            "baseValidationWape": null,
+            "selectionReason": "default_parameters_no_eligible_inner_fold",
+            "sameOrLaterOuterTruthRead": false
+          },
+          {
+            "outerOrigin": "2021-12",
+            "selectedParameters": {
+              "learningRate": 0.1,
+              "rounds": 30,
+              "ridge": 10
+            },
+            "matureEarlierCaseCount": 1036,
+            "innerFoldCount": 1,
+            "nestedValidationWape": 0.8413074732511637,
+            "nestedValidationSignedBias": -0.7735571725809253,
+            "baseValidationWape": 0.7391607631331645,
+            "selectionReason": "selected_by_inner_rolling_origin",
+            "sameOrLaterOuterTruthRead": false
+          },
+          {
+            "outerOrigin": "2022-06",
+            "selectedParameters": {
+              "learningRate": 0.1,
+              "rounds": 30,
+              "ridge": 10
+            },
+            "matureEarlierCaseCount": 2582,
+            "innerFoldCount": 2,
+            "nestedValidationWape": 0.8512071574928686,
+            "nestedValidationSignedBias": -0.7768442117679265,
+            "baseValidationWape": 0.5817554040924877,
+            "selectionReason": "selected_by_inner_rolling_origin",
+            "sameOrLaterOuterTruthRead": false
+          },
+          {
+            "outerOrigin": "2022-12",
+            "selectedParameters": {
+              "learningRate": 0.1,
+              "rounds": 30,
+              "ridge": 10
+            },
+            "matureEarlierCaseCount": 4803,
+            "innerFoldCount": 3,
+            "nestedValidationWape": 0.8762423968914512,
+            "nestedValidationSignedBias": -0.8184285439073483,
+            "baseValidationWape": 0.5010863623895613,
+            "selectionReason": "selected_by_inner_rolling_origin",
+            "sameOrLaterOuterTruthRead": false
+          }
+        ]
+      }
+    },
+    "selections": [
+      {
+        "outerOrigin": "2020-12",
+        "selectedFamily": "base_candidate_fallback",
+        "nestedRelativeWapeToBase": null,
+        "selectionReason": "no_family_cleared_nested_wape_and_bias_gates",
+        "sameOrLaterOuterTruthRead": false,
+        "innerFoldCount": 0
+      },
+      {
+        "outerOrigin": "2021-06",
+        "selectedFamily": "base_candidate_fallback",
+        "nestedRelativeWapeToBase": null,
+        "selectionReason": "no_family_cleared_nested_wape_and_bias_gates",
+        "sameOrLaterOuterTruthRead": false,
+        "innerFoldCount": 0
+      },
+      {
+        "outerOrigin": "2021-12",
+        "selectedFamily": "base_candidate_fallback",
+        "nestedRelativeWapeToBase": -0.020899167136961383,
+        "selectionReason": "no_family_cleared_nested_wape_and_bias_gates",
+        "sameOrLaterOuterTruthRead": false,
+        "innerFoldCount": 1
+      },
+      {
+        "outerOrigin": "2022-06",
+        "selectedFamily": "base_candidate_fallback",
+        "nestedRelativeWapeToBase": 0.2711332353151015,
+        "selectionReason": "no_family_cleared_nested_wape_and_bias_gates",
+        "sameOrLaterOuterTruthRead": false,
+        "innerFoldCount": 2
+      },
+      {
+        "outerOrigin": "2022-12",
+        "selectedFamily": "base_candidate_fallback",
+        "nestedRelativeWapeToBase": 0.5034259885995189,
+        "selectionReason": "no_family_cleared_nested_wape_and_bias_gates",
+        "sameOrLaterOuterTruthRead": false,
+        "innerFoldCount": 3
+      }
+    ]
+  },
+  "hierarchy": {
+    "allCellsCoherent": true,
+    "method": "MinT_diagonal_as_of_covariance_then_nonnegative_projection",
+    "nestedApplicationSelections": [
+      {
+        "outerOrigin": "2020-12",
+        "selectedChallengerWeight": 0,
+        "matureEarlierCaseCount": 0,
+        "trainingMetrics": null,
+        "sameOrLaterOuterTruthRead": false
+      },
+      {
+        "outerOrigin": "2021-06",
+        "selectedChallengerWeight": 0,
+        "matureEarlierCaseCount": 296,
+        "trainingMetrics": {
+          "caseCount": 296,
+          "wape": 0.5228379328346882,
+          "signedBias": 0.06053919120815102,
+          "zeroImputationUsed": false
+        },
+        "sameOrLaterOuterTruthRead": false
+      },
+      {
+        "outerOrigin": "2021-12",
+        "selectedChallengerWeight": 0,
+        "matureEarlierCaseCount": 1036,
+        "trainingMetrics": null,
+        "sameOrLaterOuterTruthRead": false
+      },
+      {
+        "outerOrigin": "2022-06",
+        "selectedChallengerWeight": 0,
+        "matureEarlierCaseCount": 2582,
+        "trainingMetrics": {
+          "caseCount": 2582,
+          "wape": 0.5823459238551875,
+          "signedBias": -0.09776563099520964,
+          "zeroImputationUsed": false
+        },
+        "sameOrLaterOuterTruthRead": false
+      },
+      {
+        "outerOrigin": "2022-12",
+        "selectedChallengerWeight": 0,
+        "matureEarlierCaseCount": 4803,
+        "trainingMetrics": {
+          "caseCount": 4803,
+          "wape": 0.5334868548676512,
+          "signedBias": -0.06157410957828725,
+          "zeroImputationUsed": false
+        },
+        "sameOrLaterOuterTruthRead": false
+      }
+    ]
+  },
+  "denseMonthlyDiagnostic": {
+    "originCount": 25,
+    "caseCount": 56856,
+    "rollingBaselineChampion": {
+      "caseCount": 47611,
+      "wape": 0.6633579993274837,
+      "signedBias": -0.3020611972677064,
+      "zeroImputationUsed": false,
+      "mae": 5875.489137604738,
+      "rmse": 52173.93252638004,
+      "mase": 32.46002235378997,
+      "rmsse": 926.2380493654119,
+      "scaledMetricCoverage": 0.9787654113545189,
+      "cashOccurrence": {
+        "positiveCaseCount": 42971,
+        "zeroOrNegativeCaseCount": 4640,
+        "observedRate": 0.9025435298565457,
+        "probabilityCaseCount": 47611,
+        "brier": 0.24324210791623785
+      },
+      "positiveAmount": {
+        "caseCount": 42971,
+        "wape": 0.6428345783178783,
+        "signedBias": -0.32258806484012165
+      }
+    },
+    "probabilistic": {
+      "caseCount": 47611,
+      "wis": 5923.548802823253,
+      "crpsApproximation": 5923.548802823041,
+      "meanQuantileScore": 2961.7744014115206,
+      "quantileProbabilities": [
+        0.05,
+        0.1,
+        0.25,
+        0.5,
+        0.75,
+        0.9,
+        0.95
+      ],
+      "intervalCoverage": {
+        "central_90": {
+          "nominal": 0.9,
+          "observed": 0.7221650458927559,
+          "absoluteCalibrationError": 0.17783495410724415
+        },
+        "central_80": {
+          "nominal": 0.8,
+          "observed": 0.6436327739387957,
+          "absoluteCalibrationError": 0.15636722606120435
+        },
+        "central_50": {
+          "nominal": 0.5,
+          "observed": 0.400537690869757,
+          "absoluteCalibrationError": 0.09946230913024301
+        }
+      }
+    },
+    "abstention": {
+      "scoredCaseCount": 47611,
+      "abstainedCaseCount": 9245,
+      "abstentionReasons": {
+        "uncommitted_future_buyout_not_forecastable": 2405,
+        "unknown_revenue_model": 6840
+      },
+      "pureBuyoutWithoutCutoffCommitment": "null_abstain_not_zero_not_monthly_equivalent"
+    },
+    "decisionPopulationMoved": false
+  },
+  "automation": {
+    "schema": "m2.current.automation_policy_evaluation.v0.1",
+    "overall": {
+      "point": {
+        "caseCount": 7851,
+        "wape": 0.5055714018636206,
+        "signedBias": -0.011989577726722619,
+        "zeroImputationUsed": false,
+        "mae": 5128.22194234535,
+        "rmse": 25412.27030275966,
+        "mase": 41.75761403383934,
+        "rmsse": 161.15841551311541,
+        "scaledMetricCoverage": 0.49089287988791236,
+        "cashOccurrence": {
+          "positiveCaseCount": 6697,
+          "zeroOrNegativeCaseCount": 1154,
+          "observedRate": 0.8530123551139982,
+          "probabilityCaseCount": 7851,
+          "brier": 0.05979150671924214
+        },
+        "positiveAmount": {
+          "caseCount": 6697,
+          "wape": 0.5015935543446634,
+          "signedBias": -0.015970598728186725
+        }
+      },
+      "probabilistic": {
+        "caseCount": 7851,
+        "wis": 4366.443388484207,
+        "crpsApproximation": 4366.44338848425,
+        "meanQuantileScore": 2183.221694242125,
+        "quantileProbabilities": [
+          0.05,
+          0.1,
+          0.25,
+          0.5,
+          0.75,
+          0.9,
+          0.95
+        ],
+        "intervalCoverage": {
+          "central_90": {
+            "nominal": 0.9,
+            "observed": 0.8954273340975671,
+            "absoluteCalibrationError": 0.004572665902432882
+          },
+          "central_80": {
+            "nominal": 0.8,
+            "observed": 0.8239714686027257,
+            "absoluteCalibrationError": 0.0239714686027257
+          },
+          "central_50": {
+            "nominal": 0.5,
+            "observed": 0.5525410775697364,
+            "absoluteCalibrationError": 0.05254107756973636
+          }
+        }
+      },
+      "businessLoss": 6440.681251877699,
+      "segmentWapes": {
+        "dense": 0.4637293456231137,
+        "dormant": 1.0001836094171888,
+        "intermittent": 0.9073284142904834
+      }
+    },
+    "riskCoverage": [
+      {
+        "requestedCaseCoverage": 0.25,
+        "servedCaseCount": 1962,
+        "servedCaseCoverage": 0.24990447076805503,
+        "servedActualCashCoverage": 0.8834373686812501,
+        "wape": 0.46061075131515017,
+        "signedBias": 0.011292125847878745,
+        "wis": 13887.349973847682,
+        "central80Coverage": 0.5188583078491336,
+        "businessLoss": 20544.404451824186
+      },
+      {
+        "requestedCaseCoverage": 0.5,
+        "servedCaseCount": 3925,
+        "servedCaseCoverage": 0.49993631384537,
+        "servedActualCashCoverage": 0.9627261858111558,
+        "wape": 0.48874981360419695,
+        "signedBias": 0.014948484701309555,
+        "wis": 7869.698958787481,
+        "central80Coverage": 0.6871337579617834,
+        "businessLoss": 11860.516463348336
+      },
+      {
+        "requestedCaseCoverage": 0.75,
+        "servedCaseCount": 5888,
+        "servedCaseCoverage": 0.749968156922685,
+        "servedActualCashCoverage": 0.9792768323532124,
+        "wape": 0.4952412557935196,
+        "signedBias": 0.008366446034536205,
+        "wis": 5471.400743487204,
+        "central80Coverage": 0.7783627717391305,
+        "businessLoss": 8171.541446405703
+      },
+      {
+        "requestedCaseCoverage": 1,
+        "servedCaseCount": 7851,
+        "servedCaseCoverage": 1,
+        "servedActualCashCoverage": 1,
+        "wape": 0.5055714018636206,
+        "signedBias": -0.011989577726722619,
+        "wis": 4366.443388484207,
+        "central80Coverage": 0.8239714686027257,
+        "businessLoss": 6440.681251877699
+      }
+    ],
+    "forecastValueAdded": {
+      "v0_3": {
+        "businessLoss": 6440.681251877699,
+        "businessLossFva": 0,
+        "wape": 0.5055714018636206,
+        "wapeFva": 0
+      },
+      "B4": {
+        "businessLoss": 6829.849023463699,
+        "businessLossFva": 0.056980435475078396,
+        "wape": 0.55648453794005,
+        "wapeFva": 0.09149065716164481
+      },
+      "strongestSimpleBaseline": {
+        "businessLoss": 15215.095559457346,
+        "businessLossFva": 0.5766913703099076,
+        "wape": 1,
+        "wapeFva": 0.4944285981363794
+      }
+    },
+    "gates": {
+      "absoluteWapePassed": false,
+      "eachSegmentWapePassed": false,
+      "central80CalibrationPassed": true,
+      "stableImprovementPassed": false,
+      "fullCaseCoverageEvaluated": true
+    },
+    "automationAuthorized": false,
+    "decision": "AUTOMATION_BLOCKED",
+    "humanRole": "post_gate_quality_assurance_only",
+    "releaseAuthorized": false
+  },
+  "acceptance": {
+    "developmentWapePassed": false,
+    "overallAbsoluteBiasPassed": true,
+    "eachHorizonAbsoluteBiasPassed": true,
+    "eachSegmentWapePassed": false,
+    "eachSegmentAbsoluteBiasPassed": false,
+    "stableImprovementVsV03Passed": false,
+    "central80CalibrationPassed": true,
+    "hierarchyCoherencePassed": true,
+    "denseMonthlyOriginEvaluatorPassed": true,
+    "allCurrentDevelopmentConditionsPassed": false,
+    "developmentDecision": "FAIL",
+    "finalHoldoutOpened": false,
+    "releaseAuthorized": false
+  },
+  "developmentAuthorization": {
+    "modelTraining": true,
+    "newCandidateFamilyDevelopment": false,
+    "finalHoldout": false,
+    "release": false,
+    "m3Formal": false
+  },
+  "humanEvaluation": {
+    "numericForecastRequired": false,
+    "sample120Required": false,
+    "sample120Replayed": false,
+    "role": "post_gate_quality_assurance_only"
+  },
+  "privacy": {
+    "aggregateOnly": true,
+    "workIdentifiersPresent": false,
+    "privatePathsPresent": false,
+    "rawRowsPresent": false
+  }
+}
