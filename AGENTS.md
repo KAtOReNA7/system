@@ -2,11 +2,11 @@
 
 ## 当前唯一入口
 
-- PR #7、PR #8、PR #9、PR #10、PR #11、PR #12 均已合入 `main`；已合并分支不得继续作为开发入口。
+- PR #7、PR #8、PR #9、PR #10、PR #11、PR #12、PR #13 均已合入 `main`；已合并分支不得继续作为开发入口。
 - 当前仓库治理导航为：
-  - `docs/analysis/m2-v2/M2-v2-current-state-index-v0.10.md`
+  - `docs/analysis/m2-v2/M2-v2-current-state-index-v0.11.md`
   - `docs/analysis/m2-v2/M2-repository-code-convergence-and-portable-development-audit-v0.4.md`
-  - `docs/analysis/m2-current/M2-current-R0-R5-evaluation-and-development-v0.5.md`
+  - `docs/analysis/m2-current/M2-current-maturity-reconstruction-v0.6.md`
 - PR #7 cryptographic authority 继续由不可变的
   `docs/analysis/m2-v2/M2-v2-current-state-index-v0.3.json` 提供；治理索引不得改写该绑定。
 - 历史 B0–B8、C1–C3、旧 PR 状态和旧授权记录只用于审计追溯，不是当前执行指令。
@@ -86,10 +86,11 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
 - commitment 必须 exact-work、已签署、已确认、cutoff 前可得、可审计，且预计入账月位于 horizon。
 - B4 只作 comparator/fallback，不是 release approval。
 - C1、legacy C2-R、C2-R.1、C2、C3 均为历史 development `FAIL`，不得重复进入或复制其 runner。
-- 2026-07-24 用户已授权并完成 R0–R5 本地 development 复验；授权只覆盖冻结
-  development case 和本机已验证 authority cache，不包含 provider、数据库、
-  final holdout、release 或 M3 formal。
-- 当前公共诊断为 `CANDIDATE_DEVELOPMENT_FAIL_BLOCKED`：
+- 2026-07-24 用户已授权并完成 R0–R5 及本轮多粒度组合模型本地 development
+  复验；授权只覆盖冻结 development case 和本机已验证 authority cache，不包含
+  provider、数据库、final holdout、release 或 M3 formal。
+- 当前公共诊断为
+  `PORTFOLIO_DEVELOPMENT_BACKTEST_PASS_WORK_LEVEL_BLOCKED`：
   - 3,053 部权威作品，824 部 model works，7,851 个 formal-cash cases
   - 全库现金覆盖率 0.7396468495，Top10 覆盖率 0.759412528，门槛 0.90
   - v0.3 WAPE/bias 0.50557140 / -0.01198958；v0.2 为
@@ -100,11 +101,27 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
     dormant WAPE/bias 1.00018 / -0.99972，均不具备 decision-grade 质量
   - 25 个逐月 origin 形成 56,856 个成熟 case；rolling baseline champion
     WAPE/bias 0.66335800 / -0.30206120，80% interval coverage 0.64363277
+  - v0.3/v0.4 在 5 个稀疏半年 origin 的 origin×horizon 组合 WAPE 为
+    0.08397490，但现有逐月组合基线 WAPE/bias 为 0.32846914 /
+    -0.30206335；稀疏汇总不得冒充逐月成熟度
+  - v0.5 使用 strictly as-of 的加总 additive Holt–Winters 三模型 ensemble；
+    在 2022-01 后 12 个逐月 origin、30 个 origin×horizon development cell 上
+    WAPE/bias 0.11681934 / -0.04876300，较 seasonal naive 的
+    0.21217335 改善 44.94%，portfolio development gate 通过
+  - 按 origin 聚类 bootstrap 的 WAPE 95% CI 为
+    [0.08500048, 0.13717581]，bias 95% CI 为
+    [-0.09940077, 0.02145806]；区间门禁通过但仍是 development evidence
+  - v0.5 是 development backtest，不是独立 holdout；cell APE p90 为
+    0.28366167，作品级 WAPE、intermittent/dormant、cash observability 和
+    final holdout 仍阻断完整 M2 成熟声明
   - global hurdle GLM、Tweedie boosting、hurdle GBM、MinT 和受约束 ensemble
     均未通过 nested gate；继续堆叠同类模型不是当前优先级
 - 当前 development champion 仍为
   `M2-current-occurrence-amount-calibration-v0.3`。v0.4 只是在严格门禁拒绝所有
   challenger 后返回 v0.3，不能表述为候选升级。
+- 当前 portfolio development candidate 为
+  `M2-current-multi-resolution-revenue-service-v0.5`；只允许用于组合层
+  development backtest 结论，不得下放为作品级预测、自动化或 release。
 - zero、seasonal naive、classic Croston、SBA、TSB、ADIDA、B4 和 v0.3 已进入
   同人口自动回归；基线不得因表现较弱而删除。
 - eligibility、cash observability 和 served coverage 必须继续分开报告。2,229 部非模型作品的原因 ledger 已在本地 private output 穷尽对账；不得为提高比例移动 824/7,851 冻结人口。
@@ -118,41 +135,46 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
 
 - `currentDecision=CANARY_FAIL`
 - `automationDecision=AUTOMATION_BLOCKED`
-- `nextDevelopmentReadiness=AUDITABLE_AS_OF_SIGNAL_AND_CASH_OBSERVABILITY_REQUIRED`
+- `nextDevelopmentReadiness=PORTFOLIO_INDEPENDENT_VALIDATION_AND_WORK_LEVEL_SIGNAL_REQUIRED`
 - `full160Authorized=false`
-- 本轮 R0–R5 新候选研究授权已执行完毕；默认不得继续新增模型家族或同类调参
+- 本轮多粒度重构研究授权已执行完毕；默认不得继续在同一 development 窗口调参
 - final holdout、embargo shadow、deferred labels 均 sealed
 - provider、远端/共享/staging-like 数据库、Canary/full160、release、M3 formal 均未授权
 
-## M2 当前执行队列（2026-07-24 R0–R5 完成后）
+## M2 当前执行队列（2026-07-24 多粒度重构后）
 
 以下顺序是当前仓库任务的默认优先级。除非用户明确改变业务方向或新增授权，否则
 不得以继续调参、扩建 evidence runtime、复制历史 runner 或重新引入 120 部人工评估代替。
 
-1. 保持 exact v0.3/v0.4 fallback、25-origin 次级诊断、强基线、概率评价、
-   risk–coverage、业务损失和 FVA 可复现。
-2. 只接收 cutoff 时真实可得、可审计、可版本化、exact-work 的新信号：
+1. 保持 exact v0.3/v0.4 作品级 fallback；不得把 v0.5 portfolio 结果分配回作品。
+2. 保持三个分辨率同时报告：作品 case、origin 组合、origin×horizon 组合；任何
+   稀疏权威结果都必须由逐月 origin 结果交叉检查。
+3. 下一次组合模型评价必须使用未参与本轮选择的 later-origin/final holdout；
+   未获单独授权前继续 sealed，不得在当前 2022 development 窗口继续调参。
+4. 只接收 cutoff 时真实可得、可审计、可版本化、exact-work 的新信号：
    commitment snapshot、sales historical availability、合同/可售/渠道状态。
-3. 先建立 intermittent/dormant occurrence 与 positive amount 的数据缺口
+5. 先建立 intermittent/dormant occurrence 与 positive amount 的数据缺口
    ledger，并量化每个信号的 work/origin 覆盖；无历史 snapshot 的 current
    状态不得回填。
-4. 新信号先通过 25-origin 次级诊断，再回到 7,851-case 权威人口做 nested
+6. 新信号先通过 25-origin 次级诊断，再回到 7,851-case 权威人口做 nested
    challenger；不移动冻结人口，不剔除困难 case，不将 null 计为 0。
-5. 只有绝对质量、segment、risk–coverage 和业务损失均通过，才申请 final
+7. 只有绝对质量、segment、risk–coverage 和业务损失均通过，才申请 final
    holdout；失败时继续 fallback，不得用新模型数量替代证据质量。
-6. 120 部人工评估继续完全跳过。人工只在技术门禁通过后做 post-gate QA。
-7. final holdout、embargo shadow、deferred labels、provider、数据库、
+8. 120 部人工评估继续完全跳过。人工只在技术门禁通过后做 post-gate QA。
+9. final holdout、embargo shadow、deferred labels、provider、数据库、
    Canary/full160、release 和 M3 formal 在收到各自明确授权前继续 sealed/禁止。
 
 当前启动状态：
 
-- 已实现：R0–R5 strict contract、nested evaluator、六个简单基线、三个全局
-  challenger、rolling conformal、MinT、ensemble、risk–coverage、业务损失和 FVA。
+- 已实现：R0–R5 strict contract、multi-resolution evaluator、加总
+  additive Holt–Winters ensemble、六个简单基线、三个全局 challenger、
+  rolling conformal、MinT、risk–coverage、业务损失和 FVA。
 - 已验证：权威 7,851-case 与 25-origin/56,856-case 次级 development 复验；
-  challenger 均失败并安全回退 v0.3。
+  作品级 challenger 均失败并安全回退 v0.3；portfolio v0.5 development
+  backtest 通过，但完整 M2 成熟度未通过。
 - 已退役：120 部人工评估的 current 依赖；不重建、不重放。
-- 下一输入：真实的 cutoff as-of signal 与 cash observability 数据；不存在时
-  保持阻断，不制造或推断。
+- 下一输入：组合层未参与选择的 later-origin/final holdout，或作品层真实的
+  cutoff as-of signal 与 cash observability 数据；不存在时保持阻断。
 - 未授权：final holdout 及所有既有业务 gate 外的动作。
 
 ## Git 与提交规则

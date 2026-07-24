@@ -43,6 +43,11 @@ import {
   attachM2CurrentConformalQuantiles
 } from "../../src/domain/m2Current/probabilistic.js";
 import {
+  buildM2CurrentPortfolioReconstruction,
+  evaluateM2CurrentResolution,
+  summarizeM2CurrentCashConcentration
+} from "../../src/domain/m2Current/portfolio.js";
+import {
   evaluateM2CurrentAutomationPolicy
 } from "../../src/domain/m2Current/automation.js";
 import { assertM2CurrentModelCaseRoute } from "../../src/domain/m2Current/route.js";
@@ -54,11 +59,15 @@ const config = JSON.parse(
 const nextConfig = JSON.parse(
   await readFile(path.join(root, "config/m2-current.v0.4.json"), "utf8")
 );
+const resolutionConfig = JSON.parse(
+  await readFile(path.join(root, "config/m2-current.v0.5.json"), "utf8")
+);
 const previousConfig = JSON.parse(
   await readFile(path.join(root, "config/m2-current.v0.2.json"), "utf8")
 );
 const contract = buildM2CurrentContract(config);
 const nextContract = buildM2CurrentContract(nextConfig);
+const resolutionContract = buildM2CurrentContract(resolutionConfig);
 const previousContract = buildM2CurrentContract(previousConfig);
 const populationReport = JSON.parse(
   await readFile(path.join(root, config.publicSources.population), "utf8")
@@ -66,6 +75,7 @@ const populationReport = JSON.parse(
 if (
   !contract.authorizations.modelTraining
   || !nextContract.authorizations.modelTraining
+  || !resolutionContract.authorizations.modelTraining
 ) {
   throw new Error("m2_current_candidate_development_not_authorized");
 }
@@ -75,6 +85,9 @@ if (
   || contract.authorizations.release
   || nextContract.authorizations.holdout
   || nextContract.authorizations.release
+  || resolutionContract.authorizations.newCandidateFamilyDevelopment
+  || resolutionContract.authorizations.holdout
+  || resolutionContract.authorizations.release
 ) {
   throw new Error("m2_current_candidate_forbidden_authorization_scope");
 }
@@ -724,12 +737,14 @@ const denseManifest = JSON.parse(await readFile(
 ));
 verifyDenseManifest(denseManifest, denseCaseText, denseHistoryText);
 const denseHistoryByKey = new Map(parseNdjson(denseHistoryText).map(
-  (row) => [row.historyKey, row.historySeries]
+  (row) => [row.historyKey, row]
 ));
 const denseCases = parseNdjson(denseCaseText).map((row) => ({
   ...row,
   revenueModel: row.route,
-  historySeries: denseHistoryByKey.get(row.historyKey)
+  historyFirstObservedMonth:
+    denseHistoryByKey.get(row.historyKey)?.historyFirstObservedMonth,
+  historySeries: denseHistoryByKey.get(row.historyKey)?.historySeries
 }));
 if (denseCases.some((row) => !Array.isArray(row.historySeries))) {
   throw new Error("m2_current_dense_history_join_failed");
@@ -761,6 +776,29 @@ const denseProbabilistic = attachM2CurrentConformalQuantiles(
     minimumCalibrationRows:
       nextContract.development.probabilistic.minimumCalibrationRows
   }
+);
+const authorityResolution = evaluateM2CurrentResolution(
+  nextCandidateRows,
+  {
+    bootstrapIterations:
+      resolutionContract.pairedBootstrap.iterations,
+    bootstrapSeed: resolutionContract.pairedBootstrap.seed
+  }
+);
+const denseChampionResolution = evaluateM2CurrentResolution(
+  denseChampion.rows,
+  {
+    bootstrapIterations:
+      resolutionContract.pairedBootstrap.iterations,
+    bootstrapSeed: resolutionContract.pairedBootstrap.seed
+  }
+);
+const portfolioReconstruction = buildM2CurrentPortfolioReconstruction(
+  denseCases,
+  resolutionContract.development.portfolioReconstruction
+);
+const cashConcentration = summarizeM2CurrentCashConcentration(
+  nextCandidateRows
 );
 
 const nextCandidatePrivateRows = nextCandidateRows.map((row) => ({
@@ -1077,8 +1115,222 @@ await writeFile(
   "utf8"
 );
 
+const {
+  privateValidationRows: portfolioPrivateRows,
+  privateSeasonalNaiveRows: portfolioPrivateComparatorRows,
+  ...publicPortfolioReconstruction
+} = portfolioReconstruction;
+const portfolioPrivateText = portfolioPrivateRows.map((row) => JSON.stringify({
+  ...row,
+  seasonalNaivePointEstimate:
+    portfolioPrivateComparatorRows.find((candidateRow) => (
+      candidateRow.origin === row.origin
+      && candidateRow.horizonMonths === row.horizonMonths
+    ))?.pointEstimate
+})).join("\n") + "\n";
+const portfolioPrivatePath = path.join(
+  privateDirectory,
+  "M2-current-portfolio-reconstruction-cells-private-v0.5.ndjson"
+);
+const portfolioPrivateManifestPath = path.join(
+  privateDirectory,
+  "M2-current-portfolio-reconstruction-manifest-private-v0.5.json"
+);
+const portfolioDevelopmentPassed =
+  publicPortfolioReconstruction.allPortfolioDevelopmentGatesPassed;
+const workLevelDevelopmentPassed =
+  nextCandidateAcceptance.allCurrentDevelopmentConditionsPassed;
+const resolutionCoverage = JSON.parse(await readFile(
+  path.join(root, resolutionConfig.publicSources.coverage),
+  "utf8"
+));
+const resolutionAcceptance = {
+  portfolioDevelopmentBacktestPassed: portfolioDevelopmentPassed,
+  workLevelDevelopmentPassed,
+  cashObservabilityPassed:
+    Number(
+      resolutionConfig.thresholds
+        .fullLibraryForecastableCashCoverageMinimum
+    ) <= Number(
+      resolutionCoverage.cashCoverage.forecastableCashShareOfLedgerCash
+    )
+    && Number(
+      resolutionConfig.thresholds
+        .top10ForecastableCashCoverageMinimum
+    ) <= Number(
+      resolutionCoverage.topBands.top10.forecastableCashCoverage
+    ),
+  denseMonthlyContradictionResolved:
+    portfolioDevelopmentPassed,
+  fullM2MaturityPassed: false,
+  finalHoldoutOpened: false,
+  releaseAuthorized: false
+};
+const resolutionStatus = portfolioDevelopmentPassed
+  ? "PORTFOLIO_DEVELOPMENT_BACKTEST_PASS_WORK_LEVEL_BLOCKED"
+  : "MULTI_RESOLUTION_DEVELOPMENT_FAIL_BLOCKED";
+const resolutionAutomatedEvaluation = {
+  schema: "m2.current.automated_evaluation.public.v0.3",
+  decisionStatus: "not_for_formal_decision",
+  targetContract: nextAutomatedEvaluation.targetContract,
+  authoritativeFrozenEvaluation: {
+    ...nextAutomatedEvaluation.authoritativeFrozenEvaluation,
+    multiResolution: authorityResolution,
+    cashAndErrorConcentration: cashConcentration,
+    interpretation:
+      "five_sparse_semiannual_origins_show_aggregate_accuracy_but_do_not_establish_monthly_maturity"
+  },
+  denseMonthlyDevelopmentDiagnostic: {
+    ...nextAutomatedEvaluation.denseMonthlyDevelopmentDiagnostic,
+    existingChampionMultiResolution: denseChampionResolution,
+    portfolioReconstruction: publicPortfolioReconstruction
+  },
+  automation: {
+    ...automation,
+    decision: "AUTOMATION_BLOCKED",
+    automationAuthorized: false,
+    releaseAuthorized: false
+  },
+  maturityAssessment: {
+    matureDataPredictionCapability: false,
+    highAccuracyPortfolioDevelopmentBacktestAvailable:
+      portfolioDevelopmentPassed,
+    permittedClaim:
+      "portfolio_level_development_backtest_pass_only",
+    prohibitedClaims: [
+      "mature_work_level_forecasting",
+      "independently_validated_production_forecast",
+      "release_ready",
+      "full_library_coverage"
+    ],
+    reasons: [
+      "work_level_WAPE_above_0_30",
+      "intermittent_and_dormant_segments_failed",
+      "cash_observability_below_0_90",
+      "portfolio_candidate_tuned_on_development_data",
+      "final_holdout_sealed"
+    ]
+  },
+  retiredHumanPredictionSample:
+    nextAutomatedEvaluation.retiredHumanPredictionSample,
+  boundaries: nextAutomatedEvaluation.boundaries
+};
+const resolutionPublicReport = {
+  schema: "m2.current.multi_resolution_candidate.public.v0.5",
+  version: "M2-current-multi-resolution-candidate-v0.5",
+  candidateId: resolutionConfig.candidate.id,
+  decisionStatus: "not_for_formal_decision",
+  status: resolutionStatus,
+  target: resolutionConfig.target,
+  primaryComparator: resolutionConfig.primaryComparator,
+  scope: {
+    frozenDecisionCaseCount: nextCandidateRows.length,
+    frozenDecisionWorkCount: new Set(
+      nextCandidateRows.map((row) => row.standardWorkId)
+    ).size,
+    frozenDecisionOriginCount: new Set(
+      nextCandidateRows.map((row) => row.origin)
+    ).size,
+    denseDiagnosticCaseCount: denseManifest.caseRowCount,
+    denseDiagnosticOriginCount: denseManifest.originCount,
+    portfolioEvaluationOriginCount:
+      publicPortfolioReconstruction.candidate.originCount,
+    portfolioEvaluationCellCount:
+      publicPortfolioReconstruction.candidate.originHorizonCellCount,
+    populationMoved: false
+  },
+  pointComparisonToPrevious: {
+    comparison: nextComparison,
+    pairedCi: nextPairedCi,
+    groupConfidenceIntervals
+  },
+  byHorizon: scoreM2CurrentSlices(nextCandidateRows, "horizonMonths"),
+  bySegment: scoreM2CurrentSlices(nextCandidateRows, "segment"),
+  pairedCi: nextPairedCi,
+  multiResolution: {
+    workLevelFallbackCandidateId: nextConfig.candidate.id,
+    authoritativeSparseOriginDiagnostic: authorityResolution,
+    denseMonthlyExistingChampionDiagnostic: denseChampionResolution,
+    portfolioReconstruction: publicPortfolioReconstruction,
+    cashAndErrorConcentration: cashConcentration
+  },
+  maturityAssessment: resolutionAutomatedEvaluation.maturityAssessment,
+  automation: {
+    ...automation,
+    decision: "AUTOMATION_BLOCKED",
+    automationAuthorized: false,
+    releaseAuthorized: false
+  },
+  acceptance: {
+    ...nextCandidateAcceptance,
+    ...resolutionAcceptance,
+    allCurrentDevelopmentConditionsPassed: false,
+    developmentDecision: portfolioDevelopmentPassed
+      ? "PORTFOLIO_ONLY_PASS"
+      : "FAIL"
+  },
+  developmentAuthorization: {
+    modelTraining: true,
+    newCandidateFamilyDevelopment: false,
+    finalHoldout: false,
+    release: false,
+    m3Formal: false
+  },
+  humanEvaluation: {
+    numericForecastRequired: false,
+    sample120Required: false,
+    sample120Replayed: false,
+    role: "post_gate_quality_assurance_only"
+  },
+  privacy: {
+    aggregateOnly: true,
+    workIdentifiersPresent: false,
+    privatePathsPresent: false,
+    rawRowsPresent: false
+  }
+};
+const resolutionPublicText =
+  `${JSON.stringify(resolutionPublicReport, null, 2)}\n`;
+const resolutionAutomatedText =
+  `${JSON.stringify(resolutionAutomatedEvaluation, null, 2)}\n`;
+await writeFile(portfolioPrivatePath, portfolioPrivateText, "utf8");
+await writeFile(
+  portfolioPrivateManifestPath,
+  `${JSON.stringify({
+    schema:
+      "m2.current.portfolio_reconstruction.private_manifest.v0.5",
+    tracked: false,
+    decisionStatus: "not_for_formal_decision",
+    privateCellRowCount: portfolioPrivateRows.length,
+    privateCellSha256: sha256(portfolioPrivateText),
+    denseManifestSha256: sha256(
+      `${JSON.stringify(denseManifest, null, 2)}\n`
+    ),
+    publicCandidateSha256: sha256(resolutionPublicText),
+    publicAutomatedEvaluationSha256:
+      sha256(resolutionAutomatedText),
+    providerCalled: false,
+    databaseConnected: false,
+    finalHoldoutOpened: false,
+    embargoShadowOpened: false,
+    deferred60MonthLabelsOpened: false,
+    releaseAuthorized: false
+  }, null, 2)}\n`,
+  "utf8"
+);
+await writeFile(
+  path.join(root, resolutionConfig.publicSources.candidate),
+  resolutionPublicText,
+  "utf8"
+);
+await writeFile(
+  path.join(root, resolutionConfig.publicSources.automatedEvaluation),
+  resolutionAutomatedText,
+  "utf8"
+);
+
 process.stdout.write(`${JSON.stringify({
-  candidateId: nextConfig.candidate.id,
+  candidateId: resolutionConfig.candidate.id,
   caseCount: candidate.rows.length,
   workCount: publicReport.scope.uniqueWorkCount,
   candidateWape: nextComparison.candidate.wape,
@@ -1090,6 +1342,14 @@ process.stdout.write(`${JSON.stringify({
   denseMonthlyCaseCount: denseManifest.caseRowCount,
   probabilisticWis: probabilistic.overall.wis,
   automationDecision: automation.decision,
+  portfolioDevelopmentWape:
+    publicPortfolioReconstruction.candidate.overall.wape,
+  portfolioDevelopmentBias:
+    publicPortfolioReconstruction.candidate.overall.signedBias,
+  portfolioForecastValueAdded:
+    publicPortfolioReconstruction.forecastValueAdded,
+  portfolioDevelopmentPassed,
+  fullM2MaturityPassed: false,
   automatedEvaluationBaselines:
     Object.keys(denseBaselineEvaluation.baselines),
   eligibilityReasonLedgerWorkCount: eligibilityLedger.length,

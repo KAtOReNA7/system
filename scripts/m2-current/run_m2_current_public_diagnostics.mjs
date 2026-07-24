@@ -6,7 +6,7 @@ import {
   buildM2CurrentPublicDiagnosticReport
 } from "../../src/domain/m2Current/report.js";
 
-const config = readJson("config/m2-current.v0.4.json");
+const config = readJson("config/m2-current.v0.5.json");
 const sources = Object.fromEntries(
   Object.entries(config.publicSources)
     .map(([role, file]) => [role, readJson(file)])

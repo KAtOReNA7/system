@@ -10,19 +10,21 @@
 - PR #10：M2 current canonical core、portable development 和 v0.1 候选收敛，已合并。
 - PR #11：M2 current v0.2 可靠预测候选和 120 部冻结业务样本，已合并。
 - PR #12：M2 current v0.3 自动评价与 120 部 current 依赖退役，已合并。
+- PR #13：M2 current R0–R5 全局/概率/层级模型评估与安全 fallback，已合并。
 - 当前业务结论：`currentDecision=CANARY_FAIL`。
 - 当前开发 readiness：
-  `nextDevelopmentReadiness=AUDITABLE_AS_OF_SIGNAL_AND_CASH_OBSERVABILITY_REQUIRED`。
+  `nextDevelopmentReadiness=PORTFOLIO_INDEPENDENT_VALIDATION_AND_WORK_LEVEL_SIGNAL_REQUIRED`。
 - R0–R5 评估已完成；全局 hurdle GLM、Tweedie boosting、hurdle GBM、MinT
   和 ensemble 均未通过 nested gate，v0.4 安全回退 exact v0.3。120 部人工
   评估完全跳过。provider、Canary/full160、final holdout、release 和 M3
-  formal 均未授权。
+  formal 均未授权。本轮 v0.5 多粒度重构取得 portfolio development backtest
+  WAPE 11.68%，但作品级和完整 M2 成熟度仍未通过。
 
 当前导航：
 
-- `docs/analysis/m2-v2/M2-v2-current-state-index-v0.10.md`
+- `docs/analysis/m2-v2/M2-v2-current-state-index-v0.11.md`
 - `docs/analysis/m2-v2/M2-repository-code-convergence-and-portable-development-audit-v0.4.md`
-- `docs/analysis/m2-current/M2-current-R0-R5-evaluation-and-development-v0.5.md`
+- `docs/analysis/m2-current/M2-current-maturity-reconstruction-v0.6.md`
 - `AGENTS.md`
 
 历史 PR、B0–B8、C1–C3 和旧授权记录保留在 `docs/analysis/` 中，只用于审计追溯，不是当前开发入口。
@@ -156,8 +158,15 @@ M2 的正式预测对象是未来账单现金。正式边界保持：
 | v0.2 WAPE / bias | 0.51114966 / -0.00586227 |
 | v0.3 WAPE / bias | 0.50557140 / -0.01198958 |
 | v0.4 gated result WAPE / bias | 0.50557140 / -0.01198958 |
+| 5-origin 稀疏 origin×horizon 组合 WAPE | 0.08397490 |
 | 25-origin mature cases | 56,856 |
 | monthly baseline champion WAPE / bias | 0.66335800 / -0.30206120 |
+| monthly baseline 组合 WAPE / bias | 0.32846914 / -0.30206335 |
+| v0.5 portfolio development WAPE / bias | 0.11681934 / -0.04876300 |
+| v0.5 origin-bootstrap WAPE 95% CI | [0.08500048, 0.13717581] |
+| v0.5 origin-bootstrap bias 95% CI | [-0.09940077, 0.02145806] |
+| v0.5 vs seasonal naive FVA | 44.94% |
+| v0.5 portfolio cell APE p90 | 0.28366167 |
 | monthly 80% interval coverage | 0.64363277 |
 | development WAPE 门槛 | 0.30（未通过） |
 | automation decision | `AUTOMATION_BLOCKED` |
@@ -167,26 +176,42 @@ v0.4 与 v0.3 数值相同是因为所有 challenger 被门禁拒绝后 fallback
 WAPE/bias 约 100.02% / -99.97%。这不是 release 证据。120 部旧 JSON 仅保留
 历史追溯，不参与配置、runner、loader、readiness 或验收，也不重建或重放。
 
+v0.5 将预测决策粒度拆成作品、origin 组合和 origin×horizon 组合。新的加总
+additive Holt–Winters ensemble 在 2022-01 后 12 个逐月 origin、30 个
+development cell 上 WAPE 为 11.68%，较同窗 seasonal naive 改善 44.94%。
+按 origin 聚类 bootstrap 的 WAPE 95% CI 为 8.50%–13.72%，bias 95% CI 为
+-9.94%–2.15%。
+这证明组合预算层已有高准确度 development backtest，但不是独立 holdout：
+作品级 WAPE 仍为 50.56%，cash observability 未达 90%，final holdout 仍 sealed，
+所以当前状态是 `PORTFOLIO_DEVELOPMENT_BACKTEST_PASS_WORK_LEVEL_BLOCKED`。
+
 ## M2 当前执行队列
 
 本队列已于 2026-07-24 按用户判断调整。人工预测竞赛和 120 部清单均已取消。
 
-1. **R0–R5 评价（已执行）**
+1. **多粒度合同（已执行）**
+   - 作品 case、origin 组合和 origin×horizon 组合必须分别报告；
+   - 5 个半年 origin 的低误差必须由 25 个逐月 origin 交叉检查。
+2. **R0–R5 评价（已执行）**
    - strict target/route/censor/commitment contract；
    - 25 个逐月 origin、六个简单基线、nested global model、rolling conformal、
      MinT、ensemble、risk–coverage、business loss 和 FVA。
-2. **质量结论**
+3. **质量结论**
    - 三个全局模型和 MinT 均失败；v0.4 在五个 outer origin 回退 exact v0.3；
    - 不得把 fallback 表述为候选升级、可打开 holdout 或可发布。
-3. **补充可审计输入（仅真实材料存在时）**
+   - v0.5 portfolio development backtest 通过，但完整 M2 成熟度未通过。
+4. **下一次组合验证**
+   - 只能使用未参与本轮模型选择的 later-origin 或单独授权 final holdout；
+   - 禁止继续在同一 2022 development 窗口调参后宣称独立验证。
+5. **补充可审计输入（仅真实材料存在时）**
    - exact-work commitment snapshot 和 sales historical availability snapshot；
    - 合同、可售、发布与渠道状态必须能证明在 cutoff 时可得，禁止事后回填；
    - pure-buyout 无 strict commitment 时继续 `null abstain`。
-4. **下一轮研究**
+6. **作品级下一轮研究**
    - 先建立 intermittent/dormant occurrence 与 positive amount 数据缺口 ledger；
    - 新信号先过 25-origin 诊断，再在 7,851-case 权威人口 nested 复验；
    - 当前停止新增模型家族和同类调参。
-5. **决策门禁**
+7. **决策门禁**
    - 120 部人工评估完全跳过；人工只做技术门禁后的 post-gate QA。
    - final holdout、embargo shadow、provider、数据库、Canary/full160、release
      和 M3 formal 继续保持未授权。

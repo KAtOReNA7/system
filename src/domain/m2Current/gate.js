@@ -29,7 +29,10 @@ export function evaluateM2CurrentDiagnosticGate(
   if (!candidate) {
     blockers.push("current_candidate_not_evaluated");
   } else {
-    const comparison = contract.schema === "m2.current.config.v0.4"
+    const comparison = [
+      "m2.current.config.v0.4",
+      "m2.current.config.v0.5"
+    ].includes(contract.schema)
       ? candidate.pointComparisonToPrevious?.comparison
       : candidate.comparison;
     if (
@@ -102,7 +105,10 @@ export function evaluateM2CurrentDiagnosticGate(
       blockers.push("paired_confidence_interval_failed");
     }
     if (
-      contract.schema === "m2.current.config.v0.4"
+      [
+        "m2.current.config.v0.4",
+        "m2.current.config.v0.5"
+      ].includes(contract.schema)
       && candidate.acceptance?.allCurrentDevelopmentConditionsPassed !== true
     ) {
       blockers.push("candidate_r0_r5_development_conditions_failed");
@@ -117,10 +123,26 @@ export function evaluateM2CurrentDiagnosticGate(
     ) {
       blockers.push("candidate_dormant_segment_not_improved");
     }
+    if (
+      contract.schema === "m2.current.config.v0.5"
+      && candidate.acceptance?.portfolioDevelopmentBacktestPassed !== true
+    ) {
+      blockers.push("portfolio_development_backtest_failed");
+    }
+    if (
+      contract.schema === "m2.current.config.v0.5"
+      && candidate.acceptance?.fullM2MaturityPassed !== true
+    ) {
+      blockers.push("full_m2_maturity_not_established");
+    }
   }
   blockers.push("final_holdout_sealed");
   if (
-    ["m2.current.config.v0.3", "m2.current.config.v0.4"]
+    [
+      "m2.current.config.v0.3",
+      "m2.current.config.v0.4",
+      "m2.current.config.v0.5"
+    ]
       .includes(contract.schema)
   ) {
     blockers.push("post_gate_quality_assurance_pending");
@@ -149,7 +171,13 @@ export function evaluateM2CurrentDiagnosticGate(
 
   return {
     schema: "m2.current.diagnostic_gate.v0.1",
-    status: candidateDevelopmentQualityPassed
+    status: (
+      contract.schema === "m2.current.config.v0.5"
+      && candidate?.acceptance?.portfolioDevelopmentBacktestPassed === true
+      && !candidateDevelopmentQualityPassed
+    )
+      ? "PORTFOLIO_DEVELOPMENT_BACKTEST_PASS_WORK_LEVEL_BLOCKED"
+      : candidateDevelopmentQualityPassed
       ? "CANDIDATE_DEVELOPMENT_PASS_BLOCKED"
       : candidateOverallGatesPassed
         ? "CANDIDATE_DEVELOPMENT_PARTIAL_BLOCKED"
@@ -157,8 +185,10 @@ export function evaluateM2CurrentDiagnosticGate(
         ? "CANDIDATE_DEVELOPMENT_FAIL_BLOCKED"
         : "BASELINE_ONLY_BLOCKED",
     blockers: [...new Set(blockers)],
-    developmentDirection: contract.schema === "m2.current.config.v0.4"
-      ? "auditable_as_of_signal_and_cash_observability_before_new_model_work"
+    developmentDirection: contract.schema === "m2.current.config.v0.5"
+      ? "independent_portfolio_validation_and_auditable_work_level_signals"
+      : contract.schema === "m2.current.config.v0.4"
+        ? "auditable_as_of_signal_and_cash_observability_before_new_model_work"
       : contract.schema === "m2.current.config.v0.3"
         ? "business_cash_observability_then_authorized_sealed_holdout"
       : "candidate_business_sampling_then_separate_cash_observability_resolution",

@@ -2,7 +2,8 @@ const SUPPORTED_SCHEMAS = new Set([
   "m2.current.config.v0.1",
   "m2.current.config.v0.2",
   "m2.current.config.v0.3",
-  "m2.current.config.v0.4"
+  "m2.current.config.v0.4",
+  "m2.current.config.v0.5"
 ]);
 
 export function buildM2CurrentContract(config) {
@@ -45,7 +46,11 @@ export function buildM2CurrentContract(config) {
       config.thresholds?.top10ForecastableCashCoverageMinimum,
       "top10_cash_coverage_minimum"
     ),
-    developmentWapeMaximum: ["m2.current.config.v0.3", "m2.current.config.v0.4"]
+    developmentWapeMaximum: [
+      "m2.current.config.v0.3",
+      "m2.current.config.v0.4",
+      "m2.current.config.v0.5"
+    ]
       .includes(config.schema)
       ? unitInterval(
         config.thresholds?.developmentWapeMaximum,
@@ -61,7 +66,11 @@ export function buildM2CurrentContract(config) {
       "each_horizon_absolute_bias_maximum"
     ),
     eachSegmentWapeMaximum:
-      ["m2.current.config.v0.3", "m2.current.config.v0.4"]
+      [
+        "m2.current.config.v0.3",
+        "m2.current.config.v0.4",
+        "m2.current.config.v0.5"
+      ]
         .includes(config.schema)
       ? unitInterval(
         config.thresholds?.eachSegmentWapeMaximum,
@@ -69,7 +78,11 @@ export function buildM2CurrentContract(config) {
       )
       : null,
     eachSegmentAbsoluteBiasMaximum:
-      ["m2.current.config.v0.3", "m2.current.config.v0.4"]
+      [
+        "m2.current.config.v0.3",
+        "m2.current.config.v0.4",
+        "m2.current.config.v0.5"
+      ]
         .includes(config.schema)
         ? unitInterval(
           config.thresholds?.eachSegmentAbsoluteBiasMaximum,
@@ -205,8 +218,11 @@ export function buildM2CurrentContract(config) {
     pairedBootstrap: Object.freeze(pairedBootstrap),
     evaluationPolicy,
     candidate: Object.freeze(candidate),
-    development: config.schema === "m2.current.config.v0.4"
-      ? buildV04DevelopmentPolicy(config.development)
+    development: [
+      "m2.current.config.v0.4",
+      "m2.current.config.v0.5"
+    ].includes(config.schema)
+      ? buildV04DevelopmentPolicy(config.development, config.schema)
       : null,
     businessSample,
     authorizations: Object.freeze(authorizations)
@@ -230,8 +246,10 @@ function buildEvaluationPolicy(value, schema) {
     value?.nextDevelopmentReadiness,
     "evaluation_policy_next_development_readiness"
   );
-  const expectedReadiness = schema === "m2.current.config.v0.4"
-    ? "AUDITABLE_AS_OF_SIGNAL_AND_CASH_OBSERVABILITY_REQUIRED"
+  const expectedReadiness = schema === "m2.current.config.v0.5"
+    ? "PORTFOLIO_INDEPENDENT_VALIDATION_AND_WORK_LEVEL_SIGNAL_REQUIRED"
+    : schema === "m2.current.config.v0.4"
+      ? "AUDITABLE_AS_OF_SIGNAL_AND_CASH_OBSERVABILITY_REQUIRED"
     : schema === "m2.current.config.v0.3"
       ? "BUSINESS_COVERAGE_AND_ABSOLUTE_QUALITY_REQUIRED"
       : "AUTOMATED_BACKTEST_AND_BUSINESS_COVERAGE_REQUIRED";
@@ -319,7 +337,7 @@ function buildEvaluationPolicy(value, schema) {
   return Object.freeze(result);
 }
 
-function buildV04DevelopmentPolicy(value) {
+function buildV04DevelopmentPolicy(value, schema) {
   const denseOrigins = value?.denseOrigins;
   const modelDevelopment = value?.modelDevelopment;
   const ensemble = value?.ensemble;
@@ -351,7 +369,7 @@ function buildV04DevelopmentPolicy(value) {
   ) {
     throw new Error("m2_current_distributional_policy_invalid");
   }
-  return Object.freeze({
+  const result = {
     denseOrigins: Object.freeze({
       firstOrigin: exactString(denseOrigins.firstOrigin, "dense_first_origin"),
       lastOrigin: exactString(denseOrigins.lastOrigin, "dense_last_origin"),
@@ -420,7 +438,106 @@ function buildV04DevelopmentPolicy(value) {
         [...automation.quantileProbabilities]
       ),
       businessLoss: Object.freeze({ ...automation.businessLoss })
-    })
+    }),
+    portfolioReconstruction: schema === "m2.current.config.v0.5"
+      ? buildPortfolioReconstructionPolicy(value?.portfolioReconstruction)
+      : null
+  };
+  return Object.freeze(result);
+}
+
+function buildPortfolioReconstructionPolicy(value) {
+  if (
+    value?.method !== "as_of_aggregate_additive_holt_winters_ensemble"
+    || value?.populationPolicy !== "served_works_frozen_at_each_origin"
+    || value?.sameOrLaterEvaluationTruthRead !== false
+  ) {
+    throw new Error("m2_current_portfolio_reconstruction_policy_invalid");
+  }
+  const selectionLabelsAvailableAsOf = exactString(
+    value.selectionLabelsAvailableAsOf,
+    "portfolio_selection_labels_available_as_of"
+  );
+  const evaluationFirstOrigin = exactString(
+    value.evaluationFirstOrigin,
+    "portfolio_evaluation_first_origin"
+  );
+  if (selectionLabelsAvailableAsOf > evaluationFirstOrigin) {
+    throw new Error("m2_current_portfolio_selection_after_evaluation");
+  }
+  return Object.freeze({
+    method: value.method,
+    populationPolicy: value.populationPolicy,
+    sameOrLaterEvaluationTruthRead: false,
+    selectionLabelsAvailableAsOf,
+    evaluationFirstOrigin,
+    minimumEvaluationOriginCount: positiveInteger(
+      value.minimumEvaluationOriginCount,
+      "portfolio_minimum_evaluation_origin_count"
+    ),
+    seasonLength: positiveInteger(
+      value.seasonLength,
+      "portfolio_season_length"
+    ),
+    selectedModelCount: positiveInteger(
+      value.selectedModelCount,
+      "portfolio_selected_model_count"
+    ),
+    scalePriorCellCount: nonnegativeInteger(
+      value.scalePriorCellCount,
+      "portfolio_scale_prior_cell_count"
+    ),
+    dampingFactors: Object.freeze(uniqueFiniteNumbers(
+      value.dampingFactors,
+      "portfolio_damping_factors",
+      { minimum: 0, maximum: 1 }
+    )),
+    alphaValues: Object.freeze(uniqueFiniteNumbers(
+      value.alphaValues,
+      "portfolio_alpha_values",
+      { minimum: 0, maximum: 1 }
+    )),
+    betaValues: Object.freeze(uniqueFiniteNumbers(
+      value.betaValues,
+      "portfolio_beta_values",
+      { minimum: 0, maximum: 1 }
+    )),
+    seasonalDampingFactors: Object.freeze(uniqueFiniteNumbers(
+      value.seasonalDampingFactors,
+      "portfolio_seasonal_damping_factors",
+      { minimum: 0, maximum: 1 }
+    )),
+    seasonalAlphaValues: Object.freeze(uniqueFiniteNumbers(
+      value.seasonalAlphaValues,
+      "portfolio_seasonal_alpha_values",
+      { minimum: 0, maximum: 1 }
+    )),
+    seasonalBetaValues: Object.freeze(uniqueFiniteNumbers(
+      value.seasonalBetaValues,
+      "portfolio_seasonal_beta_values",
+      { minimum: 0, maximum: 1 }
+    )),
+    gammaValues: Object.freeze(uniqueFiniteNumbers(
+      value.gammaValues,
+      "portfolio_gamma_values",
+      { minimum: 0, maximum: 1 }
+    )),
+    maximumPortfolioWape: unitInterval(
+      value.maximumPortfolioWape,
+      "portfolio_maximum_wape"
+    ),
+    maximumAbsoluteBias: unitInterval(
+      value.maximumAbsoluteBias,
+      "portfolio_maximum_absolute_bias"
+    ),
+    maximumP90CellAbsolutePercentageError: unitInterval(
+      value.maximumP90CellAbsolutePercentageError,
+      "portfolio_maximum_p90_cell_absolute_percentage_error"
+    ),
+    minimumForecastValueAdded: unitInterval(
+      value.minimumForecastValueAdded,
+      "portfolio_minimum_forecast_value_added"
+    )
   });
 }
 
@@ -568,6 +685,14 @@ function uniqueFiniteNumbers(values, name, { minimum, maximum }) {
 function positiveInteger(value, name) {
   const number = Number(value);
   if (!Number.isSafeInteger(number) || number <= 0) {
+    throw new Error(`m2_current_${name}_invalid`);
+  }
+  return number;
+}
+
+function nonnegativeInteger(value, name) {
+  const number = Number(value);
+  if (!Number.isSafeInteger(number) || number < 0) {
     throw new Error(`m2_current_${name}_invalid`);
   }
   return number;

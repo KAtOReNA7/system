@@ -8,10 +8,15 @@ export function buildM2CurrentPublicDiagnosticReport(
 ) {
   const contract = buildM2CurrentContract(config);
   const gate = evaluateM2CurrentDiagnosticGate(evidence, candidate, config);
-  const compact = config.schema === "m2.current.config.v0.4";
+  const compact = [
+    "m2.current.config.v0.4",
+    "m2.current.config.v0.5"
+  ].includes(config.schema);
   return {
-    schema: config.schema === "m2.current.config.v0.4"
-      ? "m2.current.public_diagnostic_report.v0.5"
+    schema: config.schema === "m2.current.config.v0.5"
+      ? "m2.current.public_diagnostic_report.v0.6"
+      : config.schema === "m2.current.config.v0.4"
+        ? "m2.current.public_diagnostic_report.v0.5"
       : config.schema === "m2.current.config.v0.3"
         ? "m2.current.public_diagnostic_report.v0.4"
         : config.schema === "m2.current.config.v0.2"
@@ -21,11 +26,18 @@ export function buildM2CurrentPublicDiagnosticReport(
     directionAssessment: {
       businessProblemWrong: false,
       governanceWrong: false,
-      engineeringSequenceDrifted: false,
+      engineeringSequenceDrifted:
+        config.schema === "m2.current.config.v0.5",
+      priorInstructionAssessment:
+        config.schema === "m2.current.config.v0.5"
+          ? "directionally_correct_evaluation_but_over_specified_algorithm_families_before_signal_and_decision_grain"
+          : "not_reassessed",
       retiredSequence:
         "human_numeric_baseline_and_120_work_business_sample_skipped",
-      nextPriority: config.schema === "m2.current.config.v0.4"
-        ? "auditable_as_of_signals_and_absolute_quality_before_holdout"
+      nextPriority: config.schema === "m2.current.config.v0.5"
+        ? "independent_portfolio_validation_then_auditable_work_level_signals"
+        : config.schema === "m2.current.config.v0.4"
+          ? "auditable_as_of_signals_and_absolute_quality_before_holdout"
         : "business_cash_observability_and_separately_authorized_holdout"
     },
     evaluationPolicy: contract.evaluationPolicy,
@@ -36,6 +48,9 @@ export function buildM2CurrentPublicDiagnosticReport(
       "keep_dense_monthly_rolling_origin_and_strong_baselines_as_mandatory_regression_checks",
       "improve_cash_observability_without_moving_the_frozen_model_population",
       "keep_occurrence_and_positive_amount_diagnostics_separate",
+      "report_work_portfolio_origin_and_origin_horizon_resolution_separately",
+      "require_dense_monthly_results_to_confirm_sparse_authority_results",
+      "treat_portfolio_development_pass_as_distinct_from_full_M2_maturity",
       "accept_only_real_auditable_commitment_snapshots",
       "do_not_promote_global_or_distributional_families_that_fail_nested_gates",
       "use_risk_coverage_business_loss_and_FVA_before_any_automation_claim",
@@ -63,7 +78,13 @@ function compactEvidence(evidence) {
         comparisonToPrevious:
           automated.authoritativeFrozenEvaluation.comparisonToPrevious,
         comparisonToB4:
-          automated.authoritativeFrozenEvaluation.comparisonToB4
+          automated.authoritativeFrozenEvaluation.comparisonToB4,
+        multiResolution:
+          automated.authoritativeFrozenEvaluation.multiResolution,
+        cashAndErrorConcentration:
+          automated.authoritativeFrozenEvaluation.cashAndErrorConcentration,
+        interpretation:
+          automated.authoritativeFrozenEvaluation.interpretation
       },
       denseMonthlyDevelopmentDiagnostic: {
         role: automated.denseMonthlyDevelopmentDiagnostic.role,
@@ -81,7 +102,13 @@ function compactEvidence(evidence) {
           automated.denseMonthlyDevelopmentDiagnostic.abstention,
         rollingBaselineChampion:
           automated.denseMonthlyDevelopmentDiagnostic
-            .rollingBaselineChampion.overall
+            .rollingBaselineChampion.overall,
+        existingChampionMultiResolution:
+          automated.denseMonthlyDevelopmentDiagnostic
+            .existingChampionMultiResolution,
+        portfolioReconstruction:
+          automated.denseMonthlyDevelopmentDiagnostic
+            .portfolioReconstruction
       },
       automation: {
         decision: automated.automation.decision,
@@ -91,6 +118,7 @@ function compactEvidence(evidence) {
       },
       retiredHumanPredictionSample:
         automated.retiredHumanPredictionSample,
+      maturityAssessment: automated.maturityAssessment,
       boundaries: automated.boundaries
     }
   };
@@ -107,12 +135,16 @@ function compactCandidate(candidate) {
     pointComparisonToB4: candidate.pointComparisonToB4,
     byHorizon: candidate.byHorizon,
     bySegment: candidate.bySegment,
-    probabilistic: {
-      overall: candidate.probabilistic.overall,
-      bySegment: candidate.probabilistic.bySegment
-    },
+    probabilistic: candidate.probabilistic
+      ? {
+        overall: candidate.probabilistic.overall,
+        bySegment: candidate.probabilistic.bySegment
+      }
+      : null,
     hierarchy: candidate.hierarchy,
     denseMonthlyDiagnostic: candidate.denseMonthlyDiagnostic,
+    multiResolution: candidate.multiResolution,
+    maturityAssessment: candidate.maturityAssessment,
     automation: {
       decision: candidate.automation.decision,
       gates: candidate.automation.gates,
