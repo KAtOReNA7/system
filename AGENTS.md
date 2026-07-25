@@ -10,6 +10,7 @@
   - `docs/analysis/m2-current/M2-sales-share-only-target-decision-v0.1.md`
   - `docs/analysis/m2-current/M2-sales-share-model-full-audit-and-research-v0.1.md`
   - `docs/analysis/m2-current/M2-current-authority-source-audit-v0.1.json`
+  - `docs/analysis/m2-current/M2-current-user-confirmation-form-zh-CN-v0.1.md`
   - `docs/analysis/m2-current/M2-current-as-of-signal-readiness-v0.1.md`
   - `docs/analysis/m2-current/M2-current-as-of-source-inventory-v0.1.json`
   - `docs/analysis/m2-current/M2-current-signal-input-portable-intake-v0.1.md`
@@ -31,6 +32,15 @@
 5. 核心开发必须 private-independent。缺少 private 只能阻断所属 capability，不能阻断 clone、安装、lint、build、公共测试、smoke、公共 M2 诊断或本地服务器启动。
 6. 修改后按本文件验证规则运行门禁；不得以旧 CI、部分测试或 private 文件存在代替当前工作树验证。
 7. 审计、清理和代码整理不自动扩大 provider、数据库、训练、holdout、release 或 M3 formal 授权。
+8. 凡是确实需要用户确认或补充的信息，必须先提供中文简化表格和中文填写说明：
+   - 表格使用中文事项编号、中文选项和“你的填写”列；
+   - 允许填写“不清楚”或“没有”，不得强迫用户猜测；
+   - 解释最少需要什么原始依据，并提供可直接复制的简短回复示例；
+   - 不要求用户填写内部字段名、算法名、英文状态或预测金额；
+   - 敏感材料只允许放入 Git ignored 的 capability-scoped 目录或作为任务附件，
+     不得要求上传 GitHub。
+   - 已收到的确认应写入 current tracking；除非材料或业务口径发生变化，不得
+     重复询问同一事项。
 
 ## 多电脑开发基线
 
