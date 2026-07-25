@@ -12,6 +12,7 @@ import { pairedWorkOriginBootstrap } from "../../src/domain/m2Current/bootstrap.
 import {
   attachM2CurrentScaleAndOccurrence,
   buildM2CurrentAutomatedBaselineEvaluation,
+  buildM2CurrentHistoryRegimeChallenger,
   buildM2CurrentHistoryIndex,
   buildM2CurrentRollingBaselineChampion,
   getM2CurrentHistorySeries
@@ -1454,6 +1455,47 @@ const salesShareDenseChampion = buildM2CurrentRollingBaselineChampion(
       salesShareContract.development.modelDevelopment.minimumTrainingRows
   }
 );
+const realBillRecalibrationConfig =
+  salesShareConfig.development.realBillRecalibration;
+const salesShareHistoryRegimeChallenger =
+  buildM2CurrentHistoryRegimeChallenger(
+    salesShareDenseBaselineEvaluation.rowsByBaseline,
+    {
+      minimumTrainingRows:
+        realBillRecalibrationConfig.minimumTrainingRows,
+      trainingOriginWindow:
+        realBillRecalibrationConfig.trainingOriginWindow
+    }
+  );
+if (
+  JSON.stringify(
+    salesShareHistoryRegimeChallenger.design.candidateBaselineIds
+  ) !== JSON.stringify(realBillRecalibrationConfig.candidateBaselines)
+  || JSON.stringify(
+    salesShareHistoryRegimeChallenger.design.selectionHierarchy
+  ) !== JSON.stringify(realBillRecalibrationConfig.selectionHierarchy)
+  || salesShareHistoryRegimeChallenger.design.promotionEligible
+    !== realBillRecalibrationConfig.promotionEligible
+) {
+  throw new Error("m2_current_real_bill_recalibration_config_drift");
+}
+const historyRegimeRelativeWapeImprovement = (
+  salesShareDenseChampion.overall.wape
+    - salesShareHistoryRegimeChallenger.overall.wape
+) / salesShareDenseChampion.overall.wape;
+const historyRegimeAbsoluteQualityPassed = (
+  salesShareHistoryRegimeChallenger.overall.wape
+    <= salesShareContract.thresholds.developmentWapeMaximum
+  && Math.abs(salesShareHistoryRegimeChallenger.overall.signedBias)
+    <= salesShareContract.thresholds.overallAbsoluteBiasMaximum
+  && salesShareContract.activitySegmentValues.every((segment) => (
+    salesShareHistoryRegimeChallenger.bySegment[segment].wape
+      <= salesShareContract.thresholds.eachSegmentWapeMaximum
+    && Math.abs(
+      salesShareHistoryRegimeChallenger.bySegment[segment].signedBias
+    ) <= salesShareContract.thresholds.eachSegmentAbsoluteBiasMaximum
+  ))
+);
 const salesShareDenseResolution = evaluateM2CurrentResolution(
   salesShareDenseChampion.rows,
   {
@@ -1507,6 +1549,105 @@ const salesShareWorkQualityPassed = (
 );
 const salesSharePortfolioPassed =
   publicSalesSharePortfolio.allPortfolioDevelopmentGatesPassed;
+const realBillRecalibrationReport = {
+  schema: "m2.current.real_bill_recalibration.public.v0.1",
+  version: "M2-current-real-bill-recalibration-v0.1",
+  candidateId: realBillRecalibrationConfig.candidateId,
+  decisionStatus: "not_for_formal_decision",
+  role: realBillRecalibrationConfig.role,
+  target: salesShareConfig.target,
+  scope: {
+    workCount: denseManifest.workCount,
+    originCount: denseManifest.originCount,
+    materializedCaseCount: denseManifest.caseRowCount,
+    scoredCaseCount: salesShareHistoryRegimeChallenger.overall.caseCount,
+    populationMoved: false
+  },
+  realBillReplay: {
+    deterministicReplayPassed: true,
+    targetClassificationPassed,
+    targetPartitionConservationPassed:
+      frozenTargetIsolation.maximumAbsoluteConservationDifference
+        <= salesShareContract.thresholds.targetPartitionConservationTolerance
+      && denseTargetIsolation.maximumAbsoluteConservationDifference
+        <= salesShareContract.thresholds.targetPartitionConservationTolerance,
+    existingWorkLevel: {
+      wape: salesShareComparison.candidate.wape,
+      signedBias: salesShareComparison.candidate.signedBias
+    },
+    existingDenseMonthlyChampion: {
+      overall: salesShareDenseChampion.overall,
+      bySegment: salesShareDenseChampion.bySegment
+    },
+    existingPortfolioDevelopment: {
+      overall: publicSalesSharePortfolio.candidate.overall,
+      originClusterBootstrap:
+        publicSalesSharePortfolio.candidate.originClusterBootstrap,
+      forecastValueAdded:
+        publicSalesSharePortfolio.forecastValueAdded
+    }
+  },
+  challenger: {
+    design: salesShareHistoryRegimeChallenger.design,
+    overall: salesShareHistoryRegimeChallenger.overall,
+    byOrigin: salesShareHistoryRegimeChallenger.byOrigin,
+    byHorizon: salesShareHistoryRegimeChallenger.byHorizon,
+    bySegment: salesShareHistoryRegimeChallenger.bySegment,
+    selections: salesShareHistoryRegimeChallenger.selections,
+    relativeWapeImprovementToDenseMonthlyChampion:
+      historyRegimeRelativeWapeImprovement
+  },
+  gates: {
+    improvesDenseMonthlyChampion:
+      historyRegimeRelativeWapeImprovement > 0,
+    developmentWapePassed:
+      salesShareHistoryRegimeChallenger.overall.wape
+        <= salesShareContract.thresholds.developmentWapeMaximum,
+    overallAbsoluteBiasPassed:
+      Math.abs(salesShareHistoryRegimeChallenger.overall.signedBias)
+        <= salesShareContract.thresholds.overallAbsoluteBiasMaximum,
+    eachSegmentWapePassed:
+      salesShareContract.activitySegmentValues.every((segment) => (
+        salesShareHistoryRegimeChallenger.bySegment[segment].wape
+          <= salesShareContract.thresholds.eachSegmentWapeMaximum
+      )),
+    eachSegmentAbsoluteBiasPassed:
+      salesShareContract.activitySegmentValues.every((segment) => (
+        Math.abs(
+          salesShareHistoryRegimeChallenger.bySegment[segment].signedBias
+        ) <= salesShareContract.thresholds.eachSegmentAbsoluteBiasMaximum
+      )),
+    historicalFeatureAvailableAtPassed: false,
+    independentHoldoutPassed: false,
+    allAbsoluteQualityGatesPassed: historyRegimeAbsoluteQualityPassed
+  },
+  decision: {
+    promotionDecision: "REJECT_KEEP_V0_3_WORK_LEVEL_FALLBACK",
+    candidateSelectionAuthorized: false,
+    operationalForecastAuthorized: false,
+    reasonCodes: [
+      "posthoc_same_development_window",
+      "overall_WAPE_above_0_30",
+      "intermittent_and_dormant_segments_failed",
+      "historical_feature_available_at_not_proven",
+      "independent_holdout_sealed"
+    ],
+    nextAction:
+      "materialize_versioned_historical_availability_snapshots_then_evaluate_on_unseen_later_origin_or_separately_authorized_final_holdout"
+  },
+  authorization: realBillRecalibrationConfig.authorization,
+  boundaries: {
+    aggregateOnly: true,
+    identifiersPresent: false,
+    privateRowsPresent: false,
+    providerCalled: false,
+    databaseConnected: false,
+    finalHoldoutOpened: false,
+    embargoShadowOpened: false,
+    deferred60MonthLabelsOpened: false,
+    releaseAuthorized: false
+  }
+};
 const salesShareAcceptance = {
   targetContractMigrated: true,
   allBuyoutExcludedFromTrainingLabels: true,
@@ -1771,6 +1912,11 @@ await writeFile(
   salesShareAutomatedText,
   "utf8"
 );
+await writeFile(
+  path.join(root, realBillRecalibrationConfig.publicOutput),
+  `${JSON.stringify(realBillRecalibrationReport, null, 2)}\n`,
+  "utf8"
+);
 
 process.stdout.write(`${JSON.stringify({
   candidateId: salesShareConfig.candidate.id,
@@ -1802,6 +1948,14 @@ process.stdout.write(`${JSON.stringify({
   salesSharePortfolioDevelopmentPassed: salesSharePortfolioPassed,
   frozenTargetIsolation,
   denseTargetIsolation,
+  historyRegimeRecalibration: {
+    wape: salesShareHistoryRegimeChallenger.overall.wape,
+    signedBias: salesShareHistoryRegimeChallenger.overall.signedBias,
+    relativeWapeImprovementToDenseMonthlyChampion:
+      historyRegimeRelativeWapeImprovement,
+    promotionDecision:
+      realBillRecalibrationReport.decision.promotionDecision
+  },
   fullM2MaturityPassed: false,
   automatedEvaluationBaselines:
     Object.keys(denseBaselineEvaluation.baselines),

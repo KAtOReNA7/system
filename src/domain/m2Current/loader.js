@@ -15,6 +15,10 @@ export function loadM2CurrentPublicEvidence(sources, config) {
   requireSchema(sources?.population, "m2.calibration_population_coverage.v1");
   if (config.schema === "m2.current.config.v0.6") {
     requireSchema(
+      sources?.recalibration,
+      "m2.current.real_bill_recalibration.public.v0.1"
+    );
+    requireSchema(
       sources?.signalGap,
       "m2.current.signal_gap_diagnostic.public.v0.1"
     );
@@ -150,6 +154,25 @@ export function loadM2CurrentPublicEvidence(sources, config) {
     throw new Error("m2_current_candidate_population_drift");
   }
   if (config.schema === "m2.current.config.v0.6") {
+    if (
+      Number(sources.recalibration.scope.workCount)
+        !== contract.population.modelWorkCount
+      || Number(sources.recalibration.scope.originCount) !== 25
+      || Number(sources.recalibration.scope.materializedCaseCount) !== 56856
+      || sources.recalibration.scope.populationMoved !== false
+      || sources.recalibration.decision.promotionDecision
+        !== "REJECT_KEEP_V0_3_WORK_LEVEL_FALLBACK"
+      || sources.recalibration.gates.independentHoldoutPassed !== false
+      || sources.recalibration.gates
+        .historicalFeatureAvailableAtPassed !== false
+      || sources.recalibration.boundaries.aggregateOnly !== true
+      || sources.recalibration.boundaries.identifiersPresent !== false
+      || sources.recalibration.boundaries.privateRowsPresent !== false
+      || sources.recalibration.boundaries.finalHoldoutOpened !== false
+      || sources.recalibration.boundaries.releaseAuthorized !== false
+    ) {
+      throw new Error("m2_current_recalibration_evidence_drift");
+    }
     const frozenSignalGap =
       sources.signalGap.coverageInventory.frozenAuthorityPopulation;
     const denseSignalGap =
@@ -401,6 +424,9 @@ export function loadM2CurrentPublicEvidence(sources, config) {
       }
       : null,
     automatedEvaluation: sources.automatedEvaluation ?? null,
+    recalibration: config.schema === "m2.current.config.v0.6"
+      ? sources.recalibration
+      : null,
     retiredBusinessSample:
       [
         "m2.current.config.v0.3",

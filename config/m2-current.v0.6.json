@@ -21,6 +21,42 @@
       "decision_resolution"
     ]
   },
+  "development": {
+    "realBillRecalibration": {
+      "authorization": {
+        "source": "user_instruction_2026-07-25",
+        "scope": "local_real_bill_posthoc_development_diagnostic",
+        "newCandidateFamilyDevelopment": true,
+        "candidateSelection": false,
+        "finalHoldout": false,
+        "release": false
+      },
+      "candidateId": "M2-current-history-regime-recalibration-v0.7",
+      "role": "posthoc_development_diagnostic_only",
+      "minimumTrainingRows": 80,
+      "trainingOriginWindow": 6,
+      "candidateBaselines": [
+        "zero",
+        "seasonal_naive",
+        "Croston",
+        "SBA",
+        "TSB",
+        "ADIDA",
+        "recent_mean_3",
+        "seasonal_median_2",
+        "ewma_0_5"
+      ],
+      "selectionHierarchy": [
+        "segment_horizon_trailing_occurrence",
+        "segment_horizon",
+        "segment",
+        "global"
+      ],
+      "featureAvailability": "bill_month_history_only_historical_available_at_not_proven",
+      "promotionEligible": false,
+      "publicOutput": "docs/analysis/m2-current/M2-current-real-bill-recalibration-v0.1.json"
+    }
+  },
   "routePolicy": {
     "pureBuyout": "outside_m2_forecast_scope_null_abstain",
     "buyoutPlusSales": "sales_share_cash_only",
@@ -35,10 +71,11 @@
     "previousCandidate": "docs/analysis/m2-current/M2-current-multi-resolution-candidate-v0.5.json",
     "candidate": "docs/analysis/m2-current/M2-current-sales-share-candidate-v0.6.json",
     "automatedEvaluation": "docs/analysis/m2-current/M2-current-automated-evaluation-v0.4.json",
+    "recalibration": "docs/analysis/m2-current/M2-current-real-bill-recalibration-v0.1.json",
     "signalGap": "docs/analysis/m2-current/M2-current-signal-gap-diagnostic-v0.1.json",
     "signalSourceInventory": "docs/analysis/m2-current/M2-current-as-of-source-inventory-v0.1.json"
   },
-  "publicOutput": "docs/analysis/m2-current/M2-current-public-diagnostic-v0.7.json",
+  "publicOutput": "docs/analysis/m2-current/M2-current-public-diagnostic-v0.8.json",
   "authorizations": {
     "provider": false,
     "database": false,

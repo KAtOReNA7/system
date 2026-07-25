@@ -37,7 +37,8 @@ import {
   scoreM2CurrentSlices
 } from "../src/domain/m2Current/metrics.js";
 import {
-  buildM2CurrentAutomatedBaselineEvaluation
+  buildM2CurrentAutomatedBaselineEvaluation,
+  buildM2CurrentHistoryRegimeChallenger
 } from "../src/domain/m2Current/baselines.js";
 import {
   resolveM2CurrentCashRoute,
@@ -374,6 +375,59 @@ test("automated evaluator runs rolling-origin intermittent baselines", () => {
   assert.equal(result.routePolicy.scoredCaseCount, 1);
   assert.equal(result.baselines.TSB.overall.caseCount, 1);
   assert.equal(result.baselines.TSB.overall.mase !== null, true);
+});
+
+test("history-regime challenger selects only from mature earlier labels", () => {
+  const template = [
+    row({
+      origin: "2021-01",
+      actual: 100,
+      pointEstimate: 0,
+      labelAvailableAsOf: "2021-02",
+      historySeries: Array(24).fill(0),
+      occurrenceProbability: 0,
+      scaleAbsoluteError: 1,
+      scaleSquaredError: 1
+    }),
+    row({
+      origin: "2021-02",
+      actual: 500,
+      pointEstimate: 0,
+      labelAvailableAsOf: "2021-03",
+      historySeries: Array(25).fill(0),
+      occurrenceProbability: 0,
+      scaleAbsoluteError: 1,
+      scaleSquaredError: 1
+    })
+  ];
+  const rowsByBaseline = Object.fromEntries(
+    ["zero", "seasonal_naive", "Croston", "SBA", "TSB", "ADIDA"]
+      .map((baselineId) => [
+        baselineId,
+        template.map((item) => ({
+          ...item,
+          pointEstimate: baselineId === "seasonal_naive" ? 100 : (
+            baselineId === "zero" ? 0 : 200
+          )
+        }))
+      ])
+  );
+  const result = buildM2CurrentHistoryRegimeChallenger(
+    rowsByBaseline,
+    {
+      minimumTrainingRows: 1,
+      trainingOriginWindow: 1
+    }
+  );
+
+  assert.equal(result.rows.length, 2);
+  assert.equal(result.rows[0].selectedBaselineId, "zero");
+  assert.equal(result.rows[1].selectedBaselineId, "seasonal_naive");
+  assert.equal(result.rows[1].pointEstimate, 100);
+  assert.equal(result.selections[1].latestMatureTrainingOrigin, "2021-01");
+  assert.equal(result.selections[1].sameOrLaterOuterTruthRead, false);
+  assert.equal(result.design.promotionEligible, false);
+  assert.equal(result.design.finalHoldoutOpened, false);
 });
 
 test("two-part candidate activates only from mature earlier labels", () => {
@@ -840,7 +894,7 @@ test("public diagnostic CLI is reproducible and aggregate-only", () => {
   );
   const text = JSON.stringify(report);
 
-  assert.equal(report.schema, "m2.current.public_diagnostic_report.v0.7");
+  assert.equal(report.schema, "m2.current.public_diagnostic_report.v0.8");
   assert.equal(report.directionAssessment.engineeringSequenceDrifted, true);
   assert.equal(
     report.directionAssessment.retiredSequence,

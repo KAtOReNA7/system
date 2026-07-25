@@ -16,6 +16,13 @@ const BASELINE_IDS = Object.freeze([
   "ADIDA"
 ]);
 
+const HISTORY_REGIME_BASELINE_IDS = Object.freeze([
+  ...BASELINE_IDS,
+  "recent_mean_3",
+  "seasonal_median_2",
+  "ewma_0_5"
+]);
+
 export function buildM2CurrentAutomatedBaselineEvaluation(
   caseRows,
   historyRows,
@@ -169,6 +176,180 @@ export function buildM2CurrentRollingBaselineChampion(
   };
 }
 
+export function buildM2CurrentHistoryRegimeChallenger(
+  rowsByBaseline,
+  {
+    minimumTrainingRows = 80,
+    trainingOriginWindow = 6
+  } = {}
+) {
+  const minimumRows = positiveInteger(
+    minimumTrainingRows,
+    "history_regime_minimum_training_rows"
+  );
+  const originWindow = positiveInteger(
+    trainingOriginWindow,
+    "history_regime_training_origin_window"
+  );
+  const existingBaselineIds = Object.keys(rowsByBaseline ?? {}).sort();
+  if (
+    BASELINE_IDS.some((id) => !existingBaselineIds.includes(id))
+    || existingBaselineIds.some(
+      (id) => !Array.isArray(rowsByBaseline[id])
+    )
+  ) {
+    throw new Error("m2_current_history_regime_baseline_rows_required");
+  }
+  const templateRows = rowsByBaseline.zero;
+  if (
+    templateRows.length === 0
+    || templateRows.some(
+      (row) => !Array.isArray(row.historySeries)
+        || row.historySeries.length === 0
+    )
+  ) {
+    throw new Error("m2_current_history_regime_history_series_required");
+  }
+  assertAlignedBaselineRows(rowsByBaseline, templateRows);
+  const candidateRows = {
+    ...Object.fromEntries(
+      BASELINE_IDS.map((id) => [id, rowsByBaseline[id]])
+    ),
+    recent_mean_3: templateRows.map((row) => historyForecastRow(
+      row,
+      recentMeanForecast(row.historySeries, row.horizonMonths, 3)
+    )),
+    seasonal_median_2: templateRows.map((row) => historyForecastRow(
+      row,
+      seasonalMedianForecast(row.historySeries, row.horizonMonths, 2)
+    )),
+    ewma_0_5: templateRows.map((row) => historyForecastRow(
+      row,
+      ewmaForecast(row.historySeries, row.horizonMonths, 0.5)
+    ))
+  };
+  const origins = [...new Set(templateRows.map((row) => row.origin))].sort();
+  const groupers = [
+    {
+      level: "segment_horizon_trailing_occurrence",
+      group: (row) => [
+        row.segment,
+        row.horizonMonths,
+        trailingOccurrenceBucket(row.historySeries)
+      ].join("|")
+    },
+    {
+      level: "segment_horizon",
+      group: (row) => [row.segment, row.horizonMonths].join("|")
+    },
+    {
+      level: "segment",
+      group: (row) => String(row.segment)
+    },
+    {
+      level: "global",
+      group: () => "all"
+    }
+  ];
+  const rows = [];
+  const selections = [];
+  for (const origin of origins) {
+    const matureOrigins = [...new Set(
+      templateRows.filter((row) => (
+        row.origin < origin && row.labelAvailableAsOf <= origin
+      )).map((row) => row.origin)
+    )].sort().slice(-originWindow);
+    const allowedTrainingOrigins = new Set(matureOrigins);
+    const selectionTables = groupers.map(({ group }) => (
+      buildHistoryRegimeSelectionTable(
+        candidateRows,
+        origin,
+        allowedTrainingOrigins,
+        group,
+        minimumRows
+      )
+    ));
+    const summary = {
+      outerOrigin: origin,
+      matureTrainingOriginCount: matureOrigins.length,
+      earliestMatureTrainingOrigin: matureOrigins[0] ?? null,
+      latestMatureTrainingOrigin:
+        matureOrigins[matureOrigins.length - 1] ?? null,
+      selectedCaseCount: 0,
+      fallbackCaseCount: 0,
+      selectedBaselineCounts: {},
+      selectionLevelCounts: {},
+      sameOrLaterOuterTruthRead: false
+    };
+    for (let index = 0; index < templateRows.length; index += 1) {
+      const row = templateRows[index];
+      if (row.origin !== origin) {
+        continue;
+      }
+      let selected = null;
+      let selectedLevel = "no_mature_training_fallback";
+      for (
+        let levelIndex = 0;
+        levelIndex < groupers.length && selected === null;
+        levelIndex += 1
+      ) {
+        const grouper = groupers[levelIndex];
+        selected = selectionTables[levelIndex]
+          .get(grouper.group(row))?.[0] ?? null;
+        if (selected !== null) {
+          selectedLevel = grouper.level;
+        }
+      }
+      const selectedBaselineId = selected?.baselineId ?? "zero";
+      rows.push({
+        ...candidateRows[selectedBaselineId][index],
+        selectedBaselineId,
+        selectionLevel: selectedLevel,
+        trainingCaseCount: selected?.caseCount ?? 0,
+        trainingWape: selected?.wape ?? null,
+        trainingSignedBias: selected?.signedBias ?? null
+      });
+      summary.selectedCaseCount += 1;
+      if (selected === null) {
+        summary.fallbackCaseCount += 1;
+      }
+      summary.selectedBaselineCounts[selectedBaselineId] = (
+        summary.selectedBaselineCounts[selectedBaselineId] ?? 0
+      ) + 1;
+      summary.selectionLevelCounts[selectedLevel] = (
+        summary.selectionLevelCounts[selectedLevel] ?? 0
+      ) + 1;
+    }
+    selections.push({
+      ...summary,
+      selectedBaselineCounts: sortRecord(summary.selectedBaselineCounts),
+      selectionLevelCounts: sortRecord(summary.selectionLevelCounts)
+    });
+  }
+  return {
+    schema: "m2.current.history_regime_challenger.v0.1",
+    role: "posthoc_development_diagnostic_only",
+    design: {
+      candidateBaselineIds: [...HISTORY_REGIME_BASELINE_IDS],
+      minimumTrainingRows: minimumRows,
+      trainingOriginWindow: originWindow,
+      selectionHierarchy: groupers.map(({ level }) => level),
+      selectionMetric: "mature_earlier_label_WAPE",
+      historyBoundary:
+        "bill_month_history_through_origin_but_historical_available_at_not_proven",
+      promotionEligible: false,
+      finalHoldoutOpened: false,
+      sameOrLaterOuterTruthRead: false
+    },
+    rows,
+    selections,
+    overall: scoreM2CurrentEvaluationRows(rows),
+    byOrigin: scoreM2CurrentEvaluationSlices(rows, "origin"),
+    byHorizon: scoreM2CurrentEvaluationSlices(rows, "horizonMonths"),
+    bySegment: scoreM2CurrentEvaluationSlices(rows, "segment")
+  };
+}
+
 export function attachM2CurrentScaleAndOccurrence(
   rows,
   historyRows,
@@ -270,6 +451,171 @@ function forecastBaselines(series, horizonMonths) {
       occurrenceProbability: adida.occurrenceProbability
     }
   };
+}
+
+function buildHistoryRegimeSelectionTable(
+  rowsByBaseline,
+  outerOrigin,
+  allowedTrainingOrigins,
+  group,
+  minimumTrainingRows
+) {
+  const table = new Map();
+  for (const baselineId of HISTORY_REGIME_BASELINE_IDS) {
+    const aggregates = new Map();
+    for (const row of rowsByBaseline[baselineId]) {
+      if (
+        !allowedTrainingOrigins.has(row.origin)
+        || row.origin >= outerOrigin
+        || row.labelAvailableAsOf > outerOrigin
+      ) {
+        continue;
+      }
+      const key = group(row);
+      const current = aggregates.get(key) ?? {
+        caseCount: 0,
+        actualDenominator: 0,
+        absoluteError: 0,
+        signedError: 0
+      };
+      current.caseCount += 1;
+      current.actualDenominator += Math.abs(Number(row.actual));
+      current.absoluteError += Math.abs(
+        Number(row.pointEstimate) - Number(row.actual)
+      );
+      current.signedError += Number(row.pointEstimate) - Number(row.actual);
+      aggregates.set(key, current);
+    }
+    for (const [key, aggregate] of aggregates) {
+      if (
+        aggregate.caseCount < minimumTrainingRows
+        || aggregate.actualDenominator <= 0
+      ) {
+        continue;
+      }
+      const candidates = table.get(key) ?? [];
+      candidates.push({
+        baselineId,
+        caseCount: aggregate.caseCount,
+        wape: aggregate.absoluteError / aggregate.actualDenominator,
+        signedBias: aggregate.signedError / aggregate.actualDenominator
+      });
+      table.set(key, candidates);
+    }
+  }
+  for (const candidates of table.values()) {
+    candidates.sort((left, right) => (
+      left.wape - right.wape
+      || Math.abs(left.signedBias) - Math.abs(right.signedBias)
+      || left.baselineId.localeCompare(right.baselineId)
+    ));
+  }
+  return table;
+}
+
+function assertAlignedBaselineRows(rowsByBaseline, templateRows) {
+  for (const baselineId of BASELINE_IDS) {
+    const rows = rowsByBaseline[baselineId];
+    if (
+      rows.length !== templateRows.length
+      || rows.some((row, index) => (
+        row.standardWorkId !== templateRows[index].standardWorkId
+        || row.origin !== templateRows[index].origin
+        || Number(row.horizonMonths)
+          !== Number(templateRows[index].horizonMonths)
+        || row.route !== templateRows[index].route
+      ))
+    ) {
+      throw new Error("m2_current_history_regime_baseline_alignment_drift");
+    }
+  }
+}
+
+function historyForecastRow(row, pointEstimate) {
+  const value = Math.max(0, finite(pointEstimate, "history_regime_forecast"));
+  return {
+    ...row,
+    pointEstimate: value,
+    occurrenceProbability: value > 0 ? 1 : 0
+  };
+}
+
+function recentMeanForecast(series, horizonMonths, lookbackMonths) {
+  const values = validateHistorySeries(series)
+    .map((value) => Math.max(0, value))
+    .slice(-positiveInteger(lookbackMonths, "history_regime_lookback"));
+  const horizon = positiveInteger(
+    horizonMonths,
+    "history_regime_forecast_horizon"
+  );
+  return values.reduce((sum, value) => sum + value, 0)
+    / Math.max(1, values.length)
+    * horizon;
+}
+
+function seasonalMedianForecast(series, horizonMonths, years) {
+  const values = validateHistorySeries(series)
+    .map((value) => Math.max(0, value));
+  const horizon = positiveInteger(
+    horizonMonths,
+    "history_regime_forecast_horizon"
+  );
+  const yearCount = positiveInteger(years, "history_regime_seasonal_years");
+  let total = 0;
+  for (let offset = 0; offset < horizon; offset += 1) {
+    const seasonalValues = [];
+    for (let year = 1; year <= yearCount; year += 1) {
+      const index = values.length - 12 * year + (offset % 12);
+      if (index >= 0 && index < values.length) {
+        seasonalValues.push(values[index]);
+      }
+    }
+    seasonalValues.sort((left, right) => left - right);
+    total += seasonalValues.length > 0
+      ? seasonalValues[Math.floor((seasonalValues.length - 1) / 2)]
+      : 0;
+  }
+  return total;
+}
+
+function ewmaForecast(series, horizonMonths, alpha) {
+  const values = validateHistorySeries(series)
+    .map((value) => Math.max(0, value));
+  const horizon = positiveInteger(
+    horizonMonths,
+    "history_regime_forecast_horizon"
+  );
+  const smoothing = finite(alpha, "history_regime_ewma_alpha");
+  if (smoothing <= 0 || smoothing > 1) {
+    throw new Error("m2_current_history_regime_ewma_alpha_invalid");
+  }
+  let level = values[0];
+  for (const value of values.slice(1)) {
+    level = smoothing * value + (1 - smoothing) * level;
+  }
+  return level * horizon;
+}
+
+function trailingOccurrenceBucket(series) {
+  const positiveCount = validateHistorySeries(series)
+    .slice(-12)
+    .filter((value) => value > 0)
+    .length;
+  return positiveCount === 0
+    ? "occurrence_0"
+    : positiveCount <= 2
+      ? "occurrence_1_2"
+      : positiveCount <= 6
+        ? "occurrence_3_6"
+        : "occurrence_7_12";
+}
+
+function sortRecord(record) {
+  return Object.fromEntries(
+    Object.entries(record).sort(([left], [right]) => (
+      left.localeCompare(right)
+    ))
+  );
 }
 
 function crostonClassic(series, alpha = 0.1) {

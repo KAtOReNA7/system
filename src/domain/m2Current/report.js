@@ -15,7 +15,7 @@ export function buildM2CurrentPublicDiagnosticReport(
   ].includes(config.schema);
   return {
     schema: config.schema === "m2.current.config.v0.6"
-      ? "m2.current.public_diagnostic_report.v0.7"
+      ? "m2.current.public_diagnostic_report.v0.8"
       : config.schema === "m2.current.config.v0.5"
       ? "m2.current.public_diagnostic_report.v0.6"
       : config.schema === "m2.current.config.v0.4"
@@ -36,16 +36,14 @@ export function buildM2CurrentPublicDiagnosticReport(
         ].includes(config.schema),
       priorInstructionAssessment:
         config.schema === "m2.current.config.v0.6"
-          ? "buyout_isolation_was_directionally_correct_but_current_labels_were_already_equivalent_so_accuracy_did_not_change"
+          ? "buyout_isolation_was_directionally_correct; real_bill_history_regime_recalibration_improved_secondary_WAPE_but_failed_absolute_quality_and_as_of_availability_gates"
           : config.schema === "m2.current.config.v0.5"
           ? "directionally_correct_evaluation_but_over_specified_algorithm_families_before_signal_and_decision_grain"
           : "not_reassessed",
       retiredSequence:
         "human_numeric_baseline_and_120_work_business_sample_skipped",
       nextPriority: config.schema === "m2.current.config.v0.6"
-        ? evidence.coverage.targetClassification?.passed === true
-          ? "materialize_versioned_historical_as_of_work_signals"
-          : "resolve_tiny_target_classification_uncertainty_then_materialize_versioned_historical_as_of_work_signals"
+        ? "materialize_versioned_historical_as_of_work_signals_then_use_unseen_later_origin_or_separately_authorized_final_holdout"
         : config.schema === "m2.current.config.v0.5"
         ? "independent_portfolio_validation_then_auditable_work_level_signals"
         : config.schema === "m2.current.config.v0.4"
@@ -88,6 +86,49 @@ function compactEvidence(evidence) {
   const automated = evidence.automatedEvaluation;
   return {
     ...evidence,
+    recalibration: evidence.recalibration
+      ? {
+        schema: evidence.recalibration.schema,
+        candidateId: evidence.recalibration.candidateId,
+        decisionStatus: evidence.recalibration.decisionStatus,
+        role: evidence.recalibration.role,
+        target: evidence.recalibration.target,
+        scope: evidence.recalibration.scope,
+        realBillReplay: {
+          deterministicReplayPassed:
+            evidence.recalibration.realBillReplay
+              .deterministicReplayPassed,
+          targetClassificationPassed:
+            evidence.recalibration.realBillReplay
+              .targetClassificationPassed,
+          targetPartitionConservationPassed:
+            evidence.recalibration.realBillReplay
+              .targetPartitionConservationPassed,
+          existingWorkLevel:
+            evidence.recalibration.realBillReplay.existingWorkLevel,
+          existingDenseMonthlyChampion: {
+            overall:
+              evidence.recalibration.realBillReplay
+                .existingDenseMonthlyChampion.overall
+          },
+          existingPortfolioDevelopment:
+            evidence.recalibration.realBillReplay
+              .existingPortfolioDevelopment
+        },
+        challenger: {
+          design: evidence.recalibration.challenger.design,
+          overall: evidence.recalibration.challenger.overall,
+          byHorizon: evidence.recalibration.challenger.byHorizon,
+          bySegment: evidence.recalibration.challenger.bySegment,
+          relativeWapeImprovementToDenseMonthlyChampion:
+            evidence.recalibration.challenger
+              .relativeWapeImprovementToDenseMonthlyChampion
+        },
+        gates: evidence.recalibration.gates,
+        decision: evidence.recalibration.decision,
+        boundaries: evidence.recalibration.boundaries
+      }
+      : null,
     automatedEvaluation: {
       schema: automated.schema,
       targetContract: automated.targetContract,
