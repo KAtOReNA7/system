@@ -897,7 +897,7 @@ test("public diagnostic CLI is reproducible and aggregate-only", () => {
   );
   const text = JSON.stringify(report);
 
-  assert.equal(report.schema, "m2.current.public_diagnostic_report.v0.10");
+  assert.equal(report.schema, "m2.current.public_diagnostic_report.v0.11");
   assert.equal(report.directionAssessment.engineeringSequenceDrifted, true);
   assert.equal(
     report.directionAssessment.retiredSequence,
@@ -963,6 +963,57 @@ test("public diagnostic CLI is reproducible and aggregate-only", () => {
     "REJECT_KEEP_V0_3_WORK_LEVEL_FALLBACK"
   );
   assert.equal(
+    report.evidence.humanAnchoredDevelopment.candidateId,
+    "M2-current-human-anchored-hierarchical-probabilistic-v1.0"
+  );
+  assert.equal(
+    report.evidence.humanAnchoredDevelopment.population.authorityWorkCount,
+    3053
+  );
+  assert.equal(
+    report.evidence.humanAnchoredDevelopment.population
+      .primaryIndependentWorkCount,
+    1125
+  );
+  assert.equal(
+    report.evidence.humanAnchoredDevelopment.population.fixed300BookSampleUsed,
+    false
+  );
+  assert.equal(
+    report.evidence.humanAnchoredDevelopment.decision.developmentDecision,
+    "HUMAN_ANCHORED_DEVELOPMENT_FAIL"
+  );
+  assert.equal(
+    report.evidence.humanAnchoredDevelopment.primary
+      .developmentLayerSelection.hierarchyAccepted,
+    false
+  );
+  assert.equal(
+    report.evidence.humanAnchoredDevelopment.primary
+      .developmentLayerSelection.occurrenceReversalAccepted,
+    false
+  );
+  assert.equal(
+    report.evidence.humanAnchoredDevelopment
+      .dataQuality.unmaturedLabelZeroImputationCount,
+    0
+  );
+  assert.equal(
+    report.evidence.humanAnchoredDevelopment
+      .dataQuality.signedCashSeparatedBeforeAggregation,
+    true
+  );
+  assert.equal(
+    report.evidence.humanAnchoredDevelopment
+      .dataQuality.peerTrendExcludesTargetWork,
+    true
+  );
+  assert.equal(
+    report.evidence.humanAnchoredDevelopment
+      .temporalMaturity.independentLaterOriginOpened,
+    false
+  );
+  assert.equal(
     report.gate.status,
     "CANDIDATE_DEVELOPMENT_FAIL_BLOCKED"
   );
@@ -983,7 +1034,7 @@ test("public diagnostic CLI is reproducible and aggregate-only", () => {
   );
   assert.equal(
     report.gate.developmentDirection,
-    "historical_channel_state_single_purchase_unit_economics_and_work_level_signals_then_unseen_origin_validation"
+    "freeze_human_anchored_v1_then_unseen_later_origin_or_auditable_formula_bound_work_signals"
   );
   assert.ok(
     report.gate.blockers.includes(

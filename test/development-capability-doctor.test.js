@@ -36,6 +36,7 @@ test("catalog defines one private-free core capability and scoped private capabi
       "m2-v2-current-state",
       "m2-algorithm-authoritative-input",
       "m2-current-canonical-channel",
+      "m2-current-human-anchored",
       "m3-private-materials",
     ],
   );
@@ -151,6 +152,26 @@ test("missing canonical-channel inputs block only that private capability", () =
     "frozen-sales-share-targets",
   ]);
   assert.match(result.recovery, /Missing channel artifacts block only/u);
+});
+
+test("missing human-anchored inputs block only that private capability", () => {
+  const result = evaluateCapability(
+    catalog,
+    "m2-current-human-anchored",
+    {
+      repoRoot: REPO_ROOT,
+      artifactExists: () => false,
+      toolProbe: availableToolProbe,
+    },
+  );
+  assert.equal(result.status, "BLOCKED_MISSING_PRIVATE_ARTIFACT");
+  assert.equal(result.coreDevelopmentUnaffected, true);
+  assert.deepEqual(result.missingPrivateRoles, [
+    "user-reviewed-channel-master",
+    "formal-model-input-cache",
+    "exact-v0.3-overlap-comparator",
+  ]);
+  assert.match(result.recovery, /block only this bounded local development replay/u);
 });
 
 test("capability paths cannot escape the repository", () => {

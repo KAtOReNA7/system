@@ -185,6 +185,34 @@
       "authorization": "USER_AUTHORIZED_BOUNDED_DEVELOPMENT_2026_07_26"
     },
     {
+      "id": "m2-current-human-anchored",
+      "description": "Run the user-authorized 2021-2025 human-anchored hierarchical probabilistic M2 development backtest from all authority works without opening later-origin, final holdout or release capabilities.",
+      "requiredTools": [],
+      "requiredPrivateArtifacts": [
+        {
+          "role": "user-reviewed-channel-master",
+          "kind": "file",
+          "path": "data/private-output/outputs/channel-governance-20260726/M2-渠道统一与类型人工补全表-v0.2.xlsx"
+        },
+        {
+          "role": "formal-model-input-cache",
+          "kind": "file",
+          "path": "data/private-output/m2-formal-execution/m2-formal-model-input-cache-v1.pkl"
+        },
+        {
+          "role": "exact-v0.3-overlap-comparator",
+          "kind": "file",
+          "path": "data/private-output/m2-current-quality/M2-current-occurrence-amount-candidate-cases-private-v0.3.ndjson"
+        }
+      ],
+      "canonicalValidationCommands": [
+        "npm run doctor:capability -- m2-current-human-anchored",
+        "npm run develop:m2:current:human-anchored"
+      ],
+      "recovery": "Restore only the capability-scoped private channel master, verified model-input cache and exact v0.3 comparator. Missing artifacts block only this bounded local development replay; clone, install, public tests, diagnostics and startup remain available.",
+      "authorization": "USER_AUTHORIZED_HUMAN_ANCHORED_DEVELOPMENT_2026_07_26"
+    },
+    {
       "id": "m3-private-materials",
       "description": "Bootstrap the ignored M3 completion workflow after 3 to 5 user-provided private materials are present.",
       "requiredTools": [],
