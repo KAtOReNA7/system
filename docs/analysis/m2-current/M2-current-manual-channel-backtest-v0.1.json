@@ -22,9 +22,9 @@
       "2020-06": 214
     },
     "segmentCounts": {
-      "dense": 107,
+      "dense": 97,
       "dormant": 4,
-      "intermittent": 268
+      "intermittent": 278
     },
     "specialCategoryCaseCount": 0
   },
@@ -116,7 +116,7 @@
       "maximum": 8,
       "median": 1,
       "minimum": 1,
-      "p90": 5
+      "p90": 6
     },
     "findings": [
       {
@@ -135,8 +135,8 @@
     "trailingAnnualFlat": {
       "overall": {
         "caseCount": 379,
-        "wape": 1.0424803003795395,
-        "signedBias": 0.3026960389472275,
+        "wape": 1.091149839487123,
+        "signedBias": 0.3896172396317226,
         "zeroImputationUsed": false
       },
       "byOrigin": {
@@ -148,22 +148,22 @@
         },
         "2019-12": {
           "caseCount": 100,
-          "wape": 1.2239746562154368,
-          "signedBias": 0.5209377529170823,
+          "wape": 1.3745969519241366,
+          "signedBias": 0.788828208674178,
           "zeroImputationUsed": false
         },
         "2020-06": {
           "caseCount": 214,
-          "wape": 1.103223386079532,
-          "signedBias": 0.1322389563795285,
+          "wape": 1.1037907394575988,
+          "signedBias": 0.13406413048155905,
           "zeroImputationUsed": false
         }
       },
       "bySegment": {
         "dense": {
-          "caseCount": 107,
-          "wape": 1.3873080243998603,
-          "signedBias": 1.3038481882100634,
+          "caseCount": 97,
+          "wape": 1.463083510308056,
+          "signedBias": 1.410116214409521,
           "zeroImputationUsed": false
         },
         "dormant": {
@@ -173,49 +173,49 @@
           "zeroImputationUsed": false
         },
         "intermittent": {
-          "caseCount": 268,
-          "wape": 0.7913738857276882,
-          "signedBias": -0.42635021764489545,
+          "caseCount": 278,
+          "wape": 0.8297822685748103,
+          "signedBias": -0.327513238209921,
           "zeroImputationUsed": false
         }
       },
       "byChannelBand": {
         "four_plus": {
-          "caseCount": 93,
-          "wape": 1.0880554837449015,
-          "signedBias": 0.9261027362090154,
+          "caseCount": 115,
+          "wape": 1.148090105006199,
+          "signedBias": 0.9631529817454406,
           "zeroImputationUsed": false
         },
         "one": {
-          "caseCount": 216,
-          "wape": 1.0826207420990068,
-          "signedBias": -0.6070056888321517,
+          "caseCount": 208,
+          "wape": 1.0830616570884177,
+          "signedBias": -0.621820294481581,
           "zeroImputationUsed": false
         },
         "two_to_three": {
-          "caseCount": 70,
-          "wape": 0.9292467435974343,
-          "signedBias": -0.015599138999183877,
+          "caseCount": 56,
+          "wape": 0.977071324926379,
+          "signedBias": 0.17802561130265718,
           "zeroImputationUsed": false
         }
       },
       "byConcentrationBand": {
         "top2_60_to_80pct": {
-          "caseCount": 31,
-          "wape": 0.5018924153945526,
-          "signedBias": 0.43251114525464124,
+          "caseCount": 37,
+          "wape": 0.5906927697794282,
+          "signedBias": 0.5260379911349629,
           "zeroImputationUsed": false
         },
         "top2_at_least_80pct": {
-          "caseCount": 347,
-          "wape": 1.1469530705751956,
-          "signedBias": 0.27024436407880326,
+          "caseCount": 341,
+          "wape": 1.1964786806542238,
+          "signedBias": 0.35352241223860076,
           "zeroImputationUsed": false
         },
         "top2_below_60pct": {
           "caseCount": 1,
-          "wape": 1.8328199522644246,
-          "signedBias": 1.8328199522644246,
+          "wape": 1.8751311896275669,
+          "signedBias": 1.8751311896275669,
           "zeroImputationUsed": false
         }
       }
@@ -223,8 +223,8 @@
     "manualFaithful": {
       "overall": {
         "caseCount": 379,
-        "wape": 0.6941542420316599,
-        "signedBias": -0.3205644164896804,
+        "wape": 0.704446799458909,
+        "signedBias": -0.2909828575453418,
         "zeroImputationUsed": false
       },
       "byOrigin": {
@@ -236,22 +236,22 @@
         },
         "2019-12": {
           "caseCount": 100,
-          "wape": 0.7050743526876534,
-          "signedBias": -0.19868083501954475,
+          "wape": 0.7371216491197711,
+          "signedBias": -0.10686960133408263,
           "zeroImputationUsed": false
         },
         "2020-06": {
           "caseCount": 214,
-          "wape": 0.7283286667625188,
-          "signedBias": -0.48434575285249415,
+          "wape": 0.7283071722580301,
+          "signedBias": -0.48419229897827576,
           "zeroImputationUsed": false
         }
       },
       "bySegment": {
         "dense": {
-          "caseCount": 107,
-          "wape": 0.6048865467437995,
-          "signedBias": 0.1533022206518626,
+          "caseCount": 97,
+          "wape": 0.6052407778197475,
+          "signedBias": 0.18205799852792917,
           "zeroImputationUsed": false
         },
         "dormant": {
@@ -261,49 +261,49 @@
           "zeroImputationUsed": false
         },
         "intermittent": {
-          "caseCount": 268,
-          "wape": 0.7591588085991502,
-          "signedBias": -0.6656365553547835,
+          "caseCount": 278,
+          "wape": 0.7741606685754489,
+          "signedBias": -0.6233996883238322,
           "zeroImputationUsed": false
         }
       },
       "byChannelBand": {
         "four_plus": {
-          "caseCount": 93,
-          "wape": 0.4766572379773176,
-          "signedBias": -0.10730003773603844,
+          "caseCount": 115,
+          "wape": 0.5053374866184392,
+          "signedBias": -0.10073782173967138,
           "zeroImputationUsed": false
         },
         "one": {
-          "caseCount": 216,
-          "wape": 1.0559285107930363,
-          "signedBias": -0.7141400547998201,
+          "caseCount": 208,
+          "wape": 1.0567103745199296,
+          "signedBias": -0.725251199536361,
           "zeroImputationUsed": false
         },
         "two_to_three": {
-          "caseCount": 70,
-          "wape": 0.7677532534900381,
-          "signedBias": -0.35996509256828985,
+          "caseCount": 56,
+          "wape": 0.7767622687953943,
+          "signedBias": -0.2616030490846504,
           "zeroImputationUsed": false
         }
       },
       "byConcentrationBand": {
         "top2_60_to_80pct": {
-          "caseCount": 31,
-          "wape": 0.33075645614677435,
-          "signedBias": -0.2766709291891008,
+          "caseCount": 37,
+          "wape": 0.3871264883747521,
+          "signedBias": -0.23042285245097385,
           "zeroImputationUsed": false
         },
         "top2_at_least_80pct": {
-          "caseCount": 347,
-          "wape": 0.7695683034845099,
-          "signedBias": -0.3306322864308129,
+          "caseCount": 341,
+          "wape": 0.7764198739450492,
+          "signedBias": -0.30537269943140155,
           "zeroImputationUsed": false
         },
         "top2_below_60pct": {
           "caseCount": 1,
-          "wape": 0.014517168132431504,
-          "signedBias": -0.014517168132431504,
+          "wape": 0.007465295238574478,
+          "signedBias": -0.007465295238574478,
           "zeroImputationUsed": false
         }
       }
@@ -311,8 +311,8 @@
     "manualAnnual80Percent": {
       "overall": {
         "caseCount": 379,
-        "wape": 0.7068099435686767,
-        "signedBias": -0.4380514430160077,
+        "wape": 0.7133306554972592,
+        "signedBias": -0.4136824518258922,
         "zeroImputationUsed": false
       },
       "byOrigin": {
@@ -324,22 +324,22 @@
         },
         "2019-12": {
           "caseCount": 100,
-          "wape": 0.6810136295145202,
-          "signedBias": -0.3408640277511225,
+          "wape": 0.7013275623698595,
+          "signedBias": -0.2652679207590806,
           "zeroImputationUsed": false
         },
         "2020-06": {
           "caseCount": 214,
-          "wape": 0.7500368263189114,
-          "signedBias": -0.5680445942912182,
+          "wape": 0.7500153318144227,
+          "signedBias": -0.5678911404169998,
           "zeroImputationUsed": false
         }
       },
       "bySegment": {
         "dense": {
-          "caseCount": 107,
-          "wape": 0.6035061198343531,
-          "signedBias": -0.036805798978396934,
+          "caseCount": 97,
+          "wape": 0.6032447271673971,
+          "signedBias": -0.011342207716104787,
           "zeroImputationUsed": false
         },
         "dormant": {
@@ -349,49 +349,49 @@
           "zeroImputationUsed": false
         },
         "intermittent": {
-          "caseCount": 268,
-          "wape": 0.7820358079217132,
-          "signedBias": -0.7302406461041204,
+          "caseCount": 278,
+          "wape": 0.7906901766420918,
+          "signedBias": -0.6964163738638528,
           "zeroImputationUsed": false
         }
       },
       "byChannelBand": {
         "four_plus": {
-          "caseCount": 93,
-          "wape": 0.5205014352892586,
-          "signedBias": -0.2674593235456493,
+          "caseCount": 115,
+          "wape": 0.543449400278713,
+          "signedBias": -0.26194703009183923,
           "zeroImputationUsed": false
         },
         "one": {
-          "caseCount": 216,
-          "wape": 1.0434664994855896,
-          "signedBias": -0.7532877050717546,
+          "caseCount": 208,
+          "wape": 1.0441305621497414,
+          "signedBias": -0.7627213392588272,
           "zeroImputationUsed": false
         },
         "two_to_three": {
-          "caseCount": 70,
-          "wape": 0.7472810818762922,
-          "signedBias": -0.46922125034149365,
+          "caseCount": 56,
+          "wape": 0.7445400171809783,
+          "signedBias": -0.387552511619215,
           "zeroImputationUsed": false
         }
       },
       "byConcentrationBand": {
         "top2_60_to_80pct": {
-          "caseCount": 31,
-          "wape": 0.45436345964001573,
-          "signedBias": -0.41803415761560053,
+          "caseCount": 37,
+          "wape": 0.49496412552674246,
+          "signedBias": -0.3793090149153517,
           "zeroImputationUsed": false
         },
         "top2_at_least_80pct": {
-          "caseCount": 347,
-          "wape": 0.7594015507190771,
-          "signedBias": -0.44311869163571704,
+          "caseCount": 341,
+          "wape": 0.7630915839731878,
+          "signedBias": -0.4221649287340183,
           "zeroImputationUsed": false
         },
         "top2_below_60pct": {
           "caseCount": 1,
-          "wape": 0.18733575743352954,
-          "signedBias": -0.18733575743352954,
+          "wape": 0.1802838845396725,
+          "signedBias": -0.1802838845396725,
           "zeroImputationUsed": false
         }
       }
@@ -399,8 +399,8 @@
     "manualFixed50PercentLifecycle": {
       "overall": {
         "caseCount": 379,
-        "wape": 0.6911483151239748,
-        "signedBias": -0.33281692579737104,
+        "wape": 0.6991939024593801,
+        "signedBias": -0.3054667222727301,
         "zeroImputationUsed": false
       },
       "byOrigin": {
@@ -412,22 +412,22 @@
         },
         "2019-12": {
           "caseCount": 100,
-          "wape": 0.7030047961095065,
-          "signedBias": -0.2098182772651956,
+          "wape": 0.7280622736206038,
+          "signedBias": -0.12494828876530129,
           "zeroImputationUsed": false
         },
         "2020-06": {
           "caseCount": 214,
-          "wape": 0.7229338787574494,
-          "signedBias": -0.5022151523395874,
+          "wape": 0.7229123842529606,
+          "signedBias": -0.502061698465369,
           "zeroImputationUsed": false
         }
       },
       "bySegment": {
         "dense": {
-          "caseCount": 107,
-          "wape": 0.5939340146693866,
-          "signedBias": 0.13216786544700054,
+          "caseCount": 97,
+          "wape": 0.5934077647635952,
+          "signedBias": 0.16113088064434497,
           "zeroImputationUsed": false
         },
         "dormant": {
@@ -437,49 +437,49 @@
           "zeroImputationUsed": false
         },
         "intermittent": {
-          "caseCount": 268,
-          "wape": 0.7619396704989052,
-          "signedBias": -0.6714212567771745,
+          "caseCount": 278,
+          "wape": 0.7735317885598244,
+          "signedBias": -0.6333557458201856,
           "zeroImputationUsed": false
         }
       },
       "byChannelBand": {
         "four_plus": {
-          "caseCount": 93,
-          "wape": 0.4738149658227166,
-          "signedBias": -0.1185592318384381,
+          "caseCount": 115,
+          "wape": 0.5008043286246809,
+          "signedBias": -0.11573435469135153,
           "zeroImputationUsed": false
         },
         "one": {
-          "caseCount": 216,
-          "wape": 1.0579280246204361,
-          "signedBias": -0.7176156030239002,
+          "caseCount": 208,
+          "wape": 1.05813591197882,
+          "signedBias": -0.728108163758772,
           "zeroImputationUsed": false
         },
         "two_to_three": {
-          "caseCount": 70,
-          "wape": 0.7602398279352247,
-          "signedBias": -0.38135157906775285,
+          "caseCount": 56,
+          "wape": 0.7632319957762073,
+          "signedBias": -0.28670712124390835,
           "zeroImputationUsed": false
         }
       },
       "byConcentrationBand": {
         "top2_60_to_80pct": {
-          "caseCount": 31,
-          "wape": 0.3278889069371671,
-          "signedBias": -0.2818758721652723,
+          "caseCount": 37,
+          "wape": 0.38261704932723095,
+          "signedBias": -0.24200956408127727,
           "zeroImputationUsed": false
         },
         "top2_at_least_80pct": {
-          "caseCount": 347,
-          "wape": 0.7665218977835615,
-          "signedBias": -0.34434336718595354,
+          "caseCount": 341,
+          "wape": 0.7709826210727171,
+          "signedBias": -0.32054896504177777,
           "zeroImputationUsed": false
         },
         "top2_below_60pct": {
           "caseCount": 1,
-          "wape": 0.014517168132431504,
-          "signedBias": -0.014517168132431504,
+          "wape": 0.007465295238574478,
+          "signedBias": -0.007465295238574478,
           "zeroImputationUsed": false
         }
       }
@@ -487,25 +487,25 @@
   },
   "diagnosticPopulation": {
     "topTwoShareAtLeast60": 378,
-    "topTwoShareAtLeast70": 369,
-    "topTwoShareAtLeast80": 347,
+    "topTwoShareAtLeast70": 367,
+    "topTwoShareAtLeast80": 341,
     "channelBands": {
-      "four_plus": 93,
-      "one": 216,
-      "two_to_three": 70
+      "four_plus": 115,
+      "one": 208,
+      "two_to_three": 56
     },
     "concentrationBands": {
-      "top2_60_to_80pct": 31,
-      "top2_at_least_80pct": 347,
+      "top2_60_to_80pct": 37,
+      "top2_at_least_80pct": 341,
       "top2_below_60pct": 1
     },
     "mainDecisionBands": {
-      "has_declining_main": 169,
-      "stable_main_only": 210
+      "has_declining_main": 190,
+      "stable_main_only": 189
     },
     "forecastComposition": {
-      "main": 10492664.38799544,
-      "edge": 132212.94044999997
+      "main": 10958194.29084388,
+      "edge": 195063.70949999994
     }
   },
   "sensitivityInterpretation": {

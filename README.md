@@ -20,8 +20,9 @@
   评估完全跳过。provider、Canary/full160、final holdout、release 和 M3
   formal 均未授权。三份人工复核账单已成为现金分类权威：总账只审计，分成只
   预测，买断只作评级背景。人工权威复验后作品 WAPE 为 49.08%，portfolio
-  WAPE 为 42.61%，两层均失败；v0.8 人工渠道规则 379 个安全 case 的 WAPE
-  为 69.42%。下一步完成 canonical 渠道/平台类型主表，再开发平台分层模型。
+  WAPE 为 12.79%，但 bias 与区间门禁失败，作品层也失败；v0.8 人工渠道规则
+  379 个安全 case 的 WAPE 为 70.44%。下一步完成 canonical 渠道/平台类型主表，
+  再开发平台分层模型。
 
 当前导航：
 
@@ -176,10 +177,10 @@ M2 的正式预测对象是未来分成收入现金。正式边界为：
 | dense / intermittent / dormant WAPE | 0.45873171 / 0.96321675 / 1.01854144 |
 | 3 / 6 / 12 / 18 / 24 月 WAPE | 0.3940 / 0.4140 / 0.4299 / 0.5373 / 0.7449 |
 | 25-origin mature cases | 56,856 |
-| 当前 portfolio WAPE / bias | 0.42609452 / 0.42609452 |
-| 当前 portfolio FVA | -1.34255921 |
+| 当前 portfolio WAPE / bias | 0.12794956 / 0.10048252 |
+| 当前 portfolio FVA | 0.22243439 |
 | v0.8 人工渠道规则安全窗口 case | 379 |
-| v0.8 人工规则 WAPE / bias | 0.69415424 / -0.32056442 |
+| v0.8 人工规则 WAPE / bias | 0.70444680 / -0.29098286 |
 | development WAPE 门槛 | 0.30（未通过） |
 | automation decision | `AUTOMATION_BLOCKED` |
 
@@ -188,11 +189,12 @@ M2 的正式预测对象是未来分成收入现金。正式边界为：
 7,851 个 case 仍保留为审计基线，但其中 768 个被人工权威纠正为 pure-buyout，
 当前必须弃权；不得为了保持旧人口继续预测买断。
 
-这次修正推翻了旧的组合层“development PASS”：人工分区后 portfolio WAPE/bias
-均为 42.61%，FVA 为负，作品层、intermittent、dormant 和长周期也全部未达标。
+这次修正推翻了旧的组合层“development PASS”：人工分区后 portfolio WAPE 为
+12.79%、FVA 为正，但 bias 为 10.05%，且 WAPE upper-95 与 bias interval 未过；
+作品层、intermittent、dormant 和长周期也全部未达标。
 因此当前状态是 `CANDIDATE_DEVELOPMENT_FAIL_BLOCKED`，不能开启自动化、final
 holdout 或 release。v0.8 人工渠道规则的买断真值门禁已经通过，但 WAPE 仍为
-69.42%，下一数据治理重点只剩 canonical 渠道与平台类型，而不是再次判断买断。
+70.44%，下一数据治理重点只剩 canonical 渠道与平台类型，而不是再次判断买断。
 
 ## M2 当前执行队列
 

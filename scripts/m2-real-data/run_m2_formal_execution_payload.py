@@ -43,7 +43,7 @@ PAYLOAD_SCHEMA = "m2.formal_execution_private_payload.v1"
 CANDIDATE_VERSION = "m2-realdata-dev-disentangled-forecast-v1.1-conditional"
 ALGORITHM_VERSION = "m2-disentangled-forecast-v1.1-conditional-formal-eval-v1"
 PARAMETER_VERSION = "m2-disentangled-forecast-v1.1"
-CACHE_VERSION = "selector-only-backtest-v2-human-ledger-partition"
+CACHE_VERSION = "selector-only-backtest-v1"
 
 
 def progress(message: str) -> None:
@@ -76,17 +76,11 @@ def stable_hash(value) -> str:
 
 
 def model_cache_signature() -> str:
-    from calibrate_cleaned_bills import DATA_DIR
-    from human_ledger_partition import CONFIG_PATH, discover_partition_sources
+    from calibrate_cleaned_bills import discover_sources
 
-    partition_sources = discover_partition_sources(DATA_DIR)
+    bill_path = discover_sources()[0]
     paths = [
-        *partition_sources.all(),
-        CONFIG_PATH,
-        Path(__file__).resolve().parents[2]
-        / "tools"
-        / "m2-calibration"
-        / "human_ledger_partition.py",
+        bill_path,
         readiness.FOUNDATION_PATH,
         readiness.FORMAL_INPUT_PATH,
         readiness.MAPPING_PAYLOAD,
@@ -353,36 +347,8 @@ def build_current_model_inputs():
 
     raw_mapping, standard_mapping = readiness.load_historical_mappings()
     mapped_bill, scope_reconciliation = readiness.apply_foundation_scope(
-        context["bill"],
-        final_ids,
-        raw_mapping,
-        standard_mapping,
-        require_full_scope=False,
+        context["bill"], final_ids, raw_mapping, standard_mapping
     )
-    mapped_sales_share_bill, sales_share_scope = readiness.apply_foundation_scope(
-        context["sales_share_bill"],
-        final_ids,
-        raw_mapping,
-        standard_mapping,
-        require_full_scope=False,
-    )
-    mapped_buyout_bill, buyout_scope = readiness.apply_foundation_scope(
-        context["buyout_bill"],
-        final_ids,
-        raw_mapping,
-        standard_mapping,
-        require_full_scope=False,
-    )
-    if len(mapped_bill) != len(mapped_sales_share_bill) + len(mapped_buyout_bill):
-        raise SystemExit("Human ledger partition row conservation changed after mapping.")
-    if not math.isclose(
-        float(mapped_bill["amount"].sum()),
-        float(mapped_sales_share_bill["amount"].sum())
-        + float(mapped_buyout_bill["amount"].sum()),
-        rel_tol=0.0,
-        abs_tol=1e-5,
-    ):
-        raise SystemExit("Human ledger partition amount conservation changed after mapping.")
 
     master_dates = {}
     for work_id, record in formal_input.items():
@@ -397,15 +363,12 @@ def build_current_model_inputs():
         }
 
     work_summary, work_month_stats = build_work_summary(
-        mapped_sales_share_bill,
-        master_dates,
-        context["latest_complete_month"],
-        population_ids=final_ids,
+        mapped_bill, master_dates, context["latest_complete_month"]
     )
     incomplete_work_ids = set(
-        mapped_sales_share_bill.loc[
-            mapped_sales_share_bill["validForCalibration"]
-            & mapped_sales_share_bill["billMonth"].isin(KNOWN_INCOMPLETE_MONTHS),
+        mapped_bill.loc[
+            mapped_bill["validForCalibration"]
+            & mapped_bill["billMonth"].isin(KNOWN_INCOMPLETE_MONTHS),
             "standardWorkId",
         ]
         .dropna()
@@ -413,10 +376,7 @@ def build_current_model_inputs():
     )
     current_context = {
         **context,
-        "bill": mapped_sales_share_bill,
-        "total_ledger_bill": mapped_bill,
-        "buyout_bill": mapped_buyout_bill,
-        "population_ids": final_ids,
+        "bill": mapped_bill,
         "work_summary": work_summary,
         "work_month_stats": work_month_stats,
         "incomplete_work_ids": incomplete_work_ids,
@@ -435,11 +395,6 @@ def build_current_model_inputs():
     work_rows, input_snapshot = readiness.build_current_work_rows(
         context, mapped_bill, foundation
     )
-    input_snapshot["ratingCashContext"] = {
-        "source": "total_ledger_including_buyout_historical_context",
-        "buyoutAllowedForRatingOnly": True,
-        "notCashForecast": True,
-    }
     front_rating = {str(row["standardWorkId"]): row["frontRating"] for row in work_rows}
     evaluated["rating"] = evaluated["standardWorkId"].astype(str).map(front_rating)
     if evaluated["rating"].isna().any():
@@ -474,43 +429,12 @@ def build_current_model_inputs():
     if set(v1_1_gate["workKey"].astype(str)) != final_ids:
         raise SystemExit("Forecast gate scope does not match the fixed 3053-work foundation.")
 
-    def scope_counts(frame: pd.DataFrame) -> dict:
-        valid = frame[frame["validForCalibration"]]
-        complete = valid[
-            valid["billMonth"].astype(str) <= context["latest_complete_month"]
-        ]
-        return {
-            "factCount": int(len(valid)),
-            "completeFactCount": int(len(complete)),
-            "completeAmount": float(complete["amount"].sum()),
-        }
-
-    cash_classification_authority = {
-        "schema": "m2.current.human_ledger_partition.cache_authority.v0.1",
-        "authorityMode": "user_reviewed_workbook_membership",
-        "machineClassificationUsed": False,
-        "salesShareForecastSourceOnly": True,
-        "buyoutRatingHistoricalContextOnly": True,
-        "buyoutNotCashForecast": True,
-        "latestCompleteMonth": context["latest_complete_month"],
-        "totalLedger": scope_counts(mapped_bill),
-        "salesShare": scope_counts(mapped_sales_share_bill),
-        "buyout": scope_counts(mapped_buyout_bill),
-        "rowConserved": True,
-        "amountConserved": True,
-        "salesShareScope": sales_share_scope,
-        "buyoutScope": buyout_scope,
-    }
-
     return {
         "context": current_context,
         "foundation": foundation,
         "foundationSummary": foundation_summary,
         "formalInput": formal_input,
         "mappedBill": mapped_bill,
-        "mappedSalesShareBill": mapped_sales_share_bill,
-        "mappedBuyoutBill": mapped_buyout_bill,
-        "cashClassificationAuthority": cash_classification_authority,
         "scopeReconciliation": scope_reconciliation,
         "inputSnapshot": input_snapshot,
         "evaluated": evaluated,
@@ -608,11 +532,6 @@ def build_fact_payload(model_inputs: dict) -> dict:
                 "actualSalesAmount": amount,
                 "standardWorkId": target_work_id,
                 "businessForm": clean(row.get("businessForm")),
-                "cashCategory": clean(row.get("cashCategory")),
-                "cashCategoryAuthority": clean(
-                    row.get("cashCategoryAuthority")
-                ),
-                "notCashForecast": clean(row.get("cashCategory")) == "buyout",
                 "mappingKind": mapping_kind.get(raw_work_id),
                 "channelKey": channel_key,
             }
@@ -865,8 +784,6 @@ def run() -> dict:
         "operatingSuggestionsIncluded": False,
         "latestCompleteMonth": model_inputs["context"]["latest_complete_month"],
         "scopeReconciliation": model_inputs["scopeReconciliation"],
-        "cashClassificationAuthority":
-            model_inputs["cashClassificationAuthority"],
         "reviewDecisionSummary": {
             "total": 238,
             "approved": 238,

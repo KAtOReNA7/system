@@ -24,8 +24,8 @@ M2 只预测未来分成现金。用户人工复核的总账、分成账单和�
 | dense | 0.45873171 | 0.08587016 | FAIL |
 | intermittent | 0.96321675 | -0.10112028 | FAIL |
 | dormant | 1.01854144 | -0.97173129 | FAIL |
-| portfolio | 0.42609452 | 0.42609452 | FAIL |
-| 人工渠道 comparator | 0.69415424 | -0.32056442 | REJECT |
+| portfolio | 0.12794956 | 0.10048252 | FAIL（bias/区间） |
+| 人工渠道 comparator | 0.70444680 | -0.29098286 | REJECT |
 
 公共诊断为 `CANDIDATE_DEVELOPMENT_FAIL_BLOCKED`。旧 v0.5 portfolio PASS 只
 适用于旧机器现金路由，已被人工分区复验推翻。final holdout、provider、数据库、

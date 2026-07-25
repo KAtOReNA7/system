@@ -31,7 +31,7 @@ import m2_calibration_v1_2 as v12  # noqa: E402
 import m2_formal_cash_target_v1 as cash  # noqa: E402
 import materialize_dense_development_cases as dense  # noqa: E402
 import run_m2_calibration_baseline_replay as legacy  # noqa: E402
-import run_m2_formal_execution_payload as formal  # noqa: E402
+import run_m2_current_formal_execution_payload as formal  # noqa: E402
 
 
 CONFIG = ROOT / "config" / "m2-current-manual-channel.v0.1.json"
@@ -71,7 +71,7 @@ def run() -> dict[str, Any]:
 
     calibration_spec, _v11, _v12 = v12.load_and_validate_contract()
     c2_spec = c2.load_spec()
-    works_list, _posthoc, input_evidence = legacy.load_authorized_works(
+    works_list, _posthoc, input_evidence = dense.load_current_authorized_works(
         calibration_spec
     )
     works = {
@@ -112,7 +112,7 @@ def run() -> dict[str, Any]:
     for origin in population["origins"]:
         for work_id in sorted(works):
             work = works[work_id]
-            routing = base.route_work_as_of(
+            routing = cash.route_work_as_of(
                 work, origin, calibration_spec
             )
             route = str(routing["route"])
@@ -370,7 +370,7 @@ def _classifier_audit(
     total_positive = 0.0
     for work in works:
         for channel in work.get("channels", []) or []:
-            outcome = base.classify_channel_as_of(
+            outcome = cash.classify_channel_as_of(
                 channel, str(latest), calibration_spec
             )
             channel_counts[str(outcome["label"])] += 1

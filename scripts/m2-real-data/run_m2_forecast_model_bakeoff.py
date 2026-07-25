@@ -149,12 +149,6 @@ def build_month_matrix(context: dict) -> tuple[pd.DataFrame, list[str]]:
     months = month_range(complete["billMonth"].min(), context["latest_complete_month"])
     matrix = complete.groupby(["standardWorkId", "billMonth"])["amount"].sum().unstack(fill_value=0.0)
     matrix = matrix.reindex(columns=months, fill_value=0.0)
-    population_ids = context.get("population_ids")
-    if population_ids is not None:
-        matrix = matrix.reindex(
-            index=sorted(str(value) for value in population_ids),
-            fill_value=0.0,
-        )
     return matrix, months
 
 

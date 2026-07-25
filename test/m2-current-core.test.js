@@ -1557,7 +1557,7 @@ import json
 import sys
 from pathlib import Path
 sys.path.insert(0, str(Path.cwd() / "scripts" / "m2-real-data"))
-import m2_calibration_v1 as kernel
+import m2_formal_cash_target_v1 as kernel
 spec = {
     "authority": {"firstBillMonth": "2020-01"},
     "revenueRouting": {"classifierParameters": {}},

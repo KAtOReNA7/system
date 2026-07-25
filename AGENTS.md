@@ -136,12 +136,13 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
     1.01854144；dormant bias 为 -0.97173129；
   - 3/6/12/18/24 月 WAPE 分别为 0.39404067 / 0.41395111 / 0.42992492 /
     0.53734143 / 0.74494329，长周期明显恶化；
-  - 组合层 WAPE/bias 为 0.42609452 / 0.42609452，FVA 为 -1.34255921，
-    portfolio development gate 已从旧机器分区下的 PASS 修正为 FAIL；
+  - 组合层 WAPE/bias 为 0.12794956 / 0.10048252，FVA 为 0.22243439；
+    WAPE 与 FVA 单项通过，但绝对 bias、WAPE upper-95 和 bias interval 未通过，
+    portfolio development gate 仍为 FAIL；
   - 冻结和 25-origin/56,856-case 逐月审计的分类不确定现金占比均为 0；
     final holdout 仍 sealed，完整 M2 成熟度未通过。
 - v0.8 人工渠道 comparator 已按人工账单分区重跑 379 个安全 case：
-  WAPE/bias 为 0.69415424 / -0.32056442；买断真值门禁通过，但绝对质量、
+  WAPE/bias 为 0.70444680 / -0.29098286；买断真值门禁通过，但绝对质量、
   canonical 渠道、historical available-at、特殊品类样本和独立验证仍失败。
 - D1 `revenueShareFact`、`availabilitySnapshot`、信号缺口 ledger 和 portable
   digest-bound 输入继续有效；当前版本化历史 snapshot 覆盖仍为 0，不得用当前
@@ -243,8 +244,9 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
 - 已验证：三账单逐行/逐月守恒、3,053 基础人口与 3,052 账单观察人口边界、
   7,851 旧机器路由到 7,083 当前 served case 的重分类、25-origin/56,856-case
   次级 development 复验；人工分区后作品 WAPE 0.49075894，组合 WAPE
-  0.42609452，二者均失败；D1 synthetic contract 通过，合规 snapshot 覆盖为
-  0；v0.8 按人工分区重跑 WAPE 0.69415424 并被拒绝，完整 M2 成熟度未通过。
+  0.12794956；组合 WAPE 单项通过，但 bias 与区间门禁失败，作品层也失败；
+  D1 synthetic contract 通过，合规 snapshot 覆盖为 0；v0.8 按人工分区重跑
+  WAPE 0.70444680 并被拒绝，完整 M2 成熟度未通过。
 - 已退役：120 部人工评估的 current 依赖；不重建、不重放。
 - 下一输入：版本化 canonical 渠道/平台类型主表，以及带 economic、posting、
   available-at、来源版本、lineage 与完整性权威的作品层历史分成 snapshot。

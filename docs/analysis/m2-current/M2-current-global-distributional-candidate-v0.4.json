@@ -1529,32 +1529,32 @@
     "caseCount": 56856,
     "rollingBaselineChampion": {
       "caseCount": 44301,
-      "wape": 0.5307224549273467,
-      "signedBias": -0.2125825488379113,
+      "wape": 0.657496743005391,
+      "signedBias": -0.13966719695357258,
       "zeroImputationUsed": false,
-      "mae": 4615.839271744431,
-      "rmse": 47089.736095347944,
-      "mase": 24.682861628030054,
-      "rmsse": 933.6423382638761,
-      "scaledMetricCoverage": 0.9747409765016591,
+      "mae": 5718.430149754643,
+      "rmse": 50917.10302397071,
+      "mase": 24.5039594128917,
+      "rmsse": 932.5807508542194,
+      "scaledMetricCoverage": 0.977494864675741,
       "cashOccurrence": {
         "positiveCaseCount": 42537,
         "zeroOrNegativeCaseCount": 1764,
         "observedRate": 0.9601814857452428,
         "probabilityCaseCount": 44301,
-        "brier": 0.12146831742568957
+        "brier": 0.18540686028740336
       },
       "positiveAmount": {
         "caseCount": 42537,
-        "wape": 0.529416984393356,
-        "signedBias": -0.21389092368936205
+        "wape": 0.6562948655710478,
+        "signedBias": -0.14087218914852892
       }
     },
     "probabilistic": {
       "caseCount": 44301,
-      "wis": 4741.738928428589,
-      "crpsApproximation": 4741.7389284284445,
-      "meanQuantileScore": 2370.8694642142223,
+      "wis": 5744.986659521333,
+      "crpsApproximation": 5744.9866595212425,
+      "meanQuantileScore": 2872.4933297606212,
       "quantileProbabilities": [
         0.05,
         0.1,
@@ -1567,18 +1567,18 @@
       "intervalCoverage": {
         "central_90": {
           "nominal": 0.9,
-          "observed": 0.7121961129545609,
-          "absoluteCalibrationError": 0.18780388704543916
+          "observed": 0.6911130674251146,
+          "absoluteCalibrationError": 0.20888693257488544
         },
         "central_80": {
           "nominal": 0.8,
-          "observed": 0.6319947630978985,
-          "absoluteCalibrationError": 0.16800523690210156
+          "observed": 0.5939595043001287,
+          "absoluteCalibrationError": 0.20604049569987137
         },
         "central_50": {
           "nominal": 0.5,
-          "observed": 0.390939256450193,
-          "absoluteCalibrationError": 0.109060743549807
+          "observed": 0.3621588677456491,
+          "absoluteCalibrationError": 0.1378411322543509
         }
       }
     },

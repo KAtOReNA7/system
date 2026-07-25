@@ -190,12 +190,20 @@ test("tracked v0.5 evidence is invalidated by the human ledger partition replay"
   assert.equal(
     candidate.multiResolution.portfolioReconstruction
       .candidate.overall.wape,
-    0.4260945157526471
+    0.12794955709628783
   );
   assert.equal(
     candidate.multiResolution.portfolioReconstruction
       .candidate.originClusterBootstrap.wape.upper95,
-    0.5015710486445101
+    0.1898587117519953
+  );
+  assert.equal(
+    candidate.multiResolution.portfolioReconstruction.gates.absoluteBiasPassed,
+    false
+  );
+  assert.equal(
+    candidate.multiResolution.portfolioReconstruction.gates.wapeUpper95Passed,
+    false
   );
   assert.equal(
     evaluation.retiredHumanPredictionSample.skippedByUserDecision,

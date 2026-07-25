@@ -66,16 +66,17 @@
 | dense WAPE | 0.45873171 |
 | intermittent WAPE | 0.96321675 |
 | dormant WAPE / bias | 1.01854144 / -0.97173129 |
-| portfolio WAPE / bias | 0.42609452 / 0.42609452 |
-| portfolio FVA | -1.34255921 |
+| portfolio WAPE / bias | 0.12794956 / 0.10048252 |
+| portfolio FVA | 0.22243439 |
 | 分类不确定现金占比 | 0 |
 
-旧机器分区下的 portfolio development PASS 已失效。人工分区复验的组合层误差和
-偏差都失败，作品层 WAPE 也仍高于 0.30。当前状态为
+旧机器分区下的 portfolio development PASS 已失效。人工分区复验的组合 WAPE 与
+FVA 单项通过，但绝对 bias、WAPE upper-95 和 bias interval 失败，作品层 WAPE
+也仍高于 0.30。当前状态为
 `CANDIDATE_DEVELOPMENT_FAIL_BLOCKED`，不能申请自动化、final holdout 或发布。
 
 人工渠道规则 comparator 同步重跑 379 个安全 case，WAPE/bias 为
-0.69415424 / -0.32056442。买断真值门禁已经通过；剩余阻断是 canonical 渠道、
+0.70444680 / -0.29098286。买断真值门禁已经通过；剩余阻断是 canonical 渠道、
 平台类型、历史 available-at、特殊品类成熟样本和独立验证。
 
 ## 实现边界

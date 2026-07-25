@@ -25,6 +25,7 @@ import m2_calibration_v1 as base  # noqa: E402
 import m2_calibration_v1_2 as v12  # noqa: E402
 import m2_formal_cash_target_v1 as cash  # noqa: E402
 import run_m2_calibration_baseline_replay as legacy  # noqa: E402
+import run_m2_current_formal_execution_payload as formal  # noqa: E402
 
 
 CONFIG = ROOT / "config" / "m2-current.v0.4.json"
@@ -45,6 +46,21 @@ CURRENT_MANIFEST = (
     / "m2-current-quality"
     / "M2-current-occurrence-amount-candidate-manifest-private-v0.3.json"
 )
+
+
+def load_current_authorized_works(spec):
+    """Use the current cache adapter without mutating the frozen replay runner."""
+
+    module_name = "run_m2_formal_execution_payload"
+    previous = sys.modules.get(module_name)
+    sys.modules[module_name] = formal
+    try:
+        return legacy.load_authorized_works(spec)
+    finally:
+        if previous is None:
+            sys.modules.pop(module_name, None)
+        else:
+            sys.modules[module_name] = previous
 OUTPUT_DIR = ROOT / "data" / "private-output" / "m2-current-dense"
 CASE_OUTPUT = OUTPUT_DIR / "M2-current-dense-cases-private-v0.1.ndjson"
 HISTORY_OUTPUT = OUTPUT_DIR / "M2-current-dense-history-private-v0.1.ndjson"
@@ -221,7 +237,7 @@ def run() -> dict[str, Any]:
     work_ids, frozen_cases = read_current_cases()
     calibration_spec, _v11, _v12 = v12.load_and_validate_contract()
     c2_spec = c2.load_spec()
-    works_list, _posthoc, input_evidence = legacy.load_authorized_works(
+    works_list, _posthoc, input_evidence = load_current_authorized_works(
         calibration_spec
     )
     works = {
@@ -245,7 +261,7 @@ def run() -> dict[str, Any]:
     ):
         for work_id in sorted(works):
             work = works[work_id]
-            routing = base.route_work_as_of(work, origin, calibration_spec)
+            routing = cash.route_work_as_of(work, origin, calibration_spec)
             route = str(routing["route"])
             segment_state = c2.segment_as_of(
                 work,
@@ -343,7 +359,7 @@ def run() -> dict[str, Any]:
     for case in frozen_cases:
         work = works[case["standardWorkId"]]
         authority_route = str(
-            base.route_work_as_of(
+            cash.route_work_as_of(
                 work,
                 case["origin"],
                 calibration_spec,

@@ -478,9 +478,9 @@ function buildMarkdown(artifact) {
 乘 3”明显更好，但仍未达到可用门槛：
 
 - 人工规则 WAPE 为 \`${primary.wape.toFixed(6)}\`，高于 \`0.30\` 门槛；
-- signed bias 为 \`${primary.signedBias.toFixed(6)}\`，总体偏差门槛勉强通过，
-  但不同 origin 的高估/低估互相抵消，不能解释为稳定；
-- ${primary.count} 个可评分安全窗口 case 中，没有可用于 36 个月回测的耽美 case；
+- signed bias 为 \`${primary.signedBias.toFixed(6)}\`，绝对值高于 \`0.10\` 门槛，
+  且不同 origin 的低估程度不稳定；
+- ${primary.caseCount} 个可评分安全窗口 case 中，没有可用于 36 个月回测的耽美 case；
 - ${artifact.diagnosticPopulation.topTwoShareAtLeast80} 个 case 的前两大渠道收入占比
   不低于 80%，证明“平台主导”不是少数例外；
 - 当前渠道只按原始 ID＋名称组合区分，没有完成真实平台归一；
@@ -580,8 +580,8 @@ ${Object.entries(byOrigin).map(([origin, metrics]) => (
     + `${metrics.wape.toFixed(6)} | ${metrics.signedBias.toFixed(6)} |`
   )).join("\n")}
 
-偏差从低估、转为高估、再转为大幅低估，说明 40%/50% 这种固定生命周期比例不能
-稳定代表不同年份、平台和作品组合。
+三个 origin 都出现低估，且低估程度明显不同，说明 40%/50% 这种固定生命周期比例
+不能稳定代表不同年份、平台和作品组合。
 
 ## 两个基础数据隐患的影响
 

@@ -213,7 +213,7 @@
     "review:m2:post-foundation:buckets": "node scripts/run-codex-python.mjs scripts/m2-real-data/run_m2_post_foundation_review_bucket_attribution.py",
     "review:m2:post-foundation:decisions:dry-run": "node scripts/run-codex-python.mjs scripts/m2-real-data/run_m2_post_foundation_review_decision_apply.py --dry-run",
     "review:m2:post-foundation:decisions:apply": "node scripts/run-codex-python.mjs scripts/m2-real-data/run_m2_post_foundation_review_decision_apply.py --apply",
-    "prepare:m2:formal-local": "node scripts/run-codex-python.mjs scripts/m2-real-data/run_m2_formal_execution_payload.py",
+    "prepare:m2:formal-local": "node scripts/run-codex-python.mjs scripts/m2-current/run_m2_current_formal_execution_payload.py",
     "execute:m2:formal-local:dry-run": "node scripts/m2-real-data/run_m2_formal_local_execution.mjs --dry-run",
     "execute:m2:formal-local": "node scripts/m2-real-data/run_m2_formal_local_execution.mjs --apply",
     "summary:m2:formal-local": "node scripts/m2-real-data/run_m2_formal_local_execution.mjs --summary",
