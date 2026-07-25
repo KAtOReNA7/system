@@ -4,7 +4,7 @@
 
 - PR #7、PR #8、PR #9、PR #10、PR #11、PR #12、PR #13 均已合入 `main`；已合并分支不得继续作为开发入口。
 - 当前仓库治理导航为：
-  - `docs/analysis/m2-v2/M2-v2-current-state-index-v0.12.md`
+  - `docs/analysis/m2-v2/M2-v2-current-state-index-v0.13.md`
   - `docs/analysis/m2-v2/M2-repository-code-convergence-and-portable-development-audit-v0.4.md`
   - `docs/analysis/m2-current/M2-current-maturity-reconstruction-v0.6.md`
   - `docs/analysis/m2-current/M2-sales-share-only-target-decision-v0.1.md`
@@ -12,6 +12,7 @@
   - `docs/analysis/m2-current/M2-current-authority-source-audit-v0.1.json`
   - `docs/analysis/m2-current/M2-current-user-confirmation-form-zh-CN-v0.1.md`
   - `docs/analysis/m2-current/M2-current-as-of-signal-readiness-v0.1.md`
+  - `docs/analysis/m2-current/M2-current-real-bill-recalibration-v0.1.md`
   - `docs/analysis/m2-current/M2-current-as-of-source-inventory-v0.1.json`
   - `docs/analysis/m2-current/M2-current-signal-input-portable-intake-v0.1.md`
 - PR #7 cryptographic authority 继续由不可变的
@@ -167,6 +168,17 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
   - snapshot 的 occurrence/positive amount 只用于合规可读性与缺失机制覆盖，
     不是已授权预测特征；后续动态 two-part 必须按 economic time 另行预注册
     窗口、滞后和变换，不得直接把累计 snapshot 摘要当作模型信号
+  - 2026-07-25 用户授权本地真实账单 posthoc recalibration。canonical runner
+    已重新物化 824 部作品、7,851 个冻结 case 和 25-origin/56,856-case 逐月
+    人口；v0.3 和 v0.5 指标精确复现，不是缓存或公开摘要替代
+  - v0.7 历史状态 challenger 在原六基线上增加 recent-mean-3、
+    seasonal-median-2 和 EWMA(0.5)，按最近 6 个成熟 origin 及
+    segment×horizon×trailing-occurrence 分层 nested 选择。逐月 WAPE/bias
+    为 0.59576421 / -0.21126360，较旧 champion WAPE 改善 10.1896%
+  - v0.7 dense/intermittent/dormant WAPE 分别为 0.39900895 /
+    0.82897090 / 1.00725629；总体 0.30 门槛、总体 bias、segment、历史
+    feature available-at 和 independent holdout 门禁均未通过。结论固定为
+    `REJECT_KEEP_V0_3_WORK_LEVEL_FALLBACK`，不得表述为 candidate 升级
 - 当前 development champion 仍为
   `M2-current-occurrence-amount-calibration-v0.3`。v0.4 只是在严格门禁拒绝所有
   challenger 后返回 v0.3，不能表述为候选升级。
@@ -176,6 +188,9 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
 - 当前业务目标候选为
   `M2-current-sales-share-revenue-service-v0.6`；它是目标合同迁移和同人口
   复验，不是新模型家族，也不构成精度升级。
+- `M2-current-history-regime-recalibration-v0.7` 只是一轮已完成且被门禁拒绝的
+  posthoc development diagnostic；不具备选模、自动化、holdout 或 release
+  权限，不得继续在同一 2022 窗口调参。
 - zero、seasonal naive、classic Croston、SBA、TSB、ADIDA、B4 和 v0.3 已进入
   同人口自动回归；基线不得因表现较弱而删除。
 - eligibility、target classification、served coverage 和 company-cash
@@ -194,6 +209,8 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
 - `nextDevelopmentReadiness=SALES_SHARE_TARGET_VALIDATION_AND_WORK_LEVEL_SIGNAL_REQUIRED`
 - `full160Authorized=false`
 - 本轮多粒度重构研究授权已执行完毕；默认不得继续在同一 development 窗口调参
+- 本轮真实账单 v0.7 recalibration 授权已执行完毕；参数和失败结论已冻结，
+  `candidateSelectionAuthorized=false`
 - final holdout、embargo shadow、deferred labels 均 sealed
 - 公开门禁中 `developmentReplayAuthorized=true` 只表示可精确重放既有
   development evidence；`newCandidateFamilyDevelopmentAuthorized=false`、
@@ -212,8 +229,9 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
 3. 保持 D0 exact-cell 用户确认及零容忍门禁；不得把该确认泛化到其他现金事实，
    也不得通过容差掩盖未来不确定项。A1–A6、B1–B4 已固化，无业务口径变化时
    不得重复询问用户。
-4. 下一次组合模型评价必须使用未参与本轮选择的 later-origin/final holdout；
-   未获单独授权前继续 sealed，不得在当前 2022 development 窗口继续调参。
+4. 下一次组合或作品模型选模必须使用未参与 v0.5/v0.7 设计的 later origin 或
+   final holdout；未获单独授权前继续 sealed，不得在当前 2022 development
+   窗口继续调参。
 5. 只接收 cutoff 时真实可得、可审计、可版本化、exact-work 的分成预测信号：
    sales historical availability、合同可售状态、渠道状态；commitment 不得作为
    分成预测信号。
@@ -237,12 +255,14 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
   additive Holt–Winters ensemble、六个简单基线、三个全局 challenger、
   rolling conformal、MinT、risk–coverage、业务损失和 FVA；D1
   `revenueShareFact`、`availabilitySnapshot`、signal-gap ledger、来源字段审计
-  和 digest-bound portable signal input bundle/CLI。
+  和 digest-bound portable signal input bundle/CLI；v0.7 三个低复杂度历史
+  baseline 与分层 recent-origin nested selector。
 - 已验证：权威 7,851-case 与 25-origin/56,856-case 次级 development 复验；
   作品级 challenger 均失败并安全回退 v0.3；portfolio v0.5 development
   backtest 通过；D1 synthetic contract 通过，冻结/逐月合规 snapshot 覆盖已
-  聚合量化为 0；portable CLI 只输出聚合覆盖且拒绝摘要/行数漂移和当前状态
-  回填，但完整 M2 成熟度未通过。
+  聚合量化为 0；v0.7 虽将逐月 WAPE 改善至 0.59576421，仍被绝对质量、
+  segment、available-at 与 independent holdout 门禁拒绝；portable CLI 只输出
+  聚合覆盖且拒绝摘要/行数漂移和当前状态回填，但完整 M2 成熟度未通过。
 - 已退役：120 部人工评估的 current 依赖；不重建、不重放。
 - 下一输入：带 economic、posting、available-at、来源版本、lineage 与完整性
   权威的作品层历史分成 snapshot。通过 portable bundle 导入；不存在时保持阻断，

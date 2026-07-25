@@ -21,18 +21,20 @@
   formal 均未授权。v0.6 已把正式目标迁移为纯分成收入并隔离全部买断；
   portfolio development backtest WAPE 仍为 11.68%，作品级和完整 M2
   成熟度仍未通过。当前冻结/逐月合规历史 snapshot 覆盖均为 0；公开
-  digest-bound portable signal intake 已实现，但没有真实历史权威时不得训练
-  新作品级模型。
+  digest-bound portable signal intake 已实现。v0.7 真实账单历史状态校准把
+  逐月 WAPE 改善至 59.58%，但仍被绝对质量、segment、available-at 和独立
+  holdout 门禁拒绝，不构成候选升级。
 
 当前导航：
 
-- `docs/analysis/m2-v2/M2-v2-current-state-index-v0.12.md`
+- `docs/analysis/m2-v2/M2-v2-current-state-index-v0.13.md`
 - `docs/analysis/m2-v2/M2-repository-code-convergence-and-portable-development-audit-v0.4.md`
 - `docs/analysis/m2-current/M2-current-maturity-reconstruction-v0.6.md`
 - `docs/analysis/m2-current/M2-sales-share-only-target-decision-v0.1.md`
 - `docs/analysis/m2-current/M2-sales-share-model-full-audit-and-research-v0.1.md`
 - `docs/analysis/m2-current/M2-current-as-of-source-inventory-v0.1.json`
 - `docs/analysis/m2-current/M2-current-signal-input-portable-intake-v0.1.md`
+- `docs/analysis/m2-current/M2-current-real-bill-recalibration-v0.1.md`
 - `AGENTS.md`
 
 历史 PR、B0–B8、C1–C3 和旧授权记录保留在 `docs/analysis/` 中，只用于审计追溯，不是当前开发入口。
@@ -166,7 +168,7 @@ M2 的正式预测对象是未来分成收入现金。正式边界为：
 | 历史全库 / Top10 旧 cash economic scope | 73.96% / 75.94% |
 | v0.6 冻结 / 逐月目标变化 case | 0 / 0 |
 | v0.6 冻结 / 逐月隔离买断 case 求和 | 4,800,850.15 / 11,578,795.00 |
-| v0.6 冻结 / 逐月分类不确定现金占比 | 0.0002728% / 0.0002865% |
+| v0.6 冻结 / 逐月分类不确定现金占比 | 0 / 0 |
 | D1 冻结 / 逐月合规 snapshot 覆盖 | 0 / 0 |
 | 已审计 / 可直接使用的历史信号来源角色 | 4 / 0 |
 | B4 WAPE / bias | 0.55648454 / 0.08911106 |
@@ -176,6 +178,8 @@ M2 的正式预测对象是未来分成收入现金。正式边界为：
 | 5-origin 稀疏 origin×horizon 组合 WAPE | 0.08397490 |
 | 25-origin mature cases | 56,856 |
 | monthly baseline champion WAPE / bias | 0.66335800 / -0.30206120 |
+| v0.7 history-regime WAPE / bias | 0.59576421 / -0.21126360 |
+| v0.7 dense / intermittent / dormant WAPE | 0.39900895 / 0.82897090 / 1.00725629 |
 | monthly baseline 组合 WAPE / bias | 0.32846914 / -0.30206335 |
 | v0.5 portfolio development WAPE / bias | 0.11681934 / -0.04876300 |
 | v0.5 origin-bootstrap WAPE 95% CI | [0.08500048, 0.13717581] |
@@ -197,9 +201,15 @@ development cell 上 WAPE 为 11.68%，较同窗 seasonal naive 改善 44.94%。
 按 origin 聚类 bootstrap 的 WAPE 95% CI 为 8.50%–13.72%，bias 95% CI 为
 -9.94%–2.15%。
 这证明组合预算层已有高准确度 development backtest，但不是独立 holdout：
-作品级 WAPE 仍为 50.56%，极小 target-classification uncertainty 尚未穷尽，
+作品级 WAPE 仍为 50.56%，v0.7 也未通过作品级绝对质量和 segment 门禁，
 final holdout 仍 sealed，所以当前状态是
 `SALES_SHARE_TARGET_MIGRATED_PORTFOLIO_DEVELOPMENT_PASS_WORK_LEVEL_BLOCKED`。
+
+v0.7 在六个原有基线上增加 recent-mean-3、seasonal-median-2 和 EWMA(0.5)，
+只使用最近 6 个更早且已成熟 origin，并按 segment、horizon 和最近 12 个月
+出现频次分层选择。它对旧逐月 champion 的 WAPE 相对改善 10.19%，但仍是
+posthoc 同窗诊断；历史特征 `availableAt` 不可证明，也没有独立 holdout。
+结论固定为 `REJECT_KEEP_V0_3_WORK_LEVEL_FALLBACK`。
 
 买断隔离没有改变当前冻结标签或 WAPE：现有 authority 中没有进入旧目标的
 cutoff-linked 买断/其他承诺现金，旧标签事实上已经等于分成标签。本次迁移的
@@ -222,8 +232,10 @@ cutoff-linked 买断/其他承诺现金，旧标签事实上已经等于分成�
    - 三个全局模型和 MinT 均失败；v0.4 在五个 outer origin 回退 exact v0.3；
    - 不得把 fallback 表述为候选升级、可打开 holdout 或可发布。
    - v0.5 portfolio development backtest 通过，但完整 M2 成熟度未通过。
+   - v0.7 真实账单校准有改善但仍失败；参数与失败结论已冻结，不得同窗继续调参。
 4. **下一次组合验证**
-   - 只能使用未参与本轮模型选择的 later-origin 或单独授权 final holdout；
+   - 下一次组合或作品模型选模只能使用未参与 v0.5/v0.7 设计的 later-origin
+     或单独授权 final holdout；
    - 禁止继续在同一 2022 development 窗口调参后宣称独立验证。
 5. **补充可审计输入（仅真实材料存在时）**
    - exact-work sales historical availability、合同可售和渠道状态 snapshot；
