@@ -1,0 +1,146 @@
+{
+  "schema": "m2.current.canonical_channel_development.v0.1",
+  "target": "future_sales_share_cash",
+  "candidateId": "M2-current-canonical-channel-hierarchical-v0.9",
+  "authorization": {
+    "source": "user_instruction_2026-07-26",
+    "scope": "canonical_channel_governance_and_bounded_development_challenger",
+    "newCandidateFamilyDevelopment": true,
+    "developmentModelFitting": true,
+    "nestedDevelopmentSelection": true,
+    "laterOriginValidation": false,
+    "finalHoldout": false,
+    "embargoShadow": false,
+    "deferredLabels": false,
+    "provider": false,
+    "database": false,
+    "canary": false,
+    "release": false,
+    "m3Formal": false
+  },
+  "channelMaster": {
+    "sheetName": "渠道补全表",
+    "headerRow": 4,
+    "expectedRawPairCount": 133,
+    "expectedCanonicalChannelCount": 74,
+    "uidNamespace": "m2-current-channel-uid-v0.1",
+    "requiredAuditStatus": "已确认",
+    "columnPrefixes": {
+      "rawChannelId": "原始渠道ID",
+      "rawChannelName": "原始文学库渠道名称",
+      "canonicalChannelName": "统一渠道名称",
+      "channelRole": "渠道类型/角色",
+      "revenueMode": "收入模式",
+      "contentForm": "内容形态",
+      "auditStatus": "审核状态",
+      "effectiveMonth": "生效年月"
+    },
+    "enumMappings": {
+      "channelRole": {
+        "终端销售平台": "terminal_sales_platform",
+        "版权/代理合作方": "rights_or_agency_partner",
+        "制作合作方": "production_partner",
+        "聚合/分发渠道": "aggregation_or_distribution_channel"
+      },
+      "revenueMode": {
+        "会员订阅": "membership_subscription",
+        "单购/点播": "single_purchase_or_on_demand",
+        "广告/免费分成": "advertising_or_free_share",
+        "版权/授权结算": "rights_or_license_settlement"
+      },
+      "contentForm": {
+        "有声书/音频": "audio"
+      },
+      "auditStatus": {
+        "已确认": "confirmed"
+      }
+    }
+  },
+  "dataContract": {
+    "cashCategory": "sales_share",
+    "latestCompleteMonth": "2026-04",
+    "excludedIncompleteMonths": [
+      "2026-05"
+    ],
+    "denseDevelopment": {
+      "firstOrigin": "2020-12",
+      "lastOrigin": "2022-12",
+      "originCount": 25,
+      "horizons": [
+        3,
+        6,
+        12
+      ],
+      "labelAvailableThrough": "2023-06"
+    },
+    "frozenMachineRouteAudit": {
+      "workCount": 824,
+      "caseCount": 7851
+    },
+    "currentHumanAuthorityServed": {
+      "workCount": 758,
+      "caseCount": 7083
+    }
+  },
+  "featurePolicy": {
+    "predictionFeatures": [
+      "work_sales_share_history_as_of_origin",
+      "canonical_channel_uid",
+      "channel_role",
+      "revenue_mode",
+      "observed_sales_age_months"
+    ],
+    "reportingOnlyPostHocAttributes": [
+      "third_level_category",
+      "current_rating"
+    ],
+    "unavailableFeatures": [
+      "verified_historical_launch_month",
+      "historical_channel_status_snapshot",
+      "historical_contract_saleable_status_snapshot",
+      "single_purchase_net_unit_price"
+    ],
+    "currentStateBackfillAllowed": false,
+    "commitmentSignalAllowed": false,
+    "buyoutCashAllowed": false
+  },
+  "model": {
+    "eligibleChannelRole": "terminal_sales_platform",
+    "eligibleRevenueModes": [
+      "membership_subscription",
+      "advertising_or_free_share"
+    ],
+    "singlePurchasePolicy": "fallback_until_auditable_net_unit_price_exists",
+    "nonTerminalPolicy": "fallback",
+    "weights": [
+      0,
+      0.25,
+      0.5,
+      0.75,
+      1
+    ],
+    "minimumEarlierRows": 80,
+    "minimumRelativeWapeImprovement": 0.01,
+    "maximumTrainingAbsoluteBias": 0.15,
+    "seasonalLookbackYears": 2,
+    "trendDamping": 0.5
+  },
+  "gates": {
+    "mappingCoverageRequired": 1,
+    "rowConservationRequired": true,
+    "amountConservationTolerance": 0.000001,
+    "developmentWapeMaximum": 0.3,
+    "overallAbsoluteBiasMaximum": 0.1,
+    "minimumNestedRelativeWapeImprovement": 0.01,
+    "independentValidationRequiredForPromotion": true
+  },
+  "privateOutputs": {
+    "directory": "data/private-output/m2-current-canonical-channel",
+    "channelHistory": "M2-current-canonical-channel-histories-private-v0.1.ndjson",
+    "denseCases": "M2-current-canonical-channel-dense-cases-private-v0.1.ndjson",
+    "frozenCases": "M2-current-canonical-channel-frozen-cases-private-v0.1.ndjson",
+    "manifest": "M2-current-canonical-channel-manifest-private-v0.1.json"
+  },
+  "publicOutput": "docs/analysis/m2-current/M2-current-canonical-channel-development-v0.1.json",
+  "publicReport": "docs/analysis/m2-current/M2-current-canonical-channel-development-v0.1.md"
+}

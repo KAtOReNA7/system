@@ -152,6 +152,39 @@
       "authorization": "NEW_ALGORITHM_AUTHORIZATION_REQUIRED"
     },
     {
+      "id": "m2-current-canonical-channel",
+      "description": "Run the user-authorized canonical-channel mapping audit and bounded M2 development challenger without opening final holdout or release capabilities.",
+      "requiredTools": [],
+      "requiredPrivateArtifacts": [
+        {
+          "role": "user-reviewed-channel-master",
+          "kind": "file",
+          "path": "data/private-output/outputs/channel-governance-20260726/M2-渠道统一与类型人工补全表-v0.2.xlsx"
+        },
+        {
+          "role": "formal-model-input-cache",
+          "kind": "file",
+          "path": "data/private-output/m2-formal-execution/m2-formal-model-input-cache-v1.pkl"
+        },
+        {
+          "role": "dense-development-cases",
+          "kind": "file",
+          "path": "data/private-output/m2-current-dense/M2-current-dense-cases-private-v0.1.ndjson"
+        },
+        {
+          "role": "frozen-sales-share-targets",
+          "kind": "file",
+          "path": "data/private-output/m2-current-dense/M2-current-sales-share-frozen-cases-private-v0.1.ndjson"
+        }
+      ],
+      "canonicalValidationCommands": [
+        "npm run diagnose:m2:channel-governance",
+        "npm run develop:m2:current:canonical-channel"
+      ],
+      "recovery": "Restore the capability-scoped private inputs from an authorized machine. Missing channel artifacts block only this local development capability; public diagnostics and application startup remain available.",
+      "authorization": "USER_AUTHORIZED_BOUNDED_DEVELOPMENT_2026_07_26"
+    },
+    {
       "id": "m3-private-materials",
       "description": "Bootstrap the ignored M3 completion workflow after 3 to 5 user-provided private materials are present.",
       "requiredTools": [],

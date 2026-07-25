@@ -266,7 +266,7 @@ function buildEvaluationPolicy(value, schema) {
     "evaluation_policy_next_development_readiness"
   );
   const expectedReadiness = schema === "m2.current.config.v0.6"
-    ? "CANONICAL_CHANNEL_AND_PLATFORM_TYPE_MASTER_REQUIRED"
+    ? "HISTORICAL_CHANNEL_STATE_AND_SINGLE_PURCHASE_UNIT_ECONOMICS_REQUIRED"
     : schema === "m2.current.config.v0.5"
     ? "PORTFOLIO_INDEPENDENT_VALIDATION_AND_WORK_LEVEL_SIGNAL_REQUIRED"
     : schema === "m2.current.config.v0.4"

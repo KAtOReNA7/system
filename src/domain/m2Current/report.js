@@ -15,7 +15,7 @@ export function buildM2CurrentPublicDiagnosticReport(
   ].includes(config.schema);
   return {
     schema: config.schema === "m2.current.config.v0.6"
-      ? "m2.current.public_diagnostic_report.v0.9"
+      ? "m2.current.public_diagnostic_report.v0.10"
       : config.schema === "m2.current.config.v0.5"
       ? "m2.current.public_diagnostic_report.v0.6"
       : config.schema === "m2.current.config.v0.4"
@@ -36,14 +36,14 @@ export function buildM2CurrentPublicDiagnosticReport(
         ].includes(config.schema),
       priorInstructionAssessment:
         config.schema === "m2.current.config.v0.6"
-          ? "buyout_isolation_was_directionally_correct; history-regime and manual-channel challengers both failed absolute work-level quality; canonical channel and finance-reviewed cash partition are now prerequisites"
+          ? "buyout_isolation_and_canonical_channel_governance_were_directionally_correct; v0.7_v0.8_and_v0.9_challengers_failed_absolute_work_level_quality; historical_channel_state_and_single_purchase_unit_economics_are_now_prerequisites"
           : config.schema === "m2.current.config.v0.5"
           ? "directionally_correct_evaluation_but_over_specified_algorithm_families_before_signal_and_decision_grain"
           : "not_reassessed",
       retiredSequence:
         "human_numeric_baseline_and_120_work_business_sample_skipped",
       nextPriority: config.schema === "m2.current.config.v0.6"
-        ? "build canonical channel and finance-reviewed sales-share/buyout masters, then materialize versioned historical as-of signals before unseen-origin evaluation"
+        ? "materialize_historical_channel_status_and_single_purchase_unit_economics_then_preregister_unseen_later_origin_validation"
         : config.schema === "m2.current.config.v0.5"
         ? "independent_portfolio_validation_then_auditable_work_level_signals"
         : config.schema === "m2.current.config.v0.4"
@@ -78,7 +78,7 @@ export function buildM2CurrentPublicDiagnosticReport(
       "use_risk_coverage_business_loss_and_FVA_before_any_automation_claim",
       "keep_final_holdout_sealed_until_separate_authorization",
       config.schema === "m2.current.config.v0.6"
-        ? "keep_manual_channel_rule_as_comparator_until_canonical_channel_and_finance_reviewed_cash_partition_exist"
+        ? "keep_v0_9_canonical_channel_challenger_rejected_until_as_of_channel_status_unit_economics_and_unseen_origin_validation_exist"
         : "keep_channel_identity_auditable",
       "use_humans_only_for_post_gate_quality_assurance"
     ]
@@ -169,6 +169,26 @@ function compactEvidence(evidence) {
         gates: evidence.manualChannelBacktest.gates,
         decision: evidence.manualChannelBacktest.decision,
         boundaries: evidence.manualChannelBacktest.boundaries
+      }
+      : null,
+    canonicalChannelDevelopment: evidence.canonicalChannelDevelopment
+      ? {
+        schema: evidence.canonicalChannelDevelopment.schema,
+        candidateId: evidence.canonicalChannelDevelopment.candidateId,
+        target: evidence.canonicalChannelDevelopment.target,
+        status: evidence.canonicalChannelDevelopment.status,
+        dataQuality: evidence.canonicalChannelDevelopment.dataQuality,
+        featureBoundary:
+          evidence.canonicalChannelDevelopment.featureBoundary,
+        model: evidence.canonicalChannelDevelopment.model,
+        dense25OriginDiagnostic:
+          evidence.canonicalChannelDevelopment.dense25OriginDiagnostic,
+        frozenCurrentServedDiagnostic:
+          evidence.canonicalChannelDevelopment
+            .frozenCurrentServedDiagnostic,
+        gates: evidence.canonicalChannelDevelopment.gates,
+        decision: evidence.canonicalChannelDevelopment.decision,
+        boundaries: evidence.canonicalChannelDevelopment.boundaries
       }
       : null,
     automatedEvaluation: {

@@ -1,0 +1,59 @@
+{
+  "schema": "m2.current.authority_source_audit.v0.2",
+  "date": "2026-07-26",
+  "decisionStatus": "not_for_formal_decision",
+  "supersedesForCurrentDevelopmentAuthorization": "docs/analysis/m2-current/M2-current-authority-source-audit-v0.1.json",
+  "authorizationEvent": {
+    "source": "user_instruction_2026-07-26",
+    "scope": "continue_the_current_canonical_channel_development_plan_with_corresponding_authorization",
+    "newCandidateFamilyDevelopmentAtExecution": true,
+    "developmentModelFittingAtExecution": true,
+    "nestedDevelopmentSelectionAtExecution": true,
+    "laterOriginValidationAtExecution": false,
+    "finalHoldoutAtExecution": false,
+    "providerAtExecution": false,
+    "databaseAtExecution": false,
+    "releaseAtExecution": false,
+    "executionCompleted": true
+  },
+  "currentAuthorityAfterExecution": {
+    "developmentReplayAuthorized": true,
+    "newCandidateFamilyDevelopmentAuthorized": false,
+    "candidateSelectionAuthorized": false,
+    "modelTrainingAuthorized": false,
+    "laterOriginValidationAuthorized": false,
+    "finalHoldoutAuthorized": false,
+    "providerAuthorized": false,
+    "databaseAuthorized": false,
+    "releaseAuthorized": false
+  },
+  "authorityAvailability": {
+    "cashCategoryAuthority": "user_reviewed_total_sales_share_and_buyout_ledger_membership",
+    "canonicalChannelIdentityAuthority": "user_reviewed_channel_master",
+    "canonicalChannelRawPairCoverage": 1,
+    "canonicalChannelAttributeConflictCount": 0,
+    "historicalChannelAttributeEffectiveMonthCoverage": 0,
+    "historicalChannelStatusSnapshotCoverage": 0,
+    "historicalContractSaleableSnapshotCoverage": 0,
+    "singlePurchaseNetUnitPriceCoverage": 0,
+    "verifiedHistoricalLaunchMonthCoverage": 0
+  },
+  "executionResult": {
+    "candidateId": "M2-current-canonical-channel-hierarchical-v0.9",
+    "status": "CANONICAL_CHANNEL_DEVELOPMENT_FAIL_KEEP_V0_3",
+    "dense25OriginBaselineWape": 0.4627419767924767,
+    "dense25OriginCandidateWape": 0.46506585104004866,
+    "frozenServedV03Wape": 0.4907589423671863,
+    "frozenServedCandidateWape": 0.49070110290959057,
+    "promotionDecision": "REJECT_KEEP_V0_3_WORK_LEVEL_FALLBACK",
+    "finalHoldoutOpened": false
+  },
+  "privacy": {
+    "aggregateOnly": true,
+    "targetIdentifierIncluded": false,
+    "rawChannelIdentityIncluded": false,
+    "controlledFilePathsIncluded": false,
+    "rawRowsIncluded": false,
+    "requiredForPublicDevelopment": false
+  }
+}

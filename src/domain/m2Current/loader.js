@@ -30,6 +30,10 @@ export function loadM2CurrentPublicEvidence(sources, config) {
       sources?.manualChannelBacktest,
       "m2.current.manual_channel_backtest.public.v0.1"
     );
+    requireSchema(
+      sources?.canonicalChannelDevelopment,
+      "m2.current.canonical_channel_development.public.v0.1"
+    );
   }
   const currentCandidateSchema = config.schema === "m2.current.config.v0.6"
     ? "m2.current.sales_share_candidate.public.v0.6"
@@ -279,6 +283,44 @@ export function loadM2CurrentPublicEvidence(sources, config) {
     ) {
       throw new Error("m2_current_manual_channel_backtest_evidence_drift");
     }
+    const channelDevelopment = sources.canonicalChannelDevelopment;
+    if (
+      channelDevelopment.target !== "future_sales_share_cash"
+      || channelDevelopment.status
+        !== "CANONICAL_CHANNEL_DEVELOPMENT_FAIL_KEEP_V0_3"
+      || Number(
+        channelDevelopment.dataQuality.channelMaster.rawPairCount
+      ) !== 133
+      || Number(
+        channelDevelopment.dataQuality.channelMaster
+          .canonicalChannelCount
+      ) !== 74
+      || channelDevelopment.dataQuality.mapping.mappingCoverage !== 1
+      || channelDevelopment.dataQuality.mapping.rowConserved !== true
+      || channelDevelopment.dataQuality.mapping.amountConserved !== true
+      || Number(
+        channelDevelopment.frozenCurrentServedDiagnostic
+          .machineRouteAuditCaseCount
+      ) !== contract.population.modelCaseCount
+      || Number(
+        channelDevelopment.frozenCurrentServedDiagnostic.servedCaseCount
+      ) !== candidateCaseCount
+      || Number(
+        channelDevelopment.frozenCurrentServedDiagnostic.servedWorkCount
+      ) !== candidateWorkCount
+      || channelDevelopment.decision.promotionDecision
+        !== "REJECT_KEEP_V0_3_WORK_LEVEL_FALLBACK"
+      || channelDevelopment.boundaries.aggregateOnly !== true
+      || channelDevelopment.boundaries.identifiersPresent !== false
+      || channelDevelopment.boundaries.rawChannelIdentitiesPresent !== false
+      || channelDevelopment.boundaries.finalHoldoutOpened !== false
+      || channelDevelopment.boundaries.deferredLabelsOpened !== false
+      || channelDevelopment.boundaries.releaseAuthorized !== false
+    ) {
+      throw new Error(
+        "m2_current_canonical_channel_development_evidence_drift"
+      );
+    }
   }
   const actualHorizons = Object.keys(sources.development.metrics.byHorizon)
     .map(Number)
@@ -492,6 +534,10 @@ export function loadM2CurrentPublicEvidence(sources, config) {
     manualChannelBacktest: config.schema === "m2.current.config.v0.6"
       ? sources.manualChannelBacktest
       : null,
+    canonicalChannelDevelopment:
+      config.schema === "m2.current.config.v0.6"
+        ? sources.canonicalChannelDevelopment
+        : null,
     retiredBusinessSample:
       [
         "m2.current.config.v0.3",

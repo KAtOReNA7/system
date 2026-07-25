@@ -1,0 +1,320 @@
+{
+  "schema": "m2.current.canonical_channel_development.public.v0.1",
+  "version": "M2-current-canonical-channel-development-v0.1",
+  "candidateId": "M2-current-canonical-channel-hierarchical-v0.9",
+  "target": "future_sales_share_cash",
+  "decisionStatus": "not_for_formal_decision",
+  "status": "CANONICAL_CHANNEL_DEVELOPMENT_FAIL_KEEP_V0_3",
+  "authorization": {
+    "source": "user_instruction_2026-07-26",
+    "newCandidateFamilyDevelopment": true,
+    "developmentModelFitting": true,
+    "nestedDevelopmentSelection": true,
+    "laterOriginValidation": false,
+    "finalHoldout": false,
+    "release": false
+  },
+  "dataQuality": {
+    "intendedGrain": "standard_work_x_month_x_canonical_channel_x_role_x_revenue_mode",
+    "channelMaster": {
+      "rawPairCount": 133,
+      "canonicalChannelCount": 74,
+      "confirmedRowCount": 133,
+      "inconsistentCanonicalGroupCount": 0,
+      "userMaintainedChannelUid": false,
+      "effectiveMonthCoverage": 0,
+      "roleCounts": {
+        "aggregation_or_distribution_channel": 2,
+        "production_partner": 5,
+        "rights_or_agency_partner": 38,
+        "terminal_sales_platform": 88
+      },
+      "revenueModeCounts": {
+        "advertising_or_free_share": 6,
+        "membership_subscription": 77,
+        "rights_or_license_settlement": 39,
+        "single_purchase_or_on_demand": 11
+      }
+    },
+    "mapping": {
+      "salesShareFactCount": 190663,
+      "salesShareRawPairCount": 85,
+      "mappedFactCount": 190663,
+      "unmappedFactCount": 0,
+      "completeFactCount": 190660,
+      "completeAmount": 87624963.9132,
+      "canonicalChannelsUsedBySalesShare": 39,
+      "rowConserved": true,
+      "amountConserved": true,
+      "mappingCoverage": 1
+    },
+    "panel": {
+      "grain": "standard_work_x_bill_month_x_canonical_channel_x_role_x_mode",
+      "rowCount": 180606,
+      "amount": 87624963.9132,
+      "latestCompleteMonth": "2026-04",
+      "incompleteMonthsExcluded": [
+        "2026-05"
+      ],
+      "roleAmountShares": {
+        "aggregation_or_distribution_channel": 0.000171273337297651,
+        "production_partner": 0.0017971983036249443,
+        "rights_or_agency_partner": 0.00019482384057710665,
+        "terminal_sales_platform": 0.9978367045185003
+      },
+      "revenueModeAmountShares": {
+        "advertising_or_free_share": 0.10397302893185621,
+        "membership_subscription": 0.7946607144691843,
+        "rights_or_license_settlement": 0.00019482384057710665,
+        "single_purchase_or_on_demand": 0.10117143275838242
+      }
+    },
+    "leakage": {
+      "historyThroughOriginOnly": true,
+      "currentStateBackfillUsed": false,
+      "labelsAfter2023_06Used": false,
+      "finalHoldoutOpened": false,
+      "postHocStaticChannelAttributesUsed": true
+    }
+  },
+  "featureBoundary": {
+    "thirdLevelCategoryPredictionFeatureUsed": false,
+    "currentRatingPredictionFeatureUsed": false,
+    "verifiedHistoricalLaunchMonthAvailable": false,
+    "observedSalesAgeProxyUsed": true,
+    "singlePurchaseNetUnitPriceAvailable": false,
+    "singlePurchaseUnitConversionUsed": false,
+    "historicalChannelStatusSnapshotAvailable": false,
+    "postHocStaticChannelAttributesUsed": true,
+    "currentStateBackfillUsed": false
+  },
+  "model": {
+    "structure": "nested_blend_of_exact_fallback_and_canonical_terminal_platform_curves",
+    "membershipAndAdShareBranch": "nonnegative_seasonal_curve_with_damped_recent_trend",
+    "singlePurchaseBranch": "blocked_until_auditable_net_unit_price_exists",
+    "nonTerminalBranch": "fallback",
+    "reportingOnlyPostHocAttributes": [
+      "third_level_category",
+      "current_rating"
+    ],
+    "predictionUsesPostHocCategoryOrRating": false,
+    "predictionUsesPostHocStaticChannelAttributes": true,
+    "predictionUsesBuyoutCash": false,
+    "commitmentSignalUsed": false
+  },
+  "dense25OriginDiagnostic": {
+    "role": "secondary_development_diagnostic",
+    "originCount": 25,
+    "caseCount": 44301,
+    "baseline": {
+      "caseCount": 44301,
+      "wape": 0.4627419767924767,
+      "signedBias": 0.06837072072083099,
+      "zeroImputationUsed": false
+    },
+    "candidate": {
+      "caseCount": 44301,
+      "wape": 0.46506585104004866,
+      "signedBias": 0.0684373580079398,
+      "zeroImputationUsed": false
+    },
+    "relativeWape": 0.005021965510196402,
+    "byHorizon": {
+      "3": {
+        "caseCount": 16280,
+        "wape": 0.49665222603127973,
+        "signedBias": 0.06587794002216907,
+        "zeroImputationUsed": false
+      },
+      "6": {
+        "caseCount": 16280,
+        "wape": 0.4733470617416836,
+        "signedBias": 0.07856347787155066,
+        "zeroImputationUsed": false
+      },
+      "12": {
+        "caseCount": 11741,
+        "wape": 0.44779219107512175,
+        "signedBias": 0.06219251241112191,
+        "zeroImputationUsed": false
+      }
+    },
+    "bySegment": {
+      "dense": {
+        "caseCount": 21354,
+        "wape": 0.46867764862085703,
+        "signedBias": 0.16993740080243813,
+        "zeroImputationUsed": false
+      },
+      "dormant": {
+        "caseCount": 777,
+        "wape": 1.9180266497132645,
+        "signedBias": 0.04782429434449093,
+        "zeroImputationUsed": false
+      },
+      "intermittent": {
+        "caseCount": 22170,
+        "wape": 0.4600647056151227,
+        "signedBias": -0.05588364193499065,
+        "zeroImputationUsed": false
+      }
+    },
+    "byDominantRevenueMode": {
+      "advertising_or_free_share": {
+        "caseCount": 1534,
+        "wape": 0.52912986439366,
+        "signedBias": 0.2718044277287673,
+        "zeroImputationUsed": false
+      },
+      "membership_subscription": {
+        "caseCount": 41663,
+        "wape": 0.4579868588046037,
+        "signedBias": 0.04795642707734604,
+        "zeroImputationUsed": false
+      },
+      "rights_or_license_settlement": {
+        "caseCount": 1104,
+        "wape": 2.3462162344891495,
+        "signedBias": 2.2698573082682874,
+        "zeroImputationUsed": false
+      }
+    },
+    "selectedChannelCaseCount": 20135,
+    "selectedChannelCaseShare": 0.4545044129929347,
+    "sameOrLaterOuterTruthRead": false,
+    "postHocFeatureRead": true
+  },
+  "frozenCurrentServedDiagnostic": {
+    "role": "nested_comparator_on_current_human_authority_served_population",
+    "machineRouteAuditCaseCount": 7851,
+    "servedWorkCount": 758,
+    "servedCaseCount": 7083,
+    "baseCandidate": "M2-current-occurrence-amount-calibration-v0.3",
+    "baseline": {
+      "caseCount": 7083,
+      "wape": 0.4907589423671863,
+      "signedBias": 0.07378106681783611,
+      "zeroImputationUsed": false
+    },
+    "candidate": {
+      "caseCount": 7083,
+      "wape": 0.49070110290959057,
+      "signedBias": 0.07705278282032949,
+      "zeroImputationUsed": false
+    },
+    "relativeWape": -0.00011785716489798315,
+    "byHorizon": {
+      "3": {
+        "caseCount": 2202,
+        "wape": 0.39404067255587283,
+        "signedBias": 0.02909769684005392,
+        "zeroImputationUsed": false
+      },
+      "6": {
+        "caseCount": 2202,
+        "wape": 0.4139511148183017,
+        "signedBias": 0.02783382119009738,
+        "zeroImputationUsed": false
+      },
+      "12": {
+        "caseCount": 1444,
+        "wape": 0.429721324149866,
+        "signedBias": 0.07379469228799242,
+        "zeroImputationUsed": false
+      },
+      "18": {
+        "caseCount": 864,
+        "wape": 0.537341432596619,
+        "signedBias": 0.1294277746745055,
+        "zeroImputationUsed": false
+      },
+      "24": {
+        "caseCount": 371,
+        "wape": 0.7449432886253742,
+        "signedBias": 0.10847505585430049,
+        "zeroImputationUsed": false
+      }
+    },
+    "bySegment": {
+      "dense": {
+        "caseCount": 5174,
+        "wape": 0.4586699558046861,
+        "signedBias": 0.08936356057748684,
+        "zeroImputationUsed": false
+      },
+      "dormant": {
+        "caseCount": 203,
+        "wape": 1.0185414365315342,
+        "signedBias": -0.9717312886662087,
+        "zeroImputationUsed": false
+      },
+      "intermittent": {
+        "caseCount": 1706,
+        "wape": 0.9632167529016884,
+        "signedBias": -0.10112027640164634,
+        "zeroImputationUsed": false
+      }
+    },
+    "byDominantRevenueMode": {
+      "advertising_or_free_share": {
+        "caseCount": 139,
+        "wape": 0.6205371972038674,
+        "signedBias": -0.027610266315105977,
+        "zeroImputationUsed": false
+      },
+      "membership_subscription": {
+        "caseCount": 6640,
+        "wape": 0.4867605804418079,
+        "signedBias": 0.0799520159820517,
+        "zeroImputationUsed": false
+      },
+      "rights_or_license_settlement": {
+        "caseCount": 304,
+        "wape": 1.3465020887633488,
+        "signedBias": -0.37295684103052434,
+        "zeroImputationUsed": false
+      }
+    },
+    "selectedChannelCaseCount": 416,
+    "selectedChannelCaseShare": 0.05873217563179444,
+    "sameOrLaterOuterTruthRead": false,
+    "postHocFeatureRead": true,
+    "populationMoved": true,
+    "populationChangeReason": "human_reviewed_buyout_workbook_membership"
+  },
+  "gates": {
+    "channelMasterComplete": true,
+    "canonicalAttributesConsistent": true,
+    "mappingCoveragePassed": true,
+    "rowConservationPassed": true,
+    "amountConservationPassed": true,
+    "denseDevelopmentWapePassed": false,
+    "denseDevelopmentBiasPassed": true,
+    "frozenServedWapePassed": false,
+    "frozenServedBiasPassed": true,
+    "denseNestedImprovementPassed": false,
+    "frozenNestedImprovementPassed": false,
+    "historicalLaunchMonthPassed": false,
+    "singlePurchaseUnitEconomicsPassed": false,
+    "historicalChannelStatusPassed": false,
+    "independentValidationPassed": false
+  },
+  "decision": {
+    "promotionPassed": false,
+    "promotionDecision": "REJECT_KEEP_V0_3_WORK_LEVEL_FALLBACK",
+    "reason": "absolute_quality_or_required_as_of_feature_gates_failed",
+    "nextAction": "collect_historical_channel_status_and_single_purchase_unit_economics_then_preregister_unseen_later_origin_validation"
+  },
+  "boundaries": {
+    "aggregateOnly": true,
+    "identifiersPresent": false,
+    "rawChannelIdentitiesPresent": false,
+    "privateRowsPresent": false,
+    "providerCalled": false,
+    "databaseConnected": false,
+    "finalHoldoutOpened": false,
+    "embargoShadowOpened": false,
+    "deferredLabelsOpened": false,
+    "releaseAuthorized": false
+  }
+}

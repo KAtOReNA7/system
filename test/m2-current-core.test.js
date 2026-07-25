@@ -893,11 +893,11 @@ test("public diagnostic CLI is reproducible and aggregate-only", () => {
   );
   const report = readJson(salesShareConfig.publicOutput);
   const authorityAudit = readJson(
-    "docs/analysis/m2-current/M2-current-authority-source-audit-v0.1.json"
+    "docs/analysis/m2-current/M2-current-authority-source-audit-v0.2.json"
   );
   const text = JSON.stringify(report);
 
-  assert.equal(report.schema, "m2.current.public_diagnostic_report.v0.9");
+  assert.equal(report.schema, "m2.current.public_diagnostic_report.v0.10");
   assert.equal(report.directionAssessment.engineeringSequenceDrifted, true);
   assert.equal(
     report.directionAssessment.retiredSequence,
@@ -929,23 +929,39 @@ test("public diagnostic CLI is reproducible and aggregate-only", () => {
   assert.equal(report.gate.candidateSelectionAuthorized, false);
   assert.equal(report.gate.modelTrainingAuthorized, false);
   assert.equal(
-    authorityAudit.governance.developmentReplayAuthorized,
+    authorityAudit.currentAuthorityAfterExecution.developmentReplayAuthorized,
     report.gate.developmentReplayAuthorized
   );
   assert.equal(
-    authorityAudit.governance.newCandidateFamilyDevelopmentAuthorized,
+    authorityAudit.currentAuthorityAfterExecution
+      .newCandidateFamilyDevelopmentAuthorized,
     report.gate.newCandidateFamilyDevelopmentAuthorized
   );
   assert.equal(
-    authorityAudit.governance.candidateSelectionAuthorized,
+    authorityAudit.currentAuthorityAfterExecution
+      .candidateSelectionAuthorized,
     report.gate.candidateSelectionAuthorized
   );
   assert.equal(
-    authorityAudit.governance.modelTrainingAuthorized,
+    authorityAudit.currentAuthorityAfterExecution.modelTrainingAuthorized,
     report.gate.modelTrainingAuthorized
   );
   assert.equal(authorityAudit.privacy.aggregateOnly, true);
   assert.equal(authorityAudit.privacy.requiredForPublicDevelopment, false);
+  assert.equal(
+    report.evidence.canonicalChannelDevelopment.status,
+    "CANONICAL_CHANNEL_DEVELOPMENT_FAIL_KEEP_V0_3"
+  );
+  assert.equal(
+    report.evidence.canonicalChannelDevelopment
+      .dataQuality.mapping.mappingCoverage,
+    1
+  );
+  assert.equal(
+    report.evidence.canonicalChannelDevelopment
+      .decision.promotionDecision,
+    "REJECT_KEEP_V0_3_WORK_LEVEL_FALLBACK"
+  );
   assert.equal(
     report.gate.status,
     "CANDIDATE_DEVELOPMENT_FAIL_BLOCKED"
@@ -967,7 +983,7 @@ test("public diagnostic CLI is reproducible and aggregate-only", () => {
   );
   assert.equal(
     report.gate.developmentDirection,
-    "auditable_work_level_signals_then_independent_validation"
+    "historical_channel_state_single_purchase_unit_economics_and_work_level_signals_then_unseen_origin_validation"
   );
   assert.ok(
     report.gate.blockers.includes(

@@ -2,6 +2,11 @@
 
 Status: HISTORICAL M2-A BASELINE WITH 2026-07-25 SALES-SHARE-ONLY TARGET ADDENDUM
 
+Current product and model contract:
+`docs/prd/m2-v2/M2-forecast-intelligence-v2-prd-v0.2.md`. This historical
+document cannot authorize current development, holdout, provider, database,
+Canary, or release work.
+
 This document defines the M2 old-product evaluation scope for design and fixture/synthetic testing. It is based on `docs/prd/05-老品评估.md`, `docs/prd/20-evaluation/common-evaluation-rules.md`, and the M1 closeout audit. M2-A does not authorize formal database access, real data import, `mapping_version` activation, `switch_mapping_version`, or formal old-product evaluation.
 
 The phase statements above and below preserve the original M2-A boundary for historical traceability. For final-algorithm calibration, `src/domain/oldProductEvaluation/calibrationSpec.v1.2.amendment.json` and `docs/analysis/m2-real-data/M2-calibration-v1.2-comparator-identity-decision-v1.md` take precedence for B0b/B4 identity, full-library coverage, practical equivalence, comparator selection, Gate A, and C1. The v1 and v1.1 files remain digest-bound historical checkpoints for every subject not replaced by v1.2. The current authorized work is isolated local calibration only. It does not approve a candidate for formal decision or release and does not authorize C2-R/C2/C3 or M3.

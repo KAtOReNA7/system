@@ -232,7 +232,7 @@ export function evaluateM2CurrentDiagnosticGate(
     blockers: [...new Set(blockers)],
     developmentDirection: contract.schema === "m2.current.config.v0.6"
       ? evidence.coverage.targetClassification?.passed === true
-        ? "auditable_work_level_signals_then_independent_validation"
+        ? "historical_channel_state_single_purchase_unit_economics_and_work_level_signals_then_unseen_origin_validation"
         : "sales_share_target_classification_then_auditable_work_level_signals_and_independent_validation"
       : contract.schema === "m2.current.config.v0.5"
       ? "independent_portfolio_validation_and_auditable_work_level_signals"

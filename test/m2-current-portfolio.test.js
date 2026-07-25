@@ -45,7 +45,7 @@ test("v0.6 migrates the target to sales-share cash without opening authority", (
   assert.equal(config.target, "future_sales_share_cash");
   assert.equal(
     contract.evaluationPolicy.nextDevelopmentReadiness,
-    "CANONICAL_CHANNEL_AND_PLATFORM_TYPE_MASTER_REQUIRED"
+    "HISTORICAL_CHANNEL_STATE_AND_SINGLE_PURCHASE_UNIT_ECONOMICS_REQUIRED"
   );
   assert.equal(
     contract.thresholds.maximumClassificationUncertainCashShare,
