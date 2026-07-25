@@ -13,6 +13,8 @@
 - `highAccuracyPortfolioDevelopmentBacktestAvailable=true`
 - `humanNumericBaselineRequired=false`
 - `businessSampleRequired=false`
+- `developmentReplayAuthorized=true`
+- `newCandidateFamilyDevelopmentAuthorized=false`
 - `finalHoldoutAuthorized=false`
 - `releaseAuthorized=false`
 
@@ -110,6 +112,7 @@ npm run verify:m2:current
 - `docs/analysis/m2-current/M2-current-automated-evaluation-v0.4.json`
 - `docs/analysis/m2-current/M2-current-signal-gap-diagnostic-v0.1.json`
 - `docs/analysis/m2-current/M2-current-as-of-signal-readiness-v0.1.md`
+- `docs/analysis/m2-current/M2-current-authority-source-audit-v0.1.json`
 - `docs/analysis/m2-current/M2-current-as-of-source-inventory-v0.1.json`
 - `docs/analysis/m2-current/M2-current-signal-input-portable-intake-v0.1.md`
 - `docs/analysis/m2-current/M2-current-signal-input-portable-diagnostic-v0.1.json`
@@ -128,6 +131,8 @@ npm run verify:m2:current
 4. 已审计四类现有候选来源，均不能证明历史 predictor availability；digest-bound
    portable signal input 与 aggregate-only CLI 已实现。受控输入无需固定 private
    文件名，通过 bundle/cases 参数接入，缺失权威时继续 `unknown_at_origin`。
+   全 Git 历史与本机受控库存的扩展盘点也没有发现现金事件类型或历史
+   availability 权威。历史 evidence 可精确重放，但新模型训练和选模未授权。
 5. 新信号覆盖可审计后先通过 25-origin 诊断，再回到 7,851-case population 做 grouped
    nested evaluation。
 6. 下一次 portfolio 评价只能使用未参与选择的 later-origin 或单独授权

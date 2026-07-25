@@ -199,6 +199,15 @@ export function evaluateM2CurrentDiagnosticGate(
     (blocker) => blocker.startsWith("candidate_")
       || blocker === "paired_confidence_interval_failed"
   );
+  const separatesReplayFromNewFamilyDevelopment = [
+    "m2.current.config.v0.4",
+    "m2.current.config.v0.5",
+    "m2.current.config.v0.6"
+  ].includes(contract.schema);
+  const newCandidateFamilyDevelopmentAuthorized =
+    separatesReplayFromNewFamilyDevelopment
+      ? contract.authorizations.newCandidateFamilyDevelopment
+      : contract.authorizations.modelTraining;
 
   return {
     schema: "m2.current.diagnostic_gate.v0.1",
@@ -232,8 +241,10 @@ export function evaluateM2CurrentDiagnosticGate(
       : "candidate_business_sampling_then_separate_cash_observability_resolution",
     candidateOverallGatesPassed,
     candidateDevelopmentQualityPassed,
-    candidateSelectionAuthorized: contract.authorizations.modelTraining,
-    modelTrainingAuthorized: contract.authorizations.modelTraining,
+    developmentReplayAuthorized: contract.authorizations.modelTraining,
+    newCandidateFamilyDevelopmentAuthorized,
+    candidateSelectionAuthorized: newCandidateFamilyDevelopmentAuthorized,
+    modelTrainingAuthorized: newCandidateFamilyDevelopmentAuthorized,
     holdoutAuthorized: contract.authorizations.holdout,
     releaseAuthorized: contract.authorizations.release,
     m3FormalAuthorized: contract.authorizations.m3Formal

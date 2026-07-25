@@ -1,0 +1,50 @@
+{
+  "schema": "m2.current.authority_source_audit.v0.1",
+  "date": "2026-07-25",
+  "decisionStatus": "not_for_formal_decision",
+  "scope": {
+    "gitHistoryCandidateArtifactCount": 60,
+    "gitHistorySyntheticContractConformingArtifactCount": 1,
+    "gitHistoryNonSyntheticContractConformingArtifactCount": 0,
+    "controlledLocalTargetStructuredObjectCount": 804,
+    "controlledLocalWorkbookRoleCount": 11,
+    "controlledLocalWorkbookRolesWithTargetMatches": 9
+  },
+  "authorityFieldAvailability": {
+    "cashEventType": false,
+    "explicitSalesShareOrBuyoutClassification": false,
+    "refundOrReversalType": false,
+    "settlementAdjustmentType": false,
+    "economicTime": false,
+    "postingTime": false,
+    "availableAt": false,
+    "sourceVersion": false,
+    "completeAsOfSnapshot": false
+  },
+  "findings": {
+    "d0": {
+      "status": "UNKNOWN_ABSTAIN",
+      "reason": "available_records_identify_work_and_business_authorization_context_but_do_not_authoritatively_classify_the_negative_cash_event"
+    },
+    "d1": {
+      "frozenCompliantSnapshotCoverage": 0,
+      "monthlyCompliantSnapshotCoverage": 0,
+      "currentStateBackfillAllowed": false
+    }
+  },
+  "governance": {
+    "developmentReplayAuthorized": true,
+    "newCandidateFamilyDevelopmentAuthorized": false,
+    "candidateSelectionAuthorized": false,
+    "modelTrainingAuthorized": false,
+    "finalHoldoutAuthorized": false,
+    "releaseAuthorized": false
+  },
+  "privacy": {
+    "aggregateOnly": true,
+    "targetIdentifierIncluded": false,
+    "controlledFilePathsIncluded": false,
+    "rawRowsIncluded": false,
+    "requiredForPublicDevelopment": false
+  }
+}

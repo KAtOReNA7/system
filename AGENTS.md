@@ -9,6 +9,7 @@
   - `docs/analysis/m2-current/M2-current-maturity-reconstruction-v0.6.md`
   - `docs/analysis/m2-current/M2-sales-share-only-target-decision-v0.1.md`
   - `docs/analysis/m2-current/M2-sales-share-model-full-audit-and-research-v0.1.md`
+  - `docs/analysis/m2-current/M2-current-authority-source-audit-v0.1.json`
   - `docs/analysis/m2-current/M2-current-as-of-signal-readiness-v0.1.md`
   - `docs/analysis/m2-current/M2-current-as-of-source-inventory-v0.1.json`
   - `docs/analysis/m2-current/M2-current-signal-input-portable-intake-v0.1.md`
@@ -179,6 +180,10 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
 - `full160Authorized=false`
 - 本轮多粒度重构研究授权已执行完毕；默认不得继续在同一 development 窗口调参
 - final holdout、embargo shadow、deferred labels 均 sealed
+- 公开门禁中 `developmentReplayAuthorized=true` 只表示可精确重放既有
+  development evidence；`newCandidateFamilyDevelopmentAuthorized=false`、
+  `candidateSelectionAuthorized=false`、`modelTrainingAuthorized=false`
+  才是当前新模型开发权限，禁止混用
 - provider、远端/共享/staging-like 数据库、Canary/full160、release、M3 formal 均未授权
 
 ## M2 当前执行队列（2026-07-25 分成收入目标迁移后）

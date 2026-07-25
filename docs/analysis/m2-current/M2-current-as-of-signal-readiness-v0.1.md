@@ -31,6 +31,21 @@ source row。该源表只有 7 列；与现金判断有关的公开可披露字�
 底层作品、渠道和账单标识只保留在 Git ignored private capability 中，没有写入
 本公开文档。
 
+随后又完成了全 Git 历史和本机受控库存的扩展只读盘点：
+
+- Git 历史中 60 个名称可能相关的 artifact 里，唯一同时具备 work、cash 和
+  availability 语义的是当前 synthetic fixture；非 synthetic 权威源为 0；
+- 本机受控库存中命中目标作品的 804 个结构化对象，仅重复作品、业务形态、
+  授权分类、版权或派生实际值，没有 cash event、退款、冲销、结算调整、
+  economic/posting/available-at 或来源版本权威字段；
+- 11 类候选工作簿中有 9 类命中目标作品，但命中行属于作品映射、授权分类、
+  运营确认或版权状态，不是现金事件台账。
+
+因此，扩大检索范围没有发现能解除 D0 的既有权威；它也没有产生可用于 D1 的
+历史 as-of snapshot。该盘点只形成 aggregate-only 公开摘要，不把受控库存变成
+其他电脑的启动依赖。机器可读结论见
+`M2-current-authority-source-audit-v0.1.json`。
+
 ## D1 公共合同
 
 canonical core 新增：
@@ -95,3 +110,10 @@ fingerprint 绑定输入，拒绝人口移动、引用缺失、历史不完整�
 `newCandidateFamilyDevelopment=false` 继续有效。只有合规快照覆盖和缺失机制可
 审计后，才能申请最小动态 two-part 候选；final holdout、Canary 和 release
 仍未授权。
+
+公开门禁现已区分两类权限：
+
+- `developmentReplayAuthorized=true` 只允许精确重放已经完成的冻结
+  development evidence；
+- `newCandidateFamilyDevelopmentAuthorized=false`、`candidateSelectionAuthorized=false`
+  和 `modelTrainingAuthorized=false` 禁止把历史重放权限解释成继续训练或选模。
