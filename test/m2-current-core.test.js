@@ -823,6 +823,8 @@ test("baseline diagnostic is blocked by coverage, failed quality and sealed hold
   assert.ok(gate.blockers.includes("latest_model_quality_failed"));
   assert.ok(gate.blockers.includes("final_holdout_sealed"));
   assert.equal(gate.modelTrainingAuthorized, true);
+  assert.equal(gate.developmentReplayAuthorized, true);
+  assert.equal(gate.newCandidateFamilyDevelopmentAuthorized, true);
   assert.equal(gate.releaseAuthorized, false);
 });
 
@@ -833,6 +835,9 @@ test("public diagnostic CLI is reproducible and aggregate-only", () => {
     { encoding: "utf8", windowsHide: true }
   );
   const report = readJson(salesShareConfig.publicOutput);
+  const authorityAudit = readJson(
+    "docs/analysis/m2-current/M2-current-authority-source-audit-v0.1.json"
+  );
   const text = JSON.stringify(report);
 
   assert.equal(report.schema, "m2.current.public_diagnostic_report.v0.7");
@@ -859,6 +864,31 @@ test("public diagnostic CLI is reproducible and aggregate-only", () => {
   );
   assert.equal(report.gate.candidateOverallGatesPassed, false);
   assert.equal(report.gate.candidateDevelopmentQualityPassed, false);
+  assert.equal(report.gate.developmentReplayAuthorized, true);
+  assert.equal(
+    report.gate.newCandidateFamilyDevelopmentAuthorized,
+    false
+  );
+  assert.equal(report.gate.candidateSelectionAuthorized, false);
+  assert.equal(report.gate.modelTrainingAuthorized, false);
+  assert.equal(
+    authorityAudit.governance.developmentReplayAuthorized,
+    report.gate.developmentReplayAuthorized
+  );
+  assert.equal(
+    authorityAudit.governance.newCandidateFamilyDevelopmentAuthorized,
+    report.gate.newCandidateFamilyDevelopmentAuthorized
+  );
+  assert.equal(
+    authorityAudit.governance.candidateSelectionAuthorized,
+    report.gate.candidateSelectionAuthorized
+  );
+  assert.equal(
+    authorityAudit.governance.modelTrainingAuthorized,
+    report.gate.modelTrainingAuthorized
+  );
+  assert.equal(authorityAudit.privacy.aggregateOnly, true);
+  assert.equal(authorityAudit.privacy.requiredForPublicDevelopment, false);
   assert.equal(
     report.gate.status,
     "SALES_SHARE_TARGET_MIGRATED_PORTFOLIO_DEVELOPMENT_PASS_WORK_LEVEL_BLOCKED"

@@ -1825,8 +1825,10 @@
     "developmentDirection": "sales_share_target_classification_then_auditable_work_level_signals_and_independent_validation",
     "candidateOverallGatesPassed": false,
     "candidateDevelopmentQualityPassed": false,
-    "candidateSelectionAuthorized": true,
-    "modelTrainingAuthorized": true,
+    "developmentReplayAuthorized": true,
+    "newCandidateFamilyDevelopmentAuthorized": false,
+    "candidateSelectionAuthorized": false,
+    "modelTrainingAuthorized": false,
     "holdoutAuthorized": false,
     "releaseAuthorized": false,
     "m3FormalAuthorized": false
