@@ -37,6 +37,9 @@ import {
   scoreM2CurrentSlices
 } from "../src/domain/m2Current/metrics.js";
 import {
+  forecastM2CurrentManualChannelRule
+} from "../src/domain/m2Current/manualChannel.js";
+import {
   buildM2CurrentAutomatedBaselineEvaluation,
   buildM2CurrentHistoryRegimeChallenger
 } from "../src/domain/m2Current/baselines.js";
@@ -894,7 +897,7 @@ test("public diagnostic CLI is reproducible and aggregate-only", () => {
   );
   const text = JSON.stringify(report);
 
-  assert.equal(report.schema, "m2.current.public_diagnostic_report.v0.8");
+  assert.equal(report.schema, "m2.current.public_diagnostic_report.v0.9");
   assert.equal(report.directionAssessment.engineeringSequenceDrifted, true);
   assert.equal(
     report.directionAssessment.retiredSequence,
@@ -945,7 +948,7 @@ test("public diagnostic CLI is reproducible and aggregate-only", () => {
   assert.equal(authorityAudit.privacy.requiredForPublicDevelopment, false);
   assert.equal(
     report.gate.status,
-    "SALES_SHARE_TARGET_MIGRATED_PORTFOLIO_DEVELOPMENT_PASS_WORK_LEVEL_BLOCKED"
+    "CANDIDATE_DEVELOPMENT_FAIL_BLOCKED"
   );
   assert.equal(
     report.evidence.coverage.economicScope.modelTarget,
@@ -1357,8 +1360,107 @@ test("current config grants candidate development but no downstream authority", 
   );
 });
 
+test("manual channel rule separates stable main and edge channel forecasts", () => {
+  const result = forecastM2CurrentManualChannelRule({
+    origin: "2020-12",
+    horizonMonths: 36,
+    rightsStartMonth: "2018-01",
+    channels: [
+      manualChannel("MAIN", Array(12).fill(100)),
+      manualChannel("EDGE", Array(12).fill(10))
+    ]
+  }, manualChannelPolicy({ mainChannelMaximum: 1 }));
+
+  assert.equal(result.lifecycleAgeMonths, 36);
+  assert.equal(result.lifecycleContributionShare, 0.5);
+  assert.equal(result.mainChannelCount, 1);
+  assert.equal(result.edgeChannelCount, 1);
+  assert.equal(result.stableMainChannelCount, 1);
+  assert.equal(result.decliningMainChannelCount, 0);
+  assert.equal(result.mainForecast, 2400);
+  assert.equal(result.edgeForecast, 60);
+  assert.equal(result.pointEstimate, 2460);
+  assert.equal(result.top1TrailingRevenueShare, 1200 / 1320);
+  assert.equal(result.top2TrailingRevenueShare, 1);
+});
+
+test("manual channel rule annualizes a declining latest month", () => {
+  const result = forecastM2CurrentManualChannelRule({
+    origin: "2020-12",
+    horizonMonths: 36,
+    rightsStartMonth: "2018-01",
+    channels: [
+      manualChannel("DECLINING", [
+        100, 100, 100, 100, 100, 100,
+        100, 100, 100, 100, 100, 20
+      ])
+    ]
+  }, manualChannelPolicy());
+
+  assert.equal(result.stableMainChannelCount, 0);
+  assert.equal(result.decliningMainChannelCount, 1);
+  assert.equal(result.mainForecast, 480);
+  assert.equal(result.pointEstimate, 480);
+  assert.equal(
+    result.components[0].branch,
+    "main_declining_latest_month_annualized"
+  );
+});
+
+test("manual channel lifecycle share reaches 40 percent at month 60", () => {
+  const result = forecastM2CurrentManualChannelRule({
+    origin: "2020-12",
+    horizonMonths: 36,
+    rightsStartMonth: "2016-01",
+    channels: [manualChannel("LONG-LIVED", Array(12).fill(100))]
+  }, manualChannelPolicy());
+
+  assert.equal(result.lifecycleAgeMonths, 60);
+  assert.equal(result.lifecycleContributionShare, 0.4);
+  assert.equal(result.pointEstimate, 3000);
+});
+
+test("manual channel rule rejects a horizon outside its business contract", () => {
+  assert.throws(
+    () => forecastM2CurrentManualChannelRule({
+      origin: "2020-12",
+      horizonMonths: 12,
+      rightsStartMonth: "2018-01",
+      channels: [manualChannel("MAIN", Array(12).fill(100))]
+    }, manualChannelPolicy()),
+    /m2_current_manual_channel_horizon_mismatch/u
+  );
+});
+
 function readJson(file) {
   return JSON.parse(readFileSync(file, "utf8"));
+}
+
+function manualChannelPolicy(overrides = {}) {
+  return {
+    horizonMonths: 36,
+    recentMonths: 12,
+    mainChannelMaximum: 3,
+    latestToAverageFloor: 0.8,
+    edgeHistoricalShare: 0.5,
+    annualLevelMultiplier: 1,
+    lifecycleContribution: {
+      year3Month: 36,
+      year3Share: 0.5,
+      year5Month: 60,
+      year5Share: 0.4
+    },
+    ...overrides
+  };
+}
+
+function manualChannel(channelId, values) {
+  const months = [];
+  for (let index = 0; index < values.length; index += 1) {
+    const month = index + 1;
+    months.push(`2020-${String(month).padStart(2, "0")}`);
+  }
+  return { channelId, months, values };
 }
 
 function revenueFact(overrides = {}) {
@@ -1413,3 +1515,72 @@ function signalCase(standardWorkId, segment, horizonMonths) {
     segment
   };
 }
+
+test("human-reviewed ledger membership is the only current cash-category authority", () => {
+  const config = JSON.parse(readFileSync(
+    "config/m2-current-human-ledger-partition.v0.1.json",
+    "utf8"
+  ));
+  assert.equal(
+    config.authorityMode,
+    "user_reviewed_workbook_membership"
+  );
+  assert.equal(
+    config.cashCategoryContract.machineClassificationAllowed,
+    false
+  );
+  assert.equal(
+    config.cashCategoryContract.salesShare.forecastFeatureAllowed,
+    true
+  );
+  assert.equal(
+    config.cashCategoryContract.buyout.forecastFeatureAllowed,
+    false
+  );
+  assert.equal(
+    config.cashCategoryContract.buyout.ratingHistoricalContextAllowed,
+    true
+  );
+  assert.equal(
+    config.cashCategoryContract.buyout.notCashForecast,
+    true
+  );
+
+  const output = execFileSync(
+    process.execPath,
+    ["scripts/run-codex-python.mjs", "-"],
+    {
+      cwd: process.cwd(),
+      encoding: "utf8",
+      input: `
+import json
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path.cwd() / "scripts" / "m2-real-data"))
+import m2_calibration_v1 as kernel
+spec = {
+    "authority": {"firstBillMonth": "2020-01"},
+    "revenueRouting": {"classifierParameters": {}},
+}
+share = kernel.classify_channel_as_of(
+    {"cash_category": "sales_share", "monthly": {"2020-01": 100}},
+    "2020-01",
+    spec,
+)
+buyout = kernel.classify_channel_as_of(
+    {"cash_category": "buyout", "monthly": {"2020-01": -20}},
+    "2020-01",
+    spec,
+)
+print(json.dumps({"share": share, "buyout": buyout}))
+`
+    }
+  );
+  const result = JSON.parse(output);
+  assert.equal(result.share.label, "sales_share_channel");
+  assert.equal(result.share.machineClassificationUsed, false);
+  assert.deepEqual(result.share.buyoutEventMonths, []);
+  assert.equal(result.buyout.label, "buyout_channel");
+  assert.equal(result.buyout.machineClassificationUsed, false);
+  assert.deepEqual(result.buyout.buyoutEventMonths, ["2020-01"]);
+});

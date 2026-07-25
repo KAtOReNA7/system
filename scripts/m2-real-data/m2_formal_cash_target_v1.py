@@ -516,6 +516,7 @@ def _truth_cash_components(
     target_months = set(target_month_list)
     total = 0.0
     classifier_buyout = 0.0
+    human_reviewed_buyout = 0.0
     uncertain = False
     uncertain_amount = 0.0
     user_confirmed_sales_share_amount = 0.0
@@ -524,6 +525,7 @@ def _truth_cash_components(
     event_count = 0
     cell_actual: dict[tuple[str, str], float] = {}
     buyout_by_cell: dict[tuple[str, str], float] = {}
+    human_reviewed_buyout_by_cell: dict[tuple[str, str], float] = {}
     seen_components: set[str] = set()
     for channel in sorted(
         work.get("channels", []) or [], key=base.channel_component_key
@@ -534,6 +536,10 @@ def _truth_cash_components(
         seen_components.add(component)
         monthly = channel.get("monthly", {}) or {}
         outcome = base.classify_channel_as_of(channel, target_end, calibration_spec)
+        human_reviewed_category = (
+            outcome.get("cashCategoryAuthority")
+            == "user_reviewed_workbook_membership"
+        )
         channel_uncertain = outcome.get("label") == "unknown_channel"
         if channel_uncertain:
             uncertain = True
@@ -564,10 +570,16 @@ def _truth_cash_components(
                 classifier_buyout += amount
                 event_count += 1
                 buyout_by_cell[(component, month)] = amount
+            if month in buyout_months and human_reviewed_category:
+                human_reviewed_buyout += amount
+                human_reviewed_buyout_by_cell[(component, month)] = amount
     return {
         "targetEnd": target_end,
         "totalLedgerCashActual": total,
         "classifierDerivedBuyoutActual": classifier_buyout,
+        "humanReviewedBuyoutActual": human_reviewed_buyout,
+        "humanReviewedBuyoutByComponentMonth":
+            human_reviewed_buyout_by_cell,
         "classifierDerivedBuyoutEventCount": event_count,
         "actualClassificationUncertain": uncertain,
         "classificationUncertainCashActual": uncertain_amount,
@@ -993,10 +1005,15 @@ def build_sales_share_cash_actuals(
         label_available_as_of,
         target_classification_confirmations,
     )
-    isolated_buyout = float(actuals["classifierDerivedBuyoutActual"])
+    isolated_buyout = float(
+        actuals.get(
+            "humanReviewedBuyoutActual",
+            actuals["classifierDerivedBuyoutActual"],
+        )
+    )
     isolated_other = float(actuals["cutoffCommittedOtherCashActual"])
-    sales_share = float(actuals["salesAndOtherCashActual"]) - isolated_other
     total = float(actuals["totalLedgerCashActual"])
+    sales_share = total - isolated_buyout - isolated_other
     conservation = sales_share + isolated_buyout + isolated_other - total
     if not math.isclose(
         conservation, 0.0, rel_tol=0.0, abs_tol=CONSERVATION_TOLERANCE

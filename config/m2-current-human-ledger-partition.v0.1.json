@@ -1,0 +1,51 @@
+{
+  "schema": "m2.current.human_ledger_partition.v0.1",
+  "authorityMode": "user_reviewed_workbook_membership",
+  "privateCapability": "m2-algorithm-authoritative-input",
+  "sourceDirectory": "data/real-bills",
+  "workbooks": {
+    "totalLedger": "渠道实销汇总 -总.xlsx",
+    "salesShare": "渠道实销汇总 -分成.xlsx",
+    "buyout": "渠道实销汇总 -买断.xlsx"
+  },
+  "cashCategoryContract": {
+    "classificationSource": "workbook_membership_only",
+    "machineClassificationAllowed": false,
+    "negativeCashEventPolicy": "all_negative_cash_records_are_reversals",
+    "salesShare": {
+      "forecastFeatureAllowed": true,
+      "trainingLabelAllowed": true,
+      "backtestActualAllowed": true,
+      "forecastOutputAllowed": true
+    },
+    "buyout": {
+      "forecastFeatureAllowed": false,
+      "trainingLabelAllowed": false,
+      "backtestActualAllowed": false,
+      "forecastOutputAllowed": false,
+      "ratingHistoricalContextAllowed": true,
+      "notCashForecast": true
+    },
+    "totalLedger": {
+      "forecastFeatureAllowed": false,
+      "trainingLabelAllowed": false,
+      "backtestActualAllowed": false,
+      "forecastOutputAllowed": false,
+      "conservationAuditOnly": true
+    }
+  },
+  "requiredChecks": [
+    "schema_equal",
+    "split_type_pure",
+    "no_split_overlap",
+    "row_multiset_conserved",
+    "amount_conserved",
+    "monthly_row_count_conserved",
+    "monthly_amount_conserved"
+  ],
+  "incompleteMonths": [
+    "2026-05"
+  ],
+  "trackedRawRowsAllowed": false,
+  "trackedWorkOrChannelIdentifiersAllowed": false
+}

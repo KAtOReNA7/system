@@ -645,6 +645,48 @@ def classify_channel_as_of(
     first_month = spec["authority"]["firstBillMonth"]
     months, values = _channel_history(channel, cutoff, first_month)
     positions = positive_positions(values)
+    cash_category = str(channel.get("cash_category", "")).strip()
+    if cash_category in {"sales_share", "buyout"}:
+        observed_months = [
+            month for month, value in zip(months, values) if value != 0
+        ]
+        label = (
+            "sales_share_channel"
+            if cash_category == "sales_share"
+            else "buyout_channel"
+        )
+        positive_total = sum((values[index] for index in positions), 0.0)
+        return {
+            "label": label,
+            "confidence": "human_authoritative",
+            "signalFamilies": ["user_reviewed_workbook_membership"],
+            "positiveMonthCount": len(positions),
+            "activeRatio": round(len(observed_months) / max(1, len(values)), 8),
+            "continuity": round(continuity_score(values), 8),
+            "amountVariation": 0.0,
+            "largestShare": (
+                round(
+                    max((values[index] for index in positions), default=0.0)
+                    / positive_total,
+                    8,
+                )
+                if positive_total > 0
+                else 0.0
+            ),
+            "peakMonth": (
+                months[max(positions, key=lambda index: values[index])]
+                if positions
+                else None
+            ),
+            "buyoutEventMonths": (
+                observed_months if cash_category == "buyout" else []
+            ),
+            "salesMonths": (
+                observed_months if cash_category == "sales_share" else []
+            ),
+            "cashCategoryAuthority": "user_reviewed_workbook_membership",
+            "machineClassificationUsed": False,
+        }
     if not positions:
         return {
             "label": "unknown_channel",

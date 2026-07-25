@@ -1,0 +1,96 @@
+{
+  "schema": "m2.current.manual_channel_backtest.v0.1",
+  "candidateId": "M2-current-manual-channel-prior-v0.8",
+  "target": "future_sales_share_cash",
+  "role": "posthoc_business_rule_comparator_only",
+  "authorization": {
+    "source": "user_instruction_2026-07-25",
+    "scope": "local_real_bill_manual_channel_rule_backtest",
+    "newCandidateFamilyDevelopment": true,
+    "candidateSelection": false,
+    "finalHoldout": false,
+    "deferredLabels": false,
+    "release": false
+  },
+  "population": {
+    "frozenWorkCount": 824,
+    "origins": [
+      "2019-06",
+      "2019-12",
+      "2020-06"
+    ],
+    "horizonMonths": 36,
+    "labelAvailableThrough": "2023-06",
+    "salesRoutes": [
+      "pure_sales_share",
+      "buyout_plus_sales"
+    ],
+    "specialCategoryPolicy": "report_separately_never_silently_mix",
+    "channelIdentity": "current_raw_id_name_pair_hash_not_canonical_platform"
+  },
+  "rule": {
+    "horizonMonths": 36,
+    "recentMonths": 12,
+    "mainChannelMaximum": 3,
+    "latestToAverageFloor": 0.8,
+    "edgeHistoricalShare": 0.5,
+    "annualLevelMultiplier": 1,
+    "lifecycleContribution": {
+      "year3Month": 36,
+      "year3Share": 0.5,
+      "year5Month": 60,
+      "year5Share": 0.4,
+      "between": "linear_interpolation"
+    }
+  },
+  "sensitivityRules": {
+    "annualLevel80Percent": {
+      "annualLevelMultiplier": 0.8
+    },
+    "fixed50PercentLifecycle": {
+      "lifecycleContribution": {
+        "year3Month": 36,
+        "year3Share": 0.5,
+        "year5Month": 60,
+        "year5Share": 0.5,
+        "between": "linear_interpolation"
+      }
+    }
+  },
+  "plannedPlatformBranch": {
+    "dominantTopTwoShareSensitivity": [
+      0.6,
+      0.7,
+      0.8
+    ],
+    "membershipModel": "platform_category_grade_revenue_curve",
+    "singlePurchaseModel": "unit_sales_curve_times_net_unit_revenue",
+    "requiredInputs": [
+      "canonical_channel_id",
+      "platform_type_as_of",
+      "level_as_of",
+      "category_as_of"
+    ],
+    "implemented": false,
+    "reason": "canonical channel and historical platform-type authority are unavailable"
+  },
+  "gates": {
+    "maximumWape": 0.3,
+    "maximumAbsoluteBias": 0.1,
+    "channelNormalizationRequired": true,
+    "manualBuyoutTruthRequired": true,
+    "historicalFeatureAvailableAtRequired": true
+  },
+  "boundaries": {
+    "rawBillRowsPublic": false,
+    "workIdentifiersPublic": false,
+    "channelIdentifiersPublic": false,
+    "finalHoldoutOpened": false,
+    "deferredLabelsOpened": false,
+    "promotionEligible": false,
+    "automationEligible": false
+  },
+  "privateOutputDirectory": "data/private-output/m2-current-manual-channel",
+  "publicOutput": "docs/analysis/m2-current/M2-current-manual-channel-backtest-v0.1.json",
+  "publicReport": "docs/analysis/m2-current/M2-current-manual-channel-backtest-v0.1.md"
+}

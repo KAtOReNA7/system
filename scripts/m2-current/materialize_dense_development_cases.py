@@ -209,7 +209,8 @@ def encode_ndjson(rows: Iterable[Mapping[str, Any]]) -> tuple[bytes, int]:
 
 def run() -> dict[str, Any]:
     config = json.loads(CONFIG.read_text(encoding="utf-8"))
-    confirmation_config, target_confirmations = load_user_confirmations()
+    confirmation_config, legacy_target_confirmations = load_user_confirmations()
+    target_confirmations: list[dict[str, Any]] = []
     dense = config["development"]["denseOrigins"]
     if (
         dense["stepMonths"] != 1
@@ -232,9 +233,6 @@ def run() -> dict[str, Any]:
         raise DenseMaterializationError(
             "dense development work population differs"
         )
-    confirmation_match_counts = validate_confirmation_bindings(
-        works, target_confirmations
-    )
     case_rows: list[dict[str, Any]] = []
     history_rows: list[dict[str, Any]] = []
     frozen_target_rows: list[dict[str, Any]] = []
@@ -344,11 +342,18 @@ def run() -> dict[str, Any]:
                 )
     for case in frozen_cases:
         work = works[case["standardWorkId"]]
+        authority_route = str(
+            base.route_work_as_of(
+                work,
+                case["origin"],
+                calibration_spec,
+            )["route"]
+        )
         actuals = cash.build_sales_share_cash_actuals(
             work,
             case["origin"],
             case["horizonMonths"],
-            case["route"],
+            authority_route,
             calibration_spec,
             label_available_as_of=case["labelAvailableAsOf"],
             target_classification_confirmations=target_confirmations,
@@ -361,6 +366,17 @@ def run() -> dict[str, Any]:
                     "horizonMonths": case["horizonMonths"],
                     "route": case["route"],
                 },
+                "previousMachineRoute": case["route"],
+                "authorityRoute": authority_route,
+                "authorityRouteChanged": authority_route != case["route"],
+                "servedUnderHumanAuthority": authority_route in SALES_ROUTES,
+                "abstentionReasonUnderHumanAuthority": (
+                    None
+                    if authority_route in SALES_ROUTES
+                    else "buyout_outside_m2_forecast_scope"
+                    if authority_route == "pure_buyout"
+                    else "unknown_revenue_model"
+                ),
                 "labelAvailableAsOf": case["labelAvailableAsOf"],
                 "legacyForecastableCashActual": float(
                     actuals["forecastableCashActual"]
@@ -422,15 +438,22 @@ def run() -> dict[str, Any]:
         "frozenSalesShareTargetSha256": digest_bytes(frozen_target_bytes),
         "targetPolicy": "sales_share_cash_only",
         "allBuyoutExcludedFromForecast": True,
+        "cashClassificationAuthority":
+            input_evidence["cashClassificationAuthority"],
+        "machineCashClassificationUsed":
+            input_evidence["machineCashClassificationUsed"],
+        "salesShareFactCount": input_evidence["salesShareFactCount"],
+        "buyoutFactCount": input_evidence["buyoutFactCount"],
         "userConfirmation": {
             "schema": confirmation_config["schema"],
             "configCanonicalSha256": cash.canonical_digest(
                 confirmation_config
             ),
-            "exactCellConfirmationCount": len(target_confirmations),
-            "exactAuthorityCellMatchCount": sum(
-                confirmation_match_counts.values()
-            ),
+            "legacyExactCellConfirmationCount":
+                len(legacy_target_confirmations),
+            "legacyExactCellConfirmationsApplied": False,
+            "supersededBy":
+                "user_reviewed_workbook_membership",
             "negativeCashEventPolicy": confirmation_config[
                 "negativeCashEventPolicy"
             ],

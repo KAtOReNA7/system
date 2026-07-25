@@ -776,7 +776,7 @@
           "mae": 9753.643025514386,
           "rmse": 33059.17118166851,
           "mase": 3.5538999618767027,
-          "rmsse": 3.6618293554000543,
+          "rmsse": 3.661829355400054,
           "scaledMetricCoverage": 0.9428044280442804,
           "cashOccurrence": {
             "positiveCaseCount": 2102,
@@ -1176,7 +1176,7 @@
         "18": {
           "caseCount": 995,
           "wape": 1.071508277926341,
-          "signedBias": -0.05475342193479717,
+          "signedBias": -0.05475342193479712,
           "zeroImputationUsed": false,
           "mae": 20804.156364321636,
           "rmse": 189735.02110835115,
@@ -1193,7 +1193,7 @@
           "positiveAmount": {
             "caseCount": 848,
             "wape": 1.0710933186480498,
-            "signedBias": -0.055168381213088334
+            "signedBias": -0.05516838121308824
           }
         },
         "24": {
@@ -1270,7 +1270,7 @@
         "intermittent": {
           "caseCount": 1844,
           "wape": 2.174163794595753,
-          "signedBias": 1.289523926625472,
+          "signedBias": 1.2895239266254725,
           "zeroImputationUsed": false,
           "mae": 6159.07578828633,
           "rmse": 44892.616049443204,
@@ -1294,10 +1294,10 @@
       "byRoute": {
         "buyout_plus_sales": {
           "caseCount": 2168,
-          "wape": 1.0023979445204327,
+          "wape": 1.002397944520433,
           "signedBias": 0.45756162555101226,
           "zeroImputationUsed": false,
-          "mae": 15889.8825184502,
+          "mae": 15889.882518450204,
           "rmse": 58820.57631941598,
           "mase": 7.3524170047047885,
           "rmsse": 4.514233602484246,
@@ -1555,10 +1555,10 @@
       "byRoute": {
         "buyout_plus_sales": {
           "caseCount": 2168,
-          "wape": 0.76248405325266,
+          "wape": 0.7624840532526599,
           "signedBias": -0.3454006405782169,
           "zeroImputationUsed": false,
-          "mae": 12086.798556009537,
+          "mae": 12086.798556009535,
           "rmse": 40937.65902313404,
           "mase": 4.6375786557911445,
           "rmsse": 4.366766020568368,
@@ -1579,7 +1579,7 @@
         "pure_sales_share": {
           "caseCount": 5683,
           "wape": 1.1957761874888528,
-          "signedBias": -0.660077583671658,
+          "signedBias": -0.6600775836716578,
           "zeroImputationUsed": false,
           "mae": 9525.2037054596,
           "rmse": 122803.08769875809,
@@ -1622,7 +1622,7 @@
         "positiveAmount": {
           "caseCount": 6697,
           "wape": 1.0826278321526477,
-          "signedBias": -0.05704910348907707
+          "signedBias": -0.05704910348907706
         }
       },
       "byHorizon": {
@@ -1652,7 +1652,7 @@
         "6": {
           "caseCount": 2402,
           "wape": 0.9956943057662181,
-          "signedBias": -0.20983194548400916,
+          "signedBias": -0.20983194548400913,
           "zeroImputationUsed": false,
           "mae": 7611.143405978721,
           "rmse": 69307.40002600927,
@@ -1675,7 +1675,7 @@
         "12": {
           "caseCount": 1608,
           "wape": 1.1362952173353755,
-          "signedBias": -0.07409142593845006,
+          "signedBias": -0.07409142593845001,
           "zeroImputationUsed": false,
           "mae": 15990.834315811691,
           "rmse": 138039.01802771847,
@@ -1692,7 +1692,7 @@
           "positiveAmount": {
             "caseCount": 1402,
             "wape": 1.0897897417469549,
-            "signedBias": -0.12059868322205124
+            "signedBias": -0.1205986832220512
           }
         },
         "18": {
@@ -1720,10 +1720,10 @@
         },
         "24": {
           "caseCount": 444,
-          "wape": 1.2582725893285855,
+          "wape": 1.2582725893285858,
           "signedBias": 0.4264696954103222,
           "zeroImputationUsed": false,
-          "mae": 29977.852476292126,
+          "mae": 29977.85247629213,
           "rmse": 104189.99553307274,
           "mase": 298.234616863337,
           "rmsse": 798.3700074890457,
@@ -1822,7 +1822,7 @@
           "mae": 19007.51297855017,
           "rmse": 42871.43955911887,
           "mase": 12.628597849337089,
-          "rmsse": 5.849213416472071,
+          "rmsse": 5.849213416472072,
           "scaledMetricCoverage": 0.9428044280442804,
           "cashOccurrence": {
             "positiveCaseCount": 2102,
@@ -1866,7 +1866,7 @@
       "overall": {
         "caseCount": 7851,
         "wape": 1.0441928191370002,
-        "signedBias": -0.049481119992165506,
+        "signedBias": -0.04948111999216547,
         "zeroImputationUsed": false,
         "mae": 10591.683998341166,
         "rmse": 105884.19689366625,
@@ -1907,13 +1907,13 @@
           "positiveAmount": {
             "caseCount": 2021,
             "wape": 0.8921202528094462,
-            "signedBias": -0.2948683310661539
+            "signedBias": -0.29486833106615384
           }
         },
         "6": {
           "caseCount": 2402,
           "wape": 0.8965179409923917,
-          "signedBias": -0.2744235687428947,
+          "signedBias": -0.27442356874289464,
           "zeroImputationUsed": false,
           "mae": 6853.033682536673,
           "rmse": 69667.58847446766,
@@ -1929,7 +1929,7 @@
           },
           "positiveAmount": {
             "caseCount": 2056,
-            "wape": 0.8445205399922314,
+            "wape": 0.8445205399922315,
             "signedBias": -0.3264299215685205
           }
         },
@@ -1959,7 +1959,7 @@
         "18": {
           "caseCount": 995,
           "wape": 1.1389825769557187,
-          "signedBias": 0.0612536964331372,
+          "signedBias": 0.061253696433137154,
           "zeroImputationUsed": false,
           "mae": 22114.221714723593,
           "rmse": 190818.42826042755,
@@ -2078,11 +2078,11 @@
         "buyout_plus_sales": {
           "caseCount": 2168,
           "wape": 0.8960006491203789,
-          "signedBias": 0.4020842520979907,
+          "signedBias": 0.40208425209799065,
           "zeroImputationUsed": false,
           "mae": 14203.28635828296,
           "rmse": 41770.77130328408,
-          "mase": 6.10720292462395,
+          "mase": 6.107202924623951,
           "rmsse": 3.9544075694979393,
           "scaledMetricCoverage": 0.9428044280442804,
           "cashOccurrence": {
@@ -2095,7 +2095,7 @@
           "positiveAmount": {
             "caseCount": 2102,
             "wape": 0.894218370155524,
-            "signedBias": 0.4003003116632358
+            "signedBias": 0.40030031166323576
           }
         },
         "pure_sales_share": {

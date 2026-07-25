@@ -12,6 +12,11 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+from human_ledger_partition import (
+    HumanLedgerPartitionError,
+    discover_partition_sources,
+)
+
 
 ROOT = Path(__file__).resolve().parents[2]
 DATA_DIR = ROOT / "data"
@@ -30,6 +35,7 @@ class SourceSelection:
     mapping_files: int
     operations_files: int
     selected_mapping_rows: int
+    bill_authority_mode: str = "legacy_single_workbook"
 
 
 def git_value(args: list[str]) -> str | None:
@@ -180,12 +186,23 @@ def discover_sources() -> tuple[Path, Path, dict[str, str], SourceSelection]:
         mapping_files=len(mapping_files),
         operations_files=len(operations_files),
         selected_mapping_rows=len(mapping_rows),
+        bill_authority_mode="user_reviewed_workbook_membership",
     )
-    return real_bill_files[0], master_data_files[0], mapping, selection
+    try:
+        partition = discover_partition_sources(DATA_DIR)
+    except HumanLedgerPartitionError as exc:
+        raise SystemExit(str(exc)) from exc
+    return partition.total_ledger, master_data_files[0], mapping, selection
 
 
-def read_bill_frame(path: Path, mapping: dict[str, str]) -> pd.DataFrame:
-    frame = pd.read_excel(path, dtype={"渠道ID": "string", "我方作品ID": "string"})
+def read_bill_frame(path: Path | pd.DataFrame, mapping: dict[str, str]) -> pd.DataFrame:
+    frame = (
+        path.copy()
+        if isinstance(path, pd.DataFrame)
+        else pd.read_excel(
+            path, dtype={"渠道ID": "string", "我方作品ID": "string"}
+        )
+    )
     missing = [column for column in REAL_BILL_COLUMNS if column not in frame.columns]
     if missing:
         raise SystemExit(f"Real bill workbook missing required columns: {missing}")
@@ -243,12 +260,22 @@ def read_master_dates(path: Path) -> tuple[dict[str, dict], dict[str, int]]:
     return result, stats
 
 
-def build_work_summary(frame: pd.DataFrame, master_dates: dict[str, dict], latest_complete_month: str) -> tuple[pd.DataFrame, dict]:
+def build_work_summary(
+    frame: pd.DataFrame,
+    master_dates: dict[str, dict],
+    latest_complete_month: str,
+    population_ids: set[str] | None = None,
+) -> tuple[pd.DataFrame, dict]:
     complete = frame[frame["validForCalibration"] & (frame["billMonth"] <= latest_complete_month)].copy()
     months = month_range(complete["billMonth"].min(), latest_complete_month)
 
     work_month = complete.groupby(["standardWorkId", "billMonth"], dropna=False)["amount"].sum().unstack(fill_value=0.0)
     work_month = work_month.reindex(columns=months, fill_value=0.0)
+    if population_ids is not None:
+        work_month = work_month.reindex(
+            index=sorted(str(value) for value in population_ids),
+            fill_value=0.0,
+        )
 
     business_form_counts = complete.groupby("standardWorkId")["businessForm"].nunique()
     business_form_breakdown = complete.groupby(["standardWorkId", "businessForm"])["amount"].sum().unstack(fill_value=0.0)

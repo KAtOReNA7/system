@@ -1375,6 +1375,16 @@ if (
 ) {
   throw new Error("m2_current_sales_share_frozen_target_population_drift");
 }
+const humanAuthorityFrozenRouteCounts = countBy(
+  frozenSalesShareTargets,
+  (row) => row.authorityRoute
+);
+const humanAuthorityRouteChangedCaseCount = frozenSalesShareTargets.filter(
+  (row) => row.authorityRouteChanged === true
+).length;
+const humanAuthorityAbstainedCaseCount = frozenSalesShareTargets.filter(
+  (row) => row.servedUnderHumanAuthority !== true
+).length;
 const salesShareWorkRows = nextCandidateRows.map((row) => {
   const target = frozenSalesShareByKey.get(caseKey(row));
   if (!target) {
@@ -1386,6 +1396,12 @@ const salesShareWorkRows = nextCandidateRows.map((row) => {
   });
   return {
     ...row,
+    previousMachineRoute: target.previousMachineRoute,
+    authorityRoute: target.authorityRoute,
+    authorityRouteChanged: target.authorityRouteChanged,
+    servedUnderHumanAuthority: target.servedUnderHumanAuthority,
+    abstentionReasonUnderHumanAuthority:
+      target.abstentionReasonUnderHumanAuthority,
     actual: Number(target.salesShareCashActual),
     legacyForecastableCashActual:
       Number(target.legacyForecastableCashActual),
@@ -1402,7 +1418,7 @@ const salesShareWorkRows = nextCandidateRows.map((row) => {
     userConfirmedSalesShareEventCount:
       Number(target.userConfirmedSalesShareEventCount)
   };
-});
+}).filter((row) => row.servedUnderHumanAuthority === true);
 const salesShareB4Rows = evaluatedB4Rows.map((row) => {
   const target = frozenSalesShareByKey.get(caseKey(row));
   if (!target) {
@@ -1410,9 +1426,11 @@ const salesShareB4Rows = evaluatedB4Rows.map((row) => {
   }
   return {
     ...row,
-    actual: Number(target.salesShareCashActual)
+    actual: Number(target.salesShareCashActual),
+    authorityRoute: target.authorityRoute,
+    servedUnderHumanAuthority: target.servedUnderHumanAuthority
   };
-});
+}).filter((row) => row.servedUnderHumanAuthority === true);
 const salesShareDenseCases = denseCases.map((row) => ({
   ...row,
   actual: Number(row.salesShareCashActual)
@@ -1708,6 +1726,10 @@ const salesShareAutomatedEvaluation = {
   },
   authoritativeFrozenEvaluation: {
     caseCount: salesShareWorkRows.length,
+    previousMachineClassifiedCaseCount: frozenSalesShareTargets.length,
+    humanAuthorityAbstainedCaseCount,
+    humanAuthorityRouteChangedCaseCount,
+    humanAuthorityRouteCounts: humanAuthorityFrozenRouteCounts,
     workCount: new Set(
       salesShareWorkRows.map((row) => row.standardWorkId)
     ).size,
@@ -1723,7 +1745,7 @@ const salesShareAutomatedEvaluation = {
       summarizeM2CurrentCashConcentration(salesShareWorkRows),
     targetIsolation: frozenTargetIsolation,
     interpretation:
-      "same_frozen_cases_relabelled_to_sales_share_only_without_moving_population"
+      "same frozen work-origin-horizon keys were reclassified by user-reviewed workbook membership; pure-buyout keys abstain and are excluded from prediction metrics"
   },
   denseMonthlyDevelopmentDiagnostic: {
     role: "secondary_development_diagnostic",
@@ -1774,22 +1796,32 @@ const salesSharePublicReport = {
     currentTarget: salesShareConfig.target,
     contractChangedByUserDecision: true,
     modelFamilyChanged: false,
-    frozenPopulationMoved: false,
+    frozenPopulationMoved: true,
+    frozenPopulationReclassifiedByHumanAuthority: true,
+    previousMachineClassifiedCaseCount: frozenSalesShareTargets.length,
+    currentHumanAuthorityServedCaseCount: salesShareWorkRows.length,
+    humanAuthorityAbstainedCaseCount,
+    humanAuthorityRouteChangedCaseCount,
+    humanAuthorityRouteCounts: humanAuthorityFrozenRouteCounts,
     userConfirmation: {
-      schema: denseManifest.userConfirmation.schema,
-      authorityMode: "user_business_attestation",
+      schema: "m2.current.human_ledger_partition.v0.1",
+      authorityMode: denseManifest.cashClassificationAuthority,
       authoritySource: "financial_system_record",
-      cashCategory: "sales_share",
+      cashCategory: "workbook_membership_sales_share_or_buyout",
       eventType: "reversal",
       negativeCashEventPolicy:
         denseManifest.userConfirmation.negativeCashEventPolicy,
-      exactCellConfirmationCount:
-        denseManifest.userConfirmation.exactCellConfirmationCount,
-      exactAuthorityCellMatchCount:
-        denseManifest.userConfirmation.exactAuthorityCellMatchCount,
+      legacyExactCellConfirmationCount:
+        denseManifest.userConfirmation.legacyExactCellConfirmationCount,
+      legacyExactCellConfirmationsApplied:
+        denseManifest.userConfirmation.legacyExactCellConfirmationsApplied,
+      machineCashClassificationUsed:
+        denseManifest.machineCashClassificationUsed,
+      salesShareFactCount: denseManifest.salesShareFactCount,
+      buyoutFactCount: denseManifest.buyoutFactCount,
       rawEvidenceExported:
         denseManifest.userConfirmation.rawEvidenceExported,
-      scope: "exact_digest_bound_cash_cell_only"
+      scope: "entire_user_reviewed_private_workbook_membership"
     },
     frozenTargetIsolation,
     denseTargetIsolation
@@ -1808,7 +1840,9 @@ const salesSharePublicReport = {
       publicSalesSharePortfolio.candidate.originCount,
     portfolioEvaluationCellCount:
       publicSalesSharePortfolio.candidate.originHorizonCellCount,
-    populationMoved: false
+    populationMoved: true,
+    populationChangeReason:
+      "user_reviewed_buyout_workbook_membership_replaced_machine_route_inference"
   },
   pointComparisonToPrevious: {
     comparison: salesShareComparison,
@@ -1920,8 +1954,11 @@ await writeFile(
 
 process.stdout.write(`${JSON.stringify({
   candidateId: salesShareConfig.candidate.id,
-  caseCount: candidate.rows.length,
-  workCount: publicReport.scope.uniqueWorkCount,
+  previousMachineClassifiedCaseCount: candidate.rows.length,
+  currentHumanAuthorityServedCaseCount: salesShareWorkRows.length,
+  currentHumanAuthorityServedWorkCount:
+    new Set(salesShareWorkRows.map((row) => row.standardWorkId)).size,
+  humanAuthorityAbstainedCaseCount,
   candidateWape: nextComparison.candidate.wape,
   baseCandidateWape: nextComparison.b4.wape,
   relativeWape: nextComparison.relativeWape,

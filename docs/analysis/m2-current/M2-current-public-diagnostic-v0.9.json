@@ -1,0 +1,2380 @@
+{
+  "schema": "m2.current.public_diagnostic_report.v0.9",
+  "decisionStatus": "not_for_formal_decision",
+  "directionAssessment": {
+    "businessProblemWrong": false,
+    "governanceWrong": false,
+    "engineeringSequenceDrifted": true,
+    "priorInstructionAssessment": "buyout_isolation_was_directionally_correct; history-regime and manual-channel challengers both failed absolute work-level quality; canonical channel and finance-reviewed cash partition are now prerequisites",
+    "retiredSequence": "human_numeric_baseline_and_120_work_business_sample_skipped",
+    "nextPriority": "build canonical channel and finance-reviewed sales-share/buyout masters, then materialize versioned historical as-of signals before unseen-origin evaluation"
+  },
+  "evaluationPolicy": {
+    "humanNumericBaselineRequired": false,
+    "finalHumanAcceptanceMode": "result_acceptance_after_technical_gates",
+    "nextDevelopmentReadiness": "CANONICAL_CHANNEL_AND_PLATFORM_TYPE_MASTER_REQUIRED",
+    "monthlyRollingOriginRequired": true,
+    "separateCashOccurrenceAndPositiveAmountRequired": true,
+    "automatedComparators": [
+      "zero",
+      "seasonal_naive",
+      "Croston",
+      "SBA",
+      "TSB",
+      "ADIDA"
+    ],
+    "requiredMetrics": [
+      "WAPE",
+      "signed_bias",
+      "MASE",
+      "RMSSE",
+      "Brier",
+      "WIS",
+      "CRPS_approximation",
+      "portfolio_origin_WAPE",
+      "portfolio_origin_horizon_APE_distribution",
+      "Forecast_Value_Added"
+    ],
+    "requiredCoverageViews": [
+      "eligibility",
+      "target_classification",
+      "served",
+      "abstention",
+      "economic_scope",
+      "risk_coverage",
+      "decision_resolution"
+    ],
+    "humanRole": "post_gate_quality_assurance_only",
+    "businessSampleRequired": false,
+    "retiredArtifacts": [
+      "docs/analysis/m2-current/M2-current-business-sample-diagnostic-v0.2.json"
+    ]
+  },
+  "evidence": {
+    "schema": "m2.current.public_evidence.v0.6",
+    "decisionStatus": "not_for_formal_decision",
+    "population": {
+      "libraryWorkCount": 3053,
+      "modelWorkCount": 824,
+      "modelCaseCount": 7851,
+      "modelWorkShare": 0.2698984605306256
+    },
+    "coverage": {
+      "cashObservability": {
+        "fullLibrary": 0.7396468495203204,
+        "top1": 0.784825777206678,
+        "top5": 0.7743196465159894,
+        "top10": 0.7594125279899511,
+        "fullLibraryRequired": null,
+        "top10Required": null,
+        "uncommittedCashShare": 0.26035315047967955
+      },
+      "targetClassification": {
+        "frozenClassificationUncertainCashShare": 0,
+        "denseClassificationUncertainCashShare": 0,
+        "maximumAllowed": 0,
+        "passed": true
+      },
+      "workLevelSignals": {
+        "contractStatus": "IMPLEMENTED",
+        "frozen": {
+          "inputCaseCount": 7851,
+          "workOriginSegmentCount": 2402,
+          "uniqueWorkCount": 824,
+          "originCount": 5,
+          "snapshotCount": 0,
+          "occurrenceAvailableCount": 0,
+          "occurrenceMissingCount": 2402,
+          "occurrenceCoverage": 0,
+          "positiveAmountTwoPartReadyCount": 0,
+          "positiveAmountMissingCount": 2402,
+          "positiveAmountTwoPartReadinessCoverage": 0,
+          "bySegment": {
+            "dense": {
+              "workOriginSegmentCount": 1575,
+              "occurrenceMissingCount": 1575,
+              "positiveAmountMissingCount": 1575
+            },
+            "intermittent": {
+              "workOriginSegmentCount": 593,
+              "occurrenceMissingCount": 593,
+              "positiveAmountMissingCount": 593
+            },
+            "dormant": {
+              "workOriginSegmentCount": 234,
+              "occurrenceMissingCount": 234,
+              "positiveAmountMissingCount": 234
+            }
+          },
+          "byOriginWorkOriginSegmentCount": {
+            "2020-12": 148,
+            "2021-06": 296,
+            "2021-12": 551,
+            "2022-06": 613,
+            "2022-12": 794
+          }
+        },
+        "denseMonthly": {
+          "inputCaseCount": 56856,
+          "workOriginSegmentCount": 20600,
+          "uniqueWorkCount": 824,
+          "originCount": 25,
+          "firstOrigin": "2020-12",
+          "lastOrigin": "2022-12",
+          "workOriginSegmentCountPerOrigin": 824,
+          "snapshotCount": 0,
+          "occurrenceAvailableCount": 0,
+          "occurrenceMissingCount": 20600,
+          "occurrenceCoverage": 0,
+          "positiveAmountTwoPartReadyCount": 0,
+          "positiveAmountMissingCount": 20600,
+          "positiveAmountTwoPartReadinessCoverage": 0,
+          "bySegment": {
+            "dense": {
+              "workOriginSegmentCount": 8060,
+              "occurrenceMissingCount": 8060,
+              "positiveAmountMissingCount": 8060
+            },
+            "intermittent": {
+              "workOriginSegmentCount": 11406,
+              "occurrenceMissingCount": 11406,
+              "positiveAmountMissingCount": 11406
+            },
+            "dormant": {
+              "workOriginSegmentCount": 1134,
+              "occurrenceMissingCount": 1134,
+              "positiveAmountMissingCount": 1134
+            }
+          }
+        },
+        "missingReason": "availability_snapshot_missing",
+        "readiness": {
+          "coverageMeasured": true,
+          "occurrenceFullyAvailable": false,
+          "positiveAmountPathFullyAvailable": false,
+          "status": "AS_OF_SIGNAL_COVERAGE_GAPS_PRESENT",
+          "authorizesNewCandidateFamily": false
+        },
+        "currentStateBackfillUsed": false,
+        "sourceInventory": {
+          "auditedSourceRoleCount": 4,
+          "eligibleObservedAsOfSourceRoleCount": 0,
+          "existingAuthorityCanPopulateObservedSnapshots": false,
+          "portableIntakeImplemented": true,
+          "nextAction": "obtain_versioned_complete_historical_snapshots_with_record_level_economic_posting_and_available_at_times"
+        }
+      },
+      "economicScope": {
+        "fullLibraryHistoricalForecastableShareOfLedgerCash": 0.7396468495203204,
+        "modelTarget": "sales_share_cash_only",
+        "allCompanyCashCoverageClaimed": false
+      },
+      "modelEligibility": {
+        "eligibleWorkCount": 824,
+        "excludedWorkCount": 2229,
+        "totalWorkCount": 3053,
+        "workShare": 0.2698984605306256,
+        "reasonLedgerStatus": "AVAILABLE",
+        "reasons": {
+          "notObservableAtAnyFrozenDevelopmentOrigin": 1610,
+          "insufficientHistoryAtEveryEligibleOrigin": 399,
+          "formalCashRouteExcluded": 220
+        },
+        "reasonsExhaustive": true,
+        "reasonsMutuallyExclusive": true,
+        "routeReasonBreakdownSuppressed": true
+      },
+      "served": {
+        "status": "MEASURED",
+        "caseCount": 7083,
+        "caseShareOfFrozenModelPopulation": 0.9021780664883454,
+        "workCount": 758,
+        "workShareOfFrozenModelPopulation": 0.9199029126213593,
+        "workShareOfLibrary": 0.24828037995414345,
+        "cashShareOfFrozenModelPopulation": null,
+        "fullLibraryCashShare": null,
+        "fullLibraryCashShareReason": "overlapping_development_cases_are_not_a_full_library_cash_denominator"
+      }
+    },
+    "segments": {
+      "dense": {
+        "caseCount": 5174,
+        "workCount": 617,
+        "wape": 0.50166443,
+        "signedBias": 0.11719696
+      },
+      "dormant": {
+        "caseCount": 833,
+        "workCount": 76,
+        "wape": 1.00018361,
+        "signedBias": -0.99972006
+      },
+      "intermittent": {
+        "caseCount": 1844,
+        "workCount": 367,
+        "wape": 1.16402041,
+        "signedBias": 0.15116105
+      }
+    },
+    "b4": {
+      "decision": "PRIMARY_COMPARATOR_NOT_RELEASE_APPROVAL",
+      "signedAggregateBias": 0.08911106,
+      "target": "formal_cash",
+      "wape": 0.55648454
+    },
+    "historicalLastCandidate": {
+      "decision": "FAIL",
+      "finalModel": "C3-A",
+      "signedAggregateBias": 0.08273912976841973,
+      "target": "formal_cash",
+      "wape": 0.5539451692408673
+    },
+    "currentCandidate": {
+      "candidateId": "M2-current-sales-share-revenue-service-v0.6",
+      "comparison": {
+        "caseKeyParity": true,
+        "actualParity": true,
+        "candidate": {
+          "caseCount": 7083,
+          "wape": 0.49075894236718814,
+          "signedBias": 0.07378106681783624,
+          "zeroImputationUsed": false
+        },
+        "b4": {
+          "caseCount": 7083,
+          "wape": 0.5492937504056978,
+          "signedBias": 0.18322698382449953,
+          "zeroImputationUsed": false
+        },
+        "relativeWape": -0.10656376118475219
+      },
+      "byHorizon": {
+        "3": {
+          "caseCount": 2202,
+          "wape": 0.39404067255587283,
+          "signedBias": 0.02909769684005392,
+          "zeroImputationUsed": false
+        },
+        "6": {
+          "caseCount": 2202,
+          "wape": 0.4139511148183017,
+          "signedBias": 0.02783382119009738,
+          "zeroImputationUsed": false
+        },
+        "12": {
+          "caseCount": 1444,
+          "wape": 0.4299249237593359,
+          "signedBias": 0.06227798504204987,
+          "zeroImputationUsed": false
+        },
+        "18": {
+          "caseCount": 864,
+          "wape": 0.537341432596619,
+          "signedBias": 0.1294277746745055,
+          "zeroImputationUsed": false
+        },
+        "24": {
+          "caseCount": 371,
+          "wape": 0.7449432886253742,
+          "signedBias": 0.10847505585430049,
+          "zeroImputationUsed": false
+        }
+      },
+      "pairedCi": {
+        "schema": "m2.current.paired_bootstrap.v0.1",
+        "method": "paired_work_origin_pigeonhole",
+        "confidence": 0.95,
+        "iterations": 2000,
+        "seed": 20260724,
+        "workCount": 758,
+        "originCount": 5,
+        "caseCount": 7083,
+        "lower95": -0.18503038244506645,
+        "median": -0.10467899596870356,
+        "upper95": -0.03677695549237806
+      },
+      "acceptance": {
+        "targetContractMigrated": true,
+        "allBuyoutExcludedFromTrainingLabels": true,
+        "allBuyoutExcludedFromBacktestMetrics": true,
+        "allBuyoutExcludedFromForecastOutput": true,
+        "targetPartitionConservationPassed": true,
+        "targetClassificationPassed": true,
+        "workLevelDevelopmentPassed": false,
+        "portfolioDevelopmentBacktestPassed": false,
+        "fullM2MaturityPassed": false,
+        "allCurrentDevelopmentConditionsPassed": false,
+        "developmentDecision": "FAIL",
+        "finalHoldoutOpened": false,
+        "releaseAuthorized": false
+      }
+    },
+    "previousCandidate": {
+      "candidateId": "M2-current-multi-resolution-revenue-service-v0.5",
+      "comparison": {
+        "comparison": {
+          "caseKeyParity": true,
+          "actualParity": true,
+          "candidate": {
+            "caseCount": 7083,
+            "wape": 0.49075894236718814,
+            "signedBias": 0.07378106681783624,
+            "zeroImputationUsed": false
+          },
+          "b4": {
+            "caseCount": 7083,
+            "wape": 0.5492937504056978,
+            "signedBias": 0.18322698382449953,
+            "zeroImputationUsed": false
+          },
+          "relativeWape": -0.10656376118475219
+        },
+        "pairedCi": {
+          "schema": "m2.current.paired_bootstrap.v0.1",
+          "method": "paired_work_origin_pigeonhole",
+          "confidence": 0.95,
+          "iterations": 2000,
+          "seed": 20260724,
+          "workCount": 758,
+          "originCount": 5,
+          "caseCount": 7083,
+          "lower95": -0.18503038244506645,
+          "median": -0.10467899596870356,
+          "upper95": -0.03677695549237806
+        },
+        "interpretation": "same_work_level_candidate_predictions_rescored_against_sales_share_only_actuals"
+      }
+    },
+    "automatedEvaluation": {
+      "schema": "m2.current.automated_evaluation.public.v0.4",
+      "targetContract": {
+        "target": "future_sales_share_cash",
+        "definition": "future_revenue_share_cash_only_excluding_all_buyout_and_identified_non_sales_cash",
+        "buyoutTreatment": "isolated_from_training_labels_backtest_metrics_and_forecast_output",
+        "confirmedBuyoutTreatment": "isolated_non_model_billing_audit_layer",
+        "pureBuyoutTreatment": "null_abstain_outside_M2_forecast_scope",
+        "amountConservation": "salesShareCashActual+isolatedBuyoutCashActual+isolatedOtherCashActual=totalLedgerCashActual"
+      },
+      "authoritativeFrozenEvaluation": {
+        "caseCount": 7083,
+        "workCount": 758,
+        "originCount": 5,
+        "originCadence": "frozen_sparse_semiannual",
+        "finalHoldoutOpened": false,
+        "comparisonToPrevious": {
+          "caseKeyParity": true,
+          "actualParity": true,
+          "candidate": {
+            "caseCount": 7083,
+            "wape": 0.49075894236718814,
+            "signedBias": 0.07378106681783624,
+            "zeroImputationUsed": false
+          },
+          "b4": {
+            "caseCount": 7083,
+            "wape": 0.5492937504056978,
+            "signedBias": 0.18322698382449953,
+            "zeroImputationUsed": false
+          },
+          "relativeWape": -0.10656376118475219
+        },
+        "comparisonToB4": {
+          "caseKeyParity": true,
+          "actualParity": true,
+          "candidate": {
+            "caseCount": 7083,
+            "wape": 0.49075894236718814,
+            "signedBias": 0.07378106681783624,
+            "zeroImputationUsed": false
+          },
+          "b4": {
+            "caseCount": 7083,
+            "wape": 0.5492937504056978,
+            "signedBias": 0.18322698382449953,
+            "zeroImputationUsed": false
+          },
+          "relativeWape": -0.10656376118475219
+        },
+        "multiResolution": {
+          "workCase": {
+            "caseCount": 7083,
+            "wape": 0.4907589423671863,
+            "signedBias": 0.07378106681783611,
+            "zeroImputationUsed": false
+          },
+          "portfolioOriginHorizon": {
+            "groupCount": 19,
+            "caseCount": 19,
+            "wape": 0.08925228867249711,
+            "signedBias": 0.07378205318433281,
+            "zeroImputationUsed": false,
+            "cellAbsolutePercentageError": {
+              "cellCount": 19,
+              "median": 0.0682925014701629,
+              "p75": 0.10474620819460162,
+              "p90": 0.1283449482463131,
+              "maximum": 0.19736453728202827,
+              "shareAtOrBelow10Percent": 0.6842105263157895,
+              "shareAtOrBelow20Percent": 1,
+              "shareAtOrBelow30Percent": 1
+            }
+          },
+          "portfolioOrigin": {
+            "groupCount": 5,
+            "caseCount": 5,
+            "wape": 0.07378205318433358,
+            "signedBias": 0.07378205318433358,
+            "zeroImputationUsed": false,
+            "cellAbsolutePercentageError": {
+              "cellCount": 5,
+              "median": 0.03665409108930463,
+              "p75": 0.05811510917877191,
+              "p90": 0.11097973222020938,
+              "maximum": 0.14622281424783434,
+              "shareAtOrBelow10Percent": 0.8,
+              "shareAtOrBelow20Percent": 1,
+              "shareAtOrBelow30Percent": 1
+            }
+          },
+          "portfolioHorizon": {
+            "groupCount": 5,
+            "caseCount": 5,
+            "wape": 0.07378205318433398,
+            "signedBias": 0.07378205318433398,
+            "zeroImputationUsed": false,
+            "cellAbsolutePercentageError": {
+              "cellCount": 5,
+              "median": 0.06227818496823202,
+              "p75": 0.10847505585430096,
+              "p90": 0.12104668714642498,
+              "maximum": 0.12942777467450767,
+              "shareAtOrBelow10Percent": 0.6,
+              "shareAtOrBelow20Percent": 1,
+              "shareAtOrBelow30Percent": 1
+            }
+          },
+          "originClusterBootstrap": {
+            "schema": "m2.current.origin_cluster_bootstrap.v0.1",
+            "method": "exact_origin_cluster_resampling_with_replacement",
+            "confidence": 0.95,
+            "originCount": 5,
+            "resampleCount": 3125,
+            "wape": {
+              "lower95": 0.03452792509235714,
+              "median": 0.07267811869529574,
+              "upper95": 0.12075179710563108
+            },
+            "signedBias": {
+              "lower95": 0.03452792509235714,
+              "median": 0.07267811869529574,
+              "upper95": 0.12075179710563108
+            }
+          }
+        },
+        "cashAndErrorConcentration": {
+          "caseCount": 7083,
+          "bands": [
+            {
+              "requestedCaseShare": 0.001,
+              "caseCount": 8,
+              "actualCaseShare": 0.001129464915996047,
+              "absoluteCashShare": 0.285596817865879,
+              "absoluteErrorShare": 0.06357303467474228
+            },
+            {
+              "requestedCaseShare": 0.005,
+              "caseCount": 36,
+              "actualCaseShare": 0.005082592121982211,
+              "absoluteCashShare": 0.43099401078893834,
+              "absoluteErrorShare": 0.16591855202724504
+            },
+            {
+              "requestedCaseShare": 0.01,
+              "caseCount": 71,
+              "actualCaseShare": 0.010024001129464916,
+              "absoluteCashShare": 0.5221814430538835,
+              "absoluteErrorShare": 0.2661702988387207
+            },
+            {
+              "requestedCaseShare": 0.05,
+              "caseCount": 355,
+              "actualCaseShare": 0.05012000564732458,
+              "absoluteCashShare": 0.8181282881337213,
+              "absoluteErrorShare": 0.6129844187944886
+            },
+            {
+              "requestedCaseShare": 0.1,
+              "caseCount": 709,
+              "actualCaseShare": 0.10009882818014966,
+              "absoluteCashShare": 0.9120795650602334,
+              "absoluteErrorShare": 0.7550450227699494
+            }
+          ]
+        },
+        "interpretation": "same frozen work-origin-horizon keys were reclassified by user-reviewed workbook membership; pure-buyout keys abstain and are excluded from prediction metrics"
+      },
+      "denseMonthlyDevelopmentDiagnostic": {
+        "role": "secondary_development_diagnostic",
+        "decisionPopulationMoved": false,
+        "workCount": 824,
+        "originCount": 25,
+        "materializedCaseCount": 56856,
+        "labelStatusCounts": {
+          "observed": 56856,
+          "right_censored": 0,
+          "excluded": 0,
+          "invalid": 0
+        },
+        "abstention": {
+          "scoredCaseCount": 44301,
+          "abstainedCaseCount": 12555,
+          "abstentionReasons": {
+            "buyout_outside_m2_forecast_scope": 5715,
+            "unknown_revenue_model": 6840
+          },
+          "pureBuyoutWithoutCutoffCommitment": "null_abstain_not_zero_not_monthly_equivalent"
+        },
+        "rollingBaselineChampion": {
+          "caseCount": 44301,
+          "wape": 0.5307224549273467,
+          "signedBias": -0.2125825488379113,
+          "zeroImputationUsed": false,
+          "mae": 4615.839271744431,
+          "rmse": 47089.736095347944,
+          "mase": 24.682861628030054,
+          "rmsse": 933.6423382638761,
+          "scaledMetricCoverage": 0.9747409765016591,
+          "cashOccurrence": {
+            "positiveCaseCount": 42537,
+            "zeroOrNegativeCaseCount": 1764,
+            "observedRate": 0.9601814857452428,
+            "probabilityCaseCount": 44301,
+            "brier": 0.12146831742568957
+          },
+          "positiveAmount": {
+            "caseCount": 42537,
+            "wape": 0.529416984393356,
+            "signedBias": -0.21389092368936205
+          }
+        },
+        "existingChampionMultiResolution": {
+          "workCase": {
+            "caseCount": 44301,
+            "wape": 0.5307224549273467,
+            "signedBias": -0.2125825488379113,
+            "zeroImputationUsed": false
+          },
+          "portfolioOriginHorizon": {
+            "groupCount": 69,
+            "caseCount": 69,
+            "wape": 0.24434206703364286,
+            "signedBias": -0.2125842100930291,
+            "zeroImputationUsed": false,
+            "cellAbsolutePercentageError": {
+              "cellCount": 69,
+              "median": 0.18471549743762067,
+              "p75": 0.2698899755103798,
+              "p90": 1,
+              "maximum": 1,
+              "shareAtOrBelow10Percent": 0.2463768115942029,
+              "shareAtOrBelow20Percent": 0.5362318840579711,
+              "shareAtOrBelow30Percent": 0.8695652173913043
+            }
+          },
+          "portfolioOrigin": {
+            "groupCount": 25,
+            "caseCount": 25,
+            "wape": 0.23920539056038254,
+            "signedBias": -0.21258421009302889,
+            "zeroImputationUsed": false,
+            "cellAbsolutePercentageError": {
+              "cellCount": 25,
+              "median": 0.1402859780518361,
+              "p75": 0.25990103746278204,
+              "p90": 0.7131554267296067,
+              "maximum": 1,
+              "shareAtOrBelow10Percent": 0.36,
+              "shareAtOrBelow20Percent": 0.56,
+              "shareAtOrBelow30Percent": 0.88
+            }
+          },
+          "portfolioHorizon": {
+            "groupCount": 3,
+            "caseCount": 3,
+            "wape": 0.21258421009302497,
+            "signedBias": -0.21258421009302497,
+            "zeroImputationUsed": false,
+            "cellAbsolutePercentageError": {
+              "cellCount": 3,
+              "median": 0.19800892906722678,
+              "p75": 0.218891917262463,
+              "p90": 0.23142171017960472,
+              "maximum": 0.2397749054576992,
+              "shareAtOrBelow10Percent": 0,
+              "shareAtOrBelow20Percent": 0.6666666666666666,
+              "shareAtOrBelow30Percent": 1
+            }
+          },
+          "originClusterBootstrap": {
+            "schema": "m2.current.origin_cluster_bootstrap.v0.1",
+            "method": "deterministic_origin_cluster_bootstrap",
+            "confidence": 0.95,
+            "originCount": 25,
+            "resampleCount": 2000,
+            "wape": {
+              "lower95": 0.14324043990899327,
+              "median": 0.23591744267659914,
+              "upper95": 0.3606665158613556
+            },
+            "signedBias": {
+              "lower95": -0.3399758928607961,
+              "median": -0.2091042234445198,
+              "upper95": -0.1097047130327637
+            }
+          }
+        },
+        "portfolioReconstruction": {
+          "schema": "m2.current.portfolio_reconstruction.v0.1",
+          "method": "as_of_aggregate_additive_holt_winters_ensemble",
+          "mathematicalModel": {
+            "level": "l_t=alpha*(y_t-s_{t-m})+(1-alpha)*(l_{t-1}+phi*b_{t-1})",
+            "trend": "b_t=beta*(l_t-l_{t-1})+(1-beta)*phi*b_{t-1}",
+            "seasonal": "s_t=gamma*(y_t-l_t)+(1-gamma)*s_{t-m}",
+            "monthlyForecast": "yhat_{t+k}=max(0,l_t+sum_{j=1..k}(phi^j)*b_t+s_{t-m+k})",
+            "horizonCash": "Yhat_{o,h}=calibration_scale*sum_{k=1..h}(yhat_{o+k})",
+            "hierarchy": "portfolio history and truth are sums over works served as of each origin"
+          },
+          "asOfBoundary": {
+            "historyThroughOriginOnly": true,
+            "modelSelectionLabelsAvailableThrough": "2022-01",
+            "evaluationFirstOrigin": "2022-01",
+            "sameOrLaterEvaluationTruthUsedForSelection": false,
+            "finalHoldoutOpened": false
+          },
+          "search": {
+            "modelCount": 244,
+            "selectedModelCount": 3,
+            "selectedModels": [
+              {
+                "id": "holt_winters_additive:damping=1,alpha=0.4,beta=0.05,gamma=0.2",
+                "parameters": {
+                  "family": "additive_holt_winters",
+                  "damping": 1,
+                  "alpha": 0.4,
+                  "beta": 0.05,
+                  "gamma": 0.2,
+                  "seasonLength": 12
+                },
+                "training": {
+                  "caseCount": 21,
+                  "wape": 0.20598975006706577,
+                  "signedBias": -0.20187530375355978,
+                  "zeroImputationUsed": false
+                }
+              },
+              {
+                "id": "holt:damping=1,alpha=0.5,beta=0.05",
+                "parameters": {
+                  "family": "damped_holt",
+                  "damping": 1,
+                  "alpha": 0.5,
+                  "beta": 0.05
+                },
+                "training": {
+                  "caseCount": 21,
+                  "wape": 0.20914040210478463,
+                  "signedBias": -0.18390235842195685,
+                  "zeroImputationUsed": false
+                }
+              },
+              {
+                "id": "holt_winters_additive:damping=1,alpha=0.4,beta=0.05,gamma=0.1",
+                "parameters": {
+                  "family": "additive_holt_winters",
+                  "damping": 1,
+                  "alpha": 0.4,
+                  "beta": 0.05,
+                  "gamma": 0.1,
+                  "seasonLength": 12
+                },
+                "training": {
+                  "caseCount": 21,
+                  "wape": 0.20973250101690716,
+                  "signedBias": -0.20600870902681395,
+                  "zeroImputationUsed": false
+                }
+              }
+            ],
+            "selectionMetric": "training_portfolio_WAPE",
+            "ensemble": "arithmetic_mean",
+            "trainingCellCount": 21,
+            "rawCalibrationScale": 1.2457366589598564,
+            "scalePriorCellCount": 5,
+            "calibrationScale": 1.198479609159884
+          },
+          "candidate": {
+            "originCount": 12,
+            "originHorizonCellCount": 30,
+            "overall": {
+              "caseCount": 30,
+              "wape": 0.4260945157526471,
+              "signedBias": 0.4260945157526471,
+              "zeroImputationUsed": false
+            },
+            "byHorizon": {
+              "3": {
+                "caseCount": 12,
+                "wape": 0.30203708653844574,
+                "signedBias": 0.30203708653844574,
+                "zeroImputationUsed": false
+              },
+              "6": {
+                "caseCount": 12,
+                "wape": 0.3879421703135212,
+                "signedBias": 0.3879421703135212,
+                "zeroImputationUsed": false
+              },
+              "12": {
+                "caseCount": 6,
+                "wape": 0.531798525602745,
+                "signedBias": 0.531798525602745,
+                "zeroImputationUsed": false
+              }
+            },
+            "byOrigin": {
+              "2022-01": {
+                "caseCount": 3,
+                "wape": 0.2734927166956963,
+                "signedBias": 0.2734927166956963,
+                "zeroImputationUsed": false
+              },
+              "2022-02": {
+                "caseCount": 3,
+                "wape": 0.2848479744627462,
+                "signedBias": 0.2848479744627462,
+                "zeroImputationUsed": false
+              },
+              "2022-03": {
+                "caseCount": 3,
+                "wape": 0.39236536925280535,
+                "signedBias": 0.39236536925280535,
+                "zeroImputationUsed": false
+              },
+              "2022-04": {
+                "caseCount": 3,
+                "wape": 0.4409276392296253,
+                "signedBias": 0.4409276392296253,
+                "zeroImputationUsed": false
+              },
+              "2022-05": {
+                "caseCount": 3,
+                "wape": 0.47578582968601146,
+                "signedBias": 0.47578582968601146,
+                "zeroImputationUsed": false
+              },
+              "2022-06": {
+                "caseCount": 3,
+                "wape": 0.6587011688686871,
+                "signedBias": 0.6587011688686871,
+                "zeroImputationUsed": false
+              },
+              "2022-07": {
+                "caseCount": 2,
+                "wape": 0.4700390105813513,
+                "signedBias": 0.4700390105813513,
+                "zeroImputationUsed": false
+              },
+              "2022-08": {
+                "caseCount": 2,
+                "wape": 0.424871450274411,
+                "signedBias": 0.424871450274411,
+                "zeroImputationUsed": false
+              },
+              "2022-09": {
+                "caseCount": 2,
+                "wape": 0.4730377052248865,
+                "signedBias": 0.4730377052248865,
+                "zeroImputationUsed": false
+              },
+              "2022-10": {
+                "caseCount": 2,
+                "wape": 0.41109141343337285,
+                "signedBias": 0.41109141343337285,
+                "zeroImputationUsed": false
+              },
+              "2022-11": {
+                "caseCount": 2,
+                "wape": 0.4060115143609788,
+                "signedBias": 0.4060115143609788,
+                "zeroImputationUsed": false
+              },
+              "2022-12": {
+                "caseCount": 2,
+                "wape": 0.5162893918878546,
+                "signedBias": 0.5162893918878546,
+                "zeroImputationUsed": false
+              }
+            },
+            "cellAbsolutePercentageError": {
+              "cellCount": 30,
+              "median": 0.3763410554547261,
+              "p75": 0.5086773802731815,
+              "p90": 0.5309528707211214,
+              "maximum": 0.8090594835862643,
+              "shareAtOrBelow10Percent": 0,
+              "shareAtOrBelow20Percent": 0.16666666666666666,
+              "shareAtOrBelow30Percent": 0.26666666666666666
+            },
+            "originClusterBootstrap": {
+              "schema": "m2.current.origin_cluster_bootstrap.v0.1",
+              "method": "deterministic_origin_cluster_bootstrap",
+              "confidence": 0.95,
+              "originCount": 12,
+              "resampleCount": 2000,
+              "wape": {
+                "lower95": 0.3616539477611687,
+                "median": 0.42612257375004114,
+                "upper95": 0.5015710486445101
+              },
+              "signedBias": {
+                "lower95": 0.3616539477611687,
+                "median": 0.42612257375004114,
+                "upper95": 0.5015710486445101
+              }
+            }
+          },
+          "seasonalNaiveComparator": {
+            "originCount": 12,
+            "originHorizonCellCount": 30,
+            "overall": {
+              "caseCount": 30,
+              "wape": 0.18189274098641656,
+              "signedBias": -0.14480692055783187,
+              "zeroImputationUsed": false
+            },
+            "byHorizon": {
+              "3": {
+                "caseCount": 12,
+                "wape": 0.24374235394421181,
+                "signedBias": -0.21580460460445094,
+                "zeroImputationUsed": false
+              },
+              "6": {
+                "caseCount": 12,
+                "wape": 0.20216304673734573,
+                "signedBias": -0.1408714967702309,
+                "zeroImputationUsed": false
+              },
+              "12": {
+                "caseCount": 6,
+                "wape": 0.12790066275329548,
+                "signedBias": -0.11097936140564438,
+                "zeroImputationUsed": false
+              }
+            },
+            "byOrigin": {
+              "2022-01": {
+                "caseCount": 3,
+                "wape": 0.29212165338853546,
+                "signedBias": -0.29212165338853546,
+                "zeroImputationUsed": false
+              },
+              "2022-02": {
+                "caseCount": 3,
+                "wape": 0.2754419460867764,
+                "signedBias": -0.2754419460867764,
+                "zeroImputationUsed": false
+              },
+              "2022-03": {
+                "caseCount": 3,
+                "wape": 0.23507323020912002,
+                "signedBias": -0.23507323020912002,
+                "zeroImputationUsed": false
+              },
+              "2022-04": {
+                "caseCount": 3,
+                "wape": 0.19064850531877245,
+                "signedBias": -0.19064850531877245,
+                "zeroImputationUsed": false
+              },
+              "2022-05": {
+                "caseCount": 3,
+                "wape": 0.14799349164051614,
+                "signedBias": -0.14799349164051614,
+                "zeroImputationUsed": false
+              },
+              "2022-06": {
+                "caseCount": 3,
+                "wape": 0.12685120913131803,
+                "signedBias": -0.06745723660578094,
+                "zeroImputationUsed": false
+              },
+              "2022-07": {
+                "caseCount": 2,
+                "wape": 0.13992450791107314,
+                "signedBias": -0.13992450791107314,
+                "zeroImputationUsed": false
+              },
+              "2022-08": {
+                "caseCount": 2,
+                "wape": 0.11069018392647681,
+                "signedBias": -0.11069018392647681,
+                "zeroImputationUsed": false
+              },
+              "2022-09": {
+                "caseCount": 2,
+                "wape": 0.0500778340229813,
+                "signedBias": -0.019003619301427684,
+                "zeroImputationUsed": false
+              },
+              "2022-10": {
+                "caseCount": 2,
+                "wape": 0.051832996662656255,
+                "signedBias": 0.019817329885049733,
+                "zeroImputationUsed": false
+              },
+              "2022-11": {
+                "caseCount": 2,
+                "wape": 0.09013161573446013,
+                "signedBias": 0.09013161573446013,
+                "zeroImputationUsed": false
+              },
+              "2022-12": {
+                "caseCount": 2,
+                "wape": 0.18882495226281076,
+                "signedBias": 0.18882495226281076,
+                "zeroImputationUsed": false
+              }
+            },
+            "cellAbsolutePercentageError": {
+              "cellCount": 30,
+              "median": 0.19078995286806405,
+              "p75": 0.324730934468775,
+              "p90": 0.362624862917512,
+              "maximum": 0.3728209879602183,
+              "shareAtOrBelow10Percent": 0.3333333333333333,
+              "shareAtOrBelow20Percent": 0.5,
+              "shareAtOrBelow30Percent": 0.7333333333333333
+            },
+            "originClusterBootstrap": {
+              "schema": "m2.current.origin_cluster_bootstrap.v0.1",
+              "method": "deterministic_origin_cluster_bootstrap",
+              "confidence": 0.95,
+              "originCount": 12,
+              "resampleCount": 2000,
+              "wape": {
+                "lower95": 0.11426204340771079,
+                "median": 0.1718579369972214,
+                "upper95": 0.22067268555281874
+              },
+              "signedBias": {
+                "lower95": -0.2035254185557167,
+                "median": -0.1440436087746796,
+                "upper95": -0.06477128541184406
+              }
+            }
+          },
+          "forecastValueAdded": -1.3425592106749722,
+          "gates": {
+            "evaluationOriginCountPassed": true,
+            "wapePassed": false,
+            "absoluteBiasPassed": false,
+            "wapeUpper95Passed": false,
+            "absoluteBiasIntervalPassed": false,
+            "p90CellAbsolutePercentageErrorPassed": false,
+            "forecastValueAddedPassed": false
+          },
+          "allPortfolioDevelopmentGatesPassed": false
+        }
+      },
+      "automation": {
+        "decision": "AUTOMATION_BLOCKED",
+        "gates": {
+          "targetPartitionConservationPassed": true,
+          "targetClassificationPassed": true,
+          "workLevelDevelopmentPassed": false,
+          "portfolioDevelopmentBacktestPassed": false,
+          "independentHoldoutPassed": false
+        },
+        "automationAuthorized": false,
+        "releaseAuthorized": false
+      },
+      "retiredHumanPredictionSample": {
+        "required": false,
+        "currentDependency": false,
+        "replayed": false,
+        "skippedByUserDecision": true
+      },
+      "maturityAssessment": {
+        "matureDataPredictionCapability": false,
+        "targetContractCorrected": true,
+        "highAccuracyPortfolioDevelopmentBacktestAvailable": false,
+        "permittedClaim": "sales_share_only_portfolio_development_backtest",
+        "prohibitedClaims": [
+          "buyout_forecast",
+          "mature_work_level_forecasting",
+          "independently_validated_production_forecast",
+          "release_ready",
+          "full_company_cash_coverage"
+        ],
+        "reasons": [
+          "work_level_WAPE_above_0_30",
+          "intermittent_and_dormant_segments_failed",
+          "portfolio_candidate_selected_on_development_data",
+          "final_holdout_sealed"
+        ]
+      },
+      "boundaries": {
+        "aggregateOnly": true,
+        "identifiersPresent": false,
+        "privateRowsPresent": false,
+        "providerCalled": false,
+        "databaseConnected": false,
+        "finalHoldoutOpened": false,
+        "embargoShadowOpened": false,
+        "deferred60MonthLabelsOpened": false,
+        "releaseAuthorized": false
+      }
+    },
+    "recalibration": {
+      "schema": "m2.current.real_bill_recalibration.public.v0.1",
+      "candidateId": "M2-current-history-regime-recalibration-v0.7",
+      "decisionStatus": "not_for_formal_decision",
+      "role": "posthoc_development_diagnostic_only",
+      "target": "future_sales_share_cash",
+      "scope": {
+        "workCount": 824,
+        "originCount": 25,
+        "materializedCaseCount": 56856,
+        "scoredCaseCount": 44301,
+        "populationMoved": false
+      },
+      "realBillReplay": {
+        "deterministicReplayPassed": true,
+        "targetClassificationPassed": true,
+        "targetPartitionConservationPassed": true,
+        "existingWorkLevel": {
+          "wape": 0.49075894236718814,
+          "signedBias": 0.07378106681783624
+        },
+        "existingDenseMonthlyChampion": {
+          "overall": {
+            "caseCount": 44301,
+            "wape": 0.5307224549273467,
+            "signedBias": -0.2125825488379113,
+            "zeroImputationUsed": false,
+            "mae": 4615.839271744431,
+            "rmse": 47089.736095347944,
+            "mase": 24.682861628030054,
+            "rmsse": 933.6423382638761,
+            "scaledMetricCoverage": 0.9747409765016591,
+            "cashOccurrence": {
+              "positiveCaseCount": 42537,
+              "zeroOrNegativeCaseCount": 1764,
+              "observedRate": 0.9601814857452428,
+              "probabilityCaseCount": 44301,
+              "brier": 0.12146831742568957
+            },
+            "positiveAmount": {
+              "caseCount": 42537,
+              "wape": 0.529416984393356,
+              "signedBias": -0.21389092368936205
+            }
+          }
+        },
+        "existingPortfolioDevelopment": {
+          "overall": {
+            "caseCount": 30,
+            "wape": 0.4260945157526471,
+            "signedBias": 0.4260945157526471,
+            "zeroImputationUsed": false
+          },
+          "originClusterBootstrap": {
+            "schema": "m2.current.origin_cluster_bootstrap.v0.1",
+            "method": "deterministic_origin_cluster_bootstrap",
+            "confidence": 0.95,
+            "originCount": 12,
+            "resampleCount": 2000,
+            "wape": {
+              "lower95": 0.3616539477611687,
+              "median": 0.42612257375004114,
+              "upper95": 0.5015710486445101
+            },
+            "signedBias": {
+              "lower95": 0.3616539477611687,
+              "median": 0.42612257375004114,
+              "upper95": 0.5015710486445101
+            }
+          },
+          "forecastValueAdded": -1.3425592106749722
+        }
+      },
+      "challenger": {
+        "design": {
+          "candidateBaselineIds": [
+            "zero",
+            "seasonal_naive",
+            "Croston",
+            "SBA",
+            "TSB",
+            "ADIDA",
+            "recent_mean_3",
+            "seasonal_median_2",
+            "ewma_0_5"
+          ],
+          "minimumTrainingRows": 80,
+          "trainingOriginWindow": 6,
+          "selectionHierarchy": [
+            "segment_horizon_trailing_occurrence",
+            "segment_horizon",
+            "segment",
+            "global"
+          ],
+          "selectionMetric": "mature_earlier_label_WAPE",
+          "historyBoundary": "bill_month_history_through_origin_but_historical_available_at_not_proven",
+          "promotionEligible": false,
+          "finalHoldoutOpened": false,
+          "sameOrLaterOuterTruthRead": false
+        },
+        "overall": {
+          "caseCount": 44301,
+          "wape": 0.41600480411271634,
+          "signedBias": -0.10029071998832838,
+          "zeroImputationUsed": false,
+          "mae": 3618.108286600937,
+          "rmse": 38956.435586367246,
+          "mase": 23.265080681629986,
+          "rmsse": 933.6361829216153,
+          "scaledMetricCoverage": 0.9747409765016591,
+          "cashOccurrence": {
+            "positiveCaseCount": 42537,
+            "zeroOrNegativeCaseCount": 1764,
+            "observedRate": 0.9601814857452428,
+            "probabilityCaseCount": 44301,
+            "brier": 0.12256498682164398
+          },
+          "positiveAmount": {
+            "caseCount": 42537,
+            "wape": 0.415550802353809,
+            "signedBias": -0.10074673906999998
+          }
+        },
+        "byHorizon": {
+          "3": {
+            "caseCount": 16280,
+            "wape": 0.3392411987903468,
+            "signedBias": -0.09487119045806064,
+            "zeroImputationUsed": false,
+            "mae": 1401.648765549724,
+            "rmse": 13529.494733639644,
+            "mase": 8.184433059699186,
+            "rmsse": 361.42386726152597,
+            "scaledMetricCoverage": 0.976965601965602,
+            "cashOccurrence": {
+              "positiveCaseCount": 15393,
+              "zeroOrNegativeCaseCount": 887,
+              "observedRate": 0.9455159705159705,
+              "probabilityCaseCount": 16280,
+              "brier": 0.12472882932862797
+            },
+            "positiveAmount": {
+              "caseCount": 15393,
+              "wape": 0.33852591400702886,
+              "signedBias": -0.09559055780927382
+            }
+          },
+          "6": {
+            "caseCount": 16280,
+            "wape": 0.40092882452033624,
+            "signedBias": -0.09628838149379058,
+            "zeroImputationUsed": false,
+            "mae": 3246.654076742724,
+            "rmse": 29403.77456316179,
+            "mase": 18.743113391626693,
+            "rmsse": 690.7940879187167,
+            "scaledMetricCoverage": 0.976965601965602,
+            "cashOccurrence": {
+              "positiveCaseCount": 15608,
+              "zeroOrNegativeCaseCount": 672,
+              "observedRate": 0.9587223587223587,
+              "probabilityCaseCount": 16280,
+              "brier": 0.11617292609051781
+            },
+            "positiveAmount": {
+              "caseCount": 15608,
+              "wape": 0.4003117728222586,
+              "signedBias": -0.09690754786653832
+            }
+          },
+          "12": {
+            "caseCount": 11741,
+            "wape": 0.45440934714075487,
+            "signedBias": -0.1050822118525303,
+            "zeroImputationUsed": false,
+            "mae": 7206.4939044534885,
+            "rmse": 65372.53517013642,
+            "mase": 50.68150612784053,
+            "rmsse": 1568.3876905143682,
+            "scaledMetricCoverage": 0.9685716719189166,
+            "cashOccurrence": {
+              "positiveCaseCount": 11536,
+              "zeroOrNegativeCaseCount": 205,
+              "observedRate": 0.9825398177327315,
+              "probabilityCaseCount": 11741,
+              "brier": 0.12842780878647211
+            },
+            "positiveAmount": {
+              "caseCount": 11536,
+              "wape": 0.45416493152647375,
+              "signedBias": -0.1053275655885953
+            }
+          }
+        },
+        "bySegment": {
+          "dense": {
+            "caseCount": 23393,
+            "wape": 0.33205603579643217,
+            "signedBias": -0.01640199736849347,
+            "zeroImputationUsed": false,
+            "mae": 3077.6222195095916,
+            "rmse": 20210.442317636007,
+            "mase": 6.894194325082016,
+            "rmsse": 22.94997385872067,
+            "scaledMetricCoverage": 1,
+            "cashOccurrence": {
+              "positiveCaseCount": 23093,
+              "zeroOrNegativeCaseCount": 300,
+              "observedRate": 0.9871756508357201,
+              "probabilityCaseCount": 23393,
+              "brier": 0.05257563852681848
+            },
+            "positiveAmount": {
+              "caseCount": 23093,
+              "wape": 0.3314661904111635,
+              "signedBias": -0.016994252329371948
+            }
+          },
+          "dormant": {
+            "caseCount": 777,
+            "wape": 1.088233196082007,
+            "signedBias": -0.9085103120218933,
+            "zeroImputationUsed": false,
+            "mae": 96.29893591117795,
+            "rmse": 846.3999121333583,
+            "mase": 5.619151039527285,
+            "rmsse": 24.29694276547735,
+            "scaledMetricCoverage": 1,
+            "cashOccurrence": {
+              "positiveCaseCount": 240,
+              "zeroOrNegativeCaseCount": 537,
+              "observedRate": 0.3088803088803089,
+              "probabilityCaseCount": 777,
+              "brier": 0.49034749034749037
+            },
+            "positiveAmount": {
+              "caseCount": 240,
+              "wape": 0.9984630765859923,
+              "signedBias": -0.9982804315179084
+            }
+          },
+          "intermittent": {
+            "caseCount": 20131,
+            "wape": 0.5238055606198715,
+            "signedBias": -0.2079586534987708,
+            "zeroImputationUsed": false,
+            "mae": 4382.105923725519,
+            "rmse": 53525.85554896403,
+            "mase": 44.12953638700739,
+            "rmsse": 1406.8293154267608,
+            "scaledMetricCoverage": 0.9444140877253986,
+            "cashOccurrence": {
+              "positiveCaseCount": 19204,
+              "zeroOrNegativeCaseCount": 927,
+              "observedRate": 0.9539516169092445,
+              "probabilityCaseCount": 20131,
+              "brier": 0.18969994382434002
+            },
+            "positiveAmount": {
+              "caseCount": 19204,
+              "wape": 0.5235621633428464,
+              "signedBias": -0.2082020777584498
+            }
+          }
+        },
+        "relativeWapeImprovementToDenseMonthlyChampion": 0.21615375371734488
+      },
+      "gates": {
+        "improvesDenseMonthlyChampion": true,
+        "developmentWapePassed": false,
+        "overallAbsoluteBiasPassed": false,
+        "eachSegmentWapePassed": false,
+        "eachSegmentAbsoluteBiasPassed": false,
+        "historicalFeatureAvailableAtPassed": false,
+        "independentHoldoutPassed": false,
+        "allAbsoluteQualityGatesPassed": false
+      },
+      "decision": {
+        "promotionDecision": "REJECT_KEEP_V0_3_WORK_LEVEL_FALLBACK",
+        "candidateSelectionAuthorized": false,
+        "operationalForecastAuthorized": false,
+        "reasonCodes": [
+          "posthoc_same_development_window",
+          "overall_WAPE_above_0_30",
+          "intermittent_and_dormant_segments_failed",
+          "historical_feature_available_at_not_proven",
+          "independent_holdout_sealed"
+        ],
+        "nextAction": "materialize_versioned_historical_availability_snapshots_then_evaluate_on_unseen_later_origin_or_separately_authorized_final_holdout"
+      },
+      "boundaries": {
+        "aggregateOnly": true,
+        "identifiersPresent": false,
+        "privateRowsPresent": false,
+        "providerCalled": false,
+        "databaseConnected": false,
+        "finalHoldoutOpened": false,
+        "embargoShadowOpened": false,
+        "deferred60MonthLabelsOpened": false,
+        "releaseAuthorized": false
+      }
+    },
+    "manualChannelBacktest": {
+      "schema": "m2.current.manual_channel_backtest.public.v0.1",
+      "candidateId": "M2-current-manual-channel-prior-v0.8",
+      "target": "future_sales_share_cash",
+      "role": "posthoc_business_rule_comparator_only",
+      "status": "POSTHOC_MANUAL_RULE_REJECTED_CHANNEL_GOVERNANCE_REQUIRED",
+      "scope": {
+        "frozenWorkCount": 824,
+        "representedWorkCount": 214,
+        "caseCount": 379,
+        "origins": [
+          "2019-06",
+          "2019-12",
+          "2020-06"
+        ],
+        "horizonMonths": 36,
+        "labelAvailableThrough": "2023-06",
+        "originCounts": {
+          "2019-06": 65,
+          "2019-12": 100,
+          "2020-06": 214
+        },
+        "segmentCounts": {
+          "dense": 107,
+          "dormant": 4,
+          "intermittent": 268
+        },
+        "specialCategoryCaseCount": 0
+      },
+      "manualRuleSpecification": {
+        "mainChannels": "top three current raw channel components by trailing-12 sales-share cash",
+        "stableMain": "trailing_12_cash / lifecycle_contribution_share",
+        "decliningMain": "latest_month_cash * 12 / lifecycle_contribution_share",
+        "declineBoundary": "latest_month_cash < 0.8 * trailing_12_monthly_average",
+        "edge": "0.5 * nonnegative_net_sales_share_cash_since_rights_start",
+        "lifecycleContributionShare": "0.50 through month 36, linearly decreasing to 0.40 at month 60",
+        "targetHorizonMonths": 36,
+        "channelAliasesUnified": false,
+        "platformBranchImplemented": false,
+        "specialCategoryUnitSalesBranchImplemented": false
+      },
+      "dataQuality": {
+        "channelIdentity": {
+          "auditInterpretation": "exact one-to-one does not prove one real platform per pair",
+          "distinctRawIdCount": 133,
+          "distinctRawIdNamePairCount": 133,
+          "distinctRawNameCount": 133,
+          "rawIdsWithMultipleExactNames": 0,
+          "rawNamesWithMultipleExactIds": 0,
+          "semanticAliasConflictCount": null,
+          "semanticAliasResolutionAvailable": false
+        },
+        "channelCount": {
+          "maximum": 8,
+          "median": 1,
+          "minimum": 1,
+          "p90": 5
+        }
+      },
+      "evaluation": {
+        "trailingAnnualFlat": {
+          "caseCount": 379,
+          "wape": 1.0424803003795395,
+          "signedBias": 0.3026960389472275,
+          "zeroImputationUsed": false
+        },
+        "manualFaithful": {
+          "overall": {
+            "caseCount": 379,
+            "wape": 0.6941542420316599,
+            "signedBias": -0.3205644164896804,
+            "zeroImputationUsed": false
+          },
+          "byOrigin": {
+            "2019-06": {
+              "caseCount": 65,
+              "wape": 0.616096033706538,
+              "signedBias": -0.18189265428907567,
+              "zeroImputationUsed": false
+            },
+            "2019-12": {
+              "caseCount": 100,
+              "wape": 0.7050743526876534,
+              "signedBias": -0.19868083501954475,
+              "zeroImputationUsed": false
+            },
+            "2020-06": {
+              "caseCount": 214,
+              "wape": 0.7283286667625188,
+              "signedBias": -0.48434575285249415,
+              "zeroImputationUsed": false
+            }
+          },
+          "bySegment": {
+            "dense": {
+              "caseCount": 107,
+              "wape": 0.6048865467437995,
+              "signedBias": 0.1533022206518626,
+              "zeroImputationUsed": false
+            },
+            "dormant": {
+              "caseCount": 4,
+              "wape": 1,
+              "signedBias": -1,
+              "zeroImputationUsed": false
+            },
+            "intermittent": {
+              "caseCount": 268,
+              "wape": 0.7591588085991502,
+              "signedBias": -0.6656365553547835,
+              "zeroImputationUsed": false
+            }
+          },
+          "byChannelBand": {
+            "four_plus": {
+              "caseCount": 93,
+              "wape": 0.4766572379773176,
+              "signedBias": -0.10730003773603844,
+              "zeroImputationUsed": false
+            },
+            "one": {
+              "caseCount": 216,
+              "wape": 1.0559285107930363,
+              "signedBias": -0.7141400547998201,
+              "zeroImputationUsed": false
+            },
+            "two_to_three": {
+              "caseCount": 70,
+              "wape": 0.7677532534900381,
+              "signedBias": -0.35996509256828985,
+              "zeroImputationUsed": false
+            }
+          },
+          "byConcentrationBand": {
+            "top2_60_to_80pct": {
+              "caseCount": 31,
+              "wape": 0.33075645614677435,
+              "signedBias": -0.2766709291891008,
+              "zeroImputationUsed": false
+            },
+            "top2_at_least_80pct": {
+              "caseCount": 347,
+              "wape": 0.7695683034845099,
+              "signedBias": -0.3306322864308129,
+              "zeroImputationUsed": false
+            },
+            "top2_below_60pct": {
+              "caseCount": 1,
+              "wape": 0.014517168132431504,
+              "signedBias": -0.014517168132431504,
+              "zeroImputationUsed": false
+            }
+          }
+        },
+        "manualAnnual80Percent": {
+          "caseCount": 379,
+          "wape": 0.7068099435686767,
+          "signedBias": -0.4380514430160077,
+          "zeroImputationUsed": false
+        },
+        "manualFixed50PercentLifecycle": {
+          "caseCount": 379,
+          "wape": 0.6911483151239748,
+          "signedBias": -0.33281692579737104,
+          "zeroImputationUsed": false
+        }
+      },
+      "diagnosticPopulation": {
+        "topTwoShareAtLeast60": 378,
+        "topTwoShareAtLeast70": 369,
+        "topTwoShareAtLeast80": 347,
+        "channelBands": {
+          "four_plus": 93,
+          "one": 216,
+          "two_to_three": 70
+        },
+        "concentrationBands": {
+          "top2_60_to_80pct": 31,
+          "top2_at_least_80pct": 347,
+          "top2_below_60pct": 1
+        },
+        "mainDecisionBands": {
+          "has_declining_main": 169,
+          "stable_main_only": 210
+        },
+        "forecastComposition": {
+          "main": 10492664.38799544,
+          "edge": 132212.94044999997
+        }
+      },
+      "gates": {
+        "developmentWapePassed": false,
+        "overallAbsoluteBiasPassed": false,
+        "channelNormalizationPassed": false,
+        "manualBuyoutTruthPassed": true,
+        "historicalFeatureAvailableAtPassed": false,
+        "specialCategoryBacktestAvailable": false,
+        "independentHoldoutPassed": false,
+        "allPromotionGatesPassed": false
+      },
+      "decision": {
+        "promotionDecision": "REJECT_KEEP_V0_3_WORK_LEVEL_FALLBACK",
+        "automationDecision": "AUTOMATION_BLOCKED",
+        "platformBranchDecision": "BLOCKED_PENDING_CANONICAL_CHANNEL_AND_PLATFORM_TYPE",
+        "specialCategoryDecision": "BLOCKED_NO_MATURE_36_MONTH_DANMEI_CASES_IN_SAFE_WINDOW",
+        "nextAction": "build a finance-reviewed canonical channel and platform-type master, then rerun a platform-category hierarchical challenger on an unseen origin",
+        "reasonCodes": [
+          "manual_rule_WAPE_above_0_30",
+          "overall_absolute_bias_above_0_10",
+          "origin_performance_unstable",
+          "canonical_channel_master_missing",
+          "no_safe_window_danmei_cases",
+          "historical_feature_available_at_not_proven",
+          "independent_holdout_sealed"
+        ]
+      },
+      "boundaries": {
+        "aggregateOnly": true,
+        "identifiersPresent": false,
+        "privateRowsPresent": false,
+        "databaseConnected": false,
+        "providerCalled": false,
+        "finalHoldoutOpened": false,
+        "deferredLabelsOpened": false,
+        "releaseAuthorized": false
+      }
+    },
+    "retiredBusinessSample": {
+      "currentDependency": false,
+      "historicalArtifactOnly": true,
+      "path": "docs/analysis/m2-current/M2-current-business-sample-diagnostic-v0.2.json"
+    },
+    "businessSample": null,
+    "modelQualityDecision": "FAIL",
+    "businessCoverageDecision": "CONDITIONAL",
+    "seals": {
+      "finalHoldoutOpened": false,
+      "embargoShadowOpened": false,
+      "deferred60MonthLabelsOpened": false
+    },
+    "sourceBoundary": {
+      "aggregateOnly": true,
+      "privateRowsRead": false,
+      "databaseConnected": false,
+      "providerCalled": false
+    }
+  },
+  "candidate": {
+    "schema": "m2.current.sales_share_candidate.public.v0.6",
+    "candidateId": "M2-current-sales-share-revenue-service-v0.6",
+    "decisionStatus": "not_for_formal_decision",
+    "status": "SALES_SHARE_TARGET_MIGRATED_DEVELOPMENT_FAIL_BLOCKED",
+    "scope": {
+      "frozenDecisionCaseCount": 7083,
+      "frozenDecisionWorkCount": 758,
+      "frozenDecisionOriginCount": 5,
+      "denseDiagnosticCaseCount": 56856,
+      "denseDiagnosticOriginCount": 25,
+      "portfolioEvaluationOriginCount": 12,
+      "portfolioEvaluationCellCount": 30,
+      "populationMoved": true,
+      "populationChangeReason": "user_reviewed_buyout_workbook_membership_replaced_machine_route_inference"
+    },
+    "pointComparisonToPrevious": {
+      "comparison": {
+        "caseKeyParity": true,
+        "actualParity": true,
+        "candidate": {
+          "caseCount": 7083,
+          "wape": 0.49075894236718814,
+          "signedBias": 0.07378106681783624,
+          "zeroImputationUsed": false
+        },
+        "b4": {
+          "caseCount": 7083,
+          "wape": 0.5492937504056978,
+          "signedBias": 0.18322698382449953,
+          "zeroImputationUsed": false
+        },
+        "relativeWape": -0.10656376118475219
+      },
+      "pairedCi": {
+        "schema": "m2.current.paired_bootstrap.v0.1",
+        "method": "paired_work_origin_pigeonhole",
+        "confidence": 0.95,
+        "iterations": 2000,
+        "seed": 20260724,
+        "workCount": 758,
+        "originCount": 5,
+        "caseCount": 7083,
+        "lower95": -0.18503038244506645,
+        "median": -0.10467899596870356,
+        "upper95": -0.03677695549237806
+      },
+      "interpretation": "same_work_level_candidate_predictions_rescored_against_sales_share_only_actuals"
+    },
+    "pointComparisonToB4": {
+      "comparison": {
+        "caseKeyParity": true,
+        "actualParity": true,
+        "candidate": {
+          "caseCount": 7083,
+          "wape": 0.49075894236718814,
+          "signedBias": 0.07378106681783624,
+          "zeroImputationUsed": false
+        },
+        "b4": {
+          "caseCount": 7083,
+          "wape": 0.5492937504056978,
+          "signedBias": 0.18322698382449953,
+          "zeroImputationUsed": false
+        },
+        "relativeWape": -0.10656376118475219
+      },
+      "pairedCi": {
+        "schema": "m2.current.paired_bootstrap.v0.1",
+        "method": "paired_work_origin_pigeonhole",
+        "confidence": 0.95,
+        "iterations": 2000,
+        "seed": 20260724,
+        "workCount": 758,
+        "originCount": 5,
+        "caseCount": 7083,
+        "lower95": -0.18503038244506645,
+        "median": -0.10467899596870356,
+        "upper95": -0.03677695549237806
+      }
+    },
+    "byHorizon": {
+      "3": {
+        "caseCount": 2202,
+        "wape": 0.39404067255587283,
+        "signedBias": 0.02909769684005392,
+        "zeroImputationUsed": false
+      },
+      "6": {
+        "caseCount": 2202,
+        "wape": 0.4139511148183017,
+        "signedBias": 0.02783382119009738,
+        "zeroImputationUsed": false
+      },
+      "12": {
+        "caseCount": 1444,
+        "wape": 0.4299249237593359,
+        "signedBias": 0.06227798504204987,
+        "zeroImputationUsed": false
+      },
+      "18": {
+        "caseCount": 864,
+        "wape": 0.537341432596619,
+        "signedBias": 0.1294277746745055,
+        "zeroImputationUsed": false
+      },
+      "24": {
+        "caseCount": 371,
+        "wape": 0.7449432886253742,
+        "signedBias": 0.10847505585430049,
+        "zeroImputationUsed": false
+      }
+    },
+    "bySegment": {
+      "dense": {
+        "caseCount": 5174,
+        "wape": 0.45873171426038645,
+        "signedBias": 0.08587016461212042,
+        "zeroImputationUsed": false
+      },
+      "dormant": {
+        "caseCount": 203,
+        "wape": 1.0185414365315342,
+        "signedBias": -0.9717312886662087,
+        "zeroImputationUsed": false
+      },
+      "intermittent": {
+        "caseCount": 1706,
+        "wape": 0.9632167529016884,
+        "signedBias": -0.10112027640164634,
+        "zeroImputationUsed": false
+      }
+    },
+    "probabilistic": null,
+    "multiResolution": {
+      "workLevelFallbackCandidateId": "M2-current-global-distributional-ensemble-v0.4",
+      "authoritativeSparseOriginDiagnostic": {
+        "workCase": {
+          "caseCount": 7083,
+          "wape": 0.4907589423671863,
+          "signedBias": 0.07378106681783611,
+          "zeroImputationUsed": false
+        },
+        "portfolioOriginHorizon": {
+          "groupCount": 19,
+          "caseCount": 19,
+          "wape": 0.08925228867249711,
+          "signedBias": 0.07378205318433281,
+          "zeroImputationUsed": false,
+          "cellAbsolutePercentageError": {
+            "cellCount": 19,
+            "median": 0.0682925014701629,
+            "p75": 0.10474620819460162,
+            "p90": 0.1283449482463131,
+            "maximum": 0.19736453728202827,
+            "shareAtOrBelow10Percent": 0.6842105263157895,
+            "shareAtOrBelow20Percent": 1,
+            "shareAtOrBelow30Percent": 1
+          }
+        },
+        "portfolioOrigin": {
+          "groupCount": 5,
+          "caseCount": 5,
+          "wape": 0.07378205318433358,
+          "signedBias": 0.07378205318433358,
+          "zeroImputationUsed": false,
+          "cellAbsolutePercentageError": {
+            "cellCount": 5,
+            "median": 0.03665409108930463,
+            "p75": 0.05811510917877191,
+            "p90": 0.11097973222020938,
+            "maximum": 0.14622281424783434,
+            "shareAtOrBelow10Percent": 0.8,
+            "shareAtOrBelow20Percent": 1,
+            "shareAtOrBelow30Percent": 1
+          }
+        },
+        "portfolioHorizon": {
+          "groupCount": 5,
+          "caseCount": 5,
+          "wape": 0.07378205318433398,
+          "signedBias": 0.07378205318433398,
+          "zeroImputationUsed": false,
+          "cellAbsolutePercentageError": {
+            "cellCount": 5,
+            "median": 0.06227818496823202,
+            "p75": 0.10847505585430096,
+            "p90": 0.12104668714642498,
+            "maximum": 0.12942777467450767,
+            "shareAtOrBelow10Percent": 0.6,
+            "shareAtOrBelow20Percent": 1,
+            "shareAtOrBelow30Percent": 1
+          }
+        },
+        "originClusterBootstrap": {
+          "schema": "m2.current.origin_cluster_bootstrap.v0.1",
+          "method": "exact_origin_cluster_resampling_with_replacement",
+          "confidence": 0.95,
+          "originCount": 5,
+          "resampleCount": 3125,
+          "wape": {
+            "lower95": 0.03452792509235714,
+            "median": 0.07267811869529574,
+            "upper95": 0.12075179710563108
+          },
+          "signedBias": {
+            "lower95": 0.03452792509235714,
+            "median": 0.07267811869529574,
+            "upper95": 0.12075179710563108
+          }
+        }
+      },
+      "denseMonthlyExistingChampionDiagnostic": {
+        "workCase": {
+          "caseCount": 44301,
+          "wape": 0.5307224549273467,
+          "signedBias": -0.2125825488379113,
+          "zeroImputationUsed": false
+        },
+        "portfolioOriginHorizon": {
+          "groupCount": 69,
+          "caseCount": 69,
+          "wape": 0.24434206703364286,
+          "signedBias": -0.2125842100930291,
+          "zeroImputationUsed": false,
+          "cellAbsolutePercentageError": {
+            "cellCount": 69,
+            "median": 0.18471549743762067,
+            "p75": 0.2698899755103798,
+            "p90": 1,
+            "maximum": 1,
+            "shareAtOrBelow10Percent": 0.2463768115942029,
+            "shareAtOrBelow20Percent": 0.5362318840579711,
+            "shareAtOrBelow30Percent": 0.8695652173913043
+          }
+        },
+        "portfolioOrigin": {
+          "groupCount": 25,
+          "caseCount": 25,
+          "wape": 0.23920539056038254,
+          "signedBias": -0.21258421009302889,
+          "zeroImputationUsed": false,
+          "cellAbsolutePercentageError": {
+            "cellCount": 25,
+            "median": 0.1402859780518361,
+            "p75": 0.25990103746278204,
+            "p90": 0.7131554267296067,
+            "maximum": 1,
+            "shareAtOrBelow10Percent": 0.36,
+            "shareAtOrBelow20Percent": 0.56,
+            "shareAtOrBelow30Percent": 0.88
+          }
+        },
+        "portfolioHorizon": {
+          "groupCount": 3,
+          "caseCount": 3,
+          "wape": 0.21258421009302497,
+          "signedBias": -0.21258421009302497,
+          "zeroImputationUsed": false,
+          "cellAbsolutePercentageError": {
+            "cellCount": 3,
+            "median": 0.19800892906722678,
+            "p75": 0.218891917262463,
+            "p90": 0.23142171017960472,
+            "maximum": 0.2397749054576992,
+            "shareAtOrBelow10Percent": 0,
+            "shareAtOrBelow20Percent": 0.6666666666666666,
+            "shareAtOrBelow30Percent": 1
+          }
+        },
+        "originClusterBootstrap": {
+          "schema": "m2.current.origin_cluster_bootstrap.v0.1",
+          "method": "deterministic_origin_cluster_bootstrap",
+          "confidence": 0.95,
+          "originCount": 25,
+          "resampleCount": 2000,
+          "wape": {
+            "lower95": 0.14324043990899327,
+            "median": 0.23591744267659914,
+            "upper95": 0.3606665158613556
+          },
+          "signedBias": {
+            "lower95": -0.3399758928607961,
+            "median": -0.2091042234445198,
+            "upper95": -0.1097047130327637
+          }
+        }
+      },
+      "portfolioReconstruction": {
+        "schema": "m2.current.portfolio_reconstruction.v0.1",
+        "method": "as_of_aggregate_additive_holt_winters_ensemble",
+        "mathematicalModel": {
+          "level": "l_t=alpha*(y_t-s_{t-m})+(1-alpha)*(l_{t-1}+phi*b_{t-1})",
+          "trend": "b_t=beta*(l_t-l_{t-1})+(1-beta)*phi*b_{t-1}",
+          "seasonal": "s_t=gamma*(y_t-l_t)+(1-gamma)*s_{t-m}",
+          "monthlyForecast": "yhat_{t+k}=max(0,l_t+sum_{j=1..k}(phi^j)*b_t+s_{t-m+k})",
+          "horizonCash": "Yhat_{o,h}=calibration_scale*sum_{k=1..h}(yhat_{o+k})",
+          "hierarchy": "portfolio history and truth are sums over works served as of each origin"
+        },
+        "asOfBoundary": {
+          "historyThroughOriginOnly": true,
+          "modelSelectionLabelsAvailableThrough": "2022-01",
+          "evaluationFirstOrigin": "2022-01",
+          "sameOrLaterEvaluationTruthUsedForSelection": false,
+          "finalHoldoutOpened": false
+        },
+        "search": {
+          "modelCount": 244,
+          "selectedModelCount": 3,
+          "selectedModels": [
+            {
+              "id": "holt_winters_additive:damping=1,alpha=0.4,beta=0.05,gamma=0.2",
+              "parameters": {
+                "family": "additive_holt_winters",
+                "damping": 1,
+                "alpha": 0.4,
+                "beta": 0.05,
+                "gamma": 0.2,
+                "seasonLength": 12
+              },
+              "training": {
+                "caseCount": 21,
+                "wape": 0.20598975006706577,
+                "signedBias": -0.20187530375355978,
+                "zeroImputationUsed": false
+              }
+            },
+            {
+              "id": "holt:damping=1,alpha=0.5,beta=0.05",
+              "parameters": {
+                "family": "damped_holt",
+                "damping": 1,
+                "alpha": 0.5,
+                "beta": 0.05
+              },
+              "training": {
+                "caseCount": 21,
+                "wape": 0.20914040210478463,
+                "signedBias": -0.18390235842195685,
+                "zeroImputationUsed": false
+              }
+            },
+            {
+              "id": "holt_winters_additive:damping=1,alpha=0.4,beta=0.05,gamma=0.1",
+              "parameters": {
+                "family": "additive_holt_winters",
+                "damping": 1,
+                "alpha": 0.4,
+                "beta": 0.05,
+                "gamma": 0.1,
+                "seasonLength": 12
+              },
+              "training": {
+                "caseCount": 21,
+                "wape": 0.20973250101690716,
+                "signedBias": -0.20600870902681395,
+                "zeroImputationUsed": false
+              }
+            }
+          ],
+          "selectionMetric": "training_portfolio_WAPE",
+          "ensemble": "arithmetic_mean",
+          "trainingCellCount": 21,
+          "rawCalibrationScale": 1.2457366589598564,
+          "scalePriorCellCount": 5,
+          "calibrationScale": 1.198479609159884
+        },
+        "candidate": {
+          "originCount": 12,
+          "originHorizonCellCount": 30,
+          "overall": {
+            "caseCount": 30,
+            "wape": 0.4260945157526471,
+            "signedBias": 0.4260945157526471,
+            "zeroImputationUsed": false
+          },
+          "byHorizon": {
+            "3": {
+              "caseCount": 12,
+              "wape": 0.30203708653844574,
+              "signedBias": 0.30203708653844574,
+              "zeroImputationUsed": false
+            },
+            "6": {
+              "caseCount": 12,
+              "wape": 0.3879421703135212,
+              "signedBias": 0.3879421703135212,
+              "zeroImputationUsed": false
+            },
+            "12": {
+              "caseCount": 6,
+              "wape": 0.531798525602745,
+              "signedBias": 0.531798525602745,
+              "zeroImputationUsed": false
+            }
+          },
+          "byOrigin": {
+            "2022-01": {
+              "caseCount": 3,
+              "wape": 0.2734927166956963,
+              "signedBias": 0.2734927166956963,
+              "zeroImputationUsed": false
+            },
+            "2022-02": {
+              "caseCount": 3,
+              "wape": 0.2848479744627462,
+              "signedBias": 0.2848479744627462,
+              "zeroImputationUsed": false
+            },
+            "2022-03": {
+              "caseCount": 3,
+              "wape": 0.39236536925280535,
+              "signedBias": 0.39236536925280535,
+              "zeroImputationUsed": false
+            },
+            "2022-04": {
+              "caseCount": 3,
+              "wape": 0.4409276392296253,
+              "signedBias": 0.4409276392296253,
+              "zeroImputationUsed": false
+            },
+            "2022-05": {
+              "caseCount": 3,
+              "wape": 0.47578582968601146,
+              "signedBias": 0.47578582968601146,
+              "zeroImputationUsed": false
+            },
+            "2022-06": {
+              "caseCount": 3,
+              "wape": 0.6587011688686871,
+              "signedBias": 0.6587011688686871,
+              "zeroImputationUsed": false
+            },
+            "2022-07": {
+              "caseCount": 2,
+              "wape": 0.4700390105813513,
+              "signedBias": 0.4700390105813513,
+              "zeroImputationUsed": false
+            },
+            "2022-08": {
+              "caseCount": 2,
+              "wape": 0.424871450274411,
+              "signedBias": 0.424871450274411,
+              "zeroImputationUsed": false
+            },
+            "2022-09": {
+              "caseCount": 2,
+              "wape": 0.4730377052248865,
+              "signedBias": 0.4730377052248865,
+              "zeroImputationUsed": false
+            },
+            "2022-10": {
+              "caseCount": 2,
+              "wape": 0.41109141343337285,
+              "signedBias": 0.41109141343337285,
+              "zeroImputationUsed": false
+            },
+            "2022-11": {
+              "caseCount": 2,
+              "wape": 0.4060115143609788,
+              "signedBias": 0.4060115143609788,
+              "zeroImputationUsed": false
+            },
+            "2022-12": {
+              "caseCount": 2,
+              "wape": 0.5162893918878546,
+              "signedBias": 0.5162893918878546,
+              "zeroImputationUsed": false
+            }
+          },
+          "cellAbsolutePercentageError": {
+            "cellCount": 30,
+            "median": 0.3763410554547261,
+            "p75": 0.5086773802731815,
+            "p90": 0.5309528707211214,
+            "maximum": 0.8090594835862643,
+            "shareAtOrBelow10Percent": 0,
+            "shareAtOrBelow20Percent": 0.16666666666666666,
+            "shareAtOrBelow30Percent": 0.26666666666666666
+          },
+          "originClusterBootstrap": {
+            "schema": "m2.current.origin_cluster_bootstrap.v0.1",
+            "method": "deterministic_origin_cluster_bootstrap",
+            "confidence": 0.95,
+            "originCount": 12,
+            "resampleCount": 2000,
+            "wape": {
+              "lower95": 0.3616539477611687,
+              "median": 0.42612257375004114,
+              "upper95": 0.5015710486445101
+            },
+            "signedBias": {
+              "lower95": 0.3616539477611687,
+              "median": 0.42612257375004114,
+              "upper95": 0.5015710486445101
+            }
+          }
+        },
+        "seasonalNaiveComparator": {
+          "originCount": 12,
+          "originHorizonCellCount": 30,
+          "overall": {
+            "caseCount": 30,
+            "wape": 0.18189274098641656,
+            "signedBias": -0.14480692055783187,
+            "zeroImputationUsed": false
+          },
+          "byHorizon": {
+            "3": {
+              "caseCount": 12,
+              "wape": 0.24374235394421181,
+              "signedBias": -0.21580460460445094,
+              "zeroImputationUsed": false
+            },
+            "6": {
+              "caseCount": 12,
+              "wape": 0.20216304673734573,
+              "signedBias": -0.1408714967702309,
+              "zeroImputationUsed": false
+            },
+            "12": {
+              "caseCount": 6,
+              "wape": 0.12790066275329548,
+              "signedBias": -0.11097936140564438,
+              "zeroImputationUsed": false
+            }
+          },
+          "byOrigin": {
+            "2022-01": {
+              "caseCount": 3,
+              "wape": 0.29212165338853546,
+              "signedBias": -0.29212165338853546,
+              "zeroImputationUsed": false
+            },
+            "2022-02": {
+              "caseCount": 3,
+              "wape": 0.2754419460867764,
+              "signedBias": -0.2754419460867764,
+              "zeroImputationUsed": false
+            },
+            "2022-03": {
+              "caseCount": 3,
+              "wape": 0.23507323020912002,
+              "signedBias": -0.23507323020912002,
+              "zeroImputationUsed": false
+            },
+            "2022-04": {
+              "caseCount": 3,
+              "wape": 0.19064850531877245,
+              "signedBias": -0.19064850531877245,
+              "zeroImputationUsed": false
+            },
+            "2022-05": {
+              "caseCount": 3,
+              "wape": 0.14799349164051614,
+              "signedBias": -0.14799349164051614,
+              "zeroImputationUsed": false
+            },
+            "2022-06": {
+              "caseCount": 3,
+              "wape": 0.12685120913131803,
+              "signedBias": -0.06745723660578094,
+              "zeroImputationUsed": false
+            },
+            "2022-07": {
+              "caseCount": 2,
+              "wape": 0.13992450791107314,
+              "signedBias": -0.13992450791107314,
+              "zeroImputationUsed": false
+            },
+            "2022-08": {
+              "caseCount": 2,
+              "wape": 0.11069018392647681,
+              "signedBias": -0.11069018392647681,
+              "zeroImputationUsed": false
+            },
+            "2022-09": {
+              "caseCount": 2,
+              "wape": 0.0500778340229813,
+              "signedBias": -0.019003619301427684,
+              "zeroImputationUsed": false
+            },
+            "2022-10": {
+              "caseCount": 2,
+              "wape": 0.051832996662656255,
+              "signedBias": 0.019817329885049733,
+              "zeroImputationUsed": false
+            },
+            "2022-11": {
+              "caseCount": 2,
+              "wape": 0.09013161573446013,
+              "signedBias": 0.09013161573446013,
+              "zeroImputationUsed": false
+            },
+            "2022-12": {
+              "caseCount": 2,
+              "wape": 0.18882495226281076,
+              "signedBias": 0.18882495226281076,
+              "zeroImputationUsed": false
+            }
+          },
+          "cellAbsolutePercentageError": {
+            "cellCount": 30,
+            "median": 0.19078995286806405,
+            "p75": 0.324730934468775,
+            "p90": 0.362624862917512,
+            "maximum": 0.3728209879602183,
+            "shareAtOrBelow10Percent": 0.3333333333333333,
+            "shareAtOrBelow20Percent": 0.5,
+            "shareAtOrBelow30Percent": 0.7333333333333333
+          },
+          "originClusterBootstrap": {
+            "schema": "m2.current.origin_cluster_bootstrap.v0.1",
+            "method": "deterministic_origin_cluster_bootstrap",
+            "confidence": 0.95,
+            "originCount": 12,
+            "resampleCount": 2000,
+            "wape": {
+              "lower95": 0.11426204340771079,
+              "median": 0.1718579369972214,
+              "upper95": 0.22067268555281874
+            },
+            "signedBias": {
+              "lower95": -0.2035254185557167,
+              "median": -0.1440436087746796,
+              "upper95": -0.06477128541184406
+            }
+          }
+        },
+        "forecastValueAdded": -1.3425592106749722,
+        "gates": {
+          "evaluationOriginCountPassed": true,
+          "wapePassed": false,
+          "absoluteBiasPassed": false,
+          "wapeUpper95Passed": false,
+          "absoluteBiasIntervalPassed": false,
+          "p90CellAbsolutePercentageErrorPassed": false,
+          "forecastValueAddedPassed": false
+        },
+        "allPortfolioDevelopmentGatesPassed": false
+      },
+      "cashAndErrorConcentration": {
+        "caseCount": 7083,
+        "bands": [
+          {
+            "requestedCaseShare": 0.001,
+            "caseCount": 8,
+            "actualCaseShare": 0.001129464915996047,
+            "absoluteCashShare": 0.285596817865879,
+            "absoluteErrorShare": 0.06357303467474228
+          },
+          {
+            "requestedCaseShare": 0.005,
+            "caseCount": 36,
+            "actualCaseShare": 0.005082592121982211,
+            "absoluteCashShare": 0.43099401078893834,
+            "absoluteErrorShare": 0.16591855202724504
+          },
+          {
+            "requestedCaseShare": 0.01,
+            "caseCount": 71,
+            "actualCaseShare": 0.010024001129464916,
+            "absoluteCashShare": 0.5221814430538835,
+            "absoluteErrorShare": 0.2661702988387207
+          },
+          {
+            "requestedCaseShare": 0.05,
+            "caseCount": 355,
+            "actualCaseShare": 0.05012000564732458,
+            "absoluteCashShare": 0.8181282881337213,
+            "absoluteErrorShare": 0.6129844187944886
+          },
+          {
+            "requestedCaseShare": 0.1,
+            "caseCount": 709,
+            "actualCaseShare": 0.10009882818014966,
+            "absoluteCashShare": 0.9120795650602334,
+            "absoluteErrorShare": 0.7550450227699494
+          }
+        ]
+      }
+    },
+    "maturityAssessment": {
+      "matureDataPredictionCapability": false,
+      "targetContractCorrected": true,
+      "highAccuracyPortfolioDevelopmentBacktestAvailable": false,
+      "permittedClaim": "sales_share_only_portfolio_development_backtest",
+      "prohibitedClaims": [
+        "buyout_forecast",
+        "mature_work_level_forecasting",
+        "independently_validated_production_forecast",
+        "release_ready",
+        "full_company_cash_coverage"
+      ],
+      "reasons": [
+        "work_level_WAPE_above_0_30",
+        "intermittent_and_dormant_segments_failed",
+        "portfolio_candidate_selected_on_development_data",
+        "final_holdout_sealed"
+      ]
+    },
+    "automation": {
+      "decision": "AUTOMATION_BLOCKED",
+      "gates": {
+        "targetPartitionConservationPassed": true,
+        "targetClassificationPassed": true,
+        "workLevelDevelopmentPassed": false,
+        "portfolioDevelopmentBacktestPassed": false,
+        "independentHoldoutPassed": false
+      },
+      "automationAuthorized": false,
+      "releaseAuthorized": false
+    },
+    "acceptance": {
+      "targetContractMigrated": true,
+      "allBuyoutExcludedFromTrainingLabels": true,
+      "allBuyoutExcludedFromBacktestMetrics": true,
+      "allBuyoutExcludedFromForecastOutput": true,
+      "targetPartitionConservationPassed": true,
+      "targetClassificationPassed": true,
+      "workLevelDevelopmentPassed": false,
+      "portfolioDevelopmentBacktestPassed": false,
+      "fullM2MaturityPassed": false,
+      "allCurrentDevelopmentConditionsPassed": false,
+      "developmentDecision": "FAIL",
+      "finalHoldoutOpened": false,
+      "releaseAuthorized": false
+    },
+    "developmentAuthorization": {
+      "modelTraining": true,
+      "newCandidateFamilyDevelopment": false,
+      "finalHoldout": false,
+      "release": false,
+      "m3Formal": false
+    },
+    "humanEvaluation": {
+      "numericForecastRequired": false,
+      "sample120Required": false,
+      "sample120Replayed": false,
+      "role": "post_gate_quality_assurance_only"
+    },
+    "privacy": {
+      "aggregateOnly": true,
+      "workIdentifiersPresent": false,
+      "privatePathsPresent": false,
+      "rawRowsPresent": false
+    }
+  },
+  "gate": {
+    "schema": "m2.current.diagnostic_gate.v0.1",
+    "status": "CANDIDATE_DEVELOPMENT_FAIL_BLOCKED",
+    "blockers": [
+      "auditable_work_level_signal_coverage_incomplete",
+      "candidate_absolute_wape_above_development_threshold",
+      "candidate_segment_intermittent_wape_failed",
+      "candidate_segment_dormant_wape_failed",
+      "candidate_segment_dormant_bias_failed",
+      "candidate_r0_r5_development_conditions_failed",
+      "portfolio_development_backtest_failed",
+      "full_m2_maturity_not_established",
+      "final_holdout_sealed",
+      "post_gate_quality_assurance_pending"
+    ],
+    "developmentDirection": "auditable_work_level_signals_then_independent_validation",
+    "candidateOverallGatesPassed": false,
+    "candidateDevelopmentQualityPassed": false,
+    "developmentReplayAuthorized": true,
+    "newCandidateFamilyDevelopmentAuthorized": false,
+    "candidateSelectionAuthorized": false,
+    "modelTrainingAuthorized": false,
+    "holdoutAuthorized": false,
+    "releaseAuthorized": false,
+    "m3FormalAuthorized": false
+  },
+  "nextDiagnostics": [
+    "keep_dense_monthly_rolling_origin_and_strong_baselines_as_mandatory_regression_checks",
+    "preserve_digest_bound_user_confirmation_without_generalizing_to_other_cash_cells",
+    "keep_occurrence_and_positive_amount_diagnostics_separate",
+    "materialize_contract_conforming_historical_availability_snapshots_without_current_state_backfill",
+    "use_digest_bound_portable_signal_intake_and_publish_only_aggregate_gap_diagnostics",
+    "keep_all_buyout_cash_outside_training_backtest_and_forecast_output",
+    "report_sales_share_target_completeness_and_company_cash_economic_scope_separately",
+    "report_work_portfolio_origin_and_origin_horizon_resolution_separately",
+    "require_dense_monthly_results_to_confirm_sparse_authority_results",
+    "treat_portfolio_development_pass_as_distinct_from_full_M2_maturity",
+    "keep_commitments_in_the_non_model_billing_audit_layer",
+    "do_not_promote_global_or_distributional_families_that_fail_nested_gates",
+    "use_risk_coverage_business_loss_and_FVA_before_any_automation_claim",
+    "keep_final_holdout_sealed_until_separate_authorization",
+    "keep_manual_channel_rule_as_comparator_until_canonical_channel_and_finance_reviewed_cash_partition_exist",
+    "use_humans_only_for_post_gate_quality_assurance"
+  ]
+}
