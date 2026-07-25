@@ -10,7 +10,7 @@
     "targetPartitionConservationTolerance": 0.000001
   },
   "evaluationPolicy": {
-    "nextDevelopmentReadiness": "HISTORICAL_CHANNEL_STATE_AND_SINGLE_PURCHASE_UNIT_ECONOMICS_REQUIRED",
+    "nextDevelopmentReadiness": "HUMAN_ANCHORED_DEVELOPMENT_FAILED_LATER_ORIGIN_OR_AUDITABLE_WORK_SIGNALS_REQUIRED",
     "requiredCoverageViews": [
       "eligibility",
       "target_classification",
@@ -72,6 +72,29 @@
       "labelAvailableThrough": "2023-06",
       "promotionEligible": false,
       "publicOutput": "docs/analysis/m2-current/M2-current-manual-channel-backtest-v0.1.json"
+    },
+    "humanAnchoredProbabilistic": {
+      "authorization": {
+        "source": "user_goal_2026-07-26",
+        "scope": "local_2021_2025_human_anchored_hierarchical_probabilistic_development",
+        "newCandidateFamilyDevelopment": true,
+        "candidateSelection": false,
+        "laterOrigin": false,
+        "finalHoldout": false,
+        "provider": false,
+        "database": false,
+        "release": false
+      },
+      "candidateId": "M2-current-human-anchored-hierarchical-probabilistic-v1.0",
+      "role": "failed_development_challenger_and_frozen_research_route",
+      "authorityWorkCount": 3053,
+      "modernWindow": {
+        "from": "2021-01",
+        "through": "2025-12"
+      },
+      "fixedSampleSize": false,
+      "promotionEligible": false,
+      "publicOutput": "docs/analysis/m2-current/M2-current-human-anchored-development-v0.1.json"
     }
   },
   "routePolicy": {
@@ -91,10 +114,11 @@
     "recalibration": "docs/analysis/m2-current/M2-current-real-bill-recalibration-v0.1.json",
     "manualChannelBacktest": "docs/analysis/m2-current/M2-current-manual-channel-backtest-v0.1.json",
     "canonicalChannelDevelopment": "docs/analysis/m2-current/M2-current-canonical-channel-development-v0.1.json",
+    "humanAnchoredDevelopment": "docs/analysis/m2-current/M2-current-human-anchored-development-v0.1.json",
     "signalGap": "docs/analysis/m2-current/M2-current-signal-gap-diagnostic-v0.1.json",
     "signalSourceInventory": "docs/analysis/m2-current/M2-current-as-of-source-inventory-v0.1.json"
   },
-  "publicOutput": "docs/analysis/m2-current/M2-current-public-diagnostic-v0.10.json",
+  "publicOutput": "docs/analysis/m2-current/M2-current-public-diagnostic-v0.11.json",
   "authorizations": {
     "provider": false,
     "database": false,

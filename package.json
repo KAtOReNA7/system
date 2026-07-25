@@ -83,6 +83,7 @@
     "develop:m2:current:candidate": "node scripts/m2-current/run_m2_current_candidate.mjs",
     "develop:m2:current:manual-channel": "node scripts/m2-current/run_m2_manual_channel_backtest.mjs",
     "develop:m2:current:canonical-channel": "node scripts/m2-current/run_m2_canonical_channel_development.mjs",
+    "develop:m2:current:human-anchored": "node scripts/m2-current/run_m2_human_anchored_development.mjs",
     "verify:m2:signal-input": "node scripts/m2-current/run_m2_current_signal_input_diagnostics.mjs --verify",
     "verify:m2:channel-governance": "node scripts/m2-current/run_m2_channel_governance_diagnostics.mjs --verify",
     "verify:m2:current": "node scripts/m2-current/run_m2_current_public_diagnostics.mjs --verify && node scripts/m2-current/run_m2_current_signal_input_diagnostics.mjs --verify && node scripts/m2-current/run_m2_channel_governance_diagnostics.mjs --verify",

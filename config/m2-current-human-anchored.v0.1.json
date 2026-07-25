@@ -1,0 +1,240 @@
+{
+  "schema": "m2.current.human_anchored_development.v0.1",
+  "candidateId": "M2-current-human-anchored-hierarchical-probabilistic-v1.0",
+  "target": "future_sales_share_cash",
+  "authorization": {
+    "source": "codex_goal_user_2026-07-26",
+    "scope": "human_anchored_modern_window_development",
+    "populationExpansion": true,
+    "humanParameterLearning": true,
+    "hierarchicalExpertDevelopment": true,
+    "probabilisticDevelopment": true,
+    "strictAuxiliaryRollingOrigin": true,
+    "independentLaterOrigin": false,
+    "finalHoldout": false,
+    "provider": false,
+    "database": false,
+    "canary": false,
+    "release": false,
+    "m3Formal": false
+  },
+  "dataContract": {
+    "authorityWorkCount": 3053,
+    "cashAuthority": "user_reviewed_workbook_membership",
+    "featureAndLabelWindowStart": "2021-01",
+    "featureAndLabelWindowEnd": "2025-12",
+    "historyMonths": 12,
+    "primaryHorizonMonths": 36,
+    "primaryOrigins": [
+      "2021-12",
+      "2022-01",
+      "2022-02",
+      "2022-03",
+      "2022-04",
+      "2022-05",
+      "2022-06",
+      "2022-07",
+      "2022-08",
+      "2022-09",
+      "2022-10",
+      "2022-11",
+      "2022-12"
+    ],
+    "auxiliaryOrigins": [
+      "2021-12",
+      "2022-03",
+      "2022-06",
+      "2022-09",
+      "2022-12",
+      "2023-03",
+      "2023-06",
+      "2023-09",
+      "2023-12",
+      "2024-03",
+      "2024-06",
+      "2024-09",
+      "2024-12",
+      "2025-03",
+      "2025-06",
+      "2025-09"
+    ],
+    "auxiliaryHorizons": [
+      3,
+      6,
+      12,
+      18,
+      24
+    ],
+    "strictAuxiliaryEvaluationStartsAt": "2023-03",
+    "unmaturedLabelPolicy": "exclude_never_zero_impute",
+    "pre2021CashAmountUsed": false,
+    "post2025CashAmountUsed": false,
+    "buyoutCashUsed": false,
+    "negativeCashPolicy": "separate_reversal_then_reconcile_to_net_sales_share_cash"
+  },
+  "humanPrior": {
+    "horizonMonths": 36,
+    "recentMonths": 12,
+    "mainChannelMaximum": 3,
+    "latestToAverageFloor": 0.8,
+    "edgeHistoricalShare": 0.5,
+    "lifecycleYear3Share": 0.5,
+    "lifecycleYear5Share": 0.4,
+    "recentLevelBlend": 0.5,
+    "declineTemperature": 0.1,
+    "mainBoundaryTemperature": 0.5,
+    "dominantTopTwoBoundary": 0.8,
+    "platformTrendWeight": 0.5,
+    "dormantHistoricalShare": 0.5,
+    "dormantAnnualDecay": 0.5
+  },
+  "learning": {
+    "crossWorkFoldCount": 5,
+    "coordinatePasses": 2,
+    "biasPenalty": 0.25,
+    "priorPenalty": 0.0025,
+    "hierarchicalPriorStrength": 120,
+    "occurrencePriorStrength": 80,
+    "reversalPriorStrength": 200,
+    "reversalRateMaximum": 4,
+    "minimumStrictAsOfTrainingRows": 200,
+    "bootstrapIterations": 500,
+    "bootstrapSeed": 20260726,
+    "quantileProbabilities": [
+      0.05,
+      0.1,
+      0.2,
+      0.5,
+      0.8,
+      0.9,
+      0.95
+    ],
+    "parameterGrids": {
+      "latestToAverageFloor": [
+        0.6,
+        0.7,
+        0.8,
+        0.9,
+        1
+      ],
+      "edgeHistoricalShare": [
+        0.25,
+        0.4,
+        0.5,
+        0.65,
+        0.8
+      ],
+      "lifecycleYear3Share": [
+        0.35,
+        0.4,
+        0.45,
+        0.5,
+        0.55,
+        0.6
+      ],
+      "lifecycleYear5Share": [
+        0.3,
+        0.35,
+        0.4,
+        0.45,
+        0.5
+      ],
+      "mainChannelMaximum": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "recentLevelBlend": [
+        0,
+        0.25,
+        0.5,
+        0.75,
+        1
+      ]
+    }
+  },
+  "experts": [
+    "ordinary_membership",
+    "platform_dominant",
+    "single_purchase",
+    "intermittent_or_dormant"
+  ],
+  "literatureMap": [
+    {
+      "concept": "human_lifecycle_prior_and_hierarchical_pooling",
+      "source": "Yelland_2010_Bayesian_forecasting_of_parts_demand",
+      "doi": "10.1016/j.ijforecast.2009.11.001"
+    },
+    {
+      "concept": "forecast_value_added_and_bias_correction",
+      "source": "Fildes_Goodwin_De_Baets_2025",
+      "doi": "10.1016/j.ijforecast.2024.07.006"
+    },
+    {
+      "concept": "interpretable_expert_routing",
+      "source": "Ismail_et_al_2023_Interpretable_Mixture_of_Experts",
+      "url": "https://arxiv.org/abs/2206.02107"
+    },
+    {
+      "concept": "probabilistic_retail_forecast_evaluation",
+      "source": "Makridakis_et_al_2022_M5_uncertainty",
+      "doi": "10.1016/j.ijforecast.2021.10.009"
+    },
+    {
+      "concept": "intermittent_occurrence_and_positive_amount_separation",
+      "source": "Kourentzes_2022_M5_overdispersion_and_intermittency",
+      "doi": "10.1016/j.ijforecast.2021.09.008"
+    },
+    {
+      "concept": "obsolescence_aware_occurrence_probability",
+      "source": "Prestwich_et_al_2018_TSB_obsolescence",
+      "doi": "10.1016/j.ijpe.2018.01.026"
+    },
+    {
+      "concept": "partial_pooling_across_heterogeneous_series",
+      "source": "Smyl_2022_M5_partial_pooling",
+      "doi": "10.1016/j.ijforecast.2021.11.007"
+    },
+    {
+      "concept": "hierarchical_reconciliation_without_work_level_allocation_claim",
+      "source": "Wickramasuriya_Athanasopoulos_Hyndman_2019_MinT",
+      "doi": "10.1080/01621459.2018.1448825"
+    },
+    {
+      "concept": "sequential_conformal_interval_calibration",
+      "source": "Xu_Xie_2023_Sequential_Predictive_Conformal_Inference",
+      "url": "https://proceedings.mlr.press/v202/xu23r"
+    },
+    {
+      "concept": "single_purchase_lifecycle_candidate_only",
+      "source": "Bass_1969_new_product_growth",
+      "doi": "10.1287/mnsc.15.5.215"
+    }
+  ],
+  "gates": {
+    "maximumPrimaryWape": 0.3,
+    "maximumPrimaryAbsoluteBias": 0.1,
+    "minimumRelativeImprovementToManual": 0.1,
+    "minimumRelativeImprovementToV03OnOverlap": 0.05,
+    "maximumMajorSegmentAbsoluteBias": 0.15,
+    "minimumCentral80Coverage": 0.75,
+    "maximumCentral80Coverage": 0.85,
+    "minimumLayerFva": 0,
+    "mappingCoverageRequired": 1,
+    "amountConservationTolerance": 0.000001,
+    "independentLaterOriginRequiredForMaturity": true
+  },
+  "privateOutputs": {
+    "directory": "data/private-output/m2-current-human-anchored",
+    "histories": "M2-current-human-anchored-histories-private-v0.1.ndjson",
+    "primaryCases": "M2-current-human-anchored-primary-cases-private-v0.1.ndjson",
+    "auxiliaryCases": "M2-current-human-anchored-auxiliary-cases-private-v0.1.ndjson",
+    "manifest": "M2-current-human-anchored-manifest-private-v0.1.json",
+    "evaluation": "M2-current-human-anchored-evaluation-private-v0.1.ndjson",
+    "evaluationManifest": "M2-current-human-anchored-evaluation-manifest-private-v0.1.json"
+  },
+  "publicOutput": "docs/analysis/m2-current/M2-current-human-anchored-development-v0.1.json",
+  "publicReport": "docs/analysis/m2-current/M2-current-human-anchored-development-v0.1.md"
+}

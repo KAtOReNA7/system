@@ -14,7 +14,7 @@
 - PR #16：M2 current 严格 as-of 分成事实、快照合同和信号缺口 ledger，已合并。
 - 当前业务结论：`currentDecision=CANARY_FAIL`。
 - 当前开发 readiness：
-  `nextDevelopmentReadiness=HISTORICAL_CHANNEL_STATE_AND_SINGLE_PURCHASE_UNIT_ECONOMICS_REQUIRED`。
+  `nextDevelopmentReadiness=HUMAN_ANCHORED_DEVELOPMENT_FAILED_LATER_ORIGIN_OR_AUDITABLE_WORK_SIGNALS_REQUIRED`。
 - R0–R5 评估已完成；全局 hurdle GLM、Tweedie boosting、hurdle GBM、MinT
   和 ensemble 均未通过 nested gate，v0.4 安全回退 exact v0.3。120 部人工
   评估完全跳过。provider、Canary/full160、final holdout、release 和 M3
@@ -22,13 +22,15 @@
   预测，买断只作评级背景。人工权威复验后作品 WAPE 为 49.08%，portfolio
   WAPE 为 12.79%，但 bias 与区间门禁失败，作品层也失败；v0.8 人工渠道规则
   379 个安全 case 的 WAPE 为 70.44%。canonical 渠道治理现已完成：133 个原始
-  组合归并为 74 个渠道，分成账单 100% 映射且金额守恒；但 v0.9 在 25-origin
-  诊断恶化，在 7,083 served case 只改善 0.0118%，因此继续回退 v0.3。下一步是
-  历史渠道状态、真实上线时间和单购净单价/销量口径，不是继续同窗调参。
+  组合归并为 74 个渠道，分成账单 100% 映射且金额守恒。人工锚定层级概率 v1.0
+  已从全部 3,053 部权威作品建立样本账本；36 个月主评估覆盖 1,125 部独立作品、
+  12,039 个成熟 case，WAPE 为 44.02%，较人工原式改善 17.16%，但绝对质量、
+  分群与作品聚类 bootstrap 仍失败，因此继续回退 v0.3。下一步是独立
+  later-origin 或对明确公式有用的历史 as-of 信号，不是继续同窗调参。
 
 当前导航：
 
-- `docs/analysis/m2-v2/M2-v2-current-state-index-v0.16.md`
+- `docs/analysis/m2-v2/M2-v2-current-state-index-v0.17.md`
 - `docs/analysis/m2-v2/M2-repository-code-convergence-and-portable-development-audit-v0.4.md`
 - `docs/analysis/m2-current/M2-current-maturity-reconstruction-v0.6.md`
 - `docs/analysis/m2-current/M2-sales-share-only-target-decision-v0.1.md`
@@ -39,6 +41,8 @@
 - `docs/analysis/m2-current/M2-current-manual-channel-backtest-v0.1.md`
 - `docs/analysis/m2-current/M2-current-human-ledger-partition-audit-v0.1.md`
 - `docs/analysis/m2-current/M2-current-canonical-channel-development-v0.1.md`
+- `docs/analysis/m2-current/M2-current-human-anchored-development-v0.1.md`
+- `docs/analysis/m2-current/M2-current-human-anchored-research-and-decision-v0.1.md`
 - `docs/analysis/m2-current/M2-current-authority-source-audit-v0.2.json`
 - `docs/prd/m2-v2/M2-forecast-intelligence-v2-prd-v0.2.md`
 - `AGENTS.md`
@@ -152,6 +156,7 @@ npm run doctor:capability -- <capability-id>
 - `m2-v2-current-state`：本机恢复的历史 M2 v2 private state。
 - `m2-algorithm-authoritative-input`：未来单独授权的 M2 算法研究输入。
 - `m2-current-canonical-channel`：本机人工渠道主表和账单驱动的受控 development。
+- `m2-current-human-anchored`：本机 2021—2025 分成账单驱动的人工锚定模型复现。
 - `m3-private-materials`：用户提供 3–5 份 private 材料后的 M3 completion workflow。
 
 文件存在只表示库存存在，不等于真实性通过或执行获授权。private 数据必须继续位于 Git ignored 角色中；不得提交、伪造或从公开摘要反推。
@@ -193,6 +198,10 @@ M2 的正式预测对象是未来分成收入现金。正式边界为：
 | 分成账单渠道映射覆盖 | 100% |
 | v0.9 25-origin 基线 / 候选 WAPE | 0.46274198 / 0.46506585 |
 | v0.9 7,083-case v0.3 / 候选 WAPE | 0.49075894 / 0.49070110 |
+| v1.0 36个月独立作品 / 成熟 case | 1,125 / 12,039 |
+| v1.0 人工原式 / 人工锚定 WAPE | 0.53141021 / 0.44022707 |
+| v1.0 active / intermittent / dormant WAPE | 0.36837319 / 0.82752420 / 1.00000000 |
+| v1.0 相对人工 bootstrap 95% 区间 | [-38.40%, 5.36%] |
 | development WAPE 门槛 | 0.30（未通过） |
 | automation decision | `AUTOMATION_BLOCKED` |
 
@@ -208,7 +217,8 @@ M2 的正式预测对象是未来分成收入现金。正式边界为：
 holdout 或 release。v0.8 人工渠道规则的买断真值门禁已经通过，但 WAPE 仍为
 70.44%。canonical 渠道与平台类型治理现已完成，不能再作为继续阻断数据治理的
 理由；真正剩余的是渠道属性历史生效时间、渠道/合同可售 snapshot、真实上线时间
-和单购净单价。v0.9 没有通过，因此不能替换 v0.3。
+和单购净单价。v0.9 没有通过；v1.0 虽在同窗配对比较中改善，但绝对误差、分群、
+聚类 bootstrap 与独立 later-origin 均未通过，因此同样不能替换 v0.3。
 
 ## M2 当前执行队列
 
@@ -257,8 +267,10 @@ holdout 或 release。v0.8 人工渠道规则的买断真值门禁已经通过�
      不依赖仓库内固定 private 文件名，且只输出聚合覆盖；
    - 新信号先过 25-origin 诊断，再在 7,083 个当前 served case nested 复验，
      并保留 7,851 个旧机器路由 case 的差异审计；
-   - v0.9 渠道曲线已执行并失败，参数与失败结论冻结；
-   - 只有新 historical as-of 信号和单购单位经济证据通过门禁后，才建立下一候选；
+    - v0.9 渠道曲线已执行并失败，参数与失败结论冻结；
+    - v1.0 人工锚定模型已覆盖全部合格作品并失败，参数空间与失败结论冻结；
+    - 只有独立 mature later-origin，或与明确公式绑定的新 historical as-of
+      信号通过门禁后，才建立下一候选；
    - 当前停止新增同类总收入模型和同窗调参。
 9. **决策门禁**
    - 120 部人工评估完全跳过；人工只做技术门禁后的 post-gate QA。
@@ -270,6 +282,7 @@ holdout 或 release。v0.8 人工渠道规则的买断真值门禁已经通过�
 ```bash
 npm run doctor:capability -- m2-algorithm-authoritative-input
 npm run doctor:capability -- m2-current-canonical-channel
+npm run doctor:capability -- m2-current-human-anchored
 npm run verify:m2:current
 ```
 
@@ -281,7 +294,8 @@ capability 的电脑仍可执行全部公共开发基线。
 ```bash
 npm run doctor:capability -- m2-algorithm-authoritative-input
 npm run doctor:capability -- m2-current-canonical-channel
-npm run develop:m2:current:canonical-channel
+npm run doctor:capability -- m2-current-human-anchored
+npm run develop:m2:current:human-anchored
 npm run diagnose:m2:current
 npm run verify:m2:current
 ```

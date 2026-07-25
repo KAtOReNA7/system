@@ -34,6 +34,10 @@ export function loadM2CurrentPublicEvidence(sources, config) {
       sources?.canonicalChannelDevelopment,
       "m2.current.canonical_channel_development.public.v0.1"
     );
+    requireSchema(
+      sources?.humanAnchoredDevelopment,
+      "m2.current.human_anchored.development_public.v0.1"
+    );
   }
   const currentCandidateSchema = config.schema === "m2.current.config.v0.6"
     ? "m2.current.sales_share_candidate.public.v0.6"
@@ -321,6 +325,66 @@ export function loadM2CurrentPublicEvidence(sources, config) {
         "m2_current_canonical_channel_development_evidence_drift"
       );
     }
+    const humanAnchored = sources.humanAnchoredDevelopment;
+    const humanAnchoredLiteratureConcepts = (
+      humanAnchored.literatureMap ?? []
+    ).map((entry) => String(entry.concept)).sort();
+    const expectedHumanAnchoredLiteratureConcepts = [
+      "forecast_value_added_and_bias_correction",
+      "hierarchical_reconciliation_without_work_level_allocation_claim",
+      "human_lifecycle_prior_and_hierarchical_pooling",
+      "interpretable_expert_routing",
+      "intermittent_occurrence_and_positive_amount_separation",
+      "obsolescence_aware_occurrence_probability",
+      "partial_pooling_across_heterogeneous_series",
+      "probabilistic_retail_forecast_evaluation",
+      "sequential_conformal_interval_calibration",
+      "single_purchase_lifecycle_candidate_only"
+    ].sort();
+    if (
+      humanAnchored.candidateId
+        !== "M2-current-human-anchored-hierarchical-probabilistic-v1.0"
+      || humanAnchored.target !== "future_sales_share_cash"
+      || Number(humanAnchored.population.authorityWorkCount) !== 3053
+      || Number(humanAnchored.population.modernWindowWorkWithFactCount)
+        !== 2682
+      || Number(humanAnchored.population.modernWindowFactRowCount)
+        !== 167972
+      || Number(humanAnchored.population.primaryIndependentWorkCount)
+        !== 1125
+      || Number(humanAnchored.population.primaryRepeatedCaseCount) !== 12039
+      || humanAnchored.population.fixed300BookSampleUsed !== false
+      || humanAnchored.dataQuality.mappingCoverage !== 1
+      || Number(humanAnchored.dataQuality.amountConservationDifference) !== 0
+      || Number(humanAnchored.dataQuality.unmaturedLabelZeroImputationCount) !== 0
+      || humanAnchored.dataQuality.signedCashSeparatedBeforeAggregation !== true
+      || humanAnchored.dataQuality.peerTrendExcludesTargetWork !== true
+      || humanAnchored.dataQuality.pre2021CashAmountUsed !== false
+      || humanAnchored.dataQuality.post2025CashAmountUsed !== false
+      || humanAnchored.dataQuality.buyoutCashUsed !== false
+      || JSON.stringify(humanAnchoredLiteratureConcepts)
+        !== JSON.stringify(expectedHumanAnchoredLiteratureConcepts)
+      || !humanAnchored.modelContract.fixedExpertPriors
+        .includes("reversal_rate_maximum")
+      || humanAnchored.primary.developmentLayerSelection
+        .hierarchyAccepted !== false
+      || humanAnchored.primary.developmentLayerSelection
+        .occurrenceReversalAccepted !== false
+      || humanAnchored.decision.developmentDecision
+        !== "HUMAN_ANCHORED_DEVELOPMENT_FAIL"
+      || humanAnchored.decision.maturityDecision !== "M2_NOT_MATURE"
+      || humanAnchored.decision.promotionEligible !== false
+      || humanAnchored.temporalMaturity.independentLaterOriginOpened !== false
+      || humanAnchored.temporalMaturity.finalHoldoutOpened !== false
+      || humanAnchored.boundaries.workIdentifiersPublished !== false
+      || humanAnchored.boundaries.channelIdentifiersPublished !== false
+      || humanAnchored.boundaries.privateRowsPublished !== false
+      || humanAnchored.boundaries.providerUsed !== false
+      || humanAnchored.boundaries.databaseRead !== false
+      || humanAnchored.boundaries.releaseAuthorized !== false
+    ) {
+      throw new Error("m2_current_human_anchored_evidence_drift");
+    }
   }
   const actualHorizons = Object.keys(sources.development.metrics.byHorizon)
     .map(Number)
@@ -537,6 +601,10 @@ export function loadM2CurrentPublicEvidence(sources, config) {
     canonicalChannelDevelopment:
       config.schema === "m2.current.config.v0.6"
         ? sources.canonicalChannelDevelopment
+        : null,
+    humanAnchoredDevelopment:
+      config.schema === "m2.current.config.v0.6"
+        ? sources.humanAnchoredDevelopment
         : null,
     retiredBusinessSample:
       [

@@ -56,7 +56,8 @@ synthetic fixture、加载器、门禁和聚合证据。
 
 ## 3. 模型结构
 
-目标结构是：
+M2 新候选必须以用户提供的主力/边缘渠道人工算法作为结构主干、参数先验和
+fallback，不得另建没有业务含义的平行预测路线。目标结构是：
 
 ```text
 作品 × canonical 平台 × 平台类型 × 三级分类 × 级别 × 上线月龄
@@ -72,6 +73,12 @@ synthetic fixture、加载器、门禁和聚合证据。
 
 当前三级分类与 rating 可以用于 post-hoc 结果分组；若没有历史 snapshot，不得作为
 回测特征。首笔实销月只能报告为 `observedSalesAge`，不能冒充真实上线月。
+
+人工算法中的 80% 下滑阈值、三年 50%/五年 40% 生命周期比例、边缘渠道 50%、
+主力渠道边界和近期收入水平允许按作品外训练学习，但每个变化都必须报告相对人工
+原式的逐层 FVA。模型必须同时包含普通会员、平台主导、单购和
+intermittent/dormant 四个受约束专家，并把正向收入与负数冲销分开。点预测之外
+必须输出分位数和风险区间。
 
 ### 3.1 会员/广告分成平台
 
@@ -104,9 +111,15 @@ seasonal naive、Croston/SBA/TSB/ADIDA 等基线比较。
 - 收入模式；
 - risk–coverage 与业务损失。
 
-新信号先通过 25-origin 月度诊断，再在当前人工权威 7,083 served case 做 nested
-比较，同时保留旧 7,851 machine-route case 的差异审计。任何 promotion 还必须
-使用未参与模型设计的预注册 later-origin 或经单独授权的 final holdout。
+新模型必须从全部 3,053 部权威作品建立资格 ledger，使用全部合格独立作品，不得
+固定抽取 300 本。重复 origin 不能冒充新的独立作品；bootstrap 和分折必须按作品
+聚类。2021—2025 是当前现代平台阶段，36 个月未成熟标签必须排除而不是填 0；
+2023—2025 只能用于对应标签已成熟的短周期辅助目标。
+
+新信号先通过逐月 rolling-origin 辅助诊断，再做按作品隔离的 nested 比较，同时
+保留旧 7,851 machine-route case 与当前人工权威 served 人口的差异审计。任何
+promotion 还必须使用未参与模型设计的预注册 later-origin 或经单独授权的 final
+holdout。
 
 最低 development 门禁：
 
@@ -121,7 +134,8 @@ case 或调整同窗参数来代替证据质量。
 
 ## 5. 人工角色
 
-120 部人工预测清单已永久退出 current 流程，不得重建或生成替代样本。人工只负责：
+120 部人工预测清单已永久退出 current 流程，不得重建或生成替代样本。人工算法
+是模型结构与先验，不是一个需要人工继续填写金额的比赛样本。人工只负责：
 
 - 账单分区；
 - 渠道主数据；
@@ -132,12 +146,24 @@ case 或调整同窗参数来代替证据质量。
 ## 6. 当前状态
 
 canonical 渠道治理已完成：133 个原始组合归并为 74 个 canonical 渠道，分成账单
-190,663 行 100% 映射且金额守恒。首轮 v0.9 只在会员/广告分成终端上使用渠道曲线：
+190,663 行 100% 映射且金额守恒。v0.9 渠道曲线候选已经失败。随后完成的
+人工锚定层级概率 v1.0 使用 2021—2025 分成账单，从全部 3,053 部权威作品开始，
+形成 1,125 部独立作品、12,039 个成熟 36 个月 case：
 
-- 25-origin seasonal-naive 基线 WAPE 0.46274198，v0.9 为 0.46506585；
-- 7,083 current served case 的 exact v0.3 WAPE 0.49075894，v0.9 为
-  0.49070110，改善仅 0.0118%，未达到 1% 门槛；
-- 历史渠道属性生效时间、渠道状态、真实上线月、单购净单价和独立验证均缺失。
+- 人工原式 WAPE/bias 为 `0.53141021 / -0.40552340`；
+- v1.0 WAPE/bias 为 `0.44022707 / -0.12366598`，相对人工原式改善
+  `17.16%`；
+- 5,203 个与 v0.3 精确重叠的 case 上，v1.0 WAPE 为 `0.27683274`，
+  v0.3 为 `0.37610234`；
+- active/intermittent/dormant WAPE 分别为 `0.36837319 / 0.82752420 /
+  1.00000000`；
+- 作品聚类 bootstrap 的相对人工 WAPE 改善 95% 区间为
+  `[-38.40%, 5.36%]`，仍跨 0；
+- 历史渠道属性生效时间、渠道状态、真实上线月、单购净单价和独立 later-origin
+  均缺失。
 
-结论：`REJECT_KEEP_V0_3_WORK_LEVEL_FALLBACK`。final holdout、provider、数据库、
-Canary/full160、release 和 M3 formal 均未授权。
+结论：`HUMAN_ANCHORED_DEVELOPMENT_FAIL` / `M2_NOT_MATURE`，继续
+`REJECT_KEEP_V0_3_WORK_LEVEL_FALLBACK`。v1.0 参数和失败结论冻结，不得在同一
+窗口继续调参。下一步只能是未参与选择的 mature later-origin，或对明确模型公式
+有用的历史 as-of 可审计信号。final holdout、provider、数据库、Canary/full160、
+release 和 M3 formal 均未授权。

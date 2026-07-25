@@ -1,13 +1,14 @@
 # 决策登记表
 
 M2 当前授权与停止边界只由用户最新明确指令和
-`docs/analysis/m2-v2/M2-v2-current-state-index-v0.16.md` 给出。下列历史记录中
+`docs/analysis/m2-v2/M2-v2-current-state-index-v0.17.md` 给出。下列历史记录中
 出现的“已授权”“当前”或 next step 不构成 provider、resume、Canary、full160、
 holdout 或新开发授权。
 
 | 决策 | 状态 | 当前结论 | ADR |
 |---|---|---|---|
 | DEC-015 | 当前 | M2 只预测未来分成收入现金；全部买断现金（包括 cutoff 已确认买断应收）在预测范围外。人工账单分区是现金类型唯一权威；133 个渠道原始组合已归并为 74 个 canonical 渠道。v0.9 在 25-origin 诊断恶化、在 7,083 served case 仅改善 0.0118%，结论 `REJECT_KEEP_V0_3_WORK_LEVEL_FALLBACK` | `docs/prd/m2-v2/M2-forecast-intelligence-v2-prd-v0.2.md` |
+| DEC-016 | 当前 | 人工主力/边缘渠道算法是新模型唯一结构主干和 fallback。v1.0 从全部 3,053 部权威作品建立资格账本，在 1,125 部独立作品、12,039 个成熟 36 个月 case 上较人工原式改善 17.16%，但 WAPE 0.44022707、bias -0.12366598，分群、作品聚类 bootstrap 与 later-origin 门禁失败；冻结 v1.0，继续 exact v0.3 fallback | `docs/analysis/m2-current/M2-current-human-anchored-research-and-decision-v0.1.md` |
 | DEC-014 | 历史收口声明（已被 PR #7 独立外审修复轮 supersede） | v0.1 summary 记录当时的 verifier/private-state 收口声明；独立外审随后识别 merge blockers，因此该行只作历史追溯、`not authorization`。当前状态只见 current-state-index-v0.2；PR #7 保持 Draft/open/unmerged，`nextDevelopmentReadiness=NOT_AUTHORIZED` | `docs/analysis/m2-v2/M2-v2-integrity-remediation-summary-v0.1.md` |
 | DEC-013 | 历史原始决定 + 已被后续修复轮 supersede 的 restatement v0.2 | V2-B.1 至 V2-B.8 全部保留为历史 checkpoint；V2-B.8 原始结论仍为 `CANARY_CONDITIONAL`。v0.2 restatement 的 `CANARY_FAIL` 只保留为版本化历史，不是当前授权；当前 restatement/authority 只经 current-state-index-v0.2 解析。`full160Authorized=false` | `docs/analysis/m2-v2/M2-v2-canary-v3-1-integrity-restatement-v0.2.md` |
 | DEC-012 | 历史（V2-B initial fail-closed checkpoint） | 当时冻结 160 部 immutable 样本与 evidence pilot framework，640 个计划 query 未外发，判 `PILOT_CONDITIONAL`、V2-C `NOT_READY`。该 checkpoint 后续已由 B.2–B.8 推进替代；其 provider resume 句不构成当前授权，当前以 DEC-013/014 为准 | `docs/analysis/m2-v2/M2-v2-evidence-pilot-summary-v0.1.md` |

@@ -15,7 +15,7 @@ export function buildM2CurrentPublicDiagnosticReport(
   ].includes(config.schema);
   return {
     schema: config.schema === "m2.current.config.v0.6"
-      ? "m2.current.public_diagnostic_report.v0.10"
+      ? "m2.current.public_diagnostic_report.v0.11"
       : config.schema === "m2.current.config.v0.5"
       ? "m2.current.public_diagnostic_report.v0.6"
       : config.schema === "m2.current.config.v0.4"
@@ -36,14 +36,14 @@ export function buildM2CurrentPublicDiagnosticReport(
         ].includes(config.schema),
       priorInstructionAssessment:
         config.schema === "m2.current.config.v0.6"
-          ? "buyout_isolation_and_canonical_channel_governance_were_directionally_correct; v0.7_v0.8_and_v0.9_challengers_failed_absolute_work_level_quality; historical_channel_state_and_single_purchase_unit_economics_are_now_prerequisites"
+          ? "buyout_isolation_canonical_channel_governance_and_human_anchored_modeling_were_directionally_correct; v1.0_improved_over_manual_and_v0.3_on_matched_development_cases_but_failed_absolute_segment_and_cluster_bootstrap_gates"
           : config.schema === "m2.current.config.v0.5"
           ? "directionally_correct_evaluation_but_over_specified_algorithm_families_before_signal_and_decision_grain"
           : "not_reassessed",
       retiredSequence:
         "human_numeric_baseline_and_120_work_business_sample_skipped",
       nextPriority: config.schema === "m2.current.config.v0.6"
-        ? "materialize_historical_channel_status_and_single_purchase_unit_economics_then_preregister_unseen_later_origin_validation"
+        ? "freeze_v1_0_and_obtain_an_unseen_later_origin_or_auditable_historical_work_signals_before_any_new_nested_challenger"
         : config.schema === "m2.current.config.v0.5"
         ? "independent_portfolio_validation_then_auditable_work_level_signals"
         : config.schema === "m2.current.config.v0.4"
@@ -78,7 +78,7 @@ export function buildM2CurrentPublicDiagnosticReport(
       "use_risk_coverage_business_loss_and_FVA_before_any_automation_claim",
       "keep_final_holdout_sealed_until_separate_authorization",
       config.schema === "m2.current.config.v0.6"
-        ? "keep_v0_9_canonical_channel_challenger_rejected_until_as_of_channel_status_unit_economics_and_unseen_origin_validation_exist"
+        ? "keep_v1_0_human_anchored_challenger_rejected_and_frozen_until_unseen_later_origin_or_auditable_historical_work_signals_exist"
         : "keep_channel_identity_auditable",
       "use_humans_only_for_post_gate_quality_assurance"
     ]
@@ -189,6 +189,56 @@ function compactEvidence(evidence) {
         gates: evidence.canonicalChannelDevelopment.gates,
         decision: evidence.canonicalChannelDevelopment.decision,
         boundaries: evidence.canonicalChannelDevelopment.boundaries
+      }
+      : null,
+    humanAnchoredDevelopment: evidence.humanAnchoredDevelopment
+      ? {
+        schema: evidence.humanAnchoredDevelopment.schema,
+        candidateId: evidence.humanAnchoredDevelopment.candidateId,
+        target: evidence.humanAnchoredDevelopment.target,
+        decision: evidence.humanAnchoredDevelopment.decision,
+        population: evidence.humanAnchoredDevelopment.population,
+        dataQuality: evidence.humanAnchoredDevelopment.dataQuality,
+        modelContract: evidence.humanAnchoredDevelopment.modelContract,
+        primary: {
+          design: evidence.humanAnchoredDevelopment.primary.design,
+          caveat: evidence.humanAnchoredDevelopment.primary.caveat,
+          point: evidence.humanAnchoredDevelopment.primary.metrics.point,
+          fva: evidence.humanAnchoredDevelopment.primary.metrics.fva,
+          probabilistic:
+            evidence.humanAnchoredDevelopment.primary.metrics.probabilistic,
+          developmentLayerSelection:
+            evidence.humanAnchoredDevelopment.primary
+              .developmentLayerSelection,
+          bySegment:
+            evidence.humanAnchoredDevelopment.primary.metrics.bySegment,
+          byRevenueMode:
+            evidence.humanAnchoredDevelopment.primary.metrics.byRevenueMode,
+          relativeWapeToManual:
+            evidence.humanAnchoredDevelopment.primary.relativeWapeToManual,
+          bootstrap: evidence.humanAnchoredDevelopment.primary.bootstrap
+        },
+        strictAuxiliary: {
+          design: evidence.humanAnchoredDevelopment.strictAuxiliary.design,
+          point:
+            evidence.humanAnchoredDevelopment.strictAuxiliary.metrics.point,
+          fva:
+            evidence.humanAnchoredDevelopment.strictAuxiliary.metrics.fva,
+          byHorizon:
+            evidence.humanAnchoredDevelopment.strictAuxiliary.metrics.byHorizon
+        },
+        v03ExactOverlap: {
+          design: evidence.humanAnchoredDevelopment.v03ExactOverlap.design,
+          caseCount: evidence.humanAnchoredDevelopment.v03ExactOverlap.caseCount,
+          newModel: evidence.humanAnchoredDevelopment.v03ExactOverlap.newModel,
+          v03: evidence.humanAnchoredDevelopment.v03ExactOverlap.v03,
+          relativeWapeToV03:
+            evidence.humanAnchoredDevelopment.v03ExactOverlap
+              .relativeWapeToV03
+        },
+        temporalMaturity:
+          evidence.humanAnchoredDevelopment.temporalMaturity,
+        boundaries: evidence.humanAnchoredDevelopment.boundaries
       }
       : null,
     automatedEvaluation: {

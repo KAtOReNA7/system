@@ -266,7 +266,7 @@ function buildEvaluationPolicy(value, schema) {
     "evaluation_policy_next_development_readiness"
   );
   const expectedReadiness = schema === "m2.current.config.v0.6"
-    ? "HISTORICAL_CHANNEL_STATE_AND_SINGLE_PURCHASE_UNIT_ECONOMICS_REQUIRED"
+    ? "HUMAN_ANCHORED_DEVELOPMENT_FAILED_LATER_ORIGIN_OR_AUDITABLE_WORK_SIGNALS_REQUIRED"
     : schema === "m2.current.config.v0.5"
     ? "PORTFOLIO_INDEPENDENT_VALIDATION_AND_WORK_LEVEL_SIGNAL_REQUIRED"
     : schema === "m2.current.config.v0.4"

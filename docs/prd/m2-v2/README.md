@@ -5,7 +5,7 @@
 - 当前产品合同：`M2-forecast-intelligence-v2-prd-v0.2.md`
 - 当前预测目标：未来分成收入现金
 - 当前作品级 fallback：`M2-current-occurrence-amount-calibration-v0.3`
-- 当前渠道候选：v0.9，development `FAIL`，不得替换 v0.3
+- 当前人工锚定候选：v1.0，development `FAIL`，不得替换 v0.3
 - 当前业务状态：`CANARY_FAIL` / `AUTOMATION_BLOCKED`
 - final holdout、provider、数据库、Canary/full160、release、M3 formal：未授权
 
@@ -15,8 +15,10 @@ human baseline、未来买断、resume、Canary、full160、next step 或授权�
 
 当前治理入口：
 
-- `docs/analysis/m2-v2/M2-v2-current-state-index-v0.16.md`
-- `docs/analysis/m2-current/M2-current-public-diagnostic-v0.10.json`
+- `docs/analysis/m2-v2/M2-v2-current-state-index-v0.17.md`
+- `docs/analysis/m2-current/M2-current-public-diagnostic-v0.11.json`
+- `docs/analysis/m2-current/M2-current-human-anchored-development-v0.1.md`
+- `docs/analysis/m2-current/M2-current-human-anchored-research-and-decision-v0.1.md`
 - `docs/analysis/m2-current/M2-current-canonical-channel-development-v0.1.md`
 - `docs/analysis/m2-current/M2-current-authority-source-audit-v0.2.json`
 
