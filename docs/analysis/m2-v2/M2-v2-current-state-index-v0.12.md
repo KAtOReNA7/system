@@ -113,6 +113,7 @@ npm run verify:m2:current
 - `docs/analysis/m2-current/M2-current-signal-gap-diagnostic-v0.1.json`
 - `docs/analysis/m2-current/M2-current-as-of-signal-readiness-v0.1.md`
 - `docs/analysis/m2-current/M2-current-authority-source-audit-v0.1.json`
+- `docs/analysis/m2-current/M2-current-user-confirmation-form-zh-CN-v0.1.md`
 - `docs/analysis/m2-current/M2-current-as-of-source-inventory-v0.1.json`
 - `docs/analysis/m2-current/M2-current-signal-input-portable-intake-v0.1.md`
 - `docs/analysis/m2-current/M2-current-signal-input-portable-diagnostic-v0.1.json`
