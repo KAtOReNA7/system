@@ -50,6 +50,10 @@ REGISTRY_CASH_TYPES = frozenset(
     }
 )
 CONSERVATION_TOLERANCE = 0.000001
+TARGET_CLASSIFICATION_CASH_CATEGORIES = frozenset({"sales_share"})
+TARGET_CLASSIFICATION_EVENT_TYPES = frozenset(
+    {"refund", "reversal", "settlement_adjustment"}
+)
 
 
 class FormalCashContractError(RuntimeError):
@@ -58,6 +62,74 @@ class FormalCashContractError(RuntimeError):
 
 def canonical_digest(value: Any) -> str:
     return hashlib.sha256(base.canonical_json_bytes(value)).hexdigest()
+
+
+def truth_cash_cell_digest(
+    standard_work_id: str,
+    channel_component_key: str,
+    month: str,
+    amount: Any,
+) -> str:
+    """Bind a user confirmation to one exact authority cash cell."""
+
+    work_id = _require_nonempty_string(standard_work_id, "standard_work_id")
+    component = _require_nonempty_string(
+        channel_component_key, "channel_component_key"
+    )
+    if not _is_month(month):
+        raise FormalCashContractError("truth cash cell month must use YYYY-MM")
+    numeric_amount = base.require_finite_number(amount, "truth cash cell amount")
+    return canonical_digest(
+        {
+            "standardWorkId": work_id,
+            "channelComponentKey": component,
+            "month": str(month),
+            "amount": round(float(numeric_amount), 8),
+        }
+    )
+
+
+def _normalize_target_classification_confirmations(
+    confirmations: Sequence[Mapping[str, Any]] | None,
+) -> dict[str, dict[str, str]]:
+    if confirmations is None:
+        return {}
+    if not isinstance(confirmations, Sequence) or isinstance(
+        confirmations, (str, bytes, bytearray)
+    ):
+        raise FormalCashContractError(
+            "target classification confirmations must be a sequence"
+        )
+    normalized: dict[str, dict[str, str]] = {}
+    for confirmation in confirmations:
+        if not isinstance(confirmation, Mapping):
+            raise FormalCashContractError(
+                "target classification confirmation must be an object"
+            )
+        digest = str(confirmation.get("targetCellSha256", "")).strip()
+        cash_category = str(confirmation.get("cashCategory", "")).strip()
+        event_type = str(confirmation.get("eventType", "")).strip()
+        if re.fullmatch(r"[a-f0-9]{64}", digest) is None:
+            raise FormalCashContractError(
+                "target classification confirmation digest is invalid"
+            )
+        if cash_category not in TARGET_CLASSIFICATION_CASH_CATEGORIES:
+            raise FormalCashContractError(
+                "target classification cash category is unsupported"
+            )
+        if event_type not in TARGET_CLASSIFICATION_EVENT_TYPES:
+            raise FormalCashContractError(
+                "target classification event type is unsupported"
+            )
+        if digest in normalized:
+            raise FormalCashContractError(
+                "duplicate target classification confirmation digest"
+            )
+        normalized[digest] = {
+            "cashCategory": cash_category,
+            "eventType": event_type,
+        }
+    return normalized
 
 
 def load_spec(path: Path = SPEC_PATH) -> dict[str, Any]:
@@ -429,7 +501,16 @@ def _truth_cash_components(
     origin: str,
     horizon: int,
     calibration_spec: Mapping[str, Any],
+    target_classification_confirmations: (
+        Sequence[Mapping[str, Any]] | None
+    ) = None,
 ) -> dict[str, Any]:
+    work_id = _require_nonempty_string(
+        work.get("standard_work_id"), "work standard_work_id"
+    )
+    confirmations = _normalize_target_classification_confirmations(
+        target_classification_confirmations
+    )
     target_end = base.add_months(origin, horizon)
     target_month_list = base.month_range(base.add_months(origin, 1), target_end)
     target_months = set(target_month_list)
@@ -437,6 +518,8 @@ def _truth_cash_components(
     classifier_buyout = 0.0
     uncertain = False
     uncertain_amount = 0.0
+    user_confirmed_sales_share_amount = 0.0
+    user_confirmed_sales_share_event_count = 0
     negative_amount = 0.0
     event_count = 0
     cell_actual: dict[tuple[str, str], float] = {}
@@ -457,12 +540,26 @@ def _truth_cash_components(
         buyout_months = set(outcome.get("buyoutEventMonths", [])) & target_months
         for month in target_month_list:
             amount = base.finite_number(monthly.get(month, 0.0))
+            cell_digest = truth_cash_cell_digest(
+                work_id, component, month, amount
+            )
+            confirmation = confirmations.get(cell_digest)
+            if confirmation is not None and (
+                amount >= 0
+                or confirmation["cashCategory"] != "sales_share"
+            ):
+                raise FormalCashContractError(
+                    "target classification confirmation differs from authority cash cell"
+                )
             total += amount
             cell_actual[(component, month)] = amount
             if amount < 0:
                 negative_amount += amount
-            if channel_uncertain:
+            if channel_uncertain and confirmation is None:
                 uncertain_amount += amount
+            elif confirmation is not None:
+                user_confirmed_sales_share_amount += amount
+                user_confirmed_sales_share_event_count += 1
             if month in buyout_months and amount > 0:
                 classifier_buyout += amount
                 event_count += 1
@@ -474,6 +571,9 @@ def _truth_cash_components(
         "classifierDerivedBuyoutEventCount": event_count,
         "actualClassificationUncertain": uncertain,
         "classificationUncertainCashActual": uncertain_amount,
+        "userConfirmedSalesShareCashActual": user_confirmed_sales_share_amount,
+        "userConfirmedSalesShareEventCount":
+            user_confirmed_sales_share_event_count,
         "negativeLedgerCashActual": negative_amount,
         "cellActualByComponentMonth": cell_actual,
         "classifierBuyoutByComponentMonth": buyout_by_cell,
@@ -725,6 +825,9 @@ def build_formal_cash_actuals(
     route_at_origin: str,
     calibration_spec: Mapping[str, Any],
     label_available_as_of: str,
+    target_classification_confirmations: (
+        Sequence[Mapping[str, Any]] | None
+    ) = None,
 ) -> dict[str, Any]:
     """Build the three formal-cash actuals after prediction lock."""
 
@@ -738,7 +841,13 @@ def build_formal_cash_actuals(
     routing = base.route_work_as_of(work, origin, calibration_spec)
     if route_at_origin != routing.get("route"):
         raise FormalCashContractError("truth route differs from cutoff route")
-    components = _truth_cash_components(work, origin, horizon, calibration_spec)
+    components = _truth_cash_components(
+        work,
+        origin,
+        horizon,
+        calibration_spec,
+        target_classification_confirmations,
+    )
     if str(label_available_as_of) < str(components["targetEnd"]):
         raise FormalCashContractError("label joined before the target window closed")
     commitments = resolve_commitments_as_of(
@@ -815,6 +924,12 @@ def build_formal_cash_actuals(
         "classificationUncertainCashActual": round(
             float(components["classificationUncertainCashActual"]), 8
         ),
+        "userConfirmedSalesShareCashActual": round(
+            float(components["userConfirmedSalesShareCashActual"]), 8
+        ),
+        "userConfirmedSalesShareEventCount": int(
+            components["userConfirmedSalesShareEventCount"]
+        ),
         "negativeLedgerCashActual": round(
             float(components["negativeLedgerCashActual"]), 8
         ),
@@ -856,6 +971,9 @@ def build_sales_share_cash_actuals(
     route_at_origin: str,
     calibration_spec: Mapping[str, Any],
     label_available_as_of: str,
+    target_classification_confirmations: (
+        Sequence[Mapping[str, Any]] | None
+    ) = None,
 ) -> dict[str, Any]:
     """Build the current sales-share-only target and its isolated cash ledger.
 
@@ -873,6 +991,7 @@ def build_sales_share_cash_actuals(
         route_at_origin,
         calibration_spec,
         label_available_as_of,
+        target_classification_confirmations,
     )
     isolated_buyout = float(actuals["classifierDerivedBuyoutActual"])
     isolated_other = float(actuals["cutoffCommittedOtherCashActual"])

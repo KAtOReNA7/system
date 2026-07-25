@@ -901,10 +901,16 @@ test("public diagnostic CLI is reproducible and aggregate-only", () => {
     report.evidence.coverage.economicScope.allCompanyCashCoverageClaimed,
     false
   );
-  assert.ok(
+  assert.equal(report.evidence.coverage.targetClassification.passed, true);
+  assert.equal(
     report.gate.blockers.includes(
       "sales_share_target_classification_uncertainty_unresolved"
-    )
+    ),
+    false
+  );
+  assert.equal(
+    report.gate.developmentDirection,
+    "auditable_work_level_signals_then_independent_validation"
   );
   assert.ok(
     report.gate.blockers.includes(

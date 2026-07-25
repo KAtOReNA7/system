@@ -7,7 +7,7 @@
     "engineeringSequenceDrifted": true,
     "priorInstructionAssessment": "buyout_isolation_was_directionally_correct_but_current_labels_were_already_equivalent_so_accuracy_did_not_change",
     "retiredSequence": "human_numeric_baseline_and_120_work_business_sample_skipped",
-    "nextPriority": "resolve_tiny_target_classification_uncertainty_then_materialize_versioned_historical_as_of_work_signals"
+    "nextPriority": "materialize_versioned_historical_as_of_work_signals"
   },
   "evaluationPolicy": {
     "humanNumericBaselineRequired": false,
@@ -70,10 +70,10 @@
         "uncommittedCashShare": 0.26035315047967955
       },
       "targetClassification": {
-        "frozenClassificationUncertainCashShare": 0.0000027284304596833668,
-        "denseClassificationUncertainCashShare": 0.000002865143615676321,
+        "frozenClassificationUncertainCashShare": 0,
+        "denseClassificationUncertainCashShare": 0,
         "maximumAllowed": 0,
-        "passed": false
+        "passed": true
       },
       "workLevelSignals": {
         "contractStatus": "IMPLEMENTED",
@@ -299,7 +299,7 @@
         "allBuyoutExcludedFromBacktestMetrics": true,
         "allBuyoutExcludedFromForecastOutput": true,
         "targetPartitionConservationPassed": true,
-        "targetClassificationPassed": false,
+        "targetClassificationPassed": true,
         "workLevelDevelopmentPassed": false,
         "portfolioDevelopmentBacktestPassed": true,
         "fullM2MaturityPassed": false,
@@ -993,7 +993,7 @@
         "decision": "AUTOMATION_BLOCKED",
         "gates": {
           "targetPartitionConservationPassed": true,
-          "targetClassificationPassed": false,
+          "targetClassificationPassed": true,
           "workLevelDevelopmentPassed": false,
           "portfolioDevelopmentBacktestPassed": true,
           "independentHoldoutPassed": false
@@ -1764,7 +1764,7 @@
       "decision": "AUTOMATION_BLOCKED",
       "gates": {
         "targetPartitionConservationPassed": true,
-        "targetClassificationPassed": false,
+        "targetClassificationPassed": true,
         "workLevelDevelopmentPassed": false,
         "portfolioDevelopmentBacktestPassed": true,
         "independentHoldoutPassed": false
@@ -1778,7 +1778,7 @@
       "allBuyoutExcludedFromBacktestMetrics": true,
       "allBuyoutExcludedFromForecastOutput": true,
       "targetPartitionConservationPassed": true,
-      "targetClassificationPassed": false,
+      "targetClassificationPassed": true,
       "workLevelDevelopmentPassed": false,
       "portfolioDevelopmentBacktestPassed": true,
       "fullM2MaturityPassed": false,
@@ -1811,7 +1811,6 @@
     "schema": "m2.current.diagnostic_gate.v0.1",
     "status": "SALES_SHARE_TARGET_MIGRATED_PORTFOLIO_DEVELOPMENT_PASS_WORK_LEVEL_BLOCKED",
     "blockers": [
-      "sales_share_target_classification_uncertainty_unresolved",
       "auditable_work_level_signal_coverage_incomplete",
       "candidate_absolute_wape_above_development_threshold",
       "candidate_segment_intermittent_wape_failed",
@@ -1822,7 +1821,7 @@
       "final_holdout_sealed",
       "post_gate_quality_assurance_pending"
     ],
-    "developmentDirection": "sales_share_target_classification_then_auditable_work_level_signals_and_independent_validation",
+    "developmentDirection": "auditable_work_level_signals_then_independent_validation",
     "candidateOverallGatesPassed": false,
     "candidateDevelopmentQualityPassed": false,
     "developmentReplayAuthorized": true,
@@ -1835,7 +1834,7 @@
   },
   "nextDiagnostics": [
     "keep_dense_monthly_rolling_origin_and_strong_baselines_as_mandatory_regression_checks",
-    "resolve_sales_share_target_classification_uncertainty_without_moving_the_frozen_population",
+    "preserve_digest_bound_user_confirmation_without_generalizing_to_other_cash_cells",
     "keep_occurrence_and_positive_amount_diagnostics_separate",
     "materialize_contract_conforming_historical_availability_snapshots_without_current_state_backfill",
     "use_digest_bound_portable_signal_intake_and_publish_only_aggregate_gap_diagnostics",

@@ -382,6 +382,87 @@ checks = {
 print(json.dumps({"checks": checks, "passed": all(checks.values())}))
 `);
 
+const userConfirmationProbe = runPythonProbe(String.raw`
+import json
+import sys
+from pathlib import Path
+
+root = Path.cwd()
+sys.path.insert(0, str(root / "scripts" / "m2-real-data"))
+import m2_calibration_v1 as base
+import m2_formal_cash_target_v1 as cash
+
+work_id = "SYNTHETIC-USER-CONFIRMATION-WORK"
+origin = "2019-12"
+monthly = {
+    month: 0.0 for month in base.month_range("2017-06", "2020-02")
+}
+monthly["2020-01"] = -230.38
+monthly["2020-02"] = -10.0
+channel = {
+    "channel_key": "synthetic-unknown-channel",
+    "business_form": "audio_product",
+    "first_observed_month": "2017-06",
+    "monthly": monthly,
+    "batch_cluster_sizes": {},
+}
+work = {
+    "standard_work_id": work_id,
+    "channels": [channel],
+}
+spec = base.load_spec()
+route = base.route_work_as_of(work, origin, spec)["route"]
+without_confirmation = cash.build_sales_share_cash_actuals(
+    work,
+    origin,
+    2,
+    route,
+    spec,
+    label_available_as_of="2020-02",
+)
+digest = cash.truth_cash_cell_digest(
+    work_id,
+    base.channel_component_key(channel),
+    "2020-01",
+    -230.38,
+)
+with_confirmation = cash.build_sales_share_cash_actuals(
+    work,
+    origin,
+    2,
+    route,
+    spec,
+    label_available_as_of="2020-02",
+    target_classification_confirmations=[{
+        "targetCellSha256": digest,
+        "cashCategory": "sales_share",
+        "eventType": "reversal",
+    }],
+)
+checks = {
+    "unconfirmedNegativeRemainsUncertain": (
+        without_confirmation["classificationUncertainCashActual"] == -240.38
+    ),
+    "exactDigestConfirmationResolvesOnlyClassification": (
+        with_confirmation["classificationUncertainCashActual"] == -10.0
+        and with_confirmation["userConfirmedSalesShareCashActual"] == -230.38
+        and with_confirmation["userConfirmedSalesShareEventCount"] == 1
+    ),
+    "confirmationDoesNotGeneralizeToOtherNegativeCash": (
+        with_confirmation["classificationUncertainCashActual"] == -10.0
+    ),
+    "confirmationDoesNotChangeSalesShareActual": (
+        without_confirmation["salesShareCashActual"]
+        == with_confirmation["salesShareCashActual"]
+        == -240.38
+    ),
+    "confirmationPreservesCashConservation": (
+        with_confirmation["salesShareTargetConservationDifference"] == 0.0
+    ),
+}
+print(json.dumps({"checks": checks, "passed": all(checks.values())}))
+`);
+
 test("formal-cash amendment is bound to both frozen parent contracts", () => {
   assert.equal(spec.version, "calibration-spec-c2r-v1.1-amendment");
   assert.equal(spec.amendmentKind, "formal_cash_target_correction");
@@ -523,6 +604,15 @@ test("synthetic hardening probe rejects route, snapshot, and settlement-link amb
   assert.equal(hardenedContractProbe.passed, true);
   assert.deepEqual(
     Object.entries(hardenedContractProbe.checks).filter(([, passed]) => !passed),
+    [],
+  );
+});
+
+test("user confirmation resolves one digest-bound negative cash classification", () => {
+  assert.equal(userConfirmationProbe.passed, true);
+  assert.deepEqual(
+    Object.entries(userConfirmationProbe.checks)
+      .filter(([, passed]) => !passed),
     [],
   );
 });

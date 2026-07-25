@@ -5,12 +5,24 @@
   "generatedAt": "2026-07-25",
   "d0TargetClassification": {
     "underlyingCashFactCount": 1,
-    "frozenOverlappingCaseCount": 1,
-    "denseMonthlyOverlappingCaseCount": 6,
+    "frozenPreviousUncertainCaseCount": 1,
+    "denseMonthlyPreviousUncertainCaseCount": 6,
+    "frozenConfirmedFactCaseCount": 5,
+    "denseMonthlyConfirmedFactCaseCount": 20,
     "cashActual": -230.38,
-    "status": "UNKNOWN_ABSTAIN",
-    "authorityAssessment": "manifest_matched_original_workbook_row_has_period_business_category_and_cash_but_no_explicit_refund_reversal_or_adjustment_explanation",
-    "requiredAdditionalAuthority": "original_settlement_adjustment_or_contract_evidence",
+    "status": "USER_CONFIRMED_EXACT_DIGEST_BOUND",
+    "authorityAssessment": "user_business_attestation_based_on_financial_system_record",
+    "requiredAdditionalAuthority": null,
+    "confirmation": {
+      "configSchema": "m2.current.user_confirmation.v0.1",
+      "cashCategory": "sales_share",
+      "eventType": "reversal",
+      "negativeCashEventPolicy": "all_negative_cash_records_are_reversals",
+      "negativePolicyScope": "event_type_only_not_cash_category",
+      "exactAuthorityCellMatchCount": 1,
+      "rawEvidenceExported": false,
+      "privateIdentifiersPublished": false
+    },
     "originalWorkbookAudit": {
       "matchesFormalExecutionManifest": true,
       "sourceSheetAndRowLocated": true,
@@ -22,7 +34,9 @@
       "formulaCellCount": 0,
       "privateIdentifiersPublished": false
     },
-    "classificationChanged": false,
+    "classificationChanged": true,
+    "frozenClassificationUncertainCashShareAfterConfirmation": 0,
+    "denseClassificationUncertainCashShareAfterConfirmation": 0,
     "toleranceRelaxed": false
   },
   "factAndSnapshotContract": {

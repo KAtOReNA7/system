@@ -28,6 +28,9 @@ import run_m2_calibration_baseline_replay as legacy  # noqa: E402
 
 
 CONFIG = ROOT / "config" / "m2-current.v0.4.json"
+USER_CONFIRMATION_CONFIG = (
+    ROOT / "config" / "m2-current-user-confirmation.v0.1.json"
+)
 CURRENT_PRIVATE = (
     ROOT
     / "data"
@@ -54,6 +57,80 @@ SALES_ROUTES = frozenset({"pure_sales_share", "buyout_plus_sales"})
 
 class DenseMaterializationError(RuntimeError):
     """The bounded dense development adapter contract was violated."""
+
+
+def load_user_confirmations() -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    confirmation_config = json.loads(
+        USER_CONFIRMATION_CONFIG.read_text(encoding="utf-8")
+    )
+    confirmations = confirmation_config.get("targetClassifications")
+    if (
+        confirmation_config.get("schema")
+        != "m2.current.user_confirmation.v0.1"
+        or confirmation_config.get("authorityMode")
+        != "user_business_attestation"
+        or confirmation_config.get("negativeCashEventPolicy")
+        != "all_negative_cash_records_are_reversals"
+        or not isinstance(confirmations, list)
+        or not confirmations
+        or confirmation_config.get("boundaries", {}).get(
+            "rawFinancialRecordIncluded"
+        )
+        is not False
+    ):
+        raise DenseMaterializationError(
+            "M2 user confirmation contract differs"
+        )
+    for confirmation in confirmations:
+        if (
+            confirmation.get("cashCategory") != "sales_share"
+            or confirmation.get("eventType") != "reversal"
+            or confirmation.get("authoritySource")
+            != "financial_system_record"
+            or confirmation.get("rawEvidenceExported") is not False
+            or confirmation.get("scope")
+            != "exact_digest_bound_cash_cell_only"
+        ):
+            raise DenseMaterializationError(
+                "M2 target classification confirmation differs"
+            )
+    return confirmation_config, confirmations
+
+
+def validate_confirmation_bindings(
+    works: Mapping[str, Mapping[str, Any]],
+    confirmations: list[dict[str, Any]],
+) -> dict[str, int]:
+    match_counts = {
+        str(item["targetCellSha256"]): 0 for item in confirmations
+    }
+    if len(match_counts) != len(confirmations):
+        raise DenseMaterializationError(
+            "duplicate M2 target confirmation digest"
+        )
+    for work in works.values():
+        for channel in work.get("channels", []) or []:
+            component = base.channel_component_key(channel)
+            for month, raw_amount in (channel.get("monthly", {}) or {}).items():
+                amount = base.finite_number(raw_amount)
+                digest = cash.truth_cash_cell_digest(
+                    str(work["standard_work_id"]),
+                    str(component),
+                    str(month),
+                    amount,
+                )
+                if digest not in match_counts:
+                    continue
+                if amount >= 0:
+                    raise DenseMaterializationError(
+                        "target confirmation is not bound to negative cash"
+                    )
+                match_counts[digest] += 1
+    if any(count != 1 for count in match_counts.values()):
+        raise DenseMaterializationError(
+            "target confirmation does not bind exactly one authority cash cell"
+        )
+    return match_counts
 
 
 def digest_bytes(value: bytes) -> str:
@@ -132,6 +209,7 @@ def encode_ndjson(rows: Iterable[Mapping[str, Any]]) -> tuple[bytes, int]:
 
 def run() -> dict[str, Any]:
     config = json.loads(CONFIG.read_text(encoding="utf-8"))
+    confirmation_config, target_confirmations = load_user_confirmations()
     dense = config["development"]["denseOrigins"]
     if (
         dense["stepMonths"] != 1
@@ -154,6 +232,9 @@ def run() -> dict[str, Any]:
         raise DenseMaterializationError(
             "dense development work population differs"
         )
+    confirmation_match_counts = validate_confirmation_bindings(
+        works, target_confirmations
+    )
     case_rows: list[dict[str, Any]] = []
     history_rows: list[dict[str, Any]] = []
     frozen_target_rows: list[dict[str, Any]] = []
@@ -209,6 +290,7 @@ def run() -> dict[str, Any]:
                     route,
                     calibration_spec,
                     label_available_as_of=target_end,
+                    target_classification_confirmations=target_confirmations,
                 )
                 served = route in SALES_ROUTES
                 case_rows.append(
@@ -238,6 +320,12 @@ def run() -> dict[str, Any]:
                         "classificationUncertainCashActual": float(
                             actuals["classificationUncertainCashActual"]
                         ),
+                        "userConfirmedSalesShareCashActual": float(
+                            actuals["userConfirmedSalesShareCashActual"]
+                        ),
+                        "userConfirmedSalesShareEventCount": int(
+                            actuals["userConfirmedSalesShareEventCount"]
+                        ),
                         "uncommittedBuyoutSurpriseActual": float(
                             actuals["uncommittedBuyoutSurpriseActual"]
                         ),
@@ -263,6 +351,7 @@ def run() -> dict[str, Any]:
             case["route"],
             calibration_spec,
             label_available_as_of=case["labelAvailableAsOf"],
+            target_classification_confirmations=target_confirmations,
         )
         frozen_target_rows.append(
             {
@@ -290,6 +379,12 @@ def run() -> dict[str, Any]:
                 ),
                 "classificationUncertainCashActual": float(
                     actuals["classificationUncertainCashActual"]
+                ),
+                "userConfirmedSalesShareCashActual": float(
+                    actuals["userConfirmedSalesShareCashActual"]
+                ),
+                "userConfirmedSalesShareEventCount": int(
+                    actuals["userConfirmedSalesShareEventCount"]
                 ),
                 "allBuyoutExcludedFromForecast": True,
             }
@@ -327,6 +422,20 @@ def run() -> dict[str, Any]:
         "frozenSalesShareTargetSha256": digest_bytes(frozen_target_bytes),
         "targetPolicy": "sales_share_cash_only",
         "allBuyoutExcludedFromForecast": True,
+        "userConfirmation": {
+            "schema": confirmation_config["schema"],
+            "configCanonicalSha256": cash.canonical_digest(
+                confirmation_config
+            ),
+            "exactCellConfirmationCount": len(target_confirmations),
+            "exactAuthorityCellMatchCount": sum(
+                confirmation_match_counts.values()
+            ),
+            "negativeCashEventPolicy": confirmation_config[
+                "negativeCashEventPolicy"
+            ],
+            "rawEvidenceExported": False,
+        },
         "routeCountsByWorkOrigin": dict(sorted(route_counts.items())),
         "segmentCountsByWorkOrigin": dict(sorted(segment_counts.items())),
         "inputFingerprint": input_evidence["inputFingerprint"],
