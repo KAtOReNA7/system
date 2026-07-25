@@ -14,19 +14,21 @@
 - PR #16：M2 current 严格 as-of 分成事实、快照合同和信号缺口 ledger，已合并。
 - 当前业务结论：`currentDecision=CANARY_FAIL`。
 - 当前开发 readiness：
-  `nextDevelopmentReadiness=CANONICAL_CHANNEL_AND_PLATFORM_TYPE_MASTER_REQUIRED`。
+  `nextDevelopmentReadiness=HISTORICAL_CHANNEL_STATE_AND_SINGLE_PURCHASE_UNIT_ECONOMICS_REQUIRED`。
 - R0–R5 评估已完成；全局 hurdle GLM、Tweedie boosting、hurdle GBM、MinT
   和 ensemble 均未通过 nested gate，v0.4 安全回退 exact v0.3。120 部人工
   评估完全跳过。provider、Canary/full160、final holdout、release 和 M3
   formal 均未授权。三份人工复核账单已成为现金分类权威：总账只审计，分成只
   预测，买断只作评级背景。人工权威复验后作品 WAPE 为 49.08%，portfolio
   WAPE 为 12.79%，但 bias 与区间门禁失败，作品层也失败；v0.8 人工渠道规则
-  379 个安全 case 的 WAPE 为 70.44%。下一步完成 canonical 渠道/平台类型主表，
-  再开发平台分层模型。
+  379 个安全 case 的 WAPE 为 70.44%。canonical 渠道治理现已完成：133 个原始
+  组合归并为 74 个渠道，分成账单 100% 映射且金额守恒；但 v0.9 在 25-origin
+  诊断恶化，在 7,083 served case 只改善 0.0118%，因此继续回退 v0.3。下一步是
+  历史渠道状态、真实上线时间和单购净单价/销量口径，不是继续同窗调参。
 
 当前导航：
 
-- `docs/analysis/m2-v2/M2-v2-current-state-index-v0.15.md`
+- `docs/analysis/m2-v2/M2-v2-current-state-index-v0.16.md`
 - `docs/analysis/m2-v2/M2-repository-code-convergence-and-portable-development-audit-v0.4.md`
 - `docs/analysis/m2-current/M2-current-maturity-reconstruction-v0.6.md`
 - `docs/analysis/m2-current/M2-sales-share-only-target-decision-v0.1.md`
@@ -36,6 +38,9 @@
 - `docs/analysis/m2-current/M2-current-real-bill-recalibration-v0.1.md`
 - `docs/analysis/m2-current/M2-current-manual-channel-backtest-v0.1.md`
 - `docs/analysis/m2-current/M2-current-human-ledger-partition-audit-v0.1.md`
+- `docs/analysis/m2-current/M2-current-canonical-channel-development-v0.1.md`
+- `docs/analysis/m2-current/M2-current-authority-source-audit-v0.2.json`
+- `docs/prd/m2-v2/M2-forecast-intelligence-v2-prd-v0.2.md`
 - `AGENTS.md`
 
 历史 PR、B0–B8、C1–C3 和旧授权记录保留在 `docs/analysis/` 中，只用于审计追溯，不是当前开发入口。
@@ -113,7 +118,9 @@ npm run smoke
 npm run smoke:portable-start
 npm run diagnose:m2:current
 npm run diagnose:m2:signal-input
+npm run diagnose:m2:channel-governance
 npm run verify:m2:signal-input
+npm run verify:m2:channel-governance
 npm run verify:m2:current
 ```
 
@@ -144,6 +151,7 @@ npm run doctor:capability -- <capability-id>
 - `m2-pr7-s1`：已退役 PR #7 的历史真实性验证。
 - `m2-v2-current-state`：本机恢复的历史 M2 v2 private state。
 - `m2-algorithm-authoritative-input`：未来单独授权的 M2 算法研究输入。
+- `m2-current-canonical-channel`：本机人工渠道主表和账单驱动的受控 development。
 - `m3-private-materials`：用户提供 3–5 份 private 材料后的 M3 completion workflow。
 
 文件存在只表示库存存在，不等于真实性通过或执行获授权。private 数据必须继续位于 Git ignored 角色中；不得提交、伪造或从公开摘要反推。
@@ -181,6 +189,10 @@ M2 的正式预测对象是未来分成收入现金。正式边界为：
 | 当前 portfolio FVA | 0.22243439 |
 | v0.8 人工渠道规则安全窗口 case | 379 |
 | v0.8 人工规则 WAPE / bias | 0.70444680 / -0.29098286 |
+| canonical 原始组合 / 统一渠道 | 133 / 74 |
+| 分成账单渠道映射覆盖 | 100% |
+| v0.9 25-origin 基线 / 候选 WAPE | 0.46274198 / 0.46506585 |
+| v0.9 7,083-case v0.3 / 候选 WAPE | 0.49075894 / 0.49070110 |
 | development WAPE 门槛 | 0.30（未通过） |
 | automation decision | `AUTOMATION_BLOCKED` |
 
@@ -194,7 +206,9 @@ M2 的正式预测对象是未来分成收入现金。正式边界为：
 作品层、intermittent、dormant 和长周期也全部未达标。
 因此当前状态是 `CANDIDATE_DEVELOPMENT_FAIL_BLOCKED`，不能开启自动化、final
 holdout 或 release。v0.8 人工渠道规则的买断真值门禁已经通过，但 WAPE 仍为
-70.44%，下一数据治理重点只剩 canonical 渠道与平台类型，而不是再次判断买断。
+70.44%。canonical 渠道与平台类型治理现已完成，不能再作为继续阻断数据治理的
+理由；真正剩余的是渠道属性历史生效时间、渠道/合同可售 snapshot、真实上线时间
+和单购净单价。v0.9 没有通过，因此不能替换 v0.3。
 
 ## M2 当前执行队列
 
@@ -214,32 +228,39 @@ holdout 或 release。v0.8 人工渠道规则的买断真值门禁已经通过�
    - 旧 v0.5 portfolio PASS 只适用于旧机器现金路由；人工分区复验后已失败。
    - v0.7 真实账单校准有改善但仍失败；参数与失败结论已冻结，不得同窗继续调参。
    - v0.8 人工渠道规则有相对改善但绝对质量失败；仅保留为 comparator。
-4. **先完成渠道治理**
-   - 建立 raw ID/名称到 canonical channel 及会员/单购/其他平台类型的版本化主表；
+4. **渠道治理（已执行）**
+   - 133 个 raw ID/名称组合已归并到 74 个 canonical channel；
+   - 内部 UID 自动生成，不要求用户填写或维护；
+   - 分成账单 190,663 行映射覆盖、行数和金额守恒均通过；
    - 分成/买断人工账单分区已完成；更新账单后运行
      `npm run develop:m2:current:ledger-partition` 验证守恒；
    - private 账单和渠道主表不进入 Git，也不得成为公共 clone、测试或启动依赖。
-5. **下一次组合验证**
+5. **补充历史渠道与单购证据**
+   - 当前主表生效年月覆盖为 0，角色/收入模式只能作 post-hoc development；
+   - 补充带 `effectiveAt/availableAt` 的渠道状态和合同可售 snapshot；
+   - 单购/点播必须先有作品净单价、净分成或销量换算依据；缺少时禁止假定统一
+     定价和分成比例，保持 fallback。
+6. **下一次组合验证**
    - 下一次组合或作品模型选模只能使用未参与 v0.5/v0.7 设计的 later-origin
      或单独授权 final holdout；
    - 禁止继续在同一 2022 development 窗口调参后宣称独立验证。
-6. **补充可审计输入（仅真实材料存在时）**
+7. **补充可审计输入（仅真实材料存在时）**
    - exact-work sales historical availability、合同可售和渠道状态 snapshot；
    - commitment 只保留在模型外账单/审计层，不作为分成预测信号；
    - 合同、可售、发布与渠道状态必须能证明在 cutoff 时可得，禁止事后回填；
    - 缺少版本化完整性权威时必须 `unknown_at_origin`，pure-buyout 继续
      `null abstain`。
-7. **作品级下一轮研究**
+8. **作品级下一轮研究**
    - D1 fact/snapshot、intermittent/dormant 缺口 ledger 和 portable intake
      已建立；
    - 受控输入使用 `diagnose:m2:signal-input -- --bundle-file ... --case-file ...`，
      不依赖仓库内固定 private 文件名，且只输出聚合覆盖；
    - 新信号先过 25-origin 诊断，再在 7,083 个当前 served case nested 复验，
      并保留 7,851 个旧机器路由 case 的差异审计；
-   - 渠道治理完成后，开发作品×canonical 平台×平台类型×三级分类×级别的分层
-     模型；会员平台建收入曲线，单购平台建销量、首发衰减和季节曲线；
+   - v0.9 渠道曲线已执行并失败，参数与失败结论冻结；
+   - 只有新 historical as-of 信号和单购单位经济证据通过门禁后，才建立下一候选；
    - 当前停止新增同类总收入模型和同窗调参。
-8. **决策门禁**
+9. **决策门禁**
    - 120 部人工评估完全跳过；人工只做技术门禁后的 post-gate QA。
    - final holdout、embargo shadow、provider、数据库、Canary/full160、release
      和 M3 formal 继续保持未授权。
@@ -248,6 +269,7 @@ holdout 或 release。v0.8 人工渠道规则的买断真值门禁已经通过�
 
 ```bash
 npm run doctor:capability -- m2-algorithm-authoritative-input
+npm run doctor:capability -- m2-current-canonical-channel
 npm run verify:m2:current
 ```
 
@@ -258,7 +280,8 @@ capability 的电脑仍可执行全部公共开发基线。
 
 ```bash
 npm run doctor:capability -- m2-algorithm-authoritative-input
-npm run develop:m2:current:candidate
+npm run doctor:capability -- m2-current-canonical-channel
+npm run develop:m2:current:canonical-channel
 npm run diagnose:m2:current
 npm run verify:m2:current
 ```

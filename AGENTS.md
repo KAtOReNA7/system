@@ -4,19 +4,21 @@
 
 - PR #7、PR #8、PR #9、PR #10、PR #11、PR #12、PR #13 均已合入 `main`；已合并分支不得继续作为开发入口。
 - 当前仓库治理导航为：
-  - `docs/analysis/m2-v2/M2-v2-current-state-index-v0.15.md`
+  - `docs/analysis/m2-v2/M2-v2-current-state-index-v0.16.md`
   - `docs/analysis/m2-v2/M2-repository-code-convergence-and-portable-development-audit-v0.4.md`
   - `docs/analysis/m2-current/M2-current-maturity-reconstruction-v0.6.md`
   - `docs/analysis/m2-current/M2-sales-share-only-target-decision-v0.1.md`
   - `docs/analysis/m2-current/M2-sales-share-model-full-audit-and-research-v0.1.md`
-  - `docs/analysis/m2-current/M2-current-authority-source-audit-v0.1.json`
+  - `docs/analysis/m2-current/M2-current-authority-source-audit-v0.2.json`
   - `docs/analysis/m2-current/M2-current-user-confirmation-form-zh-CN-v0.1.md`
   - `docs/analysis/m2-current/M2-current-as-of-signal-readiness-v0.1.md`
   - `docs/analysis/m2-current/M2-current-real-bill-recalibration-v0.1.md`
   - `docs/analysis/m2-current/M2-current-manual-channel-backtest-v0.1.md`
   - `docs/analysis/m2-current/M2-current-human-ledger-partition-audit-v0.1.md`
+  - `docs/analysis/m2-current/M2-current-canonical-channel-development-v0.1.md`
   - `docs/analysis/m2-current/M2-current-as-of-source-inventory-v0.1.json`
   - `docs/analysis/m2-current/M2-current-signal-input-portable-intake-v0.1.md`
+  - `docs/prd/m2-v2/M2-forecast-intelligence-v2-prd-v0.2.md`
 - PR #7 cryptographic authority 继续由不可变的
   `docs/analysis/m2-v2/M2-v2-current-state-index-v0.3.json` 提供；治理索引不得改写该绑定。
 - 历史 B0–B8、C1–C3、旧 PR 状态和旧授权记录只用于审计追溯，不是当前执行指令。
@@ -144,6 +146,25 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
 - v0.8 人工渠道 comparator 已按人工账单分区重跑 379 个安全 case：
   WAPE/bias 为 0.70444680 / -0.29098286；买断真值门禁通过，但绝对质量、
   canonical 渠道、historical available-at、特殊品类样本和独立验证仍失败。
+- canonical 渠道治理已完成：
+  - 133 个原始 ID/名称组合全部人工确认，归并为 74 个 canonical 渠道；
+  - 分成账单 190,663 行全部映射，完整月金额 87,624,963.9132 精确守恒；
+  - 分成账单实际使用 85 个原始组合、39 个 canonical 渠道；
+  - 内部 `channelUid` 由 canonical 名称稳定生成，用户无需填写或维护；
+  - 渠道主表与账单保持 private；公共 schema、synthetic fixture、核心测试与
+    `diagnose:m2:channel-governance` 不依赖 private。
+- `M2-current-canonical-channel-hierarchical-v0.9` 已按 2026-07-26 本轮授权完成：
+  - 25-origin seasonal-naive 基线 WAPE 0.46274198，v0.9 WAPE 0.46506585，
+    相对恶化 0.5022%；
+  - 当前人工权威 7,083 served case 上 exact v0.3 WAPE 0.49075894，v0.9
+    WAPE 0.49070110，只改善 0.0118%，低于 1% nested 门槛；
+  - 逐月诊断实际采用渠道权重的 case 占 45.45%，但 out-of-sample 恶化；冻结
+    served case 采用占 5.87%，未产生实质改善；
+  - 单购/点播约占完整分成现金 10.12%，但没有可审计净单价，销量分支保持阻断，
+    禁止假定统一 30 元或固定 50% 分成；
+  - 主表生效年月覆盖为 0，角色/收入模式只能作 post-hoc development；历史渠道
+    状态、合同可售状态、真实上线月和独立验证均未具备；
+  - 结论为 `REJECT_KEEP_V0_3_WORK_LEVEL_FALLBACK`，v0.9 不得替换 v0.3。
 - D1 `revenueShareFact`、`availabilitySnapshot`、信号缺口 ledger 和 portable
   digest-bound 输入继续有效；当前版本化历史 snapshot 覆盖仍为 0，不得用当前
   状态事后回填。
@@ -162,6 +183,9 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
 - `M2-current-manual-channel-prior-v0.8` 只是一轮已完成且被绝对质量门禁拒绝的
   comparator；不得替换 v0.3，不得按本轮三个 origin 调整 40%/50%/80% 后冒充
   独立验证。
+- `M2-current-canonical-channel-hierarchical-v0.9` 只是一轮已完成且被
+  25-origin、绝对质量、as-of 和独立验证门禁拒绝的 development challenger；
+  参数与失败结论已经冻结，不得继续在同一 2022 窗口调参。
 - zero、seasonal naive、classic Croston、SBA、TSB、ADIDA、B4 和 v0.3 已进入
   同人口自动回归；基线不得因表现较弱而删除。
 - eligibility、target classification、served coverage 和 company-cash
@@ -178,12 +202,15 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
 
 - `currentDecision=CANARY_FAIL`
 - `automationDecision=AUTOMATION_BLOCKED`
-- `nextDevelopmentReadiness=CANONICAL_CHANNEL_AND_PLATFORM_TYPE_MASTER_REQUIRED`
+- `nextDevelopmentReadiness=HISTORICAL_CHANNEL_STATE_AND_SINGLE_PURCHASE_UNIT_ECONOMICS_REQUIRED`
 - `full160Authorized=false`
 - 本轮多粒度重构研究授权已执行完毕；默认不得继续在同一 development 窗口调参
 - 本轮真实账单 v0.7 recalibration 授权已执行完毕；参数和失败结论已冻结，
   `candidateSelectionAuthorized=false`
 - 本轮人工渠道 v0.8 comparator 授权已执行完毕；规则、窗口和失败结论已冻结，
+  `candidateSelectionAuthorized=false`
+- 本轮 canonical 渠道 v0.9 新候选、development fitting 与 nested selection
+  授权已执行完毕；映射、参数和失败结论已冻结，
   `candidateSelectionAuthorized=false`
 - final holdout、embargo shadow、deferred labels 均 sealed
 - 公开门禁中 `developmentReplayAuthorized=true` 只表示可精确重放既有
@@ -204,12 +231,13 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
    分区取代且不得再作为 current 分类输入。每次更新三份账单必须先运行
    `npm run develop:m2:current:ledger-partition`；守恒失败时停止 private
    capability，但不得阻断公共开发。
-4. v0.8 人工渠道规则仅进入自动回归 comparator。下一步建立版本化渠道主表：
-   raw ID/名称 → canonical channel → 会员/单购/其他平台类型。账单分区已经完成，
-   不得再次要求用户逐行判断买断。
-5. 下一模型应使用“作品×canonical 平台×平台类型×三级分类×级别×上线月龄”
-   的分层结构。会员平台建收入曲线；单购平台先换算销量，再建首发衰减与季节
-   曲线。安全窗口无耽美成熟 case 时保持该分群阻断。
+4. v0.8 人工渠道规则仅进入自动回归 comparator。版本化渠道主表已经完成：
+   raw ID/名称 → canonical channel → 渠道角色/收入模式/内容形态。后续只在原始
+   渠道出现变化时更新；不得再次要求用户逐行判断买断或填写内部 UID。
+5. v0.9 已验证“只有 canonical identity 和 post-hoc 平台类型”不足以改善预测。
+   下一输入必须是带 `effectiveAt/availableAt` 的历史渠道状态/合同可售 snapshot、
+   真实上线月，以及单购平台的作品净单价/净分成/销量换算依据。缺少单购单位经济
+   证据时不得假定价格或分成比例，必须保持该分支 fallback/blocked。
 6. 下一次组合或作品模型选模必须使用未参与 v0.5/v0.7/v0.8 设计的 later origin 或
    final holdout；未获单独授权前继续 sealed，不得在当前 2022 development
    窗口继续调参。
@@ -240,18 +268,22 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
   `revenueShareFact`、`availabilitySnapshot`、signal-gap ledger、来源字段审计
   和 digest-bound portable signal input bundle/CLI；v0.7 三个低复杂度历史
   baseline 与分层 recent-origin nested selector；v0.8 人工渠道 comparator、
-  安全历史窗口物化和聚合回测。
+  安全历史窗口物化和聚合回测；canonical 渠道 schema、内部 UID、private
+  加载器、守恒门禁、公共 synthetic 诊断，以及 v0.9 canonical-channel nested
+  challenger。
 - 已验证：三账单逐行/逐月守恒、3,053 基础人口与 3,052 账单观察人口边界、
   7,851 旧机器路由到 7,083 当前 served case 的重分类、25-origin/56,856-case
   次级 development 复验；人工分区后作品 WAPE 0.49075894，组合 WAPE
   0.12794956；组合 WAPE 单项通过，但 bias 与区间门禁失败，作品层也失败；
   D1 synthetic contract 通过，合规 snapshot 覆盖为 0；v0.8 按人工分区重跑
-  WAPE 0.70444680 并被拒绝，完整 M2 成熟度未通过。
+  WAPE 0.70444680 并被拒绝；渠道主表 133→74 且 190,663 行 100% 映射守恒；
+  v0.9 逐月 WAPE 0.46506585、冻结 served WAPE 0.49070110 并被拒绝，完整 M2
+  成熟度未通过。
 - 已退役：120 部人工评估的 current 依赖；不重建、不重放。
-- 下一输入：版本化 canonical 渠道/平台类型主表，以及带 economic、posting、
-  available-at、来源版本、lineage 与完整性权威的作品层历史分成 snapshot。
-  账单分区已完成，不得重复索要买断逐行判断；不存在新输入时保持阻断，不能把
-  现有 posthoc history 改名冒充。later-origin/final holdout 仍需单独授权。
+- 下一输入：带 effective/available-at、来源版本、lineage 与完整性权威的历史
+  渠道状态/合同可售 snapshot、真实上线月，以及单购净单价/净分成/销量换算依据。
+  渠道主表和账单分区已完成，不得重复索要；不存在新输入时保持阻断，不能把
+  current 属性事后回填。later-origin/final holdout 仍需单独授权。
 - 未授权：final holdout 及所有既有业务 gate 外的动作。
 
 ## Git 与提交规则

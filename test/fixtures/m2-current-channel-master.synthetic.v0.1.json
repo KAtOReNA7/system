@@ -1,0 +1,35 @@
+{
+  "schema": "m2.current.channel_master.synthetic_fixture.v0.1",
+  "channelMaster": [
+    {
+      "rawChannelId": "synthetic-001",
+      "rawChannelName": "合成平台甲旧名",
+      "canonicalChannelName": "合成平台甲",
+      "channelRole": "terminal_sales_platform",
+      "revenueMode": "membership_subscription",
+      "contentForm": "audio",
+      "auditStatus": "confirmed"
+    },
+    {
+      "rawChannelId": "synthetic-002",
+      "rawChannelName": "合成平台甲新名",
+      "canonicalChannelName": "合成平台甲",
+      "channelRole": "terminal_sales_platform",
+      "revenueMode": "membership_subscription",
+      "contentForm": "audio",
+      "auditStatus": "confirmed"
+    }
+  ],
+  "facts": [
+    {
+      "rawChannelId": "synthetic-001",
+      "rawChannelName": "合成平台甲旧名",
+      "amount": 120
+    },
+    {
+      "rawChannelId": "synthetic-002",
+      "rawChannelName": "合成平台甲新名",
+      "amount": -20
+    }
+  ]
+}

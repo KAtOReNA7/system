@@ -35,6 +35,7 @@ test("catalog defines one private-free core capability and scoped private capabi
       "m2-pr7-s1",
       "m2-v2-current-state",
       "m2-algorithm-authoritative-input",
+      "m2-current-canonical-channel",
       "m3-private-materials",
     ],
   );
@@ -129,6 +130,27 @@ test("present S1 evidence still requires the canonical verifier", () => {
   assert.equal(result.status, "AVAILABLE_FOR_CANONICAL_VALIDATION");
   assert.match(result.canonicalValidationCommands[0], /--batch-id=<explicitly-authorized-batch>/u);
   assert.match(result.notes.join(" "), /presence is inventory only/u);
+});
+
+test("missing canonical-channel inputs block only that private capability", () => {
+  const result = evaluateCapability(
+    catalog,
+    "m2-current-canonical-channel",
+    {
+      repoRoot: REPO_ROOT,
+      artifactExists: () => false,
+      toolProbe: availableToolProbe,
+    },
+  );
+  assert.equal(result.status, "BLOCKED_MISSING_PRIVATE_ARTIFACT");
+  assert.equal(result.coreDevelopmentUnaffected, true);
+  assert.deepEqual(result.missingPrivateRoles, [
+    "user-reviewed-channel-master",
+    "formal-model-input-cache",
+    "dense-development-cases",
+    "frozen-sales-share-targets",
+  ]);
+  assert.match(result.recovery, /Missing channel artifacts block only/u);
 });
 
 test("capability paths cannot escape the repository", () => {

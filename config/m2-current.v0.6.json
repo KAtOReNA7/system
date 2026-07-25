@@ -10,7 +10,7 @@
     "targetPartitionConservationTolerance": 0.000001
   },
   "evaluationPolicy": {
-    "nextDevelopmentReadiness": "CANONICAL_CHANNEL_AND_PLATFORM_TYPE_MASTER_REQUIRED",
+    "nextDevelopmentReadiness": "HISTORICAL_CHANNEL_STATE_AND_SINGLE_PURCHASE_UNIT_ECONOMICS_REQUIRED",
     "requiredCoverageViews": [
       "eligibility",
       "target_classification",
@@ -90,10 +90,11 @@
     "automatedEvaluation": "docs/analysis/m2-current/M2-current-automated-evaluation-v0.4.json",
     "recalibration": "docs/analysis/m2-current/M2-current-real-bill-recalibration-v0.1.json",
     "manualChannelBacktest": "docs/analysis/m2-current/M2-current-manual-channel-backtest-v0.1.json",
+    "canonicalChannelDevelopment": "docs/analysis/m2-current/M2-current-canonical-channel-development-v0.1.json",
     "signalGap": "docs/analysis/m2-current/M2-current-signal-gap-diagnostic-v0.1.json",
     "signalSourceInventory": "docs/analysis/m2-current/M2-current-as-of-source-inventory-v0.1.json"
   },
-  "publicOutput": "docs/analysis/m2-current/M2-current-public-diagnostic-v0.9.json",
+  "publicOutput": "docs/analysis/m2-current/M2-current-public-diagnostic-v0.10.json",
   "authorizations": {
     "provider": false,
     "database": false,
