@@ -1,0 +1,226 @@
+{
+  "schema": "m2.current.signal_input_bundle.v0.1",
+  "bundleId": "SYN-M2-SIGNAL-BUNDLE-V0.1",
+  "populationId": "SYN-M2-WORK-ORIGIN-POPULATION-V0.1",
+  "target": "future_sales_share_cash",
+  "currency": "CNY",
+  "sourceMode": "synthetic_fixture",
+  "currentStateBackfillUsed": false,
+  "caseFileSha256": "0e4ac5835d363b20541d0b7cb7c65eaa86cade2d2817d928f76af0ba9d1fc034",
+  "caseRowCount": 7,
+  "casePopulationSha256": "463821bad31a798094b8e28143e93c0e043383165489055104062b4ff655fcb7",
+  "facts": [
+    {
+      "factId": "SYN-DENSE-SALE-1",
+      "standardWorkId": "SYN-WORK-DENSE",
+      "channelId": "SYN-CHANNEL-DENSE",
+      "currency": "CNY",
+      "eventType": "sale",
+      "cashAmount": 100,
+      "economicTime": "2022-01-01T00:00:00Z",
+      "postingTime": "2022-01-02T00:00:00Z",
+      "availableAt": "2022-01-03T00:00:00Z",
+      "source": {
+        "system": "synthetic-ledger",
+        "dataset": "synthetic-sales-share-events",
+        "version": "synthetic-v0.1",
+        "recordId": "dense-sale-1",
+        "contentHashSha256": "1111111111111111111111111111111111111111111111111111111111111111"
+      },
+      "lineage": {
+        "transformId": "synthetic-signal-input-adapter",
+        "transformVersion": "v0.1",
+        "parentFactIds": []
+      }
+    },
+    {
+      "factId": "SYN-DENSE-REFUND-1",
+      "standardWorkId": "SYN-WORK-DENSE",
+      "channelId": "SYN-CHANNEL-DENSE",
+      "currency": "CNY",
+      "eventType": "refund",
+      "cashAmount": -20,
+      "economicTime": "2022-02-05T00:00:00Z",
+      "postingTime": "2022-02-06T00:00:00Z",
+      "availableAt": "2022-02-07T00:00:00Z",
+      "source": {
+        "system": "synthetic-ledger",
+        "dataset": "synthetic-sales-share-events",
+        "version": "synthetic-v0.1",
+        "recordId": "dense-refund-1",
+        "contentHashSha256": "2222222222222222222222222222222222222222222222222222222222222222"
+      },
+      "lineage": {
+        "transformId": "synthetic-signal-input-adapter",
+        "transformVersion": "v0.1",
+        "parentFactIds": []
+      }
+    },
+    {
+      "factId": "SYN-DENSE-REVERSAL-1",
+      "standardWorkId": "SYN-WORK-DENSE",
+      "channelId": "SYN-CHANNEL-DENSE",
+      "currency": "CNY",
+      "eventType": "reversal",
+      "cashAmount": 5,
+      "economicTime": "2022-02-08T00:00:00Z",
+      "postingTime": "2022-02-09T00:00:00Z",
+      "availableAt": "2022-02-10T00:00:00Z",
+      "source": {
+        "system": "synthetic-ledger",
+        "dataset": "synthetic-sales-share-events",
+        "version": "synthetic-v0.1",
+        "recordId": "dense-reversal-1",
+        "contentHashSha256": "3333333333333333333333333333333333333333333333333333333333333333"
+      },
+      "lineage": {
+        "transformId": "synthetic-signal-input-adapter",
+        "transformVersion": "v0.1",
+        "parentFactIds": [
+          "SYN-DENSE-REFUND-1"
+        ]
+      },
+      "reversesFactId": "SYN-DENSE-REFUND-1"
+    },
+    {
+      "factId": "SYN-INTERMITTENT-SALE-1",
+      "standardWorkId": "SYN-WORK-INTERMITTENT",
+      "channelId": "SYN-CHANNEL-INTERMITTENT",
+      "currency": "CNY",
+      "eventType": "sale",
+      "cashAmount": 30,
+      "economicTime": "2022-02-03T00:00:00Z",
+      "postingTime": "2022-02-04T00:00:00Z",
+      "availableAt": "2022-02-05T00:00:00Z",
+      "source": {
+        "system": "synthetic-ledger",
+        "dataset": "synthetic-sales-share-events",
+        "version": "synthetic-v0.1",
+        "recordId": "intermittent-sale-1",
+        "contentHashSha256": "4444444444444444444444444444444444444444444444444444444444444444"
+      },
+      "lineage": {
+        "transformId": "synthetic-signal-input-adapter",
+        "transformVersion": "v0.1",
+        "parentFactIds": []
+      }
+    }
+  ],
+  "snapshots": [
+    {
+      "snapshotId": "SYN-DENSE-2022-01",
+      "standardWorkId": "SYN-WORK-DENSE",
+      "currency": "CNY",
+      "origin": "2022-01",
+      "segment": "dense",
+      "status": "observed_as_of",
+      "factIds": [
+        "SYN-DENSE-SALE-1"
+      ],
+      "authority": {
+        "system": "synthetic-ledger",
+        "dataset": "synthetic-complete-snapshots",
+        "version": "synthetic-2022-01",
+        "recordId": "dense-2022-01",
+        "availableAt": "2022-01-20T00:00:00Z",
+        "contentHashSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "completeness": "complete_as_of_snapshot"
+      },
+      "currentStateBackfillUsed": false
+    },
+    {
+      "snapshotId": "SYN-DENSE-2022-02",
+      "standardWorkId": "SYN-WORK-DENSE",
+      "currency": "CNY",
+      "origin": "2022-02",
+      "segment": "dense",
+      "status": "observed_as_of",
+      "factIds": [
+        "SYN-DENSE-SALE-1",
+        "SYN-DENSE-REFUND-1",
+        "SYN-DENSE-REVERSAL-1"
+      ],
+      "authority": {
+        "system": "synthetic-ledger",
+        "dataset": "synthetic-complete-snapshots",
+        "version": "synthetic-2022-02",
+        "recordId": "dense-2022-02",
+        "availableAt": "2022-02-20T00:00:00Z",
+        "contentHashSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "completeness": "complete_as_of_snapshot"
+      },
+      "currentStateBackfillUsed": false
+    },
+    {
+      "snapshotId": "SYN-INTERMITTENT-2022-01",
+      "standardWorkId": "SYN-WORK-INTERMITTENT",
+      "currency": "CNY",
+      "origin": "2022-01",
+      "segment": "intermittent",
+      "status": "unknown_at_origin",
+      "factIds": [],
+      "authority": null,
+      "missingReason": "historical_snapshot_absent",
+      "currentStateBackfillUsed": false
+    },
+    {
+      "snapshotId": "SYN-INTERMITTENT-2022-02",
+      "standardWorkId": "SYN-WORK-INTERMITTENT",
+      "currency": "CNY",
+      "origin": "2022-02",
+      "segment": "intermittent",
+      "status": "observed_as_of",
+      "factIds": [
+        "SYN-INTERMITTENT-SALE-1"
+      ],
+      "authority": {
+        "system": "synthetic-ledger",
+        "dataset": "synthetic-complete-snapshots",
+        "version": "synthetic-2022-02",
+        "recordId": "intermittent-2022-02",
+        "availableAt": "2022-02-20T00:00:00Z",
+        "contentHashSha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "completeness": "complete_as_of_snapshot"
+      },
+      "currentStateBackfillUsed": false
+    },
+    {
+      "snapshotId": "SYN-DORMANT-2022-01",
+      "standardWorkId": "SYN-WORK-DORMANT",
+      "currency": "CNY",
+      "origin": "2022-01",
+      "segment": "dormant",
+      "status": "observed_as_of",
+      "factIds": [],
+      "authority": {
+        "system": "synthetic-ledger",
+        "dataset": "synthetic-complete-snapshots",
+        "version": "synthetic-2022-01",
+        "recordId": "dormant-2022-01",
+        "availableAt": "2022-01-20T00:00:00Z",
+        "contentHashSha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "completeness": "complete_as_of_snapshot"
+      },
+      "currentStateBackfillUsed": false
+    },
+    {
+      "snapshotId": "SYN-DORMANT-2022-02",
+      "standardWorkId": "SYN-WORK-DORMANT",
+      "currency": "CNY",
+      "origin": "2022-02",
+      "segment": "dormant",
+      "status": "observed_as_of",
+      "factIds": [],
+      "authority": {
+        "system": "synthetic-ledger",
+        "dataset": "synthetic-complete-snapshots",
+        "version": "synthetic-2022-02",
+        "recordId": "dormant-2022-02",
+        "availableAt": "2022-02-20T00:00:00Z",
+        "contentHashSha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "completeness": "complete_as_of_snapshot"
+      },
+      "currentStateBackfillUsed": false
+    }
+  ]
+}

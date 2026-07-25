@@ -11,6 +11,7 @@
 - PR #11：M2 current v0.2 可靠预测候选和 120 部冻结业务样本，已合并。
 - PR #12：M2 current v0.3 自动评价与 120 部 current 依赖退役，已合并。
 - PR #13：M2 current R0–R5 全局/概率/层级模型评估与安全 fallback，已合并。
+- PR #16：M2 current 严格 as-of 分成事实、快照合同和信号缺口 ledger，已合并。
 - 当前业务结论：`currentDecision=CANARY_FAIL`。
 - 当前开发 readiness：
   `nextDevelopmentReadiness=SALES_SHARE_TARGET_VALIDATION_AND_WORK_LEVEL_SIGNAL_REQUIRED`。
@@ -19,7 +20,9 @@
   评估完全跳过。provider、Canary/full160、final holdout、release 和 M3
   formal 均未授权。v0.6 已把正式目标迁移为纯分成收入并隔离全部买断；
   portfolio development backtest WAPE 仍为 11.68%，作品级和完整 M2
-  成熟度仍未通过。
+  成熟度仍未通过。当前冻结/逐月合规历史 snapshot 覆盖均为 0；公开
+  digest-bound portable signal intake 已实现，但没有真实历史权威时不得训练
+  新作品级模型。
 
 当前导航：
 
@@ -28,6 +31,8 @@
 - `docs/analysis/m2-current/M2-current-maturity-reconstruction-v0.6.md`
 - `docs/analysis/m2-current/M2-sales-share-only-target-decision-v0.1.md`
 - `docs/analysis/m2-current/M2-sales-share-model-full-audit-and-research-v0.1.md`
+- `docs/analysis/m2-current/M2-current-as-of-source-inventory-v0.1.json`
+- `docs/analysis/m2-current/M2-current-signal-input-portable-intake-v0.1.md`
 - `AGENTS.md`
 
 历史 PR、B0–B8、C1–C3 和旧授权记录保留在 `docs/analysis/` 中，只用于审计追溯，不是当前开发入口。
@@ -104,6 +109,8 @@ npm run test:e2e
 npm run smoke
 npm run smoke:portable-start
 npm run diagnose:m2:current
+npm run diagnose:m2:signal-input
+npm run verify:m2:signal-input
 npm run verify:m2:current
 ```
 
@@ -160,6 +167,8 @@ M2 的正式预测对象是未来分成收入现金。正式边界为：
 | v0.6 冻结 / 逐月目标变化 case | 0 / 0 |
 | v0.6 冻结 / 逐月隔离买断 case 求和 | 4,800,850.15 / 11,578,795.00 |
 | v0.6 冻结 / 逐月分类不确定现金占比 | 0.0002728% / 0.0002865% |
+| D1 冻结 / 逐月合规 snapshot 覆盖 | 0 / 0 |
+| 已审计 / 可直接使用的历史信号来源角色 | 4 / 0 |
 | B4 WAPE / bias | 0.55648454 / 0.08911106 |
 | v0.2 WAPE / bias | 0.51114966 / -0.00586227 |
 | v0.3 WAPE / bias | 0.50557140 / -0.01198958 |
@@ -217,11 +226,16 @@ cutoff-linked 买断/其他承诺现金，旧标签事实上已经等于分成�
    - 只能使用未参与本轮模型选择的 later-origin 或单独授权 final holdout；
    - 禁止继续在同一 2022 development 窗口调参后宣称独立验证。
 5. **补充可审计输入（仅真实材料存在时）**
-   - exact-work commitment snapshot 和 sales historical availability snapshot；
+   - exact-work sales historical availability、合同可售和渠道状态 snapshot；
+   - commitment 只保留在模型外账单/审计层，不作为分成预测信号；
    - 合同、可售、发布与渠道状态必须能证明在 cutoff 时可得，禁止事后回填；
-   - pure-buyout 无 strict commitment 时继续 `null abstain`。
+   - 缺少版本化完整性权威时必须 `unknown_at_origin`，pure-buyout 继续
+     `null abstain`。
 6. **作品级下一轮研究**
-   - 先建立 intermittent/dormant occurrence 与 positive amount 数据缺口 ledger；
+   - D1 fact/snapshot、intermittent/dormant 缺口 ledger 和 portable intake
+     已建立；
+   - 受控输入使用 `diagnose:m2:signal-input -- --bundle-file ... --case-file ...`，
+     不依赖仓库内固定 private 文件名，且只输出聚合覆盖；
    - 新信号先过 25-origin 诊断，再在 7,851-case 权威人口 nested 复验；
    - 当前停止新增模型家族和同类调参。
 7. **决策门禁**

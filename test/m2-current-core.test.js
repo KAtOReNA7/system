@@ -927,6 +927,32 @@ test("sales-share evidence treats historical total-cash coverage as disclosure",
     evidence.coverage.workLevelSignals.readiness.authorizesNewCandidateFamily,
     false
   );
+  assert.deepEqual(
+    evidence.coverage.workLevelSignals.sourceInventory,
+    {
+      auditedSourceRoleCount: 4,
+      eligibleObservedAsOfSourceRoleCount: 0,
+      existingAuthorityCanPopulateObservedSnapshots: false,
+      portableIntakeImplemented: true,
+      nextAction:
+        "obtain_versioned_complete_historical_snapshots_with_record_level_economic_posting_and_available_at_times"
+    }
+  );
+});
+
+test("sales-share evidence rejects source-inventory eligibility drift", () => {
+  const sources = salesSharePublicSources();
+  sources.signalSourceInventory = structuredClone(
+    sources.signalSourceInventory
+  );
+  sources.signalSourceInventory.sourceRoles.formalIncomeFactExtract
+    .observedAsOfEligible = true;
+  sources.signalSourceInventory.eligibleObservedAsOfSourceRoleCount = 1;
+
+  assert.throws(
+    () => loadM2CurrentPublicEvidence(sources, salesShareConfig),
+    /m2_current_signal_gap_population_or_boundary_drift/
+  );
 });
 
 test("revenue-share facts preserve event, three-time and lineage semantics", () => {
@@ -1060,6 +1086,14 @@ test("availability snapshots require historical authority or remain unknown", ()
 
   assert.equal(observed.signals.occurrence.value, true);
   assert.equal(observed.signals.positiveAmount.value, 100);
+  assert.equal(
+    observed.signals.occurrence.semantic,
+    "historical_net_sales_share_cash_positive_as_of_snapshot"
+  );
+  assert.equal(
+    observed.signals.positiveAmount.semantic,
+    "historical_net_sales_share_cash_as_of_snapshot"
+  );
   assert.equal(observed.amounts.netSalesShareCash, 100);
   assert.equal(observed.currentStateBackfillUsed, false);
   assert.equal(unknown.status, "unknown_at_origin");

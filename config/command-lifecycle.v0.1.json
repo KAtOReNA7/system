@@ -27,6 +27,8 @@
     "smoke:portable-start",
     "check:no-real-data",
     "diagnose:m2:current",
+    "diagnose:m2:signal-input",
+    "verify:m2:signal-input",
     "verify:m2:current"
   ],
   "historyDispatcher": "history:m2",

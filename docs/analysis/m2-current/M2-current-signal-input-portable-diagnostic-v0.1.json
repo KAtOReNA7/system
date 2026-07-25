@@ -1,0 +1,211 @@
+{
+  "schema": "m2.current.signal_input_diagnostic.public.v0.1",
+  "decisionStatus": "not_for_formal_decision",
+  "target": "future_sales_share_cash",
+  "bundle": {
+    "schema": "m2.current.signal_input_bundle_summary.public.v0.1",
+    "target": "future_sales_share_cash",
+    "currency": "CNY",
+    "sourceMode": "synthetic_fixture",
+    "factCount": 4,
+    "eventTypeCounts": {
+      "refund": 1,
+      "reversal": 1,
+      "sale": 2
+    },
+    "snapshotCount": 6,
+    "snapshotStatusCounts": {
+      "observed_as_of": 5,
+      "unknown_at_origin": 1
+    },
+    "uniqueWorkCount": 3,
+    "originCount": 2,
+    "firstOrigin": "2022-01",
+    "lastOrigin": "2022-02",
+    "distinctSourceSystemCount": 1,
+    "distinctSourceDatasetCount": 1,
+    "invariants": {
+      "salesShareCashOnly": true,
+      "allBuyoutExcluded": true,
+      "currentStateBackfillUsed": false,
+      "unknownAtOriginPreserved": true,
+      "snapshotFactsCumulative": true,
+      "identifiersPublished": false
+    },
+    "aggregateOnly": true,
+    "rowIdentifiersIncluded": false,
+    "sourceNamesIncluded": false
+  },
+  "coverage": {
+    "schema": "m2.current.signal_gap_summary.public.v0.1",
+    "grain": "work_origin_segment",
+    "target": "future_sales_share_cash",
+    "inputCaseCount": 7,
+    "workOriginSegmentCount": 6,
+    "uniqueWorkCount": 3,
+    "originCount": 2,
+    "snapshotCount": 6,
+    "overall": {
+      "workOriginSegmentCount": 6,
+      "occurrence": {
+        "eligibleCount": 6,
+        "availableCount": 5,
+        "positiveCount": 3,
+        "nonPositiveCount": 2,
+        "missingCount": 1,
+        "coverage": 0.8333333333333334
+      },
+      "positiveAmount": {
+        "eligibleCount": 6,
+        "availableCount": 3,
+        "notApplicableCount": 2,
+        "missingCount": 1,
+        "twoPartReadyCount": 5,
+        "twoPartReadinessCoverage": 0.8333333333333334,
+        "conditionalPositiveOccurrenceCount": 3,
+        "conditionalPositiveAmountCoverage": 1
+      }
+    },
+    "bySegment": {
+      "dense": {
+        "workOriginSegmentCount": 2,
+        "occurrence": {
+          "eligibleCount": 2,
+          "availableCount": 2,
+          "positiveCount": 2,
+          "nonPositiveCount": 0,
+          "missingCount": 0,
+          "coverage": 1
+        },
+        "positiveAmount": {
+          "eligibleCount": 2,
+          "availableCount": 2,
+          "notApplicableCount": 0,
+          "missingCount": 0,
+          "twoPartReadyCount": 2,
+          "twoPartReadinessCoverage": 1,
+          "conditionalPositiveOccurrenceCount": 2,
+          "conditionalPositiveAmountCoverage": 1
+        }
+      },
+      "intermittent": {
+        "workOriginSegmentCount": 2,
+        "occurrence": {
+          "eligibleCount": 2,
+          "availableCount": 1,
+          "positiveCount": 1,
+          "nonPositiveCount": 0,
+          "missingCount": 1,
+          "coverage": 0.5
+        },
+        "positiveAmount": {
+          "eligibleCount": 2,
+          "availableCount": 1,
+          "notApplicableCount": 0,
+          "missingCount": 1,
+          "twoPartReadyCount": 1,
+          "twoPartReadinessCoverage": 0.5,
+          "conditionalPositiveOccurrenceCount": 1,
+          "conditionalPositiveAmountCoverage": 1
+        }
+      },
+      "dormant": {
+        "workOriginSegmentCount": 2,
+        "occurrence": {
+          "eligibleCount": 2,
+          "availableCount": 2,
+          "positiveCount": 0,
+          "nonPositiveCount": 2,
+          "missingCount": 0,
+          "coverage": 1
+        },
+        "positiveAmount": {
+          "eligibleCount": 2,
+          "availableCount": 0,
+          "notApplicableCount": 2,
+          "missingCount": 0,
+          "twoPartReadyCount": 2,
+          "twoPartReadinessCoverage": 1,
+          "conditionalPositiveOccurrenceCount": 0,
+          "conditionalPositiveAmountCoverage": null
+        }
+      }
+    },
+    "byOrigin": {
+      "2022-01": {
+        "workOriginSegmentCount": 3,
+        "occurrence": {
+          "eligibleCount": 3,
+          "availableCount": 2,
+          "positiveCount": 1,
+          "nonPositiveCount": 1,
+          "missingCount": 1,
+          "coverage": 0.6666666666666666
+        },
+        "positiveAmount": {
+          "eligibleCount": 3,
+          "availableCount": 1,
+          "notApplicableCount": 1,
+          "missingCount": 1,
+          "twoPartReadyCount": 2,
+          "twoPartReadinessCoverage": 0.6666666666666666,
+          "conditionalPositiveOccurrenceCount": 1,
+          "conditionalPositiveAmountCoverage": 1
+        }
+      },
+      "2022-02": {
+        "workOriginSegmentCount": 3,
+        "occurrence": {
+          "eligibleCount": 3,
+          "availableCount": 3,
+          "positiveCount": 2,
+          "nonPositiveCount": 1,
+          "missingCount": 0,
+          "coverage": 1
+        },
+        "positiveAmount": {
+          "eligibleCount": 3,
+          "availableCount": 2,
+          "notApplicableCount": 1,
+          "missingCount": 0,
+          "twoPartReadyCount": 3,
+          "twoPartReadinessCoverage": 1,
+          "conditionalPositiveOccurrenceCount": 2,
+          "conditionalPositiveAmountCoverage": 1
+        }
+      }
+    },
+    "missingReasons": {
+      "historical_snapshot_absent": 1
+    },
+    "readiness": {
+      "coverageMeasured": true,
+      "occurrenceFullyAvailable": false,
+      "positiveAmountPathFullyAvailable": false,
+      "status": "AS_OF_SIGNAL_COVERAGE_GAPS_PRESENT",
+      "authorizesNewCandidateFamily": false
+    },
+    "invariants": {
+      "populationRowsDropped": false,
+      "nullImputedAsZero": false,
+      "currentStateBackfillUsed": false,
+      "portfolioForecastAllocatedToWorks": false
+    },
+    "aggregateOnly": true,
+    "rowIdentifiersIncluded": false
+  },
+  "readiness": {
+    "coverageMeasured": true,
+    "coverageComplete": false,
+    "newCandidateFamilyAuthorized": false,
+    "nextAction": "acquire_versioned_historical_as_of_signal_authority"
+  },
+  "sourceBoundary": {
+    "aggregateOnly": true,
+    "rowIdentifiersIncluded": false,
+    "privateRowsPublished": false,
+    "databaseConnected": false,
+    "providerCalled": false,
+    "finalHoldoutOpened": false
+  }
+}
