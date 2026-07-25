@@ -1,0 +1,136 @@
+{
+  "schema": "m2.current.signal_gap_diagnostic.public.v0.1",
+  "decisionStatus": "not_for_formal_decision",
+  "target": "future_sales_share_cash",
+  "generatedAt": "2026-07-25",
+  "d0TargetClassification": {
+    "underlyingCashFactCount": 1,
+    "frozenOverlappingCaseCount": 1,
+    "denseMonthlyOverlappingCaseCount": 6,
+    "cashActual": -230.38,
+    "status": "UNKNOWN_ABSTAIN",
+    "authorityAssessment": "current_authority_fields_conflict_and_do_not_prove_sales_share_refund_or_buyout_reversal",
+    "requiredAdditionalAuthority": "original_settlement_adjustment_or_contract_evidence",
+    "classificationChanged": false,
+    "toleranceRelaxed": false
+  },
+  "factAndSnapshotContract": {
+    "revenueShareFactSchema": "m2.current.revenue_share_fact.v0.1",
+    "availabilitySnapshotSchema": "m2.current.availability_snapshot.v0.1",
+    "eventTypes": [
+      "sale",
+      "refund",
+      "reversal"
+    ],
+    "requiredTimes": [
+      "economicTime",
+      "postingTime",
+      "availableAt"
+    ],
+    "requiredLineage": [
+      "work",
+      "channel",
+      "currency",
+      "source",
+      "sourceVersion",
+      "transformLineage"
+    ],
+    "historicalSnapshotMissingPolicy": "unknown_at_origin",
+    "currentStateBackfillAllowed": false
+  },
+  "coverageInventory": {
+    "interpretation": "coverage_of_contract_conforming_versioned_as_of_snapshots_not_raw_source_inventory",
+    "frozenAuthorityPopulation": {
+      "inputCaseCount": 7851,
+      "workOriginSegmentCount": 2402,
+      "uniqueWorkCount": 824,
+      "originCount": 5,
+      "snapshotCount": 0,
+      "occurrenceAvailableCount": 0,
+      "occurrenceMissingCount": 2402,
+      "occurrenceCoverage": 0,
+      "positiveAmountTwoPartReadyCount": 0,
+      "positiveAmountMissingCount": 2402,
+      "positiveAmountTwoPartReadinessCoverage": 0,
+      "bySegment": {
+        "dense": {
+          "workOriginSegmentCount": 1575,
+          "occurrenceMissingCount": 1575,
+          "positiveAmountMissingCount": 1575
+        },
+        "intermittent": {
+          "workOriginSegmentCount": 593,
+          "occurrenceMissingCount": 593,
+          "positiveAmountMissingCount": 593
+        },
+        "dormant": {
+          "workOriginSegmentCount": 234,
+          "occurrenceMissingCount": 234,
+          "positiveAmountMissingCount": 234
+        }
+      },
+      "byOriginWorkOriginSegmentCount": {
+        "2020-12": 148,
+        "2021-06": 296,
+        "2021-12": 551,
+        "2022-06": 613,
+        "2022-12": 794
+      }
+    },
+    "denseMonthlyDiagnosticPopulation": {
+      "inputCaseCount": 56856,
+      "workOriginSegmentCount": 20600,
+      "uniqueWorkCount": 824,
+      "originCount": 25,
+      "firstOrigin": "2020-12",
+      "lastOrigin": "2022-12",
+      "workOriginSegmentCountPerOrigin": 824,
+      "snapshotCount": 0,
+      "occurrenceAvailableCount": 0,
+      "occurrenceMissingCount": 20600,
+      "occurrenceCoverage": 0,
+      "positiveAmountTwoPartReadyCount": 0,
+      "positiveAmountMissingCount": 20600,
+      "positiveAmountTwoPartReadinessCoverage": 0,
+      "bySegment": {
+        "dense": {
+          "workOriginSegmentCount": 8060,
+          "occurrenceMissingCount": 8060,
+          "positiveAmountMissingCount": 8060
+        },
+        "intermittent": {
+          "workOriginSegmentCount": 11406,
+          "occurrenceMissingCount": 11406,
+          "positiveAmountMissingCount": 11406
+        },
+        "dormant": {
+          "workOriginSegmentCount": 1134,
+          "occurrenceMissingCount": 1134,
+          "positiveAmountMissingCount": 1134
+        }
+      }
+    },
+    "missingReason": "availability_snapshot_missing",
+    "readiness": {
+      "coverageMeasured": true,
+      "occurrenceFullyAvailable": false,
+      "positiveAmountPathFullyAvailable": false,
+      "status": "AS_OF_SIGNAL_COVERAGE_GAPS_PRESENT",
+      "authorizesNewCandidateFamily": false
+    }
+  },
+  "invariants": {
+    "populationRowsDropped": false,
+    "nullImputedAsZero": false,
+    "currentStateBackfillUsed": false,
+    "portfolioForecastAllocatedToWorks": false
+  },
+  "sourceBoundary": {
+    "aggregateOnly": true,
+    "rowIdentifiersIncluded": false,
+    "privateRowsPublished": false,
+    "databaseConnected": false,
+    "providerCalled": false,
+    "finalHoldoutOpened": false
+  }
+}

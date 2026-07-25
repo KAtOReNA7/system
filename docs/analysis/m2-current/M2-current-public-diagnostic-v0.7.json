@@ -7,7 +7,7 @@
     "engineeringSequenceDrifted": true,
     "priorInstructionAssessment": "buyout_isolation_was_directionally_correct_but_current_labels_were_already_equivalent_so_accuracy_did_not_change",
     "retiredSequence": "human_numeric_baseline_and_120_work_business_sample_skipped",
-    "nextPriority": "resolve_tiny_target_classification_uncertainty_then_add_auditable_work_level_sales_signals_and_independent_validation"
+    "nextPriority": "resolve_tiny_target_classification_uncertainty_then_materialize_versioned_historical_as_of_work_signals"
   },
   "evaluationPolicy": {
     "humanNumericBaselineRequired": false,
@@ -74,6 +74,88 @@
         "denseClassificationUncertainCashShare": 0.000002865143615676321,
         "maximumAllowed": 0,
         "passed": false
+      },
+      "workLevelSignals": {
+        "contractStatus": "IMPLEMENTED",
+        "frozen": {
+          "inputCaseCount": 7851,
+          "workOriginSegmentCount": 2402,
+          "uniqueWorkCount": 824,
+          "originCount": 5,
+          "snapshotCount": 0,
+          "occurrenceAvailableCount": 0,
+          "occurrenceMissingCount": 2402,
+          "occurrenceCoverage": 0,
+          "positiveAmountTwoPartReadyCount": 0,
+          "positiveAmountMissingCount": 2402,
+          "positiveAmountTwoPartReadinessCoverage": 0,
+          "bySegment": {
+            "dense": {
+              "workOriginSegmentCount": 1575,
+              "occurrenceMissingCount": 1575,
+              "positiveAmountMissingCount": 1575
+            },
+            "intermittent": {
+              "workOriginSegmentCount": 593,
+              "occurrenceMissingCount": 593,
+              "positiveAmountMissingCount": 593
+            },
+            "dormant": {
+              "workOriginSegmentCount": 234,
+              "occurrenceMissingCount": 234,
+              "positiveAmountMissingCount": 234
+            }
+          },
+          "byOriginWorkOriginSegmentCount": {
+            "2020-12": 148,
+            "2021-06": 296,
+            "2021-12": 551,
+            "2022-06": 613,
+            "2022-12": 794
+          }
+        },
+        "denseMonthly": {
+          "inputCaseCount": 56856,
+          "workOriginSegmentCount": 20600,
+          "uniqueWorkCount": 824,
+          "originCount": 25,
+          "firstOrigin": "2020-12",
+          "lastOrigin": "2022-12",
+          "workOriginSegmentCountPerOrigin": 824,
+          "snapshotCount": 0,
+          "occurrenceAvailableCount": 0,
+          "occurrenceMissingCount": 20600,
+          "occurrenceCoverage": 0,
+          "positiveAmountTwoPartReadyCount": 0,
+          "positiveAmountMissingCount": 20600,
+          "positiveAmountTwoPartReadinessCoverage": 0,
+          "bySegment": {
+            "dense": {
+              "workOriginSegmentCount": 8060,
+              "occurrenceMissingCount": 8060,
+              "positiveAmountMissingCount": 8060
+            },
+            "intermittent": {
+              "workOriginSegmentCount": 11406,
+              "occurrenceMissingCount": 11406,
+              "positiveAmountMissingCount": 11406
+            },
+            "dormant": {
+              "workOriginSegmentCount": 1134,
+              "occurrenceMissingCount": 1134,
+              "positiveAmountMissingCount": 1134
+            }
+          }
+        },
+        "missingReason": "availability_snapshot_missing",
+        "readiness": {
+          "coverageMeasured": true,
+          "occurrenceFullyAvailable": false,
+          "positiveAmountPathFullyAvailable": false,
+          "status": "AS_OF_SIGNAL_COVERAGE_GAPS_PRESENT",
+          "authorizesNewCandidateFamily": false
+        },
+        "currentStateBackfillUsed": false
       },
       "economicScope": {
         "fullLibraryHistoricalForecastableShareOfLedgerCash": 0.7396468495203204,
@@ -1723,6 +1805,7 @@
     "status": "SALES_SHARE_TARGET_MIGRATED_PORTFOLIO_DEVELOPMENT_PASS_WORK_LEVEL_BLOCKED",
     "blockers": [
       "sales_share_target_classification_uncertainty_unresolved",
+      "auditable_work_level_signal_coverage_incomplete",
       "candidate_absolute_wape_above_development_threshold",
       "candidate_segment_intermittent_wape_failed",
       "candidate_segment_dormant_wape_failed",
@@ -1745,6 +1828,7 @@
     "keep_dense_monthly_rolling_origin_and_strong_baselines_as_mandatory_regression_checks",
     "resolve_sales_share_target_classification_uncertainty_without_moving_the_frozen_population",
     "keep_occurrence_and_positive_amount_diagnostics_separate",
+    "materialize_contract_conforming_historical_availability_snapshots_without_current_state_backfill",
     "keep_all_buyout_cash_outside_training_backtest_and_forecast_output",
     "report_sales_share_target_completeness_and_company_cash_economic_scope_separately",
     "report_work_portfolio_origin_and_origin_horizon_resolution_separately",

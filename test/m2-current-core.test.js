@@ -22,6 +22,10 @@ import {
   buildM2CurrentContract
 } from "../src/domain/m2Current/contract.js";
 import {
+  buildM2CurrentAvailabilitySnapshot,
+  buildM2CurrentUnknownAvailabilitySnapshot
+} from "../src/domain/m2Current/availabilitySnapshot.js";
+import {
   evaluateM2CurrentDiagnosticGate
 } from "../src/domain/m2Current/gate.js";
 import {
@@ -39,6 +43,15 @@ import {
   resolveM2CurrentCashRoute,
   resolveM2CurrentSalesShareRoute
 } from "../src/domain/m2Current/route.js";
+import {
+  buildM2CurrentRevenueShareFact,
+  selectM2CurrentRevenueShareFactsAsOf,
+  validateM2CurrentRevenueShareFacts
+} from "../src/domain/m2Current/revenueShareFact.js";
+import {
+  buildM2CurrentSignalGapLedger,
+  summarizeM2CurrentSignalGapLedger
+} from "../src/domain/m2Current/signalGapLedger.js";
 import {
   buildM2CurrentFormalCashTarget,
   buildM2CurrentSalesShareTarget,
@@ -898,6 +911,291 @@ test("sales-share evidence treats historical total-cash coverage as disclosure",
     evidence.coverage.economicScope.allCompanyCashCoverageClaimed,
     false
   );
+  assert.equal(
+    evidence.coverage.workLevelSignals.contractStatus,
+    "IMPLEMENTED"
+  );
+  assert.equal(
+    evidence.coverage.workLevelSignals.frozen.workOriginSegmentCount,
+    2402
+  );
+  assert.equal(
+    evidence.coverage.workLevelSignals.frozen.occurrenceCoverage,
+    0
+  );
+  assert.equal(
+    evidence.coverage.workLevelSignals.readiness.authorizesNewCandidateFamily,
+    false
+  );
+});
+
+test("revenue-share facts preserve event, three-time and lineage semantics", () => {
+  const sale = revenueFact();
+  const refund = revenueFact({
+    factId: "SYN-FACT-REFUND",
+    eventType: "refund",
+    cashAmount: -20,
+    economicTime: "2022-01-10T00:00:00Z",
+    postingTime: "2022-01-11T00:00:00Z",
+    availableAt: "2022-01-12T00:00:00Z",
+    source: syntheticFactSource("refund")
+  });
+  const reversal = revenueFact({
+    factId: "SYN-FACT-REVERSAL",
+    eventType: "reversal",
+    cashAmount: 10,
+    economicTime: "2022-01-13T00:00:00Z",
+    postingTime: "2022-01-14T00:00:00Z",
+    availableAt: "2022-01-15T00:00:00Z",
+    source: syntheticFactSource("reversal"),
+    lineage: {
+      transformId: "synthetic-transform",
+      transformVersion: "v0.1",
+      parentFactIds: ["SYN-FACT-REFUND"]
+    },
+    reversesFactId: "SYN-FACT-REFUND"
+  });
+  const facts = validateM2CurrentRevenueShareFacts([
+    sale,
+    refund,
+    reversal
+  ]);
+  const asOf = selectM2CurrentRevenueShareFactsAsOf(
+    facts,
+    "2022-01-12T23:59:59.999Z"
+  );
+
+  assert.deepEqual(
+    facts.map((fact) => fact.eventType),
+    ["sale", "refund", "reversal"]
+  );
+  assert.equal(facts.every((fact) => fact.buyoutIncluded === false), true);
+  assert.equal(facts[0].source.version, "synthetic-v0.1");
+  assert.deepEqual(
+    facts[2].lineage.parentFactIds,
+    ["SYN-FACT-REFUND"]
+  );
+  assert.deepEqual(
+    asOf.map((fact) => fact.factId),
+    ["SYN-FACT-SALE", "SYN-FACT-REFUND"]
+  );
+  assert.throws(
+    () => buildM2CurrentRevenueShareFact(revenueFact({
+      factId: "SYN-BAD-TIME",
+      postingTime: "2022-01-09T00:00:00Z",
+      availableAt: "2022-01-08T00:00:00Z",
+      source: syntheticFactSource("bad-time")
+    })),
+    /time_order_invalid/u
+  );
+  assert.throws(
+    () => buildM2CurrentRevenueShareFact(revenueFact({
+      factId: "SYN-BAD-REFUND",
+      eventType: "refund",
+      cashAmount: 20,
+      source: syntheticFactSource("bad-refund")
+    })),
+    /refund_amount_not_negative/u
+  );
+  assert.throws(
+    () => buildM2CurrentRevenueShareFact(revenueFact({
+      factId: "SYN-BAD-DATE",
+      economicTime: "2022-02-31T00:00:00Z",
+      postingTime: "2022-02-31T00:00:00Z",
+      availableAt: "2022-02-31T00:00:00Z",
+      source: syntheticFactSource("bad-date")
+    })),
+    /economic_time_invalid/u
+  );
+  assert.throws(
+    () => validateM2CurrentRevenueShareFacts([
+      revenueFact({
+        factId: "SYN-CYCLE-A",
+        eventType: "reversal",
+        cashAmount: 10,
+        source: syntheticFactSource("cycle-a"),
+        lineage: {
+          transformId: "synthetic-transform",
+          transformVersion: "v0.1",
+          parentFactIds: ["SYN-CYCLE-B"]
+        },
+        reversesFactId: "SYN-CYCLE-B"
+      }),
+      revenueFact({
+        factId: "SYN-CYCLE-B",
+        eventType: "reversal",
+        cashAmount: -10,
+        source: syntheticFactSource("cycle-b"),
+        lineage: {
+          transformId: "synthetic-transform",
+          transformVersion: "v0.1",
+          parentFactIds: ["SYN-CYCLE-A"]
+        },
+        reversesFactId: "SYN-CYCLE-A"
+      })
+    ]),
+    /reversal_cycle/u
+  );
+});
+
+test("availability snapshots require historical authority or remain unknown", () => {
+  const observed = buildM2CurrentAvailabilitySnapshot({
+    snapshotId: "SYN-SNAPSHOT-OBSERVED",
+    standardWorkId: "SYN-WORK-D1",
+    currency: "CNY",
+    origin: "2022-01",
+    segment: "dense",
+    status: "observed_as_of",
+    facts: [revenueFact()],
+    authority: syntheticSnapshotAuthority("observed")
+  });
+  const unknown = buildM2CurrentUnknownAvailabilitySnapshot({
+    snapshotId: "SYN-SNAPSHOT-UNKNOWN",
+    standardWorkId: "SYN-WORK-UNKNOWN",
+    currency: "CNY",
+    origin: "2022-01",
+    segment: "intermittent",
+    missingReason: "historical_snapshot_absent"
+  });
+
+  assert.equal(observed.signals.occurrence.value, true);
+  assert.equal(observed.signals.positiveAmount.value, 100);
+  assert.equal(observed.amounts.netSalesShareCash, 100);
+  assert.equal(observed.currentStateBackfillUsed, false);
+  assert.equal(unknown.status, "unknown_at_origin");
+  assert.equal(unknown.signals.occurrence.value, null);
+  assert.equal(unknown.signals.positiveAmount.value, null);
+  assert.throws(
+    () => buildM2CurrentAvailabilitySnapshot({
+      snapshotId: "SYN-SNAPSHOT-BACKFILL",
+      standardWorkId: "SYN-WORK-D1",
+      currency: "CNY",
+      origin: "2022-01",
+      segment: "dense",
+      status: "observed_as_of",
+      facts: [revenueFact()],
+      authority: syntheticSnapshotAuthority("backfill"),
+      currentStateBackfillUsed: true
+    }),
+    /current_state_backfill_forbidden/u
+  );
+  assert.throws(
+    () => buildM2CurrentAvailabilitySnapshot({
+      snapshotId: "SYN-SNAPSHOT-FUTURE",
+      standardWorkId: "SYN-WORK-D1",
+      currency: "CNY",
+      origin: "2022-01",
+      segment: "dense",
+      status: "observed_as_of",
+      facts: [revenueFact()],
+      authority: {
+        ...syntheticSnapshotAuthority("future"),
+        availableAt: "2022-02-01T00:00:00Z"
+      }
+    }),
+    /authority_not_available_at_origin/u
+  );
+  assert.throws(
+    () => buildM2CurrentAvailabilitySnapshot({
+      snapshotId: "SYN-SNAPSHOT-CURRENCY",
+      standardWorkId: "SYN-WORK-D1",
+      currency: "USD",
+      origin: "2022-01",
+      segment: "dense",
+      status: "observed_as_of",
+      facts: [revenueFact()],
+      authority: syntheticSnapshotAuthority("currency")
+    }),
+    /fact_currency_mismatch/u
+  );
+});
+
+test("signal gap ledger measures work-origin-segment two-part readiness", () => {
+  const cases = [
+    signalCase("SYN-DENSE", "dense", 3),
+    signalCase("SYN-DENSE", "dense", 6),
+    signalCase("SYN-INTERMITTENT", "intermittent", 3),
+    signalCase("SYN-DORMANT", "dormant", 3)
+  ];
+  const ledger = buildM2CurrentSignalGapLedger(cases, [
+    {
+      snapshotId: "SYN-DENSE-SNAPSHOT",
+      standardWorkId: "SYN-DENSE",
+      currency: "CNY",
+      origin: "2022-01",
+      segment: "dense",
+      status: "observed_as_of",
+      facts: [revenueFact({ standardWorkId: "SYN-DENSE" })],
+      authority: syntheticSnapshotAuthority("dense")
+    },
+    {
+      snapshotId: "SYN-INTERMITTENT-SNAPSHOT",
+      standardWorkId: "SYN-INTERMITTENT",
+      currency: "CNY",
+      origin: "2022-01",
+      segment: "intermittent",
+      status: "unknown_at_origin",
+      facts: [],
+      authority: null,
+      missingReason: "historical_snapshot_absent"
+    },
+    {
+      snapshotId: "SYN-DORMANT-SNAPSHOT",
+      standardWorkId: "SYN-DORMANT",
+      currency: "CNY",
+      origin: "2022-01",
+      segment: "dormant",
+      status: "observed_as_of",
+      facts: [],
+      authority: syntheticSnapshotAuthority("dormant")
+    }
+  ]);
+  const summary = summarizeM2CurrentSignalGapLedger(ledger);
+
+  assert.equal(ledger.inputCaseCount, 4);
+  assert.equal(ledger.workOriginSegmentCount, 3);
+  assert.equal(ledger.overall.occurrence.availableCount, 2);
+  assert.equal(ledger.overall.occurrence.coverage, 2 / 3);
+  assert.equal(ledger.overall.positiveAmount.availableCount, 1);
+  assert.equal(ledger.overall.positiveAmount.notApplicableCount, 1);
+  assert.equal(
+    ledger.overall.positiveAmount.twoPartReadinessCoverage,
+    2 / 3
+  );
+  assert.equal(
+    ledger.bySegment.intermittent.occurrence.missingCount,
+    1
+  );
+  assert.deepEqual(
+    ledger.missingReasons,
+    { historical_snapshot_absent: 1 }
+  );
+  assert.equal(
+    ledger.readiness.status,
+    "AS_OF_SIGNAL_COVERAGE_GAPS_PRESENT"
+  );
+  assert.equal(ledger.readiness.authorizesNewCandidateFamily, false);
+  assert.equal(summary.aggregateOnly, true);
+  assert.equal(summary.rowIdentifiersIncluded, false);
+  assert.equal("rows" in summary, false);
+  assert.equal(ledger.invariants.nullImputedAsZero, false);
+});
+
+test("missing snapshots become unknown_at_origin without zero imputation", () => {
+  const ledger = buildM2CurrentSignalGapLedger(
+    [signalCase("SYN-MISSING", "dormant", 3)],
+    []
+  );
+
+  assert.equal(ledger.rows[0].availabilityStatus, "unknown_at_origin");
+  assert.equal(ledger.rows[0].occurrenceValue, null);
+  assert.equal(ledger.rows[0].positiveAmountValue, null);
+  assert.equal(
+    ledger.rows[0].missingReason,
+    "availability_snapshot_missing"
+  );
+  assert.equal(ledger.overall.occurrence.coverage, 0);
+  assert.equal(ledger.overall.positiveAmount.twoPartReadinessCoverage, 0);
 });
 
 test("current config grants candidate development but no downstream authority", () => {
@@ -937,4 +1235,57 @@ test("current config grants candidate development but no downstream authority", 
 
 function readJson(file) {
   return JSON.parse(readFileSync(file, "utf8"));
+}
+
+function revenueFact(overrides = {}) {
+  return {
+    factId: "SYN-FACT-SALE",
+    standardWorkId: "SYN-WORK-D1",
+    channelId: "SYN-CHANNEL",
+    currency: "CNY",
+    eventType: "sale",
+    cashAmount: 100,
+    economicTime: "2022-01-01T00:00:00Z",
+    postingTime: "2022-01-02T00:00:00Z",
+    availableAt: "2022-01-03T00:00:00Z",
+    source: syntheticFactSource("sale"),
+    lineage: {
+      transformId: "synthetic-transform",
+      transformVersion: "v0.1",
+      parentFactIds: []
+    },
+    ...overrides
+  };
+}
+
+function syntheticFactSource(recordId) {
+  return {
+    system: "synthetic-system",
+    dataset: "synthetic-revenue-share-facts",
+    version: "synthetic-v0.1",
+    recordId,
+    contentHashSha256: "a".repeat(64)
+  };
+}
+
+function syntheticSnapshotAuthority(recordId) {
+  return {
+    system: "synthetic-system",
+    dataset: "synthetic-availability-snapshots",
+    version: "synthetic-v0.1",
+    recordId,
+    availableAt: "2022-01-20T00:00:00Z",
+    contentHashSha256: "b".repeat(64),
+    completeness: "complete_as_of_snapshot"
+  };
+}
+
+function signalCase(standardWorkId, segment, horizonMonths) {
+  return {
+    standardWorkId,
+    origin: "2022-01",
+    horizonMonths,
+    route: "pure_sales_share",
+    segment
+  };
 }
