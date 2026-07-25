@@ -1,0 +1,111 @@
+{
+  "schema": "m2.current.as_of_source_inventory.public.v0.1",
+  "decisionStatus": "not_for_formal_decision",
+  "target": "future_sales_share_cash",
+  "auditDate": "2026-07-25",
+  "auditedSourceRoleCount": 4,
+  "eligibleObservedAsOfSourceRoleCount": 0,
+  "sourceRoles": {
+    "formalIncomeFactExtract": {
+      "availableFields": [
+        "work",
+        "channel",
+        "businessForm",
+        "cashAmount",
+        "billMonth",
+        "sourceRowNumber",
+        "rowHash"
+      ],
+      "economicTimeStatus": "period_only_not_an_instant",
+      "postingTimeStatus": "missing",
+      "availableAtStatus": "missing",
+      "historicalSourceVersionAtOriginStatus": "missing",
+      "saleRefundReversalStatus": "not_explicitly_encoded",
+      "observedAsOfEligible": false,
+      "reason": "bill_month_and_posthoc_row_hash_do_not_prove_when_a_record_was_posted_or_available"
+    },
+    "denseMonthlyHistoryMaterialization": {
+      "availableFields": [
+        "work",
+        "origin",
+        "segment",
+        "historySeries",
+        "historyFirstObservedMonth",
+        "historyThroughOriginOnly"
+      ],
+      "construction": "posthoc_slice_of_complete_cache_by_bill_month",
+      "recordLevelAvailableAtStatus": "missing",
+      "historicalSnapshotAuthorityStatus": "missing",
+      "observedAsOfEligible": false,
+      "reason": "history_through_origin_assertion_is_not_historical_availability_evidence"
+    },
+    "targetLabelAvailabilityMetadata": {
+      "availableFields": [
+        "labelAvailableAsOf",
+        "targetEnd"
+      ],
+      "role": "outcome_maturity_only",
+      "predictorAvailabilityAuthority": false,
+      "observedAsOfEligible": false,
+      "reason": "label_maturity_cannot_substitute_for_feature_availability"
+    },
+    "derivedChannelAndRouteState": {
+      "availableFields": [
+        "firstObservedMonth",
+        "monthlyCash",
+        "derivedChannelRoute",
+        "derivedActivitySegment"
+      ],
+      "construction": "posthoc_derivation_from_complete_bill_cache",
+      "historicalStateVersionStatus": "missing",
+      "recordLevelAvailableAtStatus": "missing",
+      "observedAsOfEligible": false,
+      "reason": "current_complete_cache_cannot_be_backfilled_as_a_historical_channel_or_contract_snapshot"
+    }
+  },
+  "acceptedInputContract": {
+    "schema": "m2.current.signal_input_bundle.v0.1",
+    "factSchema": "m2.current.revenue_share_fact.v0.1",
+    "snapshotSchema": "m2.current.availability_snapshot.v0.1",
+    "requiredFactTimes": [
+      "economicTime",
+      "postingTime",
+      "availableAt"
+    ],
+    "requiredFactIdentity": [
+      "standardWorkId",
+      "channelId",
+      "currency",
+      "sourceVersion",
+      "sourceRecordId",
+      "sourceRecordHash",
+      "transformLineage"
+    ],
+    "singleTargetCurrencyRequiredPerBundle": true,
+    "requiredSnapshotAuthority": [
+      "version",
+      "availableAt",
+      "contentHashSha256",
+      "complete_as_of_snapshot"
+    ],
+    "factSnapshotAndCaseFilesDigestBound": true,
+    "canonicalCasePopulationFingerprintBound": true,
+    "currentStateBackfillAllowed": false,
+    "unknownAtOriginRequiredWhenAuthorityMissing": true,
+    "aggregateOnlyDiagnostic": true,
+    "portableCommand": "npm run diagnose:m2:signal-input -- --bundle-file <bundle.json> --case-file <cases.ndjson>"
+  },
+  "readiness": {
+    "existingAuthorityCanPopulateObservedSnapshots": false,
+    "portableIntakeImplemented": true,
+    "twoPartDevelopmentReady": false,
+    "nextAction": "obtain_versioned_complete_historical_snapshots_with_record_level_economic_posting_and_available_at_times"
+  },
+  "boundaries": {
+    "privateRowsPublished": false,
+    "rowIdentifiersPublished": false,
+    "databaseConnected": false,
+    "providerCalled": false,
+    "finalHoldoutOpened": false
+  }
+}

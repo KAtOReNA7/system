@@ -155,7 +155,14 @@
           "status": "AS_OF_SIGNAL_COVERAGE_GAPS_PRESENT",
           "authorizesNewCandidateFamily": false
         },
-        "currentStateBackfillUsed": false
+        "currentStateBackfillUsed": false,
+        "sourceInventory": {
+          "auditedSourceRoleCount": 4,
+          "eligibleObservedAsOfSourceRoleCount": 0,
+          "existingAuthorityCanPopulateObservedSnapshots": false,
+          "portableIntakeImplemented": true,
+          "nextAction": "obtain_versioned_complete_historical_snapshots_with_record_level_economic_posting_and_available_at_times"
+        }
       },
       "economicScope": {
         "fullLibraryHistoricalForecastableShareOfLedgerCash": 0.7396468495203204,
@@ -1829,6 +1836,7 @@
     "resolve_sales_share_target_classification_uncertainty_without_moving_the_frozen_population",
     "keep_occurrence_and_positive_amount_diagnostics_separate",
     "materialize_contract_conforming_historical_availability_snapshots_without_current_state_backfill",
+    "use_digest_bound_portable_signal_intake_and_publish_only_aggregate_gap_diagnostics",
     "keep_all_buyout_cash_outside_training_backtest_and_forecast_output",
     "report_sales_share_target_completeness_and_company_cash_economic_scope_separately",
     "report_work_portfolio_origin_and_origin_horizon_resolution_separately",

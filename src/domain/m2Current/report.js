@@ -63,6 +63,9 @@ export function buildM2CurrentPublicDiagnosticReport(
       config.schema === "m2.current.config.v0.6"
         ? "materialize_contract_conforming_historical_availability_snapshots_without_current_state_backfill"
         : "keep_historical_signal_availability_auditable",
+      config.schema === "m2.current.config.v0.6"
+        ? "use_digest_bound_portable_signal_intake_and_publish_only_aggregate_gap_diagnostics"
+        : "keep_signal_intake_private_independent",
       "keep_all_buyout_cash_outside_training_backtest_and_forecast_output",
       "report_sales_share_target_completeness_and_company_cash_economic_scope_separately",
       "report_work_portfolio_origin_and_origin_horizon_resolution_separately",

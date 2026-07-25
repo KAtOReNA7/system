@@ -9,8 +9,19 @@
     "denseMonthlyOverlappingCaseCount": 6,
     "cashActual": -230.38,
     "status": "UNKNOWN_ABSTAIN",
-    "authorityAssessment": "current_authority_fields_conflict_and_do_not_prove_sales_share_refund_or_buyout_reversal",
+    "authorityAssessment": "manifest_matched_original_workbook_row_has_period_business_category_and_cash_but_no_explicit_refund_reversal_or_adjustment_explanation",
     "requiredAdditionalAuthority": "original_settlement_adjustment_or_contract_evidence",
+    "originalWorkbookAudit": {
+      "matchesFormalExecutionManifest": true,
+      "sourceSheetAndRowLocated": true,
+      "cashAmountMatches": true,
+      "sourceColumnCount": 7,
+      "explicitCashEventTypeColumnPresent": false,
+      "explicitAdjustmentExplanationColumnPresent": false,
+      "businessCategoryIsCashTypeAuthority": false,
+      "formulaCellCount": 0,
+      "privateIdentifiersPublished": false
+    },
     "classificationChanged": false,
     "toleranceRelaxed": false
   },

@@ -70,7 +70,8 @@ FVA 和自动门禁都是必要的。错误在于执行顺序和问题抽象：
 3. **外部行业的数据条件没有迁移。** M5 的头部方案依赖大量相关序列以及价格、
    日历、促销等 cutoff 时已知解释变量。当前本地数据主要是历史现金、route 和
    segment；高额收入由极少数突发 case 主导，而合同、可售、渠道、发布时间和
-   commitment snapshot 尚不完整。
+   分成收入事实都缺少版本化历史 available-at 权威。commitment 已移至模型外
+   账单/审计层，不再作为分成预测输入。
 4. **间歇需求方法的目标错位。** Croston、SBA、TSB、ADIDA 主要服务库存和
    间歇需求率，不会自动解决重尾作品现金的金额分配。本地 positive-amount WAPE
    与整体 WAPE 接近，说明主要瓶颈不是“会不会发生”，而是“发生时金额多大”。
@@ -192,8 +193,10 @@ training WAPE 选择前三个模型，等权平均，并用带 5 个先验 cell 
    holdout，必须单独授权，并预先冻结 WAPE ≤ 0.15、|bias| ≤ 0.10、
    p90 cell APE ≤ 0.30 与 FVA ≥ 0.20。
 3. **作品级信号工程。** 只接收 cutoff 时真实可得、可审计、可版本化的
-   commitment、合同、可售、渠道和发布时间 snapshot；建立
-   work×origin coverage 与 freshness ledger。
+   分成收入事实、合同可售状态、渠道状态和发布时间 snapshot；commitment
+   继续留在模型外账单/审计层，不得成为分成预测信号。使用 digest-bound
+   portable bundle 建立 work×origin×segment coverage 与 freshness ledger；
+   无历史完整性权威时必须 `unknown_at_origin`，不得用当前状态回填。
 4. **成熟库实现的进入条件。** 只有在上述新特征覆盖足够、月度 panel 数量足够后，
    才引入成熟 LightGBM/CatBoost/Tweedie 库，并使用 grouped nested
    rolling-origin 验证；不得再实现名字相似的简化 stump。
@@ -204,11 +207,15 @@ training WAPE 选择前三个模型，等权平均，并用带 5 个先验 cell 
 
 ## 可复现证据
 
-- `config/m2-current.v0.5.json`
+- `config/m2-current.v0.6.json`
 - `src/domain/m2Current/portfolio.js`
-- `docs/analysis/m2-current/M2-current-multi-resolution-candidate-v0.5.json`
-- `docs/analysis/m2-current/M2-current-automated-evaluation-v0.3.json`
-- `docs/analysis/m2-current/M2-current-public-diagnostic-v0.6.json`
+- `src/domain/m2Current/revenueShareFact.js`
+- `src/domain/m2Current/availabilitySnapshot.js`
+- `src/domain/m2Current/signalInputBundle.js`
+- `docs/analysis/m2-current/M2-current-sales-share-candidate-v0.6.json`
+- `docs/analysis/m2-current/M2-current-automated-evaluation-v0.4.json`
+- `docs/analysis/m2-current/M2-current-as-of-source-inventory-v0.1.json`
+- `docs/analysis/m2-current/M2-current-public-diagnostic-v0.7.json`
 
 公开诊断不读取 private 文件：
 

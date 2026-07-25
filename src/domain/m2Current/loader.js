@@ -18,6 +18,10 @@ export function loadM2CurrentPublicEvidence(sources, config) {
       sources?.signalGap,
       "m2.current.signal_gap_diagnostic.public.v0.1"
     );
+    requireSchema(
+      sources?.signalSourceInventory,
+      "m2.current.as_of_source_inventory.public.v0.1"
+    );
   }
   const currentCandidateSchema = config.schema === "m2.current.config.v0.6"
     ? "m2.current.sales_share_candidate.public.v0.6"
@@ -162,6 +166,33 @@ export function loadM2CurrentPublicEvidence(sources, config) {
       || sources.signalGap.invariants.populationRowsDropped !== false
       || sources.signalGap.invariants.nullImputedAsZero !== false
       || sources.signalGap.invariants.currentStateBackfillUsed !== false
+      || sources.signalSourceInventory.auditedSourceRoleCount !== 4
+      || Object.keys(sources.signalSourceInventory.sourceRoles ?? {})
+        .length !== sources.signalSourceInventory.auditedSourceRoleCount
+      || sources.signalSourceInventory
+        .eligibleObservedAsOfSourceRoleCount !== 0
+      || Object.values(
+        sources.signalSourceInventory.sourceRoles ?? {}
+      ).some((sourceRole) => sourceRole?.observedAsOfEligible !== false)
+      || sources.signalSourceInventory
+        .readiness.existingAuthorityCanPopulateObservedSnapshots !== false
+      || sources.signalSourceInventory
+        .readiness.portableIntakeImplemented !== true
+      || sources.signalSourceInventory
+        .readiness.twoPartDevelopmentReady !== false
+      || sources.signalSourceInventory
+        .acceptedInputContract.currentStateBackfillAllowed !== false
+      || sources.signalSourceInventory
+        .acceptedInputContract.unknownAtOriginRequiredWhenAuthorityMissing
+          !== true
+      || sources.signalSourceInventory
+        .acceptedInputContract.canonicalCasePopulationFingerprintBound
+          !== true
+      || sources.signalSourceInventory
+        .acceptedInputContract.singleTargetCurrencyRequiredPerBundle
+          !== true
+      || sources.signalSourceInventory
+        .boundaries.rowIdentifiersPublished !== false
     ) {
       throw new Error("m2_current_signal_gap_population_or_boundary_drift");
     }
@@ -267,7 +298,22 @@ export function loadM2CurrentPublicEvidence(sources, config) {
           readiness:
             sources.signalGap.coverageInventory.readiness,
           currentStateBackfillUsed:
-            sources.signalGap.invariants.currentStateBackfillUsed
+            sources.signalGap.invariants.currentStateBackfillUsed,
+          sourceInventory: {
+            auditedSourceRoleCount:
+              sources.signalSourceInventory.auditedSourceRoleCount,
+            eligibleObservedAsOfSourceRoleCount:
+              sources.signalSourceInventory
+                .eligibleObservedAsOfSourceRoleCount,
+            existingAuthorityCanPopulateObservedSnapshots:
+              sources.signalSourceInventory.readiness
+                .existingAuthorityCanPopulateObservedSnapshots,
+            portableIntakeImplemented:
+              sources.signalSourceInventory.readiness
+                .portableIntakeImplemented,
+            nextAction:
+              sources.signalSourceInventory.readiness.nextAction
+          }
         }
         : null,
       economicScope: config.schema === "m2.current.config.v0.6"

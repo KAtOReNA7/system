@@ -1,0 +1,7 @@
+{"standardWorkId":"SYN-WORK-DENSE","origin":"2022-01","horizonMonths":3,"route":"pure_sales_share","segment":"dense"}
+{"standardWorkId":"SYN-WORK-DENSE","origin":"2022-01","horizonMonths":6,"route":"pure_sales_share","segment":"dense"}
+{"standardWorkId":"SYN-WORK-INTERMITTENT","origin":"2022-01","horizonMonths":3,"route":"pure_sales_share","segment":"intermittent"}
+{"standardWorkId":"SYN-WORK-DORMANT","origin":"2022-01","horizonMonths":3,"route":"pure_sales_share","segment":"dormant"}
+{"standardWorkId":"SYN-WORK-DENSE","origin":"2022-02","horizonMonths":3,"route":"pure_sales_share","segment":"dense"}
+{"standardWorkId":"SYN-WORK-INTERMITTENT","origin":"2022-02","horizonMonths":3,"route":"pure_sales_share","segment":"intermittent"}
+{"standardWorkId":"SYN-WORK-DORMANT","origin":"2022-02","horizonMonths":3,"route":"pure_sales_share","segment":"dormant"}

@@ -10,6 +10,8 @@
   - `docs/analysis/m2-current/M2-sales-share-only-target-decision-v0.1.md`
   - `docs/analysis/m2-current/M2-sales-share-model-full-audit-and-research-v0.1.md`
   - `docs/analysis/m2-current/M2-current-as-of-signal-readiness-v0.1.md`
+  - `docs/analysis/m2-current/M2-current-as-of-source-inventory-v0.1.json`
+  - `docs/analysis/m2-current/M2-current-signal-input-portable-intake-v0.1.md`
 - PR #7 cryptographic authority 继续由不可变的
   `docs/analysis/m2-v2/M2-v2-current-state-index-v0.3.json` 提供；治理索引不得改写该绑定。
 - 历史 B0–B8、C1–C3、旧 PR 状态和旧授权记录只用于审计追溯，不是当前执行指令。
@@ -132,14 +134,23 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
   - 分成目标分类不确定现金占比在冻结/逐月 case 中分别为
     0.0000027284304597 / 0.0000028651436157；严格零容忍分类门禁未通过
   - D0 已将该不确定项追溯为同一笔 -230.38 元底层负向现金事实；它在冻结
-    人口中重叠 1 个 case、在逐月人口中重叠 6 个 case。当前权威字段不能证明
-    它属于分成退款或买断冲销，缺少原始结算调整/合同依据时必须继续
-    `UNKNOWN_ABSTAIN`，不得猜测或放宽容差
+    人口中重叠 1 个 case、在逐月人口中重叠 6 个 case。已只读核验与正式执行
+    manifest 匹配的原始工作簿 source row；原表只有期间、业务授权分类和金额，
+    没有独立退款/冲销/结算调整类型或说明字段。业务分类不能证明 cash event，
+    缺少原始结算调整/合同依据时必须继续 `UNKNOWN_ABSTAIN`，不得猜测或放宽容差
   - D1 已实现 `revenueShareFact`、`availabilitySnapshot` 与
     work×origin×segment 信号缺口 ledger。当前符合新合同的版本化历史 snapshot
     库存为 0：冻结人口 2,402 个 work-origin-segment、逐月人口 20,600 个
     work-origin-segment 均为 `unknown_at_origin`。这是合规 snapshot 覆盖率，
     不代表原始账单不存在，也不得用当前状态回填
+  - 现有正式收入事实、逐月 history、标签成熟时间和派生渠道/route 四类来源已
+    完成字段级审计，均缺少历史 origin 所需的 posting/available-at 或版本化完整
+    snapshot 权威，不能升级为 `observed_as_of`。公开 digest-bound signal input
+    bundle 与 aggregate-only 诊断入口已实现；其他电脑不需要复制固定 private
+    文件即可开发和验证该入口
+  - snapshot 的 occurrence/positive amount 只用于合规可读性与缺失机制覆盖，
+    不是已授权预测特征；后续动态 two-part 必须按 economic time 另行预注册
+    窗口、滞后和变换，不得直接把累计 snapshot 摘要当作模型信号
 - 当前 development champion 仍为
   `M2-current-occurrence-amount-calibration-v0.3`。v0.4 只是在严格门禁拒绝所有
   challenger 后返回 v0.3，不能表述为候选升级。
@@ -185,10 +196,12 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
 5. 只接收 cutoff 时真实可得、可审计、可版本化、exact-work 的分成预测信号：
    sales historical availability、合同可售状态、渠道状态；commitment 不得作为
    分成预测信号。
-6. D1 合同与缺口 ledger 已建立；下一步采集/物化符合合同的历史
-   `availabilitySnapshot`，补齐 economic、posting、available-at、来源版本和
-   lineage。当前冻结/逐月 occurrence 与 positive amount 合规覆盖均为 0；
-   无历史 snapshot 的 current 状态不得回填。
+6. D1 合同、缺口 ledger、来源字段审计和 digest-bound portable intake 已建立；
+   使用 `npm run diagnose:m2:signal-input` 验证公开 synthetic 输入，受控数据通过
+   `--bundle-file` 与 `--case-file` 提交同目录摘要绑定包。下一步采集/物化符合
+   合同的历史 `availabilitySnapshot`，补齐 economic、posting、available-at、
+   来源版本和 lineage。当前冻结/逐月 occurrence 与 positive amount 合规覆盖
+   均为 0；无历史 snapshot 的 current 状态不得回填。
 7. 新信号先通过 25-origin 次级诊断，再回到 7,851-case 权威人口做 nested
    challenger；不移动冻结人口，不剔除困难 case，不将 null 计为 0。
 8. 只有绝对质量、segment、risk–coverage 和业务损失均通过，才申请 final
@@ -202,15 +215,18 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
 - 已实现：R0–R5 strict contract、multi-resolution evaluator、加总
   additive Holt–Winters ensemble、六个简单基线、三个全局 challenger、
   rolling conformal、MinT、risk–coverage、业务损失和 FVA；D1
-  `revenueShareFact`、`availabilitySnapshot` 和 signal-gap ledger。
+  `revenueShareFact`、`availabilitySnapshot`、signal-gap ledger、来源字段审计
+  和 digest-bound portable signal input bundle/CLI。
 - 已验证：权威 7,851-case 与 25-origin/56,856-case 次级 development 复验；
   作品级 challenger 均失败并安全回退 v0.3；portfolio v0.5 development
   backtest 通过；D1 synthetic contract 通过，冻结/逐月合规 snapshot 覆盖已
-  聚合量化为 0，但完整 M2 成熟度未通过。
+  聚合量化为 0；portable CLI 只输出聚合覆盖且拒绝摘要/行数漂移和当前状态
+  回填，但完整 M2 成熟度未通过。
 - 已退役：120 部人工评估的 current 依赖；不重建、不重放。
 - 下一输入：D0 原始结算调整/合同依据，或带 economic、posting、available-at、
-  来源版本和 lineage 的作品层历史分成 snapshot。不存在时保持阻断；组合层
-  later-origin/final holdout 仍需单独授权。
+  来源版本、lineage 与完整性权威的作品层历史分成 snapshot。通过 portable
+  bundle 导入；不存在时保持阻断，不能把现有 posthoc history 改名冒充。
+  组合层 later-origin/final holdout 仍需单独授权。
 - 未授权：final holdout 及所有既有业务 gate 外的动作。
 
 ## Git 与提交规则

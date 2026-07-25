@@ -110,21 +110,28 @@ npm run verify:m2:current
 - `docs/analysis/m2-current/M2-current-automated-evaluation-v0.4.json`
 - `docs/analysis/m2-current/M2-current-signal-gap-diagnostic-v0.1.json`
 - `docs/analysis/m2-current/M2-current-as-of-signal-readiness-v0.1.md`
+- `docs/analysis/m2-current/M2-current-as-of-source-inventory-v0.1.json`
+- `docs/analysis/m2-current/M2-current-signal-input-portable-intake-v0.1.md`
+- `docs/analysis/m2-current/M2-current-signal-input-portable-diagnostic-v0.1.json`
 - `docs/analysis/m2-current/M2-current-public-diagnostic-v0.7.json`
 
 ## 下一开发方向
 
-1. D0 已定位同一笔 -230.38 元负向现金事实，但当前权威不能证明其属于分成退款
-   或买断冲销；等待原始结算调整/合同依据，继续 `UNKNOWN_ABSTAIN`。
+1. D0 已定位并在 manifest 匹配的原始工作簿中只读核验同一笔 -230.38 元负向
+   现金事实；原表没有独立退款/冲销/结算调整类型或说明字段，业务授权分类不能
+   证明 cash event。等待原始结算调整/合同依据，继续 `UNKNOWN_ABSTAIN`。
 2. 冻结现有 2022 development 窗口，不再同窗调参。
 3. D1 公共合同和缺口 ledger 已实现；下一步物化带 economic、posting、
    available-at、来源版本和 lineage 的历史 `availabilitySnapshot`，禁止当前
    状态回填。当前冻结 2,402 和逐月 20,600 个 work-origin-segment 的合规
    snapshot 覆盖均为 0。
-4. 新信号覆盖可审计后先通过 25-origin 诊断，再回到 7,851-case population 做 grouped
+4. 已审计四类现有候选来源，均不能证明历史 predictor availability；digest-bound
+   portable signal input 与 aggregate-only CLI 已实现。受控输入无需固定 private
+   文件名，通过 bundle/cases 参数接入，缺失权威时继续 `unknown_at_origin`。
+5. 新信号覆盖可审计后先通过 25-origin 诊断，再回到 7,851-case population 做 grouped
    nested evaluation。
-5. 下一次 portfolio 评价只能使用未参与选择的 later-origin 或单独授权
+6. 下一次 portfolio 评价只能使用未参与选择的 later-origin 或单独授权
    final holdout；当前 holdout 继续 sealed。
-6. portfolio、work allocation/ranking、abstention 是独立 capability。
-7. 120 部人工预估继续跳过；人工只做 post-gate QA。
-8. provider、数据库、Canary/full160、release 和 M3 formal 继续未授权。
+7. portfolio、work allocation/ranking、abstention 是独立 capability。
+8. 120 部人工预估继续跳过；人工只做 post-gate QA。
+9. provider、数据库、Canary/full160、release 和 M3 formal 继续未授权。

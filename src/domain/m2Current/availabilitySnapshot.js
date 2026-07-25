@@ -69,8 +69,18 @@ export function buildM2CurrentAvailabilitySnapshot(input) {
         netSalesShareCash: null
       }),
       signals: Object.freeze({
-        occurrence: Object.freeze({ status: "missing", value: null }),
-        positiveAmount: Object.freeze({ status: "missing", value: null })
+        occurrence: Object.freeze({
+          status: "missing",
+          value: null,
+          semantic:
+            "historical_net_sales_share_cash_positive_as_of_snapshot"
+        }),
+        positiveAmount: Object.freeze({
+          status: "missing",
+          value: null,
+          semantic:
+            "historical_net_sales_share_cash_as_of_snapshot"
+        })
       }),
       missingReason,
       reconstructionPolicy: "strict_historical_snapshot_only",
@@ -130,11 +140,15 @@ export function buildM2CurrentAvailabilitySnapshot(input) {
     signals: Object.freeze({
       occurrence: Object.freeze({
         status: "available",
-        value: occurrence
+        value: occurrence,
+        semantic:
+          "historical_net_sales_share_cash_positive_as_of_snapshot"
       }),
       positiveAmount: Object.freeze({
         status: occurrence ? "available" : "not_applicable",
-        value: occurrence ? netSalesShareCash : null
+        value: occurrence ? netSalesShareCash : null,
+        semantic:
+          "historical_net_sales_share_cash_as_of_snapshot"
       })
     }),
     missingReason: null,
