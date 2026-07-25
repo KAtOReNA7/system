@@ -1,0 +1,562 @@
+{
+  "schema": "m2.current.manual_channel_backtest.public.v0.1",
+  "version": "M2-current-manual-channel-backtest-v0.1",
+  "candidateId": "M2-current-manual-channel-prior-v0.8",
+  "target": "future_sales_share_cash",
+  "role": "posthoc_business_rule_comparator_only",
+  "status": "POSTHOC_MANUAL_RULE_REJECTED_CHANNEL_GOVERNANCE_REQUIRED",
+  "scope": {
+    "frozenWorkCount": 824,
+    "representedWorkCount": 214,
+    "caseCount": 379,
+    "origins": [
+      "2019-06",
+      "2019-12",
+      "2020-06"
+    ],
+    "horizonMonths": 36,
+    "labelAvailableThrough": "2023-06",
+    "originCounts": {
+      "2019-06": 65,
+      "2019-12": 100,
+      "2020-06": 214
+    },
+    "segmentCounts": {
+      "dense": 97,
+      "dormant": 4,
+      "intermittent": 278
+    },
+    "specialCategoryCaseCount": 0
+  },
+  "currentM2Summary": {
+    "workLevelChampion": "M2-current-occurrence-amount-calibration-v0.3",
+    "workLevelLogic": "aggregate sales-share history, segment activity, calibrate occurrence and positive amount",
+    "rejectedHistoryRegimeCandidate": "M2-current-history-regime-recalibration-v0.7",
+    "portfolioDevelopmentCandidate": "M2-current-multi-resolution-revenue-service-v0.5",
+    "portfolioResultMustNotBeAllocatedToWorks": true
+  },
+  "manualRuleSpecification": {
+    "mainChannels": "top three current raw channel components by trailing-12 sales-share cash",
+    "stableMain": "trailing_12_cash / lifecycle_contribution_share",
+    "decliningMain": "latest_month_cash * 12 / lifecycle_contribution_share",
+    "declineBoundary": "latest_month_cash < 0.8 * trailing_12_monthly_average",
+    "edge": "0.5 * nonnegative_net_sales_share_cash_since_rights_start",
+    "lifecycleContributionShare": "0.50 through month 36, linearly decreasing to 0.40 at month 60",
+    "targetHorizonMonths": 36,
+    "channelAliasesUnified": false,
+    "platformBranchImplemented": false,
+    "specialCategoryUnitSalesBranchImplemented": false
+  },
+  "dataQuality": {
+    "channelIdentity": {
+      "auditInterpretation": "exact one-to-one does not prove one real platform per pair",
+      "distinctRawIdCount": 133,
+      "distinctRawIdNamePairCount": 133,
+      "distinctRawNameCount": 133,
+      "rawIdsWithMultipleExactNames": 0,
+      "rawNamesWithMultipleExactIds": 0,
+      "semanticAliasConflictCount": null,
+      "semanticAliasResolutionAvailable": false
+    },
+    "classificationCoverage": {
+      "danmeiWorkCount": 28,
+      "historicalAvailableAtProven": false,
+      "一级分类": {
+        "distinctNonemptyCount": 2,
+        "nonemptyCount": 3053
+      },
+      "三级分类": {
+        "distinctNonemptyCount": 64,
+        "nonemptyCount": 3053
+      },
+      "二级分类": {
+        "distinctNonemptyCount": 9,
+        "nonemptyCount": 3053
+      },
+      "作品状态": {
+        "distinctNonemptyCount": 2,
+        "nonemptyCount": 3053
+      },
+      "版权到期": {
+        "distinctNonemptyCount": 1394,
+        "nonemptyCount": 3053
+      },
+      "版权开始": {
+        "distinctNonemptyCount": 1726,
+        "nonemptyCount": 3053
+      },
+      "辅助标签": {
+        "distinctNonemptyCount": 83,
+        "nonemptyCount": 3053
+      },
+      "音频版权状态": {
+        "distinctNonemptyCount": 3,
+        "nonemptyCount": 3053
+      }
+    },
+    "humanReviewedBuyoutIsolation": {
+      "cashClassificationAuthority": "user_reviewed_workbook_membership",
+      "channelClassificationCounts": {
+        "buyout_channel": 1073,
+        "sales_share_channel": 9912
+      },
+      "classifierIsolatedPositiveBuyoutCash": 39169566.17529994,
+      "classifierIsolatedShareOfPositiveCash": 0.30358489002112676,
+      "humanReviewedIsolatedBuyoutCash": 39169566.17529994,
+      "humanReviewedIsolatedShareOfPositiveCash": 0.30358489002112676,
+      "machineCashClassificationUsed": false,
+      "manualFinancialTruthTableAvailable": true
+    },
+    "buyoutEventMonthsExcludedFromHistory": 0,
+    "rightsStartSourceCounts": {
+      "first_observed_month_proxy": 32,
+      "formal_input_current_record": 347
+    },
+    "channelCount": {
+      "maximum": 8,
+      "median": 1,
+      "minimum": 1,
+      "p90": 6
+    },
+    "findings": [
+      {
+        "severity": "high",
+        "code": "canonical_channel_master_missing",
+        "effect": "main-channel ranking and platform concentration may be fragmented"
+      },
+      {
+        "severity": "high",
+        "code": "historical_feature_available_at_not_proven",
+        "effect": "the result is posthoc development evidence only"
+      }
+    ]
+  },
+  "evaluation": {
+    "trailingAnnualFlat": {
+      "overall": {
+        "caseCount": 379,
+        "wape": 1.091149839487123,
+        "signedBias": 0.3896172396317226,
+        "zeroImputationUsed": false
+      },
+      "byOrigin": {
+        "2019-06": {
+          "caseCount": 65,
+          "wape": 0.6847097839451749,
+          "signedBias": 0.32352358916795243,
+          "zeroImputationUsed": false
+        },
+        "2019-12": {
+          "caseCount": 100,
+          "wape": 1.3745969519241366,
+          "signedBias": 0.788828208674178,
+          "zeroImputationUsed": false
+        },
+        "2020-06": {
+          "caseCount": 214,
+          "wape": 1.1037907394575988,
+          "signedBias": 0.13406413048155905,
+          "zeroImputationUsed": false
+        }
+      },
+      "bySegment": {
+        "dense": {
+          "caseCount": 97,
+          "wape": 1.463083510308056,
+          "signedBias": 1.410116214409521,
+          "zeroImputationUsed": false
+        },
+        "dormant": {
+          "caseCount": 4,
+          "wape": 0.8524277401507203,
+          "signedBias": -0.547553181341219,
+          "zeroImputationUsed": false
+        },
+        "intermittent": {
+          "caseCount": 278,
+          "wape": 0.8297822685748103,
+          "signedBias": -0.327513238209921,
+          "zeroImputationUsed": false
+        }
+      },
+      "byChannelBand": {
+        "four_plus": {
+          "caseCount": 115,
+          "wape": 1.148090105006199,
+          "signedBias": 0.9631529817454406,
+          "zeroImputationUsed": false
+        },
+        "one": {
+          "caseCount": 208,
+          "wape": 1.0830616570884177,
+          "signedBias": -0.621820294481581,
+          "zeroImputationUsed": false
+        },
+        "two_to_three": {
+          "caseCount": 56,
+          "wape": 0.977071324926379,
+          "signedBias": 0.17802561130265718,
+          "zeroImputationUsed": false
+        }
+      },
+      "byConcentrationBand": {
+        "top2_60_to_80pct": {
+          "caseCount": 37,
+          "wape": 0.5906927697794282,
+          "signedBias": 0.5260379911349629,
+          "zeroImputationUsed": false
+        },
+        "top2_at_least_80pct": {
+          "caseCount": 341,
+          "wape": 1.1964786806542238,
+          "signedBias": 0.35352241223860076,
+          "zeroImputationUsed": false
+        },
+        "top2_below_60pct": {
+          "caseCount": 1,
+          "wape": 1.8751311896275669,
+          "signedBias": 1.8751311896275669,
+          "zeroImputationUsed": false
+        }
+      }
+    },
+    "manualFaithful": {
+      "overall": {
+        "caseCount": 379,
+        "wape": 0.704446799458909,
+        "signedBias": -0.2909828575453418,
+        "zeroImputationUsed": false
+      },
+      "byOrigin": {
+        "2019-06": {
+          "caseCount": 65,
+          "wape": 0.616096033706538,
+          "signedBias": -0.18189265428907567,
+          "zeroImputationUsed": false
+        },
+        "2019-12": {
+          "caseCount": 100,
+          "wape": 0.7371216491197711,
+          "signedBias": -0.10686960133408263,
+          "zeroImputationUsed": false
+        },
+        "2020-06": {
+          "caseCount": 214,
+          "wape": 0.7283071722580301,
+          "signedBias": -0.48419229897827576,
+          "zeroImputationUsed": false
+        }
+      },
+      "bySegment": {
+        "dense": {
+          "caseCount": 97,
+          "wape": 0.6052407778197475,
+          "signedBias": 0.18205799852792917,
+          "zeroImputationUsed": false
+        },
+        "dormant": {
+          "caseCount": 4,
+          "wape": 1,
+          "signedBias": -1,
+          "zeroImputationUsed": false
+        },
+        "intermittent": {
+          "caseCount": 278,
+          "wape": 0.7741606685754489,
+          "signedBias": -0.6233996883238322,
+          "zeroImputationUsed": false
+        }
+      },
+      "byChannelBand": {
+        "four_plus": {
+          "caseCount": 115,
+          "wape": 0.5053374866184392,
+          "signedBias": -0.10073782173967138,
+          "zeroImputationUsed": false
+        },
+        "one": {
+          "caseCount": 208,
+          "wape": 1.0567103745199296,
+          "signedBias": -0.725251199536361,
+          "zeroImputationUsed": false
+        },
+        "two_to_three": {
+          "caseCount": 56,
+          "wape": 0.7767622687953943,
+          "signedBias": -0.2616030490846504,
+          "zeroImputationUsed": false
+        }
+      },
+      "byConcentrationBand": {
+        "top2_60_to_80pct": {
+          "caseCount": 37,
+          "wape": 0.3871264883747521,
+          "signedBias": -0.23042285245097385,
+          "zeroImputationUsed": false
+        },
+        "top2_at_least_80pct": {
+          "caseCount": 341,
+          "wape": 0.7764198739450492,
+          "signedBias": -0.30537269943140155,
+          "zeroImputationUsed": false
+        },
+        "top2_below_60pct": {
+          "caseCount": 1,
+          "wape": 0.007465295238574478,
+          "signedBias": -0.007465295238574478,
+          "zeroImputationUsed": false
+        }
+      }
+    },
+    "manualAnnual80Percent": {
+      "overall": {
+        "caseCount": 379,
+        "wape": 0.7133306554972592,
+        "signedBias": -0.4136824518258922,
+        "zeroImputationUsed": false
+      },
+      "byOrigin": {
+        "2019-06": {
+          "caseCount": 65,
+          "wape": 0.6615990476093805,
+          "signedBias": -0.32859379233000785,
+          "zeroImputationUsed": false
+        },
+        "2019-12": {
+          "caseCount": 100,
+          "wape": 0.7013275623698595,
+          "signedBias": -0.2652679207590806,
+          "zeroImputationUsed": false
+        },
+        "2020-06": {
+          "caseCount": 214,
+          "wape": 0.7500153318144227,
+          "signedBias": -0.5678911404169998,
+          "zeroImputationUsed": false
+        }
+      },
+      "bySegment": {
+        "dense": {
+          "caseCount": 97,
+          "wape": 0.6032447271673971,
+          "signedBias": -0.011342207716104787,
+          "zeroImputationUsed": false
+        },
+        "dormant": {
+          "caseCount": 4,
+          "wape": 1,
+          "signedBias": -1,
+          "zeroImputationUsed": false
+        },
+        "intermittent": {
+          "caseCount": 278,
+          "wape": 0.7906901766420918,
+          "signedBias": -0.6964163738638528,
+          "zeroImputationUsed": false
+        }
+      },
+      "byChannelBand": {
+        "four_plus": {
+          "caseCount": 115,
+          "wape": 0.543449400278713,
+          "signedBias": -0.26194703009183923,
+          "zeroImputationUsed": false
+        },
+        "one": {
+          "caseCount": 208,
+          "wape": 1.0441305621497414,
+          "signedBias": -0.7627213392588272,
+          "zeroImputationUsed": false
+        },
+        "two_to_three": {
+          "caseCount": 56,
+          "wape": 0.7445400171809783,
+          "signedBias": -0.387552511619215,
+          "zeroImputationUsed": false
+        }
+      },
+      "byConcentrationBand": {
+        "top2_60_to_80pct": {
+          "caseCount": 37,
+          "wape": 0.49496412552674246,
+          "signedBias": -0.3793090149153517,
+          "zeroImputationUsed": false
+        },
+        "top2_at_least_80pct": {
+          "caseCount": 341,
+          "wape": 0.7630915839731878,
+          "signedBias": -0.4221649287340183,
+          "zeroImputationUsed": false
+        },
+        "top2_below_60pct": {
+          "caseCount": 1,
+          "wape": 0.1802838845396725,
+          "signedBias": -0.1802838845396725,
+          "zeroImputationUsed": false
+        }
+      }
+    },
+    "manualFixed50PercentLifecycle": {
+      "overall": {
+        "caseCount": 379,
+        "wape": 0.6991939024593801,
+        "signedBias": -0.3054667222727301,
+        "zeroImputationUsed": false
+      },
+      "byOrigin": {
+        "2019-06": {
+          "caseCount": 65,
+          "wape": 0.6162496988631281,
+          "signedBias": -0.18524772484602478,
+          "zeroImputationUsed": false
+        },
+        "2019-12": {
+          "caseCount": 100,
+          "wape": 0.7280622736206038,
+          "signedBias": -0.12494828876530129,
+          "zeroImputationUsed": false
+        },
+        "2020-06": {
+          "caseCount": 214,
+          "wape": 0.7229123842529606,
+          "signedBias": -0.502061698465369,
+          "zeroImputationUsed": false
+        }
+      },
+      "bySegment": {
+        "dense": {
+          "caseCount": 97,
+          "wape": 0.5934077647635952,
+          "signedBias": 0.16113088064434497,
+          "zeroImputationUsed": false
+        },
+        "dormant": {
+          "caseCount": 4,
+          "wape": 1,
+          "signedBias": -1,
+          "zeroImputationUsed": false
+        },
+        "intermittent": {
+          "caseCount": 278,
+          "wape": 0.7735317885598244,
+          "signedBias": -0.6333557458201856,
+          "zeroImputationUsed": false
+        }
+      },
+      "byChannelBand": {
+        "four_plus": {
+          "caseCount": 115,
+          "wape": 0.5008043286246809,
+          "signedBias": -0.11573435469135153,
+          "zeroImputationUsed": false
+        },
+        "one": {
+          "caseCount": 208,
+          "wape": 1.05813591197882,
+          "signedBias": -0.728108163758772,
+          "zeroImputationUsed": false
+        },
+        "two_to_three": {
+          "caseCount": 56,
+          "wape": 0.7632319957762073,
+          "signedBias": -0.28670712124390835,
+          "zeroImputationUsed": false
+        }
+      },
+      "byConcentrationBand": {
+        "top2_60_to_80pct": {
+          "caseCount": 37,
+          "wape": 0.38261704932723095,
+          "signedBias": -0.24200956408127727,
+          "zeroImputationUsed": false
+        },
+        "top2_at_least_80pct": {
+          "caseCount": 341,
+          "wape": 0.7709826210727171,
+          "signedBias": -0.32054896504177777,
+          "zeroImputationUsed": false
+        },
+        "top2_below_60pct": {
+          "caseCount": 1,
+          "wape": 0.007465295238574478,
+          "signedBias": -0.007465295238574478,
+          "zeroImputationUsed": false
+        }
+      }
+    }
+  },
+  "diagnosticPopulation": {
+    "topTwoShareAtLeast60": 378,
+    "topTwoShareAtLeast70": 367,
+    "topTwoShareAtLeast80": 341,
+    "channelBands": {
+      "four_plus": 115,
+      "one": 208,
+      "two_to_three": 56
+    },
+    "concentrationBands": {
+      "top2_60_to_80pct": 37,
+      "top2_at_least_80pct": 341,
+      "top2_below_60pct": 1
+    },
+    "mainDecisionBands": {
+      "has_declining_main": 190,
+      "stable_main_only": 189
+    },
+    "forecastComposition": {
+      "main": 10958194.29084388,
+      "edge": 195063.70949999994
+    }
+  },
+  "sensitivityInterpretation": {
+    "annual80PercentHasLowestObservedWape": false,
+    "annual80PercentAbsoluteBiasPassed": false,
+    "parameterSelectionAuthorized": false,
+    "interpretation": "sensitivity results describe instability and must not be used for same-window tuning"
+  },
+  "gates": {
+    "developmentWapePassed": false,
+    "overallAbsoluteBiasPassed": false,
+    "channelNormalizationPassed": false,
+    "manualBuyoutTruthPassed": true,
+    "historicalFeatureAvailableAtPassed": false,
+    "specialCategoryBacktestAvailable": false,
+    "independentHoldoutPassed": false,
+    "allPromotionGatesPassed": false
+  },
+  "decision": {
+    "promotionDecision": "REJECT_KEEP_V0_3_WORK_LEVEL_FALLBACK",
+    "automationDecision": "AUTOMATION_BLOCKED",
+    "platformBranchDecision": "BLOCKED_PENDING_CANONICAL_CHANNEL_AND_PLATFORM_TYPE",
+    "specialCategoryDecision": "BLOCKED_NO_MATURE_36_MONTH_DANMEI_CASES_IN_SAFE_WINDOW",
+    "nextAction": "build a finance-reviewed canonical channel and platform-type master, then rerun a platform-category hierarchical challenger on an unseen origin",
+    "reasonCodes": [
+      "manual_rule_WAPE_above_0_30",
+      "overall_absolute_bias_above_0_10",
+      "origin_performance_unstable",
+      "canonical_channel_master_missing",
+      "no_safe_window_danmei_cases",
+      "historical_feature_available_at_not_proven",
+      "independent_holdout_sealed"
+    ]
+  },
+  "authorization": {
+    "source": "user_instruction_2026-07-25",
+    "scope": "local_real_bill_manual_channel_rule_backtest",
+    "newCandidateFamilyDevelopment": true,
+    "candidateSelection": false,
+    "finalHoldout": false,
+    "deferredLabels": false,
+    "release": false
+  },
+  "boundaries": {
+    "aggregateOnly": true,
+    "identifiersPresent": false,
+    "privateRowsPresent": false,
+    "databaseConnected": false,
+    "providerCalled": false,
+    "finalHoldoutOpened": false,
+    "deferredLabelsOpened": false,
+    "releaseAuthorized": false
+  }
+}

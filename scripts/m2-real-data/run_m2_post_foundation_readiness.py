@@ -242,6 +242,8 @@ def apply_foundation_scope(
     final_ids: set[str],
     raw_mapping: dict[str, str],
     standard_mapping: dict[str, str],
+    *,
+    require_full_scope: bool = True,
 ) -> tuple[pd.DataFrame, dict]:
     result = bill.copy()
     original_ids = result["standardWorkId"].map(canonical_work_id)
@@ -267,7 +269,12 @@ def apply_foundation_scope(
         .dropna()
         .astype(str)
     )
-    if valid_after != final_ids:
+    scope_is_valid = (
+        valid_after == final_ids
+        if require_full_scope
+        else valid_after.issubset(final_ids)
+    )
+    if not scope_is_valid:
         raise SystemExit(
             "Mapped bill scope differs from the fixed foundation: "
             f"bill_only={len(valid_after - final_ids)}, "
@@ -296,6 +303,8 @@ def apply_foundation_scope(
         "incomeAmountConserved": abs(amount_before - amount_after) <= 0.001,
         "rowCountConserved": len(result) == len(bill),
         "scopeFullyAligned": valid_after == final_ids,
+        "scopeWithinFoundation": valid_after.issubset(final_ids),
+        "fullScopeRequired": require_full_scope,
         "reconciliationReason": (
             "canonicalize numeric IDs and merge bill-only historical-volume identity "
             "into its confirmed foundation target; no income row is dropped"
@@ -370,6 +379,7 @@ def build_current_work_rows(
         bill,
         canonical_master_dates(master_dates),
         context["latest_complete_month"],
+        population_ids=final_ids,
     )
     incomplete_work_ids = set(
         bill.loc[

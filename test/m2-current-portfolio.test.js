@@ -45,7 +45,7 @@ test("v0.6 migrates the target to sales-share cash without opening authority", (
   assert.equal(config.target, "future_sales_share_cash");
   assert.equal(
     contract.evaluationPolicy.nextDevelopmentReadiness,
-    "SALES_SHARE_TARGET_VALIDATION_AND_WORK_LEVEL_SIGNAL_REQUIRED"
+    "CANONICAL_CHANNEL_AND_PLATFORM_TYPE_MASTER_REQUIRED"
   );
   assert.equal(
     contract.thresholds.maximumClassificationUncertainCashShare,
@@ -61,16 +61,19 @@ test("v0.6 migrates the target to sales-share cash without opening authority", (
     true
   );
   assert.deepEqual(candidate.targetMigration.userConfirmation, {
-    schema: "m2.current.user_confirmation.v0.1",
-    authorityMode: "user_business_attestation",
+    schema: "m2.current.human_ledger_partition.v0.1",
+    authorityMode: "user_reviewed_workbook_membership",
     authoritySource: "financial_system_record",
-    cashCategory: "sales_share",
+    cashCategory: "workbook_membership_sales_share_or_buyout",
     eventType: "reversal",
     negativeCashEventPolicy: "all_negative_cash_records_are_reversals",
-    exactCellConfirmationCount: 1,
-    exactAuthorityCellMatchCount: 1,
+    legacyExactCellConfirmationCount: 1,
+    legacyExactCellConfirmationsApplied: false,
+    machineCashClassificationUsed: false,
+    salesShareFactCount: 190663,
+    buyoutFactCount: 1707,
     rawEvidenceExported: false,
-    scope: "exact_digest_bound_cash_cell_only"
+    scope: "entire_user_reviewed_private_workbook_membership"
   });
   assert.equal(candidate.acceptance.targetClassificationPassed, true);
   assert.equal(candidate.acceptance.fullM2MaturityPassed, false);
@@ -165,7 +168,7 @@ test("portfolio reconstruction keeps model selection before evaluation", () => {
   assert.ok(result.gates.absoluteBiasIntervalPassed);
 });
 
-test("tracked v0.5 evidence allows only the portfolio development claim", () => {
+test("tracked v0.5 evidence is invalidated by the human ledger partition replay", () => {
   const candidate = readJson(
     "docs/analysis/m2-current/M2-current-multi-resolution-candidate-v0.5.json"
   );
@@ -176,23 +179,31 @@ test("tracked v0.5 evidence allows only the portfolio development claim", () => 
 
   assert.equal(
     candidate.status,
-    "PORTFOLIO_DEVELOPMENT_BACKTEST_PASS_WORK_LEVEL_BLOCKED"
+    "MULTI_RESOLUTION_DEVELOPMENT_FAIL_BLOCKED"
   );
   assert.equal(
     candidate.acceptance.portfolioDevelopmentBacktestPassed,
-    true
+    false
   );
   assert.equal(candidate.acceptance.workLevelDevelopmentPassed, false);
   assert.equal(candidate.acceptance.fullM2MaturityPassed, false);
   assert.equal(
     candidate.multiResolution.portfolioReconstruction
       .candidate.overall.wape,
-    0.11681933893326385
+    0.12794955709628783
   );
   assert.equal(
     candidate.multiResolution.portfolioReconstruction
       .candidate.originClusterBootstrap.wape.upper95,
-    0.13717580709819285
+    0.1898587117519953
+  );
+  assert.equal(
+    candidate.multiResolution.portfolioReconstruction.gates.absoluteBiasPassed,
+    false
+  );
+  assert.equal(
+    candidate.multiResolution.portfolioReconstruction.gates.wapeUpper95Passed,
+    false
   );
   assert.equal(
     evaluation.retiredHumanPredictionSample.skippedByUserDecision,

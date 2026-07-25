@@ -10,7 +10,7 @@
     "targetPartitionConservationTolerance": 0.000001
   },
   "evaluationPolicy": {
-    "nextDevelopmentReadiness": "SALES_SHARE_TARGET_VALIDATION_AND_WORK_LEVEL_SIGNAL_REQUIRED",
+    "nextDevelopmentReadiness": "CANONICAL_CHANNEL_AND_PLATFORM_TYPE_MASTER_REQUIRED",
     "requiredCoverageViews": [
       "eligibility",
       "target_classification",
@@ -55,6 +55,23 @@
       "featureAvailability": "bill_month_history_only_historical_available_at_not_proven",
       "promotionEligible": false,
       "publicOutput": "docs/analysis/m2-current/M2-current-real-bill-recalibration-v0.1.json"
+    },
+    "manualChannelBacktest": {
+      "authorization": {
+        "source": "user_instruction_2026-07-25",
+        "scope": "local_real_bill_manual_channel_rule_backtest",
+        "newCandidateFamilyDevelopment": true,
+        "candidateSelection": false,
+        "finalHoldout": false,
+        "deferredLabels": false,
+        "release": false
+      },
+      "candidateId": "M2-current-manual-channel-prior-v0.8",
+      "role": "posthoc_business_rule_comparator_only",
+      "horizonMonths": 36,
+      "labelAvailableThrough": "2023-06",
+      "promotionEligible": false,
+      "publicOutput": "docs/analysis/m2-current/M2-current-manual-channel-backtest-v0.1.json"
     }
   },
   "routePolicy": {
@@ -72,10 +89,11 @@
     "candidate": "docs/analysis/m2-current/M2-current-sales-share-candidate-v0.6.json",
     "automatedEvaluation": "docs/analysis/m2-current/M2-current-automated-evaluation-v0.4.json",
     "recalibration": "docs/analysis/m2-current/M2-current-real-bill-recalibration-v0.1.json",
+    "manualChannelBacktest": "docs/analysis/m2-current/M2-current-manual-channel-backtest-v0.1.json",
     "signalGap": "docs/analysis/m2-current/M2-current-signal-gap-diagnostic-v0.1.json",
     "signalSourceInventory": "docs/analysis/m2-current/M2-current-as-of-source-inventory-v0.1.json"
   },
-  "publicOutput": "docs/analysis/m2-current/M2-current-public-diagnostic-v0.8.json",
+  "publicOutput": "docs/analysis/m2-current/M2-current-public-diagnostic-v0.9.json",
   "authorizations": {
     "provider": false,
     "database": false,

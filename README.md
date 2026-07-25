@@ -14,20 +14,19 @@
 - PR #16：M2 current 严格 as-of 分成事实、快照合同和信号缺口 ledger，已合并。
 - 当前业务结论：`currentDecision=CANARY_FAIL`。
 - 当前开发 readiness：
-  `nextDevelopmentReadiness=SALES_SHARE_TARGET_VALIDATION_AND_WORK_LEVEL_SIGNAL_REQUIRED`。
+  `nextDevelopmentReadiness=CANONICAL_CHANNEL_AND_PLATFORM_TYPE_MASTER_REQUIRED`。
 - R0–R5 评估已完成；全局 hurdle GLM、Tweedie boosting、hurdle GBM、MinT
   和 ensemble 均未通过 nested gate，v0.4 安全回退 exact v0.3。120 部人工
   评估完全跳过。provider、Canary/full160、final holdout、release 和 M3
-  formal 均未授权。v0.6 已把正式目标迁移为纯分成收入并隔离全部买断；
-  portfolio development backtest WAPE 仍为 11.68%，作品级和完整 M2
-  成熟度仍未通过。当前冻结/逐月合规历史 snapshot 覆盖均为 0；公开
-  digest-bound portable signal intake 已实现。v0.7 真实账单历史状态校准把
-  逐月 WAPE 改善至 59.58%，但仍被绝对质量、segment、available-at 和独立
-  holdout 门禁拒绝，不构成候选升级。
+  formal 均未授权。三份人工复核账单已成为现金分类权威：总账只审计，分成只
+  预测，买断只作评级背景。人工权威复验后作品 WAPE 为 49.08%，portfolio
+  WAPE 为 12.79%，但 bias 与区间门禁失败，作品层也失败；v0.8 人工渠道规则
+  379 个安全 case 的 WAPE 为 70.44%。下一步完成 canonical 渠道/平台类型主表，
+  再开发平台分层模型。
 
 当前导航：
 
-- `docs/analysis/m2-v2/M2-v2-current-state-index-v0.13.md`
+- `docs/analysis/m2-v2/M2-v2-current-state-index-v0.15.md`
 - `docs/analysis/m2-v2/M2-repository-code-convergence-and-portable-development-audit-v0.4.md`
 - `docs/analysis/m2-current/M2-current-maturity-reconstruction-v0.6.md`
 - `docs/analysis/m2-current/M2-sales-share-only-target-decision-v0.1.md`
@@ -35,6 +34,8 @@
 - `docs/analysis/m2-current/M2-current-as-of-source-inventory-v0.1.json`
 - `docs/analysis/m2-current/M2-current-signal-input-portable-intake-v0.1.md`
 - `docs/analysis/m2-current/M2-current-real-bill-recalibration-v0.1.md`
+- `docs/analysis/m2-current/M2-current-manual-channel-backtest-v0.1.md`
+- `docs/analysis/m2-current/M2-current-human-ledger-partition-audit-v0.1.md`
 - `AGENTS.md`
 
 历史 PR、B0–B8、C1–C3 和旧授权记录保留在 `docs/analysis/` 中，只用于审计追溯，不是当前开发入口。
@@ -163,58 +164,37 @@ M2 的正式预测对象是未来分成收入现金。正式边界为：
 | 指标 | 当前值 |
 |---|---:|
 | 权威作品 | 3,053 |
-| model works / formal-cash cases | 824 / 7,851 |
-| model work share | 26.99% |
-| 历史全库 / Top10 旧 cash economic scope | 73.96% / 75.94% |
-| v0.6 冻结 / 逐月目标变化 case | 0 / 0 |
-| v0.6 冻结 / 逐月隔离买断 case 求和 | 4,800,850.15 / 11,578,795.00 |
-| v0.6 冻结 / 逐月分类不确定现金占比 | 0 / 0 |
+| 有账单观察作品 | 3,052 |
+| 旧机器路由审计人口 | 824 works / 7,851 cases |
+| 当前人工权威 served 人口 | 758 works / 7,083 cases |
+| 人工权威 pure-buyout 弃权 | 768 cases |
+| 总账 / 分成 / 买断行数 | 192,370 / 190,663 / 1,707 |
+| 人工账单分区分类不确定现金占比 | 0 |
 | D1 冻结 / 逐月合规 snapshot 覆盖 | 0 / 0 |
 | 已审计 / 可直接使用的历史信号来源角色 | 4 / 0 |
-| B4 WAPE / bias | 0.55648454 / 0.08911106 |
-| v0.2 WAPE / bias | 0.51114966 / -0.00586227 |
-| v0.3 WAPE / bias | 0.50557140 / -0.01198958 |
-| v0.4 gated result WAPE / bias | 0.50557140 / -0.01198958 |
-| 5-origin 稀疏 origin×horizon 组合 WAPE | 0.08397490 |
+| 当前作品级 WAPE / bias | 0.49075894 / 0.07378107 |
+| 当前 B4 WAPE | 0.54929375 |
+| dense / intermittent / dormant WAPE | 0.45873171 / 0.96321675 / 1.01854144 |
+| 3 / 6 / 12 / 18 / 24 月 WAPE | 0.3940 / 0.4140 / 0.4299 / 0.5373 / 0.7449 |
 | 25-origin mature cases | 56,856 |
-| monthly baseline champion WAPE / bias | 0.66335800 / -0.30206120 |
-| v0.7 history-regime WAPE / bias | 0.59576421 / -0.21126360 |
-| v0.7 dense / intermittent / dormant WAPE | 0.39900895 / 0.82897090 / 1.00725629 |
-| monthly baseline 组合 WAPE / bias | 0.32846914 / -0.30206335 |
-| v0.5 portfolio development WAPE / bias | 0.11681934 / -0.04876300 |
-| v0.5 origin-bootstrap WAPE 95% CI | [0.08500048, 0.13717581] |
-| v0.5 origin-bootstrap bias 95% CI | [-0.09940077, 0.02145806] |
-| v0.5 vs seasonal naive FVA | 44.94% |
-| v0.5 portfolio cell APE p90 | 0.28366167 |
-| monthly 80% interval coverage | 0.64363277 |
+| 当前 portfolio WAPE / bias | 0.12794956 / 0.10048252 |
+| 当前 portfolio FVA | 0.22243439 |
+| v0.8 人工渠道规则安全窗口 case | 379 |
+| v0.8 人工规则 WAPE / bias | 0.70444680 / -0.29098286 |
 | development WAPE 门槛 | 0.30（未通过） |
 | automation decision | `AUTOMATION_BLOCKED` |
 
-v0.4 与 v0.3 数值相同是因为所有 challenger 被门禁拒绝后 fallback，不是新模型
-打平。绝对 WAPE 仍约 50.56%；intermittent WAPE 约 90.73%，dormant
-WAPE/bias 约 100.02% / -99.97%。这不是 release 证据。120 部旧 JSON 仅保留
-历史追溯，不参与配置、runner、loader、readiness 或验收，也不重建或重放。
+现金类型现在只由用户人工复核后的三份 private 账单成员关系决定。总账只作守恒
+审计，分成账单是预测链路唯一现金来源，买断账单只作评级历史背景。旧机器路由的
+7,851 个 case 仍保留为审计基线，但其中 768 个被人工权威纠正为 pure-buyout，
+当前必须弃权；不得为了保持旧人口继续预测买断。
 
-v0.5 将预测决策粒度拆成作品、origin 组合和 origin×horizon 组合。新的加总
-additive Holt–Winters ensemble 在 2022-01 后 12 个逐月 origin、30 个
-development cell 上 WAPE 为 11.68%，较同窗 seasonal naive 改善 44.94%。
-按 origin 聚类 bootstrap 的 WAPE 95% CI 为 8.50%–13.72%，bias 95% CI 为
--9.94%–2.15%。
-这证明组合预算层已有高准确度 development backtest，但不是独立 holdout：
-作品级 WAPE 仍为 50.56%，v0.7 也未通过作品级绝对质量和 segment 门禁，
-final holdout 仍 sealed，所以当前状态是
-`SALES_SHARE_TARGET_MIGRATED_PORTFOLIO_DEVELOPMENT_PASS_WORK_LEVEL_BLOCKED`。
-
-v0.7 在六个原有基线上增加 recent-mean-3、seasonal-median-2 和 EWMA(0.5)，
-只使用最近 6 个更早且已成熟 origin，并按 segment、horizon 和最近 12 个月
-出现频次分层选择。它对旧逐月 champion 的 WAPE 相对改善 10.19%，但仍是
-posthoc 同窗诊断；历史特征 `availableAt` 不可证明，也没有独立 holdout。
-结论固定为 `REJECT_KEEP_V0_3_WORK_LEVEL_FALLBACK`。
-
-买断隔离没有改变当前冻结标签或 WAPE：现有 authority 中没有进入旧目标的
-cutoff-linked 买断/其他承诺现金，旧标签事实上已经等于分成标签。本次迁移的
-价值是固定未来业务语义、去除 private commitment 依赖和防止新数据重新混入
-买断，不是一次精度提升。
+这次修正推翻了旧的组合层“development PASS”：人工分区后 portfolio WAPE 为
+12.79%、FVA 为正，但 bias 为 10.05%，且 WAPE upper-95 与 bias interval 未过；
+作品层、intermittent、dormant 和长周期也全部未达标。
+因此当前状态是 `CANDIDATE_DEVELOPMENT_FAIL_BLOCKED`，不能开启自动化、final
+holdout 或 release。v0.8 人工渠道规则的买断真值门禁已经通过，但 WAPE 仍为
+70.44%，下一数据治理重点只剩 canonical 渠道与平台类型，而不是再次判断买断。
 
 ## M2 当前执行队列
 
@@ -231,26 +211,35 @@ cutoff-linked 买断/其他承诺现金，旧标签事实上已经等于分成�
 3. **质量结论**
    - 三个全局模型和 MinT 均失败；v0.4 在五个 outer origin 回退 exact v0.3；
    - 不得把 fallback 表述为候选升级、可打开 holdout 或可发布。
-   - v0.5 portfolio development backtest 通过，但完整 M2 成熟度未通过。
+   - 旧 v0.5 portfolio PASS 只适用于旧机器现金路由；人工分区复验后已失败。
    - v0.7 真实账单校准有改善但仍失败；参数与失败结论已冻结，不得同窗继续调参。
-4. **下一次组合验证**
+   - v0.8 人工渠道规则有相对改善但绝对质量失败；仅保留为 comparator。
+4. **先完成渠道治理**
+   - 建立 raw ID/名称到 canonical channel 及会员/单购/其他平台类型的版本化主表；
+   - 分成/买断人工账单分区已完成；更新账单后运行
+     `npm run develop:m2:current:ledger-partition` 验证守恒；
+   - private 账单和渠道主表不进入 Git，也不得成为公共 clone、测试或启动依赖。
+5. **下一次组合验证**
    - 下一次组合或作品模型选模只能使用未参与 v0.5/v0.7 设计的 later-origin
      或单独授权 final holdout；
    - 禁止继续在同一 2022 development 窗口调参后宣称独立验证。
-5. **补充可审计输入（仅真实材料存在时）**
+6. **补充可审计输入（仅真实材料存在时）**
    - exact-work sales historical availability、合同可售和渠道状态 snapshot；
    - commitment 只保留在模型外账单/审计层，不作为分成预测信号；
    - 合同、可售、发布与渠道状态必须能证明在 cutoff 时可得，禁止事后回填；
    - 缺少版本化完整性权威时必须 `unknown_at_origin`，pure-buyout 继续
      `null abstain`。
-6. **作品级下一轮研究**
+7. **作品级下一轮研究**
    - D1 fact/snapshot、intermittent/dormant 缺口 ledger 和 portable intake
      已建立；
    - 受控输入使用 `diagnose:m2:signal-input -- --bundle-file ... --case-file ...`，
      不依赖仓库内固定 private 文件名，且只输出聚合覆盖；
-   - 新信号先过 25-origin 诊断，再在 7,851-case 权威人口 nested 复验；
-   - 当前停止新增模型家族和同类调参。
-7. **决策门禁**
+   - 新信号先过 25-origin 诊断，再在 7,083 个当前 served case nested 复验，
+     并保留 7,851 个旧机器路由 case 的差异审计；
+   - 渠道治理完成后，开发作品×canonical 平台×平台类型×三级分类×级别的分层
+     模型；会员平台建收入曲线，单购平台建销量、首发衰减和季节曲线；
+   - 当前停止新增同类总收入模型和同窗调参。
+8. **决策门禁**
    - 120 部人工评估完全跳过；人工只做技术门禁后的 post-gate QA。
    - final holdout、embargo shadow、provider、数据库、Canary/full160、release
      和 M3 formal 继续保持未授权。

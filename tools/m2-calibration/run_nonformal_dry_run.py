@@ -39,7 +39,9 @@ import numpy as np
 import pandas as pd
 
 from calibrate_cleaned_bills import (
+    DATA_DIR,
     KNOWN_INCOMPLETE_MONTHS,
+    REAL_BILL_COLUMNS,
     add_months,
     build_work_summary,
     discover_sources,
@@ -1036,7 +1038,19 @@ def load_analysis_inputs():
     parameters = load_calibrated_parameters()
     c0_summary = json.loads(C0_SUMMARY_FILE.read_text(encoding="utf-8"))
     bill_path, master_path, mapping, selection = discover_sources()
-    bill = read_bill_frame(bill_path, mapping)
+    from human_ledger_partition import load_mapped_partition
+
+    partition, partition_reconciliation, partition_sources = (
+        load_mapped_partition(
+            DATA_DIR,
+            REAL_BILL_COLUMNS,
+            mapping,
+            read_bill_frame,
+        )
+    )
+    bill = partition["totalLedger"]
+    sales_share_bill = partition["salesShare"]
+    buyout_bill = partition["buyout"]
     valid_months = sorted(m for m in bill["billMonth"].dropna().unique())
     if not valid_months:
         raise SystemExit("No valid bill months found.")
@@ -1056,6 +1070,10 @@ def load_analysis_inputs():
         "parameters": parameters,
         "c0_summary": c0_summary,
         "bill": bill,
+        "sales_share_bill": sales_share_bill,
+        "buyout_bill": buyout_bill,
+        "human_ledger_partition": partition_reconciliation,
+        "human_ledger_partition_sources": partition_sources,
         "selection": selection,
         "latest_complete_month": latest_complete_month,
         "master_stats": master_stats,

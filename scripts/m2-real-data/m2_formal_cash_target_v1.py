@@ -496,6 +496,103 @@ def compose_future_cash_forecast(
     }
 
 
+def classify_channel_as_of(
+    channel: Mapping[str, Any],
+    cutoff: str,
+    calibration_spec: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Use explicit human ledger membership before the frozen legacy heuristic."""
+
+    cash_category = str(channel.get("cash_category", "")).strip()
+    if cash_category not in {"sales_share", "buyout"}:
+        return base.classify_channel_as_of(channel, cutoff, calibration_spec)
+
+    first_month = calibration_spec["authority"]["firstBillMonth"]
+    months, values = base._channel_history(channel, cutoff, first_month)
+    positions = base.positive_positions(values)
+    observed_months = [
+        month for month, value in zip(months, values) if value != 0
+    ]
+    positive_total = sum((values[index] for index in positions), 0.0)
+    return {
+        "label": (
+            "sales_share_channel"
+            if cash_category == "sales_share"
+            else "buyout_channel"
+        ),
+        "confidence": "human_authoritative",
+        "signalFamilies": ["user_reviewed_workbook_membership"],
+        "positiveMonthCount": len(positions),
+        "activeRatio": round(len(observed_months) / max(1, len(values)), 8),
+        "continuity": round(base.continuity_score(values), 8),
+        "amountVariation": 0.0,
+        "largestShare": (
+            round(
+                max((values[index] for index in positions), default=0.0)
+                / positive_total,
+                8,
+            )
+            if positive_total > 0
+            else 0.0
+        ),
+        "peakMonth": (
+            months[max(positions, key=lambda index: values[index])]
+            if positions
+            else None
+        ),
+        "buyoutEventMonths": (
+            observed_months if cash_category == "buyout" else []
+        ),
+        "salesMonths": (
+            observed_months if cash_category == "sales_share" else []
+        ),
+        "cashCategoryAuthority": "user_reviewed_workbook_membership",
+        "machineClassificationUsed": False,
+    }
+
+
+def route_work_as_of(
+    work: Mapping[str, Any],
+    origin: str,
+    calibration_spec: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Route current work using category-explicit channel classification."""
+
+    classified = []
+    for channel in sorted(
+        work.get("channels", []), key=base.channel_component_key
+    ):
+        monthly = channel.get("monthly", {}) or {}
+        first_observed = str(channel.get("first_observed_month", ""))
+        if first_observed:
+            exists_at_origin = first_observed <= origin
+        else:
+            exists_at_origin = any(str(month) <= origin for month in monthly)
+        if not exists_at_origin:
+            continue
+        result = classify_channel_as_of(channel, origin, calibration_spec)
+        classified.append(
+            {
+                "channel_key": base.channel_component_key(channel),
+                "raw_channel_key": str(channel.get("channel_key", "")),
+                "business_form": str(channel.get("business_form", "unknown")),
+                **result,
+            }
+        )
+    labels = {item["label"] for item in classified}
+    has_sales = bool(labels & {"sales_share_channel", "mixed_channel"})
+    has_buyout = bool(labels & {"buyout_channel", "mixed_channel"})
+    if has_sales and has_buyout:
+        route = "buyout_plus_sales"
+    elif has_sales:
+        route = "pure_sales_share"
+    elif has_buyout:
+        route = "pure_buyout"
+    else:
+        route = "unknown_revenue_model"
+    return {"route": route, "channels": classified}
+
+
 def _truth_cash_components(
     work: Mapping[str, Any],
     origin: str,
@@ -516,6 +613,7 @@ def _truth_cash_components(
     target_months = set(target_month_list)
     total = 0.0
     classifier_buyout = 0.0
+    human_reviewed_buyout = 0.0
     uncertain = False
     uncertain_amount = 0.0
     user_confirmed_sales_share_amount = 0.0
@@ -524,6 +622,7 @@ def _truth_cash_components(
     event_count = 0
     cell_actual: dict[tuple[str, str], float] = {}
     buyout_by_cell: dict[tuple[str, str], float] = {}
+    human_reviewed_buyout_by_cell: dict[tuple[str, str], float] = {}
     seen_components: set[str] = set()
     for channel in sorted(
         work.get("channels", []) or [], key=base.channel_component_key
@@ -533,7 +632,11 @@ def _truth_cash_components(
             raise FormalCashContractError("duplicate truth channel component")
         seen_components.add(component)
         monthly = channel.get("monthly", {}) or {}
-        outcome = base.classify_channel_as_of(channel, target_end, calibration_spec)
+        outcome = classify_channel_as_of(channel, target_end, calibration_spec)
+        human_reviewed_category = (
+            outcome.get("cashCategoryAuthority")
+            == "user_reviewed_workbook_membership"
+        )
         channel_uncertain = outcome.get("label") == "unknown_channel"
         if channel_uncertain:
             uncertain = True
@@ -564,10 +667,16 @@ def _truth_cash_components(
                 classifier_buyout += amount
                 event_count += 1
                 buyout_by_cell[(component, month)] = amount
+            if month in buyout_months and human_reviewed_category:
+                human_reviewed_buyout += amount
+                human_reviewed_buyout_by_cell[(component, month)] = amount
     return {
         "targetEnd": target_end,
         "totalLedgerCashActual": total,
         "classifierDerivedBuyoutActual": classifier_buyout,
+        "humanReviewedBuyoutActual": human_reviewed_buyout,
+        "humanReviewedBuyoutByComponentMonth":
+            human_reviewed_buyout_by_cell,
         "classifierDerivedBuyoutEventCount": event_count,
         "actualClassificationUncertain": uncertain,
         "classificationUncertainCashActual": uncertain_amount,
@@ -838,7 +947,7 @@ def build_formal_cash_actuals(
         raise FormalCashContractError("truth route is outside the frozen domain")
     if not _is_month(label_available_as_of):
         raise FormalCashContractError("label_available_as_of must use YYYY-MM")
-    routing = base.route_work_as_of(work, origin, calibration_spec)
+    routing = route_work_as_of(work, origin, calibration_spec)
     if route_at_origin != routing.get("route"):
         raise FormalCashContractError("truth route differs from cutoff route")
     components = _truth_cash_components(
@@ -993,10 +1102,15 @@ def build_sales_share_cash_actuals(
         label_available_as_of,
         target_classification_confirmations,
     )
-    isolated_buyout = float(actuals["classifierDerivedBuyoutActual"])
+    isolated_buyout = float(
+        actuals.get(
+            "humanReviewedBuyoutActual",
+            actuals["classifierDerivedBuyoutActual"],
+        )
+    )
     isolated_other = float(actuals["cutoffCommittedOtherCashActual"])
-    sales_share = float(actuals["salesAndOtherCashActual"]) - isolated_other
     total = float(actuals["totalLedgerCashActual"])
+    sales_share = total - isolated_buyout - isolated_other
     conservation = sales_share + isolated_buyout + isolated_other - total
     if not math.isclose(
         conservation, 0.0, rel_tol=0.0, abs_tol=CONSERVATION_TOLERANCE

@@ -15,7 +15,7 @@ export function buildM2CurrentPublicDiagnosticReport(
   ].includes(config.schema);
   return {
     schema: config.schema === "m2.current.config.v0.6"
-      ? "m2.current.public_diagnostic_report.v0.8"
+      ? "m2.current.public_diagnostic_report.v0.9"
       : config.schema === "m2.current.config.v0.5"
       ? "m2.current.public_diagnostic_report.v0.6"
       : config.schema === "m2.current.config.v0.4"
@@ -36,14 +36,14 @@ export function buildM2CurrentPublicDiagnosticReport(
         ].includes(config.schema),
       priorInstructionAssessment:
         config.schema === "m2.current.config.v0.6"
-          ? "buyout_isolation_was_directionally_correct; real_bill_history_regime_recalibration_improved_secondary_WAPE_but_failed_absolute_quality_and_as_of_availability_gates"
+          ? "buyout_isolation_was_directionally_correct; history-regime and manual-channel challengers both failed absolute work-level quality; canonical channel and finance-reviewed cash partition are now prerequisites"
           : config.schema === "m2.current.config.v0.5"
           ? "directionally_correct_evaluation_but_over_specified_algorithm_families_before_signal_and_decision_grain"
           : "not_reassessed",
       retiredSequence:
         "human_numeric_baseline_and_120_work_business_sample_skipped",
       nextPriority: config.schema === "m2.current.config.v0.6"
-        ? "materialize_versioned_historical_as_of_work_signals_then_use_unseen_later_origin_or_separately_authorized_final_holdout"
+        ? "build canonical channel and finance-reviewed sales-share/buyout masters, then materialize versioned historical as-of signals before unseen-origin evaluation"
         : config.schema === "m2.current.config.v0.5"
         ? "independent_portfolio_validation_then_auditable_work_level_signals"
         : config.schema === "m2.current.config.v0.4"
@@ -77,6 +77,9 @@ export function buildM2CurrentPublicDiagnosticReport(
       "do_not_promote_global_or_distributional_families_that_fail_nested_gates",
       "use_risk_coverage_business_loss_and_FVA_before_any_automation_claim",
       "keep_final_holdout_sealed_until_separate_authorization",
+      config.schema === "m2.current.config.v0.6"
+        ? "keep_manual_channel_rule_as_comparator_until_canonical_channel_and_finance_reviewed_cash_partition_exist"
+        : "keep_channel_identity_auditable",
       "use_humans_only_for_post_gate_quality_assurance"
     ]
   };
@@ -127,6 +130,45 @@ function compactEvidence(evidence) {
         gates: evidence.recalibration.gates,
         decision: evidence.recalibration.decision,
         boundaries: evidence.recalibration.boundaries
+      }
+      : null,
+    manualChannelBacktest: evidence.manualChannelBacktest
+      ? {
+        schema: evidence.manualChannelBacktest.schema,
+        candidateId: evidence.manualChannelBacktest.candidateId,
+        target: evidence.manualChannelBacktest.target,
+        role: evidence.manualChannelBacktest.role,
+        status: evidence.manualChannelBacktest.status,
+        scope: evidence.manualChannelBacktest.scope,
+        manualRuleSpecification:
+          evidence.manualChannelBacktest.manualRuleSpecification,
+        dataQuality: {
+          channelIdentity:
+            evidence.manualChannelBacktest.dataQuality.channelIdentity,
+          classifierBuyoutIsolation:
+            evidence.manualChannelBacktest.dataQuality
+              .classifierBuyoutIsolation,
+          channelCount:
+            evidence.manualChannelBacktest.dataQuality.channelCount
+        },
+        evaluation: {
+          trailingAnnualFlat:
+            evidence.manualChannelBacktest.evaluation
+              .trailingAnnualFlat.overall,
+          manualFaithful:
+            evidence.manualChannelBacktest.evaluation.manualFaithful,
+          manualAnnual80Percent:
+            evidence.manualChannelBacktest.evaluation
+              .manualAnnual80Percent.overall,
+          manualFixed50PercentLifecycle:
+            evidence.manualChannelBacktest.evaluation
+              .manualFixed50PercentLifecycle.overall
+        },
+        diagnosticPopulation:
+          evidence.manualChannelBacktest.diagnosticPopulation,
+        gates: evidence.manualChannelBacktest.gates,
+        decision: evidence.manualChannelBacktest.decision,
+        boundaries: evidence.manualChannelBacktest.boundaries
       }
       : null,
     automatedEvaluation: {

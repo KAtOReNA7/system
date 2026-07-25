@@ -26,6 +26,10 @@ export function loadM2CurrentPublicEvidence(sources, config) {
       sources?.signalSourceInventory,
       "m2.current.as_of_source_inventory.public.v0.1"
     );
+    requireSchema(
+      sources?.manualChannelBacktest,
+      "m2.current.manual_channel_backtest.public.v0.1"
+    );
   }
   const currentCandidateSchema = config.schema === "m2.current.config.v0.6"
     ? "m2.current.sales_share_candidate.public.v0.6"
@@ -146,7 +150,29 @@ export function loadM2CurrentPublicEvidence(sources, config) {
       ? sources.candidate.scope.frozenDecisionWorkCount
       : sources.candidate.scope.uniqueWorkCount
   );
-  if (
+  if (config.schema === "m2.current.config.v0.6") {
+    const migration = sources.candidate.targetMigration;
+    if (
+      Number(migration.previousMachineClassifiedCaseCount)
+        !== contract.population.modelCaseCount
+      || Number(migration.currentHumanAuthorityServedCaseCount)
+        !== candidateCaseCount
+      || Number(migration.humanAuthorityAbstainedCaseCount)
+        + candidateCaseCount !== contract.population.modelCaseCount
+      || migration.frozenPopulationMoved !== true
+      || migration.frozenPopulationReclassifiedByHumanAuthority !== true
+      || migration.userConfirmation?.authorityMode
+        !== "user_reviewed_workbook_membership"
+      || migration.userConfirmation?.machineCashClassificationUsed !== false
+      || candidateCaseCount >= contract.population.modelCaseCount
+      || candidateWorkCount > contract.population.modelWorkCount
+      || sources.candidate.scope.populationMoved !== true
+      || sources.candidate.scope.populationChangeReason
+        !== "user_reviewed_buyout_workbook_membership_replaced_machine_route_inference"
+    ) {
+      throw new Error("m2_current_candidate_population_drift");
+    }
+  } else if (
     candidateCaseCount !== contract.population.modelCaseCount
     || candidateWorkCount !== contract.population.modelWorkCount
     || sources.candidate.scope.populationMoved !== false
@@ -218,6 +244,40 @@ export function loadM2CurrentPublicEvidence(sources, config) {
         .boundaries.rowIdentifiersPublished !== false
     ) {
       throw new Error("m2_current_signal_gap_population_or_boundary_drift");
+    }
+    if (
+      sources.manualChannelBacktest.candidateId
+        !== "M2-current-manual-channel-prior-v0.8"
+      || sources.manualChannelBacktest.target !== "future_sales_share_cash"
+      || Number(sources.manualChannelBacktest.scope.frozenWorkCount)
+        !== contract.population.modelWorkCount
+      || Number(sources.manualChannelBacktest.scope.caseCount) !== 379
+      || Number(sources.manualChannelBacktest.scope.horizonMonths) !== 36
+      || sources.manualChannelBacktest.scope.labelAvailableThrough
+        !== "2023-06"
+      || sources.manualChannelBacktest.decision.promotionDecision
+        !== "REJECT_KEEP_V0_3_WORK_LEVEL_FALLBACK"
+      || sources.manualChannelBacktest.gates
+        .developmentWapePassed !== false
+      || sources.manualChannelBacktest.gates
+        .channelNormalizationPassed !== false
+      || sources.manualChannelBacktest.gates
+        .manualBuyoutTruthPassed !== true
+      || sources.manualChannelBacktest.gates
+        .historicalFeatureAvailableAtPassed !== false
+      || sources.manualChannelBacktest.gates
+        .independentHoldoutPassed !== false
+      || sources.manualChannelBacktest.boundaries.aggregateOnly !== true
+      || sources.manualChannelBacktest.boundaries.identifiersPresent !== false
+      || sources.manualChannelBacktest.boundaries.privateRowsPresent !== false
+      || sources.manualChannelBacktest.boundaries
+        .finalHoldoutOpened !== false
+      || sources.manualChannelBacktest.boundaries
+        .deferredLabelsOpened !== false
+      || sources.manualChannelBacktest.boundaries
+        .releaseAuthorized !== false
+    ) {
+      throw new Error("m2_current_manual_channel_backtest_evidence_drift");
     }
   }
   const actualHorizons = Object.keys(sources.development.metrics.byHorizon)
@@ -368,12 +428,14 @@ export function loadM2CurrentPublicEvidence(sources, config) {
       served: {
         status: "MEASURED",
         caseCount: candidateCaseCount,
-        caseShareOfFrozenModelPopulation: 1,
+        caseShareOfFrozenModelPopulation:
+          candidateCaseCount / contract.population.modelCaseCount,
         workCount: candidateWorkCount,
-        workShareOfFrozenModelPopulation: 1,
+        workShareOfFrozenModelPopulation:
+          candidateWorkCount / contract.population.modelWorkCount,
         workShareOfLibrary:
-          contract.population.modelWorkCount / contract.population.libraryWorkCount,
-        cashShareOfFrozenModelPopulation: 1,
+          candidateWorkCount / contract.population.libraryWorkCount,
+        cashShareOfFrozenModelPopulation: null,
         fullLibraryCashShare: null,
         fullLibraryCashShareReason:
           "overlapping_development_cases_are_not_a_full_library_cash_denominator"
@@ -426,6 +488,9 @@ export function loadM2CurrentPublicEvidence(sources, config) {
     automatedEvaluation: sources.automatedEvaluation ?? null,
     recalibration: config.schema === "m2.current.config.v0.6"
       ? sources.recalibration
+      : null,
+    manualChannelBacktest: config.schema === "m2.current.config.v0.6"
+      ? sources.manualChannelBacktest
       : null,
     retiredBusinessSample:
       [

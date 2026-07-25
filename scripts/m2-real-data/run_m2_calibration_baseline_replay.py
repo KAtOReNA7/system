@@ -798,7 +798,16 @@ def load_authorized_works(spec: Mapping[str, Any]) -> tuple[list[dict[str, Any]]
     if not isinstance(model_inputs, Mapping):
         raise ReplayError("verified local model-input cache payload is invalid")
     scope = model_inputs["scopeReconciliation"]
-    required_scope_checks = ("scopeFullyAligned", "rowCountConserved", "incomeAmountConserved")
+    cash_authority = model_inputs.get("cashClassificationAuthority") or {}
+    human_partition = (
+        cash_authority.get("authorityMode")
+        == "user_reviewed_workbook_membership"
+    )
+    required_scope_checks = (
+        ("scopeWithinFoundation", "rowCountConserved", "incomeAmountConserved")
+        if human_partition
+        else ("scopeFullyAligned", "rowCountConserved", "incomeAmountConserved")
+    )
     if not all(bool(scope.get(name)) for name in required_scope_checks):
         raise ReplayError("verified model-input scope reconciliation is not fully closed")
     mapped = model_inputs["mappedBill"]
@@ -824,17 +833,42 @@ def load_authorized_works(spec: Mapping[str, Any]) -> tuple[list[dict[str, Any]]
     required_channel_columns = {"渠道ID", "文学库渠道名称"}
     if not required_channel_columns.issubset(set(complete.columns)):
         raise ReplayError("mapped bill is missing the channel identity columns")
+    if human_partition and "cashCategory" not in complete:
+        raise ReplayError(
+            "human-reviewed ledger cache is missing cashCategory membership"
+        )
     channel_keys = []
-    for raw_id_value, name_value in zip(complete["渠道ID"], complete["文学库渠道名称"]):
+    row_categories = (
+        complete["cashCategory"]
+        if human_partition
+        else [""] * len(complete)
+    )
+    for raw_id_value, name_value, category_value in zip(
+        complete["渠道ID"], complete["文学库渠道名称"], row_categories
+    ):
         raw_name = clean_scalar(name_value) or "未提供渠道名称"
         raw_id = clean_scalar(raw_id_value)
         if not raw_id:
             raw_id = f"missing-{formal.stable_hash(raw_name)[:16]}"
-        channel_keys.append(formal.stable_hash([raw_id, raw_name])[:24])
+        cash_category = clean_scalar(category_value)
+        if cash_category == "buyout":
+            channel_keys.append(
+                formal.stable_hash([raw_id, raw_name, "buyout"])[:24]
+            )
+        else:
+            channel_keys.append(formal.stable_hash([raw_id, raw_name])[:24])
     complete["_calibrationChannelKey"] = channel_keys
 
-    expected_facts = int(spec["authority"]["incomeFactCount"])
-    expected_complete = int(spec["authority"]["completeIncomeFactCountThroughLatestCompleteMonth"])
+    if human_partition:
+        expected_facts = int(cash_authority["totalLedger"]["factCount"])
+        expected_complete = int(
+            cash_authority["totalLedger"]["completeFactCount"]
+        )
+    else:
+        expected_facts = int(spec["authority"]["incomeFactCount"])
+        expected_complete = int(
+            spec["authority"]["completeIncomeFactCountThroughLatestCompleteMonth"]
+        )
     if len(valid) != expected_facts or len(complete) != expected_complete:
         raise ReplayError(
             f"income scope mismatch: valid={len(valid)} complete={len(complete)} "
@@ -886,6 +920,11 @@ def load_authorized_works(spec: Mapping[str, Any]) -> tuple[list[dict[str, Any]]
             {
                 "channel_key": channel_key,
                 "business_form": business_form,
+                "cash_category": (
+                    clean_scalar(frame["cashCategory"].iloc[0])
+                    if human_partition
+                    else ""
+                ),
                 "first_observed_month": str(frame["billMonth"].min()),
                 "monthly": monthly,
                 "batch_cluster_sizes": batch,
@@ -896,6 +935,11 @@ def load_authorized_works(spec: Mapping[str, Any]) -> tuple[list[dict[str, Any]]
                 "standardWorkId": work_id,
                 "channelKey": channel_key,
                 "businessForm": business_form,
+                "cashCategory": (
+                    clean_scalar(frame["cashCategory"].iloc[0])
+                    if human_partition
+                    else ""
+                ),
                 "firstObservedMonth": str(frame["billMonth"].min()),
                 "monthly": monthly,
                 "batchClusterSizes": batch,
@@ -979,6 +1023,22 @@ def load_authorized_works(spec: Mapping[str, Any]) -> tuple[list[dict[str, Any]]
         "loader": "verified_final_model_input_cache_read_only",
         "modelInputCacheReadOnly": True,
         "databaseRead": False,
+        "cashClassificationAuthority": (
+            "user_reviewed_workbook_membership"
+            if human_partition
+            else "historical_machine_classifier"
+        ),
+        "machineCashClassificationUsed": not human_partition,
+        "salesShareFactCount": (
+            int(cash_authority["salesShare"]["factCount"])
+            if human_partition
+            else None
+        ),
+        "buyoutFactCount": (
+            int(cash_authority["buyout"]["factCount"])
+            if human_partition
+            else None
+        ),
     }
     return works, posthoc, evidence
 
