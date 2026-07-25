@@ -41,6 +41,13 @@ export function evaluateM2CurrentDiagnosticGate(
   ) {
     blockers.push("sales_share_target_classification_uncertainty_unresolved");
   }
+  if (
+    contract.schema === "m2.current.config.v0.6"
+    && evidence.coverage.workLevelSignals?.readiness?.status
+      !== "AS_OF_SIGNAL_COVERAGE_COMPLETE"
+  ) {
+    blockers.push("auditable_work_level_signal_coverage_incomplete");
+  }
   if (!candidate) {
     blockers.push("current_candidate_not_evaluated");
   } else {

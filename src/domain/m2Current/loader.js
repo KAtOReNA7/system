@@ -13,6 +13,12 @@ export function loadM2CurrentPublicEvidence(sources, config) {
   requireSchema(sources?.segments, "m2.c2_activity_segment_route_manifest.v1");
   requireSchema(sources?.development, "m2.c3_development_validation.v1");
   requireSchema(sources?.population, "m2.calibration_population_coverage.v1");
+  if (config.schema === "m2.current.config.v0.6") {
+    requireSchema(
+      sources?.signalGap,
+      "m2.current.signal_gap_diagnostic.public.v0.1"
+    );
+  }
   const currentCandidateSchema = config.schema === "m2.current.config.v0.6"
     ? "m2.current.sales_share_candidate.public.v0.6"
     : config.schema === "m2.current.config.v0.5"
@@ -139,6 +145,27 @@ export function loadM2CurrentPublicEvidence(sources, config) {
   ) {
     throw new Error("m2_current_candidate_population_drift");
   }
+  if (config.schema === "m2.current.config.v0.6") {
+    const frozenSignalGap =
+      sources.signalGap.coverageInventory.frozenAuthorityPopulation;
+    const denseSignalGap =
+      sources.signalGap.coverageInventory.denseMonthlyDiagnosticPopulation;
+    if (
+      Number(frozenSignalGap.inputCaseCount)
+        !== contract.population.modelCaseCount
+      || Number(frozenSignalGap.uniqueWorkCount)
+        !== contract.population.modelWorkCount
+      || Number(denseSignalGap.uniqueWorkCount)
+        !== contract.population.modelWorkCount
+      || sources.signalGap.sourceBoundary.aggregateOnly !== true
+      || sources.signalGap.sourceBoundary.rowIdentifiersIncluded !== false
+      || sources.signalGap.invariants.populationRowsDropped !== false
+      || sources.signalGap.invariants.nullImputedAsZero !== false
+      || sources.signalGap.invariants.currentStateBackfillUsed !== false
+    ) {
+      throw new Error("m2_current_signal_gap_population_or_boundary_drift");
+    }
+  }
   const actualHorizons = Object.keys(sources.development.metrics.byHorizon)
     .map(Number)
     .sort((a, b) => a - b);
@@ -225,6 +252,22 @@ export function loadM2CurrentPublicEvidence(sources, config) {
             contract.thresholds.maximumClassificationUncertainCashShare,
           passed:
             sources.candidate.acceptance.targetClassificationPassed
+        }
+        : null,
+      workLevelSignals: config.schema === "m2.current.config.v0.6"
+        ? {
+          contractStatus: "IMPLEMENTED",
+          frozen:
+            sources.signalGap.coverageInventory.frozenAuthorityPopulation,
+          denseMonthly:
+            sources.signalGap.coverageInventory
+              .denseMonthlyDiagnosticPopulation,
+          missingReason:
+            sources.signalGap.coverageInventory.missingReason,
+          readiness:
+            sources.signalGap.coverageInventory.readiness,
+          currentStateBackfillUsed:
+            sources.signalGap.invariants.currentStateBackfillUsed
         }
         : null,
       economicScope: config.schema === "m2.current.config.v0.6"

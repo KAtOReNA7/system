@@ -9,6 +9,7 @@
   - `docs/analysis/m2-current/M2-current-maturity-reconstruction-v0.6.md`
   - `docs/analysis/m2-current/M2-sales-share-only-target-decision-v0.1.md`
   - `docs/analysis/m2-current/M2-sales-share-model-full-audit-and-research-v0.1.md`
+  - `docs/analysis/m2-current/M2-current-as-of-signal-readiness-v0.1.md`
 - PR #7 cryptographic authority 继续由不可变的
   `docs/analysis/m2-v2/M2-v2-current-state-index-v0.3.json` 提供；治理索引不得改写该绑定。
 - 历史 B0–B8、C1–C3、旧 PR 状态和旧授权记录只用于审计追溯，不是当前执行指令。
@@ -130,6 +131,15 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
     中隔离 11,578,794.9998；这些是重叠 case 求和，不是全库经济总额
   - 分成目标分类不确定现金占比在冻结/逐月 case 中分别为
     0.0000027284304597 / 0.0000028651436157；严格零容忍分类门禁未通过
+  - D0 已将该不确定项追溯为同一笔 -230.38 元底层负向现金事实；它在冻结
+    人口中重叠 1 个 case、在逐月人口中重叠 6 个 case。当前权威字段不能证明
+    它属于分成退款或买断冲销，缺少原始结算调整/合同依据时必须继续
+    `UNKNOWN_ABSTAIN`，不得猜测或放宽容差
+  - D1 已实现 `revenueShareFact`、`availabilitySnapshot` 与
+    work×origin×segment 信号缺口 ledger。当前符合新合同的版本化历史 snapshot
+    库存为 0：冻结人口 2,402 个 work-origin-segment、逐月人口 20,600 个
+    work-origin-segment 均为 `unknown_at_origin`。这是合规 snapshot 覆盖率，
+    不代表原始账单不存在，也不得用当前状态回填
 - 当前 development champion 仍为
   `M2-current-occurrence-amount-calibration-v0.3`。v0.4 只是在严格门禁拒绝所有
   challenger 后返回 v0.3，不能表述为候选升级。
@@ -175,9 +185,10 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
 5. 只接收 cutoff 时真实可得、可审计、可版本化、exact-work 的分成预测信号：
    sales historical availability、合同可售状态、渠道状态；commitment 不得作为
    分成预测信号。
-6. 先建立 intermittent/dormant occurrence 与 positive amount 的数据缺口
-   ledger，并量化每个信号的 work/origin 覆盖；无历史 snapshot 的 current
-   状态不得回填。
+6. D1 合同与缺口 ledger 已建立；下一步采集/物化符合合同的历史
+   `availabilitySnapshot`，补齐 economic、posting、available-at、来源版本和
+   lineage。当前冻结/逐月 occurrence 与 positive amount 合规覆盖均为 0；
+   无历史 snapshot 的 current 状态不得回填。
 7. 新信号先通过 25-origin 次级诊断，再回到 7,851-case 权威人口做 nested
    challenger；不移动冻结人口，不剔除困难 case，不将 null 计为 0。
 8. 只有绝对质量、segment、risk–coverage 和业务损失均通过，才申请 final
@@ -190,14 +201,16 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
 
 - 已实现：R0–R5 strict contract、multi-resolution evaluator、加总
   additive Holt–Winters ensemble、六个简单基线、三个全局 challenger、
-  rolling conformal、MinT、risk–coverage、业务损失和 FVA。
+  rolling conformal、MinT、risk–coverage、业务损失和 FVA；D1
+  `revenueShareFact`、`availabilitySnapshot` 和 signal-gap ledger。
 - 已验证：权威 7,851-case 与 25-origin/56,856-case 次级 development 复验；
   作品级 challenger 均失败并安全回退 v0.3；portfolio v0.5 development
-  backtest 通过，但完整 M2 成熟度未通过。
+  backtest 通过；D1 synthetic contract 通过，冻结/逐月合规 snapshot 覆盖已
+  聚合量化为 0，但完整 M2 成熟度未通过。
 - 已退役：120 部人工评估的 current 依赖；不重建、不重放。
-- 下一输入：target-classification uncertainty 对账、组合层未参与选择的
-  later-origin/final holdout，或作品层真实的 cutoff as-of 分成信号；不存在时
-  保持阻断。
+- 下一输入：D0 原始结算调整/合同依据，或带 economic、posting、available-at、
+  来源版本和 lineage 的作品层历史分成 snapshot。不存在时保持阻断；组合层
+  later-origin/final holdout 仍需单独授权。
 - 未授权：final holdout 及所有既有业务 gate 外的动作。
 
 ## Git 与提交规则
