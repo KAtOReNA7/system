@@ -231,7 +231,9 @@ export function evaluateM2CurrentDiagnosticGate(
         : "BASELINE_ONLY_BLOCKED",
     blockers: [...new Set(blockers)],
     developmentDirection: contract.schema === "m2.current.config.v0.6"
-      ? "sales_share_target_classification_then_auditable_work_level_signals_and_independent_validation"
+      ? evidence.coverage.targetClassification?.passed === true
+        ? "auditable_work_level_signals_then_independent_validation"
+        : "sales_share_target_classification_then_auditable_work_level_signals_and_independent_validation"
       : contract.schema === "m2.current.config.v0.5"
       ? "independent_portfolio_validation_and_auditable_work_level_signals"
       : contract.schema === "m2.current.config.v0.4"

@@ -47,7 +47,7 @@ salesShareCashActual
 | case 数 | 7,851 | 56,856 |
 | 数值标签变化数 | 0 | 0 |
 | 隔离买断现金 case 求和 | 4,800,850.1534 | 11,578,794.9998 |
-| 分类不确定现金占比 | 0.00000272843046 | 0.00000286514362 |
+| 分类不确定现金占比 | 0 | 0 |
 | 最大守恒差 | 5.82e-11 | 2.33e-10 |
 
 这些现金金额是重叠 work-origin-horizon case 的求和，不是全库经济总额。标签
@@ -55,8 +55,10 @@ salesShareCashActual
 承诺现金；本轮修正固定未来语义并去除 commitment private 依赖，但不会自动
 改善现有算法精度。
 
-冻结不确定项只有 1 个 case、金额 -230.38。它可能是分成退款或买断冲回，
-缺少可审计 cash type 时不得静默归类。
+唯一底层不确定现金已由用户依据财务系统记录确认为分成收入冲销，并以 exact-cell
+摘要绑定。该事实写入冻结/逐月重叠人口 5/20 个 case；原先分别有 1/6 个 case
+计入 uncertainty。这些是同一事实跨 origin/horizon 的重复，不是独立现金。
+原始财务记录不进入 Git。
 
 ## 当前质量
 
@@ -73,7 +75,7 @@ salesShareCashActual
 
 - 作品级 WAPE 高于 0.30；
 - intermittent/dormant 失败；
-- target-classification uncertainty 在严格零容忍门禁下未穷尽；
+- target-classification 零容忍门禁已通过，但没有改善预测精度；
 - portfolio 评价窗口属于 development，不是独立 holdout；
 - final holdout、automation 与 release 未授权。
 
@@ -114,6 +116,7 @@ npm run verify:m2:current
 - `docs/analysis/m2-current/M2-current-as-of-signal-readiness-v0.1.md`
 - `docs/analysis/m2-current/M2-current-authority-source-audit-v0.1.json`
 - `docs/analysis/m2-current/M2-current-user-confirmation-form-zh-CN-v0.1.md`
+- `config/m2-current-user-confirmation.v0.1.json`
 - `docs/analysis/m2-current/M2-current-as-of-source-inventory-v0.1.json`
 - `docs/analysis/m2-current/M2-current-signal-input-portable-intake-v0.1.md`
 - `docs/analysis/m2-current/M2-current-signal-input-portable-diagnostic-v0.1.json`
@@ -121,9 +124,9 @@ npm run verify:m2:current
 
 ## 下一开发方向
 
-1. D0 已定位并在 manifest 匹配的原始工作簿中只读核验同一笔 -230.38 元负向
-   现金事实；原表没有独立退款/冲销/结算调整类型或说明字段，业务授权分类不能
-   证明 cash event。等待原始结算调整/合同依据，继续 `UNKNOWN_ABSTAIN`。
+1. D0 已完成：唯一底层负向现金由用户依据财务系统记录确认为分成收入冲销，
+   并以 exact-cell 摘要绑定。全局“负数均为冲销”只决定事件类型，不推断其他
+   现金类别；原始财务记录不进入 Git。
 2. 冻结现有 2022 development 窗口，不再同窗调参。
 3. D1 公共合同和缺口 ledger 已实现；下一步物化带 economic、posting、
    available-at、来源版本和 lineage 的历史 `availabilitySnapshot`，禁止当前

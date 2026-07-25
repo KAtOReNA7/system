@@ -1395,7 +1395,11 @@ const salesShareWorkRows = nextCandidateRows.map((row) => {
     totalLedgerCashActual:
       Number(target.totalLedgerCashActual),
     classificationUncertainCashActual:
-      Number(target.classificationUncertainCashActual)
+      Number(target.classificationUncertainCashActual),
+    userConfirmedSalesShareCashActual:
+      Number(target.userConfirmedSalesShareCashActual),
+    userConfirmedSalesShareEventCount:
+      Number(target.userConfirmedSalesShareEventCount)
   };
 });
 const salesShareB4Rows = evaluatedB4Rows.map((row) => {
@@ -1630,6 +1634,22 @@ const salesSharePublicReport = {
     contractChangedByUserDecision: true,
     modelFamilyChanged: false,
     frozenPopulationMoved: false,
+    userConfirmation: {
+      schema: denseManifest.userConfirmation.schema,
+      authorityMode: "user_business_attestation",
+      authoritySource: "financial_system_record",
+      cashCategory: "sales_share",
+      eventType: "reversal",
+      negativeCashEventPolicy:
+        denseManifest.userConfirmation.negativeCashEventPolicy,
+      exactCellConfirmationCount:
+        denseManifest.userConfirmation.exactCellConfirmationCount,
+      exactAuthorityCellMatchCount:
+        denseManifest.userConfirmation.exactAuthorityCellMatchCount,
+      rawEvidenceExported:
+        denseManifest.userConfirmation.rawEvidenceExported,
+      scope: "exact_digest_bound_cash_cell_only"
+    },
     frozenTargetIsolation,
     denseTargetIsolation
   },
@@ -2020,7 +2040,11 @@ function summarizeSalesShareTarget(rows, legacyActualField) {
     buyout: Number(row.isolatedBuyoutCashActual),
     other: Number(row.isolatedOtherCashActual),
     total: Number(row.totalLedgerCashActual),
-    uncertain: Number(row.classificationUncertainCashActual)
+    uncertain: Number(row.classificationUncertainCashActual),
+    userConfirmedSalesShare:
+      Number(row.userConfirmedSalesShareCashActual),
+    userConfirmedSalesShareEventCount:
+      Number(row.userConfirmedSalesShareEventCount)
   }));
   if (
     values.length === 0
@@ -2068,6 +2092,9 @@ function summarizeSalesShareTarget(rows, legacyActualField) {
         (total, row) => total + Math.abs(row.uncertain),
         0
       ),
+    userConfirmedSalesShareCashCaseSum: sum("userConfirmedSalesShare"),
+    userConfirmedSalesShareCaseCount:
+      values.filter((row) => row.userConfirmedSalesShareEventCount > 0).length,
     maximumAbsoluteConservationDifference: Math.max(
       ...conservationDifferences.map(Math.abs)
     ),

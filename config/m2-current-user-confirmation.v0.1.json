@@ -1,0 +1,57 @@
+{
+  "schema": "m2.current.user_confirmation.v0.1",
+  "confirmedAt": "2026-07-25",
+  "authorityMode": "user_business_attestation",
+  "negativeCashEventPolicy": "all_negative_cash_records_are_reversals",
+  "targetClassifications": [
+    {
+      "confirmationId": "D0-001",
+      "targetCellSha256": "0a29f474ebc0a67f90ac2b5239275aa204ade92acff5763359deb69da4a31b37",
+      "cashCategory": "sales_share",
+      "eventType": "reversal",
+      "authoritySource": "financial_system_record",
+      "rawEvidenceExported": false,
+      "scope": "exact_digest_bound_cash_cell_only"
+    }
+  ],
+  "historicalSourceAvailability": {
+    "salesShareSettlementDetails": {
+      "exists": true,
+      "historyRetained": true,
+      "exportAvailable": false,
+      "earliestObservedMonthInCurrentAuthority": "2017-06"
+    },
+    "refundReversalAdjustmentDetails": {
+      "exists": true,
+      "historyRetained": true,
+      "exportAvailable": false,
+      "earliestNegativeMonthInCurrentAuthority": "2019-11"
+    },
+    "workChannelSaleStatusHistory": {
+      "exists": true,
+      "historyRetained": true,
+      "exportAvailable": false,
+      "availabilityDefinition": "each_work_first_detail_month",
+      "currentAuthorityWorkCount": 3053,
+      "firstDetailMonthRange": [
+        "2017-06",
+        "2026-04"
+      ]
+    },
+    "salesShareContractStatusHistory": {
+      "exists": false,
+      "historyRetained": false,
+      "exportAvailable": false
+    }
+  },
+  "boundaries": {
+    "rawFinancialRecordIncluded": false,
+    "workIdentifierIncluded": false,
+    "channelIdentifierIncluded": false,
+    "opensDatabaseAccess": false,
+    "opensProviderAccess": false,
+    "authorizesNewModelFamily": false,
+    "opensFinalHoldout": false,
+    "authorizesRelease": false
+  }
+}

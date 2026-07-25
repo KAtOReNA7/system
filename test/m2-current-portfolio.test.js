@@ -60,7 +60,19 @@ test("v0.6 migrates the target to sales-share cash without opening authority", (
     candidate.acceptance.allBuyoutExcludedFromTrainingLabels,
     true
   );
-  assert.equal(candidate.acceptance.targetClassificationPassed, false);
+  assert.deepEqual(candidate.targetMigration.userConfirmation, {
+    schema: "m2.current.user_confirmation.v0.1",
+    authorityMode: "user_business_attestation",
+    authoritySource: "financial_system_record",
+    cashCategory: "sales_share",
+    eventType: "reversal",
+    negativeCashEventPolicy: "all_negative_cash_records_are_reversals",
+    exactCellConfirmationCount: 1,
+    exactAuthorityCellMatchCount: 1,
+    rawEvidenceExported: false,
+    scope: "exact_digest_bound_cash_cell_only"
+  });
+  assert.equal(candidate.acceptance.targetClassificationPassed, true);
   assert.equal(candidate.acceptance.fullM2MaturityPassed, false);
   assert.equal(contract.authorizations.holdout, false);
   assert.equal(contract.authorizations.release, false);

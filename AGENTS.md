@@ -133,7 +133,7 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
     [0.08500048, 0.13717581]，bias 95% CI 为
     [-0.09940077, 0.02145806]；区间门禁通过但仍是 development evidence
   - v0.5 是 development backtest，不是独立 holdout；cell APE p90 为
-    0.28366167，作品级 WAPE、intermittent/dormant、target classification 和
+    0.28366167，作品级 WAPE、intermittent/dormant、work-level signal 和
     final holdout 仍阻断完整 M2 成熟声明
   - global hurdle GLM、Tweedie boosting、hurdle GBM、MinT 和受约束 ensemble
     均未通过 nested gate；继续堆叠同类模型不是当前优先级
@@ -142,13 +142,18 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
     的数值标签变化数均为 0，因此 WAPE、bias 与分布规律性均未改善
   - v0.6 在重叠冻结 case 中隔离买断现金 4,800,850.1534，在逐月重叠 case
     中隔离 11,578,794.9998；这些是重叠 case 求和，不是全库经济总额
-  - 分成目标分类不确定现金占比在冻结/逐月 case 中分别为
-    0.0000027284304597 / 0.0000028651436157；严格零容忍分类门禁未通过
-  - D0 已将该不确定项追溯为同一笔 -230.38 元底层负向现金事实；它在冻结
-    人口中重叠 1 个 case、在逐月人口中重叠 6 个 case。已只读核验与正式执行
-    manifest 匹配的原始工作簿 source row；原表只有期间、业务授权分类和金额，
-    没有独立退款/冲销/结算调整类型或说明字段。业务分类不能证明 cash event，
-    缺少原始结算调整/合同依据时必须继续 `UNKNOWN_ABSTAIN`，不得猜测或放宽容差
+  - D0 已完成：用户依据财务系统记录确认唯一底层负向现金事实属于分成收入冲销，
+    exact-cell 摘要在 authority 中唯一匹配；冻结/逐月 case 的分类不确定现金
+    占比、case 数和金额均为 0，严格零容忍分类门禁通过
+  - 该底层事实写入冻结/逐月重叠人口 5/20 个 case；原先分别有 1/6 个 case
+    计入 uncertainty。这是同一事实跨 origin/horizon 的重复，不是独立现金。
+    原始财务凭证不对外、不进入 Git
+  - 用户确认“全部负数都是冲销”只决定 `eventType=reversal`，不得据此推断其他
+    负数的 `cashCategory`；D0 的分成分类只适用于摘要精确绑定的单个现金事实
+  - 用户已确认 B1 分成结算明细、B2 冲销/调账明细、B3 作品渠道历史存在并保留
+    历史但不导出，B4 分成合同状态历史不存在。当前 authority 观察范围：
+    B1 最早 2017-06、B2 最早负数 2019-11、B3 作品第一条明细为
+    2017-06 至 2026-04；这些不是首次可查询时间，不能冒充 `availableAt`
   - D1 已实现 `revenueShareFact`、`availabilitySnapshot` 与
     work×origin×segment 信号缺口 ledger。当前符合新合同的版本化历史 snapshot
     库存为 0：冻结人口 2,402 个 work-origin-segment、逐月人口 20,600 个
@@ -204,8 +209,9 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
 1. 保持 exact v0.3/v0.4 作品级 fallback；不得把 v0.5 portfolio 结果分配回作品。
 2. 保持三个分辨率同时报告：作品 case、origin 组合、origin×horizon 组合；任何
    稀疏权威结果都必须由逐月 origin 结果交叉检查。
-3. 先穷尽对账极小的 target-classification uncertainty；不得把不确定现金静默
-   归入分成或买断，也不得通过容差掩盖。
+3. 保持 D0 exact-cell 用户确认及零容忍门禁；不得把该确认泛化到其他现金事实，
+   也不得通过容差掩盖未来不确定项。A1–A6、B1–B4 已固化，无业务口径变化时
+   不得重复询问用户。
 4. 下一次组合模型评价必须使用未参与本轮选择的 later-origin/final holdout；
    未获单独授权前继续 sealed，不得在当前 2022 development 窗口继续调参。
 5. 只接收 cutoff 时真实可得、可审计、可版本化、exact-work 的分成预测信号：
@@ -238,9 +244,9 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
   聚合量化为 0；portable CLI 只输出聚合覆盖且拒绝摘要/行数漂移和当前状态
   回填，但完整 M2 成熟度未通过。
 - 已退役：120 部人工评估的 current 依赖；不重建、不重放。
-- 下一输入：D0 原始结算调整/合同依据，或带 economic、posting、available-at、
-  来源版本、lineage 与完整性权威的作品层历史分成 snapshot。通过 portable
-  bundle 导入；不存在时保持阻断，不能把现有 posthoc history 改名冒充。
+- 下一输入：带 economic、posting、available-at、来源版本、lineage 与完整性
+  权威的作品层历史分成 snapshot。通过 portable bundle 导入；不存在时保持阻断，
+  不能把现有 posthoc history 改名冒充。D0 已完成，不得重复索要 A/B 确认。
   组合层 later-origin/final holdout 仍需单独授权。
 - 未授权：final holdout 及所有既有业务 gate 外的动作。
 

@@ -43,7 +43,9 @@ export function buildM2CurrentPublicDiagnosticReport(
       retiredSequence:
         "human_numeric_baseline_and_120_work_business_sample_skipped",
       nextPriority: config.schema === "m2.current.config.v0.6"
-        ? "resolve_tiny_target_classification_uncertainty_then_materialize_versioned_historical_as_of_work_signals"
+        ? evidence.coverage.targetClassification?.passed === true
+          ? "materialize_versioned_historical_as_of_work_signals"
+          : "resolve_tiny_target_classification_uncertainty_then_materialize_versioned_historical_as_of_work_signals"
         : config.schema === "m2.current.config.v0.5"
         ? "independent_portfolio_validation_then_auditable_work_level_signals"
         : config.schema === "m2.current.config.v0.4"
@@ -57,7 +59,9 @@ export function buildM2CurrentPublicDiagnosticReport(
     nextDiagnostics: [
       "keep_dense_monthly_rolling_origin_and_strong_baselines_as_mandatory_regression_checks",
       config.schema === "m2.current.config.v0.6"
-        ? "resolve_sales_share_target_classification_uncertainty_without_moving_the_frozen_population"
+        ? evidence.coverage.targetClassification?.passed === true
+          ? "preserve_digest_bound_user_confirmation_without_generalizing_to_other_cash_cells"
+          : "resolve_sales_share_target_classification_uncertainty_without_moving_the_frozen_population"
         : "improve_cash_observability_without_moving_the_frozen_model_population",
       "keep_occurrence_and_positive_amount_diagnostics_separate",
       config.schema === "m2.current.config.v0.6"
