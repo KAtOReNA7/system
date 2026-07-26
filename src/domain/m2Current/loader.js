@@ -39,6 +39,10 @@ export function loadM2CurrentPublicEvidence(sources, config) {
       "m2.current.human_anchored.development_public.v0.1"
     );
     requireSchema(
+      sources?.humanAnchoredTsbOccurrence,
+      "m2.current.human_anchored_tsb_development_public.v0.1"
+    );
+    requireSchema(
       sources?.humanAnchoredLaterOriginReadiness,
       "m2.current.human_anchored_later_origin_readiness.v0.1"
     );
@@ -389,6 +393,71 @@ export function loadM2CurrentPublicEvidence(sources, config) {
     ) {
       throw new Error("m2_current_human_anchored_evidence_drift");
     }
+    const humanAnchoredTsb = sources.humanAnchoredTsbOccurrence;
+    if (
+      humanAnchoredTsb.candidateId
+        !== "M2-current-human-anchored-tsb-occurrence-challenger-v0.1"
+      || humanAnchoredTsb.target !== "future_sales_share_cash"
+      || humanAnchoredTsb.decision !== "TSB_OCCURRENCE_DEVELOPMENT_FAIL"
+      || humanAnchoredTsb.developmentAccepted !== false
+      || Number(humanAnchoredTsb.population.authorityWorkCount) !== 3053
+      || Number(
+        humanAnchoredTsb.population.modernWindowWorkWithFactCount
+      ) !== 2682
+      || Number(
+        humanAnchoredTsb.population.modernWindowFactRowCount
+      ) !== 167972
+      || Number(
+        humanAnchoredTsb.population.primaryIndependentWorkCount
+      ) !== 1125
+      || Number(humanAnchoredTsb.population.primaryCaseCount) !== 12039
+      || humanAnchoredTsb.dataQuality.mappingCoverage !== 1
+      || Number(
+        humanAnchoredTsb.dataQuality.amountConservationDifference
+      ) !== 0
+      || Number(
+        humanAnchoredTsb.dataQuality
+          .unmaturedLabelZeroImputationCount
+      ) !== 0
+      || humanAnchoredTsb.dataQuality.buyoutCashUsed !== false
+      || humanAnchoredTsb.dataQuality.observedZeroMonthsIncluded !== true
+      || humanAnchoredTsb.dataQuality.unobservedMonthsZeroFilled !== false
+      || humanAnchoredTsb.modelContract
+        .learnedGlobalHumanFormulaFrozen !== true
+      || humanAnchoredTsb.modelContract.fourExpertLayerEnabled !== false
+      || humanAnchoredTsb.modelContract.canonicalTsbHelperReused !== true
+      || Number(
+        humanAnchoredTsb.primary.preFallbackMetrics.fva
+          .rawTsbCandidate.valueAdded
+      ) >= 0
+      || Number(
+        humanAnchoredTsb.primary.preFallbackMetrics.fva
+          .blendCandidate.valueAdded
+      ) >= 0
+      || Number(
+        humanAnchoredTsb.primary.selectedPipelineMetrics.fva
+          .selectedPipeline.valueAdded
+      ) !== 0
+      || Number(humanAnchoredTsb.exactV03Overlap.caseCount) !== 5203
+      || humanAnchoredTsb.gates.rawCandidateFvaStrictlyPositive !== false
+      || humanAnchoredTsb.gates.overallWapeImproved !== false
+      || humanAnchoredTsb.gates.timeBlockMajorityImproved !== false
+      || humanAnchoredTsb.privateCapability.status
+        !== "EXECUTED_AUTHENTICATED_LOCAL_DEVELOPMENT"
+      || humanAnchoredTsb.boundaries.frozenV10Modified !== false
+      || humanAnchoredTsb.boundaries.exactV03FallbackRetained !== true
+      || humanAnchoredTsb.boundaries
+        .prohibited202301Through202304BlockOpened !== false
+      || humanAnchoredTsb.boundaries.finalHoldoutOpened !== false
+      || humanAnchoredTsb.boundaries.currentDecision !== "CANARY_FAIL"
+      || humanAnchoredTsb.boundaries.automationDecision
+        !== "AUTOMATION_BLOCKED"
+      || humanAnchoredTsb.boundaries.releaseAuthorized !== false
+    ) {
+      throw new Error(
+        "m2_current_human_anchored_tsb_occurrence_evidence_drift"
+      );
+    }
     const laterOrigin = sources.humanAnchoredLaterOriginReadiness;
     if (
       laterOrigin.candidateId !== humanAnchored.candidateId
@@ -646,6 +715,10 @@ export function loadM2CurrentPublicEvidence(sources, config) {
     humanAnchoredDevelopment:
       config.schema === "m2.current.config.v0.6"
         ? sources.humanAnchoredDevelopment
+        : null,
+    humanAnchoredTsbOccurrence:
+      config.schema === "m2.current.config.v0.6"
+        ? sources.humanAnchoredTsbOccurrence
         : null,
     humanAnchoredLaterOriginReadiness:
       config.schema === "m2.current.config.v0.6"

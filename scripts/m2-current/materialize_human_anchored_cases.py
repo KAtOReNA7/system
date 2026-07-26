@@ -395,6 +395,7 @@ def _history_row(
     history_months = canonical.month_range("2021-01", origin)
     amount_by_mode: dict[str, Decimal] = defaultdict(Decimal)
     total_positive_by_month = [Decimal("0") for _ in history_months]
+    total_reversal_by_month = [Decimal("0") for _ in history_months]
     own_positive_by_uid_month: dict[
         str, dict[str, Decimal]
     ] = defaultdict(lambda: defaultdict(Decimal))
@@ -431,6 +432,7 @@ def _history_row(
             reversal.append(float(rev))
             net.append(float(amount))
             total_positive_by_month[index] += pos
+            total_reversal_by_month[index] += rev
             amount_by_mode[mode] += pos
         trailing_positive = positive[-12:]
         peer_series = [
@@ -495,6 +497,8 @@ def _history_row(
         key=lambda item: (item[1], item[0]),
     )[0]
     first = first_observed.get(work_id, "2021-01")
+    observed_start = max("2021-01", first)
+    observed_start_index = history_months.index(observed_start)
     work_positive_indexes = [
         index
         for index, amount in enumerate(total_positive_by_month)
@@ -521,6 +525,24 @@ def _history_row(
         "dominantRevenueMode": dominant_mode,
         **reporting,
         "canonicalChannels": channels,
+        "salesShareMonthlyHistory": {
+            "startsAt": observed_start,
+            "through": origin,
+            "positiveSeries": [
+                float(value)
+                for value in total_positive_by_month[
+                    observed_start_index:
+                ]
+            ],
+            "reversalSeries": [
+                float(value)
+                for value in total_reversal_by_month[
+                    observed_start_index:
+                ]
+            ],
+            "observedZeroMonthsIncluded": True,
+            "unobservedMonthsZeroFilled": False,
+        },
         "cashHistoryWindowStart": "2021-01",
         "cashHistoryThroughOriginOnly": True,
         "pre2021CashAmountUsed": False,
@@ -619,11 +641,26 @@ def _validate_cases(
                 "human-anchored case key is duplicated"
             )
         seen.add(key)
+        history = histories.get(row["historyKey"])
+        monthly = (
+            history.get("salesShareMonthlyHistory", {})
+            if history is not None
+            else {}
+        )
+        positive_series = monthly.get("positiveSeries", [])
+        reversal_series = monthly.get("reversalSeries", [])
         if (
-            row["historyKey"] not in histories
+            history is None
             or row["labelAvailableAsOf"] != row["targetEnd"]
             or row["labelAvailableAsOf"]
             > config["dataContract"]["featureAndLabelWindowEnd"]
+            or monthly.get("through") != row["origin"]
+            or monthly.get("observedZeroMonthsIncluded") is not True
+            or monthly.get("unobservedMonthsZeroFilled") is not False
+            or not positive_series
+            or len(positive_series) != len(reversal_series)
+            or any(float(value) < 0 for value in positive_series)
+            or any(float(value) < 0 for value in reversal_series)
             or not math.isclose(
                 float(row["actual"]),
                 float(row["actualPositive"])
@@ -894,6 +931,7 @@ def _fixture_self_test() -> dict[str, Any]:
         },
     )
     channel = history["canonicalChannels"][0]
+    monthly = history["salesShareMonthlyHistory"]
     passed = (
         positive == Decimal("110")
         and reversal == Decimal("25")
@@ -901,6 +939,16 @@ def _fixture_self_test() -> dict[str, Any]:
         and channel["cumulativeReversal"] == 25.0
         and channel["cumulativeNet"] == 85.0
         and channel["peerTrendRatio"] == 2.0
+        and monthly["startsAt"] == "2021-01"
+        and monthly["through"] == "2021-07"
+        and monthly["positiveSeries"] == [
+            100.0, 0.0, 0.0, 0.0, 0.0, 0.0, 10.0
+        ]
+        and monthly["reversalSeries"] == [
+            25.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
+        ]
+        and monthly["observedZeroMonthsIncluded"] is True
+        and monthly["unobservedMonthsZeroFilled"] is False
     )
     if not passed:
         raise HumanAnchoredMaterializationError(

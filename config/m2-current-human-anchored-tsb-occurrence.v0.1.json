@@ -1,0 +1,116 @@
+{
+  "schema": "m2.current.human_anchored_tsb_occurrence_development.v0.1",
+  "candidateId": "M2-current-human-anchored-tsb-occurrence-challenger-v0.1",
+  "target": "future_sales_share_cash",
+  "baseConfig": "config/m2-current-human-anchored.v0.1.json",
+  "preregistration": "docs/analysis/m2-current/M2-current-human-anchored-tsb-occurrence-preregistration-v0.1.json",
+  "authorization": {
+    "source": "codex_goal_user_2026-07-26",
+    "oneCandidateOnly": true,
+    "localDevelopment": true,
+    "trainingFoldFit": true,
+    "innerEarlierOriginSelection": true,
+    "publicSyntheticValidation": true,
+    "controlledPrivateDevelopmentBacktest": true,
+    "championSelection": false,
+    "exactV03Replacement": false,
+    "v10Retuning": false,
+    "independentLaterOrigin": false,
+    "finalHoldout": false,
+    "embargoShadow": false,
+    "deferredLabels": false,
+    "provider": false,
+    "database": false,
+    "canary": false,
+    "full160": false,
+    "release": false,
+    "m3Formal": false
+  },
+  "parameterSpace": {
+    "occurrenceSmoothing": [
+      0.05,
+      0.1,
+      0.2
+    ],
+    "positiveAmountSmoothing": [
+      0.05,
+      0.1,
+      0.2
+    ],
+    "learnedGlobalToTsbBlend": [
+      0,
+      0.25,
+      0.5
+    ],
+    "rawTsbBlendForReportingOnly": 1,
+    "selectionCombinationCount": 27
+  },
+  "selection": {
+    "method": "inner_earlier_origin_folds_only",
+    "minimumInnerTrainingRows": 200,
+    "minimumValidationOrigins": 2,
+    "tieBreakOrder": [
+      "lowest_business_loss",
+      "lowest_wape",
+      "lowest_absolute_bias",
+      "smallest_lambda",
+      "smallest_occurrence_smoothing",
+      "smallest_positive_amount_smoothing"
+    ],
+    "outerMetricsMayChangeGrid": false
+  },
+  "evaluation": {
+    "quantileProbabilities": [
+      0.05,
+      0.1,
+      0.2,
+      0.5,
+      0.8,
+      0.9,
+      0.95
+    ],
+    "riskCoverageLevels": [
+      0.25,
+      0.5,
+      0.75,
+      1
+    ],
+    "businessLoss": {
+      "underForecastWeight": 1.5,
+      "overForecastWeight": 1,
+      "abstentionWeight": 2
+    },
+    "workClusterBootstrap": {
+      "iterations": 500,
+      "seed": 20260726
+    },
+    "originBootstrapIterations": 500,
+    "originBootstrapSeed": 20260726,
+    "timeBlockSensitivity": {
+      "method": "adjacent_calendar_origins_are_one_time_evidence_block"
+    }
+  },
+  "developmentAcceptance": {
+    "maximumAbsoluteBiasDeterioration": 0.01,
+    "minimumIntermittentRelativeWapeImprovement": 0.01,
+    "maximumActiveRelativeWapeDegradation": 0.01,
+    "dormantSystematicMissGuard": {
+      "minimumSignedBias": -0.95,
+      "actualPositiveCasePredictionRecallStrictlyPositive": true
+    },
+    "workClusterBootstrapMaximumUpper95": 0,
+    "timeBlockSensitivity": {
+      "minimumEvaluatedBlockCount": 2,
+      "minimumPositiveImprovementBlockShare": 0.5,
+      "singleBlockMayDriveAllImprovement": false
+    }
+  },
+  "syntheticFixture": "test/fixtures/m2-current-human-anchored-tsb-occurrence.synthetic.v0.1.json",
+  "publicDiagnosticOutput": "docs/analysis/m2-current/M2-current-human-anchored-tsb-occurrence-public-diagnostic-v0.1.json",
+  "publicOutput": "docs/analysis/m2-current/M2-current-human-anchored-tsb-occurrence-development-v0.1.json",
+  "publicReport": "docs/analysis/m2-current/M2-current-human-anchored-tsb-occurrence-development-v0.1.md",
+  "privateOutputs": {
+    "evaluation": "M2-current-human-anchored-tsb-occurrence-evaluation-private-v0.1.ndjson",
+    "evaluationManifest": "M2-current-human-anchored-tsb-occurrence-evaluation-manifest-private-v0.1.json"
+  }
+}

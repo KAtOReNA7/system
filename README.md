@@ -31,10 +31,14 @@
   需账单完整到 2029-01，并需找回原运行时 frozen v1 state。FVA 语义审计还确认
   后两层的 0 是安全回退值；当前代码已分开报告 raw candidate 与 selected
   pipeline，并让门禁检查回退前 candidate FVA，不改变冻结模型参数和预测路径。
+  随后获准的单一 TSB occurrence 候选也已完成：主评估 raw TSB 与选前 blend
+  WAPE 分别为 54.35% 和 45.35%，两层 FVA 都为负；strict rolling 11 个连续
+  时间块中仅 3 个改善。候选已拒绝并回退，网格与失败结论冻结，不建立第二个同窗
+  候选。
 
 当前导航：
 
-- `docs/analysis/m2-v2/M2-v2-current-state-index-v0.19.md`
+- `docs/analysis/m2-v2/M2-v2-current-state-index-v0.20.md`
 - `docs/analysis/m2-v2/M2-repository-code-convergence-and-portable-development-audit-v0.4.md`
 - `docs/analysis/m2-current/M2-current-maturity-reconstruction-v0.6.md`
 - `docs/analysis/m2-current/M2-sales-share-only-target-decision-v0.1.md`
@@ -52,6 +56,12 @@
 - `docs/analysis/m2-current/M2-current-human-anchored-later-origin-preregistration-v0.1.json`
 - `docs/analysis/m2-current/M2-current-human-anchored-fva-semantics-remediation-v0.1.md`
 - `docs/analysis/m2-current/M2-current-human-anchored-fva-semantics-remediation-v0.1.json`
+- `docs/analysis/m2-current/M2-current-human-anchored-tsb-occurrence-preregistration-v0.1.json`
+- `docs/analysis/m2-current/M2-current-human-anchored-tsb-occurrence-development-v0.1.md`
+- `docs/analysis/m2-current/M2-current-human-anchored-tsb-occurrence-development-v0.1.json`
+- `docs/analysis/m2-current/M2-current-human-anchored-tsb-occurrence-decision-v0.1.md`
+- `docs/analysis/m2-current/M2-current-human-anchored-tsb-occurrence-code-audit-v0.1.md`
+- `docs/analysis/m2-current/M2-current-human-anchored-tsb-occurrence-public-diagnostic-v0.1.json`
 - `docs/analysis/m2-current/M2-current-authority-source-audit-v0.2.json`
 - `docs/prd/m2-v2/M2-forecast-intelligence-v2-prd-v0.2.md`
 - `AGENTS.md`
@@ -166,6 +176,8 @@ npm run doctor:capability -- <capability-id>
 - `m2-algorithm-authoritative-input`：未来单独授权的 M2 算法研究输入。
 - `m2-current-canonical-channel`：本机人工渠道主表和账单驱动的受控 development。
 - `m2-current-human-anchored`：本机 2021—2025 分成账单驱动的人工锚定模型复现。
+- `m2-current-human-anchored-tsb-occurrence`：已冻结的单一 TSB occurrence
+  候选受控 development；只允许精确重放既有 27 组合和失败证据。
 - `m2-current-human-anchored-later-origin`：later-origin 资格审计；缺少原始 frozen
   v1 state 时只允许公共 readiness，不允许运行模型验证。
 - `m3-private-materials`：用户提供 3–5 份 private 材料后的 M3 completion workflow。
@@ -213,6 +225,12 @@ M2 的正式预测对象是未来分成收入现金。正式边界为：
 | v1.0 人工原式 / 人工锚定 WAPE | 0.53141021 / 0.44022707 |
 | v1.0 active / intermittent / dormant WAPE | 0.36837319 / 0.82752420 / 1.00000000 |
 | v1.0 相对人工 bootstrap 95% 区间 | [-38.40%, 5.36%] |
+| TSB 主评估 learnedGlobal / raw / blend WAPE | 0.44022495 / 0.54346231 / 0.45348237 |
+| TSB raw / blend / selected FVA | -0.10323736 / -0.01325742 / 0 |
+| TSB active / intermittent / dormant WAPE | 0.40697875 / 0.70411859 / 1.82646345 |
+| TSB strict learnedGlobal / blend WAPE | 0.41191878 / 0.44487051 |
+| TSB strict 改善时间块 | 3 / 11 |
+| TSB 精确重叠 blend / v0.3 WAPE | 0.26352433 / 0.37610234（同窗，不独立） |
 | later-origin 2023 候选块 | 2023-01 至 2023-04，1 个时间块，不合格 |
 | earliest independent origin / label through | 2026-01 / 2029-01 |
 | later-origin 指标读取 / 候选块消耗 | false / false |
@@ -232,7 +250,10 @@ holdout 或 release。v0.8 人工渠道规则的买断真值门禁已经通过�
 70.44%。canonical 渠道与平台类型治理现已完成，不能再作为继续阻断数据治理的
 理由；真正剩余的是渠道属性历史生效时间、渠道/合同可售 snapshot、真实上线时间
 和单购净单价。v0.9 没有通过；v1.0 虽在同窗配对比较中改善，但绝对误差、分群、
-聚类 bootstrap 与独立 later-origin 均未通过，因此同样不能替换 v0.3。
+聚类 bootstrap 与独立 later-origin 均未通过，因此同样不能替换 v0.3。单一 TSB
+occurrence 候选也未通过：raw 与 blend FVA 为负，strict rolling、active、
+dormant、作品聚类 bootstrap 和时间块多数门禁失败；selected FVA=0 只表示
+`lambda=0` 安全回退。该候选已冻结，不允许同窗调参或建立第二个候选。
 资格审计没有运行表现验证：2023-01 至 2023-04 必须作为一个连续块，但 2023-03
 已进入既有辅助证据，且整个块早于 2025-12 的选择证据边界。2026-05 的 3 条
 不完整事实也被显式排除，未成熟标签没有填 0。
@@ -287,6 +308,8 @@ holdout 或 release。v0.8 人工渠道规则的买断真值门禁已经通过�
      并保留 7,851 个旧机器路由 case 的差异审计；
     - v0.9 渠道曲线已执行并失败，参数与失败结论冻结；
     - v1.0 人工锚定模型已覆盖全部合格作品并失败，参数空间与失败结论冻结；
+    - TSB occurrence 单一候选已执行并失败，27 组合、inner selection 与失败结论
+      冻结；不得再建第二个同窗候选；
     - 只有独立 mature later-origin，或与明确公式绑定的新 historical as-of
       信号通过门禁后，才建立下一候选；
    - 当前停止新增同类总收入模型和同窗调参。
@@ -301,6 +324,8 @@ holdout 或 release。v0.8 人工渠道规则的买断真值门禁已经通过�
 npm run doctor:capability -- m2-algorithm-authoritative-input
 npm run doctor:capability -- m2-current-canonical-channel
 npm run doctor:capability -- m2-current-human-anchored
+npm run doctor:capability -- m2-current-human-anchored-tsb-occurrence
+npm run diagnose:m2:human-anchored-tsb-occurrence
 npm run doctor:capability -- m2-current-human-anchored-later-origin
 npm run diagnose:m2:later-origin-readiness
 npm run verify:m2:current

@@ -4,7 +4,7 @@
 
 - PR #7、PR #8、PR #9、PR #10、PR #11、PR #12、PR #13 均已合入 `main`；已合并分支不得继续作为开发入口。
 - 当前仓库治理导航为：
-  - `docs/analysis/m2-v2/M2-v2-current-state-index-v0.19.md`
+  - `docs/analysis/m2-v2/M2-v2-current-state-index-v0.20.md`
   - `docs/analysis/m2-v2/M2-repository-code-convergence-and-portable-development-audit-v0.4.md`
   - `docs/analysis/m2-current/M2-current-maturity-reconstruction-v0.6.md`
   - `docs/analysis/m2-current/M2-sales-share-only-target-decision-v0.1.md`
@@ -23,6 +23,12 @@
   - `docs/analysis/m2-current/M2-current-human-anchored-later-origin-preregistration-v0.1.json`
   - `docs/analysis/m2-current/M2-current-human-anchored-fva-semantics-remediation-v0.1.md`
   - `docs/analysis/m2-current/M2-current-human-anchored-fva-semantics-remediation-v0.1.json`
+  - `docs/analysis/m2-current/M2-current-human-anchored-tsb-occurrence-preregistration-v0.1.json`
+  - `docs/analysis/m2-current/M2-current-human-anchored-tsb-occurrence-development-v0.1.md`
+  - `docs/analysis/m2-current/M2-current-human-anchored-tsb-occurrence-development-v0.1.json`
+  - `docs/analysis/m2-current/M2-current-human-anchored-tsb-occurrence-decision-v0.1.md`
+  - `docs/analysis/m2-current/M2-current-human-anchored-tsb-occurrence-code-audit-v0.1.md`
+  - `docs/analysis/m2-current/M2-current-human-anchored-tsb-occurrence-public-diagnostic-v0.1.json`
   - `docs/analysis/m2-current/M2-current-as-of-source-inventory-v0.1.json`
   - `docs/analysis/m2-current/M2-current-signal-input-portable-intake-v0.1.md`
   - `docs/prd/m2-v2/M2-forecast-intelligence-v2-prd-v0.2.md`
@@ -198,6 +204,26 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
   - 结论为 `HUMAN_ANCHORED_DEVELOPMENT_FAIL` / `M2_NOT_MATURE`。参数空间、
     失败试验和失败结论已冻结，不得在同一 2021—2025 development 窗口继续调参，
     不得替换 exact v0.3。
+- `M2-current-human-anchored-tsb-occurrence-challenger-v0.1` 已按 2026-07-26
+  单一候选授权完成本地 development：
+  - 只替换 v1.0 occurrence/positive amount 子层，复用共同 reversal 层；冻结
+    `3 × 3 × 3 = 27` 个组合，inner selection 只读取 outer fold 之前的 origin；
+  - 36 个月主评估仍为 1,125 部独立作品、12,039 个成熟 case；learnedGlobal
+    WAPE/bias 为 `0.44022495 / -0.12377106`，raw TSB 为
+    `0.54346231 / 0.22068122`，选前 blend 为
+    `0.45348237 / 0.03777402`；
+  - raw TSB 与选前 blend 的 FVA 分别为 `-0.10323736 / -0.01325742`；
+    selected pipeline 在门禁拒绝后回退 `lambda=0`，FVA=0 只表示安全回退；
+  - active/intermittent/dormant WAPE 为 `0.40697875 / 0.70411859 /
+    1.82646345`；作品聚类相对候选改善 95% 区间为
+    `[-0.02847674, 0.09264632]`；
+  - strict rolling 74,320 case 的 learnedGlobal/blend WAPE 为
+    `0.41191878 / 0.44487051`，11 个连续时间块中仅 3 个改善；
+  - 在相同 inner selection 下与 v0.3 精确重叠的 5,203 case 中，blend/v0.3
+    WAPE 为 `0.26352433 / 0.37610234`；这是同窗配对诊断，不具独立性，不能覆盖
+    主评估、strict rolling、分群、bootstrap 与时间块门禁失败；
+  - 结论为 `TSB_OCCURRENCE_DEVELOPMENT_FAIL`。该单变量候选、网格、结果和失败
+    结论已经冻结，不得继续调参、建立第二个同窗候选或替换 exact v0.3。
 - v1.0 独立 later-origin 资格审计已按 2026-07-26 授权完成，未读取预测指标：
   - 最新完整账单月为 2026-04，理论成熟的 36 个月 origin 为 2023-01 至
     2023-04；四个相邻月只算 1 个连续时间块；
@@ -258,6 +284,10 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
 - 本轮 canonical 渠道 v0.9 新候选、development fitting 与 nested selection
   授权已执行完毕；映射、参数和失败结论已冻结，
   `candidateSelectionAuthorized=false`
+- 本轮 human-anchored TSB occurrence 单一候选、inner fitting、公开 synthetic
+  与 private development 授权已执行完毕；27 组合、结果和失败结论已冻结，
+  `candidateSelectionAuthorized=false`、`newCandidateFamilyDevelopmentAuthorized=false`、
+  `modelTrainingAuthorized=false`
 - 本轮 v1.0 later-origin readiness audit 已授权并执行；合格块的一次冻结验证也
   获授权，但资格未成立，故未执行。`candidateSelectionAuthorized=false`、
   `laterOriginReadinessAuditAuthorized=true`、
@@ -290,29 +320,33 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
    结论已经冻结；不得继续在同一 2021—2025 development 窗口调参。FVA 评估必须
    同时报告 raw candidate 与 selected pipeline；不得把安全回退后的 0 当作层级
    增量，也不得用大量作品/case 数替代时间验证块数量。
-6. 2023-01 至 2023-04 later-origin 连续块已经资格审计并被拒绝，不得拆月重试。
+6. human-anchored TSB occurrence 单一候选已经按预注册执行并失败。raw TSB 和
+   选前 blend FVA 都为负，strict rolling、active、dormant、作品聚类 bootstrap
+   和时间块多数门禁未通过；selected FVA=0 只表示回退。网格、inner selection、
+   结果和失败结论全部冻结，不得继续同窗调参或建立第二个候选。
+7. 2023-01 至 2023-04 later-origin 连续块已经资格审计并被拒绝，不得拆月重试。
    下一次最早可能时间独立的 origin 为 2026-01，只有账单完整到 2029-01 且取得
    原运行时 frozen v1 state 后才可重新审计；此前不读取指标、不填 0、不打开
    final holdout。
-7. 只接收 cutoff 时真实可得、可审计、可版本化、exact-work 的分成预测信号：
+8. 只接收 cutoff 时真实可得、可审计、可版本化、exact-work 的分成预测信号：
    sales historical availability、合同可售状态、渠道状态；commitment 不得作为
    分成预测信号。
-8. D1 合同、缺口 ledger、来源字段审计和 digest-bound portable intake 已建立；
+9. D1 合同、缺口 ledger、来源字段审计和 digest-bound portable intake 已建立；
    使用 `npm run diagnose:m2:signal-input` 验证公开 synthetic 输入，受控数据通过
    `--bundle-file` 与 `--case-file` 提交同目录摘要绑定包。下一步采集/物化符合
    合同的历史 `availabilitySnapshot`，补齐 economic、posting、available-at、
    来源版本和 lineage。当前冻结/逐月 occurrence 与 positive amount 合规覆盖
    均为 0；无历史 snapshot 的 current 状态不得回填。
-9. 新信号必须对应明确的人工公式参数或 occurrence/positive amount 误差目标，
+10. 新信号必须对应明确的人工公式参数或 occurrence/positive amount 误差目标，
    并具有 historical `effectiveAt/availableAt`。先通过成熟短周期 rolling-origin
    诊断，再按独立作品做 nested challenger；同时保留 7,083 个当前 served 与
    7,851 个旧机器路由 case 的差异审计。不剔除困难分成 case，不将
    pure-buyout/null 计为 0。
-10. 只有绝对质量、segment、平台类型/品类、risk–coverage 和业务损失均通过，才申请 final
+11. 只有绝对质量、segment、平台类型/品类、risk–coverage 和业务损失均通过，才申请 final
    holdout；失败时继续 fallback，不得用新模型数量替代证据质量。
-11. 120 部人工评估继续完全跳过。人工只负责渠道主表/账单分区的数据治理，以及
+12. 120 部人工评估继续完全跳过。人工只负责渠道主表/账单分区的数据治理，以及
    技术门禁通过后的 post-gate QA；不提供预测金额。
-12. final holdout、embargo shadow、deferred labels、provider、数据库、
+13. final holdout、embargo shadow、deferred labels、provider、数据库、
    Canary/full160、release 和 M3 formal 在收到各自明确授权前继续 sealed/禁止。
 
 当前启动状态：
@@ -329,7 +363,9 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
   分离、按作品外验证、严格短周期 rolling-origin、作品聚类 bootstrap、FVA 与
   分位数区间；later-origin 资格 core、public preregistration、private digest
   binding 和无 private readiness verifier；v1.0 raw/selected FVA 分离、非恒真
-  candidate FVA 门禁和连续月份时间块审计。
+  candidate FVA 门禁和连续月份时间块审计；canonical TSB 过程共用实现、
+  observed-zero/unobserved-zero 历史物化、单一 runner mode、27 组合 earlier-origin
+  inner selection、公开 synthetic 诊断和三层 raw/blend/selected FVA 报告。
 - 已验证：三账单逐行/逐月守恒、3,053 基础人口与 3,052 账单观察人口边界、
   7,851 旧机器路由到 7,083 当前 served case 的重分类、25-origin/56,856-case
   次级 development 复验；人工分区后作品 WAPE 0.49075894，组合 WAPE
@@ -339,7 +375,10 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
   v0.9 逐月 WAPE 0.46506585、冻结 served WAPE 0.49070110 并被拒绝，完整 M2
   成熟度未通过；v1.0 在 1,125 部独立作品、12,039 个成熟 36 个月 case 上
   WAPE 0.44022707，虽较人工原式改善 17.16%，仍被绝对质量、分群、作品聚类
-  bootstrap 与 later-origin 门禁拒绝；2023-01 至 2023-04 虽已标签成熟，但因
+  bootstrap 与 later-origin 门禁拒绝；TSB occurrence 候选主评估 learnedGlobal/
+  raw/blend WAPE 为 0.44022495 / 0.54346231 / 0.45348237，raw 与 blend FVA
+  均为负；strict rolling 11 个时间块仅 3 个改善，active、dormant 与 bootstrap
+  失败，故安全回退且冻结，不建立第二个候选；2023-01 至 2023-04 虽已标签成熟，但因
   2023-03 已用及选择证据截至 2025-12，被作为单一时间块拒绝，未读取新指标。
 - 已退役：120 部人工评估的 current 依赖；不重建、不重放。
 - 下一输入：later-origin 路线等待账单完整到 2029-01，并要求原运行时 frozen

@@ -14,7 +14,8 @@ export function buildM2CurrentPublicDiagnosticReport(
     "m2.current.config.v0.6"
   ].includes(config.schema);
   return {
-    schema: config.schema === "m2.current.config.v0.6"
+    schema: config.publicDiagnosticSchema
+      ?? (config.schema === "m2.current.config.v0.6"
       ? "m2.current.public_diagnostic_report.v0.12"
       : config.schema === "m2.current.config.v0.5"
       ? "m2.current.public_diagnostic_report.v0.6"
@@ -24,7 +25,7 @@ export function buildM2CurrentPublicDiagnosticReport(
         ? "m2.current.public_diagnostic_report.v0.4"
         : config.schema === "m2.current.config.v0.2"
           ? "m2.current.public_diagnostic_report.v0.3"
-          : "m2.current.public_diagnostic_report.v0.2",
+          : "m2.current.public_diagnostic_report.v0.2"),
     decisionStatus: "not_for_formal_decision",
     directionAssessment: {
       businessProblemWrong: false,
@@ -36,7 +37,7 @@ export function buildM2CurrentPublicDiagnosticReport(
         ].includes(config.schema),
       priorInstructionAssessment:
         config.schema === "m2.current.config.v0.6"
-          ? "buyout_isolation_canonical_channel_governance_and_human_anchored_modeling_were_directionally_correct; v1.0_improved_over_manual_and_v0.3_on_matched_development_cases_but_failed_absolute_segment_and_cluster_bootstrap_gates"
+          ? "buyout_isolation_canonical_channel_governance_and_human_anchored_modeling_were_directionally_correct; frozen_v1.0_and_the_one_variable_TSB_occurrence_challenger_both_failed_their_preregistered_development_gates"
           : config.schema === "m2.current.config.v0.5"
           ? "directionally_correct_evaluation_but_over_specified_algorithm_families_before_signal_and_decision_grain"
           : "not_reassessed",
@@ -80,6 +81,9 @@ export function buildM2CurrentPublicDiagnosticReport(
       config.schema === "m2.current.config.v0.6"
         ? "keep_v1_0_rejected_and_do_not_read_later_origin_metrics_before_2029_01_complete_labels_and_original_frozen_state"
         : "keep_channel_identity_auditable",
+      config.schema === "m2.current.config.v0.6"
+        ? "freeze_the_failed_learnedGlobal_plus_TSB_parameter_space_and_do_not_open_a_second_candidate_without_new_authorization"
+        : "keep_failed_candidate_spaces_frozen",
       "use_humans_only_for_post_gate_quality_assurance"
     ]
   };
@@ -241,6 +245,62 @@ function compactEvidence(evidence) {
         boundaries: evidence.humanAnchoredDevelopment.boundaries
       }
       : null,
+    humanAnchoredTsbOccurrence:
+      evidence.humanAnchoredTsbOccurrence
+        ? {
+          schema: evidence.humanAnchoredTsbOccurrence.schema,
+          candidateId:
+            evidence.humanAnchoredTsbOccurrence.candidateId,
+          target: evidence.humanAnchoredTsbOccurrence.target,
+          role: evidence.humanAnchoredTsbOccurrence.role,
+          decision: evidence.humanAnchoredTsbOccurrence.decision,
+          developmentAccepted:
+            evidence.humanAnchoredTsbOccurrence.developmentAccepted,
+          population: evidence.humanAnchoredTsbOccurrence.population,
+          dataQuality: evidence.humanAnchoredTsbOccurrence.dataQuality,
+          modelContract:
+            evidence.humanAnchoredTsbOccurrence.modelContract,
+          primary: {
+            design:
+              evidence.humanAnchoredTsbOccurrence.primary.design,
+            parameterSelectionDistribution:
+              evidence.humanAnchoredTsbOccurrence.primary
+                .parameterSelectionDistribution,
+            preFallbackMetrics:
+              evidence.humanAnchoredTsbOccurrence.primary
+                .preFallbackMetrics,
+            selectedPipelineMetrics:
+              evidence.humanAnchoredTsbOccurrence.primary
+                .selectedPipelineMetrics,
+            bootstrap:
+              evidence.humanAnchoredTsbOccurrence.primary.bootstrap
+          },
+          strictAuxiliary: {
+            design:
+              evidence.humanAnchoredTsbOccurrence.strictAuxiliary
+                .design,
+            preFallbackMetrics:
+              evidence.humanAnchoredTsbOccurrence.strictAuxiliary
+                .preFallbackMetrics,
+            selectedPipelineMetrics:
+              evidence.humanAnchoredTsbOccurrence.strictAuxiliary
+                .selectedPipelineMetrics,
+            timeBlockAudit:
+              evidence.humanAnchoredTsbOccurrence.strictAuxiliary
+                .timeBlockAudit
+          },
+          exactV03Overlap:
+            evidence.humanAnchoredTsbOccurrence.exactV03Overlap,
+          gates: evidence.humanAnchoredTsbOccurrence.gates,
+          fvaSemantics:
+            evidence.humanAnchoredTsbOccurrence.fvaSemantics,
+          failureAttribution:
+            evidence.humanAnchoredTsbOccurrence.failureAttribution,
+          privateCapability:
+            evidence.humanAnchoredTsbOccurrence.privateCapability,
+          boundaries: evidence.humanAnchoredTsbOccurrence.boundaries
+        }
+        : null,
     humanAnchoredLaterOriginReadiness:
       evidence.humanAnchoredLaterOriginReadiness
         ? evidence.humanAnchoredLaterOriginReadiness

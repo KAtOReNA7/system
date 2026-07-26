@@ -213,6 +213,35 @@
       "authorization": "USER_AUTHORIZED_HUMAN_ANCHORED_DEVELOPMENT_2026_07_26"
     },
     {
+      "id": "m2-current-human-anchored-tsb-occurrence",
+      "description": "Run the one-candidate learnedGlobal plus canonical TSB occurrence and positive-amount local development backtest without changing frozen v1.0, exact v0.3, later-origin, final holdout or release boundaries.",
+      "requiredTools": [],
+      "requiredPrivateArtifacts": [
+        {
+          "role": "user-reviewed-channel-master",
+          "kind": "file",
+          "path": "data/private-output/outputs/channel-governance-20260726/M2-渠道统一与类型人工补全表-v0.2.xlsx"
+        },
+        {
+          "role": "formal-model-input-cache",
+          "kind": "file",
+          "path": "data/private-output/m2-formal-execution/m2-formal-model-input-cache-v1.pkl"
+        },
+        {
+          "role": "exact-v0.3-overlap-comparator",
+          "kind": "file",
+          "path": "data/private-output/m2-current-quality/M2-current-occurrence-amount-candidate-cases-private-v0.3.ndjson"
+        }
+      ],
+      "canonicalValidationCommands": [
+        "npm run doctor:capability -- m2-current-human-anchored-tsb-occurrence",
+        "npm run diagnose:m2:human-anchored-tsb-occurrence",
+        "npm run develop:m2:current:human-anchored-tsb-occurrence"
+      ],
+      "recovery": "Restore only the capability-scoped private channel master, verified model-input cache and exact v0.3 comparator. Missing artifacts block only this candidate private development; public core, synthetic diagnostics, tests and startup remain available.",
+      "authorization": "USER_AUTHORIZED_HUMAN_ANCHORED_TSB_OCCURRENCE_DEVELOPMENT_2026_07_26"
+    },
+    {
       "id": "m2-current-human-anchored-later-origin",
       "description": "Audit later-origin readiness and run a one-time frozen v1.0 validation only if an independent mature block and the original frozen model state both exist.",
       "requiredTools": [],

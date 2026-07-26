@@ -608,6 +608,56 @@ export function rawCandidateLayerFvaGate(metrics, minimumValueAdded = 0) {
   );
 }
 
+export function fitM2HumanAnchoredOccurrence(rows, config) {
+  if (!Array.isArray(rows) || rows.length === 0) {
+    throw new Error("m2_human_anchored_occurrence_training_rows_required");
+  }
+  return fitOccurrence(
+    rows.map((row) => ({ row })),
+    Number(config?.learning?.occurrencePriorStrength)
+  );
+}
+
+export function fitM2HumanAnchoredReversal(rows, config) {
+  if (!Array.isArray(rows) || rows.length === 0) {
+    throw new Error("m2_human_anchored_reversal_training_rows_required");
+  }
+  return fitReversal(
+    rows.map((row) => ({ row })),
+    Number(config?.learning?.reversalPriorStrength),
+    Number(config?.learning?.reversalRateMaximum)
+  );
+}
+
+export function predictM2HumanAnchoredOccurrenceProbability(row, state) {
+  return occurrenceProbability(row, state);
+}
+
+export function predictM2HumanAnchoredReversalRate(row, state) {
+  return reversalRateFor(row, state);
+}
+
+export function buildM2HumanAnchoredResidualPools(rows) {
+  if (!Array.isArray(rows) || rows.length === 0) {
+    throw new Error("m2_human_anchored_residual_rows_required");
+  }
+  return buildResidualPools(rows);
+}
+
+export function calibrateM2HumanAnchoredQuantiles(
+  pointEstimate,
+  row,
+  pools,
+  probabilities = DEFAULT_QUANTILES
+) {
+  return calibratedQuantiles(
+    finite(pointEstimate, "point_estimate"),
+    row,
+    pools,
+    probabilities
+  );
+}
+
 export function workClusterBootstrap(
   rows,
   {

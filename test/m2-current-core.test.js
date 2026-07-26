@@ -897,7 +897,7 @@ test("public diagnostic CLI is reproducible and aggregate-only", () => {
   );
   const text = JSON.stringify(report);
 
-  assert.equal(report.schema, "m2.current.public_diagnostic_report.v0.12");
+  assert.equal(report.schema, "m2.current.public_diagnostic_report.v0.13");
   assert.equal(report.directionAssessment.engineeringSequenceDrifted, true);
   assert.equal(
     report.directionAssessment.retiredSequence,
@@ -1006,6 +1006,33 @@ test("public diagnostic CLI is reproducible and aggregate-only", () => {
   assert.equal(
     report.evidence.humanAnchoredDevelopment
       .dataQuality.peerTrendExcludesTargetWork,
+    true
+  );
+  assert.equal(
+    report.evidence.humanAnchoredTsbOccurrence.candidateId,
+    "M2-current-human-anchored-tsb-occurrence-challenger-v0.1"
+  );
+  assert.equal(
+    report.evidence.humanAnchoredTsbOccurrence.decision,
+    "TSB_OCCURRENCE_DEVELOPMENT_FAIL"
+  );
+  assert.equal(
+    report.evidence.humanAnchoredTsbOccurrence
+      .primary.preFallbackMetrics.fva.rawTsbCandidate.valueAdded < 0,
+    true
+  );
+  assert.equal(
+    report.evidence.humanAnchoredTsbOccurrence
+      .primary.selectedPipelineMetrics.fva.selectedPipeline.valueAdded,
+    0
+  );
+  assert.equal(
+    report.evidence.humanAnchoredTsbOccurrence.exactV03Overlap.caseCount,
+    5203
+  );
+  assert.equal(
+    report.evidence.humanAnchoredTsbOccurrence
+      .boundaries.exactV03FallbackRetained,
     true
   );
   assert.equal(
