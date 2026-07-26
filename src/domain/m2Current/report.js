@@ -15,7 +15,7 @@ export function buildM2CurrentPublicDiagnosticReport(
   ].includes(config.schema);
   return {
     schema: config.schema === "m2.current.config.v0.6"
-      ? "m2.current.public_diagnostic_report.v0.11"
+      ? "m2.current.public_diagnostic_report.v0.12"
       : config.schema === "m2.current.config.v0.5"
       ? "m2.current.public_diagnostic_report.v0.6"
       : config.schema === "m2.current.config.v0.4"
@@ -241,6 +241,10 @@ function compactEvidence(evidence) {
         boundaries: evidence.humanAnchoredDevelopment.boundaries
       }
       : null,
+    humanAnchoredLaterOriginReadiness:
+      evidence.humanAnchoredLaterOriginReadiness
+        ? evidence.humanAnchoredLaterOriginReadiness
+        : null,
     automatedEvaluation: {
       schema: automated.schema,
       targetContract: automated.targetContract,

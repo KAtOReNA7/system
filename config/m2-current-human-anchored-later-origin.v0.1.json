@@ -1,0 +1,125 @@
+{
+  "schema": "m2.current.human_anchored_later_origin_preregistration.v0.1",
+  "candidateId": "M2-current-human-anchored-hierarchical-probabilistic-v1.0",
+  "target": "future_sales_share_cash",
+  "authorization": {
+    "source": "codex_goal_user_2026-07-26",
+    "scope": "later_origin_readiness_audit_and_qualified_one_time_frozen_validation",
+    "readinessAudit": true,
+    "qualifiedLaterOriginValidation": true,
+    "finalHoldout": false,
+    "provider": false,
+    "remoteOrSharedDatabase": false,
+    "canary": false,
+    "full160": false,
+    "release": false,
+    "m3Formal": false
+  },
+  "frozenDevelopment": {
+    "developmentCommit": "19cf18aa4224849b06d69479de3c575bccf9804f",
+    "featureAndLabelWindow": {
+      "from": "2021-01",
+      "through": "2025-12"
+    },
+    "primaryOrigins": {
+      "from": "2021-12",
+      "through": "2022-12",
+      "horizonMonths": 36
+    },
+    "auxiliaryOrigins": {
+      "from": "2021-12",
+      "through": "2025-09",
+      "horizons": [
+        3,
+        6,
+        12,
+        18,
+        24
+      ]
+    },
+    "selectionEvidenceLabelThrough": "2025-12",
+    "trackedModelFiles": [
+      "config/m2-current-human-anchored.v0.1.json",
+      "src/domain/m2Current/humanAnchored.js",
+      "scripts/m2-current/materialize_human_anchored_cases.py",
+      "scripts/m2-current/run_m2_human_anchored_development.mjs"
+    ],
+    "requiredFrozenStateArtifact": "data/private-output/m2-current-human-anchored/M2-current-human-anchored-model-state-private-v1.0.json"
+  },
+  "qualificationAudit": {
+    "horizonMonths": 36,
+    "latestCompleteMonth": "2026-04",
+    "incompleteMonths": [
+      "2026-05"
+    ],
+    "focusOrigins": [
+      "2023-01",
+      "2023-02",
+      "2023-03",
+      "2023-04"
+    ],
+    "continuousOriginsCountAsOneTimeBlock": true,
+    "strictTimeIndependenceRequiresOriginAfterSelectionEvidenceLabelThrough": true,
+    "unmaturedLabelPolicy": "exclude_never_zero_impute"
+  },
+  "metrics": {
+    "primary": [
+      "wape",
+      "signed_bias",
+      "mae",
+      "quantile_loss",
+      "central_80_interval_coverage",
+      "risk_coverage",
+      "business_loss",
+      "forecast_value_added"
+    ],
+    "segments": [
+      "active",
+      "intermittent",
+      "dormant",
+      "membership",
+      "single_purchase",
+      "platform_dominant",
+      "ordinary_work",
+      "major_reporting_categories"
+    ],
+    "bootstrap": {
+      "method": "resample_independent_works_with_all_repeated_cases",
+      "cluster": "standard_work",
+      "iterations": 500,
+      "seed": 20260726
+    },
+    "timeBlockSensitivity": {
+      "method": "leave_contiguous_origin_subblock_out",
+      "independentTimeBlockCountMustBeReported": true,
+      "workCountCannotSubstituteForTimeBlockCount": true
+    }
+  },
+  "gates": {
+    "maximumWape": 0.3,
+    "maximumAbsoluteBias": 0.1,
+    "minimumRelativeWapeImprovementToManual": 0.1,
+    "minimumRelativeWapeImprovementToExactV03": 0.05,
+    "maximumMajorSegmentAbsoluteBias": 0.15,
+    "minimumCentral80Coverage": 0.75,
+    "maximumCentral80Coverage": 0.85,
+    "minimumLayerFva": 0,
+    "workClusterBootstrapRelativeImprovementUpperBelowZero": true,
+    "independentTimeBlockRequired": true
+  },
+  "privateInputs": {
+    "ledgerPartitionEvidence": "data/private-output/m2-current-ledger/M2-current-human-ledger-partition-private-v0.1.json",
+    "humanAnchoredManifest": "data/private-output/m2-current-human-anchored/M2-current-human-anchored-manifest-private-v0.1.json",
+    "humanAnchoredEvaluationManifest": "data/private-output/m2-current-human-anchored/M2-current-human-anchored-evaluation-manifest-private-v0.1.json",
+    "channelMaster": "data/private-output/outputs/channel-governance-20260726/M2-渠道统一与类型人工补全表-v0.2.xlsx",
+    "totalLedger": "data/real-bills/渠道实销汇总 -总.xlsx",
+    "salesShareLedger": "data/real-bills/渠道实销汇总 -分成.xlsx",
+    "buyoutLedger": "data/real-bills/渠道实销汇总 -买断.xlsx"
+  },
+  "outputs": {
+    "publicPreregistration": "docs/analysis/m2-current/M2-current-human-anchored-later-origin-preregistration-v0.1.json",
+    "publicDiagnostic": "docs/analysis/m2-current/M2-current-human-anchored-later-origin-readiness-v0.1.json",
+    "publicReport": "docs/analysis/m2-current/M2-current-human-anchored-later-origin-readiness-v0.1.md",
+    "privatePreregistration": "data/private-output/m2-current-human-anchored-later-origin/M2-current-human-anchored-later-origin-preregistration-private-v0.1.json"
+  }
+}

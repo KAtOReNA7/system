@@ -213,6 +213,44 @@
       "authorization": "USER_AUTHORIZED_HUMAN_ANCHORED_DEVELOPMENT_2026_07_26"
     },
     {
+      "id": "m2-current-human-anchored-later-origin",
+      "description": "Audit later-origin readiness and run a one-time frozen v1.0 validation only if an independent mature block and the original frozen model state both exist.",
+      "requiredTools": [],
+      "requiredPrivateArtifacts": [
+        {
+          "role": "total-ledger-authority",
+          "kind": "file",
+          "path": "data/real-bills/渠道实销汇总 -总.xlsx"
+        },
+        {
+          "role": "sales-share-ledger-authority",
+          "kind": "file",
+          "path": "data/real-bills/渠道实销汇总 -分成.xlsx"
+        },
+        {
+          "role": "buyout-ledger-authority",
+          "kind": "file",
+          "path": "data/real-bills/渠道实销汇总 -买断.xlsx"
+        },
+        {
+          "role": "user-reviewed-channel-master",
+          "kind": "file",
+          "path": "data/private-output/outputs/channel-governance-20260726/M2-渠道统一与类型人工补全表-v0.2.xlsx"
+        },
+        {
+          "role": "frozen-v1-model-state",
+          "kind": "file",
+          "path": "data/private-output/m2-current-human-anchored/M2-current-human-anchored-model-state-private-v1.0.json"
+        }
+      ],
+      "canonicalValidationCommands": [
+        "npm run diagnose:m2:later-origin-readiness",
+        "npm run check:m2:current:later-origin-readiness"
+      ],
+      "recovery": "Recover only the original digest-bound v1.0 model state from the authorized run. Do not infer it from public aggregates or refit parameters and expert weights under this authorization. Missing private artifacts block only later-origin validation; public readiness remains available.",
+      "authorization": "USER_AUTHORIZED_LATER_ORIGIN_READINESS_AND_QUALIFIED_FROZEN_VALIDATION_2026_07_26"
+    },
+    {
       "id": "m3-private-materials",
       "description": "Bootstrap the ignored M3 completion workflow after 3 to 5 user-provided private materials are present.",
       "requiredTools": [],

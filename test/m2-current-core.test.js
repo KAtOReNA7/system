@@ -897,7 +897,7 @@ test("public diagnostic CLI is reproducible and aggregate-only", () => {
   );
   const text = JSON.stringify(report);
 
-  assert.equal(report.schema, "m2.current.public_diagnostic_report.v0.11");
+  assert.equal(report.schema, "m2.current.public_diagnostic_report.v0.12");
   assert.equal(report.directionAssessment.engineeringSequenceDrifted, true);
   assert.equal(
     report.directionAssessment.retiredSequence,
@@ -1011,6 +1011,25 @@ test("public diagnostic CLI is reproducible and aggregate-only", () => {
   assert.equal(
     report.evidence.humanAnchoredDevelopment
       .temporalMaturity.independentLaterOriginOpened,
+    false
+  );
+  assert.equal(
+    report.evidence.humanAnchoredLaterOriginReadiness.decision,
+    "NO_QUALIFIED_INDEPENDENT_MATURE_LATER_ORIGIN"
+  );
+  assert.equal(
+    report.evidence.humanAnchoredLaterOriginReadiness
+      .candidateBlock.timeBlockCount,
+    1
+  );
+  assert.equal(
+    report.evidence.humanAnchoredLaterOriginReadiness
+      .frozenModel.stateArtifactPresent,
+    false
+  );
+  assert.equal(
+    report.evidence.humanAnchoredLaterOriginReadiness
+      .validation.metricsRead,
     false
   );
   assert.equal(

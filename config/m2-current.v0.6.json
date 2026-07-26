@@ -115,10 +115,11 @@
     "manualChannelBacktest": "docs/analysis/m2-current/M2-current-manual-channel-backtest-v0.1.json",
     "canonicalChannelDevelopment": "docs/analysis/m2-current/M2-current-canonical-channel-development-v0.1.json",
     "humanAnchoredDevelopment": "docs/analysis/m2-current/M2-current-human-anchored-development-v0.1.json",
+    "humanAnchoredLaterOriginReadiness": "docs/analysis/m2-current/M2-current-human-anchored-later-origin-readiness-v0.1.json",
     "signalGap": "docs/analysis/m2-current/M2-current-signal-gap-diagnostic-v0.1.json",
     "signalSourceInventory": "docs/analysis/m2-current/M2-current-as-of-source-inventory-v0.1.json"
   },
-  "publicOutput": "docs/analysis/m2-current/M2-current-public-diagnostic-v0.11.json",
+  "publicOutput": "docs/analysis/m2-current/M2-current-public-diagnostic-v0.12.json",
   "authorizations": {
     "provider": false,
     "database": false,

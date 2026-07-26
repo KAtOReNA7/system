@@ -38,6 +38,10 @@ export function loadM2CurrentPublicEvidence(sources, config) {
       sources?.humanAnchoredDevelopment,
       "m2.current.human_anchored.development_public.v0.1"
     );
+    requireSchema(
+      sources?.humanAnchoredLaterOriginReadiness,
+      "m2.current.human_anchored_later_origin_readiness.v0.1"
+    );
   }
   const currentCandidateSchema = config.schema === "m2.current.config.v0.6"
     ? "m2.current.sales_share_candidate.public.v0.6"
@@ -385,6 +389,33 @@ export function loadM2CurrentPublicEvidence(sources, config) {
     ) {
       throw new Error("m2_current_human_anchored_evidence_drift");
     }
+    const laterOrigin = sources.humanAnchoredLaterOriginReadiness;
+    if (
+      laterOrigin.candidateId !== humanAnchored.candidateId
+      || laterOrigin.target !== "future_sales_share_cash"
+      || laterOrigin.decision
+        !== "NO_QUALIFIED_INDEPENDENT_MATURE_LATER_ORIGIN"
+      || laterOrigin.candidateBlock.from !== "2023-01"
+      || laterOrigin.candidateBlock.through !== "2023-04"
+      || laterOrigin.candidateBlock.timeBlockCount !== 1
+      || laterOrigin.candidateBlock.eligible !== false
+      || laterOrigin.temporalBoundary.latestCompleteMonth !== "2026-04"
+      || laterOrigin.temporalBoundary
+        .earliestTimeIndependentOrigin !== "2026-01"
+      || laterOrigin.temporalBoundary
+        .earliestTimeIndependentLabelThrough !== "2029-01"
+      || laterOrigin.frozenModel.stateArtifactPresent !== false
+      || laterOrigin.frozenModel.refitAllowed !== false
+      || laterOrigin.validation.metricsRead !== false
+      || laterOrigin.validation.laterOriginConsumed !== false
+      || laterOrigin.boundaries.currentDecision !== "CANARY_FAIL"
+      || laterOrigin.boundaries.automationDecision
+        !== "AUTOMATION_BLOCKED"
+      || laterOrigin.boundaries.exactV03FallbackRetained !== true
+      || laterOrigin.boundaries.releaseAuthorized !== false
+    ) {
+      throw new Error("m2_current_later_origin_readiness_evidence_drift");
+    }
   }
   const actualHorizons = Object.keys(sources.development.metrics.byHorizon)
     .map(Number)
@@ -605,6 +636,10 @@ export function loadM2CurrentPublicEvidence(sources, config) {
     humanAnchoredDevelopment:
       config.schema === "m2.current.config.v0.6"
         ? sources.humanAnchoredDevelopment
+        : null,
+    humanAnchoredLaterOriginReadiness:
+      config.schema === "m2.current.config.v0.6"
+        ? sources.humanAnchoredLaterOriginReadiness
         : null,
     retiredBusinessSample:
       [
