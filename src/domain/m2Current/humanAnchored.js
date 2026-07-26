@@ -366,15 +366,19 @@ export function predictM2HumanAnchored(row, state, config) {
     learned,
     state.parameters
   );
+  const rawHierarchyPoint = weightedExpertPoint(
+    weights,
+    expertPoints,
+    state.expertMultipliers
+  );
   const hierarchyPoint = state.hierarchyAccepted
-    ? weightedExpertPoint(
-      weights,
-      expertPoints,
-      state.expertMultipliers
-    )
+    ? rawHierarchyPoint
     : learned.positivePointEstimate;
   const probability = occurrenceProbability(row, state.occurrence);
   const reversalRate = reversalRateFor(row, state.reversal);
+  const fullyRawOccurrencePoint = (
+    rawHierarchyPoint * probability * (1 - reversalRate)
+  );
   const occurrencePoint = hierarchyPoint * probability * (1 - reversalRate);
   const pointEstimate = state.occurrenceReversalAccepted
     ? occurrencePoint
@@ -388,7 +392,10 @@ export function predictM2HumanAnchored(row, state, config) {
   return Object.freeze({
     manualPointEstimate: manual.positivePointEstimate,
     learnedGlobalPointEstimate: learned.positivePointEstimate,
+    rawHierarchicalPointEstimate: rawHierarchyPoint,
     hierarchicalPointEstimate: hierarchyPoint,
+    fullyRawOccurrenceReversalPointEstimate: fullyRawOccurrencePoint,
+    candidateOccurrenceReversalPointEstimate: occurrencePoint,
     occurrenceReversalPointEstimate: occurrencePoint,
     pointEstimate,
     positivePointEstimate: hierarchyPoint * probability,
@@ -509,46 +516,72 @@ export function strictRollingM2HumanAnchored(rows, config) {
     throw new Error("m2_human_anchored_strict_rolling_output_empty");
   }
   output.sort(compareCaseRows);
+  const timeBlockAudit = buildContiguousTimeBlockAudit(output, config);
   return Object.freeze({
     schema: "m2.current.human_anchored_strict_rolling.v0.1",
     rows: Object.freeze(output),
     selections: Object.freeze(selections),
-    metrics: scoreM2HumanAnchoredLayers(output, config)
+    metrics: scoreM2HumanAnchoredLayers(output, config),
+    timeBlockAudit
   });
 }
 
 export function scoreM2HumanAnchoredLayers(rows, config) {
   const levels = config?.learning?.quantileProbabilities ?? DEFAULT_QUANTILES;
-  const pointFields = {
+  const selectedPointFields = {
     manualFaithful: "manualPointEstimate",
     learnedGlobal: "learnedGlobalPointEstimate",
     hierarchicalPositive: "hierarchicalPointEstimate",
     occurrenceAndReversal: "pointEstimate"
   };
-  const point = Object.fromEntries(Object.entries(pointFields).map(
-    ([id, field]) => [
-      id,
-      scoreM2CurrentPointRows(rows.map((row) => ({
-        actual: row.actual,
-        pointEstimate: row[field]
-      })))
-    ]
-  ));
-  const layerOrder = Object.keys(pointFields);
-  const fva = layerOrder.slice(1).map((id, index) => {
-    const previous = layerOrder[index];
-    return {
-      from: previous,
-      to: id,
-      absoluteWapeChange: point[id].wape - point[previous].wape,
-      relativeWapeChange: point[id].wape / point[previous].wape - 1,
-      valueAdded: point[previous].wape - point[id].wape
-    };
-  });
+  const candidatePointFields = {
+    manualFaithful: "manualPointEstimate",
+    learnedGlobal: "learnedGlobalPointEstimate",
+    hierarchicalPositive: "rawHierarchicalPointEstimate",
+    occurrenceAndReversal: "candidateOccurrenceReversalPointEstimate"
+  };
+  const fullyRawPointFields = {
+    hierarchicalPositive: "rawHierarchicalPointEstimate",
+    occurrenceAndReversal: "fullyRawOccurrenceReversalPointEstimate"
+  };
+  const point = scorePointFields(rows, selectedPointFields);
+  const candidatePoint = scorePointFields(rows, candidatePointFields);
+  const fullyRawPoint = scorePointFields(rows, fullyRawPointFields);
+  const selectedPipelineFva = sequentialFva(
+    point,
+    Object.keys(selectedPointFields)
+  );
+  const candidateFva = [
+    fvaBetween(
+      "manualFaithful",
+      "learnedGlobal",
+      candidatePoint.manualFaithful,
+      candidatePoint.learnedGlobal,
+      "learned_global_before_fallback"
+    ),
+    fvaBetween(
+      "learnedGlobal",
+      "hierarchicalPositive",
+      candidatePoint.learnedGlobal,
+      candidatePoint.hierarchicalPositive,
+      "fully_raw_hierarchy_before_inner_or_global_fallback"
+    ),
+    fvaBetween(
+      "hierarchicalPositive",
+      "occurrenceAndReversal",
+      point.hierarchicalPositive,
+      candidatePoint.occurrenceAndReversal,
+      "occurrence_reversal_candidate_on_selected_hierarchy_before_fallback"
+    )
+  ];
   const probabilistic = scoreM2CurrentProbabilisticRows(rows, levels);
   return Object.freeze({
     point,
-    fva,
+    candidatePoint,
+    fullyRawPoint,
+    candidateFva: Object.freeze(candidateFva),
+    selectedPipelineFva: Object.freeze(selectedPipelineFva),
+    fva: Object.freeze(selectedPipelineFva),
     probabilistic,
     byOrigin: scoreM2CurrentSlices(rows, "origin"),
     byHorizon: scoreM2CurrentSlices(rows, "horizonMonths"),
@@ -559,6 +592,20 @@ export function scoreM2HumanAnchoredLayers(rows, config) {
       "secondLevelCategoryReportingOnly"
     )
   });
+}
+
+export function rawCandidateLayerFvaGate(metrics, minimumValueAdded = 0) {
+  const threshold = finite(
+    minimumValueAdded,
+    "minimum_raw_candidate_layer_fva"
+  );
+  const candidateFva = metrics?.candidateFva;
+  if (!Array.isArray(candidateFva) || candidateFva.length === 0) {
+    throw new Error("m2_human_anchored_candidate_fva_required");
+  }
+  return candidateFva.every(
+    (row) => finite(row?.valueAdded, "candidate_fva_value_added") >= threshold
+  );
 }
 
 export function workClusterBootstrap(
@@ -953,17 +1000,20 @@ function selectCrossFitLayers(rows, config) {
     const selectedHierarchy = hierarchyAccepted
       ? row.hierarchicalPointEstimate
       : row.learnedGlobalPointEstimate;
+    const candidateOccurrenceReversal = (
+      selectedHierarchy
+      * row.occurrenceProbability
+      * (1 - row.reversalRate)
+    );
     return {
       ...row,
-      rawHierarchicalPointEstimate: row.hierarchicalPointEstimate,
+      preGlobalHierarchicalPointEstimate: row.hierarchicalPointEstimate,
       hierarchicalPointEstimate: selectedHierarchy,
-      rawOccurrenceReversalPointEstimate:
+      preGlobalOccurrenceReversalPointEstimate:
         row.occurrenceReversalPointEstimate,
-      occurrenceReversalPointEstimate: (
-        selectedHierarchy
-        * row.occurrenceProbability
-        * (1 - row.reversalRate)
-      )
+      candidateOccurrenceReversalPointEstimate:
+        candidateOccurrenceReversal,
+      occurrenceReversalPointEstimate: candidateOccurrenceReversal
     };
   });
   const hierarchy = scoreM2CurrentPointRows(hierarchyRows.map((row) => ({
@@ -972,7 +1022,15 @@ function selectCrossFitLayers(rows, config) {
   })));
   const occurrenceRaw = scoreM2CurrentPointRows(hierarchyRows.map((row) => ({
     actual: row.actual,
-    pointEstimate: row.occurrenceReversalPointEstimate
+    pointEstimate: row.candidateOccurrenceReversalPointEstimate
+  })));
+  const fullyRawHierarchy = scoreM2CurrentPointRows(rows.map((row) => ({
+    actual: row.actual,
+    pointEstimate: row.rawHierarchicalPointEstimate
+  })));
+  const fullyRawOccurrenceReversal = scoreM2CurrentPointRows(rows.map((row) => ({
+    actual: row.actual,
+    pointEstimate: row.fullyRawOccurrenceReversalPointEstimate
   })));
   const occurrenceAccepted = (
     occurrenceRaw.wape <= hierarchy.wape
@@ -998,14 +1056,115 @@ function selectCrossFitLayers(rows, config) {
     rows: selectedRows,
     selection: Object.freeze({
       scope: "development_cross_work_only_requires_later_origin_validation",
+      metricSemantics: Object.freeze({
+        rawHierarchyMetrics:
+          "legacy_pre_global_candidate_includes_inner_fold_selection",
+        fullyRawHierarchyMetrics:
+          "expert_layer_before_inner_or_global_fallback",
+        rawOccurrenceReversalMetrics:
+          "legacy_alias_of_candidate_on_selected_hierarchy",
+        candidateOccurrenceReversalMetrics:
+          "occurrence_reversal_on_selected_hierarchy_before_global_fallback",
+        fullyRawOccurrenceReversalMetrics:
+          "occurrence_reversal_on_fully_raw_hierarchy"
+      }),
       hierarchyAccepted,
       occurrenceReversalAccepted: occurrenceAccepted,
       learnedGlobalMetrics: learned,
       rawHierarchyMetrics: hierarchyRaw,
+      preGlobalHierarchyMetrics: hierarchyRaw,
+      fullyRawHierarchyMetrics: fullyRawHierarchy,
       selectedHierarchyMetrics: hierarchy,
-      rawOccurrenceReversalMetrics: occurrenceRaw
+      rawOccurrenceReversalMetrics: occurrenceRaw,
+      candidateOccurrenceReversalMetrics: occurrenceRaw,
+      fullyRawOccurrenceReversalMetrics: fullyRawOccurrenceReversal
     })
   };
+}
+
+function scorePointFields(rows, pointFields) {
+  return Object.fromEntries(Object.entries(pointFields).map(
+    ([id, field]) => [
+      id,
+      scoreM2CurrentPointRows(rows.map((row) => ({
+        actual: row.actual,
+        pointEstimate: finite(row[field], field)
+      })))
+    ]
+  ));
+}
+
+function sequentialFva(point, layerOrder) {
+  return layerOrder.slice(1).map((id, index) => fvaBetween(
+    layerOrder[index],
+    id,
+    point[layerOrder[index]],
+    point[id],
+    "selected_pipeline_after_fallback"
+  ));
+}
+
+function fvaBetween(from, to, comparator, candidate, measurement) {
+  return Object.freeze({
+    from,
+    to,
+    measurement,
+    comparatorWape: comparator.wape,
+    candidateWape: candidate.wape,
+    absoluteWapeChange: candidate.wape - comparator.wape,
+    relativeWapeChange: candidate.wape / comparator.wape - 1,
+    valueAdded: comparator.wape - candidate.wape
+  });
+}
+
+function buildContiguousTimeBlockAudit(rows, config) {
+  const origins = [...new Set(
+    rows.map((row) => requireMonth(row.outerOrigin ?? row.origin, "outer_origin"))
+  )].sort();
+  const originBlocks = [];
+  for (const origin of origins) {
+    const previousBlock = originBlocks.at(-1);
+    const previousOrigin = previousBlock?.origins.at(-1);
+    if (
+      previousOrigin !== undefined
+      && monthOrdinal(origin) - monthOrdinal(previousOrigin) === 1
+    ) {
+      previousBlock.origins.push(origin);
+    } else {
+      originBlocks.push({ origins: [origin] });
+    }
+  }
+  const blocks = originBlocks.map(({ origins: blockOrigins }, index) => {
+    const originSet = new Set(blockOrigins);
+    const blockRows = rows.filter((row) => originSet.has(
+      requireMonth(row.outerOrigin ?? row.origin, "outer_origin")
+    ));
+    const metrics = scoreM2HumanAnchoredLayers(blockRows, config);
+    return Object.freeze({
+      blockId: `strict_time_block_${String(index + 1).padStart(2, "0")}`,
+      startsAt: blockOrigins[0],
+      endsAt: blockOrigins.at(-1),
+      originCount: blockOrigins.length,
+      caseCount: blockRows.length,
+      candidateFva: metrics.candidateFva,
+      selectedPipelineFva: metrics.selectedPipelineFva
+    });
+  });
+  return Object.freeze({
+    schema: "m2.current.human_anchored_time_block_audit.v0.1",
+    method: "adjacent_calendar_origins_are_one_time_evidence_block",
+    independentTimeBlockCount: blocks.length,
+    evaluatedOriginCount: origins.length,
+    caseCount: rows.length,
+    caseCountCannotSubstituteForTimeBlockCount: true,
+    blocks: Object.freeze(blocks)
+  });
+}
+
+function monthOrdinal(month) {
+  const [year, number] = requireMonth(month, "month_ordinal")
+    .split("-").map(Number);
+  return year * 12 + number - 1;
 }
 
 function attachCrossFoldQuantiles(rows, probabilities) {

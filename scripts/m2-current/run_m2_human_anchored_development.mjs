@@ -10,7 +10,7 @@ import { fileURLToPath } from "node:url";
 
 import {
   crossFitM2HumanAnchored,
-  scoreM2HumanAnchoredLayers,
+  rawCandidateLayerFvaGate,
   strictRollingM2HumanAnchored,
   workClusterBootstrap
 } from "../../src/domain/m2Current/humanAnchored.js";
@@ -281,7 +281,6 @@ function evaluateGates({
   const segmentBias = Object.values(
     primaryResult.metrics.bySegment
   ).map((metrics) => Math.abs(metrics.signedBias));
-  const layerFva = primaryResult.metrics.fva.map((row) => row.valueAdded);
   const checks = {
     modernWindowAndPopulationExpanded: (
       privateManifest.modernWindowWorkWithFactCount > 300
@@ -314,8 +313,16 @@ function evaluateGates({
       && coverage80 >= gate.minimumCentral80Coverage
       && coverage80 <= gate.maximumCentral80Coverage
     ),
-    eachLayerFvaNonnegative:
-      layerFva.every((valueAdded) => valueAdded >= gate.minimumLayerFva),
+    eachRawCandidateLayerFvaNonnegative:
+      rawCandidateLayerFvaGate(
+        primaryResult.metrics,
+        gate.minimumLayerFva
+      ),
+    strictAuxiliaryTimeBlocksReported: (
+      auxiliaryResult.timeBlockAudit.independentTimeBlockCount > 0
+      && auxiliaryResult.timeBlockAudit
+        .caseCountCannotSubstituteForTimeBlockCount
+    ),
     workClusterBootstrapRelativeManualUpperBelowZero:
       bootstrap.relativeWapeToManual95.upper < 0,
     independentLaterOrigin:
@@ -422,6 +429,15 @@ function buildPublicResult({
       currentStaticChannelAttributesUsed: true,
       channelAttributeEffectiveMonthProven: false,
       manualRuleFallbackRetained: true,
+      fvaSemantics: {
+        candidateFva:
+          "before_fallback_and_used_by_layer_gate",
+        selectedPipelineFva:
+          "after_fallback_for_operational_output_only",
+        adjacentCalendarOrigins:
+          "one_time_evidence_block",
+        caseCountCannotSubstituteForTimeBlockCount: true
+      },
       shortHorizonUse:
         "auxiliary_validation_of_direction_not_36_month_maturity"
     },
@@ -444,7 +460,8 @@ function buildPublicResult({
       outerOriginStartsAt:
         value.dataContract.strictAuxiliaryEvaluationStartsAt,
       metrics: auxiliaryMetrics,
-      selections: auxiliaryResult.selections
+      selections: auxiliaryResult.selections,
+      timeBlockAudit: auxiliaryResult.timeBlockAudit
     },
     v03ExactOverlap: {
       design: "same_case_cross_work_overlap_comparison",
@@ -480,6 +497,10 @@ function buildPublicResult({
 function publicMetrics(metrics) {
   return {
     point: metrics.point,
+    candidatePoint: metrics.candidatePoint,
+    fullyRawPoint: metrics.fullyRawPoint,
+    candidateFva: metrics.candidateFva,
+    selectedPipelineFva: metrics.selectedPipelineFva,
     fva: metrics.fva,
     probabilistic: metrics.probabilistic,
     byOrigin: metrics.byOrigin,
@@ -512,7 +533,16 @@ function compactEvaluationRow(row, evaluationFamily) {
     actual: row.actual,
     manualPointEstimate: row.manualPointEstimate,
     learnedGlobalPointEstimate: row.learnedGlobalPointEstimate,
+    rawHierarchicalPointEstimate: row.rawHierarchicalPointEstimate,
+    preGlobalHierarchicalPointEstimate:
+      row.preGlobalHierarchicalPointEstimate ?? null,
     hierarchicalPointEstimate: row.hierarchicalPointEstimate,
+    fullyRawOccurrenceReversalPointEstimate:
+      row.fullyRawOccurrenceReversalPointEstimate,
+    preGlobalOccurrenceReversalPointEstimate:
+      row.preGlobalOccurrenceReversalPointEstimate ?? null,
+    candidateOccurrenceReversalPointEstimate:
+      row.candidateOccurrenceReversalPointEstimate,
     occurrenceReversalPointEstimate:
       row.occurrenceReversalPointEstimate,
     pointEstimate: row.pointEstimate,
@@ -539,10 +569,17 @@ function renderReport(result) {
   const checks = Object.entries(result.decision.checks).map(
     ([id, passed]) => `| ${id} | ${passed ? "通过" : "未通过"} |`
   ).join("\n");
-  const fva = result.primary.metrics.fva.map((row) => (
-    `| ${row.from} → ${row.to} | `
-    + `${number(row.valueAdded)} | ${percent(-row.relativeWapeChange)} |`
-  )).join("\n");
+  const selectedFvaByTransition = new Map(
+    result.primary.metrics.selectedPipelineFva.map(
+      (row) => [`${row.from}->${row.to}`, row]
+    )
+  );
+  const fva = result.primary.metrics.candidateFva.map((row) => {
+    const selected = selectedFvaByTransition.get(`${row.from}->${row.to}`);
+    return `| ${row.from} → ${row.to} | `
+      + `${number(row.valueAdded)} | ${percent(-row.relativeWapeChange)} | `
+      + `${number(selected.valueAdded)} |`;
+  }).join("\n");
   return `# M2 人工锚定层级概率模型开发回测 v0.1
 
 ## 结论
@@ -586,17 +623,18 @@ function renderReport(result) {
 全体作品外 development 层选择中，层级专家接受状态为
 \`${result.primary.developmentLayerSelection.hierarchyAccepted}\`，发生/冲销层接受状态为
 \`${result.primary.developmentLayerSelection.occurrenceReversalAccepted}\`。未通过的原始层会
-回退上一层；FVA 的 0 表示安全回退，不表示该原始层获得了独立成功证据。
+回退上一层；candidate FVA 保留回退前的真实增量，selected pipeline FVA 只反映
+安全回退后的最终输出。
 
 ## 逐层 FVA
 
-| 层级 | WAPE 绝对改善 | WAPE 相对改善 |
-|---|---:|---:|
+| 层级 | candidate WAPE 绝对改善 | candidate WAPE 相对改善 | selected pipeline WAPE 绝对改善 |
+|---|---:|---:|---:|
 ${fva}
 
 模型层级固定为：人工原式 → 可学习人工参数 → 四个受约束专家 →
-发生概率与冲销 → 分位数/区间。任何层表现变差都会在 FVA 中暴露，不得用
-“新模型数量”代替证据。
+发生概率与冲销 → 分位数/区间。门禁使用回退前的 candidate FVA，不再用
+回退后必然非负的 selected pipeline FVA 代替层级证据。
 
 ## 数据与时序边界
 
