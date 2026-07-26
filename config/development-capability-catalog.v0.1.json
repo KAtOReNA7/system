@@ -242,6 +242,35 @@
       "authorization": "USER_AUTHORIZED_HUMAN_ANCHORED_TSB_OCCURRENCE_DEVELOPMENT_2026_07_26"
     },
     {
+      "id": "m2-current-lifecycle-aware",
+      "description": "Run the user-authorized lifecycle-aware occurrence and log-amount M2 algorithm reconstruction experiment without changing exact v0.3, the sales-share cash authority, production routes, final holdout or release boundaries.",
+      "requiredTools": [],
+      "requiredPrivateArtifacts": [
+        {
+          "role": "user-reviewed-channel-master",
+          "kind": "file",
+          "path": "data/private-output/outputs/channel-governance-20260726/M2-渠道统一与类型人工补全表-v0.2.xlsx"
+        },
+        {
+          "role": "formal-model-input-cache",
+          "kind": "file",
+          "path": "data/private-output/m2-formal-execution/m2-formal-model-input-cache-v1.pkl"
+        },
+        {
+          "role": "exact-v0.3-overlap-comparator",
+          "kind": "file",
+          "path": "data/private-output/m2-current-quality/M2-current-occurrence-amount-candidate-cases-private-v0.3.ndjson"
+        }
+      ],
+      "canonicalValidationCommands": [
+        "npm run doctor:capability -- m2-current-lifecycle-aware",
+        "npm run diagnose:m2:lifecycle-aware",
+        "npm run develop:m2:current:lifecycle-aware"
+      ],
+      "recovery": "Restore only the capability-scoped private channel master, verified model-input cache and exact v0.3 comparator. Missing artifacts block only the lifecycle-aware private experiment; public diagnostics, tests and application startup remain available.",
+      "authorization": "USER_AUTHORIZED_LIFECYCLE_AWARE_ALGORITHM_RECONSTRUCTION_2026_07_26"
+    },
+    {
       "id": "m2-current-human-anchored-later-origin",
       "description": "Audit later-origin readiness and run a one-time frozen v1.0 validation only if an independent mature block and the original frozen model state both exist.",
       "requiredTools": [],

@@ -34,11 +34,29 @@
   随后获准的单一 TSB occurrence 候选也已完成：主评估 raw TSB 与选前 blend
   WAPE 分别为 54.35% 和 45.35%，两层 FVA 都为负；strict rolling 11 个连续
   时间块中仅 3 个改善。候选已拒绝并回退，网格与失败结论冻结，不建立第二个同窗
-  候选。
+  候选。随后完成的 lifecycle-aware v0.1 算法重构把作品互斥分类为
+  active/stable/decline/dormant/revival，并实现状态条件 occurrence 与 log-amount。
+  raw challenger 的 primary/strict WAPE 为 50.14%/62.28%，均劣于
+  learnedGlobal baseline 的 44.02%/41.19%；仅 revival 启用的 post-hoc 管线改善
+  0.0145%/0.0048%，低于 1% materiality，top 1%/5%/10% 收入作品无改善。因此
+  结论为 development fail，不替换 exact v0.3，也不进入生产。
+  5,203-case exact v0.3 overlap 上 raw lifecycle WAPE 为 27.46%、exact v0.3
+  为 37.61%，但这是同窗子集诊断，不能覆盖总体与 strict raw 失败。
+  随后的信息增益与数据就绪审计确认，下一轮更可能产生增益的是 cutoff 时真实
+  可得、可版本化的渠道上下架、合同可售和权利续约状态，而不是继续从同一现金
+  序列派生特征。但当前合规 historical commercial-state 覆盖为 0：
+  `standard_work_status_history` 是单行 current projection，
+  `basic_info_version` 只有一个有效填充快照，`mapping_change_record` 为空；
+  transfer archive 也只是当前文件副本。三轮结论依次为
+  `NEEDS_DATA_MATERIALIZATION_FIRST`、
+  `NO_COMPLIANT_HISTORICAL_COMMERCIAL_STATE_SOURCE_FOUND_IN_INSPECTED_SCOPE` 和
+  `NO_RECOVERABLE_COMPLIANT_HISTORICAL_COMMERCIAL_SOURCE_ACQUIRED`。在业务系统
+  提供 capability-scoped immutable export 前，不创建 event ledger、不训练
+  commercial-state 模型，也不得用 current 属性事后回填历史。
 
 当前导航：
 
-- `docs/analysis/m2-v2/M2-v2-current-state-index-v0.20.md`
+- `docs/analysis/m2-v2/M2-v2-current-state-index-v0.21.md`
 - `docs/analysis/m2-v2/M2-repository-code-convergence-and-portable-development-audit-v0.4.md`
 - `docs/analysis/m2-current/M2-current-maturity-reconstruction-v0.6.md`
 - `docs/analysis/m2-current/M2-sales-share-only-target-decision-v0.1.md`
@@ -62,6 +80,14 @@
 - `docs/analysis/m2-current/M2-current-human-anchored-tsb-occurrence-decision-v0.1.md`
 - `docs/analysis/m2-current/M2-current-human-anchored-tsb-occurrence-code-audit-v0.1.md`
 - `docs/analysis/m2-current/M2-current-human-anchored-tsb-occurrence-public-diagnostic-v0.1.json`
+- `docs/analysis/m2-current/M2-current-model-structure-and-lifecycle-aware-proposal-v0.1.md`
+- `docs/analysis/m2-current/M2-current-lifecycle-aware-revenue-forecast-development-v0.1.md`
+- `docs/analysis/m2-current/M2-current-lifecycle-aware-revenue-forecast-development-v0.1.json`
+- `docs/analysis/m2-current/M2-current-lifecycle-aware-public-diagnostic-v0.1.json`
+- `docs/analysis/m2-current/M2-current-feature-information-gain-and-commercial-state-model-proposal-v0.1.md`
+- `docs/analysis/m2-current/M2-commercial-state-data-readiness-audit-v0.1.md`
+- `docs/analysis/m2-current/M2-commercial-state-source-discovery-v0.1.md`
+- `docs/analysis/m2-current/M2-historical-commercial-source-acquisition-audit-v0.1.md`
 - `docs/analysis/m2-current/M2-current-authority-source-audit-v0.2.json`
 - `docs/prd/m2-v2/M2-forecast-intelligence-v2-prd-v0.2.md`
 - `AGENTS.md`
@@ -142,6 +168,7 @@ npm run smoke:portable-start
 npm run diagnose:m2:current
 npm run diagnose:m2:signal-input
 npm run diagnose:m2:channel-governance
+npm run diagnose:m2:lifecycle-aware
 npm run verify:m2:signal-input
 npm run verify:m2:channel-governance
 npm run verify:m2:current
@@ -178,6 +205,8 @@ npm run doctor:capability -- <capability-id>
 - `m2-current-human-anchored`：本机 2021—2025 分成账单驱动的人工锚定模型复现。
 - `m2-current-human-anchored-tsb-occurrence`：已冻结的单一 TSB occurrence
   候选受控 development；只允许精确重放既有 27 组合和失败证据。
+- `m2-current-lifecycle-aware`：本轮已执行的五状态 lifecycle-aware occurrence
+  与 log-amount 受控 development；只保留算法实验和失败证据，不修改 production。
 - `m2-current-human-anchored-later-origin`：later-origin 资格审计；缺少原始 frozen
   v1 state 时只允许公共 readiness，不允许运行模型验证。
 - `m3-private-materials`：用户提供 3–5 份 private 材料后的 M3 completion workflow。
@@ -208,6 +237,8 @@ M2 的正式预测对象是未来分成收入现金。正式边界为：
 | 人工账单分区分类不确定现金占比 | 0 |
 | D1 冻结 / 逐月合规 snapshot 覆盖 | 0 / 0 |
 | 已审计 / 可直接使用的历史信号来源角色 | 4 / 0 |
+| 合规 historical commercial-state work/channel/month 覆盖 | 0 / 0 / 0 |
+| 可恢复 historical commercial event ledger | 否 |
 | 当前作品级 WAPE / bias | 0.49075894 / 0.07378107 |
 | 当前 B4 WAPE | 0.54929375 |
 | dense / intermittent / dormant WAPE | 0.45873171 / 0.96321675 / 1.01854144 |

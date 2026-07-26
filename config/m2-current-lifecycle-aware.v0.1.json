@@ -1,0 +1,373 @@
+{
+  "schema": "m2.current.lifecycle_aware_revenue_forecast_development.v0.1",
+  "candidateId": "M2-lifecycle-aware-revenue-forecast-challenger-v0.1",
+  "target": "future_sales_share_cash",
+  "datasetVersion": "M2-human-anchored-sales-share-development-2021-2025-v0.1",
+  "featureVersion": "M2-lifecycle-revival-selected-state-log-ratio-features-v0.5",
+  "baseConfig": "config/m2-current-human-anchored.v0.1.json",
+  "authorization": {
+    "source": "codex_goal_user_2026-07-26_lifecycle_aware_algorithm_reconstruction",
+    "algorithmReconstruction": true,
+    "localDevelopment": true,
+    "rapidExperiment": true,
+    "baselineReplay": true,
+    "trainingFoldFit": true,
+    "strictEarlierLabelRolling": true,
+    "productionModelModification": false,
+    "exactV03Replacement": false,
+    "dataAuthorityChange": false,
+    "cashBoundaryChange": false,
+    "independentLaterOrigin": false,
+    "finalHoldout": false,
+    "provider": false,
+    "database": false,
+    "canary": false,
+    "full160": false,
+    "release": false,
+    "m3Formal": false
+  },
+  "lifecycle": {
+    "method": "deterministic_as_of_positive_sales_share_history_only",
+    "states": [
+      "active",
+      "stable",
+      "decline",
+      "dormant",
+      "revival"
+    ],
+    "trailingWindowMonths": 12,
+    "recentWindowMonths": 3,
+    "priorWindowMonths": 9,
+    "revivalMinimumPriorZeroMonths": 9,
+    "dormantMaximumTrailingPositiveMonths": 0,
+    "declineRecentToPriorMaximum": 0.6,
+    "declineLogSlopeMaximum": -0.08,
+    "stableMinimumTrailingPositiveMonths": 8,
+    "stableRecentToPriorMinimum": 0.75,
+    "stableRecentToPriorMaximum": 1.25,
+    "futureLabelsUsedForClassification": false
+  },
+  "model": {
+    "occurrenceFamily": "regularized_logistic_with_lifecycle_probability_calibration",
+    "amountFamily": "frozen_baseline_offset_lifecycle_shrunk_log_revenue_ratio",
+    "amountEstimator": "lifecycle_shrunk_log_revenue_ratio",
+    "reversalFamily": "existing_separate_common_reversal_layer",
+    "minimumTrainingRows": 15,
+    "minimumPositiveTrainingRows": 8,
+    "occurrenceRidge": 2,
+    "occurrenceIterations": 25,
+    "occurrenceLifecyclePriorStrength": 30,
+    "occurrenceLogisticWeight": 0.25,
+    "amountRidge": 5,
+    "amountIterations": 20,
+    "huberDelta": 1.5,
+    "revenueWeightExponent": 0.25,
+    "maximumRevenueWeight": 5,
+    "amountLogOffset": "frozen_learnedGlobal_positive",
+    "amountLifecyclePriorStrength": 30,
+    "minimumAmountScale": 0.25,
+    "maximumAmountScale": 4,
+    "amountPredictionCapQuantile": 0.99,
+    "amountPredictionCapMultiplier": 3,
+    "baselineAnchoredPredictionCap": false,
+    "selectedLifecycleStates": [
+      "revival"
+    ],
+    "stateSelectionSemantics": "posthoc_from_completed_experiment_04_development_only_not_independent_selection",
+    "hyperparameterSelection": "numeric_parameters_fixed; state routing informed by completed experiment 04",
+    "outerMetricsMayChangeConfig": false
+  },
+  "training": {
+    "primaryDesign": "deterministic_cross_work_five_fold",
+    "crossWorkFoldCount": 5,
+    "strictRollingDesign": "origin_less_than_outer_and_label_available_as_of_outer",
+    "strictRollingStartsAt": "2023-03",
+    "minimumStrictTrainingRows": 200,
+    "unmaturedLabelPolicy": "exclude_never_zero_impute"
+  },
+  "evaluation": {
+    "revenueWeightedWapeDefinition": "sum_absolute_error_divided_by_sum_absolute_actual_cash",
+    "lifecycleSegmentMetrics": true,
+    "occurrenceMetrics": [
+      "brier",
+      "log_loss",
+      "precision_at_0.5",
+      "recall_at_0.5"
+    ],
+    "conditionalAmountMetrics": [
+      "positive_amount_wape",
+      "positive_amount_bias",
+      "log1p_mae"
+    ],
+    "topRevenueFractions": [
+      0.01,
+      0.05,
+      0.1
+    ],
+    "topRevenueRankingBasis": "sum_actual_positive_sales_share_cash_by_work",
+    "materialRelativeWapeImprovementMinimum": 0.01,
+    "modelSelectionGateAdded": false
+  },
+  "experiments": [
+    {
+      "experimentId": "M2-lifecycle-aware-baseline-learnedGlobal-common-reversal-v0.1",
+      "kind": "baseline",
+      "model": "frozen_learnedGlobal_plus_common_reversal",
+      "retuned": false
+    },
+    {
+      "experimentId": "M2-lifecycle-aware-revival-selected-challenger-experiment-05-v0.1",
+      "kind": "challenger",
+      "model": "lifecycle_state_conditioned_occurrence_and_shrunk_log_revenue_ratio_amount",
+      "retuned": false
+    }
+  ],
+  "completedRapidExperiments": [
+    {
+      "experimentId": "M2-lifecycle-aware-direct-hurdle-log-experiment-01-v0.1",
+      "status": "COMPLETED_FAILED",
+      "datasetVersion": "M2-human-anchored-sales-share-development-2021-2025-v0.1",
+      "featureVersion": "M2-lifecycle-history-only-features-v0.1",
+      "modelConfig": {
+        "occurrenceFamily": "regularized_logistic_with_lifecycle_probability_calibration",
+        "occurrenceLogisticWeight": 1,
+        "amountFamily": "revenue_weighted_huber_log1p_with_lifecycle_shrinkage",
+        "amountLogOffset": "none",
+        "occurrenceRidge": 2,
+        "occurrenceIterations": 25,
+        "occurrenceLifecyclePriorStrength": 30,
+        "amountRidge": 5,
+        "amountIterations": 20,
+        "huberDelta": 1.5,
+        "revenueWeightExponent": 0.25,
+        "maximumRevenueWeight": 5,
+        "amountLifecyclePriorStrength": 30,
+        "minimumAmountScale": 0.25,
+        "maximumAmountScale": 4,
+        "amountPredictionCapQuantile": 0.99,
+        "amountPredictionCapMultiplier": 3,
+        "outerMetricsChangedThisExperiment": false
+      },
+      "evaluationResult": {
+        "primary": {
+          "candidateWape": 0.755897982542632,
+          "candidateSignedBias": -0.5031228583463283,
+          "baselineWape": 0.4402249501995905,
+          "baselineSignedBias": -0.12377105831355606,
+          "relativeWape": 0.7170721064308614,
+          "occurrenceBrier": 0.15188895823920226,
+          "occurrenceLogLoss": 1.9007969041717472,
+          "conditionalAmountWape": 0.695536318819573,
+          "conditionalAmountSignedBias": -0.33452286699562017
+        },
+        "strictRolling": {
+          "candidateWape": 0.7037595345707504,
+          "candidateSignedBias": -0.5115643711505095,
+          "baselineWape": 0.4119187843120154,
+          "baselineSignedBias": -0.0384740094930633,
+          "relativeWape": 0.7084909971905404
+        },
+        "lifecyclePrimary": {
+          "activeRelativeWape": 0.17052715948244002,
+          "stableRelativeWape": 1.9797072810012306,
+          "declineRelativeWape": 0.0500742872269313,
+          "dormantRelativeWape": 0.9835440047443358,
+          "revivalRelativeWape": -0.2731716482767086
+        },
+        "topRevenuePrimary": {
+          "top01PositiveRevenueShare": 0.5550840142073638,
+          "top01RelativeWape": 1.8845147130442594,
+          "top05RelativeWape": 1.026326627366546,
+          "top10RelativeWape": 0.8470046499452659
+        }
+      },
+      "diagnosis": "direct_log_amount_lost_large_work_scale_and_logistic_occurrence_underestimated_a_96.98_percent_positive_36_month_target_rate"
+    },
+    {
+      "experimentId": "M2-lifecycle-aware-offset-hurdle-log-challenger-experiment-02-v0.1",
+      "status": "COMPLETED_FAILED",
+      "datasetVersion": "M2-human-anchored-sales-share-development-2021-2025-v0.1",
+      "featureVersion": "M2-lifecycle-history-plus-frozen-baseline-offset-features-v0.2",
+      "modelConfig": {
+        "occurrenceFamily": "regularized_logistic_with_lifecycle_probability_calibration",
+        "occurrenceLogisticWeight": 0.25,
+        "amountFamily": "revenue_weighted_huber_log1p_with_lifecycle_shrinkage",
+        "amountEstimator": "revenue_weighted_huber_log1p",
+        "amountLogOffset": "frozen_learnedGlobal_positive",
+        "occurrenceRidge": 2,
+        "occurrenceIterations": 25,
+        "occurrenceLifecyclePriorStrength": 30,
+        "amountRidge": 5,
+        "amountIterations": 20,
+        "huberDelta": 1.5,
+        "revenueWeightExponent": 0.25,
+        "maximumRevenueWeight": 5,
+        "amountLifecyclePriorStrength": 30,
+        "minimumAmountScale": 0.25,
+        "maximumAmountScale": 4,
+        "amountPredictionCapQuantile": 0.99,
+        "amountPredictionCapMultiplier": 3,
+        "outerMetricsChangedThisExperiment": false
+      },
+      "evaluationResult": {
+        "primary": {
+          "candidateWape": 0.698604442200598,
+          "candidateSignedBias": -0.3519755234710907,
+          "baselineWape": 0.4402249501995905,
+          "baselineSignedBias": -0.12377105831355606,
+          "relativeWape": 0.586926051973798,
+          "occurrenceBrier": 0.03478308147607738,
+          "occurrenceLogLoss": 0.14933947430083605,
+          "conditionalAmountWape": 0.7016689630310659,
+          "conditionalAmountSignedBias": -0.30376710368717896
+        },
+        "strictRolling": {
+          "candidateWape": 0.6193771588787342,
+          "candidateSignedBias": -0.3555267121062006,
+          "baselineWape": 0.4119187843120154,
+          "baselineSignedBias": -0.0384740094930633,
+          "relativeWape": 0.5036390241664137
+        },
+        "lifecyclePrimary": {
+          "activeRelativeWape": 0.02949219837447936,
+          "stableRelativeWape": 1.781073692719632,
+          "declineRelativeWape": 0.13762041562749228,
+          "dormantRelativeWape": 0.5964532381979264,
+          "revivalRelativeWape": -0.3103597926915641
+        },
+        "topRevenuePrimary": {
+          "top01PositiveRevenueShare": 0.5550840142073638,
+          "top01RelativeWape": 1.586620215282975,
+          "top05RelativeWape": 0.799493651951801,
+          "top10RelativeWape": 0.669553819914896
+        }
+      },
+      "diagnosis": "occurrence_calibration_recovered_but_high_dimensional_log_residual_regression_still_destroyed_large_work_scale_and_stable_work_accuracy"
+    },
+    {
+      "experimentId": "M2-lifecycle-aware-state-log-ratio-challenger-experiment-03-v0.1",
+      "status": "COMPLETED_FAILED",
+      "datasetVersion": "M2-human-anchored-sales-share-development-2021-2025-v0.1",
+      "featureVersion": "M2-lifecycle-history-plus-state-log-ratio-features-v0.3",
+      "modelConfig": {
+        "occurrenceFamily": "regularized_logistic_with_lifecycle_probability_calibration",
+        "occurrenceLogisticWeight": 0.25,
+        "amountFamily": "frozen_baseline_offset_lifecycle_shrunk_log_revenue_ratio",
+        "amountEstimator": "lifecycle_shrunk_log_revenue_ratio",
+        "baselineAnchoredPredictionCap": true,
+        "amountLifecyclePriorStrength": 30,
+        "minimumAmountScale": 0.25,
+        "maximumAmountScale": 4,
+        "amountPredictionCapQuantile": 0.99,
+        "amountPredictionCapMultiplier": 3,
+        "outerMetricsChangedThisExperiment": false
+      },
+      "evaluationResult": {
+        "primary": {
+          "candidateWape": 0.7108520624235471,
+          "candidateSignedBias": -0.3412617351926827,
+          "baselineWape": 0.4402249501995905,
+          "baselineSignedBias": -0.12377105831355606,
+          "relativeWape": 0.6147473288400827,
+          "occurrenceBrier": 0.03478308147607738,
+          "occurrenceLogLoss": 0.14933947430083605,
+          "conditionalAmountWape": 0.7291010275711436,
+          "conditionalAmountSignedBias": -0.2865007285896687
+        },
+        "strictRolling": {
+          "candidateWape": 0.6879656908946675,
+          "candidateSignedBias": -0.16591632383788696,
+          "baselineWape": 0.4119187843120154,
+          "baselineSignedBias": -0.0384740094930633,
+          "relativeWape": 0.6701488669512954
+        },
+        "lifecyclePrimary": {
+          "activeRelativeWape": 0.1465363071394361,
+          "stableRelativeWape": 1.694351307864383,
+          "declineRelativeWape": 0.04921678542890451,
+          "dormantRelativeWape": 0.7562548830514657,
+          "revivalRelativeWape": -0.7091054726744402
+        },
+        "topRevenuePrimary": {
+          "top01PositiveRevenueShare": 0.5550840142073638,
+          "top01RelativeWape": 1.6519854759943096,
+          "top05RelativeWape": 0.8519532367243776,
+          "top10RelativeWape": 0.7164797709087711
+        }
+      },
+      "diagnosis": "state_log_ratio_improved_revival_but_the_global_p99_cap_inappropriately_truncated_frozen_baseline_anchored_top_revenue_predictions"
+    },
+    {
+      "experimentId": "M2-lifecycle-aware-uncapped-state-log-ratio-challenger-experiment-04-v0.1",
+      "status": "COMPLETED_FAILED",
+      "datasetVersion": "M2-human-anchored-sales-share-development-2021-2025-v0.1",
+      "featureVersion": "M2-lifecycle-history-plus-uncapped-state-log-ratio-features-v0.4",
+      "modelConfig": {
+        "occurrenceFamily": "regularized_logistic_with_lifecycle_probability_calibration",
+        "occurrenceLogisticWeight": 0.25,
+        "amountFamily": "frozen_baseline_offset_lifecycle_shrunk_log_revenue_ratio",
+        "amountEstimator": "lifecycle_shrunk_log_revenue_ratio",
+        "baselineAnchoredPredictionCap": false,
+        "selectedLifecycleStates": [
+          "active",
+          "stable",
+          "decline",
+          "dormant",
+          "revival"
+        ],
+        "amountLifecyclePriorStrength": 30,
+        "minimumAmountScale": 0.25,
+        "maximumAmountScale": 4,
+        "outerMetricsChangedThisExperiment": false
+      },
+      "evaluationResult": {
+        "primary": {
+          "candidateWape": 0.5013929755304328,
+          "candidateSignedBias": -0.06749346019436138,
+          "baselineWape": 0.4402249501995905,
+          "baselineSignedBias": -0.12377105831355606,
+          "relativeWape": 0.13894720256793658,
+          "occurrenceBrier": 0.03478308147607738,
+          "conditionalAmountWape": 0.5194252085441816,
+          "conditionalAmountSignedBias": -0.010801719474756073
+        },
+        "strictRolling": {
+          "candidateWape": 0.6227597714411169,
+          "candidateSignedBias": 0.2121056260070299,
+          "baselineWape": 0.4119187843120154,
+          "baselineSignedBias": -0.0384740094930633,
+          "relativeWape": 0.5118508675957738
+        },
+        "lifecyclePrimary": {
+          "activeRelativeWape": 0.15993484993468976,
+          "stableRelativeWape": 0.16093666724753075,
+          "declineRelativeWape": -0.007996635415354336,
+          "dormantRelativeWape": 0.7562548830514657,
+          "revivalRelativeWape": -0.7091054726744402
+        },
+        "lifecycleStrictRolling": {
+          "activeRelativeWape": 0.8844592496541399,
+          "stableRelativeWape": 0.15058364932167678,
+          "declineRelativeWape": 0.14697917362664303,
+          "dormantRelativeWape": 0.048688180937748404,
+          "revivalRelativeWape": -0.13711823409737578
+        },
+        "topRevenuePrimary": {
+          "top01PositiveRevenueShare": 0.5550840142073638,
+          "top01RelativeWape": 0.2675880655795011,
+          "top05RelativeWape": 0.1629307329677081,
+          "top10RelativeWape": 0.14515263669192713
+        }
+      },
+      "diagnosis": "removing_the_incompatible_cap_recovered_top_revenue_scale_and_bias_but_only_revival_improved_in_both_primary_and_strict_views"
+    }
+  ],
+  "syntheticFixture": "test/fixtures/m2-current-lifecycle-aware.synthetic.v0.1.json",
+  "publicDiagnosticOutput": "docs/analysis/m2-current/M2-current-lifecycle-aware-public-diagnostic-v0.1.json",
+  "publicOutput": "docs/analysis/m2-current/M2-current-lifecycle-aware-revenue-forecast-development-v0.1.json",
+  "publicReport": "docs/analysis/m2-current/M2-current-lifecycle-aware-revenue-forecast-development-v0.1.md",
+  "privateOutputs": {
+    "evaluation": "M2-current-lifecycle-aware-evaluation-private-v0.1.ndjson",
+    "evaluationManifest": "M2-current-lifecycle-aware-evaluation-manifest-private-v0.1.json"
+  }
+}

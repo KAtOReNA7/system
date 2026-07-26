@@ -1,0 +1,497 @@
+{
+  "schema": "m2.current.commercial_state_source_discovery.public.v0.1",
+  "version": "v0.1",
+  "auditDate": "2026-07-26",
+  "status": "ANALYSIS_ONLY_NO_MODEL_DEVELOPMENT",
+  "target": "future_sales_share_cash",
+  "decision": "NO_COMPLIANT_HISTORICAL_COMMERCIAL_STATE_SOURCE_FOUND_IN_INSPECTED_SCOPE",
+  "decisionReasonCodes": [
+    "no_record_level_available_at",
+    "no_versioned_work_channel_contract_event_ledger",
+    "no_historical_channel_saleability_snapshot",
+    "no_contract_revision_history",
+    "no_platform_publish_history_with_as_of_authority",
+    "current_snapshot_backfill_forbidden"
+  ],
+  "answerSummary": {
+    "historicalCommercialStateSourceExists": false,
+    "qualifiedAnswer": "No materialized or accessible source in the inspected repository, local source directories, public execution summaries, or schema/code paths can prove historical work-channel-contract commercial state as of an evaluation origin.",
+    "externalUnexportedSourceMayExist": true,
+    "externalUnexportedSourceQualification": "User-attested settlement and work-channel detail history is not exported and is defined through first detail month; it is cash-derived history, not a verified commercial relation event ledger.",
+    "commercialRelationSnapshotV01GeneratableNow": false,
+    "primaryTrainingRowsNow": 0,
+    "strictTrainingRowsNow": 0,
+    "nextAction": "BEGIN_PROSPECTIVE_VERSIONED_COMMERCIAL_RELATION_COLLECTION_OR_OBTAIN_IMMUTABLE_SOURCE_AUDIT_EXPORT"
+  },
+  "scope": {
+    "repositorySchemaAndMigrationsInspected": true,
+    "publicAnalysisReportsInspected": true,
+    "capabilityScopedPrivateSourcesInspectedAggregateOnly": true,
+    "sourceWorkbooksInspectedAtSheetHeaderAndAggregateProfileOnly": true,
+    "ignoredSourceDirectoriesInspected": true,
+    "gitHistoryForIgnoredSourcePathsChecked": true,
+    "localRecoveryMetadataInspected": true,
+    "databaseConnected": false,
+    "databaseRowsQueried": false,
+    "providerConnected": false,
+    "modelTrainingExecuted": false,
+    "predictionPipelineModified": false,
+    "productionCodeModified": false,
+    "exactV03FallbackModified": false,
+    "dataAuthorityModified": false,
+    "cashBoundaryModified": false
+  },
+  "classificationDefinitions": {
+    "A": "A real historical event or complete snapshot source with event/effective time, record availability time, version, source record identity, lineage, and exact work-channel-contract relation identity.",
+    "B": "A current extract or current snapshot, including a current ledger that contains historical business dates but cannot prove when each value was available or how it changed.",
+    "C": "A required history that cannot be reconstructed from the inspected material; it needs an external immutable audit export or future prospective collection."
+  },
+  "sourceClassifications": {
+    "A_historicalEventSources": [],
+    "B_currentOrEffectiveDateOnlySources": [
+      {
+        "sourceRole": "current_formal_work_master",
+        "grain": "work",
+        "snapshotDate": "2026-07-13",
+        "rowCount": 3053,
+        "currentFieldCoverage": {
+          "rightsStart": 3053,
+          "rightsEnd": 3053,
+          "workStatus": 3053,
+          "audioRightsStatus": 3053
+        },
+        "recordLevelTemporalAuthorityCoverage": {
+          "effectiveAt": 0,
+          "availableAt": 0,
+          "sourceVersion": 0,
+          "sourceRecordId": 0,
+          "lineage": 0
+        },
+        "classification": "B",
+        "retrospectiveAsOfUsable": false
+      },
+      {
+        "sourceRole": "digital_copyright_contract_ledger_current_extract",
+        "grain": "work_contract_current_row",
+        "rawRowCount": 12033,
+        "identityCoverage": {
+          "workIdNonEmpty": 10757,
+          "distinctWorkIdValues": 8854,
+          "contractNumberNonEmpty": 11158,
+          "distinctContractNumberValues": 7154
+        },
+        "businessDateCoverage": {
+          "signedDateNonEmpty": 11964,
+          "signedDateValid": 11905,
+          "signedDateValidMonthRange": [
+            "2002-04",
+            "2027-08"
+          ],
+          "expiryNonEmpty": 12033,
+          "expiryValid": 9931,
+          "expiryValidMonthRange": [
+            "2006-08",
+            "2089-04"
+          ],
+          "preRenewalExpiryNonEmpty": 3240,
+          "preRenewalExpiryValid": 1486,
+          "preRenewalExpiryValidMonthRange": [
+            "2012-10",
+            "2034-11"
+          ],
+          "renewalFlagNonEmpty": 5985,
+          "renewalTimeNonEmpty": 263,
+          "renewalTimeValidUnderExistingParser": 0,
+          "firstPublicationNonEmpty": 9609,
+          "firstPublicationValid": 8917,
+          "firstPublicationValidMonthRange": [
+            "2000-01",
+            "2026-03"
+          ]
+        },
+        "missingForHistoricalCommercialState": [
+          "canonicalChannelIdentity",
+          "relationStateEvent",
+          "recordAvailableAt",
+          "sourceVersion",
+          "immutableChangeSequence",
+          "recordLineage",
+          "completeAsOfEvidence"
+        ],
+        "classification": "B",
+        "retrospectiveAsOfUsable": false,
+        "reason": "Historical business dates are present, but this is one mutable current extract. Signing or expiry time is not record availability time, and the ledger itself points to a separate downlist feedback source that is absent from the inspected source directories."
+      },
+      {
+        "sourceRole": "original_library_current_extract",
+        "grain": "work_current_row",
+        "rawRowCount": 13848,
+        "workIdNonEmpty": 13848,
+        "authorizationStartNonEmpty": 13839,
+        "authorizationEndNonEmpty": 13839,
+        "channelIdentityCoverage": 0,
+        "contractStatusCoverage": 0,
+        "recordAvailableAtCoverage": 0,
+        "sourceVersionCoverage": 0,
+        "lineageCoverage": 0,
+        "classification": "B",
+        "retrospectiveAsOfUsable": false
+      },
+      {
+        "sourceRole": "authorization_relation_dashboard_current_extract",
+        "grain": "work_platform_current_relation",
+        "rawDataRowCount": 13085,
+        "observedColumns": [
+          "clientCode",
+          "authorizationCategory",
+          "authorizationPlatform",
+          "workId",
+          "workName",
+          "authorName"
+        ],
+        "relationEffectiveTimeCoverage": 0,
+        "relationStatusCoverage": 0,
+        "recordAvailableAtCoverage": 0,
+        "sourceVersionCoverage": 0,
+        "lineageCoverage": 0,
+        "classification": "B",
+        "retrospectiveAsOfUsable": false
+      },
+      {
+        "sourceRole": "authorization_summary_current_extract",
+        "grain": "work_platform_current_authorization",
+        "rawDataRowCount": 18959,
+        "observedColumns": [
+          "platformWorkName",
+          "workId",
+          "authorizationForm",
+          "author",
+          "publicationOrOriginal",
+          "companyCopyrightExpiry"
+        ],
+        "relationStartCoverage": 0,
+        "relationStatusCoverage": 0,
+        "recordAvailableAtCoverage": 0,
+        "sourceVersionCoverage": 0,
+        "lineageCoverage": 0,
+        "classification": "B",
+        "retrospectiveAsOfUsable": false
+      },
+      {
+        "sourceRole": "canonical_channel_master",
+        "grain": "raw_channel_pair_to_canonical_channel",
+        "rawPairCount": 133,
+        "canonicalChannelCount": 74,
+        "salesShareUsedCanonicalChannelCount": 39,
+        "effectiveMonthCoverage": 0,
+        "historicalStatusCoverage": 0,
+        "classification": "B",
+        "retrospectiveAsOfUsable": false
+      },
+      {
+        "sourceRole": "local_formal_database_status_and_basic_info_destinations",
+        "grain": "current_work_snapshot_written_into_versioned_or_history_shaped_tables",
+        "observedExecutionWorkCount": 3053,
+        "observedActiveBasicInfoVersionCount": 1,
+        "statusHistoryWriteBehavior": "one row per current payload record with valid_from equal to payload.generatedAt",
+        "businessHistoryReadPathFound": false,
+        "classification": "B",
+        "retrospectiveAsOfUsable": false,
+        "reason": "The table shape supports history, but the implemented writer converts a single current payload into one current status row per work. No upstream transition history is imported."
+      },
+      {
+        "sourceRole": "cash_fact_and_cash_derived_channel_history",
+        "grain": "cash_fact_or_posthoc_work_origin_channel_cash_series",
+        "cashFactRowCount": 192370,
+        "cashBillMonthCount": 108,
+        "completeCashBillMonthCount": 107,
+        "cashMonthRange": [
+          "2017-06",
+          "2026-05"
+        ],
+        "explicitCommercialRelationEventCoverage": 0,
+        "classification": "B",
+        "retrospectiveAsOfUsable": false,
+        "reason": "First or last cash month is a settlement observation, not channel entry, exit, restore, platform publication, or saleability authority."
+      }
+    ],
+    "C_notRecoverableFromInspectedMaterial": [
+      {
+        "requiredHistory": "work_channel_entry_exit_restore_reactivation",
+        "recoverableNow": false
+      },
+      {
+        "requiredHistory": "work_channel_saleable_on_saleable_off",
+        "recoverableNow": false
+      },
+      {
+        "requiredHistory": "channel_level_rights_start_expiry_and_contract_revision",
+        "recoverableNow": false
+      },
+      {
+        "requiredHistory": "platform_publish_launch_first_available_with_record_authority",
+        "recoverableNow": false
+      },
+      {
+        "requiredHistory": "record_level_available_at_source_version_and_lineage",
+        "recoverableNow": false
+      },
+      {
+        "requiredHistory": "downlist_feedback_history_referenced_by_current_contract_ledger",
+        "recoverableNow": false,
+        "reason": "The current ledger references a separate downlist feedback table, but no matching source artifact, import adapter, archive reader, or audited export was found."
+      }
+    ]
+  },
+  "databaseAndSchemaFindings": {
+    "historyCapableDestinationExists": true,
+    "historyCapableDestination": {
+      "table": "m1.standard_work_status_history",
+      "fields": [
+        "standard_work_id",
+        "status",
+        "status_basis",
+        "valid_from",
+        "valid_to",
+        "created_at",
+        "created_by"
+      ],
+      "migrationStatus": "formal_migration_candidate_not_approved_for_production",
+      "sourceHistoryImported": false
+    },
+    "versionedCurrentSnapshotDestinationExists": true,
+    "versionedCurrentSnapshotDestination": {
+      "tables": [
+        "m1.basic_info_version",
+        "m1.basic_info_version_work"
+      ],
+      "recordLevelAvailableAtFieldExists": false,
+      "recordLevelEffectiveAtFieldExists": false,
+      "sourceRecordReferenceExists": true,
+      "sourceRecordReferenceSemantics": "one payload-level current source reference, not immutable upstream row history"
+    },
+    "channelHistoryTableExists": false,
+    "workChannelRelationHistoryTableExists": false,
+    "contractHistoryTableExists": false,
+    "rightsRelationHistoryTableExists": false,
+    "platformPublishHistoryTableExists": false,
+    "mappingChangeRecordExists": true,
+    "mappingChangeRecordScope": [
+      "channel_alias",
+      "raw_work_mapping",
+      "historical_volume_mapping",
+      "projection"
+    ],
+    "mappingChangeRecordIsCommercialHistory": false,
+    "formalAuditEventTableExists": true,
+    "formalAuditEventScope": "formal execution and export lifecycle",
+    "formalAuditEventIsCommercialHistory": false
+  },
+  "codeDiscovery": {
+    "importAdapter": {
+      "currentWorkbookAndCurrentPayloadImportExists": true,
+      "commercialHistoricalEventImportExists": false
+    },
+    "upstreamConnector": {
+      "commercialStateConnectorExists": false
+    },
+    "historicalLoader": {
+      "cashHistoryLoadersExist": true,
+      "commercialRelationHistoricalLoaderExists": false
+    },
+    "archiveReader": {
+      "businessCommercialHistoryArchiveReaderExists": false,
+      "archiveOnlyModelEvidenceReplayIsNotSourceRecovery": true
+    },
+    "snapshotBuilder": {
+      "cashAvailabilitySnapshotBuilderExists": true,
+      "cashAvailabilitySnapshotSchema": "m2.current.availability_snapshot.v0.1",
+      "commercialRelationSnapshotBuilderExists": false,
+      "commercialRelationSnapshotSchemaExists": false
+    },
+    "statusHistoryReader": {
+      "m2ReaderExists": false,
+      "onlyRepositoryReferenceOutsideMigrationIsCurrentPayloadWriter": true
+    }
+  },
+  "gitAndArchiveRecoverability": {
+    "trackedFilesUnderPrivateSourcePaths": 0,
+    "gitCommitsForPrivateSourcePaths": 0,
+    "recoverableHistoricalPrivateVersionsFromRepositoryGit": false,
+    "localRecoveryStoresObserved": true,
+    "localRecoveryStoreClassification": "technical_smoke_rehearsal_or_forensic_storage_not_verified_business_history",
+    "localRecoveryStoresCountedAsSource": false,
+    "databaseRecoveryStoreOpenedOrConnected": false
+  },
+  "historicalEligibleCoverage": {
+    "work": {
+      "authorityWorkCount": 3053,
+      "historicalCommercialStateAsOfCoveredWorkCount": 0,
+      "coverage": 0
+    },
+    "channel": {
+      "canonicalMasterChannelCount": 74,
+      "salesShareUsedCanonicalChannelCount": 39,
+      "historicalStatusCoveredMasterChannelCount": 0,
+      "historicalStatusCoveredUsedChannelCount": 0,
+      "explicitWorkChannelRelationEventRowCount": 0
+    },
+    "contract": {
+      "currentExtractDistinctContractNumberValues": 7154,
+      "historicalAsOfContractRelationCount": 0,
+      "historicalRevisionSequenceCount": 0,
+      "coverage": 0
+    },
+    "month": {
+      "historicalCommercialSnapshotMonthCount": 0,
+      "primaryOriginMonthCount": 13,
+      "primaryOriginMonthCoveredCount": 0,
+      "strictCandidateOriginMonthCount": 16,
+      "strictCandidateOriginMonthCoveredCount": 0,
+      "strictEvaluatedOuterOriginMonthCount": 11,
+      "strictEvaluatedOuterOriginMonthCoveredCount": 0
+    }
+  },
+  "commercialRelationSnapshotV01": {
+    "canGenerateNow": false,
+    "compliantRowCountNow": 0,
+    "currentEffectiveDateOnlyProjectionPossible": true,
+    "currentEffectiveDateOnlyProjectionMayUseCanonicalName": false,
+    "currentEffectiveDateOnlyProjectionModelEligible": false,
+    "blockers": [
+      "missing_exact_work_channel_contract_or_right_relation_identity",
+      "missing_relation_state_event_sequence",
+      "missing_record_level_effective_at_and_available_at_pair",
+      "missing_source_system_dataset_version_record_id_and_content_hash",
+      "missing_transform_lineage",
+      "missing_complete_as_of_snapshot_evidence",
+      "missing_explicit_unknown_at_origin_for_unrecoverable_history"
+    ],
+    "minimumRequiredFields": [
+      "snapshotId",
+      "standardWorkId",
+      "canonicalChannelUid",
+      "contractOrRightsRelationId",
+      "origin",
+      "originCutoffAt",
+      "commercialState",
+      "eventType",
+      "effectiveAt",
+      "availableAt",
+      "source.system",
+      "source.dataset",
+      "source.version",
+      "source.recordId",
+      "source.contentHash",
+      "lineage.transformId",
+      "lineage.transformVersion",
+      "lineage.parentRecordIds",
+      "completeness"
+    ]
+  },
+  "trainingRowEstimate": {
+    "now": {
+      "primary": {
+        "candidateRows": 12039,
+        "validTrainingRows": 0,
+        "unknownRows": 12039
+      },
+      "strictCandidateInventory": {
+        "candidateRows": 97490,
+        "validTrainingRows": 0,
+        "unknownRows": 97490
+      },
+      "strictEvaluatedComparator": {
+        "candidateRows": 74320,
+        "validEvaluationRows": 0,
+        "unknownRows": 74320
+      }
+    },
+    "upperBoundAfterFullMaterialization": {
+      "primaryRows": 12039,
+      "strictCandidateRows": 97490,
+      "strictEvaluatedComparatorRows": 74320,
+      "qualification": "These are population ceilings, not promised usable rows. Actual rows depend on exact identity joins, complete as-of evidence, and mature target labels."
+    }
+  },
+  "minimumFutureCollectionPlan": {
+    "retrospectiveOption": [
+      "Obtain an immutable export from the actual contract, rights, platform publication, or channel availability source system.",
+      "Require change events or complete snapshots with both effectiveAt and the earliest provable availableAt.",
+      "Require source system, dataset, version, record ID, content hash, and extraction timestamp.",
+      "Obtain the separately referenced downlist feedback history if it exists, with the same provenance requirements.",
+      "Map every event to exact work, canonical channel, and contract or rights relation without using cash timing as a substitute.",
+      "Materialize complete snapshots per evaluation origin and preserve unknown_at_origin when evidence is absent."
+    ],
+    "prospectiveOption": [
+      "Start an append-only work-channel-contract relation event ledger now.",
+      "Capture entry, exit, restore, reactivation, saleable_on, saleable_off, rights_start, rights_expiry, contract_signed, contract_amended, and contract_terminated.",
+      "Record effectiveAt and firstObserved availableAt independently; never backdate availableAt.",
+      "Write a complete monthly close snapshot for every authoritative work and used canonical channel, including explicit no-change coverage.",
+      "Bind each monthly snapshot to a versioned source manifest and immutable record hashes.",
+      "Keep unavailable retrospective periods as unknown_at_origin.",
+      "Begin training only after the required forecast target window has fully matured."
+    ],
+    "minimumAutomationTestsAfterCollection": [
+      "event_id_uniqueness",
+      "effective_at_not_after_snapshot_cutoff_for_active_state",
+      "available_at_not_after_origin_cutoff_for_model_use",
+      "no_overlapping_active_relation_intervals",
+      "complete_snapshot_work_channel_coverage",
+      "source_record_hash_and_version_present",
+      "lineage_parent_integrity",
+      "unknown_at_origin_not_coerced_to_inactive"
+    ]
+  },
+  "riskAssessment": {
+    "overallSeverityIfCurrentStateIsBackfilled": "CRITICAL",
+    "confidence": "HIGH",
+    "risks": [
+      "current work status leaks 2026-07-13 information into every historical development origin",
+      "current contract expiry may already include renewals or corrections",
+      "current platform relation membership cannot reveal entry, exit, or restore dates",
+      "publication date is not platform launch or first saleable date",
+      "cash first and last month are not business relation events",
+      "absence of a source row is unknown, not inactive"
+    ]
+  },
+  "evidenceSources": [
+    "config/m2-current-user-confirmation.v0.1.json",
+    "db/migrations/V0030_130__table_standard_work_status_history.sql",
+    "db/migrations/V0040_040__table_basic_info_version.sql",
+    "db/migrations/V0040_050__table_basic_info_version_work.sql",
+    "db/migrations/V0050_070__table_mapping_change_record.sql",
+    "db/migrations/V0070_000__m2_evaluation_persistence.sql",
+    "db/migrations/V0071_000__m2_formal_term_and_snapshot_semantics.sql",
+    "db/migrations/V0071_010__m2_formal_task_export_release_audit.sql",
+    "db/migrations/V0071_020__m2_rights_term_status_independence.sql",
+    "scripts/m2-real-data/run_m2_formal_local_execution.mjs",
+    "scripts/m2-real-data/run_authorized_real_data_db_import.mjs",
+    "scripts/m2-real-data/run_copyright_ledger_masterdata_audit.py",
+    "scripts/m2-current/materialize_canonical_channel_cases.py",
+    "scripts/m2-current/run_m2_current_signal_input_diagnostics.mjs",
+    "src/domain/m2Current/availabilitySnapshot.js",
+    "src/domain/m2Current/revenueShareFact.js",
+    "src/domain/m2Current/signalInputBundle.js",
+    "docs/analysis/m1-master-data/M1-original-library-structure-audit-v1.json",
+    "docs/analysis/m1-master-data/M1-digital-copyright-ledger-structure-audit-v1.json",
+    "docs/analysis/m1-master-data/M1-digital-copyright-ledger-masterdata-backfill-summary-v1.json",
+    "docs/analysis/m1-master-data/date-profile-public.json",
+    "docs/analysis/m1-real-bills/16-representative-acceptance-dataset-catalog.md",
+    "docs/analysis/m2-real-data/M2-formal-local-execution-summary-v1.json",
+    "docs/analysis/m2-real-data/M2-local-db-import-reconciliation-summary-v0.1.json",
+    "docs/analysis/m2-current/M2-current-as-of-source-inventory-v0.1.json",
+    "docs/analysis/m2-current/M2-commercial-state-data-readiness-audit-v0.1.json"
+  ],
+  "safety": {
+    "rawPrivateRowsIncluded": false,
+    "workIdentifiersIncluded": false,
+    "workNamesIncluded": false,
+    "authorNamesIncluded": false,
+    "channelNamesIncluded": false,
+    "contractIdentifiersIncluded": false,
+    "secretsIncluded": false,
+    "privateSourcePathsIncluded": false,
+    "aggregateOnly": true
+  }
+}

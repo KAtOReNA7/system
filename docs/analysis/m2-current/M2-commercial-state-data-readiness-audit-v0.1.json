@@ -1,0 +1,492 @@
+{
+  "schema": "m2.current.commercial_state_data_readiness_audit.public.v0.1",
+  "version": "M2-commercial-state-data-readiness-audit-v0.1",
+  "auditDate": "2026-07-26",
+  "status": "ANALYSIS_ONLY_NO_MODEL_DEVELOPMENT",
+  "target": "future_sales_share_cash",
+  "decision": "NEEDS_DATA_MATERIALIZATION_FIRST",
+  "decisionReasonCodes": [
+    "commercial_state_historical_snapshot_coverage_zero",
+    "current_work_and_rights_fields_have_no_record_level_available_at",
+    "channel_master_effective_month_coverage_zero",
+    "channel_relation_event_fields_absent",
+    "verified_release_or_launch_time_coverage_zero",
+    "current_snapshot_backfill_would_expose_all_historical_cases_to_leakage"
+  ],
+  "scope": {
+    "productionCodeChanged": false,
+    "modelTrained": false,
+    "thresholdChanged": false,
+    "privateRawRowsPublished": false,
+    "privateIdentifiersPublished": false,
+    "privateAuditMode": "aggregate_field_and_count_only"
+  },
+  "availabilitySnapshotSchemaAudit": {
+    "schemaExists": true,
+    "schema": "m2.current.availability_snapshot.v0.1",
+    "implementation": "src/domain/m2Current/availabilitySnapshot.js",
+    "semanticScope": "historical_sales_share_cash_occurrence_and_positive_amount_availability",
+    "commercialSaleabilitySnapshot": false,
+    "snapshotFields": [
+      "snapshotId",
+      "standardWorkId",
+      "currency",
+      "origin",
+      "segment",
+      "status",
+      "originCutoffAt",
+      "authority",
+      "factIds",
+      "amounts",
+      "signals",
+      "missingReason"
+    ],
+    "statusValues": [
+      "observed_as_of",
+      "unknown_at_origin"
+    ],
+    "authorityFields": [
+      "system",
+      "dataset",
+      "version",
+      "recordId",
+      "availableAt",
+      "contentHashSha256",
+      "completeness"
+    ],
+    "authorityCompletenessRequired": "complete_as_of_snapshot",
+    "effectiveAt": {
+      "present": false,
+      "note": "The cash fact contract uses economicTime; a commercial relation effectiveAt field does not exist."
+    },
+    "availableAt": {
+      "presentInContract": true,
+      "presentInRealConformingSnapshots": false
+    },
+    "version": {
+      "presentInContract": true,
+      "presentInRealConformingSnapshots": false
+    },
+    "lineage": {
+      "presentOnSnapshot": false,
+      "presentOnReferencedRevenueShareFactContract": true,
+      "presentInRealConformingFacts": false
+    },
+    "sourceRecord": {
+      "recordIdPresentInAuthorityContract": true,
+      "recordIdPresentInFactSourceContract": true,
+      "presentInRealConformingSnapshotsOrFacts": false
+    },
+    "currentStateBackfillAllowed": false,
+    "realObservedAsOfCoverage": {
+      "frozenWorkOriginSegment": {
+        "eligibleCount": 2402,
+        "observedSnapshotCount": 0,
+        "unknownCount": 2402,
+        "coverage": 0
+      },
+      "denseWorkOriginSegment": {
+        "eligibleCount": 20600,
+        "observedSnapshotCount": 0,
+        "unknownCount": 20600,
+        "coverage": 0
+      }
+    },
+    "syntheticEvidenceExcludedFromRealCoverage": {
+      "workCount": 3,
+      "originCount": 2,
+      "snapshotCount": 6,
+      "observedAsOfCount": 5,
+      "unknownAtOriginCount": 1
+    }
+  },
+  "realDataInventory": {
+    "currentWorkMaster": {
+      "artifactStatus": "verified_complete",
+      "asOfDate": "2026-07-13",
+      "workCount": 3053,
+      "sourceManifestDigestCount": 5,
+      "fieldSourcePresentCount": 3053,
+      "currentFieldCoverage": {
+        "rightsStart": 3053,
+        "rightsEnd": 3053,
+        "workStatus": 3053,
+        "audioRightsStatus": 3053
+      },
+      "workStatusDistribution": {
+        "activeListed": 2298,
+        "inactiveDelisted": 755
+      },
+      "audioRightsStatusDistribution": {
+        "valid": 2250,
+        "perpetual": 473,
+        "expired": 330
+      },
+      "rightsStartValueTypes": {
+        "exactDate": 3053
+      },
+      "rightsEndValueTypes": {
+        "exactDate": 2503,
+        "yearOnly": 2,
+        "perpetual": 473,
+        "expiredUnknownDate": 16,
+        "relativeTerm": 59
+      },
+      "releaseOrLaunchFieldCount": 0,
+      "recordLevelTemporalAuthorityCoverage": {
+        "effectiveAt": 0,
+        "availableAt": 0,
+        "sourceVersion": 0,
+        "sourceRecordId": 0,
+        "recordId": 0,
+        "lineage": 0
+      },
+      "classification": "current_snapshot_only"
+    },
+    "formalIncomeFactsCurrentExtract": {
+      "rowCount": 192370,
+      "uniqueWorkCount": 3052,
+      "uniqueChannelKeyCount": 147,
+      "cashCategoryCounts": {
+        "salesShare": 190663,
+        "buyout": 1707
+      },
+      "fieldCoverage": {
+        "billMonth": 192370,
+        "sourceRowNumber": 192370,
+        "rowHash": 192370,
+        "economicTime": 0,
+        "postingTime": 0,
+        "availableAt": 0,
+        "sourceVersion": 0,
+        "sourceRecordId": 0,
+        "lineage": 0,
+        "explicitEventType": 0
+      },
+      "firstBillMonth": "2017-06",
+      "lastBillMonth": "2026-05",
+      "latestCompleteMonth": "2026-04",
+      "distinctBillMonthCount": 108,
+      "completeBillMonthCount": 107,
+      "incompleteBillMonthCount": 1,
+      "billMonthsContinuous": true,
+      "classification": "posthoc_current_extract_not_record_level_as_of"
+    },
+    "canonicalChannelMaster": {
+      "rawPairCount": 133,
+      "canonicalChannelCount": 74,
+      "confirmedRowCount": 133,
+      "salesShareRawPairCount": 85,
+      "canonicalChannelsUsedBySalesShare": 39,
+      "mappedSalesShareFactCount": 190663,
+      "mappingCoverage": 1,
+      "effectiveMonthPresentCount": 0,
+      "effectiveMonthEligibleCount": 133,
+      "effectiveMonthCoverage": 0,
+      "historicalStatusSnapshotCanonicalChannelCount": 0,
+      "historicalStatusCoverageAcrossMaster": 0,
+      "historicalStatusCoverageAcrossUsedChannels": 0,
+      "classification": "current_static_master_only"
+    },
+    "canonicalChannelCashHistories": {
+      "workOriginRowCount": 20600,
+      "nestedWorkOriginChannelRowCount": 38440,
+      "outerRowsWithoutObservedChannels": 4320,
+      "uniqueWorkCountWithChannelHistory": 758,
+      "uniqueCanonicalChannelCountInDenseHistory": 22,
+      "earliestCashFirstObservedMonth": "2017-06",
+      "latestOrigin": "2022-12",
+      "cashHistoryFieldsPresentOnNestedRows": {
+        "channelUid": 38440,
+        "channelRole": 38440,
+        "revenueMode": 38440,
+        "historyFirstMonth": 38440,
+        "historySeries": 38440
+      },
+      "explicitRelationEventFieldCoverage": {
+        "entry": 0,
+        "exit": 0,
+        "restore": 0,
+        "reactivation": 0,
+        "rightsStart": 0,
+        "rightsExpiry": 0,
+        "saleableOn": 0,
+        "saleableOff": 0,
+        "effectiveAt": 0,
+        "availableAt": 0,
+        "sourceVersion": 0,
+        "sourceRecordId": 0,
+        "lineage": 0
+      },
+      "classification": "cash_derived_history_not_channel_relation_history"
+    },
+    "releaseTimeCandidateInventory": {
+      "upstreamM1FirstPublicationCandidateArtifactsExist": true,
+      "verifiedM2FormalInputFieldCount": 0,
+      "verifiedHistoricalLaunchFieldCount": 0,
+      "recordLevelAsOfEligibleCount": 0,
+      "firstPublicationIsNotAutomaticallyLaunchOrFirstAvailable": true,
+      "classification": "upstream_candidate_only_not_m2_model_eligible"
+    },
+    "declaredSourceAvailability": {
+      "salesShareSettlementHistory": "exists_but_not_exported_with_as_of_authority",
+      "reversalAndAdjustmentHistory": "exists_but_not_exported_with_as_of_authority",
+      "workChannelHistory": "exists_but_not_exported_as_a_versioned_relation_ledger",
+      "contractStatusHistory": "does_not_exist"
+    }
+  },
+  "fieldAudit": [
+    {
+      "area": "historical_availability_snapshot",
+      "field": "availableAt",
+      "existsInCodeContract": true,
+      "existsInRealData": false,
+      "currentOnly": false,
+      "asOfOriginUsable": false,
+      "coverage": 0,
+      "risk": "missing_historical_authority"
+    },
+    {
+      "area": "historical_availability_snapshot",
+      "field": "effectiveAt",
+      "existsInCodeContract": false,
+      "existsInRealData": false,
+      "currentOnly": false,
+      "asOfOriginUsable": false,
+      "coverage": 0,
+      "risk": "commercial_relation_time_not_modeled"
+    },
+    {
+      "area": "historical_availability_snapshot",
+      "field": "version_lineage_source_record",
+      "existsInCodeContract": true,
+      "existsInRealData": false,
+      "currentOnly": false,
+      "asOfOriginUsable": false,
+      "coverage": 0,
+      "risk": "posthoc_extract_cannot_prove_record_availability"
+    },
+    {
+      "area": "channel_relation_history",
+      "field": "entry_exit_restore",
+      "existsInCodeContract": false,
+      "existsInRealData": false,
+      "currentOnly": false,
+      "asOfOriginUsable": false,
+      "coverage": 0,
+      "risk": "cash_first_or_last_month_is_not_a_business_relation_event"
+    },
+    {
+      "area": "channel_relation_history",
+      "field": "rights_start_rights_expiry",
+      "existsInCodeContract": false,
+      "existsInRealData": false,
+      "currentOnly": false,
+      "asOfOriginUsable": false,
+      "coverage": 0,
+      "risk": "no_channel_relation_level_rights_ledger"
+    },
+    {
+      "area": "channel_master",
+      "field": "channel_role_revenue_mode",
+      "existsInCodeContract": true,
+      "existsInRealData": true,
+      "currentOnly": true,
+      "asOfOriginUsable": false,
+      "coverage": 1,
+      "risk": "all_effective_months_missing"
+    },
+    {
+      "area": "release_time",
+      "field": "verified_release_launch_first_available",
+      "existsInCodeContract": false,
+      "existsInRealData": false,
+      "upstreamCandidateArtifactsExist": true,
+      "existsInVerifiedM2Input": false,
+      "currentOnly": false,
+      "asOfOriginUsable": false,
+      "coverage": 0,
+      "risk": "first_cash_month_is_only_a_settlement_proxy"
+    },
+    {
+      "area": "rights_window",
+      "field": "work_level_contract_start_end",
+      "existsInCodeContract": true,
+      "existsInRealData": true,
+      "currentOnly": true,
+      "asOfOriginUsable": false,
+      "coverage": 1,
+      "risk": "renewal_and_revision_history_missing"
+    },
+    {
+      "area": "rights_window",
+      "field": "channel_level_saleable_period",
+      "existsInCodeContract": false,
+      "existsInRealData": false,
+      "currentOnly": false,
+      "asOfOriginUsable": false,
+      "coverage": 0,
+      "risk": "work_rights_status_cannot_substitute_for_channel_saleability"
+    },
+    {
+      "area": "commercial_state",
+      "field": "current_work_and_audio_rights_status",
+      "existsInCodeContract": true,
+      "existsInRealData": true,
+      "currentOnly": true,
+      "asOfOriginUsable": false,
+      "coverage": 1,
+      "risk": "snapshot_date_is_after_every_historical_development_origin"
+    }
+  ],
+  "coverage": {
+    "work": {
+      "authorityWorkCount": 3053,
+      "workWithAnyCashFactCount": 3052,
+      "workWithModern2021To2025SalesShareFactCount": 2682,
+      "currentRightsAndStatusCoveredWorkCount": 3053,
+      "verifiedReleaseCoveredWorkCount": 0,
+      "historicalCommercialStateAsOfCoveredWorkCount": 0,
+      "historicalCommercialStateAsOfCoverage": 0
+    },
+    "channel": {
+      "canonicalMasterChannelCount": 74,
+      "salesShareUsedCanonicalChannelCount": 39,
+      "mappingCoveredSalesShareFactCount": 190663,
+      "channelMasterEffectiveMonthCoveredRawPairCount": 0,
+      "channelMasterEffectiveMonthEligibleRawPairCount": 133,
+      "historicalStatusCoveredMasterChannelCount": 0,
+      "historicalStatusCoveredUsedChannelCount": 0,
+      "explicitWorkChannelRelationEventRowCount": 0
+    },
+    "workOriginCase": {
+      "legacyFrozenSignalAudit": {
+        "caseCount": 7851,
+        "workOriginSegmentCount": 2402,
+        "commercialStateValidCount": 0,
+        "unknownAtOriginCaseCount": 7851
+      },
+      "legacyDenseSignalAudit": {
+        "caseCount": 56856,
+        "workOriginSegmentCount": 20600,
+        "commercialStateValidCount": 0,
+        "unknownAtOriginCaseCount": 56856
+      },
+      "commercialModelPrimaryComparatorUniverse": {
+        "caseCount": 12039,
+        "workCount": 1125,
+        "originCount": 13,
+        "commercialStateValidCount": 0,
+        "unknownAtOriginCaseCount": 12039
+      },
+      "commercialModelStrictCandidateInventory": {
+        "caseCount": 97490,
+        "workCount": 2650,
+        "originCount": 16,
+        "commercialStateValidCount": 0,
+        "unknownAtOriginCaseCount": 97490,
+        "evaluatedComparatorCaseCount": 74320,
+        "evaluatedComparatorUnknownCount": 74320
+      },
+      "note": "The universes are separate audit views and must not be summed."
+    },
+    "month": {
+      "cashBillMonthCount": 108,
+      "completeCashBillMonthCount": 107,
+      "cashRange": {
+        "first": "2017-06",
+        "last": "2026-05",
+        "latestComplete": "2026-04"
+      },
+      "historicalCommercialSnapshotMonthCount": 0,
+      "primaryOriginMonthCount": 13,
+      "primaryOriginMonthCoveredCount": 0,
+      "legacyDenseOriginMonthCount": 25,
+      "legacyDenseOriginMonthCoveredCount": 0,
+      "strictEvaluationOriginCount": 11,
+      "strictEvaluationOriginCoveredCount": 0,
+      "currentMasterSnapshotDateCount": 1,
+      "currentMasterAsOfDate": "2026-07-13"
+    }
+  },
+  "ifModelDevelopmentStartedNow": {
+    "primary": {
+      "candidateRows": 12039,
+      "validTrainingRows": 0,
+      "unknownRows": 12039,
+      "unknownShare": 1
+    },
+    "strictCandidateInventory": {
+      "candidateRows": 97490,
+      "validTrainingRows": 0,
+      "unknownRows": 97490,
+      "unknownShare": 1
+    },
+    "strictEvaluatedComparator": {
+      "candidateRows": 74320,
+      "validEvaluationRows": 0,
+      "unknownRows": 74320,
+      "unknownShare": 1
+    },
+    "stateTargetRowsAvailable": 0,
+    "reason": "Neither historical origin features nor future commercial-state labels have versioned complete snapshots."
+  },
+  "leakageRisk": {
+    "overall": "CRITICAL_IF_CURRENT_FIELDS_ARE_BACKFILLED",
+    "currentWorkMasterJoin": {
+      "primaryExposedRows": 12039,
+      "primaryExposedShare": 1,
+      "strictInventoryExposedRows": 97490,
+      "strictInventoryExposedShare": 1,
+      "reason": "The only verified work-rights snapshot is dated 2026-07-13, after all listed development origins."
+    },
+    "currentChannelMasterJoin": {
+      "staticRawPairRowsWithoutEffectiveMonth": 133,
+      "staticRawPairShareWithoutEffectiveMonth": 1,
+      "denseNestedRowsWithPosthocStaticAttributes": 38440,
+      "denseNestedRowsWithProvenAsOfAttributes": 0
+    },
+    "cashExtractAvailability": {
+      "factsWithoutPostingTimeAndAvailableAt": 192370,
+      "share": 1,
+      "note": "billMonth and rowHash do not prove when a fact was posted or available."
+    },
+    "semanticProxyRisks": [
+      "first_cash_month_used_as_channel_entry_or_launch",
+      "last_or_zero_cash_used_as_channel_exit_or_dead",
+      "work_level_rights_used_as_channel_level_saleability",
+      "absence_of_snapshot_used_as_inactive_instead_of_unknown"
+    ]
+  },
+  "minimumMaterializationRequired": [
+    "exact_work_channel_contract_or_right_relation_identity",
+    "entry_exit_restore_saleable_on_saleable_off_rights_start_rights_expiry_events",
+    "effectiveAt_and_availableAt_for_every_event_or_snapshot",
+    "source_system_dataset_version_record_id_content_hash_and_transform_lineage",
+    "complete_as_of_snapshot_evidence_at_each_origin",
+    "verified_release_or_launch_date_with_record_level_source_authority",
+    "explicit_unknown_at_origin_when_history_is_unavailable"
+  ],
+  "feasibility": {
+    "notFeasible": false,
+    "reason": "Current rights fields, channel identity and portable authority contracts provide a materialization starting point.",
+    "retrospectiveCondition": "A source-system audit log or historical export with record availability and versions must exist; current values cannot reconstruct it.",
+    "prospectiveCondition": "If retrospective history is unavailable, begin prospective complete snapshots and wait for mature outcome labels."
+  },
+  "evidenceSources": [
+    "src/domain/m2Current/availabilitySnapshot.js",
+    "src/domain/m2Current/revenueShareFact.js",
+    "src/domain/m2Current/signalInputBundle.js",
+    "scripts/m2-current/materialize_canonical_channel_cases.py",
+    "scripts/m2-current/materialize_manual_channel_cases.py",
+    "scripts/m2-real-data/m2_post_foundation_input_contract.py",
+    "docs/analysis/m2-current/M2-current-as-of-source-inventory-v0.1.json",
+    "docs/analysis/m2-current/M2-current-as-of-signal-readiness-v0.1.md",
+    "docs/analysis/m2-current/M2-current-signal-gap-diagnostic-v0.1.json",
+    "docs/analysis/m2-current/M2-current-authority-source-audit-v0.2.json",
+    "docs/analysis/m2-current/M2-current-canonical-channel-development-v0.1.json",
+    "docs/analysis/m2-current/M2-current-manual-channel-backtest-v0.1.json",
+    "docs/analysis/m2-current/M2-current-human-anchored-development-v0.1.json",
+    "docs/analysis/m2-current/M2-current-lifecycle-aware-revenue-forecast-development-v0.1.json"
+  ]
+}

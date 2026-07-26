@@ -4,7 +4,7 @@
 
 - PR #7、PR #8、PR #9、PR #10、PR #11、PR #12、PR #13 均已合入 `main`；已合并分支不得继续作为开发入口。
 - 当前仓库治理导航为：
-  - `docs/analysis/m2-v2/M2-v2-current-state-index-v0.20.md`
+  - `docs/analysis/m2-v2/M2-v2-current-state-index-v0.21.md`
   - `docs/analysis/m2-v2/M2-repository-code-convergence-and-portable-development-audit-v0.4.md`
   - `docs/analysis/m2-current/M2-current-maturity-reconstruction-v0.6.md`
   - `docs/analysis/m2-current/M2-sales-share-only-target-decision-v0.1.md`
@@ -29,6 +29,14 @@
   - `docs/analysis/m2-current/M2-current-human-anchored-tsb-occurrence-decision-v0.1.md`
   - `docs/analysis/m2-current/M2-current-human-anchored-tsb-occurrence-code-audit-v0.1.md`
   - `docs/analysis/m2-current/M2-current-human-anchored-tsb-occurrence-public-diagnostic-v0.1.json`
+  - `docs/analysis/m2-current/M2-current-model-structure-and-lifecycle-aware-proposal-v0.1.md`
+  - `docs/analysis/m2-current/M2-current-lifecycle-aware-revenue-forecast-development-v0.1.md`
+  - `docs/analysis/m2-current/M2-current-lifecycle-aware-revenue-forecast-development-v0.1.json`
+  - `docs/analysis/m2-current/M2-current-lifecycle-aware-public-diagnostic-v0.1.json`
+  - `docs/analysis/m2-current/M2-current-feature-information-gain-and-commercial-state-model-proposal-v0.1.md`
+  - `docs/analysis/m2-current/M2-commercial-state-data-readiness-audit-v0.1.md`
+  - `docs/analysis/m2-current/M2-commercial-state-source-discovery-v0.1.md`
+  - `docs/analysis/m2-current/M2-historical-commercial-source-acquisition-audit-v0.1.md`
   - `docs/analysis/m2-current/M2-current-as-of-source-inventory-v0.1.json`
   - `docs/analysis/m2-current/M2-current-signal-input-portable-intake-v0.1.md`
   - `docs/prd/m2-v2/M2-forecast-intelligence-v2-prd-v0.2.md`
@@ -224,6 +232,42 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
     主评估、strict rolling、分群、bootstrap 与时间块门禁失败；
   - 结论为 `TSB_OCCURRENCE_DEVELOPMENT_FAIL`。该单变量候选、网格、结果和失败
     结论已经冻结，不得继续调参、建立第二个同窗候选或替换 exact v0.3。
+- `M2-lifecycle-aware-revenue-forecast-challenger-v0.1` 已按 2026-07-26 本轮
+  算法重构授权完成：
+  - 在既有 as-of 分成历史上建立互斥的
+    active/stable/decline/dormant/revival 状态，并实现状态条件 occurrence、
+    log-amount、共同 reversal、revenue-weighted WAPE、生命周期分群和 top-revenue
+    误差诊断；
+  - 直接 Huber log、baseline-offset Huber log、带 cap state log-ratio 和不截断
+    state log-ratio 四个 raw 实验均已保存且失败；最终 raw challenger 的
+    primary/strict WAPE 为 `0.50139298 / 0.62275977`，对应 baseline 为
+    `0.44022495 / 0.41191878`；
+  - 仅在 revival 使用 challenger、其余状态回退 baseline 的 post-hoc 诊断，
+    primary/strict 相对 WAPE 只改善 `0.0145% / 0.0048%`，低于 1% materiality；
+    top 1%/5%/10% 收入作品 WAPE 均无改善；
+  - 5,203 个 exact v0.3 overlap case 上 raw/selected/learnedGlobal/exact v0.3
+    WAPE 为 `0.27458711 / 0.27723899 / 0.27723899 / 0.37610234`；这是同窗
+    子集诊断，不是独立 later-origin，不能覆盖总体和 strict raw 失败；
+  - 结论为 `LIFECYCLE_AWARE_DEVELOPMENT_FAIL_TRIVIAL_POSTHOC_GAIN`，
+    `modelUpgradeSupported=false`。不得替换 exact v0.3，不得将 post-hoc state
+    routing 表述为独立选模或成熟度提升；本轮配置、实验和失败结论已冻结。
+- lifecycle-aware 失败后的 feature information gain 与 commercial-state source
+  审计已完成：
+  - 下一轮最有潜在增益的信息是 cutoff 时真实可得、可审计、可版本化的渠道
+    上下架、合同可售和权利续约状态，不是继续从同一现金序列派生新状态；
+  - readiness 决定为 `NEEDS_DATA_MATERIALIZATION_FIRST`；source discovery 决定为
+    `NO_COMPLIANT_HISTORICAL_COMMERCIAL_STATE_SOURCE_FOUND_IN_INSPECTED_SCOPE`；
+    acquisition audit 决定为
+    `NO_RECOVERABLE_COMPLIANT_HISTORICAL_COMMERCIAL_SOURCE_ACQUIRED`；
+  - `m1.standard_work_status_history` 实际只有每部作品一条 current row，
+    `validFrom` 相同且无关闭记录；`basic_info_version` 只有一个有效填充快照；
+    `mapping_change_record` 为 0 行。三者均不是可训练的商业状态历史；
+  - transfer ZIP 与本地 current master/dump 字节一致，没有新增历史来源；仓库、
+    migration、dump、archive、loader 中均未发现可生成 canonical commercial
+    event ledger 的未接入历史源；
+  - 当前合规 historical commercial-state work/channel/contract/month 覆盖均为
+    0，不得创建空 ledger、填 0、从 current 属性回填或进入模型训练。下一步仅允许
+    业务系统提供 capability-scoped immutable export 后重新审计。
 - v1.0 独立 later-origin 资格审计已按 2026-07-26 授权完成，未读取预测指标：
   - 最新完整账单月为 2026-04，理论成熟的 36 个月 origin 为 2023-01 至
     2023-04；四个相邻月只算 1 个连续时间块；
@@ -288,6 +332,15 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
   与 private development 授权已执行完毕；27 组合、结果和失败结论已冻结，
   `candidateSelectionAuthorized=false`、`newCandidateFamilyDevelopmentAuthorized=false`、
   `modelTrainingAuthorized=false`
+- 本轮 lifecycle-aware revenue forecast v0.1 算法重构、快速实验、公开 synthetic
+  与 private development 授权已执行完毕；raw 候选失败，post-hoc revival-only
+  收益低于 materiality，配置和失败结论已冻结，`candidateSelectionAuthorized=false`、
+  `newCandidateFamilyDevelopmentAuthorized=false`、`modelTrainingAuthorized=false`
+- 本轮 commercial-state information-gain proposal、data readiness、source
+  discovery 和 historical source acquisition audit 已执行完毕；只授权
+  source investigation，不授权 schema、event ledger、模型实现或训练。
+  `commercialStateHistoricalCoverage=0`、`canonicalEventLedgerGenerated=false`，
+  在取得合规 immutable export 前保持 data-materialization blocked
 - 本轮 v1.0 later-origin readiness audit 已授权并执行；合格块的一次冻结验证也
   获授权，但资格未成立，故未执行。`candidateSelectionAuthorized=false`、
   `laterOriginReadinessAuditAuthorized=true`、
@@ -330,13 +383,17 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
    final holdout。
 8. 只接收 cutoff 时真实可得、可审计、可版本化、exact-work 的分成预测信号：
    sales historical availability、合同可售状态、渠道状态；commitment 不得作为
-   分成预测信号。
+   分成预测信号。现有 repo、migration、dump、archive 和 loader 已确认不能恢复
+   合规 commercial-state history；不得重复扫描同一 current projection 冒充新来源。
 9. D1 合同、缺口 ledger、来源字段审计和 digest-bound portable intake 已建立；
    使用 `npm run diagnose:m2:signal-input` 验证公开 synthetic 输入，受控数据通过
    `--bundle-file` 与 `--case-file` 提交同目录摘要绑定包。下一步采集/物化符合
    合同的历史 `availabilitySnapshot`，补齐 economic、posting、available-at、
    来源版本和 lineage。当前冻结/逐月 occurrence 与 positive amount 合规覆盖
-   均为 0；无历史 snapshot 的 current 状态不得回填。
+   均为 0；无历史 snapshot 的 current 状态不得回填。商业状态来源需由业务系统
+   提供不可变导出，至少包含 stable work/channel identity、状态 before/after、
+   `effectiveAt`、`availableAt`、来源版本、lineage、撤销/更正语义与完整性权威；
+   取得后先重新做 acquisition/readiness audit，再决定是否物化 event ledger。
 10. 新信号必须对应明确的人工公式参数或 occurrence/positive amount 误差目标，
    并具有 historical `effectiveAt/availableAt`。先通过成熟短周期 rolling-origin
    诊断，再按独立作品做 nested challenger；同时保留 7,083 个当前 served 与
@@ -365,7 +422,11 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
   binding 和无 private readiness verifier；v1.0 raw/selected FVA 分离、非恒真
   candidate FVA 门禁和连续月份时间块审计；canonical TSB 过程共用实现、
   observed-zero/unobserved-zero 历史物化、单一 runner mode、27 组合 earlier-origin
-  inner selection、公开 synthetic 诊断和三层 raw/blend/selected FVA 报告。
+  inner selection、公开 synthetic 诊断和三层 raw/blend/selected FVA 报告；
+  lifecycle-aware 五状态 encoder、状态条件 occurrence、log-amount、raw/selected
+  分离、revenue-weighted WAPE、生命周期分群和 top-revenue 误差诊断；
+  commercial-state feature information gain proposal、data readiness、historical
+  source discovery 和 acquisition audit。
 - 已验证：三账单逐行/逐月守恒、3,053 基础人口与 3,052 账单观察人口边界、
   7,851 旧机器路由到 7,083 当前 served case 的重分类、25-origin/56,856-case
   次级 development 复验；人工分区后作品 WAPE 0.49075894，组合 WAPE
@@ -379,13 +440,22 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
   raw/blend WAPE 为 0.44022495 / 0.54346231 / 0.45348237，raw 与 blend FVA
   均为负；strict rolling 11 个时间块仅 3 个改善，active、dormant 与 bootstrap
   失败，故安全回退且冻结，不建立第二个候选；2023-01 至 2023-04 虽已标签成熟，但因
-  2023-03 已用及选择证据截至 2025-12，被作为单一时间块拒绝，未读取新指标。
+  2023-03 已用及选择证据截至 2025-12，被作为单一时间块拒绝，未读取新指标；
+  lifecycle-aware raw challenger primary/strict WAPE 为
+  0.50139298 / 0.62275977，均劣于 0.44022495 / 0.41191878 baseline；post-hoc
+  revival-only 管线只改善 0.0145% / 0.0048%，低于 materiality 且头部收入作品
+  无改善；5,203-case exact v0.3 overlap 的 raw WAPE 虽为 0.27458711，但只是
+  同窗子集诊断，因此拒绝升级；历史商业状态 source audit 确认 current projection、
+  单快照 version、空 mapping change 与 current archive 均不能生成合规 event
+  ledger，work/channel/contract/month 合规历史覆盖均为 0。
 - 已退役：120 部人工评估的 current 依赖；不重建、不重放。
 - 下一输入：later-origin 路线等待账单完整到 2029-01，并要求原运行时 frozen
   v1 state；或者仅在明确公式需要时接收带 effective/available-at、来源版本、
   lineage 与完整性权威的历史渠道状态/合同可售 snapshot、真实上线月、单购
-  净单价/净分成/销量换算。渠道主表和账单分区已完成，不得重复索要；不存在新
-  输入时保持阻断，不能把 current 属性事后回填。final holdout 仍需单独授权。
+  净单价/净分成/销量换算。历史商业状态必须来自 capability-scoped immutable
+  export；报告中的业务系统材料表是当前唯一采集入口。渠道主表和账单分区已完成，
+  不得重复索要；不存在新输入时保持阻断，不能把 current 属性事后回填。
+  final holdout 仍需单独授权。
 - 未授权：final holdout 及所有既有业务 gate 外的动作。
 
 ## Git 与提交规则

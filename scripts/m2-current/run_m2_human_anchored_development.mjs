@@ -21,6 +21,10 @@ import {
   runM2HumanAnchoredTsbPublicDiagnostic,
   writeM2HumanAnchoredTsbBlockedDevelopment
 } from "./human_anchored_tsb_occurrence_mode.mjs";
+import {
+  runM2LifecycleAwarePrivateDevelopment,
+  runM2LifecycleAwarePublicDiagnostic
+} from "./lifecycle_aware_mode.mjs";
 
 let config;
 
@@ -33,8 +37,17 @@ const root = path.resolve(
 );
 const tsbPublicMode = process.argv.includes("--tsb-occurrence-public");
 const tsbPrivateMode = process.argv.includes("--tsb-occurrence");
+const lifecyclePublicMode = process.argv.includes("--lifecycle-aware-public");
+const lifecyclePrivateMode = process.argv.includes("--lifecycle-aware");
 if (tsbPublicMode) {
   await runM2HumanAnchoredTsbPublicDiagnostic({
+    root,
+    verify: process.argv.includes("--verify")
+  });
+  return;
+}
+if (lifecyclePublicMode) {
+  await runM2LifecycleAwarePublicDiagnostic({
     root,
     verify: process.argv.includes("--verify")
   });
@@ -122,6 +135,17 @@ const auxiliaryCases = joinCases(parseNdjson(auxiliaryText), historyByKey);
 
 if (tsbPrivateMode) {
   await runM2HumanAnchoredTsbPrivateDevelopment({
+    root,
+    baseConfig: config,
+    manifest,
+    primaryCases,
+    auxiliaryCases,
+    privateDirectory
+  });
+  return;
+}
+if (lifecyclePrivateMode) {
+  await runM2LifecycleAwarePrivateDevelopment({
     root,
     baseConfig: config,
     manifest,

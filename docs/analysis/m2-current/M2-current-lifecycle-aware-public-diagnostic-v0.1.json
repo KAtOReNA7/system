@@ -1,0 +1,406 @@
+{
+  "schema": "m2.current.lifecycle_aware_public_diagnostic.v0.1",
+  "candidateId": "M2-lifecycle-aware-revenue-forecast-challenger-v0.1",
+  "datasetVersion": "M2-human-anchored-sales-share-development-2021-2025-v0.1",
+  "featureVersion": "M2-lifecycle-revival-selected-state-log-ratio-features-v0.5",
+  "fixtureSchema": "m2.current.lifecycle_aware_synthetic_fixture.v0.1",
+  "caseCount": 30,
+  "workCount": 30,
+  "lifecycleCounts": {
+    "active": 6,
+    "stable": 6,
+    "decline": 6,
+    "dormant": 6,
+    "revival": 6
+  },
+  "featureNames": [
+    "logTrailing1",
+    "logTrailing3",
+    "logTrailing6",
+    "logTrailing12",
+    "logTrailing24",
+    "occurrence3",
+    "occurrence6",
+    "occurrence12",
+    "occurrence24",
+    "logMeanPositive",
+    "logMedianPositive",
+    "logMonthsSincePositive",
+    "recentToPriorLogRatio",
+    "logTrendSlope12",
+    "logHistoryMonths",
+    "logHorizon",
+    "stateStable",
+    "stateDecline",
+    "stateDormant",
+    "stateRevival",
+    "stableHorizonInteraction",
+    "declineHorizonInteraction",
+    "dormantHorizonInteraction",
+    "revivalHorizonInteraction"
+  ],
+  "model": {
+    "occurrence": "regularized_logistic_with_lifecycle_probability_calibration",
+    "amount": "frozen_baseline_offset_lifecycle_shrunk_log_revenue_ratio",
+    "reversal": "existing_separate_common_reversal_layer"
+  },
+  "evaluation": {
+    "caseCount": 30,
+    "workCount": 30,
+    "candidate": {
+      "caseCount": 30,
+      "wape": 0.4096848407265113,
+      "signedBias": -0.3066131068745902,
+      "zeroImputationUsed": false
+    },
+    "rawCandidate": {
+      "caseCount": 30,
+      "wape": 0.49197291508137925,
+      "signedBias": -0.016420739208502858,
+      "zeroImputationUsed": false
+    },
+    "baseline": {
+      "caseCount": 30,
+      "wape": 0.43888434638903445,
+      "signedBias": -0.33581261253711336,
+      "zeroImputationUsed": false
+    },
+    "relativeWapeToBaseline": -0.06653120782904443,
+    "rawRelativeWapeToBaseline": 0.1209625477170384,
+    "revenueWeightedWape": {
+      "value": 0.4096848407265113,
+      "baselineValue": 0.43888434638903445,
+      "definition": "sum_absolute_error_divided_by_sum_absolute_actual_cash",
+      "interpretation": "canonical_WAPE_is_revenue_weighted_MAE_not_equal_weight_MAPE"
+    },
+    "occurrence": {
+      "caseCount": 30,
+      "observedPositiveCaseCount": 24,
+      "observedRate": 0.8,
+      "brier": 0.06257435881949294,
+      "logLoss": 0.24689810200630086,
+      "threshold": 0.5,
+      "precision": 0.9230769230769231,
+      "recall": 1
+    },
+    "conditionalPositiveAmount": {
+      "caseCount": 24,
+      "wape": 0.3963648137940001,
+      "signedBias": -0.0065715607411471096,
+      "logMae": 0.5324476568672182
+    },
+    "lifecycleClassification": {
+      "method": "deterministic_as_of_history_only_without_future_labels",
+      "mutuallyExclusiveStates": [
+        "active",
+        "stable",
+        "decline",
+        "dormant",
+        "revival"
+      ],
+      "counts": {
+        "active": 6,
+        "stable": 6,
+        "decline": 6,
+        "dormant": 6,
+        "revival": 6
+      }
+    },
+    "byLifecycle": {
+      "active": {
+        "caseCount": 6,
+        "candidate": {
+          "caseCount": 6,
+          "wape": 0.5413691394384371,
+          "signedBias": -0.5413691394384371,
+          "absoluteError": 5651.893815737283,
+          "actualDenominator": 10440
+        },
+        "rawCandidate": {
+          "caseCount": 6,
+          "wape": 0.32776128855956804,
+          "signedBias": -0.32776128855956804,
+          "absoluteError": 3421.8278525618903,
+          "actualDenominator": 10440
+        },
+        "baseline": {
+          "caseCount": 6,
+          "wape": 0.5413691394384371,
+          "signedBias": -0.5413691394384371,
+          "absoluteError": 5651.893815737283,
+          "actualDenominator": 10440
+        },
+        "relativeWapeToBaseline": 0,
+        "rawRelativeWapeToBaseline": -0.39456968511438384,
+        "occurrence": {
+          "caseCount": 6,
+          "observedPositiveCaseCount": 6,
+          "observedRate": 1,
+          "brier": 0.01683826221166179,
+          "logLoss": 0.1379648895657615,
+          "threshold": 0.5,
+          "precision": 1,
+          "recall": 1
+        },
+        "conditionalPositiveAmount": {
+          "caseCount": 6,
+          "wape": 0.23076814518617866,
+          "signedBias": -0.23076814518617866,
+          "logMae": 0.26357124904506435
+        }
+      },
+      "stable": {
+        "caseCount": 6,
+        "candidate": {
+          "caseCount": 6,
+          "wape": 0.054236600614768204,
+          "signedBias": -0.054236600614768204,
+          "absoluteError": 456.88912357880736,
+          "actualDenominator": 8424
+        },
+        "rawCandidate": {
+          "caseCount": 6,
+          "wape": 0.14809551476007152,
+          "signedBias": 0.14809551476007152,
+          "absoluteError": 1247.5566163388426,
+          "actualDenominator": 8424
+        },
+        "baseline": {
+          "caseCount": 6,
+          "wape": 0.054236600614768204,
+          "signedBias": -0.054236600614768204,
+          "absoluteError": 456.88912357880736,
+          "actualDenominator": 8424
+        },
+        "relativeWapeToBaseline": 0,
+        "rawRelativeWapeToBaseline": 1.7305456662368006,
+        "occurrence": {
+          "caseCount": 6,
+          "observedPositiveCaseCount": 6,
+          "observedRate": 1,
+          "brier": 0.01674561005940551,
+          "logLoss": 0.13784653644807257,
+          "threshold": 0.5,
+          "precision": 1,
+          "recall": 1
+        },
+        "conditionalPositiveAmount": {
+          "caseCount": 6,
+          "wape": 0.3257019779414096,
+          "signedBias": 0.3257019779414096,
+          "logMae": 0.2804463182753801
+        }
+      },
+      "decline": {
+        "caseCount": 6,
+        "candidate": {
+          "caseCount": 6,
+          "wape": 0.6607634366578511,
+          "signedBias": 0.6607634366578511,
+          "absoluteError": 1332.0990883022278,
+          "actualDenominator": 2016
+        },
+        "rawCandidate": {
+          "caseCount": 6,
+          "wape": 0.9191861763721046,
+          "signedBias": 0.9191861763721046,
+          "absoluteError": 1853.0793315661629,
+          "actualDenominator": 2016
+        },
+        "baseline": {
+          "caseCount": 6,
+          "wape": 0.6607634366578511,
+          "signedBias": 0.6607634366578511,
+          "absoluteError": 1332.0990883022278,
+          "actualDenominator": 2016
+        },
+        "relativeWapeToBaseline": 0,
+        "rawRelativeWapeToBaseline": 0.3910972147934799,
+        "occurrence": {
+          "caseCount": 6,
+          "observedPositiveCaseCount": 6,
+          "observedRate": 1,
+          "brier": 0.014718333786441879,
+          "logLoss": 0.12839303488879952,
+          "threshold": 0.5,
+          "precision": 1,
+          "recall": 1
+        },
+        "conditionalPositiveAmount": {
+          "caseCount": 6,
+          "wape": 1.100917148726955,
+          "signedBias": 1.100917148726955,
+          "logMae": 0.7416303242530651
+        }
+      },
+      "dormant": {
+        "caseCount": 6,
+        "candidate": {
+          "caseCount": 6,
+          "wape": null,
+          "signedBias": null,
+          "absoluteError": 0,
+          "actualDenominator": 0
+        },
+        "rawCandidate": {
+          "caseCount": 6,
+          "wape": null,
+          "signedBias": null,
+          "absoluteError": 3045.400373076047,
+          "actualDenominator": 0
+        },
+        "baseline": {
+          "caseCount": 6,
+          "wape": null,
+          "signedBias": null,
+          "absoluteError": 0,
+          "actualDenominator": 0
+        },
+        "relativeWapeToBaseline": null,
+        "rawRelativeWapeToBaseline": null,
+        "occurrence": {
+          "caseCount": 6,
+          "observedPositiveCaseCount": 0,
+          "observedRate": 0,
+          "brier": 0.24633498662006392,
+          "logLoss": 0.6858156944009933,
+          "threshold": 0.5,
+          "precision": 0,
+          "recall": null
+        },
+        "conditionalPositiveAmount": {
+          "caseCount": 0,
+          "wape": null,
+          "signedBias": null,
+          "logMae": null
+        }
+      },
+      "revival": {
+        "caseCount": 6,
+        "candidate": {
+          "caseCount": 6,
+          "wape": 0.6337865812158905,
+          "signedBias": -0.6337865812158905,
+          "absoluteError": 3148.651735480544,
+          "actualDenominator": 4968
+        },
+        "rawCandidate": {
+          "caseCount": 6,
+          "wape": 0.6337865812158905,
+          "signedBias": -0.6337865812158905,
+          "absoluteError": 3148.651735480544,
+          "actualDenominator": 4968
+        },
+        "baseline": {
+          "caseCount": 6,
+          "wape": 0.7857086469093085,
+          "signedBias": -0.7857086469093085,
+          "absoluteError": 3903.400557845445,
+          "actualDenominator": 4968
+        },
+        "relativeWapeToBaseline": -0.19335674399285796,
+        "rawRelativeWapeToBaseline": -0.19335674399285796,
+        "occurrence": {
+          "caseCount": 6,
+          "observedPositiveCaseCount": 6,
+          "observedRate": 1,
+          "brier": 0.01823460141989156,
+          "logLoss": 0.1444703547278771,
+          "threshold": 0.5,
+          "precision": 1,
+          "recall": 1
+        },
+        "conditionalPositiveAmount": {
+          "caseCount": 6,
+          "wape": 0.5704001073010774,
+          "signedBias": -0.5704001073010774,
+          "logMae": 0.8441427358953631
+        }
+      }
+    },
+    "topRevenue": {
+      "rankingBasis": "sum_actual_positive_sales_share_cash_by_work",
+      "publicDetail": "aggregate_only_no_work_identifier",
+      "cumulative": {
+        "0.01": {
+          "fraction": 0.01,
+          "workCount": 1,
+          "caseCount": 1,
+          "positiveRevenueShare": 0.07882882882882883,
+          "candidateAbsoluteErrorShare": 0.10381195094265859,
+          "baselineAbsoluteErrorShare": 0.09690521645935397,
+          "candidate": {
+            "caseCount": 1,
+            "wape": 0.5415370243943084,
+            "signedBias": -0.5415370243943084,
+            "absoluteError": 1099.320159520446,
+            "actualDenominator": 2029.9999999999998
+          },
+          "baseline": {
+            "caseCount": 1,
+            "wape": 0.5415370243943084,
+            "signedBias": -0.5415370243943084,
+            "absoluteError": 1099.320159520446,
+            "actualDenominator": 2029.9999999999998
+          },
+          "relativeWapeToBaseline": 0
+        },
+        "0.05": {
+          "fraction": 0.05,
+          "workCount": 2,
+          "caseCount": 2,
+          "positiveRevenueShare": 0.15315315315315314,
+          "candidateAbsoluteErrorShare": 0.20162746602125367,
+          "baselineAbsoluteErrorShare": 0.18821294717535,
+          "candidate": {
+            "caseCount": 2,
+            "wape": 0.541364315162306,
+            "signedBias": -0.541364315162306,
+            "absoluteError": 2135.1408590001347,
+            "actualDenominator": 3944
+          },
+          "baseline": {
+            "caseCount": 2,
+            "wape": 0.541364315162306,
+            "signedBias": -0.541364315162306,
+            "absoluteError": 2135.1408590001347,
+            "actualDenominator": 3944
+          },
+          "relativeWapeToBaseline": 0
+        },
+        "0.1": {
+          "fraction": 0.1,
+          "workCount": 3,
+          "caseCount": 3,
+          "positiveRevenueShare": 0.22297297297297297,
+          "candidateAbsoluteErrorShare": 0.293570368258094,
+          "baselineAbsoluteErrorShare": 0.2740387770750656,
+          "candidate": {
+            "caseCount": 3,
+            "wape": 0.5414094960840219,
+            "signedBias": -0.5414094960840219,
+            "absoluteError": 3108.7733265144534,
+            "actualDenominator": 5742
+          },
+          "baseline": {
+            "caseCount": 3,
+            "wape": 0.5414094960840219,
+            "signedBias": -0.5414094960840219,
+            "absoluteError": 3108.7733265144534,
+            "actualDenominator": 5742
+          },
+          "relativeWapeToBaseline": 0
+        }
+      }
+    }
+  },
+  "boundaries": {
+    "publicSyntheticOnly": true,
+    "privateArtifactRead": false,
+    "exactV03Modified": false,
+    "productionRouteModified": false,
+    "buyoutCashUsed": false,
+    "finalHoldoutUsed": false,
+    "releaseAuthorized": false
+  }
+}

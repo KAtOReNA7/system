@@ -30,6 +30,7 @@
     "diagnose:m2:signal-input",
     "diagnose:m2:channel-governance",
     "diagnose:m2:human-anchored-tsb-occurrence",
+    "diagnose:m2:lifecycle-aware",
     "diagnose:m2:later-origin-readiness",
     "verify:m2:signal-input",
     "verify:m2:channel-governance",
