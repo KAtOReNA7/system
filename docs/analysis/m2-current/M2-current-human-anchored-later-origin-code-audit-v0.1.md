@@ -1,6 +1,6 @@
 # M2 v1.0 later-origin 全代码审计 v0.1
 
-日期：2026-07-26  
+日期：2026-07-26
 范围：later-origin readiness、预注册、public diagnostic 和既有 v1.0 接口
 
 ## 结论

@@ -1,6 +1,6 @@
 # M2 当前状态索引 v0.18
 
-日期：2026-07-26  
+日期：2026-07-26
 状态：current repository governance entry
 
 ## 唯一当前结论
