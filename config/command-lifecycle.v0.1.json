@@ -32,7 +32,6 @@
     "diagnose:m2:later-origin-readiness",
     "verify:m2:signal-input",
     "verify:m2:channel-governance",
-    "verify:m2:later-origin-readiness",
     "verify:m2:current"
   ],
   "historyDispatcher": "history:m2",

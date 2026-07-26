@@ -88,7 +88,6 @@
     "develop:m2:current:human-anchored": "node scripts/m2-current/run_m2_human_anchored_development.mjs",
     "verify:m2:signal-input": "node scripts/m2-current/run_m2_current_signal_input_diagnostics.mjs --verify",
     "verify:m2:channel-governance": "node scripts/m2-current/run_m2_channel_governance_diagnostics.mjs --verify",
-    "verify:m2:later-origin-readiness": "node scripts/m2-current/run_m2_human_anchored_later_origin_readiness.mjs --verify",
     "verify:m2:current": "node scripts/m2-current/run_m2_current_public_diagnostics.mjs --verify && node scripts/m2-current/run_m2_current_signal_input_diagnostics.mjs --verify && node scripts/m2-current/run_m2_channel_governance_diagnostics.mjs --verify && node scripts/m2-current/run_m2_human_anchored_later_origin_readiness.mjs --verify",
     "history:m2": "node scripts/run-historical-command.mjs",
     "import:m2:real-data:local-db": "node scripts/m2-real-data/run_authorized_real_data_db_import.mjs --clear",
