@@ -1,0 +1,129 @@
+{
+  "schema": "m2.current.human_anchored_later_origin_readiness.v0.1",
+  "candidateId": "M2-current-human-anchored-hierarchical-probabilistic-v1.0",
+  "target": "future_sales_share_cash",
+  "decision": "NO_QUALIFIED_INDEPENDENT_MATURE_LATER_ORIGIN",
+  "candidateBlock": {
+    "from": "2023-01",
+    "through": "2023-04",
+    "timeBlockCount": 1,
+    "adjacentMonthsNotIndependentReplicates": true,
+    "eligible": false,
+    "months": [
+      {
+        "origin": "2023-01",
+        "labelThrough": "2026-01",
+        "mature": true,
+        "originPreviouslyUsed": false,
+        "afterSelectionEvidence": false,
+        "eligible": false,
+        "reasons": [
+          "origin_not_after_v1_0_selection_evidence_label_boundary"
+        ]
+      },
+      {
+        "origin": "2023-02",
+        "labelThrough": "2026-02",
+        "mature": true,
+        "originPreviouslyUsed": false,
+        "afterSelectionEvidence": false,
+        "eligible": false,
+        "reasons": [
+          "origin_not_after_v1_0_selection_evidence_label_boundary"
+        ]
+      },
+      {
+        "origin": "2023-03",
+        "labelThrough": "2026-03",
+        "mature": true,
+        "originPreviouslyUsed": true,
+        "afterSelectionEvidence": false,
+        "eligible": false,
+        "reasons": [
+          "origin_used_in_v1_0_development_evidence",
+          "origin_not_after_v1_0_selection_evidence_label_boundary"
+        ]
+      },
+      {
+        "origin": "2023-04",
+        "labelThrough": "2026-04",
+        "mature": true,
+        "originPreviouslyUsed": false,
+        "afterSelectionEvidence": false,
+        "eligible": false,
+        "reasons": [
+          "origin_not_after_v1_0_selection_evidence_label_boundary"
+        ]
+      }
+    ]
+  },
+  "temporalBoundary": {
+    "horizonMonths": 36,
+    "latestCompleteMonth": "2026-04",
+    "incompleteMonthsExcluded": [
+      "2026-05"
+    ],
+    "selectionEvidenceLabelThrough": "2025-12",
+    "earliestTimeIndependentOrigin": "2026-01",
+    "earliestTimeIndependentLabelThrough": "2029-01",
+    "missingCompleteMonthCount": 33,
+    "missingCompleteMonthRange": {
+      "from": "2026-05",
+      "through": "2029-01"
+    }
+  },
+  "frozenModel": {
+    "developmentCommit": "19cf18aa4224849b06d69479de3c575bccf9804f",
+    "stateArtifactPresent": false,
+    "refitAllowed": false,
+    "parameterUpdateAllowed": false,
+    "expertWeightUpdateAllowed": false,
+    "thresholdReselectionAllowed": false
+  },
+  "dataQuality": {
+    "authorityWorkCount": 3053,
+    "ledgerObservedWorkCount": 3052,
+    "observedSalesShareWorkCount": 2718,
+    "modernWindowWorkCount": 2682,
+    "salesShareFactRowCount": 190663,
+    "modernWindowFactRowCount": 167972,
+    "mappingCoverage": 1,
+    "rowConservationPassed": true,
+    "cashConservationPassed": true,
+    "buyoutIsolated": true,
+    "unmaturedLabelZeroImputationCount": 0,
+    "incomplete202605Excluded": true,
+    "incomplete202605FactCount": 3,
+    "incomplete202605MarkedCalibrationValidCount": 3,
+    "privateDigestValuesPublished": false
+  },
+  "validation": {
+    "metricsRead": false,
+    "laterOriginConsumed": false,
+    "trainingPerformed": false,
+    "finalHoldoutOpened": false,
+    "stopModelDevelopment": true
+  },
+  "blockReasons": [
+    "candidate_block_contains_previously_evaluated_origin",
+    "candidate_block_precedes_v1_0_selection_evidence_label_boundary",
+    "original_frozen_model_state_artifact_missing"
+  ],
+  "nextCondition": {
+    "earliestPossibleIndependentOrigin": "2026-01",
+    "requiredCompleteLedgerThrough": "2029-01",
+    "frozenStateArtifactRequired": true,
+    "finalHoldoutRemainsSealed": true
+  },
+  "boundaries": {
+    "aggregateOnly": true,
+    "privateDigestValuesPublished": false,
+    "metricsRead": false,
+    "laterOriginConsumed": false,
+    "codeMergeDoesNotEqualModelRelease": true,
+    "currentDecision": "CANARY_FAIL",
+    "automationDecision": "AUTOMATION_BLOCKED",
+    "exactV03FallbackRetained": true,
+    "releaseAuthorized": false
+  }
+}

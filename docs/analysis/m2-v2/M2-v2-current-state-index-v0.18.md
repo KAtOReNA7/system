@@ -41,7 +41,7 @@ later-origin 预测指标，也没有训练、调参、更新专家权重或打�
 
 - v1.0 development commit：`19cf18aa4224849b06d69479de3c575bccf9804f`；
 - readiness audit implementation commit：
-  `c190a58` 所在提交（完整值见公开预注册）；
+  `d208d84` 所在提交（完整值见公开预注册）；
 - 模型、窗口、排除规则、三种报告分辨率、指标、分群、作品聚类 bootstrap、
   时间块敏感性和门槛均已预先声明；
 - private 文件完整摘要只写入 Git ignored 预注册；公开文件不含账单行、作品 ID、
