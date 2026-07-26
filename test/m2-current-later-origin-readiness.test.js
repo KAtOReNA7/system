@@ -102,6 +102,8 @@ const privateEvidence = {
   cashConservationPassed: true,
   buyoutIsolated: true,
   unmaturedLabelZeroImputationCount: 0,
+  incomplete202605FactCount: 3,
+  incomplete202605MarkedCalibrationValidCount: 3,
   incomplete202605Excluded: true,
   frozenModelStatePresent: false,
   privateDigestManifestWritten: true
@@ -166,6 +168,10 @@ test("public preregistration remains aggregate-only and non-tuning", () => {
   assert.equal(
     preregistration.dataEvidence.privateDigestValuesPublished,
     false
+  );
+  assert.equal(
+    preregistration.dataEvidence.incomplete202605ExplicitlyExcluded,
+    true
   );
   assert.equal(
     preregistration.nonReuse.validationResultsMayTuneV1,

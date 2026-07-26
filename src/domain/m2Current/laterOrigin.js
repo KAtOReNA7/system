@@ -232,6 +232,12 @@ export function buildM2HumanAnchoredLaterOriginPublicPreregistration({
       cashConservationPassed: privateEvidence.cashConservationPassed,
       rowConservationPassed: privateEvidence.rowConservationPassed,
       buyoutIsolated: privateEvidence.buyoutIsolated,
+      incomplete202605FactCount:
+        privateEvidence.incomplete202605FactCount,
+      incomplete202605MarkedCalibrationValidCount:
+        privateEvidence.incomplete202605MarkedCalibrationValidCount,
+      incomplete202605ExplicitlyExcluded:
+        privateEvidence.incomplete202605Excluded,
       privateDigestManifestWritten:
         privateEvidence.privateDigestManifestWritten,
       privateDigestValuesPublished: false,
@@ -410,7 +416,12 @@ ${blockRows}
 
 - 现金权威仍为人工拆分的分成账单；买断继续隔离。
 - 作品人口、渠道映射、行数与金额守恒均只公开聚合结果。
-- 2026-05 不完整事实明确排除；未成熟标签不填 0。
+- 2026-05 的 ${
+    diagnostic.dataQuality.incomplete202605FactCount
+  } 条不完整事实虽然在现有缓存中有 ${
+    diagnostic.dataQuality.incomplete202605MarkedCalibrationValidCount
+  } 条标记为 calibration-valid，later-origin 审计仍按完整月上限全部显式排除；
+  未成熟标签不填 0。
 - private 文件摘要仅写入 ignored 预注册，不在公开文件中披露。
 - final holdout、provider、远程/共享数据库、Canary、full160、release 和
   M3 formal 均未打开。
@@ -490,6 +501,10 @@ function buildDataQuality(privateEvidence) {
     unmaturedLabelZeroImputationCount:
       numberOrNull(value.unmaturedLabelZeroImputationCount),
     incomplete202605Excluded: value.incomplete202605Excluded === true,
+    incomplete202605FactCount:
+      numberOrNull(value.incomplete202605FactCount),
+    incomplete202605MarkedCalibrationValidCount:
+      numberOrNull(value.incomplete202605MarkedCalibrationValidCount),
     privateDigestValuesPublished: false
   });
 }

@@ -50,10 +50,9 @@ def run() -> dict[str, Any]:
         raise LaterOriginDataAuditError(
             "2026-05 incomplete fact count differs"
         )
-    if incomplete["validForCalibration"].astype(bool).any():
-        raise LaterOriginDataAuditError(
-            "2026-05 incomplete facts are calibration-valid"
-        )
+    incomplete_marked_calibration_valid = int(
+        incomplete["validForCalibration"].astype(bool).sum()
+    )
     if complete.empty or max(complete["billMonth"].astype(str)) != "2026-04":
         raise LaterOriginDataAuditError(
             "latest complete sales-share month differs"
@@ -128,6 +127,8 @@ def run() -> dict[str, Any]:
         "ledgerRowCounts": ledger["rowCounts"],
         "latestCompleteMonth": "2026-04",
         "incomplete202605FactCount": len(incomplete),
+        "incomplete202605MarkedCalibrationValidCount":
+            incomplete_marked_calibration_valid,
         "incomplete202605Excluded": True,
         "mappingCoverage": human["dataQuality"]["mappingCoverage"],
         "rowConservationPassed": True,
