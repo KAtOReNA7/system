@@ -28,11 +28,13 @@
   分群与作品聚类 bootstrap 仍失败，因此继续回退 v0.3。later-origin 资格审计
   随后确认 2023-01 至 2023-04 虽已标签成熟，但 2023-03 已进入既有辅助评估，
   且选择证据使用到 2025-12；整块不独立。最早可能独立的 origin 为 2026-01，
-  需账单完整到 2029-01，并需找回原运行时 frozen v1 state。
+  需账单完整到 2029-01，并需找回原运行时 frozen v1 state。FVA 语义审计还确认
+  后两层的 0 是安全回退值；当前代码已分开报告 raw candidate 与 selected
+  pipeline，并让门禁检查回退前 candidate FVA，不改变冻结模型参数和预测路径。
 
 当前导航：
 
-- `docs/analysis/m2-v2/M2-v2-current-state-index-v0.18.md`
+- `docs/analysis/m2-v2/M2-v2-current-state-index-v0.19.md`
 - `docs/analysis/m2-v2/M2-repository-code-convergence-and-portable-development-audit-v0.4.md`
 - `docs/analysis/m2-current/M2-current-maturity-reconstruction-v0.6.md`
 - `docs/analysis/m2-current/M2-sales-share-only-target-decision-v0.1.md`
@@ -48,6 +50,8 @@
 - `docs/analysis/m2-current/M2-current-human-anchored-later-origin-readiness-v0.1.md`
 - `docs/analysis/m2-current/M2-current-human-anchored-later-origin-code-audit-v0.1.md`
 - `docs/analysis/m2-current/M2-current-human-anchored-later-origin-preregistration-v0.1.json`
+- `docs/analysis/m2-current/M2-current-human-anchored-fva-semantics-remediation-v0.1.md`
+- `docs/analysis/m2-current/M2-current-human-anchored-fva-semantics-remediation-v0.1.json`
 - `docs/analysis/m2-current/M2-current-authority-source-audit-v0.2.json`
 - `docs/prd/m2-v2/M2-forecast-intelligence-v2-prd-v0.2.md`
 - `AGENTS.md`

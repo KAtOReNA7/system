@@ -4,7 +4,7 @@
 
 - PR #7、PR #8、PR #9、PR #10、PR #11、PR #12、PR #13 均已合入 `main`；已合并分支不得继续作为开发入口。
 - 当前仓库治理导航为：
-  - `docs/analysis/m2-v2/M2-v2-current-state-index-v0.18.md`
+  - `docs/analysis/m2-v2/M2-v2-current-state-index-v0.19.md`
   - `docs/analysis/m2-v2/M2-repository-code-convergence-and-portable-development-audit-v0.4.md`
   - `docs/analysis/m2-current/M2-current-maturity-reconstruction-v0.6.md`
   - `docs/analysis/m2-current/M2-sales-share-only-target-decision-v0.1.md`
@@ -21,6 +21,8 @@
   - `docs/analysis/m2-current/M2-current-human-anchored-later-origin-readiness-v0.1.md`
   - `docs/analysis/m2-current/M2-current-human-anchored-later-origin-code-audit-v0.1.md`
   - `docs/analysis/m2-current/M2-current-human-anchored-later-origin-preregistration-v0.1.json`
+  - `docs/analysis/m2-current/M2-current-human-anchored-fva-semantics-remediation-v0.1.md`
+  - `docs/analysis/m2-current/M2-current-human-anchored-fva-semantics-remediation-v0.1.json`
   - `docs/analysis/m2-current/M2-current-as-of-source-inventory-v0.1.json`
   - `docs/analysis/m2-current/M2-current-signal-input-portable-intake-v0.1.md`
   - `docs/prd/m2-v2/M2-forecast-intelligence-v2-prd-v0.2.md`
@@ -188,6 +190,11 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
   - 四专家原始层 WAPE 0.45540455、发生/冲销原始层 WAPE 0.44126080，均劣于
     已学习人工参数层 0.44022707，已按 nested FVA 拒绝并回退；后两层 FVA=0
     表示安全回退，不是层级成功；
+  - 2026-07-26 已修复 FVA 报告与门禁语义：完整 raw candidate、选前
+    occurrence/reversal candidate 和 selected pipeline 分开报告；历史选择口径中
+    四专家 candidate FVA 为 -0.015177，发生/冲销 candidate FVA 为 -0.001034。
+    门禁改查回退前 candidate FVA，相邻 calendar origin 只算一个时间证据块；
+    该修复不改参数、不重训、不改写冻结 development artifact；
   - 结论为 `HUMAN_ANCHORED_DEVELOPMENT_FAIL` / `M2_NOT_MATURE`。参数空间、
     失败试验和失败结论已冻结，不得在同一 2021—2025 development 窗口继续调参，
     不得替换 exact v0.3。
@@ -280,7 +287,9 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
    渠道出现变化时更新；不得再次要求用户逐行判断买断或填写内部 UID。
 5. v1.0 已验证“以人工公式为主干并扩大到全部合格作品”方向有相对价值，但现有
    信号仍不足以达到绝对质量。v1.0 的人工阈值、层级专家、概率层、参数空间和失败
-   结论已经冻结；不得继续在同一 2021—2025 development 窗口调参。
+   结论已经冻结；不得继续在同一 2021—2025 development 窗口调参。FVA 评估必须
+   同时报告 raw candidate 与 selected pipeline；不得把安全回退后的 0 当作层级
+   增量，也不得用大量作品/case 数替代时间验证块数量。
 6. 2023-01 至 2023-04 later-origin 连续块已经资格审计并被拒绝，不得拆月重试。
    下一次最早可能时间独立的 origin 为 2026-01，只有账单完整到 2029-01 且取得
    原运行时 frozen v1 state 后才可重新审计；此前不读取指标、不填 0、不打开
@@ -319,7 +328,8 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
   challenger；v1.0 人工公式主干、可学习人工参数、四个受约束专家、正向/冲销
   分离、按作品外验证、严格短周期 rolling-origin、作品聚类 bootstrap、FVA 与
   分位数区间；later-origin 资格 core、public preregistration、private digest
-  binding 和无 private readiness verifier。
+  binding 和无 private readiness verifier；v1.0 raw/selected FVA 分离、非恒真
+  candidate FVA 门禁和连续月份时间块审计。
 - 已验证：三账单逐行/逐月守恒、3,053 基础人口与 3,052 账单观察人口边界、
   7,851 旧机器路由到 7,083 当前 served case 的重分类、25-origin/56,856-case
   次级 development 复验；人工分区后作品 WAPE 0.49075894，组合 WAPE

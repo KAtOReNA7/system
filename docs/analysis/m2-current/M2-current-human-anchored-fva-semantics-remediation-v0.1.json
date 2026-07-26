@@ -1,0 +1,64 @@
+{
+  "schema": "m2.current.human_anchored.fva_semantics_remediation.v0.1",
+  "generatedAt": "2026-07-26",
+  "status": "IMPLEMENTED_WITHOUT_MODEL_RETUNING",
+  "implementationBaseCommit": "392d207eb98b6f25724884b113d9fb8922bf73a8",
+  "historicalEvidence": {
+    "source": "M2-current-human-anchored-development-v0.1.json",
+    "immutable": true,
+    "learnedGlobal": {
+      "wape": 0.4402270694,
+      "signedBias": -0.1236659773
+    },
+    "selectionMetadata": {
+      "hierarchicalPositive": {
+        "selectedPipelineFva": 0,
+        "candidateWape": 0.4554045527,
+        "candidateFvaVersusLearnedGlobal": -0.0151774834,
+        "candidateRelativeWapeChange": 0.0344764685,
+        "selection": "REJECTED_FALLBACK"
+      },
+      "occurrenceAndReversal": {
+        "selectedPipelineFva": 0,
+        "candidateWape": 0.4412608028,
+        "candidateFvaVersusSelectedHierarchy": -0.0010337334,
+        "candidateRelativeWapeChange": 0.0023481931,
+        "selection": "REJECTED_FALLBACK"
+      }
+    },
+    "limitation": "legacy rawHierarchyMetrics includes inner-fold selection and is not a fully unselected raw ablation"
+  },
+  "implementationContract": {
+    "selectedPredictionBehaviorChanged": false,
+    "modelParametersChanged": false,
+    "trainingPerformed": false,
+    "laterOriginMetricsRead": false,
+    "rawPredictionFieldsPreserved": true,
+    "candidateFvaReportedSeparately": true,
+    "selectedPipelineFvaReportedSeparately": true,
+    "gateUsesCandidateFva": true,
+    "adjacentOriginsCountAsOneTimeBlock": true,
+    "caseCountCannotSubstituteForTimeBlockCount": true
+  },
+  "boundaries": {
+    "privateDataPublished": false,
+    "workIdentifiersPublished": false,
+    "channelIdentifiersPublished": false,
+    "reversiblePrivateDigestPublished": false,
+    "finalHoldoutOpened": false,
+    "providerUsed": false,
+    "databaseUsed": false,
+    "canaryAuthorized": false,
+    "full160Authorized": false,
+    "releaseAuthorized": false,
+    "m3FormalAuthorized": false
+  },
+  "decisions": {
+    "currentDecision": "CANARY_FAIL",
+    "automationDecision": "AUTOMATION_BLOCKED",
+    "fallback": "M2-current-occurrence-amount-calibration-v0.3",
+    "modelTrainingAuthorized": false,
+    "candidateSelectionAuthorized": false,
+    "codeMergeDoesNotEqualModelRelease": true
+  }
+}

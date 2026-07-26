@@ -7,6 +7,8 @@ import {
   fitM2HumanAnchoredModel,
   forecastM2HumanAnchoredBase,
   predictM2HumanAnchored,
+  rawCandidateLayerFvaGate,
+  scoreM2HumanAnchoredLayers,
   strictRollingM2HumanAnchored,
   workClusterBootstrap
 } from "../src/domain/m2Current/humanAnchored.js";
@@ -96,6 +98,80 @@ test("cross-work fitting never trains on the validation work", () => {
   assert.ok(result.rows.every((row) => (
     row.quantiles["0.05"] <= row.quantiles["0.95"]
   )));
+  assert.ok(result.rows.every((row) => (
+    Number.isFinite(row.rawHierarchicalPointEstimate)
+    && Number.isFinite(row.fullyRawOccurrenceReversalPointEstimate)
+    && Number.isFinite(row.candidateOccurrenceReversalPointEstimate)
+  )));
+});
+
+test("candidate FVA remains negative when selected pipeline safely falls back", () => {
+  const rows = [{
+    ...syntheticRow("1", "2022-12", 36, 100, 0),
+    actual: 100,
+    manualPointEstimate: 150,
+    learnedGlobalPointEstimate: 110,
+    rawHierarchicalPointEstimate: 140,
+    hierarchicalPointEstimate: 110,
+    fullyRawOccurrenceReversalPointEstimate: 130,
+    candidateOccurrenceReversalPointEstimate: 130,
+    occurrenceReversalPointEstimate: 130,
+    pointEstimate: 110,
+    quantiles: {
+      "0.05": 80,
+      "0.1": 85,
+      "0.2": 90,
+      "0.5": 110,
+      "0.8": 125,
+      "0.9": 130,
+      "0.95": 135
+    }
+  }];
+  const metrics = scoreM2HumanAnchoredLayers(rows, config);
+
+  assert.ok(Math.abs(metrics.candidateFva[1].valueAdded + 0.3) < 1e-12);
+  assert.equal(metrics.selectedPipelineFva[1].valueAdded, 0);
+  assert.ok(Math.abs(metrics.candidateFva[2].valueAdded + 0.2) < 1e-12);
+  assert.equal(metrics.selectedPipelineFva[2].valueAdded, 0);
+  assert.equal(rawCandidateLayerFvaGate(metrics, 0), false);
+});
+
+test("raw expert output is retained even when hierarchy is rejected", () => {
+  const rows = Array.from({ length: 12 }, (_, index) => syntheticRow(
+    String(index + 1),
+    "2022-12",
+    36,
+    80 + index,
+    index % 2
+  ));
+  const fitted = fitM2HumanAnchoredModel(rows, config);
+  const state = {
+    ...fitted,
+    expertMultipliers: {
+      ordinary_membership: 2,
+      platform_dominant: 2,
+      single_purchase: 2,
+      intermittent_or_dormant: 2
+    },
+    hierarchyAccepted: false,
+    occurrenceReversalAccepted: false
+  };
+  const prediction = predictM2HumanAnchored(rows[0], state, config);
+
+  assert.equal(
+    prediction.hierarchicalPointEstimate,
+    prediction.learnedGlobalPointEstimate
+  );
+  assert.notEqual(
+    prediction.rawHierarchicalPointEstimate,
+    prediction.hierarchicalPointEstimate
+  );
+  assert.equal(
+    prediction.fullyRawOccurrenceReversalPointEstimate,
+    prediction.rawHierarchicalPointEstimate
+      * prediction.occurrenceProbability
+      * (1 - prediction.reversalRate)
+  );
 });
 
 test("strict rolling fitting reads only labels mature by the outer origin", () => {
@@ -118,6 +194,40 @@ test("strict rolling fitting reads only labels mature by the outer origin", () =
     row.maximumTrainingLabelAvailableAsOf <= row.outerOrigin
     && row.sameOrLaterOuterTruthRead === false
   )));
+  assert.equal(
+    result.timeBlockAudit.caseCountCannotSubstituteForTimeBlockCount,
+    true
+  );
+});
+
+test("strict rolling counts adjacent origins as one time evidence block", () => {
+  const rows = [];
+  for (const origin of ["2021-12", "2022-01", "2022-02", "2022-05"]) {
+    for (let work = 1; work <= 6; work += 1) {
+      rows.push(syntheticRow(
+        String(work),
+        origin,
+        1,
+        60 + work,
+        work % 2,
+        addMonths(origin, 1)
+      ));
+    }
+  }
+  const result = strictRollingM2HumanAnchored(rows, {
+    ...config,
+    dataContract: {
+      ...config.dataContract,
+      strictAuxiliaryEvaluationStartsAt: "2022-01"
+    }
+  });
+
+  assert.equal(result.timeBlockAudit.evaluatedOriginCount, 3);
+  assert.equal(result.timeBlockAudit.independentTimeBlockCount, 2);
+  assert.deepEqual(
+    result.timeBlockAudit.blocks.map((block) => block.originCount),
+    [2, 1]
+  );
 });
 
 test("work-cluster bootstrap keeps repeated cases within sampled works", () => {

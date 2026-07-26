@@ -179,6 +179,12 @@ canonical 渠道治理已完成：133 个原始组合归并为 74 个 canonical 
   1.00000000`；
 - 作品聚类 bootstrap 的相对人工 WAPE 改善 95% 区间为
   `[-38.40%, 5.36%]`，仍跨 0；
+- 后两层公开 FVA=0 只表示 selected pipeline 安全回退。回退前选择口径中，
+  四专家 candidate FVA 为 `-0.015177`，发生/冲销 candidate FVA 为
+  `-0.001034`；当前门禁必须检查 candidate FVA，并同时保留 selected-pipeline
+  FVA，不能让回退后的非负值替代层级证据；
+- strict rolling 必须把相邻 calendar origin 合并为一个时间证据块；作品或 case
+  数不能替代独立时间块数量；
 - 历史渠道属性生效时间、渠道状态、真实上线月、单购净单价和独立 later-origin
   均缺失。
 
@@ -189,3 +195,7 @@ canonical 渠道治理已完成：133 个原始组合归并为 74 个 canonical 
 2026-01 origin 的标签完整到 2029-01，并要求原运行时 frozen v1 state；或者仅在
 明确模型公式需要时接收历史 as-of 可审计信号。final holdout、provider、数据库、
 Canary/full160、release 和 M3 formal 均未授权。
+
+FVA 语义修复仅增加 raw/candidate/selected 报告、非恒真门禁和时间块审计，
+不改变 v1.0 参数、专家结构、冻结预测路径或历史失败结论，也不授权在同一
+development 窗口开发 v1.1。
