@@ -121,6 +121,26 @@ seasonal naive、Croston/SBA/TSB/ADIDA 等基线比较。
 promotion 还必须使用未参与模型设计的预注册 later-origin 或经单独授权的 final
 holdout。
 
+### 4.1 later-origin 独立性与一次性消费
+
+later-origin 必须在读取任何预测指标前预注册。预注册至少绑定冻结模型代码和
+commit、训练与选择证据边界、候选时间块、36 个月标签截止、资格和排除 ledger、
+private 数据摘要、人口/守恒、指标、分群、bootstrap、时间块敏感性与门槛。
+
+独立性按时间证据判断，不能只看某个 origin 是否出现在 36 个月主评估中：
+
+1. origin 必须晚于 v1.0 参数选择、层比较和阈值判断所读取的最晚标签月份；
+2. 相邻候选月份必须作为一个连续时间块，不得按作品数或月份数冒充多份独立证据；
+3. 未成熟标签和不完整月份必须排除，禁止填 0；
+4. 只允许直接复用原运行时冻结的完整模型状态；不得在验证前重新拟合人工参数、
+   专家权重、occurrence/reversal 或分位数残差池；
+5. 指标一旦读取，该时间块即消费；失败后只允许误差归因，不自动授权 v1.1。
+
+2026-07-26 资格审计确认：2023-01 至 2023-04 的 36 个月标签已成熟，但
+2023-03 已进入既有短周期辅助评估，v1.0 选择/比较证据的标签边界到 2025-12，
+且原运行没有留下完整 frozen state。因此该连续块不合格，未读取指标。最早可能
+时间独立的 origin 为 2026-01，需要账单完整到 2029-01 并取得原始 frozen state。
+
 最低 development 门禁：
 
 - WAPE ≤ 0.30；
@@ -164,6 +184,8 @@ canonical 渠道治理已完成：133 个原始组合归并为 74 个 canonical 
 
 结论：`HUMAN_ANCHORED_DEVELOPMENT_FAIL` / `M2_NOT_MATURE`，继续
 `REJECT_KEEP_V0_3_WORK_LEVEL_FALLBACK`。v1.0 参数和失败结论冻结，不得在同一
-窗口继续调参。下一步只能是未参与选择的 mature later-origin，或对明确模型公式
-有用的历史 as-of 可审计信号。final holdout、provider、数据库、Canary/full160、
-release 和 M3 formal 均未授权。
+窗口继续调参。later-origin readiness audit 已授权并完成，但 2023 候选块不独立，
+`metricsRead=false`、`laterOriginConsumed=false`。下一次资格审计最早等待
+2026-01 origin 的标签完整到 2029-01，并要求原运行时 frozen v1 state；或者仅在
+明确模型公式需要时接收历史 as-of 可审计信号。final holdout、provider、数据库、
+Canary/full160、release 和 M3 formal 均未授权。

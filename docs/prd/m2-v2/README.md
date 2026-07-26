@@ -15,8 +15,9 @@ human baseline、未来买断、resume、Canary、full160、next step 或授权�
 
 当前治理入口：
 
-- `docs/analysis/m2-v2/M2-v2-current-state-index-v0.17.md`
-- `docs/analysis/m2-current/M2-current-public-diagnostic-v0.11.json`
+- `docs/analysis/m2-v2/M2-v2-current-state-index-v0.18.md`
+- `docs/analysis/m2-current/M2-current-public-diagnostic-v0.12.json`
+- `docs/analysis/m2-current/M2-current-human-anchored-later-origin-readiness-v0.1.md`
 - `docs/analysis/m2-current/M2-current-human-anchored-development-v0.1.md`
 - `docs/analysis/m2-current/M2-current-human-anchored-research-and-decision-v0.1.md`
 - `docs/analysis/m2-current/M2-current-canonical-channel-development-v0.1.md`

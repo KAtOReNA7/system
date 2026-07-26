@@ -232,7 +232,7 @@ export function evaluateM2CurrentDiagnosticGate(
     blockers: [...new Set(blockers)],
     developmentDirection: contract.schema === "m2.current.config.v0.6"
       ? evidence.coverage.targetClassification?.passed === true
-        ? "freeze_human_anchored_v1_then_unseen_later_origin_or_auditable_formula_bound_work_signals"
+        ? "later_origin_not_qualified_wait_for_2029_01_complete_labels_and_original_frozen_v1_state"
         : "sales_share_target_classification_then_auditable_work_level_signals_and_independent_validation"
       : contract.schema === "m2.current.config.v0.5"
       ? "independent_portfolio_validation_and_auditable_work_level_signals"

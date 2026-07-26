@@ -1,0 +1,323 @@
+{
+  "schema": "m2.current.human_anchored_later_origin_public_preregistration.v0.1",
+  "candidateId": "M2-current-human-anchored-hierarchical-probabilistic-v1.0",
+  "target": "future_sales_share_cash",
+  "authorization": {
+    "readinessAudit": true,
+    "qualifiedLaterOriginValidation": true,
+    "finalHoldout": false,
+    "provider": false,
+    "remoteOrSharedDatabase": false,
+    "canary": false,
+    "full160": false,
+    "release": false,
+    "m3Formal": false
+  },
+  "freeze": {
+    "developmentCommit": "19cf18aa4224849b06d69479de3c575bccf9804f",
+    "auditImplementationCommit": "d208d8436ec7006b06e80c4c3d70f601e445edf3",
+    "trackedCodeDigest": "e75db10d8e156b751d1505da57b4023712d041938bd4e2e478618dda0f6b23c4",
+    "modelCodeFrozen": true,
+    "parameterSpaceFrozen": true,
+    "humanThresholdsFrozen": true,
+    "fourExpertStructureFrozen": true,
+    "previousFailureConclusionFrozen": true,
+    "refitProhibited": true,
+    "resultDrivenTuningProhibited": true
+  },
+  "windows": {
+    "featureAndLabelWindow": {
+      "from": "2021-01",
+      "through": "2025-12"
+    },
+    "primaryDevelopmentOrigins": {
+      "from": "2021-12",
+      "through": "2022-12",
+      "horizonMonths": 36
+    },
+    "auxiliaryDevelopmentOrigins": {
+      "from": "2021-12",
+      "through": "2025-09",
+      "horizons": [
+        3,
+        6,
+        12,
+        18,
+        24
+      ]
+    },
+    "selectionEvidenceLabelThrough": "2025-12",
+    "candidateBlock": {
+      "from": "2023-01",
+      "through": "2023-04",
+      "horizonMonths": 36,
+      "labelThrough": "2026-04",
+      "timeBlockCount": 1
+    }
+  },
+  "eligibility": {
+    "populationRule": "all_authority_works_with_sales_share_history_as_of_origin",
+    "exclusions": [
+      "pure_buyout_outside_forecast_scope",
+      "no_sales_share_history_as_of_origin",
+      "unmatured_36_month_label",
+      "origin_or_label_period_used_by_v1_0_selection_evidence",
+      "incomplete_2026_05_facts",
+      "missing_original_frozen_model_state"
+    ],
+    "zeroImputationForUnmaturedLabels": false,
+    "candidateMonths": [
+      {
+        "origin": "2023-01",
+        "labelThrough": "2026-01",
+        "mature": true,
+        "originPreviouslyUsed": false,
+        "afterSelectionEvidence": false,
+        "eligible": false,
+        "reasons": [
+          "origin_not_after_v1_0_selection_evidence_label_boundary"
+        ]
+      },
+      {
+        "origin": "2023-02",
+        "labelThrough": "2026-02",
+        "mature": true,
+        "originPreviouslyUsed": false,
+        "afterSelectionEvidence": false,
+        "eligible": false,
+        "reasons": [
+          "origin_not_after_v1_0_selection_evidence_label_boundary"
+        ]
+      },
+      {
+        "origin": "2023-03",
+        "labelThrough": "2026-03",
+        "mature": true,
+        "originPreviouslyUsed": true,
+        "afterSelectionEvidence": false,
+        "eligible": false,
+        "reasons": [
+          "origin_used_in_v1_0_development_evidence",
+          "origin_not_after_v1_0_selection_evidence_label_boundary"
+        ]
+      },
+      {
+        "origin": "2023-04",
+        "labelThrough": "2026-04",
+        "mature": true,
+        "originPreviouslyUsed": false,
+        "afterSelectionEvidence": false,
+        "eligible": false,
+        "reasons": [
+          "origin_not_after_v1_0_selection_evidence_label_boundary"
+        ]
+      }
+    ],
+    "candidateBlockEligible": false,
+    "blockReasons": [
+      "candidate_block_contains_previously_evaluated_origin",
+      "candidate_block_precedes_v1_0_selection_evidence_label_boundary",
+      "original_frozen_model_state_artifact_missing"
+    ]
+  },
+  "dataEvidence": {
+    "authorityWorkCount": 3053,
+    "ledgerObservedWorkCount": 3052,
+    "observedSalesShareWorkCount": 2718,
+    "modernWindowWorkCount": 2682,
+    "salesShareFactRowCount": 190663,
+    "modernWindowFactRowCount": 167972,
+    "ledgerRowCounts": {
+      "buyout": 1707,
+      "salesShare": 190663,
+      "totalLedger": 192370
+    },
+    "mappingCoverage": 1,
+    "cashConservationPassed": true,
+    "rowConservationPassed": true,
+    "buyoutIsolated": true,
+    "incomplete202605FactCount": 3,
+    "incomplete202605MarkedCalibrationValidCount": 3,
+    "incomplete202605ExplicitlyExcluded": true,
+    "privateDigestManifestWritten": true,
+    "privateDigestValuesPublished": false,
+    "rawRowsPublished": false,
+    "workIdentifiersPublished": false,
+    "channelIdentifiersPublished": false
+  },
+  "evaluationPlan": {
+    "models": [
+      "frozen_v1_0",
+      "exact_v0_3",
+      "faithful_manual_formula",
+      "existing_required_baselines"
+    ],
+    "resolutions": [
+      "work_case",
+      "origin_portfolio",
+      "origin_horizon_portfolio"
+    ],
+    "metrics": [
+      "wape",
+      "signed_bias",
+      "mae",
+      "quantile_loss",
+      "central_80_interval_coverage",
+      "risk_coverage",
+      "business_loss",
+      "forecast_value_added"
+    ],
+    "segments": [
+      "active",
+      "intermittent",
+      "dormant",
+      "membership",
+      "single_purchase",
+      "platform_dominant",
+      "ordinary_work",
+      "major_reporting_categories"
+    ],
+    "bootstrap": {
+      "method": "resample_independent_works_with_all_repeated_cases",
+      "cluster": "standard_work",
+      "iterations": 500,
+      "seed": 20260726
+    },
+    "timeBlockSensitivity": {
+      "method": "leave_contiguous_origin_subblock_out",
+      "independentTimeBlockCountMustBeReported": true,
+      "workCountCannotSubstituteForTimeBlockCount": true
+    },
+    "gates": {
+      "maximumWape": 0.3,
+      "maximumAbsoluteBias": 0.1,
+      "minimumRelativeWapeImprovementToManual": 0.1,
+      "minimumRelativeWapeImprovementToExactV03": 0.05,
+      "maximumMajorSegmentAbsoluteBias": 0.15,
+      "minimumCentral80Coverage": 0.75,
+      "maximumCentral80Coverage": 0.85,
+      "minimumLayerFva": 0,
+      "workClusterBootstrapRelativeImprovementUpperBelowZero": true,
+      "independentTimeBlockRequired": true
+    },
+    "adjacentOriginsCountAsIndependentEvidence": false
+  },
+  "assessment": {
+    "schema": "m2.current.human_anchored_later_origin_assessment.v0.1",
+    "candidateId": "M2-current-human-anchored-hierarchical-probabilistic-v1.0",
+    "target": "future_sales_share_cash",
+    "decision": "NO_QUALIFIED_INDEPENDENT_MATURE_LATER_ORIGIN",
+    "candidateBlock": {
+      "from": "2023-01",
+      "through": "2023-04",
+      "timeBlockCount": 1,
+      "adjacentMonthsNotIndependentReplicates": true,
+      "eligible": false,
+      "months": [
+        {
+          "origin": "2023-01",
+          "labelThrough": "2026-01",
+          "mature": true,
+          "originPreviouslyUsed": false,
+          "afterSelectionEvidence": false,
+          "eligible": false,
+          "reasons": [
+            "origin_not_after_v1_0_selection_evidence_label_boundary"
+          ]
+        },
+        {
+          "origin": "2023-02",
+          "labelThrough": "2026-02",
+          "mature": true,
+          "originPreviouslyUsed": false,
+          "afterSelectionEvidence": false,
+          "eligible": false,
+          "reasons": [
+            "origin_not_after_v1_0_selection_evidence_label_boundary"
+          ]
+        },
+        {
+          "origin": "2023-03",
+          "labelThrough": "2026-03",
+          "mature": true,
+          "originPreviouslyUsed": true,
+          "afterSelectionEvidence": false,
+          "eligible": false,
+          "reasons": [
+            "origin_used_in_v1_0_development_evidence",
+            "origin_not_after_v1_0_selection_evidence_label_boundary"
+          ]
+        },
+        {
+          "origin": "2023-04",
+          "labelThrough": "2026-04",
+          "mature": true,
+          "originPreviouslyUsed": false,
+          "afterSelectionEvidence": false,
+          "eligible": false,
+          "reasons": [
+            "origin_not_after_v1_0_selection_evidence_label_boundary"
+          ]
+        }
+      ]
+    },
+    "temporalBoundary": {
+      "horizonMonths": 36,
+      "latestCompleteMonth": "2026-04",
+      "incompleteMonthsExcluded": [
+        "2026-05"
+      ],
+      "selectionEvidenceLabelThrough": "2025-12",
+      "earliestTimeIndependentOrigin": "2026-01",
+      "earliestTimeIndependentLabelThrough": "2029-01",
+      "missingCompleteMonthCount": 33,
+      "missingCompleteMonthRange": {
+        "from": "2026-05",
+        "through": "2029-01"
+      }
+    },
+    "frozenModel": {
+      "developmentCommit": "19cf18aa4224849b06d69479de3c575bccf9804f",
+      "stateArtifactPresent": false,
+      "refitAllowed": false,
+      "parameterUpdateAllowed": false,
+      "expertWeightUpdateAllowed": false,
+      "thresholdReselectionAllowed": false
+    },
+    "dataQuality": {
+      "authorityWorkCount": 3053,
+      "ledgerObservedWorkCount": 3052,
+      "observedSalesShareWorkCount": 2718,
+      "modernWindowWorkCount": 2682,
+      "salesShareFactRowCount": 190663,
+      "modernWindowFactRowCount": 167972,
+      "mappingCoverage": 1,
+      "rowConservationPassed": true,
+      "cashConservationPassed": true,
+      "buyoutIsolated": true,
+      "unmaturedLabelZeroImputationCount": 0,
+      "incomplete202605Excluded": true,
+      "incomplete202605FactCount": 3,
+      "incomplete202605MarkedCalibrationValidCount": 3,
+      "privateDigestValuesPublished": false
+    },
+    "validation": {
+      "metricsRead": false,
+      "laterOriginConsumed": false,
+      "trainingPerformed": false,
+      "finalHoldoutOpened": false,
+      "stopModelDevelopment": true
+    },
+    "blockReasons": [
+      "candidate_block_contains_previously_evaluated_origin",
+      "candidate_block_precedes_v1_0_selection_evidence_label_boundary",
+      "original_frozen_model_state_artifact_missing"
+    ]
+  },
+  "nonReuse": {
+    "validationResultsMayTuneV1": false,
+    "consumedBlockMayBeReusedForTuning": false,
+    "failureAllowsAttributionOnly": true,
+    "v1_1DevelopmentAuthorized": false
+  }
+}

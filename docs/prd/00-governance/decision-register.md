@@ -1,12 +1,13 @@
 # 决策登记表
 
 M2 当前授权与停止边界只由用户最新明确指令和
-`docs/analysis/m2-v2/M2-v2-current-state-index-v0.17.md` 给出。下列历史记录中
+`docs/analysis/m2-v2/M2-v2-current-state-index-v0.18.md` 给出。下列历史记录中
 出现的“已授权”“当前”或 next step 不构成 provider、resume、Canary、full160、
 holdout 或新开发授权。
 
 | 决策 | 状态 | 当前结论 | ADR |
 |---|---|---|---|
+| DEC-017 | 当前 | v1.0 later-origin 资格审计确认 2023-01 至 2023-04 虽已 36 个月标签成熟，但必须作为 1 个连续块，且 2023-03 已进入既有辅助评估、选择证据读取到 2025-12，整块不独立；原运行完整 frozen state 缺失，未读取指标、未消耗窗口。最早可能独立 origin 为 2026-01，需账单完整到 2029-01 且取得原 frozen state | `docs/analysis/m2-current/M2-current-human-anchored-later-origin-readiness-v0.1.md` |
 | DEC-015 | 当前 | M2 只预测未来分成收入现金；全部买断现金（包括 cutoff 已确认买断应收）在预测范围外。人工账单分区是现金类型唯一权威；133 个渠道原始组合已归并为 74 个 canonical 渠道。v0.9 在 25-origin 诊断恶化、在 7,083 served case 仅改善 0.0118%，结论 `REJECT_KEEP_V0_3_WORK_LEVEL_FALLBACK` | `docs/prd/m2-v2/M2-forecast-intelligence-v2-prd-v0.2.md` |
 | DEC-016 | 当前 | 人工主力/边缘渠道算法是新模型唯一结构主干和 fallback。v1.0 从全部 3,053 部权威作品建立资格账本，在 1,125 部独立作品、12,039 个成熟 36 个月 case 上较人工原式改善 17.16%，但 WAPE 0.44022707、bias -0.12366598，分群、作品聚类 bootstrap 与 later-origin 门禁失败；冻结 v1.0，继续 exact v0.3 fallback | `docs/analysis/m2-current/M2-current-human-anchored-research-and-decision-v0.1.md` |
 | DEC-014 | 历史收口声明（已被 PR #7 独立外审修复轮 supersede） | v0.1 summary 记录当时的 verifier/private-state 收口声明；独立外审随后识别 merge blockers，因此该行只作历史追溯、`not authorization`。当前状态只见 current-state-index-v0.2；PR #7 保持 Draft/open/unmerged，`nextDevelopmentReadiness=NOT_AUTHORIZED` | `docs/analysis/m2-v2/M2-v2-integrity-remediation-summary-v0.1.md` |
