@@ -188,9 +188,35 @@ canonical 渠道治理已完成：133 个原始组合归并为 74 个 canonical 
 - 历史渠道属性生效时间、渠道状态、真实上线月、单购净单价和独立 later-origin
   均缺失。
 
-结论：`HUMAN_ANCHORED_DEVELOPMENT_FAIL` / `M2_NOT_MATURE`，继续
-`REJECT_KEEP_V0_3_WORK_LEVEL_FALLBACK`。v1.0 参数和失败结论冻结，不得在同一
-窗口继续调参。later-origin readiness audit 已授权并完成，但 2023 候选块不独立，
+2026-07-26 获准执行的
+`M2-current-human-anchored-tsb-occurrence-challenger-v0.1` 是 v1.0 之后唯一的
+受控单变量候选。它只用 canonical TSB 替换 occurrence/positive amount 子层，
+共同 reversal 层保持不变；预注册冻结 occurrence smoothing `{0.05, 0.10, 0.20}`、
+positive amount smoothing `{0.05, 0.10, 0.20}` 和 blend
+`lambda {0, 0.25, 0.50}` 共 27 个组合。inner selection 只能读取当前 outer fold
+之前的 origin，observed zero 更新 occurrence，unobserved month 禁止填 0。
+
+受控 development 结果：
+
+- 主评估仍覆盖 1,125 部独立作品、12,039 个成熟 36 个月 case；
+- learnedGlobal、raw TSB、选前 blend 的 WAPE 分别为
+  `0.44022495 / 0.54346231 / 0.45348237`；
+- raw TSB 与选前 blend FVA 分别为 `-0.10323736 / -0.01325742`；selected
+  pipeline 回退 `lambda=0` 后 FVA=0，只表示安全回退；
+- active/intermittent/dormant WAPE 为
+  `0.40697875 / 0.70411859 / 1.82646345`；
+- strict rolling 74,320 case 中 learnedGlobal/blend WAPE 为
+  `0.41191878 / 0.44487051`，11 个连续时间块只有 3 个改善；
+- 作品聚类相对候选改善 95% 区间为
+  `[-0.02847674, 0.09264632]`；
+- 与 v0.3 精确重叠的 5,203 个同窗 case 中，blend/v0.3 WAPE 为
+  `0.26352433 / 0.37610234`，但这不是独立 later-origin，不能推翻总体门禁。
+
+结论：v1.0 保持 `HUMAN_ANCHORED_DEVELOPMENT_FAIL`，TSB 单变量候选为
+`TSB_OCCURRENCE_DEVELOPMENT_FAIL`，总体仍是 `M2_NOT_MATURE` /
+`REJECT_KEEP_V0_3_WORK_LEVEL_FALLBACK`。v1.0 参数、TSB 27 组合、inner
+selection、预测结果与失败结论均冻结；不得在同一窗口继续调参或建立第二个候选。
+later-origin readiness audit 已授权并完成，但 2023 候选块不独立，
 `metricsRead=false`、`laterOriginConsumed=false`。下一次资格审计最早等待
 2026-01 origin 的标签完整到 2029-01，并要求原运行时 frozen v1 state；或者仅在
 明确模型公式需要时接收历史 as-of 可审计信号。final holdout、provider、数据库、

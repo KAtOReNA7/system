@@ -1,0 +1,48 @@
+{
+  "schema": "m2.current.human_anchored_tsb_public_diagnostic.v0.1",
+  "candidateId": "M2-current-human-anchored-tsb-occurrence-challenger-v0.1",
+  "target": "future_sales_share_cash",
+  "privateCapabilityUsed": false,
+  "syntheticCaseCount": 3,
+  "parameterGridCount": 27,
+  "checks": {
+    "lambdaZeroExactlyRestoresLearnedGlobal": true,
+    "observedZeroMonthsReduceOccurrenceProbability": true,
+    "zeroMonthsDoNotUpdatePositiveAmount": true,
+    "reversalSeriesDoesNotEnterPositiveTsbState": true,
+    "noPrivateInputRequired": true,
+    "noUnobservedOrUnmaturedZeroImputation": true
+  },
+  "point": {
+    "caseCount": 3,
+    "wape": 0.17562427051281046,
+    "signedBias": 0.16510871007325,
+    "zeroImputationUsed": false,
+    "mae": 26.636347694442918,
+    "rmse": 42.69359069501851,
+    "mase": null,
+    "rmsse": null,
+    "scaledMetricCoverage": 0,
+    "cashOccurrence": {
+      "positiveCaseCount": 2,
+      "zeroOrNegativeCaseCount": 1,
+      "observedRate": 0.6666666666666666,
+      "probabilityCaseCount": 3,
+      "brier": 0.09613371640997602
+    },
+    "positiveAmount": {
+      "caseCount": 2,
+      "wape": 0.013692110203129779,
+      "signedBias": 0.002940245034590441
+    }
+  },
+  "boundaries": {
+    "frozenV10Modified": false,
+    "exactV03FallbackRetained": true,
+    "independentLaterOriginOpened": false,
+    "finalHoldoutOpened": false,
+    "currentDecision": "CANARY_FAIL",
+    "automationDecision": "AUTOMATION_BLOCKED",
+    "releaseAuthorized": false
+  }
+}

@@ -423,7 +423,7 @@ function forecastBaselines(series, horizonMonths) {
   }).reduce((sum, value) => sum + value, 0);
   const croston = crostonClassic(nonnegative);
   const sba = crostonSba(nonnegative);
-  const tsb = teunterSyntetosBabai(nonnegative);
+  const tsb = fitM2CurrentTsbProcess(nonnegative);
   const adida = aggregateDisaggregate(nonnegative);
   return {
     zero: {
@@ -715,24 +715,55 @@ export function buildM2CurrentHistoryFeatures(
   });
 }
 
-function teunterSyntetosBabai(series, alpha = 0.1, beta = 0.1) {
-  const positives = series.filter((value) => value > 0);
+export function fitM2CurrentTsbProcess(
+  series,
+  {
+    positiveAmountSmoothing = 0.1,
+    occurrenceSmoothing = 0.1
+  } = {}
+) {
+  const values = validateHistorySeries(series).map(
+    (value) => Math.max(0, value)
+  );
+  const alpha = smoothing(
+    positiveAmountSmoothing,
+    "tsb_positive_amount_smoothing"
+  );
+  const beta = smoothing(
+    occurrenceSmoothing,
+    "tsb_occurrence_smoothing"
+  );
+  const positives = values.filter((value) => value > 0);
   if (positives.length === 0) {
-    return { rate: 0, occurrenceProbability: 0 };
+    return Object.freeze({
+      rate: 0,
+      expectedMonthlyPositiveCash: 0,
+      occurrenceProbability: 0,
+      positiveAmountLevel: 0,
+      observedMonthCount: values.length,
+      positiveMonthCount: 0
+    });
   }
-  let probability = positives.length / series.length;
+  let probability = positives.length / values.length;
   let size = positives[0];
-  for (const value of series) {
+  for (const value of values) {
     const occurrence = value > 0 ? 1 : 0;
     probability += beta * (occurrence - probability);
     if (occurrence === 1) {
       size += alpha * (value - size);
     }
   }
-  return {
-    rate: Math.max(0, probability * size),
-    occurrenceProbability: clamp(probability, 0, 1)
-  };
+  const occurrenceProbability = clamp(probability, 0, 1);
+  const positiveAmountLevel = Math.max(0, size);
+  const rate = occurrenceProbability * positiveAmountLevel;
+  return Object.freeze({
+    rate,
+    expectedMonthlyPositiveCash: rate,
+    occurrenceProbability,
+    positiveAmountLevel,
+    observedMonthCount: values.length,
+    positiveMonthCount: positives.length
+  });
 }
 
 function aggregateDisaggregate(series, alpha = 0.1) {
@@ -828,6 +859,14 @@ function positiveInteger(value, name) {
 function finite(value, name) {
   const number = Number(value);
   if (!Number.isFinite(number)) {
+    throw new Error(`m2_current_${name}_invalid`);
+  }
+  return number;
+}
+
+function smoothing(value, name) {
+  const number = finite(value, name);
+  if (number <= 0 || number > 1) {
     throw new Error(`m2_current_${name}_invalid`);
   }
   return number;

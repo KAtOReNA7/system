@@ -16,13 +16,31 @@ import {
 } from "../../src/domain/m2Current/humanAnchored.js";
 import { scoreM2CurrentPointRows } from
   "../../src/domain/m2Current/metrics.js";
+import {
+  runM2HumanAnchoredTsbPrivateDevelopment,
+  runM2HumanAnchoredTsbPublicDiagnostic,
+  writeM2HumanAnchoredTsbBlockedDevelopment
+} from "./human_anchored_tsb_occurrence_mode.mjs";
 
+let config;
 
+await main();
+
+async function main() {
 const root = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
   "../.."
 );
-const config = JSON.parse(await readFile(
+const tsbPublicMode = process.argv.includes("--tsb-occurrence-public");
+const tsbPrivateMode = process.argv.includes("--tsb-occurrence");
+if (tsbPublicMode) {
+  await runM2HumanAnchoredTsbPublicDiagnostic({
+    root,
+    verify: process.argv.includes("--verify")
+  });
+  return;
+}
+config = JSON.parse(await readFile(
   path.join(root, "config/m2-current-human-anchored.v0.1.json"),
   "utf8"
 ));
@@ -45,6 +63,17 @@ const materialization = spawnSync(
   }
 );
 if (materialization.status !== 0) {
+  if (tsbPrivateMode) {
+    await runM2HumanAnchoredTsbPublicDiagnostic({
+      root,
+      verify: false
+    });
+    await writeM2HumanAnchoredTsbBlockedDevelopment({
+      root,
+      reason: "controlled_private_materialization_failed"
+    });
+    return;
+  }
   throw new Error(
     "m2_human_anchored_materialization_failed:"
     + materialization.stderr
@@ -90,6 +119,18 @@ if (historyByKey.size !== histories.length) {
 }
 const primaryCases = joinCases(parseNdjson(primaryText), historyByKey);
 const auxiliaryCases = joinCases(parseNdjson(auxiliaryText), historyByKey);
+
+if (tsbPrivateMode) {
+  await runM2HumanAnchoredTsbPrivateDevelopment({
+    root,
+    baseConfig: config,
+    manifest,
+    primaryCases,
+    auxiliaryCases,
+    privateDirectory
+  });
+  return;
+}
 
 const primary = crossFitM2HumanAnchored(primaryCases, config);
 const primaryBootstrap = workClusterBootstrap(primary.rows, {
@@ -204,6 +245,7 @@ process.stdout.write(JSON.stringify({
   developmentDecision: gates.developmentDecision,
   maturityDecision: gates.maturityDecision
 }) + "\n");
+}
 
 function assertBoundary(value) {
   if (

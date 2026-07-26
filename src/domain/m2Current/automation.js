@@ -19,33 +19,16 @@ export function evaluateM2CurrentAutomationPolicy({
     a.automationRiskScore - b.automationRiskScore
     || caseKey(a).localeCompare(caseKey(b))
   ));
-  const riskCoverage = policy.coverageLevels.map((coverage) => {
-    const count = Math.max(1, Math.floor(scored.length * Number(coverage)));
-    const selected = scored.slice(0, count);
-    const point = scoreM2CurrentEvaluationRows(selected);
-    const probability = scoreM2CurrentProbabilisticRows(
-      selected,
-      policy.quantileProbabilities
-    );
-    return {
-      requestedCaseCoverage: Number(coverage),
-      servedCaseCount: selected.length,
-      servedCaseCoverage: selected.length / scored.length,
-      servedActualCashCoverage: actualCashCoverage(selected, scored),
-      wape: point.wape,
-      signedBias: point.signedBias,
-      wis: probability.wis,
-      central80Coverage:
-        probability.intervalCoverage.central_80?.observed ?? null,
-      businessLoss: businessLoss(selected, policy.businessLoss)
-    };
-  });
+  const riskCoverage = evaluateM2CurrentRiskCoverage(scored, policy);
   const overallPoint = scoreM2CurrentEvaluationRows(scored);
   const overallProbability = scoreM2CurrentProbabilisticRows(
     scored,
     policy.quantileProbabilities
   );
-  const modelLoss = businessLoss(scored, policy.businessLoss);
+  const modelLoss = scoreM2CurrentBusinessLoss(
+    scored,
+    policy.businessLoss
+  );
   const fva = Object.fromEntries(Object.entries(comparators).map(
     ([name, comparatorRows]) => {
       const comparatorByKey = new Map(
@@ -61,7 +44,10 @@ export function evaluateM2CurrentAutomationPolicy({
         ...row,
         pointEstimate: comparatorByKey.get(caseKey(row)).pointEstimate
       }));
-      const comparatorLoss = businessLoss(aligned, policy.businessLoss);
+      const comparatorLoss = scoreM2CurrentBusinessLoss(
+        aligned,
+        policy.businessLoss
+      );
       const comparatorWape = scoreM2CurrentEvaluationRows(aligned).wape;
       return [name, {
         businessLoss: comparatorLoss,
@@ -117,6 +103,73 @@ export function evaluateM2CurrentAutomationPolicy({
   };
 }
 
+export function evaluateM2CurrentRiskCoverage(rows, policy) {
+  if (!Array.isArray(rows) || rows.length === 0) {
+    throw new Error("m2_current_risk_coverage_rows_required");
+  }
+  const scored = rows.map((row) => (
+    Number.isFinite(Number(row.automationRiskScore))
+      ? { ...row, automationRiskScore: Number(row.automationRiskScore) }
+      : {
+      ...row,
+      automationRiskScore: riskScore(row)
+    }
+  )).sort((a, b) => (
+    a.automationRiskScore - b.automationRiskScore
+    || caseKey(a).localeCompare(caseKey(b))
+  ));
+  return policy.coverageLevels.map((coverage) => {
+    const count = Math.max(1, Math.floor(scored.length * Number(coverage)));
+    const selected = scored.slice(0, count);
+    const point = scoreM2CurrentEvaluationRows(selected);
+    const probability = scoreM2CurrentProbabilisticRows(
+      selected,
+      policy.quantileProbabilities
+    );
+    return {
+      requestedCaseCoverage: Number(coverage),
+      servedCaseCount: selected.length,
+      servedCaseCoverage: selected.length / scored.length,
+      servedActualCashCoverage: actualCashCoverage(selected, scored),
+      wape: point.wape,
+      signedBias: point.signedBias,
+      wis: probability.wis,
+      central80Coverage:
+        probability.intervalCoverage.central_80?.observed ?? null,
+      businessLoss: scoreM2CurrentBusinessLoss(
+        selected,
+        policy.businessLoss
+      )
+    };
+  });
+}
+
+export function scoreM2CurrentBusinessLoss(rows, policy) {
+  if (!Array.isArray(rows) || rows.length === 0) {
+    throw new Error("m2_current_business_loss_rows_required");
+  }
+  const underWeight = Number(policy.underForecastWeight);
+  const overWeight = Number(policy.overForecastWeight);
+  const abstentionWeight = Number(policy.abstentionWeight);
+  if (
+    !Number.isFinite(underWeight)
+    || !Number.isFinite(overWeight)
+    || !Number.isFinite(abstentionWeight)
+    || underWeight < 0
+    || overWeight < 0
+    || abstentionWeight < 0
+  ) {
+    throw new Error("m2_current_business_loss_policy_invalid");
+  }
+  return rows.reduce((sum, row) => {
+    if (row.pointEstimate === null || row.pointEstimate === undefined) {
+      return sum + abstentionWeight * Math.abs(Number(row.actual));
+    }
+    const error = Number(row.pointEstimate) - Number(row.actual);
+    return sum + (error < 0 ? underWeight * -error : overWeight * error);
+  }, 0) / rows.length;
+}
+
 function riskScore(row) {
   const quantiles = row.quantiles;
   if (quantiles === null || typeof quantiles !== "object") {
@@ -143,19 +196,6 @@ function actualCashCoverage(selected, full) {
     (sum, row) => sum + Math.max(0, Number(row.actual)),
     0
   ) / denominator;
-}
-
-function businessLoss(rows, policy) {
-  const underWeight = Number(policy.underForecastWeight);
-  const overWeight = Number(policy.overForecastWeight);
-  const abstentionWeight = Number(policy.abstentionWeight);
-  return rows.reduce((sum, row) => {
-    if (row.pointEstimate === null || row.pointEstimate === undefined) {
-      return sum + abstentionWeight * Math.abs(Number(row.actual));
-    }
-    const error = Number(row.pointEstimate) - Number(row.actual);
-    return sum + (error < 0 ? underWeight * -error : overWeight * error);
-  }, 0) / rows.length;
 }
 
 function caseKey(row) {

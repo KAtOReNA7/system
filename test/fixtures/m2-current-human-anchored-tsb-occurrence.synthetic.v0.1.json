@@ -1,0 +1,135 @@
+{
+  "schema": "m2.current.human_anchored_tsb_synthetic_fixture.v0.1",
+  "purpose": "public_private_independent_contract_and_component_diagnostic",
+  "cases": [
+    {
+      "standardWorkId": "SYN-TSB-ACTIVE",
+      "origin": "2022-06",
+      "horizonMonths": 3,
+      "labelAvailableAsOf": "2022-09",
+      "segment": "active",
+      "dominantRevenueMode": "membership_subscription",
+      "secondLevelCategoryReportingOnly": "synthetic_membership",
+      "learnedGlobalPositive": 330,
+      "reversalRate": 0.05,
+      "actualPositive": 300,
+      "actualReversal": 15,
+      "salesShareMonthlyHistory": {
+        "startsAt": "2022-01",
+        "through": "2022-06",
+        "positiveSeries": [
+          80,
+          100,
+          90,
+          110,
+          95,
+          105
+        ],
+        "reversalSeries": [
+          0,
+          0,
+          10,
+          0,
+          0,
+          5
+        ],
+        "observedZeroMonthsIncluded": true,
+        "unobservedMonthsZeroFilled": false
+      }
+    },
+    {
+      "standardWorkId": "SYN-TSB-INTERMITTENT",
+      "origin": "2022-06",
+      "horizonMonths": 6,
+      "labelAvailableAsOf": "2022-12",
+      "segment": "intermittent",
+      "dominantRevenueMode": "single_purchase_or_on_demand",
+      "secondLevelCategoryReportingOnly": "synthetic_single_purchase",
+      "learnedGlobalPositive": 240,
+      "reversalRate": 0.1,
+      "actualPositive": 180,
+      "actualReversal": 20,
+      "salesShareMonthlyHistory": {
+        "startsAt": "2021-07",
+        "through": "2022-06",
+        "positiveSeries": [
+          0,
+          90,
+          0,
+          0,
+          120,
+          0,
+          0,
+          0,
+          75,
+          0,
+          0,
+          0
+        ],
+        "reversalSeries": [
+          0,
+          0,
+          0,
+          10,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          5,
+          0
+        ],
+        "observedZeroMonthsIncluded": true,
+        "unobservedMonthsZeroFilled": false
+      }
+    },
+    {
+      "standardWorkId": "SYN-TSB-DORMANT",
+      "origin": "2022-06",
+      "horizonMonths": 12,
+      "labelAvailableAsOf": "2023-06",
+      "segment": "dormant",
+      "dominantRevenueMode": "advertising_or_free_share",
+      "secondLevelCategoryReportingOnly": "synthetic_free_share",
+      "learnedGlobalPositive": 120,
+      "reversalRate": 0.2,
+      "actualPositive": 30,
+      "actualReversal": 40,
+      "salesShareMonthlyHistory": {
+        "startsAt": "2021-07",
+        "through": "2022-06",
+        "positiveSeries": [
+          60,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "reversalSeries": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          20,
+          20
+        ],
+        "observedZeroMonthsIncluded": true,
+        "unobservedMonthsZeroFilled": false
+      }
+    }
+  ]
+}

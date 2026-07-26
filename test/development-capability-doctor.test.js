@@ -37,6 +37,7 @@ test("catalog defines one private-free core capability and scoped private capabi
       "m2-algorithm-authoritative-input",
       "m2-current-canonical-channel",
       "m2-current-human-anchored",
+      "m2-current-human-anchored-tsb-occurrence",
       "m2-current-human-anchored-later-origin",
       "m3-private-materials",
     ],
@@ -173,6 +174,26 @@ test("missing human-anchored inputs block only that private capability", () => {
     "exact-v0.3-overlap-comparator",
   ]);
   assert.match(result.recovery, /block only this bounded local development replay/u);
+});
+
+test("missing TSB occurrence inputs block only that private capability", () => {
+  const result = evaluateCapability(
+    catalog,
+    "m2-current-human-anchored-tsb-occurrence",
+    {
+      repoRoot: REPO_ROOT,
+      artifactExists: () => false,
+      toolProbe: availableToolProbe,
+    },
+  );
+  assert.equal(result.status, "BLOCKED_MISSING_PRIVATE_ARTIFACT");
+  assert.equal(result.coreDevelopmentUnaffected, true);
+  assert.deepEqual(result.missingPrivateRoles, [
+    "user-reviewed-channel-master",
+    "formal-model-input-cache",
+    "exact-v0.3-overlap-comparator",
+  ]);
+  assert.match(result.recovery, /public core, synthetic diagnostics, tests and startup remain available/u);
 });
 
 test("later-origin capability requires the original frozen v1 state", () => {
