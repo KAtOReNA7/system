@@ -406,6 +406,16 @@ export function loadM2CurrentPublicEvidence(sources, config) {
         .earliestTimeIndependentLabelThrough !== "2029-01"
       || laterOrigin.frozenModel.stateArtifactPresent !== false
       || laterOrigin.frozenModel.refitAllowed !== false
+      || Number(laterOrigin.dataQuality.authorityWorkCount) !== 3053
+      || Number(laterOrigin.dataQuality.ledgerObservedWorkCount) !== 3052
+      || Number(laterOrigin.dataQuality.observedSalesShareWorkCount)
+        !== 2718
+      || Number(laterOrigin.dataQuality.modernWindowWorkCount) !== 2682
+      || Number(laterOrigin.dataQuality.incomplete202605FactCount) !== 3
+      || Number(
+        laterOrigin.dataQuality.incomplete202605MarkedCalibrationValidCount
+      ) !== 3
+      || laterOrigin.dataQuality.incomplete202605Excluded !== true
       || laterOrigin.validation.metricsRead !== false
       || laterOrigin.validation.laterOriginConsumed !== false
       || laterOrigin.boundaries.currentDecision !== "CANARY_FAIL"

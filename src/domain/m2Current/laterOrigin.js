@@ -224,9 +224,13 @@ export function buildM2HumanAnchoredLaterOriginPublicPreregistration({
     }),
     dataEvidence: Object.freeze({
       authorityWorkCount: privateEvidence.authorityWorkCount,
+      ledgerObservedWorkCount:
+        privateEvidence.ledgerObservedWorkCount,
       observedSalesShareWorkCount:
         privateEvidence.observedSalesShareWorkCount,
+      modernWindowWorkCount: privateEvidence.modernWindowWorkCount,
       salesShareFactRowCount: privateEvidence.salesShareFactRowCount,
+      modernWindowFactRowCount: privateEvidence.modernWindowFactRowCount,
       ledgerRowCounts: privateEvidence.ledgerRowCounts,
       mappingCoverage: privateEvidence.mappingCoverage,
       cashConservationPassed: privateEvidence.cashConservationPassed,
@@ -415,6 +419,11 @@ ${blockRows}
 ## 数据和治理核对
 
 - 现金权威仍为人工拆分的分成账单；买断继续隔离。
+- 权威人口为 ${diagnostic.dataQuality.authorityWorkCount} 部，其中 ${
+    diagnostic.dataQuality.ledgerObservedWorkCount
+  } 部有任一账单观察、${
+    diagnostic.dataQuality.observedSalesShareWorkCount
+  } 部有分成账单观察；1 部无现金历史的作品仍保持无观察/弃权，不补零。
 - 作品人口、渠道映射、行数与金额守恒均只公开聚合结果。
 - 2026-05 的 ${
     diagnostic.dataQuality.incomplete202605FactCount
@@ -491,9 +500,15 @@ function buildDataQuality(privateEvidence) {
   const value = privateEvidence ?? {};
   return Object.freeze({
     authorityWorkCount: numberOrNull(value.authorityWorkCount),
+    ledgerObservedWorkCount:
+      numberOrNull(value.ledgerObservedWorkCount),
     observedSalesShareWorkCount:
       numberOrNull(value.observedSalesShareWorkCount),
+    modernWindowWorkCount:
+      numberOrNull(value.modernWindowWorkCount),
     salesShareFactRowCount: numberOrNull(value.salesShareFactRowCount),
+    modernWindowFactRowCount:
+      numberOrNull(value.modernWindowFactRowCount),
     mappingCoverage: numberOrNull(value.mappingCoverage),
     rowConservationPassed: value.rowConservationPassed === true,
     cashConservationPassed: value.cashConservationPassed === true,

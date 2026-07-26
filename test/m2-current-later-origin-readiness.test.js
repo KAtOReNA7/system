@@ -90,8 +90,11 @@ const developmentEvidence = {
 
 const privateEvidence = {
   authorityWorkCount: 3053,
-  observedSalesShareWorkCount: 3052,
+  ledgerObservedWorkCount: 3052,
+  observedSalesShareWorkCount: 2718,
+  modernWindowWorkCount: 2682,
   salesShareFactRowCount: 190663,
+  modernWindowFactRowCount: 167972,
   ledgerRowCounts: {
     totalLedger: 192370,
     salesShare: 190663,
@@ -173,6 +176,7 @@ test("public preregistration remains aggregate-only and non-tuning", () => {
     preregistration.dataEvidence.incomplete202605ExplicitlyExcluded,
     true
   );
+  assert.equal(preregistration.dataEvidence.ledgerObservedWorkCount, 3052);
   assert.equal(
     preregistration.nonReuse.validationResultsMayTuneV1,
     false

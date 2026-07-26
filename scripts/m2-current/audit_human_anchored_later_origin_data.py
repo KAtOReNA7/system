@@ -112,6 +112,12 @@ def run() -> dict[str, Any]:
         str(value)
         for value in bill["standardWorkId"].dropna().astype(str)
     }
+    ledger_observed_work_ids = {
+        str(value)
+        for value in inputs["mappedBill"]["standardWorkId"]
+        .dropna()
+        .astype(str)
+    }
     if not observed_work_ids.issubset(authority_work_ids):
         raise LaterOriginDataAuditError(
             "sales-share observations exceed authority population"
@@ -119,6 +125,7 @@ def run() -> dict[str, Any]:
     return {
         "schema": "m2.current.human_anchored_later_origin_private_profile.v0.1",
         "authorityWorkCount": len(authority_work_ids),
+        "ledgerObservedWorkCount": len(ledger_observed_work_ids),
         "observedSalesShareWorkCount": len(observed_work_ids),
         "modernWindowWorkCount":
             int(human["modernWindowWorkWithFactCount"]),
