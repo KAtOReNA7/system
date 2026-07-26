@@ -45,7 +45,7 @@ test("v0.6 migrates the target to sales-share cash without opening authority", (
   assert.equal(config.target, "future_sales_share_cash");
   assert.equal(
     contract.evaluationPolicy.nextDevelopmentReadiness,
-    "HUMAN_ANCHORED_DEVELOPMENT_FAILED_LATER_ORIGIN_OR_AUDITABLE_WORK_SIGNALS_REQUIRED"
+    "LATER_ORIGIN_NOT_QUALIFIED_2029_01_COMPLETE_LABELS_AND_ORIGINAL_FROZEN_STATE_REQUIRED"
   );
   assert.equal(
     contract.thresholds.maximumClassificationUncertainCashShare,

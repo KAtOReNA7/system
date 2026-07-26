@@ -43,7 +43,7 @@ export function buildM2CurrentPublicDiagnosticReport(
       retiredSequence:
         "human_numeric_baseline_and_120_work_business_sample_skipped",
       nextPriority: config.schema === "m2.current.config.v0.6"
-        ? "freeze_v1_0_and_obtain_an_unseen_later_origin_or_auditable_historical_work_signals_before_any_new_nested_challenger"
+        ? "wait_for_2029_01_complete_labels_and_recover_the_original_frozen_v1_state_before_any_later_origin_metrics"
         : config.schema === "m2.current.config.v0.5"
         ? "independent_portfolio_validation_then_auditable_work_level_signals"
         : config.schema === "m2.current.config.v0.4"
@@ -78,7 +78,7 @@ export function buildM2CurrentPublicDiagnosticReport(
       "use_risk_coverage_business_loss_and_FVA_before_any_automation_claim",
       "keep_final_holdout_sealed_until_separate_authorization",
       config.schema === "m2.current.config.v0.6"
-        ? "keep_v1_0_human_anchored_challenger_rejected_and_frozen_until_unseen_later_origin_or_auditable_historical_work_signals_exist"
+        ? "keep_v1_0_rejected_and_do_not_read_later_origin_metrics_before_2029_01_complete_labels_and_original_frozen_state"
         : "keep_channel_identity_auditable",
       "use_humans_only_for_post_gate_quality_assurance"
     ]

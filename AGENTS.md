@@ -4,7 +4,7 @@
 
 - PR #7、PR #8、PR #9、PR #10、PR #11、PR #12、PR #13 均已合入 `main`；已合并分支不得继续作为开发入口。
 - 当前仓库治理导航为：
-  - `docs/analysis/m2-v2/M2-v2-current-state-index-v0.17.md`
+  - `docs/analysis/m2-v2/M2-v2-current-state-index-v0.18.md`
   - `docs/analysis/m2-v2/M2-repository-code-convergence-and-portable-development-audit-v0.4.md`
   - `docs/analysis/m2-current/M2-current-maturity-reconstruction-v0.6.md`
   - `docs/analysis/m2-current/M2-sales-share-only-target-decision-v0.1.md`
@@ -18,6 +18,9 @@
   - `docs/analysis/m2-current/M2-current-canonical-channel-development-v0.1.md`
   - `docs/analysis/m2-current/M2-current-human-anchored-development-v0.1.md`
   - `docs/analysis/m2-current/M2-current-human-anchored-research-and-decision-v0.1.md`
+  - `docs/analysis/m2-current/M2-current-human-anchored-later-origin-readiness-v0.1.md`
+  - `docs/analysis/m2-current/M2-current-human-anchored-later-origin-code-audit-v0.1.md`
+  - `docs/analysis/m2-current/M2-current-human-anchored-later-origin-preregistration-v0.1.json`
   - `docs/analysis/m2-current/M2-current-as-of-source-inventory-v0.1.json`
   - `docs/analysis/m2-current/M2-current-signal-input-portable-intake-v0.1.md`
   - `docs/prd/m2-v2/M2-forecast-intelligence-v2-prd-v0.2.md`
@@ -188,6 +191,19 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
   - 结论为 `HUMAN_ANCHORED_DEVELOPMENT_FAIL` / `M2_NOT_MATURE`。参数空间、
     失败试验和失败结论已冻结，不得在同一 2021—2025 development 窗口继续调参，
     不得替换 exact v0.3。
+- v1.0 独立 later-origin 资格审计已按 2026-07-26 授权完成，未读取预测指标：
+  - 最新完整账单月为 2026-04，理论成熟的 36 个月 origin 为 2023-01 至
+    2023-04；四个相邻月只算 1 个连续时间块；
+  - 2023-03 已进入 v1.0 既有短周期辅助评估，且 v1.0 选择/比较证据的标签边界
+    到 2025-12，因此 2023-01 至 2023-04 整块不具备严格时间独立性；
+  - 原 v1.0 执行未留下可复用的完整冻结模型状态；不得重新拟合人工参数、专家
+    权重、发生/冲销层或残差池来补造；
+  - 2026-05 的 3 条不完整事实在缓存中仍标记为 calibration-valid，later-origin
+    审计按完整月上限显式排除，未成熟标签零填充数仍为 0；
+  - 资格结论为 `NO_QUALIFIED_INDEPENDENT_MATURE_LATER_ORIGIN`，
+    `metricsRead=false`、`laterOriginConsumed=false`、`trainingPerformed=false`；
+  - 最早可能时间独立的 origin 为 2026-01，36 个月标签需账单完整到 2029-01；
+    当前缺 2026-05 至 2029-01 共 33 个完整月，且仍需原始 frozen v1 state。
 - D1 `revenueShareFact`、`availabilitySnapshot`、信号缺口 ledger 和 portable
   digest-bound 输入继续有效；当前版本化历史 snapshot 覆盖仍为 0，不得用当前
   状态事后回填。
@@ -225,7 +241,7 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
 
 - `currentDecision=CANARY_FAIL`
 - `automationDecision=AUTOMATION_BLOCKED`
-- `nextDevelopmentReadiness=HUMAN_ANCHORED_DEVELOPMENT_FAILED_LATER_ORIGIN_OR_AUDITABLE_WORK_SIGNALS_REQUIRED`
+- `nextDevelopmentReadiness=LATER_ORIGIN_NOT_QUALIFIED_2029_01_COMPLETE_LABELS_AND_ORIGINAL_FROZEN_STATE_REQUIRED`
 - `full160Authorized=false`
 - 本轮多粒度重构研究授权已执行完毕；默认不得继续在同一 development 窗口调参
 - 本轮真实账单 v0.7 recalibration 授权已执行完毕；参数和失败结论已冻结，
@@ -235,9 +251,11 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
 - 本轮 canonical 渠道 v0.9 新候选、development fitting 与 nested selection
   授权已执行完毕；映射、参数和失败结论已冻结，
   `candidateSelectionAuthorized=false`
-- 本轮 v1.0 人工锚定层级概率模型授权已执行完毕；只覆盖本机 2021—2025
-  development、按作品外验证与短周期严格辅助回测。`candidateSelectionAuthorized=false`、
-  `laterOriginAuthorized=false`、`finalHoldoutAuthorized=false`
+- 本轮 v1.0 later-origin readiness audit 已授权并执行；合格块的一次冻结验证也
+  获授权，但资格未成立，故未执行。`candidateSelectionAuthorized=false`、
+  `laterOriginReadinessAuditAuthorized=true`、
+  `qualifiedLaterOriginValidationAuthorized=true`、
+  `laterOriginValidationExecuted=false`、`finalHoldoutAuthorized=false`
 - final holdout、embargo shadow、deferred labels 均 sealed
 - 公开门禁中 `developmentReplayAuthorized=true` 只表示可精确重放既有
   development evidence；`newCandidateFamilyDevelopmentAuthorized=false`、
@@ -263,9 +281,10 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
 5. v1.0 已验证“以人工公式为主干并扩大到全部合格作品”方向有相对价值，但现有
    信号仍不足以达到绝对质量。v1.0 的人工阈值、层级专家、概率层、参数空间和失败
    结论已经冻结；不得继续在同一 2021—2025 development 窗口调参。
-6. 下一次组合或作品模型选模必须使用未参与本轮选择且 36 个月标签成熟的
-   later-origin；如果时间上尚未成熟则保持阻断，不得把未成熟标签填 0。final
-   holdout 未获单独授权前继续 sealed。
+6. 2023-01 至 2023-04 later-origin 连续块已经资格审计并被拒绝，不得拆月重试。
+   下一次最早可能时间独立的 origin 为 2026-01，只有账单完整到 2029-01 且取得
+   原运行时 frozen v1 state 后才可重新审计；此前不读取指标、不填 0、不打开
+   final holdout。
 7. 只接收 cutoff 时真实可得、可审计、可版本化、exact-work 的分成预测信号：
    sales historical availability、合同可售状态、渠道状态；commitment 不得作为
    分成预测信号。
@@ -299,7 +318,8 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
   加载器、守恒门禁、公共 synthetic 诊断，以及 v0.9 canonical-channel nested
   challenger；v1.0 人工公式主干、可学习人工参数、四个受约束专家、正向/冲销
   分离、按作品外验证、严格短周期 rolling-origin、作品聚类 bootstrap、FVA 与
-  分位数区间。
+  分位数区间；later-origin 资格 core、public preregistration、private digest
+  binding 和无 private readiness verifier。
 - 已验证：三账单逐行/逐月守恒、3,053 基础人口与 3,052 账单观察人口边界、
   7,851 旧机器路由到 7,083 当前 served case 的重分类、25-origin/56,856-case
   次级 development 复验；人工分区后作品 WAPE 0.49075894，组合 WAPE
@@ -309,13 +329,14 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
   v0.9 逐月 WAPE 0.46506585、冻结 served WAPE 0.49070110 并被拒绝，完整 M2
   成熟度未通过；v1.0 在 1,125 部独立作品、12,039 个成熟 36 个月 case 上
   WAPE 0.44022707，虽较人工原式改善 17.16%，仍被绝对质量、分群、作品聚类
-  bootstrap 与 later-origin 门禁拒绝。
+  bootstrap 与 later-origin 门禁拒绝；2023-01 至 2023-04 虽已标签成熟，但因
+  2023-03 已用及选择证据截至 2025-12，被作为单一时间块拒绝，未读取新指标。
 - 已退役：120 部人工评估的 current 依赖；不重建、不重放。
-- 下一输入：优先是未参与 v1.0 选择且 36 个月标签成熟的 later-origin；或者仅在
-  明确公式需要时接收带 effective/available-at、来源版本、lineage 与完整性权威的
-  历史渠道状态/合同可售 snapshot、真实上线月、单购净单价/净分成/销量换算。
-  渠道主表和账单分区已完成，不得重复索要；不存在新输入时保持阻断，不能把
-  current 属性事后回填。later-origin/final holdout 仍需单独授权。
+- 下一输入：later-origin 路线等待账单完整到 2029-01，并要求原运行时 frozen
+  v1 state；或者仅在明确公式需要时接收带 effective/available-at、来源版本、
+  lineage 与完整性权威的历史渠道状态/合同可售 snapshot、真实上线月、单购
+  净单价/净分成/销量换算。渠道主表和账单分区已完成，不得重复索要；不存在新
+  输入时保持阻断，不能把 current 属性事后回填。final holdout 仍需单独授权。
 - 未授权：final holdout 及所有既有业务 gate 外的动作。
 
 ## Git 与提交规则

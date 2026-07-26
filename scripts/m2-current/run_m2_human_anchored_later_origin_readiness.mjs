@@ -2,7 +2,6 @@
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import {
-  existsSync,
   mkdirSync,
   readFileSync,
   writeFileSync
@@ -177,20 +176,6 @@ function verifyFrozenTrackedModel() {
   );
   if (result.status !== 0) {
     throw new Error("m2_later_origin_frozen_model_code_drift");
-  }
-  const statePath = path.join(
-    root,
-    config.frozenDevelopment.requiredFrozenStateArtifact
-  );
-  if (existsSync(statePath)) {
-    const stat = spawnSync(
-      process.execPath,
-      ["-e", "process.exit(0)"],
-      { windowsHide: true }
-    );
-    if (stat.status !== 0) {
-      throw new Error("m2_later_origin_frozen_state_probe_failed");
-    }
   }
 }
 

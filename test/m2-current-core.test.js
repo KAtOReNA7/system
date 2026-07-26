@@ -1053,7 +1053,7 @@ test("public diagnostic CLI is reproducible and aggregate-only", () => {
   );
   assert.equal(
     report.gate.developmentDirection,
-    "freeze_human_anchored_v1_then_unseen_later_origin_or_auditable_formula_bound_work_signals"
+    "later_origin_not_qualified_wait_for_2029_01_complete_labels_and_original_frozen_v1_state"
   );
   assert.ok(
     report.gate.blockers.includes(
