@@ -378,6 +378,53 @@ test("public and production boundaries remain isolated and private rows stay ign
   );
 });
 
+test("K2 fails closed when frozen strict auxiliary G0 bindings are unavailable", async () => {
+  const [development, forecastability, state] = await Promise.all([
+    readJson(
+      "docs/analysis/m2-current/"
+        + "M2-current-channel-generative-v0.2-core-development-v0.1.json"
+    ),
+    readJson(
+      "docs/analysis/m2-current/"
+        + "M2-current-channel-generative-v0.2-"
+        + "forecastability-diagnostic-v0.1.json"
+    ),
+    readFile(
+      path.join(
+        root,
+        "docs/analysis/m2-v2/M2-v2-current-state-index-v0.25.md"
+      ),
+      "utf8"
+    )
+  ]);
+  assert.equal(
+    development.finalStatus,
+    "GENERATIVE_V02_CORE_EXECUTION_BLOCKED"
+  );
+  assert.equal(
+    development.contractBlocker.code,
+    "CONTRACT_SEMANTIC_BLOCKER"
+  );
+  assert.equal(development.execution.secondRun.G1Executed, false);
+  assert.equal(development.execution.secondRun.G2Executed, false);
+  assert.equal(development.execution.secondRun.G3Executed, false);
+  assert.equal(development.execution.secondRun.oracleExecuted, false);
+  assert.equal(development.boundaries.G4Executed, false);
+  assert.equal(development.boundaries.G5Executed, false);
+  assert.equal(development.boundaries.G6Executed, false);
+  assert.equal(
+    development.boundaries.safeToStartImplementationOfAnyLaterLayer,
+    false
+  );
+  assert.equal(
+    forecastability.finalStatus,
+    "NOT_EXECUTED_CONTRACT_SEMANTIC_BLOCKER"
+  );
+  assert.equal(forecastability.candidateOutputsFrozen, false);
+  assert.match(state, /exact v0\.3 仍是作品级 development champion/u);
+  assert.doesNotMatch(JSON.stringify(development), /SYN-|channelUid/u);
+});
+
 function frozenG0Rows() {
   const rows = [];
   for (const spec of [

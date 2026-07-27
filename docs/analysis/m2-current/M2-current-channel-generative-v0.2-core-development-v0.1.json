@@ -1,0 +1,136 @@
+{
+  "schema": "m2.current.channel_generative_core_development.v0.1",
+  "candidateId": "M2-current-channel-generative-v0.2",
+  "finalStatus": "GENERATIVE_V02_CORE_EXECUTION_BLOCKED",
+  "asOf": "2026-07-27",
+  "implementationCommit": "b55431c6c5ed7ce2af0701cfb14136297c0b69bf",
+  "contractRestorationCommit": "5fa602846a043a8ebfd9126aca2cbe975c692a39",
+  "evidenceClass": "STRICTLY_CONTROLLED_REUSED_DEVELOPMENT_WINDOW_EVIDENCE",
+  "execution": {
+    "runReceiptPreparedBeforePrivateEvaluationRowRead": true,
+    "firstRun": {
+      "status": "INVALIDATED_BY_IMPLEMENTATION_BUG",
+      "bug": "materialization manifest counting duplicated all monthly label references after the two packed files were encoded",
+      "candidateOutcomeProduced": false,
+      "frozenEvaluationRowsRead": false,
+      "modelFitExecuted": false
+    },
+    "contractRestorationCiRun": 30275964871,
+    "secondRun": {
+      "status": "CONTRACT_SEMANTIC_BLOCKER",
+      "G0FrozenEvaluationVerifier": "PASS",
+      "G1Executed": false,
+      "G2Executed": false,
+      "G3Executed": false,
+      "oracleExecuted": false,
+      "privateEvaluationOutputRowCount": 0
+    }
+  },
+  "materialization": {
+    "primaryPackedRowCount": 58986,
+    "auxiliaryPackedRowCount": 102743,
+    "monthlyLabelRowCount": 3800643,
+    "monthlyUniqueKeyCount": 3800643,
+    "predictionEligibleObservedPackedRowCount": 103272,
+    "futureFirstSeenPackedRowCount": 58457,
+    "primarySha256": "8dacad2900e7938f972e384c92e69eb0bf794486684ed0ed034d412db881422a",
+    "auxiliarySha256": "cf68f8ed9756d86460a4bd19a9a8f61e2966677dd9bd663c53cf8c6626af7d69",
+    "overlappingHorizonDuplicateCount": 0,
+    "positiveConservationDifference": 0,
+    "reversalConservationDifference": 0,
+    "netConservationDifference": 0,
+    "unmaturedLabelZeroImputationCount": 0,
+    "buyoutCashUsed": false
+  },
+  "G0SemanticEquivalence": {
+    "status": "G0_SEMANTIC_EQUIVALENCE_PASS_ON_FROZEN_EVALUATION_ROWS",
+    "primaryWape": 0.4402249501995905,
+    "primarySignedBias": -0.12377105831355606,
+    "strictWape": 0.4119187843120153,
+    "strictSignedBias": -0.03847400949306328,
+    "learnedGlobalRetrained": false,
+    "commonReversalRetrained": false,
+    "limitation": "Frozen strict evaluation contains validation rows only and is insufficient to assign G0 offsets and horizon-specific common reversal to earlier auxiliary rows required by nested strict training."
+  },
+  "contractBlocker": {
+    "code": "CONTRACT_SEMANTIC_BLOCKER",
+    "firstMissingStage": "strict_auxiliary_monthly_G0_binding_before_any_G1_G2_fit",
+    "requiredButUnavailable": [
+      "frozen A1 monthly positive component for every earlier auxiliary work-channel-origin used by each strict outer fit",
+      "frozen horizon-specific common reversal for those same auxiliary training cases"
+    ],
+    "forbiddenSubstitutions": [
+      "choose one horizon",
+      "average overlapping horizons",
+      "reuse primary 36-month reversal for short horizons",
+      "refit learnedGlobal",
+      "refit common reversal",
+      "continue training with missing G0"
+    ],
+    "externalDecisionRequired": true
+  },
+  "evaluation": {
+    "G0": {
+      "primary": {
+        "wape": 0.4402249501995905,
+        "signedBias": -0.12377105831355606
+      },
+      "strict": {
+        "wape": 0.4119187843120153,
+        "signedBias": -0.03847400949306328
+      }
+    },
+    "G1": {
+      "primary": null,
+      "strict": null,
+      "relativeChange": null,
+      "status": "NOT_EXECUTED_CONTRACT_BLOCKER"
+    },
+    "G2": {
+      "primary": null,
+      "strict": null,
+      "relativeChange": null,
+      "status": "NOT_EXECUTED_CONTRACT_BLOCKER"
+    },
+    "G3": {
+      "primary": null,
+      "strict": null,
+      "relativeChange": null,
+      "status": "NOT_EXECUTED_CONTRACT_BLOCKER"
+    }
+  },
+  "gateMatrix": {
+    "status": "NOT_EVALUABLE",
+    "rawResultRequirement": false,
+    "mechanismSafety": null,
+    "horizonSafety": null,
+    "timeBlockSafety": null,
+    "topRevenueSafety": null,
+    "bootstrapInterval": null,
+    "coverage": null
+  },
+  "interpretation": {
+    "humanTrunkAnchorSupported": "REMAINS_CURRENT_FROZEN_FALLBACK_NOT_NEWLY_TESTED",
+    "workLevelAutomationSupported": false,
+    "causalBusinessMechanismProven": false,
+    "forecastingTheoreticallyImpossible": false,
+    "allowedConclusion": "The preregistered private comparison could not be identified from the frozen evidence without violating its G0 and common-reversal contract."
+  },
+  "boundaries": {
+    "G4Executed": false,
+    "G5Executed": false,
+    "G6Executed": false,
+    "productionSurfaceChangeCount": 0,
+    "exactV03Modified": false,
+    "finalHoldoutOpened": false,
+    "providerUsed": false,
+    "databaseRead": false,
+    "safeToStartPlatform": false,
+    "safeToStartTaxonomy": false,
+    "safeToStartComposition": false,
+    "safeToStartImplementationOfAnyLaterLayer": false,
+    "productionUpgradeSupported": false,
+    "exactV03ReplacementSupported": false,
+    "releaseAuthorized": false
+  }
+}

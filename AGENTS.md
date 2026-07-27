@@ -4,6 +4,7 @@
 
 - PR #7、PR #8、PR #9、PR #10、PR #11、PR #12、PR #13 均已合入 `main`；已合并分支不得继续作为开发入口。
 - 当前仓库治理导航为：
+  - `docs/analysis/m2-v2/M2-v2-current-state-index-v0.25.md`
   - `docs/analysis/m2-v2/M2-v2-current-state-index-v0.24.md`
   - `docs/analysis/m2-v2/M2-repository-code-convergence-and-portable-development-audit-v0.4.md`
   - `docs/analysis/m2-current/M2-current-maturity-reconstruction-v0.6.md`
@@ -37,6 +38,10 @@
   - `docs/analysis/m2-current/M2-current-channel-experts-development-v0.1.md`
   - `docs/analysis/m2-current/M2-current-channel-experts-development-v0.1.json`
   - `docs/analysis/m2-current/M2-current-channel-experts-public-diagnostic-v0.1.json`
+  - `docs/analysis/m2-current/M2-current-channel-generative-v0.2-core-development-v0.1.md`
+  - `docs/analysis/m2-current/M2-current-channel-generative-v0.2-core-development-v0.1.json`
+  - `docs/analysis/m2-current/M2-current-channel-generative-v0.2-forecastability-diagnostic-v0.1.md`
+  - `docs/analysis/m2-current/M2-current-channel-generative-v0.2-forecastability-diagnostic-v0.1.json`
   - `docs/analysis/m2-current/M2-current-channel-experts-architecture-failure-audit-v0.1.md`
   - `docs/analysis/m2-current/M2-current-channel-experts-architecture-failure-audit-v0.1.json`
   - `docs/analysis/m2-current/M2-current-channel-generative-v0.2-preregistration.md`
@@ -281,6 +286,18 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
     `CHANNEL_EXPERT_DEVELOPMENT_FAIL_KEEP_LEARNEDGLOBAL_AND_EXACT_V0_3`。
     A0–A6、平台 taxonomy、shrinkage 网格、nested selection 和失败结论已冻结，
     不得继续同窗调参、用 post-hoc fallback 隐藏 raw 结果或替换 exact v0.3。
+- `M2-current-channel-generative-v0.2` core 已按 2026-07-27 授权实现并尝试一次
+  private execution：
+  - G0 在 frozen primary/strict evaluation rows 上通过 semantic-equivalence；
+  - 物化 3,800,643 个唯一 monthly labels，positive/reversal/net 守恒差为 0；
+  - strict nested training 所需的早期 auxiliary G0 offset 与 horizon-specific
+    frozen common reversal 未被既有 frozen evaluation 保存；禁止择 horizon、
+    平均、借用 primary-36 reversal 或重训；
+  - 因此在任何 G1/G2 fitting 前以 `CONTRACT_SEMANTIC_BLOCKER` fail closed，
+    G1、G2、G3、oracle 和 core gates 均未执行；
+  - 最终状态为 `GENERATIVE_V02_CORE_EXECUTION_BLOCKED`。G4、G5、G6、
+    production、exact v0.3、holdout 与 release 继续禁止；补充 frozen state
+    或重新执行必须由用户另行授权。
 - channelExperts v0.1 architecture failure audit 已只读复核现有代码与冻结
   A0–A6 rows，结论为
   `CHANNEL_EXPERT_V01_IMPLEMENTATION_MISMATCH_CONFIRMED`：
