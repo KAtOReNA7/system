@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import test from "node:test";
 
 import {
+  canonicalEvidenceSha256,
   compareM2ModelRegistryEntries,
   explainM2Identifier,
   findM2ModelsByAlias,
@@ -23,6 +24,14 @@ const registry = loadM2ModelRegistry(
 test("registry schema, evidence paths and immutable digests validate", () => {
   const validation = validateM2ModelRegistry(registry, { repoRoot: root });
   assert.equal(validation.valid, true, validation.errors.join("\n"));
+  assert.equal(
+    registry.validationRules.historicalEvidenceDigestContract,
+    "sha256_utf8_lf_v1"
+  );
+  assert.equal(
+    canonicalEvidenceSha256("same\r\ncontent\r\n"),
+    canonicalEvidenceSha256("same\ncontent\n")
+  );
   assert.equal(validation.counts.modelCount, 27);
   assert.equal(validation.counts.experimentCount, 12);
   assert.equal(validation.counts.comparabilityGroupCount, 13);

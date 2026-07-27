@@ -290,7 +290,7 @@ export function validateM2ModelRegistry(registry, {
         errors.push(`historical_evidence_missing:${entry.path}`);
         continue;
       }
-      const actual = sha256(readFileSync(resolved));
+      const actual = canonicalEvidenceSha256(readFileSync(resolved));
       if (actual !== entry.sha256) {
         errors.push(`historical_evidence_digest_mismatch:${entry.path}`);
       }
@@ -441,8 +441,11 @@ function sameNumbers(left, right) {
     === JSON.stringify([...(right ?? [])].sort((a, b) => a - b));
 }
 
-function sha256(value) {
-  return createHash("sha256").update(value).digest("hex");
+export function canonicalEvidenceSha256(value) {
+  const canonicalText = Buffer.isBuffer(value)
+    ? value.toString("utf8").replace(/\r\n/gu, "\n")
+    : String(value).replace(/\r\n/gu, "\n");
+  return createHash("sha256").update(canonicalText, "utf8").digest("hex");
 }
 
 function unique(values) {
