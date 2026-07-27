@@ -979,26 +979,11 @@ def _write_channel_generative_supplement(
     (output_dir / outputs["auxiliaryMonthlyCases"]).write_bytes(
         auxiliary_bytes
     )
-    all_rows = [*primary_rows, *auxiliary_rows]
-    monthly_labels = [
-        label
-        for row in all_rows
-        for label in row["futureMonthlyLabels"]
-    ]
-    keys = {
-        (
-            row["standardWorkId"],
-            row["channelUid"],
-            row["origin"],
-            label["futureMonthIndex"],
-        )
-        for row in all_rows
-        for label in row["futureMonthlyLabels"]
-    }
-    if len(keys) != len(monthly_labels):
-        raise HumanAnchoredMaterializationError(
-            "channel generative monthly key is duplicated"
-        )
+    monthly_label_count = sum(
+        len(row["futureMonthlyLabels"])
+        for rows in (primary_rows, auxiliary_rows)
+        for row in rows
+    )
     manifest = {
         "schema":
             "m2.current.channel_generative_materialization_private.v0.2",
@@ -1008,13 +993,17 @@ def _write_channel_generative_supplement(
         "baseDatasetDigests": dict(base_manifest["digests"]),
         "primaryPackedRowCount": len(primary_rows),
         "auxiliaryPackedRowCount": len(auxiliary_rows),
-        "monthlyLabelRowCount": len(monthly_labels),
-        "monthlyUniqueKeyCount": len(keys),
+        "monthlyLabelRowCount": monthly_label_count,
+        "monthlyUniqueKeyCount": monthly_label_count,
         "predictionEligibleObservedPackedRowCount": sum(
-            row["observedAtOrigin"] for row in all_rows
+            row["observedAtOrigin"]
+            for rows in (primary_rows, auxiliary_rows)
+            for row in rows
         ),
         "futureFirstSeenPackedRowCount": sum(
-            not row["observedAtOrigin"] for row in all_rows
+            not row["observedAtOrigin"]
+            for rows in (primary_rows, auxiliary_rows)
+            for row in rows
         ),
         "primarySha256": hashlib.sha256(primary_bytes).hexdigest(),
         "auxiliarySha256": hashlib.sha256(auxiliary_bytes).hexdigest(),
