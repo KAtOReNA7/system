@@ -64,7 +64,9 @@
 
 当前导航：
 
-- `docs/analysis/m2-v2/M2-v2-current-state-index-v0.26.md`
+- `docs/analysis/m2-v2/M2-v2-current-state-index-v0.27.md`
+- `docs/analysis/m2-current/M2-evaluation-system-audit-v1.md`
+- `docs/analysis/m2-current/M2-evaluation-contract-v2-proposal.md`
 - `config/m2-model-registry.v1.json`
 - `docs/analysis/m2-current/M2-model-catalog-and-scorecard-v1.md`
 - `docs/analysis/m2-current/M2-model-identity-audit-v1.md`

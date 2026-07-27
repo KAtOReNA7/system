@@ -1,7 +1,7 @@
 {
   "schema": "m2.model_registry.v1",
   "generatedFromCommit": "481441f3c93126e442294092b8e84779a0c50e0e",
-  "asOf": "2026-07-27",
+  "asOf": "2026-07-28",
   "targetAuthority": {
     "currentTarget": "future_sales_share_cash",
     "displayNameZh": "未来分成收入现金",
@@ -23,7 +23,7 @@
     "approvedForAutomation": null,
     "activeCandidate": null,
     "blockedExperiment": "M2-EXP-CHANNEL-GENERATIVE-02",
-    "latestStateIndex": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.26.md",
+    "latestStateIndex": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.27.md",
     "roleConflict": false,
     "sourceAssertions": [
       {
@@ -1953,7 +1953,7 @@
     {"identifier": "G4", "namespace": "M2-EXP-CHANNEL-GENERATIVE-02", "parentExperiment": "M2-EXP-CHANNEL-GENERATIVE-02", "type": "experiment_arm", "displayNameZh": "渠道时间生成 v0.2 / G4", "meaningZh": "平台层；未授权。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-current-channel-generative-v0.2-preregistration.json"},
     {"identifier": "G5", "namespace": "M2-EXP-CHANNEL-GENERATIVE-02", "parentExperiment": "M2-EXP-CHANNEL-GENERATIVE-02", "type": "experiment_arm", "displayNameZh": "渠道时间生成 v0.2 / G5", "meaningZh": "taxonomy 层；未授权。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-current-channel-generative-v0.2-preregistration.json"},
     {"identifier": "G6", "namespace": "M2-EXP-CHANNEL-GENERATIVE-02", "parentExperiment": "M2-EXP-CHANNEL-GENERATIVE-02", "type": "experiment_arm", "displayNameZh": "渠道时间生成 v0.2 / G6", "meaningZh": "组合层；未授权。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-current-channel-generative-v0.2-preregistration.json"},
-    {"identifier": "state-index-v0.1-v0.26", "namespace": "M2-STATE-INDEX", "parentExperiment": null, "type": "status_index_series", "displayNameZh": "M2 状态索引 v0.1–v0.26", "meaningZh": "仓库状态页版本序列，不是模型版本。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.26.md"},
+    {"identifier": "state-index-v0.1-v0.27", "namespace": "M2-STATE-INDEX", "parentExperiment": null, "type": "status_index_series", "displayNameZh": "M2 状态索引 v0.1–v0.27", "meaningZh": "仓库状态页版本序列，不是模型版本。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.27.md"},
     {"identifier": "config-v0.x", "namespace": "M2-CONFIG", "parentExperiment": null, "type": "config_version_series", "displayNameZh": "配置 schema 版本", "meaningZh": "配置合同版本，不是模型成绩或模型代际。", "mayAppearAloneInUserReport": false, "evidenceRef": "config/m2-current.v0.6.json"},
     {"identifier": "report-v0.x", "namespace": "M2-REPORT", "parentExperiment": null, "type": "report_version_series", "displayNameZh": "报告 schema 版本", "meaningZh": "报告结构版本，不是模型。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-current-public-diagnostic-v0.13.json"},
     {"identifier": "calibration-v1.x", "namespace": "M2-ARCHIVE-COMMAND", "parentExperiment": null, "type": "archive_only_workflow", "displayNameZh": "历史校准 v1.x 流程", "meaningZh": "历史校准与重放流程；不作为当前模型入口。", "mayAppearAloneInUserReport": false, "evidenceRef": "config/command-lifecycle.v0.1.json"},
