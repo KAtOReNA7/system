@@ -1,0 +1,1171 @@
+{
+  "schemaVersion": "m2.current.channel_generative_preregistration.v0.2",
+  "artifactType": "MINIMAL_FALSIFIABLE_PREREGISTRATION",
+  "asOf": "2026-07-27",
+  "repository": "KAtOReNA7/system",
+  "activePr": 28,
+  "activeBranch": "codex/m2-lifecycle-aware-challenger-v0-1",
+  "verifiedAnchor": "e5bcef11dbc352d5f2a58d88bf303a8fdd30b6d3",
+  "verifiedAnchorCi": {
+    "runId": 30267683933,
+    "conclusion": "success"
+  },
+  "startHead": "e5bcef11dbc352d5f2a58d88bf303a8fdd30b6d3",
+  "startHeadRelationToVerifiedAnchor": "EQUAL",
+  "sourceEvidence": {
+    "architectureConclusion": "CHANNEL_EXPERT_V01_IMPLEMENTATION_MISMATCH_CONFIRMED",
+    "frozenV01Decision": "CHANNEL_EXPERT_DEVELOPMENT_FAIL_KEEP_LEARNEDGLOBAL_AND_EXACT_V0_3",
+    "theoryStatus": "UNPROVEN_FALSIFIABLE_HYPOTHESIS",
+    "trackedSources": [
+      {
+        "path": "docs/analysis/m2-current/M2-current-channel-experts-architecture-failure-audit-v0.1.json",
+        "sha256": "b7a64a618e3d62bf9725feabacba59f3451ea6a04b7b9f8462a8fbaed0a62eb4",
+        "gitBlob": "25ab9ef577a4c21f36b79ed1d1ce16494d2920e3",
+        "role": "v0.1 architecture mismatch and asset disposition"
+      },
+      {
+        "path": "docs/analysis/m2-current/M2-current-channel-experts-development-v0.1.json",
+        "sha256": "23f70e8faa48e3bf0894bf6c17f0a546781a126e1cbcd47ec9c5d21d287545f1",
+        "gitBlob": "89202f72a72c20ca66e7b3027d1291def18e29b3",
+        "role": "frozen case counts, split definitions and A0-A6 decision"
+      },
+      {
+        "path": "config/m2-current-human-anchored.v0.1.json",
+        "sha256": "e07054b016e032241dbb894637bef2836fbea0924a84eeed7f5e079ed1f64a74",
+        "gitBlob": "43ffd1a0d49ce521727d184f4c1b2194c568cbe9",
+        "role": "frozen learnedGlobal and primary/auxiliary case contract"
+      },
+      {
+        "path": "config/m2-current-channel-experts.v0.1.json",
+        "sha256": "ec8777a649b1b9faa7b43e6d5e6a6d006913ce9cadef43b7fc14b88642ed3a9b",
+        "gitBlob": "cc427fe8b6c01bb2d3a99af2ca5b893af131e825",
+        "role": "frozen channel materialization and v0.1 evaluation contract"
+      },
+      {
+        "path": "src/domain/m2Current/humanAnchored.js",
+        "sha256": "c7c886bbdc04d44c4c16b66859dbc27fedaf70106eabea402ffa7a5169101116",
+        "gitBlob": "ecdb600a6801b920ecdca64903f5caee6663ccfd",
+        "role": "G0 learnedGlobal definition and deterministic work folds"
+      },
+      {
+        "path": "src/domain/m2Current/channelExperts.js",
+        "sha256": "5ee4a5b0a331f421f27726742ece6e7d9cfb95d758b97830f5308db36fd228c9",
+        "gitBlob": "e3a5056671699430c59296c59558eeb7fadd517c",
+        "role": "v0.1 implementation mismatch reference only; not a v0.2 template"
+      },
+      {
+        "path": "scripts/m2-current/materialize_human_anchored_cases.py",
+        "sha256": "25a9a85e40d648fe9e7681b6571978293f982fe77f3155fbebe7b0d3403775c4",
+        "gitBlob": "ee7b9fdb87fa086715fa0af674f33dcf31a8b3e8",
+        "role": "origin-only cash history and work-channel conservation source"
+      }
+    ],
+    "privateReceiptOnlySources": [
+      {
+        "path": "data/private-output/m2-current-human-anchored/M2-current-channel-experts-materialization-manifest-private-v0.1.json",
+        "sha256": "7b34817097315674bce9617ce3300f381b55d883f20115a812676d8e8cf56b2f",
+        "tracked": false,
+        "role": "existing schema, digests and counts only"
+      },
+      {
+        "path": "data/private-output/m2-current-human-anchored/M2-current-channel-experts-evaluation-manifest-private-v0.1.json",
+        "sha256": "6da0625d550e13e86eb79b208bc59fad23dc62c052af72d1fd25c708bd50f066",
+        "tracked": false,
+        "role": "existing frozen evaluation digest and counts only"
+      }
+    ],
+    "newV02OutcomeRead": false,
+    "v02TrainingExecuted": false,
+    "v01AblationsRerun": false
+  },
+  "scientificQuestion": {
+    "text": "Using only origin-visible work-channel cash history and frozen static mechanism mapping, do membership, advertising and transactional mechanisms provide stable out-of-time incremental value beyond frozen learnedGlobal when represented by independent temporal generation processes?",
+    "questionOne": "Does an independent occurrence-times-conditional-amount generator add value?",
+    "questionTwo": "Does a mechanism-specific dynamic residual add value when frozen learnedGlobal is used only as a structured offset?",
+    "mustRemainSeparatelyReported": true
+  },
+  "hypotheses": {
+    "H0": {
+      "statement": "Mechanism labels and temporal structure provide no stable out-of-time incremental value over frozen learnedGlobal with the currently available data.",
+      "status": "TO_TEST"
+    },
+    "H1_M": {
+      "statement": "Membership cash is associated with a smoother active state and slower future decay driven by recent level and continuity.",
+      "status": "TO_TEST_NOT_ASSUMED_TRUE"
+    },
+    "H1_A": {
+      "statement": "Advertising cash has shorter memory, higher variability and stronger recent-trend or peak-recency dynamics in both occurrence and conditional amount.",
+      "status": "TO_TEST_NOT_ASSUMED_TRUE"
+    },
+    "H1_T": {
+      "statement": "Transactional cash has sparse purchase occurrence, a short spike and a longer tail that require separate occurrence and conditional-amount processes.",
+      "status": "TO_TEST_NOT_ASSUMED_TRUE"
+    },
+    "failureInterpretation": "If correctly specified G1 and G2 fail the frozen gates, accept that current data do not support implementable incremental mechanism value; do not continue unbounded tuning."
+  },
+  "targetContract": {
+    "target": "future_sales_share_positive_cash",
+    "predictionGrain": "work_x_canonical_channel_x_origin_x_horizon",
+    "generatorTrainingGrain": "work_x_canonical_channel_x_origin_x_future_month",
+    "generatorTrainingUniqueKey": "standardWorkId|channelUid|origin|futureMonthIndex",
+    "overlappingHorizonTrainingRule": "materialize each unique future month once; never duplicate a monthly label because it contributes to multiple cumulative horizons",
+    "monthlyTrainingWeight": 1,
+    "horizonValue": "nonnegative cumulative positive cash after origin through the frozen horizon",
+    "monthlyPointEquation": "P(monthly_positive_cash>0|origin_only_features)*E(monthly_positive_cash|positive,origin_only_features)",
+    "cumulativePointEquation": "sum(monthlyPoint[t] for t=1..horizonMonths)",
+    "workTotalEquation": "frozen_common_reversal_applied_to(sum(candidate_observed_channel_positive)+sum(frozen_G0_fallback_channel_positive))",
+    "candidateCoverage": [
+      "membership_subscription",
+      "advertising_or_free_share",
+      "single_purchase_or_on_demand"
+    ],
+    "otherRevenueModePolicy": "FROZEN_G0_CHANNEL_COMPONENT",
+    "predictionEligibleChannelPolicy": "POSITIVE_CASH_OBSERVED_AT_ORIGIN_ONLY",
+    "futureFirstSeenPrediction": 0,
+    "nonnegativeMonthlyPredictions": true,
+    "cumulativeHorizonsMonotonicNondecreasing": true,
+    "horizonSpecificDynamicsRequired": true,
+    "constantFinalScaleAcrossHorizonsForbidden": true,
+    "commonReversal": {
+      "policy": "reuse frozen human-anchored common reversal",
+      "refitAuthorized": false,
+      "appliedAfterChannelPositiveSum": true
+    },
+    "cashExclusions": [
+      "buyout_cash",
+      "other_non_sales_share_cash",
+      "commitment",
+      "pre_2021_cash",
+      "post_2025_cash",
+      "unmatured_labels"
+    ],
+    "zeroImputationForUnmaturedLabels": false
+  },
+  "caseManifest": {
+    "datasetVersion": "M2-human-anchored-authority-window-2021-2025-v0.1",
+    "caseSetsFrozenUnchanged": true,
+    "primary": {
+      "caseRowCount": 12039,
+      "independentWorkCount": 1125,
+      "originCount": 13,
+      "origins": [
+        "2021-12",
+        "2022-01",
+        "2022-02",
+        "2022-03",
+        "2022-04",
+        "2022-05",
+        "2022-06",
+        "2022-07",
+        "2022-08",
+        "2022-09",
+        "2022-10",
+        "2022-11",
+        "2022-12"
+      ],
+      "horizonsMonths": [
+        36
+      ],
+      "horizonCaseCounts": {
+        "36": 12039
+      },
+      "outerWorkFoldCount": 5,
+      "originBlockRule": "adjacent_calendar_origins_are_one_time_evidence_block",
+      "originBlockCount": 1,
+      "workChannelEvaluationRowCount": 58986,
+      "evaluationDesign": "frozen_deterministic_cross_work_not_independent_later_origin"
+    },
+    "strict": {
+      "sourceAuxiliaryCaseRowCount": 97490,
+      "evaluatedCaseRowCount": 74320,
+      "independentWorkCount": 2650,
+      "originCount": 11,
+      "originBlocks": [
+        ["2023-03"],
+        ["2023-06"],
+        ["2023-09"],
+        ["2023-12"],
+        ["2024-03"],
+        ["2024-06"],
+        ["2024-09"],
+        ["2024-12"],
+        ["2025-03"],
+        ["2025-06"],
+        ["2025-09"]
+      ],
+      "originBlockCount": 11,
+      "horizonsMonths": [
+        3,
+        6,
+        12,
+        18,
+        24
+      ],
+      "horizonCaseCounts": {
+        "3": 22805,
+        "6": 20155,
+        "12": 15028,
+        "18": 10269,
+        "24": 6063
+      },
+      "workChannelEvaluationRowCount": 250559,
+      "evaluationDesign": "strict_as_of_rolling_with_mature_earlier_labels_only"
+    },
+    "channelUniverse": {
+      "canonicalMasterChannelCount": 74,
+      "canonicalChannelsUsedBySalesShareCount": 39,
+      "configuredNamedPlatformCount": 5,
+      "mechanismParentCount": 3,
+      "source": "docs/analysis/m2-current/M2-current-canonical-channel-development-v0.1.json"
+    },
+    "materialization": {
+      "workChannelLabelRowCount": 387175,
+      "predictionEligibleObservedChannelLabelCount": 287914,
+      "futureFirstSeenLabelOnlyCount": 99261,
+      "positiveConservationDifference": 0,
+      "reversalConservationDifference": 0,
+      "netConservationDifference": 0
+    },
+    "digests": {
+      "frozenEvaluationSha256": "aee288069e2cee728d26797df24c48f186e9083c49235f9e4c77ccc0e74922fd",
+      "frozenEvaluationRowCount": 395904,
+      "frozenWorkEvaluationRowCount": 86359,
+      "frozenChannelEvaluationRowCount": 309545,
+      "primarySupplementSha256": "fd7e4ea011125480e1870befa6e5622493052db9c4c2305f1344bae00c4ac1c5",
+      "auxiliarySupplementSha256": "0838fa02847fe6f417f432e07c3d1f79f3943152049320021180f8cd78ba9ed5",
+      "basePrimaryCasesSha256": "86a2b578f1ae934f388e77a50976a4113d9110a0e027e7c681798df83c0fa89d",
+      "baseAuxiliaryCasesSha256": "1906ecea712630ef14ae367ccaa9ec053855492dfc29ad168acdcb73f2aff110",
+      "baseHistoriesSha256": "299acb647638ff83a2c81ddbabf6007424273c5952e7b30a58aae13989e266b1"
+    }
+  },
+  "cashAuthority": {
+    "authority": "user_reviewed_sales_share_workbook_membership",
+    "featureAndLabelWindowStart": "2021-01",
+    "featureAndLabelWindowEnd": "2025-12",
+    "positiveCashSource": "sales-share ledger only",
+    "reversalSource": "sales-share ledger only and modeled by frozen common reversal",
+    "buyoutUsed": false,
+    "otherCashUsed": false,
+    "databaseReadAuthorized": false,
+    "providerAuthorized": false,
+    "finalHoldoutAuthorized": false
+  },
+  "futureFirstSeenBoundary": {
+    "definition": "canonical channel with no positive cash on or before origin",
+    "prediction": 0,
+    "identityUsedAsFeature": false,
+    "labelOnlyRowCountFromFrozenManifest": 99261,
+    "requiredExecutionOutputs": {
+      "actualPositiveCash": "sum frozen label actualPositive where observedAtOrigin=false",
+      "actualCashShare": "futureFirstSeenActualPositiveCash / totalActualPositiveCash",
+      "modelCeilingDisclosure": "report unreachable positive cash separately for primary and strict"
+    },
+    "currentPreregistrationOutcomeRead": false,
+    "routingDifferenceContribution": "EXCLUDED",
+    "failureAttributionPolicy": "never describe future-first-seen cash as relative G1/G2 failure because G0 and candidates share zero prediction"
+  },
+  "featureAllowlist": [
+    {
+      "id": "log_recent_1_positive",
+      "formula": "log1p(sum(channel positive cash in the last 1 available month through origin))",
+      "sourcePath": "materialize_human_anchored_cases.py panel[work][channel][month].positive",
+      "availableAt": "month<=origin",
+      "missingPolicy": "no missing after observed-at-origin eligibility"
+    },
+    {
+      "id": "log_recent_3_positive",
+      "formula": "log1p(sum(channel positive cash over the last min(3,observedChannelAgeMonths) months))",
+      "sourcePath": "origin-truncated channel monthly positive history",
+      "availableAt": "month<=origin",
+      "missingPolicy": "use available observed months only; never pad pre-observation months with zero"
+    },
+    {
+      "id": "log_recent_12_positive",
+      "formula": "log1p(sum(channel positive cash over the last min(12,observedChannelAgeMonths) months))",
+      "sourcePath": "origin-truncated channel monthly positive history",
+      "availableAt": "month<=origin",
+      "missingPolicy": "use available observed months only"
+    },
+    {
+      "id": "log_cumulative_positive",
+      "formula": "log1p(sum(channel positive cash from max(2021-01,firstObservedChannelMonth) through origin))",
+      "sourcePath": "origin-truncated channel monthly positive history",
+      "availableAt": "month<=origin",
+      "missingPolicy": "not missing for eligible channels"
+    },
+    {
+      "id": "positive_rate_3",
+      "formula": "positive-month count / available-month count over last min(3,observedChannelAgeMonths) months",
+      "sourcePath": "origin-truncated channel monthly positive history",
+      "availableAt": "month<=origin",
+      "missingPolicy": "denominator is available observed months and is at least 1"
+    },
+    {
+      "id": "positive_rate_12",
+      "formula": "positive-month count / available-month count over last min(12,observedChannelAgeMonths) months",
+      "sourcePath": "origin-truncated channel monthly positive history",
+      "availableAt": "month<=origin",
+      "missingPolicy": "denominator is available observed months and is at least 1"
+    },
+    {
+      "id": "log_recent_3_vs_previous_3",
+      "formula": "log1p(sum(last 3 available months))-log1p(sum(previous 3 available months))",
+      "sourcePath": "origin-truncated channel monthly positive history",
+      "availableAt": "month<=origin",
+      "missingPolicy": "value=0 when fewer than 4 available months; paired with previous_3_available indicator"
+    },
+    {
+      "id": "previous_3_available",
+      "formula": "1 when observedChannelAgeMonths>=4 else 0",
+      "sourcePath": "first observed channel month and origin",
+      "availableAt": "origin",
+      "missingPolicy": "none"
+    },
+    {
+      "id": "log_positive_volatility_12",
+      "formula": "population standard deviation of log1p(monthly positive cash) over last min(12,observedChannelAgeMonths) months",
+      "sourcePath": "origin-truncated channel monthly positive history",
+      "availableAt": "month<=origin",
+      "missingPolicy": "0 when one available month"
+    },
+    {
+      "id": "months_since_last_positive_scaled",
+      "formula": "min(monthsSinceLastPositive,36)/36",
+      "sourcePath": "canonicalChannels[].monthsSinceLastPositive",
+      "availableAt": "origin",
+      "missingPolicy": "none for eligible channels"
+    },
+    {
+      "id": "log_historical_peak_positive",
+      "formula": "log1p(max monthly channel positive cash through origin)",
+      "sourcePath": "origin-truncated channel monthly positive history",
+      "availableAt": "month<=origin",
+      "missingPolicy": "none for eligible channels"
+    },
+    {
+      "id": "months_since_peak_scaled",
+      "formula": "min(origin month index - latest historical peak month index,36)/36",
+      "sourcePath": "origin-truncated channel monthly positive history",
+      "availableAt": "origin",
+      "missingPolicy": "latest peak breaks ties"
+    },
+    {
+      "id": "log_observed_channel_age",
+      "formula": "log1p(number of months from first positive channel month through origin)",
+      "sourcePath": "origin-truncated channel monthly positive history",
+      "availableAt": "origin",
+      "missingPolicy": "none for eligible channels"
+    },
+    {
+      "id": "log_observed_work_age",
+      "formula": "log1p(observedSalesAgeMonths)",
+      "sourcePath": "history.observedSalesAgeMonths",
+      "availableAt": "origin",
+      "missingPolicy": "none"
+    },
+    {
+      "id": "trailing_12_work_share",
+      "formula": "channel trailing-12 positive / work trailing-12 positive; 0 when work denominator is 0",
+      "sourcePath": "origin-truncated channel and work monthly positive history",
+      "availableAt": "origin",
+      "missingPolicy": "fixed zero-denominator rule"
+    },
+    {
+      "id": "channel_rank_percentile",
+      "formula": "(rankByTrailing12-1)/max(observedChannelCount-1,1), descending trailing cash then channelUid tie-break",
+      "sourcePath": "origin-observed canonical channels",
+      "availableAt": "origin",
+      "missingPolicy": "0 for a single observed channel"
+    },
+    {
+      "id": "available_month_fraction_3",
+      "formula": "min(observedChannelAgeMonths,3)/3",
+      "sourcePath": "first observed channel month and origin",
+      "availableAt": "origin",
+      "missingPolicy": "none"
+    },
+    {
+      "id": "available_month_fraction_12",
+      "formula": "min(observedChannelAgeMonths,12)/12",
+      "sourcePath": "first observed channel month and origin",
+      "availableAt": "origin",
+      "missingPolicy": "none"
+    },
+    {
+      "id": "mechanism_parent",
+      "formula": "one of membership, advertising, transactional; separate parent model rather than a numeric feature",
+      "sourcePath": "frozen user-confirmed revenueMode mapping",
+      "availableAt": "static mapping bound before training",
+      "missingPolicy": "unknown or other routes to G0"
+    },
+    {
+      "id": "future_month_basis",
+      "formula": "fixed mechanism-specific basis from modelFamilies.timeBasis",
+      "sourcePath": "future month index t in 1..36",
+      "availableAt": "known at forecast construction",
+      "missingPolicy": "none"
+    }
+  ],
+  "featureDenylist": [
+    "platform identity in G1 or G2",
+    "taxonomy identity in G1 or G2",
+    "v0.1 raw mechanism factor",
+    "v0.1 mechanism/platform/taxonomy amount scale",
+    "actual_over_prediction ratio",
+    "future-first-seen channel identity",
+    "future cash or labels beyond origin",
+    "unmatured labels filled with zero",
+    "buyout cash, other cash or commitment",
+    "platform membership-pool size without historical authority",
+    "v0.1 leave-one-work-out peerTrendRatio or platform trend multiplier",
+    "exposure, click, play, consumption-duration, fill-rate or eCPM proxy",
+    "order count, unit price or refund proxy",
+    "current availability or contract status backfilled into history",
+    "GPT, embedding, title inference or similar-work retrieval",
+    "post-result feature additions"
+  ],
+  "candidateGraph": {
+    "evaluationOrder": [
+      "G0",
+      "G1",
+      "G2",
+      "G3",
+      "G4",
+      "G5",
+      "G6"
+    ],
+    "nodes": {
+      "G0": {
+        "name": "frozen_learnedGlobal_channel_component",
+        "role": "baseline, conservation comparator and unsupported-channel fallback",
+        "positiveMonthlyDefinition": "frozen A1 channel positive point divided by frozen horizonMonths because the bound source code uses a linear horizon scale",
+        "commonReversal": "frozen",
+        "refit": false,
+        "sourceCommit": "e5bcef11dbc352d5f2a58d88bf303a8fdd30b6d3",
+        "configSha256": "e07054b016e032241dbb894637bef2836fbea0924a84eeed7f5e079ed1f64a74",
+        "caseManifestDigest": "aee288069e2cee728d26797df24c48f186e9083c49235f9e4c77ccc0e74922fd"
+      },
+      "G1": {
+        "name": "raw_independent_mechanism_generator",
+        "question": "Does an independent temporal generator add value without using learnedGlobal as predictor or offset?",
+        "parents": [
+          "membership",
+          "advertising",
+          "transactional"
+        ],
+        "occurrence": "independent monthly L2 logistic probability",
+        "conditionalAmount": "independent monthly L2 log1p-ridge positive amount with training-only smearing",
+        "conditionalAmountBackTransform": "max(0,exp(linearPrediction)*trainingSmearing-1)",
+        "monthlyPoint": "occurrenceProbability*conditionalPositiveAmount",
+        "usesG0AsFeatureOrOffset": false,
+        "platformParameters": false,
+        "taxonomyParameters": false,
+        "rawResultRequired": true
+      },
+      "G2": {
+        "name": "raw_structured_learnedGlobal_offset_generator",
+        "question": "Does a mechanism-specific dynamic residual add value around frozen learnedGlobal?",
+        "parents": [
+          "membership",
+          "advertising",
+          "transactional"
+        ],
+        "occurrence": "separate monthly L2 logistic probability; G0 is not an occurrence multiplier",
+        "conditionalAmountEquation": "log1p(actualPositiveMonthly)=log1p(frozenG0PositiveMonthly)+dynamicResidual(features,t)",
+        "residualRegularizationTarget": 0,
+        "backTransform": "max(0,exp(log1p(G0Monthly)+residualPrediction)*trainingSmearing-1)",
+        "actualPredictionRatioUsed": false,
+        "platformOrTaxonomyMultiplierUsed": false,
+        "rawResultRequired": true,
+        "sameCasesAndFoldsAsG1": true
+      },
+      "G3": {
+        "name": "training_only_convex_blend",
+        "equation": "alpha*G0+(1-alpha)*innerSelectedRawCore",
+        "requiresCompletedRawOutputs": [
+          "G1",
+          "G2"
+        ],
+        "rawCoreSelection": "inside each outer training set only",
+        "alphaSelection": "inside each outer training set only",
+        "outerOutcomeUsedForSelection": false,
+        "theoryEvidenceEligible": false,
+        "canMaskRawFailure": false,
+        "rawAndBlendBothReported": true
+      },
+      "G4": {
+        "name": "mechanism_parent_plus_bounded_platform_parameter_deviation",
+        "equation": "theta_platform=theta_mechanism+delta_platform with L2 penalty on delta_platform",
+        "amountMultiplier": false,
+        "requiresPriorPhase": "CORE_RAW_PASS",
+        "implementationRequiresNewAuthorization": true
+      },
+      "G5": {
+        "name": "taxonomy_as_hierarchical_generator_parameter_prior",
+        "equation": "theta_taxonomy=theta_parent+delta_taxonomy with L2 penalty on delta_taxonomy",
+        "amountMultiplier": false,
+        "actualPredictionRatio": false,
+        "unknownToken": "other_or_unknown",
+        "authorityField": "secondLevelCategoryReportingOnly",
+        "mappingPolicy": "bind the immutable private mapping digest before any training; any drift fails closed",
+        "availableAtPolicy": "frozen intrinsic static mapping only; no current-state or outcome-driven retrospective change",
+        "requiresPriorPhase": "PLATFORM_INCREMENTAL_PASS",
+        "implementationRequiresNewAuthorization": true
+      },
+      "G6": {
+        "name": "eligible_named_channel_generator_composition_with_frozen_fallback",
+        "eligibleNamedChannelPolicy": "use best gate-passing generator",
+        "otherOrUnsupportedPolicy": "frozen G0 channel component",
+        "refit": false,
+        "rawLayerFailureCanBeHidden": false,
+        "requiresPriorPhase": "TAXONOMY_INCREMENTAL_PASS",
+        "implementationRequiresNewAuthorization": true
+      }
+    },
+    "coreParentPriorityForLaterPhase": [
+      "G1_if_all_core_gates_pass",
+      "G2_if_G1_fails_and_G2_all_core_gates_pass",
+      "none"
+    ],
+    "G4G5G6AuthorizedNow": false
+  },
+  "modelFamilies": {
+    "primaryFamily": "deterministic_pure_javascript_L2_regularized_two_part_GLM",
+    "dependencyContract": "Node 24 standard library only; no new runtime dependency",
+    "trainingExample": "one mature future month for one origin-observed work-channel",
+    "occurrence": {
+      "family": "L2_penalized_logistic_regression",
+      "loss": "mean binary log loss plus lambda/2 times squared non-intercept coefficients",
+      "solver": "deterministic IRLS with weighted ridge solve and step halving",
+      "interceptPenalized": false,
+      "oneClassRule": "smoothed constant probability (positiveCount+0.5)/(rowCount+1)",
+      "diagnosticThreshold": 0.5,
+      "stepAcceptance": "strict penalized-objective decrease",
+      "noAcceptedStepRule": "NUMERICAL_FAILURE"
+    },
+    "conditionalAmount": {
+      "family": "L2_penalized_linear_ridge_on_log1p_positive_cash",
+      "loss": "mean squared log1p error plus lambda times squared non-intercept coefficients",
+      "solver": "normal equations with deterministic partial-pivot Gaussian elimination; equal pivots choose the lowest row index",
+      "interceptPenalized": false,
+      "smearing": "mean(exp(training log residual)) estimated only from the current fit partition",
+      "noPositiveRowRule": "unsupported parent or cell routes to its preregistered parent; never synthesize zero amount"
+    },
+    "standardization": {
+      "fitScope": "current training partition only",
+      "formula": "(x-trainingMean)/trainingPopulationStandardDeviation",
+      "zeroVarianceRule": "standardized value 0",
+      "futureMonthBasisStandardized": false
+    },
+    "timeBasis": {
+      "membership": {
+        "base": [
+          "1",
+          "u=t/36",
+          "u_squared"
+        ],
+        "interactions": [
+          "u*log_recent_12_positive",
+          "u*positive_rate_12"
+        ]
+      },
+      "advertising": {
+        "base": [
+          "1",
+          "short=exp(-(t-1)/3)",
+          "u=t/36",
+          "u_squared"
+        ],
+        "interactions": [
+          "short*log_recent_3_vs_previous_3",
+          "short*log_positive_volatility_12"
+        ]
+      },
+      "transactional": {
+        "base": [
+          "1",
+          "short_spike=exp(-(t-1)/3)",
+          "long_tail=exp(-(t-1)/18)"
+        ],
+        "interactions": [
+          "short_spike*months_since_last_positive_scaled",
+          "long_tail*log_cumulative_positive"
+        ]
+      }
+    },
+    "interactionConvention": "multiply each fixed future-month basis value by the standardized origin feature named in the interaction; time-basis values themselves are not standardized",
+    "numericAlternativeFamily": null,
+    "numericFailureRule": "mark the raw candidate NUMERICAL_FAILURE for that outer fold, publish the failure receipt and make the candidate ineligible to pass; do not switch family"
+  },
+  "hyperparameterGrid": {
+    "rawCore": {
+      "occurrenceL2": [
+        1,
+        10,
+        100
+      ],
+      "conditionalAmountL2": [
+        1,
+        10,
+        100
+      ],
+      "configurationCountPerCandidate": 9,
+      "sameRegularizationValuesAcrossMechanismParents": true,
+      "timeBasis": "FIXED_NOT_SELECTED",
+      "featureAllowlist": "FIXED_NOT_SELECTED"
+    },
+    "blend": {
+      "alpha": [
+        0.5,
+        0.75,
+        0.9,
+        1
+      ],
+      "tieBreak": "largest alpha, which is strongest shrinkage to G0"
+    },
+    "laterPlatformLayer": {
+      "platformDeviationL2": [
+        10,
+        100
+      ],
+      "selectionAuthorizedNow": false
+    },
+    "laterTaxonomyLayer": {
+      "taxonomyDeviationL2": [
+        10,
+        100
+      ],
+      "selectionAuthorizedNow": false
+    },
+    "selectionObjective": [
+      "lowest inner-validation work-total revenue-weighted WAPE",
+      "lowest absolute inner-validation signed percentage bias",
+      "higher occurrence L2",
+      "higher conditional-amount L2",
+      "lexicographically smaller configuration ID"
+    ],
+    "parameterValueProvenance": "small log-spaced structural grid fixed before any v0.2 outcome; no A0-A6 slice metric was used to choose a grid value",
+    "auditOutcomeUsedToChooseNumericValues": false,
+    "bestRawForBlendTieBreak": [
+      "lowest inner-validation work-total revenue-weighted WAPE",
+      "lowest absolute signed percentage bias",
+      "G1 before G2"
+    ],
+    "maximumIterations": 200,
+    "coefficientConvergenceTolerance": 1e-8,
+    "linearSolvePivotTolerance": 1e-12,
+    "minimumStepMultiplier": 9.5367431640625e-7,
+    "timeoutSecondsPerCandidateOuterFold": 1800,
+    "timeoutRule": "candidate fold fails closed; no partial score and no retry with changed settings",
+    "forbiddenSearch": [
+      "Bayesian optimization",
+      "random search",
+      "unbounded grid expansion",
+      "outer primary or strict metric driven parameter additions",
+      "feature additions after outcome review",
+      "rerun-until-pass"
+    ],
+    "executedInThisPreregistration": false
+  },
+  "seeds": {
+    "outerWorkFoldAlgorithm": "existing FNV1a deterministicWorkFold(standardWorkId,5); no random seed",
+    "innerWorkFoldAlgorithm": "existing FNV1a deterministicWorkFold(standardWorkId+'\\u001fchannel-generative-v0.2-inner',5)",
+    "bootstrapSeed": 2026072702,
+    "bootstrapIterations": 2000,
+    "otherRandomnessAllowed": false
+  },
+  "splitProtocol": {
+    "outerPrimary": {
+      "caseSet": "frozen primary 12039",
+      "foldCount": 5,
+      "group": "standardWorkId",
+      "foldFunction": "deterministicWorkFold(standardWorkId,5)",
+      "sameWorkAcrossTrainAndValidation": false,
+      "G0Refit": false
+    },
+    "outerStrict": {
+      "caseSet": "frozen strict evaluated 74320",
+      "outerOrigins": [
+        "2023-03",
+        "2023-06",
+        "2023-09",
+        "2023-12",
+        "2024-03",
+        "2024-06",
+        "2024-09",
+        "2024-12",
+        "2025-03",
+        "2025-06",
+        "2025-09"
+      ],
+      "trainingRule": "origin<outerOrigin and labelAvailableAsOf<=outerOrigin",
+      "validationRule": "origin=outerOrigin",
+      "sameOrLaterOuterTruthRead": false,
+      "G0Refit": false
+    },
+    "labelMaturity": "exclude immature future months; never zero-fill",
+    "actualAuthority": "frozen sales-share positive/reversal/net labels",
+    "caseResampling": false
+  },
+  "nestedSelection": {
+    "innerFoldCount": 5,
+    "group": "standardWorkId",
+    "allFiveInnerValidationRotationsAggregated": true,
+    "primaryRule": "within each outer primary training set, keep all rows of one work in one inner fold",
+    "strictRule": "within rows available before each strict outer origin, keep all origins and horizons of one work in one inner fold",
+    "selectedInsideOuterTrainingOnly": [
+      "occurrence L2",
+      "conditional amount L2",
+      "G3 raw-core identity",
+      "G3 alpha",
+      "later platform deviation L2",
+      "later taxonomy deviation L2",
+      "platform eligibility",
+      "taxonomy eligibility",
+      "standardization moments",
+      "smearing factor"
+    ],
+    "outerOutcomesUsedForSelection": false,
+    "occurrenceThresholdSelected": false,
+    "occurrenceDiagnosticThreshold": 0.5
+  },
+  "evaluationMetrics": {
+    "main": [
+      "primary work-total revenue-weighted WAPE",
+      "strict work-total revenue-weighted WAPE"
+    ],
+    "relativeImprovementFormula": "(baselineWape-candidateWape)/baselineWape",
+    "requiredForEveryRawAndBlend": [
+      "work-total WAPE",
+      "work-channel WAPE",
+      "absolute error",
+      "signed error",
+      "signed percentage bias",
+      "each frozen horizon",
+      "each primary origin and strict origin block",
+      "membership, advertising and transactional slices",
+      "five named platform diagnostic slices",
+      "taxonomy population and coverage only until taxonomy is authorized",
+      "top 1%, 5% and 10% actual-revenue work slices",
+      "head, middle and tail absolute-error contribution",
+      "monthly occurrence precision and recall at fixed 0.5",
+      "monthly occurrence Brier score",
+      "monthly occurrence log loss",
+      "positive conditional-amount absolute error and WAPE",
+      "generator row and actual-cash usage",
+      "fallback rate and reason",
+      "future-first-seen unreachable cash and share",
+      "prediction mass and actual mass",
+      "train, validation and evaluation work/row/positive counts"
+    ],
+    "revenueBands": {
+      "rankingUnit": "work aggregate actual positive cash within evaluation family",
+      "tieBreak": "stable standardWorkId ascending",
+      "head": "top 10% of works",
+      "middle": "next 40% of works",
+      "tail": "bottom 50% of works"
+    },
+    "pairedBootstrap": {
+      "clusterUnit": "standardWorkId across all channel, origin and horizon rows",
+      "iterations": 2000,
+      "seed": 2026072702,
+      "comparison": "candidate versus declared baseline work-total WAPE and absolute error",
+      "primaryAndStrictSeparate": true,
+      "confidenceLevel": 0.95,
+      "quantileRule": "sort 2000 replicate relative improvements and select zero-based floor(p*(B-1)) at p=0.025 and 0.975",
+      "unitMayChangeAfterFailure": false
+    },
+    "publicOutputPolicy": "aggregate only; no work ID, channel UID or taxonomy value",
+    "privateRowOutputPolicy": "Git-ignored capability-scoped output only"
+  },
+  "materiality": {
+    "relativeWapeMinimum": 0.01,
+    "relativeWapeMaximumAllowedHarm": -0.01,
+    "absoluteBiasDeteriorationMaximumPercentagePoints": 0.01,
+    "meaning": "one percent relative WAPE, not one percentage point"
+  },
+  "gates": {
+    "coreRawPass": {
+      "candidateScope": [
+        "G1",
+        "G2"
+      ],
+      "allConditionsRequiredPerCandidate": true,
+      "conditions": {
+        "primaryRelativeWape": {
+          "operator": ">=",
+          "value": 0.01
+        },
+        "strictRelativeWape": {
+          "operator": ">=",
+          "value": 0.01
+        },
+        "strictImprovedOriginBlocks": {
+          "operator": ">=",
+          "value": 6,
+          "total": 11,
+          "perBlockImprovementOperator": ">",
+          "perBlockImprovementValue": 0
+        },
+        "improvedFrozenHorizonSlices": {
+          "operator": ">=",
+          "value": 4,
+          "total": 6,
+          "slices": [
+            "primary:36",
+            "strict:3",
+            "strict:6",
+            "strict:12",
+            "strict:18",
+            "strict:24"
+          ],
+          "perSliceImprovementOperator": ">",
+          "perSliceImprovementValue": 0
+        },
+        "eachHorizonRelativeImprovement": {
+          "operator": ">=",
+          "value": -0.01
+        },
+        "top10RelativeWape": {
+          "operator": ">=",
+          "value": 0.01
+        },
+        "top1RelativeWape": {
+          "operator": ">=",
+          "value": -0.01
+        },
+        "top5RelativeWape": {
+          "operator": ">=",
+          "value": -0.01
+        },
+        "primaryAbsoluteBiasDeterioration": {
+          "metric": "abs(candidateBias)-abs(G0Bias)",
+          "operator": "<=",
+          "value": 0.01
+        },
+        "strictAbsoluteBiasDeterioration": {
+          "metric": "abs(candidateBias)-abs(G0Bias)",
+          "operator": "<=",
+          "value": 0.01
+        },
+        "primaryBootstrapRelativeImprovementLower95": {
+          "operator": ">=",
+          "value": -0.01
+        },
+        "strictBootstrapRelativeImprovementLower95": {
+          "operator": ">=",
+          "value": -0.01
+        },
+        "generatorObservedChannelRowUsage": {
+          "operator": ">=",
+          "value": 0.2,
+          "requiredIn": [
+            "primary",
+            "strict"
+          ]
+        },
+        "generatorActualPositiveCashUsage": {
+          "operator": ">=",
+          "value": 0.2,
+          "requiredIn": [
+            "primary",
+            "strict"
+          ]
+        },
+        "coveredChannelRowsRelativeWape": {
+          "operator": ">=",
+          "value": 0,
+          "requiredIn": [
+            "primary",
+            "strict"
+          ]
+        },
+        "rawResultNotBlend": true,
+        "postHocFallback": false
+      },
+      "passRule": "at least one raw candidate satisfies every condition",
+      "failureStatus": "GENERATIVE_V02_CORE_FAIL",
+      "nextPhaseParentPriority": "G1 if G1 passes; otherwise G2 if G2 passes; no outer-metric ranking"
+    },
+    "mechanismSafety": {
+      "adequateEvaluationPopulation": {
+        "minimumDistinctWorks": 100,
+        "minimumEvaluationRows": 500,
+        "minimumPositiveTargetRows": 100,
+        "mustHoldIn": [
+          "primary",
+          "strict"
+        ]
+      },
+      "minimumAdequatelyPopulatedMechanismsWithoutMaterialHarm": 2,
+      "maximumRelativeWapeHarm": -0.01,
+      "materialActualPositiveCashShare": 0.05,
+      "materialCashMechanismRule": "every mechanism with >=5% actual-positive-cash share must have relative WAPE >=-0.01 in primary and strict",
+      "smallPopulationRule": "report interval and fallback only; never use the slice to decide total upgrade"
+    },
+    "platformIncrementalPass": {
+      "candidate": "G4",
+      "baseline": "declared passing raw core parent",
+      "requiresCoreRawPass": true,
+      "primaryRelativeWape": {
+        "operator": ">=",
+        "value": 0.01
+      },
+      "strictRelativeWape": {
+        "operator": ">=",
+        "value": 0.01
+      },
+      "reuseAllCoreHorizonTimeTopRevenueBiasBootstrapSafety": true,
+      "supportedPlatformRowsRelativeWape": {
+        "operator": ">=",
+        "value": 0,
+        "requiredIn": [
+          "primary",
+          "strict"
+        ]
+      },
+      "failureAction": "retain raw core and stop before G5"
+    },
+    "taxonomyIncrementalPass": {
+      "candidate": "G5",
+      "baseline": "passing G4 raw",
+      "requiresPlatformIncrementalPass": true,
+      "primaryRelativeWape": {
+        "operator": ">=",
+        "value": 0.01
+      },
+      "strictRelativeWape": {
+        "operator": ">=",
+        "value": 0.01
+      },
+      "reuseAllCoreHorizonTimeTopRevenueBiasBootstrapSafety": true,
+      "supportedTaxonomyRowsRelativeWape": {
+        "operator": ">=",
+        "value": 0,
+        "requiredIn": [
+          "primary",
+          "strict"
+        ]
+      },
+      "failureAction": "retain G4 and stop before G6; never hide G5 raw failure with routing"
+    },
+    "blendDiagnostic": {
+      "candidate": "G3",
+      "theoryGateEligible": false,
+      "nextPhaseParentEligible": false,
+      "ifRawFailsButBlendPassesStatus": "RAW_CORE_FAIL_BLEND_ONLY_SIGNAL",
+      "requiredReports": [
+        "G1 raw",
+        "G2 raw",
+        "inner-selected raw identity by outer fold",
+        "selected alpha by outer fold",
+        "G3 blend"
+      ]
+    },
+    "G6CompositionSafety": {
+      "requiresTaxonomyIncrementalPass": true,
+      "allCoreGatesVersusG0Required": true,
+      "primaryRelativeWapeVersusBestRawLayer": {
+        "operator": ">=",
+        "value": -0.01
+      },
+      "strictRelativeWapeVersusBestRawLayer": {
+        "operator": ">=",
+        "value": -0.01
+      },
+      "releaseEvidence": false
+    }
+  },
+  "phaseStops": [
+    {
+      "order": 1,
+      "phase": "CORE_G1_G2_AND_G3_DIAGNOSTIC",
+      "startRequiresNewAuthorization": true,
+      "stopWhen": "neither G1 nor G2 passes every coreRawPass and mechanismSafety condition",
+      "status": "GENERATIVE_V02_CORE_FAIL",
+      "forbidNext": [
+        "G4",
+        "G5",
+        "G6"
+      ]
+    },
+    {
+      "order": 2,
+      "phase": "PLATFORM_G4",
+      "startRequires": [
+        "core raw pass",
+        "new explicit platform-layer authorization"
+      ],
+      "stopWhen": "G4 fails platformIncrementalPass",
+      "retain": "declared passing raw core",
+      "forbidNext": [
+        "G5",
+        "G6"
+      ]
+    },
+    {
+      "order": 3,
+      "phase": "TAXONOMY_G5",
+      "startRequires": [
+        "G4 raw pass",
+        "new explicit taxonomy-layer authorization"
+      ],
+      "stopWhen": "G5 fails taxonomyIncrementalPass",
+      "retain": "G4 raw",
+      "forbidNext": [
+        "G6"
+      ]
+    },
+    {
+      "order": 4,
+      "phase": "COMPOSITION_G6",
+      "startRequires": [
+        "G5 raw pass",
+        "new explicit composition authorization"
+      ],
+      "stopWhen": "G6 fails composition safety",
+      "releaseAuthorized": false
+    }
+  ],
+  "fallbackPolicy": {
+    "coreUnsupportedMechanismOrCell": "frozen G0 channel component",
+    "futureFirstSeen": "zero prediction",
+    "laterPlatformUnsupported": "mechanism parent generator",
+    "laterTaxonomyUnsupported": "eligible platform parent else mechanism parent",
+    "otherChannel": "frozen G0 channel component",
+    "fallbackIsPredeclared": true,
+    "fallbackCanReplaceRawReporting": false,
+    "fallbackCanProveTheory": false,
+    "fallbackReasonsRequired": [
+      "other_mechanism",
+      "insufficient_parent_training_support",
+      "future_first_seen",
+      "platform_ineligible",
+      "taxonomy_ineligible",
+      "numeric_failure"
+    ],
+    "eligibility": {
+      "mechanismParent": {
+        "minimumDistinctTrainingWorks": 50,
+        "minimumMonthlyTrainingRows": 1000,
+        "minimumPositiveTrainingMonths": 100
+      },
+      "platform": {
+        "minimumDistinctTrainingWorks": 100,
+        "minimumTrainingRows": 500,
+        "minimumPositiveTargetsPerFrozenHorizon": 50,
+        "recomputedWithinEachOuterTrainingFold": true,
+        "manboStandaloneAllowed": false,
+        "missevanAndManboCoreParent": "transactional"
+      },
+      "taxonomy": {
+        "minimumDistinctTrainingWorks": 100,
+        "minimumTrainingRows": 500,
+        "minimumPositiveTrainingRows": 100,
+        "minimumPositiveTargetsPerFrozenHorizon": 30,
+        "recomputedWithinEachOuterTrainingFold": true,
+        "unknownToken": "other_or_unknown"
+      }
+    }
+  },
+  "requiredOutputs": {
+    "candidateIds": [
+      "G0",
+      "G1",
+      "G2",
+      "G3",
+      "G4",
+      "G5",
+      "G6"
+    ],
+    "rawAlwaysPublished": [
+      "G1",
+      "G2",
+      "any authorized G4",
+      "any authorized G5"
+    ],
+    "G2OffsetReports": [
+      "frozen G0 monthly offset before residual",
+      "dynamic residual contribution by future month",
+      "raw G2 monthly and cumulative prediction after residual"
+    ],
+    "selectionSeparatedFromRaw": true,
+    "perOuterFoldReceipts": [
+      "train, inner-validation and outer-evaluation counts",
+      "selected finite-grid values",
+      "selected G3 raw identity and alpha",
+      "standardization digest",
+      "smearing factor",
+      "eligibility counts and fallback reasons",
+      "convergence and timeout status",
+      "same-or-later truth read count"
+    ],
+    "evaluationSlices": "all entries in evaluationMetrics.requiredForEveryRawAndBlend",
+    "privatePredictions": "Git-ignored capability-scoped NDJSON with digest manifest",
+    "publicResults": "aggregate-only JSON and Markdown",
+    "noOutcomeInPreregistration": true
+  },
+  "forbiddenActions": [
+    "implement or modify a v0.2 predictor in this preregistration task",
+    "run v0.2 training, fitting, prediction, ablation or hyperparameter search",
+    "read any new v0.2 candidate outcome",
+    "rerun A0-A6 to select favorable v0.2 rules",
+    "modify channelExperts.js behavior",
+    "modify production loader, route, API, workbook, exact v0.3 or release configuration",
+    "use final holdout, later-origin holdout, provider, database or unauthorized external data",
+    "make taxonomy or platform identity a cash multiplier",
+    "select parameter, platform, taxonomy or blend using outer evaluation outcomes",
+    "replace raw results with blend, selected routing or fallback results",
+    "add features or grid points after result review",
+    "claim business plausibility as evidence of predictive value",
+    "merge PR #28"
+  ],
+  "dataLimitations": [
+    "no historically versioned platform membership-pool size",
+    "no exposure, click, play or consumption-duration history",
+    "no advertising fill-rate or eCPM history",
+    "no order count, unit price or refund history",
+    "no compliant historical platform availability state",
+    "no compliant historical contract effective/expiry state",
+    "no historical sales-share rule changes",
+    "no future marketing or operating-action plan",
+    "mechanism labels may be scientifically plausible but not identifiable from cash history alone"
+  ],
+  "implementationPlan": {
+    "authorizedNow": false,
+    "nextAuthorizedTaskOrder": [
+      "bind frozen case and source digests and fail closed on drift",
+      "extend private materialization with origin-truncated per-channel monthly history and mature future-month positive labels through month 36",
+      "validate monthly-to-horizon and work-channel positive/reversal/net conservation",
+      "implement G0 semantic-equivalence verifier without refitting G0",
+      "implement the shared deterministic two-part GLM primitives",
+      "implement and test G1 independently",
+      "implement and test G2 independently",
+      "implement training-only G3 selection while preserving both raw results",
+      "run synthetic no-real-data and leakage tests",
+      "only after explicit private-development authorization, execute frozen primary and strict protocol once",
+      "apply core gates and stop before G4 unless every prerequisite and a new authorization exist"
+    ],
+    "productionSurfaceChangeAllowed": false,
+    "newRuntimeDependencyAllowed": false
+  },
+  "unresolvedQuestions": [],
+  "preregistrationSelfCheck": {
+    "candidateIdsConsistent": true,
+    "gatesMachineReadable": true,
+    "allParametersFiniteOrFixed": true,
+    "allSeedsFixed": true,
+    "openEndedTuningLanguagePresent": false,
+    "platformOrTaxonomyInCore": false,
+    "G1AndG2AreTwoPartTemporalGenerators": true,
+    "G2OffsetDistinguishedFromV01Scale": true,
+    "rawBlendSelectedSeparated": true,
+    "primaryStrictHorizonTimeAndTopRevenueGatesPresent": true,
+    "futureFirstSeenBoundaryPresent": true,
+    "privateRowDataCommitted": false,
+    "productionSurfaceChangeCount": 0
+  },
+  "implementationAuthorizationRequired": true,
+  "safeToStartImplementation": false,
+  "finalStatus": "GENERATIVE_V02_PREREGISTRATION_COMPLETE_IMPLEMENTATION_NOT_AUTHORIZED"
+}

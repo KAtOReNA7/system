@@ -4,7 +4,7 @@
 
 - PR #7、PR #8、PR #9、PR #10、PR #11、PR #12、PR #13 均已合入 `main`；已合并分支不得继续作为开发入口。
 - 当前仓库治理导航为：
-  - `docs/analysis/m2-v2/M2-v2-current-state-index-v0.23.md`
+  - `docs/analysis/m2-v2/M2-v2-current-state-index-v0.24.md`
   - `docs/analysis/m2-v2/M2-repository-code-convergence-and-portable-development-audit-v0.4.md`
   - `docs/analysis/m2-current/M2-current-maturity-reconstruction-v0.6.md`
   - `docs/analysis/m2-current/M2-sales-share-only-target-decision-v0.1.md`
@@ -39,6 +39,8 @@
   - `docs/analysis/m2-current/M2-current-channel-experts-public-diagnostic-v0.1.json`
   - `docs/analysis/m2-current/M2-current-channel-experts-architecture-failure-audit-v0.1.md`
   - `docs/analysis/m2-current/M2-current-channel-experts-architecture-failure-audit-v0.1.json`
+  - `docs/analysis/m2-current/M2-current-channel-generative-v0.2-preregistration.md`
+  - `docs/analysis/m2-current/M2-current-channel-generative-v0.2-preregistration.json`
   - `docs/analysis/m2-current/M2-current-feature-information-gain-and-commercial-state-model-proposal-v0.1.md`
   - `docs/analysis/m2-current/M2-commercial-state-data-readiness-audit-v0.1.md`
   - `docs/analysis/m2-current/M2-commercial-state-source-discovery-v0.1.md`
@@ -288,6 +290,25 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
     v0.2 实现、训练、调参或选择；现有 v0.1 multiplier/calibration 路径须从下一
     候选退役，物化、守恒、future-first-seen exclusion、canonical mapping、
     nested work folds 和 learnedGlobal fallback 可复用。
+- `M2-current-channel-generative-v0.2` 最小可证伪预注册已冻结：
+  - G1 为不使用 learnedGlobal offset 的独立逐月
+    occurrence × conditional-amount generator；
+  - G2 为 occurrence 独立、仅将 frozen learnedGlobal channel component 用作
+    log-space structured offset 的 dynamic-residual generator；
+  - G3 只允许 outer training 内选择 raw core 与保守 convex blend，不能替代
+    G1/G2 raw 或作为理论证据；
+  - primary、strict、horizon、strict time block、top-revenue、bias、paired
+    bootstrap 和 mechanism safety 门均已机器化；
+  - G1/G2 raw core 未全部通过规定门时必须
+    `GENERATIVE_V02_CORE_FAIL` 并停止 G4–G6；后续严格按
+    core → platform → taxonomy → composition 顺序且每层需要新授权；
+  - platform/taxonomy 只能作为 generator parameter 的 bounded deviation/prior，
+    禁止金额倍率；
+  - 当前状态为
+    `GENERATIVE_V02_PREREGISTRATION_COMPLETE_IMPLEMENTATION_NOT_AUTHORIZED`，
+    `implementationAuthorizationRequired=true`、
+    `safeToStartImplementation=false`。不得开始实现、训练、调参或读取 v0.2
+    候选结果。
 - lifecycle-aware 失败后的 feature information gain 与 commercial-state source
   审计已完成：
   - 下一轮最有潜在增益的信息是 cutoff 时真实可得、可审计、可版本化的渠道
