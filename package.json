@@ -61,6 +61,7 @@
     "smoke": "node tools/dev-smoke/run-api-smoke.mjs",
     "smoke:portable-start": "node tools/dev-smoke/run-portable-startup.mjs",
     "check:no-real-data": "node scripts/check-no-real-data.mjs",
+    "m2:model": "node scripts/m2-current/query_m2_model_registry.mjs",
     "m3:private-dry-run:check": "node scripts/m3-private-dry-run/check_m3_private_dry_run_safety.js",
     "m3:private-dry-run": "node scripts/m3-private-dry-run/run_m3_private_material_dry_run.js",
     "m3:private-completion-bootstrap": "node scripts/m3-private-dry-run/bootstrap_m3_private_completion_pack.js",

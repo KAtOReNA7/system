@@ -358,18 +358,119 @@ export function compareM2ModelRegistryEntries(registry, leftId, rightId) {
     }
   }
   if (pairs.length > 0) {
+    const sharedComparableGroupIds = unique(
+      pairs.map((pair) => pair.left.comparableGroupId)
+    );
     return Object.freeze({
       comparable: true,
       pairs: Object.freeze(pairs),
-      winnerByWape: bestWapeModel(left, right, pairs)
+      sharedComparableGroupIds: Object.freeze(sharedComparableGroupIds),
+      winnerByWape: bestWapeModel(left, right, pairs),
+      globalLeaderboardAllowed: false
     });
   }
   return Object.freeze({
     comparable: false,
     pairs: Object.freeze([]),
+    sharedComparableGroupIds: Object.freeze([]),
     winnerByWape: null,
-    differences: Object.freeze(comparisonDifferences(left, right))
+    globalLeaderboardAllowed: false,
+    differences: Object.freeze(comparisonDifferences(registry, left, right))
   });
+}
+
+export function renderM2ModelCatalog(registry) {
+  const lines = [
+    "<!-- 由 config/m2-model-registry.v1.json 确定性生成；请勿手工改写成绩或角色。 -->",
+    "# M2 模型目录与成绩总账 v1",
+    "",
+    "本目录是模型登记表（Model Registry）的中文阅读视图。唯一当前机器权威仍是",
+    "`config/m2-model-registry.v1.json`；本文件不授予训练、自动化、生产或发布权限。",
+    "",
+    "## 当前角色",
+    "",
+    ...renderCurrentRoles(registry),
+    "",
+    "## 持久模型与模型族",
+    "",
+    "| 能力 | 类型 | 中文名称（英文原名、稳定 ID） | 旧 ID / 别名 | 当前角色（机器状态） | 谱系 |",
+    "|---|---|---|---|---|---|",
+    ...(registry.models ?? []).map((model) => {
+      const lineage = [
+        model.predecessorIds.length > 0
+          ? `前序 ${model.predecessorIds.map(code).join("、")}`
+          : "无前序",
+        model.successorIds.length > 0
+          ? `后续 ${model.successorIds.map(code).join("、")}`
+          : "无后续"
+      ].join("；");
+      const aliases = [...model.legacyIds, ...model.legacyAliases]
+        .map(code)
+        .join("、");
+      return `| ${capabilityZh(model.capability)}（${model.capability}）`
+        + ` | ${entityTypeZh(model.entityType)}（${model.entityType}）`
+        + ` | ${escapeTable(model.displayNameZh)}（${escapeTable(model.displayNameEn)}，`
+        + `${code(model.stableModelId)}） | ${aliases || "无"}`
+        + ` | ${roleZh(model.currentRole)}（${code(model.currentRole)}）`
+        + ` | ${lineage} |`;
+    }),
+    "",
+    "## 实验、实验臂与检查点",
+    "",
+    "实验 ID 只组织评价活动；实验臂、消融和检查点不是新的模型身份。",
+    "",
+    "| 实验（英文原名、稳定 ID） | 已登记实验臂（完整作用域、机器状态） |",
+    "|---|---|",
+    ...(registry.experiments ?? []).map((experiment) => (
+      `| ${experiment.displayNameZh}（${experiment.displayNameEn}，`
+      + `${code(experiment.experimentId)}） | `
+      + experiment.arms.map((arm) => (
+        `${arm.displayNameZh} / ${arm.armId}（`
+        + `${code(`${experiment.experimentId}/${arm.armId}`)}；`
+        + `${code(arm.executionStatus)}）`
+      )).join("；")
+      + " |"
+    )),
+    "",
+    "## 成绩人口与可比组",
+    "",
+    "成绩只在同一可比组内解释；不同目标、现金权威、人口、horizon、粒度、",
+    "as-of/label maturity、实际值定义或评价族不得直接排名。",
+    "",
+    "| 可比组 | 可比等级（机器状态） | 目标 / 现金权威 | 人口 / 粒度 / horizon | as-of / actual / 评价族 |",
+    "|---|---|---|---|---|",
+    ...registry.comparabilityGroups.map((group) => (
+      `| ${code(group.comparableGroupId)}`
+      + ` | ${comparisonClassZh(group.comparisonClass)}（`
+      + `${code(group.comparisonClass)}）`
+      + ` | ${code(group.target)} / ${code(group.cashAuthority)}`
+      + ` | ${code(group.populationId)} / ${code(group.grain)} / `
+      + `${group.horizons.length === 0 ? "无" : group.horizons.join("、")}`
+      + ` | ${code(group.asOfContract)} / ${code(group.actualDefinition)} / `
+      + `${code(group.evaluationFamily)} |`
+    )),
+    "",
+    "## 成绩总账",
+    "",
+    "| 可比组 | 模型（稳定 ID） | cases / works / origins | WAPE | signed bias | 结果（机器状态） |",
+    "|---|---|---:|---:|---:|---|",
+    ...renderScoreLedger(registry),
+    "",
+    "## 查询",
+    "",
+    "```bash",
+    "npm run m2:model -- status",
+    "npm run m2:model -- list",
+    "npm run m2:model -- show M2-WORK-OA03",
+    "npm run m2:model -- aliases exact-v0.3",
+    "npm run m2:model -- experiment M2-EXP-CHANNEL-GENERATIVE-02",
+    "npm run m2:model -- explain G1",
+    "npm run m2:model -- compare M2-WORK-OA03 M2-WORK-LG01",
+    "```",
+    "",
+    "查询命令只读取公开登记表，不执行模型、训练、私有评价或生产写入。"
+  ];
+  return `${lines.join("\n")}\n`;
 }
 
 function bestWapeModel(left, right, pairs) {
@@ -381,10 +482,19 @@ function bestWapeModel(left, right, pairs) {
   return leftBest < rightBest ? left.stableModelId : right.stableModelId;
 }
 
-function comparisonDifferences(left, right) {
-  const leftValues = evaluationDimensions(left);
-  const rightValues = evaluationDimensions(right);
-  return ["target", "cashAuthority", "populationId", "grain", "horizons"]
+function comparisonDifferences(registry, left, right) {
+  const leftValues = evaluationDimensions(registry, left);
+  const rightValues = evaluationDimensions(registry, right);
+  return [
+    "target",
+    "cashAuthority",
+    "populationId",
+    "grain",
+    "horizons",
+    "asOfContract",
+    "actualDefinition",
+    "evaluationFamily"
+  ]
     .filter((field) => JSON.stringify(leftValues[field]) !== JSON.stringify(
       rightValues[field]
     ))
@@ -395,15 +505,165 @@ function comparisonDifferences(left, right) {
     }));
 }
 
-function evaluationDimensions(model) {
+function evaluationDimensions(registry, model) {
   const evaluations = model.evaluations.filter((item) => item.WAPE !== null);
+  const groups = new Map((registry.comparabilityGroups ?? []).map(
+    (group) => [group.comparableGroupId, group]
+  ));
+  const evaluationGroups = evaluations
+    .map((evaluation) => groups.get(evaluation.comparableGroupId))
+    .filter(Boolean);
   return {
     target: unique(evaluations.map((item) => item.target)),
     cashAuthority: unique(evaluations.map((item) => item.cashAuthority)),
     populationId: unique(evaluations.map((item) => item.populationId)),
     grain: unique(evaluations.map((item) => item.grain)),
-    horizons: unique(evaluations.map((item) => item.horizons.join(",")))
+    horizons: unique(evaluations.map((item) => item.horizons.join(","))),
+    asOfContract: unique(evaluationGroups.map((item) => item.asOfContract)),
+    actualDefinition: unique(evaluationGroups.map(
+      (item) => item.actualDefinition
+    )),
+    evaluationFamily: unique(evaluationGroups.map(
+      (item) => item.evaluationFamily
+    ))
   };
+}
+
+function renderCurrentRoles(registry) {
+  const definitions = [
+    ["现行运行回退模型", "operational fallback", "operationalWorkFallback"],
+    ["研究比较基线", "research baseline", "researchWorkBaseline"],
+    ["组合级参考", "portfolio reference", "portfolioReference"],
+    ["活动候选", "active candidate", "activeCandidate"],
+    ["自动化批准模型", "approved for automation", "approvedForAutomation"]
+  ];
+  const models = new Map(registry.models.map(
+    (model) => [model.stableModelId, model]
+  ));
+  const rows = definitions.map(([zh, en, key]) => {
+    const id = registry.currentRoles[key];
+    if (id === null) {
+      return `- ${zh}（${en}）：无（\`null\`）。`;
+    }
+    const model = models.get(id);
+    return `- ${zh}（${en}）：${model.displayNameZh}（`
+      + `${model.displayNameEn}，${code(id)}）。`;
+  });
+  rows.push(
+    `- 阻断实验：${code(registry.currentRoles.blockedExperiment)}`
+      + "；这是前置条件阻断，不是已执行失败。"
+  );
+  return rows;
+}
+
+function renderScoreLedger(registry) {
+  return registry.comparabilityGroups.flatMap((group) => (
+    registry.models.flatMap((model) => (
+      model.evaluations
+        .filter((evaluation) => (
+          evaluation.comparableGroupId === group.comparableGroupId
+        ))
+        .map((evaluation) => (
+          `| ${code(group.comparableGroupId)}`
+          + ` | ${model.displayNameZh}（${code(model.stableModelId)}）`
+          + ` | ${displayCount(evaluation.caseCount)} / `
+          + `${displayCount(evaluation.workCount)} / `
+          + `${displayCount(evaluation.originCount)}`
+          + ` | ${displayMetric(evaluation.WAPE, evaluation.resultStatus)}`
+          + ` | ${displayMetric(evaluation.signedBias, evaluation.resultStatus)}`
+          + ` | ${resultStatusZh(evaluation.resultStatus)}（`
+          + `${code(evaluation.resultStatus)}） |`
+        ))
+    ))
+  ));
+}
+
+function capabilityZh(capability) {
+  return {
+    WORK: "作品点预测",
+    PORT: "组合预测",
+    BASE: "研究基线族",
+    CHAN: "渠道预测"
+  }[capability] ?? "其他能力";
+}
+
+function entityTypeZh(entityType) {
+  return {
+    model: "模型",
+    model_family: "模型族",
+    model_pipeline: "选定管线"
+  }[entityType] ?? "登记实体";
+}
+
+function roleZh(role) {
+  return {
+    operational_work_fallback: "现行运行回退",
+    research_baseline: "研究比较基线",
+    portfolio_reference: "组合级参考",
+    baseline_family: "研究基线族",
+    comparator_only: "仅作比较",
+    rejected_development_candidate: "已拒绝开发候选",
+    failed_development_candidate: "已执行失败候选",
+    failed_research_candidate: "已执行失败研究候选",
+    blocked_not_executed: "阻断且未执行",
+    archive_only: "仅历史审计",
+    selected_safe_fallback: "安全回退管线",
+    rejected_pipeline_safe_fallback: "已拒绝且安全回退的管线",
+    regression_baseline_family: "回归比较基线族",
+    rejected_posthoc_diagnostic: "已拒绝后验诊断",
+    rejected_comparator: "已拒绝比较模型",
+    human_formula_comparator: "人工公式比较模型",
+    research_work_baseline: "研究比较基线",
+    rejected_nested_layer: "已拒绝嵌套层",
+    failed_channel_development_model: "已执行失败渠道模型",
+    blocked_model_family_no_candidate_outcome: "阻断且无候选结果",
+    archive_only_failed_model: "仅历史审计且已失败"
+  }[role] ?? "登记角色";
+}
+
+function comparisonClassZh(value) {
+  return {
+    SAME_CASE_COMPARABLE: "同案例可比",
+    SAME_INTERSECTION_COMPARABLE: "仅相同案例交集可比",
+    REUSED_DEVELOPMENT_WINDOW: "复用开发窗口",
+    DIFFERENT_GRAIN_NOT_COMPARABLE: "粒度不同，不可直接比较",
+    DIFFERENT_TARGET_NOT_COMPARABLE: "目标不同，不可直接比较",
+    STANDALONE_ONLY: "仅独立展示"
+  }[value] ?? "登记比较等级";
+}
+
+function resultStatusZh(value) {
+  if (/NOT_EXECUTED/u.test(value)) {
+    return "尚未执行";
+  }
+  if (/BLOCKED|BLOCKER/u.test(value)) {
+    return "因前置条件不满足而阻断";
+  }
+  if (/FAIL|REJECT/u.test(value)) {
+    return "已执行但未通过";
+  }
+  return "登记结果";
+}
+
+function displayMetric(value, resultStatus) {
+  if (value !== null) {
+    return Number(value).toFixed(8);
+  }
+  return /NOT_EXECUTED/u.test(resultStatus)
+    ? "未执行（null）"
+    : "未登记（null）";
+}
+
+function displayCount(value) {
+  return value === null ? "—" : String(value);
+}
+
+function code(value) {
+  return `\`${escapeTable(value)}\``;
+}
+
+function escapeTable(value) {
+  return String(value).replace(/\|/gu, "\\|");
 }
 
 function requireFields(value, fields, context, errors) {

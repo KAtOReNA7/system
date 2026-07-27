@@ -23,7 +23,7 @@
     "approvedForAutomation": null,
     "activeCandidate": null,
     "blockedExperiment": "M2-EXP-CHANNEL-GENERATIVE-02",
-    "latestStateIndex": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.25.md",
+    "latestStateIndex": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.26.md",
     "roleConflict": false,
     "sourceAssertions": [
       {
@@ -1340,7 +1340,7 @@
       "stableModelId": "M2-CHAN-SCL01",
       "displayNameZh": "渠道倍率专家模型",
       "displayNameEn": "Channel Scalar Experts v0.1",
-      "legacyIds": ["M2-current-channel-mechanism-hierarchical-challenger-v0.1", "A6"],
+      "legacyIds": ["M2-current-channel-mechanism-hierarchical-challenger-v0.1"],
       "legacyAliases": ["channelExperts v0.1", "channel scalar experts"],
       "entityType": "model",
       "capability": "CHAN",
@@ -1937,6 +1937,8 @@
     {"identifier": "K0", "namespace": "M2-EXP-CHANNEL-GENERATIVE-02", "parentExperiment": "M2-EXP-CHANNEL-GENERATIVE-02", "type": "execution_checkpoint", "displayNameZh": "执行检查点 K0（解释边界）", "meaningZh": "渠道生成 v0.2 的解释边界提交检查点，不是模型。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-current-channel-generative-v0.2-interpretation-amendment-v0.1.md"},
     {"identifier": "K1", "namespace": "M2-EXP-CHANNEL-GENERATIVE-02", "parentExperiment": "M2-EXP-CHANNEL-GENERATIVE-02", "type": "execution_checkpoint", "displayNameZh": "执行检查点 K1（核心实现）", "meaningZh": "渠道生成 v0.2 的核心实现检查点，不是模型。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-current-channel-generative-v0.2-core-development-v0.1.md"},
     {"identifier": "K2", "namespace": "M2-EXP-CHANNEL-GENERATIVE-02", "parentExperiment": "M2-EXP-CHANNEL-GENERATIVE-02", "type": "execution_checkpoint", "displayNameZh": "执行检查点 K2（结果封存）", "meaningZh": "渠道生成 v0.2 的结果封存检查点，不是模型。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-current-channel-generative-v0.2-core-development-v0.1.md"},
+    {"identifier": "K0", "namespace": "M2-MODEL-REGISTRY-V1", "parentExperiment": null, "type": "governance_checkpoint", "displayNameZh": "模型登记治理检查点 K0（登记表、命名与长期规则）", "meaningZh": "本轮模型身份、别名、成绩人口、中文报告标准与长期规则固化检查点，不是模型或训练阶段。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-model-identity-audit-v1.md"},
+    {"identifier": "K1", "namespace": "M2-MODEL-REGISTRY-V1", "parentExperiment": null, "type": "governance_checkpoint", "displayNameZh": "模型登记治理检查点 K1（目录、查询与状态索引）", "meaningZh": "本轮确定性目录、只读查询入口、README 与状态索引治理检查点，不是模型或训练阶段。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-model-catalog-and-scorecard-v1.md"},
     {"identifier": "A0", "namespace": "M2-EXP-CHANNEL-EXPERTS-01", "parentExperiment": "M2-EXP-CHANNEL-EXPERTS-01", "type": "experiment_arm", "displayNameZh": "渠道倍率专家 / A0", "meaningZh": "learnedGlobal 作品基线。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-current-channel-experts-development-v0.1.json"},
     {"identifier": "A1", "namespace": "M2-EXP-CHANNEL-EXPERTS-01", "parentExperiment": "M2-EXP-CHANNEL-EXPERTS-01", "type": "experiment_arm", "displayNameZh": "渠道倍率专家 / A1", "meaningZh": "渠道守恒分解重组。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-current-channel-experts-development-v0.1.json"},
     {"identifier": "A2", "namespace": "M2-EXP-CHANNEL-EXPERTS-01", "parentExperiment": "M2-EXP-CHANNEL-EXPERTS-01", "type": "experiment_arm", "displayNameZh": "渠道倍率专家 / A2", "meaningZh": "原始机制倍率专家。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-current-channel-experts-development-v0.1.json"},
@@ -1951,7 +1953,7 @@
     {"identifier": "G4", "namespace": "M2-EXP-CHANNEL-GENERATIVE-02", "parentExperiment": "M2-EXP-CHANNEL-GENERATIVE-02", "type": "experiment_arm", "displayNameZh": "渠道时间生成 v0.2 / G4", "meaningZh": "平台层；未授权。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-current-channel-generative-v0.2-preregistration.json"},
     {"identifier": "G5", "namespace": "M2-EXP-CHANNEL-GENERATIVE-02", "parentExperiment": "M2-EXP-CHANNEL-GENERATIVE-02", "type": "experiment_arm", "displayNameZh": "渠道时间生成 v0.2 / G5", "meaningZh": "taxonomy 层；未授权。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-current-channel-generative-v0.2-preregistration.json"},
     {"identifier": "G6", "namespace": "M2-EXP-CHANNEL-GENERATIVE-02", "parentExperiment": "M2-EXP-CHANNEL-GENERATIVE-02", "type": "experiment_arm", "displayNameZh": "渠道时间生成 v0.2 / G6", "meaningZh": "组合层；未授权。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-current-channel-generative-v0.2-preregistration.json"},
-    {"identifier": "state-index-v0.1-v0.25", "namespace": "M2-STATE-INDEX", "parentExperiment": null, "type": "status_index_series", "displayNameZh": "M2 状态索引 v0.1–v0.25", "meaningZh": "仓库状态页版本序列，不是模型版本。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.25.md"},
+    {"identifier": "state-index-v0.1-v0.26", "namespace": "M2-STATE-INDEX", "parentExperiment": null, "type": "status_index_series", "displayNameZh": "M2 状态索引 v0.1–v0.26", "meaningZh": "仓库状态页版本序列，不是模型版本。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.26.md"},
     {"identifier": "config-v0.x", "namespace": "M2-CONFIG", "parentExperiment": null, "type": "config_version_series", "displayNameZh": "配置 schema 版本", "meaningZh": "配置合同版本，不是模型成绩或模型代际。", "mayAppearAloneInUserReport": false, "evidenceRef": "config/m2-current.v0.6.json"},
     {"identifier": "report-v0.x", "namespace": "M2-REPORT", "parentExperiment": null, "type": "report_version_series", "displayNameZh": "报告 schema 版本", "meaningZh": "报告结构版本，不是模型。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-current-public-diagnostic-v0.13.json"},
     {"identifier": "calibration-v1.x", "namespace": "M2-ARCHIVE-COMMAND", "parentExperiment": null, "type": "archive_only_workflow", "displayNameZh": "历史校准 v1.x 流程", "meaningZh": "历史校准与重放流程；不作为当前模型入口。", "mayAppearAloneInUserReport": false, "evidenceRef": "config/command-lifecycle.v0.1.json"},
@@ -2038,6 +2040,16 @@
         "modelId": null,
         "nonModelNamespaces": ["M2-ARCHIVE-CAMPAIGN"],
         "resolutionZh": "短码表示历史实验臂；算法使用对应 stableModelId。"
+      },
+      {
+        "alias": "K0/K1",
+        "collisionType": "execution_checkpoint_across_governance_namespaces",
+        "modelId": null,
+        "nonModelNamespaces": [
+          "M2-EXP-CHANNEL-GENERATIVE-02",
+          "M2-MODEL-REGISTRY-V1"
+        ],
+        "resolutionZh": "必须同时显示所属任务 namespace 和中文检查点含义；不得裸写 K0 或 K1。"
       }
     ]
   }

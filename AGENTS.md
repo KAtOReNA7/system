@@ -4,7 +4,7 @@
 
 - PR #7、PR #8、PR #9、PR #10、PR #11、PR #12、PR #13 均已合入 `main`；已合并分支不得继续作为开发入口。
 - 当前仓库治理导航为：
-  - `docs/analysis/m2-v2/M2-v2-current-state-index-v0.25.md`
+  - `docs/analysis/m2-v2/M2-v2-current-state-index-v0.26.md`
   - `docs/analysis/m2-v2/M2-v2-current-state-index-v0.24.md`
   - `docs/analysis/m2-v2/M2-repository-code-convergence-and-portable-development-audit-v0.4.md`
   - `docs/analysis/m2-current/M2-current-maturity-reconstruction-v0.6.md`

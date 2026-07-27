@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -10,6 +11,7 @@ import {
   explainM2Identifier,
   findM2ModelsByAlias,
   loadM2ModelRegistry,
+  renderM2ModelCatalog,
   validateM2ModelRegistry
 } from "../src/domain/m2Current/modelRegistry.js";
 
@@ -34,6 +36,7 @@ test("registry schema, evidence paths and immutable digests validate", () => {
   );
   assert.equal(validation.counts.modelCount, 27);
   assert.equal(validation.counts.experimentCount, 12);
+  assert.equal(validation.counts.nonModelIdentifierCount, 47);
   assert.equal(validation.counts.comparabilityGroupCount, 13);
 });
 
@@ -171,3 +174,114 @@ test("registry contains no private path and performs no model execution", () => 
     false
   );
 });
+
+test("reader catalog is a deterministic complete rendering of the registry", async () => {
+  const catalog = await readFile(
+    path.join(
+      root,
+      "docs",
+      "analysis",
+      "m2-current",
+      "M2-model-catalog-and-scorecard-v1.md"
+    ),
+    "utf8"
+  );
+  assert.equal(catalog, renderM2ModelCatalog(registry));
+  assert.match(catalog, /M2-WORK-OA03/u);
+  assert.match(catalog, /CG-NOT-EXECUTED/u);
+  assert.match(catalog, /NOT_EXECUTED_CONTRACT_SEMANTIC_BLOCKER/u);
+});
+
+test("read-only query exposes scoped identities and refuses invalid ranking", () => {
+  const list = runQuery("list");
+  assert.equal(list.status, 0, list.stderr);
+  assert.match(list.stdout, /M2 持久模型与模型族：27 个/u);
+  assert.match(list.stdout, /M2-CHAN-GEN02/u);
+
+  const status = runQuery("status");
+  assert.equal(status.status, 0, status.stderr);
+  assert.match(status.stdout, /模型执行次数：0/u);
+  assert.match(status.stdout, /M2-WORK-OA03/u);
+
+  const show = runQuery("show", "M2-WORK-OA03");
+  assert.equal(show.status, 0, show.stderr);
+  assert.match(show.stdout, /公式：/u);
+  assert.match(show.stdout, /证据路径：/u);
+  assert.match(show.stdout, /current-human-authority-served-758w-7083c/u);
+
+  const aliases = runQuery("aliases", "exact-v0.3");
+  assert.equal(aliases.status, 0, aliases.stderr);
+  assert.match(aliases.stdout, /M2-WORK-OA03/u);
+  assert.match(aliases.stdout, /exact v0\.3/u);
+
+  const experiment = runQuery(
+    "experiment",
+    "M2-EXP-CHANNEL-GENERATIVE-02"
+  );
+  assert.equal(experiment.status, 0, experiment.stderr);
+  assert.match(experiment.stdout, /M2-EXP-CHANNEL-GENERATIVE-02\/G1/u);
+  assert.match(experiment.stdout, /NOT_EXECUTED_CONTRACT_SEMANTIC_BLOCKER/u);
+
+  const g1 = runQuery("explain", "G1");
+  assert.equal(g1.status, 0, g1.stderr);
+  assert.match(g1.stdout, /M2-EXP-CHANNEL-GENERATIVE-02\/G1/u);
+  assert.match(g1.stdout, /独立渠道发生-条件金额生成器/u);
+
+  const k1 = runQuery("explain", "K1");
+  assert.equal(k1.status, 0, k1.stderr);
+  assert.match(k1.stdout, /M2-EXP-CHANNEL-GENERATIVE-02/u);
+  assert.match(k1.stdout, /M2-MODEL-REGISTRY-V1/u);
+
+  const scoped = runQuery(
+    "compare",
+    "M2-WORK-OA03",
+    "M2-WORK-LG01"
+  );
+  assert.equal(scoped.status, 0, scoped.stderr);
+  assert.match(scoped.stdout, /只能在下列明确相同可比组内比较/u);
+  assert.match(scoped.stdout, /CG-WORK-SS-OVERLAP-5203-H36/u);
+
+  const refused = runQuery(
+    "compare",
+    "M2-WORK-OA03",
+    "M2-PORT-ETS01"
+  );
+  assert.equal(refused.status, 0, refused.stderr);
+  assert.match(refused.stdout, /不能直接排名/u);
+  assert.match(refused.stdout, /grain 不同/u);
+});
+
+test("current user-facing query is Chinese-first and never leaves G1 bare", () => {
+  const result = runQuery("explain", "G1");
+  assert.equal(result.status, 0, result.stderr);
+  const linesWithG1 = result.stdout
+    .split(/\r?\n/u)
+    .filter((line) => /\bG1\b/u.test(line));
+  assert.ok(linesWithG1.length > 0);
+  assert.equal(
+    linesWithG1.every((line) => (
+      /渠道时间生成/u.test(line)
+      && /M2-EXP-CHANNEL-GENERATIVE-02/u.test(line)
+    )),
+    true
+  );
+});
+
+function runQuery(...args) {
+  return spawnSync(
+    process.execPath,
+    [
+      path.join(
+        root,
+        "scripts",
+        "m2-current",
+        "query_m2_model_registry.mjs"
+      ),
+      ...args
+    ],
+    {
+      cwd: root,
+      encoding: "utf8"
+    }
+  );
+}

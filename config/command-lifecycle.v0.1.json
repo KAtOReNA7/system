@@ -26,6 +26,7 @@
     "smoke",
     "smoke:portable-start",
     "check:no-real-data",
+    "m2:model",
     "diagnose:m2:current",
     "diagnose:m2:signal-input",
     "diagnose:m2:channel-governance",

@@ -12,6 +12,14 @@
 - PR #12：M2 current v0.3 自动评价与 120 部 current 依赖退役，已合并。
 - PR #13：M2 current R0–R5 全局/概率/层级模型评估与安全 fallback，已合并。
 - PR #16：M2 current 严格 as-of 分成事实、快照合同和信号缺口 ledger，已合并。
+- M2 模型名称、别名、角色、成绩人口和可比组的唯一当前机器权威是
+  `config/m2-model-registry.v1.json`；中文目录见
+  `docs/analysis/m2-current/M2-model-catalog-and-scorecard-v1.md`。
+- 当前现行运行回退模型（operational fallback）为作品发生-金额校准模型 v0.3
+  （Occurrence-Amount Calibration v0.3，`M2-WORK-OA03`）；当前研究比较基线
+  （research baseline）为人工锚定可学习全局模型
+  （Human-Anchored Learned Global，`M2-WORK-LG01`）。当前无活动候选或自动化
+  批准模型（`activeCandidate=null`，`approvedForAutomation=null`）。
 - 当前业务结论：`currentDecision=CANARY_FAIL`。
 - 当前开发 readiness：
   `nextDevelopmentReadiness=LATER_ORIGIN_NOT_QUALIFIED_2029_01_COMPLETE_LABELS_AND_ORIGINAL_FROZEN_STATE_REQUIRED`。
@@ -56,7 +64,11 @@
 
 当前导航：
 
-- `docs/analysis/m2-v2/M2-v2-current-state-index-v0.21.md`
+- `docs/analysis/m2-v2/M2-v2-current-state-index-v0.26.md`
+- `config/m2-model-registry.v1.json`
+- `docs/analysis/m2-current/M2-model-catalog-and-scorecard-v1.md`
+- `docs/analysis/m2-current/M2-model-identity-audit-v1.md`
+- `docs/analysis/m2-current/M2-user-facing-bilingual-reporting-standard-v1.md`
 - `docs/analysis/m2-v2/M2-repository-code-convergence-and-portable-development-audit-v0.4.md`
 - `docs/analysis/m2-current/M2-current-maturity-reconstruction-v0.6.md`
 - `docs/analysis/m2-current/M2-sales-share-only-target-decision-v0.1.md`
@@ -93,6 +105,24 @@
 - `AGENTS.md`
 
 历史 PR、B0–B8、C1–C3 和旧授权记录保留在 `docs/analysis/` 中，只用于审计追溯，不是当前开发入口。
+其中 PR 编号是集成记录，B0–B8 是历史证据治理阶段，C1–C3 是历史实验臂，
+R0–R5 是评价活动阶段，A0–A6 与 G0–G6 是各自实验内的局部臂，K0–K2 是所属
+任务的执行检查点；这些编号都不得脱离作用域冒充模型名称。
+
+## M2 模型只读查询
+
+模型查询默认中文优先，并保留英文原名、稳定 ID 和机器状态码。它只读取公开
+Model Registry，不训练模型、不访问 private capability，也不改变 production：
+
+```bash
+npm run m2:model -- status
+npm run m2:model -- list
+npm run m2:model -- show M2-WORK-OA03
+npm run m2:model -- aliases exact-v0.3
+npm run m2:model -- experiment M2-EXP-CHANNEL-GENERATIVE-02
+npm run m2:model -- explain G1
+npm run m2:model -- compare M2-WORK-OA03 M2-WORK-LG01
+```
 
 ## 新电脑开始开发
 
