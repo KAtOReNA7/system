@@ -1,0 +1,362 @@
+{
+  "schema": "m2.evaluation-v2.frozen-rescore.public.v1",
+  "asOf": "2026-07-28",
+  "status": "M2_EVALUATION_V2_FROZEN_RESCORE_COMPLETE_NO_MODEL_CHANGE",
+  "target": "future_sales_share_cash",
+  "cashAuthority": "user_reviewed_sales_share_workbook_membership",
+  "actualDefinition": "sales_share_cash_actual_only",
+  "readiness": "READY",
+  "contractRecommendation": "DRAFT_VALIDATED_REVISION_REQUIRED",
+  "modelRolesChanged": false,
+  "v1ScoreReproduction": {
+    "status": "PASS",
+    "absoluteTolerance": 1e-8,
+    "allQualifiedBindingsWithinTolerance": true
+  },
+  "comparabilityGroups": [
+    {
+      "comparabilityGroupId": "CG-WORK-SS-CURRENT-7083",
+      "caseCount": 7083,
+      "grain": "work_origin_horizon",
+      "models": [
+        {
+          "stableModelId": "M2-WORK-OA03",
+          "variant": "operational_fallback",
+          "wape": 0.4907589423671863,
+          "signedBias": 0.07378106681783611,
+          "absoluteBias": 0.07378106681783611,
+          "mae": 5061.446019486031,
+          "medianAbsoluteError": 243.89014249100006,
+          "p90AbsoluteError": 7921.221739002002
+        },
+        {
+          "stableModelId": "M2-WORK-CCR01",
+          "variant": "raw_candidate",
+          "wape": 0.49070110290959057,
+          "signedBias": 0.07705278282032949,
+          "absoluteBias": 0.07705278282032949,
+          "mae": 5060.84949180789,
+          "medianAbsoluteError": 248.20714690879998,
+          "p90AbsoluteError": 7977.945283200004,
+          "relativeWapeFvaVsFallback": 0.00011785716489798315,
+          "workClusterAbsoluteWapeFva95": [
+            -0.0034702315532785604,
+            0.002370785554487887
+          ],
+          "horizonWins": "1/5",
+          "timeBlockWins": "1/5"
+        }
+      ]
+    },
+    {
+      "comparabilityGroupId": "CG-WORK-SS-HA-PRIMARY-12039-H36",
+      "caseCount": 12039,
+      "grain": "work_origin_horizon",
+      "fallbackStableModelId": "M2-WORK-LG01",
+      "models": [
+        {
+          "stableModelId": "M2-WORK-LG01",
+          "variant": "research_baseline",
+          "wape": 0.44022495019959107,
+          "signedBias": -0.12377105831355607,
+          "mae": 16502.335349831475,
+          "medianAbsoluteError": 760.2849662625495,
+          "p90AbsoluteError": 24428.545985804707
+        },
+        {
+          "stableModelId": "M2-WORK-OR01",
+          "variant": "raw_candidate",
+          "wape": 0.4412608027720724,
+          "signedBias": -0.14574128203069808,
+          "relativeWapeFvaVsFallback": -0.0023530074158955028,
+          "workClusterAbsoluteWapeFva95": [
+            -0.004677415564594069,
+            0.005903898093892452
+          ]
+        },
+        {
+          "stableModelId": "M2-WORK-TSB01",
+          "variant": "raw_candidate",
+          "wape": 0.5434623063391253,
+          "signedBias": 0.22068122293832965,
+          "relativeWapeFvaVsFallback": -0.23451046128286923,
+          "workClusterAbsoluteWapeFva95": [
+            -0.2549339178715965,
+            -0.023670961352536077
+          ],
+          "occurrence": {
+            "baseRate": 0.9698479940194368,
+            "brier": 0.02951496747359326,
+            "logLoss": 0.6609912875352927,
+            "prAuc": 0.9894964944761377,
+            "rocAucAuxiliary": 0.6739594157023852,
+            "specificityAt0_5": 0
+          }
+        },
+        {
+          "stableModelId": "M2-WORK-TSBB01",
+          "variant": "raw_candidate",
+          "wape": 0.4534823708903173,
+          "signedBias": 0.03777402233019999,
+          "relativeWapeFvaVsFallback": -0.030115105208633697,
+          "workClusterAbsoluteWapeFva95": [
+            -0.056703413910234805,
+            0.01096106599391231
+          ]
+        },
+        {
+          "stableModelId": "M2-WORK-TSBB01",
+          "variant": "selected_pipeline",
+          "wape": 0.44022495019959107,
+          "signedBias": -0.12377105831355607,
+          "relativeWapeFvaVsFallback": 0
+        },
+        {
+          "stableModelId": "M2-WORK-LC01",
+          "variant": "raw_candidate",
+          "wape": 0.5013929755304328,
+          "signedBias": -0.06749346019436138,
+          "relativeWapeFvaVsFallback": -0.13894720256793658,
+          "workClusterAbsoluteWapeFva95": [
+            -0.09536391803868377,
+            -0.005457320398539426
+          ],
+          "occurrence": {
+            "baseRate": 0.9698479940194368,
+            "brier": 0.03478308147607738,
+            "logLoss": 0.14933947430083605,
+            "prAuc": 0.9831221438085722,
+            "rocAucAuxiliary": 0.6461880082710693,
+            "specificityAt0_5": 0.1046831955922865
+          },
+          "conditionalAmount": {
+            "caseCount": 11676,
+            "wape": 0.5194252085441816,
+            "signedBias": -0.010801719474756073,
+            "mae": 20078.25812594088,
+            "logMae": 1.2881457527206635
+          }
+        },
+        {
+          "stableModelId": "M2-WORK-LC01",
+          "variant": "selected_pipeline",
+          "wape": 0.440161195113913,
+          "relativeWapeFvaVsFallback": 0.00014482388071968,
+          "workClusterAbsoluteWapeFva95": [
+            -2.1155700955290764e-8,
+            0.0002659046159718069
+          ]
+        },
+        {
+          "stableModelId": "M2-CHAN-SCL01",
+          "variant": "raw_full_stack",
+          "wape": 0.5377668290047714,
+          "signedBias": -0.1270980421229044,
+          "relativeWapeFvaVsFallback": -0.22157280899448573,
+          "workClusterAbsoluteWapeFva95": [
+            -0.15700562446166738,
+            -0.005675320425902558
+          ],
+          "meanSpearmanDiagnostic": 0.8343304715745723
+        }
+      ],
+      "probabilisticCapability": {
+        "stableModelId": "M2-WORK-LG01",
+        "variant": "historical_original_quantiles",
+        "wis": 15311.36294948372,
+        "crpsApproximation": 15311.362949483831,
+        "central90Coverage": 0.8984965528698396,
+        "central80Coverage": 0.8008970844754548,
+        "central60Coverage": 0.5994683943849157,
+        "status": "REUSABLE_DEVELOPMENT_EVIDENCE_NOT_PRODUCTION_VALIDATED"
+      }
+    },
+    {
+      "comparabilityGroupId": "CG-WORK-SS-HA-STRICT-74320",
+      "caseCount": 74320,
+      "grain": "work_origin_horizon",
+      "fallbackStableModelId": "M2-WORK-LG01",
+      "fallback": {
+        "wape": 0.4119187843120132,
+        "signedBias": -0.038474009493062455,
+        "mae": 2775.1143265876185,
+        "medianAbsoluteError": 26.819689168389647,
+        "p90AbsoluteError": 1850.3687531992077
+      },
+      "rawCandidates": [
+        {
+          "stableModelId": "M2-WORK-TSB01",
+          "wape": 0.508021968577698,
+          "relativeWapeFvaVsFallback": -0.23330614656526616,
+          "workClusterAbsoluteWapeFva95": [
+            -0.20122854971001639,
+            -0.03123355684468844
+          ],
+          "horizonWins": "0/5",
+          "timeBlockWins": "0/11"
+        },
+        {
+          "stableModelId": "M2-WORK-TSBB01",
+          "wape": 0.44487050495496644,
+          "relativeWapeFvaVsFallback": -0.07999567365685745,
+          "workClusterAbsoluteWapeFva95": [
+            -0.08270475856557769,
+            -0.0030259641913546933
+          ],
+          "horizonWins": "0/5",
+          "timeBlockWins": "3/11"
+        },
+        {
+          "stableModelId": "M2-WORK-LC01",
+          "wape": 0.6227597714411169,
+          "relativeWapeFvaVsFallback": -0.5118508675957738,
+          "workClusterAbsoluteWapeFva95": [
+            -0.2960196826398792,
+            -0.1527375602940012
+          ],
+          "horizonWins": "0/5",
+          "timeBlockWins": "0/11",
+          "occurrenceBrier": 0.06121655444268907,
+          "occurrenceLogLoss": 0.22529809981080856,
+          "conditionalAmountWape": 0.6537398775149984
+        },
+        {
+          "stableModelId": "M2-CHAN-SCL01",
+          "wape": 0.6586532381615944,
+          "relativeWapeFvaVsFallback": -0.5989881094198546,
+          "workClusterAbsoluteWapeFva95": [
+            -0.4488012330657638,
+            -0.11681454776631248
+          ],
+          "horizonWins": "0/5",
+          "timeBlockWins": "0/11",
+          "meanSpearmanDiagnostic": 0.9055780890024294
+        }
+      ]
+    },
+    {
+      "comparabilityGroupId": "CG-WORK-SS-OVERLAP-5203-H36",
+      "caseCount": 5203,
+      "grain": "work_origin_horizon",
+      "models": [
+        {
+          "stableModelId": "M2-WORK-OA03",
+          "variant": "operational_fallback",
+          "wape": 0.37610234318174496,
+          "signedBias": 0.09727286054523814
+        },
+        {
+          "stableModelId": "M2-WORK-LG01",
+          "variant": "research_baseline",
+          "wape": 0.27723898946743475,
+          "signedBias": -0.1222020629090662
+        },
+        {
+          "stableModelId": "M2-WORK-LC01",
+          "variant": "raw_candidate",
+          "wape": 0.2745871073230918,
+          "signedBias": -0.080829762110986,
+          "relativeWapeFvaVsExactV03": 0.26991386174267384,
+          "workClusterAbsoluteWapeFva95": [
+            -0.0052307985208940155,
+            0.3508765651655536
+          ]
+        }
+      ],
+      "interpretation": "SAME_WINDOW_INTERSECTION_DIAGNOSTIC_NOT_INDEPENDENT"
+    },
+    {
+      "comparabilityGroupId": "CG-PORT-SS-30CELLS",
+      "caseCount": 30,
+      "grain": "portfolio_origin_horizon",
+      "models": [
+        {
+          "stableModelId": "M2-PORT-ETS01",
+          "variant": "portfolio_reference",
+          "wape": 0.12794955709628783,
+          "signedBias": 0.10048251956343071,
+          "byHorizonWape": {
+            "3": 0.127779,
+            "6": 0.145975,
+            "12": 0.109388
+          }
+        },
+        {
+          "stableModelId": "M2-BASE-CLASSIC01",
+          "experimentId": "M2-EXP-PORTFOLIO-ETS-01",
+          "armId": "SNAIVE",
+          "variant": "portfolio_seasonal_naive_comparator",
+          "wape": 0.16455146007913654,
+          "signedBias": -0.11545014908334182,
+          "byHorizonWape": {
+            "3": 0.240387,
+            "6": 0.202503,
+            "12": 0.084797
+          }
+        }
+      ],
+      "relativeWapeFva": 0.22243438596804932,
+      "horizonWins": "2/3",
+      "interpretation": "PORTFOLIO_DEVELOPMENT_EVIDENCE_NO_WORK_ALLOCATION"
+    }
+  ],
+  "structuralFindings": [
+    {
+      "code": "HEAVY_TAILED_ABSOLUTE_ERROR",
+      "evidence": "Current served fallback MAE 5061.45 versus median absolute error 243.89; primary baseline MAE 16502.34 versus median 760.28; strict baseline MAE 2775.11 versus median 26.82."
+    },
+    {
+      "code": "HEAD_REVENUE_MASKS_TAIL_ERROR",
+      "evidence": "Top 1% works hold 55.97% of current-served actual cash but 26.40% of fallback absolute error; outside top 10% fallback WAPE is 1.3311 versus pooled 0.4908."
+    },
+    {
+      "code": "RANKING_SIGNAL_WITHOUT_POINT_FORECAST_SUCCESS",
+      "evidence": "Some failed raw candidates improve mean Spearman diagnostics while materially worsening WAPE; this is a bounded diagnostic, not a promotion result."
+    },
+    {
+      "code": "PORTFOLIO_HORIZON_DIVERGENCE",
+      "evidence": "Portfolio ETS wins at 3 and 6 months but loses to seasonal naive at 12 months; pooled WAPE cannot define a unified horizon champion."
+    }
+  ],
+  "unavailable": [
+    {
+      "stableModelId": "M2-WORK-HP01",
+      "reason": "UNAVAILABLE_RAW_ROWS_SELECTED_FALLBACK_ONLY"
+    },
+    {
+      "capability": "origin_visible_revenue_scale_band",
+      "reason": "CAPABILITY_GAP_NO_ORIGIN_VISIBLE_REVENUE_SCALE_BAND"
+    },
+    {
+      "capability": "mase",
+      "reason": "CAPABILITY_GAP_NO_STRICT_ORIGIN_PRIOR_MASE_SCALE"
+    },
+    {
+      "capability": "general_intervals",
+      "reason": "CAPABILITY_GAP_NO_FROZEN_DISTRIBUTION_FOR_MOST_MODELS"
+    }
+  ],
+  "historicalFailureDecisionsChanged": false,
+  "authorizationCounters": {
+    "modelExecutionCount": 0,
+    "trainingCount": 0,
+    "fittingCount": 0,
+    "tuningCount": 0,
+    "selectionCount": 0,
+    "predictionRowsGenerated": 0,
+    "predictionRowsModified": 0,
+    "productionChangeCount": 0,
+    "successfulControlledRescoreCount": 1,
+    "sourceRowsInFinalPrivateReceipt": 716801
+  },
+  "sealed": {
+    "production": true,
+    "exactV03PredictionPath": true,
+    "provider": true,
+    "database": true,
+    "finalHoldout": true,
+    "canaryFull160": true,
+    "release": true,
+    "m3Formal": true
+  }
+}

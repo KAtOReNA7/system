@@ -23,7 +23,7 @@
     "approvedForAutomation": null,
     "activeCandidate": null,
     "blockedExperiment": "M2-EXP-CHANNEL-GENERATIVE-02",
-    "latestStateIndex": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.27.md",
+    "latestStateIndex": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.28.md",
     "roleConflict": false,
     "sourceAssertions": [
       {

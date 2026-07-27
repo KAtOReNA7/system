@@ -4,7 +4,6 @@ import readline from "node:readline";
 import crypto from "node:crypto";
 import { spawnSync } from "node:child_process";
 import {
-  groupScorePointRowsV2,
   scoreConditionalAmountRowsV2,
   scoreOccurrenceRowsV2,
   scorePairedPointRowsV2,
@@ -179,7 +178,7 @@ async function loadRescoreDatasets(bindings) {
       addModel(groups["CG-WORK-SS-HA-PRIMARY-12039-H36"], "M2-WORK-OR01", row, row.occurrenceReversalPointEstimate, {
         variantType: "raw_candidate"
       });
-      addModel(groups["CG-WORK-SS-HA-PRIMARY-12039-H36"], "M2-WORK-LG01-ORIGINAL", row, row.learnedGlobalPointEstimate, {
+      addModel(groups["CG-WORK-SS-HA-PRIMARY-12039-H36"], "M2-WORK-LG01::historical_original", row, row.learnedGlobalPointEstimate, {
         variantType: "historical_original_baseline",
         quantiles: row.quantiles
       });
@@ -192,17 +191,18 @@ async function loadRescoreDatasets(bindings) {
         ? groups["CG-WORK-SS-HA-STRICT-74320"]
         : null;
     if (!group) return;
-    addModel(group, "M2-WORK-LG01", row, row.learnedGlobalPointEstimate, {
+    addModel(group, "M2-WORK-LG01", row, row.selectedPipelinePointEstimate, {
       variantType: "research_baseline"
     });
     addModel(group, "M2-WORK-TSB01", row, row.rawTsbPointEstimate, {
       variantType: "raw_candidate",
-      occurrenceProbability: row.occurrenceProbability
+      occurrenceProbability: row.occurrenceProbability,
+      occurrenceActual: row.actualPositive
     });
     addModel(group, "M2-WORK-TSBB01", row, row.blendCandidatePointEstimate, {
       variantType: "raw_candidate"
     });
-    addModel(group, "M2-WORK-TSBB01-SELECTED", row, row.selectedPipelinePointEstimate, {
+    addModel(group, "M2-WORK-TSBB01::selected_pipeline", row, row.selectedPipelinePointEstimate, {
       variantType: "selected_pipeline"
     });
   });
@@ -211,11 +211,11 @@ async function loadRescoreDatasets(bindings) {
       ? groups["CG-WORK-SS-HA-PRIMARY-12039-H36"]
       : row.evaluationFamily === "strict_rolling"
         ? groups["CG-WORK-SS-HA-STRICT-74320"]
-        : row.evaluationFamily === "overlap"
+        : row.evaluationFamily === "v03_overlap_cross_work"
           ? groups["CG-WORK-SS-OVERLAP-5203-H36"]
           : null;
     if (!group) return;
-    if (row.evaluationFamily === "overlap") {
+    if (row.evaluationFamily === "v03_overlap_cross_work") {
       addModel(group, "M2-WORK-OA03", row, row.v03PointEstimate, {
         variantType: "operational_fallback"
       });
@@ -226,11 +226,13 @@ async function loadRescoreDatasets(bindings) {
     addModel(group, "M2-WORK-LC01", row, row.rawLifecyclePointEstimate, {
       variantType: "raw_candidate",
       occurrenceProbability: row.occurrenceProbability,
+      occurrenceActual: row.actualPositive,
       conditionalAmountPrediction: row.conditionalPositiveAmount,
+      conditionalActual: row.actualPositive,
       reversalPointEstimate: row.reversalPointEstimate,
       lifecycleState: row.lifecycleState
     });
-    addModel(group, "M2-WORK-LC01-SELECTED", row, row.pointEstimate, {
+    addModel(group, "M2-WORK-LC01::selected_pipeline", row, row.pointEstimate, {
       variantType: "selected_pipeline",
       lifecycleState: row.lifecycleState
     });
@@ -251,7 +253,7 @@ async function loadRescoreDatasets(bindings) {
     addModel(groups["CG-PORT-SS-30CELLS"], "M2-PORT-ETS01", row, row.pointEstimate, {
       variantType: "portfolio_reference"
     });
-    addModel(groups["CG-PORT-SS-30CELLS"], "M2-EXP-PORTFOLIO-V05:SNAIVE", row, row.seasonalNaivePointEstimate, {
+    addModel(groups["CG-PORT-SS-30CELLS"], "M2-BASE-CLASSIC01::M2-EXP-PORTFOLIO-ETS-01:SNAIVE", row, row.seasonalNaivePointEstimate, {
       variantType: "research_comparator"
     });
   });
@@ -273,7 +275,9 @@ function addModel(group, modelId, source, pointEstimate, extras) {
     segment: source.segment ?? source.legacySegment ?? null,
     lifecycleState: extras.lifecycleState ?? null,
     occurrenceProbability: extras.occurrenceProbability,
+    occurrenceActual: extras.occurrenceActual,
     conditionalAmountPrediction: extras.conditionalAmountPrediction,
+    conditionalActual: extras.conditionalActual,
     reversalPointEstimate: extras.reversalPointEstimate,
     quantiles: extras.quantiles
   });
@@ -285,13 +289,14 @@ function scoreGroup(groupId, group) {
   const scoredModels = {};
   for (const [modelId, rows] of Object.entries(group.models)) {
     const score = scorePointRowsV2(rows);
-    const byHorizon = groupScorePointRowsV2(rows, "horizonMonths");
-    const byOrigin = groupScorePointRowsV2(rows, "origin");
+    const byHorizon = safeGroupScore(rows, "horizonMonths");
+    const byOrigin = safeGroupScore(rows, "origin");
+    const byTimeBlock = scoreTimeBlocks(rows);
     const bySegment = rows.every((row) => row.segment)
-      ? groupScorePointRowsV2(rows, "segment")
+      ? safeGroupScore(rows, "segment")
       : null;
     const byLifecycle = rows.every((row) => row.lifecycleState)
-      ? groupScorePointRowsV2(rows, "lifecycleState")
+      ? safeGroupScore(rows, "lifecycleState")
       : null;
     const occurrence = rows.every((row) => row.occurrenceProbability !== undefined)
       ? scoreOccurrenceRowsV2(rows, {
@@ -304,13 +309,17 @@ function scoreGroup(groupId, group) {
       && row.reversalPointEstimate !== undefined
     ) ? scoreConditionalAmountRowsV2(rows) : null;
     const probabilistic = rows.every((row) => row.quantiles)
-      ? scoreM2CurrentProbabilisticRows(rows)
+      ? scoreM2CurrentProbabilisticRows(
+        rows,
+        [0.05, 0.1, 0.2, 0.5, 0.8, 0.9, 0.95]
+      )
       : null;
     scoredModels[modelId] = {
       variantType: group.variants[modelId],
       pooledDiagnostic: score,
       byHorizon,
       byOrigin,
+      byTimeBlock,
       bySegment,
       byLifecycle,
       topRevenuePosthocAttribution: topRevenueAttribution(rows),
@@ -329,9 +338,12 @@ function scoreGroup(groupId, group) {
       paired[modelId] = {
         versus: fallbackId,
         ...scorePairedPointRowsV2(rows, group.models[fallbackId]),
-        workClusterBootstrap: workClusterBootstrap(
+        clusterBootstrap: clusterBootstrap(
           rows,
           group.models[fallbackId],
+          group.grain === "portfolio_origin_horizon"
+            ? "origin"
+            : "standardWorkId",
           preregistration.uncertainty.seed,
           preregistration.uncertainty.workClusterBootstrapIterations
         )
@@ -350,7 +362,9 @@ function scoreGroup(groupId, group) {
 function chooseFallback(groupId, models) {
   if (models["M2-WORK-OA03"]) return "M2-WORK-OA03";
   if (models["M2-WORK-LG01"]) return "M2-WORK-LG01";
-  if (groupId === "CG-PORT-SS-30CELLS") return "M2-EXP-PORTFOLIO-V05:SNAIVE";
+  if (groupId === "CG-PORT-SS-30CELLS") {
+    return "M2-BASE-CLASSIC01::M2-EXP-PORTFOLIO-ETS-01:SNAIVE";
+  }
   return null;
 }
 
@@ -383,6 +397,65 @@ function topRevenueAttribution(rows) {
       outsideTopWape: (errorTotal - topError) / (actualTotal - topActual)
     }];
   }));
+}
+
+function scoreTimeBlocks(rows) {
+  const origins = [...new Set(rows.map((row) => row.origin))].sort();
+  const blockByOrigin = new Map();
+  let blockStart = origins[0];
+  let previous = origins[0];
+  let blockIndex = 1;
+  for (const origin of origins) {
+    if (origin !== origins[0] && monthDistance(previous, origin) !== 1) {
+      blockIndex += 1;
+      blockStart = origin;
+    }
+    blockByOrigin.set(origin, { blockIndex, blockStart });
+    previous = origin;
+  }
+  const blockEnds = new Map();
+  for (const origin of origins) {
+    blockEnds.set(blockByOrigin.get(origin).blockIndex, origin);
+  }
+  const tagged = rows.map((row) => {
+    const block = blockByOrigin.get(row.origin);
+    return {
+      ...row,
+      timeBlock: `B${block.blockIndex}:${block.blockStart}..${blockEnds.get(block.blockIndex)}`
+    };
+  });
+  return safeGroupScore(tagged, "timeBlock");
+}
+
+function safeGroupScore(rows, field) {
+  const groups = new Map();
+  for (const row of rows) {
+    const key = String(row[field] ?? "");
+    const values = groups.get(key) ?? [];
+    values.push(row);
+    groups.set(key, values);
+  }
+  return Object.fromEntries([...groups].sort(([a], [b]) => a.localeCompare(b))
+    .map(([key, values]) => {
+      try {
+        return [key, scorePointRowsV2(values)];
+      } catch (error) {
+        if (error.message !== "m2_evaluation_v2_actual_denominator_zero") throw error;
+        return [key, {
+          status: "UNDEFINED_ZERO_ACTUAL_DENOMINATOR",
+          caseCount: values.length,
+          wape: null,
+          signedBias: null,
+          absoluteBias: null
+        }];
+      }
+    }));
+}
+
+function monthDistance(left, right) {
+  const [leftYear, leftMonth] = left.split("-").map(Number);
+  const [rightYear, rightMonth] = right.split("-").map(Number);
+  return (rightYear - leftYear) * 12 + rightMonth - leftMonth;
 }
 
 function rankingDiagnostic(rows) {
@@ -421,18 +494,19 @@ function businessLoss(rows) {
   );
 }
 
-function workClusterBootstrap(candidate, fallback, seed, iterations) {
+function clusterBootstrap(candidate, fallback, clusterField, seed, iterations) {
   const fallbackByKey = new Map(fallback.map((row) => [row.caseKey, row]));
   const clusters = new Map();
   for (const row of candidate) {
     const other = fallbackByKey.get(row.caseKey);
-    const value = clusters.get(row.standardWorkId) ?? {
+    const clusterId = row[clusterField];
+    const value = clusters.get(clusterId) ?? {
       candidateError: 0, fallbackError: 0, denominator: 0
     };
     value.candidateError += Math.abs(Number(row.pointEstimate) - Number(row.actual));
     value.fallbackError += Math.abs(Number(other.pointEstimate) - Number(row.actual));
     value.denominator += Math.abs(Number(row.actual));
-    clusters.set(row.standardWorkId, value);
+    clusters.set(clusterId, value);
   }
   const values = [...clusters.values()];
   const random = mulberry32(seed);
@@ -449,7 +523,7 @@ function workClusterBootstrap(candidate, fallback, seed, iterations) {
   }
   estimates.sort((a, b) => a - b);
   return {
-    unit: "standardWorkId",
+    unit: clusterField,
     iterations,
     seed,
     absoluteWapeFvaLower95: quantile(estimates, 0.025),

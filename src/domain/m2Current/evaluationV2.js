@@ -81,7 +81,8 @@ export function scoreOccurrenceRowsV2(rows, options = {}) {
   let logLoss = 0;
   const pairs = [];
   for (const row of rows) {
-    const actual = finite(row.actual, "actual") > 0 ? 1 : 0;
+    const occurrenceActual = row.occurrenceActual ?? row.actual;
+    const actual = finite(occurrenceActual, "occurrence_actual") > 0 ? 1 : 0;
     const raw = finite(row.occurrenceProbability, "occurrence_probability");
     if (raw < 0 || raw > 1) throw new Error("m2_evaluation_v2_probability_range");
     const probability = Math.min(1 - epsilon, Math.max(epsilon, raw));
@@ -106,7 +107,9 @@ export function scoreOccurrenceRowsV2(rows, options = {}) {
 
 export function scoreConditionalAmountRowsV2(rows) {
   requireRows(rows);
-  const eligible = rows.filter((row) => finite(row.actual, "actual") > 0);
+  const eligible = rows.filter((row) =>
+    finite(row.conditionalActual ?? row.actual, "conditional_actual") > 0
+  );
   if (eligible.length === 0) throw new Error("m2_evaluation_v2_no_positive_actual");
   let absoluteError = 0;
   let signedError = 0;
@@ -116,7 +119,10 @@ export function scoreConditionalAmountRowsV2(rows) {
     if (row.reversalPointEstimate === undefined) {
       throw new Error("m2_evaluation_v2_independent_reversal_required");
     }
-    const actual = finite(row.actual, "actual");
+    const actual = finite(
+      row.conditionalActual ?? row.actual,
+      "conditional_actual"
+    );
     const prediction = finite(row.conditionalAmountPrediction, "conditional_amount");
     absoluteError += Math.abs(prediction - actual);
     signedError += prediction - actual;
