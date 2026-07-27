@@ -271,6 +271,35 @@
       "authorization": "USER_AUTHORIZED_LIFECYCLE_AWARE_ALGORITHM_RECONSTRUCTION_2026_07_26"
     },
     {
+      "id": "m2-current-channel-experts",
+      "description": "Run the user-authorized work-channel, monetization-mechanism and named-platform hierarchical M2 development experiment with bounded nested selection and raw A0-A6 preservation.",
+      "requiredTools": [],
+      "requiredPrivateArtifacts": [
+        {
+          "role": "user-reviewed-channel-master",
+          "kind": "file",
+          "path": "data/private-output/outputs/channel-governance-20260726/M2-渠道统一与类型人工补全表-v0.2.xlsx"
+        },
+        {
+          "role": "formal-model-input-cache",
+          "kind": "file",
+          "path": "data/private-output/m2-formal-execution/m2-formal-model-input-cache-v1.pkl"
+        },
+        {
+          "role": "exact-v0.3-overlap-comparator",
+          "kind": "file",
+          "path": "data/private-output/m2-current-quality/M2-current-occurrence-amount-candidate-cases-private-v0.3.ndjson"
+        }
+      ],
+      "canonicalValidationCommands": [
+        "npm run doctor:capability -- m2-current-channel-experts",
+        "npm run diagnose:m2:channel-experts",
+        "npm run develop:m2:current:channel-experts"
+      ],
+      "recovery": "Restore only the capability-scoped private channel master, verified model-input cache and exact v0.3 comparator. Missing artifacts block only this channel-expert private experiment; public diagnostics, tests and application startup remain available.",
+      "authorization": "USER_AUTHORIZED_CHANNEL_EXPERT_DEVELOPMENT_2026_07_27"
+    },
+    {
       "id": "m2-current-human-anchored-later-origin",
       "description": "Audit later-origin readiness and run a one-time frozen v1.0 validation only if an independent mature block and the original frozen model state both exist.",
       "requiredTools": [],

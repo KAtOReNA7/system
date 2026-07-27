@@ -1,0 +1,66 @@
+{
+  "schema": "m2.current.channel_experts_preregistration.v0.1",
+  "candidateId": "M2-current-channel-mechanism-hierarchical-challenger-v0.1",
+  "registeredAt": "2026-07-27T00:00:00+08:00",
+  "status": "PREREGISTERED_BEFORE_CANDIDATE_METRICS",
+  "objective": "test whether origin-available canonical channel identity, user-confirmed monetization mechanism, and intrinsic work category improve future sales-share cash forecasts",
+  "frozenEvaluationSequence": [
+    "materialize_and_verify_work_channel_conservation",
+    "run_A0_through_A6_on_primary_cross_work_outer_folds",
+    "run_A0_through_A6_on_strict_rolling_origins",
+    "run_top_revenue_1_5_10_percent_diagnostics",
+    "publish_all_raw_ablations_regardless_of_result"
+  ],
+  "ablationIds": [
+    "A0",
+    "A1",
+    "A2",
+    "A3",
+    "A4",
+    "A5",
+    "A6"
+  ],
+  "nestedSelection": {
+    "selectedObject": "A6_shrinkage_prior_strength",
+    "grid": [
+      20,
+      80,
+      240
+    ],
+    "selectionData": "outer_training_only_deterministic_inner_work_split",
+    "selectionMetric": "work_level_sales_share_cash_WAPE",
+    "exactV03Used": false,
+    "outerValidationUsed": false,
+    "laterOriginUsed": false,
+    "finalHoldoutUsed": false
+  },
+  "sparseFallbackOrder": [
+    "platform_x_mechanism_x_intrinsic_category",
+    "platform_x_mechanism",
+    "platform",
+    "mechanism",
+    "learnedGlobal"
+  ],
+  "staticFeatureAuthorization": {
+    "canonicalChannelIdentity": true,
+    "userConfirmedMonetizationMechanism": true,
+    "intrinsicWorkCategory": true,
+    "futureFirstSeenChannelIdentity": false
+  },
+  "cashBoundary": {
+    "target": "future_sales_share_cash",
+    "buyoutCashUsed": false,
+    "otherCashUsed": false,
+    "unmaturedLabelZeroImputation": false
+  },
+  "prohibited": {
+    "productionLoaderRouteOrApiChange": true,
+    "exactV03Replacement": true,
+    "posthocFallbackHidingRawAblations": true,
+    "finalHoldout": true,
+    "provider": true,
+    "database": true,
+    "release": true
+  },
+  "candidateMetricsReadBeforeRegistration": false
+}

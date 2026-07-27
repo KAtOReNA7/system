@@ -28,6 +28,9 @@ import run_m2_current_formal_execution_payload as formal  # noqa: E402
 
 
 CONFIG_PATH = ROOT / "config" / "m2-current-human-anchored.v0.1.json"
+CHANNEL_EXPERT_CONFIG_PATH = (
+    ROOT / "config" / "m2-current-channel-experts.v0.1.json"
+)
 V03_PATH = (
     ROOT
     / "data"
@@ -41,9 +44,16 @@ class HumanAnchoredMaterializationError(RuntimeError):
     """The human-anchored private materialization contract was violated."""
 
 
-def run() -> dict[str, Any]:
+def run(*, channel_experts: bool = False) -> dict[str, Any]:
     config = json.loads(CONFIG_PATH.read_text(encoding="utf-8"))
     _validate_config(config)
+    channel_config = (
+        json.loads(
+            CHANNEL_EXPERT_CONFIG_PATH.read_text(encoding="utf-8")
+        )
+        if channel_experts
+        else None
+    )
     output_dir = ROOT / config["privateOutputs"]["directory"]
     master_config = json.loads(
         (ROOT / "config/m2-current-canonical-channel.v0.1.json").read_text(
@@ -173,6 +183,16 @@ def run() -> dict[str, Any]:
         + "\n",
         encoding="utf-8",
     )
+    if channel_config is not None:
+        _write_channel_expert_supplement(
+            output_dir=output_dir,
+            channel_config=channel_config,
+            base_manifest=manifest,
+            primary=primary,
+            auxiliary=auxiliary,
+            history_by_key=history_by_key,
+            panel=panel,
+        )
     return manifest
 
 
@@ -624,6 +644,279 @@ def _future_amounts(
     return positive, reversal
 
 
+def _write_channel_expert_supplement(
+    *,
+    output_dir: Path,
+    channel_config: Mapping[str, Any],
+    base_manifest: Mapping[str, Any],
+    primary: list[Mapping[str, Any]],
+    auxiliary: list[Mapping[str, Any]],
+    history_by_key: Mapping[str, Mapping[str, Any]],
+    panel: Mapping[str, Any],
+) -> None:
+    _validate_channel_expert_config(channel_config)
+    platform_by_uid = {
+        canonical.canonical_uid(
+            str(platform["canonicalChannelName"]),
+            "m2-current-channel-uid-v0.1",
+        ): str(platform["platformId"])
+        for platform in channel_config["platformModels"]
+    }
+    if len(platform_by_uid) != len(channel_config["platformModels"]):
+        raise HumanAnchoredMaterializationError(
+            "channel expert platform identities are duplicated"
+        )
+    primary_rows = _build_work_channel_supplement(
+        primary,
+        history_by_key,
+        panel,
+        platform_by_uid,
+    )
+    auxiliary_rows = _build_work_channel_supplement(
+        auxiliary,
+        history_by_key,
+        panel,
+        platform_by_uid,
+    )
+    primary_bytes = _encode_ndjson(primary_rows)
+    auxiliary_bytes = _encode_ndjson(auxiliary_rows)
+    outputs = channel_config["privateOutputs"]
+    (output_dir / outputs["primaryWorkChannelCases"]).write_bytes(
+        primary_bytes
+    )
+    (output_dir / outputs["auxiliaryWorkChannelCases"]).write_bytes(
+        auxiliary_bytes
+    )
+    all_rows = [*primary_rows, *auxiliary_rows]
+    labels = [
+        label
+        for row in all_rows
+        for label in row["workChannelLabels"]
+    ]
+    platform_counts = Counter(
+        label["platformId"]
+        for label in labels
+        if label["observedAtOrigin"]
+        and label["platformId"] != "other_platform"
+    )
+    manifest = {
+        "schema":
+            "m2.current.channel_expert_materialization_private.v0.1",
+        "tracked": False,
+        "candidateId": channel_config["candidateId"],
+        "target": "future_sales_share_cash",
+        "baseDatasetDigests": dict(base_manifest["digests"]),
+        "primaryCaseRowCount": len(primary_rows),
+        "auxiliaryCaseRowCount": len(auxiliary_rows),
+        "workChannelLabelRowCount": len(labels),
+        "predictionEligibleObservedChannelLabelCount": sum(
+            label["observedAtOrigin"] for label in labels
+        ),
+        "futureFirstSeenLabelOnlyCount": sum(
+            not label["observedAtOrigin"] for label in labels
+        ),
+        "namedPlatformObservedLabelCounts":
+            dict(sorted(platform_counts.items())),
+        "namedPlatformConfiguredCount":
+            len(channel_config["platformModels"]),
+        "primarySha256": hashlib.sha256(primary_bytes).hexdigest(),
+        "auxiliarySha256":
+            hashlib.sha256(auxiliary_bytes).hexdigest(),
+        "dataQuality": {
+            "caseGrain":
+                "work_origin_horizon_with_channel_label_array",
+            "channelLabelGrain":
+                "work_origin_horizon_canonical_channel",
+            "duplicateCaseKeyCount": 0,
+            "workChannelPositiveConservationDifference": 0,
+            "workChannelReversalConservationDifference": 0,
+            "workChannelNetConservationDifference": 0,
+            "futureFirstSeenIdentityUsedAsFeature": False,
+            "unmaturedLabelZeroImputationCount": 0,
+            "buyoutCashUsed": False,
+            "pre2021CashAmountUsed": False,
+            "post2025CashAmountUsed": False,
+        },
+        "featurePolicy": {
+            "canonicalChannelIdentity": "static_user_confirmed",
+            "monetizationMechanism": "static_user_confirmed",
+            "intrinsicWorkCategory": "development_only",
+            "futureFirstSeenChannel":
+                "label_only_zero_prediction_no_identity_feature",
+        },
+        "independentLaterOriginOpened": False,
+        "finalHoldoutOpened": False,
+        "providerUsed": False,
+        "databaseRead": False,
+    }
+    (output_dir / outputs["materializationManifest"]).write_text(
+        json.dumps(
+            manifest,
+            ensure_ascii=False,
+            indent=2,
+            sort_keys=True,
+            allow_nan=False,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+
+def _validate_channel_expert_config(
+    config: Mapping[str, Any]
+) -> None:
+    authorization = config.get("authorization", {})
+    contract = config.get("dataContract", {})
+    if (
+        config.get("schema")
+        != "m2.current.channel_expert_development.v0.1"
+        or config.get("target") != "future_sales_share_cash"
+        or authorization.get("localPrivateDevelopmentTraining") is not True
+        or authorization.get("boundedNestedSelection") is not True
+        or authorization.get(
+            "canonicalChannelIdentityStaticFeature"
+        ) is not True
+        or authorization.get(
+            "userConfirmedMonetizationMechanismStaticFeature"
+        ) is not True
+        or authorization.get(
+            "intrinsicWorkCategoryStaticFeature"
+        ) is not True
+        or any(
+            authorization.get(key) is not False
+            for key in (
+                "productionModelModification",
+                "exactV03Replacement",
+                "independentLaterOrigin",
+                "finalHoldout",
+                "provider",
+                "database",
+                "canary",
+                "release",
+                "m3Formal",
+            )
+        )
+        or contract.get("workChannelConservationRequired") is not True
+        or contract.get("buyoutCashUsed") is not False
+        or contract.get("pre2021CashAmountUsed") is not False
+        or contract.get("post2025CashAmountUsed") is not False
+    ):
+        raise HumanAnchoredMaterializationError(
+            "channel expert authorization or data boundary differs"
+        )
+
+
+def _build_work_channel_supplement(
+    cases: Iterable[Mapping[str, Any]],
+    histories: Mapping[str, Mapping[str, Any]],
+    panel: Mapping[str, Any],
+    platform_by_uid: Mapping[str, str],
+) -> list[dict[str, Any]]:
+    output = []
+    seen: set[tuple[str, str, int]] = set()
+    for row in cases:
+        work_id = str(row["standardWorkId"])
+        origin = str(row["origin"])
+        horizon = int(row["horizonMonths"])
+        key = (work_id, origin, horizon)
+        if key in seen:
+            raise HumanAnchoredMaterializationError(
+                "channel expert supplemental case key is duplicated"
+            )
+        seen.add(key)
+        history = histories[str(row["historyKey"])]
+        observed_uids = {
+            str(channel["channelUid"])
+            for channel in history["canonicalChannels"]
+        }
+        labels_by_uid: dict[str, dict[str, Any]] = {}
+        for (uid, role, mode), series in panel.get(work_id, {}).items():
+            positive = Decimal("0")
+            reversal = Decimal("0")
+            for month, amounts in series.items():
+                if origin < month <= row["targetEnd"]:
+                    positive += amounts["positive"]
+                    reversal += amounts["reversal"]
+            if (
+                uid not in observed_uids
+                and positive == 0
+                and reversal == 0
+            ):
+                continue
+            previous = labels_by_uid.get(uid)
+            if previous is not None and (
+                previous["channelRole"] != role
+                or previous["revenueMode"] != mode
+            ):
+                raise HumanAnchoredMaterializationError(
+                    "canonical channel static attributes conflict in panel"
+                )
+            labels_by_uid[uid] = {
+                "channelUid": uid,
+                "channelRole": role,
+                "revenueMode": mode,
+                "platformId":
+                    platform_by_uid.get(uid, "other_platform"),
+                "observedAtOrigin": uid in observed_uids,
+                "actualPositive": float(positive),
+                "actualReversal": float(reversal),
+                "actual": float(positive - reversal),
+            }
+        labels = [
+            labels_by_uid[uid]
+            for uid in sorted(labels_by_uid)
+        ]
+        positive_total = sum(
+            (Decimal(str(label["actualPositive"])) for label in labels),
+            Decimal("0"),
+        )
+        reversal_total = sum(
+            (Decimal(str(label["actualReversal"])) for label in labels),
+            Decimal("0"),
+        )
+        net_total = sum(
+            (Decimal(str(label["actual"])) for label in labels),
+            Decimal("0"),
+        )
+        if (
+            not math.isclose(
+                float(positive_total),
+                float(row["actualPositive"]),
+                rel_tol=0,
+                abs_tol=1e-7,
+            )
+            or not math.isclose(
+                float(reversal_total),
+                float(row["actualReversal"]),
+                rel_tol=0,
+                abs_tol=1e-7,
+            )
+            or not math.isclose(
+                float(net_total),
+                float(row["actual"]),
+                rel_tol=0,
+                abs_tol=1e-7,
+            )
+        ):
+            raise HumanAnchoredMaterializationError(
+                "work-channel label conservation failed"
+            )
+        output.append(
+            {
+                "caseKey": {
+                    "standardWorkId": work_id,
+                    "origin": origin,
+                    "horizonMonths": horizon,
+                },
+                "workChannelLabels": labels,
+                "futureFirstSeenIdentityUsedAsFeature": False,
+                "unmaturedLabelZeroImputed": False,
+                "buyoutCashUsed": False,
+            }
+        )
+    return output
+
+
 def _validate_cases(
     cases: Iterable[Mapping[str, Any]],
     histories: Mapping[str, Mapping[str, Any]],
@@ -965,7 +1258,7 @@ if __name__ == "__main__":
     result = (
         _fixture_self_test()
         if sys.argv[1:] == ["--fixture-self-test"]
-        else run()
+        else run(channel_experts=sys.argv[1:] == ["--channel-experts"])
     )
     print(
         json.dumps(

@@ -1,0 +1,164 @@
+{
+  "schema": "m2.current.channel_expert_development.v0.1",
+  "candidateId": "M2-current-channel-mechanism-hierarchical-challenger-v0.1",
+  "datasetVersion": "M2-human-anchored-authority-window-2021-2025-v0.1",
+  "featureVersion": "M2-channel-mechanism-static-features-v0.1",
+  "target": "future_sales_share_cash",
+  "baseConfig": "config/m2-current-human-anchored.v0.1.json",
+  "authorization": {
+    "source": "codex_goal_user_2026-07-27",
+    "scope": "local_private_channel_mechanism_development",
+    "localPrivateDevelopmentTraining": true,
+    "boundedNestedSelection": true,
+    "canonicalChannelIdentityStaticFeature": true,
+    "userConfirmedMonetizationMechanismStaticFeature": true,
+    "intrinsicWorkCategoryStaticFeature": true,
+    "productionModelModification": false,
+    "exactV03Replacement": false,
+    "independentLaterOrigin": false,
+    "finalHoldout": false,
+    "provider": false,
+    "database": false,
+    "canary": false,
+    "release": false,
+    "m3Formal": false
+  },
+  "dataContract": {
+    "cashAuthority": "user_reviewed_sales_share_workbook_membership",
+    "featureAndLabelWindowStart": "2021-01",
+    "featureAndLabelWindowEnd": "2025-12",
+    "caseGrain": "work_origin_horizon",
+    "supplementalLabelGrain": "work_origin_horizon_canonical_channel",
+    "predictionEligibleChannelPolicy": "observed_by_origin_only",
+    "futureFirstSeenChannelPolicy": "label_only_zero_prediction_no_identity_feature",
+    "workChannelConservationRequired": true,
+    "unmaturedLabelPolicy": "exclude_never_zero_impute",
+    "buyoutCashUsed": false,
+    "pre2021CashAmountUsed": false,
+    "post2025CashAmountUsed": false
+  },
+  "mechanismExperts": [
+    {
+      "expertId": "membership",
+      "revenueModes": [
+        "membership_subscription"
+      ],
+      "rawForm": "learnedGlobal_channel_contribution_times_recent_level_persistence"
+    },
+    {
+      "expertId": "advertising",
+      "revenueModes": [
+        "advertising_or_free_share"
+      ],
+      "rawForm": "learnedGlobal_channel_contribution_times_leave_one_work_out_platform_trend"
+    },
+    {
+      "expertId": "transactional",
+      "revenueModes": [
+        "single_purchase_or_on_demand"
+      ],
+      "rawForm": "learnedGlobal_channel_contribution_times_recency_decay"
+    }
+  ],
+  "otherRevenueModePolicy": "learnedGlobal_channel_contribution_fallback",
+  "platformModels": [
+    {
+      "platformId": "ximalaya",
+      "canonicalChannelName": "喜马拉雅"
+    },
+    {
+      "platformId": "wechat_reading",
+      "canonicalChannelName": "微信读书"
+    },
+    {
+      "platformId": "fanqie_audio",
+      "canonicalChannelName": "番茄畅听"
+    },
+    {
+      "platformId": "missevan",
+      "canonicalChannelName": "猫耳"
+    },
+    {
+      "platformId": "manbo",
+      "canonicalChannelName": "漫播"
+    }
+  ],
+  "platformTaxonomy": {
+    "categoryFeature": "secondLevelCategoryReportingOnly",
+    "node": "platform_id_x_mechanism_expert_x_intrinsic_work_category",
+    "unknownCategoryToken": "__unknown_category__",
+    "publicCategoryPolicy": "counts_only_no_private_category_values"
+  },
+  "training": {
+    "crossWorkFoldCount": 5,
+    "strictRollingStartsAt": "2023-03",
+    "minimumStrictTrainingRows": 200,
+    "innerSelectionFoldCount": 5,
+    "innerSelectionValidationFold": 0,
+    "shrinkagePriorStrengthGrid": [
+      20,
+      80,
+      240
+    ],
+    "minimumNodeRows": 40,
+    "minimumNodeWorks": 15,
+    "minimumPlatformRows": 60,
+    "minimumPlatformWorks": 20,
+    "scaleMinimum": 0.1,
+    "scaleMaximum": 4
+  },
+  "ablations": [
+    {
+      "id": "A0",
+      "name": "learnedGlobal_work_baseline"
+    },
+    {
+      "id": "A1",
+      "name": "exact_learnedGlobal_channel_decomposition_recomposition"
+    },
+    {
+      "id": "A2",
+      "name": "raw_membership_advertising_transactional_experts"
+    },
+    {
+      "id": "A3",
+      "name": "mechanism_calibrated_experts"
+    },
+    {
+      "id": "A4",
+      "name": "five_platform_partial_pooling"
+    },
+    {
+      "id": "A5",
+      "name": "platform_specific_intrinsic_category_taxonomy"
+    },
+    {
+      "id": "A6",
+      "name": "nested_selected_hierarchical_shrinkage"
+    }
+  ],
+  "evaluation": {
+    "primary": "cross_work_outer_folds",
+    "strictRolling": "mature_earlier_labels_only",
+    "topRevenueFractions": [
+      0.01,
+      0.05,
+      0.1
+    ],
+    "primaryAblationForDecision": "A6",
+    "materialRelativeWapeImprovementMinimum": 0.01,
+    "maximumPrimaryWape": 0.3,
+    "maximumPrimaryAbsoluteBias": 0.1
+  },
+  "syntheticFixture": "test/fixtures/m2-current-channel-experts.synthetic.v0.1.json",
+  "publicDiagnosticOutput": "docs/analysis/m2-current/M2-current-channel-experts-public-diagnostic-v0.1.json",
+  "publicOutput": "docs/analysis/m2-current/M2-current-channel-experts-development-v0.1.json",
+  "publicReport": "docs/analysis/m2-current/M2-current-channel-experts-development-v0.1.md",
+  "privateOutputs": {
+    "primaryWorkChannelCases": "M2-current-channel-experts-primary-work-channel-cases-private-v0.1.ndjson",
+    "auxiliaryWorkChannelCases": "M2-current-channel-experts-auxiliary-work-channel-cases-private-v0.1.ndjson",
+    "materializationManifest": "M2-current-channel-experts-materialization-manifest-private-v0.1.json",
+    "evaluation": "M2-current-channel-experts-evaluation-private-v0.1.ndjson",
+    "evaluationManifest": "M2-current-channel-experts-evaluation-manifest-private-v0.1.json"
+  }
+}
