@@ -2,6 +2,26 @@
 
 This directory is the only implementation home for current M2 model logic.
 
+- `config/m2-model-registry.v1.json` is the only current authority for M2 model
+  names, aliases, roles, evaluation populations, and comparability groups.
+  Historical artifacts remain immutable evidence and are not rewritten from
+  the registry.
+- Keep model, model family, experiment, experiment arm/ablation, execution
+  checkpoint, evaluation campaign, status index, report/config/schema version,
+  status code, and command identities separate. User-facing text must not show
+  a local code such as `G1`, `A5`, `R3`, or `K1` without its parent experiment
+  and a Chinese explanation.
+- Rank evaluations only when target, cash authority, case population (or an
+  explicit same-case intersection), horizon contract, grain, as-of/label
+  maturity, actual definition, and evaluation family match. Otherwise show the
+  differences and refuse to name a winner.
+- Keep operational fallback, research baseline, candidate, champion, blocked,
+  failed, and not executed as distinct roles or states. A blocker means the
+  candidate did not run; a failure requires an executed result.
+- Work-level point forecasts, portfolio forecasts, ranking/allocation, and
+  risk/interval outputs are different capabilities. Do not compare or promote
+  them as one model leaderboard, and never allocate a portfolio result back to
+  works.
 - Keep `M2-current-occurrence-amount-calibration-v0.3` as the operational
   fallback. Development challengers must not be imported by `loader.js`,
   `route.js`, or any production API.
@@ -12,7 +32,7 @@ This directory is the only implementation home for current M2 model logic.
   are canonical channel identity, the user-confirmed monetization mechanism,
   and intrinsic work category.
 - Preserve every preregistered raw ablation result. A fallback or selected
-  pipeline must never replace or conceal the raw candidate metrics.
+  pipeline must never replace or conceal raw candidate metrics or raw FVA.
 - Model selection must be nested inside the applicable outer work or time
   split. Exact v0.3, later-origin, final holdout, provider, database, canary,
   release, and M3 data must not be read for selection.
