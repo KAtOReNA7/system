@@ -1,0 +1,245 @@
+{
+  "schema": "m2.current.channel_generative_public_diagnostic.v0.2",
+  "fixtureSchema": "m2.current.channel_generative_synthetic_fixture.v0.2",
+  "packedTrainingGrainVerified": true,
+  "monthlyRowCount": 6696,
+  "monthlyUniqueKeyCount": 6696,
+  "workCount": 180,
+  "sameWorkAcrossMultipleOrigins": true,
+  "overlappingHorizonNoDuplicate": true,
+  "evaluations": {
+    "G1": {
+      "candidateId": "G1",
+      "workTotal": {
+        "caseCount": 540,
+        "absoluteError": 10568.312899771525,
+        "signedError": -5774.929151761635,
+        "actualDenominator": 48002.50201954327,
+        "wape": 0.22016170939316548,
+        "signedBias": -0.1203047530607985
+      },
+      "workChannel": {
+        "caseCount": 558,
+        "absoluteError": 10568.312899771525,
+        "signedError": -5774.929151761635,
+        "actualDenominator": 48002.50201954327,
+        "wape": 0.22016170939316548,
+        "signedBias": -0.1203047530607985
+      },
+      "byHorizon": {
+        "3": {
+          "caseCount": 180,
+          "absoluteError": 2747.5117069404505,
+          "signedError": -2373.995236939359,
+          "actualDenominator": 8507.727279493063,
+          "wape": 0.32294308652359177,
+          "signedBias": -0.279039884442654
+        },
+        "6": {
+          "caseCount": 180,
+          "absoluteError": 3212.3341209685104,
+          "signedError": -2342.291024978479,
+          "actualDenominator": 14467.704877697643,
+          "wape": 0.2220348111966543,
+          "signedBias": -0.16189789913320557
+        },
+        "12": {
+          "caseCount": 180,
+          "absoluteError": 4608.467071862551,
+          "signedError": -1058.642889843802,
+          "actualDenominator": 25027.069862352615,
+          "wape": 0.1841392978566346,
+          "signedBias": -0.042299913480334475
+        }
+      },
+      "byMechanism": {
+        "advertising": {
+          "caseCount": 180,
+          "absoluteError": 4481.015076110259,
+          "signedError": -2325.5490661745102,
+          "actualDenominator": 21389.947277813928,
+          "wape": 0.20949163725887512,
+          "signedBias": -0.10872158944433749
+        },
+        "membership": {
+          "caseCount": 180,
+          "absoluteError": 3433.9016091704334,
+          "signedError": -1156.9506345067214,
+          "actualDenominator": 19789.341749999996,
+          "wape": 0.17352278072465113,
+          "signedBias": -0.058463320767438945
+        },
+        "transactional": {
+          "caseCount": 180,
+          "absoluteError": 2608.3962144908282,
+          "signedError": -2247.429451080405,
+          "actualDenominator": 6778.212991729367,
+          "wape": 0.38482063305970743,
+          "signedBias": -0.33156666127527584
+        }
+      },
+      "topRevenue": {
+        "0.01": {
+          "caseCount": 2,
+          "absoluteError": 3983.7170264296,
+          "signedError": -3983.7170264296,
+          "actualDenominator": 4503.733313122098,
+          "wape": 0.8845366165049392,
+          "signedBias": -0.8845366165049392
+        },
+        "0.05": {
+          "caseCount": 9,
+          "absoluteError": 5127.508684803386,
+          "signedError": -5127.508684803386,
+          "actualDenominator": 7944.15907695515,
+          "wape": 0.6454438582023795,
+          "signedBias": -0.6454438582023795
+        },
+        "0.1": {
+          "caseCount": 18,
+          "absoluteError": 5480.901778183516,
+          "signedError": -5480.901778183516,
+          "actualDenominator": 11570.87766819014,
+          "wape": 0.47368072979038006,
+          "signedBias": -0.47368072979038006
+        }
+      },
+      "coverage": {
+        "observedChannelMonthlyRowCount": 2160,
+        "generatorMonthlyRowCount": 2160,
+        "generatorObservedChannelRowUsage": 1,
+        "observedChannelActualPositiveCash": 25031.344581987563,
+        "generatorActualPositiveCash": 25031.344581987563,
+        "generatorActualPositiveCashUsage": 1
+      }
+    },
+    "G2": {
+      "candidateId": "G2",
+      "workTotal": {
+        "caseCount": 540,
+        "absoluteError": 9895.549770266025,
+        "signedError": -5570.8924149751,
+        "actualDenominator": 48002.50201954327,
+        "wape": 0.2061465414081384,
+        "signedBias": -0.11605420927240462
+      },
+      "workChannel": {
+        "caseCount": 558,
+        "absoluteError": 9895.549770266025,
+        "signedError": -5570.8924149751,
+        "actualDenominator": 48002.50201954327,
+        "wape": 0.2061465414081384,
+        "signedBias": -0.11605420927240462
+      },
+      "byHorizon": {
+        "3": {
+          "caseCount": 180,
+          "absoluteError": 2708.8941070288897,
+          "signedError": -2351.3370184230243,
+          "actualDenominator": 8507.727279493063,
+          "wape": 0.3184039659520328,
+          "signedBias": -0.2763766328159886
+        },
+        "6": {
+          "caseCount": 180,
+          "absoluteError": 3070.0635596424154,
+          "signedError": -2287.8010386880624,
+          "actualDenominator": 14467.704877697643,
+          "wape": 0.21220114631830797,
+          "signedBias": -0.1581315805117624
+        },
+        "12": {
+          "caseCount": 180,
+          "absoluteError": 4116.592103594706,
+          "signedError": -931.7543578640048,
+          "actualDenominator": 25027.069862352615,
+          "wape": 0.16448558006333605,
+          "signedBias": -0.03722986202494331
+        }
+      },
+      "byMechanism": {
+        "advertising": {
+          "caseCount": 180,
+          "absoluteError": 4251.252947659344,
+          "signedError": -2575.8540990433335,
+          "actualDenominator": 21389.947277813928,
+          "wape": 0.1987500433004258,
+          "signedBias": -0.12042358335848073
+        },
+        "membership": {
+          "caseCount": 180,
+          "absoluteError": 3138.953990236356,
+          "signedError": -822.1434608292118,
+          "actualDenominator": 19789.341749999996,
+          "wape": 0.15861841338084712,
+          "signedBias": -0.04154476036724223
+        },
+        "transactional": {
+          "caseCount": 180,
+          "absoluteError": 2460.342832370311,
+          "signedError": -2127.8948551025514,
+          "actualDenominator": 6778.212991729367,
+          "wape": 0.36297809398618336,
+          "signedBias": -0.3139315417941224
+        }
+      },
+      "topRevenue": {
+        "0.01": {
+          "caseCount": 2,
+          "absoluteError": 4009.121160572588,
+          "signedError": -4009.121160572588,
+          "actualDenominator": 4503.733313122098,
+          "wape": 0.8901772999950052,
+          "signedBias": -0.8901772999950052
+        },
+        "0.05": {
+          "caseCount": 9,
+          "absoluteError": 5072.072907326002,
+          "signedError": -5072.072907326002,
+          "actualDenominator": 7944.15907695515,
+          "wape": 0.6384656775113363,
+          "signedBias": -0.6384656775113363
+        },
+        "0.1": {
+          "caseCount": 18,
+          "absoluteError": 5263.8749436641965,
+          "signedError": -5263.8749436641965,
+          "actualDenominator": 11570.87766819014,
+          "wape": 0.4549244313709477,
+          "signedBias": -0.4549244313709477
+        }
+      },
+      "coverage": {
+        "observedChannelMonthlyRowCount": 2160,
+        "generatorMonthlyRowCount": 2160,
+        "generatorObservedChannelRowUsage": 1,
+        "observedChannelActualPositiveCash": 25031.344581987563,
+        "generatorActualPositiveCash": 25031.344581987563,
+        "generatorActualPositiveCashUsage": 1
+      }
+    }
+  },
+  "boundaries": {
+    "publicSyntheticOnly": true,
+    "privateArtifactRead": false,
+    "G1UsesG0": false,
+    "G2UsesG0OnlyAsAmountOffset": true,
+    "platformFeatureUsed": false,
+    "taxonomyFeatureUsed": false,
+    "scalarFactorUsed": false,
+    "futureFirstSeenPrediction": 0,
+    "observedZeroMonthsIncluded": true,
+    "unobservedPreStartMonthsZeroFilled": false,
+    "immatureLabelsIncluded": false,
+    "productionLoaderModified": false,
+    "productionRouteModified": false,
+    "exactV03Modified": false,
+    "G4Implemented": false,
+    "G5Implemented": false,
+    "G6Implemented": false,
+    "finalHoldoutUsed": false,
+    "databaseUsed": false,
+    "providerUsed": false,
+    "releaseAuthorized": false
+  }
+}

@@ -29,6 +29,11 @@ import {
   runM2ChannelExpertsPrivateDevelopment,
   runM2ChannelExpertsPublicDiagnostic
 } from "./channel_experts_mode.mjs";
+import {
+  prepareM2ChannelGenerativeRunReceipt,
+  runM2ChannelGenerativePrivateDevelopment,
+  runM2ChannelGenerativePublicDiagnostic
+} from "./channel_generative_mode.mjs";
 
 let config;
 
@@ -48,6 +53,12 @@ const channelExpertsPublicMode = process.argv.includes(
 );
 const channelExpertsPrivateMode = process.argv.includes(
   "--channel-experts"
+);
+const channelGenerativePublicMode = process.argv.includes(
+  "--channel-generative-public"
+);
+const channelGenerativePrivateMode = process.argv.includes(
+  "--channel-generative"
 );
 if (tsbPublicMode) {
   await runM2HumanAnchoredTsbPublicDiagnostic({
@@ -70,12 +81,38 @@ if (channelExpertsPublicMode) {
   });
   return;
 }
+if (channelGenerativePublicMode) {
+  await runM2ChannelGenerativePublicDiagnostic({
+    root,
+    verify: process.argv.includes("--verify")
+  });
+  return;
+}
 config = JSON.parse(await readFile(
   path.join(root, "config/m2-current-human-anchored.v0.1.json"),
   "utf8"
 ));
 assertBoundary(config);
 
+const privateDirectory = path.join(root, config.privateOutputs.directory);
+if (channelGenerativePrivateMode) {
+  const head = spawnSync("git", ["rev-parse", "HEAD"], {
+    cwd: root,
+    encoding: "utf8",
+    windowsHide: true
+  });
+  if (head.status !== 0) {
+    throw new Error("m2_channel_generative_git_head_unavailable");
+  }
+  await prepareM2ChannelGenerativeRunReceipt({
+    root,
+    privateDirectory,
+    implementationCommit: head.stdout.trim(),
+    command:
+      "npm run develop:m2:current:channel-generative",
+    environment: `${process.platform}-${process.arch}`
+  });
+}
 const materialization = spawnSync(
   process.execPath,
   [
@@ -84,7 +121,8 @@ const materialization = spawnSync(
       root,
       "scripts/m2-current/materialize_human_anchored_cases.py"
     ),
-    ...(channelExpertsPrivateMode ? ["--channel-experts"] : [])
+    ...(channelExpertsPrivateMode ? ["--channel-experts"] : []),
+    ...(channelGenerativePrivateMode ? ["--channel-generative"] : [])
   ],
   {
     cwd: root,
@@ -111,7 +149,6 @@ if (materialization.status !== 0) {
   );
 }
 
-const privateDirectory = path.join(root, config.privateOutputs.directory);
 const [
   historyText,
   primaryText,
@@ -181,6 +218,14 @@ if (channelExpertsPrivateMode) {
     primaryCases,
     auxiliaryCases,
     privateDirectory
+  });
+  return;
+}
+if (channelGenerativePrivateMode) {
+  await runM2ChannelGenerativePrivateDevelopment({
+    root,
+    privateDirectory,
+    baseManifest: manifest
   });
   return;
 }

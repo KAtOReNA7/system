@@ -31,6 +31,9 @@ CONFIG_PATH = ROOT / "config" / "m2-current-human-anchored.v0.1.json"
 CHANNEL_EXPERT_CONFIG_PATH = (
     ROOT / "config" / "m2-current-channel-experts.v0.1.json"
 )
+CHANNEL_GENERATIVE_CONFIG_PATH = (
+    ROOT / "config" / "m2-current-channel-generative.v0.2.json"
+)
 V03_PATH = (
     ROOT
     / "data"
@@ -44,7 +47,11 @@ class HumanAnchoredMaterializationError(RuntimeError):
     """The human-anchored private materialization contract was violated."""
 
 
-def run(*, channel_experts: bool = False) -> dict[str, Any]:
+def run(
+    *,
+    channel_experts: bool = False,
+    channel_generative: bool = False,
+) -> dict[str, Any]:
     config = json.loads(CONFIG_PATH.read_text(encoding="utf-8"))
     _validate_config(config)
     channel_config = (
@@ -52,6 +59,13 @@ def run(*, channel_experts: bool = False) -> dict[str, Any]:
             CHANNEL_EXPERT_CONFIG_PATH.read_text(encoding="utf-8")
         )
         if channel_experts
+        else None
+    )
+    generative_config = (
+        json.loads(
+            CHANNEL_GENERATIVE_CONFIG_PATH.read_text(encoding="utf-8")
+        )
+        if channel_generative
         else None
     )
     output_dir = ROOT / config["privateOutputs"]["directory"]
@@ -187,6 +201,16 @@ def run(*, channel_experts: bool = False) -> dict[str, Any]:
         _write_channel_expert_supplement(
             output_dir=output_dir,
             channel_config=channel_config,
+            base_manifest=manifest,
+            primary=primary,
+            auxiliary=auxiliary,
+            history_by_key=history_by_key,
+            panel=panel,
+        )
+    if generative_config is not None:
+        _write_channel_generative_supplement(
+            output_dir=output_dir,
+            generative_config=generative_config,
             base_manifest=manifest,
             primary=primary,
             auxiliary=auxiliary,
@@ -923,6 +947,456 @@ def _build_work_channel_supplement(
     return output
 
 
+def _write_channel_generative_supplement(
+    *,
+    output_dir: Path,
+    generative_config: Mapping[str, Any],
+    base_manifest: Mapping[str, Any],
+    primary: list[Mapping[str, Any]],
+    auxiliary: list[Mapping[str, Any]],
+    history_by_key: Mapping[str, Mapping[str, Any]],
+    panel: Mapping[str, Any],
+) -> None:
+    _validate_channel_generative_config(generative_config)
+    primary_rows = _build_channel_generative_rows(
+        primary,
+        history_by_key,
+        panel,
+        "primary",
+    )
+    auxiliary_rows = _build_channel_generative_rows(
+        auxiliary,
+        history_by_key,
+        panel,
+        "strict",
+    )
+    primary_bytes = _encode_ndjson(primary_rows)
+    auxiliary_bytes = _encode_ndjson(auxiliary_rows)
+    outputs = generative_config["privateOutputs"]
+    (output_dir / outputs["primaryMonthlyCases"]).write_bytes(
+        primary_bytes
+    )
+    (output_dir / outputs["auxiliaryMonthlyCases"]).write_bytes(
+        auxiliary_bytes
+    )
+    all_rows = [*primary_rows, *auxiliary_rows]
+    monthly_labels = [
+        label
+        for row in all_rows
+        for label in row["futureMonthlyLabels"]
+    ]
+    keys = {
+        (
+            row["standardWorkId"],
+            row["channelUid"],
+            row["origin"],
+            label["futureMonthIndex"],
+        )
+        for row in all_rows
+        for label in row["futureMonthlyLabels"]
+    }
+    if len(keys) != len(monthly_labels):
+        raise HumanAnchoredMaterializationError(
+            "channel generative monthly key is duplicated"
+        )
+    manifest = {
+        "schema":
+            "m2.current.channel_generative_materialization_private.v0.2",
+        "tracked": False,
+        "candidateId": generative_config["candidateId"],
+        "target": generative_config["target"],
+        "baseDatasetDigests": dict(base_manifest["digests"]),
+        "primaryPackedRowCount": len(primary_rows),
+        "auxiliaryPackedRowCount": len(auxiliary_rows),
+        "monthlyLabelRowCount": len(monthly_labels),
+        "monthlyUniqueKeyCount": len(keys),
+        "predictionEligibleObservedPackedRowCount": sum(
+            row["observedAtOrigin"] for row in all_rows
+        ),
+        "futureFirstSeenPackedRowCount": sum(
+            not row["observedAtOrigin"] for row in all_rows
+        ),
+        "primarySha256": hashlib.sha256(primary_bytes).hexdigest(),
+        "auxiliarySha256": hashlib.sha256(auxiliary_bytes).hexdigest(),
+        "dataQuality": {
+            "trainingGrain":
+                "work_channel_origin_future_month",
+            "overlappingHorizonDuplicateCount": 0,
+            "monthlyTrainingWeight": 1,
+            "positiveConservationDifference": 0,
+            "reversalConservationDifference": 0,
+            "netConservationDifference": 0,
+            "futureFirstSeenIdentityUsedAsFeature": False,
+            "unmaturedLabelZeroImputationCount": 0,
+            "unobservedPreStartMonthZeroImputationCount": 0,
+            "observedZeroMonthsIncluded": True,
+            "buyoutCashUsed": False,
+            "pre2021CashAmountUsed": False,
+            "post2025CashAmountUsed": False,
+        },
+        "featurePolicy": {
+            "allowlistOnly": True,
+            "platformFeatureUsed": False,
+            "taxonomyFeatureUsed": False,
+            "peerTrendFeatureUsed": False,
+            "actualPredictionRatioUsed": False,
+        },
+        "independentLaterOriginOpened": False,
+        "finalHoldoutOpened": False,
+        "providerUsed": False,
+        "databaseRead": False,
+    }
+    (output_dir / outputs["materializationManifest"]).write_text(
+        json.dumps(
+            manifest,
+            ensure_ascii=False,
+            indent=2,
+            sort_keys=True,
+            allow_nan=False,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+
+def _validate_channel_generative_config(
+    config: Mapping[str, Any]
+) -> None:
+    authorization = config.get("authorization", {})
+    contract = config.get("dataContract", {})
+    if (
+        config.get("schema")
+        != "m2.current.channel_generative_core.v0.2"
+        or config.get("target") != "future_sales_share_positive_cash"
+        or authorization.get("coreImplementation") is not True
+        or authorization.get(
+            "oneTimePrivateDevelopmentEvaluation"
+        ) is not True
+        or any(
+            authorization.get(key) is not False
+            for key in (
+                "G4Platform",
+                "G5Taxonomy",
+                "G6Composition",
+                "newModelFamily",
+                "outcomeDrivenTuning",
+                "laterOriginHoldout",
+                "finalHoldout",
+                "provider",
+                "database",
+                "canary",
+                "full160",
+                "automation",
+                "production",
+                "exactV03Replacement",
+                "release",
+                "mergePr",
+            )
+        )
+        or contract.get("monthlyTrainingWeight") != 1
+        or contract.get("futureFirstSeenPrediction") != 0
+        or contract.get("buyoutCashUsed") is not False
+        or contract.get("otherCashUsed") is not False
+        or contract.get("commitmentUsed") is not False
+    ):
+        raise HumanAnchoredMaterializationError(
+            "channel generative authorization or data boundary differs"
+        )
+
+
+def _build_channel_generative_rows(
+    cases: Iterable[Mapping[str, Any]],
+    histories: Mapping[str, Mapping[str, Any]],
+    panel: Mapping[str, Any],
+    evaluation_family: str,
+) -> list[dict[str, Any]]:
+    case_groups: dict[
+        tuple[str, str], list[Mapping[str, Any]]
+    ] = defaultdict(list)
+    for row in cases:
+        case_groups[
+            (str(row["standardWorkId"]), str(row["origin"]))
+        ].append(row)
+    output: list[dict[str, Any]] = []
+    for (work_id, origin), group in sorted(case_groups.items()):
+        group_output_start = len(output)
+        horizons = sorted({int(row["horizonMonths"]) for row in group})
+        maximum_horizon = max(horizons)
+        by_horizon = {
+            int(row["horizonMonths"]): row for row in group
+        }
+        if len(by_horizon) != len(group):
+            raise HumanAnchoredMaterializationError(
+                "channel generative case horizon is duplicated"
+            )
+        history = histories[f"{work_id}|{origin}"]
+        channel_static: dict[str, tuple[str, str]] = {}
+        channel_series: dict[str, Mapping[str, Any]] = {}
+        for (uid, role, mode), series in panel.get(work_id, {}).items():
+            previous = channel_static.get(uid)
+            if previous is not None and previous != (role, mode):
+                raise HumanAnchoredMaterializationError(
+                    "canonical channel static attributes conflict in panel"
+                )
+            channel_static[uid] = (role, mode)
+            channel_series[uid] = series
+        observed_uids = {
+            uid
+            for uid, series in channel_series.items()
+            if any(
+                month <= origin and amounts["positive"] > 0
+                for month, amounts in series.items()
+            )
+        }
+        trailing_by_uid = {
+            uid: _channel_trailing_positive(series, origin, 12)
+            for uid, series in channel_series.items()
+            if uid in observed_uids
+        }
+        ranked = sorted(
+            observed_uids,
+            key=lambda uid: (-trailing_by_uid[uid], uid),
+        )
+        denominator = max(len(ranked) - 1, 1)
+        rank_percentile = {
+            uid: index / denominator
+            for index, uid in enumerate(ranked)
+        }
+        work_trailing = sum(
+            trailing_by_uid.values(),
+            Decimal("0"),
+        )
+        future_uids = {
+            uid
+            for uid, series in channel_series.items()
+            if any(
+                origin < month
+                <= canonical.add_months(origin, maximum_horizon)
+                and (
+                    amounts["positive"] > 0
+                    or amounts["reversal"] > 0
+                )
+                for month, amounts in series.items()
+            )
+        }
+        for uid in sorted(observed_uids | future_uids):
+            observed = uid in observed_uids
+            role, mode = channel_static[uid]
+            features = (
+                _channel_generative_features(
+                    channel_series[uid],
+                    origin,
+                    int(history["observedSalesAgeMonths"]),
+                    work_trailing,
+                    rank_percentile[uid],
+                )
+                if observed
+                else None
+            )
+            labels = []
+            for future_month_index in range(1, maximum_horizon + 1):
+                included = [
+                    horizon
+                    for horizon in horizons
+                    if horizon >= future_month_index
+                ]
+                if not included:
+                    continue
+                future_month = canonical.add_months(
+                    origin,
+                    future_month_index,
+                )
+                amounts = channel_series[uid].get(
+                    future_month,
+                    {
+                        "positive": Decimal("0"),
+                        "reversal": Decimal("0"),
+                        "net": Decimal("0"),
+                    },
+                )
+                labels.append(
+                    {
+                        "futureMonthIndex": future_month_index,
+                        "futureMonth": future_month,
+                        "labelAvailableAsOf": future_month,
+                        "actualPositive": float(amounts["positive"]),
+                        "actualReversal": float(amounts["reversal"]),
+                        "actual": float(amounts["net"]),
+                        "includedHorizons": included,
+                    }
+                )
+            output.append(
+                {
+                    "schema":
+                        "m2.current.channel_generative_packed_private.v0.2",
+                    "evaluationFamily": evaluation_family,
+                    "standardWorkId": work_id,
+                    "channelUid": uid,
+                    "origin": origin,
+                    "channelRole": role,
+                    "revenueMode": mode,
+                    "mechanism": _mechanism_parent(mode),
+                    "observedAtOrigin": observed,
+                    "features": features,
+                    "futureMonthlyLabels": labels,
+                    "horizonMonths": horizons,
+                    "reversalRateByHorizon": {},
+                    "futureFirstSeenIdentityUsedAsFeature": False,
+                    "unmaturedLabelZeroImputed": False,
+                    "buyoutCashUsed": False,
+                }
+            )
+        _validate_channel_generative_conservation(
+            output[group_output_start:],
+            work_id,
+            origin,
+            by_horizon,
+        )
+    return output
+
+
+def _channel_trailing_positive(
+    series: Mapping[str, Mapping[str, Decimal]],
+    origin: str,
+    count: int,
+) -> Decimal:
+    months = canonical.month_range(
+        canonical.add_months(origin, -(count - 1)),
+        origin,
+    )
+    return sum(
+        (
+            series.get(month, {}).get("positive", Decimal("0"))
+            for month in months
+        ),
+        Decimal("0"),
+    )
+
+
+def _channel_generative_features(
+    series: Mapping[str, Mapping[str, Decimal]],
+    origin: str,
+    observed_work_age: int,
+    work_trailing_12: Decimal,
+    rank_percentile: float,
+) -> dict[str, float]:
+    first_positive = min(
+        month
+        for month, amounts in series.items()
+        if month <= origin and amounts["positive"] > 0
+    )
+    months = canonical.month_range(first_positive, origin)
+    values = [
+        float(
+            series.get(month, {}).get("positive", Decimal("0"))
+        )
+        for month in months
+    ]
+    recent3 = values[-3:]
+    previous3 = values[-6:-3]
+    recent12 = values[-12:]
+    positive_indexes = [
+        index for index, value in enumerate(values) if value > 0
+    ]
+    peak = max(values)
+    latest_peak = max(
+        index for index, value in enumerate(values) if value == peak
+    )
+    logs = [math.log1p(value) for value in recent12]
+    log_mean = sum(logs) / len(logs)
+    volatility = math.sqrt(
+        sum((value - log_mean) ** 2 for value in logs) / len(logs)
+    )
+    channel_trailing = Decimal(str(sum(recent12)))
+    return {
+        "log_recent_1_positive": math.log1p(sum(values[-1:])),
+        "log_recent_3_positive": math.log1p(sum(recent3)),
+        "log_recent_12_positive": math.log1p(sum(recent12)),
+        "log_cumulative_positive": math.log1p(sum(values)),
+        "positive_rate_3":
+            sum(value > 0 for value in recent3) / len(recent3),
+        "positive_rate_12":
+            sum(value > 0 for value in recent12) / len(recent12),
+        "log_recent_3_vs_previous_3": (
+            0.0
+            if len(values) < 4
+            else math.log1p(sum(recent3))
+            - math.log1p(sum(previous3))
+        ),
+        "previous_3_available": 1.0 if len(values) >= 4 else 0.0,
+        "log_positive_volatility_12": volatility,
+        "months_since_last_positive_scaled":
+            min(len(values) - 1 - positive_indexes[-1], 36) / 36,
+        "log_historical_peak_positive": math.log1p(peak),
+        "months_since_peak_scaled":
+            min(len(values) - 1 - latest_peak, 36) / 36,
+        "log_observed_channel_age": math.log1p(len(values)),
+        "log_observed_work_age": math.log1p(observed_work_age),
+        "trailing_12_work_share": (
+            0.0
+            if work_trailing_12 == 0
+            else float(channel_trailing / work_trailing_12)
+        ),
+        "channel_rank_percentile": rank_percentile,
+        "available_month_fraction_3": min(len(values), 3) / 3,
+        "available_month_fraction_12": min(len(values), 12) / 12,
+    }
+
+
+def _mechanism_parent(revenue_mode: str) -> str:
+    return {
+        "membership_subscription": "membership",
+        "advertising_or_free_share": "advertising",
+        "single_purchase_or_on_demand": "transactional",
+    }.get(revenue_mode, "other")
+
+
+def _validate_channel_generative_conservation(
+    rows: Iterable[Mapping[str, Any]],
+    work_id: str,
+    origin: str,
+    cases: Mapping[int, Mapping[str, Any]],
+) -> None:
+    selected = [
+        row
+        for row in rows
+        if row["standardWorkId"] == work_id and row["origin"] == origin
+    ]
+    for horizon, case in cases.items():
+        labels = [
+            label
+            for row in selected
+            for label in row["futureMonthlyLabels"]
+            if horizon in label["includedHorizons"]
+        ]
+        positive = sum(label["actualPositive"] for label in labels)
+        reversal = sum(label["actualReversal"] for label in labels)
+        net = sum(label["actual"] for label in labels)
+        if not (
+            math.isclose(
+                positive,
+                float(case["actualPositive"]),
+                rel_tol=0,
+                abs_tol=1e-7,
+            )
+            and math.isclose(
+                reversal,
+                float(case["actualReversal"]),
+                rel_tol=0,
+                abs_tol=1e-7,
+            )
+            and math.isclose(
+                net,
+                float(case["actual"]),
+                rel_tol=0,
+                abs_tol=1e-7,
+            )
+        ):
+            raise HumanAnchoredMaterializationError(
+                "channel generative monthly conservation failed"
+            )
+
+
 def _validate_cases(
     cases: Iterable[Mapping[str, Any]],
     histories: Mapping[str, Mapping[str, Any]],
@@ -1261,11 +1735,19 @@ def _fixture_self_test() -> dict[str, Any]:
 
 
 if __name__ == "__main__":
-    result = (
-        _fixture_self_test()
-        if sys.argv[1:] == ["--fixture-self-test"]
-        else run(channel_experts=sys.argv[1:] == ["--channel-experts"])
-    )
+    arguments = sys.argv[1:]
+    if arguments == ["--fixture-self-test"]:
+        result = _fixture_self_test()
+    elif arguments == ["--channel-experts"]:
+        result = run(channel_experts=True)
+    elif arguments == ["--channel-generative"]:
+        result = run(channel_generative=True)
+    elif arguments:
+        raise HumanAnchoredMaterializationError(
+            "unsupported materialization mode"
+        )
+    else:
+        result = run()
     print(
         json.dumps(
             result,

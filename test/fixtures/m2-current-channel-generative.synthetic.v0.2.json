@@ -1,0 +1,29 @@
+{
+  "schema": "m2.current.channel_generative_synthetic_fixture.v0.2",
+  "worksPerMechanism": 60,
+  "origins": [
+    "2022-06",
+    "2022-09",
+    "2022-12"
+  ],
+  "horizons": [
+    3,
+    6,
+    12
+  ],
+  "historyMonths": 12,
+  "topRevenueMultiplier": 10,
+  "includes": {
+    "membershipSlowPersistence": true,
+    "advertisingShortMemoryChange": true,
+    "transactionalSpikeAndTail": true,
+    "allZeroOccurrenceNode": true,
+    "noPositiveAmountNode": true,
+    "topRevenueOutlier": true,
+    "sameWorkAcrossMultipleOrigins": true,
+    "sameFutureMonthAcrossMultipleHorizons": true,
+    "futureFirstSeenChannel": true,
+    "reversalConservation": true
+  },
+  "privateArtifact": false
+}
