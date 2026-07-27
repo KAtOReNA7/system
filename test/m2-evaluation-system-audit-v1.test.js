@@ -153,10 +153,10 @@ test("evaluation contract remains a proposal and public aggregates are not overc
   assert.doesNotMatch(proposal, /已启用评价合同/u);
 });
 
-test("state index records zero execution and registry points to it", () => {
+test("historical audit state records zero execution and registry may advance", () => {
   assert.equal(
     registry.currentRoles.latestStateIndex,
-    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.27.md"
+    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.28.md"
   );
   assert.equal(audit.executionBoundary.modelExecutionCount, 0);
   assert.equal(audit.executionBoundary.modelTrainingCount, 0);
