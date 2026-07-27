@@ -1,0 +1,683 @@
+{
+  "schemaVersion": "m2.evaluation_system_audit.v1",
+  "asOf": "2026-07-28",
+  "status": "M2_EVALUATION_SYSTEM_AUDIT_COMPLETE_NO_METRIC_CHANGE",
+  "shareReadiness": "SHARE_WITH_CAVEATS",
+  "authority": {
+    "modelRegistry": "config/m2-model-registry.v1.json",
+    "modelCatalog": "docs/analysis/m2-current/M2-model-catalog-and-scorecard-v1.md",
+    "bilingualReportingStandard": "docs/analysis/m2-current/M2-user-facing-bilingual-reporting-standard-v1.md",
+    "expectedStartingHead": "65f9ec587b87efbfc84e383219c00039d78a7c2f",
+    "evidenceScope": "PUBLIC_CODE_AND_COMMITTED_AGGREGATES_ONLY",
+    "registryIsCurrentAuthority": true
+  },
+  "executionBoundary": {
+    "modelExecutionCount": 0,
+    "modelTrainingCount": 0,
+    "candidateSelectionCount": 0,
+    "privateEvaluationRowReadCount": 0,
+    "historicalScoreMutationCount": 0,
+    "productionChangeCount": 0,
+    "holdoutReadCount": 0,
+    "providerCallCount": 0,
+    "databaseCallCount": 0
+  },
+  "currentRoles": {
+    "operationalWorkFallback": "M2-WORK-OA03",
+    "researchWorkBaseline": "M2-WORK-LG01",
+    "portfolioReference": "M2-PORT-ETS01",
+    "activeCandidate": null,
+    "approvedForAutomation": null,
+    "blockedExperiment": "M2-EXP-CHANNEL-GENERATIVE-02",
+    "rolesChangedByAudit": false
+  },
+  "registryCoverage": {
+    "modelCount": 27,
+    "experimentCount": 12,
+    "nonModelIdentifierCount": 47,
+    "comparabilityGroupCount": 13,
+    "evaluationCount": 40,
+    "wapeEvaluationCount": 39,
+    "signedBiasEvaluationCount": 33,
+    "relativeWapeEvaluationCount": 24,
+    "independentEvidenceEvaluationCount": 0
+  },
+  "metricInventory": [
+    {
+      "metricId": "work_cash_wape_current_v1",
+      "displayNameZh": "当前作品现金加权绝对百分比误差",
+      "metricRole": "PRIMARY_CANDIDATE_AND_DIAGNOSTIC",
+      "implementation": "src/domain/m2Current/metrics.js",
+      "coverage": "39_OF_40_REGISTRY_EVALUATIONS",
+      "limitations": [
+        "HEAD_REVENUE_DOMINANCE",
+        "ZERO_ACTUAL_ASYMMETRY",
+        "HORIZON_POOLING_WEIGHTING"
+      ]
+    },
+    {
+      "metricId": "work_cash_signed_bias_current_v1",
+      "displayNameZh": "当前作品现金有方向总量偏差",
+      "metricRole": "CALIBRATION_GUARDRAIL",
+      "implementation": "src/domain/m2Current/metrics.js",
+      "coverage": "33_OF_40_REGISTRY_EVALUATIONS",
+      "limitations": [
+        "SIGNED_ERROR_CANCELLATION"
+      ]
+    },
+    {
+      "metricId": "historical_signed_aggregate_bias_python_v1",
+      "displayNameZh": "历史 Python 有方向聚合偏差",
+      "metricRole": "ARCHIVE_ONLY_DIAGNOSTIC",
+      "implementation": "scripts/m2-real-data/m2_calibration_v1.py",
+      "coverage": "HISTORICAL_ONLY",
+      "limitations": [
+        "NET_ACTUAL_DENOMINATOR",
+        "NOT_INTERCHANGEABLE_WITH_CURRENT_SIGNED_BIAS"
+      ]
+    },
+    {
+      "metricId": "mae_and_scaled_absolute_error",
+      "displayNameZh": "平均绝对误差与尺度化绝对误差",
+      "metricRole": "SEGMENT_GUARDRAIL_AND_DIAGNOSTIC",
+      "implementation": "PARTIAL_EXPERIMENT_SPECIFIC",
+      "coverage": "NON_CANONICAL_PARTIAL",
+      "limitations": [
+        "NOT_REGISTERED_FOR_ALL_COMPARABILITY_GROUPS"
+      ]
+    },
+    {
+      "metricId": "occurrence_calibration_and_discrimination",
+      "displayNameZh": "收入发生校准与区分",
+      "metricRole": "CAPABILITY_SPECIFIC_PRIMARY_AND_GUARDRAIL",
+      "implementation": "src/domain/m2Current/lifecycleAware.js",
+      "coverage": "PARTIAL_EXPERIMENT_SPECIFIC",
+      "limitations": [
+        "NO_CANONICAL_RELIABILITY_BINS",
+        "NO_CANONICAL_PR_AUC",
+        "THRESHOLD_PROVENANCE_NOT_UNIFORM"
+      ]
+    },
+    {
+      "metricId": "conditional_positive_amount",
+      "displayNameZh": "正向发生条件金额",
+      "metricRole": "CAPABILITY_SPECIFIC_PRIMARY",
+      "implementation": "src/domain/m2Current/lifecycleAware.js",
+      "coverage": "LIFECYCLE_SPECIFIC_ONLY",
+      "limitations": [
+        "GENERIC_EVALUATOR_USES_FINAL_POINT_SUBSET"
+      ]
+    },
+    {
+      "metricId": "portfolio_origin_horizon_cash_error",
+      "displayNameZh": "组合 origin-horizon 现金误差",
+      "metricRole": "PORTFOLIO_PRIMARY_CANDIDATE",
+      "implementation": "src/domain/m2Current/portfolio.js",
+      "coverage": "PARTIAL",
+      "limitations": [
+        "AGGREGATION_CANCELLATION",
+        "MAY_NOT_ALLOCATE_BACK_TO_WORKS"
+      ]
+    },
+    {
+      "metricId": "probabilistic_interval_quality",
+      "displayNameZh": "概率与区间质量",
+      "metricRole": "RISK_CAPABILITY_PRIMARY_AND_GUARDRAIL",
+      "implementation": "src/domain/m2Current/metrics.js",
+      "coverage": "MODEL_SPECIFIC_PARTIAL",
+      "limitations": [
+        "REQUIRES_ACTUAL_FROZEN_INTERVAL_OR_DISTRIBUTION_OUTPUT"
+      ]
+    },
+    {
+      "metricId": "risk_coverage",
+      "displayNameZh": "风险覆盖",
+      "metricRole": "DIAGNOSTIC_ONLY_UNTIL_AUTHORIZED",
+      "implementation": "src/domain/m2Current/automation.js",
+      "coverage": "PARTIAL",
+      "limitations": [
+        "CASE_AND_CASH_COVERAGE_MUST_BOTH_BE_REPORTED"
+      ]
+    },
+    {
+      "metricId": "asymmetric_business_loss",
+      "displayNameZh": "非对称业务损失",
+      "metricRole": "DIAGNOSTIC_ONLY_UNTIL_COST_AUTHORIZATION",
+      "implementation": "src/domain/m2Current/automation.js",
+      "coverage": "PARTIAL",
+      "limitations": [
+        "BUSINESS_COST_WEIGHTS_NOT_AUTHORIZED"
+      ]
+    },
+    {
+      "metricId": "ranking_and_allocation_utility",
+      "displayNameZh": "排序与资源分配效用",
+      "metricRole": "CAPABILITY_GAP",
+      "implementation": null,
+      "coverage": "ABSENT",
+      "limitations": [
+        "NO_CANONICAL_RANKING_EVALUATION"
+      ]
+    }
+  ],
+  "formulaAssessment": {
+    "currentWorkWape": {
+      "definitionId": "work_cash_wape_current_v1",
+      "formula": "sum(abs(pointEstimate-actual))/sum(abs(actual))",
+      "status": "IMPLEMENTATION_CORRECT_FOR_DECLARED_DEFINITION",
+      "negativeActualHandling": "ABSOLUTE_DENOMINATOR_INCLUDED",
+      "zeroActualHandling": "ERROR_IN_NUMERATOR_ZERO_IN_DENOMINATOR",
+      "allZeroActualPopulationHandling": "FAIL_CLOSED"
+    },
+    "currentWorkSignedBias": {
+      "definitionId": "work_cash_signed_bias_current_v1",
+      "formula": "sum(pointEstimate-actual)/sum(abs(actual))",
+      "status": "IMPLEMENTATION_CORRECT_FOR_DECLARED_DEFINITION",
+      "directionPreserved": true
+    },
+    "historicalPythonSignedAggregateBias": {
+      "definitionId": "historical_signed_aggregate_bias_python_v1",
+      "formula": "(sum(prediction)-sum(actual))/sum(actual)",
+      "status": "DIFFERENT_METRIC_DEFINITION",
+      "directlyInterchangeableWithCurrentSignedBias": false
+    }
+  },
+  "implementationFindings": [
+    {
+      "findingId": "EVAL-IMP-001",
+      "status": "CURRENT_FORMULAS_CORRECT",
+      "severity": "INFORMATIONAL",
+      "evidence": [
+        "src/domain/m2Current/metrics.js"
+      ],
+      "findingZh": "当前 JavaScript 作品级 WAPE 与有向偏差严格使用绝对实际现金分母；负冲销进入分母，零实际值仍贡献误差，全零分母会关闭失败。",
+      "action": "PRESERVE_AND_VERSION_DEFINITION"
+    },
+    {
+      "findingId": "EVAL-IMP-002",
+      "status": "HISTORICAL_METRIC_DEFINITION_MISMATCH",
+      "severity": "MATERIAL_CAVEAT",
+      "evidence": [
+        "scripts/m2-real-data/m2_calibration_v1.py",
+        "src/domain/m2Current/metrics.js"
+      ],
+      "findingZh": "历史 Python signedAggregateBias 使用净实际总额作分母，不能与当前 JavaScript signed bias 当作同一指标。",
+      "action": "REQUIRE_METRIC_DEFINITION_ID_ON_FUTURE_EVALUATIONS"
+    },
+    {
+      "findingId": "EVAL-IMP-003",
+      "status": "MISLABELED_PARTIAL_CAPABILITY",
+      "severity": "MATERIAL_CAVEAT",
+      "evidence": [
+        "src/domain/m2Current/metrics.js",
+        "src/domain/m2Current/lifecycleAware.js"
+      ],
+      "findingZh": "通用评价器 positiveAmount 实际计算正实际值子集上的最终 pointEstimate 误差，不读取独立 conditionalAmountPrediction；生命周期专用实现才保存真正的发生与条件金额分解。",
+      "action": "DO_NOT_INTERPRET_GENERIC_POSITIVE_AMOUNT_AS_CONDITIONAL_AMOUNT"
+    },
+    {
+      "findingId": "EVAL-IMP-004",
+      "status": "AGGREGATION_CANCELLATION_EXPLICIT",
+      "severity": "MATERIAL_CAVEAT",
+      "evidence": [
+        "src/domain/m2Current/portfolio.js"
+      ],
+      "findingZh": "组合聚合会抵消作品级高估与低估；组合准确不能证明作品点预测准确。",
+      "action": "REPORT_WORK_AND_PORTFOLIO_RESOLUTIONS_SIDE_BY_SIDE"
+    },
+    {
+      "findingId": "EVAL-IMP-005",
+      "status": "HORIZON_POOLING_WEIGHTING_RISK",
+      "severity": "MATERIAL_CAVEAT",
+      "evidence": [
+        "src/domain/m2Current/metrics.js",
+        "src/domain/m2Current/portfolio.js"
+      ],
+      "findingZh": "跨 horizon 池化 WAPE 按实际现金规模自然加权，累计 horizon 还会重复使用月份，不能作为未经授权的统一排序。",
+      "action": "MAKE_HORIZON_STRATIFIED_RESULTS_PRIMARY"
+    },
+    {
+      "findingId": "EVAL-IMP-006",
+      "status": "REGISTRY_METRIC_DEFINITION_ID_GAP",
+      "severity": "GOVERNANCE_GAP",
+      "evidence": [
+        "config/m2-model-registry.v1.json"
+      ],
+      "findingZh": "登记成绩具有人口、目标、粒度与窗口，但每条 evaluation 尚未携带可机读的 metricDefinitionId。",
+      "action": "ADD_ONLY_IN_A_SEPARATELY_AUTHORIZED_SCHEMA_MIGRATION"
+    },
+    {
+      "findingId": "EVAL-IMP-007",
+      "status": "HISTORICAL_FORENSIC_WAPE_VARIANT",
+      "severity": "MATERIAL_CAVEAT",
+      "evidence": [
+        "scripts/m2-real-data/run_m2_c3_development_validation.py"
+      ],
+      "findingZh": "历史内部特征残差校正开发的 forensic 分组 helper 曾使用 abs(sum(actual)) 分母，而主点指标使用 sum(abs(actual))；该局部视图不可与当前 WAPE 混用。",
+      "action": "KEEP_ARCHIVE_IMMUTABLE_AND_LABEL_DEFINITION"
+    }
+  ],
+  "metricSufficiency": {
+    "wapeAndSignedBiasSufficientForOverallEvaluation": false,
+    "limitations": [
+      "HEAD_REVENUE_DOMINANCE",
+      "SIGNED_ERROR_CANCELLATION",
+      "ZERO_ACTUAL_ASYMMETRY",
+      "HORIZON_POOLING_WEIGHTING",
+      "NO_OCCURRENCE_CALIBRATION",
+      "NO_WORK_BALANCED_ERROR",
+      "NO_RANKING_UTILITY",
+      "NO_INTERVAL_CALIBRATION",
+      "NO_INDEPENDENT_TIME_EVIDENCE"
+    ]
+  },
+  "capabilityMatrix": [
+    {
+      "capabilityId": "work_point_cash",
+      "displayNameZh": "作品级现金点预测",
+      "currentCoverage": "PARTIAL",
+      "primaryEvidence": [
+        "WAPE",
+        "signedBias",
+        "byHorizon",
+        "bySegment"
+      ],
+      "missingOrNonCanonical": [
+        "canonical MAE",
+        "as-of MASE",
+        "head-error contribution",
+        "independent later-origin"
+      ],
+      "mayAllocateBackToWorks": true
+    },
+    {
+      "capabilityId": "occurrence_probability",
+      "displayNameZh": "收入发生概率",
+      "currentCoverage": "PARTIAL_EXPERIMENT_SPECIFIC",
+      "primaryEvidence": [
+        "Brier",
+        "logLoss",
+        "precision",
+        "recall"
+      ],
+      "missingOrNonCanonical": [
+        "reliability bins",
+        "calibration intercept and slope",
+        "PR-AUC",
+        "threshold provenance"
+      ],
+      "mayAllocateBackToWorks": false
+    },
+    {
+      "capabilityId": "conditional_amount",
+      "displayNameZh": "正向发生条件金额",
+      "currentCoverage": "MISLABELED_IN_GENERIC_EVALUATOR",
+      "primaryEvidence": [
+        "lifecycle-specific conditional amount WAPE",
+        "lifecycle-specific conditional amount bias",
+        "lifecycle-specific log-MAE"
+      ],
+      "missingOrNonCanonical": [
+        "generic conditional output contract"
+      ],
+      "mayAllocateBackToWorks": false
+    },
+    {
+      "capabilityId": "portfolio_budget",
+      "displayNameZh": "组合预算预测",
+      "currentCoverage": "PARTIAL",
+      "primaryEvidence": [
+        "portfolio origin-horizon WAPE",
+        "portfolio signedBias",
+        "origin bootstrap"
+      ],
+      "missingOrNonCanonical": [
+        "independent time evidence",
+        "authorized business horizon weights"
+      ],
+      "mayAllocateBackToWorks": false
+    },
+    {
+      "capabilityId": "ranking_allocation",
+      "displayNameZh": "排序与资源分配",
+      "currentCoverage": "ABSENT",
+      "primaryEvidence": [],
+      "missingOrNonCanonical": [
+        "complete eligible set",
+        "Spearman or Kendall",
+        "top-k cash capture",
+        "NDCG@k",
+        "decision utility"
+      ],
+      "mayAllocateBackToWorks": false
+    },
+    {
+      "capabilityId": "risk_interval",
+      "displayNameZh": "风险与区间",
+      "currentCoverage": "PARTIAL_MODEL_SPECIFIC",
+      "primaryEvidence": [
+        "coverage",
+        "WIS",
+        "CRPS approximation",
+        "risk-coverage"
+      ],
+      "missingOrNonCanonical": [
+        "conditional coverage by horizon and segment",
+        "independent calibration",
+        "interval-output capability registration"
+      ],
+      "mayAllocateBackToWorks": false
+    },
+    {
+      "capabilityId": "business_loss",
+      "displayNameZh": "非对称业务损失",
+      "currentCoverage": "DIAGNOSTIC_ONLY",
+      "primaryEvidence": [
+        "underforecast cost",
+        "overforecast cost",
+        "abstention cost"
+      ],
+      "missingOrNonCanonical": [
+        "business-authorized cost weights",
+        "currency and decision period",
+        "budget constraint",
+        "abstention action"
+      ],
+      "mayAllocateBackToWorks": false
+    }
+  ],
+  "experimentClassification": [
+    {
+      "experimentId": "M2-EXP-CURRENT-CALIBRATION-01",
+      "classification": "EXECUTED_PARTIAL_SIGNAL_HISTORICAL_TARGET",
+      "conclusionZh": "作品分群校准 v0.1 有局部开发改善，但属于人工账单分区前目标，不能成为当前总体优胜者。"
+    },
+    {
+      "experimentId": "M2-EXP-R0-R5-01",
+      "classification": "MIXED_RAW_FAILURE_AND_SAFE_FALLBACK",
+      "conclusionZh": "复合候选原始臂失败，安全回退只证明管线没有继续恶化；回退后的零增量不是候选成功。"
+    },
+    {
+      "experimentId": "M2-EXP-PORTFOLIO-ETS-01",
+      "classification": "SECONDARY_PORTFOLIO_CAPABILITY_GATE_FAIL",
+      "conclusionZh": "组合现金 ETS/Holt-Winters 在组合粒度有相对价值，但门禁失败且不能下放为作品预测。"
+    },
+    {
+      "experimentId": "M2-EXP-HISTORY-REGIME-01",
+      "classification": "TRUE_POSTHOC_DEVELOPMENT_FAILURE",
+      "conclusionZh": "历史状态后验校准在同一开发窗口恶化，属于已执行失败。"
+    },
+    {
+      "experimentId": "M2-EXP-MANUAL-CHANNEL-01",
+      "classification": "TRUE_STANDALONE_FAILURE",
+      "conclusionZh": "人工渠道规则比较在人口和窗口受限的独立比较组内失败，且不可跨组排名。"
+    },
+    {
+      "experimentId": "M2-EXP-CANONICAL-CHANNEL-01",
+      "classification": "BELOW_MATERIALITY_AND_DENSE_REGRESSION",
+      "conclusionZh": "统一渠道曲线在当前人口仅有低于门槛的微小变化，并在密集逐月窗口恶化。"
+    },
+    {
+      "experimentId": "M2-EXP-HUMAN-ANCHORED-10",
+      "classification": "RELATIVE_BASELINE_VALUE_WITH_ABSOLUTE_AND_STABILITY_FAILURE",
+      "conclusionZh": "可学习全局模型相对人工公式有开发价值，但绝对质量、分群、作品聚类区间和独立证据均不足；层级与发生原始候选被拒绝。"
+    },
+    {
+      "experimentId": "M2-EXP-TSB-OCCURRENCE-01",
+      "classification": "TRUE_RAW_AND_BLEND_FAILURE",
+      "conclusionZh": "原始 TSB 与混合候选在主窗口和严格滚动窗口失败；同窗重叠子集改善不能覆盖这些失败。"
+    },
+    {
+      "experimentId": "M2-EXP-LIFECYCLE-AWARE-01",
+      "classification": "TRUE_RAW_FAILURE_TRIVIAL_POSTHOC_GAIN",
+      "conclusionZh": "五状态原始候选失败，仅复苏状态后验路由收益低于实质性门槛；重叠子集诊断不构成独立胜利。"
+    },
+    {
+      "experimentId": "M2-EXP-CHANNEL-EXPERTS-01",
+      "classification": "TRUE_PRIMARY_AND_STRICT_FAILURE",
+      "conclusionZh": "渠道倍率专家在主窗口和严格窗口均明显恶化，安全回退不得掩盖原始结果。"
+    },
+    {
+      "experimentId": "M2-EXP-CHANNEL-GENERATIVE-02",
+      "classification": "BLOCKED_NOT_EXECUTED_NO_MODEL_CONCLUSION",
+      "conclusionZh": "渠道时间生成 v0.2 因评价合同语义阻断而未执行；只能得出未执行结论，不能评价模型好坏。"
+    },
+    {
+      "experimentId": "M2-EXP-ARCHIVE-C1-C3",
+      "classification": "ARCHIVED_HISTORICAL_TARGET_FAILURES",
+      "conclusionZh": "历史冻结开发活动均为历史目标下的失败证据，只用于追溯，不能与当前分成现金目标排名。"
+    }
+  ],
+  "comparabilityFindings": {
+    "crossGroupRankingAllowed": false,
+    "overallWinnerSupported": false,
+    "requiredMatchDimensions": [
+      "target",
+      "cashAuthority",
+      "population",
+      "grain",
+      "horizon",
+      "asOfContract",
+      "actualDefinition",
+      "evaluationWindow",
+      "metricDefinition"
+    ],
+    "groupSummaries": [
+      {
+        "comparableGroupId": "CG-WORK-SS-CURRENT-7083",
+        "comparisonClass": "SAME_CASE_COMPARABLE",
+        "modelIds": [
+          "M2-WORK-B4",
+          "M2-WORK-OA03",
+          "M2-WORK-CCR01"
+        ]
+      },
+      {
+        "comparableGroupId": "CG-WORK-FORMAL-LEGACY-7851",
+        "comparisonClass": "REUSED_DEVELOPMENT_WINDOW",
+        "modelIds": [
+          "M2-WORK-B4",
+          "M2-WORK-SEG01",
+          "M2-WORK-HRC02",
+          "M2-WORK-GDE04"
+        ]
+      },
+      {
+        "comparableGroupId": "CG-WORK-R0R5-GLOBAL-7851",
+        "comparisonClass": "REUSED_DEVELOPMENT_WINDOW",
+        "modelIds": [
+          "M2-WORK-GHG01",
+          "M2-WORK-TWD01",
+          "M2-WORK-HGB01"
+        ]
+      },
+      {
+        "comparableGroupId": "CG-PORT-SS-30CELLS",
+        "comparisonClass": "DIFFERENT_GRAIN_NOT_COMPARABLE",
+        "modelIds": [
+          "M2-PORT-ETS01"
+        ]
+      },
+      {
+        "comparableGroupId": "CG-WORK-SS-DENSE-44301",
+        "comparisonClass": "REUSED_DEVELOPMENT_WINDOW",
+        "modelIds": [
+          "M2-BASE-CLASSIC01",
+          "M2-WORK-HSC01",
+          "M2-WORK-CCR01"
+        ]
+      },
+      {
+        "comparableGroupId": "CG-WORK-SS-MANUAL-379-H36",
+        "comparisonClass": "STANDALONE_ONLY",
+        "modelIds": [
+          "M2-WORK-MCR01"
+        ]
+      },
+      {
+        "comparableGroupId": "CG-WORK-SS-HA-PRIMARY-12039-H36",
+        "comparisonClass": "REUSED_DEVELOPMENT_WINDOW",
+        "modelIds": [
+          "M2-WORK-MAN01",
+          "M2-WORK-LG01",
+          "M2-WORK-HP01",
+          "M2-WORK-OR01",
+          "M2-WORK-TSB01",
+          "M2-WORK-TSBB01",
+          "M2-WORK-LC01",
+          "M2-CHAN-SCL01",
+          "M2-CHAN-GEN02"
+        ]
+      },
+      {
+        "comparableGroupId": "CG-WORK-SS-HA-STRICT-74320",
+        "comparisonClass": "REUSED_DEVELOPMENT_WINDOW",
+        "modelIds": [
+          "M2-WORK-LG01",
+          "M2-WORK-TSB01",
+          "M2-WORK-TSBB01",
+          "M2-WORK-LC01",
+          "M2-CHAN-SCL01"
+        ]
+      },
+      {
+        "comparableGroupId": "CG-WORK-SS-OVERLAP-5203-H36",
+        "comparisonClass": "SAME_INTERSECTION_COMPARABLE",
+        "modelIds": [
+          "M2-WORK-OA03",
+          "M2-WORK-LG01",
+          "M2-WORK-TSBB01",
+          "M2-WORK-LC01"
+        ]
+      },
+      {
+        "comparableGroupId": "CG-NOT-EXECUTED",
+        "comparisonClass": "STANDALONE_ONLY",
+        "modelIds": [
+          "M2-CHAN-GEN02"
+        ]
+      },
+      {
+        "comparableGroupId": "CG-WORK-HISTORICAL-C1",
+        "comparisonClass": "DIFFERENT_TARGET_NOT_COMPARABLE",
+        "modelIds": [
+          "M2-WORK-C1TE01"
+        ]
+      },
+      {
+        "comparableGroupId": "CG-WORK-LEGACY-BUYOUT-C2R",
+        "comparisonClass": "DIFFERENT_TARGET_NOT_COMPARABLE",
+        "modelIds": [
+          "M2-WORK-C2R01"
+        ]
+      },
+      {
+        "comparableGroupId": "CG-WORK-ARCHIVE-FORMAL-7851",
+        "comparisonClass": "REUSED_DEVELOPMENT_WINDOW",
+        "modelIds": [
+          "M2-WORK-C2R101",
+          "M2-WORK-C2IM01",
+          "M2-WORK-C3IR01"
+        ]
+      }
+    ]
+  },
+  "overallBestModel": {
+    "supported": false,
+    "modelId": null,
+    "reasonCode": "NO_SINGLE_WINNER_ACROSS_CAPABILITIES_AND_NO_INDEPENDENT_EVIDENCE",
+    "byCapability": {
+      "operationalWorkFallback": "M2-WORK-OA03",
+      "researchWorkBaseline": "M2-WORK-LG01",
+      "portfolioDevelopmentReference": "M2-PORT-ETS01",
+      "rankingAllocation": null,
+      "riskInterval": null
+    }
+  },
+  "missingDataContract": {
+    "publicAggregateStatus": "NOT_COMPUTABLE_FROM_PUBLIC_AGGREGATES",
+    "minimumFrozenPredictionRescoreFields": [
+      "stableModelId",
+      "experimentId",
+      "predictionArtifactDigest",
+      "standardWorkId",
+      "origin",
+      "horizonMonths",
+      "target",
+      "cashAuthority",
+      "populationId",
+      "actualDefinition",
+      "actual",
+      "pointEstimate",
+      "selectedPipelinePointEstimate",
+      "operationalFallbackPointEstimate",
+      "eligibilityStatus",
+      "abstentionReason",
+      "lifecycleAtOrigin",
+      "revenueScaleBandAtOrigin",
+      "timeBlockId"
+    ],
+    "rescoreWithoutTraining": [
+      "horizon-stratified WAPE",
+      "MAE",
+      "signed bias",
+      "absolute bias",
+      "error quantiles",
+      "head-error contribution",
+      "paired fallback FVA",
+      "origin and time-block stability",
+      "work-cluster bootstrap",
+      "ranking diagnostics when the complete eligible set is present"
+    ],
+    "requiresExistingFrozenModelOutput": [
+      "occurrenceProbability",
+      "conditionalAmountPrediction",
+      "reversalPrediction",
+      "lowerQuantiles",
+      "upperQuantiles",
+      "predictiveDistribution"
+    ],
+    "cannotBeManufacturedByRescoring": [
+      "missing occurrence probabilities",
+      "missing conditional amount outputs",
+      "missing interval or distribution outputs",
+      "independent later-origin evidence",
+      "business cost weights"
+    ]
+  },
+  "proposedEvaluationContract": {
+    "document": "docs/analysis/m2-current/M2-evaluation-contract-v2-proposal.md",
+    "activationStatus": "DRAFT_NOT_ACTIVE",
+    "metricOrGateChanged": false,
+    "separateAuthorizationRequired": true,
+    "trainingRequiredForFrozenPredictionRescore": false
+  },
+  "agentsHygiene": {
+    "status": "NO_BLOCKING_AUTHORITY_CONFLICT",
+    "authorityConflict": false,
+    "recommendations": [
+      {
+        "file": "AGENTS.md",
+        "recommendationZh": "当前分数、临时状态和已完成批次应逐步从长期规则迁移到状态索引，只保留稳定边界与权威入口。"
+      },
+      {
+        "file": "AGENTS.md",
+        "recommendationZh": "导航中的 latest state index 应避免硬编码旧版本，改为只指向一个稳定 current index 或由 registry 生成。"
+      },
+      {
+        "file": "src/domain/m2Current/AGENTS.md",
+        "recommendationZh": "现行回退角色应引用 Model Registry 的角色键，不在局部规则重复硬编码具体模型，以避免未来合法角色迁移后漂移。"
+      }
+    ],
+    "filesChangedByAudit": []
+  },
+  "nextStep": {
+    "controlledFrozenPredictionRescoreAuthorizationRequired": true,
+    "evaluationContractActivationAuthorizationRequired": true,
+    "trainingRequired": false,
+    "candidateExecutionAuthorized": false,
+    "holdoutAuthorized": false,
+    "recommendedActionCode": "REQUEST_SEPARATE_FROZEN_PREDICTION_RESCORE_AUTHORIZATION_IF_V2_VALIDATION_IS_DESIRED"
+  },
+  "blockers": []
+}

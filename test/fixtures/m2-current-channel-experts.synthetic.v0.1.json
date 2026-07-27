@@ -1,0 +1,50 @@
+{
+  "schema": "m2.current.channel_experts_synthetic_fixture.v0.1",
+  "origin": "2022-12",
+  "horizonMonths": 12,
+  "replicationsPerPlatformMechanism": 25,
+  "categories": [
+    "synthetic_fiction",
+    "synthetic_nonfiction"
+  ],
+  "historyPositiveSeries": [
+    80,
+    90,
+    100,
+    110,
+    120,
+    130,
+    125,
+    135,
+    140,
+    150,
+    155,
+    160
+  ],
+  "historyReversalSeries": [
+    0,
+    0,
+    5,
+    0,
+    0,
+    0,
+    0,
+    0,
+    4,
+    0,
+    0,
+    0
+  ],
+  "mechanismActualMultipliers": {
+    "membership_subscription": 0.95,
+    "advertising_or_free_share": 1.1,
+    "single_purchase_or_on_demand": 0.75
+  },
+  "platformActualMultipliers": {
+    "ximalaya": 1.08,
+    "wechat_reading": 0.92,
+    "fanqie_audio": 1.15,
+    "missevan": 0.86,
+    "manbo": 1.02
+  }
+}

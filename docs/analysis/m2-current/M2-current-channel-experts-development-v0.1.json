@@ -1,0 +1,2578 @@
+{
+  "schema": "m2.current.channel_expert_development.public.v0.1",
+  "candidateId": "M2-current-channel-mechanism-hierarchical-challenger-v0.1",
+  "status": "DEVELOPMENT_EXPERIMENT_ONLY",
+  "decision": "CHANNEL_EXPERT_DEVELOPMENT_FAIL_KEEP_LEARNEDGLOBAL_AND_EXACT_V0_3",
+  "maturityDecision": "M2_NOT_MATURE",
+  "objective": "improve_work_level_future_sales_share_cash_with_origin_available_static_channel_features",
+  "preregistration": "docs/analysis/m2-current/M2-current-channel-experts-preregistration-v0.1.json",
+  "dataset": {
+    "datasetVersion": "M2-human-anchored-authority-window-2021-2025-v0.1",
+    "authority": "user_reviewed_sales_share_workbook_membership",
+    "featureAndLabelWindow": {
+      "startsAt": "2021-01",
+      "endsAt": "2025-12"
+    },
+    "authorityWorkCount": 3053,
+    "workWithModernSalesShareFactCount": 2682,
+    "modernSalesShareFactRowCount": 167972,
+    "primary": {
+      "caseRowCount": 12039,
+      "independentWorkCount": 1125,
+      "originCount": 13,
+      "originCounts": {
+        "2021-12": 722,
+        "2022-01": 748,
+        "2022-02": 765,
+        "2022-03": 806,
+        "2022-04": 872,
+        "2022-05": 907,
+        "2022-06": 947,
+        "2022-07": 974,
+        "2022-08": 1001,
+        "2022-09": 1034,
+        "2022-10": 1055,
+        "2022-11": 1083,
+        "2022-12": 1125
+      },
+      "horizonCounts": null,
+      "positiveTargetCaseCount": 11676,
+      "reversalTargetCaseCount": 560,
+      "evaluationDesign": "deterministic_cross_work_only_not_later_origin"
+    },
+    "strictAuxiliary": {
+      "caseRowCount": 97490,
+      "independentWorkCount": 2650,
+      "originCount": 16,
+      "originCounts": {
+        "2021-12": 3610,
+        "2022-03": 4030,
+        "2022-06": 4735,
+        "2022-09": 5170,
+        "2022-12": 5625,
+        "2023-03": 5955,
+        "2023-06": 6995,
+        "2023-09": 8280,
+        "2023-12": 9085,
+        "2024-03": 8192,
+        "2024-06": 8632,
+        "2024-09": 6894,
+        "2024-12": 7383,
+        "2025-03": 5050,
+        "2025-06": 5204,
+        "2025-09": 2650
+      },
+      "horizonCounts": {
+        "3": 27439,
+        "6": 24789,
+        "12": 19662,
+        "18": 14903,
+        "24": 10697
+      },
+      "positiveTargetCaseCount": 89005,
+      "reversalTargetCaseCount": 868,
+      "evaluationDesign": "strict_as_of_rolling_with_mature_earlier_labels_only"
+    },
+    "workChannelMaterialization": {
+      "primaryCaseRowCount": 12039,
+      "auxiliaryCaseRowCount": 97490,
+      "workChannelLabelRowCount": 387175,
+      "predictionEligibleObservedChannelLabelCount": 287914,
+      "futureFirstSeenLabelOnlyCount": 99261,
+      "configuredNamedPlatformCount": 5,
+      "namedPlatformObservedLabelCounts": {
+        "fanqie_audio": 32579,
+        "manbo": 695,
+        "missevan": 3326,
+        "wechat_reading": 10001,
+        "ximalaya": 98763
+      },
+      "workChannelPositiveConservationDifference": 0,
+      "workChannelReversalConservationDifference": 0,
+      "workChannelNetConservationDifference": 0
+    },
+    "dataQuality": {
+      "mappingCoverage": 1,
+      "amountConservationDifference": 0,
+      "unmaturedLabelZeroImputationCount": 0,
+      "futureFirstSeenIdentityUsedAsFeature": false,
+      "buyoutCashUsed": false,
+      "pre2021CashAmountUsed": false,
+      "post2025CashAmountUsed": false
+    }
+  },
+  "featureSet": {
+    "featureVersion": "M2-channel-mechanism-static-features-v0.1",
+    "canonicalChannelIdentity": "user_confirmed_static_development_only",
+    "monetizationMechanism": "user_confirmed_static_development_only",
+    "intrinsicWorkCategory": "development_only",
+    "categoryValuesPublished": false,
+    "futureFirstSeenChannelIdentityUsed": false,
+    "channelAttributeHistoricalEffectiveMonthClaimed": false
+  },
+  "model": {
+    "learnedGlobalContributionDecomposition": "exact_positive_forecast_conservation_by_observed_channel",
+    "mechanismExperts": [
+      {
+        "expertId": "membership",
+        "revenueModes": [
+          "membership_subscription"
+        ],
+        "rawForm": "learnedGlobal_channel_contribution_times_recent_level_persistence"
+      },
+      {
+        "expertId": "advertising",
+        "revenueModes": [
+          "advertising_or_free_share"
+        ],
+        "rawForm": "learnedGlobal_channel_contribution_times_leave_one_work_out_platform_trend"
+      },
+      {
+        "expertId": "transactional",
+        "revenueModes": [
+          "single_purchase_or_on_demand"
+        ],
+        "rawForm": "learnedGlobal_channel_contribution_times_recency_decay"
+      }
+    ],
+    "namedPlatforms": [
+      {
+        "platformId": "ximalaya",
+        "displayName": "喜马拉雅",
+        "model": "platform_partial_pooling_with_sparse_fallback"
+      },
+      {
+        "platformId": "wechat_reading",
+        "displayName": "微信读书",
+        "model": "platform_partial_pooling_with_sparse_fallback"
+      },
+      {
+        "platformId": "fanqie_audio",
+        "displayName": "番茄畅听",
+        "model": "platform_partial_pooling_with_sparse_fallback"
+      },
+      {
+        "platformId": "missevan",
+        "displayName": "猫耳",
+        "model": "platform_partial_pooling_with_sparse_fallback"
+      },
+      {
+        "platformId": "manbo",
+        "displayName": "漫播",
+        "model": "platform_partial_pooling_with_sparse_fallback"
+      }
+    ],
+    "platformTaxonomy": {
+      "node": "platform_id_x_mechanism_expert_x_intrinsic_work_category",
+      "categoryValuesPublished": false
+    },
+    "hierarchy": {
+      "fallbackOrder": [
+        "platform_x_mechanism_x_intrinsic_category",
+        "platform_x_mechanism",
+        "platform",
+        "mechanism",
+        "learnedGlobal"
+      ],
+      "shrinkagePriorStrengthGrid": [
+        20,
+        80,
+        240
+      ],
+      "selection": "deterministic_inner_work_holdout_inside_each_outer_training_set"
+    },
+    "commonReversalLayer": "existing_human_anchored_reversal_layer_shared_by_A0_A6"
+  },
+  "ablations": [
+    {
+      "id": "A0",
+      "name": "learnedGlobal_work_baseline"
+    },
+    {
+      "id": "A1",
+      "name": "exact_learnedGlobal_channel_decomposition_recomposition"
+    },
+    {
+      "id": "A2",
+      "name": "raw_membership_advertising_transactional_experts"
+    },
+    {
+      "id": "A3",
+      "name": "mechanism_calibrated_experts"
+    },
+    {
+      "id": "A4",
+      "name": "five_platform_partial_pooling"
+    },
+    {
+      "id": "A5",
+      "name": "platform_specific_intrinsic_category_taxonomy"
+    },
+    {
+      "id": "A6",
+      "name": "nested_selected_hierarchical_shrinkage"
+    }
+  ],
+  "evaluation": {
+    "primary": {
+      "caseCount": 12039,
+      "workCount": 1125,
+      "ablations": {
+        "A0": {
+          "caseCount": 12039,
+          "wape": 0.4402249501995905,
+          "signedBias": -0.12377105831355606,
+          "zeroImputationUsed": false
+        },
+        "A1": {
+          "caseCount": 12039,
+          "wape": 0.4402249501995905,
+          "signedBias": -0.12377105831355606,
+          "zeroImputationUsed": false
+        },
+        "A2": {
+          "caseCount": 12039,
+          "wape": 0.4489318580558125,
+          "signedBias": -0.04262672751031243,
+          "zeroImputationUsed": false
+        },
+        "A3": {
+          "caseCount": 12039,
+          "wape": 0.45885402626247157,
+          "signedBias": -0.08161722802917348,
+          "zeroImputationUsed": false
+        },
+        "A4": {
+          "caseCount": 12039,
+          "wape": 0.45901147505321604,
+          "signedBias": -0.07957886061487214,
+          "zeroImputationUsed": false
+        },
+        "A5": {
+          "caseCount": 12039,
+          "wape": 0.5808089752819102,
+          "signedBias": -0.14853126876146633,
+          "zeroImputationUsed": false
+        },
+        "A6": {
+          "caseCount": 12039,
+          "wape": 0.5377668290047714,
+          "signedBias": -0.1270980421229044,
+          "zeroImputationUsed": false
+        }
+      },
+      "relativeWapeToA0": {
+        "A0": 0,
+        "A1": 0,
+        "A2": 0.01977831527330376,
+        "A3": 0.04231717455913153,
+        "A4": 0.04267482986847537,
+        "A5": 0.3193458821872348,
+        "A6": 0.22157280899448573
+      },
+      "decompositionMaximumAbsoluteDifference": 0,
+      "byMechanism": {
+        "advertising": {
+          "channelCaseCount": 3540,
+          "metricsAvailable": true,
+          "ablations": {
+            "A0": {
+              "caseCount": 3540,
+              "wape": 0.8044990699199824,
+              "signedBias": -0.053983600143196676,
+              "zeroImputationUsed": false
+            },
+            "A1": {
+              "caseCount": 3540,
+              "wape": 0.8044990699199824,
+              "signedBias": -0.053983600143196676,
+              "zeroImputationUsed": false
+            },
+            "A2": {
+              "caseCount": 3540,
+              "wape": 1.0916065646261126,
+              "signedBias": 0.369697956955999,
+              "zeroImputationUsed": false
+            },
+            "A3": {
+              "caseCount": 3540,
+              "wape": 0.9912060457897063,
+              "signedBias": 0.17876378495328774,
+              "zeroImputationUsed": false
+            },
+            "A4": {
+              "caseCount": 3540,
+              "wape": 0.9889319425778826,
+              "signedBias": 0.17337869448997775,
+              "zeroImputationUsed": false
+            },
+            "A5": {
+              "caseCount": 3540,
+              "wape": 1.0892886273957998,
+              "signedBias": 0.32905458182561215,
+              "zeroImputationUsed": false
+            },
+            "A6": {
+              "caseCount": 3540,
+              "wape": 1.0671365975072042,
+              "signedBias": 0.30202806354186557,
+              "zeroImputationUsed": false
+            }
+          }
+        },
+        "future_first_seen_label_only": {
+          "channelCaseCount": 32246,
+          "metricsAvailable": true,
+          "ablations": {
+            "A0": {
+              "caseCount": 32246,
+              "wape": 1,
+              "signedBias": -1,
+              "zeroImputationUsed": false
+            },
+            "A1": {
+              "caseCount": 32246,
+              "wape": 1,
+              "signedBias": -1,
+              "zeroImputationUsed": false
+            },
+            "A2": {
+              "caseCount": 32246,
+              "wape": 1,
+              "signedBias": -1,
+              "zeroImputationUsed": false
+            },
+            "A3": {
+              "caseCount": 32246,
+              "wape": 1,
+              "signedBias": -1,
+              "zeroImputationUsed": false
+            },
+            "A4": {
+              "caseCount": 32246,
+              "wape": 1,
+              "signedBias": -1,
+              "zeroImputationUsed": false
+            },
+            "A5": {
+              "caseCount": 32246,
+              "wape": 1,
+              "signedBias": -1,
+              "zeroImputationUsed": false
+            },
+            "A6": {
+              "caseCount": 32246,
+              "wape": 1,
+              "signedBias": -1,
+              "zeroImputationUsed": false
+            }
+          }
+        },
+        "learnedGlobal": {
+          "channelCaseCount": 279,
+          "metricsAvailable": true,
+          "ablations": {
+            "A0": {
+              "caseCount": 279,
+              "wape": 5.865022974161785,
+              "signedBias": 5.824656027302402,
+              "zeroImputationUsed": false
+            },
+            "A1": {
+              "caseCount": 279,
+              "wape": 5.865022974161785,
+              "signedBias": 5.824656027302402,
+              "zeroImputationUsed": false
+            },
+            "A2": {
+              "caseCount": 279,
+              "wape": 5.865022974161785,
+              "signedBias": 5.824656027302402,
+              "zeroImputationUsed": false
+            },
+            "A3": {
+              "caseCount": 279,
+              "wape": 1.9753539585786313,
+              "signedBias": 1.681245626680538,
+              "zeroImputationUsed": false
+            },
+            "A4": {
+              "caseCount": 279,
+              "wape": 1.9753539585786313,
+              "signedBias": 1.681245626680538,
+              "zeroImputationUsed": false
+            },
+            "A5": {
+              "caseCount": 279,
+              "wape": 1.9753539585786313,
+              "signedBias": 1.681245626680538,
+              "zeroImputationUsed": false
+            },
+            "A6": {
+              "caseCount": 279,
+              "wape": 3.23376025616101,
+              "signedBias": 3.0778716008238827,
+              "zeroImputationUsed": false
+            }
+          }
+        },
+        "membership": {
+          "channelCaseCount": 22499,
+          "metricsAvailable": true,
+          "ablations": {
+            "A0": {
+              "caseCount": 22499,
+              "wape": 0.42309138726040113,
+              "signedBias": -0.00021283906202735026,
+              "zeroImputationUsed": false
+            },
+            "A1": {
+              "caseCount": 22499,
+              "wape": 0.42309138726040113,
+              "signedBias": -0.00021283906202735026,
+              "zeroImputationUsed": false
+            },
+            "A2": {
+              "caseCount": 22499,
+              "wape": 0.41630791842567694,
+              "signedBias": 0.04587861530764124,
+              "zeroImputationUsed": false
+            },
+            "A3": {
+              "caseCount": 22499,
+              "wape": 0.4273895365098482,
+              "signedBias": 0.009782886523964444,
+              "zeroImputationUsed": false
+            },
+            "A4": {
+              "caseCount": 22499,
+              "wape": 0.42617568938072076,
+              "signedBias": 0.011998611225781684,
+              "zeroImputationUsed": false
+            },
+            "A5": {
+              "caseCount": 22499,
+              "wape": 0.5787497979773816,
+              "signedBias": -0.10264319729244054,
+              "zeroImputationUsed": false
+            },
+            "A6": {
+              "caseCount": 22499,
+              "wape": 0.5255045700743164,
+              "signedBias": -0.0692101833351041,
+              "zeroImputationUsed": false
+            }
+          }
+        },
+        "transactional": {
+          "channelCaseCount": 422,
+          "metricsAvailable": true,
+          "ablations": {
+            "A0": {
+              "caseCount": 422,
+              "wape": 0.9599072912297639,
+              "signedBias": -0.17042592893991268,
+              "zeroImputationUsed": false
+            },
+            "A1": {
+              "caseCount": 422,
+              "wape": 0.9599072912297639,
+              "signedBias": -0.17042592893991268,
+              "zeroImputationUsed": false
+            },
+            "A2": {
+              "caseCount": 422,
+              "wape": 0.9248252937594913,
+              "signedBias": -0.22280899199209503,
+              "zeroImputationUsed": false
+            },
+            "A3": {
+              "caseCount": 422,
+              "wape": 1.333913980331349,
+              "signedBias": 0.27585660369918613,
+              "zeroImputationUsed": false
+            },
+            "A4": {
+              "caseCount": 422,
+              "wape": 1.3922592040697488,
+              "signedBias": 0.325211194584191,
+              "zeroImputationUsed": false
+            },
+            "A5": {
+              "caseCount": 422,
+              "wape": 1.3948019060526742,
+              "signedBias": 0.3271640352131134,
+              "zeroImputationUsed": false
+            },
+            "A6": {
+              "caseCount": 422,
+              "wape": 1.3558865419040236,
+              "signedBias": 0.2856612129716618,
+              "zeroImputationUsed": false
+            }
+          }
+        }
+      },
+      "byNamedPlatform": {
+        "fanqie_audio": {
+          "channelCaseCount": 3540,
+          "metricsAvailable": true,
+          "ablations": {
+            "A0": {
+              "caseCount": 3540,
+              "wape": 0.8044990699199824,
+              "signedBias": -0.053983600143196676,
+              "zeroImputationUsed": false
+            },
+            "A1": {
+              "caseCount": 3540,
+              "wape": 0.8044990699199824,
+              "signedBias": -0.053983600143196676,
+              "zeroImputationUsed": false
+            },
+            "A2": {
+              "caseCount": 3540,
+              "wape": 1.0916065646261126,
+              "signedBias": 0.369697956955999,
+              "zeroImputationUsed": false
+            },
+            "A3": {
+              "caseCount": 3540,
+              "wape": 0.9912060457897063,
+              "signedBias": 0.17876378495328774,
+              "zeroImputationUsed": false
+            },
+            "A4": {
+              "caseCount": 3540,
+              "wape": 0.9889319425778826,
+              "signedBias": 0.17337869448997775,
+              "zeroImputationUsed": false
+            },
+            "A5": {
+              "caseCount": 3540,
+              "wape": 1.0892886273957998,
+              "signedBias": 0.32905458182561215,
+              "zeroImputationUsed": false
+            },
+            "A6": {
+              "caseCount": 3540,
+              "wape": 1.0671365975072042,
+              "signedBias": 0.30202806354186557,
+              "zeroImputationUsed": false
+            }
+          }
+        },
+        "manbo": {
+          "channelCaseCount": 43,
+          "metricsAvailable": true,
+          "ablations": {
+            "A0": {
+              "caseCount": 43,
+              "wape": 0.6365100749354651,
+              "signedBias": -0.03129584848818864,
+              "zeroImputationUsed": false
+            },
+            "A1": {
+              "caseCount": 43,
+              "wape": 0.6365100749354651,
+              "signedBias": -0.03129584848818864,
+              "zeroImputationUsed": false
+            },
+            "A2": {
+              "caseCount": 43,
+              "wape": 0.6364896574471061,
+              "signedBias": -0.031316294279711415,
+              "zeroImputationUsed": false
+            },
+            "A3": {
+              "caseCount": 43,
+              "wape": 1.2765694522863518,
+              "signedBias": 0.7735670035083647,
+              "zeroImputationUsed": false
+            },
+            "A4": {
+              "caseCount": 43,
+              "wape": 1.2765694522863518,
+              "signedBias": 0.7735670035083647,
+              "zeroImputationUsed": false
+            },
+            "A5": {
+              "caseCount": 43,
+              "wape": 1.2765694522863518,
+              "signedBias": 0.7735670035083647,
+              "zeroImputationUsed": false
+            },
+            "A6": {
+              "caseCount": 43,
+              "wape": 1.0823363494200215,
+              "signedBias": 0.544019509841582,
+              "zeroImputationUsed": false
+            }
+          }
+        },
+        "missevan": {
+          "channelCaseCount": 379,
+          "metricsAvailable": true,
+          "ablations": {
+            "A0": {
+              "caseCount": 379,
+              "wape": 0.9931547925246027,
+              "signedBias": -0.1847294767037879,
+              "zeroImputationUsed": false
+            },
+            "A1": {
+              "caseCount": 379,
+              "wape": 0.9931547925246027,
+              "signedBias": -0.1847294767037879,
+              "zeroImputationUsed": false
+            },
+            "A2": {
+              "caseCount": 379,
+              "wape": 0.9544682188022364,
+              "signedBias": -0.24249578394441318,
+              "zeroImputationUsed": false
+            },
+            "A3": {
+              "caseCount": 379,
+              "wape": 1.3398093998784757,
+              "signedBias": 0.2246884849635817,
+              "zeroImputationUsed": false
+            },
+            "A4": {
+              "caseCount": 379,
+              "wape": 1.4041529216975404,
+              "signedBias": 0.2791170738352059,
+              "zeroImputationUsed": false
+            },
+            "A5": {
+              "caseCount": 379,
+              "wape": 1.4069570312721522,
+              "signedBias": 0.28127068017288287,
+              "zeroImputationUsed": false
+            },
+            "A6": {
+              "caseCount": 379,
+              "wape": 1.3840094196548909,
+              "signedBias": 0.2591001686060286,
+              "zeroImputationUsed": false
+            }
+          }
+        },
+        "ximalaya": {
+          "channelCaseCount": 10577,
+          "metricsAvailable": true,
+          "ablations": {
+            "A0": {
+              "caseCount": 10577,
+              "wape": 0.39416123697669214,
+              "signedBias": -0.008905532313883753,
+              "zeroImputationUsed": false
+            },
+            "A1": {
+              "caseCount": 10577,
+              "wape": 0.39416123697669214,
+              "signedBias": -0.008905532313883753,
+              "zeroImputationUsed": false
+            },
+            "A2": {
+              "caseCount": 10577,
+              "wape": 0.38729785632800295,
+              "signedBias": 0.03693241921582653,
+              "zeroImputationUsed": false
+            },
+            "A3": {
+              "caseCount": 10577,
+              "wape": 0.399680145609859,
+              "signedBias": 0.0008223884899984182,
+              "zeroImputationUsed": false
+            },
+            "A4": {
+              "caseCount": 10577,
+              "wape": 0.39842438960301707,
+              "signedBias": 0.0031146125576297624,
+              "zeroImputationUsed": false
+            },
+            "A5": {
+              "caseCount": 10577,
+              "wape": 0.5562662205560281,
+              "signedBias": -0.11548528048265123,
+              "zeroImputationUsed": false
+            },
+            "A6": {
+              "caseCount": 10577,
+              "wape": 0.5011746486846558,
+              "signedBias": -0.0809087722598159,
+              "zeroImputationUsed": false
+            }
+          }
+        }
+      },
+      "topRevenue": {
+        "0.01": {
+          "fraction": 0.01,
+          "workCount": 12,
+          "ablations": {
+            "A0": {
+              "caseCount": 12,
+              "wape": 0.21139492691074613,
+              "signedBias": -0.08761864657954428,
+              "zeroImputationUsed": false
+            },
+            "A1": {
+              "caseCount": 12,
+              "wape": 0.21139492691074613,
+              "signedBias": -0.08761864657954428,
+              "zeroImputationUsed": false
+            },
+            "A2": {
+              "caseCount": 12,
+              "wape": 0.22542040877870545,
+              "signedBias": 0.0010248784427116977,
+              "zeroImputationUsed": false
+            },
+            "A3": {
+              "caseCount": 12,
+              "wape": 0.2521775070553053,
+              "signedBias": -0.03911813077442136,
+              "zeroImputationUsed": false
+            },
+            "A4": {
+              "caseCount": 12,
+              "wape": 0.2504052494533444,
+              "signedBias": -0.03708404624907438,
+              "zeroImputationUsed": false
+            },
+            "A5": {
+              "caseCount": 12,
+              "wape": 0.4496419597868086,
+              "signedBias": -0.1861360309818758,
+              "zeroImputationUsed": false
+            },
+            "A6": {
+              "caseCount": 12,
+              "wape": 0.3888595310389799,
+              "signedBias": -0.1340056270912017,
+              "zeroImputationUsed": false
+            }
+          }
+        },
+        "0.05": {
+          "fraction": 0.05,
+          "workCount": 57,
+          "ablations": {
+            "A0": {
+              "caseCount": 57,
+              "wape": 0.2861044173793864,
+              "signedBias": -0.15319139329406417,
+              "zeroImputationUsed": false
+            },
+            "A1": {
+              "caseCount": 57,
+              "wape": 0.2861044173793864,
+              "signedBias": -0.15319139329406417,
+              "zeroImputationUsed": false
+            },
+            "A2": {
+              "caseCount": 57,
+              "wape": 0.2970003741075755,
+              "signedBias": -0.07237349779831061,
+              "zeroImputationUsed": false
+            },
+            "A3": {
+              "caseCount": 57,
+              "wape": 0.31728481270512743,
+              "signedBias": -0.10940614130927348,
+              "zeroImputationUsed": false
+            },
+            "A4": {
+              "caseCount": 57,
+              "wape": 0.3178147581524465,
+              "signedBias": -0.10696309695072083,
+              "zeroImputationUsed": false
+            },
+            "A5": {
+              "caseCount": 57,
+              "wape": 0.4719206883499723,
+              "signedBias": -0.18305316315097278,
+              "zeroImputationUsed": false
+            },
+            "A6": {
+              "caseCount": 57,
+              "wape": 0.4203949754489159,
+              "signedBias": -0.15975762891454778,
+              "zeroImputationUsed": false
+            }
+          }
+        },
+        "0.1": {
+          "fraction": 0.1,
+          "workCount": 113,
+          "ablations": {
+            "A0": {
+              "caseCount": 113,
+              "wape": 0.3195105667781592,
+              "signedBias": -0.13586917300030582,
+              "zeroImputationUsed": false
+            },
+            "A1": {
+              "caseCount": 113,
+              "wape": 0.3195105667781592,
+              "signedBias": -0.13586917300030582,
+              "zeroImputationUsed": false
+            },
+            "A2": {
+              "caseCount": 113,
+              "wape": 0.3286412019118589,
+              "signedBias": -0.05629934182553283,
+              "zeroImputationUsed": false
+            },
+            "A3": {
+              "caseCount": 113,
+              "wape": 0.350215612640382,
+              "signedBias": -0.09307751886797425,
+              "zeroImputationUsed": false
+            },
+            "A4": {
+              "caseCount": 113,
+              "wape": 0.3508767087510707,
+              "signedBias": -0.09088521386164672,
+              "zeroImputationUsed": false
+            },
+            "A5": {
+              "caseCount": 113,
+              "wape": 0.49225577575123985,
+              "signedBias": -0.16504583589220348,
+              "zeroImputationUsed": false
+            },
+            "A6": {
+              "caseCount": 113,
+              "wape": 0.4441787936392491,
+              "signedBias": -0.14268155955602319,
+              "zeroImputationUsed": false
+            }
+          }
+        }
+      }
+    },
+    "strictRolling": {
+      "caseCount": 74320,
+      "workCount": 2650,
+      "ablations": {
+        "A0": {
+          "caseCount": 74320,
+          "wape": 0.4119187843120153,
+          "signedBias": -0.03847400949306328,
+          "zeroImputationUsed": false
+        },
+        "A1": {
+          "caseCount": 74320,
+          "wape": 0.4119187843120153,
+          "signedBias": -0.03847400949306328,
+          "zeroImputationUsed": false
+        },
+        "A2": {
+          "caseCount": 74320,
+          "wape": 0.41847102007057885,
+          "signedBias": -0.016123111715780177,
+          "zeroImputationUsed": false
+        },
+        "A3": {
+          "caseCount": 74320,
+          "wape": 0.546800863416389,
+          "signedBias": 0.24602742839907624,
+          "zeroImputationUsed": false
+        },
+        "A4": {
+          "caseCount": 74320,
+          "wape": 0.5923044795431115,
+          "signedBias": 0.3064182218518706,
+          "zeroImputationUsed": false
+        },
+        "A5": {
+          "caseCount": 74320,
+          "wape": 0.663533554679662,
+          "signedBias": 0.3597429260939639,
+          "zeroImputationUsed": false
+        },
+        "A6": {
+          "caseCount": 74320,
+          "wape": 0.6586532381615944,
+          "signedBias": 0.3571760131960592,
+          "zeroImputationUsed": false
+        }
+      },
+      "relativeWapeToA0": {
+        "A0": 0,
+        "A1": 0,
+        "A2": 0.015906620450696574,
+        "A3": 0.32744823552937286,
+        "A4": 0.43791568168559136,
+        "A5": 0.6108358733576389,
+        "A6": 0.598988109419855
+      },
+      "decompositionMaximumAbsoluteDifference": 0,
+      "byMechanism": {
+        "advertising": {
+          "channelCaseCount": 25630,
+          "metricsAvailable": true,
+          "ablations": {
+            "A0": {
+              "caseCount": 25630,
+              "wape": 0.5997927174471424,
+              "signedBias": 0.21627644714502903,
+              "zeroImputationUsed": false
+            },
+            "A1": {
+              "caseCount": 25630,
+              "wape": 0.5997927174471424,
+              "signedBias": 0.21627644714502903,
+              "zeroImputationUsed": false
+            },
+            "A2": {
+              "caseCount": 25630,
+              "wape": 0.5827194798281263,
+              "signedBias": 0.17869915932277083,
+              "zeroImputationUsed": false
+            },
+            "A3": {
+              "caseCount": 25630,
+              "wape": 0.6425741813060378,
+              "signedBias": 0.26491387063683774,
+              "zeroImputationUsed": false
+            },
+            "A4": {
+              "caseCount": 25630,
+              "wape": 0.6438921899058389,
+              "signedBias": 0.26685539793815244,
+              "zeroImputationUsed": false
+            },
+            "A5": {
+              "caseCount": 25630,
+              "wape": 0.7412036673445269,
+              "signedBias": 0.3728148175642525,
+              "zeroImputationUsed": false
+            },
+            "A6": {
+              "caseCount": 25630,
+              "wape": 0.7330893436787891,
+              "signedBias": 0.3650906845228973,
+              "zeroImputationUsed": false
+            }
+          }
+        },
+        "future_first_seen_label_only": {
+          "channelCaseCount": 40790,
+          "metricsAvailable": true,
+          "ablations": {
+            "A0": {
+              "caseCount": 40790,
+              "wape": 1,
+              "signedBias": -1,
+              "zeroImputationUsed": false
+            },
+            "A1": {
+              "caseCount": 40790,
+              "wape": 1,
+              "signedBias": -1,
+              "zeroImputationUsed": false
+            },
+            "A2": {
+              "caseCount": 40790,
+              "wape": 1,
+              "signedBias": -1,
+              "zeroImputationUsed": false
+            },
+            "A3": {
+              "caseCount": 40790,
+              "wape": 1,
+              "signedBias": -1,
+              "zeroImputationUsed": false
+            },
+            "A4": {
+              "caseCount": 40790,
+              "wape": 1,
+              "signedBias": -1,
+              "zeroImputationUsed": false
+            },
+            "A5": {
+              "caseCount": 40790,
+              "wape": 1,
+              "signedBias": -1,
+              "zeroImputationUsed": false
+            },
+            "A6": {
+              "caseCount": 40790,
+              "wape": 1,
+              "signedBias": -1,
+              "zeroImputationUsed": false
+            }
+          }
+        },
+        "learnedGlobal": {
+          "channelCaseCount": 858,
+          "metricsAvailable": false
+        },
+        "membership": {
+          "channelCaseCount": 180535,
+          "metricsAvailable": true,
+          "ablations": {
+            "A0": {
+              "caseCount": 180535,
+              "wape": 0.41635043107159814,
+              "signedBias": -0.03561833305186583,
+              "zeroImputationUsed": false
+            },
+            "A1": {
+              "caseCount": 180535,
+              "wape": 0.41635043107159814,
+              "signedBias": -0.03561833305186583,
+              "zeroImputationUsed": false
+            },
+            "A2": {
+              "caseCount": 180535,
+              "wape": 0.42192939722444484,
+              "signedBias": 0.00019552929429061082,
+              "zeroImputationUsed": false
+            },
+            "A3": {
+              "caseCount": 180535,
+              "wape": 0.46488659627692897,
+              "signedBias": 0.1636692289662712,
+              "zeroImputationUsed": false
+            },
+            "A4": {
+              "caseCount": 180535,
+              "wape": 0.4951665907849371,
+              "signedBias": 0.21737248980204205,
+              "zeroImputationUsed": false
+            },
+            "A5": {
+              "caseCount": 180535,
+              "wape": 0.5846453663725167,
+              "signedBias": 0.27317299948453083,
+              "zeroImputationUsed": false
+            },
+            "A6": {
+              "caseCount": 180535,
+              "wape": 0.5790002184432227,
+              "signedBias": 0.2707893415064533,
+              "zeroImputationUsed": false
+            }
+          }
+        },
+        "transactional": {
+          "channelCaseCount": 2746,
+          "metricsAvailable": true,
+          "ablations": {
+            "A0": {
+              "caseCount": 2746,
+              "wape": 0.8556023625108384,
+              "signedBias": 0.322431714901376,
+              "zeroImputationUsed": false
+            },
+            "A1": {
+              "caseCount": 2746,
+              "wape": 0.8556023625108384,
+              "signedBias": 0.322431714901376,
+              "zeroImputationUsed": false
+            },
+            "A2": {
+              "caseCount": 2746,
+              "wape": 0.8554924527363655,
+              "signedBias": 0.3223162614626036,
+              "zeroImputationUsed": false
+            },
+            "A3": {
+              "caseCount": 2746,
+              "wape": 2.144814305176075,
+              "signedBias": 1.871160095637318,
+              "zeroImputationUsed": false
+            },
+            "A4": {
+              "caseCount": 2746,
+              "wape": 2.378644183748599,
+              "signedBias": 2.111363207220491,
+              "zeroImputationUsed": false
+            },
+            "A5": {
+              "caseCount": 2746,
+              "wape": 2.3820528999482735,
+              "signedBias": 2.114232717485756,
+              "zeroImputationUsed": false
+            },
+            "A6": {
+              "caseCount": 2746,
+              "wape": 2.3826663187423227,
+              "signedBias": 2.1148804916851547,
+              "zeroImputationUsed": false
+            }
+          }
+        }
+      },
+      "byNamedPlatform": {
+        "fanqie_audio": {
+          "channelCaseCount": 22204,
+          "metricsAvailable": true,
+          "ablations": {
+            "A0": {
+              "caseCount": 22204,
+              "wape": 0.599160490008014,
+              "signedBias": 0.21810149501668097,
+              "zeroImputationUsed": false
+            },
+            "A1": {
+              "caseCount": 22204,
+              "wape": 0.599160490008014,
+              "signedBias": 0.21810149501668097,
+              "zeroImputationUsed": false
+            },
+            "A2": {
+              "caseCount": 22204,
+              "wape": 0.5818462730523182,
+              "signedBias": 0.18017980400636038,
+              "zeroImputationUsed": false
+            },
+            "A3": {
+              "caseCount": 22204,
+              "wape": 0.6418194296421275,
+              "signedBias": 0.26657451030513,
+              "zeroImputationUsed": false
+            },
+            "A4": {
+              "caseCount": 22204,
+              "wape": 0.6431402325804852,
+              "signedBias": 0.26852015388049516,
+              "zeroImputationUsed": false
+            },
+            "A5": {
+              "caseCount": 22204,
+              "wape": 0.7406580221885236,
+              "signedBias": 0.3747042203653384,
+              "zeroImputationUsed": false
+            },
+            "A6": {
+              "caseCount": 22204,
+              "wape": 0.732526418506668,
+              "signedBias": 0.3669633957052826,
+              "zeroImputationUsed": false
+            }
+          }
+        },
+        "manbo": {
+          "channelCaseCount": 562,
+          "metricsAvailable": true,
+          "ablations": {
+            "A0": {
+              "caseCount": 562,
+              "wape": 0.8107723756984393,
+              "signedBias": -0.2582247141411889,
+              "zeroImputationUsed": false
+            },
+            "A1": {
+              "caseCount": 562,
+              "wape": 0.8107723756984393,
+              "signedBias": -0.2582247141411889,
+              "zeroImputationUsed": false
+            },
+            "A2": {
+              "caseCount": 562,
+              "wape": 0.8107545776873375,
+              "signedBias": -0.25825130767123194,
+              "zeroImputationUsed": false
+            },
+            "A3": {
+              "caseCount": 562,
+              "wape": 1.2233615378994922,
+              "signedBias": 0.32937130724029495,
+              "zeroImputationUsed": false
+            },
+            "A4": {
+              "caseCount": 562,
+              "wape": 1.2250926767446413,
+              "signedBias": 0.35578067506296474,
+              "zeroImputationUsed": false
+            },
+            "A5": {
+              "caseCount": 562,
+              "wape": 1.2251643413148927,
+              "signedBias": 0.35225548546227353,
+              "zeroImputationUsed": false
+            },
+            "A6": {
+              "caseCount": 562,
+              "wape": 1.2326662686855905,
+              "signedBias": 0.3600091405185048,
+              "zeroImputationUsed": false
+            }
+          }
+        },
+        "missevan": {
+          "channelCaseCount": 2162,
+          "metricsAvailable": true,
+          "ablations": {
+            "A0": {
+              "caseCount": 2162,
+              "wape": 0.8630191430502085,
+              "signedBias": 0.426822101357177,
+              "zeroImputationUsed": false
+            },
+            "A1": {
+              "caseCount": 2162,
+              "wape": 0.8630191430502085,
+              "signedBias": 0.426822101357177,
+              "zeroImputationUsed": false
+            },
+            "A2": {
+              "caseCount": 2162,
+              "wape": 0.8628924727407447,
+              "signedBias": 0.4266904747716808,
+              "zeroImputationUsed": false
+            },
+            "A3": {
+              "caseCount": 2162,
+              "wape": 2.3115800810098315,
+              "signedBias": 2.150341981089735,
+              "zeroImputationUsed": false
+            },
+            "A4": {
+              "caseCount": 2162,
+              "wape": 2.5876243224172017,
+              "signedBias": 2.429441553513145,
+              "zeroImputationUsed": false
+            },
+            "A5": {
+              "caseCount": 2162,
+              "wape": 2.5916400066210663,
+              "signedBias": 2.433472492808339,
+              "zeroImputationUsed": false
+            },
+            "A6": {
+              "caseCount": 2162,
+              "wape": 2.5910247349821303,
+              "signedBias": 2.4328524706780295,
+              "zeroImputationUsed": false
+            }
+          }
+        },
+        "wechat_reading": {
+          "channelCaseCount": 10001,
+          "metricsAvailable": true,
+          "ablations": {
+            "A0": {
+              "caseCount": 10001,
+              "wape": 0.6342875314552725,
+              "signedBias": -0.4677963782757996,
+              "zeroImputationUsed": false
+            },
+            "A1": {
+              "caseCount": 10001,
+              "wape": 0.6342875314552725,
+              "signedBias": -0.4677963782757996,
+              "zeroImputationUsed": false
+            },
+            "A2": {
+              "caseCount": 10001,
+              "wape": 0.579668353763208,
+              "signedBias": -0.3631669176946952,
+              "zeroImputationUsed": false
+            },
+            "A3": {
+              "caseCount": 10001,
+              "wape": 0.5806142464842851,
+              "signedBias": -0.29183782670929964,
+              "zeroImputationUsed": false
+            },
+            "A4": {
+              "caseCount": 10001,
+              "wape": 0.948709551263162,
+              "signedBias": 0.31927846268544324,
+              "zeroImputationUsed": false
+            },
+            "A5": {
+              "caseCount": 10001,
+              "wape": 1.0428008414195842,
+              "signedBias": 0.42489319904770906,
+              "zeroImputationUsed": false
+            },
+            "A6": {
+              "caseCount": 10001,
+              "wape": 0.9951948742648921,
+              "signedBias": 0.3720262587213075,
+              "zeroImputationUsed": false
+            }
+          }
+        },
+        "ximalaya": {
+          "channelCaseCount": 67891,
+          "metricsAvailable": true,
+          "ablations": {
+            "A0": {
+              "caseCount": 67891,
+              "wape": 0.36091878370677066,
+              "signedBias": -0.01496258612871011,
+              "zeroImputationUsed": false
+            },
+            "A1": {
+              "caseCount": 67891,
+              "wape": 0.36091878370677066,
+              "signedBias": -0.01496258612871011,
+              "zeroImputationUsed": false
+            },
+            "A2": {
+              "caseCount": 67891,
+              "wape": 0.36556898910237,
+              "signedBias": 0.007024600178408014,
+              "zeroImputationUsed": false
+            },
+            "A3": {
+              "caseCount": 67891,
+              "wape": 0.40380961480863337,
+              "signedBias": 0.17386410824291088,
+              "zeroImputationUsed": false
+            },
+            "A4": {
+              "caseCount": 67891,
+              "wape": 0.4088577330314974,
+              "signedBias": 0.18618336416732362,
+              "zeroImputationUsed": false
+            },
+            "A5": {
+              "caseCount": 67891,
+              "wape": 0.5039441188212843,
+              "signedBias": 0.2416938650431887,
+              "zeroImputationUsed": false
+            },
+            "A6": {
+              "caseCount": 67891,
+              "wape": 0.5012999900432,
+              "signedBias": 0.2432158632252277,
+              "zeroImputationUsed": false
+            }
+          }
+        }
+      },
+      "topRevenue": {
+        "0.01": {
+          "fraction": 0.01,
+          "workCount": 27,
+          "ablations": {
+            "A0": {
+              "caseCount": 27,
+              "wape": 0.16492920273279538,
+              "signedBias": -0.08868474965710456,
+              "zeroImputationUsed": false
+            },
+            "A1": {
+              "caseCount": 27,
+              "wape": 0.16492920273279538,
+              "signedBias": -0.08868474965710456,
+              "zeroImputationUsed": false
+            },
+            "A2": {
+              "caseCount": 27,
+              "wape": 0.14663320522057963,
+              "signedBias": -0.0719400227468893,
+              "zeroImputationUsed": false
+            },
+            "A3": {
+              "caseCount": 27,
+              "wape": 0.20701323643529926,
+              "signedBias": 0.1495926546920368,
+              "zeroImputationUsed": false
+            },
+            "A4": {
+              "caseCount": 27,
+              "wape": 0.2508621136707486,
+              "signedBias": 0.19971122007135036,
+              "zeroImputationUsed": false
+            },
+            "A5": {
+              "caseCount": 27,
+              "wape": 0.3628911593788758,
+              "signedBias": 0.2434731663340298,
+              "zeroImputationUsed": false
+            },
+            "A6": {
+              "caseCount": 27,
+              "wape": 0.35584053294806184,
+              "signedBias": 0.24350754107629352,
+              "zeroImputationUsed": false
+            }
+          }
+        },
+        "0.05": {
+          "fraction": 0.05,
+          "workCount": 133,
+          "ablations": {
+            "A0": {
+              "caseCount": 133,
+              "wape": 0.2516816126942929,
+              "signedBias": -0.03874233612221038,
+              "zeroImputationUsed": false
+            },
+            "A1": {
+              "caseCount": 133,
+              "wape": 0.2516816126942929,
+              "signedBias": -0.03874233612221038,
+              "zeroImputationUsed": false
+            },
+            "A2": {
+              "caseCount": 133,
+              "wape": 0.23470363550188553,
+              "signedBias": -0.019620275395026112,
+              "zeroImputationUsed": false
+            },
+            "A3": {
+              "caseCount": 133,
+              "wape": 0.3689992789287097,
+              "signedBias": 0.2529430593734819,
+              "zeroImputationUsed": false
+            },
+            "A4": {
+              "caseCount": 133,
+              "wape": 0.4113316033676832,
+              "signedBias": 0.31344849691625404,
+              "zeroImputationUsed": false
+            },
+            "A5": {
+              "caseCount": 133,
+              "wape": 0.5119895497450514,
+              "signedBias": 0.365989547285833,
+              "zeroImputationUsed": false
+            },
+            "A6": {
+              "caseCount": 133,
+              "wape": 0.505643113242036,
+              "signedBias": 0.3638974137322101,
+              "zeroImputationUsed": false
+            }
+          }
+        },
+        "0.1": {
+          "fraction": 0.1,
+          "workCount": 265,
+          "ablations": {
+            "A0": {
+              "caseCount": 265,
+              "wape": 0.2582905657425014,
+              "signedBias": -0.035341301400097155,
+              "zeroImputationUsed": false
+            },
+            "A1": {
+              "caseCount": 265,
+              "wape": 0.2582905657425014,
+              "signedBias": -0.035341301400097155,
+              "zeroImputationUsed": false
+            },
+            "A2": {
+              "caseCount": 265,
+              "wape": 0.24078153620759332,
+              "signedBias": -0.015556700906054887,
+              "zeroImputationUsed": false
+            },
+            "A3": {
+              "caseCount": 265,
+              "wape": 0.37364317170705263,
+              "signedBias": 0.25178754065067116,
+              "zeroImputationUsed": false
+            },
+            "A4": {
+              "caseCount": 265,
+              "wape": 0.4142005551258456,
+              "signedBias": 0.312301875571971,
+              "zeroImputationUsed": false
+            },
+            "A5": {
+              "caseCount": 265,
+              "wape": 0.5123635559163036,
+              "signedBias": 0.3654936876941787,
+              "zeroImputationUsed": false
+            },
+            "A6": {
+              "caseCount": 265,
+              "wape": 0.5059843391296014,
+              "signedBias": 0.3631611765273004,
+              "zeroImputationUsed": false
+            }
+          }
+        }
+      }
+    },
+    "strictRollingOrigins": [
+      {
+        "outerOrigin": "2023-03",
+        "status": "evaluated",
+        "trainingRowCount": 9671,
+        "trainingWorkCount": 1125,
+        "validationRowCount": 5955,
+        "selectedPriorStrength": 80,
+        "platformModels": {
+          "ximalaya": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 8434,
+            "trainingWorkCount": 999
+          },
+          "wechat_reading": {
+            "status": "sparse_fallback_to_mechanism_or_learnedGlobal",
+            "trainingRowCount": 0,
+            "trainingWorkCount": 0
+          },
+          "fanqie_audio": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 2683,
+            "trainingWorkCount": 430
+          },
+          "missevan": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 309,
+            "trainingWorkCount": 46
+          },
+          "manbo": {
+            "status": "sparse_fallback_to_mechanism_or_learnedGlobal",
+            "trainingRowCount": 34,
+            "trainingWorkCount": 6
+          }
+        },
+        "maximumTrainingLabelAvailableAsOf": "2023-03",
+        "sameOrLaterOuterTruthRead": false
+      },
+      {
+        "outerOrigin": "2023-06",
+        "status": "evaluated",
+        "trainingRowCount": 13656,
+        "trainingWorkCount": 1191,
+        "validationRowCount": 6995,
+        "selectedPriorStrength": 80,
+        "platformModels": {
+          "ximalaya": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 11937,
+            "trainingWorkCount": 1058
+          },
+          "wechat_reading": {
+            "status": "sparse_fallback_to_mechanism_or_learnedGlobal",
+            "trainingRowCount": 0,
+            "trainingWorkCount": 0
+          },
+          "fanqie_audio": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 3958,
+            "trainingWorkCount": 448
+          },
+          "missevan": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 453,
+            "trainingWorkCount": 48
+          },
+          "manbo": {
+            "status": "sparse_fallback_to_mechanism_or_learnedGlobal",
+            "trainingRowCount": 52,
+            "trainingWorkCount": 6
+          }
+        },
+        "maximumTrainingLabelAvailableAsOf": "2023-06",
+        "sameOrLaterOuterTruthRead": false
+      },
+      {
+        "outerOrigin": "2023-09",
+        "status": "evaluated",
+        "trainingRowCount": 18086,
+        "trainingWorkCount": 1399,
+        "validationRowCount": 8280,
+        "selectedPriorStrength": 20,
+        "platformModels": {
+          "ximalaya": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 15861,
+            "trainingWorkCount": 1252
+          },
+          "wechat_reading": {
+            "status": "sparse_fallback_to_mechanism_or_learnedGlobal",
+            "trainingRowCount": 0,
+            "trainingWorkCount": 0
+          },
+          "fanqie_audio": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 5434,
+            "trainingWorkCount": 488
+          },
+          "missevan": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 613,
+            "trainingWorkCount": 51
+          },
+          "manbo": {
+            "status": "sparse_fallback_to_mechanism_or_learnedGlobal",
+            "trainingRowCount": 70,
+            "trainingWorkCount": 6
+          }
+        },
+        "maximumTrainingLabelAvailableAsOf": "2023-09",
+        "sameOrLaterOuterTruthRead": false
+      },
+      {
+        "outerOrigin": "2023-12",
+        "status": "evaluated",
+        "trainingRowCount": 23935,
+        "trainingWorkCount": 1656,
+        "validationRowCount": 9085,
+        "selectedPriorStrength": 20,
+        "platformModels": {
+          "ximalaya": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 21080,
+            "trainingWorkCount": 1522
+          },
+          "wechat_reading": {
+            "status": "sparse_fallback_to_mechanism_or_learnedGlobal",
+            "trainingRowCount": 0,
+            "trainingWorkCount": 0
+          },
+          "fanqie_audio": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 7240,
+            "trainingWorkCount": 491
+          },
+          "missevan": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 817,
+            "trainingWorkCount": 57
+          },
+          "manbo": {
+            "status": "sparse_fallback_to_mechanism_or_learnedGlobal",
+            "trainingRowCount": 100,
+            "trainingWorkCount": 12
+          }
+        },
+        "maximumTrainingLabelAvailableAsOf": "2023-12",
+        "sameOrLaterOuterTruthRead": false
+      },
+      {
+        "outerOrigin": "2024-03",
+        "status": "evaluated",
+        "trainingRowCount": 30439,
+        "trainingWorkCount": 1817,
+        "validationRowCount": 8192,
+        "selectedPriorStrength": 80,
+        "platformModels": {
+          "ximalaya": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 26946,
+            "trainingWorkCount": 1672
+          },
+          "wechat_reading": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 225,
+            "trainingWorkCount": 225
+          },
+          "fanqie_audio": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 9230,
+            "trainingWorkCount": 511
+          },
+          "missevan": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 1040,
+            "trainingWorkCount": 57
+          },
+          "manbo": {
+            "status": "sparse_fallback_to_mechanism_or_learnedGlobal",
+            "trainingRowCount": 139,
+            "trainingWorkCount": 15
+          }
+        },
+        "maximumTrainingLabelAvailableAsOf": "2024-03",
+        "sameOrLaterOuterTruthRead": false
+      },
+      {
+        "outerOrigin": "2024-06",
+        "status": "evaluated",
+        "trainingRowCount": 37775,
+        "trainingWorkCount": 2048,
+        "validationRowCount": 8632,
+        "selectedPriorStrength": 240,
+        "platformModels": {
+          "ximalaya": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 33605,
+            "trainingWorkCount": 1904
+          },
+          "wechat_reading": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 749,
+            "trainingWorkCount": 299
+          },
+          "fanqie_audio": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 11419,
+            "trainingWorkCount": 546
+          },
+          "missevan": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 1283,
+            "trainingWorkCount": 57
+          },
+          "manbo": {
+            "status": "sparse_fallback_to_mechanism_or_learnedGlobal",
+            "trainingRowCount": 187,
+            "trainingWorkCount": 17
+          }
+        },
+        "maximumTrainingLabelAvailableAsOf": "2024-06",
+        "sameOrLaterOuterTruthRead": false
+      },
+      {
+        "outerOrigin": "2024-09",
+        "status": "evaluated",
+        "trainingRowCount": 45862,
+        "trainingWorkCount": 2158,
+        "validationRowCount": 6894,
+        "selectedPriorStrength": 240,
+        "platformModels": {
+          "ximalaya": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 41014,
+            "trainingWorkCount": 2012
+          },
+          "wechat_reading": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 1415,
+            "trainingWorkCount": 367
+          },
+          "fanqie_audio": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 13797,
+            "trainingWorkCount": 549
+          },
+          "missevan": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 1540,
+            "trainingWorkCount": 57
+          },
+          "manbo": {
+            "status": "sparse_fallback_to_mechanism_or_learnedGlobal",
+            "trainingRowCount": 245,
+            "trainingWorkCount": 19
+          }
+        },
+        "maximumTrainingLabelAvailableAsOf": "2024-09",
+        "sameOrLaterOuterTruthRead": false
+      },
+      {
+        "outerOrigin": "2024-12",
+        "status": "evaluated",
+        "trainingRowCount": 54659,
+        "trainingWorkCount": 2298,
+        "validationRowCount": 7383,
+        "selectedPriorStrength": 240,
+        "platformModels": {
+          "ximalaya": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 49100,
+            "trainingWorkCount": 2151
+          },
+          "wechat_reading": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 2489,
+            "trainingWorkCount": 482
+          },
+          "fanqie_audio": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 16432,
+            "trainingWorkCount": 657
+          },
+          "missevan": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 1808,
+            "trainingWorkCount": 57
+          },
+          "manbo": {
+            "status": "sparse_fallback_to_mechanism_or_learnedGlobal",
+            "trainingRowCount": 310,
+            "trainingWorkCount": 19
+          }
+        },
+        "maximumTrainingLabelAvailableAsOf": "2024-12",
+        "sameOrLaterOuterTruthRead": false
+      },
+      {
+        "outerOrigin": "2025-03",
+        "status": "evaluated",
+        "trainingRowCount": 64313,
+        "trainingWorkCount": 2461,
+        "validationRowCount": 5050,
+        "selectedPriorStrength": 240,
+        "platformModels": {
+          "ximalaya": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 57979,
+            "trainingWorkCount": 2244
+          },
+          "wechat_reading": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 3809,
+            "trainingWorkCount": 539
+          },
+          "fanqie_audio": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 19239,
+            "trainingWorkCount": 665
+          },
+          "missevan": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 2085,
+            "trainingWorkCount": 58
+          },
+          "manbo": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 384,
+            "trainingWorkCount": 20
+          }
+        },
+        "maximumTrainingLabelAvailableAsOf": "2025-03",
+        "sameOrLaterOuterTruthRead": false
+      },
+      {
+        "outerOrigin": "2025-06",
+        "status": "evaluated",
+        "trainingRowCount": 74673,
+        "trainingWorkCount": 2525,
+        "validationRowCount": 5204,
+        "selectedPriorStrength": 240,
+        "platformModels": {
+          "ximalaya": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 67419,
+            "trainingWorkCount": 2260
+          },
+          "wechat_reading": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 5522,
+            "trainingWorkCount": 582
+          },
+          "fanqie_audio": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 22258,
+            "trainingWorkCount": 806
+          },
+          "missevan": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 2367,
+            "trainingWorkCount": 59
+          },
+          "manbo": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 465,
+            "trainingWorkCount": 21
+          }
+        },
+        "maximumTrainingLabelAvailableAsOf": "2025-06",
+        "sameOrLaterOuterTruthRead": false
+      },
+      {
+        "outerOrigin": "2025-09",
+        "status": "evaluated",
+        "trainingRowCount": 85802,
+        "trainingWorkCount": 2602,
+        "validationRowCount": 2650,
+        "selectedPriorStrength": 240,
+        "platformModels": {
+          "ximalaya": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 77568,
+            "trainingWorkCount": 2312
+          },
+          "wechat_reading": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 7534,
+            "trainingWorkCount": 649
+          },
+          "fanqie_audio": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 25607,
+            "trainingWorkCount": 849
+          },
+          "missevan": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 2656,
+            "trainingWorkCount": 59
+          },
+          "manbo": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 555,
+            "trainingWorkCount": 21
+          }
+        },
+        "maximumTrainingLabelAvailableAsOf": "2025-09",
+        "sameOrLaterOuterTruthRead": false
+      }
+    ],
+    "outerFolds": [
+      {
+        "fold": 0,
+        "trainingRowCount": 9600,
+        "trainingWorkCount": 888,
+        "validationRowCount": 2439,
+        "validationWorkCount": 237,
+        "selectedPriorStrength": 240,
+        "innerSelection": [
+          {
+            "priorStrength": 240,
+            "metrics": {
+              "caseCount": 1957,
+              "wape": 0.6274410233751417,
+              "signedBias": -0.20607242901826775,
+              "zeroImputationUsed": false
+            }
+          },
+          {
+            "priorStrength": 80,
+            "metrics": {
+              "caseCount": 1957,
+              "wape": 0.6307362049457182,
+              "signedBias": -0.20251988449953737,
+              "zeroImputationUsed": false
+            }
+          },
+          {
+            "priorStrength": 20,
+            "metrics": {
+              "caseCount": 1957,
+              "wape": 0.6327474373054953,
+              "signedBias": -0.2008616339015741,
+              "zeroImputationUsed": false
+            }
+          }
+        ],
+        "platformModels": {
+          "ximalaya": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 8409,
+            "trainingWorkCount": 787
+          },
+          "wechat_reading": {
+            "status": "sparse_fallback_to_mechanism_or_learnedGlobal",
+            "trainingRowCount": 0,
+            "trainingWorkCount": 0
+          },
+          "fanqie_audio": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 2864,
+            "trainingWorkCount": 341
+          },
+          "missevan": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 303,
+            "trainingWorkCount": 36
+          },
+          "manbo": {
+            "status": "sparse_fallback_to_mechanism_or_learnedGlobal",
+            "trainingRowCount": 41,
+            "trainingWorkCount": 5
+          }
+        },
+        "maximumLabelAvailableAsOf": "2025-12",
+        "outerValidationUsedForSelection": false
+      },
+      {
+        "fold": 1,
+        "trainingRowCount": 9698,
+        "trainingWorkCount": 912,
+        "validationRowCount": 2341,
+        "validationWorkCount": 213,
+        "selectedPriorStrength": 240,
+        "innerSelection": [
+          {
+            "priorStrength": 240,
+            "metrics": {
+              "caseCount": 2192,
+              "wape": 0.39918986812418944,
+              "signedBias": -0.22123465562516018,
+              "zeroImputationUsed": false
+            }
+          },
+          {
+            "priorStrength": 80,
+            "metrics": {
+              "caseCount": 2192,
+              "wape": 0.46522309486390706,
+              "signedBias": -0.2730935192452072,
+              "zeroImputationUsed": false
+            }
+          },
+          {
+            "priorStrength": 20,
+            "metrics": {
+              "caseCount": 2192,
+              "wape": 0.5063706098051073,
+              "signedBias": -0.30724297418792107,
+              "zeroImputationUsed": false
+            }
+          }
+        ],
+        "platformModels": {
+          "ximalaya": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 8499,
+            "trainingWorkCount": 808
+          },
+          "wechat_reading": {
+            "status": "sparse_fallback_to_mechanism_or_learnedGlobal",
+            "trainingRowCount": 0,
+            "trainingWorkCount": 0
+          },
+          "fanqie_audio": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 2871,
+            "trainingWorkCount": 353
+          },
+          "missevan": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 326,
+            "trainingWorkCount": 41
+          },
+          "manbo": {
+            "status": "sparse_fallback_to_mechanism_or_learnedGlobal",
+            "trainingRowCount": 43,
+            "trainingWorkCount": 6
+          }
+        },
+        "maximumLabelAvailableAsOf": "2025-12",
+        "outerValidationUsedForSelection": false
+      },
+      {
+        "fold": 2,
+        "trainingRowCount": 9616,
+        "trainingWorkCount": 905,
+        "validationRowCount": 2423,
+        "validationWorkCount": 220,
+        "selectedPriorStrength": 240,
+        "innerSelection": [
+          {
+            "priorStrength": 240,
+            "metrics": {
+              "caseCount": 2158,
+              "wape": 0.405972192716875,
+              "signedBias": -0.2354855717236482,
+              "zeroImputationUsed": false
+            }
+          },
+          {
+            "priorStrength": 80,
+            "metrics": {
+              "caseCount": 2158,
+              "wape": 0.46385570176071245,
+              "signedBias": -0.28002375513846806,
+              "zeroImputationUsed": false
+            }
+          },
+          {
+            "priorStrength": 20,
+            "metrics": {
+              "caseCount": 2158,
+              "wape": 0.4979572647533612,
+              "signedBias": -0.3075391311625954,
+              "zeroImputationUsed": false
+            }
+          }
+        ],
+        "platformModels": {
+          "ximalaya": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 8358,
+            "trainingWorkCount": 794
+          },
+          "wechat_reading": {
+            "status": "sparse_fallback_to_mechanism_or_learnedGlobal",
+            "trainingRowCount": 0,
+            "trainingWorkCount": 0
+          },
+          "fanqie_audio": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 2738,
+            "trainingWorkCount": 336
+          },
+          "missevan": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 313,
+            "trainingWorkCount": 37
+          },
+          "manbo": {
+            "status": "sparse_fallback_to_mechanism_or_learnedGlobal",
+            "trainingRowCount": 30,
+            "trainingWorkCount": 5
+          }
+        },
+        "maximumLabelAvailableAsOf": "2025-12",
+        "outerValidationUsedForSelection": false
+      },
+      {
+        "fold": 3,
+        "trainingRowCount": 9607,
+        "trainingWorkCount": 892,
+        "validationRowCount": 2432,
+        "validationWorkCount": 233,
+        "selectedPriorStrength": 240,
+        "innerSelection": [
+          {
+            "priorStrength": 240,
+            "metrics": {
+              "caseCount": 1973,
+              "wape": 0.15140161533520702,
+              "signedBias": -0.06296453003761782,
+              "zeroImputationUsed": false
+            }
+          },
+          {
+            "priorStrength": 80,
+            "metrics": {
+              "caseCount": 1973,
+              "wape": 0.1584506848775505,
+              "signedBias": -0.06638941311375045,
+              "zeroImputationUsed": false
+            }
+          },
+          {
+            "priorStrength": 20,
+            "metrics": {
+              "caseCount": 1973,
+              "wape": 0.16258251167782534,
+              "signedBias": -0.06880987425135936,
+              "zeroImputationUsed": false
+            }
+          }
+        ],
+        "platformModels": {
+          "ximalaya": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 8517,
+            "trainingWorkCount": 800
+          },
+          "wechat_reading": {
+            "status": "sparse_fallback_to_mechanism_or_learnedGlobal",
+            "trainingRowCount": 0,
+            "trainingWorkCount": 0
+          },
+          "fanqie_audio": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 2845,
+            "trainingWorkCount": 345
+          },
+          "missevan": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 269,
+            "trainingWorkCount": 32
+          },
+          "manbo": {
+            "status": "sparse_fallback_to_mechanism_or_learnedGlobal",
+            "trainingRowCount": 42,
+            "trainingWorkCount": 5
+          }
+        },
+        "maximumLabelAvailableAsOf": "2025-12",
+        "outerValidationUsedForSelection": false
+      },
+      {
+        "fold": 4,
+        "trainingRowCount": 9635,
+        "trainingWorkCount": 903,
+        "validationRowCount": 2404,
+        "validationWorkCount": 222,
+        "selectedPriorStrength": 240,
+        "innerSelection": [
+          {
+            "priorStrength": 240,
+            "metrics": {
+              "caseCount": 2004,
+              "wape": 0.43440352955826333,
+              "signedBias": -0.21314110607192988,
+              "zeroImputationUsed": false
+            }
+          },
+          {
+            "priorStrength": 80,
+            "metrics": {
+              "caseCount": 2004,
+              "wape": 0.47683708143858444,
+              "signedBias": -0.2609467655117495,
+              "zeroImputationUsed": false
+            }
+          },
+          {
+            "priorStrength": 20,
+            "metrics": {
+              "caseCount": 2004,
+              "wape": 0.5029132291259271,
+              "signedBias": -0.28953813562833075,
+              "zeroImputationUsed": false
+            }
+          }
+        ],
+        "platformModels": {
+          "ximalaya": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 8525,
+            "trainingWorkCount": 807
+          },
+          "wechat_reading": {
+            "status": "sparse_fallback_to_mechanism_or_learnedGlobal",
+            "trainingRowCount": 0,
+            "trainingWorkCount": 0
+          },
+          "fanqie_audio": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 2842,
+            "trainingWorkCount": 345
+          },
+          "missevan": {
+            "status": "fitted_with_hierarchical_pooling",
+            "trainingRowCount": 305,
+            "trainingWorkCount": 38
+          },
+          "manbo": {
+            "status": "sparse_fallback_to_mechanism_or_learnedGlobal",
+            "trainingRowCount": 16,
+            "trainingWorkCount": 3
+          }
+        },
+        "maximumLabelAvailableAsOf": "2025-12",
+        "outerValidationUsedForSelection": false
+      }
+    ],
+    "coverageMatrix": {
+      "primary": {
+        "ximalaya": {
+          "membership": {
+            "channelCaseCount": 10577,
+            "positiveActualCaseCount": 10347,
+            "fallbackCounts": {
+              "hierarchically_shrunk_taxonomy": 10577
+            }
+          },
+          "advertising": {
+            "channelCaseCount": 0,
+            "positiveActualCaseCount": 0,
+            "fallbackCounts": {}
+          },
+          "transactional": {
+            "channelCaseCount": 0,
+            "positiveActualCaseCount": 0,
+            "fallbackCounts": {}
+          },
+          "learnedGlobal": {
+            "channelCaseCount": 0,
+            "positiveActualCaseCount": 0,
+            "fallbackCounts": {}
+          }
+        },
+        "wechat_reading": {
+          "membership": {
+            "channelCaseCount": 0,
+            "positiveActualCaseCount": 0,
+            "fallbackCounts": {}
+          },
+          "advertising": {
+            "channelCaseCount": 0,
+            "positiveActualCaseCount": 0,
+            "fallbackCounts": {}
+          },
+          "transactional": {
+            "channelCaseCount": 0,
+            "positiveActualCaseCount": 0,
+            "fallbackCounts": {}
+          },
+          "learnedGlobal": {
+            "channelCaseCount": 0,
+            "positiveActualCaseCount": 0,
+            "fallbackCounts": {}
+          }
+        },
+        "fanqie_audio": {
+          "membership": {
+            "channelCaseCount": 0,
+            "positiveActualCaseCount": 0,
+            "fallbackCounts": {}
+          },
+          "advertising": {
+            "channelCaseCount": 3540,
+            "positiveActualCaseCount": 3540,
+            "fallbackCounts": {
+              "hierarchically_shrunk_taxonomy": 3456,
+              "hierarchically_shrunk_platform_x_mechanism": 84
+            }
+          },
+          "transactional": {
+            "channelCaseCount": 0,
+            "positiveActualCaseCount": 0,
+            "fallbackCounts": {}
+          },
+          "learnedGlobal": {
+            "channelCaseCount": 0,
+            "positiveActualCaseCount": 0,
+            "fallbackCounts": {}
+          }
+        },
+        "missevan": {
+          "membership": {
+            "channelCaseCount": 0,
+            "positiveActualCaseCount": 0,
+            "fallbackCounts": {}
+          },
+          "advertising": {
+            "channelCaseCount": 0,
+            "positiveActualCaseCount": 0,
+            "fallbackCounts": {}
+          },
+          "transactional": {
+            "channelCaseCount": 379,
+            "positiveActualCaseCount": 327,
+            "fallbackCounts": {
+              "hierarchically_shrunk_platform_x_mechanism": 189,
+              "hierarchically_shrunk_taxonomy": 190
+            }
+          },
+          "learnedGlobal": {
+            "channelCaseCount": 0,
+            "positiveActualCaseCount": 0,
+            "fallbackCounts": {}
+          }
+        },
+        "manbo": {
+          "membership": {
+            "channelCaseCount": 0,
+            "positiveActualCaseCount": 0,
+            "fallbackCounts": {}
+          },
+          "advertising": {
+            "channelCaseCount": 0,
+            "positiveActualCaseCount": 0,
+            "fallbackCounts": {}
+          },
+          "transactional": {
+            "channelCaseCount": 43,
+            "positiveActualCaseCount": 43,
+            "fallbackCounts": {
+              "hierarchically_shrunk_mechanism": 43
+            }
+          },
+          "learnedGlobal": {
+            "channelCaseCount": 0,
+            "positiveActualCaseCount": 0,
+            "fallbackCounts": {}
+          }
+        }
+      },
+      "strictRolling": {
+        "ximalaya": {
+          "membership": {
+            "channelCaseCount": 67891,
+            "positiveActualCaseCount": 61369,
+            "fallbackCounts": {
+              "hierarchically_shrunk_taxonomy": 67891
+            }
+          },
+          "advertising": {
+            "channelCaseCount": 0,
+            "positiveActualCaseCount": 0,
+            "fallbackCounts": {}
+          },
+          "transactional": {
+            "channelCaseCount": 0,
+            "positiveActualCaseCount": 0,
+            "fallbackCounts": {}
+          },
+          "learnedGlobal": {
+            "channelCaseCount": 0,
+            "positiveActualCaseCount": 0,
+            "fallbackCounts": {}
+          }
+        },
+        "wechat_reading": {
+          "membership": {
+            "channelCaseCount": 10001,
+            "positiveActualCaseCount": 8217,
+            "fallbackCounts": {
+              "hierarchically_shrunk_mechanism": 1125,
+              "hierarchically_shrunk_platform_x_mechanism": 961,
+              "hierarchically_shrunk_taxonomy": 7915
+            }
+          },
+          "advertising": {
+            "channelCaseCount": 0,
+            "positiveActualCaseCount": 0,
+            "fallbackCounts": {}
+          },
+          "transactional": {
+            "channelCaseCount": 0,
+            "positiveActualCaseCount": 0,
+            "fallbackCounts": {}
+          },
+          "learnedGlobal": {
+            "channelCaseCount": 0,
+            "positiveActualCaseCount": 0,
+            "fallbackCounts": {}
+          }
+        },
+        "fanqie_audio": {
+          "membership": {
+            "channelCaseCount": 0,
+            "positiveActualCaseCount": 0,
+            "fallbackCounts": {}
+          },
+          "advertising": {
+            "channelCaseCount": 22204,
+            "positiveActualCaseCount": 21388,
+            "fallbackCounts": {
+              "hierarchically_shrunk_taxonomy": 20924,
+              "hierarchically_shrunk_platform_x_mechanism": 1280
+            }
+          },
+          "transactional": {
+            "channelCaseCount": 0,
+            "positiveActualCaseCount": 0,
+            "fallbackCounts": {}
+          },
+          "learnedGlobal": {
+            "channelCaseCount": 0,
+            "positiveActualCaseCount": 0,
+            "fallbackCounts": {}
+          }
+        },
+        "missevan": {
+          "membership": {
+            "channelCaseCount": 0,
+            "positiveActualCaseCount": 0,
+            "fallbackCounts": {}
+          },
+          "advertising": {
+            "channelCaseCount": 0,
+            "positiveActualCaseCount": 0,
+            "fallbackCounts": {}
+          },
+          "transactional": {
+            "channelCaseCount": 2162,
+            "positiveActualCaseCount": 1164,
+            "fallbackCounts": {
+              "hierarchically_shrunk_platform_x_mechanism": 231,
+              "hierarchically_shrunk_taxonomy": 1931
+            }
+          },
+          "learnedGlobal": {
+            "channelCaseCount": 0,
+            "positiveActualCaseCount": 0,
+            "fallbackCounts": {}
+          }
+        },
+        "manbo": {
+          "membership": {
+            "channelCaseCount": 0,
+            "positiveActualCaseCount": 0,
+            "fallbackCounts": {}
+          },
+          "advertising": {
+            "channelCaseCount": 0,
+            "positiveActualCaseCount": 0,
+            "fallbackCounts": {}
+          },
+          "transactional": {
+            "channelCaseCount": 562,
+            "positiveActualCaseCount": 539,
+            "fallbackCounts": {
+              "hierarchically_shrunk_mechanism": 195,
+              "hierarchically_shrunk_taxonomy": 367
+            }
+          },
+          "learnedGlobal": {
+            "channelCaseCount": 0,
+            "positiveActualCaseCount": 0,
+            "fallbackCounts": {}
+          }
+        }
+      }
+    },
+    "topRevenueFractions": [
+      0.01,
+      0.05,
+      0.1
+    ],
+    "rawAblationsPreserved": [
+      "A0",
+      "A1",
+      "A2",
+      "A3",
+      "A4",
+      "A5",
+      "A6"
+    ],
+    "selectedPipelineDoesNotReplaceRawMetrics": true
+  },
+  "comparison": {
+    "primary": {
+      "A0": {
+        "caseCount": 12039,
+        "wape": 0.4402249501995905,
+        "signedBias": -0.12377105831355606,
+        "zeroImputationUsed": false
+      },
+      "A6": {
+        "caseCount": 12039,
+        "wape": 0.5377668290047714,
+        "signedBias": -0.1270980421229044,
+        "zeroImputationUsed": false
+      },
+      "relativeWape": 0.22157280899448573
+    },
+    "strictRolling": {
+      "A0": {
+        "caseCount": 74320,
+        "wape": 0.4119187843120153,
+        "signedBias": -0.03847400949306328,
+        "zeroImputationUsed": false
+      },
+      "A6": {
+        "caseCount": 74320,
+        "wape": 0.6586532381615944,
+        "signedBias": 0.3571760131960592,
+        "zeroImputationUsed": false
+      },
+      "relativeWape": 0.598988109419855
+    }
+  },
+  "gates": {
+    "checks": {
+      "workChannelConservation": true,
+      "A0A1DecompositionConservation": true,
+      "primaryMaterialRelativeWape": false,
+      "strictMaterialRelativeWape": false,
+      "primaryAbsoluteWape": false,
+      "primaryAbsoluteBias": false,
+      "laterOriginIndependent": false
+    },
+    "rawDevelopmentPass": false,
+    "independentLaterOriginRequiredForMaturity": true,
+    "independentLaterOriginAvailable": false
+  },
+  "implementation": {
+    "canonicalCore": "src/domain/m2Current/channelExperts.js",
+    "materializer": "existing materialize_human_anchored_cases.py --channel-experts mode",
+    "runner": "existing run_m2_human_anchored_development.mjs --channel-experts mode",
+    "productionLoaderImported": false,
+    "productionRouteImported": false,
+    "productionApiChanged": false,
+    "exactV03CodeChanged": false,
+    "exactV03UsedForTrainingOrSelection": false
+  },
+  "boundaries": {
+    "developmentOnly": true,
+    "currentDecision": "CANARY_FAIL",
+    "automationDecision": "AUTOMATION_BLOCKED",
+    "exactV03FallbackRetained": true,
+    "independentLaterOriginOpened": false,
+    "finalHoldoutOpened": false,
+    "providerAuthorized": false,
+    "databaseAuthorized": false,
+    "canaryAuthorized": false,
+    "releaseAuthorized": false,
+    "m3FormalAuthorized": false
+  }
+}

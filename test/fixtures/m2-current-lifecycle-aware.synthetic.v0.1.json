@@ -1,0 +1,89 @@
+{
+  "schema": "m2.current.lifecycle_aware_synthetic_fixture.v0.1",
+  "purpose": "public_private_independent_lifecycle_occurrence_and_log_amount_diagnostic",
+  "origin": "2022-12",
+  "horizonMonths": 12,
+  "replicationsPerState": 6,
+  "lifecycleTemplates": [
+    {
+      "expectedLifecycleState": "active",
+      "legacySegment": "active",
+      "positiveSeries": [
+        20, 0, 30, 0, 40, 0,
+        50, 0, 70, 0, 90, 0,
+        110, 0, 140, 0, 180, 0
+      ],
+      "reversalSeries": [
+        0, 0, 0, 0, 0, 0,
+        0, 0, 5, 0, 0, 0,
+        0, 0, 0, 0, 10, 0
+      ],
+      "actualPositive": 1500,
+      "actualReversal": 50
+    },
+    {
+      "expectedLifecycleState": "stable",
+      "legacySegment": "active",
+      "positiveSeries": [
+        95, 100, 105, 98, 102, 100,
+        96, 104, 100, 101, 99, 100,
+        103, 97, 102, 98, 101, 99
+      ],
+      "reversalSeries": [
+        0, 0, 0, 5, 0, 0,
+        0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 5, 0
+      ],
+      "actualPositive": 1200,
+      "actualReversal": 30
+    },
+    {
+      "expectedLifecycleState": "decline",
+      "legacySegment": "active",
+      "positiveSeries": [
+        220, 210, 205, 200, 190, 180,
+        170, 160, 150, 140, 130, 120,
+        110, 100, 85, 55, 40, 30
+      ],
+      "reversalSeries": [
+        0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0,
+        0, 0, 10, 0, 0, 0
+      ],
+      "actualPositive": 300,
+      "actualReversal": 20
+    },
+    {
+      "expectedLifecycleState": "dormant",
+      "legacySegment": "dormant",
+      "positiveSeries": [
+        120, 80, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0
+      ],
+      "reversalSeries": [
+        0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0
+      ],
+      "actualPositive": 0,
+      "actualReversal": 0
+    },
+    {
+      "expectedLifecycleState": "revival",
+      "legacySegment": "intermittent",
+      "positiveSeries": [
+        100, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 70, 90
+      ],
+      "reversalSeries": [
+        0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 5
+      ],
+      "actualPositive": 700,
+      "actualReversal": 10
+    }
+  ]
+}

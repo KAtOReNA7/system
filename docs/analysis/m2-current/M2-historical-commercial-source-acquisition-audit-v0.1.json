@@ -1,0 +1,512 @@
+{
+  "schema": "m2.current.historical_commercial_source_acquisition_audit.public.v0.1",
+  "auditDate": "2026-07-26",
+  "status": "ANALYSIS_ONLY_NO_MODEL_DEVELOPMENT",
+  "decision": "NO_RECOVERABLE_COMPLIANT_HISTORICAL_COMMERCIAL_SOURCE_ACQUIRED",
+  "qualifiedDecision": "A work-channel sale-status history is attested to exist outside the accessible source set and the current copyright ledger explicitly refers to a separate downlist feedback table. Neither source is exported, materialized, connected, or independently verifiable. The accessible repository, source directories, transfer archives, migration schema, and local dump contain current/effective-date projections and technical audit history, but no model-eligible historical work-channel-contract commercial event authority.",
+  "relationshipToPriorAudits": {
+    "dataReadinessDecision": "NEEDS_DATA_MATERIALIZATION_FIRST",
+    "sourceDiscoveryDecision": "NO_COMPLIANT_HISTORICAL_COMMERCIAL_STATE_SOURCE_FOUND_IN_INSPECTED_SCOPE",
+    "thisAuditContribution": [
+      "tests the unconnected external-source clues explicitly",
+      "classifies the authorization-summary downlist fields as current projection rather than event history",
+      "inspects project-transfer archive membership and byte identity",
+      "inspects the existing PostgreSQL custom dump without connecting to a database",
+      "counts actual history-shaped and audit-table rows at aggregate level"
+    ]
+  },
+  "scopeAndSafety": {
+    "databaseConnected": false,
+    "remoteOrSharedDatabaseConnected": false,
+    "providerCalled": false,
+    "modelTrainingExecuted": false,
+    "predictionPipelineModified": false,
+    "schemaCreated": false,
+    "rawBusinessRowsPublished": false,
+    "workChannelContractIdentifiersPublished": false,
+    "pullRequestCreated": false,
+    "commitCreated": false
+  },
+  "requiredAnswers": {
+    "recoverableHistoricalCommercialSourceExists": {
+      "answer": false,
+      "qualification": "No accessible source currently satisfies exact relation identity, business event history, effectiveAt, first-provable availableAt, immutable version, lineage, and complete-as-of coverage. External candidates may exist but require a business-system export before recoverability can be verified."
+    },
+    "candidateSources": [
+      {
+        "sourceId": "external_work_channel_sale_status_history",
+        "existenceEvidence": "user_business_attestation",
+        "existsClaimed": true,
+        "historyRetainedClaimed": true,
+        "exportAvailable": false,
+        "reportedCurrentWorkCount": 3053,
+        "reportedObservedMonthRange": [
+          "2017-06",
+          "2026-04"
+        ],
+        "reportedDefinition": "each_work_first_detail_month",
+        "coverageConfidence": "unverified",
+        "eventLedgerGeneration": "not_now",
+        "reason": "The reported definition is cash-detail first occurrence rather than a verified saleable-on/off transition, and no export proves channel, event, availableAt, version, or completeness."
+      },
+      {
+        "sourceId": "external_downlist_feedback_table",
+        "existenceEvidence": "explicit_reference_in_current_digital_copyright_ledger_field_name",
+        "existsClaimed": "possible_not_verified",
+        "materializedFileCount": 0,
+        "importerCount": 0,
+        "archiveMemberCount": 0,
+        "coverage": "unknown",
+        "fields": "unknown",
+        "eventLedgerGeneration": "not_now",
+        "reason": "The current ledger tells users to consult this table, but the table itself is absent from the accessible files, code paths, and transfer archives."
+      },
+      {
+        "sourceId": "authorization_summary_current_extract",
+        "existenceEvidence": "local_current_workbook_and_reader_code",
+        "existsClaimed": true,
+        "currentRowFootprint": 18959,
+        "currentStatusWorkCoverage": {
+          "coveredWorks": 3053,
+          "authorityWorks": 3053,
+          "coverage": 1
+        },
+        "observedFields": [
+          "work identity",
+          "platform work identity",
+          "authorization start",
+          "authorization end",
+          "current delisted flag"
+        ],
+        "loaderBehavior": "collects current status strings into a work-level set and emits one current listed/delisted projection",
+        "historicalVersionCount": 0,
+        "recordAvailableAtCoverage": 0,
+        "eventLedgerGeneration": "provisional_effective_date_only_diagnostic_possible_but_not_canonical",
+        "reason": "It has useful business-effective dates and current status, but no event timestamp, channel-level transition chain, source version, or as-of availability authority."
+      },
+      {
+        "sourceId": "digital_copyright_ledger_current_extract",
+        "existenceEvidence": "local_current_workbook_and_public_structure_audit",
+        "existsClaimed": true,
+        "rowCount": 12033,
+        "sheetCount": 1,
+        "workIdNonEmpty": 10757,
+        "contractNumberNonEmpty": 11158,
+        "distinctContractNumberValues": 7154,
+        "partialChangeClues": {
+          "preRenewalExpiryNonEmpty": 3240,
+          "staleRenewalFlagNonEmpty": 5985,
+          "renewalTimeNonEmpty": 263,
+          "ebookRenewalStatusNonEmpty": 506
+        },
+        "recordAvailableAtCoverage": 0,
+        "historicalVersionCount": 0,
+        "eventLedgerGeneration": "provisional_rights_effective_date_only_diagnostic_possible_but_not_canonical",
+        "reason": "One prior-expiry field and current renewal fields cannot reconstruct an append-only amendment chain or prove when each value became knowable."
+      }
+    ],
+    "businessSystemDataNeeded": [
+      "the referenced downlist feedback table or an equivalent immutable export",
+      "work-platform publish, unpublish, delist, relist, restore, and saleable-state events",
+      "contract and rights amendment, renewal, termination, and correction history",
+      "CRM, ERP, copyright-system, or platform audit/change-log export if those systems own the events",
+      "CDC or binlog export with before/after values, commit time, transaction position, and schema version when an audit table does not exist",
+      "immutable periodic archive snapshots plus manifests when event history is unavailable"
+    ]
+  },
+  "externalDependencyInvestigation": {
+    "downlistFeedbackTable": {
+      "referenceFound": true,
+      "referenceSource": "digital copyright ledger field label",
+      "embeddedInWorkbook": false,
+      "reason": "The public structure audit reports one sheet only and no separate downlist sheet.",
+      "fileNameMatchesInDataTree": 0,
+      "codeReferencesOutsideAudits": 0,
+      "connectorOrImporterFound": false,
+      "transferArchiveMembersFound": 0,
+      "classification": "EXTERNAL_CANDIDATE_UNACQUIRED"
+    },
+    "channelOperationsHistory": {
+      "materializedEventSourceFound": false,
+      "userAttestedExternalSource": true,
+      "exportAvailable": false,
+      "currentAuthorizationExtractFound": true,
+      "currentExtractHasStartEndAndCurrentDelistedFlag": true,
+      "classification": "EXTERNAL_CANDIDATE_PLUS_CURRENT_PROJECTION"
+    },
+    "platformPublishHistory": {
+      "materializedEventSourceFound": false,
+      "platformPublishOrUnpublishTableFound": false,
+      "connectorFound": false,
+      "classification": "NOT_FOUND_IN_ACCESSIBLE_SCOPE"
+    },
+    "contractAndRightsChangeHistory": {
+      "materializedAppendOnlyHistoryFound": false,
+      "currentEffectiveDateFieldsFound": true,
+      "partialPriorExpiryFieldFound": true,
+      "completeAmendmentChainFound": false,
+      "classification": "CURRENT_OR_PARTIAL_CHANGE_CLUE_ONLY"
+    },
+    "crmErp": {
+      "explicitRepositoryReferenceFound": false,
+      "connectorFound": false,
+      "credentialOrEndpointInspected": false,
+      "classification": "UNVERIFIED_EXTERNAL_POSSIBILITY"
+    },
+    "auditCdcBinlog": {
+      "businessAuditLogFound": false,
+      "businessCdcOrBinlogExportFound": false,
+      "localTechnicalWalSegmentsFound": 12,
+      "walArchiveStatusMarkersFound": 0,
+      "baseBackupMarkersFound": 0,
+      "classification": "TECHNICAL_SMOKE_OR_REHEARSAL_STATE_NOT_BUSINESS_HISTORY"
+    }
+  },
+  "archiveInvestigation": {
+    "relevantProjectTransferArchives": [
+      {
+        "role": "foundation_transfer_2026_07_13",
+        "entryCount": 52,
+        "fileCount": 49,
+        "containsCurrentMasterDataWorkbooks": true,
+        "containsCurrentFormalDatabaseDump": true,
+        "containsDownlistFeedbackTable": false,
+        "containsHistoricalCommercialEventExport": false,
+        "currentMasterWorkbookByteIdentity": {
+          "comparedFiles": 5,
+          "identicalFiles": 5
+        },
+        "currentDatabaseDumpByteIdentical": true,
+        "classification": "PORTABILITY_COPY_OF_CURRENT_STATE"
+      },
+      {
+        "role": "c3_continuation_2026_07_16",
+        "entryCount": 18,
+        "nestsFoundationTransfer": true,
+        "otherMaterial": "derived development case and manifest artifacts",
+        "containsNewCommercialSource": false,
+        "classification": "DERIVED_DEVELOPMENT_TRANSFER_NOT_SOURCE_HISTORY"
+      }
+    ],
+    "exactCurrentSourceWorkbookCopiesOutsideCurrentPaths": 0,
+    "gitTrackedSourceDataFiles": 0,
+    "gitHistoryCommitsForSourceDataPaths": 0,
+    "conclusion": "The archives improve portability of the current state but do not add an earlier commercial-state version or an upstream event source."
+  },
+  "codeInvestigation": [
+    {
+      "path": "src/domain/m2Current/loader.js",
+      "role": "public aggregate evidence loader",
+      "commercialHistoricalSourceReader": false
+    },
+    {
+      "path": "src/domain/m2Current/availabilitySnapshot.js",
+      "role": "strict cash-fact availability snapshot contract",
+      "commercialHistoricalSourceReader": false,
+      "reason": "It validates revenue fact availability and rejects current backfill; it does not create channel or contract state."
+    },
+    {
+      "path": "scripts/m2-real-data/run_m2_five_source_staging_recovery.py",
+      "role": "current five-source staging builder",
+      "commercialHistoricalSourceReader": false,
+      "decisiveBehavior": "reads authorization start/end and current downlist strings, then collapses them to one work-level current status"
+    },
+    {
+      "path": "scripts/m2-real-data/run_copyright_ledger_masterdata_audit.py",
+      "role": "current workbook parser and structure/gap audit",
+      "commercialHistoricalSourceReader": false
+    },
+    {
+      "path": "scripts/m2-real-data/run_m2_formal_local_execution.mjs",
+      "role": "writes one current formal payload and current cash facts",
+      "commercialHistoricalSourceReader": false
+    },
+    {
+      "path": "src/domain/m2V2EvidencePilot/requestEventLedger.js",
+      "role": "provider request lifecycle ledger",
+      "commercialHistoricalSourceReader": false,
+      "reason": "Its events are planned/reserved/dispatched/completed/provider_failed and do not describe work-channel commercial state."
+    },
+    {
+      "path": "src/domain/m2V2EvidencePilot/migrationArchiveV0_3.js",
+      "role": "private-state migration ZIP structure verifier",
+      "commercialHistoricalSourceReader": false,
+      "implementationStatus": "PARTIAL_NOT_INTEGRATED_STRUCTURE_ONLY"
+    },
+    {
+      "path": "src/domain/m2V2EvidencePilot/privateStateRecovery.js",
+      "role": "offline evidence/private-state recovery",
+      "commercialHistoricalSourceReader": false
+    }
+  ],
+  "databaseMigrationAndDumpAudit": {
+    "dumpInspectedWithoutDatabaseConnection": "data/private-output/m2-formal-execution/m2-current-local-db-2026-07-13.dump",
+    "dumpTableDataEntryCount": 60,
+    "commercialHistoryTablesAbsent": [
+      "work_channel_relation_history",
+      "channel_status_history",
+      "contract_history",
+      "rights_relation_history",
+      "platform_publish_history",
+      "commercial_relation_event"
+    ],
+    "tables": [
+      {
+        "table": "m1.standard_work_status_history",
+        "rowCount": 3053,
+        "statusDistribution": {
+          "listed": 2298,
+          "delisted": 755
+        },
+        "statusBasisDistinctCount": 1,
+        "statusBasis": "post_foundation_user_confirmed",
+        "validFromDistinctCount": 1,
+        "validToNonNullCount": 0,
+        "classification": "B_CURRENT_PROJECTION_IN_HISTORY_SHAPED_TABLE",
+        "reason": "There is exactly one open interval per work, all written from the same current payload generation time."
+      },
+      {
+        "table": "m1.basic_info_version",
+        "rowCount": 2,
+        "versionSummary": [
+          {
+            "status": "retired",
+            "sourceType": "master_data_seed",
+            "snapshotWorkCount": 0
+          },
+          {
+            "status": "active",
+            "sourceType": "formal_basic_info",
+            "snapshotWorkCount": 3053
+          }
+        ],
+        "classification": "B_VERSION_CONTAINER_WITH_ONE_POPULATED_CURRENT_SNAPSHOT"
+      },
+      {
+        "table": "m1.basic_info_version_work",
+        "rowCount": 3053,
+        "populatedVersionCount": 1,
+        "sourceRecordRefDistinctCount": 1,
+        "createdAtDistinctCount": 1,
+        "classification": "B_CURRENT_PROJECTION",
+        "reason": "The table contains only one populated work snapshot and one payload-level source reference."
+      },
+      {
+        "table": "m1.mapping_change_record",
+        "rowCount": 0,
+        "allowedEntityTypes": [
+          "channel_alias",
+          "raw_work_mapping",
+          "historical_volume_mapping",
+          "projection"
+        ],
+        "classification": "NOT_A_COMMERCIAL_HISTORY_SOURCE",
+        "reason": "It is empty and its contract excludes work-channel saleability, contract, and rights relations."
+      },
+      {
+        "table": "m1.background_task_event",
+        "rowCount": 3,
+        "eventTypes": [
+          "formal_execution_started",
+          "formal_import_started",
+          "formal_execution_completed"
+        ],
+        "classification": "TECHNICAL_EXECUTION_AUDIT"
+      },
+      {
+        "table": "m1.m2_formal_audit_events",
+        "rowCount": 7,
+        "eventTypes": [
+          "formal_input_verified",
+          "formal_master_data_written",
+          "mapping_validated",
+          "mapping_activated",
+          "formal_evaluation_started",
+          "formal_evaluation_completed",
+          "export_prepared"
+        ],
+        "classification": "TECHNICAL_M2_EXECUTION_AUDIT"
+      },
+      {
+        "table": "m1.batch_impact_record",
+        "rowCount": 1,
+        "eventType": "batch_activated",
+        "classification": "TECHNICAL_IMPORT_IMPACT_EVENT"
+      },
+      {
+        "table": "m1.restore_point",
+        "rowCount": 1,
+        "operationType": "batch_activate",
+        "backupReferenceScheme": "private-local-dump",
+        "classification": "TECHNICAL_DATABASE_RESTORE_REFERENCE"
+      },
+      {
+        "table": "m1.import_file",
+        "rowCount": 1,
+        "classification": "CURRENT_SOURCE_FILE_REGISTRATION"
+      },
+      {
+        "table": "m1.m2_evaluation_input_snapshots",
+        "rowCount": 3053,
+        "classification": "MODEL_AGGREGATE_INPUT_SNAPSHOT_NOT_COMMERCIAL_RELATION_HISTORY"
+      }
+    ],
+    "preApplyDumpQualification": {
+      "role": "technical_before_apply_safeguard",
+      "independentlyEnumerated": false,
+      "reason": "The installed PostgreSQL 16 pg_restore does not support its archive header version.",
+      "whyItDoesNotChangeTheDecision": [
+        "the post-apply dump retains the prior seed-version metadata",
+        "the relevant execution path contains no DELETE or TRUNCATE",
+        "the successful writer inserted exactly one open status interval per work",
+        "the post-apply dump contains no prior closed status intervals or populated prior work snapshots",
+        "the schema has no contract, rights, platform publish, or work-channel relation history table"
+      ]
+    }
+  },
+  "sourceClassification": {
+    "A_trueHistoricalSource": [],
+    "A_pendingExternalAcquisition": [
+      "user-attested work-channel sale-status history",
+      "referenced downlist feedback table",
+      "platform operation audit/change log if retained externally",
+      "contract or copyright-system amendment/renewal audit log if retained externally",
+      "CRM or ERP audit/CDC export if the system owns these events"
+    ],
+    "B_currentProjectionOrEffectiveDateOnly": [
+      "digital copyright ledger current extract",
+      "original-library current extracts",
+      "authorization relationship current dashboard",
+      "authorization summary current extract",
+      "current formal work master",
+      "standard_work_status_history as currently populated",
+      "basic_info_version and basic_info_version_work as currently populated",
+      "current project-transfer archive copies"
+    ],
+    "C_notRecoverableFromCurrentAccessibleMaterial": [
+      "historical work-channel entry, exit, restore, and reactivation sequence",
+      "historical platform publish, unpublish, delist, and relist sequence",
+      "complete contract amendment and renewal chain",
+      "first-provable record availableAt",
+      "source transaction order and deletion tombstones",
+      "complete historical snapshot coverage at each development origin"
+    ]
+  },
+  "coverageAndEventLedgerReadiness": {
+    "compliantHistoricalCoverage": {
+      "works": {
+        "covered": 0,
+        "denominator": 3053
+      },
+      "canonicalChannels": {
+        "covered": 0,
+        "denominator": 74
+      },
+      "salesShareUsedCanonicalChannels": {
+        "covered": 0,
+        "denominator": 39
+      },
+      "historicalContractRelations": 0,
+      "commercialSnapshotMonths": 0
+    },
+    "externalCandidateCoverage": "unknown_until_export",
+    "canonicalEventLedgerCanBeGeneratedNow": false,
+    "provisionalEffectiveDateOnlyDiagnosticCanBeGenerated": true,
+    "provisionalDiagnosticRestrictions": [
+      "must not be named commercial_relation_event_ledger_v0.1",
+      "must not be used for feature generation, labels, training, or evaluation",
+      "must mark availableAt and historical completeness as unknown",
+      "must not infer entry from first cash or exit from last or zero cash"
+    ]
+  },
+  "minimumBusinessSystemAcquisitionRequest": [
+    {
+      "itemId": "H1",
+      "source": "downlist feedback or copyright-system renewal/delist export",
+      "minimumEvidence": "one immutable full export plus data dictionary and extraction timestamp",
+      "minimumFields": [
+        "source event or record ID",
+        "work ID",
+        "contract or rights relation ID",
+        "platform/channel ID when applicable",
+        "old state",
+        "new state",
+        "effectiveAt",
+        "created/recorded/first-observed time",
+        "updated time",
+        "version or transaction sequence",
+        "deletion/tombstone flag"
+      ]
+    },
+    {
+      "itemId": "H2",
+      "source": "platform operations publish/unpublish history",
+      "minimumEvidence": "append-only event export or complete monthly snapshots",
+      "minimumFields": [
+        "work ID",
+        "platform/channel ID",
+        "publish/unpublish/relist/restore event",
+        "effectiveAt",
+        "availableAt",
+        "source event ID",
+        "source version"
+      ]
+    },
+    {
+      "itemId": "H3",
+      "source": "contract and rights amendment/renewal history",
+      "minimumEvidence": "versioned contract-right relation export",
+      "minimumFields": [
+        "contract ID",
+        "work ID",
+        "right type",
+        "channel/platform scope",
+        "validFrom",
+        "validTo",
+        "amendment or renewal event type",
+        "effectiveAt",
+        "availableAt",
+        "source version"
+      ]
+    },
+    {
+      "itemId": "H4",
+      "source": "CRM, ERP, copyright-system audit log or CDC/binlog",
+      "minimumEvidence": "bounded export with source-system ownership and completeness statement",
+      "minimumFields": [
+        "entity primary key",
+        "insert/update/delete operation",
+        "before and after values",
+        "commit timestamp",
+        "transaction ID or LSN/binlog position",
+        "capture timestamp",
+        "schema version"
+      ]
+    },
+    {
+      "itemId": "H5",
+      "source": "archive snapshots when event logs do not exist",
+      "minimumEvidence": "immutable periodic full snapshots and per-file digest manifest",
+      "minimumFields": [
+        "snapshot cutoff",
+        "extract availableAt",
+        "source version",
+        "work/channel/contract row counts",
+        "coverage start and end",
+        "known missing periods",
+        "content hashes"
+      ]
+    }
+  ],
+  "acquisitionAcceptanceCriteria": [
+    "exact work identity is joinable to the 3053-work authority without fuzzy matching",
+    "channel/platform identity is joinable to the canonical channel master",
+    "contract or rights relation identity is stable across versions",
+    "effectiveAt and first-provable availableAt are separate",
+    "insert, update, delete, and restore semantics are preserved",
+    "source version, transaction order, record hash, and extract manifest are present",
+    "complete-as-of coverage or explicit unknown periods can be proven",
+    "no current-state backfill is used"
+  ],
+  "nextAction": "REQUEST_CAPABILITY_SCOPED_IMMUTABLE_EXPORT_FROM_BUSINESS_SYSTEM_OWNER_THEN_REAUDIT_BEFORE_ANY_MODEL_WORK"
+}

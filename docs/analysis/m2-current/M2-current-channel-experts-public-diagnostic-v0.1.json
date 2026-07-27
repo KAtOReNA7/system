@@ -1,0 +1,970 @@
+{
+  "schema": "m2.current.channel_experts_public_diagnostic.v0.1",
+  "candidateId": "M2-current-channel-mechanism-hierarchical-challenger-v0.1",
+  "fixtureSchema": "m2.current.channel_experts_synthetic_fixture.v0.1",
+  "caseCount": 375,
+  "workCount": 375,
+  "ablations": [
+    "A0",
+    "A1",
+    "A2",
+    "A3",
+    "A4",
+    "A5",
+    "A6"
+  ],
+  "mechanisms": [
+    "membership",
+    "advertising",
+    "transactional"
+  ],
+  "platformCoverage": {
+    "ximalaya": 75,
+    "wechat_reading": 75,
+    "fanqie_audio": 75,
+    "missevan": 75,
+    "manbo": 75
+  },
+  "fallbackCounts": {
+    "hierarchically_shrunk_platform": 210,
+    "hierarchically_shrunk_mechanism": 165
+  },
+  "evaluation": {
+    "caseCount": 375,
+    "workCount": 375,
+    "ablations": {
+      "A0": {
+        "caseCount": 375,
+        "wape": 0.1601544803869877,
+        "signedBias": 0.01643038246069989,
+        "zeroImputationUsed": false
+      },
+      "A1": {
+        "caseCount": 375,
+        "wape": 0.1601544803869877,
+        "signedBias": 0.01643038246069989,
+        "zeroImputationUsed": false
+      },
+      "A2": {
+        "caseCount": 375,
+        "wape": 0.14316053598849848,
+        "signedBias": 0.09530347915636164,
+        "zeroImputationUsed": false
+      },
+      "A3": {
+        "caseCount": 375,
+        "wape": 0.10525775225834834,
+        "signedBias": 0.04244004076044072,
+        "zeroImputationUsed": false
+      },
+      "A4": {
+        "caseCount": 375,
+        "wape": 0.09247518853974727,
+        "signedBias": 0.03345569604625758,
+        "zeroImputationUsed": false
+      },
+      "A5": {
+        "caseCount": 375,
+        "wape": 0.09247518853974727,
+        "signedBias": 0.03345569604625758,
+        "zeroImputationUsed": false
+      },
+      "A6": {
+        "caseCount": 375,
+        "wape": 0.08233339260161543,
+        "signedBias": 0.011999135665998964,
+        "zeroImputationUsed": false
+      }
+    },
+    "relativeWapeToA0": {
+      "A0": 0,
+      "A1": 0,
+      "A2": -0.10610970331536196,
+      "A3": -0.3427736020621477,
+      "A4": -0.4225875647294053,
+      "A5": -0.4225875647294053,
+      "A6": -0.48591264882087626
+    },
+    "decompositionMaximumAbsoluteDifference": 0,
+    "byMechanism": {
+      "advertising": {
+        "channelCaseCount": 125,
+        "metricsAvailable": true,
+        "ablations": {
+          "A0": {
+            "caseCount": 125,
+            "wape": 0.14419750168269604,
+            "signedBias": -0.1375742209424365,
+            "zeroImputationUsed": false
+          },
+          "A1": {
+            "caseCount": 125,
+            "wape": 0.14419750168269604,
+            "signedBias": -0.1375742209424365,
+            "zeroImputationUsed": false
+          },
+          "A2": {
+            "caseCount": 125,
+            "wape": 0.09525816119915961,
+            "signedBias": 0.010553960994405575,
+            "zeroImputationUsed": false
+          },
+          "A3": {
+            "caseCount": 125,
+            "wape": 0.09602447871295942,
+            "signedBias": 0.004873378809864536,
+            "zeroImputationUsed": false
+          },
+          "A4": {
+            "caseCount": 125,
+            "wape": 0.08030631629839427,
+            "signedBias": -0.01196725345581225,
+            "zeroImputationUsed": false
+          },
+          "A5": {
+            "caseCount": 125,
+            "wape": 0.08030631629839427,
+            "signedBias": -0.01196725345581225,
+            "zeroImputationUsed": false
+          },
+          "A6": {
+            "caseCount": 125,
+            "wape": 0.07522659726624346,
+            "signedBias": -0.02614525923560774,
+            "zeroImputationUsed": false
+          }
+        }
+      },
+      "membership": {
+        "channelCaseCount": 125,
+        "metricsAvailable": true,
+        "ablations": {
+          "A0": {
+            "caseCount": 125,
+            "wape": 0.0959441434413473,
+            "signedBias": -0.0014017295122947637,
+            "zeroImputationUsed": false
+          },
+          "A1": {
+            "caseCount": 125,
+            "wape": 0.0959441434413473,
+            "signedBias": -0.0014017295122947637,
+            "zeroImputationUsed": false
+          },
+          "A2": {
+            "caseCount": 125,
+            "wape": 0.10252333314252707,
+            "signedBias": 0.05954950271646986,
+            "zeroImputationUsed": false
+          },
+          "A3": {
+            "caseCount": 125,
+            "wape": 0.09576107932633213,
+            "signedBias": 0.026470964497236606,
+            "zeroImputationUsed": false
+          },
+          "A4": {
+            "caseCount": 125,
+            "wape": 0.07406343995506355,
+            "signedBias": 0.013248831168303516,
+            "zeroImputationUsed": false
+          },
+          "A5": {
+            "caseCount": 125,
+            "wape": 0.07406343995506355,
+            "signedBias": 0.013248831168303516,
+            "zeroImputationUsed": false
+          },
+          "A6": {
+            "caseCount": 125,
+            "wape": 0.06170225018950539,
+            "signedBias": -0.006331177597882908,
+            "zeroImputationUsed": false
+          }
+        }
+      },
+      "transactional": {
+        "channelCaseCount": 125,
+        "metricsAvailable": true,
+        "ablations": {
+          "A0": {
+            "caseCount": 125,
+            "wape": 0.26489114261776014,
+            "signedBias": 0.26489114261776014,
+            "zeroImputationUsed": false
+          },
+          "A1": {
+            "caseCount": 125,
+            "wape": 0.26489114261776014,
+            "signedBias": 0.26489114261776014,
+            "zeroImputationUsed": false
+          },
+          "A2": {
+            "caseCount": 125,
+            "wape": 0.26489114261776014,
+            "signedBias": 0.26489114261776014,
+            "zeroImputationUsed": false
+          },
+          "A3": {
+            "caseCount": 125,
+            "wape": 0.13082900583880588,
+            "signedBias": 0.11776530822134423,
+            "zeroImputationUsed": false
+          },
+          "A4": {
+            "caseCount": 125,
+            "wape": 0.13364441603433103,
+            "signedBias": 0.12567138416136847,
+            "zeroImputationUsed": false
+          },
+          "A5": {
+            "caseCount": 125,
+            "wape": 0.13364441603433103,
+            "signedBias": 0.12567138416136847,
+            "zeroImputationUsed": false
+          },
+          "A6": {
+            "caseCount": 125,
+            "wape": 0.11888947281550036,
+            "signedBias": 0.09116264498927257,
+            "zeroImputationUsed": false
+          }
+        }
+      }
+    },
+    "byNamedPlatform": {
+      "fanqie_audio": {
+        "channelCaseCount": 75,
+        "metricsAvailable": true,
+        "ablations": {
+          "A0": {
+            "caseCount": 75,
+            "wape": 0.1679005071102174,
+            "signedBias": -0.11084437847350942,
+            "zeroImputationUsed": false
+          },
+          "A1": {
+            "caseCount": 75,
+            "wape": 0.1679005071102174,
+            "signedBias": -0.11084437847350942,
+            "zeroImputationUsed": false
+          },
+          "A2": {
+            "caseCount": 75,
+            "wape": 0.09890369382688208,
+            "signedBias": -0.04184756519017406,
+            "zeroImputationUsed": false
+          },
+          "A3": {
+            "caseCount": 75,
+            "wape": 0.09153813468797561,
+            "signedBias": -0.08824997932766104,
+            "zeroImputationUsed": false
+          },
+          "A4": {
+            "caseCount": 75,
+            "wape": 0.085440745521356,
+            "signedBias": -0.06819722967794571,
+            "zeroImputationUsed": false
+          },
+          "A5": {
+            "caseCount": 75,
+            "wape": 0.085440745521356,
+            "signedBias": -0.06819722967794571,
+            "zeroImputationUsed": false
+          },
+          "A6": {
+            "caseCount": 75,
+            "wape": 0.09443541832264225,
+            "signedBias": -0.06784847858652103,
+            "zeroImputationUsed": false
+          }
+        }
+      },
+      "manbo": {
+        "channelCaseCount": 75,
+        "metricsAvailable": true,
+        "ablations": {
+          "A0": {
+            "caseCount": 75,
+            "wape": 0.13584351870955116,
+            "signedBias": 0.002479377211239325,
+            "zeroImputationUsed": false
+          },
+          "A1": {
+            "caseCount": 75,
+            "wape": 0.13584351870955116,
+            "signedBias": 0.002479377211239325,
+            "zeroImputationUsed": false
+          },
+          "A2": {
+            "caseCount": 75,
+            "wape": 0.09279945124866251,
+            "signedBias": 0.08026990199147031,
+            "zeroImputationUsed": false
+          },
+          "A3": {
+            "caseCount": 75,
+            "wape": 0.05003952173833774,
+            "signedBias": 0.028012942563283374,
+            "zeroImputationUsed": false
+          },
+          "A4": {
+            "caseCount": 75,
+            "wape": 0.054948759877371925,
+            "signedBias": 0.02283972638747714,
+            "zeroImputationUsed": false
+          },
+          "A5": {
+            "caseCount": 75,
+            "wape": 0.054948759877371925,
+            "signedBias": 0.02283972638747714,
+            "zeroImputationUsed": false
+          },
+          "A6": {
+            "caseCount": 75,
+            "wape": 0.05467844470496713,
+            "signedBias": 0.004675886812321952,
+            "zeroImputationUsed": false
+          }
+        }
+      },
+      "missevan": {
+        "channelCaseCount": 75,
+        "metricsAvailable": true,
+        "ablations": {
+          "A0": {
+            "caseCount": 75,
+            "wape": 0.19726203465155978,
+            "signedBias": 0.18898716832030713,
+            "zeroImputationUsed": false
+          },
+          "A1": {
+            "caseCount": 75,
+            "wape": 0.19726203465155978,
+            "signedBias": 0.18898716832030713,
+            "zeroImputationUsed": false
+          },
+          "A2": {
+            "caseCount": 75,
+            "wape": 0.28125034887360434,
+            "signedBias": 0.28125034887360434,
+            "zeroImputationUsed": false
+          },
+          "A3": {
+            "caseCount": 75,
+            "wape": 0.21963544696103554,
+            "signedBias": 0.21963544696103554,
+            "zeroImputationUsed": false
+          },
+          "A4": {
+            "caseCount": 75,
+            "wape": 0.16974659016655022,
+            "signedBias": 0.16974659016655022,
+            "zeroImputationUsed": false
+          },
+          "A5": {
+            "caseCount": 75,
+            "wape": 0.16974659016655022,
+            "signedBias": 0.16974659016655022,
+            "zeroImputationUsed": false
+          },
+          "A6": {
+            "caseCount": 75,
+            "wape": 0.12293130030372339,
+            "signedBias": 0.11716637164472206,
+            "zeroImputationUsed": false
+          }
+        }
+      },
+      "wechat_reading": {
+        "channelCaseCount": 75,
+        "metricsAvailable": true,
+        "ablations": {
+          "A0": {
+            "caseCount": 75,
+            "wape": 0.15619579468365688,
+            "signedBias": 0.11144452690811311,
+            "zeroImputationUsed": false
+          },
+          "A1": {
+            "caseCount": 75,
+            "wape": 0.15619579468365688,
+            "signedBias": 0.11144452690811311,
+            "zeroImputationUsed": false
+          },
+          "A2": {
+            "caseCount": 75,
+            "wape": 0.1976905435122824,
+            "signedBias": 0.1976905435122824,
+            "zeroImputationUsed": false
+          },
+          "A3": {
+            "caseCount": 75,
+            "wape": 0.14011845755810762,
+            "signedBias": 0.14011845755810762,
+            "zeroImputationUsed": false
+          },
+          "A4": {
+            "caseCount": 75,
+            "wape": 0.10894732941062281,
+            "signedBias": 0.10894732941062281,
+            "zeroImputationUsed": false
+          },
+          "A5": {
+            "caseCount": 75,
+            "wape": 0.10894732941062281,
+            "signedBias": 0.10894732941062281,
+            "zeroImputationUsed": false
+          },
+          "A6": {
+            "caseCount": 75,
+            "wape": 0.07898703636036336,
+            "signedBias": 0.06952667905855167,
+            "zeroImputationUsed": false
+          }
+        }
+      },
+      "ximalaya": {
+        "channelCaseCount": 75,
+        "metricsAvailable": true,
+        "ablations": {
+          "A0": {
+            "caseCount": 75,
+            "wape": 0.14869035479328718,
+            "signedBias": -0.0532139215227185,
+            "zeroImputationUsed": false
+          },
+          "A1": {
+            "caseCount": 75,
+            "wape": 0.14869035479328718,
+            "signedBias": -0.0532139215227185,
+            "zeroImputationUsed": false
+          },
+          "A2": {
+            "caseCount": 75,
+            "wape": 0.0814372294305543,
+            "signedBias": 0.02025490743638858,
+            "zeroImputationUsed": false
+          },
+          "A3": {
+            "caseCount": 75,
+            "wape": 0.05124246431043155,
+            "signedBias": -0.02908128287284426,
+            "zeroImputationUsed": false
+          },
+          "A4": {
+            "caseCount": 75,
+            "wape": 0.059844440119855465,
+            "signedBias": -0.021112190994370103,
+            "zeroImputationUsed": false
+          },
+          "A5": {
+            "caseCount": 75,
+            "wape": 0.059844440119855465,
+            "signedBias": -0.021112190994370103,
+            "zeroImputationUsed": false
+          },
+          "A6": {
+            "caseCount": 75,
+            "wape": 0.06608817444748531,
+            "signedBias": -0.02881076492816931,
+            "zeroImputationUsed": false
+          }
+        }
+      }
+    },
+    "topRevenue": {
+      "0.01": {
+        "fraction": 0.01,
+        "workCount": 4,
+        "ablations": {
+          "A0": {
+            "caseCount": 4,
+            "wape": 0.256713236335753,
+            "signedBias": -0.256713236335753,
+            "zeroImputationUsed": false
+          },
+          "A1": {
+            "caseCount": 4,
+            "wape": 0.256713236335753,
+            "signedBias": -0.256713236335753,
+            "zeroImputationUsed": false
+          },
+          "A2": {
+            "caseCount": 4,
+            "wape": 0.1290480857420167,
+            "signedBias": -0.1290480857420167,
+            "zeroImputationUsed": false
+          },
+          "A3": {
+            "caseCount": 4,
+            "wape": 0.13473174429553716,
+            "signedBias": -0.13473174429553716,
+            "zeroImputationUsed": false
+          },
+          "A4": {
+            "caseCount": 4,
+            "wape": 0.1270189513703915,
+            "signedBias": -0.1270189513703915,
+            "zeroImputationUsed": false
+          },
+          "A5": {
+            "caseCount": 4,
+            "wape": 0.1270189513703915,
+            "signedBias": -0.1270189513703915,
+            "zeroImputationUsed": false
+          },
+          "A6": {
+            "caseCount": 4,
+            "wape": 0.12267457098020235,
+            "signedBias": -0.12267457098020235,
+            "zeroImputationUsed": false
+          }
+        }
+      },
+      "0.05": {
+        "fraction": 0.05,
+        "workCount": 19,
+        "ablations": {
+          "A0": {
+            "caseCount": 19,
+            "wape": 0.2085520172681355,
+            "signedBias": -0.2085520172681355,
+            "zeroImputationUsed": false
+          },
+          "A1": {
+            "caseCount": 19,
+            "wape": 0.2085520172681355,
+            "signedBias": -0.2085520172681355,
+            "zeroImputationUsed": false
+          },
+          "A2": {
+            "caseCount": 19,
+            "wape": 0.0858440701611354,
+            "signedBias": -0.08222820291411118,
+            "zeroImputationUsed": false
+          },
+          "A3": {
+            "caseCount": 19,
+            "wape": 0.09433295825126291,
+            "signedBias": -0.09148314381405015,
+            "zeroImputationUsed": false
+          },
+          "A4": {
+            "caseCount": 19,
+            "wape": 0.08991537533403376,
+            "signedBias": -0.0898016536222001,
+            "zeroImputationUsed": false
+          },
+          "A5": {
+            "caseCount": 19,
+            "wape": 0.08991537533403376,
+            "signedBias": -0.0898016536222001,
+            "zeroImputationUsed": false
+          },
+          "A6": {
+            "caseCount": 19,
+            "wape": 0.09192867418853432,
+            "signedBias": -0.09192867418853432,
+            "zeroImputationUsed": false
+          }
+        }
+      },
+      "0.1": {
+        "fraction": 0.1,
+        "workCount": 38,
+        "ablations": {
+          "A0": {
+            "caseCount": 38,
+            "wape": 0.171780108842358,
+            "signedBias": -0.171780108842358,
+            "zeroImputationUsed": false
+          },
+          "A1": {
+            "caseCount": 38,
+            "wape": 0.171780108842358,
+            "signedBias": -0.171780108842358,
+            "zeroImputationUsed": false
+          },
+          "A2": {
+            "caseCount": 38,
+            "wape": 0.07421812070621998,
+            "signedBias": -0.054465055765553945,
+            "zeroImputationUsed": false
+          },
+          "A3": {
+            "caseCount": 38,
+            "wape": 0.08334614775452438,
+            "signedBias": -0.06634485226751319,
+            "zeroImputationUsed": false
+          },
+          "A4": {
+            "caseCount": 38,
+            "wape": 0.077214436196809,
+            "signedBias": -0.07008940624115217,
+            "zeroImputationUsed": false
+          },
+          "A5": {
+            "caseCount": 38,
+            "wape": 0.077214436196809,
+            "signedBias": -0.07008940624115217,
+            "zeroImputationUsed": false
+          },
+          "A6": {
+            "caseCount": 38,
+            "wape": 0.08158457235862471,
+            "signedBias": -0.07702124021506483,
+            "zeroImputationUsed": false
+          }
+        }
+      }
+    }
+  },
+  "folds": [
+    {
+      "fold": 0,
+      "trainingRowCount": 298,
+      "trainingWorkCount": 298,
+      "validationRowCount": 77,
+      "validationWorkCount": 77,
+      "selectedPriorStrength": 20,
+      "innerSelection": [
+        {
+          "priorStrength": 20,
+          "metrics": {
+            "caseCount": 56,
+            "wape": 0.10158501067817054,
+            "signedBias": 0.03018381704811577,
+            "zeroImputationUsed": false
+          }
+        },
+        {
+          "priorStrength": 80,
+          "metrics": {
+            "caseCount": 56,
+            "wape": 0.11638665442981208,
+            "signedBias": 0.05754758663668006,
+            "zeroImputationUsed": false
+          }
+        },
+        {
+          "priorStrength": 240,
+          "metrics": {
+            "caseCount": 56,
+            "wape": 0.133846049458524,
+            "signedBias": 0.08062900262400866,
+            "zeroImputationUsed": false
+          }
+        }
+      ],
+      "platformModels": {
+        "ximalaya": {
+          "status": "fitted_with_hierarchical_pooling",
+          "trainingRowCount": 60,
+          "trainingWorkCount": 60
+        },
+        "wechat_reading": {
+          "status": "sparse_fallback_to_mechanism_or_learnedGlobal",
+          "trainingRowCount": 57,
+          "trainingWorkCount": 57
+        },
+        "fanqie_audio": {
+          "status": "fitted_with_hierarchical_pooling",
+          "trainingRowCount": 60,
+          "trainingWorkCount": 60
+        },
+        "missevan": {
+          "status": "sparse_fallback_to_mechanism_or_learnedGlobal",
+          "trainingRowCount": 59,
+          "trainingWorkCount": 59
+        },
+        "manbo": {
+          "status": "fitted_with_hierarchical_pooling",
+          "trainingRowCount": 62,
+          "trainingWorkCount": 62
+        }
+      },
+      "maximumLabelAvailableAsOf": "2023-12",
+      "outerValidationUsedForSelection": false
+    },
+    {
+      "fold": 1,
+      "trainingRowCount": 298,
+      "trainingWorkCount": 298,
+      "validationRowCount": 77,
+      "validationWorkCount": 77,
+      "selectedPriorStrength": 20,
+      "innerSelection": [
+        {
+          "priorStrength": 20,
+          "metrics": {
+            "caseCount": 54,
+            "wape": 0.09463822786833816,
+            "signedBias": 0.0297773644583711,
+            "zeroImputationUsed": false
+          }
+        },
+        {
+          "priorStrength": 80,
+          "metrics": {
+            "caseCount": 54,
+            "wape": 0.11115993254009134,
+            "signedBias": 0.05972520710957296,
+            "zeroImputationUsed": false
+          }
+        },
+        {
+          "priorStrength": 240,
+          "metrics": {
+            "caseCount": 54,
+            "wape": 0.13062721489602233,
+            "signedBias": 0.08451380918533774,
+            "zeroImputationUsed": false
+          }
+        }
+      ],
+      "platformModels": {
+        "ximalaya": {
+          "status": "fitted_with_hierarchical_pooling",
+          "trainingRowCount": 62,
+          "trainingWorkCount": 62
+        },
+        "wechat_reading": {
+          "status": "fitted_with_hierarchical_pooling",
+          "trainingRowCount": 60,
+          "trainingWorkCount": 60
+        },
+        "fanqie_audio": {
+          "status": "sparse_fallback_to_mechanism_or_learnedGlobal",
+          "trainingRowCount": 58,
+          "trainingWorkCount": 58
+        },
+        "missevan": {
+          "status": "sparse_fallback_to_mechanism_or_learnedGlobal",
+          "trainingRowCount": 58,
+          "trainingWorkCount": 58
+        },
+        "manbo": {
+          "status": "fitted_with_hierarchical_pooling",
+          "trainingRowCount": 60,
+          "trainingWorkCount": 60
+        }
+      },
+      "maximumLabelAvailableAsOf": "2023-12",
+      "outerValidationUsedForSelection": false
+    },
+    {
+      "fold": 2,
+      "trainingRowCount": 300,
+      "trainingWorkCount": 300,
+      "validationRowCount": 75,
+      "validationWorkCount": 75,
+      "selectedPriorStrength": 20,
+      "innerSelection": [
+        {
+          "priorStrength": 20,
+          "metrics": {
+            "caseCount": 54,
+            "wape": 0.09190837431531845,
+            "signedBias": 0.043413225953757725,
+            "zeroImputationUsed": false
+          }
+        },
+        {
+          "priorStrength": 80,
+          "metrics": {
+            "caseCount": 54,
+            "wape": 0.10976277942832152,
+            "signedBias": 0.07350877992728154,
+            "zeroImputationUsed": false
+          }
+        },
+        {
+          "priorStrength": 240,
+          "metrics": {
+            "caseCount": 54,
+            "wape": 0.13105087090506262,
+            "signedBias": 0.0985613788480739,
+            "zeroImputationUsed": false
+          }
+        }
+      ],
+      "platformModels": {
+        "ximalaya": {
+          "status": "sparse_fallback_to_mechanism_or_learnedGlobal",
+          "trainingRowCount": 59,
+          "trainingWorkCount": 59
+        },
+        "wechat_reading": {
+          "status": "fitted_with_hierarchical_pooling",
+          "trainingRowCount": 62,
+          "trainingWorkCount": 62
+        },
+        "fanqie_audio": {
+          "status": "sparse_fallback_to_mechanism_or_learnedGlobal",
+          "trainingRowCount": 59,
+          "trainingWorkCount": 59
+        },
+        "missevan": {
+          "status": "fitted_with_hierarchical_pooling",
+          "trainingRowCount": 61,
+          "trainingWorkCount": 61
+        },
+        "manbo": {
+          "status": "sparse_fallback_to_mechanism_or_learnedGlobal",
+          "trainingRowCount": 59,
+          "trainingWorkCount": 59
+        }
+      },
+      "maximumLabelAvailableAsOf": "2023-12",
+      "outerValidationUsedForSelection": false
+    },
+    {
+      "fold": 3,
+      "trainingRowCount": 304,
+      "trainingWorkCount": 304,
+      "validationRowCount": 71,
+      "validationWorkCount": 71,
+      "selectedPriorStrength": 20,
+      "innerSelection": [
+        {
+          "priorStrength": 20,
+          "metrics": {
+            "caseCount": 54,
+            "wape": 0.09071886247664313,
+            "signedBias": 0.010598989512721814,
+            "zeroImputationUsed": false
+          }
+        },
+        {
+          "priorStrength": 80,
+          "metrics": {
+            "caseCount": 54,
+            "wape": 0.10123435067310531,
+            "signedBias": 0.03813072843442747,
+            "zeroImputationUsed": false
+          }
+        },
+        {
+          "priorStrength": 240,
+          "metrics": {
+            "caseCount": 54,
+            "wape": 0.11684673385644441,
+            "signedBias": 0.06173066518581136,
+            "zeroImputationUsed": false
+          }
+        }
+      ],
+      "platformModels": {
+        "ximalaya": {
+          "status": "sparse_fallback_to_mechanism_or_learnedGlobal",
+          "trainingRowCount": 59,
+          "trainingWorkCount": 59
+        },
+        "wechat_reading": {
+          "status": "fitted_with_hierarchical_pooling",
+          "trainingRowCount": 63,
+          "trainingWorkCount": 63
+        },
+        "fanqie_audio": {
+          "status": "fitted_with_hierarchical_pooling",
+          "trainingRowCount": 61,
+          "trainingWorkCount": 61
+        },
+        "missevan": {
+          "status": "fitted_with_hierarchical_pooling",
+          "trainingRowCount": 61,
+          "trainingWorkCount": 61
+        },
+        "manbo": {
+          "status": "fitted_with_hierarchical_pooling",
+          "trainingRowCount": 60,
+          "trainingWorkCount": 60
+        }
+      },
+      "maximumLabelAvailableAsOf": "2023-12",
+      "outerValidationUsedForSelection": false
+    },
+    {
+      "fold": 4,
+      "trainingRowCount": 300,
+      "trainingWorkCount": 300,
+      "validationRowCount": 75,
+      "validationWorkCount": 75,
+      "selectedPriorStrength": 20,
+      "innerSelection": [
+        {
+          "priorStrength": 20,
+          "metrics": {
+            "caseCount": 58,
+            "wape": 0.0983073450441152,
+            "signedBias": 0.03916145113268087,
+            "zeroImputationUsed": false
+          }
+        },
+        {
+          "priorStrength": 80,
+          "metrics": {
+            "caseCount": 58,
+            "wape": 0.11093600255420952,
+            "signedBias": 0.06445473404545997,
+            "zeroImputationUsed": false
+          }
+        },
+        {
+          "priorStrength": 240,
+          "metrics": {
+            "caseCount": 58,
+            "wape": 0.1276552808093585,
+            "signedBias": 0.08592118867590272,
+            "zeroImputationUsed": false
+          }
+        }
+      ],
+      "platformModels": {
+        "ximalaya": {
+          "status": "fitted_with_hierarchical_pooling",
+          "trainingRowCount": 60,
+          "trainingWorkCount": 60
+        },
+        "wechat_reading": {
+          "status": "sparse_fallback_to_mechanism_or_learnedGlobal",
+          "trainingRowCount": 58,
+          "trainingWorkCount": 58
+        },
+        "fanqie_audio": {
+          "status": "fitted_with_hierarchical_pooling",
+          "trainingRowCount": 62,
+          "trainingWorkCount": 62
+        },
+        "missevan": {
+          "status": "fitted_with_hierarchical_pooling",
+          "trainingRowCount": 61,
+          "trainingWorkCount": 61
+        },
+        "manbo": {
+          "status": "sparse_fallback_to_mechanism_or_learnedGlobal",
+          "trainingRowCount": 59,
+          "trainingWorkCount": 59
+        }
+      },
+      "maximumLabelAvailableAsOf": "2023-12",
+      "outerValidationUsedForSelection": false
+    }
+  ],
+  "boundaries": {
+    "publicSyntheticOnly": true,
+    "privateArtifactRead": false,
+    "workChannelConservation": true,
+    "futureFirstSeenIdentityUsedAsFeature": false,
+    "exactV03Modified": false,
+    "productionLoaderModified": false,
+    "productionRouteModified": false,
+    "buyoutCashUsed": false,
+    "finalHoldoutUsed": false,
+    "providerUsed": false,
+    "databaseUsed": false,
+    "releaseAuthorized": false
+  }
+}

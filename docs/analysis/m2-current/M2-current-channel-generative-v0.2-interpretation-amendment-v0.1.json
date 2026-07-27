@@ -1,0 +1,151 @@
+{
+  "schemaVersion": "m2-current-channel-generative-interpretation-amendment.v0.1",
+  "artifactType": "interpretation_amendment_no_outcome",
+  "asOf": "2026-07-27",
+  "repository": "KAtOReNA7/system",
+  "activePr": 28,
+  "activeBranch": "codex/m2-lifecycle-aware-challenger-v0-1",
+  "verifiedAnchor": "36125b451d00489cec900a8140d61f3a91904fed",
+  "startHead": "36125b451d00489cec900a8140d61f3a91904fed",
+  "instructionSha256": "3e48d433a19b0c2065fc6b800b373932da5f37bc6be1ad686ab4e26ede2b5cd4",
+  "boundPreregistration": {
+    "path": "docs/analysis/m2-current/M2-current-channel-generative-v0.2-preregistration.json",
+    "sha256": "ba8be0e03102b5d07957a6a078e2e8113b78ccd8632f3589b4d41f5a66b15a50",
+    "gitBlob": "1321bf4011179f7f36e7b26ee806f7a46a2cc909",
+    "candidateGraphUnchanged": true,
+    "featureAllowlistUnchanged": true,
+    "featureDenylistUnchanged": true,
+    "modelFamiliesUnchanged": true,
+    "hyperparameterGridUnchanged": true,
+    "timeBasisUnchanged": true,
+    "innerOuterSplitUnchanged": true,
+    "seedsUnchanged": true,
+    "gatesUnchanged": true,
+    "phaseStopsUnchanged": true
+  },
+  "amendmentScope": {
+    "interpretationBoundaryOnly": true,
+    "candidateAdded": false,
+    "candidateRemoved": false,
+    "selectionRuleChanged": false,
+    "outcomeRead": false,
+    "trainingExecuted": false,
+    "predictionExecuted": false,
+    "privateEvaluationRowsRead": false
+  },
+  "inferenceBoundary": {
+    "v01FailureProvesOnly": "scalar multiplier architecture mismatch",
+    "v02FirstDirectTest": "G1 and G2 are the first direct tests of mechanism-specific monthly channel generators in this lineage",
+    "passDoesNotProve": [
+      "historical membership-pool mechanisms were identified",
+      "historical advertising traffic mechanisms were identified",
+      "historical order or price mechanisms were identified",
+      "historical contract mechanisms were identified",
+      "a causal channel mechanism was identified"
+    ],
+    "failureDoesNotProve": [
+      "channel-mechanism theory is false",
+      "forecasting is theoretically impossible",
+      "irreducible error has been measured",
+      "Bayes error has been measured",
+      "a theoretical maximum has been established"
+    ],
+    "allowedFailureConclusion": "CURRENT_CASH_HISTORY_LOW_COMPLEXITY_GENERATIVE_CORE_NO_INCREMENTAL_VALUE",
+    "allowedFailureMeaning": "Within the current origin-visible cash history, frozen static mechanism mapping, current case window, and preregistered deterministic low-complexity GLM family, G1 and G2 provide no stable incremental value.",
+    "forbiddenExpandedConclusion": "FORECASTING_IS_THEORETICALLY_IMPOSSIBLE",
+    "evidenceClass": "STRICTLY_CONTROLLED_REUSED_DEVELOPMENT_WINDOW_EVIDENCE",
+    "independentHoldout": false,
+    "reasonNotIndependent": "The primary and strict development windows have been repeatedly analyzed by historical challengers.",
+    "confidenceCanIncreaseOnlyWith": [
+      "a genuinely independent mature later-origin",
+      "new real drivers with historically valid availableAt and lineage"
+    ]
+  },
+  "humanFormulaQuestions": {
+    "A_baselineAnchor": {
+      "question": "Is the human-led learnedGlobal trunk a useful baseline anchor?",
+      "evidence": [
+        "G0 on identical cases and folds",
+        "G2 relative to G1",
+        "G2 residual shrinkage toward zero",
+        "G2 versus G0 without horizon or top-revenue harm"
+      ],
+      "interpretation": {
+        "G2_pass_G1_fail": "Supports the human trunk as a useful structured prior or offset.",
+        "G1_pass_G2_fail": "Supports the possibility that the human trunk constrains the channel time process.",
+        "both_pass": "Both low-complexity routes show development signal only.",
+        "both_fail": "The human trunk may remain the most stable fallback; mechanism theory is not rejected."
+      }
+    },
+    "B_workAutomationQuality": {
+      "question": "Does the human formula reach work-level automation quality?",
+      "decisionEvidence": [
+        "existing absolute quality gates",
+        "primary",
+        "strict",
+        "time blocks",
+        "top revenue",
+        "bias",
+        "paired uncertainty"
+      ],
+      "cannotSubstitute": [
+        "selected fallback",
+        "portfolio error cancellation",
+        "same-window overlap improvement"
+      ]
+    },
+    "C_businessMechanismReality": {
+      "question": "Are the human business mechanisms real or causal?",
+      "answerableNow": false,
+      "reason": "The current data contain no historical membership pool, exposure, play, order, net price, availability, contract-state, or operating-action drivers.",
+      "allowedClaim": "The experiment tests cash-history patterns only."
+    }
+  },
+  "resultInterpretationMatrix": {
+    "G2PassG1Fail": "HUMAN_TRUNK_STRUCTURED_OFFSET_HAS_DEVELOPMENT_VALUE",
+    "G1PassG2Fail": "INDEPENDENT_GENERATOR_HAS_DEVELOPMENT_VALUE_AND_G0_MAY_CONSTRAIN_DYNAMICS",
+    "bothPass": "BOTH_LOW_COMPLEXITY_ROUTES_HAVE_DEVELOPMENT_SIGNAL",
+    "bothFail": "CURRENT_CASH_HISTORY_LOW_COMPLEXITY_GENERATIVE_CORE_NO_INCREMENTAL_VALUE",
+    "blendOnly": "RAW_CORE_FAIL_BLEND_ONLY_SIGNAL",
+    "contractOrNumericBlock": "GENERATIVE_V02_CORE_EXECUTION_BLOCKED"
+  },
+  "currentAuthorization": {
+    "G0": true,
+    "G1": true,
+    "G2": true,
+    "G3": true,
+    "forecastabilityOracleDiagnostic": true,
+    "oneTimePrivateDevelopmentEvaluation": true,
+    "G4Platform": false,
+    "G5Taxonomy": false,
+    "G6Composition": false,
+    "newModelFamily": false,
+    "outcomeDrivenTuning": false,
+    "finalHoldout": false,
+    "laterOriginHoldout": false,
+    "provider": false,
+    "database": false,
+    "canary": false,
+    "full160": false,
+    "automation": false,
+    "release": false,
+    "productionLoaderRouteApiChange": false,
+    "exactV03Replacement": false,
+    "mergePr": false
+  },
+  "checkpoint": {
+    "id": "K0",
+    "implementationMayStartOnlyAfter": [
+      "this amendment is committed and pushed",
+      "the forecastability diagnostic contract is committed and pushed",
+      "the K0 exact-head Linux CI succeeds",
+      "the K0 exact-head Windows CI succeeds"
+    ],
+    "privateOutcomeMayBeRead": false
+  },
+  "productionSurfaceChangeCount": 0,
+  "safeToStartPlatform": false,
+  "safeToStartTaxonomy": false,
+  "safeToStartComposition": false,
+  "finalStatus": "GENERATIVE_V02_INTERPRETATION_BOUNDARY_AMENDED_NO_OUTCOME_READ"
+}

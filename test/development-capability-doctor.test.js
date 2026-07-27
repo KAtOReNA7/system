@@ -38,6 +38,9 @@ test("catalog defines one private-free core capability and scoped private capabi
       "m2-current-canonical-channel",
       "m2-current-human-anchored",
       "m2-current-human-anchored-tsb-occurrence",
+      "m2-current-lifecycle-aware",
+      "m2-current-channel-experts",
+      "m2-current-channel-generative",
       "m2-current-human-anchored-later-origin",
       "m3-private-materials",
     ],
@@ -194,6 +197,76 @@ test("missing TSB occurrence inputs block only that private capability", () => {
     "exact-v0.3-overlap-comparator",
   ]);
   assert.match(result.recovery, /public core, synthetic diagnostics, tests and startup remain available/u);
+});
+
+test("missing lifecycle-aware inputs block only that private capability", () => {
+  const result = evaluateCapability(
+    catalog,
+    "m2-current-lifecycle-aware",
+    {
+      repoRoot: REPO_ROOT,
+      artifactExists: () => false,
+      toolProbe: availableToolProbe,
+    },
+  );
+  assert.equal(result.status, "BLOCKED_MISSING_PRIVATE_ARTIFACT");
+  assert.equal(result.coreDevelopmentUnaffected, true);
+  assert.deepEqual(result.missingPrivateRoles, [
+    "user-reviewed-channel-master",
+    "formal-model-input-cache",
+    "exact-v0.3-overlap-comparator",
+  ]);
+  assert.match(
+    result.recovery,
+    /public diagnostics, tests and application startup remain available/u,
+  );
+});
+
+test("missing channel-expert inputs block only that private capability", () => {
+  const result = evaluateCapability(
+    catalog,
+    "m2-current-channel-experts",
+    {
+      repoRoot: REPO_ROOT,
+      artifactExists: () => false,
+      toolProbe: availableToolProbe,
+    },
+  );
+  assert.equal(result.status, "BLOCKED_MISSING_PRIVATE_ARTIFACT");
+  assert.equal(result.coreDevelopmentUnaffected, true);
+  assert.deepEqual(result.missingPrivateRoles, [
+    "user-reviewed-channel-master",
+    "formal-model-input-cache",
+    "exact-v0.3-overlap-comparator",
+  ]);
+  assert.match(
+    result.recovery,
+    /public diagnostics, tests and application startup remain available/u,
+  );
+});
+
+test("missing channel-generative inputs block only that private capability", () => {
+  const result = evaluateCapability(
+    catalog,
+    "m2-current-channel-generative",
+    {
+      repoRoot: REPO_ROOT,
+      artifactExists: () => false,
+      toolProbe: availableToolProbe,
+    },
+  );
+  assert.equal(result.status, "BLOCKED_MISSING_PRIVATE_ARTIFACT");
+  assert.equal(result.coreDevelopmentUnaffected, true);
+  assert.deepEqual(result.missingPrivateRoles, [
+    "user-reviewed-channel-master",
+    "formal-model-input-cache",
+    "frozen-channel-expert-evaluation",
+    "frozen-channel-expert-evaluation-manifest",
+  ]);
+  assert.match(
+    result.recovery,
+    /public synthetic diagnostics, tests and startup remain available/u,
+  );
 });
 
 test("later-origin capability requires the original frozen v1 state", () => {

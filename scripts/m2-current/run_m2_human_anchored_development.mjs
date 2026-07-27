@@ -21,6 +21,19 @@ import {
   runM2HumanAnchoredTsbPublicDiagnostic,
   writeM2HumanAnchoredTsbBlockedDevelopment
 } from "./human_anchored_tsb_occurrence_mode.mjs";
+import {
+  runM2LifecycleAwarePrivateDevelopment,
+  runM2LifecycleAwarePublicDiagnostic
+} from "./lifecycle_aware_mode.mjs";
+import {
+  runM2ChannelExpertsPrivateDevelopment,
+  runM2ChannelExpertsPublicDiagnostic
+} from "./channel_experts_mode.mjs";
+import {
+  prepareM2ChannelGenerativeRunReceipt,
+  runM2ChannelGenerativePrivateDevelopment,
+  runM2ChannelGenerativePublicDiagnostic
+} from "./channel_generative_mode.mjs";
 
 let config;
 
@@ -33,8 +46,43 @@ const root = path.resolve(
 );
 const tsbPublicMode = process.argv.includes("--tsb-occurrence-public");
 const tsbPrivateMode = process.argv.includes("--tsb-occurrence");
+const lifecyclePublicMode = process.argv.includes("--lifecycle-aware-public");
+const lifecyclePrivateMode = process.argv.includes("--lifecycle-aware");
+const channelExpertsPublicMode = process.argv.includes(
+  "--channel-experts-public"
+);
+const channelExpertsPrivateMode = process.argv.includes(
+  "--channel-experts"
+);
+const channelGenerativePublicMode = process.argv.includes(
+  "--channel-generative-public"
+);
+const channelGenerativePrivateMode = process.argv.includes(
+  "--channel-generative"
+);
 if (tsbPublicMode) {
   await runM2HumanAnchoredTsbPublicDiagnostic({
+    root,
+    verify: process.argv.includes("--verify")
+  });
+  return;
+}
+if (lifecyclePublicMode) {
+  await runM2LifecycleAwarePublicDiagnostic({
+    root,
+    verify: process.argv.includes("--verify")
+  });
+  return;
+}
+if (channelExpertsPublicMode) {
+  await runM2ChannelExpertsPublicDiagnostic({
+    root,
+    verify: process.argv.includes("--verify")
+  });
+  return;
+}
+if (channelGenerativePublicMode) {
+  await runM2ChannelGenerativePublicDiagnostic({
     root,
     verify: process.argv.includes("--verify")
   });
@@ -46,6 +94,25 @@ config = JSON.parse(await readFile(
 ));
 assertBoundary(config);
 
+const privateDirectory = path.join(root, config.privateOutputs.directory);
+if (channelGenerativePrivateMode) {
+  const head = spawnSync("git", ["rev-parse", "HEAD"], {
+    cwd: root,
+    encoding: "utf8",
+    windowsHide: true
+  });
+  if (head.status !== 0) {
+    throw new Error("m2_channel_generative_git_head_unavailable");
+  }
+  await prepareM2ChannelGenerativeRunReceipt({
+    root,
+    privateDirectory,
+    implementationCommit: head.stdout.trim(),
+    command:
+      "npm run develop:m2:current:channel-generative",
+    environment: `${process.platform}-${process.arch}`
+  });
+}
 const materialization = spawnSync(
   process.execPath,
   [
@@ -53,7 +120,9 @@ const materialization = spawnSync(
     path.join(
       root,
       "scripts/m2-current/materialize_human_anchored_cases.py"
-    )
+    ),
+    ...(channelExpertsPrivateMode ? ["--channel-experts"] : []),
+    ...(channelGenerativePrivateMode ? ["--channel-generative"] : [])
   ],
   {
     cwd: root,
@@ -80,7 +149,6 @@ if (materialization.status !== 0) {
   );
 }
 
-const privateDirectory = path.join(root, config.privateOutputs.directory);
 const [
   historyText,
   primaryText,
@@ -128,6 +196,36 @@ if (tsbPrivateMode) {
     primaryCases,
     auxiliaryCases,
     privateDirectory
+  });
+  return;
+}
+if (lifecyclePrivateMode) {
+  await runM2LifecycleAwarePrivateDevelopment({
+    root,
+    baseConfig: config,
+    manifest,
+    primaryCases,
+    auxiliaryCases,
+    privateDirectory
+  });
+  return;
+}
+if (channelExpertsPrivateMode) {
+  await runM2ChannelExpertsPrivateDevelopment({
+    root,
+    baseConfig: config,
+    manifest,
+    primaryCases,
+    auxiliaryCases,
+    privateDirectory
+  });
+  return;
+}
+if (channelGenerativePrivateMode) {
+  await runM2ChannelGenerativePrivateDevelopment({
+    root,
+    privateDirectory,
+    baseManifest: manifest
   });
   return;
 }

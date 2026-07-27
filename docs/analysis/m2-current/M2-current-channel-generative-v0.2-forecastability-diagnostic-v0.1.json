@@ -1,0 +1,23 @@
+{
+  "schema": "m2.current.channel_generative_forecastability_public.v0.1",
+  "finalStatus": "NOT_EXECUTED_CONTRACT_SEMANTIC_BLOCKER",
+  "candidateOutputsFrozen": false,
+  "reason": "G1, G2 and G3 candidate outputs were not produced because strict auxiliary G0 offset and common-reversal bindings were unavailable.",
+  "currentReachability": null,
+  "oracleEntry": null,
+  "oracleOccurrence": null,
+  "conditionalAmountAndHead": null,
+  "horizonShape": null,
+  "targetUseDiagnostic": null,
+  "participatesInTraining": false,
+  "participatesInSelection": false,
+  "participatesInGate": false,
+  "deployable": false,
+  "canAuthorizeG4G5G6": false,
+  "forbiddenClaims": [
+    "proven irreducible error",
+    "Bayes error measured",
+    "theoretical maximum established",
+    "forecasting impossible"
+  ]
+}

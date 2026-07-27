@@ -1,0 +1,182 @@
+{
+  "schema": "m2.evaluation-v2.frozen-rescore-preregistration.v1",
+  "status": "FROZEN_BEFORE_V2_OUTCOME_READ",
+  "taskAnchor": "83bef9290b53a468f1a4cb1989c3012f9e2ace9f",
+  "taskStartedAt": "2026-07-28T00:52:24.9555500+08:00",
+  "target": "future_sales_share_cash",
+  "cashAuthority": "user_reviewed_sales_share_workbook_membership",
+  "actualDefinition": "sales_share_cash_actual_only",
+  "purpose": "Validate the draft evaluation contract v2 by rescoring only prediction rows that existed before this task.",
+  "prohibitions": {
+    "modelExecution": true,
+    "training": true,
+    "fitting": true,
+    "tuning": true,
+    "selection": true,
+    "predictionReconstruction": true,
+    "predictionImputation": true,
+    "productionIntegration": true,
+    "holdoutRead": true
+  },
+  "caseKey": [
+    "standardWorkId",
+    "origin",
+    "horizonMonths"
+  ],
+  "numericPolicy": {
+    "registeredScoreAbsoluteTolerance": 1e-8,
+    "probabilityClipEpsilon": 1e-12,
+    "missingPrediction": "DISQUALIFY_MODEL_GROUP_NO_IMPUTATION",
+    "zeroScale": "SUPPRESS_SCALED_METRIC_NO_SYNTHETIC_SCALE",
+    "quantileMethod": "R_TYPE_7",
+    "deterministicTieBreak": "stable_case_key_ascending"
+  },
+  "uncertainty": {
+    "seed": 20260728,
+    "workClusterBootstrapIterations": 2000,
+    "confidenceLevel": 0.95,
+    "clusterUnit": "standardWorkId",
+    "resamplePolicy": "sample_works_with_replacement_keep_all_rows",
+    "timeBlockDefinition": "maximal_connected_component_of_adjacent_calendar_origins"
+  },
+  "privacy": {
+    "minimumPublicCasesPerCell": 30,
+    "minimumPublicWorksPerCell": 20,
+    "minimumPortfolioOriginsPerCell": 5,
+    "suppressionCode": "SUPPRESSED_PRIVACY_THRESHOLD"
+  },
+  "horizonPolicy": {
+    "scoreEachHorizonSeparately": true,
+    "pooledWapeDiagnosticOnly": true,
+    "businessHorizonWeightsAuthorized": false,
+    "unifiedChampionAllowed": false
+  },
+  "pointMetrics": [
+    "wape",
+    "signedBias",
+    "absoluteBias",
+    "mae",
+    "medianAbsoluteError",
+    "absoluteErrorQuantiles",
+    "pairedAbsoluteErrorDifference",
+    "absoluteWapeFva",
+    "relativeWapeFva"
+  ],
+  "occurrenceMetrics": {
+    "requiresStoredProbability": true,
+    "thresholds": [
+      0.25,
+      0.5,
+      0.75
+    ],
+    "metrics": [
+      "brier",
+      "logLoss",
+      "baseRate",
+      "reliability10EqualWidthBins",
+      "prAuc",
+      "rocAucAuxiliary",
+      "confusionMatrix"
+    ]
+  },
+  "conditionalAmountMetrics": {
+    "requiresStoredConditionalAmountAndIndependentReversal": true,
+    "actualPositiveRowsOnly": true,
+    "metrics": [
+      "wape",
+      "signedBias",
+      "mae",
+      "logMae"
+    ]
+  },
+  "rankingDiagnostic": {
+    "promotionGate": false,
+    "within": "origin_and_horizon",
+    "topFractions": [
+      0.01,
+      0.05,
+      0.1
+    ],
+    "metrics": [
+      "spearman",
+      "actualCashCapture"
+    ]
+  },
+  "businessLossSensitivity": {
+    "promotionGate": false,
+    "underToOverCostRatios": [
+      [0.5, 1],
+      [1, 1],
+      [2, 1]
+    ],
+    "winnerSelectionAllowed": false
+  },
+  "posthocTopRevenueAttribution": {
+    "usesFutureActual": true,
+    "selectionUseAllowed": false,
+    "fractions": [
+      0.01,
+      0.05,
+      0.1
+    ]
+  },
+  "artifactBindings": [
+    {
+      "artifactId": "ART-CURRENT-CANONICAL-51384",
+      "sha256": "f4377698b09d2f77cf27421bf0599218c572cdf6195a9eec03733e9bdb83240d",
+      "rowCount": 51384,
+      "privatePath": "data/private-output/m2-current-canonical-channel/M2-current-canonical-channel-evaluation-private-v0.1.ndjson",
+      "families": ["frozen_served", "dense_25_origin"]
+    },
+    {
+      "artifactId": "ART-HUMAN-ANCHORED-91562",
+      "sha256": "620ac0969e2b43c67b856bd33f59d2eaddf34b8569ef489e027a868ba85b6501",
+      "rowCount": 91562,
+      "privatePath": "data/private-output/m2-current-human-anchored/M2-current-human-anchored-evaluation-private-v0.1.ndjson",
+      "families": ["primary", "strict_auxiliary", "overlap"]
+    },
+    {
+      "artifactId": "ART-TSB-86359",
+      "sha256": "c6dc529d38fbc18821a63d1c5bd0215b6128293acca210c571367619adbfa9f7",
+      "rowCount": 86359,
+      "privatePath": "data/private-output/m2-current-human-anchored/M2-current-human-anchored-tsb-occurrence-evaluation-private-v0.1.ndjson",
+      "families": ["primary_36_month", "strict_auxiliary"]
+    },
+    {
+      "artifactId": "ART-LIFECYCLE-91562",
+      "sha256": "d0327389051e4d5ecf9b61e010e40449f5110f77f012ecb60535b6f148fc5038",
+      "rowCount": 91562,
+      "privatePath": "data/private-output/m2-current-human-anchored/M2-current-lifecycle-aware-evaluation-private-v0.1.ndjson",
+      "families": ["primary_36_month", "strict_rolling", "overlap"]
+    },
+    {
+      "artifactId": "ART-CHANNEL-SCALAR-395904",
+      "sha256": "aee288069e2cee728d26797df24c48f186e9083c49235f9e4c77ccc0e74922fd",
+      "rowCount": 395904,
+      "privatePath": "data/private-output/m2-current-human-anchored/M2-current-channel-experts-evaluation-private-v0.1.ndjson",
+      "families": ["work", "channel"]
+    },
+    {
+      "artifactId": "ART-PORTFOLIO-30",
+      "sha256": "d38a3305dba6c2eb904568160612093be5b6077010aa9e84f0aa79f5fe944504",
+      "rowCount": 30,
+      "privatePath": "data/private-output/m2-current-quality/M2-current-sales-share-portfolio-cells-private-v0.6.ndjson",
+      "families": ["portfolio"]
+    }
+  ],
+  "qualifiedComparabilityGroups": [
+    "CG-WORK-SS-CURRENT-7083",
+    "CG-WORK-SS-HA-PRIMARY-12039-H36",
+    "CG-WORK-SS-HA-STRICT-74320",
+    "CG-WORK-SS-OVERLAP-5203-H36",
+    "CG-PORT-SS-30CELLS"
+  ],
+  "knownCapabilityGapsBeforeOutcomeRead": [
+    "CAPABILITY_GAP_NO_ORIGIN_VISIBLE_REVENUE_SCALE_BAND",
+    "CAPABILITY_GAP_NO_STRICT_ORIGIN_PRIOR_MASE_SCALE",
+    "CAPABILITY_GAP_RAW_HIERARCHICAL_POSITIVE_EXPERT_ROWS_NOT_IDENTIFIABLE",
+    "CAPABILITY_GAP_NO_INTERVAL_OUTPUT_EXCEPT_HUMAN_ANCHORED_ARTIFACT",
+    "CAPABILITY_GAP_OCCURRENCE_AND_CONDITIONAL_AMOUNT_ONLY_LIFECYCLE_ARTIFACT"
+  ],
+  "outcomeReadBeforeFreeze": false
+}

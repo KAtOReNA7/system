@@ -1,12 +1,14 @@
 # 决策登记表
 
 M2 当前授权与停止边界只由用户最新明确指令和
-`docs/analysis/m2-v2/M2-v2-current-state-index-v0.18.md` 给出。下列历史记录中
+`docs/analysis/m2-v2/M2-v2-current-state-index-v0.21.md` 给出。下列历史记录中
 出现的“已授权”“当前”或 next step 不构成 provider、resume、Canary、full160、
 holdout 或新开发授权。
 
 | 决策 | 状态 | 当前结论 | ADR |
 |---|---|---|---|
+| DEC-019 | 当前 | commercial-state information gain、data readiness、source discovery 与 source acquisition audit 已完成。现有 `standard_work_status_history`、`basic_info_version`、`mapping_change_record`、transfer archive 和 loader 均不能恢复合规历史商业状态；work/channel/contract/month 历史覆盖为 0，`canonicalEventLedgerGenerated=false`。决定 `NO_RECOVERABLE_COMPLIANT_HISTORICAL_COMMERCIAL_SOURCE_ACQUIRED`；业务系统提供 capability-scoped immutable export 并重新审计前，不创建 event ledger、不开发或训练 commercial-state 模型 | `docs/analysis/m2-current/M2-historical-commercial-source-acquisition-audit-v0.1.md` |
+| DEC-018 | 当前 | lifecycle-aware revenue forecast v0.1 已完成五状态、状态条件 occurrence、log-amount 与 top-revenue 诊断。raw challenger primary/strict WAPE 为 0.50139298/0.62275977，劣于 learnedGlobal baseline 0.44022495/0.41191878；revival-only post-hoc 管线只改善 0.0145%/0.0048%，低于 1% materiality，头部收入作品无改善。结论 `LIFECYCLE_AWARE_DEVELOPMENT_FAIL_TRIVIAL_POSTHOC_GAIN`，不替换 exact v0.3、不进入 production | `docs/analysis/m2-current/M2-current-lifecycle-aware-revenue-forecast-development-v0.1.md` |
 | DEC-017 | 当前 | v1.0 later-origin 资格审计确认 2023-01 至 2023-04 虽已 36 个月标签成熟，但必须作为 1 个连续块，且 2023-03 已进入既有辅助评估、选择证据读取到 2025-12，整块不独立；原运行完整 frozen state 缺失，未读取指标、未消耗窗口。最早可能独立 origin 为 2026-01，需账单完整到 2029-01 且取得原 frozen state | `docs/analysis/m2-current/M2-current-human-anchored-later-origin-readiness-v0.1.md` |
 | DEC-015 | 当前 | M2 只预测未来分成收入现金；全部买断现金（包括 cutoff 已确认买断应收）在预测范围外。人工账单分区是现金类型唯一权威；133 个渠道原始组合已归并为 74 个 canonical 渠道。v0.9 在 25-origin 诊断恶化、在 7,083 served case 仅改善 0.0118%，结论 `REJECT_KEEP_V0_3_WORK_LEVEL_FALLBACK` | `docs/prd/m2-v2/M2-forecast-intelligence-v2-prd-v0.2.md` |
 | DEC-016 | 当前 | 人工主力/边缘渠道算法是新模型唯一结构主干和 fallback。v1.0 从全部 3,053 部权威作品建立资格账本，在 1,125 部独立作品、12,039 个成熟 36 个月 case 上较人工原式改善 17.16%，但 WAPE 0.44022707、bias -0.12366598，分群、作品聚类 bootstrap 与 later-origin 门禁失败；冻结 v1.0，继续 exact v0.3 fallback | `docs/analysis/m2-current/M2-current-human-anchored-research-and-decision-v0.1.md` |

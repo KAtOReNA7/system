@@ -1,0 +1,205 @@
+{
+  "schemaVersion": "m2-current-channel-generative-forecastability-diagnostic-contract.v0.1",
+  "artifactType": "forecastability_oracle_diagnostic_contract_no_outcome",
+  "asOf": "2026-07-27",
+  "repository": "KAtOReNA7/system",
+  "activePr": 28,
+  "activeBranch": "codex/m2-lifecycle-aware-challenger-v0-1",
+  "verifiedAnchor": "36125b451d00489cec900a8140d61f3a91904fed",
+  "boundPreregistration": {
+    "path": "docs/analysis/m2-current/M2-current-channel-generative-v0.2-preregistration.json",
+    "sha256": "ba8be0e03102b5d07957a6a078e2e8113b78ccd8632f3589b4d41f5a66b15a50",
+    "candidateIds": [
+      "G0",
+      "G1",
+      "G2",
+      "G3"
+    ]
+  },
+  "executionOrder": {
+    "runOnlyAfterCandidateOutputsFrozen": true,
+    "participatesInTraining": false,
+    "participatesInInnerSelection": false,
+    "participatesInOuterSelection": false,
+    "participatesInGate": false,
+    "participatesInRouting": false,
+    "canAuthorizeG4G5G6": false,
+    "outcomeReadAtContractCreation": false
+  },
+  "scope": {
+    "evaluationFamilies": [
+      "primary",
+      "strict"
+    ],
+    "candidates": [
+      "G0",
+      "G1",
+      "G2"
+    ],
+    "blendReportedOnlyAsFrozenCandidateOutput": true,
+    "diagnosticQuestions": [
+      "future-first-seen structural unreachable mass",
+      "occurrence uncertainty",
+      "conditional amount scale uncertainty",
+      "horizon shape",
+      "top-revenue concentration",
+      "work-point versus portfolio-budget versus ranking use"
+    ]
+  },
+  "currentReachability": {
+    "requiredByFamily": [
+      "totalActualPositiveCash",
+      "observedAtOriginChannelActualPositiveCash",
+      "futureFirstSeenActualPositiveCash",
+      "futureFirstSeenShare",
+      "reversalActual",
+      "G0WorkTotalWape",
+      "G0WorkChannelWape"
+    ],
+    "futureFirstSeenDefinition": "canonical channel with no positive cash on or before origin",
+    "futureFirstSeenPrediction": 0,
+    "interpretation": "Observed structural unreachable positive cash under the current zero-new-channel-entry boundary.",
+    "notACompleteBayesErrorFloor": true
+  },
+  "oracleEntry": {
+    "id": "ORACLE_ENTRY",
+    "definition": "Keep G0 for observed-at-origin channels; replace future-first-seen channel positive prediction with its future actual positive cash; preserve comparable common-reversal treatment.",
+    "requiredReports": [
+      "workChannelAbsoluteError",
+      "workChannelWape",
+      "workTotalAbsoluteError",
+      "workTotalWape",
+      "maximumRemovableErrorRelativeToG0",
+      "top1Impact",
+      "top5Impact",
+      "top10Impact",
+      "eachHorizonImpact"
+    ],
+    "deployable": false,
+    "selectionEligible": false,
+    "futureInformationUsed": true,
+    "retrospectiveUpperBoundOnly": true
+  },
+  "oracleOccurrence": {
+    "id": "ORACLE_OCCURRENCE",
+    "candidates": [
+      "G0",
+      "G1",
+      "G2"
+    ],
+    "definition": "candidate conditional positive amount multiplied by the actual monthly positive-occurrence indicator, with all other accounting unchanged",
+    "requiredReports": [
+      "originalCandidateAbsoluteError",
+      "oracleOccurrenceAbsoluteError",
+      "maximumRemovableOccurrenceUncertaintyComponent",
+      "remainingConditionalAmountAbsoluteError",
+      "mechanismBreakdown",
+      "horizonBreakdown",
+      "topRevenueBreakdown"
+    ],
+    "deployable": false,
+    "selectionEligible": false,
+    "futureInformationUsed": true,
+    "interpretation": "Retrospective upper-bound diagnostic if occurrence were known perfectly."
+  },
+  "conditionalAmountAndHead": {
+    "condition": "actual monthly positive occurrence",
+    "requiredReports": [
+      "conditionalAmountWape",
+      "conditionalAmountAbsoluteError",
+      "conditionalAmountBias",
+      "top1AbsoluteErrorContribution",
+      "top5AbsoluteErrorContribution",
+      "top10AbsoluteErrorContribution",
+      "predictionMass",
+      "actualMass",
+      "smearingFactorDistribution",
+      "logResidualAggregateQuantiles",
+      "mechanismScaleBias",
+      "horizonScaleBias"
+    ]
+  },
+  "horizonShape": {
+    "comparisonUnit": "same work-channel-origin across multiple frozen horizons",
+    "requiredReports": [
+      "actualCumulativeRatios",
+      "G0ImpliedRatios",
+      "G1ImpliedRatios",
+      "G2ImpliedRatios",
+      "residualDirectionChangeRate",
+      "monotonicity",
+      "absoluteErrorByHorizon",
+      "incrementalCashError3To6",
+      "incrementalCashError6To12",
+      "incrementalCashError12To18",
+      "incrementalCashError18To24"
+    ]
+  },
+  "targetUseDiagnostic": {
+    "gateUnchanged": true,
+    "requiredByFamily": [
+      "workLevelWape",
+      "originHorizonPortfolioWape",
+      "originHorizonPortfolioBias",
+      "predictedTopDecileCaptureOfActualTopDecilePositiveCash",
+      "workRevenueRankSpearman",
+      "top10WorkAbsoluteErrorShare"
+    ],
+    "possibleFutureUseInterpretations": [
+      "work-level point forecast",
+      "portfolio budgeting",
+      "ranking prioritization",
+      "interval and human decision support"
+    ],
+    "nonMainMetricCannotDeclareCorePass": true
+  },
+  "decomposition": {
+    "entryGap": "G0 absolute error minus ORACLE_ENTRY absolute error",
+    "occurrenceGap": "candidate absolute error minus ORACLE_OCCURRENCE absolute error",
+    "amountGap": "ORACLE_OCCURRENCE absolute error remaining under actual occurrence",
+    "headContribution": "absolute error carried by actual-revenue top 1, 5 and 10 percent work bands",
+    "shapeGap": "incremental cumulative-horizon absolute error and ratio mismatch",
+    "overlapWarning": "Diagnostic gaps are retrospective upper bounds and may overlap; do not sum them as causal shares."
+  },
+  "outputPolicy": {
+    "publicAggregateOnly": true,
+    "publicWorkId": false,
+    "publicChannelUid": false,
+    "publicTaxonomyValue": false,
+    "publicLedgerRows": false,
+    "publicCredentialOrLocalMachinePath": false,
+    "privateRowsGitIgnoredCapabilityScoped": true,
+    "privateManifestRequires": [
+      "path",
+      "sha256",
+      "rowCount"
+    ]
+  },
+  "allowedClaims": [
+    "observed structural unreachable mass",
+    "retrospective oracle gap",
+    "current model-family residual gap",
+    "missing historically available drivers"
+  ],
+  "forbiddenClaims": [
+    "proven irreducible error",
+    "Bayes error measured",
+    "theoretical maximum established",
+    "forecasting impossible"
+  ],
+  "finalArtifacts": [
+    "docs/analysis/m2-current/M2-current-channel-generative-v0.2-forecastability-diagnostic-v0.1.md",
+    "docs/analysis/m2-current/M2-current-channel-generative-v0.2-forecastability-diagnostic-v0.1.json"
+  ],
+  "checkpoint": {
+    "id": "K0",
+    "outcomeRead": false,
+    "candidateOutputRequiredBeforeExecution": true,
+    "K1ExactHeadLinuxWindowsCiRequiredBeforePrivateExecution": true
+  },
+  "safeToRunBeforeCandidateFreeze": false,
+  "safeToStartPlatform": false,
+  "safeToStartTaxonomy": false,
+  "safeToStartComposition": false,
+  "finalStatus": "FORECASTABILITY_ORACLE_DIAGNOSTIC_CONTRACT_FROZEN_NO_OUTCOME_READ"
+}
