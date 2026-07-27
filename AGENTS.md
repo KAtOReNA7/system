@@ -41,6 +41,10 @@
   - `docs/analysis/m2-current/M2-current-channel-experts-architecture-failure-audit-v0.1.json`
   - `docs/analysis/m2-current/M2-current-channel-generative-v0.2-preregistration.md`
   - `docs/analysis/m2-current/M2-current-channel-generative-v0.2-preregistration.json`
+  - `docs/analysis/m2-current/M2-current-channel-generative-v0.2-interpretation-amendment-v0.1.md`
+  - `docs/analysis/m2-current/M2-current-channel-generative-v0.2-interpretation-amendment-v0.1.json`
+  - `docs/analysis/m2-current/M2-current-channel-generative-v0.2-forecastability-diagnostic-contract-v0.1.md`
+  - `docs/analysis/m2-current/M2-current-channel-generative-v0.2-forecastability-diagnostic-contract-v0.1.json`
   - `docs/analysis/m2-current/M2-current-feature-information-gain-and-commercial-state-model-proposal-v0.1.md`
   - `docs/analysis/m2-current/M2-commercial-state-data-readiness-audit-v0.1.md`
   - `docs/analysis/m2-current/M2-commercial-state-source-discovery-v0.1.md`
@@ -309,6 +313,21 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
     `implementationAuthorizationRequired=true`、
     `safeToStartImplementation=false`。不得开始实现、训练、调参或读取 v0.2
     候选结果。
+- 2026-07-27 用户已新增授权一次性执行预注册的 Channel Generative v0.2 core：
+  - 解释边界修订只允许在当前 cash-history、静态机制映射、case window 和冻结
+    low-complexity GLM 内解释 G1/G2；失败状态只能是
+    `CURRENT_CASH_HISTORY_LOW_COMPLEXITY_GENERATIVE_CORE_NO_INCREMENTAL_VALUE`，
+    不得扩展为 `FORECASTING_IS_THEORETICALLY_IMPOSSIBLE`；
+  - 本轮只授权 G0 semantic-equivalence、G1、G2、training-only G3 和不参与
+    训练/选模/gate/routing 的 forecastability/oracle diagnostic；
+  - K0 解释修订必须先独立 commit/push 并通过 exact-head Linux/Windows CI；
+    K1 实现与 synthetic 验证再独立 commit/push/CI；两者成功后才能读取一次
+    private development outcome；
+  - private evaluation 只允许完整执行一次冻结协议；outcome 后不得新增
+    feature、grid、time basis、family、fold、seed、gate 或 routing；
+  - G4 platform、G5 taxonomy、G6 composition、later-origin/final holdout、
+    production、exact v0.3 replacement 和 release 继续未授权；无论 core
+    成功或失败都必须在 G3 后停止。
 - lifecycle-aware 失败后的 feature information gain 与 commercial-state source
   审计已完成：
   - 下一轮最有潜在增益的信息是 cutoff 时真实可得、可审计、可版本化的渠道
