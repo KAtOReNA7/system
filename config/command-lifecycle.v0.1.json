@@ -70,6 +70,7 @@
     "summary:",
     "audit:m1:",
     "verify:m1:",
-    "check:m2"
+    "check:m2",
+    "rescore:m2:"
   ]
 }
