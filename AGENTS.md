@@ -4,7 +4,7 @@
 
 - PR #7、PR #8、PR #9、PR #10、PR #11、PR #12、PR #13 均已合入 `main`；已合并分支不得继续作为开发入口。
 - 当前仓库治理导航为：
-  - `docs/analysis/m2-v2/M2-v2-current-state-index-v0.22.md`
+  - `docs/analysis/m2-v2/M2-v2-current-state-index-v0.23.md`
   - `docs/analysis/m2-v2/M2-repository-code-convergence-and-portable-development-audit-v0.4.md`
   - `docs/analysis/m2-current/M2-current-maturity-reconstruction-v0.6.md`
   - `docs/analysis/m2-current/M2-sales-share-only-target-decision-v0.1.md`
@@ -37,6 +37,8 @@
   - `docs/analysis/m2-current/M2-current-channel-experts-development-v0.1.md`
   - `docs/analysis/m2-current/M2-current-channel-experts-development-v0.1.json`
   - `docs/analysis/m2-current/M2-current-channel-experts-public-diagnostic-v0.1.json`
+  - `docs/analysis/m2-current/M2-current-channel-experts-architecture-failure-audit-v0.1.md`
+  - `docs/analysis/m2-current/M2-current-channel-experts-architecture-failure-audit-v0.1.json`
   - `docs/analysis/m2-current/M2-current-feature-information-gain-and-commercial-state-model-proposal-v0.1.md`
   - `docs/analysis/m2-current/M2-commercial-state-data-readiness-audit-v0.1.md`
   - `docs/analysis/m2-current/M2-commercial-state-source-discovery-v0.1.md`
@@ -273,6 +275,19 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
     `CHANNEL_EXPERT_DEVELOPMENT_FAIL_KEEP_LEARNEDGLOBAL_AND_EXACT_V0_3`。
     A0–A6、平台 taxonomy、shrinkage 网格、nested selection 和失败结论已冻结，
     不得继续同窗调参、用 post-hoc fallback 隐藏 raw 结果或替换 exact v0.3。
+- channelExperts v0.1 architecture failure audit 已只读复核现有代码与冻结
+  A0–A6 rows，结论为
+  `CHANNEL_EXPERT_V01_IMPLEMENTATION_MISMATCH_CONFIRMED`：
+  - v0.1 没有实现独立渠道时间生成器，而是对已经包含 origin-observed 渠道历史、
+    渠道排序及 main/edge allocation 的 learnedGlobal 渠道分量施加 factor 和
+    单一金额 scale；
+  - 第一处 WAPE 恶化在 A1→A2；primary 最大增量在 A4→A5 taxonomy 直接金额
+    修正，strict 最大增量在 A2→A3 mechanism amount scale；
+  - taxonomy 是直接金额 ratio correction 及其 shrinkage，不是生成器参数 prior；
+  - 仅支持下一步 `PREREGISTER_GENERATIVE_V02`，不证明原理论正确，也不授权
+    v0.2 实现、训练、调参或选择；现有 v0.1 multiplier/calibration 路径须从下一
+    候选退役，物化、守恒、future-first-seen exclusion、canonical mapping、
+    nested work folds 和 learnedGlobal fallback 可复用。
 - lifecycle-aware 失败后的 feature information gain 与 commercial-state source
   审计已完成：
   - 下一轮最有潜在增益的信息是 cutoff 时真实可得、可审计、可版本化的渠道
