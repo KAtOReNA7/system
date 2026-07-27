@@ -128,6 +128,69 @@ test("channel expert challenger stays isolated from production and sealed capabi
   );
 });
 
+test("frozen private development publishes every raw ablation and the failed decision", async () => {
+  const result = await readJson(
+    "docs/analysis/m2-current/"
+      + "M2-current-channel-experts-development-v0.1.json"
+  );
+
+  assert.equal(
+    result.decision,
+    "CHANNEL_EXPERT_DEVELOPMENT_FAIL_KEEP_LEARNEDGLOBAL_AND_EXACT_V0_3"
+  );
+  assert.equal(result.maturityDecision, "M2_NOT_MATURE");
+  assert.equal(result.evaluation.primary.caseCount, 12039);
+  assert.equal(result.evaluation.strictRolling.caseCount, 74320);
+  assert.equal(result.evaluation.strictRollingOrigins.filter(
+    (origin) => origin.status === "evaluated"
+  ).length, 11);
+  assert.deepEqual(
+    Object.keys(result.evaluation.primary.ablations),
+    M2_CHANNEL_EXPERT_ABLATIONS
+  );
+  assert.deepEqual(
+    result.evaluation.rawAblationsPreserved,
+    M2_CHANNEL_EXPERT_ABLATIONS
+  );
+  assert.equal(
+    result.evaluation.primary.ablations.A1.wape,
+    result.evaluation.primary.ablations.A0.wape
+  );
+  assert.equal(
+    result.evaluation.strictRolling.ablations.A1.wape,
+    result.evaluation.strictRolling.ablations.A0.wape
+  );
+  assert.equal(
+    result.evaluation.primary.ablations.A6.wape
+      > result.evaluation.primary.ablations.A0.wape,
+    true
+  );
+  assert.equal(
+    result.evaluation.strictRolling.ablations.A6.wape
+      > result.evaluation.strictRolling.ablations.A0.wape,
+    true
+  );
+  assert.equal(
+    result.dataset.workChannelMaterialization.workChannelLabelRowCount,
+    387175
+  );
+  assert.equal(
+    result.dataset.workChannelMaterialization
+      .workChannelPositiveConservationDifference,
+    0
+  );
+  assert.equal(
+    Object.values(
+      result.dataset.workChannelMaterialization
+        .namedPlatformObservedLabelCounts
+    ).every((count) => count > 0),
+    true
+  );
+  assert.equal(result.boundaries.exactV03FallbackRetained, true);
+  assert.equal(result.boundaries.finalHoldoutOpened, false);
+  assert.equal(result.boundaries.releaseAuthorized, false);
+});
+
 async function readJson(relativePath) {
   return JSON.parse(await readFile(path.join(root, relativePath), "utf8"));
 }

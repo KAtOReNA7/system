@@ -694,6 +694,12 @@ def _write_channel_expert_supplement(
         for label in row["workChannelLabels"]
     ]
     platform_counts = Counter(
+        {
+            str(platform["platformId"]): 0
+            for platform in channel_config["platformModels"]
+        }
+    )
+    platform_counts.update(
         label["platformId"]
         for label in labels
         if label["observedAtOrigin"]

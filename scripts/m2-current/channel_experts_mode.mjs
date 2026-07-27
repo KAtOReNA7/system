@@ -143,7 +143,7 @@ export async function runM2ChannelExpertsPrivateDevelopment({
     ),
     writeFile(
       path.join(root, config.publicReport),
-      renderReport(result),
+      renderM2ChannelExpertReport(result),
       "utf8"
     ),
     writeFile(
@@ -259,8 +259,10 @@ function buildPublicResult({
             .predictionEligibleObservedChannelLabelCount,
         futureFirstSeenLabelOnlyCount:
           materialization.futureFirstSeenLabelOnlyCount,
-        configuredNamedPlatformCount:
+      configuredNamedPlatformCount:
           materialization.namedPlatformConfiguredCount,
+        namedPlatformObservedLabelCounts:
+          materialization.namedPlatformObservedLabelCounts,
         workChannelPositiveConservationDifference: 0,
         workChannelReversalConservationDifference: 0,
         workChannelNetConservationDifference: 0
@@ -294,6 +296,8 @@ function buildPublicResult({
       mechanismExperts: config.mechanismExperts,
       namedPlatforms: config.platformModels.map((platform) => ({
         platformId: platform.platformId,
+        displayName:
+          platform.displayName ?? platform.canonicalChannelName,
         model: "platform_partial_pooling_with_sparse_fallback"
       })),
       platformTaxonomy: Object.freeze({
@@ -384,7 +388,7 @@ function coverageMatrix(rows, config) {
   );
   const mechanisms = config.mechanismExperts.map(
     (expert) => String(expert.expertId)
-  );
+  ).concat("learnedGlobal");
   const matrix = {};
   for (const platformId of platforms) {
     const mechanismRows = {};
@@ -598,7 +602,7 @@ function assertDatasetBoundary(
   }
 }
 
-function renderReport(result) {
+export function renderM2ChannelExpertReport(result) {
   const primary = result.evaluation.primary;
   const strict = result.evaluation.strictRolling;
   const rows = M2_CHANNEL_EXPERT_ABLATIONS.map((id) => (
@@ -613,20 +617,35 @@ function renderReport(result) {
   const platformRows = Object.entries(
     result.evaluation.coverageMatrix.primary
   ).flatMap(([platform, mechanisms]) => (
-    Object.entries(mechanisms).map(([mechanism, value]) => (
-      `| ${platform} | ${mechanism} | ${value.channelCaseCount}`
-      + ` | ${value.positiveActualCaseCount}`
-      + ` | ${JSON.stringify(value.fallbackCounts)} |`
-    ))
+    Object.entries(mechanisms).map(([mechanism, value]) => {
+      const strictValue = result.evaluation.coverageMatrix
+        .strictRolling[platform][mechanism];
+      return (
+        `| ${platform} | ${mechanism} | ${value.channelCaseCount}`
+        + ` | ${strictValue.channelCaseCount}`
+        + ` | ${JSON.stringify(value.fallbackCounts)}`
+        + ` | ${JSON.stringify(strictValue.fallbackCounts)} |`
+      );
+    })
   )).join("\n");
-  const topRows = Object.values(primary.topRevenue).map((value) => (
-    `| top ${percent(value.fraction, 0)} | ${value.workCount}`
-    + ` | ${number(value.ablations.A0.wape)}`
-    + ` | ${number(value.ablations.A6.wape)}`
-    + ` | ${percent(
-      value.ablations.A6.wape / value.ablations.A0.wape - 1
-    )} |`
-  )).join("\n");
+  const topRows = Object.entries(primary.topRevenue).map(([key, value]) => {
+    const strictValue = strict.topRevenue[key];
+    return (
+      `| top ${percent(value.fraction, 0)} | ${value.workCount}`
+      + ` | ${number(value.ablations.A0.wape)}`
+      + ` | ${number(value.ablations.A6.wape)}`
+      + ` | ${percent(
+        value.ablations.A6.wape / value.ablations.A0.wape - 1
+      )}`
+      + ` | ${strictValue.workCount}`
+      + ` | ${number(strictValue.ablations.A0.wape)}`
+      + ` | ${number(strictValue.ablations.A6.wape)}`
+      + ` | ${percent(
+        strictValue.ablations.A6.wape
+          / strictValue.ablations.A0.wape - 1
+      )} |`
+    );
+  }).join("\n");
   return `# M2 channel/mechanism hierarchical challenger v0.1
 
 ## 结论先行
@@ -662,8 +681,8 @@ inner work holdout 选择；outer validation、exact v0.3 和 sealed 数据未�
 
 ## 五个平台 × 三类机制覆盖与回退
 
-| 平台 | 机制 | channel case | 正实际 case | A6 路由计数 |
-|---|---|---:|---:|---|
+| 平台 | 机制 | primary channel case | strict channel case | primary A6 路由 | strict A6 路由 |
+|---|---|---:|---:|---|---|
 ${platformRows}
 
 细分类样本不足时按
@@ -672,8 +691,8 @@ taxonomy → platform×mechanism → platform → mechanism → learnedGlobal
 
 ## Top-revenue
 
-| 收入层 | 作品数 | A0 WAPE | A6 WAPE | 相对变化 |
-|---|---:|---:|---:|---:|
+| 收入层 | primary 作品 | primary A0 | primary A6 | primary 相对 | strict 作品 | strict A0 | strict A6 | strict 相对 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
 ${topRows}
 
 ## 门禁

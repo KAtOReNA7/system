@@ -80,7 +80,8 @@
     },
     {
       "platformId": "manbo",
-      "canonicalChannelName": "漫播"
+      "displayName": "漫播",
+      "canonicalChannelName": "克拉漫播"
     }
   ],
   "platformTaxonomy": {

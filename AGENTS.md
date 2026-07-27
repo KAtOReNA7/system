@@ -4,7 +4,7 @@
 
 - PR #7、PR #8、PR #9、PR #10、PR #11、PR #12、PR #13 均已合入 `main`；已合并分支不得继续作为开发入口。
 - 当前仓库治理导航为：
-  - `docs/analysis/m2-v2/M2-v2-current-state-index-v0.21.md`
+  - `docs/analysis/m2-v2/M2-v2-current-state-index-v0.22.md`
   - `docs/analysis/m2-v2/M2-repository-code-convergence-and-portable-development-audit-v0.4.md`
   - `docs/analysis/m2-current/M2-current-maturity-reconstruction-v0.6.md`
   - `docs/analysis/m2-current/M2-sales-share-only-target-decision-v0.1.md`
@@ -33,6 +33,10 @@
   - `docs/analysis/m2-current/M2-current-lifecycle-aware-revenue-forecast-development-v0.1.md`
   - `docs/analysis/m2-current/M2-current-lifecycle-aware-revenue-forecast-development-v0.1.json`
   - `docs/analysis/m2-current/M2-current-lifecycle-aware-public-diagnostic-v0.1.json`
+  - `docs/analysis/m2-current/M2-current-channel-experts-preregistration-v0.1.json`
+  - `docs/analysis/m2-current/M2-current-channel-experts-development-v0.1.md`
+  - `docs/analysis/m2-current/M2-current-channel-experts-development-v0.1.json`
+  - `docs/analysis/m2-current/M2-current-channel-experts-public-diagnostic-v0.1.json`
   - `docs/analysis/m2-current/M2-current-feature-information-gain-and-commercial-state-model-proposal-v0.1.md`
   - `docs/analysis/m2-current/M2-commercial-state-data-readiness-audit-v0.1.md`
   - `docs/analysis/m2-current/M2-commercial-state-source-discovery-v0.1.md`
@@ -251,6 +255,24 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
   - 结论为 `LIFECYCLE_AWARE_DEVELOPMENT_FAIL_TRIVIAL_POSTHOC_GAIN`，
     `modelUpgradeSupported=false`。不得替换 exact v0.3，不得将 post-hoc state
     routing 表述为独立选模或成熟度提升；本轮配置、实验和失败结论已冻结。
+- `M2-current-channel-mechanism-hierarchical-challenger-v0.1` 已按
+  2026-07-27 用户授权完成 local private development：
+  - 物化 12,039 个 primary case、97,490 个 auxiliary case 和 387,175 条
+    work-channel label；287,914 条渠道在 origin 已观察，99,261 条未来首次出现
+    渠道只作 label-only，positive/reversal/net 三项逐 case 守恒差均为 0；
+  - learnedGlobal 逐渠道分解 A1 与 A0 在 primary/strict 最大绝对差均为 0；
+    membership、advertising、transactional 三类专家和喜马拉雅、微信读书、
+    番茄畅听、猫耳、漫播五个平台模型均已执行，稀疏节点按预注册层级回退；
+  - A0–A6 primary WAPE 依次为 `0.44022495 / 0.44022495 / 0.44893186 /
+    0.45885403 / 0.45901148 / 0.58080898 / 0.53776683`；
+  - A0–A6 strict WAPE 依次为 `0.41191878 / 0.41191878 / 0.41847102 /
+    0.54680086 / 0.59230448 / 0.66353355 / 0.65865324`；
+  - A6 相对 A0 在 primary/strict 分别恶化 `22.16% / 59.90%`，top
+    1%/5%/10% 收入作品也全部恶化；
+  - 结论为
+    `CHANNEL_EXPERT_DEVELOPMENT_FAIL_KEEP_LEARNEDGLOBAL_AND_EXACT_V0_3`。
+    A0–A6、平台 taxonomy、shrinkage 网格、nested selection 和失败结论已冻结，
+    不得继续同窗调参、用 post-hoc fallback 隐藏 raw 结果或替换 exact v0.3。
 - lifecycle-aware 失败后的 feature information gain 与 commercial-state source
   审计已完成：
   - 下一轮最有潜在增益的信息是 cutoff 时真实可得、可审计、可版本化的渠道
@@ -336,6 +358,11 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
   与 private development 授权已执行完毕；raw 候选失败，post-hoc revival-only
   收益低于 materiality，配置和失败结论已冻结，`candidateSelectionAuthorized=false`、
   `newCandidateFamilyDevelopmentAuthorized=false`、`modelTrainingAuthorized=false`
+- 本轮 channel/mechanism hierarchical challenger 的 work-channel 物化、三类
+  机制专家、五个平台模型、平台 taxonomy、hierarchical shrinkage、A0–A6 和
+  bounded nested selection 已执行完毕并失败；配置、raw 结果和失败结论冻结，
+  `candidateSelectionAuthorized=false`、`newCandidateFamilyDevelopmentAuthorized=false`、
+  `modelTrainingAuthorized=false`
 - 本轮 commercial-state information-gain proposal、data readiness、source
   discovery 和 historical source acquisition audit 已执行完毕；只授权
   source investigation，不授权 schema、event ledger、模型实现或训练。
@@ -425,6 +452,9 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
   inner selection、公开 synthetic 诊断和三层 raw/blend/selected FVA 报告；
   lifecycle-aware 五状态 encoder、状态条件 occurrence、log-amount、raw/selected
   分离、revenue-weighted WAPE、生命周期分群和 top-revenue 误差诊断；
+  work-channel 守恒物化、learnedGlobal 渠道贡献分解、membership/advertising/
+  transactional 专家、五个平台 partial-pooling、平台×机制×作品分类 taxonomy、
+  hierarchical shrinkage、A0–A6 与 nested inner-work selection；
   commercial-state feature information gain proposal、data readiness、historical
   source discovery 和 acquisition audit。
 - 已验证：三账单逐行/逐月守恒、3,053 基础人口与 3,052 账单观察人口边界、
@@ -447,7 +477,10 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
   无改善；5,203-case exact v0.3 overlap 的 raw WAPE 虽为 0.27458711，但只是
   同窗子集诊断，因此拒绝升级；历史商业状态 source audit 确认 current projection、
   单快照 version、空 mapping change 与 current archive 均不能生成合规 event
-  ledger，work/channel/contract/month 合规历史覆盖均为 0。
+  ledger，work/channel/contract/month 合规历史覆盖均为 0；channel expert
+  A6 primary/strict WAPE 为 0.53776683 / 0.65865324，较 A0 恶化
+  22.16% / 59.90%，五个平台和 top-revenue 均不支持升级，故冻结并保留
+  learnedGlobal 与 exact v0.3。
 - 已退役：120 部人工评估的 current 依赖；不重建、不重放。
 - 下一输入：later-origin 路线等待账单完整到 2029-01，并要求原运行时 frozen
   v1 state；或者仅在明确公式需要时接收带 effective/available-at、来源版本、
