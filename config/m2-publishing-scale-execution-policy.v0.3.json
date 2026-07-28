@@ -45,6 +45,7 @@
       "cache_rebuild",
       "receipt_control_flow",
       "memory",
+      "process_termination",
       "deterministic_implementation"
     ]
   },

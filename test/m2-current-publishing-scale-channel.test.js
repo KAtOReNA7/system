@@ -368,7 +368,7 @@ test("readiness and impact map disclose the K7D implementation block", () => {
 test("historical consumed authorization remains immutable", () => {
   assert.equal(
     packageConfig.scripts["develop:m2:current:publishing-scale-channel"],
-    "node --max-old-space-size=8192 "
+    "node --max-old-space-size=24576 "
       + "scripts/m2-current/run_m2_human_anchored_development.mjs "
       + "--publishing-scale-channel"
   );

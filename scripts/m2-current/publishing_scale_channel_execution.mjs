@@ -182,7 +182,12 @@ export async function prepareM2PublishingScaleExecution({
     privateDirectory,
     config.privateOutputs.runReceiptPrefix
   );
-  const attemptNumber = authorizeAttempt(previousReceipts, policy);
+  const recoveredReceipts = await recoverInterruptedPreviousReceipt({
+    directory: privateDirectory,
+    previousReceipts,
+    policy
+  });
+  const attemptNumber = authorizeAttempt(recoveredReceipts, policy);
   const suffix = `${gitPreflight.head.slice(0, 12)}-attempt-${attemptNumber}`;
   const authorizationFile =
     `${path.parse(config.privateOutputs.runtimeAuthorization).name}-`
@@ -247,6 +252,7 @@ export async function prepareM2PublishingScaleExecution({
     command,
     environment,
     nodeVersion: process.version,
+    executionProcessId: process.pid,
     startTime: new Date().toISOString(),
     modelId: M2_PUBLISHING_SCALE_MODEL_ID,
     experimentArmId: M2_PUBLISHING_SCALE_ARM_ID,
@@ -557,6 +563,10 @@ function classifyInfrastructureFailure(failureCode) {
       /heap out of memory|ENOMEM|memory/iu
     ],
     [
+      "process_termination",
+      /process_terminated_before_valid_evaluation/iu
+    ],
+    [
       "deterministic_implementation",
       /deterministic_implementation|conservation|duplicate case key/iu
     ]
@@ -702,7 +712,66 @@ async function readPreviousReceipts(directory, prefix) {
   })));
 }
 
-function authorizeAttempt(previousReceipts, policy) {
+export async function recoverInterruptedPreviousReceipt({
+  directory,
+  previousReceipts,
+  policy
+}) {
+  if (previousReceipts.length === 0) return previousReceipts;
+  const latest = previousReceipts.at(-1);
+  const receipt = latest.value;
+  if (
+    receipt.status === "COMPLETED"
+    || receipt.status?.startsWith("FAILED_CLOSED_")
+    || receipt.evaluationComplete === true
+  ) {
+    return previousReceipts;
+  }
+  if (
+    Number.isInteger(receipt.executionProcessId)
+    && receipt.executionProcessId > 0
+    && processIsAlive(receipt.executionProcessId)
+  ) {
+    throw new Error("m2_publishing_scale_execution_already_running");
+  }
+  if (
+    policy.executionWindow.invalidAttemptReceiptRequired !== true
+    || receipt.interpretableRawCandidateEvaluationProduced === true
+  ) {
+    throw new Error("m2_publishing_scale_interrupted_attempt_not_recoverable");
+  }
+  const receiptPath = path.join(directory, latest.file);
+  const failure = await recordPublishingScaleExecutionFailure({
+    receiptPath,
+    error: {
+      code:
+        "m2_publishing_scale_process_terminated_before_valid_evaluation"
+    }
+  });
+  if (typeof receipt.runtimeAuthorizationFile === "string") {
+    await closeRuntimeAuthorization(
+      path.join(directory, receipt.runtimeAuthorizationFile),
+      "CLOSED_FAILED",
+      failure.status
+    );
+  }
+  return previousReceipts.map((entry) => (
+    entry.file === latest.file ? { ...entry, value: failure } : entry
+  ));
+}
+
+function processIsAlive(processId) {
+  try {
+    process.kill(processId, 0);
+    return true;
+  } catch (error) {
+    if (error?.code === "ESRCH") return false;
+    if (error?.code === "EPERM") return true;
+    throw error;
+  }
+}
+
+export function authorizeAttempt(previousReceipts, policy) {
   if (previousReceipts.length === 0) return 1;
   if (
     previousReceipts.some(({ value }) => (
