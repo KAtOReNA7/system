@@ -168,6 +168,419 @@ export function quantileType7(sortedValues, probability) {
   return sortedValues[lower] * (1 - weight) + sortedValues[upper] * weight;
 }
 
+const V21_IDENTITY_FIELDS = [
+  "metricDefinitionId",
+  "metricDefinitionVersion",
+  "target",
+  "cashAuthority",
+  "actualDefinition",
+  "asOfContract",
+  "grain",
+  "populationId",
+  "horizonContract",
+  "evaluationFamily",
+  "artifactId",
+  "artifactSha256"
+];
+
+export function validateEvaluationIdentityV21(identity) {
+  if (identity === null || typeof identity !== "object" || Array.isArray(identity)) {
+    throw new Error("m2_evaluation_v2_1_identity_required");
+  }
+  for (const field of V21_IDENTITY_FIELDS) {
+    if (identity[field] === null || identity[field] === undefined || identity[field] === "") {
+      throw new Error(`m2_evaluation_v2_1_identity_${field}_required`);
+    }
+  }
+  if (!/^[a-f0-9]{64}$/.test(identity.artifactSha256)) {
+    throw new Error("m2_evaluation_v2_1_identity_artifact_sha256_invalid");
+  }
+  return { ...identity };
+}
+
+export function compareEvaluationIdentitiesV21(left, right) {
+  const validatedLeft = validateEvaluationIdentityV21(left);
+  const validatedRight = validateEvaluationIdentityV21(right);
+  const comparisonFields = [
+    "target",
+    "cashAuthority",
+    "actualDefinition",
+    "asOfContract",
+    "grain",
+    "populationId",
+    "horizonContract",
+    "evaluationFamily"
+  ];
+  const differences = comparisonFields
+    .filter((field) => JSON.stringify(validatedLeft[field]) !== JSON.stringify(validatedRight[field]))
+    .map((field) => ({
+      field,
+      left: validatedLeft[field],
+      right: validatedRight[field]
+    }));
+  return {
+    status: differences.length === 0
+      ? "SAME_CASE_COMPARABLE"
+      : "NOT_COMPARABLE_IDENTITY_MISMATCH",
+    differences
+  };
+}
+
+export function scorePointRowsV21(rows) {
+  requireRows(rows);
+  const workCount = new Set(rows.map((row) => row.standardWorkId).filter(Boolean)).size;
+  try {
+    return {
+      status: "DEFINED",
+      workCount,
+      ...scorePointRowsV2(rows)
+    };
+  } catch (error) {
+    if (error.message !== "m2_evaluation_v2_actual_denominator_zero") throw error;
+    return {
+      status: "UNDEFINED_ZERO_ACTUAL_DENOMINATOR",
+      caseCount: rows.length,
+      workCount,
+      actualAbsoluteTotal: 0,
+      absoluteErrorTotal: rows.reduce(
+        (sum, row) => sum + Math.abs(finite(row.pointEstimate, "point_estimate")),
+        0
+      ),
+      signedErrorTotal: rows.reduce(
+        (sum, row) => sum + finite(row.pointEstimate, "point_estimate"),
+        0
+      ),
+      wape: null,
+      signedBias: null,
+      absoluteBias: null,
+      mae: rows.reduce(
+        (sum, row) => sum + Math.abs(finite(row.pointEstimate, "point_estimate")),
+        0
+      ) / rows.length,
+      medianAbsoluteError: quantileType7(
+        rows.map((row) => Math.abs(finite(row.pointEstimate, "point_estimate")))
+          .sort((a, b) => a - b),
+        0.5
+      ),
+      absoluteErrorQuantiles: null
+    };
+  }
+}
+
+export function scoreOccurrenceRowsV21(rows, options = {}) {
+  requireRows(rows);
+  const normalized = rows.map((row) => {
+    if (row.actualPositive === null || row.actualPositive === undefined) {
+      throw new Error("m2_evaluation_v2_1_actual_positive_binary_required");
+    }
+    const value = finite(row.actualPositive, "actual_positive");
+    if (value < 0) throw new Error("m2_evaluation_v2_1_actual_positive_invalid");
+    return {
+      ...row,
+      actualPositive: value > 0 ? 1 : 0
+    };
+  });
+  const mapped = normalized.map((row) => ({
+    occurrenceActual: row.actualPositive,
+    occurrenceProbability: row.occurrenceProbability
+  }));
+  const candidate = scoreOccurrenceRowsV2(mapped, {
+    epsilon: options.epsilon ?? 1e-12,
+    thresholds: [options.diagnosticThreshold ?? 0.5]
+  });
+  const prevalence = candidate.baseRate;
+  const oracleRows = normalized.map(() => ({
+    occurrenceActual: 0,
+    occurrenceProbability: prevalence
+  }));
+  normalized.forEach((row, index) => {
+    oracleRows[index].occurrenceActual = row.actualPositive;
+  });
+  const oracle = scoreOccurrenceRowsV2(oracleRows, {
+    epsilon: options.epsilon ?? 1e-12,
+    thresholds: [options.diagnosticThreshold ?? 0.5]
+  });
+  const frozenRate = options.frozenTrainingBaseRate;
+  let frozenBaseline = {
+    status: "NOT_COMPUTABLE_FROZEN_TRAINING_BASE_RATE_MISSING",
+    trainingBaseRate: null,
+    brier: null,
+    logLoss: null,
+    brierSkill: null,
+    logLossImprovement: null
+  };
+  if (frozenRate !== null && frozenRate !== undefined) {
+    const rate = finite(frozenRate, "frozen_training_base_rate");
+    if (rate < 0 || rate > 1) {
+      throw new Error("m2_evaluation_v2_1_frozen_training_base_rate_invalid");
+    }
+    const baseline = scoreOccurrenceRowsV2(normalized.map((row) => ({
+      occurrenceActual: row.actualPositive,
+      occurrenceProbability: rate
+    })), {
+      epsilon: options.epsilon ?? 1e-12,
+      thresholds: [options.diagnosticThreshold ?? 0.5]
+    });
+    frozenBaseline = {
+      status: "COMPUTABLE",
+      trainingBaseRate: rate,
+      brier: baseline.brier,
+      logLoss: baseline.logLoss,
+      brierSkill: baseline.brier === 0 ? null : 1 - candidate.brier / baseline.brier,
+      logLossImprovement: baseline.logLoss - candidate.logLoss
+    };
+  }
+  return {
+    caseCount: candidate.caseCount,
+    prevalence,
+    brier: candidate.brier,
+    logLoss: candidate.logLoss,
+    prAuc: candidate.prAuc,
+    rocAucAuxiliary: candidate.rocAucAuxiliary,
+    reliability10EqualWidthBins: candidate.reliability10EqualWidthBins,
+    threshold05DiagnosticOnly: candidate.confusionMatrices[
+      String(options.diagnosticThreshold ?? 0.5)
+    ],
+    evaluationPrevalenceOracleDescriptiveOnly: {
+      probability: prevalence,
+      brier: oracle.brier,
+      logLoss: oracle.logLoss
+    },
+    frozenTrainingPrevalenceBaseline: frozenBaseline
+  };
+}
+
+export function scoreConditionalAmountRowsV21(rows) {
+  requireRows(rows);
+  for (const row of rows) {
+    if (row.actualPositiveAmount === undefined) {
+      throw new Error("m2_evaluation_v2_1_actual_positive_amount_required");
+    }
+    if (row.conditionalAmountPrediction === undefined) {
+      throw new Error("m2_evaluation_v2_1_conditional_amount_output_required");
+    }
+    if (row.reversalPointEstimate === undefined) {
+      throw new Error("m2_evaluation_v2_1_independent_reversal_required");
+    }
+  }
+  return scoreConditionalAmountRowsV2(rows.map((row) => ({
+    conditionalActual: row.actualPositiveAmount,
+    conditionalAmountPrediction: row.conditionalAmountPrediction,
+    reversalPointEstimate: row.reversalPointEstimate
+  })));
+}
+
+export function assignMaximalAdjacentOriginBlocksV21(rows) {
+  requireRows(rows);
+  const origins = [...new Set(rows.map((row) => String(row.origin ?? "")))].sort();
+  if (origins.some((origin) => !/^\d{4}-\d{2}$/.test(origin))) {
+    throw new Error("m2_evaluation_v2_1_origin_month_required");
+  }
+  const result = new Map();
+  let start = origins[0];
+  let previous = origins[0];
+  let index = 1;
+  for (const origin of origins) {
+    if (origin !== origins[0] && monthDistanceV21(previous, origin) !== 1) {
+      index += 1;
+      start = origin;
+    }
+    result.set(origin, { index, start, end: origin });
+    previous = origin;
+  }
+  const ends = new Map();
+  for (const origin of origins) ends.set(result.get(origin).index, origin);
+  return rows.map((row) => {
+    const block = result.get(String(row.origin));
+    return {
+      ...row,
+      timeBlock: `B${block.index}:${block.start}..${ends.get(block.index)}`
+    };
+  });
+}
+
+export function scoreIntervalRowsV21(rows, options = {}) {
+  requireRows(rows);
+  const grid = options.quantileGrid ?? [0.05, 0.1, 0.2, 0.5, 0.8, 0.9, 0.95];
+  const required = [0.05, 0.1, 0.2, 0.5, 0.8, 0.9, 0.95];
+  if (JSON.stringify(grid) !== JSON.stringify(required)) {
+    throw new Error("m2_evaluation_v2_1_native_quantile_grid_required");
+  }
+  const score = intervalCoreV21(rows, grid);
+  const byHorizon = groupedPrivateScoreV21(
+    rows,
+    (row) => String(row.horizonMonths),
+    (values) => intervalCoreV21(values, grid),
+    options
+  );
+  const byTimeBlock = groupedPrivateScoreV21(
+    assignMaximalAdjacentOriginBlocksV21(rows),
+    (row) => row.timeBlock,
+    (values) => intervalCoreV21(values, grid),
+    options
+  );
+  let reference = {
+    status: "NO_FROZEN_INTERVAL_REFERENCE",
+    interpretationStatus: "PROMISING_DEVELOPMENT_INTERVAL_EVIDENCE",
+    wisImprovement: null,
+    crpsImprovement: null
+  };
+  if (options.referenceRows) {
+    ensureExactPairsV21(rows, options.referenceRows);
+    const referenceScore = intervalCoreV21(options.referenceRows, grid);
+    reference = {
+      status: "COMPARABLE_FROZEN_REFERENCE",
+      interpretationStatus: "PAIRED_INTERVAL_REFERENCE_AVAILABLE",
+      modelId: options.referenceModelId ?? null,
+      wis: referenceScore.wis,
+      crpsApproximation: referenceScore.crpsApproximation,
+      wisImprovement: referenceScore.wis - score.wis,
+      crpsImprovement: referenceScore.crpsApproximation - score.crpsApproximation
+    };
+  }
+  return {
+    ...score,
+    quantileGrid: grid,
+    byHorizon,
+    byTimeBlock,
+    reference
+  };
+}
+
+export function scoreRankingRowsV21(candidateRows, fallbackRows, options = {}) {
+  requireRows(candidateRows);
+  requireRows(fallbackRows);
+  ensureExactPairsV21(candidateRows, fallbackRows);
+  const privacy = privacyStatusV21(candidateRows, options);
+  if (privacy.status !== "PUBLIC") return privacy;
+  const fractions = options.topFractions ?? [0.01, 0.05, 0.1];
+  const candidate = rankingCoreV21(candidateRows, fractions);
+  const fallback = rankingCoreV21(fallbackRows, fractions);
+  const differences = rankingDifferencesV21(candidate, fallback, fractions);
+  const iterations = options.bootstrapIterations ?? 1000;
+  const seed = options.seed ?? 20260728;
+  const workInterval = rankingBootstrapV21(
+    candidateRows,
+    fallbackRows,
+    "standardWorkId",
+    seed,
+    iterations
+  );
+  const originInterval = rankingBootstrapV21(
+    candidateRows,
+    fallbackRows,
+    "origin",
+    seed + 1,
+    iterations
+  );
+  const confirmed = workInterval
+    && originInterval
+    && workInterval.meanSpearmanDifferenceLower95 > 0
+    && originInterval.meanSpearmanDifferenceLower95 > 0;
+  return {
+    status: confirmed
+      ? "PAIRED_RANKING_SIGNAL_ESTIMATED"
+      : "UNCONFIRMED_RANKING_SIGNAL",
+    caseCount: candidateRows.length,
+    workCount: new Set(candidateRows.map((row) => row.standardWorkId)).size,
+    groupCount: candidate.groupCount,
+    weighting: "equal_origin_horizon_cell_weight",
+    candidate,
+    fallback,
+    pairedDifferences: differences,
+    clusterIntervals: {
+      work: workInterval,
+      originTime: originInterval
+    }
+  };
+}
+
+export function scorePortfolioPairedV21(candidateRows, fallbackRows, options = {}) {
+  requireRows(candidateRows);
+  requireRows(fallbackRows);
+  ensureExactPairsV21(candidateRows, fallbackRows);
+  const horizons = [...new Set(candidateRows.map((row) => Number(row.horizonMonths)))]
+    .sort((a, b) => a - b);
+  const byHorizon = {};
+  for (const horizon of horizons) {
+    const candidate = candidateRows.filter((row) => Number(row.horizonMonths) === horizon);
+    const fallback = fallbackRows.filter((row) => Number(row.horizonMonths) === horizon);
+    const originCount = new Set(candidate.map((row) => row.origin)).size;
+    if (originCount < (options.minimumOriginCount ?? 5)) {
+      byHorizon[String(horizon)] = {
+        status: "SUPPRESSED_MINIMUM_ORIGIN_COUNT",
+        originCount
+      };
+      continue;
+    }
+    const paired = scorePairedPointRowsV2(candidate, fallback);
+    byHorizon[String(horizon)] = {
+      status: "DEFINED_SMALL_SAMPLE_DEVELOPMENT_ONLY",
+      originCount,
+      ...paired,
+      originClusterInterval: pointFvaBootstrapV21(
+        candidate,
+        fallback,
+        "origin",
+        (options.seed ?? 20260728) + horizon,
+        options.bootstrapIterations ?? 1000
+      )
+    };
+  }
+  return {
+    status: "PORTFOLIO_PAIRED_DEVELOPMENT_EVIDENCE",
+    smallSampleWarning: true,
+    caseCount: candidateRows.length,
+    originCount: new Set(candidateRows.map((row) => row.origin)).size,
+    byHorizon
+  };
+}
+
+export function scoreTopRevenueAttributionV21(rows, options = {}) {
+  requireRows(rows);
+  const fractions = options.topFractions ?? [0.01, 0.05, 0.1];
+  const caseCells = groupMapV21(
+    rows,
+    (row) => `${row.origin}|${row.horizonMonths}`
+  );
+  const withinCell = {};
+  for (const [key, values] of [...caseCells].sort(([a], [b]) => a.localeCompare(b))) {
+    const privacy = privacyStatusV21(values, options);
+    withinCell[key] = privacy.status === "PUBLIC"
+      ? revenueSharesV21(values, fractions)
+      : privacy;
+  }
+  const works = new Map();
+  for (const row of rows) {
+    const value = works.get(row.standardWorkId) ?? {
+      actual: 0,
+      absoluteError: 0
+    };
+    value.actual += Math.abs(finite(row.actual, "actual"));
+    value.absoluteError += Math.abs(
+      finite(row.pointEstimate, "point_estimate") - finite(row.actual, "actual")
+    );
+    works.set(row.standardWorkId, value);
+  }
+  return {
+    status: "POSTHOC_FUTURE_ACTUAL_ATTRIBUTION_ONLY",
+    futureActualUsed: true,
+    allowedForSelectionOrGate: false,
+    caseLevelWithinOriginHorizon: withinCell,
+    workLevelGlobal: works.size < (options.minimumWorkCount ?? 20)
+      ? {
+        status: "SUPPRESSED_PUBLIC_PRIVACY_THRESHOLD",
+        workCount: works.size,
+        minimumWorkCount: options.minimumWorkCount ?? 20
+      }
+      : revenueSharesV21(
+        [...works].map(([standardWorkId, value]) => ({ standardWorkId, ...value })),
+        fractions,
+        true
+      )
+  };
+}
+
 function reliabilityBins(pairs, count) {
   const result = [];
   for (let index = 0; index < count; index += 1) {
@@ -232,6 +645,446 @@ function aucByThreshold(pairs, kind) {
     previousY = y;
   }
   return area;
+}
+
+function intervalCoreV21(rows, grid) {
+  const intervals = [
+    { id: "central_90", lower: 0.05, upper: 0.95, nominal: 0.9 },
+    { id: "central_80", lower: 0.1, upper: 0.9, nominal: 0.8 },
+    { id: "central_60", lower: 0.2, upper: 0.8, nominal: 0.6 }
+  ];
+  const coverage = Object.fromEntries(intervals.map(({ id, nominal }) => [
+    id,
+    { nominal, hits: 0, widthTotal: 0 }
+  ]));
+  let quantileLoss = 0;
+  let wis = 0;
+  for (const row of rows) {
+    const actual = finite(row.actual, "actual");
+    const quantiles = {};
+    let previous = -Infinity;
+    for (const probability of grid) {
+      const value = finite(row.quantiles?.[String(probability)], "quantile");
+      if (value < previous) throw new Error("m2_evaluation_v2_1_quantiles_not_monotone");
+      previous = value;
+      quantiles[String(probability)] = value;
+      const error = actual - value;
+      quantileLoss += error >= 0
+        ? probability * error
+        : (1 - probability) * -error;
+    }
+    let weighted = 0.5 * Math.abs(actual - quantiles["0.5"]);
+    for (const interval of intervals) {
+      const lower = quantiles[String(interval.lower)];
+      const upper = quantiles[String(interval.upper)];
+      const alpha = 1 - interval.nominal;
+      const score = upper - lower
+        + (actual < lower ? 2 / alpha * (lower - actual) : 0)
+        + (actual > upper ? 2 / alpha * (actual - upper) : 0);
+      weighted += alpha / 2 * score;
+      coverage[interval.id].widthTotal += upper - lower;
+      if (actual >= lower && actual <= upper) coverage[interval.id].hits += 1;
+    }
+    wis += weighted / (intervals.length + 0.5);
+  }
+  return {
+    caseCount: rows.length,
+    workCount: new Set(rows.map((row) => row.standardWorkId).filter(Boolean)).size,
+    wis: wis / rows.length,
+    crpsApproximation: 2 * quantileLoss / (rows.length * grid.length),
+    meanQuantileScore: quantileLoss / (rows.length * grid.length),
+    intervals: Object.fromEntries(intervals.map(({ id, nominal }) => [id, {
+      nominal,
+      observedCoverage: coverage[id].hits / rows.length,
+      absoluteCalibrationError: Math.abs(coverage[id].hits / rows.length - nominal),
+      meanWidth: coverage[id].widthTotal / rows.length
+    }]))
+  };
+}
+
+function groupedPrivateScoreV21(rows, keyOf, scorer, options) {
+  const result = {};
+  for (const [key, values] of [...groupMapV21(rows, keyOf)]
+    .sort(([a], [b]) => a.localeCompare(b))) {
+    const privacy = privacyStatusV21(values, options);
+    result[key] = privacy.status === "PUBLIC" ? scorer(values) : privacy;
+  }
+  return result;
+}
+
+function privacyStatusV21(rows, options = {}) {
+  const caseCount = rows.length;
+  const workCount = new Set(
+    rows.map((row) => row.standardWorkId).filter((value) =>
+      value && value !== "__PORTFOLIO__"
+    )
+  ).size;
+  const minimumCaseCount = options.minimumCaseCount ?? 30;
+  const minimumWorkCount = options.minimumWorkCount ?? 20;
+  if (caseCount < minimumCaseCount || workCount < minimumWorkCount) {
+    return {
+      status: "SUPPRESSED_PUBLIC_PRIVACY_THRESHOLD",
+      caseCount,
+      workCount,
+      minimumCaseCount,
+      minimumWorkCount
+    };
+  }
+  return { status: "PUBLIC", caseCount, workCount };
+}
+
+function ensureExactPairsV21(candidateRows, fallbackRows) {
+  if (candidateRows.length !== fallbackRows.length) {
+    throw new Error("m2_evaluation_v2_1_pair_mismatch");
+  }
+  const fallback = new Map(fallbackRows.map((row) => [row.caseKey, row]));
+  for (const row of candidateRows) {
+    const other = fallback.get(row.caseKey);
+    if (!other || finite(other.actual, "actual") !== finite(row.actual, "actual")) {
+      throw new Error("m2_evaluation_v2_1_pair_mismatch");
+    }
+  }
+}
+
+function rankingCoreV21(rows, fractions) {
+  const cells = groupMapV21(rows, (row) => `${row.origin}|${row.horizonMonths}`);
+  const cellScores = [];
+  for (const values of cells.values()) {
+    if (values.length < 2) continue;
+    const actualRanks = ranksV21(values.map((row) => finite(row.actual, "actual")));
+    const predictedRanks = ranksV21(values.map((row) =>
+      finite(row.pointEstimate, "point_estimate")
+    ));
+    const captures = Object.fromEntries(fractions.map((fraction) => [
+      String(fraction),
+      topCaptureV21(values, fraction)
+    ]));
+    cellScores.push({
+      spearman: correlationV21(actualRanks, predictedRanks),
+      kendallTauB: kendallTauBV21(values),
+      captures
+    });
+  }
+  return {
+    groupCount: cellScores.length,
+    meanSpearman: averageV21(cellScores.map((row) => row.spearman)),
+    meanKendallTauB: averageV21(cellScores.map((row) => row.kendallTauB)),
+    meanTopRevenueCapture: Object.fromEntries(fractions.map((fraction) => [
+      String(fraction),
+      averageV21(cellScores.map((row) => row.captures[String(fraction)]))
+    ]))
+  };
+}
+
+function rankingDifferencesV21(candidate, fallback, fractions) {
+  return {
+    meanSpearman: candidate.meanSpearman - fallback.meanSpearman,
+    meanKendallTauB: candidate.meanKendallTauB - fallback.meanKendallTauB,
+    meanTopRevenueCapture: Object.fromEntries(fractions.map((fraction) => [
+      String(fraction),
+      candidate.meanTopRevenueCapture[String(fraction)]
+        - fallback.meanTopRevenueCapture[String(fraction)]
+    ]))
+  };
+}
+
+function rankingBootstrapV21(
+  candidateRows,
+  fallbackRows,
+  clusterField,
+  seed,
+  iterations
+) {
+  const fallbackByKey = new Map(fallbackRows.map((row) => [row.caseKey, row]));
+  const cells = groupMapV21(candidateRows, (row) => `${row.origin}|${row.horizonMonths}`);
+  const contributions = new Map();
+  for (const values of cells.values()) {
+    if (values.length < 2) continue;
+    const actualRanks = ranksV21(values.map((row) => finite(row.actual, "actual")));
+    const candidateRanks = ranksV21(values.map((row) =>
+      finite(row.pointEstimate, "point_estimate")
+    ));
+    const fallbackRanks = ranksV21(values.map((row) =>
+      finite(fallbackByKey.get(row.caseKey).pointEstimate, "fallback")
+    ));
+    const actualMean = averageV21(actualRanks);
+    const candidateMean = averageV21(candidateRanks);
+    const fallbackMean = averageV21(fallbackRanks);
+    const actualSquare = actualRanks.reduce(
+      (sum, value) => sum + (value - actualMean) ** 2,
+      0
+    );
+    const candidateSquare = candidateRanks.reduce(
+      (sum, value) => sum + (value - candidateMean) ** 2,
+      0
+    );
+    const fallbackSquare = fallbackRanks.reduce(
+      (sum, value) => sum + (value - fallbackMean) ** 2,
+      0
+    );
+    for (let index = 0; index < values.length; index += 1) {
+      const row = values[index];
+      const key = String(row[clusterField]);
+      const candidateContribution = actualSquare && candidateSquare
+        ? (actualRanks[index] - actualMean) * (candidateRanks[index] - candidateMean)
+          / Math.sqrt(actualSquare * candidateSquare)
+        : 0;
+      const fallbackContribution = actualSquare && fallbackSquare
+        ? (actualRanks[index] - actualMean) * (fallbackRanks[index] - fallbackMean)
+          / Math.sqrt(actualSquare * fallbackSquare)
+        : 0;
+      contributions.set(
+        key,
+        (contributions.get(key) ?? 0)
+          + (candidateContribution - fallbackContribution) / cells.size
+      );
+    }
+  }
+  const keys = [...contributions.keys()].sort();
+  if (keys.length < 2) return null;
+  const random = mulberry32V21(seed);
+  const estimates = [];
+  for (let iteration = 0; iteration < iterations; iteration += 1) {
+    let estimate = 0;
+    for (let index = 0; index < keys.length; index += 1) {
+      const key = keys[Math.floor(random() * keys.length)];
+      estimate += contributions.get(key);
+    }
+    estimates.push(estimate);
+  }
+  estimates.sort((a, b) => a - b);
+  return {
+    unit: clusterField === "origin" ? "origin_time_cluster" : "standard_work_cluster",
+    clusterCount: keys.length,
+    iterations,
+    seed,
+    meanSpearmanDifferenceLower95: quantileType7(estimates, 0.025),
+    meanSpearmanDifferenceUpper95: quantileType7(estimates, 0.975)
+  };
+}
+
+function pointFvaBootstrapV21(candidateRows, fallbackRows, field, seed, iterations) {
+  const fallback = new Map(fallbackRows.map((row) => [row.caseKey, row]));
+  const clusters = new Map();
+  for (const row of candidateRows) {
+    const value = clusters.get(row[field]) ?? {
+      candidateError: 0,
+      fallbackError: 0,
+      denominator: 0
+    };
+    value.candidateError += Math.abs(
+      finite(row.pointEstimate, "point_estimate") - finite(row.actual, "actual")
+    );
+    value.fallbackError += Math.abs(
+      finite(fallback.get(row.caseKey).pointEstimate, "fallback") - finite(row.actual, "actual")
+    );
+    value.denominator += Math.abs(finite(row.actual, "actual"));
+    clusters.set(row[field], value);
+  }
+  const values = [...clusters.values()];
+  const random = mulberry32V21(seed);
+  const estimates = [];
+  for (let iteration = 0; iteration < iterations; iteration += 1) {
+    let candidateError = 0;
+    let fallbackError = 0;
+    let denominator = 0;
+    for (let index = 0; index < values.length; index += 1) {
+      const value = values[Math.floor(random() * values.length)];
+      candidateError += value.candidateError;
+      fallbackError += value.fallbackError;
+      denominator += value.denominator;
+    }
+    estimates.push(denominator === 0 ? 0 : (fallbackError - candidateError) / denominator);
+  }
+  estimates.sort((a, b) => a - b);
+  return {
+    unit: field,
+    clusterCount: values.length,
+    iterations,
+    seed,
+    absoluteWapeFvaLower95: quantileType7(estimates, 0.025),
+    absoluteWapeFvaUpper95: quantileType7(estimates, 0.975)
+  };
+}
+
+function revenueSharesV21(rows, fractions, aggregated = false) {
+  const ordered = [...rows].sort((left, right) => {
+    const leftActual = aggregated ? left.actual : Math.abs(finite(left.actual, "actual"));
+    const rightActual = aggregated ? right.actual : Math.abs(finite(right.actual, "actual"));
+    return rightActual - leftActual;
+  });
+  const actualOf = (row) => aggregated ? row.actual : Math.abs(finite(row.actual, "actual"));
+  const errorOf = (row) => aggregated
+    ? row.absoluteError
+    : Math.abs(finite(row.pointEstimate, "point_estimate") - finite(row.actual, "actual"));
+  const actualTotal = ordered.reduce((sum, row) => sum + actualOf(row), 0);
+  const errorTotal = ordered.reduce((sum, row) => sum + errorOf(row), 0);
+  return Object.fromEntries(fractions.map((fraction) => {
+    const count = Math.max(1, Math.ceil(ordered.length * fraction));
+    const top = ordered.slice(0, count);
+    const topActual = top.reduce((sum, row) => sum + actualOf(row), 0);
+    const topError = top.reduce((sum, row) => sum + errorOf(row), 0);
+    return [String(fraction), {
+      itemCount: count,
+      actualCashShare: actualTotal === 0 ? null : topActual / actualTotal,
+      absoluteErrorShare: errorTotal === 0 ? null : topError / errorTotal,
+      outsideTopWape: actualTotal - topActual === 0
+        ? null
+        : (errorTotal - topError) / (actualTotal - topActual),
+      denominatorStatus: actualTotal === 0
+        ? "UNDEFINED_ZERO_ACTUAL_DENOMINATOR"
+        : "DEFINED"
+    }];
+  }));
+}
+
+function topCaptureV21(rows, fraction) {
+  const count = Math.max(1, Math.ceil(rows.length * fraction));
+  const ordered = [...rows].sort((left, right) =>
+    finite(right.pointEstimate, "point_estimate")
+      - finite(left.pointEstimate, "point_estimate")
+  );
+  const total = rows.reduce((sum, row) => sum + Math.max(0, finite(row.actual, "actual")), 0);
+  if (total === 0) return 0;
+  return ordered.slice(0, count).reduce(
+    (sum, row) => sum + Math.max(0, finite(row.actual, "actual")),
+    0
+  ) / total;
+}
+
+function kendallTauBV21(rows) {
+  const pairs = rows.map((row) => ({
+    x: finite(row.actual, "actual"),
+    y: finite(row.pointEstimate, "point_estimate")
+  })).sort((left, right) => left.x - right.x || left.y - right.y);
+  const totalPairs = pairs.length * (pairs.length - 1) / 2;
+  const xTies = tiePairCountV21(pairs.map((row) => row.x));
+  const yTies = tiePairCountV21(pairs.map((row) => row.y).sort((a, b) => a - b));
+  let bothTies = 0;
+  for (let start = 0; start < pairs.length;) {
+    let end = start + 1;
+    while (
+      end < pairs.length
+      && pairs[end].x === pairs[start].x
+      && pairs[end].y === pairs[start].y
+    ) end += 1;
+    bothTies += (end - start) * (end - start - 1) / 2;
+    start = end;
+  }
+  const yValues = [...new Set(pairs.map((row) => row.y))].sort((a, b) => a - b);
+  const yIndex = new Map(yValues.map((value, index) => [value, index + 1]));
+  const tree = Array(yValues.length + 1).fill(0);
+  let processed = 0;
+  let discordant = 0;
+  for (let start = 0; start < pairs.length;) {
+    let end = start + 1;
+    while (end < pairs.length && pairs[end].x === pairs[start].x) end += 1;
+    for (let index = start; index < end; index += 1) {
+      const rank = yIndex.get(pairs[index].y);
+      discordant += processed - fenwickSumV21(tree, rank);
+    }
+    for (let index = start; index < end; index += 1) {
+      fenwickAddV21(tree, yIndex.get(pairs[index].y), 1);
+      processed += 1;
+    }
+    start = end;
+  }
+  const comparablePairs = totalPairs - xTies - yTies + bothTies;
+  const concordant = comparablePairs - discordant;
+  const denominator = Math.sqrt((totalPairs - xTies) * (totalPairs - yTies));
+  return denominator === 0 ? 0 : (concordant - discordant) / denominator;
+}
+
+function tiePairCountV21(sortedValues) {
+  let count = 0;
+  for (let start = 0; start < sortedValues.length;) {
+    let end = start + 1;
+    while (end < sortedValues.length && sortedValues[end] === sortedValues[start]) end += 1;
+    count += (end - start) * (end - start - 1) / 2;
+    start = end;
+  }
+  return count;
+}
+
+function fenwickAddV21(tree, index, value) {
+  for (let cursor = index; cursor < tree.length; cursor += cursor & -cursor) {
+    tree[cursor] += value;
+  }
+}
+
+function fenwickSumV21(tree, index) {
+  let result = 0;
+  for (let cursor = index; cursor > 0; cursor -= cursor & -cursor) {
+    result += tree[cursor];
+  }
+  return result;
+}
+
+function ranksV21(values) {
+  const ordered = values.map((value, index) => ({ value, index }))
+    .sort((a, b) => a.value - b.value || a.index - b.index);
+  const result = Array(values.length);
+  for (let start = 0; start < ordered.length;) {
+    let end = start + 1;
+    while (end < ordered.length && ordered[end].value === ordered[start].value) end += 1;
+    const rank = (start + end - 1) / 2;
+    for (let index = start; index < end; index += 1) result[ordered[index].index] = rank;
+    start = end;
+  }
+  return result;
+}
+
+function correlationV21(left, right) {
+  const leftMean = averageV21(left);
+  const rightMean = averageV21(right);
+  let numerator = 0;
+  let leftSquare = 0;
+  let rightSquare = 0;
+  for (let index = 0; index < left.length; index += 1) {
+    const leftValue = left[index] - leftMean;
+    const rightValue = right[index] - rightMean;
+    numerator += leftValue * rightValue;
+    leftSquare += leftValue ** 2;
+    rightSquare += rightValue ** 2;
+  }
+  return leftSquare && rightSquare
+    ? numerator / Math.sqrt(leftSquare * rightSquare)
+    : 0;
+}
+
+function averageV21(values) {
+  return values.length
+    ? values.reduce((sum, value) => sum + value, 0) / values.length
+    : null;
+}
+
+function groupMapV21(rows, keyOf) {
+  const groups = new Map();
+  for (const row of rows) {
+    const key = String(keyOf(row) ?? "");
+    if (!key) throw new Error("m2_evaluation_v2_1_group_key_required");
+    const values = groups.get(key) ?? [];
+    values.push(row);
+    groups.set(key, values);
+  }
+  return groups;
+}
+
+function monthDistanceV21(left, right) {
+  const [leftYear, leftMonth] = left.split("-").map(Number);
+  const [rightYear, rightMonth] = right.split("-").map(Number);
+  return (rightYear - leftYear) * 12 + rightMonth - leftMonth;
+}
+
+function mulberry32V21(seed) {
+  let state = seed >>> 0;
+  return () => {
+    state += 0x6D2B79F5;
+    let value = state;
+    value = Math.imul(value ^ value >>> 15, value | 1);
+    value ^= value + Math.imul(value ^ value >>> 7, value | 61);
+    return ((value ^ value >>> 14) >>> 0) / 4294967296;
+  };
 }
 
 function requireRows(rows) {

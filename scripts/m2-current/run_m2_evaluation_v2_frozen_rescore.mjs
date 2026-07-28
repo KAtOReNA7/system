@@ -4,10 +4,19 @@ import readline from "node:readline";
 import crypto from "node:crypto";
 import { spawnSync } from "node:child_process";
 import {
+  assignMaximalAdjacentOriginBlocksV21,
   scoreConditionalAmountRowsV2,
+  scoreConditionalAmountRowsV21,
+  scoreIntervalRowsV21,
   scoreOccurrenceRowsV2,
+  scoreOccurrenceRowsV21,
   scorePairedPointRowsV2,
-  scorePointRowsV2
+  scorePointRowsV2,
+  scorePointRowsV21,
+  scorePortfolioPairedV21,
+  scoreRankingRowsV21,
+  scoreTopRevenueAttributionV21,
+  validateEvaluationIdentityV21
 } from "../../src/domain/m2Current/evaluationV2.js";
 import {
   scoreM2CurrentProbabilisticRows
@@ -18,13 +27,26 @@ const preregistration = JSON.parse(fs.readFileSync(
   path.join(root, "config/m2-evaluation-v2-rescore-preregistration.v1.json"),
   "utf8"
 ));
+const contractV21 = JSON.parse(fs.readFileSync(
+  path.join(root, "config/m2-evaluation-contract.v2.1.json"),
+  "utf8"
+));
+const modelRegistry = JSON.parse(fs.readFileSync(
+  path.join(root, "config/m2-model-registry.v1.json"),
+  "utf8"
+));
 const mode = process.argv.includes("--inventory")
   ? "inventory"
+  : process.argv.includes("--rescore-v2-1")
+    ? "rescore-v2-1"
   : process.argv.includes("--rescore")
     ? "rescore"
     : null;
 if (!mode) {
-  console.error("Usage: node scripts/m2-current/run_m2_evaluation_v2_frozen_rescore.mjs --inventory|--rescore");
+  console.error(
+    "Usage: node scripts/m2-current/run_m2_evaluation_v2_frozen_rescore.mjs "
+      + "--inventory|--rescore|--rescore-v2-1"
+  );
   process.exit(2);
 }
 
@@ -99,6 +121,50 @@ if (mode === "inventory") {
 }
 
 const datasets = await loadRescoreDatasets(preregistration.artifactBindings);
+if (mode === "rescore-v2-1") {
+  const resultsV21 = scoreV21Datasets(datasets, inventory);
+  const receiptV21 = {
+    schema: "m2.evaluation-v2.1.frozen-rescore.private.v1",
+    asOf: contractV21.asOf,
+    contractVersion: contractV21.version,
+    taskAnchor: preregistration.taskAnchor,
+    preregistrationSha256: crypto.createHash("sha256")
+      .update(fs.readFileSync(
+        path.join(root, "config/m2-evaluation-v2-rescore-preregistration.v1.json")
+      ))
+      .digest("hex"),
+    contractSha256: crypto.createHash("sha256")
+      .update(fs.readFileSync(
+        path.join(root, "config/m2-evaluation-contract.v2.1.json")
+      ))
+      .digest("hex"),
+    status: "COMPLETE_AVAILABLE_GROUPS",
+    authorizationCounters: {
+      privateRowReadCount: inventory.reduce((sum, item) => sum + item.rowCount, 0),
+      modelExecutionCount: 0,
+      trainingCount: 0,
+      fittingCount: 0,
+      tuningCount: 0,
+      selectionCount: 0,
+      predictionRowsGenerated: 0,
+      predictionRowsModified: 0,
+      productionChangeCount: 0
+    },
+    results: resultsV21
+  };
+  const receiptV21Path = path.join(
+    privateDirectory,
+    "M2-evaluation-v2.1-frozen-rescore-private-v1.json"
+  );
+  fs.writeFileSync(receiptV21Path, `${JSON.stringify(receiptV21, null, 2)}\n`);
+  console.log(JSON.stringify({
+    status: "COMPLETE_AVAILABLE_GROUPS",
+    contractVersion: "2.1",
+    comparabilityGroupCount: Object.keys(resultsV21).length,
+    receiptPath: receiptV21Path
+  }));
+  process.exit(0);
+}
 const results = {};
 for (const [groupId, group] of Object.entries(datasets)) {
   results[groupId] = scoreGroup(groupId, group);
@@ -229,6 +295,7 @@ async function loadRescoreDatasets(bindings) {
       occurrenceActual: row.actualPositive,
       conditionalAmountPrediction: row.conditionalPositiveAmount,
       conditionalActual: row.actualPositive,
+      actualPositiveAmount: row.actualPositive,
       reversalPointEstimate: row.reversalPointEstimate,
       lifecycleState: row.lifecycleState
     });
@@ -276,13 +343,263 @@ function addModel(group, modelId, source, pointEstimate, extras) {
     lifecycleState: extras.lifecycleState ?? null,
     occurrenceProbability: extras.occurrenceProbability,
     occurrenceActual: extras.occurrenceActual,
+    actualPositive: extras.actualPositive ?? extras.occurrenceActual,
     conditionalAmountPrediction: extras.conditionalAmountPrediction,
     conditionalActual: extras.conditionalActual,
+    actualPositiveAmount: extras.actualPositiveAmount,
     reversalPointEstimate: extras.reversalPointEstimate,
     quantiles: extras.quantiles
   });
   group.models[modelId] = rows;
   group.variants[modelId] = extras.variantType;
+}
+
+function scoreV21Datasets(datasets, artifactInventory) {
+  const results = {};
+  for (const [groupId, group] of Object.entries(datasets)) {
+    const groupAuthority = modelRegistry.comparabilityGroups.find(
+      (item) => item.comparableGroupId === groupId
+    );
+    if (!groupAuthority) {
+      throw new Error(`m2_evaluation_v2_1_comparability_group_missing:${groupId}`);
+    }
+    const models = {};
+    for (const [modelId, rows] of Object.entries(group.models)) {
+      const artifact = artifactForModelV21(groupId, modelId, artifactInventory);
+      const pointIdentity = evaluationIdentityV21(
+        contractV21.pointMetrics,
+        groupAuthority,
+        artifact
+      );
+      const point = scorePointRowsV21(rows);
+      models[modelId] = {
+        variantType: group.variants[modelId],
+        pointIdentity,
+        pooledCrossHorizonDiagnostic: point,
+        mase: {
+          status: "NOT_COMPUTABLE_PRE_ORIGIN_SCALE_MISSING",
+          value: null,
+          strictlyPreOriginScaleAvailable: false
+        },
+        byHorizon: scorePointSlicesV21(rows, "horizonMonths"),
+        byMaximalAdjacentOriginTimeBlock: scorePointSlicesV21(
+          assignMaximalAdjacentOriginBlocksV21(rows),
+          "timeBlock"
+        ),
+        topRevenueAttribution: group.grain === "portfolio_origin_horizon"
+          ? null
+          : scoreTopRevenueAttributionV21(rows, privacyOptionsV21()),
+        occurrence: rows.every((row) =>
+          row.occurrenceProbability !== undefined
+          && row.actualPositive !== undefined
+        ) ? {
+          identity: evaluationIdentityV21(
+            contractV21.occurrenceMetrics,
+            groupAuthority,
+            artifact
+          ),
+          score: scoreOccurrenceRowsV21(rows, {
+            epsilon: preregistration.numericPolicy.probabilityClipEpsilon,
+            diagnosticThreshold: 0.5,
+            frozenTrainingBaseRate: null
+          })
+        } : null,
+        conditionalAmount: rows.every((row) =>
+          row.conditionalAmountPrediction !== undefined
+          && row.actualPositiveAmount !== undefined
+          && row.reversalPointEstimate !== undefined
+        ) ? {
+          identity: evaluationIdentityV21(
+            contractV21.conditionalAmountMetrics,
+            groupAuthority,
+            artifact
+          ),
+          score: scoreConditionalAmountRowsV21(rows)
+        } : null,
+        intervals: rows.every((row) => row.quantiles) ? {
+          identity: evaluationIdentityV21(
+            contractV21.intervalMetrics,
+            groupAuthority,
+            artifact
+          ),
+          score: scoreIntervalRowsV21(rows, {
+            quantileGrid: contractV21.intervalMetrics.nativeQuantileGrid,
+            ...privacyOptionsV21()
+          })
+        } : null
+      };
+    }
+    const fallbackId = chooseFallback(groupId, group.models);
+    const paired = {};
+    if (fallbackId) {
+      for (const [modelId, rows] of Object.entries(group.models)) {
+        if (modelId === fallbackId) continue;
+        try {
+          const pointFva = scorePairedPointRowsV2(rows, group.models[fallbackId]);
+          const pair = {
+            versus: fallbackId,
+            status: "STRICT_EXACT_CASE_PAIR",
+            pointFva,
+            workClusterInterval: pointFvaBootstrapV21Runner(
+              rows,
+              group.models[fallbackId],
+              group.grain === "portfolio_origin_horizon"
+                ? "origin"
+                : "standardWorkId"
+            )
+          };
+          if (modelId === "M2-CHAN-SCL01") {
+            pair.ranking = {
+              identity: evaluationIdentityV21(
+                contractV21.rankingMetrics,
+                groupAuthority,
+                artifactForModelV21(groupId, modelId, artifactInventory)
+              ),
+              score: scoreRankingRowsV21(
+                rows,
+                group.models[fallbackId],
+                {
+                  ...privacyOptionsV21(),
+                  topFractions: contractV21.topRevenueAttribution.fractions,
+                  seed: contractV21.uncertainty.seed,
+                  bootstrapIterations: contractV21.uncertainty.bootstrapIterations
+                }
+              )
+            };
+          }
+          paired[modelId] = pair;
+        } catch (error) {
+          if (
+            error.message !== "m2_evaluation_v2_pair_mismatch"
+            && error.message !== "m2_evaluation_v2_1_pair_mismatch"
+          ) throw error;
+          paired[modelId] = {
+            versus: fallbackId,
+            status: "NOT_COMPARABLE_CASE_SET_MISMATCH"
+          };
+        }
+      }
+    }
+    const portfolio = group.grain === "portfolio_origin_horizon"
+      ? {
+        identity: evaluationIdentityV21(
+          contractV21.portfolioMetrics,
+          groupAuthority,
+          artifactForModelV21(
+            groupId,
+            "M2-PORT-ETS01",
+            artifactInventory
+          )
+        ),
+        score: scorePortfolioPairedV21(
+          group.models["M2-PORT-ETS01"],
+          group.models["M2-BASE-CLASSIC01::M2-EXP-PORTFOLIO-ETS-01:SNAIVE"],
+          {
+            minimumOriginCount:
+              contractV21.publicPrivacy.minimumPortfolioOriginCount,
+            seed: contractV21.uncertainty.seed,
+            bootstrapIterations: contractV21.uncertainty.bootstrapIterations
+          }
+        )
+      }
+      : null;
+    results[groupId] = {
+      comparisonClass: groupAuthority.comparisonClass,
+      grain: group.grain ?? "work_origin_horizon",
+      fallbackId,
+      models,
+      paired,
+      portfolio
+    };
+  }
+  return results;
+}
+
+function scorePointSlicesV21(rows, field) {
+  const groups = new Map();
+  for (const row of rows) {
+    const key = String(row[field] ?? "");
+    const values = groups.get(key) ?? [];
+    values.push(row);
+    groups.set(key, values);
+  }
+  return Object.fromEntries([...groups].sort(([left], [right]) =>
+    left.localeCompare(right)
+  ).map(([key, values]) => {
+    if (
+      values.length < contractV21.publicPrivacy.minimumCaseCount
+      || new Set(values.map((row) => row.standardWorkId)).size
+        < contractV21.publicPrivacy.minimumWorkCount
+    ) {
+      return [key, {
+        status: contractV21.publicPrivacy.suppressionStatus,
+        caseCount: values.length,
+        workCount: new Set(values.map((row) => row.standardWorkId)).size
+      }];
+    }
+    return [key, scorePointRowsV21(values)];
+  }));
+}
+
+function evaluationIdentityV21(metric, group, artifact) {
+  return validateEvaluationIdentityV21({
+    metricDefinitionId: metric.metricDefinitionId,
+    metricDefinitionVersion: metric.metricDefinitionVersion,
+    target: group.target,
+    cashAuthority: group.cashAuthority,
+    actualDefinition: group.actualDefinition,
+    asOfContract: group.asOfContract,
+    grain: group.grain,
+    populationId: group.populationId,
+    horizonContract: group.horizons,
+    evaluationFamily: group.evaluationFamily,
+    artifactId: artifact.artifactId,
+    artifactSha256: artifact.sha256
+  });
+}
+
+function artifactForModelV21(groupId, modelId, artifactInventory) {
+  let artifactId;
+  if (groupId === "CG-WORK-SS-CURRENT-7083") {
+    artifactId = "ART-CURRENT-CANONICAL-51384";
+  } else if (groupId === "CG-PORT-SS-30CELLS") {
+    artifactId = "ART-PORTFOLIO-30";
+  } else if (modelId.startsWith("M2-CHAN-SCL01")) {
+    artifactId = "ART-CHANNEL-SCALAR-395904";
+  } else if (modelId.startsWith("M2-WORK-LC01")) {
+    artifactId = "ART-LIFECYCLE-91562";
+  } else if (
+    modelId.startsWith("M2-WORK-TSB")
+    || modelId === "M2-WORK-LG01"
+  ) {
+    artifactId = groupId === "CG-WORK-SS-OVERLAP-5203-H36"
+      ? "ART-LIFECYCLE-91562"
+      : "ART-TSB-86359";
+  } else if (modelId === "M2-WORK-OA03") {
+    artifactId = "ART-LIFECYCLE-91562";
+  } else {
+    artifactId = "ART-HUMAN-ANCHORED-91562";
+  }
+  const artifact = artifactInventory.find((item) => item.artifactId === artifactId);
+  if (!artifact) throw new Error(`m2_evaluation_v2_1_artifact_missing:${artifactId}`);
+  return artifact;
+}
+
+function privacyOptionsV21() {
+  return {
+    minimumCaseCount: contractV21.publicPrivacy.minimumCaseCount,
+    minimumWorkCount: contractV21.publicPrivacy.minimumWorkCount
+  };
+}
+
+function pointFvaBootstrapV21Runner(candidate, fallback, clusterField) {
+  return clusterBootstrap(
+    candidate,
+    fallback,
+    clusterField,
+    contractV21.uncertainty.seed,
+    contractV21.uncertainty.bootstrapIterations
+  );
 }
 
 function scoreGroup(groupId, group) {
