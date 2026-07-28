@@ -2,7 +2,9 @@
   "schema": "m2.evaluation_contract.v2.2",
   "version": "2.2",
   "asOf": "2026-07-28",
-  "status": "DRAFT_V2_2_REVISION_INCOMPLETE",
+  "status": "M2_EVALUATION_V2_2_BLOCKED_UNRESOLVED_REVERSAL",
+  "activationAllowed": false,
+  "blockingReason": "nonzero_unresolved_reversal_residual_in_evaluation_scope",
   "activationScope": "development_evaluation_only",
   "explicitlyNotAuthorized": [
     "model_execution",

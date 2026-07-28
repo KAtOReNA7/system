@@ -1,6 +1,6 @@
 {
   "schema": "m2.model_registry.v1",
-  "generatedFromCommit": "f5677bcee52f76633ffaa3072b4b0e4005c8691f",
+  "contentAuthority": "tracked_registry_content_with_runtime_verified_execution_head",
   "asOf": "2026-07-28",
   "targetAuthority": {
     "currentTarget": "future_sales_share_cash",
@@ -16,6 +16,30 @@
       "docs/analysis/m2-current/M2-current-human-ledger-partition-audit-v0.1.md"
     ]
   },
+  "actualDefinitionTransformations": [
+    {
+      "transformationId": "M2-ACTUAL-POSTING-TIME-01",
+      "version": "1",
+      "displayNameZh": "分成收入原入账口径",
+      "sourceAuthority": "user_reviewed_sales_share_workbook_membership",
+      "timeView": "posting_time",
+      "status": "PRESERVED_HISTORICAL_ACTUAL"
+    },
+    {
+      "transformationId": "M2-ACTUAL-REVERSAL-RESTATEMENT-01",
+      "version": "1",
+      "displayNameZh": "分成收入冲销追溯重述",
+      "sourceAuthority": "user_reviewed_sales_share_workbook_membership",
+      "algorithmRef": "config/m2-reversal-restatement.v1.json",
+      "timeViews": [
+        "posting_time",
+        "as_of_restated",
+        "final_restated"
+      ],
+      "status": "BLOCKED_UNRESOLVED_REVERSAL",
+      "crossActualDefinitionWinnerAllowed": false
+    }
+  ],
   "currentRoles": {
     "operationalWorkFallback": "M2-WORK-OA03",
     "researchWorkBaseline": "M2-WORK-LG01",
@@ -23,7 +47,7 @@
     "approvedForAutomation": null,
     "activeCandidate": null,
     "blockedExperiment": "M2-EXP-CHANNEL-GENERATIVE-02",
-    "latestStateIndex": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.29.md",
+    "latestStateIndex": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.30.md",
     "roleConflict": false,
     "sourceAssertions": [
       {
@@ -45,16 +69,23 @@
     "roleInterpretationZh": "exact v0.3 是作品级现行运行回退模型；learnedGlobal 是研究比较基线，并且只在渠道生成实验内部承担冻结 G0 回退。两种称呼作用域不同，不构成模型晋升冲突。"
   },
   "currentEvaluationContract": {
-    "version": "2.1",
-    "status": "ACTIVE_FOR_DEVELOPMENT_EVALUATION_ONLY",
-    "activationCondition": "exact_head_linux_and_windows_ci_success",
+    "version": "2.2",
+    "status": "M2_EVALUATION_V2_2_BLOCKED_UNRESOLVED_REVERSAL",
+    "activationAllowed": false,
+    "activationCondition": "authority_and_scope_proven_and_all_views_pass_and_zero_unresolved_residual_and_exact_cash_conservation_and_no_future_leakage_and_deterministic_public_safe_outputs_and_exact_head_linux_windows_ci_success",
     "productionGateActive": false,
     "automationGateActive": false,
     "modelRolesChanged": false,
-    "configRef": "config/m2-evaluation-contract.v2.1.json",
-    "contractRef": "docs/analysis/m2-current/M2-evaluation-contract-v2.1.md",
-    "validationRef": "docs/analysis/m2-current/M2-evaluation-contract-v2.1-validation.md",
-    "diagnosticRef": "docs/analysis/m2-current/M2-evaluation-v2.1-diagnostic-recheck.json"
+    "configRef": "config/m2-evaluation-contract.v2.2.json",
+    "contractRef": "docs/analysis/m2-current/M2-evaluation-contract-v2.2.md",
+    "validationRef": "docs/analysis/m2-current/M2-evaluation-contract-v2.2-validation.md",
+    "diagnosticRef": "docs/analysis/m2-current/M2-evaluation-v2.2-diagnostic-recheck.json",
+    "priorActiveDevelopmentContract": {
+      "version": "2.1",
+      "status": "ACTIVE_FOR_DEVELOPMENT_EVALUATION_ONLY",
+      "configRef": "config/m2-evaluation-contract.v2.1.json",
+      "validationRef": "docs/analysis/m2-current/M2-evaluation-contract-v2.1-validation.md"
+    }
   },
   "metricDefinitions": [
     {
@@ -95,6 +126,62 @@
       "version": "2.1",
       "capability": "portfolio_budget",
       "primaryUnit": "horizon"
+    },
+    {
+      "metricDefinitionId": "M2-EVAL-V2.2-POINT",
+      "version": "2.2",
+      "capability": "work_cash_point_forecast",
+      "actualDefinitionFamilies": [
+        "M2-ACTUAL-POSTING-TIME-01",
+        "M2-ACTUAL-REVERSAL-RESTATEMENT-01"
+      ],
+      "crossActualDefinitionWinnerAllowed": false
+    },
+    {
+      "metricDefinitionId": "M2-EVAL-V2.2-OCCURRENCE",
+      "version": "2.2",
+      "capability": "positive_sales_share_cash_occurrence",
+      "prAucMethod": "trapezoidal",
+      "averagePrecisionReportedSeparately": true
+    },
+    {
+      "metricDefinitionId": "M2-EVAL-V2.2-CONDITIONAL-AMOUNT",
+      "version": "2.2",
+      "capability": "conditional_positive_amount",
+      "predictionField": "conditionalAmountPrediction",
+      "actualField": "actualPositiveAmount"
+    },
+    {
+      "metricDefinitionId": "M2-EVAL-V2.2-REVERSAL",
+      "version": "2.2",
+      "capability": "reversal_occurrence_and_amount",
+      "separateFromPositiveOccurrence": true
+    },
+    {
+      "metricDefinitionId": "M2-EVAL-V2.2-RANKING",
+      "version": "2.2",
+      "capability": "ranking_diagnostic",
+      "bootstrapMethod": "full_standard_work_cluster_resample_recompute_within_cell_ranks",
+      "bootstrapIterations": 2000,
+      "timeIndependenceRequiredForTimeIntervalClaim": true
+    },
+    {
+      "metricDefinitionId": "M2-EVAL-V2.2-PORTFOLIO",
+      "version": "2.2",
+      "capability": "portfolio_budget",
+      "primaryUnit": "horizon",
+      "smallSampleSensitivityOnly": true
+    },
+    {
+      "metricDefinitionId": "M2-EVAL-V2.2-TOP-REVENUE",
+      "version": "2.2",
+      "capability": "posthoc_attribution",
+      "views": [
+        "positive_revenue",
+        "absolute_cash_magnitude",
+        "reversal_magnitude"
+      ],
+      "allowedForFittingSelectionOrGate": false
     }
   ],
   "models": [

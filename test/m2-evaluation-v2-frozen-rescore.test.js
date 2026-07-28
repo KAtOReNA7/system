@@ -129,7 +129,7 @@ test("public v2 rescore preserves registry roles and exposes aggregates only", (
   assert.equal(registry.currentRoles.approvedForAutomation, null);
   assert.equal(
     registry.currentRoles.latestStateIndex,
-    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.29.md"
+    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.30.md"
   );
   const publicText = fs.readFileSync(
     "docs/analysis/m2-current/M2-evaluation-v2-frozen-rescore-v1.md",

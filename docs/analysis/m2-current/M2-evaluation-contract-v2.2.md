@@ -1,10 +1,12 @@
 # M2 评价合同 v2.2
 
-当前状态：公共修订草案（`DRAFT_V2_2_REVISION_INCOMPLETE`）。
+当前状态：因未解决冲销残差而阻断
+（`M2_EVALUATION_V2_2_BLOCKED_UNRESOLVED_REVERSAL`）。
 
-只有冲销权威、三时间视图、整数现金守恒、2,000 次完整 bootstrap、冻结标签重评分、
-重复执行确定性、公共隐私以及当前执行提交的 Linux/Windows CI 全部通过后，状态才
-允许变为 `ACTIVE_FOR_DEVELOPMENT_EVALUATION_ONLY`。
+冲销权威、整数现金守恒、2,000 次完整 bootstrap、冻结标签重评分、重复执行确定性
+和公共隐私已经验证；但 final restated 视图存在非零未分配冲销残差。只有三时间视图、
+零残差以及当前执行提交的 Linux/Windows CI 等全部条件同时通过后，状态才允许变为
+`ACTIVE_FOR_DEVELOPMENT_EVALUATION_ONLY`。
 
 本合同不授权模型执行、训练、拟合、调参、选择、晋升、预测生成或修改、later
 origin、final holdout、production、Canary 或 release。

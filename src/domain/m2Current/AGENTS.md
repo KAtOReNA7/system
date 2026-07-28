@@ -48,11 +48,26 @@ This directory is the only implementation home for current M2 model logic.
 
 ## Evaluation contract rules
 
-- `config/m2-evaluation-contract.v2.1.json` is active only for development
-  evaluation after its exact Git head passes both Linux and Windows CI.
-  Evaluation Contract v2 remains an immutable historical draft. Neither
-  contract may be wired into production, the automation gate, or exact v0.3
-  serving merely because a frozen rescore completed.
+- Read the current evaluation-contract identity and status from
+  `config/m2-model-registry.v1.json`. A revision may activate for development
+  evaluation only after every semantic, authority, conservation, leakage,
+  determinism, privacy, and runtime exact-head Linux/Windows CI gate passes.
+  No evaluation contract may be wired into production, the automation gate,
+  or exact v0.3 serving merely because a frozen rescore completed.
+- Reversal restatement starts at the posting month and allocates backward by
+  month only within the same cash category, work, canonical channel, and
+  currency scope. Never cross scopes, reuse consumed positive cash, round an
+  unresolved residual away, or fall back to a company aggregate.
+- Keep posting-time, as-of-restated, and final-restated views separate. Future
+  reversals may update mature labels only; they must never enter features at an
+  earlier forecast origin.
+- Posting-time and reversal-restated actual definitions require distinct
+  comparability groups. Same-case label-impact pairs are allowed, but do not
+  rank models or name a winner across actual definitions.
+- Resolve repository roots and execution Git identities at runtime. Do not
+  persist drive letters, machine-absolute paths, or a copied active HEAD in
+  implementation or long-lived contracts. Content payload digests may remain
+  authoritative; transport hashes and package paths are audit metadata only.
 - A frozen evaluation must preserve raw candidate, pre-selection, selected
   pipeline, and operational fallback variants as separate identities. Never
   substitute one variant's rows or metrics for another.

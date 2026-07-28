@@ -264,6 +264,48 @@ test("v2.2 public reports preserve the blocked result and contain aggregates onl
   assert.equal(diagnostic.authorizationCounters.predictionRowsModified, 0);
 });
 
+test("registry records the blocked v2.2 identities without changing model roles", () => {
+  const registry = JSON.parse(fs.readFileSync(
+    "config/m2-model-registry.v1.json",
+    "utf8"
+  ));
+  assert.equal(
+    registry.currentRoles.latestStateIndex,
+    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.30.md"
+  );
+  assert.equal(registry.currentRoles.operationalWorkFallback, "M2-WORK-OA03");
+  assert.equal(registry.currentRoles.researchWorkBaseline, "M2-WORK-LG01");
+  assert.equal(registry.currentRoles.portfolioReference, "M2-PORT-ETS01");
+  assert.equal(registry.currentRoles.activeCandidate, null);
+  assert.equal(registry.currentRoles.approvedForAutomation, null);
+  assert.equal(
+    registry.currentEvaluationContract.status,
+    "M2_EVALUATION_V2_2_BLOCKED_UNRESOLVED_REVERSAL"
+  );
+  assert.equal(registry.currentEvaluationContract.activationAllowed, false);
+  assert.ok(
+    registry.actualDefinitionTransformations.some(
+      (item) =>
+        item.transformationId === "M2-ACTUAL-REVERSAL-RESTATEMENT-01"
+    )
+  );
+  const metricDefinitionIds = new Set(
+    registry.metricDefinitions.map((item) => item.metricDefinitionId)
+  );
+  for (const metricDefinitionId of [
+    "M2-EVAL-V2.2-POINT",
+    "M2-EVAL-V2.2-OCCURRENCE",
+    "M2-EVAL-V2.2-CONDITIONAL-AMOUNT",
+    "M2-EVAL-V2.2-REVERSAL",
+    "M2-EVAL-V2.2-RANKING",
+    "M2-EVAL-V2.2-PORTFOLIO",
+    "M2-EVAL-V2.2-TOP-REVENUE"
+  ]) {
+    assert.ok(metricDefinitionIds.has(metricDefinitionId));
+  }
+  assert.equal(Object.hasOwn(registry, "generatedFromCommit"), false);
+});
+
 function rankingRows() {
   return Array.from({ length: 12 }, (_, index) => {
     const origin = index < 6 ? "2024-01" : "2024-02";

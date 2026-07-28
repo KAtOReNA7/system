@@ -267,14 +267,14 @@ test("v2.1 extends the frozen runner without production imports", () => {
   assert.doesNotMatch(source, /src\/server/);
 });
 
-test("v2.1 registry authority changes evaluation metadata but not model roles", () => {
+test("registry advances beyond v2.1 without changing model roles", () => {
   const registry = JSON.parse(fs.readFileSync(
     "config/m2-model-registry.v1.json",
     "utf8"
   ));
   assert.equal(
     registry.currentRoles.latestStateIndex,
-    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.29.md"
+    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.30.md"
   );
   assert.equal(registry.currentRoles.operationalWorkFallback, "M2-WORK-OA03");
   assert.equal(registry.currentRoles.researchWorkBaseline, "M2-WORK-LG01");
@@ -282,21 +282,23 @@ test("v2.1 registry authority changes evaluation metadata but not model roles", 
   assert.equal(registry.currentRoles.activeCandidate, null);
   assert.equal(registry.currentRoles.approvedForAutomation, null);
   assert.equal(
-    registry.currentEvaluationContract.status,
+    registry.currentEvaluationContract.priorActiveDevelopmentContract.status,
     "ACTIVE_FOR_DEVELOPMENT_EVALUATION_ONLY"
   );
   assert.equal(registry.currentEvaluationContract.productionGateActive, false);
-  assert.deepEqual(
-    registry.metricDefinitions.map((item) => item.metricDefinitionId),
-    [
+  const metricDefinitionIds = registry.metricDefinitions.map(
+    (item) => item.metricDefinitionId
+  );
+  for (const metricDefinitionId of [
       "M2-EVAL-V2.1-POINT",
       "M2-EVAL-V2.1-OCCURRENCE",
       "M2-EVAL-V2.1-CONDITIONAL-AMOUNT",
       "M2-EVAL-V2.1-RANKING",
       "M2-EVAL-V2.1-INTERVAL",
       "M2-EVAL-V2.1-PORTFOLIO"
-    ]
-  );
+  ]) {
+    assert.ok(metricDefinitionIds.includes(metricDefinitionId));
+  }
 });
 
 test("v2.1 public diagnostic is aggregate-only and preserves raw failures", () => {
