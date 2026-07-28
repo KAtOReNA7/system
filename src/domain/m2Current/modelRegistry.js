@@ -620,6 +620,7 @@ function capabilityZh(capability) {
 function entityTypeZh(entityType) {
   return {
     model: "模型",
+    model_revision: "模型修订",
     model_family: "模型族",
     model_pipeline: "选定管线"
   }[entityType] ?? "登记实体";

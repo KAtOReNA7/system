@@ -217,6 +217,14 @@ test("read-only query exposes scoped identities and refuses invalid ranking", ()
   assert.match(status.stdout, /M2_PUBLISHING_SCALE_CORE_FAIL/u);
   assert.match(status.stdout, /M2-WORK-OA03/u);
 
+  const publishingScale = runQuery("show", "M2-CHAN-PSC01");
+  assert.equal(publishingScale.status, 0, publishingScale.stderr);
+  assert.match(publishingScale.stdout, /模型修订（model_revision）/u);
+  assert.match(
+    publishingScale.stdout,
+    /未来分成收入开发可建模现金/u
+  );
+
   const show = runQuery("show", "M2-WORK-OA03");
   assert.equal(show.status, 0, show.stderr);
   assert.match(show.stdout, /公式：/u);

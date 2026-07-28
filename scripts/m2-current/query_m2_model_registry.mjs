@@ -303,6 +303,7 @@ function formatMetric(value, resultStatus = "") {
 function entityTypeZh(value) {
   return {
     model: "模型",
+    model_revision: "模型修订",
     model_family: "模型族",
     model_pipeline: "选定管线"
   }[value] ?? "登记实体";
@@ -320,6 +321,8 @@ function capabilityZh(value) {
 function targetZh(value) {
   return {
     future_sales_share_cash: "未来分成收入现金",
+    future_sales_share_development_modelable_cash:
+      "未来分成收入开发可建模现金",
     future_bill_cash: "历史未来账单现金",
     formal_cash: "历史正式现金",
     historical_target: "历史目标",
