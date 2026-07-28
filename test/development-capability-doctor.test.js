@@ -304,9 +304,11 @@ test("missing v2.2 reversal-rescore inputs block only that private capability", 
   assert.equal(result.status, "BLOCKED_MISSING_PRIVATE_ARTIFACT");
   assert.equal(result.coreDevelopmentUnaffected, true);
   assert.deepEqual(result.missingPrivateRoles, [
+    "total-ledger-authority",
     "sales-share-ledger-authority",
-    "formal-income-facts",
-    "formal-execution-payload",
+    "buyout-ledger-authority",
+    "m1-work-mapping-authority",
+    "user-reviewed-channel-master",
     "frozen-current-canonical-evaluation",
     "frozen-human-anchored-evaluation",
     "frozen-tsb-evaluation",

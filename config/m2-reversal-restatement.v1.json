@@ -82,10 +82,13 @@
   },
   "privateOutputs": {
     "directoryRole": "m2-evaluation-v2-2-reversal-rescore",
+    "authorityFacts": "M2-reversal-authority-facts-private-v1.ndjson",
+    "authorityReceipt": "M2-reversal-authority-export-receipt-private-v1.json",
     "allocationLedger": "M2-reversal-allocation-ledger-private-v1.ndjson",
     "scopeReconciliation": "M2-reversal-scope-reconciliation-private-v1.json",
     "labelOnlyRescoreRows": "M2-evaluation-v2.2-label-only-rescore-private-v1.ndjson",
     "executionReceipt": "M2-evaluation-v2.2-execution-receipt-private-v1.json",
+    "publicAggregateCandidate": "M2-evaluation-v2.2-public-aggregate-candidate.json",
     "gitIgnoredRequired": true
   }
 }

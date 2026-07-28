@@ -65,6 +65,7 @@
     "check:m2:evaluation-v2-frozen-readiness": "node scripts/m2-current/run_m2_evaluation_v2_frozen_rescore.mjs --inventory",
     "rescore:m2:evaluation-v2-frozen": "node scripts/m2-current/run_m2_evaluation_v2_frozen_rescore.mjs --rescore",
     "rescore:m2:evaluation-v2-2-frozen-labels": "node --max-old-space-size=8192 scripts/m2-current/run_m2_evaluation_v2_frozen_rescore.mjs --rescore-v2-2",
+    "report:m2:evaluation-v2-2": "node scripts/m2-current/publish_m2_evaluation_v2_2_public_reports.mjs",
     "m3:private-dry-run:check": "node scripts/m3-private-dry-run/check_m3_private_dry_run_safety.js",
     "m3:private-dry-run": "node scripts/m3-private-dry-run/run_m3_private_material_dry_run.js",
     "m3:private-completion-bootstrap": "node scripts/m3-private-dry-run/bootstrap_m3_private_completion_pack.js",

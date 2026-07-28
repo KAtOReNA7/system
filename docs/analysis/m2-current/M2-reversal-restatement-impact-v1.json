@@ -1,0 +1,96 @@
+{
+  "schema": "m2.reversal-restatement.impact.public.v1",
+  "asOf": "2026-07-28",
+  "status": "M2_EVALUATION_V2_2_BLOCKED_UNRESOLVED_REVERSAL",
+  "labelOnlyRescoreStatus": "PARTIAL_COMPLETE_SCOPES_LABEL_ONLY_RESCORE",
+  "cash": {
+    "positiveRevenue": {
+      "exactMinorUnits": "83821498165600000018517939",
+      "authorityMonetaryUnits": "83821498.165600000018517939"
+    },
+    "reversalPosting": {
+      "exactMinorUnits": "-1228913283699999995685150",
+      "authorityMonetaryUnits": "-1228913.283699999995685150"
+    },
+    "tracedOffset": {
+      "exactMinorUnits": "1228645514699999995355150",
+      "authorityMonetaryUnits": "1228645.514699999995355150"
+    },
+    "restatedRevenue": {
+      "exactMinorUnits": "82592852650900000023162789",
+      "authorityMonetaryUnits": "82592852.650900000023162789"
+    },
+    "unresolvedReversalResidual": {
+      "exactMinorUnits": "-267769000000000330000",
+      "authorityMonetaryUnits": "-267.769000000000330000"
+    },
+    "conservationDifference": {
+      "exactMinorUnits": "0",
+      "authorityMonetaryUnits": "0.000000000000000000"
+    }
+  },
+  "affectedPopulation": {
+    "affectedScopeCount": 101,
+    "affectedWorkCount": 85,
+    "affectedChannelCount": 11,
+    "affectedMonthCount": 590,
+    "fullyZeroedMonthCount": 499,
+    "partiallyRetainedMonthCount": 91,
+    "maximumTraceDepthMonths": 62,
+    "traceDepthDistribution": {
+      "0": 9,
+      "1": 41,
+      "2": 29,
+      "3": 13,
+      "more": 51
+    },
+    "evaluatedCaseCount": 98675,
+    "affectedCaseCount": 430,
+    "affectedWorkCaseCount": 403,
+    "actualDefinitionDifferenceCaseCount": 88463,
+    "blockedResidualCaseCount": 322,
+    "portfolioPopulationMismatchCount": 30
+  },
+  "views": {
+    "postingTime": "PASS_FROZEN_HISTORICAL_POSTING_ACTUAL_PRESERVED",
+    "currentAuthorityPostingReconciliation": "DIFFERENCES_REPORTED_NOT_REWRITTEN",
+    "asOfRestated": "PASS",
+    "finalRestated": "BLOCKED"
+  },
+  "timeIntegrity": {
+    "authorityStartMonth": "2017-06",
+    "authorityDataAsOf": "2026-05",
+    "labelMaturityCutoff": "2025-12",
+    "futureLeakageRiskFound": false,
+    "originAfterCutoffRowsUsed": 0
+  },
+  "frozenArtifacts": {
+    "artifactCount": 6,
+    "rowCount": 716801,
+    "allGitIgnored": true,
+    "allDigestsMatched": true,
+    "predictionRowsModified": 0
+  },
+  "deterministicExecution": {
+    "executionCount": 2,
+    "comparedFileCount": 7,
+    "byteIdentical": true
+  },
+  "authorizationCounters": {
+    "privateAuthorityRowReadCount": 190663,
+    "frozenPredictionRowReadCount": 716801,
+    "modelExecutionCount": 0,
+    "trainingCount": 0,
+    "fittingCount": 0,
+    "tuningCount": 0,
+    "selectionCount": 0,
+    "predictionRowsGenerated": 0,
+    "predictionRowsModified": 0,
+    "productionChangeCount": 0
+  },
+  "publicPrivacy": {
+    "aggregateOnly": true,
+    "containsRowLevelIdentity": false,
+    "containsPrivatePath": false
+  }
+}

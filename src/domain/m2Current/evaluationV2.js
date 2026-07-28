@@ -1568,19 +1568,13 @@ function fullRankingWorkBootstrapV22(
     }
     const cellDifferences = [];
     for (const cell of cells) {
-      const candidate = weightedRankingCellScoreV22(
+      const pair = weightedRankingCellPairV22(
         cell,
         clusterWeights,
-        "candidate",
         fractions
       );
-      const fallback = weightedRankingCellScoreV22(
-        cell,
-        clusterWeights,
-        "fallback",
-        fractions
-      );
-      if (candidate === null || fallback === null) continue;
+      if (pair === null) continue;
+      const { candidate, fallback } = pair;
       cellDifferences.push({
         spearman: candidate.spearman - fallback.spearman,
         kendallTauB: candidate.kendallTauB - fallback.kendallTauB,
@@ -1654,18 +1648,27 @@ function prepareWeightedRankingCellV22(
   return {
     key,
     items,
-    actualOrder: order("actual"),
-    candidateOrder: order("candidate"),
-    fallbackOrder: order("fallback"),
+    actualRankGroups: rankGroupsV22(items, order("actual"), "actual"),
+    candidateRankGroups: rankGroupsV22(
+      items,
+      order("candidate"),
+      "candidate"
+    ),
+    fallbackRankGroups: rankGroupsV22(
+      items,
+      order("fallback"),
+      "fallback"
+    ),
+    candidateKendall: prepareWeightedKendallV22(items, "candidate"),
+    fallbackKendall: prepareWeightedKendallV22(items, "fallback"),
     candidateDescending: order("candidate", true),
     fallbackDescending: order("fallback", true)
   };
 }
 
-function weightedRankingCellScoreV22(
+function weightedRankingCellPairV22(
   cell,
   clusterWeights,
-  predictionField,
   fractions
 ) {
   const weights = cell.items.map(
@@ -1673,68 +1676,188 @@ function weightedRankingCellScoreV22(
   );
   const totalWeight = weights.reduce((sum, value) => sum + value, 0);
   if (totalWeight < 2) return null;
-  const predictionOrder = predictionField === "candidate"
-    ? cell.candidateOrder
-    : cell.fallbackOrder;
-  const descendingOrder = predictionField === "candidate"
-    ? cell.candidateDescending
-    : cell.fallbackDescending;
   const actualRanks = weightedRanksV22(
-    cell.items,
+    cell.items.length,
     weights,
-    cell.actualOrder,
-    "actual"
+    cell.actualRankGroups
   );
-  const predictionRanks = weightedRanksV22(
-    cell.items,
-    weights,
-    predictionOrder,
-    predictionField
-  );
-  return {
-    spearman: weightedCorrelationV22(
-      actualRanks,
-      predictionRanks,
-      weights
-    ),
-    kendallTauB: weightedKendallTauBV22(
-      cell.items,
+  const score = (rankGroups, kendall, descendingOrder) => {
+    const predictionRanks = weightedRanksV22(
+      cell.items.length,
       weights,
-      predictionField
+      rankGroups
+    );
+    return {
+      spearman: weightedCorrelationV22(
+        actualRanks,
+        predictionRanks,
+        weights
+      ),
+      kendallTauB: weightedKendallTauPreparedV22(kendall, weights),
+      topCapture: Object.fromEntries(fractions.map((fraction) => [
+        String(fraction),
+        weightedTopCaptureV22(
+          cell.items,
+          weights,
+          descendingOrder,
+          fraction
+        )
+      ]))
+    };
+  };
+  return {
+    candidate: score(
+      cell.candidateRankGroups,
+      cell.candidateKendall,
+      cell.candidateDescending
     ),
-    topCapture: Object.fromEntries(fractions.map((fraction) => [
-      String(fraction),
-      weightedTopCaptureV22(
-        cell.items,
-        weights,
-        descendingOrder,
-        fraction
-      )
-    ]))
+    fallback: score(
+      cell.fallbackRankGroups,
+      cell.fallbackKendall,
+      cell.fallbackDescending
+    )
   };
 }
 
-function weightedRanksV22(items, weights, order, field) {
-  const ranks = Array(items.length).fill(0);
-  let offset = 0;
+function rankGroupsV22(items, order, field) {
+  const groups = [];
   for (let start = 0; start < order.length;) {
     let end = start + 1;
     while (
       end < order.length
       && items[order[end]][field] === items[order[start]][field]
     ) end += 1;
-    let groupWeight = 0;
-    for (let cursor = start; cursor < end; cursor += 1) {
-      groupWeight += weights[order[cursor]];
-    }
-    const rank = offset + (groupWeight - 1) / 2;
-    for (let cursor = start; cursor < end; cursor += 1) {
-      ranks[order[cursor]] = rank;
-    }
-    offset += groupWeight;
+    groups.push(order.slice(start, end));
     start = end;
   }
+  return groups;
+}
+
+function weightedRanksV22(itemCount, weights, groups) {
+  const ranks = Array(itemCount).fill(0);
+  let offset = 0;
+  for (const group of groups) {
+    let groupWeight = 0;
+    for (const index of group) groupWeight += weights[index];
+    const rank = offset + (groupWeight - 1) / 2;
+    for (const index of group) ranks[index] = rank;
+    offset += groupWeight;
+  }
   return ranks;
+}
+
+function prepareWeightedKendallV22(items, predictionField) {
+  const ordered = items.map((_, index) => index).sort((left, right) =>
+    items[left].actual - items[right].actual
+    || items[left][predictionField] - items[right][predictionField]
+    || items[left].caseKey.localeCompare(items[right].caseKey)
+  );
+  const groupAdjacent = (order, same) => {
+    const groups = [];
+    for (let start = 0; start < order.length;) {
+      let end = start + 1;
+      while (end < order.length && same(order[start], order[end])) end += 1;
+      groups.push(order.slice(start, end));
+      start = end;
+    }
+    return groups;
+  };
+  const yOrder = items.map((_, index) => index).sort((left, right) =>
+    items[left][predictionField] - items[right][predictionField]
+    || items[left].caseKey.localeCompare(items[right].caseKey)
+  );
+  const xGroups = groupAdjacent(
+    ordered,
+    (left, right) => items[left].actual === items[right].actual
+  );
+  const yGroups = groupAdjacent(
+    yOrder,
+    (left, right) =>
+      items[left][predictionField] === items[right][predictionField]
+  );
+  const bothGroups = groupAdjacent(
+    ordered,
+    (left, right) =>
+      items[left].actual === items[right].actual
+      && items[left][predictionField] === items[right][predictionField]
+  );
+  const yValues = [...new Set(
+    items.map((item) => item[predictionField])
+  )].sort((left, right) => left - right);
+  const yValueRanks = new Map(
+    yValues.map((value, index) => [value, index + 1])
+  );
+  return {
+    ordered,
+    xGroups,
+    yGroups,
+    bothGroups,
+    yRanks: items.map((item) => yValueRanks.get(item[predictionField])),
+    yValueCount: yValues.length
+  };
+}
+
+function weightedKendallTauPreparedV22(prepared, weights) {
+  const totalWeight = weights.reduce((sum, value) => sum + value, 0);
+  const totalPairs = totalWeight * (totalWeight - 1) / 2;
+  const tiePairs = (groups) => groups.reduce((sum, group) => {
+    const weight = group.reduce(
+      (groupSum, index) => groupSum + weights[index],
+      0
+    );
+    return sum + weight * (weight - 1) / 2;
+  }, 0);
+  const xTies = tiePairs(prepared.xGroups);
+  const yTies = tiePairs(prepared.yGroups);
+  const bothTies = tiePairs(prepared.bothGroups);
+  const tree = new Float64Array(prepared.yValueCount + 1);
+  let processed = 0;
+  let discordant = 0;
+  for (const group of prepared.xGroups) {
+    for (const index of group) {
+      const weight = weights[index];
+      if (weight === 0) continue;
+      discordant += weight * (
+        processed - fenwickSumV21(tree, prepared.yRanks[index])
+      );
+    }
+    for (const index of group) {
+      const weight = weights[index];
+      if (weight === 0) continue;
+      fenwickAddV21(tree, prepared.yRanks[index], weight);
+      processed += weight;
+    }
+  }
+  const comparablePairs = totalPairs - xTies - yTies + bothTies;
+  const concordant = comparablePairs - discordant;
+  const denominator = Math.sqrt(
+    (totalPairs - xTies) * (totalPairs - yTies)
+  );
+  return denominator === 0 ? 0 : (concordant - discordant) / denominator;
+}
+
+/*
+ * Top capture still walks the precomputed prediction order because bootstrap
+ * weights change the effective number of copies selected at the cutoff.
+ */
+function weightedTopCaptureV22(items, weights, order, fraction) {
+  const totalWeight = weights.reduce((sum, value) => sum + value, 0);
+  const count = Math.max(1, Math.ceil(totalWeight * fraction));
+  const actualTotal = items.reduce(
+    (sum, item, index) =>
+      sum + weights[index] * Math.max(0, item.actual),
+    0
+  );
+  if (actualTotal === 0) return 0;
+  let remaining = count;
+  let captured = 0;
+  for (const index of order) {
+    const copies = Math.min(remaining, weights[index]);
+    captured += copies * Math.max(0, items[index].actual);
+    remaining -= copies;
+    if (remaining === 0) break;
+  }
+  return captured / actualTotal;
 }
 
 function weightedCorrelationV22(left, right, weights) {
@@ -1761,96 +1884,6 @@ function weightedCorrelationV22(left, right, weights) {
   return leftSquare && rightSquare
     ? numerator / Math.sqrt(leftSquare * rightSquare)
     : 0;
-}
-
-function weightedKendallTauBV22(items, weights, predictionField) {
-  const active = items.map((item, index) => ({
-    x: item.actual,
-    y: item[predictionField],
-    weight: weights[index],
-    caseKey: item.caseKey
-  })).filter((item) => item.weight > 0)
-    .sort((left, right) =>
-      left.x - right.x
-      || left.y - right.y
-      || left.caseKey.localeCompare(right.caseKey)
-    );
-  const totalWeight = active.reduce((sum, item) => sum + item.weight, 0);
-  const totalPairs = totalWeight * (totalWeight - 1) / 2;
-  const tiePairs = (field) => {
-    const totals = new Map();
-    for (const item of active) {
-      const key = String(item[field]);
-      totals.set(key, (totals.get(key) ?? 0) + item.weight);
-    }
-    return [...totals.values()].reduce(
-      (sum, weight) => sum + weight * (weight - 1) / 2,
-      0
-    );
-  };
-  const xTies = tiePairs("x");
-  const yTies = tiePairs("y");
-  const bothTotals = new Map();
-  for (const item of active) {
-    const key = `${item.x}\u001f${item.y}`;
-    bothTotals.set(key, (bothTotals.get(key) ?? 0) + item.weight);
-  }
-  const bothTies = [...bothTotals.values()].reduce(
-    (sum, weight) => sum + weight * (weight - 1) / 2,
-    0
-  );
-  const yValues = [...new Set(active.map((item) => item.y))]
-    .sort((left, right) => left - right);
-  const yIndex = new Map(
-    yValues.map((value, index) => [value, index + 1])
-  );
-  const tree = Array(yValues.length + 1).fill(0);
-  let processed = 0;
-  let discordant = 0;
-  for (let start = 0; start < active.length;) {
-    let end = start + 1;
-    while (end < active.length && active[end].x === active[start].x) {
-      end += 1;
-    }
-    for (let index = start; index < end; index += 1) {
-      const item = active[index];
-      const rank = yIndex.get(item.y);
-      discordant += item.weight
-        * (processed - fenwickSumV21(tree, rank));
-    }
-    for (let index = start; index < end; index += 1) {
-      const item = active[index];
-      fenwickAddV21(tree, yIndex.get(item.y), item.weight);
-      processed += item.weight;
-    }
-    start = end;
-  }
-  const comparablePairs = totalPairs - xTies - yTies + bothTies;
-  const concordant = comparablePairs - discordant;
-  const denominator = Math.sqrt(
-    (totalPairs - xTies) * (totalPairs - yTies)
-  );
-  return denominator === 0 ? 0 : (concordant - discordant) / denominator;
-}
-
-function weightedTopCaptureV22(items, weights, order, fraction) {
-  const totalWeight = weights.reduce((sum, value) => sum + value, 0);
-  const count = Math.max(1, Math.ceil(totalWeight * fraction));
-  const actualTotal = items.reduce(
-    (sum, item, index) =>
-      sum + weights[index] * Math.max(0, item.actual),
-    0
-  );
-  if (actualTotal === 0) return 0;
-  let remaining = count;
-  let captured = 0;
-  for (const index of order) {
-    const copies = Math.min(remaining, weights[index]);
-    captured += copies * Math.max(0, items[index].actual);
-    remaining -= copies;
-    if (remaining === 0) break;
-  }
-  return captured / actualTotal;
 }
 
 function summarizeRankingByOriginV22(byOriginHorizon) {

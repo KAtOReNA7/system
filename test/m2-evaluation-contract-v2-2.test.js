@@ -221,11 +221,47 @@ test("v2.2 extends the canonical frozen runner without a parallel model runtime"
   assert.match(source, /modelExecutionCount:\s*0/);
   assert.match(source, /predictionRowsModified:\s*0/);
   assert.match(source, /src\/domain\/m2Current\/reversalRestatement\.js/);
+  assert.match(source, /export_m2_reversal_authority\.py/);
   assert.match(source, /test\/m2-reversal-restatement\.test\.js/);
   assert.match(source, /sha256TrackedSetV22/);
   assert.doesNotMatch(source, /from .*loader\.js/);
   assert.doesNotMatch(source, /from .*route\.js/);
   assert.doesNotMatch(source, /src\/server/);
+});
+
+test("v2.2 public reports preserve the blocked result and contain aggregates only", () => {
+  const authority = JSON.parse(fs.readFileSync(
+    "docs/analysis/m2-current/M2-reversal-restatement-authority-audit-v1.json",
+    "utf8"
+  ));
+  const impact = JSON.parse(fs.readFileSync(
+    "docs/analysis/m2-current/M2-reversal-restatement-impact-v1.json",
+    "utf8"
+  ));
+  const diagnostic = JSON.parse(fs.readFileSync(
+    "docs/analysis/m2-current/M2-evaluation-v2.2-diagnostic-recheck.json",
+    "utf8"
+  ));
+  for (const report of [authority, impact, diagnostic]) {
+    assert.equal(
+      report.status,
+      "M2_EVALUATION_V2_2_BLOCKED_UNRESOLVED_REVERSAL"
+    );
+    const serialized = JSON.stringify(report);
+    assert.doesNotMatch(serialized, /[A-Za-z]:[\\/]/);
+    assert.doesNotMatch(serialized, /data[\\/]private-(?:input|output)/i);
+  }
+  assert.equal(
+    impact.cash.unresolvedReversalResidual.exactMinorUnits,
+    "-267769000000000330000"
+  );
+  assert.equal(impact.cash.conservationDifference.exactMinorUnits, "0");
+  assert.equal(impact.deterministicExecution.byteIdentical, true);
+  assert.equal(diagnostic.activation.allowed, false);
+  assert.equal(diagnostic.authorizationCounters.modelExecutionCount, 0);
+  assert.equal(diagnostic.authorizationCounters.trainingCount, 0);
+  assert.equal(diagnostic.authorizationCounters.selectionCount, 0);
+  assert.equal(diagnostic.authorizationCounters.predictionRowsModified, 0);
 });
 
 function rankingRows() {

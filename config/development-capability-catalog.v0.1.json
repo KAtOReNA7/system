@@ -382,19 +382,29 @@
       "requiredTools": [],
       "requiredPrivateArtifacts": [
         {
+          "role": "total-ledger-authority",
+          "kind": "file",
+          "path": "data/real-bills/渠道实销汇总 -总.xlsx"
+        },
+        {
           "role": "sales-share-ledger-authority",
           "kind": "file",
           "path": "data/real-bills/渠道实销汇总 -分成.xlsx"
         },
         {
-          "role": "formal-income-facts",
+          "role": "buyout-ledger-authority",
           "kind": "file",
-          "path": "data/private-output/m2-formal-execution/m2-formal-income-facts-v1.ndjson"
+          "path": "data/real-bills/渠道实销汇总 -买断.xlsx"
         },
         {
-          "role": "formal-execution-payload",
+          "role": "m1-work-mapping-authority",
+          "kind": "directory",
+          "path": "data/m1-master-data-private/mapping-candidate"
+        },
+        {
+          "role": "user-reviewed-channel-master",
           "kind": "file",
-          "path": "data/private-output/m2-formal-execution/m2-formal-execution-payload-v1.json"
+          "path": "data/private-output/outputs/channel-governance-20260726/M2-渠道统一与类型人工补全表-v0.2.xlsx"
         },
         {
           "role": "frozen-current-canonical-evaluation",
@@ -431,7 +441,7 @@
         "npm run doctor:capability -- m2-evaluation-v2-2-reversal-rescore",
         "npm run rescore:m2:evaluation-v2-2-frozen-labels"
       ],
-      "recovery": "Restore only the user-reviewed sales-share authority, its verified row-level fact export, and the six digest-bound frozen prediction artifacts. Never regenerate predictions or infer private rows from public aggregates.",
+      "recovery": "Restore only the user-reviewed ledger partition, its work-mapping authority, and the six digest-bound frozen prediction artifacts. Never regenerate predictions or infer private rows from public aggregates.",
       "authorization": "USER_AUTHORIZED_M2_EVALUATION_V2_2_LABEL_ONLY_RESCORE_2026_07_28"
     },
     {

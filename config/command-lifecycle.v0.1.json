@@ -65,6 +65,7 @@
     "precheck:",
     "prepare:",
     "recover:",
+    "report:m2:",
     "rerun:",
     "summarize:",
     "summary:",
