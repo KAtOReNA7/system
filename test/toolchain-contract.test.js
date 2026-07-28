@@ -8,6 +8,15 @@ import {
   listProjectJavaScriptFiles,
   listTrackedJavaScriptFiles
 } from "../tools/node/project-inventory.mjs";
+import {
+  buildCompatiblePythonCandidates,
+  resolveCompatiblePython
+} from "../scripts/resolve-compatible-python.mjs";
+import { resolveDoctorPython } from "../scripts/check-development-capability.mjs";
+import {
+  resolveRunnerPython,
+  runPythonCommand
+} from "../scripts/run-codex-python.mjs";
 
 function readJson(path) {
   return JSON.parse(readFileSync(path, "utf8"));
@@ -202,4 +211,181 @@ test("build manifest imports public application composition without starting ser
   assert.equal(result.status, "PASS");
   assert.equal(result.requiredTrackedFileCount, 8);
   assert.equal(result.importCheckCount, 3);
+});
+
+function successfulPythonProbe(executable, {
+  major = 3,
+  minor = 13,
+  patch = 14
+} = {}) {
+  return {
+    status: 0,
+    stdout: `${JSON.stringify({ major, minor, patch, executable })}\n`,
+    stderr: "",
+    error: null
+  };
+}
+
+test("compatible Python resolver treats an explicit path with spaces as one executable", () => {
+  const explicit = "C:\\Program Files\\Python313\\python.exe";
+  const calls = [];
+  const resolution = resolveCompatiblePython({
+    env: { KATORENA7_PYTHON: explicit },
+    platform: "win32",
+    pathExists: () => false,
+    spawnSyncImpl(executable, args, options) {
+      calls.push({ executable, args, options });
+      return successfulPythonProbe(executable);
+    }
+  });
+
+  assert.equal(resolution.status, "READY");
+  assert.equal(resolution.executable, explicit);
+  assert.equal(resolution.source, "KATORENA7_PYTHON");
+  assert.equal(calls[0].executable, explicit);
+  assert.equal(calls[0].args[0], "-c");
+  assert.equal(calls[0].options.shell, false);
+});
+
+test("compatible Python resolver supports Windows py -3.13 without shell parsing", () => {
+  const candidates = buildCompatiblePythonCandidates({
+    env: {},
+    platform: "win32",
+    pathExists: () => false
+  });
+  const calls = [];
+  const resolution = resolveCompatiblePython({
+    candidates,
+    spawnSyncImpl(executable, args, options) {
+      calls.push({ executable, args, options });
+      if (executable === "py" && args[0] === "-3.13") {
+        return successfulPythonProbe("C:\\Python313\\python.exe");
+      }
+      return { status: 1, stdout: "", stderr: "", error: null };
+    }
+  });
+
+  assert.equal(resolution.status, "READY");
+  assert.equal(resolution.source, "windows_py_3_13");
+  assert.equal(resolution.executable, "C:\\Python313\\python.exe");
+  assert.deepEqual(calls[0].args.slice(0, 2), ["-3.13", "-c"]);
+  assert.equal(calls[0].options.shell, false);
+});
+
+test("compatible Python resolver blocks when every present candidate is Python 3.14", () => {
+  const resolution = resolveCompatiblePython({
+    candidates: [
+      { executable: "python", argsPrefix: [], source: "verified_python" }
+    ],
+    spawnSyncImpl(executable) {
+      return successfulPythonProbe(executable, { minor: 14, patch: 5 });
+    }
+  });
+
+  assert.equal(resolution.compatible, false);
+  assert.equal(resolution.status, "BLOCKED_MISSING_OR_INCOMPATIBLE_PYTHON");
+  assert.match(resolution.attempts[0].reason, /UNSUPPORTED_PYTHON_VERSION_3\.14\.5/);
+});
+
+test("compatible Python resolver skips an incompatible candidate and selects a later compatible one", () => {
+  const resolution = resolveCompatiblePython({
+    candidates: [
+      { executable: "python-first", argsPrefix: [], source: "first" },
+      { executable: "python-second", argsPrefix: [], source: "second" }
+    ],
+    spawnSyncImpl(executable) {
+      return executable === "python-first"
+        ? successfulPythonProbe(executable, { minor: 14, patch: 1 })
+        : successfulPythonProbe(executable, { minor: 12, patch: 9 });
+    }
+  });
+
+  assert.equal(resolution.status, "READY");
+  assert.equal(resolution.source, "second");
+  assert.equal(resolution.version, "3.12.9");
+  assert.equal(resolution.attempts.length, 2);
+});
+
+test("compatible Python resolver reports a safe block when every candidate is missing", () => {
+  const resolution = resolveCompatiblePython({
+    candidates: [
+      { executable: "missing-a", argsPrefix: [], source: "a" },
+      { executable: "missing-b", argsPrefix: [], source: "b" }
+    ],
+    spawnSyncImpl() {
+      return {
+        status: null,
+        stdout: "",
+        stderr: "",
+        error: Object.assign(new Error("missing"), { code: "ENOENT" })
+      };
+    }
+  });
+
+  assert.equal(resolution.compatible, false);
+  assert.equal(resolution.attempts.length, 2);
+  assert.deepEqual(resolution.attempts.map(({ reason }) => reason), ["ENOENT", "ENOENT"]);
+});
+
+test("doctor and Python runner share the same compatible interpreter resolution", () => {
+  const options = {
+    candidates: [
+      { executable: "python-shared", argsPrefix: [], source: "shared-test" }
+    ],
+    spawnSyncImpl() {
+      return successfulPythonProbe("C:\\Shared Python\\python.exe");
+    }
+  };
+  const doctorResolution = resolveDoctorPython(options);
+  const runnerResolution = resolveRunnerPython(options);
+
+  assert.deepEqual(runnerResolution, doctorResolution);
+  assert.equal(runnerResolution.executable, "C:\\Shared Python\\python.exe");
+});
+
+test("compatible Python candidate forms are platform-specific and array-based", () => {
+  const windows = buildCompatiblePythonCandidates({
+    env: {},
+    platform: "win32",
+    pathExists: () => false
+  });
+  const posix = buildCompatiblePythonCandidates({
+    env: {},
+    platform: "linux",
+    pathExists: () => false
+  });
+
+  assert.deepEqual(
+    windows.slice(0, 3).map(({ executable, argsPrefix }) => [executable, argsPrefix]),
+    [["py", ["-3.13"]], ["py", ["-3.12"]], ["py", ["-3.11"]]]
+  );
+  assert.deepEqual(
+    posix.slice(0, 3).map(({ executable, argsPrefix }) => [executable, argsPrefix]),
+    [["python3.13", []], ["python3.12", []], ["python3.11", []]]
+  );
+});
+
+test("Python runner launches the resolved executable with an args array and shell disabled", () => {
+  const calls = [];
+  const resolution = {
+    compatible: true,
+    executable: "C:\\Path With Spaces\\python.exe",
+    argsPrefix: [],
+    version: "3.13.14",
+    source: "test"
+  };
+  const result = runPythonCommand(["script.py", "--flag=value"], {
+    resolution,
+    env: {},
+    stdio: "pipe",
+    spawnSyncImpl(executable, args, options) {
+      calls.push({ executable, args, options });
+      return { status: 0, stdout: "", stderr: "", error: null };
+    }
+  });
+
+  assert.equal(result.status, 0);
+  assert.equal(calls[0].executable, resolution.executable);
+  assert.deepEqual(calls[0].args, ["script.py", "--flag=value"]);
+  assert.equal(calls[0].options.shell, false);
 });

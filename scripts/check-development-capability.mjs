@@ -2,6 +2,7 @@ import { readFileSync, statSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { resolveCompatiblePython } from "./resolve-compatible-python.mjs";
 
 const SCRIPT_PATH = fileURLToPath(import.meta.url);
 const DEFAULT_REPO_ROOT = path.resolve(path.dirname(SCRIPT_PATH), "..");
@@ -64,9 +65,24 @@ export function loadCapabilityCatalog(catalogPath = DEFAULT_CATALOG_PATH) {
   return catalog;
 }
 
-function defaultToolProbe(tool) {
+export function resolveDoctorPython(options = {}) {
+  return resolveCompatiblePython(options);
+}
+
+function defaultToolProbe(tool, options = {}) {
   if (tool.runtime === "node") {
     return { present: true, versionText: process.version };
+  }
+  if (tool.id === "python") {
+    const resolution = (options.pythonResolver ?? resolveDoctorPython)(
+      options.pythonResolverOptions ?? {},
+    );
+    return {
+      present: resolution.compatible,
+      versionText: resolution.version ? `Python ${resolution.version}` : "",
+      error: resolution.error,
+      resolution,
+    };
   }
   if (tool.id === "npm") {
     const npmExecPath = process.env.npm_execpath;
@@ -171,6 +187,14 @@ function evaluateTool(tool, toolProbe) {
       : probed.versionText || "unknown",
     recommended: tool.recommended ?? tool.recommendedMajor ?? null,
     required: tool.exactVersion ?? null,
+    resolution: probed.resolution
+      ? {
+        source: probed.resolution.source,
+        executable: probed.resolution.executable,
+        launcherExecutable: probed.resolution.launcherExecutable,
+        launcherArgsPrefix: probed.resolution.launcherArgsPrefix,
+      }
+      : null,
   };
 }
 
@@ -185,7 +209,8 @@ export function evaluateCapability(catalog, capabilityId, options = {}) {
   }
   const repoRoot = path.resolve(options.repoRoot ?? DEFAULT_REPO_ROOT);
   const artifactExists = options.artifactExists ?? defaultArtifactProbe;
-  const toolProbe = options.toolProbe ?? defaultToolProbe;
+  const toolProbe = options.toolProbe
+    ?? ((tool) => defaultToolProbe(tool, options));
   const artifacts = (capability.requiredPrivateArtifacts ?? []).map((artifact) => {
     const absolutePath = resolveRepoPath(repoRoot, artifact.path);
     return {
@@ -239,9 +264,12 @@ export function formatCapabilityResult(result) {
   if (result.tools.length > 0) {
     lines.push("Tools:");
     for (const tool of result.tools) {
+      const resolution = tool.resolution
+        ? `; ${tool.resolution.source}; ${tool.resolution.executable}`
+        : "";
       lines.push(
         `- ${tool.id}: ${tool.present && tool.compatible ? "OK" : "MISSING_OR_INCOMPATIBLE"}`
-        + (tool.version ? ` (${tool.version})` : ""),
+        + (tool.version ? ` (${tool.version}${resolution})` : ""),
       );
     }
   }
