@@ -225,3 +225,27 @@ Canary/full160、release 和 M3 formal 均未授权。
 FVA 语义修复仅增加 raw/candidate/selected 报告、非恒真门禁和时间块审计，
 不改变 v1.0 参数、专家结构、冻结预测路径或历史失败结论，也不授权在同一
 development 窗口开发 v1.1。
+
+## 7. 出版行业规模适配 amendment
+
+向前的新模型修订必须遵守
+`M2-forecast-intelligence-v2-publishing-scale-amendment-v0.1.md` 和
+`M2-PUBLISHING-SCALE-SUPPORT-01`。
+
+本出版社的年度新品 SKU、标准作品、版本、授权关系、账单行、月度现金行和预测 case
+不得混用。当前可审计人口为 3,053 个标准作品，但没有注册的 ISBN/SKU—作品—版本
+权威，不能把 distinct work 解释为年度新品 SKU。
+
+固定 `50/100` 作品门槛继续属于历史渠道时间生成实验；新的出版行业适配版本必须
+使用 `DIRECT_FIT`、`SHRUNK_FIT`、`POOLED_PARENT`、`REPORT_ONLY` 四级支持、
+作品聚类有效样本量、现金集中度、时间正确的训练侧学习曲线和连续 partial pooling。
+
+三级分类只有 current-only assignment 且没有历史 `effectiveAt/availableAt`，
+当前只能报告；已观察作品—渠道现金关系不是授权关系。缺少 as-of 权威时禁止把分类
+或授权回填到 forecast origin。
+
+小样本节点可以进入低维、强收缩的开发检验，但训练资格不等于模型晋升资格。禁止
+为了保留旧人口把弃权写成 0，也禁止从其他行业移植未经本项目证据验证的样本门槛。
+
+本 amendment 不改写历史模型、配置、分数或阻断；也不授权 outer outcome、
+sealed holdout、later-origin、production 或 release。

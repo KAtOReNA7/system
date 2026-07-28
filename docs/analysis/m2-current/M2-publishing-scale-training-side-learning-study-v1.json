@@ -1,0 +1,219 @@
+{
+  "schema": "m2.publishing_scale.training_side_learning_study.public.v1",
+  "asOf": "2026-07-28",
+  "status": "K7B_TRAINING_SIDE_STUDY_COMPLETE_NO_OUTER_OUTCOME",
+  "method": {
+    "labelAuthority": "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01",
+    "sourceFamily": "strict packed rows after v2.2 reversal restatement",
+    "validationOrigins": [
+      "2024-06",
+      "2024-12",
+      "2025-06"
+    ],
+    "workHoldoutFold": 0,
+    "workHoldoutFoldCount": 5,
+    "sameWorkRowsKeptTogether": true,
+    "trainingLabelsAvailableBeforeValidationOrigin": true,
+    "duplicateHistoricalLabelEventsCollapsed": true,
+    "workBalancedTrainingWeights": true,
+    "replicatesPerSupportAndOrigin": 5,
+    "supportGrid": [8, 12, 16, 24, 32, 48, 64, 96, 128],
+    "l2Grid": [1, 3, 10, 30, 100, 300],
+    "basisProfiles": ["compact", "current"],
+    "newCandidateOuterOutcomeRead": false,
+    "sealedHoldoutRead": false
+  },
+  "parameterCalibration": {
+    "globalPooledParent": {
+      "candidateCount": 6,
+      "basisProfile": "compact",
+      "occurrenceL2": 1,
+      "conditionalAmountL2": 1,
+      "effectiveParameterCount": 20,
+      "convergenceRate": 1.0,
+      "trainingSideMedian": {
+        "workTotalWape": 0.8192392022,
+        "workTotalSignedBias": -0.6153730145,
+        "occurrenceLogLoss": 0.5559290455,
+        "conditionalLogMae": 1.8257481882
+      }
+    },
+    "membership": {
+      "candidateCount": 12,
+      "basisProfile": "current",
+      "occurrenceL2": 1,
+      "conditionalAmountL2": 1,
+      "effectiveParameterCount": 23,
+      "convergenceRate": 1.0,
+      "trainingSideMedian": {
+        "workTotalWape": 0.8286041266,
+        "workTotalSignedBias": -0.6404112469,
+        "occurrenceLogLoss": 0.5534379224,
+        "conditionalLogMae": 1.8190133678
+      }
+    },
+    "advertising": {
+      "candidateCount": 12,
+      "basisProfile": "compact",
+      "occurrenceL2": 1,
+      "conditionalAmountL2": 1,
+      "effectiveParameterCount": 21,
+      "convergenceRate": 1.0,
+      "trainingSideMedian": {
+        "workTotalWape": 0.8444800685,
+        "workTotalSignedBias": -0.6469406362,
+        "occurrenceLogLoss": 0.5634750271,
+        "conditionalLogMae": 0.9823269709
+      }
+    },
+    "transactional": {
+      "candidateCount": 12,
+      "basisProfile": "compact",
+      "occurrenceL2": 1,
+      "conditionalAmountL2": 3,
+      "effectiveParameterCount": 21,
+      "convergenceRate": 1.0,
+      "trainingSideMedian": {
+        "workTotalWape": 0.7914056972,
+        "workTotalSignedBias": -0.6033736370,
+        "occurrenceLogLoss": 0.4086878321,
+        "conditionalLogMae": 1.0205135615
+      }
+    }
+  },
+  "mechanismLearningCurveMaximumStudiedSupport": {
+    "globalPooledParent": {
+      "distinctWorks": 128,
+      "runCount": 15,
+      "convergenceRate": 1.0,
+      "cashEffectiveWorkCountMedian": 5.3974365286,
+      "workTotalWapeMedian": 0.8371833319,
+      "workTotalSignedBiasMedian": -0.7335843258,
+      "occurrenceLogLossMedian": 0.5516622100,
+      "conditionalLogMaeMedian": 1.5552058116,
+      "coefficientRelativeInstability": 0.1351287055,
+      "predictionWorkTotalCvMedian": 0.3160739816,
+      "leaveOneWorkOutWapeDeltaMaximum": 0.0184448668,
+      "stableRegionStatus": "NO_INTEGER_STABILITY_THRESHOLD_SUPPORTED"
+    },
+    "membership": {
+      "distinctWorks": 128,
+      "runCount": 15,
+      "convergenceRate": 1.0,
+      "cashEffectiveWorkCountMedian": 4.6838313708,
+      "workTotalWapeMedian": 0.8394559219,
+      "workTotalSignedBiasMedian": -0.7752427625,
+      "occurrenceLogLossMedian": 0.5452408871,
+      "conditionalLogMaeMedian": 1.3282557761,
+      "coefficientRelativeInstability": 0.1195720274,
+      "predictionWorkTotalCvMedian": 0.2271872977,
+      "leaveOneWorkOutWapeDeltaMaximum": 0.0214280262,
+      "stableRegionStatus": "NO_INTEGER_STABILITY_THRESHOLD_SUPPORTED"
+    },
+    "advertising": {
+      "distinctWorks": 128,
+      "runCount": 15,
+      "convergenceRate": 1.0,
+      "cashEffectiveWorkCountMedian": 5.7872607813,
+      "workTotalWapeMedian": 0.8456084784,
+      "workTotalSignedBiasMedian": -0.5467697257,
+      "occurrenceLogLossMedian": 0.5790215008,
+      "conditionalLogMaeMedian": 1.0761958650,
+      "coefficientRelativeInstability": 0.1019817157,
+      "predictionWorkTotalCvMedian": 0.3427360213,
+      "leaveOneWorkOutWapeDeltaMaximum": 0.0121191194,
+      "stableRegionStatus": "NO_INTEGER_STABILITY_THRESHOLD_SUPPORTED"
+    },
+    "transactional": {
+      "distinctWorks": 48,
+      "runCount": 15,
+      "convergenceRate": 1.0,
+      "cashEffectiveWorkCountMedian": 3.2817101679,
+      "workTotalWapeMedian": 0.7865991392,
+      "workTotalSignedBiasMedian": -0.5889653013,
+      "occurrenceLogLossMedian": 0.4086439094,
+      "conditionalLogMaeMedian": 1.0245102633,
+      "coefficientRelativeInstability": 0.0188720013,
+      "predictionWorkTotalCvMedian": 0.0436118793,
+      "leaveOneWorkOutWapeDeltaMaximum": 0.0077142333,
+      "stableRegionStatus": "NO_INTEGER_STABILITY_THRESHOLD_SUPPORTED"
+    }
+  },
+  "namedPlatformLearningCurveMaximumStudiedSupport": {
+    "喜马拉雅": {
+      "mechanism": "membership",
+      "distinctWorks": 128,
+      "runCount": 15,
+      "cashEffectiveWorkCountMedian": 4.2277300764,
+      "workTotalSignedBiasMedian": -0.7901605943,
+      "coefficientRelativeInstability": 0.0748015277,
+      "predictionWorkTotalCvMedian": 0.1646257504,
+      "leaveOneWorkOutWapeDeltaMaximum": 0.0482863139,
+      "stableRegionStatus": "NO_INTEGER_STABILITY_THRESHOLD_SUPPORTED"
+    },
+    "微信读书": {
+      "mechanism": "membership",
+      "distinctWorks": 128,
+      "runCount": 15,
+      "cashEffectiveWorkCountMedian": 15.0596157153,
+      "workTotalSignedBiasMedian": -0.1274456610,
+      "coefficientRelativeInstability": 0.0466289548,
+      "predictionWorkTotalCvMedian": 0.0974755142,
+      "leaveOneWorkOutWapeDeltaMaximum": 0.0110969214,
+      "stableRegionStatus": "OBSERVED_TRAINING_SIDE_STABLE_REGION",
+      "minimumObservedStableDistinctWorks": 32,
+      "notStandalonePromotionAuthority": true
+    },
+    "番茄畅听": {
+      "mechanism": "advertising",
+      "distinctWorks": 128,
+      "runCount": 15,
+      "cashEffectiveWorkCountMedian": 5.7853023768,
+      "workTotalSignedBiasMedian": -0.5548804819,
+      "coefficientRelativeInstability": 0.1031077744,
+      "predictionWorkTotalCvMedian": 0.3388693504,
+      "leaveOneWorkOutWapeDeltaMaximum": 0.0120616495,
+      "stableRegionStatus": "NO_INTEGER_STABILITY_THRESHOLD_SUPPORTED"
+    },
+    "猫耳": {
+      "mechanism": "transactional",
+      "distinctWorks": 32,
+      "runCount": 15,
+      "cashEffectiveWorkCountMedian": 2.4023524655,
+      "workTotalSignedBiasMedian": 0.4457191439,
+      "coefficientRelativeInstability": 0.0431171948,
+      "predictionWorkTotalCvMedian": 0.1557999118,
+      "leaveOneWorkOutWapeDeltaMaximum": 0.2758130204,
+      "stableRegionStatus": "NO_INTEGER_STABILITY_THRESHOLD_SUPPORTED"
+    },
+    "克拉漫播": {
+      "mechanism": "transactional",
+      "distinctWorks": 16,
+      "runCount": 10,
+      "cashEffectiveWorkCountMedian": 4.0014900747,
+      "workTotalSignedBiasMedian": -0.9219705198,
+      "coefficientRelativeInstability": 0.0138491165,
+      "predictionWorkTotalCvMedian": 0.0155361298,
+      "leaveOneWorkOutWapeDeltaMaximum": 0.0092406048,
+      "stableRegionStatus": "NO_INTEGER_STABILITY_THRESHOLD_SUPPORTED"
+    }
+  },
+  "conclusions": {
+    "universalFixedDistinctWorkThresholdSupported": false,
+    "directFitNodeAtFreeze": null,
+    "mechanismDecision": "SHRUNK_FIT_TO_GLOBAL_PARENT",
+    "largeNamedPlatformDecision": "SHRUNK_FIT_TO_MECHANISM_PARENT",
+    "catEarDecision": "POOLED_PARENT_HIGH_LEAVE_ONE_WORK_OUT_SENSITIVITY",
+    "manboDecision": "POOLED_PARENT_MAXIMUM_STUDIED_SUPPORT_BELOW_PARAMETER_COUNT",
+    "taxonomyDecision": "REPORT_ONLY_CURRENT_AS_OF_AUTHORITY_MISSING",
+    "authorizationDecision": "PROHIBITED_AS_STRICT_ORIGIN_FEATURE",
+    "primaryReason": "numerical convergence and coefficient stability do not remove large time-correct validation bias or cash concentration; continuous component shrinkage is required"
+  },
+  "publicPrivacy": {
+    "aggregateOnly": true,
+    "containsWorkIdentity": false,
+    "containsCategoryValues": false,
+    "containsPrivatePath": false,
+    "containsPrivateArtifactDigest": false
+  }
+}

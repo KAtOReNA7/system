@@ -3,6 +3,14 @@
   "version": "2.2",
   "asOf": "2026-07-28",
   "status": "M2_EVALUATION_V2_2_ACTIVE_FOR_DEVELOPMENT_WITH_DISCLOSED_RESIDUAL_EXCLUSION",
+  "forwardStatisticalSupportContract": {
+    "contractId": "M2-PUBLISHING-SCALE-SUPPORT-01",
+    "path": "config/m2-publishing-scale-statistical-support.v1.json",
+    "appliesOnlyToNewPublishingScaleModelRevision": true,
+    "historicalEligibilityRewritten": false,
+    "trainingEligibilitySeparateFromPromotionEligibility": true,
+    "newCandidateOuterOutcomeMaySelectSupportThreshold": false
+  },
   "activationAllowed": true,
   "blockingReason": null,
   "activationScope": "development_evaluation_only",

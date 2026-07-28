@@ -190,6 +190,39 @@
       "authorization": "USER_AUTHORIZED_READ_ONLY_PUBLISHING_SCALE_AUDIT_2026_07_28"
     },
     {
+      "id": "m2-publishing-scale-contract-calibration",
+      "description": "Run the user-authorized training-side publishing-scale learning-curve and parameter-calibration study after K7A exact-head CI, without reading candidate outer outcomes or sealed holdout data.",
+      "requiredTools": [],
+      "requiredPrivateArtifacts": [
+        {
+          "role": "strict-packed-training-rows",
+          "kind": "file",
+          "path": "data/private-output/m2-current-human-anchored/M2-current-channel-generative-auxiliary-monthly-private-v0.2.ndjson"
+        },
+        {
+          "role": "v2.2-development-modelable-scope-reconciliation",
+          "kind": "file",
+          "path": "data/private-output/m2-evaluation-v2-2-reversal-rescore/M2-reversal-scope-reconciliation-private-v1.json"
+        },
+        {
+          "role": "v2.2-reversal-allocation-ledger",
+          "kind": "file",
+          "path": "data/private-output/m2-evaluation-v2-2-reversal-rescore/M2-reversal-allocation-ledger-private-v1.ndjson"
+        },
+        {
+          "role": "v2.2-development-activation-receipt",
+          "kind": "file",
+          "path": "data/private-output/m2-evaluation-v2-2-reversal-rescore/M2-evaluation-v2.2-execution-receipt-private-v1.json"
+        }
+      ],
+      "canonicalValidationCommands": [
+        "npm run doctor:capability -- m2-publishing-scale-contract-calibration",
+        "npm run check:m2:publishing-scale-learning"
+      ],
+      "recovery": "Restore only the capability-scoped strict packed rows and v2.2 reversal-restatement artifacts from a verified encrypted bundle. Missing inputs block only K7B training-side calibration; public development, diagnostics, tests and startup remain available.",
+      "authorization": "USER_AUTHORIZED_TRAINING_SIDE_PUBLISHING_SCALE_CALIBRATION_2026_07_28"
+    },
+    {
       "id": "m2-current-canonical-channel",
       "description": "Run the user-authorized canonical-channel mapping audit and bounded M2 development challenger without opening final holdout or release capabilities.",
       "requiredTools": [],

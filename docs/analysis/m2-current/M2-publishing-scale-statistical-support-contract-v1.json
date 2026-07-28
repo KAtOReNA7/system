@@ -1,0 +1,53 @@
+{
+  "schema": "m2.publishing_scale.statistical_support_contract.v1",
+  "contractId": "M2-PUBLISHING-SCALE-SUPPORT-01",
+  "displayNameZh": "M2 出版行业统计支持合同 v1",
+  "displayNameEn": "M2 Publishing-Scale Statistical Support Contract v1",
+  "status": "FROZEN_BEFORE_IMPLEMENTATION_AND_OUTER_OUTCOME",
+  "canonicalConfig": "config/m2-publishing-scale-statistical-support.v1.json",
+  "effectiveScope": "new publishing-scale model revision only",
+  "historicalArtifactsRewritten": false,
+  "fixedUniversalWorkThreshold": null,
+  "tierSemantics": {
+    "DIRECT_FIT": "independent child parameters allowed only with as-of authority and observed training-side stability",
+    "SHRUNK_FIT": "child occurrence and conditional-amount components fit with continuous shrinkage to the nearest parent",
+    "POOLED_PARENT": "no independent child parameter; use nearest eligible parent",
+    "REPORT_ONLY": "population reporting only; no training or routing"
+  },
+  "currentFreeze": {
+    "directFitNodes": [],
+    "shrunkFitNodes": [
+      "globalPooledParent",
+      "membership",
+      "advertising",
+      "transactional",
+      "喜马拉雅",
+      "微信读书",
+      "番茄畅听"
+    ],
+    "pooledParentNodes": [
+      "猫耳",
+      "克拉漫播"
+    ],
+    "reportOnlyDimensions": [
+      "current-only taxonomy",
+      "current or observed-cash authorization relation"
+    ]
+  },
+  "governance": {
+    "trainingEligibilitySeparateFromPromotionEligibility": true,
+    "smallSampleDevelopmentAllowed": true,
+    "smallSampleStandaloneConclusionAllowed": false,
+    "monthlyRowsCountAsIndependentWorks": false,
+    "outerOutcomeMaySelectThreshold": false,
+    "materialityChanged": false,
+    "workClusterBootstrapChanged": false,
+    "historical50And100RulesPreservedForHistoricalVerifier": true
+  },
+  "phaseGate": {
+    "K7BComplete": true,
+    "K7CImplementationRequired": true,
+    "K7CExactHeadLinuxWindowsCiRequiredBeforePrivateExecution": true,
+    "newCandidateOuterOutcomeMayBeRead": false
+  }
+}

@@ -36,6 +36,7 @@ test("catalog defines one private-free core capability and scoped private capabi
       "m2-v2-current-state",
       "m2-algorithm-authoritative-input",
       "m2-publishing-scale-audit",
+      "m2-publishing-scale-contract-calibration",
       "m2-current-canonical-channel",
       "m2-current-human-anchored",
       "m2-current-human-anchored-tsb-occurrence",
@@ -81,6 +82,27 @@ test("missing publishing-scale inputs block only that audit capability", () => {
     "strict-packed-training-rows",
   ]);
   assert.match(result.recovery, /block only this read-only scale audit/u);
+});
+
+test("missing K7B inputs block only training-side scale calibration", () => {
+  const result = evaluateCapability(
+    catalog,
+    "m2-publishing-scale-contract-calibration",
+    {
+      repoRoot: REPO_ROOT,
+      artifactExists: () => false,
+      toolProbe: availableToolProbe,
+    },
+  );
+  assert.equal(result.status, "BLOCKED_MISSING_PRIVATE_ARTIFACT");
+  assert.equal(result.coreDevelopmentUnaffected, true);
+  assert.deepEqual(result.missingPrivateRoles, [
+    "strict-packed-training-rows",
+    "v2.2-development-modelable-scope-reconciliation",
+    "v2.2-reversal-allocation-ledger",
+    "v2.2-development-activation-receipt",
+  ]);
+  assert.match(result.recovery, /block only K7B training-side calibration/u);
 });
 
 test("core doctor rejects Node and npm versions outside the repository contract", () => {
