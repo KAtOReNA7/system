@@ -14,6 +14,10 @@ export const M2_PUBLISHING_SCALE_ARM_ID =
   `${M2_PUBLISHING_SCALE_EXPERIMENT_ID}/CORE`;
 export const M2_PUBLISHING_SCALE_RAW_CANDIDATE_ID =
   "M2-CHAN-PSC01-RAW";
+export const M2_PUBLISHING_SCALE_MATERIALIZER_ID =
+  "M2-MATERIALIZER-PUBLISHING-SCALE-CHANNEL-01";
+export const M2_PUBLISHING_SCALE_RECEIPT_CONTROLLER_ID =
+  "M2-RECEIPT-CONTROLLER-PUBLISHING-SCALE-CHANNEL-01";
 
 const EPSILON = 1e-12;
 
@@ -47,6 +51,11 @@ export function validateM2PublishingScaleConfig(config, support) {
   if (
     config.supportContract !==
       "config/m2-publishing-scale-statistical-support.v1.json"
+    || config.executionPolicy
+      !== "config/m2-publishing-scale-execution-policy.v0.2.json"
+    || config.materializerId !== M2_PUBLISHING_SCALE_MATERIALIZER_ID
+    || config.receiptControllerId
+      !== M2_PUBLISHING_SCALE_RECEIPT_CONTROLLER_ID
     || config.dataContract.trainingWeight
       !== "equal_total_weight_per_standard_work"
     || config.dataContract.taxonomyAsOfStatus !== "REPORT_ONLY"
@@ -77,44 +86,31 @@ export function validateM2PublishingScaleConfig(config, support) {
   }
   const frozenGlobal = support.parameterFreeze.nodes.globalPooledParent;
   const activeGlobal = config.nodes.globalPooledParent;
+  validateFrozenNodeSpec(
+    activeGlobal,
+    frozenGlobal,
+    "global"
+  );
   if (
-    activeGlobal.basisProfile !== frozenGlobal.basisProfile
-    || activeGlobal.occurrenceL2 !== frozenGlobal.occurrenceL2
-    || activeGlobal.conditionalAmountL2
-      !== frozenGlobal.conditionalAmountL2
-    || activeGlobal.effectiveParameterCount
-      !== frozenGlobal.effectiveParameterCount
-    || activeGlobal.frozenTier !== frozenGlobal.frozenTier
+    activeGlobal.basisMeaning
+      !== "compact_linear_horizon_basis_alias_not_membership_routing"
+    || frozenGlobal.basisMeaning !== activeGlobal.basisMeaning
   ) {
     throw new M2PublishingScaleContractError(
-      "m2_publishing_scale_global_parameter_drift"
+      "m2_publishing_scale_global_basis_alias_semantics_drift"
     );
   }
   for (const mechanism of M2_CHANNEL_GENERATIVE_MECHANISMS) {
     const frozen = support.parameterFreeze.nodes[mechanism];
     const active = config.nodes.mechanisms[mechanism];
-    if (
-      active.basisProfile !== frozen.basisProfile
-      || active.occurrenceL2 !== frozen.occurrenceL2
-      || active.conditionalAmountL2 !== frozen.conditionalAmountL2
-      || active.effectiveParameterCount
-        !== frozen.effectiveParameterCount
-      || active.frozenTier !== frozen.frozenTier
-    ) {
-      throw new M2PublishingScaleContractError(
-        `m2_publishing_scale_${mechanism}_parameter_drift`
-      );
-    }
+    validateFrozenNodeSpec(active, frozen, mechanism);
   }
   for (const platform of config.nodes.namedPlatforms) {
-    if (
-      support.parameterFreeze.namedPlatforms[platform.displayNameZh]
-        !== platform.frozenTier
-    ) {
-      throw new M2PublishingScaleContractError(
-        `m2_publishing_scale_${platform.platformId}_tier_drift`
-      );
-    }
+    validateFrozenNodeSpec(
+      platform,
+      support.parameterFreeze.namedPlatforms[platform.displayNameZh],
+      platform.platformId
+    );
   }
   if (
     config.oneClassSmoothing.pseudoPositive
@@ -126,7 +122,59 @@ export function validateM2PublishingScaleConfig(config, support) {
       "m2_publishing_scale_one_class_smoothing_drift"
     );
   }
+  for (const node of inspectM2PublishingScaleDesignContracts(config)) {
+    if (node.actualDesignMatrixColumnCount !== node.effectiveParameterCount) {
+      throw new M2PublishingScaleContractError(
+        `m2_publishing_scale_${node.nodeId}_effective_parameter_count_drift`
+      );
+    }
+  }
   return true;
+}
+
+export function inspectM2PublishingScaleDesignContracts(config) {
+  const specs = [
+    ["globalPooledParent", config.nodes.globalPooledParent],
+    ...M2_CHANNEL_GENERATIVE_MECHANISMS.map(
+      (mechanism) => [mechanism, config.nodes.mechanisms[mechanism]]
+    ),
+    ...config.nodes.namedPlatforms.map(
+      (platform) => [platform.platformId, platform]
+    )
+  ];
+  return Object.freeze(specs.map(([nodeId, spec]) => Object.freeze({
+    nodeId,
+    basisMechanism: spec.basisMechanism,
+    basisProfile: spec.basisProfile,
+    basisMeaning: spec.basisMeaning ?? null,
+    occurrenceL2: spec.occurrenceL2,
+    conditionalAmountL2: spec.conditionalAmountL2,
+    effectiveParameterCount: spec.effectiveParameterCount,
+    actualDesignMatrixColumnCount:
+      actualDesignMatrixColumnCount(config, spec),
+    frozenTier: spec.frozenTier,
+    designCountMatches:
+      actualDesignMatrixColumnCount(config, spec)
+        === spec.effectiveParameterCount
+  })));
+}
+
+function validateFrozenNodeSpec(active, frozen, nodeId) {
+  if (
+    active === undefined
+    || frozen === undefined
+    || active.basisMechanism !== frozen.basisMechanism
+    || active.basisMeaning !== frozen.basisMeaning
+    || active.basisProfile !== frozen.basisProfile
+    || active.occurrenceL2 !== frozen.occurrenceL2
+    || active.conditionalAmountL2 !== frozen.conditionalAmountL2
+    || active.effectiveParameterCount !== frozen.effectiveParameterCount
+    || active.frozenTier !== frozen.frozenTier
+  ) {
+    throw new M2PublishingScaleContractError(
+      `m2_publishing_scale_${nodeId}_parameter_drift`
+    );
+  }
 }
 
 export function fitM2PublishingScaleChannelCore(
@@ -287,6 +335,12 @@ export function predictM2PublishingScaleChannelMonthly(
       supportTier: "POOLED_PARENT",
       selectedNodeId: "originVisibleEmpiricalParent",
       hierarchyPath: Object.freeze(["originVisibleEmpiricalParent"]),
+      layerPredictions: freezeLayerPredictions({
+        originVisibleEmpiricalParent: zeroLayerPrediction(),
+        globalPooledParent: zeroLayerPrediction(),
+        mechanism: zeroLayerPrediction(),
+        namedPlatform: zeroLayerPrediction()
+      }),
       taxonomyFeatureUsed: false,
       authorizationBackfillUsed: false
     });
@@ -306,7 +360,13 @@ export function predictM2PublishingScaleChannelMonthly(
       prediction: global,
       node: state.global,
       path: ["originVisibleEmpiricalParent", "globalPooledParent"],
-      fallbackReason: "unregistered_mechanism_uses_global_parent"
+      fallbackReason: "unregistered_mechanism_uses_global_parent",
+      layerPredictions: {
+        originVisibleEmpiricalParent: empirical,
+        globalPooledParent: global,
+        mechanism: global,
+        namedPlatform: global
+      }
     });
   }
   const mechanismRaw = mechanismNode.model === null
@@ -329,7 +389,13 @@ export function predictM2PublishingScaleChannelMonthly(
         "globalPooledParent",
         mechanismNode.nodeId
       ],
-      fallbackReason: mechanismNode.fallbackReason
+      fallbackReason: mechanismNode.fallbackReason,
+      layerPredictions: {
+        originVisibleEmpiricalParent: empirical,
+        globalPooledParent: global,
+        mechanism,
+        namedPlatform: mechanism
+      }
     });
   }
   const platformRaw = platformNode.model === null
@@ -351,7 +417,13 @@ export function predictM2PublishingScaleChannelMonthly(
       mechanismNode.nodeId,
       platformNode.nodeId
     ],
-    fallbackReason: platformNode.fallbackReason
+    fallbackReason: platformNode.fallbackReason,
+    layerPredictions: {
+      originVisibleEmpiricalParent: empirical,
+      globalPooledParent: global,
+      mechanism,
+      namedPlatform: platform
+    }
   });
 }
 
@@ -870,7 +942,8 @@ function predictionResult({
   prediction,
   node,
   path,
-  fallbackReason
+  fallbackReason,
+  layerPredictions
 }) {
   return Object.freeze({
     candidateId: M2_PUBLISHING_SCALE_RAW_CANDIDATE_ID,
@@ -886,12 +959,33 @@ function predictionResult({
     supportTier: node.tier,
     selectedNodeId: node.nodeId,
     hierarchyPath: Object.freeze(path),
+    layerPredictions: freezeLayerPredictions(layerPredictions),
     occurrenceShrinkageWeight:
       node.support?.occurrenceShrinkageWeight ?? 0,
     conditionalAmountShrinkageWeight:
       node.support?.conditionalAmountShrinkageWeight ?? 0,
     taxonomyFeatureUsed: false,
     authorizationBackfillUsed: false
+  });
+}
+
+function freezeLayerPredictions(values) {
+  return Object.freeze(Object.fromEntries(Object.entries(values).map(
+    ([key, value]) => [key, Object.freeze({
+      positivePoint: Math.max(
+        0,
+        value.occurrenceProbability * value.conditionalPositiveAmount
+      ),
+      occurrenceProbability: value.occurrenceProbability,
+      conditionalPositiveAmount: value.conditionalPositiveAmount
+    })]
+  )));
+}
+
+function zeroLayerPrediction() {
+  return Object.freeze({
+    occurrenceProbability: 0,
+    conditionalPositiveAmount: 0
   });
 }
 
@@ -904,13 +998,60 @@ function freezeNode(value) {
 }
 
 function buildFitReceipt({ id, training, validation, state }) {
+  const trainingWorks = new Set(
+    training.map((row) => row.standardWorkId)
+  );
+  const validationWorks = new Set(
+    validation.map((row) => row.standardWorkId)
+  );
+  const overlap = [...trainingWorks].filter(
+    (workId) => validationWorks.has(workId)
+  );
+  const strictOrigin = typeof id === "string" && /^\d{4}-\d{2}$/u.test(id)
+    ? id
+    : null;
+  const labelAvailabilityByHorizon = Object.freeze(Object.fromEntries(
+    [...new Set(training.flatMap((row) => row.includedHorizons))]
+      .sort((left, right) => left - right)
+      .map((horizon) => {
+        const rows = training.filter(
+          (row) => row.includedHorizons.includes(horizon)
+        );
+        const maximum = rows.map((row) => row.labelAvailableAsOf)
+          .sort().at(-1) ?? null;
+        return [String(horizon), Object.freeze({
+          trainingRowCount: rows.length,
+          maximumLabelAvailableAsOf: maximum,
+          allLabelsAvailableBeforeStrictOuterOrigin: strictOrigin === null
+            ? null
+            : rows.every(
+              (row) => row.labelAvailableAsOf < strictOrigin
+            )
+        })];
+      })
+  ));
   return Object.freeze({
     id,
     status: "EVALUATED",
     trainingRowCount: training.length,
-    trainingWorkCount: distinctWorkCount(training),
+    trainingWorkCount: trainingWorks.size,
     validationRowCount: validation.length,
-    validationWorkCount: distinctWorkCount(validation),
+    validationWorkCount: validationWorks.size,
+    trainingValidationWorkOverlapCount: overlap.length,
+    primaryWorkFoldIsolationPassed:
+      strictOrigin === null ? overlap.length === 0 : null,
+    strictEarlierOriginTrainingPassed: strictOrigin === null
+      ? null
+      : training.every((row) => (
+        row.origin < strictOrigin
+        && row.labelAvailableAsOf < strictOrigin
+      )),
+    labelAvailabilityByHorizon,
+    sampleIdentity: Object.freeze({
+      worksAreStandardWorks: true,
+      workChannelScopesAreIndependentWorks: false,
+      monthlyRowsAreIndependentWorks: false
+    }),
     support: publicStateSupport(state),
     taxonomyTier: "REPORT_ONLY",
     authorizationTier: "REPORT_ONLY",
@@ -1014,6 +1155,27 @@ function designRow(
     );
   }
   return output;
+}
+
+function actualDesignMatrixColumnCount(config, spec) {
+  const standardizer = {
+    featureOrder: config.featureOrder,
+    means: config.featureOrder.map(() => 0),
+    standardDeviations: config.featureOrder.map(() => 1)
+  };
+  const row = {
+    futureMonthIndex: 1,
+    features: Object.fromEntries(
+      config.featureOrder.map((field) => [field, 0])
+    )
+  };
+  return designRow(
+    row,
+    standardizer,
+    spec.basisMechanism,
+    spec.basisProfile,
+    config
+  ).length;
 }
 
 function fitWeightedLogistic(

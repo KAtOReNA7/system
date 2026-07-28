@@ -1,5 +1,4 @@
 import { createHash } from "node:crypto";
-import { spawnSync } from "node:child_process";
 import {
   mkdir,
   readFile,
@@ -14,6 +13,7 @@ import {
   buildM2ChannelGenerativeSyntheticDiagnostic,
   crossFitM2ChannelGenerativeG1,
   expandM2ChannelGenerativePackedRows,
+  scoreM2ChannelGenerativeG1Predictions,
   scoreM2ChannelGenerativeFrozenG0Comparator,
   strictRollingM2ChannelGenerativeG1,
   verifyM2ChannelGenerativeG0
@@ -134,202 +134,46 @@ export async function runM2PublishingScaleChannelPublicDiagnostic({
   return readiness;
 }
 
-export function verifyM2PublishingScaleGitAndCiPreflight({ root }) {
-  const status = runCommand(root, "git", ["status", "--porcelain"]);
-  if (status.stdout.trim() !== "") {
-    throw new Error("m2_publishing_scale_worktree_not_clean");
-  }
-  const head = runCommand(root, "git", ["rev-parse", "HEAD"]).stdout.trim();
-  const upstream = runCommand(
-    root,
-    "git",
-    ["rev-parse", "@{upstream}"]
-  ).stdout.trim();
-  const branch = runCommand(
-    root,
-    "git",
-    ["branch", "--show-current"]
-  ).stdout.trim();
-  if (head !== upstream) {
-    throw new Error("m2_publishing_scale_upstream_not_exact_head");
-  }
-  const ancestor = spawnSync(
-    "git",
-    ["merge-base", "--is-ancestor", "origin/main", "HEAD"],
-    { cwd: root, encoding: "utf8", windowsHide: true }
-  );
-  if (ancestor.status !== 0) {
-    throw new Error("m2_publishing_scale_origin_main_not_ancestor");
-  }
-  const pr = JSON.parse(runCommand(
-    root,
-    "gh",
-    [
-      "pr",
-      "view",
-      "29",
-      "--json",
-      "number,state,isDraft,baseRefName,headRefName,headRefOid,statusCheckRollup"
-    ]
-  ).stdout);
-  if (
-    pr.number !== 29
-    || pr.state !== "OPEN"
-    || pr.isDraft !== true
-    || pr.baseRefName !== "main"
-    || pr.headRefName !== branch
-    || pr.headRefOid !== head
-  ) {
-    throw new Error("m2_publishing_scale_pr29_exact_head_invalid");
-  }
-  const checks = new Map((pr.statusCheckRollup ?? []).map((check) => [
-    String(check.name ?? check.context),
-    String(check.conclusion ?? check.state ?? check.status)
-  ]));
-  for (const checkName of ["verify", "verify-windows"]) {
-    if (checks.get(checkName) !== "SUCCESS") {
-      throw new Error(
-        `m2_publishing_scale_exact_head_ci_not_success:${checkName}`
-      );
-    }
-  }
-  return Object.freeze({
-    checkedAt: new Date().toISOString(),
-    branch,
-    head,
-    upstream,
-    originMain: runCommand(
-      root,
-      "git",
-      ["rev-parse", "origin/main"]
-    ).stdout.trim(),
-    prNumber: pr.number,
-    prHead: pr.headRefOid,
-    prBase: pr.baseRefName,
-    prDraft: pr.isDraft,
-    linuxCheck: checks.get("verify"),
-    windowsCheck: checks.get("verify-windows"),
-    worktreeClean: true
-  });
-}
-
-export async function prepareM2PublishingScaleRunReceipt({
-  root,
-  privateDirectory,
-  gitPreflight,
-  command,
-  environment
-}) {
-  const [configText, supportText, sourceText] = await Promise.all([
-    readFile(path.join(root, PUBLISHING_SCALE_CONFIG_PATH), "utf8"),
-    readFile(path.join(root, PUBLISHING_SCALE_SUPPORT_PATH), "utf8"),
-    readFile(
-      path.join(
-        root,
-        "src/domain/m2Current/publishingScaleChannelCore.js"
-      ),
-      "utf8"
-    )
-  ]);
-  const config = JSON.parse(configText);
-  const support = JSON.parse(supportText);
-  validateM2PublishingScaleConfig(config, support);
-  assertPublishingScalePrivateAuthorization(config);
-  const receiptPath = path.join(
-    privateDirectory,
-    config.privateOutputs.runReceipt
-  );
-  const previous = await readOptionalJson(receiptPath);
-  if (previous !== null) {
-    throw new Error(
-      "m2_publishing_scale_one_time_private_execution_already_consumed"
-    );
-  }
-  const [baseManifestText, frozenManifestText] = await Promise.all([
-    readFile(
-      path.join(
-        privateDirectory,
-        "M2-current-human-anchored-manifest-private-v0.1.json"
-      ),
-      "utf8"
-    ),
-    readFile(
-      path.join(
-        privateDirectory,
-        "M2-current-channel-experts-evaluation-manifest-private-v0.1.json"
-      ),
-      "utf8"
-    )
-  ]);
-  const receipt = {
-    schema: "m2.current.publishing_scale_channel_run_receipt_private.v0.1",
-    tracked: false,
-    status: "PREPARED_BEFORE_PRIVATE_EVALUATION_ROW_READ",
-    implementationCommit: gitPreflight.head,
-    codeSha256: digest(sourceText),
-    configSha256: digest(configText),
-    supportContractSha256: digest(supportText),
-    datasetDigests: JSON.parse(baseManifestText).digests,
-    frozenCaseDigest: JSON.parse(frozenManifestText).sha256,
-    command,
-    environment,
-    nodeVersion: process.version,
-    startTime: new Date().toISOString(),
-    modelId: M2_PUBLISHING_SCALE_MODEL_ID,
-    experimentArmId: M2_PUBLISHING_SCALE_ARM_ID,
-    expectedCandidateId: M2_PUBLISHING_SCALE_RAW_CANDIDATE_ID,
-    expectedPrimaryOuterFolds:
-      config.selection.outerPrimaryWorkFoldCount,
-    expectedStrictOuterOrigins: config.selection.strictOrigins,
-    bootstrapIterations: config.evaluation.bootstrapIterations,
-    gitPreflight,
-    candidateOutcomeReadAtReceipt: false,
-    candidateExecutionStarted: false,
-    candidateExecuted: false,
-    finalHoldoutOpened: false,
-    productionModified: false
-  };
-  await mkdir(privateDirectory, { recursive: true });
-  await writeFile(
-    receiptPath,
-    JSON.stringify(receipt, null, 2) + "\n",
-    "utf8"
-  );
-  return receipt;
-}
-
 export async function runM2PublishingScalePrivateDevelopment({
   root,
   privateDirectory,
-  baseManifest
+  sourceDirectory,
+  receiptPath
 }) {
   const [
     config,
     support,
-    historicalConfig,
     frozenConfig,
     preregistration
   ] = await Promise.all([
     readJson(path.join(root, PUBLISHING_SCALE_CONFIG_PATH)),
     readJson(path.join(root, PUBLISHING_SCALE_SUPPORT_PATH)),
-    readJson(path.join(root, CONFIG_PATH)),
     readJson(path.join(root, FROZEN_CONFIG_PATH)),
     readJson(path.join(root, PREREGISTRATION_PATH))
   ]);
   validateM2PublishingScaleConfig(config, support);
-  assertPublishingScalePrivateAuthorization(config);
-  const receiptPath = path.join(
-    privateDirectory,
-    config.privateOutputs.runReceipt
-  );
+  if (
+    typeof receiptPath !== "string"
+    || typeof sourceDirectory !== "string"
+  ) {
+    throw new Error("m2_publishing_scale_v0_2_execution_context_missing");
+  }
   const receipt = await readJson(receiptPath);
   if (
-    receipt?.status !== "PREPARED_BEFORE_PRIVATE_EVALUATION_ROW_READ"
+    receipt?.status !== "PRIVATE_MATERIALIZATION_COMPLETE"
     || receipt?.implementationCommit !== receipt?.gitPreflight?.head
-    || receipt?.candidateOutcomeReadAtReceipt !== false
+    || receipt?.modelId !== M2_PUBLISHING_SCALE_MODEL_ID
+    || receipt?.experimentArmId !== M2_PUBLISHING_SCALE_ARM_ID
+    || receipt?.candidateFitStarted !== false
+    || receipt?.predictionRowsProduced !== 0
+    || receipt?.evaluationRowsProduced !== 0
   ) {
     throw new Error("m2_publishing_scale_run_receipt_invalid");
   }
+  const outputFiles = validatePublishingScaleOutputFiles(
+    receipt.outputFiles,
+    config
+  );
   const restatementDirectory = path.join(
     root,
     config.privateOutputs.reversalRestatementDirectory
@@ -338,6 +182,7 @@ export async function runM2PublishingScalePrivateDevelopment({
     primaryText,
     auxiliaryText,
     materializationText,
+    baseManifestText,
     frozenText,
     frozenManifestText,
     reconciliationText,
@@ -346,22 +191,26 @@ export async function runM2PublishingScalePrivateDevelopment({
   ] = await Promise.all([
     readFile(path.join(
       privateDirectory,
-      config.privateOutputs.primaryMonthlyCases
+      outputFiles.primaryMonthlyCases
     ), "utf8"),
     readFile(path.join(
       privateDirectory,
-      config.privateOutputs.auxiliaryMonthlyCases
+      outputFiles.auxiliaryMonthlyCases
     ), "utf8"),
     readFile(path.join(
       privateDirectory,
-      config.privateOutputs.materializationManifest
+      outputFiles.materializationManifest
     ), "utf8"),
     readFile(path.join(
-      privateDirectory,
+      sourceDirectory,
+      "M2-current-human-anchored-manifest-private-v0.1.json"
+    ), "utf8"),
+    readFile(path.join(
+      sourceDirectory,
       frozenConfig.privateOutputs.evaluation
     ), "utf8"),
     readFile(path.join(
-      privateDirectory,
+      sourceDirectory,
       frozenConfig.privateOutputs.evaluationManifest
     ), "utf8"),
     readFile(path.join(
@@ -378,11 +227,12 @@ export async function runM2PublishingScalePrivateDevelopment({
     ), "utf8")
   ]);
   const materialization = JSON.parse(materializationText);
+  const baseManifest = JSON.parse(baseManifestText);
   const frozenManifest = JSON.parse(frozenManifestText);
   const reconciliation = JSON.parse(reconciliationText);
   const reversalReceipt = JSON.parse(reversalReceiptText);
-  verifyPrivateBindings({
-    config: historicalConfig,
+  verifyPublishingScalePrivateBindings({
+    config,
     preregistration,
     baseManifest,
     materialization,
@@ -409,14 +259,15 @@ export async function runM2PublishingScalePrivateDevelopment({
   await writeFile(
     receiptPath,
     JSON.stringify({
-      ...receipt,
+      ...await readJson(receiptPath),
       status:
         "RESTATEMENT_BINDING_PREFLIGHT_PASSED_BEFORE_CANDIDATE_FIT",
       restatementBindingPreflight: {
         primary: primaryRestatement.audit,
         strict: strictRestatement.audit
       },
-      candidateOutcomeReadAtPreflight: false
+      candidateOutcomeReadAtPreflight: false,
+      evaluationStarted: false
     }, null, 2) + "\n",
     "utf8"
   );
@@ -429,15 +280,19 @@ export async function runM2PublishingScalePrivateDevelopment({
   await writeFile(
     receiptPath,
     JSON.stringify({
-      ...receipt,
+      ...await readJson(receiptPath),
       status: "CANDIDATE_FIT_STARTED_AFTER_RESTATEMENT_PREFLIGHT",
       restatementBindingPreflight: {
         primary: primaryRestatement.audit,
         strict: strictRestatement.audit
       },
       candidateOutcomeReadAtFitStart: false,
-      candidateExecutionStarted: true,
-      candidateExecuted: false
+      candidateFitStarted: true,
+      candidateOutputFrozen: false,
+      predictionRowsProduced: 0,
+      evaluationStarted: false,
+      evaluationRowsProduced: 0,
+      evaluationComplete: false
     }, null, 2) + "\n",
     "utf8"
   );
@@ -450,6 +305,22 @@ export async function runM2PublishingScalePrivateDevelopment({
     strictRows,
     config,
     support
+  );
+  const predictionRowsProduced =
+    primary.predictions.size + strict.predictions.size;
+  await writeFile(
+    receiptPath,
+    JSON.stringify({
+      ...await readJson(receiptPath),
+      status: "RAW_CANDIDATE_OUTPUTS_FROZEN_BEFORE_EVALUATION_AND_ORACLE",
+      candidateFitStarted: true,
+      candidateOutputFrozen: true,
+      predictionRowsProduced,
+      evaluationStarted: false,
+      evaluationRowsProduced: 0,
+      evaluationComplete: false
+    }, null, 2) + "\n",
+    "utf8"
   );
   const frozenRows = parseNdjson(frozenText);
   const baselines = {
@@ -468,6 +339,43 @@ export async function runM2PublishingScalePrivateDevelopment({
       config
     )
   };
+  const operationalFallback = {
+    primary: scorePublishingScaleOperationalFallbackIntersection(
+      primary,
+      "M2-WORK-OA03"
+    ),
+    strict: scorePublishingScaleOperationalFallbackIntersection(
+      strict,
+      "M2-WORK-OA03"
+    )
+  };
+  const globalParentAblation = {
+    primary: scoreM2ChannelGenerativeG1Predictions(
+      primary.rows,
+      primary.globalParentPredictions,
+      config,
+      { candidateId: `${M2_PUBLISHING_SCALE_RAW_CANDIDATE_ID}-GLOBAL-PARENT` }
+    ),
+    strict: scoreM2ChannelGenerativeG1Predictions(
+      strict.rows,
+      strict.globalParentPredictions,
+      config,
+      { candidateId: `${M2_PUBLISHING_SCALE_RAW_CANDIDATE_ID}-GLOBAL-PARENT` }
+    )
+  };
+  const diagnostics = {
+    primary: buildPublishingScaleDetailedEvaluation(primary, config),
+    strict: buildPublishingScaleDetailedEvaluation(strict, config)
+  };
+  await writeFile(
+    receiptPath,
+    JSON.stringify({
+      ...await readJson(receiptPath),
+      status: "EVALUATION_STARTED_AFTER_RAW_CANDIDATE_FREEZE",
+      evaluationStarted: true
+    }, null, 2) + "\n",
+    "utf8"
+  );
   const bootstrap = {
     primary: pairedBootstrap(
       baselines.primary.cases,
@@ -524,21 +432,25 @@ export async function runM2PublishingScalePrivateDevelopment({
     config,
     support,
     baselines,
+    operationalFallback,
+    globalParentAblation,
+    diagnostics,
     primary,
     strict,
     bootstrap,
     gate,
     forecastability,
     candidateFreeze,
+    outputFiles,
     restatementBinding: {
       primary: primaryRestatement.audit,
       strict: strictRestatement.audit
     },
-    receipt
+    receipt: await readJson(receiptPath)
   });
   const privateManifest = {
     schema:
-      "m2.current.publishing_scale_channel_evaluation_private_manifest.v0.1",
+      "m2.current.publishing_scale_channel_evaluation_private_manifest.v0.2",
     tracked: false,
     modelId: M2_PUBLISHING_SCALE_MODEL_ID,
     experimentArmId: M2_PUBLISHING_SCALE_ARM_ID,
@@ -551,6 +463,7 @@ export async function runM2PublishingScalePrivateDevelopment({
     primaryPackedSha256: materialization.primarySha256,
     auxiliaryPackedSha256: materialization.auxiliarySha256,
     frozenEvaluationSha256: frozenManifest.sha256,
+    outputFiles,
     candidateFreeze,
     rawCandidatePreserved: true,
     fallbackOverwroteRaw: false,
@@ -564,18 +477,18 @@ export async function runM2PublishingScalePrivateDevelopment({
     writeFile(
       path.join(
         privateDirectory,
-        config.privateOutputs.evaluationRows
+        outputFiles.evaluationRows
       ),
       privateText,
-      "utf8"
+      { encoding: "utf8", flag: "wx" }
     ),
     writeFile(
       path.join(
         privateDirectory,
-        config.privateOutputs.evaluationManifest
+        outputFiles.evaluationManifest
       ),
       JSON.stringify(privateManifest, null, 2) + "\n",
-      "utf8"
+      { encoding: "utf8", flag: "wx" }
     ),
     writeFile(
       path.join(root, config.publicDevelopmentOutput),
@@ -584,7 +497,7 @@ export async function runM2PublishingScalePrivateDevelopment({
     ),
     writeFile(
       path.join(root, config.publicDevelopmentReport),
-      renderPublishingScaleDevelopmentReport(result),
+      renderPublishingScaleDevelopmentReportCurrent(result),
       "utf8"
     ),
     writeFile(
@@ -598,20 +511,26 @@ export async function runM2PublishingScalePrivateDevelopment({
     ),
     writeFile(
       path.join(root, config.publicForecastabilityReport),
-      renderPublishingScaleForecastabilityReport(result),
+      renderPublishingScaleForecastabilityReportCurrent(result),
       "utf8"
     )
   ]);
   await writeFile(
     receiptPath,
     JSON.stringify({
-      ...receipt,
+      ...await readJson(receiptPath),
       status: "COMPLETED",
       completedAt: new Date().toISOString(),
       outputRowCount: privateManifest.rowCount,
       outputSha256: privateManifest.sha256,
+      outputFiles,
       finalStatus: result.finalStatus,
-      candidateExecutionStarted: true,
+      candidateFitStarted: true,
+      candidateOutputFrozen: true,
+      predictionRowsProduced,
+      evaluationStarted: true,
+      evaluationRowsProduced: privateManifest.rowCount,
+      evaluationComplete: true,
       candidateExecuted: true,
       candidateOutcomeReadAfterReceipt: true,
       predictionGeneratedAfterFreezeCount: 0,
@@ -628,38 +547,6 @@ export async function runM2PublishingScalePrivateDevelopment({
     privateSha256: privateManifest.sha256
   }) + "\n");
   return result;
-}
-
-export async function recordM2PublishingScaleRunFailure({
-  root,
-  privateDirectory,
-  error
-}) {
-  const config = await readJson(path.join(
-    root,
-    PUBLISHING_SCALE_CONFIG_PATH
-  ));
-  const receiptPath = path.join(
-    privateDirectory,
-    config.privateOutputs.runReceipt
-  );
-  const receipt = await readOptionalJson(receiptPath);
-  if (receipt === null || receipt.status === "COMPLETED") return;
-  await writeFile(
-    receiptPath,
-    JSON.stringify({
-      ...receipt,
-      status: receipt.candidateExecutionStarted === true
-        ? "FAILED_CLOSED_AFTER_CANDIDATE_FIT_STARTED"
-        : "FAILED_CLOSED_BEFORE_CANDIDATE_FIT_STARTED",
-      failedAt: new Date().toISOString(),
-      failureCode: String(error?.code ?? error?.message ?? error),
-      candidateExecuted: false,
-      finalHoldoutOpened: false,
-      productionModified: false
-    }, null, 2) + "\n",
-    "utf8"
-  );
 }
 
 export async function prepareM2ChannelGenerativeRunReceipt({
@@ -1433,6 +1320,31 @@ function bothTop(baselines, primary, strict, fraction, threshold) {
 }
 
 function pairedBootstrap(baselineCases, candidateCases, config) {
+  const baselineKeys = new Map(baselineCases.map((row) => [
+    publishingScaleCaseKey(
+      row.standardWorkId,
+      row.origin,
+      row.horizonMonths
+    ),
+    Number(row.actual)
+  ]));
+  const candidateKeys = new Map(candidateCases.map((row) => [
+    publishingScaleCaseKey(
+      row.standardWorkId,
+      row.origin,
+      row.horizonMonths
+    ),
+    Number(row.actual)
+  ]));
+  if (
+    baselineKeys.size !== candidateKeys.size
+    || [...baselineKeys].some(([key, actual]) => (
+      !candidateKeys.has(key)
+      || Math.abs(candidateKeys.get(key) - actual) > 1e-8
+    ))
+  ) {
+    throw new Error("m2_publishing_scale_bootstrap_same_case_invalid");
+  }
   const baseline = groupCasesByWork(baselineCases);
   const candidate = groupCasesByWork(candidateCases);
   const works = [...baseline.keys()].filter((work) => candidate.has(work))
@@ -1464,6 +1376,9 @@ function pairedBootstrap(baselineCases, candidateCases, config) {
   return {
     iterations: values.length,
     seed: Number(config.evaluation.bootstrapSeed),
+    clusterUnit: "standardWorkId",
+    sameCasePaired: true,
+    statistic: "relative_wape_improvement",
     lower95: values[Math.floor(0.025 * (values.length - 1))],
     upper95: values[Math.floor(0.975 * (values.length - 1))]
   };
@@ -1655,7 +1570,9 @@ function buildPublishingScaleReadiness({
           support.parameterFreeze.nodes[key].frozenTier
         ])
       ),
-      namedPlatforms: support.parameterFreeze.namedPlatforms,
+      namedPlatforms: Object.fromEntries(Object.entries(
+        support.parameterFreeze.namedPlatforms
+      ).map(([name, value]) => [name, value.frozenTier])),
       taxonomy: support.parameterFreeze.taxonomy,
       authorization: support.parameterFreeze.authorization
     },
@@ -1870,6 +1787,9 @@ function buildPublishingScalePublicResult({
   config,
   support,
   baselines,
+  operationalFallback,
+  globalParentAblation,
+  diagnostics,
   primary,
   strict,
   bootstrap,
@@ -1880,7 +1800,9 @@ function buildPublishingScalePublicResult({
 }) {
   const finalStatus = gate.allPassed
     ? "M2_PUBLISHING_SCALE_CORE_PASS"
-    : "M2_PUBLISHING_SCALE_CORE_FAIL";
+    : gate.reproducibleLocalSignal
+      ? "M2_PUBLISHING_SCALE_CORE_PROMISING_NOT_QUALIFIED"
+      : "M2_PUBLISHING_SCALE_CORE_FAIL";
   return {
     schema: "m2.current.publishing_scale_channel_development_public.v0.1",
     displayNameZh: config.displayNameZh,
@@ -1899,12 +1821,43 @@ function buildPublishingScalePublicResult({
       sameCases: true,
       sameActualDefinition: true,
       operationalFallbackId: "M2-WORK-OA03",
-      operationalFallbackDirectlyRanked: false
+      operationalFallbackDirectlyRanked:
+        operationalFallback.primary.caseCount > 0
+        || operationalFallback.strict.caseCount > 0,
+      operationalFallbackComparisonPopulation:
+        "exact_same_case_intersection_only"
     },
     evaluation: {
       frozenResearchComparator: {
         primary: publishingScaleEvaluationSummary(baselines.primary),
         strict: publishingScaleEvaluationSummary(baselines.strict)
+      },
+      operationalFallbackSameCaseIntersection: {
+        primary: publishingScaleComparableIntersectionSummary(
+          operationalFallback.primary
+        ),
+        strict: publishingScaleComparableIntersectionSummary(
+          operationalFallback.strict
+        )
+      },
+      globalParentAblation: {
+        role: "PRE_REGISTERED_LAYER_ABLATION_NOT_OPERATIONAL_FALLBACK",
+        primary: publishingScaleEvaluationSummary(
+          globalParentAblation.primary
+        ),
+        strict: publishingScaleEvaluationSummary(
+          globalParentAblation.strict
+        ),
+        relativeWapeFromGlobalParentToRawCandidate: {
+          primary: relativeWape(
+            globalParentAblation.primary,
+            primary.evaluation
+          ),
+          strict: relativeWape(
+            globalParentAblation.strict,
+            strict.evaluation
+          )
+        }
       },
       rawCandidate: {
         primary: publishingScaleEvaluationSummary(primary.evaluation),
@@ -1912,6 +1865,20 @@ function buildPublishingScalePublicResult({
         relativeWapeToFrozenResearchComparator: {
           primary: relativeWape(baselines.primary, primary.evaluation),
           strict: relativeWape(baselines.strict, strict.evaluation)
+        },
+        operationalFallbackSameCaseIntersection: {
+          primary: operationalFallback.primary.candidate,
+          strict: operationalFallback.strict.candidate,
+          relativeWapeToOperationalFallback: {
+            primary: relativeMetric(
+              operationalFallback.primary.fallback.wape,
+              operationalFallback.primary.candidate.wape
+            ),
+            strict: relativeMetric(
+              operationalFallback.strict.fallback.wape,
+              operationalFallback.strict.candidate.wape
+            )
+          }
         },
         byHorizon: {
           primary: primary.evaluation.byHorizon,
@@ -1949,7 +1916,8 @@ function buildPublishingScalePublicResult({
           primary: primary.evaluation.coverage,
           strict: strict.evaluation.coverage,
           role: "DESCRIPTIVE_ONLY_NOT_A_FIT_GATE"
-        }
+        },
+        detailedDiagnostics: diagnostics
       }
     },
     bootstrap: {
@@ -2113,6 +2081,16 @@ function evaluatePublishingScaleGates({
   return {
     checks,
     allPassed: Object.values(checks).every(Boolean),
+    reproducibleLocalSignal: (
+      (
+        primaryRelative > 0
+        && bootstrap.primary.lower95 > 0
+      )
+      || (
+        strictRelative > 0
+        && bootstrap.strict.lower95 > 0
+      )
+    ),
     primaryRelativeWape: primaryRelative,
     strictRelativeWape: strictRelative,
     strictImprovedOriginBlocks: strictImprovedOrigins,
@@ -2163,6 +2141,521 @@ function publishingScaleEvaluationSummary(value) {
   };
 }
 
+function scorePublishingScaleOperationalFallbackIntersection(
+  result,
+  modelId
+) {
+  const fallbackByCase = new Map();
+  for (const row of result.rows) {
+    for (const horizon of row.includedHorizons) {
+      const point = row.operationalFallbackPointByHorizon?.[String(horizon)];
+      if (!Number.isFinite(Number(point))) continue;
+      const key = publishingScaleCaseKey(
+        row.standardWorkId,
+        row.origin,
+        horizon
+      );
+      const previous = fallbackByCase.get(key);
+      if (previous !== undefined && previous !== Number(point)) {
+        throw new Error(
+          "m2_publishing_scale_operational_fallback_point_drift"
+        );
+      }
+      fallbackByCase.set(key, Number(point));
+    }
+  }
+  const candidateCases = result.evaluation.cases.filter((row) => (
+    fallbackByCase.has(publishingScaleCaseKey(
+      row.standardWorkId,
+      row.origin,
+      row.horizonMonths
+    ))
+  ));
+  const fallbackCases = candidateCases.map((row) => ({
+    ...row,
+    pointEstimate: fallbackByCase.get(publishingScaleCaseKey(
+      row.standardWorkId,
+      row.origin,
+      row.horizonMonths
+    ))
+  }));
+  return Object.freeze({
+    modelId,
+    caseCount: candidateCases.length,
+    workCount: new Set(
+      candidateCases.map((row) => row.standardWorkId)
+    ).size,
+    sameCase: true,
+    sameTarget: true,
+    sameOrigin: true,
+    sameHorizon: true,
+    sameActualDefinition: true,
+    fallback: scorePublishingScaleComparableCases(fallbackCases),
+    candidate: scorePublishingScaleComparableCases(candidateCases),
+    byHorizon: Object.freeze({
+      fallback: scorePublishingScaleComparableSlices(
+        fallbackCases,
+        "horizonMonths"
+      ),
+      candidate: scorePublishingScaleComparableSlices(
+        candidateCases,
+        "horizonMonths"
+      )
+    }),
+    byOrigin: Object.freeze({
+      fallback: scorePublishingScaleComparableSlices(
+        fallbackCases,
+        "origin"
+      ),
+      candidate: scorePublishingScaleComparableSlices(
+        candidateCases,
+        "origin"
+      )
+    })
+  });
+}
+
+function publishingScaleComparableIntersectionSummary(value) {
+  return {
+    modelId: value.modelId,
+    caseCount: value.caseCount,
+    workCount: value.workCount,
+    sameCase: value.sameCase,
+    sameTarget: value.sameTarget,
+    sameOrigin: value.sameOrigin,
+    sameHorizon: value.sameHorizon,
+    sameActualDefinition: value.sameActualDefinition,
+    fallback: value.fallback,
+    candidate: value.candidate,
+    relativeWape: relativeMetric(
+      value.fallback.wape,
+      value.candidate.wape
+    ),
+    byHorizon: value.byHorizon,
+    byOrigin: value.byOrigin
+  };
+}
+
+function scorePublishingScaleComparableSlices(cases, field) {
+  const groups = new Map();
+  for (const row of cases) {
+    const key = String(row[field]);
+    const values = groups.get(key) ?? [];
+    values.push(row);
+    groups.set(key, values);
+  }
+  return Object.freeze(Object.fromEntries(
+    [...groups.entries()].map(([key, values]) => [
+      key,
+      scorePublishingScaleComparableCases(values)
+    ])
+  ));
+}
+
+function scorePublishingScaleComparableCases(cases) {
+  let absoluteError = 0;
+  let signedError = 0;
+  let denominator = 0;
+  const errors = [];
+  for (const row of cases) {
+    const actual = Number(row.actual);
+    const point = Number(row.pointEstimate);
+    const error = point - actual;
+    absoluteError += Math.abs(error);
+    signedError += error;
+    denominator += Math.abs(actual);
+    errors.push(Math.abs(error));
+  }
+  errors.sort((left, right) => left - right);
+  const middle = Math.floor(errors.length / 2);
+  return Object.freeze({
+    caseCount: cases.length,
+    absoluteError,
+    actualCashDenominator: denominator,
+    wape: denominator === 0 ? null : absoluteError / denominator,
+    signedBias: denominator === 0 ? null : signedError / denominator,
+    mae: cases.length === 0 ? null : absoluteError / cases.length,
+    medianAbsoluteError: cases.length === 0
+      ? null
+      : cases.length % 2 === 0
+        ? (errors[middle - 1] + errors[middle]) / 2
+        : errors[middle]
+  });
+}
+
+function publishingScaleCaseKey(workId, origin, horizon) {
+  return `${workId}\u001f${origin}\u001f${horizon}`;
+}
+
+export function buildPublishingScaleDetailedEvaluation(result, config) {
+  const tierAttribution = scorePublishingScaleSupportAttribution(result);
+  return Object.freeze({
+    occurrenceCalibration: Object.freeze({
+      allPredictionEligibleRows: scoreOccurrenceCalibration(
+        result.rows,
+        result.predictions
+      ),
+      originObservedRows: scoreOccurrenceCalibration(
+        result.rows.filter((row) => row.observedAtOrigin),
+        result.predictions
+      )
+    }),
+    namedPlatforms: scorePublishingScaleNamedPlatforms(
+      result.evaluation.cases,
+      config.nodes.namedPlatforms
+    ),
+    supportTier: tierAttribution.byTier,
+    selectedNode: tierAttribution.bySelectedNode,
+    topCashAndErrorAttribution: scorePublishingScaleTopAttribution(
+      result.evaluation.cases,
+      config.evaluation.topRevenueFractions
+    ),
+    hierarchyLayerIncrement: scorePublishingScaleLayerIncrement(result),
+    structuralCoverage: Object.freeze({
+      originObservedMonthlyRowCount:
+        result.evaluation.coverage.observedChannelMonthlyRowCount,
+      futureFirstSeenMonthlyRowCount:
+        result.evaluation.coverage.futureFirstSeenMonthlyRowCount,
+      futureFirstSeenActualPositiveCash:
+        result.evaluation.coverage.futureFirstSeenActualPositiveCash,
+      futureFirstSeenActualPositiveCashShare: safeRatio(
+        result.evaluation.coverage.futureFirstSeenActualPositiveCash,
+        result.evaluation.coverage.observedChannelActualPositiveCash
+          + result.evaluation.coverage.futureFirstSeenActualPositiveCash
+      ),
+      tierMonthlyRowUsage: tierAttribution.monthlyRowUsage
+    })
+  });
+}
+
+function scoreOccurrenceCalibration(rows, predictions) {
+  const binCount = 10;
+  const bins = Array.from({ length: binCount }, (_, index) => ({
+    lowerInclusive: index / binCount,
+    upperInclusive: (index + 1) / binCount,
+    rowCount: 0,
+    predictedProbabilityTotal: 0,
+    actualOccurrenceTotal: 0
+  }));
+  for (const row of rows) {
+    const prediction = predictions.get(
+      `${row.standardWorkId}\u001f${row.channelUid}`
+        + `\u001f${row.origin}\u001f${row.futureMonthIndex}`
+    );
+    if (!Number.isFinite(prediction?.occurrenceProbability)) continue;
+    const probability = Math.max(
+      0,
+      Math.min(1, Number(prediction.occurrenceProbability))
+    );
+    const index = Math.min(binCount - 1, Math.floor(probability * binCount));
+    bins[index].rowCount += 1;
+    bins[index].predictedProbabilityTotal += probability;
+    bins[index].actualOccurrenceTotal += row.actualPositive > 0 ? 1 : 0;
+  }
+  const populated = bins.filter((bin) => bin.rowCount > 0).map((bin) => {
+    const meanPredictedProbability =
+      bin.predictedProbabilityTotal / bin.rowCount;
+    const observedOccurrenceRate =
+      bin.actualOccurrenceTotal / bin.rowCount;
+    return Object.freeze({
+      lowerInclusive: bin.lowerInclusive,
+      upperInclusive: bin.upperInclusive,
+      rowCount: bin.rowCount,
+      meanPredictedProbability,
+      observedOccurrenceRate,
+      absoluteCalibrationGap:
+        Math.abs(meanPredictedProbability - observedOccurrenceRate)
+    });
+  });
+  const rowCount = populated.reduce(
+    (total, bin) => total + bin.rowCount,
+    0
+  );
+  return Object.freeze({
+    rowCount,
+    binCount,
+    populatedBinCount: populated.length,
+    expectedCalibrationError: rowCount === 0
+      ? null
+      : populated.reduce(
+        (total, bin) => total
+          + bin.rowCount / rowCount * bin.absoluteCalibrationGap,
+        0
+      ),
+    bins: Object.freeze(populated)
+  });
+}
+
+function scorePublishingScaleNamedPlatforms(cases, platforms) {
+  return Object.freeze(Object.fromEntries(platforms.map((platform) => {
+    const rows = cases.flatMap((row) => row.channels
+      .filter((channel) => channel.channelUid === platform.channelUid)
+      .map((channel) => ({
+        ...channel,
+        standardWorkId: row.standardWorkId,
+        origin: row.origin,
+        horizonMonths: row.horizonMonths
+      })));
+    return [platform.platformId, Object.freeze({
+      displayNameZh: platform.displayNameZh,
+      channelUid: platform.channelUid,
+      frozenTier: platform.frozenTier,
+      workCount: new Set(rows.map((row) => row.standardWorkId)).size,
+      channelCaseCount: rows.length,
+      point: scorePublishingScaleComparableCases(rows)
+    })];
+  })));
+}
+
+function scorePublishingScaleSupportAttribution(result) {
+  const cases = new Map();
+  const monthlyUsage = new Map();
+  for (const row of result.rows) {
+    const prediction = result.predictions.get(
+      `${row.standardWorkId}\u001f${row.channelUid}`
+        + `\u001f${row.origin}\u001f${row.futureMonthIndex}`
+    );
+    if (prediction === undefined) continue;
+    const tier = prediction.supportTier;
+    const node = prediction.selectedNodeId;
+    const usage = monthlyUsage.get(tier) ?? {
+      monthlyRowCount: 0,
+      actualPositiveCash: 0
+    };
+    usage.monthlyRowCount += 1;
+    usage.actualPositiveCash += Number(row.actualPositive);
+    monthlyUsage.set(tier, usage);
+    for (const horizon of row.includedHorizons) {
+      const key = [
+        tier,
+        node,
+        row.standardWorkId,
+        row.origin,
+        horizon
+      ].join("\u001f");
+      const value = cases.get(key) ?? {
+        tier,
+        node,
+        standardWorkId: row.standardWorkId,
+        origin: row.origin,
+        horizonMonths: horizon,
+        actual: 0,
+        pointEstimate: 0
+      };
+      value.actual += Number(row.actual);
+      value.pointEstimate += Number(prediction.positivePoint);
+      cases.set(key, value);
+    }
+  }
+  const values = [...cases.values()];
+  const byTier = scorePublishingScaleAttributionDimension(values, "tier");
+  const bySelectedNode = scorePublishingScaleAttributionDimension(
+    values,
+    "node"
+  );
+  const totalRows = [...monthlyUsage.values()].reduce(
+    (total, value) => total + value.monthlyRowCount,
+    0
+  );
+  const totalCash = [...monthlyUsage.values()].reduce(
+    (total, value) => total + value.actualPositiveCash,
+    0
+  );
+  return Object.freeze({
+    byTier,
+    bySelectedNode,
+    monthlyRowUsage: Object.freeze(Object.fromEntries(
+      [...monthlyUsage.entries()].sort().map(([tier, value]) => [
+        tier,
+        Object.freeze({
+          ...value,
+          monthlyRowShare: safeRatio(value.monthlyRowCount, totalRows),
+          actualPositiveCashShare:
+            safeRatio(value.actualPositiveCash, totalCash)
+        })
+      ])
+    ))
+  });
+}
+
+function scorePublishingScaleAttributionDimension(rows, field) {
+  const keys = [...new Set(rows.map((row) => row[field]))].sort();
+  const scores = Object.fromEntries(keys.map((key) => {
+    const selected = rows.filter((row) => row[field] === key);
+    return [key, {
+      workCount: new Set(selected.map((row) => row.standardWorkId)).size,
+      point: scorePublishingScaleComparableCases(selected)
+    }];
+  }));
+  const totalAbsoluteError = Object.values(scores).reduce(
+    (total, value) => total + value.point.absoluteError,
+    0
+  );
+  return Object.freeze(Object.fromEntries(Object.entries(scores).map(
+    ([key, value]) => [key, Object.freeze({
+      ...value,
+      shareOfAttributedAbsoluteError: safeRatio(
+        value.point.absoluteError,
+        totalAbsoluteError
+      )
+    })]
+  )));
+}
+
+function scorePublishingScaleTopAttribution(cases, fractions) {
+  const works = new Map();
+  for (const row of cases) {
+    const value = works.get(row.standardWorkId) ?? {
+      standardWorkId: row.standardWorkId,
+      actualPositiveCash: 0,
+      reversalCash: 0,
+      absoluteCashScale: 0,
+      absoluteError: 0
+    };
+    value.actualPositiveCash += Number(row.actualPositive);
+    value.reversalCash += Number(row.actualReversal);
+    value.absoluteCashScale += Math.abs(Number(row.actual));
+    value.absoluteError += Math.abs(
+      Number(row.pointEstimate) - Number(row.actual)
+    );
+    works.set(row.standardWorkId, value);
+  }
+  const values = [...works.values()];
+  return Object.freeze({
+    byPositiveRevenue: topAttributionView(
+      values,
+      fractions,
+      "actualPositiveCash"
+    ),
+    byAbsoluteCashScale: topAttributionView(
+      values,
+      fractions,
+      "absoluteCashScale"
+    ),
+    byReversalCash: topAttributionView(
+      values,
+      fractions,
+      "reversalCash"
+    )
+  });
+}
+
+function topAttributionView(works, fractions, orderField) {
+  const ordered = [...works].sort((left, right) => (
+    right[orderField] - left[orderField]
+      || left.standardWorkId.localeCompare(right.standardWorkId)
+  ));
+  const totals = {
+    actualPositiveCash: sumValues(works, "actualPositiveCash"),
+    reversalCash: sumValues(works, "reversalCash"),
+    absoluteCashScale: sumValues(works, "absoluteCashScale"),
+    absoluteError: sumValues(works, "absoluteError")
+  };
+  return Object.freeze(Object.fromEntries(fractions.map((fraction) => {
+    const count = Math.max(1, Math.ceil(ordered.length * Number(fraction)));
+    const selected = ordered.slice(0, count);
+    const values = {
+      selectedWorkCount: selected.length,
+      actualPositiveCash: sumValues(selected, "actualPositiveCash"),
+      reversalCash: sumValues(selected, "reversalCash"),
+      absoluteCashScale: sumValues(selected, "absoluteCashScale"),
+      absoluteError: sumValues(selected, "absoluteError")
+    };
+    return [String(fraction), Object.freeze({
+      ...values,
+      actualPositiveCashShare: safeRatio(
+        values.actualPositiveCash,
+        totals.actualPositiveCash
+      ),
+      reversalCashShare: safeRatio(
+        values.reversalCash,
+        totals.reversalCash
+      ),
+      absoluteCashScaleShare: safeRatio(
+        values.absoluteCashScale,
+        totals.absoluteCashScale
+      ),
+      absoluteErrorShare: safeRatio(
+        values.absoluteError,
+        totals.absoluteError
+      )
+    })];
+  })));
+}
+
+function scorePublishingScaleLayerIncrement(result) {
+  const layerIds = [
+    "originVisibleEmpiricalParent",
+    "globalPooledParent",
+    "mechanism",
+    "namedPlatform"
+  ];
+  const cases = new Map();
+  for (const row of result.rows) {
+    const prediction = result.predictions.get(
+      `${row.standardWorkId}\u001f${row.channelUid}`
+        + `\u001f${row.origin}\u001f${row.futureMonthIndex}`
+    );
+    if (prediction?.layerPredictions === undefined) {
+      throw new Error("m2_publishing_scale_layer_prediction_missing");
+    }
+    for (const horizon of row.includedHorizons) {
+      const key = publishingScaleCaseKey(
+        row.standardWorkId,
+        row.origin,
+        horizon
+      );
+      const value = cases.get(key) ?? {
+        standardWorkId: row.standardWorkId,
+        origin: row.origin,
+        horizonMonths: horizon,
+        actual: 0,
+        points: Object.fromEntries(layerIds.map((layer) => [layer, 0]))
+      };
+      value.actual += Number(row.actual);
+      for (const layer of layerIds) {
+        value.points[layer] += Number(
+          prediction.layerPredictions[layer].positivePoint
+        );
+      }
+      cases.set(key, value);
+    }
+  }
+  const scores = Object.fromEntries(layerIds.map((layer) => [
+    layer,
+    scorePublishingScaleComparableCases(
+      [...cases.values()].map((row) => ({
+        actual: row.actual,
+        pointEstimate: row.points[layer]
+      }))
+    )
+  ]));
+  return Object.freeze(Object.fromEntries(layerIds.map((layer, index) => {
+    const current = scores[layer];
+    const parent = index === 0 ? null : scores[layerIds[index - 1]];
+    return [layer, Object.freeze({
+      ...current,
+      parentLayer: index === 0 ? null : layerIds[index - 1],
+      incrementalAbsoluteErrorReductionFromParent: parent === null
+        ? null
+        : parent.absoluteError - current.absoluteError,
+      incrementalWapeReductionFromParent: parent === null
+        || !Number.isFinite(parent.wape)
+        || !Number.isFinite(current.wape)
+        ? null
+        : parent.wape - current.wape
+    })];
+  })));
+}
+
+function sumValues(rows, field) {
+  return rows.reduce((total, row) => total + Number(row[field]), 0);
+}
+
+function safeRatio(numerator, denominator) {
+  return denominator === 0 ? null : numerator / denominator;
+}
+
 function scorePublishingScaleRanking(cases) {
   const groups = new Map();
   for (const row of cases) {
@@ -2170,6 +2663,7 @@ function scorePublishingScaleRanking(cases) {
     const values = groups.get(key) ?? [];
     values.push({
       actual: Math.max(0, Number(row.actual)),
+      actualPositive: Math.max(0, Number(row.actualPositive)),
       point: Math.max(0, Number(row.pointEstimate))
     });
     groups.set(key, values);
@@ -2178,7 +2672,10 @@ function scorePublishingScaleRanking(cases) {
     .filter((rows) => rows.length >= 2)
     .map((rows) => ({
       spearman: spearman(rows),
-      ndcgAt10: ndcgAt(rows, 10)
+      ndcgAt10: ndcgAt(rows, 10),
+      topCaptureAt1Percent: topCapture(rows, 0.01),
+      topCaptureAt5Percent: topCapture(rows, 0.05),
+      topCaptureAt10Percent: topCapture(rows, 0.1)
     }));
   return {
     groupCount: groupScores.length,
@@ -2188,9 +2685,36 @@ function scorePublishingScaleRanking(cases) {
     meanNdcgAt10: averageFinite(
       groupScores.map((row) => row.ndcgAt10)
     ),
+    meanTopCaptureAt1Percent: averageFinite(
+      groupScores.map((row) => row.topCaptureAt1Percent)
+    ),
+    meanTopCaptureAt5Percent: averageFinite(
+      groupScores.map((row) => row.topCaptureAt5Percent)
+    ),
+    meanTopCaptureAt10Percent: averageFinite(
+      groupScores.map((row) => row.topCaptureAt10Percent)
+    ),
     diagnosticOnly: true,
     futureActualUsedForAttributionOnly: true
   };
+}
+
+function topCapture(rows, fraction) {
+  const count = Math.max(1, Math.ceil(rows.length * fraction));
+  const selected = [...rows].sort(
+    (left, right) => right.point - left.point
+  ).slice(0, count);
+  const denominator = rows.reduce(
+    (total, row) => total + row.actualPositive,
+    0
+  );
+  return safeRatio(
+    selected.reduce(
+      (total, row) => total + row.actualPositive,
+      0
+    ),
+    denominator
+  );
 }
 
 function spearman(rows) {
@@ -2290,10 +2814,17 @@ function publishingScalePrivateRows(primary, strict) {
     ["primary", primary],
     ["strict", strict]
   ]) {
-    for (const row of result.evaluation.cases) {
+    for (const row of result.rows) {
+      const prediction = result.predictions.get(
+        `${row.standardWorkId}\u001f${row.channelUid}`
+          + `\u001f${row.origin}\u001f${row.futureMonthIndex}`
+      );
+      if (prediction === undefined) {
+        throw new Error("m2_publishing_scale_private_prediction_missing");
+      }
       output.push({
         schema:
-          "m2.current.publishing_scale_channel_evaluation_private_row.v0.1",
+          "m2.current.publishing_scale_channel_evaluation_private_row.v0.2",
         tracked: false,
         evaluationFamily: family,
         modelId: M2_PUBLISHING_SCALE_MODEL_ID,
@@ -2302,13 +2833,37 @@ function publishingScalePrivateRows(primary, strict) {
         actualDefinitionId:
           "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01",
         standardWorkId: row.standardWorkId,
+        channelUid: row.channelUid,
+        mechanism: row.mechanism,
         origin: row.origin,
-        horizonMonths: row.horizonMonths,
+        futureMonthIndex: row.futureMonthIndex,
+        futureMonth: row.futureMonth,
+        includedHorizons: row.includedHorizons,
+        labelAvailableAsOf: row.labelAvailableAsOf,
+        observedAtOrigin: row.observedAtOrigin,
         actualPositive: row.actualPositive,
         actualReversal: row.actualReversal,
         actual: row.actual,
-        positivePoint: row.positivePoint,
-        pointEstimate: row.pointEstimate,
+        postingTimeActualPositive: row.postingTimeActualPositive,
+        postingTimeActualReversal: row.postingTimeActualReversal,
+        postingTimeActual: row.postingTimeActual,
+        positivePoint: prediction.positivePoint,
+        pointEstimate: prediction.positivePoint,
+        occurrenceProbability: prediction.occurrenceProbability,
+        conditionalPositiveAmount:
+          prediction.conditionalPositiveAmount,
+        selectedNodeId: prediction.selectedNodeId,
+        supportTier: prediction.supportTier,
+        hierarchyPath: prediction.hierarchyPath,
+        layerPredictions: prediction.layerPredictions,
+        occurrenceShrinkageWeight:
+          prediction.occurrenceShrinkageWeight ?? 0,
+        conditionalAmountShrinkageWeight:
+          prediction.conditionalAmountShrinkageWeight ?? 0,
+        fallbackReason: prediction.fallbackReason,
+        taxonomyFeatureUsed: prediction.taxonomyFeatureUsed,
+        authorizationBackfillUsed:
+          prediction.authorizationBackfillUsed,
         rawCandidatePreserved: true,
         fallbackOverwroteRaw: false
       });
@@ -2418,44 +2973,147 @@ function renderPublishingScaleForecastabilityReport(result) {
 `;
 }
 
-function assertPublishingScalePrivateAuthorization(config) {
-  if (
-    config?.authorization?.oneTimePrivateDevelopmentEvaluation
-      !== "AUTHORIZED_AFTER_K7C_EXACT_HEAD_LINUX_WINDOWS_CI"
-    || config?.authorization?.authorizedModelId
-      !== M2_PUBLISHING_SCALE_MODEL_ID
-    || config?.authorization?.authorizedArmId
-      !== M2_PUBLISHING_SCALE_ARM_ID
-    || config?.authorization?.outcomeDrivenTuning !== false
-    || config?.authorization?.laterOriginHoldout !== false
-    || config?.authorization?.finalHoldout !== false
-    || config?.authorization?.provider !== false
-    || config?.authorization?.database !== false
-    || config?.authorization?.production !== false
-    || config?.authorization?.release !== false
-    || config?.authorization?.retryAuthorized !== true
-    || config?.currentExecution?.privateExecutionAuthorizationConsumed
-      !== false
-    || config?.currentExecution?.candidateOutputProduced !== false
-  ) {
-    throw new Error("m2_publishing_scale_private_authorization_invalid");
-  }
+function renderPublishingScaleDevelopmentReportCurrent(result) {
+  const raw = result.evaluation.rawCandidate;
+  const frozen = result.evaluation.frozenResearchComparator;
+  const globalParent = result.evaluation.globalParentAblation;
+  const fallback = result.evaluation.operationalFallbackSameCaseIntersection;
+  const occurrence = raw.primary.occurrence;
+  const amount = raw.primary.conditionalAmount;
+  const sparseTiers = publishingScaleSparsePlatformTierSummary(result);
+  return `# ${result.displayNameZh}：受控私有开发评价
+
+- 英文原名：${result.displayNameEn}
+- 稳定模型 ID：\`${result.modelId}\`
+- 所属实验臂：出版行业规模适配渠道核心实验的核心臂（\`${result.experimentArmId}\`）
+- 机器结论：${publishingScaleStatusZh(result.finalStatus)}
+  （\`${result.finalStatus}\`）
+
+## 先说结论
+
+本轮已经真正拟合并完整评价原始候选
+（raw candidate，\`${result.candidateId}\`）。原始候选输出先冻结，随后才运行评价与
+可预测性/oracle 诊断；运行回退和任何 selected pipeline 都没有覆盖原始结果。
+这是重复使用开发窗口的受控证据，不是独立 later-origin 或 final holdout 证据，
+也不授权生产、自动化、发布或合并。
+
+## 点预测总账
+
+| 对象 | 主评价（primary）WAPE | 严格滚动（strict）WAPE | 主评价 signed bias | 严格滚动 signed bias |
+|---|---:|---:|---:|---:|
+| 冻结研究基线（Frozen learnedGlobal，\`M2-WORK-LG01-FROZEN-G0\`） | ${number(frozen.primary.wape)} | ${number(frozen.strict.wape)} | ${number(frozen.primary.signedBias)} | ${number(frozen.strict.signedBias)} |
+| 全局父层消融（global-parent ablation） | ${number(globalParent.primary.wape)} | ${number(globalParent.strict.wape)} | ${number(globalParent.primary.signedBias)} | ${number(globalParent.strict.signedBias)} |
+| 原始候选（raw candidate，\`${result.candidateId}\`） | ${number(raw.primary.wape)} | ${number(raw.strict.wape)} | ${number(raw.primary.signedBias)} | ${number(raw.strict.signedBias)} |
+
+原始候选相对冻结研究基线的 WAPE 变化为：主评价
+${percent(raw.relativeWapeToFrozenResearchComparator.primary)}，严格滚动
+${percent(raw.relativeWapeToFrozenResearchComparator.strict)}。主评价的绝对误差为
+${number(raw.primary.absoluteError)}，实际现金分母为
+${number(raw.primary.actualDenominator)}，MAE 为 ${number(raw.primary.mae)}，
+绝对误差中位数为 ${number(raw.primary.medianAbsoluteError)}；严格滚动对应值为
+${number(raw.strict.absoluteError)}、${number(raw.strict.actualDenominator)}、
+${number(raw.strict.mae)} 和 ${number(raw.strict.medianAbsoluteError)}。
+
+## 与现行运行回退的同人口比较
+
+现行运行回退是作品发生—金额校准模型 v0.3
+（Occurrence-Amount Calibration v0.3，\`M2-WORK-OA03\`），角色保持不变。
+这里只比较 exact same-case、same-target、same-origin、same-horizon 的交集：
+
+| 口径 | 同人口 case 数 | 运行回退 WAPE | 原始候选 WAPE | 原始候选相对变化 |
+|---|---:|---:|---:|---:|
+| 主评价（primary） | ${fallback.primary.caseCount} | ${number(fallback.primary.fallback.wape)} | ${number(fallback.primary.candidate.wape)} | ${percent(fallback.primary.relativeWape)} |
+| 严格滚动（strict） | ${fallback.strict.caseCount} | ${number(fallback.strict.fallback.wape)} | ${number(fallback.strict.candidate.wape)} | ${percent(fallback.strict.relativeWape)} |
+
+## 发生、条件金额与结构
+
+主评价发生部分的 Brier score、log loss、PR-AUC、Average Precision 和辅助
+ROC-AUC 分别为 ${number(occurrence.brier)}、${number(occurrence.logLoss)}、
+${number(occurrence.prAuc)}、${number(occurrence.averagePrecision)}、
+${number(occurrence.rocAuc)}。条件正金额 WAPE、MAE 和绝对误差中位数分别为
+${number(amount.wape)}、${number(amount.mae)}、
+${number(amount.medianAbsoluteError)}。
+
+完整机器记录还包含：发生概率校准、各 horizon、各严格滚动时间块、三种变现机制、
+五个重点平台、支持层级、top 1%/5%/10% 正收入与绝对现金及冲销误差归因、
+排序与 top capture、层级相对父层增量，以及 2,000 次
+\`standardWorkId\` 作品聚类 bootstrap。
+
+稀疏平台实际层级：${sparseTiers}。月度行没有被当作独立作品；作品数、作品—渠道
+scope 数与月度行数在每个 outer receipt 中分开记录。三级分类和授权关系均保持
+只报告（\`REPORT_ONLY\`），不估参、不路由、不做 current-only 回填。
+
+## 决策边界
+
+当前状态只由冻结门产生。即使机器结论为通过，也只表示 development core
+证据通过；现行运行回退、production、exact v0.3、provider、数据库、
+final holdout、Canary/full160、release、M3 formal 和 PR 合并均未获得授权。
+`;
 }
 
-function runCommand(root, command, args) {
-  const result = spawnSync(command, args, {
-    cwd: root,
-    encoding: "utf8",
-    windowsHide: true,
-    maxBuffer: 10 * 1024 * 1024
-  });
-  if (result.status !== 0) {
-    throw new Error(
-      `m2_publishing_scale_command_failed:${command}:${args.join(" ")}:`
-        + String(result.stderr ?? "").trim()
-    );
-  }
-  return result;
+function renderPublishingScaleForecastabilityReportCurrent(result) {
+  const primary = result.forecastability.primary;
+  const strict = result.forecastability.strict;
+  return `# ${result.displayNameZh}：可预测性与 oracle 诊断
+
+- 英文原名：${result.displayNameEn}
+- 稳定模型 ID：\`${result.modelId}\`
+- 所属实验臂：出版行业规模适配渠道核心实验的核心臂（\`${result.experimentArmId}\`）
+- 机器结论：${publishingScaleStatusZh(result.finalStatus)}
+  （\`${result.finalStatus}\`）
+
+这些 retrospective oracle 只在原始候选输出冻结后运行，不参与训练、参数选择、
+路由或晋级门，也不能证明 Bayes error、理论上限或“无法预测”。
+
+| 诊断 | 主评价最多可移除绝对误差 | 严格滚动最多可移除绝对误差 |
+|---|---:|---:|
+| 真实发生替换（\`ORACLE_OCCURRENCE_ONLY\`） | ${number(primary.diagnostics.ORACLE_OCCURRENCE_ONLY.maximumRemovableError)} | ${number(strict.diagnostics.ORACLE_OCCURRENCE_ONLY.maximumRemovableError)} |
+| 真实条件金额替换（\`ORACLE_AMOUNT_ONLY\`） | ${number(primary.diagnostics.ORACLE_AMOUNT_ONLY.maximumRemovableError)} | ${number(strict.diagnostics.ORACLE_AMOUNT_ONLY.maximumRemovableError)} |
+| 发生与金额同时替换（\`ORACLE_BOTH\`） | ${number(primary.diagnostics.ORACLE_BOTH.maximumRemovableError)} | ${number(strict.diagnostics.ORACLE_BOTH.maximumRemovableError)} |
+| future-first 新渠道上限（\`FUTURE_FIRST_ENTRY_CEILING\`） | ${number(primary.diagnostics.FUTURE_FIRST_ENTRY_CEILING.maximumRemovableError)} | ${number(strict.diagnostics.FUTURE_FIRST_ENTRY_CEILING.maximumRemovableError)} |
+
+主评价和严格滚动中，origin 时尚未观察到的新渠道正现金占比分别为
+${percent(primary.currentReachability.futureFirstSeenShare)} 与
+${percent(strict.currentReachability.futureFirstSeenShare)}。机制时间 basis 相对全局父层
+的绝对误差增益分别为
+${number(primary.diagnostics.MECHANISM_INFORMATION_GAIN.absoluteErrorGain)}
+与 ${number(strict.diagnostics.MECHANISM_INFORMATION_GAIN.absoluteErrorGain)}。
+
+这些数值用于判断下一步证据应优先补发生、条件金额、新渠道进入、机制时间结构，
+还是停止 cash-only 路线；它们不参与本轮模型选拔，也不授权任何后续实验。
+`;
+}
+
+function publishingScaleSparsePlatformTierSummary(result) {
+  const definitions = [
+    ["猫耳", "missevan"],
+    ["克拉漫播", "manbo"]
+  ];
+  return definitions.map(([name, platformId]) => {
+    const tiers = new Set();
+    for (const receipt of [
+      ...result.support.primaryOuterFolds,
+      ...result.support.strictOuterOrigins
+    ]) {
+      const tier = receipt.support?.namedPlatforms?.[platformId]?.tier;
+      if (typeof tier === "string") tiers.add(tier);
+    }
+    return `${name}（${[...tiers].sort().map(
+      (tier) => `\`${tier}\``
+    ).join(" / ") || "无可评价 outer receipt"}）`;
+  }).join("；");
+}
+
+function publishingScaleStatusZh(status) {
+  return ({
+    M2_PUBLISHING_SCALE_CORE_PASS: "开发核心证据通过",
+    M2_PUBLISHING_SCALE_CORE_PROMISING_NOT_QUALIFIED:
+      "存在局部信号但未满足全部冻结晋级门",
+    M2_PUBLISHING_SCALE_CORE_FAIL:
+      "原始候选完成评价但未达到冻结门或出现实质伤害",
+    M2_PUBLISHING_SCALE_IMPLEMENTATION_BLOCKED:
+      "原始候选完整评价前发生实现阻断"
+  })[status] ?? "未知状态";
 }
 
 function verifyPrivateBindings({
@@ -2506,6 +3164,113 @@ function verifyPrivateBindings({
   ) {
     throw new Error("m2_channel_generative_private_binding_invalid");
   }
+}
+
+function verifyPublishingScalePrivateBindings({
+  config,
+  preregistration,
+  baseManifest,
+  materialization,
+  frozenManifest,
+  primaryText,
+  auxiliaryText,
+  frozenText,
+  reconciliationText,
+  allocationText,
+  reversalReceipt
+}) {
+  if (
+    materialization?.schema
+      !== "m2.current.publishing_scale_channel_materialization_private.v0.2"
+    || materialization.modelId !== M2_PUBLISHING_SCALE_MODEL_ID
+    || materialization.experimentArmId !== M2_PUBLISHING_SCALE_ARM_ID
+    || materialization.candidateId
+      !== M2_PUBLISHING_SCALE_RAW_CANDIDATE_ID
+    || materialization.materializerId
+      !== "M2-MATERIALIZER-PUBLISHING-SCALE-CHANNEL-01"
+    || materialization.primarySha256 !== digest(primaryText)
+    || materialization.auxiliarySha256 !== digest(auxiliaryText)
+    || materialization.sourceArtifacts
+      ?.historicalChannelGenerativeArtifactsRead !== false
+    || materialization.sourceArtifacts
+      ?.historicalChannelGenerativeAuthorizationChecked !== false
+    || materialization.sourceArtifacts
+      ?.historicalFrozenComparator?.sourceArtifact !== true
+    || materialization.sourceArtifacts
+      ?.historicalFrozenComparator?.readOnly !== true
+    || materialization.sourceArtifacts
+      ?.historicalFrozenComparator?.overwritten !== false
+    || frozenManifest.sha256 !== digest(frozenText)
+    || frozenManifest.sha256
+      !== preregistration.caseManifest.digests.frozenEvaluationSha256
+    || frozenManifest.rowCount
+      !== preregistration.caseManifest.digests.frozenEvaluationRowCount
+    || baseManifest.digests.primaryCasesSha256
+      !== preregistration.caseManifest.digests.basePrimaryCasesSha256
+    || baseManifest.digests.auxiliaryCasesSha256
+      !== preregistration.caseManifest.digests.baseAuxiliaryCasesSha256
+    || baseManifest.digests.historiesSha256
+      !== preregistration.caseManifest.digests.baseHistoriesSha256
+    || materialization.baseDatasetDigests.primaryCasesSha256
+      !== baseManifest.digests.primaryCasesSha256
+    || materialization.baseDatasetDigests.auxiliaryCasesSha256
+      !== baseManifest.digests.auxiliaryCasesSha256
+    || materialization.baseDatasetDigests.historiesSha256
+      !== baseManifest.digests.historiesSha256
+    || materialization.dataQuality.overlappingHorizonDuplicateCount !== 0
+    || materialization.dataQuality.unmaturedLabelZeroImputationCount !== 0
+    || materialization.dataQuality.buyoutCashUsed !== false
+    || materialization.dataQuality.trainingWeight
+      !== "equal_total_weight_per_standard_work"
+    || materialization.dataQuality.monthlyRowsAreIndependentWorks !== false
+    || reversalReceipt?.status
+      !== "M2_EVALUATION_V2_2_ACTIVE_FOR_DEVELOPMENT_WITH_DISCLOSED_RESIDUAL_EXCLUSION"
+    || reversalReceipt?.actualDefinitionId !== config.actualDefinitionId
+    || reversalReceipt?.outputDigests?.scopeReconciliationSha256
+      !== digest(reconciliationText)
+    || reversalReceipt?.outputDigests?.allocationLedgerSha256
+      !== digest(allocationText)
+    || reversalReceipt?.labels?.originAfterCutoffRowsUsed !== 0
+    || frozenManifest.G4Executed === true
+    || frozenManifest.G5Executed === true
+    || frozenManifest.G6Executed === true
+  ) {
+    throw new Error("m2_publishing_scale_private_binding_invalid");
+  }
+}
+
+function validatePublishingScaleOutputFiles(outputFiles, config) {
+  const keys = [
+    "primaryMonthlyCases",
+    "auxiliaryMonthlyCases",
+    "materializationManifest",
+    "evaluationRows",
+    "evaluationManifest"
+  ];
+  if (
+    outputFiles === null
+    || typeof outputFiles !== "object"
+    || Array.isArray(outputFiles)
+    || Object.keys(outputFiles).sort().join(",") !== [...keys].sort().join(",")
+  ) {
+    throw new Error("m2_publishing_scale_versioned_output_plan_invalid");
+  }
+  for (const key of keys) {
+    const value = outputFiles[key];
+    const base = config.privateOutputs[key];
+    const parsed = path.parse(base);
+    if (
+      typeof value !== "string"
+      || path.basename(value) !== value
+      || value.includes("/")
+      || value.includes("\\")
+      || !value.startsWith(`${parsed.name}-`)
+      || path.extname(value) !== parsed.ext
+    ) {
+      throw new Error("m2_publishing_scale_versioned_output_identity_invalid");
+    }
+  }
+  return Object.freeze({ ...outputFiles });
 }
 
 function assertBoundary(config) {

@@ -11,6 +11,7 @@ from __future__ import annotations
 import hashlib
 import json
 import math
+import subprocess
 import sys
 from collections import Counter, defaultdict
 from decimal import Decimal
@@ -37,6 +38,12 @@ CHANNEL_GENERATIVE_CONFIG_PATH = (
 PUBLISHING_SCALE_CHANNEL_CONFIG_PATH = (
     ROOT / "config" / "m2-current-publishing-scale-channel.v0.1.json"
 )
+PUBLISHING_SCALE_SUPPORT_PATH = (
+    ROOT / "config" / "m2-publishing-scale-statistical-support.v1.json"
+)
+PUBLISHING_SCALE_EXECUTION_POLICY_PATH = (
+    ROOT / "config" / "m2-publishing-scale-execution-policy.v0.2.json"
+)
 V03_PATH = (
     ROOT
     / "data"
@@ -55,6 +62,8 @@ def run(
     channel_experts: bool = False,
     channel_generative: bool = False,
     publishing_scale_channel: bool = False,
+    execution_authorization_file: str | None = None,
+    run_receipt_file: str | None = None,
 ) -> dict[str, Any]:
     config = json.loads(CONFIG_PATH.read_text(encoding="utf-8"))
     _validate_config(config)
@@ -79,7 +88,32 @@ def run(
         if channel_generative or publishing_scale_channel
         else None
     )
-    output_dir = ROOT / config["privateOutputs"]["directory"]
+    if generative_config is not None:
+        _validate_channel_generative_config(generative_config)
+    output_dir = ROOT / (
+        generative_config["privateOutputs"]["directory"]
+        if publishing_scale_channel
+        else config["privateOutputs"]["directory"]
+    )
+    receipt_path: Path | None = None
+    publishing_scale_output_files: Mapping[str, str] | None = None
+    if publishing_scale_channel:
+        policy = json.loads(
+            PUBLISHING_SCALE_EXECUTION_POLICY_PATH.read_text(
+                encoding="utf-8"
+            )
+        )
+        _validate_publishing_scale_execution_policy(policy)
+        (
+            receipt_path,
+            publishing_scale_output_files,
+        ) = _prepare_publishing_scale_private_materialization(
+            output_dir=output_dir,
+            config=generative_config,
+            policy=policy,
+            execution_authorization_file=execution_authorization_file,
+            run_receipt_file=run_receipt_file,
+        )
     master_config = json.loads(
         (ROOT / "config/m2-current-canonical-channel.v0.1.json").read_text(
             encoding="utf-8"
@@ -87,6 +121,15 @@ def run(
     )
     master, master_evidence = canonical.load_channel_master(master_config)
     inputs = formal.load_or_build_model_inputs()
+    if receipt_path is not None:
+        _update_private_receipt(
+            receipt_path,
+            status="PRIVATE_INPUTS_READ_FOR_MATERIALIZATION",
+            privateRowsRead=(
+                len(inputs["formalInput"])
+                + len(inputs["mappedSalesShareBill"])
+            ),
+        )
     authority_work_ids = {str(value) for value in inputs["formalInput"]}
     if len(authority_work_ids) != int(
         config["dataContract"]["authorityWorkCount"]
@@ -188,26 +231,27 @@ def run(
         rows,
     )
     output_dir.mkdir(parents=True, exist_ok=True)
-    (output_dir / config["privateOutputs"]["histories"]).write_bytes(
-        history_bytes
-    )
-    (output_dir / config["privateOutputs"]["primaryCases"]).write_bytes(
-        primary_bytes
-    )
-    (output_dir / config["privateOutputs"]["auxiliaryCases"]).write_bytes(
-        auxiliary_bytes
-    )
-    (output_dir / config["privateOutputs"]["manifest"]).write_text(
-        json.dumps(
-            manifest,
-            ensure_ascii=False,
-            indent=2,
-            sort_keys=True,
-            allow_nan=False,
+    if not publishing_scale_channel:
+        (output_dir / config["privateOutputs"]["histories"]).write_bytes(
+            history_bytes
         )
-        + "\n",
-        encoding="utf-8",
-    )
+        (output_dir / config["privateOutputs"]["primaryCases"]).write_bytes(
+            primary_bytes
+        )
+        (output_dir / config["privateOutputs"]["auxiliaryCases"]).write_bytes(
+            auxiliary_bytes
+        )
+        (output_dir / config["privateOutputs"]["manifest"]).write_text(
+            json.dumps(
+                manifest,
+                ensure_ascii=False,
+                indent=2,
+                sort_keys=True,
+                allow_nan=False,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
     if channel_config is not None:
         _write_channel_expert_supplement(
             output_dir=output_dir,
@@ -217,9 +261,10 @@ def run(
             auxiliary=auxiliary,
             history_by_key=history_by_key,
             panel=panel,
+            output_files=publishing_scale_output_files,
         )
     if generative_config is not None:
-        _write_channel_generative_supplement(
+        materialization_manifest = _write_channel_generative_supplement(
             output_dir=output_dir,
             generative_config=generative_config,
             base_manifest=manifest,
@@ -228,6 +273,18 @@ def run(
             history_by_key=history_by_key,
             panel=panel,
         )
+        if receipt_path is not None:
+            _update_private_receipt(
+                receipt_path,
+                status="PRIVATE_MATERIALIZATION_COMPLETE",
+                privateMaterializationComplete=True,
+                materializedPrimaryPackedRows=materialization_manifest[
+                    "primaryPackedRowCount"
+                ],
+                materializedStrictPackedRows=materialization_manifest[
+                    "auxiliaryPackedRowCount"
+                ],
+            )
     return manifest
 
 
@@ -967,7 +1024,8 @@ def _write_channel_generative_supplement(
     auxiliary: list[Mapping[str, Any]],
     history_by_key: Mapping[str, Mapping[str, Any]],
     panel: Mapping[str, Any],
-) -> None:
+    output_files: Mapping[str, str] | None = None,
+) -> dict[str, Any]:
     _validate_channel_generative_config(generative_config)
     primary_rows = _build_channel_generative_rows(
         primary,
@@ -983,28 +1041,72 @@ def _write_channel_generative_supplement(
     )
     primary_bytes = _encode_ndjson(primary_rows)
     auxiliary_bytes = _encode_ndjson(auxiliary_rows)
-    outputs = generative_config["privateOutputs"]
-    (output_dir / outputs["primaryMonthlyCases"]).write_bytes(
-        primary_bytes
+    outputs = output_files or generative_config["privateOutputs"]
+    _write_new_private_bytes(
+        output_dir / outputs["primaryMonthlyCases"],
+        primary_bytes,
     )
-    (output_dir / outputs["auxiliaryMonthlyCases"]).write_bytes(
-        auxiliary_bytes
+    _write_new_private_bytes(
+        output_dir / outputs["auxiliaryMonthlyCases"],
+        auxiliary_bytes,
     )
     monthly_label_count = sum(
         len(row["futureMonthlyLabels"])
         for rows in (primary_rows, auxiliary_rows)
         for row in rows
     )
+    publishing_scale = (
+        generative_config.get("schema")
+        == "m2.current.publishing_scale_channel_core.v0.1"
+    )
     manifest = {
-        "schema":
-            "m2.current.channel_generative_materialization_private.v0.2",
+        "schema": (
+            "m2.current.publishing_scale_channel_"
+            "materialization_private.v0.2"
+            if publishing_scale
+            else "m2.current.channel_generative_materialization_private.v0.2"
+        ),
         "tracked": False,
-        "candidateId": generative_config["candidateId"],
+        "modelId": (
+            generative_config.get("modelId")
+            if publishing_scale
+            else None
+        ),
+        "experimentArmId": (
+            generative_config.get("experimentArmId")
+            if publishing_scale
+            else None
+        ),
+        "candidateId": (
+            "M2-CHAN-PSC01-RAW"
+            if publishing_scale
+            else generative_config["candidateId"]
+        ),
+        "materializerId": (
+            generative_config.get("materializerId")
+            if publishing_scale
+            else "M2-MATERIALIZER-CHANNEL-GENERATIVE-V02"
+        ),
         "target": generative_config["target"],
         "actualDefinitionId": generative_config["actualDefinitionId"],
         "labelMaterializationStage":
-            "POSTING_TIME_INTERMEDIATE_REBOUND_IN_MEMORY_BEFORE_G1_FIT",
+            (
+                "POSTING_TIME_INTERMEDIATE_REBOUND_IN_MEMORY_"
+                "BEFORE_PSC01_FIT"
+                if publishing_scale
+                else
+                "POSTING_TIME_INTERMEDIATE_REBOUND_IN_MEMORY_BEFORE_G1_FIT"
+            ),
         "baseDatasetDigests": dict(base_manifest["digests"]),
+        "sourceArtifacts": {
+            "historicalChannelGenerativeArtifactsRead": False,
+            "historicalChannelGenerativeAuthorizationChecked": False,
+            "historicalFrozenComparator": {
+                "sourceArtifact": True,
+                "readOnly": True,
+                "overwritten": False,
+            },
+        },
         "primaryPackedRowCount": len(primary_rows),
         "auxiliaryPackedRowCount": len(auxiliary_rows),
         "monthlyLabelRowCount": monthly_label_count,
@@ -1025,7 +1127,14 @@ def _write_channel_generative_supplement(
             "trainingGrain":
                 "work_channel_origin_future_month",
             "overlappingHorizonDuplicateCount": 0,
-            "monthlyTrainingWeight": 1,
+            "trainingWeight": (
+                generative_config.get("dataContract", {}).get(
+                    "trainingWeight"
+                )
+                if publishing_scale
+                else "one_per_monthly_row"
+            ),
+            "monthlyRowsAreIndependentWorks": False,
             "positiveConservationDifference": 0,
             "reversalConservationDifference": 0,
             "netConservationDifference": 0,
@@ -1049,7 +1158,8 @@ def _write_channel_generative_supplement(
         "providerUsed": False,
         "databaseRead": False,
     }
-    (output_dir / outputs["materializationManifest"]).write_text(
+    _write_new_private_text(
+        output_dir / outputs["materializationManifest"],
         json.dumps(
             manifest,
             ensure_ascii=False,
@@ -1058,8 +1168,8 @@ def _write_channel_generative_supplement(
             allow_nan=False,
         )
         + "\n",
-        encoding="utf-8",
     )
+    return manifest
 
 
 def _validate_channel_generative_config(
@@ -1141,12 +1251,18 @@ def _validate_publishing_scale_channel_config(
         != "future_sales_share_development_modelable_cash"
         or config.get("actualDefinitionId")
         != "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01"
+        or config.get("executionPolicy")
+        != "config/m2-publishing-scale-execution-policy.v0.2.json"
+        or config.get("materializerId")
+        != "M2-MATERIALIZER-PUBLISHING-SCALE-CHANNEL-01"
+        or config.get("receiptControllerId")
+        != "M2-RECEIPT-CONTROLLER-PUBLISHING-SCALE-CHANNEL-01"
         or authorization.get("oneTimePrivateDevelopmentEvaluation")
-        != "AUTHORIZED_AFTER_K7C_EXACT_HEAD_LINUX_WINDOWS_CI"
+        is not False
         or authorization.get("authorizedModelId") != "M2-CHAN-PSC01"
         or authorization.get("authorizedArmId")
         != "M2-EXP-PUBLISHING-SCALE-CHANNEL-01/CORE"
-        or authorization.get("retryAuthorized") is not True
+        or authorization.get("retryAuthorized") is not False
         or any(
             authorization.get(key) is not False
             for key in (
@@ -1163,7 +1279,8 @@ def _validate_publishing_scale_channel_config(
                 "mergePr",
             )
         )
-        or execution.get("privateExecutionAuthorizationConsumed") is not False
+        or execution.get("privateExecutionAuthorizationConsumed") is not True
+        or execution.get("candidateFitStarted") is not False
         or execution.get("candidateOutputProduced") is not False
         or contract.get("trainingWeight")
         != "equal_total_weight_per_standard_work"
@@ -1184,18 +1301,236 @@ def _validate_publishing_scale_channel_config(
         )
 
 
+def _validate_publishing_scale_execution_policy(
+    policy: Mapping[str, Any]
+) -> None:
+    if (
+        policy.get("schema")
+        != "m2.publishing_scale.execution_policy.v0.2"
+        or policy.get("status")
+        != "USER_AUTHORIZED_RUNTIME_EXACT_HEAD_BINDING_REQUIRED"
+        or policy.get("authorizedModelId") != "M2-CHAN-PSC01"
+        or policy.get("authorizedArmId")
+        != "M2-EXP-PUBLISHING-SCALE-CHANNEL-01/CORE"
+        or policy.get("authorizedCommand")
+        != "npm run develop:m2:current:publishing-scale-channel"
+        or policy.get("runtimeBinding", {}).get("exactHeadRequired")
+        is not True
+        or policy.get("runtimeBinding", {}).get(
+            "bothChecksMustSucceedBeforePrivateRead"
+        )
+        is not True
+        or policy.get("historicalAuthorization", {}).get(
+            "historicalConsumedFieldsMayBeRewritten"
+        )
+        is not False
+        or policy.get("executionWindow", {}).get(
+            "normalPrivateExecutionMaximum"
+        )
+        != 1
+        or policy.get("executionWindow", {}).get(
+            "infrastructureRecoveryRetryMaximum"
+        )
+        != 1
+    ):
+        raise HumanAnchoredMaterializationError(
+            "publishing-scale execution policy differs"
+        )
+
+
+def _prepare_publishing_scale_private_materialization(
+    *,
+    output_dir: Path,
+    config: Mapping[str, Any],
+    policy: Mapping[str, Any],
+    execution_authorization_file: str | None,
+    run_receipt_file: str | None,
+) -> tuple[Path, Mapping[str, str]]:
+    for value in (execution_authorization_file, run_receipt_file):
+        if (
+            not value
+            or Path(value).name != value
+            or "/" in value
+            or "\\" in value
+        ):
+            raise HumanAnchoredMaterializationError(
+                "publishing-scale execution artifact filename invalid"
+            )
+    authorization_prefix = Path(
+        config["privateOutputs"]["runtimeAuthorization"]
+    ).stem
+    receipt_prefix = config["privateOutputs"]["runReceiptPrefix"]
+    if (
+        not execution_authorization_file.startswith(
+            authorization_prefix + "-"
+        )
+        or not run_receipt_file.startswith(receipt_prefix + "-")
+    ):
+        raise HumanAnchoredMaterializationError(
+            "publishing-scale execution artifact identity invalid"
+        )
+    authorization_path = output_dir / execution_authorization_file
+    receipt_path = output_dir / run_receipt_file
+    authorization = json.loads(
+        authorization_path.read_text(encoding="utf-8")
+    )
+    receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+    output_files = receipt.get("outputFiles")
+    _validate_publishing_scale_output_files(config, output_files)
+    head = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+        shell=False,
+    ).stdout.strip()
+    if (
+        authorization.get("schema")
+        != "m2.publishing_scale.runtime_execution_authorization.private.v0.2"
+        or authorization.get("status")
+        != "ACTIVE_FOR_ONE_LOGICAL_EXECUTION_WINDOW"
+        or authorization.get("authorizationPolicyId")
+        != policy.get("authorizationPolicyId")
+        or authorization.get("authorizedModelId") != "M2-CHAN-PSC01"
+        or authorization.get("authorizedArmId")
+        != "M2-EXP-PUBLISHING-SCALE-CHANNEL-01/CORE"
+        or authorization.get("exactHead") != head
+        or authorization.get("finalHoldoutAuthorized") is not False
+        or authorization.get("productionAuthorized") is not False
+        or authorization.get("mergeAuthorized") is not False
+        or receipt.get("schema")
+        != "m2.current.publishing_scale_channel_run_receipt_private.v0.2"
+        or receipt.get("status")
+        != "PREPARED_BEFORE_PRIVATE_MATERIALIZATION"
+        or receipt.get("runtimeAuthorizationFile")
+        != execution_authorization_file
+        or receipt.get("implementationCommit") != head
+        or receipt.get("modelId") != "M2-CHAN-PSC01"
+        or receipt.get("experimentArmId")
+        != "M2-EXP-PUBLISHING-SCALE-CHANNEL-01/CORE"
+        or receipt.get("materializerId")
+        != "M2-MATERIALIZER-PUBLISHING-SCALE-CHANNEL-01"
+        or receipt.get("candidateFitStarted") is not False
+        or int(receipt.get("predictionRowsProduced", -1)) != 0
+        or int(receipt.get("evaluationRowsProduced", -1)) != 0
+    ):
+        raise HumanAnchoredMaterializationError(
+            "publishing-scale runtime authorization or receipt differs"
+        )
+    _update_private_receipt(
+        receipt_path,
+        status="PRIVATE_MATERIALIZATION_STARTED_BEFORE_INPUT_READ",
+        privateMaterializationStarted=True,
+        privateRowsRead=0,
+    )
+    return receipt_path, output_files
+
+
+def _validate_publishing_scale_output_files(
+    config: Mapping[str, Any],
+    output_files: Any,
+) -> None:
+    required = (
+        "primaryMonthlyCases",
+        "auxiliaryMonthlyCases",
+        "materializationManifest",
+        "evaluationRows",
+        "evaluationManifest",
+    )
+    if not isinstance(output_files, dict) or set(output_files) != set(required):
+        raise HumanAnchoredMaterializationError(
+            "publishing-scale versioned output plan invalid"
+        )
+    for key in required:
+        value = output_files.get(key)
+        base = config["privateOutputs"][key]
+        if (
+            not isinstance(value, str)
+            or Path(value).name != value
+            or "/" in value
+            or "\\" in value
+            or not value.startswith(Path(base).stem + "-")
+            or Path(value).suffix != Path(base).suffix
+        ):
+            raise HumanAnchoredMaterializationError(
+                "publishing-scale versioned output identity invalid"
+            )
+
+
+def _write_new_private_bytes(file_path: Path, value: bytes) -> None:
+    with file_path.open("xb") as handle:
+        handle.write(value)
+
+
+def _write_new_private_text(file_path: Path, value: str) -> None:
+    with file_path.open("x", encoding="utf-8", newline="\n") as handle:
+        handle.write(value)
+
+
+def _update_private_receipt(
+    receipt_path: Path,
+    *,
+    status: str,
+    **updates: Any,
+) -> None:
+    receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+    receipt.update(updates)
+    receipt["status"] = status
+    receipt_path.write_text(
+        json.dumps(
+            receipt,
+            ensure_ascii=False,
+            indent=2,
+            sort_keys=True,
+            allow_nan=False,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+
+def _publishing_scale_preflight() -> dict[str, Any]:
+    config = json.loads(
+        PUBLISHING_SCALE_CHANNEL_CONFIG_PATH.read_text(encoding="utf-8")
+    )
+    support = json.loads(
+        PUBLISHING_SCALE_SUPPORT_PATH.read_text(encoding="utf-8")
+    )
+    policy = json.loads(
+        PUBLISHING_SCALE_EXECUTION_POLICY_PATH.read_text(encoding="utf-8")
+    )
+    _validate_publishing_scale_channel_config(config)
+    _validate_publishing_scale_execution_policy(policy)
+    if (
+        support.get("contractId") != "M2-PUBLISHING-SCALE-SUPPORT-01"
+        or support.get("currentFreezeDecision", {}).get(
+            "directFitNodeCount"
+        )
+        != 0
+        or support.get("parameterFreeze", {}).get("taxonomy")
+        != "REPORT_ONLY"
+        or support.get("parameterFreeze", {}).get("authorization")
+        != "REPORT_ONLY"
+    ):
+        raise HumanAnchoredMaterializationError(
+            "publishing-scale support preflight differs"
+        )
+    return {
+        "status": "READY",
+        "modelId": config["modelId"],
+        "experimentArmId": config["experimentArmId"],
+        "materializerId": config["materializerId"],
+        "legacyAuthorizationChecked": False,
+        "privateArtifactRowsRead": 0,
+        "privateOutputWrites": 0,
+    }
+
+
 def _publishing_scale_config_self_test() -> dict[str, Any]:
     config = json.loads(
         PUBLISHING_SCALE_CHANNEL_CONFIG_PATH.read_text(encoding="utf-8")
     )
-    config["authorization"]["oneTimePrivateDevelopmentEvaluation"] = (
-        "AUTHORIZED_AFTER_K7C_EXACT_HEAD_LINUX_WINDOWS_CI"
-    )
-    config["authorization"]["retryAuthorized"] = True
-    config["currentExecution"]["privateExecutionAuthorizationConsumed"] = (
-        False
-    )
-    config["currentExecution"]["candidateOutputProduced"] = False
     _validate_publishing_scale_channel_config(config)
     return {
         "modelId": config["modelId"],
@@ -1341,6 +1676,15 @@ def _build_channel_generative_rows(
                     "features": features,
                     "futureMonthlyLabels": labels,
                     "horizonMonths": horizons,
+                    "operationalFallbackPointByHorizon": {
+                        str(horizon): (
+                            float(by_horizon[horizon]["v03PointEstimate"])
+                            if by_horizon[horizon]["v03PointEstimate"]
+                            is not None
+                            else None
+                        )
+                        for horizon in horizons
+                    },
                     "reversalRateByHorizon": {},
                     "futureFirstSeenIdentityUsedAsFeature": False,
                     "unmaturedLabelZeroImputed": False,
@@ -1839,14 +2183,30 @@ if __name__ == "__main__":
     arguments = sys.argv[1:]
     if arguments == ["--fixture-self-test"]:
         result = _fixture_self_test()
+    elif arguments == ["--publishing-scale-preflight"]:
+        result = _publishing_scale_preflight()
     elif arguments == ["--publishing-scale-config-self-test"]:
         result = _publishing_scale_config_self_test()
     elif arguments == ["--channel-experts"]:
         result = run(channel_experts=True)
     elif arguments == ["--channel-generative"]:
         result = run(channel_generative=True)
+    elif (
+        len(arguments) == 5
+        and arguments[0] == "--publishing-scale-channel"
+        and arguments[1] == "--execution-authorization"
+        and arguments[3] == "--run-receipt"
+    ):
+        result = run(
+            publishing_scale_channel=True,
+            execution_authorization_file=arguments[2],
+            run_receipt_file=arguments[4],
+        )
     elif arguments == ["--publishing-scale-channel"]:
-        result = run(publishing_scale_channel=True)
+        raise HumanAnchoredMaterializationError(
+            "publishing-scale private materialization requires "
+            "runtime authorization and run receipt"
+        )
     elif arguments:
         raise HumanAnchoredMaterializationError(
             "unsupported materialization mode"

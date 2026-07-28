@@ -144,6 +144,8 @@
     },
     "nodes": {
       "globalPooledParent": {
+        "basisMechanism": "membership",
+        "basisMeaning": "compact_linear_horizon_basis_alias_not_membership_routing",
         "basisProfile": "compact",
         "occurrenceL2": 1,
         "conditionalAmountL2": 1,
@@ -151,6 +153,8 @@
         "frozenTier": "SHRUNK_FIT"
       },
       "membership": {
+        "basisMechanism": "membership",
+        "basisMeaning": "membership_horizon_basis",
         "basisProfile": "current",
         "occurrenceL2": 1,
         "conditionalAmountL2": 1,
@@ -158,6 +162,8 @@
         "frozenTier": "SHRUNK_FIT"
       },
       "advertising": {
+        "basisMechanism": "advertising",
+        "basisMeaning": "advertising_horizon_basis",
         "basisProfile": "compact",
         "occurrenceL2": 1,
         "conditionalAmountL2": 1,
@@ -165,6 +171,8 @@
         "frozenTier": "SHRUNK_FIT"
       },
       "transactional": {
+        "basisMechanism": "transactional",
+        "basisMeaning": "transactional_horizon_basis",
         "basisProfile": "compact",
         "occurrenceL2": 1,
         "conditionalAmountL2": 3,
@@ -173,11 +181,46 @@
       }
     },
     "namedPlatforms": {
-      "喜马拉雅": "SHRUNK_FIT",
-      "微信读书": "SHRUNK_FIT",
-      "番茄畅听": "SHRUNK_FIT",
-      "猫耳": "POOLED_PARENT",
-      "克拉漫播": "POOLED_PARENT"
+      "喜马拉雅": {
+        "basisMechanism": "membership",
+        "basisProfile": "current",
+        "occurrenceL2": 1,
+        "conditionalAmountL2": 1,
+        "effectiveParameterCount": 23,
+        "frozenTier": "SHRUNK_FIT"
+      },
+      "微信读书": {
+        "basisMechanism": "membership",
+        "basisProfile": "current",
+        "occurrenceL2": 1,
+        "conditionalAmountL2": 1,
+        "effectiveParameterCount": 23,
+        "frozenTier": "SHRUNK_FIT"
+      },
+      "番茄畅听": {
+        "basisMechanism": "advertising",
+        "basisProfile": "compact",
+        "occurrenceL2": 1,
+        "conditionalAmountL2": 1,
+        "effectiveParameterCount": 21,
+        "frozenTier": "SHRUNK_FIT"
+      },
+      "猫耳": {
+        "basisMechanism": "transactional",
+        "basisProfile": "compact",
+        "occurrenceL2": 1,
+        "conditionalAmountL2": 3,
+        "effectiveParameterCount": 21,
+        "frozenTier": "POOLED_PARENT"
+      },
+      "克拉漫播": {
+        "basisMechanism": "transactional",
+        "basisProfile": "compact",
+        "occurrenceL2": 1,
+        "conditionalAmountL2": 3,
+        "effectiveParameterCount": 21,
+        "frozenTier": "POOLED_PARENT"
+      }
     },
     "taxonomy": "REPORT_ONLY",
     "authorization": "REPORT_ONLY",

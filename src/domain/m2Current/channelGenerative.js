@@ -179,7 +179,16 @@ export function expandM2ChannelGenerativePackedRows(
         actualPositive,
         actualReversal,
         actual,
+        postingTimeActualPositive:
+          label?.postingTimeActualPositive ?? actualPositive,
+        postingTimeActualReversal:
+          label?.postingTimeActualReversal ?? actualReversal,
+        postingTimeActual:
+          label?.postingTimeActual ?? actual,
         g0MonthlyPositive,
+        operationalFallbackPointByHorizon: Object.freeze({
+          ...(packed?.operationalFallbackPointByHorizon ?? {})
+        }),
         reversalRateByHorizon,
         trainingWeight: 1,
         futureFirstSeenIdentityUsedAsFeature: false,

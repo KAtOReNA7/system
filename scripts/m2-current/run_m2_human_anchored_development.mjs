@@ -34,12 +34,12 @@ import {
   recordM2ChannelGenerativeRunFailure,
   runM2ChannelGenerativePrivateDevelopment,
   runM2ChannelGenerativePublicDiagnostic,
-  prepareM2PublishingScaleRunReceipt,
-  recordM2PublishingScaleRunFailure,
-  runM2PublishingScaleChannelPublicDiagnostic,
-  runM2PublishingScalePrivateDevelopment,
-  verifyM2PublishingScaleGitAndCiPreflight
+  runM2PublishingScaleChannelPublicDiagnostic
 } from "./channel_generative_mode.mjs";
+import {
+  runM2PublishingScaleAuthorizedExecution,
+  runM2PublishingScaleCommandPreflight
+} from "./publishing_scale_channel_execution.mjs";
 
 let config;
 
@@ -72,6 +72,14 @@ const publishingScaleChannelPublicMode = process.argv.includes(
 const publishingScaleChannelPrivateMode = process.argv.includes(
   "--publishing-scale-channel"
 );
+const preflightOnly = process.argv.includes("--preflight-only");
+if (preflightOnly && !publishingScaleChannelPrivateMode) {
+  throw new Error("m2_publishing_scale_preflight_requires_command_mode");
+}
+if (publishingScaleChannelPrivateMode && preflightOnly) {
+  await runM2PublishingScaleCommandPreflight({ root });
+  return;
+}
 if (tsbPublicMode) {
   await runM2HumanAnchoredTsbPublicDiagnostic({
     root,
@@ -107,6 +115,10 @@ if (publishingScaleChannelPublicMode) {
   });
   return;
 }
+if (publishingScaleChannelPrivateMode) {
+  await runM2PublishingScaleAuthorizedExecution({ root });
+  return;
+}
 config = JSON.parse(await readFile(
   path.join(root, "config/m2-current-human-anchored.v0.1.json"),
   "utf8"
@@ -132,17 +144,6 @@ if (channelGenerativePrivateMode) {
     environment: `${process.platform}-${process.arch}`
   });
 }
-if (publishingScaleChannelPrivateMode) {
-  const gitPreflight = verifyM2PublishingScaleGitAndCiPreflight({ root });
-  await prepareM2PublishingScaleRunReceipt({
-    root,
-    privateDirectory,
-    gitPreflight,
-    command:
-      "npm run develop:m2:current:publishing-scale-channel",
-    environment: `${process.platform}-${process.arch}`
-  });
-}
 const materialization = spawnSync(
   process.execPath,
   [
@@ -157,11 +158,6 @@ const materialization = spawnSync(
         ? ["--channel-generative"]
         : []
     ),
-    ...(
-      publishingScaleChannelPrivateMode
-        ? ["--publishing-scale-channel"]
-        : []
-    )
   ],
   {
     cwd: root,
@@ -171,16 +167,6 @@ const materialization = spawnSync(
   }
 );
 if (materialization.status !== 0) {
-  if (publishingScaleChannelPrivateMode) {
-    await recordM2PublishingScaleRunFailure({
-      root,
-      privateDirectory,
-      error: new Error(
-        "controlled_private_materialization_failed:"
-          + String(materialization.stderr ?? "").trim()
-      )
-    });
-  }
   if (tsbPrivateMode) {
     await runM2HumanAnchoredTsbPublicDiagnostic({
       root,
@@ -287,24 +273,6 @@ if (channelGenerativePrivateMode) {
   }
   return;
 }
-if (publishingScaleChannelPrivateMode) {
-  try {
-    await runM2PublishingScalePrivateDevelopment({
-      root,
-      privateDirectory,
-      baseManifest: manifest
-    });
-  } catch (error) {
-    await recordM2PublishingScaleRunFailure({
-      root,
-      privateDirectory,
-      error
-    });
-    throw error;
-  }
-  return;
-}
-
 const primary = crossFitM2HumanAnchored(primaryCases, config);
 const primaryBootstrap = workClusterBootstrap(primary.rows, {
   iterations: config.learning.bootstrapIterations,
