@@ -582,7 +582,7 @@ function classifyInfrastructureFailure(failureCode) {
     ],
     [
       "deterministic_implementation",
-      /deterministic_implementation|conservation|duplicate case key|G0_paired_(?:work|channel|population)/iu
+      /deterministic_implementation|conservation|duplicate case key|invalid string length|G0_paired_(?:work|channel|population)/iu
     ]
   ];
   return patterns.find(([, pattern]) => pattern.test(failureCode))?.[0]

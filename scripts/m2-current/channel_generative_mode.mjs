@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import {
   mkdir,
+  open,
   readFile,
   writeFile
 } from "node:fs/promises";
@@ -406,12 +407,15 @@ export async function runM2PublishingScalePrivateDevelopment({
     strict: strict.evaluation,
     bootstrap
   });
-  const privateRows = publishingScalePrivateRows(primary, strict);
-  const privateText = privateRows.map(JSON.stringify).join("\n") + "\n";
+  const privateArtifact = await writePublishingScalePrivateRows(
+    path.join(privateDirectory, outputFiles.evaluationRows),
+    primary,
+    strict
+  );
   const candidateFreeze = {
     status: "RAW_CANDIDATE_OUTPUTS_FROZEN_BEFORE_ORACLE",
-    rowCount: privateRows.length,
-    sha256: digest(privateText),
+    rowCount: privateArtifact.rowCount,
+    sha256: privateArtifact.sha256,
     predictionGeneratedAfterFreezeCount: 0,
     predictionModifiedAfterFreezeCount: 0
   };
@@ -468,8 +472,8 @@ export async function runM2PublishingScalePrivateDevelopment({
     experimentArmId: M2_PUBLISHING_SCALE_ARM_ID,
     candidateId: M2_PUBLISHING_SCALE_RAW_CANDIDATE_ID,
     actualDefinitionId: config.actualDefinitionId,
-    rowCount: privateRows.length,
-    sha256: digest(privateText),
+    rowCount: privateArtifact.rowCount,
+    sha256: privateArtifact.sha256,
     primaryMonthlyRowCount: primary.rows.length,
     strictMonthlyRowCount: strict.rows.length,
     primaryPackedSha256: materialization.primarySha256,
@@ -477,6 +481,9 @@ export async function runM2PublishingScalePrivateDevelopment({
     frozenEvaluationSha256: frozenManifest.sha256,
     outputFiles,
     candidateFreeze,
+    serialization: privateArtifact.serialization,
+    maximumSerializationBufferBytes:
+      privateArtifact.maximumBufferedBytes,
     rawCandidatePreserved: true,
     fallbackOverwroteRaw: false,
     finalHoldoutOpened: false,
@@ -486,14 +493,6 @@ export async function runM2PublishingScalePrivateDevelopment({
     databaseRead: false
   };
   await Promise.all([
-    writeFile(
-      path.join(
-        privateDirectory,
-        outputFiles.evaluationRows
-      ),
-      privateText,
-      { encoding: "utf8", flag: "wx" }
-    ),
     writeFile(
       path.join(
         privateDirectory,
@@ -2894,8 +2893,7 @@ function publicRestatementAudit(value) {
   };
 }
 
-function publishingScalePrivateRows(primary, strict) {
-  const output = [];
+function* publishingScalePrivateRows(primary, strict) {
   for (const [family, result] of [
     ["primary", primary],
     ["strict", strict]
@@ -2908,7 +2906,7 @@ function publishingScalePrivateRows(primary, strict) {
       if (prediction === undefined) {
         throw new Error("m2_publishing_scale_private_prediction_missing");
       }
-      output.push({
+      yield {
         schema:
           "m2.current.publishing_scale_channel_evaluation_private_row.v0.2",
         tracked: false,
@@ -2952,10 +2950,44 @@ function publishingScalePrivateRows(primary, strict) {
           prediction.authorizationBackfillUsed,
         rawCandidatePreserved: true,
         fallbackOverwroteRaw: false
-      });
+      };
     }
   }
-  return output;
+}
+
+export async function writePublishingScalePrivateRows(
+  outputPath,
+  primary,
+  strict
+) {
+  const handle = await open(outputPath, "wx");
+  const hash = createHash("sha256");
+  let rowCount = 0;
+  let bufferedText = "";
+  try {
+    for (const row of publishingScalePrivateRows(primary, strict)) {
+      const line = `${JSON.stringify(row)}\n`;
+      hash.update(line, "utf8");
+      bufferedText += line;
+      rowCount += 1;
+      if (Buffer.byteLength(bufferedText, "utf8") >= 4 * 1024 * 1024) {
+        await handle.write(bufferedText, null, "utf8");
+        bufferedText = "";
+      }
+    }
+    if (bufferedText.length > 0) {
+      await handle.write(bufferedText, null, "utf8");
+    }
+    await handle.sync();
+  } finally {
+    await handle.close();
+  }
+  return Object.freeze({
+    rowCount,
+    sha256: hash.digest("hex"),
+    serialization: "STREAMED_NDJSON_INCREMENTAL_SHA256",
+    maximumBufferedBytes: 4 * 1024 * 1024
+  });
 }
 
 function publishingScalePublicForecastability(result) {

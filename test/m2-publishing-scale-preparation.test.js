@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
 import {
   mkdtemp,
   readFile,
@@ -13,6 +14,9 @@ import test from "node:test";
 import {
   createM2PublishingScalePreparationDirectory,
 } from "../scripts/m2-current/prepare_m2_publishing_scale_channel.mjs";
+import {
+  writePublishingScalePrivateRows,
+} from "../scripts/m2-current/channel_generative_mode.mjs";
 import {
   authorizeAttempt,
   readPreviousReceipts,
@@ -159,4 +163,54 @@ test("private run receipts are ordered by attempt number rather than filename", 
     [1, 2]
   );
   assert.equal(receipts.at(-1).file, "receipt-a-attempt-2.json");
+});
+
+test("private evaluation rows stream to NDJSON with an incremental digest", async (t) => {
+  const directory = await mkdtemp(path.join(os.tmpdir(), "m2-psc-stream-"));
+  t.after(() => rm(directory, { recursive: true, force: true }));
+  const outputPath = path.join(directory, "evaluation.ndjson");
+  const row = {
+    standardWorkId: "W1",
+    channelUid: "C1",
+    mechanism: "membership",
+    origin: "2022-12",
+    futureMonthIndex: 1,
+    futureMonth: "2023-01",
+    includedHorizons: [3],
+    labelAvailableAsOf: "2023-01",
+    observedAtOrigin: true,
+    actualPositive: 10,
+    actualReversal: 0,
+    actual: 10,
+    postingTimeActualPositive: 10,
+    postingTimeActualReversal: 0,
+    postingTimeActual: 10
+  };
+  const prediction = {
+    positivePoint: 9,
+    occurrenceProbability: 0.5,
+    conditionalPositiveAmount: 18,
+    selectedNodeId: "membership",
+    supportTier: "SHRUNK_FIT",
+    hierarchyPath: ["globalPooledParent", "membership"],
+    layerPredictions: {},
+    fallbackReason: null,
+    taxonomyFeatureUsed: false,
+    authorizationBackfillUsed: false
+  };
+  const key = "W1\u001fC1\u001f2022-12\u001f1";
+  const artifact = await writePublishingScalePrivateRows(
+    outputPath,
+    { rows: [row], predictions: new Map([[key, prediction]]) },
+    { rows: [], predictions: new Map() }
+  );
+  const text = await readFile(outputPath, "utf8");
+  assert.equal(artifact.rowCount, 1);
+  assert.equal(
+    artifact.sha256,
+    createHash("sha256").update(text, "utf8").digest("hex")
+  );
+  assert.equal(text.endsWith("\n"), true);
+  assert.equal(JSON.parse(text).standardWorkId, "W1");
+  assert.equal(artifact.serialization, "STREAMED_NDJSON_INCREMENTAL_SHA256");
 });
