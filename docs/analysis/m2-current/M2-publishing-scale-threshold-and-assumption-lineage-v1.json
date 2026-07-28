@@ -1,0 +1,666 @@
+{
+  "schema": "m2.publishing_scale.threshold_assumption_lineage.v1",
+  "asOf": "2026-07-28",
+  "status": "K7A_THRESHOLD_LINEAGE_COMPLETE_BEFORE_NEW_OUTER_OUTCOME",
+  "scope": {
+    "repository": "KAtOReNA7/system",
+    "activeBranch": "runtime_resolved",
+    "activePullRequest": 29,
+    "searchedRefs": [
+      "current working tree",
+      "origin/main",
+      "origin/codex/m2-evaluation-contract-v2-1",
+      "all locally fetched Git history"
+    ],
+    "searchedSurfaces": [
+      "AGENTS",
+      "PRD",
+      "requirements",
+      "config",
+      "schema",
+      "canonical source",
+      "runner",
+      "tests",
+      "Model Registry",
+      "public reports",
+      "status indexes"
+    ],
+    "newCandidateOuterOutcomeRead": false
+  },
+  "primaryFinding": {
+    "channelGenerativeThresholdOriginCommit": "36125b451d00489cec900a8140d61f3a91904fed",
+    "channelGenerativeThresholdOriginSubject": "docs(m2): preregister minimal channel generative v0.2",
+    "mergedThroughPullRequest": 28,
+    "originalNumericProvenance": "small log-spaced structural grid fixed before any v0.2 outcome",
+    "publishingPopulationOrLearningCurveEvidencePresent": false,
+    "conclusion": "The fixed 50/100-work eligibility rules were preregistered governance assumptions, not thresholds estimated from this publisher's population, grouped learning curves, effective sample size, concentration, or stability."
+  },
+  "thresholds": [
+    {
+      "stableThresholdId": "M2-THR-GEN-MECH-TRAIN-WORKS-01",
+      "currentValue": 50,
+      "unit": "distinct standard works",
+      "scope": "channel generative v0.2 mechanism-parent training eligibility",
+      "sourceLocations": [
+        "docs/analysis/m2-current/M2-current-channel-generative-v0.2-preregistration.json#fallbackPolicy.eligibility.mechanismParent.minimumDistinctTrainingWorks",
+        "config/m2-current-channel-generative.v0.2.json#eligibility.minimumDistinctTrainingWorks",
+        "src/domain/m2Current/channelGenerative.js"
+      ],
+      "firstIntroduced": {
+        "commit": "36125b451d00489cec900a8140d61f3a91904fed",
+        "pullRequest": 28
+      },
+      "originalRationale": "No threshold-specific rationale beyond a preregistered generic support guard.",
+      "projectRealDataEvidence": "NONE_BEFORE_FREEZE",
+      "genericIndustryAssumption": true,
+      "classification": "statistical_stability",
+      "forwardDecision": "REPLACE_WITH_SUPPORT_TIERS_AND_TRAINING_SIDE_STABILITY"
+    },
+    {
+      "stableThresholdId": "M2-THR-GEN-MECH-TRAIN-ROWS-01",
+      "currentValue": 1000,
+      "unit": "monthly training rows",
+      "scope": "channel generative v0.2 mechanism-parent training eligibility",
+      "sourceLocations": [
+        "docs/analysis/m2-current/M2-current-channel-generative-v0.2-preregistration.json#fallbackPolicy.eligibility.mechanismParent.minimumMonthlyTrainingRows",
+        "config/m2-current-channel-generative.v0.2.json#eligibility.minimumMonthlyTrainingRows"
+      ],
+      "firstIntroduced": {
+        "commit": "36125b451d00489cec900a8140d61f3a91904fed",
+        "pullRequest": 28
+      },
+      "originalRationale": "Generic row-volume guard.",
+      "projectRealDataEvidence": "NONE_BEFORE_FREEZE",
+      "genericIndustryAssumption": true,
+      "classification": "statistical_stability",
+      "forwardDecision": "DEMOTE_FROM_INDEPENDENT_SAMPLE_PROXY"
+    },
+    {
+      "stableThresholdId": "M2-THR-GEN-MECH-POSITIVE-MONTHS-01",
+      "currentValue": 100,
+      "unit": "positive training months",
+      "scope": "channel generative v0.2 mechanism-parent training eligibility",
+      "sourceLocations": [
+        "docs/analysis/m2-current/M2-current-channel-generative-v0.2-preregistration.json#fallbackPolicy.eligibility.mechanismParent.minimumPositiveTrainingMonths",
+        "config/m2-current-channel-generative.v0.2.json#eligibility.minimumPositiveTrainingMonths"
+      ],
+      "firstIntroduced": {
+        "commit": "36125b451d00489cec900a8140d61f3a91904fed",
+        "pullRequest": 28
+      },
+      "originalRationale": "Generic event-volume guard.",
+      "projectRealDataEvidence": "NONE_BEFORE_FREEZE",
+      "genericIndustryAssumption": true,
+      "classification": "statistical_stability",
+      "forwardDecision": "RETAIN_AS_SUPPORT_DIMENSION_NOT_STANDALONE_GATE"
+    },
+    {
+      "stableThresholdId": "M2-THR-GEN-MECH-EVAL-WORKS-01",
+      "currentValue": 100,
+      "unit": "distinct standard works",
+      "scope": "mechanism safety evaluation population",
+      "sourceLocations": [
+        "docs/analysis/m2-current/M2-current-channel-generative-v0.2-preregistration.json#gates.mechanismSafety.adequateEvaluationPopulation.minimumDistinctWorks"
+      ],
+      "firstIntroduced": {
+        "commit": "36125b451d00489cec900a8140d61f3a91904fed",
+        "pullRequest": 28
+      },
+      "originalRationale": "Generic adequate-population definition.",
+      "projectRealDataEvidence": "NONE_BEFORE_FREEZE",
+      "genericIndustryAssumption": true,
+      "classification": "statistical_stability",
+      "forwardDecision": "REPLACE_WITH_UNCERTAINTY_AND_SUPPORT_TIER"
+    },
+    {
+      "stableThresholdId": "M2-THR-GEN-MECH-EVAL-ROWS-01",
+      "currentValue": 500,
+      "unit": "evaluation rows",
+      "scope": "mechanism safety evaluation population",
+      "sourceLocations": [
+        "docs/analysis/m2-current/M2-current-channel-generative-v0.2-preregistration.json#gates.mechanismSafety.adequateEvaluationPopulation.minimumEvaluationRows"
+      ],
+      "firstIntroduced": {
+        "commit": "36125b451d00489cec900a8140d61f3a91904fed",
+        "pullRequest": 28
+      },
+      "originalRationale": "Generic row-volume guard.",
+      "projectRealDataEvidence": "NONE_BEFORE_FREEZE",
+      "genericIndustryAssumption": true,
+      "classification": "statistical_stability",
+      "forwardDecision": "RETAIN_AS_DESCRIPTIVE_DIMENSION"
+    },
+    {
+      "stableThresholdId": "M2-THR-GEN-MECH-EVAL-POSITIVE-01",
+      "currentValue": 100,
+      "unit": "positive target rows",
+      "scope": "mechanism safety evaluation population",
+      "sourceLocations": [
+        "docs/analysis/m2-current/M2-current-channel-generative-v0.2-preregistration.json#gates.mechanismSafety.adequateEvaluationPopulation.minimumPositiveTargetRows"
+      ],
+      "firstIntroduced": {
+        "commit": "36125b451d00489cec900a8140d61f3a91904fed",
+        "pullRequest": 28
+      },
+      "originalRationale": "Generic positive-event guard.",
+      "projectRealDataEvidence": "NONE_BEFORE_FREEZE",
+      "genericIndustryAssumption": true,
+      "classification": "statistical_stability",
+      "forwardDecision": "RETAIN_AS_SUPPORT_DIMENSION_NOT_STANDALONE_GATE"
+    },
+    {
+      "stableThresholdId": "M2-THR-GEN-PLATFORM-WORKS-01",
+      "currentValue": 100,
+      "unit": "distinct standard works",
+      "scope": "future platform-node eligibility",
+      "sourceLocations": [
+        "docs/analysis/m2-current/M2-current-channel-generative-v0.2-preregistration.json#fallbackPolicy.eligibility.platform.minimumDistinctTrainingWorks"
+      ],
+      "firstIntroduced": {
+        "commit": "36125b451d00489cec900a8140d61f3a91904fed",
+        "pullRequest": 28
+      },
+      "originalRationale": "Generic standalone platform support.",
+      "projectRealDataEvidence": "NONE_BEFORE_FREEZE",
+      "genericIndustryAssumption": true,
+      "classification": "business_scale_and_statistical_stability",
+      "forwardDecision": "REPLACE_WITH_PLATFORM_SUPPORT_TIER"
+    },
+    {
+      "stableThresholdId": "M2-THR-GEN-PLATFORM-ROWS-01",
+      "currentValue": 500,
+      "unit": "training rows",
+      "scope": "future platform-node eligibility",
+      "sourceLocations": [
+        "docs/analysis/m2-current/M2-current-channel-generative-v0.2-preregistration.json#fallbackPolicy.eligibility.platform.minimumTrainingRows"
+      ],
+      "firstIntroduced": {
+        "commit": "36125b451d00489cec900a8140d61f3a91904fed",
+        "pullRequest": 28
+      },
+      "originalRationale": "Generic row-volume guard.",
+      "projectRealDataEvidence": "NONE_BEFORE_FREEZE",
+      "genericIndustryAssumption": true,
+      "classification": "statistical_stability",
+      "forwardDecision": "RETAIN_AS_DESCRIPTIVE_DIMENSION"
+    },
+    {
+      "stableThresholdId": "M2-THR-GEN-PLATFORM-POSITIVE-HORIZON-01",
+      "currentValue": 50,
+      "unit": "positive targets per frozen horizon",
+      "scope": "future platform-node eligibility",
+      "sourceLocations": [
+        "docs/analysis/m2-current/M2-current-channel-generative-v0.2-preregistration.json#fallbackPolicy.eligibility.platform.minimumPositiveTargetsPerFrozenHorizon"
+      ],
+      "firstIntroduced": {
+        "commit": "36125b451d00489cec900a8140d61f3a91904fed",
+        "pullRequest": 28
+      },
+      "originalRationale": "Generic per-horizon event guard.",
+      "projectRealDataEvidence": "NONE_BEFORE_FREEZE",
+      "genericIndustryAssumption": true,
+      "classification": "statistical_stability",
+      "forwardDecision": "REPLACE_WITH_PARENT_RELATIVE_UNCERTAINTY"
+    },
+    {
+      "stableThresholdId": "M2-THR-GEN-TAXONOMY-WORKS-01",
+      "currentValue": 100,
+      "unit": "distinct standard works",
+      "scope": "future taxonomy-node eligibility",
+      "sourceLocations": [
+        "docs/analysis/m2-current/M2-current-channel-generative-v0.2-preregistration.json#fallbackPolicy.eligibility.taxonomy.minimumDistinctTrainingWorks"
+      ],
+      "firstIntroduced": {
+        "commit": "36125b451d00489cec900a8140d61f3a91904fed",
+        "pullRequest": 28
+      },
+      "originalRationale": "Generic standalone taxonomy support.",
+      "projectRealDataEvidence": "NONE_BEFORE_FREEZE",
+      "genericIndustryAssumption": true,
+      "classification": "business_scale_and_statistical_stability",
+      "forwardDecision": "REPLACE_WITH_LEVEL3_TO_PARENT_HIERARCHICAL_TIER"
+    },
+    {
+      "stableThresholdId": "M2-THR-GEN-TAXONOMY-ROWS-01",
+      "currentValue": 500,
+      "unit": "training rows",
+      "scope": "future taxonomy-node eligibility",
+      "sourceLocations": [
+        "docs/analysis/m2-current/M2-current-channel-generative-v0.2-preregistration.json#fallbackPolicy.eligibility.taxonomy.minimumTrainingRows"
+      ],
+      "firstIntroduced": {
+        "commit": "36125b451d00489cec900a8140d61f3a91904fed",
+        "pullRequest": 28
+      },
+      "originalRationale": "Generic row-volume guard.",
+      "projectRealDataEvidence": "NONE_BEFORE_FREEZE",
+      "genericIndustryAssumption": true,
+      "classification": "statistical_stability",
+      "forwardDecision": "RETAIN_AS_DESCRIPTIVE_DIMENSION"
+    },
+    {
+      "stableThresholdId": "M2-THR-GEN-TAXONOMY-POSITIVE-ROWS-01",
+      "currentValue": 100,
+      "unit": "positive training rows",
+      "scope": "future taxonomy-node eligibility",
+      "sourceLocations": [
+        "docs/analysis/m2-current/M2-current-channel-generative-v0.2-preregistration.json#fallbackPolicy.eligibility.taxonomy.minimumPositiveTrainingRows"
+      ],
+      "firstIntroduced": {
+        "commit": "36125b451d00489cec900a8140d61f3a91904fed",
+        "pullRequest": 28
+      },
+      "originalRationale": "Generic positive-event guard.",
+      "projectRealDataEvidence": "NONE_BEFORE_FREEZE",
+      "genericIndustryAssumption": true,
+      "classification": "statistical_stability",
+      "forwardDecision": "RETAIN_AS_SUPPORT_DIMENSION_NOT_STANDALONE_GATE"
+    },
+    {
+      "stableThresholdId": "M2-THR-GEN-TAXONOMY-POSITIVE-HORIZON-01",
+      "currentValue": 30,
+      "unit": "positive targets per frozen horizon",
+      "scope": "future taxonomy-node eligibility",
+      "sourceLocations": [
+        "docs/analysis/m2-current/M2-current-channel-generative-v0.2-preregistration.json#fallbackPolicy.eligibility.taxonomy.minimumPositiveTargetsPerFrozenHorizon"
+      ],
+      "firstIntroduced": {
+        "commit": "36125b451d00489cec900a8140d61f3a91904fed",
+        "pullRequest": 28
+      },
+      "originalRationale": "Generic per-horizon event guard.",
+      "projectRealDataEvidence": "NONE_BEFORE_FREEZE",
+      "genericIndustryAssumption": true,
+      "classification": "statistical_stability",
+      "forwardDecision": "REPLACE_WITH_PARENT_RELATIVE_UNCERTAINTY"
+    },
+    {
+      "stableThresholdId": "M2-THR-GEN-USAGE-ROWS-01",
+      "currentValue": 0.2,
+      "unit": "share",
+      "scope": "primary and strict generator observed-channel row usage",
+      "sourceLocations": [
+        "docs/analysis/m2-current/M2-current-channel-generative-v0.2-preregistration.json#gates.coreRawPass.conditions.generatorObservedChannelRowUsage",
+        "config/m2-current-channel-generative.v0.2.json#evaluation.minimumGeneratorRowUsage",
+        "scripts/m2-current/channel_generative_mode.mjs"
+      ],
+      "firstIntroduced": {
+        "commit": "36125b451d00489cec900a8140d61f3a91904fed",
+        "pullRequest": 28
+      },
+      "originalRationale": "Ensure the generator affects a material share of rows.",
+      "projectRealDataEvidence": "NO_DECISION_COST_OR_COVERAGE_STUDY",
+      "genericIndustryAssumption": true,
+      "classification": "evaluation_materiality",
+      "forwardDecision": "RECALIBRATE_SEPARATELY_FROM_FIT_SUPPORT"
+    },
+    {
+      "stableThresholdId": "M2-THR-GEN-USAGE-CASH-01",
+      "currentValue": 0.2,
+      "unit": "share",
+      "scope": "primary and strict generator actual-positive-cash usage",
+      "sourceLocations": [
+        "docs/analysis/m2-current/M2-current-channel-generative-v0.2-preregistration.json#gates.coreRawPass.conditions.generatorActualPositiveCashUsage",
+        "config/m2-current-channel-generative.v0.2.json#evaluation.minimumGeneratorActualPositiveCashUsage",
+        "scripts/m2-current/channel_generative_mode.mjs"
+      ],
+      "firstIntroduced": {
+        "commit": "36125b451d00489cec900a8140d61f3a91904fed",
+        "pullRequest": 28
+      },
+      "originalRationale": "Ensure the generator covers material positive cash.",
+      "projectRealDataEvidence": "NO_DECISION_COST_OR_COVERAGE_STUDY",
+      "genericIndustryAssumption": true,
+      "classification": "evaluation_materiality",
+      "forwardDecision": "RECALIBRATE_SEPARATELY_FROM_FIT_SUPPORT"
+    },
+    {
+      "stableThresholdId": "M2-THR-GEN-WAPE-MATERIALITY-01",
+      "currentValue": 0.01,
+      "unit": "relative WAPE improvement",
+      "scope": "primary, strict, top-10 and later incremental gates",
+      "sourceLocations": [
+        "docs/analysis/m2-current/M2-current-channel-generative-v0.2-preregistration.json#materiality.relativeWapeMinimum",
+        "config/m2-current-channel-generative.v0.2.json#evaluation.relativeWapeMinimum"
+      ],
+      "firstIntroduced": {
+        "commit": "36125b451d00489cec900a8140d61f3a91904fed",
+        "pullRequest": 28
+      },
+      "originalRationale": "One-percent business materiality, explicitly not one percentage point.",
+      "projectRealDataEvidence": "BUSINESS_DECISION_RULE_NOT_SAMPLE_SIZE_RULE",
+      "genericIndustryAssumption": false,
+      "classification": "evaluation_materiality",
+      "forwardDecision": "RETAIN_PENDING_SEPARATE_ERROR_COST_DECISION"
+    },
+    {
+      "stableThresholdId": "M2-THR-GEN-HARM-SAFETY-01",
+      "currentValue": -0.01,
+      "unit": "relative WAPE improvement lower bound",
+      "scope": "each horizon, top-1, top-5 and bootstrap lower-bound safety",
+      "sourceLocations": [
+        "docs/analysis/m2-current/M2-current-channel-generative-v0.2-preregistration.json#gates.coreRawPass.conditions",
+        "config/m2-current-channel-generative.v0.2.json#evaluation.relativeWapeMaximumAllowedHarm"
+      ],
+      "firstIntroduced": {
+        "commit": "36125b451d00489cec900a8140d61f3a91904fed",
+        "pullRequest": 28
+      },
+      "originalRationale": "Bound material deterioration.",
+      "projectRealDataEvidence": "BUSINESS_SAFETY_RULE_NOT_SAMPLE_SIZE_RULE",
+      "genericIndustryAssumption": false,
+      "classification": "governance_safety",
+      "forwardDecision": "RETAIN"
+    },
+    {
+      "stableThresholdId": "M2-THR-GEN-BIAS-SAFETY-01",
+      "currentValue": 0.01,
+      "unit": "absolute bias deterioration",
+      "scope": "primary and strict safety gate",
+      "sourceLocations": [
+        "docs/analysis/m2-current/M2-current-channel-generative-v0.2-preregistration.json#materiality.absoluteBiasDeteriorationMaximumPercentagePoints",
+        "config/m2-current-channel-generative.v0.2.json#evaluation.absoluteBiasDeteriorationMaximum"
+      ],
+      "firstIntroduced": {
+        "commit": "36125b451d00489cec900a8140d61f3a91904fed",
+        "pullRequest": 28
+      },
+      "originalRationale": "Bound aggregate under/over-forecast deterioration.",
+      "projectRealDataEvidence": "BUSINESS_SAFETY_RULE_NOT_SAMPLE_SIZE_RULE",
+      "genericIndustryAssumption": false,
+      "classification": "governance_safety",
+      "forwardDecision": "RETAIN"
+    },
+    {
+      "stableThresholdId": "M2-THR-GEN-TIME-BLOCKS-01",
+      "currentValue": {
+        "improved": 6,
+        "total": 11
+      },
+      "unit": "strict origin blocks",
+      "scope": "strict stability gate",
+      "sourceLocations": [
+        "docs/analysis/m2-current/M2-current-channel-generative-v0.2-preregistration.json#gates.coreRawPass.conditions.strictImprovedOriginBlocks",
+        "config/m2-current-channel-generative.v0.2.json#evaluation.strictImprovedOriginBlockMinimum"
+      ],
+      "firstIntroduced": {
+        "commit": "36125b451d00489cec900a8140d61f3a91904fed",
+        "pullRequest": 28
+      },
+      "originalRationale": "Require a simple majority of frozen time blocks.",
+      "projectRealDataEvidence": "FROZEN_TIME_GRID_EXISTS_BUT_THRESHOLD_NOT_LEARNED",
+      "genericIndustryAssumption": true,
+      "classification": "statistical_stability",
+      "forwardDecision": "RETAIN_AS_GOVERNANCE_GATE_WITH_UNCERTAINTY_CONTEXT"
+    },
+    {
+      "stableThresholdId": "M2-THR-GEN-HORIZONS-01",
+      "currentValue": {
+        "improved": 4,
+        "total": 6
+      },
+      "unit": "frozen horizon surfaces",
+      "scope": "cross-horizon stability gate",
+      "sourceLocations": [
+        "docs/analysis/m2-current/M2-current-channel-generative-v0.2-preregistration.json#gates.coreRawPass.conditions.improvedFrozenHorizonSlices",
+        "config/m2-current-channel-generative.v0.2.json#evaluation.improvedHorizonSliceMinimum"
+      ],
+      "firstIntroduced": {
+        "commit": "36125b451d00489cec900a8140d61f3a91904fed",
+        "pullRequest": 28
+      },
+      "originalRationale": "Require improvement on most frozen horizons.",
+      "projectRealDataEvidence": "FROZEN_HORIZONS_EXIST_BUT_THRESHOLD_NOT_LEARNED",
+      "genericIndustryAssumption": true,
+      "classification": "governance_safety",
+      "forwardDecision": "RETAIN"
+    },
+    {
+      "stableThresholdId": "M2-THR-GEN-BOOTSTRAP-01",
+      "currentValue": 2000,
+      "unit": "replicates",
+      "scope": "paired standard-work cluster uncertainty",
+      "sourceLocations": [
+        "config/m2-evaluation-contract.v2.2.json#uncertainty.bootstrapIterations",
+        "docs/analysis/m2-current/M2-current-channel-generative-v0.2-preregistration.json#evaluationMetrics.pairedBootstrap.iterations",
+        "config/m2-current-channel-generative.v0.2.json#evaluation.bootstrapIterations"
+      ],
+      "firstIntroduced": {
+        "commit": "0094c64b0fd92e871b0dd2c536d4e2a04f5fe730",
+        "pullRequest": 29
+      },
+      "originalRationale": "Correct the earlier incomplete 200-replicate ranking procedure and recompute full ranks per work-cluster sample.",
+      "projectRealDataEvidence": "METHOD_CORRECTION_INDEPENDENT_OF_INDUSTRY_SCALE",
+      "genericIndustryAssumption": false,
+      "classification": "statistical_uncertainty",
+      "forwardDecision": "RETAIN"
+    },
+    {
+      "stableThresholdId": "M2-THR-GEN-OUTER-FOLDS-01",
+      "currentValue": 5,
+      "unit": "work-group folds",
+      "scope": "primary outer cross-fit",
+      "sourceLocations": [
+        "docs/analysis/m2-current/M2-current-channel-generative-v0.2-preregistration.json#splitProtocol.outerPrimary.foldCount",
+        "config/m2-current-channel-generative.v0.2.json#selection.outerPrimaryWorkFoldCount"
+      ],
+      "firstIntroduced": {
+        "commit": "36125b451d00489cec900a8140d61f3a91904fed",
+        "pullRequest": 28
+      },
+      "originalRationale": "Reuse the existing deterministic work-fold protocol.",
+      "projectRealDataEvidence": "INHERITED_PROTOCOL_NOT_REESTIMATED_FOR_SPARSE_NODES",
+      "genericIndustryAssumption": true,
+      "classification": "evaluation_design",
+      "forwardDecision": "KEEP_OUTER_COMPARABILITY_AND_ADAPT_INNER_SCHEME"
+    },
+    {
+      "stableThresholdId": "M2-THR-GEN-INNER-FOLDS-01",
+      "currentValue": 5,
+      "unit": "work-group folds",
+      "scope": "nested hyperparameter selection",
+      "sourceLocations": [
+        "docs/analysis/m2-current/M2-current-channel-generative-v0.2-preregistration.json#nestedSelection.innerFoldCount",
+        "config/m2-current-channel-generative.v0.2.json#selection.innerWorkFoldCount"
+      ],
+      "firstIntroduced": {
+        "commit": "36125b451d00489cec900a8140d61f3a91904fed",
+        "pullRequest": 28
+      },
+      "originalRationale": "Reuse five grouped rotations.",
+      "projectRealDataEvidence": "NO_SPARSE_NODE_FOLD_FEASIBILITY_STUDY",
+      "genericIndustryAssumption": true,
+      "classification": "evaluation_design",
+      "forwardDecision": "CALIBRATE_WITH_GROUPED_CV_FEASIBILITY"
+    },
+    {
+      "stableThresholdId": "M2-THR-GEN-L2-GRID-01",
+      "currentValue": {
+        "occurrence": [
+          1,
+          10,
+          100
+        ],
+        "conditionalAmount": [
+          1,
+          10,
+          100
+        ]
+      },
+      "unit": "L2 penalty",
+      "scope": "independent mechanism occurrence and conditional amount",
+      "sourceLocations": [
+        "docs/analysis/m2-current/M2-current-channel-generative-v0.2-preregistration.json#hyperparameterGrid.rawCore",
+        "config/m2-current-channel-generative.v0.2.json#grid"
+      ],
+      "firstIntroduced": {
+        "commit": "36125b451d00489cec900a8140d61f3a91904fed",
+        "pullRequest": 28
+      },
+      "originalRationale": "Small log-spaced structural grid; no v0.2 outcome used.",
+      "projectRealDataEvidence": "NO_TRAINING_SIDE_LEARNING_CURVE_OR_COEFFICIENT_STABILITY",
+      "genericIndustryAssumption": true,
+      "classification": "algorithm_parameter",
+      "forwardDecision": "RECALIBRATE_ON_TRAINING_SIDE_ONLY"
+    },
+    {
+      "stableThresholdId": "M2-THR-GEN-ONE-CLASS-SMOOTHING-01",
+      "currentValue": "(positiveCount+0.5)/(rowCount+1)",
+      "unit": "smoothed probability",
+      "scope": "one-class occurrence node",
+      "sourceLocations": [
+        "docs/analysis/m2-current/M2-current-channel-generative-v0.2-preregistration.json#modelFamilies.occurrence.oneClassRule",
+        "src/domain/m2Current/channelGenerative.js"
+      ],
+      "firstIntroduced": {
+        "commit": "36125b451d00489cec900a8140d61f3a91904fed",
+        "pullRequest": 28
+      },
+      "originalRationale": "Finite deterministic Jeffreys-style smoothing for one-class nodes.",
+      "projectRealDataEvidence": "NUMERICAL_SAFETY_RULE",
+      "genericIndustryAssumption": false,
+      "classification": "numerical_safety",
+      "forwardDecision": "RETAIN_AS_FALLBACK_AND_COMPARE_PRIOR_STRENGTH"
+    },
+    {
+      "stableThresholdId": "M2-THR-GEN-NUMERICAL-01",
+      "currentValue": {
+        "maximumIterations": 200,
+        "coefficientTolerance": 1e-08,
+        "pivotTolerance": 1e-12,
+        "minimumStepMultiplier": 9.5367431640625e-07,
+        "timeoutSecondsPerCandidateOuterFold": 1800
+      },
+      "unit": "solver controls",
+      "scope": "deterministic logistic/ridge numerical safety",
+      "sourceLocations": [
+        "docs/analysis/m2-current/M2-current-channel-generative-v0.2-preregistration.json#hyperparameterGrid",
+        "config/m2-current-channel-generative.v0.2.json#numerical",
+        "src/domain/m2Current/channelGenerative.js"
+      ],
+      "firstIntroduced": {
+        "commit": "36125b451d00489cec900a8140d61f3a91904fed",
+        "pullRequest": 28
+      },
+      "originalRationale": "Deterministic convergence, singularity and compute-budget safety.",
+      "projectRealDataEvidence": "NUMERICAL_AND_COMPUTE_SAFETY_NOT_BUSINESS_SCALE",
+      "genericIndustryAssumption": false,
+      "classification": "numerical_safety_and_compute_budget",
+      "forwardDecision": "RETAIN_UNLESS_TRAINING_SIDE_DIAGNOSTIC_FAILS"
+    },
+    {
+      "stableThresholdId": "M2-THR-CHAN-EXPERT-NODE-01",
+      "currentValue": {
+        "minimumNodeWorks": 15,
+        "minimumNodeRows": 40,
+        "minimumPlatformWorks": 20,
+        "minimumPlatformRows": 60
+      },
+      "unit": "works and rows",
+      "scope": "historical channel-expert partial-pooling nodes",
+      "sourceLocations": [
+        "config/m2-current-channel-experts.v0.1.json#training"
+      ],
+      "firstIntroduced": {
+        "commit": "aab7bb14c0641afef7bda6bd2d5049a38c8640b8",
+        "pullRequest": 28
+      },
+      "originalRationale": "Bound sparse partial-pooling cells before the channel-expert run.",
+      "projectRealDataEvidence": "NO_RECORDED_LEARNING_CURVE_BEFORE_FREEZE",
+      "genericIndustryAssumption": true,
+      "classification": "statistical_stability",
+      "forwardDecision": "HISTORICAL_IMMUTABLE_INPUT_TO_NEW_SUPPORT_CONTRACT"
+    },
+    {
+      "stableThresholdId": "M2-THR-CHAN-EXPERT-SHRINKAGE-01",
+      "currentValue": [
+        20,
+        80,
+        240
+      ],
+      "unit": "prior strength",
+      "scope": "historical channel-expert hierarchy",
+      "sourceLocations": [
+        "config/m2-current-channel-experts.v0.1.json#training.shrinkagePriorStrengthGrid"
+      ],
+      "firstIntroduced": {
+        "commit": "aab7bb14c0641afef7bda6bd2d5049a38c8640b8",
+        "pullRequest": 28
+      },
+      "originalRationale": "Bounded nested shrinkage grid.",
+      "projectRealDataEvidence": "NO_RECORDED_LEARNING_CURVE_BEFORE_FREEZE",
+      "genericIndustryAssumption": true,
+      "classification": "algorithm_parameter",
+      "forwardDecision": "RECALIBRATE_ON_TRAINING_SIDE_ONLY"
+    },
+    {
+      "stableThresholdId": "M2-THR-EVAL-PRIVACY-01",
+      "currentValue": {
+        "minimumCaseCount": 30,
+        "minimumWorkCount": 20,
+        "minimumPortfolioOriginCount": 5
+      },
+      "unit": "public aggregate cells",
+      "scope": "evaluation artifact privacy suppression",
+      "sourceLocations": [
+        "config/m2-evaluation-contract.v2.1.json#publicPrivacy",
+        "config/m2-evaluation-contract.v2.2.json#publicPrivacy"
+      ],
+      "firstIntroduced": {
+        "commit": "f5677bcee52f76633ffaa3072b4b0e4005c8691f",
+        "pullRequest": 29
+      },
+      "originalRationale": "Prevent small public cells from disclosing private identities.",
+      "projectRealDataEvidence": "PRIVACY_POLICY_NOT_MODEL_SUPPORT",
+      "genericIndustryAssumption": false,
+      "classification": "privacy_governance",
+      "forwardDecision": "RETAIN_AND_KEEP_SEPARATE_FROM_FIT_ELIGIBILITY"
+    }
+  ],
+  "timeBasisAssumptions": [
+    {
+      "stableThresholdId": "M2-ASSUMP-GEN-TIME-MEMBERSHIP-01",
+      "currentValue": "1, t/36, (t/36)^2 plus two origin-feature interactions",
+      "parameterCountBeforeInterceptHandling": 5,
+      "projectRealDataEvidence": "NO_TRAINING_SIDE_COMPLEXITY_ABLATION_BEFORE_FREEZE",
+      "classification": "algorithm_structure",
+      "forwardDecision": "CALIBRATE_COMPLEXITY_WITH_GROUPED_TRAINING_VALIDATION"
+    },
+    {
+      "stableThresholdId": "M2-ASSUMP-GEN-TIME-ADVERTISING-01",
+      "currentValue": "1, exp(-(t-1)/3), t/36, (t/36)^2 plus two interactions",
+      "parameterCountBeforeInterceptHandling": 6,
+      "projectRealDataEvidence": "NO_TRAINING_SIDE_COMPLEXITY_ABLATION_BEFORE_FREEZE",
+      "classification": "algorithm_structure",
+      "forwardDecision": "CALIBRATE_COMPLEXITY_WITH_GROUPED_TRAINING_VALIDATION"
+    },
+    {
+      "stableThresholdId": "M2-ASSUMP-GEN-TIME-TRANSACTIONAL-01",
+      "currentValue": "1, exp(-(t-1)/3), exp(-(t-1)/18) plus two interactions",
+      "parameterCountBeforeInterceptHandling": 5,
+      "projectRealDataEvidence": "NO_TRAINING_SIDE_COMPLEXITY_ABLATION_BEFORE_FREEZE",
+      "classification": "algorithm_structure",
+      "forwardDecision": "CALIBRATE_COMPLEXITY_WITH_GROUPED_TRAINING_VALIDATION"
+    }
+  ],
+  "impactSummary": {
+    "historicalArtifactsToPreserve": [
+      "M2-CHAN-GEN02 and M2-EXP-CHANNEL-GENERATIVE-02/G1",
+      "all frozen channel-generative v0.2 reports and receipts",
+      "all historical scores and failure/block states",
+      "channel-expert historical raw ablations",
+      "evaluation contract v2.1 and v2.2 historical identities"
+    ],
+    "forwardSurfacesRequiringNewVersion": [
+      "publishing-scale support contract",
+      "publishing-scale PRD amendment",
+      "new versioned model revision and experiment arm",
+      "runtime support-tier evaluator",
+      "training-side learning-curve report",
+      "public support-tier reporting",
+      "Model Registry and catalog",
+      "M2 scoped AGENTS",
+      "tests and current state index"
+    ]
+  }
+}

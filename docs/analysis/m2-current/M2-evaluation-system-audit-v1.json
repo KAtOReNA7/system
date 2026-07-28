@@ -28,15 +28,15 @@
     "portfolioReference": "M2-PORT-ETS01",
     "activeCandidate": null,
     "approvedForAutomation": null,
-    "blockedExperiment": "M2-EXP-CHANNEL-GENERATIVE-02",
+    "blockedExperiment": "M2-EXP-PUBLISHING-SCALE-CHANNEL-01",
     "rolesChangedByAudit": false
   },
   "registryCoverage": {
-    "modelCount": 27,
-    "experimentCount": 12,
-    "nonModelIdentifierCount": 47,
-    "comparabilityGroupCount": 13,
-    "evaluationCount": 40,
+    "modelCount": 28,
+    "experimentCount": 13,
+    "nonModelIdentifierCount": 50,
+    "comparabilityGroupCount": 14,
+    "evaluationCount": 41,
     "wapeEvaluationCount": 39,
     "signedBiasEvaluationCount": 33,
     "relativeWapeEvaluationCount": 24,
@@ -48,7 +48,7 @@
       "displayNameZh": "当前作品现金加权绝对百分比误差",
       "metricRole": "PRIMARY_CANDIDATE_AND_DIAGNOSTIC",
       "implementation": "src/domain/m2Current/metrics.js",
-      "coverage": "39_OF_40_REGISTRY_EVALUATIONS",
+      "coverage": "39_OF_41_REGISTRY_EVALUATIONS",
       "limitations": [
         "HEAD_REVENUE_DOMINANCE",
         "ZERO_ACTUAL_ASYMMETRY",
@@ -60,7 +60,7 @@
       "displayNameZh": "当前作品现金有方向总量偏差",
       "metricRole": "CALIBRATION_GUARDRAIL",
       "implementation": "src/domain/m2Current/metrics.js",
-      "coverage": "33_OF_40_REGISTRY_EVALUATIONS",
+      "coverage": "33_OF_41_REGISTRY_EVALUATIONS",
       "limitations": [
         "SIGNED_ERROR_CANCELLATION"
       ]
@@ -443,6 +443,11 @@
       "conclusionZh": "渠道时间生成 v0.2 因评价合同语义阻断而未执行；只能得出未执行结论，不能评价模型好坏。"
     },
     {
+      "experimentId": "M2-EXP-PUBLISHING-SCALE-CHANNEL-01",
+      "classification": "IMPLEMENTATION_BLOCKED_BEFORE_CANDIDATE_FIT_NO_MODEL_CONCLUSION",
+      "conclusionZh": "出版行业规模适配渠道核心的私有物化已启动，但因实现接线错误在候选拟合前 fail-closed；没有候选预测或评价指标，不能评价候选优劣。一次性授权已消耗且未授权重试。"
+    },
+    {
       "experimentId": "M2-EXP-ARCHIVE-C1-C3",
       "classification": "ARCHIVED_HISTORICAL_TARGET_FAILURES",
       "conclusionZh": "历史冻结开发活动均为历史目标下的失败证据，只用于追溯，不能与当前分成现金目标排名。"
@@ -551,10 +556,17 @@
         ]
       },
       {
-        "comparableGroupId": "CG-NOT-EXECUTED",
+        "comparableGroupId": "CG-G1-BLOCKED-NO-CANDIDATE-OUTCOME",
         "comparisonClass": "STANDALONE_ONLY",
         "modelIds": [
           "M2-CHAN-GEN02"
+        ]
+      },
+      {
+        "comparableGroupId": "CG-PSC01-IMPLEMENTATION-BLOCK-NO-CANDIDATE-OUTCOME",
+        "comparisonClass": "STANDALONE_ONLY",
+        "modelIds": [
+          "M2-CHAN-PSC01"
         ]
       },
       {

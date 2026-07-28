@@ -9,6 +9,7 @@ _recovery/
 *.log.tmp
 
 # Python / Node local caches
+.venv/
 __pycache__/
 *.pyc
 node_modules/

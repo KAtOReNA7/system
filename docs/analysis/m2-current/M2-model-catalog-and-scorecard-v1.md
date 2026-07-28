@@ -11,7 +11,9 @@
 - 组合级参考（portfolio reference）：组合现金 ETS/Holt-Winters 模型（Portfolio ETS/Holt-Winters，`M2-PORT-ETS01`）。
 - 活动候选（active candidate）：无（`null`）。
 - 自动化批准模型（approved for automation）：无（`null`）。
-- 阻断实验：`M2-EXP-CHANNEL-GENERATIVE-02`；这是前置条件阻断，不是已执行失败。
+- 当前阻断实验：出版行业规模适配渠道核心开发
+  （`M2-EXP-PUBLISHING-SCALE-CHANNEL-01`）；私有物化已启动，但在候选拟合前因实现
+  接线错误 fail-closed，没有形成候选结果。
 
 ## 持久模型与模型族
 
@@ -38,7 +40,8 @@
 | 作品点预测（WORK） | 模型（model） | TSB 与全局模型混合候选（TSB and Learned-Global Blend，`M2-WORK-TSBB01`） | `TSB blend`、`M2-current-human-anchored-tsb-occurrence-challenger-v0.1/blend`、`blend candidate` | 已执行失败候选（`failed_development_candidate`） | 前序 `M2-WORK-TSB01`、`M2-WORK-LG01`；无后续 |
 | 作品点预测（WORK） | 模型（model） | 生命周期五状态模型（Lifecycle-Aware Five-State Model，`M2-WORK-LC01`） | `M2-lifecycle-aware-revenue-forecast-challenger-v0.1`、`lifecycle-aware v0.1`、`five-state lifecycle` | 已执行失败候选（`failed_development_candidate`） | 前序 `M2-WORK-LG01`；无后续 |
 | 渠道预测（CHAN） | 模型（model） | 渠道倍率专家模型（Channel Scalar Experts v0.1，`M2-CHAN-SCL01`） | `M2-current-channel-mechanism-hierarchical-challenger-v0.1`、`channelExperts v0.1`、`channel scalar experts` | 已执行失败渠道模型（`failed_channel_development_model`） | 前序 `M2-WORK-LG01`；后续 `M2-CHAN-GEN02` |
-| 渠道预测（CHAN） | 模型族（model_family） | 渠道时间生成模型 v0.2（Channel Generative v0.2，`M2-CHAN-GEN02`） | `M2-current-channel-generative-v0.2`、`channelGenerative v0.2`、`channel generative core` | 阻断且无候选结果（`blocked_model_family_no_candidate_outcome`） | 前序 `M2-WORK-LG01`、`M2-CHAN-SCL01`；无后续 |
+| 渠道预测（CHAN） | 模型族（model_family） | 渠道时间生成模型 v0.2——独立渠道月度发生—条件金额核心（Channel Generative v0.2 — Independent Monthly Occurrence × Conditional Amount Core，`M2-CHAN-GEN02`） | `M2-current-channel-generative-v0.2`、`channelGenerative v0.2`、`channel generative core` | 阻断且无候选结果（`blocked_model_family_no_candidate_outcome`） | 前序 `M2-WORK-LG01`、`M2-CHAN-SCL01`；后续 `M2-CHAN-PSC01` |
+| 渠道预测（CHAN） | 登记实体（model_revision） | 出版行业适配的渠道月度发生—条件金额核心（Publishing-Scale Channel Monthly Occurrence × Conditional Amount Core，`M2-CHAN-PSC01`） | `M2-current-publishing-scale-channel-v0.1`、`publishing-scale channel core`、`publishing scale occurrence amount core` | 实现阻断且无候选结果（`implementation_blocked_no_candidate_outcome`） | 前序 `M2-CHAN-GEN02`；无后续 |
 | 作品点预测（WORK） | 模型（model） | C1 透明组合模型（C1 Transparent Ensemble，`M2-WORK-C1TE01`） | `C1`、`C1 transparent ensemble` | 仅历史审计且已失败（`archive_only_failed_model`） | 前序 `M2-WORK-B4`；无后续 |
 | 作品点预测（WORK） | 模型（model） | 旧买断收入路由模型（Legacy C2-R Revenue Route，`M2-WORK-C2R01`） | `legacy C2-R`、`C2-R`、`legacy C2R` | 仅历史审计且已失败（`archive_only_failed_model`） | 无前序；后续 `M2-WORK-C2R101` |
 | 作品点预测（WORK） | 模型（model） | 正式现金路由分治模型（Formal-Cash Route-Specific Model C2-R.1，`M2-WORK-C2R101`） | `C2-R.1`、`C2R1`、`formal cash C2R1` | 仅历史审计且已失败（`archive_only_failed_model`） | 前序 `M2-WORK-C2R01`；后续 `M2-WORK-C2IM01` |
@@ -61,7 +64,8 @@
 | TSB 间歇发生候选（TSB Occurrence Challenger，`M2-EXP-TSB-OCCURRENCE-01`） | 冻结 learnedGlobal 比较臂 / BASE（`M2-EXP-TSB-OCCURRENCE-01/BASE`；`EXECUTED`）；原始 TSB 候选 / RAW（`M2-EXP-TSB-OCCURRENCE-01/RAW`；`EXECUTED_FAILED`）；TSB 混合候选 / BLEND（`M2-EXP-TSB-OCCURRENCE-01/BLEND`；`EXECUTED_FAILED`） |
 | 生命周期五状态候选（Lifecycle-Aware Five-State Challenger，`M2-EXP-LIFECYCLE-AWARE-01`） | 冻结 learnedGlobal 比较臂 / BASE（`M2-EXP-LIFECYCLE-AWARE-01/BASE`；`EXECUTED`）；五状态原始候选 / RAW（`M2-EXP-LIFECYCLE-AWARE-01/RAW`；`EXECUTED_FAILED`）；仅复苏状态后验诊断 / REVIVAL_ONLY（`M2-EXP-LIFECYCLE-AWARE-01/REVIVAL_ONLY`；`EXECUTED_TRIVIAL_POSTHOC_GAIN`） |
 | 渠道倍率专家 v0.1（Channel Scalar Experts v0.1，`M2-EXP-CHANNEL-EXPERTS-01`） | learnedGlobal 作品基线 / A0（`M2-EXP-CHANNEL-EXPERTS-01/A0`；`EXECUTED`）；渠道守恒分解重组 / A1（`M2-EXP-CHANNEL-EXPERTS-01/A1`；`EXECUTED_EQUIVALENT`）；原始机制倍率专家 / A2（`M2-EXP-CHANNEL-EXPERTS-01/A2`；`EXECUTED`）；机制校准倍率专家 / A3（`M2-EXP-CHANNEL-EXPERTS-01/A3`；`EXECUTED`）；五平台部分池化 / A4（`M2-EXP-CHANNEL-EXPERTS-01/A4`；`EXECUTED`）；平台与内在品类 taxonomy 倍率 / A5（`M2-EXP-CHANNEL-EXPERTS-01/A5`；`EXECUTED_FAILED`）；nested 层级 shrinkage 选择 / A6（`M2-EXP-CHANNEL-EXPERTS-01/A6`；`EXECUTED_FAILED`） |
-| 渠道时间生成 v0.2（Channel Generative v0.2，`M2-EXP-CHANNEL-GENERATIVE-02`） | 冻结 learnedGlobal 渠道基线 / G0（`M2-EXP-CHANNEL-GENERATIVE-02/G0`；`SEMANTIC_EQUIVALENCE_PASS`）；独立渠道发生-条件金额生成器 / G1（`M2-EXP-CHANNEL-GENERATIVE-02/G1`；`NOT_EXECUTED_CONTRACT_SEMANTIC_BLOCKER`）；带层级收缩的渠道生成器 / G2（`M2-EXP-CHANNEL-GENERATIVE-02/G2`；`NOT_EXECUTED_CONTRACT_SEMANTIC_BLOCKER`）；预注册核心选择管线 / G3（`M2-EXP-CHANNEL-GENERATIVE-02/G3`；`NOT_EXECUTED_CONTRACT_SEMANTIC_BLOCKER`）；平台层 / G4（`M2-EXP-CHANNEL-GENERATIVE-02/G4`；`NOT_AUTHORIZED`）；taxonomy 层 / G5（`M2-EXP-CHANNEL-GENERATIVE-02/G5`；`NOT_AUTHORIZED`）；组合层 / G6（`M2-EXP-CHANNEL-GENERATIVE-02/G6`；`NOT_AUTHORIZED`） |
+| 渠道时间生成 v0.2（Channel Generative v0.2，`M2-EXP-CHANNEL-GENERATIVE-02`） | 冻结 learnedGlobal 渠道基线 / G0（`M2-EXP-CHANNEL-GENERATIVE-02/G0`；`SEMANTIC_EQUIVALENCE_PASS_COMPARATOR_ONLY`）；独立渠道发生-条件金额生成器 / G1（`M2-EXP-CHANNEL-GENERATIVE-02/G1`；`EXECUTION_STARTED_BLOCKED_INNER_ELIGIBILITY_NO_CANDIDATE_OUTCOME`）；带层级收缩的渠道生成器 / G2（`M2-EXP-CHANNEL-GENERATIVE-02/G2`；`NOT_EXECUTED_NOT_AUTHORIZED`）；预注册核心选择管线 / G3（`M2-EXP-CHANNEL-GENERATIVE-02/G3`；`NOT_EXECUTED_NOT_AUTHORIZED`）；平台层 / G4（`M2-EXP-CHANNEL-GENERATIVE-02/G4`；`NOT_AUTHORIZED`）；taxonomy 层 / G5（`M2-EXP-CHANNEL-GENERATIVE-02/G5`；`NOT_AUTHORIZED`）；组合层 / G6（`M2-EXP-CHANNEL-GENERATIVE-02/G6`；`NOT_AUTHORIZED`） |
+| 出版行业规模适配渠道核心开发（Publishing-Scale Channel Core Development，`M2-EXP-PUBLISHING-SCALE-CHANNEL-01`） | 历史渠道时间生成核心审计参照 / HISTORICAL_REFERENCE（`M2-EXP-PUBLISHING-SCALE-CHANNEL-01/HISTORICAL_REFERENCE`；`HISTORICAL_BLOCKED_REFERENCE_ONLY`）；出版行业适配的渠道月度发生—条件金额核心 / CORE（`M2-EXP-PUBLISHING-SCALE-CHANNEL-01/CORE`；`PRIVATE_MATERIALIZATION_FAILED_CLOSED_BEFORE_CANDIDATE_FIT_NO_RETRY_AUTHORIZED`） |
 | C1–C3 历史冻结开发活动（Archived C1-C3 Development Campaign，`M2-EXP-ARCHIVE-C1-C3`） | 透明组合开发 / C1（`M2-EXP-ARCHIVE-C1-C3/C1`；`ARCHIVE_DEVELOPMENT_FAIL`）；旧买断收入路由 / C2-R（`M2-EXP-ARCHIVE-C1-C3/C2-R`；`ARCHIVE_DEVELOPMENT_FAIL`）；正式现金路由分治 / C2-R.1（`M2-EXP-ARCHIVE-C1-C3/C2-R.1`；`ARCHIVE_DEVELOPMENT_FAIL`）；活跃度与间歇模型组合 / C2（`M2-EXP-ARCHIVE-C1-C3/C2`；`ARCHIVE_DEVELOPMENT_FAIL`）；内部特征残差校正 / C3（`M2-EXP-ARCHIVE-C1-C3/C3`；`ARCHIVE_DEVELOPMENT_FAIL`） |
 
 ## 成绩人口与可比组
@@ -80,7 +84,8 @@ as-of/label maturity、实际值定义或评价族不得直接排名。
 | `CG-WORK-SS-HA-PRIMARY-12039-H36` | 复用开发窗口（`REUSED_DEVELOPMENT_WINDOW`） | `future_sales_share_cash` / `user_reviewed_sales_share_workbook_membership` | `human-anchored-primary-1125w-12039c` / `work_origin_horizon` / 36 | `cross_work_outer_folds_2021_2025` / `sales_share_cash_actual_only` / `human_anchored_primary` |
 | `CG-WORK-SS-HA-STRICT-74320` | 复用开发窗口（`REUSED_DEVELOPMENT_WINDOW`） | `future_sales_share_cash` / `user_reviewed_sales_share_workbook_membership` | `human-anchored-strict-2650w-74320c` / `work_origin_horizon` / 3、6、12、18、24 | `strict_rolling_mature_earlier_labels` / `sales_share_cash_actual_only` / `human_anchored_strict` |
 | `CG-WORK-SS-OVERLAP-5203-H36` | 仅相同案例交集可比（`SAME_INTERSECTION_COMPARABLE`） | `future_sales_share_cash` / `user_reviewed_sales_share_workbook_membership` | `human-anchored-exact-v03-intersection-5203c` / `work_origin_horizon` / 36 | `same_work_fold_selection_reused_without_outer_metric_tuning` / `sales_share_cash_actual_only` / `same_case_overlap_diagnostic` |
-| `CG-NOT-EXECUTED` | 仅独立展示（`STANDALONE_ONLY`） | `future_sales_share_cash` / `user_reviewed_sales_share_workbook_membership` | `not_executed` / `work_origin_horizon_channel_month` / 无 | `not_executed` / `no_candidate_actual_read` / `blocked_no_outcome` |
+| `CG-G1-BLOCKED-NO-CANDIDATE-OUTCOME` | 仅独立展示（`STANDALONE_ONLY`） | `future_sales_share_development_modelable_cash` / `user_reviewed_sales_share_workbook_membership` | `G1-primary-outer0-inner-eligibility-no-candidate-output` / `work_origin_horizon_channel_month` / 36 | `primary_outer_fold_0_inner_selection_before_candidate_prediction` / `M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01` / `G1_inner_selection_eligibility_block` |
+| `CG-PSC01-IMPLEMENTATION-BLOCK-NO-CANDIDATE-OUTCOME` | 仅独立展示（`STANDALONE_ONLY`） | `future_sales_share_development_modelable_cash` / `user_reviewed_sales_share_workbook_membership` | `publishing-scale-private-materialization-blocked-before-candidate-fit` / `work_origin_horizon_channel_month` / 3、6、12、18、24、36 | `K7C_exact_head_ci_then_one_time_K7D_private_materialization_attempt` / `M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01` / `publishing_scale_K7D_implementation_block_before_candidate_fit` |
 | `CG-WORK-HISTORICAL-C1` | 目标不同，不可直接比较（`DIFFERENT_TARGET_NOT_COMPARABLE`） | `historical_target` / `historical_target_authority` | `historical-C1-population` / `work_origin_horizon` / 3、6、12、18、24 | `historical_frozen` / `historical_target_actual` / `archive_C1` |
 | `CG-WORK-LEGACY-BUYOUT-C2R` | 目标不同，不可直接比较（`DIFFERENT_TARGET_NOT_COMPARABLE`） | `legacy_buyout_target` / `legacy_buyout_target` | `historical-C2R-population` / `work_origin_horizon` / 无 | `historical_frozen` / `legacy_buyout_target_actual` / `archive_C2R` |
 | `CG-WORK-ARCHIVE-FORMAL-7851` | 复用开发窗口（`REUSED_DEVELOPMENT_WINDOW`） | `formal_cash` / `formal_cash_pre_manual_partition` | `legacy-machine-route-824w-7851c` / `work_origin_horizon` / 3、6、12、18、24 | `historical_frozen` / `formal_cash_actual_pre_manual_partition` / `archive_C2_C3` |
@@ -113,7 +118,7 @@ as-of/label maturity、实际值定义或评价族不得直接排名。
 | `CG-WORK-SS-HA-PRIMARY-12039-H36` | TSB 与全局模型混合候选（`M2-WORK-TSBB01`） | 12039 / 1125 / 13 | 0.45348237 | 0.03777402 | 已执行但未通过（`DEVELOPMENT_FAIL`） |
 | `CG-WORK-SS-HA-PRIMARY-12039-H36` | 生命周期五状态模型（`M2-WORK-LC01`） | 12039 / 1125 / 13 | 0.50139298 | 未登记（null） | 已执行但未通过（`DEVELOPMENT_FAIL`） |
 | `CG-WORK-SS-HA-PRIMARY-12039-H36` | 渠道倍率专家模型（`M2-CHAN-SCL01`） | 12039 / 1125 / 13 | 0.53776683 | 未登记（null） | 已执行但未通过（`DEVELOPMENT_FAIL`） |
-| `CG-WORK-SS-HA-PRIMARY-12039-H36` | 渠道时间生成模型 v0.2（`M2-CHAN-GEN02`） | 12039 / 1125 / 13 | 0.44022495 | -0.12377106 | 登记结果（`G0_SEMANTIC_EQUIVALENCE_PASS_NOT_CANDIDATE_SCORE`） |
+| `CG-WORK-SS-HA-PRIMARY-12039-H36` | 渠道时间生成模型 v0.2——独立渠道月度发生—条件金额核心（`M2-CHAN-GEN02`） | 12039 / 1125 / 13 | 0.44022495 | -0.12377106 | 登记结果（`G0_SEMANTIC_EQUIVALENCE_PASS_NOT_CANDIDATE_SCORE`） |
 | `CG-WORK-SS-HA-STRICT-74320` | 人工锚定可学习全局模型（`M2-WORK-LG01`） | 74320 / 2650 / 11 | 0.41191878 | -0.03847401 | 登记结果（`STRICT_ROLLING_DEVELOPMENT_BASELINE`） |
 | `CG-WORK-SS-HA-STRICT-74320` | TSB 间歇发生模型（`M2-WORK-TSB01`） | 74320 / 2650 / 11 | 0.50802197 | 0.20751052 | 已执行但未通过（`DEVELOPMENT_FAIL`） |
 | `CG-WORK-SS-HA-STRICT-74320` | TSB 与全局模型混合候选（`M2-WORK-TSBB01`） | 74320 / 2650 / 11 | 0.44487050 | 未登记（null） | 已执行但未通过（`DEVELOPMENT_FAIL`） |
@@ -123,7 +128,8 @@ as-of/label maturity、实际值定义或评价族不得直接排名。
 | `CG-WORK-SS-OVERLAP-5203-H36` | 人工锚定可学习全局模型（`M2-WORK-LG01`） | 5203 / — / 13 | 0.27723899 | -0.12220206 | 登记结果（`SAME_INTERSECTION_DEVELOPMENT_ONLY`） |
 | `CG-WORK-SS-OVERLAP-5203-H36` | TSB 与全局模型混合候选（`M2-WORK-TSBB01`） | 5203 / — / 13 | 0.26352433 | 0.00222693 | 登记结果（`SAME_INTERSECTION_DIAGNOSTIC_ONLY`） |
 | `CG-WORK-SS-OVERLAP-5203-H36` | 生命周期五状态模型（`M2-WORK-LC01`） | 5203 / — / 13 | 0.27458711 | 未登记（null） | 登记结果（`SAME_INTERSECTION_DIAGNOSTIC_ONLY`） |
-| `CG-NOT-EXECUTED` | 渠道时间生成模型 v0.2（`M2-CHAN-GEN02`） | 0 / 0 / 0 | 未执行（null） | 未执行（null） | 尚未执行（`NOT_EXECUTED_CONTRACT_SEMANTIC_BLOCKER`） |
+| `CG-G1-BLOCKED-NO-CANDIDATE-OUTCOME` | 渠道时间生成模型 v0.2——独立渠道月度发生—条件金额核心（`M2-CHAN-GEN02`） | 0 / 0 / 0 | 未产生（null） | 未产生（null） | 因前置条件不满足而阻断（`M2_CHANNEL_GENERATIVE_G1_CORE_BLOCKED`） |
+| `CG-PSC01-IMPLEMENTATION-BLOCK-NO-CANDIDATE-OUTCOME` | 出版行业适配的渠道月度发生—条件金额核心（`M2-CHAN-PSC01`） | 0 / 0 / 0 | 未产生（null） | 未产生（null） | 实现阻断且无候选结果（`M2_PUBLISHING_SCALE_IMPLEMENTATION_BLOCKED`） |
 | `CG-WORK-HISTORICAL-C1` | C1 透明组合模型（`M2-WORK-C1TE01`） | — / — / 5 | 3.85015700 | 3.51137000 | 已执行但未通过（`ARCHIVE_DEVELOPMENT_FAIL`） |
 | `CG-WORK-LEGACY-BUYOUT-C2R` | 旧买断收入路由模型（`M2-WORK-C2R01`） | — / — / — | 1.17960000 | 0.79260000 | 已执行但未通过（`ARCHIVE_DEVELOPMENT_FAIL`） |
 | `CG-WORK-ARCHIVE-FORMAL-7851` | 正式现金路由分治模型（`M2-WORK-C2R101`） | 7851 / 824 / 5 | 0.58382400 | 0.02933800 | 已执行但未通过（`ARCHIVE_DEVELOPMENT_FAIL`） |

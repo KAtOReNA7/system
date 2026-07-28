@@ -1,0 +1,58 @@
+{
+  "schema": "m2.reversal-restatement.authority-audit.public.v1",
+  "asOf": "2026-07-28",
+  "status": "M2_EVALUATION_V2_2_BLOCKED_UNRESOLVED_REVERSAL",
+  "cashAuthority": "user_reviewed_sales_share_workbook_membership",
+  "authorityExportStatus": "READY",
+  "evidence": {
+    "reviewedLedgerMembershipProven": true,
+    "negativeEventPolicy": "all_negative_cash_records_are_reversals",
+    "salesShareRowCount": 190663,
+    "reversalRowCount": 143,
+    "fieldCoverage": {
+      "recordIdentifier": 1,
+      "postingMonth": 1,
+      "recordedAt": 1,
+      "standardWorkMapping": 1,
+      "canonicalChannelMapping": 1,
+      "amount": 1,
+      "cashCategory": 1,
+      "cashCategoryAuthority": 1
+    }
+  },
+  "timeAuthority": {
+    "postingTimeField": "billMonth",
+    "recordedAtField": "billMonth",
+    "recordedAtGranularity": "month",
+    "authorityStartMonth": "2017-06",
+    "authorityDataAsOf": "2026-05",
+    "labelMaturityCutoff": "2025-12"
+  },
+  "scopeAuthority": {
+    "scopeFields": [
+      "cashCategory",
+      "standardWorkId",
+      "channelMemberId",
+      "sourceLedgerNativeCurrencyScope"
+    ],
+    "channelScopeMode": "user_reviewed_canonical_channel_uid",
+    "channelMappingCoverage": 1,
+    "channelMasterConfirmed": true,
+    "currencyScopeMode": "single_digest_bound_authority_ledger_native_monetary_unit",
+    "contractOrSettlementFieldStatus": "NOT_AVAILABLE_NOT_USED_FOR_SCOPE_COLLAPSE",
+    "companyAggregateFallbackUsed": false
+  },
+  "exactCashControls": {
+    "amountScalePower": 18,
+    "exactIntegerMinorUnits": true,
+    "authorityFactReceiptBinding": true,
+    "authoritySourceReceiptBinding": true,
+    "authorityRecordIdentifiersUnique": true,
+    "conservationDifferenceMinor": "0"
+  },
+  "privacy": {
+    "aggregateOnly": true,
+    "rowLevelIdentityPublished": false,
+    "privatePathPublished": false
+  }
+}

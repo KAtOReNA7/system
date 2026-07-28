@@ -184,3 +184,16 @@ L = c_under * max(y-ŷ, 0)
 7. 没有独立证据时不得宣布成熟或自动化批准。
 
 本草案的启用、阈值、horizon 权重、业务损失权重和受控重计分均需后续单独授权。
+
+## 10. 出版行业统计支持引用
+
+新的出版行业适配模型修订必须引用
+`M2-PUBLISHING-SCALE-SUPPORT-01`。训练资格不再由单一 `50/100` 作品门控制，
+而由 `DIRECT_FIT`、`SHRUNK_FIT`、`POOLED_PARENT`、`REPORT_ONLY` 四级状态、
+作品有效样本量、现金集中度、时间正确的 training-side stability 和 as-of
+authority 共同决定。
+
+该引用不改写历史渠道时间生成模型 v0.2 的 eligibility、报告或阻断，也不改变本
+评价合同的 1% materiality、6/11 time block、4/6 horizon、top-revenue harm
+和 2,000 次 standard-work cluster bootstrap。支持合同只能决定新版本是否以及
+如何拟合；模型晋升仍须通过本评价合同的 outer 门禁。

@@ -34,10 +34,10 @@ test("registry schema, evidence paths and immutable digests validate", () => {
     canonicalEvidenceSha256("same\r\ncontent\r\n"),
     canonicalEvidenceSha256("same\ncontent\n")
   );
-  assert.equal(validation.counts.modelCount, 27);
-  assert.equal(validation.counts.experimentCount, 12);
-  assert.equal(validation.counts.nonModelIdentifierCount, 47);
-  assert.equal(validation.counts.comparabilityGroupCount, 13);
+  assert.equal(validation.counts.modelCount, 28);
+  assert.equal(validation.counts.experimentCount, 13);
+  assert.equal(validation.counts.nonModelIdentifierCount, 50);
+  assert.equal(validation.counts.comparabilityGroupCount, 14);
 });
 
 test("stable model IDs and model aliases are unique", () => {
@@ -129,19 +129,23 @@ test("evaluations preserve population and comparability contracts", () => {
   );
 });
 
-test("channel generative status remains blocked rather than failed", () => {
+test("channel generative G1 execution is eligibility-blocked rather than failed", () => {
   const experiment = registry.experiments.find(
     (item) => item.experimentId === "M2-EXP-CHANNEL-GENERATIVE-02"
   );
   assert.equal(
     experiment.arms.find((arm) => arm.armId === "G1").executionStatus,
-    "NOT_EXECUTED_CONTRACT_SEMANTIC_BLOCKER"
+    "EXECUTION_STARTED_BLOCKED_INNER_ELIGIBILITY_NO_CANDIDATE_OUTCOME"
   );
   const model = registry.models.find(
     (item) => item.stableModelId === "M2-CHAN-GEN02"
   );
   assert.equal(model.operationalStatus, "blocked_not_failed");
   assert.equal(model.evaluations.at(-1).WAPE, null);
+  assert.equal(
+    model.evaluations.at(-1).resultStatus,
+    "M2_CHANNEL_GENERATIVE_G1_CORE_BLOCKED"
+  );
 });
 
 test("long-term reporting rules are placed at the minimal AGENTS scope", async () => {
@@ -188,19 +192,22 @@ test("reader catalog is a deterministic complete rendering of the registry", asy
   );
   assert.equal(catalog, renderM2ModelCatalog(registry));
   assert.match(catalog, /M2-WORK-OA03/u);
-  assert.match(catalog, /CG-NOT-EXECUTED/u);
-  assert.match(catalog, /NOT_EXECUTED_CONTRACT_SEMANTIC_BLOCKER/u);
+  assert.match(catalog, /CG-G1-BLOCKED-NO-CANDIDATE-OUTCOME/u);
+  assert.match(catalog, /M2_CHANNEL_GENERATIVE_G1_CORE_BLOCKED/u);
+  assert.match(catalog, /M2_PUBLISHING_SCALE_IMPLEMENTATION_BLOCKED/u);
 });
 
 test("read-only query exposes scoped identities and refuses invalid ranking", () => {
   const list = runQuery("list");
   assert.equal(list.status, 0, list.stderr);
-  assert.match(list.stdout, /M2 持久模型与模型族：27 个/u);
+  assert.match(list.stdout, /M2 持久模型与模型族：28 个/u);
   assert.match(list.stdout, /M2-CHAN-GEN02/u);
 
   const status = runQuery("status");
   assert.equal(status.status, 0, status.stderr);
-  assert.match(status.stdout, /模型执行次数：0/u);
+  assert.match(status.stdout, /本次只读查询模型执行次数：0/u);
+  assert.match(status.stdout, /K7D 私有物化启动次数：1/u);
+  assert.match(status.stdout, /候选拟合启动次数、候选外层预测行和候选评价行均为 0/u);
   assert.match(status.stdout, /M2-WORK-OA03/u);
 
   const show = runQuery("show", "M2-WORK-OA03");
@@ -220,7 +227,10 @@ test("read-only query exposes scoped identities and refuses invalid ranking", ()
   );
   assert.equal(experiment.status, 0, experiment.stderr);
   assert.match(experiment.stdout, /M2-EXP-CHANNEL-GENERATIVE-02\/G1/u);
-  assert.match(experiment.stdout, /NOT_EXECUTED_CONTRACT_SEMANTIC_BLOCKER/u);
+  assert.match(
+    experiment.stdout,
+    /EXECUTION_STARTED_BLOCKED_INNER_ELIGIBILITY_NO_CANDIDATE_OUTCOME/u
+  );
 
   const g1 = runQuery("explain", "G1");
   assert.equal(g1.status, 0, g1.stderr);

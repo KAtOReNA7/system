@@ -1,0 +1,91 @@
+{
+  "schema": "m2.current.channel_generative_G1_implementation_readiness.v0.1",
+  "asOf": "2026-07-28",
+  "displayNameZh": "渠道时间生成模型 v0.2——独立渠道月度发生—条件金额核心",
+  "displayNameEn": "Channel Generative v0.2 — Independent Monthly Occurrence × Conditional Amount Core",
+  "modelId": "M2-CHAN-GEN02",
+  "experimentArmId": "M2-EXP-CHANNEL-GENERATIVE-02/G1",
+  "checkpoint": "K5",
+  "status": "G1_IMPLEMENTATION_READY_FOR_AUTHORIZED_PRIVATE_DEVELOPMENT_EVALUATION",
+  "resultEvidenceRead": false,
+  "privateTrainingExecuted": false,
+  "privatePredictionGenerated": false,
+  "privateEvaluationExecuted": false,
+  "actualDefinition": {
+    "stableId": "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01",
+    "view": "DEVELOPMENT_MODELABLE_RESTATEMENT_VIEW",
+    "residualPolicyStatus": "UNALLOCATED_REVERSAL_RESIDUAL_EXCLUDED_FROM_MODELABLE_TARGET",
+    "unallocatedResidualAssignedToMonthlyLabel": false
+  },
+  "armSpecificPrerequisites": {
+    "trainingAndInnerSelection": [
+      "origin-visible work-channel cash features",
+      "mature development-modelable monthly labels",
+      "inner validation WAPE"
+    ],
+    "frozenG0ChannelOffsetRequired": false,
+    "auxiliaryG0StateRequired": false,
+    "outerEvaluationOnly": [
+      "frozen G0 points on the exact paired outer cases"
+    ],
+    "missingG2OrG3OffsetBlocksG1": false
+  },
+  "implementation": {
+    "trainingGrain": "standardWorkId_x_canonicalChannel_x_origin_x_futureMonth",
+    "occurrence": "deterministic_L2_logistic_probability",
+    "conditionalAmount": "positive_month_log1p_L2_ridge_with_training_partition_smearing",
+    "parameterGrid": {
+      "occurrenceL2": [
+        1,
+        10,
+        100
+      ],
+      "conditionalAmountL2": [
+        1,
+        10,
+        100
+      ],
+      "configurationCount": 9
+    },
+    "selection": "nested_inside_each_outer_training_partition",
+    "strictLabelAvailability": "labelAvailableAsOf_before_outerOrigin",
+    "futureFirstSeenPrediction": 0,
+    "G0UsedAsFeatureOffsetOrMultiplier": false
+  },
+  "forecastabilityDiagnosticsImplemented": [
+    "ORACLE_OCCURRENCE_ONLY",
+    "ORACLE_AMOUNT_ONLY",
+    "ORACLE_BOTH",
+    "FUTURE_FIRST_ENTRY_CEILING",
+    "MECHANISM_INFORMATION_GAIN"
+  ],
+  "syntheticValidation": {
+    "monthlyRowCount": 6696,
+    "uniqueMonthlyKeyCount": 6696,
+    "workCount": 180,
+    "G1UsesG0": false,
+    "candidateIdsExecuted": [
+      "G1"
+    ],
+    "G2Executed": false,
+    "G3Executed": false,
+    "originAfterCutoffReversalFeatureRowCount": 0,
+    "publicPrivateBoundaryPassed": true
+  },
+  "boundaries": {
+    "G2Executed": false,
+    "G3Executed": false,
+    "G4Executed": false,
+    "G5Executed": false,
+    "G6Executed": false,
+    "productionModified": false,
+    "exactV03Modified": false,
+    "laterOriginOpened": false,
+    "finalHoldoutOpened": false,
+    "providerUsed": false,
+    "databaseUsed": false,
+    "releaseAuthorized": false,
+    "mergePrAuthorized": false
+  },
+  "nextGate": "K5 exact-head Linux and Windows CI must pass before the one-time K6 private execution"
+}

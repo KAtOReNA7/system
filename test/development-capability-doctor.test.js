@@ -35,13 +35,17 @@ test("catalog defines one private-free core capability and scoped private capabi
       "m2-pr7-s1",
       "m2-v2-current-state",
       "m2-algorithm-authoritative-input",
+      "m2-publishing-scale-audit",
+      "m2-publishing-scale-contract-calibration",
       "m2-current-canonical-channel",
       "m2-current-human-anchored",
       "m2-current-human-anchored-tsb-occurrence",
       "m2-current-lifecycle-aware",
       "m2-current-channel-experts",
+      "m2-current-publishing-scale-channel",
       "m2-current-channel-generative",
       "m2-current-human-anchored-later-origin",
+      "m2-evaluation-v2-2-reversal-rescore",
       "m3-private-materials",
     ],
   );
@@ -58,6 +62,48 @@ test("catalog defines one private-free core capability and scoped private capabi
   assert.equal(s1.privateBundle.providerCredentialsIncluded, false);
   assert.equal(s1.privateBundle.databaseCredentialsIncluded, false);
   assert.equal(catalog.principles.missingPrivateArtifactsBlockOnlyOwningCapability, true);
+});
+
+test("missing publishing-scale inputs block only that audit capability", () => {
+  const result = evaluateCapability(
+    catalog,
+    "m2-publishing-scale-audit",
+    {
+      repoRoot: REPO_ROOT,
+      artifactExists: () => false,
+      toolProbe: availableToolProbe,
+    },
+  );
+  assert.equal(result.status, "BLOCKED_MISSING_PRIVATE_ARTIFACT");
+  assert.equal(result.coreDevelopmentUnaffected, true);
+  assert.deepEqual(result.missingPrivateRoles, [
+    "formal-model-input-cache",
+    "user-reviewed-channel-master",
+    "primary-packed-training-rows",
+    "strict-packed-training-rows",
+  ]);
+  assert.match(result.recovery, /block only this read-only scale audit/u);
+});
+
+test("missing K7B inputs block only training-side scale calibration", () => {
+  const result = evaluateCapability(
+    catalog,
+    "m2-publishing-scale-contract-calibration",
+    {
+      repoRoot: REPO_ROOT,
+      artifactExists: () => false,
+      toolProbe: availableToolProbe,
+    },
+  );
+  assert.equal(result.status, "BLOCKED_MISSING_PRIVATE_ARTIFACT");
+  assert.equal(result.coreDevelopmentUnaffected, true);
+  assert.deepEqual(result.missingPrivateRoles, [
+    "strict-packed-training-rows",
+    "v2.2-development-modelable-scope-reconciliation",
+    "v2.2-reversal-allocation-ledger",
+    "v2.2-development-activation-receipt",
+  ]);
+  assert.match(result.recovery, /block only K7B training-side calibration/u);
 });
 
 test("core doctor rejects Node and npm versions outside the repository contract", () => {
@@ -262,10 +308,41 @@ test("missing channel-generative inputs block only that private capability", () 
     "formal-model-input-cache",
     "frozen-channel-expert-evaluation",
     "frozen-channel-expert-evaluation-manifest",
+    "v2.2-development-modelable-scope-reconciliation",
+    "v2.2-reversal-allocation-ledger",
+    "v2.2-development-activation-receipt",
   ]);
   assert.match(
     result.recovery,
     /public synthetic diagnostics, tests and startup remain available/u,
+  );
+});
+
+test("missing publishing-scale execution inputs block only that private capability", () => {
+  const result = evaluateCapability(
+    catalog,
+    "m2-current-publishing-scale-channel",
+    {
+      repoRoot: REPO_ROOT,
+      artifactExists: () => false,
+      toolProbe: availableToolProbe,
+    },
+  );
+  assert.equal(result.status, "BLOCKED_MISSING_PRIVATE_ARTIFACT");
+  assert.equal(result.coreDevelopmentUnaffected, true);
+  assert.deepEqual(result.missingPrivateRoles, [
+    "user-reviewed-channel-master",
+    "formal-model-input-cache",
+    "frozen-channel-expert-evaluation",
+    "frozen-channel-expert-evaluation-manifest",
+    "v2.2-development-modelable-scope-reconciliation",
+    "v2.2-reversal-allocation-ledger",
+    "v2.2-development-activation-receipt",
+    "publishing-scale-private-execution-receipt",
+  ]);
+  assert.match(
+    result.authorization,
+    /CONSUMED_M2_PUBLISHING_SCALE_PRIVATE_EXECUTION_IMPLEMENTATION_BLOCKED_NO_RETRY/u,
   );
 });
 
@@ -288,6 +365,34 @@ test("later-origin capability requires the original frozen v1 state", () => {
   ]);
   assert.match(result.recovery, /Do not infer/u);
   assert.match(result.recovery, /refit/u);
+});
+
+test("missing v2.2 reversal-rescore inputs block only that private capability", () => {
+  const result = evaluateCapability(
+    catalog,
+    "m2-evaluation-v2-2-reversal-rescore",
+    {
+      repoRoot: REPO_ROOT,
+      artifactExists: () => false,
+      toolProbe: availableToolProbe,
+    },
+  );
+  assert.equal(result.status, "BLOCKED_MISSING_PRIVATE_ARTIFACT");
+  assert.equal(result.coreDevelopmentUnaffected, true);
+  assert.deepEqual(result.missingPrivateRoles, [
+    "total-ledger-authority",
+    "sales-share-ledger-authority",
+    "buyout-ledger-authority",
+    "m1-work-mapping-authority",
+    "user-reviewed-channel-master",
+    "frozen-current-canonical-evaluation",
+    "frozen-human-anchored-evaluation",
+    "frozen-tsb-evaluation",
+    "frozen-lifecycle-evaluation",
+    "frozen-channel-evaluation",
+    "frozen-portfolio-evaluation",
+  ]);
+  assert.match(result.recovery, /Never regenerate predictions/u);
 });
 
 test("capability paths cannot escape the repository", () => {

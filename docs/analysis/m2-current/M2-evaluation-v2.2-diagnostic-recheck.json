@@ -1,0 +1,3052 @@
+{
+  "schema": "m2.evaluation-v2.2.diagnostic-recheck.public.v1",
+  "asOf": "2026-07-28",
+  "contractVersion": "2.2",
+  "status": "M2_EVALUATION_V2_2_BLOCKED_UNRESOLVED_REVERSAL",
+  "resultStatus": "PARTIAL_COMPLETE_SCOPES_LABEL_ONLY_RESCORE",
+  "actualDefinition": {
+    "stableId": "M2-ACTUAL-REVERSAL-RESTATEMENT-01",
+    "displayNameZh": "分成收入冲销追溯重述 v1",
+    "displayNameEn": "Sales-Share Revenue Reversal Restatement v1",
+    "target": "future_sales_share_cash",
+    "cashAuthority": "user_reviewed_sales_share_workbook_membership",
+    "comparabilityRule": "posting-time and reversal-restated actuals use different comparabilityGroupId values"
+  },
+  "comparability": {
+    "postingTimeAndRestatedUseDifferentGroups": true,
+    "crossActualDefinitionWinnerAllowed": false,
+    "frozenPredictionLabelOnlyRescore": true,
+    "historicalRawFailuresOverwritten": false
+  },
+  "statisticalCorrections": {
+    "workClusterBootstrap": {
+      "iterations": 2000,
+      "method": "full_standard_work_cluster_resample_recompute_within_cell_ranks",
+      "approximationFromFixedRankContributions": false
+    },
+    "independentTimeBlockIntervalMayBeAbsent": true,
+    "occurrenceReportsTrapezoidalPrAucAndAveragePrecisionSeparately": true,
+    "conditionalAmountUsesConditionalPredictionAgainstPositiveActual": true,
+    "reversalIsEvaluatedSeparately": true,
+    "topRevenueViews": [
+      "positive_revenue",
+      "absolute_cash_magnitude",
+      "reversal_magnitude"
+    ],
+    "topRevenueUse": "POSTHOC_FUTURE_ACTUAL_ATTRIBUTION_ONLY"
+  },
+  "reversalImpact": {
+    "schema": "m2.reversal-restatement.impact.public.v1",
+    "asOf": "2026-07-28",
+    "status": "M2_EVALUATION_V2_2_BLOCKED_UNRESOLVED_REVERSAL",
+    "labelOnlyRescoreStatus": "PARTIAL_COMPLETE_SCOPES_LABEL_ONLY_RESCORE",
+    "cash": {
+      "positiveRevenue": {
+        "exactMinorUnits": "83821498165600000018517939",
+        "authorityMonetaryUnits": "83821498.165600000018517939"
+      },
+      "reversalPosting": {
+        "exactMinorUnits": "-1228913283699999995685150",
+        "authorityMonetaryUnits": "-1228913.283699999995685150"
+      },
+      "tracedOffset": {
+        "exactMinorUnits": "1228645514699999995355150",
+        "authorityMonetaryUnits": "1228645.514699999995355150"
+      },
+      "restatedRevenue": {
+        "exactMinorUnits": "82592852650900000023162789",
+        "authorityMonetaryUnits": "82592852.650900000023162789"
+      },
+      "unresolvedReversalResidual": {
+        "exactMinorUnits": "-267769000000000330000",
+        "authorityMonetaryUnits": "-267.769000000000330000"
+      },
+      "conservationDifference": {
+        "exactMinorUnits": "0",
+        "authorityMonetaryUnits": "0.000000000000000000"
+      }
+    },
+    "affectedPopulation": {
+      "affectedScopeCount": 101,
+      "affectedWorkCount": 85,
+      "affectedChannelCount": 11,
+      "affectedMonthCount": 590,
+      "fullyZeroedMonthCount": 499,
+      "partiallyRetainedMonthCount": 91,
+      "maximumTraceDepthMonths": 62,
+      "traceDepthDistribution": {
+        "0": 9,
+        "1": 41,
+        "2": 29,
+        "3": 13,
+        "more": 51
+      },
+      "evaluatedCaseCount": 98675,
+      "affectedCaseCount": 430,
+      "affectedWorkCaseCount": 403,
+      "actualDefinitionDifferenceCaseCount": 88463,
+      "blockedResidualCaseCount": 322,
+      "portfolioPopulationMismatchCount": 30
+    },
+    "views": {
+      "postingTime": "PASS_FROZEN_HISTORICAL_POSTING_ACTUAL_PRESERVED",
+      "currentAuthorityPostingReconciliation": "DIFFERENCES_REPORTED_NOT_REWRITTEN",
+      "asOfRestated": "PASS",
+      "finalRestated": "BLOCKED"
+    },
+    "timeIntegrity": {
+      "authorityStartMonth": "2017-06",
+      "authorityDataAsOf": "2026-05",
+      "labelMaturityCutoff": "2025-12",
+      "futureLeakageRiskFound": false,
+      "originAfterCutoffRowsUsed": 0
+    },
+    "frozenArtifacts": {
+      "artifactCount": 6,
+      "rowCount": 716801,
+      "allGitIgnored": true,
+      "allDigestsMatched": true,
+      "predictionRowsModified": 0
+    },
+    "deterministicExecution": {
+      "executionCount": 2,
+      "comparedFileCount": 7,
+      "byteIdentical": true
+    },
+    "authorizationCounters": {
+      "privateAuthorityRowReadCount": 190663,
+      "frozenPredictionRowReadCount": 716801,
+      "modelExecutionCount": 0,
+      "trainingCount": 0,
+      "fittingCount": 0,
+      "tuningCount": 0,
+      "selectionCount": 0,
+      "predictionRowsGenerated": 0,
+      "predictionRowsModified": 0,
+      "productionChangeCount": 0
+    },
+    "publicPrivacy": {
+      "aggregateOnly": true,
+      "containsRowLevelIdentity": false,
+      "containsPrivatePath": false
+    }
+  },
+  "groups": {
+    "CG-WORK-SS-CURRENT-7083": {
+      "postingComparabilityGroupId": "CG-WORK-SS-CURRENT-7083::POSTING_TIME",
+      "restatedComparabilityGroupId": "CG-WORK-SS-CURRENT-7083::REVERSAL_RESTATED",
+      "crossActualDefinitionWinnerAllowed": false,
+      "fallbackId": "M2-WORK-OA03",
+      "models": {
+        "M2-WORK-OA03": {
+          "status": "PARTIAL_COMPLETE_SCOPES_LABEL_ONLY_RESCORE",
+          "stableModelId": "M2-WORK-OA03",
+          "variantType": "operational_fallback",
+          "originalCaseCount": 7083,
+          "sameCaseCount": 7019,
+          "blockedCaseCount": 64,
+          "blockedStatusCounts": {
+            "BLOCKED_UNRESOLVED_REVERSAL": 64
+          },
+          "postingAuthorityMismatchCount": 26,
+          "postingTime": {
+            "actualDefinitionId": "M2-ACTUAL-POSTING-TIME-01",
+            "point": {
+              "status": "DEFINED",
+              "workCount": 755,
+              "caseCount": 7019,
+              "actualAbsoluteTotal": 71375204.44969998,
+              "absoluteErrorTotal": 35427329.0264772,
+              "signedErrorTotal": 5691229.779113526,
+              "wape": 0.4963534507483448,
+              "signedBias": 0.0797367912707597,
+              "absoluteBias": 0.0797367912707597,
+              "mae": 5047.347061757687,
+              "medianAbsoluteError": 246.79444996360002
+            },
+            "occurrence": {
+              "status": "NOT_COMPUTABLE_OCCURRENCE_PROBABILITY_MISSING"
+            },
+            "conditionalAmount": {
+              "status": "NOT_COMPUTABLE_CONDITIONAL_AMOUNT_PREDICTION_MISSING"
+            },
+            "reversal": {
+              "status": "NOT_COMPUTABLE_REVERSAL_PREDICTION_MISSING",
+              "occurrence": {},
+              "amount": {},
+              "calibration": {}
+            },
+            "topRevenueAttribution": {
+              "status": "POSTHOC_FUTURE_ACTUAL_ATTRIBUTION_ONLY",
+              "futureActualUsed": true,
+              "allowedForFittingSelectionOrGate": false
+            }
+          },
+          "reversalRestated": {
+            "actualDefinitionId": "M2-ACTUAL-REVERSAL-RESTATEMENT-01",
+            "point": {
+              "status": "DEFINED",
+              "workCount": 755,
+              "caseCount": 7019,
+              "actualAbsoluteTotal": 70550709.80329996,
+              "absoluteErrorTotal": 34688665.14921583,
+              "signedErrorTotal": 6514747.837913539,
+              "wape": 0.49168414103742003,
+              "signedBias": 0.09234135072598258,
+              "absoluteBias": 0.09234135072598258,
+              "mae": 4942.109296084319,
+              "medianAbsoluteError": 247.75162426532043
+            },
+            "occurrence": {
+              "status": "NOT_COMPUTABLE_OCCURRENCE_PROBABILITY_MISSING"
+            },
+            "conditionalAmount": {
+              "status": "NOT_COMPUTABLE_CONDITIONAL_AMOUNT_PREDICTION_MISSING"
+            },
+            "reversal": {
+              "status": "NOT_COMPUTABLE_REVERSAL_PREDICTION_MISSING",
+              "occurrence": {},
+              "amount": {},
+              "calibration": {}
+            },
+            "topRevenueAttribution": {
+              "status": "POSTHOC_FUTURE_ACTUAL_ATTRIBUTION_ONLY",
+              "futureActualUsed": true,
+              "allowedForFittingSelectionOrGate": false
+            }
+          },
+          "pairedActualDefinitionImpact": {
+            "status": "PAIRED_LABEL_DEFINITION_IMPACT_NOT_MODEL_IMPROVEMENT",
+            "sameCaseCount": 7019,
+            "postingTimeWape": 0.4963534507483448,
+            "postingTimeSignedBias": 0.0797367912707597,
+            "restatedWape": 0.49168414103742003,
+            "restatedSignedBias": 0.09234135072598258,
+            "absoluteWapeChange": -0.004669309710924774,
+            "relativeWapeChange": -0.009407227256876927,
+            "affectedCaseCount": 119,
+            "unaffectedCaseCount": 6900
+          }
+        },
+        "M2-WORK-CCR01": {
+          "status": "PARTIAL_COMPLETE_SCOPES_LABEL_ONLY_RESCORE",
+          "stableModelId": "M2-WORK-CCR01",
+          "variantType": "raw_candidate",
+          "originalCaseCount": 7083,
+          "sameCaseCount": 7019,
+          "blockedCaseCount": 64,
+          "blockedStatusCounts": {
+            "BLOCKED_UNRESOLVED_REVERSAL": 64
+          },
+          "postingAuthorityMismatchCount": 26,
+          "postingTime": {
+            "actualDefinitionId": "M2-ACTUAL-POSTING-TIME-01",
+            "point": {
+              "status": "DEFINED",
+              "workCount": 755,
+              "caseCount": 7019,
+              "actualAbsoluteTotal": 71375204.44969998,
+              "absoluteErrorTotal": 35417981.191117965,
+              "signedErrorTotal": 5935353.139012053,
+              "wape": 0.496222483202524,
+              "signedBias": 0.08315707373132437,
+              "absoluteBias": 0.08315707373132437,
+              "mae": 5046.01527156546,
+              "medianAbsoluteError": 250.84539167999992
+            },
+            "occurrence": {
+              "status": "NOT_COMPUTABLE_OCCURRENCE_PROBABILITY_MISSING"
+            },
+            "conditionalAmount": {
+              "status": "NOT_COMPUTABLE_CONDITIONAL_AMOUNT_PREDICTION_MISSING"
+            },
+            "reversal": {
+              "status": "NOT_COMPUTABLE_REVERSAL_PREDICTION_MISSING",
+              "occurrence": {},
+              "amount": {},
+              "calibration": {}
+            },
+            "topRevenueAttribution": {
+              "status": "POSTHOC_FUTURE_ACTUAL_ATTRIBUTION_ONLY",
+              "futureActualUsed": true,
+              "allowedForFittingSelectionOrGate": false
+            }
+          },
+          "reversalRestated": {
+            "actualDefinitionId": "M2-ACTUAL-REVERSAL-RESTATEMENT-01",
+            "point": {
+              "status": "DEFINED",
+              "workCount": 755,
+              "caseCount": 7019,
+              "actualAbsoluteTotal": 70550709.80329996,
+              "absoluteErrorTotal": 34629565.155308686,
+              "signedErrorTotal": 6758871.197812065,
+              "wape": 0.49084644579562986,
+              "signedBias": 0.09580160450059601,
+              "absoluteBias": 0.09580160450059601,
+              "mae": 4933.689294102962,
+              "medianAbsoluteError": 251.45821001060017
+            },
+            "occurrence": {
+              "status": "NOT_COMPUTABLE_OCCURRENCE_PROBABILITY_MISSING"
+            },
+            "conditionalAmount": {
+              "status": "NOT_COMPUTABLE_CONDITIONAL_AMOUNT_PREDICTION_MISSING"
+            },
+            "reversal": {
+              "status": "NOT_COMPUTABLE_REVERSAL_PREDICTION_MISSING",
+              "occurrence": {},
+              "amount": {},
+              "calibration": {}
+            },
+            "topRevenueAttribution": {
+              "status": "POSTHOC_FUTURE_ACTUAL_ATTRIBUTION_ONLY",
+              "futureActualUsed": true,
+              "allowedForFittingSelectionOrGate": false
+            }
+          },
+          "pairedActualDefinitionImpact": {
+            "status": "PAIRED_LABEL_DEFINITION_IMPACT_NOT_MODEL_IMPROVEMENT",
+            "sameCaseCount": 7019,
+            "postingTimeWape": 0.496222483202524,
+            "postingTimeSignedBias": 0.08315707373132437,
+            "restatedWape": 0.49084644579562986,
+            "restatedSignedBias": 0.09580160450059601,
+            "absoluteWapeChange": -0.00537603740689413,
+            "relativeWapeChange": -0.010833925484791118,
+            "affectedCaseCount": 119,
+            "unaffectedCaseCount": 6900
+          }
+        }
+      },
+      "pairedAgainstFallback": {
+        "M2-WORK-CCR01": {
+          "versus": "M2-WORK-OA03",
+          "postingTime": {
+            "caseCount": 7019,
+            "meanPairedAbsoluteErrorImprovement": 1.3317901922352495,
+            "medianPairedAbsoluteErrorImprovement": 0,
+            "absoluteWapeFva": 0.00013096754582081482,
+            "relativeWapeFva": 0.0002638594445618647
+          },
+          "reversalRestated": {
+            "caseCount": 7019,
+            "meanPairedAbsoluteErrorImprovement": 8.420001981362926,
+            "medianPairedAbsoluteErrorImprovement": 0,
+            "absoluteWapeFva": 0.0008376952417901706,
+            "relativeWapeFva": 0.0017037263801568114
+          }
+        }
+      }
+    },
+    "CG-WORK-SS-HA-PRIMARY-12039-H36": {
+      "postingComparabilityGroupId": "CG-WORK-SS-HA-PRIMARY-12039-H36::POSTING_TIME",
+      "restatedComparabilityGroupId": "CG-WORK-SS-HA-PRIMARY-12039-H36::REVERSAL_RESTATED",
+      "crossActualDefinitionWinnerAllowed": false,
+      "fallbackId": "M2-WORK-LG01",
+      "models": {
+        "M2-WORK-MAN01": {
+          "status": "PARTIAL_COMPLETE_SCOPES_LABEL_ONLY_RESCORE",
+          "stableModelId": "M2-WORK-MAN01",
+          "variantType": "research_comparator",
+          "originalCaseCount": 12039,
+          "sameCaseCount": 11994,
+          "blockedCaseCount": 45,
+          "blockedStatusCounts": {
+            "BLOCKED_UNRESOLVED_REVERSAL": 45
+          },
+          "postingAuthorityMismatchCount": 26,
+          "postingTime": {
+            "actualDefinitionId": "M2-ACTUAL-POSTING-TIME-01",
+            "point": {
+              "status": "DEFINED",
+              "workCount": 1121,
+              "caseCount": 11994,
+              "actualAbsoluteTotal": 446521189.01770055,
+              "absoluteErrorTotal": 237552807.42352593,
+              "signedErrorTotal": -180740922.31559032,
+              "wape": 0.5320079164577095,
+              "signedBias": -0.4047756898462115,
+              "absoluteBias": 0.4047756898462115,
+              "mae": 19805.970270429043,
+              "medianAbsoluteError": 605.3575000000001
+            },
+            "occurrence": {
+              "status": "NOT_COMPUTABLE_OCCURRENCE_PROBABILITY_MISSING"
+            },
+            "conditionalAmount": {
+              "status": "NOT_COMPUTABLE_CONDITIONAL_AMOUNT_PREDICTION_MISSING"
+            },
+            "reversal": {
+              "status": "NOT_COMPUTABLE_REVERSAL_PREDICTION_MISSING",
+              "occurrence": {},
+              "amount": {},
+              "calibration": {}
+            },
+            "topRevenueAttribution": {
+              "status": "POSTHOC_FUTURE_ACTUAL_ATTRIBUTION_ONLY",
+              "futureActualUsed": true,
+              "allowedForFittingSelectionOrGate": false
+            }
+          },
+          "reversalRestated": {
+            "actualDefinitionId": "M2-ACTUAL-REVERSAL-RESTATEMENT-01",
+            "point": {
+              "status": "DEFINED",
+              "workCount": 1121,
+              "caseCount": 11994,
+              "actualAbsoluteTotal": 445425787.0222002,
+              "absoluteErrorTotal": 237907214.73832586,
+              "signedErrorTotal": -179645849.89449033,
+              "wape": 0.5341119029699744,
+              "signedBias": -0.40331263956555957,
+              "absoluteBias": 0.40331263956555957,
+              "mae": 19835.518987687665,
+              "medianAbsoluteError": 607.5460499999999
+            },
+            "occurrence": {
+              "status": "NOT_COMPUTABLE_OCCURRENCE_PROBABILITY_MISSING"
+            },
+            "conditionalAmount": {
+              "status": "NOT_COMPUTABLE_CONDITIONAL_AMOUNT_PREDICTION_MISSING"
+            },
+            "reversal": {
+              "status": "NOT_COMPUTABLE_REVERSAL_PREDICTION_MISSING",
+              "occurrence": {},
+              "amount": {},
+              "calibration": {}
+            },
+            "topRevenueAttribution": {
+              "status": "POSTHOC_FUTURE_ACTUAL_ATTRIBUTION_ONLY",
+              "futureActualUsed": true,
+              "allowedForFittingSelectionOrGate": false
+            }
+          },
+          "pairedActualDefinitionImpact": {
+            "status": "PAIRED_LABEL_DEFINITION_IMPACT_NOT_MODEL_IMPROVEMENT",
+            "sameCaseCount": 11994,
+            "postingTimeWape": 0.5320079164577095,
+            "postingTimeSignedBias": -0.4047756898462115,
+            "restatedWape": 0.5341119029699744,
+            "restatedSignedBias": -0.40331263956555957,
+            "absoluteWapeChange": 0.002103986512264844,
+            "relativeWapeChange": 0.003954803015477459,
+            "affectedCaseCount": 140,
+            "unaffectedCaseCount": 11854
+          }
+        },
+        "M2-WORK-OR01": {
+          "status": "PARTIAL_COMPLETE_SCOPES_LABEL_ONLY_RESCORE",
+          "stableModelId": "M2-WORK-OR01",
+          "variantType": "raw_candidate",
+          "originalCaseCount": 12039,
+          "sameCaseCount": 11994,
+          "blockedCaseCount": 45,
+          "blockedStatusCounts": {
+            "BLOCKED_UNRESOLVED_REVERSAL": 45
+          },
+          "postingAuthorityMismatchCount": 26,
+          "postingTime": {
+            "actualDefinitionId": "M2-ACTUAL-POSTING-TIME-01",
+            "point": {
+              "status": "DEFINED",
+              "workCount": 1121,
+              "caseCount": 11994,
+              "actualAbsoluteTotal": 446521189.01770055,
+              "absoluteErrorTotal": 197735202.6491792,
+              "signedErrorTotal": -64369100.92373502,
+              "wape": 0.44283498188333625,
+              "signedBias": -0.14415687879300923,
+              "absoluteBias": 0.14415687879300923,
+              "mae": 16486.176642419476,
+              "medianAbsoluteError": 754.374016999642
+            },
+            "occurrence": {
+              "status": "NOT_COMPUTABLE_OCCURRENCE_PROBABILITY_MISSING"
+            },
+            "conditionalAmount": {
+              "status": "NOT_COMPUTABLE_CONDITIONAL_AMOUNT_PREDICTION_MISSING"
+            },
+            "reversal": {
+              "status": "NOT_COMPUTABLE_REVERSAL_PREDICTION_MISSING",
+              "occurrence": {},
+              "amount": {},
+              "calibration": {}
+            },
+            "topRevenueAttribution": {
+              "status": "POSTHOC_FUTURE_ACTUAL_ATTRIBUTION_ONLY",
+              "futureActualUsed": true,
+              "allowedForFittingSelectionOrGate": false
+            }
+          },
+          "reversalRestated": {
+            "actualDefinitionId": "M2-ACTUAL-REVERSAL-RESTATEMENT-01",
+            "point": {
+              "status": "DEFINED",
+              "workCount": 1121,
+              "caseCount": 11994,
+              "actualAbsoluteTotal": 445425787.0222002,
+              "absoluteErrorTotal": 198523752.104886,
+              "signedErrorTotal": -63274028.50263499,
+              "wape": 0.44569433986315543,
+              "signedBias": -0.14205290835458834,
+              "absoluteBias": 0.14205290835458834,
+              "mae": 16551.92196972536,
+              "medianAbsoluteError": 754.880786435556
+            },
+            "occurrence": {
+              "status": "NOT_COMPUTABLE_OCCURRENCE_PROBABILITY_MISSING"
+            },
+            "conditionalAmount": {
+              "status": "NOT_COMPUTABLE_CONDITIONAL_AMOUNT_PREDICTION_MISSING"
+            },
+            "reversal": {
+              "status": "NOT_COMPUTABLE_REVERSAL_PREDICTION_MISSING",
+              "occurrence": {},
+              "amount": {},
+              "calibration": {}
+            },
+            "topRevenueAttribution": {
+              "status": "POSTHOC_FUTURE_ACTUAL_ATTRIBUTION_ONLY",
+              "futureActualUsed": true,
+              "allowedForFittingSelectionOrGate": false
+            }
+          },
+          "pairedActualDefinitionImpact": {
+            "status": "PAIRED_LABEL_DEFINITION_IMPACT_NOT_MODEL_IMPROVEMENT",
+            "sameCaseCount": 11994,
+            "postingTimeWape": 0.44283498188333625,
+            "postingTimeSignedBias": -0.14415687879300923,
+            "restatedWape": 0.44569433986315543,
+            "restatedSignedBias": -0.14205290835458834,
+            "absoluteWapeChange": 0.002859357979819177,
+            "relativeWapeChange": 0.0064569379041794495,
+            "affectedCaseCount": 140,
+            "unaffectedCaseCount": 11854
+          }
+        },
+        "M2-WORK-LG01::historical_original": {
+          "status": "PARTIAL_COMPLETE_SCOPES_LABEL_ONLY_RESCORE",
+          "stableModelId": "M2-WORK-LG01",
+          "variantType": "historical_original_baseline",
+          "originalCaseCount": 12039,
+          "sameCaseCount": 11994,
+          "blockedCaseCount": 45,
+          "blockedStatusCounts": {
+            "BLOCKED_UNRESOLVED_REVERSAL": 45
+          },
+          "postingAuthorityMismatchCount": 26,
+          "postingTime": {
+            "actualDefinitionId": "M2-ACTUAL-POSTING-TIME-01",
+            "point": {
+              "status": "DEFINED",
+              "workCount": 1121,
+              "caseCount": 11994,
+              "actualAbsoluteTotal": 446521189.01770055,
+              "absoluteErrorTotal": 197362815.96902418,
+              "signedErrorTotal": -54500758.346694574,
+              "wape": 0.44200100873869286,
+              "signedBias": -0.12205637646578539,
+              "absoluteBias": 0.12205637646578539,
+              "mae": 16455.128895199614,
+              "medianAbsoluteError": 757.2190102066199
+            },
+            "occurrence": {
+              "status": "NOT_COMPUTABLE_OCCURRENCE_PROBABILITY_MISSING"
+            },
+            "conditionalAmount": {
+              "status": "NOT_COMPUTABLE_CONDITIONAL_AMOUNT_PREDICTION_MISSING"
+            },
+            "reversal": {
+              "status": "NOT_COMPUTABLE_REVERSAL_PREDICTION_MISSING",
+              "occurrence": {},
+              "amount": {},
+              "calibration": {}
+            },
+            "topRevenueAttribution": {
+              "status": "POSTHOC_FUTURE_ACTUAL_ATTRIBUTION_ONLY",
+              "futureActualUsed": true,
+              "allowedForFittingSelectionOrGate": false
+            }
+          },
+          "reversalRestated": {
+            "actualDefinitionId": "M2-ACTUAL-REVERSAL-RESTATEMENT-01",
+            "point": {
+              "status": "DEFINED",
+              "workCount": 1121,
+              "caseCount": 11994,
+              "actualAbsoluteTotal": 445425787.0222002,
+              "absoluteErrorTotal": 198180370.7612272,
+              "signedErrorTotal": -53405685.9255946,
+              "wape": 0.44492343401606826,
+              "signedBias": -0.11989805593121809,
+              "absoluteBias": 0.11989805593121809,
+              "mae": 16523.292543040454,
+              "medianAbsoluteError": 759.4584430721895
+            },
+            "occurrence": {
+              "status": "NOT_COMPUTABLE_OCCURRENCE_PROBABILITY_MISSING"
+            },
+            "conditionalAmount": {
+              "status": "NOT_COMPUTABLE_CONDITIONAL_AMOUNT_PREDICTION_MISSING"
+            },
+            "reversal": {
+              "status": "NOT_COMPUTABLE_REVERSAL_PREDICTION_MISSING",
+              "occurrence": {},
+              "amount": {},
+              "calibration": {}
+            },
+            "topRevenueAttribution": {
+              "status": "POSTHOC_FUTURE_ACTUAL_ATTRIBUTION_ONLY",
+              "futureActualUsed": true,
+              "allowedForFittingSelectionOrGate": false
+            }
+          },
+          "pairedActualDefinitionImpact": {
+            "status": "PAIRED_LABEL_DEFINITION_IMPACT_NOT_MODEL_IMPROVEMENT",
+            "sameCaseCount": 11994,
+            "postingTimeWape": 0.44200100873869286,
+            "postingTimeSignedBias": -0.12205637646578539,
+            "restatedWape": 0.44492343401606826,
+            "restatedSignedBias": -0.11989805593121809,
+            "absoluteWapeChange": 0.0029224252773754067,
+            "relativeWapeChange": 0.006611806804954767,
+            "affectedCaseCount": 140,
+            "unaffectedCaseCount": 11854
+          }
+        },
+        "M2-WORK-LG01": {
+          "status": "PARTIAL_COMPLETE_SCOPES_LABEL_ONLY_RESCORE",
+          "stableModelId": "M2-WORK-LG01",
+          "variantType": "research_baseline",
+          "originalCaseCount": 12039,
+          "sameCaseCount": 11994,
+          "blockedCaseCount": 45,
+          "blockedStatusCounts": {
+            "BLOCKED_UNRESOLVED_REVERSAL": 45
+          },
+          "postingAuthorityMismatchCount": 26,
+          "postingTime": {
+            "actualDefinitionId": "M2-ACTUAL-POSTING-TIME-01",
+            "point": {
+              "status": "DEFINED",
+              "workCount": 1121,
+              "caseCount": 11994,
+              "actualAbsoluteTotal": 446521189.01769894,
+              "absoluteErrorTotal": 197361574.17867693,
+              "signedErrorTotal": -54547895.472937696,
+              "wape": 0.44199822770527925,
+              "signedBias": -0.1221619417276423,
+              "absoluteBias": 0.1221619417276423,
+              "mae": 16455.025360903528,
+              "medianAbsoluteError": 757.0586589208515
+            },
+            "occurrence": {
+              "status": "NOT_COMPUTABLE_OCCURRENCE_PROBABILITY_MISSING"
+            },
+            "conditionalAmount": {
+              "status": "NOT_COMPUTABLE_CONDITIONAL_AMOUNT_PREDICTION_MISSING"
+            },
+            "reversal": {
+              "status": "NOT_COMPUTABLE_REVERSAL_PREDICTION_MISSING",
+              "occurrence": {},
+              "amount": {},
+              "calibration": {}
+            },
+            "topRevenueAttribution": {
+              "status": "POSTHOC_FUTURE_ACTUAL_ATTRIBUTION_ONLY",
+              "futureActualUsed": true,
+              "allowedForFittingSelectionOrGate": false
+            }
+          },
+          "reversalRestated": {
+            "actualDefinitionId": "M2-ACTUAL-REVERSAL-RESTATEMENT-01",
+            "point": {
+              "status": "DEFINED",
+              "workCount": 1121,
+              "caseCount": 11994,
+              "actualAbsoluteTotal": 445425787.0221991,
+              "absoluteErrorTotal": 198179051.54189962,
+              "signedErrorTotal": -53452823.051837705,
+              "wape": 0.44492047231208637,
+              "signedBias": -0.12000388080175009,
+              "absoluteBias": 0.12000388080175009,
+              "mae": 16523.18255310152,
+              "medianAbsoluteError": 759.469104207413
+            },
+            "occurrence": {
+              "status": "NOT_COMPUTABLE_OCCURRENCE_PROBABILITY_MISSING"
+            },
+            "conditionalAmount": {
+              "status": "NOT_COMPUTABLE_CONDITIONAL_AMOUNT_PREDICTION_MISSING"
+            },
+            "reversal": {
+              "status": "NOT_COMPUTABLE_REVERSAL_PREDICTION_MISSING",
+              "occurrence": {},
+              "amount": {},
+              "calibration": {}
+            },
+            "topRevenueAttribution": {
+              "status": "POSTHOC_FUTURE_ACTUAL_ATTRIBUTION_ONLY",
+              "futureActualUsed": true,
+              "allowedForFittingSelectionOrGate": false
+            }
+          },
+          "pairedActualDefinitionImpact": {
+            "status": "PAIRED_LABEL_DEFINITION_IMPACT_NOT_MODEL_IMPROVEMENT",
+            "sameCaseCount": 11994,
+            "postingTimeWape": 0.44199822770527925,
+            "postingTimeSignedBias": -0.1221619417276423,
+            "restatedWape": 0.44492047231208637,
+            "restatedSignedBias": -0.12000388080175009,
+            "absoluteWapeChange": 0.002922244606807123,
+            "relativeWapeChange": 0.006611439647571826,
+            "affectedCaseCount": 140,
+            "unaffectedCaseCount": 11854
+          }
+        },
+        "M2-WORK-TSB01": {
+          "status": "PARTIAL_COMPLETE_SCOPES_LABEL_ONLY_RESCORE",
+          "stableModelId": "M2-WORK-TSB01",
+          "variantType": "raw_candidate",
+          "originalCaseCount": 12039,
+          "sameCaseCount": 11994,
+          "blockedCaseCount": 45,
+          "blockedStatusCounts": {
+            "BLOCKED_UNRESOLVED_REVERSAL": 45
+          },
+          "postingAuthorityMismatchCount": 26,
+          "postingTime": {
+            "actualDefinitionId": "M2-ACTUAL-POSTING-TIME-01",
+            "point": {
+              "status": "DEFINED",
+              "workCount": 1121,
+              "caseCount": 11994,
+              "actualAbsoluteTotal": 446521189.01769894,
+              "absoluteErrorTotal": 244556005.81209084,
+              "signedErrorTotal": 100297583.16116264,
+              "wape": 0.5476918270106937,
+              "signedBias": 0.22461998585511048,
+              "absoluteBias": 0.22461998585511048,
+              "mae": 20389.862082048596,
+              "medianAbsoluteError": 1151.790090693864
+            },
+            "occurrence": {
+              "status": "DEFINED",
+              "caseCount": 11994,
+              "prevalence": 0.9699849924962481,
+              "brier": 0.029480662997572547,
+              "logLoss": 0.6692704441018037,
+              "prAucTrapezoidal": 0.9893235384528671,
+              "averagePrecision": 0.9800137699769298,
+              "rocAucAuxiliary": 0.6668822703569995
+            },
+            "conditionalAmount": {
+              "status": "NOT_COMPUTABLE_CONDITIONAL_AMOUNT_PREDICTION_MISSING"
+            },
+            "reversal": {
+              "status": "NOT_COMPUTABLE_REVERSAL_PREDICTION_MISSING",
+              "occurrence": {},
+              "amount": {},
+              "calibration": {}
+            },
+            "topRevenueAttribution": {
+              "status": "POSTHOC_FUTURE_ACTUAL_ATTRIBUTION_ONLY",
+              "futureActualUsed": true,
+              "allowedForFittingSelectionOrGate": false
+            }
+          },
+          "reversalRestated": {
+            "actualDefinitionId": "M2-ACTUAL-REVERSAL-RESTATEMENT-01",
+            "point": {
+              "status": "DEFINED",
+              "workCount": 1121,
+              "caseCount": 11994,
+              "actualAbsoluteTotal": 445425787.0221991,
+              "absoluteErrorTotal": 245657083.39559078,
+              "signedErrorTotal": 101392655.58226267,
+              "wape": 0.5515106905639204,
+              "signedBias": 0.22763086138344626,
+              "absoluteBias": 0.22763086138344626,
+              "mae": 20481.664448523494,
+              "medianAbsoluteError": 1152.4533850996613
+            },
+            "occurrence": {
+              "status": "DEFINED",
+              "caseCount": 11994,
+              "prevalence": 0.9694847423711856,
+              "brier": 0.029980913122634067,
+              "logLoss": 0.68309287693716,
+              "prAucTrapezoidal": 0.9890402534710804,
+              "averagePrecision": 0.9794780452304863,
+              "rocAucAuxiliary": 0.6636573956588675
+            },
+            "conditionalAmount": {
+              "status": "NOT_COMPUTABLE_CONDITIONAL_AMOUNT_PREDICTION_MISSING"
+            },
+            "reversal": {
+              "status": "NOT_COMPUTABLE_REVERSAL_PREDICTION_MISSING",
+              "occurrence": {},
+              "amount": {},
+              "calibration": {}
+            },
+            "topRevenueAttribution": {
+              "status": "POSTHOC_FUTURE_ACTUAL_ATTRIBUTION_ONLY",
+              "futureActualUsed": true,
+              "allowedForFittingSelectionOrGate": false
+            }
+          },
+          "pairedActualDefinitionImpact": {
+            "status": "PAIRED_LABEL_DEFINITION_IMPACT_NOT_MODEL_IMPROVEMENT",
+            "sameCaseCount": 11994,
+            "postingTimeWape": 0.5476918270106937,
+            "postingTimeSignedBias": 0.22461998585511048,
+            "restatedWape": 0.5515106905639204,
+            "restatedSignedBias": 0.22763086138344626,
+            "absoluteWapeChange": 0.0038188635532266924,
+            "relativeWapeChange": 0.00697265024762217,
+            "affectedCaseCount": 140,
+            "unaffectedCaseCount": 11854
+          }
+        },
+        "M2-WORK-TSBB01": {
+          "status": "PARTIAL_COMPLETE_SCOPES_LABEL_ONLY_RESCORE",
+          "stableModelId": "M2-WORK-TSBB01",
+          "variantType": "raw_candidate",
+          "originalCaseCount": 12039,
+          "sameCaseCount": 11994,
+          "blockedCaseCount": 45,
+          "blockedStatusCounts": {
+            "BLOCKED_UNRESOLVED_REVERSAL": 45
+          },
+          "postingAuthorityMismatchCount": 26,
+          "postingTime": {
+            "actualDefinitionId": "M2-ACTUAL-POSTING-TIME-01",
+            "point": {
+              "status": "DEFINED",
+              "workCount": 1121,
+              "caseCount": 11994,
+              "actualAbsoluteTotal": 446521189.01769894,
+              "absoluteErrorTotal": 203494625.6344024,
+              "signedErrorTotal": 18206426.239467595,
+              "wape": 0.4557334134177816,
+              "signedBias": 0.04077393567709491,
+              "absoluteBias": 0.04077393567709491,
+              "mae": 16966.368653860463,
+              "medianAbsoluteError": 930.4191604423688
+            },
+            "occurrence": {
+              "status": "NOT_COMPUTABLE_OCCURRENCE_PROBABILITY_MISSING"
+            },
+            "conditionalAmount": {
+              "status": "NOT_COMPUTABLE_CONDITIONAL_AMOUNT_PREDICTION_MISSING"
+            },
+            "reversal": {
+              "status": "NOT_COMPUTABLE_REVERSAL_PREDICTION_MISSING",
+              "occurrence": {},
+              "amount": {},
+              "calibration": {}
+            },
+            "topRevenueAttribution": {
+              "status": "POSTHOC_FUTURE_ACTUAL_ATTRIBUTION_ONLY",
+              "futureActualUsed": true,
+              "allowedForFittingSelectionOrGate": false
+            }
+          },
+          "reversalRestated": {
+            "actualDefinitionId": "M2-ACTUAL-REVERSAL-RESTATEMENT-01",
+            "point": {
+              "status": "DEFINED",
+              "workCount": 1121,
+              "caseCount": 11994,
+              "actualAbsoluteTotal": 445425787.0221991,
+              "absoluteErrorTotal": 204595872.07850245,
+              "signedErrorTotal": 19301498.660567626,
+              "wape": 0.4593265096892691,
+              "signedBias": 0.04333269249991959,
+              "absoluteBias": 0.04333269249991959,
+              "mae": 17058.185099091417,
+              "medianAbsoluteError": 934.6880505363063
+            },
+            "occurrence": {
+              "status": "NOT_COMPUTABLE_OCCURRENCE_PROBABILITY_MISSING"
+            },
+            "conditionalAmount": {
+              "status": "NOT_COMPUTABLE_CONDITIONAL_AMOUNT_PREDICTION_MISSING"
+            },
+            "reversal": {
+              "status": "NOT_COMPUTABLE_REVERSAL_PREDICTION_MISSING",
+              "occurrence": {},
+              "amount": {},
+              "calibration": {}
+            },
+            "topRevenueAttribution": {
+              "status": "POSTHOC_FUTURE_ACTUAL_ATTRIBUTION_ONLY",
+              "futureActualUsed": true,
+              "allowedForFittingSelectionOrGate": false
+            }
+          },
+          "pairedActualDefinitionImpact": {
+            "status": "PAIRED_LABEL_DEFINITION_IMPACT_NOT_MODEL_IMPROVEMENT",
+            "sameCaseCount": 11994,
+            "postingTimeWape": 0.4557334134177816,
+            "postingTimeSignedBias": 0.04077393567709491,
+            "restatedWape": 0.4593265096892691,
+            "restatedSignedBias": 0.04333269249991959,
+            "absoluteWapeChange": 0.0035930962714874615,
+            "relativeWapeChange": 0.007884206348928835,
+            "affectedCaseCount": 140,
+            "unaffectedCaseCount": 11854
+          }
+        },
+        "M2-WORK-TSBB01::selected_pipeline": {
+          "status": "PARTIAL_COMPLETE_SCOPES_LABEL_ONLY_RESCORE",
+          "stableModelId": "M2-WORK-TSBB01",
+          "variantType": "selected_pipeline",
+          "originalCaseCount": 12039,
+          "sameCaseCount": 11994,
+          "blockedCaseCount": 45,
+          "blockedStatusCounts": {
+            "BLOCKED_UNRESOLVED_REVERSAL": 45
+          },
+          "postingAuthorityMismatchCount": 26,
+          "postingTime": {
+            "actualDefinitionId": "M2-ACTUAL-POSTING-TIME-01",
+            "point": {
+              "status": "DEFINED",
+              "workCount": 1121,
+              "caseCount": 11994,
+              "actualAbsoluteTotal": 446521189.01769894,
+              "absoluteErrorTotal": 197361574.17867693,
+              "signedErrorTotal": -54547895.472937696,
+              "wape": 0.44199822770527925,
+              "signedBias": -0.1221619417276423,
+              "absoluteBias": 0.1221619417276423,
+              "mae": 16455.025360903528,
+              "medianAbsoluteError": 757.0586589208515
+            },
+            "occurrence": {
+              "status": "NOT_COMPUTABLE_OCCURRENCE_PROBABILITY_MISSING"
+            },
+            "conditionalAmount": {
+              "status": "NOT_COMPUTABLE_CONDITIONAL_AMOUNT_PREDICTION_MISSING"
+            },
+            "reversal": {
+              "status": "NOT_COMPUTABLE_REVERSAL_PREDICTION_MISSING",
+              "occurrence": {},
+              "amount": {},
+              "calibration": {}
+            },
+            "topRevenueAttribution": {
+              "status": "POSTHOC_FUTURE_ACTUAL_ATTRIBUTION_ONLY",
+              "futureActualUsed": true,
+              "allowedForFittingSelectionOrGate": false
+            }
+          },
+          "reversalRestated": {
+            "actualDefinitionId": "M2-ACTUAL-REVERSAL-RESTATEMENT-01",
+            "point": {
+              "status": "DEFINED",
+              "workCount": 1121,
+              "caseCount": 11994,
+              "actualAbsoluteTotal": 445425787.0221991,
+              "absoluteErrorTotal": 198179051.54189962,
+              "signedErrorTotal": -53452823.051837705,
+              "wape": 0.44492047231208637,
+              "signedBias": -0.12000388080175009,
+              "absoluteBias": 0.12000388080175009,
+              "mae": 16523.18255310152,
+              "medianAbsoluteError": 759.469104207413
+            },
+            "occurrence": {
+              "status": "NOT_COMPUTABLE_OCCURRENCE_PROBABILITY_MISSING"
+            },
+            "conditionalAmount": {
+              "status": "NOT_COMPUTABLE_CONDITIONAL_AMOUNT_PREDICTION_MISSING"
+            },
+            "reversal": {
+              "status": "NOT_COMPUTABLE_REVERSAL_PREDICTION_MISSING",
+              "occurrence": {},
+              "amount": {},
+              "calibration": {}
+            },
+            "topRevenueAttribution": {
+              "status": "POSTHOC_FUTURE_ACTUAL_ATTRIBUTION_ONLY",
+              "futureActualUsed": true,
+              "allowedForFittingSelectionOrGate": false
+            }
+          },
+          "pairedActualDefinitionImpact": {
+            "status": "PAIRED_LABEL_DEFINITION_IMPACT_NOT_MODEL_IMPROVEMENT",
+            "sameCaseCount": 11994,
+            "postingTimeWape": 0.44199822770527925,
+            "postingTimeSignedBias": -0.1221619417276423,
+            "restatedWape": 0.44492047231208637,
+            "restatedSignedBias": -0.12000388080175009,
+            "absoluteWapeChange": 0.002922244606807123,
+            "relativeWapeChange": 0.006611439647571826,
+            "affectedCaseCount": 140,
+            "unaffectedCaseCount": 11854
+          }
+        },
+        "M2-WORK-LC01": {
+          "status": "PARTIAL_COMPLETE_SCOPES_LABEL_ONLY_RESCORE",
+          "stableModelId": "M2-WORK-LC01",
+          "variantType": "raw_candidate",
+          "originalCaseCount": 12039,
+          "sameCaseCount": 11994,
+          "blockedCaseCount": 45,
+          "blockedStatusCounts": {
+            "BLOCKED_UNRESOLVED_REVERSAL": 45
+          },
+          "postingAuthorityMismatchCount": 26,
+          "postingTime": {
+            "actualDefinitionId": "M2-ACTUAL-POSTING-TIME-01",
+            "point": {
+              "status": "DEFINED",
+              "workCount": 1121,
+              "caseCount": 11994,
+              "actualAbsoluteTotal": 446521189.01770055,
+              "absoluteErrorTotal": 224943866.291156,
+              "signedErrorTotal": -29805527.273009446,
+              "wape": 0.503769746707897,
+              "signedBias": -0.06675053279907826,
+              "absoluteBias": 0.06675053279907826,
+              "mae": 18754.699540700018,
+              "medianAbsoluteError": 841.029238521406
+            },
+            "occurrence": {
+              "status": "DEFINED",
+              "caseCount": 11994,
+              "prevalence": 0.9699849924962481,
+              "brier": 0.034658858967220894,
+              "logLoss": 0.14876416561351405,
+              "prAucTrapezoidal": 0.9835770965865203,
+              "averagePrecision": 0.9824136224747554,
+              "rocAucAuxiliary": 0.648427501766852
+            },
+            "conditionalAmount": {
+              "status": "DEFINED",
+              "caseCount": 11994,
+              "positiveCaseCount": 11628,
+              "wape": 0.5257640723797388,
+              "signedBias": -0.007110904305290578,
+              "mae": 20141.275247405545,
+              "logMae": 1.2891681773704031
+            },
+            "reversal": {
+              "status": "DEFINED_AVAILABLE_OUTPUTS",
+              "caseCount": 11994,
+              "reversalCaseCount": 552,
+              "occurrence": {
+                "status": "NOT_COMPUTABLE_REVERSAL_OCCURRENCE_PROBABILITY_MISSING"
+              },
+              "amount": {
+                "status": "DEFINED",
+                "wape": 2.2614585110509595,
+                "signedBias": 0.3596420143782974,
+                "mae": 6.754102251243443
+              },
+              "calibration": {
+                "status": "NOT_COMPUTABLE_REVERSAL_OCCURRENCE_PROBABILITY_MISSING"
+              }
+            },
+            "topRevenueAttribution": {
+              "status": "POSTHOC_FUTURE_ACTUAL_ATTRIBUTION_ONLY",
+              "futureActualUsed": true,
+              "allowedForFittingSelectionOrGate": false
+            }
+          },
+          "reversalRestated": {
+            "actualDefinitionId": "M2-ACTUAL-REVERSAL-RESTATEMENT-01",
+            "point": {
+              "status": "DEFINED",
+              "workCount": 1121,
+              "caseCount": 11994,
+              "actualAbsoluteTotal": 445425787.0222002,
+              "absoluteErrorTotal": 225928124.20733455,
+              "signedErrorTotal": -28710454.851909447,
+              "wape": 0.5072183308418877,
+              "signedBias": -0.06445620278037137,
+              "absoluteBias": 0.06445620278037137,
+              "mae": 18836.762064977032,
+              "medianAbsoluteError": 844.393857364291
+            },
+            "occurrence": {
+              "status": "DEFINED",
+              "caseCount": 11994,
+              "prevalence": 0.9694847423711856,
+              "brier": 0.035169799243173726,
+              "logLoss": 0.15189384130302808,
+              "prAucTrapezoidal": 0.9822545292761448,
+              "averagePrecision": 0.9811050990191731,
+              "rocAucAuxiliary": 0.63659075700072
+            },
+            "conditionalAmount": {
+              "status": "DEFINED",
+              "caseCount": 11994,
+              "positiveCaseCount": 11628,
+              "wape": 0.5258223448344482,
+              "signedBias": -0.007052087674721316,
+              "mae": 20142.314394714725,
+              "logMae": 1.2908046185035185
+            },
+            "reversal": {
+              "status": "DEFINED_AVAILABLE_OUTPUTS",
+              "caseCount": 11994,
+              "reversalCaseCount": 552,
+              "occurrence": {
+                "status": "NOT_COMPUTABLE_REVERSAL_OCCURRENCE_PROBABILITY_MISSING"
+              },
+              "amount": {
+                "status": "DEFINED",
+                "wape": 2.2614585110509595,
+                "signedBias": 0.3596420143782974,
+                "mae": 6.754102251243443
+              },
+              "calibration": {
+                "status": "NOT_COMPUTABLE_REVERSAL_OCCURRENCE_PROBABILITY_MISSING"
+              }
+            },
+            "topRevenueAttribution": {
+              "status": "POSTHOC_FUTURE_ACTUAL_ATTRIBUTION_ONLY",
+              "futureActualUsed": true,
+              "allowedForFittingSelectionOrGate": false
+            }
+          },
+          "pairedActualDefinitionImpact": {
+            "status": "PAIRED_LABEL_DEFINITION_IMPACT_NOT_MODEL_IMPROVEMENT",
+            "sameCaseCount": 11994,
+            "postingTimeWape": 0.503769746707897,
+            "postingTimeSignedBias": -0.06675053279907826,
+            "restatedWape": 0.5072183308418877,
+            "restatedSignedBias": -0.06445620278037137,
+            "absoluteWapeChange": 0.0034485841339907397,
+            "relativeWapeChange": 0.006845556241769302,
+            "affectedCaseCount": 140,
+            "unaffectedCaseCount": 11854
+          }
+        },
+        "M2-WORK-LC01::selected_pipeline": {
+          "status": "PARTIAL_COMPLETE_SCOPES_LABEL_ONLY_RESCORE",
+          "stableModelId": "M2-WORK-LC01",
+          "variantType": "selected_pipeline",
+          "originalCaseCount": 12039,
+          "sameCaseCount": 11994,
+          "blockedCaseCount": 45,
+          "blockedStatusCounts": {
+            "BLOCKED_UNRESOLVED_REVERSAL": 45
+          },
+          "postingAuthorityMismatchCount": 26,
+          "postingTime": {
+            "actualDefinitionId": "M2-ACTUAL-POSTING-TIME-01",
+            "point": {
+              "status": "DEFINED",
+              "workCount": 1121,
+              "caseCount": 11994,
+              "actualAbsoluteTotal": 446521189.01770055,
+              "absoluteErrorTotal": 197332801.7843642,
+              "signedErrorTotal": -54510050.06632208,
+              "wape": 0.44193379091029367,
+              "signedBias": -0.12207718560061714,
+              "absoluteBias": 0.12207718560061714,
+              "mae": 16452.62646192798,
+              "medianAbsoluteError": 757.0586589208515
+            },
+            "occurrence": {
+              "status": "NOT_COMPUTABLE_OCCURRENCE_PROBABILITY_MISSING"
+            },
+            "conditionalAmount": {
+              "status": "NOT_COMPUTABLE_CONDITIONAL_AMOUNT_PREDICTION_MISSING"
+            },
+            "reversal": {
+              "status": "NOT_COMPUTABLE_REVERSAL_PREDICTION_MISSING",
+              "occurrence": {},
+              "amount": {},
+              "calibration": {}
+            },
+            "topRevenueAttribution": {
+              "status": "POSTHOC_FUTURE_ACTUAL_ATTRIBUTION_ONLY",
+              "futureActualUsed": true,
+              "allowedForFittingSelectionOrGate": false
+            }
+          },
+          "reversalRestated": {
+            "actualDefinitionId": "M2-ACTUAL-REVERSAL-RESTATEMENT-01",
+            "point": {
+              "status": "DEFINED",
+              "workCount": 1121,
+              "caseCount": 11994,
+              "actualAbsoluteTotal": 445425787.0222002,
+              "absoluteErrorTotal": 198150279.1475868,
+              "signedErrorTotal": -53414977.64522202,
+              "wape": 0.444855877052558,
+              "signedBias": -0.11991891624038327,
+              "absoluteBias": 0.11991891624038327,
+              "mae": 16520.783654125964,
+              "medianAbsoluteError": 759.469104207413
+            },
+            "occurrence": {
+              "status": "NOT_COMPUTABLE_OCCURRENCE_PROBABILITY_MISSING"
+            },
+            "conditionalAmount": {
+              "status": "NOT_COMPUTABLE_CONDITIONAL_AMOUNT_PREDICTION_MISSING"
+            },
+            "reversal": {
+              "status": "NOT_COMPUTABLE_REVERSAL_PREDICTION_MISSING",
+              "occurrence": {},
+              "amount": {},
+              "calibration": {}
+            },
+            "topRevenueAttribution": {
+              "status": "POSTHOC_FUTURE_ACTUAL_ATTRIBUTION_ONLY",
+              "futureActualUsed": true,
+              "allowedForFittingSelectionOrGate": false
+            }
+          },
+          "pairedActualDefinitionImpact": {
+            "status": "PAIRED_LABEL_DEFINITION_IMPACT_NOT_MODEL_IMPROVEMENT",
+            "sameCaseCount": 11994,
+            "postingTimeWape": 0.44193379091029367,
+            "postingTimeSignedBias": -0.12207718560061714,
+            "restatedWape": 0.444855877052558,
+            "restatedSignedBias": -0.11991891624038327,
+            "absoluteWapeChange": 0.0029220861422643574,
+            "relativeWapeChange": 0.0066120450673061715,
+            "affectedCaseCount": 140,
+            "unaffectedCaseCount": 11854
+          }
+        },
+        "M2-CHAN-SCL01": {
+          "status": "PARTIAL_COMPLETE_SCOPES_LABEL_ONLY_RESCORE",
+          "stableModelId": "M2-CHAN-SCL01",
+          "variantType": "raw_candidate",
+          "originalCaseCount": 12039,
+          "sameCaseCount": 11994,
+          "blockedCaseCount": 45,
+          "blockedStatusCounts": {
+            "BLOCKED_UNRESOLVED_REVERSAL": 45
+          },
+          "postingAuthorityMismatchCount": 26,
+          "postingTime": {
+            "actualDefinitionId": "M2-ACTUAL-POSTING-TIME-01",
+            "point": {
+              "status": "DEFINED",
+              "workCount": 1121,
+              "caseCount": 11994,
+              "actualAbsoluteTotal": 446521189.01770055,
+              "absoluteErrorTotal": 241536601.97178993,
+              "signedErrorTotal": -56203891.54019084,
+              "wape": 0.5409297652887312,
+              "signedBias": -0.12587060350670806,
+              "absoluteBias": 0.12587060350670806,
+              "mae": 20138.11922392779,
+              "medianAbsoluteError": 688.7052960975636
+            },
+            "occurrence": {
+              "status": "NOT_COMPUTABLE_OCCURRENCE_PROBABILITY_MISSING"
+            },
+            "conditionalAmount": {
+              "status": "NOT_COMPUTABLE_CONDITIONAL_AMOUNT_PREDICTION_MISSING"
+            },
+            "reversal": {
+              "status": "NOT_COMPUTABLE_REVERSAL_PREDICTION_MISSING",
+              "occurrence": {},
+              "amount": {},
+              "calibration": {}
+            },
+            "topRevenueAttribution": {
+              "status": "POSTHOC_FUTURE_ACTUAL_ATTRIBUTION_ONLY",
+              "futureActualUsed": true,
+              "allowedForFittingSelectionOrGate": false
+            }
+          },
+          "reversalRestated": {
+            "actualDefinitionId": "M2-ACTUAL-REVERSAL-RESTATEMENT-01",
+            "point": {
+              "status": "DEFINED",
+              "workCount": 1121,
+              "caseCount": 11994,
+              "actualAbsoluteTotal": 445425787.0222002,
+              "absoluteErrorTotal": 242638720.1505985,
+              "signedErrorTotal": -55108819.119090825,
+              "wape": 0.5447343355954047,
+              "signedBias": -0.12372166301261803,
+              "absoluteBias": 0.12372166301261803,
+              "mae": 20230.008350058237,
+              "medianAbsoluteError": 690.121254531945
+            },
+            "occurrence": {
+              "status": "NOT_COMPUTABLE_OCCURRENCE_PROBABILITY_MISSING"
+            },
+            "conditionalAmount": {
+              "status": "NOT_COMPUTABLE_CONDITIONAL_AMOUNT_PREDICTION_MISSING"
+            },
+            "reversal": {
+              "status": "NOT_COMPUTABLE_REVERSAL_PREDICTION_MISSING",
+              "occurrence": {},
+              "amount": {},
+              "calibration": {}
+            },
+            "topRevenueAttribution": {
+              "status": "POSTHOC_FUTURE_ACTUAL_ATTRIBUTION_ONLY",
+              "futureActualUsed": true,
+              "allowedForFittingSelectionOrGate": false
+            }
+          },
+          "pairedActualDefinitionImpact": {
+            "status": "PAIRED_LABEL_DEFINITION_IMPACT_NOT_MODEL_IMPROVEMENT",
+            "sameCaseCount": 11994,
+            "postingTimeWape": 0.5409297652887312,
+            "postingTimeSignedBias": -0.12587060350670806,
+            "restatedWape": 0.5447343355954047,
+            "restatedSignedBias": -0.12372166301261803,
+            "absoluteWapeChange": 0.0038045703066735825,
+            "relativeWapeChange": 0.0070333905634547556,
+            "affectedCaseCount": 140,
+            "unaffectedCaseCount": 11854
+          }
+        }
+      },
+      "pairedAgainstFallback": {
+        "M2-WORK-MAN01": {
+          "versus": "M2-WORK-LG01",
+          "postingTime": {
+            "caseCount": 11994,
+            "meanPairedAbsoluteErrorImprovement": -3350.944909525464,
+            "medianPairedAbsoluteErrorImprovement": -0.0002521347223201076,
+            "absoluteWapeFva": -0.09000968875243076,
+            "relativeWapeFva": -0.20364264630592266
+          },
+          "reversalRestated": {
+            "caseCount": 11994,
+            "meanPairedAbsoluteErrorImprovement": -3312.336434586109,
+            "medianPairedAbsoluteErrorImprovement": -0.00023304716314333403,
+            "absoluteWapeFva": -0.08919143065788837,
+            "relativeWapeFva": -0.20046600731675412
+          }
+        },
+        "M2-WORK-OR01": {
+          "versus": "M2-WORK-LG01",
+          "postingTime": {
+            "caseCount": 11994,
+            "meanPairedAbsoluteErrorImprovement": -31.151281515917656,
+            "medianPairedAbsoluteErrorImprovement": 0.0013309383358665258,
+            "absoluteWapeFva": -0.0008367541780575083,
+            "relativeWapeFva": -0.0018931165909910064
+          },
+          "reversalRestated": {
+            "caseCount": 11994,
+            "meanPairedAbsoluteErrorImprovement": -28.739416623821864,
+            "medianPairedAbsoluteErrorImprovement": 0.0013309383358665258,
+            "absoluteWapeFva": -0.0007738675510694515,
+            "relativeWapeFva": -0.0017393390487248084
+          }
+        },
+        "M2-WORK-LG01::historical_original": {
+          "versus": "M2-WORK-LG01",
+          "postingTime": {
+            "caseCount": 11994,
+            "meanPairedAbsoluteErrorImprovement": -0.10353429604139741,
+            "medianPairedAbsoluteErrorImprovement": -0.000013837061056995448,
+            "absoluteWapeFva": -0.0000027810334141120663,
+            "relativeWapeFva": -0.000006291956030191059
+          },
+          "reversalRestated": {
+            "caseCount": 11994,
+            "meanPairedAbsoluteErrorImprovement": -0.10998993890441065,
+            "medianPairedAbsoluteErrorImprovement": -0.000013837061056995448,
+            "absoluteWapeFva": -0.0000029617039822849023,
+            "relativeWapeFva": -0.0000066567042125154074
+          }
+        },
+        "M2-WORK-TSB01": {
+          "versus": "M2-WORK-LG01",
+          "postingTime": {
+            "caseCount": 11994,
+            "meanPairedAbsoluteErrorImprovement": -3934.836721145043,
+            "medianPairedAbsoluteErrorImprovement": -46.069296013290526,
+            "absoluteWapeFva": -0.1056935993054145,
+            "relativeWapeFva": -0.2391267491142297
+          },
+          "reversalRestated": {
+            "caseCount": 11994,
+            "meanPairedAbsoluteErrorImprovement": -3958.481895421966,
+            "medianPairedAbsoluteErrorImprovement": -46.069296013290526,
+            "absoluteWapeFva": -0.10659021825183407,
+            "relativeWapeFva": -0.2395713950808429
+          }
+        },
+        "M2-WORK-TSBB01": {
+          "versus": "M2-WORK-LG01",
+          "postingTime": {
+            "caseCount": 11994,
+            "meanPairedAbsoluteErrorImprovement": -511.34329295687104,
+            "medianPairedAbsoluteErrorImprovement": -8.388391307887714,
+            "absoluteWapeFva": -0.013735185712502374,
+            "relativeWapeFva": -0.031075205400282524
+          },
+          "reversalRestated": {
+            "caseCount": 11994,
+            "meanPairedAbsoluteErrorImprovement": -535.0025459898388,
+            "medianPairedAbsoluteErrorImprovement": -8.393047613996401,
+            "absoluteWapeFva": -0.014406037377182712,
+            "relativeWapeFva": -0.03237890426196821
+          }
+        },
+        "M2-WORK-TSBB01::selected_pipeline": {
+          "versus": "M2-WORK-LG01",
+          "postingTime": {
+            "caseCount": 11994,
+            "meanPairedAbsoluteErrorImprovement": 0,
+            "medianPairedAbsoluteErrorImprovement": 0,
+            "absoluteWapeFva": 0,
+            "relativeWapeFva": 0
+          },
+          "reversalRestated": {
+            "caseCount": 11994,
+            "meanPairedAbsoluteErrorImprovement": 0,
+            "medianPairedAbsoluteErrorImprovement": 0,
+            "absoluteWapeFva": 0,
+            "relativeWapeFva": 0
+          }
+        },
+        "M2-WORK-LC01": {
+          "versus": "M2-WORK-LG01",
+          "postingTime": {
+            "caseCount": 11994,
+            "meanPairedAbsoluteErrorImprovement": -2299.674179796502,
+            "medianPairedAbsoluteErrorImprovement": -0.01633295517522794,
+            "absoluteWapeFva": -0.061771519002618236,
+            "relativeWapeFva": -0.13975512825767944
+          },
+          "reversalRestated": {
+            "caseCount": 11994,
+            "meanPairedAbsoluteErrorImprovement": -2313.5795118755477,
+            "medianPairedAbsoluteErrorImprovement": -0.016664237828904915,
+            "absoluteWapeFva": -0.06229785852980174,
+            "relativeWapeFva": -0.14002021126621345
+          }
+        },
+        "M2-WORK-LC01::selected_pipeline": {
+          "versus": "M2-WORK-LG01",
+          "postingTime": {
+            "caseCount": 11994,
+            "meanPairedAbsoluteErrorImprovement": 2.3988989755855803,
+            "medianPairedAbsoluteErrorImprovement": 0,
+            "absoluteWapeFva": 0.00006443679498507882,
+            "relativeWapeFva": 0.00014578518859587053
+          },
+          "reversalRestated": {
+            "caseCount": 11994,
+            "meanPairedAbsoluteErrorImprovement": 2.3988989755855803,
+            "medianPairedAbsoluteErrorImprovement": 0,
+            "absoluteWapeFva": 0.0000645952595279553,
+            "relativeWapeFva": 0.00014518383294948034
+          }
+        },
+        "M2-CHAN-SCL01": {
+          "versus": "M2-WORK-LG01",
+          "postingTime": {
+            "caseCount": 11994,
+            "meanPairedAbsoluteErrorImprovement": -3683.093863024227,
+            "medianPairedAbsoluteErrorImprovement": 4.624572749397777,
+            "absoluteWapeFva": -0.09893153758345241,
+            "relativeWapeFva": -0.22382790559381882
+          },
+          "reversalRestated": {
+            "caseCount": 11994,
+            "meanPairedAbsoluteErrorImprovement": -3706.825796956685,
+            "medianPairedAbsoluteErrorImprovement": 4.619083802525456,
+            "absoluteWapeFva": -0.09981386328331876,
+            "relativeWapeFva": -0.22434090920703942
+          },
+          "ranking": {
+            "postingTime": {
+              "status": "WORK_CLUSTER_RANKING_SIGNAL_TIME_INDEPENDENCE_UNCONFIRMED",
+              "caseCount": 11994,
+              "workCount": 1121,
+              "groupCount": 13,
+              "weighting": "equal_origin_horizon_cell_weight",
+              "candidate": {
+                "groupCount": 13,
+                "meanSpearman": 0.8332237530834363,
+                "meanKendallTauB": 0.6659219566702768,
+                "meanTopRevenueCapture": {
+                  "0.01": 0.5122033314715121,
+                  "0.05": 0.7802639474205851,
+                  "0.1": 0.85094632006088
+                }
+              },
+              "fallback": {
+                "groupCount": 13,
+                "meanSpearman": 0.8144275216253107,
+                "meanKendallTauB": 0.645598391515719,
+                "meanTopRevenueCapture": {
+                  "0.01": 0.5091480670001632,
+                  "0.05": 0.7791635705726883,
+                  "0.1": 0.8463481726858509
+                }
+              },
+              "difference": {},
+              "workClusterBootstrap": {
+                "method": "full_standard_work_cluster_resample_recompute_within_cell_ranks",
+                "approximationFromFixedRankContributions": false,
+                "clusterUnit": "standardWorkId",
+                "clusterCount": 1121,
+                "iterations": 2000,
+                "seed": 20260728,
+                "meanSpearmanDifference95": {
+                  "lower95": 0.014660242462878503,
+                  "upper95": 0.022978005670658167
+                },
+                "meanKendallTauBDifference95": {
+                  "lower95": 0.01614861309614848,
+                  "upper95": 0.024797624413407684
+                },
+                "meanTopRevenueCaptureDifference95": {
+                  "0.01": {
+                    "lower95": -0.009477838362027091,
+                    "upper95": 0.019134934258346357
+                  },
+                  "0.05": {
+                    "lower95": -0.006241108555928074,
+                    "upper95": 0.015304809314364422
+                  },
+                  "0.1": {
+                    "lower95": -0.0014472746455786178,
+                    "upper95": 0.016316119163584282
+                  }
+                }
+              },
+              "timeIndependence": {
+                "status": "NOT_COMPUTABLE_INSUFFICIENT_INDEPENDENT_TIME_BLOCKS",
+                "independentTimeBlockCount": 1,
+                "minimumIndependentTimeBlocks": 2,
+                "interval": null
+              }
+            },
+            "reversalRestated": {
+              "status": "WORK_CLUSTER_RANKING_SIGNAL_TIME_INDEPENDENCE_UNCONFIRMED",
+              "caseCount": 11994,
+              "workCount": 1121,
+              "groupCount": 13,
+              "weighting": "equal_origin_horizon_cell_weight",
+              "candidate": {
+                "groupCount": 13,
+                "meanSpearman": 0.8322104049952355,
+                "meanKendallTauB": 0.6648374956738772,
+                "meanTopRevenueCapture": {
+                  "0.01": 0.5109824850612623,
+                  "0.05": 0.7797064626285753,
+                  "0.1": 0.8505646886726732
+                }
+              },
+              "fallback": {
+                "groupCount": 13,
+                "meanSpearman": 0.8132676719884853,
+                "meanKendallTauB": 0.6444424210545812,
+                "meanTopRevenueCapture": {
+                  "0.01": 0.5079169523100467,
+                  "0.05": 0.7786013052456361,
+                  "0.1": 0.8459574499771498
+                }
+              },
+              "difference": {},
+              "workClusterBootstrap": {
+                "method": "full_standard_work_cluster_resample_recompute_within_cell_ranks",
+                "approximationFromFixedRankContributions": false,
+                "clusterUnit": "standardWorkId",
+                "clusterCount": 1121,
+                "iterations": 2000,
+                "seed": 20260728,
+                "meanSpearmanDifference95": {
+                  "lower95": 0.014904964653776043,
+                  "upper95": 0.02309495786548796
+                },
+                "meanKendallTauBDifference95": {
+                  "lower95": 0.016209125298559224,
+                  "upper95": 0.024842320677378973
+                },
+                "meanTopRevenueCaptureDifference95": {
+                  "0.01": {
+                    "lower95": -0.009504050373403907,
+                    "upper95": 0.019399619078887754
+                  },
+                  "0.05": {
+                    "lower95": -0.006246995314415569,
+                    "upper95": 0.015342495171028021
+                  },
+                  "0.1": {
+                    "lower95": -0.0014582909060331308,
+                    "upper95": 0.016362178874123647
+                  }
+                }
+              },
+              "timeIndependence": {
+                "status": "NOT_COMPUTABLE_INSUFFICIENT_INDEPENDENT_TIME_BLOCKS",
+                "independentTimeBlockCount": 1,
+                "minimumIndependentTimeBlocks": 2,
+                "interval": null
+              }
+            }
+          }
+        }
+      }
+    },
+    "CG-WORK-SS-HA-STRICT-74320": {
+      "postingComparabilityGroupId": "CG-WORK-SS-HA-STRICT-74320::POSTING_TIME",
+      "restatedComparabilityGroupId": "CG-WORK-SS-HA-STRICT-74320::REVERSAL_RESTATED",
+      "crossActualDefinitionWinnerAllowed": false,
+      "fallbackId": "M2-WORK-LG01",
+      "models": {
+        "M2-WORK-LG01": {
+          "status": "PARTIAL_COMPLETE_SCOPES_LABEL_ONLY_RESCORE",
+          "stableModelId": "M2-WORK-LG01",
+          "variantType": "research_baseline",
+          "originalCaseCount": 74320,
+          "sameCaseCount": 74164,
+          "blockedCaseCount": 156,
+          "blockedStatusCounts": {
+            "BLOCKED_UNRESOLVED_REVERSAL": 156
+          },
+          "postingAuthorityMismatchCount": 59,
+          "postingTime": {
+            "actualDefinitionId": "M2-ACTUAL-POSTING-TIME-01",
+            "point": {
+              "status": "DEFINED",
+              "workCount": 2646,
+              "caseCount": 74164,
+              "actualAbsoluteTotal": 496368544.23550296,
+              "absoluteErrorTotal": 205148973.45202214,
+              "signedErrorTotal": -18697717.39400898,
+              "wape": 0.41329970610444006,
+              "signedBias": -0.03766902155898463,
+              "absoluteBias": 0.03766902155898463,
+              "mae": 2766.1530318216674,
+              "medianAbsoluteError": 26.823191742908513
+            },
+            "occurrence": {
+              "status": "NOT_COMPUTABLE_OCCURRENCE_PROBABILITY_MISSING"
+            },
+            "conditionalAmount": {
+              "status": "NOT_COMPUTABLE_CONDITIONAL_AMOUNT_PREDICTION_MISSING"
+            },
+            "reversal": {
+              "status": "NOT_COMPUTABLE_REVERSAL_PREDICTION_MISSING",
+              "occurrence": {},
+              "amount": {},
+              "calibration": {}
+            },
+            "topRevenueAttribution": {
+              "status": "POSTHOC_FUTURE_ACTUAL_ATTRIBUTION_ONLY",
+              "futureActualUsed": true,
+              "allowedForFittingSelectionOrGate": false
+            }
+          },
+          "reversalRestated": {
+            "actualDefinitionId": "M2-ACTUAL-REVERSAL-RESTATEMENT-01",
+            "point": {
+              "status": "DEFINED",
+              "workCount": 2646,
+              "caseCount": 74164,
+              "actualAbsoluteTotal": 496048396.645503,
+              "absoluteErrorTotal": 205465168.04093248,
+              "signedErrorTotal": -18377569.80400899,
+              "wape": 0.41420387492506405,
+              "signedBias": -0.03704793711316514,
+              "absoluteBias": 0.03704793711316514,
+              "mae": 2770.4164829422966,
+              "medianAbsoluteError": 26.857446439048424
+            },
+            "occurrence": {
+              "status": "NOT_COMPUTABLE_OCCURRENCE_PROBABILITY_MISSING"
+            },
+            "conditionalAmount": {
+              "status": "NOT_COMPUTABLE_CONDITIONAL_AMOUNT_PREDICTION_MISSING"
+            },
+            "reversal": {
+              "status": "NOT_COMPUTABLE_REVERSAL_PREDICTION_MISSING",
+              "occurrence": {},
+              "amount": {},
+              "calibration": {}
+            },
+            "topRevenueAttribution": {
+              "status": "POSTHOC_FUTURE_ACTUAL_ATTRIBUTION_ONLY",
+              "futureActualUsed": true,
+              "allowedForFittingSelectionOrGate": false
+            }
+          },
+          "pairedActualDefinitionImpact": {
+            "status": "PAIRED_LABEL_DEFINITION_IMPACT_NOT_MODEL_IMPROVEMENT",
+            "sameCaseCount": 74164,
+            "postingTimeWape": 0.41329970610444006,
+            "postingTimeSignedBias": -0.03766902155898463,
+            "restatedWape": 0.41420387492506405,
+            "restatedSignedBias": -0.03704793711316514,
+            "absoluteWapeChange": 0.0009041688206239962,
+            "relativeWapeChange": 0.0021876831927760687,
+            "affectedCaseCount": 7,
+            "unaffectedCaseCount": 74157
+          }
+        },
+        "M2-WORK-TSB01": {
+          "status": "PARTIAL_COMPLETE_SCOPES_LABEL_ONLY_RESCORE",
+          "stableModelId": "M2-WORK-TSB01",
+          "variantType": "raw_candidate",
+          "originalCaseCount": 74320,
+          "sameCaseCount": 74164,
+          "blockedCaseCount": 156,
+          "blockedStatusCounts": {
+            "BLOCKED_UNRESOLVED_REVERSAL": 156
+          },
+          "postingAuthorityMismatchCount": 59,
+          "postingTime": {
+            "actualDefinitionId": "M2-ACTUAL-POSTING-TIME-01",
+            "point": {
+              "status": "DEFINED",
+              "workCount": 2646,
+              "caseCount": 74164,
+              "actualAbsoluteTotal": 496368544.23550296,
+              "absoluteErrorTotal": 253367452.59751183,
+              "signedErrorTotal": 104415753.89077938,
+              "wape": 0.5104422017469769,
+              "signedBias": 0.21035932897721885,
+              "absoluteBias": 0.21035932897721885,
+              "mae": 3416.3132058345263,
+              "medianAbsoluteError": 53.93355225159992
+            },
+            "occurrence": {
+              "status": "DEFINED",
+              "caseCount": 74164,
+              "prevalence": 0.8997087535731622,
+              "brier": 0.06763553860414338,
+              "logLoss": 0.4286486454600308,
+              "prAucTrapezoidal": 0.9931830614515893,
+              "averagePrecision": 0.9912441778763271,
+              "rocAucAuxiliary": 0.9433386069135798
+            },
+            "conditionalAmount": {
+              "status": "NOT_COMPUTABLE_CONDITIONAL_AMOUNT_PREDICTION_MISSING"
+            },
+            "reversal": {
+              "status": "NOT_COMPUTABLE_REVERSAL_PREDICTION_MISSING",
+              "occurrence": {},
+              "amount": {},
+              "calibration": {}
+            },
+            "topRevenueAttribution": {
+              "status": "POSTHOC_FUTURE_ACTUAL_ATTRIBUTION_ONLY",
+              "futureActualUsed": true,
+              "allowedForFittingSelectionOrGate": false
+            }
+          },
+          "reversalRestated": {
+            "actualDefinitionId": "M2-ACTUAL-REVERSAL-RESTATEMENT-01",
+            "point": {
+              "status": "DEFINED",
+              "workCount": 2646,
+              "caseCount": 74164,
+              "actualAbsoluteTotal": 496048396.645503,
+              "absoluteErrorTotal": 253685896.7630501,
+              "signedErrorTotal": 104735901.48077935,
+              "wape": 0.5114136009280253,
+              "signedBias": 0.21114048989785975,
+              "absoluteBias": 0.21114048989785975,
+              "mae": 3420.6069894160255,
+              "medianAbsoluteError": 53.95702708160736
+            },
+            "occurrence": {
+              "status": "DEFINED",
+              "caseCount": 74164,
+              "prevalence": 0.8991828919691495,
+              "brier": 0.06816137954498466,
+              "logLoss": 0.4402493715603471,
+              "prAucTrapezoidal": 0.9929065479069438,
+              "averagePrecision": 0.9908106908740746,
+              "rocAucAuxiliary": 0.9415362990628645
+            },
+            "conditionalAmount": {
+              "status": "NOT_COMPUTABLE_CONDITIONAL_AMOUNT_PREDICTION_MISSING"
+            },
+            "reversal": {
+              "status": "NOT_COMPUTABLE_REVERSAL_PREDICTION_MISSING",
+              "occurrence": {},
+              "amount": {},
+              "calibration": {}
+            },
+            "topRevenueAttribution": {
+              "status": "POSTHOC_FUTURE_ACTUAL_ATTRIBUTION_ONLY",
+              "futureActualUsed": true,
+              "allowedForFittingSelectionOrGate": false
+            }
+          },
+          "pairedActualDefinitionImpact": {
+            "status": "PAIRED_LABEL_DEFINITION_IMPACT_NOT_MODEL_IMPROVEMENT",
+            "sameCaseCount": 74164,
+            "postingTimeWape": 0.5104422017469769,
+            "postingTimeSignedBias": 0.21035932897721885,
+            "restatedWape": 0.5114136009280253,
+            "restatedSignedBias": 0.21114048989785975,
+            "absoluteWapeChange": 0.0009713991810484934,
+            "relativeWapeChange": 0.001903054210102395,
+            "affectedCaseCount": 7,
+            "unaffectedCaseCount": 74157
+          }
+        },
+        "M2-WORK-TSBB01": {
+          "status": "PARTIAL_COMPLETE_SCOPES_LABEL_ONLY_RESCORE",
+          "stableModelId": "M2-WORK-TSBB01",
+          "variantType": "raw_candidate",
+          "originalCaseCount": 74320,
+          "sameCaseCount": 74164,
+          "blockedCaseCount": 156,
+          "blockedStatusCounts": {
+            "BLOCKED_UNRESOLVED_REVERSAL": 156
+          },
+          "postingAuthorityMismatchCount": 59,
+          "postingTime": {
+            "actualDefinitionId": "M2-ACTUAL-POSTING-TIME-01",
+            "point": {
+              "status": "DEFINED",
+              "workCount": 2646,
+              "caseCount": 74164,
+              "actualAbsoluteTotal": 496368544.23550296,
+              "absoluteErrorTotal": 221703630.5432006,
+              "signedErrorTotal": 42859018.24838501,
+              "wape": 0.4466512495965355,
+              "signedBias": 0.08634515370911673,
+              "absoluteBias": 0.08634515370911673,
+              "mae": 2989.369917253662,
+              "medianAbsoluteError": 39.97233549536018
+            },
+            "occurrence": {
+              "status": "NOT_COMPUTABLE_OCCURRENCE_PROBABILITY_MISSING"
+            },
+            "conditionalAmount": {
+              "status": "NOT_COMPUTABLE_CONDITIONAL_AMOUNT_PREDICTION_MISSING"
+            },
+            "reversal": {
+              "status": "NOT_COMPUTABLE_REVERSAL_PREDICTION_MISSING",
+              "occurrence": {},
+              "amount": {},
+              "calibration": {}
+            },
+            "topRevenueAttribution": {
+              "status": "POSTHOC_FUTURE_ACTUAL_ATTRIBUTION_ONLY",
+              "futureActualUsed": true,
+              "allowedForFittingSelectionOrGate": false
+            }
+          },
+          "reversalRestated": {
+            "actualDefinitionId": "M2-ACTUAL-REVERSAL-RESTATEMENT-01",
+            "point": {
+              "status": "DEFINED",
+              "workCount": 2646,
+              "caseCount": 74164,
+              "actualAbsoluteTotal": 496048396.645503,
+              "absoluteErrorTotal": 222021043.51113427,
+              "signedErrorTotal": 43179165.83838501,
+              "wape": 0.4475793995354849,
+              "signedBias": 0.08704627639234697,
+              "absoluteBias": 0.08704627639234697,
+              "mae": 2993.649796547304,
+              "medianAbsoluteError": 39.98814569976989
+            },
+            "occurrence": {
+              "status": "NOT_COMPUTABLE_OCCURRENCE_PROBABILITY_MISSING"
+            },
+            "conditionalAmount": {
+              "status": "NOT_COMPUTABLE_CONDITIONAL_AMOUNT_PREDICTION_MISSING"
+            },
+            "reversal": {
+              "status": "NOT_COMPUTABLE_REVERSAL_PREDICTION_MISSING",
+              "occurrence": {},
+              "amount": {},
+              "calibration": {}
+            },
+            "topRevenueAttribution": {
+              "status": "POSTHOC_FUTURE_ACTUAL_ATTRIBUTION_ONLY",
+              "futureActualUsed": true,
+              "allowedForFittingSelectionOrGate": false
+            }
+          },
+          "pairedActualDefinitionImpact": {
+            "status": "PAIRED_LABEL_DEFINITION_IMPACT_NOT_MODEL_IMPROVEMENT",
+            "sameCaseCount": 74164,
+            "postingTimeWape": 0.4466512495965355,
+            "postingTimeSignedBias": 0.08634515370911673,
+            "restatedWape": 0.4475793995354849,
+            "restatedSignedBias": 0.08704627639234697,
+            "absoluteWapeChange": 0.0009281499389494074,
+            "relativeWapeChange": 0.002078019349073479,
+            "affectedCaseCount": 7,
+            "unaffectedCaseCount": 74157
+          }
+        },
+        "M2-WORK-TSBB01::selected_pipeline": {
+          "status": "PARTIAL_COMPLETE_SCOPES_LABEL_ONLY_RESCORE",
+          "stableModelId": "M2-WORK-TSBB01",
+          "variantType": "selected_pipeline",
+          "originalCaseCount": 74320,
+          "sameCaseCount": 74164,
+          "blockedCaseCount": 156,
+          "blockedStatusCounts": {
+            "BLOCKED_UNRESOLVED_REVERSAL": 156
+          },
+          "postingAuthorityMismatchCount": 59,
+          "postingTime": {
+            "actualDefinitionId": "M2-ACTUAL-POSTING-TIME-01",
+            "point": {
+              "status": "DEFINED",
+              "workCount": 2646,
+              "caseCount": 74164,
+              "actualAbsoluteTotal": 496368544.23550296,
+              "absoluteErrorTotal": 205148973.45202214,
+              "signedErrorTotal": -18697717.39400898,
+              "wape": 0.41329970610444006,
+              "signedBias": -0.03766902155898463,
+              "absoluteBias": 0.03766902155898463,
+              "mae": 2766.1530318216674,
+              "medianAbsoluteError": 26.823191742908513
+            },
+            "occurrence": {
+              "status": "NOT_COMPUTABLE_OCCURRENCE_PROBABILITY_MISSING"
+            },
+            "conditionalAmount": {
+              "status": "NOT_COMPUTABLE_CONDITIONAL_AMOUNT_PREDICTION_MISSING"
+            },
+            "reversal": {
+              "status": "NOT_COMPUTABLE_REVERSAL_PREDICTION_MISSING",
+              "occurrence": {},
+              "amount": {},
+              "calibration": {}
+            },
+            "topRevenueAttribution": {
+              "status": "POSTHOC_FUTURE_ACTUAL_ATTRIBUTION_ONLY",
+              "futureActualUsed": true,
+              "allowedForFittingSelectionOrGate": false
+            }
+          },
+          "reversalRestated": {
+            "actualDefinitionId": "M2-ACTUAL-REVERSAL-RESTATEMENT-01",
+            "point": {
+              "status": "DEFINED",
+              "workCount": 2646,
+              "caseCount": 74164,
+              "actualAbsoluteTotal": 496048396.645503,
+              "absoluteErrorTotal": 205465168.04093248,
+              "signedErrorTotal": -18377569.80400899,
+              "wape": 0.41420387492506405,
+              "signedBias": -0.03704793711316514,
+              "absoluteBias": 0.03704793711316514,
+              "mae": 2770.4164829422966,
+              "medianAbsoluteError": 26.857446439048424
+            },
+            "occurrence": {
+              "status": "NOT_COMPUTABLE_OCCURRENCE_PROBABILITY_MISSING"
+            },
+            "conditionalAmount": {
+              "status": "NOT_COMPUTABLE_CONDITIONAL_AMOUNT_PREDICTION_MISSING"
+            },
+            "reversal": {
+              "status": "NOT_COMPUTABLE_REVERSAL_PREDICTION_MISSING",
+              "occurrence": {},
+              "amount": {},
+              "calibration": {}
+            },
+            "topRevenueAttribution": {
+              "status": "POSTHOC_FUTURE_ACTUAL_ATTRIBUTION_ONLY",
+              "futureActualUsed": true,
+              "allowedForFittingSelectionOrGate": false
+            }
+          },
+          "pairedActualDefinitionImpact": {
+            "status": "PAIRED_LABEL_DEFINITION_IMPACT_NOT_MODEL_IMPROVEMENT",
+            "sameCaseCount": 74164,
+            "postingTimeWape": 0.41329970610444006,
+            "postingTimeSignedBias": -0.03766902155898463,
+            "restatedWape": 0.41420387492506405,
+            "restatedSignedBias": -0.03704793711316514,
+            "absoluteWapeChange": 0.0009041688206239962,
+            "relativeWapeChange": 0.0021876831927760687,
+            "affectedCaseCount": 7,
+            "unaffectedCaseCount": 74157
+          }
+        },
+        "M2-WORK-LC01": {
+          "status": "PARTIAL_COMPLETE_SCOPES_LABEL_ONLY_RESCORE",
+          "stableModelId": "M2-WORK-LC01",
+          "variantType": "raw_candidate",
+          "originalCaseCount": 74320,
+          "sameCaseCount": 74164,
+          "blockedCaseCount": 156,
+          "blockedStatusCounts": {
+            "BLOCKED_UNRESOLVED_REVERSAL": 156
+          },
+          "postingAuthorityMismatchCount": 59,
+          "postingTime": {
+            "actualDefinitionId": "M2-ACTUAL-POSTING-TIME-01",
+            "point": {
+              "status": "DEFINED",
+              "workCount": 2646,
+              "caseCount": 74164,
+              "actualAbsoluteTotal": 496368544.23549765,
+              "absoluteErrorTotal": 309924354.09364974,
+              "signedErrorTotal": 106201301.5200044,
+              "wape": 0.6243835506760252,
+              "signedBias": 0.21395655053761453,
+              "absoluteBias": 0.21395655053761453,
+              "mae": 4178.905588879372,
+              "medianAbsoluteError": 31.845773287551147
+            },
+            "occurrence": {
+              "status": "DEFINED",
+              "caseCount": 74164,
+              "prevalence": 0.8997087535731622,
+              "brier": 0.06111204095991211,
+              "logLoss": 0.2250032204459022,
+              "prAucTrapezoidal": 0.9794499753202637,
+              "averagePrecision": 0.9792085607002926,
+              "rocAucAuxiliary": 0.8638431253699669
+            },
+            "conditionalAmount": {
+              "status": "DEFINED",
+              "caseCount": 74164,
+              "positiveCaseCount": 66687,
+              "wape": 0.6572189761261634,
+              "signedBias": 0.3363059702926638,
+              "mae": 4888.728518348592,
+              "logMae": 0.912187496749958
+            },
+            "reversal": {
+              "status": "DEFINED_AVAILABLE_OUTPUTS",
+              "caseCount": 74164,
+              "reversalCaseCount": 109,
+              "occurrence": {
+                "status": "NOT_COMPUTABLE_REVERSAL_OCCURRENCE_PROBABILITY_MISSING"
+              },
+              "amount": {
+                "status": "DEFINED",
+                "wape": 44.630945391356676,
+                "signedBias": 43.19400570884512,
+                "mae": 2.149879752626274
+              },
+              "calibration": {
+                "status": "NOT_COMPUTABLE_REVERSAL_OCCURRENCE_PROBABILITY_MISSING"
+              }
+            },
+            "topRevenueAttribution": {
+              "status": "POSTHOC_FUTURE_ACTUAL_ATTRIBUTION_ONLY",
+              "futureActualUsed": true,
+              "allowedForFittingSelectionOrGate": false
+            }
+          },
+          "reversalRestated": {
+            "actualDefinitionId": "M2-ACTUAL-REVERSAL-RESTATEMENT-01",
+            "point": {
+              "status": "DEFINED",
+              "workCount": 2646,
+              "caseCount": 74164,
+              "actualAbsoluteTotal": 496048396.64549786,
+              "absoluteErrorTotal": 310152010.96304834,
+              "signedErrorTotal": 106521449.1100044,
+              "wape": 0.6252454660884615,
+              "signedBias": 0.21474003309021922,
+              "absoluteBias": 0.21474003309021922,
+              "mae": 4181.9752300718455,
+              "medianAbsoluteError": 31.850406218776115
+            },
+            "occurrence": {
+              "status": "DEFINED",
+              "caseCount": 74164,
+              "prevalence": 0.8991828919691495,
+              "brier": 0.061538439369246335,
+              "logLoss": 0.22658809500673183,
+              "prAucTrapezoidal": 0.9789604176511261,
+              "averagePrecision": 0.978714546274371,
+              "rocAucAuxiliary": 0.862121347157901
+            },
+            "conditionalAmount": {
+              "status": "DEFINED",
+              "caseCount": 74164,
+              "positiveCaseCount": 66687,
+              "wape": 0.6572220131254048,
+              "signedBias": 0.33631506728240745,
+              "mae": 4888.71782882696,
+              "logMae": 0.9121806672795248
+            },
+            "reversal": {
+              "status": "DEFINED_AVAILABLE_OUTPUTS",
+              "caseCount": 74164,
+              "reversalCaseCount": 109,
+              "occurrence": {
+                "status": "NOT_COMPUTABLE_REVERSAL_OCCURRENCE_PROBABILITY_MISSING"
+              },
+              "amount": {
+                "status": "DEFINED",
+                "wape": 44.630945391356676,
+                "signedBias": 43.19400570884512,
+                "mae": 2.149879752626274
+              },
+              "calibration": {
+                "status": "NOT_COMPUTABLE_REVERSAL_OCCURRENCE_PROBABILITY_MISSING"
+              }
+            },
+            "topRevenueAttribution": {
+              "status": "POSTHOC_FUTURE_ACTUAL_ATTRIBUTION_ONLY",
+              "futureActualUsed": true,
+              "allowedForFittingSelectionOrGate": false
+            }
+          },
+          "pairedActualDefinitionImpact": {
+            "status": "PAIRED_LABEL_DEFINITION_IMPACT_NOT_MODEL_IMPROVEMENT",
+            "sameCaseCount": 74164,
+            "postingTimeWape": 0.6243835506760252,
+            "postingTimeSignedBias": 0.21395655053761453,
+            "restatedWape": 0.6252454660884615,
+            "restatedSignedBias": 0.21474003309021922,
+            "absoluteWapeChange": 0.0008619154124362982,
+            "relativeWapeChange": 0.001380426200374929,
+            "affectedCaseCount": 7,
+            "unaffectedCaseCount": 74157
+          }
+        },
+        "M2-WORK-LC01::selected_pipeline": {
+          "status": "PARTIAL_COMPLETE_SCOPES_LABEL_ONLY_RESCORE",
+          "stableModelId": "M2-WORK-LC01",
+          "variantType": "selected_pipeline",
+          "originalCaseCount": 74320,
+          "sameCaseCount": 74164,
+          "blockedCaseCount": 156,
+          "blockedStatusCounts": {
+            "BLOCKED_UNRESOLVED_REVERSAL": 156
+          },
+          "postingAuthorityMismatchCount": 59,
+          "postingTime": {
+            "actualDefinitionId": "M2-ACTUAL-POSTING-TIME-01",
+            "point": {
+              "status": "DEFINED",
+              "workCount": 2646,
+              "caseCount": 74164,
+              "actualAbsoluteTotal": 496368544.23549765,
+              "absoluteErrorTotal": 205138984.62165076,
+              "signedErrorTotal": -18686945.390495364,
+              "wape": 0.4132795822861901,
+              "signedBias": -0.03764731993498264,
+              "absoluteBias": 0.03764731993498264,
+              "mae": 2766.0183461200954,
+              "medianAbsoluteError": 26.82279632425182
+            },
+            "occurrence": {
+              "status": "NOT_COMPUTABLE_OCCURRENCE_PROBABILITY_MISSING"
+            },
+            "conditionalAmount": {
+              "status": "NOT_COMPUTABLE_CONDITIONAL_AMOUNT_PREDICTION_MISSING"
+            },
+            "reversal": {
+              "status": "NOT_COMPUTABLE_REVERSAL_PREDICTION_MISSING",
+              "occurrence": {},
+              "amount": {},
+              "calibration": {}
+            },
+            "topRevenueAttribution": {
+              "status": "POSTHOC_FUTURE_ACTUAL_ATTRIBUTION_ONLY",
+              "futureActualUsed": true,
+              "allowedForFittingSelectionOrGate": false
+            }
+          },
+          "reversalRestated": {
+            "actualDefinitionId": "M2-ACTUAL-REVERSAL-RESTATEMENT-01",
+            "point": {
+              "status": "DEFINED",
+              "workCount": 2646,
+              "caseCount": 74164,
+              "actualAbsoluteTotal": 496048396.64549786,
+              "absoluteErrorTotal": 205455179.21056107,
+              "signedErrorTotal": -18366797.800495517,
+              "wape": 0.41418373811898457,
+              "signedBias": -0.03702622148302475,
+              "absoluteBias": 0.03702622148302475,
+              "mae": 2770.2817972407242,
+              "medianAbsoluteError": 26.84793821214013
+            },
+            "occurrence": {
+              "status": "NOT_COMPUTABLE_OCCURRENCE_PROBABILITY_MISSING"
+            },
+            "conditionalAmount": {
+              "status": "NOT_COMPUTABLE_CONDITIONAL_AMOUNT_PREDICTION_MISSING"
+            },
+            "reversal": {
+              "status": "NOT_COMPUTABLE_REVERSAL_PREDICTION_MISSING",
+              "occurrence": {},
+              "amount": {},
+              "calibration": {}
+            },
+            "topRevenueAttribution": {
+              "status": "POSTHOC_FUTURE_ACTUAL_ATTRIBUTION_ONLY",
+              "futureActualUsed": true,
+              "allowedForFittingSelectionOrGate": false
+            }
+          },
+          "pairedActualDefinitionImpact": {
+            "status": "PAIRED_LABEL_DEFINITION_IMPACT_NOT_MODEL_IMPROVEMENT",
+            "sameCaseCount": 74164,
+            "postingTimeWape": 0.4132795822861901,
+            "postingTimeSignedBias": -0.03764731993498264,
+            "restatedWape": 0.41418373811898457,
+            "restatedSignedBias": -0.03702622148302475,
+            "absoluteWapeChange": 0.0009041558327944621,
+            "relativeWapeChange": 0.002187758291355202,
+            "affectedCaseCount": 7,
+            "unaffectedCaseCount": 74157
+          }
+        },
+        "M2-CHAN-SCL01": {
+          "status": "PARTIAL_COMPLETE_SCOPES_LABEL_ONLY_RESCORE",
+          "stableModelId": "M2-CHAN-SCL01",
+          "variantType": "raw_candidate",
+          "originalCaseCount": 74320,
+          "sameCaseCount": 74164,
+          "blockedCaseCount": 156,
+          "blockedStatusCounts": {
+            "BLOCKED_UNRESOLVED_REVERSAL": 156
+          },
+          "postingAuthorityMismatchCount": 59,
+          "postingTime": {
+            "actualDefinitionId": "M2-ACTUAL-POSTING-TIME-01",
+            "point": {
+              "status": "DEFINED",
+              "workCount": 2646,
+              "caseCount": 74164,
+              "actualAbsoluteTotal": 496368544.23549765,
+              "absoluteErrorTotal": 327897508.6707711,
+              "signedErrorTotal": 177614951.51196563,
+              "wape": 0.6605928447295062,
+              "signedBias": 0.35782878180873967,
+              "absoluteBias": 0.35782878180873967,
+              "mae": 4421.248970804853,
+              "medianAbsoluteError": 30.07985352057814
+            },
+            "occurrence": {
+              "status": "NOT_COMPUTABLE_OCCURRENCE_PROBABILITY_MISSING"
+            },
+            "conditionalAmount": {
+              "status": "NOT_COMPUTABLE_CONDITIONAL_AMOUNT_PREDICTION_MISSING"
+            },
+            "reversal": {
+              "status": "NOT_COMPUTABLE_REVERSAL_PREDICTION_MISSING",
+              "occurrence": {},
+              "amount": {},
+              "calibration": {}
+            },
+            "topRevenueAttribution": {
+              "status": "POSTHOC_FUTURE_ACTUAL_ATTRIBUTION_ONLY",
+              "futureActualUsed": true,
+              "allowedForFittingSelectionOrGate": false
+            }
+          },
+          "reversalRestated": {
+            "actualDefinitionId": "M2-ACTUAL-REVERSAL-RESTATEMENT-01",
+            "point": {
+              "status": "DEFINED",
+              "workCount": 2646,
+              "caseCount": 74164,
+              "actualAbsoluteTotal": 496048396.64549786,
+              "absoluteErrorTotal": 328217398.300349,
+              "signedErrorTotal": 177935099.1019656,
+              "wape": 0.6616640644741572,
+              "signedBias": 0.3587051189062251,
+              "absoluteBias": 0.3587051189062251,
+              "mae": 4425.562244489901,
+              "medianAbsoluteError": 30.117654305974
+            },
+            "occurrence": {
+              "status": "NOT_COMPUTABLE_OCCURRENCE_PROBABILITY_MISSING"
+            },
+            "conditionalAmount": {
+              "status": "NOT_COMPUTABLE_CONDITIONAL_AMOUNT_PREDICTION_MISSING"
+            },
+            "reversal": {
+              "status": "NOT_COMPUTABLE_REVERSAL_PREDICTION_MISSING",
+              "occurrence": {},
+              "amount": {},
+              "calibration": {}
+            },
+            "topRevenueAttribution": {
+              "status": "POSTHOC_FUTURE_ACTUAL_ATTRIBUTION_ONLY",
+              "futureActualUsed": true,
+              "allowedForFittingSelectionOrGate": false
+            }
+          },
+          "pairedActualDefinitionImpact": {
+            "status": "PAIRED_LABEL_DEFINITION_IMPACT_NOT_MODEL_IMPROVEMENT",
+            "sameCaseCount": 74164,
+            "postingTimeWape": 0.6605928447295062,
+            "postingTimeSignedBias": 0.35782878180873967,
+            "restatedWape": 0.6616640644741572,
+            "restatedSignedBias": 0.3587051189062251,
+            "absoluteWapeChange": 0.0010712197446509641,
+            "relativeWapeChange": 0.0016216036143861245,
+            "affectedCaseCount": 7,
+            "unaffectedCaseCount": 74157
+          }
+        }
+      },
+      "pairedAgainstFallback": {
+        "M2-WORK-TSB01": {
+          "versus": "M2-WORK-LG01",
+          "postingTime": {
+            "caseCount": 74164,
+            "meanPairedAbsoluteErrorImprovement": -650.1601740128607,
+            "medianPairedAbsoluteErrorImprovement": -3.5303136629111673,
+            "absoluteWapeFva": -0.0971424956425368,
+            "relativeWapeFva": -0.2350412889429665
+          },
+          "reversalRestated": {
+            "caseCount": 74164,
+            "meanPairedAbsoluteErrorImprovement": -650.1905064737309,
+            "medianPairedAbsoluteErrorImprovement": -3.5355757982015312,
+            "absoluteWapeFva": -0.0972097260029613,
+            "relativeWapeFva": -0.2346905277516973
+          }
+        },
+        "M2-WORK-TSBB01": {
+          "versus": "M2-WORK-LG01",
+          "postingTime": {
+            "caseCount": 74164,
+            "meanPairedAbsoluteErrorImprovement": -223.21688543198107,
+            "medianPairedAbsoluteErrorImprovement": -0.8255746923237642,
+            "absoluteWapeFva": -0.03335154349209546,
+            "relativeWapeFva": -0.0806957832282309
+          },
+          "reversalRestated": {
+            "caseCount": 74164,
+            "meanPairedAbsoluteErrorImprovement": -223.2333136049936,
+            "medianPairedAbsoluteErrorImprovement": -0.8281135245772451,
+            "absoluteWapeFva": -0.03337552461042087,
+            "relativeWapeFva": -0.08057752867826018
+          }
+        },
+        "M2-WORK-TSBB01::selected_pipeline": {
+          "versus": "M2-WORK-LG01",
+          "postingTime": {
+            "caseCount": 74164,
+            "meanPairedAbsoluteErrorImprovement": 0,
+            "medianPairedAbsoluteErrorImprovement": 0,
+            "absoluteWapeFva": 0,
+            "relativeWapeFva": 0
+          },
+          "reversalRestated": {
+            "caseCount": 74164,
+            "meanPairedAbsoluteErrorImprovement": 0,
+            "medianPairedAbsoluteErrorImprovement": 0,
+            "absoluteWapeFva": 0,
+            "relativeWapeFva": 0
+          }
+        },
+        "M2-WORK-LC01": {
+          "versus": "M2-WORK-LG01",
+          "postingTime": {
+            "caseCount": 74164,
+            "meanPairedAbsoluteErrorImprovement": -1412.752557057821,
+            "medianPairedAbsoluteErrorImprovement": -0.01079758187199431,
+            "absoluteWapeFva": -0.21108384457158236,
+            "relativeWapeFva": -0.5107282716485659
+          },
+          "reversalRestated": {
+            "caseCount": 74164,
+            "meanPairedAbsoluteErrorImprovement": -1411.5587471296685,
+            "medianPairedAbsoluteErrorImprovement": -0.010836069377388569,
+            "absoluteWapeFva": -0.21104159116339488,
+            "relativeWapeFva": -0.5095113878439073
+          }
+        },
+        "M2-WORK-LC01::selected_pipeline": {
+          "versus": "M2-WORK-LG01",
+          "postingTime": {
+            "caseCount": 74164,
+            "meanPairedAbsoluteErrorImprovement": 0.1346857015637729,
+            "medianPairedAbsoluteErrorImprovement": 0,
+            "absoluteWapeFva": 0.000020123818252781867,
+            "relativeWapeFva": 0.00004869061834678057
+          },
+          "reversalRestated": {
+            "caseCount": 74164,
+            "meanPairedAbsoluteErrorImprovement": 0.1346857015637729,
+            "medianPairedAbsoluteErrorImprovement": 0,
+            "absoluteWapeFva": 0.000020136806082093894,
+            "relativeWapeFva": 0.000048615687348929626
+          }
+        },
+        "M2-CHAN-SCL01": {
+          "versus": "M2-WORK-LG01",
+          "postingTime": {
+            "caseCount": 74164,
+            "meanPairedAbsoluteErrorImprovement": -1655.0959389831164,
+            "medianPairedAbsoluteErrorImprovement": -0.00006498688920682921,
+            "absoluteWapeFva": -0.2472931386250633,
+            "relativeWapeFva": -0.5983385300607282
+          },
+          "reversalRestated": {
+            "caseCount": 74164,
+            "meanPairedAbsoluteErrorImprovement": -1655.1457615475306,
+            "medianPairedAbsoluteErrorImprovement": -0.00006309355148190199,
+            "absoluteWapeFva": -0.2474601895490905,
+            "relativeWapeFva": -0.597435718325567
+          },
+          "ranking": {
+            "postingTime": {
+              "status": "WORK_CLUSTER_RANKING_SIGNAL_WITH_TIME_BLOCKS_AVAILABLE",
+              "caseCount": 74164,
+              "workCount": 2646,
+              "groupCount": 39,
+              "weighting": "equal_origin_horizon_cell_weight",
+              "candidate": {
+                "groupCount": 39,
+                "meanSpearman": 0.9051098797238206,
+                "meanKendallTauB": 0.7587649807580584,
+                "meanTopRevenueCapture": {
+                  "0.01": 0.56396322115961,
+                  "0.05": 0.8517050371024959,
+                  "0.1": 0.9118281752356714
+                }
+              },
+              "fallback": {
+                "groupCount": 39,
+                "meanSpearman": 0.901490987808252,
+                "meanKendallTauB": 0.753981953832229,
+                "meanTopRevenueCapture": {
+                  "0.01": 0.5609860449239212,
+                  "0.05": 0.839464864520784,
+                  "0.1": 0.9084824904851845
+                }
+              },
+              "difference": {},
+              "workClusterBootstrap": {
+                "method": "full_standard_work_cluster_resample_recompute_within_cell_ranks",
+                "approximationFromFixedRankContributions": false,
+                "clusterUnit": "standardWorkId",
+                "clusterCount": 2646,
+                "iterations": 2000,
+                "seed": 20260728,
+                "meanSpearmanDifference95": {
+                  "lower95": 0.002817995907861206,
+                  "upper95": 0.004430151891029574
+                },
+                "meanKendallTauBDifference95": {
+                  "lower95": 0.003662131915623222,
+                  "upper95": 0.0059116094528052525
+                },
+                "meanTopRevenueCaptureDifference95": {
+                  "0.01": {
+                    "lower95": -0.014241534142189132,
+                    "upper95": 0.03184899796390986
+                  },
+                  "0.05": {
+                    "lower95": 0.00025806092491868234,
+                    "upper95": 0.03144949925245412
+                  },
+                  "0.1": {
+                    "lower95": 0.00021720585902437978,
+                    "upper95": 0.011425561186181772
+                  }
+                }
+              },
+              "timeIndependence": {
+                "status": "INDEPENDENT_TIME_BLOCKS_AVAILABLE",
+                "independentTimeBlockCount": 11,
+                "minimumIndependentTimeBlocks": 2,
+                "interval": null
+              }
+            },
+            "reversalRestated": {
+              "status": "WORK_CLUSTER_RANKING_SIGNAL_WITH_TIME_BLOCKS_AVAILABLE",
+              "caseCount": 74164,
+              "workCount": 2646,
+              "groupCount": 39,
+              "weighting": "equal_origin_horizon_cell_weight",
+              "candidate": {
+                "groupCount": 39,
+                "meanSpearman": 0.9048916360652532,
+                "meanKendallTauB": 0.7584317770377229,
+                "meanTopRevenueCapture": {
+                  "0.01": 0.5639341527697356,
+                  "0.05": 0.851602042284018,
+                  "0.1": 0.9117659181597302
+                }
+              },
+              "fallback": {
+                "groupCount": 39,
+                "meanSpearman": 0.901202558915952,
+                "meanKendallTauB": 0.7535793966531333,
+                "meanTopRevenueCapture": {
+                  "0.01": 0.5606406697253001,
+                  "0.05": 0.8393369601064185,
+                  "0.1": 0.9084194472554505
+                }
+              },
+              "difference": {},
+              "workClusterBootstrap": {
+                "method": "full_standard_work_cluster_resample_recompute_within_cell_ranks",
+                "approximationFromFixedRankContributions": false,
+                "clusterUnit": "standardWorkId",
+                "clusterCount": 2646,
+                "iterations": 2000,
+                "seed": 20260728,
+                "meanSpearmanDifference95": {
+                  "lower95": 0.002891104890769035,
+                  "upper95": 0.004559528067260004
+                },
+                "meanKendallTauBDifference95": {
+                  "lower95": 0.0037500128226660443,
+                  "upper95": 0.006004508147449391
+                },
+                "meanTopRevenueCaptureDifference95": {
+                  "0.01": {
+                    "lower95": -0.013849330812682031,
+                    "upper95": 0.0319734145373765
+                  },
+                  "0.05": {
+                    "lower95": 0.0002584797807002204,
+                    "upper95": 0.03149815239496609
+                  },
+                  "0.1": {
+                    "lower95": 0.0002176715157632756,
+                    "upper95": 0.01142461273203395
+                  }
+                }
+              },
+              "timeIndependence": {
+                "status": "INDEPENDENT_TIME_BLOCKS_AVAILABLE",
+                "independentTimeBlockCount": 11,
+                "minimumIndependentTimeBlocks": 2,
+                "interval": null
+              }
+            }
+          }
+        }
+      }
+    },
+    "CG-WORK-SS-OVERLAP-5203-H36": {
+      "postingComparabilityGroupId": "CG-WORK-SS-OVERLAP-5203-H36::POSTING_TIME",
+      "restatedComparabilityGroupId": "CG-WORK-SS-OVERLAP-5203-H36::REVERSAL_RESTATED",
+      "crossActualDefinitionWinnerAllowed": false,
+      "fallbackId": "M2-WORK-OA03",
+      "models": {
+        "M2-WORK-OA03": {
+          "status": "PARTIAL_COMPLETE_SCOPES_LABEL_ONLY_RESCORE",
+          "stableModelId": "M2-WORK-OA03",
+          "variantType": "operational_fallback",
+          "originalCaseCount": 5203,
+          "sameCaseCount": 5176,
+          "blockedCaseCount": 27,
+          "blockedStatusCounts": {
+            "BLOCKED_UNRESOLVED_REVERSAL": 27
+          },
+          "postingAuthorityMismatchCount": 18,
+          "postingTime": {
+            "actualDefinitionId": "M2-ACTUAL-POSTING-TIME-01",
+            "point": {
+              "status": "DEFINED",
+              "workCount": 753,
+              "caseCount": 5176,
+              "actualAbsoluteTotal": 45344665.481199965,
+              "absoluteErrorTotal": 17193982.491315257,
+              "signedErrorTotal": 4440228.4726013895,
+              "wape": 0.37918423939953716,
+              "signedBias": 0.09792173843342877,
+              "absoluteBias": 0.09792173843342877,
+              "mae": 3321.8667873483882,
+              "medianAbsoluteError": 170.40625
+            },
+            "occurrence": {
+              "status": "NOT_COMPUTABLE_OCCURRENCE_PROBABILITY_MISSING"
+            },
+            "conditionalAmount": {
+              "status": "NOT_COMPUTABLE_CONDITIONAL_AMOUNT_PREDICTION_MISSING"
+            },
+            "reversal": {
+              "status": "NOT_COMPUTABLE_REVERSAL_PREDICTION_MISSING",
+              "occurrence": {},
+              "amount": {},
+              "calibration": {}
+            },
+            "topRevenueAttribution": {
+              "status": "POSTHOC_FUTURE_ACTUAL_ATTRIBUTION_ONLY",
+              "futureActualUsed": true,
+              "allowedForFittingSelectionOrGate": false
+            }
+          },
+          "reversalRestated": {
+            "actualDefinitionId": "M2-ACTUAL-REVERSAL-RESTATEMENT-01",
+            "point": {
+              "status": "DEFINED",
+              "workCount": 753,
+              "caseCount": 5176,
+              "actualAbsoluteTotal": 45005300.71439994,
+              "absoluteErrorTotal": 16940448.493653942,
+              "signedErrorTotal": 4778616.651801386,
+              "wape": 0.376410072252526,
+              "signedBias": 0.10617897394189425,
+              "absoluteBias": 0.10617897394189425,
+              "mae": 3272.8841757445794,
+              "medianAbsoluteError": 170.79008782969962
+            },
+            "occurrence": {
+              "status": "NOT_COMPUTABLE_OCCURRENCE_PROBABILITY_MISSING"
+            },
+            "conditionalAmount": {
+              "status": "NOT_COMPUTABLE_CONDITIONAL_AMOUNT_PREDICTION_MISSING"
+            },
+            "reversal": {
+              "status": "NOT_COMPUTABLE_REVERSAL_PREDICTION_MISSING",
+              "occurrence": {},
+              "amount": {},
+              "calibration": {}
+            },
+            "topRevenueAttribution": {
+              "status": "POSTHOC_FUTURE_ACTUAL_ATTRIBUTION_ONLY",
+              "futureActualUsed": true,
+              "allowedForFittingSelectionOrGate": false
+            }
+          },
+          "pairedActualDefinitionImpact": {
+            "status": "PAIRED_LABEL_DEFINITION_IMPACT_NOT_MODEL_IMPROVEMENT",
+            "sameCaseCount": 5176,
+            "postingTimeWape": 0.37918423939953716,
+            "postingTimeSignedBias": 0.09792173843342877,
+            "restatedWape": 0.376410072252526,
+            "restatedSignedBias": 0.10617897394189425,
+            "absoluteWapeChange": -0.002774167147011175,
+            "relativeWapeChange": -0.00731614571165784,
+            "affectedCaseCount": 119,
+            "unaffectedCaseCount": 5057
+          }
+        },
+        "M2-WORK-LG01": {
+          "status": "PARTIAL_COMPLETE_SCOPES_LABEL_ONLY_RESCORE",
+          "stableModelId": "M2-WORK-LG01",
+          "variantType": "research_baseline",
+          "originalCaseCount": 5203,
+          "sameCaseCount": 5176,
+          "blockedCaseCount": 27,
+          "blockedStatusCounts": {
+            "BLOCKED_UNRESOLVED_REVERSAL": 27
+          },
+          "postingAuthorityMismatchCount": 18,
+          "postingTime": {
+            "actualDefinitionId": "M2-ACTUAL-POSTING-TIME-01",
+            "point": {
+              "status": "DEFINED",
+              "workCount": 753,
+              "caseCount": 5176,
+              "actualAbsoluteTotal": 45344665.481199965,
+              "absoluteErrorTotal": 12674439.491553271,
+              "signedErrorTotal": -5565798.33405583,
+              "wape": 0.279513353049393,
+              "signedBias": -0.12274428039089684,
+              "absoluteBias": 0.12274428039089684,
+              "mae": 2448.6938739476955,
+              "medianAbsoluteError": 63.84976487781449
+            },
+            "occurrence": {
+              "status": "NOT_COMPUTABLE_OCCURRENCE_PROBABILITY_MISSING"
+            },
+            "conditionalAmount": {
+              "status": "NOT_COMPUTABLE_CONDITIONAL_AMOUNT_PREDICTION_MISSING"
+            },
+            "reversal": {
+              "status": "NOT_COMPUTABLE_REVERSAL_PREDICTION_MISSING",
+              "occurrence": {},
+              "amount": {},
+              "calibration": {}
+            },
+            "topRevenueAttribution": {
+              "status": "POSTHOC_FUTURE_ACTUAL_ATTRIBUTION_ONLY",
+              "futureActualUsed": true,
+              "allowedForFittingSelectionOrGate": false
+            }
+          },
+          "reversalRestated": {
+            "actualDefinitionId": "M2-ACTUAL-REVERSAL-RESTATEMENT-01",
+            "point": {
+              "status": "DEFINED",
+              "workCount": 753,
+              "caseCount": 5176,
+              "actualAbsoluteTotal": 45005300.71439994,
+              "absoluteErrorTotal": 12438235.48524196,
+              "signedErrorTotal": -5227410.154855825,
+              "wape": 0.2763726780579473,
+              "signedBias": -0.1161509882586621,
+              "absoluteBias": 0.1161509882586621,
+              "mae": 2403.059405958648,
+              "medianAbsoluteError": 63.84976487781449
+            },
+            "occurrence": {
+              "status": "NOT_COMPUTABLE_OCCURRENCE_PROBABILITY_MISSING"
+            },
+            "conditionalAmount": {
+              "status": "NOT_COMPUTABLE_CONDITIONAL_AMOUNT_PREDICTION_MISSING"
+            },
+            "reversal": {
+              "status": "NOT_COMPUTABLE_REVERSAL_PREDICTION_MISSING",
+              "occurrence": {},
+              "amount": {},
+              "calibration": {}
+            },
+            "topRevenueAttribution": {
+              "status": "POSTHOC_FUTURE_ACTUAL_ATTRIBUTION_ONLY",
+              "futureActualUsed": true,
+              "allowedForFittingSelectionOrGate": false
+            }
+          },
+          "pairedActualDefinitionImpact": {
+            "status": "PAIRED_LABEL_DEFINITION_IMPACT_NOT_MODEL_IMPROVEMENT",
+            "sameCaseCount": 5176,
+            "postingTimeWape": 0.279513353049393,
+            "postingTimeSignedBias": -0.12274428039089684,
+            "restatedWape": 0.2763726780579473,
+            "restatedSignedBias": -0.1161509882586621,
+            "absoluteWapeChange": -0.0031406749914457133,
+            "relativeWapeChange": -0.011236225236404773,
+            "affectedCaseCount": 119,
+            "unaffectedCaseCount": 5057
+          }
+        },
+        "M2-WORK-LC01": {
+          "status": "PARTIAL_COMPLETE_SCOPES_LABEL_ONLY_RESCORE",
+          "stableModelId": "M2-WORK-LC01",
+          "variantType": "raw_candidate",
+          "originalCaseCount": 5203,
+          "sameCaseCount": 5176,
+          "blockedCaseCount": 27,
+          "blockedStatusCounts": {
+            "BLOCKED_UNRESOLVED_REVERSAL": 27
+          },
+          "postingAuthorityMismatchCount": 18,
+          "postingTime": {
+            "actualDefinitionId": "M2-ACTUAL-POSTING-TIME-01",
+            "point": {
+              "status": "DEFINED",
+              "workCount": 753,
+              "caseCount": 5176,
+              "actualAbsoluteTotal": 45344665.481199965,
+              "absoluteErrorTotal": 12567186.336602958,
+              "signedErrorTotal": -3690185.448723667,
+              "wape": 0.2771480658913087,
+              "signedBias": -0.08138080653067402,
+              "absoluteBias": 0.08138080653067402,
+              "mae": 2427.972630719273,
+              "medianAbsoluteError": 64.70318209625742
+            },
+            "occurrence": {
+              "status": "DEFINED",
+              "caseCount": 5176,
+              "prevalence": 0.9350850077279753,
+              "brier": 0.05422866456963738,
+              "logLoss": 0.2004015457953236,
+              "prAucTrapezoidal": 0.9807875823734875,
+              "averagePrecision": 0.9800289861136584,
+              "rocAucAuxiliary": 0.787362566410862
+            },
+            "conditionalAmount": {
+              "status": "DEFINED",
+              "caseCount": 5176,
+              "positiveCaseCount": 4844,
+              "wape": 0.2767740371528167,
+              "signedBias": -0.06304306158895627,
+              "mae": 2572.0992451026154,
+              "logMae": 0.7614946359411295
+            },
+            "reversal": {
+              "status": "DEFINED_AVAILABLE_OUTPUTS",
+              "caseCount": 5176,
+              "reversalCaseCount": 280,
+              "occurrence": {
+                "status": "NOT_COMPUTABLE_REVERSAL_OCCURRENCE_PROBABILITY_MISSING"
+              },
+              "amount": {
+                "status": "DEFINED",
+                "wape": 2.391181958933811,
+                "signedBias": 0.4800283415296839,
+                "mae": 10.312873048910555
+              },
+              "calibration": {
+                "status": "NOT_COMPUTABLE_REVERSAL_OCCURRENCE_PROBABILITY_MISSING"
+              }
+            },
+            "topRevenueAttribution": {
+              "status": "POSTHOC_FUTURE_ACTUAL_ATTRIBUTION_ONLY",
+              "futureActualUsed": true,
+              "allowedForFittingSelectionOrGate": false
+            }
+          },
+          "reversalRestated": {
+            "actualDefinitionId": "M2-ACTUAL-REVERSAL-RESTATEMENT-01",
+            "point": {
+              "status": "DEFINED",
+              "workCount": 753,
+              "caseCount": 5176,
+              "actualAbsoluteTotal": 45005300.71439994,
+              "absoluteErrorTotal": 12413935.666835034,
+              "signedErrorTotal": -3351797.269523662,
+              "wape": 0.27583274569395466,
+              "signedBias": -0.07447561101288715,
+              "absoluteBias": 0.07447561101288715,
+              "mae": 2398.364696065501,
+              "medianAbsoluteError": 64.96147509000278
+            },
+            "occurrence": {
+              "status": "DEFINED",
+              "caseCount": 5176,
+              "prevalence": 0.9346986089644513,
+              "brier": 0.054797486223994885,
+              "logLoss": 0.2043240889422333,
+              "prAucTrapezoidal": 0.9793313708944735,
+              "averagePrecision": 0.978578889559591,
+              "rocAucAuxiliary": 0.7768345274466686
+            },
+            "conditionalAmount": {
+              "status": "DEFINED",
+              "caseCount": 5176,
+              "positiveCaseCount": 4838,
+              "wape": 0.2770054225543507,
+              "signedBias": -0.06282179521475294,
+              "mae": 2576.831819259606,
+              "logMae": 0.7635350490040839
+            },
+            "reversal": {
+              "status": "DEFINED_AVAILABLE_OUTPUTS",
+              "caseCount": 5176,
+              "reversalCaseCount": 280,
+              "occurrence": {
+                "status": "NOT_COMPUTABLE_REVERSAL_OCCURRENCE_PROBABILITY_MISSING"
+              },
+              "amount": {
+                "status": "DEFINED",
+                "wape": 2.391181958933811,
+                "signedBias": 0.4800283415296839,
+                "mae": 10.312873048910555
+              },
+              "calibration": {
+                "status": "NOT_COMPUTABLE_REVERSAL_OCCURRENCE_PROBABILITY_MISSING"
+              }
+            },
+            "topRevenueAttribution": {
+              "status": "POSTHOC_FUTURE_ACTUAL_ATTRIBUTION_ONLY",
+              "futureActualUsed": true,
+              "allowedForFittingSelectionOrGate": false
+            }
+          },
+          "pairedActualDefinitionImpact": {
+            "status": "PAIRED_LABEL_DEFINITION_IMPACT_NOT_MODEL_IMPROVEMENT",
+            "sameCaseCount": 5176,
+            "postingTimeWape": 0.2771480658913087,
+            "postingTimeSignedBias": -0.08138080653067402,
+            "restatedWape": 0.27583274569395466,
+            "restatedSignedBias": -0.07447561101288715,
+            "absoluteWapeChange": -0.0013153201973540307,
+            "relativeWapeChange": -0.0047459115152904685,
+            "affectedCaseCount": 119,
+            "unaffectedCaseCount": 5057
+          }
+        },
+        "M2-WORK-LC01::selected_pipeline": {
+          "status": "PARTIAL_COMPLETE_SCOPES_LABEL_ONLY_RESCORE",
+          "stableModelId": "M2-WORK-LC01",
+          "variantType": "selected_pipeline",
+          "originalCaseCount": 5203,
+          "sameCaseCount": 5176,
+          "blockedCaseCount": 27,
+          "blockedStatusCounts": {
+            "BLOCKED_UNRESOLVED_REVERSAL": 27
+          },
+          "postingAuthorityMismatchCount": 18,
+          "postingTime": {
+            "actualDefinitionId": "M2-ACTUAL-POSTING-TIME-01",
+            "point": {
+              "status": "DEFINED",
+              "workCount": 753,
+              "caseCount": 5176,
+              "actualAbsoluteTotal": 45344665.481199965,
+              "absoluteErrorTotal": 12674439.491553286,
+              "signedErrorTotal": -5565798.334055815,
+              "wape": 0.27951335304939334,
+              "signedBias": -0.12274428039089652,
+              "absoluteBias": 0.12274428039089652,
+              "mae": 2448.693873947698,
+              "medianAbsoluteError": 63.84976487781449
+            },
+            "occurrence": {
+              "status": "NOT_COMPUTABLE_OCCURRENCE_PROBABILITY_MISSING"
+            },
+            "conditionalAmount": {
+              "status": "NOT_COMPUTABLE_CONDITIONAL_AMOUNT_PREDICTION_MISSING"
+            },
+            "reversal": {
+              "status": "NOT_COMPUTABLE_REVERSAL_PREDICTION_MISSING",
+              "occurrence": {},
+              "amount": {},
+              "calibration": {}
+            },
+            "topRevenueAttribution": {
+              "status": "POSTHOC_FUTURE_ACTUAL_ATTRIBUTION_ONLY",
+              "futureActualUsed": true,
+              "allowedForFittingSelectionOrGate": false
+            }
+          },
+          "reversalRestated": {
+            "actualDefinitionId": "M2-ACTUAL-REVERSAL-RESTATEMENT-01",
+            "point": {
+              "status": "DEFINED",
+              "workCount": 753,
+              "caseCount": 5176,
+              "actualAbsoluteTotal": 45005300.71439994,
+              "absoluteErrorTotal": 12438235.485241976,
+              "signedErrorTotal": -5227410.15485581,
+              "wape": 0.27637267805794763,
+              "signedBias": -0.11615098825866178,
+              "absoluteBias": 0.11615098825866178,
+              "mae": 2403.0594059586506,
+              "medianAbsoluteError": 63.84976487781449
+            },
+            "occurrence": {
+              "status": "NOT_COMPUTABLE_OCCURRENCE_PROBABILITY_MISSING"
+            },
+            "conditionalAmount": {
+              "status": "NOT_COMPUTABLE_CONDITIONAL_AMOUNT_PREDICTION_MISSING"
+            },
+            "reversal": {
+              "status": "NOT_COMPUTABLE_REVERSAL_PREDICTION_MISSING",
+              "occurrence": {},
+              "amount": {},
+              "calibration": {}
+            },
+            "topRevenueAttribution": {
+              "status": "POSTHOC_FUTURE_ACTUAL_ATTRIBUTION_ONLY",
+              "futureActualUsed": true,
+              "allowedForFittingSelectionOrGate": false
+            }
+          },
+          "pairedActualDefinitionImpact": {
+            "status": "PAIRED_LABEL_DEFINITION_IMPACT_NOT_MODEL_IMPROVEMENT",
+            "sameCaseCount": 5176,
+            "postingTimeWape": 0.27951335304939334,
+            "postingTimeSignedBias": -0.12274428039089652,
+            "restatedWape": 0.27637267805794763,
+            "restatedSignedBias": -0.11615098825866178,
+            "absoluteWapeChange": -0.0031406749914457133,
+            "relativeWapeChange": -0.011236225236404773,
+            "affectedCaseCount": 119,
+            "unaffectedCaseCount": 5057
+          }
+        }
+      },
+      "pairedAgainstFallback": {
+        "M2-WORK-LG01": {
+          "versus": "M2-WORK-OA03",
+          "postingTime": {
+            "caseCount": 5176,
+            "meanPairedAbsoluteErrorImprovement": 873.1729134006963,
+            "medianPairedAbsoluteErrorImprovement": 13.382892450329752,
+            "absoluteWapeFva": 0.09967088635014415,
+            "relativeWapeFva": 0.26285608945134287
+          },
+          "reversalRestated": {
+            "caseCount": 5176,
+            "meanPairedAbsoluteErrorImprovement": 869.8247697859332,
+            "medianPairedAbsoluteErrorImprovement": 13.426833731701196,
+            "absoluteWapeFva": 0.10003739419457869,
+            "relativeWapeFva": 0.2657670492076142
+          }
+        },
+        "M2-WORK-LC01": {
+          "versus": "M2-WORK-OA03",
+          "postingTime": {
+            "caseCount": 5176,
+            "meanPairedAbsoluteErrorImprovement": 893.894156629116,
+            "medianPairedAbsoluteErrorImprovement": 14.262146672166256,
+            "absoluteWapeFva": 0.10203617350822847,
+            "relativeWapeFva": 0.2690939203322621
+          },
+          "reversalRestated": {
+            "caseCount": 5176,
+            "meanPairedAbsoluteErrorImprovement": 874.5194796790763,
+            "medianPairedAbsoluteErrorImprovement": 14.014358833325884,
+            "absoluteWapeFva": 0.10057732655857132,
+            "relativeWapeFva": 0.2672014751270949
+          }
+        },
+        "M2-WORK-LC01::selected_pipeline": {
+          "versus": "M2-WORK-OA03",
+          "postingTime": {
+            "caseCount": 5176,
+            "meanPairedAbsoluteErrorImprovement": 873.1729134006938,
+            "medianPairedAbsoluteErrorImprovement": 13.382892450329752,
+            "absoluteWapeFva": 0.09967088635014382,
+            "relativeWapeFva": 0.262856089451342
+          },
+          "reversalRestated": {
+            "caseCount": 5176,
+            "meanPairedAbsoluteErrorImprovement": 869.8247697859307,
+            "medianPairedAbsoluteErrorImprovement": 13.426833731701196,
+            "absoluteWapeFva": 0.10003739419457836,
+            "relativeWapeFva": 0.2657670492076133
+          }
+        }
+      }
+    },
+    "CG-PORT-SS-30CELLS": {
+      "postingComparabilityGroupId": "CG-PORT-SS-30CELLS::POSTING_TIME",
+      "restatedComparabilityGroupId": "CG-PORT-SS-30CELLS::REVERSAL_RESTATED",
+      "crossActualDefinitionWinnerAllowed": false,
+      "fallbackId": "M2-BASE-CLASSIC01::M2-EXP-PORTFOLIO-ETS-01:SNAIVE",
+      "models": {
+        "M2-PORT-ETS01": {
+          "status": "NOT_RESCORABLE_NO_COMPLETE_AUTHORITY_CASES",
+          "originalCaseCount": 30,
+          "blockedCaseCount": 30,
+          "blockedStatusCounts": {
+            "BLOCKED_UNRESOLVED_REVERSAL": 30
+          }
+        },
+        "M2-BASE-CLASSIC01::M2-EXP-PORTFOLIO-ETS-01:SNAIVE": {
+          "status": "NOT_RESCORABLE_NO_COMPLETE_AUTHORITY_CASES",
+          "originalCaseCount": 30,
+          "blockedCaseCount": 30,
+          "blockedStatusCounts": {
+            "BLOCKED_UNRESOLVED_REVERSAL": 30
+          }
+        }
+      },
+      "pairedAgainstFallback": {}
+    }
+  },
+  "deterministicExecution": {
+    "executionCount": 2,
+    "comparedFileCount": 7,
+    "byteIdentical": true
+  },
+  "authorizationCounters": {
+    "privateAuthorityRowReadCount": 190663,
+    "frozenPredictionRowReadCount": 716801,
+    "modelExecutionCount": 0,
+    "trainingCount": 0,
+    "fittingCount": 0,
+    "tuningCount": 0,
+    "selectionCount": 0,
+    "predictionRowsGenerated": 0,
+    "predictionRowsModified": 0,
+    "productionChangeCount": 0
+  },
+  "activation": {
+    "allowed": false,
+    "reason": "M2_EVALUATION_V2_2_BLOCKED_UNRESOLVED_REVERSAL"
+  },
+  "publicPrivacy": {
+    "aggregateOnly": true,
+    "containsRowLevelIdentity": false,
+    "containsPrivatePath": false
+  }
+}

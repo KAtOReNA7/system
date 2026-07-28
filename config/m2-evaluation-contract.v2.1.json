@@ -1,0 +1,259 @@
+{
+  "schema": "m2.evaluation_contract.v2.1",
+  "version": "2.1",
+  "asOf": "2026-07-28",
+  "status": "ACTIVE_FOR_DEVELOPMENT_EVALUATION_ONLY",
+  "activationScope": "development_evaluation_only",
+  "activationCondition": "effective only when this exact Git head passes both Linux and Windows CI",
+  "explicitlyNotAuthorized": [
+    "model_execution",
+    "training",
+    "fitting",
+    "tuning",
+    "model_selection",
+    "promotion",
+    "prediction_generation",
+    "production_change",
+    "final_holdout",
+    "canary",
+    "release"
+  ],
+  "targetContract": {
+    "target": "future_sales_share_cash",
+    "cashAuthority": "user_reviewed_sales_share_workbook_membership",
+    "actualDefinition": "sales_share_cash_actual_only",
+    "excludedCash": [
+      "buyout_cash",
+      "other_non_sales_share_cash"
+    ],
+    "pureBuyout": {
+      "forecast": null,
+      "status": "ABSTAIN",
+      "reason": "buyout_outside_m2_forecast_scope"
+    }
+  },
+  "evaluationIdentity": {
+    "requiredFields": [
+      "metricDefinitionId",
+      "metricDefinitionVersion",
+      "stableModelId",
+      "displayNameZh",
+      "displayNameEn",
+      "experimentId",
+      "armId",
+      "variant",
+      "comparabilityGroupId",
+      "target",
+      "cashAuthority",
+      "actualDefinition",
+      "asOfContract",
+      "grain",
+      "populationId",
+      "horizonContract",
+      "evaluationFamily",
+      "caseKeyFields",
+      "artifactId",
+      "artifactSha256"
+    ],
+    "comparisonRule": "all comparison identity fields must match, or an explicit same-case intersection must be declared",
+    "separateVariantIdentities": [
+      "raw_candidate",
+      "pre_selection",
+      "selected_pipeline",
+      "operational_fallback"
+    ]
+  },
+  "pointMetrics": {
+    "metricDefinitionId": "M2-EVAL-V2.1-POINT",
+    "metricDefinitionVersion": "2.1",
+    "primaryUnit": "horizon",
+    "pooledCrossHorizonStatus": "diagnostic_only_without_preregistered_business_weights",
+    "metrics": [
+      "WAPE",
+      "signed_bias",
+      "MAE",
+      "median_absolute_error",
+      "absolute_error_p50",
+      "absolute_error_p75",
+      "absolute_error_p90",
+      "absolute_error_p95",
+      "absolute_error_p99"
+    ],
+    "strictPairedFva": {
+      "requiresExactCaseKeyAndActualParity": true,
+      "metrics": [
+        "mean_paired_absolute_error_improvement",
+        "median_paired_absolute_error_improvement",
+        "absolute_WAPE_FVA",
+        "relative_WAPE_FVA"
+      ]
+    },
+    "zeroActualDenominatorStatus": "UNDEFINED_ZERO_ACTUAL_DENOMINATOR",
+    "mase": {
+      "status": "optional",
+      "requiresStrictlyPreOriginScale": true,
+      "missingStatus": "NOT_COMPUTABLE_PRE_ORIGIN_SCALE_MISSING"
+    }
+  },
+  "topRevenueAttribution": {
+    "fractions": [
+      0.01,
+      0.05,
+      0.1
+    ],
+    "caseLevelScope": "within_origin_horizon_cell",
+    "workLevelScope": "global_aggregated_work",
+    "status": "POSTHOC_FUTURE_ACTUAL_ATTRIBUTION_ONLY",
+    "futureActualUsed": true,
+    "allowedForFittingSelectionOrGate": false,
+    "futureActualScaleBandsProhibited": true
+  },
+  "occurrenceMetrics": {
+    "metricDefinitionId": "M2-EVAL-V2.1-OCCURRENCE",
+    "metricDefinitionVersion": "2.1",
+    "actualField": "actualPositive",
+    "actualDefinition": "sales_share_cash_actual_strictly_positive",
+    "probabilityField": "occurrenceProbability",
+    "metrics": [
+      "prevalence",
+      "Brier",
+      "log_loss",
+      "PR_AUC",
+      "ROC_AUC_auxiliary",
+      "reliability_10_equal_width_bins"
+    ],
+    "frozenTrainingPrevalenceBaseline": {
+      "requiredForSkillClaim": true,
+      "missingStatus": "NOT_COMPUTABLE_FROZEN_TRAINING_BASE_RATE_MISSING"
+    },
+    "evaluationPrevalenceOracle": "descriptive_only",
+    "threshold05": "diagnostic_only_not_a_gate"
+  },
+  "conditionalAmountMetrics": {
+    "metricDefinitionId": "M2-EVAL-V2.1-CONDITIONAL-AMOUNT",
+    "metricDefinitionVersion": "2.1",
+    "predictionField": "conditionalAmountPrediction",
+    "actualField": "actualPositiveAmount",
+    "requiresIndependentReversalComponent": true,
+    "prohibitsSubstitutionFromFinalPointEstimate": true,
+    "metrics": [
+      "WAPE",
+      "signed_bias",
+      "MAE",
+      "log_MAE"
+    ]
+  },
+  "rankingMetrics": {
+    "metricDefinitionId": "M2-EVAL-V2.1-RANKING",
+    "metricDefinitionVersion": "2.1",
+    "requiresPairedCandidateAndFallback": true,
+    "group": "origin_horizon",
+    "weighting": "equal_origin_horizon_cell_weight",
+    "metrics": [
+      "Spearman",
+      "Kendall_tau_b",
+      "top_1_percent_revenue_capture",
+      "top_5_percent_revenue_capture",
+      "top_10_percent_revenue_capture"
+    ],
+    "report": [
+      "candidate",
+      "fallback",
+      "paired_difference",
+      "origin_horizon_distribution",
+      "origin_horizon_win_rate",
+      "group_count",
+      "case_count",
+      "work_count",
+      "weighting",
+      "standard_work_cluster_interval",
+      "origin_time_cluster_interval"
+    ],
+    "insufficientEvidenceStatus": "UNCONFIRMED_RANKING_SIGNAL"
+  },
+  "intervalMetrics": {
+    "metricDefinitionId": "M2-EVAL-V2.1-INTERVAL",
+    "metricDefinitionVersion": "2.1",
+    "nativeQuantileGrid": [
+      0.05,
+      0.1,
+      0.2,
+      0.5,
+      0.8,
+      0.9,
+      0.95
+    ],
+    "centralIntervals": [
+      0.9,
+      0.8,
+      0.6
+    ],
+    "metrics": [
+      "coverage",
+      "mean_width",
+      "WIS",
+      "CRPS_approximation"
+    ],
+    "slices": [
+      "horizon",
+      "maximal_adjacent_origin_time_block"
+    ],
+    "withoutFrozenReferenceStatus": "PROMISING_DEVELOPMENT_INTERVAL_EVIDENCE"
+  },
+  "portfolioMetrics": {
+    "metricDefinitionId": "M2-EVAL-V2.1-PORTFOLIO",
+    "metricDefinitionVersion": "2.1",
+    "grain": "portfolio_origin_horizon",
+    "comparison": "ETS_versus_seasonal_naive",
+    "separateByHorizon": true,
+    "report": [
+      "origin_count",
+      "paired_differences",
+      "origin_cluster_interval",
+      "small_sample_warning"
+    ]
+  },
+  "uncertainty": {
+    "seed": 20260728,
+    "bootstrapIterations": 200,
+    "workLevelUnit": "standard_work_cluster",
+    "portfolioUnit": "origin_cluster",
+    "timeBlockDefinition": "maximal_adjacent_monthly_origin_component"
+  },
+  "publicPrivacy": {
+    "minimumCaseCount": 30,
+    "minimumWorkCount": 20,
+    "minimumPortfolioOriginCount": 5,
+    "suppressionStatus": "SUPPRESSED_PRIVACY_THRESHOLD",
+    "prohibitedPublicFields": [
+      "standardWorkId",
+      "channelUid",
+      "rowLevelActual",
+      "rowLevelPrediction",
+      "privatePath",
+      "privateReceiptPath"
+    ]
+  },
+  "missingness": {
+    "missingPrediction": "MISSING_PREDICTION_NOT_ZERO",
+    "abstention": "ABSTENTION_NOT_ZERO",
+    "missingScale": "NOT_COMPUTABLE_PRE_ORIGIN_SCALE_MISSING",
+    "missingOriginVisibleRevenueScaleBand": "NOT_COMPUTABLE_ORIGIN_VISIBLE_SCALE_BAND_MISSING",
+    "missingFrozenTrainingBaseRate": "NOT_COMPUTABLE_FROZEN_TRAINING_BASE_RATE_MISSING",
+    "missingRawRows": "NOT_RESCORABLE_RAW_ROWS_UNAVAILABLE",
+    "zeroActualDenominator": "UNDEFINED_ZERO_ACTUAL_DENOMINATOR"
+  },
+  "activationGate": {
+    "required": [
+      "contract_semantics_complete",
+      "unit_tests_pass",
+      "frozen_artifact_reproduction_pass",
+      "repeated_output_byte_identical",
+      "public_artifacts_private_safe",
+      "linux_exact_head_ci_pass",
+      "windows_exact_head_ci_pass"
+    ],
+    "passStatus": "ACTIVE_FOR_DEVELOPMENT_EVALUATION_ONLY",
+    "failStatus": "DRAFT_V2_1_REVISION_INCOMPLETE"
+  }
+}

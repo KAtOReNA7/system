@@ -1,6 +1,6 @@
 {
   "schemaVersion": "development-capability-catalog.v0.1",
-  "catalogVersion": "2026-07-23",
+  "catalogVersion": "2026-07-28",
   "principles": {
     "coreDevelopmentMustNotRequirePrivateArtifacts": true,
     "missingPrivateArtifactsBlockOnlyOwningCapability": true,
@@ -130,6 +130,11 @@
           "path": "data/private-output/m2-formal-execution/m2-formal-income-facts-v1.ndjson"
         },
         {
+          "role": "formal-execution-payload",
+          "kind": "file",
+          "path": "data/private-output/m2-formal-execution/m2-formal-execution-payload-v1.json"
+        },
+        {
           "role": "formal-model-input-cache",
           "kind": "file",
           "path": "data/private-output/m2-formal-execution/m2-formal-model-input-cache-v1.pkl"
@@ -150,6 +155,72 @@
       ],
       "recovery": "Restore only from a verified encrypted authoritative-input bundle. Do not regenerate historical private inputs from public summaries.",
       "authorization": "NEW_ALGORITHM_AUTHORIZATION_REQUIRED"
+    },
+    {
+      "id": "m2-publishing-scale-audit",
+      "description": "Run the user-authorized read-only publishing-scale population, authority and training-support audit without reading a new candidate outer outcome or executing a model.",
+      "requiredTools": [],
+      "requiredPrivateArtifacts": [
+        {
+          "role": "formal-model-input-cache",
+          "kind": "file",
+          "path": "data/private-output/m2-formal-execution/m2-formal-model-input-cache-v1.pkl"
+        },
+        {
+          "role": "user-reviewed-channel-master",
+          "kind": "file",
+          "path": "data/private-output/outputs/channel-governance-20260726/M2-渠道统一与类型人工补全表-v0.2.xlsx"
+        },
+        {
+          "role": "primary-packed-training-rows",
+          "kind": "file",
+          "path": "data/private-output/m2-current-human-anchored/M2-current-channel-generative-primary-monthly-private-v0.2.ndjson"
+        },
+        {
+          "role": "strict-packed-training-rows",
+          "kind": "file",
+          "path": "data/private-output/m2-current-human-anchored/M2-current-channel-generative-auxiliary-monthly-private-v0.2.ndjson"
+        }
+      ],
+      "canonicalValidationCommands": [
+        "npm run doctor:capability -- m2-publishing-scale-audit",
+        "npm run check:m2:publishing-scale-audit"
+      ],
+      "recovery": "Restore only the capability-scoped cache, channel master and packed training rows from a verified encrypted bundle. Missing inputs block only this read-only scale audit; public development, diagnostics, tests and startup remain available.",
+      "authorization": "USER_AUTHORIZED_READ_ONLY_PUBLISHING_SCALE_AUDIT_2026_07_28"
+    },
+    {
+      "id": "m2-publishing-scale-contract-calibration",
+      "description": "Run the user-authorized training-side publishing-scale learning-curve and parameter-calibration study after K7A exact-head CI, without reading candidate outer outcomes or sealed holdout data.",
+      "requiredTools": [],
+      "requiredPrivateArtifacts": [
+        {
+          "role": "strict-packed-training-rows",
+          "kind": "file",
+          "path": "data/private-output/m2-current-human-anchored/M2-current-channel-generative-auxiliary-monthly-private-v0.2.ndjson"
+        },
+        {
+          "role": "v2.2-development-modelable-scope-reconciliation",
+          "kind": "file",
+          "path": "data/private-output/m2-evaluation-v2-2-reversal-rescore/M2-reversal-scope-reconciliation-private-v1.json"
+        },
+        {
+          "role": "v2.2-reversal-allocation-ledger",
+          "kind": "file",
+          "path": "data/private-output/m2-evaluation-v2-2-reversal-rescore/M2-reversal-allocation-ledger-private-v1.ndjson"
+        },
+        {
+          "role": "v2.2-development-activation-receipt",
+          "kind": "file",
+          "path": "data/private-output/m2-evaluation-v2-2-reversal-rescore/M2-evaluation-v2.2-execution-receipt-private-v1.json"
+        }
+      ],
+      "canonicalValidationCommands": [
+        "npm run doctor:capability -- m2-publishing-scale-contract-calibration",
+        "npm run check:m2:publishing-scale-learning"
+      ],
+      "recovery": "Restore only the capability-scoped strict packed rows and v2.2 reversal-restatement artifacts from a verified encrypted bundle. Missing inputs block only K7B training-side calibration; public development, diagnostics, tests and startup remain available.",
+      "authorization": "USER_AUTHORIZED_TRAINING_SIDE_PUBLISHING_SCALE_CALIBRATION_2026_07_28"
     },
     {
       "id": "m2-current-canonical-channel",
@@ -300,8 +371,72 @@
       "authorization": "USER_AUTHORIZED_CHANNEL_EXPERT_DEVELOPMENT_2026_07_27"
     },
     {
+      "id": "m2-current-publishing-scale-channel",
+      "description": "Audit the consumed publishing-scale channel-core private execution attempt. The attempt failed closed during private materialization before candidate fit because the new runner invoked the historical materialization mode; no retry is authorized.",
+      "requiredTools": [
+        {
+          "id": "git",
+          "command": "git",
+          "versionArgs": ["--version"]
+        },
+        {
+          "id": "gh",
+          "command": "gh",
+          "versionArgs": ["--version"]
+        }
+      ],
+      "requiredPrivateArtifacts": [
+        {
+          "role": "user-reviewed-channel-master",
+          "kind": "file",
+          "path": "data/private-output/outputs/channel-governance-20260726/M2-渠道统一与类型人工补全表-v0.2.xlsx"
+        },
+        {
+          "role": "formal-model-input-cache",
+          "kind": "file",
+          "path": "data/private-output/m2-formal-execution/m2-formal-model-input-cache-v1.pkl"
+        },
+        {
+          "role": "frozen-channel-expert-evaluation",
+          "kind": "file",
+          "path": "data/private-output/m2-current-human-anchored/M2-current-channel-experts-evaluation-private-v0.1.ndjson"
+        },
+        {
+          "role": "frozen-channel-expert-evaluation-manifest",
+          "kind": "file",
+          "path": "data/private-output/m2-current-human-anchored/M2-current-channel-experts-evaluation-manifest-private-v0.1.json"
+        },
+        {
+          "role": "v2.2-development-modelable-scope-reconciliation",
+          "kind": "file",
+          "path": "data/private-output/m2-evaluation-v2-2-reversal-rescore/M2-reversal-scope-reconciliation-private-v1.json"
+        },
+        {
+          "role": "v2.2-reversal-allocation-ledger",
+          "kind": "file",
+          "path": "data/private-output/m2-evaluation-v2-2-reversal-rescore/M2-reversal-allocation-ledger-private-v1.ndjson"
+        },
+        {
+          "role": "v2.2-development-activation-receipt",
+          "kind": "file",
+          "path": "data/private-output/m2-evaluation-v2-2-reversal-rescore/M2-evaluation-v2.2-execution-receipt-private-v1.json"
+        },
+        {
+          "role": "publishing-scale-private-execution-receipt",
+          "kind": "file",
+          "path": "data/private-output/m2-current-human-anchored/M2-current-publishing-scale-channel-run-receipt-private-v0.1.json"
+        }
+      ],
+      "canonicalValidationCommands": [
+        "npm run doctor:capability -- m2-current-publishing-scale-channel",
+        "npm run diagnose:m2:publishing-scale-channel"
+      ],
+      "recovery": "Restore only the capability-scoped channel master, verified model-input cache, frozen paired comparator, v2.2 reversal-restatement outputs and the fail-closed publishing-scale receipt for audit. Restoration does not reopen training or retry authorization; public synthetic diagnostics, tests and startup remain available.",
+      "authorization": "CONSUMED_M2_PUBLISHING_SCALE_PRIVATE_EXECUTION_IMPLEMENTATION_BLOCKED_NO_RETRY_2026_07_28"
+    },
+    {
       "id": "m2-current-channel-generative",
-      "description": "Run the one-time user-authorized preregistered G0-G3 Channel Generative v0.2 core development evaluation and non-selecting forecastability/oracle diagnostic.",
+      "description": "Audit the consumed Channel Generative v0.2 independent G1 private capability and its prerequisite-blocked receipt. The one-time execution authorization is closed; frozen G0 remains only an unexecuted paired outer-case comparator.",
       "requiredTools": [],
       "requiredPrivateArtifacts": [
         {
@@ -323,15 +458,29 @@
           "role": "frozen-channel-expert-evaluation-manifest",
           "kind": "file",
           "path": "data/private-output/m2-current-human-anchored/M2-current-channel-experts-evaluation-manifest-private-v0.1.json"
+        },
+        {
+          "role": "v2.2-development-modelable-scope-reconciliation",
+          "kind": "file",
+          "path": "data/private-output/m2-evaluation-v2-2-reversal-rescore/M2-reversal-scope-reconciliation-private-v1.json"
+        },
+        {
+          "role": "v2.2-reversal-allocation-ledger",
+          "kind": "file",
+          "path": "data/private-output/m2-evaluation-v2-2-reversal-rescore/M2-reversal-allocation-ledger-private-v1.ndjson"
+        },
+        {
+          "role": "v2.2-development-activation-receipt",
+          "kind": "file",
+          "path": "data/private-output/m2-evaluation-v2-2-reversal-rescore/M2-evaluation-v2.2-execution-receipt-private-v1.json"
         }
       ],
       "canonicalValidationCommands": [
         "npm run doctor:capability -- m2-current-channel-generative",
-        "npm run diagnose:m2:channel-generative",
-        "npm run develop:m2:current:channel-generative"
+        "npm run diagnose:m2:channel-generative"
       ],
-      "recovery": "Restore only the capability-scoped channel master, verified model-input cache and frozen channel-expert evaluation plus manifest. Missing artifacts block only this one-time private core evaluation; public synthetic diagnostics, tests and startup remain available.",
-      "authorization": "USER_AUTHORIZED_CHANNEL_GENERATIVE_V0_2_CORE_ONE_TIME_PRIVATE_EVALUATION_2026_07_27"
+      "recovery": "Restore only the capability-scoped channel master, verified model-input cache, frozen G0 comparator, v2.2 reversal-restatement outputs, and the final private execution receipt for audit. Restoration does not reopen training or retry authorization; public synthetic diagnostics, tests and startup remain available.",
+      "authorization": "CONSUMED_M2_CHANNEL_GENERATIVE_G1_PRIVATE_EXECUTION_BLOCKED_NO_RETRY_2026_07_28"
     },
     {
       "id": "m2-current-human-anchored-later-origin",
@@ -370,6 +519,74 @@
       ],
       "recovery": "Recover only the original digest-bound v1.0 model state from the authorized run. Do not infer it from public aggregates or refit parameters and expert weights under this authorization. Missing private artifacts block only later-origin validation; public readiness remains available.",
       "authorization": "USER_AUTHORIZED_LATER_ORIGIN_READINESS_AND_QUALIFIED_FROZEN_VALIDATION_2026_07_26"
+    },
+    {
+      "id": "m2-evaluation-v2-2-reversal-rescore",
+      "description": "Apply the user-authorized sales-share reversal restatement and label-only rescore to unchanged frozen predictions without model execution, fitting, selection, later-origin, holdout, or production access.",
+      "requiredTools": [],
+      "requiredPrivateArtifacts": [
+        {
+          "role": "total-ledger-authority",
+          "kind": "file",
+          "path": "data/real-bills/渠道实销汇总 -总.xlsx"
+        },
+        {
+          "role": "sales-share-ledger-authority",
+          "kind": "file",
+          "path": "data/real-bills/渠道实销汇总 -分成.xlsx"
+        },
+        {
+          "role": "buyout-ledger-authority",
+          "kind": "file",
+          "path": "data/real-bills/渠道实销汇总 -买断.xlsx"
+        },
+        {
+          "role": "m1-work-mapping-authority",
+          "kind": "directory",
+          "path": "data/m1-master-data-private/mapping-candidate"
+        },
+        {
+          "role": "user-reviewed-channel-master",
+          "kind": "file",
+          "path": "data/private-output/outputs/channel-governance-20260726/M2-渠道统一与类型人工补全表-v0.2.xlsx"
+        },
+        {
+          "role": "frozen-current-canonical-evaluation",
+          "kind": "file",
+          "path": "data/private-output/m2-current-canonical-channel/M2-current-canonical-channel-evaluation-private-v0.1.ndjson"
+        },
+        {
+          "role": "frozen-human-anchored-evaluation",
+          "kind": "file",
+          "path": "data/private-output/m2-current-human-anchored/M2-current-human-anchored-evaluation-private-v0.1.ndjson"
+        },
+        {
+          "role": "frozen-tsb-evaluation",
+          "kind": "file",
+          "path": "data/private-output/m2-current-human-anchored/M2-current-human-anchored-tsb-occurrence-evaluation-private-v0.1.ndjson"
+        },
+        {
+          "role": "frozen-lifecycle-evaluation",
+          "kind": "file",
+          "path": "data/private-output/m2-current-human-anchored/M2-current-lifecycle-aware-evaluation-private-v0.1.ndjson"
+        },
+        {
+          "role": "frozen-channel-evaluation",
+          "kind": "file",
+          "path": "data/private-output/m2-current-human-anchored/M2-current-channel-experts-evaluation-private-v0.1.ndjson"
+        },
+        {
+          "role": "frozen-portfolio-evaluation",
+          "kind": "file",
+          "path": "data/private-output/m2-current-quality/M2-current-sales-share-portfolio-cells-private-v0.6.ndjson"
+        }
+      ],
+      "canonicalValidationCommands": [
+        "npm run doctor:capability -- m2-evaluation-v2-2-reversal-rescore",
+        "npm run rescore:m2:evaluation-v2-2-frozen-labels"
+      ],
+      "recovery": "Restore only the user-reviewed ledger partition, its work-mapping authority, and the six digest-bound frozen prediction artifacts. Never regenerate predictions or infer private rows from public aggregates.",
+      "authorization": "USER_AUTHORIZED_M2_EVALUATION_V2_2_LABEL_ONLY_RESCORE_2026_07_28"
     },
     {
       "id": "m3-private-materials",

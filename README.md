@@ -27,11 +27,12 @@
 | 公共工程 | 可安装、构建、测试和启动 | Linux/Windows 使用同一套无私有数据门禁；以上方 CI 徽章为准 |
 | M2 业务门禁 | Canary 失败（`CANARY_FAIL`） | 尚未达到自动化或发布要求 |
 | M2 自动化 | 自动化被阻断（`AUTOMATION_BLOCKED`） | 没有模型获准自动化，活动候选为空（`activeCandidate=null`） |
-| M2 评价合同第二版 | 已验证、需修订、未激活（`DRAFT_VALIDATED_REVISION_REQUIRED`） | 冻结预测重计分完成，但不能替代现行门禁 |
-| M2 最新重计分 | 完成且模型角色不变（`M2_EVALUATION_V2_FROZEN_RESCORE_COMPLETE_NO_MODEL_CHANGE`） | 只读取既有冻结预测，没有训练、调参或生成预测 |
+| M2 评价合同 v2.1 | 历史开发评价合同 | 继续保留审计证据，但当前开发评价权威已前移到 v2.2 |
+| M2 评价合同 v2.2 | 开发评价已激活，并透明隔离无法分配的冲销残差（`M2_EVALUATION_V2_2_ACTIVE_FOR_DEVELOPMENT_WITH_DISCLOSED_RESIDUAL_EXCLUSION`） | 不是 production/automation gate，不改变运行回退模型 |
+| M2 出版行业规模适配 | 私有物化在候选拟合前因实现接线错误 fail-closed（`M2_PUBLISHING_SCALE_IMPLEMENTATION_BLOCKED`） | 没有候选预测或评价指标；一次性授权已消耗，未授权重试 |
 | M3 | 仅合成 fixture/prototype | 不代表真实材料执行或正式发布 |
 
-最新治理入口是 [M2 当前状态索引 v0.28](docs/analysis/m2-v2/M2-v2-current-state-index-v0.28.md)。
+最新治理入口是 [M2 当前状态索引 v0.36](docs/analysis/m2-v2/M2-v2-current-state-index-v0.36.md)。
 模型名称、别名、角色、成绩人口和可比组以
 [Model Registry](config/m2-model-registry.v1.json) 为唯一当前机器权威。
 
@@ -57,7 +58,8 @@ flowchart LR
     C --> F["公开诊断与冻结证据"]
     D --> F
     E --> F
-    F -. "第二版合同：已验证但未激活" .-> G["DRAFT_VALIDATED_REVISION_REQUIRED"]
+    F -. "v2.1：最近已激活开发评价合同" .-> G["ACTIVE_FOR_DEVELOPMENT_EVALUATION_ONLY"]
+    F -. "v2.2：未解决冲销残差" .-> J["BLOCKED_UNRESOLVED_REVERSAL"]
     H["Capability-scoped private 输入"] -. "仅在单独授权时" .-> B
     I["Production / Holdout / Release"] -. "保持关闭" .-> B
 ```
@@ -143,8 +145,11 @@ holdout。
 - 渠道生成实验 v0.2（Channel Generative v0.2，
   `M2-EXP-CHANNEL-GENERATIVE-02`）因合同语义前置条件未满足而阻断
   （`GENERATIVE_V02_CORE_EXECUTION_BLOCKED`），属于未执行，不是执行失败。
-- 评价合同第二版冻结重计分复现了第一版 WAPE/bias，并增加误差分布、发生分类、
-  排序和区间诊断；它没有改变任何模型角色或失败结论。
+- 评价合同 v2.1 冻结复核复现第一版 WAPE/bias，并固化发生 baseline、配对排序、
+  原生区间、组合不确定性和隐私/缺失状态；它没有改变模型角色或 raw failure。
+- 评价合同 v2.2 完成 2,000 次完整作品 cluster 排序 bootstrap、冲销追溯重述和
+  冻结预测标签重评分；整数守恒差为 0，但最终重述视图仍有非零未分配冲销残差，
+  因而保持 `M2_EVALUATION_V2_2_BLOCKED_UNRESOLVED_REVERSAL`。
 - 下一轮模型开发必须等待合格 later-origin，或真实可审计、带
   `effectiveAt/availableAt` 的历史商业状态输入；不能继续同窗调参。
 
@@ -152,10 +157,10 @@ holdout。
 
 | 主题 | 当前入口 |
 |---|---|
-| 当前状态 | [M2 当前状态索引 v0.28](docs/analysis/m2-v2/M2-v2-current-state-index-v0.28.md) |
+| 当前状态 | [M2 当前状态索引 v0.36](docs/analysis/m2-v2/M2-v2-current-state-index-v0.36.md) |
 | 模型权威 | [Model Registry](config/m2-model-registry.v1.json) · [中文模型目录](docs/analysis/m2-current/M2-model-catalog-and-scorecard-v1.md) |
-| 评价体系 | [评价体系审计](docs/analysis/m2-current/M2-evaluation-system-audit-v1.md) · [第二版合同提案](docs/analysis/m2-current/M2-evaluation-contract-v2-proposal.md) |
-| 冻结重计分 | [工件准备度](docs/analysis/m2-current/M2-evaluation-v2-frozen-artifact-readiness-v1.md) · [公开报告](docs/analysis/m2-current/M2-evaluation-v2-frozen-rescore-v1.md) · [合同验证](docs/analysis/m2-current/M2-evaluation-contract-v2-validation-v1.md) |
+| 评价体系 | [v2.2 合同](docs/analysis/m2-current/M2-evaluation-contract-v2.2.md) · [v2.2 验证](docs/analysis/m2-current/M2-evaluation-contract-v2.2-validation.md) · [v2.1 合同](docs/analysis/m2-current/M2-evaluation-contract-v2.1.md) |
+| 冻结标签重评分 | [v2.2 诊断复核](docs/analysis/m2-current/M2-evaluation-v2.2-diagnostic-recheck.md) · [机器可读聚合](docs/analysis/m2-current/M2-evaluation-v2.2-diagnostic-recheck.json) · [冲销影响](docs/analysis/m2-current/M2-reversal-restatement-impact-v1.md) |
 | 代码与仓库 | [全库收敛审计](docs/analysis/repository-current-state-and-convergence-audit-v0.1.md) · [协作规则](AGENTS.md) |
 | 产品定义 | [M2 Forecast Intelligence v2 PRD](docs/prd/m2-v2/M2-forecast-intelligence-v2-prd-v0.2.md) |
 

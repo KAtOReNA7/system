@@ -1,0 +1,37 @@
+{
+  "schema": "m2.prd.publishing_scale_amendment.v0.1",
+  "amendmentId": "M2-PRD-PUBLISHING-SCALE-01",
+  "boundPrd": "docs/prd/m2-v2/M2-forecast-intelligence-v2-prd-v0.2.md",
+  "status": "CURRENT_FORWARD_AMENDMENT",
+  "effectiveFor": "new publishing-scale model revision",
+  "requirements": {
+    "publishingReality": [
+      "low annual SKU volume",
+      "long-tail cash",
+      "head-work concentration",
+      "multi-level classification"
+    ],
+    "entitySeparation": [
+      "book SKU",
+      "edition/version",
+      "standard work",
+      "creative work",
+      "author",
+      "authorization relation",
+      "work-channel scope",
+      "bill row",
+      "monthly positive cash",
+      "prediction case"
+    ],
+    "taxonomyAsOfRequiredForFeatureUse": true,
+    "currentOnlyTaxonomyMayBeBackfilled": false,
+    "supportTiersRequired": true,
+    "partialPoolingRequired": true,
+    "trainingEligibilitySeparateFromPromotionEligibility": true,
+    "smallSampleDevelopmentAllowedWithUncertainty": true,
+    "unsupportedIndustryThresholdTransferForbidden": true
+  },
+  "canonicalSupportContract": "config/m2-publishing-scale-statistical-support.v1.json",
+  "historicalPrdOrArtifactsRewritten": false,
+  "newCandidateOuterOutcomeRead": false
+}

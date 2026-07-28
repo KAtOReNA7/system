@@ -1,0 +1,318 @@
+{
+  "schema": "m2.current.publishing_scale_channel_readiness.v0.1",
+  "displayNameZh": "出版行业适配的渠道月度发生—条件金额核心",
+  "displayNameEn": "Publishing-Scale Channel Monthly Occurrence × Conditional Amount Core",
+  "modelId": "M2-CHAN-PSC01",
+  "experimentArmId": "M2-EXP-PUBLISHING-SCALE-CHANNEL-01/CORE",
+  "status": "M2_PUBLISHING_SCALE_IMPLEMENTATION_BLOCKED",
+  "supportContractId": "M2-PUBLISHING-SCALE-SUPPORT-01",
+  "supportContractStatus": "FROZEN_BEFORE_NEW_CANDIDATE_OUTER_OUTCOME",
+  "implementation": {
+    "canonicalCore": "src/domain/m2Current/publishingScaleChannelCore.js",
+    "runtimeConfig": "config/m2-current-publishing-scale-channel.v0.1.json",
+    "publicDiagnostic": "docs/analysis/m2-current/M2-current-publishing-scale-channel-public-diagnostic-v0.1.json",
+    "historicalModelOverwritten": false,
+    "historicalArtifactVerifierPreserved": true,
+    "legacyFixedEligibilityUsed": false,
+    "workBalancedTraining": true,
+    "continuousParentShrinkage": true,
+    "oneClassSmoothing": "Jeffreys_0.5_0.5"
+  },
+  "supportTiers": {
+    "directFitNodeCount": 0,
+    "globalPooledParent": "SHRUNK_FIT",
+    "mechanisms": {
+      "membership": "SHRUNK_FIT",
+      "advertising": "SHRUNK_FIT",
+      "transactional": "SHRUNK_FIT"
+    },
+    "namedPlatforms": {
+      "喜马拉雅": "SHRUNK_FIT",
+      "微信读书": "SHRUNK_FIT",
+      "番茄畅听": "SHRUNK_FIT",
+      "猫耳": "POOLED_PARENT",
+      "克拉漫播": "POOLED_PARENT"
+    },
+    "taxonomy": "REPORT_ONLY",
+    "authorization": "REPORT_ONLY"
+  },
+  "syntheticVerification": {
+    "status": "SYNTHETIC_DIAGNOSTIC_PASS",
+    "distinctWorkCount": 180,
+    "monthlyRowCount": 4464,
+    "workTotal": {
+      "caseCount": 540,
+      "absoluteError": 11204.696710251836,
+      "signedError": -6930.578503249388,
+      "actualDenominator": 48002.50201954327,
+      "wape": 0.23341901440241727,
+      "signedBias": -0.14437952630943568
+    },
+    "support": {
+      "globalPooledParent": {
+        "nodeId": "globalPooledParent",
+        "displayNameZh": null,
+        "nodeType": "global_parent",
+        "parentNodeId": "originVisibleEmpiricalParent",
+        "tier": "SHRUNK_FIT",
+        "parametersEstimated": true,
+        "fallbackReason": null,
+        "support": {
+          "distinctWorks": 180,
+          "positiveDistinctWorks": 177,
+          "occurrenceClassEffectiveWorkCount": 5.9,
+          "cashEffectiveWorkCount": 96.49395122479541,
+          "monthlyRows": 4320,
+          "positiveMonths": 4248,
+          "independentOrigins": 2,
+          "cashHhi": 0.010363343891581016,
+          "top1WorkCashShare": 0.04783456255325792,
+          "top3WorkCashShare": 0.10722961792094272,
+          "effectiveParameterCount": 20,
+          "occurrenceShrinkageWeight": 0.22779922779922782,
+          "conditionalAmountShrinkageWeight": 0.8283172663496793,
+          "monthlyRowsUsedAsIndependentSample": false
+        }
+      },
+      "mechanisms": {
+        "membership": {
+          "nodeId": "membership",
+          "displayNameZh": null,
+          "nodeType": "mechanism",
+          "parentNodeId": "globalPooledParent",
+          "tier": "SHRUNK_FIT",
+          "parametersEstimated": true,
+          "fallbackReason": null,
+          "support": {
+            "distinctWorks": 60,
+            "positiveDistinctWorks": 59,
+            "occurrenceClassEffectiveWorkCount": 1.9666666666666668,
+            "cashEffectiveWorkCount": 39.300499825795,
+            "monthlyRows": 1440,
+            "positiveMonths": 1416,
+            "independentOrigins": 2,
+            "cashHhi": 0.025444969006313937,
+            "top1WorkCashShare": 0.1051400214683619,
+            "top3WorkCashShare": 0.14637302490831763,
+            "effectiveParameterCount": 23,
+            "occurrenceShrinkageWeight": 0.0787716955941255,
+            "conditionalAmountShrinkageWeight": 0.6308215814590136,
+            "monthlyRowsUsedAsIndependentSample": false
+          }
+        },
+        "advertising": {
+          "nodeId": "advertising",
+          "displayNameZh": null,
+          "nodeType": "mechanism",
+          "parentNodeId": "globalPooledParent",
+          "tier": "SHRUNK_FIT",
+          "parametersEstimated": true,
+          "fallbackReason": null,
+          "support": {
+            "distinctWorks": 60,
+            "positiveDistinctWorks": 59,
+            "occurrenceClassEffectiveWorkCount": 1.9666666666666668,
+            "cashEffectiveWorkCount": 39.329548613816925,
+            "monthlyRows": 1440,
+            "positiveMonths": 1416,
+            "independentOrigins": 2,
+            "cashHhi": 0.025426175362935347,
+            "top1WorkCashShare": 0.105037226239653,
+            "top3WorkCashShare": 0.14627296900593195,
+            "effectiveParameterCount": 21,
+            "occurrenceShrinkageWeight": 0.08563134978229317,
+            "conditionalAmountShrinkageWeight": 0.6519118660339107,
+            "monthlyRowsUsedAsIndependentSample": false
+          }
+        },
+        "transactional": {
+          "nodeId": "transactional",
+          "displayNameZh": null,
+          "nodeType": "mechanism",
+          "parentNodeId": "globalPooledParent",
+          "tier": "SHRUNK_FIT",
+          "parametersEstimated": true,
+          "fallbackReason": null,
+          "support": {
+            "distinctWorks": 60,
+            "positiveDistinctWorks": 59,
+            "occurrenceClassEffectiveWorkCount": 1.9666666666666668,
+            "cashEffectiveWorkCount": 33.79807655582412,
+            "monthlyRows": 1440,
+            "positiveMonths": 1416,
+            "independentOrigins": 2,
+            "cashHhi": 0.029587482540561292,
+            "top1WorkCashShare": 0.12372776990074479,
+            "top3WorkCashShare": 0.17322677454334892,
+            "effectiveParameterCount": 21,
+            "occurrenceShrinkageWeight": 0.08563134978229317,
+            "conditionalAmountShrinkageWeight": 0.6167748702163516,
+            "monthlyRowsUsedAsIndependentSample": false
+          }
+        }
+      },
+      "namedPlatforms": {
+        "ximalaya": {
+          "nodeId": "ximalaya",
+          "displayNameZh": "喜马拉雅",
+          "nodeType": "platform",
+          "parentNodeId": "membership",
+          "tier": "POOLED_PARENT",
+          "parametersEstimated": false,
+          "fallbackReason": "distinct_work_support_below_effective_parameter_contract",
+          "support": {
+            "distinctWorks": 0,
+            "positiveDistinctWorks": 0,
+            "occurrenceClassEffectiveWorkCount": 0,
+            "cashEffectiveWorkCount": 1,
+            "monthlyRows": 0,
+            "positiveMonths": 0,
+            "independentOrigins": 0,
+            "cashHhi": 1,
+            "top1WorkCashShare": 0,
+            "top3WorkCashShare": 0,
+            "effectiveParameterCount": 23,
+            "occurrenceShrinkageWeight": 0,
+            "conditionalAmountShrinkageWeight": 0.041666666666666664,
+            "monthlyRowsUsedAsIndependentSample": false
+          }
+        },
+        "wechat_reading": {
+          "nodeId": "wechat_reading",
+          "displayNameZh": "微信读书",
+          "nodeType": "platform",
+          "parentNodeId": "membership",
+          "tier": "POOLED_PARENT",
+          "parametersEstimated": false,
+          "fallbackReason": "distinct_work_support_below_effective_parameter_contract",
+          "support": {
+            "distinctWorks": 0,
+            "positiveDistinctWorks": 0,
+            "occurrenceClassEffectiveWorkCount": 0,
+            "cashEffectiveWorkCount": 1,
+            "monthlyRows": 0,
+            "positiveMonths": 0,
+            "independentOrigins": 0,
+            "cashHhi": 1,
+            "top1WorkCashShare": 0,
+            "top3WorkCashShare": 0,
+            "effectiveParameterCount": 23,
+            "occurrenceShrinkageWeight": 0,
+            "conditionalAmountShrinkageWeight": 0.041666666666666664,
+            "monthlyRowsUsedAsIndependentSample": false
+          }
+        },
+        "fanqie_audio": {
+          "nodeId": "fanqie_audio",
+          "displayNameZh": "番茄畅听",
+          "nodeType": "platform",
+          "parentNodeId": "advertising",
+          "tier": "POOLED_PARENT",
+          "parametersEstimated": false,
+          "fallbackReason": "distinct_work_support_below_effective_parameter_contract",
+          "support": {
+            "distinctWorks": 0,
+            "positiveDistinctWorks": 0,
+            "occurrenceClassEffectiveWorkCount": 0,
+            "cashEffectiveWorkCount": 1,
+            "monthlyRows": 0,
+            "positiveMonths": 0,
+            "independentOrigins": 0,
+            "cashHhi": 1,
+            "top1WorkCashShare": 0,
+            "top3WorkCashShare": 0,
+            "effectiveParameterCount": 21,
+            "occurrenceShrinkageWeight": 0,
+            "conditionalAmountShrinkageWeight": 0.045454545454545456,
+            "monthlyRowsUsedAsIndependentSample": false
+          }
+        },
+        "missevan": {
+          "nodeId": "missevan",
+          "displayNameZh": "猫耳",
+          "nodeType": "platform",
+          "parentNodeId": "transactional",
+          "tier": "POOLED_PARENT",
+          "parametersEstimated": false,
+          "fallbackReason": "training_side_contract_requires_parent_pooling",
+          "support": {
+            "distinctWorks": 0,
+            "positiveDistinctWorks": 0,
+            "occurrenceClassEffectiveWorkCount": 0,
+            "cashEffectiveWorkCount": 1,
+            "monthlyRows": 0,
+            "positiveMonths": 0,
+            "independentOrigins": 0,
+            "cashHhi": 1,
+            "top1WorkCashShare": 0,
+            "top3WorkCashShare": 0,
+            "effectiveParameterCount": 21,
+            "occurrenceShrinkageWeight": 0,
+            "conditionalAmountShrinkageWeight": 0.045454545454545456,
+            "monthlyRowsUsedAsIndependentSample": false
+          }
+        },
+        "manbo": {
+          "nodeId": "manbo",
+          "displayNameZh": "克拉漫播",
+          "nodeType": "platform",
+          "parentNodeId": "transactional",
+          "tier": "POOLED_PARENT",
+          "parametersEstimated": false,
+          "fallbackReason": "training_side_contract_requires_parent_pooling",
+          "support": {
+            "distinctWorks": 0,
+            "positiveDistinctWorks": 0,
+            "occurrenceClassEffectiveWorkCount": 0,
+            "cashEffectiveWorkCount": 1,
+            "monthlyRows": 0,
+            "positiveMonths": 0,
+            "independentOrigins": 0,
+            "cashHhi": 1,
+            "top1WorkCashShare": 0,
+            "top3WorkCashShare": 0,
+            "effectiveParameterCount": 21,
+            "occurrenceShrinkageWeight": 0,
+            "conditionalAmountShrinkageWeight": 0.045454545454545456,
+            "monthlyRowsUsedAsIndependentSample": false
+          }
+        }
+      },
+      "taxonomy": {
+        "tier": "REPORT_ONLY",
+        "parametersEstimated": false,
+        "routingUsed": false,
+        "reason": "taxonomy_as_of_authority_unavailable"
+      },
+      "authorization": {
+        "tier": "REPORT_ONLY",
+        "parametersEstimated": false,
+        "routingUsed": false,
+        "reason": "authorization_as_of_authority_unavailable"
+      }
+    },
+    "privateArtifactRead": false,
+    "candidateOuterOutcomeRead": false
+  },
+  "authorityBoundary": {
+    "taxonomy": "REPORT_ONLY",
+    "authorization": "REPORT_ONLY",
+    "currentOnlyTaxonomyBackfilled": false,
+    "currentOnlyAuthorizationBackfilled": false,
+    "originObservedCanonicalChannelIdentityOnly": true
+  },
+  "executionBoundary": {
+    "privateDevelopmentExecutionAuthorizedOnceAfterExactHeadCi": false,
+    "privateDevelopmentExecutionConsumed": true,
+    "privateMaterializationStarted": true,
+    "privateCapabilityReadOccurred": true,
+    "candidateFitStarted": false,
+    "candidateOuterOutcomeProduced": false,
+    "finalHoldoutOpened": false,
+    "productionModified": false,
+    "operationalFallbackModified": false,
+    "retryAuthorized": false,
+    "mergeAuthorized": false
+  },
+  "impactMap": "docs/analysis/m2-current/M2-publishing-scale-threshold-impact-map-v1.json"
+}

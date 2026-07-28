@@ -1,6 +1,6 @@
 {
   "schema": "m2.model_registry.v1",
-  "generatedFromCommit": "481441f3c93126e442294092b8e84779a0c50e0e",
+  "contentAuthority": "tracked_registry_content_with_runtime_verified_execution_head",
   "asOf": "2026-07-28",
   "targetAuthority": {
     "currentTarget": "future_sales_share_cash",
@@ -16,14 +16,53 @@
       "docs/analysis/m2-current/M2-current-human-ledger-partition-audit-v0.1.md"
     ]
   },
+  "actualDefinitionTransformations": [
+    {
+      "transformationId": "M2-ACTUAL-POSTING-TIME-01",
+      "version": "1",
+      "displayNameZh": "分成收入原入账口径",
+      "sourceAuthority": "user_reviewed_sales_share_workbook_membership",
+      "timeView": "posting_time",
+      "status": "PRESERVED_HISTORICAL_ACTUAL"
+    },
+    {
+      "transformationId": "M2-ACTUAL-REVERSAL-RESTATEMENT-01",
+      "version": "1",
+      "displayNameZh": "分成收入冲销追溯重述",
+      "sourceAuthority": "user_reviewed_sales_share_workbook_membership",
+      "algorithmRef": "config/m2-reversal-restatement.v1.json",
+      "timeViews": [
+        "posting_time",
+        "as_of_restated",
+        "final_restated"
+      ],
+      "status": "FINANCIAL_RECONCILIATION_WITH_DISCLOSED_UNALLOCATED_RESIDUAL",
+      "crossActualDefinitionWinnerAllowed": false
+    },
+    {
+      "transformationId": "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01",
+      "version": "1",
+      "displayNameZh": "分成收入开发可建模冲销重述",
+      "sourceAuthority": "user_reviewed_sales_share_workbook_membership",
+      "algorithmRef": "config/m2-reversal-restatement.v1.json",
+      "timeViews": [
+        "as_of_restated",
+        "development_modelable_restatement"
+      ],
+      "status": "UNALLOCATED_REVERSAL_RESIDUAL_EXCLUDED_FROM_MODELABLE_TARGET",
+      "financialReconciliationRef": "M2-ACTUAL-REVERSAL-RESTATEMENT-01",
+      "wholeCaseExclusionAllowed": false,
+      "crossActualDefinitionWinnerAllowed": false
+    }
+  ],
   "currentRoles": {
     "operationalWorkFallback": "M2-WORK-OA03",
     "researchWorkBaseline": "M2-WORK-LG01",
     "portfolioReference": "M2-PORT-ETS01",
     "approvedForAutomation": null,
     "activeCandidate": null,
-    "blockedExperiment": "M2-EXP-CHANNEL-GENERATIVE-02",
-    "latestStateIndex": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.28.md",
+    "blockedExperiment": "M2-EXP-PUBLISHING-SCALE-CHANNEL-01",
+    "latestStateIndex": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.36.md",
     "roleConflict": false,
     "sourceAssertions": [
       {
@@ -32,18 +71,141 @@
         "scope": "work_level_development"
       },
       {
-        "source": "docs/analysis/m2-current/M2-current-channel-generative-v0.2-core-development-v0.1.json",
-        "assertion": "learnedGlobal_is_frozen_G0_fallback",
-        "scope": "blocked_channel_generative_experiment"
+        "source": "docs/analysis/m2-current/M2-current-channel-generative-g1-development-v0.1.json",
+        "assertion": "learnedGlobal_is_frozen_G0_outer_comparator_only",
+        "scope": "blocked_channel_generative_G1_core_experiment"
       },
       {
         "source": "AGENTS.md",
         "assertion": "exact_v0_3_remains_current_development_champion_and_fallback",
         "scope": "repository_governance"
+      },
+      {
+        "source": "docs/analysis/m2-current/M2-current-publishing-scale-channel-execution-closure-v0.1.json",
+        "assertion": "publishing_scale_private_attempt_failed_closed_before_candidate_fit_and_retry_is_not_authorized",
+        "scope": "publishing_scale_channel_core_development"
       }
     ],
-    "roleInterpretationZh": "exact v0.3 是作品级现行运行回退模型；learnedGlobal 是研究比较基线，并且只在渠道生成实验内部承担冻结 G0 回退。两种称呼作用域不同，不构成模型晋升冲突。"
+    "roleInterpretationZh": "作品发生—金额校准模型 v0.3 是作品级现行运行回退模型；人工锚定可学习全局模型是研究比较基线。出版行业适配渠道核心的唯一一次私有命令在候选拟合前因实现接线错误 fail-closed，没有形成候选结果；活动候选与自动化批准继续为空。"
   },
+  "currentEvaluationContract": {
+    "version": "2.2",
+    "status": "M2_EVALUATION_V2_2_ACTIVE_FOR_DEVELOPMENT_WITH_DISCLOSED_RESIDUAL_EXCLUSION",
+    "activationAllowed": true,
+    "activationCondition": "authority_and_scope_proven_and_four_views_reconcile_and_unallocated_residual_is_exactly_preserved_and_excluded_only_from_the_modelable_target_and_no_future_leakage_and_frozen_predictions_unchanged_and_deterministic_public_safe_outputs_and_exact_head_linux_windows_ci_success",
+    "productionGateActive": false,
+    "automationGateActive": false,
+    "modelRolesChanged": false,
+    "configRef": "config/m2-evaluation-contract.v2.2.json",
+    "contractRef": "docs/analysis/m2-current/M2-evaluation-contract-v2.2-development-activation-v1.md",
+    "validationRef": "docs/analysis/m2-current/M2-evaluation-contract-v2.2-development-activation-validation-v1.md",
+    "diagnosticRef": "docs/analysis/m2-current/M2-evaluation-v2.2-development-modelable-rescore-v1.json",
+    "fourViewReconciliationRef": "docs/analysis/m2-current/M2-reversal-four-view-reconciliation-v1.json",
+    "priorActiveDevelopmentContract": {
+      "version": "2.1",
+      "status": "ACTIVE_FOR_DEVELOPMENT_EVALUATION_ONLY",
+      "configRef": "config/m2-evaluation-contract.v2.1.json",
+      "validationRef": "docs/analysis/m2-current/M2-evaluation-contract-v2.1-validation.md"
+    }
+  },
+  "metricDefinitions": [
+    {
+      "metricDefinitionId": "M2-EVAL-V2.1-POINT",
+      "version": "2.1",
+      "capability": "work_cash_point_forecast",
+      "primaryUnit": "horizon",
+      "pooledCrossHorizon": "diagnostic_only"
+    },
+    {
+      "metricDefinitionId": "M2-EVAL-V2.1-OCCURRENCE",
+      "version": "2.1",
+      "capability": "positive_sales_share_cash_occurrence",
+      "actualField": "actualPositive",
+      "frozenTrainingBaselineRequiredForSkill": true
+    },
+    {
+      "metricDefinitionId": "M2-EVAL-V2.1-CONDITIONAL-AMOUNT",
+      "version": "2.1",
+      "capability": "conditional_positive_amount",
+      "predictionField": "conditionalAmountPrediction",
+      "actualField": "actualPositiveAmount"
+    },
+    {
+      "metricDefinitionId": "M2-EVAL-V2.1-RANKING",
+      "version": "2.1",
+      "capability": "ranking_diagnostic",
+      "requiresPairedFallback": true
+    },
+    {
+      "metricDefinitionId": "M2-EVAL-V2.1-INTERVAL",
+      "version": "2.1",
+      "capability": "risk_interval",
+      "nativeQuantileGrid": [0.05, 0.1, 0.2, 0.5, 0.8, 0.9, 0.95]
+    },
+    {
+      "metricDefinitionId": "M2-EVAL-V2.1-PORTFOLIO",
+      "version": "2.1",
+      "capability": "portfolio_budget",
+      "primaryUnit": "horizon"
+    },
+    {
+      "metricDefinitionId": "M2-EVAL-V2.2-POINT",
+      "version": "2.2",
+      "capability": "work_cash_point_forecast",
+      "actualDefinitionFamilies": [
+        "M2-ACTUAL-POSTING-TIME-01",
+        "M2-ACTUAL-REVERSAL-RESTATEMENT-01",
+        "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01"
+      ],
+      "crossActualDefinitionWinnerAllowed": false
+    },
+    {
+      "metricDefinitionId": "M2-EVAL-V2.2-OCCURRENCE",
+      "version": "2.2",
+      "capability": "positive_sales_share_cash_occurrence",
+      "prAucMethod": "trapezoidal",
+      "averagePrecisionReportedSeparately": true
+    },
+    {
+      "metricDefinitionId": "M2-EVAL-V2.2-CONDITIONAL-AMOUNT",
+      "version": "2.2",
+      "capability": "conditional_positive_amount",
+      "predictionField": "conditionalAmountPrediction",
+      "actualField": "actualPositiveAmount"
+    },
+    {
+      "metricDefinitionId": "M2-EVAL-V2.2-REVERSAL",
+      "version": "2.2",
+      "capability": "reversal_occurrence_and_amount",
+      "separateFromPositiveOccurrence": true
+    },
+    {
+      "metricDefinitionId": "M2-EVAL-V2.2-RANKING",
+      "version": "2.2",
+      "capability": "ranking_diagnostic",
+      "bootstrapMethod": "full_standard_work_cluster_resample_recompute_within_cell_ranks",
+      "bootstrapIterations": 2000,
+      "timeIndependenceRequiredForTimeIntervalClaim": true
+    },
+    {
+      "metricDefinitionId": "M2-EVAL-V2.2-PORTFOLIO",
+      "version": "2.2",
+      "capability": "portfolio_budget",
+      "primaryUnit": "horizon",
+      "smallSampleSensitivityOnly": true
+    },
+    {
+      "metricDefinitionId": "M2-EVAL-V2.2-TOP-REVENUE",
+      "version": "2.2",
+      "capability": "posthoc_attribution",
+      "views": [
+        "positive_revenue",
+        "absolute_cash_magnitude",
+        "reversal_magnitude"
+      ],
+      "allowedForFittingSelectionOrGate": false
+    }
+  ],
   "models": [
     {
       "stableModelId": "M2-WORK-B4",
@@ -1412,32 +1574,32 @@
     },
     {
       "stableModelId": "M2-CHAN-GEN02",
-      "displayNameZh": "渠道时间生成模型 v0.2",
-      "displayNameEn": "Channel Generative v0.2",
+      "displayNameZh": "渠道时间生成模型 v0.2——独立渠道月度发生—条件金额核心",
+      "displayNameEn": "Channel Generative v0.2 — Independent Monthly Occurrence × Conditional Amount Core",
       "legacyIds": ["M2-current-channel-generative-v0.2"],
       "legacyAliases": ["channelGenerative v0.2", "channel generative core"],
       "entityType": "model_family",
       "capability": "CHAN",
-      "target": "future_sales_share_cash",
-      "targetHistory": ["future_sales_share_cash"],
+      "target": "future_sales_share_development_modelable_cash",
+      "targetHistory": ["future_sales_share_cash", "future_sales_share_development_modelable_cash"],
       "predictionGrain": "work_origin_horizon_channel_month",
-      "horizonContract": "G0/G1/G2/G3 preregistered core; candidate outcomes unavailable",
-      "formulaSummaryZh": "预注册为逐渠道、逐月发生与条件金额生成器；当前只完成公开实现和冻结 G0 评价行语义复算。",
-      "formulaSummaryEn": "Preregistered per-channel monthly occurrence and conditional-amount generator.",
-      "inputSummaryZh": "冻结 learnedGlobal 渠道分量、逐月渠道标签与严格 earlier-origin 训练状态。",
+      "horizonContract": "G1 independent core started; blocked at primary outer fold 0 inner eligibility before candidate prediction; G2–G6 not executed",
+      "formulaSummaryZh": "逐渠道、逐月发生概率乘以条件正金额；会员、广告和交易型机制使用冻结的不同时间 basis。独立核心不读取 learnedGlobal 特征、offset 或 multiplier。",
+      "formulaSummaryEn": "Independent per-channel monthly occurrence probability times conditional positive amount with fixed mechanism-specific time bases.",
+      "inputSummaryZh": "只使用 origin 可见的作品—渠道分成现金、冻结机制映射和 v2.2 开发可建模重述标签；冻结 learnedGlobal 只作为未执行的外层配对比较基线。",
       "codeEntrypoints": ["src/domain/m2Current/channelGenerative.js"],
       "configEntrypoints": ["config/m2-current-channel-generative.v0.2.json"],
-      "evidenceRefs": ["docs/analysis/m2-current/M2-current-channel-generative-v0.2-preregistration.json", "docs/analysis/m2-current/M2-current-channel-generative-v0.2-core-development-v0.1.json"],
+      "evidenceRefs": ["docs/analysis/m2-current/M2-current-channel-generative-v0.2-preregistration.json", "docs/analysis/m2-current/M2-current-channel-generative-v0.2-core-development-v0.1.json", "docs/analysis/m2-current/M2-current-channel-generative-g1-implementation-readiness-v0.1.json", "docs/analysis/m2-current/M2-current-channel-generative-g1-development-v0.1.json", "docs/analysis/m2-current/M2-current-channel-generative-g1-forecastability-v0.1.json"],
       "predecessorIds": ["M2-WORK-LG01", "M2-CHAN-SCL01"],
-      "successorIds": [],
+      "successorIds": ["M2-CHAN-PSC01"],
       "currentRole": "blocked_model_family_no_candidate_outcome",
-      "evidenceStatus": "contract_semantic_blocker",
+      "evidenceStatus": "G1_preregistered_mechanism_parent_eligibility_block",
       "operationalStatus": "blocked_not_failed",
       "automationAuthorized": false,
       "productionImported": false,
       "finalHoldoutOpened": false,
-      "developmentWindowReuse": "no_candidate_execution",
-      "limitationsZh": ["strict auxiliary G0 渠道状态缺失", "G1/G2/G3 未执行", "不能解释为渠道机制理论失败"],
+      "developmentWindowReuse": "G1_fit_started_no_candidate_prediction_or_evaluation",
+      "limitationsZh": ["交易型机制父节点在首个 primary 外层折的五个内层训练折只有 25–32 个独立作品，低于预注册门槛 50", "没有外层候选预测、primary/strict 指标或 oracle 结果", "G2–G6 未执行", "不能解释为模型效果失败或渠道机制理论失败"],
       "registryReviewRequired": false,
       "evaluations": [
         {
@@ -1462,25 +1624,78 @@
           "resultStatus": "G0_SEMANTIC_EQUIVALENCE_PASS_NOT_CANDIDATE_SCORE"
         },
         {
-          "evaluationId": "eval-gen02-g1-g3-candidates",
-          "datasetVersion": "M2-channel-generative-v0.2",
+          "evaluationId": "eval-gen02-g1-prerequisite-block",
+          "datasetVersion": "M2-channel-generative-v0.2-development-modelable",
           "cashAuthority": "user_reviewed_sales_share_workbook_membership",
-          "populationId": "not_executed",
-          "comparableGroupId": "CG-NOT-EXECUTED",
+          "populationId": "G1-primary-outer0-inner-eligibility-no-candidate-output",
+          "comparableGroupId": "CG-G1-BLOCKED-NO-CANDIDATE-OUTCOME",
           "caseCount": 0,
           "workCount": 0,
           "originCount": 0,
-          "horizons": [],
-          "target": "future_sales_share_cash",
+          "horizons": [36],
+          "target": "future_sales_share_development_modelable_cash",
           "grain": "work_origin_horizon_channel_month",
           "WAPE": null,
           "signedBias": null,
-          "baselineModelId": "M2-WORK-LG01",
+          "baselineModelId": null,
           "relativeWape": null,
           "materiality": 0.01,
           "independentEvidence": false,
-          "reportRef": "docs/analysis/m2-current/M2-current-channel-generative-v0.2-core-development-v0.1.json",
-          "resultStatus": "NOT_EXECUTED_CONTRACT_SEMANTIC_BLOCKER"
+          "reportRef": "docs/analysis/m2-current/M2-current-channel-generative-g1-development-v0.1.json",
+          "resultStatus": "M2_CHANNEL_GENERATIVE_G1_CORE_BLOCKED"
+        }
+      ]
+    },
+    {
+      "stableModelId": "M2-CHAN-PSC01",
+      "displayNameZh": "出版行业适配的渠道月度发生—条件金额核心",
+      "displayNameEn": "Publishing-Scale Channel Monthly Occurrence × Conditional Amount Core",
+      "legacyIds": ["M2-current-publishing-scale-channel-v0.1"],
+      "legacyAliases": ["publishing-scale channel core", "publishing scale occurrence amount core"],
+      "entityType": "model_revision",
+      "capability": "CHAN",
+      "target": "future_sales_share_development_modelable_cash",
+      "targetHistory": ["future_sales_share_development_modelable_cash"],
+      "predictionGrain": "work_origin_horizon_channel_month",
+      "horizonContract": "3/6/12/18/24/36 month development horizons; parameters frozen before private outer outcome",
+      "formulaSummaryZh": "按作品聚类平衡权重拟合渠道月度发生概率与条件正金额；全局、机制和重点平台按统计支持等级在 logit 与 log1p 尺度连续收缩到父层。",
+      "formulaSummaryEn": "Work-balanced two-part monthly channel model with support-tier routing and continuous logit/log1p shrinkage to eligible parents.",
+      "inputSummaryZh": "只使用 forecast origin 已观察的分成现金、canonical channel identity 和冻结变现机制；三级分类与授权关系因缺少历史 as-of 权威而仅报告。",
+      "codeEntrypoints": ["src/domain/m2Current/publishingScaleChannelCore.js"],
+      "configEntrypoints": ["config/m2-current-publishing-scale-channel.v0.1.json", "config/m2-publishing-scale-statistical-support.v1.json"],
+      "evidenceRefs": ["docs/analysis/m2-current/M2-current-publishing-scale-channel-public-diagnostic-v0.1.json", "docs/analysis/m2-current/M2-current-publishing-scale-channel-readiness-v0.1.json", "docs/analysis/m2-current/M2-current-publishing-scale-channel-execution-closure-v0.1.json", "docs/analysis/m2-current/M2-publishing-scale-threshold-impact-map-v1.json", "docs/analysis/m2-current/M2-publishing-scale-training-side-learning-study-v1.json"],
+      "predecessorIds": ["M2-CHAN-GEN02"],
+      "successorIds": [],
+      "currentRole": "implementation_blocked_no_candidate_outcome",
+      "evidenceStatus": "K7D_private_materialization_failed_closed_before_candidate_fit_no_candidate_outcome",
+      "operationalStatus": "implementation_blocked_private_authorization_consumed_no_retry",
+      "automationAuthorized": false,
+      "productionImported": false,
+      "finalHoldoutOpened": false,
+      "developmentWindowReuse": "one_time_private_attempt_consumed_before_candidate_fit_retry_not_authorized",
+      "limitationsZh": ["当前没有 DIRECT_FIT 节点", "三级分类与授权关系为 REPORT_ONLY", "私有物化在候选拟合前因实现接线错误 fail-closed，没有候选预测或评价指标", "本次授权已消耗且未授权重试", "不具备自动化、生产或发布权限"],
+      "registryReviewRequired": false,
+      "evaluations": [
+        {
+          "evaluationId": "eval-psc01-k7d-implementation-block",
+          "datasetVersion": "M2-publishing-scale-channel-v0.1-private-attempt-no-candidate-output",
+          "cashAuthority": "user_reviewed_sales_share_workbook_membership",
+          "populationId": "publishing-scale-private-materialization-blocked-before-candidate-fit",
+          "comparableGroupId": "CG-PSC01-IMPLEMENTATION-BLOCK-NO-CANDIDATE-OUTCOME",
+          "caseCount": 0,
+          "workCount": 0,
+          "originCount": 0,
+          "horizons": [3, 6, 12, 18, 24, 36],
+          "target": "future_sales_share_development_modelable_cash",
+          "grain": "work_origin_horizon_channel_month",
+          "WAPE": null,
+          "signedBias": null,
+          "baselineModelId": null,
+          "relativeWape": null,
+          "materiality": 0.01,
+          "independentEvidence": false,
+          "reportRef": "docs/analysis/m2-current/M2-current-publishing-scale-channel-execution-closure-v0.1.json",
+          "resultStatus": "M2_PUBLISHING_SCALE_IMPLEMENTATION_BLOCKED"
         }
       ]
     },
@@ -1889,15 +2104,37 @@
       "entityType": "experiment",
       "modelIds": ["M2-WORK-LG01", "M2-CHAN-GEN02"],
       "arms": [
-        {"armId": "G0", "displayNameZh": "冻结 learnedGlobal 渠道基线", "modelId": "M2-WORK-LG01", "executionStatus": "SEMANTIC_EQUIVALENCE_PASS"},
-        {"armId": "G1", "displayNameZh": "独立渠道发生-条件金额生成器", "modelId": "M2-CHAN-GEN02", "executionStatus": "NOT_EXECUTED_CONTRACT_SEMANTIC_BLOCKER"},
-        {"armId": "G2", "displayNameZh": "带层级收缩的渠道生成器", "modelId": "M2-CHAN-GEN02", "executionStatus": "NOT_EXECUTED_CONTRACT_SEMANTIC_BLOCKER"},
-        {"armId": "G3", "displayNameZh": "预注册核心选择管线", "modelId": "M2-CHAN-GEN02", "executionStatus": "NOT_EXECUTED_CONTRACT_SEMANTIC_BLOCKER"},
+        {"armId": "G0", "displayNameZh": "冻结 learnedGlobal 渠道基线", "modelId": "M2-WORK-LG01", "executionStatus": "SEMANTIC_EQUIVALENCE_PASS_COMPARATOR_ONLY"},
+        {"armId": "G1", "displayNameZh": "独立渠道发生-条件金额生成器", "modelId": "M2-CHAN-GEN02", "executionStatus": "EXECUTION_STARTED_BLOCKED_INNER_ELIGIBILITY_NO_CANDIDATE_OUTCOME"},
+        {"armId": "G2", "displayNameZh": "带层级收缩的渠道生成器", "modelId": "M2-CHAN-GEN02", "executionStatus": "NOT_EXECUTED_NOT_AUTHORIZED"},
+        {"armId": "G3", "displayNameZh": "预注册核心选择管线", "modelId": "M2-CHAN-GEN02", "executionStatus": "NOT_EXECUTED_NOT_AUTHORIZED"},
         {"armId": "G4", "displayNameZh": "平台层", "modelId": null, "executionStatus": "NOT_AUTHORIZED"},
         {"armId": "G5", "displayNameZh": "taxonomy 层", "modelId": null, "executionStatus": "NOT_AUTHORIZED"},
         {"armId": "G6", "displayNameZh": "组合层", "modelId": null, "executionStatus": "NOT_AUTHORIZED"}
       ],
-      "evidenceRefs": ["docs/analysis/m2-current/M2-current-channel-generative-v0.2-core-development-v0.1.json"]
+      "evidenceRefs": ["docs/analysis/m2-current/M2-current-channel-generative-v0.2-core-development-v0.1.json", "docs/analysis/m2-current/M2-current-channel-generative-g1-development-v0.1.json"]
+    },
+    {
+      "experimentId": "M2-EXP-PUBLISHING-SCALE-CHANNEL-01",
+      "displayNameZh": "出版行业规模适配渠道核心开发",
+      "displayNameEn": "Publishing-Scale Channel Core Development",
+      "entityType": "experiment",
+      "modelIds": ["M2-CHAN-GEN02", "M2-CHAN-PSC01"],
+      "arms": [
+        {
+          "armId": "HISTORICAL_REFERENCE",
+          "displayNameZh": "历史渠道时间生成核心审计参照",
+          "modelId": "M2-CHAN-GEN02",
+          "executionStatus": "HISTORICAL_BLOCKED_REFERENCE_ONLY"
+        },
+        {
+          "armId": "CORE",
+          "displayNameZh": "出版行业适配的渠道月度发生—条件金额核心",
+          "modelId": "M2-CHAN-PSC01",
+          "executionStatus": "PRIVATE_MATERIALIZATION_FAILED_CLOSED_BEFORE_CANDIDATE_FIT_NO_RETRY_AUTHORIZED"
+        }
+      ],
+      "evidenceRefs": ["docs/analysis/m2-current/M2-current-publishing-scale-channel-readiness-v0.1.json", "docs/analysis/m2-current/M2-current-publishing-scale-channel-execution-closure-v0.1.json", "docs/analysis/m2-current/M2-publishing-scale-threshold-impact-map-v1.json"]
     },
     {
       "experimentId": "M2-EXP-ARCHIVE-C1-C3",
@@ -1937,6 +2174,9 @@
     {"identifier": "K0", "namespace": "M2-EXP-CHANNEL-GENERATIVE-02", "parentExperiment": "M2-EXP-CHANNEL-GENERATIVE-02", "type": "execution_checkpoint", "displayNameZh": "执行检查点 K0（解释边界）", "meaningZh": "渠道生成 v0.2 的解释边界提交检查点，不是模型。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-current-channel-generative-v0.2-interpretation-amendment-v0.1.md"},
     {"identifier": "K1", "namespace": "M2-EXP-CHANNEL-GENERATIVE-02", "parentExperiment": "M2-EXP-CHANNEL-GENERATIVE-02", "type": "execution_checkpoint", "displayNameZh": "执行检查点 K1（核心实现）", "meaningZh": "渠道生成 v0.2 的核心实现检查点，不是模型。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-current-channel-generative-v0.2-core-development-v0.1.md"},
     {"identifier": "K2", "namespace": "M2-EXP-CHANNEL-GENERATIVE-02", "parentExperiment": "M2-EXP-CHANNEL-GENERATIVE-02", "type": "execution_checkpoint", "displayNameZh": "执行检查点 K2（结果封存）", "meaningZh": "渠道生成 v0.2 的结果封存检查点，不是模型。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-current-channel-generative-v0.2-core-development-v0.1.md"},
+    {"identifier": "K4", "namespace": "M2-EVALUATION-V2-2", "parentExperiment": null, "type": "governance_checkpoint", "displayNameZh": "评价检查点 K4（冲销残差透明隔离）", "meaningZh": "M2 评价合同 v2.2 四视图、残差隔离和冻结标签重评分检查点，不是模型或实验臂。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-evaluation-contract-v2.2-development-activation-v1.md"},
+    {"identifier": "K5", "namespace": "M2-EXP-CHANNEL-GENERATIVE-02", "parentExperiment": "M2-EXP-CHANNEL-GENERATIVE-02", "type": "execution_checkpoint", "displayNameZh": "执行检查点 K5（独立核心前置拆分）", "meaningZh": "渠道时间生成模型 v0.2 独立核心的前置拆分、实现和公共门禁检查点，不是模型成绩。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-current-channel-generative-g1-implementation-readiness-v0.1.md"},
+    {"identifier": "K6", "namespace": "M2-EXP-CHANNEL-GENERATIVE-02", "parentExperiment": "M2-EXP-CHANNEL-GENERATIVE-02", "type": "execution_checkpoint", "displayNameZh": "执行检查点 K6（私有执行资格阻断封存）", "meaningZh": "渠道时间生成模型 v0.2 独立核心已启动私有拟合，但在候选预测前因交易型机制父节点独立作品支持不足而阻断；不是模型效果失败。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-current-channel-generative-g1-development-v0.1.md"},
     {"identifier": "K0", "namespace": "M2-MODEL-REGISTRY-V1", "parentExperiment": null, "type": "governance_checkpoint", "displayNameZh": "模型登记治理检查点 K0（登记表、命名与长期规则）", "meaningZh": "本轮模型身份、别名、成绩人口、中文报告标准与长期规则固化检查点，不是模型或训练阶段。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-model-identity-audit-v1.md"},
     {"identifier": "K1", "namespace": "M2-MODEL-REGISTRY-V1", "parentExperiment": null, "type": "governance_checkpoint", "displayNameZh": "模型登记治理检查点 K1（目录、查询与状态索引）", "meaningZh": "本轮确定性目录、只读查询入口、README 与状态索引治理检查点，不是模型或训练阶段。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-model-catalog-and-scorecard-v1.md"},
     {"identifier": "A0", "namespace": "M2-EXP-CHANNEL-EXPERTS-01", "parentExperiment": "M2-EXP-CHANNEL-EXPERTS-01", "type": "experiment_arm", "displayNameZh": "渠道倍率专家 / A0", "meaningZh": "learnedGlobal 作品基线。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-current-channel-experts-development-v0.1.json"},
@@ -1946,10 +2186,10 @@
     {"identifier": "A4", "namespace": "M2-EXP-CHANNEL-EXPERTS-01", "parentExperiment": "M2-EXP-CHANNEL-EXPERTS-01", "type": "experiment_arm", "displayNameZh": "渠道倍率专家 / A4", "meaningZh": "五平台部分池化。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-current-channel-experts-development-v0.1.json"},
     {"identifier": "A5", "namespace": "M2-EXP-CHANNEL-EXPERTS-01", "parentExperiment": "M2-EXP-CHANNEL-EXPERTS-01", "type": "experiment_arm", "displayNameZh": "渠道倍率专家 / A5", "meaningZh": "平台与内在品类 taxonomy 倍率。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-current-channel-experts-development-v0.1.json"},
     {"identifier": "A6", "namespace": "M2-EXP-CHANNEL-EXPERTS-01", "parentExperiment": "M2-EXP-CHANNEL-EXPERTS-01", "type": "experiment_arm", "displayNameZh": "渠道倍率专家 / A6", "meaningZh": "nested 层级 shrinkage 选择。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-current-channel-experts-development-v0.1.json"},
-    {"identifier": "G0", "namespace": "M2-EXP-CHANNEL-GENERATIVE-02", "parentExperiment": "M2-EXP-CHANNEL-GENERATIVE-02", "type": "experiment_arm", "displayNameZh": "渠道时间生成 v0.2 / G0", "meaningZh": "冻结 learnedGlobal 渠道基线，只完成已有评价行语义复算。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-current-channel-generative-v0.2-core-development-v0.1.json"},
-    {"identifier": "G1", "namespace": "M2-EXP-CHANNEL-GENERATIVE-02", "parentExperiment": "M2-EXP-CHANNEL-GENERATIVE-02", "type": "experiment_arm", "displayNameZh": "渠道时间生成 v0.2 / G1", "meaningZh": "独立渠道发生-条件金额生成器；尚未执行。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-current-channel-generative-v0.2-core-development-v0.1.json"},
-    {"identifier": "G2", "namespace": "M2-EXP-CHANNEL-GENERATIVE-02", "parentExperiment": "M2-EXP-CHANNEL-GENERATIVE-02", "type": "experiment_arm", "displayNameZh": "渠道时间生成 v0.2 / G2", "meaningZh": "带层级收缩的渠道生成器；尚未执行。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-current-channel-generative-v0.2-core-development-v0.1.json"},
-    {"identifier": "G3", "namespace": "M2-EXP-CHANNEL-GENERATIVE-02", "parentExperiment": "M2-EXP-CHANNEL-GENERATIVE-02", "type": "experiment_arm", "displayNameZh": "渠道时间生成 v0.2 / G3", "meaningZh": "预注册核心选择管线；尚未执行。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-current-channel-generative-v0.2-core-development-v0.1.json"},
+    {"identifier": "G0", "namespace": "M2-EXP-CHANNEL-GENERATIVE-02", "parentExperiment": "M2-EXP-CHANNEL-GENERATIVE-02", "type": "experiment_arm", "displayNameZh": "渠道时间生成 v0.2 / G0", "meaningZh": "冻结 learnedGlobal 渠道基线，只完成已有评价行语义复算，并且只作为外层配对比较基线。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-current-channel-generative-g1-development-v0.1.json"},
+    {"identifier": "G1", "namespace": "M2-EXP-CHANNEL-GENERATIVE-02", "parentExperiment": "M2-EXP-CHANNEL-GENERATIVE-02", "type": "experiment_arm", "displayNameZh": "渠道时间生成 v0.2 / G1", "meaningZh": "独立渠道发生-条件金额生成器；拟合已启动，但因交易型机制父节点独立作品数低于预注册门槛而阻断，没有候选结果。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-current-channel-generative-g1-development-v0.1.json"},
+    {"identifier": "G2", "namespace": "M2-EXP-CHANNEL-GENERATIVE-02", "parentExperiment": "M2-EXP-CHANNEL-GENERATIVE-02", "type": "experiment_arm", "displayNameZh": "渠道时间生成 v0.2 / G2", "meaningZh": "带层级收缩的渠道生成器；本轮未授权且未执行。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-current-channel-generative-g1-development-v0.1.json"},
+    {"identifier": "G3", "namespace": "M2-EXP-CHANNEL-GENERATIVE-02", "parentExperiment": "M2-EXP-CHANNEL-GENERATIVE-02", "type": "experiment_arm", "displayNameZh": "渠道时间生成 v0.2 / G3", "meaningZh": "预注册核心选择管线；本轮未授权且未执行。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-current-channel-generative-g1-development-v0.1.json"},
     {"identifier": "G4", "namespace": "M2-EXP-CHANNEL-GENERATIVE-02", "parentExperiment": "M2-EXP-CHANNEL-GENERATIVE-02", "type": "experiment_arm", "displayNameZh": "渠道时间生成 v0.2 / G4", "meaningZh": "平台层；未授权。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-current-channel-generative-v0.2-preregistration.json"},
     {"identifier": "G5", "namespace": "M2-EXP-CHANNEL-GENERATIVE-02", "parentExperiment": "M2-EXP-CHANNEL-GENERATIVE-02", "type": "experiment_arm", "displayNameZh": "渠道时间生成 v0.2 / G5", "meaningZh": "taxonomy 层；未授权。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-current-channel-generative-v0.2-preregistration.json"},
     {"identifier": "G6", "namespace": "M2-EXP-CHANNEL-GENERATIVE-02", "parentExperiment": "M2-EXP-CHANNEL-GENERATIVE-02", "type": "experiment_arm", "displayNameZh": "渠道时间生成 v0.2 / G6", "meaningZh": "组合层；未授权。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-current-channel-generative-v0.2-preregistration.json"},
@@ -1974,7 +2214,8 @@
     {"comparableGroupId": "CG-WORK-SS-HA-PRIMARY-12039-H36", "comparisonClass": "REUSED_DEVELOPMENT_WINDOW", "target": "future_sales_share_cash", "cashAuthority": "user_reviewed_sales_share_workbook_membership", "populationId": "human-anchored-primary-1125w-12039c", "horizons": [36], "grain": "work_origin_horizon", "asOfContract": "cross_work_outer_folds_2021_2025", "actualDefinition": "sales_share_cash_actual_only", "evaluationFamily": "human_anchored_primary"},
     {"comparableGroupId": "CG-WORK-SS-HA-STRICT-74320", "comparisonClass": "REUSED_DEVELOPMENT_WINDOW", "target": "future_sales_share_cash", "cashAuthority": "user_reviewed_sales_share_workbook_membership", "populationId": "human-anchored-strict-2650w-74320c", "horizons": [3, 6, 12, 18, 24], "grain": "work_origin_horizon", "asOfContract": "strict_rolling_mature_earlier_labels", "actualDefinition": "sales_share_cash_actual_only", "evaluationFamily": "human_anchored_strict"},
     {"comparableGroupId": "CG-WORK-SS-OVERLAP-5203-H36", "comparisonClass": "SAME_INTERSECTION_COMPARABLE", "target": "future_sales_share_cash", "cashAuthority": "user_reviewed_sales_share_workbook_membership", "populationId": "human-anchored-exact-v03-intersection-5203c", "horizons": [36], "grain": "work_origin_horizon", "asOfContract": "same_work_fold_selection_reused_without_outer_metric_tuning", "actualDefinition": "sales_share_cash_actual_only", "evaluationFamily": "same_case_overlap_diagnostic"},
-    {"comparableGroupId": "CG-NOT-EXECUTED", "comparisonClass": "STANDALONE_ONLY", "target": "future_sales_share_cash", "cashAuthority": "user_reviewed_sales_share_workbook_membership", "populationId": "not_executed", "horizons": [], "grain": "work_origin_horizon_channel_month", "asOfContract": "not_executed", "actualDefinition": "no_candidate_actual_read", "evaluationFamily": "blocked_no_outcome"},
+    {"comparableGroupId": "CG-G1-BLOCKED-NO-CANDIDATE-OUTCOME", "comparisonClass": "STANDALONE_ONLY", "target": "future_sales_share_development_modelable_cash", "cashAuthority": "user_reviewed_sales_share_workbook_membership", "populationId": "G1-primary-outer0-inner-eligibility-no-candidate-output", "horizons": [36], "grain": "work_origin_horizon_channel_month", "asOfContract": "primary_outer_fold_0_inner_selection_before_candidate_prediction", "actualDefinition": "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01", "evaluationFamily": "G1_inner_selection_eligibility_block"},
+    {"comparableGroupId": "CG-PSC01-IMPLEMENTATION-BLOCK-NO-CANDIDATE-OUTCOME", "comparisonClass": "STANDALONE_ONLY", "target": "future_sales_share_development_modelable_cash", "cashAuthority": "user_reviewed_sales_share_workbook_membership", "populationId": "publishing-scale-private-materialization-blocked-before-candidate-fit", "horizons": [3, 6, 12, 18, 24, 36], "grain": "work_origin_horizon_channel_month", "asOfContract": "K7C_exact_head_ci_then_one_time_K7D_private_materialization_attempt", "actualDefinition": "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01", "evaluationFamily": "publishing_scale_K7D_implementation_block_before_candidate_fit"},
     {"comparableGroupId": "CG-WORK-HISTORICAL-C1", "comparisonClass": "DIFFERENT_TARGET_NOT_COMPARABLE", "target": "historical_target", "cashAuthority": "historical_target_authority", "populationId": "historical-C1-population", "horizons": [3, 6, 12, 18, 24], "grain": "work_origin_horizon", "asOfContract": "historical_frozen", "actualDefinition": "historical_target_actual", "evaluationFamily": "archive_C1"},
     {"comparableGroupId": "CG-WORK-LEGACY-BUYOUT-C2R", "comparisonClass": "DIFFERENT_TARGET_NOT_COMPARABLE", "target": "legacy_buyout_target", "cashAuthority": "legacy_buyout_target", "populationId": "historical-C2R-population", "horizons": [], "grain": "work_origin_horizon", "asOfContract": "historical_frozen", "actualDefinition": "legacy_buyout_target_actual", "evaluationFamily": "archive_C2R"},
     {"comparableGroupId": "CG-WORK-ARCHIVE-FORMAL-7851", "comparisonClass": "REUSED_DEVELOPMENT_WINDOW", "target": "formal_cash", "cashAuthority": "formal_cash_pre_manual_partition", "populationId": "legacy-machine-route-824w-7851c", "horizons": [3, 6, 12, 18, 24], "grain": "work_origin_horizon", "asOfContract": "historical_frozen", "actualDefinition": "formal_cash_actual_pre_manual_partition", "evaluationFamily": "archive_C2_C3"}

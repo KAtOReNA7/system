@@ -31,8 +31,14 @@ import {
 } from "./channel_experts_mode.mjs";
 import {
   prepareM2ChannelGenerativeRunReceipt,
+  recordM2ChannelGenerativeRunFailure,
   runM2ChannelGenerativePrivateDevelopment,
-  runM2ChannelGenerativePublicDiagnostic
+  runM2ChannelGenerativePublicDiagnostic,
+  prepareM2PublishingScaleRunReceipt,
+  recordM2PublishingScaleRunFailure,
+  runM2PublishingScaleChannelPublicDiagnostic,
+  runM2PublishingScalePrivateDevelopment,
+  verifyM2PublishingScaleGitAndCiPreflight
 } from "./channel_generative_mode.mjs";
 
 let config;
@@ -60,6 +66,12 @@ const channelGenerativePublicMode = process.argv.includes(
 const channelGenerativePrivateMode = process.argv.includes(
   "--channel-generative"
 );
+const publishingScaleChannelPublicMode = process.argv.includes(
+  "--publishing-scale-channel-public"
+);
+const publishingScaleChannelPrivateMode = process.argv.includes(
+  "--publishing-scale-channel"
+);
 if (tsbPublicMode) {
   await runM2HumanAnchoredTsbPublicDiagnostic({
     root,
@@ -83,6 +95,13 @@ if (channelExpertsPublicMode) {
 }
 if (channelGenerativePublicMode) {
   await runM2ChannelGenerativePublicDiagnostic({
+    root,
+    verify: process.argv.includes("--verify")
+  });
+  return;
+}
+if (publishingScaleChannelPublicMode) {
+  await runM2PublishingScaleChannelPublicDiagnostic({
     root,
     verify: process.argv.includes("--verify")
   });
@@ -113,6 +132,17 @@ if (channelGenerativePrivateMode) {
     environment: `${process.platform}-${process.arch}`
   });
 }
+if (publishingScaleChannelPrivateMode) {
+  const gitPreflight = verifyM2PublishingScaleGitAndCiPreflight({ root });
+  await prepareM2PublishingScaleRunReceipt({
+    root,
+    privateDirectory,
+    gitPreflight,
+    command:
+      "npm run develop:m2:current:publishing-scale-channel",
+    environment: `${process.platform}-${process.arch}`
+  });
+}
 const materialization = spawnSync(
   process.execPath,
   [
@@ -122,7 +152,16 @@ const materialization = spawnSync(
       "scripts/m2-current/materialize_human_anchored_cases.py"
     ),
     ...(channelExpertsPrivateMode ? ["--channel-experts"] : []),
-    ...(channelGenerativePrivateMode ? ["--channel-generative"] : [])
+    ...(
+      channelGenerativePrivateMode
+        ? ["--channel-generative"]
+        : []
+    ),
+    ...(
+      publishingScaleChannelPrivateMode
+        ? ["--publishing-scale-channel"]
+        : []
+    )
   ],
   {
     cwd: root,
@@ -132,6 +171,16 @@ const materialization = spawnSync(
   }
 );
 if (materialization.status !== 0) {
+  if (publishingScaleChannelPrivateMode) {
+    await recordM2PublishingScaleRunFailure({
+      root,
+      privateDirectory,
+      error: new Error(
+        "controlled_private_materialization_failed:"
+          + String(materialization.stderr ?? "").trim()
+      )
+    });
+  }
   if (tsbPrivateMode) {
     await runM2HumanAnchoredTsbPublicDiagnostic({
       root,
@@ -222,11 +271,37 @@ if (channelExpertsPrivateMode) {
   return;
 }
 if (channelGenerativePrivateMode) {
-  await runM2ChannelGenerativePrivateDevelopment({
-    root,
-    privateDirectory,
-    baseManifest: manifest
-  });
+  try {
+    await runM2ChannelGenerativePrivateDevelopment({
+      root,
+      privateDirectory,
+      baseManifest: manifest
+    });
+  } catch (error) {
+    await recordM2ChannelGenerativeRunFailure({
+      root,
+      privateDirectory,
+      error
+    });
+    throw error;
+  }
+  return;
+}
+if (publishingScaleChannelPrivateMode) {
+  try {
+    await runM2PublishingScalePrivateDevelopment({
+      root,
+      privateDirectory,
+      baseManifest: manifest
+    });
+  } catch (error) {
+    await recordM2PublishingScaleRunFailure({
+      root,
+      privateDirectory,
+      error
+    });
+    throw error;
+  }
   return;
 }
 

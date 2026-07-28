@@ -1,0 +1,208 @@
+{
+  "schema": "m2.publishing_scale.statistical_support.v1",
+  "contractId": "M2-PUBLISHING-SCALE-SUPPORT-01",
+  "version": "1.0.0",
+  "status": "FROZEN_BEFORE_NEW_CANDIDATE_OUTER_OUTCOME",
+  "frozenAt": "2026-07-28",
+  "boundEvidence": {
+    "populationAudit": "docs/analysis/m2-current/M2-publishing-scale-population-and-authority-audit-v1.json",
+    "thresholdLineage": "docs/analysis/m2-current/M2-publishing-scale-threshold-and-assumption-lineage-v1.json",
+    "trainingSideStudy": "docs/analysis/m2-current/M2-publishing-scale-training-side-learning-study-v1.json",
+    "newCandidateOuterOutcomeRead": false
+  },
+  "supportTiers": [
+    "DIRECT_FIT",
+    "SHRUNK_FIT",
+    "POOLED_PARENT",
+    "REPORT_ONLY"
+  ],
+  "authorityRules": {
+    "taxonomy": {
+      "currentStatus": "REPORT_ONLY",
+      "requiredForTraining": [
+        "stable assignment identity",
+        "effectiveAt",
+        "availableAt",
+        "version",
+        "conflict policy",
+        "multi-assignment policy"
+      ],
+      "currentOnlyAssignmentMayBeBackfilled": false
+    },
+    "authorization": {
+      "currentStatus": "REPORT_ONLY",
+      "observedCashRelationIsAuthorization": false,
+      "requiredForStrictOriginUse": [
+        "work-platform relation identity",
+        "start",
+        "end",
+        "effectiveAt",
+        "availableAt",
+        "version"
+      ]
+    },
+    "platformIdentity": {
+      "originObservedCashChannelMayBeUsed": true,
+      "unobservedOrCurrentAuthorizationMayBeImputed": false
+    }
+  },
+  "supportMetrics": {
+    "distinctWorks": "unique standard-work clusters",
+    "positiveDistinctWorks": "unique standard-work clusters with positive development-modelable cash",
+    "occurrenceClassEffectiveWorkCount": "harmonic class-balanced effective work count; zero for a missing class",
+    "cashEffectiveWorkCount": "inverse work-level positive-cash HHI",
+    "monthlyRows": "descriptive only; never an independent-work proxy",
+    "positiveMonths": "descriptive and numerical support only",
+    "independentOrigins": "time-correct inner validation origins",
+    "effectiveParameterCount": "free coefficients including intercept for the component design",
+    "groupedCvConvergenceRate": "share of work-grouped time-correct fits without numerical failure",
+    "coefficientRelativeInstability": "median coefficient-vector deviation divided by center norm",
+    "predictionWorkTotalCv": "median CV of the same validation work total across grouped subsamples",
+    "leaveOneWorkOutWapeDelta": "absolute work-total WAPE change after omitting one training work",
+    "parentRelativeValidationUncertainty": "paired work-cluster uncertainty against the parent",
+    "authorityCoverage": "as-of-valid assignment or relation coverage"
+  },
+  "tierRules": {
+    "DIRECT_FIT": {
+      "authorityAsOfValid": true,
+      "observedTrainingSideStableRegionRequired": true,
+      "minimumDistinctWorksFormula": "effectiveParameterCount",
+      "minimumPositiveDistinctWorksFormula": "ceil(effectiveParameterCount / 2)",
+      "minimumCashEffectiveWorkCountFormula": "effectiveParameterCount",
+      "minimumIndependentOrigins": 3,
+      "minimumGroupedCvConvergenceRate": 0.95,
+      "maximumCoefficientRelativeInstability": 0.25,
+      "maximumPredictionWorkTotalCv": 0.15,
+      "maximumAbsoluteMedianSignedBias": 0.25,
+      "maximumLeaveOneWorkOutWapeDelta": 0.03,
+      "independentParametersAllowed": true
+    },
+    "SHRUNK_FIT": {
+      "authorityAsOfValid": true,
+      "minimumDistinctWorksFormula": "max(8, effectiveParameterCount)",
+      "minimumPositiveDistinctWorksFormula": "max(6, ceil(effectiveParameterCount / 2))",
+      "minimumIndependentOrigins": 2,
+      "minimumGroupedCvConvergenceRate": 0.95,
+      "maximumCoefficientRelativeInstability": 0.5,
+      "maximumPredictionWorkTotalCv": 0.35,
+      "maximumLeaveOneWorkOutWapeDelta": 0.05,
+      "parentShrinkageRequired": true
+    },
+    "POOLED_PARENT": {
+      "authorityAsOfValid": true,
+      "independentChildParametersAllowed": false,
+      "predictionSource": "nearest eligible parent"
+    },
+    "REPORT_ONLY": {
+      "trigger": "authority as-of invalid, unresolved conflict, or non-model scope",
+      "trainingAllowed": false,
+      "routingAllowed": false,
+      "populationReportingAllowed": true
+    }
+  },
+  "continuousShrinkage": {
+    "occurrenceWeight": "occurrenceClassEffectiveWorkCount / (occurrenceClassEffectiveWorkCount + occurrenceEffectiveParameterCount)",
+    "conditionalAmountWeight": "cashEffectiveWorkCount / (cashEffectiveWorkCount + conditionalAmountEffectiveParameterCount)",
+    "combinationScale": {
+      "occurrence": "logit child-to-parent interpolation",
+      "conditionalAmount": "log1p child-to-parent interpolation"
+    },
+    "minimum": 0,
+    "maximum": 1,
+    "monthlyRowsUsedInNumerator": false
+  },
+  "hierarchy": {
+    "futureWhenAsOfAuthorityExists": [
+      "level3",
+      "level2",
+      "level1",
+      "platform",
+      "mechanism",
+      "globalPooledParent",
+      "originVisibleEmpiricalParent"
+    ],
+    "current": [
+      "platform",
+      "mechanism",
+      "globalPooledParent",
+      "originVisibleEmpiricalParent"
+    ],
+    "taxonomySkippedReason": "current-only assignment lacks historical effectiveAt and availableAt"
+  },
+  "parameterFreeze": {
+    "trainingWeight": "equal_total_weight_per_standard_work",
+    "historicalLabelDeduplication": "latest representation available before inner validation origin",
+    "validationOrigins": ["2024-06", "2024-12", "2025-06"],
+    "groupedSubsampleReplicatesPerOrigin": 5,
+    "innerWorkFoldCount": 3,
+    "innerWorkFoldRepeats": 3,
+    "outerPrimaryWorkFoldCount": 5,
+    "oneClassSmoothing": {
+      "prior": "Jeffreys",
+      "pseudoPositive": 0.5,
+      "pseudoNegative": 0.5
+    },
+    "nodes": {
+      "globalPooledParent": {
+        "basisProfile": "compact",
+        "occurrenceL2": 1,
+        "conditionalAmountL2": 1,
+        "effectiveParameterCount": 20,
+        "frozenTier": "SHRUNK_FIT"
+      },
+      "membership": {
+        "basisProfile": "current",
+        "occurrenceL2": 1,
+        "conditionalAmountL2": 1,
+        "effectiveParameterCount": 23,
+        "frozenTier": "SHRUNK_FIT"
+      },
+      "advertising": {
+        "basisProfile": "compact",
+        "occurrenceL2": 1,
+        "conditionalAmountL2": 1,
+        "effectiveParameterCount": 21,
+        "frozenTier": "SHRUNK_FIT"
+      },
+      "transactional": {
+        "basisProfile": "compact",
+        "occurrenceL2": 1,
+        "conditionalAmountL2": 3,
+        "effectiveParameterCount": 21,
+        "frozenTier": "SHRUNK_FIT"
+      }
+    },
+    "namedPlatforms": {
+      "喜马拉雅": "SHRUNK_FIT",
+      "微信读书": "SHRUNK_FIT",
+      "番茄畅听": "SHRUNK_FIT",
+      "猫耳": "POOLED_PARENT",
+      "克拉漫播": "POOLED_PARENT"
+    },
+    "taxonomy": "REPORT_ONLY",
+    "authorization": "REPORT_ONLY",
+    "generatorUsage": {
+      "historicalMinimumCaseShare": 0.2,
+      "forwardEligibilityRole": "DESCRIPTIVE_ONLY_NOT_A_FIT_GATE"
+    }
+  },
+  "evaluationRulesPreserved": {
+    "relativeWapeMateriality": 0.01,
+    "topRevenueHarmTolerance": 0.01,
+    "biasHarmTolerance": 0.01,
+    "minimumPassingTimeBlocks": 6,
+    "totalTimeBlocks": 11,
+    "minimumPassingHorizons": 4,
+    "totalHorizons": 6,
+    "workClusterBootstrapReplicates": 2000,
+    "bootstrapClusterUnit": "standard_work"
+  },
+  "currentFreezeDecision": {
+    "directFitNodeCount": 0,
+    "universalFixedDistinctWorkThreshold": null,
+    "smallSampleDevelopmentAllowed": true,
+    "standalonePromotionAutomaticallyAllowed": false,
+    "newCandidateOuterOutcomeMayNowBeRead": false,
+    "reason": "K7C implementation and exact-head Linux/Windows CI must pass first"
+  }
+}

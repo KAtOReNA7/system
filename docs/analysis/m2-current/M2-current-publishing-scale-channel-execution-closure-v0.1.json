@@ -1,0 +1,70 @@
+{
+  "schema": "m2.current.publishing_scale_channel_execution_closure_public.v0.1",
+  "displayNameZh": "出版行业适配的渠道月度发生—条件金额核心",
+  "displayNameEn": "Publishing-Scale Channel Monthly Occurrence × Conditional Amount Core",
+  "modelId": "M2-CHAN-PSC01",
+  "experimentArmId": "M2-EXP-PUBLISHING-SCALE-CHANNEL-01/CORE",
+  "finalStatus": "M2_PUBLISHING_SCALE_IMPLEMENTATION_BLOCKED",
+  "executionAttempt": {
+    "exactHeadPreflightPassed": true,
+    "pullRequestNumber": 29,
+    "k7cLinuxCiPassed": true,
+    "k7cWindowsCiPassed": true,
+    "privateMaterializationStarted": true,
+    "privateCapabilityReadOccurred": true,
+    "failureStage": "PRIVATE_MATERIALIZATION_CONFIG_VALIDATION_BEFORE_CANDIDATE_FIT",
+    "failureCode": "CHANNEL_GENERATIVE_AUTHORIZATION_OR_DATA_BOUNDARY_DIFFERS",
+    "candidateFitStarted": false,
+    "candidateOutputProduced": false,
+    "evaluatedCandidateIds": []
+  },
+  "requestedEvaluationAvailability": {
+    "primary": "NOT_PRODUCED",
+    "strict": "NOT_PRODUCED",
+    "horizon": "NOT_PRODUCED",
+    "timeBlock": "NOT_PRODUCED",
+    "topRevenue": "NOT_PRODUCED",
+    "bias": "NOT_PRODUCED",
+    "mae": "NOT_PRODUCED",
+    "medianAbsoluteError": "NOT_PRODUCED",
+    "occurrence": "NOT_PRODUCED",
+    "conditionalAmount": "NOT_PRODUCED",
+    "ranking": "NOT_PRODUCED",
+    "workClusterBootstrap2000": "NOT_PRODUCED",
+    "forecastabilityOracle": "NOT_PRODUCED"
+  },
+  "rootCause": {
+    "class": "IMPLEMENTATION_MODE_ROUTING_MISMATCH",
+    "explanation": "the new publishing-scale runner invoked the historical channel-generative materialization mode, whose consumed historical authorization correctly failed closed before the new model could fit",
+    "dataAuthorityFailure": false,
+    "statisticalSupportFailure": false,
+    "rawCandidateGateFailure": false
+  },
+  "remediation": {
+    "publishingScaleMaterializationModeSeparated": true,
+    "historicalMaterializationModePreserved": true,
+    "materializationFailureReceiptAutomatic": true,
+    "publicSyntheticValidationOnlyAfterRepair": true,
+    "privateRetryPerformed": false,
+    "privateRetryAuthorized": false,
+    "newAuthorizationAndNewExactHeadCiRequiredForAnyFutureAttempt": true
+  },
+  "governance": {
+    "privateExecutionAuthorizationConsumed": true,
+    "activeCandidate": null,
+    "approvedForAutomation": null,
+    "operationalFallbackModelId": "M2-WORK-OA03",
+    "operationalFallbackModified": false,
+    "finalHoldoutOpened": false,
+    "productionModified": false,
+    "providerUsed": false,
+    "databaseUsed": false,
+    "laterOriginOpened": false,
+    "mergeAuthorized": false
+  },
+  "privacy": {
+    "privateRowDataIncluded": false,
+    "privatePathIncluded": false,
+    "privateDigestIncluded": false
+  }
+}

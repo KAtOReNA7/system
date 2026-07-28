@@ -106,15 +106,16 @@ def header_index(columns: Iterable[Any], prefix: str) -> str:
 
 
 def load_channel_master(
-    config: Mapping[str, Any]
+    config: Mapping[str, Any],
+    workbook_path: Path = WORKBOOK_PATH,
 ) -> tuple[dict[tuple[str, str], dict[str, str]], dict[str, Any]]:
-    if not WORKBOOK_PATH.is_file():
+    if not workbook_path.is_file():
         raise CanonicalChannelMaterializationError(
             "user-reviewed channel workbook is missing"
         )
     master_config = config["channelMaster"]
     frame = pd.read_excel(
-        WORKBOOK_PATH,
+        workbook_path,
         sheet_name=master_config["sheetName"],
         header=int(master_config["headerRow"]) - 1,
         dtype=object,
@@ -203,7 +204,7 @@ def load_channel_master(
             "channel workbook canonical channel count differs"
         )
     evidence = {
-        "workbookSha256": digest_file(WORKBOOK_PATH),
+        "workbookSha256": digest_file(workbook_path),
         "rawPairCount": len(rows),
         "canonicalChannelCount": len(canonical_attributes),
         "confirmedRowCount": status_counts.get("confirmed", 0),
