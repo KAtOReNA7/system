@@ -42,6 +42,7 @@ test("catalog defines one private-free core capability and scoped private capabi
       "m2-current-human-anchored-tsb-occurrence",
       "m2-current-lifecycle-aware",
       "m2-current-channel-experts",
+      "m2-current-publishing-scale-channel",
       "m2-current-channel-generative",
       "m2-current-human-anchored-later-origin",
       "m2-evaluation-v2-2-reversal-rescore",
@@ -314,6 +315,33 @@ test("missing channel-generative inputs block only that private capability", () 
   assert.match(
     result.recovery,
     /public synthetic diagnostics, tests and startup remain available/u,
+  );
+});
+
+test("missing publishing-scale execution inputs block only that private capability", () => {
+  const result = evaluateCapability(
+    catalog,
+    "m2-current-publishing-scale-channel",
+    {
+      repoRoot: REPO_ROOT,
+      artifactExists: () => false,
+      toolProbe: availableToolProbe,
+    },
+  );
+  assert.equal(result.status, "BLOCKED_MISSING_PRIVATE_ARTIFACT");
+  assert.equal(result.coreDevelopmentUnaffected, true);
+  assert.deepEqual(result.missingPrivateRoles, [
+    "user-reviewed-channel-master",
+    "formal-model-input-cache",
+    "frozen-channel-expert-evaluation",
+    "frozen-channel-expert-evaluation-manifest",
+    "v2.2-development-modelable-scope-reconciliation",
+    "v2.2-reversal-allocation-ledger",
+    "v2.2-development-activation-receipt",
+  ]);
+  assert.match(
+    result.authorization,
+    /USER_AUTHORIZED_ONE_TIME_PUBLISHING_SCALE_PRIVATE_DEVELOPMENT/u,
   );
 });
 

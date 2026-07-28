@@ -6,6 +6,9 @@
   "forwardStatisticalSupportContract": {
     "contractId": "M2-PUBLISHING-SCALE-SUPPORT-01",
     "path": "config/m2-publishing-scale-statistical-support.v1.json",
+    "activeForwardModelId": "M2-CHAN-PSC01",
+    "activeForwardExperimentArmId": "M2-EXP-PUBLISHING-SCALE-CHANNEL-01/CORE",
+    "activeForwardConfig": "config/m2-current-publishing-scale-channel.v0.1.json",
     "appliesOnlyToNewPublishingScaleModelRevision": true,
     "historicalEligibilityRewritten": false,
     "trainingEligibilitySeparateFromPromotionEligibility": true,

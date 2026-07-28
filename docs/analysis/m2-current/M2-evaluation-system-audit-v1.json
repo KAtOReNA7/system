@@ -32,9 +32,9 @@
     "rolesChangedByAudit": false
   },
   "registryCoverage": {
-    "modelCount": 27,
-    "experimentCount": 12,
-    "nonModelIdentifierCount": 47,
+    "modelCount": 28,
+    "experimentCount": 13,
+    "nonModelIdentifierCount": 50,
     "comparabilityGroupCount": 13,
     "evaluationCount": 40,
     "wapeEvaluationCount": 39,
@@ -441,6 +441,11 @@
       "experimentId": "M2-EXP-CHANNEL-GENERATIVE-02",
       "classification": "BLOCKED_NOT_EXECUTED_NO_MODEL_CONCLUSION",
       "conclusionZh": "渠道时间生成 v0.2 因评价合同语义阻断而未执行；只能得出未执行结论，不能评价模型好坏。"
+    },
+    {
+      "experimentId": "M2-EXP-PUBLISHING-SCALE-CHANNEL-01",
+      "classification": "IMPLEMENTED_NOT_EXECUTED_AWAITING_EXACT_HEAD_CI",
+      "conclusionZh": "出版行业规模适配渠道核心已完成支持合同绑定与公开 synthetic 验证，但尚未执行私有 outer development evaluation，不能评价候选优劣。"
     },
     {
       "experimentId": "M2-EXP-ARCHIVE-C1-C3",

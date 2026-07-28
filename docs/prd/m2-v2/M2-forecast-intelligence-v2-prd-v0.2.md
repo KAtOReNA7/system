@@ -249,3 +249,9 @@ development 窗口开发 v1.1。
 
 本 amendment 不改写历史模型、配置、分数或阻断；也不授权 outer outcome、
 sealed holdout、later-origin、production 或 release。
+向前实现身份冻结为出版行业适配的渠道月度发生—条件金额核心
+（Publishing-Scale Channel Monthly Occurrence × Conditional Amount Core，
+`M2-CHAN-PSC01`，`M2-EXP-PUBLISHING-SCALE-CHANNEL-01/CORE`），其运行配置为
+`config/m2-current-publishing-scale-channel.v0.1.json`。该身份不改写历史
+`M2-CHAN-GEN02`，也不改变作品发生—金额校准模型 v0.3
+（Occurrence-Amount Calibration v0.3，`M2-WORK-OA03`）的运行回退角色。

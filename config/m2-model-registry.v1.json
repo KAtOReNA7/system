@@ -62,7 +62,7 @@
     "approvedForAutomation": null,
     "activeCandidate": null,
     "blockedExperiment": "M2-EXP-CHANNEL-GENERATIVE-02",
-    "latestStateIndex": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.34.md",
+    "latestStateIndex": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.35.md",
     "roleConflict": false,
     "sourceAssertions": [
       {
@@ -1586,7 +1586,7 @@
       "configEntrypoints": ["config/m2-current-channel-generative.v0.2.json"],
       "evidenceRefs": ["docs/analysis/m2-current/M2-current-channel-generative-v0.2-preregistration.json", "docs/analysis/m2-current/M2-current-channel-generative-v0.2-core-development-v0.1.json", "docs/analysis/m2-current/M2-current-channel-generative-g1-implementation-readiness-v0.1.json", "docs/analysis/m2-current/M2-current-channel-generative-g1-development-v0.1.json", "docs/analysis/m2-current/M2-current-channel-generative-g1-forecastability-v0.1.json"],
       "predecessorIds": ["M2-WORK-LG01", "M2-CHAN-SCL01"],
-      "successorIds": [],
+      "successorIds": ["M2-CHAN-PSC01"],
       "currentRole": "blocked_model_family_no_candidate_outcome",
       "evidenceStatus": "G1_preregistered_mechanism_parent_eligibility_block",
       "operationalStatus": "blocked_not_failed",
@@ -1640,6 +1640,37 @@
           "resultStatus": "M2_CHANNEL_GENERATIVE_G1_CORE_BLOCKED"
         }
       ]
+    },
+    {
+      "stableModelId": "M2-CHAN-PSC01",
+      "displayNameZh": "出版行业适配的渠道月度发生—条件金额核心",
+      "displayNameEn": "Publishing-Scale Channel Monthly Occurrence × Conditional Amount Core",
+      "legacyIds": ["M2-current-publishing-scale-channel-v0.1"],
+      "legacyAliases": ["publishing-scale channel core", "publishing scale occurrence amount core"],
+      "entityType": "model_revision",
+      "capability": "CHAN",
+      "target": "future_sales_share_development_modelable_cash",
+      "targetHistory": ["future_sales_share_development_modelable_cash"],
+      "predictionGrain": "work_origin_horizon_channel_month",
+      "horizonContract": "3/6/12/18/24/36 month development horizons; parameters frozen before private outer outcome",
+      "formulaSummaryZh": "按作品聚类平衡权重拟合渠道月度发生概率与条件正金额；全局、机制和重点平台按统计支持等级在 logit 与 log1p 尺度连续收缩到父层。",
+      "formulaSummaryEn": "Work-balanced two-part monthly channel model with support-tier routing and continuous logit/log1p shrinkage to eligible parents.",
+      "inputSummaryZh": "只使用 forecast origin 已观察的分成现金、canonical channel identity 和冻结变现机制；三级分类与授权关系因缺少历史 as-of 权威而仅报告。",
+      "codeEntrypoints": ["src/domain/m2Current/publishingScaleChannelCore.js"],
+      "configEntrypoints": ["config/m2-current-publishing-scale-channel.v0.1.json", "config/m2-publishing-scale-statistical-support.v1.json"],
+      "evidenceRefs": ["docs/analysis/m2-current/M2-current-publishing-scale-channel-public-diagnostic-v0.1.json", "docs/analysis/m2-current/M2-current-publishing-scale-channel-readiness-v0.1.json", "docs/analysis/m2-current/M2-publishing-scale-threshold-impact-map-v1.json", "docs/analysis/m2-current/M2-publishing-scale-training-side-learning-study-v1.json"],
+      "predecessorIds": ["M2-CHAN-GEN02"],
+      "successorIds": [],
+      "currentRole": "development_candidate_implemented_not_executed",
+      "evidenceStatus": "K7C_implemented_public_synthetic_verified_private_outer_not_read",
+      "operationalStatus": "awaiting_exact_head_ci_before_one_time_private_development_execution",
+      "automationAuthorized": false,
+      "productionImported": false,
+      "finalHoldoutOpened": false,
+      "developmentWindowReuse": "authorized_once_only_after_K7C_exact_head_linux_windows_ci",
+      "limitationsZh": ["当前没有 DIRECT_FIT 节点", "三级分类与授权关系为 REPORT_ONLY", "尚未执行私有 outer development evaluation", "不具备自动化、生产或发布权限"],
+      "registryReviewRequired": false,
+      "evaluations": []
     },
     {
       "stableModelId": "M2-WORK-C1TE01",
@@ -2055,6 +2086,28 @@
         {"armId": "G6", "displayNameZh": "组合层", "modelId": null, "executionStatus": "NOT_AUTHORIZED"}
       ],
       "evidenceRefs": ["docs/analysis/m2-current/M2-current-channel-generative-v0.2-core-development-v0.1.json", "docs/analysis/m2-current/M2-current-channel-generative-g1-development-v0.1.json"]
+    },
+    {
+      "experimentId": "M2-EXP-PUBLISHING-SCALE-CHANNEL-01",
+      "displayNameZh": "出版行业规模适配渠道核心开发",
+      "displayNameEn": "Publishing-Scale Channel Core Development",
+      "entityType": "experiment",
+      "modelIds": ["M2-CHAN-GEN02", "M2-CHAN-PSC01"],
+      "arms": [
+        {
+          "armId": "HISTORICAL_REFERENCE",
+          "displayNameZh": "历史渠道时间生成核心审计参照",
+          "modelId": "M2-CHAN-GEN02",
+          "executionStatus": "HISTORICAL_BLOCKED_REFERENCE_ONLY"
+        },
+        {
+          "armId": "CORE",
+          "displayNameZh": "出版行业适配的渠道月度发生—条件金额核心",
+          "modelId": "M2-CHAN-PSC01",
+          "executionStatus": "IMPLEMENTED_NOT_EXECUTED_AWAITING_EXACT_HEAD_CI"
+        }
+      ],
+      "evidenceRefs": ["docs/analysis/m2-current/M2-current-publishing-scale-channel-readiness-v0.1.json", "docs/analysis/m2-current/M2-publishing-scale-threshold-impact-map-v1.json"]
     },
     {
       "experimentId": "M2-EXP-ARCHIVE-C1-C3",

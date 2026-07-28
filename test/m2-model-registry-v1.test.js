@@ -34,8 +34,8 @@ test("registry schema, evidence paths and immutable digests validate", () => {
     canonicalEvidenceSha256("same\r\ncontent\r\n"),
     canonicalEvidenceSha256("same\ncontent\n")
   );
-  assert.equal(validation.counts.modelCount, 27);
-  assert.equal(validation.counts.experimentCount, 12);
+  assert.equal(validation.counts.modelCount, 28);
+  assert.equal(validation.counts.experimentCount, 13);
   assert.equal(validation.counts.nonModelIdentifierCount, 50);
   assert.equal(validation.counts.comparabilityGroupCount, 13);
 });
@@ -199,7 +199,7 @@ test("reader catalog is a deterministic complete rendering of the registry", asy
 test("read-only query exposes scoped identities and refuses invalid ranking", () => {
   const list = runQuery("list");
   assert.equal(list.status, 0, list.stderr);
-  assert.match(list.stdout, /M2 持久模型与模型族：27 个/u);
+  assert.match(list.stdout, /M2 持久模型与模型族：28 个/u);
   assert.match(list.stdout, /M2-CHAN-GEN02/u);
 
   const status = runQuery("status");

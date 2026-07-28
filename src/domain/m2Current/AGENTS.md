@@ -39,6 +39,17 @@ This directory is the only implementation home for current M2 model logic.
 - Sparse channel/category cells fall back deterministically through the
   preregistered hierarchy; they do not stop the experiment and must not be
   filled with fabricated observations.
+- 新的出版行业适配模型必须绑定
+  `M2-PUBLISHING-SCALE-SUPPORT-01`。禁止重新引入一个跨 mechanism、platform
+  和 taxonomy 共用、又没有本项目训练侧证据的固定作品数门槛；月度行数不得冒充
+  独立作品数。
+- 出版行业适配节点必须显式报告 `DIRECT_FIT`、`SHRUNK_FIT`、
+  `POOLED_PARENT` 或 `REPORT_ONLY`，以及 distinct works、positive works、
+  work-cluster ESS、现金 ESS、集中度、连续收缩权重和父层回退原因。
+- 当前三级分类和 work-platform 授权关系缺少历史
+  `effectiveAt/availableAt`，只能是 `REPORT_ONLY`。在权威补齐前，不得从
+  current-only 快照向 forecast origin 回填分类或授权；已观察现金关系也不得解释为
+  授权关系。
 - Public artifacts contain only aggregate evidence. Work IDs, channel IDs,
   row-level actuals, and row-level predictions remain in capability-scoped,
   Git-ignored private output.

@@ -1,0 +1,316 @@
+{
+  "schema": "m2.current.publishing_scale_channel_core.v0.1",
+  "candidateId": "M2-current-publishing-scale-channel-v0.1",
+  "modelId": "M2-CHAN-PSC01",
+  "experimentId": "M2-EXP-PUBLISHING-SCALE-CHANNEL-01",
+  "experimentArmId": "M2-EXP-PUBLISHING-SCALE-CHANNEL-01/CORE",
+  "displayNameZh": "出版行业适配的渠道月度发生—条件金额核心",
+  "displayNameEn": "Publishing-Scale Channel Monthly Occurrence × Conditional Amount Core",
+  "target": "future_sales_share_development_modelable_cash",
+  "actualDefinitionId": "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01",
+  "comparabilityGroupId": "M2-COMP-WORK-POINT-DEVELOPMENT-MODELABLE-RESTATEMENT-01",
+  "supportContract": "config/m2-publishing-scale-statistical-support.v1.json",
+  "baseConfig": "config/m2-current-human-anchored.v0.1.json",
+  "historicalPredecessorConfig": "config/m2-current-channel-generative.v0.2.json",
+  "authorization": {
+    "source": "current_user_attachment_runtime_bound",
+    "coreImplementation": true,
+    "syntheticValidation": true,
+    "oneTimePrivateDevelopmentEvaluation": "AUTHORIZED_AFTER_K7C_EXACT_HEAD_LINUX_WINDOWS_CI",
+    "authorizedModelId": "M2-CHAN-PSC01",
+    "authorizedArmId": "M2-EXP-PUBLISHING-SCALE-CHANNEL-01/CORE",
+    "candidateOuterOutcomeReadBeforeK7CExactHeadCi": false,
+    "outcomeDrivenTuning": false,
+    "laterOriginHoldout": false,
+    "finalHoldout": false,
+    "provider": false,
+    "database": false,
+    "canary": false,
+    "full160": false,
+    "automation": false,
+    "production": false,
+    "release": false,
+    "mergePr": false
+  },
+  "currentExecution": {
+    "status": "IMPLEMENTED_NOT_EXECUTED_AWAITING_EXACT_HEAD_CI",
+    "privateExecutionAuthorizationConsumed": false,
+    "candidateOutputProduced": false,
+    "evaluatedCandidateIds": [],
+    "operationalFallbackModified": false
+  },
+  "dataContract": {
+    "cashAuthority": "user_reviewed_sales_share_workbook_membership",
+    "featureAndLabelWindowStart": "2021-01",
+    "featureAndLabelWindowEnd": "2025-12",
+    "trainingGrain": "work_x_canonical_channel_x_origin_x_future_month",
+    "uniqueKey": "standardWorkId|channelUid|origin|futureMonthIndex",
+    "trainingWeight": "equal_total_weight_per_standard_work",
+    "monthlyRowsAreIndependentWorks": false,
+    "historicalLabelDeduplication": "latest_representation_available_before_validation_origin",
+    "predictionEligibleChannelPolicy": "positive_cash_observed_at_origin_only",
+    "futureFirstSeenPrediction": 0,
+    "taxonomyAsOfStatus": "REPORT_ONLY",
+    "authorizationAsOfStatus": "REPORT_ONLY",
+    "currentOnlyTaxonomyBackfill": false,
+    "currentOnlyAuthorizationBackfill": false,
+    "buyoutCashUsed": false,
+    "otherCashUsed": false,
+    "commitmentUsed": false,
+    "labelView": "DEVELOPMENT_MODELABLE_RESTATEMENT_VIEW",
+    "residualPolicyStatus": "UNALLOCATED_REVERSAL_RESIDUAL_EXCLUDED_FROM_MODELABLE_TARGET",
+    "labelAvailability": "maximum_of_revenue_month_and_contributing_reversal_recorded_month"
+  },
+  "featureOrder": [
+    "log_recent_1_positive",
+    "log_recent_3_positive",
+    "log_recent_12_positive",
+    "log_cumulative_positive",
+    "positive_rate_3",
+    "positive_rate_12",
+    "log_recent_3_vs_previous_3",
+    "previous_3_available",
+    "log_positive_volatility_12",
+    "months_since_last_positive_scaled",
+    "log_historical_peak_positive",
+    "months_since_peak_scaled",
+    "log_observed_channel_age",
+    "log_observed_work_age",
+    "trailing_12_work_share",
+    "channel_rank_percentile",
+    "available_month_fraction_3",
+    "available_month_fraction_12"
+  ],
+  "basisProfiles": {
+    "compact": {
+      "membership": {
+        "base": ["u"],
+        "interactions": []
+      },
+      "advertising": {
+        "base": ["short", "u"],
+        "interactions": []
+      },
+      "transactional": {
+        "base": ["short_spike", "long_tail"],
+        "interactions": []
+      }
+    },
+    "current": {
+      "membership": {
+        "base": ["u", "u_squared"],
+        "interactions": [
+          ["u", "log_recent_12_positive"],
+          ["u", "positive_rate_12"]
+        ]
+      },
+      "advertising": {
+        "base": ["short", "u", "u_squared"],
+        "interactions": [
+          ["short", "log_recent_3_vs_previous_3"],
+          ["short", "log_positive_volatility_12"]
+        ]
+      },
+      "transactional": {
+        "base": ["short_spike", "long_tail"],
+        "interactions": [
+          ["short_spike", "months_since_last_positive_scaled"],
+          ["long_tail", "log_cumulative_positive"]
+        ]
+      }
+    }
+  },
+  "nodes": {
+    "globalPooledParent": {
+      "basisMechanism": "membership",
+      "basisProfile": "compact",
+      "occurrenceL2": 1,
+      "conditionalAmountL2": 1,
+      "effectiveParameterCount": 20,
+      "frozenTier": "SHRUNK_FIT"
+    },
+    "mechanisms": {
+      "membership": {
+        "basisMechanism": "membership",
+        "basisProfile": "current",
+        "occurrenceL2": 1,
+        "conditionalAmountL2": 1,
+        "effectiveParameterCount": 23,
+        "frozenTier": "SHRUNK_FIT"
+      },
+      "advertising": {
+        "basisMechanism": "advertising",
+        "basisProfile": "compact",
+        "occurrenceL2": 1,
+        "conditionalAmountL2": 1,
+        "effectiveParameterCount": 21,
+        "frozenTier": "SHRUNK_FIT"
+      },
+      "transactional": {
+        "basisMechanism": "transactional",
+        "basisProfile": "compact",
+        "occurrenceL2": 1,
+        "conditionalAmountL2": 3,
+        "effectiveParameterCount": 21,
+        "frozenTier": "SHRUNK_FIT"
+      }
+    },
+    "namedPlatforms": [
+      {
+        "platformId": "ximalaya",
+        "displayNameZh": "喜马拉雅",
+        "channelUid": "chn_846e11f634e4e518364a",
+        "mechanism": "membership",
+        "basisMechanism": "membership",
+        "basisProfile": "current",
+        "occurrenceL2": 1,
+        "conditionalAmountL2": 1,
+        "effectiveParameterCount": 23,
+        "frozenTier": "SHRUNK_FIT"
+      },
+      {
+        "platformId": "wechat_reading",
+        "displayNameZh": "微信读书",
+        "channelUid": "chn_9c0835f2ded5dea065e1",
+        "mechanism": "membership",
+        "basisMechanism": "membership",
+        "basisProfile": "current",
+        "occurrenceL2": 1,
+        "conditionalAmountL2": 1,
+        "effectiveParameterCount": 23,
+        "frozenTier": "SHRUNK_FIT"
+      },
+      {
+        "platformId": "fanqie_audio",
+        "displayNameZh": "番茄畅听",
+        "channelUid": "chn_0c5894e9a72814b7d7f8",
+        "mechanism": "advertising",
+        "basisMechanism": "advertising",
+        "basisProfile": "compact",
+        "occurrenceL2": 1,
+        "conditionalAmountL2": 1,
+        "effectiveParameterCount": 21,
+        "frozenTier": "SHRUNK_FIT"
+      },
+      {
+        "platformId": "missevan",
+        "displayNameZh": "猫耳",
+        "channelUid": "chn_744db9d05e912d103620",
+        "mechanism": "transactional",
+        "basisMechanism": "transactional",
+        "basisProfile": "compact",
+        "occurrenceL2": 1,
+        "conditionalAmountL2": 3,
+        "effectiveParameterCount": 21,
+        "frozenTier": "POOLED_PARENT"
+      },
+      {
+        "platformId": "manbo",
+        "displayNameZh": "克拉漫播",
+        "channelUid": "chn_2c645574c6c7201a4a8e",
+        "mechanism": "transactional",
+        "basisMechanism": "transactional",
+        "basisProfile": "compact",
+        "occurrenceL2": 1,
+        "conditionalAmountL2": 3,
+        "effectiveParameterCount": 21,
+        "frozenTier": "POOLED_PARENT"
+      }
+    ],
+    "taxonomy": {
+      "frozenTier": "REPORT_ONLY",
+      "futureHierarchy": "level3_to_level2_to_level1_to_platform_to_mechanism_to_global",
+      "currentParametersEstimated": false
+    },
+    "authorization": {
+      "frozenTier": "REPORT_ONLY",
+      "currentParametersEstimated": false
+    }
+  },
+  "oneClassSmoothing": {
+    "prior": "Jeffreys",
+    "pseudoPositive": 0.5,
+    "pseudoNegative": 0.5
+  },
+  "numerical": {
+    "maximumIterations": 100,
+    "coefficientTolerance": 1e-7,
+    "pivotTolerance": 1e-12,
+    "minimumLogisticVariance": 1e-8,
+    "oneClassPseudoPositive": 0.5,
+    "oneClassPseudoNegative": 0.5,
+    "conditionalLogPredictionClip": 30,
+    "numericFailurePolicy": "demote_child_to_nearest_eligible_parent"
+  },
+  "selection": {
+    "outerPrimaryWorkFoldCount": 5,
+    "innerWorkFoldCount": 3,
+    "innerWorkFoldRepeats": 3,
+    "strictOrigins": [
+      "2023-03",
+      "2023-06",
+      "2023-09",
+      "2023-12",
+      "2024-03",
+      "2024-06",
+      "2024-09",
+      "2024-12",
+      "2025-03",
+      "2025-06",
+      "2025-09"
+    ],
+    "outerOutcomeUsedForSelection": false,
+    "parameterSelectionStatus": "FROZEN_FROM_TRAINING_SIDE_STUDY"
+  },
+  "evaluation": {
+    "topRevenueFractions": [0.01, 0.05, 0.1],
+    "bootstrapIterations": 2000,
+    "bootstrapSeed": 2026072801,
+    "relativeWapeMinimum": 0.01,
+    "relativeWapeMaximumAllowedHarm": -0.01,
+    "absoluteBiasDeteriorationMaximum": 0.01,
+    "strictImprovedOriginBlockMinimum": 6,
+    "strictOriginBlockTotal": 11,
+    "improvedHorizonSliceMinimum": 4,
+    "horizonSliceTotal": 6,
+    "generatorUsageRole": "DESCRIPTIVE_ONLY_NOT_A_FIT_GATE"
+  },
+  "forecastabilityDiagnostics": {
+    "runOnlyAfterRawCandidatePredictionsFrozen": true,
+    "participatesInTraining": false,
+    "participatesInSelection": false,
+    "participatesInGate": false,
+    "oracleIds": [
+      "ORACLE_OCCURRENCE_ONLY",
+      "ORACLE_AMOUNT_ONLY",
+      "ORACLE_BOTH",
+      "FUTURE_FIRST_ENTRY_CEILING",
+      "MECHANISM_INFORMATION_GAIN"
+    ],
+    "pooledBasis": {
+      "base": ["u", "u_squared", "short_spike", "long_tail"],
+      "interactions": []
+    }
+  },
+  "privateOutputs": {
+    "directory": "data/private-output/m2-current-human-anchored",
+    "primaryMonthlyCases": "M2-current-channel-generative-primary-monthly-private-v0.2.ndjson",
+    "auxiliaryMonthlyCases": "M2-current-channel-generative-auxiliary-monthly-private-v0.2.ndjson",
+    "materializationManifest": "M2-current-channel-generative-materialization-manifest-private-v0.2.json",
+    "runReceipt": "M2-current-publishing-scale-channel-run-receipt-private-v0.1.json",
+    "evaluationRows": "M2-current-publishing-scale-channel-evaluation-private-v0.1.ndjson",
+    "evaluationManifest": "M2-current-publishing-scale-channel-evaluation-manifest-private-v0.1.json",
+    "reversalRestatementDirectory": "data/private-output/m2-evaluation-v2-2-reversal-rescore",
+    "reversalScopeReconciliation": "M2-reversal-scope-reconciliation-private-v1.json",
+    "reversalAllocationLedger": "M2-reversal-allocation-ledger-private-v1.ndjson",
+    "reversalExecutionReceipt": "M2-evaluation-v2.2-execution-receipt-private-v1.json"
+  },
+  "syntheticFixture": "test/fixtures/m2-current-channel-generative.synthetic.v0.2.json",
+  "publicDiagnosticOutput": "docs/analysis/m2-current/M2-current-publishing-scale-channel-public-diagnostic-v0.1.json",
+  "publicReadinessOutput": "docs/analysis/m2-current/M2-current-publishing-scale-channel-readiness-v0.1.json",
+  "publicReadinessReport": "docs/analysis/m2-current/M2-current-publishing-scale-channel-readiness-v0.1.md",
+  "publicDevelopmentOutput": "docs/analysis/m2-current/M2-current-publishing-scale-channel-development-v0.1.json",
+  "publicDevelopmentReport": "docs/analysis/m2-current/M2-current-publishing-scale-channel-development-v0.1.md",
+  "publicForecastabilityOutput": "docs/analysis/m2-current/M2-current-publishing-scale-channel-forecastability-v0.1.json",
+  "publicForecastabilityReport": "docs/analysis/m2-current/M2-current-publishing-scale-channel-forecastability-v0.1.md"
+}

@@ -1,0 +1,406 @@
+{
+  "schema": "m2.current.publishing_scale_channel_public_diagnostic.v0.1",
+  "displayNameZh": "出版行业适配的渠道月度发生—条件金额核心",
+  "displayNameEn": "Publishing-Scale Channel Monthly Occurrence × Conditional Amount Core",
+  "modelId": "M2-CHAN-PSC01",
+  "experimentArmId": "M2-EXP-PUBLISHING-SCALE-CHANNEL-01/CORE",
+  "status": "SYNTHETIC_DIAGNOSTIC_PASS",
+  "supportContractId": "M2-PUBLISHING-SCALE-SUPPORT-01",
+  "training": {
+    "monthlyRowCount": 4464,
+    "distinctWorkCount": 180,
+    "workBalanced": true
+  },
+  "support": {
+    "globalPooledParent": {
+      "nodeId": "globalPooledParent",
+      "displayNameZh": null,
+      "nodeType": "global_parent",
+      "parentNodeId": "originVisibleEmpiricalParent",
+      "tier": "SHRUNK_FIT",
+      "parametersEstimated": true,
+      "fallbackReason": null,
+      "support": {
+        "distinctWorks": 180,
+        "positiveDistinctWorks": 177,
+        "occurrenceClassEffectiveWorkCount": 5.9,
+        "cashEffectiveWorkCount": 96.49395122479541,
+        "monthlyRows": 4320,
+        "positiveMonths": 4248,
+        "independentOrigins": 2,
+        "cashHhi": 0.010363343891581016,
+        "top1WorkCashShare": 0.04783456255325792,
+        "top3WorkCashShare": 0.10722961792094272,
+        "effectiveParameterCount": 20,
+        "occurrenceShrinkageWeight": 0.22779922779922782,
+        "conditionalAmountShrinkageWeight": 0.8283172663496793,
+        "monthlyRowsUsedAsIndependentSample": false
+      }
+    },
+    "mechanisms": {
+      "membership": {
+        "nodeId": "membership",
+        "displayNameZh": null,
+        "nodeType": "mechanism",
+        "parentNodeId": "globalPooledParent",
+        "tier": "SHRUNK_FIT",
+        "parametersEstimated": true,
+        "fallbackReason": null,
+        "support": {
+          "distinctWorks": 60,
+          "positiveDistinctWorks": 59,
+          "occurrenceClassEffectiveWorkCount": 1.9666666666666668,
+          "cashEffectiveWorkCount": 39.300499825795,
+          "monthlyRows": 1440,
+          "positiveMonths": 1416,
+          "independentOrigins": 2,
+          "cashHhi": 0.025444969006313937,
+          "top1WorkCashShare": 0.1051400214683619,
+          "top3WorkCashShare": 0.14637302490831763,
+          "effectiveParameterCount": 23,
+          "occurrenceShrinkageWeight": 0.0787716955941255,
+          "conditionalAmountShrinkageWeight": 0.6308215814590136,
+          "monthlyRowsUsedAsIndependentSample": false
+        }
+      },
+      "advertising": {
+        "nodeId": "advertising",
+        "displayNameZh": null,
+        "nodeType": "mechanism",
+        "parentNodeId": "globalPooledParent",
+        "tier": "SHRUNK_FIT",
+        "parametersEstimated": true,
+        "fallbackReason": null,
+        "support": {
+          "distinctWorks": 60,
+          "positiveDistinctWorks": 59,
+          "occurrenceClassEffectiveWorkCount": 1.9666666666666668,
+          "cashEffectiveWorkCount": 39.329548613816925,
+          "monthlyRows": 1440,
+          "positiveMonths": 1416,
+          "independentOrigins": 2,
+          "cashHhi": 0.025426175362935347,
+          "top1WorkCashShare": 0.105037226239653,
+          "top3WorkCashShare": 0.14627296900593195,
+          "effectiveParameterCount": 21,
+          "occurrenceShrinkageWeight": 0.08563134978229317,
+          "conditionalAmountShrinkageWeight": 0.6519118660339107,
+          "monthlyRowsUsedAsIndependentSample": false
+        }
+      },
+      "transactional": {
+        "nodeId": "transactional",
+        "displayNameZh": null,
+        "nodeType": "mechanism",
+        "parentNodeId": "globalPooledParent",
+        "tier": "SHRUNK_FIT",
+        "parametersEstimated": true,
+        "fallbackReason": null,
+        "support": {
+          "distinctWorks": 60,
+          "positiveDistinctWorks": 59,
+          "occurrenceClassEffectiveWorkCount": 1.9666666666666668,
+          "cashEffectiveWorkCount": 33.79807655582412,
+          "monthlyRows": 1440,
+          "positiveMonths": 1416,
+          "independentOrigins": 2,
+          "cashHhi": 0.029587482540561292,
+          "top1WorkCashShare": 0.12372776990074479,
+          "top3WorkCashShare": 0.17322677454334892,
+          "effectiveParameterCount": 21,
+          "occurrenceShrinkageWeight": 0.08563134978229317,
+          "conditionalAmountShrinkageWeight": 0.6167748702163516,
+          "monthlyRowsUsedAsIndependentSample": false
+        }
+      }
+    },
+    "namedPlatforms": {
+      "ximalaya": {
+        "nodeId": "ximalaya",
+        "displayNameZh": "喜马拉雅",
+        "nodeType": "platform",
+        "parentNodeId": "membership",
+        "tier": "POOLED_PARENT",
+        "parametersEstimated": false,
+        "fallbackReason": "distinct_work_support_below_effective_parameter_contract",
+        "support": {
+          "distinctWorks": 0,
+          "positiveDistinctWorks": 0,
+          "occurrenceClassEffectiveWorkCount": 0,
+          "cashEffectiveWorkCount": 1,
+          "monthlyRows": 0,
+          "positiveMonths": 0,
+          "independentOrigins": 0,
+          "cashHhi": 1,
+          "top1WorkCashShare": 0,
+          "top3WorkCashShare": 0,
+          "effectiveParameterCount": 23,
+          "occurrenceShrinkageWeight": 0,
+          "conditionalAmountShrinkageWeight": 0.041666666666666664,
+          "monthlyRowsUsedAsIndependentSample": false
+        }
+      },
+      "wechat_reading": {
+        "nodeId": "wechat_reading",
+        "displayNameZh": "微信读书",
+        "nodeType": "platform",
+        "parentNodeId": "membership",
+        "tier": "POOLED_PARENT",
+        "parametersEstimated": false,
+        "fallbackReason": "distinct_work_support_below_effective_parameter_contract",
+        "support": {
+          "distinctWorks": 0,
+          "positiveDistinctWorks": 0,
+          "occurrenceClassEffectiveWorkCount": 0,
+          "cashEffectiveWorkCount": 1,
+          "monthlyRows": 0,
+          "positiveMonths": 0,
+          "independentOrigins": 0,
+          "cashHhi": 1,
+          "top1WorkCashShare": 0,
+          "top3WorkCashShare": 0,
+          "effectiveParameterCount": 23,
+          "occurrenceShrinkageWeight": 0,
+          "conditionalAmountShrinkageWeight": 0.041666666666666664,
+          "monthlyRowsUsedAsIndependentSample": false
+        }
+      },
+      "fanqie_audio": {
+        "nodeId": "fanqie_audio",
+        "displayNameZh": "番茄畅听",
+        "nodeType": "platform",
+        "parentNodeId": "advertising",
+        "tier": "POOLED_PARENT",
+        "parametersEstimated": false,
+        "fallbackReason": "distinct_work_support_below_effective_parameter_contract",
+        "support": {
+          "distinctWorks": 0,
+          "positiveDistinctWorks": 0,
+          "occurrenceClassEffectiveWorkCount": 0,
+          "cashEffectiveWorkCount": 1,
+          "monthlyRows": 0,
+          "positiveMonths": 0,
+          "independentOrigins": 0,
+          "cashHhi": 1,
+          "top1WorkCashShare": 0,
+          "top3WorkCashShare": 0,
+          "effectiveParameterCount": 21,
+          "occurrenceShrinkageWeight": 0,
+          "conditionalAmountShrinkageWeight": 0.045454545454545456,
+          "monthlyRowsUsedAsIndependentSample": false
+        }
+      },
+      "missevan": {
+        "nodeId": "missevan",
+        "displayNameZh": "猫耳",
+        "nodeType": "platform",
+        "parentNodeId": "transactional",
+        "tier": "POOLED_PARENT",
+        "parametersEstimated": false,
+        "fallbackReason": "training_side_contract_requires_parent_pooling",
+        "support": {
+          "distinctWorks": 0,
+          "positiveDistinctWorks": 0,
+          "occurrenceClassEffectiveWorkCount": 0,
+          "cashEffectiveWorkCount": 1,
+          "monthlyRows": 0,
+          "positiveMonths": 0,
+          "independentOrigins": 0,
+          "cashHhi": 1,
+          "top1WorkCashShare": 0,
+          "top3WorkCashShare": 0,
+          "effectiveParameterCount": 21,
+          "occurrenceShrinkageWeight": 0,
+          "conditionalAmountShrinkageWeight": 0.045454545454545456,
+          "monthlyRowsUsedAsIndependentSample": false
+        }
+      },
+      "manbo": {
+        "nodeId": "manbo",
+        "displayNameZh": "克拉漫播",
+        "nodeType": "platform",
+        "parentNodeId": "transactional",
+        "tier": "POOLED_PARENT",
+        "parametersEstimated": false,
+        "fallbackReason": "training_side_contract_requires_parent_pooling",
+        "support": {
+          "distinctWorks": 0,
+          "positiveDistinctWorks": 0,
+          "occurrenceClassEffectiveWorkCount": 0,
+          "cashEffectiveWorkCount": 1,
+          "monthlyRows": 0,
+          "positiveMonths": 0,
+          "independentOrigins": 0,
+          "cashHhi": 1,
+          "top1WorkCashShare": 0,
+          "top3WorkCashShare": 0,
+          "effectiveParameterCount": 21,
+          "occurrenceShrinkageWeight": 0,
+          "conditionalAmountShrinkageWeight": 0.045454545454545456,
+          "monthlyRowsUsedAsIndependentSample": false
+        }
+      }
+    },
+    "taxonomy": {
+      "tier": "REPORT_ONLY",
+      "parametersEstimated": false,
+      "routingUsed": false,
+      "reason": "taxonomy_as_of_authority_unavailable"
+    },
+    "authorization": {
+      "tier": "REPORT_ONLY",
+      "parametersEstimated": false,
+      "routingUsed": false,
+      "reason": "authorization_as_of_authority_unavailable"
+    }
+  },
+  "evaluation": {
+    "candidateId": "M2-CHAN-PSC01-RAW",
+    "workTotal": {
+      "caseCount": 540,
+      "absoluteError": 11204.696710251836,
+      "signedError": -6930.578503249388,
+      "actualDenominator": 48002.50201954327,
+      "wape": 0.23341901440241727,
+      "signedBias": -0.14437952630943568
+    },
+    "workChannel": {
+      "caseCount": 558,
+      "absoluteError": 11204.696710251836,
+      "signedError": -6930.578503249388,
+      "actualDenominator": 48002.50201954327,
+      "wape": 0.23341901440241727,
+      "signedBias": -0.14437952630943568
+    },
+    "byHorizon": {
+      "3": {
+        "caseCount": 180,
+        "absoluteError": 2951.983288902683,
+        "signedError": -2593.88933678343,
+        "actualDenominator": 8507.727279493063,
+        "wape": 0.3469767179794435,
+        "signedBias": -0.30488628179651617
+      },
+      "6": {
+        "caseCount": 180,
+        "absoluteError": 3480.5183051625545,
+        "signedError": -2703.9552854801555,
+        "actualDenominator": 14467.704877697643,
+        "wape": 0.24057155814173867,
+        "signedBias": -0.1868959388056343
+      },
+      "12": {
+        "caseCount": 180,
+        "absoluteError": 4772.19511618663,
+        "signedError": -1632.7338809858074,
+        "actualDenominator": 25027.069862352615,
+        "wape": 0.19068133594677353,
+        "signedBias": -0.06523871511790018
+      }
+    },
+    "byOrigin": {
+      "2022-12": {
+        "caseCount": 540,
+        "absoluteError": 11204.696710251836,
+        "signedError": -6930.578503249388,
+        "actualDenominator": 48002.50201954327,
+        "wape": 0.23341901440241727,
+        "signedBias": -0.14437952630943568
+      }
+    },
+    "byMechanism": {
+      "advertising": {
+        "caseCount": 180,
+        "absoluteError": 4903.584636895117,
+        "signedError": -3413.8271618203576,
+        "actualDenominator": 21389.947277813928,
+        "wape": 0.22924715863985373,
+        "signedBias": -0.1595996061832862
+      },
+      "membership": {
+        "caseCount": 180,
+        "absoluteError": 3621.1209564276173,
+        "signedError": -1500.0858611151718,
+        "actualDenominator": 19789.341749999996,
+        "wape": 0.18298339591955443,
+        "signedBias": -0.07580271643523323
+      },
+      "transactional": {
+        "caseCount": 180,
+        "absoluteError": 2634.9911169291227,
+        "signedError": -1971.6654803138567,
+        "actualDenominator": 6778.212991729367,
+        "wape": 0.38874421918347557,
+        "signedBias": -0.2908827861738251
+      }
+    },
+    "topRevenue": {
+      "0.01": {
+        "caseCount": 2,
+        "absoluteError": 3990.506715158279,
+        "signedError": -3990.506715158279,
+        "actualDenominator": 4503.7333131220985,
+        "wape": 0.8860441855052829,
+        "signedBias": -0.8860441855052829
+      },
+      "0.05": {
+        "caseCount": 9,
+        "absoluteError": 5292.4372739596065,
+        "signedError": -5292.4372739596065,
+        "actualDenominator": 7944.159076955152,
+        "wape": 0.6662048459367078,
+        "signedBias": -0.6662048459367078
+      },
+      "0.1": {
+        "caseCount": 18,
+        "absoluteError": 5819.596923931277,
+        "signedError": -5819.596923931277,
+        "actualDenominator": 11570.877668190142,
+        "wape": 0.5029520742346202,
+        "signedBias": -0.5029520742346202
+      }
+    },
+    "occurrence": {
+      "rowCount": 2232,
+      "positiveCount": 2127,
+      "brier": 0.01720235127565155,
+      "logLoss": 0.11911096486108658,
+      "prAuc": 0.9936274887733945,
+      "averagePrecision": 0.9936294585608118,
+      "rocAuc": 0.8968567398750755
+    },
+    "conditionalAmount": {
+      "rowCount": 2124,
+      "actualMass": 25012.06986235263,
+      "predictionMass": 23403.546424780856,
+      "absoluteError": 7682.98828284607,
+      "wape": 0.3071712307348965,
+      "mae": 3.6172261218672648,
+      "medianAbsoluteError": 1.8984363511175744,
+      "signedBias": -0.0643098890425247
+    },
+    "coverage": {
+      "observedChannelMonthlyRowCount": 2160,
+      "generatorMonthlyRowCount": 2160,
+      "generatorObservedChannelRowUsage": 1,
+      "observedChannelActualPositiveCash": 25012.06986235263,
+      "generatorActualPositiveCash": 25012.06986235263,
+      "generatorActualPositiveCashUsage": 1,
+      "futureFirstSeenMonthlyRowCount": 72,
+      "futureFirstSeenActualPositiveCash": 15
+    },
+    "privateCaseRowsIncluded": false
+  },
+  "boundaries": {
+    "publicSyntheticOnly": true,
+    "privateArtifactRead": false,
+    "candidateOuterOutcomeRead": false,
+    "taxonomyTier": "REPORT_ONLY",
+    "authorizationTier": "REPORT_ONLY",
+    "taxonomyFeatureUsed": false,
+    "authorizationBackfillUsed": false,
+    "legacyFixedEligibilityUsed": false,
+    "operationalFallbackModified": false,
+    "productionModified": false
+  }
+}

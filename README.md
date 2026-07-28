@@ -32,7 +32,7 @@
 | M2 最新复核 | 完成到可验证范围且模型角色不变 | 只读取既有冻结预测，没有模型执行、训练、调参、选模或生成预测 |
 | M3 | 仅合成 fixture/prototype | 不代表真实材料执行或正式发布 |
 
-最新治理入口是 [M2 当前状态索引 v0.34](docs/analysis/m2-v2/M2-v2-current-state-index-v0.34.md)。
+最新治理入口是 [M2 当前状态索引 v0.35](docs/analysis/m2-v2/M2-v2-current-state-index-v0.35.md)。
 模型名称、别名、角色、成绩人口和可比组以
 [Model Registry](config/m2-model-registry.v1.json) 为唯一当前机器权威。
 
@@ -157,7 +157,7 @@ holdout。
 
 | 主题 | 当前入口 |
 |---|---|
-| 当前状态 | [M2 当前状态索引 v0.34](docs/analysis/m2-v2/M2-v2-current-state-index-v0.34.md) |
+| 当前状态 | [M2 当前状态索引 v0.35](docs/analysis/m2-v2/M2-v2-current-state-index-v0.35.md) |
 | 模型权威 | [Model Registry](config/m2-model-registry.v1.json) · [中文模型目录](docs/analysis/m2-current/M2-model-catalog-and-scorecard-v1.md) |
 | 评价体系 | [v2.2 合同](docs/analysis/m2-current/M2-evaluation-contract-v2.2.md) · [v2.2 验证](docs/analysis/m2-current/M2-evaluation-contract-v2.2-validation.md) · [v2.1 合同](docs/analysis/m2-current/M2-evaluation-contract-v2.1.md) |
 | 冻结标签重评分 | [v2.2 诊断复核](docs/analysis/m2-current/M2-evaluation-v2.2-diagnostic-recheck.md) · [机器可读聚合](docs/analysis/m2-current/M2-evaluation-v2.2-diagnostic-recheck.json) · [冲销影响](docs/analysis/m2-current/M2-reversal-restatement-impact-v1.md) |

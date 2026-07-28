@@ -1,0 +1,112 @@
+{
+  "schema": "m2.publishing_scale.threshold_impact_map.v1",
+  "status": "K7C_IMPLEMENTATION_CLOSED_NO_PRIVATE_OUTER_OUTCOME",
+  "modelId": "M2-CHAN-PSC01",
+  "experimentArmId": "M2-EXP-PUBLISHING-SCALE-CHANNEL-01/CORE",
+  "supportContractId": "M2-PUBLISHING-SCALE-SUPPORT-01",
+  "activeForwardPath": {
+    "prd": "docs/prd/m2-v2/M2-forecast-intelligence-v2-prd-v0.2.md",
+    "evaluationContract": "config/m2-evaluation-contract.v2.2.json",
+    "supportContract": "config/m2-publishing-scale-statistical-support.v1.json",
+    "runtimeConfig": "config/m2-current-publishing-scale-channel.v0.1.json",
+    "canonicalCore": "src/domain/m2Current/publishingScaleChannelCore.js",
+    "runner": "scripts/m2-current/run_m2_human_anchored_development.mjs",
+    "modeImplementation": "scripts/m2-current/channel_generative_mode.mjs",
+    "publicDiagnostic": "docs/analysis/m2-current/M2-current-publishing-scale-channel-public-diagnostic-v0.1.json",
+    "readinessReport": "docs/analysis/m2-current/M2-current-publishing-scale-channel-readiness-v0.1.json",
+    "registry": "config/m2-model-registry.v1.json",
+    "catalog": "docs/analysis/m2-current/M2-model-catalog-and-scorecard-v1.md",
+    "scopedRules": "src/domain/m2Current/AGENTS.md"
+  },
+  "closureChecks": [
+    {
+      "checkId": "K7C-IMPACT-01",
+      "requirement": "active config and PRD agree",
+      "status": "PASS",
+      "evidence": [
+        "config/m2-current-publishing-scale-channel.v0.1.json",
+        "docs/prd/m2-v2/M2-forecast-intelligence-v2-prd-v0.2.md",
+        "config/m2-evaluation-contract.v2.2.json"
+      ]
+    },
+    {
+      "checkId": "K7C-IMPACT-02",
+      "requirement": "new implementation has no hidden historical fixed eligibility",
+      "status": "PASS",
+      "evidence": [
+        "src/domain/m2Current/publishingScaleChannelCore.js",
+        "test/m2-current-publishing-scale-channel.test.js"
+      ],
+      "historical50And100PreservedOnlyForHistoricalVerifier": true
+    },
+    {
+      "checkId": "K7C-IMPACT-03",
+      "requirement": "tests do not treat historical thresholds as current general truth",
+      "status": "PASS",
+      "evidence": [
+        "test/m2-publishing-scale-support-contract.test.js",
+        "test/m2-current-publishing-scale-channel.test.js"
+      ]
+    },
+    {
+      "checkId": "K7C-IMPACT-04",
+      "requirement": "public report exposes support tier, effective sample size and fallback",
+      "status": "PASS",
+      "evidence": [
+        "docs/analysis/m2-current/M2-current-publishing-scale-channel-public-diagnostic-v0.1.json",
+        "docs/analysis/m2-current/M2-current-publishing-scale-channel-readiness-v0.1.md"
+      ]
+    },
+    {
+      "checkId": "K7C-IMPACT-05",
+      "requirement": "query registry explains new model and experiment arm",
+      "status": "PASS",
+      "evidence": [
+        "config/m2-model-registry.v1.json",
+        "scripts/m2-current/query_m2_model_registry.mjs"
+      ]
+    },
+    {
+      "checkId": "K7C-IMPACT-06",
+      "requirement": "scoped rules prevent unsupported fixed threshold reintroduction",
+      "status": "PASS",
+      "evidence": [
+        "src/domain/m2Current/AGENTS.md"
+      ]
+    },
+    {
+      "checkId": "K7C-IMPACT-07",
+      "requirement": "historical artifact verifier still reads historical version",
+      "status": "PASS",
+      "evidence": [
+        "config/m2-current-channel-generative.v0.2.json",
+        "test/m2-current-channel-generative-v0.2-preregistration.test.js",
+        "test/m2-current-publishing-scale-channel.test.js"
+      ]
+    },
+    {
+      "checkId": "K7C-IMPACT-08",
+      "requirement": "Linux, Windows, clean clone, no-real-data and private isolation",
+      "status": "PENDING_EXACT_HEAD_CI",
+      "evidence": [
+        ".github/workflows/ci.yml",
+        "npm run check:no-real-data",
+        "npm run smoke:portable-start"
+      ]
+    }
+  ],
+  "historicalBoundary": {
+    "historicalModelId": "M2-CHAN-GEN02",
+    "historicalExperimentArmId": "M2-EXP-CHANNEL-GENERATIVE-02/G1",
+    "historicalConfigRewritten": false,
+    "historicalReportRewritten": false,
+    "historicalScoreRewritten": false,
+    "historicalBlockerReinterpreted": false
+  },
+  "executionBoundary": {
+    "newCandidateOuterOutcomeRead": false,
+    "privateDevelopmentExecutionStarted": false,
+    "sealedHoldoutOpened": false,
+    "productionModified": false
+  }
+}

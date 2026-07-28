@@ -1661,16 +1661,21 @@ export function predictM2ChannelGenerativeG1PooledDiagnostic(
 export function scoreM2ChannelGenerativeG1Predictions(
   rows,
   predictions,
-  config
+  config,
+  { candidateId = "G1" } = {}
 ) {
   const source = requireMonthlyRows(rows);
-  const cases = aggregateG1PredictionCases(source, predictions);
+  const cases = aggregateG1PredictionCases(
+    source,
+    predictions,
+    candidateId
+  );
   return buildG1Evaluation(
     source,
     predictions,
     cases,
     config,
-    "G1"
+    candidateId
   );
 }
 
@@ -2447,7 +2452,7 @@ function aggregateG1ActualCases(rows) {
   })).sort(compareCases);
 }
 
-function aggregateG1PredictionCases(rows, predictions) {
+function aggregateG1PredictionCases(rows, predictions, candidateId = "G1") {
   const actualCases = aggregateG1ActualCases(rows);
   const caseIndex = new Map(actualCases.map((row) => [
     caseKey(row.standardWorkId, row.origin, row.horizonMonths),
@@ -2491,7 +2496,7 @@ function aggregateG1PredictionCases(rows, predictions) {
   }
   return [...caseIndex.values()].map((value) => Object.freeze({
     ...value,
-    candidateId: "G1",
+    candidateId,
     channels: Object.freeze(
       [...value.channels.values()].map(Object.freeze)
     )

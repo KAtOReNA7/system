@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { spawnSync } from "node:child_process";
 import {
   mkdir,
   readFile,
@@ -17,8 +18,21 @@ import {
   strictRollingM2ChannelGenerativeG1,
   verifyM2ChannelGenerativeG0
 } from "../../src/domain/m2Current/channelGenerative.js";
+import {
+  buildM2PublishingScaleSyntheticDiagnostic,
+  crossFitM2PublishingScaleChannel,
+  M2_PUBLISHING_SCALE_ARM_ID,
+  M2_PUBLISHING_SCALE_MODEL_ID,
+  M2_PUBLISHING_SCALE_RAW_CANDIDATE_ID,
+  strictRollingM2PublishingScaleChannel,
+  validateM2PublishingScaleConfig
+} from "../../src/domain/m2Current/publishingScaleChannelCore.js";
 
 const CONFIG_PATH = "config/m2-current-channel-generative.v0.2.json";
+const PUBLISHING_SCALE_CONFIG_PATH =
+  "config/m2-current-publishing-scale-channel.v0.1.json";
+const PUBLISHING_SCALE_SUPPORT_PATH =
+  "config/m2-publishing-scale-statistical-support.v1.json";
 const FROZEN_CONFIG_PATH = "config/m2-current-channel-experts.v0.1.json";
 const PREREGISTRATION_PATH =
   "docs/analysis/m2-current/"
@@ -49,6 +63,599 @@ export async function runM2ChannelGenerativePublicDiagnostic({
     "M2 channel generative public diagnostic written.\n"
   );
   return result;
+}
+
+export async function runM2PublishingScaleChannelPublicDiagnostic({
+  root,
+  verify
+}) {
+  const [config, support] = await Promise.all([
+    readJson(path.join(root, PUBLISHING_SCALE_CONFIG_PATH)),
+    readJson(path.join(root, PUBLISHING_SCALE_SUPPORT_PATH))
+  ]);
+  validateM2PublishingScaleConfig(config, support);
+  const fixture = await readJson(path.join(root, config.syntheticFixture));
+  const diagnostic = buildM2PublishingScaleSyntheticDiagnostic(
+    fixture,
+    config,
+    support
+  );
+  const readiness = buildPublishingScaleReadiness({
+    config,
+    support,
+    diagnostic
+  });
+  const outputs = [
+    [
+      path.join(root, config.publicDiagnosticOutput),
+      JSON.stringify(diagnostic, null, 2) + "\n"
+    ],
+    [
+      path.join(root, config.publicReadinessOutput),
+      JSON.stringify(readiness, null, 2) + "\n"
+    ],
+    [
+      path.join(root, config.publicReadinessReport),
+      renderPublishingScaleReadiness(readiness)
+    ]
+  ];
+  if (verify) {
+    for (const [filePath, text] of outputs) {
+      if (await readFile(filePath, "utf8") !== text) {
+        throw new Error(
+          `m2_publishing_scale_public_artifact_drift:${filePath}`
+        );
+      }
+    }
+    process.stdout.write(
+      "M2 publishing-scale channel public diagnostic verified.\n"
+    );
+    return readiness;
+  }
+  for (const [filePath, text] of outputs) {
+    await mkdir(path.dirname(filePath), { recursive: true });
+    await writeFile(filePath, text, "utf8");
+  }
+  process.stdout.write(
+    "M2 publishing-scale channel public diagnostic written.\n"
+  );
+  return readiness;
+}
+
+export function verifyM2PublishingScaleGitAndCiPreflight({ root }) {
+  const status = runCommand(root, "git", ["status", "--porcelain"]);
+  if (status.stdout.trim() !== "") {
+    throw new Error("m2_publishing_scale_worktree_not_clean");
+  }
+  const head = runCommand(root, "git", ["rev-parse", "HEAD"]).stdout.trim();
+  const upstream = runCommand(
+    root,
+    "git",
+    ["rev-parse", "@{upstream}"]
+  ).stdout.trim();
+  const branch = runCommand(
+    root,
+    "git",
+    ["branch", "--show-current"]
+  ).stdout.trim();
+  if (head !== upstream) {
+    throw new Error("m2_publishing_scale_upstream_not_exact_head");
+  }
+  const ancestor = spawnSync(
+    "git",
+    ["merge-base", "--is-ancestor", "origin/main", "HEAD"],
+    { cwd: root, encoding: "utf8", windowsHide: true }
+  );
+  if (ancestor.status !== 0) {
+    throw new Error("m2_publishing_scale_origin_main_not_ancestor");
+  }
+  const pr = JSON.parse(runCommand(
+    root,
+    "gh",
+    [
+      "pr",
+      "view",
+      "29",
+      "--json",
+      "number,state,isDraft,baseRefName,headRefName,headRefOid,statusCheckRollup"
+    ]
+  ).stdout);
+  if (
+    pr.number !== 29
+    || pr.state !== "OPEN"
+    || pr.isDraft !== true
+    || pr.baseRefName !== "main"
+    || pr.headRefName !== branch
+    || pr.headRefOid !== head
+  ) {
+    throw new Error("m2_publishing_scale_pr29_exact_head_invalid");
+  }
+  const checks = new Map((pr.statusCheckRollup ?? []).map((check) => [
+    String(check.name ?? check.context),
+    String(check.conclusion ?? check.state ?? check.status)
+  ]));
+  for (const checkName of ["verify", "verify-windows"]) {
+    if (checks.get(checkName) !== "SUCCESS") {
+      throw new Error(
+        `m2_publishing_scale_exact_head_ci_not_success:${checkName}`
+      );
+    }
+  }
+  return Object.freeze({
+    checkedAt: new Date().toISOString(),
+    branch,
+    head,
+    upstream,
+    originMain: runCommand(
+      root,
+      "git",
+      ["rev-parse", "origin/main"]
+    ).stdout.trim(),
+    prNumber: pr.number,
+    prHead: pr.headRefOid,
+    prBase: pr.baseRefName,
+    prDraft: pr.isDraft,
+    linuxCheck: checks.get("verify"),
+    windowsCheck: checks.get("verify-windows"),
+    worktreeClean: true
+  });
+}
+
+export async function prepareM2PublishingScaleRunReceipt({
+  root,
+  privateDirectory,
+  gitPreflight,
+  command,
+  environment
+}) {
+  const [
+    configText,
+    supportText,
+    sourceText,
+    baseManifestText,
+    frozenManifestText
+  ] = await Promise.all([
+    readFile(path.join(root, PUBLISHING_SCALE_CONFIG_PATH), "utf8"),
+    readFile(path.join(root, PUBLISHING_SCALE_SUPPORT_PATH), "utf8"),
+    readFile(
+      path.join(
+        root,
+        "src/domain/m2Current/publishingScaleChannelCore.js"
+      ),
+      "utf8"
+    ),
+    readFile(
+      path.join(
+        privateDirectory,
+        "M2-current-human-anchored-manifest-private-v0.1.json"
+      ),
+      "utf8"
+    ),
+    readFile(
+      path.join(
+        privateDirectory,
+        "M2-current-channel-experts-evaluation-manifest-private-v0.1.json"
+      ),
+      "utf8"
+    )
+  ]);
+  const config = JSON.parse(configText);
+  const support = JSON.parse(supportText);
+  validateM2PublishingScaleConfig(config, support);
+  assertPublishingScalePrivateAuthorization(config);
+  const receiptPath = path.join(
+    privateDirectory,
+    config.privateOutputs.runReceipt
+  );
+  const previous = await readOptionalJson(receiptPath);
+  if (
+    previous?.status === "COMPLETED"
+    || previous?.candidateExecutionStarted === true
+    || previous?.candidateExecuted === true
+  ) {
+    throw new Error(
+      "m2_publishing_scale_one_time_private_execution_already_consumed"
+    );
+  }
+  const receipt = {
+    schema: "m2.current.publishing_scale_channel_run_receipt_private.v0.1",
+    tracked: false,
+    status: "PREPARED_BEFORE_PRIVATE_EVALUATION_ROW_READ",
+    implementationCommit: gitPreflight.head,
+    codeSha256: digest(sourceText),
+    configSha256: digest(configText),
+    supportContractSha256: digest(supportText),
+    datasetDigests: JSON.parse(baseManifestText).digests,
+    frozenCaseDigest: JSON.parse(frozenManifestText).sha256,
+    command,
+    environment,
+    nodeVersion: process.version,
+    startTime: new Date().toISOString(),
+    modelId: M2_PUBLISHING_SCALE_MODEL_ID,
+    experimentArmId: M2_PUBLISHING_SCALE_ARM_ID,
+    expectedCandidateId: M2_PUBLISHING_SCALE_RAW_CANDIDATE_ID,
+    expectedPrimaryOuterFolds:
+      config.selection.outerPrimaryWorkFoldCount,
+    expectedStrictOuterOrigins: config.selection.strictOrigins,
+    bootstrapIterations: config.evaluation.bootstrapIterations,
+    gitPreflight,
+    candidateOutcomeReadAtReceipt: false,
+    candidateExecutionStarted: false,
+    candidateExecuted: false,
+    finalHoldoutOpened: false,
+    productionModified: false
+  };
+  await mkdir(privateDirectory, { recursive: true });
+  await writeFile(
+    receiptPath,
+    JSON.stringify(receipt, null, 2) + "\n",
+    "utf8"
+  );
+  return receipt;
+}
+
+export async function runM2PublishingScalePrivateDevelopment({
+  root,
+  privateDirectory,
+  baseManifest
+}) {
+  const [
+    config,
+    support,
+    historicalConfig,
+    frozenConfig,
+    preregistration
+  ] = await Promise.all([
+    readJson(path.join(root, PUBLISHING_SCALE_CONFIG_PATH)),
+    readJson(path.join(root, PUBLISHING_SCALE_SUPPORT_PATH)),
+    readJson(path.join(root, CONFIG_PATH)),
+    readJson(path.join(root, FROZEN_CONFIG_PATH)),
+    readJson(path.join(root, PREREGISTRATION_PATH))
+  ]);
+  validateM2PublishingScaleConfig(config, support);
+  assertPublishingScalePrivateAuthorization(config);
+  const receiptPath = path.join(
+    privateDirectory,
+    config.privateOutputs.runReceipt
+  );
+  const receipt = await readJson(receiptPath);
+  if (
+    receipt?.status !== "PREPARED_BEFORE_PRIVATE_EVALUATION_ROW_READ"
+    || receipt?.implementationCommit !== receipt?.gitPreflight?.head
+    || receipt?.candidateOutcomeReadAtReceipt !== false
+  ) {
+    throw new Error("m2_publishing_scale_run_receipt_invalid");
+  }
+  const restatementDirectory = path.join(
+    root,
+    config.privateOutputs.reversalRestatementDirectory
+  );
+  const [
+    primaryText,
+    auxiliaryText,
+    materializationText,
+    frozenText,
+    frozenManifestText,
+    reconciliationText,
+    allocationText,
+    reversalReceiptText
+  ] = await Promise.all([
+    readFile(path.join(
+      privateDirectory,
+      config.privateOutputs.primaryMonthlyCases
+    ), "utf8"),
+    readFile(path.join(
+      privateDirectory,
+      config.privateOutputs.auxiliaryMonthlyCases
+    ), "utf8"),
+    readFile(path.join(
+      privateDirectory,
+      config.privateOutputs.materializationManifest
+    ), "utf8"),
+    readFile(path.join(
+      privateDirectory,
+      frozenConfig.privateOutputs.evaluation
+    ), "utf8"),
+    readFile(path.join(
+      privateDirectory,
+      frozenConfig.privateOutputs.evaluationManifest
+    ), "utf8"),
+    readFile(path.join(
+      restatementDirectory,
+      config.privateOutputs.reversalScopeReconciliation
+    ), "utf8"),
+    readFile(path.join(
+      restatementDirectory,
+      config.privateOutputs.reversalAllocationLedger
+    ), "utf8"),
+    readFile(path.join(
+      restatementDirectory,
+      config.privateOutputs.reversalExecutionReceipt
+    ), "utf8")
+  ]);
+  const materialization = JSON.parse(materializationText);
+  const frozenManifest = JSON.parse(frozenManifestText);
+  const reconciliation = JSON.parse(reconciliationText);
+  const reversalReceipt = JSON.parse(reversalReceiptText);
+  verifyPrivateBindings({
+    config: historicalConfig,
+    preregistration,
+    baseManifest,
+    materialization,
+    frozenManifest,
+    primaryText,
+    auxiliaryText,
+    frozenText,
+    reconciliationText,
+    allocationText,
+    reversalReceipt
+  });
+  const primaryRestatement =
+    applyM2DevelopmentModelableRestatementToPackedRows(
+      parseNdjson(primaryText),
+      reconciliation,
+      parseNdjson(allocationText)
+    );
+  const strictRestatement =
+    applyM2DevelopmentModelableRestatementToPackedRows(
+      parseNdjson(auxiliaryText),
+      reconciliation,
+      parseNdjson(allocationText)
+    );
+  await writeFile(
+    receiptPath,
+    JSON.stringify({
+      ...receipt,
+      status:
+        "RESTATEMENT_BINDING_PREFLIGHT_PASSED_BEFORE_CANDIDATE_FIT",
+      restatementBindingPreflight: {
+        primary: primaryRestatement.audit,
+        strict: strictRestatement.audit
+      },
+      candidateOutcomeReadAtPreflight: false
+    }, null, 2) + "\n",
+    "utf8"
+  );
+  const primaryRows = expandM2ChannelGenerativePackedRows(
+    primaryRestatement.rows
+  );
+  const strictRows = expandM2ChannelGenerativePackedRows(
+    strictRestatement.rows
+  );
+  await writeFile(
+    receiptPath,
+    JSON.stringify({
+      ...receipt,
+      status: "CANDIDATE_FIT_STARTED_AFTER_RESTATEMENT_PREFLIGHT",
+      restatementBindingPreflight: {
+        primary: primaryRestatement.audit,
+        strict: strictRestatement.audit
+      },
+      candidateOutcomeReadAtFitStart: false,
+      candidateExecutionStarted: true,
+      candidateExecuted: false
+    }, null, 2) + "\n",
+    "utf8"
+  );
+  const primary = crossFitM2PublishingScaleChannel(
+    primaryRows,
+    config,
+    support
+  );
+  const strict = strictRollingM2PublishingScaleChannel(
+    strictRows,
+    config,
+    support
+  );
+  const frozenRows = parseNdjson(frozenText);
+  const baselines = {
+    primary: scoreM2ChannelGenerativeFrozenG0Comparator(
+      primary.rows,
+      frozenRows.filter(
+        (row) => row.evaluationFamily === "primary"
+      ),
+      config
+    ),
+    strict: scoreM2ChannelGenerativeFrozenG0Comparator(
+      strict.rows,
+      frozenRows.filter(
+        (row) => row.evaluationFamily === "strict_rolling"
+      ),
+      config
+    )
+  };
+  const bootstrap = {
+    primary: pairedBootstrap(
+      baselines.primary.cases,
+      primary.evaluation.cases,
+      config
+    ),
+    strict: pairedBootstrap(
+      baselines.strict.cases,
+      strict.evaluation.cases,
+      config
+    )
+  };
+  const gate = evaluatePublishingScaleGates({
+    config,
+    baselines,
+    primary: primary.evaluation,
+    strict: strict.evaluation,
+    bootstrap
+  });
+  const privateRows = publishingScalePrivateRows(primary, strict);
+  const privateText = privateRows.map(JSON.stringify).join("\n") + "\n";
+  const candidateFreeze = {
+    status: "RAW_CANDIDATE_OUTPUTS_FROZEN_BEFORE_ORACLE",
+    rowCount: privateRows.length,
+    sha256: digest(privateText),
+    predictionGeneratedAfterFreezeCount: 0,
+    predictionModifiedAfterFreezeCount: 0
+  };
+  const forecastability = {
+    primary: reidentifyPublishingScaleForecastability(
+      buildM2ChannelGenerativeForecastabilityDiagnostic(
+      primary.rows,
+      primary.predictions,
+      config,
+      {
+        pooledPredictions: primary.globalParentPredictions,
+        candidateOutputsFrozen: true
+      }
+      )
+    ),
+    strict: reidentifyPublishingScaleForecastability(
+      buildM2ChannelGenerativeForecastabilityDiagnostic(
+      strict.rows,
+      strict.predictions,
+      config,
+      {
+        pooledPredictions: strict.globalParentPredictions,
+        candidateOutputsFrozen: true
+      }
+      )
+    )
+  };
+  const result = buildPublishingScalePublicResult({
+    config,
+    support,
+    baselines,
+    primary,
+    strict,
+    bootstrap,
+    gate,
+    forecastability,
+    candidateFreeze,
+    restatementBinding: {
+      primary: primaryRestatement.audit,
+      strict: strictRestatement.audit
+    },
+    receipt
+  });
+  const privateManifest = {
+    schema:
+      "m2.current.publishing_scale_channel_evaluation_private_manifest.v0.1",
+    tracked: false,
+    modelId: M2_PUBLISHING_SCALE_MODEL_ID,
+    experimentArmId: M2_PUBLISHING_SCALE_ARM_ID,
+    candidateId: M2_PUBLISHING_SCALE_RAW_CANDIDATE_ID,
+    actualDefinitionId: config.actualDefinitionId,
+    rowCount: privateRows.length,
+    sha256: digest(privateText),
+    primaryMonthlyRowCount: primary.rows.length,
+    strictMonthlyRowCount: strict.rows.length,
+    primaryPackedSha256: materialization.primarySha256,
+    auxiliaryPackedSha256: materialization.auxiliarySha256,
+    frozenEvaluationSha256: frozenManifest.sha256,
+    candidateFreeze,
+    rawCandidatePreserved: true,
+    fallbackOverwroteRaw: false,
+    finalHoldoutOpened: false,
+    productionModified: false,
+    exactV03Modified: false,
+    providerUsed: false,
+    databaseRead: false
+  };
+  await Promise.all([
+    writeFile(
+      path.join(
+        privateDirectory,
+        config.privateOutputs.evaluationRows
+      ),
+      privateText,
+      "utf8"
+    ),
+    writeFile(
+      path.join(
+        privateDirectory,
+        config.privateOutputs.evaluationManifest
+      ),
+      JSON.stringify(privateManifest, null, 2) + "\n",
+      "utf8"
+    ),
+    writeFile(
+      path.join(root, config.publicDevelopmentOutput),
+      JSON.stringify(result, null, 2) + "\n",
+      "utf8"
+    ),
+    writeFile(
+      path.join(root, config.publicDevelopmentReport),
+      renderPublishingScaleDevelopmentReport(result),
+      "utf8"
+    ),
+    writeFile(
+      path.join(root, config.publicForecastabilityOutput),
+      JSON.stringify(
+        publishingScalePublicForecastability(result),
+        null,
+        2
+      ) + "\n",
+      "utf8"
+    ),
+    writeFile(
+      path.join(root, config.publicForecastabilityReport),
+      renderPublishingScaleForecastabilityReport(result),
+      "utf8"
+    )
+  ]);
+  await writeFile(
+    receiptPath,
+    JSON.stringify({
+      ...receipt,
+      status: "COMPLETED",
+      completedAt: new Date().toISOString(),
+      outputRowCount: privateManifest.rowCount,
+      outputSha256: privateManifest.sha256,
+      finalStatus: result.finalStatus,
+      candidateExecutionStarted: true,
+      candidateExecuted: true,
+      candidateOutcomeReadAfterReceipt: true,
+      predictionGeneratedAfterFreezeCount: 0,
+      predictionModifiedAfterFreezeCount: 0
+    }, null, 2) + "\n",
+    "utf8"
+  );
+  process.stdout.write(JSON.stringify({
+    finalStatus: result.finalStatus,
+    modelId: M2_PUBLISHING_SCALE_MODEL_ID,
+    primary: result.evaluation.rawCandidate.primary,
+    strict: result.evaluation.rawCandidate.strict,
+    privateRowCount: privateManifest.rowCount,
+    privateSha256: privateManifest.sha256
+  }) + "\n");
+  return result;
+}
+
+export async function recordM2PublishingScaleRunFailure({
+  root,
+  privateDirectory,
+  error
+}) {
+  const config = await readJson(path.join(
+    root,
+    PUBLISHING_SCALE_CONFIG_PATH
+  ));
+  const receiptPath = path.join(
+    privateDirectory,
+    config.privateOutputs.runReceipt
+  );
+  const receipt = await readOptionalJson(receiptPath);
+  if (receipt === null || receipt.status === "COMPLETED") return;
+  await writeFile(
+    receiptPath,
+    JSON.stringify({
+      ...receipt,
+      status: receipt.candidateExecutionStarted === true
+        ? "FAILED_CLOSED_AFTER_CANDIDATE_FIT_STARTED"
+        : "FAILED_CLOSED_BEFORE_CANDIDATE_FIT_STARTED",
+      failedAt: new Date().toISOString(),
+      failureCode: String(error?.code ?? error?.message ?? error),
+      candidateExecuted: false,
+      finalHoldoutOpened: false,
+      productionModified: false
+    }, null, 2) + "\n",
+    "utf8"
+  );
 }
 
 export async function prepareM2ChannelGenerativeRunReceipt({
@@ -1005,6 +1612,716 @@ inner/outer selection、gate 或 routing，也不能授权其它实验臂。它�
 \`FUTURE_FIRST_ENTRY_CEILING\` 与 \`MECHANISM_INFORMATION_GAIN\` 均不可部署，
 也不参与独立核心是否通过的判定。
 `;
+}
+
+function buildPublishingScaleReadiness({
+  config,
+  support,
+  diagnostic
+}) {
+  return {
+    schema: "m2.current.publishing_scale_channel_readiness.v0.1",
+    displayNameZh: config.displayNameZh,
+    displayNameEn: config.displayNameEn,
+    modelId: M2_PUBLISHING_SCALE_MODEL_ID,
+    experimentArmId: M2_PUBLISHING_SCALE_ARM_ID,
+    status: "IMPLEMENTED_NOT_EXECUTED_AWAITING_EXACT_HEAD_CI",
+    supportContractId: support.contractId,
+    supportContractStatus: support.status,
+    implementation: {
+      canonicalCore:
+        "src/domain/m2Current/publishingScaleChannelCore.js",
+      runtimeConfig: PUBLISHING_SCALE_CONFIG_PATH,
+      publicDiagnostic: config.publicDiagnosticOutput,
+      historicalModelOverwritten: false,
+      historicalArtifactVerifierPreserved: true,
+      legacyFixedEligibilityUsed: false,
+      workBalancedTraining: true,
+      continuousParentShrinkage: true,
+      oneClassSmoothing: "Jeffreys_0.5_0.5"
+    },
+    supportTiers: {
+      directFitNodeCount:
+        support.currentFreezeDecision.directFitNodeCount,
+      globalPooledParent:
+        support.parameterFreeze.nodes.globalPooledParent.frozenTier,
+      mechanisms: Object.fromEntries(
+        ["membership", "advertising", "transactional"].map((key) => [
+          key,
+          support.parameterFreeze.nodes[key].frozenTier
+        ])
+      ),
+      namedPlatforms: support.parameterFreeze.namedPlatforms,
+      taxonomy: support.parameterFreeze.taxonomy,
+      authorization: support.parameterFreeze.authorization
+    },
+    syntheticVerification: {
+      status: diagnostic.status,
+      distinctWorkCount: diagnostic.training.distinctWorkCount,
+      monthlyRowCount: diagnostic.training.monthlyRowCount,
+      workTotal: diagnostic.evaluation.workTotal,
+      support: diagnostic.support,
+      privateArtifactRead: diagnostic.boundaries.privateArtifactRead,
+      candidateOuterOutcomeRead:
+        diagnostic.boundaries.candidateOuterOutcomeRead
+    },
+    authorityBoundary: {
+      taxonomy: "REPORT_ONLY",
+      authorization: "REPORT_ONLY",
+      currentOnlyTaxonomyBackfilled: false,
+      currentOnlyAuthorizationBackfilled: false,
+      originObservedCanonicalChannelIdentityOnly: true
+    },
+    executionBoundary: {
+      privateDevelopmentExecutionAuthorizedOnceAfterExactHeadCi: true,
+      privateDevelopmentExecutionConsumed: false,
+      candidateOuterOutcomeProduced: false,
+      finalHoldoutOpened: false,
+      productionModified: false,
+      operationalFallbackModified: false,
+      mergeAuthorized: false
+    },
+    impactMap:
+      "docs/analysis/m2-current/"
+      + "M2-publishing-scale-threshold-impact-map-v1.json"
+  };
+}
+
+function renderPublishingScaleReadiness(result) {
+  const mechanisms = result.supportTiers.mechanisms;
+  return `# ${result.displayNameZh}：K7C 实现就绪报告
+
+- 英文名：${result.displayNameEn}
+- 稳定模型 ID：\`${result.modelId}\`
+- 实验臂：\`${result.experimentArmId}\`
+- 当前状态：已实现但尚未执行私有开发评价（\`${result.status}\`）
+- 支持合同：\`${result.supportContractId}\`
+
+## 实现结果
+
+新版本位于 canonical M2 core，使用每部作品总权重相等的训练权重，并分别在发生概率的
+logit 尺度与条件金额的 log1p 尺度连续收缩到父层。历史
+\`M2-CHAN-GEN02\`、历史配置、历史评分和旧阻断结论均未改写。
+
+## 冻结支持层级
+
+- 全局池化父层：\`${result.supportTiers.globalPooledParent}\`
+- 会员分成机制：\`${mechanisms.membership}\`
+- 广告分成机制：\`${mechanisms.advertising}\`
+- 单购交易机制：\`${mechanisms.transactional}\`
+- 三级分类：\`${result.supportTiers.taxonomy}\`
+- 授权关系：\`${result.supportTiers.authorization}\`
+- 独立拟合（\`DIRECT_FIT\`）节点数：${result.supportTiers.directFitNodeCount}
+
+月度行没有被解释为独立作品样本。每个公开节点都报告 distinct works、
+positive works、work-cluster ESS、现金 ESS、集中度、支持层级、连续收缩权重与回退原因。
+
+## 权威与执行边界
+
+三级分类和 work-platform 授权关系缺少历史 as-of 字段，因此保持
+\`REPORT_ONLY\`；只允许使用 forecast origin 已观察到的 canonical channel
+identity，不回填 current-only 分类或授权。K7C 只运行了公开 synthetic diagnostic，
+未读取新候选 outer outcome；一次性 private development execution 必须等待本提交的
+exact-head Linux/Windows CI 成功后才能执行。
+
+## 公开 synthetic 验证
+
+- 状态：\`${result.syntheticVerification.status}\`
+- distinct works：${result.syntheticVerification.distinctWorkCount}
+- monthly rows：${result.syntheticVerification.monthlyRowCount}
+- WAPE：${number(result.syntheticVerification.workTotal.wape)}
+- signed bias：${number(result.syntheticVerification.workTotal.signedBias)}
+- private artifact read：${result.syntheticVerification.privateArtifactRead}
+- candidate outer outcome read：${result.syntheticVerification.candidateOuterOutcomeRead}
+`;
+}
+
+function buildPublishingScalePublicResult({
+  config,
+  support,
+  baselines,
+  primary,
+  strict,
+  bootstrap,
+  gate,
+  forecastability,
+  candidateFreeze,
+  restatementBinding
+}) {
+  const finalStatus = gate.allPassed
+    ? "M2_PUBLISHING_SCALE_CORE_PASS"
+    : "M2_PUBLISHING_SCALE_CORE_FAIL";
+  return {
+    schema: "m2.current.publishing_scale_channel_development_public.v0.1",
+    displayNameZh: config.displayNameZh,
+    displayNameEn: config.displayNameEn,
+    modelId: M2_PUBLISHING_SCALE_MODEL_ID,
+    experimentArmId: M2_PUBLISHING_SCALE_ARM_ID,
+    candidateId: M2_PUBLISHING_SCALE_RAW_CANDIDATE_ID,
+    finalStatus,
+    evaluationContractId:
+      "M2_EVALUATION_V2_2_ACTIVE_FOR_DEVELOPMENT_WITH_DISCLOSED_RESIDUAL_EXCLUSION",
+    supportContractId: support.contractId,
+    actualDefinitionId: config.actualDefinitionId,
+    comparisonBoundary: {
+      comparatorId: "M2-WORK-LG01-FROZEN-G0",
+      comparatorRole: "paired_research_baseline_not_operational_fallback",
+      sameCases: true,
+      sameActualDefinition: true,
+      operationalFallbackId: "M2-WORK-OA03",
+      operationalFallbackDirectlyRanked: false
+    },
+    evaluation: {
+      frozenResearchComparator: {
+        primary: publishingScaleEvaluationSummary(baselines.primary),
+        strict: publishingScaleEvaluationSummary(baselines.strict)
+      },
+      rawCandidate: {
+        primary: publishingScaleEvaluationSummary(primary.evaluation),
+        strict: publishingScaleEvaluationSummary(strict.evaluation),
+        relativeWapeToFrozenResearchComparator: {
+          primary: relativeWape(baselines.primary, primary.evaluation),
+          strict: relativeWape(baselines.strict, strict.evaluation)
+        },
+        byHorizon: {
+          primary: primary.evaluation.byHorizon,
+          strict: strict.evaluation.byHorizon
+        },
+        byTimeBlock: {
+          primary: primary.evaluation.byOrigin,
+          strict: strict.evaluation.byOrigin
+        },
+        byMechanism: {
+          primary: primary.evaluation.byMechanism,
+          strict: strict.evaluation.byMechanism
+        },
+        topRevenue: {
+          primary: primary.evaluation.topRevenue,
+          strict: strict.evaluation.topRevenue
+        },
+        occurrence: {
+          primary: primary.evaluation.occurrence,
+          strict: strict.evaluation.occurrence
+        },
+        conditionalAmount: {
+          primary: primary.evaluation.conditionalAmount,
+          strict: strict.evaluation.conditionalAmount
+        },
+        ranking: {
+          primary: scorePublishingScaleRanking(
+            primary.evaluation.cases
+          ),
+          strict: scorePublishingScaleRanking(
+            strict.evaluation.cases
+          )
+        },
+        coverage: {
+          primary: primary.evaluation.coverage,
+          strict: strict.evaluation.coverage,
+          role: "DESCRIPTIVE_ONLY_NOT_A_FIT_GATE"
+        }
+      }
+    },
+    bootstrap: {
+      clusterUnit: "standard_work",
+      iterations: config.evaluation.bootstrapIterations,
+      pairedRelativeWape: bootstrap
+    },
+    gate,
+    support: {
+      primaryOuterFolds: primary.receipts,
+      strictOuterOrigins: strict.receipts,
+      directFitNodeCount:
+        support.currentFreezeDecision.directFitNodeCount,
+      taxonomyTier: "REPORT_ONLY",
+      authorizationTier: "REPORT_ONLY"
+    },
+    forecastability,
+    candidateFreeze: {
+      status: candidateFreeze.status,
+      rowCount: candidateFreeze.rowCount,
+      privateDigestPublished: false,
+      predictionGeneratedAfterFreezeCount:
+        candidateFreeze.predictionGeneratedAfterFreezeCount,
+      predictionModifiedAfterFreezeCount:
+        candidateFreeze.predictionModifiedAfterFreezeCount
+    },
+    reversalRestatement: {
+      primary: publicRestatementAudit(restatementBinding.primary),
+      strict: publicRestatementAudit(restatementBinding.strict)
+    },
+    interpretation: {
+      cashOnlyCoreMayContinueAsDevelopmentCandidate:
+        finalStatus === "M2_PUBLISHING_SCALE_CORE_PASS",
+      operationalFallbackRemainsUnchanged: true,
+      productionUpgradeSupported: false,
+      automationSupported: false,
+      releaseSupported: false,
+      ifFailedNextEvidencePriority: [
+        "historical_business_state",
+        "availability_and_consumption",
+        "exposure_and_eCPM",
+        "orders_and_refunds",
+        "contracts",
+        "origin_visible_operations"
+      ]
+    },
+    boundaries: {
+      oneTimePrivateDevelopmentExecutionConsumed: true,
+      rawCandidatePreserved: true,
+      fallbackOverwroteRaw: false,
+      outerOutcomeUsedForParameterSelection: false,
+      currentOnlyTaxonomyBackfilled: false,
+      currentOnlyAuthorizationBackfilled: false,
+      finalHoldoutOpened: false,
+      laterOriginOpened: false,
+      providerUsed: false,
+      databaseRead: false,
+      productionModified: false,
+      exactV03Modified: false,
+      mergeAuthorized: false,
+      privateRowDataPublished: false,
+      privateArtifactDigestPublished: false
+    }
+  };
+}
+
+function evaluatePublishingScaleGates({
+  config,
+  baselines,
+  primary,
+  strict,
+  bootstrap
+}) {
+  const primaryRelative = relativeWape(baselines.primary, primary);
+  const strictRelative = relativeWape(baselines.strict, strict);
+  const strictImprovedOrigins = Object.keys(strict.byOrigin).filter(
+    (origin) => relativeMetric(
+      baselines.strict.byOrigin[origin]?.wape,
+      strict.byOrigin[origin]?.wape
+    ) > 0
+  ).length;
+  const horizons = [
+    ...Object.keys(primary.byHorizon).map((horizon) => ({
+      family: "primary",
+      horizon,
+      value: relativeMetric(
+        baselines.primary.byHorizon[horizon]?.wape,
+        primary.byHorizon[horizon]?.wape
+      )
+    })),
+    ...Object.keys(strict.byHorizon).map((horizon) => ({
+      family: "strict",
+      horizon,
+      value: relativeMetric(
+        baselines.strict.byHorizon[horizon]?.wape,
+        strict.byHorizon[horizon]?.wape
+      )
+    }))
+  ].filter((entry) => Number.isFinite(entry.value));
+  const checks = {
+    rawCandidateProduced: true,
+    primaryRelativeWape:
+      primaryRelative >= config.evaluation.relativeWapeMinimum,
+    strictRelativeWape:
+      strictRelative >= config.evaluation.relativeWapeMinimum,
+    strictImprovedOriginBlocks:
+      strictImprovedOrigins
+        >= config.evaluation.strictImprovedOriginBlockMinimum,
+    improvedHorizonSlices:
+      horizons.filter((entry) => entry.value > 0).length
+        >= config.evaluation.improvedHorizonSliceMinimum,
+    eachHorizonSafety: horizons.every(
+      (entry) => entry.value
+        >= config.evaluation.relativeWapeMaximumAllowedHarm
+    ),
+    top10MaterialImprovement: bothTop(
+      baselines,
+      primary,
+      strict,
+      "0.1",
+      config.evaluation.relativeWapeMinimum
+    ),
+    top1Safety: bothTop(
+      baselines,
+      primary,
+      strict,
+      "0.01",
+      config.evaluation.relativeWapeMaximumAllowedHarm
+    ),
+    top5Safety: bothTop(
+      baselines,
+      primary,
+      strict,
+      "0.05",
+      config.evaluation.relativeWapeMaximumAllowedHarm
+    ),
+    biasSafety:
+      Math.abs(primary.workTotal.signedBias)
+        - Math.abs(baselines.primary.workTotal.signedBias)
+          <= config.evaluation.absoluteBiasDeteriorationMaximum
+      && Math.abs(strict.workTotal.signedBias)
+        - Math.abs(baselines.strict.workTotal.signedBias)
+          <= config.evaluation.absoluteBiasDeteriorationMaximum,
+    bootstrapSafety:
+      bootstrap.primary.lower95
+        >= config.evaluation.relativeWapeMaximumAllowedHarm
+      && bootstrap.strict.lower95
+        >= config.evaluation.relativeWapeMaximumAllowedHarm,
+    occurrenceScored:
+      Number.isFinite(primary.occurrence.logLoss)
+      && Number.isFinite(strict.occurrence.logLoss),
+    conditionalAmountScored:
+      Number.isFinite(primary.conditionalAmount.mae)
+      && Number.isFinite(strict.conditionalAmount.mae),
+    mechanismSafety: publishingScaleMechanismSafety(
+      baselines,
+      primary,
+      strict
+    )
+  };
+  return {
+    checks,
+    allPassed: Object.values(checks).every(Boolean),
+    primaryRelativeWape: primaryRelative,
+    strictRelativeWape: strictRelative,
+    strictImprovedOriginBlocks: strictImprovedOrigins,
+    improvedHorizonSlices:
+      horizons.filter((entry) => entry.value > 0).length,
+    horizonRelativeImprovements: horizons,
+    generatorUsageIsNotAGate: true
+  };
+}
+
+function publishingScaleMechanismSafety(baselines, primary, strict) {
+  const mechanisms = ["membership", "advertising", "transactional"];
+  return mechanisms.filter((mechanism) => {
+    const primaryValue = relativeMetric(
+      baselines.primary.byMechanism[mechanism]?.wape,
+      primary.byMechanism[mechanism]?.wape
+    );
+    const strictValue = relativeMetric(
+      baselines.strict.byMechanism[mechanism]?.wape,
+      strict.byMechanism[mechanism]?.wape
+    );
+    return primaryValue >= -0.01 && strictValue >= -0.01;
+  }).length >= 2;
+}
+
+function publishingScaleEvaluationSummary(value) {
+  const errors = value.cases.map(
+    (row) => Math.abs(row.pointEstimate - row.actual)
+  ).sort((left, right) => left - right);
+  const middle = Math.floor(errors.length / 2);
+  const medianAbsoluteError = errors.length === 0
+    ? null
+    : errors.length % 2 === 0
+      ? (errors[middle - 1] + errors[middle]) / 2
+      : errors[middle];
+  return {
+    ...value.workTotal,
+    mae: errors.length === 0
+      ? null
+      : value.workTotal.absoluteError / errors.length,
+    medianAbsoluteError,
+    workChannelWape: value.workChannel.wape,
+    workChannelAbsoluteError: value.workChannel.absoluteError,
+    occurrence: value.occurrence ?? null,
+    conditionalAmount: value.conditionalAmount ?? null,
+    ranking: scorePublishingScaleRanking(value.cases),
+    privateCasesIncluded: false
+  };
+}
+
+function scorePublishingScaleRanking(cases) {
+  const groups = new Map();
+  for (const row of cases) {
+    const key = `${row.origin}\u001f${row.horizonMonths}`;
+    const values = groups.get(key) ?? [];
+    values.push({
+      actual: Math.max(0, Number(row.actual)),
+      point: Math.max(0, Number(row.pointEstimate))
+    });
+    groups.set(key, values);
+  }
+  const groupScores = [...groups.values()]
+    .filter((rows) => rows.length >= 2)
+    .map((rows) => ({
+      spearman: spearman(rows),
+      ndcgAt10: ndcgAt(rows, 10)
+    }));
+  return {
+    groupCount: groupScores.length,
+    meanSpearman: averageFinite(
+      groupScores.map((row) => row.spearman)
+    ),
+    meanNdcgAt10: averageFinite(
+      groupScores.map((row) => row.ndcgAt10)
+    ),
+    diagnosticOnly: true,
+    futureActualUsedForAttributionOnly: true
+  };
+}
+
+function spearman(rows) {
+  const actualRanks = averageRanks(rows.map((row) => row.actual));
+  const pointRanks = averageRanks(rows.map((row) => row.point));
+  const actualMean = averageFinite(actualRanks);
+  const pointMean = averageFinite(pointRanks);
+  let covariance = 0;
+  let actualVariance = 0;
+  let pointVariance = 0;
+  for (let index = 0; index < rows.length; index += 1) {
+    const actualDelta = actualRanks[index] - actualMean;
+    const pointDelta = pointRanks[index] - pointMean;
+    covariance += actualDelta * pointDelta;
+    actualVariance += actualDelta ** 2;
+    pointVariance += pointDelta ** 2;
+  }
+  return actualVariance === 0 || pointVariance === 0
+    ? null
+    : covariance / Math.sqrt(actualVariance * pointVariance);
+}
+
+function averageRanks(values) {
+  const ordered = values.map((value, index) => ({ value, index }))
+    .sort((left, right) => right.value - left.value || left.index - right.index);
+  const ranks = Array(values.length);
+  for (let start = 0; start < ordered.length;) {
+    let end = start + 1;
+    while (
+      end < ordered.length
+      && ordered[end].value === ordered[start].value
+    ) {
+      end += 1;
+    }
+    const rank = (start + 1 + end) / 2;
+    for (let index = start; index < end; index += 1) {
+      ranks[ordered[index].index] = rank;
+    }
+    start = end;
+  }
+  return ranks;
+}
+
+function ndcgAt(rows, count) {
+  const gain = (value, index) => (
+    (2 ** Math.min(30, value) - 1) / Math.log2(index + 2)
+  );
+  const predicted = [...rows].sort(
+    (left, right) => right.point - left.point
+  ).slice(0, count);
+  const ideal = [...rows].sort(
+    (left, right) => right.actual - left.actual
+  ).slice(0, count);
+  const dcg = predicted.reduce(
+    (total, row, index) => total + gain(row.actual, index),
+    0
+  );
+  const idcg = ideal.reduce(
+    (total, row, index) => total + gain(row.actual, index),
+    0
+  );
+  return idcg === 0 ? null : dcg / idcg;
+}
+
+function averageFinite(values) {
+  const finiteValues = values.filter(Number.isFinite);
+  return finiteValues.length === 0
+    ? null
+    : finiteValues.reduce((total, value) => total + value, 0)
+      / finiteValues.length;
+}
+
+function publicRestatementAudit(value) {
+  return {
+    transformedPackedRowCount: value.transformedPackedRowCount,
+    transformedLabelCount: value.transformedLabelCount,
+    laterRecordedReversalLabelCount:
+      value.laterRecordedReversalLabelCount,
+    originalPostingLabelChangedCount:
+      value.originalPostingLabelChangedCount,
+    canonicalWorkIdAliasPackedRowCount:
+      value.canonicalWorkIdAliasPackedRowCount,
+    canonicalWorkIdAmbiguousScopeCount:
+      value.canonicalWorkIdAmbiguousScopeCount,
+    unresolvedRestatementScopeCount:
+      value.unresolvedRestatementScopeCount,
+    excludedUnallocatedReversalResidualAssignedToLabel:
+      value.excludedUnallocatedReversalResidualAssignedToLabel,
+    exactIntegerReconciliationDifferenceMinor:
+      value.exactIntegerReconciliationDifferenceMinor
+  };
+}
+
+function publishingScalePrivateRows(primary, strict) {
+  const output = [];
+  for (const [family, result] of [
+    ["primary", primary],
+    ["strict", strict]
+  ]) {
+    for (const row of result.evaluation.cases) {
+      output.push({
+        schema:
+          "m2.current.publishing_scale_channel_evaluation_private_row.v0.1",
+        tracked: false,
+        evaluationFamily: family,
+        modelId: M2_PUBLISHING_SCALE_MODEL_ID,
+        experimentArmId: M2_PUBLISHING_SCALE_ARM_ID,
+        candidateId: M2_PUBLISHING_SCALE_RAW_CANDIDATE_ID,
+        actualDefinitionId:
+          "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01",
+        standardWorkId: row.standardWorkId,
+        origin: row.origin,
+        horizonMonths: row.horizonMonths,
+        actualPositive: row.actualPositive,
+        actualReversal: row.actualReversal,
+        actual: row.actual,
+        positivePoint: row.positivePoint,
+        pointEstimate: row.pointEstimate,
+        rawCandidatePreserved: true,
+        fallbackOverwroteRaw: false
+      });
+    }
+  }
+  return output;
+}
+
+function publishingScalePublicForecastability(result) {
+  return {
+    schema:
+      "m2.current.publishing_scale_channel_forecastability_public.v0.1",
+    displayNameZh: result.displayNameZh,
+    displayNameEn: result.displayNameEn,
+    modelId: result.modelId,
+    experimentArmId: result.experimentArmId,
+    finalStatus: result.finalStatus,
+    primary: result.forecastability.primary,
+    strict: result.forecastability.strict,
+    diagnosticOnly: true,
+    participatesInTraining: false,
+    participatesInSelection: false,
+    participatesInGate: false,
+    deployable: false,
+    allowedClaims: [
+      "observed structural unreachable mass",
+      "retrospective oracle gap",
+      "current model residual gap",
+      "missing historically available drivers"
+    ],
+    forbiddenClaims: [
+      "proven irreducible error",
+      "Bayes error measured",
+      "theoretical maximum established",
+      "forecasting impossible"
+    ]
+  };
+}
+
+function reidentifyPublishingScaleForecastability(value) {
+  return {
+    ...value,
+    schema: "m2.current.publishing_scale_channel_forecastability.v0.1",
+    modelId: M2_PUBLISHING_SCALE_MODEL_ID,
+    experimentArmId: M2_PUBLISHING_SCALE_ARM_ID
+  };
+}
+
+function renderPublishingScaleDevelopmentReport(result) {
+  const raw = result.evaluation.rawCandidate;
+  const base = result.evaluation.frozenResearchComparator;
+  return `# ${result.displayNameZh}：一次性私有开发评价
+
+- 英文名：${result.displayNameEn}
+- 稳定模型 ID：\`${result.modelId}\`
+- 实验臂：\`${result.experimentArmId}\`
+- 最终状态：\`${result.finalStatus}\`
+
+## 核心结果
+
+| 对象 | Primary WAPE | Strict WAPE | Primary signed bias | Strict signed bias |
+|---|---:|---:|---:|---:|
+| 冻结研究比较基线（\`M2-WORK-LG01-FROZEN-G0\`） | ${number(base.primary.wape)} | ${number(base.strict.wape)} | ${number(base.primary.signedBias)} | ${number(base.strict.signedBias)} |
+| 出版行业适配 raw core（\`${result.modelId}\`） | ${number(raw.primary.wape)} | ${number(raw.strict.wape)} | ${number(raw.primary.signedBias)} | ${number(raw.strict.signedBias)} |
+
+相对冻结研究比较基线的 WAPE 改善为 primary
+${percent(raw.relativeWapeToFrozenResearchComparator.primary)}、strict
+${percent(raw.relativeWapeToFrozenResearchComparator.strict)}。raw candidate 结果已独立保留，
+没有被 fallback 或 selected pipeline 覆盖。
+
+## 评价覆盖
+
+报告包含 primary、strict rolling、各 horizon、各时间块、top 1%/5%/10% 收入、
+bias、MAE、median AE、occurrence、conditional amount、ranking、2,000 次
+standard-work cluster bootstrap，以及候选冻结后的 forecastability/oracle diagnostic。
+
+## 支持与权威
+
+每个 outer fit receipt 都公开聚合的 support tier、distinct/positive works、
+work-cluster ESS、现金 ESS、集中度、连续收缩权重和回退原因。三级分类与授权关系继续为
+\`REPORT_ONLY\`，没有用 current-only 快照回填 forecast origin。
+
+## 治理边界
+
+这是同一 development window 的一次性受控评价，不是独立 later-origin 或 final
+holdout。作品发生—金额校准模型 v0.3（Occurrence-Amount Calibration v0.3，
+\`M2-WORK-OA03\`）的运行回退角色未改变；本结果不授权 automation、production、
+provider、database、Canary/full160、release、M3 formal 或合并 PR。
+`;
+}
+
+function renderPublishingScaleForecastabilityReport(result) {
+  const primary = result.forecastability.primary;
+  const strict = result.forecastability.strict;
+  return `# ${result.displayNameZh}：forecastability / oracle 诊断
+
+这些 retrospective oracle 只在 raw candidate 预测冻结后运行，不参与训练、参数选择、
+路由或通过门禁，也不能证明 Bayes error、理论上限或“无法预测”。
+
+| 口径 | 全部实际正现金 | future-first-seen 正现金 | 占比 |
+|---|---:|---:|---:|
+| Primary | ${number(primary.currentReachability.totalActualPositiveCash)} | ${number(primary.currentReachability.futureFirstSeenActualPositiveCash)} | ${percent(primary.currentReachability.futureFirstSeenShare)} |
+| Strict | ${number(strict.currentReachability.totalActualPositiveCash)} | ${number(strict.currentReachability.futureFirstSeenActualPositiveCash)} | ${percent(strict.currentReachability.futureFirstSeenShare)} |
+
+\`ORACLE_OCCURRENCE_ONLY\`、\`ORACLE_AMOUNT_ONLY\`、\`ORACLE_BOTH\`、
+\`FUTURE_FIRST_ENTRY_CEILING\` 与 \`MECHANISM_INFORMATION_GAIN\` 均不可部署。
+`;
+}
+
+function assertPublishingScalePrivateAuthorization(config) {
+  if (
+    config?.authorization?.oneTimePrivateDevelopmentEvaluation
+      !== "AUTHORIZED_AFTER_K7C_EXACT_HEAD_LINUX_WINDOWS_CI"
+    || config?.authorization?.authorizedModelId
+      !== M2_PUBLISHING_SCALE_MODEL_ID
+    || config?.authorization?.authorizedArmId
+      !== M2_PUBLISHING_SCALE_ARM_ID
+    || config?.authorization?.outcomeDrivenTuning !== false
+    || config?.authorization?.laterOriginHoldout !== false
+    || config?.authorization?.finalHoldout !== false
+    || config?.authorization?.provider !== false
+    || config?.authorization?.database !== false
+    || config?.authorization?.production !== false
+    || config?.authorization?.release !== false
+  ) {
+    throw new Error("m2_publishing_scale_private_authorization_invalid");
+  }
+}
+
+function runCommand(root, command, args) {
+  const result = spawnSync(command, args, {
+    cwd: root,
+    encoding: "utf8",
+    windowsHide: true,
+    maxBuffer: 10 * 1024 * 1024
+  });
+  if (result.status !== 0) {
+    throw new Error(
+      `m2_publishing_scale_command_failed:${command}:${args.join(" ")}:`
+        + String(result.stderr ?? "").trim()
+    );
+  }
+  return result;
 }
 
 function verifyPrivateBindings({
