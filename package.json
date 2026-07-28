@@ -90,6 +90,7 @@
     "diagnose:m2:channel-experts": "node scripts/m2-current/run_m2_human_anchored_development.mjs --channel-experts-public",
     "diagnose:m2:channel-generative": "node scripts/m2-current/run_m2_human_anchored_development.mjs --channel-generative-public",
     "check:m2:current:later-origin-readiness": "node scripts/m2-current/run_m2_human_anchored_later_origin_readiness.mjs --private-audit",
+    "check:m2:publishing-scale-audit": "node scripts/run-codex-python.mjs scripts/m2-current/audit_publishing_scale.py",
     "develop:m2:current:ledger-partition": "node scripts/run-codex-python.mjs scripts/m2-current/validate_human_ledger_partition.py",
     "develop:m2:current:candidate": "node scripts/m2-current/run_m2_current_candidate.mjs",
     "develop:m2:current:manual-channel": "node scripts/m2-current/run_m2_manual_channel_backtest.mjs",

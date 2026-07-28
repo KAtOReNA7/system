@@ -1,0 +1,293 @@
+{
+  "schema": "m2.publishing_scale.population_authority_audit.v1",
+  "asOf": "2026-07-28",
+  "status": "K7A_COMPLETE_NO_MODEL_EXECUTION",
+  "scope": {
+    "sourceRevision": "runtime_resolved_by_git",
+    "activePullRequest": 29,
+    "privateRowDataPublished": false,
+    "newCandidateOuterOutcomeRead": false,
+    "modelTrainedOrSelected": false
+  },
+  "entityAuthority": {
+    "bookSku": {
+      "count": null,
+      "authorityPresent": false,
+      "reason": "no registered ISBN/SKU-to-work/edition authority"
+    },
+    "editionOrVersion": {
+      "count": null,
+      "authorityPresent": false,
+      "reason": "no registered edition/version identity table"
+    },
+    "standardWork": {
+      "count": 3053,
+      "authorityPresent": true,
+      "authorityGrain": "one current formal foundation row per standard work"
+    },
+    "creativeWorkSeparateFromStandardWork": {
+      "count": null,
+      "authorityPresent": false
+    },
+    "exactAuthorIdentityCell": {
+      "count": 2304,
+      "resolvedPersonEntity": false
+    },
+    "salesShareBillRow": {
+      "count": 190663,
+      "authorityPresent": true
+    },
+    "observedCashWorkChannelScope": {
+      "count": 9053,
+      "verifiedAuthorizationRelation": false
+    },
+    "predictionCase": {
+      "primaryPackedRowCount": 58986,
+      "strictPackedRowCount": 102743,
+      "sameAsSkuOrNewLaunch": false
+    }
+  },
+  "classificationAuthority": {
+    "authorityGrain": "one_current_row_per_standard_work",
+    "standardWorkCount": 3053,
+    "nodeCounts": {
+      "level1": 2,
+      "level2": 9,
+      "level3": 64
+    },
+    "coverage": {
+      "level1": 1.0,
+      "level2": 1.0,
+      "level3": 1.0
+    },
+    "conflictingParentNodeCounts": {
+      "level2": 0,
+      "level3": 0
+    },
+    "multiAssignmentRepresentable": false,
+    "effectiveAtCoverage": 0,
+    "availableAtCoverage": 0,
+    "strictOriginUseStatus": "CURRENT_ONLY_REPORTING_NOT_STRICT_ORIGIN_FEATURE"
+  },
+  "authorizationAuthority": {
+    "workPlatformAuthorityTablePresent": false,
+    "observedCashWorkChannelScopeCount": 9053,
+    "observedCashRelationIsAuthorizationAuthority": false,
+    "billAuthorizationCategoryRowCoverage": 1.0,
+    "billAuthorizationCategoryDistinctCurrentValues": 2,
+    "startCoverage": 0,
+    "endCoverage": 0,
+    "effectiveAtCoverage": 0,
+    "availableAtCoverage": 0,
+    "versionCoverage": 0,
+    "strictOriginUseStatus": "PROHIBITED_CURRENT_OR_CASH_OBSERVED_ONLY"
+  },
+  "salesShareCashAuthority": {
+    "fullWindow": {
+      "monthMinimum": "2017-06",
+      "monthMaximum": "2026-05",
+      "billRowCount": 190663,
+      "standardWorkCount": 2718,
+      "canonicalChannelCount": 39,
+      "workChannelScopeCount": 9053,
+      "positiveRowCount": 190520,
+      "negativeReversalRowCount": 143,
+      "zeroRowCount": 0,
+      "workHistorySpanMonths": {
+        "minimum": 1,
+        "p25": 22,
+        "median": 32,
+        "p75": 49,
+        "maximum": 102
+      },
+      "workChannelHistorySpanMonths": {
+        "minimum": 1,
+        "p25": 10,
+        "median": 21,
+        "p75": 35,
+        "maximum": 102
+      },
+      "annualFirstObservedPositiveCashWorks": {
+        "2017": 2,
+        "2018": 54,
+        "2019": 44,
+        "2020": 308,
+        "2021": 317,
+        "2022": 402,
+        "2023": 692,
+        "2024": 644,
+        "2025": 221,
+        "2026": 34
+      },
+      "annualFirstObservedCashIsVerifiedPublicationLaunch": false,
+      "exactDuplicateBillRowCount": 1761,
+      "duplicateInterpretation": "requires invoice or settlement-line identity; exact repetition alone is not proof of invalidity"
+    },
+    "modelWindow2021To2025": {
+      "billRowCount": 167972,
+      "standardWorkCount": 2682,
+      "canonicalChannelCount": 37,
+      "workChannelScopeCount": 8880,
+      "positiveRowCount": 167866,
+      "negativeReversalRowCount": 106,
+      "workHistoryMedianMonths": 28,
+      "workChannelHistoryMedianMonths": 19
+    }
+  },
+  "mechanismScale2021To2025": {
+    "membership": {
+      "distinctWorks": 2646,
+      "positiveCashShare": 0.7851206784,
+      "top1WorkCashShare": 0.3065668705,
+      "top3WorkCashShare": 0.3666881458,
+      "top5WorkCashShare": 0.4173896349,
+      "revenueHhi": 0.1004966942
+    },
+    "advertising": {
+      "distinctWorks": 866,
+      "positiveCashShare": 0.1153545135,
+      "top1WorkCashShare": 0.2097637538,
+      "top3WorkCashShare": 0.3456828548,
+      "top5WorkCashShare": 0.4519832138,
+      "revenueHhi": 0.0683045566
+    },
+    "transactional": {
+      "distinctWorks": 71,
+      "positiveCashShare": 0.0993100528,
+      "top1WorkCashShare": 0.2951919040,
+      "top3WorkCashShare": 0.5182780377,
+      "top5WorkCashShare": 0.6384163277,
+      "revenueHhi": 0.1316433556
+    },
+    "other": {
+      "distinctWorks": 22,
+      "positiveCashShare": 0.0002147553,
+      "top1WorkCashShare": 0.5091343057,
+      "top3WorkCashShare": 0.8247841072,
+      "top5WorkCashShare": 0.9023312670,
+      "revenueHhi": 0.3257543260
+    }
+  },
+  "namedChannelAnchors2021To2025": {
+    "喜马拉雅": {
+      "distinctWorks": 2417,
+      "positiveCashShare": 0.6659352714,
+      "top1WorkCashShare": 0.36124,
+      "top3WorkCashShare": 0.42909,
+      "top5WorkCashShare": 0.47265,
+      "revenueHhi": 0.13688
+    },
+    "微信读书": {
+      "distinctWorks": 713,
+      "positiveCashShare": 0.05435,
+      "top1WorkCashShare": 0.07139,
+      "top3WorkCashShare": 0.15402,
+      "top5WorkCashShare": 0.19732,
+      "revenueHhi": 0.01697
+    },
+    "番茄畅听": {
+      "distinctWorks": 864,
+      "positiveCashShare": 0.11518,
+      "top1WorkCashShare": 0.21007,
+      "top3WorkCashShare": 0.34619,
+      "top5WorkCashShare": 0.45265,
+      "revenueHhi": 0.06845
+    },
+    "猫耳": {
+      "distinctWorks": 60,
+      "positiveCashShare": 0.06844,
+      "top1WorkCashShare": 0.42831,
+      "top3WorkCashShare": 0.61944,
+      "top5WorkCashShare": 0.73432,
+      "revenueHhi": 0.21533
+    },
+    "克拉漫播": {
+      "distinctWorks": 22,
+      "positiveCashShare": 0.02921,
+      "top1WorkCashShare": 0.49648,
+      "top3WorkCashShare": 0.77941,
+      "top5WorkCashShare": 0.87914,
+      "revenueHhi": 0.29457
+    }
+  },
+  "level3TrainingSupport": {
+    "primaryNodeFoldCount": 320,
+    "primaryDistinctWorks": {
+      "minimum": 0,
+      "p25": 2,
+      "median": 5,
+      "p75": 13,
+      "maximum": 109
+    },
+    "primaryShareBelowFixedWorkCounts": {
+      "5": 0.44375,
+      "10": 0.684375,
+      "15": 0.778125,
+      "25": 0.834375,
+      "50": 0.934375,
+      "100": 0.978125
+    },
+    "strictNodeOriginCount": 704,
+    "strictDistinctWorks": {
+      "minimum": 0,
+      "p25": 3,
+      "median": 9,
+      "p75": 24,
+      "maximum": 517
+    },
+    "strictShareBelowFixedWorkCounts": {
+      "5": 0.3295454545,
+      "10": 0.5255681818,
+      "15": 0.6207386364,
+      "25": 0.7514204545,
+      "50": 0.8536931818,
+      "100": 0.9289772727
+    },
+    "conclusion": "fixed 50/100-work pass-fail rules erase most level-3 nodes and are not a sufficient publishing-scale support contract"
+  },
+  "transactionalSupportDiagnosis": {
+    "fullWindowDistinctWorks": 71,
+    "primaryPackedDistinctWorks": 48,
+    "primaryOuterFold0TrainingDistinctWorks": 38,
+    "executedV02DevelopmentModelableInnerDistinctWorkRange": {
+      "minimum": 25,
+      "maximum": 32
+    },
+    "executedV02DevelopmentModelableInnerTrainingRowRange": {
+      "minimum": 8640,
+      "maximum": 11916
+    },
+    "executedV02DevelopmentModelableInnerPositiveMonthRange": {
+      "minimum": 1087,
+      "maximum": 1710
+    },
+    "diagnosis": "the 25-32 range is a nested model-eligible outer-fold and inner-fold training subset, not the publisher's annual SKU count and not its full transactional standard-work population"
+  },
+  "dataQuality": {
+    "foundationDuplicateStandardWorkIds": 0,
+    "orphanBillStandardWorks": 0,
+    "channelMappingCoverage": 1.0,
+    "channelJoinRowExpansion": 0,
+    "channelMasterRawPairCount": 133,
+    "channelMasterCanonicalChannelCount": 74,
+    "channelMasterEffectiveMonthCoverage": 0,
+    "monthlyRowsAreIndependentWorks": false,
+    "currentOnlyClassificationRisk": "HIGH_FOR_STRICT_FEATURE_USE",
+    "authorizationHistoryGapRisk": "HIGH_FOR_STRICT_FEATURE_USE"
+  },
+  "k7aDecision": {
+    "historical50And100WorkThresholdsValidatedAsIndustryScaleTruth": false,
+    "replaceForwardWithTrainingSideSupportContract": true,
+    "classificationMayBeUsedForCurrentDescriptiveReporting": true,
+    "classificationMayBeUsedAsStrictOriginFeature": false,
+    "authorizationMayBeUsedAsStrictOriginFeature": false,
+    "k7bMayProceedWithoutNewOuterOutcome": true
+  },
+  "publicPrivacy": {
+    "aggregateOnly": true,
+    "containsWorkIdentity": false,
+    "containsCategoryValues": false,
+    "containsPrivatePath": false,
+    "containsPrivateArtifactDigest": false
+  }
+}

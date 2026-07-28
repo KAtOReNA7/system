@@ -1,6 +1,6 @@
 {
   "schemaVersion": "development-capability-catalog.v0.1",
-  "catalogVersion": "2026-07-23",
+  "catalogVersion": "2026-07-28",
   "principles": {
     "coreDevelopmentMustNotRequirePrivateArtifacts": true,
     "missingPrivateArtifactsBlockOnlyOwningCapability": true,
@@ -155,6 +155,39 @@
       ],
       "recovery": "Restore only from a verified encrypted authoritative-input bundle. Do not regenerate historical private inputs from public summaries.",
       "authorization": "NEW_ALGORITHM_AUTHORIZATION_REQUIRED"
+    },
+    {
+      "id": "m2-publishing-scale-audit",
+      "description": "Run the user-authorized read-only publishing-scale population, authority and training-support audit without reading a new candidate outer outcome or executing a model.",
+      "requiredTools": [],
+      "requiredPrivateArtifacts": [
+        {
+          "role": "formal-model-input-cache",
+          "kind": "file",
+          "path": "data/private-output/m2-formal-execution/m2-formal-model-input-cache-v1.pkl"
+        },
+        {
+          "role": "user-reviewed-channel-master",
+          "kind": "file",
+          "path": "data/private-output/outputs/channel-governance-20260726/M2-渠道统一与类型人工补全表-v0.2.xlsx"
+        },
+        {
+          "role": "primary-packed-training-rows",
+          "kind": "file",
+          "path": "data/private-output/m2-current-human-anchored/M2-current-channel-generative-primary-monthly-private-v0.2.ndjson"
+        },
+        {
+          "role": "strict-packed-training-rows",
+          "kind": "file",
+          "path": "data/private-output/m2-current-human-anchored/M2-current-channel-generative-auxiliary-monthly-private-v0.2.ndjson"
+        }
+      ],
+      "canonicalValidationCommands": [
+        "npm run doctor:capability -- m2-publishing-scale-audit",
+        "npm run check:m2:publishing-scale-audit"
+      ],
+      "recovery": "Restore only the capability-scoped cache, channel master and packed training rows from a verified encrypted bundle. Missing inputs block only this read-only scale audit; public development, diagnostics, tests and startup remain available.",
+      "authorization": "USER_AUTHORIZED_READ_ONLY_PUBLISHING_SCALE_AUDIT_2026_07_28"
     },
     {
       "id": "m2-current-canonical-channel",

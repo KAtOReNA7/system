@@ -35,6 +35,7 @@ test("catalog defines one private-free core capability and scoped private capabi
       "m2-pr7-s1",
       "m2-v2-current-state",
       "m2-algorithm-authoritative-input",
+      "m2-publishing-scale-audit",
       "m2-current-canonical-channel",
       "m2-current-human-anchored",
       "m2-current-human-anchored-tsb-occurrence",
@@ -59,6 +60,27 @@ test("catalog defines one private-free core capability and scoped private capabi
   assert.equal(s1.privateBundle.providerCredentialsIncluded, false);
   assert.equal(s1.privateBundle.databaseCredentialsIncluded, false);
   assert.equal(catalog.principles.missingPrivateArtifactsBlockOnlyOwningCapability, true);
+});
+
+test("missing publishing-scale inputs block only that audit capability", () => {
+  const result = evaluateCapability(
+    catalog,
+    "m2-publishing-scale-audit",
+    {
+      repoRoot: REPO_ROOT,
+      artifactExists: () => false,
+      toolProbe: availableToolProbe,
+    },
+  );
+  assert.equal(result.status, "BLOCKED_MISSING_PRIVATE_ARTIFACT");
+  assert.equal(result.coreDevelopmentUnaffected, true);
+  assert.deepEqual(result.missingPrivateRoles, [
+    "formal-model-input-cache",
+    "user-reviewed-channel-master",
+    "primary-packed-training-rows",
+    "strict-packed-training-rows",
+  ]);
+  assert.match(result.recovery, /block only this read-only scale audit/u);
 });
 
 test("core doctor rejects Node and npm versions outside the repository contract", () => {
