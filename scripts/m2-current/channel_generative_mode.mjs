@@ -327,14 +327,26 @@ export async function runM2PublishingScalePrivateDevelopment({
       frozenRows.filter(
         (row) => row.evaluationFamily === "primary"
       ),
-      config
+      config,
+      { channelPairingPolicy: "same_case_intersection" }
     ),
     strict: scoreM2ChannelGenerativeFrozenG0Comparator(
       strict.rows,
       frozenRows.filter(
         (row) => row.evaluationFamily === "strict_rolling"
       ),
-      config
+      config,
+      { channelPairingPolicy: "same_case_intersection" }
+    )
+  };
+  const pairedResearchComparatorCandidate = {
+    primary: scorePublishingScaleCandidateChannelIntersection(
+      baselines.primary,
+      primary.evaluation
+    ),
+    strict: scorePublishingScaleCandidateChannelIntersection(
+      baselines.strict,
+      strict.evaluation
     )
   };
   const operationalFallback = {
@@ -389,6 +401,7 @@ export async function runM2PublishingScalePrivateDevelopment({
   const gate = evaluatePublishingScaleGates({
     config,
     baselines,
+    pairedResearchComparatorCandidate,
     primary: primary.evaluation,
     strict: strict.evaluation,
     bootstrap
@@ -430,6 +443,7 @@ export async function runM2PublishingScalePrivateDevelopment({
     config,
     support,
     baselines,
+    pairedResearchComparatorCandidate,
     operationalFallback,
     globalParentAblation,
     diagnostics,
@@ -1786,6 +1800,7 @@ function buildPublishingScalePublicResult({
   config,
   support,
   baselines,
+  pairedResearchComparatorCandidate,
   operationalFallback,
   globalParentAblation,
   diagnostics,
@@ -1819,6 +1834,8 @@ function buildPublishingScalePublicResult({
       comparatorRole: "paired_research_baseline_not_operational_fallback",
       sameCases: true,
       sameActualDefinition: true,
+      workTotalPopulation: "exact_same_case_population",
+      workChannelPopulation: "same_case_channel_intersection_only",
       operationalFallbackId: "M2-WORK-OA03",
       operationalFallbackDirectlyRanked:
         operationalFallback.primary.caseCount > 0
@@ -1830,6 +1847,11 @@ function buildPublishingScalePublicResult({
       frozenResearchComparator: {
         primary: publishingScaleEvaluationSummary(baselines.primary),
         strict: publishingScaleEvaluationSummary(baselines.strict)
+      },
+      frozenResearchComparatorChannelIntersection: {
+        primary: pairedResearchComparatorCandidate.primary,
+        strict: pairedResearchComparatorCandidate.strict,
+        directlyComparableToRawCandidateFullChannelPopulation: false
       },
       operationalFallbackSameCaseIntersection: {
         primary: publishingScaleComparableIntersectionSummary(
@@ -1986,6 +2008,7 @@ function buildPublishingScalePublicResult({
 function evaluatePublishingScaleGates({
   config,
   baselines,
+  pairedResearchComparatorCandidate,
   primary,
   strict,
   bootstrap
@@ -2073,8 +2096,8 @@ function evaluatePublishingScaleGates({
       && Number.isFinite(strict.conditionalAmount.mae),
     mechanismSafety: publishingScaleMechanismSafety(
       baselines,
-      primary,
-      strict
+      pairedResearchComparatorCandidate.primary,
+      pairedResearchComparatorCandidate.strict
     )
   };
   return {
@@ -2113,6 +2136,70 @@ function publishingScaleMechanismSafety(baselines, primary, strict) {
     );
     return primaryValue >= -0.01 && strictValue >= -0.01;
   }).length >= 2;
+}
+
+function scorePublishingScaleCandidateChannelIntersection(
+  baseline,
+  candidate
+) {
+  const candidateCases = new Map(candidate.cases.map((row) => [
+    publishingScaleCaseKey(
+      row.standardWorkId,
+      row.origin,
+      row.horizonMonths
+    ),
+    row
+  ]));
+  const pairedChannels = [];
+  for (const baselineCase of baseline.cases) {
+    const candidateCase = candidateCases.get(publishingScaleCaseKey(
+      baselineCase.standardWorkId,
+      baselineCase.origin,
+      baselineCase.horizonMonths
+    ));
+    if (candidateCase === undefined) {
+      throw new Error(
+        "m2_publishing_scale_candidate_comparator_work_pair_missing"
+      );
+    }
+    const candidateChannels = new Map(candidateCase.channels.map((row) => [
+      row.channelUid,
+      row
+    ]));
+    for (const baselineChannel of baselineCase.channels) {
+      const candidateChannel = candidateChannels.get(baselineChannel.channelUid);
+      if (candidateChannel === undefined) {
+        throw new Error(
+          "m2_publishing_scale_candidate_comparator_channel_pair_missing"
+        );
+      }
+      pairedChannels.push(candidateChannel);
+    }
+  }
+  const observedChannels = pairedChannels.filter(
+    (row) => row.observedAtOrigin
+  );
+  return Object.freeze({
+    sameCase: true,
+    sameTarget: true,
+    sameOrigin: true,
+    sameHorizon: true,
+    sameActualDefinition: true,
+    population: "same_case_channel_intersection_only",
+    candidateFullChannelCaseCount:
+      candidate.cases.reduce((total, row) => total + row.channels.length, 0),
+    pairedChannelCaseCount: pairedChannels.length,
+    excludedCandidateChannelCaseCount:
+      candidate.cases.reduce(
+        (total, row) => total + row.channels.length,
+        0
+      ) - pairedChannels.length,
+    workChannel: scorePublishingScaleComparableCases(pairedChannels),
+    byMechanism: scorePublishingScaleComparableSlices(
+      observedChannels,
+      "mechanism"
+    )
+  });
 }
 
 function publishingScaleEvaluationSummary(value) {

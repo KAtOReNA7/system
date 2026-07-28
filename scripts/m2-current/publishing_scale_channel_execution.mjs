@@ -188,6 +188,18 @@ export async function prepareM2PublishingScaleExecution({
     policy
   });
   const attemptNumber = authorizeAttempt(recoveredReceipts, policy);
+  const previousAttempt = recoveredReceipts.at(-1)?.value ?? null;
+  const retryAuthorizationBasis = attemptNumber === 1
+    ? null
+    : Object.freeze({
+      previousAttemptNumber: previousAttempt?.attemptNumber ?? null,
+      previousFailureCode: previousAttempt?.failureCode ?? null,
+      failureClassUnderCurrentPolicy:
+        previousAttempt?.infrastructureFailureClass
+        ?? classifyInfrastructureFailure(previousAttempt?.failureCode),
+      previousReceiptRewritten: false,
+      validEvaluationPreviouslyProduced: false
+    });
   const suffix = `${gitPreflight.head.slice(0, 12)}-attempt-${attemptNumber}`;
   const authorizationFile =
     `${path.parse(config.privateOutputs.runtimeAuthorization).name}-`
@@ -233,6 +245,7 @@ export async function prepareM2PublishingScaleExecution({
     attemptNumber,
     normalExecution: attemptNumber === 1,
     infrastructureRecoveryRetry: attemptNumber > 1,
+    retryAuthorizationBasis,
     createdAt: new Date().toISOString(),
     finalHoldoutAuthorized: false,
     productionAuthorized: false,
@@ -269,6 +282,7 @@ export async function prepareM2PublishingScaleExecution({
         prepared.receipt.normalizedContentDigests
     },
     attemptNumber,
+    retryAuthorizationBasis,
     gitPreflight,
     privateMaterializationStarted: false,
     privateRowsRead: 0,
@@ -568,7 +582,7 @@ function classifyInfrastructureFailure(failureCode) {
     ],
     [
       "deterministic_implementation",
-      /deterministic_implementation|conservation|duplicate case key/iu
+      /deterministic_implementation|conservation|duplicate case key|G0_paired_(?:work|channel|population)/iu
     ]
   ];
   return patterns.find(([, pattern]) => pattern.test(failureCode))?.[0]
@@ -783,10 +797,22 @@ export function authorizeAttempt(previousReceipts, policy) {
     throw new Error("m2_publishing_scale_valid_evaluation_already_exists");
   }
   const previous = previousReceipts.at(-1).value;
+  const currentFailureClass = classifyInfrastructureFailure(
+    previous.failureCode
+  );
+  const retryEligibleUnderCurrentPolicy = (
+    previous.infrastructureRecoveryEligible === true
+    || (
+      previous.status?.startsWith("FAILED_CLOSED_")
+      && currentFailureClass !== null
+      && policy.executionWindow.allowedRetryFailureClasses
+        ?.includes(currentFailureClass)
+    )
+  );
   if (
     policy.executionWindow.infrastructureRetryAllowedBeforeValidEvaluation
       !== true
-    || previous.infrastructureRecoveryEligible !== true
+    || retryEligibleUnderCurrentPolicy !== true
     || previous.interpretableRawCandidateEvaluationProduced === true
   ) {
     throw new Error("m2_publishing_scale_infrastructure_retry_not_eligible");

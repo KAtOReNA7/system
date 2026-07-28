@@ -112,3 +112,27 @@ test("fatal process termination is preserved as an invalid infrastructure attemp
   ));
   assert.equal(authorization.status, "CLOSED_FAILED");
 });
+
+test("a closed pre-evaluation pairing failure is retryable without rewriting its receipt", () => {
+  const previous = {
+    status: "FAILED_CLOSED_AFTER_CANDIDATE_FIT_STARTED",
+    attemptNumber: 2,
+    failureCode: "m2_channel_generative_G0_paired_channel_missing",
+    infrastructureFailureClass: null,
+    infrastructureRecoveryEligible: false,
+    interpretableRawCandidateEvaluationProduced: false,
+    evaluationComplete: false
+  };
+  const policy = {
+    executionWindow: {
+      infrastructureRetryAllowedBeforeValidEvaluation: true,
+      allowedRetryFailureClasses: ["deterministic_implementation"]
+    }
+  };
+  assert.equal(
+    authorizeAttempt([{ file: "attempt-2.json", value: previous }], policy),
+    3
+  );
+  assert.equal(previous.infrastructureFailureClass, null);
+  assert.equal(previous.infrastructureRecoveryEligible, false);
+});

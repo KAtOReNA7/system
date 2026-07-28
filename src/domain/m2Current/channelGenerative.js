@@ -1691,10 +1691,18 @@ export function scoreM2ChannelGenerativeG1Predictions(
 export function scoreM2ChannelGenerativeFrozenG0Comparator(
   rows,
   frozenRows,
-  config = null
+  config = null,
+  {
+    channelPairingPolicy = "exact"
+  } = {}
 ) {
   const source = requireMonthlyRows(rows);
   const frozen = requireArray(frozenRows, "frozen_comparator_rows");
+  if (!["exact", "same_case_intersection"].includes(channelPairingPolicy)) {
+    throw new M2ChannelGenerativeContractError(
+      "m2_channel_generative_G0_channel_pairing_policy_invalid"
+    );
+  }
   const actualCases = aggregateG1ActualCases(source);
   const workIndex = new Map();
   const channelIndex = new Map();
@@ -1725,6 +1733,11 @@ export function scoreM2ChannelGenerativeFrozenG0Comparator(
       channelIndex.set(key, row);
     }
   }
+  const currentChannelCaseCount = actualCases.reduce(
+    (total, row) => total + row.channels.length,
+    0
+  );
+  let pairedChannelCaseCount = 0;
   const cases = actualCases.map((actualCase) => {
     const key = caseKey(
       actualCase.standardWorkId,
@@ -1737,22 +1750,24 @@ export function scoreM2ChannelGenerativeFrozenG0Comparator(
         "m2_channel_generative_G0_paired_work_missing"
       );
     }
-    const channels = actualCase.channels.map((channel) => {
+    const channels = actualCase.channels.flatMap((channel) => {
       const frozenChannel = channelIndex.get(
         `${key}\u001f${channel.channelUid}`
       );
       if (frozenChannel === undefined) {
+        if (channelPairingPolicy === "same_case_intersection") return [];
         throw new M2ChannelGenerativeContractError(
           "m2_channel_generative_G0_paired_channel_missing"
         );
       }
-      return Object.freeze({
+      pairedChannelCaseCount += 1;
+      return [Object.freeze({
         ...channel,
         pointEstimate: finite(
           frozenChannel?.ablationPoints?.A1,
           "frozen_G0_channel_point"
         )
-      });
+      })];
     });
     return Object.freeze({
       ...actualCase,
@@ -1792,6 +1807,12 @@ export function scoreM2ChannelGenerativeFrozenG0Comparator(
       resolvedConfig.evaluation.topRevenueFractions
     ),
     coverage: Object.freeze({
+      channelPairingPolicy,
+      currentChannelCaseCount,
+      frozenChannelCaseCount: channelIndex.size,
+      pairedChannelCaseCount,
+      unpairedCurrentChannelCaseCount:
+        currentChannelCaseCount - pairedChannelCaseCount,
       observedChannelMonthlyRowCount:
         source.filter((row) => row.observedAtOrigin).length,
       generatorMonthlyRowCount: 0,
