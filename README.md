@@ -27,12 +27,12 @@
 | 公共工程 | 可安装、构建、测试和启动 | Linux/Windows 使用同一套无私有数据门禁；以上方 CI 徽章为准 |
 | M2 业务门禁 | Canary 失败（`CANARY_FAIL`） | 尚未达到自动化或发布要求 |
 | M2 自动化 | 自动化被阻断（`AUTOMATION_BLOCKED`） | 没有模型获准自动化，活动候选为空（`activeCandidate=null`） |
-| M2 评价合同 v2.1 | 仍是最近一个已激活的开发评价合同（`ACTIVE_FOR_DEVELOPMENT_EVALUATION_ONLY`） | 不是 production/automation gate，不改变模型角色 |
-| M2 评价合同 v2.2 | 因未解决冲销残差而阻断（`M2_EVALUATION_V2_2_BLOCKED_UNRESOLVED_REVERSAL`） | 统计修正和标签重评分已完成，但最终重述视图未通过，不能激活 |
-| M2 最新复核 | 完成到可验证范围且模型角色不变 | 只读取既有冻结预测，没有模型执行、训练、调参、选模或生成预测 |
+| M2 评价合同 v2.1 | 历史开发评价合同 | 继续保留审计证据，但当前开发评价权威已前移到 v2.2 |
+| M2 评价合同 v2.2 | 开发评价已激活，并透明隔离无法分配的冲销残差（`M2_EVALUATION_V2_2_ACTIVE_FOR_DEVELOPMENT_WITH_DISCLOSED_RESIDUAL_EXCLUSION`） | 不是 production/automation gate，不改变运行回退模型 |
+| M2 出版行业规模适配 | 私有物化在候选拟合前因实现接线错误 fail-closed（`M2_PUBLISHING_SCALE_IMPLEMENTATION_BLOCKED`） | 没有候选预测或评价指标；一次性授权已消耗，未授权重试 |
 | M3 | 仅合成 fixture/prototype | 不代表真实材料执行或正式发布 |
 
-最新治理入口是 [M2 当前状态索引 v0.35](docs/analysis/m2-v2/M2-v2-current-state-index-v0.35.md)。
+最新治理入口是 [M2 当前状态索引 v0.36](docs/analysis/m2-v2/M2-v2-current-state-index-v0.36.md)。
 模型名称、别名、角色、成绩人口和可比组以
 [Model Registry](config/m2-model-registry.v1.json) 为唯一当前机器权威。
 
@@ -157,7 +157,7 @@ holdout。
 
 | 主题 | 当前入口 |
 |---|---|
-| 当前状态 | [M2 当前状态索引 v0.35](docs/analysis/m2-v2/M2-v2-current-state-index-v0.35.md) |
+| 当前状态 | [M2 当前状态索引 v0.36](docs/analysis/m2-v2/M2-v2-current-state-index-v0.36.md) |
 | 模型权威 | [Model Registry](config/m2-model-registry.v1.json) · [中文模型目录](docs/analysis/m2-current/M2-model-catalog-and-scorecard-v1.md) |
 | 评价体系 | [v2.2 合同](docs/analysis/m2-current/M2-evaluation-contract-v2.2.md) · [v2.2 验证](docs/analysis/m2-current/M2-evaluation-contract-v2.2-validation.md) · [v2.1 合同](docs/analysis/m2-current/M2-evaluation-contract-v2.1.md) |
 | 冻结标签重评分 | [v2.2 诊断复核](docs/analysis/m2-current/M2-evaluation-v2.2-diagnostic-recheck.md) · [机器可读聚合](docs/analysis/m2-current/M2-evaluation-v2.2-diagnostic-recheck.json) · [冲销影响](docs/analysis/m2-current/M2-reversal-restatement-impact-v1.md) |

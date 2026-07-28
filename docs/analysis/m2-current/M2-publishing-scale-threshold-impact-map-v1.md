@@ -14,8 +14,13 @@
 - Model Registry 与通用 query 命令可以解释新模型和完整实验臂身份。
 - scoped `AGENTS.md` 明确禁止以后重新引入无本项目证据的通用固定门槛。
 - 历史 `M2-CHAN-GEN02` 配置、预注册、评分、阻断和 verifier 保留不变。
-- K7C 没有读取新候选 outer outcome；Linux/Windows 与 clean-clone 门禁必须在
-  exact HEAD CI 后才从 pending 转为通过，之后才可解锁一次 K7D 私有执行。
+- K7C 精确提交已通过 Linux/Windows、clean-clone、no-real-data 与 private
+  isolation 门禁。
+- K7D 唯一一次私有命令已启动 capability-scoped 物化，但新 runner 误调用历史
+  渠道时间生成模型 v0.2 的物化模式，因历史授权已消耗而在候选拟合前正确
+  fail-closed。未生成新候选 outer outcome。
+- 接线已改为独立 publishing-scale 物化入口，物化阶段失败也会自动记录收据；
+  修复后只做公开 synthetic 验证。本次授权已消耗且未授权私有重跑。
 
 机器可核验明细见
 `docs/analysis/m2-current/M2-publishing-scale-threshold-impact-map-v1.json`。

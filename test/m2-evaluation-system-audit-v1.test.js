@@ -91,7 +91,7 @@ test("audit covers every registry evaluation and comparability group", () => {
     .map((group) => group.comparableGroupId)
     .sort();
 
-  assert.equal(evaluationCount, 40);
+  assert.equal(evaluationCount, 41);
   assert.equal(audit.registryCoverage.evaluationCount, evaluationCount);
   assert.deepEqual(auditGroups, registryGroups);
   assert.equal(audit.registryCoverage.independentEvidenceEvaluationCount, 0);
@@ -156,7 +156,7 @@ test("evaluation contract remains a proposal and public aggregates are not overc
 test("historical audit state records zero execution and registry may advance", () => {
   assert.equal(
     registry.currentRoles.latestStateIndex,
-    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.35.md"
+    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.36.md"
   );
   assert.equal(audit.executionBoundary.modelExecutionCount, 0);
   assert.equal(audit.executionBoundary.modelTrainingCount, 0);

@@ -34,6 +34,9 @@ CHANNEL_EXPERT_CONFIG_PATH = (
 CHANNEL_GENERATIVE_CONFIG_PATH = (
     ROOT / "config" / "m2-current-channel-generative.v0.2.json"
 )
+PUBLISHING_SCALE_CHANNEL_CONFIG_PATH = (
+    ROOT / "config" / "m2-current-publishing-scale-channel.v0.1.json"
+)
 V03_PATH = (
     ROOT
     / "data"
@@ -51,6 +54,7 @@ def run(
     *,
     channel_experts: bool = False,
     channel_generative: bool = False,
+    publishing_scale_channel: bool = False,
 ) -> dict[str, Any]:
     config = json.loads(CONFIG_PATH.read_text(encoding="utf-8"))
     _validate_config(config)
@@ -61,11 +65,18 @@ def run(
         if channel_experts
         else None
     )
-    generative_config = (
-        json.loads(
-            CHANNEL_GENERATIVE_CONFIG_PATH.read_text(encoding="utf-8")
+    if channel_generative and publishing_scale_channel:
+        raise HumanAnchoredMaterializationError(
+            "channel generative materialization modes are mutually exclusive"
         )
-        if channel_generative
+    generative_config_path = (
+        PUBLISHING_SCALE_CHANNEL_CONFIG_PATH
+        if publishing_scale_channel
+        else CHANNEL_GENERATIVE_CONFIG_PATH
+    )
+    generative_config = (
+        json.loads(generative_config_path.read_text(encoding="utf-8"))
+        if channel_generative or publishing_scale_channel
         else None
     )
     output_dir = ROOT / config["privateOutputs"]["directory"]
@@ -1054,6 +1065,12 @@ def _write_channel_generative_supplement(
 def _validate_channel_generative_config(
     config: Mapping[str, Any]
 ) -> None:
+    if (
+        config.get("schema")
+        == "m2.current.publishing_scale_channel_core.v0.1"
+    ):
+        _validate_publishing_scale_channel_config(config)
+        return
     authorization = config.get("authorization", {})
     contract = config.get("dataContract", {})
     if (
@@ -1106,6 +1123,86 @@ def _validate_channel_generative_config(
         raise HumanAnchoredMaterializationError(
             "channel generative authorization or data boundary differs"
         )
+
+
+def _validate_publishing_scale_channel_config(
+    config: Mapping[str, Any]
+) -> None:
+    authorization = config.get("authorization", {})
+    execution = config.get("currentExecution", {})
+    contract = config.get("dataContract", {})
+    if (
+        config.get("schema")
+        != "m2.current.publishing_scale_channel_core.v0.1"
+        or config.get("modelId") != "M2-CHAN-PSC01"
+        or config.get("experimentArmId")
+        != "M2-EXP-PUBLISHING-SCALE-CHANNEL-01/CORE"
+        or config.get("target")
+        != "future_sales_share_development_modelable_cash"
+        or config.get("actualDefinitionId")
+        != "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01"
+        or authorization.get("oneTimePrivateDevelopmentEvaluation")
+        != "AUTHORIZED_AFTER_K7C_EXACT_HEAD_LINUX_WINDOWS_CI"
+        or authorization.get("authorizedModelId") != "M2-CHAN-PSC01"
+        or authorization.get("authorizedArmId")
+        != "M2-EXP-PUBLISHING-SCALE-CHANNEL-01/CORE"
+        or authorization.get("retryAuthorized") is not True
+        or any(
+            authorization.get(key) is not False
+            for key in (
+                "outcomeDrivenTuning",
+                "laterOriginHoldout",
+                "finalHoldout",
+                "provider",
+                "database",
+                "canary",
+                "full160",
+                "automation",
+                "production",
+                "release",
+                "mergePr",
+            )
+        )
+        or execution.get("privateExecutionAuthorizationConsumed") is not False
+        or execution.get("candidateOutputProduced") is not False
+        or contract.get("trainingWeight")
+        != "equal_total_weight_per_standard_work"
+        or contract.get("monthlyRowsAreIndependentWorks") is not False
+        or contract.get("futureFirstSeenPrediction") != 0
+        or contract.get("taxonomyAsOfStatus") != "REPORT_ONLY"
+        or contract.get("authorizationAsOfStatus") != "REPORT_ONLY"
+        or contract.get("currentOnlyTaxonomyBackfill") is not False
+        or contract.get("currentOnlyAuthorizationBackfill") is not False
+        or contract.get("buyoutCashUsed") is not False
+        or contract.get("otherCashUsed") is not False
+        or contract.get("commitmentUsed") is not False
+        or contract.get("labelView")
+        != "DEVELOPMENT_MODELABLE_RESTATEMENT_VIEW"
+    ):
+        raise HumanAnchoredMaterializationError(
+            "publishing-scale channel authorization or data boundary differs"
+        )
+
+
+def _publishing_scale_config_self_test() -> dict[str, Any]:
+    config = json.loads(
+        PUBLISHING_SCALE_CHANNEL_CONFIG_PATH.read_text(encoding="utf-8")
+    )
+    config["authorization"]["oneTimePrivateDevelopmentEvaluation"] = (
+        "AUTHORIZED_AFTER_K7C_EXACT_HEAD_LINUX_WINDOWS_CI"
+    )
+    config["authorization"]["retryAuthorized"] = True
+    config["currentExecution"]["privateExecutionAuthorizationConsumed"] = (
+        False
+    )
+    config["currentExecution"]["candidateOutputProduced"] = False
+    _validate_publishing_scale_channel_config(config)
+    return {
+        "modelId": config["modelId"],
+        "experimentArmId": config["experimentArmId"],
+        "publishingScaleConfigBoundaryValidated": True,
+        "privateArtifactRead": False,
+    }
 
 
 def _build_channel_generative_rows(
@@ -1742,10 +1839,14 @@ if __name__ == "__main__":
     arguments = sys.argv[1:]
     if arguments == ["--fixture-self-test"]:
         result = _fixture_self_test()
+    elif arguments == ["--publishing-scale-config-self-test"]:
+        result = _publishing_scale_config_self_test()
     elif arguments == ["--channel-experts"]:
         result = run(channel_experts=True)
     elif arguments == ["--channel-generative"]:
         result = run(channel_generative=True)
+    elif arguments == ["--publishing-scale-channel"]:
+        result = run(publishing_scale_channel=True)
     elif arguments:
         raise HumanAnchoredMaterializationError(
             "unsupported materialization mode"

@@ -372,7 +372,7 @@
     },
     {
       "id": "m2-current-publishing-scale-channel",
-      "description": "Run exactly one user-authorized publishing-scale channel-core private development evaluation after the K7C implementation commit is the exact clean PR #29 head and both Linux and Windows CI checks succeed.",
+      "description": "Audit the consumed publishing-scale channel-core private execution attempt. The attempt failed closed during private materialization before candidate fit because the new runner invoked the historical materialization mode; no retry is authorized.",
       "requiredTools": [
         {
           "id": "git",
@@ -420,15 +420,19 @@
           "role": "v2.2-development-activation-receipt",
           "kind": "file",
           "path": "data/private-output/m2-evaluation-v2-2-reversal-rescore/M2-evaluation-v2.2-execution-receipt-private-v1.json"
+        },
+        {
+          "role": "publishing-scale-private-execution-receipt",
+          "kind": "file",
+          "path": "data/private-output/m2-current-human-anchored/M2-current-publishing-scale-channel-run-receipt-private-v0.1.json"
         }
       ],
       "canonicalValidationCommands": [
         "npm run doctor:capability -- m2-current-publishing-scale-channel",
-        "npm run diagnose:m2:publishing-scale-channel",
-        "npm run develop:m2:current:publishing-scale-channel"
+        "npm run diagnose:m2:publishing-scale-channel"
       ],
-      "recovery": "Restore only the capability-scoped channel master, verified model-input cache, frozen paired comparator and v2.2 reversal-restatement outputs from a verified encrypted bundle. A prior started or completed run receipt keeps the one-time authorization consumed.",
-      "authorization": "USER_AUTHORIZED_ONE_TIME_PUBLISHING_SCALE_PRIVATE_DEVELOPMENT_AFTER_K7C_EXACT_HEAD_CI_2026_07_28"
+      "recovery": "Restore only the capability-scoped channel master, verified model-input cache, frozen paired comparator, v2.2 reversal-restatement outputs and the fail-closed publishing-scale receipt for audit. Restoration does not reopen training or retry authorization; public synthetic diagnostics, tests and startup remain available.",
+      "authorization": "CONSUMED_M2_PUBLISHING_SCALE_PRIVATE_EXECUTION_IMPLEMENTATION_BLOCKED_NO_RETRY_2026_07_28"
     },
     {
       "id": "m2-current-channel-generative",

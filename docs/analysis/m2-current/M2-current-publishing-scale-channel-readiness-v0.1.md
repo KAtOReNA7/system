@@ -1,9 +1,10 @@
-# 出版行业适配的渠道月度发生—条件金额核心：K7C 实现就绪报告
+# 出版行业适配的渠道月度发生—条件金额核心：当前实现与执行闭环
 
 - 英文名：Publishing-Scale Channel Monthly Occurrence × Conditional Amount Core
 - 稳定模型 ID：`M2-CHAN-PSC01`
 - 实验臂：`M2-EXP-PUBLISHING-SCALE-CHANNEL-01/CORE`
-- 当前状态：已实现但尚未执行私有开发评价（`IMPLEMENTED_NOT_EXECUTED_AWAITING_EXACT_HEAD_CI`）
+- 当前状态：私有物化在候选拟合前因实现接线错误 fail-closed
+  （`M2_PUBLISHING_SCALE_IMPLEMENTATION_BLOCKED`）
 - 支持合同：`M2-PUBLISHING-SCALE-SUPPORT-01`
 
 ## 实现结果
@@ -29,9 +30,10 @@ positive works、work-cluster ESS、现金 ESS、集中度、支持层级、连�
 
 三级分类和 work-platform 授权关系缺少历史 as-of 字段，因此保持
 `REPORT_ONLY`；只允许使用 forecast origin 已观察到的 canonical channel
-identity，不回填 current-only 分类或授权。K7C 只运行了公开 synthetic diagnostic，
-未读取新候选 outer outcome；一次性 private development execution 必须等待本提交的
-exact-head Linux/Windows CI 成功后才能执行。
+identity，不回填 current-only 分类或授权。K7C exact-head Linux/Windows CI 已通过；
+K7D 唯一一次私有命令已启动物化并读取 capability-scoped 输入，但在候选拟合前
+fail-closed。没有候选预测、候选评价、bootstrap 或 oracle 结果。本次授权已消耗，
+未授权重试。
 
 ## 公开 synthetic 验证
 

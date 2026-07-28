@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -34,6 +35,7 @@ const [
   fixture,
   diagnostic,
   readiness,
+  executionClosure,
   impact,
   historical,
   evaluation,
@@ -41,6 +43,7 @@ const [
   coreSource,
   runnerSource,
   modeSource,
+  materializerSource,
   packageConfig
 ] = await Promise.all([
   readJson("config/m2-current-publishing-scale-channel.v0.1.json"),
@@ -56,6 +59,10 @@ const [
   ),
   readJson(
     "docs/analysis/m2-current/"
+      + "M2-current-publishing-scale-channel-execution-closure-v0.1.json"
+  ),
+  readJson(
+    "docs/analysis/m2-current/"
       + "M2-publishing-scale-threshold-impact-map-v1.json"
   ),
   readJson("config/m2-current-channel-generative.v0.2.json"),
@@ -66,6 +73,7 @@ const [
     "scripts/m2-current/run_m2_human_anchored_development.mjs"
   ),
   readText("scripts/m2-current/channel_generative_mode.mjs"),
+  readText("scripts/m2-current/materialize_human_anchored_cases.py"),
   readJson("package.json")
 ]);
 
@@ -247,32 +255,36 @@ test("PRD, evaluation contract, registry and query identities agree", () => {
   assert.equal(registry.currentRoles.approvedForAutomation, null);
 });
 
-test("readiness and impact map close public K7C without private execution", () => {
+test("readiness and impact map disclose the K7D implementation block", () => {
   assert.equal(
     readiness.status,
-    "IMPLEMENTED_NOT_EXECUTED_AWAITING_EXACT_HEAD_CI"
+    "M2_PUBLISHING_SCALE_IMPLEMENTATION_BLOCKED"
   );
   assert.equal(
     readiness.executionBoundary.privateDevelopmentExecutionConsumed,
-    false
+    true
   );
+  assert.equal(readiness.executionBoundary.privateMaterializationStarted, true);
+  assert.equal(readiness.executionBoundary.privateCapabilityReadOccurred, true);
+  assert.equal(readiness.executionBoundary.candidateFitStarted, false);
   assert.equal(readiness.executionBoundary.candidateOuterOutcomeProduced, false);
   assert.equal(impact.closureChecks.length, 8);
   assert.equal(
     impact.closureChecks.filter((entry) => entry.status === "PASS").length,
-    7
-  );
-  assert.equal(
-    impact.closureChecks.at(-1).status,
-    "PENDING_EXACT_HEAD_CI"
+    8
   );
   assert.doesNotMatch(
-    JSON.stringify({ diagnostic, readiness, impact }),
+    JSON.stringify({
+      diagnostic,
+      readiness,
+      executionClosure,
+      impact
+    }),
     /data[\\/]+private-(?:input|output)|[A-Z]:\\/iu
   );
 });
 
-test("one-time private runner is runtime-bound and remains unexecuted in K7C", () => {
+test("one-time private runner is closed after the fail-closed K7D attempt", () => {
   assert.equal(
     packageConfig.scripts["develop:m2:current:publishing-scale-channel"],
     "node --max-old-space-size=8192 "
@@ -291,15 +303,81 @@ test("one-time private runner is runtime-bound and remains unexecuted in K7C", (
     modeSource,
     /m2_publishing_scale_one_time_private_execution_already_consumed/u
   );
+  const preparationSource = modeSource.slice(
+    modeSource.indexOf(
+      "export async function prepareM2PublishingScaleRunReceipt"
+    ),
+    modeSource.indexOf(
+      "export async function runM2PublishingScalePrivateDevelopment"
+    )
+  );
+  assert.ok(
+    preparationSource.indexOf(
+      "assertPublishingScalePrivateAuthorization(config)"
+    ) < preparationSource.indexOf(
+      "M2-current-human-anchored-manifest-private-v0.1.json"
+    )
+  );
+  assert.match(
+    runnerSource,
+    /publishingScaleChannelPrivateMode[\s\S]*\["--publishing-scale-channel"\]/u
+  );
+  assert.match(
+    materializerSource,
+    /PUBLISHING_SCALE_CHANNEL_CONFIG_PATH/u
+  );
+  assert.match(materializerSource, /--publishing-scale-channel/u);
   assert.doesNotMatch(
     modeSource,
     /implementationCommit:\s*"[a-f0-9]{40}"/u
   );
   assert.equal(
     config.currentExecution.privateExecutionAuthorizationConsumed,
+    true
+  );
+  assert.equal(
+    config.authorization.oneTimePrivateDevelopmentEvaluation,
     false
   );
+  assert.equal(config.authorization.retryAuthorized, false);
+  assert.equal(config.currentExecution.candidateFitStarted, false);
   assert.equal(config.currentExecution.candidateOutputProduced, false);
+  assert.equal(
+    executionClosure.finalStatus,
+    "M2_PUBLISHING_SCALE_IMPLEMENTATION_BLOCKED"
+  );
+  assert.equal(
+    executionClosure.executionAttempt.candidateFitStarted,
+    false
+  );
+  assert.equal(
+    executionClosure.remediation.privateRetryPerformed,
+    false
+  );
+  assert.equal(
+    executionClosure.remediation.privateRetryAuthorized,
+    false
+  );
+  assert.equal(executionClosure.governance.activeCandidate, null);
+  assert.equal(executionClosure.governance.approvedForAutomation, null);
+});
+
+test("publishing-scale materialization config has a private-free self-test", () => {
+  const output = execFileSync(
+    process.execPath,
+    [
+      "scripts/run-codex-python.mjs",
+      "scripts/m2-current/materialize_human_anchored_cases.py",
+      "--publishing-scale-config-self-test"
+    ],
+    { encoding: "utf8", windowsHide: true }
+  );
+  assert.deepEqual(JSON.parse(output), {
+    experimentArmId: M2_PUBLISHING_SCALE_ARM_ID,
+    modelId: M2_PUBLISHING_SCALE_MODEL_ID,
+    privateArtifactRead: false,
+    publishingScaleConfigBoundaryValidated: true
+  });
 });
 
 async function readJson(relativePath) {

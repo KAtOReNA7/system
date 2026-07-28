@@ -61,8 +61,8 @@
     "portfolioReference": "M2-PORT-ETS01",
     "approvedForAutomation": null,
     "activeCandidate": null,
-    "blockedExperiment": "M2-EXP-CHANNEL-GENERATIVE-02",
-    "latestStateIndex": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.35.md",
+    "blockedExperiment": "M2-EXP-PUBLISHING-SCALE-CHANNEL-01",
+    "latestStateIndex": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.36.md",
     "roleConflict": false,
     "sourceAssertions": [
       {
@@ -79,9 +79,14 @@
         "source": "AGENTS.md",
         "assertion": "exact_v0_3_remains_current_development_champion_and_fallback",
         "scope": "repository_governance"
+      },
+      {
+        "source": "docs/analysis/m2-current/M2-current-publishing-scale-channel-execution-closure-v0.1.json",
+        "assertion": "publishing_scale_private_attempt_failed_closed_before_candidate_fit_and_retry_is_not_authorized",
+        "scope": "publishing_scale_channel_core_development"
       }
     ],
-    "roleInterpretationZh": "exact v0.3 是作品级现行运行回退模型；learnedGlobal 是研究比较基线，并且只在渠道生成实验内部承担冻结 G0 外层配对比较基线。渠道时间生成模型 v0.2 的独立核心未形成候选结果，不构成模型晋升冲突。"
+    "roleInterpretationZh": "作品发生—金额校准模型 v0.3 是作品级现行运行回退模型；人工锚定可学习全局模型是研究比较基线。出版行业适配渠道核心的唯一一次私有命令在候选拟合前因实现接线错误 fail-closed，没有形成候选结果；活动候选与自动化批准继续为空。"
   },
   "currentEvaluationContract": {
     "version": "2.2",
@@ -1658,19 +1663,41 @@
       "inputSummaryZh": "只使用 forecast origin 已观察的分成现金、canonical channel identity 和冻结变现机制；三级分类与授权关系因缺少历史 as-of 权威而仅报告。",
       "codeEntrypoints": ["src/domain/m2Current/publishingScaleChannelCore.js"],
       "configEntrypoints": ["config/m2-current-publishing-scale-channel.v0.1.json", "config/m2-publishing-scale-statistical-support.v1.json"],
-      "evidenceRefs": ["docs/analysis/m2-current/M2-current-publishing-scale-channel-public-diagnostic-v0.1.json", "docs/analysis/m2-current/M2-current-publishing-scale-channel-readiness-v0.1.json", "docs/analysis/m2-current/M2-publishing-scale-threshold-impact-map-v1.json", "docs/analysis/m2-current/M2-publishing-scale-training-side-learning-study-v1.json"],
+      "evidenceRefs": ["docs/analysis/m2-current/M2-current-publishing-scale-channel-public-diagnostic-v0.1.json", "docs/analysis/m2-current/M2-current-publishing-scale-channel-readiness-v0.1.json", "docs/analysis/m2-current/M2-current-publishing-scale-channel-execution-closure-v0.1.json", "docs/analysis/m2-current/M2-publishing-scale-threshold-impact-map-v1.json", "docs/analysis/m2-current/M2-publishing-scale-training-side-learning-study-v1.json"],
       "predecessorIds": ["M2-CHAN-GEN02"],
       "successorIds": [],
-      "currentRole": "development_candidate_implemented_not_executed",
-      "evidenceStatus": "K7C_implemented_public_synthetic_verified_private_outer_not_read",
-      "operationalStatus": "awaiting_exact_head_ci_before_one_time_private_development_execution",
+      "currentRole": "implementation_blocked_no_candidate_outcome",
+      "evidenceStatus": "K7D_private_materialization_failed_closed_before_candidate_fit_no_candidate_outcome",
+      "operationalStatus": "implementation_blocked_private_authorization_consumed_no_retry",
       "automationAuthorized": false,
       "productionImported": false,
       "finalHoldoutOpened": false,
-      "developmentWindowReuse": "authorized_once_only_after_K7C_exact_head_linux_windows_ci",
-      "limitationsZh": ["当前没有 DIRECT_FIT 节点", "三级分类与授权关系为 REPORT_ONLY", "尚未执行私有 outer development evaluation", "不具备自动化、生产或发布权限"],
+      "developmentWindowReuse": "one_time_private_attempt_consumed_before_candidate_fit_retry_not_authorized",
+      "limitationsZh": ["当前没有 DIRECT_FIT 节点", "三级分类与授权关系为 REPORT_ONLY", "私有物化在候选拟合前因实现接线错误 fail-closed，没有候选预测或评价指标", "本次授权已消耗且未授权重试", "不具备自动化、生产或发布权限"],
       "registryReviewRequired": false,
-      "evaluations": []
+      "evaluations": [
+        {
+          "evaluationId": "eval-psc01-k7d-implementation-block",
+          "datasetVersion": "M2-publishing-scale-channel-v0.1-private-attempt-no-candidate-output",
+          "cashAuthority": "user_reviewed_sales_share_workbook_membership",
+          "populationId": "publishing-scale-private-materialization-blocked-before-candidate-fit",
+          "comparableGroupId": "CG-PSC01-IMPLEMENTATION-BLOCK-NO-CANDIDATE-OUTCOME",
+          "caseCount": 0,
+          "workCount": 0,
+          "originCount": 0,
+          "horizons": [3, 6, 12, 18, 24, 36],
+          "target": "future_sales_share_development_modelable_cash",
+          "grain": "work_origin_horizon_channel_month",
+          "WAPE": null,
+          "signedBias": null,
+          "baselineModelId": null,
+          "relativeWape": null,
+          "materiality": 0.01,
+          "independentEvidence": false,
+          "reportRef": "docs/analysis/m2-current/M2-current-publishing-scale-channel-execution-closure-v0.1.json",
+          "resultStatus": "M2_PUBLISHING_SCALE_IMPLEMENTATION_BLOCKED"
+        }
+      ]
     },
     {
       "stableModelId": "M2-WORK-C1TE01",
@@ -2104,10 +2131,10 @@
           "armId": "CORE",
           "displayNameZh": "出版行业适配的渠道月度发生—条件金额核心",
           "modelId": "M2-CHAN-PSC01",
-          "executionStatus": "IMPLEMENTED_NOT_EXECUTED_AWAITING_EXACT_HEAD_CI"
+          "executionStatus": "PRIVATE_MATERIALIZATION_FAILED_CLOSED_BEFORE_CANDIDATE_FIT_NO_RETRY_AUTHORIZED"
         }
       ],
-      "evidenceRefs": ["docs/analysis/m2-current/M2-current-publishing-scale-channel-readiness-v0.1.json", "docs/analysis/m2-current/M2-publishing-scale-threshold-impact-map-v1.json"]
+      "evidenceRefs": ["docs/analysis/m2-current/M2-current-publishing-scale-channel-readiness-v0.1.json", "docs/analysis/m2-current/M2-current-publishing-scale-channel-execution-closure-v0.1.json", "docs/analysis/m2-current/M2-publishing-scale-threshold-impact-map-v1.json"]
     },
     {
       "experimentId": "M2-EXP-ARCHIVE-C1-C3",
@@ -2188,6 +2215,7 @@
     {"comparableGroupId": "CG-WORK-SS-HA-STRICT-74320", "comparisonClass": "REUSED_DEVELOPMENT_WINDOW", "target": "future_sales_share_cash", "cashAuthority": "user_reviewed_sales_share_workbook_membership", "populationId": "human-anchored-strict-2650w-74320c", "horizons": [3, 6, 12, 18, 24], "grain": "work_origin_horizon", "asOfContract": "strict_rolling_mature_earlier_labels", "actualDefinition": "sales_share_cash_actual_only", "evaluationFamily": "human_anchored_strict"},
     {"comparableGroupId": "CG-WORK-SS-OVERLAP-5203-H36", "comparisonClass": "SAME_INTERSECTION_COMPARABLE", "target": "future_sales_share_cash", "cashAuthority": "user_reviewed_sales_share_workbook_membership", "populationId": "human-anchored-exact-v03-intersection-5203c", "horizons": [36], "grain": "work_origin_horizon", "asOfContract": "same_work_fold_selection_reused_without_outer_metric_tuning", "actualDefinition": "sales_share_cash_actual_only", "evaluationFamily": "same_case_overlap_diagnostic"},
     {"comparableGroupId": "CG-G1-BLOCKED-NO-CANDIDATE-OUTCOME", "comparisonClass": "STANDALONE_ONLY", "target": "future_sales_share_development_modelable_cash", "cashAuthority": "user_reviewed_sales_share_workbook_membership", "populationId": "G1-primary-outer0-inner-eligibility-no-candidate-output", "horizons": [36], "grain": "work_origin_horizon_channel_month", "asOfContract": "primary_outer_fold_0_inner_selection_before_candidate_prediction", "actualDefinition": "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01", "evaluationFamily": "G1_inner_selection_eligibility_block"},
+    {"comparableGroupId": "CG-PSC01-IMPLEMENTATION-BLOCK-NO-CANDIDATE-OUTCOME", "comparisonClass": "STANDALONE_ONLY", "target": "future_sales_share_development_modelable_cash", "cashAuthority": "user_reviewed_sales_share_workbook_membership", "populationId": "publishing-scale-private-materialization-blocked-before-candidate-fit", "horizons": [3, 6, 12, 18, 24, 36], "grain": "work_origin_horizon_channel_month", "asOfContract": "K7C_exact_head_ci_then_one_time_K7D_private_materialization_attempt", "actualDefinition": "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01", "evaluationFamily": "publishing_scale_K7D_implementation_block_before_candidate_fit"},
     {"comparableGroupId": "CG-WORK-HISTORICAL-C1", "comparisonClass": "DIFFERENT_TARGET_NOT_COMPARABLE", "target": "historical_target", "cashAuthority": "historical_target_authority", "populationId": "historical-C1-population", "horizons": [3, 6, 12, 18, 24], "grain": "work_origin_horizon", "asOfContract": "historical_frozen", "actualDefinition": "historical_target_actual", "evaluationFamily": "archive_C1"},
     {"comparableGroupId": "CG-WORK-LEGACY-BUYOUT-C2R", "comparisonClass": "DIFFERENT_TARGET_NOT_COMPARABLE", "target": "legacy_buyout_target", "cashAuthority": "legacy_buyout_target", "populationId": "historical-C2R-population", "horizons": [], "grain": "work_origin_horizon", "asOfContract": "historical_frozen", "actualDefinition": "legacy_buyout_target_actual", "evaluationFamily": "archive_C2R"},
     {"comparableGroupId": "CG-WORK-ARCHIVE-FORMAL-7851", "comparisonClass": "REUSED_DEVELOPMENT_WINDOW", "target": "formal_cash", "cashAuthority": "formal_cash_pre_manual_partition", "populationId": "legacy-machine-route-824w-7851c", "horizons": [3, 6, 12, 18, 24], "grain": "work_origin_horizon", "asOfContract": "historical_frozen", "actualDefinition": "formal_cash_actual_pre_manual_partition", "evaluationFamily": "archive_C2_C3"}

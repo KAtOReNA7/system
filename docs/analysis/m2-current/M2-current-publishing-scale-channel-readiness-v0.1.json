@@ -4,7 +4,7 @@
   "displayNameEn": "Publishing-Scale Channel Monthly Occurrence × Conditional Amount Core",
   "modelId": "M2-CHAN-PSC01",
   "experimentArmId": "M2-EXP-PUBLISHING-SCALE-CHANNEL-01/CORE",
-  "status": "IMPLEMENTED_NOT_EXECUTED_AWAITING_EXACT_HEAD_CI",
+  "status": "M2_PUBLISHING_SCALE_IMPLEMENTATION_BLOCKED",
   "supportContractId": "M2-PUBLISHING-SCALE-SUPPORT-01",
   "supportContractStatus": "FROZEN_BEFORE_NEW_CANDIDATE_OUTER_OUTCOME",
   "implementation": {
@@ -302,12 +302,16 @@
     "originObservedCanonicalChannelIdentityOnly": true
   },
   "executionBoundary": {
-    "privateDevelopmentExecutionAuthorizedOnceAfterExactHeadCi": true,
-    "privateDevelopmentExecutionConsumed": false,
+    "privateDevelopmentExecutionAuthorizedOnceAfterExactHeadCi": false,
+    "privateDevelopmentExecutionConsumed": true,
+    "privateMaterializationStarted": true,
+    "privateCapabilityReadOccurred": true,
+    "candidateFitStarted": false,
     "candidateOuterOutcomeProduced": false,
     "finalHoldoutOpened": false,
     "productionModified": false,
     "operationalFallbackModified": false,
+    "retryAuthorized": false,
     "mergeAuthorized": false
   },
   "impactMap": "docs/analysis/m2-current/M2-publishing-scale-threshold-impact-map-v1.json"

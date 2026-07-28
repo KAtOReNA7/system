@@ -1,6 +1,6 @@
 {
   "schema": "m2.publishing_scale.threshold_impact_map.v1",
-  "status": "K7C_IMPLEMENTATION_CLOSED_NO_PRIVATE_OUTER_OUTCOME",
+  "status": "K7D_IMPLEMENTATION_BLOCKED_BEFORE_CANDIDATE_FIT_AUTHORIZATION_CONSUMED",
   "modelId": "M2-CHAN-PSC01",
   "experimentArmId": "M2-EXP-PUBLISHING-SCALE-CHANNEL-01/CORE",
   "supportContractId": "M2-PUBLISHING-SCALE-SUPPORT-01",
@@ -12,8 +12,10 @@
     "canonicalCore": "src/domain/m2Current/publishingScaleChannelCore.js",
     "runner": "scripts/m2-current/run_m2_human_anchored_development.mjs",
     "modeImplementation": "scripts/m2-current/channel_generative_mode.mjs",
+    "materializer": "scripts/m2-current/materialize_human_anchored_cases.py",
     "publicDiagnostic": "docs/analysis/m2-current/M2-current-publishing-scale-channel-public-diagnostic-v0.1.json",
     "readinessReport": "docs/analysis/m2-current/M2-current-publishing-scale-channel-readiness-v0.1.json",
+    "executionClosure": "docs/analysis/m2-current/M2-current-publishing-scale-channel-execution-closure-v0.1.json",
     "registry": "config/m2-model-registry.v1.json",
     "catalog": "docs/analysis/m2-current/M2-model-catalog-and-scorecard-v1.md",
     "scopedRules": "src/domain/m2Current/AGENTS.md"
@@ -87,9 +89,11 @@
     {
       "checkId": "K7C-IMPACT-08",
       "requirement": "Linux, Windows, clean clone, no-real-data and private isolation",
-      "status": "PENDING_EXACT_HEAD_CI",
+      "status": "PASS",
       "evidence": [
         ".github/workflows/ci.yml",
+        "GitHub Actions run 30355660975: verify SUCCESS",
+        "GitHub Actions run 30355660975: verify-windows SUCCESS",
         "npm run check:no-real-data",
         "npm run smoke:portable-start"
       ]
@@ -105,8 +109,23 @@
   },
   "executionBoundary": {
     "newCandidateOuterOutcomeRead": false,
-    "privateDevelopmentExecutionStarted": false,
+    "privateDevelopmentExecutionStarted": true,
+    "privateCapabilityReadOccurred": true,
+    "candidateFitStarted": false,
+    "candidateOutputProduced": false,
+    "privateExecutionAuthorizationConsumed": true,
+    "privateRetryAuthorized": false,
     "sealedHoldoutOpened": false,
     "productionModified": false
+  },
+  "k7dClosure": {
+    "finalStatus": "M2_PUBLISHING_SCALE_IMPLEMENTATION_BLOCKED",
+    "failureStage": "PRIVATE_MATERIALIZATION_CONFIG_VALIDATION_BEFORE_CANDIDATE_FIT",
+    "rootCause": "new_runner_invoked_historical_channel_generative_materialization_mode",
+    "rawCandidateEvaluationProduced": false,
+    "implementationRoutingRepairedAfterFailure": true,
+    "repairValidatedWithPublicSyntheticDataOnly": true,
+    "privateRerunPerformed": false,
+    "newAuthorizationRequiredForAnyFutureAttempt": true
   }
 }

@@ -338,10 +338,11 @@ test("missing publishing-scale execution inputs block only that private capabili
     "v2.2-development-modelable-scope-reconciliation",
     "v2.2-reversal-allocation-ledger",
     "v2.2-development-activation-receipt",
+    "publishing-scale-private-execution-receipt",
   ]);
   assert.match(
     result.authorization,
-    /USER_AUTHORIZED_ONE_TIME_PUBLISHING_SCALE_PRIVATE_DEVELOPMENT/u,
+    /CONSUMED_M2_PUBLISHING_SCALE_PRIVATE_EXECUTION_IMPLEMENTATION_BLOCKED_NO_RETRY/u,
   );
 });
 

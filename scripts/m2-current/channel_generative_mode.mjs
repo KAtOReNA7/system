@@ -85,6 +85,10 @@ export async function runM2PublishingScaleChannelPublicDiagnostic({
     support,
     diagnostic
   });
+  const executionClosure = buildPublishingScaleExecutionClosure({
+    config,
+    readiness
+  });
   const outputs = [
     [
       path.join(root, config.publicDiagnosticOutput),
@@ -97,6 +101,14 @@ export async function runM2PublishingScaleChannelPublicDiagnostic({
     [
       path.join(root, config.publicReadinessReport),
       renderPublishingScaleReadiness(readiness)
+    ],
+    [
+      path.join(root, config.publicExecutionClosureOutput),
+      JSON.stringify(executionClosure, null, 2) + "\n"
+    ],
+    [
+      path.join(root, config.publicExecutionClosureReport),
+      renderPublishingScaleExecutionClosure(executionClosure)
     ]
   ];
   if (verify) {
@@ -208,13 +220,7 @@ export async function prepareM2PublishingScaleRunReceipt({
   command,
   environment
 }) {
-  const [
-    configText,
-    supportText,
-    sourceText,
-    baseManifestText,
-    frozenManifestText
-  ] = await Promise.all([
+  const [configText, supportText, sourceText] = await Promise.all([
     readFile(path.join(root, PUBLISHING_SCALE_CONFIG_PATH), "utf8"),
     readFile(path.join(root, PUBLISHING_SCALE_SUPPORT_PATH), "utf8"),
     readFile(
@@ -223,7 +229,23 @@ export async function prepareM2PublishingScaleRunReceipt({
         "src/domain/m2Current/publishingScaleChannelCore.js"
       ),
       "utf8"
-    ),
+    )
+  ]);
+  const config = JSON.parse(configText);
+  const support = JSON.parse(supportText);
+  validateM2PublishingScaleConfig(config, support);
+  assertPublishingScalePrivateAuthorization(config);
+  const receiptPath = path.join(
+    privateDirectory,
+    config.privateOutputs.runReceipt
+  );
+  const previous = await readOptionalJson(receiptPath);
+  if (previous !== null) {
+    throw new Error(
+      "m2_publishing_scale_one_time_private_execution_already_consumed"
+    );
+  }
+  const [baseManifestText, frozenManifestText] = await Promise.all([
     readFile(
       path.join(
         privateDirectory,
@@ -239,24 +261,6 @@ export async function prepareM2PublishingScaleRunReceipt({
       "utf8"
     )
   ]);
-  const config = JSON.parse(configText);
-  const support = JSON.parse(supportText);
-  validateM2PublishingScaleConfig(config, support);
-  assertPublishingScalePrivateAuthorization(config);
-  const receiptPath = path.join(
-    privateDirectory,
-    config.privateOutputs.runReceipt
-  );
-  const previous = await readOptionalJson(receiptPath);
-  if (
-    previous?.status === "COMPLETED"
-    || previous?.candidateExecutionStarted === true
-    || previous?.candidateExecuted === true
-  ) {
-    throw new Error(
-      "m2_publishing_scale_one_time_private_execution_already_consumed"
-    );
-  }
   const receipt = {
     schema: "m2.current.publishing_scale_channel_run_receipt_private.v0.1",
     tracked: false,
@@ -1625,7 +1629,7 @@ function buildPublishingScaleReadiness({
     displayNameEn: config.displayNameEn,
     modelId: M2_PUBLISHING_SCALE_MODEL_ID,
     experimentArmId: M2_PUBLISHING_SCALE_ARM_ID,
-    status: "IMPLEMENTED_NOT_EXECUTED_AWAITING_EXACT_HEAD_CI",
+    status: config.currentExecution.status,
     supportContractId: support.contractId,
     supportContractStatus: support.status,
     implementation: {
@@ -1673,12 +1677,26 @@ function buildPublishingScaleReadiness({
       originObservedCanonicalChannelIdentityOnly: true
     },
     executionBoundary: {
-      privateDevelopmentExecutionAuthorizedOnceAfterExactHeadCi: true,
-      privateDevelopmentExecutionConsumed: false,
-      candidateOuterOutcomeProduced: false,
-      finalHoldoutOpened: false,
-      productionModified: false,
-      operationalFallbackModified: false,
+      privateDevelopmentExecutionAuthorizedOnceAfterExactHeadCi:
+        config.authorization.oneTimePrivateDevelopmentEvaluation
+          === "AUTHORIZED_AFTER_K7C_EXACT_HEAD_LINUX_WINDOWS_CI",
+      privateDevelopmentExecutionConsumed:
+        config.currentExecution.privateExecutionAuthorizationConsumed,
+      privateMaterializationStarted:
+        config.currentExecution.privateMaterializationStarted,
+      privateCapabilityReadOccurred:
+        config.currentExecution.privateCapabilityReadOccurred,
+      candidateFitStarted:
+        config.currentExecution.candidateFitStarted,
+      candidateOuterOutcomeProduced:
+        config.currentExecution.candidateOutputProduced,
+      finalHoldoutOpened:
+        config.currentExecution.finalHoldoutOpened,
+      productionModified:
+        config.currentExecution.productionModified,
+      operationalFallbackModified:
+        config.currentExecution.operationalFallbackModified,
+      retryAuthorized: config.authorization.retryAuthorized,
       mergeAuthorized: false
     },
     impactMap:
@@ -1689,12 +1707,13 @@ function buildPublishingScaleReadiness({
 
 function renderPublishingScaleReadiness(result) {
   const mechanisms = result.supportTiers.mechanisms;
-  return `# ${result.displayNameZh}：K7C 实现就绪报告
+  return `# ${result.displayNameZh}：当前实现与执行闭环
 
 - 英文名：${result.displayNameEn}
 - 稳定模型 ID：\`${result.modelId}\`
 - 实验臂：\`${result.experimentArmId}\`
-- 当前状态：已实现但尚未执行私有开发评价（\`${result.status}\`）
+- 当前状态：私有物化在候选拟合前因实现接线错误 fail-closed
+  （\`${result.status}\`）
 - 支持合同：\`${result.supportContractId}\`
 
 ## 实现结果
@@ -1720,9 +1739,10 @@ positive works、work-cluster ESS、现金 ESS、集中度、支持层级、连�
 
 三级分类和 work-platform 授权关系缺少历史 as-of 字段，因此保持
 \`REPORT_ONLY\`；只允许使用 forecast origin 已观察到的 canonical channel
-identity，不回填 current-only 分类或授权。K7C 只运行了公开 synthetic diagnostic，
-未读取新候选 outer outcome；一次性 private development execution 必须等待本提交的
-exact-head Linux/Windows CI 成功后才能执行。
+identity，不回填 current-only 分类或授权。K7C exact-head Linux/Windows CI 已通过；
+K7D 唯一一次私有命令已启动物化并读取 capability-scoped 输入，但在候选拟合前
+fail-closed。没有候选预测、候选评价、bootstrap 或 oracle 结果。本次授权已消耗，
+未授权重试。
 
 ## 公开 synthetic 验证
 
@@ -1733,6 +1753,116 @@ exact-head Linux/Windows CI 成功后才能执行。
 - signed bias：${number(result.syntheticVerification.workTotal.signedBias)}
 - private artifact read：${result.syntheticVerification.privateArtifactRead}
 - candidate outer outcome read：${result.syntheticVerification.candidateOuterOutcomeRead}
+`;
+}
+
+function buildPublishingScaleExecutionClosure({ config, readiness }) {
+  return {
+    schema:
+      "m2.current.publishing_scale_channel_execution_closure_public.v0.1",
+    displayNameZh: config.displayNameZh,
+    displayNameEn: config.displayNameEn,
+    modelId: M2_PUBLISHING_SCALE_MODEL_ID,
+    experimentArmId: M2_PUBLISHING_SCALE_ARM_ID,
+    finalStatus: config.currentExecution.status,
+    executionAttempt: {
+      exactHeadPreflightPassed: true,
+      pullRequestNumber: 29,
+      k7cLinuxCiPassed: true,
+      k7cWindowsCiPassed: true,
+      privateMaterializationStarted:
+        config.currentExecution.privateMaterializationStarted,
+      privateCapabilityReadOccurred:
+        config.currentExecution.privateCapabilityReadOccurred,
+      failureStage: config.currentExecution.failureStage,
+      failureCode: config.currentExecution.failureCode,
+      candidateFitStarted: config.currentExecution.candidateFitStarted,
+      candidateOutputProduced:
+        config.currentExecution.candidateOutputProduced,
+      evaluatedCandidateIds:
+        config.currentExecution.evaluatedCandidateIds
+    },
+    requestedEvaluationAvailability: {
+      primary: "NOT_PRODUCED",
+      strict: "NOT_PRODUCED",
+      horizon: "NOT_PRODUCED",
+      timeBlock: "NOT_PRODUCED",
+      topRevenue: "NOT_PRODUCED",
+      bias: "NOT_PRODUCED",
+      mae: "NOT_PRODUCED",
+      medianAbsoluteError: "NOT_PRODUCED",
+      occurrence: "NOT_PRODUCED",
+      conditionalAmount: "NOT_PRODUCED",
+      ranking: "NOT_PRODUCED",
+      workClusterBootstrap2000: "NOT_PRODUCED",
+      forecastabilityOracle: "NOT_PRODUCED"
+    },
+    rootCause: {
+      class: "IMPLEMENTATION_MODE_ROUTING_MISMATCH",
+      explanation:
+        "the new publishing-scale runner invoked the historical "
+        + "channel-generative materialization mode, whose consumed "
+        + "historical authorization correctly failed closed before "
+        + "the new model could fit",
+      dataAuthorityFailure: false,
+      statisticalSupportFailure: false,
+      rawCandidateGateFailure: false
+    },
+    remediation: {
+      publishingScaleMaterializationModeSeparated: true,
+      historicalMaterializationModePreserved: true,
+      materializationFailureReceiptAutomatic: true,
+      publicSyntheticValidationOnlyAfterRepair: true,
+      privateRetryPerformed: false,
+      privateRetryAuthorized: false,
+      newAuthorizationAndNewExactHeadCiRequiredForAnyFutureAttempt: true
+    },
+    governance: {
+      privateExecutionAuthorizationConsumed:
+        readiness.executionBoundary.privateDevelopmentExecutionConsumed,
+      activeCandidate: null,
+      approvedForAutomation: null,
+      operationalFallbackModelId: "M2-WORK-OA03",
+      operationalFallbackModified: false,
+      finalHoldoutOpened: false,
+      productionModified: false,
+      providerUsed: false,
+      databaseUsed: false,
+      laterOriginOpened: false,
+      mergeAuthorized: false
+    },
+    privacy: {
+      privateRowDataIncluded: false,
+      privatePathIncluded: false,
+      privateDigestIncluded: false
+    }
+  };
+}
+
+function renderPublishingScaleExecutionClosure(result) {
+  return `# ${result.displayNameZh}：K7D 一次性执行闭环
+
+- 最终状态：出版行业规模适配实现阻断（\`${result.finalStatus}\`）
+- 模型：${result.displayNameZh}（${result.displayNameEn}，\`${result.modelId}\`）
+- 实验臂：出版行业规模适配渠道核心开发的核心臂
+  （\`${result.experimentArmId}\`）
+
+K7C 的精确提交、Draft PR #29 与 Linux/Windows CI 前置核验均通过。K7D 唯一一次
+私有命令随后启动 capability-scoped 物化；由于新 runner 误调用历史渠道时间生成模型
+v0.2 的物化模式，历史已消耗授权的边界校验正确 fail-closed。失败发生在候选拟合前。
+
+因此没有生成 raw candidate、primary/strict 结果、分 horizon/time block/top revenue
+结果、bias/MAE/median AE、occurrence/conditional amount/ranking、2,000 次作品聚类
+bootstrap 或 forecastability/oracle 诊断。不能把本次结果解释为模型通过或模型失败。
+
+实现已修复为独立的 publishing-scale 物化入口，并补齐物化阶段自动失败收据；历史
+物化入口未改写。修复后只运行公开 synthetic 验证。本次私有授权已消耗且未授权重试；
+未来若要再次执行，必须由用户提供新的明确授权，并重新经过新提交的精确
+Linux/Windows CI。
+
+作品发生—金额校准模型 v0.3（Occurrence-Amount Calibration v0.3，
+\`M2-WORK-OA03\`）继续是现行运行回退模型；活动候选和自动化批准均为空。final
+holdout、production、provider、database、later-origin、release 与 PR 合并均未打开。
 `;
 }
 
@@ -2303,6 +2433,10 @@ function assertPublishingScalePrivateAuthorization(config) {
     || config?.authorization?.database !== false
     || config?.authorization?.production !== false
     || config?.authorization?.release !== false
+    || config?.authorization?.retryAuthorized !== true
+    || config?.currentExecution?.privateExecutionAuthorizationConsumed
+      !== false
+    || config?.currentExecution?.candidateOutputProduced !== false
   ) {
     throw new Error("m2_publishing_scale_private_authorization_invalid");
   }

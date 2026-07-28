@@ -16,7 +16,7 @@
     "source": "current_user_attachment_runtime_bound",
     "coreImplementation": true,
     "syntheticValidation": true,
-    "oneTimePrivateDevelopmentEvaluation": "AUTHORIZED_AFTER_K7C_EXACT_HEAD_LINUX_WINDOWS_CI",
+    "oneTimePrivateDevelopmentEvaluation": false,
     "authorizedModelId": "M2-CHAN-PSC01",
     "authorizedArmId": "M2-EXP-PUBLISHING-SCALE-CHANNEL-01/CORE",
     "candidateOuterOutcomeReadBeforeK7CExactHeadCi": false,
@@ -30,14 +30,23 @@
     "automation": false,
     "production": false,
     "release": false,
-    "mergePr": false
+    "mergePr": false,
+    "closureStatus": "CONSUMED_WITH_IMPLEMENTATION_BLOCK_BEFORE_CANDIDATE_FIT",
+    "retryAuthorized": false
   },
   "currentExecution": {
-    "status": "IMPLEMENTED_NOT_EXECUTED_AWAITING_EXACT_HEAD_CI",
-    "privateExecutionAuthorizationConsumed": false,
+    "status": "M2_PUBLISHING_SCALE_IMPLEMENTATION_BLOCKED",
+    "privateExecutionAuthorizationConsumed": true,
+    "privateMaterializationStarted": true,
+    "privateCapabilityReadOccurred": true,
+    "failureStage": "PRIVATE_MATERIALIZATION_CONFIG_VALIDATION_BEFORE_CANDIDATE_FIT",
+    "failureCode": "CHANNEL_GENERATIVE_AUTHORIZATION_OR_DATA_BOUNDARY_DIFFERS",
+    "candidateFitStarted": false,
     "candidateOutputProduced": false,
     "evaluatedCandidateIds": [],
-    "operationalFallbackModified": false
+    "operationalFallbackModified": false,
+    "finalHoldoutOpened": false,
+    "productionModified": false
   },
   "dataContract": {
     "cashAuthority": "user_reviewed_sales_share_workbook_membership",
@@ -309,6 +318,8 @@
   "publicDiagnosticOutput": "docs/analysis/m2-current/M2-current-publishing-scale-channel-public-diagnostic-v0.1.json",
   "publicReadinessOutput": "docs/analysis/m2-current/M2-current-publishing-scale-channel-readiness-v0.1.json",
   "publicReadinessReport": "docs/analysis/m2-current/M2-current-publishing-scale-channel-readiness-v0.1.md",
+  "publicExecutionClosureOutput": "docs/analysis/m2-current/M2-current-publishing-scale-channel-execution-closure-v0.1.json",
+  "publicExecutionClosureReport": "docs/analysis/m2-current/M2-current-publishing-scale-channel-execution-closure-v0.1.md",
   "publicDevelopmentOutput": "docs/analysis/m2-current/M2-current-publishing-scale-channel-development-v0.1.json",
   "publicDevelopmentReport": "docs/analysis/m2-current/M2-current-publishing-scale-channel-development-v0.1.md",
   "publicForecastabilityOutput": "docs/analysis/m2-current/M2-current-publishing-scale-channel-forecastability-v0.1.json",

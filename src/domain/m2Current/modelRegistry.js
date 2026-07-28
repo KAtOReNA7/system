@@ -549,10 +549,22 @@ function renderCurrentRoles(registry) {
     return `- ${zh}（${en}）：${model.displayNameZh}（`
       + `${model.displayNameEn}，${code(id)}）。`;
   });
-  rows.push(
-    `- 阻断实验：${code(registry.currentRoles.blockedExperiment)}`
-      + "；这是前置条件阻断，不是已执行失败。"
-  );
+  if (
+    registry.currentRoles.blockedExperiment
+      === "M2-EXP-PUBLISHING-SCALE-CHANNEL-01"
+  ) {
+    rows.push(
+      "- 当前阻断实验：出版行业规模适配渠道核心开发\n"
+        + "  （`M2-EXP-PUBLISHING-SCALE-CHANNEL-01`）；"
+        + "私有物化已启动，但在候选拟合前因实现\n"
+        + "  接线错误 fail-closed，没有形成候选结果。"
+    );
+  } else {
+    rows.push(
+      `- 阻断实验：${code(registry.currentRoles.blockedExperiment)}`
+        + "；这是前置条件阻断，不是已执行失败。"
+    );
+  }
   return rows;
 }
 
@@ -617,6 +629,8 @@ function roleZh(role) {
     rejected_nested_layer: "已拒绝嵌套层",
     failed_channel_development_model: "已执行失败渠道模型",
     blocked_model_family_no_candidate_outcome: "阻断且无候选结果",
+    implementation_blocked_no_candidate_outcome:
+      "实现阻断且无候选结果",
     archive_only_failed_model: "仅历史审计且已失败"
   }[role] ?? "登记角色";
 }
@@ -633,6 +647,9 @@ function comparisonClassZh(value) {
 }
 
 function resultStatusZh(value) {
+  if (value === "M2_PUBLISHING_SCALE_IMPLEMENTATION_BLOCKED") {
+    return "实现阻断且无候选结果";
+  }
   if (/NOT_EXECUTED/u.test(value)) {
     return "尚未执行";
   }

@@ -56,6 +56,9 @@ This directory is the only implementation home for current M2 model logic.
 - Extend the existing human-anchored materializer and runner modes. Do not
   create a second production loader, route, API, runtime, or duplicated
   historical runner.
+- 出版行业适配渠道核心的 K7D 一次性私有授权已在候选拟合前的实现阻断中消耗。
+  未获新的明确授权、独立新收据和新 exact-head Linux/Windows CI 前，不得重跑、
+  覆盖失败收据或把公开 synthetic 验证解释为私有候选结果。
 
 ## Evaluation contract rules
 

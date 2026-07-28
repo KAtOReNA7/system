@@ -202,7 +202,7 @@ Model Registry 当前登记 27 个模型、12 个实验、13 个可比组和 40 
 | 生命周期五状态候选（Lifecycle-Aware Five-State Challenger，`M2-EXP-LIFECYCLE-AWARE-01`） | raw 失败、后验收益微小（`TRUE_RAW_FAILURE_TRIVIAL_POSTHOC_GAIN`） | raw 候选失败；仅复苏路由不足 materiality，不能反称模型成功。 |
 | 渠道倍率专家 v0.1（Channel Scalar Experts v0.1，`M2-EXP-CHANNEL-EXPERTS-01`） | 主窗和严格窗真实失败（`TRUE_PRIMARY_AND_STRICT_FAILURE`） | 两个核心可比窗均明显恶化。 |
 | 渠道时间生成 v0.2（Channel Generative v0.2，`M2-EXP-CHANNEL-GENERATIVE-02`） | 前置条件阻断、未执行（`BLOCKED_NOT_EXECUTED_NO_MODEL_CONCLUSION`） | 只能判定未执行，不能判定候选优劣。 |
-| 出版行业规模适配渠道核心开发（Publishing-Scale Channel Core Development，`M2-EXP-PUBLISHING-SCALE-CHANNEL-01`） | 已实现但未执行（`IMPLEMENTED_NOT_EXECUTED_AWAITING_EXACT_HEAD_CI`） | 已绑定统计支持合同并通过公开 synthetic 验证；尚未读取私有 outer outcome，不能判定候选优劣。 |
+| 出版行业规模适配渠道核心开发（Publishing-Scale Channel Core Development，`M2-EXP-PUBLISHING-SCALE-CHANNEL-01`） | 候选拟合前实现阻断、无模型结论（`IMPLEMENTATION_BLOCKED_BEFORE_CANDIDATE_FIT_NO_MODEL_CONCLUSION`） | 私有物化已启动，但因实现接线错误在候选拟合前 fail-closed；没有候选预测或评价指标。一次性授权已消耗，未授权重试。 |
 | 历史冻结开发活动（Archived C1-C3 Development Campaign，`M2-EXP-ARCHIVE-C1-C3`） | 历史目标失败（`ARCHIVED_HISTORICAL_TARGET_FAILURES`） | 保留追溯；不同目标/权威，不能与当前分成现金直接排名。 |
 
 “无法提高总体 WAPE/bias”因此至少有四种不同含义：

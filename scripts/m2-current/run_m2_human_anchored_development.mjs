@@ -153,8 +153,13 @@ const materialization = spawnSync(
     ),
     ...(channelExpertsPrivateMode ? ["--channel-experts"] : []),
     ...(
-      channelGenerativePrivateMode || publishingScaleChannelPrivateMode
+      channelGenerativePrivateMode
         ? ["--channel-generative"]
+        : []
+    ),
+    ...(
+      publishingScaleChannelPrivateMode
+        ? ["--publishing-scale-channel"]
         : []
     )
   ],
@@ -166,6 +171,16 @@ const materialization = spawnSync(
   }
 );
 if (materialization.status !== 0) {
+  if (publishingScaleChannelPrivateMode) {
+    await recordM2PublishingScaleRunFailure({
+      root,
+      privateDirectory,
+      error: new Error(
+        "controlled_private_materialization_failed:"
+          + String(materialization.stderr ?? "").trim()
+      )
+    });
+  }
   if (tsbPrivateMode) {
     await runM2HumanAnchoredTsbPublicDiagnostic({
       root,

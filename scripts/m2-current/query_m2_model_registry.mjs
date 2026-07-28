@@ -69,15 +69,17 @@ function printStatus() {
   printRole("活动候选", "activeCandidate");
   printRole("自动化批准模型", "approvedForAutomation");
   console.log(
-    `阻断实验：${registry.currentRoles.blockedExperiment}`
-      + "（因前置条件不满足而阻断，不是已执行失败；"
-      + "`GENERATIVE_V02_CORE_EXECUTION_BLOCKED`）"
+    `当前阻断实验：${registry.currentRoles.blockedExperiment}`
+      + "（出版行业规模适配渠道核心的私有物化已启动，"
+      + "但在候选拟合前因实现接线错误 fail-closed；"
+      + "`M2_PUBLISHING_SCALE_IMPLEMENTATION_BLOCKED`）"
   );
   console.log(`当前状态索引：${registry.currentRoles.latestStateIndex}`);
   console.log("本次只读查询模型执行次数：0。");
   console.log(
-    "登记的本轮渠道独立核心拟合启动次数：1；"
-      + "候选外层预测行和候选评价行均为 0。"
+    "出版行业规模适配渠道核心开发的 K7D 私有物化启动次数：1；"
+      + "候选拟合启动次数、候选外层预测行和候选评价行均为 0；"
+      + "一次性授权已消耗，未授权重试。"
   );
 }
 
