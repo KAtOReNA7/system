@@ -58,8 +58,8 @@ flowchart LR
     C --> F["公开诊断与冻结证据"]
     D --> F
     E --> F
-    F -. "v2.1：最近已激活开发评价合同" .-> G["ACTIVE_FOR_DEVELOPMENT_EVALUATION_ONLY"]
-    F -. "v2.2：未解决冲销残差" .-> J["BLOCKED_UNRESOLVED_REVERSAL"]
+    F -. "v2.2：开发评价已激活，残差透明隔离" .-> G["M2_EVALUATION_V2_2_ACTIVE_FOR_DEVELOPMENT_WITH_DISCLOSED_RESIDUAL_EXCLUSION"]
+    F -. "v2.1：上一版开发评价合同" .-> J["ACTIVE_FOR_DEVELOPMENT_EVALUATION_ONLY"]
     H["Capability-scoped private 输入"] -. "仅在单独授权时" .-> B
     I["Production / Holdout / Release"] -. "保持关闭" .-> B
 ```
@@ -148,8 +148,10 @@ holdout。
 - 评价合同 v2.1 冻结复核复现第一版 WAPE/bias，并固化发生 baseline、配对排序、
   原生区间、组合不确定性和隐私/缺失状态；它没有改变模型角色或 raw failure。
 - 评价合同 v2.2 完成 2,000 次完整作品 cluster 排序 bootstrap、冲销追溯重述和
-  冻结预测标签重评分；整数守恒差为 0，但最终重述视图仍有非零未分配冲销残差，
-  因而保持 `M2_EVALUATION_V2_2_BLOCKED_UNRESOLVED_REVERSAL`。
+  冻结预测标签重评分；整数守恒差为 0。最终财务对账视图继续披露非零未分配冲销
+  残差，开发可建模标签只隔离该 residual component，当前状态为开发评价已激活并
+  披露残差隔离（`M2_EVALUATION_V2_2_ACTIVE_FOR_DEVELOPMENT_WITH_DISCLOSED_RESIDUAL_EXCLUSION`），
+  不代表 production 或 automation gate。
 - 下一轮模型开发必须等待合格 later-origin，或真实可审计、带
   `effectiveAt/availableAt` 的历史商业状态输入；不能继续同窗调参。
 
@@ -194,6 +196,19 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
 | `config/` | 模型、工具链、能力、测试与命令生命周期合同 |
 | `docs/prd/` | 产品需求权威 |
 | `docs/analysis/` | 公开脱敏分析和历史审计证据 |
+
+## 本地数据空间治理
+
+`data/` 默认不进入 Git，但其中并不都是可删除缓存。清理时必须先区分：
+
+| 类型 | 典型内容 | 处理 |
+|---|---|---|
+| 权威输入 | 原始账单、主数据、人工确认和 capability input | 保留；按能力范围备份 |
+| 冻结证据 | 预测行、评价行、manifest、receipt、digest 与失败实验结果 | 保留或做带逐文件摘要的冷归档；不能按年龄直接删除 |
+| 可再生缓存 | `data/**/node_modules`、且同目录原始 `.xlsx` 存在的 `*.xlsx.inspect.ndjson` | 可清理；删除前仍需确认没有 capability、合同或 digest 引用 |
+
+不得在 `data/` 下安装依赖。文件较大、实验失败或名称较旧，都不足以证明它可以删除；
+清理 frozen evidence 前必须先验证外部归档可恢复。
 
 ## 安全与贡献
 

@@ -4,6 +4,8 @@
 .analysis-python/
 .analysis-node-workspace/
 _recovery/
+/output/
+/tmp/
 *.tmp
 *.bak
 *.log.tmp

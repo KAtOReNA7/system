@@ -5,7 +5,7 @@
 
 1. `README.md`：面向用户的中文项目状态与开始入口；
 2. `AGENTS.md`：仓库长期协作、权限、安全和验证规则；
-3. `docs/analysis/m2-v2/M2-v2-current-state-index-v0.28.md`：最新状态索引；
+3. `docs/analysis/m2-v2/M2-v2-current-state-index-v0.36.md`：最新状态索引；
 4. `config/m2-model-registry.v1.json`：M2 模型名称、别名、角色、成绩人口和可比组；
 5. `src/domain/m2Current/AGENTS.md`：M2 canonical core 的局部长期规则。
 
