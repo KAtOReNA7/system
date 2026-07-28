@@ -325,6 +325,8 @@
   },
   "publicPreflightOutput": "docs/analysis/m2-current/M2-current-publishing-scale-channel-preflight-v0.2.json",
   "publicWiringReport": "docs/analysis/m2-current/M2-current-publishing-scale-channel-wiring-audit-v0.2.md",
+  "publicPrivateReadinessOutput": "docs/analysis/m2-current/M2-current-publishing-scale-channel-private-readiness-v0.2.json",
+  "publicPrivateReadinessReport": "docs/analysis/m2-current/M2-current-publishing-scale-channel-private-readiness-v0.2.md",
   "syntheticFixture": "test/fixtures/m2-current-channel-generative.synthetic.v0.2.json",
   "publicDiagnosticOutput": "docs/analysis/m2-current/M2-current-publishing-scale-channel-public-diagnostic-v0.1.json",
   "publicReadinessOutput": "docs/analysis/m2-current/M2-current-publishing-scale-channel-readiness-v0.1.json",

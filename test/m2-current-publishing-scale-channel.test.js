@@ -93,6 +93,10 @@ const publicPreflight = await readJson(
   "docs/analysis/m2-current/"
     + "M2-current-publishing-scale-channel-preflight-v0.2.json"
 );
+const privateReadiness = await readJson(
+  "docs/analysis/m2-current/"
+    + "M2-current-publishing-scale-channel-private-readiness-v0.2.json"
+);
 
 test("K7C active config is bound to the frozen publishing-scale contract", () => {
   assert.equal(validateM2PublishingScaleConfig(config, support), true);
@@ -517,6 +521,37 @@ test("preflight identity, materializer and receipt bindings fail closed", () => 
   assert.match(
     modeSource,
     /flag: "wx"/u
+  );
+});
+
+test("R1 readiness preserves the unopened logical execution window", () => {
+  assert.equal(
+    privateReadiness.status,
+    "READY_PENDING_R1_EXACT_HEAD_LINUX_WINDOWS_CI"
+  );
+  assert.equal(privateReadiness.modelId, M2_PUBLISHING_SCALE_MODEL_ID);
+  assert.equal(
+    privateReadiness.experimentArmId,
+    M2_PUBLISHING_SCALE_ARM_ID
+  );
+  assert.equal(
+    privateReadiness.authorizationPreparation
+      .historicalConsumedAuthorizationRewritten,
+    false
+  );
+  assert.equal(privateReadiness.executionCounters.privateArtifactRowsRead, 0);
+  assert.equal(privateReadiness.executionCounters.candidateFitStarted, false);
+  assert.equal(
+    privateReadiness.executionCounters.logicalExecutionWindowConsumed,
+    false
+  );
+  assert.equal(
+    privateReadiness.r0Evidence.githubActions.linux.status,
+    "SUCCESS"
+  );
+  assert.equal(
+    privateReadiness.r0Evidence.githubActions.windows.status,
+    "SUCCESS"
   );
 });
 
