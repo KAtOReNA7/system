@@ -15,6 +15,7 @@ import {
 } from "../scripts/m2-current/prepare_m2_publishing_scale_channel.mjs";
 import {
   authorizeAttempt,
+  readPreviousReceipts,
   recoverInterruptedPreviousReceipt,
 } from "../scripts/m2-current/publishing_scale_channel_execution.mjs";
 
@@ -135,4 +136,27 @@ test("a closed pre-evaluation pairing failure is retryable without rewriting its
   );
   assert.equal(previous.infrastructureFailureClass, null);
   assert.equal(previous.infrastructureRecoveryEligible, false);
+});
+
+test("private run receipts are ordered by attempt number rather than filename", async (t) => {
+  const directory = await mkdtemp(path.join(os.tmpdir(), "m2-psc-order-"));
+  t.after(() => rm(directory, { recursive: true, force: true }));
+  await Promise.all([
+    writeFile(
+      path.join(directory, "receipt-z-attempt-1.json"),
+      JSON.stringify({ attemptNumber: 1 }),
+      "utf8"
+    ),
+    writeFile(
+      path.join(directory, "receipt-a-attempt-2.json"),
+      JSON.stringify({ attemptNumber: 2 }),
+      "utf8"
+    )
+  ]);
+  const receipts = await readPreviousReceipts(directory, "receipt");
+  assert.deepEqual(
+    receipts.map(({ value }) => value.attemptNumber),
+    [1, 2]
+  );
+  assert.equal(receipts.at(-1).file, "receipt-a-attempt-2.json");
 });

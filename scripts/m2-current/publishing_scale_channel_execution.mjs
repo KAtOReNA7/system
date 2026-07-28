@@ -709,7 +709,7 @@ function assertMaterializerPreflight(materializer, config) {
   }
 }
 
-async function readPreviousReceipts(directory, prefix) {
+export async function readPreviousReceipts(directory, prefix) {
   let files;
   try {
     files = await readdir(directory);
@@ -719,11 +719,25 @@ async function readPreviousReceipts(directory, prefix) {
   }
   const receiptFiles = files.filter(
     (file) => file.startsWith(`${prefix}-`) && file.endsWith(".json")
-  ).sort();
-  return Promise.all(receiptFiles.map(async (file) => ({
+  );
+  const receipts = await Promise.all(receiptFiles.map(async (file) => ({
     file,
     value: JSON.parse(await readFile(path.join(directory, file), "utf8"))
   })));
+  const attemptNumbers = new Set();
+  for (const { value } of receipts) {
+    const attemptNumber = Number(value.attemptNumber);
+    if (!Number.isInteger(attemptNumber) || attemptNumber <= 0) {
+      throw new Error("m2_publishing_scale_receipt_attempt_number_invalid");
+    }
+    if (attemptNumbers.has(attemptNumber)) {
+      throw new Error("m2_publishing_scale_receipt_attempt_number_duplicate");
+    }
+    attemptNumbers.add(attemptNumber);
+  }
+  return receipts.sort((left, right) => (
+    left.value.attemptNumber - right.value.attemptNumber
+  ));
 }
 
 export async function recoverInterruptedPreviousReceipt({
