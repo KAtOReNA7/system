@@ -42,7 +42,7 @@ PUBLISHING_SCALE_SUPPORT_PATH = (
     ROOT / "config" / "m2-publishing-scale-statistical-support.v1.json"
 )
 PUBLISHING_SCALE_EXECUTION_POLICY_PATH = (
-    ROOT / "config" / "m2-publishing-scale-execution-policy.v0.2.json"
+    ROOT / "config" / "m2-publishing-scale-execution-policy.v0.3.json"
 )
 V03_PATH = (
     ROOT
@@ -62,6 +62,8 @@ def run(
     channel_experts: bool = False,
     channel_generative: bool = False,
     publishing_scale_channel: bool = False,
+    publishing_scale_prepare: bool = False,
+    preparation_output_directory: str | None = None,
     execution_authorization_file: str | None = None,
     run_receipt_file: str | None = None,
 ) -> dict[str, Any]:
@@ -74,27 +76,42 @@ def run(
         if channel_experts
         else None
     )
-    if channel_generative and publishing_scale_channel:
+    if channel_generative and (
+        publishing_scale_channel or publishing_scale_prepare
+    ):
         raise HumanAnchoredMaterializationError(
             "channel generative materialization modes are mutually exclusive"
         )
+    if publishing_scale_channel and publishing_scale_prepare:
+        raise HumanAnchoredMaterializationError(
+            "publishing-scale execution and preparation are mutually exclusive"
+        )
+    publishing_scale_mode = (
+        publishing_scale_channel or publishing_scale_prepare
+    )
     generative_config_path = (
         PUBLISHING_SCALE_CHANNEL_CONFIG_PATH
-        if publishing_scale_channel
+        if publishing_scale_mode
         else CHANNEL_GENERATIVE_CONFIG_PATH
     )
     generative_config = (
         json.loads(generative_config_path.read_text(encoding="utf-8"))
-        if channel_generative or publishing_scale_channel
+        if channel_generative or publishing_scale_mode
         else None
     )
     if generative_config is not None:
         _validate_channel_generative_config(generative_config)
-    output_dir = ROOT / (
-        generative_config["privateOutputs"]["directory"]
-        if publishing_scale_channel
-        else config["privateOutputs"]["directory"]
-    )
+    if publishing_scale_prepare:
+        output_dir = _resolve_publishing_scale_preparation_directory(
+            preparation_output_directory,
+            generative_config,
+        )
+    else:
+        output_dir = ROOT / (
+            generative_config["privateOutputs"]["directory"]
+            if publishing_scale_channel
+            else config["privateOutputs"]["directory"]
+        )
     receipt_path: Path | None = None
     publishing_scale_output_files: Mapping[str, str] | None = None
     if publishing_scale_channel:
@@ -114,6 +131,15 @@ def run(
             execution_authorization_file=execution_authorization_file,
             run_receipt_file=run_receipt_file,
         )
+    elif publishing_scale_prepare:
+        publishing_scale_output_files = {
+            key: generative_config["privateOutputs"][key]
+            for key in (
+                "primaryMonthlyCases",
+                "auxiliaryMonthlyCases",
+                "materializationManifest",
+            )
+        }
     master_config = json.loads(
         (ROOT / "config/m2-current-canonical-channel.v0.1.json").read_text(
             encoding="utf-8"
@@ -272,6 +298,7 @@ def run(
             auxiliary=auxiliary,
             history_by_key=history_by_key,
             panel=panel,
+            output_files=publishing_scale_output_files,
         )
         if receipt_path is not None:
             _update_private_receipt(
@@ -1252,7 +1279,7 @@ def _validate_publishing_scale_channel_config(
         or config.get("actualDefinitionId")
         != "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01"
         or config.get("executionPolicy")
-        != "config/m2-publishing-scale-execution-policy.v0.2.json"
+        != "config/m2-publishing-scale-execution-policy.v0.3.json"
         or config.get("materializerId")
         != "M2-MATERIALIZER-PUBLISHING-SCALE-CHANNEL-01"
         or config.get("receiptControllerId")
@@ -1306,9 +1333,9 @@ def _validate_publishing_scale_execution_policy(
 ) -> None:
     if (
         policy.get("schema")
-        != "m2.publishing_scale.execution_policy.v0.2"
+        != "m2.publishing_scale.execution_policy.v0.3"
         or policy.get("status")
-        != "USER_AUTHORIZED_RUNTIME_EXACT_HEAD_BINDING_REQUIRED"
+        != "USER_AUTHORIZED_FIRST_VALID_RAW_EVALUATION"
         or policy.get("authorizedModelId") != "M2-CHAN-PSC01"
         or policy.get("authorizedArmId")
         != "M2-EXP-PUBLISHING-SCALE-CHANNEL-01/CORE"
@@ -1325,17 +1352,49 @@ def _validate_publishing_scale_execution_policy(
         )
         is not False
         or policy.get("executionWindow", {}).get(
-            "normalPrivateExecutionMaximum"
+            "firstValidRawCandidateEvaluationMaximum"
         )
         != 1
         or policy.get("executionWindow", {}).get(
-            "infrastructureRecoveryRetryMaximum"
+            "infrastructureRetryAllowedBeforeValidEvaluation"
         )
-        != 1
+        is not True
+        or policy.get("privateArtifactPolicy", {}).get(
+            "derivedCacheMissingRequiresAutomaticRebuild"
+        )
+        is not True
+        or policy.get("privateArtifactPolicy", {}).get(
+            "historicalReceiptMissingBlocks"
+        )
+        is not False
     ):
         raise HumanAnchoredMaterializationError(
             "publishing-scale execution policy differs"
         )
+
+
+def _resolve_publishing_scale_preparation_directory(
+    relative_directory: str | None,
+    config: Mapping[str, Any],
+) -> Path:
+    if (
+        not relative_directory
+        or Path(relative_directory).is_absolute()
+        or "\\" in relative_directory
+    ):
+        raise HumanAnchoredMaterializationError(
+            "publishing-scale preparation directory invalid"
+        )
+    root = ROOT.resolve()
+    resolved = (root / relative_directory).resolve()
+    expected_root = (
+        root / config["privateOutputs"]["preparationDirectory"]
+    ).resolve()
+    if resolved == expected_root or expected_root not in resolved.parents:
+        raise HumanAnchoredMaterializationError(
+            "publishing-scale preparation directory escapes versioned root"
+        )
+    return resolved
 
 
 def _prepare_publishing_scale_private_materialization(
@@ -2187,6 +2246,15 @@ if __name__ == "__main__":
         result = _publishing_scale_preflight()
     elif arguments == ["--publishing-scale-config-self-test"]:
         result = _publishing_scale_config_self_test()
+    elif (
+        len(arguments) == 3
+        and arguments[0] == "--publishing-scale-prepare"
+        and arguments[1] == "--output-directory"
+    ):
+        result = run(
+            publishing_scale_prepare=True,
+            preparation_output_directory=arguments[2],
+        )
     elif arguments == ["--channel-experts"]:
         result = run(channel_experts=True)
     elif arguments == ["--channel-generative"]:

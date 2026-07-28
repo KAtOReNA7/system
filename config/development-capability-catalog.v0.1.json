@@ -436,7 +436,8 @@
     },
     {
       "id": "m2-current-publishing-scale-channel-controlled-retry-v2",
-      "description": "Execute the user-authorized publishing-scale channel core controlled retry from a new exact-head Draft PR after public, clean-clone, Linux and Windows gates. The historical consumed attempt remains immutable.",
+      "description": "Prepare and execute the user-authorized publishing-scale channel core from an exact-head Draft PR. Source authority is blocking; derived cache is rebuilt automatically; historical receipts are optional provenance.",
+      "privateArtifactClassificationVersion": "private-artifact-classification.v0.1",
       "requiredTools": [
         {
           "id": "git",
@@ -451,57 +452,91 @@
       ],
       "requiredPrivateArtifacts": [
         {
+          "role": "total-ledger-authority",
+          "kind": "file",
+          "artifactClass": "PRIVATE_SOURCE_AUTHORITY",
+          "path": "data/real-bills/渠道实销汇总 -总.xlsx"
+        },
+        {
+          "role": "sales-share-ledger-authority",
+          "kind": "file",
+          "artifactClass": "PRIVATE_SOURCE_AUTHORITY",
+          "path": "data/real-bills/渠道实销汇总 -分成.xlsx"
+        },
+        {
+          "role": "buyout-ledger-authority",
+          "kind": "file",
+          "artifactClass": "PRIVATE_SOURCE_AUTHORITY",
+          "path": "data/real-bills/渠道实销汇总 -买断.xlsx"
+        },
+        {
+          "role": "m1-work-mapping-authority",
+          "kind": "directory",
+          "artifactClass": "PRIVATE_SOURCE_AUTHORITY",
+          "path": "data/m1-master-data-private/mapping-candidate"
+        },
+        {
           "role": "user-reviewed-channel-master",
           "kind": "file",
+          "artifactClass": "PRIVATE_SOURCE_AUTHORITY",
           "path": "data/private-output/outputs/channel-governance-20260726/M2-渠道统一与类型人工补全表-v0.2.xlsx"
         },
         {
           "role": "formal-model-input-cache",
           "kind": "file",
+          "artifactClass": "PRIVATE_DERIVED_CACHE",
           "path": "data/private-output/m2-formal-execution/m2-formal-model-input-cache-v1.pkl"
         },
         {
           "role": "operational-fallback-exact-overlap-comparator-read-only-source",
           "kind": "file",
+          "artifactClass": "PRIVATE_DERIVED_CACHE",
           "path": "data/private-output/m2-current-quality/M2-current-occurrence-amount-candidate-cases-private-v0.3.ndjson"
         },
         {
           "role": "historical-base-materialization-manifest-read-only-source",
           "kind": "file",
+          "artifactClass": "PRIVATE_DERIVED_CACHE",
           "path": "data/private-output/m2-current-human-anchored/M2-current-human-anchored-manifest-private-v0.1.json"
         },
         {
           "role": "frozen-learned-global-comparator-read-only-source",
           "kind": "file",
+          "artifactClass": "PRIVATE_DERIVED_CACHE",
           "path": "data/private-output/m2-current-human-anchored/M2-current-channel-experts-evaluation-private-v0.1.ndjson"
         },
         {
           "role": "frozen-learned-global-comparator-manifest-read-only-source",
           "kind": "file",
+          "artifactClass": "PRIVATE_DERIVED_CACHE",
           "path": "data/private-output/m2-current-human-anchored/M2-current-channel-experts-evaluation-manifest-private-v0.1.json"
         },
         {
           "role": "v2.2-development-modelable-scope-reconciliation",
           "kind": "file",
-          "path": "data/private-output/m2-evaluation-v2-2-reversal-rescore/M2-reversal-scope-reconciliation-private-v1.json"
+          "artifactClass": "PRIVATE_DERIVED_CACHE",
+          "path": "data/private-output/m2-current-publishing-scale-channel/prepared/v0.1/current/M2-reversal-scope-reconciliation-private-v1.json"
         },
         {
           "role": "v2.2-reversal-allocation-ledger",
           "kind": "file",
-          "path": "data/private-output/m2-evaluation-v2-2-reversal-rescore/M2-reversal-allocation-ledger-private-v1.ndjson"
+          "artifactClass": "PRIVATE_DERIVED_CACHE",
+          "path": "data/private-output/m2-current-publishing-scale-channel/prepared/v0.1/current/M2-reversal-allocation-ledger-private-v1.ndjson"
         },
         {
           "role": "v2.2-development-activation-receipt",
           "kind": "file",
-          "path": "data/private-output/m2-evaluation-v2-2-reversal-rescore/M2-evaluation-v2.2-execution-receipt-private-v1.json"
+          "artifactClass": "PRIVATE_RUN_PROVENANCE",
+          "path": "data/private-output/m2-current-publishing-scale-channel/prepared/v0.1/current/M2-evaluation-v2.2-execution-receipt-private-v1.json"
         }
       ],
       "canonicalValidationCommands": [
         "npm run doctor:capability -- m2-current-publishing-scale-channel-controlled-retry-v2",
+        "npm run prepare:m2:current:publishing-scale-channel",
         "npm run develop:m2:current:publishing-scale-channel -- --preflight-only"
       ],
-      "recovery": "Restore only the listed capability-scoped source artifacts from a verified encrypted bundle. Runtime authorization, receipts, materialized rows, predictions and evaluations are created under the dedicated publishing-scale output directory and must never overwrite the historical attempt.",
-      "authorization": "M2-PSC01-CONTROLLED-RETRY-20260728-01"
+      "recovery": "Restore only missing PRIVATE_SOURCE_AUTHORITY from a verified capability-scoped source. Run prepare:m2:current:publishing-scale-channel for every derived cache miss; missing historical receipts are non-blocking and are never fabricated.",
+      "authorization": "M2-PSC01-DERIVED-CACHE-REBUILD-FIRST-VALID-20260728-01"
     },
     {
       "id": "m2-current-channel-generative",

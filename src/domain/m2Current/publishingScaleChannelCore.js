@@ -52,7 +52,7 @@ export function validateM2PublishingScaleConfig(config, support) {
     config.supportContract !==
       "config/m2-publishing-scale-statistical-support.v1.json"
     || config.executionPolicy
-      !== "config/m2-publishing-scale-execution-policy.v0.2.json"
+      !== "config/m2-publishing-scale-execution-policy.v0.3.json"
     || config.materializerId !== M2_PUBLISHING_SCALE_MATERIALIZER_ID
     || config.receiptControllerId
       !== M2_PUBLISHING_SCALE_RECEIPT_CONTROLLER_ID

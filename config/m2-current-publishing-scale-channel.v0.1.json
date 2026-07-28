@@ -10,7 +10,7 @@
   "actualDefinitionId": "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01",
   "comparabilityGroupId": "M2-COMP-WORK-POINT-DEVELOPMENT-MODELABLE-RESTATEMENT-01",
   "supportContract": "config/m2-publishing-scale-statistical-support.v1.json",
-  "executionPolicy": "config/m2-publishing-scale-execution-policy.v0.2.json",
+  "executionPolicy": "config/m2-publishing-scale-execution-policy.v0.3.json",
   "materializerId": "M2-MATERIALIZER-PUBLISHING-SCALE-CHANNEL-01",
   "receiptControllerId": "M2-RECEIPT-CONTROLLER-PUBLISHING-SCALE-CHANNEL-01",
   "baseConfig": "config/m2-current-human-anchored.v0.1.json",
@@ -310,6 +310,9 @@
   },
   "privateOutputs": {
     "directory": "data/private-output/m2-current-publishing-scale-channel",
+    "preparationDirectory": "data/private-output/m2-current-publishing-scale-channel/prepared/v0.1/runs",
+    "preparationCurrentDirectory": "data/private-output/m2-current-publishing-scale-channel/prepared/v0.1/current",
+    "preparationReceipt": "M2-current-publishing-scale-channel-rebuild-receipt-private-v0.1.json",
     "runtimeAuthorization": "M2-current-publishing-scale-channel-execution-authorization-private-v0.2.json",
     "primaryMonthlyCases": "M2-current-publishing-scale-channel-primary-monthly-private-v0.2.ndjson",
     "auxiliaryMonthlyCases": "M2-current-publishing-scale-channel-strict-monthly-private-v0.2.ndjson",

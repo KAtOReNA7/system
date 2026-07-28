@@ -138,6 +138,7 @@ export async function runM2PublishingScalePrivateDevelopment({
   root,
   privateDirectory,
   sourceDirectory,
+  restatementDirectory,
   receiptPath
 }) {
   const [
@@ -155,6 +156,7 @@ export async function runM2PublishingScalePrivateDevelopment({
   if (
     typeof receiptPath !== "string"
     || typeof sourceDirectory !== "string"
+    || typeof restatementDirectory !== "string"
   ) {
     throw new Error("m2_publishing_scale_v0_2_execution_context_missing");
   }
@@ -173,10 +175,6 @@ export async function runM2PublishingScalePrivateDevelopment({
   const outputFiles = validatePublishingScaleOutputFiles(
     receipt.outputFiles,
     config
-  );
-  const restatementDirectory = path.join(
-    root,
-    config.privateOutputs.reversalRestatementDirectory
   );
   const [
     primaryText,
@@ -533,6 +531,7 @@ export async function runM2PublishingScalePrivateDevelopment({
       evaluationComplete: true,
       candidateExecuted: true,
       candidateOutcomeReadAfterReceipt: true,
+      interpretableRawCandidateEvaluationProduced: true,
       predictionGeneratedAfterFreezeCount: 0,
       predictionModifiedAfterFreezeCount: 0
     }, null, 2) + "\n",

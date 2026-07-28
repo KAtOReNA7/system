@@ -126,6 +126,22 @@ function defaultArtifactProbe(absolutePath, artifact) {
   }
 }
 
+const PRIVATE_ARTIFACT_CLASSES = new Set([
+  "PRIVATE_SOURCE_AUTHORITY",
+  "PRIVATE_DERIVED_CACHE",
+  "PRIVATE_RUN_PROVENANCE",
+]);
+
+function artifactClass(artifact) {
+  const value = artifact.artifactClass ?? "PRIVATE_SOURCE_AUTHORITY";
+  if (!PRIVATE_ARTIFACT_CLASSES.has(value)) {
+    throw new Error(
+      `Unsupported private artifact class for ${artifact.role}: ${value}`,
+    );
+  }
+  return value;
+}
+
 function evaluateTool(tool, toolProbe) {
   const probed = toolProbe(tool);
   if (!probed.present) {
@@ -217,20 +233,46 @@ export function evaluateCapability(catalog, capabilityId, options = {}) {
       role: artifact.role,
       kind: artifact.kind,
       path: artifact.path,
+      artifactClass: artifactClass(artifact),
       present: Boolean(artifactExists(absolutePath, artifact)),
     };
   });
   const tools = (capability.requiredTools ?? []).map((tool) => evaluateTool(tool, toolProbe));
   const missingArtifacts = artifacts.filter((artifact) => !artifact.present);
+  const sourceAuthorityArtifacts = artifacts.filter(
+    (artifact) => artifact.artifactClass === "PRIVATE_SOURCE_AUTHORITY",
+  );
+  const derivedCacheArtifacts = artifacts.filter(
+    (artifact) => artifact.artifactClass === "PRIVATE_DERIVED_CACHE",
+  );
+  const historicalReceiptArtifacts = artifacts.filter(
+    (artifact) => artifact.artifactClass === "PRIVATE_RUN_PROVENANCE",
+  );
+  const missingSourceAuthority = sourceAuthorityArtifacts.filter(
+    (artifact) => !artifact.present,
+  );
+  const missingDerivedCache = derivedCacheArtifacts.filter(
+    (artifact) => !artifact.present,
+  );
+  const missingHistoricalReceipts = historicalReceiptArtifacts.filter(
+    (artifact) => !artifact.present,
+  );
   const unavailableTools = tools.filter((tool) => !tool.present || !tool.compatible);
   let status = capabilityId === "core-dev"
     ? "READY"
     : "AVAILABLE_FOR_CANONICAL_VALIDATION";
   if (unavailableTools.length > 0) {
     status = "BLOCKED_MISSING_OR_INCOMPATIBLE_TOOL";
-  } else if (missingArtifacts.length > 0) {
-    status = "BLOCKED_MISSING_PRIVATE_ARTIFACT";
+  } else if (missingSourceAuthority.length > 0) {
+    status = capability.privateArtifactClassificationVersion
+      ? "MISSING_SOURCE_AUTHORITY"
+      : "BLOCKED_MISSING_PRIVATE_ARTIFACT";
+  } else if (missingDerivedCache.length > 0) {
+    status = "DERIVED_CACHE_MISS_REBUILD_REQUIRED";
   }
+  const safeToRebuildDerivedCache =
+    unavailableTools.length === 0 && missingSourceAuthority.length === 0;
+  const safeToStartModelAfterRebuild = safeToRebuildDerivedCache;
   return {
     schemaVersion: "development-capability-doctor-result.v0.1",
     capabilityId,
@@ -243,6 +285,22 @@ export function evaluateCapability(catalog, capabilityId, options = {}) {
     tools,
     privateArtifacts: artifacts,
     missingPrivateRoles: missingArtifacts.map((artifact) => artifact.role),
+    sourceAuthorityStatus: missingSourceAuthority.length > 0
+      ? "MISSING_SOURCE_AUTHORITY"
+      : "SOURCE_AUTHORITY_AVAILABLE",
+    derivedCacheStatus: missingDerivedCache.length > 0
+      ? "CACHE_MISS_REBUILDABLE"
+      : "CACHE_READY",
+    historicalReceiptStatus: missingHistoricalReceipts.length > 0
+      ? "OPTIONAL_PROVENANCE_MISSING"
+      : "PROVENANCE_AVAILABLE",
+    rebuildPlan: missingDerivedCache.map((artifact) => ({
+      role: artifact.role,
+      path: artifact.path,
+      action: "REBUILD_FROM_PRIVATE_SOURCE_AUTHORITY",
+    })),
+    safeToRebuildDerivedCache,
+    safeToStartModelAfterRebuild,
     unavailableTools: unavailableTools.map((tool) => tool.id),
     canonicalValidationCommands: capability.canonicalValidationCommands ?? [],
     recovery: capability.recovery ?? null,
@@ -250,6 +308,8 @@ export function evaluateCapability(catalog, capabilityId, options = {}) {
       ? ["core-dev intentionally does not inspect or require private artifacts"]
       : [
         "artifact presence is inventory only",
+        "derived cache misses are rebuild instructions, not source-authority blockers",
+        "historical receipt absence is a non-blocking provenance warning",
         "run the canonical verifier before treating the capability as usable",
         "availability does not grant execution authorization",
       ],
@@ -276,11 +336,27 @@ export function formatCapabilityResult(result) {
   if (result.privateArtifacts.length > 0) {
     lines.push("Private capability roles (contents were not read):");
     for (const artifact of result.privateArtifacts) {
-      lines.push(`- ${artifact.role}: ${artifact.present ? "PRESENT" : "MISSING"} — ${artifact.path}`);
+      lines.push(
+        `- ${artifact.role} [${artifact.artifactClass}]: `
+        + `${artifact.present ? "PRESENT" : "MISSING"} — ${artifact.path}`,
+      );
     }
   }
+  lines.push(`Source authority: ${result.sourceAuthorityStatus}`);
+  lines.push(`Derived cache: ${result.derivedCacheStatus}`);
+  lines.push(`Historical receipt: ${result.historicalReceiptStatus}`);
+  lines.push(`Safe to rebuild derived cache: ${result.safeToRebuildDerivedCache}`);
+  lines.push(
+    `Safe to start model after rebuild: ${result.safeToStartModelAfterRebuild}`,
+  );
   if (result.status === "BLOCKED_MISSING_PRIVATE_ARTIFACT") {
     lines.push("Core development remains available; only this capability is blocked.");
+  }
+  if (result.status === "MISSING_SOURCE_AUTHORITY") {
+    lines.push("The owning private capability is blocked by missing source authority.");
+  }
+  if (result.status === "DERIVED_CACHE_MISS_REBUILD_REQUIRED") {
+    lines.push("Derived cache is rebuildable and does not block after preparation.");
   }
   if (result.recovery) {
     lines.push(`Recovery: ${result.recovery}`);
@@ -318,7 +394,10 @@ function main() {
     const catalog = loadCapabilityCatalog();
     const result = evaluateCapability(catalog, capabilityId);
     process.stdout.write(`${json ? JSON.stringify(result, null, 2) : formatCapabilityResult(result)}\n`);
-    process.exitCode = result.status.startsWith("BLOCKED_") ? 1 : 0;
+    process.exitCode = (
+      result.status.startsWith("BLOCKED_")
+      || result.status === "MISSING_SOURCE_AUTHORITY"
+    ) ? 1 : 0;
   } catch (error) {
     process.stderr.write(`[CAPABILITY_DOCTOR_ERROR] ${error.message}\n`);
     process.exitCode = 2;

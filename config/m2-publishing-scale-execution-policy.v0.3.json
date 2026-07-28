@@ -1,0 +1,72 @@
+{
+  "schema": "m2.publishing_scale.execution_policy.v0.3",
+  "authorizationPolicyId": "M2-PSC01-DERIVED-CACHE-REBUILD-FIRST-VALID-20260728-01",
+  "status": "USER_AUTHORIZED_FIRST_VALID_RAW_EVALUATION",
+  "authorizationSource": {
+    "type": "user_attached_instruction",
+    "displayName": "M2 publishing-scale derived-cache rebuild and algorithm evaluation",
+    "sha256": "c71be9095ff3bd777e23730cc1623dc6f2cab3eeaeeeebf125bbe0589689797a"
+  },
+  "authorizedModelId": "M2-CHAN-PSC01",
+  "authorizedArmId": "M2-EXP-PUBLISHING-SCALE-CHANNEL-01/CORE",
+  "authorizedCommand": "npm run develop:m2:current:publishing-scale-channel",
+  "preparationCommand": "npm run prepare:m2:current:publishing-scale-channel",
+  "runtimeBinding": {
+    "exactHeadRequired": true,
+    "openDraftPullRequestRequired": true,
+    "baseBranch": "main",
+    "originMainMustBeAncestor": true,
+    "trackingAndPullRequestHeadMustMatch": true,
+    "linuxCheck": "verify",
+    "windowsCheck": "verify-windows",
+    "bothChecksMustSucceedBeforePrivateRead": true
+  },
+  "privateArtifactPolicy": {
+    "classificationVersion": "private-artifact-classification.v0.1",
+    "sourceAuthorityMissingBlocks": true,
+    "derivedCacheMissingRequiresAutomaticRebuild": true,
+    "historicalReceiptMissingBlocks": false,
+    "historicalReceiptFabricationAllowed": false,
+    "versionedRebuildReceiptRequired": true,
+    "oldPrivateOutputRequired": false
+  },
+  "executionWindow": {
+    "firstValidRawCandidateEvaluationMaximum": 1,
+    "infrastructureRetryAllowedBeforeValidEvaluation": true,
+    "invalidAttemptReceiptRequired": true,
+    "retryAfterValidEvaluationAllowed": false,
+    "outcomeDrivenRetryAllowed": false,
+    "allowedRetryFailureClasses": [
+      "runner_dispatch",
+      "file_io",
+      "path_resolution",
+      "temporary_directory",
+      "schema_wiring",
+      "cache_rebuild",
+      "receipt_control_flow",
+      "memory",
+      "deterministic_implementation"
+    ]
+  },
+  "historicalAuthorization": {
+    "historicalConsumedFieldsMayBeRewritten": false,
+    "historicalReceiptsMayBeOverwritten": false,
+    "historicalArtifactsMayBeOverwritten": false
+  },
+  "forbidden": {
+    "outcomeDrivenTuning": true,
+    "laterOriginHoldout": true,
+    "finalHoldout": true,
+    "provider": true,
+    "externalNetwork": true,
+    "database": true,
+    "production": true,
+    "automation": true,
+    "canary": true,
+    "full160": true,
+    "release": true,
+    "pullRequestMerge": true,
+    "taxonomyTrainingOrRouting": true,
+    "authorizationTrainingOrRouting": true
+  }
+}

@@ -102,6 +102,7 @@
     "develop:m2:current:lifecycle-aware": "node scripts/m2-current/run_m2_human_anchored_development.mjs --lifecycle-aware",
     "develop:m2:current:channel-experts": "node scripts/m2-current/run_m2_human_anchored_development.mjs --channel-experts",
     "develop:m2:current:channel-generative": "node --max-old-space-size=8192 scripts/m2-current/run_m2_human_anchored_development.mjs --channel-generative",
+    "prepare:m2:current:publishing-scale-channel": "node --max-old-space-size=8192 scripts/m2-current/prepare_m2_publishing_scale_channel.mjs",
     "develop:m2:current:publishing-scale-channel": "node --max-old-space-size=8192 scripts/m2-current/run_m2_human_anchored_development.mjs --publishing-scale-channel",
     "verify:m2:signal-input": "node scripts/m2-current/run_m2_current_signal_input_diagnostics.mjs --verify",
     "verify:m2:channel-governance": "node scripts/m2-current/run_m2_channel_governance_diagnostics.mjs --verify",

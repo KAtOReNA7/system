@@ -87,7 +87,7 @@ const [
   readJson("package.json")
 ]);
 const executionPolicy = await readJson(
-  "config/m2-publishing-scale-execution-policy.v0.2.json"
+  "config/m2-publishing-scale-execution-policy.v0.3.json"
 );
 const publicPreflight = await readJson(
   "docs/analysis/m2-current/"

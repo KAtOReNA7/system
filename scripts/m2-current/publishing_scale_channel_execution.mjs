@@ -1,11 +1,13 @@
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import {
+  copyFile,
   mkdir,
   readFile,
   readdir,
   writeFile
 } from "node:fs/promises";
+import { constants as fsConstants } from "node:fs";
 import path from "node:path";
 
 import {
@@ -26,7 +28,7 @@ const CONFIG_PATH =
 const SUPPORT_PATH =
   "config/m2-publishing-scale-statistical-support.v1.json";
 const POLICY_PATH =
-  "config/m2-publishing-scale-execution-policy.v0.2.json";
+  "config/m2-publishing-scale-execution-policy.v0.3.json";
 const MATERIALIZER_PATH =
   "scripts/m2-current/materialize_human_anchored_cases.py";
 const MATERIALIZER_PREFLIGHT_ARGUMENT = "--publishing-scale-preflight";
@@ -169,6 +171,7 @@ export function verifyM2PublishingScaleGitAndCiPreflight({ root }) {
 export async function prepareM2PublishingScaleExecution({
   root,
   gitPreflight,
+  prepared,
   command,
   environment
 }) {
@@ -224,7 +227,7 @@ export async function prepareM2PublishingScaleExecution({
     branch: gitPreflight.branch,
     attemptNumber,
     normalExecution: attemptNumber === 1,
-    infrastructureRecoveryRetry: attemptNumber === 2,
+    infrastructureRecoveryRetry: attemptNumber > 1,
     createdAt: new Date().toISOString(),
     finalHoldoutAuthorized: false,
     productionAuthorized: false,
@@ -251,6 +254,14 @@ export async function prepareM2PublishingScaleExecution({
     materializerId: M2_PUBLISHING_SCALE_MATERIALIZER_ID,
     receiptControllerId: M2_PUBLISHING_SCALE_RECEIPT_CONTROLLER_ID,
     outputFiles,
+    preparedBundle: {
+      runId: prepared.receipt.runId,
+      relativeDirectory: prepared.relativeDirectory,
+      receiptFile: config.privateOutputs.preparationReceipt,
+      preparedFiles: prepared.receipt.preparedFiles,
+      normalizedContentDigests:
+        prepared.receipt.normalizedContentDigests
+    },
     attemptNumber,
     gitPreflight,
     privateMaterializationStarted: false,
@@ -288,29 +299,27 @@ export async function prepareM2PublishingScaleExecution({
 
 export async function runM2PublishingScaleAuthorizedExecution({ root }) {
   const gitPreflight = verifyM2PublishingScaleGitAndCiPreflight({ root });
+  const prepared = await ensureM2PublishingScalePreparation({
+    root,
+    exactHead: gitPreflight.head
+  });
   const execution = await prepareM2PublishingScaleExecution({
     root,
     gitPreflight,
+    prepared,
     command: "npm run develop:m2:current:publishing-scale-channel",
     environment: `${process.platform}-${process.arch}`
   });
   try {
-    invokePublishingScalePrivateMaterializer({
-      root,
-      authorizationFile: execution.authorizationFile,
-      receiptFile: execution.receiptFile
+    await attachPreparedPublishingScaleMaterialization({
+      execution,
+      prepared
     });
-    const config = JSON.parse(await readFile(
-      path.join(root, CONFIG_PATH),
-      "utf8"
-    ));
     const result = await runM2PublishingScalePrivateDevelopment({
       root,
       privateDirectory: execution.privateDirectory,
-      sourceDirectory: path.join(
-        root,
-        config.privateOutputs.historicalSourceDirectory
-      ),
+      sourceDirectory: prepared.directory,
+      restatementDirectory: prepared.directory,
       receiptPath: execution.receiptPath
     });
     await closeRuntimeAuthorization(
@@ -331,6 +340,127 @@ export async function runM2PublishingScaleAuthorizedExecution({ root }) {
     );
     throw error;
   }
+}
+
+async function ensureM2PublishingScalePreparation({ root, exactHead }) {
+  let prepared = await findLatestPreparedBundle({ root, exactHead });
+  if (prepared !== null) return prepared;
+  runNode(root, [
+    "--max-old-space-size=8192",
+    "scripts/m2-current/prepare_m2_publishing_scale_channel.mjs"
+  ]);
+  prepared = await findLatestPreparedBundle({ root, exactHead });
+  if (prepared === null) {
+    throw new Error("m2_publishing_scale_cache_rebuild_missing_after_prepare");
+  }
+  return prepared;
+}
+
+async function findLatestPreparedBundle({ root, exactHead }) {
+  const config = JSON.parse(await readFile(path.join(root, CONFIG_PATH), "utf8"));
+  const relativeRoot = config.privateOutputs.preparationDirectory;
+  const directoryRoot = resolvePrivateDirectory(root, relativeRoot);
+  let entries;
+  try {
+    entries = await readdir(directoryRoot, { withFileTypes: true });
+  } catch (error) {
+    if (error?.code === "ENOENT") return null;
+    throw error;
+  }
+  const directories = entries
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => entry.name)
+    .sort()
+    .reverse();
+  for (const runId of directories) {
+    const directory = path.join(directoryRoot, runId);
+    const receipt = await readOptionalJson(path.join(
+      directory,
+      config.privateOutputs.preparationReceipt
+    ));
+    if (
+      receipt?.status !== "COMPLETE"
+      || receipt?.exactHead !== exactHead
+      || receipt?.modelId !== M2_PUBLISHING_SCALE_MODEL_ID
+      || receipt?.experimentArmId !== M2_PUBLISHING_SCALE_ARM_ID
+    ) {
+      continue;
+    }
+    await verifyPreparedBundle(directory, receipt);
+    return {
+      directory,
+      relativeDirectory: path.posix.join(
+        relativeRoot.replaceAll("\\", "/"),
+        runId
+      ),
+      receipt
+    };
+  }
+  return null;
+}
+
+async function verifyPreparedBundle(directory, receipt) {
+  for (const [role, filename] of Object.entries(receipt.preparedFiles ?? {})) {
+    if (
+      typeof filename !== "string"
+      || path.basename(filename) !== filename
+      || filename.includes("/")
+      || filename.includes("\\")
+    ) {
+      throw new Error(`m2_publishing_scale_prepared_filename_invalid:${role}`);
+    }
+    const contents = await readFile(path.join(directory, filename));
+    if (digest(contents) !== receipt.normalizedContentDigests?.[role]) {
+      throw new Error(`m2_publishing_scale_prepared_digest_mismatch:${role}`);
+    }
+  }
+}
+
+async function attachPreparedPublishingScaleMaterialization({
+  execution,
+  prepared
+}) {
+  const receipt = await readOptionalJson(execution.receiptPath);
+  if (receipt?.status !== "PREPARED_BEFORE_PRIVATE_MATERIALIZATION") {
+    throw new Error("m2_publishing_scale_receipt_control_flow_invalid");
+  }
+  const roles = [
+    "primaryMonthlyCases",
+    "auxiliaryMonthlyCases",
+    "materializationManifest"
+  ];
+  for (const role of roles) {
+    await copyFile(
+      path.join(prepared.directory, prepared.receipt.preparedFiles[role]),
+      path.join(execution.privateDirectory, receipt.outputFiles[role]),
+      fsConstants.COPYFILE_EXCL
+    );
+  }
+  const materialization = JSON.parse(await readFile(
+    path.join(
+      execution.privateDirectory,
+      receipt.outputFiles.materializationManifest
+    ),
+    "utf8"
+  ));
+  await writeFile(
+    execution.receiptPath,
+    JSON.stringify({
+      ...receipt,
+      status: "PRIVATE_MATERIALIZATION_COMPLETE",
+      privateMaterializationStarted: true,
+      privateMaterializationComplete: true,
+      privateRowsRead:
+        Number(materialization.primaryPackedRowCount)
+        + Number(materialization.auxiliaryPackedRowCount),
+      materializedPrimaryPackedRows:
+        materialization.primaryPackedRowCount,
+      materializedStrictPackedRows:
+        materialization.auxiliaryPackedRowCount,
+      preparedBundleVerified: true
+    }, null, 2) + "\n",
+    "utf8"
+  );
 }
 
 export function invokePublishingScalePrivateMaterializer({
@@ -366,9 +496,7 @@ async function recordPublishingScaleExecutionFailure({
   const infrastructureFailureClass =
     classifyInfrastructureFailure(failureCode);
   const infrastructureRecoveryEligible = (
-    candidateFitStarted === false
-    && predictionRowsProduced === 0
-    && evaluationRowsProduced === 0
+    receipt.evaluationComplete !== true
     && infrastructureFailureClass !== null
   );
   const failure = {
@@ -384,6 +512,7 @@ async function recordPublishingScaleExecutionFailure({
     evaluationRowsProduced,
     infrastructureFailureClass,
     infrastructureRecoveryEligible,
+    interpretableRawCandidateEvaluationProduced: false,
     evaluationComplete: false,
     finalHoldoutOpened: false,
     productionModified: false
@@ -414,6 +543,22 @@ function classifyInfrastructureFailure(failureCode) {
     [
       "schema_wiring",
       /schema_wiring|versioned output (?:plan|identity) invalid/iu
+    ],
+    [
+      "cache_rebuild",
+      /cache_rebuild|prepared_(?:digest|filename)|rebuild_(?:incomplete|missing)/iu
+    ],
+    [
+      "temporary_directory",
+      /temporary_directory|temp(?:orary)? directory/iu
+    ],
+    [
+      "memory",
+      /heap out of memory|ENOMEM|memory/iu
+    ],
+    [
+      "deterministic_implementation",
+      /deterministic_implementation|conservation|duplicate case key/iu
     ]
   ];
   return patterns.find(([, pattern]) => pattern.test(failureCode))?.[0]
@@ -458,9 +603,9 @@ export function planM2PublishingScaleReceiptController({
 
 export function assertExecutionPolicy(policy, config) {
   if (
-    policy?.schema !== "m2.publishing_scale.execution_policy.v0.2"
+    policy?.schema !== "m2.publishing_scale.execution_policy.v0.3"
     || policy?.status
-      !== "USER_AUTHORIZED_RUNTIME_EXACT_HEAD_BINDING_REQUIRED"
+      !== "USER_AUTHORIZED_FIRST_VALID_RAW_EVALUATION"
     || policy?.authorizedModelId !== M2_PUBLISHING_SCALE_MODEL_ID
     || policy?.authorizedArmId !== M2_PUBLISHING_SCALE_ARM_ID
     || policy?.authorizedCommand
@@ -474,8 +619,18 @@ export function assertExecutionPolicy(policy, config) {
       ?.historicalReceiptsMayBeOverwritten !== false
     || policy?.historicalAuthorization
       ?.historicalArtifactsMayBeOverwritten !== false
-    || policy?.executionWindow?.normalPrivateExecutionMaximum !== 1
-    || policy?.executionWindow?.infrastructureRecoveryRetryMaximum !== 1
+    || policy?.executionWindow
+      ?.firstValidRawCandidateEvaluationMaximum !== 1
+    || policy?.executionWindow
+      ?.infrastructureRetryAllowedBeforeValidEvaluation !== true
+    || policy?.executionWindow
+      ?.invalidAttemptReceiptRequired !== true
+    || policy?.executionWindow
+      ?.retryAfterValidEvaluationAllowed !== false
+    || policy?.privateArtifactPolicy
+      ?.derivedCacheMissingRequiresAutomaticRebuild !== true
+    || policy?.privateArtifactPolicy
+      ?.historicalReceiptMissingBlocks !== false
     || policy?.forbidden?.finalHoldout !== true
     || policy?.forbidden?.production !== true
     || policy?.forbidden?.pullRequestMerge !== true
@@ -549,21 +704,28 @@ async function readPreviousReceipts(directory, prefix) {
 
 function authorizeAttempt(previousReceipts, policy) {
   if (previousReceipts.length === 0) return 1;
-  if (previousReceipts.length > policy.executionWindow
-    .infrastructureRecoveryRetryMaximum) {
-    throw new Error("m2_publishing_scale_execution_window_exhausted");
+  if (
+    previousReceipts.some(({ value }) => (
+      value.evaluationComplete === true
+      || value.interpretableRawCandidateEvaluationProduced === true
+      || value.status === "COMPLETED"
+    ))
+  ) {
+    throw new Error("m2_publishing_scale_valid_evaluation_already_exists");
   }
   const previous = previousReceipts.at(-1).value;
   if (
-    previous.candidateFitStarted === true
-    || Number(previous.predictionRowsProduced ?? 0) !== 0
-    || Number(previous.evaluationRowsProduced ?? 0) !== 0
-    || previous.status !== "FAILED_CLOSED_BEFORE_CANDIDATE_FIT_STARTED"
+    policy.executionWindow.infrastructureRetryAllowedBeforeValidEvaluation
+      !== true
     || previous.infrastructureRecoveryEligible !== true
+    || previous.interpretableRawCandidateEvaluationProduced === true
   ) {
     throw new Error("m2_publishing_scale_infrastructure_retry_not_eligible");
   }
-  return 2;
+  return Math.max(
+    previousReceipts.length,
+    ...previousReceipts.map(({ value }) => Number(value.attemptNumber ?? 0))
+  ) + 1;
 }
 
 async function readOptionalJson(filePath) {
@@ -609,6 +771,23 @@ function runCommand(root, command, args) {
 
 function digest(value) {
   return createHash("sha256").update(value, "utf8").digest("hex");
+}
+
+function resolvePrivateDirectory(root, relativePath) {
+  if (!relativePath || path.isAbsolute(relativePath)) {
+    throw new Error("m2_publishing_scale_private_directory_invalid");
+  }
+  const resolvedRoot = path.resolve(root);
+  const resolved = path.resolve(resolvedRoot, relativePath);
+  const relative = path.relative(resolvedRoot, resolved).replaceAll("\\", "/");
+  if (
+    relative === ".."
+    || relative.startsWith("../")
+    || !relative.startsWith("data/private-output/")
+  ) {
+    throw new Error("m2_publishing_scale_private_directory_escapes_root");
+  }
+  return resolved;
 }
 
 function versionPrivateOutputFilename(filename, suffix) {

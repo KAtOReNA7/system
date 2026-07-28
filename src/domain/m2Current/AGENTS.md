@@ -53,6 +53,16 @@ This directory is the only implementation home for current M2 model logic.
 - Public artifacts contain only aggregate evidence. Work IDs, channel IDs,
   row-level actuals, and row-level predictions remain in capability-scoped,
   Git-ignored private output.
+- M2 的 monthly materialization、primary/strict packed rows、冻结 baseline
+  prediction rows、candidate/evaluation rows、manifest、摘要和冲销
+  reconciliation/allocation 都属于 `PRIVATE_DERIVED_CACHE`。缺失时从已验证的
+  `PRIVATE_SOURCE_AUTHORITY` 与冻结实现自动重建，不得要求从旧电脑恢复。
+- 历史 execution/run/attempt receipt 属于 `PRIVATE_RUN_PROVENANCE`，缺失只告警，
+  不得作为拟合输入、标签、baseline 或运行硬门禁，也不得补造。每次当前执行仍必须
+  生成新的版本化 receipt，并用当次 digest 绑定代码、权威输入和输出。
+- M2 prepare/runner 必须在运行时解析仓库根并创建模型专属版本化 Git-ignored
+  目录。派生缓存可重建或替换 current-cache 镜像，但冻结历史 artifact、原始账单
+  和用户确认关系不可覆盖或改写。
 - Extend the existing human-anchored materializer and runner modes. Do not
   create a second production loader, route, API, runtime, or duplicated
   historical runner.
