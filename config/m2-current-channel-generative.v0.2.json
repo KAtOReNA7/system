@@ -2,7 +2,9 @@
   "schema": "m2.current.channel_generative_core.v0.2",
   "candidateId": "M2-current-channel-generative-v0.2",
   "datasetVersion": "M2-human-anchored-authority-window-2021-2025-v0.1",
-  "target": "future_sales_share_positive_cash",
+  "target": "future_sales_share_development_modelable_cash",
+  "actualDefinitionId": "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01",
+  "comparabilityGroupId": "M2-COMP-WORK-POINT-DEVELOPMENT-MODELABLE-RESTATEMENT-01",
   "baseConfig": "config/m2-current-human-anchored.v0.1.json",
   "channelExpertConfig": "config/m2-current-channel-experts.v0.1.json",
   "preregistration": {
@@ -16,11 +18,17 @@
     "path": "docs/analysis/m2-current/M2-current-channel-generative-v0.2-forecastability-diagnostic-contract-v0.1.json"
   },
   "authorization": {
-    "source": "user_attachment_2026-07-27",
+    "source": "current_user_attachment_runtime_bound",
     "coreImplementation": true,
     "syntheticValidation": true,
     "oneTimePrivateDevelopmentEvaluation": true,
     "forecastabilityOracleDiagnostic": true,
+    "authorizedModelId": "M2-CHAN-GEN02",
+    "authorizedArmId": "M2-EXP-CHANNEL-GENERATIVE-02/G1",
+    "G1IndependentCoreTraining": true,
+    "G1PrivateDevelopmentEvaluation": true,
+    "G2StructuredOffset": false,
+    "G3Blend": false,
     "G4Platform": false,
     "G5Taxonomy": false,
     "G6Composition": false,
@@ -53,14 +61,63 @@
     "observedZeroMonthPolicy": "include",
     "buyoutCashUsed": false,
     "otherCashUsed": false,
-    "commitmentUsed": false
+    "commitmentUsed": false,
+    "labelView": "DEVELOPMENT_MODELABLE_RESTATEMENT_VIEW",
+    "residualPolicyStatus": "UNALLOCATED_REVERSAL_RESIDUAL_EXCLUDED_FROM_MODELABLE_TARGET",
+    "labelAvailability": "maximum_of_revenue_month_and_contributing_reversal_recorded_month",
+    "originAfterCutoffReversalFeatureRowCountRequired": 0
   },
   "candidateIds": [
+    "G0",
+    "G1"
+  ],
+  "historicalPreregisteredCandidateIds": [
     "G0",
     "G1",
     "G2",
     "G3"
   ],
+  "currentExecution": {
+    "displayNameZh": "渠道时间生成模型 v0.2——独立渠道月度发生—条件金额核心",
+    "displayNameEn": "Channel Generative v0.2 — Independent Monthly Occurrence × Conditional Amount Core",
+    "modelId": "M2-CHAN-GEN02",
+    "experimentArmId": "M2-EXP-CHANNEL-GENERATIVE-02/G1",
+    "trainedCandidateIds": [
+      "G1"
+    ],
+    "pairedComparatorIds": [
+      "G0"
+    ],
+    "notExecutedArmIds": [
+      "M2-EXP-CHANNEL-GENERATIVE-02/G2",
+      "M2-EXP-CHANNEL-GENERATIVE-02/G3",
+      "M2-EXP-CHANNEL-GENERATIVE-02/G4",
+      "M2-EXP-CHANNEL-GENERATIVE-02/G5",
+      "M2-EXP-CHANNEL-GENERATIVE-02/G6"
+    ],
+    "armSpecificPrerequisites": {
+      "G1Training": {
+        "originVisibleFeatures": true,
+        "matureDevelopmentModelableLabels": true,
+        "frozenG0ChannelOffset": false,
+        "auxiliaryG0State": false
+      },
+      "G1OuterEvaluation": {
+        "sameActualDefinition": true,
+        "samePairedCases": true,
+        "frozenG0WorkPointComparator": true,
+        "frozenG0ChannelOffset": false
+      },
+      "G2StructuredOffset": {
+        "authorized": false,
+        "frozenG0ChannelOffset": true
+      },
+      "G3Blend": {
+        "authorized": false,
+        "frozenG0ChannelOffset": true
+      }
+    }
+  },
   "mechanismParents": {
     "membership_subscription": "membership",
     "advertising_or_free_share": "advertising",
@@ -145,6 +202,7 @@
     "oneClassRule": "(positiveCount+0.5)/(rowCount+1)",
     "smearing": "mean_exp_training_log_residual",
     "G1UsesG0": false,
+    "G1UnsupportedParentPolicy": "fail_closed_raw_candidate_unavailable",
     "G2AmountOffset": "log1p_frozen_G0_monthly_positive",
     "G2OccurrenceUsesG0": false,
     "platformFeature": false,
@@ -204,6 +262,28 @@
     "blendTieBreak": "largest_alpha_then_G1",
     "outerOutcomeUsedForSelection": false
   },
+  "forecastabilityDiagnostics": {
+    "runOnlyAfterG1PredictionsFrozen": true,
+    "participatesInTraining": false,
+    "participatesInSelection": false,
+    "participatesInGate": false,
+    "oracleIds": [
+      "ORACLE_OCCURRENCE_ONLY",
+      "ORACLE_AMOUNT_ONLY",
+      "ORACLE_BOTH",
+      "FUTURE_FIRST_ENTRY_CEILING",
+      "MECHANISM_INFORMATION_GAIN"
+    ],
+    "pooledBasis": {
+      "base": [
+        "u",
+        "u_squared",
+        "short_spike",
+        "long_tail"
+      ],
+      "interactions": []
+    }
+  },
   "eligibility": {
     "minimumDistinctTrainingWorks": 50,
     "minimumMonthlyTrainingRows": 1000,
@@ -232,14 +312,18 @@
     "primaryMonthlyCases": "M2-current-channel-generative-primary-monthly-private-v0.2.ndjson",
     "auxiliaryMonthlyCases": "M2-current-channel-generative-auxiliary-monthly-private-v0.2.ndjson",
     "materializationManifest": "M2-current-channel-generative-materialization-manifest-private-v0.2.json",
-    "runReceipt": "M2-current-channel-generative-run-receipt-private-v0.2.json",
-    "evaluationRows": "M2-current-channel-generative-evaluation-private-v0.2.ndjson",
-    "evaluationManifest": "M2-current-channel-generative-evaluation-manifest-private-v0.2.json"
+    "runReceipt": "M2-current-channel-generative-g1-run-receipt-private-v0.1.json",
+    "evaluationRows": "M2-current-channel-generative-g1-evaluation-private-v0.1.ndjson",
+    "evaluationManifest": "M2-current-channel-generative-g1-evaluation-manifest-private-v0.1.json",
+    "reversalRestatementDirectory": "data/private-output/m2-evaluation-v2-2-reversal-rescore",
+    "reversalScopeReconciliation": "M2-reversal-scope-reconciliation-private-v1.json",
+    "reversalAllocationLedger": "M2-reversal-allocation-ledger-private-v1.ndjson",
+    "reversalExecutionReceipt": "M2-evaluation-v2.2-execution-receipt-private-v1.json"
   },
   "syntheticFixture": "test/fixtures/m2-current-channel-generative.synthetic.v0.2.json",
-  "publicDiagnosticOutput": "docs/analysis/m2-current/M2-current-channel-generative-public-diagnostic-v0.2.json",
-  "publicDevelopmentOutput": "docs/analysis/m2-current/M2-current-channel-generative-v0.2-core-development-v0.1.json",
-  "publicDevelopmentReport": "docs/analysis/m2-current/M2-current-channel-generative-v0.2-core-development-v0.1.md",
-  "publicForecastabilityOutput": "docs/analysis/m2-current/M2-current-channel-generative-v0.2-forecastability-diagnostic-v0.1.json",
-  "publicForecastabilityReport": "docs/analysis/m2-current/M2-current-channel-generative-v0.2-forecastability-diagnostic-v0.1.md"
+  "publicDiagnosticOutput": "docs/analysis/m2-current/M2-current-channel-generative-g1-public-diagnostic-v0.1.json",
+  "publicDevelopmentOutput": "docs/analysis/m2-current/M2-current-channel-generative-g1-development-v0.1.json",
+  "publicDevelopmentReport": "docs/analysis/m2-current/M2-current-channel-generative-g1-development-v0.1.md",
+  "publicForecastabilityOutput": "docs/analysis/m2-current/M2-current-channel-generative-g1-forecastability-v0.1.json",
+  "publicForecastabilityReport": "docs/analysis/m2-current/M2-current-channel-generative-g1-forecastability-v0.1.md"
 }

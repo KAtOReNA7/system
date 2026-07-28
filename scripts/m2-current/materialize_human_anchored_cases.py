@@ -990,6 +990,9 @@ def _write_channel_generative_supplement(
         "tracked": False,
         "candidateId": generative_config["candidateId"],
         "target": generative_config["target"],
+        "actualDefinitionId": generative_config["actualDefinitionId"],
+        "labelMaterializationStage":
+            "POSTING_TIME_INTERMEDIATE_REBOUND_IN_MEMORY_BEFORE_G1_FIT",
         "baseDatasetDigests": dict(base_manifest["digests"]),
         "primaryPackedRowCount": len(primary_rows),
         "auxiliaryPackedRowCount": len(auxiliary_rows),
@@ -1056,11 +1059,21 @@ def _validate_channel_generative_config(
     if (
         config.get("schema")
         != "m2.current.channel_generative_core.v0.2"
-        or config.get("target") != "future_sales_share_positive_cash"
+        or config.get("target")
+        != "future_sales_share_development_modelable_cash"
+        or config.get("actualDefinitionId")
+        != "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01"
         or authorization.get("coreImplementation") is not True
         or authorization.get(
             "oneTimePrivateDevelopmentEvaluation"
         ) is not True
+        or authorization.get("authorizedModelId") != "M2-CHAN-GEN02"
+        or authorization.get("authorizedArmId")
+        != "M2-EXP-CHANNEL-GENERATIVE-02/G1"
+        or authorization.get("G1IndependentCoreTraining") is not True
+        or authorization.get("G1PrivateDevelopmentEvaluation") is not True
+        or authorization.get("G2StructuredOffset") is not False
+        or authorization.get("G3Blend") is not False
         or any(
             authorization.get(key) is not False
             for key in (
@@ -1087,6 +1100,8 @@ def _validate_channel_generative_config(
         or contract.get("buyoutCashUsed") is not False
         or contract.get("otherCashUsed") is not False
         or contract.get("commitmentUsed") is not False
+        or contract.get("labelView")
+        != "DEVELOPMENT_MODELABLE_RESTATEMENT_VIEW"
     ):
         raise HumanAnchoredMaterializationError(
             "channel generative authorization or data boundary differs"

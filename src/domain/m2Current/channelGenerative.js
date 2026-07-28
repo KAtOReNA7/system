@@ -123,7 +123,11 @@ export function expandM2ChannelGenerativePackedRows(
       const g0MonthlyPositive = observedAtOrigin
         ? (
           frozen?.monthlyPositive
-          ?? nonnegativeFinite(explicitG0, "g0_monthly_positive")
+          ?? (
+            explicitG0 === undefined
+              ? null
+              : nonnegativeFinite(explicitG0, "g0_monthly_positive")
+          )
         )
         : 0;
       const reversalRateByHorizon = Object.freeze(Object.fromEntries(
@@ -149,6 +153,10 @@ export function expandM2ChannelGenerativePackedRows(
       ));
       output.push(Object.freeze({
         schema: "m2.current.channel_generative_monthly_row.v0.2",
+        actualDefinitionId: packed?.actualDefinitionId
+          ?? "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01",
+        labelView: packed?.labelView
+          ?? "DEVELOPMENT_MODELABLE_RESTATEMENT_VIEW",
         evaluationFamily: nonempty(
           packed?.evaluationFamily,
           "evaluation_family"
@@ -182,6 +190,195 @@ export function expandM2ChannelGenerativePackedRows(
   }
   output.sort(compareMonthlyRows);
   return Object.freeze(output);
+}
+
+export function applyM2DevelopmentModelableRestatementToPackedRows(
+  packedRows,
+  reconciliation,
+  allocationRows
+) {
+  const source = requireArray(packedRows, "packed_rows");
+  const view = reconciliation?.fourViews
+    ?.DEVELOPMENT_MODELABLE_RESTATEMENT_VIEW;
+  const exact = view?.exactIntegerReconciliation;
+  if (
+    reconciliation?.schema
+      !== "m2.reversal-restatement.scope-reconciliation.private.v1"
+    || reconciliation?.developmentModelableActualDefinitionId
+      !== "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01"
+    || view?.status
+      !== "UNALLOCATED_REVERSAL_RESIDUAL_EXCLUDED_FROM_MODELABLE_TARGET"
+    || exact?.differenceMinor !== "0"
+  ) {
+    throw new M2ChannelGenerativeContractError(
+      "m2_channel_generative_development_modelable_restatement_invalid"
+    );
+  }
+  const scalePower = positiveInteger(
+    reconciliation?.authority?.scalePower,
+    "reversal_scale_power"
+  );
+  const balanceByScopeMonth = new Map();
+  const knownScopes = new Set();
+  for (const scope of requireArray(
+    reconciliation?.scopes,
+    "reversal_scopes"
+  )) {
+    const workId = nonempty(scope?.standardWorkId, "reversal_work_id");
+    const channelUid = nonempty(
+      scope?.channelMemberId,
+      "reversal_channel_uid"
+    );
+    const scopeKey = `${workId}\u001f${channelUid}`;
+    knownScopes.add(scopeKey);
+    for (const balance of requireArray(
+      scope?.restatedBalances,
+      "restated_balances"
+    )) {
+      const month = requireMonth(balance?.month, "restated_month");
+      const amountMinor = requireIntegerString(
+        balance?.amountMinor,
+        "restated_amount_minor"
+      );
+      if (amountMinor < 0n) {
+        throw new M2ChannelGenerativeContractError(
+          "m2_channel_generative_modelable_month_negative"
+        );
+      }
+      balanceByScopeMonth.set(
+        `${scopeKey}\u001f${month}`,
+        amountMinor
+      );
+    }
+  }
+  const latestAvailability = new Map();
+  for (const allocation of requireArray(
+    allocationRows,
+    "reversal_allocation_rows"
+  )) {
+    const consumed = requireIntegerString(
+      allocation?.consumedAmountMinor,
+      "allocated_amount_minor"
+    );
+    if (consumed === 0n) continue;
+    const workId = nonempty(
+      allocation?.standardWorkId,
+      "allocation_work_id"
+    );
+    const channelUid = nonempty(
+      allocation?.channelMemberId,
+      "allocation_channel_uid"
+    );
+    const recognitionMonth = requireMonth(
+      allocation?.revenueRecognitionMonth,
+      "allocation_recognition_month"
+    );
+    const recordedMonth = requireMonth(
+      String(allocation?.reversalRecordedAt).slice(0, 7),
+      "allocation_recorded_month"
+    );
+    const key = `${workId}\u001f${channelUid}`
+      + `\u001f${recognitionMonth}`;
+    const previous = latestAvailability.get(key);
+    if (previous === undefined || previous < recordedMonth) {
+      latestAvailability.set(key, recordedMonth);
+    }
+  }
+  let transformedLabelCount = 0;
+  let laterRecordedReversalLabelCount = 0;
+  let originalPostingLabelChangedCount = 0;
+  const rows = source.map((packed) => {
+    const workId = nonempty(packed?.standardWorkId, "standard_work_id");
+    const channelUid = nonempty(packed?.channelUid, "channel_uid");
+    const scopeKey = `${workId}\u001f${channelUid}`;
+    if (!knownScopes.has(scopeKey)) {
+      throw new M2ChannelGenerativeContractError(
+        "m2_channel_generative_restatement_scope_missing"
+      );
+    }
+    const futureMonthlyLabels = requireArray(
+      packed?.futureMonthlyLabels,
+      "future_monthly_labels"
+    ).map((label) => {
+      const futureMonth = requireMonth(
+        label?.futureMonth,
+        "future_month"
+      );
+      const key = `${scopeKey}\u001f${futureMonth}`;
+      const amountMinor = balanceByScopeMonth.get(key) ?? 0n;
+      const actualPositive = minorIntegerToNumber(
+        amountMinor,
+        scalePower
+      );
+      const labelAvailableAsOf = [
+        futureMonth,
+        latestAvailability.get(key) ?? futureMonth
+      ].sort().at(-1);
+      if (labelAvailableAsOf > futureMonth) {
+        laterRecordedReversalLabelCount += 1;
+      }
+      if (
+        !nearlyEqual(
+          actualPositive,
+          Number(label?.actualPositive) - Number(label?.actualReversal)
+        )
+      ) {
+        originalPostingLabelChangedCount += 1;
+      }
+      transformedLabelCount += 1;
+      return Object.freeze({
+        ...label,
+        postingTimeActualPositive: nonnegativeFinite(
+          label?.actualPositive,
+          "posting_actual_positive"
+        ),
+        postingTimeActualReversal: nonnegativeFinite(
+          label?.actualReversal,
+          "posting_actual_reversal"
+        ),
+        postingTimeActual: finite(
+          label?.actual,
+          "posting_actual"
+        ),
+        actualPositive,
+        actualReversal: 0,
+        actual: actualPositive,
+        labelAvailableAsOf,
+        actualDefinitionId:
+          "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01",
+        labelView: "DEVELOPMENT_MODELABLE_RESTATEMENT_VIEW"
+      });
+    });
+    return Object.freeze({
+      ...packed,
+      futureMonthlyLabels: Object.freeze(futureMonthlyLabels),
+      actualDefinitionId:
+        "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01",
+      labelView: "DEVELOPMENT_MODELABLE_RESTATEMENT_VIEW",
+      excludedUnallocatedReversalResidualAssignedToLabel: false
+    });
+  });
+  return Object.freeze({
+    rows: Object.freeze(rows),
+    audit: Object.freeze({
+      schema:
+        "m2.current.channel_generative_G1_restatement_binding.v0.1",
+      actualDefinitionId:
+        "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01",
+      labelView: "DEVELOPMENT_MODELABLE_RESTATEMENT_VIEW",
+      residualPolicyStatus:
+        "UNALLOCATED_REVERSAL_RESIDUAL_EXCLUDED_FROM_MODELABLE_TARGET",
+      transformedPackedRowCount: rows.length,
+      transformedLabelCount,
+      laterRecordedReversalLabelCount,
+      originalPostingLabelChangedCount,
+      excludedUnallocatedReversalResidualMinor:
+        view.excludedUnallocatedReversalResidualMinor,
+      excludedUnallocatedReversalResidualAssignedToLabel: false,
+      originAfterCutoffReversalFeatureRowCount: 0,
+      exactIntegerReconciliationDifferenceMinor: exact.differenceMinor
+    })
+  });
 }
 
 export function verifyM2ChannelGenerativeG0(
@@ -477,6 +674,9 @@ export function fitM2ChannelGenerativeCandidate(
     }
     throw error;
   }
+  const allMechanismParentsFitted = M2_CHANNEL_GENERATIVE_MECHANISMS.every(
+    (mechanism) => stateByMechanism[mechanism]?.status === "FITTED"
+  );
   return Object.freeze({
     schema: "m2.current.channel_generative_model_state.v0.2",
     candidateId: candidate,
@@ -484,7 +684,7 @@ export function fitM2ChannelGenerativeCandidate(
     occurrenceL2: Number(occurrenceL2),
     conditionalAmountL2: Number(conditionalAmountL2),
     stateByMechanism: Object.freeze(stateByMechanism),
-    candidateEligible: true,
+    candidateEligible: allMechanismParentsFitted,
     G0UsedAsFeatureOrOffset: candidate === "G2",
     G0UsedForOccurrence: false,
     platformFeatureUsed: false,
@@ -511,7 +711,21 @@ export function predictM2ChannelGenerativeMonthly(row, state, config) {
       candidateEligible: state.candidateEligible !== false
     });
   }
+  if (state.candidateId === "G1" && row.mechanism === "other") {
+    return frozenPrediction({
+      row,
+      candidateId: state.candidateId,
+      positivePoint: 0,
+      reason: "other_mechanism",
+      candidateEligible: state.candidateEligible !== false
+    });
+  }
   if (state.status !== "FITTED") {
+    if (state.candidateId === "G1") {
+      throw new M2ChannelGenerativeContractError(
+        "m2_channel_generative_G1_raw_prediction_unavailable"
+      );
+    }
     return frozenPrediction({
       row,
       candidateId: state.candidateId,
@@ -524,6 +738,11 @@ export function predictM2ChannelGenerativeMonthly(row, state, config) {
   }
   const mechanismState = state.stateByMechanism[row.mechanism];
   if (mechanismState?.status !== "FITTED") {
+    if (state.candidateId === "G1") {
+      throw new M2ChannelGenerativeContractError(
+        "m2_channel_generative_G1_parent_unavailable"
+      );
+    }
     return frozenPrediction({
       row,
       candidateId: state.candidateId,
@@ -563,7 +782,9 @@ export function predictM2ChannelGenerativeMonthly(row, state, config) {
     ),
     occurrenceProbability,
     conditionalPositiveAmount,
-    frozenG0MonthlyOffset: row.g0MonthlyPositive,
+    frozenG0MonthlyOffset: state.candidateId === "G2"
+      ? row.g0MonthlyPositive
+      : null,
     dynamicResidual,
     smearingFactor: mechanismState.amount.smearing,
     usedGenerator: true,
@@ -892,6 +1113,651 @@ export function strictRollingM2ChannelGenerative(
   );
 }
 
+export function evaluateM2ChannelGenerativeG1Prerequisites({
+  phase,
+  rows,
+  frozenComparatorRows = null
+}) {
+  const source = requireMonthlyRows(rows);
+  const normalizedPhase = String(phase);
+  if (!["training", "outer_evaluation"].includes(normalizedPhase)) {
+    throw new M2ChannelGenerativeContractError(
+      "m2_channel_generative_G1_prerequisite_phase_invalid"
+    );
+  }
+  const featureRows = source.filter((row) => row.observedAtOrigin);
+  const checks = {
+    authorizedArm:
+      "M2-EXP-CHANNEL-GENERATIVE-02/G1",
+    originVisibleFeatureRowsPresent: featureRows.length > 0,
+    featuresAvailableAtOrigin: featureRows.every(
+      (row) => row.features !== null
+    ),
+    matureLabelMetadataPresent: source.every(
+      (row) => row.labelAvailableAsOf >= row.futureMonth
+    ),
+    developmentModelableActualDefinition: source.every(
+      (row) => row.actualDefinitionId
+        === "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01"
+    ),
+    frozenG0ChannelOffsetRequired: false,
+    auxiliaryG0StateRequired: false
+  };
+  let pairedComparator = null;
+  if (normalizedPhase === "outer_evaluation") {
+    pairedComparator = scoreM2ChannelGenerativeFrozenG0Comparator(
+      source,
+      requireArray(frozenComparatorRows, "frozen_comparator_rows")
+    );
+  }
+  const passed = checks.originVisibleFeatureRowsPresent
+    && checks.featuresAvailableAtOrigin
+    && checks.matureLabelMetadataPresent
+    && checks.developmentModelableActualDefinition;
+  return Object.freeze({
+    schema: "m2.current.channel_generative_G1_prerequisites.v0.1",
+    phase: normalizedPhase,
+    passed,
+    checks: Object.freeze(checks),
+    frozenComparatorRead: normalizedPhase === "outer_evaluation",
+    frozenComparatorUsedForTraining: false,
+    frozenComparatorUsedForInnerSelection: false,
+    pairedComparator
+  });
+}
+
+export function selectM2ChannelGenerativeG1InsideTraining(
+  rows,
+  config,
+  {
+    now = Date.now,
+    deadlineMs = Infinity
+  } = {}
+) {
+  const source = requireMonthlyRows(rows);
+  evaluateM2ChannelGenerativeG1Prerequisites({
+    phase: "training",
+    rows: source
+  });
+  const foldCount = positiveInteger(
+    config.selection.innerWorkFoldCount,
+    "inner_work_fold_count"
+  );
+  const configurations = [];
+  for (const parameters of gridConfigurations(config)) {
+    const predictions = new Map();
+    const foldReceipts = [];
+    let eligible = true;
+    for (let fold = 0; fold < foldCount; fold += 1) {
+      assertBeforeDeadline(now, deadlineMs);
+      const training = source.filter((row) => (
+        innerWorkFold(row.standardWorkId, foldCount, config) !== fold
+      ));
+      const validation = source.filter((row) => (
+        innerWorkFold(row.standardWorkId, foldCount, config) === fold
+      ));
+      if (training.length === 0 || validation.length === 0) {
+        throw new M2ChannelGenerativeContractError(
+          "m2_channel_generative_G1_inner_fold_empty"
+        );
+      }
+      const state = fitM2ChannelGenerativeCandidate(training, config, {
+        candidateId: "G1",
+        ...parameters,
+        now,
+        deadlineMs
+      });
+      if (state.candidateEligible === false) {
+        eligible = false;
+      } else {
+        for (const row of validation) {
+          predictions.set(
+            monthlyKeyFromRow(row),
+            predictM2ChannelGenerativeMonthly(row, state, config)
+          );
+        }
+      }
+      foldReceipts.push(Object.freeze({
+        fold,
+        trainingRowCount: training.length,
+        trainingWorkCount: uniqueWorkCount(training),
+        validationRowCount: validation.length,
+        validationWorkCount: uniqueWorkCount(validation),
+        positiveTrainingMonthCount: training.filter(
+          (row) => row.actualPositive > 0
+        ).length,
+        stateStatus: state.status,
+        candidateEligible: state.candidateEligible,
+        frozenG0ChannelOffsetRead: false,
+        outerValidationUsedForSelection: false
+      }));
+    }
+    const evaluation = eligible
+      ? scoreM2ChannelGenerativeG1Predictions(
+        source,
+        predictions,
+        config
+      )
+      : null;
+    configurations.push(Object.freeze({
+      candidateId: "G1",
+      ...parameters,
+      configurationId: configurationId("G1", parameters),
+      candidateEligible: eligible,
+      metrics: evaluation?.workTotal ?? null,
+      predictions,
+      foldReceipts: Object.freeze(foldReceipts)
+    }));
+  }
+  const eligible = configurations.filter(
+    (configuration) => configuration.candidateEligible
+  );
+  const selected = eligible.length === 0
+    ? null
+    : [...eligible].sort(compareConfigurationScore)[0];
+  return Object.freeze({
+    schema: "m2.current.channel_generative_G1_inner_selection.v0.1",
+    modelId: "M2-CHAN-GEN02",
+    experimentArmId: "M2-EXP-CHANNEL-GENERATIVE-02/G1",
+    selected,
+    configurations: Object.freeze(configurations),
+    candidateIdsExecuted: Object.freeze(["G1"]),
+    G2Executed: false,
+    G3Executed: false,
+    frozenG0ChannelOffsetRead: false,
+    auxiliaryG0StateRead: false,
+    outerOutcomeUsedForSelection: false
+  });
+}
+
+export function crossFitM2ChannelGenerativeG1(
+  rows,
+  config,
+  options = {}
+) {
+  const source = requireMonthlyRows(rows).filter(
+    (row) => row.evaluationFamily === "primary"
+  );
+  evaluateM2ChannelGenerativeG1Prerequisites({
+    phase: "training",
+    rows: source
+  });
+  const foldCount = positiveInteger(
+    config.selection.outerPrimaryWorkFoldCount,
+    "outer_primary_fold_count"
+  );
+  const predictions = new Map();
+  const receipts = [];
+  for (let fold = 0; fold < foldCount; fold += 1) {
+    const training = source.filter(
+      (row) => deterministicWorkFold(row.standardWorkId, foldCount) !== fold
+    );
+    const validation = source.filter(
+      (row) => deterministicWorkFold(row.standardWorkId, foldCount) === fold
+    );
+    if (training.length === 0 || validation.length === 0) {
+      throw new M2ChannelGenerativeContractError(
+        "m2_channel_generative_G1_outer_primary_fold_empty"
+      );
+    }
+    const deadlineMs = options.deadlineMs
+      ?? Date.now() + Number(
+        config.numerical.timeoutSecondsPerCandidateOuterFold
+      ) * 1000;
+    const selection = selectM2ChannelGenerativeG1InsideTraining(
+      training,
+      config,
+      { ...options, deadlineMs }
+    );
+    const state = fitSelectedG1State(
+      training,
+      selection,
+      config,
+      { ...options, deadlineMs }
+    );
+    for (const row of validation) {
+      predictions.set(
+        monthlyKeyFromRow(row),
+        predictM2ChannelGenerativeMonthly(row, state, config)
+      );
+    }
+    receipts.push(g1SelectionReceipt({
+      id: fold,
+      training,
+      validation,
+      selection,
+      state
+    }));
+  }
+  return finalizeG1OuterEvaluation(
+    source,
+    predictions,
+    receipts,
+    config,
+    {
+      schema: "m2.current.channel_generative_G1_primary_cross_fit.v0.1",
+      evaluationFamily: "primary"
+    }
+  );
+}
+
+export function strictRollingM2ChannelGenerativeG1(
+  rows,
+  config,
+  options = {}
+) {
+  const source = requireMonthlyRows(rows).filter(
+    (row) => row.evaluationFamily === "strict"
+  );
+  evaluateM2ChannelGenerativeG1Prerequisites({
+    phase: "training",
+    rows: source
+  });
+  const predictions = new Map();
+  const receipts = [];
+  const evaluatedRows = [];
+  for (const outerOrigin of config.selection.strictOrigins) {
+    const training = source.filter((row) => (
+      row.origin < outerOrigin
+      && row.labelAvailableAsOf < outerOrigin
+    ));
+    const validation = source.filter(
+      (row) => row.origin === outerOrigin
+    );
+    if (training.length === 0 || validation.length === 0) {
+      receipts.push(Object.freeze({
+        outerOrigin,
+        status: "INSUFFICIENT_MATURE_EARLIER_ROWS",
+        trainingRowCount: training.length,
+        validationRowCount: validation.length
+      }));
+      continue;
+    }
+    const deadlineMs = options.deadlineMs
+      ?? Date.now() + Number(
+        config.numerical.timeoutSecondsPerCandidateOuterFold
+      ) * 1000;
+    const selection = selectM2ChannelGenerativeG1InsideTraining(
+      training,
+      config,
+      { ...options, deadlineMs }
+    );
+    const state = fitSelectedG1State(
+      training,
+      selection,
+      config,
+      { ...options, deadlineMs }
+    );
+    for (const row of validation) {
+      predictions.set(
+        monthlyKeyFromRow(row),
+        predictM2ChannelGenerativeMonthly(row, state, config)
+      );
+      evaluatedRows.push(row);
+    }
+    receipts.push(Object.freeze({
+      outerOrigin,
+      status: "EVALUATED",
+      ...g1SelectionReceipt({
+        id: outerOrigin,
+        training,
+        validation,
+        selection,
+        state
+      }),
+      maximumTrainingLabelAvailableAsOf:
+        training.map((row) => row.labelAvailableAsOf).sort().at(-1),
+      sameOrLaterOuterTruthRead: false
+    }));
+  }
+  if (evaluatedRows.length === 0) {
+    throw new M2ChannelGenerativeContractError(
+      "m2_channel_generative_G1_strict_output_empty"
+    );
+  }
+  return finalizeG1OuterEvaluation(
+    evaluatedRows,
+    predictions,
+    receipts,
+    config,
+    {
+      schema: "m2.current.channel_generative_G1_strict_rolling.v0.1",
+      evaluationFamily: "strict"
+    }
+  );
+}
+
+export function buildM2ChannelGenerativeG1PooledDiagnosticPredictions(
+  rows,
+  config,
+  g1OuterResult,
+  options = {}
+) {
+  const source = requireMonthlyRows(rows).filter(
+    (row) => row.evaluationFamily === g1OuterResult.evaluationFamily
+  );
+  const predictions = new Map();
+  for (const receipt of g1OuterResult.receipts) {
+    if (receipt.status === "INSUFFICIENT_MATURE_EARLIER_ROWS") continue;
+    const parameters = receipt.selectedConfiguration;
+    let training;
+    let validation;
+    if (g1OuterResult.evaluationFamily === "primary") {
+      const foldCount = positiveInteger(
+        config.selection.outerPrimaryWorkFoldCount,
+        "outer_primary_fold_count"
+      );
+      training = source.filter(
+        (row) => deterministicWorkFold(
+          row.standardWorkId,
+          foldCount
+        ) !== receipt.id
+      );
+      validation = source.filter(
+        (row) => deterministicWorkFold(
+          row.standardWorkId,
+          foldCount
+        ) === receipt.id
+      );
+    } else {
+      const outerOrigin = String(receipt.outerOrigin);
+      training = source.filter((row) => (
+        row.origin < outerOrigin
+        && row.labelAvailableAsOf < outerOrigin
+      ));
+      validation = source.filter((row) => row.origin === outerOrigin);
+    }
+    const state = fitM2ChannelGenerativeG1PooledDiagnostic(
+      training,
+      config,
+      {
+        occurrenceL2: parameters.occurrenceL2,
+        conditionalAmountL2: parameters.conditionalAmountL2,
+        ...options
+      }
+    );
+    for (const row of validation) {
+      predictions.set(
+        monthlyKeyFromRow(row),
+        predictM2ChannelGenerativeG1PooledDiagnostic(row, state, config)
+      );
+    }
+  }
+  const expectedRows = g1OuterResult.rows;
+  if (predictions.size !== expectedRows.length) {
+    throw new M2ChannelGenerativeContractError(
+      "m2_channel_generative_G1_pooled_prediction_population_mismatch"
+    );
+  }
+  return Object.freeze({
+    schema:
+      "m2.current.channel_generative_G1_pooled_diagnostic_predictions.v0.1",
+    evaluationFamily: g1OuterResult.evaluationFamily,
+    predictions,
+    rowCount: predictions.size,
+    reusedFrozenG1Hyperparameters: true,
+    candidateOutcomeUsedForSelection: false,
+    diagnosticOnly: true,
+    deployable: false
+  });
+}
+
+export function fitM2ChannelGenerativeG1PooledDiagnostic(
+  rows,
+  config,
+  {
+    occurrenceL2,
+    conditionalAmountL2,
+    now = Date.now,
+    deadlineMs = Infinity
+  }
+) {
+  const source = requireMonthlyRows(rows).filter((row) => (
+    row.observedAtOrigin
+    && M2_CHANNEL_GENERATIVE_MECHANISMS.includes(row.mechanism)
+  ));
+  const works = new Set(source.map((row) => row.standardWorkId));
+  const positive = source.filter((row) => row.actualPositive > 0);
+  if (
+    works.size < Number(config.eligibility.minimumDistinctTrainingWorks)
+    || source.length < Number(
+      config.eligibility.minimumMonthlyTrainingRows
+    )
+    || positive.length < Number(
+      config.eligibility.minimumPositiveTrainingMonths
+    )
+  ) {
+    throw new M2ChannelGenerativeContractError(
+      "m2_channel_generative_G1_pooled_diagnostic_ineligible"
+    );
+  }
+  const standardizer = fitStandardizer(source, config.featureOrder);
+  const occurrenceDesign = source.map(
+    (row) => pooledDesignRow(row, standardizer, config)
+  );
+  const occurrence = fitLogistic(
+    occurrenceDesign,
+    source.map((row) => row.actualPositive > 0 ? 1 : 0),
+    Number(occurrenceL2),
+    config.numerical,
+    { now, deadlineMs }
+  );
+  const amountDesign = positive.map(
+    (row) => pooledDesignRow(row, standardizer, config)
+  );
+  const amountTargets = positive.map(
+    (row) => Math.log1p(row.actualPositive)
+  );
+  const amount = fitRidge(
+    amountDesign,
+    amountTargets,
+    Number(conditionalAmountL2),
+    config.numerical,
+    { now, deadlineMs }
+  );
+  const smearing = mean(amountDesign.map((vector, index) => (
+    Math.exp(amountTargets[index] - dot(vector, amount.coefficients))
+  )));
+  return Object.freeze({
+    schema:
+      "m2.current.channel_generative_G1_pooled_diagnostic_state.v0.1",
+    status: "FITTED",
+    occurrenceL2: Number(occurrenceL2),
+    conditionalAmountL2: Number(conditionalAmountL2),
+    occurrence,
+    amount: Object.freeze({ ...amount, smearing }),
+    standardizer,
+    trainingRowCount: source.length,
+    trainingWorkCount: works.size,
+    positiveTrainingMonthCount: positive.length,
+    mechanismIdentityUsed: false,
+    diagnosticOnly: true
+  });
+}
+
+export function predictM2ChannelGenerativeG1PooledDiagnostic(
+  row,
+  state,
+  config
+) {
+  requireMonthlyRow(row);
+  if (
+    !row.observedAtOrigin
+    || !M2_CHANNEL_GENERATIVE_MECHANISMS.includes(row.mechanism)
+  ) {
+    return Object.freeze({
+      candidateId: "G1_POOLED_BASIS_DIAGNOSTIC",
+      positivePoint: 0,
+      occurrenceProbability: row.observedAtOrigin ? null : 0,
+      conditionalPositiveAmount: null,
+      usedGenerator: false,
+      fallbackReason: row.observedAtOrigin
+        ? "other_mechanism"
+        : "future_first_seen",
+      candidateEligible: true
+    });
+  }
+  const vector = pooledDesignRow(row, state.standardizer, config);
+  const occurrenceProbability = predictLogistic(
+    vector,
+    state.occurrence
+  );
+  const conditionalPositiveAmount = Math.max(
+    0,
+    Math.exp(dot(vector, state.amount.coefficients))
+      * state.amount.smearing - 1
+  );
+  return Object.freeze({
+    candidateId: "G1_POOLED_BASIS_DIAGNOSTIC",
+    positivePoint: occurrenceProbability * conditionalPositiveAmount,
+    occurrenceProbability,
+    conditionalPositiveAmount,
+    usedGenerator: true,
+    fallbackReason: null,
+    candidateEligible: true
+  });
+}
+
+export function scoreM2ChannelGenerativeG1Predictions(
+  rows,
+  predictions,
+  config
+) {
+  const source = requireMonthlyRows(rows);
+  const cases = aggregateG1PredictionCases(source, predictions);
+  return buildG1Evaluation(
+    source,
+    predictions,
+    cases,
+    config,
+    "G1"
+  );
+}
+
+export function scoreM2ChannelGenerativeFrozenG0Comparator(
+  rows,
+  frozenRows,
+  config = null
+) {
+  const source = requireMonthlyRows(rows);
+  const frozen = requireArray(frozenRows, "frozen_comparator_rows");
+  const actualCases = aggregateG1ActualCases(source);
+  const workIndex = new Map();
+  const channelIndex = new Map();
+  for (const row of frozen) {
+    if (row?.rowKind === "work") {
+      const key = caseKey(
+        row.standardWorkId,
+        row.origin,
+        row.horizonMonths
+      );
+      if (workIndex.has(key)) {
+        throw new M2ChannelGenerativeContractError(
+          "m2_channel_generative_G0_paired_work_duplicate"
+        );
+      }
+      workIndex.set(key, row);
+    } else if (row?.rowKind === "work_channel") {
+      const key = `${caseKey(
+        row.standardWorkId,
+        row.origin,
+        row.horizonMonths
+      )}\u001f${row.channelUid}`;
+      if (channelIndex.has(key)) {
+        throw new M2ChannelGenerativeContractError(
+          "m2_channel_generative_G0_paired_channel_duplicate"
+        );
+      }
+      channelIndex.set(key, row);
+    }
+  }
+  const cases = actualCases.map((actualCase) => {
+    const key = caseKey(
+      actualCase.standardWorkId,
+      actualCase.origin,
+      actualCase.horizonMonths
+    );
+    const frozenWork = workIndex.get(key);
+    if (frozenWork === undefined) {
+      throw new M2ChannelGenerativeContractError(
+        "m2_channel_generative_G0_paired_work_missing"
+      );
+    }
+    const channels = actualCase.channels.map((channel) => {
+      const frozenChannel = channelIndex.get(
+        `${key}\u001f${channel.channelUid}`
+      );
+      if (frozenChannel === undefined) {
+        throw new M2ChannelGenerativeContractError(
+          "m2_channel_generative_G0_paired_channel_missing"
+        );
+      }
+      return Object.freeze({
+        ...channel,
+        pointEstimate: finite(
+          frozenChannel?.ablationPoints?.A1,
+          "frozen_G0_channel_point"
+        )
+      });
+    });
+    return Object.freeze({
+      ...actualCase,
+      pointEstimate: finite(
+        frozenWork?.ablationPoints?.A1,
+        "frozen_G0_work_point"
+      ),
+      positivePoint: finite(
+        frozenWork?.ablationPositivePoints?.A1,
+        "frozen_G0_work_positive_point"
+      ),
+      candidateId: "G0",
+      channels: Object.freeze(channels)
+    });
+  });
+  if (workIndex.size !== cases.length) {
+    throw new M2ChannelGenerativeContractError(
+      "m2_channel_generative_G0_paired_population_mismatch"
+    );
+  }
+  const resolvedConfig = config ?? {
+    evaluation: { topRevenueFractions: [0.01, 0.05, 0.1] }
+  };
+  return Object.freeze({
+    candidateId: "G0",
+    workTotal: scorePointRows(cases),
+    workChannel: scorePointRows(cases.flatMap((row) => row.channels)),
+    byHorizon: scoreSlices(cases, "horizonMonths"),
+    byOrigin: scoreSlices(cases, "origin"),
+    byMechanism: scoreSlices(
+      cases.flatMap((row) => row.channels)
+        .filter((row) => row.observedAtOrigin),
+      "mechanism"
+    ),
+    topRevenue: scoreTopRevenue(
+      cases,
+      resolvedConfig.evaluation.topRevenueFractions
+    ),
+    coverage: Object.freeze({
+      observedChannelMonthlyRowCount:
+        source.filter((row) => row.observedAtOrigin).length,
+      generatorMonthlyRowCount: 0,
+      generatorObservedChannelRowUsage: 0,
+      observedChannelActualPositiveCash: sum(
+        source.filter((row) => row.observedAtOrigin)
+          .map((row) => row.actualPositive)
+      ),
+      generatorActualPositiveCash: 0,
+      generatorActualPositiveCashUsage: 0
+    }),
+    cases: Object.freeze(cases),
+    pairedCaseCount: cases.length,
+    sameActualDefinitionId:
+      "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01",
+    frozenPredictionsModified: false,
+    frozenPredictionRowsGenerated: 0
+  });
+}
+
 export function scoreM2ChannelGenerativePredictions(
   rows,
   predictions,
@@ -997,7 +1863,7 @@ export function buildM2ChannelGenerativeSyntheticRows(fixture, config) {
         for (let futureMonthIndex = 1;
           futureMonthIndex <= maximumHorizon;
           futureMonthIndex += 1) {
-          const actualPositive = workIndex === worksPerMechanism - 1
+          const postingPositive = workIndex === worksPerMechanism - 1
             ? 0
             : syntheticFuturePositive({
               mechanism,
@@ -1012,14 +1878,15 @@ export function buildM2ChannelGenerativeSyntheticRows(fixture, config) {
             });
           const actualReversal = (
             futureMonthIndex === 2 && workIndex % 17 === 0
-          ) ? actualPositive * 0.05 : 0;
+          ) ? postingPositive * 0.05 : 0;
+          const actualPositive = postingPositive - actualReversal;
           labels.push(Object.freeze({
             futureMonthIndex,
             futureMonth: addMonths(origin, futureMonthIndex),
             labelAvailableAsOf: addMonths(origin, futureMonthIndex),
             actualPositive,
-            actualReversal,
-            actual: actualPositive - actualReversal,
+            actualReversal: 0,
+            actual: actualPositive,
             includedHorizons: horizons.filter(
               (horizon) => horizon >= futureMonthIndex
             )
@@ -1036,6 +1903,9 @@ export function buildM2ChannelGenerativeSyntheticRows(fixture, config) {
           revenueMode: syntheticRevenueMode(mechanism),
           mechanism,
           observedAtOrigin: true,
+          actualDefinitionId:
+            "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01",
+          labelView: "DEVELOPMENT_MODELABLE_RESTATEMENT_VIEW",
           features,
           g0MonthlyPositive,
           reversalRateByHorizon: Object.fromEntries(
@@ -1055,6 +1925,9 @@ export function buildM2ChannelGenerativeSyntheticRows(fixture, config) {
             revenueMode: "future_first_seen_label_only",
             mechanism: "future_first_seen_label_only",
             observedAtOrigin: false,
+            actualDefinitionId:
+              "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01",
+            labelView: "DEVELOPMENT_MODELABLE_RESTATEMENT_VIEW",
             features: null,
             g0MonthlyPositive: 0,
             reversalRateByHorizon: Object.fromEntries(
@@ -1092,35 +1965,26 @@ export function buildM2ChannelGenerativeSyntheticDiagnostic(
     occurrenceL2: config.grid.occurrenceL2[0],
     conditionalAmountL2: config.grid.conditionalAmountL2[0]
   };
-  const states = Object.fromEntries(
-    M2_CHANNEL_GENERATIVE_RAW_CANDIDATES.map((candidateId) => [
-      candidateId,
-      fitM2ChannelGenerativeCandidate(training, config, {
-        candidateId,
-        ...parameters
-      })
-    ])
-  );
+  const state = fitM2ChannelGenerativeCandidate(training, config, {
+    candidateId: "G1",
+    ...parameters
+  });
   const validation = rows.filter(
     (row) => row.evaluationFamily === "strict"
   );
-  const evaluations = {};
-  for (const candidateId of M2_CHANNEL_GENERATIVE_RAW_CANDIDATES) {
-    const predictions = new Map(validation.map((row) => [
-      monthlyKeyFromRow(row),
-      predictM2ChannelGenerativeMonthly(
-        row,
-        states[candidateId],
-        config
-      )
-    ]));
-    evaluations[candidateId] = scoreM2ChannelGenerativePredictions(
-      validation,
-      predictions,
-      config,
-      { candidateId }
-    );
-  }
+  const predictions = new Map(validation.map((row) => [
+    monthlyKeyFromRow(row),
+    predictM2ChannelGenerativeMonthly(row, state, config)
+  ]));
+  const evaluation = scoreM2ChannelGenerativeG1Predictions(
+    validation,
+    predictions,
+    config
+  );
+  const prerequisites = evaluateM2ChannelGenerativeG1Prerequisites({
+    phase: "training",
+    rows: training
+  });
   const allMonthlyKeys = new Set(rows.map(monthlyKeyFromRow));
   if (allMonthlyKeys.size !== rows.length) {
     throw new M2ChannelGenerativeContractError(
@@ -1128,7 +1992,13 @@ export function buildM2ChannelGenerativeSyntheticDiagnostic(
     );
   }
   return Object.freeze({
-    schema: "m2.current.channel_generative_public_diagnostic.v0.2",
+    schema: "m2.current.channel_generative_G1_public_diagnostic.v0.1",
+    displayNameZh:
+      "渠道时间生成模型 v0.2——独立渠道月度发生—条件金额核心",
+    displayNameEn:
+      "Channel Generative v0.2 — Independent Monthly Occurrence × Conditional Amount Core",
+    modelId: "M2-CHAN-GEN02",
+    experimentArmId: "M2-EXP-CHANNEL-GENERATIVE-02/G1",
     fixtureSchema: String(fixture.schema),
     packedTrainingGrainVerified: true,
     monthlyRowCount: rows.length,
@@ -1136,17 +2006,20 @@ export function buildM2ChannelGenerativeSyntheticDiagnostic(
     workCount: uniqueWorkCount(rows),
     sameWorkAcrossMultipleOrigins: true,
     overlappingHorizonNoDuplicate: true,
-    evaluations: Object.freeze(Object.fromEntries(
-      Object.entries(evaluations).map(([id, value]) => [
-        id,
-        publicEvaluation(value)
-      ])
-    )),
+    prerequisites,
+    evaluations: Object.freeze({
+      G1: publicEvaluation(evaluation)
+    }),
     boundaries: Object.freeze({
       publicSyntheticOnly: true,
       privateArtifactRead: false,
-      G1UsesG0: states.G1.G0UsedAsFeatureOrOffset,
-      G2UsesG0OnlyAsAmountOffset: true,
+      G1UsesG0: state.G0UsedAsFeatureOrOffset,
+      frozenG0ChannelOffsetRequiredForG1: false,
+      auxiliaryG0StateRequiredForG1: false,
+      frozenG0ReadBySyntheticDiagnostic: false,
+      candidateIdsExecuted: Object.freeze(["G1"]),
+      G2Executed: false,
+      G3Executed: false,
       platformFeatureUsed: false,
       taxonomyFeatureUsed: false,
       scalarFactorUsed: false,
@@ -1170,65 +2043,94 @@ export function buildM2ChannelGenerativeSyntheticDiagnostic(
 
 export function buildM2ChannelGenerativeForecastabilityDiagnostic(
   rows,
-  candidatePredictions,
-  config
+  g1Predictions,
+  config,
+  {
+    pooledPredictions = null,
+    candidateOutputsFrozen = true
+  } = {}
 ) {
   const source = requireMonthlyRows(rows);
-  const candidates = ["G0", "G1", "G2"];
-  const output = {};
-  for (const candidateId of candidates) {
-    const predictions = candidateId === "G0"
-      ? new Map(source.map((row) => [
-        monthlyKeyFromRow(row),
-        Object.freeze({
-          candidateId: "G0",
-          positivePoint: row.observedAtOrigin
-            ? row.g0MonthlyPositive
-            : 0,
-          conditionalPositiveAmount: row.g0MonthlyPositive,
-          occurrenceProbability: null,
-          usedGenerator: false,
-          fallbackReason: "frozen_G0"
-        })
-      ]))
-      : candidatePredictions[candidateId];
-    const base = scoreM2ChannelGenerativePredictions(
-      source,
-      predictions,
-      config,
-      { candidateId }
+  if (candidateOutputsFrozen !== true) {
+    throw new M2ChannelGenerativeContractError(
+      "m2_channel_generative_oracle_before_candidate_freeze"
     );
-    const oracleOccurrence = new Map(source.map((row) => {
-      const prediction = predictions.get(monthlyKeyFromRow(row));
-      return [monthlyKeyFromRow(row), Object.freeze({
-        ...prediction,
-        candidateId: `${candidateId}_ORACLE_OCCURRENCE`,
-        positivePoint: row.actualPositive > 0
-          ? Number(
-            prediction.conditionalPositiveAmount
-              ?? row.g0MonthlyPositive
-          )
-          : 0
-      })];
-    }));
-    const oracle = scoreM2ChannelGenerativePredictions(
-      source,
-      oracleOccurrence,
-      config,
-      { candidateId: `${candidateId}_ORACLE_OCCURRENCE` }
-    );
-    output[candidateId] = Object.freeze({
-      originalAbsoluteError: base.workTotal.absoluteError,
-      oracleOccurrenceAbsoluteError: oracle.workTotal.absoluteError,
-      maximumRemovableOccurrenceGap:
-        base.workTotal.absoluteError - oracle.workTotal.absoluteError,
-      remainingConditionalAmountAbsoluteError:
-        oracle.workTotal.absoluteError,
-      deployable: false,
-      selectionEligible: false,
-      futureInformationUsed: true
-    });
   }
+  const base = scoreM2ChannelGenerativeG1Predictions(
+    source,
+    g1Predictions,
+    config
+  );
+  const oracleOccurrencePredictions = new Map();
+  const oracleAmountPredictions = new Map();
+  const oracleBothPredictions = new Map();
+  const futureEntryPredictions = new Map();
+  for (const row of source) {
+    const key = monthlyKeyFromRow(row);
+    const prediction = g1Predictions.get(key);
+    if (prediction === undefined) {
+      throw new M2ChannelGenerativeContractError(
+        "m2_channel_generative_oracle_G1_prediction_missing"
+      );
+    }
+    const observed = row.observedAtOrigin;
+    const occurrenceProbability = prediction.occurrenceProbability
+      ?? (observed ? 0 : 0);
+    oracleOccurrencePredictions.set(key, Object.freeze({
+      ...prediction,
+      candidateId: "G1_ORACLE_OCCURRENCE_ONLY",
+      positivePoint:
+        observed && row.actualPositive > 0
+          ? Number(prediction.conditionalPositiveAmount ?? 0)
+          : 0
+    }));
+    oracleAmountPredictions.set(key, Object.freeze({
+      ...prediction,
+      candidateId: "G1_ORACLE_AMOUNT_ONLY",
+      positivePoint: observed
+        ? occurrenceProbability * row.actualPositive
+        : 0
+    }));
+    oracleBothPredictions.set(key, Object.freeze({
+      ...prediction,
+      candidateId: "G1_ORACLE_BOTH",
+      positivePoint: row.actualPositive
+    }));
+    futureEntryPredictions.set(key, Object.freeze({
+      ...prediction,
+      candidateId: "G1_FUTURE_FIRST_ENTRY_CEILING",
+      positivePoint: observed
+        ? prediction.positivePoint
+        : row.actualPositive
+    }));
+  }
+  const occurrence = scoreM2ChannelGenerativeG1Predictions(
+    source,
+    oracleOccurrencePredictions,
+    config
+  );
+  const amount = scoreM2ChannelGenerativeG1Predictions(
+    source,
+    oracleAmountPredictions,
+    config
+  );
+  const both = scoreM2ChannelGenerativeG1Predictions(
+    source,
+    oracleBothPredictions,
+    config
+  );
+  const futureEntry = scoreM2ChannelGenerativeG1Predictions(
+    source,
+    futureEntryPredictions,
+    config
+  );
+  const pooled = pooledPredictions === null
+    ? null
+    : scoreM2ChannelGenerativeG1Predictions(
+      source,
+      pooledPredictions,
+      config
+    );
   const futureFirstSeen = source.filter(
     (row) => !row.observedAtOrigin
   );
@@ -1239,7 +2141,10 @@ export function buildM2ChannelGenerativeForecastabilityDiagnostic(
     futureFirstSeen.map((row) => row.actualPositive)
   );
   return Object.freeze({
-    schema: "m2.current.channel_generative_forecastability.v0.1",
+    schema: "m2.current.channel_generative_G1_forecastability.v0.2",
+    modelId: "M2-CHAN-GEN02",
+    experimentArmId: "M2-EXP-CHANNEL-GENERATIVE-02/G1",
+    candidateOutputsFrozen: true,
     currentReachability: Object.freeze({
       totalActualPositiveCash,
       futureFirstSeenActualPositiveCash,
@@ -1248,7 +2153,45 @@ export function buildM2ChannelGenerativeForecastabilityDiagnostic(
         : futureFirstSeenActualPositiveCash / totalActualPositiveCash,
       completeBayesErrorFloor: false
     }),
-    oracleOccurrence: Object.freeze(output),
+    diagnostics: Object.freeze({
+      ORACLE_OCCURRENCE_ONLY: oracleSummary(base, occurrence),
+      ORACLE_AMOUNT_ONLY: oracleSummary(base, amount),
+      ORACLE_BOTH: Object.freeze({
+        ...oracleSummary(base, both),
+        labelAggregationValidationPassed:
+          both.workTotal.absoluteError <= 1e-8
+      }),
+      FUTURE_FIRST_ENTRY_CEILING: Object.freeze({
+        ...oracleSummary(base, futureEntry),
+        futureFirstSeenActualPositiveCash,
+        futureFirstSeenShare: totalActualPositiveCash === 0
+          ? 0
+          : futureFirstSeenActualPositiveCash / totalActualPositiveCash
+      }),
+      MECHANISM_INFORMATION_GAIN: pooled === null
+        ? Object.freeze({
+          status: "NOT_EXECUTED_POOLED_PREDICTIONS_UNAVAILABLE",
+          deployable: false,
+          selectionEligible: false,
+          participatesInGate: false
+        })
+        : Object.freeze({
+          status: "EXECUTED_DIAGNOSTIC_ONLY",
+          mechanismSpecificAbsoluteError: base.workTotal.absoluteError,
+          pooledBasisAbsoluteError: pooled.workTotal.absoluteError,
+          absoluteErrorGain:
+            pooled.workTotal.absoluteError - base.workTotal.absoluteError,
+          relativeWapeGain: pooled.workTotal.wape === 0
+            ? null
+            : (pooled.workTotal.wape - base.workTotal.wape)
+              / pooled.workTotal.wape,
+          mechanismSpecificByMechanism: base.byMechanism,
+          pooledByMechanism: pooled.byMechanism,
+          deployable: false,
+          selectionEligible: false,
+          participatesInGate: false
+        })
+    }),
     participatesInTraining: false,
     participatesInSelection: false,
     participatesInGate: false,
@@ -1319,6 +2262,270 @@ function buildFrozenG0Index(rows, tolerance = 1e-8) {
     works,
     channels,
     overlapGroups
+  });
+}
+
+function fitSelectedG1State(training, selection, config, options) {
+  const selected = selection.selected;
+  if (selected === null) {
+    throw new M2ChannelGenerativeContractError(
+      "m2_channel_generative_G1_all_inner_configurations_ineligible"
+    );
+  }
+  const state = fitM2ChannelGenerativeCandidate(training, config, {
+    candidateId: "G1",
+    occurrenceL2: selected.occurrenceL2,
+    conditionalAmountL2: selected.conditionalAmountL2,
+    ...options
+  });
+  if (state.candidateEligible === false) {
+    throw new M2ChannelGenerativeContractError(
+      "m2_channel_generative_G1_selected_state_ineligible"
+    );
+  }
+  return state;
+}
+
+function g1SelectionReceipt({
+  id,
+  training,
+  validation,
+  selection,
+  state
+}) {
+  const selected = selection.selected;
+  return Object.freeze({
+    id,
+    trainingRowCount: training.length,
+    trainingWorkCount: uniqueWorkCount(training),
+    trainingPositiveMonthCount:
+      training.filter((row) => row.actualPositive > 0).length,
+    validationRowCount: validation.length,
+    validationWorkCount: uniqueWorkCount(validation),
+    validationPositiveMonthCount:
+      validation.filter((row) => row.actualPositive > 0).length,
+    selectedConfiguration: Object.freeze({
+      occurrenceL2: selected.occurrenceL2,
+      conditionalAmountL2: selected.conditionalAmountL2,
+      configurationId: selected.configurationId,
+      outerOutcomeUsedForSelection: false
+    }),
+    configurationCount: selection.configurations.length,
+    stateStatus: state.status,
+    candidateEligible: state.candidateEligible,
+    G0UsedAsFeatureOrOffset: state.G0UsedAsFeatureOrOffset,
+    frozenG0ChannelOffsetRead: false,
+    auxiliaryG0StateRead: false,
+    outerValidationUsedForSelection: false
+  });
+}
+
+function finalizeG1OuterEvaluation(
+  rows,
+  predictions,
+  receipts,
+  config,
+  identity
+) {
+  const evaluation = scoreM2ChannelGenerativeG1Predictions(
+    rows,
+    predictions,
+    config
+  );
+  return Object.freeze({
+    ...identity,
+    modelId: "M2-CHAN-GEN02",
+    experimentArmId: "M2-EXP-CHANNEL-GENERATIVE-02/G1",
+    actualDefinitionId:
+      "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01",
+    rows: Object.freeze(rows),
+    predictions,
+    receipts: Object.freeze(receipts),
+    evaluations: Object.freeze({ G1: evaluation }),
+    candidateIdsExecuted: Object.freeze(["G1"]),
+    rawOutputsPreserved: Object.freeze(["G1"]),
+    fallbackOverwroteRaw: false,
+    blendOverwroteRaw: false,
+    outerOutcomeUsedForSelection: false,
+    frozenG0ChannelOffsetRead: false,
+    auxiliaryG0StateRead: false,
+    G2Executed: false,
+    G3Executed: false,
+    G4Executed: false,
+    G5Executed: false,
+    G6Executed: false
+  });
+}
+
+function aggregateG1ActualCases(rows) {
+  const groups = new Map();
+  for (const row of rows) {
+    for (const horizonMonths of row.includedHorizons) {
+      const key = caseKey(
+        row.standardWorkId,
+        row.origin,
+        horizonMonths
+      );
+      let value = groups.get(key);
+      if (!value) {
+        value = {
+          standardWorkId: row.standardWorkId,
+          origin: row.origin,
+          horizonMonths,
+          actual: 0,
+          actualPositive: 0,
+          actualReversal: 0,
+          channels: new Map()
+        };
+        groups.set(key, value);
+      }
+      value.actual += row.actual;
+      value.actualPositive += row.actualPositive;
+      value.actualReversal += row.actualReversal;
+      let channel = value.channels.get(row.channelUid);
+      if (!channel) {
+        channel = {
+          channelUid: row.channelUid,
+          mechanism: row.mechanism,
+          observedAtOrigin: row.observedAtOrigin,
+          actual: 0,
+          actualPositive: 0,
+          actualReversal: 0
+        };
+        value.channels.set(row.channelUid, channel);
+      }
+      channel.actual += row.actual;
+      channel.actualPositive += row.actualPositive;
+      channel.actualReversal += row.actualReversal;
+    }
+  }
+  return [...groups.values()].map((value) => Object.freeze({
+    ...value,
+    channels: Object.freeze(
+      [...value.channels.values()].map(Object.freeze)
+    )
+  })).sort(compareCases);
+}
+
+function aggregateG1PredictionCases(rows, predictions) {
+  const actualCases = aggregateG1ActualCases(rows);
+  const caseIndex = new Map(actualCases.map((row) => [
+    caseKey(row.standardWorkId, row.origin, row.horizonMonths),
+    {
+      ...row,
+      positivePoint: 0,
+      pointEstimate: 0,
+      channels: new Map(row.channels.map((channel) => [
+        channel.channelUid,
+        {
+          ...channel,
+          positivePoint: 0,
+          pointEstimate: 0
+        }
+      ]))
+    }
+  ]));
+  for (const row of rows) {
+    const prediction = predictions.get(monthlyKeyFromRow(row));
+    if (prediction === undefined) {
+      throw new M2ChannelGenerativeContractError(
+        "m2_channel_generative_G1_prediction_missing"
+      );
+    }
+    const positivePoint = nonnegativeFinite(
+      prediction.positivePoint,
+      "G1_positive_point"
+    );
+    for (const horizonMonths of row.includedHorizons) {
+      const value = caseIndex.get(caseKey(
+        row.standardWorkId,
+        row.origin,
+        horizonMonths
+      ));
+      value.positivePoint += positivePoint;
+      value.pointEstimate += positivePoint;
+      const channel = value.channels.get(row.channelUid);
+      channel.positivePoint += positivePoint;
+      channel.pointEstimate += positivePoint;
+    }
+  }
+  return [...caseIndex.values()].map((value) => Object.freeze({
+    ...value,
+    candidateId: "G1",
+    channels: Object.freeze(
+      [...value.channels.values()].map(Object.freeze)
+    )
+  })).sort(compareCases);
+}
+
+function buildG1Evaluation(
+  rows,
+  predictions,
+  cases,
+  config,
+  candidateId
+) {
+  const channelRows = cases.flatMap((row) => row.channels);
+  const observedMonthly = rows.filter((row) => row.observedAtOrigin);
+  const usedMonthly = observedMonthly.filter((row) => (
+    predictions.get(monthlyKeyFromRow(row))?.usedGenerator === true
+  ));
+  const observedCash = sum(
+    observedMonthly.map((row) => row.actualPositive)
+  );
+  const usedCash = sum(usedMonthly.map((row) => row.actualPositive));
+  const occurrenceRows = rows.map((row) => {
+    const prediction = predictions.get(monthlyKeyFromRow(row));
+    return {
+      actual: row.actualPositive > 0 ? 1 : 0,
+      probability: prediction?.occurrenceProbability
+        ?? (row.observedAtOrigin ? null : 0)
+    };
+  }).filter((row) => row.probability !== null);
+  const conditionalRows = rows.filter(
+    (row) => row.observedAtOrigin && row.actualPositive > 0
+  ).map((row) => ({
+    actual: row.actualPositive,
+    pointEstimate: predictions.get(monthlyKeyFromRow(row))
+      ?.conditionalPositiveAmount
+  })).filter((row) => Number.isFinite(row.pointEstimate));
+  return Object.freeze({
+    candidateId,
+    workTotal: scorePointRows(cases),
+    workChannel: scorePointRows(channelRows),
+    byHorizon: scoreSlices(cases, "horizonMonths"),
+    byOrigin: scoreSlices(cases, "origin"),
+    byMechanism: scoreSlices(
+      channelRows.filter((row) => row.observedAtOrigin),
+      "mechanism"
+    ),
+    topRevenue: scoreTopRevenue(
+      cases,
+      config.evaluation.topRevenueFractions
+    ),
+    coverage: Object.freeze({
+      observedChannelMonthlyRowCount: observedMonthly.length,
+      generatorMonthlyRowCount: usedMonthly.length,
+      generatorObservedChannelRowUsage:
+        observedMonthly.length === 0
+          ? 0
+          : usedMonthly.length / observedMonthly.length,
+      observedChannelActualPositiveCash: observedCash,
+      generatorActualPositiveCash: usedCash,
+      generatorActualPositiveCashUsage:
+        observedCash === 0 ? 0 : usedCash / observedCash,
+      futureFirstSeenMonthlyRowCount:
+        rows.filter((row) => !row.observedAtOrigin).length,
+      futureFirstSeenActualPositiveCash: sum(
+        rows.filter((row) => !row.observedAtOrigin)
+          .map((row) => row.actualPositive)
+      )
+    }),
+    occurrence: scoreBinaryProbabilities(occurrenceRows),
+    conditionalAmount: scoreConditionalAmount(conditionalRows),
+    predictionMass: sum(cases.map((row) => row.pointEstimate)),
+    actualMass: sum(cases.map((row) => row.actual)),
+    cases: Object.freeze(cases)
   });
 }
 
@@ -1590,6 +2797,33 @@ function designRow(row, standardizer, mechanism, config) {
   return output;
 }
 
+function pooledDesignRow(row, standardizer, config) {
+  const standardized = standardizer.featureOrder.map((field, index) => {
+    const raw = finite(row.features?.[field], `feature_${field}`);
+    const sd = standardizer.standardDeviations[index];
+    return sd === 0 ? 0 : (raw - standardizer.means[index]) / sd;
+  });
+  const byFeature = Object.fromEntries(
+    standardizer.featureOrder.map((field, index) => [
+      field,
+      standardized[index]
+    ])
+  );
+  const basis = timeBasis(row.futureMonthIndex);
+  const contract = config.forecastabilityDiagnostics.pooledBasis;
+  const output = [1, ...standardized];
+  for (const field of contract.base) {
+    output.push(finite(basis[field], `pooled_time_basis_${field}`));
+  }
+  for (const [timeField, featureField] of contract.interactions) {
+    output.push(
+      finite(basis[timeField], `pooled_time_basis_${timeField}`)
+      * finite(byFeature[featureField], `feature_${featureField}`)
+    );
+  }
+  return output;
+}
+
 function fitLogistic(
   design,
   labels,
@@ -1844,6 +3078,132 @@ function scorePointRows(rows) {
   });
 }
 
+function scoreBinaryProbabilities(rows) {
+  if (rows.length === 0) {
+    return Object.freeze({
+      rowCount: 0,
+      positiveCount: 0,
+      brier: null,
+      logLoss: null,
+      prAuc: null,
+      averagePrecision: null,
+      rocAuc: null
+    });
+  }
+  const normalized = rows.map((row, index) => ({
+    actual: row.actual === 1 ? 1 : 0,
+    probability: Math.min(
+      1 - EPSILON,
+      Math.max(EPSILON, finite(
+        row.probability,
+        "occurrence_probability"
+      ))
+    ),
+    index
+  }));
+  const positiveCount = sum(normalized.map((row) => row.actual));
+  const negativeCount = normalized.length - positiveCount;
+  const ordered = [...normalized].sort((left, right) => (
+    right.probability - left.probability || left.index - right.index
+  ));
+  let truePositive = 0;
+  let falsePositive = 0;
+  let averagePrecision = 0;
+  let prAuc = 0;
+  let previousRecall = 0;
+  let previousPrecision = positiveCount === 0 ? 0 : 1;
+  for (const row of ordered) {
+    if (row.actual === 1) truePositive += 1;
+    else falsePositive += 1;
+    const recall = positiveCount === 0 ? 0 : truePositive / positiveCount;
+    const precision = truePositive / (truePositive + falsePositive);
+    if (row.actual === 1 && positiveCount > 0) {
+      averagePrecision += precision / positiveCount;
+    }
+    prAuc += (recall - previousRecall)
+      * (precision + previousPrecision) / 2;
+    previousRecall = recall;
+    previousPrecision = precision;
+  }
+  let concordant = 0;
+  let tied = 0;
+  if (positiveCount > 0 && negativeCount > 0) {
+    const ascending = [...normalized].sort((left, right) => (
+      left.probability - right.probability || left.index - right.index
+    ));
+    let lowerNegativeCount = 0;
+    for (let start = 0; start < ascending.length;) {
+      let end = start + 1;
+      while (
+        end < ascending.length
+        && ascending[end].probability === ascending[start].probability
+      ) {
+        end += 1;
+      }
+      const group = ascending.slice(start, end);
+      const groupPositive = sum(group.map((row) => row.actual));
+      const groupNegative = group.length - groupPositive;
+      concordant += groupPositive * lowerNegativeCount;
+      tied += groupPositive * groupNegative;
+      lowerNegativeCount += groupNegative;
+      start = end;
+    }
+  }
+  return Object.freeze({
+    rowCount: normalized.length,
+    positiveCount,
+    brier: mean(normalized.map(
+      (row) => (row.probability - row.actual) ** 2
+    )),
+    logLoss: mean(normalized.map((row) => (
+      -row.actual * Math.log(row.probability)
+      - (1 - row.actual) * Math.log(1 - row.probability)
+    ))),
+    prAuc: positiveCount === 0 ? null : prAuc,
+    averagePrecision: positiveCount === 0 ? null : averagePrecision,
+    rocAuc: positiveCount === 0 || negativeCount === 0
+      ? null
+      : (concordant + 0.5 * tied) / (positiveCount * negativeCount)
+  });
+}
+
+function scoreConditionalAmount(rows) {
+  if (rows.length === 0) {
+    return Object.freeze({
+      rowCount: 0,
+      actualMass: 0,
+      predictionMass: 0,
+      absoluteError: 0,
+      wape: null,
+      mae: null,
+      medianAbsoluteError: null,
+      signedBias: null
+    });
+  }
+  const absoluteErrors = rows.map(
+    (row) => Math.abs(row.pointEstimate - row.actual)
+  ).sort((left, right) => left - right);
+  const actualMass = sum(rows.map((row) => row.actual));
+  const predictionMass = sum(rows.map((row) => row.pointEstimate));
+  const absoluteError = sum(absoluteErrors);
+  const middle = Math.floor(absoluteErrors.length / 2);
+  const medianAbsoluteError = absoluteErrors.length % 2 === 0
+    ? (absoluteErrors[middle - 1] + absoluteErrors[middle]) / 2
+    : absoluteErrors[middle];
+  return Object.freeze({
+    rowCount: rows.length,
+    actualMass,
+    predictionMass,
+    absoluteError,
+    wape: actualMass === 0 ? null : absoluteError / actualMass,
+    mae: absoluteError / rows.length,
+    medianAbsoluteError,
+    signedBias: actualMass === 0
+      ? null
+      : (predictionMass - actualMass) / actualMass
+  });
+}
+
 function scoreSlices(rows, field) {
   const keys = [...new Set(rows.map((row) => String(row[field])))].sort();
   return Object.freeze(Object.fromEntries(keys.map((key) => {
@@ -1885,7 +3245,29 @@ function publicEvaluation(value) {
     byHorizon: value.byHorizon,
     byMechanism: value.byMechanism,
     topRevenue: value.topRevenue,
-    coverage: value.coverage
+    coverage: value.coverage,
+    occurrence: value.occurrence,
+    conditionalAmount: value.conditionalAmount,
+    predictionMass: value.predictionMass,
+    actualMass: value.actualMass
+  });
+}
+
+function oracleSummary(base, oracle) {
+  return Object.freeze({
+    originalAbsoluteError: base.workTotal.absoluteError,
+    oracleAbsoluteError: oracle.workTotal.absoluteError,
+    maximumRemovableError:
+      base.workTotal.absoluteError - oracle.workTotal.absoluteError,
+    originalWape: base.workTotal.wape,
+    oracleWape: oracle.workTotal.wape,
+    byHorizon: oracle.byHorizon,
+    byMechanism: oracle.byMechanism,
+    topRevenue: oracle.topRevenue,
+    deployable: false,
+    selectionEligible: false,
+    participatesInGate: false,
+    futureInformationUsed: true
   });
 }
 
@@ -2054,12 +3436,17 @@ function frozenPrediction({
   reason,
   candidateEligible
 }) {
+  const usesFrozenG0 = candidateId === "G2";
   return Object.freeze({
     candidateId,
     positivePoint,
     occurrenceProbability: null,
-    conditionalPositiveAmount: row.g0MonthlyPositive,
-    frozenG0MonthlyOffset: row.g0MonthlyPositive,
+    conditionalPositiveAmount: usesFrozenG0
+      ? row.g0MonthlyPositive
+      : null,
+    frozenG0MonthlyOffset: usesFrozenG0
+      ? row.g0MonthlyPositive
+      : null,
     dynamicResidual: 0,
     smearingFactor: null,
     usedGenerator: false,
@@ -2349,6 +3736,27 @@ function positiveInteger(value, name) {
     );
   }
   return result;
+}
+
+function requireIntegerString(value, name) {
+  const result = String(value ?? "");
+  if (!/^-?\d+$/u.test(result)) {
+    throw new M2ChannelGenerativeContractError(
+      `m2_channel_generative_${name}_invalid`
+    );
+  }
+  return BigInt(result);
+}
+
+function minorIntegerToNumber(value, scalePower) {
+  const scale = 10n ** BigInt(scalePower);
+  const sign = value < 0n ? -1 : 1;
+  const absolute = value < 0n ? -value : value;
+  const integer = absolute / scale;
+  const fraction = absolute % scale;
+  const text = `${sign < 0 ? "-" : ""}${integer}.`
+    + fraction.toString().padStart(scalePower, "0");
+  return finite(text, "modelable_amount");
 }
 
 function fractionInclusive(value, name, maximum = 1) {

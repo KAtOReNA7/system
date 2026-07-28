@@ -1,0 +1,192 @@
+{
+  "schema": "m2.current.channel_generative_G1_public_diagnostic.v0.1",
+  "displayNameZh": "渠道时间生成模型 v0.2——独立渠道月度发生—条件金额核心",
+  "displayNameEn": "Channel Generative v0.2 — Independent Monthly Occurrence × Conditional Amount Core",
+  "modelId": "M2-CHAN-GEN02",
+  "experimentArmId": "M2-EXP-CHANNEL-GENERATIVE-02/G1",
+  "fixtureSchema": "m2.current.channel_generative_synthetic_fixture.v0.2",
+  "packedTrainingGrainVerified": true,
+  "monthlyRowCount": 6696,
+  "monthlyUniqueKeyCount": 6696,
+  "workCount": 180,
+  "sameWorkAcrossMultipleOrigins": true,
+  "overlappingHorizonNoDuplicate": true,
+  "prerequisites": {
+    "schema": "m2.current.channel_generative_G1_prerequisites.v0.1",
+    "phase": "training",
+    "passed": true,
+    "checks": {
+      "authorizedArm": "M2-EXP-CHANNEL-GENERATIVE-02/G1",
+      "originVisibleFeatureRowsPresent": true,
+      "featuresAvailableAtOrigin": true,
+      "matureLabelMetadataPresent": true,
+      "developmentModelableActualDefinition": true,
+      "frozenG0ChannelOffsetRequired": false,
+      "auxiliaryG0StateRequired": false
+    },
+    "frozenComparatorRead": false,
+    "frozenComparatorUsedForTraining": false,
+    "frozenComparatorUsedForInnerSelection": false,
+    "pairedComparator": null
+  },
+  "evaluations": {
+    "G1": {
+      "candidateId": "G1",
+      "workTotal": {
+        "caseCount": 540,
+        "absoluteError": 10616.07645185612,
+        "signedError": -4946.0517253151575,
+        "actualDenominator": 48002.50201954327,
+        "wape": 0.2211567315289939,
+        "signedBias": -0.10303737341235818
+      },
+      "workChannel": {
+        "caseCount": 558,
+        "absoluteError": 10616.07645185612,
+        "signedError": -4946.0517253151575,
+        "actualDenominator": 48002.50201954327,
+        "wape": 0.2211567315289939,
+        "signedBias": -0.10303737341235818
+      },
+      "byHorizon": {
+        "3": {
+          "caseCount": 180,
+          "absoluteError": 2685.3466347327635,
+          "signedError": -2253.684052109787,
+          "actualDenominator": 8507.727279493063,
+          "wape": 0.31563619125468384,
+          "signedBias": -0.26489848323441717
+        },
+        "6": {
+          "caseCount": 180,
+          "absoluteError": 3143.594134039963,
+          "signedError": -2104.338869409878,
+          "actualDenominator": 14467.704877697643,
+          "wape": 0.21728354017546336,
+          "signedBias": -0.14545077378885252
+        },
+        "12": {
+          "caseCount": 180,
+          "absoluteError": 4787.135683083371,
+          "signedError": -588.028803795489,
+          "actualDenominator": 25027.069862352615,
+          "wape": 0.1912783122200214,
+          "signedBias": -0.023495711125178145
+        }
+      },
+      "byMechanism": {
+        "advertising": {
+          "caseCount": 180,
+          "absoluteError": 4476.873590256151,
+          "signedError": -1953.5214189160897,
+          "actualDenominator": 21389.947277813928,
+          "wape": 0.2092980189296517,
+          "signedBias": -0.09132894969508973
+        },
+        "membership": {
+          "caseCount": 180,
+          "absoluteError": 3520.8086123862704,
+          "signedError": -789.5426839085653,
+          "actualDenominator": 19789.341749999996,
+          "wape": 0.17791438729316356,
+          "signedBias": -0.03989736969945276
+        },
+        "transactional": {
+          "caseCount": 180,
+          "absoluteError": 2573.3942492136725,
+          "signedError": -2157.987622490498,
+          "actualDenominator": 6778.212991729367,
+          "wape": 0.3796567402578931,
+          "signedBias": -0.3183711732168389
+        }
+      },
+      "topRevenue": {
+        "0.01": {
+          "caseCount": 2,
+          "absoluteError": 3973.6093252809424,
+          "signedError": -3973.6093252809424,
+          "actualDenominator": 4503.7333131220985,
+          "wape": 0.8822923226167534,
+          "signedBias": -0.8822923226167534
+        },
+        "0.05": {
+          "caseCount": 9,
+          "absoluteError": 5072.288489714622,
+          "signedError": -5072.288489714622,
+          "actualDenominator": 7944.159076955152,
+          "wape": 0.6384928147308369,
+          "signedBias": -0.6384928147308369
+        },
+        "0.1": {
+          "caseCount": 18,
+          "absoluteError": 5361.020363441589,
+          "signedError": -5361.020363441589,
+          "actualDenominator": 11570.877668190142,
+          "wape": 0.46332011427099745,
+          "signedBias": -0.46332011427099745
+        }
+      },
+      "coverage": {
+        "observedChannelMonthlyRowCount": 2160,
+        "generatorMonthlyRowCount": 2160,
+        "generatorObservedChannelRowUsage": 1,
+        "observedChannelActualPositiveCash": 25012.06986235263,
+        "generatorActualPositiveCash": 25012.06986235263,
+        "generatorActualPositiveCashUsage": 1,
+        "futureFirstSeenMonthlyRowCount": 72,
+        "futureFirstSeenActualPositiveCash": 15
+      },
+      "occurrence": {
+        "rowCount": 2232,
+        "positiveCount": 2127,
+        "brier": 0.01719261615957131,
+        "logLoss": 0.11881486474792033,
+        "prAuc": 0.9935777592362031,
+        "averagePrecision": 0.9935797618689949,
+        "rocAuc": 0.8983612062596548
+      },
+      "conditionalAmount": {
+        "rowCount": 2124,
+        "actualMass": 25012.06986235263,
+        "predictionMass": 24445.571874512574,
+        "absoluteError": 7790.647777092003,
+        "wape": 0.3114755324115833,
+        "mae": 3.667913266050849,
+        "medianAbsoluteError": 1.8807190049323212,
+        "signedBias": -0.022648984708487887
+      },
+      "predictionMass": 43056.45029422816,
+      "actualMass": 48002.50201954327
+    }
+  },
+  "boundaries": {
+    "publicSyntheticOnly": true,
+    "privateArtifactRead": false,
+    "G1UsesG0": false,
+    "frozenG0ChannelOffsetRequiredForG1": false,
+    "auxiliaryG0StateRequiredForG1": false,
+    "frozenG0ReadBySyntheticDiagnostic": false,
+    "candidateIdsExecuted": [
+      "G1"
+    ],
+    "G2Executed": false,
+    "G3Executed": false,
+    "platformFeatureUsed": false,
+    "taxonomyFeatureUsed": false,
+    "scalarFactorUsed": false,
+    "futureFirstSeenPrediction": 0,
+    "observedZeroMonthsIncluded": true,
+    "unobservedPreStartMonthsZeroFilled": false,
+    "immatureLabelsIncluded": false,
+    "productionLoaderModified": false,
+    "productionRouteModified": false,
+    "exactV03Modified": false,
+    "G4Implemented": false,
+    "G5Implemented": false,
+    "G6Implemented": false,
+    "finalHoldoutUsed": false,
+    "databaseUsed": false,
+    "providerUsed": false,
+    "releaseAuthorized": false
+  }
+}

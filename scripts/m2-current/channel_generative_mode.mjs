@@ -7,12 +7,14 @@ import {
 import path from "node:path";
 
 import {
+  applyM2DevelopmentModelableRestatementToPackedRows,
+  buildM2ChannelGenerativeG1PooledDiagnosticPredictions,
   buildM2ChannelGenerativeForecastabilityDiagnostic,
   buildM2ChannelGenerativeSyntheticDiagnostic,
-  crossFitM2ChannelGenerative,
+  crossFitM2ChannelGenerativeG1,
   expandM2ChannelGenerativePackedRows,
-  scoreM2ChannelGenerativePredictions,
-  strictRollingM2ChannelGenerative,
+  scoreM2ChannelGenerativeFrozenG0Comparator,
+  strictRollingM2ChannelGenerativeG1,
   verifyM2ChannelGenerativeG0
 } from "../../src/domain/m2Current/channelGenerative.js";
 
@@ -109,12 +111,17 @@ export async function prepareM2ChannelGenerativeRunReceipt({
     environment,
     nodeVersion: process.version,
     startTime: new Date().toISOString(),
-    expectedCandidateIds: ["G0", "G1", "G2", "G3"],
+    modelId: "M2-CHAN-GEN02",
+    experimentArmId: "M2-EXP-CHANNEL-GENERATIVE-02/G1",
+    expectedCandidateIds: ["G0", "G1"],
+    expectedTrainedCandidateIds: ["G1"],
     expectedPrimaryOuterFolds:
       config.selection.outerPrimaryWorkFoldCount,
     expectedStrictOuterOrigins: config.selection.strictOrigins,
     expectedParameterGridCount:
       config.grid.configurationCountPerRawCandidate,
+    G2Expected: false,
+    G3Expected: false,
     G4Expected: false,
     G5Expected: false,
     G6Expected: false,
@@ -158,8 +165,13 @@ export async function runM2ChannelGenerativePrivateDevelopment({
   ) {
     throw new Error("m2_channel_generative_run_receipt_invalid");
   }
+  const restatementDirectory = path.join(
+    root,
+    config.privateOutputs.reversalRestatementDirectory
+  );
   const [primaryText, auxiliaryText, materializationText,
-    frozenText, frozenManifestText] = await Promise.all([
+    frozenText, frozenManifestText, reconciliationText,
+    allocationText, reversalReceiptText] = await Promise.all([
     readFile(path.join(
       privateDirectory,
       config.privateOutputs.primaryMonthlyCases
@@ -179,10 +191,24 @@ export async function runM2ChannelGenerativePrivateDevelopment({
     readFile(path.join(
       privateDirectory,
       frozenConfig.privateOutputs.evaluationManifest
+    ), "utf8"),
+    readFile(path.join(
+      restatementDirectory,
+      config.privateOutputs.reversalScopeReconciliation
+    ), "utf8"),
+    readFile(path.join(
+      restatementDirectory,
+      config.privateOutputs.reversalAllocationLedger
+    ), "utf8"),
+    readFile(path.join(
+      restatementDirectory,
+      config.privateOutputs.reversalExecutionReceipt
     ), "utf8")
   ]);
   const materialization = JSON.parse(materializationText);
   const frozenManifest = JSON.parse(frozenManifestText);
+  const reconciliation = JSON.parse(reconciliationText);
+  const reversalReceipt = JSON.parse(reversalReceiptText);
   verifyPrivateBindings({
     config,
     preregistration,
@@ -191,7 +217,10 @@ export async function runM2ChannelGenerativePrivateDevelopment({
     frozenManifest,
     primaryText,
     auxiliaryText,
-    frozenText
+    frozenText,
+    reconciliationText,
+    allocationText,
+    reversalReceipt
   });
   const frozenRows = parseNdjson(frozenText);
   const expected = {
@@ -202,39 +231,56 @@ export async function runM2ChannelGenerativePrivateDevelopment({
     frozenRows,
     { expected }
   );
+  const primaryRestatement =
+    applyM2DevelopmentModelableRestatementToPackedRows(
+      parseNdjson(primaryText),
+      reconciliation,
+      parseNdjson(allocationText)
+    );
+  const strictRestatement =
+    applyM2DevelopmentModelableRestatementToPackedRows(
+      parseNdjson(auxiliaryText),
+      reconciliation,
+      parseNdjson(allocationText)
+    );
   const primaryRows = expandM2ChannelGenerativePackedRows(
-    parseNdjson(primaryText),
-    { frozenRows: frozenRows.filter(
-      (row) => row.evaluationFamily === "primary"
-    ) }
+    primaryRestatement.rows
   );
   const strictRows = expandM2ChannelGenerativePackedRows(
-    parseNdjson(auxiliaryText),
-    { frozenRows: frozenRows.filter(
-      (row) => row.evaluationFamily === "strict_rolling"
-    ) }
+    strictRestatement.rows
   );
-  const primary = crossFitM2ChannelGenerative(primaryRows, config);
-  const strict = strictRollingM2ChannelGenerative(strictRows, config);
+  const primary = crossFitM2ChannelGenerativeG1(primaryRows, config);
+  const strict = strictRollingM2ChannelGenerativeG1(strictRows, config);
   const baselines = {
-    primary: scoreG0(primary.rows, config),
-    strict: scoreG0(strict.rows, config)
+    primary: scoreM2ChannelGenerativeFrozenG0Comparator(
+      primary.rows,
+      frozenRows.filter(
+        (row) => row.evaluationFamily === "primary"
+      ),
+      config
+    ),
+    strict: scoreM2ChannelGenerativeFrozenG0Comparator(
+      strict.rows,
+      frozenRows.filter(
+        (row) => row.evaluationFamily === "strict_rolling"
+      ),
+      config
+    )
   };
-  const bootstrap = {};
-  for (const candidateId of ["G1", "G2", "G3"]) {
-    bootstrap[candidateId] = {
+  const bootstrap = {
+    G1: {
       primary: pairedBootstrap(
         baselines.primary.cases,
-        primary.evaluations[candidateId].cases,
+        primary.evaluations.G1.cases,
         config
       ),
       strict: pairedBootstrap(
         baselines.strict.cases,
-        strict.evaluations[candidateId].cases,
+        strict.evaluations.G1.cases,
         config
       )
-    };
-  }
+    }
+  };
   const gateMatrix = evaluateCoreGates({
     config,
     baselines,
@@ -242,26 +288,45 @@ export async function runM2ChannelGenerativePrivateDevelopment({
     strict,
     bootstrap
   });
-  const candidatePredictions = {
-    primary: {
-      G1: primary.predictions.G1,
-      G2: primary.predictions.G2
-    },
-    strict: {
-      G1: strict.predictions.G1,
-      G2: strict.predictions.G2
-    }
+  const privateRows = privateEvaluationRows(primary, strict);
+  const privateText = privateRows.map(JSON.stringify).join("\n") + "\n";
+  const candidateFreeze = {
+    status: "G1_CANDIDATE_OUTPUTS_FROZEN_BEFORE_ORACLE",
+    rowCount: privateRows.length,
+    sha256: digest(privateText),
+    predictionGeneratedAfterFreezeCount: 0,
+    predictionModifiedAfterFreezeCount: 0
   };
+  const primaryPooled =
+    buildM2ChannelGenerativeG1PooledDiagnosticPredictions(
+      primaryRows,
+      config,
+      primary
+    );
+  const strictPooled =
+    buildM2ChannelGenerativeG1PooledDiagnosticPredictions(
+      strictRows,
+      config,
+      strict
+    );
   const forecastability = {
     primary: buildM2ChannelGenerativeForecastabilityDiagnostic(
       primary.rows,
-      candidatePredictions.primary,
-      config
+      primary.predictions,
+      config,
+      {
+        pooledPredictions: primaryPooled.predictions,
+        candidateOutputsFrozen: true
+      }
     ),
     strict: buildM2ChannelGenerativeForecastabilityDiagnostic(
       strict.rows,
-      candidatePredictions.strict,
-      config
+      strict.predictions,
+      config,
+      {
+        pooledPredictions: strictPooled.predictions,
+        candidateOutputsFrozen: true
+      }
     )
   };
   const result = buildPublicResult({
@@ -277,15 +342,21 @@ export async function runM2ChannelGenerativePrivateDevelopment({
     bootstrap,
     gateMatrix,
     forecastability,
-    receipt
+    receipt,
+    candidateFreeze,
+    restatementBinding: {
+      primary: primaryRestatement.audit,
+      strict: strictRestatement.audit
+    }
   });
-  const privateRows = privateEvaluationRows(primary, strict);
-  const privateText = privateRows.map(JSON.stringify).join("\n") + "\n";
   const privateManifest = {
     schema:
-      "m2.current.channel_generative_evaluation_private_manifest.v0.2",
+      "m2.current.channel_generative_G1_evaluation_private_manifest.v0.1",
     tracked: false,
-    candidateId: config.candidateId,
+    modelId: "M2-CHAN-GEN02",
+    experimentArmId: "M2-EXP-CHANNEL-GENERATIVE-02/G1",
+    candidateId: "G1",
+    actualDefinitionId: config.actualDefinitionId,
     rowCount: privateRows.length,
     sha256: digest(privateText),
     primaryMonthlyRowCount: primary.rows.length,
@@ -293,8 +364,14 @@ export async function runM2ChannelGenerativePrivateDevelopment({
     primaryPackedSha256: materialization.primarySha256,
     auxiliaryPackedSha256: materialization.auxiliarySha256,
     frozenEvaluationSha256: frozenManifest.sha256,
-    rawCandidatesPreserved: ["G1", "G2"],
-    blendDiagnosticPreserved: true,
+    reversalScopeReconciliationSha256: digest(reconciliationText),
+    reversalAllocationLedgerSha256: digest(allocationText),
+    candidateFreeze,
+    rawCandidatesPreserved: ["G1"],
+    G1Executed: true,
+    G2Executed: false,
+    G3Executed: false,
+    blendDiagnosticPreserved: false,
     G4Executed: false,
     G5Executed: false,
     G6Executed: false,
@@ -353,7 +430,12 @@ export async function runM2ChannelGenerativePrivateDevelopment({
       completedAt: new Date().toISOString(),
       outputRowCount: privateManifest.rowCount,
       outputSha256: privateManifest.sha256,
-      finalStatus: result.finalStatus
+      finalStatus: result.finalStatus,
+      G1Executed: true,
+      G2Executed: false,
+      G3Executed: false,
+      predictionGeneratedAfterFreezeCount: 0,
+      predictionModifiedAfterFreezeCount: 0
     }, null, 2) + "\n",
     "utf8"
   );
@@ -361,35 +443,12 @@ export async function runM2ChannelGenerativePrivateDevelopment({
     finalStatus: result.finalStatus,
     G0: result.evaluation.G0,
     G1: result.evaluation.G1,
-    G2: result.evaluation.G2,
-    G3: result.evaluation.G3,
+    G2Executed: false,
+    G3Executed: false,
     privateRowCount: privateManifest.rowCount,
     privateSha256: privateManifest.sha256
   }) + "\n");
   return result;
-}
-
-function scoreG0(rows, config) {
-  const predictions = new Map(rows.map((row) => [
-    monthlyKey(row),
-    {
-      candidateId: "G0",
-      positivePoint: row.observedAtOrigin ? row.g0MonthlyPositive : 0,
-      occurrenceProbability: null,
-      conditionalPositiveAmount: row.g0MonthlyPositive,
-      usedGenerator: false,
-      fallbackReason: row.observedAtOrigin
-        ? "frozen_G0"
-        : "future_first_seen",
-      candidateEligible: true
-    }
-  ]));
-  return scoreM2ChannelGenerativePredictions(
-    rows,
-    predictions,
-    config,
-    { candidateId: "G0" }
-  );
 }
 
 function buildPublicResult({
@@ -405,7 +464,9 @@ function buildPublicResult({
   bootstrap,
   gateMatrix,
   forecastability,
-  receipt
+  receipt,
+  candidateFreeze,
+  restatementBinding
 }) {
   const evaluation = {
     G0: publicCandidate(baselines.primary, baselines.strict, null),
@@ -414,34 +475,21 @@ function buildPublicResult({
       strict.evaluations.G1,
       bootstrap.G1,
       baselines
-    ),
-    G2: publicCandidate(
-      primary.evaluations.G2,
-      strict.evaluations.G2,
-      bootstrap.G2,
-      baselines
-    ),
-    G3: publicCandidate(
-      primary.evaluations.G3,
-      strict.evaluations.G3,
-      bootstrap.G3,
-      baselines
     )
   };
   const g1 = gateMatrix.G1.allPassed;
-  const g2 = gateMatrix.G2.allPassed;
-  const finalStatus = g1 && g2
-    ? "GENERATIVE_V02_BOTH_RAW_CORE_PASS"
-    : g1
-      ? "GENERATIVE_V02_G1_CORE_PASS"
-      : g2
-        ? "GENERATIVE_V02_G2_CORE_PASS"
-        : gateMatrix.G3.allPassed
-          ? "RAW_CORE_FAIL_BLEND_ONLY_SIGNAL"
-          : "GENERATIVE_V02_CORE_FAIL";
+  const finalStatus = g1
+    ? "M2_CHANNEL_GENERATIVE_G1_CORE_PASS"
+    : "M2_CHANNEL_GENERATIVE_G1_CORE_FAIL_CASH_ONLY_SIGNAL_INSUFFICIENT";
   return {
-    schema: "m2.current.channel_generative_core_development.v0.1",
-    candidateId: config.candidateId,
+    schema: "m2.current.channel_generative_G1_development.v0.1",
+    displayNameZh:
+      "渠道时间生成模型 v0.2——独立渠道月度发生—条件金额核心",
+    displayNameEn:
+      "Channel Generative v0.2 — Independent Monthly Occurrence × Conditional Amount Core",
+    modelId: "M2-CHAN-GEN02",
+    experimentArmId: "M2-EXP-CHANNEL-GENERATIVE-02/G1",
+    candidateId: "G1",
     finalStatus,
     evidenceClass:
       "STRICTLY_CONTROLLED_REUSED_DEVELOPMENT_WINDOW_EVIDENCE",
@@ -452,6 +500,13 @@ function buildPublicResult({
       frozenEvaluationSha256: frozenManifest.sha256,
       baseDatasetDigests: baseManifest.digests
     },
+    actualDefinition: {
+      stableId: config.actualDefinitionId,
+      comparabilityGroupId: config.comparabilityGroupId,
+      labelView: "DEVELOPMENT_MODELABLE_RESTATEMENT_VIEW",
+      residualPolicyStatus:
+        "UNALLOCATED_REVERSAL_RESIDUAL_EXCLUDED_FROM_MODELABLE_TARGET"
+    },
     population: {
       primaryCaseCount: baselines.primary.workTotal.caseCount,
       strictCaseCount: baselines.strict.workTotal.caseCount,
@@ -461,23 +516,23 @@ function buildPublicResult({
         materialization.monthlyLabelRowCount
     },
     G0SemanticEquivalence: G0,
+    restatementBinding,
+    candidateFreeze,
     evaluation,
     gateMatrix,
     selection: {
       primaryOuterFolds: primary.receipts,
       strictOuterOrigins: strict.receipts,
-      rawOutputsPreserved: ["G1", "G2"],
-      G3TheoryEvidenceEligible: false,
+      rawOutputsPreserved: ["G1"],
+      candidateIdsExecuted: ["G1"],
+      G2Executed: false,
+      G3Executed: false,
       outerOutcomeUsedForSelection: false
     },
     forecastability,
     interpretation: {
       humanTrunkAnchorSupported:
-        evaluation.G0.primary.wape
-          <= Math.min(
-            evaluation.G1.primary.wape,
-            evaluation.G2.primary.wape
-          ),
+        evaluation.G0.primary.wape <= evaluation.G1.primary.wape,
       workLevelAutomationSupported: false,
       causalBusinessMechanismProven: false,
       allowedFailureConclusion:
@@ -485,6 +540,9 @@ function buildPublicResult({
       forecastingTheoreticallyImpossible: false
     },
     boundaries: {
+      G1Executed: true,
+      G2Executed: false,
+      G3Executed: false,
       G4Executed: false,
       G5Executed: false,
       G6Executed: false,
@@ -555,7 +613,7 @@ function evaluateCoreGates({
   bootstrap
 }) {
   const result = {};
-  for (const candidateId of ["G1", "G2", "G3"]) {
+  for (const candidateId of ["G1"]) {
     const p = primary.evaluations[candidateId];
     const s = strict.evaluations[candidateId];
     const primaryRelative = relativeWape(baselines.primary, p);
@@ -579,7 +637,7 @@ function evaluateCoreGates({
       ))
     ].filter(Number.isFinite);
     const checks = {
-      rawResult: candidateId !== "G3",
+      rawResult: true,
       primaryRelativeWape: primaryRelative >= 0.01,
       strictRelativeWape: strictRelative >= 0.01,
       strictImprovedOriginBlocks: strictBlocks >= 6,
@@ -617,10 +675,7 @@ function evaluateCoreGates({
     };
     result[candidateId] = {
       checks,
-      allPassed: candidateId === "G3"
-        ? Object.entries(checks).filter(([key]) => key !== "rawResult")
-          .every(([, value]) => value)
-        : Object.values(checks).every(Boolean),
+      allPassed: Object.values(checks).every(Boolean),
       primaryRelativeWape: primaryRelative,
       strictRelativeWape: strictRelative,
       strictImprovedOriginBlocks: strictBlocks,
@@ -716,27 +771,31 @@ function privateEvaluationRows(primary, strict) {
     ["primary", primary],
     ["strict", strict]
   ]) {
-    for (const candidateId of ["G1", "G2", "G3"]) {
-      for (const row of result.evaluations[candidateId].cases) {
-        output.push({
-          schema:
-            "m2.current.channel_generative_evaluation_private_row.v0.2",
-          tracked: false,
-          evaluationFamily: family,
-          candidateId,
-          standardWorkId: row.standardWorkId,
-          origin: row.origin,
-          horizonMonths: row.horizonMonths,
-          actualPositive: row.actualPositive,
-          actualReversal: row.actualReversal,
-          actual: row.actual,
-          positivePoint: row.positivePoint,
-          pointEstimate: row.pointEstimate,
-          G4Executed: false,
-          G5Executed: false,
-          G6Executed: false
-        });
-      }
+    for (const row of result.evaluations.G1.cases) {
+      output.push({
+        schema:
+          "m2.current.channel_generative_G1_evaluation_private_row.v0.1",
+        tracked: false,
+        evaluationFamily: family,
+        modelId: "M2-CHAN-GEN02",
+        experimentArmId: "M2-EXP-CHANNEL-GENERATIVE-02/G1",
+        candidateId: "G1",
+        actualDefinitionId:
+          "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01",
+        standardWorkId: row.standardWorkId,
+        origin: row.origin,
+        horizonMonths: row.horizonMonths,
+        actualPositive: row.actualPositive,
+        actualReversal: row.actualReversal,
+        actual: row.actual,
+        positivePoint: row.positivePoint,
+        pointEstimate: row.pointEstimate,
+        G2Executed: false,
+        G3Executed: false,
+        G4Executed: false,
+        G5Executed: false,
+        G6Executed: false
+      });
     }
   }
   return output;
@@ -745,7 +804,13 @@ function privateEvaluationRows(primary, strict) {
 function publicForecastability(result) {
   return {
     schema:
-      "m2.current.channel_generative_forecastability_public.v0.1",
+      "m2.current.channel_generative_G1_forecastability_public.v0.1",
+    displayNameZh:
+      "渠道时间生成模型 v0.2——独立渠道月度发生—条件金额核心",
+    displayNameEn:
+      "Channel Generative v0.2 — Independent Monthly Occurrence × Conditional Amount Core",
+    modelId: "M2-CHAN-GEN02",
+    experimentArmId: "M2-EXP-CHANNEL-GENERATIVE-02/G1",
     finalStatus: result.finalStatus,
     primary: result.forecastability.primary,
     strict: result.forecastability.strict,
@@ -771,19 +836,20 @@ function publicForecastability(result) {
 }
 
 function renderDevelopmentReport(result) {
-  return `# M2 Channel Generative v0.2 core development
+  return `# 渠道时间生成模型 v0.2——独立渠道月度发生—条件金额核心
 
 ## 结论
 
-本轮严格执行 G0、raw G1、raw G2 与不参与理论判定的 G3；最终状态为
+本轮只执行实验臂 \`M2-EXP-CHANNEL-GENERATIVE-02/G1\` 的 raw 独立核心；
+冻结的 \`G0\` 只作为相同实际值定义、相同外层 case 的配对比较基线。最终状态为
 \`${result.finalStatus}\`。这是重复使用 development window 的受控证据，不是独立
-later-origin，也不构成 production、exact v0.3 替换或 release 授权。
+later-origin，也不构成 production、exact v0.3 替换、自动化或 release 授权。
 
 ## 核心结果
 
-| 候选 | Primary WAPE | 相对 G0 | Strict WAPE | 相对 G0 |
+| 对象 | Primary WAPE | 相对冻结 G0 | Strict WAPE | 相对冻结 G0 |
 |---|---:|---:|---:|---:|
-${["G0", "G1", "G2", "G3"].map((id) => {
+${["G0", "G1"].map((id) => {
     const value = result.evaluation[id];
     return `| ${id} | ${number(value.primary.wape)} | ${
       percent(value.relativeWape?.primary)
@@ -792,14 +858,15 @@ ${["G0", "G1", "G2", "G3"].map((id) => {
     } |`;
   }).join("\n")}
 
-G0 semantic-equivalence：\`${
+冻结 G0 语义等价校验：\`${
   result.G0SemanticEquivalence.status
-}\`。G1/G2 raw 结果均已保留；G3 没有覆盖 raw 输出，也不作为 G4 parent。
+}\`。raw 独立核心结果完整保留，未由 fallback 或 blend 覆盖。
 
 ## 边界
 
-G4、G5、G6 均未执行。production surface change count 为 0；exact v0.3、
-holdout、provider、database、Canary 与 release 均未打开。无论 core 结果如何，
+结构化偏置、混合、平台、taxonomy 与 composition 实验臂均未执行。
+production surface change count 为 0；exact v0.3、holdout、provider、database、
+Canary 与 release 均未打开。无论结果如何，
 \`safeToStartImplementationOfAnyLaterLayer=false\`，等待用户另行决定。
 `;
 }
@@ -807,18 +874,18 @@ holdout、provider、database、Canary 与 release 均未打开。无论 core �
 function renderForecastabilityReport(result) {
   const primary = result.forecastability.primary;
   const strict = result.forecastability.strict;
-  return `# M2 Channel Generative v0.2 forecastability diagnostic
+  return `# 渠道时间生成模型 v0.2 可预测性诊断
 
 ## 诊断边界
 
-该 retrospective oracle 诊断在候选输出冻结后执行，不参与训练、inner/outer
-selection、gate 或 routing，也不能授权 G4–G6。它只描述当前零新渠道进入边界下的
-结构性不可达正现金、oracle gap 与当前模型族剩余 gap；没有测得 Bayes error，
-没有证明理论 ceiling，也没有证明预测不可能。
+这些 retrospective oracle 诊断只在 raw 独立核心候选输出冻结后执行，不参与训练、
+inner/outer selection、gate 或 routing，也不能授权其它实验臂。它们描述当前
+输入边界下的新渠道不可达现金、发生误差上限、条件金额误差上限和机制时间 basis
+的信息增益；没有测得 Bayes error，也没有证明预测不可能。
 
 ## 当前可达范围
 
-| 口径 | 全部实际正现金 | future-first-seen 正现金 | 占比 |
+| 口径 | 全部实际可建模现金 | future-first-seen 现金 | 占比 |
 |---|---:|---:|---:|
 | Primary | ${number(primary.currentReachability.totalActualPositiveCash)} | ${
   number(primary.currentReachability.futureFirstSeenActualPositiveCash)
@@ -827,8 +894,9 @@ selection、gate 或 routing，也不能授权 G4–G6。它只描述当前零�
   number(strict.currentReachability.futureFirstSeenActualPositiveCash)
 } | ${percent(strict.currentReachability.futureFirstSeenShare)} |
 
-ORACLE_OCCURRENCE 只表示“若月度 occurrence 已完美知晓”的回顾性上界，不可部署，
-也不参与 core pass。
+\`ORACLE_OCCURRENCE_ONLY\`、\`ORACLE_AMOUNT_ONLY\`、\`ORACLE_BOTH\`、
+\`FUTURE_FIRST_ENTRY_CEILING\` 与 \`MECHANISM_INFORMATION_GAIN\` 均不可部署，
+也不参与独立核心是否通过的判定。
 `;
 }
 
@@ -840,7 +908,10 @@ function verifyPrivateBindings({
   frozenManifest,
   primaryText,
   auxiliaryText,
-  frozenText
+  frozenText,
+  reconciliationText,
+  allocationText,
+  reversalReceipt
 }) {
   if (
     materialization?.schema
@@ -862,6 +933,15 @@ function verifyPrivateBindings({
     || materialization.dataQuality.overlappingHorizonDuplicateCount !== 0
     || materialization.dataQuality.unmaturedLabelZeroImputationCount !== 0
     || materialization.dataQuality.buyoutCashUsed !== false
+    || reversalReceipt?.status
+      !== "M2_EVALUATION_V2_2_ACTIVE_FOR_DEVELOPMENT_WITH_DISCLOSED_RESIDUAL_EXCLUSION"
+    || reversalReceipt?.actualDefinitionId
+      !== "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01"
+    || reversalReceipt?.outputDigests?.scopeReconciliationSha256
+      !== digest(reconciliationText)
+    || reversalReceipt?.outputDigests?.allocationLedgerSha256
+      !== digest(allocationText)
+    || reversalReceipt?.labels?.originAfterCutoffRowsUsed !== 0
     || frozenManifest.G4Executed === true
     || frozenManifest.G5Executed === true
     || frozenManifest.G6Executed === true
@@ -873,8 +953,19 @@ function verifyPrivateBindings({
 function assertBoundary(config) {
   if (
     config?.schema !== "m2.current.channel_generative_core.v0.2"
+    || config?.target
+      !== "future_sales_share_development_modelable_cash"
+    || config?.actualDefinitionId
+      !== "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01"
     || config?.authorization?.coreImplementation !== true
     || config?.authorization?.oneTimePrivateDevelopmentEvaluation !== true
+    || config?.authorization?.authorizedModelId !== "M2-CHAN-GEN02"
+    || config?.authorization?.authorizedArmId
+      !== "M2-EXP-CHANNEL-GENERATIVE-02/G1"
+    || config?.authorization?.G1IndependentCoreTraining !== true
+    || config?.authorization?.G1PrivateDevelopmentEvaluation !== true
+    || config?.authorization?.G2StructuredOffset !== false
+    || config?.authorization?.G3Blend !== false
     || config?.authorization?.G4Platform !== false
     || config?.authorization?.G5Taxonomy !== false
     || config?.authorization?.G6Composition !== false
@@ -884,7 +975,8 @@ function assertBoundary(config) {
     || config?.authorization?.production !== false
     || config?.authorization?.exactV03Replacement !== false
     || config?.authorization?.release !== false
-    || config?.candidateIds?.join(",") !== "G0,G1,G2,G3"
+    || config?.candidateIds?.join(",") !== "G0,G1"
+    || config?.currentExecution?.trainedCandidateIds?.join(",") !== "G1"
   ) {
     throw new Error("m2_channel_generative_authorization_boundary_differs");
   }
@@ -897,11 +989,6 @@ function frozenConfigPublicPath() {
 
 function parseNdjson(value) {
   return value.split(/\r?\n/u).filter(Boolean).map(JSON.parse);
-}
-
-function monthlyKey(row) {
-  return `${row.standardWorkId}\u001f${row.channelUid}\u001f${row.origin}`
-    + `\u001f${row.futureMonthIndex}`;
 }
 
 function relativeWape(baseline, candidate) {

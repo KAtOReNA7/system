@@ -306,7 +306,7 @@
     },
     {
       "id": "m2-current-channel-generative",
-      "description": "Run the one-time user-authorized preregistered G0-G3 Channel Generative v0.2 core development evaluation and non-selecting forecastability/oracle diagnostic.",
+      "description": "Run only the user-authorized Channel Generative v0.2 independent G1 core against v2.2 development-modelable labels, with frozen G0 used solely as the paired outer-case comparator and oracle diagnostics run only after G1 output freeze.",
       "requiredTools": [],
       "requiredPrivateArtifacts": [
         {
@@ -328,6 +328,21 @@
           "role": "frozen-channel-expert-evaluation-manifest",
           "kind": "file",
           "path": "data/private-output/m2-current-human-anchored/M2-current-channel-experts-evaluation-manifest-private-v0.1.json"
+        },
+        {
+          "role": "v2.2-development-modelable-scope-reconciliation",
+          "kind": "file",
+          "path": "data/private-output/m2-evaluation-v2-2-reversal-rescore/M2-reversal-scope-reconciliation-private-v1.json"
+        },
+        {
+          "role": "v2.2-reversal-allocation-ledger",
+          "kind": "file",
+          "path": "data/private-output/m2-evaluation-v2-2-reversal-rescore/M2-reversal-allocation-ledger-private-v1.ndjson"
+        },
+        {
+          "role": "v2.2-development-activation-receipt",
+          "kind": "file",
+          "path": "data/private-output/m2-evaluation-v2-2-reversal-rescore/M2-evaluation-v2.2-execution-receipt-private-v1.json"
         }
       ],
       "canonicalValidationCommands": [
@@ -335,8 +350,8 @@
         "npm run diagnose:m2:channel-generative",
         "npm run develop:m2:current:channel-generative"
       ],
-      "recovery": "Restore only the capability-scoped channel master, verified model-input cache and frozen channel-expert evaluation plus manifest. Missing artifacts block only this one-time private core evaluation; public synthetic diagnostics, tests and startup remain available.",
-      "authorization": "USER_AUTHORIZED_CHANNEL_GENERATIVE_V0_2_CORE_ONE_TIME_PRIVATE_EVALUATION_2026_07_27"
+      "recovery": "Restore only the capability-scoped channel master, verified model-input cache, frozen G0 comparator, and v2.2 reversal-restatement outputs. Missing G0 channel offsets never block G1 training; missing paired outer-case G0 rows block only the comparison. public synthetic diagnostics, tests and startup remain available.",
+      "authorization": "USER_AUTHORIZED_M2_CHANNEL_GENERATIVE_G1_ONLY_PRIVATE_DEVELOPMENT_2026_07_28"
     },
     {
       "id": "m2-current-human-anchored-later-origin",

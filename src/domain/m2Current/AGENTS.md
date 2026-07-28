@@ -71,6 +71,13 @@ This directory is the only implementation home for current M2 model logic.
   not use that offset. User-visible experiment-arm reports must include the
   full Chinese name, stable model ID, and parent experiment/arm ID rather than
   a bare local abbreviation.
+- “渠道时间生成模型 v0.2——独立渠道月度发生—条件金额核心”
+  (`M2-CHAN-GEN02`, `M2-EXP-CHANNEL-GENERATIVE-02/G1`) must never read frozen
+  learnedGlobal values as a feature, offset, multiplier, training prerequisite,
+  or inner-selection prerequisite. Frozen G0 may be read only after the raw G1
+  outer predictions exist, and only to score the same development-modelable
+  actual definition on the exact paired outer cases. A missing G2/G3 offset
+  must not block this independent arm.
 - Posting-time and reversal-restated actual definitions require distinct
   comparability groups. Same-case label-impact pairs are allowed, but do not
   rank models or name a winner across actual definitions.

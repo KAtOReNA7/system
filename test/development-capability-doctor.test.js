@@ -263,6 +263,9 @@ test("missing channel-generative inputs block only that private capability", () 
     "formal-model-input-cache",
     "frozen-channel-expert-evaluation",
     "frozen-channel-expert-evaluation-manifest",
+    "v2.2-development-modelable-scope-reconciliation",
+    "v2.2-reversal-allocation-ledger",
+    "v2.2-development-activation-receipt",
   ]);
   assert.match(
     result.recovery,
