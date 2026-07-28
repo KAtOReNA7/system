@@ -1,0 +1,91 @@
+{
+  "schema": "m2.reversal_restatement.v1",
+  "version": "1",
+  "asOf": "2026-07-28",
+  "actualDefinition": {
+    "stableId": "M2-ACTUAL-REVERSAL-RESTATEMENT-01",
+    "displayNameZh": "分成收入冲销追溯重述 v1",
+    "displayNameEn": "Sales-Share Revenue Reversal Restatement v1",
+    "target": "future_sales_share_cash",
+    "cashAuthority": "user_reviewed_sales_share_workbook_membership",
+    "comparabilityRule": "posting-time and reversal-restated actuals use different comparabilityGroupId values"
+  },
+  "authority": {
+    "cashCategory": "sales_share",
+    "classificationEvidence": [
+      "config/m2-current-human-ledger-partition.v0.1.json",
+      "config/m2-current-user-confirmation.v0.1.json",
+      "docs/analysis/m2-current/M2-current-human-ledger-partition-audit-v0.1.md"
+    ],
+    "requiredNegativeEventPolicy": "all_negative_cash_records_are_reversals",
+    "negativeAmountAloneIsNotAuthority": true,
+    "requiredPostingTimeField": "billMonth",
+    "recordedAtPolicy": "must be proven from the authority posting month; current-state backfill is prohibited",
+    "currencyPolicy": "use an authority currency field or a proven single-currency ledger scope; otherwise block",
+    "missingAuthorityStatus": "M2_EVALUATION_V2_2_BLOCKED_REVERSAL_AUTHORITY"
+  },
+  "minorUnitPolicy": {
+    "inputType": "integer_minor_unit_string",
+    "authorityScaleRule": "derive the maximum exact decimal places from authority amount strings and require lossless round-trip",
+    "floatingPointCashAccumulationAllowed": false,
+    "roundingAllowed": false,
+    "conservationDifferenceRequiredMinorUnits": "0"
+  },
+  "reversalScope": {
+    "required": [
+      "cashCategory",
+      "standardWorkId",
+      "channelMemberId",
+      "currencyScope"
+    ],
+    "optionalWhenAuthorityExists": [
+      "contractId",
+      "statementId",
+      "settlementEntityId"
+    ],
+    "prohibitedCrossings": [
+      "work",
+      "channel",
+      "currency",
+      "cash_category"
+    ],
+    "companyAggregateFallbackAllowed": false
+  },
+  "algorithm": {
+    "positiveAggregation": "same_scope_same_month",
+    "reversalOrder": [
+      "postingMonth_ascending",
+      "recordedAt_ascending",
+      "authorityRecordId_ascending"
+    ],
+    "allocationDirection": "posting_month_then_monthly_backward",
+    "reuseConsumedBalanceAllowed": false,
+    "unresolvedResidualPolicy": "preserve_negative_residual_and_block_complete_actual",
+    "allocationLedgerRequired": true
+  },
+  "timeViews": {
+    "postingTimeActual": "preserve the authority posting month",
+    "restatedActualAsOf": "use only reversal records visible no later than cutoff",
+    "finalRestatedActual": "use only records visible no later than the frozen label maturity cutoff",
+    "futureReversalMayEnterOriginFeatures": false,
+    "labelMaturityCutoffRequired": true,
+    "dataAsOfRequired": true
+  },
+  "conservation": {
+    "equation": "positive revenue + signed reversal = nonnegative restated revenue + signed unresolved residual",
+    "levels": [
+      "reversalScopeKey",
+      "time_range",
+      "global"
+    ],
+    "exactIntegerMinorUnitDifference": "0"
+  },
+  "privateOutputs": {
+    "directoryRole": "m2-evaluation-v2-2-reversal-rescore",
+    "allocationLedger": "M2-reversal-allocation-ledger-private-v1.ndjson",
+    "scopeReconciliation": "M2-reversal-scope-reconciliation-private-v1.json",
+    "labelOnlyRescoreRows": "M2-evaluation-v2.2-label-only-rescore-private-v1.ndjson",
+    "executionReceipt": "M2-evaluation-v2.2-execution-receipt-private-v1.json",
+    "gitIgnoredRequired": true
+  }
+}

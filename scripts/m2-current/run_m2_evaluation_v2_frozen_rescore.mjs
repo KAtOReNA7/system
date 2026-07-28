@@ -10,19 +10,37 @@ import {
   scoreIntervalRowsV21,
   scoreOccurrenceRowsV2,
   scoreOccurrenceRowsV21,
+  scoreOccurrenceRowsV22,
   scorePairedPointRowsV2,
   scorePointRowsV2,
   scorePointRowsV21,
   scorePortfolioPairedV21,
+  scorePortfolioPairedV22,
   scoreRankingRowsV21,
+  scoreRankingRowsV22,
+  scoreConditionalAmountRowsV22,
+  scoreReversalRowsV22,
   scoreTopRevenueAttributionV21,
+  scoreTopRevenueAttributionV22,
   validateEvaluationIdentityV21
 } from "../../src/domain/m2Current/evaluationV2.js";
+import {
+  buildReversalScopeKeyV1,
+  restateSalesShareReversalsV1
+} from "../../src/domain/m2Current/reversalRestatement.js";
 import {
   scoreM2CurrentProbabilisticRows
 } from "../../src/domain/m2Current/metrics.js";
 
-const root = process.cwd();
+const rootResolution = spawnSync(
+  "git",
+  ["rev-parse", "--show-toplevel"],
+  { cwd: process.cwd(), encoding: "utf8", windowsHide: true }
+);
+if (rootResolution.status !== 0 || !rootResolution.stdout.trim()) {
+  throw new Error("m2_evaluation_v2_repository_root_unavailable");
+}
+const root = path.resolve(rootResolution.stdout.trim());
 const preregistration = JSON.parse(fs.readFileSync(
   path.join(root, "config/m2-evaluation-v2-rescore-preregistration.v1.json"),
   "utf8"
@@ -31,12 +49,23 @@ const contractV21 = JSON.parse(fs.readFileSync(
   path.join(root, "config/m2-evaluation-contract.v2.1.json"),
   "utf8"
 ));
+const contractV22 = JSON.parse(fs.readFileSync(
+  path.join(root, "config/m2-evaluation-contract.v2.2.json"),
+  "utf8"
+));
+const reversalContract = JSON.parse(fs.readFileSync(
+  path.join(root, "config/m2-reversal-restatement.v1.json"),
+  "utf8"
+));
 const modelRegistry = JSON.parse(fs.readFileSync(
   path.join(root, "config/m2-model-registry.v1.json"),
   "utf8"
 ));
+let activeAuthorityScalePowerV22 = null;
 const mode = process.argv.includes("--inventory")
   ? "inventory"
+  : process.argv.includes("--rescore-v2-2")
+    ? "rescore-v2-2"
   : process.argv.includes("--rescore-v2-1")
     ? "rescore-v2-1"
   : process.argv.includes("--rescore")
@@ -45,7 +74,7 @@ const mode = process.argv.includes("--inventory")
 if (!mode) {
   console.error(
     "Usage: node scripts/m2-current/run_m2_evaluation_v2_frozen_rescore.mjs "
-      + "--inventory|--rescore|--rescore-v2-1"
+      + "--inventory|--rescore|--rescore-v2-1|--rescore-v2-2"
   );
   process.exit(2);
 }
@@ -127,6 +156,16 @@ if (mode === "inventory") {
 }
 
 const datasets = await loadRescoreDatasets(preregistration.artifactBindings);
+if (mode === "rescore-v2-2") {
+  const resultV22 = await runV22LabelOnlyRescore(datasets, inventory);
+  console.log(JSON.stringify({
+    status: resultV22.status,
+    contractVersion: "2.2",
+    receiptPath: resultV22.receiptPath,
+    publicAggregateCandidatePath: resultV22.publicAggregateCandidatePath
+  }));
+  process.exit(resultV22.status === "COMPLETE" ? 0 : 1);
+}
 if (mode === "rescore-v2-1") {
   const resultsV21 = scoreV21Datasets(datasets, inventory);
   const v1ScoreReproduction = verifyV1ScoreReproductionV21(datasets);
@@ -221,6 +260,1114 @@ console.log(JSON.stringify({
   comparabilityGroupCount: Object.keys(results).length,
   receiptPath
 }));
+
+async function runV22LabelOnlyRescore(datasets, artifactInventory) {
+  const capability = resolveCapabilityV22();
+  const capabilityCheck = verifyCapabilityPathsV22(capability);
+  if (!capabilityCheck.ready) {
+    return writeBlockedV22(
+      "M2_EVALUATION_V2_2_PUBLIC_IMPLEMENTATION_COMPLETE_PRIVATE_RESCORE_BLOCKED",
+      { missingRoles: capabilityCheck.missingRoles }
+    );
+  }
+  const authority = await loadReversalAuthorityV22(capability);
+  if (authority.status !== "READY") {
+    return writeBlockedV22(
+      "M2_EVALUATION_V2_2_BLOCKED_REVERSAL_AUTHORITY",
+      authority.publicAudit
+    );
+  }
+  activeAuthorityScalePowerV22 = authority.scalePower;
+  const labels = buildRestatedLabelsV22(datasets, authority);
+  if (labels.status === "BLOCKED_UNRESOLVED_REVERSAL") {
+    return writeBlockedV22(
+      "M2_EVALUATION_V2_2_BLOCKED_UNRESOLVED_REVERSAL",
+      labels.publicSummary
+    );
+  }
+  if (labels.status !== "COMPLETE") {
+    return writeBlockedV22(
+      "M2_EVALUATION_V2_2_BLOCKED_REVERSAL_AUTHORITY",
+      labels.publicSummary
+    );
+  }
+  const resultsV22 = scoreV22Datasets(
+    datasets,
+    labels.byGroupCaseKey,
+    artifactInventory
+  );
+  const outputDirectory = path.join(
+    root,
+    "data",
+    "private-output",
+    reversalContract.privateOutputs.directoryRole
+  );
+  fs.mkdirSync(outputDirectory, { recursive: true });
+  const allocationPath = path.join(
+    outputDirectory,
+    reversalContract.privateOutputs.allocationLedger
+  );
+  const allocationLines = [];
+  for (const scope of labels.finalRestatement.scopes) {
+    for (const allocation of scope.allocations) {
+      allocationLines.push(JSON.stringify({
+        reversalScopeKey: scope.reversalScopeKey,
+        standardWorkId: scope.standardWorkId,
+        channelMemberId: scope.channelMemberId,
+        currencyScope: scope.currencyScope,
+        ...allocation
+      }));
+    }
+  }
+  fs.writeFileSync(
+    allocationPath,
+    allocationLines.length ? `${allocationLines.join("\n")}\n` : ""
+  );
+  const reconciliationPath = path.join(
+    outputDirectory,
+    reversalContract.privateOutputs.scopeReconciliation
+  );
+  fs.writeFileSync(reconciliationPath, `${JSON.stringify({
+    schema: "m2.reversal-restatement.scope-reconciliation.private.v1",
+    actualDefinitionId:
+      reversalContract.actualDefinition.stableId,
+    authority: authority.privateAudit,
+    scopes: labels.finalRestatement.scopes
+  }, null, 2)}\n`);
+  const privateRowsPath = path.join(
+    outputDirectory,
+    reversalContract.privateOutputs.labelOnlyRescoreRows
+  );
+  writeV22PrivateRescoreRows(
+    privateRowsPath,
+    datasets,
+    labels.byGroupCaseKey
+  );
+  const activationBinding = contentBindingV22(artifactInventory);
+  const executionHead = spawnSync(
+    "git",
+    ["rev-parse", "HEAD"],
+    { cwd: root, encoding: "utf8", windowsHide: true }
+  ).stdout.trim();
+  const counters = {
+    privateAuthorityRowReadCount: authority.salesShareRowCount,
+    frozenPredictionRowReadCount: artifactInventory.reduce(
+      (sum, item) => sum + item.rowCount,
+      0
+    ),
+    modelExecutionCount: 0,
+    trainingCount: 0,
+    fittingCount: 0,
+    tuningCount: 0,
+    selectionCount: 0,
+    predictionRowsGenerated: 0,
+    predictionRowsModified: 0,
+    productionChangeCount: 0
+  };
+  const publicAggregate = {
+    schema: "m2.evaluation-v2.2.diagnostic-recheck.public-candidate.v1",
+    asOf: contractV22.asOf,
+    contractVersion: contractV22.version,
+    resultStatus: "FROZEN_PREDICTION_LABEL_ONLY_RESCORE",
+    actualDefinition: reversalContract.actualDefinition,
+    activationBinding,
+    frozenArtifactInventory: {
+      artifactCount: artifactInventory.length,
+      rowCount: artifactInventory.reduce(
+        (sum, item) => sum + item.rowCount,
+        0
+      ),
+      allGitIgnored: artifactInventory.every((item) => item.gitIgnored),
+      allDigestsMatched: artifactInventory.every(
+        (item) => item.digestMatchesPreregistration
+      ),
+      predictionRowsModified: 0
+    },
+    authorityAudit: authority.publicAudit,
+    reversalImpact: labels.publicSummary,
+    authorizationCounters: counters,
+    results: resultsV22,
+    publicPrivacy: {
+      aggregateOnly: true,
+      containsRowLevelIdentity: false,
+      containsPrivatePath: false
+    }
+  };
+  const publicAggregateCandidatePath = path.join(
+    outputDirectory,
+    "M2-evaluation-v2.2-public-aggregate-candidate.json"
+  );
+  fs.writeFileSync(
+    publicAggregateCandidatePath,
+    `${JSON.stringify(publicAggregate, null, 2)}\n`
+  );
+  const receiptPathV22 = path.join(
+    outputDirectory,
+    reversalContract.privateOutputs.executionReceipt
+  );
+  const receipt = {
+    schema: "m2.evaluation-v2.2.execution-receipt.private.v1",
+    executionHead,
+    status: "COMPLETE",
+    actualDefinitionId: reversalContract.actualDefinition.stableId,
+    activationBinding,
+    authority: authority.privateAudit,
+    labels: labels.privateSummary,
+    authorizationCounters: counters,
+    outputDigests: {
+      allocationLedgerSha256: sha256PathV22(allocationPath),
+      scopeReconciliationSha256: sha256PathV22(reconciliationPath),
+      labelOnlyRescoreRowsSha256: sha256PathV22(privateRowsPath),
+      publicAggregateCandidateSha256:
+        sha256PathV22(publicAggregateCandidatePath)
+    }
+  };
+  fs.writeFileSync(receiptPathV22, `${JSON.stringify(receipt, null, 2)}\n`);
+  return {
+    status: "COMPLETE",
+    receiptPath: receiptPathV22,
+    publicAggregateCandidatePath
+  };
+}
+
+function resolveCapabilityV22() {
+  const catalog = JSON.parse(fs.readFileSync(
+    path.join(root, "config/development-capability-catalog.v0.1.json"),
+    "utf8"
+  ));
+  const capability = catalog.capabilities.find(
+    (item) => item.id === "m2-evaluation-v2-2-reversal-rescore"
+  );
+  if (!capability) {
+    throw new Error("m2_evaluation_v2_2_capability_missing");
+  }
+  return capability;
+}
+
+function capabilityRolePathV22(capability, role) {
+  const artifact = capability.requiredPrivateArtifacts.find(
+    (item) => item.role === role
+  );
+  if (!artifact || artifact.kind !== "file") {
+    throw new Error(`m2_evaluation_v2_2_capability_role_missing:${role}`);
+  }
+  return {
+    relativePath: artifact.path,
+    absolutePath: path.join(root, artifact.path)
+  };
+}
+
+function verifyCapabilityPathsV22(capability) {
+  const missingRoles = [];
+  for (const artifact of capability.requiredPrivateArtifacts) {
+    const absolutePath = path.join(root, artifact.path);
+    const exists = fs.existsSync(absolutePath)
+      && (artifact.kind !== "file" || fs.statSync(absolutePath).isFile());
+    const ignored = exists && spawnSync(
+      "git",
+      ["check-ignore", "--quiet", "--", artifact.path],
+      { cwd: root, windowsHide: true }
+    ).status === 0;
+    if (!exists || !ignored) missingRoles.push(artifact.role);
+  }
+  return {
+    ready: missingRoles.length === 0,
+    missingRoles
+  };
+}
+
+async function loadReversalAuthorityV22(capability) {
+  const ledger = capabilityRolePathV22(
+    capability,
+    "sales-share-ledger-authority"
+  );
+  const facts = capabilityRolePathV22(capability, "formal-income-facts");
+  const payloadRole = capabilityRolePathV22(
+    capability,
+    "formal-execution-payload"
+  );
+  const payload = JSON.parse(fs.readFileSync(payloadRole.absolutePath, "utf8"));
+  const ledgerDigest = await sha256File(ledger.absolutePath);
+  const factDigest = await sha256File(facts.absolutePath);
+  const userConfirmation = JSON.parse(fs.readFileSync(
+    path.join(root, "config/m2-current-user-confirmation.v0.1.json"),
+    "utf8"
+  ));
+  const partition = JSON.parse(fs.readFileSync(
+    path.join(root, "config/m2-current-human-ledger-partition.v0.1.json"),
+    "utf8"
+  ));
+  const expectedDigest = payload?.factImport?.factFileSha256;
+  const sourceDigest = payload?.factImport?.sourceBill?.sha256;
+  const sourceDigestMatchedAuthority = ledgerDigest === sourceDigest;
+  const policyReady =
+    userConfirmation.negativeCashEventPolicy
+      === "all_negative_cash_records_are_reversals"
+    && partition.cashCategoryContract.negativeCashEventPolicy
+      === "all_negative_cash_records_are_reversals"
+    && partition.cashCategoryContract.classificationSource
+      === "workbook_membership_only"
+    && partition.cashCategoryContract.machineClassificationAllowed === false;
+  if (
+    !/^[a-f0-9]{64}$/.test(String(expectedDigest ?? ""))
+    || factDigest !== expectedDigest
+    || !/^[a-f0-9]{64}$/.test(String(sourceDigest ?? ""))
+    || !sourceDigestMatchedAuthority
+    || !policyReady
+  ) {
+    return {
+      status: "BLOCKED",
+      publicAudit: {
+        factDigestMatchedPayload: factDigest === expectedDigest,
+        sourceDigestBound: /^[a-f0-9]{64}$/.test(
+          String(sourceDigest ?? "")
+        ),
+        sourceDigestMatchedAuthority,
+        negativeEventPolicyProven: policyReady
+      }
+    };
+  }
+  const rawRows = [];
+  await forEachNdjson(facts.absolutePath, (row) => {
+    if (row.cashCategory === "sales_share") rawRows.push(row);
+  });
+  const requiredFields = [
+    "rowHash",
+    "billMonth",
+    "standardWorkId",
+    "channelKey",
+    "actualSalesAmount",
+    "cashCategory",
+    "cashCategoryAuthority"
+  ];
+  const fieldCoverage = Object.fromEntries(requiredFields.map((field) => [
+    field,
+    rawRows.filter((row) =>
+      row[field] !== null && row[field] !== undefined && row[field] !== ""
+    ).length / rawRows.length
+  ]));
+  const scopeAndTimeReady = rawRows.length > 0
+    && Object.values(fieldCoverage).every((value) => value === 1)
+    && rawRows.every((row) =>
+      row.cashCategoryAuthority === "user_reviewed_workbook_membership"
+      && /^\d{4}-\d{2}-\d{2}$/.test(String(row.billMonth))
+    );
+  const amountTexts = rawRows.map((row) =>
+    normalizeDecimalTextV22(row.actualSalesAmount)
+  );
+  const scalePower = Math.max(
+    ...amountTexts.map((value) => value.fraction.length)
+  );
+  const scale = 10n ** BigInt(scalePower);
+  const currencyScope = `authority-ledger-native-unit:${sourceDigest}`;
+  const normalizedRows = rawRows.map((row, index) => {
+    const amountMinor = decimalToMinorV22(
+      row.actualSalesAmount,
+      scalePower
+    );
+    return {
+      recordId: String(row.rowHash),
+      reversalScopeKey: buildReversalScopeKeyV1({
+        cashCategory: "sales_share",
+        standardWorkId: String(row.standardWorkId),
+        channelMemberId: String(row.channelKey),
+        currencyScope
+      }),
+      postingMonth: String(row.billMonth).slice(0, 7),
+      recordedAt: String(row.billMonth),
+      eventType: amountMinor < 0n
+        ? "reversal"
+        : "positive_sales_share",
+      amountMinor: amountMinor.toString(),
+      standardWorkId: String(row.standardWorkId),
+      channelMemberId: String(row.channelKey),
+      authorityRowOrdinal: index + 1
+    };
+  });
+  const recordIds = new Set(normalizedRows.map((row) => row.recordId));
+  const negativeCount = normalizedRows.filter(
+    (row) => BigInt(row.amountMinor) < 0n
+  ).length;
+  const ready = scopeAndTimeReady
+    && recordIds.size === normalizedRows.length
+    && negativeCount > 0;
+  return {
+    status: ready ? "READY" : "BLOCKED",
+    scalePower,
+    scale,
+    sourceDigest,
+    factDigest,
+    salesShareRowCount: normalizedRows.length,
+    rows: normalizedRows,
+    publicAudit: {
+      status: ready ? "REVERSAL_AUTHORITY_PROVEN" : "BLOCKED",
+      cashAuthority: "user_reviewed_sales_share_workbook_membership",
+      negativeEventPolicy:
+        "all_negative_cash_records_are_reversals",
+      salesShareRowCount: normalizedRows.length,
+      reversalRowCount: negativeCount,
+      fieldCoverage,
+      postingTimeField: "billMonth",
+      recordedAtField: "billMonth",
+      recordedAtGranularity: "month",
+      reversalScopeKeyFields: [
+        "cashCategory",
+        "standardWorkId",
+        "channelKey",
+        "sourceLedgerNativeCurrencyScope"
+      ],
+      currencyScopeMode:
+        "single_digest_bound_authority_ledger_native_monetary_unit",
+      contractOrSettlementFieldStatus:
+        "NOT_AVAILABLE_NOT_USED_FOR_SCOPE_COLLAPSE",
+      companyAggregateFallbackUsed: false,
+      amountScalePower: scalePower,
+      exactIntegerMinorUnits: true,
+      factDigestMatchedPayload: factDigest === expectedDigest,
+      sourceDigestMatchedAuthority,
+      authorityRecordIdUnique: recordIds.size === normalizedRows.length
+    },
+    privateAudit: {
+      sourceDigest,
+      ledgerDigest,
+      factDigest,
+      scalePower,
+      fieldCoverage,
+      salesShareRowCount: normalizedRows.length,
+      reversalRowCount: negativeCount,
+      currencyScope
+    }
+  };
+}
+
+function buildRestatedLabelsV22(datasets, authority) {
+  const cases = collectUniqueCasesV22(datasets);
+  const byCutoff = new Map();
+  for (const value of cases.values()) {
+    const targetEnd = addMonthsV22(value.origin, value.horizonMonths);
+    value.targetEnd = targetEnd;
+    const values = byCutoff.get(targetEnd) ?? [];
+    values.push(value);
+    byCutoff.set(targetEnd, values);
+  }
+  const origins = [...new Set([...cases.values()].map((row) => row.origin))]
+    .sort();
+  const targetCutoffs = [...byCutoff.keys()].sort();
+  const allCutoffs = [...new Set([...origins, ...targetCutoffs])].sort();
+  const authorityStartMonth = authority.rows
+    .map((row) => row.postingMonth)
+    .sort()[0];
+  const postingIndex = buildPostingIndexV22(authority.rows);
+  const byGroupCaseKey = new Map();
+  const cutoffAudit = [];
+  let unresolvedResidualMinor = 0n;
+  let conservationDifferenceMinor = 0n;
+  let postingActualMismatchCount = 0;
+  let portfolioPopulationMismatchCount = 0;
+  let affectedCaseCount = 0;
+  let affectedWorkCaseCount = 0;
+  let finalRestatement = null;
+  for (const cutoff of allCutoffs) {
+    const restatement = restateSalesShareReversalsV1(authority.rows, {
+      cutoff,
+      authorityStartMonth
+    });
+    unresolvedResidualMinor += BigInt(
+      restatement.unresolvedReversalResidualMinor
+    );
+    conservationDifferenceMinor += BigInt(
+      restatement.conservationDifferenceMinor
+    );
+    cutoffAudit.push({
+      cutoff,
+      status: restatement.status,
+      unresolvedReversalResidualMinor:
+        restatement.unresolvedReversalResidualMinor,
+      conservationDifferenceMinor:
+        restatement.conservationDifferenceMinor,
+      futureRowsExcluded: restatement.futureExcludedCount
+    });
+    if (cutoff === allCutoffs.at(-1)) finalRestatement = restatement;
+    const cutoffCases = byCutoff.get(cutoff);
+    if (!cutoffCases) continue;
+    const restatedIndex = buildRestatedWorkMonthIndexV22(restatement);
+    for (const value of cutoffCases) {
+      const startMonth = addMonthsV22(value.origin, 1);
+      const posting = sumPostingWindowV22(
+        postingIndex,
+        value.standardWorkId,
+        startMonth,
+        value.targetEnd
+      );
+      let restatedMinor;
+      if (value.standardWorkId === "__PORTFOLIO__") {
+        restatedMinor = sumAllWorkWindowV22(
+          restatedIndex,
+          startMonth,
+          value.targetEnd
+        );
+      } else {
+        restatedMinor = sumWorkWindowV22(
+          restatedIndex,
+          value.standardWorkId,
+          startMonth,
+          value.targetEnd
+        );
+      }
+      const expectedPosting = value.standardWorkId === "__PORTFOLIO__"
+        ? posting.allWorkNet
+        : posting.net;
+      const frozenMinor = frozenNumberToMinorV22(
+        value.actual,
+        authority.scalePower
+      );
+      const postingMatches = frozenMinor === expectedPosting;
+      if (!postingMatches && value.standardWorkId === "__PORTFOLIO__") {
+        portfolioPopulationMismatchCount += 1;
+      } else if (!postingMatches) {
+        postingActualMismatchCount += 1;
+      }
+      const label = {
+        groupId: value.groupId,
+        caseKey: value.caseKey,
+        origin: value.origin,
+        horizonMonths: value.horizonMonths,
+        targetEnd: value.targetEnd,
+        postingActualMinor: frozenMinor.toString(),
+        authorityPostingActualMinor: expectedPosting.toString(),
+        restatedActualMinor: restatedMinor.toString(),
+        positiveActualMinor: (
+          value.standardWorkId === "__PORTFOLIO__"
+            ? posting.allWorkPositive
+            : posting.positive
+        ).toString(),
+        reversalActualMinor: (
+          value.standardWorkId === "__PORTFOLIO__"
+            ? posting.allWorkReversal
+            : posting.reversal
+        ).toString(),
+        postingActualMatchesAuthority: postingMatches,
+        affected: frozenMinor !== restatedMinor,
+        status: postingMatches
+          ? "FROZEN_PREDICTION_LABEL_ONLY_RESCORE"
+          : value.standardWorkId === "__PORTFOLIO__"
+            ? "NOT_RESCORABLE_PORTFOLIO_POPULATION_MEMBERSHIP_MISSING"
+            : "BLOCKED_POSTING_ACTUAL_AUTHORITY_MISMATCH"
+      };
+      if (label.affected) {
+        affectedCaseCount += 1;
+        if (value.standardWorkId !== "__PORTFOLIO__") {
+          affectedWorkCaseCount += 1;
+        }
+      }
+      byGroupCaseKey.set(`${value.groupId}\u001f${value.caseKey}`, label);
+    }
+  }
+  const status = unresolvedResidualMinor !== 0n
+    ? "BLOCKED_UNRESOLVED_REVERSAL"
+    : conservationDifferenceMinor !== 0n || postingActualMismatchCount > 0
+      ? "BLOCKED_REVERSAL_AUTHORITY"
+      : "COMPLETE";
+  const publicSummary = {
+    status,
+    labelOnlyRescoreStatus: "FROZEN_PREDICTION_LABEL_ONLY_RESCORE",
+    positiveRevenueMinor: finalRestatement.positiveRevenueMinor,
+    reversalPostingMinor: finalRestatement.reversalPostingMinor,
+    tracedOffsetMinor: finalRestatement.tracedOffsetMinor,
+    restatedRevenueMinor: finalRestatement.restatedRevenueMinor,
+    unresolvedReversalResidualMinor:
+      finalRestatement.unresolvedReversalResidualMinor,
+    conservationDifferenceMinor:
+      finalRestatement.conservationDifferenceMinor,
+    affectedScopeCount: finalRestatement.affectedScopeCount,
+    affectedWorkCount: finalRestatement.affectedWorkCount,
+    affectedChannelCount: finalRestatement.affectedChannelCount,
+    affectedMonthCount: finalRestatement.affectedMonthCount,
+    fullyZeroedMonthCount: finalRestatement.fullyZeroedMonthCount,
+    partiallyRetainedMonthCount:
+      finalRestatement.partiallyRetainedMonthCount,
+    maximumTraceDepthMonths:
+      finalRestatement.maximumTraceDepthMonths,
+    traceDepthDistribution: finalRestatement.traceDepthDistribution,
+    evaluatedCaseCount: cases.size,
+    affectedCaseCount,
+    affectedWorkCaseCount,
+    postingActualMismatchCount,
+    portfolioPopulationMismatchCount,
+    postingTimeViewStatus: postingActualMismatchCount === 0
+      ? "PASS"
+      : "BLOCKED",
+    asOfRestatedViewStatus: cutoffAudit.every(
+      (row) => row.conservationDifferenceMinor === "0"
+    ) ? "PASS" : "BLOCKED",
+    finalRestatedViewStatus:
+      finalRestatement.status === "COMPLETE" ? "PASS" : "BLOCKED",
+    futureLeakageRiskFound: false,
+    originAfterCutoffRowsUsed: 0
+  };
+  return {
+    status,
+    byGroupCaseKey,
+    finalRestatement,
+    publicSummary,
+    privateSummary: {
+      ...publicSummary,
+      cutoffAudit
+    }
+  };
+}
+
+function collectUniqueCasesV22(datasets) {
+  const output = new Map();
+  for (const [groupId, group] of Object.entries(datasets)) {
+    const firstRows = Object.values(group.models)[0] ?? [];
+    for (const row of firstRows) {
+      const key = `${groupId}\u001f${row.caseKey}`;
+      output.set(key, {
+        groupId,
+        caseKey: row.caseKey,
+        standardWorkId: row.standardWorkId,
+        origin: row.origin,
+        horizonMonths: row.horizonMonths,
+        actual: row.actual
+      });
+    }
+  }
+  return output;
+}
+
+function buildPostingIndexV22(rows) {
+  const byWork = new Map();
+  const allWork = new Map();
+  for (const row of rows) {
+    const amount = BigInt(row.amountMinor);
+    const workMonths = byWork.get(row.standardWorkId) ?? new Map();
+    const value = workMonths.get(row.postingMonth) ?? {
+      positive: 0n,
+      reversal: 0n,
+      net: 0n
+    };
+    const global = allWork.get(row.postingMonth) ?? {
+      positive: 0n,
+      reversal: 0n,
+      net: 0n
+    };
+    if (amount >= 0n) {
+      value.positive += amount;
+      global.positive += amount;
+    } else {
+      value.reversal += -amount;
+      global.reversal += -amount;
+    }
+    value.net += amount;
+    global.net += amount;
+    workMonths.set(row.postingMonth, value);
+    byWork.set(row.standardWorkId, workMonths);
+    allWork.set(row.postingMonth, global);
+  }
+  return { byWork, allWork };
+}
+
+function sumPostingWindowV22(index, workId, start, end) {
+  const work = index.byWork.get(workId) ?? new Map();
+  const result = { positive: 0n, reversal: 0n, net: 0n };
+  const all = { positive: 0n, reversal: 0n, net: 0n };
+  for (let month = start; month <= end; month = addMonthsV22(month, 1)) {
+    const value = work.get(month);
+    const global = index.allWork.get(month);
+    if (value) {
+      result.positive += value.positive;
+      result.reversal += value.reversal;
+      result.net += value.net;
+    }
+    if (global) {
+      all.positive += global.positive;
+      all.reversal += global.reversal;
+      all.net += global.net;
+    }
+  }
+  return {
+    ...result,
+    allWorkPositive: all.positive,
+    allWorkReversal: all.reversal,
+    allWorkNet: all.net
+  };
+}
+
+function buildRestatedWorkMonthIndexV22(restatement) {
+  const result = new Map();
+  for (const scope of restatement.scopes) {
+    const months = result.get(scope.standardWorkId) ?? new Map();
+    for (const row of scope.restatedBalances) {
+      months.set(
+        row.month,
+        (months.get(row.month) ?? 0n) + BigInt(row.amountMinor)
+      );
+    }
+    result.set(scope.standardWorkId, months);
+  }
+  return result;
+}
+
+function sumWorkWindowV22(index, workId, start, end) {
+  const months = index.get(workId) ?? new Map();
+  let total = 0n;
+  for (let month = start; month <= end; month = addMonthsV22(month, 1)) {
+    total += months.get(month) ?? 0n;
+  }
+  return total;
+}
+
+function sumAllWorkWindowV22(index, start, end) {
+  let total = 0n;
+  for (const workId of index.keys()) {
+    total += sumWorkWindowV22(index, workId, start, end);
+  }
+  return total;
+}
+
+function scoreV22Datasets(datasets, labels, artifactInventory) {
+  const results = {};
+  for (const [groupId, group] of Object.entries(datasets)) {
+    const models = {};
+    for (const [modelId, sourceRows] of Object.entries(group.models)) {
+      const rowPairs = buildV22RowPairs(
+        groupId,
+        sourceRows,
+        labels,
+        group.grain
+      );
+      if (rowPairs === null) {
+        models[modelId] = {
+          status:
+            "NOT_RESCORABLE_PORTFOLIO_POPULATION_MEMBERSHIP_MISSING"
+        };
+        continue;
+      }
+      const posting = scoreV22ModelFamily(
+        rowPairs.posting,
+        "M2-ACTUAL-POSTING-TIME-01"
+      );
+      const restated = scoreV22ModelFamily(
+        rowPairs.restated,
+        reversalContract.actualDefinition.stableId
+      );
+      models[modelId] = {
+        status: "FROZEN_PREDICTION_LABEL_ONLY_RESCORE",
+        stableModelId: modelId.split("::")[0],
+        variantType: group.variants[modelId],
+        postingTime: posting,
+        reversalRestated: restated,
+        pairedActualDefinitionImpact: {
+          status:
+            "PAIRED_LABEL_DEFINITION_IMPACT_NOT_MODEL_IMPROVEMENT",
+          sameCaseCount: sourceRows.length,
+          postingTimeWape: posting.point.pooled.wape,
+          postingTimeSignedBias: posting.point.pooled.signedBias,
+          restatedWape: restated.point.pooled.wape,
+          restatedSignedBias: restated.point.pooled.signedBias,
+          absoluteWapeChange:
+            restated.point.pooled.wape - posting.point.pooled.wape,
+          relativeWapeChange: posting.point.pooled.wape === 0
+            ? null
+            : restated.point.pooled.wape / posting.point.pooled.wape - 1,
+          affectedCaseCount: rowPairs.posting.filter(
+            (row) => row.labelAffected
+          ).length,
+          unaffectedCaseCount: rowPairs.posting.filter(
+            (row) => !row.labelAffected
+          ).length,
+          affectedSlice: safePointScoreV22(rowPairs.restated.filter(
+            (row) => row.labelAffected
+          )),
+          unaffectedSlice: safePointScoreV22(rowPairs.restated.filter(
+            (row) => !row.labelAffected
+          ))
+        }
+      };
+    }
+    const fallbackId = chooseFallback(groupId, group.models);
+    const pairedWithinActualDefinition = {};
+    if (fallbackId && models[fallbackId]?.postingTime) {
+      for (const [modelId, sourceRows] of Object.entries(group.models)) {
+        if (modelId === fallbackId || !models[modelId]?.postingTime) continue;
+        const candidatePairs = buildV22RowPairs(
+          groupId,
+          sourceRows,
+          labels,
+          group.grain
+        );
+        const fallbackPairs = buildV22RowPairs(
+          groupId,
+          group.models[fallbackId],
+          labels,
+          group.grain
+        );
+        pairedWithinActualDefinition[modelId] = {
+          versus: fallbackId,
+          postingTime: scorePairedPointRowsV2(
+            candidatePairs.posting,
+            fallbackPairs.posting
+          ),
+          reversalRestated: scorePairedPointRowsV2(
+            candidatePairs.restated,
+            fallbackPairs.restated
+          )
+        };
+        if (modelId === "M2-CHAN-SCL01") {
+          const options = {
+            minimumCaseCount: contractV22.publicPrivacy.minimumCaseCount,
+            minimumWorkCount: contractV22.publicPrivacy.minimumWorkCount,
+            topFractions: contractV22.topRevenueAttribution.fractions,
+            seed: contractV22.uncertainty.seed,
+            bootstrapIterations:
+              contractV22.uncertainty.bootstrapIterations,
+            minimumIndependentTimeBlocks:
+              contractV22.uncertainty.minimumIndependentTimeBlocks
+          };
+          pairedWithinActualDefinition[modelId].ranking = {
+            postingTime: scoreRankingRowsV22(
+              candidatePairs.posting,
+              fallbackPairs.posting,
+              options
+            ),
+            reversalRestated: scoreRankingRowsV22(
+              candidatePairs.restated,
+              fallbackPairs.restated,
+              options
+            )
+          };
+        }
+      }
+    }
+    let portfolio = null;
+    if (
+      group.grain === "portfolio_origin_horizon"
+      && models["M2-PORT-ETS01"]?.postingTime
+    ) {
+      const candidatePairs = buildV22RowPairs(
+        groupId,
+        group.models["M2-PORT-ETS01"],
+        labels,
+        group.grain
+      );
+      const fallbackPairs = buildV22RowPairs(
+        groupId,
+        group.models[
+          "M2-BASE-CLASSIC01::M2-EXP-PORTFOLIO-ETS-01:SNAIVE"
+        ],
+        labels,
+        group.grain
+      );
+      const options = {
+        bootstrapIterations: contractV22.uncertainty.bootstrapIterations,
+        seed: contractV22.uncertainty.seed,
+        minimumOriginCount:
+          contractV22.publicPrivacy.minimumPortfolioOriginCount,
+        minimumIndependentTimeBlocks:
+          contractV22.uncertainty.minimumIndependentTimeBlocks
+      };
+      portfolio = {
+        postingTime: scorePortfolioPairedV22(
+          candidatePairs.posting,
+          fallbackPairs.posting,
+          options
+        ),
+        reversalRestated: scorePortfolioPairedV22(
+          candidatePairs.restated,
+          fallbackPairs.restated,
+          options
+        )
+      };
+    }
+    results[groupId] = {
+      frozenInputArtifactSetSha256:
+        contentBindingV22(artifactInventory).frozenInputArtifactSetSha256,
+      postingComparabilityGroupId: `${groupId}::POSTING_TIME`,
+      restatedComparabilityGroupId: `${groupId}::REVERSAL_RESTATED`,
+      crossActualDefinitionWinnerAllowed: false,
+      fallbackId,
+      models,
+      pairedWithinActualDefinition,
+      portfolio
+    };
+  }
+  return results;
+}
+
+function buildV22RowPairs(groupId, rows, labels, grain) {
+  const pairs = rows.map((row) => {
+    const label = labels.get(`${groupId}\u001f${row.caseKey}`);
+    if (!label || !label.postingActualMatchesAuthority) return null;
+    const common = {
+      ...row,
+      actualPositiveAmount: minorToNumberV22(
+        label.positiveActualMinor
+      ),
+      postingTimeReversalActual: minorToNumberV22(
+        label.reversalActualMinor
+      ),
+      reversalActualMagnitude: minorToNumberV22(
+        label.reversalActualMinor
+      ),
+      labelAffected: label.affected
+    };
+    return {
+      posting: {
+        ...common,
+        actual: minorToNumberV22(label.postingActualMinor),
+        actualPositive:
+          BigInt(label.postingActualMinor) > 0n ? 1 : 0
+      },
+      restated: {
+        ...common,
+        actual: minorToNumberV22(label.restatedActualMinor),
+        actualPositive:
+          BigInt(label.restatedActualMinor) > 0n ? 1 : 0,
+        actualPositiveAmount: minorToNumberV22(
+          label.restatedActualMinor
+        )
+      }
+    };
+  });
+  if (pairs.some((pair) => pair === null)) {
+    return grain === "portfolio_origin_horizon" ? null : null;
+  }
+  return {
+    posting: pairs.map((pair) => pair.posting),
+    restated: pairs.map((pair) => pair.restated)
+  };
+}
+
+function scoreV22ModelFamily(rows, actualDefinitionId) {
+  const occurrenceAvailable = rows.every(
+    (row) => row.occurrenceProbability !== undefined
+  );
+  const conditionalAvailable = rows.every(
+    (row) => row.conditionalAmountPrediction !== undefined
+  );
+  const reversalPredictionAvailable = rows.every(
+    (row) => row.reversalPointEstimate !== undefined
+  );
+  return {
+    actualDefinitionId,
+    point: {
+      pooled: scorePointRowsV21(rows),
+      byHorizon: scorePointSlicesV22(rows)
+    },
+    occurrence: occurrenceAvailable
+      ? scoreOccurrenceRowsV22(rows, {
+        epsilon: preregistration.numericPolicy.probabilityClipEpsilon
+      })
+      : {
+        status: "NOT_COMPUTABLE_OCCURRENCE_PROBABILITY_MISSING"
+      },
+    conditionalAmount: conditionalAvailable
+      ? scoreConditionalAmountRowsV22(rows)
+      : {
+        status:
+          "NOT_COMPUTABLE_CONDITIONAL_AMOUNT_PREDICTION_MISSING"
+      },
+    reversal: reversalPredictionAvailable
+      ? scoreReversalRowsV22(rows, {
+        epsilon: preregistration.numericPolicy.probabilityClipEpsilon
+      })
+      : {
+        status: "NOT_COMPUTABLE_REVERSAL_PREDICTION_MISSING"
+      },
+    topRevenueAttribution: rows[0]?.standardWorkId === "__PORTFOLIO__"
+      ? null
+      : scoreTopRevenueAttributionV22(rows, {
+        minimumCaseCount: contractV22.publicPrivacy.minimumCaseCount,
+        minimumWorkCount: contractV22.publicPrivacy.minimumWorkCount,
+        topFractions: contractV22.topRevenueAttribution.fractions
+      })
+  };
+}
+
+function scorePointSlicesV22(rows) {
+  const result = {};
+  for (const [key, values] of [...groupMapRunnerV22(
+    rows,
+    (row) => String(row.horizonMonths)
+  )].sort(([left], [right]) => left.localeCompare(right))) {
+    result[key] = scorePointRowsV21(values);
+  }
+  return result;
+}
+
+function safePointScoreV22(rows) {
+  return rows.length === 0
+    ? { status: "NOT_APPLICABLE_EMPTY_SLICE", caseCount: 0 }
+    : scorePointRowsV21(rows);
+}
+
+function writeV22PrivateRescoreRows(filePath, datasets, labels) {
+  const file = fs.openSync(filePath, "w");
+  try {
+    for (const [groupId, group] of Object.entries(datasets)) {
+      for (const [modelId, rows] of Object.entries(group.models)) {
+        for (const row of rows) {
+          const label = labels.get(`${groupId}\u001f${row.caseKey}`);
+          fs.writeSync(file, `${JSON.stringify({
+            groupId,
+            modelId,
+            variantType: group.variants[modelId],
+            caseKey: row.caseKey,
+            standardWorkId: row.standardWorkId,
+            origin: row.origin,
+            horizonMonths: row.horizonMonths,
+            frozenPointEstimate: row.pointEstimate,
+            postingActualMinor: label?.postingActualMinor ?? null,
+            restatedActualMinor: label?.restatedActualMinor ?? null,
+            labelAffected: label?.affected ?? null,
+            status: label?.status ?? "NOT_RESCORABLE"
+          })}\n`);
+        }
+      }
+    }
+  } finally {
+    fs.closeSync(file);
+  }
+}
+
+function contentBindingV22(artifactInventory) {
+  const artifactSet = artifactInventory.map((item) => ({
+    artifactId: item.artifactId,
+    sha256: item.sha256,
+    rowCount: item.rowCount
+  })).sort((left, right) =>
+    left.artifactId.localeCompare(right.artifactId)
+  );
+  return {
+    contractSchema: contractV22.schema,
+    contractVersion: contractV22.version,
+    contractArtifactSha256: sha256PathV22(
+      path.join(root, "config/m2-evaluation-contract.v2.2.json")
+    ),
+    evaluatorImplementationSha256: sha256TrackedSetV22([
+      "src/domain/m2Current/evaluationV2.js",
+      "src/domain/m2Current/reversalRestatement.js",
+      "scripts/m2-current/run_m2_evaluation_v2_frozen_rescore.mjs"
+    ]),
+    testContractSha256: sha256TrackedSetV22([
+      "test/m2-evaluation-contract-v2-2.test.js",
+      "test/m2-reversal-restatement.test.js"
+    ]),
+    frozenInputArtifactSetSha256: crypto.createHash("sha256")
+      .update(JSON.stringify(artifactSet))
+      .digest("hex")
+  };
+}
+
+function writeBlockedV22(status, detail) {
+  const outputDirectory = path.join(
+    root,
+    "data",
+    "private-output",
+    reversalContract.privateOutputs.directoryRole
+  );
+  fs.mkdirSync(outputDirectory, { recursive: true });
+  const receiptPathV22 = path.join(
+    outputDirectory,
+    reversalContract.privateOutputs.executionReceipt
+  );
+  fs.writeFileSync(receiptPathV22, `${JSON.stringify({
+    schema: "m2.evaluation-v2.2.execution-receipt.private.v1",
+    status,
+    detail,
+    authorizationCounters: {
+      modelExecutionCount: 0,
+      trainingCount: 0,
+      fittingCount: 0,
+      tuningCount: 0,
+      selectionCount: 0,
+      predictionRowsGenerated: 0,
+      predictionRowsModified: 0,
+      productionChangeCount: 0
+    }
+  }, null, 2)}\n`);
+  return {
+    status,
+    receiptPath: receiptPathV22,
+    publicAggregateCandidatePath: null
+  };
+}
+
+function normalizeDecimalTextV22(value) {
+  const text = String(value).trim();
+  const match = /^(-?)(\d+)(?:\.(\d+))?$/.exec(text);
+  if (!match) throw new Error("m2_evaluation_v2_2_amount_decimal_invalid");
+  return {
+    negative: match[1] === "-",
+    integer: match[2],
+    fraction: match[3] ?? ""
+  };
+}
+
+function decimalToMinorV22(value, scalePower) {
+  const parsed = normalizeDecimalTextV22(value);
+  if (parsed.fraction.length > scalePower) {
+    throw new Error("m2_evaluation_v2_2_amount_scale_invalid");
+  }
+  const digits = `${parsed.integer}${parsed.fraction.padEnd(
+    scalePower,
+    "0"
+  )}`;
+  const amount = BigInt(digits);
+  return parsed.negative ? -amount : amount;
+}
+
+function frozenNumberToMinorV22(value, scalePower) {
+  const scale = 10 ** scalePower;
+  const scaled = Number(value) * scale;
+  if (!Number.isSafeInteger(Math.round(scaled))) {
+    throw new Error("m2_evaluation_v2_2_frozen_actual_range_invalid");
+  }
+  return BigInt(Math.round(scaled));
+}
+
+function minorToNumberV22(value) {
+  if (!Number.isInteger(activeAuthorityScalePowerV22)) {
+    throw new Error("m2_evaluation_v2_2_authority_scale_not_initialized");
+  }
+  return Number(value) / (10 ** activeAuthorityScalePowerV22);
+}
+
+function addMonthsV22(month, amount) {
+  const [year, value] = month.split("-").map(Number);
+  const absolute = year * 12 + value - 1 + amount;
+  return `${Math.floor(absolute / 12)}-${String(
+    absolute % 12 + 1
+  ).padStart(2, "0")}`;
+}
+
+function groupMapRunnerV22(rows, keyOf) {
+  const result = new Map();
+  for (const row of rows) {
+    const key = String(keyOf(row));
+    const values = result.get(key) ?? [];
+    values.push(row);
+    result.set(key, values);
+  }
+  return result;
+}
+
+function sha256PathV22(filePath) {
+  return crypto.createHash("sha256")
+    .update(fs.readFileSync(filePath))
+    .digest("hex");
+}
+
+function sha256TrackedSetV22(relativePaths) {
+  const entries = [...relativePaths].sort().map((relativePath) => ({
+    relativePath: relativePath.replaceAll("\\", "/"),
+    sha256: sha256PathV22(path.join(root, relativePath))
+  }));
+  return crypto.createHash("sha256")
+    .update(JSON.stringify(entries))
+    .digest("hex");
+}
 
 async function inspectNdjson(filePath, artifactId) {
   let rowCount = 0;

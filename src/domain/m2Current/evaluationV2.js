@@ -595,6 +595,368 @@ export function scoreTopRevenueAttributionV21(rows, options = {}) {
   };
 }
 
+export function scoreOccurrenceRowsV22(rows, options = {}) {
+  requireRows(rows);
+  const epsilon = options.epsilon ?? 1e-12;
+  const diagnosticThreshold = options.diagnosticThreshold ?? 0.5;
+  const pairs = rows.map((row) => {
+    if (row.actualPositive === null || row.actualPositive === undefined) {
+      throw new Error("m2_evaluation_v2_2_actual_positive_required");
+    }
+    const actualValue = finite(row.actualPositive, "actual_positive");
+    const probability = finite(
+      row.occurrenceProbability,
+      "occurrence_probability"
+    );
+    if (probability < 0 || probability > 1) {
+      throw new Error("m2_evaluation_v2_probability_range");
+    }
+    return {
+      actual: actualValue > 0 ? 1 : 0,
+      probability: Math.min(1 - epsilon, Math.max(epsilon, probability))
+    };
+  });
+  const positives = pairs.reduce((sum, row) => sum + row.actual, 0);
+  let brier = 0;
+  let logLoss = 0;
+  for (const row of pairs) {
+    brier += (row.probability - row.actual) ** 2;
+    logLoss -= row.actual * Math.log(row.probability)
+      + (1 - row.actual) * Math.log(1 - row.probability);
+  }
+  return {
+    status: "DEFINED",
+    caseCount: rows.length,
+    prevalence: positives / rows.length,
+    brier: brier / rows.length,
+    logLoss: logLoss / rows.length,
+    prAucTrapezoidal: aucByThreshold(pairs, "pr"),
+    averagePrecision: averagePrecisionV22(pairs),
+    rocAucAuxiliary: aucByThreshold(pairs, "roc"),
+    reliability10EqualWidthBins: reliabilityBins(pairs, 10),
+    threshold05DiagnosticOnly: confusion(pairs, diagnosticThreshold)
+  };
+}
+
+export function scoreConditionalAmountRowsV22(rows) {
+  requireRows(rows);
+  if (rows.some((row) =>
+    row.actualPositiveAmount === null
+    || row.actualPositiveAmount === undefined
+  )) {
+    return {
+      status: "NOT_COMPUTABLE_CONDITIONAL_AMOUNT_ACTUAL_MISSING",
+      caseCount: rows.length
+    };
+  }
+  if (rows.some((row) =>
+    row.conditionalAmountPrediction === null
+    || row.conditionalAmountPrediction === undefined
+  )) {
+    return {
+      status: "NOT_COMPUTABLE_CONDITIONAL_AMOUNT_PREDICTION_MISSING",
+      caseCount: rows.length
+    };
+  }
+  const eligible = rows.filter(
+    (row) => finite(row.actualPositiveAmount, "actual_positive_amount") > 0
+  );
+  if (eligible.length === 0) {
+    return {
+      status: "NOT_COMPUTABLE_NO_POSITIVE_ACTUAL",
+      caseCount: rows.length,
+      positiveCaseCount: 0
+    };
+  }
+  let absoluteError = 0;
+  let signedError = 0;
+  let denominator = 0;
+  let logAbsoluteError = 0;
+  for (const row of eligible) {
+    const actual = finite(row.actualPositiveAmount, "actual_positive_amount");
+    const prediction = finite(
+      row.conditionalAmountPrediction,
+      "conditional_amount"
+    );
+    absoluteError += Math.abs(prediction - actual);
+    signedError += prediction - actual;
+    denominator += actual;
+    logAbsoluteError += Math.abs(
+      Math.log1p(Math.max(0, prediction)) - Math.log1p(actual)
+    );
+  }
+  return {
+    status: "DEFINED",
+    caseCount: rows.length,
+    positiveCaseCount: eligible.length,
+    wape: absoluteError / denominator,
+    signedBias: signedError / denominator,
+    mae: absoluteError / eligible.length,
+    logMae: logAbsoluteError / eligible.length
+  };
+}
+
+export function scoreReversalRowsV22(rows, options = {}) {
+  requireRows(rows);
+  if (rows.some((row) =>
+    row.postingTimeReversalActual === null
+    || row.postingTimeReversalActual === undefined
+  )) {
+    return {
+      status: "NOT_COMPUTABLE_REVERSAL_ACTUAL_MISSING",
+      caseCount: rows.length,
+      occurrence: null,
+      amount: null,
+      calibration: null
+    };
+  }
+  if (rows.some((row) =>
+    row.reversalPointEstimate === null
+    || row.reversalPointEstimate === undefined
+  )) {
+    return {
+      status: "NOT_COMPUTABLE_REVERSAL_PREDICTION_MISSING",
+      caseCount: rows.length,
+      occurrence: null,
+      amount: null,
+      calibration: null
+    };
+  }
+  const normalized = rows.map((row) => {
+    const actual = finite(
+      row.postingTimeReversalActual,
+      "posting_time_reversal_actual"
+    );
+    const prediction = finite(
+      row.reversalPointEstimate,
+      "reversal_point_estimate"
+    );
+    if (actual < 0 || prediction < 0) {
+      throw new Error("m2_evaluation_v2_2_reversal_magnitude_nonnegative");
+    }
+    return { ...row, actual, prediction };
+  });
+  const actualTotal = normalized.reduce((sum, row) => sum + row.actual, 0);
+  const absoluteError = normalized.reduce(
+    (sum, row) => sum + Math.abs(row.prediction - row.actual),
+    0
+  );
+  const signedError = normalized.reduce(
+    (sum, row) => sum + row.prediction - row.actual,
+    0
+  );
+  const occurrence = normalized.every(
+    (row) => row.reversalOccurrenceProbability !== undefined
+  )
+    ? scoreOccurrenceRowsV22(normalized.map((row) => ({
+      actualPositive: row.actual > 0 ? 1 : 0,
+      occurrenceProbability: row.reversalOccurrenceProbability
+    })), options)
+    : {
+      status: "NOT_COMPUTABLE_REVERSAL_OCCURRENCE_PROBABILITY_MISSING"
+    };
+  return {
+    status: "DEFINED_AVAILABLE_OUTPUTS",
+    caseCount: rows.length,
+    reversalCaseCount: normalized.filter((row) => row.actual > 0).length,
+    occurrence,
+    amount: {
+      status: actualTotal === 0
+        ? "UNDEFINED_ZERO_ACTUAL_DENOMINATOR"
+        : "DEFINED",
+      wape: actualTotal === 0 ? null : absoluteError / actualTotal,
+      signedBias: actualTotal === 0 ? null : signedError / actualTotal,
+      mae: absoluteError / normalized.length
+    },
+    calibration: occurrence.status === "DEFINED"
+      ? {
+        status: "DEFINED",
+        reliability10EqualWidthBins: occurrence.reliability10EqualWidthBins
+      }
+      : {
+        status: "NOT_COMPUTABLE_REVERSAL_OCCURRENCE_PROBABILITY_MISSING"
+      }
+  };
+}
+
+export function scoreRankingRowsV22(candidateRows, fallbackRows, options = {}) {
+  requireRows(candidateRows);
+  requireRows(fallbackRows);
+  ensureExactPairsV21(candidateRows, fallbackRows);
+  const privacy = privacyStatusV21(candidateRows, options);
+  if (privacy.status !== "PUBLIC") return privacy;
+  const fractions = options.topFractions ?? [0.01, 0.05, 0.1];
+  const iterations = options.bootstrapIterations ?? 2000;
+  if (iterations < 2000) {
+    throw new Error("m2_evaluation_v2_2_bootstrap_iterations_minimum");
+  }
+  const seed = options.seed ?? 20260728;
+  const candidate = rankingCoreV21(candidateRows, fractions);
+  const fallback = rankingCoreV21(fallbackRows, fractions);
+  const pairedDifferences = rankingDifferencesV21(
+    candidate,
+    fallback,
+    fractions
+  );
+  const workBootstrap = fullRankingWorkBootstrapV22(
+    candidateRows,
+    fallbackRows,
+    fractions,
+    seed,
+    iterations
+  );
+  const blocks = new Set(
+    assignMaximalAdjacentOriginBlocksV21(candidateRows)
+      .map((row) => row.timeBlock)
+  );
+  const minimumIndependentBlocks = options.minimumIndependentTimeBlocks ?? 2;
+  const timeIndependence = blocks.size < minimumIndependentBlocks
+    ? {
+      status: "NOT_COMPUTABLE_INSUFFICIENT_INDEPENDENT_TIME_BLOCKS",
+      independentTimeBlockCount: blocks.size,
+      minimumIndependentTimeBlocks: minimumIndependentBlocks,
+      interval: null
+    }
+    : {
+      status: "INDEPENDENT_TIME_BLOCKS_AVAILABLE",
+      independentTimeBlockCount: blocks.size,
+      minimumIndependentTimeBlocks: minimumIndependentBlocks,
+      interval: null
+    };
+  return {
+    status: timeIndependence.status
+      === "NOT_COMPUTABLE_INSUFFICIENT_INDEPENDENT_TIME_BLOCKS"
+      ? "WORK_CLUSTER_RANKING_SIGNAL_TIME_INDEPENDENCE_UNCONFIRMED"
+      : "WORK_CLUSTER_RANKING_SIGNAL_WITH_TIME_BLOCKS_AVAILABLE",
+    caseCount: candidateRows.length,
+    workCount: new Set(candidateRows.map((row) => row.standardWorkId)).size,
+    groupCount: candidate.groupCount,
+    weighting: "equal_origin_horizon_cell_weight",
+    candidate,
+    fallback,
+    pairedDifferences,
+    workClusterBootstrap: workBootstrap,
+    timeIndependence,
+    byOriginDescriptiveOnly: summarizeRankingByOriginV22(
+      pairedDifferences.byOriginHorizon
+    )
+  };
+}
+
+export function scorePortfolioPairedV22(candidateRows, fallbackRows, options = {}) {
+  requireRows(candidateRows);
+  requireRows(fallbackRows);
+  ensureExactPairsV21(candidateRows, fallbackRows);
+  const iterations = options.bootstrapIterations ?? 2000;
+  if (iterations < 2000) {
+    throw new Error("m2_evaluation_v2_2_bootstrap_iterations_minimum");
+  }
+  const seed = options.seed ?? 20260728;
+  const horizons = [...new Set(candidateRows.map(
+    (row) => Number(row.horizonMonths)
+  ))].sort((left, right) => left - right);
+  const byHorizon = {};
+  for (const horizon of horizons) {
+    const candidate = candidateRows.filter(
+      (row) => Number(row.horizonMonths) === horizon
+    );
+    const fallback = fallbackRows.filter(
+      (row) => Number(row.horizonMonths) === horizon
+    );
+    const origins = [...new Set(candidate.map((row) => row.origin))].sort();
+    if (origins.length < (options.minimumOriginCount ?? 5)) {
+      byHorizon[String(horizon)] = {
+        status: "SUPPRESSED_MINIMUM_ORIGIN_COUNT",
+        originCount: origins.length
+      };
+      continue;
+    }
+    const blocks = new Set(
+      assignMaximalAdjacentOriginBlocksV21(candidate)
+        .map((row) => row.timeBlock)
+    );
+    byHorizon[String(horizon)] = {
+      status: "SMALL_SAMPLE_SENSITIVITY_PENDING_LATER_ORIGIN_VALIDATION",
+      originCount: origins.length,
+      paired: scorePairedPointRowsV2(candidate, fallback),
+      originResamplingSensitivity: pointFvaBootstrapV21(
+        candidate,
+        fallback,
+        "origin",
+        seed + horizon,
+        iterations
+      ),
+      leaveOneOriginOut: leaveOneOriginOutV22(candidate, fallback),
+      contiguousTimeBlockDiagnostic: {
+        timeBlockCount: blocks.size,
+        status: blocks.size < (options.minimumIndependentTimeBlocks ?? 2)
+          ? "NOT_COMPUTABLE_INSUFFICIENT_INDEPENDENT_TIME_BLOCKS"
+          : "INDEPENDENT_TIME_BLOCKS_AVAILABLE"
+      },
+      independentExternalValidation: false,
+      routerAuthorized: false
+    };
+  }
+  return {
+    status: "PORTFOLIO_SMALL_SAMPLE_SENSITIVITY_ONLY",
+    caseCount: candidateRows.length,
+    originCount: new Set(candidateRows.map((row) => row.origin)).size,
+    separateByHorizon: true,
+    byHorizon
+  };
+}
+
+export function scoreTopRevenueAttributionV22(rows, options = {}) {
+  requireRows(rows);
+  const fractions = options.topFractions ?? [0.01, 0.05, 0.1];
+  const measures = {
+    positiveRevenueAttribution: (row) =>
+      Math.max(0, finite(row.actual, "actual")),
+    absoluteCashMagnitudeAttribution: (row) =>
+      Math.abs(finite(row.actual, "actual")),
+    reversalMagnitudeAttribution: (row) => row.reversalActualMagnitude === undefined
+      ? Math.max(0, -finite(row.actual, "actual"))
+      : Math.max(
+        0,
+        finite(row.reversalActualMagnitude, "reversal_actual_magnitude")
+      )
+  };
+  const output = {};
+  for (const [name, measure] of Object.entries(measures)) {
+    output[name] = attributionMeasureV22(rows, fractions, measure, options);
+  }
+  return {
+    status: "POSTHOC_FUTURE_ACTUAL_ATTRIBUTION_ONLY",
+    futureActualUsed: true,
+    allowedForFittingSelectionOrGate: false,
+    ...output
+  };
+}
+
+export function validateActivationBindingV22(expected, observed, ci = {}) {
+  const fields = [
+    "contractArtifactSha256",
+    "evaluatorImplementationSha256",
+    "testContractSha256",
+    "frozenInputArtifactSetSha256"
+  ];
+  const digestDifferences = fields.filter(
+    (field) => expected?.[field] !== observed?.[field]
+  );
+  const ciPassed = ci.linux === "SUCCESS" && ci.windows === "SUCCESS";
+  return {
+    status: digestDifferences.length === 0 && ciPassed
+      ? "ACTIVE_FOR_DEVELOPMENT_EVALUATION_ONLY"
+      : "DRAFT_V2_2_REVISION_INCOMPLETE",
+    bindingMode: "content_digest_and_current_execution_ci",
+    exactHeadAuditOnly: true,
+    descendantCommitMayInheritWhenDigestsUnchanged: true,
+    digestDifferences,
+    linuxCi: ci.linux ?? null,
+    windowsCi: ci.windows ?? null
+  };
+}
+
 function reliabilityBins(pairs, count) {
   const result = [];
   for (let index = 0; index < count; index += 1) {
@@ -1133,6 +1495,495 @@ function mulberry32V21(seed) {
     value ^= value + Math.imul(value ^ value >>> 7, value | 61);
     return ((value ^ value >>> 14) >>> 0) / 4294967296;
   };
+}
+
+function averagePrecisionV22(pairs) {
+  const ordered = [...pairs].sort((left, right) =>
+    right.probability - left.probability
+    || right.actual - left.actual
+  );
+  const positive = ordered.reduce((sum, row) => sum + row.actual, 0);
+  if (positive === 0) return null;
+  let truePositive = 0;
+  let falsePositive = 0;
+  let previousRecall = 0;
+  let area = 0;
+  for (let index = 0; index < ordered.length;) {
+    const probability = ordered[index].probability;
+    while (
+      index < ordered.length
+      && ordered[index].probability === probability
+    ) {
+      if (ordered[index].actual) truePositive += 1;
+      else falsePositive += 1;
+      index += 1;
+    }
+    const recall = truePositive / positive;
+    const precision = truePositive / (truePositive + falsePositive);
+    area += (recall - previousRecall) * precision;
+    previousRecall = recall;
+  }
+  return area;
+}
+
+function fullRankingWorkBootstrapV22(
+  candidateRows,
+  fallbackRows,
+  fractions,
+  seed,
+  iterations
+) {
+  const fallbackByKey = new Map(
+    fallbackRows.map((row) => [row.caseKey, row])
+  );
+  const workIds = [...new Set(
+    candidateRows.map((row) => String(row.standardWorkId))
+  )].sort();
+  const workIndex = new Map(workIds.map((value, index) => [value, index]));
+  const cells = [...groupMapV21(
+    candidateRows,
+    (row) => `${row.origin}|${row.horizonMonths}`
+  ).entries()]
+    .sort(([left], [right]) => left.localeCompare(right))
+    .map(([key, values]) => prepareWeightedRankingCellV22(
+      key,
+      [...values].sort((left, right) =>
+        String(left.caseKey).localeCompare(String(right.caseKey))
+      ),
+      fallbackByKey,
+      workIndex
+    ));
+  const random = mulberry32V21(seed);
+  const estimates = {
+    spearman: [],
+    kendallTauB: [],
+    topCapture: Object.fromEntries(
+      fractions.map((fraction) => [String(fraction), []])
+    )
+  };
+  for (let iteration = 0; iteration < iterations; iteration += 1) {
+    const clusterWeights = new Uint32Array(workIds.length);
+    for (let index = 0; index < workIds.length; index += 1) {
+      clusterWeights[Math.floor(random() * workIds.length)] += 1;
+    }
+    const cellDifferences = [];
+    for (const cell of cells) {
+      const candidate = weightedRankingCellScoreV22(
+        cell,
+        clusterWeights,
+        "candidate",
+        fractions
+      );
+      const fallback = weightedRankingCellScoreV22(
+        cell,
+        clusterWeights,
+        "fallback",
+        fractions
+      );
+      if (candidate === null || fallback === null) continue;
+      cellDifferences.push({
+        spearman: candidate.spearman - fallback.spearman,
+        kendallTauB: candidate.kendallTauB - fallback.kendallTauB,
+        topCapture: Object.fromEntries(fractions.map((fraction) => [
+          String(fraction),
+          candidate.topCapture[String(fraction)]
+            - fallback.topCapture[String(fraction)]
+        ]))
+      });
+    }
+    estimates.spearman.push(averageV21(
+      cellDifferences.map((row) => row.spearman)
+    ) ?? 0);
+    estimates.kendallTauB.push(averageV21(
+      cellDifferences.map((row) => row.kendallTauB)
+    ) ?? 0);
+    for (const fraction of fractions) {
+      estimates.topCapture[String(fraction)].push(averageV21(
+        cellDifferences.map((row) => row.topCapture[String(fraction)])
+      ) ?? 0);
+    }
+  }
+  const interval = (values) => {
+    values.sort((left, right) => left - right);
+    return {
+      lower95: quantileType7(values, 0.025),
+      upper95: quantileType7(values, 0.975)
+    };
+  };
+  return {
+    method:
+      "full_standard_work_cluster_resample_recompute_within_cell_ranks",
+    approximationFromFixedRankContributions: false,
+    clusterUnit: "standardWorkId",
+    clusterCount: workIds.length,
+    iterations,
+    seed,
+    meanSpearmanDifference95: interval(estimates.spearman),
+    meanKendallTauBDifference95: interval(estimates.kendallTauB),
+    meanTopRevenueCaptureDifference95: Object.fromEntries(
+      fractions.map((fraction) => [
+        String(fraction),
+        interval(estimates.topCapture[String(fraction)])
+      ])
+    )
+  };
+}
+
+function prepareWeightedRankingCellV22(
+  key,
+  candidateRows,
+  fallbackByKey,
+  workIndex
+) {
+  const items = candidateRows.map((row) => ({
+    caseKey: String(row.caseKey),
+    workIndex: workIndex.get(String(row.standardWorkId)),
+    actual: finite(row.actual, "actual"),
+    candidate: finite(row.pointEstimate, "point_estimate"),
+    fallback: finite(
+      fallbackByKey.get(row.caseKey).pointEstimate,
+      "fallback"
+    )
+  }));
+  const order = (field, descending = false) =>
+    items.map((_, index) => index).sort((left, right) => {
+      const difference = items[left][field] - items[right][field];
+      return (descending ? -difference : difference)
+        || items[left].caseKey.localeCompare(items[right].caseKey);
+    });
+  return {
+    key,
+    items,
+    actualOrder: order("actual"),
+    candidateOrder: order("candidate"),
+    fallbackOrder: order("fallback"),
+    candidateDescending: order("candidate", true),
+    fallbackDescending: order("fallback", true)
+  };
+}
+
+function weightedRankingCellScoreV22(
+  cell,
+  clusterWeights,
+  predictionField,
+  fractions
+) {
+  const weights = cell.items.map(
+    (item) => clusterWeights[item.workIndex]
+  );
+  const totalWeight = weights.reduce((sum, value) => sum + value, 0);
+  if (totalWeight < 2) return null;
+  const predictionOrder = predictionField === "candidate"
+    ? cell.candidateOrder
+    : cell.fallbackOrder;
+  const descendingOrder = predictionField === "candidate"
+    ? cell.candidateDescending
+    : cell.fallbackDescending;
+  const actualRanks = weightedRanksV22(
+    cell.items,
+    weights,
+    cell.actualOrder,
+    "actual"
+  );
+  const predictionRanks = weightedRanksV22(
+    cell.items,
+    weights,
+    predictionOrder,
+    predictionField
+  );
+  return {
+    spearman: weightedCorrelationV22(
+      actualRanks,
+      predictionRanks,
+      weights
+    ),
+    kendallTauB: weightedKendallTauBV22(
+      cell.items,
+      weights,
+      predictionField
+    ),
+    topCapture: Object.fromEntries(fractions.map((fraction) => [
+      String(fraction),
+      weightedTopCaptureV22(
+        cell.items,
+        weights,
+        descendingOrder,
+        fraction
+      )
+    ]))
+  };
+}
+
+function weightedRanksV22(items, weights, order, field) {
+  const ranks = Array(items.length).fill(0);
+  let offset = 0;
+  for (let start = 0; start < order.length;) {
+    let end = start + 1;
+    while (
+      end < order.length
+      && items[order[end]][field] === items[order[start]][field]
+    ) end += 1;
+    let groupWeight = 0;
+    for (let cursor = start; cursor < end; cursor += 1) {
+      groupWeight += weights[order[cursor]];
+    }
+    const rank = offset + (groupWeight - 1) / 2;
+    for (let cursor = start; cursor < end; cursor += 1) {
+      ranks[order[cursor]] = rank;
+    }
+    offset += groupWeight;
+    start = end;
+  }
+  return ranks;
+}
+
+function weightedCorrelationV22(left, right, weights) {
+  const weightTotal = weights.reduce((sum, value) => sum + value, 0);
+  if (weightTotal === 0) return 0;
+  const leftMean = left.reduce(
+    (sum, value, index) => sum + value * weights[index],
+    0
+  ) / weightTotal;
+  const rightMean = right.reduce(
+    (sum, value, index) => sum + value * weights[index],
+    0
+  ) / weightTotal;
+  let numerator = 0;
+  let leftSquare = 0;
+  let rightSquare = 0;
+  for (let index = 0; index < left.length; index += 1) {
+    const leftValue = left[index] - leftMean;
+    const rightValue = right[index] - rightMean;
+    numerator += weights[index] * leftValue * rightValue;
+    leftSquare += weights[index] * leftValue ** 2;
+    rightSquare += weights[index] * rightValue ** 2;
+  }
+  return leftSquare && rightSquare
+    ? numerator / Math.sqrt(leftSquare * rightSquare)
+    : 0;
+}
+
+function weightedKendallTauBV22(items, weights, predictionField) {
+  const active = items.map((item, index) => ({
+    x: item.actual,
+    y: item[predictionField],
+    weight: weights[index],
+    caseKey: item.caseKey
+  })).filter((item) => item.weight > 0)
+    .sort((left, right) =>
+      left.x - right.x
+      || left.y - right.y
+      || left.caseKey.localeCompare(right.caseKey)
+    );
+  const totalWeight = active.reduce((sum, item) => sum + item.weight, 0);
+  const totalPairs = totalWeight * (totalWeight - 1) / 2;
+  const tiePairs = (field) => {
+    const totals = new Map();
+    for (const item of active) {
+      const key = String(item[field]);
+      totals.set(key, (totals.get(key) ?? 0) + item.weight);
+    }
+    return [...totals.values()].reduce(
+      (sum, weight) => sum + weight * (weight - 1) / 2,
+      0
+    );
+  };
+  const xTies = tiePairs("x");
+  const yTies = tiePairs("y");
+  const bothTotals = new Map();
+  for (const item of active) {
+    const key = `${item.x}\u001f${item.y}`;
+    bothTotals.set(key, (bothTotals.get(key) ?? 0) + item.weight);
+  }
+  const bothTies = [...bothTotals.values()].reduce(
+    (sum, weight) => sum + weight * (weight - 1) / 2,
+    0
+  );
+  const yValues = [...new Set(active.map((item) => item.y))]
+    .sort((left, right) => left - right);
+  const yIndex = new Map(
+    yValues.map((value, index) => [value, index + 1])
+  );
+  const tree = Array(yValues.length + 1).fill(0);
+  let processed = 0;
+  let discordant = 0;
+  for (let start = 0; start < active.length;) {
+    let end = start + 1;
+    while (end < active.length && active[end].x === active[start].x) {
+      end += 1;
+    }
+    for (let index = start; index < end; index += 1) {
+      const item = active[index];
+      const rank = yIndex.get(item.y);
+      discordant += item.weight
+        * (processed - fenwickSumV21(tree, rank));
+    }
+    for (let index = start; index < end; index += 1) {
+      const item = active[index];
+      fenwickAddV21(tree, yIndex.get(item.y), item.weight);
+      processed += item.weight;
+    }
+    start = end;
+  }
+  const comparablePairs = totalPairs - xTies - yTies + bothTies;
+  const concordant = comparablePairs - discordant;
+  const denominator = Math.sqrt(
+    (totalPairs - xTies) * (totalPairs - yTies)
+  );
+  return denominator === 0 ? 0 : (concordant - discordant) / denominator;
+}
+
+function weightedTopCaptureV22(items, weights, order, fraction) {
+  const totalWeight = weights.reduce((sum, value) => sum + value, 0);
+  const count = Math.max(1, Math.ceil(totalWeight * fraction));
+  const actualTotal = items.reduce(
+    (sum, item, index) =>
+      sum + weights[index] * Math.max(0, item.actual),
+    0
+  );
+  if (actualTotal === 0) return 0;
+  let remaining = count;
+  let captured = 0;
+  for (const index of order) {
+    const copies = Math.min(remaining, weights[index]);
+    captured += copies * Math.max(0, items[index].actual);
+    remaining -= copies;
+    if (remaining === 0) break;
+  }
+  return captured / actualTotal;
+}
+
+function summarizeRankingByOriginV22(byOriginHorizon) {
+  const origins = new Map();
+  for (const [key, value] of Object.entries(byOriginHorizon)) {
+    const origin = key.split("|")[0];
+    const rows = origins.get(origin) ?? [];
+    rows.push(value);
+    origins.set(origin, rows);
+  }
+  return Object.fromEntries([...origins.entries()]
+    .sort(([left], [right]) => left.localeCompare(right))
+    .map(([origin, values]) => [origin, {
+      status: "DESCRIPTIVE_ONLY_NOT_INDEPENDENT_INTERVAL",
+      cellCount: values.length,
+      meanSpearmanDifference: averageV21(
+        values.map((row) => row.spearman)
+      ),
+      meanKendallTauBDifference: averageV21(
+        values.map((row) => row.kendallTauB)
+      )
+    }]));
+}
+
+function leaveOneOriginOutV22(candidateRows, fallbackRows) {
+  const origins = [...new Set(candidateRows.map((row) => row.origin))].sort();
+  if (origins.length < 2) {
+    return {
+      status: "NOT_COMPUTABLE_INSUFFICIENT_ORIGINS",
+      originCount: origins.length,
+      estimates: []
+    };
+  }
+  return {
+    status: "DESCRIPTIVE_SENSITIVITY_ONLY",
+    originCount: origins.length,
+    estimates: origins.map((omittedOrigin) => {
+      const candidate = candidateRows.filter(
+        (row) => row.origin !== omittedOrigin
+      );
+      const fallback = fallbackRows.filter(
+        (row) => row.origin !== omittedOrigin
+      );
+      return {
+        omittedOrigin,
+        absoluteWapeFva: scorePairedPointRowsV2(
+          candidate,
+          fallback
+        ).absoluteWapeFva
+      };
+    })
+  };
+}
+
+function attributionMeasureV22(rows, fractions, measure, options) {
+  const withinCells = {};
+  for (const [key, values] of [...groupMapV21(
+    rows,
+    (row) => `${row.origin}|${row.horizonMonths}`
+  )].sort(([left], [right]) => left.localeCompare(right))) {
+    const privacy = privacyStatusV21(values, options);
+    withinCells[key] = privacy.status === "PUBLIC"
+      ? measureSharesV22(values.map((row) => ({
+        magnitude: measure(row),
+        absoluteError: Math.abs(
+          finite(row.pointEstimate, "point_estimate")
+            - finite(row.actual, "actual")
+        ),
+        stableKey: String(row.caseKey)
+      })), fractions)
+      : privacy;
+  }
+  const works = new Map();
+  for (const row of rows) {
+    const key = String(row.standardWorkId);
+    const value = works.get(key) ?? { magnitude: 0, absoluteError: 0 };
+    value.magnitude += measure(row);
+    value.absoluteError += Math.abs(
+      finite(row.pointEstimate, "point_estimate")
+        - finite(row.actual, "actual")
+    );
+    works.set(key, value);
+  }
+  return {
+    caseLevelWithinOriginHorizon: withinCells,
+    workLevelGlobal: works.size < (options.minimumWorkCount ?? 20)
+      ? {
+        status: "SUPPRESSED_PRIVACY_THRESHOLD",
+        workCount: works.size,
+        minimumWorkCount: options.minimumWorkCount ?? 20
+      }
+      : measureSharesV22([...works].map(([stableKey, value]) => ({
+        stableKey,
+        ...value
+      })), fractions)
+  };
+}
+
+function measureSharesV22(rows, fractions) {
+  const ordered = [...rows].sort((left, right) =>
+    right.magnitude - left.magnitude
+    || left.stableKey.localeCompare(right.stableKey)
+  );
+  const magnitudeTotal = ordered.reduce(
+    (sum, row) => sum + row.magnitude,
+    0
+  );
+  const errorTotal = ordered.reduce(
+    (sum, row) => sum + row.absoluteError,
+    0
+  );
+  return Object.fromEntries(fractions.map((fraction) => {
+    const count = Math.max(1, Math.ceil(ordered.length * fraction));
+    const top = ordered.slice(0, count);
+    const topMagnitude = top.reduce(
+      (sum, row) => sum + row.magnitude,
+      0
+    );
+    const topError = top.reduce(
+      (sum, row) => sum + row.absoluteError,
+      0
+    );
+    return [String(fraction), {
+      itemCount: count,
+      magnitudeShare: magnitudeTotal === 0
+        ? null
+        : topMagnitude / magnitudeTotal,
+      absoluteErrorShare: errorTotal === 0 ? null : topError / errorTotal,
+      denominatorStatus: magnitudeTotal === 0
+        ? "UNDEFINED_ZERO_ACTUAL_DENOMINATOR"
+        : "DEFINED"
+    }];
+  }));
 }
 
 function requireRows(rows) {

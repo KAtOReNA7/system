@@ -42,6 +42,7 @@ test("catalog defines one private-free core capability and scoped private capabi
       "m2-current-channel-experts",
       "m2-current-channel-generative",
       "m2-current-human-anchored-later-origin",
+      "m2-evaluation-v2-2-reversal-rescore",
       "m3-private-materials",
     ],
   );
@@ -288,6 +289,32 @@ test("later-origin capability requires the original frozen v1 state", () => {
   ]);
   assert.match(result.recovery, /Do not infer/u);
   assert.match(result.recovery, /refit/u);
+});
+
+test("missing v2.2 reversal-rescore inputs block only that private capability", () => {
+  const result = evaluateCapability(
+    catalog,
+    "m2-evaluation-v2-2-reversal-rescore",
+    {
+      repoRoot: REPO_ROOT,
+      artifactExists: () => false,
+      toolProbe: availableToolProbe,
+    },
+  );
+  assert.equal(result.status, "BLOCKED_MISSING_PRIVATE_ARTIFACT");
+  assert.equal(result.coreDevelopmentUnaffected, true);
+  assert.deepEqual(result.missingPrivateRoles, [
+    "sales-share-ledger-authority",
+    "formal-income-facts",
+    "formal-execution-payload",
+    "frozen-current-canonical-evaluation",
+    "frozen-human-anchored-evaluation",
+    "frozen-tsb-evaluation",
+    "frozen-lifecycle-evaluation",
+    "frozen-channel-evaluation",
+    "frozen-portfolio-evaluation",
+  ]);
+  assert.match(result.recovery, /Never regenerate predictions/u);
 });
 
 test("capability paths cannot escape the repository", () => {

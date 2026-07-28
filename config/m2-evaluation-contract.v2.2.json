@@ -1,0 +1,203 @@
+{
+  "schema": "m2.evaluation_contract.v2.2",
+  "version": "2.2",
+  "asOf": "2026-07-28",
+  "status": "DRAFT_V2_2_REVISION_INCOMPLETE",
+  "activationScope": "development_evaluation_only",
+  "explicitlyNotAuthorized": [
+    "model_execution",
+    "training",
+    "fitting",
+    "tuning",
+    "model_selection",
+    "promotion",
+    "prediction_generation",
+    "prediction_modification",
+    "production_change",
+    "later_origin",
+    "final_holdout",
+    "canary",
+    "release"
+  ],
+  "actualDefinitions": {
+    "postingTime": {
+      "stableId": "M2-ACTUAL-POSTING-TIME-01",
+      "displayNameZh": "分成收入原入账口径",
+      "comparabilityGroupSuffix": "POSTING_TIME"
+    },
+    "reversalRestated": {
+      "stableId": "M2-ACTUAL-REVERSAL-RESTATEMENT-01",
+      "displayNameZh": "分成收入冲销追溯重述 v1",
+      "displayNameEn": "Sales-Share Revenue Reversal Restatement v1",
+      "comparabilityGroupSuffix": "REVERSAL_RESTATED"
+    },
+    "crossDefinitionWinnerAllowed": false,
+    "pairedImpactReportRequired": true
+  },
+  "frozenPredictionRescore": {
+    "status": "FROZEN_PREDICTION_LABEL_ONLY_RESCORE",
+    "predictionMutationAllowed": false,
+    "predictionGenerationAllowed": false,
+    "sameCaseRequired": true,
+    "requiredSlices": [
+      "horizon",
+      "primary_strict",
+      "reversal_affected_unaffected",
+      "raw_candidate",
+      "selected_pipeline",
+      "fallback"
+    ]
+  },
+  "pointMetrics": {
+    "metricDefinitionId": "M2-EVAL-V2.2-POINT",
+    "metricDefinitionVersion": "2.2",
+    "metrics": [
+      "WAPE",
+      "signed_bias",
+      "MAE",
+      "median_absolute_error",
+      "absolute_error_quantiles"
+    ],
+    "postingAndRestatedComparabilityGroupsMustDiffer": true
+  },
+  "occurrenceMetrics": {
+    "metricDefinitionId": "M2-EVAL-V2.2-OCCURRENCE",
+    "metricDefinitionVersion": "2.2",
+    "metrics": [
+      "prevalence",
+      "Brier",
+      "log_loss",
+      "PR_AUC_trapezoidal",
+      "Average_Precision",
+      "ROC_AUC_auxiliary",
+      "reliability_10_equal_width_bins"
+    ],
+    "historicalPrAucRename": "PR_AUC_trapezoidal",
+    "averagePrecisionIsDistinct": true
+  },
+  "conditionalAmountMetrics": {
+    "metricDefinitionId": "M2-EVAL-V2.2-CONDITIONAL-AMOUNT",
+    "metricDefinitionVersion": "2.2",
+    "actualField": "actualPositiveAmount",
+    "predictionField": "conditionalAmountPrediction",
+    "metrics": [
+      "WAPE",
+      "signed_bias",
+      "MAE",
+      "log_MAE"
+    ],
+    "fieldPresenceAloneIsPass": false
+  },
+  "reversalMetrics": {
+    "metricDefinitionId": "M2-EVAL-V2.2-REVERSAL",
+    "metricDefinitionVersion": "2.2",
+    "actualField": "postingTimeReversalActual",
+    "predictionField": "reversalPointEstimate",
+    "occurrenceProbabilityField": "reversalOccurrenceProbability",
+    "metricsWhenOutputsExist": [
+      "occurrence",
+      "amount_WAPE",
+      "signed_bias",
+      "MAE",
+      "calibration"
+    ],
+    "missingActualStatus": "NOT_COMPUTABLE_REVERSAL_ACTUAL_MISSING"
+  },
+  "rankingMetrics": {
+    "metricDefinitionId": "M2-EVAL-V2.2-RANKING",
+    "metricDefinitionVersion": "2.2",
+    "bootstrapMethod": "full_standard_work_cluster_resample_recompute_within_cell_ranks",
+    "recomputeEachIteration": [
+      "rank",
+      "Spearman",
+      "Kendall_tau_b",
+      "top_k_capture"
+    ],
+    "pairedCandidateFallbackWeightsRequired": true,
+    "fixedRankContributionApproximationAllowed": false,
+    "timeBlockDefinition": "maximal_adjacent_monthly_origin_component",
+    "insufficientTimeBlocksStatus": "NOT_COMPUTABLE_INSUFFICIENT_INDEPENDENT_TIME_BLOCKS",
+    "channelInterpretationWhenTimeUnconfirmed": "WORK_CLUSTER_RANKING_SIGNAL_TIME_INDEPENDENCE_UNCONFIRMED"
+  },
+  "portfolioMetrics": {
+    "metricDefinitionId": "M2-EVAL-V2.2-PORTFOLIO",
+    "metricDefinitionVersion": "2.2",
+    "separateByHorizon": true,
+    "originResamplingInterpretation": "small_sample_sensitivity_only",
+    "leaveOneOriginOutRequired": true,
+    "contiguousTimeBlockDiagnosticRequired": true,
+    "independentExternalValidationClaimAllowed": false,
+    "routerAuthorized": false
+  },
+  "topRevenueAttribution": {
+    "fractions": [
+      0.01,
+      0.05,
+      0.1
+    ],
+    "views": [
+      "positive_revenue_attribution",
+      "absolute_cash_magnitude_attribution",
+      "reversal_magnitude_attribution"
+    ],
+    "status": "POSTHOC_FUTURE_ACTUAL_ATTRIBUTION_ONLY",
+    "allowedForFittingSelectionOrGate": false
+  },
+  "uncertainty": {
+    "seed": 20260728,
+    "bootstrapIterations": 2000,
+    "confidenceLevel": 0.95,
+    "workLevelUnit": "standardWorkId",
+    "portfolioUnit": "origin",
+    "minimumIndependentTimeBlocks": 2
+  },
+  "publicPrivacy": {
+    "minimumCaseCount": 30,
+    "minimumWorkCount": 20,
+    "minimumPortfolioOriginCount": 5,
+    "suppressionStatus": "SUPPRESSED_PRIVACY_THRESHOLD",
+    "prohibitedPublicFields": [
+      "standardWorkId",
+      "channelUid",
+      "channelMemberId",
+      "authorityRecordId",
+      "rowLevelActual",
+      "rowLevelPrediction",
+      "privatePath",
+      "privateReceiptPath"
+    ]
+  },
+  "activationBinding": {
+    "mode": "content_digest_and_current_execution_ci",
+    "requiredDigests": [
+      "contractArtifactSha256",
+      "evaluatorImplementationSha256",
+      "testContractSha256",
+      "frozenInputArtifactSetSha256"
+    ],
+    "exactHead": "execution_audit_only_not_permanent_binding",
+    "descendantCommitMayInheritWhenDigestsUnchanged": true,
+    "machinePathBindingAllowed": false
+  },
+  "activationGate": {
+    "required": [
+      "reversal_authority_and_scope_proven",
+      "posting_asof_final_views_pass",
+      "unresolved_reversal_residual_zero",
+      "integer_cash_conservation_difference_zero",
+      "future_leakage_zero",
+      "full_bootstrap_2000",
+      "time_independence_not_overclaimed",
+      "conditional_and_reversal_scored_or_exact_missing_status",
+      "pr_auc_methods_distinct",
+      "top_revenue_semantics_split",
+      "frozen_predictions_unchanged",
+      "label_only_rescore_byte_identical",
+      "public_artifacts_private_safe",
+      "linux_current_execution_ci_pass",
+      "windows_current_execution_ci_pass"
+    ],
+    "passStatus": "ACTIVE_FOR_DEVELOPMENT_EVALUATION_ONLY",
+    "failStatus": "DRAFT_V2_2_REVISION_INCOMPLETE"
+  }
+}

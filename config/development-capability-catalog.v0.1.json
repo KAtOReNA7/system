@@ -130,6 +130,11 @@
           "path": "data/private-output/m2-formal-execution/m2-formal-income-facts-v1.ndjson"
         },
         {
+          "role": "formal-execution-payload",
+          "kind": "file",
+          "path": "data/private-output/m2-formal-execution/m2-formal-execution-payload-v1.json"
+        },
+        {
           "role": "formal-model-input-cache",
           "kind": "file",
           "path": "data/private-output/m2-formal-execution/m2-formal-model-input-cache-v1.pkl"
@@ -370,6 +375,64 @@
       ],
       "recovery": "Recover only the original digest-bound v1.0 model state from the authorized run. Do not infer it from public aggregates or refit parameters and expert weights under this authorization. Missing private artifacts block only later-origin validation; public readiness remains available.",
       "authorization": "USER_AUTHORIZED_LATER_ORIGIN_READINESS_AND_QUALIFIED_FROZEN_VALIDATION_2026_07_26"
+    },
+    {
+      "id": "m2-evaluation-v2-2-reversal-rescore",
+      "description": "Apply the user-authorized sales-share reversal restatement and label-only rescore to unchanged frozen predictions without model execution, fitting, selection, later-origin, holdout, or production access.",
+      "requiredTools": [],
+      "requiredPrivateArtifacts": [
+        {
+          "role": "sales-share-ledger-authority",
+          "kind": "file",
+          "path": "data/real-bills/渠道实销汇总 -分成.xlsx"
+        },
+        {
+          "role": "formal-income-facts",
+          "kind": "file",
+          "path": "data/private-output/m2-formal-execution/m2-formal-income-facts-v1.ndjson"
+        },
+        {
+          "role": "formal-execution-payload",
+          "kind": "file",
+          "path": "data/private-output/m2-formal-execution/m2-formal-execution-payload-v1.json"
+        },
+        {
+          "role": "frozen-current-canonical-evaluation",
+          "kind": "file",
+          "path": "data/private-output/m2-current-canonical-channel/M2-current-canonical-channel-evaluation-private-v0.1.ndjson"
+        },
+        {
+          "role": "frozen-human-anchored-evaluation",
+          "kind": "file",
+          "path": "data/private-output/m2-current-human-anchored/M2-current-human-anchored-evaluation-private-v0.1.ndjson"
+        },
+        {
+          "role": "frozen-tsb-evaluation",
+          "kind": "file",
+          "path": "data/private-output/m2-current-human-anchored/M2-current-human-anchored-tsb-occurrence-evaluation-private-v0.1.ndjson"
+        },
+        {
+          "role": "frozen-lifecycle-evaluation",
+          "kind": "file",
+          "path": "data/private-output/m2-current-human-anchored/M2-current-lifecycle-aware-evaluation-private-v0.1.ndjson"
+        },
+        {
+          "role": "frozen-channel-evaluation",
+          "kind": "file",
+          "path": "data/private-output/m2-current-human-anchored/M2-current-channel-experts-evaluation-private-v0.1.ndjson"
+        },
+        {
+          "role": "frozen-portfolio-evaluation",
+          "kind": "file",
+          "path": "data/private-output/m2-current-quality/M2-current-sales-share-portfolio-cells-private-v0.6.ndjson"
+        }
+      ],
+      "canonicalValidationCommands": [
+        "npm run doctor:capability -- m2-evaluation-v2-2-reversal-rescore",
+        "npm run rescore:m2:evaluation-v2-2-frozen-labels"
+      ],
+      "recovery": "Restore only the user-reviewed sales-share authority, its verified row-level fact export, and the six digest-bound frozen prediction artifacts. Never regenerate predictions or infer private rows from public aggregates.",
+      "authorization": "USER_AUTHORIZED_M2_EVALUATION_V2_2_LABEL_ONLY_RESCORE_2026_07_28"
     },
     {
       "id": "m3-private-materials",
