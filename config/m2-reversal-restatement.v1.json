@@ -10,6 +10,14 @@
     "cashAuthority": "user_reviewed_sales_share_workbook_membership",
     "comparabilityRule": "posting-time and reversal-restated actuals use different comparabilityGroupId values"
   },
+  "developmentModelableActualDefinition": {
+    "stableId": "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01",
+    "displayNameZh": "分成收入开发可建模冲销重述 v1",
+    "displayNameEn": "Sales-Share Revenue Development-Modelable Reversal Restatement v1",
+    "target": "future_sales_share_cash",
+    "comparabilityGroupSuffix": "DEVELOPMENT_MODELABLE_RESTATEMENT",
+    "residualPolicyStatus": "UNALLOCATED_REVERSAL_RESIDUAL_EXCLUDED_FROM_MODELABLE_TARGET"
+  },
   "authority": {
     "cashCategory": "sales_share",
     "classificationEvidence": [
@@ -60,19 +68,24 @@
     ],
     "allocationDirection": "posting_month_then_monthly_backward",
     "reuseConsumedBalanceAllowed": false,
-    "unresolvedResidualPolicy": "preserve_negative_residual_and_block_complete_actual",
+    "unresolvedResidualPolicy": "preserve_negative_residual_in_financial_reconciliation_and_exclude_only_that_component_from_development_modelable_target",
+    "rawFinancialReversalPhysicalDeletionAllowed": false,
+    "wholePartiallyAllocatedReversalDeletionAllowed": false,
+    "wholeCaseExclusionForResidualAllowed": false,
     "allocationLedgerRequired": true
   },
   "timeViews": {
-    "postingTimeActual": "preserve the authority posting month",
-    "restatedActualAsOf": "use only reversal records visible no later than cutoff",
-    "finalRestatedActual": "use only records visible no later than the frozen label maturity cutoff",
+    "POSTING_TIME_ACCOUNTING_VIEW": "preserve every authority posting, including all raw reversal records",
+    "AS_OF_RESTATED_VIEW": "use only reversal records visible no later than cutoff",
+    "FINAL_ACCOUNTING_RECONCILIATION_VIEW": "retain the full positive, posted reversal, allocated reversal, and unresolved residual bridge",
+    "DEVELOPMENT_MODELABLE_RESTATEMENT_VIEW": "positive cash minus successfully allocated reversal; disclose but do not assign the unresolved residual to a work-channel-month target",
     "futureReversalMayEnterOriginFeatures": false,
     "labelMaturityCutoffRequired": true,
     "dataAsOfRequired": true
   },
   "conservation": {
-    "equation": "positive revenue + signed reversal = nonnegative restated revenue + signed unresolved residual",
+    "equation": "posting positive cash + posted reversal = modelable restated cash + excluded unallocated reversal residual",
+    "excludedUnallocatedReversalResidualSign": "signed_negative",
     "levels": [
       "reversalScopeKey",
       "time_range",

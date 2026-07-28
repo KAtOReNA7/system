@@ -58,9 +58,19 @@ This directory is the only implementation home for current M2 model logic.
   month only within the same cash category, work, canonical channel, and
   currency scope. Never cross scopes, reuse consumed positive cash, round an
   unresolved residual away, or fall back to a company aggregate.
-- Keep posting-time, as-of-restated, and final-restated views separate. Future
-  reversals may update mature labels only; they must never enter features at an
-  earlier forecast origin.
+- Never physically delete a raw financial reversal or the allocated component
+  of a partially allocated reversal. Only the unallocatable residual component
+  may be transparently excluded from the development-modelable target, and it
+  must remain visible in financial reconciliation.
+- Keep posting-time accounting, as-of restated, final accounting
+  reconciliation, and development-modelable restatement views separate.
+  Future reversals may update mature labels only; they must never enter
+  features at an earlier forecast origin.
+- Experiment prerequisites are arm-specific. An auxiliary offset required by a
+  structured-offset or blend arm must not block an independent arm that does
+  not use that offset. User-visible experiment-arm reports must include the
+  full Chinese name, stable model ID, and parent experiment/arm ID rather than
+  a bare local abbreviation.
 - Posting-time and reversal-restated actual definitions require distinct
   comparability groups. Same-case label-impact pairs are allowed, but do not
   rank models or name a winner across actual definitions.

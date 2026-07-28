@@ -3,7 +3,7 @@
 ## 当前权威入口
 
 - 用户首页与公共开始入口：`README.md`
-- 当前 M2 状态：`docs/analysis/m2-v2/M2-v2-current-state-index-v0.30.md`
+- 当前 M2 状态：`docs/analysis/m2-v2/M2-v2-current-state-index-v0.31.md`
 - M2 模型机器权威：`config/m2-model-registry.v1.json`
 - M2 中文目录：`docs/analysis/m2-current/M2-model-catalog-and-scorecard-v1.md`
 - M2 评价体系：
@@ -12,6 +12,10 @@
   - `docs/analysis/m2-current/M2-evaluation-contract-v2.2.md`
   - `docs/analysis/m2-current/M2-evaluation-contract-v2.2-validation.md`
   - `docs/analysis/m2-current/M2-evaluation-v2.2-diagnostic-recheck.md`
+  - `docs/analysis/m2-current/M2-evaluation-contract-v2.2-development-activation-v1.md`
+  - `docs/analysis/m2-current/M2-evaluation-contract-v2.2-development-activation-validation-v1.md`
+  - `docs/analysis/m2-current/M2-evaluation-v2.2-development-modelable-rescore-v1.md`
+  - `docs/analysis/m2-current/M2-reversal-four-view-reconciliation-v1.md`
   - `docs/analysis/m2-current/M2-reversal-restatement-authority-audit-v1.md`
   - `docs/analysis/m2-current/M2-reversal-restatement-impact-v1.md`
   - `config/m2-evaluation-contract.v2.1.json`
@@ -156,9 +160,11 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
   README、旧报告或历史 PR 当成机器权威。
 - 分成收入冲销从发生月开始按月向过去追溯，只能消费同一现金类型、作品、canonical
   渠道和币种范围内尚未消费的正收入；不得跨 scope，也不得使用公司级汇总回退。
-- posting-time、as-of restated 与 final restated 是三个不同时间视图。未来冲销不得
-  倒灌 forecast origin 特征；未分配冲销残差必须保留并阻断所属完整 actual，不能
-  舍入、抹零或跨 scope 吸收。
+- posting-time accounting、as-of restated、final accounting reconciliation
+  与 development-modelable restatement 是四个不同视图。未来冲销不得倒灌
+  forecast origin 特征；未分配冲销残差必须保留在财务对账中，只允许把无法归属的
+  residual component 从开发可建模目标中透明隔离，不能删除整条冲销、阻断整条
+  case、舍入、抹零或跨 scope 吸收。
 - 原入账 actual 与冲销重述 actual 必须使用不同可比组。同一冻结预测可以做 same-case
   标签影响配对，但不得跨 actual definition 评选模型改善、退化或冠军。
 - 跨电脑任务必须在运行时解析仓库根、Git 起点和当前执行 HEAD；不得把盘符、绝对

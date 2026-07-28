@@ -1,0 +1,46 @@
+{
+  "schema": "m2.evaluation-contract-v2.2.development-activation-validation.public.v1",
+  "asOf": "2026-07-28",
+  "status": "M2_EVALUATION_V2_2_ACTIVE_FOR_DEVELOPMENT_WITH_DISCLOSED_RESIDUAL_EXCLUSION",
+  "activationScope": "development_evaluation_only",
+  "gates": {
+    "rawReversalRowsPreserved": true,
+    "reversalRowCount": 143,
+    "originalReversalRowsDeleted": 0,
+    "allocatedComponentPreserved": true,
+    "excludedResidualExactMinorUnits": "-267769000000000330000",
+    "excludedResidualMatchesUnresolvedResidual": true,
+    "fourViewsPresent": true,
+    "exactIntegerReconciliationDifferenceMinor": "0",
+    "originAfterCutoffRowsUsed": 0,
+    "frozenArtifactCount": 6,
+    "frozenPredictionRowCount": 716801,
+    "frozenInputDigestsMatched": true,
+    "predictionRowsGenerated": 0,
+    "predictionRowsModified": 0,
+    "residualBlockedCaseCount": 0,
+    "restoredResidualCaseCount": 292,
+    "deterministicExecutionCount": 2,
+    "deterministicComparedFileCount": 7,
+    "deterministicByteIdentical": true,
+    "publicAggregateOnly": true,
+    "containsPrivatePath": false,
+    "linuxExactHeadCiRequired": true,
+    "windowsExactHeadCiRequired": true
+  },
+  "authorityRefs": [
+    "config/m2-evaluation-contract.v2.2.json",
+    "config/m2-reversal-restatement.v1.json",
+    "docs/analysis/m2-current/M2-reversal-four-view-reconciliation-v1.json",
+    "docs/analysis/m2-current/M2-evaluation-v2.2-development-modelable-rescore-v1.json"
+  ],
+  "explicitlyNotAuthorized": [
+    "production",
+    "automation",
+    "model_promotion",
+    "later_origin",
+    "final_holdout",
+    "canary",
+    "release"
+  ]
+}

@@ -36,7 +36,22 @@
         "as_of_restated",
         "final_restated"
       ],
-      "status": "BLOCKED_UNRESOLVED_REVERSAL",
+      "status": "FINANCIAL_RECONCILIATION_WITH_DISCLOSED_UNALLOCATED_RESIDUAL",
+      "crossActualDefinitionWinnerAllowed": false
+    },
+    {
+      "transformationId": "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01",
+      "version": "1",
+      "displayNameZh": "分成收入开发可建模冲销重述",
+      "sourceAuthority": "user_reviewed_sales_share_workbook_membership",
+      "algorithmRef": "config/m2-reversal-restatement.v1.json",
+      "timeViews": [
+        "as_of_restated",
+        "development_modelable_restatement"
+      ],
+      "status": "UNALLOCATED_REVERSAL_RESIDUAL_EXCLUDED_FROM_MODELABLE_TARGET",
+      "financialReconciliationRef": "M2-ACTUAL-REVERSAL-RESTATEMENT-01",
+      "wholeCaseExclusionAllowed": false,
       "crossActualDefinitionWinnerAllowed": false
     }
   ],
@@ -47,7 +62,7 @@
     "approvedForAutomation": null,
     "activeCandidate": null,
     "blockedExperiment": "M2-EXP-CHANNEL-GENERATIVE-02",
-    "latestStateIndex": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.30.md",
+    "latestStateIndex": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.31.md",
     "roleConflict": false,
     "sourceAssertions": [
       {
@@ -70,16 +85,17 @@
   },
   "currentEvaluationContract": {
     "version": "2.2",
-    "status": "M2_EVALUATION_V2_2_BLOCKED_UNRESOLVED_REVERSAL",
-    "activationAllowed": false,
-    "activationCondition": "authority_and_scope_proven_and_all_views_pass_and_zero_unresolved_residual_and_exact_cash_conservation_and_no_future_leakage_and_deterministic_public_safe_outputs_and_exact_head_linux_windows_ci_success",
+    "status": "M2_EVALUATION_V2_2_ACTIVE_FOR_DEVELOPMENT_WITH_DISCLOSED_RESIDUAL_EXCLUSION",
+    "activationAllowed": true,
+    "activationCondition": "authority_and_scope_proven_and_four_views_reconcile_and_unallocated_residual_is_exactly_preserved_and_excluded_only_from_the_modelable_target_and_no_future_leakage_and_frozen_predictions_unchanged_and_deterministic_public_safe_outputs_and_exact_head_linux_windows_ci_success",
     "productionGateActive": false,
     "automationGateActive": false,
     "modelRolesChanged": false,
     "configRef": "config/m2-evaluation-contract.v2.2.json",
-    "contractRef": "docs/analysis/m2-current/M2-evaluation-contract-v2.2.md",
-    "validationRef": "docs/analysis/m2-current/M2-evaluation-contract-v2.2-validation.md",
-    "diagnosticRef": "docs/analysis/m2-current/M2-evaluation-v2.2-diagnostic-recheck.json",
+    "contractRef": "docs/analysis/m2-current/M2-evaluation-contract-v2.2-development-activation-v1.md",
+    "validationRef": "docs/analysis/m2-current/M2-evaluation-contract-v2.2-development-activation-validation-v1.md",
+    "diagnosticRef": "docs/analysis/m2-current/M2-evaluation-v2.2-development-modelable-rescore-v1.json",
+    "fourViewReconciliationRef": "docs/analysis/m2-current/M2-reversal-four-view-reconciliation-v1.json",
     "priorActiveDevelopmentContract": {
       "version": "2.1",
       "status": "ACTIVE_FOR_DEVELOPMENT_EVALUATION_ONLY",
@@ -133,7 +149,8 @@
       "capability": "work_cash_point_forecast",
       "actualDefinitionFamilies": [
         "M2-ACTUAL-POSTING-TIME-01",
-        "M2-ACTUAL-REVERSAL-RESTATEMENT-01"
+        "M2-ACTUAL-REVERSAL-RESTATEMENT-01",
+        "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01"
       ],
       "crossActualDefinitionWinnerAllowed": false
     },

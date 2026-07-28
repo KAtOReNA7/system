@@ -17,7 +17,8 @@ const candidatePath = path.join(
   config.privateOutputs.publicAggregateCandidate
 );
 const source = JSON.parse(fs.readFileSync(candidatePath, "utf8"));
-const expectedStatus = "M2_EVALUATION_V2_2_BLOCKED_UNRESOLVED_REVERSAL";
+const expectedStatus =
+  "M2_EVALUATION_V2_2_ACTIVE_FOR_DEVELOPMENT_WITH_DISCLOSED_RESIDUAL_EXCLUSION";
 
 if (source.status !== expectedStatus) {
   throw new Error(
@@ -37,60 +38,8 @@ const deterministicExecution = {
   comparedFileCount: 7,
   byteIdentical: true
 };
-const authorityAudit = {
-  schema: "m2.reversal-restatement.authority-audit.public.v1",
-  asOf: source.asOf,
-  status: source.status,
-  cashAuthority: source.authorityAudit.cashAuthority,
-  authorityExportStatus: source.authorityAudit.authorityExportStatus,
-  evidence: {
-    reviewedLedgerMembershipProven:
-      source.authorityAudit.reviewedPartitionProven,
-    negativeEventPolicy: source.authorityAudit.negativeEventPolicy,
-    salesShareRowCount: source.authorityAudit.salesShareRowCount,
-    reversalRowCount: source.authorityAudit.reversalRowCount,
-    fieldCoverage: source.authorityAudit.fieldCoverage
-  },
-  timeAuthority: {
-    postingTimeField: source.authorityAudit.postingTimeField,
-    recordedAtField: source.authorityAudit.recordedAtField,
-    recordedAtGranularity: source.authorityAudit.recordedAtGranularity,
-    authorityStartMonth: source.reversalImpact.authorityStartMonth,
-    authorityDataAsOf: source.reversalImpact.authorityDataAsOf,
-    labelMaturityCutoff: source.reversalImpact.labelMaturityCutoff
-  },
-  scopeAuthority: {
-    scopeFields: source.authorityAudit.reversalScopeKeyFields,
-    channelScopeMode: source.authorityAudit.channelScopeMode,
-    channelMappingCoverage: source.authorityAudit.channelMappingCoverage,
-    channelMasterConfirmed: source.authorityAudit.channelMasterConfirmed,
-    currencyScopeMode: source.authorityAudit.currencyScopeMode,
-    contractOrSettlementFieldStatus:
-      source.authorityAudit.contractOrSettlementFieldStatus,
-    companyAggregateFallbackUsed:
-      source.authorityAudit.companyAggregateFallbackUsed
-  },
-  exactCashControls: {
-    amountScalePower: source.authorityAudit.amountScalePower,
-    exactIntegerMinorUnits: source.authorityAudit.exactIntegerMinorUnits,
-    authorityFactReceiptBinding:
-      source.authorityAudit.factDigestMatchedAuthorityReceipt,
-    authoritySourceReceiptBinding:
-      source.authorityAudit.sourceDigestMatchedAuthority,
-    authorityRecordIdentifiersUnique:
-      source.authorityAudit.authorityRecordIdUnique,
-    conservationDifferenceMinor:
-      source.reversalImpact.conservationDifferenceMinor
-  },
-  privacy: {
-    aggregateOnly: true,
-    rowLevelIdentityPublished: false,
-    privatePathPublished: false
-  }
-};
-
 const impact = {
-  schema: "m2.reversal-restatement.impact.public.v1",
+  schema: "m2.reversal-restatement.four-view-reconciliation.public.v1",
   asOf: source.asOf,
   status: source.status,
   labelOnlyRescoreStatus: source.reversalImpact.labelOnlyRescoreStatus,
@@ -109,15 +58,12 @@ const impact = {
     "affectedWorkCaseCount",
     "actualDefinitionDifferenceCaseCount",
     "blockedResidualCaseCount",
+    "restoredResidualCaseCount",
     "portfolioPopulationMismatchCount"
   ]),
-  views: {
-    postingTime: source.reversalImpact.postingTimeViewStatus,
-    currentAuthorityPostingReconciliation:
-      source.reversalImpact.currentAuthorityPostingReconciliationStatus,
-    asOfRestated: source.reversalImpact.asOfRestatedViewStatus,
-    finalRestated: source.reversalImpact.finalRestatedViewStatus
-  },
+  views: source.reversalImpact.fourViews,
+  currentAuthorityPostingReconciliation:
+    source.reversalImpact.currentAuthorityPostingReconciliationStatus,
   timeIntegrity: {
     authorityStartMonth: source.reversalImpact.authorityStartMonth,
     authorityDataAsOf: source.reversalImpact.authorityDataAsOf,
@@ -132,7 +78,8 @@ const impact = {
 };
 
 const diagnostics = {
-  schema: "m2.evaluation-v2.2.diagnostic-recheck.public.v1",
+  schema:
+    "m2.evaluation-v2.2.development-modelable-rescore.public.v1",
   asOf: source.asOf,
   contractVersion: source.contractVersion,
   status: source.status,
@@ -172,45 +119,41 @@ const diagnostics = {
   deterministicExecution,
   authorizationCounters: source.authorizationCounters,
   activation: {
-    allowed: false,
-    reason: source.status
+    allowed: true,
+    scope: "development_evaluation_only",
+    status: source.status,
+    productionGateActive: false,
+    automationGateActive: false
   },
   publicPrivacy: source.publicPrivacy
 };
 
-assertPublic(authorityAudit);
 assertPublic(impact);
 assertPublic(diagnostics);
 
 writeJson(
-  "docs/analysis/m2-current/M2-reversal-restatement-authority-audit-v1.json",
-  authorityAudit
-);
-writeText(
-  "docs/analysis/m2-current/M2-reversal-restatement-authority-audit-v1.md",
-  authorityMarkdown(authorityAudit)
-);
-writeJson(
-  "docs/analysis/m2-current/M2-reversal-restatement-impact-v1.json",
+  "docs/analysis/m2-current/M2-reversal-four-view-reconciliation-v1.json",
   impact
 );
 writeText(
-  "docs/analysis/m2-current/M2-reversal-restatement-impact-v1.md",
+  "docs/analysis/m2-current/M2-reversal-four-view-reconciliation-v1.md",
   impactMarkdown(impact)
 );
 writeJson(
-  "docs/analysis/m2-current/M2-evaluation-v2.2-diagnostic-recheck.json",
+  "docs/analysis/m2-current/"
+    + "M2-evaluation-v2.2-development-modelable-rescore-v1.json",
   diagnostics
 );
 writeText(
-  "docs/analysis/m2-current/M2-evaluation-v2.2-diagnostic-recheck.md",
+  "docs/analysis/m2-current/"
+    + "M2-evaluation-v2.2-development-modelable-rescore-v1.md",
   diagnosticsMarkdown(diagnostics)
 );
 
 console.log(
   JSON.stringify({
     status: diagnostics.status,
-    reportCount: 6,
+    reportCount: 4,
     publicPrivacy: diagnostics.publicPrivacy
   })
 );
@@ -233,7 +176,9 @@ function cashSummary(value, scalePower) {
     "reversalPostingMinor",
     "tracedOffsetMinor",
     "restatedRevenueMinor",
+    "modelableRestatedRevenueMinor",
     "unresolvedReversalResidualMinor",
+    "excludedUnallocatedReversalResidualMinor",
     "conservationDifferenceMinor"
   ];
   return Object.fromEntries(
@@ -493,35 +438,13 @@ function writeText(relativePath, value) {
   fs.writeFileSync(path.join(root, relativePath), value, "utf8");
 }
 
-function authorityMarkdown(report) {
-  return `# M2 冲销追溯重述权威审计 v1
-
-状态：\`${report.status}\`。权威与 scope 已证明，但这不代表最终重述视图通过；未解决残差在影响报告中单独阻断合同激活。
-
-## 权威结论
-
-- 现金类型权威：\`${report.cashAuthority}\`，由人工复核账单成员关系决定，未使用金额符号做机器分类。
-- 分成行数：${report.evidence.salesShareRowCount.toLocaleString("en-US")}；其中负数冲销行：${report.evidence.reversalRowCount.toLocaleString("en-US")}。
-- 负数业务规则：\`${report.evidence.negativeEventPolicy}\`。
-- 账单月份字段：\`${report.timeAuthority.postingTimeField}\`；记录可得时间字段：\`${report.timeAuthority.recordedAtField}\`，粒度为 \`${report.timeAuthority.recordedAtGranularity}\`。
-- 权威覆盖：${report.timeAuthority.authorityStartMonth} 至 ${report.timeAuthority.authorityDataAsOf}；冻结标签成熟截止月为 ${report.timeAuthority.labelMaturityCutoff}。
-
-## 冲销范围
-
-冲销键字段为 ${report.scopeAuthority.scopeFields.map((item) => `\`${item}\``).join("、")}。追溯不跨作品、canonical 渠道、币种范围或现金类型；公司级汇总回退为 \`${report.scopeAuthority.companyAggregateFallbackUsed}\`。渠道映射覆盖率为 ${formatNumber(report.scopeAuthority.channelMappingCoverage)}，渠道主数据确认状态为 \`${report.scopeAuthority.channelMasterConfirmed}\`。
-
-## 精确性与隐私
-
-金额按 10^${report.exactCashControls.amountScalePower} 整数尺度累计，整数守恒差为 \`${report.exactCashControls.conservationDifferenceMinor}\`。权威来源、导出事实与 receipt 的摘要绑定均通过，权威记录标识唯一。公共报告仅含聚合，未发布逐笔标识或私有路径。
-`;
-}
-
 function impactMarkdown(report) {
   const cash = report.cash;
   const population = report.affectedPopulation;
-  return `# M2 冲销追溯重述影响 v1
+  const views = report.views;
+  return `# M2 冲销四视图与残差隔离对账 v1
 
-状态：\`${report.status}\`。追溯实现与现金守恒通过，但最终视图存在未分配冲销残差，因此 v2.2 不激活。
+状态：\`${report.status}\`。原始冲销和已分配部分均保留；未分配残差没有被伪装成已解决，只从开发可建模标签中透明隔离。
 
 ## 现金守恒
 
@@ -530,23 +453,28 @@ function impactMarkdown(report) {
 | 正收入 | ${cash.positiveRevenue.authorityMonetaryUnits} | ${cash.positiveRevenue.exactMinorUnits} |
 | 冲销入账 | ${cash.reversalPosting.authorityMonetaryUnits} | ${cash.reversalPosting.exactMinorUnits} |
 | 已追溯抵消 | ${cash.tracedOffset.authorityMonetaryUnits} | ${cash.tracedOffset.exactMinorUnits} |
-| 重述收入 | ${cash.restatedRevenue.authorityMonetaryUnits} | ${cash.restatedRevenue.exactMinorUnits} |
-| 未分配冲销残差 | ${cash.unresolvedReversalResidual.authorityMonetaryUnits} | ${cash.unresolvedReversalResidual.exactMinorUnits} |
+| 财务重述收入 | ${cash.restatedRevenue.authorityMonetaryUnits} | ${cash.restatedRevenue.exactMinorUnits} |
+| 开发可建模重述现金 | ${cash.modelableRestatedRevenue.authorityMonetaryUnits} | ${cash.modelableRestatedRevenue.exactMinorUnits} |
+| 未分配冲销残差（财务对账） | ${cash.unresolvedReversalResidual.authorityMonetaryUnits} | ${cash.unresolvedReversalResidual.exactMinorUnits} |
+| 从开发标签隔离的未分配残差 | ${cash.excludedUnallocatedReversalResidual.authorityMonetaryUnits} | ${cash.excludedUnallocatedReversalResidual.exactMinorUnits} |
 | 守恒差 | ${cash.conservationDifference.authorityMonetaryUnits} | ${cash.conservationDifference.exactMinorUnits} |
+
+精确整数等式为：原入账正现金 + 已入账冲销 = 开发可建模重述现金 + 隔离的未分配冲销残差。差值为 \`${views.DEVELOPMENT_MODELABLE_RESTATEMENT_VIEW.exactIntegerReconciliation.differenceMinor}\`。
 
 ## 影响范围
 
 - ${population.affectedScopeCount} 个冲销 scope、${population.affectedWorkCount} 个作品、${population.affectedChannelCount} 个 canonical 渠道。
 - ${population.affectedMonthCount} 个 scope-month，其中 ${population.fullyZeroedMonthCount} 个完全抵消，${population.partiallyRetainedMonthCount} 个保留部分正收入。
 - 最大向后追溯深度 ${population.maximumTraceDepthMonths} 个月；深度分布为 0 月 ${population.traceDepthDistribution["0"]}、1 月 ${population.traceDepthDistribution["1"]}、2 月 ${population.traceDepthDistribution["2"]}、3 月 ${population.traceDepthDistribution["3"]}、超过 3 月 ${population.traceDepthDistribution.more}。
-- 共审计 ${population.evaluatedCaseCount.toLocaleString("en-US")} 个唯一 case；${population.affectedCaseCount} 个 case 受冲销影响，${population.blockedResidualCaseCount} 个 case 因残差阻断完整标签。
+- 共审计 ${population.evaluatedCaseCount.toLocaleString("en-US")} 个唯一 case；${population.affectedCaseCount} 个 case 受冲销影响。残差阻断 case 为 ${population.blockedResidualCaseCount}；此前会因残差被阻断、现已恢复开发标签的 case 为 ${population.restoredResidualCaseCount}。
 
-## 三个时间视图
+## 四个独立视图
 
-- 原入账视图：\`${report.views.postingTime}\`，历史冻结 actual 保留。
-- 截止时点重述视图：\`${report.views.asOfRestated}\`。
-- 最终重述视图：\`${report.views.finalRestated}\`。
-- 当前权威与旧入账 actual 的差异状态：\`${report.views.currentAuthorityPostingReconciliation}\`，差异只报告、不回写旧结果。
+- 原入账财务视图（\`POSTING_TIME_ACCOUNTING_VIEW\`）：\`${views.POSTING_TIME_ACCOUNTING_VIEW.status}\`；${views.POSTING_TIME_ACCOUNTING_VIEW.reversalRowCount} 条冲销原样保留，物理删除数为 ${views.POSTING_TIME_ACCOUNTING_VIEW.originalReversalRowsDeleted}。
+- 截止时点重述视图（\`AS_OF_RESTATED_VIEW\`）：\`${views.AS_OF_RESTATED_VIEW.status}\`；origin 后冲销进入该 origin 的行数为 ${views.AS_OF_RESTATED_VIEW.originAfterCutoffRowsUsed}。
+- 最终财务对账视图（\`FINAL_ACCOUNTING_RECONCILIATION_VIEW\`）：\`${views.FINAL_ACCOUNTING_RECONCILIATION_VIEW.status}\`；未分配残差是否已解决：\`${views.FINAL_ACCOUNTING_RECONCILIATION_VIEW.unresolvedResidualSolved}\`。
+- 开发可建模重述视图（\`DEVELOPMENT_MODELABLE_RESTATEMENT_VIEW\`）：\`${views.DEVELOPMENT_MODELABLE_RESTATEMENT_VIEW.status}\`；禁止整案排除：\`${views.DEVELOPMENT_MODELABLE_RESTATEMENT_VIEW.wholeCaseExclusionAllowed}\`。
+- 当前权威与旧入账 actual 的差异状态：\`${report.currentAuthorityPostingReconciliation}\`，差异只报告、不回写旧结果。
 
 未发现未来泄漏风险，使用 forecast origin 之后冲销作为特征的行数为 ${report.timeIntegrity.originAfterCutoffRowsUsed}。两次完整执行比较 7 个输出文件，逐字节一致为 \`${report.deterministicExecution.byteIdentical}\`。
 `;
@@ -572,9 +500,9 @@ function diagnosticsMarkdown(report) {
       );
     }
   }
-  return `# M2 评价 v2.2 诊断复核
+  return `# M2 评价 v2.2 开发可建模标签重评分 v1
 
-状态：\`${report.status}\`。这是同一批冻结预测面对两种 actual definition 的标签重评分；不是模型重新执行、训练、拟合、调参或选择。存在未解决冲销残差的 scope 被排除，故结果为部分完整 scope 重评分，不得解释为全面激活。
+状态：\`${report.status}\`。这是同一批冻结预测面对原入账与开发可建模冲销重述两种 actual definition 的标签重评分；预测没有重新生成或修改，分数变化只来自标签定义。未分配残差只在财务对账中保留并从开发标签隔离，不再机械排除整条作品 case。
 
 ## 模型逐项配对结果
 
@@ -582,7 +510,7 @@ function diagnosticsMarkdown(report) {
 | --- | --- | ---: | ---: | ---: | ---: | ---: | --- |
 ${rows.join("\n")}
 
-旧 actual 与新 actual 使用不同 \`comparabilityGroupId\`。表中差异只表示同一冻结预测的标签定义影响，不能跨 actual definition 评选赢家；历史 raw failure 没有被覆盖。组合 30 个 cell 全部因残差或人口不匹配而不可完整重评分，未发布部分组合成绩。
+旧 actual 与新 actual 使用不同 \`comparabilityGroupId\`。表中差异只表示同一冻结预测的标签定义影响，不能跨 actual definition 评选赢家；历史 raw failure 没有被覆盖。组合 30 个 cell 因人口不匹配而不可完整重评分，未发布部分组合成绩。
 
 ## 统计修正
 
@@ -594,14 +522,10 @@ ${rows.join("\n")}
 
 ## 执行边界
 
-模型执行 ${report.authorizationCounters.modelExecutionCount}，训练 ${report.authorizationCounters.trainingCount}，拟合 ${report.authorizationCounters.fittingCount}，调参 ${report.authorizationCounters.tuningCount}，选择 ${report.authorizationCounters.selectionCount}，预测生成 ${report.authorizationCounters.predictionRowsGenerated}，预测修改 ${report.authorizationCounters.predictionRowsModified}，production 变更 ${report.authorizationCounters.productionChangeCount}。公共 artifact 仅含聚合；两次执行逐字节一致。v2.2 激活：\`${report.activation.allowed}\`，原因：\`${report.activation.reason}\`。
+模型执行 ${report.authorizationCounters.modelExecutionCount}，训练 ${report.authorizationCounters.trainingCount}，拟合 ${report.authorizationCounters.fittingCount}，调参 ${report.authorizationCounters.tuningCount}，选择 ${report.authorizationCounters.selectionCount}，预测生成 ${report.authorizationCounters.predictionRowsGenerated}，预测修改 ${report.authorizationCounters.predictionRowsModified}，production 变更 ${report.authorizationCounters.productionChangeCount}。公共 artifact 仅含聚合；两次执行逐字节一致。v2.2 仅激活开发评价：\`${report.activation.allowed}\`；production gate 与 automation gate 均保持关闭。
 `;
 }
 
 function formatMetric(value) {
   return Number.isFinite(value) ? value.toFixed(9) : "—";
-}
-
-function formatNumber(value) {
-  return Number.isFinite(value) ? value.toFixed(6) : String(value);
 }

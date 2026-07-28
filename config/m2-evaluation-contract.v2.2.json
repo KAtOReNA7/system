@@ -2,9 +2,9 @@
   "schema": "m2.evaluation_contract.v2.2",
   "version": "2.2",
   "asOf": "2026-07-28",
-  "status": "M2_EVALUATION_V2_2_BLOCKED_UNRESOLVED_REVERSAL",
-  "activationAllowed": false,
-  "blockingReason": "nonzero_unresolved_reversal_residual_in_evaluation_scope",
+  "status": "M2_EVALUATION_V2_2_ACTIVE_FOR_DEVELOPMENT_WITH_DISCLOSED_RESIDUAL_EXCLUSION",
+  "activationAllowed": true,
+  "blockingReason": null,
   "activationScope": "development_evaluation_only",
   "explicitlyNotAuthorized": [
     "model_execution",
@@ -33,11 +33,22 @@
       "displayNameEn": "Sales-Share Revenue Reversal Restatement v1",
       "comparabilityGroupSuffix": "REVERSAL_RESTATED"
     },
+    "developmentModelableRestatement": {
+      "stableId": "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01",
+      "displayNameZh": "分成收入开发可建模冲销重述 v1",
+      "displayNameEn": "Sales-Share Revenue Development-Modelable Reversal Restatement v1",
+      "comparabilityGroupSuffix": "DEVELOPMENT_MODELABLE_RESTATEMENT",
+      "status": "UNALLOCATED_REVERSAL_RESIDUAL_EXCLUDED_FROM_MODELABLE_TARGET",
+      "modelableCashEquation": "positive cash - successfully allocated reversal",
+      "excludedComponentField": "excludedUnallocatedReversalResidual",
+      "wholeCaseExclusionAllowed": false
+    },
     "crossDefinitionWinnerAllowed": false,
     "pairedImpactReportRequired": true
   },
   "frozenPredictionRescore": {
-    "status": "FROZEN_PREDICTION_LABEL_ONLY_RESCORE",
+    "status": "FROZEN_PREDICTION_DEVELOPMENT_MODELABLE_LABEL_ONLY_RESCORE",
+    "actualDefinitionId": "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01",
     "predictionMutationAllowed": false,
     "predictionGenerationAllowed": false,
     "sameCaseRequired": true,
@@ -49,6 +60,19 @@
       "selected_pipeline",
       "fallback"
     ]
+  },
+  "financialReconciliation": {
+    "rawReversalDeletionAllowed": false,
+    "allocatedComponentDeletionAllowed": false,
+    "unresolvedResidualSolvedClaimAllowed": false,
+    "requiredViews": [
+      "POSTING_TIME_ACCOUNTING_VIEW",
+      "AS_OF_RESTATED_VIEW",
+      "FINAL_ACCOUNTING_RECONCILIATION_VIEW",
+      "DEVELOPMENT_MODELABLE_RESTATEMENT_VIEW"
+    ],
+    "exactIntegerEquation": "posting positive cash + posted reversal = modelable restated cash + excluded unallocated reversal residual",
+    "modelableTargetStatus": "UNALLOCATED_REVERSAL_RESIDUAL_EXCLUDED_FROM_MODELABLE_TARGET"
   },
   "pointMetrics": {
     "metricDefinitionId": "M2-EVAL-V2.2-POINT",
@@ -185,7 +209,7 @@
     "required": [
       "reversal_authority_and_scope_proven",
       "posting_asof_final_views_pass",
-      "unresolved_reversal_residual_zero",
+      "unallocated_reversal_residual_preserved_and_exactly_excluded_from_modelable_target",
       "integer_cash_conservation_difference_zero",
       "future_leakage_zero",
       "full_bootstrap_2000",
@@ -199,7 +223,7 @@
       "linux_current_execution_ci_pass",
       "windows_current_execution_ci_pass"
     ],
-    "passStatus": "ACTIVE_FOR_DEVELOPMENT_EVALUATION_ONLY",
+    "passStatus": "M2_EVALUATION_V2_2_ACTIVE_FOR_DEVELOPMENT_WITH_DISCLOSED_RESIDUAL_EXCLUSION",
     "failStatus": "DRAFT_V2_2_REVISION_INCOMPLETE"
   }
 }

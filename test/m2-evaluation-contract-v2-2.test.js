@@ -26,6 +26,15 @@ test("v2.2 contract requires 2,000 resamples and remains non-production", () => 
     contract.actualDefinitions.reversalRestated.stableId,
     "M2-ACTUAL-REVERSAL-RESTATEMENT-01"
   );
+  assert.equal(
+    contract.actualDefinitions.developmentModelableRestatement.stableId,
+    "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01"
+  );
+  assert.equal(
+    contract.status,
+    "M2_EVALUATION_V2_2_ACTIVE_FOR_DEVELOPMENT_WITH_DISCLOSED_RESIDUAL_EXCLUSION"
+  );
+  assert.equal(contract.activationAllowed, true);
   assert.ok(contract.explicitlyNotAuthorized.includes("training"));
   assert.ok(contract.explicitlyNotAuthorized.includes("prediction_modification"));
   assert.ok(contract.explicitlyNotAuthorized.includes("production_change"));
@@ -217,7 +226,10 @@ test("v2.2 extends the canonical frozen runner without a parallel model runtime"
   assert.match(source, /--rescore-v2-2/);
   assert.match(source, /\["rev-parse", "--show-toplevel"\]/);
   assert.match(source, /sourceDigestMatchedAuthority/);
-  assert.match(source, /FROZEN_PREDICTION_LABEL_ONLY_RESCORE/);
+  assert.match(
+    source,
+    /FROZEN_PREDICTION_DEVELOPMENT_MODELABLE_LABEL_ONLY_RESCORE/
+  );
   assert.match(source, /modelExecutionCount:\s*0/);
   assert.match(source, /predictionRowsModified:\s*0/);
   assert.match(source, /src\/domain\/m2Current\/reversalRestatement\.js/);
@@ -229,7 +241,7 @@ test("v2.2 extends the canonical frozen runner without a parallel model runtime"
   assert.doesNotMatch(source, /src\/server/);
 });
 
-test("v2.2 public reports preserve the blocked result and contain aggregates only", () => {
+test("historical v2.2 blocked reports remain unchanged and aggregate-only", () => {
   const authority = JSON.parse(fs.readFileSync(
     "docs/analysis/m2-current/M2-reversal-restatement-authority-audit-v1.json",
     "utf8"
@@ -264,14 +276,54 @@ test("v2.2 public reports preserve the blocked result and contain aggregates onl
   assert.equal(diagnostic.authorizationCounters.predictionRowsModified, 0);
 });
 
-test("registry records the blocked v2.2 identities without changing model roles", () => {
+test("active v2.2 reports isolate the exact residual without blocking whole cases", () => {
+  const fourViews = JSON.parse(fs.readFileSync(
+    "docs/analysis/m2-current/M2-reversal-four-view-reconciliation-v1.json",
+    "utf8"
+  ));
+  const rescore = JSON.parse(fs.readFileSync(
+    "docs/analysis/m2-current/"
+      + "M2-evaluation-v2.2-development-modelable-rescore-v1.json",
+    "utf8"
+  ));
+  for (const report of [fourViews, rescore]) {
+    assert.equal(
+      report.status,
+      "M2_EVALUATION_V2_2_ACTIVE_FOR_DEVELOPMENT_WITH_DISCLOSED_RESIDUAL_EXCLUSION"
+    );
+    const serialized = JSON.stringify(report);
+    assert.doesNotMatch(serialized, /[A-Za-z]:[\\/]/);
+    assert.doesNotMatch(serialized, /data[\\/]private-(?:input|output)/i);
+  }
+  assert.equal(
+    fourViews.views.POSTING_TIME_ACCOUNTING_VIEW.reversalRowCount,
+    143
+  );
+  assert.equal(
+    fourViews.cash.excludedUnallocatedReversalResidual.exactMinorUnits,
+    "-267769000000000330000"
+  );
+  assert.equal(
+    fourViews.views.DEVELOPMENT_MODELABLE_RESTATEMENT_VIEW
+      .exactIntegerReconciliation.differenceMinor,
+    "0"
+  );
+  assert.equal(fourViews.affectedPopulation.blockedResidualCaseCount, 0);
+  assert.equal(fourViews.affectedPopulation.restoredResidualCaseCount, 292);
+  assert.equal(fourViews.frozenArtifacts.predictionRowsModified, 0);
+  assert.equal(rescore.activation.allowed, true);
+  assert.equal(rescore.activation.productionGateActive, false);
+  assert.equal(rescore.activation.automationGateActive, false);
+});
+
+test("registry records active development-only v2.2 without changing model roles", () => {
   const registry = JSON.parse(fs.readFileSync(
     "config/m2-model-registry.v1.json",
     "utf8"
   ));
   assert.equal(
     registry.currentRoles.latestStateIndex,
-    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.30.md"
+    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.31.md"
   );
   assert.equal(registry.currentRoles.operationalWorkFallback, "M2-WORK-OA03");
   assert.equal(registry.currentRoles.researchWorkBaseline, "M2-WORK-LG01");
@@ -280,13 +332,20 @@ test("registry records the blocked v2.2 identities without changing model roles"
   assert.equal(registry.currentRoles.approvedForAutomation, null);
   assert.equal(
     registry.currentEvaluationContract.status,
-    "M2_EVALUATION_V2_2_BLOCKED_UNRESOLVED_REVERSAL"
+    "M2_EVALUATION_V2_2_ACTIVE_FOR_DEVELOPMENT_WITH_DISCLOSED_RESIDUAL_EXCLUSION"
   );
-  assert.equal(registry.currentEvaluationContract.activationAllowed, false);
+  assert.equal(registry.currentEvaluationContract.activationAllowed, true);
   assert.ok(
     registry.actualDefinitionTransformations.some(
       (item) =>
         item.transformationId === "M2-ACTUAL-REVERSAL-RESTATEMENT-01"
+    )
+  );
+  assert.ok(
+    registry.actualDefinitionTransformations.some(
+      (item) =>
+        item.transformationId
+          === "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01"
     )
   );
   const metricDefinitionIds = new Set(

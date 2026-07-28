@@ -1,8 +1,10 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
+  buildReversalFourViewsV1,
   buildReversalScopeKeyV1,
   buildReversalTimeViewsV1,
+  DEVELOPMENT_MODELABLE_ACTUAL_DEFINITION_V1,
   restateSalesShareReversalsV1
 } from "../src/domain/m2Current/reversalRestatement.js";
 
@@ -232,4 +234,53 @@ test("recordedAt and integer minor-unit safety fail closed", () => {
     ]),
     /minor_unit_integer_required/
   );
+});
+
+test("four views preserve raw reversals and isolate only the residual component", () => {
+  const rows = [
+    positive("P1", "2024-01", 100),
+    positive("P2", "2024-02", 20),
+    reversal("R1", "2024-03", 150)
+  ];
+  const views = buildReversalFourViewsV1(rows, {
+    originCutoff: "2024-02",
+    labelMaturityCutoff: "2024-03",
+    authorityStartMonth: "2024-01"
+  });
+  assert.equal(views.status, "FOUR_VIEWS_COMPLETE_FOR_DEVELOPMENT");
+  assert.equal(
+    views.POSTING_TIME_ACCOUNTING_VIEW.reversalRowCount,
+    1
+  );
+  assert.equal(
+    views.POSTING_TIME_ACCOUNTING_VIEW.originalReversalRowsDeleted,
+    0
+  );
+  assert.equal(
+    views.AS_OF_RESTATED_VIEW.originAfterCutoffRowsUsed,
+    0
+  );
+  assert.equal(
+    views.FINAL_ACCOUNTING_RECONCILIATION_VIEW
+      .unresolvedReversalResidualMinor,
+    "-30"
+  );
+  assert.equal(
+    views.FINAL_ACCOUNTING_RECONCILIATION_VIEW
+      .unresolvedResidualSolved,
+    false
+  );
+  const modelable = views.DEVELOPMENT_MODELABLE_RESTATEMENT_VIEW;
+  assert.equal(
+    modelable.actualDefinitionId,
+    DEVELOPMENT_MODELABLE_ACTUAL_DEFINITION_V1.stableId
+  );
+  assert.equal(modelable.modelableRestatedCashMinor, "0");
+  assert.equal(modelable.excludedUnallocatedReversalResidualMinor, "-30");
+  assert.equal(
+    modelable.exactIntegerReconciliation.differenceMinor,
+    "0"
+  );
+  assert.equal(modelable.wholeCaseExclusionAllowed, false);
+  assert.equal(modelable.allocatedReversalComponentPreserved, true);
 });

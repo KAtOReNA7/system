@@ -6,6 +6,16 @@ export const REVERSAL_ACTUAL_DEFINITION_V1 = Object.freeze({
   displayNameEn: "Sales-Share Revenue Reversal Restatement v1"
 });
 
+export const DEVELOPMENT_MODELABLE_ACTUAL_DEFINITION_V1 = Object.freeze({
+  stableId: "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01",
+  displayNameZh: "分成收入开发可建模冲销重述 v1",
+  displayNameEn:
+    "Sales-Share Revenue Development-Modelable Reversal Restatement v1"
+});
+
+export const UNALLOCATED_REVERSAL_RESIDUAL_EXCLUSION_STATUS =
+  "UNALLOCATED_REVERSAL_RESIDUAL_EXCLUDED_FROM_MODELABLE_TARGET";
+
 export function buildReversalScopeKeyV1({
   cashCategory,
   standardWorkId,
@@ -102,6 +112,116 @@ export function buildReversalTimeViewsV1(rows, options = {}) {
     postingTimeActual: postingTime,
     restatedActualAsOf: asOf,
     finalRestatedActual: final,
+    futureLeakageCheck: {
+      status: asOf.futureExcludedCount > 0
+        ? "PASS_FUTURE_ROWS_EXCLUDED"
+        : "PASS_NO_FUTURE_ROWS_PRESENT",
+      originAfterCutoffRowsUsed: 0
+    }
+  };
+}
+
+export function buildReversalFourViewsV1(rows, options = {}) {
+  const originCutoff = normalizeCutoff(options.originCutoff);
+  const labelMaturityCutoff = normalizeCutoff(options.labelMaturityCutoff);
+  if (originCutoff === null || labelMaturityCutoff === null) {
+    throw new Error("m2_reversal_restatement_cutoffs_required");
+  }
+  if (originCutoff > labelMaturityCutoff) {
+    throw new Error("m2_reversal_restatement_cutoff_order_invalid");
+  }
+  const postingTime = postingTimeActualV1(rows, {
+    cutoff: labelMaturityCutoff
+  });
+  const asOf = restateSalesShareReversalsV1(rows, {
+    ...options,
+    cutoff: originCutoff
+  });
+  const final = restateSalesShareReversalsV1(rows, {
+    ...options,
+    cutoff: labelMaturityCutoff
+  });
+  const reconciliationDifference =
+    BigInt(final.positiveRevenueMinor)
+    + BigInt(final.reversalPostingMinor)
+    - BigInt(final.modelableRestatedRevenueMinor)
+    - BigInt(final.excludedUnallocatedReversalResidualMinor);
+  if (reconciliationDifference !== 0n) {
+    throw new Error(
+      "m2_reversal_restatement_development_modelable_conservation_failed"
+    );
+  }
+  const reversalRows = rows.filter((row) =>
+    String(row.eventType ?? "") === "reversal"
+  );
+  const controlsPass = (
+    asOf.conservationDifferenceMinor === "0"
+    && final.conservationDifferenceMinor === "0"
+    && asOf.status !== "BLOCKED_RECORDED_AT_MISSING"
+    && final.status !== "BLOCKED_RECORDED_AT_MISSING"
+    && asOf.status !== "BLOCKED_REVERSAL_CLASSIFICATION"
+    && final.status !== "BLOCKED_REVERSAL_CLASSIFICATION"
+  );
+  return {
+    status: controlsPass
+      ? "FOUR_VIEWS_COMPLETE_FOR_DEVELOPMENT"
+      : "FOUR_VIEWS_BLOCKED",
+    originCutoff,
+    labelMaturityCutoff,
+    POSTING_TIME_ACCOUNTING_VIEW: {
+      status: "PASS_RAW_ACCOUNTING_RECORDS_PRESERVED",
+      actualDefinitionId: "M2-ACTUAL-POSTING-TIME-01",
+      reversalRowCount: reversalRows.length,
+      originalReversalRowsDeleted: 0,
+      postingTimeActual: postingTime
+    },
+    AS_OF_RESTATED_VIEW: {
+      status: controlsPass
+        ? "PASS_ORIGIN_VISIBLE_REVERSALS_ONLY"
+        : "BLOCKED",
+      actualDefinitionId: REVERSAL_ACTUAL_DEFINITION_V1.stableId,
+      restatement: asOf,
+      originAfterCutoffRowsUsed: 0
+    },
+    FINAL_ACCOUNTING_RECONCILIATION_VIEW: {
+      status: BigInt(final.unresolvedReversalResidualMinor) === 0n
+        ? "PASS_FULLY_ALLOCATED"
+        : "RECONCILED_WITH_DISCLOSED_UNALLOCATED_RESIDUAL",
+      actualDefinitionId: REVERSAL_ACTUAL_DEFINITION_V1.stableId,
+      positiveRevenueMinor: final.positiveRevenueMinor,
+      reversalPostingMinor: final.reversalPostingMinor,
+      tracedOffsetMinor: final.tracedOffsetMinor,
+      restatedRevenueMinor: final.restatedRevenueMinor,
+      unresolvedReversalResidualMinor:
+        final.unresolvedReversalResidualMinor,
+      conservationDifferenceMinor: final.conservationDifferenceMinor,
+      unresolvedResidualSolved:
+        BigInt(final.unresolvedReversalResidualMinor) === 0n,
+      restatement: final
+    },
+    DEVELOPMENT_MODELABLE_RESTATEMENT_VIEW: {
+      status: BigInt(final.unresolvedReversalResidualMinor) === 0n
+        ? "COMPLETE_NO_RESIDUAL_TO_EXCLUDE"
+        : UNALLOCATED_REVERSAL_RESIDUAL_EXCLUSION_STATUS,
+      actualDefinitionId:
+        DEVELOPMENT_MODELABLE_ACTUAL_DEFINITION_V1.stableId,
+      modelableRestatedCashMinor: final.modelableRestatedRevenueMinor,
+      excludedUnallocatedReversalResidualMinor:
+        final.excludedUnallocatedReversalResidualMinor,
+      exactIntegerReconciliation: {
+        equation:
+          "postingPositiveCash + postedReversal = "
+          + "modelableRestatedCash + excludedUnallocatedReversalResidual",
+        postingPositiveCashMinor: final.positiveRevenueMinor,
+        postedReversalMinor: final.reversalPostingMinor,
+        modelableRestatedCashMinor: final.modelableRestatedRevenueMinor,
+        excludedUnallocatedReversalResidualMinor:
+          final.excludedUnallocatedReversalResidualMinor,
+        differenceMinor: reconciliationDifference.toString()
+      },
+      wholeCaseExclusionAllowed: false,
+      allocatedReversalComponentPreserved: true
+    },
     futureLeakageCheck: {
       status: asOf.futureExcludedCount > 0
         ? "PASS_FUTURE_ROWS_EXCLUDED"
@@ -272,7 +392,12 @@ function restateScope(scopeKey, rows, authorityStartMonth) {
     reversalPostingMinor: reversalTotal.toString(),
     tracedOffsetMinor: (positiveTotal - restatedTotal).toString(),
     restatedRevenueMinor: restatedTotal.toString(),
+    modelableRestatedRevenueMinor: restatedTotal.toString(),
     unresolvedReversalResidualMinor: unresolved.toString(),
+    excludedUnallocatedReversalResidualMinor: unresolved.toString(),
+    residualExclusionStatus: unresolved === 0n
+      ? "NO_UNALLOCATED_REVERSAL_RESIDUAL"
+      : UNALLOCATED_REVERSAL_RESIDUAL_EXCLUSION_STATUS,
     conservationDifferenceMinor: conservationDifference.toString(),
     reversalCount: reversals.length,
     unclassifiedNegativeCount,
@@ -303,8 +428,14 @@ function summarizeScopes(scopes) {
     reversalPostingMinor: sumField("reversalPostingMinor"),
     tracedOffsetMinor: sumField("tracedOffsetMinor"),
     restatedRevenueMinor: sumField("restatedRevenueMinor"),
+    modelableRestatedRevenueMinor: sumField(
+      "modelableRestatedRevenueMinor"
+    ),
     unresolvedReversalResidualMinor: sumField(
       "unresolvedReversalResidualMinor"
+    ),
+    excludedUnallocatedReversalResidualMinor: sumField(
+      "excludedUnallocatedReversalResidualMinor"
     ),
     conservationDifferenceMinor: sumField("conservationDifferenceMinor"),
     affectedScopeCount: scopes.filter((scope) => scope.allocations.some(

@@ -1,0 +1,140 @@
+{
+  "schema": "m2.reversal-restatement.four-view-reconciliation.public.v1",
+  "asOf": "2026-07-28",
+  "status": "M2_EVALUATION_V2_2_ACTIVE_FOR_DEVELOPMENT_WITH_DISCLOSED_RESIDUAL_EXCLUSION",
+  "labelOnlyRescoreStatus": "FROZEN_PREDICTION_DEVELOPMENT_MODELABLE_LABEL_ONLY_RESCORE",
+  "cash": {
+    "positiveRevenue": {
+      "exactMinorUnits": "83821498165600000018517939",
+      "authorityMonetaryUnits": "83821498.165600000018517939"
+    },
+    "reversalPosting": {
+      "exactMinorUnits": "-1228913283699999995685150",
+      "authorityMonetaryUnits": "-1228913.283699999995685150"
+    },
+    "tracedOffset": {
+      "exactMinorUnits": "1228645514699999995355150",
+      "authorityMonetaryUnits": "1228645.514699999995355150"
+    },
+    "restatedRevenue": {
+      "exactMinorUnits": "82592852650900000023162789",
+      "authorityMonetaryUnits": "82592852.650900000023162789"
+    },
+    "modelableRestatedRevenue": {
+      "exactMinorUnits": "82592852650900000023162789",
+      "authorityMonetaryUnits": "82592852.650900000023162789"
+    },
+    "unresolvedReversalResidual": {
+      "exactMinorUnits": "-267769000000000330000",
+      "authorityMonetaryUnits": "-267.769000000000330000"
+    },
+    "excludedUnallocatedReversalResidual": {
+      "exactMinorUnits": "-267769000000000330000",
+      "authorityMonetaryUnits": "-267.769000000000330000"
+    },
+    "conservationDifference": {
+      "exactMinorUnits": "0",
+      "authorityMonetaryUnits": "0.000000000000000000"
+    }
+  },
+  "affectedPopulation": {
+    "affectedScopeCount": 101,
+    "affectedWorkCount": 85,
+    "affectedChannelCount": 11,
+    "affectedMonthCount": 590,
+    "fullyZeroedMonthCount": 499,
+    "partiallyRetainedMonthCount": 91,
+    "maximumTraceDepthMonths": 62,
+    "traceDepthDistribution": {
+      "0": 9,
+      "1": 41,
+      "2": 29,
+      "3": 13,
+      "more": 51
+    },
+    "evaluatedCaseCount": 98675,
+    "affectedCaseCount": 430,
+    "affectedWorkCaseCount": 403,
+    "actualDefinitionDifferenceCaseCount": 88463,
+    "blockedResidualCaseCount": 0,
+    "restoredResidualCaseCount": 292,
+    "portfolioPopulationMismatchCount": 30
+  },
+  "views": {
+    "POSTING_TIME_ACCOUNTING_VIEW": {
+      "status": "PASS_RAW_ACCOUNTING_RECORDS_PRESERVED",
+      "actualDefinitionId": "M2-ACTUAL-POSTING-TIME-01",
+      "reversalRowCount": 143,
+      "originalReversalRowsDeleted": 0
+    },
+    "AS_OF_RESTATED_VIEW": {
+      "status": "PASS_ORIGIN_VISIBLE_REVERSALS_ONLY",
+      "actualDefinitionId": "M2-ACTUAL-REVERSAL-RESTATEMENT-01",
+      "originAfterCutoffRowsUsed": 0
+    },
+    "FINAL_ACCOUNTING_RECONCILIATION_VIEW": {
+      "status": "RECONCILED_WITH_DISCLOSED_UNALLOCATED_RESIDUAL",
+      "actualDefinitionId": "M2-ACTUAL-REVERSAL-RESTATEMENT-01",
+      "positiveRevenueMinor": "83821498165600000018517939",
+      "reversalPostingMinor": "-1228913283699999995685150",
+      "tracedOffsetMinor": "1228645514699999995355150",
+      "restatedRevenueMinor": "82592852650900000023162789",
+      "unresolvedReversalResidualMinor": "-267769000000000330000",
+      "conservationDifferenceMinor": "0",
+      "unresolvedResidualSolved": false
+    },
+    "DEVELOPMENT_MODELABLE_RESTATEMENT_VIEW": {
+      "status": "UNALLOCATED_REVERSAL_RESIDUAL_EXCLUDED_FROM_MODELABLE_TARGET",
+      "actualDefinitionId": "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01",
+      "modelableRestatedCashMinor": "82592852650900000023162789",
+      "excludedUnallocatedReversalResidualMinor": "-267769000000000330000",
+      "exactIntegerReconciliation": {
+        "equation": "postingPositiveCash + postedReversal = modelableRestatedCash + excludedUnallocatedReversalResidual",
+        "postingPositiveCashMinor": "83821498165600000018517939",
+        "postedReversalMinor": "-1228913283699999995685150",
+        "modelableRestatedCashMinor": "82592852650900000023162789",
+        "excludedUnallocatedReversalResidualMinor": "-267769000000000330000",
+        "differenceMinor": "0"
+      },
+      "wholeCaseExclusionAllowed": false,
+      "allocatedReversalComponentPreserved": true
+    }
+  },
+  "currentAuthorityPostingReconciliation": "DIFFERENCES_REPORTED_NOT_REWRITTEN",
+  "timeIntegrity": {
+    "authorityStartMonth": "2017-06",
+    "authorityDataAsOf": "2026-05",
+    "labelMaturityCutoff": "2025-12",
+    "futureLeakageRiskFound": false,
+    "originAfterCutoffRowsUsed": 0
+  },
+  "frozenArtifacts": {
+    "artifactCount": 6,
+    "rowCount": 716801,
+    "allGitIgnored": true,
+    "allDigestsMatched": true,
+    "predictionRowsModified": 0
+  },
+  "deterministicExecution": {
+    "executionCount": 2,
+    "comparedFileCount": 7,
+    "byteIdentical": true
+  },
+  "authorizationCounters": {
+    "privateAuthorityRowReadCount": 190663,
+    "frozenPredictionRowReadCount": 716801,
+    "modelExecutionCount": 0,
+    "trainingCount": 0,
+    "fittingCount": 0,
+    "tuningCount": 0,
+    "selectionCount": 0,
+    "predictionRowsGenerated": 0,
+    "predictionRowsModified": 0,
+    "productionChangeCount": 0
+  },
+  "publicPrivacy": {
+    "aggregateOnly": true,
+    "containsRowLevelIdentity": false,
+    "containsPrivatePath": false
+  }
+}

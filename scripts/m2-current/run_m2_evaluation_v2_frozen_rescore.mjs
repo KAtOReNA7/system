@@ -26,6 +26,8 @@ import {
 } from "../../src/domain/m2Current/evaluationV2.js";
 import {
   buildReversalScopeKeyV1,
+  DEVELOPMENT_MODELABLE_ACTUAL_DEFINITION_V1,
+  UNALLOCATED_REVERSAL_RESIDUAL_EXCLUSION_STATUS,
   restateSalesShareReversalsV1
 } from "../../src/domain/m2Current/reversalRestatement.js";
 import {
@@ -164,7 +166,12 @@ if (mode === "rescore-v2-2") {
     receiptPath: resultV22.receiptPath,
     publicAggregateCandidatePath: resultV22.publicAggregateCandidatePath
   }));
-  process.exit(resultV22.status === "COMPLETE" ? 0 : 1);
+  process.exit(
+    resultV22.status
+      === "M2_EVALUATION_V2_2_ACTIVE_FOR_DEVELOPMENT_WITH_DISCLOSED_RESIDUAL_EXCLUSION"
+      ? 0
+      : 1
+  );
 }
 if (mode === "rescore-v2-1") {
   const resultsV21 = scoreV21Datasets(datasets, inventory);
@@ -280,10 +287,8 @@ async function runV22LabelOnlyRescore(datasets, artifactInventory) {
   activeAuthorityScalePowerV22 = authority.scalePower;
   const labels = buildRestatedLabelsV22(datasets, authority);
   const executionStatus = labels.status === "COMPLETE"
-    ? "COMPLETE"
-    : labels.status === "BLOCKED_UNRESOLVED_REVERSAL"
-      ? "M2_EVALUATION_V2_2_BLOCKED_UNRESOLVED_REVERSAL"
-      : "M2_EVALUATION_V2_2_BLOCKED_REVERSAL_AUTHORITY";
+    ? "M2_EVALUATION_V2_2_ACTIVE_FOR_DEVELOPMENT_WITH_DISCLOSED_RESIDUAL_EXCLUSION"
+    : "M2_EVALUATION_V2_2_BLOCKED_REVERSAL_AUTHORITY";
   const resultsV22 = scoreV22Datasets(
     datasets,
     labels.byGroupCaseKey,
@@ -322,9 +327,12 @@ async function runV22LabelOnlyRescore(datasets, artifactInventory) {
   );
   fs.writeFileSync(reconciliationPath, `${JSON.stringify({
     schema: "m2.reversal-restatement.scope-reconciliation.private.v1",
-    actualDefinitionId:
+    financialActualDefinitionId:
       reversalContract.actualDefinition.stableId,
+    developmentModelableActualDefinitionId:
+      DEVELOPMENT_MODELABLE_ACTUAL_DEFINITION_V1.stableId,
     authority: authority.privateAudit,
+    fourViews: labels.fourViews,
     scopes: labels.finalRestatement.scopes
   }, null, 2)}\n`);
   const privateRowsPath = path.join(
@@ -363,9 +371,10 @@ async function runV22LabelOnlyRescore(datasets, artifactInventory) {
     contractVersion: contractV22.version,
     status: executionStatus,
     resultStatus: labels.status === "COMPLETE"
-      ? "FROZEN_PREDICTION_LABEL_ONLY_RESCORE"
-      : "PARTIAL_COMPLETE_SCOPES_LABEL_ONLY_RESCORE",
-    actualDefinition: reversalContract.actualDefinition,
+      ? "FROZEN_PREDICTION_DEVELOPMENT_MODELABLE_LABEL_ONLY_RESCORE"
+      : "BLOCKED_REVERSAL_AUTHORITY",
+    actualDefinition: DEVELOPMENT_MODELABLE_ACTUAL_DEFINITION_V1,
+    financialActualDefinition: reversalContract.actualDefinition,
     activationBinding,
     frozenArtifactInventory: {
       artifactCount: artifactInventory.length,
@@ -405,7 +414,9 @@ async function runV22LabelOnlyRescore(datasets, artifactInventory) {
     schema: "m2.evaluation-v2.2.execution-receipt.private.v1",
     executionHead,
     status: executionStatus,
-    actualDefinitionId: reversalContract.actualDefinition.stableId,
+    actualDefinitionId: DEVELOPMENT_MODELABLE_ACTUAL_DEFINITION_V1.stableId,
+    financialActualDefinitionId:
+      reversalContract.actualDefinition.stableId,
     activationBinding,
     authority: authority.privateAudit,
     labels: labels.privateSummary,
@@ -757,7 +768,6 @@ function buildRestatedLabelsV22(datasets, authority) {
   const postingIndex = buildPostingIndexV22(authority.rows);
   const byGroupCaseKey = new Map();
   const cutoffAudit = [];
-  let unresolvedResidualMinor = 0n;
   let conservationDifferenceMinor = 0n;
   let postingActualExactMismatchCount = 0;
   let postingActualMismatchCount = 0;
@@ -765,16 +775,13 @@ function buildRestatedLabelsV22(datasets, authority) {
   let affectedCaseCount = 0;
   let affectedWorkCaseCount = 0;
   let actualDefinitionDifferenceCaseCount = 0;
-  let blockedResidualCaseCount = 0;
+  let restoredResidualCaseCount = 0;
   let finalRestatement = null;
   for (const cutoff of allCutoffs) {
     const restatement = restateSalesShareReversalsV1(authority.rows, {
       cutoff,
       authorityStartMonth
     });
-    unresolvedResidualMinor += BigInt(
-      restatement.unresolvedReversalResidualMinor
-    );
     conservationDifferenceMinor += BigInt(
       restatement.conservationDifferenceMinor
     );
@@ -842,7 +849,7 @@ function buildRestatedLabelsV22(datasets, authority) {
       } else if (!postingMatches) {
         postingActualMismatchCount += 1;
       }
-      const blockedByResidual = value.standardWorkId === "__PORTFOLIO__"
+      const residualScopePresent = value.standardWorkId === "__PORTFOLIO__"
         ? residualWorkIds.size > 0
         : residualWorkIds.has(value.standardWorkId);
       const portfolioPopulationMismatch =
@@ -858,6 +865,7 @@ function buildRestatedLabelsV22(datasets, authority) {
         postingActualMinor: frozenMinor.toString(),
         authorityPostingActualMinor: expectedPosting.toString(),
         restatedActualMinor: restatedMinor.toString(),
+        developmentModelableActualMinor: restatedMinor.toString(),
         positiveActualMinor: (
           value.standardWorkId === "__PORTFOLIO__"
             ? posting.allWorkPositive
@@ -874,12 +882,13 @@ function buildRestatedLabelsV22(datasets, authority) {
         postingActualToleranceMinor: postingToleranceMinor.toString(),
         reversalAffected,
         actualDefinitionChanged,
-        blockedByUnresolvedReversal: blockedByResidual,
-        status: blockedByResidual
-          ? "BLOCKED_UNRESOLVED_REVERSAL"
-          : portfolioPopulationMismatch
-            ? "NOT_RESCORABLE_PORTFOLIO_POPULATION_MEMBERSHIP_MISSING"
-            : "FROZEN_PREDICTION_LABEL_ONLY_RESCORE"
+        unallocatedResidualScopePresent: residualScopePresent,
+        excludedUnallocatedReversalResidualMinor:
+          residualScopePresent ? "DISCLOSED_AT_RECONCILIATION_SCOPE" : "0",
+        blockedByUnresolvedReversal: false,
+        status: portfolioPopulationMismatch
+          ? "NOT_RESCORABLE_PORTFOLIO_POPULATION_MEMBERSHIP_MISSING"
+          : "FROZEN_PREDICTION_DEVELOPMENT_MODELABLE_LABEL_ONLY_RESCORE"
       };
       if (reversalAffected) {
         affectedCaseCount += 1;
@@ -890,26 +899,94 @@ function buildRestatedLabelsV22(datasets, authority) {
       if (actualDefinitionChanged) {
         actualDefinitionDifferenceCaseCount += 1;
       }
-      if (blockedByResidual) blockedResidualCaseCount += 1;
+      if (residualScopePresent && !portfolioPopulationMismatch) {
+        restoredResidualCaseCount += 1;
+      }
       byGroupCaseKey.set(`${value.groupId}\u001f${value.caseKey}`, label);
     }
   }
-  const status = unresolvedResidualMinor !== 0n
-    ? "BLOCKED_UNRESOLVED_REVERSAL"
-    : conservationDifferenceMinor !== 0n
-      ? "BLOCKED_REVERSAL_AUTHORITY"
-      : "COMPLETE";
+  const status = conservationDifferenceMinor !== 0n
+    ? "BLOCKED_REVERSAL_AUTHORITY"
+    : "COMPLETE";
+  const excludedResidual =
+    finalRestatement.excludedUnallocatedReversalResidualMinor;
+  const modelableConservationDifference = (
+    BigInt(finalRestatement.positiveRevenueMinor)
+    + BigInt(finalRestatement.reversalPostingMinor)
+    - BigInt(finalRestatement.modelableRestatedRevenueMinor)
+    - BigInt(excludedResidual)
+  );
+  if (modelableConservationDifference !== 0n) {
+    throw new Error(
+      "m2_evaluation_v2_2_modelable_reconciliation_failed"
+    );
+  }
+  const fourViews = {
+    POSTING_TIME_ACCOUNTING_VIEW: {
+      status: "PASS_RAW_ACCOUNTING_RECORDS_PRESERVED",
+      actualDefinitionId: "M2-ACTUAL-POSTING-TIME-01",
+      reversalRowCount: authority.publicAudit.reversalRowCount,
+      originalReversalRowsDeleted: 0
+    },
+    AS_OF_RESTATED_VIEW: {
+      status: cutoffAudit.every(
+        (row) => row.conservationDifferenceMinor === "0"
+      ) ? "PASS_ORIGIN_VISIBLE_REVERSALS_ONLY" : "BLOCKED",
+      actualDefinitionId: reversalContract.actualDefinition.stableId,
+      originAfterCutoffRowsUsed: 0
+    },
+    FINAL_ACCOUNTING_RECONCILIATION_VIEW: {
+      status: BigInt(excludedResidual) === 0n
+        ? "PASS_FULLY_ALLOCATED"
+        : "RECONCILED_WITH_DISCLOSED_UNALLOCATED_RESIDUAL",
+      actualDefinitionId: reversalContract.actualDefinition.stableId,
+      positiveRevenueMinor: finalRestatement.positiveRevenueMinor,
+      reversalPostingMinor: finalRestatement.reversalPostingMinor,
+      tracedOffsetMinor: finalRestatement.tracedOffsetMinor,
+      restatedRevenueMinor: finalRestatement.restatedRevenueMinor,
+      unresolvedReversalResidualMinor: excludedResidual,
+      conservationDifferenceMinor:
+        finalRestatement.conservationDifferenceMinor,
+      unresolvedResidualSolved: BigInt(excludedResidual) === 0n
+    },
+    DEVELOPMENT_MODELABLE_RESTATEMENT_VIEW: {
+      status: BigInt(excludedResidual) === 0n
+        ? "COMPLETE_NO_RESIDUAL_TO_EXCLUDE"
+        : UNALLOCATED_REVERSAL_RESIDUAL_EXCLUSION_STATUS,
+      actualDefinitionId:
+        DEVELOPMENT_MODELABLE_ACTUAL_DEFINITION_V1.stableId,
+      modelableRestatedCashMinor:
+        finalRestatement.modelableRestatedRevenueMinor,
+      excludedUnallocatedReversalResidualMinor: excludedResidual,
+      exactIntegerReconciliation: {
+        equation:
+          "postingPositiveCash + postedReversal = "
+          + "modelableRestatedCash + excludedUnallocatedReversalResidual",
+        postingPositiveCashMinor: finalRestatement.positiveRevenueMinor,
+        postedReversalMinor: finalRestatement.reversalPostingMinor,
+        modelableRestatedCashMinor:
+          finalRestatement.modelableRestatedRevenueMinor,
+        excludedUnallocatedReversalResidualMinor: excludedResidual,
+        differenceMinor: modelableConservationDifference.toString()
+      },
+      wholeCaseExclusionAllowed: false,
+      allocatedReversalComponentPreserved: true
+    }
+  };
   const publicSummary = {
     status,
     labelOnlyRescoreStatus: status === "COMPLETE"
-      ? "FROZEN_PREDICTION_LABEL_ONLY_RESCORE"
-      : "PARTIAL_COMPLETE_SCOPES_LABEL_ONLY_RESCORE",
+      ? "FROZEN_PREDICTION_DEVELOPMENT_MODELABLE_LABEL_ONLY_RESCORE"
+      : "BLOCKED_REVERSAL_AUTHORITY",
     positiveRevenueMinor: finalRestatement.positiveRevenueMinor,
     reversalPostingMinor: finalRestatement.reversalPostingMinor,
     tracedOffsetMinor: finalRestatement.tracedOffsetMinor,
     restatedRevenueMinor: finalRestatement.restatedRevenueMinor,
+    modelableRestatedRevenueMinor:
+      finalRestatement.modelableRestatedRevenueMinor,
     unresolvedReversalResidualMinor:
       finalRestatement.unresolvedReversalResidualMinor,
+    excludedUnallocatedReversalResidualMinor: excludedResidual,
     conservationDifferenceMinor:
       finalRestatement.conservationDifferenceMinor,
     affectedScopeCount: finalRestatement.affectedScopeCount,
@@ -926,7 +1003,8 @@ function buildRestatedLabelsV22(datasets, authority) {
     affectedCaseCount,
     affectedWorkCaseCount,
     actualDefinitionDifferenceCaseCount,
-    blockedResidualCaseCount,
+    blockedResidualCaseCount: 0,
+    restoredResidualCaseCount,
     postingActualExactMismatchCount,
     postingActualMismatchCount,
     portfolioPopulationMismatchCount,
@@ -940,7 +1018,10 @@ function buildRestatedLabelsV22(datasets, authority) {
       (row) => row.conservationDifferenceMinor === "0"
     ) ? "PASS" : "BLOCKED",
     finalRestatedViewStatus:
-      finalRestatement.status === "COMPLETE" ? "PASS" : "BLOCKED",
+      fourViews.FINAL_ACCOUNTING_RECONCILIATION_VIEW.status,
+    developmentModelableRestatedViewStatus:
+      fourViews.DEVELOPMENT_MODELABLE_RESTATEMENT_VIEW.status,
+    fourViews,
     authorityStartMonth,
     authorityDataAsOf: authority.rows.map(
       (row) => row.recordedAt.slice(0, 7)
@@ -953,6 +1034,7 @@ function buildRestatedLabelsV22(datasets, authority) {
     status,
     byGroupCaseKey,
     finalRestatement,
+    fourViews,
     publicSummary,
     privateSummary: {
       ...publicSummary,
@@ -1096,12 +1178,12 @@ function scoreV22Datasets(datasets, labels, artifactInventory) {
       );
       const restated = scoreV22ModelFamily(
         rowPairs.restated,
-        reversalContract.actualDefinition.stableId
+        DEVELOPMENT_MODELABLE_ACTUAL_DEFINITION_V1.stableId
       );
       models[modelId] = {
         status: rowPairs.blockedCaseCount === 0
-          ? "FROZEN_PREDICTION_LABEL_ONLY_RESCORE"
-          : "PARTIAL_COMPLETE_SCOPES_LABEL_ONLY_RESCORE",
+          ? "FROZEN_PREDICTION_DEVELOPMENT_MODELABLE_LABEL_ONLY_RESCORE"
+          : "PARTIAL_PORTFOLIO_POPULATION_LABEL_ONLY_RESCORE",
         stableModelId: modelId.split("::")[0],
         variantType: group.variants[modelId],
         originalCaseCount: rowPairs.originalCaseCount,
@@ -1248,7 +1330,8 @@ function scoreV22Datasets(datasets, labels, artifactInventory) {
       frozenInputArtifactSetSha256:
         contentBindingV22(artifactInventory).frozenInputArtifactSetSha256,
       postingComparabilityGroupId: `${groupId}::POSTING_TIME`,
-      restatedComparabilityGroupId: `${groupId}::REVERSAL_RESTATED`,
+      restatedComparabilityGroupId:
+        `${groupId}::DEVELOPMENT_MODELABLE_RESTATEMENT`,
       crossActualDefinitionWinnerAllowed: false,
       fallbackId,
       models,
@@ -1269,7 +1352,10 @@ function buildV22RowPairs(groupId, rows, labels, grain) {
         (blockedStatusCounts.LABEL_MISSING ?? 0) + 1;
       return null;
     }
-    if (label.status !== "FROZEN_PREDICTION_LABEL_ONLY_RESCORE") {
+    if (
+      label.status
+        !== "FROZEN_PREDICTION_DEVELOPMENT_MODELABLE_LABEL_ONLY_RESCORE"
+    ) {
       blockedStatusCounts[label.status] =
         (blockedStatusCounts[label.status] ?? 0) + 1;
       return null;
@@ -1300,11 +1386,11 @@ function buildV22RowPairs(groupId, rows, labels, grain) {
       },
       restated: {
         ...common,
-        actual: minorToNumberV22(label.restatedActualMinor),
+        actual: minorToNumberV22(label.developmentModelableActualMinor),
         actualPositive:
-          BigInt(label.restatedActualMinor) > 0n ? 1 : 0,
+          BigInt(label.developmentModelableActualMinor) > 0n ? 1 : 0,
         actualPositiveAmount: minorToNumberV22(
-          label.restatedActualMinor
+          label.developmentModelableActualMinor
         )
       }
     };
@@ -1404,6 +1490,10 @@ function writeV22PrivateRescoreRows(filePath, datasets, labels) {
             authorityPostingActualMinor:
               label?.authorityPostingActualMinor ?? null,
             restatedActualMinor: label?.restatedActualMinor ?? null,
+            developmentModelableActualMinor:
+              label?.developmentModelableActualMinor ?? null,
+            unallocatedResidualScopePresent:
+              label?.unallocatedResidualScopePresent ?? null,
             postingActualDifferenceMinor:
               label?.postingActualDifferenceMinor ?? null,
             reversalAffected: label?.reversalAffected ?? null,
