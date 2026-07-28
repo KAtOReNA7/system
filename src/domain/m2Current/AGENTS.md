@@ -66,9 +66,10 @@ This directory is the only implementation home for current M2 model logic.
 - Extend the existing human-anchored materializer and runner modes. Do not
   create a second production loader, route, API, runtime, or duplicated
   historical runner.
-- 出版行业适配渠道核心的 K7D 一次性私有授权已在候选拟合前的实现阻断中消耗。
-  未获新的明确授权、独立新收据和新 exact-head Linux/Windows CI 前，不得重跑、
-  覆盖失败收据或把公开 synthetic 验证解释为私有候选结果。
+- 受控 private development 可在首个有效 raw candidate 评价之前修复基础设施、
+  路径、schema、缓存、receipt、内存或确定性实现错误并保留逐次 attempt receipt。
+  一旦首个完整、可解释结果产生，必须立即冻结；不得根据 outer outcome 修改特征、
+  参数、层级、fold 或评价门后再运行第二个版本。
 
 ## Evaluation contract rules
 

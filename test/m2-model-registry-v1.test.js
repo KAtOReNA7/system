@@ -37,7 +37,7 @@ test("registry schema, evidence paths and immutable digests validate", () => {
   assert.equal(validation.counts.modelCount, 28);
   assert.equal(validation.counts.experimentCount, 13);
   assert.equal(validation.counts.nonModelIdentifierCount, 50);
-  assert.equal(validation.counts.comparabilityGroupCount, 14);
+  assert.equal(validation.counts.comparabilityGroupCount, 16);
 });
 
 test("stable model IDs and model aliases are unique", () => {
@@ -92,7 +92,7 @@ test("evaluations preserve population and comparability contracts", () => {
   const oa03 = registry.models.find(
     (model) => model.stableModelId === "M2-WORK-OA03"
   );
-  assert.equal(oa03.evaluations.length, 2);
+  assert.equal(oa03.evaluations.length, 4);
   assert.notEqual(
     oa03.evaluations[0].comparableGroupId,
     oa03.evaluations[1].comparableGroupId
@@ -109,12 +109,15 @@ test("evaluations preserve population and comparability contracts", () => {
     "M2-WORK-LG01"
   );
   assert.equal(differentPopulation.comparable, true);
-  assert.equal(
-    differentPopulation.pairs.every(
+  assert.deepEqual(
+    new Set(differentPopulation.pairs.map(
       (pair) => pair.left.comparableGroupId
-        === "CG-WORK-SS-OVERLAP-5203-H36"
-    ),
-    true
+    )),
+    new Set([
+      "CG-WORK-SS-OVERLAP-5203-H36",
+      "CG-PSC01-V22-PRIMARY-12039-H36",
+      "CG-PSC01-V22-STRICT-74320"
+    ])
   );
   const differentGrain = compareM2ModelRegistryEntries(
     registry,
@@ -195,6 +198,9 @@ test("reader catalog is a deterministic complete rendering of the registry", asy
   assert.match(catalog, /CG-G1-BLOCKED-NO-CANDIDATE-OUTCOME/u);
   assert.match(catalog, /M2_CHANNEL_GENERATIVE_G1_CORE_BLOCKED/u);
   assert.match(catalog, /M2_PUBLISHING_SCALE_IMPLEMENTATION_BLOCKED/u);
+  assert.match(catalog, /M2_PUBLISHING_SCALE_CORE_FAIL/u);
+  assert.match(catalog, /CG-PSC01-V22-PRIMARY-12039-H36/u);
+  assert.match(catalog, /CG-PSC01-V22-STRICT-74320/u);
 });
 
 test("read-only query exposes scoped identities and refuses invalid ranking", () => {
@@ -206,8 +212,9 @@ test("read-only query exposes scoped identities and refuses invalid ranking", ()
   const status = runQuery("status");
   assert.equal(status.status, 0, status.stderr);
   assert.match(status.stdout, /本次只读查询模型执行次数：0/u);
-  assert.match(status.stdout, /K7D 私有物化启动次数：1/u);
-  assert.match(status.stdout, /候选拟合启动次数、候选外层预测行和候选评价行均为 0/u);
+  assert.match(status.stdout, /第一份有效原始候选评价已经冻结/u);
+  assert.match(status.stdout, /原始候选预测行 3,318,819/u);
+  assert.match(status.stdout, /M2_PUBLISHING_SCALE_CORE_FAIL/u);
   assert.match(status.stdout, /M2-WORK-OA03/u);
 
   const show = runQuery("show", "M2-WORK-OA03");

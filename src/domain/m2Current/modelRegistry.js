@@ -186,8 +186,20 @@ export function validateM2ModelRegistry(registry, {
       errors.push(`current_role_model_unknown:${role}:${modelId}`);
     }
   }
+  const activeExperiment = registry?.currentRoles?.activeExperiment;
+  if (
+    activeExperiment !== null
+    && activeExperiment !== undefined
+    && !experimentIds.has(activeExperiment)
+  ) {
+    errors.push(`active_experiment_unknown:${activeExperiment}`);
+  }
   const blockedExperiment = registry?.currentRoles?.blockedExperiment;
-  if (!experimentIds.has(blockedExperiment)) {
+  if (
+    blockedExperiment !== null
+    && blockedExperiment !== undefined
+    && !experimentIds.has(blockedExperiment)
+  ) {
     errors.push(`blocked_experiment_unknown:${blockedExperiment}`);
   }
   requirePublicEvidencePath(
@@ -550,21 +562,27 @@ function renderCurrentRoles(registry) {
       + `${model.displayNameEn}，${code(id)}）。`;
   });
   if (
-    registry.currentRoles.blockedExperiment
+    registry.currentRoles.activeExperiment
       === "M2-EXP-PUBLISHING-SCALE-CHANNEL-01"
   ) {
     rows.push(
-      "- 当前阻断实验：出版行业规模适配渠道核心开发\n"
-        + "  （`M2-EXP-PUBLISHING-SCALE-CHANNEL-01`）；"
-        + "私有物化已启动，但在候选拟合前因实现\n"
-        + "  接线错误 fail-closed，没有形成候选结果。"
+      "- 当前实验：出版行业规模适配渠道核心开发\n"
+        + "  （Publishing-Scale Channel Core Development，"
+        + "`M2-EXP-PUBLISHING-SCALE-CHANNEL-01`）；"
+        + "第一份完整原始候选评价已执行并按冻结门失败\n"
+        + "  （`M2_PUBLISHING_SCALE_CORE_FAIL`），结果已冻结。"
     );
-  } else {
+  } else if (registry.currentRoles.activeExperiment !== null) {
     rows.push(
-      `- 阻断实验：${code(registry.currentRoles.blockedExperiment)}`
-        + "；这是前置条件阻断，不是已执行失败。"
+      `- 当前实验：${code(registry.currentRoles.activeExperiment)}。`
     );
   }
+  rows.push(
+    registry.currentRoles.blockedExperiment === null
+      ? "- 当前阻断实验：无（`null`）。"
+      : `- 当前阻断实验：${code(registry.currentRoles.blockedExperiment)}`
+        + "；这是前置条件阻断，不是已执行失败。"
+  );
   return rows;
 }
 

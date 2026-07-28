@@ -3112,6 +3112,9 @@ function renderPublishingScaleDevelopmentReportCurrent(result) {
 本轮已经真正拟合并完整评价原始候选
 （raw candidate，\`${result.candidateId}\`）。原始候选输出先冻结，随后才运行评价与
 可预测性/oracle 诊断；运行回退和任何 selected pipeline 都没有覆盖原始结果。
+冻结原始候选预测共 ${result.candidateFreeze.rowCount} 行。本轮采用评价 v2.2
+开发可建模冲销重述（\`${result.actualDefinitionId}\`），没有启用
+development-only positive-cash 后备口径。
 这是重复使用开发窗口的受控证据，不是独立 later-origin 或 final holdout 证据，
 也不授权生产、自动化、发布或合并。
 
@@ -3131,6 +3134,12 @@ ${number(raw.primary.actualDenominator)}，MAE 为 ${number(raw.primary.mae)}，
 绝对误差中位数为 ${number(raw.primary.medianAbsoluteError)}；严格滚动对应值为
 ${number(raw.strict.absoluteError)}、${number(raw.strict.actualDenominator)}、
 ${number(raw.strict.mae)} 和 ${number(raw.strict.medianAbsoluteError)}。
+2,000 次作品聚类配对 bootstrap 的相对 WAPE 95% 区间，主评价为
+[${number(result.bootstrap.pairedRelativeWape.primary.lower95)},
+${number(result.bootstrap.pairedRelativeWape.primary.upper95)}]，严格滚动为
+[${number(result.bootstrap.pairedRelativeWape.strict.lower95)},
+${number(result.bootstrap.pairedRelativeWape.strict.upper95)}]；两者整体都低于 0，
+说明相对冻结研究基线的伤害不是少量作品造成的偶然波动。
 
 ## 与现行运行回退的同人口比较
 
@@ -3152,6 +3161,11 @@ ${number(occurrence.rocAuc)}。条件正金额 WAPE、MAE 和绝对误差中位�
 ${number(amount.wape)}、${number(amount.mae)}、
 ${number(amount.medianAbsoluteError)}。
 
+候选的主要限制是条件正金额严重低估，而不是 occurrence 是否发生。候选冻结后的
+retrospective oracle 诊断中，真实条件金额替换最多可移除的绝对误差远高于真实发生
+替换；future-first 新渠道进入构成次要但非零的结构上限。该诊断不参与训练、选择或
+晋级门。
+
 完整机器记录还包含：发生概率校准、各 horizon、各严格滚动时间块、三种变现机制、
 五个重点平台、支持层级、top 1%/5%/10% 正收入与绝对现金及冲销误差归因、
 排序与 top capture、层级相对父层增量，以及 2,000 次
@@ -3163,8 +3177,10 @@ scope 数与月度行数在每个 outer receipt 中分开记录。三级分类�
 
 ## 决策边界
 
-当前状态只由冻结门产生。即使机器结论为通过，也只表示 development core
-证据通过；现行运行回退、production、exact v0.3、provider、数据库、
+冻结门结论为失败，当前 cash-only 路线不值得继续在同一开发窗口调参。下一步若有
+独立授权，最有价值的证据是 forecast-origin 可得的历史商业状态、可用量与消费、
+曝光与 eCPM、订单与退款、合同及运营动作，而不是继续只从现金历史中重塑金额。
+现行运行回退、production、exact v0.3、provider、数据库、
 final holdout、Canary/full160、release、M3 formal 和 PR 合并均未获得授权。
 `;
 }
@@ -3204,6 +3220,7 @@ ${number(primary.diagnostics.MECHANISM_INFORMATION_GAIN.absoluteErrorGain)}
 
 function publishingScaleSparsePlatformTierSummary(result) {
   const definitions = [
+    ["微信读书", "wechat_reading"],
     ["猫耳", "missevan"],
     ["克拉漫播", "manbo"]
   ];
