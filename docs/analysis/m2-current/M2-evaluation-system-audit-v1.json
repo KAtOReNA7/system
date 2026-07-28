@@ -551,7 +551,7 @@
         ]
       },
       {
-        "comparableGroupId": "CG-NOT-EXECUTED",
+        "comparableGroupId": "CG-G1-BLOCKED-NO-CANDIDATE-OUTCOME",
         "comparisonClass": "STANDALONE_ONLY",
         "modelIds": [
           "M2-CHAN-GEN02"

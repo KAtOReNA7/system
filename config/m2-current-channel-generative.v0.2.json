@@ -21,12 +21,12 @@
     "source": "current_user_attachment_runtime_bound",
     "coreImplementation": true,
     "syntheticValidation": true,
-    "oneTimePrivateDevelopmentEvaluation": true,
-    "forecastabilityOracleDiagnostic": true,
+    "oneTimePrivateDevelopmentEvaluation": false,
+    "forecastabilityOracleDiagnostic": false,
     "authorizedModelId": "M2-CHAN-GEN02",
     "authorizedArmId": "M2-EXP-CHANNEL-GENERATIVE-02/G1",
-    "G1IndependentCoreTraining": true,
-    "G1PrivateDevelopmentEvaluation": true,
+    "G1IndependentCoreTraining": false,
+    "G1PrivateDevelopmentEvaluation": false,
     "G2StructuredOffset": false,
     "G3Blend": false,
     "G4Platform": false,
@@ -44,8 +44,21 @@
     "production": false,
     "exactV03Replacement": false,
     "release": false,
-    "mergePr": false
+    "mergePr": false,
+    "closureStatus": "CONSUMED_WITH_PREREGISTERED_ELIGIBILITY_BLOCK",
+    "closedAfterFitStarted": true,
+    "retryAuthorized": false
   },
+  "authorizationHistory": [
+    {
+      "source": "current_user_attachment_runtime_bound",
+      "scope": "M2-EXP-CHANNEL-GENERATIVE-02/G1 one-time private development evaluation",
+      "status": "CONSUMED_WITH_PREREGISTERED_ELIGIBILITY_BLOCK",
+      "fitStarted": true,
+      "candidateOutcomeProduced": false,
+      "retryAuthorized": false
+    }
+  ],
   "dataContract": {
     "cashAuthority": "user_reviewed_sales_share_workbook_membership",
     "featureAndLabelWindowStart": "2021-01",
@@ -82,9 +95,14 @@
     "displayNameEn": "Channel Generative v0.2 — Independent Monthly Occurrence × Conditional Amount Core",
     "modelId": "M2-CHAN-GEN02",
     "experimentArmId": "M2-EXP-CHANNEL-GENERATIVE-02/G1",
-    "trainedCandidateIds": [
+    "status": "M2_CHANNEL_GENERATIVE_G1_CORE_BLOCKED",
+    "privateExecutionAuthorizationConsumed": true,
+    "fitStartedCandidateIds": [
       "G1"
     ],
+    "trainedCandidateIds": [],
+    "candidateOutputIds": [],
+    "evaluatedCandidateIds": [],
     "pairedComparatorIds": [
       "G0"
     ],

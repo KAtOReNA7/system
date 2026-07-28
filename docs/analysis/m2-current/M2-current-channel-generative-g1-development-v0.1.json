@@ -1,0 +1,284 @@
+{
+  "schema": "m2.current.channel_generative_G1_development.v0.1",
+  "asOf": "2026-07-28",
+  "displayNameZh": "渠道时间生成模型 v0.2——独立渠道月度发生—条件金额核心",
+  "displayNameEn": "Channel Generative v0.2 — Independent Monthly Occurrence × Conditional Amount Core",
+  "modelId": "M2-CHAN-GEN02",
+  "experimentArmId": "M2-EXP-CHANNEL-GENERATIVE-02/G1",
+  "candidateId": "G1",
+  "finalStatus": "M2_CHANNEL_GENERATIVE_G1_CORE_BLOCKED",
+  "evidenceClass": "STRICTLY_CONTROLLED_REUSED_DEVELOPMENT_WINDOW_PREREQUISITE_BLOCK",
+  "sourceBindings": {
+    "implementationCommit": "0c664ee019158cade2a796aa8fe848b7813e4cbf",
+    "evaluationContractVersion": "2.2",
+    "actualDefinitionId": "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01",
+    "labelView": "DEVELOPMENT_MODELABLE_RESTATEMENT_VIEW",
+    "preregistration": "docs/analysis/m2-current/M2-current-channel-generative-v0.2-preregistration.json",
+    "implementationReadiness": "docs/analysis/m2-current/M2-current-channel-generative-g1-implementation-readiness-v0.1.json"
+  },
+  "execution": {
+    "command": "npm run develop:m2:current:channel-generative",
+    "attemptCount": 2,
+    "preFitFailureCount": 1,
+    "fitStartedCount": 1,
+    "completedCandidateExecutionCount": 0,
+    "firstAttemptStatus": "FAILED_CLOSED_BEFORE_G1_FIT",
+    "firstAttemptErrorCode": "m2_channel_generative_restatement_scope_missing",
+    "firstAttemptCandidateOutcomeRead": false,
+    "secondAttemptStatus": "FAILED_CLOSED_AFTER_G1_FIT_STARTED",
+    "secondAttemptErrorCode": "m2_channel_generative_G1_all_inner_configurations_ineligible",
+    "innerWorkFoldCount": 5,
+    "parameterConfigurationCount": 9,
+    "innerCandidateStateAttemptCount": 45,
+    "eligibleInnerConfigurationCount": 0,
+    "outerCandidatePredictionRowCount": 0,
+    "candidateEvaluationRowCount": 0,
+    "strictRollingStageEntered": false,
+    "candidateOutputsFrozen": false,
+    "oracleDiagnosticsExecuted": false
+  },
+  "population": {
+    "primaryPackedRowCount": 58986,
+    "primaryMonthlyRowCount": 2123496,
+    "primaryObservedChannelMonthlyRowCount": 962604,
+    "primaryFutureFirstSeenMonthlyRowCount": 1160892,
+    "strictPackedRowCount": 102743,
+    "strictMonthlyRowCount": 1677147,
+    "strictObservedChannelMonthlyRowCount": 1134084,
+    "strictFutureFirstSeenMonthlyRowCount": 543063,
+    "materializedMonthlyLabelRowCount": 3800643
+  },
+  "restatementBinding": {
+    "status": "PASS",
+    "residualPolicyStatus": "UNALLOCATED_REVERSAL_RESIDUAL_EXCLUDED_FROM_MODELABLE_TARGET",
+    "excludedUnallocatedReversalResidualMinor": "-267769000000000330000",
+    "exactIntegerReconciliationDifferenceMinor": "0",
+    "originAfterCutoffReversalFeatureRowCount": 0,
+    "primary": {
+      "transformedPackedRowCount": 58986,
+      "transformedLabelCount": 2123496,
+      "laterRecordedReversalLabelCount": 751,
+      "originalPostingLabelChangedCount": 1741,
+      "canonicalWorkIdAliasPackedRowCount": 13,
+      "canonicalWorkIdAliasWorkCount": 1,
+      "canonicalWorkIdAliasScopeCount": 1,
+      "canonicalWorkIdAmbiguousScopeCount": 0,
+      "unresolvedRestatementScopeCount": 0
+    },
+    "strict": {
+      "transformedPackedRowCount": 102743,
+      "transformedLabelCount": 1677147,
+      "laterRecordedReversalLabelCount": 322,
+      "originalPostingLabelChangedCount": 753,
+      "canonicalWorkIdAliasPackedRowCount": 16,
+      "canonicalWorkIdAliasWorkCount": 1,
+      "canonicalWorkIdAliasScopeCount": 1,
+      "canonicalWorkIdAmbiguousScopeCount": 0,
+      "unresolvedRestatementScopeCount": 0
+    },
+    "packedStandardWorkIdPreserved": true,
+    "excludedUnallocatedReversalResidualAssignedToLabel": false
+  },
+  "eligibilityBlock": {
+    "classification": "PREREGISTERED_MECHANISM_PARENT_ELIGIBILITY_NOT_MET",
+    "phase": "primary_outer_fold_0_inner_selection",
+    "blockedMechanism": "transactional",
+    "thresholds": {
+      "minimumDistinctTrainingWorks": 50,
+      "minimumMonthlyTrainingRows": 1000,
+      "minimumPositiveTrainingMonths": 100
+    },
+    "innerFolds": [
+      {
+        "innerFold": 0,
+        "membership": {
+          "trainingRows": 517752,
+          "trainingWorks": 692,
+          "positiveTrainingMonths": 294933,
+          "eligible": true
+        },
+        "advertising": {
+          "trainingRows": 79956,
+          "trainingWorks": 271,
+          "positiveTrainingMonths": 70221,
+          "eligible": true
+        },
+        "transactional": {
+          "trainingRows": 11916,
+          "trainingWorks": 32,
+          "positiveTrainingMonths": 1710,
+          "eligible": false
+        }
+      },
+      {
+        "innerFold": 1,
+        "membership": {
+          "trainingRows": 512532,
+          "trainingWorks": 685,
+          "positiveTrainingMonths": 291137,
+          "eligible": true
+        },
+        "advertising": {
+          "trainingRows": 83700,
+          "trainingWorks": 272,
+          "positiveTrainingMonths": 74013,
+          "eligible": true
+        },
+        "transactional": {
+          "trainingRows": 9972,
+          "trainingWorks": 29,
+          "positiveTrainingMonths": 1664,
+          "eligible": false
+        }
+      },
+      {
+        "innerFold": 2,
+        "membership": {
+          "trainingRows": 513108,
+          "trainingWorks": 668,
+          "positiveTrainingMonths": 290226,
+          "eligible": true
+        },
+        "advertising": {
+          "trainingRows": 81612,
+          "trainingWorks": 264,
+          "positiveTrainingMonths": 71266,
+          "eligible": true
+        },
+        "transactional": {
+          "trainingRows": 8640,
+          "trainingWorks": 25,
+          "positiveTrainingMonths": 1216,
+          "eligible": false
+        }
+      },
+      {
+        "innerFold": 3,
+        "membership": {
+          "trainingRows": 515196,
+          "trainingWorks": 692,
+          "positiveTrainingMonths": 291303,
+          "eligible": true
+        },
+        "advertising": {
+          "trainingRows": 81864,
+          "trainingWorks": 277,
+          "positiveTrainingMonths": 71831,
+          "eligible": true
+        },
+        "transactional": {
+          "trainingRows": 10332,
+          "trainingWorks": 31,
+          "positiveTrainingMonths": 1519,
+          "eligible": false
+        }
+      },
+      {
+        "innerFold": 4,
+        "membership": {
+          "trainingRows": 510228,
+          "trainingWorks": 671,
+          "positiveTrainingMonths": 289537,
+          "eligible": true
+        },
+        "advertising": {
+          "trainingRows": 85284,
+          "trainingWorks": 280,
+          "positiveTrainingMonths": 74257,
+          "eligible": true
+        },
+        "transactional": {
+          "trainingRows": 8676,
+          "trainingWorks": 27,
+          "positiveTrainingMonths": 1087,
+          "eligible": false
+        }
+      }
+    ],
+    "distinctTrainingWorkRange": {
+      "minimum": 25,
+      "maximum": 32
+    },
+    "trainingRowRange": {
+      "minimum": 8640,
+      "maximum": 11916
+    },
+    "positiveTrainingMonthRange": {
+      "minimum": 1087,
+      "maximum": 1710
+    },
+    "parameterIndependent": true,
+    "thresholdChangedAfterOutcome": false,
+    "retryExecutedAfterFitStart": false
+  },
+  "rawEvaluation": {
+    "status": "NOT_PRODUCED_PREREQUISITE_BLOCK",
+    "primary": {
+      "WAPE": null,
+      "signedBias": null,
+      "MAE": null,
+      "medianAbsoluteError": null
+    },
+    "strict": {
+      "WAPE": null,
+      "signedBias": null,
+      "MAE": null,
+      "medianAbsoluteError": null
+    },
+    "byHorizon": {
+      "status": "NOT_PRODUCED_PREREQUISITE_BLOCK"
+    },
+    "byOriginTimeBlock": {
+      "status": "NOT_PRODUCED_PREREQUISITE_BLOCK"
+    },
+    "topRevenue": {
+      "status": "NOT_PRODUCED_PREREQUISITE_BLOCK"
+    },
+    "occurrence": {
+      "status": "NOT_PRODUCED_PREREQUISITE_BLOCK"
+    },
+    "conditionalAmount": {
+      "status": "NOT_PRODUCED_PREREQUISITE_BLOCK"
+    },
+    "ranking": {
+      "status": "NOT_PRODUCED_PREREQUISITE_BLOCK"
+    },
+    "bootstrap": {
+      "status": "NOT_PRODUCED_PREREQUISITE_BLOCK",
+      "iterationsCompleted": 0
+    }
+  },
+  "decision": {
+    "status": "M2_CHANNEL_GENERATIVE_G1_CORE_BLOCKED",
+    "isModelFailure": false,
+    "isCandidatePass": false,
+    "isCandidateFail": false,
+    "activeDevelopmentCandidate": false,
+    "recommendedNextEvidence": [
+      "increase distinct transactional-mechanism work support without changing the frozen evaluation population",
+      "collect mechanism-driven origin-visible data such as listing state, consumption, exposure, eCPM, orders, refunds, contract validity and operations"
+    ],
+    "cashOnlyAlgorithmContinuationAuthorized": false
+  },
+  "boundaries": {
+    "G1FitStarted": true,
+    "G1CandidateOutcomeProduced": false,
+    "G2Executed": false,
+    "G3Executed": false,
+    "G4Executed": false,
+    "G5Executed": false,
+    "G6Executed": false,
+    "productionSurfaceChangeCount": 0,
+    "exactV03Modified": false,
+    "finalHoldoutOpened": false,
+    "laterOriginOpened": false,
+    "providerUsed": false,
+    "databaseRead": false,
+    "releaseAuthorized": false
+  },
+  "publicPrivacy": {
+    "aggregateOnly": true,
+    "containsRowLevelIdentity": false,
+    "containsPrivatePath": false
+  }
+}

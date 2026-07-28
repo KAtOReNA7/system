@@ -156,7 +156,7 @@ test("evaluation contract remains a proposal and public aggregates are not overc
 test("historical audit state records zero execution and registry may advance", () => {
   assert.equal(
     registry.currentRoles.latestStateIndex,
-    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.31.md"
+    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.32.md"
   );
   assert.equal(audit.executionBoundary.modelExecutionCount, 0);
   assert.equal(audit.executionBoundary.modelTrainingCount, 0);

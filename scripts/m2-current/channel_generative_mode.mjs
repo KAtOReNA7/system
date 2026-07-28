@@ -94,6 +94,7 @@ export async function prepareM2ChannelGenerativeRunReceipt({
   const baseManifest = JSON.parse(baseManifestText);
   const frozenManifest = JSON.parse(frozenManifestText);
   assertBoundary(config);
+  assertPrivateExecutionAuthorization(config);
   const receiptPath = path.join(
     privateDirectory,
     config.privateOutputs.runReceipt
@@ -177,6 +178,7 @@ export async function runM2ChannelGenerativePrivateDevelopment({
       readJson(path.join(root, frozenConfigPublicPath()))
     ]);
   assertBoundary(config);
+  assertPrivateExecutionAuthorization(config);
   const receipt = await readJson(path.join(
     privateDirectory,
     config.privateOutputs.runReceipt
@@ -1063,12 +1065,13 @@ function assertBoundary(config) {
     || config?.actualDefinitionId
       !== "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01"
     || config?.authorization?.coreImplementation !== true
-    || config?.authorization?.oneTimePrivateDevelopmentEvaluation !== true
+    || config?.authorization?.oneTimePrivateDevelopmentEvaluation !== false
+    || config?.authorization?.forecastabilityOracleDiagnostic !== false
     || config?.authorization?.authorizedModelId !== "M2-CHAN-GEN02"
     || config?.authorization?.authorizedArmId
       !== "M2-EXP-CHANNEL-GENERATIVE-02/G1"
-    || config?.authorization?.G1IndependentCoreTraining !== true
-    || config?.authorization?.G1PrivateDevelopmentEvaluation !== true
+    || config?.authorization?.G1IndependentCoreTraining !== false
+    || config?.authorization?.G1PrivateDevelopmentEvaluation !== false
     || config?.authorization?.G2StructuredOffset !== false
     || config?.authorization?.G3Blend !== false
     || config?.authorization?.G4Platform !== false
@@ -1080,10 +1083,33 @@ function assertBoundary(config) {
     || config?.authorization?.production !== false
     || config?.authorization?.exactV03Replacement !== false
     || config?.authorization?.release !== false
+    || config?.authorization?.closureStatus
+      !== "CONSUMED_WITH_PREREGISTERED_ELIGIBILITY_BLOCK"
+    || config?.authorization?.closedAfterFitStarted !== true
+    || config?.authorization?.retryAuthorized !== false
     || config?.candidateIds?.join(",") !== "G0,G1"
-    || config?.currentExecution?.trainedCandidateIds?.join(",") !== "G1"
+    || config?.currentExecution?.status
+      !== "M2_CHANNEL_GENERATIVE_G1_CORE_BLOCKED"
+    || config?.currentExecution?.privateExecutionAuthorizationConsumed
+      !== true
+    || config?.currentExecution?.fitStartedCandidateIds?.join(",") !== "G1"
+    || config?.currentExecution?.trainedCandidateIds?.length !== 0
+    || config?.currentExecution?.candidateOutputIds?.length !== 0
+    || config?.currentExecution?.evaluatedCandidateIds?.length !== 0
   ) {
     throw new Error("m2_channel_generative_authorization_boundary_differs");
+  }
+}
+
+function assertPrivateExecutionAuthorization(config) {
+  if (
+    config?.authorization?.oneTimePrivateDevelopmentEvaluation !== true
+    || config?.authorization?.G1IndependentCoreTraining !== true
+    || config?.authorization?.G1PrivateDevelopmentEvaluation !== true
+  ) {
+    throw new Error(
+      "m2_channel_generative_private_execution_authorization_closed"
+    );
   }
 }
 

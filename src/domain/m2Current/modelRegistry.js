@@ -649,6 +649,9 @@ function displayMetric(value, resultStatus) {
   if (value !== null) {
     return Number(value).toFixed(8);
   }
+  if (/BLOCKED|BLOCKER/u.test(resultStatus)) {
+    return "未产生（null）";
+  }
   return /NOT_EXECUTED/u.test(resultStatus)
     ? "未执行（null）"
     : "未登记（null）";

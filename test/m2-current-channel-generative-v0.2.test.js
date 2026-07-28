@@ -611,6 +611,69 @@ test("v2.2 restatement binding fails closed on ambiguous canonical work identity
   );
 });
 
+test("blocked private execution is published as aggregate prerequisite evidence without fabricated metrics", async () => {
+  const [development, forecastability] = await Promise.all([
+    readJson(
+      "docs/analysis/m2-current/"
+        + "M2-current-channel-generative-g1-development-v0.1.json"
+    ),
+    readJson(
+      "docs/analysis/m2-current/"
+        + "M2-current-channel-generative-g1-forecastability-v0.1.json"
+    )
+  ]);
+  assert.equal(
+    development.finalStatus,
+    "M2_CHANNEL_GENERATIVE_G1_CORE_BLOCKED"
+  );
+  assert.equal(development.decision.isModelFailure, false);
+  assert.equal(development.execution.innerCandidateStateAttemptCount, 45);
+  assert.equal(development.execution.eligibleInnerConfigurationCount, 0);
+  assert.equal(development.execution.outerCandidatePredictionRowCount, 0);
+  assert.equal(development.execution.candidateEvaluationRowCount, 0);
+  assert.equal(
+    development.eligibilityBlock.blockedMechanism,
+    "transactional"
+  );
+  assert.deepEqual(
+    development.eligibilityBlock.distinctTrainingWorkRange,
+    { minimum: 25, maximum: 32 }
+  );
+  assert.equal(development.rawEvaluation.primary.WAPE, null);
+  assert.equal(development.rawEvaluation.strict.WAPE, null);
+  assert.equal(development.boundaries.G2Executed, false);
+  assert.equal(development.boundaries.G3Executed, false);
+  assert.equal(development.publicPrivacy.containsRowLevelIdentity, false);
+  assert.equal(
+    forecastability.candidateOutputStatus,
+    "NOT_FROZEN_PREREQUISITE_BLOCK"
+  );
+  assert.equal(
+    Object.values(forecastability.diagnostics).every(
+      (value) => value.status
+        === "NOT_EXECUTED_CANDIDATE_OUTPUTS_NOT_FROZEN"
+    ),
+    true
+  );
+  assert.equal(
+    forecastability.interpretation.forecastingTheoreticallyImpossible,
+    false
+  );
+  assert.equal(
+    config.authorization.oneTimePrivateDevelopmentEvaluation,
+    false
+  );
+  assert.equal(config.authorization.G1IndependentCoreTraining, false);
+  assert.equal(config.authorization.G1PrivateDevelopmentEvaluation, false);
+  assert.equal(config.authorization.retryAuthorized, false);
+  assert.equal(
+    config.currentExecution.status,
+    "M2_CHANNEL_GENERATIVE_G1_CORE_BLOCKED"
+  );
+  assert.deepEqual(config.currentExecution.candidateOutputIds, []);
+  assert.deepEqual(config.currentExecution.evaluatedCandidateIds, []);
+});
+
 test("strict G1 training reads only labels available before each outer origin and oracle runs after freeze", () => {
   const smallFixture = {
     ...fixture,

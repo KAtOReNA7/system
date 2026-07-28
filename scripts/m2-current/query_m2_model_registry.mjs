@@ -74,7 +74,11 @@ function printStatus() {
       + "`GENERATIVE_V02_CORE_EXECUTION_BLOCKED`）"
   );
   console.log(`当前状态索引：${registry.currentRoles.latestStateIndex}`);
-  console.log("模型执行次数：0（查询只读取公开登记表）。");
+  console.log("本次只读查询模型执行次数：0。");
+  console.log(
+    "登记的本轮渠道独立核心拟合启动次数：1；"
+      + "候选外层预测行和候选评价行均为 0。"
+  );
 }
 
 function printRole(label, key) {

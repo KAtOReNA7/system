@@ -306,7 +306,7 @@
     },
     {
       "id": "m2-current-channel-generative",
-      "description": "Run only the user-authorized Channel Generative v0.2 independent G1 core against v2.2 development-modelable labels, with frozen G0 used solely as the paired outer-case comparator and oracle diagnostics run only after G1 output freeze.",
+      "description": "Audit the consumed Channel Generative v0.2 independent G1 private capability and its prerequisite-blocked receipt. The one-time execution authorization is closed; frozen G0 remains only an unexecuted paired outer-case comparator.",
       "requiredTools": [],
       "requiredPrivateArtifacts": [
         {
@@ -347,11 +347,10 @@
       ],
       "canonicalValidationCommands": [
         "npm run doctor:capability -- m2-current-channel-generative",
-        "npm run diagnose:m2:channel-generative",
-        "npm run develop:m2:current:channel-generative"
+        "npm run diagnose:m2:channel-generative"
       ],
-      "recovery": "Restore only the capability-scoped channel master, verified model-input cache, frozen G0 comparator, and v2.2 reversal-restatement outputs. Missing G0 channel offsets never block G1 training; missing paired outer-case G0 rows block only the comparison. public synthetic diagnostics, tests and startup remain available.",
-      "authorization": "USER_AUTHORIZED_M2_CHANNEL_GENERATIVE_G1_ONLY_PRIVATE_DEVELOPMENT_2026_07_28"
+      "recovery": "Restore only the capability-scoped channel master, verified model-input cache, frozen G0 comparator, v2.2 reversal-restatement outputs, and the final private execution receipt for audit. Restoration does not reopen training or retry authorization; public synthetic diagnostics, tests and startup remain available.",
+      "authorization": "CONSUMED_M2_CHANNEL_GENERATIVE_G1_PRIVATE_EXECUTION_BLOCKED_NO_RETRY_2026_07_28"
     },
     {
       "id": "m2-current-human-anchored-later-origin",

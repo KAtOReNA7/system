@@ -1,0 +1,57 @@
+{
+  "schema": "m2.current.channel_generative_G1_forecastability_public.v0.1",
+  "asOf": "2026-07-28",
+  "displayNameZh": "渠道时间生成模型 v0.2——独立渠道月度发生—条件金额核心",
+  "displayNameEn": "Channel Generative v0.2 — Independent Monthly Occurrence × Conditional Amount Core",
+  "modelId": "M2-CHAN-GEN02",
+  "experimentArmId": "M2-EXP-CHANNEL-GENERATIVE-02/G1",
+  "finalStatus": "M2_CHANNEL_GENERATIVE_G1_CORE_BLOCKED",
+  "candidateOutputStatus": "NOT_FROZEN_PREREQUISITE_BLOCK",
+  "diagnostics": {
+    "ORACLE_OCCURRENCE_ONLY": {
+      "status": "NOT_EXECUTED_CANDIDATE_OUTPUTS_NOT_FROZEN"
+    },
+    "ORACLE_AMOUNT_ONLY": {
+      "status": "NOT_EXECUTED_CANDIDATE_OUTPUTS_NOT_FROZEN"
+    },
+    "ORACLE_BOTH": {
+      "status": "NOT_EXECUTED_CANDIDATE_OUTPUTS_NOT_FROZEN"
+    },
+    "FUTURE_FIRST_ENTRY_CEILING": {
+      "status": "NOT_EXECUTED_CANDIDATE_OUTPUTS_NOT_FROZEN"
+    },
+    "MECHANISM_INFORMATION_GAIN": {
+      "status": "NOT_EXECUTED_CANDIDATE_OUTPUTS_NOT_FROZEN"
+    }
+  },
+  "blockingEvidence": {
+    "classification": "PREREGISTERED_MECHANISM_PARENT_ELIGIBILITY_NOT_MET",
+    "blockedMechanism": "transactional",
+    "minimumDistinctTrainingWorks": 50,
+    "observedDistinctTrainingWorkRange": {
+      "minimum": 25,
+      "maximum": 32
+    },
+    "primaryOuterFold": 0,
+    "innerWorkFoldCount": 5,
+    "eligibleInnerConfigurationCount": 0
+  },
+  "interpretation": {
+    "occurrenceVersusAmountErrorDominanceKnown": false,
+    "mechanismTimeBasisIncrementKnown": false,
+    "futureFirstSeenUnreachableCashShareKnown": false,
+    "cashOnlyTheoreticalCeilingKnown": false,
+    "forecastingTheoreticallyImpossible": false,
+    "reason": "candidate outputs were not produced or frozen"
+  },
+  "participatesInTraining": false,
+  "participatesInSelection": false,
+  "participatesInGate": false,
+  "deployable": false,
+  "canAuthorizeLaterArms": false,
+  "publicPrivacy": {
+    "aggregateOnly": true,
+    "containsRowLevelIdentity": false,
+    "containsPrivatePath": false
+  }
+}
