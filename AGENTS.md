@@ -110,6 +110,12 @@ fixture composition。两者在无 private、无数据库条件下都必须能�
 - 使用 `npm run doctor:capability -- <capability-id>` 盘点能力。缺少 private 只能
   阻断所属 capability，不能阻断 clone、安装、lint、build、公共测试、smoke、
   公共诊断或本地服务器启动。
+- 本地 `data/**` 必须区分权威输入、冻结证据和可再生缓存。不得因体积、年龄或实验
+  失败删除权威输入、manifest、receipt、digest、冻结预测或评价行；需要释放空间时
+  先做 capability-scoped、逐文件摘要可验证的冷归档。
+- 禁止在 `data/**` 下安装 `node_modules`。只有在同目录原始 `.xlsx` 存在且没有
+  capability、合同或 digest 引用时，`*.xlsx.inspect.ndjson` 才可作为可再生展开
+  缓存清理；清理必须报告精确目标、数量、字节数和剩余阻断项。
 - 跨电脑恢复只能使用 capability-scoped 加密包、逐文件摘要和原子恢复；环境变量、
   provider key 与数据库凭据不得进入包。
 - 需要用户补充材料时，先给中文简表、中文选项和“你的填写”列；允许“不清楚”或
