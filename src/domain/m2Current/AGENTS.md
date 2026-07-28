@@ -48,10 +48,11 @@ This directory is the only implementation home for current M2 model logic.
 
 ## Evaluation contract rules
 
-- Evaluation Contract v2 remains a validated-but-inactive draft until a
-  separate activation decision. Its evaluator must not be wired into
-  production, the active model gate, or exact v0.3 serving merely because a
-  frozen rescore completed.
+- `config/m2-evaluation-contract.v2.1.json` is active only for development
+  evaluation after its exact Git head passes both Linux and Windows CI.
+  Evaluation Contract v2 remains an immutable historical draft. Neither
+  contract may be wired into production, the automation gate, or exact v0.3
+  serving merely because a frozen rescore completed.
 - A frozen evaluation must preserve raw candidate, pre-selection, selected
   pipeline, and operational fallback variants as separate identities. Never
   substitute one variant's rows or metrics for another.

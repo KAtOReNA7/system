@@ -1,6 +1,6 @@
 {
   "schema": "m2.model_registry.v1",
-  "generatedFromCommit": "481441f3c93126e442294092b8e84779a0c50e0e",
+  "generatedFromCommit": "f5677bcee52f76633ffaa3072b4b0e4005c8691f",
   "asOf": "2026-07-28",
   "targetAuthority": {
     "currentTarget": "future_sales_share_cash",
@@ -23,7 +23,7 @@
     "approvedForAutomation": null,
     "activeCandidate": null,
     "blockedExperiment": "M2-EXP-CHANNEL-GENERATIVE-02",
-    "latestStateIndex": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.28.md",
+    "latestStateIndex": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.29.md",
     "roleConflict": false,
     "sourceAssertions": [
       {
@@ -44,6 +44,59 @@
     ],
     "roleInterpretationZh": "exact v0.3 是作品级现行运行回退模型；learnedGlobal 是研究比较基线，并且只在渠道生成实验内部承担冻结 G0 回退。两种称呼作用域不同，不构成模型晋升冲突。"
   },
+  "currentEvaluationContract": {
+    "version": "2.1",
+    "status": "ACTIVE_FOR_DEVELOPMENT_EVALUATION_ONLY",
+    "activationCondition": "exact_head_linux_and_windows_ci_success",
+    "productionGateActive": false,
+    "automationGateActive": false,
+    "modelRolesChanged": false,
+    "configRef": "config/m2-evaluation-contract.v2.1.json",
+    "contractRef": "docs/analysis/m2-current/M2-evaluation-contract-v2.1.md",
+    "validationRef": "docs/analysis/m2-current/M2-evaluation-contract-v2.1-validation.md",
+    "diagnosticRef": "docs/analysis/m2-current/M2-evaluation-v2.1-diagnostic-recheck.json"
+  },
+  "metricDefinitions": [
+    {
+      "metricDefinitionId": "M2-EVAL-V2.1-POINT",
+      "version": "2.1",
+      "capability": "work_cash_point_forecast",
+      "primaryUnit": "horizon",
+      "pooledCrossHorizon": "diagnostic_only"
+    },
+    {
+      "metricDefinitionId": "M2-EVAL-V2.1-OCCURRENCE",
+      "version": "2.1",
+      "capability": "positive_sales_share_cash_occurrence",
+      "actualField": "actualPositive",
+      "frozenTrainingBaselineRequiredForSkill": true
+    },
+    {
+      "metricDefinitionId": "M2-EVAL-V2.1-CONDITIONAL-AMOUNT",
+      "version": "2.1",
+      "capability": "conditional_positive_amount",
+      "predictionField": "conditionalAmountPrediction",
+      "actualField": "actualPositiveAmount"
+    },
+    {
+      "metricDefinitionId": "M2-EVAL-V2.1-RANKING",
+      "version": "2.1",
+      "capability": "ranking_diagnostic",
+      "requiresPairedFallback": true
+    },
+    {
+      "metricDefinitionId": "M2-EVAL-V2.1-INTERVAL",
+      "version": "2.1",
+      "capability": "risk_interval",
+      "nativeQuantileGrid": [0.05, 0.1, 0.2, 0.5, 0.8, 0.9, 0.95]
+    },
+    {
+      "metricDefinitionId": "M2-EVAL-V2.1-PORTFOLIO",
+      "version": "2.1",
+      "capability": "portfolio_budget",
+      "primaryUnit": "horizon"
+    }
+  ],
   "models": [
     {
       "stableModelId": "M2-WORK-B4",

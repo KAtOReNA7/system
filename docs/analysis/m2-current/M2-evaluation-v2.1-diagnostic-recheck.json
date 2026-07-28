@@ -1,0 +1,310 @@
+{
+  "schema": "m2.evaluation-v2.1.diagnostic-recheck.public.v1",
+  "asOf": "2026-07-28",
+  "contractVersion": "2.1",
+  "contractStatus": "ACTIVE_FOR_DEVELOPMENT_EVALUATION_ONLY",
+  "activationCondition": "effective only when this exact Git head passes both Linux and Windows CI",
+  "resultStatus": "M2_EVALUATION_CONTRACT_V2_1_ACTIVE_FOR_DEVELOPMENT_ONLY",
+  "frozenArtifactInventory": {
+    "artifactCount": 6,
+    "rowCount": 716801,
+    "allExistedBeforeTask": true,
+    "allGitIgnored": true,
+    "allDigestsMatched": true,
+    "allRowCountsMatched": true,
+    "allCaseKeyFieldsComplete": true,
+    "allCaseKeysUniqueWithinArtifact": true
+  },
+  "determinism": {
+    "runsCompared": 2,
+    "byteIdentical": true,
+    "aggregateOutputSha256": "7b2adc142e296551785b5549fa849be8b4b5486763182d220c145aa608219b02",
+    "aggregateOutputBytes": 822833
+  },
+  "v1ScoreReproduction": {
+    "status": "PASS",
+    "absoluteTolerance": 1e-8,
+    "bindingCount": 25,
+    "maximumAbsoluteDifference": 0
+  },
+  "authorizationCounters": {
+    "privateRowReadCount": 716801,
+    "modelExecutionCount": 0,
+    "trainingCount": 0,
+    "fittingCount": 0,
+    "tuningCount": 0,
+    "selectionCount": 0,
+    "predictionRowsGenerated": 0,
+    "predictionRowsModified": 0,
+    "productionChangeCount": 0
+  },
+  "occurrence": {
+    "baselineRule": "frozen training prevalence is required for a skill claim; evaluation prevalence is descriptive only",
+    "lifecyclePrimary": {
+      "caseCount": 12039,
+      "prevalence": 0.9698479940194368,
+      "brier": 0.03478308147607738,
+      "logLoss": 0.14933947430083605,
+      "prAuc": 0.9831221438085722,
+      "rocAucAuxiliary": 0.6461880082710693,
+      "specificityAt05DiagnosticOnly": 0.1046831955922865,
+      "evaluationPrevalenceOracleBrierDescriptiveOnly": 0.029242862515907648,
+      "frozenTrainingBaselineStatus": "NOT_COMPUTABLE_FROZEN_TRAINING_BASE_RATE_MISSING"
+    },
+    "lifecycleStrict": {
+      "caseCount": 74320,
+      "prevalence": 0.8988697524219591,
+      "brier": 0.06121655444268907,
+      "logLoss": 0.22529809981080856,
+      "prAuc": 0.979382900971018,
+      "rocAucAuxiliary": 0.8645663924465683,
+      "specificityAt05DiagnosticOnly": 0.3853113358169239,
+      "evaluationPrevalenceOracleBrierDescriptiveOnly": 0.09090292060280988,
+      "frozenTrainingBaselineStatus": "NOT_COMPUTABLE_FROZEN_TRAINING_BASE_RATE_MISSING"
+    },
+    "tsbPrimary": {
+      "caseCount": 12039,
+      "prevalence": 0.9698479940194368,
+      "brier": 0.02951496747359326,
+      "logLoss": 0.6609912875352927,
+      "prAuc": 0.9894964944761377,
+      "rocAucAuxiliary": 0.6739594157023852,
+      "specificityAt05DiagnosticOnly": 0,
+      "evaluationPrevalenceOracleBrierDescriptiveOnly": 0.02924286251590718,
+      "frozenTrainingBaselineStatus": "NOT_COMPUTABLE_FROZEN_TRAINING_BASE_RATE_MISSING"
+    },
+    "tsbStrict": {
+      "caseCount": 74320,
+      "prevalence": 0.8988697524219591,
+      "brier": 0.06783695711903377,
+      "logLoss": 0.4292145310987973,
+      "prAuc": 0.9931778202612898,
+      "rocAucAuxiliary": 0.9438035434392135,
+      "specificityAt05DiagnosticOnly": 0.2036987759446514,
+      "evaluationPrevalenceOracleBrierDescriptiveOnly": 0.09090292060284455,
+      "frozenTrainingBaselineStatus": "NOT_COMPUTABLE_FROZEN_TRAINING_BASE_RATE_MISSING"
+    }
+  },
+  "channelRankingVersusResearchFallback": {
+    "primary": {
+      "status": "PAIRED_RANKING_SIGNAL_ESTIMATED",
+      "caseCount": 12039,
+      "workCount": 1125,
+      "groupCount": 13,
+      "weighting": "equal_origin_horizon_cell_weight",
+      "spearmanCandidate": 0.8343304715745723,
+      "spearmanFallback": 0.815629555981928,
+      "spearmanDifference": 0.018700915592644307,
+      "kendallTauBDifference": 0.020257775556994484,
+      "winRates": {
+        "spearman": 0.9230769230769231,
+        "kendallTauB": 0.8461538461538461,
+        "topRevenueCapture": {
+          "0.01": 0.38461538461538464,
+          "0.05": 0.5384615384615384,
+          "0.1": 0.38461538461538464
+        }
+      },
+      "originHorizonDifferenceDistribution": {
+        "spearman": {
+          "min": -0.0005407441815051817,
+          "p10": 0.002645593144372229,
+          "p50": 0.02386613800748527,
+          "p90": 0.025979797892935433,
+          "max": 0.028349436808082773
+        },
+        "kendallTauB": {
+          "min": -0.002737925124207563,
+          "p10": 0.0006312719551598419,
+          "p50": 0.024676415200310386,
+          "p90": 0.02938679821314707,
+          "max": 0.030466321101239147
+        }
+      },
+      "workClusterSpearmanDifference95": [
+        0.012763494497423474,
+        0.02410535945626344
+      ],
+      "originTimeClusterSpearmanDifference95": [
+        0.012532497569769974,
+        0.02285075395712172
+      ],
+      "topRevenueCaptureDifferences": {
+        "0.01": 0.0027402519773428446,
+        "0.05": 0.0006601862649613377,
+        "0.1": 0.004952808188733782
+      }
+    },
+    "strict": {
+      "status": "PAIRED_RANKING_SIGNAL_ESTIMATED",
+      "caseCount": 74320,
+      "workCount": 2650,
+      "groupCount": 39,
+      "weighting": "equal_origin_horizon_cell_weight",
+      "spearmanCandidate": 0.9055780890024294,
+      "spearmanFallback": 0.901994593367468,
+      "spearmanDifference": 0.003583495634961409,
+      "kendallTauBDifference": 0.00474241954444532,
+      "winRates": {
+        "spearman": 0.9230769230769231,
+        "kendallTauB": 0.9230769230769231,
+        "topRevenueCapture": {
+          "0.01": 0.41025641025641024,
+          "0.05": 0.8717948717948718,
+          "0.1": 0.6923076923076923
+        }
+      },
+      "originHorizonDifferenceDistribution": {
+        "spearman": {
+          "min": -0.00240135976308653,
+          "p10": 0.0006404497950803336,
+          "p50": 0.0033070563306822898,
+          "p90": 0.007577077760930308,
+          "max": 0.009163058966495163
+        },
+        "kendallTauB": {
+          "min": -0.00424643107639977,
+          "p10": 0.00025790217306482794,
+          "p50": 0.004051879408140446,
+          "p90": 0.010090303778805976,
+          "max": 0.012899079184004125
+        }
+      },
+      "workClusterSpearmanDifference95": [
+        0.0022451382856090154,
+        0.005085503167627102
+      ],
+      "originTimeClusterSpearmanDifference95": [
+        0.0023002761936232997,
+        0.005357183971376464
+      ],
+      "topRevenueCaptureDifferences": {
+        "0.01": 0.0029085490386461244,
+        "0.05": 0.01194318173590514,
+        "0.1": 0.003334263261890791
+      }
+    },
+    "interpretation": "ranking evidence is separate from and cannot reverse the channel point-forecast failure"
+  },
+  "intervals": {
+    "modelId": "M2-WORK-LG01::historical_original",
+    "caseCount": 12039,
+    "workCount": 1125,
+    "nativeQuantileGrid": [
+      0.05,
+      0.1,
+      0.2,
+      0.5,
+      0.8,
+      0.9,
+      0.95
+    ],
+    "wis": 15311.36294948372,
+    "crpsApproximation": 15311.362949483831,
+    "central90": {
+      "observedCoverage": 0.8984965528698396,
+      "meanWidth": 58651.820087668704
+    },
+    "central80": {
+      "observedCoverage": 0.8008970844754548,
+      "meanWidth": 16158.801130494872
+    },
+    "central60": {
+      "observedCoverage": 0.5994683943849157,
+      "meanWidth": 4457.671457523664
+    },
+    "referenceStatus": "NO_FROZEN_INTERVAL_REFERENCE",
+    "interpretationStatus": "PROMISING_DEVELOPMENT_INTERVAL_EVIDENCE"
+  },
+  "portfolioEtsVersusSeasonalNaive": {
+    "status": "PORTFOLIO_PAIRED_DEVELOPMENT_EVIDENCE",
+    "smallSampleWarning": true,
+    "caseCount": 30,
+    "originCount": 12,
+    "byHorizon": {
+      "3": {
+        "originCount": 12,
+        "absoluteWapeFva": 0.11260812024539904,
+        "relativeWapeFva": 0.4684449470395813,
+        "originClusterAbsoluteWapeFva95": [
+          0.003071721342159534,
+          0.2148938035397583
+        ]
+      },
+      "6": {
+        "originCount": 12,
+        "absoluteWapeFva": 0.056527458145602255,
+        "relativeWapeFva": 0.27914447092475503,
+        "originClusterAbsoluteWapeFva95": [
+          -0.05533991158997948,
+          0.1640283022789754
+        ]
+      },
+      "12": {
+        "originCount": 6,
+        "absoluteWapeFva": -0.024590493443358605,
+        "relativeWapeFva": -0.2899909551523203,
+        "originClusterAbsoluteWapeFva95": [
+          -0.12911100488350025,
+          0.06137414076602187
+        ]
+      }
+    }
+  },
+  "topRevenuePosthoc": {
+    "status": "POSTHOC_FUTURE_ACTUAL_ATTRIBUTION_ONLY",
+    "futureActualUsed": true,
+    "allowedForSelectionOrGate": false,
+    "caseLevelScope": "within_origin_horizon_cell",
+    "workLevelScope": "global_aggregated_work",
+    "operationalFallbackWorkLevelGlobal": {
+      "0.01": {
+        "workCount": 8,
+        "actualCashShare": 0.5597450514397173,
+        "absoluteErrorShare": 0.263974932309246
+      },
+      "0.05": {
+        "workCount": 38,
+        "actualCashShare": 0.8360347196875624,
+        "absoluteErrorShare": 0.6651964871467684
+      },
+      "0.1": {
+        "workCount": 76,
+        "actualCashShare": 0.9254808037217345,
+        "absoluteErrorShare": 0.7978823228924977
+      }
+    }
+  },
+  "historicalPointFailurePreservation": {
+    "tsbPrimaryAbsoluteWapeFva": -0.10323735613953422,
+    "tsbStrictAbsoluteWapeFva": -0.09610318426568482,
+    "lifecyclePrimaryAbsoluteWapeFva": -0.06116802533084231,
+    "lifecycleStrictAbsoluteWapeFva": -0.21084098712910154,
+    "channelPrimaryAbsoluteWapeFva": -0.09754187880518084,
+    "channelStrictAbsoluteWapeFva": -0.24673445384957898,
+    "interpretation": "all raw point-forecast failures remain failures"
+  },
+  "capabilityGaps": {
+    "mase": "NOT_COMPUTABLE_PRE_ORIGIN_SCALE_MISSING",
+    "originVisibleRevenueScaleBand": "NOT_COMPUTABLE_ORIGIN_VISIBLE_SCALE_BAND_MISSING",
+    "humanAnchoredPositiveAmountExperts": {
+      "stableModelId": "M2-WORK-HP01",
+      "status": "NOT_RESCORABLE_RAW_ROWS_UNAVAILABLE"
+    },
+    "frozenTrainingPrevalence": "NOT_COMPUTABLE_FROZEN_TRAINING_BASE_RATE_MISSING"
+  },
+  "modelRoles": {
+    "operationalWorkFallback": "M2-WORK-OA03",
+    "researchWorkBaseline": "M2-WORK-LG01",
+    "portfolioReference": "M2-PORT-ETS01",
+    "activeCandidate": null,
+    "approvedForAutomation": null
+  },
+  "publicPrivacy": {
+    "minimumCaseCount": 30,
+    "minimumWorkCount": 20,
+    "minimumPortfolioOriginCount": 5,
+    "containsRowLevelIdentity": false,
+    "containsPrivatePath": false
+  }
+}

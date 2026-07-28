@@ -171,6 +171,11 @@ export function quantileType7(sortedValues, probability) {
 const V21_IDENTITY_FIELDS = [
   "metricDefinitionId",
   "metricDefinitionVersion",
+  "stableModelId",
+  "displayNameZh",
+  "displayNameEn",
+  "variant",
+  "comparabilityGroupId",
   "target",
   "cashAuthority",
   "actualDefinition",
@@ -179,6 +184,7 @@ const V21_IDENTITY_FIELDS = [
   "populationId",
   "horizonContract",
   "evaluationFamily",
+  "caseKeyFields",
   "artifactId",
   "artifactSha256"
 ];
@@ -191,6 +197,14 @@ export function validateEvaluationIdentityV21(identity) {
     if (identity[field] === null || identity[field] === undefined || identity[field] === "") {
       throw new Error(`m2_evaluation_v2_1_identity_${field}_required`);
     }
+  }
+  for (const field of ["experimentId", "armId"]) {
+    if (!Object.hasOwn(identity, field)) {
+      throw new Error(`m2_evaluation_v2_1_identity_${field}_required`);
+    }
+  }
+  if (!Array.isArray(identity.caseKeyFields) || identity.caseKeyFields.length === 0) {
+    throw new Error("m2_evaluation_v2_1_identity_case_key_fields_invalid");
   }
   if (!/^[a-f0-9]{64}$/.test(identity.artifactSha256)) {
     throw new Error("m2_evaluation_v2_1_identity_artifact_sha256_invalid");
@@ -569,7 +583,7 @@ export function scoreTopRevenueAttributionV21(rows, options = {}) {
     caseLevelWithinOriginHorizon: withinCell,
     workLevelGlobal: works.size < (options.minimumWorkCount ?? 20)
       ? {
-        status: "SUPPRESSED_PUBLIC_PRIVACY_THRESHOLD",
+        status: "SUPPRESSED_PRIVACY_THRESHOLD",
         workCount: works.size,
         minimumWorkCount: options.minimumWorkCount ?? 20
       }
@@ -723,7 +737,7 @@ function privacyStatusV21(rows, options = {}) {
   const minimumWorkCount = options.minimumWorkCount ?? 20;
   if (caseCount < minimumCaseCount || workCount < minimumWorkCount) {
     return {
-      status: "SUPPRESSED_PUBLIC_PRIVACY_THRESHOLD",
+      status: "SUPPRESSED_PRIVACY_THRESHOLD",
       caseCount,
       workCount,
       minimumCaseCount,
@@ -749,7 +763,7 @@ function ensureExactPairsV21(candidateRows, fallbackRows) {
 function rankingCoreV21(rows, fractions) {
   const cells = groupMapV21(rows, (row) => `${row.origin}|${row.horizonMonths}`);
   const cellScores = [];
-  for (const values of cells.values()) {
+  for (const [key, values] of cells) {
     if (values.length < 2) continue;
     const actualRanks = ranksV21(values.map((row) => finite(row.actual, "actual")));
     const predictedRanks = ranksV21(values.map((row) =>
@@ -760,6 +774,7 @@ function rankingCoreV21(rows, fractions) {
       topCaptureV21(values, fraction)
     ]));
     cellScores.push({
+      key,
       spearman: correlationV21(actualRanks, predictedRanks),
       kendallTauB: kendallTauBV21(values),
       captures
@@ -772,11 +787,32 @@ function rankingCoreV21(rows, fractions) {
     meanTopRevenueCapture: Object.fromEntries(fractions.map((fraction) => [
       String(fraction),
       averageV21(cellScores.map((row) => row.captures[String(fraction)]))
-    ]))
+    ])),
+    byOriginHorizon: Object.fromEntries(cellScores.map((row) => [row.key, {
+      caseCount: cells.get(row.key).length,
+      spearman: row.spearman,
+      kendallTauB: row.kendallTauB,
+      topRevenueCapture: row.captures
+    }]))
   };
 }
 
 function rankingDifferencesV21(candidate, fallback, fractions) {
+  const keys = Object.keys(candidate.byOriginHorizon).sort();
+  const byOriginHorizon = Object.fromEntries(keys.map((key) => {
+    const candidateCell = candidate.byOriginHorizon[key];
+    const fallbackCell = fallback.byOriginHorizon[key];
+    return [key, {
+      caseCount: candidateCell.caseCount,
+      spearman: candidateCell.spearman - fallbackCell.spearman,
+      kendallTauB: candidateCell.kendallTauB - fallbackCell.kendallTauB,
+      topRevenueCapture: Object.fromEntries(fractions.map((fraction) => [
+        String(fraction),
+        candidateCell.topRevenueCapture[String(fraction)]
+          - fallbackCell.topRevenueCapture[String(fraction)]
+      ]))
+    }];
+  }));
   return {
     meanSpearman: candidate.meanSpearman - fallback.meanSpearman,
     meanKendallTauB: candidate.meanKendallTauB - fallback.meanKendallTauB,
@@ -784,7 +820,19 @@ function rankingDifferencesV21(candidate, fallback, fractions) {
       String(fraction),
       candidate.meanTopRevenueCapture[String(fraction)]
         - fallback.meanTopRevenueCapture[String(fraction)]
-    ]))
+    ])),
+    winRates: {
+      spearman: keys.filter((key) => byOriginHorizon[key].spearman > 0).length / keys.length,
+      kendallTauB:
+        keys.filter((key) => byOriginHorizon[key].kendallTauB > 0).length / keys.length,
+      topRevenueCapture: Object.fromEntries(fractions.map((fraction) => [
+        String(fraction),
+        keys.filter((key) =>
+          byOriginHorizon[key].topRevenueCapture[String(fraction)] > 0
+        ).length / keys.length
+      ]))
+    },
+    byOriginHorizon
   };
 }
 

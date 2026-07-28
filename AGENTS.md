@@ -3,11 +3,15 @@
 ## 当前权威入口
 
 - 用户首页与公共开始入口：`README.md`
-- 当前 M2 状态：`docs/analysis/m2-v2/M2-v2-current-state-index-v0.28.md`
+- 当前 M2 状态：`docs/analysis/m2-v2/M2-v2-current-state-index-v0.29.md`
 - M2 模型机器权威：`config/m2-model-registry.v1.json`
 - M2 中文目录：`docs/analysis/m2-current/M2-model-catalog-and-scorecard-v1.md`
 - M2 评价体系：
   - `docs/analysis/m2-current/M2-evaluation-system-audit-v1.md`
+  - `config/m2-evaluation-contract.v2.1.json`
+  - `docs/analysis/m2-current/M2-evaluation-contract-v2.1.md`
+  - `docs/analysis/m2-current/M2-evaluation-contract-v2.1-validation.md`
+  - `docs/analysis/m2-current/M2-evaluation-v2.1-diagnostic-recheck.md`
   - `docs/analysis/m2-current/M2-evaluation-contract-v2-proposal.md`
   - `docs/analysis/m2-current/M2-evaluation-v2-frozen-artifact-readiness-v1.md`
   - `docs/analysis/m2-current/M2-evaluation-v2-frozen-rescore-v1.md`
@@ -59,6 +63,12 @@ B0–B8、C1–C3、局部实验臂和旧授权记录只用于审计追溯，不
 - npm：11.13.0
 - Python：3.11–3.13；reference/CI 为 3.13
 - GitHub CI：Linux 与 Windows 使用相同公共门禁
+
+doctor 与仓库 Python launcher 必须共用
+`scripts/resolve-compatible-python.mjs`。resolver 必须验证实际版本，只接受
+3.11–3.13；`KATORENA7_PYTHON` 只按一个可执行文件路径处理；进程使用可执行文件与
+参数数组且 `shell:false`。不得因机器裸 `python` 指向其他版本而让 doctor
+与实际脚本选择不同解释器，也不得提交本机安装路径或扩大允许版本。
 
 新电脑只依赖 GitHub 中的公开内容：
 

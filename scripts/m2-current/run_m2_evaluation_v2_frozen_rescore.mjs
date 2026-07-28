@@ -60,7 +60,7 @@ const inventory = [];
 for (const binding of preregistration.artifactBindings) {
   const absolutePath = path.join(root, binding.privatePath);
   const stat = fs.statSync(absolutePath);
-  const inspection = await inspectNdjson(absolutePath);
+  const inspection = await inspectNdjson(absolutePath, binding.artifactId);
   const sha256 = await sha256File(absolutePath);
   const ignored = spawnSync(
     "git",
@@ -78,6 +78,10 @@ for (const binding of preregistration.artifactBindings) {
     digestMatchesPreregistration: sha256 === binding.sha256,
     rowCount: inspection.rowCount,
     rowCountMatchesPreregistration: inspection.rowCount === binding.rowCount,
+    uniqueCaseKeyCount: inspection.uniqueCaseKeyCount,
+    uniqueCaseKeysMatchRowCount:
+      inspection.uniqueCaseKeyCount === inspection.rowCount,
+    caseKeyFieldsComplete: inspection.caseKeyFieldsComplete,
     fields: [...inspection.fields].sort(),
     familyCounts: Object.fromEntries([...inspection.familyCounts].sort())
   });
@@ -88,6 +92,8 @@ const inventoryPass = inventory.every((item) =>
   && item.gitIgnored
   && item.digestMatchesPreregistration
   && item.rowCountMatchesPreregistration
+  && item.uniqueCaseKeysMatchRowCount
+  && item.caseKeyFieldsComplete
 );
 const inventoryReceipt = {
   schema: "m2.evaluation-v2.frozen-artifact-inventory.private.v1",
@@ -123,6 +129,7 @@ if (mode === "inventory") {
 const datasets = await loadRescoreDatasets(preregistration.artifactBindings);
 if (mode === "rescore-v2-1") {
   const resultsV21 = scoreV21Datasets(datasets, inventory);
+  const v1ScoreReproduction = verifyV1ScoreReproductionV21(datasets);
   const receiptV21 = {
     schema: "m2.evaluation-v2.1.frozen-rescore.private.v1",
     asOf: contractV21.asOf,
@@ -139,6 +146,18 @@ if (mode === "rescore-v2-1") {
       ))
       .digest("hex"),
     status: "COMPLETE_AVAILABLE_GROUPS",
+    v1ScoreReproduction,
+    capabilityGaps: {
+      mase: contractV21.missingness.missingScale,
+      originVisibleRevenueScaleBand:
+        contractV21.missingness.missingOriginVisibleRevenueScaleBand,
+      humanAnchoredPositiveAmountExperts: {
+        stableModelId: "M2-WORK-HP01",
+        status: contractV21.missingness.missingRawRows
+      },
+      frozenTrainingPrevalence:
+        contractV21.missingness.missingFrozenTrainingBaseRate
+    },
     authorizationCounters: {
       privateRowReadCount: inventory.reduce((sum, item) => sum + item.rowCount, 0),
       modelExecutionCount: 0,
@@ -203,10 +222,12 @@ console.log(JSON.stringify({
   receiptPath
 }));
 
-async function inspectNdjson(filePath) {
+async function inspectNdjson(filePath, artifactId) {
   let rowCount = 0;
   const fields = new Set();
   const familyCounts = new Map();
+  const caseKeys = new Set();
+  let caseKeyFieldsComplete = true;
   await forEachNdjson(filePath, (row) => {
     rowCount += 1;
     Object.keys(row).forEach((field) => fields.add(field));
@@ -214,8 +235,66 @@ async function inspectNdjson(filePath) {
       row.evaluationFamily ?? row.population ?? row.rowKind ?? "portfolio"
     );
     familyCounts.set(family, (familyCounts.get(family) ?? 0) + 1);
+    const caseKey = frozenArtifactCaseKeyV21(artifactId, row);
+    if (caseKey === null) caseKeyFieldsComplete = false;
+    else caseKeys.add(caseKey);
   });
-  return { rowCount, fields, familyCounts };
+  return {
+    rowCount,
+    fields,
+    familyCounts,
+    uniqueCaseKeyCount: caseKeys.size,
+    caseKeyFieldsComplete
+  };
+}
+
+function frozenArtifactCaseKeyV21(artifactId, row) {
+  let fields;
+  if (artifactId === "ART-CURRENT-CANONICAL-51384") {
+    fields = ["population", "standardWorkId", "origin", "horizonMonths"];
+  } else if (artifactId === "ART-HUMAN-ANCHORED-91562") {
+    fields = [
+      "evaluationFamily",
+      "standardWorkId",
+      "origin",
+      "horizonMonths"
+    ];
+  } else if (artifactId === "ART-TSB-86359") {
+    fields = [
+      "evaluationFamily",
+      "standardWorkId",
+      "origin",
+      "horizonMonths"
+    ];
+  } else if (artifactId === "ART-LIFECYCLE-91562") {
+    fields = [
+      "evaluationFamily",
+      "standardWorkId",
+      "origin",
+      "horizonMonths"
+    ];
+  } else if (artifactId === "ART-CHANNEL-SCALAR-395904") {
+    fields = [
+      "evaluationFamily",
+      "rowKind",
+      "standardWorkId",
+      "channelUid",
+      "origin",
+      "horizonMonths"
+    ];
+  } else if (artifactId === "ART-PORTFOLIO-30") {
+    fields = ["origin", "horizonMonths"];
+  } else {
+    throw new Error(`m2_evaluation_v2_1_unknown_artifact:${artifactId}`);
+  }
+  const values = fields.map((field) => row[field] ?? "__NOT_APPLICABLE__");
+  const required = fields.filter((field) =>
+    field !== "channelUid" || row.rowKind !== "work"
+  );
+  if (required.some((field) =>
+    row[field] === null || row[field] === undefined || row[field] === ""
+  )) return null;
+  return values.map((value) => String(value)).join("|");
 }
 
 async function loadRescoreDatasets(bindings) {
@@ -369,7 +448,10 @@ function scoreV21Datasets(datasets, artifactInventory) {
       const pointIdentity = evaluationIdentityV21(
         contractV21.pointMetrics,
         groupAuthority,
-        artifact
+        artifact,
+        groupId,
+        modelId,
+        group.variants[modelId]
       );
       const point = scorePointRowsV21(rows);
       models[modelId] = {
@@ -396,7 +478,10 @@ function scoreV21Datasets(datasets, artifactInventory) {
           identity: evaluationIdentityV21(
             contractV21.occurrenceMetrics,
             groupAuthority,
-            artifact
+            artifact,
+            groupId,
+            modelId,
+            group.variants[modelId]
           ),
           score: scoreOccurrenceRowsV21(rows, {
             epsilon: preregistration.numericPolicy.probabilityClipEpsilon,
@@ -412,7 +497,10 @@ function scoreV21Datasets(datasets, artifactInventory) {
           identity: evaluationIdentityV21(
             contractV21.conditionalAmountMetrics,
             groupAuthority,
-            artifact
+            artifact,
+            groupId,
+            modelId,
+            group.variants[modelId]
           ),
           score: scoreConditionalAmountRowsV21(rows)
         } : null,
@@ -420,7 +508,10 @@ function scoreV21Datasets(datasets, artifactInventory) {
           identity: evaluationIdentityV21(
             contractV21.intervalMetrics,
             groupAuthority,
-            artifact
+            artifact,
+            groupId,
+            modelId,
+            group.variants[modelId]
           ),
           score: scoreIntervalRowsV21(rows, {
             quantileGrid: contractV21.intervalMetrics.nativeQuantileGrid,
@@ -439,6 +530,8 @@ function scoreV21Datasets(datasets, artifactInventory) {
           const pair = {
             versus: fallbackId,
             status: "STRICT_EXACT_CASE_PAIR",
+            caseCount: rows.length,
+            workCount: new Set(rows.map((row) => row.standardWorkId)).size,
             pointFva,
             workClusterInterval: pointFvaBootstrapV21Runner(
               rows,
@@ -453,7 +546,10 @@ function scoreV21Datasets(datasets, artifactInventory) {
               identity: evaluationIdentityV21(
                 contractV21.rankingMetrics,
                 groupAuthority,
-                artifactForModelV21(groupId, modelId, artifactInventory)
+                artifactForModelV21(groupId, modelId, artifactInventory),
+                groupId,
+                modelId,
+                group.variants[modelId]
               ),
               score: scoreRankingRowsV21(
                 rows,
@@ -489,7 +585,10 @@ function scoreV21Datasets(datasets, artifactInventory) {
             groupId,
             "M2-PORT-ETS01",
             artifactInventory
-          )
+          ),
+          groupId,
+          "M2-PORT-ETS01",
+          group.variants["M2-PORT-ETS01"]
         ),
         score: scorePortfolioPairedV21(
           group.models["M2-PORT-ETS01"],
@@ -513,6 +612,29 @@ function scoreV21Datasets(datasets, artifactInventory) {
     };
   }
   return results;
+}
+
+function verifyV1ScoreReproductionV21(datasets) {
+  let bindingCount = 0;
+  let maximumAbsoluteDifference = 0;
+  for (const group of Object.values(datasets)) {
+    for (const rows of Object.values(group.models)) {
+      const v1 = scorePointRowsV2(rows);
+      const v21 = scorePointRowsV21(rows);
+      maximumAbsoluteDifference = Math.max(
+        maximumAbsoluteDifference,
+        Math.abs(v1.wape - v21.wape),
+        Math.abs(v1.signedBias - v21.signedBias)
+      );
+      bindingCount += 1;
+    }
+  }
+  return {
+    status: maximumAbsoluteDifference <= 1e-8 ? "PASS" : "FAIL",
+    absoluteTolerance: 1e-8,
+    bindingCount,
+    maximumAbsoluteDifference
+  };
 }
 
 function scorePointSlicesV21(rows, field) {
@@ -541,10 +663,21 @@ function scorePointSlicesV21(rows, field) {
   }));
 }
 
-function evaluationIdentityV21(metric, group, artifact) {
+function evaluationIdentityV21(
+  metric,
+  group,
+  artifact,
+  groupId,
+  modelId,
+  variant
+) {
+  const modelIdentity = modelIdentityV21(groupId, modelId);
   return validateEvaluationIdentityV21({
     metricDefinitionId: metric.metricDefinitionId,
     metricDefinitionVersion: metric.metricDefinitionVersion,
+    ...modelIdentity,
+    variant,
+    comparabilityGroupId: groupId,
     target: group.target,
     cashAuthority: group.cashAuthority,
     actualDefinition: group.actualDefinition,
@@ -553,9 +686,65 @@ function evaluationIdentityV21(metric, group, artifact) {
     populationId: group.populationId,
     horizonContract: group.horizons,
     evaluationFamily: group.evaluationFamily,
+    caseKeyFields: group.grain === "portfolio_origin_horizon"
+      ? ["origin", "horizonMonths"]
+      : ["standardWorkId", "origin", "horizonMonths"],
     artifactId: artifact.artifactId,
     artifactSha256: artifact.sha256
   });
+}
+
+function modelIdentityV21(groupId, modelId) {
+  const stableModelId = modelId.split("::")[0];
+  const model = modelRegistry.models.find(
+    (item) => item.stableModelId === stableModelId
+  );
+  if (!model) throw new Error(`m2_evaluation_v2_1_model_missing:${stableModelId}`);
+  let experimentId = null;
+  let armId = null;
+  if (stableModelId === "M2-WORK-CCR01") {
+    experimentId = "M2-EXP-CANONICAL-CHANNEL-01";
+    armId = "CCR";
+  } else if (stableModelId === "M2-WORK-MAN01") {
+    experimentId = "M2-EXP-HUMAN-ANCHORED-10";
+    armId = "MANUAL";
+  } else if (stableModelId === "M2-WORK-OR01") {
+    experimentId = "M2-EXP-HUMAN-ANCHORED-10";
+    armId = "OCCURRENCE";
+  } else if (modelId === "M2-WORK-LG01::historical_original") {
+    experimentId = "M2-EXP-HUMAN-ANCHORED-10";
+    armId = "GLOBAL";
+  } else if (stableModelId === "M2-WORK-LG01") {
+    experimentId = groupId === "CG-WORK-SS-OVERLAP-5203-H36"
+      ? "M2-EXP-LIFECYCLE-AWARE-01"
+      : "M2-EXP-TSB-OCCURRENCE-01";
+    armId = "BASE";
+  } else if (stableModelId === "M2-WORK-TSB01") {
+    experimentId = "M2-EXP-TSB-OCCURRENCE-01";
+    armId = "RAW";
+  } else if (stableModelId === "M2-WORK-TSBB01") {
+    experimentId = "M2-EXP-TSB-OCCURRENCE-01";
+    armId = "BLEND";
+  } else if (stableModelId === "M2-WORK-LC01") {
+    experimentId = "M2-EXP-LIFECYCLE-AWARE-01";
+    armId = modelId.includes("selected_pipeline") ? "REVIVAL_ONLY" : "RAW";
+  } else if (stableModelId === "M2-CHAN-SCL01") {
+    experimentId = "M2-EXP-CHANNEL-EXPERTS-01";
+    armId = "A6";
+  } else if (stableModelId === "M2-PORT-ETS01") {
+    experimentId = "M2-EXP-PORTFOLIO-ETS-01";
+    armId = "ETS";
+  } else if (stableModelId === "M2-BASE-CLASSIC01") {
+    experimentId = "M2-EXP-PORTFOLIO-ETS-01";
+    armId = "SNAIVE";
+  }
+  return {
+    stableModelId,
+    displayNameZh: model.displayNameZh,
+    displayNameEn: model.displayNameEn,
+    experimentId,
+    armId
+  };
 }
 
 function artifactForModelV21(groupId, modelId, artifactInventory) {

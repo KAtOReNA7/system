@@ -21,7 +21,7 @@ const runnerPath =
 test("v2.1 contract freezes the requested evaluation semantics without model authority", () => {
   const contract = JSON.parse(fs.readFileSync(contractPath, "utf8"));
   assert.equal(contract.schema, "m2.evaluation_contract.v2.1");
-  assert.equal(contract.status, "DRAFT_V2_1_REVISION_INCOMPLETE");
+  assert.equal(contract.status, "ACTIVE_FOR_DEVELOPMENT_EVALUATION_ONLY");
   assert.equal(contract.activationScope, "development_evaluation_only");
   assert.deepEqual(
     contract.intervalMetrics.nativeQuantileGrid,
@@ -43,6 +43,13 @@ test("v2.1 identities gate comparability and bind the frozen artifact digest", (
   const identity = {
     metricDefinitionId: "M2-EVAL-V2.1-POINT",
     metricDefinitionVersion: "2.1",
+    stableModelId: "M2-WORK-OA03",
+    displayNameZh: "作品发生-金额校准模型 v0.3",
+    displayNameEn: "Occurrence-Amount Calibration v0.3",
+    experimentId: null,
+    armId: null,
+    variant: "operational_fallback",
+    comparabilityGroupId: "CG-WORK-SS-CURRENT-7083",
     target: "future_sales_share_cash",
     cashAuthority: "human",
     actualDefinition: "sales_share_only",
@@ -51,6 +58,7 @@ test("v2.1 identities gate comparability and bind the frozen artifact digest", (
     populationId: "p",
     horizonContract: [3, 6],
     evaluationFamily: "family",
+    caseKeyFields: ["standardWorkId", "origin", "horizonMonths"],
     artifactId: "ART-1",
     artifactSha256: "a".repeat(64)
   };
@@ -167,7 +175,7 @@ test("v2.1 interval scoring reports coverage, width, WIS and public suppression"
   );
   assert.equal(
     score.byHorizon["3"].status,
-    "SUPPRESSED_PUBLIC_PRIVACY_THRESHOLD"
+    "SUPPRESSED_PRIVACY_THRESHOLD"
   );
   assert.throws(
     () => scoreIntervalRowsV21(rows, { quantileGrid: [0.1, 0.5, 0.9] }),
@@ -194,6 +202,11 @@ test("v2.1 ranking is paired to fallback and has deterministic cluster intervals
   assert.equal(first.weighting, "equal_origin_horizon_cell_weight");
   assert.deepEqual(first, second);
   assert.ok(Object.hasOwn(first.pairedDifferences.meanTopRevenueCapture, "0.1"));
+  assert.ok(Number.isFinite(first.pairedDifferences.winRates.spearman));
+  assert.equal(
+    Object.keys(first.pairedDifferences.byOriginHorizon).length,
+    first.groupCount
+  );
   assert.throws(
     () => scoreRankingRowsV21(candidate.slice(1), fallback),
     /pair_mismatch/
@@ -247,9 +260,73 @@ test("v2.1 time blocks are maximal adjacent origin components", () => {
 test("v2.1 extends the frozen runner without production imports", () => {
   const source = fs.readFileSync(runnerPath, "utf8");
   assert.match(source, /--rescore-v2-1/);
+  assert.match(source, /uniqueCaseKeysMatchRowCount/);
+  assert.match(source, /caseKeyFieldsComplete/);
   assert.doesNotMatch(source, /from .*loader\.js/);
   assert.doesNotMatch(source, /from .*route\.js/);
   assert.doesNotMatch(source, /src\/server/);
+});
+
+test("v2.1 registry authority changes evaluation metadata but not model roles", () => {
+  const registry = JSON.parse(fs.readFileSync(
+    "config/m2-model-registry.v1.json",
+    "utf8"
+  ));
+  assert.equal(
+    registry.currentRoles.latestStateIndex,
+    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.29.md"
+  );
+  assert.equal(registry.currentRoles.operationalWorkFallback, "M2-WORK-OA03");
+  assert.equal(registry.currentRoles.researchWorkBaseline, "M2-WORK-LG01");
+  assert.equal(registry.currentRoles.portfolioReference, "M2-PORT-ETS01");
+  assert.equal(registry.currentRoles.activeCandidate, null);
+  assert.equal(registry.currentRoles.approvedForAutomation, null);
+  assert.equal(
+    registry.currentEvaluationContract.status,
+    "ACTIVE_FOR_DEVELOPMENT_EVALUATION_ONLY"
+  );
+  assert.equal(registry.currentEvaluationContract.productionGateActive, false);
+  assert.deepEqual(
+    registry.metricDefinitions.map((item) => item.metricDefinitionId),
+    [
+      "M2-EVAL-V2.1-POINT",
+      "M2-EVAL-V2.1-OCCURRENCE",
+      "M2-EVAL-V2.1-CONDITIONAL-AMOUNT",
+      "M2-EVAL-V2.1-RANKING",
+      "M2-EVAL-V2.1-INTERVAL",
+      "M2-EVAL-V2.1-PORTFOLIO"
+    ]
+  );
+});
+
+test("v2.1 public diagnostic is aggregate-only and preserves raw failures", () => {
+  const publicPath =
+    "docs/analysis/m2-current/M2-evaluation-v2.1-diagnostic-recheck.json";
+  const value = JSON.parse(fs.readFileSync(publicPath, "utf8"));
+  const text = fs.readFileSync(publicPath, "utf8");
+  assert.equal(
+    value.resultStatus,
+    "M2_EVALUATION_CONTRACT_V2_1_ACTIVE_FOR_DEVELOPMENT_ONLY"
+  );
+  assert.equal(value.authorizationCounters.modelExecutionCount, 0);
+  assert.equal(value.authorizationCounters.trainingCount, 0);
+  assert.equal(value.authorizationCounters.selectionCount, 0);
+  assert.equal(value.authorizationCounters.predictionRowsGenerated, 0);
+  assert.equal(value.modelRoles.activeCandidate, null);
+  assert.equal(value.modelRoles.approvedForAutomation, null);
+  assert.ok(
+    value.historicalPointFailurePreservation.tsbPrimaryAbsoluteWapeFva < 0
+  );
+  assert.equal(value.publicPrivacy.containsRowLevelIdentity, false);
+  assert.equal(value.publicPrivacy.containsPrivatePath, false);
+  assert.equal(
+    value.frozenArtifactInventory.allCaseKeysUniqueWithinArtifact,
+    true
+  );
+  assert.equal(value.v1ScoreReproduction.maximumAbsoluteDifference, 0);
+  assert.doesNotMatch(text, /data[\\/]+private-(input|output)/iu);
+  assert.doesNotMatch(text, /standardWorkId|channelUid/iu);
+  assert.doesNotMatch(text, /privateReceiptPath/iu);
 });
 
 function syntheticRows() {

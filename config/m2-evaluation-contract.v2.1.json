@@ -2,8 +2,9 @@
   "schema": "m2.evaluation_contract.v2.1",
   "version": "2.1",
   "asOf": "2026-07-28",
-  "status": "DRAFT_V2_1_REVISION_INCOMPLETE",
+  "status": "ACTIVE_FOR_DEVELOPMENT_EVALUATION_ONLY",
   "activationScope": "development_evaluation_only",
+  "activationCondition": "effective only when this exact Git head passes both Linux and Windows CI",
   "explicitlyNotAuthorized": [
     "model_execution",
     "training",
@@ -35,6 +36,13 @@
     "requiredFields": [
       "metricDefinitionId",
       "metricDefinitionVersion",
+      "stableModelId",
+      "displayNameZh",
+      "displayNameEn",
+      "experimentId",
+      "armId",
+      "variant",
+      "comparabilityGroupId",
       "target",
       "cashAuthority",
       "actualDefinition",
@@ -43,6 +51,7 @@
       "populationId",
       "horizonContract",
       "evaluationFamily",
+      "caseKeyFields",
       "artifactId",
       "artifactSha256"
     ],
@@ -151,6 +160,8 @@
       "candidate",
       "fallback",
       "paired_difference",
+      "origin_horizon_distribution",
+      "origin_horizon_win_rate",
       "group_count",
       "case_count",
       "work_count",
@@ -213,7 +224,7 @@
     "minimumCaseCount": 30,
     "minimumWorkCount": 20,
     "minimumPortfolioOriginCount": 5,
-    "suppressionStatus": "SUPPRESSED_PUBLIC_PRIVACY_THRESHOLD",
+    "suppressionStatus": "SUPPRESSED_PRIVACY_THRESHOLD",
     "prohibitedPublicFields": [
       "standardWorkId",
       "channelUid",
@@ -227,7 +238,9 @@
     "missingPrediction": "MISSING_PREDICTION_NOT_ZERO",
     "abstention": "ABSTENTION_NOT_ZERO",
     "missingScale": "NOT_COMPUTABLE_PRE_ORIGIN_SCALE_MISSING",
+    "missingOriginVisibleRevenueScaleBand": "NOT_COMPUTABLE_ORIGIN_VISIBLE_SCALE_BAND_MISSING",
     "missingFrozenTrainingBaseRate": "NOT_COMPUTABLE_FROZEN_TRAINING_BASE_RATE_MISSING",
+    "missingRawRows": "NOT_RESCORABLE_RAW_ROWS_UNAVAILABLE",
     "zeroActualDenominator": "UNDEFINED_ZERO_ACTUAL_DENOMINATOR"
   },
   "activationGate": {
