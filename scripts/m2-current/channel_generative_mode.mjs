@@ -94,6 +94,30 @@ export async function prepareM2ChannelGenerativeRunReceipt({
   const baseManifest = JSON.parse(baseManifestText);
   const frozenManifest = JSON.parse(frozenManifestText);
   assertBoundary(config);
+  const receiptPath = path.join(
+    privateDirectory,
+    config.privateOutputs.runReceipt
+  );
+  const previousReceipt = await readOptionalJson(receiptPath);
+  const attemptHistory = [
+    ...normalizeAttemptHistory(previousReceipt?.attemptHistory),
+    ...(previousReceipt === null
+      ? []
+      : [summarizePriorAttempt(previousReceipt)])
+  ];
+  if (
+    previousReceipt?.status === "COMPLETED"
+    || previousReceipt?.G1ExecutionStarted === true
+    || previousReceipt?.G1Executed === true
+    || attemptHistory.some((attempt) => (
+      attempt.G1ExecutionStarted === true
+      || attempt.G1Executed === true
+    ))
+  ) {
+    throw new Error(
+      "m2_channel_generative_one_time_private_execution_already_consumed"
+    );
+  }
   const receipt = {
     schema: "m2.current.channel_generative_run_receipt_private.v0.2",
     tracked: false,
@@ -120,6 +144,10 @@ export async function prepareM2ChannelGenerativeRunReceipt({
     expectedStrictOuterOrigins: config.selection.strictOrigins,
     expectedParameterGridCount:
       config.grid.configurationCountPerRawCandidate,
+    attemptOrdinal: attemptHistory.length + 1,
+    priorAttemptCount: attemptHistory.length,
+    priorCompletedCandidateExecutionCount: 0,
+    attemptHistory,
     G2Expected: false,
     G3Expected: false,
     G4Expected: false,
@@ -128,10 +156,6 @@ export async function prepareM2ChannelGenerativeRunReceipt({
     candidateOutcomeReadAtReceipt: false
   };
   await mkdir(privateDirectory, { recursive: true });
-  const receiptPath = path.join(
-    privateDirectory,
-    config.privateOutputs.runReceipt
-  );
   await writeFile(
     receiptPath,
     JSON.stringify(receipt, null, 2) + "\n",
@@ -243,11 +267,49 @@ export async function runM2ChannelGenerativePrivateDevelopment({
       reconciliation,
       parseNdjson(allocationText)
     );
+  await writeFile(
+    path.join(
+      privateDirectory,
+      config.privateOutputs.runReceipt
+    ),
+    JSON.stringify({
+      ...receipt,
+      status: "RESTATEMENT_BINDING_PREFLIGHT_PASSED_BEFORE_G1_FIT",
+      restatementBindingPreflight: {
+        primary: primaryRestatement.audit,
+        strict: strictRestatement.audit
+      },
+      candidateOutcomeReadAtPreflight: false,
+      G1Executed: false,
+      G2Executed: false,
+      G3Executed: false
+    }, null, 2) + "\n",
+    "utf8"
+  );
   const primaryRows = expandM2ChannelGenerativePackedRows(
     primaryRestatement.rows
   );
   const strictRows = expandM2ChannelGenerativePackedRows(
     strictRestatement.rows
+  );
+  await writeFile(
+    path.join(
+      privateDirectory,
+      config.privateOutputs.runReceipt
+    ),
+    JSON.stringify({
+      ...receipt,
+      status: "G1_FIT_STARTED_AFTER_RESTATEMENT_PREFLIGHT",
+      restatementBindingPreflight: {
+        primary: primaryRestatement.audit,
+        strict: strictRestatement.audit
+      },
+      candidateOutcomeReadAtFitStart: false,
+      G1ExecutionStarted: true,
+      G2Executed: false,
+      G3Executed: false
+    }, null, 2) + "\n",
+    "utf8"
   );
   const primary = crossFitM2ChannelGenerativeG1(primaryRows, config);
   const strict = strictRollingM2ChannelGenerativeG1(strictRows, config);
@@ -431,9 +493,11 @@ export async function runM2ChannelGenerativePrivateDevelopment({
       outputRowCount: privateManifest.rowCount,
       outputSha256: privateManifest.sha256,
       finalStatus: result.finalStatus,
+      G1ExecutionStarted: true,
       G1Executed: true,
       G2Executed: false,
       G3Executed: false,
+      candidateOutcomeReadAfterReceipt: true,
       predictionGeneratedAfterFreezeCount: 0,
       predictionModifiedAfterFreezeCount: 0
     }, null, 2) + "\n",
@@ -449,6 +513,47 @@ export async function runM2ChannelGenerativePrivateDevelopment({
     privateSha256: privateManifest.sha256
   }) + "\n");
   return result;
+}
+
+export async function recordM2ChannelGenerativeRunFailure({
+  root,
+  privateDirectory,
+  error
+}) {
+  const config = await readJson(path.join(root, CONFIG_PATH));
+  const receiptPath = path.join(
+    privateDirectory,
+    config.privateOutputs.runReceipt
+  );
+  const receipt = await readOptionalJson(receiptPath);
+  if (receipt === null || receipt.status === "COMPLETED") return;
+  const fitStarted = receipt.G1ExecutionStarted === true;
+  const preflightPassed = fitStarted || receipt.status
+    === "RESTATEMENT_BINDING_PREFLIGHT_PASSED_BEFORE_G1_FIT";
+  await writeFile(
+    receiptPath,
+    JSON.stringify({
+      ...receipt,
+      status: fitStarted
+        ? "FAILED_CLOSED_AFTER_G1_FIT_STARTED"
+        : preflightPassed
+          ? "FAILED_CLOSED_AFTER_RESTATEMENT_PREFLIGHT"
+        : "FAILED_CLOSED_BEFORE_G1_FIT",
+      failurePhase: fitStarted
+        ? "G1_EXECUTION"
+        : preflightPassed
+          ? "PRE_FIT_EXPANSION_AFTER_RESTATEMENT_PREFLIGHT"
+        : "DEVELOPMENT_MODELABLE_RESTATEMENT_SCOPE_BINDING",
+      errorCode: String(error?.code ?? error?.message ?? "unknown_error"),
+      candidateOutcomeReadAtFailure:
+        fitStarted ? null : false,
+      G1ExecutionStarted: fitStarted,
+      G1Executed: fitStarted,
+      G2Executed: false,
+      G3Executed: false
+    }, null, 2) + "\n",
+    "utf8"
+  );
 }
 
 function buildPublicResult({
@@ -1012,6 +1117,52 @@ function digest(value) {
 
 async function readJson(filePath) {
   return JSON.parse(await readFile(filePath, "utf8"));
+}
+
+async function readOptionalJson(filePath) {
+  try {
+    return await readJson(filePath);
+  } catch (error) {
+    if (error?.code === "ENOENT") return null;
+    throw error;
+  }
+}
+
+function normalizeAttemptHistory(value) {
+  if (value === undefined) return [];
+  if (!Array.isArray(value)) {
+    throw new Error("m2_channel_generative_attempt_history_invalid");
+  }
+  return value.map((attempt) => ({
+    attemptOrdinal: Number(attempt.attemptOrdinal),
+    implementationCommit: String(attempt.implementationCommit),
+    startTime: String(attempt.startTime),
+    status: String(attempt.status),
+    failurePhase: attempt.failurePhase ?? null,
+    errorCode: attempt.errorCode ?? null,
+    candidateOutcomeRead:
+      attempt.candidateOutcomeRead === true,
+    G1ExecutionStarted: attempt.G1ExecutionStarted === true,
+    G1Executed: attempt.G1Executed === true
+  }));
+}
+
+function summarizePriorAttempt(receipt) {
+  return {
+    attemptOrdinal:
+      Number(receipt.attemptOrdinal ?? receipt.priorAttemptCount + 1) || 1,
+    implementationCommit: String(receipt.implementationCommit),
+    startTime: String(receipt.startTime),
+    status: String(receipt.status),
+    failurePhase: receipt.failurePhase ?? null,
+    errorCode: receipt.errorCode ?? null,
+    candidateOutcomeRead:
+      receipt.candidateOutcomeReadAtFailure === true
+      || receipt.candidateOutcomeReadAfterReceipt === true
+      || receipt.G1Executed === true,
+    G1ExecutionStarted: receipt.G1ExecutionStarted === true,
+    G1Executed: receipt.G1Executed === true
+  };
 }
 
 function number(value) {

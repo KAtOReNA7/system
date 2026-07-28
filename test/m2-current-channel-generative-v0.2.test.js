@@ -496,6 +496,119 @@ test("v2.2 development-modelable binding preserves raw labels and delays later r
     false
   );
   assert.equal(result.audit.originAfterCutoffReversalFeatureRowCount, 0);
+  assert.equal(result.audit.canonicalWorkIdAliasPackedRowCount, 0);
+  assert.equal(result.audit.packedStandardWorkIdPreserved, true);
+});
+
+test("v2.2 restatement binding resolves canonical work identity without changing frozen case identity", () => {
+  const packed = [{
+    evaluationFamily: "strict",
+    standardWorkId: "Ｙ００１",
+    channelUid: "C1",
+    origin: "2022-12",
+    observedAtOrigin: true,
+    mechanism: "membership",
+    features: Object.fromEntries(
+      config.featureOrder.map((field) => [field, 0])
+    ),
+    futureMonthlyLabels: [{
+      futureMonthIndex: 1,
+      futureMonth: "2023-01",
+      labelAvailableAsOf: "2023-01",
+      actualPositive: 10,
+      actualReversal: 0,
+      actual: 10,
+      includedHorizons: [3]
+    }]
+  }];
+  const reconciliation = {
+    schema: "m2.reversal-restatement.scope-reconciliation.private.v1",
+    developmentModelableActualDefinitionId:
+      "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01",
+    authority: { scalePower: 2 },
+    fourViews: {
+      DEVELOPMENT_MODELABLE_RESTATEMENT_VIEW: {
+        status:
+          "UNALLOCATED_REVERSAL_RESIDUAL_EXCLUDED_FROM_MODELABLE_TARGET",
+        excludedUnallocatedReversalResidualMinor: "-25",
+        exactIntegerReconciliation: { differenceMinor: "0" }
+      }
+    },
+    scopes: [{
+      standardWorkId: "1",
+      channelMemberId: "C1",
+      restatedBalances: [{ month: "2023-01", amountMinor: "750" }]
+    }]
+  };
+  const result = applyM2DevelopmentModelableRestatementToPackedRows(
+    packed,
+    reconciliation,
+    [{
+      consumedAmountMinor: "0"
+    }]
+  );
+  assert.equal(result.rows[0].standardWorkId, "Ｙ００１");
+  assert.equal(result.rows[0].futureMonthlyLabels[0].actual, 7.5);
+  assert.equal(result.audit.canonicalWorkIdAliasPackedRowCount, 1);
+  assert.equal(result.audit.canonicalWorkIdAliasWorkCount, 1);
+  assert.equal(result.audit.canonicalWorkIdAliasScopeCount, 1);
+  assert.equal(result.audit.canonicalWorkIdAmbiguousScopeCount, 0);
+  assert.equal(result.audit.unresolvedRestatementScopeCount, 0);
+});
+
+test("v2.2 restatement binding fails closed on ambiguous canonical work identity", () => {
+  const packed = [{
+    standardWorkId: "001",
+    channelUid: "C1",
+    futureMonthlyLabels: [{
+      futureMonth: "2023-01",
+      actualPositive: 1,
+      actualReversal: 0,
+      actual: 1
+    }]
+  }];
+  const reconciliation = {
+    schema: "m2.reversal-restatement.scope-reconciliation.private.v1",
+    developmentModelableActualDefinitionId:
+      "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01",
+    authority: { scalePower: 2 },
+    fourViews: {
+      DEVELOPMENT_MODELABLE_RESTATEMENT_VIEW: {
+        status:
+          "UNALLOCATED_REVERSAL_RESIDUAL_EXCLUDED_FROM_MODELABLE_TARGET",
+        excludedUnallocatedReversalResidualMinor: "0",
+        exactIntegerReconciliation: { differenceMinor: "0" }
+      }
+    },
+    scopes: [
+      {
+        standardWorkId: "1",
+        channelMemberId: "C1",
+        restatedBalances: [{
+          month: "2023-01",
+          amountMinor: "100"
+        }]
+      },
+      {
+        standardWorkId: "Y1",
+        channelMemberId: "C1",
+        restatedBalances: [{
+          month: "2023-01",
+          amountMinor: "100"
+        }]
+      }
+    ]
+  };
+  assert.throws(
+    () => applyM2DevelopmentModelableRestatementToPackedRows(
+      packed,
+      reconciliation,
+      [{
+        consumedAmountMinor: "0"
+      }]
+    ),
+    /restatement_scope_ambiguous/u
+  );
 });
 
 test("strict G1 training reads only labels available before each outer origin and oracle runs after freeze", () => {

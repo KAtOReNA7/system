@@ -220,6 +220,8 @@ export function applyM2DevelopmentModelableRestatementToPackedRows(
   );
   const balanceByScopeMonth = new Map();
   const knownScopes = new Set();
+  const canonicalScopeIndex = new Map();
+  const ambiguousCanonicalScopes = new Set();
   for (const scope of requireArray(
     reconciliation?.scopes,
     "reversal_scopes"
@@ -231,6 +233,15 @@ export function applyM2DevelopmentModelableRestatementToPackedRows(
     );
     const scopeKey = `${workId}\u001f${channelUid}`;
     knownScopes.add(scopeKey);
+    const canonicalScopeKey = `${
+      canonicalM2CurrentWorkId(workId)
+    }\u001f${channelUid}`;
+    const indexedScope = canonicalScopeIndex.get(canonicalScopeKey);
+    if (indexedScope !== undefined && indexedScope !== scopeKey) {
+      ambiguousCanonicalScopes.add(canonicalScopeKey);
+    } else {
+      canonicalScopeIndex.set(canonicalScopeKey, scopeKey);
+    }
     for (const balance of requireArray(
       scope?.restatedBalances,
       "restated_balances"
@@ -287,14 +298,33 @@ export function applyM2DevelopmentModelableRestatementToPackedRows(
   let transformedLabelCount = 0;
   let laterRecordedReversalLabelCount = 0;
   let originalPostingLabelChangedCount = 0;
+  let canonicalWorkIdAliasPackedRowCount = 0;
+  const canonicalWorkIdAliasWorks = new Set();
+  const canonicalWorkIdAliasScopes = new Set();
   const rows = source.map((packed) => {
     const workId = nonempty(packed?.standardWorkId, "standard_work_id");
     const channelUid = nonempty(packed?.channelUid, "channel_uid");
-    const scopeKey = `${workId}\u001f${channelUid}`;
-    if (!knownScopes.has(scopeKey)) {
-      throw new M2ChannelGenerativeContractError(
-        "m2_channel_generative_restatement_scope_missing"
-      );
+    const directScopeKey = `${workId}\u001f${channelUid}`;
+    let scopeKey = directScopeKey;
+    if (!knownScopes.has(directScopeKey)) {
+      const canonicalScopeKey = `${
+        canonicalM2CurrentWorkId(workId)
+      }\u001f${channelUid}`;
+      if (ambiguousCanonicalScopes.has(canonicalScopeKey)) {
+        throw new M2ChannelGenerativeContractError(
+          "m2_channel_generative_restatement_scope_ambiguous"
+        );
+      }
+      const canonicalScope = canonicalScopeIndex.get(canonicalScopeKey);
+      if (canonicalScope === undefined) {
+        throw new M2ChannelGenerativeContractError(
+          "m2_channel_generative_restatement_scope_missing"
+        );
+      }
+      scopeKey = canonicalScope;
+      canonicalWorkIdAliasPackedRowCount += 1;
+      canonicalWorkIdAliasWorks.add(workId);
+      canonicalWorkIdAliasScopes.add(directScopeKey);
     }
     const futureMonthlyLabels = requireArray(
       packed?.futureMonthlyLabels,
@@ -372,6 +402,16 @@ export function applyM2DevelopmentModelableRestatementToPackedRows(
       transformedLabelCount,
       laterRecordedReversalLabelCount,
       originalPostingLabelChangedCount,
+      workIdBindingMode:
+        "exact_then_canonical_numeric_identity_fail_closed",
+      canonicalWorkIdAliasPackedRowCount,
+      canonicalWorkIdAliasWorkCount:
+        canonicalWorkIdAliasWorks.size,
+      canonicalWorkIdAliasScopeCount:
+        canonicalWorkIdAliasScopes.size,
+      canonicalWorkIdAmbiguousScopeCount: 0,
+      unresolvedRestatementScopeCount: 0,
+      packedStandardWorkIdPreserved: true,
       excludedUnallocatedReversalResidualMinor:
         view.excludedUnallocatedReversalResidualMinor,
       excludedUnallocatedReversalResidualAssignedToLabel: false,
@@ -3696,6 +3736,13 @@ function nonempty(value, name) {
     );
   }
   return result;
+}
+
+function canonicalM2CurrentWorkId(value) {
+  const text = String(value ?? "").normalize("NFKC").trim().toUpperCase();
+  const numeric = /^Y?(\d+)(?:\.0)?$/u.exec(text);
+  if (numeric === null) return text;
+  return BigInt(numeric[1]).toString();
 }
 
 function requireMonth(value, name) {

@@ -31,6 +31,7 @@ import {
 } from "./channel_experts_mode.mjs";
 import {
   prepareM2ChannelGenerativeRunReceipt,
+  recordM2ChannelGenerativeRunFailure,
   runM2ChannelGenerativePrivateDevelopment,
   runM2ChannelGenerativePublicDiagnostic
 } from "./channel_generative_mode.mjs";
@@ -222,11 +223,20 @@ if (channelExpertsPrivateMode) {
   return;
 }
 if (channelGenerativePrivateMode) {
-  await runM2ChannelGenerativePrivateDevelopment({
-    root,
-    privateDirectory,
-    baseManifest: manifest
-  });
+  try {
+    await runM2ChannelGenerativePrivateDevelopment({
+      root,
+      privateDirectory,
+      baseManifest: manifest
+    });
+  } catch (error) {
+    await recordM2ChannelGenerativeRunFailure({
+      root,
+      privateDirectory,
+      error
+    });
+    throw error;
+  }
   return;
 }
 
