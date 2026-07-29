@@ -1,0 +1,63 @@
+{
+  "schema": "m2.current.core_legacy_population.public_diagnostic.v0.1",
+  "experimentId": "M2-EXP-CORE-LEGACY-POPULATION-01",
+  "status": "SYNTHETIC_DIAGNOSTIC_PASS",
+  "selections": [
+    {
+      "id": "march_calendar_year_and_cutoff_ties",
+      "referenceWindow": {
+        "start": "2024-01",
+        "end": "2024-03",
+        "monthCount": 3,
+        "basis": "CALENDAR_YEAR_JANUARY_THROUGH_ORIGIN"
+      },
+      "core80": [
+        "W1",
+        "W2",
+        "W3"
+      ],
+      "core90": [
+        "W1",
+        "W2",
+        "W3"
+      ],
+      "core80Capture": 1,
+      "core80TieCount": 2
+    },
+    {
+      "id": "february_uses_cross_year_six_months",
+      "referenceWindow": {
+        "start": "2023-09",
+        "end": "2024-02",
+        "monthCount": 6,
+        "basis": "LATEST_6_COMPLETE_MONTHS_CROSS_YEAR"
+      },
+      "core80": [
+        "W1"
+      ],
+      "core90": [
+        "W1"
+      ],
+      "core80Capture": 0.9090909090909091,
+      "core80TieCount": 1
+    }
+  ],
+  "eligibility": [
+    {
+      "id": "work_and_channel_both_need_three_complete_months",
+      "eligiblePairs": [
+        "W1|MATURE"
+      ],
+      "immaturePairCount": 2
+    }
+  ],
+  "boundaries": {
+    "publicSyntheticOnly": true,
+    "privateArtifactRead": false,
+    "modelTrainingPerformed": false,
+    "tailPoolCreated": false,
+    "futureActualUsedForSelection": false,
+    "historicalEvidenceMutated": false,
+    "productionModified": false
+  }
+}

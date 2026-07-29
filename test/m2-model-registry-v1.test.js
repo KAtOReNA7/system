@@ -35,7 +35,7 @@ test("registry schema, evidence paths and immutable digests validate", () => {
     canonicalEvidenceSha256("same\ncontent\n")
   );
   assert.equal(validation.counts.modelCount, 30);
-  assert.equal(validation.counts.experimentCount, 15);
+  assert.equal(validation.counts.experimentCount, 16);
   assert.equal(validation.counts.nonModelIdentifierCount, 51);
   assert.equal(validation.counts.comparabilityGroupCount, 18);
 });

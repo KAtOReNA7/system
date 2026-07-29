@@ -34,6 +34,8 @@
   - `docs/analysis/m2-current/M2-evaluation-v2-frozen-rescore-v1.md`
   - `docs/analysis/m2-current/M2-evaluation-contract-v2-validation-v1.md`
 - M2 canonical core 局部规则：`src/domain/m2Current/AGENTS.md`
+- 当前 M2 作品预测范围：
+  `docs/analysis/m2-current/M2-core-legacy-observed-channel-scope-contract-v0.1.md`
 - 仓库收敛与可移植开发：
   - `docs/analysis/repository-current-state-and-convergence-audit-v0.1.md`
   - `docs/analysis/m2-v2/M2-repository-code-convergence-and-portable-development-audit-v0.4.md`
@@ -112,6 +114,10 @@ fixture composition。两者在无 private、无数据库条件下都必须能�
 
 - `data/private-input/**`、`data/private-output/**`、原始账单、台账、材料、private
   receipt/workbook、密钥、连接串、dump、`.env` 和 `.pgpass` 禁止提交。
+- Private 文件必须区分不可推导的权威输入（`PRIVATE_SOURCE_AUTHORITY`）、可由权威
+  输入与冻结代码重建的派生缓存（`PRIVATE_DERIVED_CACHE`）和只作溯源的运行收据
+  （`PRIVATE_RUN_PROVENANCE`）。只有权威输入缺失才允许阻断；缓存缺失必须给出自动
+  重建计划，历史收据缺失只告警且不得补造。
 - 禁止伪造 private 文件、从公开聚合摘要反推 private 内容、降低真实性 verifier，
   或用文件存在代替真实性通过和执行授权。
 - 使用 `npm run doctor:capability -- <capability-id>` 盘点能力。缺少 private 只能
@@ -154,6 +160,15 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
 
 - 正式目标是未来分成收入现金。买断及其他非分成现金只进入模型外账单/审计层，
   不得进入特征、标签、回测指标、点预测、区间或年度预测明细。
+- 当前 M2 人口仅为 origin 时至少积累 3 个完整账单月的动态 Core80/Core90 老作品，
+  且只预测同一 origin 时至少积累 3 个完整账单月的已有 canonical 渠道。未来新增
+  作品、未来首次出现渠道和 Core 外尾部不属于当前 M2 actual，也不得按预测为 0。
+- Core80/Core90 必须在每个 forecast origin 和训练 pseudo-origin 用当时可见收入
+  重算，并同时约束训练、服务和评价人口；不得只在评价时筛 Core、继续让尾部主导
+  Core-only 训练，也不得用当前固定名单或未来 TopN 回看历史。
+- 尾部不得通过长尾池、公司组合或收入补差重新加入当前 M2。公司组合模型及参考
+  （`M2-PORT-LRC01`、`M2-PORT-ETS01`）保留历史证据，但不得参加当前作品模型排名，
+  也不得用公司全部未来收入判断作品模型。
 - 人工拆分账单成员关系是现金类型唯一权威：总账只作守恒审计，分成账单是预测
   actual 的唯一来源，买断账单只作评级/历史背景。
 - pure-buyout 必须 `null abstain`，原因为

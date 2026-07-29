@@ -1134,6 +1134,7 @@
       "predecessorIds": ["M2-WORK-CRMR01", "M2-PORT-ETS01"],
       "successorIds": [],
       "currentRole": "failed_development_candidate",
+      "currentM2ScopeStatus": "OUT_OF_CURRENT_M2_SCOPE_PORTFOLIO_RESEARCH",
       "evidenceStatus": "first_valid_development_evaluation_failed_with_protocol_gaps",
       "operationalStatus": "development_failed_not_selected_not_production",
       "automationAuthorized": false,
@@ -1141,6 +1142,7 @@
       "finalHoldoutOpened": false,
       "developmentWindowReuse": "first_valid_rolling_development_evaluation_complete_window_closed",
       "limitationsZh": [
+        "该模型回答公司全部未来分成收入组合问题，不属于当前核心老品×已有成熟渠道的 M2 作品预测范围，不参加作品模型排名",
         "12 个月预注册主臂 WAPE 0.552720、signed bias +0.278809，且不得用结果更好的诊断臂事后替换",
         "36 个月主臂 WAPE 1.963796、signed bias +0.942953，未来新增作品分量发生严重高估",
         "年龄带收缩辅助臂没有形成与公司目录主臂不同的预测，Y1/Y2/Y3 也未单独评分",
@@ -2358,6 +2360,27 @@
         }
       ],
       "evidenceRefs": ["docs/analysis/m2-current/M2-current-publishing-scale-channel-readiness-v0.1.json", "docs/analysis/m2-current/M2-current-publishing-scale-channel-execution-closure-v0.1.json", "docs/analysis/m2-current/M2-publishing-scale-threshold-impact-map-v1.json"]
+    },
+    {
+      "experimentId": "M2-EXP-CORE-LEGACY-POPULATION-01",
+      "displayNameZh": "M2 核心老品—已有渠道范围纠偏、冻结重评分与尾部干扰验证 v0.1",
+      "displayNameEn": "M2 Core Legacy Work–Observed Channel Scope Correction, Frozen Rescore and Tail Interference Test v0.1",
+      "entityType": "experiment",
+      "modelIds": ["M2-WORK-OA03", "M2-WORK-LG01", "M2-WORK-CRMR01"],
+      "arms": [
+        {"armId": "SCOPE_GOVERNANCE", "displayNameZh": "范围治理与训练语义审计", "modelId": null, "executionStatus": "EXECUTED_K0_AUDIT"},
+        {"armId": "FROZEN_RESCORE", "displayNameZh": "正确人口冻结重评分", "modelId": null, "executionStatus": "PREREGISTERED_NOT_EXECUTED"},
+        {"armId": "T0_FULL", "displayNameZh": "原始全量训练人口", "modelId": "M2-WORK-LG01", "executionStatus": "PREREGISTERED_NOT_EXECUTED"},
+        {"armId": "T1_CORE90", "displayNameZh": "动态 Core90 训练人口", "modelId": "M2-WORK-LG01", "executionStatus": "PREREGISTERED_NOT_EXECUTED"},
+        {"armId": "T2_CORE80", "displayNameZh": "动态 Core80 训练人口", "modelId": "M2-WORK-LG01", "executionStatus": "PREREGISTERED_NOT_EXECUTED"},
+        {"armId": "T3_REVENUE_WEIGHTED_FULL", "displayNameZh": "起点可见收入加权全量训练人口", "modelId": "M2-WORK-LG01", "executionStatus": "NOT_EXECUTED_REQUIRES_MODEL_CHANGE"}
+      ],
+      "evidenceRefs": [
+        "config/m2-current-core-legacy-population.v0.1.json",
+        "docs/analysis/m2-current/M2-core-legacy-observed-channel-scope-contract-v0.1.md",
+        "docs/analysis/m2-current/M2-core-legacy-training-population-and-loss-audit-v0.1.json",
+        "docs/analysis/m2-current/M2-core-legacy-training-population-and-loss-audit-v0.1.md"
+      ]
     },
     {
       "experimentId": "M2-EXP-ARCHIVE-C1-C3",

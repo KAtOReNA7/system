@@ -396,6 +396,8 @@ export function renderM2ModelCatalog(registry) {
     "| 能力 | 类型 | 中文名称（英文原名、稳定 ID） | 旧 ID / 别名 | 当前角色（机器状态） | 谱系 |",
     "|---|---|---|---|---|---|",
     ...(registry.models ?? []).map((model) => {
+      const outsideCurrentWorkScope = model.currentM2ScopeStatus
+        === "OUT_OF_CURRENT_M2_SCOPE_PORTFOLIO_RESEARCH";
       const lineage = [
         model.predecessorIds.length > 0
           ? `前序 ${model.predecessorIds.map(code).join("、")}`
@@ -403,15 +405,22 @@ export function renderM2ModelCatalog(registry) {
         model.successorIds.length > 0
           ? `后续 ${model.successorIds.map(code).join("、")}`
           : "无后续"
-      ].join("；");
+      ].join("；") + (outsideCurrentWorkScope
+        ? "；不得参加作品模型排名"
+        : "");
       const aliases = [...model.legacyIds, ...model.legacyAliases]
         .map(code)
         .join("、");
+      const currentRole = outsideCurrentWorkScope
+        ? `已执行失败、且属于当前 M2 范围外组合研究（${
+          code(model.currentRole)
+        }；${code(model.currentM2ScopeStatus)}）`
+        : `${roleZh(model.currentRole)}（${code(model.currentRole)}）`;
       return `| ${capabilityZh(model.capability)}（${model.capability}）`
         + ` | ${entityTypeZh(model.entityType)}（${model.entityType}）`
         + ` | ${escapeTable(model.displayNameZh)}（${escapeTable(model.displayNameEn)}，`
         + `${code(model.stableModelId)}） | ${aliases || "无"}`
-        + ` | ${roleZh(model.currentRole)}（${code(model.currentRole)}）`
+        + ` | ${currentRole}`
         + ` | ${lineage} |`;
     }),
     "",

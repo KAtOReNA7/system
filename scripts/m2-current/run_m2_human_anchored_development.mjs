@@ -48,6 +48,12 @@ import {
   runM2LayeredRevenueCompositionPrivateDevelopment,
   runM2LayeredRevenueCompositionPublicDiagnostic
 } from "./layered_revenue_composition_mode.mjs";
+import {
+  runM2CoreLegacyPopulationPublicDiagnostic
+} from "./core_legacy_population_mode.mjs";
+import {
+  runM2CoreLegacyPopulationK0Audit
+} from "./core_legacy_population_private.mjs";
 
 let config;
 
@@ -91,6 +97,12 @@ const layeredRevenueCompositionPublicMode = process.argv.includes(
 );
 const layeredRevenueCompositionPrivateMode = process.argv.includes(
   "--layered-revenue-composition"
+);
+const coreLegacyPopulationPublicMode = process.argv.includes(
+  "--core-legacy-population-public"
+);
+const coreLegacyPopulationAuditMode = process.argv.includes(
+  "--core-legacy-population-audit"
 );
 if (tsbPublicMode) {
   await runM2HumanAnchoredTsbPublicDiagnostic({
@@ -147,6 +159,23 @@ if (layeredRevenueCompositionPublicMode) {
 }
 if (layeredRevenueCompositionPrivateMode) {
   await runM2LayeredRevenueCompositionPrivateDevelopment({ root });
+  return;
+}
+if (coreLegacyPopulationPublicMode) {
+  await runM2CoreLegacyPopulationPublicDiagnostic({
+    root,
+    verify: process.argv.includes("--verify")
+  });
+  return;
+}
+if (coreLegacyPopulationAuditMode) {
+  const result = await runM2CoreLegacyPopulationK0Audit({ root });
+  process.stdout.write(`${JSON.stringify({
+    status: result.status,
+    experimentId: result.experiment.stableExperimentId,
+    modelTrainingPerformed:
+      result.boundaries.modelTrainingPerformed
+  }, null, 2)}\n`);
   return;
 }
 config = JSON.parse(await readFile(

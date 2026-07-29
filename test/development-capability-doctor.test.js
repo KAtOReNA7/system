@@ -38,6 +38,7 @@ test("catalog defines one private-free core capability and scoped private capabi
       "m2-publishing-scale-audit",
       "m2-publishing-scale-contract-calibration",
       "m2-core-revenue-manual",
+      "m2-core-legacy-population",
       "m2-layered-revenue-composition",
       "m2-current-canonical-channel",
       "m2-current-human-anchored",
@@ -64,6 +65,49 @@ test("catalog defines one private-free core capability and scoped private capabi
   assert.equal(s1.privateBundle.providerCredentialsIncluded, false);
   assert.equal(s1.privateBundle.databaseCredentialsIncluded, false);
   assert.equal(catalog.principles.missingPrivateArtifactsBlockOnlyOwningCapability, true);
+});
+
+test("core legacy capability rebuilds cache but blocks only missing authority", () => {
+  const cacheMiss = evaluateCapability(
+    catalog,
+    "m2-core-legacy-population",
+    {
+      repoRoot: REPO_ROOT,
+      artifactExists: (_absolutePath, artifact) => (
+        artifact.artifactClass === "PRIVATE_SOURCE_AUTHORITY"
+      ),
+      toolProbe: availableToolProbe,
+    },
+  );
+  assert.equal(cacheMiss.status, "DERIVED_CACHE_MISS_REBUILD_REQUIRED");
+  assert.equal(
+    cacheMiss.sourceAuthorityStatus,
+    "SOURCE_AUTHORITY_AVAILABLE"
+  );
+  assert.equal(cacheMiss.derivedCacheStatus, "CACHE_MISS_REBUILDABLE");
+  assert.equal(
+    cacheMiss.historicalReceiptStatus,
+    "OPTIONAL_PROVENANCE_MISSING"
+  );
+  assert.equal(cacheMiss.safeToStartModelAfterRebuild, true);
+
+  const authorityMissing = evaluateCapability(
+    catalog,
+    "m2-core-legacy-population",
+    {
+      repoRoot: REPO_ROOT,
+      artifactExists: (_absolutePath, artifact) => (
+        artifact.artifactClass !== "PRIVATE_SOURCE_AUTHORITY"
+      ),
+      toolProbe: availableToolProbe,
+    },
+  );
+  assert.equal(authorityMissing.status, "MISSING_SOURCE_AUTHORITY");
+  assert.equal(
+    authorityMissing.sourceAuthorityStatus,
+    "MISSING_SOURCE_AUTHORITY"
+  );
+  assert.equal(authorityMissing.safeToRebuildDerivedCache, false);
 });
 
 test("missing publishing-scale inputs block only that audit capability", () => {

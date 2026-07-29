@@ -38,6 +38,23 @@ This directory is the only implementation home for current M2 model logic.
 - Select core populations only from cash visible at the forecast origin.
   Work-count coverage is not revenue coverage, and future-actual TopN may be
   used only as a post-hoc oracle diagnostic.
+- Current M2 service, training, and evaluation scope is dynamic Core80/Core90
+  legacy works with at least three complete bill months, restricted to
+  canonical work-channel pairs that also have at least three complete bill
+  months at that origin. Recompute membership independently at every forecast
+  and training pseudo-origin, include all cutoff-revenue ties, and never use a
+  current fixed Core list to backcast history.
+- Future new works, future first-observed channels, and works outside Core are
+  abstained populations, not zero predictions. Do not pool, compose, allocate,
+  or add them back to a current-M2 candidate actual or error denominator.
+- A Core-only evaluation is invalid as evidence about tail interference when
+  the fitted training target still includes unrestricted tail cases. Training
+  population ablations must change only the origin-safe training population,
+  preserve every raw arm, and compare on identical Core cases.
+- `M2-PORT-LRC01` and `M2-PORT-ETS01` are portfolio capabilities outside the
+  current work-model ranking. Preserve their historical identities and
+  evidence, but never use company-total, future-work, or future-channel metrics
+  to select a current M2 work model.
 - Preserve every preregistered raw ablation result. A fallback or selected
   pipeline must never replace or conceal raw candidate metrics or raw FVA.
 - Model selection must be nested inside the applicable outer work or time
