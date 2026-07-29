@@ -309,8 +309,13 @@ export function buildCoreLegacyOriginPopulation({
       .map((item) => Object.freeze({
         standardWorkId: item.standardWorkId,
         channelUid: item.channelUid,
+        level2Category: item.level2Category,
+        level3Category: item.level3Category,
+        settlementMechanism: item.settlementMechanism,
         firstPositiveMonth: item.firstPositiveMonth,
-        completeMonthCount: item.completeMonthCount
+        completeMonthCount: item.completeMonthCount,
+        workCompleteMonthCount:
+          originSerial - firstPositiveByWork.get(item.standardWorkId) + 1
       }))),
     eligibleWorkCount: new Set(
       enrichedPairs.map((item) => item.standardWorkId)
@@ -331,6 +336,7 @@ export function buildCoreLegacyWorkCases({
   const actualIndex = buildActualIndex(finalRows);
   const workCases = [];
   const channelCases = [];
+  const immatureChannelCases = [];
   const populationRows = [];
   for (const origin of [...new Set(origins)].sort()) {
     const population = buildCoreLegacyOriginPopulation({
@@ -420,6 +426,29 @@ export function buildCoreLegacyWorkCases({
         });
       }
     }
+    for (const pair of population.immatureObservedPairs) {
+      for (const horizonMonths of horizons) {
+        immatureChannelCases.push({
+          experimentId: M2_CORE_LEGACY_EXPERIMENT_ID,
+          standardWorkId: pair.standardWorkId,
+          channelUid: pair.channelUid,
+          origin,
+          horizonMonths,
+          actual: futureCashForPair(
+            actualIndex,
+            pair,
+            monthToSerial(origin),
+            horizonMonths
+          ),
+          completeMonthCount: pair.completeMonthCount,
+          workCompleteMonthCount: pair.workCompleteMonthCount,
+          level2Category: pair.level2Category,
+          level3Category: pair.level3Category,
+          settlementMechanism: pair.settlementMechanism,
+          eligibilityStatus: "ABSTAIN_IMMATURE_AT_ORIGIN"
+        });
+      }
+    }
     populationRows.push({
       origin,
       eligibleWorkCount: population.eligibleWorkCount,
@@ -448,6 +477,9 @@ export function buildCoreLegacyWorkCases({
     schema: "m2.current.core_legacy_cases.v0.1",
     workCases: Object.freeze(workCases.sort(compareWorkCases)),
     channelCases: Object.freeze(channelCases.sort(compareChannelCases)),
+    immatureChannelCases: Object.freeze(immatureChannelCases.sort(
+      compareChannelCases
+    )),
     populationRows: Object.freeze(populationRows.sort(
       (left, right) => left.origin.localeCompare(right.origin)
     ))

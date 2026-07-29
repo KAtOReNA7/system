@@ -52,6 +52,7 @@ import {
   runM2CoreLegacyPopulationPublicDiagnostic
 } from "./core_legacy_population_mode.mjs";
 import {
+  runM2CoreLegacyFrozenRescore,
   runM2CoreLegacyPopulationK0Audit
 } from "./core_legacy_population_private.mjs";
 
@@ -103,6 +104,9 @@ const coreLegacyPopulationPublicMode = process.argv.includes(
 );
 const coreLegacyPopulationAuditMode = process.argv.includes(
   "--core-legacy-population-audit"
+);
+const coreLegacyPopulationRescoreMode = process.argv.includes(
+  "--core-legacy-population-rescore"
 );
 if (tsbPublicMode) {
   await runM2HumanAnchoredTsbPublicDiagnostic({
@@ -170,6 +174,16 @@ if (coreLegacyPopulationPublicMode) {
 }
 if (coreLegacyPopulationAuditMode) {
   const result = await runM2CoreLegacyPopulationK0Audit({ root });
+  process.stdout.write(`${JSON.stringify({
+    status: result.status,
+    experimentId: result.experiment.stableExperimentId,
+    modelTrainingPerformed:
+      result.boundaries.modelTrainingPerformed
+  }, null, 2)}\n`);
+  return;
+}
+if (coreLegacyPopulationRescoreMode) {
+  const result = await runM2CoreLegacyFrozenRescore({ root });
   process.stdout.write(`${JSON.stringify({
     status: result.status,
     experimentId: result.experiment.stableExperimentId,

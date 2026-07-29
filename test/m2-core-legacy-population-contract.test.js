@@ -5,6 +5,7 @@ import test from "node:test";
 import {
   buildCoreLegacyOriginPopulation,
   buildCoreLegacySyntheticDiagnostic,
+  buildCoreLegacyWorkCases,
   scoreCoreLegacyPairedBootstrap,
   scoreCoreLegacyPointRows,
   selectOriginSafeCoreLegacyPopulations,
@@ -17,6 +18,10 @@ const config = JSON.parse(readFileSync(
 ));
 const fixture = JSON.parse(readFileSync(
   "test/fixtures/m2-core-legacy-population.synthetic.v0.1.json",
+  "utf8"
+));
+const frozenRescore = JSON.parse(readFileSync(
+  "docs/analysis/m2-current/M2-core-legacy-frozen-rescore-v0.1.json",
   "utf8"
 ));
 
@@ -117,6 +122,47 @@ test("maturity excludes rather than zero-imputes immature pairs", () => {
   );
 });
 
+test("coverage rows preserve immature future actual outside candidate error", () => {
+  const item = fixture.eligibilityCases[0];
+  const finalMonthlyRows = [
+    ...item.monthlyRows,
+    {
+      standardWorkId: "W1",
+      channelUid: "MATURE",
+      month: "2024-04",
+      cash: 7
+    },
+    {
+      standardWorkId: "W1",
+      channelUid: "IMMATURE",
+      month: "2024-04",
+      cash: 11
+    }
+  ];
+  const result = buildCoreLegacyWorkCases({
+    origins: [item.origin],
+    horizons: [3],
+    finalMonthlyRows,
+    featureMonthlyRowsForOrigin: () => item.monthlyRows,
+    config
+  });
+  assert.equal(result.channelCases.length, 1);
+  assert.equal(result.channelCases[0].actual, 7);
+  assert.equal(result.immatureChannelCases.length, 2);
+  assert.equal(
+    result.immatureChannelCases.find(
+      (row) => row.channelUid === "IMMATURE"
+    ).actual,
+    11
+  );
+  assert.equal(
+    result.immatureChannelCases.every(
+      (row) => row.eligibilityStatus === "ABSTAIN_IMMATURE_AT_ORIGIN"
+    ),
+    true
+  );
+});
+
 test("point metrics keep false positives and misses explicit", () => {
   const result = scoreCoreLegacyPointRows([
     {standardWorkId: "W1", actual: 0, pointEstimate: 5},
@@ -156,4 +202,43 @@ test("paired bootstrap is deterministic at the work cluster", () => {
   assert.deepEqual(first, second);
   assert.equal(first.status, "COMPUTED");
   assert.ok(first.improvement95.lower > 0);
+});
+
+test("frozen rescore publishes a complete explicit comparability matrix", () => {
+  assert.equal(
+    frozenRescore.status,
+    "K1_FROZEN_MODEL_CORRECT_POPULATION_RESCORE_COMPLETE"
+  );
+  assert.equal(frozenRescore.metrics.length, 192);
+  assert.equal(
+    frozenRescore.rebuildAudit.learnedGlobal
+      .maximumAbsoluteReconstructionDifference,
+    0
+  );
+  assert.equal(
+    frozenRescore.metrics.some((row) => (
+      row.modelId === "M2-WORK-OA03"
+      && row.grain === "WORK_CHANNEL"
+      && row.status
+        === "NOT_COMPARABLE_FROZEN_CHANNEL_DECOMPOSITION_UNAVAILABLE"
+    )),
+    true
+  );
+  assert.equal(
+    frozenRescore.coverage.every((row) => (
+      row.companyFutureRevenueDenominatorUsed === false
+      && row.immaturePolicy === "ABSTAIN_NOT_ZERO"
+    )),
+    true
+  );
+  const serialized = JSON.stringify(frozenRescore);
+  for (const forbiddenKey of [
+    "\"standardWorkId\":",
+    "\"channelUid\":",
+    "\"caseKey\":",
+    "data/private-output",
+    "data/private-input"
+  ]) {
+    assert.equal(serialized.includes(forbiddenKey), false);
+  }
 });

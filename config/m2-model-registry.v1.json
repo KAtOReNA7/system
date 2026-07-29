@@ -2369,7 +2369,7 @@
       "modelIds": ["M2-WORK-OA03", "M2-WORK-LG01", "M2-WORK-CRMR01"],
       "arms": [
         {"armId": "SCOPE_GOVERNANCE", "displayNameZh": "范围治理与训练语义审计", "modelId": null, "executionStatus": "EXECUTED_K0_AUDIT"},
-        {"armId": "FROZEN_RESCORE", "displayNameZh": "正确人口冻结重评分", "modelId": null, "executionStatus": "PREREGISTERED_NOT_EXECUTED"},
+        {"armId": "FROZEN_RESCORE", "displayNameZh": "正确人口冻结重评分", "modelId": null, "executionStatus": "EXECUTED_K1_FROZEN_RESCORE_COMPLETE"},
         {"armId": "T0_FULL", "displayNameZh": "原始全量训练人口", "modelId": "M2-WORK-LG01", "executionStatus": "PREREGISTERED_NOT_EXECUTED"},
         {"armId": "T1_CORE90", "displayNameZh": "动态 Core90 训练人口", "modelId": "M2-WORK-LG01", "executionStatus": "PREREGISTERED_NOT_EXECUTED"},
         {"armId": "T2_CORE80", "displayNameZh": "动态 Core80 训练人口", "modelId": "M2-WORK-LG01", "executionStatus": "PREREGISTERED_NOT_EXECUTED"},
@@ -2379,7 +2379,9 @@
         "config/m2-current-core-legacy-population.v0.1.json",
         "docs/analysis/m2-current/M2-core-legacy-observed-channel-scope-contract-v0.1.md",
         "docs/analysis/m2-current/M2-core-legacy-training-population-and-loss-audit-v0.1.json",
-        "docs/analysis/m2-current/M2-core-legacy-training-population-and-loss-audit-v0.1.md"
+        "docs/analysis/m2-current/M2-core-legacy-training-population-and-loss-audit-v0.1.md",
+        "docs/analysis/m2-current/M2-core-legacy-frozen-rescore-v0.1.json",
+        "docs/analysis/m2-current/M2-core-legacy-frozen-rescore-v0.1.md"
       ]
     },
     {

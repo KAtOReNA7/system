@@ -449,8 +449,8 @@
     },
     {
       "experimentId": "M2-EXP-CORE-LEGACY-POPULATION-01",
-      "classification": "SCOPE_GOVERNANCE_COMPLETE_RESCORE_AND_ABLATION_PREREGISTERED",
-      "conclusionZh": "核心老品—已有成熟渠道的当前范围合同与训练语义审计已经完成；冻结重评分和一次训练人口消融仍按阶段门禁等待执行，因此此处不登记新的模型优劣结论。"
+      "classification": "SCOPE_GOVERNANCE_AND_FROZEN_RESCORE_COMPLETE_ABLATION_PREREGISTERED",
+      "conclusionZh": "核心老品—已有成熟渠道的当前范围合同、训练语义审计和冻结模型正确人口重评分已经完成；不同 horizon 的同案例最低 WAPE 模型不同，不构成跨 horizon 冠军。一次训练人口消融仍按阶段门禁等待执行。"
     },
     {
       "experimentId": "M2-EXP-CORE-REVENUE-MANUAL-01",
