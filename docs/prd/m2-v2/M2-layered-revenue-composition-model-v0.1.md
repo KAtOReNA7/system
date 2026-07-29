@@ -1,7 +1,7 @@
 # M2 分层收入组合模型 v0.1
 
-英文名称：Layered Revenue Composition Model v0.1  
-稳定模型 ID：`M2-PORT-LRC01`  
+英文名称：Layered Revenue Composition Model v0.1
+稳定模型 ID：`M2-PORT-LRC01`
 实验 ID：`M2-EXP-LAYERED-REVENUE-COMPOSITION-01`
 
 ## 目标
