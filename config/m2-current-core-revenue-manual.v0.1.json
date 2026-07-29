@@ -254,6 +254,7 @@
   "privateOutputs": {
     "directory": "data/private-output/m2-core-revenue-manual",
     "authorityProfile": "M2-core-revenue-manual-authority-profile-private-v0.1.json",
+    "staticMetadata": "M2-core-revenue-manual-static-metadata-private-v0.1.json",
     "monthlyRows": "M2-core-revenue-manual-monthly-rows-private-v0.1.ndjson",
     "candidateRows": "M2-core-revenue-manual-candidate-rows-private-v0.1.ndjson",
     "evaluationRows": "M2-core-revenue-manual-evaluation-rows-private-v0.1.ndjson",

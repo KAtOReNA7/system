@@ -9,6 +9,9 @@ import {
   buildM2CoreRevenueManualSyntheticDiagnostic,
   validateM2CoreRevenueManualConfig
 } from "../../src/domain/m2Current/coreRevenueManual.js";
+import {
+  runM2CoreRevenueManualPrivateEvaluation
+} from "./core_revenue_manual_private.mjs";
 
 const CONFIG_PATH =
   "config/m2-current-core-revenue-manual.v0.1.json";
@@ -53,10 +56,16 @@ export async function runM2CoreRevenueManualPublicDiagnostic({
   return diagnostic;
 }
 
-export async function runM2CoreRevenueManualPrivateDevelopment() {
-  throw new Error(
-    "m2_core_revenue_manual_private_execution_not_implemented_k1_only"
-  );
+export async function runM2CoreRevenueManualPrivateDevelopment({ root }) {
+  const result = await runM2CoreRevenueManualPrivateEvaluation({ root });
+  process.stdout.write(`${JSON.stringify({
+    status: result.status,
+    exactHead: result.execution.exactHead,
+    legalOriginCount: result.population.legalOriginCount,
+    firstValidEvaluationProduced:
+      result.execution.firstValidEvaluationProduced
+  }, null, 2)}\n`);
+  return result;
 }
 
 function assertSyntheticExpectations(fixture, diagnostic) {

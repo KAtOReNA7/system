@@ -66,13 +66,19 @@
       "F6": 60,
       "F12": 360,
       "directK": null,
+      "twoCompleteWindows": false,
+      "calendarWindowMonthCount": 3,
       "k": 1,
       "kSource": "ONE",
       "kSupportCount": 0,
+      "channelFallbackK": 1,
+      "channelFallbackSupportCount": 0,
       "Y1": 360,
       "Y2": 360,
       "Y3": 360,
-      "F36": 1080
+      "F36": 1080,
+      "F36OneFallback": 1080,
+      "F36ChannelFallback": 1080
     },
     {
       "id": "six_months_negative_slope",
@@ -88,13 +94,19 @@
       "F6": 210,
       "F12": 120,
       "directK": null,
+      "twoCompleteWindows": false,
+      "calendarWindowMonthCount": 6,
       "k": 1,
       "kSource": "ONE",
       "kSupportCount": 0,
+      "channelFallbackK": 1,
+      "channelFallbackSupportCount": 0,
       "Y1": 120,
       "Y2": 120,
       "Y3": 120,
-      "F36": 360
+      "F36": 360,
+      "F36OneFallback": 360,
+      "F36ChannelFallback": 360
     },
     {
       "id": "six_months_zero_slope",
@@ -110,13 +122,19 @@
       "F6": 60,
       "F12": 60,
       "directK": null,
+      "twoCompleteWindows": false,
+      "calendarWindowMonthCount": 6,
       "k": 1,
       "kSource": "ONE",
       "kSupportCount": 0,
+      "channelFallbackK": 1,
+      "channelFallbackSupportCount": 0,
       "Y1": 60,
       "Y2": 60,
       "Y3": 60,
-      "F36": 180
+      "F36": 180,
+      "F36OneFallback": 180,
+      "F36ChannelFallback": 180
     },
     {
       "id": "direct_k_two_complete_windows",
@@ -132,13 +150,19 @@
       "F6": 60,
       "F12": 120,
       "directK": 2,
+      "twoCompleteWindows": true,
+      "calendarWindowMonthCount": 24,
       "k": 2,
       "kSource": "DIRECT",
       "kSupportCount": 1,
+      "channelFallbackK": 1,
+      "channelFallbackSupportCount": 0,
       "Y1": 120,
       "Y2": 240,
       "Y3": 480,
-      "F36": 840
+      "F36": 840,
+      "F36OneFallback": 360,
+      "F36ChannelFallback": 360
     }
   ],
   "kFallbacks": [
@@ -146,19 +170,28 @@
       "id": "category_median",
       "k": 1,
       "sourceLevel": "CHANNEL_LEVEL2_CATEGORY",
-      "supportCount": 3
+      "supportCount": 3,
+      "channelFallbackK": 2,
+      "channelFallbackSupportCount": 5,
+      "oneFallbackK": 1
     },
     {
       "id": "channel_median",
       "k": 2,
       "sourceLevel": "CHANNEL",
-      "supportCount": 2
+      "supportCount": 2,
+      "channelFallbackK": 2,
+      "channelFallbackSupportCount": 2,
+      "oneFallbackK": 1
     },
     {
       "id": "unit_fallback",
       "k": 1,
       "sourceLevel": "ONE",
-      "supportCount": 0
+      "supportCount": 0,
+      "channelFallbackK": 1,
+      "channelFallbackSupportCount": 0,
+      "oneFallbackK": 1
     }
   ],
   "tailConservation": {

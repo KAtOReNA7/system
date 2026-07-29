@@ -96,6 +96,8 @@ export function selectCoreRevenuePopulations({
   const window = referenceWindowForOrigin(origin);
   const start = monthToSerial(window.start);
   const end = monthToSerial(window.end);
+  const previousStart = start - 12;
+  const previousEnd = end - 12;
   const ranked = requireWorkCashRows(monthlyWorkCash).map((row) => {
     const referenceRevenue = Object.entries(row.months)
       .filter(([month]) => {
@@ -103,9 +105,22 @@ export function selectCoreRevenuePopulations({
         return serial >= start && serial <= end;
       })
       .reduce((sum, [, cash]) => sum + requireFiniteCash(cash), 0);
+    const previousReferenceRevenue = Object.entries(row.months)
+      .filter(([month]) => {
+        const serial = monthToSerial(month);
+        return serial >= previousStart && serial <= previousEnd;
+      })
+      .reduce((sum, [, cash]) => sum + requireFiniteCash(cash), 0);
     return Object.freeze({
       standardWorkId: row.standardWorkId,
-      referenceRevenue
+      referenceRevenue,
+      previousReferenceRevenue,
+      yoyMultiplier: previousReferenceRevenue > 0
+        ? referenceRevenue / previousReferenceRevenue
+        : null,
+      yoyStatus: previousReferenceRevenue > 0
+        ? "COMPUTABLE"
+        : "NOT_COMPUTABLE"
     });
   }).sort((left, right) => (
     right.referenceRevenue - left.referenceRevenue
@@ -120,6 +135,11 @@ export function selectCoreRevenuePopulations({
       status: "NOT_COMPUTABLE_NONPOSITIVE_REFERENCE_REVENUE",
       origin,
       referenceWindow: window,
+      previousReferenceWindow: Object.freeze({
+        start: serialToMonth(previousStart),
+        end: serialToMonth(previousEnd),
+        monthCount: window.monthCount
+      }),
       referenceRevenueTotal,
       ranked,
       populations: Object.fromEntries(
@@ -152,6 +172,11 @@ export function selectCoreRevenuePopulations({
     status: "SELECTED",
     origin,
     referenceWindow: window,
+    previousReferenceWindow: Object.freeze({
+      start: serialToMonth(previousStart),
+      end: serialToMonth(previousEnd),
+      monthCount: window.monthCount
+    }),
     referenceRevenueTotal,
     ranked: Object.freeze(ranked),
     populations: Object.freeze(populations),
@@ -242,7 +267,11 @@ export function forecastCoreRevenueManual(
     F3,
     F6,
     F12,
-    directK
+    directK,
+    twoCompleteWindows: Boolean(
+      twoCompleteWindows && calendarWindow.length >= 24
+    ),
+    calendarWindowMonthCount: calendarWindow.length
   });
 }
 
@@ -274,37 +303,46 @@ export function resolveCoreRevenueK({
   level2Category,
   fallbackIndex
 }) {
-  if (Number.isFinite(directK)) {
-    return Object.freeze({
-      k: directK,
-      sourceLevel: "DIRECT",
-      supportCount: 1
-    });
-  }
   const channelKey = requireNonempty(channelUid, "channel_uid");
   const categoryKey = `${channelKey}\u0000${
     normalizeCategory(level2Category)
   }`;
   const category = fallbackIndex?.category?.[categoryKey];
+  const channel = fallbackIndex?.channel?.[channelKey];
+  const counterfactual = {
+    channelFallbackK: channel?.median ?? 1,
+    channelFallbackSupportCount: channel?.count ?? 0,
+    oneFallbackK: 1
+  };
+  if (Number.isFinite(directK)) {
+    return Object.freeze({
+      k: directK,
+      sourceLevel: "DIRECT",
+      supportCount: 1,
+      ...counterfactual
+    });
+  }
   if (category) {
     return Object.freeze({
       k: category.median,
       sourceLevel: "CHANNEL_LEVEL2_CATEGORY",
-      supportCount: category.count
+      supportCount: category.count,
+      ...counterfactual
     });
   }
-  const channel = fallbackIndex?.channel?.[channelKey];
   if (channel) {
     return Object.freeze({
       k: channel.median,
       sourceLevel: "CHANNEL",
-      supportCount: channel.count
+      supportCount: channel.count,
+      ...counterfactual
     });
   }
   return Object.freeze({
     k: 1,
     sourceLevel: "ONE",
-    supportCount: 0
+    supportCount: 0,
+    ...counterfactual
   });
 }
 
@@ -316,15 +354,24 @@ export function applyCoreRevenueLongTermForecast(base, resolvedK) {
   const Y1 = base.F12;
   const Y2 = Y1 * k;
   const Y3 = Y2 * k;
+  const channelFallbackK = requireFiniteCash(
+    resolvedK.channelFallbackK ?? 1
+  );
   return Object.freeze({
     ...base,
     k,
     kSource: resolvedK.sourceLevel,
     kSupportCount: resolvedK.supportCount,
+    channelFallbackK,
+    channelFallbackSupportCount:
+      resolvedK.channelFallbackSupportCount ?? 0,
     Y1,
     Y2,
     Y3,
-    F36: Y1 + Y2 + Y3
+    F36: Y1 + Y2 + Y3,
+    F36OneFallback: Y1 * 3,
+    F36ChannelFallback:
+      Y1 + Y1 * channelFallbackK + Y1 * channelFallbackK ** 2
   });
 }
 
@@ -359,11 +406,13 @@ export function poolEligibleTailMonthlyRows({
 
 export function runCoreRevenueManualRolling({
   monthlyRows,
+  featureMonthlyRowsForOrigin = null,
   origins,
   config
 }) {
   validateM2CoreRevenueManualConfig(config);
   const source = normalizeMonthlyRows(monthlyRows);
+  const actualIndex = buildActualIndex(source);
   const originList = [...new Set(origins.map(String))]
     .sort(stableTextCompare);
   if (originList.length === 0 || source.length === 0) {
@@ -371,9 +420,6 @@ export function runCoreRevenueManualRolling({
       "m2_core_revenue_manual_rolling_input_empty"
     );
   }
-  const minimumSourceSerial = Math.min(
-    ...source.map((row) => monthToSerial(row.month))
-  );
   const thresholds = config.coreSelection.populations.map((item) => [
     item.id,
     item.minimumCumulativeReferenceRevenueShare
@@ -383,10 +429,24 @@ export function runCoreRevenueManualRolling({
   const portfolioRows = [];
   const portfolioAnnualRows = [];
   const originDiagnostics = [];
+  const selectionRows = [];
 
   for (const origin of originList) {
     const originSerial = monthToSerial(origin);
-    const visible = source.filter(
+    const featureSource = featureMonthlyRowsForOrigin === null
+      ? source
+      : normalizeMonthlyRows(featureMonthlyRowsForOrigin(origin));
+    if (featureSource.length === 0) {
+      originDiagnostics.push(Object.freeze({
+        origin,
+        status: "NOT_COMPUTABLE_EMPTY_ORIGIN_VISIBLE_FEATURE_ROWS"
+      }));
+      continue;
+    }
+    const minimumSourceSerial = Math.min(
+      ...featureSource.map((row) => monthToSerial(row.month))
+    );
+    const visible = featureSource.filter(
       (row) => monthToSerial(row.month) <= originSerial
     );
     const workMonth = aggregateBy(visible, (row) => [
@@ -404,11 +464,31 @@ export function runCoreRevenueManualRolling({
       continue;
     }
     const eligible = buildEligibleStates({
-      source,
+      source: featureSource,
       origin,
       originSerial,
       minimumSourceSerial
     });
+    for (let index = 0; index < selection.ranked.length; index += 1) {
+      const row = selection.ranked[index];
+      selectionRows.push(Object.freeze({
+        origin,
+        standardWorkId: row.standardWorkId,
+        referenceRank: index + 1,
+        referenceRevenue: row.referenceRevenue,
+        previousReferenceRevenue: row.previousReferenceRevenue,
+        yoyMultiplier: row.yoyMultiplier,
+        yoyStatus: row.yoyStatus,
+        core80: selection.populations.CORE80.includes(
+          row.standardWorkId
+        ),
+        core90: selection.populations.CORE90.includes(
+          row.standardWorkId
+        ),
+        top20: selection.top.TOP20.includes(row.standardWorkId),
+        top50: selection.top.TOP50.includes(row.standardWorkId)
+      }));
+    }
     const populationDiagnostics = [];
     for (const [populationId] of thresholds) {
       const coreWorkIds = selection.populations[populationId];
@@ -451,7 +531,7 @@ export function runCoreRevenueManualRolling({
             horizonMonths: horizon,
             pointEstimate: forecastForHorizon(forecast, horizon),
             actual: futureCashForKey(
-              source,
+              actualIndex,
               item,
               originSerial,
               horizon
@@ -459,6 +539,25 @@ export function runCoreRevenueManualRolling({
             k: forecast.k,
             kSource: forecast.kSource,
             kSupportCount: forecast.kSupportCount,
+            channelFallbackK: forecast.channelFallbackK,
+            channelFallbackSupportCount:
+              forecast.channelFallbackSupportCount,
+            historyMonthCount: forecast.historyMonthCount,
+            twoCompleteWindows: forecast.twoCompleteWindows,
+            M1: forecast.M1,
+            S6: forecast.S6,
+            S12: forecast.S12,
+            P12: forecast.P12,
+            b6: forecast.b6,
+            F3: forecast.F3,
+            F6: forecast.F6,
+            F12: forecast.F12,
+            Y1: forecast.Y1,
+            Y2: forecast.Y2,
+            Y3: forecast.Y3,
+            F36: forecast.F36,
+            F36OneFallback: forecast.F36OneFallback,
+            F36ChannelFallback: forecast.F36ChannelFallback,
             referenceRank: selection.ranked.findIndex(
               (row) => row.standardWorkId === item.standardWorkId
             ) + 1,
@@ -481,7 +580,7 @@ export function runCoreRevenueManualRolling({
             annualComponent: component,
             pointEstimate: forecast[component],
             actual: futureCashForKeyRange(
-              source,
+              actualIndex,
               item,
               originSerial,
               startOffset,
@@ -516,9 +615,15 @@ export function runCoreRevenueManualRolling({
           ? 0
           : forecastForHorizon(tail.forecast, horizon);
         const tailActual = futureCashForStates(
-          source,
+          actualIndex,
           eligible.filter((item) => !coreSet.has(item.standardWorkId)),
           originSerial,
+          horizon
+        );
+        const fullActual = futureCashAll(
+          actualIndex,
+          originSerial,
+          1,
           horizon
         );
         portfolioRows.push(
@@ -528,7 +633,8 @@ export function runCoreRevenueManualRolling({
             variant: "CORE_ONLY",
             horizon,
             pointEstimate: corePrediction,
-            actual: coreActual,
+            actual: fullActual,
+            servedEligibleActual: coreActual,
             coreWorkCount: coreWorkIds.length,
             eligibleWorkChannelCount: selectedStates.length,
             tailKSource: null
@@ -539,7 +645,8 @@ export function runCoreRevenueManualRolling({
             variant: "CORE_PLUS_POOLED_TAIL",
             horizon,
             pointEstimate: corePrediction + tailPrediction,
-            actual: coreActual + tailActual,
+            actual: fullActual,
+            servedEligibleActual: coreActual + tailActual,
             coreWorkCount: coreWorkIds.length,
             eligibleWorkChannelCount: eligible.length,
             tailKSource: tail?.forecast?.kSource ?? "NO_ELIGIBLE_TAIL"
@@ -562,8 +669,14 @@ export function runCoreRevenueManualRolling({
         );
         const tailPrediction = tail?.forecast?.[component] ?? 0;
         const tailActual = futureCashForStatesRange(
-          source,
+          actualIndex,
           eligible.filter((item) => !coreSet.has(item.standardWorkId)),
+          originSerial,
+          startOffset,
+          endOffset
+        );
+        const fullActual = futureCashAll(
+          actualIndex,
           originSerial,
           startOffset,
           endOffset
@@ -575,7 +688,8 @@ export function runCoreRevenueManualRolling({
             variant: "CORE_ONLY",
             annualComponent: component,
             pointEstimate: corePrediction,
-            actual: coreActual
+            actual: fullActual,
+            servedEligibleActual: coreActual
           }),
           Object.freeze({
             origin,
@@ -583,7 +697,8 @@ export function runCoreRevenueManualRolling({
             variant: "CORE_PLUS_POOLED_TAIL",
             annualComponent: component,
             pointEstimate: corePrediction + tailPrediction,
-            actual: coreActual + tailActual
+            actual: fullActual,
+            servedEligibleActual: coreActual + tailActual
           })
         );
       }
@@ -625,6 +740,7 @@ export function runCoreRevenueManualRolling({
     portfolioAnnualRows: Object.freeze(
       portfolioAnnualRows.sort(comparePortfolioAnnualRows)
     ),
+    selectionRows: Object.freeze(selectionRows.sort(compareSelectionRows)),
     originDiagnostics: Object.freeze(originDiagnostics)
   });
 }
@@ -753,7 +869,8 @@ function buildEligibleStates({
     const windowStart = Math.max(minimumSourceSerial, originSerial - 23);
     const windowCash = denseCash(rows, windowStart, originSerial);
     const twoCompleteWindows =
-      originSerial - minimumSourceSerial + 1 >= 24;
+      originSerial - minimumSourceSerial + 1 >= 24
+      && originSerial - firstSerial + 1 >= 24;
     const base = forecastCoreRevenueManual(history, {
       windowCash,
       twoCompleteWindows
@@ -803,6 +920,7 @@ function buildTailForecast({
     windowCash,
     twoCompleteWindows:
       originSerial - minimumSourceSerial + 1 >= 24
+      && originSerial - firstSerial + 1 >= 24
   });
   const resolvedK = Number.isFinite(base.directK)
     ? { k: base.directK, sourceLevel: "DIRECT", supportCount: 1 }
@@ -813,9 +931,23 @@ function buildTailForecast({
   });
 }
 
-function futureCashForKey(source, item, originSerial, horizon) {
+function buildActualIndex(source) {
+  const byKey = new Map();
+  const all = new Map();
+  for (const row of source) {
+    const serial = monthToSerial(row.month);
+    const key = `${row.standardWorkId}\u0000${row.channelUid}`;
+    const months = byKey.get(key) ?? new Map();
+    months.set(serial, (months.get(serial) ?? 0) + row.cash);
+    byKey.set(key, months);
+    all.set(serial, (all.get(serial) ?? 0) + row.cash);
+  }
+  return { byKey, all };
+}
+
+function futureCashForKey(index, item, originSerial, horizon) {
   return futureCashForKeyRange(
-    source,
+    index,
     item,
     originSerial,
     1,
@@ -824,23 +956,29 @@ function futureCashForKey(source, item, originSerial, horizon) {
 }
 
 function futureCashForKeyRange(
-  source,
+  index,
   item,
   originSerial,
   startOffset,
   endOffset
 ) {
-  return sum(source.filter((row) => (
-    row.standardWorkId === item.standardWorkId
-    && row.channelUid === item.channelUid
-    && monthToSerial(row.month) >= originSerial + startOffset
-    && monthToSerial(row.month) <= originSerial + endOffset
-  )).map((row) => row.cash));
+  const months = index.byKey.get(
+    `${item.standardWorkId}\u0000${item.channelUid}`
+  ) ?? new Map();
+  let total = 0;
+  for (
+    let serial = originSerial + startOffset;
+    serial <= originSerial + endOffset;
+    serial += 1
+  ) {
+    total += months.get(serial) ?? 0;
+  }
+  return total;
 }
 
-function futureCashForStates(source, states, originSerial, horizon) {
+function futureCashForStates(index, states, originSerial, horizon) {
   return futureCashForStatesRange(
-    source,
+    index,
     states,
     originSerial,
     1,
@@ -849,20 +987,44 @@ function futureCashForStates(source, states, originSerial, horizon) {
 }
 
 function futureCashForStatesRange(
-  source,
+  index,
   states,
   originSerial,
   startOffset,
   endOffset
 ) {
-  const keys = new Set(states.map((item) => (
+  const keys = states.map((item) => (
     `${item.standardWorkId}\u0000${item.channelUid}`
-  )));
-  return sum(source.filter((row) => (
-    keys.has(`${row.standardWorkId}\u0000${row.channelUid}`)
-    && monthToSerial(row.month) >= originSerial + startOffset
-    && monthToSerial(row.month) <= originSerial + endOffset
-  )).map((row) => row.cash));
+  ));
+  let total = 0;
+  for (const key of keys) {
+    const months = index.byKey.get(key) ?? new Map();
+    for (
+      let serial = originSerial + startOffset;
+      serial <= originSerial + endOffset;
+      serial += 1
+    ) {
+      total += months.get(serial) ?? 0;
+    }
+  }
+  return total;
+}
+
+function futureCashAll(
+  index,
+  originSerial,
+  startOffset,
+  endOffset
+) {
+  let total = 0;
+  for (
+    let serial = originSerial + startOffset;
+    serial <= originSerial + endOffset;
+    serial += 1
+  ) {
+    total += index.all.get(serial) ?? 0;
+  }
+  return total;
 }
 
 function forecastForHorizon(forecast, horizon) {
@@ -882,6 +1044,7 @@ function portfolioRow({
   horizon,
   pointEstimate,
   actual,
+  servedEligibleActual,
   coreWorkCount,
   eligibleWorkChannelCount,
   tailKSource
@@ -895,6 +1058,8 @@ function portfolioRow({
     horizonMonths: horizon,
     pointEstimate,
     actual,
+    servedEligibleActual,
+    unservedActual: actual - servedEligibleActual,
     coreWorkCount,
     eligibleWorkChannelCount,
     tailKSource
@@ -1135,5 +1300,13 @@ function comparePortfolioAnnualRows(left, right) {
     || stableTextCompare(left.populationId, right.populationId)
     || stableTextCompare(left.variant, right.variant)
     || stableTextCompare(left.annualComponent, right.annualComponent)
+  );
+}
+
+function compareSelectionRows(left, right) {
+  return (
+    stableTextCompare(left.origin, right.origin)
+    || left.referenceRank - right.referenceRank
+    || stableTextCompare(left.standardWorkId, right.standardWorkId)
   );
 }

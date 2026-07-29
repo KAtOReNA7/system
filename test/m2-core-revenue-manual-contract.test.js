@@ -15,6 +15,11 @@ import {
   runCoreRevenueManualRolling,
   validateM2CoreRevenueManualConfig
 } from "../src/domain/m2Current/coreRevenueManual.js";
+import {
+  determineCoreRevenueManualDecision,
+  scoreCoreRevenuePairedComparison,
+  scoreCoreRevenuePublicCell
+} from "../src/domain/m2Current/coreRevenueManualEvaluation.js";
 
 const root = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -139,7 +144,8 @@ test("rolling runner is input-order deterministic and excludes future features",
       row.variant === "CORE_PLUS_POOLED_TAIL"
       && row.horizonMonths === horizon
     ));
-    assert.ok(full.actual > core.actual);
+    assert.equal(full.actual, core.actual);
+    assert.ok(full.servedEligibleActual > core.servedEligibleActual);
     assert.ok(full.pointEstimate > core.pointEstimate);
   }
 });
@@ -166,6 +172,94 @@ test("authorization permits one development evaluation but no promotion", () => 
   ]) {
     assert.equal(config.authorization[key], false, key);
   }
+});
+
+test("paired evaluation is deterministic and clusters complete works", () => {
+  const pairs = Array.from({ length: 24 }, (_, index) => ({
+    standardWorkId: `W-${String(index % 6).padStart(2, "0")}`,
+    actual: 100 + index,
+    candidatePointEstimate: 100 + index,
+    baselinePointEstimate: 110 + index
+  }));
+  const first = scoreCoreRevenuePairedComparison(pairs, {
+    iterations: 2000,
+    seed: 20260728
+  });
+  const second = scoreCoreRevenuePairedComparison([...pairs].reverse(), {
+    iterations: 2000,
+    seed: 20260728
+  });
+  assert.equal(first.status, "COMPUTED");
+  assert.equal(first.caseCount, 24);
+  assert.equal(first.workCount, 6);
+  assert.equal(first.bootstrap.clusterCount, 6);
+  assert.equal(first.bootstrap.iterations, 2000);
+  assert.deepEqual(second, first);
+  assert.equal(first.candidate.wape, 0);
+  assert.ok(first.relativeWapeFva > 0.99);
+});
+
+test("public cells suppress small populations without leaking metrics", () => {
+  const rows = Array.from({ length: 29 }, (_, index) => ({
+    standardWorkId: `W-${index}`,
+    origin: "2024-01",
+    actual: 10,
+    pointEstimate: 9
+  }));
+  assert.deepEqual(scoreCoreRevenuePublicCell(rows), {
+    status: "SUPPRESSED_PRIVACY_THRESHOLD",
+    caseCount: 29,
+    workCount: 29,
+    originCount: 1,
+    metrics: null
+  });
+  const computed = scoreCoreRevenuePublicCell([
+    ...rows,
+    {
+      standardWorkId: "W-29",
+      origin: "2024-01",
+      actual: 10,
+      pointEstimate: 9
+    }
+  ]);
+  assert.equal(computed.status, "COMPUTED");
+  assert.equal(computed.metrics.wape, 0.1);
+});
+
+test("decision states preserve pass, mixed and fail semantics", () => {
+  const improved = {
+    status: "COMPUTED",
+    relativeWapeFva: 0.02,
+    absoluteBiasDelta: 0
+  };
+  assert.equal(determineCoreRevenueManualDecision({
+    populationComparisons: [{
+      primary: improved,
+      strict: improved,
+      timeStability: {
+        improvedYearCount: 2,
+        singleYearDriven: false
+      }
+    }],
+    anyMaterialSliceImprovement: true,
+    longTermUncontrolled: false
+  }).status, "M2_CORE_REVENUE_MANUAL_BASELINE_PASS");
+  assert.equal(determineCoreRevenueManualDecision({
+    populationComparisons: [],
+    anyMaterialSliceImprovement: true,
+    longTermUncontrolled: false
+  }).status, "M2_CORE_REVENUE_MANUAL_BASELINE_MIXED");
+  assert.equal(determineCoreRevenueManualDecision({
+    populationComparisons: [],
+    anyMaterialSliceImprovement: false,
+    longTermUncontrolled: false
+  }).status, "M2_CORE_REVENUE_MANUAL_BASELINE_FAIL");
+  assert.equal(determineCoreRevenueManualDecision({
+    populationComparisons: [],
+    anyMaterialSliceImprovement: true,
+    longTermUncontrolled: true
+  }).reason,
+  "valid_evaluation_completed_long_term_compounding_uncontrolled");
 });
 
 test("synthetic fixture covers the frozen contract edge families", () => {

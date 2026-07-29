@@ -37,6 +37,9 @@ CHANNEL_GENERATIVE_CONFIG_PATH = (
 PUBLISHING_SCALE_CHANNEL_CONFIG_PATH = (
     ROOT / "config" / "m2-current-publishing-scale-channel.v0.1.json"
 )
+CORE_REVENUE_MANUAL_CONFIG_PATH = (
+    ROOT / "config" / "m2-current-core-revenue-manual.v0.1.json"
+)
 V03_PATH = (
     ROOT
     / "data"
@@ -55,7 +58,10 @@ def run(
     channel_experts: bool = False,
     channel_generative: bool = False,
     publishing_scale_channel: bool = False,
+    core_revenue_manual: bool = False,
 ) -> dict[str, Any]:
+    if core_revenue_manual:
+        return _write_core_revenue_manual_metadata()
     config = json.loads(CONFIG_PATH.read_text(encoding="utf-8"))
     _validate_config(config)
     channel_config = (
@@ -229,6 +235,101 @@ def run(
             panel=panel,
         )
     return manifest
+
+
+def _write_core_revenue_manual_metadata() -> dict[str, Any]:
+    config = json.loads(
+        CORE_REVENUE_MANUAL_CONFIG_PATH.read_text(encoding="utf-8")
+    )
+    if (
+        config.get("schema")
+        != "m2.current.core_revenue_manual.v0.1"
+        or config.get("model", {}).get("stableModelId")
+        != "M2-WORK-CRMR01"
+    ):
+        raise HumanAnchoredMaterializationError(
+            "core-revenue manual config identity differs"
+        )
+    master_config = json.loads(
+        (ROOT / "config/m2-current-canonical-channel.v0.1.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    master, master_evidence = canonical.load_channel_master(master_config)
+    channels: dict[str, dict[str, str]] = {}
+    for mapping in master.values():
+        channel_uid = canonical.clean(mapping.get("channelUid"))
+        mechanism = canonical.clean(mapping.get("revenueMode")) or "UNKNOWN"
+        previous = channels.get(channel_uid)
+        if (
+            previous is not None
+            and previous["settlementMechanism"] != mechanism
+        ):
+            raise HumanAnchoredMaterializationError(
+                "core-revenue channel mechanism identity conflicts"
+            )
+        channels[channel_uid] = {
+            "channelUid": channel_uid,
+            "settlementMechanism": mechanism,
+        }
+    category_status = "AVAILABLE_FROM_REBUILDABLE_MODEL_INPUT"
+    categories: list[dict[str, str]] = []
+    try:
+        inputs = formal.load_or_build_model_inputs()
+        for work_id, row in sorted(
+            inputs.get("formalInput", {}).items(),
+            key=lambda item: str(item[0]),
+        ):
+            categories.append(
+                {
+                    "standardWorkId": str(work_id),
+                    "level2Category": (
+                        canonical.clean((row or {}).get("二级分类"))
+                        or "UNKNOWN"
+                    ),
+                }
+            )
+    except Exception as error:
+        category_status = (
+            "CATEGORY_METADATA_REBUILD_UNAVAILABLE:"
+            + type(error).__name__
+        )
+        categories = []
+    output_directory = ROOT / config["privateOutputs"]["directory"]
+    output_directory.mkdir(parents=True, exist_ok=True)
+    metadata = {
+        "schema":
+            "m2.current.core_revenue_manual.static_metadata.private.v0.1",
+        "modelId": "M2-WORK-CRMR01",
+        "categoryStatus": category_status,
+        "workCategoryCount": len(categories),
+        "channelCount": len(channels),
+        "channelMasterEvidence": master_evidence,
+        "workCategories": categories,
+        "channels": [
+            channels[key] for key in sorted(channels)
+        ],
+    }
+    output_path = (
+        output_directory / config["privateOutputs"]["staticMetadata"]
+    )
+    output_path.write_text(
+        json.dumps(
+            metadata,
+            ensure_ascii=False,
+            indent=2,
+            sort_keys=True,
+            allow_nan=False,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    return {
+        "status": "READY",
+        "categoryStatus": category_status,
+        "workCategoryCount": len(categories),
+        "channelCount": len(channels),
+    }
 
 
 def _validate_config(config: Mapping[str, Any]) -> None:
@@ -1847,6 +1948,8 @@ if __name__ == "__main__":
         result = run(channel_generative=True)
     elif arguments == ["--publishing-scale-channel"]:
         result = run(publishing_scale_channel=True)
+    elif arguments == ["--core-revenue-manual"]:
+        result = run(core_revenue_manual=True)
     elif arguments:
         raise HumanAnchoredMaterializationError(
             "unsupported materialization mode"
