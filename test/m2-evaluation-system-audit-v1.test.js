@@ -91,7 +91,7 @@ test("historical audit keeps its snapshot while the registry advances", () => {
     .map((group) => group.comparableGroupId)
     .sort();
 
-  assert.equal(evaluationCount, 65);
+  assert.equal(evaluationCount, 77);
   assert.equal(audit.registryCoverage.evaluationCount, 45);
   assert.equal(
     auditGroups.every((groupId) => registryGroups.includes(groupId)),
@@ -100,7 +100,7 @@ test("historical audit keeps its snapshot while the registry advances", () => {
   assert.equal(audit.registryCoverage.independentEvidenceEvaluationCount, 0);
 });
 
-test("audit classifies every registered experiment and inventories evaluation capabilities", () => {
+test("historical audit experiment snapshot remains a subset as the registry advances", () => {
   const registryExperiments = registry.experiments
     .map((experiment) => experiment.experimentId)
     .sort();
@@ -108,7 +108,24 @@ test("audit classifies every registered experiment and inventories evaluation ca
     .map((experiment) => experiment.experimentId)
     .sort();
 
-  assert.deepEqual(auditExperiments, registryExperiments);
+  assert.equal(
+    auditExperiments.every(
+      (experimentId) => registryExperiments.includes(experimentId)
+    ),
+    true
+  );
+  assert.equal(
+    registryExperiments.includes(
+      "M2-EXP-CORE-LEGACY-HORIZON-ROUTER-01"
+    ),
+    true
+  );
+  assert.equal(
+    auditExperiments.includes(
+      "M2-EXP-CORE-LEGACY-HORIZON-ROUTER-01"
+    ),
+    false
+  );
   assert.ok(audit.metricInventory.length >= 10);
   assert.ok(
     audit.capabilityMatrix.some(
@@ -159,7 +176,7 @@ test("evaluation contract remains a proposal and public aggregates are not overc
 test("historical audit state records zero execution and registry may advance", () => {
   assert.equal(
     registry.currentRoles.latestStateIndex,
-    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.39.md"
+    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.40.md"
   );
   assert.equal(audit.executionBoundary.modelExecutionCount, 0);
   assert.equal(audit.executionBoundary.modelTrainingCount, 0);

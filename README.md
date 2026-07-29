@@ -32,9 +32,10 @@
 | M2 出版行业规模适配 | 私有物化在候选拟合前因实现接线错误 fail-closed（`M2_PUBLISHING_SCALE_IMPLEMENTATION_BLOCKED`） | 没有候选预测或评价指标；一次性授权已消耗，未授权重试 |
 | M2 分层收入组合 v0.1 | 已完成首个有效组合开发评价并失败（`M2_LAYERED_REVENUE_COMPOSITION_FAIL`） | 12/36 个月主结果失败；年龄带辅助臂和年度分量未完整执行；没有晋升或自动化授权 |
 | M2 核心老品范围与尾部测试 | 范围纠偏、冻结重评分与一次训练人口消融已完成（`M2_CORE_LEGACY_SCOPE_AND_TAIL_TEST_COMPLETE`） | 尾部干扰未确认（`TAIL_INTERFERENCE_NOT_CONFIRMED`）；核心 80% 训练稳定退化，未授权新架构 |
+| M2 核心老品全周期路由与已有渠道分配 | 预注册验证已完成（`M2_CORE_LEGACY_HORIZON_ROUTER_AND_CHANNEL_ALLOCATION_COMPLETE`） | 合法模型交集的同案例证据已补齐；滚动路由未确认（`HORIZON_ROUTER_NOT_CONFIRMED`），已有渠道分配证据混合（`CHANNEL_ALLOCATION_MIXED`） |
 | M3 | 仅合成 fixture/prototype | 不代表真实材料执行或正式发布 |
 
-最新治理入口是 [M2 当前状态索引 v0.39](docs/analysis/m2-v2/M2-v2-current-state-index-v0.39.md)。
+最新治理入口是 [M2 当前状态索引 v0.40](docs/analysis/m2-v2/M2-v2-current-state-index-v0.40.md)。
 模型名称、别名、角色、成绩人口和可比组以
 [Model Registry](config/m2-model-registry.v1.json) 为唯一当前机器权威。
 
@@ -44,6 +45,7 @@
 |---|---|---|
 | 作品点预测 | 作品发生-金额校准模型 v0.3（Occurrence-Amount Calibration v0.3，`M2-WORK-OA03`）是现行运行回退模型（operational fallback） | 当前人工权威开发人口 WAPE 为 `0.49075894`；未通过绝对质量门槛 |
 | 作品研究比较 | 人工锚定可学习全局模型（Human-Anchored Learned Global，`M2-WORK-LG01`）是研究比较基线（research baseline） | 只用于研究比较，不是 production 晋升 |
+| 周期路由研究 | 按预测周期滚动模型路由器 v0.1（Rolling Horizon Model Router v0.1，`M2-WORK-HR01`）已执行但未确认 | 3/12/36 个月只追平最强单模型，6 个月 WAPE 退化约 2.53%；不是活动候选或运行管线 |
 | 组合预测 | 组合现金 ETS/Holt-Winters（Portfolio ETS/Holt-Winters，`M2-PORT-ETS01`）是组合级参考（portfolio reference） | 组合结果不得分配回作品；不同 horizon 必须分别报告 |
 | 分层组合开发候选 | 分层收入组合模型 v0.1（Layered Revenue Composition Model v0.1，`M2-PORT-LRC01`）已执行失败 | 四分量守恒，但 12/36 个月质量失败且协议物化不完整；不替代组合级参考 |
 | 排序能力 | 仅有后验诊断（post-hoc diagnostic） | 排序信号不能掩盖点预测失败，也不能直接用于分配 |
@@ -174,11 +176,11 @@ holdout。
 
 | 主题 | 当前入口 |
 |---|---|
-| 当前状态 | [M2 当前状态索引 v0.39](docs/analysis/m2-v2/M2-v2-current-state-index-v0.39.md) |
+| 当前状态 | [M2 当前状态索引 v0.40](docs/analysis/m2-v2/M2-v2-current-state-index-v0.40.md) |
 | 模型权威 | [Model Registry](config/m2-model-registry.v1.json) · [中文模型目录](docs/analysis/m2-current/M2-model-catalog-and-scorecard-v1.md) |
 | 评价体系 | [v2.2 合同](docs/analysis/m2-current/M2-evaluation-contract-v2.2.md) · [v2.2 验证](docs/analysis/m2-current/M2-evaluation-contract-v2.2-validation.md) · [v2.1 合同](docs/analysis/m2-current/M2-evaluation-contract-v2.1.md) |
 | 冻结标签重评分 | [v2.2 诊断复核](docs/analysis/m2-current/M2-evaluation-v2.2-diagnostic-recheck.md) · [机器可读聚合](docs/analysis/m2-current/M2-evaluation-v2.2-diagnostic-recheck.json) · [冲销影响](docs/analysis/m2-current/M2-reversal-restatement-impact-v1.md) |
-| 核心老品范围 | [范围合同](docs/analysis/m2-current/M2-core-legacy-observed-channel-scope-contract-v0.1.md) · [训练人口审计](docs/analysis/m2-current/M2-core-legacy-training-population-and-loss-audit-v0.1.md) · [冻结重评分](docs/analysis/m2-current/M2-core-legacy-frozen-rescore-v0.1.md) · [尾部干扰测试](docs/analysis/m2-current/M2-core-legacy-tail-interference-test-v0.1.md) |
+| 核心老品范围 | [范围合同](docs/analysis/m2-current/M2-core-legacy-observed-channel-scope-contract-v0.1.md) · [训练人口审计](docs/analysis/m2-current/M2-core-legacy-training-population-and-loss-audit-v0.1.md) · [冻结重评分](docs/analysis/m2-current/M2-core-legacy-frozen-rescore-v0.1.md) · [尾部干扰测试](docs/analysis/m2-current/M2-core-legacy-tail-interference-test-v0.1.md) · [全周期同案例重评分](docs/analysis/m2-current/M2-core-legacy-full-horizon-same-case-rescore-v0.1.md) · [滚动路由](docs/analysis/m2-current/M2-core-legacy-horizon-router-v0.1.md) · [已有渠道分配](docs/analysis/m2-current/M2-core-legacy-observed-channel-allocation-v0.1.md) |
 | 代码与仓库 | [全库收敛审计](docs/analysis/repository-current-state-and-convergence-audit-v0.1.md) · [协作规则](AGENTS.md) |
 | 产品定义 | [M2 Forecast Intelligence v2 PRD](docs/prd/m2-v2/M2-forecast-intelligence-v2-prd-v0.2.md) |
 

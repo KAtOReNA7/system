@@ -659,6 +659,27 @@ function resultStatusZh(value) {
   if (value === "M2_PUBLISHING_SCALE_IMPLEMENTATION_BLOCKED") {
     return "实现阻断且无候选结果";
   }
+  if (value === "HORIZON_ROUTER_NOT_CONFIRMED") {
+    return "按预测周期滚动模型路由未确认";
+  }
+  if (value === "SAME_CASE_NO_STABLE_WINNER") {
+    return "同案例重评分未形成稳定优胜";
+  }
+  if (value === "SAME_CASE_WAPE_BIAS_TRADEOFF") {
+    return "同案例 WAPE 与偏差存在权衡";
+  }
+  if (value === "SAME_CASE_CLEAR_WINNER") {
+    return "同案例重评分形成明确优胜";
+  }
+  if (value === "SAME_CASE_CLEAR_WINNER_COMPARISON_LOSER") {
+    return "同案例明确优胜比较中的落后模型";
+  }
+  if (value === "CHANNEL_ALLOCATION_MIXED") {
+    return "已有渠道分配证据混合";
+  }
+  if (value === "CHANNEL_ALLOCATION_NOT_CONFIRMED") {
+    return "已有渠道分配未确认";
+  }
   if (value === "CONTROLLED_FULL_POPULATION_REFERENCE") {
     return "已执行的全量训练人口参照";
   }

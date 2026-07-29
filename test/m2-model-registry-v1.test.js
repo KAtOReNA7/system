@@ -34,10 +34,10 @@ test("registry schema, evidence paths and immutable digests validate", () => {
     canonicalEvidenceSha256("same\r\ncontent\r\n"),
     canonicalEvidenceSha256("same\ncontent\n")
   );
-  assert.equal(validation.counts.modelCount, 30);
-  assert.equal(validation.counts.experimentCount, 16);
-  assert.equal(validation.counts.nonModelIdentifierCount, 57);
-  assert.equal(validation.counts.comparabilityGroupCount, 26);
+  assert.equal(validation.counts.modelCount, 31);
+  assert.equal(validation.counts.experimentCount, 17);
+  assert.equal(validation.counts.nonModelIdentifierCount, 61);
+  assert.equal(validation.counts.comparabilityGroupCount, 30);
 });
 
 test("stable model IDs and model aliases are unique", () => {
@@ -102,9 +102,9 @@ test("core-revenue manual candidate failed without promotion", () => {
     "first_valid_development_evaluation_failed_long_term_compounding"
   );
   assert.equal(model.currentRole, "failed_development_candidate");
-  assert.equal(model.evaluations.length, 2);
+  assert.equal(model.evaluations.length, 6);
   assert.equal(
-    model.evaluations.every(
+    model.evaluations.slice(0, 2).every(
       (item) => (
         item.resultStatus === "M2_CORE_REVENUE_MANUAL_BASELINE_FAIL"
       )
@@ -190,7 +190,7 @@ test("core legacy population test records non-confirmation without promotion", (
   );
   assert.equal(
     registry.currentRoles.latestStateIndex,
-    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.39.md"
+    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.40.md"
   );
   assert.equal(registry.currentRoles.activeCandidate, null);
   assert.equal(registry.currentRoles.approvedForAutomation, null);
@@ -200,7 +200,7 @@ test("evaluations preserve population and comparability contracts", () => {
   const oa03 = registry.models.find(
     (model) => model.stableModelId === "M2-WORK-OA03"
   );
-  assert.equal(oa03.evaluations.length, 2);
+  assert.equal(oa03.evaluations.length, 5);
   assert.notEqual(
     oa03.evaluations[0].comparableGroupId,
     oa03.evaluations[1].comparableGroupId
@@ -235,6 +235,40 @@ test("evaluations preserve population and comparability contracts", () => {
     differentGrain.differences.some((item) => item.field === "grain"),
     true
   );
+});
+
+test("horizon router and observed-channel allocation close without promotion", () => {
+  const model = registry.models.find(
+    (item) => item.stableModelId === "M2-WORK-HR01"
+  );
+  const experiment = registry.experiments.find(
+    (item) => (
+      item.experimentId === "M2-EXP-CORE-LEGACY-HORIZON-ROUTER-01"
+    )
+  );
+  assert.equal(model.entityType, "model_pipeline");
+  assert.equal(model.currentRole, "failed_development_candidate");
+  assert.equal(model.evaluations.length, 4);
+  assert.equal(
+    model.evaluations.every(
+      (item) => item.resultStatus === "HORIZON_ROUTER_NOT_CONFIRMED"
+    ),
+    true
+  );
+  assert.equal(
+    experiment.sameCaseEvidenceStatus,
+    "SAME_CASE_EVIDENCE_COMPLETE_FOR_LEGAL_MODEL_INTERSECTIONS"
+  );
+  assert.equal(
+    experiment.horizonRouterStatus,
+    "HORIZON_ROUTER_NOT_CONFIRMED"
+  );
+  assert.equal(
+    experiment.channelAllocationStatus,
+    "CHANNEL_ALLOCATION_MIXED"
+  );
+  assert.equal(registry.currentRoles.activeCandidate, null);
+  assert.equal(registry.currentRoles.approvedForAutomation, null);
 });
 
 test("channel generative G1 execution is eligibility-blocked rather than failed", () => {
@@ -307,12 +341,14 @@ test("reader catalog is a deterministic complete rendering of the registry", asy
   assert.match(catalog, /M2_LAYERED_REVENUE_COMPOSITION_FAIL/u);
   assert.match(catalog, /TAIL_INTERFERENCE_NOT_CONFIRMED/u);
   assert.match(catalog, /CG-CORE-LEGACY-K2-CORE80-WORK-H3/u);
+  assert.match(catalog, /M2-WORK-HR01/u);
+  assert.match(catalog, /HORIZON_ROUTER_NOT_CONFIRMED/u);
 });
 
 test("read-only query exposes scoped identities and refuses invalid ranking", () => {
   const list = runQuery("list");
   assert.equal(list.status, 0, list.stderr);
-  assert.match(list.stdout, /M2 持久模型与模型族：30 个/u);
+  assert.match(list.stdout, /M2 持久模型与模型族：31 个/u);
   assert.match(list.stdout, /M2-CHAN-GEN02/u);
 
   const status = runQuery("status");

@@ -355,10 +355,11 @@ ${horizonRows}
 | ---: | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
 ${primaryRows}
 
-所有可执行分配前后的作品总额预测与评价指标完全不变；最大作品总额点预测差为
+所有已分配尝试在分配前后的作品总额预测与评价指标完全不变；最大作品总额点预测差为
 \`${value.summaries.maximumWorkTotalPointDifference}\`。渠道预测按货币最小单位
 分配，最大金额守恒差为
-\`${value.summaries.maximumConservationDifferenceMinor}\` 分。
+\`${value.summaries.maximumConservationDifferenceMinor}\` 分。弃权尝试没有生成
+渠道预测，因此不把“未分配总额”误记为渠道金额守恒差。
 
 ## 全部原始评价单元
 
@@ -378,7 +379,8 @@ case key、origin 或任何 private 路径。
 人工锚定可学习全局模型（Human-Anchored Learned Global，\`M2-WORK-LG01\`）。
 活动候选（\`activeCandidate\`）和自动化批准
 （\`approvedForAutomation\`）均为空。本阶段没有训练、调参、结果后选窗、修改
-fallback、读取 later-origin/final holdout、写数据库或 production。`;
+fallback、读取 later-origin/final holdout、写数据库或 production。
+`;
 }
 
 function assertAuthorityBindings({ config, registry, priorRescore }) {

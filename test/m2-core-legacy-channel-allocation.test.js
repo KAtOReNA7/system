@@ -190,6 +190,29 @@ test("K3 preserves every raw arm, total metrics and public privacy", () => {
       )
     ]
   }));
+  cases.push({
+    evaluationFamily: "PRIMARY_ROLLING",
+    populationId: "CORE80",
+    origin: "2022-03",
+    horizonMonths: 3,
+    standardWorkId: "PRIVATE_WORK_ABSTAIN",
+    actualTotal: 100,
+    totalPredictions: [total("M2-WORK-OA03", 100)],
+    channels: [
+      channel(
+        "PRIVATE_CHANNEL_ABSTAIN_A",
+        Array(12).fill(0),
+        {},
+        20
+      ),
+      channel(
+        "PRIVATE_CHANNEL_ABSTAIN_B",
+        Array(12).fill(0),
+        {},
+        80
+      )
+    ]
+  });
   const result = buildM2CoreLegacyObservedChannelAllocation(
     cases,
     config,
@@ -222,6 +245,10 @@ test("K3 preserves every raw arm, total metrics and public privacy", () => {
   assert.equal(
     result.publicResult.summaries.maximumConservationDifferenceMinor,
     0
+  );
+  assert.equal(
+    result.publicResult.summaries.abstainAttemptCount > 0,
+    true
   );
   assert.equal(
     result.publicResult.boundaries.resultBasedWindowSelectionPerformed,

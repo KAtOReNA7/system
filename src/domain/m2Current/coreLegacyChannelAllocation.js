@@ -148,7 +148,9 @@ export function buildM2CoreLegacyObservedChannelAllocation(
           attempts.map((row) => row.workTotalPointDifference)
         ),
         maximumConservationDifferenceMinor: maximum(
-          attempts.map((row) => Math.abs(row.conservationDifferenceMinor))
+          attempts
+            .filter((row) => row.status === "ALLOCATED")
+            .map((row) => Math.abs(row.conservationDifferenceMinor))
         )
       }),
       boundaries: Object.freeze({
@@ -355,8 +357,9 @@ function allocateWorkCase({ workCase, total, arm, config }) {
     });
   });
   const allocatedMinor = sum(rows.map((row) => row.pointEstimateMinor));
-  const conservationDifferenceMinor =
-    allocatedMinor - allocated.totalMinor;
+  const conservationDifferenceMinor = allocated.status === "ALLOCATED"
+    ? allocatedMinor - allocated.totalMinor
+    : null;
   if (
     allocated.status === "ALLOCATED"
     && conservationDifferenceMinor
