@@ -106,7 +106,6 @@ function buildActualCache({
   rolling,
   scalePower
 }) {
-  const factor = 10 ** scalePower;
   const cache = new Map();
   let maximumDifference = 0n;
   for (const origin of rolling.origins) {
@@ -132,7 +131,7 @@ function buildActualCache({
         }).map((row) => ({
           workId: row.standardWorkId,
           channelId: row.channelUid,
-          amountMinor: String(Math.round(row.cash * factor))
+          amountMinor: row.amountMinor
         }));
         const value = decomposeM2LayeredRevenueActual({
           futureRows,

@@ -482,6 +482,7 @@ function restatementMonthlyRows(restatement, metadata, scalePower) {
         standardWorkId: scope.standardWorkId,
         channelUid: scope.channelMemberId,
         month: balance.month,
+        amountMinor: amountMinor.toString(),
         cash: minorToNumber(amountMinor, scalePower),
         level2Category:
           metadata.categoryByWork.get(scope.standardWorkId) ?? "UNKNOWN",

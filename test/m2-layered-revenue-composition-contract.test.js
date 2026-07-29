@@ -64,6 +64,23 @@ test("four future cash components are exclusive and conserve money", () => {
   );
 });
 
+test("cash conservation remains exact above JavaScript safe integer range", () => {
+  const amountMinor = "1564749000000000000000";
+  const result = decomposeM2LayeredRevenueActual({
+    futureRows: [{
+      workId: "CORE",
+      channelId: "KNOWN",
+      amountMinor
+    }],
+    coreWorkIds: ["CORE"],
+    originVisiblePositiveWorkIds: ["CORE"],
+    originVisiblePositiveWorkChannels: ["CORE|KNOWN"]
+  });
+  assert.equal(result.components.EXISTING_CORE, amountMinor);
+  assert.equal(result.companyTotalMinor, amountMinor);
+  assert.equal(result.conservationDifferenceMinor, "0");
+});
+
 test("future new work takes precedence over future channel entry", () => {
   const component = classifyM2LayeredRevenueActual({
     workId: "UNSEEN",
