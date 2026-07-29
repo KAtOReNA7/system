@@ -769,7 +769,7 @@ export async function runM2CoreLegacyTailInterferenceTest({ root }) {
   }
 }
 
-function rebuildFrozenLearnedGlobalRows({
+export function rebuildFrozenLearnedGlobalRows({
   config,
   humanPublic,
   humanEvaluations,
@@ -915,7 +915,7 @@ function rebuildFrozenLearnedGlobalRows({
   };
 }
 
-function rebuildFrozenOccurrenceAmountRows({
+export function rebuildFrozenOccurrenceAmountRows({
   config,
   occurrenceRows,
   strictKeys,
@@ -975,7 +975,7 @@ function rebuildFrozenOccurrenceAmountRows({
   };
 }
 
-function rebuildFrozenCoreRevenueManualRows({
+export function rebuildFrozenCoreRevenueManualRows({
   config,
   origins,
   featureRows,
@@ -2406,7 +2406,7 @@ function efficientPairedWorkBootstrap(rows, { iterations, seed }) {
   };
 }
 
-function verifyCoreLegacyStagePreflight(root, {
+export function verifyCoreLegacyStagePreflight(root, {
   stage,
   allowedDirtyPaths
 }) {
@@ -2579,7 +2579,7 @@ function coreRevenueForecastForHorizon(forecast, horizon) {
   throw new Error("m2_core_legacy_horizon_invalid");
 }
 
-function deduplicateFrozenRows(rows) {
+export function deduplicateFrozenRows(rows) {
   const output = new Map();
   for (const row of rows) {
     const key = [

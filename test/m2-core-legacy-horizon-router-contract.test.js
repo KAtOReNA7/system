@@ -5,6 +5,7 @@ import test from "node:test";
 import {
   buildM2CoreLegacyCapabilityMatrix,
   buildM2CoreLegacyK0CapabilityReport,
+  buildM2CoreLegacySameCaseEvaluation,
   capabilityCellKey,
   validateM2CoreLegacyHorizonRouterConfig
 } from "../src/domain/m2Current/coreLegacyHorizonRouter.js";
@@ -139,6 +140,88 @@ test("capability cell key is stable and typed", () => {
   }), "STRICT_ROLLING|12|WORK_CHANNEL");
 });
 
+test("K1 same-case evaluation intersects cases before ranking", () => {
+  const rows = [
+    ...syntheticModelRows("M2-WORK-OA03", [100, 100, 100, 100]),
+    ...syntheticModelRows("M2-WORK-CRMR01", [200, 200, 200, 200]),
+    {
+      ...syntheticModelRows("M2-WORK-CRMR01", [200])[0],
+      standardWorkId: "EXTRA",
+      caseKey: "EXTRA",
+      pointEstimate: 0
+    }
+  ];
+  const result = buildM2CoreLegacySameCaseEvaluation(rows, config, {
+    evaluationHead: "synthetic-head",
+    exactHeadCiRunId: 1
+  });
+  const cell = result.publicResult.comparisonSets.find((item) => (
+    item.evaluationFamily === "PRIMARY_ROLLING"
+    && item.populationId === "CORE80"
+    && item.grain === "WORK_TOTAL"
+    && item.horizonMonths === 3
+  ));
+  assert.equal(cell.caseCount, 4);
+  assert.equal(cell.workCount, 4);
+  assert.equal(cell.winnerDecision.status, "CLEAR_WINNER");
+  assert.equal(cell.winnerDecision.winnerModelId, "M2-WORK-OA03");
+  assert.equal(cell.pairedBootstrap.iterations, 2000);
+  assert.equal(result.privateRows.length, 8);
+  assert.equal(result.publicResult.boundaries.differentCaseIndependentWapeRanked, false);
+  assert.doesNotMatch(
+    JSON.stringify(result.publicResult),
+    /"standardWorkId":|"channelUid":|"caseKey":|"W1"/u
+  );
+});
+
+test("K1 marks material WAPE gains with worse bias as a tradeoff", () => {
+  const candidate = syntheticModelRows(
+    "M2-WORK-OA03",
+    [120, 120, 120, 120]
+  );
+  const balanced = syntheticModelRows(
+    "M2-WORK-CRMR01",
+    [70, 130, 70, 130]
+  );
+  const result = buildM2CoreLegacySameCaseEvaluation(
+    [...candidate, ...balanced],
+    config
+  );
+  const cell = result.publicResult.comparisonSets.find((item) => (
+    item.evaluationFamily === "PRIMARY_ROLLING"
+    && item.populationId === "CORE80"
+    && item.grain === "WORK_TOTAL"
+    && item.horizonMonths === 3
+  ));
+  assert.equal(
+    cell.winnerDecision.status,
+    "WAPE_WIN_BIAS_TRADEOFF"
+  );
+  assert.equal(cell.winnerDecision.pointWapeLeaderModelId, "M2-WORK-OA03");
+  assert.equal(cell.winnerDecision.absoluteBiasWorsening > 0.02, true);
+});
+
+test("K1 does not declare a winner below one percent improvement", () => {
+  const result = buildM2CoreLegacySameCaseEvaluation([
+    ...syntheticModelRows(
+      "M2-WORK-OA03",
+      [110, 110, 110, 110]
+    ),
+    ...syntheticModelRows(
+      "M2-WORK-CRMR01",
+      [110.05, 110.05, 110.05, 110.05]
+    )
+  ], config);
+  const cell = result.publicResult.comparisonSets.find((item) => (
+    item.evaluationFamily === "PRIMARY_ROLLING"
+    && item.populationId === "CORE80"
+    && item.grain === "WORK_TOTAL"
+    && item.horizonMonths === 3
+  ));
+  assert.equal(cell.winnerDecision.status, "NO_STABLE_WINNER");
+  assert.equal(cell.winnerDecision.winnerModelId, null);
+});
+
 function findCell(matrix, modelId, family, horizon, grain) {
   const cell = matrix.find((item) => (
     item.modelId === modelId
@@ -148,4 +231,23 @@ function findCell(matrix, modelId, family, horizon, grain) {
   ));
   assert.ok(cell);
   return cell;
+}
+
+function syntheticModelRows(modelId, predictions) {
+  const origins = ["2021-06", "2021-12", "2022-06", "2022-12"];
+  return predictions.map((pointEstimate, index) => ({
+    schema: "synthetic",
+    modelId,
+    evaluationFamily: "PRIMARY_ROLLING",
+    populationId: "CORE80",
+    grain: "WORK_TOTAL",
+    standardWorkId: `W${index + 1}`,
+    channelUid: null,
+    origin: origins[index],
+    horizonMonths: 3,
+    pointEstimate,
+    actual: 100,
+    caseKey: `CASE_${index + 1}`,
+    frozenSourceStatus: "SYNTHETIC"
+  }));
 }

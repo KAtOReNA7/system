@@ -59,6 +59,9 @@ import {
 import {
   runM2CoreLegacyHorizonRouterK0
 } from "./core_legacy_horizon_router_mode.mjs";
+import {
+  runM2CoreLegacyFullHorizonSameCaseRescore
+} from "./core_legacy_horizon_router_private.mjs";
 
 let config;
 
@@ -120,6 +123,9 @@ const coreLegacyHorizonRouterK0Mode = process.argv.includes(
 );
 const coreLegacyHorizonRouterPublicMode = process.argv.includes(
   "--core-legacy-horizon-router-public"
+);
+const coreLegacyHorizonRouterK1Mode = process.argv.includes(
+  "--core-legacy-horizon-router-k1"
 );
 if (tsbPublicMode) {
   await runM2HumanAnchoredTsbPublicDiagnostic({
@@ -230,6 +236,18 @@ if (
     experimentId: result.experiment.stableExperimentId,
     privateEvaluationPerformed:
       result.boundaries.privateEvaluationPerformed
+  }, null, 2)}\n`);
+  return;
+}
+if (coreLegacyHorizonRouterK1Mode) {
+  const result = await runM2CoreLegacyFullHorizonSameCaseRescore({
+    root
+  });
+  process.stdout.write(`${JSON.stringify({
+    status: result.status,
+    experimentId: result.experiment.stableExperimentId,
+    sameCaseEvidenceStatus: result.sameCaseEvidenceStatus,
+    evaluationHead: result.evaluationHead
   }, null, 2)}\n`);
   return;
 }
