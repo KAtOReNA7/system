@@ -6,7 +6,12 @@ import {
   assertM2LayeredRevenuePublicSafe,
   buildM2LayeredRevenueSyntheticDiagnostic,
   classifyM2LayeredRevenueActual,
+  composeM2LayeredRevenuePrediction,
   decomposeM2LayeredRevenueActual,
+  estimateM2DirectCatalogRetention,
+  estimateM2LayeredPortfolioRatio,
+  forecastM2LayeredPortfolioAmount,
+  selectM2LayeredRatioEstimator,
   validateM2LayeredRevenueCompositionConfig
 } from "../src/domain/m2Current/layeredRevenueComposition.js";
 
@@ -101,6 +106,119 @@ test("public safety blocks row identities and machine paths", () => {
     /m2_layered_revenue_public_identity_leak/u
   );
 });
+
+test("portfolio ratios use only mature pre-origin pseudo-origins", () => {
+  const history = [
+    ratioRow("2021-01", 12, 10, 100),
+    ratioRow("2022-01", 12, 20, 100),
+    ratioRow("2023-01", 12, 30, 100),
+    ratioRow("2024-01", 12, 90, 100)
+  ];
+  const estimate = estimateM2LayeredPortfolioRatio({
+    history,
+    origin: "2024-01",
+    horizonMonths: 12
+  });
+  assert.equal(estimate.status, "COMPUTED");
+  assert.equal(estimate.maturePseudoOriginCount, 3);
+  assert.equal(
+    estimate.estimators.SAME_MONTH_PRIOR_YEAR,
+    0.3
+  );
+  assert.equal(
+    estimate.estimators.RECENT_3_MATURE_MEDIAN,
+    0.2
+  );
+  assert.equal(
+    selectM2LayeredRatioEstimator(
+      estimate,
+      "RECENT_3_MATURE_MEDIAN"
+    ).ratio,
+    0.2
+  );
+  assert.deepEqual(
+    forecastM2LayeredPortfolioAmount({
+      preOrigin12MonthCashMinor: "1000",
+      estimate: {
+        status: "COMPUTED",
+        ratio: 0.2
+      }
+    }),
+    { status: "COMPUTED", amountMinor: "200" }
+  );
+});
+
+test("direct retention estimates each year without recursive compounding", () => {
+  const history = [
+    retentionRow("2018-01", "Y2", 70, 100, "B1"),
+    retentionRow("2019-01", "Y2", 60, 100, "B2"),
+    retentionRow("2020-01", "Y2", 50, 100, "B3")
+  ];
+  const result = estimateM2DirectCatalogRetention({
+    history,
+    origin: "2024-01",
+    annualComponent: "Y2"
+  });
+  assert.equal(result.status, "COMPUTED");
+  assert.equal(result.maturePseudoOriginCount, 3);
+  assert.equal(result.independentTimeBlockCount, 3);
+  assert.equal(result.supportStatus, "DIRECT_SUPPORT");
+  assert.equal(
+    result.estimators.RECENT_3_MATURE_MEDIAN,
+    0.6
+  );
+});
+
+test("fixed composition sums cash and requires every component", () => {
+  assert.deepEqual(
+    composeM2LayeredRevenuePrediction({
+      EXISTING_CORE: "100",
+      EXISTING_TAIL: "20",
+      FUTURE_NEW_WORK: "10",
+      EXISTING_WORK_NEW_CHANNEL: "5"
+    }),
+    {
+      components: {
+        EXISTING_CORE: "100",
+        EXISTING_TAIL: "20",
+        FUTURE_NEW_WORK: "10",
+        EXISTING_WORK_NEW_CHANNEL: "5"
+      },
+      companyTotalMinor: "135"
+    }
+  );
+  assert.throws(
+    () => composeM2LayeredRevenuePrediction({
+      EXISTING_CORE: "100"
+    }),
+    /m2_layered_revenue_component_missing/u
+  );
+});
+
+function ratioRow(pseudoOrigin, horizonMonths, numeratorMinor, denominatorMinor) {
+  return {
+    pseudoOrigin,
+    horizonMonths,
+    numeratorMinor: String(numeratorMinor),
+    denominatorMinor: String(denominatorMinor)
+  };
+}
+
+function retentionRow(
+  pseudoOrigin,
+  annualComponent,
+  numeratorMinor,
+  denominatorMinor,
+  timeBlockId
+) {
+  return {
+    pseudoOrigin,
+    annualComponent,
+    numeratorMinor: String(numeratorMinor),
+    denominatorMinor: String(denominatorMinor),
+    timeBlockId
+  };
+}
 
 function readJson(filePath) {
   return JSON.parse(readFileSync(filePath, "utf8"));

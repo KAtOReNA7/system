@@ -230,4 +230,187 @@ export function assertM2LayeredRevenuePublicSafe(value) {
   return true;
 }
 
+export function estimateM2LayeredPortfolioRatio({
+  history,
+  origin,
+  horizonMonths,
+  halfLifeMonths = 24
+}) {
+  const originSerial = monthToSerial(origin);
+  const mature = history
+    .filter((row) => (
+      Number(row.horizonMonths) === Number(horizonMonths)
+      && monthToSerial(row.pseudoOrigin) + Number(horizonMonths)
+        <= originSerial
+      && BigInt(row.denominatorMinor) > 0n
+    ))
+    .map((row) => ({
+      pseudoOrigin: String(row.pseudoOrigin),
+      serial: monthToSerial(row.pseudoOrigin),
+      ratio: Number(row.numeratorMinor) / Number(row.denominatorMinor)
+    }))
+    .filter((row) => Number.isFinite(row.ratio) && row.ratio >= 0)
+    .sort((left, right) => left.serial - right.serial);
+  if (mature.length === 0) {
+    return Object.freeze({
+      status: "NOT_MATURE",
+      maturePseudoOriginCount: 0,
+      estimators: Object.freeze({})
+    });
+  }
+  const priorYearSerial = originSerial - 12;
+  const priorYear = mature.find((row) => row.serial === priorYearSerial);
+  const recent = mature.slice(-3).map((row) => row.ratio);
+  const weighted = mature.map((row) => ({
+    value: row.ratio,
+    weight: 0.5 ** ((originSerial - row.serial) / halfLifeMonths)
+  }));
+  return Object.freeze({
+    status: "COMPUTED",
+    maturePseudoOriginCount: mature.length,
+    estimators: Object.freeze({
+      SAME_MONTH_PRIOR_YEAR: priorYear?.ratio ?? null,
+      RECENT_3_MATURE_MEDIAN: median(recent),
+      TIME_DECAY_MATURE_MEDIAN: weightedMedian(weighted)
+    })
+  });
+}
+
+export function selectM2LayeredRatioEstimator(
+  estimate,
+  estimatorId
+) {
+  const ratio = estimate?.estimators?.[estimatorId];
+  return Number.isFinite(ratio)
+    ? Object.freeze({ status: "COMPUTED", estimatorId, ratio })
+    : Object.freeze({ status: "NOT_MATURE", estimatorId, ratio: null });
+}
+
+export function forecastM2LayeredPortfolioAmount({
+  preOrigin12MonthCashMinor,
+  estimate
+}) {
+  if (estimate?.status !== "COMPUTED" || !Number.isFinite(estimate.ratio)) {
+    return Object.freeze({
+      status: "NOT_MATURE",
+      amountMinor: null
+    });
+  }
+  const amount = Math.round(
+    Number(preOrigin12MonthCashMinor) * estimate.ratio
+  );
+  if (!Number.isSafeInteger(amount)) {
+    throw new Error("m2_layered_revenue_amount_not_safe_integer");
+  }
+  return Object.freeze({
+    status: "COMPUTED",
+    amountMinor: String(amount)
+  });
+}
+
+export function estimateM2DirectCatalogRetention({
+  history,
+  origin,
+  annualComponent,
+  ageBand = null,
+  minimumMaturePseudoOrigins = 3
+}) {
+  const year = { Y1: 12, Y2: 24, Y3: 36 }[annualComponent];
+  if (!year) {
+    throw new Error("m2_layered_revenue_annual_component_invalid");
+  }
+  const eligible = history.filter((row) => (
+    row.annualComponent === annualComponent
+    && (ageBand === null || row.ageBand === ageBand)
+  ));
+  const estimate = estimateM2LayeredPortfolioRatio({
+    history: eligible.map((row) => ({
+      ...row,
+      horizonMonths: year
+    })),
+    origin,
+    horizonMonths: year
+  });
+  const ratios = eligible
+    .filter((row) => (
+      monthToSerial(row.pseudoOrigin) + year <= monthToSerial(origin)
+      && BigInt(row.denominatorMinor) > 0n
+    ))
+    .map((row) => Number(row.numeratorMinor) / Number(row.denominatorMinor))
+    .filter(Number.isFinite);
+  const uncertainty = ratios.length < 2
+    ? null
+    : quantile(ratios, 0.75) - quantile(ratios, 0.25);
+  return Object.freeze({
+    status: estimate.status,
+    annualComponent,
+    ageBand,
+    maturePseudoOriginCount: estimate.maturePseudoOriginCount,
+    independentTimeBlockCount: new Set(
+      eligible.map((row) => row.timeBlockId).filter(Boolean)
+    ).size,
+    uncertaintyIqr: uncertainty,
+    supportStatus:
+      estimate.maturePseudoOriginCount >= minimumMaturePseudoOrigins
+        ? "DIRECT_SUPPORT"
+        : "SHRINK_REQUIRED",
+    estimators: estimate.estimators
+  });
+}
+
+export function composeM2LayeredRevenuePrediction(components) {
+  const values = COMPONENT_IDS.map((id) => {
+    const value = components[id];
+    if (value === null || value === undefined) {
+      throw new Error(`m2_layered_revenue_component_missing:${id}`);
+    }
+    return BigInt(value);
+  });
+  return Object.freeze({
+    components: Object.freeze(Object.fromEntries(
+      COMPONENT_IDS.map((id, index) => [id, values[index].toString()])
+    )),
+    companyTotalMinor: values
+      .reduce((total, value) => total + value, 0n)
+      .toString()
+  });
+}
+
+function median(values) {
+  if (values.length === 0) return null;
+  const sorted = [...values].sort((left, right) => left - right);
+  const middle = Math.floor(sorted.length / 2);
+  return sorted.length % 2 === 1
+    ? sorted[middle]
+    : (sorted[middle - 1] + sorted[middle]) / 2;
+}
+
+function weightedMedian(rows) {
+  if (rows.length === 0) return null;
+  const sorted = [...rows].sort((left, right) => left.value - right.value);
+  const total = sorted.reduce((sum, row) => sum + row.weight, 0);
+  let cumulative = 0;
+  for (const row of sorted) {
+    cumulative += row.weight;
+    if (cumulative >= total / 2) return row.value;
+  }
+  return sorted.at(-1).value;
+}
+
+function quantile(values, probability) {
+  if (values.length === 0) return null;
+  const sorted = [...values].sort((left, right) => left - right);
+  const index = (sorted.length - 1) * probability;
+  const lower = Math.floor(index);
+  const upper = Math.ceil(index);
+  return sorted[lower]
+    + (sorted[upper] - sorted[lower]) * (index - lower);
+}
+
+function monthToSerial(month) {
+  const match = /^(\d{4})-(0[1-9]|1[0-2])$/u.exec(String(month));
+  if (!match) throw new Error("m2_layered_revenue_month_invalid");
+  return Number(match[1]) * 12 + Number(match[2]) - 1;
+}
+
 export { COMPONENT_IDS as M2_LAYERED_REVENUE_COMPONENT_IDS };
