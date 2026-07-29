@@ -275,6 +275,44 @@ export function quantiles(values, probabilities) {
   ));
 }
 
+export function assertCoreRevenuePublicSafe(value) {
+  const forbiddenFields = new Set([
+    "standardWorkId",
+    "channelUid",
+    "channelMemberId",
+    "authorityRecordId",
+    "privatePath",
+    "privateReceiptPath"
+  ]);
+  const visit = (item) => {
+    if (Array.isArray(item)) {
+      item.forEach(visit);
+      return;
+    }
+    if (item !== null && typeof item === "object") {
+      for (const [field, nested] of Object.entries(item)) {
+        if (forbiddenFields.has(field)) {
+          throw new Error(
+            "m2_core_revenue_manual_public_artifact_private_field_found"
+          );
+        }
+        visit(nested);
+      }
+      return;
+    }
+    if (
+      typeof item === "string"
+      && /^chn_[a-f0-9]+$/u.test(item)
+    ) {
+      throw new Error(
+        "m2_core_revenue_manual_public_artifact_private_value_found"
+      );
+    }
+  };
+  visit(value);
+  return true;
+}
+
 function distinctWorkCount(rows) {
   return new Set(
     rows.map((row, index) => (

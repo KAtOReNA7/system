@@ -19,6 +19,7 @@ import {
   validateM2CoreRevenueManualConfig
 } from "../../src/domain/m2Current/coreRevenueManual.js";
 import {
+  assertCoreRevenuePublicSafe,
   determineCoreRevenueManualDecision,
   quantiles,
   scoreCoreRevenuePairedComparison,
@@ -153,7 +154,7 @@ export async function runM2CoreRevenueManualPrivateEvaluation({ root }) {
       evaluation,
       asOfAudit
     });
-    assertPublicSafe(publicResult);
+    assertCoreRevenuePublicSafe(publicResult);
     await writePrivateOutputs({
       root,
       config,
@@ -1498,19 +1499,6 @@ function allWindowActual(index, origin, horizon) {
     total += index.all.get(serial) ?? 0;
   }
   return total;
-}
-
-function assertPublicSafe(value) {
-  const text = JSON.stringify(value);
-  if (
-    /standardWorkId|channelUid|channelMemberId|authorityRecordId|privatePath|privateReceiptPath/u
-      .test(text)
-    || /chn_[a-f0-9]+/u.test(text)
-  ) {
-    throw new Error(
-      "m2_core_revenue_manual_public_artifact_private_field_found"
-    );
-  }
 }
 
 async function writeNdjson(filePath, rows) {

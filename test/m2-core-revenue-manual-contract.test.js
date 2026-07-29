@@ -16,6 +16,7 @@ import {
   validateM2CoreRevenueManualConfig
 } from "../src/domain/m2Current/coreRevenueManual.js";
 import {
+  assertCoreRevenuePublicSafe,
   determineCoreRevenueManualDecision,
   scoreCoreRevenuePairedComparison,
   scoreCoreRevenuePublicCell
@@ -224,6 +225,30 @@ test("public cells suppress small populations without leaking metrics", () => {
   ]);
   assert.equal(computed.status, "COMPUTED");
   assert.equal(computed.metrics.wape, 0.1);
+});
+
+test("public safety permits schema labels but blocks row identity fields", () => {
+  assert.equal(assertCoreRevenuePublicSafe({
+    bootstrap: {
+      unit: "standardWorkId",
+      clusterCount: 20
+    },
+    platforms: {
+      PLATFORM_01: { status: "COMPUTED" }
+    }
+  }), true);
+  assert.throws(
+    () => assertCoreRevenuePublicSafe({
+      result: { standardWorkId: "W-PRIVATE" }
+    }),
+    /public_artifact_private_field_found/u
+  );
+  assert.throws(
+    () => assertCoreRevenuePublicSafe({
+      platform: "chn_012345abcdef"
+    }),
+    /public_artifact_private_value_found/u
+  );
 });
 
 test("decision states preserve pass, mixed and fail semantics", () => {
