@@ -16,6 +16,7 @@ import {
   validateM2CoreRevenueManualConfig
 } from "../src/domain/m2Current/coreRevenueManual.js";
 import {
+  assessCoreRevenueLongTermControl,
   assertCoreRevenuePublicSafe,
   determineCoreRevenueManualDecision,
   scoreCoreRevenuePairedComparison,
@@ -35,6 +36,10 @@ const fixture = readJson(
 const diagnostic = readJson(
   "docs/analysis/m2-current/"
     + "M2-core-revenue-manual-public-diagnostic-v0.1.json"
+);
+const development = readJson(
+  "docs/analysis/m2-current/"
+    + "M2-core-revenue-manual-development-v0.1.json"
 );
 
 test("core-revenue manual contract freezes target, population and formula", () => {
@@ -175,6 +180,40 @@ test("authorization permits one development evaluation but no promotion", () => 
   }
 });
 
+test("first valid development evidence is failed and remains bounded", () => {
+  assert.equal(
+    development.status,
+    "M2_CORE_REVENUE_MANUAL_BASELINE_FAIL"
+  );
+  assert.equal(
+    development.decisionRestatement.originalAutomaticStatus,
+    "M2_CORE_REVENUE_MANUAL_BASELINE_MIXED"
+  );
+  assert.equal(
+    development.longTermControl.status,
+    "UNCONTROLLED_COMPOUNDING"
+  );
+  assert.equal(development.execution.firstValidEvaluationProduced, true);
+  assert.equal(development.execution.modelTrainingPerformed, false);
+  assert.equal(development.execution.modelSelectionPerformed, false);
+  assert.equal(development.authority.conservationDifferenceMinor, "0");
+  assert.equal(development.authority.originalReversalRowsDeleted, 0);
+  assert.equal(development.authority.futureFeatureLeakageCount, 0);
+  assert.equal(development.population.legalOriginCount, 70);
+  assert.equal(
+    development.formulaDiagnostics.CORE80.s12Only.workCount,
+    development.formulaDiagnostics.CORE80.frozenF12.workCount
+  );
+  assert.equal(
+    development.formulaDiagnostics.CORE90.noGrowthK1F36.workCount,
+    development.formulaDiagnostics.CORE90.frozenF36.workCount
+  );
+  assert.equal(development.evidenceBoundaries.activeCandidate, null);
+  assert.equal(development.evidenceBoundaries.approvedForAutomation, null);
+  assert.equal(development.evidenceBoundaries.productionChanged, false);
+  assert.equal(assertCoreRevenuePublicSafe(development), true);
+});
+
 test("paired evaluation is deterministic and clusters complete works", () => {
   const pairs = Array.from({ length: 24 }, (_, index) => ({
     standardWorkId: `W-${String(index % 6).padStart(2, "0")}`,
@@ -285,6 +324,45 @@ test("decision states preserve pass, mixed and fail semantics", () => {
     longTermUncontrolled: true
   }).reason,
   "valid_evaluation_completed_long_term_compounding_uncontrolled");
+});
+
+test("long-term control detects compounding failure without tuning", () => {
+  const longTerm = assessCoreRevenueLongTermControl({
+    CORE80: {
+      frozenF36: {
+        status: "COMPUTED",
+        metrics: { wape: 2, absoluteBias: 1.5 }
+      },
+      noGrowthK1F36: {
+        status: "COMPUTED",
+        metrics: { wape: 0.8 }
+      }
+    },
+    CORE90: {
+      frozenF36: {
+        status: "COMPUTED",
+        metrics: { wape: 0.7, absoluteBias: 0.2 }
+      },
+      noGrowthK1F36: {
+        status: "COMPUTED",
+        metrics: { wape: 0.6 }
+      }
+    }
+  });
+  assert.equal(longTerm.status, "UNCONTROLLED_COMPOUNDING");
+  assert.equal(
+    longTerm.populations.CORE80.status,
+    "UNCONTROLLED_COMPOUNDING"
+  );
+  assert.equal(
+    determineCoreRevenueManualDecision({
+      populationComparisons: [],
+      anyMaterialSliceImprovement: true,
+      longTermUncontrolled:
+        longTerm.status === "UNCONTROLLED_COMPOUNDING"
+    }).status,
+    "M2_CORE_REVENUE_MANUAL_BASELINE_FAIL"
+  );
 });
 
 test("synthetic fixture covers the frozen contract edge families", () => {

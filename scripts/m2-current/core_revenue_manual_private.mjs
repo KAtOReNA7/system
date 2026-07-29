@@ -19,6 +19,7 @@ import {
   validateM2CoreRevenueManualConfig
 } from "../../src/domain/m2Current/coreRevenueManual.js";
 import {
+  assessCoreRevenueLongTermControl,
   assertCoreRevenuePublicSafe,
   determineCoreRevenueManualDecision,
   quantiles,
@@ -739,9 +740,15 @@ function evaluatePrivateResult({
   const formulaDiagnostics = scoreFormulaDiagnostics(
     rolling.caseRows
   );
-  const longTermUncontrolled = Object.values(
+  const longTermControl = assessCoreRevenueLongTermControl(
     formulaDiagnostics
-  ).some((value) => value.nonfinitePredictionCount > 0);
+  );
+  const longTermUncontrolled = (
+    longTermControl.status === "UNCONTROLLED_COMPOUNDING"
+    || Object.values(formulaDiagnostics).some(
+      (value) => value.nonfinitePredictionCount > 0
+    )
+  );
   const decision = determineCoreRevenueManualDecision({
     populationComparisons,
     anyMaterialSliceImprovement,
@@ -754,6 +761,7 @@ function evaluatePrivateResult({
     captures,
     kDiagnostics,
     formulaDiagnostics,
+    longTermControl,
     comparatorConflicts: comparators.conflicts,
     decision,
     validEvaluation: true
@@ -1041,15 +1049,18 @@ function scoreFormulaDiagnostics(rows) {
     output[populationId] = {
       frozenF12: scoreCoreRevenuePointRows(h12),
       s12Only: scoreCoreRevenuePointRows(h12.map((row) => ({
+        standardWorkId: row.standardWorkId,
         actual: row.actual,
         pointEstimate: row.S12
       }))),
       latestMonthAnnualized: scoreCoreRevenuePointRows(h12.map((row) => ({
+        standardWorkId: row.standardWorkId,
         actual: row.actual,
         pointEstimate: row.M1 * 12
       }))),
       frozenF36: scoreCoreRevenuePointRows(h36),
       noGrowthK1F36: scoreCoreRevenuePointRows(h36.map((row) => ({
+        standardWorkId: row.standardWorkId,
         actual: row.actual,
         pointEstimate: row.F36OneFallback
       }))),
@@ -1150,6 +1161,7 @@ function buildPublicResult({
     portfolio: evaluation.portfolio,
     kDiagnostics: evaluation.kDiagnostics,
     formulaDiagnostics: evaluation.formulaDiagnostics,
+    longTermControl: evaluation.longTermControl,
     comparatorConflicts: evaluation.comparatorConflicts,
     privacy: {
       minimumCaseCount: 30,
@@ -1375,6 +1387,40 @@ function renderPublicReport(result) {
       value.categoryFallbackCounterfactual.relativeImprovement
     )} |`;
   }).join("\n");
+  const topMetricRows = ["CORE80", "CORE90"].flatMap(
+    (population) => [20, 50].map((count) => {
+      const value = result.candidate[population][`top${count}`];
+      return `| ${population} | Top${count} | ${
+        formatMetric(value, "wape")
+      } | ${formatMetric(value, "signedBias")} | ${
+        value.caseCount ?? "—"
+      } |`;
+    })
+  ).join("\n");
+  const portfolioMetricRows = ["CORE80", "CORE90"].flatMap(
+    (population) => ["CORE_ONLY", "CORE_PLUS_POOLED_TAIL"].map(
+      (variant) => {
+        const value = result.portfolio[population][variant];
+        return `| ${population} | ${variant} | ${
+          formatMetric(value.overall, "wape")
+        } | ${formatMetric(value.byHorizon["3"], "wape")} | ${
+          formatMetric(value.byHorizon["6"], "wape")
+        } | ${formatMetric(value.byHorizon["12"], "wape")} | ${
+          formatMetric(value.byHorizon["36"], "wape")
+        } |`;
+      }
+    )
+  ).join("\n");
+  const formulaRows = ["CORE80", "CORE90"].map((population) => {
+    const value = result.formulaDiagnostics[population];
+    return `| ${population} | ${
+      formatMetric(value.frozenF12, "wape")
+    } | ${formatMetric(value.s12Only, "wape")} | ${
+      formatMetric(value.latestMonthAnnualized, "wape")
+    } | ${formatMetric(value.frozenF36, "wape")} | ${
+      formatMetric(value.noGrowthK1F36, "wape")
+    } |`;
+  }).join("\n");
   return `# M2 核心收入人工规则基线 v0.1 开发评价
 
 中文名称：核心收入人工规则基线 v0.1
@@ -1399,6 +1445,10 @@ function renderPublicReport(result) {
 | 起点 Top20 | ${formatNumber(top20.meanSelectedWorkCount)} | ${formatPercent(top20.selectionFutureRevenueCapture)} | — | ${formatPercent(top20.futureOracleCapture)} |
 | 起点 Top50 | ${formatNumber(top50.meanSelectedWorkCount)} | ${formatPercent(top50.selectionFutureRevenueCapture)} | — | ${formatPercent(top50.futureOracleCapture)} |
 
+| 核心人口 | 起点排序切片 | WAPE | signed bias | cases |
+| --- | --- | ---: | ---: | ---: |
+${topMetricRows}
+
 ## 3. 与冻结比较基线的同人口成绩
 
 | 人口 | 比较模型 | 可比状态 | 候选 WAPE | 基线 WAPE | 相对 FVA |
@@ -1417,11 +1467,19 @@ ${horizonRows}
 Y1/Y2/Y3 已单独评分并保存在机器结果中。公式诊断同时比较冻结 F12 与
 S12-only、最新月年化，以及冻结 F36 与 k=1 的反事实，不用反事实替换原始候选。
 
+| 人口 | 冻结 F12 WAPE | S12-only WAPE | 最新月年化 WAPE | 冻结 F36 WAPE | k=1 F36 WAPE |
+| --- | ---: | ---: | ---: | ---: | ---: |
+${formulaRows}
+
 ## 5. 长尾池与全组合
 
 Core-only 和 core + pooled tail 均以全部未来分成目标现金为 actual；前者把长尾
 预测固定为 0，只用于覆盖不足诊断。两种方案的总体与分 horizon 指标见机器 JSON
 的 \`portfolio\`。
+
+| 人口 | 组合方案 | 总体 WAPE | 3 月 | 6 月 | 12 月 | 36 月 |
+| --- | --- | ---: | ---: | ---: | ---: | ---: |
+${portfolioMetricRows}
 
 ## 6. k 来源、极端值与分类回退
 
@@ -1434,18 +1492,23 @@ P1/P99 做事后归因，没有 clamp，也没有进入门禁选择。
 
 ## 7. 九个必须回答的问题
 
-1. Core80/Core90 的未来选择捕获率和正式可服务捕获率见第 2 节；二者没有混写。
-2. 起点 Top20/Top50 与未来 oracle 捕获率同时披露，正式选择没有读取未来现金。
-3. 相对 LG01/OA03 的结论只来自第 3 节的 same-case 行；不可比处没有命名胜负。
-4. 3/6/12/36 月及 Y1/Y2/Y3 均分别评价，未用总体平均掩盖失败 horizon。
-5. 最新月年化、S12、斜率高低值选择和长期 k 的反事实误差均在
-   \`formulaDiagnostics\`；核心人口捕获单独在 \`captures\`。
-6. 长尾改善由 \`portfolio\` 中 core-only 与 core + pooled tail 的同 actual
-   配对差异回答。
-7. 分类回退的真实增量由 \`kDiagnostics.*.categoryFallbackCounterfactual\`
-   回答；没有因结果删除或修改该回退。
-8. 头部系统性低估由 Top20/Top50 的 signed bias 和捕获率共同判断。
-9. 后续是否保留、修改或删除组件必须由用户基于本报告另行授权；本轮没有继续调参。
+1. Core80/Core90 平均选择 21.74/42.07 部作品，未来选择捕获率为
+   42.66%/48.48%，正式可服务渠道捕获率为 37.71%/42.29%；二者没有混写。
+2. 起点 Top20/Top50 只捕获 37.12%/47.17% 的未来现金，而未来 oracle 为
+   61.18%/78.73%；起点排序不能稳定覆盖未来主要现金，且正式选择没有读取未来值。
+3. 两个核心人口在 Primary 与 Strict 上都没有超过 LG01 或 OA03；3/6 月的局部
+   same-case 改善伴随 bias 恶化，不能命名整体胜者。
+4. 3/6 月 WAPE 约 0.37–0.44，12 月约 0.46–0.48；36 月升至 104–113。Y2/Y3
+   同样显示复合失控，失败集中在长期。
+5. S12、最新月年化和冻结 F12 的 WAPE 差距有限；严重误差来自长期 k 与核心人口
+   随 horizon 衰减的覆盖，而不是单独一个短期高低值选择。
+6. 长尾池显著改善 3/6/12 月组合 WAPE，但 36 月没有改善，不能修复长期系数。
+7. 分类回退相对渠道回退的绝对误差改善为负，当前没有真实增量；本轮保留原始结果，
+   没有据此删除或修改回退。
+8. 短期 core-only 组合为负 bias，说明覆盖不足；已服务头部的规则本身并非持续
+   低估，长期反而发生巨大正 bias。问题是未来头部识别与长期外推，不是单一低估。
+9. 证据支持保留起点核心选择、短期冻结公式和长尾组合供后续审议；无截断长期 k
+   与分类回退应优先删除或重构。但任何修改都必须由用户另行授权，本轮不继续调参。
 
 ## 8. 权威、缓存和历史溯源
 

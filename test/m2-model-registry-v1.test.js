@@ -37,7 +37,7 @@ test("registry schema, evidence paths and immutable digests validate", () => {
   assert.equal(validation.counts.modelCount, 29);
   assert.equal(validation.counts.experimentCount, 14);
   assert.equal(validation.counts.nonModelIdentifierCount, 50);
-  assert.equal(validation.counts.comparabilityGroupCount, 14);
+  assert.equal(validation.counts.comparabilityGroupCount, 16);
 });
 
 test("stable model IDs and model aliases are unique", () => {
@@ -88,7 +88,7 @@ test("current roles retain fallback, research baseline and no automation promoti
   assert.equal(registry.currentRoles.roleConflict, false);
 });
 
-test("core-revenue manual candidate is preregistered without execution or promotion", () => {
+test("core-revenue manual candidate failed without promotion", () => {
   const model = registry.models.find(
     (item) => item.stableModelId === "M2-WORK-CRMR01"
   );
@@ -99,14 +99,29 @@ test("core-revenue manual candidate is preregistered without execution or promot
   );
   assert.equal(
     model.evidenceStatus,
-    "public_canonical_implementation_complete_private_evaluation_not_executed"
+    "first_valid_development_evaluation_failed_long_term_compounding"
   );
-  assert.equal(model.evaluations.length, 0);
+  assert.equal(model.currentRole, "failed_development_candidate");
+  assert.equal(model.evaluations.length, 2);
+  assert.equal(
+    model.evaluations.every(
+      (item) => (
+        item.resultStatus === "M2_CORE_REVENUE_MANUAL_BASELINE_FAIL"
+      )
+    ),
+    true
+  );
   assert.equal(model.automationAuthorized, false);
   assert.equal(model.productionImported, false);
   assert.deepEqual(
     experiment.modelIds,
     ["M2-WORK-CRMR01", "M2-WORK-LG01", "M2-WORK-OA03"]
+  );
+  assert.equal(
+    experiment.arms.find(
+      (item) => item.armId === "MANUAL_RULE"
+    ).executionStatus,
+    "EXECUTED_FAILED_LONG_TERM_COMPOUNDING"
   );
 });
 

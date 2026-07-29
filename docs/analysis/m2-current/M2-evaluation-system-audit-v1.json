@@ -32,13 +32,13 @@
     "rolesChangedByAudit": false
   },
   "registryCoverage": {
-    "modelCount": 28,
-    "experimentCount": 13,
+    "modelCount": 29,
+    "experimentCount": 14,
     "nonModelIdentifierCount": 50,
-    "comparabilityGroupCount": 14,
-    "evaluationCount": 41,
-    "wapeEvaluationCount": 39,
-    "signedBiasEvaluationCount": 33,
+    "comparabilityGroupCount": 16,
+    "evaluationCount": 43,
+    "wapeEvaluationCount": 41,
+    "signedBiasEvaluationCount": 35,
     "relativeWapeEvaluationCount": 24,
     "independentEvidenceEvaluationCount": 0
   },
@@ -449,8 +449,8 @@
     },
     {
       "experimentId": "M2-EXP-CORE-REVENUE-MANUAL-01",
-      "classification": "PUBLIC_CANONICAL_IMPLEMENTATION_COMPLETE_PRIVATE_EVALUATION_NOT_EXECUTED",
-      "conclusionZh": "核心收入人工规则基线 v0.1 已完成公开 canonical 实现与 synthetic 确定性验证，但私有滚动评价尚未执行；当前没有模型优劣结论，也不改变运行回退、研究基线、活动候选或自动化授权。"
+      "classification": "EXECUTED_FAILED_LONG_TERM_COMPOUNDING_WITH_PARTIAL_SHORT_HORIZON_IMPROVEMENT",
+      "conclusionZh": "核心收入人工规则基线 v0.1 已完成首个有效真实滚动开发评价；3/6 个月有局部改善，但无截断长期 k 在 36 个月明显复合爆炸，按合同重述为失败。该证据不改变运行回退、研究基线、活动候选或自动化授权。"
     },
     {
       "experimentId": "M2-EXP-ARCHIVE-C1-C3",
@@ -572,6 +572,20 @@
         "comparisonClass": "STANDALONE_ONLY",
         "modelIds": [
           "M2-CHAN-PSC01"
+        ]
+      },
+      {
+        "comparableGroupId": "CG-CRMR01-CORE80-ABSOLUTE-6004",
+        "comparisonClass": "STANDALONE_ONLY",
+        "modelIds": [
+          "M2-WORK-CRMR01"
+        ]
+      },
+      {
+        "comparableGroupId": "CG-CRMR01-CORE90-ABSOLUTE-11612",
+        "comparisonClass": "STANDALONE_ONLY",
+        "modelIds": [
+          "M2-WORK-CRMR01"
         ]
       },
       {

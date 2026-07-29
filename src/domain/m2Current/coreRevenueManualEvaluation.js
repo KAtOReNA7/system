@@ -257,6 +257,42 @@ export function determineCoreRevenueManualDecision({
   });
 }
 
+export function assessCoreRevenueLongTermControl(formulaDiagnostics) {
+  const populations = {};
+  let uncontrolled = false;
+  for (const populationId of ["CORE80", "CORE90"]) {
+    const value = formulaDiagnostics?.[populationId];
+    const frozen = value?.frozenF36;
+    const noGrowth = value?.noGrowthK1F36;
+    const populationUncontrolled = (
+      frozen?.status === "COMPUTED"
+      && noGrowth?.status === "COMPUTED"
+      && frozen.metrics.wape > 1
+      && frozen.metrics.absoluteBias > 1
+      && noGrowth.metrics.wape < 1
+    );
+    populations[populationId] = Object.freeze({
+      status: populationUncontrolled
+        ? "UNCONTROLLED_COMPOUNDING"
+        : "CONTROLLED_OR_INCONCLUSIVE",
+      frozenF36Wape: frozen?.metrics?.wape ?? null,
+      frozenF36AbsoluteBias:
+        frozen?.metrics?.absoluteBias ?? null,
+      noGrowthK1F36Wape: noGrowth?.metrics?.wape ?? null
+    });
+    uncontrolled ||= populationUncontrolled;
+  }
+  return Object.freeze({
+    status: uncontrolled
+      ? "UNCONTROLLED_COMPOUNDING"
+      : "CONTROLLED_OR_INCONCLUSIVE",
+    rule:
+      "frozen_F36_WAPE_and_absolute_bias_above_one_"
+      + "while_same_case_k1_F36_WAPE_below_one",
+    populations: Object.freeze(populations)
+  });
+}
+
 export function quantiles(values, probabilities) {
   const sorted = values
     .map(Number)

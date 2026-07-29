@@ -3,6 +3,11 @@
 状态：审计完成且未改动指标（M2 Evaluation System Audit，
 `M2_EVALUATION_SYSTEM_AUDIT_COMPLETE_NO_METRIC_CHANGE`）。
 
+2026-07-29 总账增补：核心收入人工规则基线 v0.1
+（`M2-WORK-CRMR01`）的首个有效真实滚动评价已登记为长期复合失控失败。此增补只
+更新当前 Registry 覆盖、实验分类和成绩总账；下文“模型执行为 0”描述的是本审计
+最初执行时的边界，不改写为本次模型执行声明。
+
 ## 1. 结论先行
 
 本轮基于已提交公开代码、Model Registry 和公开聚合证据完成只读审计。模型执行、
@@ -29,7 +34,7 @@
    （Evaluation Contract v2 Proposal，`DRAFT_NOT_ACTIVE`）。该草案本轮未启用，
    也未改变 evaluator、gate、阈值、模型角色或历史成绩。
 
-审计置信度：对当前公开代码公式、Model Registry 的 40 条评价记录和 13 个可比组为
+审计置信度：对当前公开代码公式、Model Registry 的 43 条评价记录和 16 个可比组为
 高；对无法从公开聚合反推的行级误差、排序、校准、区间和新指标明确记为
 `NOT_COMPUTABLE_FROM_PUBLIC_AGGREGATES`，不作数值猜测。
 
@@ -172,7 +177,7 @@ WAPE 为 0。组合结果不能分配回作品，也不能证明作品预测成�
 
 ## 5. 当前指标覆盖矩阵
 
-Model Registry 当前登记 29 个模型、14 个实验、14 个可比组和 41 条评价记录。
+Model Registry 当前登记 29 个模型、14 个实验、16 个可比组和 43 条评价记录。
 
 | 指标/证据 | 登记覆盖 | 能力解释 | 主要缺口 |
 |---|---:|---|---|
@@ -203,7 +208,7 @@ Model Registry 当前登记 29 个模型、14 个实验、14 个可比组和 41 
 | 渠道倍率专家 v0.1（Channel Scalar Experts v0.1，`M2-EXP-CHANNEL-EXPERTS-01`） | 主窗和严格窗真实失败（`TRUE_PRIMARY_AND_STRICT_FAILURE`） | 两个核心可比窗均明显恶化。 |
 | 渠道时间生成 v0.2（Channel Generative v0.2，`M2-EXP-CHANNEL-GENERATIVE-02`） | 前置条件阻断、未执行（`BLOCKED_NOT_EXECUTED_NO_MODEL_CONCLUSION`） | 只能判定未执行，不能判定候选优劣。 |
 | 出版行业规模适配渠道核心开发（Publishing-Scale Channel Core Development，`M2-EXP-PUBLISHING-SCALE-CHANNEL-01`） | 候选拟合前实现阻断、无模型结论（`IMPLEMENTATION_BLOCKED_BEFORE_CANDIDATE_FIT_NO_MODEL_CONCLUSION`） | 私有物化已启动，但因实现接线错误在候选拟合前 fail-closed；没有候选预测或评价指标。一次性授权已消耗，未授权重试。 |
-| 核心收入人工规则基线开发评价（Core-Revenue Manual Rule Baseline Development Evaluation，`M2-EXP-CORE-REVENUE-MANUAL-01`） | 公开 canonical 实现完成、私有评价未执行（`PUBLIC_CANONICAL_IMPLEMENTATION_COMPLETE_PRIVATE_EVALUATION_NOT_EXECUTED`） | synthetic 确定性与无未来特征验证已通过，但当前仍没有真实模型优劣结论；不改变运行回退、研究基线、活动候选或自动化授权。 |
+| 核心收入人工规则基线开发评价（Core-Revenue Manual Rule Baseline Development Evaluation，`M2-EXP-CORE-REVENUE-MANUAL-01`） | 已执行、长期复合失控且短期仅局部改善（`EXECUTED_FAILED_LONG_TERM_COMPOUNDING_WITH_PARTIAL_SHORT_HORIZON_IMPROVEMENT`） | 首个有效真实滚动评价已完成；3/6 月有局部改善，但无截断长期 k 在 36 月明显复合爆炸，按合同重述为失败；不改变运行回退、研究基线、活动候选或自动化授权。 |
 | 历史冻结开发活动（Archived C1-C3 Development Campaign，`M2-EXP-ARCHIVE-C1-C3`） | 历史目标失败（`ARCHIVED_HISTORICAL_TARGET_FAILURES`） | 保留追溯；不同目标/权威，不能与当前分成现金直接排名。 |
 
 “无法提高总体 WAPE/bias”因此至少有四种不同含义：
@@ -230,6 +235,9 @@ Model Registry 当前登记 29 个模型、14 个实验、14 个可比组和 41 
 | `CG-WORK-SS-HA-STRICT-74320` | 复用开发窗（`REUSED_DEVELOPMENT_WINDOW`） | 人工锚定可学习全局模型（`M2-WORK-LG01`）0.411919；TSB 间歇发生模型（`M2-WORK-TSB01`）0.508022；TSB 与全局模型混合候选（`M2-WORK-TSBB01`）0.444871；生命周期五状态模型（`M2-WORK-LC01`）0.622760；渠道倍率专家模型（`M2-CHAN-SCL01`）0.658653 |
 | `CG-WORK-SS-OVERLAP-5203-H36` | 同交集可比（`SAME_INTERSECTION_COMPARABLE`） | 作品发生-金额校准模型 v0.3（`M2-WORK-OA03`）0.376102；人工锚定可学习全局模型（`M2-WORK-LG01`）0.277239；TSB 与全局模型混合候选（`M2-WORK-TSBB01`）0.263524；生命周期五状态模型（`M2-WORK-LC01`）0.274587。该同窗交集仅为诊断。 |
 | `CG-G1-BLOCKED-NO-CANDIDATE-OUTCOME` | 仅独立展示（`STANDALONE_ONLY`） | 渠道时间生成模型 v0.2——独立渠道月度发生—条件金额核心（Channel Generative v0.2 — Independent Monthly Occurrence × Conditional Amount Core，`M2-CHAN-GEN02`）没有候选分数（`M2_CHANNEL_GENERATIVE_G1_CORE_BLOCKED`） |
+| `CG-PSC01-IMPLEMENTATION-BLOCK-NO-CANDIDATE-OUTCOME` | 仅独立展示（`STANDALONE_ONLY`） | 出版行业适配的渠道月度发生—条件金额核心（`M2-CHAN-PSC01`）在候选拟合前实现阻断，没有候选分数（`M2_PUBLISHING_SCALE_IMPLEMENTATION_BLOCKED`） |
+| `CG-CRMR01-CORE80-ABSOLUTE-6004` | 仅独立展示（`STANDALONE_ONLY`） | 核心收入人工规则基线 v0.1（`M2-WORK-CRMR01`）Core80 全 horizon WAPE 67.811901（`M2_CORE_REVENUE_MANUAL_BASELINE_FAIL`） |
+| `CG-CRMR01-CORE90-ABSOLUTE-11612` | 仅独立展示（`STANDALONE_ONLY`） | 核心收入人工规则基线 v0.1（`M2-WORK-CRMR01`）Core90 全 horizon WAPE 61.841350（`M2_CORE_REVENUE_MANUAL_BASELINE_FAIL`） |
 | `CG-WORK-HISTORICAL-C1` | 不同目标（`DIFFERENT_TARGET_NOT_COMPARABLE`） | 透明组合模型（C1 Transparent Ensemble，`M2-WORK-C1TE01`）3.850157 |
 | `CG-WORK-LEGACY-BUYOUT-C2R` | 不同目标（`DIFFERENT_TARGET_NOT_COMPARABLE`） | 旧买断收入路由模型（Legacy C2-R Revenue Route，`M2-WORK-C2R01`）1.179600 |
 | `CG-WORK-ARCHIVE-FORMAL-7851` | 复用历史开发窗（`REUSED_DEVELOPMENT_WINDOW`） | 正式现金路由分治模型（Formal-Cash Route-Specific Model C2-R.1，`M2-WORK-C2R101`）0.583824；活跃度与间歇模型组合（C2 Activity and Intermittent Model Mix，`M2-WORK-C2IM01`）0.556955；内部特征残差校正模型（C3 Internal-Feature Residual Correction，`M2-WORK-C3IR01`）0.553945 |
@@ -249,7 +257,7 @@ Model Registry 当前登记 29 个模型、14 个实验、14 个可比组和 41 
 | 排序/分配 | 无 canonical 模型或评价 | 不能由 WAPE 推断排序能力 |
 | 风险/区间 | 部分历史概率报告有 coverage/WIS/CRPS 和 risk–coverage | 没有统一同组、独立证据支持风险能力冠军 |
 
-所有 40 条登记评价的 `independentEvidence=false`。活动候选和自动化批准模型仍为空
+所有 43 条登记评价的 `independentEvidence=false`。活动候选和自动化批准模型仍为空
 （`activeCandidate=null`、`approvedForAutomation=null`）。
 
 ## 9. 评价合同 v2 草案
