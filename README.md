@@ -30,9 +30,10 @@
 | M2 评价合同 v2.1 | 历史开发评价合同 | 继续保留审计证据，但当前开发评价权威已前移到 v2.2 |
 | M2 评价合同 v2.2 | 开发评价已激活，并透明隔离无法分配的冲销残差（`M2_EVALUATION_V2_2_ACTIVE_FOR_DEVELOPMENT_WITH_DISCLOSED_RESIDUAL_EXCLUSION`） | 不是 production/automation gate，不改变运行回退模型 |
 | M2 出版行业规模适配 | 私有物化在候选拟合前因实现接线错误 fail-closed（`M2_PUBLISHING_SCALE_IMPLEMENTATION_BLOCKED`） | 没有候选预测或评价指标；一次性授权已消耗，未授权重试 |
+| M2 分层收入组合 v0.1 | 已完成首个有效组合开发评价并失败（`M2_LAYERED_REVENUE_COMPOSITION_FAIL`） | 12/36 个月主结果失败；年龄带辅助臂和年度分量未完整执行；没有晋升或自动化授权 |
 | M3 | 仅合成 fixture/prototype | 不代表真实材料执行或正式发布 |
 
-最新治理入口是 [M2 当前状态索引 v0.37](docs/analysis/m2-v2/M2-v2-current-state-index-v0.37.md)。
+最新治理入口是 [M2 当前状态索引 v0.38](docs/analysis/m2-v2/M2-v2-current-state-index-v0.38.md)。
 模型名称、别名、角色、成绩人口和可比组以
 [Model Registry](config/m2-model-registry.v1.json) 为唯一当前机器权威。
 
@@ -43,6 +44,7 @@
 | 作品点预测 | 作品发生-金额校准模型 v0.3（Occurrence-Amount Calibration v0.3，`M2-WORK-OA03`）是现行运行回退模型（operational fallback） | 当前人工权威开发人口 WAPE 为 `0.49075894`；未通过绝对质量门槛 |
 | 作品研究比较 | 人工锚定可学习全局模型（Human-Anchored Learned Global，`M2-WORK-LG01`）是研究比较基线（research baseline） | 只用于研究比较，不是 production 晋升 |
 | 组合预测 | 组合现金 ETS/Holt-Winters（Portfolio ETS/Holt-Winters，`M2-PORT-ETS01`）是组合级参考（portfolio reference） | 组合结果不得分配回作品；不同 horizon 必须分别报告 |
+| 分层组合开发候选 | 分层收入组合模型 v0.1（Layered Revenue Composition Model v0.1，`M2-PORT-LRC01`）已执行失败 | 四分量守恒，但 12/36 个月质量失败且协议物化不完整；不替代组合级参考 |
 | 排序能力 | 仅有后验诊断（post-hoc diagnostic） | 排序信号不能掩盖点预测失败，也不能直接用于分配 |
 | 风险区间 | 存在可复用的冻结开发证据（development evidence） | 缺少合格独立 later-origin，不得接入 production |
 
@@ -159,7 +161,7 @@ holdout。
 
 | 主题 | 当前入口 |
 |---|---|
-| 当前状态 | [M2 当前状态索引 v0.37](docs/analysis/m2-v2/M2-v2-current-state-index-v0.37.md) |
+| 当前状态 | [M2 当前状态索引 v0.38](docs/analysis/m2-v2/M2-v2-current-state-index-v0.38.md) |
 | 模型权威 | [Model Registry](config/m2-model-registry.v1.json) · [中文模型目录](docs/analysis/m2-current/M2-model-catalog-and-scorecard-v1.md) |
 | 评价体系 | [v2.2 合同](docs/analysis/m2-current/M2-evaluation-contract-v2.2.md) · [v2.2 验证](docs/analysis/m2-current/M2-evaluation-contract-v2.2-validation.md) · [v2.1 合同](docs/analysis/m2-current/M2-evaluation-contract-v2.1.md) |
 | 冻结标签重评分 | [v2.2 诊断复核](docs/analysis/m2-current/M2-evaluation-v2.2-diagnostic-recheck.md) · [机器可读聚合](docs/analysis/m2-current/M2-evaluation-v2.2-diagnostic-recheck.json) · [冲销影响](docs/analysis/m2-current/M2-reversal-restatement-impact-v1.md) |

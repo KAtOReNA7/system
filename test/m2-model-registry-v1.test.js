@@ -34,10 +34,10 @@ test("registry schema, evidence paths and immutable digests validate", () => {
     canonicalEvidenceSha256("same\r\ncontent\r\n"),
     canonicalEvidenceSha256("same\ncontent\n")
   );
-  assert.equal(validation.counts.modelCount, 29);
-  assert.equal(validation.counts.experimentCount, 14);
-  assert.equal(validation.counts.nonModelIdentifierCount, 50);
-  assert.equal(validation.counts.comparabilityGroupCount, 16);
+  assert.equal(validation.counts.modelCount, 30);
+  assert.equal(validation.counts.experimentCount, 15);
+  assert.equal(validation.counts.nonModelIdentifierCount, 51);
+  assert.equal(validation.counts.comparabilityGroupCount, 18);
 });
 
 test("stable model IDs and model aliases are unique", () => {
@@ -122,6 +122,41 @@ test("core-revenue manual candidate failed without promotion", () => {
       (item) => item.armId === "MANUAL_RULE"
     ).executionStatus,
     "EXECUTED_FAILED_LONG_TERM_COMPOUNDING"
+  );
+});
+
+test("layered revenue composition failed without post-outcome replacement", () => {
+  const model = registry.models.find(
+    (item) => item.stableModelId === "M2-PORT-LRC01"
+  );
+  const experiment = registry.experiments.find(
+    (item) => (
+      item.experimentId === "M2-EXP-LAYERED-REVENUE-COMPOSITION-01"
+    )
+  );
+  assert.equal(model.currentRole, "failed_development_candidate");
+  assert.equal(model.evaluations.length, 2);
+  assert.equal(
+    model.evaluations.every(
+      (item) => (
+        item.resultStatus === "M2_LAYERED_REVENUE_COMPOSITION_FAIL"
+      )
+    ),
+    true
+  );
+  assert.equal(model.automationAuthorized, false);
+  assert.equal(model.productionImported, false);
+  assert.equal(
+    experiment.arms.find(
+      (item) => item.armId === "L5B"
+    ).executionStatus,
+    "EXECUTED_PRIMARY_FAILED"
+  );
+  assert.equal(
+    experiment.arms.find(
+      (item) => item.armId === "L6B"
+    ).executionStatus,
+    "NOT_EXECUTED_DUPLICATES_L6A"
   );
 });
 
@@ -232,12 +267,14 @@ test("reader catalog is a deterministic complete rendering of the registry", asy
   assert.match(catalog, /CG-G1-BLOCKED-NO-CANDIDATE-OUTCOME/u);
   assert.match(catalog, /M2_CHANNEL_GENERATIVE_G1_CORE_BLOCKED/u);
   assert.match(catalog, /M2_PUBLISHING_SCALE_IMPLEMENTATION_BLOCKED/u);
+  assert.match(catalog, /M2-PORT-LRC01/u);
+  assert.match(catalog, /M2_LAYERED_REVENUE_COMPOSITION_FAIL/u);
 });
 
 test("read-only query exposes scoped identities and refuses invalid ranking", () => {
   const list = runQuery("list");
   assert.equal(list.status, 0, list.stderr);
-  assert.match(list.stdout, /M2 持久模型与模型族：29 个/u);
+  assert.match(list.stdout, /M2 持久模型与模型族：30 个/u);
   assert.match(list.stdout, /M2-CHAN-GEN02/u);
 
   const status = runQuery("status");

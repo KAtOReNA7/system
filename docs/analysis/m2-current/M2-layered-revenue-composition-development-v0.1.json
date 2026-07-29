@@ -1,0 +1,508 @@
+{
+  "schema": "m2.current.layered_revenue_composition.development.public.v0.1",
+  "status": "M2_LAYERED_REVENUE_COMPOSITION_FAIL",
+  "model": {
+    "stableModelId": "M2-PORT-LRC01",
+    "displayNameZh": "分层收入组合模型 v0.1",
+    "displayNameEn": "Layered Revenue Composition Model v0.1",
+    "experimentId": "M2-EXP-LAYERED-REVENUE-COMPOSITION-01",
+    "entityType": "model",
+    "capability": "PORT",
+    "currentRole": "failed_development_candidate",
+    "activeCandidate": false,
+    "approvedForAutomation": false
+  },
+  "execution": {
+    "exactHead": "82e160d4a3305f0b408582eaeb0527c26005e555",
+    "draftPrNumber": 32,
+    "linuxCi": "success",
+    "windowsCi": "success",
+    "firstValidEvaluationProduced": true,
+    "modelTrainingPerformed": false,
+    "outerResultModelSelectionPerformed": false,
+    "rawRunnerStatus": "M2_LAYERED_REVENUE_COMPOSITION_PARTIAL",
+    "validationRestatementPerformed": true,
+    "resultRestatedWithoutRerun": true
+  },
+  "authority": {
+    "rowCount": 190663,
+    "workCount": 2719,
+    "channelCount": 39,
+    "reversalRowCount": 143,
+    "authorityStartMonth": "2017-06",
+    "labelMaturityCutoff": "2026-05",
+    "originalReversalRowsDeleted": 0,
+    "conservationDifferenceMinor": "0"
+  },
+  "population": {
+    "legalOriginCount": 70
+  },
+  "fourComponentConservation": {
+    "maximumDifferenceMinor": "0",
+    "status": "CONSERVED"
+  },
+  "componentActualShares": {
+    "EXISTING_CORE": 0.45361161609630746,
+    "EXISTING_TAIL": 0.07693649301630717,
+    "FUTURE_NEW_WORK": 0.4135854473333111,
+    "EXISTING_WORK_NEW_CHANNEL": 0.05586644355407447
+  },
+  "variants": {
+    "CORE80": {
+      "L7": {
+        "3": {
+          "status": "COMPUTED",
+          "metrics": {
+            "caseCount": 70,
+            "actualAbsoluteTotal": 122749496.03819999,
+            "absoluteErrorTotal": 22136501.029326323,
+            "signedErrorTotal": -4999487.462732329,
+            "wape": 0.1803388343235021,
+            "signedBias": -0.040729189317212956,
+            "absoluteBias": 0.040729189317212956,
+            "mae": 316235.72899037605,
+            "medianAbsoluteError": 179161.82861124544,
+            "absoluteErrorQuantiles": {
+              "p50": 179161.82861124544,
+              "p75": 438063.40558141854,
+              "p90": 847002.7117603887,
+              "p95": 1081241.9621766594,
+              "p99": 1201813.057499372
+            }
+          },
+          "caseCount": 70,
+          "workCount": 70,
+          "bootstrap": {
+            "iterations": 2000,
+            "clusterUnit": "origin",
+            "lower95": 0.1398666673182224,
+            "upper95": 0.22767819938806225
+          }
+        },
+        "6": {
+          "status": "COMPUTED",
+          "metrics": {
+            "caseCount": 70,
+            "actualAbsoluteTotal": 261087615.29719996,
+            "absoluteErrorTotal": 57163586.099103436,
+            "signedErrorTotal": -999904.1333873244,
+            "wape": 0.2189440737510022,
+            "signedBias": -0.0038297647027382684,
+            "absoluteBias": 0.0038297647027382684,
+            "mae": 816622.6585586205,
+            "medianAbsoluteError": 620971.4951622775,
+            "absoluteErrorQuantiles": {
+              "p50": 620971.4951622775,
+              "p75": 1177733.259199829,
+              "p90": 2019996.4804277786,
+              "p95": 2519680.53895988,
+              "p99": 3722099.94258162
+            }
+          },
+          "caseCount": 70,
+          "workCount": 70,
+          "bootstrap": {
+            "iterations": 2000,
+            "clusterUnit": "origin",
+            "lower95": 0.16283828674709128,
+            "upper95": 0.28575605722400416
+          }
+        }
+      },
+      "L5A": {
+        "12": {
+          "status": "COMPUTED",
+          "metrics": {
+            "caseCount": 70,
+            "actualAbsoluteTotal": 577168716.8956,
+            "absoluteErrorTotal": 206851264.46905163,
+            "signedErrorTotal": 104072270.17979597,
+            "wape": 0.35838959807391557,
+            "signedBias": 0.18031516111886028,
+            "absoluteBias": 0.18031516111886028,
+            "mae": 2955018.063843595,
+            "medianAbsoluteError": 1815298.9387050783,
+            "absoluteErrorQuantiles": {
+              "p50": 1815298.9387050783,
+              "p75": 3647112.7144970153,
+              "p90": 6810992.570619075,
+              "p95": 10258758.758064765,
+              "p99": 12696138.966709457
+            }
+          },
+          "caseCount": 70,
+          "workCount": 70,
+          "bootstrap": {
+            "iterations": 2000,
+            "clusterUnit": "origin",
+            "lower95": 0.2815884471483667,
+            "upper95": 0.4502593428784298
+          }
+        }
+      },
+      "L5B": {
+        "12": {
+          "status": "COMPUTED",
+          "metrics": {
+            "caseCount": 70,
+            "actualAbsoluteTotal": 577168716.8956,
+            "absoluteErrorTotal": 318048638.2738017,
+            "signedErrorTotal": 160079113.5728501,
+            "wape": 0.5510496826378262,
+            "signedBias": 0.27735237355528003,
+            "absoluteBias": 0.27735237355528003,
+            "mae": 4543551.975340024,
+            "medianAbsoluteError": 3531877.506843378,
+            "absoluteErrorQuantiles": {
+              "p50": 3531877.506843378,
+              "p75": 5984322.044382617,
+              "p90": 8507826.554315409,
+              "p95": 12737553.836555008,
+              "p99": 20417607.792883433
+            }
+          },
+          "caseCount": 70,
+          "workCount": 70,
+          "bootstrap": {
+            "iterations": 2000,
+            "clusterUnit": "origin",
+            "lower95": 0.4548313994422237,
+            "upper95": 0.6666543338579053
+          }
+        }
+      },
+      "L6A": {
+        "36": {
+          "status": "COMPUTED",
+          "metrics": {
+            "caseCount": 70,
+            "actualAbsoluteTotal": 2288280725.6480994,
+            "absoluteErrorTotal": 4497025220.723918,
+            "signedErrorTotal": 2161049934.602919,
+            "wape": 1.965241926097265,
+            "signedBias": 0.9443989587382705,
+            "absoluteBias": 0.9443989587382705,
+            "mae": 64243217.438913114,
+            "medianAbsoluteError": 36363960.51615,
+            "absoluteErrorQuantiles": {
+              "p50": 36363960.51615,
+              "p75": 135005290.45631006,
+              "p90": 162501005.46144432,
+              "p95": 174193091.28063405,
+              "p99": 193481404.4997229
+            }
+          },
+          "caseCount": 70,
+          "workCount": 70,
+          "bootstrap": {
+            "iterations": 2000,
+            "clusterUnit": "origin",
+            "lower95": 1.7029297452395344,
+            "upper95": 2.2512672133756344
+          }
+        }
+      },
+      "L6B_SHRUNK_TO_COMPANY_CATALOG": {
+        "36": {
+          "distinctArmExecutionStatus": "NOT_EXECUTED_DUPLICATES_L6A",
+          "status": "COMPUTED",
+          "metrics": {
+            "caseCount": 70,
+            "actualAbsoluteTotal": 2288280725.6480994,
+            "absoluteErrorTotal": 4497025220.723918,
+            "signedErrorTotal": 2161049934.602919,
+            "wape": 1.965241926097265,
+            "signedBias": 0.9443989587382705,
+            "absoluteBias": 0.9443989587382705,
+            "mae": 64243217.438913114,
+            "medianAbsoluteError": 36363960.51615,
+            "absoluteErrorQuantiles": {
+              "p50": 36363960.51615,
+              "p75": 135005290.45631006,
+              "p90": 162501005.46144432,
+              "p95": 174193091.28063405,
+              "p99": 193481404.4997229
+            }
+          },
+          "caseCount": 70,
+          "workCount": 70,
+          "bootstrap": {
+            "iterations": 2000,
+            "clusterUnit": "origin",
+            "lower95": 1.7029297452395344,
+            "upper95": 2.2512672133756344
+          }
+        }
+      }
+    },
+    "CORE90": {
+      "L7": {
+        "3": {
+          "status": "COMPUTED",
+          "metrics": {
+            "caseCount": 70,
+            "actualAbsoluteTotal": 122749496.03819999,
+            "absoluteErrorTotal": 22136501.029326316,
+            "signedErrorTotal": -4999487.462732326,
+            "wape": 0.18033883432350203,
+            "signedBias": -0.040729189317212935,
+            "absoluteBias": 0.040729189317212935,
+            "mae": 316235.72899037594,
+            "medianAbsoluteError": 179161.8286112455,
+            "absoluteErrorQuantiles": {
+              "p50": 179161.8286112455,
+              "p75": 438063.40558141726,
+              "p90": 847002.7117603911,
+              "p95": 1081241.9621766598,
+              "p99": 1201813.0574993705
+            }
+          },
+          "caseCount": 70,
+          "workCount": 70,
+          "bootstrap": {
+            "iterations": 2000,
+            "clusterUnit": "origin",
+            "lower95": 0.1398666673182224,
+            "upper95": 0.22767819938806225
+          }
+        },
+        "6": {
+          "status": "COMPUTED",
+          "metrics": {
+            "caseCount": 70,
+            "actualAbsoluteTotal": 261087615.29719996,
+            "absoluteErrorTotal": 57163586.0991034,
+            "signedErrorTotal": -999904.1333873319,
+            "wape": 0.21894407375100206,
+            "signedBias": -0.003829764702738297,
+            "absoluteBias": 0.003829764702738297,
+            "mae": 816622.65855862,
+            "medianAbsoluteError": 620971.4951622775,
+            "absoluteErrorQuantiles": {
+              "p50": 620971.4951622775,
+              "p75": 1177733.2591998293,
+              "p90": 2019996.4804277786,
+              "p95": 2519680.5389598804,
+              "p99": 3722099.942581619
+            }
+          },
+          "caseCount": 70,
+          "workCount": 70,
+          "bootstrap": {
+            "iterations": 2000,
+            "clusterUnit": "origin",
+            "lower95": 0.1628382867470912,
+            "upper95": 0.28575605722400405
+          }
+        }
+      },
+      "L5A": {
+        "12": {
+          "status": "COMPUTED",
+          "metrics": {
+            "caseCount": 70,
+            "actualAbsoluteTotal": 577168716.8956,
+            "absoluteErrorTotal": 207675929.69045156,
+            "signedErrorTotal": 105576134.57279602,
+            "wape": 0.3598184094374897,
+            "signedBias": 0.18292075000297175,
+            "absoluteBias": 0.18292075000297175,
+            "mae": 2966798.9955778793,
+            "medianAbsoluteError": 1829539.818405075,
+            "absoluteErrorQuantiles": {
+              "p50": 1829539.818405075,
+              "p75": 3651414.321854084,
+              "p90": 6788942.2236790825,
+              "p95": 10238961.38180477,
+              "p99": 12740830.71167646
+            }
+          },
+          "caseCount": 70,
+          "workCount": 70,
+          "bootstrap": {
+            "iterations": 2000,
+            "clusterUnit": "origin",
+            "lower95": 0.2832512740852104,
+            "upper95": 0.4521518846403118
+          }
+        }
+      },
+      "L5B": {
+        "12": {
+          "status": "COMPUTED",
+          "metrics": {
+            "caseCount": 70,
+            "actualAbsoluteTotal": 577168716.8956,
+            "absoluteErrorTotal": 319012820.16835165,
+            "signedErrorTotal": 160919748.79202822,
+            "wape": 0.5527202199804181,
+            "signedBias": 0.278808854467308,
+            "absoluteBias": 0.278808854467308,
+            "mae": 4557326.002405023,
+            "medianAbsoluteError": 3666492.1842538062,
+            "absoluteErrorQuantiles": {
+              "p50": 3666492.1842538062,
+              "p75": 6003162.557015547,
+              "p90": 8961621.855897883,
+              "p95": 12646534.395059455,
+              "p99": 20259688.366129175
+            }
+          },
+          "caseCount": 70,
+          "workCount": 70,
+          "bootstrap": {
+            "iterations": 2000,
+            "clusterUnit": "origin",
+            "lower95": 0.45809641645541815,
+            "upper95": 0.6681867161813063
+          }
+        }
+      },
+      "L6A": {
+        "36": {
+          "status": "COMPUTED",
+          "metrics": {
+            "caseCount": 70,
+            "actualAbsoluteTotal": 2288280725.6480994,
+            "absoluteErrorTotal": 4493716953.833623,
+            "signedErrorTotal": 2157741667.7126226,
+            "wape": 1.9637961826387746,
+            "signedBias": 0.9429532152797796,
+            "absoluteBias": 0.9429532152797796,
+            "mae": 64195956.48333747,
+            "medianAbsoluteError": 36363960.51615,
+            "absoluteErrorQuantiles": {
+              "p50": 36363960.51615,
+              "p75": 135998981.23019928,
+              "p90": 162025218.1830897,
+              "p95": 173713422.97066692,
+              "p99": 193532378.66633454
+            }
+          },
+          "caseCount": 70,
+          "workCount": 70,
+          "bootstrap": {
+            "iterations": 2000,
+            "clusterUnit": "origin",
+            "lower95": 1.7016572536588481,
+            "upper95": 2.2488942117965585
+          }
+        }
+      },
+      "L6B_SHRUNK_TO_COMPANY_CATALOG": {
+        "36": {
+          "distinctArmExecutionStatus": "NOT_EXECUTED_DUPLICATES_L6A",
+          "status": "COMPUTED",
+          "metrics": {
+            "caseCount": 70,
+            "actualAbsoluteTotal": 2288280725.6480994,
+            "absoluteErrorTotal": 4493716953.833623,
+            "signedErrorTotal": 2157741667.7126226,
+            "wape": 1.9637961826387746,
+            "signedBias": 0.9429532152797796,
+            "absoluteBias": 0.9429532152797796,
+            "mae": 64195956.48333747,
+            "medianAbsoluteError": 36363960.51615,
+            "absoluteErrorQuantiles": {
+              "p50": 36363960.51615,
+              "p75": 135998981.23019928,
+              "p90": 162025218.1830897,
+              "p95": 173713422.97066692,
+              "p99": 193532378.66633454
+            }
+          },
+          "caseCount": 70,
+          "workCount": 70,
+          "bootstrap": {
+            "iterations": 2000,
+            "clusterUnit": "origin",
+            "lower95": 1.7016572536588481,
+            "upper95": 2.2488942117965585
+          }
+        }
+      }
+    }
+  },
+  "comparators": {
+    "status": "NOT_COMPARABLE",
+    "reason": "no_same_case_company_portfolio_rows_under_the_active_actual_definition"
+  },
+  "horizonDecisions": {
+    "SHORT_TERM_3_6_STATUS": "PARTIAL_ABSOLUTE_METRICS_ONLY_NO_SAME_CASE_COMPARATOR",
+    "MEDIUM_TERM_12_STATUS": "FAIL_PRIMARY_L5B_HIGH_ERROR_AND_WORSE_THAN_L5A_DIAGNOSTIC",
+    "LONG_TERM_36_STATUS": "FAIL_L6A_HIGH_ERROR_L6B_DISTINCT_ARM_NOT_EXECUTED_ANNUAL_COMPONENTS_NOT_SEPARATELY_SCORED",
+    "OVERALL_PORTFOLIO_STATUS": "M2_LAYERED_REVENUE_COMPOSITION_FAIL"
+  },
+  "boundaries": {
+    "activeCandidate": null,
+    "approvedForAutomation": null,
+    "productionChanged": false,
+    "laterOriginRead": false,
+    "finalHoldoutRead": false,
+    "providerUsed": false,
+    "databaseUsed": false
+  },
+  "validation": {
+    "status": "PUBLIC_AGGREGATE_VALIDATED_WITH_PROTOCOL_GAPS",
+    "conclusionReason": "primary_12_and_36_month_results_failed_and_required_distinct_or_annual_outputs_were_not_fully_materialized",
+    "publicNumericValuesFinite": true,
+    "componentActualShareSum": 1.0000000000000002,
+    "predictionRowCount": 840,
+    "primaryRowCount": 280,
+    "primaryCore90ByHorizon": {
+      "3": {
+        "wape": 0.18033883432350203,
+        "signedBias": -0.040729189317212935,
+        "bootstrapLower95": 0.1398666673182224,
+        "bootstrapUpper95": 0.22767819938806225
+      },
+      "6": {
+        "wape": 0.21894407375100206,
+        "signedBias": -0.003829764702738297,
+        "bootstrapLower95": 0.1628382867470912,
+        "bootstrapUpper95": 0.28575605722400405
+      },
+      "12": {
+        "wape": 0.5527202199804181,
+        "signedBias": 0.278808854467308,
+        "bootstrapLower95": 0.45809641645541815,
+        "bootstrapUpper95": 0.6681867161813063
+      },
+      "36": {
+        "wape": 1.9637961826387746,
+        "signedBias": 0.9429532152797796,
+        "bootstrapLower95": 1.7016572536588481,
+        "bootstrapUpper95": 2.2488942117965585
+      }
+    },
+    "variantIntegrity": {
+      "l6aAndL6bPredictionsIdentical": true,
+      "l6bDistinctAgeBandShrinkageExecuted": false,
+      "postOutcomeVariantReplacementPerformed": false
+    },
+    "annualComponentCoverage": {
+      "Y1": "NOT_SEPARATELY_SCORED",
+      "Y2": "NOT_SEPARATELY_SCORED",
+      "Y3": "NOT_SEPARATELY_SCORED"
+    },
+    "declaredPrivateOutputCoverage": {
+      "predictionRows": "MATERIALIZED",
+      "componentRows": "NOT_MATERIALIZED",
+      "evaluationRows": "NOT_MATERIALIZED",
+      "manifest": "MATERIALIZED",
+      "receipt": "MATERIALIZED"
+    },
+    "requiredSliceCoverage": {
+      "component": "VALIDATED_FROM_FROZEN_PREDICTION_ROWS",
+      "origin": "PRIVATE_FROZEN_ROWS_ONLY",
+      "year": "VALIDATED_FROM_FROZEN_PREDICTION_ROWS",
+      "independent_time_block": "HALF_WINDOW_DIAGNOSTIC_ONLY",
+      "core80_core90": "MATERIALIZED",
+      "top_revenue_posthoc": "NOT_MATERIALIZED",
+      "prediction_cash_composition": "VALIDATED_FROM_FROZEN_PREDICTION_ROWS",
+      "absolute_error_contribution": "VALIDATED_FROM_FROZEN_PREDICTION_ROWS"
+    },
+    "frozenAfterValidReceipt": true,
+    "candidateRerunAfterValidReceipt": false
+  }
+}

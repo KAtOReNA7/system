@@ -62,7 +62,7 @@
     "approvedForAutomation": null,
     "activeCandidate": null,
     "blockedExperiment": "M2-EXP-PUBLISHING-SCALE-CHANNEL-01",
-    "latestStateIndex": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.37.md",
+    "latestStateIndex": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.38.md",
     "roleConflict": false,
     "sourceAssertions": [
       {
@@ -1040,7 +1040,7 @@
         "docs/analysis/m2-current/M2-core-revenue-manual-development-v0.1.md"
       ],
       "predecessorIds": ["M2-WORK-MAN01"],
-      "successorIds": [],
+      "successorIds": ["M2-PORT-LRC01"],
       "currentRole": "failed_development_candidate",
       "evidenceStatus": "first_valid_development_evaluation_failed_long_term_compounding",
       "operationalStatus": "development_failed_not_selected_not_production",
@@ -1096,6 +1096,99 @@
           "independentEvidence": false,
           "reportRef": "docs/analysis/m2-current/M2-core-revenue-manual-development-v0.1.json",
           "resultStatus": "M2_CORE_REVENUE_MANUAL_BASELINE_FAIL"
+        }
+      ]
+    },
+    {
+      "stableModelId": "M2-PORT-LRC01",
+      "displayNameZh": "分层收入组合模型 v0.1",
+      "displayNameEn": "Layered Revenue Composition Model v0.1",
+      "legacyIds": [],
+      "legacyAliases": ["layered revenue composition", "M2 layered revenue composition v0.1"],
+      "entityType": "model",
+      "capability": "PORT",
+      "target": "future_sales_share_development_modelable_cash",
+      "targetHistory": ["future_sales_share_development_modelable_cash"],
+      "predictionGrain": "portfolio_origin_horizon_component",
+      "horizonContract": "monthly rolling 3/6/12/36 months with preregistered Y1/Y2/Y3 annual components",
+      "formulaSummaryZh": "把公司未来分成现金互斥分为现有核心、现有长尾、未来新增作品和现有作品新增渠道四部分；短期复用冻结核心规则，12/36 个月使用对 origin 基数的直接成熟历史比率，不递归作品级 k。",
+      "formulaSummaryEn": "Mutually exclusive four-component portfolio composition using frozen short-term core rules and direct mature historical ratios for 12/36-month catalog cash, without recursive work-level k.",
+      "inputSummaryZh": "预测起点可见的开发可建模分成现金、canonical 渠道、Core80/Core90 选择和起点前成熟 pseudo-origin 比率；不读取未来作品或渠道身份。",
+      "codeEntrypoints": [
+        "src/domain/m2Current/layeredRevenueComposition.js",
+        "scripts/m2-current/layered_revenue_composition_mode.mjs",
+        "scripts/m2-current/layered_revenue_composition_private.mjs",
+        "scripts/m2-current/run_m2_human_anchored_development.mjs"
+      ],
+      "configEntrypoints": ["config/m2-current-layered-revenue-composition.v0.1.json"],
+      "evidenceRefs": [
+        "docs/prd/m2-v2/M2-layered-revenue-composition-model-v0.1.md",
+        "docs/analysis/m2-current/M2-layered-revenue-composition-public-diagnostic-v0.1.json",
+        "docs/analysis/m2-current/M2-layered-revenue-composition-development-v0.1.json",
+        "docs/analysis/m2-current/M2-layered-revenue-composition-development-v0.1.md",
+        "docs/analysis/m2-current/M2-layered-revenue-four-component-conservation-v0.1.md",
+        "docs/analysis/m2-current/M2-layered-revenue-future-new-work-v0.1.md",
+        "docs/analysis/m2-current/M2-layered-revenue-existing-work-new-channel-v0.1.md",
+        "docs/analysis/m2-current/M2-layered-revenue-36-month-retention-v0.1.md"
+      ],
+      "predecessorIds": ["M2-WORK-CRMR01", "M2-PORT-ETS01"],
+      "successorIds": [],
+      "currentRole": "failed_development_candidate",
+      "evidenceStatus": "first_valid_development_evaluation_failed_with_protocol_gaps",
+      "operationalStatus": "development_failed_not_selected_not_production",
+      "automationAuthorized": false,
+      "productionImported": false,
+      "finalHoldoutOpened": false,
+      "developmentWindowReuse": "first_valid_rolling_development_evaluation_complete_window_closed",
+      "limitationsZh": [
+        "12 个月预注册主臂 WAPE 0.552720、signed bias +0.278809，且不得用结果更好的诊断臂事后替换",
+        "36 个月主臂 WAPE 1.963796、signed bias +0.942953，未来新增作品分量发生严重高估",
+        "年龄带收缩辅助臂没有形成与公司目录主臂不同的预测，Y1/Y2/Y3 也未单独评分",
+        "没有相同 actual、人口、origin 和组合粒度的冻结比较行，不能计算相对 FVA"
+      ],
+      "registryReviewRequired": false,
+      "evaluations": [
+        {
+          "evaluationId": "eval-lrc01-core80-portfolio-280",
+          "datasetVersion": "M2-layered-revenue-composition-v0.1-development-modelable-restatement",
+          "cashAuthority": "user_reviewed_sales_share_workbook_membership",
+          "populationId": "layered-revenue-core80-70o-280c",
+          "comparableGroupId": "CG-LRC01-CORE80-PORT-280",
+          "caseCount": 280,
+          "workCount": 0,
+          "originCount": 70,
+          "horizons": [3, 6, 12, 36],
+          "target": "future_sales_share_development_modelable_cash",
+          "grain": "portfolio_origin_horizon",
+          "WAPE": 1.50629187822265,
+          "signedBias": 0.7125039968591801,
+          "baselineModelId": null,
+          "relativeWape": null,
+          "materiality": 0.01,
+          "independentEvidence": false,
+          "reportRef": "docs/analysis/m2-current/M2-layered-revenue-composition-development-v0.1.json",
+          "resultStatus": "M2_LAYERED_REVENUE_COMPOSITION_FAIL"
+        },
+        {
+          "evaluationId": "eval-lrc01-core90-portfolio-280",
+          "datasetVersion": "M2-layered-revenue-composition-v0.1-development-modelable-restatement",
+          "cashAuthority": "user_reviewed_sales_share_workbook_membership",
+          "populationId": "layered-revenue-core90-70o-280c",
+          "comparableGroupId": "CG-LRC01-CORE90-PORT-280",
+          "caseCount": 280,
+          "workCount": 0,
+          "originCount": 70,
+          "horizons": [3, 6, 12, 36],
+          "target": "future_sales_share_development_modelable_cash",
+          "grain": "portfolio_origin_horizon",
+          "WAPE": 1.5055704629344393,
+          "signedBias": 0.7117445588624998,
+          "baselineModelId": null,
+          "relativeWape": null,
+          "materiality": 0.01,
+          "independentEvidence": false,
+          "reportRef": "docs/analysis/m2-current/M2-layered-revenue-composition-development-v0.1.json",
+          "resultStatus": "M2_LAYERED_REVENUE_COMPOSITION_FAIL"
         }
       ]
     },
@@ -2159,6 +2252,32 @@
       ]
     },
     {
+      "experimentId": "M2-EXP-LAYERED-REVENUE-COMPOSITION-01",
+      "displayNameZh": "分层收入组合模型开发评价",
+      "displayNameEn": "Layered Revenue Composition Model Development Evaluation",
+      "entityType": "experiment",
+      "modelIds": ["M2-PORT-LRC01", "M2-WORK-CRMR01", "M2-PORT-ETS01", "M2-WORK-LG01", "M2-WORK-OA03"],
+      "arms": [
+        {"armId": "L0", "displayNameZh": "冻结参考模型盘点", "modelId": null, "executionStatus": "FROZEN_REFERENCES_NOT_REEXECUTED_NOT_COMPARABLE"},
+        {"armId": "L1", "displayNameZh": "现有核心作品短期规则", "modelId": "M2-PORT-LRC01", "executionStatus": "EXECUTED"},
+        {"armId": "L2", "displayNameZh": "现有长尾作品组合", "modelId": "M2-PORT-LRC01", "executionStatus": "EXECUTED"},
+        {"armId": "L3", "displayNameZh": "未来新增作品组合", "modelId": "M2-PORT-LRC01", "executionStatus": "EXECUTED_FAILED_LONG_HORIZON"},
+        {"armId": "L4", "displayNameZh": "现有作品新增渠道组合", "modelId": "M2-PORT-LRC01", "executionStatus": "EXECUTED_FAILED_ABSOLUTE_ERROR"},
+        {"armId": "L5A", "displayNameZh": "12 个月核心规则组合诊断臂", "modelId": "M2-PORT-LRC01", "executionStatus": "EXECUTED_DIAGNOSTIC_NOT_SELECTED"},
+        {"armId": "L5B", "displayNameZh": "12 个月直接目录组合主臂", "modelId": "M2-PORT-LRC01", "executionStatus": "EXECUTED_PRIMARY_FAILED"},
+        {"armId": "L6A", "displayNameZh": "36 个月公司目录直接保留主臂", "modelId": "M2-PORT-LRC01", "executionStatus": "EXECUTED_PRIMARY_FAILED"},
+        {"armId": "L6B", "displayNameZh": "36 个月年龄带收缩辅助臂", "modelId": "M2-PORT-LRC01", "executionStatus": "NOT_EXECUTED_DUPLICATES_L6A"},
+        {"armId": "L7", "displayNameZh": "冻结分 horizon 最终组合", "modelId": "M2-PORT-LRC01", "executionStatus": "EXECUTED_FAILED"}
+      ],
+      "evidenceRefs": [
+        "docs/prd/m2-v2/M2-layered-revenue-composition-model-v0.1.md",
+        "docs/analysis/m2-current/M2-layered-revenue-composition-development-v0.1.json",
+        "docs/analysis/m2-current/M2-layered-revenue-composition-development-v0.1.md",
+        "docs/analysis/m2-current/M2-layered-revenue-four-component-conservation-v0.1.md",
+        "docs/analysis/m2-current/M2-layered-revenue-36-month-retention-v0.1.md"
+      ]
+    },
+    {
       "experimentId": "M2-EXP-TSB-OCCURRENCE-01",
       "displayNameZh": "TSB 间歇发生候选",
       "displayNameEn": "TSB Occurrence Challenger",
@@ -2305,6 +2424,7 @@
     {"identifier": "CHANNEL_EXPERT_DEVELOPMENT_FAIL_KEEP_LEARNEDGLOBAL_AND_EXACT_V0_3", "namespace": "M2-STATUS", "parentExperiment": "M2-EXP-CHANNEL-EXPERTS-01", "type": "status_code", "displayNameZh": "渠道倍率专家开发失败并保留现有回退", "meaningZh": "A0–A6 已实际执行，A6 未通过。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-current-channel-experts-development-v0.1.json"},
     {"identifier": "TSB_OCCURRENCE_DEVELOPMENT_FAIL", "namespace": "M2-STATUS", "parentExperiment": "M2-EXP-TSB-OCCURRENCE-01", "type": "status_code", "displayNameZh": "TSB 发生模型开发失败", "meaningZh": "raw 与 blend 已执行并未通过。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-current-human-anchored-tsb-occurrence-development-v0.1.json"},
     {"identifier": "LIFECYCLE_AWARE_DEVELOPMENT_FAIL_TRIVIAL_POSTHOC_GAIN", "namespace": "M2-STATUS", "parentExperiment": "M2-EXP-LIFECYCLE-AWARE-01", "type": "status_code", "displayNameZh": "生命周期模型开发失败且后验收益不实质", "meaningZh": "raw 候选已执行失败，revival-only 改善低于实质阈值。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-current-lifecycle-aware-revenue-forecast-development-v0.1.json"},
+    {"identifier": "M2_LAYERED_REVENUE_COMPOSITION_FAIL", "namespace": "M2-STATUS", "parentExperiment": "M2-EXP-LAYERED-REVENUE-COMPOSITION-01", "type": "status_code", "displayNameZh": "分层收入组合模型开发失败", "meaningZh": "主 12/36 个月结果失败，且年龄带辅助臂和年度分量未完整执行；不改变现行模型角色。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-layered-revenue-composition-development-v0.1.json"},
     {"identifier": "AUTOMATION_BLOCKED", "namespace": "M2-BUSINESS-STATUS", "parentExperiment": null, "type": "business_status", "displayNameZh": "自动化被阻断", "meaningZh": "当前没有模型获准自动化。", "mayAppearAloneInUserReport": false, "evidenceRef": "AGENTS.md"},
     {"identifier": "CANARY_FAIL", "namespace": "M2-BUSINESS-STATUS", "parentExperiment": null, "type": "business_status", "displayNameZh": "Canary 结论失败", "meaningZh": "当前业务 gate 不允许 Canary 或发布。", "mayAppearAloneInUserReport": false, "evidenceRef": "AGENTS.md"}
   ],
@@ -2322,6 +2442,8 @@
     {"comparableGroupId": "CG-PSC01-IMPLEMENTATION-BLOCK-NO-CANDIDATE-OUTCOME", "comparisonClass": "STANDALONE_ONLY", "target": "future_sales_share_development_modelable_cash", "cashAuthority": "user_reviewed_sales_share_workbook_membership", "populationId": "publishing-scale-private-materialization-blocked-before-candidate-fit", "horizons": [3, 6, 12, 18, 24, 36], "grain": "work_origin_horizon_channel_month", "asOfContract": "K7C_exact_head_ci_then_one_time_K7D_private_materialization_attempt", "actualDefinition": "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01", "evaluationFamily": "publishing_scale_K7D_implementation_block_before_candidate_fit"},
     {"comparableGroupId": "CG-CRMR01-CORE80-ABSOLUTE-6004", "comparisonClass": "STANDALONE_ONLY", "target": "future_sales_share_development_modelable_cash", "cashAuthority": "user_reviewed_sales_share_workbook_membership", "populationId": "core-revenue-manual-core80-102w-6004c", "horizons": [3, 6, 12, 36], "grain": "work_origin_horizon", "asOfContract": "70_monthly_origins_2017_08_through_2023_05_origin_visible_features_36_month_label_maturity", "actualDefinition": "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01", "evaluationFamily": "core_revenue_manual_absolute_development"},
     {"comparableGroupId": "CG-CRMR01-CORE90-ABSOLUTE-11612", "comparisonClass": "STANDALONE_ONLY", "target": "future_sales_share_development_modelable_cash", "cashAuthority": "user_reviewed_sales_share_workbook_membership", "populationId": "core-revenue-manual-core90-194w-11612c", "horizons": [3, 6, 12, 36], "grain": "work_origin_horizon", "asOfContract": "70_monthly_origins_2017_08_through_2023_05_origin_visible_features_36_month_label_maturity", "actualDefinition": "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01", "evaluationFamily": "core_revenue_manual_absolute_development"},
+    {"comparableGroupId": "CG-LRC01-CORE80-PORT-280", "comparisonClass": "STANDALONE_ONLY", "target": "future_sales_share_development_modelable_cash", "cashAuthority": "user_reviewed_sales_share_workbook_membership", "populationId": "layered-revenue-core80-70o-280c", "horizons": [3, 6, 12, 36], "grain": "portfolio_origin_horizon", "asOfContract": "70_monthly_origins_2017_08_through_2023_05_origin_visible_features_36_month_label_maturity", "actualDefinition": "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01", "evaluationFamily": "layered_revenue_composition_absolute_development"},
+    {"comparableGroupId": "CG-LRC01-CORE90-PORT-280", "comparisonClass": "STANDALONE_ONLY", "target": "future_sales_share_development_modelable_cash", "cashAuthority": "user_reviewed_sales_share_workbook_membership", "populationId": "layered-revenue-core90-70o-280c", "horizons": [3, 6, 12, 36], "grain": "portfolio_origin_horizon", "asOfContract": "70_monthly_origins_2017_08_through_2023_05_origin_visible_features_36_month_label_maturity", "actualDefinition": "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01", "evaluationFamily": "layered_revenue_composition_absolute_development"},
     {"comparableGroupId": "CG-WORK-HISTORICAL-C1", "comparisonClass": "DIFFERENT_TARGET_NOT_COMPARABLE", "target": "historical_target", "cashAuthority": "historical_target_authority", "populationId": "historical-C1-population", "horizons": [3, 6, 12, 18, 24], "grain": "work_origin_horizon", "asOfContract": "historical_frozen", "actualDefinition": "historical_target_actual", "evaluationFamily": "archive_C1"},
     {"comparableGroupId": "CG-WORK-LEGACY-BUYOUT-C2R", "comparisonClass": "DIFFERENT_TARGET_NOT_COMPARABLE", "target": "legacy_buyout_target", "cashAuthority": "legacy_buyout_target", "populationId": "historical-C2R-population", "horizons": [], "grain": "work_origin_horizon", "asOfContract": "historical_frozen", "actualDefinition": "legacy_buyout_target_actual", "evaluationFamily": "archive_C2R"},
     {"comparableGroupId": "CG-WORK-ARCHIVE-FORMAL-7851", "comparisonClass": "REUSED_DEVELOPMENT_WINDOW", "target": "formal_cash", "cashAuthority": "formal_cash_pre_manual_partition", "populationId": "legacy-machine-route-824w-7851c", "horizons": [3, 6, 12, 18, 24], "grain": "work_origin_horizon", "asOfContract": "historical_frozen", "actualDefinition": "formal_cash_actual_pre_manual_partition", "evaluationFamily": "archive_C2_C3"}

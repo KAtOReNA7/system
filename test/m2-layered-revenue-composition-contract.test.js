@@ -21,6 +21,10 @@ const config = readJson(
 const fixture = readJson(
   "test/fixtures/m2-layered-revenue-composition.synthetic.v0.1.json"
 );
+const development = readJson(
+  "docs/analysis/m2-current/"
+    + "M2-layered-revenue-composition-development-v0.1.json"
+);
 
 test("layered revenue contract freezes identity and authorization", () => {
   assert.equal(validateM2LayeredRevenueCompositionConfig(config), true);
@@ -107,6 +111,44 @@ test("public synthetic diagnostic proves boundaries without identities", () => {
   );
   assert.equal(result.privateEvaluation.executed, false);
   assert.equal(assertM2LayeredRevenuePublicSafe(result), true);
+});
+
+test("first valid layered evaluation is frozen as failed with protocol gaps", () => {
+  assert.equal(
+    development.status,
+    "M2_LAYERED_REVENUE_COMPOSITION_FAIL"
+  );
+  assert.equal(
+    development.execution.exactHead,
+    "82e160d4a3305f0b408582eaeb0527c26005e555"
+  );
+  assert.equal(
+    development.fourComponentConservation.maximumDifferenceMinor,
+    "0"
+  );
+  assert.equal(
+    development.variants.CORE90.L5B["12"].metrics.wape,
+    0.5527202199804181
+  );
+  assert.equal(
+    development.variants.CORE90.L6A["36"].metrics.wape,
+    1.9637961826387746
+  );
+  assert.equal(
+    development.variants.CORE90
+      .L6B_SHRUNK_TO_COMPANY_CATALOG["36"]
+      .distinctArmExecutionStatus,
+    "NOT_EXECUTED_DUPLICATES_L6A"
+  );
+  assert.equal(
+    development.validation.annualComponentCoverage.Y2,
+    "NOT_SEPARATELY_SCORED"
+  );
+  assert.equal(
+    development.validation.candidateRerunAfterValidReceipt,
+    false
+  );
+  assert.equal(assertM2LayeredRevenuePublicSafe(development), true);
 });
 
 test("public safety blocks row identities and machine paths", () => {
