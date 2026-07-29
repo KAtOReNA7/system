@@ -77,6 +77,16 @@ This directory is the only implementation home for current M2 model logic.
 - Public artifacts contain only aggregate evidence. Work IDs, channel IDs,
   row-level actuals, and row-level predictions remain in capability-scoped,
   Git-ignored private output.
+- M2 的 monthly materialization、primary/strict packed rows、冻结 baseline
+  prediction rows、candidate/evaluation rows、manifest、摘要和冲销
+  reconciliation/allocation 都属于 `PRIVATE_DERIVED_CACHE`。缺失时从已验证的
+  `PRIVATE_SOURCE_AUTHORITY` 与冻结实现自动重建，不得要求从旧电脑恢复。
+- 历史 execution/run/attempt receipt 属于 `PRIVATE_RUN_PROVENANCE`，缺失只告警，
+  不得作为拟合输入、标签、baseline 或运行硬门禁，也不得补造。每次当前执行仍必须
+  生成新的版本化 receipt，并用当次 digest 绑定代码、权威输入和输出。
+- M2 prepare/runner 必须在运行时解析仓库根并创建模型专属版本化 Git-ignored
+  目录。派生缓存可重建或替换 current-cache 镜像，但冻结历史 artifact、原始账单
+  和用户确认关系不可覆盖或改写。
 - Extend the existing human-anchored materializer and runner modes. Do not
   create a second production loader, route, API, runtime, or duplicated
   historical runner.
@@ -95,9 +105,12 @@ This directory is the only implementation home for current M2 model logic.
 - Horizon decisions remain separate. A 3/6-month pass must not authorize a
   12/36-month claim, and a long-horizon failure must not erase valid short-term
   evidence. Revenue coverage, not work-count coverage, is the business target.
-- 出版行业适配渠道核心的 K7D 一次性私有授权已在候选拟合前的实现阻断中消耗。
-  未获新的明确授权、独立新收据和新 exact-head Linux/Windows CI 前，不得重跑、
-  覆盖失败收据或把公开 synthetic 验证解释为私有候选结果。
+- 受控 private development 可在首个有效 raw candidate 评价之前修复基础设施、
+  路径、schema、缓存、receipt、内存或确定性实现错误并保留逐次 attempt receipt。
+  一旦首个完整、可解释结果产生，必须立即冻结；不得根据 outer outcome 修改特征、
+  参数、层级、fold 或评价门后再运行第二个版本。
+- 已完成或失败的 private evaluation 不授予再次执行权；后续模型运行仍需用户在当前
+  任务中明确授权、独立新收据和新 exact-head Linux/Windows CI。
 
 ## Evaluation contract rules
 

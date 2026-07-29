@@ -69,17 +69,18 @@ function printStatus() {
   printRole("活动候选", "activeCandidate");
   printRole("自动化批准模型", "approvedForAutomation");
   console.log(
-    `当前阻断实验：${registry.currentRoles.blockedExperiment}`
-      + "（出版行业规模适配渠道核心的私有物化已启动，"
-      + "但在候选拟合前因实现接线错误 fail-closed；"
-      + "`M2_PUBLISHING_SCALE_IMPLEMENTATION_BLOCKED`）"
+    `当前实验：${registry.currentRoles.activeExperiment}`
+      + "（出版行业规模适配渠道核心开发，"
+      + "第一份完整原始候选评价已执行并按冻结门失败；"
+      + "`M2_PUBLISHING_SCALE_CORE_FAIL`）"
   );
+  console.log("当前阻断实验：无（null）。");
   console.log(`当前状态索引：${registry.currentRoles.latestStateIndex}`);
   console.log("本次只读查询模型执行次数：0。");
   console.log(
-    "出版行业规模适配渠道核心开发的 K7D 私有物化启动次数：1；"
-      + "候选拟合启动次数、候选外层预测行和候选评价行均为 0；"
-      + "一次性授权已消耗，未授权重试。"
+    "出版行业规模适配渠道核心开发的第一份有效原始候选评价已经冻结；"
+      + "原始候选预测行 3,318,819，primary 评价 case 12,039，"
+      + "strict 评价 case 74,320；不授权第二个参数版本。"
   );
 }
 
@@ -302,6 +303,7 @@ function formatMetric(value, resultStatus = "") {
 function entityTypeZh(value) {
   return {
     model: "模型",
+    model_revision: "模型修订",
     model_family: "模型族",
     model_pipeline: "选定管线"
   }[value] ?? "登记实体";
@@ -319,6 +321,8 @@ function capabilityZh(value) {
 function targetZh(value) {
   return {
     future_sales_share_cash: "未来分成收入现金",
+    future_sales_share_development_modelable_cash:
+      "未来分成收入开发可建模现金",
     future_bill_cash: "历史未来账单现金",
     formal_cash: "历史正式现金",
     historical_target: "历史目标",

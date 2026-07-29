@@ -45,9 +45,10 @@ test("catalog defines one private-free core capability and scoped private capabi
       "m2-current-human-anchored",
       "m2-current-human-anchored-tsb-occurrence",
       "m2-current-lifecycle-aware",
-      "m2-current-channel-experts",
-      "m2-current-publishing-scale-channel",
-      "m2-current-channel-generative",
+    "m2-current-channel-experts",
+    "m2-current-publishing-scale-channel",
+    "m2-current-publishing-scale-channel-controlled-retry-v2",
+    "m2-current-channel-generative",
       "m2-current-human-anchored-later-origin",
       "m2-evaluation-v2-2-reversal-rescore",
       "m3-private-materials",
@@ -390,6 +391,110 @@ test("missing publishing-scale execution inputs block only that private capabili
   assert.match(
     result.authorization,
     /CONSUMED_M2_PUBLISHING_SCALE_PRIVATE_EXECUTION_IMPLEMENTATION_BLOCKED_NO_RETRY/u,
+  );
+});
+
+test("publishing-scale derived cache misses are rebuildable when source authority exists", () => {
+  const result = evaluateCapability(
+    catalog,
+    "m2-current-publishing-scale-channel-controlled-retry-v2",
+    {
+      repoRoot: REPO_ROOT,
+      artifactExists: (_absolutePath, artifact) => (
+        artifact.artifactClass === "PRIVATE_SOURCE_AUTHORITY"
+      ),
+      toolProbe: availableToolProbe,
+    },
+  );
+  assert.equal(result.status, "DERIVED_CACHE_MISS_REBUILD_REQUIRED");
+  assert.equal(result.sourceAuthorityStatus, "SOURCE_AUTHORITY_AVAILABLE");
+  assert.equal(result.derivedCacheStatus, "CACHE_MISS_REBUILDABLE");
+  assert.equal(result.historicalReceiptStatus, "OPTIONAL_PROVENANCE_MISSING");
+  assert.equal(result.safeToRebuildDerivedCache, true);
+  assert.equal(result.safeToStartModelAfterRebuild, true);
+  assert.deepEqual(
+    result.rebuildPlan
+      .filter((entry) => entry.role.startsWith("v2.2-"))
+      .map((entry) => entry.role),
+    [
+      "v2.2-development-modelable-scope-reconciliation",
+      "v2.2-reversal-allocation-ledger",
+    ],
+  );
+  assert.doesNotMatch(result.status, /BLOCKED_MISSING_PRIVATE_ARTIFACT/u);
+});
+
+test("publishing-scale historical receipt absence warns without blocking", () => {
+  const result = evaluateCapability(
+    catalog,
+    "m2-current-publishing-scale-channel-controlled-retry-v2",
+    {
+      repoRoot: REPO_ROOT,
+      artifactExists: (_absolutePath, artifact) => (
+        artifact.artifactClass !== "PRIVATE_RUN_PROVENANCE"
+      ),
+      toolProbe: availableToolProbe,
+    },
+  );
+  assert.equal(result.status, "AVAILABLE_FOR_CANONICAL_VALIDATION");
+  assert.equal(result.derivedCacheStatus, "CACHE_READY");
+  assert.equal(result.historicalReceiptStatus, "OPTIONAL_PROVENANCE_MISSING");
+  assert.equal(result.safeToStartModelAfterRebuild, true);
+});
+
+test("publishing-scale source authority absence blocks accurately", () => {
+  const result = evaluateCapability(
+    catalog,
+    "m2-current-publishing-scale-channel-controlled-retry-v2",
+    {
+      repoRoot: REPO_ROOT,
+      artifactExists: (_absolutePath, artifact) => (
+        artifact.artifactClass !== "PRIVATE_SOURCE_AUTHORITY"
+      ),
+      toolProbe: availableToolProbe,
+    },
+  );
+  assert.equal(result.status, "MISSING_SOURCE_AUTHORITY");
+  assert.equal(result.sourceAuthorityStatus, "MISSING_SOURCE_AUTHORITY");
+  assert.equal(result.safeToRebuildDerivedCache, false);
+  assert.equal(result.safeToStartModelAfterRebuild, false);
+});
+
+test("publishing-scale classification is independent of repository location", () => {
+  const probe = (_absolutePath, artifact) => (
+    artifact.artifactClass === "PRIVATE_SOURCE_AUTHORITY"
+  );
+  const first = evaluateCapability(
+    catalog,
+    "m2-current-publishing-scale-channel-controlled-retry-v2",
+    {
+      repoRoot: path.join(REPO_ROOT, "portable-clone-a"),
+      artifactExists: probe,
+      toolProbe: availableToolProbe,
+    },
+  );
+  const second = evaluateCapability(
+    catalog,
+    "m2-current-publishing-scale-channel-controlled-retry-v2",
+    {
+      repoRoot: path.join(REPO_ROOT, "portable-clone-b"),
+      artifactExists: probe,
+      toolProbe: availableToolProbe,
+    },
+  );
+  assert.deepEqual(
+    {
+      status: first.status,
+      source: first.sourceAuthorityStatus,
+      cache: first.derivedCacheStatus,
+      receipt: first.historicalReceiptStatus,
+    },
+    {
+      status: second.status,
+      source: second.sourceAuthorityStatus,
+      cache: second.derivedCacheStatus,
+      receipt: second.historicalReceiptStatus,
+    },
   );
 });
 

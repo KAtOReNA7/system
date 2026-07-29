@@ -3,9 +3,14 @@
 ## 当前权威入口
 
 - 用户首页与公共开始入口：`README.md`
-- 当前 M2 状态：`docs/analysis/m2-v2/M2-v2-current-state-index-v0.40.md`
+- 当前 M2 状态：`docs/analysis/m2-v2/M2-v2-current-state-index-v0.41.md`
 - M2 模型机器权威：`config/m2-model-registry.v1.json`
 - M2 中文目录：`docs/analysis/m2-current/M2-model-catalog-and-scorecard-v1.md`
+- M2 出版行业规模适配渠道核心结论：
+  - `docs/analysis/m2-current/M2-current-publishing-scale-channel-development-v0.1.json`
+  - `docs/analysis/m2-current/M2-current-publishing-scale-channel-development-v0.1.md`
+  - `docs/analysis/m2-current/M2-current-publishing-scale-channel-forecastability-v0.1.json`
+  - `docs/analysis/m2-current/M2-current-publishing-scale-channel-forecastability-v0.1.md`
 - M2 分层收入组合模型开发结论：
   - `docs/analysis/m2-current/M2-layered-revenue-composition-development-v0.1.json`
   - `docs/analysis/m2-current/M2-layered-revenue-composition-development-v0.1.md`
@@ -117,10 +122,18 @@ fixture composition。两者在无 private、无数据库条件下都必须能�
 
 - `data/private-input/**`、`data/private-output/**`、原始账单、台账、材料、private
   receipt/workbook、密钥、连接串、dump、`.env` 和 `.pgpass` 禁止提交。
-- Private 文件必须区分不可推导的权威输入（`PRIVATE_SOURCE_AUTHORITY`）、可由权威
-  输入与冻结代码重建的派生缓存（`PRIVATE_DERIVED_CACHE`）和只作溯源的运行收据
-  （`PRIVATE_RUN_PROVENANCE`）。只有权威输入缺失才允许阻断；缓存缺失必须给出自动
-  重建计划，历史收据缺失只告警且不得补造。
+- Private 文件必须区分三类：不可由代码推导的权威输入
+  (`PRIVATE_SOURCE_AUTHORITY`)、可由权威输入与冻结代码确定性重建的派生缓存
+  (`PRIVATE_DERIVED_CACHE`) 和运行溯源 (`PRIVATE_RUN_PROVENANCE`)。Git ignored
+  private output 是可丢弃缓存，不是换电脑前置合同；历史 receipt 是 provenance，
+  不是训练数据或执行输入。
+- Capability doctor 必须分别报告 source authority、derived cache 和 historical
+  receipt 状态。只有权威输入缺失才可报告 `MISSING_SOURCE_AUTHORITY`；缓存缺失必须
+  报告 `CACHE_MISS_REBUILDABLE` 并给出自动重建计划；历史 receipt 缺失只能告警
+  `OPTIONAL_PROVENANCE_MISSING`，不得阻断或伪造。
+- 新电脑必须能从 `PRIVATE_SOURCE_AUTHORITY` 与仓库内冻结代码重建所需派生工件；
+  不得要求预置本机绝对路径、活动 HEAD、运输包 hash 或旧输出 digest。运行时生成的
+  digest 只绑定当次输入、代码和输出完整性。
 - 禁止伪造 private 文件、从公开聚合摘要反推 private 内容、降低真实性 verifier，
   或用文件存在代替真实性通过和执行授权。
 - 使用 `npm run doctor:capability -- <capability-id>` 盘点能力。缺少 private 只能
@@ -134,6 +147,8 @@ fixture composition。两者在无 private、无数据库条件下都必须能�
   缓存清理；清理必须报告精确目标、数量、字节数和剩余阻断项。
 - 跨电脑恢复只能使用 capability-scoped 加密包、逐文件摘要和原子恢复；环境变量、
   provider key 与数据库凭据不得进入包。
+- 跨电脑搬运只针对不可重建的原始权威输入，并使用仓库外 capability-scoped 加密包
+  或用户明确提供的私有数据根；可重建缓存和历史 receipt 不得成为搬运前提。
 - 需要用户补充材料时，先给中文简表、中文选项和“你的填写”列；允许“不清楚”或
   “没有”，并说明最少依据和可复制回复。敏感材料只能进入 Git ignored 的
   capability 目录或任务附件，不得要求上传 GitHub。

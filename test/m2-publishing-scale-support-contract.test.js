@@ -160,13 +160,25 @@ test("training-side parameter freeze agrees with public learning evidence", () =
 });
 
 test("named platforms and current-only taxonomy have explicit tiers", () => {
-  assert.deepEqual(support.parameterFreeze.namedPlatforms, {
+  assert.deepEqual(
+    Object.fromEntries(Object.entries(
+      support.parameterFreeze.namedPlatforms
+    ).map(([name, value]) => [name, value.frozenTier])),
+    {
     喜马拉雅: "SHRUNK_FIT",
     微信读书: "SHRUNK_FIT",
     番茄畅听: "SHRUNK_FIT",
     猫耳: "POOLED_PARENT",
     克拉漫播: "POOLED_PARENT",
-  });
+    }
+  );
+  for (const value of Object.values(
+    support.parameterFreeze.namedPlatforms
+  )) {
+    assert.equal(typeof value.basisMechanism, "string");
+    assert.equal(typeof value.basisProfile, "string");
+    assert.ok(value.effectiveParameterCount > 0);
+  }
   assert.equal(support.parameterFreeze.taxonomy, "REPORT_ONLY");
   assert.equal(support.parameterFreeze.authorization, "REPORT_ONLY");
   assert.equal(

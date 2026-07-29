@@ -1,0 +1,59 @@
+{
+  "schema": "m2.publishing_scale.execution_policy.v0.2",
+  "authorizationPolicyId": "M2-PSC01-CONTROLLED-RETRY-20260728-01",
+  "status": "USER_AUTHORIZED_RUNTIME_EXACT_HEAD_BINDING_REQUIRED",
+  "authorizationSource": {
+    "type": "user_attached_instruction",
+    "displayName": "M2-publishing-scale-from-main-controlled-retry-Codex-instruction-v2.txt",
+    "sha256": "655cfbddaedaca13f084449175e2f24e459a24a4232c66007ae7ade877364d5a"
+  },
+  "authorizedModelId": "M2-CHAN-PSC01",
+  "authorizedArmId": "M2-EXP-PUBLISHING-SCALE-CHANNEL-01/CORE",
+  "authorizedCommand": "npm run develop:m2:current:publishing-scale-channel",
+  "runtimeBinding": {
+    "exactHeadRequired": true,
+    "openDraftPullRequestRequired": true,
+    "baseBranch": "main",
+    "originMainMustBeAncestor": true,
+    "trackingAndPullRequestHeadMustMatch": true,
+    "linuxCheck": "verify",
+    "windowsCheck": "verify-windows",
+    "bothChecksMustSucceedBeforePrivateRead": true
+  },
+  "executionWindow": {
+    "normalPrivateExecutionMaximum": 1,
+    "infrastructureRecoveryRetryMaximum": 1,
+    "retryOnlyBeforeCandidateFit": true,
+    "retryOnlyWhenPredictionRowsProduced": 0,
+    "retryOnlyWhenEvaluationRowsProduced": 0,
+    "allowedRetryFailureClasses": [
+      "runner_dispatch",
+      "file_io",
+      "path_resolution",
+      "receipt_control_flow",
+      "schema_wiring"
+    ],
+    "outcomeDrivenRetryAllowed": false
+  },
+  "historicalAuthorization": {
+    "historicalConsumedFieldsMayBeRewritten": false,
+    "historicalReceiptsMayBeOverwritten": false,
+    "historicalArtifactsMayBeOverwritten": false
+  },
+  "forbidden": {
+    "outcomeDrivenTuning": true,
+    "laterOriginHoldout": true,
+    "finalHoldout": true,
+    "provider": true,
+    "externalNetwork": true,
+    "database": true,
+    "production": true,
+    "automation": true,
+    "canary": true,
+    "full160": true,
+    "release": true,
+    "pullRequestMerge": true,
+    "taxonomyTrainingOrRouting": true,
+    "authorizationTrainingOrRouting": true
+  }
+}

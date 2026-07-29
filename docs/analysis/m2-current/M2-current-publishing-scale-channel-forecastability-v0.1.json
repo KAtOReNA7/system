@@ -1,0 +1,999 @@
+{
+  "schema": "m2.current.publishing_scale_channel_forecastability_public.v0.1",
+  "displayNameZh": "出版行业适配的渠道月度发生—条件金额核心",
+  "displayNameEn": "Publishing-Scale Channel Monthly Occurrence × Conditional Amount Core",
+  "modelId": "M2-CHAN-PSC01",
+  "experimentArmId": "M2-EXP-PUBLISHING-SCALE-CHANNEL-01/CORE",
+  "finalStatus": "M2_PUBLISHING_SCALE_CORE_FAIL",
+  "primary": {
+    "schema": "m2.current.publishing_scale_channel_forecastability.v0.1",
+    "modelId": "M2-CHAN-PSC01",
+    "experimentArmId": "M2-EXP-PUBLISHING-SCALE-CHANNEL-01/CORE",
+    "candidateOutputsFrozen": true,
+    "currentReachability": {
+      "totalActualPositiveCash": 450206377.48779684,
+      "futureFirstSeenActualPositiveCash": 51684313.4905009,
+      "futureFirstSeenShare": 0.11480138015570834,
+      "completeBayesErrorFloor": false
+    },
+    "diagnostics": {
+      "ORACLE_OCCURRENCE_ONLY": {
+        "originalAbsoluteError": 416029696.40677136,
+        "oracleAbsoluteError": 415155435.1432622,
+        "maximumRemovableError": 874261.2635091543,
+        "originalWape": 0.9240866349523135,
+        "oracleWape": 0.9221447227377695,
+        "byHorizon": {
+          "36": {
+            "caseCount": 12039,
+            "absoluteError": 415155435.1432622,
+            "signedError": -401258236.035111,
+            "actualDenominator": 450206377.4877992,
+            "wape": 0.9221447227377695,
+            "signedBias": -0.8912762148643381
+          }
+        },
+        "byMechanism": {
+          "advertising": {
+            "caseCount": 3540,
+            "absoluteError": 44946244.75119461,
+            "signedError": -41679323.14227512,
+            "actualDenominator": 50521899.10299988,
+            "wape": 0.8896388605575162,
+            "signedBias": -0.824975384581303
+          },
+          "membership": {
+            "caseCount": 22498,
+            "absoluteError": 317488504.91795576,
+            "signedError": -299291451.4327753,
+            "actualDenominator": 339097988.28220016,
+            "wape": 0.9362736314841809,
+            "signedBias": -0.8826105190093386
+          },
+          "other": {
+            "caseCount": 279,
+            "absoluteError": 22742.30111897796,
+            "signedError": -12169.281212157519,
+            "actualDenominator": 23608.818099999993,
+            "wape": 0.9632968928240405,
+            "signedBias": -0.5154549101362055
+          },
+          "transactional": {
+            "caseCount": 422,
+            "absoluteError": 8640487.546420308,
+            "signedError": -8590978.688346295,
+            "actualDenominator": 8878567.79399999,
+            "wape": 0.9731848364394341,
+            "signedBias": -0.9676086152264283
+          }
+        },
+        "topRevenue": {
+          "0.01": {
+            "caseCount": 12,
+            "absoluteError": 241070166.27393597,
+            "signedError": -241070166.27393597,
+            "actualDenominator": 250210710.44630003,
+            "wape": 0.963468613489566,
+            "signedBias": -0.963468613489566
+          },
+          "0.05": {
+            "caseCount": 57,
+            "absoluteError": 357828288.39401984,
+            "signedError": -357828288.39401984,
+            "actualDenominator": 376679136.90940017,
+            "wape": 0.9499551563432769,
+            "signedBias": -0.9499551563432769
+          },
+          "0.1": {
+            "caseCount": 113,
+            "absoluteError": 385376235.1966792,
+            "signedError": -385312369.6875904,
+            "actualDenominator": 410646958.2640001,
+            "wape": 0.9384611950514566,
+            "signedBias": -0.9383056709259189
+          }
+        },
+        "deployable": false,
+        "selectionEligible": false,
+        "participatesInGate": false,
+        "futureInformationUsed": true
+      },
+      "ORACLE_AMOUNT_ONLY": {
+        "originalAbsoluteError": 416029696.40677136,
+        "oracleAbsoluteError": 90843861.01184432,
+        "maximumRemovableError": 325185835.394927,
+        "originalWape": 0.9240866349523135,
+        "oracleWape": 0.20178270578653948,
+        "byHorizon": {
+          "36": {
+            "caseCount": 12039,
+            "absoluteError": 90843861.01184432,
+            "signedError": -90843861.01184432,
+            "actualDenominator": 450206377.4877992,
+            "wape": 0.20178270578653948,
+            "signedBias": -0.20178270578653948
+          }
+        },
+        "byMechanism": {
+          "advertising": {
+            "caseCount": 3540,
+            "absoluteError": 7784784.725306242,
+            "signedError": -7784784.725306242,
+            "actualDenominator": 50521899.10299988,
+            "wape": 0.15408733368148464,
+            "signedBias": -0.15408733368148464
+          },
+          "membership": {
+            "caseCount": 22498,
+            "absoluteError": 26700253.088792346,
+            "signedError": -26700253.088792346,
+            "actualDenominator": 339097988.28220016,
+            "wape": 0.0787390489222607,
+            "signedBias": -0.0787390489222607
+          },
+          "other": {
+            "caseCount": 279,
+            "absoluteError": 7202.362135804679,
+            "signedError": -7202.362135804679,
+            "actualDenominator": 23608.818099999993,
+            "wape": 0.30507084705797627,
+            "signedBias": -0.30507084705797627
+          },
+          "transactional": {
+            "caseCount": 422,
+            "absoluteError": 4667307.34511019,
+            "signedError": -4667307.34511019,
+            "actualDenominator": 8878567.79399999,
+            "wape": 0.5256824584100478,
+            "signedBias": -0.5256824584100478
+          }
+        },
+        "topRevenue": {
+          "0.01": {
+            "caseCount": 12,
+            "absoluteError": 30428227.599847555,
+            "signedError": -30428227.599847555,
+            "actualDenominator": 250210710.44630003,
+            "wape": 0.12161041206258846,
+            "signedBias": -0.12161041206258846
+          },
+          "0.05": {
+            "caseCount": 57,
+            "absoluteError": 62780439.41073706,
+            "signedError": -62780439.41073706,
+            "actualDenominator": 376679136.90940017,
+            "wape": 0.16666821509107677,
+            "signedBias": -0.16666821509107677
+          },
+          "0.1": {
+            "caseCount": 113,
+            "absoluteError": 75477049.57811482,
+            "signedError": -75477049.57811482,
+            "actualDenominator": 410646958.2640001,
+            "wape": 0.18380033763598833,
+            "signedBias": -0.18380033763598833
+          }
+        },
+        "deployable": false,
+        "selectionEligible": false,
+        "participatesInGate": false,
+        "futureInformationUsed": true
+      },
+      "ORACLE_BOTH": {
+        "originalAbsoluteError": 416029696.40677136,
+        "oracleAbsoluteError": 0,
+        "maximumRemovableError": 416029696.40677136,
+        "originalWape": 0.9240866349523135,
+        "oracleWape": 0,
+        "byHorizon": {
+          "36": {
+            "caseCount": 12039,
+            "absoluteError": 0,
+            "signedError": 0,
+            "actualDenominator": 450206377.4877992,
+            "wape": 0,
+            "signedBias": 0
+          }
+        },
+        "byMechanism": {
+          "advertising": {
+            "caseCount": 3540,
+            "absoluteError": 0,
+            "signedError": 0,
+            "actualDenominator": 50521899.10299988,
+            "wape": 0,
+            "signedBias": 0
+          },
+          "membership": {
+            "caseCount": 22498,
+            "absoluteError": 0,
+            "signedError": 0,
+            "actualDenominator": 339097988.28220016,
+            "wape": 0,
+            "signedBias": 0
+          },
+          "other": {
+            "caseCount": 279,
+            "absoluteError": 0,
+            "signedError": 0,
+            "actualDenominator": 23608.818099999993,
+            "wape": 0,
+            "signedBias": 0
+          },
+          "transactional": {
+            "caseCount": 422,
+            "absoluteError": 0,
+            "signedError": 0,
+            "actualDenominator": 8878567.79399999,
+            "wape": 0,
+            "signedBias": 0
+          }
+        },
+        "topRevenue": {
+          "0.01": {
+            "caseCount": 12,
+            "absoluteError": 0,
+            "signedError": 0,
+            "actualDenominator": 250210710.44630003,
+            "wape": 0,
+            "signedBias": 0
+          },
+          "0.05": {
+            "caseCount": 57,
+            "absoluteError": 0,
+            "signedError": 0,
+            "actualDenominator": 376679136.90940017,
+            "wape": 0,
+            "signedBias": 0
+          },
+          "0.1": {
+            "caseCount": 113,
+            "absoluteError": 0,
+            "signedError": 0,
+            "actualDenominator": 410646958.2640001,
+            "wape": 0,
+            "signedBias": 0
+          }
+        },
+        "deployable": false,
+        "selectionEligible": false,
+        "participatesInGate": false,
+        "futureInformationUsed": true,
+        "labelAggregationValidationPassed": true
+      },
+      "FUTURE_FIRST_ENTRY_CEILING": {
+        "originalAbsoluteError": 416029696.40677136,
+        "oracleAbsoluteError": 368798849.47957575,
+        "maximumRemovableError": 47230846.92719561,
+        "originalWape": 0.9240866349523135,
+        "oracleWape": 0.8191773104981622,
+        "byHorizon": {
+          "36": {
+            "caseCount": 12039,
+            "absoluteError": 368798849.47957575,
+            "signedError": -348676292.4914094,
+            "actualDenominator": 450206377.4877992,
+            "wape": 0.8191773104981622,
+            "signedBias": -0.7744810156556672
+          }
+        },
+        "byMechanism": {
+          "advertising": {
+            "caseCount": 3540,
+            "absoluteError": 44320107.909879155,
+            "signedError": -40691009.79250771,
+            "actualDenominator": 50521899.10299988,
+            "wape": 0.877245485557124,
+            "signedBias": -0.8054133062090606
+          },
+          "membership": {
+            "caseCount": 22498,
+            "absoluteError": 320994209.8152404,
+            "signedError": -299594510.3969966,
+            "actualDenominator": 339097988.28220016,
+            "wape": 0.9466119555628456,
+            "signedBias": -0.883504239923923
+          },
+          "other": {
+            "caseCount": 279,
+            "absoluteError": 80807.71053236269,
+            "signedError": 70159.48247293492,
+            "actualDenominator": 23608.818099999993,
+            "wape": 3.422776616350935,
+            "signedBias": 2.9717490378281552
+          },
+          "transactional": {
+            "caseCount": 422,
+            "absoluteError": 8605633.991872935,
+            "signedError": -8460931.78437811,
+            "actualDenominator": 8878567.79399999,
+            "wape": 0.9692592534674905,
+            "signedBias": -0.9529613312291073
+          }
+        },
+        "topRevenue": {
+          "0.01": {
+            "caseCount": 12,
+            "absoluteError": 227134827.70411378,
+            "signedError": -227134827.70411378,
+            "actualDenominator": 250210710.44630003,
+            "wape": 0.9077742007885039,
+            "signedBias": -0.9077742007885039
+          },
+          "0.05": {
+            "caseCount": 57,
+            "absoluteError": 326875258.869257,
+            "signedError": -326743236.8121015,
+            "actualDenominator": 376679136.90940017,
+            "wape": 0.8677816922679151,
+            "signedBias": -0.8674312028348165
+          },
+          "0.1": {
+            "caseCount": 113,
+            "absoluteError": 345294517.17738634,
+            "signedError": -345069493.9868857,
+            "actualDenominator": 410646958.2640001,
+            "wape": 0.8408549247195459,
+            "signedBias": -0.8403069523409074
+          }
+        },
+        "deployable": false,
+        "selectionEligible": false,
+        "participatesInGate": false,
+        "futureInformationUsed": true,
+        "futureFirstSeenActualPositiveCash": 51684313.4905009,
+        "futureFirstSeenShare": 0.11480138015570834
+      },
+      "MECHANISM_INFORMATION_GAIN": {
+        "status": "EXECUTED_DIAGNOSTIC_ONLY",
+        "mechanismSpecificAbsoluteError": 416029696.40677136,
+        "pooledBasisAbsoluteError": 437920425.4007559,
+        "absoluteErrorGain": 21890728.99398452,
+        "relativeWapeGain": 0.049987914982388776,
+        "mechanismSpecificByMechanism": {
+          "advertising": {
+            "caseCount": 3540,
+            "absoluteError": 44320107.909879155,
+            "signedError": -40691009.79250771,
+            "actualDenominator": 50521899.10299988,
+            "wape": 0.877245485557124,
+            "signedBias": -0.8054133062090606
+          },
+          "membership": {
+            "caseCount": 22498,
+            "absoluteError": 320994209.8152404,
+            "signedError": -299594510.3969966,
+            "actualDenominator": 339097988.28220016,
+            "wape": 0.9466119555628456,
+            "signedBias": -0.883504239923923
+          },
+          "other": {
+            "caseCount": 279,
+            "absoluteError": 80807.71053236269,
+            "signedError": 70159.48247293492,
+            "actualDenominator": 23608.818099999993,
+            "wape": 3.422776616350935,
+            "signedBias": 2.9717490378281552
+          },
+          "transactional": {
+            "caseCount": 422,
+            "absoluteError": 8605633.991872935,
+            "signedError": -8460931.78437811,
+            "actualDenominator": 8878567.79399999,
+            "wape": 0.9692592534674905,
+            "signedBias": -0.9529613312291073
+          }
+        },
+        "pooledByMechanism": {
+          "advertising": {
+            "caseCount": 3540,
+            "absoluteError": 48945561.83444931,
+            "signedError": -47593030.4998447,
+            "actualDenominator": 50521899.10299988,
+            "wape": 0.9687989308292457,
+            "signedBias": -0.9420277413328417
+          },
+          "membership": {
+            "caseCount": 22498,
+            "absoluteError": 334526590.1147713,
+            "signedError": -323021755.6208983,
+            "actualDenominator": 339097988.28220016,
+            "wape": 0.986518946365366,
+            "signedBias": -0.9525911883383894
+          },
+          "other": {
+            "caseCount": 279,
+            "absoluteError": 80807.71053236269,
+            "signedError": 70159.48247293492,
+            "actualDenominator": 23608.818099999993,
+            "wape": 3.422776616350935,
+            "signedBias": 2.9717490378281552
+          },
+          "transactional": {
+            "caseCount": 422,
+            "absoluteError": 8700061.801639423,
+            "signedError": -8494339.40449586,
+            "actualDenominator": 8878567.79399999,
+            "wape": 0.9798947311658531,
+            "signedBias": -0.9567240574810064
+          }
+        },
+        "deployable": false,
+        "selectionEligible": false,
+        "participatesInGate": false
+      }
+    },
+    "participatesInTraining": false,
+    "participatesInSelection": false,
+    "participatesInGate": false,
+    "deployable": false
+  },
+  "strict": {
+    "schema": "m2.current.publishing_scale_channel_forecastability.v0.1",
+    "modelId": "M2-CHAN-PSC01",
+    "experimentArmId": "M2-EXP-PUBLISHING-SCALE-CHANNEL-01/CORE",
+    "candidateOutputsFrozen": true,
+    "currentReachability": {
+      "totalActualPositiveCash": 205127979.43198153,
+      "futureFirstSeenActualPositiveCash": 15215898.37659864,
+      "futureFirstSeenShare": 0.07417758620122364,
+      "completeBayesErrorFloor": false
+    },
+    "diagnostics": {
+      "ORACLE_OCCURRENCE_ONLY": {
+        "originalAbsoluteError": 458012200.6722559,
+        "oracleAbsoluteError": 455380532.7502517,
+        "maximumRemovableError": 2631667.9220041633,
+        "originalWape": 0.9153333867253249,
+        "oracleWape": 0.9100740213454315,
+        "byHorizon": {
+          "3": {
+            "caseCount": 22805,
+            "absoluteError": 41682511.534777544,
+            "signedError": -39819988.95835562,
+            "actualDenominator": 45698713.89539975,
+            "wape": 0.9121156369998742,
+            "signedBias": -0.8713590725879069
+          },
+          "6": {
+            "caseCount": 20155,
+            "absoluteError": 73624403.64520426,
+            "signedError": -70165015.46946925,
+            "actualDenominator": 80894982.19030027,
+            "wape": 0.9101232443813086,
+            "signedBias": -0.8673593042447372
+          },
+          "12": {
+            "caseCount": 15028,
+            "absoluteError": 112372791.39678112,
+            "signedError": -106486469.83067036,
+            "actualDenominator": 123696952.28390001,
+            "wape": 0.9084523856244371,
+            "signedBias": -0.8608657518600019
+          },
+          "18": {
+            "caseCount": 10269,
+            "absoluteError": 122408992.15632603,
+            "signedError": -115691394.38266033,
+            "actualDenominator": 134529095.02910006,
+            "wape": 0.9099071998503199,
+            "signedBias": -0.8599730367444682
+          },
+          "24": {
+            "caseCount": 6063,
+            "absoluteError": 105291834.01716697,
+            "signedError": -99078469.36995777,
+            "actualDenominator": 115557722.68589991,
+            "wape": 0.9111622448926509,
+            "signedBias": -0.8573937515129579
+          }
+        },
+        "byMechanism": {
+          "advertising": {
+            "caseCount": 25630,
+            "absoluteError": 47074487.861352764,
+            "signedError": -39388997.6357517,
+            "actualDenominator": 55520036.00650009,
+            "wape": 0.8478828770183335,
+            "signedBias": -0.7094555491848056
+          },
+          "membership": {
+            "caseCount": 180535,
+            "absoluteError": 347070853.329944,
+            "signedError": -318275311.22179234,
+            "actualDenominator": 370548936.6398048,
+            "wape": 0.9366397228858254,
+            "signedBias": -0.8589292256724907
+          },
+          "other": {
+            "caseCount": 858,
+            "absoluteError": 0,
+            "signedError": 0,
+            "actualDenominator": 0,
+            "wape": null,
+            "signedBias": null
+          },
+          "transactional": {
+            "caseCount": 2746,
+            "absoluteError": 41816959.64160093,
+            "signedError": -41786114.08776616,
+            "actualDenominator": 42517578.372500055,
+            "wape": 0.9835216689727494,
+            "signedBias": -0.9827961912993851
+          }
+        },
+        "topRevenue": {
+          "0.01": {
+            "caseCount": 27,
+            "absoluteError": 318026862.6151257,
+            "signedError": -318026862.6151257,
+            "actualDenominator": 329883910.21189994,
+            "wape": 0.9640569084161823,
+            "signedBias": -0.9640569084161823
+          },
+          "0.05": {
+            "caseCount": 133,
+            "absoluteError": 421102235.7703724,
+            "signedError": -421102235.7703724,
+            "actualDenominator": 450283015.6606996,
+            "wape": 0.9351945801297651,
+            "signedBias": -0.9351945801297651
+          },
+          "0.1": {
+            "caseCount": 265,
+            "absoluteError": 436548963.1010097,
+            "signedError": -436522179.47724986,
+            "actualDenominator": 477723157.0393996,
+            "wape": 0.9138116012764395,
+            "signedBias": -0.9137555361195275
+          }
+        },
+        "deployable": false,
+        "selectionEligible": false,
+        "participatesInGate": false,
+        "futureInformationUsed": true
+      },
+      "ORACLE_AMOUNT_ONLY": {
+        "originalAbsoluteError": 458012200.6722559,
+        "oracleAbsoluteError": 91632547.5670101,
+        "maximumRemovableError": 366379653.10524577,
+        "originalWape": 0.9153333867253249,
+        "oracleWape": 0.18312684678633603,
+        "byHorizon": {
+          "3": {
+            "caseCount": 22805,
+            "absoluteError": 7665115.39587492,
+            "signedError": -7665115.39587492,
+            "actualDenominator": 45698713.89539975,
+            "wape": 0.16773153427073859,
+            "signedBias": -0.16773153427073859
+          },
+          "6": {
+            "caseCount": 20155,
+            "absoluteError": 13864203.79521252,
+            "signedError": -13864203.79521252,
+            "actualDenominator": 80894982.19030027,
+            "wape": 0.17138521351791472,
+            "signedBias": -0.17138521351791472
+          },
+          "12": {
+            "caseCount": 15028,
+            "absoluteError": 22135207.552165788,
+            "signedError": -22135207.552165788,
+            "actualDenominator": 123696952.28390001,
+            "wape": 0.17894707301569332,
+            "signedBias": -0.17894707301569332
+          },
+          "18": {
+            "caseCount": 10269,
+            "absoluteError": 24853351.444291823,
+            "signedError": -24853351.444291823,
+            "actualDenominator": 134529095.02910006,
+            "wape": 0.18474331845401756,
+            "signedBias": -0.18474331845401756
+          },
+          "24": {
+            "caseCount": 6063,
+            "absoluteError": 23114669.379464906,
+            "signedError": -23114669.379464906,
+            "actualDenominator": 115557722.68589991,
+            "wape": 0.20002704139725405,
+            "signedBias": -0.20002704139725405
+          }
+        },
+        "byMechanism": {
+          "advertising": {
+            "caseCount": 25630,
+            "absoluteError": 9142288.384661108,
+            "signedError": -9142288.384661108,
+            "actualDenominator": 55520036.00650009,
+            "wape": 0.16466647074203558,
+            "signedBias": -0.16466647074203558
+          },
+          "membership": {
+            "caseCount": 180535,
+            "absoluteError": 23356035.346028537,
+            "signedError": -23356035.346028537,
+            "actualDenominator": 370548936.6398048,
+            "wape": 0.06303090641097148,
+            "signedBias": -0.06303090641097148
+          },
+          "other": {
+            "caseCount": 858,
+            "absoluteError": 0,
+            "signedError": 0,
+            "actualDenominator": 0,
+            "wape": null,
+            "signedBias": null
+          },
+          "transactional": {
+            "caseCount": 2746,
+            "absoluteError": 27343308.77052052,
+            "signedError": -27343308.77052052,
+            "actualDenominator": 42517578.372500055,
+            "wape": 0.64310597680243,
+            "signedBias": -0.64310597680243
+          }
+        },
+        "topRevenue": {
+          "0.01": {
+            "caseCount": 27,
+            "absoluteError": 49163096.409242444,
+            "signedError": -49163096.409242444,
+            "actualDenominator": 329883910.21189994,
+            "wape": 0.14903150741017554,
+            "signedBias": -0.14903150741017554
+          },
+          "0.05": {
+            "caseCount": 133,
+            "absoluteError": 79314473.64580975,
+            "signedError": -79314473.64580975,
+            "actualDenominator": 450283015.6606996,
+            "wape": 0.1761436049934767,
+            "signedBias": -0.1761436049934767
+          },
+          "0.1": {
+            "caseCount": 265,
+            "absoluteError": 85056387.95141113,
+            "signedError": -85056387.95141113,
+            "actualDenominator": 477723157.0393996,
+            "wape": 0.1780453526233316,
+            "signedBias": -0.1780453526233316
+          }
+        },
+        "deployable": false,
+        "selectionEligible": false,
+        "participatesInGate": false,
+        "futureInformationUsed": true
+      },
+      "ORACLE_BOTH": {
+        "originalAbsoluteError": 458012200.6722559,
+        "oracleAbsoluteError": 0,
+        "maximumRemovableError": 458012200.6722559,
+        "originalWape": 0.9153333867253249,
+        "oracleWape": 0,
+        "byHorizon": {
+          "3": {
+            "caseCount": 22805,
+            "absoluteError": 0,
+            "signedError": 0,
+            "actualDenominator": 45698713.89539975,
+            "wape": 0,
+            "signedBias": 0
+          },
+          "6": {
+            "caseCount": 20155,
+            "absoluteError": 0,
+            "signedError": 0,
+            "actualDenominator": 80894982.19030027,
+            "wape": 0,
+            "signedBias": 0
+          },
+          "12": {
+            "caseCount": 15028,
+            "absoluteError": 0,
+            "signedError": 0,
+            "actualDenominator": 123696952.28390001,
+            "wape": 0,
+            "signedBias": 0
+          },
+          "18": {
+            "caseCount": 10269,
+            "absoluteError": 0,
+            "signedError": 0,
+            "actualDenominator": 134529095.02910006,
+            "wape": 0,
+            "signedBias": 0
+          },
+          "24": {
+            "caseCount": 6063,
+            "absoluteError": 0,
+            "signedError": 0,
+            "actualDenominator": 115557722.68589991,
+            "wape": 0,
+            "signedBias": 0
+          }
+        },
+        "byMechanism": {
+          "advertising": {
+            "caseCount": 25630,
+            "absoluteError": 0,
+            "signedError": 0,
+            "actualDenominator": 55520036.00650009,
+            "wape": 0,
+            "signedBias": 0
+          },
+          "membership": {
+            "caseCount": 180535,
+            "absoluteError": 0,
+            "signedError": 0,
+            "actualDenominator": 370548936.6398048,
+            "wape": 0,
+            "signedBias": 0
+          },
+          "other": {
+            "caseCount": 858,
+            "absoluteError": 0,
+            "signedError": 0,
+            "actualDenominator": 0,
+            "wape": null,
+            "signedBias": null
+          },
+          "transactional": {
+            "caseCount": 2746,
+            "absoluteError": 0,
+            "signedError": 0,
+            "actualDenominator": 42517578.372500055,
+            "wape": 0,
+            "signedBias": 0
+          }
+        },
+        "topRevenue": {
+          "0.01": {
+            "caseCount": 27,
+            "absoluteError": 0,
+            "signedError": 0,
+            "actualDenominator": 329883910.21189994,
+            "wape": 0,
+            "signedBias": 0
+          },
+          "0.05": {
+            "caseCount": 133,
+            "absoluteError": 0,
+            "signedError": 0,
+            "actualDenominator": 450283015.6606996,
+            "wape": 0,
+            "signedBias": 0
+          },
+          "0.1": {
+            "caseCount": 265,
+            "absoluteError": 0,
+            "signedError": 0,
+            "actualDenominator": 477723157.0393996,
+            "wape": 0,
+            "signedBias": 0
+          }
+        },
+        "deployable": false,
+        "selectionEligible": false,
+        "participatesInGate": false,
+        "futureInformationUsed": true,
+        "labelAggregationValidationPassed": true
+      },
+      "FUTURE_FIRST_ENTRY_CEILING": {
+        "originalAbsoluteError": 458012200.6722559,
+        "oracleAbsoluteError": 431586360.72891176,
+        "maximumRemovableError": 26425839.943344116,
+        "originalWape": 0.9153333867253249,
+        "oracleWape": 0.8625215761733364,
+        "byHorizon": {
+          "3": {
+            "caseCount": 22805,
+            "absoluteError": 40833081.32003552,
+            "signedError": -38604876.26573794,
+            "actualDenominator": 45698713.89539975,
+            "wape": 0.8935280194864733,
+            "signedBias": -0.8447694251111976
+          },
+          "6": {
+            "caseCount": 20155,
+            "absoluteError": 71334305.01831701,
+            "signedError": -66892822.09075278,
+            "actualDenominator": 80894982.19030027,
+            "wape": 0.88181371806854,
+            "signedBias": -0.8269094111843883
+          },
+          "12": {
+            "caseCount": 15028,
+            "absoluteError": 107127243.9023908,
+            "signedError": -98736254.97003222,
+            "actualDenominator": 123696952.28390001,
+            "wape": 0.866045944741794,
+            "signedBias": -0.7982108948280321
+          },
+          "18": {
+            "caseCount": 10269,
+            "absoluteError": 115403336.66087434,
+            "signedError": -105023724.86898667,
+            "actualDenominator": 134529095.02910006,
+            "wape": 0.8578318068363678,
+            "signedBias": -0.7806766621470912
+          },
+          "24": {
+            "caseCount": 6063,
+            "absoluteError": 96888393.82729605,
+            "signedError": -86327037.86690408,
+            "actualDenominator": 115557722.68589991,
+            "wape": 0.8384415301316608,
+            "signedBias": -0.7470468944905705
+          }
+        },
+        "byMechanism": {
+          "advertising": {
+            "caseCount": 25630,
+            "absoluteError": 46689078.0598276,
+            "signedError": -37583018.93743647,
+            "actualDenominator": 55520036.00650009,
+            "wape": 0.8409410623285873,
+            "signedBias": -0.6769271355125992
+          },
+          "membership": {
+            "caseCount": 180535,
+            "absoluteError": 353453294.18484104,
+            "signedError": -316361446.33136135,
+            "actualDenominator": 370548936.6398048,
+            "wape": 0.9538640088675205,
+            "signedBias": -0.8537642806377371
+          },
+          "other": {
+            "caseCount": 858,
+            "absoluteError": 44402.09435331409,
+            "signedError": 44402.09435331409,
+            "actualDenominator": 0,
+            "wape": null,
+            "signedBias": null
+          },
+          "transactional": {
+            "caseCount": 2746,
+            "absoluteError": 41823908.351395525,
+            "signedError": -41684652.88796168,
+            "actualDenominator": 42517578.372500055,
+            "wape": 0.9836851004300567,
+            "signedBias": -0.9804098559602561
+          }
+        },
+        "topRevenue": {
+          "0.01": {
+            "caseCount": 27,
+            "absoluteError": 302947950.47551924,
+            "signedError": -302947950.47551924,
+            "actualDenominator": 329883910.21189994,
+            "wape": 0.9183471551580722,
+            "signedBias": -0.9183471551580722
+          },
+          "0.05": {
+            "caseCount": 133,
+            "absoluteError": 396157870.09325475,
+            "signedError": -396157870.09325475,
+            "actualDenominator": 450283015.6606996,
+            "wape": 0.879797496940836,
+            "signedBias": -0.879797496940836
+          },
+          "0.1": {
+            "caseCount": 265,
+            "absoluteError": 408510396.14831793,
+            "signedError": -408200742.9149362,
+            "actualDenominator": 477723157.0393996,
+            "wape": 0.8551195187605832,
+            "signedBias": -0.8544713332397038
+          }
+        },
+        "deployable": false,
+        "selectionEligible": false,
+        "participatesInGate": false,
+        "futureInformationUsed": true,
+        "futureFirstSeenActualPositiveCash": 15215898.37659864,
+        "futureFirstSeenShare": 0.07417758620122364
+      },
+      "MECHANISM_INFORMATION_GAIN": {
+        "status": "EXECUTED_DIAGNOSTIC_ONLY",
+        "mechanismSpecificAbsoluteError": 458012200.6722559,
+        "pooledBasisAbsoluteError": 483437159.90783817,
+        "absoluteErrorGain": 25424959.235582292,
+        "relativeWapeGain": 0.05259206644443565,
+        "mechanismSpecificByMechanism": {
+          "advertising": {
+            "caseCount": 25630,
+            "absoluteError": 46689078.0598276,
+            "signedError": -37583018.93743647,
+            "actualDenominator": 55520036.00650009,
+            "wape": 0.8409410623285873,
+            "signedBias": -0.6769271355125992
+          },
+          "membership": {
+            "caseCount": 180535,
+            "absoluteError": 353453294.18484104,
+            "signedError": -316361446.33136135,
+            "actualDenominator": 370548936.6398048,
+            "wape": 0.9538640088675205,
+            "signedBias": -0.8537642806377371
+          },
+          "other": {
+            "caseCount": 858,
+            "absoluteError": 44402.09435331409,
+            "signedError": 44402.09435331409,
+            "actualDenominator": 0,
+            "wape": null,
+            "signedBias": null
+          },
+          "transactional": {
+            "caseCount": 2746,
+            "absoluteError": 41823908.351395525,
+            "signedError": -41684652.88796168,
+            "actualDenominator": 42517578.372500055,
+            "wape": 0.9836851004300567,
+            "signedBias": -0.9804098559602561
+          }
+        },
+        "pooledByMechanism": {
+          "advertising": {
+            "caseCount": 25630,
+            "absoluteError": 53735512.37025879,
+            "signedError": -50591931.32385446,
+            "actualDenominator": 55520036.00650009,
+            "wape": 0.9678580245151072,
+            "signedBias": -0.9112373651546505
+          },
+          "membership": {
+            "caseCount": 180535,
+            "absoluteError": 367231530.7944754,
+            "signedError": -342962200.93747884,
+            "actualDenominator": 370548936.6398048,
+            "wape": 0.9910473205633454,
+            "signedBias": -0.9255517072792416
+          },
+          "other": {
+            "caseCount": 858,
+            "absoluteError": 44402.09435331409,
+            "signedError": 44402.09435331409,
+            "actualDenominator": 0,
+            "wape": null,
+            "signedBias": null
+          },
+          "transactional": {
+            "caseCount": 2746,
+            "absoluteError": 41746417.81559609,
+            "signedError": -41493037.81689562,
+            "actualDenominator": 42517578.372500055,
+            "wape": 0.9818625475292181,
+            "signedBias": -0.9759031300741461
+          }
+        },
+        "deployable": false,
+        "selectionEligible": false,
+        "participatesInGate": false
+      }
+    },
+    "participatesInTraining": false,
+    "participatesInSelection": false,
+    "participatesInGate": false,
+    "deployable": false
+  },
+  "diagnosticOnly": true,
+  "participatesInTraining": false,
+  "participatesInSelection": false,
+  "participatesInGate": false,
+  "deployable": false,
+  "allowedClaims": [
+    "observed structural unreachable mass",
+    "retrospective oracle gap",
+    "current model residual gap",
+    "missing historically available drivers"
+  ],
+  "forbiddenClaims": [
+    "proven irreducible error",
+    "Bayes error measured",
+    "theoretical maximum established",
+    "forecasting impossible"
+  ]
+}

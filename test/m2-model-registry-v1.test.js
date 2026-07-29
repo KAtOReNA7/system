@@ -37,7 +37,7 @@ test("registry schema, evidence paths and immutable digests validate", () => {
   assert.equal(validation.counts.modelCount, 31);
   assert.equal(validation.counts.experimentCount, 17);
   assert.equal(validation.counts.nonModelIdentifierCount, 61);
-  assert.equal(validation.counts.comparabilityGroupCount, 30);
+  assert.equal(validation.counts.comparabilityGroupCount, 32);
 });
 
 test("stable model IDs and model aliases are unique", () => {
@@ -190,7 +190,7 @@ test("core legacy population test records non-confirmation without promotion", (
   );
   assert.equal(
     registry.currentRoles.latestStateIndex,
-    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.40.md"
+    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.41.md"
   );
   assert.equal(registry.currentRoles.activeCandidate, null);
   assert.equal(registry.currentRoles.approvedForAutomation, null);
@@ -200,7 +200,7 @@ test("evaluations preserve population and comparability contracts", () => {
   const oa03 = registry.models.find(
     (model) => model.stableModelId === "M2-WORK-OA03"
   );
-  assert.equal(oa03.evaluations.length, 5);
+  assert.equal(oa03.evaluations.length, 7);
   assert.notEqual(
     oa03.evaluations[0].comparableGroupId,
     oa03.evaluations[1].comparableGroupId
@@ -217,12 +217,15 @@ test("evaluations preserve population and comparability contracts", () => {
     "M2-WORK-LG01"
   );
   assert.equal(differentPopulation.comparable, true);
-  assert.equal(
-    differentPopulation.pairs.every(
+  assert.deepEqual(
+    new Set(differentPopulation.pairs.map(
       (pair) => pair.left.comparableGroupId
-        === "CG-WORK-SS-OVERLAP-5203-H36"
-    ),
-    true
+    )),
+    new Set([
+      "CG-WORK-SS-OVERLAP-5203-H36",
+      "CG-PSC01-V22-PRIMARY-12039-H36",
+      "CG-PSC01-V22-STRICT-74320"
+    ])
   );
   const differentGrain = compareM2ModelRegistryEntries(
     registry,
@@ -343,6 +346,9 @@ test("reader catalog is a deterministic complete rendering of the registry", asy
   assert.match(catalog, /CG-CORE-LEGACY-K2-CORE80-WORK-H3/u);
   assert.match(catalog, /M2-WORK-HR01/u);
   assert.match(catalog, /HORIZON_ROUTER_NOT_CONFIRMED/u);
+  assert.match(catalog, /M2_PUBLISHING_SCALE_CORE_FAIL/u);
+  assert.match(catalog, /CG-PSC01-V22-PRIMARY-12039-H36/u);
+  assert.match(catalog, /CG-PSC01-V22-STRICT-74320/u);
 });
 
 test("read-only query exposes scoped identities and refuses invalid ranking", () => {
@@ -354,9 +360,18 @@ test("read-only query exposes scoped identities and refuses invalid ranking", ()
   const status = runQuery("status");
   assert.equal(status.status, 0, status.stderr);
   assert.match(status.stdout, /本次只读查询模型执行次数：0/u);
-  assert.match(status.stdout, /K7D 私有物化启动次数：1/u);
-  assert.match(status.stdout, /候选拟合启动次数、候选外层预测行和候选评价行均为 0/u);
+  assert.match(status.stdout, /第一份有效原始候选评价已经冻结/u);
+  assert.match(status.stdout, /原始候选预测行 3,318,819/u);
+  assert.match(status.stdout, /M2_PUBLISHING_SCALE_CORE_FAIL/u);
   assert.match(status.stdout, /M2-WORK-OA03/u);
+
+  const publishingScale = runQuery("show", "M2-CHAN-PSC01");
+  assert.equal(publishingScale.status, 0, publishingScale.stderr);
+  assert.match(publishingScale.stdout, /模型修订（model_revision）/u);
+  assert.match(
+    publishingScale.stdout,
+    /未来分成收入开发可建模现金/u
+  );
 
   const show = runQuery("show", "M2-WORK-OA03");
   assert.equal(show.status, 0, show.stderr);
