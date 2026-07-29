@@ -183,6 +183,76 @@ export async function runM2CoreRevenueManualPrivateEvaluation({ root }) {
   }
 }
 
+export async function materializeM2CoreRevenueAuthority({ root }) {
+  const config = await readJson(path.join(root, CONFIG_PATH));
+  validateM2CoreRevenueManualConfig(config);
+  preparePrivateInputs(root);
+  const privateDirectory = path.join(
+    root,
+    config.privateOutputs.directory
+  );
+  const metadata = await readJson(path.join(
+    privateDirectory,
+    config.privateOutputs.staticMetadata
+  ));
+  const authority = await loadAuthority(root);
+  const authorityStartMonth = authority.rows
+    .map((row) => row.postingMonth)
+    .sort()[0];
+  const labelMaturityCutoff = authority.rows
+    .map((row) => row.recordedAt.slice(0, 7))
+    .sort()
+    .at(-1);
+  const finalRestatement = restateSalesShareReversalsV1(
+    authority.rows,
+    {
+      cutoff: labelMaturityCutoff,
+      authorityStartMonth
+    }
+  );
+  assertRestatementUsable(finalRestatement);
+  const metadataIndex = buildMetadataIndex(metadata);
+  const finalMonthlyRows = restatementMonthlyRows(
+    finalRestatement,
+    metadataIndex,
+    authority.scalePower
+  );
+  const asOfAudit = [];
+  return Object.freeze({
+    config,
+    metadata,
+    authority,
+    authorityStartMonth,
+    labelMaturityCutoff,
+    finalRestatement,
+    finalMonthlyRows,
+    asOfAudit,
+    featureMonthlyRowsForOrigin(origin) {
+      const asOf = restateSalesShareReversalsV1(authority.rows, {
+        cutoff: origin,
+        authorityStartMonth
+      });
+      assertRestatementUsable(asOf);
+      asOfAudit.push({
+        origin,
+        visibleRowCount: asOf.visibleRowCount,
+        futureExcludedCount: asOf.futureExcludedCount,
+        conservationDifferenceMinor: asOf.conservationDifferenceMinor
+      });
+      return restatementMonthlyRows(
+        asOf,
+        metadataIndex,
+        authority.scalePower
+      );
+    },
+    legalOrigins: Object.freeze(legalMonthlyOrigins({
+      authorityStartMonth,
+      labelMaturityCutoff,
+      maximumHorizon: 36
+    }))
+  });
+}
+
 function verifyExactHeadPreflight(root) {
   const status = run(root, "git", ["status", "--porcelain"]).trim();
   if (status !== "") {

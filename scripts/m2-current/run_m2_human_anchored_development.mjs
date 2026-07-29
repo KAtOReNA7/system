@@ -45,6 +45,7 @@ import {
   runM2CoreRevenueManualPublicDiagnostic
 } from "./core_revenue_manual_mode.mjs";
 import {
+  runM2LayeredRevenueCompositionPrivateDevelopment,
   runM2LayeredRevenueCompositionPublicDiagnostic
 } from "./layered_revenue_composition_mode.mjs";
 
@@ -87,6 +88,9 @@ const coreRevenueManualPrivateMode = process.argv.includes(
 );
 const layeredRevenueCompositionPublicMode = process.argv.includes(
   "--layered-revenue-composition-public"
+);
+const layeredRevenueCompositionPrivateMode = process.argv.includes(
+  "--layered-revenue-composition"
 );
 if (tsbPublicMode) {
   await runM2HumanAnchoredTsbPublicDiagnostic({
@@ -139,6 +143,10 @@ if (layeredRevenueCompositionPublicMode) {
     root,
     verify: process.argv.includes("--verify")
   });
+  return;
+}
+if (layeredRevenueCompositionPrivateMode) {
+  await runM2LayeredRevenueCompositionPrivateDevelopment({ root });
   return;
 }
 config = JSON.parse(await readFile(

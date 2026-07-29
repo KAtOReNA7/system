@@ -9,6 +9,9 @@ import {
   assertM2LayeredRevenuePublicSafe,
   buildM2LayeredRevenueSyntheticDiagnostic
 } from "../../src/domain/m2Current/layeredRevenueComposition.js";
+import {
+  runM2LayeredRevenueCompositionPrivate
+} from "./layered_revenue_composition_private.mjs";
 
 const CONFIG_PATH =
   "config/m2-current-layered-revenue-composition.v0.1.json";
@@ -48,6 +51,12 @@ export async function runM2LayeredRevenueCompositionPublicDiagnostic({
     "M2 layered-revenue composition public diagnostic written.\n"
   );
   return diagnostic;
+}
+
+export async function runM2LayeredRevenueCompositionPrivateDevelopment({
+  root
+}) {
+  return runM2LayeredRevenueCompositionPrivate({ root });
 }
 
 function assertExpectations(fixture, diagnostic) {

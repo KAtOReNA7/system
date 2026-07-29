@@ -294,7 +294,8 @@
       ],
       "canonicalValidationCommands": [
         "npm run doctor:capability -- m2-layered-revenue-composition",
-        "npm run diagnose:m2:layered-revenue-composition"
+        "npm run diagnose:m2:layered-revenue-composition",
+        "npm run develop:m2:current:layered-revenue-composition"
       ],
       "recovery": "Restore only missing authoritative ledgers, work mapping authority, or the user-reviewed channel master. Rebuild derived reversal, label, candidate, evaluation and comparison caches; warn but do not block on historical receipt loss.",
       "authorization": "USER_AUTHORIZED_M2_LAYERED_REVENUE_COMPOSITION_DEVELOPMENT_EVALUATION_2026_07_29"
