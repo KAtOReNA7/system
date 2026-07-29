@@ -53,7 +53,8 @@ import {
 } from "./core_legacy_population_mode.mjs";
 import {
   runM2CoreLegacyFrozenRescore,
-  runM2CoreLegacyPopulationK0Audit
+  runM2CoreLegacyPopulationK0Audit,
+  runM2CoreLegacyTailInterferenceTest
 } from "./core_legacy_population_private.mjs";
 
 let config;
@@ -107,6 +108,9 @@ const coreLegacyPopulationAuditMode = process.argv.includes(
 );
 const coreLegacyPopulationRescoreMode = process.argv.includes(
   "--core-legacy-population-rescore"
+);
+const coreLegacyTailTestMode = process.argv.includes(
+  "--core-legacy-tail-test"
 );
 if (tsbPublicMode) {
   await runM2HumanAnchoredTsbPublicDiagnostic({
@@ -189,6 +193,18 @@ if (coreLegacyPopulationRescoreMode) {
     experimentId: result.experiment.stableExperimentId,
     modelTrainingPerformed:
       result.boundaries.modelTrainingPerformed
+  }, null, 2)}\n`);
+  return;
+}
+if (coreLegacyTailTestMode) {
+  const result = await runM2CoreLegacyTailInterferenceTest({ root });
+  process.stdout.write(`${JSON.stringify({
+    status: result.status,
+    experimentId: result.experiment.stableExperimentId,
+    tailInterferenceDecision:
+      result.tailInterferenceDecision.status,
+    validTrainingEvaluationCount:
+      result.boundaries.validTrainingEvaluationCount
   }, null, 2)}\n`);
   return;
 }

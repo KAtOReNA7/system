@@ -36,6 +36,10 @@ export function validateM2CoreLegacyPopulationConfig(config) {
     || config?.evaluation?.bootstrap?.iterations !== 2000
     || config?.trainingAblation?.baseModelId !== "M2-WORK-LG01"
     || config?.trainingAblation?.sampleWeightSupport !== "NOT_NATIVE"
+    || config?.trainingAblation?.trainingHorizonMonths !== 36
+    || config?.trainingAblation?.minimumMatureTrainingRows !== 30
+    || config?.trainingAblation?.fallbackStatus
+      !== "DISABLED_RAW_LEARNED_GLOBAL_ONLY"
     || config?.portfolioBoundary?.outOfScopeStatus
       !== "OUT_OF_CURRENT_M2_SCOPE_PORTFOLIO_RESEARCH"
   ) {
@@ -605,6 +609,106 @@ export function scoreCoreLegacyPairedBootstrap(rows, {
       median: empiricalQuantile(deltas, 0.5),
       upper: empiricalQuantile(deltas, 0.975)
     })
+  });
+}
+
+export function selectCoreLegacyQuarterlyOrigins(origins) {
+  const legalOrigins = [...new Set(origins.map((origin) => (
+    serialToMonth(monthToSerial(origin))
+  )))].sort();
+  if (legalOrigins.length === 0) return Object.freeze([]);
+  const selected = legalOrigins.filter((_, index) => index % 3 === 0);
+  const last = legalOrigins.at(-1);
+  if (selected.at(-1) !== last) selected.push(last);
+  return Object.freeze(selected);
+}
+
+export function selectCoreLegacyTrainingRows({
+  workCases,
+  outerOrigin,
+  armId,
+  primaryHorizonMonths
+}) {
+  const normalizedOuterOrigin = serialToMonth(monthToSerial(outerOrigin));
+  const horizon = Number(primaryHorizonMonths);
+  if (!Number.isInteger(horizon) || horizon <= 0) {
+    throw new M2CoreLegacyPopulationError(
+      "m2_core_legacy_training_horizon_invalid"
+    );
+  }
+  const suffix = String(armId).split("/").at(-1);
+  const populationFilter = {
+    T0_FULL: () => true,
+    T1_CORE90: (row) => row.core90 === true,
+    T2_CORE80: (row) => row.core80 === true
+  }[suffix];
+  if (!populationFilter) {
+    throw new M2CoreLegacyPopulationError(
+      "m2_core_legacy_training_arm_invalid"
+    );
+  }
+  return Object.freeze(workCases.filter((row) => (
+    Number(row.horizonMonths) === horizon
+    && String(row.origin) < normalizedOuterOrigin
+    && String(row.labelAvailableAsOf) <= normalizedOuterOrigin
+    && populationFilter(row)
+  )).sort(compareWorkCases));
+}
+
+export function decideCoreLegacyTailInterference({
+  armAssessments
+}) {
+  if (!Array.isArray(armAssessments) || armAssessments.length === 0) {
+    return Object.freeze({
+      status: "TAIL_INTERFERENCE_NOT_EVALUABLE",
+      confirmedArmIds: Object.freeze([]),
+      reason: "NO_EXECUTABLE_ARM_ASSESSMENTS"
+    });
+  }
+  const executable = armAssessments.filter(
+    (row) => row.status === "COMPUTED"
+  );
+  if (executable.length === 0) {
+    return Object.freeze({
+      status: "TAIL_INTERFERENCE_NOT_EVALUABLE",
+      confirmedArmIds: Object.freeze([]),
+      reason: "NO_COMPUTABLE_CONTROLLED_COMPARISON"
+    });
+  }
+  const confirmed = executable.filter((row) => (
+    row.threeMonthRelativeWapeImprovementAtLeastMinimum === true
+    && row.sixMonthRelativeWapeImprovementAtLeastMinimum === true
+    && row.threeMonthBiasNotMateriallyWorse === true
+    && row.sixMonthBiasNotMateriallyWorse === true
+    && row.threeMonthBootstrapSupportsImprovement === true
+    && row.sixMonthBootstrapSupportsImprovement === true
+    && row.majorityTimeBlocksImprove === true
+    && row.fallbackUsed === false
+  ));
+  if (confirmed.length > 0) {
+    return Object.freeze({
+      status: "TAIL_INTERFERENCE_CONFIRMED",
+      confirmedArmIds: Object.freeze(
+        confirmed.map((row) => row.armId).sort()
+      ),
+      reason: "PREREGISTERED_THREE_AND_SIX_MONTH_RULE_SATISFIED"
+    });
+  }
+  const anyDirectionalEvidence = executable.some((row) => (
+    row.threeMonthRelativeWapeImprovementAtLeastMinimum === true
+    || row.sixMonthRelativeWapeImprovementAtLeastMinimum === true
+    || row.threeMonthBootstrapSupportsImprovement === true
+    || row.sixMonthBootstrapSupportsImprovement === true
+    || row.majorityTimeBlocksImprove === true
+  ));
+  return Object.freeze({
+    status: anyDirectionalEvidence
+      ? "TAIL_INTERFERENCE_MIXED"
+      : "TAIL_INTERFERENCE_NOT_CONFIRMED",
+    confirmedArmIds: Object.freeze([]),
+    reason: anyDirectionalEvidence
+      ? "PARTIAL_OR_UNSTABLE_EVIDENCE"
+      : "NO_STABLE_PREREGISTERED_IMPROVEMENT"
   });
 }
 

@@ -154,7 +154,15 @@
       "TAIL_INTERFERENCE_NOT_CONFIRMED",
       "TAIL_INTERFERENCE_NOT_EVALUABLE"
     ],
-    "confirmationMinimumRelativeWapeImprovement": 0.01
+    "confirmationMinimumRelativeWapeImprovement": 0.01,
+    "materialAbsoluteBiasWorseningThreshold": 0.01,
+    "bootstrapImprovementLowerBoundRequired": 0,
+    "minimumImprovingTimeBlockShare": 0.5,
+    "trainingHorizonMonths": 36,
+    "minimumMatureTrainingRows": 30,
+    "minimumMatureTrainingRowsRationale": "five_cross_work_folds_times_maximum_six_value_parameter_grid_fixed_before_training",
+    "evaluationFamily": "CONTROLLED_STRICT_ROLLING",
+    "fallbackStatus": "DISABLED_RAW_LEARNED_GLOBAL_ONLY"
   },
   "portfolioBoundary": {
     "outOfScopeModelId": "M2-PORT-LRC01",

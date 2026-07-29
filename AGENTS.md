@@ -3,7 +3,7 @@
 ## 当前权威入口
 
 - 用户首页与公共开始入口：`README.md`
-- 当前 M2 状态：`docs/analysis/m2-v2/M2-v2-current-state-index-v0.38.md`
+- 当前 M2 状态：`docs/analysis/m2-v2/M2-v2-current-state-index-v0.39.md`
 - M2 模型机器权威：`config/m2-model-registry.v1.json`
 - M2 中文目录：`docs/analysis/m2-current/M2-model-catalog-and-scorecard-v1.md`
 - M2 分层收入组合模型开发结论：
@@ -35,7 +35,10 @@
   - `docs/analysis/m2-current/M2-evaluation-contract-v2-validation-v1.md`
 - M2 canonical core 局部规则：`src/domain/m2Current/AGENTS.md`
 - 当前 M2 作品预测范围：
-  `docs/analysis/m2-current/M2-core-legacy-observed-channel-scope-contract-v0.1.md`
+  - `docs/analysis/m2-current/M2-core-legacy-observed-channel-scope-contract-v0.1.md`
+  - `docs/analysis/m2-current/M2-core-legacy-training-population-and-loss-audit-v0.1.md`
+  - `docs/analysis/m2-current/M2-core-legacy-frozen-rescore-v0.1.md`
+  - `docs/analysis/m2-current/M2-core-legacy-tail-interference-test-v0.1.md`
 - 仓库收敛与可移植开发：
   - `docs/analysis/repository-current-state-and-convergence-audit-v0.1.md`
   - `docs/analysis/m2-v2/M2-repository-code-convergence-and-portable-development-audit-v0.4.md`

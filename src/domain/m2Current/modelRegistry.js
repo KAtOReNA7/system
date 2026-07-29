@@ -659,6 +659,18 @@ function resultStatusZh(value) {
   if (value === "M2_PUBLISHING_SCALE_IMPLEMENTATION_BLOCKED") {
     return "实现阻断且无候选结果";
   }
+  if (value === "CONTROLLED_FULL_POPULATION_REFERENCE") {
+    return "已执行的全量训练人口参照";
+  }
+  if (value === "CONTROLLED_CORE90_TRAINING_TAIL_INTERFERENCE_NOT_CONFIRMED") {
+    return "动态核心 90% 训练已执行，尾部干扰未确认";
+  }
+  if (value === "CONTROLLED_CORE80_TRAINING_TAIL_INTERFERENCE_NOT_CONFIRMED") {
+    return "动态核心 80% 训练已执行且退化，尾部干扰未确认";
+  }
+  if (value === "TAIL_INTERFERENCE_NOT_CONFIRMED") {
+    return "尾部干扰未确认";
+  }
   if (/NOT_EXECUTED/u.test(value)) {
     return "尚未执行";
   }

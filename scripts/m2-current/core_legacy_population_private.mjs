@@ -13,11 +13,15 @@ import { spawnSync } from "node:child_process";
 import {
   buildCoreLegacyOriginPopulation,
   buildCoreLegacyWorkCases,
+  decideCoreLegacyTailInterference,
   scoreCoreLegacyPointRows,
+  selectCoreLegacyQuarterlyOrigins,
+  selectCoreLegacyTrainingRows,
   validateM2CoreLegacyPopulationConfig
 } from "../../src/domain/m2Current/coreLegacyPopulation.js";
 import {
-  forecastM2HumanAnchoredBase
+  forecastM2HumanAnchoredBase,
+  learnM2HumanAnchoredParameters
 } from "../../src/domain/m2Current/humanAnchored.js";
 import {
   applyCoreRevenueLongTermForecast,
@@ -383,6 +387,383 @@ export async function runM2CoreLegacyFrozenRescore({ root }) {
       validFrozenRescoreProduced: false,
       modelTrainingPerformed: false,
       priorK0Status: priorReceipt?.status ?? null
+    }, null, 2)}\n`, "utf8");
+    throw error;
+  }
+}
+
+export async function runM2CoreLegacyTailInterferenceTest({ root }) {
+  const config = await readJson(path.join(root, CONFIG_PATH));
+  const humanConfig = await readJson(path.join(
+    root,
+    "config/m2-current-human-anchored.v0.1.json"
+  ));
+  validateM2CoreLegacyPopulationConfig(config);
+  const privateDirectory = path.join(
+    root,
+    config.privateOutputs.directory
+  );
+  await mkdir(privateDirectory, { recursive: true });
+  const receiptPath = path.join(
+    privateDirectory,
+    config.privateOutputs.receipt
+  );
+  const priorReceipt = await readJsonIfPresent(receiptPath);
+  if (priorReceipt?.status === "VALID_K2_TAIL_INTERFERENCE_TEST_COMPLETE") {
+    throw new Error("m2_core_legacy_tail_test_already_complete");
+  }
+  const priorK1Valid = (
+    priorReceipt?.status === "VALID_K1_FROZEN_RESCORE_COMPLETE"
+    || (
+      priorReceipt?.status
+        === "INVALIDATED_K2_INFRASTRUCTURE_RETRY_ALLOWED"
+      && priorReceipt?.priorK1Status
+        === "VALID_K1_FROZEN_RESCORE_COMPLETE"
+    )
+  );
+  if (!priorK1Valid) {
+    throw new Error("m2_core_legacy_k1_valid_receipt_required");
+  }
+  const frozenRescore = await readJson(path.join(
+    root,
+    config.publicOutputs.frozenRescoreJson
+  ));
+  if (
+    frozenRescore?.status
+      !== "K1_FROZEN_MODEL_CORRECT_POPULATION_RESCORE_COMPLETE"
+  ) {
+    throw new Error("m2_core_legacy_k1_public_result_required");
+  }
+  let preflight = null;
+  let trainingStarted = false;
+  let validEvaluationProduced = false;
+  try {
+    preflight = verifyCoreLegacyStagePreflight(root, {
+      stage: "K2_TAIL_INTERFERENCE_TEST",
+      allowedDirtyPaths: [
+        "config/m2-current-core-legacy-population.v0.1.json",
+        "package.json",
+        "scripts/m2-current/core_legacy_population_private.mjs",
+        "scripts/m2-current/run_m2_human_anchored_development.mjs",
+        "src/domain/m2Current/coreLegacyPopulation.js",
+        "test/m2-core-legacy-population-contract.test.js",
+        "docs/analysis/m2-current/"
+          + "M2-core-legacy-tail-interference-test-v0.1.json",
+        "docs/analysis/m2-current/"
+          + "M2-core-legacy-tail-interference-test-v0.1.md"
+      ]
+    });
+    const authority = await materializeM2CoreRevenueAuthority({ root });
+    const featureCache = new Map();
+    const featureRows = (origin) => {
+      if (!featureCache.has(origin)) {
+        featureCache.set(
+          origin,
+          authority.featureMonthlyRowsForOrigin(origin)
+        );
+      }
+      return featureCache.get(origin);
+    };
+    const cases = buildCoreLegacyWorkCases({
+      origins: authority.legalOrigins,
+      horizons: config.evaluation.horizonsMonths,
+      finalMonthlyRows: authority.finalMonthlyRows,
+      featureMonthlyRowsForOrigin: featureRows,
+      config
+    });
+    const workCasesByOrigin = groupByValues(
+      cases.workCases,
+      (row) => row.origin
+    );
+    const channelCasesByWork = groupByValues(
+      cases.channelCases,
+      frozenWorkKey
+    );
+    const candidateOrigins = selectCoreLegacyQuarterlyOrigins(
+      authority.legalOrigins
+    );
+    const executableArms = config.trainingAblation.arms.filter(
+      (arm) => !arm.armId.endsWith("/T3_REVENUE_WEIGHTED_FULL")
+    );
+    const selections = [];
+    const privateRows = [];
+    const evaluatedOrigins = [];
+    const skippedOrigins = [];
+    trainingStarted = true;
+    for (const outerOrigin of candidateOrigins) {
+      const trainingByArm = new Map(executableArms.map((arm) => [
+        arm.armId,
+        selectCoreLegacyTrainingRows({
+          workCases: cases.workCases,
+          outerOrigin,
+          armId: arm.armId,
+          primaryHorizonMonths:
+            config.trainingAblation.trainingHorizonMonths
+        })
+      ]));
+      const readiness = executableArms.map((arm) => {
+        const rows = trainingByArm.get(arm.armId);
+        return {
+          armId: arm.armId,
+          trainingRowCount: rows.length,
+          positiveTrainingRowCount: rows.filter(
+            (row) => row.actualPositive > 0
+          ).length,
+          maximumTrainingLabelAvailableAsOf:
+            rows.map((row) => row.labelAvailableAsOf).sort().at(-1)
+              ?? null
+        };
+      });
+      const allReady = readiness.every((row) => (
+        row.trainingRowCount
+          >= config.trainingAblation.minimumMatureTrainingRows
+        && row.positiveTrainingRowCount > 0
+        && row.maximumTrainingLabelAvailableAsOf <= outerOrigin
+      ));
+      if (!allReady) {
+        skippedOrigins.push({
+          outerOrigin,
+          status: "SKIPPED_INSUFFICIENT_SHARED_MATURE_TRAINING_ROWS",
+          arms: readiness
+        });
+        continue;
+      }
+      const validation = workCasesByOrigin.get(outerOrigin) ?? [];
+      if (validation.length === 0) {
+        throw new Error("m2_core_legacy_validation_origin_empty");
+      }
+      evaluatedOrigins.push(outerOrigin);
+      const diagnosticIndex = buildWorkDiagnosticIndex({
+        origin: outerOrigin,
+        workCases: validation,
+        featureRows: featureRows(outerOrigin)
+      });
+      for (const arm of executableArms) {
+        const training = trainingByArm.get(arm.armId);
+        const fit = learnM2HumanAnchoredParameters(
+          training,
+          humanConfig
+        );
+        selections.push({
+          outerOrigin,
+          armId: arm.armId,
+          trainingPopulation: arm.population,
+          status: "EVALUATED",
+          trainingRowCount: training.length,
+          positiveTrainingRowCount: fit.trainingPositiveRowCount,
+          independentTrainingWorkCount: new Set(training.map(
+            (row) => row.standardWorkId
+          )).size,
+          maximumTrainingLabelAvailableAsOf:
+            training.map(
+              (row) => row.labelAvailableAsOf
+            ).sort().at(-1),
+          parameters: fit.parameters,
+          objective: fit.objective,
+          coordinatePath: fit.path,
+          sameOrLaterOuterTruthRead: false,
+          populationRecomputedAtEachTrainingPseudoOrigin: true
+        });
+        for (const workCase of validation) {
+          const forecast = forecastM2HumanAnchoredBase(
+            workCase,
+            fit.parameters
+          );
+          const correctChannels = channelCasesByWork.get(
+            frozenWorkKey(workCase)
+          ) ?? [];
+          const components = new Map(
+            forecast.channelComponents.map((component) => [
+              String(component.channelUid),
+              component.forecast36 * forecast.horizonScale
+            ])
+          );
+          if (
+            correctChannels.length !== components.size
+            || correctChannels.some(
+              (row) => !components.has(String(row.channelUid))
+            )
+          ) {
+            throw new Error(
+              "m2_core_legacy_tail_channel_component_mismatch"
+            );
+          }
+          const componentTotal = sum(correctChannels.map(
+            (row) => components.get(String(row.channelUid))
+          ));
+          if (
+            Math.abs(componentTotal - forecast.positivePointEstimate)
+              > 1e-7 * Math.max(1, forecast.positivePointEstimate)
+          ) {
+            throw new Error(
+              "m2_core_legacy_tail_work_channel_conservation_failed"
+            );
+          }
+          const diagnostic = diagnosticIndex.get(
+            String(workCase.standardWorkId)
+          );
+          const common = {
+            schema:
+              "m2.current.core_legacy_tail_test_row.private.v0.1",
+            experimentId: config.experiment.stableExperimentId,
+            modelId: config.trainingAblation.baseModelId,
+            armId: arm.armId,
+            trainingPopulation: arm.population,
+            evaluationFamily:
+              config.trainingAblation.evaluationFamily,
+            standardWorkId: String(workCase.standardWorkId),
+            origin: workCase.origin,
+            horizonMonths: workCase.horizonMonths,
+            core80: workCase.core80,
+            core90: workCase.core90,
+            top20: workCase.top20,
+            top50: workCase.top50,
+            revenueDecile: workCase.revenueDecile,
+            fallbackUsed: false,
+            selectedPipelineUsed: false,
+            rawLayer: config.trainingAblation.rawLayer
+          };
+          for (const populationId of config.evaluation.populationIds) {
+            if (!belongsToPopulation(workCase, populationId)) continue;
+            privateRows.push({
+              ...common,
+              rowType: "EVALUATION",
+              populationId,
+              grain: "WORK_TOTAL",
+              channelUid: null,
+              pointEstimate: forecast.positivePointEstimate,
+              actual: workCase.actual,
+              settlementMechanism: workCase.dominantRevenueMode,
+              level2Category:
+                workCase.secondLevelCategoryReportingOnly,
+              level3Category:
+                workCase.thirdLevelCategoryReportingOnly,
+              diagnostic,
+              caseKey: frozenWorkKey(workCase)
+            });
+            for (const channelCase of correctChannels) {
+              privateRows.push({
+                ...common,
+                rowType: "EVALUATION",
+                populationId,
+                grain: "WORK_CHANNEL",
+                channelUid: String(channelCase.channelUid),
+                pointEstimate: components.get(
+                  String(channelCase.channelUid)
+                ),
+                actual: channelCase.actual,
+                settlementMechanism:
+                  channelCase.settlementMechanism,
+                level2Category: channelCase.level2Category,
+                level3Category: channelCase.level3Category,
+                diagnostic: null,
+                caseKey: frozenChannelKey(channelCase)
+              });
+            }
+          }
+        }
+      }
+    }
+    if (privateRows.length === 0 || evaluatedOrigins.length === 0) {
+      throw new Error("m2_core_legacy_tail_evaluation_rows_empty");
+    }
+    const evaluation = buildTailInterferenceEvaluation({
+      config,
+      rows: privateRows,
+      selections,
+      candidateOrigins,
+      evaluatedOrigins,
+      skippedOrigins
+    });
+    assertTailInterferencePublicSafe(evaluation);
+    validEvaluationProduced = true;
+
+    const privateRowsPath = path.join(
+      privateDirectory,
+      config.privateOutputs.trainingRows
+    );
+    await writeNdjson(privateRowsPath, privateRows);
+    const manifestPath = path.join(
+      privateDirectory,
+      config.privateOutputs.manifest
+    );
+    const priorManifest = await readJsonIfPresent(manifestPath) ?? {};
+    const codeBindings = {};
+    for (const relative of [
+      "config/m2-current-core-legacy-population.v0.1.json",
+      "config/m2-current-human-anchored.v0.1.json",
+      "src/domain/m2Current/coreLegacyPopulation.js",
+      "src/domain/m2Current/humanAnchored.js",
+      "scripts/m2-current/core_legacy_population_private.mjs"
+    ]) {
+      codeBindings[relative] = await fileBinding(path.join(root, relative));
+    }
+    await writeFile(manifestPath, `${JSON.stringify({
+      ...priorManifest,
+      schema: "m2.current.core_legacy_population.manifest.private.v0.1",
+      status: "VALID_K2_TAIL_INTERFERENCE_TEST_COMPLETE",
+      experimentId: config.experiment.stableExperimentId,
+      actualDefinitionId: config.target.actualDefinitionId,
+      stages: {
+        ...(priorManifest.stages ?? {}),
+        K1_FROZEN_RESCORE: "COMPLETE",
+        K2_TAIL_INTERFERENCE_TEST: "COMPLETE"
+      },
+      k2: {
+        executionBaseHead: preflight.head,
+        exactHeadCiRunId: preflight.ciRunId,
+        validTrainingEvaluationCount: 1,
+        privateEvaluationRowCount: privateRows.length,
+        evaluatedOriginCount: evaluatedOrigins.length,
+        trainingPopulationOnlyDifference: true,
+        rawLearnedGlobalOnly: true,
+        codeBindings,
+        outputBindings: {
+          tailTestRows: await fileBinding(privateRowsPath)
+        }
+      },
+      privateIdentityPublished: false
+    }, null, 2)}\n`, "utf8");
+    await writeFile(receiptPath, `${JSON.stringify({
+      schema: "m2.current.core_legacy_population.run_receipt.private.v0.1",
+      stage: "K2_CONTROLLED_TRAINING_POPULATION_ABLATION",
+      status: "VALID_K2_TAIL_INTERFERENCE_TEST_COMPLETE",
+      executionBaseHead: preflight.head,
+      exactHeadCiRunId: preflight.ciRunId,
+      command: "npm run develop:m2:current:core-legacy-tail-test",
+      frozenRescoreExecutionCount:
+        priorReceipt.frozenRescoreExecutionCount ?? null,
+      validTrainingEvaluationCount: 1,
+      validTrainingEvaluationProduced: true,
+      postResultTuningPerformed: false,
+      architectureChanged: false,
+      featureChanged: false,
+      parameterGridChanged: false,
+      fallbackUsed: false,
+      laterOriginRead: false,
+      finalHoldoutRead: false,
+      productionChanged: false,
+      manifestSha256: await sha256File(manifestPath)
+    }, null, 2)}\n`, "utf8");
+    await writePublicK2Outputs({ root, config, evaluation });
+    return evaluation;
+  } catch (error) {
+    await writeFile(receiptPath, `${JSON.stringify({
+      schema: "m2.current.core_legacy_population.run_receipt.private.v0.1",
+      stage: "K2_CONTROLLED_TRAINING_POPULATION_ABLATION",
+      status: validEvaluationProduced
+        ? "K2_VALID_EVALUATION_PRODUCED_REPORTING_INCOMPLETE"
+        : "INVALIDATED_K2_INFRASTRUCTURE_RETRY_ALLOWED",
+      executionBaseHead: preflight?.head ?? null,
+      errorCode: safeErrorCode(error),
+      trainingStarted,
+      validTrainingEvaluationProduced: validEvaluationProduced,
+      retryMayRetrain: !validEvaluationProduced,
+      priorK1Status: priorReceipt?.priorK1Status
+        ?? priorReceipt?.status
+        ?? null,
+      frozenRescoreExecutionCount:
+        priorReceipt?.frozenRescoreExecutionCount ?? null
     }, null, 2)}\n`, "utf8");
     throw error;
   }
@@ -1128,6 +1509,846 @@ function buildCoverageReport(cases, config) {
   return output;
 }
 
+function buildWorkDiagnosticIndex({
+  origin,
+  workCases,
+  featureRows
+}) {
+  const originSerial = monthToSerial(origin);
+  const rowsByWork = groupByValues(
+    featureRows,
+    (row) => String(row.standardWorkId)
+  );
+  const output = new Map();
+  const representativeCases = new Map();
+  for (const row of workCases) {
+    if (!representativeCases.has(String(row.standardWorkId))) {
+      representativeCases.set(String(row.standardWorkId), row);
+    }
+  }
+  for (const [standardWorkId, workCase] of representativeCases) {
+    const channels = new Set(workCase.canonicalChannels.map(
+      (channel) => String(channel.channelUid)
+    ));
+    const months = new Map();
+    for (const row of rowsByWork.get(standardWorkId) ?? []) {
+      if (!channels.has(String(row.channelUid))) continue;
+      const serial = monthToSerial(row.month);
+      if (serial > originSerial) continue;
+      months.set(serial, (
+        months.get(serial) ?? 0
+      ) + Number(row.cash));
+    }
+    const firstSerial = months.size > 0
+      ? Math.min(...months.keys())
+      : originSerial;
+    const history = denseCashFromMap(months, firstSerial, originSerial);
+    const last6Start = Math.max(firstSerial, originSerial - 5);
+    const last6 = denseCashFromMap(months, last6Start, originSerial);
+    const currentRevenue = months.get(originSerial) ?? 0;
+    const historicalPeak = Math.max(0, ...history);
+    const peakSerial = historicalPeak > 0
+      ? [...months.entries()]
+        .filter(([, value]) => value === historicalPeak)
+        .map(([serial]) => serial)
+        .sort((left, right) => right - left)[0]
+      : null;
+    const yearStart = Math.floor(originSerial / 12) * 12;
+    const elapsedYearMonths = originSerial - yearStart + 1;
+    const currentYtd = sumSerialValues(months, yearStart, originSerial);
+    const priorYtd = sumSerialValues(
+      months,
+      yearStart - 12,
+      yearStart - 12 + elapsedYearMonths - 1
+    );
+    const priorFive = denseCashFromMap(
+      months,
+      Math.max(firstSerial, originSerial - 5),
+      originSerial - 1
+    );
+    const priorFiveAverage = average(priorFive) ?? 0;
+    output.set(standardWorkId, {
+      currentRevenue,
+      historicalPeak,
+      currentToHistoricalPeakRatio: historicalPeak > 0
+        ? currentRevenue / historicalPeak
+        : null,
+      currentToHistoricalPeakGap: historicalPeak > 0
+        ? (historicalPeak - currentRevenue) / historicalPeak
+        : null,
+      last6LinearTrend: linearSlope(last6),
+      last6LinearTrendNormalized: normalizeSlope(last6),
+      currentYearToDateRevenue: currentYtd,
+      priorYearSamePeriodRevenue: priorYtd,
+      yearToDateVersusPriorRatio: priorYtd !== 0
+        ? currentYtd / priorYtd
+        : null,
+      monthsSincePeak: peakSerial === null
+        ? null
+        : originSerial - peakSerial,
+      consecutiveDeclineMonths: countConsecutiveDeclines(history),
+      singleMonthAnomaly: (
+        priorFive.length >= 3
+        && priorFiveAverage > 0
+        && currentRevenue >= priorFiveAverage * 2
+      ),
+      singleMonthToPriorFiveAverageRatio: priorFiveAverage > 0
+        ? currentRevenue / priorFiveAverage
+        : null,
+      diagnosticOnlyNotModelFeature: true
+    });
+  }
+  return output;
+}
+
+export function buildTailInterferenceEvaluation({
+  config,
+  rows,
+  selections,
+  candidateOrigins,
+  evaluatedOrigins,
+  skippedOrigins
+}) {
+  const metrics = metricCells(rows, [
+    "armId",
+    "evaluationFamily",
+    "populationId",
+    "grain",
+    "horizonMonths"
+  ]);
+  const blockByOrigin = buildTailTimeBlockMap(evaluatedOrigins);
+  const comparisons = buildTailArmComparisons({
+    rows,
+    config,
+    blockByOrigin
+  });
+  const armAssessments = buildTailArmAssessments({
+    comparisons,
+    config
+  });
+  const decision = decideCoreLegacyTailInterference({
+    armAssessments
+  });
+  const timeRows = rows.map((row) => ({
+    ...row,
+    timeBlock: blockByOrigin.get(row.origin)
+  }));
+  const yearRows = rows.map((row) => ({
+    ...row,
+    originYear: String(row.origin).slice(0, 4)
+  }));
+  return {
+    schema: "m2.current.core_legacy_tail_interference.public.v0.1",
+    asOf: config.asOf,
+    experiment: config.experiment,
+    status: "K2_CONTROLLED_TRAINING_POPULATION_ABLATION_COMPLETE",
+    tailInterferenceDecision: decision,
+    target: {
+      actualDefinitionId: config.target.actualDefinitionId,
+      grain: config.target.predictionGrain,
+      workTotalMeaning: config.target.workTotalMeaning
+    },
+    controlledDesign: {
+      baseModelId: config.trainingAblation.baseModelId,
+      rawLayer: config.trainingAblation.rawLayer,
+      allowedDifference: config.trainingAblation.allowedDifference,
+      trainingHorizonMonths:
+        config.trainingAblation.trainingHorizonMonths,
+      parameterGridSource:
+        "config/m2-current-human-anchored.v0.1.json",
+      evaluationFamily: config.trainingAblation.evaluationFamily,
+      candidateOriginCount: candidateOrigins.length,
+      evaluatedOriginCount: evaluatedOrigins.length,
+      evaluatedOrigins,
+      skippedOrigins,
+      selectionRule:
+        config.trainingAblation.evaluationOrigins.selectionRule,
+      minimumMatureTrainingRows:
+        config.trainingAblation.minimumMatureTrainingRows,
+      minimumMatureTrainingRowsRationale:
+        config.trainingAblation.minimumMatureTrainingRowsRationale,
+      fallbackStatus: config.trainingAblation.fallbackStatus,
+      arms: [
+        ...config.trainingAblation.arms.slice(0, 3).map((arm) => ({
+          ...arm,
+          status: "EXECUTED_ON_SHARED_EVALUATION_ORIGINS"
+        })),
+        {
+          ...config.trainingAblation.arms[3],
+          status: "NOT_EXECUTED_REQUIRES_MODEL_CHANGE",
+          reason: "BASE_TRAINER_HAS_NO_NATIVE_SAMPLE_WEIGHT_SUPPORT"
+        }
+      ],
+      leakageAudit: {
+        coreRecomputedAtEveryTrainingPseudoOrigin: true,
+        validationOriginCoreUsedForTrainingSelection: false,
+        futureActualUsedForCoreSelection: false,
+        currentFixedCoreBackcastUsed: false,
+        maximumTrainingLabelAfterOuterOriginCount: 0
+      }
+    },
+    trainingSelections: selections,
+    metrics,
+    comparisons,
+    armAssessments,
+    bestObservedTrainingArmByHorizon:
+      buildBestObservedTrainingArms(metrics),
+    alternativeExplanationDiagnostics: {
+      populationSelection:
+        buildTailPopulationSelectionDiagnostics(rows),
+      meanRegressionAndHighPoint:
+        buildTailDiagnosticComparisons(rows),
+      extremeWorkDominance:
+        comparisons.map((row) => ({
+          armId: row.armId,
+          populationId: row.populationId,
+          grain: row.grain,
+          horizonMonths: row.horizonMonths,
+          ...row.extremeWorkDominance
+        })),
+      channelDominance: buildTailSliceComparisons({
+        rows: rows.filter((row) => row.grain === "WORK_CHANNEL"),
+        field: "channelUid",
+        prefix: "CHANNEL"
+      }),
+      yearDominance: buildTailSliceComparisons({
+        rows: yearRows,
+        field: "originYear"
+      }),
+      evaluationPopulationIdenticalAcrossArms:
+        verifyTailSameCasesAcrossArms(rows),
+      fallbackMaskingPossible: false,
+      diagnosticFieldsUsedAsModelFeatures: false
+    },
+    slices: {
+      timeBlocks: metricCells(timeRows, [
+        "armId",
+        "populationId",
+        "grain",
+        "horizonMonths",
+        "timeBlock"
+      ], { suppressSmallCells: true }),
+      channels: buildTailSanitizedMetricSlices(
+        rows.filter((row) => row.grain === "WORK_CHANNEL"),
+        "channelUid",
+        "CHANNEL"
+      ),
+      settlementMechanisms: metricCells(rows, [
+        "armId",
+        "populationId",
+        "grain",
+        "horizonMonths",
+        "settlementMechanism"
+      ], { suppressSmallCells: true }),
+      level2ReportingOnly: buildTailSanitizedMetricSlices(
+        rows,
+        "level2Category",
+        "LEVEL2"
+      ),
+      level3ReportingOnly: buildTailSanitizedMetricSlices(
+        rows,
+        "level3Category",
+        "LEVEL3"
+      ),
+      sanitizedDimensionLabels: true,
+      smallCellMinimumWorks: 5
+    },
+    boundaries: {
+      validTrainingEvaluationCount: 1,
+      postResultTuningPerformed: false,
+      featureChanged: false,
+      architectureChanged: false,
+      parameterGridChanged: false,
+      sampleWeightArmExecuted: false,
+      selectedPipelineUsed: false,
+      fallbackUsed: false,
+      portfolioModelsIncluded: false,
+      companyTotalDenominatorUsed: false,
+      futureNewWorkIncluded: false,
+      futureFirstChannelIncluded: false,
+      productionChanged: false,
+      laterOriginRead: false,
+      finalHoldoutRead: false
+    },
+    privacy: {
+      privateRowIdentityIncluded: false,
+      privatePathIncluded: false,
+      originalChannelOrCategoryLabelIncluded: false,
+      aggregateOnly: true
+    }
+  };
+}
+
+function buildTailArmComparisons({ rows, config, blockByOrigin }) {
+  const dimensions = [
+    "populationId",
+    "grain",
+    "horizonMonths"
+  ];
+  const groups = groupByValues(rows, (row) => dimensions
+    .map((field) => String(row[field]))
+    .join("\u0000"));
+  const baselineId =
+    `${config.experiment.stableExperimentId}/T0_FULL`;
+  const candidateIds = [
+    `${config.experiment.stableExperimentId}/T1_CORE90`,
+    `${config.experiment.stableExperimentId}/T2_CORE80`
+  ];
+  const output = [];
+  for (const values of groups.values()) {
+    const byArm = groupByValues(values, (row) => row.armId);
+    const baselineIndex = new Map(
+      (byArm.get(baselineId) ?? []).map((row) => [row.caseKey, row])
+    );
+    for (const armId of candidateIds) {
+      const candidateIndex = new Map(
+        (byArm.get(armId) ?? []).map((row) => [row.caseKey, row])
+      );
+      const commonKeys = [...baselineIndex.keys()].filter(
+        (key) => candidateIndex.has(key)
+      ).sort();
+      if (commonKeys.length === 0) continue;
+      const common = commonKeys.map((key) => ({
+        ...candidateIndex.get(key),
+        candidatePointEstimate:
+          candidateIndex.get(key).pointEstimate,
+        baselinePointEstimate:
+          baselineIndex.get(key).pointEstimate
+      }));
+      const candidate = scoreCoreLegacyPointRows(common.map((row) => ({
+        ...row,
+        pointEstimate: row.candidatePointEstimate
+      })));
+      const baseline = scoreCoreLegacyPointRows(common.map((row) => ({
+        ...row,
+        pointEstimate: row.baselinePointEstimate
+      })));
+      const first = common[0];
+      const timeBlocks = buildTailComparisonTimeBlocks(
+        common,
+        blockByOrigin
+      );
+      output.push({
+        armId,
+        baselineArmId: baselineId,
+        populationId: first.populationId,
+        grain: first.grain,
+        horizonMonths: first.horizonMonths,
+        sameCaseCount: common.length,
+        sameWorkCount: new Set(common.map(
+          (row) => row.standardWorkId
+        )).size,
+        candidateWape: candidate.wape,
+        baselineWape: baseline.wape,
+        relativeWapeImprovement: baseline.wape > 0
+          ? (baseline.wape - candidate.wape) / baseline.wape
+          : null,
+        candidateSignedBias: candidate.signedBias,
+        baselineSignedBias: baseline.signedBias,
+        absoluteBiasWorsening:
+          Math.abs(candidate.signedBias) - Math.abs(baseline.signedBias),
+        bootstrap: efficientPairedWorkBootstrap(common, {
+          iterations: config.evaluation.bootstrap.iterations,
+          seed: config.evaluation.bootstrap.seed
+        }),
+        timeBlocks,
+        improvingTimeBlockShare: ratio(
+          timeBlocks.filter(
+            (row) => row.absoluteWapeImprovement > 0
+          ).length,
+          timeBlocks.length
+        ),
+        extremeWorkDominance:
+          buildExtremeWorkDominance(common),
+        rawCandidateOnly: true,
+        fallbackUsed: false
+      });
+    }
+  }
+  return output.sort(comparePublicCells);
+}
+
+function buildTailComparisonTimeBlocks(rows, blockByOrigin) {
+  const groups = groupByValues(rows, (row) => (
+    blockByOrigin.get(row.origin)
+  ));
+  return [...groups].map(([timeBlock, values]) => {
+    const candidate = scoreCoreLegacyPointRows(values.map((row) => ({
+      ...row,
+      pointEstimate: row.candidatePointEstimate
+    })));
+    const baseline = scoreCoreLegacyPointRows(values.map((row) => ({
+      ...row,
+      pointEstimate: row.baselinePointEstimate
+    })));
+    return {
+      timeBlock,
+      caseCount: values.length,
+      workCount: new Set(values.map(
+        (row) => row.standardWorkId
+      )).size,
+      candidateWape: candidate.wape,
+      baselineWape: baseline.wape,
+      absoluteWapeImprovement: baseline.wape - candidate.wape
+    };
+  }).sort((left, right) => left.timeBlock.localeCompare(right.timeBlock));
+}
+
+function buildTailArmAssessments({ comparisons, config }) {
+  const definitions = [
+    {
+      armId: `${config.experiment.stableExperimentId}/T1_CORE90`,
+      populationId: "CORE90"
+    },
+    {
+      armId: `${config.experiment.stableExperimentId}/T2_CORE80`,
+      populationId: "CORE80"
+    }
+  ];
+  const minimum =
+    config.trainingAblation.confirmationMinimumRelativeWapeImprovement;
+  const biasThreshold =
+    config.trainingAblation.materialAbsoluteBiasWorseningThreshold;
+  const bootstrapThreshold =
+    config.trainingAblation.bootstrapImprovementLowerBoundRequired;
+  return definitions.map(({ armId, populationId }) => {
+    const find = (horizonMonths) => comparisons.find((row) => (
+      row.armId === armId
+      && row.populationId === populationId
+      && row.grain === "WORK_TOTAL"
+      && row.horizonMonths === horizonMonths
+    ));
+    const three = find(3);
+    const six = find(6);
+    if (!three || !six) {
+      return {
+        armId,
+        populationId,
+        status: "NOT_COMPUTABLE_REQUIRED_CELL_MISSING"
+      };
+    }
+    const timeBlocks = [...three.timeBlocks, ...six.timeBlocks];
+    return {
+      armId,
+      populationId,
+      status: "COMPUTED",
+      threeMonthRelativeWapeImprovement:
+        three.relativeWapeImprovement,
+      sixMonthRelativeWapeImprovement:
+        six.relativeWapeImprovement,
+      threeMonthRelativeWapeImprovementAtLeastMinimum:
+        three.relativeWapeImprovement >= minimum,
+      sixMonthRelativeWapeImprovementAtLeastMinimum:
+        six.relativeWapeImprovement >= minimum,
+      threeMonthBiasNotMateriallyWorse:
+        three.absoluteBiasWorsening <= biasThreshold,
+      sixMonthBiasNotMateriallyWorse:
+        six.absoluteBiasWorsening <= biasThreshold,
+      threeMonthBootstrapSupportsImprovement:
+        three.bootstrap
+          .leftModelAbsoluteWapeImprovement95.lower
+          > bootstrapThreshold,
+      sixMonthBootstrapSupportsImprovement:
+        six.bootstrap
+          .leftModelAbsoluteWapeImprovement95.lower
+          > bootstrapThreshold,
+      improvingTimeBlockCount: timeBlocks.filter(
+        (row) => row.absoluteWapeImprovement > 0
+      ).length,
+      timeBlockCount: timeBlocks.length,
+      improvingTimeBlockShare: ratio(
+        timeBlocks.filter(
+          (row) => row.absoluteWapeImprovement > 0
+        ).length,
+        timeBlocks.length
+      ),
+      majorityTimeBlocksImprove: ratio(
+        timeBlocks.filter(
+          (row) => row.absoluteWapeImprovement > 0
+        ).length,
+        timeBlocks.length
+      ) > config.trainingAblation.minimumImprovingTimeBlockShare,
+      fallbackUsed: false
+    };
+  });
+}
+
+function buildBestObservedTrainingArms(metrics) {
+  const groups = groupByValues(metrics.filter(
+    (row) => row.status === "COMPUTED"
+  ), (row) => [
+    row.evaluationFamily,
+    row.populationId,
+    row.grain,
+    row.horizonMonths
+  ].join("\u0000"));
+  return [...groups.values()].map((values) => {
+    const ranked = [...values].sort((left, right) => (
+      left.wape - right.wape || left.armId.localeCompare(right.armId)
+    ));
+    const first = ranked[0];
+    return {
+      evaluationFamily: first.evaluationFamily,
+      populationId: first.populationId,
+      grain: first.grain,
+      horizonMonths: first.horizonMonths,
+      bestObservedTrainingArmId: first.armId,
+      bestObservedWape: first.wape,
+      rankingScope:
+        "ONLY_THIS_SAME_CASE_POPULATION_GRAIN_HORIZON_AND_FAMILY"
+    };
+  }).sort(comparePublicCells);
+}
+
+function buildTailPopulationSelectionDiagnostics(rows) {
+  const baselineId = "M2-EXP-CORE-LEGACY-POPULATION-01/T0_FULL";
+  const unique = new Map();
+  for (const row of rows) {
+    if (
+      row.armId !== baselineId
+      || row.grain !== "WORK_TOTAL"
+      || row.horizonMonths !== 3
+    ) {
+      continue;
+    }
+    unique.set(
+      `${row.populationId}\u0000${row.origin}\u0000${row.standardWorkId}`,
+      row
+    );
+  }
+  const grouped = groupByValues(
+    [...unique.values()],
+    (row) => row.populationId
+  );
+  return [...grouped].map(([populationId, values]) => ({
+    populationId,
+    originWorkCount: values.length,
+    independentWorkCount: new Set(values.map(
+      (row) => row.standardWorkId
+    )).size,
+    meanCurrentToHistoricalPeakGap: averageNonNull(values.map(
+      (row) => row.diagnostic.currentToHistoricalPeakGap
+    )),
+    medianLast6LinearTrendNormalized: median(values.map(
+      (row) => row.diagnostic.last6LinearTrendNormalized
+    ).filter(Number.isFinite)),
+    meanYearToDateVersusPriorRatio: averageNonNull(values.map(
+      (row) => row.diagnostic.yearToDateVersusPriorRatio
+    )),
+    medianMonthsSincePeak: median(values.map(
+      (row) => row.diagnostic.monthsSincePeak
+    ).filter(Number.isFinite)),
+    meanConsecutiveDeclineMonths: average(values.map(
+      (row) => row.diagnostic.consecutiveDeclineMonths
+    )),
+    singleMonthAnomalyShare: ratio(
+      values.filter((row) => row.diagnostic.singleMonthAnomaly).length,
+      values.length
+    ),
+    nearHistoricalPeakShare: ratio(
+      values.filter((row) => (
+        row.diagnostic.currentToHistoricalPeakRatio >= 0.9
+      )).length,
+      values.length
+    )
+  })).sort(comparePublicCells);
+}
+
+function buildTailDiagnosticComparisons(rows) {
+  const definitions = [
+    {
+      id: "NEAR_HISTORICAL_PEAK",
+      match: (diagnostic) => (
+        diagnostic.currentToHistoricalPeakRatio >= 0.9
+      )
+    },
+    {
+      id: "BELOW_HISTORICAL_PEAK",
+      match: (diagnostic) => (
+        diagnostic.currentToHistoricalPeakRatio < 0.9
+      )
+    },
+    {
+      id: "LAST6_DECLINING",
+      match: (diagnostic) => (
+        diagnostic.last6LinearTrendNormalized < 0
+      )
+    },
+    {
+      id: "LAST6_NONDECLINING",
+      match: (diagnostic) => (
+        diagnostic.last6LinearTrendNormalized >= 0
+      )
+    },
+    {
+      id: "SINGLE_MONTH_ANOMALY",
+      match: (diagnostic) => diagnostic.singleMonthAnomaly
+    },
+    {
+      id: "NO_SINGLE_MONTH_ANOMALY",
+      match: (diagnostic) => !diagnostic.singleMonthAnomaly
+    }
+  ];
+  const output = [];
+  for (const armId of [
+    "M2-EXP-CORE-LEGACY-POPULATION-01/T1_CORE90",
+    "M2-EXP-CORE-LEGACY-POPULATION-01/T2_CORE80"
+  ]) {
+    const populationId = armId.endsWith("T1_CORE90")
+      ? "CORE90"
+      : "CORE80";
+    for (const horizonMonths of [3, 6]) {
+      const candidate = new Map(rows.filter((row) => (
+        row.armId === armId
+        && row.populationId === populationId
+        && row.grain === "WORK_TOTAL"
+        && row.horizonMonths === horizonMonths
+      )).map((row) => [row.caseKey, row]));
+      const baseline = new Map(rows.filter((row) => (
+        row.armId.endsWith("/T0_FULL")
+        && row.populationId === populationId
+        && row.grain === "WORK_TOTAL"
+        && row.horizonMonths === horizonMonths
+      )).map((row) => [row.caseKey, row]));
+      for (const definition of definitions) {
+        const values = [...candidate].filter(([key, row]) => (
+          baseline.has(key) && definition.match(row.diagnostic)
+        )).map(([key, row]) => ({
+          ...row,
+          candidatePointEstimate: row.pointEstimate,
+          baselinePointEstimate: baseline.get(key).pointEstimate
+        }));
+        if (values.length === 0) continue;
+        const candidateScore = scoreCoreLegacyPointRows(values.map(
+          (row) => ({
+            ...row,
+            pointEstimate: row.candidatePointEstimate
+          })
+        ));
+        const baselineScore = scoreCoreLegacyPointRows(values.map(
+          (row) => ({
+            ...row,
+            pointEstimate: row.baselinePointEstimate
+          })
+        ));
+        output.push({
+          armId,
+          populationId,
+          horizonMonths,
+          diagnosticGroup: definition.id,
+          caseCount: values.length,
+          workCount: candidateScore.workCount,
+          candidateWape: candidateScore.wape,
+          baselineWape: baselineScore.wape,
+          relativeWapeImprovement: baselineScore.wape > 0
+            ? (
+              baselineScore.wape - candidateScore.wape
+            ) / baselineScore.wape
+            : null
+        });
+      }
+    }
+  }
+  return output.sort(comparePublicCells);
+}
+
+function buildTailSliceComparisons({ rows, field, prefix = null }) {
+  const values = [...new Set(rows.map(
+    (row) => String(row[field] ?? "UNKNOWN")
+  ))].sort();
+  const aliases = new Map(values.map((value, index) => [
+    value,
+    prefix
+      ? `${prefix}_${String(index + 1).padStart(3, "0")}`
+      : value
+  ]));
+  const output = [];
+  for (const armId of [
+    "M2-EXP-CORE-LEGACY-POPULATION-01/T1_CORE90",
+    "M2-EXP-CORE-LEGACY-POPULATION-01/T2_CORE80"
+  ]) {
+    const populationId = armId.endsWith("T1_CORE90")
+      ? "CORE90"
+      : "CORE80";
+    for (const horizonMonths of [3, 6, 12, 36]) {
+      const candidate = new Map(rows.filter((row) => (
+        row.armId === armId
+        && row.populationId === populationId
+        && row.horizonMonths === horizonMonths
+      )).map((row) => [row.caseKey, row]));
+      const baseline = new Map(rows.filter((row) => (
+        row.armId.endsWith("/T0_FULL")
+        && row.populationId === populationId
+        && row.horizonMonths === horizonMonths
+      )).map((row) => [row.caseKey, row]));
+      const groups = groupByValues(
+        [...candidate].filter(([key]) => baseline.has(key)),
+        ([, row]) => String(row[field] ?? "UNKNOWN")
+      );
+      for (const [slice, pairs] of groups) {
+        const common = pairs.map(([key, row]) => ({
+          ...row,
+          candidatePointEstimate: row.pointEstimate,
+          baselinePointEstimate: baseline.get(key).pointEstimate
+        }));
+        const candidateScore = scoreCoreLegacyPointRows(common.map(
+          (row) => ({
+            ...row,
+            pointEstimate: row.candidatePointEstimate
+          })
+        ));
+        const baselineScore = scoreCoreLegacyPointRows(common.map(
+          (row) => ({
+            ...row,
+            pointEstimate: row.baselinePointEstimate
+          })
+        ));
+        output.push({
+          armId,
+          populationId,
+          horizonMonths,
+          sliceId: aliases.get(slice),
+          status: candidateScore.workCount < 5
+            ? "SUPPRESSED_SMALL_CELL"
+            : "COMPUTED",
+          caseCount: common.length,
+          workCount: candidateScore.workCount,
+          candidateWape: candidateScore.workCount < 5
+            ? null
+            : candidateScore.wape,
+          baselineWape: candidateScore.workCount < 5
+            ? null
+            : baselineScore.wape,
+          absoluteWapeImprovement: candidateScore.workCount < 5
+            ? null
+            : baselineScore.wape - candidateScore.wape
+        });
+      }
+    }
+  }
+  return output.sort(comparePublicCells);
+}
+
+function buildTailSanitizedMetricSlices(rows, field, prefix) {
+  const values = [...new Set(rows.map(
+    (row) => String(row[field] ?? "UNKNOWN")
+  ))].sort();
+  const aliases = new Map(values.map((value, index) => [
+    value,
+    `${prefix}_${String(index + 1).padStart(3, "0")}`
+  ]));
+  return metricCells(rows.map((row) => ({
+    ...row,
+    sanitizedSliceId: aliases.get(String(row[field] ?? "UNKNOWN"))
+  })), [
+    "armId",
+    "populationId",
+    "grain",
+    "horizonMonths",
+    "sanitizedSliceId"
+  ], { suppressSmallCells: true });
+}
+
+function buildExtremeWorkDominance(rows) {
+  const grouped = groupByValues(rows, (row) => String(row.standardWorkId));
+  const contributions = [...grouped].map(([workId, values]) => ({
+    workId,
+    improvement: sum(values.map((row) => (
+      Math.abs(row.baselinePointEstimate - row.actual)
+      - Math.abs(row.candidatePointEstimate - row.actual)
+    )))
+  })).sort((left, right) => (
+    Math.abs(right.improvement) - Math.abs(left.improvement)
+  ));
+  const absoluteMagnitude = sum(contributions.map(
+    (row) => Math.abs(row.improvement)
+  ));
+  return {
+    independentWorkCount: contributions.length,
+    netAbsoluteErrorImprovement: sum(contributions.map(
+      (row) => row.improvement
+    )),
+    top1ShareOfAbsoluteContributionMagnitude: ratio(
+      sum(contributions.slice(0, 1).map(
+        (row) => Math.abs(row.improvement)
+      )),
+      absoluteMagnitude
+    ),
+    top5ShareOfAbsoluteContributionMagnitude: ratio(
+      sum(contributions.slice(0, 5).map(
+        (row) => Math.abs(row.improvement)
+      )),
+      absoluteMagnitude
+    ),
+    largestWorkContributionDirection:
+      contributions[0]?.improvement > 0
+        ? "IMPROVEMENT"
+        : "DEGRADATION"
+  };
+}
+
+function verifyTailSameCasesAcrossArms(rows) {
+  const dimensions = [
+    "populationId",
+    "grain",
+    "horizonMonths"
+  ];
+  const groups = groupByValues(rows, (row) => dimensions
+    .map((field) => String(row[field]))
+    .join("\u0000"));
+  for (const values of groups.values()) {
+    const byArm = groupByValues(values, (row) => row.armId);
+    const signatures = [...byArm.values()].map((armRows) => (
+      armRows.map((row) => row.caseKey).sort().join("\u0001")
+    ));
+    if (new Set(signatures).size !== 1) return false;
+  }
+  return true;
+}
+
+function buildTailTimeBlockMap(origins) {
+  return new Map(origins.map((origin, index) => [
+    origin,
+    `TIME_BLOCK_${
+      Math.min(3, Math.floor(index * 3 / origins.length) + 1)
+    }`
+  ]));
+}
+
+function sumSerialValues(months, start, end) {
+  let total = 0;
+  for (let serial = start; serial <= end; serial += 1) {
+    total += Number(months.get(serial) ?? 0);
+  }
+  return total;
+}
+
+function linearSlope(values) {
+  if (values.length < 2) return 0;
+  const center = (values.length - 1) / 2;
+  let numerator = 0;
+  let denominator = 0;
+  for (let index = 0; index < values.length; index += 1) {
+    numerator += (index - center) * (values[index] - average(values));
+    denominator += (index - center) ** 2;
+  }
+  return denominator > 0 ? numerator / denominator : 0;
+}
+
+function normalizeSlope(values) {
+  const center = average(values.map((value) => Math.abs(value))) ?? 0;
+  return center > 0 ? linearSlope(values) / center : 0;
+}
+
+function countConsecutiveDeclines(values) {
+  let count = 0;
+  for (let index = values.length - 1; index > 0; index -= 1) {
+    if (values[index] < values[index - 1]) count += 1;
+    else break;
+  }
+  return count;
+}
+
 function efficientPairedWorkBootstrap(rows, { iterations, seed }) {
   const byWork = groupByValues(rows, (row) => String(row.standardWorkId));
   const workIds = [...byWork.keys()].sort();
@@ -1539,6 +2760,32 @@ function assertFrozenRescorePublicSafe(value) {
   return true;
 }
 
+function assertTailInterferencePublicSafe(value) {
+  assertNoPrivateIdentityKeys(value);
+  const serialized = JSON.stringify(value);
+  for (const forbidden of [
+    "private-output",
+    "private-input",
+    "executionBaseHead",
+    "sha256"
+  ]) {
+    if (serialized.includes(forbidden)) {
+      throw new Error(
+        `m2_core_legacy_public_tail_test_forbidden_${forbidden}`
+      );
+    }
+  }
+  if (
+    value?.boundaries?.validTrainingEvaluationCount !== 1
+    || value?.boundaries?.fallbackUsed !== false
+    || value?.controlledDesign?.arms?.[3]?.status
+      !== "NOT_EXECUTED_REQUIRES_MODEL_CHANGE"
+  ) {
+    throw new Error("m2_core_legacy_public_tail_test_boundary_invalid");
+  }
+  return true;
+}
+
 function assertNoPrivateIdentityKeys(value) {
   if (Array.isArray(value)) {
     for (const item of value) assertNoPrivateIdentityKeys(item);
@@ -1570,6 +2817,129 @@ async function writePublicK1Outputs({ root, config, evaluation }) {
     "utf8"
   );
   await writeFile(reportPath, renderFrozenRescoreReport(evaluation), "utf8");
+}
+
+async function writePublicK2Outputs({ root, config, evaluation }) {
+  const jsonPath = path.join(
+    root,
+    config.publicOutputs.tailTestJson
+  );
+  const reportPath = path.join(
+    root,
+    config.publicOutputs.tailTestReport
+  );
+  await writeFile(
+    jsonPath,
+    `${JSON.stringify(evaluation, null, 2)}\n`,
+    "utf8"
+  );
+  await writeFile(
+    reportPath,
+    renderTailInterferenceReport(evaluation),
+    "utf8"
+  );
+}
+
+export function renderTailInterferenceReport(value) {
+  const metricRows = value.metrics.filter((row) => (
+    ["CORE80", "CORE90"].includes(row.populationId)
+  )).map((row) => (
+    `| ${trainingArmName(row.armId)}（\`${row.armId}\`） | `
+    + `${row.populationId} | ${grainName(row.grain)}（\`${row.grain}\`） | `
+    + `${row.horizonMonths} | ${row.caseCount} | ${row.workCount} | `
+    + `${decimal(row.wape)} | ${decimal(row.signedBias)} |`
+  )).join("\n");
+  const comparisonRows = value.comparisons.filter((row) => (
+    ["CORE80", "CORE90"].includes(row.populationId)
+  )).map((row) => (
+    `| ${trainingArmName(row.armId)}（\`${row.armId}\`） | `
+    + `${row.populationId} | ${grainName(row.grain)} | `
+    + `${row.horizonMonths} | `
+    + `${percent(row.relativeWapeImprovement)} | `
+    + `${decimal(row.absoluteBiasWorsening)} | `
+    + `${intervalText(
+      row.bootstrap.leftModelAbsoluteWapeImprovement95
+    )} | ${percent(row.improvingTimeBlockShare)} |`
+  )).join("\n");
+  const selectionRows = value.alternativeExplanationDiagnostics
+    .populationSelection.map((row) => (
+      `| ${row.populationId} | ${row.originWorkCount} | `
+      + `${row.independentWorkCount} | `
+      + `${percent(row.meanCurrentToHistoricalPeakGap)} | `
+      + `${decimal(row.medianLast6LinearTrendNormalized)} | `
+      + `${decimal(row.meanYearToDateVersusPriorRatio)} | `
+      + `${number(row.medianMonthsSincePeak)} | `
+      + `${number(row.meanConsecutiveDeclineMonths)} | `
+      + `${percent(row.singleMonthAnomalyShare)} | `
+      + `${percent(row.nearHistoricalPeakShare)} |`
+    )).join("\n");
+  const assessmentRows = value.armAssessments.map((row) => (
+    `| ${trainingArmName(row.armId)}（\`${row.armId}\`） | `
+    + `${row.populationId} | ${percent(
+      row.threeMonthRelativeWapeImprovement
+    )} | ${percent(row.sixMonthRelativeWapeImprovement)} | `
+    + `${row.threeMonthBootstrapSupportsImprovement ? "是" : "否"} | `
+    + `${row.sixMonthBootstrapSupportsImprovement ? "是" : "否"} | `
+    + `${percent(row.improvingTimeBlockShare)} |`
+  )).join("\n");
+  return `# M2 尾部干扰受控训练消融 v0.1
+
+> 实验：${value.experiment.displayNameZh}（${
+  value.experiment.displayNameEn
+}，\`${value.experiment.stableExperimentId}\`）
+>
+> 阶段状态：受控训练人口消融完成（\`${value.status}\`）；尾部干扰判定为“${
+  tailDecisionName(value.tailInterferenceDecision.status)
+}”（\`${value.tailInterferenceDecision.status}\`）。
+
+## 结论先行
+
+本阶段只改变人工锚定可学习全局模型（Human-Anchored Learned Global，\`M2-WORK-LG01\`）的训练人口。原始全量训练（Full-population training）、动态 Core90 训练（Dynamic Core90 training）和动态 Core80 训练（Dynamic Core80 training）使用相同特征、公式、参数网格、优化方法、训练标签成熟规则、滚动评价起点与正确 actual。只报告原始可学习全局层（raw learnedGlobal）；未启用后备选择。
+
+收入加权全量训练臂（Revenue-weighted full-population arm，\`${value.controlledDesign.arms[3].armId}\`）没有执行，因为当前训练器不原生支持样本权重（\`${value.controlledDesign.arms[3].status}\`）。没有为了补齐该臂修改模型。
+
+本轮共有 ${value.controlledDesign.evaluatedOriginCount} 个共享滚动评价起点。所有训练标签均在对应外层起点前成熟，Core 成员资格在每一个训练 pseudo-origin 独立重算；没有使用 validation 起点名单、未来 actual 或今天的固定 Core 名单回看历史。
+
+## 预注册判定
+
+| 训练臂 | 对应评价人口 | 3个月相对 WAPE 改善 | 6个月相对 WAPE 改善 | 3个月 bootstrap 支持 | 6个月 bootstrap 支持 | 改善时间块占比 |
+|---|---|---:|---:|---|---|---:|
+${assessmentRows}
+
+“确认尾部干扰”要求同一 Core 训练臂在对应作品总额人口上同时满足：3个月和6个月相对 WAPE 至少改善 1%、绝对 bias 不实质恶化、2,000 次作品聚类配对 bootstrap 下界大于 0、多数独立时间块改善，并且没有 fallback。机器判定严格按该规则生成。
+
+## 完整核心人口结果
+
+| 训练臂 | 人口 | 粒度 | horizon（月） | cases | works | WAPE | signed bias |
+|---|---|---|---:|---:|---:|---:|---:|
+${metricRows}
+
+作品总额（work-total）与作品×渠道（work×channel）分别评分，渠道误差没有在作品内抵消后消失。3、6、12、36个月各自形成独立同案例比较，不跨 horizon 评选冠军。
+
+## 相对全量训练的同案例比较
+
+| Core训练臂 | 人口 | 粒度 | horizon（月） | 相对 WAPE 改善 | 绝对 bias 恶化 | 绝对 WAPE 改善95%区间 | 改善时间块占比 |
+|---|---|---|---:|---:|---:|---|---:|
+${comparisonRows}
+
+每个单元均在完全相同的作品、起点、horizon、粒度与 actual 上比较。机器结果 JSON 同时保留 Top20、Top50、时间块、匿名渠道、年份、结算机制、匿名二级/三级分类切片以及极端作品贡献集中度。
+
+## 均值回归与头部高点替代解释
+
+| 人口 | origin×work | 独立作品 | 当前距历史峰值平均缺口 | 最近6月标准化趋势中位数 | YTD/上年同期均值 | 距峰值月数中位数 | 连续下降月均值 | 单月异常占比 | 接近峰值占比 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+${selectionRows}
+
+上述字段只用于结果诊断，没有加入特征或参与训练。机器结果进一步把“接近历史高点/低于高点”“最近6月下降/非下降”“单月异常/非异常”分组比较，以判断改善是否可能主要来自均值回归或高点选择。
+
+## 治理边界
+
+- 本轮有效训练评价只执行一次（\`validTrainingEvaluationCount=1\`），未在见到结果后调参。
+- 动态 Core80/Core90 是训练和评价人口，不是公司组合分量；Core 外尾部没有以预测为 0、长尾池或公司补差重新加入误差。
+- 三级分类仍只作报告诊断，不改变 Core 资格，也不直接修正金额。
+- 分层收入组合模型 v0.1（Layered Revenue Composition Model v0.1，\`M2-PORT-LRC01\`）和组合参考模型（Portfolio ETS Reference，\`M2-PORT-ETS01\`）没有进入本轮排名。
+- 本轮不改变运行回退、研究基线、活动候选或自动化批准，不进入 production、独立 later-origin、final holdout、Canary/full160、release 或 M3 formal。
+`;
 }
 
 function renderFrozenRescoreReport(value) {
@@ -2264,6 +3634,55 @@ function groupName(id) {
     OUTSIDE_CORE90: "动态 Core90 以外尾部",
     INELIGIBLE_AT_ORIGIN: "起点不满足成熟资格"
   })[id] ?? id;
+}
+
+function trainingArmName(id) {
+  return ({
+    "M2-EXP-CORE-LEGACY-POPULATION-01/T0_FULL":
+      "原始全量训练",
+    "M2-EXP-CORE-LEGACY-POPULATION-01/T1_CORE90":
+      "动态 Core90 训练",
+    "M2-EXP-CORE-LEGACY-POPULATION-01/T2_CORE80":
+      "动态 Core80 训练",
+    "M2-EXP-CORE-LEGACY-POPULATION-01/T3_REVENUE_WEIGHTED_FULL":
+      "收入加权全量训练"
+  })[id] ?? id;
+}
+
+function grainName(id) {
+  return ({
+    WORK_TOTAL: "作品总额",
+    WORK_CHANNEL: "作品×渠道"
+  })[id] ?? id;
+}
+
+function tailDecisionName(id) {
+  return ({
+    TAIL_INTERFERENCE_CONFIRMED: "尾部干扰已确认",
+    TAIL_INTERFERENCE_MIXED: "尾部干扰证据混合",
+    TAIL_INTERFERENCE_NOT_CONFIRMED: "尾部干扰未确认",
+    TAIL_INTERFERENCE_NOT_EVALUABLE: "尾部干扰不可评价"
+  })[id] ?? id;
+}
+
+function decimal(value) {
+  return value === null || !Number.isFinite(value)
+    ? "不可计算"
+    : Number(value).toFixed(6);
+}
+
+function intervalText(value) {
+  if (
+    value === null
+    || !Number.isFinite(value?.lower)
+    || !Number.isFinite(value?.median)
+    || !Number.isFinite(value?.upper)
+  ) {
+    return "不可计算";
+  }
+  return `[${decimal(value.lower)}, ${decimal(value.median)}, ${
+    decimal(value.upper)
+  }]`;
 }
 
 async function writeNdjson(filePath, rows) {

@@ -31,9 +31,10 @@
 | M2 评价合同 v2.2 | 开发评价已激活，并透明隔离无法分配的冲销残差（`M2_EVALUATION_V2_2_ACTIVE_FOR_DEVELOPMENT_WITH_DISCLOSED_RESIDUAL_EXCLUSION`） | 不是 production/automation gate，不改变运行回退模型 |
 | M2 出版行业规模适配 | 私有物化在候选拟合前因实现接线错误 fail-closed（`M2_PUBLISHING_SCALE_IMPLEMENTATION_BLOCKED`） | 没有候选预测或评价指标；一次性授权已消耗，未授权重试 |
 | M2 分层收入组合 v0.1 | 已完成首个有效组合开发评价并失败（`M2_LAYERED_REVENUE_COMPOSITION_FAIL`） | 12/36 个月主结果失败；年龄带辅助臂和年度分量未完整执行；没有晋升或自动化授权 |
+| M2 核心老品范围与尾部测试 | 范围纠偏、冻结重评分与一次训练人口消融已完成（`M2_CORE_LEGACY_SCOPE_AND_TAIL_TEST_COMPLETE`） | 尾部干扰未确认（`TAIL_INTERFERENCE_NOT_CONFIRMED`）；核心 80% 训练稳定退化，未授权新架构 |
 | M3 | 仅合成 fixture/prototype | 不代表真实材料执行或正式发布 |
 
-最新治理入口是 [M2 当前状态索引 v0.38](docs/analysis/m2-v2/M2-v2-current-state-index-v0.38.md)。
+最新治理入口是 [M2 当前状态索引 v0.39](docs/analysis/m2-v2/M2-v2-current-state-index-v0.39.md)。
 模型名称、别名、角色、成绩人口和可比组以
 [Model Registry](config/m2-model-registry.v1.json) 为唯一当前机器权威。
 
@@ -125,7 +126,7 @@ npm run m2:model -- compare M2-WORK-OA03 M2-WORK-LG01
 查询命令只读取公开 Model Registry；不会训练模型、读取 private capability 或改变
 production。
 
-## M2 预测目标
+## M2 预测目标与当前作品范围
 
 M2 的正式预测对象是**未来分成收入现金**：
 
@@ -134,6 +135,11 @@ M2 的正式预测对象是**未来分成收入现金**：
 - 分成账单是预测实际值的唯一现金来源，总账只用于守恒审计，买断账单只作历史背景；
 - 所有开发特征必须证明在 forecast origin 可得，禁止用 current 状态事后回填历史；
 - 作品点预测、组合预测、排序/分配和风险区间是不同能力，不共享排行榜。
+
+当前作品级开发范围进一步限定为：每个预测起点动态重算的核心成熟老品，以及这些作品
+在该起点已经出现并成熟的 canonical 渠道。起点后的新增作品、首次新增渠道、动态核心
+人口之外的长尾，以及公司组合总额缺口均不进入当前作品预测 actual。作品总额只允许
+汇总同一批符合资格渠道对；不成熟渠道对必须弃权并单独报告覆盖，不能按 0 计误差。
 
 当前最早可能具备时间独立性的 later-origin 是 2026-01；36 个月标签需完整到
 2029-01，并且仍需原始 frozen state。此前不拆月重试、不补造预测、不打开 final
@@ -154,6 +160,13 @@ holdout。
   残差，开发可建模标签只隔离该 residual component，当前状态为开发评价已激活并
   披露残差隔离（`M2_EVALUATION_V2_2_ACTIVE_FOR_DEVELOPMENT_WITH_DISCLOSED_RESIDUAL_EXCLUSION`），
   不代表 production 或 automation gate。
+- 核心老品正确人口冻结重评分覆盖 70 个合法起点：核心 80% / 核心 90% 的未来绝对
+  收入覆盖在 3 个月为 76.59% / 87.88%，在 36 个月为 81.40% / 90.27%；不同
+  horizon 的最佳冻结模型不同，不能生成跨 horizon 冠军。
+- 一次受控训练人口消融没有证实尾部干扰（`TAIL_INTERFERENCE_NOT_CONFIRMED`）：
+  动态核心 90% 训练的 3 / 6 个月作品总额改善仅 0.033% / 0.247%，无 bootstrap
+  与时间块稳定性支持，且渠道层变差；动态核心 80% 训练的作品总额退化 4.456% /
+  4.705%。当前证据不足以授权“核心作品总额 + 渠道份额”独立架构。
 - 下一轮模型开发必须等待合格 later-origin，或真实可审计、带
   `effectiveAt/availableAt` 的历史商业状态输入；不能继续同窗调参。
 
@@ -161,10 +174,11 @@ holdout。
 
 | 主题 | 当前入口 |
 |---|---|
-| 当前状态 | [M2 当前状态索引 v0.38](docs/analysis/m2-v2/M2-v2-current-state-index-v0.38.md) |
+| 当前状态 | [M2 当前状态索引 v0.39](docs/analysis/m2-v2/M2-v2-current-state-index-v0.39.md) |
 | 模型权威 | [Model Registry](config/m2-model-registry.v1.json) · [中文模型目录](docs/analysis/m2-current/M2-model-catalog-and-scorecard-v1.md) |
 | 评价体系 | [v2.2 合同](docs/analysis/m2-current/M2-evaluation-contract-v2.2.md) · [v2.2 验证](docs/analysis/m2-current/M2-evaluation-contract-v2.2-validation.md) · [v2.1 合同](docs/analysis/m2-current/M2-evaluation-contract-v2.1.md) |
 | 冻结标签重评分 | [v2.2 诊断复核](docs/analysis/m2-current/M2-evaluation-v2.2-diagnostic-recheck.md) · [机器可读聚合](docs/analysis/m2-current/M2-evaluation-v2.2-diagnostic-recheck.json) · [冲销影响](docs/analysis/m2-current/M2-reversal-restatement-impact-v1.md) |
+| 核心老品范围 | [范围合同](docs/analysis/m2-current/M2-core-legacy-observed-channel-scope-contract-v0.1.md) · [训练人口审计](docs/analysis/m2-current/M2-core-legacy-training-population-and-loss-audit-v0.1.md) · [冻结重评分](docs/analysis/m2-current/M2-core-legacy-frozen-rescore-v0.1.md) · [尾部干扰测试](docs/analysis/m2-current/M2-core-legacy-tail-interference-test-v0.1.md) |
 | 代码与仓库 | [全库收敛审计](docs/analysis/repository-current-state-and-convergence-audit-v0.1.md) · [协作规则](AGENTS.md) |
 | 产品定义 | [M2 Forecast Intelligence v2 PRD](docs/prd/m2-v2/M2-forecast-intelligence-v2-prd-v0.2.md) |
 

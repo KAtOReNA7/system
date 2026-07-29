@@ -37,8 +37,10 @@ export async function runM2CoreLegacyPopulationPublicDiagnostic({
         "m2_core_legacy_population_public_diagnostic_drift"
       );
     }
+    await assertTrackedPublicEvidence(root, config);
     process.stdout.write(
-      "M2 core legacy population public diagnostic verified.\n"
+      "M2 core legacy population public diagnostic and tracked evidence "
+        + "verified.\n"
     );
     return diagnostic;
   }
@@ -48,6 +50,52 @@ export async function runM2CoreLegacyPopulationPublicDiagnostic({
     "M2 core legacy population public diagnostic written.\n"
   );
   return diagnostic;
+}
+
+async function assertTrackedPublicEvidence(root, config) {
+  const [frozenRescore, tailTest] = await Promise.all([
+    readJson(path.join(root, config.publicOutputs.frozenRescoreJson)),
+    readJson(path.join(root, config.publicOutputs.tailTestJson))
+  ]);
+  if (
+    frozenRescore.status
+      !== "K1_FROZEN_MODEL_CORRECT_POPULATION_RESCORE_COMPLETE"
+    || frozenRescore.metrics?.length !== 192
+    || frozenRescore.rebuildAudit?.learnedGlobal
+      ?.maximumAbsoluteReconstructionDifference !== 0
+  ) {
+    throw new Error("m2_core_legacy_frozen_rescore_evidence_invalid");
+  }
+  if (
+    tailTest.status
+      !== "K2_CONTROLLED_TRAINING_POPULATION_ABLATION_COMPLETE"
+    || tailTest.metrics?.length !== 96
+    || tailTest.comparisons?.length !== 64
+    || tailTest.tailInterferenceDecision?.status
+      !== "TAIL_INTERFERENCE_NOT_CONFIRMED"
+    || tailTest.boundaries?.validTrainingEvaluationCount !== 1
+    || tailTest.boundaries?.postResultTuningPerformed !== false
+    || tailTest.boundaries?.fallbackUsed !== false
+    || tailTest.controlledDesign?.arms?.find(
+      (arm) => arm.armId.endsWith("/T3_REVENUE_WEIGHTED_FULL")
+    )?.status !== "NOT_EXECUTED_REQUIRES_MODEL_CHANGE"
+  ) {
+    throw new Error("m2_core_legacy_tail_test_evidence_invalid");
+  }
+  const serialized = JSON.stringify({ frozenRescore, tailTest });
+  for (const forbidden of [
+    "\"standardWorkId\":",
+    "\"channelUid\":",
+    "\"caseKey\":",
+    "data/private-input",
+    "data/private-output"
+  ]) {
+    if (serialized.includes(forbidden)) {
+      throw new Error(
+        `m2_core_legacy_public_evidence_privacy_boundary:${forbidden}`
+      );
+    }
+  }
 }
 
 function assertFixture(diagnostic, fixture) {

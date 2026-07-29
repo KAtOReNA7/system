@@ -36,8 +36,8 @@ test("registry schema, evidence paths and immutable digests validate", () => {
   );
   assert.equal(validation.counts.modelCount, 30);
   assert.equal(validation.counts.experimentCount, 16);
-  assert.equal(validation.counts.nonModelIdentifierCount, 51);
-  assert.equal(validation.counts.comparabilityGroupCount, 18);
+  assert.equal(validation.counts.nonModelIdentifierCount, 57);
+  assert.equal(validation.counts.comparabilityGroupCount, 26);
 });
 
 test("stable model IDs and model aliases are unique", () => {
@@ -160,6 +160,42 @@ test("layered revenue composition failed without post-outcome replacement", () =
   );
 });
 
+test("core legacy population test records non-confirmation without promotion", () => {
+  const experiment = registry.experiments.find(
+    (item) => (
+      item.experimentId === "M2-EXP-CORE-LEGACY-POPULATION-01"
+    )
+  );
+  assert.equal(
+    experiment.resultStatus,
+    "TAIL_INTERFERENCE_NOT_CONFIRMED"
+  );
+  assert.equal(
+    experiment.arms.find(
+      (item) => item.armId === "T1_CORE90"
+    ).executionStatus,
+    "EXECUTED_TAIL_INTERFERENCE_NOT_CONFIRMED"
+  );
+  assert.equal(
+    experiment.arms.find(
+      (item) => item.armId === "T2_CORE80"
+    ).executionStatus,
+    "EXECUTED_DEGRADED_TAIL_INTERFERENCE_NOT_CONFIRMED"
+  );
+  assert.equal(
+    experiment.arms.find(
+      (item) => item.armId === "T3_REVENUE_WEIGHTED_FULL"
+    ).executionStatus,
+    "NOT_EXECUTED_REQUIRES_MODEL_CHANGE"
+  );
+  assert.equal(
+    registry.currentRoles.latestStateIndex,
+    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.39.md"
+  );
+  assert.equal(registry.currentRoles.activeCandidate, null);
+  assert.equal(registry.currentRoles.approvedForAutomation, null);
+});
+
 test("evaluations preserve population and comparability contracts", () => {
   const oa03 = registry.models.find(
     (model) => model.stableModelId === "M2-WORK-OA03"
@@ -269,6 +305,8 @@ test("reader catalog is a deterministic complete rendering of the registry", asy
   assert.match(catalog, /M2_PUBLISHING_SCALE_IMPLEMENTATION_BLOCKED/u);
   assert.match(catalog, /M2-PORT-LRC01/u);
   assert.match(catalog, /M2_LAYERED_REVENUE_COMPOSITION_FAIL/u);
+  assert.match(catalog, /TAIL_INTERFERENCE_NOT_CONFIRMED/u);
+  assert.match(catalog, /CG-CORE-LEGACY-K2-CORE80-WORK-H3/u);
 });
 
 test("read-only query exposes scoped identities and refuses invalid ranking", () => {
