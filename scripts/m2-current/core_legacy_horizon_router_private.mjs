@@ -9,6 +9,7 @@ import path from "node:path";
 import readline from "node:readline";
 
 import {
+  buildM2CoreLegacyRollingHorizonRouter,
   buildM2CoreLegacySameCaseEvaluation,
   validateM2CoreLegacyHorizonRouterConfig
 } from "../../src/domain/m2Current/coreLegacyHorizonRouter.js";
@@ -27,6 +28,7 @@ import {
   verifyCoreLegacyStagePreflight
 } from "./core_legacy_population_private.mjs";
 import {
+  renderM2CoreLegacyHorizonRouterReport,
   renderM2CoreLegacySameCaseReport
 } from "./core_legacy_horizon_router_mode.mjs";
 
@@ -180,6 +182,178 @@ export async function runM2CoreLegacyFullHorizonSameCaseRescore({
         exactHeadCiRunId: preflight?.ciRunId ?? null,
         errorCode: safeErrorCode(error),
         validSameCaseEvaluationProduced: false,
+        retryAllowed: true,
+        modelTrainingPerformed: false
+      }, null, 2)}\n`, "utf8");
+    }
+    throw error;
+  }
+}
+
+export async function runM2CoreLegacyRollingHorizonRouter({ root }) {
+  const [config, baseConfig] = await Promise.all([
+    readJson(path.join(root, CONFIG_PATH)),
+    readJson(path.join(root, BASE_CONFIG_PATH))
+  ]);
+  validateM2CoreLegacyHorizonRouterConfig(config);
+  validateM2CoreLegacyPopulationConfig(baseConfig);
+  const privateDirectory = path.join(
+    root,
+    config.privateOutputs.directory
+  );
+  await mkdir(privateDirectory, { recursive: true });
+  const receiptPath = path.join(
+    privateDirectory,
+    config.privateOutputs.receipt
+  );
+  const manifestPath = path.join(
+    privateDirectory,
+    config.privateOutputs.manifest
+  );
+  const [priorReceipt, priorManifest, k1Public] = await Promise.all([
+    readJsonIfPresent(receiptPath),
+    readJsonIfPresent(manifestPath),
+    readJson(path.join(root, config.publicOutputs.sameCaseJson))
+  ]);
+  if (
+    priorReceipt?.status
+      === "VALID_K2_ROLLING_HORIZON_ROUTER_COMPLETE"
+    || priorReceipt?.validRouterEvaluationProduced === true
+    || priorManifest?.stages?.K2_HORIZON_ROUTER === "COMPLETE"
+  ) {
+    throw new Error(
+      "m2_core_legacy_horizon_router_k2_already_executed"
+    );
+  }
+  if (
+    k1Public?.status
+      !== "K1_FULL_HORIZON_SAME_CASE_FROZEN_RESCORE_COMPLETE"
+    || typeof k1Public?.evaluationHead !== "string"
+    || k1Public.evaluationHead.length !== 40
+    || priorManifest?.stages?.K1_FULL_HORIZON_SAME_CASE_RESCORE
+      !== "COMPLETE"
+  ) {
+    throw new Error(
+      "m2_core_legacy_horizon_router_k1_evidence_required"
+    );
+  }
+  let preflight = null;
+  let validRouterEvaluationProduced = false;
+  try {
+    preflight = verifyCoreLegacyStagePreflight(root, {
+      stage: "HORIZON_ROUTER_K2_ROLLING_INNER_SELECTION",
+      allowedDirtyPaths: []
+    });
+    await writeFile(receiptPath, `${JSON.stringify({
+      schema:
+        "m2.current.core_legacy_horizon_router.run_receipt.private.v0.1",
+      stage: "K2_ROLLING_HORIZON_ROUTER",
+      status: "K2_EXECUTION_STARTED",
+      evaluationHead: k1Public.evaluationHead,
+      routerExecutionHead: preflight.head,
+      exactHeadCiRunId: preflight.ciRunId,
+      k1ValidEvidencePreserved: true,
+      validRouterEvaluationProduced: false,
+      retryAllowed: true
+    }, null, 2)}\n`, "utf8");
+
+    const rebuilt = await rebuildAndVerifyFrozenRows({
+      root,
+      config,
+      baseConfig
+    });
+    const evaluation = buildM2CoreLegacyRollingHorizonRouter(
+      rebuilt.rows,
+      config,
+      {
+        evaluationHead: k1Public.evaluationHead,
+        routerExecutionHead: preflight.head,
+        exactHeadCiRunId: preflight.ciRunId
+      }
+    );
+    assertK2PublicSafe(evaluation.publicResult);
+    validRouterEvaluationProduced = true;
+
+    const routerRowsPath = path.join(
+      privateDirectory,
+      config.privateOutputs.routerRows
+    );
+    await writeNdjson(routerRowsPath, [
+      ...evaluation.selectionRows,
+      ...evaluation.predictionRows
+    ]);
+    await writeFile(manifestPath, `${JSON.stringify({
+      ...priorManifest,
+      schema:
+        "m2.current.core_legacy_horizon_router.manifest.private.v0.1",
+      status: "VALID_K2_ROLLING_HORIZON_ROUTER_COMPLETE",
+      experimentId: config.experiment.stableExperimentId,
+      evaluationHead: k1Public.evaluationHead,
+      routerExecutionHead: preflight.head,
+      routerExactHeadCiRunId: preflight.ciRunId,
+      finalDocumentationHead: null,
+      stages: {
+        ...(priorManifest?.stages ?? {}),
+        K0_CAPABILITY_MATRIX: "COMPLETE",
+        K1_FULL_HORIZON_SAME_CASE_RESCORE: "COMPLETE",
+        K2_HORIZON_ROUTER: "COMPLETE",
+        K3_CHANNEL_ALLOCATION: "NOT_EXECUTED"
+      },
+      replayVerification: rebuilt.audit,
+      privateRouterSelectionRowCount: evaluation.selectionRows.length,
+      privateRouterPredictionRowCount: evaluation.predictionRows.length,
+      outputBindings: {
+        ...(priorManifest?.outputBindings ?? {}),
+        routerRows: await fileBinding(routerRowsPath)
+      },
+      privateIdentityPublished: false
+    }, null, 2)}\n`, "utf8");
+    await writePublicK2Outputs({
+      root,
+      config,
+      publicResult: evaluation.publicResult
+    });
+    await writeFile(receiptPath, `${JSON.stringify({
+      schema:
+        "m2.current.core_legacy_horizon_router.run_receipt.private.v0.1",
+      stage: "K2_ROLLING_HORIZON_ROUTER",
+      status: "VALID_K2_ROLLING_HORIZON_ROUTER_COMPLETE",
+      evaluationHead: k1Public.evaluationHead,
+      routerExecutionHead: preflight.head,
+      exactHeadCiRunId: preflight.ciRunId,
+      exactHeadCiUrl: preflight.ciUrl,
+      linuxCi: preflight.linux,
+      windowsCi: preflight.windows,
+      command:
+        "npm run develop:m2:current:core-legacy-horizon-router",
+      k1ValidEvidencePreserved: true,
+      validRouterEvaluationProduced: true,
+      executionCount: 1,
+      modelTrainingPerformed: false,
+      modelParametersChanged: false,
+      routingThresholdsChangedAfterResult: false,
+      currentOuterActualReadForSelection: false,
+      posthocReferenceUsedForSelection: false,
+      fallbackChanged: false,
+      laterOriginRead: false,
+      finalHoldoutRead: false,
+      productionChanged: false,
+      manifestSha256: await sha256File(manifestPath)
+    }, null, 2)}\n`, "utf8");
+    return evaluation.publicResult;
+  } catch (error) {
+    if (!validRouterEvaluationProduced) {
+      await writeFile(receiptPath, `${JSON.stringify({
+        schema:
+          "m2.current.core_legacy_horizon_router.run_receipt.private.v0.1",
+        stage: "K2_ROLLING_HORIZON_ROUTER",
+        status: "INVALIDATED_K2_EXECUTION_RETRY_ALLOWED",
+        evaluationHead: k1Public.evaluationHead,
+        routerExecutionHead: preflight?.head ?? null,
+        exactHeadCiRunId: preflight?.ciRunId ?? null,
+        errorCode: safeErrorCode(error),
+        k1ValidEvidencePreserved: true,
+        validRouterEvaluationProduced: false,
         retryAllowed: true,
         modelTrainingPerformed: false
       }, null, 2)}\n`, "utf8");
@@ -423,6 +597,22 @@ async function writePublicK1Outputs({ root, config, publicResult }) {
   ]);
 }
 
+async function writePublicK2Outputs({ root, config, publicResult }) {
+  const jsonPath = path.join(root, config.publicOutputs.routerJson);
+  const reportPath = path.join(
+    root,
+    config.publicOutputs.routerReport
+  );
+  await Promise.all([
+    writeFile(jsonPath, `${JSON.stringify(publicResult, null, 2)}\n`, "utf8"),
+    writeFile(
+      reportPath,
+      renderM2CoreLegacyHorizonRouterReport(publicResult),
+      "utf8"
+    )
+  ]);
+}
+
 function assertK1PublicSafe(value) {
   const serialized = JSON.stringify(value);
   for (const forbidden of [
@@ -435,6 +625,25 @@ function assertK1PublicSafe(value) {
     if (serialized.includes(forbidden)) {
       throw new Error(
         `m2_core_legacy_horizon_router_k1_privacy_boundary:${forbidden}`
+      );
+    }
+  }
+}
+
+function assertK2PublicSafe(value) {
+  const serialized = JSON.stringify(value);
+  for (const forbidden of [
+    "\"standardWorkId\":",
+    "\"channelUid\":",
+    "\"caseKey\":",
+    "\"outerOrigin\":",
+    "\"origin\":",
+    "data/private-input",
+    "data/private-output"
+  ]) {
+    if (serialized.includes(forbidden)) {
+      throw new Error(
+        `m2_core_legacy_horizon_router_k2_privacy_boundary:${forbidden}`
       );
     }
   }

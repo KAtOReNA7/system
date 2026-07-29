@@ -55,6 +55,7 @@ export async function runM2CoreLegacyHorizonRouterK0({
   }
   if (verify) {
     await assertOptionalK1Evidence({ root, config });
+    await assertOptionalK2Evidence({ root, config });
   }
   process.stdout.write(
     verify
@@ -149,6 +150,106 @@ bias 不恶化超过 2 个百分点，bootstrap 95% 下界支持改善，并在�
 人工锚定可学习全局模型（Human-Anchored Learned Global，
 \`M2-WORK-LG01\`）。本阶段没有训练、调参、修改 fallback、打开 later-origin
 或 final holdout；活动候选与自动化批准仍为空。
+`;
+}
+
+export function renderM2CoreLegacyHorizonRouterReport(value) {
+  const horizonRows = value.horizonDecisions.map((row) => (
+    `| ${row.horizonMonths} | `
+      + `${formatRouterHorizon(row.primaryStatus, row.primaryMetrics)} | `
+      + `${formatRouterHorizon(row.strictStatus, row.strictMetrics)} |`
+  )).join("\n");
+  const evaluationRows = value.evaluationSets.map((row) => (
+    `| ${row.populationId} | ${familyName(row.evaluationFamily)} `
+      + `(\`${row.evaluationFamily}\`) | ${row.horizonMonths} | `
+      + `${row.sameCaseCount} | `
+      + `${formatNumber(row.routerMetrics?.wape)} | `
+      + `${formatPercent(row.routerMetrics?.signedBias)} | `
+      + `${row.strongestSingleModelId
+        ? modelShortName(row.strongestSingleModelId)
+        : "无"} | `
+      + `${formatPercent(row.relativeFva)} | `
+      + `\`${row.decision.status}\` |`
+  )).join("\n");
+  const selectionRows = Object.entries(
+    value.selectionSummary.bySelectedModelId
+  ).map(([modelId, count]) => (
+    `| ${modelShortName(modelId)} | ${count} |`
+  )).join("\n") || "| 无可执行选择 | 0 |";
+  const reasonRows = Object.entries(
+    value.selectionSummary.bySelectionReason
+  ).map(([reason, count]) => (
+    `| ${routerReasonName(reason)}（\`${reason}\`） | ${count} |`
+  )).join("\n") || "| 无 | 0 |";
+  return `# M2 核心老品按预测周期滚动模型路由报告 v0.1
+
+## 结论
+
+本报告属于实验“${value.experiment.displayNameZh}”
+（${value.experiment.displayNameEn}，\`${value.experiment.stableExperimentId}\`）的
+按预测周期滚动模型路由阶段（\`${value.status}\`）。路由器整体判定为
+\`${value.horizonRouterStatus}\`；这是开发候选证据，不是现行运行回退、活动候选、
+自动化批准或 production 授权。
+
+首次有效私有评价身份（\`evaluationHead\`）为 \`${value.evaluationHead}\`。
+路由器首次有效执行身份（\`routerExecutionHead\`）为
+\`${value.routerExecutionHead}\`，对应 Linux/Windows exact-head CI
+\`${value.exactHeadCiRunId}\`。最终文档身份（\`finalDocumentationHead\`）仍为空。
+
+## 各 horizon 的 Core80 作品总额判定
+
+| horizon（月） | 主滚动评价（Primary rolling） | 严格滚动评价（Strict rolling） |
+| ---: | --- | --- |
+${horizonRows}
+
+每个 horizon 独立判定，不强制统一模型。相对 FVA 以完全同案例的最强单模型为
+比较对象；事后组合（\`POSTHOC_REFERENCE\`）只作诊断上限，从未参与内层选择。
+
+## Core80 / Core90 完整同案例结果
+
+| 人口 | 评价族 | horizon（月） | 同案例数 | 路由器 WAPE | 路由器 bias | 最强单模型 | 相对 FVA | 判定 |
+| --- | --- | ---: | ---: | ---: | ---: | --- | ---: | --- |
+${evaluationRows}
+
+## 路由选择分布
+
+总选择单元为 ${value.selectionSummary.selectionCount}，其中早期回退
+${value.selectionSummary.fallbackSelectionCount}，滚动内层选择
+${value.selectionSummary.rollingInnerSelectionCount}，弃权
+${value.selectionSummary.abstainCount}。
+
+| 被选模型 | 次数 |
+| --- | ---: |
+${selectionRows}
+
+| 选择原因 | 次数 |
+| --- | ---: |
+${reasonRows}
+
+## 冻结选择合同
+
+- 历史 pseudo-origin 只有在其完整目标窗口于外层 origin 时已经成熟才可读
+  （\`${value.frozenSelectionContract.matureHistoryDefinition}\`）。
+- 至少需要
+  \`${value.frozenSelectionContract.minimumMatureSelectionOrigins}\`
+  个成熟历史选择起点；不足时只允许按作品发生—金额校准模型 v0.3
+  （Occurrence-Amount Calibration v0.3，\`M2-WORK-OA03\`）→人工锚定可学习
+  全局模型（Human-Anchored Learned Global，\`M2-WORK-LG01\`）→弃权的顺序。
+- 成熟后先排除 absolute bias 超过 10% 的模型，再比较历史同案例 WAPE；
+  WAPE 相差低于 1% 时选择 absolute bias 更小者。
+- 当前外层 actual 禁止参与选择
+  （\`outerActualAllowedForSelection=false\`）。
+
+## 确认门禁与治理边界
+
+路由器确认（\`HORIZON_ROUTER_CONFIRMED\`）必须同时满足 Core80 作品总额相对
+最强同案例单模型 WAPE 改善至少 1%、absolute bias 不恶化超过 2 个百分点、
+2,000 次作品聚类配对 bootstrap 支持、多数独立时间块改善、单一/前五匿名作品
+贡献不越过预注册阈值，且早期 fallback 不掩盖主要结果。
+
+本阶段没有训练或调参，没有修改现行运行回退，没有读取 later-origin 或 final
+holdout，没有写入数据库或 production。路由器原始候选、现行回退、每个单模型和
+事后诊断参照均分别保留，selected pipeline 没有掩盖 raw candidate。
 `;
 }
 
@@ -374,6 +475,61 @@ async function assertOptionalK1Evidence({ root, config }) {
   }
 }
 
+async function assertOptionalK2Evidence({ root, config }) {
+  const jsonPath = path.join(root, config.publicOutputs.routerJson);
+  let value;
+  try {
+    value = await readJson(jsonPath);
+  } catch (error) {
+    if (error?.code === "ENOENT") return;
+    throw error;
+  }
+  if (
+    value?.status !== "K2_ROLLING_HORIZON_ROUTER_COMPLETE"
+    || value?.model?.modelId !== config.horizonRouter.modelId
+    || value?.evaluationSets?.length !== 16
+    || value?.horizonDecisions?.length !== 4
+    || !/^[0-9a-f]{40}$/u.test(value?.evaluationHead ?? "")
+    || !/^[0-9a-f]{40}$/u.test(value?.routerExecutionHead ?? "")
+    || !Number.isInteger(value?.exactHeadCiRunId)
+    || value?.boundaries?.currentOuterActualReadForSelection !== false
+    || value?.boundaries?.posthocReferenceUsedForSelection !== false
+    || value?.boundaries?.rawCandidatePreserved !== true
+  ) {
+    throw new Error(
+      "m2_core_legacy_horizon_router_k2_public_evidence_invalid"
+    );
+  }
+  const serialized = JSON.stringify(value);
+  for (const forbidden of [
+    "\"standardWorkId\":",
+    "\"channelUid\":",
+    "\"caseKey\":",
+    "\"outerOrigin\":",
+    "\"origin\":",
+    "data/private-input",
+    "data/private-output"
+  ]) {
+    if (serialized.includes(forbidden)) {
+      throw new Error(
+        `m2_core_legacy_horizon_router_k2_privacy_boundary:${forbidden}`
+      );
+    }
+  }
+  const reportPath = path.join(
+    root,
+    config.publicOutputs.routerReport
+  );
+  if (
+    await readFile(reportPath, "utf8")
+      !== renderM2CoreLegacyHorizonRouterReport(value)
+  ) {
+    throw new Error(
+      "m2_core_legacy_horizon_router_k2_report_drift"
+    );
+  }
+}
+
 function formatDecision(status, winnerModelId, metrics) {
   if (status === "NOT_COMPARABLE") {
     return "不可比较（`NOT_COMPARABLE`）";
@@ -389,6 +545,15 @@ function formatDecision(status, winnerModelId, metrics) {
   return `${metricText}${winner}（\`${status}\`）`;
 }
 
+function formatRouterHorizon(status, metrics) {
+  if (metrics === null || metrics.routerWape === null) {
+    return `不可评价（\`${status}\`）`;
+  }
+  return `路由器 WAPE \`${formatNumber(metrics.routerWape)}\`，bias `
+    + `\`${formatPercent(metrics.routerSignedBias)}\`，相对最强单模型 FVA `
+    + `\`${formatPercent(metrics.relativeFva)}\`（\`${status}\`）`;
+}
+
 function modelShortName(modelId) {
   return ({
     "M2-WORK-OA03":
@@ -399,8 +564,31 @@ function modelShortName(modelId) {
         + "`M2-WORK-LG01`）",
     "M2-WORK-CRMR01":
       "核心收入人工规则基线 v0.1（Core-Revenue Manual Rule Baseline v0.1，"
-        + "`M2-WORK-CRMR01`）"
+        + "`M2-WORK-CRMR01`）",
+    "M2-WORK-HR01":
+      "按预测周期滚动模型路由器 v0.1（Rolling Horizon Model Router v0.1，"
+        + "`M2-WORK-HR01`）"
   })[modelId] ?? `模型（\`${modelId}\`）`;
+}
+
+function routerReasonName(value) {
+  return ({
+    INSUFFICIENT_MATURE_SELECTION_ORIGINS_OPERATIONAL_FALLBACK:
+      "成熟历史起点不足，使用现行运行回退",
+    OA03_UNSUPPORTED_FOR_CELL_LG01_FALLBACK:
+      "现行回退不支持该单元，使用人工锚定全局模型",
+    NO_SUPPORTED_FROZEN_FALLBACK_ABSTAIN:
+      "没有受支持的冻结回退，执行弃权",
+    ONLY_ONE_LEGAL_MODEL: "只有一个合法模型",
+    ALL_MODELS_EXCEED_ABSOLUTE_BIAS_THRESHOLD_MINIMUM_BIAS_SELECTED:
+      "全部模型超过偏差阈值，选择绝对偏差最小者",
+    WAPE_WITHIN_ONE_PERCENT_LOWER_ABSOLUTE_BIAS_SELECTED:
+      "WAPE 近似平局，选择绝对偏差更小者",
+    LOWEST_HISTORICAL_SAME_CASE_WAPE_AFTER_BIAS_GUARD:
+      "通过偏差护栏后选择历史同案例 WAPE 最低者",
+    NO_COMPUTABLE_HISTORICAL_METRIC:
+      "没有可计算的历史指标"
+  })[value] ?? value;
 }
 
 function formatNumber(value) {

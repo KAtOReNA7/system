@@ -427,7 +427,8 @@
         "npm run doctor:capability -- m2-core-legacy-horizon-router",
         "npm run diagnose:m2:core-legacy-horizon-router",
         "npm run prepare:m2:current:core-legacy-horizon-router",
-        "npm run rescore:m2:current:core-legacy-horizon-router"
+        "npm run rescore:m2:current:core-legacy-horizon-router",
+        "npm run develop:m2:current:core-legacy-horizon-router"
       ],
       "recovery": "Restore only missing PRIVATE_SOURCE_AUTHORITY from a verified capability-scoped source. Rebuild frozen formula rows, same-case rows, router selections and channel allocations from source authority and frozen repository code. Missing caches or historical receipts never block and are never fabricated.",
       "authorization": "USER_AUTHORIZED_M2_CORE_LEGACY_FULL_HORIZON_ROUTER_AND_CHANNEL_ALLOCATION_EVALUATION_2026_07_29"

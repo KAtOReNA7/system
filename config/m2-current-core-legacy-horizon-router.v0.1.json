@@ -243,7 +243,12 @@
     ]
   },
   "horizonRouter": {
+    "modelId": "M2-WORK-HR01",
+    "displayNameZh": "按预测周期滚动模型路由器 v0.1",
+    "displayNameEn": "Rolling Horizon Model Router v0.1",
     "minimumMatureSelectionOrigins": 3,
+    "matureHistoryDefinition": "prior_origin_target_window_fully_observed_by_outer_origin",
+    "outerActualAllowedForSelection": false,
     "absoluteBiasExclusionThreshold": 0.1,
     "wapeTieThreshold": 0.01,
     "operationalFallbackModelId": "M2-WORK-OA03",
@@ -257,6 +262,9 @@
     "posthocReferenceRole": "DIAGNOSTIC_ONLY_NOT_A_CANDIDATE",
     "confirmationMinimumRelativeWapeImprovement": 0.01,
     "maximumAbsoluteBiasWorsening": 0.02,
+    "maximumSingleWorkAbsoluteErrorContribution": 0.5,
+    "maximumTopFiveWorkAbsoluteErrorContribution": 0.8,
+    "maximumFallbackSelectionShareForConfirmation": 0.5,
     "decisionStates": [
       "HORIZON_ROUTER_CONFIRMED",
       "HORIZON_ROUTER_MIXED",
