@@ -38,6 +38,7 @@ test("catalog defines one private-free core capability and scoped private capabi
       "m2-publishing-scale-audit",
       "m2-publishing-scale-contract-calibration",
       "m2-core-revenue-manual",
+      "m2-layered-revenue-composition",
       "m2-current-canonical-channel",
       "m2-current-human-anchored",
       "m2-current-human-anchored-tsb-occurrence",

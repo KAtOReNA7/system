@@ -1,0 +1,26 @@
+{
+  "schema": "m2.current.layered_revenue_composition.synthetic.v0.1",
+  "origin": "2024-06",
+  "horizonMonths": 3,
+  "coreWorkIds": ["W-CORE"],
+  "originVisiblePositiveWorkIds": ["W-CORE", "W-TAIL", "W-NEW-CHANNEL"],
+  "originVisiblePositiveWorkChannels": [
+    "W-CORE|C-1",
+    "W-TAIL|C-1",
+    "W-NEW-CHANNEL|C-1"
+  ],
+  "futureRows": [
+    {"workId": "W-CORE", "channelId": "C-1", "amountMinor": 1000},
+    {"workId": "W-TAIL", "channelId": "C-1", "amountMinor": 300},
+    {"workId": "W-FUTURE", "channelId": "C-2", "amountMinor": 200},
+    {"workId": "W-NEW-CHANNEL", "channelId": "C-2", "amountMinor": 100}
+  ],
+  "expected": {
+    "EXISTING_CORE": "1000",
+    "EXISTING_TAIL": "300",
+    "FUTURE_NEW_WORK": "200",
+    "EXISTING_WORK_NEW_CHANNEL": "100",
+    "COMPANY_TOTAL": "1600",
+    "CONSERVATION_DIFFERENCE": "0"
+  }
+}

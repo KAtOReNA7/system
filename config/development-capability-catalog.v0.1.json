@@ -262,6 +262,44 @@
       "authorization": "USER_AUTHORIZED_M2_CORE_REVENUE_MANUAL_RULE_DEVELOPMENT_EVALUATION_2026_07_29"
     },
     {
+      "id": "m2-layered-revenue-composition",
+      "description": "Run the user-authorized layered revenue composition rolling development evaluation from authoritative sales-share billing sources. Rebuildable caches and historical receipts are not gates.",
+      "requiredTools": [],
+      "requiredPrivateArtifacts": [
+        {
+          "role": "total-ledger-authority",
+          "kind": "file",
+          "path": "data/real-bills/渠道实销汇总 -总.xlsx"
+        },
+        {
+          "role": "sales-share-ledger-authority",
+          "kind": "file",
+          "path": "data/real-bills/渠道实销汇总 -分成.xlsx"
+        },
+        {
+          "role": "buyout-ledger-authority",
+          "kind": "file",
+          "path": "data/real-bills/渠道实销汇总 -买断.xlsx"
+        },
+        {
+          "role": "m1-work-mapping-authority",
+          "kind": "directory",
+          "path": "data/m1-master-data-private/mapping-candidate"
+        },
+        {
+          "role": "user-reviewed-channel-master",
+          "kind": "file",
+          "path": "data/private-output/outputs/channel-governance-20260726/M2-渠道统一与类型人工补全表-v0.2.xlsx"
+        }
+      ],
+      "canonicalValidationCommands": [
+        "npm run doctor:capability -- m2-layered-revenue-composition",
+        "npm run diagnose:m2:layered-revenue-composition"
+      ],
+      "recovery": "Restore only missing authoritative ledgers, work mapping authority, or the user-reviewed channel master. Rebuild derived reversal, label, candidate, evaluation and comparison caches; warn but do not block on historical receipt loss.",
+      "authorization": "USER_AUTHORIZED_M2_LAYERED_REVENUE_COMPOSITION_DEVELOPMENT_EVALUATION_2026_07_29"
+    },
+    {
       "id": "m2-current-canonical-channel",
       "description": "Run the user-authorized canonical-channel mapping audit and bounded M2 development challenger without opening final holdout or release capabilities.",
       "requiredTools": [],

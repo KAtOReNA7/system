@@ -1,0 +1,50 @@
+{
+  "schema": "m2.current.layered_revenue_composition.public_diagnostic.v0.1",
+  "status": "PUBLIC_CONTRACT_AND_SYNTHETIC_DIAGNOSTIC_COMPLETE",
+  "model": {
+    "stableModelId": "M2-PORT-LRC01",
+    "experimentId": "M2-EXP-LAYERED-REVENUE-COMPOSITION-01",
+    "displayNameZh": "分层收入组合模型 v0.1",
+    "displayNameEn": "Layered Revenue Composition Model v0.1"
+  },
+  "target": {
+    "actualDefinitionId": "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01",
+    "calendarField": "billMonth",
+    "excludedCash": [
+      "buyout_cash",
+      "other_non_sales_share_cash"
+    ]
+  },
+  "decomposition": {
+    "origin": "2024-06",
+    "horizonMonths": 3,
+    "components": {
+      "EXISTING_CORE": "1000",
+      "EXISTING_TAIL": "300",
+      "FUTURE_NEW_WORK": "200",
+      "EXISTING_WORK_NEW_CHANNEL": "100"
+    },
+    "companyTotalMinor": "1600",
+    "conservationDifferenceMinor": "0",
+    "componentIds": [
+      "EXISTING_CORE",
+      "EXISTING_TAIL",
+      "FUTURE_NEW_WORK",
+      "EXISTING_WORK_NEW_CHANNEL"
+    ]
+  },
+  "frozenBoundaries": {
+    "futureNewWorkIdentityPredictionAllowed": false,
+    "newChannelIdentityPredictionAllowed": false,
+    "workLevelGrowthCompoundingAllowed": false,
+    "fixedWorkCountEligibilityAllowed": false,
+    "horizonDecisionsIndependent": true,
+    "bootstrapIterations": 2000,
+    "formulaTuningAuthorized": false,
+    "productionAuthorized": false
+  },
+  "privateEvaluation": {
+    "executed": false,
+    "status": "NOT_EXECUTED_PUBLIC_DIAGNOSTIC_ONLY"
+  }
+}

@@ -1,0 +1,236 @@
+{
+  "schema": "m2.current.layered_revenue_composition.v0.1",
+  "version": "0.1",
+  "asOf": "2026-07-29",
+  "model": {
+    "stableModelId": "M2-PORT-LRC01",
+    "displayNameZh": "分层收入组合模型 v0.1",
+    "displayNameEn": "Layered Revenue Composition Model v0.1",
+    "experimentId": "M2-EXP-LAYERED-REVENUE-COMPOSITION-01",
+    "entityType": "model",
+    "capability": "PORT",
+    "currentRole": "preregistered_development_candidate",
+    "activeCandidate": false,
+    "approvedForAutomation": false
+  },
+  "target": {
+    "name": "future_sales_share_development_modelable_cash",
+    "actualDefinitionId": "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01",
+    "cashAuthority": "user_reviewed_sales_share_workbook_membership",
+    "calendarField": "billMonth",
+    "calendarMeaning": "financial_posting_month",
+    "predictionGrain": "portfolio_origin_horizon_component",
+    "excludedCash": ["buyout_cash", "other_non_sales_share_cash"]
+  },
+  "originContract": {
+    "frequency": "monthly",
+    "originMeaning": "last_complete_visible_billMonth",
+    "deriveLegalOriginsAtRuntime": true,
+    "futureFeatureOrPopulationSelectionAllowed": false,
+    "primaryPopulation": "all_legal_mature_monthly_origins",
+    "strictPopulation": "complete_rolling_origins_with_matched_same_case_reference"
+  },
+  "components": [
+    {
+      "id": "EXISTING_CORE",
+      "displayNameZh": "现有核心作品收入",
+      "definition": "work_has_positive_cash_on_or_before_origin_and_is_selected_from_origin_visible_cash"
+    },
+    {
+      "id": "EXISTING_TAIL",
+      "displayNameZh": "现有长尾作品组合收入",
+      "definition": "work_has_positive_cash_on_or_before_origin_and_is_not_selected_core"
+    },
+    {
+      "id": "FUTURE_NEW_WORK",
+      "displayNameZh": "未来新增作品组合收入",
+      "definition": "work_has_no_positive_cash_on_or_before_origin_and_first_positive_cash_is_after_origin"
+    },
+    {
+      "id": "EXISTING_WORK_NEW_CHANNEL",
+      "displayNameZh": "现有作品新增渠道组合收入",
+      "definition": "work_exists_on_or_before_origin_but_work_channel_first_positive_cash_is_after_origin"
+    }
+  ],
+  "componentPrecedence": [
+    "FUTURE_NEW_WORK",
+    "EXISTING_WORK_NEW_CHANNEL",
+    "EXISTING_CORE",
+    "EXISTING_TAIL"
+  ],
+  "conservation": {
+    "currencyRepresentation": "integer_minor_units",
+    "requiredDifference": "0",
+    "futureNewWorkAndNewChannelMayOverlap": false,
+    "equation": "EXISTING_CORE + EXISTING_TAIL + FUTURE_NEW_WORK + EXISTING_WORK_NEW_CHANNEL = COMPANY_TOTAL"
+  },
+  "coreSelection": {
+    "primaryPopulation": "CORE90",
+    "sensitivityPopulation": "CORE80",
+    "referenceWindow": {
+      "monthsMarchThroughDecember": "calendar_year_january_through_origin",
+      "monthsJanuaryOrFebruary": "latest_6_complete_months_cross_year"
+    },
+    "ordering": ["referenceRevenue_desc", "standardWorkId_asc"],
+    "populations": [
+      {"id": "CORE80", "minimumCumulativeReferenceRevenueShare": 0.8},
+      {"id": "CORE90", "minimumCumulativeReferenceRevenueShare": 0.9}
+    ],
+    "futureActualTopNSelectionAllowed": false
+  },
+  "experiments": {
+    "L0": {
+      "role": "frozen_references",
+      "modelIds": ["M2-WORK-OA03", "M2-WORK-LG01", "M2-PORT-ETS01", "M2-WORK-CRMR01"],
+      "missingPrivateRows": "REBUILD_IF_CANONICAL_OTHERWISE_NOT_COMPARABLE"
+    },
+    "L1": {
+      "role": "existing_core_short_term",
+      "forecasts": {"F3": "M1 * 3", "F6": "S6"},
+      "minimumCompleteMonths": 3,
+      "formulaTuningAllowed": false
+    },
+    "L2": {
+      "role": "existing_tail_portfolio",
+      "individualTailAccuracyClaimAllowed": false
+    },
+    "L3": {
+      "role": "future_new_work_portfolio",
+      "ratioDenominator": "company_sales_share_cash_12_months_before_pseudo_origin",
+      "estimators": ["SAME_MONTH_PRIOR_YEAR", "RECENT_3_MATURE_MEDIAN", "TIME_DECAY_MATURE_MEDIAN"],
+      "timeDecay": {"halfLifeMonths": 24, "fixedBeforeOuterEvaluation": true},
+      "identityPredictionAllowed": false,
+      "immatureStatus": "NOT_MATURE"
+    },
+    "L4": {
+      "role": "existing_work_new_channel_portfolio",
+      "ratioDenominator": "company_sales_share_cash_12_months_before_pseudo_origin",
+      "estimators": ["SAME_MONTH_PRIOR_YEAR", "RECENT_3_MATURE_MEDIAN", "TIME_DECAY_MATURE_MEDIAN"],
+      "timeDecay": {"halfLifeMonths": 24, "fixedBeforeOuterEvaluation": true},
+      "identityPredictionAllowed": false,
+      "immatureStatus": "NOT_MATURE"
+    },
+    "L5A": {
+      "role": "twelve_month_core_rule_composition",
+      "formula": "core_F12 + tail_portfolio + future_new_work_portfolio + existing_work_new_channel_portfolio"
+    },
+    "L5B": {
+      "role": "twelve_month_direct_catalog_composition",
+      "formula": "direct_catalog_12_month + future_new_work_portfolio + existing_work_new_channel_portfolio",
+      "primary": true,
+      "workLevelKAllowed": false
+    },
+    "L6A": {
+      "role": "company_catalog_direct_retention",
+      "primary": true,
+      "directRatios": ["R1", "R2", "R3"],
+      "recursiveCompoundingAllowed": false
+    },
+    "L6B": {
+      "role": "catalog_age_band_direct_retention",
+      "ageBandsCompleteMonths": [[0, 12], [13, 24], [25, 60], [61, null]],
+      "shrinkageOrder": ["AGE_BAND", "COMPANY_CATALOG", "MATURE_HISTORY_MEDIAN"],
+      "recursiveCompoundingAllowed": false
+    },
+    "L7": {
+      "role": "frozen_final_composition",
+      "primaryByHorizon": {"3": "CORE90_L1_L2_L3_L4", "6": "CORE90_L1_L2_L3_L4", "12": "L5B", "36": "L6A"},
+      "postOutcomeVariantReplacementAllowed": false
+    }
+  },
+  "retention": {
+    "ratios": {
+      "R1": "existing_catalog_year_1_cash / pre_origin_12_month_company_cash",
+      "R2": "existing_catalog_year_2_cash / pre_origin_12_month_company_cash",
+      "R3": "existing_catalog_year_3_cash / pre_origin_12_month_company_cash"
+    },
+    "directToOriginDenominator": true,
+    "workLevelGrowthCompoundingAllowed": false,
+    "fixedWorkCountEligibilityAllowed": false,
+    "eligibilityEvidence": [
+      "mature_pseudo_origin_count",
+      "independent_time_block_count",
+      "positive_cash_denominator",
+      "ratio_estimate_uncertainty"
+    ]
+  },
+  "evaluation": {
+    "contractVersion": "2.2",
+    "contractConfig": "config/m2-evaluation-contract.v2.2.json",
+    "horizonsMonths": [3, 6, 12, 36],
+    "annualComponents": ["Y1", "Y2", "Y3"],
+    "pointMetrics": ["WAPE", "signed_bias", "MAE", "median_absolute_error"],
+    "requiredSlices": [
+      "component",
+      "primary_strict",
+      "origin",
+      "year",
+      "independent_time_block",
+      "core80_core90",
+      "top_revenue_posthoc",
+      "prediction_cash_composition",
+      "absolute_error_contribution"
+    ],
+    "bootstrap": {
+      "iterations": 2000,
+      "seed": 20260729,
+      "clusterUnitByCapability": {
+        "work_component": "standardWorkId",
+        "portfolio_component": "independent_time_block"
+      }
+    },
+    "materiality": 0.01,
+    "horizonDecisionsIndependent": true,
+    "decisionFields": [
+      "SHORT_TERM_3_6_STATUS",
+      "MEDIUM_TERM_12_STATUS",
+      "LONG_TERM_36_STATUS",
+      "OVERALL_PORTFOLIO_STATUS"
+    ]
+  },
+  "decisionStates": [
+    "M2_LAYERED_REVENUE_COMPOSITION_PASS",
+    "M2_LAYERED_REVENUE_COMPOSITION_PARTIAL",
+    "M2_LAYERED_REVENUE_COMPOSITION_FAIL",
+    "M2_LAYERED_REVENUE_COMPOSITION_BLOCKED_AUTHORITY_SOURCE"
+  ],
+  "authorization": {
+    "source": "user_attachment_M2_Layered_Revenue_Composition_Model_v0.1_2026-07-29",
+    "publicContractAndImplementation": true,
+    "privateDevelopmentEvaluation": true,
+    "derivedCacheRebuild": true,
+    "fixedExperimentExecution": true,
+    "bootstrapIterations": 2000,
+    "formulaTuning": false,
+    "outerResultModelSelection": false,
+    "activeCandidateChange": false,
+    "automation": false,
+    "production": false,
+    "laterOrigin": false,
+    "finalHoldout": false,
+    "provider": false,
+    "database": false,
+    "canary": false,
+    "full160": false,
+    "release": false,
+    "m3Formal": false,
+    "pullRequestMerge": false
+  },
+  "privateOutputs": {
+    "directory": "data/private-output/m2-layered-revenue-composition",
+    "componentRows": "M2-layered-revenue-component-rows-private-v0.1.ndjson",
+    "predictionRows": "M2-layered-revenue-prediction-rows-private-v0.1.ndjson",
+    "evaluationRows": "M2-layered-revenue-evaluation-rows-private-v0.1.ndjson",
+    "manifest": "M2-layered-revenue-manifest-private-v0.1.json",
+    "receipt": "M2-layered-revenue-run-receipt-private-v0.1.json"
+  },
+  "publicOutputs": {
+    "diagnostic": "docs/analysis/m2-current/M2-layered-revenue-composition-public-diagnostic-v0.1.json",
+    "evaluation": "docs/analysis/m2-current/M2-layered-revenue-composition-development-v0.1.json",
+    "report": "docs/analysis/m2-current/M2-layered-revenue-composition-development-v0.1.md",
+    "conservation": "docs/analysis/m2-current/M2-layered-revenue-four-component-conservation-v0.1.md",
+    "futureNewWork": "docs/analysis/m2-current/M2-layered-revenue-future-new-work-v0.1.md",
+    "newChannel": "docs/analysis/m2-current/M2-layered-revenue-existing-work-new-channel-v0.1.md",
+    "retention": "docs/analysis/m2-current/M2-layered-revenue-36-month-retention-v0.1.md"
+  }
+}
