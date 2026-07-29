@@ -56,6 +56,9 @@ import {
   runM2CoreLegacyPopulationK0Audit,
   runM2CoreLegacyTailInterferenceTest
 } from "./core_legacy_population_private.mjs";
+import {
+  runM2CoreLegacyHorizonRouterK0
+} from "./core_legacy_horizon_router_mode.mjs";
 
 let config;
 
@@ -111,6 +114,12 @@ const coreLegacyPopulationRescoreMode = process.argv.includes(
 );
 const coreLegacyTailTestMode = process.argv.includes(
   "--core-legacy-tail-test"
+);
+const coreLegacyHorizonRouterK0Mode = process.argv.includes(
+  "--core-legacy-horizon-router-k0"
+);
+const coreLegacyHorizonRouterPublicMode = process.argv.includes(
+  "--core-legacy-horizon-router-public"
 );
 if (tsbPublicMode) {
   await runM2HumanAnchoredTsbPublicDiagnostic({
@@ -205,6 +214,22 @@ if (coreLegacyTailTestMode) {
       result.tailInterferenceDecision.status,
     validTrainingEvaluationCount:
       result.boundaries.validTrainingEvaluationCount
+  }, null, 2)}\n`);
+  return;
+}
+if (
+  coreLegacyHorizonRouterK0Mode
+  || coreLegacyHorizonRouterPublicMode
+) {
+  const result = await runM2CoreLegacyHorizonRouterK0({
+    root,
+    verify: process.argv.includes("--verify")
+  });
+  process.stdout.write(`${JSON.stringify({
+    status: result.status,
+    experimentId: result.experiment.stableExperimentId,
+    privateEvaluationPerformed:
+      result.boundaries.privateEvaluationPerformed
   }, null, 2)}\n`);
   return;
 }
