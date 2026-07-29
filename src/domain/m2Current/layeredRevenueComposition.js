@@ -296,15 +296,24 @@ export function forecastM2LayeredPortfolioAmount({
       amountMinor: null
     });
   }
-  const amount = Math.round(
-    Number(preOrigin12MonthCashMinor) * estimate.ratio
-  );
-  if (!Number.isSafeInteger(amount)) {
-    throw new Error("m2_layered_revenue_amount_not_safe_integer");
+  const baseMinor = BigInt(preOrigin12MonthCashMinor);
+  if (baseMinor < 0n || estimate.ratio < 0) {
+    throw new Error("m2_layered_revenue_amount_negative");
   }
+  const ratioScale = 1_000_000_000_000n;
+  const scaledRatioNumber = Math.round(
+    estimate.ratio * Number(ratioScale)
+  );
+  if (!Number.isSafeInteger(scaledRatioNumber)) {
+    throw new Error("m2_layered_revenue_ratio_not_safe_integer");
+  }
+  const scaledRatio = BigInt(scaledRatioNumber);
+  const amount = (
+    baseMinor * scaledRatio + ratioScale / 2n
+  ) / ratioScale;
   return Object.freeze({
     status: "COMPUTED",
-    amountMinor: String(amount)
+    amountMinor: amount.toString()
   });
 }
 

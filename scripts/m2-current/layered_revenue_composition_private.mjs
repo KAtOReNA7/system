@@ -177,20 +177,26 @@ function buildPredictionRows({ rolling, actualCache }) {
           && row.variant === "CORE_ONLY"
           && row.horizonMonths === horizon
         ));
-        const denominator = preOrigin12(actualCache, origin, populationId);
+        const denominatorMinor = preOrigin12Minor(
+          actualCache,
+          origin,
+          populationId
+        );
         const futureNew = estimateComponent({
           history,
           origin,
           horizon,
           componentId: "FUTURE_NEW_WORK",
-          denominator
+          denominatorMinor,
+          scalePower: actualCache.scalePower
         });
         const newChannel = estimateComponent({
           history,
           origin,
           horizon,
           componentId: "EXISTING_WORK_NEW_CHANNEL",
-          denominator
+          denominatorMinor,
+          scalePower: actualCache.scalePower
         });
         let existingCore = 0;
         let existingTail = 0;
@@ -205,7 +211,8 @@ function buildPredictionRows({ rolling, actualCache }) {
             history,
             origin,
             horizon,
-            denominator
+            denominatorMinor,
+            scalePower: actualCache.scalePower
           });
           existingCore = existing;
           existingTail = 0;
@@ -241,7 +248,8 @@ function buildPredictionRows({ rolling, actualCache }) {
               history,
               origin,
               horizon,
-              denominator
+              denominatorMinor,
+              scalePower: actualCache.scalePower
             }) + futureNew + newChannel
           });
         }
@@ -263,21 +271,19 @@ function componentHistory(actualCache, origins, populationId) {
       const value = actualCache.cache.get(
         key(pseudoOrigin, populationId, horizonMonths)
       );
-      const denominator = preOrigin12(
+      const denominatorMinor = preOrigin12Minor(
         actualCache,
         pseudoOrigin,
         populationId
       );
-      if (!value || denominator <= 0) return [];
+      if (!value || BigInt(denominatorMinor) <= 0n) return [];
       return Object.entries(value.components).map(
         ([componentId, numeratorMinor]) => ({
           pseudoOrigin,
           horizonMonths,
           componentId,
           numeratorMinor,
-          denominatorMinor: String(Math.round(
-            denominator * 10 ** actualCache.scalePower
-          ))
+          denominatorMinor
         })
       );
     }
@@ -289,7 +295,8 @@ function estimateComponent({
   origin,
   horizon,
   componentId,
-  denominator
+  denominatorMinor,
+  scalePower
 }) {
   const estimate = estimateM2LayeredPortfolioRatio({
     history: history.filter((row) => row.componentId === componentId),
@@ -301,19 +308,20 @@ function estimateComponent({
     "RECENT_3_MATURE_MEDIAN"
   );
   const forecast = forecastM2LayeredPortfolioAmount({
-    preOrigin12MonthCashMinor: String(Math.round(denominator * 1000)),
+    preOrigin12MonthCashMinor: denominatorMinor,
     estimate: selected
   });
   return forecast.amountMinor === null
     ? 0
-    : Number(forecast.amountMinor) / 1000;
+    : minorToNumber(forecast.amountMinor, scalePower);
 }
 
 function estimateExistingCatalog({
   history,
   origin,
   horizon,
-  denominator
+  denominatorMinor,
+  scalePower
 }) {
   const components = ["EXISTING_CORE", "EXISTING_TAIL"];
   return components.reduce((total, componentId) => total + estimateComponent({
@@ -321,15 +329,16 @@ function estimateExistingCatalog({
     origin,
     horizon,
     componentId,
-    denominator
+    denominatorMinor,
+    scalePower
   }), 0);
 }
 
-function preOrigin12(actualCache, origin, populationId) {
+function preOrigin12Minor(actualCache, origin, populationId) {
   const prior = actualCache.cache.get(key(addMonths(origin, -12), populationId, 12));
   return prior
-    ? minorToNumber(prior.companyTotalMinor, actualCache.scalePower)
-    : 0;
+    ? prior.companyTotalMinor
+    : "0";
 }
 
 function buildPublicResult({

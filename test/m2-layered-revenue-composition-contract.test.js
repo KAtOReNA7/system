@@ -163,6 +163,19 @@ test("portfolio ratios use only mature pre-origin pseudo-origins", () => {
     }),
     { status: "COMPUTED", amountMinor: "200" }
   );
+  assert.deepEqual(
+    forecastM2LayeredPortfolioAmount({
+      preOrigin12MonthCashMinor: "415783223800000000000000",
+      estimate: {
+        status: "COMPUTED",
+        ratio: 0.2
+      }
+    }),
+    {
+      status: "COMPUTED",
+      amountMinor: "83156644760000000000000"
+    }
+  );
 });
 
 test("direct retention estimates each year without recursive compounding", () => {
