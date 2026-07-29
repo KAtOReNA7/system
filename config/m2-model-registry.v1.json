@@ -1,7 +1,7 @@
 {
   "schema": "m2.model_registry.v1",
   "contentAuthority": "tracked_registry_content_with_runtime_verified_execution_head",
-  "asOf": "2026-07-28",
+  "asOf": "2026-07-29",
   "targetAuthority": {
     "currentTarget": "future_sales_share_cash",
     "displayNameZh": "未来分成收入现金",
@@ -1011,6 +1011,37 @@
           "resultStatus": "DEVELOPMENT_COMPARATOR"
         }
       ]
+    },
+    {
+      "stableModelId": "M2-WORK-CRMR01",
+      "displayNameZh": "核心收入人工规则基线 v0.1",
+      "displayNameEn": "Core-Revenue Manual Rule Baseline v0.1",
+      "legacyIds": [],
+      "legacyAliases": ["core revenue manual rule", "core-revenue manual baseline"],
+      "entityType": "model",
+      "capability": "WORK",
+      "target": "future_sales_share_development_modelable_cash",
+      "targetHistory": ["future_sales_share_development_modelable_cash"],
+      "predictionGrain": "work_origin_horizon_channel",
+      "horizonContract": "monthly rolling 3/6/12/36 months with Y1/Y2/Y3 components",
+      "formulaSummaryZh": "按预测起点可见收入选择 Core80/Core90，在作品×渠道粒度冻结使用 M1、S6、S12、P12、原始金额线性斜率和无截断长期 k，并对长尾做组合池预测。",
+      "formulaSummaryEn": "Origin-selected Core80/Core90 manual cash rule using M1, S6, S12, P12, raw-value slope, unclamped long-term k, and pooled-tail forecasts.",
+      "inputSummaryZh": "截至预测起点可见的分成入账现金、canonical 渠道、固定二级分类及主要结算机制；不读取未来 TopN、消费、曝光、订单或运营数据。",
+      "codeEntrypoints": [],
+      "configEntrypoints": ["config/m2-current-core-revenue-manual.v0.1.json"],
+      "evidenceRefs": ["docs/prd/m2-v2/M2-core-revenue-manual-rule-baseline-v0.1.md"],
+      "predecessorIds": ["M2-WORK-MAN01"],
+      "successorIds": [],
+      "currentRole": "preregistered_development_candidate",
+      "evidenceStatus": "public_contract_preregistered_private_evaluation_not_executed",
+      "operationalStatus": "not_executed_public_implementation_pending",
+      "automationAuthorized": false,
+      "productionImported": false,
+      "finalHoldoutOpened": false,
+      "developmentWindowReuse": "authorized_rolling_development_no_result_yet",
+      "limitationsZh": ["真实滚动评价尚未执行", "不改变现行运行回退或研究比较基线"],
+      "registryReviewRequired": false,
+      "evaluations": []
     },
     {
       "stableModelId": "M2-WORK-LG01",
@@ -2053,6 +2084,19 @@
         {"armId": "OCCURRENCE", "displayNameZh": "发生与冲销候选", "modelId": "M2-WORK-OR01", "executionStatus": "EXECUTED_REJECTED"}
       ],
       "evidenceRefs": ["docs/analysis/m2-current/M2-current-human-anchored-development-v0.1.json"]
+    },
+    {
+      "experimentId": "M2-EXP-CORE-REVENUE-MANUAL-01",
+      "displayNameZh": "核心收入人工规则基线开发评价",
+      "displayNameEn": "Core-Revenue Manual Rule Baseline Development Evaluation",
+      "entityType": "experiment",
+      "modelIds": ["M2-WORK-CRMR01", "M2-WORK-LG01", "M2-WORK-OA03"],
+      "arms": [
+        {"armId": "MANUAL_RULE", "displayNameZh": "核心收入人工规则原始候选", "modelId": "M2-WORK-CRMR01", "executionStatus": "PUBLIC_CONTRACT_PREREGISTERED_PRIVATE_EVALUATION_NOT_EXECUTED"},
+        {"armId": "RESEARCH_BASELINE", "displayNameZh": "冻结人工锚定可学习全局比较基线", "modelId": "M2-WORK-LG01", "executionStatus": "FROZEN_COMPARATOR_NOT_REEXECUTED"},
+        {"armId": "OPERATIONAL_FALLBACK", "displayNameZh": "冻结作品发生—金额运行回退比较基线", "modelId": "M2-WORK-OA03", "executionStatus": "FROZEN_COMPARATOR_NOT_REEXECUTED"}
+      ],
+      "evidenceRefs": ["docs/prd/m2-v2/M2-core-revenue-manual-rule-baseline-v0.1.md"]
     },
     {
       "experimentId": "M2-EXP-TSB-OCCURRENCE-01",

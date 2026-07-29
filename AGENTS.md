@@ -155,6 +155,11 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
   scope 必须分别报告；不得为了保持旧人口把弃权 case 计为 0。
 - 所有模型输入必须能证明在 forecast origin 可得。没有 historical
   `effectiveAt/availableAt` 的 current 状态不得事后回填。
+- 业务权威明确为作品建立时即确定且基本固定的三级分类和作品来源，不要求伪造
+  historical `availableAt`；它们只允许用于诊断或预注册的层级回退，不得直接乘以
+  金额倍率。
+- 作品数量覆盖率不得替代收入金额覆盖率。核心人口必须只用预测起点可见收入选择，
+  禁止使用未来实际 TopN 形成候选人口或正式成绩。
 - 作品点预测、组合预测、排序/分配和风险区间属于不同能力，不得共享排行榜，也不得
   将 portfolio 结果分配回作品。
 - 不同目标、粒度、人口、horizon、评价窗口、actual 定义或评价家族的成绩不得直接
@@ -177,6 +182,9 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
   路径或预先抄录的活动提交 SHA 写进实现或长期合同。
 - 权威 payload digest 可以作为内容绑定保留；运输包 hash、恢复包路径和本机路径
   只是传输审计信息，不得成为长期业务或评价合同条件。
+- Git-ignored 可重建缓存和历史运行收据缺失不得阻断跨电脑公开开发；私有评价只有在
+  不可替代的权威源确实缺失或无法形成合法起点时才允许阻断。
+- 固定作品数资格门槛不得脱离当前出版业务的真实人口与独立支持证据。
 - 120 部人工预测/复核已取消；不得重建、重放或生成替代样本。人工只做技术门禁后的
   post-gate QA，不提供预测金额。
 - 默认不授权训练、调参、新候选、private evaluation、provider、数据库、

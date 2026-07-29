@@ -223,6 +223,45 @@
       "authorization": "USER_AUTHORIZED_TRAINING_SIDE_PUBLISHING_SCALE_CALIBRATION_2026_07_28"
     },
     {
+      "id": "m2-core-revenue-manual",
+      "description": "Run the user-authorized core-revenue manual-rule rolling development evaluation from authoritative sales-share billing sources. Derived caches and historical receipts are rebuildable and must not become execution gates.",
+      "requiredTools": [],
+      "requiredPrivateArtifacts": [
+        {
+          "role": "total-ledger-authority",
+          "kind": "file",
+          "path": "data/real-bills/渠道实销汇总 -总.xlsx"
+        },
+        {
+          "role": "sales-share-ledger-authority",
+          "kind": "file",
+          "path": "data/real-bills/渠道实销汇总 -分成.xlsx"
+        },
+        {
+          "role": "buyout-ledger-authority",
+          "kind": "file",
+          "path": "data/real-bills/渠道实销汇总 -买断.xlsx"
+        },
+        {
+          "role": "m1-work-mapping-authority",
+          "kind": "directory",
+          "path": "data/m1-master-data-private/mapping-candidate"
+        },
+        {
+          "role": "user-reviewed-channel-master",
+          "kind": "file",
+          "path": "data/private-output/outputs/channel-governance-20260726/M2-渠道统一与类型人工补全表-v0.2.xlsx"
+        }
+      ],
+      "canonicalValidationCommands": [
+        "npm run doctor:capability -- m2-core-revenue-manual",
+        "npm run diagnose:m2:core-revenue-manual",
+        "npm run develop:m2:current:core-revenue-manual"
+      ],
+      "recovery": "Restore only missing authoritative ledgers, work mapping authority, or the user-reviewed channel master from a capability-scoped verified package. All derived caches and historical receipts must be rebuilt or warned about; they must not block public implementation or a valid private evaluation.",
+      "authorization": "USER_AUTHORIZED_M2_CORE_REVENUE_MANUAL_RULE_DEVELOPMENT_EVALUATION_2026_07_29"
+    },
+    {
       "id": "m2-current-canonical-channel",
       "description": "Run the user-authorized canonical-channel mapping audit and bounded M2 development challenger without opening final holdout or release capabilities.",
       "requiredTools": [],

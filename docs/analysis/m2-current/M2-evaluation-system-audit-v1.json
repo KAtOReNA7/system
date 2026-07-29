@@ -448,6 +448,11 @@
       "conclusionZh": "出版行业规模适配渠道核心的私有物化已启动，但因实现接线错误在候选拟合前 fail-closed；没有候选预测或评价指标，不能评价候选优劣。一次性授权已消耗且未授权重试。"
     },
     {
+      "experimentId": "M2-EXP-CORE-REVENUE-MANUAL-01",
+      "classification": "PUBLIC_CONTRACT_PREREGISTERED_PRIVATE_EVALUATION_NOT_EXECUTED",
+      "conclusionZh": "核心收入人工规则基线 v0.1 已完成公开合同预登记，但私有滚动评价尚未执行；当前没有模型优劣结论，也不改变运行回退、研究基线、活动候选或自动化授权。"
+    },
+    {
       "experimentId": "M2-EXP-ARCHIVE-C1-C3",
       "classification": "ARCHIVED_HISTORICAL_TARGET_FAILURES",
       "conclusionZh": "历史冻结开发活动均为历史目标下的失败证据，只用于追溯，不能与当前分成现金目标排名。"

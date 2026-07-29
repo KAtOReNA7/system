@@ -31,6 +31,13 @@ This directory is the only implementation home for current M2 model logic.
   channel-expert experiment, the only additionally authorized static features
   are canonical channel identity, the user-confirmed monetization mechanism,
   and intrinsic work category.
+- When business authority explicitly establishes intrinsic category and work
+  source at work creation, do not fabricate historical `availableAt` values.
+  Such static fields may support diagnostics or a preregistered hierarchical
+  fallback, but never a direct cash multiplier.
+- Select core populations only from cash visible at the forecast origin.
+  Work-count coverage is not revenue coverage, and future-actual TopN may be
+  used only as a post-hoc oracle diagnostic.
 - Preserve every preregistered raw ablation result. A fallback or selected
   pipeline must never replace or conceal raw candidate metrics or raw FVA.
 - Model selection must be nested inside the applicable outer work or time
@@ -56,6 +63,10 @@ This directory is the only implementation home for current M2 model logic.
 - Extend the existing human-anchored materializer and runner modes. Do not
   create a second production loader, route, API, runtime, or duplicated
   historical runner.
+- Missing rebuildable Git-ignored caches or historical receipts must not block
+  portable public development. A private evaluation may be blocked only when
+  an irreplaceable authoritative source is missing or no legal historical
+  forecast origin can be formed.
 - 出版行业适配渠道核心的 K7D 一次性私有授权已在候选拟合前的实现阻断中消耗。
   未获新的明确授权、独立新收据和新 exact-head Linux/Windows CI 前，不得重跑、
   覆盖失败收据或把公开 synthetic 验证解释为私有候选结果。

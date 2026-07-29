@@ -1,0 +1,268 @@
+{
+  "schema": "m2.current.core_revenue_manual.v0.1",
+  "version": "0.1",
+  "asOf": "2026-07-29",
+  "model": {
+    "stableModelId": "M2-WORK-CRMR01",
+    "displayNameZh": "核心收入人工规则基线 v0.1",
+    "displayNameEn": "Core-Revenue Manual Rule Baseline v0.1",
+    "experimentId": "M2-EXP-CORE-REVENUE-MANUAL-01",
+    "entityType": "model",
+    "capability": "WORK",
+    "currentRole": "preregistered_development_candidate",
+    "activeCandidate": false,
+    "approvedForAutomation": false
+  },
+  "target": {
+    "name": "future_sales_share_development_modelable_cash",
+    "actualDefinitionId": "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01",
+    "cashAuthority": "user_reviewed_sales_share_workbook_membership",
+    "calendarField": "billMonth",
+    "calendarMeaning": "financial_posting_month",
+    "predictionGrain": "work_origin_horizon_channel",
+    "excludedCash": [
+      "buyout_cash",
+      "other_non_sales_share_cash"
+    ],
+    "futureConsumptionMonthReconstructionAllowed": false
+  },
+  "entityAuthority": {
+    "workIdentityFields": [
+      "standardWorkId",
+      "workName"
+    ],
+    "channelIdentity": "canonical_channel_uid",
+    "excludedProductIdentities": [
+      "ISBN",
+      "edition",
+      "paper_book",
+      "other_media_product",
+      "platform_product_item"
+    ],
+    "firstRevenueMonthDefinition": "first_nonzero_sales_share_bill_posting_month_for_work_channel",
+    "authorizationStartMeansListed": false,
+    "unobservedChannelEntryForecastAllowed": false
+  },
+  "originContract": {
+    "frequency": "monthly",
+    "originField": "origin",
+    "featureCutoffField": "featureCutoffMonth",
+    "targetStartField": "targetStartMonth",
+    "targetEndField": "targetEndMonth",
+    "originMeaning": "last_complete_visible_billMonth",
+    "partialMonthAllowed": false,
+    "futureFeatureOrPopulationSelectionAllowed": false,
+    "deriveLegalOriginsAtRuntime": true,
+    "primaryPopulation": "all_origin_eligible_work_channel_cases",
+    "strictPopulation": "same_case_intersection_with_complete_dense_history_and_matched_comparator_rows"
+  },
+  "coreSelection": {
+    "selectionGrain": "work_origin",
+    "rankingCash": "sales_share_development_modelable_cash_summed_across_channels",
+    "referenceWindow": {
+      "monthsInCurrentCalendarYearAtLeast3": "calendar_year_january_through_origin",
+      "monthsInCurrentCalendarYearOneOrTwo": "latest_6_complete_months_cross_year",
+      "previousReference": "exact_corresponding_months_one_calendar_year_earlier"
+    },
+    "ordering": [
+      "referenceRevenue_desc",
+      "standardWorkId_asc"
+    ],
+    "populations": [
+      {
+        "id": "CORE80",
+        "minimumCumulativeReferenceRevenueShare": 0.8
+      },
+      {
+        "id": "CORE90",
+        "minimumCumulativeReferenceRevenueShare": 0.9
+      }
+    ],
+    "topDiagnostics": [
+      20,
+      50
+    ],
+    "futureActualTopNSelectionAllowed": false,
+    "futureActualTopNRole": "posthoc_oracle_diagnostic_only",
+    "nonpositiveReferenceTotalStatus": "NOT_COMPUTABLE_NONPOSITIVE_REFERENCE_REVENUE"
+  },
+  "eligibility": {
+    "historyClock": "complete_months_from_firstRevenueMonth_through_origin",
+    "minimumCompleteMonths": 3,
+    "twoToFiveMonthsStatus": "NOT_ELIGIBLE",
+    "threeToFiveMonthsPolicy": "eligible_use_available_dense_months",
+    "sixOrMoreMonthsPolicy": "eligible_use_latest_6_dense_months",
+    "missingMonthsAfterFirstRevenueMonth": "structural_zero",
+    "monthsBeforeFirstRevenueMonth": "zero_for_window_alignment_only",
+    "neverObservedWorkChannelStatus": "NOT_ELIGIBLE_UNOBSERVED_CHANNEL"
+  },
+  "formula": {
+    "M1": "origin_month_cash",
+    "S6": "sum_latest_minimum_of_6_and_history_months",
+    "S12": "sum_latest_12_complete_months_with_pre_first_revenue_zero",
+    "P12": "sum_12_complete_months_immediately_before_S12",
+    "b6": {
+      "definition": "ordinary_least_squares_slope_of_raw_monthly_cash_on_zero_based_month_index",
+      "minimumMonths": 3,
+      "maximumMonths": 6,
+      "logTransformAllowed": false,
+      "significanceThresholdAllowed": false
+    },
+    "forecasts": {
+      "F3": "M1 * 3",
+      "F6": "S6",
+      "F12WhenPositiveSlope": "max(S12, M1 * 12)",
+      "F12WhenNegativeSlope": "min(S12, M1 * 12)",
+      "F12WhenZeroSlope": "S12"
+    },
+    "categoryAmountMultiplierAllowed": false,
+    "platformTrendMultiplierAllowed": false
+  },
+  "longTermMultiplier": {
+    "direct": "S12 / P12",
+    "directRequirements": [
+      "two_complete_contiguous_12_month_pre_origin_windows",
+      "P12_positive",
+      "both_windows_strictly_not_after_origin"
+    ],
+    "fallbackOrder": [
+      "same_channel_and_level2_category_core_direct_k_median",
+      "same_channel_core_direct_k_median",
+      "one"
+    ],
+    "fixedSupportThresholdAllowed": false,
+    "hardClampAllowed": false,
+    "recordFields": [
+      "sourceLevel",
+      "supportCount",
+      "applicablePopulation"
+    ],
+    "forecasts": {
+      "Y1": "F12",
+      "Y2": "Y1 * k",
+      "Y3": "Y2 * k",
+      "F36": "Y1 + Y2 + Y3"
+    }
+  },
+  "yoyDiagnostic": {
+    "multiplier": "CurrentReference / PreviousReference",
+    "zeroPreviousStatus": "NOT_COMPUTABLE",
+    "allowedUses": [
+      "core_entry_exit_and_rank_change_explanation",
+      "growth_decline_diagnostic",
+      "segment_diagnostic"
+    ],
+    "forecastMultiplierAllowed": false
+  },
+  "tailPooling": {
+    "population": "eligible_work_channels_outside_selected_core_population",
+    "aggregationGrain": "origin_month_portfolio",
+    "formula": "same_frozen_manual_formula_on_monthly_pooled_tail_cash",
+    "variants": [
+      "core_only",
+      "core_plus_pooled_tail"
+    ],
+    "coreOnlyMayRepresentFullPortfolio": false,
+    "individualComplexTailModelAllowed": false
+  },
+  "comparators": {
+    "requiredModelIds": [
+      "M2-WORK-LG01",
+      "M2-WORK-OA03"
+    ],
+    "sameOriginTargetActualAndPopulationRequired": true,
+    "candidateChannelRowsAggregateToWorkBeforeWorkComparatorMatch": true,
+    "missingDerivedRowsPolicy": "deterministically_rebuild_from_authoritative_sources",
+    "unrebuildableStatus": "NOT_COMPARABLE",
+    "formulaOrParameterChangeAllowed": false
+  },
+  "evaluation": {
+    "contractVersion": "2.2",
+    "contractConfig": "config/m2-evaluation-contract.v2.2.json",
+    "horizonsMonths": [
+      3,
+      6,
+      12,
+      36
+    ],
+    "annualComponents": [
+      "Y1",
+      "Y2",
+      "Y3"
+    ],
+    "pointMetrics": [
+      "WAPE",
+      "signed_bias",
+      "MAE",
+      "median_absolute_error"
+    ],
+    "requiredSlices": [
+      "primary_strict",
+      "core80_core90",
+      "origin",
+      "year",
+      "horizon",
+      "channel",
+      "settlement_mechanism",
+      "level2_category_diagnostic",
+      "top20_top50",
+      "core_only_core_plus_pooled_tail"
+    ],
+    "bootstrap": {
+      "iterations": 2000,
+      "seed": 20260728,
+      "clusterUnit": "standardWorkId",
+      "statistics": [
+        "candidate_minus_baseline_WAPE",
+        "candidate_FVA"
+      ]
+    },
+    "materiality": 0.01,
+    "passRequiresPrimaryAndStrict": true
+  },
+  "decisionStates": [
+    "M2_CORE_REVENUE_MANUAL_BASELINE_PASS",
+    "M2_CORE_REVENUE_MANUAL_BASELINE_MIXED",
+    "M2_CORE_REVENUE_MANUAL_BASELINE_FAIL",
+    "M2_CORE_REVENUE_MANUAL_BASELINE_BLOCKED"
+  ],
+  "authorization": {
+    "source": "user_attachment_M2_Core-Revenue_Manual_Rule_Baseline_v0.1_2026-07-29",
+    "publicContractAndImplementation": true,
+    "privateDevelopmentEvaluation": true,
+    "deterministicComparatorRebuild": true,
+    "formulaTuning": false,
+    "modelSelection": false,
+    "activeCandidateChange": false,
+    "automation": false,
+    "production": false,
+    "laterOrigin": false,
+    "finalHoldout": false,
+    "provider": false,
+    "database": false,
+    "canary": false,
+    "full160": false,
+    "release": false,
+    "m3Formal": false,
+    "pullRequestMerge": false
+  },
+  "executionStages": {
+    "contract": "PUBLIC_CONTRACT_AND_SYNTHETIC_FIXTURES",
+    "implementation": "PUBLIC_CANONICAL_IMPLEMENTATION",
+    "privateEvaluation": "FIRST_VALID_PRIVATE_ROLLING_EVALUATION_THEN_STOP"
+  },
+  "privateOutputs": {
+    "directory": "data/private-output/m2-core-revenue-manual",
+    "authorityProfile": "M2-core-revenue-manual-authority-profile-private-v0.1.json",
+    "monthlyRows": "M2-core-revenue-manual-monthly-rows-private-v0.1.ndjson",
+    "candidateRows": "M2-core-revenue-manual-candidate-rows-private-v0.1.ndjson",
+    "evaluationRows": "M2-core-revenue-manual-evaluation-rows-private-v0.1.ndjson",
+    "manifest": "M2-core-revenue-manual-manifest-private-v0.1.json",
+    "receipt": "M2-core-revenue-manual-run-receipt-private-v0.1.json"
+  },
+  "publicOutputs": {
+    "diagnostic": "docs/analysis/m2-current/M2-core-revenue-manual-public-diagnostic-v0.1.json",
+    "evaluation": "docs/analysis/m2-current/M2-core-revenue-manual-development-v0.1.json",
+    "report": "docs/analysis/m2-current/M2-core-revenue-manual-development-v0.1.md"
+  }
+}

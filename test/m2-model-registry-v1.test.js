@@ -34,8 +34,8 @@ test("registry schema, evidence paths and immutable digests validate", () => {
     canonicalEvidenceSha256("same\r\ncontent\r\n"),
     canonicalEvidenceSha256("same\ncontent\n")
   );
-  assert.equal(validation.counts.modelCount, 28);
-  assert.equal(validation.counts.experimentCount, 13);
+  assert.equal(validation.counts.modelCount, 29);
+  assert.equal(validation.counts.experimentCount, 14);
   assert.equal(validation.counts.nonModelIdentifierCount, 50);
   assert.equal(validation.counts.comparabilityGroupCount, 14);
 });
@@ -86,6 +86,28 @@ test("current roles retain fallback, research baseline and no automation promoti
   assert.equal(registry.currentRoles.activeCandidate, null);
   assert.equal(registry.currentRoles.approvedForAutomation, null);
   assert.equal(registry.currentRoles.roleConflict, false);
+});
+
+test("core-revenue manual candidate is preregistered without execution or promotion", () => {
+  const model = registry.models.find(
+    (item) => item.stableModelId === "M2-WORK-CRMR01"
+  );
+  const experiment = registry.experiments.find(
+    (item) => (
+      item.experimentId === "M2-EXP-CORE-REVENUE-MANUAL-01"
+    )
+  );
+  assert.equal(
+    model.evidenceStatus,
+    "public_contract_preregistered_private_evaluation_not_executed"
+  );
+  assert.equal(model.evaluations.length, 0);
+  assert.equal(model.automationAuthorized, false);
+  assert.equal(model.productionImported, false);
+  assert.deepEqual(
+    experiment.modelIds,
+    ["M2-WORK-CRMR01", "M2-WORK-LG01", "M2-WORK-OA03"]
+  );
 });
 
 test("evaluations preserve population and comparability contracts", () => {
@@ -200,7 +222,7 @@ test("reader catalog is a deterministic complete rendering of the registry", asy
 test("read-only query exposes scoped identities and refuses invalid ranking", () => {
   const list = runQuery("list");
   assert.equal(list.status, 0, list.stderr);
-  assert.match(list.stdout, /M2 持久模型与模型族：28 个/u);
+  assert.match(list.stdout, /M2 持久模型与模型族：29 个/u);
   assert.match(list.stdout, /M2-CHAN-GEN02/u);
 
   const status = runQuery("status");
