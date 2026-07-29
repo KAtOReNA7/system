@@ -449,8 +449,8 @@
     },
     {
       "experimentId": "M2-EXP-CORE-REVENUE-MANUAL-01",
-      "classification": "PUBLIC_CONTRACT_PREREGISTERED_PRIVATE_EVALUATION_NOT_EXECUTED",
-      "conclusionZh": "核心收入人工规则基线 v0.1 已完成公开合同预登记，但私有滚动评价尚未执行；当前没有模型优劣结论，也不改变运行回退、研究基线、活动候选或自动化授权。"
+      "classification": "PUBLIC_CANONICAL_IMPLEMENTATION_COMPLETE_PRIVATE_EVALUATION_NOT_EXECUTED",
+      "conclusionZh": "核心收入人工规则基线 v0.1 已完成公开 canonical 实现与 synthetic 确定性验证，但私有滚动评价尚未执行；当前没有模型优劣结论，也不改变运行回退、研究基线、活动候选或自动化授权。"
     },
     {
       "experimentId": "M2-EXP-ARCHIVE-C1-C3",

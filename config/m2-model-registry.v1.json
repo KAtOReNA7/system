@@ -1027,19 +1027,26 @@
       "formulaSummaryZh": "按预测起点可见收入选择 Core80/Core90，在作品×渠道粒度冻结使用 M1、S6、S12、P12、原始金额线性斜率和无截断长期 k，并对长尾做组合池预测。",
       "formulaSummaryEn": "Origin-selected Core80/Core90 manual cash rule using M1, S6, S12, P12, raw-value slope, unclamped long-term k, and pooled-tail forecasts.",
       "inputSummaryZh": "截至预测起点可见的分成入账现金、canonical 渠道、固定二级分类及主要结算机制；不读取未来 TopN、消费、曝光、订单或运营数据。",
-      "codeEntrypoints": [],
+      "codeEntrypoints": [
+        "src/domain/m2Current/coreRevenueManual.js",
+        "scripts/m2-current/core_revenue_manual_mode.mjs",
+        "scripts/m2-current/run_m2_human_anchored_development.mjs"
+      ],
       "configEntrypoints": ["config/m2-current-core-revenue-manual.v0.1.json"],
-      "evidenceRefs": ["docs/prd/m2-v2/M2-core-revenue-manual-rule-baseline-v0.1.md"],
+      "evidenceRefs": [
+        "docs/prd/m2-v2/M2-core-revenue-manual-rule-baseline-v0.1.md",
+        "docs/analysis/m2-current/M2-core-revenue-manual-public-diagnostic-v0.1.json"
+      ],
       "predecessorIds": ["M2-WORK-MAN01"],
       "successorIds": [],
       "currentRole": "preregistered_development_candidate",
-      "evidenceStatus": "public_contract_preregistered_private_evaluation_not_executed",
-      "operationalStatus": "not_executed_public_implementation_pending",
+      "evidenceStatus": "public_canonical_implementation_complete_private_evaluation_not_executed",
+      "operationalStatus": "not_executed_private_evaluation_pending",
       "automationAuthorized": false,
       "productionImported": false,
       "finalHoldoutOpened": false,
       "developmentWindowReuse": "authorized_rolling_development_no_result_yet",
-      "limitationsZh": ["真实滚动评价尚未执行", "不改变现行运行回退或研究比较基线"],
+      "limitationsZh": ["真实滚动评价尚未执行", "公开实现只通过 synthetic 与无泄漏确定性验证", "不改变现行运行回退或研究比较基线"],
       "registryReviewRequired": false,
       "evaluations": []
     },
@@ -2092,7 +2099,7 @@
       "entityType": "experiment",
       "modelIds": ["M2-WORK-CRMR01", "M2-WORK-LG01", "M2-WORK-OA03"],
       "arms": [
-        {"armId": "MANUAL_RULE", "displayNameZh": "核心收入人工规则原始候选", "modelId": "M2-WORK-CRMR01", "executionStatus": "PUBLIC_CONTRACT_PREREGISTERED_PRIVATE_EVALUATION_NOT_EXECUTED"},
+        {"armId": "MANUAL_RULE", "displayNameZh": "核心收入人工规则原始候选", "modelId": "M2-WORK-CRMR01", "executionStatus": "PUBLIC_CANONICAL_IMPLEMENTATION_COMPLETE_PRIVATE_EVALUATION_NOT_EXECUTED"},
         {"armId": "RESEARCH_BASELINE", "displayNameZh": "冻结人工锚定可学习全局比较基线", "modelId": "M2-WORK-LG01", "executionStatus": "FROZEN_COMPARATOR_NOT_REEXECUTED"},
         {"armId": "OPERATIONAL_FALLBACK", "displayNameZh": "冻结作品发生—金额运行回退比较基线", "modelId": "M2-WORK-OA03", "executionStatus": "FROZEN_COMPARATOR_NOT_REEXECUTED"}
       ],

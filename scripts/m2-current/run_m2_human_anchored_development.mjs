@@ -40,6 +40,10 @@ import {
   runM2PublishingScalePrivateDevelopment,
   verifyM2PublishingScaleGitAndCiPreflight
 } from "./channel_generative_mode.mjs";
+import {
+  runM2CoreRevenueManualPrivateDevelopment,
+  runM2CoreRevenueManualPublicDiagnostic
+} from "./core_revenue_manual_mode.mjs";
 
 let config;
 
@@ -71,6 +75,12 @@ const publishingScaleChannelPublicMode = process.argv.includes(
 );
 const publishingScaleChannelPrivateMode = process.argv.includes(
   "--publishing-scale-channel"
+);
+const coreRevenueManualPublicMode = process.argv.includes(
+  "--core-revenue-manual-public"
+);
+const coreRevenueManualPrivateMode = process.argv.includes(
+  "--core-revenue-manual"
 );
 if (tsbPublicMode) {
   await runM2HumanAnchoredTsbPublicDiagnostic({
@@ -105,6 +115,17 @@ if (publishingScaleChannelPublicMode) {
     root,
     verify: process.argv.includes("--verify")
   });
+  return;
+}
+if (coreRevenueManualPublicMode) {
+  await runM2CoreRevenueManualPublicDiagnostic({
+    root,
+    verify: process.argv.includes("--verify")
+  });
+  return;
+}
+if (coreRevenueManualPrivateMode) {
+  await runM2CoreRevenueManualPrivateDevelopment({ root });
   return;
 }
 config = JSON.parse(await readFile(

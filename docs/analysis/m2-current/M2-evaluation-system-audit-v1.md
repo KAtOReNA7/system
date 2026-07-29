@@ -203,7 +203,7 @@ Model Registry 当前登记 29 个模型、14 个实验、14 个可比组和 41 
 | 渠道倍率专家 v0.1（Channel Scalar Experts v0.1，`M2-EXP-CHANNEL-EXPERTS-01`） | 主窗和严格窗真实失败（`TRUE_PRIMARY_AND_STRICT_FAILURE`） | 两个核心可比窗均明显恶化。 |
 | 渠道时间生成 v0.2（Channel Generative v0.2，`M2-EXP-CHANNEL-GENERATIVE-02`） | 前置条件阻断、未执行（`BLOCKED_NOT_EXECUTED_NO_MODEL_CONCLUSION`） | 只能判定未执行，不能判定候选优劣。 |
 | 出版行业规模适配渠道核心开发（Publishing-Scale Channel Core Development，`M2-EXP-PUBLISHING-SCALE-CHANNEL-01`） | 候选拟合前实现阻断、无模型结论（`IMPLEMENTATION_BLOCKED_BEFORE_CANDIDATE_FIT_NO_MODEL_CONCLUSION`） | 私有物化已启动，但因实现接线错误在候选拟合前 fail-closed；没有候选预测或评价指标。一次性授权已消耗，未授权重试。 |
-| 核心收入人工规则基线开发评价（Core-Revenue Manual Rule Baseline Development Evaluation，`M2-EXP-CORE-REVENUE-MANUAL-01`） | 公开合同已预登记、私有评价未执行（`PUBLIC_CONTRACT_PREREGISTERED_PRIVATE_EVALUATION_NOT_EXECUTED`） | 当前没有模型优劣结论；不改变运行回退、研究基线、活动候选或自动化授权。 |
+| 核心收入人工规则基线开发评价（Core-Revenue Manual Rule Baseline Development Evaluation，`M2-EXP-CORE-REVENUE-MANUAL-01`） | 公开 canonical 实现完成、私有评价未执行（`PUBLIC_CANONICAL_IMPLEMENTATION_COMPLETE_PRIVATE_EVALUATION_NOT_EXECUTED`） | synthetic 确定性与无未来特征验证已通过，但当前仍没有真实模型优劣结论；不改变运行回退、研究基线、活动候选或自动化授权。 |
 | 历史冻结开发活动（Archived C1-C3 Development Campaign，`M2-EXP-ARCHIVE-C1-C3`） | 历史目标失败（`ARCHIVED_HISTORICAL_TARGET_FAILURES`） | 保留追溯；不同目标/权威，不能与当前分成现金直接排名。 |
 
 “无法提高总体 WAPE/bias”因此至少有四种不同含义：

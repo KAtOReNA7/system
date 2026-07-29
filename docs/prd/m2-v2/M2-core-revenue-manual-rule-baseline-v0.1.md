@@ -3,7 +3,7 @@
 英文名称：Core-Revenue Manual Rule Baseline v0.1
 稳定模型 ID：`M2-WORK-CRMR01`
 实验 ID：`M2-EXP-CORE-REVENUE-MANUAL-01`
-状态：公开合同已预注册，私有滚动评价尚未执行。
+状态：公开 canonical 实现已完成，私有滚动评价尚未执行。
 
 ## 1. 目的与边界
 
@@ -149,3 +149,16 @@ error，Top20/Top50 捕获率与误差，core-only 与 core + pooled tail 的组
 首个完整、有效、可解释的评价产生后立即停止公式修改和调参。无论结果为何，
 `activeCandidate`、`approvedForAutomation` 与 production 均不改变，Draft PR
 保持 Open/Unmerged。
+
+## 9. 公开实现入口
+
+- canonical 规则核心：`src/domain/m2Current/coreRevenueManual.js`
+- 现有 runner 的模式接线：
+  `scripts/m2-current/run_m2_human_anchored_development.mjs`
+- capability-scoped 模式：
+  `scripts/m2-current/core_revenue_manual_mode.mjs`
+- 公开 synthetic 诊断：
+  `docs/analysis/m2-current/M2-core-revenue-manual-public-diagnostic-v0.1.json`
+
+公开实现不读取私有 artifact，不训练模型、不调参，也不使用未来实际值选择作品、
+人口或参数。真实滚动成绩只能由下一阶段一次性私有评价产生。

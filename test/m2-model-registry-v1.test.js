@@ -99,7 +99,7 @@ test("core-revenue manual candidate is preregistered without execution or promot
   );
   assert.equal(
     model.evidenceStatus,
-    "public_contract_preregistered_private_evaluation_not_executed"
+    "public_canonical_implementation_complete_private_evaluation_not_executed"
   );
   assert.equal(model.evaluations.length, 0);
   assert.equal(model.automationAuthorized, false);

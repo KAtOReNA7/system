@@ -9,6 +9,12 @@ import {
   evaluateCapability,
   loadCapabilityCatalog
 } from "../scripts/check-development-capability.mjs";
+import {
+  addMonths,
+  buildM2CoreRevenueManualSyntheticDiagnostic,
+  runCoreRevenueManualRolling,
+  validateM2CoreRevenueManualConfig
+} from "../src/domain/m2Current/coreRevenueManual.js";
 
 const root = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -20,8 +26,13 @@ const config = readJson(
 const fixture = readJson(
   "test/fixtures/m2-core-revenue-manual.synthetic.v0.1.json"
 );
+const diagnostic = readJson(
+  "docs/analysis/m2-current/"
+    + "M2-core-revenue-manual-public-diagnostic-v0.1.json"
+);
 
 test("core-revenue manual contract freezes target, population and formula", () => {
+  assert.equal(validateM2CoreRevenueManualConfig(config), true);
   assert.equal(config.model.stableModelId, "M2-WORK-CRMR01");
   assert.equal(
     config.model.experimentId,
@@ -52,6 +63,85 @@ test("core-revenue manual contract freezes target, population and formula", () =
     [3, 6, 12, 36]
   );
   assert.equal(config.evaluation.bootstrap.iterations, 2000);
+});
+
+test("canonical synthetic diagnostic matches every frozen expectation", () => {
+  const generated = buildM2CoreRevenueManualSyntheticDiagnostic(
+    fixture,
+    config
+  );
+  assert.deepEqual(generated, diagnostic);
+  assert.equal(generated.status, "SYNTHETIC_DIAGNOSTIC_PASS");
+  assert.equal(generated.boundaries.privateArtifactRead, false);
+  assert.equal(generated.boundaries.modelTrained, false);
+  assert.equal(generated.boundaries.parameterTuned, false);
+  for (const expected of fixture.forecastCases) {
+    const actual = generated.forecasts.find(
+      (item) => item.id === expected.id
+    );
+    assert.equal(actual.status, expected.expectedStatus);
+    for (const [field, value] of Object.entries(
+      expected.expected ?? {}
+    )) {
+      assert.equal(actual[field], value, `${expected.id}:${field}`);
+    }
+  }
+});
+
+test("rolling runner is input-order deterministic and excludes future features", () => {
+  const rows = buildRollingRows(1);
+  const forward = runCoreRevenueManualRolling({
+    monthlyRows: rows,
+    origins: ["2024-12"],
+    config
+  });
+  const reversed = runCoreRevenueManualRolling({
+    monthlyRows: [...rows].reverse(),
+    origins: ["2024-12"],
+    config
+  });
+  assert.deepEqual(reversed, forward);
+  assert.equal(forward.caseRows.length, 20);
+  assert.equal(forward.annualComponentRows.length, 15);
+  assert.equal(forward.portfolioRows.length, 16);
+  assert.equal(forward.portfolioAnnualRows.length, 12);
+  assert.equal(
+    forward.caseRows.every(
+      (row) => (
+        row.targetStartMonth === "2025-01"
+        && row.channelUid !== "CH-FUTURE"
+      )
+    ),
+    true
+  );
+  const changedFuture = runCoreRevenueManualRolling({
+    monthlyRows: buildRollingRows(7),
+    origins: ["2024-12"],
+    config
+  });
+  assert.deepEqual(
+    withoutActual(changedFuture.caseRows),
+    withoutActual(forward.caseRows)
+  );
+  assert.notDeepEqual(
+    changedFuture.caseRows.map((row) => row.actual),
+    forward.caseRows.map((row) => row.actual)
+  );
+  const core80Portfolio = forward.portfolioRows.filter(
+    (row) => row.populationId === "CORE80"
+  );
+  for (const horizon of config.evaluation.horizonsMonths) {
+    const core = core80Portfolio.find((row) => (
+      row.variant === "CORE_ONLY"
+      && row.horizonMonths === horizon
+    ));
+    const full = core80Portfolio.find((row) => (
+      row.variant === "CORE_PLUS_POOLED_TAIL"
+      && row.horizonMonths === horizon
+    ));
+    assert.ok(full.actual > core.actual);
+    assert.ok(full.pointEstimate > core.pointEstimate);
+  }
 });
 
 test("authorization permits one development evaluation but no promotion", () => {
@@ -115,8 +205,9 @@ test("public diagnostic validates without private execution", () => {
         root,
         "scripts",
         "m2-current",
-        "run_m2_core_revenue_manual.mjs"
+        "run_m2_human_anchored_development.mjs"
       ),
+      "--core-revenue-manual-public",
       "--verify"
     ],
     {
@@ -127,7 +218,7 @@ test("public diagnostic validates without private execution", () => {
   assert.equal(result.status, 0, result.stderr);
   assert.match(
     result.stdout,
-    /core-revenue manual public contract verified/u
+    /core-revenue manual public diagnostic verified/u
   );
 });
 
@@ -167,4 +258,57 @@ function readJson(relativePath) {
   return JSON.parse(
     readFileSync(path.join(root, relativePath), "utf8")
   );
+}
+
+function buildRollingRows(futureMultiplier) {
+  const works = [
+    {
+      standardWorkId: "W-A",
+      channelUid: "CH-1",
+      level2Category: "CAT-A",
+      settlementMechanism: "membership",
+      cash: 10
+    },
+    {
+      standardWorkId: "W-B",
+      channelUid: "CH-1",
+      level2Category: "CAT-A",
+      settlementMechanism: "membership",
+      cash: 4
+    },
+    {
+      standardWorkId: "W-C",
+      channelUid: "CH-2",
+      level2Category: "CAT-B",
+      settlementMechanism: "transactional",
+      cash: 2
+    }
+  ];
+  const rows = [];
+  for (let offset = 0; offset < 60; offset += 1) {
+    const month = addMonths("2023-01", offset);
+    const multiplier = month > "2024-12" ? futureMultiplier : 1;
+    for (const work of works) {
+      rows.push({
+        ...work,
+        month,
+        cash: work.cash * multiplier
+      });
+    }
+    if (month > "2024-12") {
+      rows.push({
+        standardWorkId: "W-A",
+        channelUid: "CH-FUTURE",
+        level2Category: "CAT-A",
+        settlementMechanism: "membership",
+        month,
+        cash: 1000 * multiplier
+      });
+    }
+  }
+  return rows;
+}
+
+function withoutActual(rows) {
+  return rows.map(({ actual: _actual, ...row }) => row);
 }
