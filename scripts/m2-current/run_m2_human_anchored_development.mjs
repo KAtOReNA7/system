@@ -34,12 +34,36 @@ import {
   recordM2ChannelGenerativeRunFailure,
   runM2ChannelGenerativePrivateDevelopment,
   runM2ChannelGenerativePublicDiagnostic,
-  prepareM2PublishingScaleRunReceipt,
-  recordM2PublishingScaleRunFailure,
-  runM2PublishingScaleChannelPublicDiagnostic,
-  runM2PublishingScalePrivateDevelopment,
-  verifyM2PublishingScaleGitAndCiPreflight
+  runM2PublishingScaleChannelPublicDiagnostic
 } from "./channel_generative_mode.mjs";
+import {
+  runM2CoreRevenueManualPrivateDevelopment,
+  runM2CoreRevenueManualPublicDiagnostic
+} from "./core_revenue_manual_mode.mjs";
+import {
+  runM2LayeredRevenueCompositionPrivateDevelopment,
+  runM2LayeredRevenueCompositionPublicDiagnostic
+} from "./layered_revenue_composition_mode.mjs";
+import {
+  runM2CoreLegacyPopulationPublicDiagnostic
+} from "./core_legacy_population_mode.mjs";
+import {
+  runM2CoreLegacyFrozenRescore,
+  runM2CoreLegacyPopulationK0Audit,
+  runM2CoreLegacyTailInterferenceTest
+} from "./core_legacy_population_private.mjs";
+import {
+  runM2CoreLegacyHorizonRouterK0
+} from "./core_legacy_horizon_router_mode.mjs";
+import {
+  runM2CoreLegacyFullHorizonSameCaseRescore,
+  runM2CoreLegacyObservedChannelAllocation,
+  runM2CoreLegacyRollingHorizonRouter
+} from "./core_legacy_horizon_router_private.mjs";
+import {
+  runM2PublishingScaleAuthorizedExecution,
+  runM2PublishingScaleCommandPreflight
+} from "./publishing_scale_channel_execution.mjs";
 
 let config;
 
@@ -72,6 +96,53 @@ const publishingScaleChannelPublicMode = process.argv.includes(
 const publishingScaleChannelPrivateMode = process.argv.includes(
   "--publishing-scale-channel"
 );
+const coreRevenueManualPublicMode = process.argv.includes(
+  "--core-revenue-manual-public"
+);
+const coreRevenueManualPrivateMode = process.argv.includes(
+  "--core-revenue-manual"
+);
+const layeredRevenueCompositionPublicMode = process.argv.includes(
+  "--layered-revenue-composition-public"
+);
+const layeredRevenueCompositionPrivateMode = process.argv.includes(
+  "--layered-revenue-composition"
+);
+const coreLegacyPopulationPublicMode = process.argv.includes(
+  "--core-legacy-population-public"
+);
+const coreLegacyPopulationAuditMode = process.argv.includes(
+  "--core-legacy-population-audit"
+);
+const coreLegacyPopulationRescoreMode = process.argv.includes(
+  "--core-legacy-population-rescore"
+);
+const coreLegacyTailTestMode = process.argv.includes(
+  "--core-legacy-tail-test"
+);
+const coreLegacyHorizonRouterK0Mode = process.argv.includes(
+  "--core-legacy-horizon-router-k0"
+);
+const coreLegacyHorizonRouterPublicMode = process.argv.includes(
+  "--core-legacy-horizon-router-public"
+);
+const coreLegacyHorizonRouterK1Mode = process.argv.includes(
+  "--core-legacy-horizon-router-k1"
+);
+const coreLegacyHorizonRouterK2Mode = process.argv.includes(
+  "--core-legacy-horizon-router-k2"
+);
+const coreLegacyHorizonRouterK3Mode = process.argv.includes(
+  "--core-legacy-horizon-router-k3"
+);
+const preflightOnly = process.argv.includes("--preflight-only");
+if (preflightOnly && !publishingScaleChannelPrivateMode) {
+  throw new Error("m2_publishing_scale_preflight_requires_command_mode");
+}
+if (publishingScaleChannelPrivateMode && preflightOnly) {
+  await runM2PublishingScaleCommandPreflight({ root });
+  return;
+}
 if (tsbPublicMode) {
   await runM2HumanAnchoredTsbPublicDiagnostic({
     root,
@@ -107,6 +178,127 @@ if (publishingScaleChannelPublicMode) {
   });
   return;
 }
+if (publishingScaleChannelPrivateMode) {
+  await runM2PublishingScaleAuthorizedExecution({ root });
+  return;
+}
+if (coreRevenueManualPublicMode) {
+  await runM2CoreRevenueManualPublicDiagnostic({
+    root,
+    verify: process.argv.includes("--verify")
+  });
+  return;
+}
+if (coreRevenueManualPrivateMode) {
+  await runM2CoreRevenueManualPrivateDevelopment({ root });
+  return;
+}
+if (layeredRevenueCompositionPublicMode) {
+  await runM2LayeredRevenueCompositionPublicDiagnostic({
+    root,
+    verify: process.argv.includes("--verify")
+  });
+  return;
+}
+if (layeredRevenueCompositionPrivateMode) {
+  await runM2LayeredRevenueCompositionPrivateDevelopment({ root });
+  return;
+}
+if (coreLegacyPopulationPublicMode) {
+  await runM2CoreLegacyPopulationPublicDiagnostic({
+    root,
+    verify: process.argv.includes("--verify")
+  });
+  return;
+}
+if (coreLegacyPopulationAuditMode) {
+  const result = await runM2CoreLegacyPopulationK0Audit({ root });
+  process.stdout.write(`${JSON.stringify({
+    status: result.status,
+    experimentId: result.experiment.stableExperimentId,
+    modelTrainingPerformed:
+      result.boundaries.modelTrainingPerformed
+  }, null, 2)}\n`);
+  return;
+}
+if (coreLegacyPopulationRescoreMode) {
+  const result = await runM2CoreLegacyFrozenRescore({ root });
+  process.stdout.write(`${JSON.stringify({
+    status: result.status,
+    experimentId: result.experiment.stableExperimentId,
+    modelTrainingPerformed:
+      result.boundaries.modelTrainingPerformed
+  }, null, 2)}\n`);
+  return;
+}
+if (coreLegacyTailTestMode) {
+  const result = await runM2CoreLegacyTailInterferenceTest({ root });
+  process.stdout.write(`${JSON.stringify({
+    status: result.status,
+    experimentId: result.experiment.stableExperimentId,
+    tailInterferenceDecision:
+      result.tailInterferenceDecision.status,
+    validTrainingEvaluationCount:
+      result.boundaries.validTrainingEvaluationCount
+  }, null, 2)}\n`);
+  return;
+}
+if (
+  coreLegacyHorizonRouterK0Mode
+  || coreLegacyHorizonRouterPublicMode
+) {
+  const result = await runM2CoreLegacyHorizonRouterK0({
+    root,
+    verify: process.argv.includes("--verify")
+  });
+  process.stdout.write(`${JSON.stringify({
+    status: result.status,
+    experimentId: result.experiment.stableExperimentId,
+    privateEvaluationPerformed:
+      result.boundaries.privateEvaluationPerformed
+  }, null, 2)}\n`);
+  return;
+}
+if (coreLegacyHorizonRouterK1Mode) {
+  const result = await runM2CoreLegacyFullHorizonSameCaseRescore({
+    root
+  });
+  process.stdout.write(`${JSON.stringify({
+    status: result.status,
+    experimentId: result.experiment.stableExperimentId,
+    sameCaseEvidenceStatus: result.sameCaseEvidenceStatus,
+    evaluationHead: result.evaluationHead
+  }, null, 2)}\n`);
+  return;
+}
+if (coreLegacyHorizonRouterK2Mode) {
+  const result = await runM2CoreLegacyRollingHorizonRouter({ root });
+  process.stdout.write(`${JSON.stringify({
+    status: result.status,
+    experimentId: result.experiment.stableExperimentId,
+    horizonRouterStatus: result.horizonRouterStatus,
+    evaluationHead: result.evaluationHead,
+    routerExecutionHead: result.routerExecutionHead
+  }, null, 2)}\n`);
+  return;
+}
+if (coreLegacyHorizonRouterK3Mode) {
+  const result = await runM2CoreLegacyObservedChannelAllocation({
+    root
+  });
+  process.stdout.write(`${JSON.stringify({
+    status: result.status,
+    taskStatus: result.taskStatus,
+    experimentId: result.experiment.stableExperimentId,
+    sameCaseEvidenceStatus: result.sameCaseEvidenceStatus,
+    horizonRouterStatus: result.horizonRouterStatus,
+    channelAllocationStatus: result.channelAllocationStatus,
+    evaluationHead: result.evaluationHead,
+    routerExecutionHead: result.routerExecutionHead,
+    allocationExecutionHead: result.allocationExecutionHead
+  }, null, 2)}\n`);
+  return;
+}
 config = JSON.parse(await readFile(
   path.join(root, "config/m2-current-human-anchored.v0.1.json"),
   "utf8"
@@ -132,17 +324,6 @@ if (channelGenerativePrivateMode) {
     environment: `${process.platform}-${process.arch}`
   });
 }
-if (publishingScaleChannelPrivateMode) {
-  const gitPreflight = verifyM2PublishingScaleGitAndCiPreflight({ root });
-  await prepareM2PublishingScaleRunReceipt({
-    root,
-    privateDirectory,
-    gitPreflight,
-    command:
-      "npm run develop:m2:current:publishing-scale-channel",
-    environment: `${process.platform}-${process.arch}`
-  });
-}
 const materialization = spawnSync(
   process.execPath,
   [
@@ -157,11 +338,6 @@ const materialization = spawnSync(
         ? ["--channel-generative"]
         : []
     ),
-    ...(
-      publishingScaleChannelPrivateMode
-        ? ["--publishing-scale-channel"]
-        : []
-    )
   ],
   {
     cwd: root,
@@ -171,16 +347,6 @@ const materialization = spawnSync(
   }
 );
 if (materialization.status !== 0) {
-  if (publishingScaleChannelPrivateMode) {
-    await recordM2PublishingScaleRunFailure({
-      root,
-      privateDirectory,
-      error: new Error(
-        "controlled_private_materialization_failed:"
-          + String(materialization.stderr ?? "").trim()
-      )
-    });
-  }
   if (tsbPrivateMode) {
     await runM2HumanAnchoredTsbPublicDiagnostic({
       root,
@@ -287,24 +453,6 @@ if (channelGenerativePrivateMode) {
   }
   return;
 }
-if (publishingScaleChannelPrivateMode) {
-  try {
-    await runM2PublishingScalePrivateDevelopment({
-      root,
-      privateDirectory,
-      baseManifest: manifest
-    });
-  } catch (error) {
-    await recordM2PublishingScaleRunFailure({
-      root,
-      privateDirectory,
-      error
-    });
-    throw error;
-  }
-  return;
-}
-
 const primary = crossFitM2HumanAnchored(primaryCases, config);
 const primaryBootstrap = workClusterBootstrap(primary.rows, {
   iterations: config.learning.bootstrapIterations,

@@ -1,0 +1,397 @@
+{
+  "schema": "m2.current.core_legacy_horizon_router.v0.1",
+  "version": "0.1",
+  "asOf": "2026-07-29",
+  "experiment": {
+    "stableExperimentId": "M2-EXP-CORE-LEGACY-HORIZON-ROUTER-01",
+    "displayNameZh": "M2 核心老品全周期同案例证据补齐、按周期模型路由与已有渠道分配验证 v0.1",
+    "displayNameEn": "M2 Core Legacy Full-Horizon Same-Case Evidence Completion, Horizon Router and Observed-Channel Allocation Validation v0.1",
+    "entityType": "experiment",
+    "activeCandidate": false,
+    "approvedForAutomation": false
+  },
+  "scope": {
+    "baseContract": "config/m2-current-core-legacy-population.v0.1.json",
+    "actualDefinitionId": "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01",
+    "target": "future_sales_share_development_modelable_cash",
+    "identity": "standardWorkId",
+    "calendarField": "billMonth",
+    "minimumCompleteMonths": 3,
+    "immaturePolicy": "ABSTAIN_NOT_ZERO",
+    "populations": [
+      "CORE80",
+      "CORE90"
+    ],
+    "diagnosticPopulations": [
+      "TOP20",
+      "TOP50"
+    ],
+    "horizonsMonths": [
+      3,
+      6,
+      12,
+      36
+    ],
+    "evaluationFamilies": [
+      "PRIMARY_ROLLING",
+      "STRICT_ROLLING"
+    ],
+    "grains": [
+      "WORK_TOTAL",
+      "WORK_CHANNEL"
+    ],
+    "excludedModelIds": [
+      "M2-PORT-LRC01",
+      "M2-PORT-ETS01"
+    ],
+    "futureNewWorkIncluded": false,
+    "futureFirstObservedChannelIncluded": false,
+    "tailIncluded": false,
+    "buyoutIncluded": false,
+    "companyRevenueIncluded": false
+  },
+  "models": [
+    {
+      "modelId": "M2-WORK-OA03",
+      "displayNameZh": "作品发生—金额校准模型 v0.3",
+      "displayNameEn": "Occurrence-Amount Calibration v0.3",
+      "role": "operational_fallback",
+      "supportedGrains": [
+        "WORK_TOTAL"
+      ],
+      "supportedHorizonsMonths": [
+        3,
+        6,
+        12,
+        18,
+        24
+      ]
+    },
+    {
+      "modelId": "M2-WORK-LG01",
+      "displayNameZh": "人工锚定可学习全局模型",
+      "displayNameEn": "Human-Anchored Learned Global",
+      "role": "research_baseline",
+      "supportedGrains": [
+        "WORK_TOTAL",
+        "WORK_CHANNEL"
+      ],
+      "supportedHorizonsMonths": [
+        3,
+        6,
+        12,
+        18,
+        24,
+        36
+      ]
+    },
+    {
+      "modelId": "M2-WORK-CRMR01",
+      "displayNameZh": "核心收入人工规则基线 v0.1",
+      "displayNameEn": "Core-Revenue Manual Rule Baseline v0.1",
+      "role": "research_baseline",
+      "supportedGrains": [
+        "WORK_TOTAL",
+        "WORK_CHANNEL"
+      ],
+      "supportedHorizonsMonths": [
+        3,
+        6,
+        12,
+        36
+      ]
+    }
+  ],
+  "capabilityRules": {
+    "allowedStatuses": [
+      "FROZEN_AVAILABLE",
+      "DETERMINISTIC_FROZEN_REPLAY_AVAILABLE",
+      "UNSUPPORTED_BY_MODEL_CONTRACT",
+      "NOT_RECONSTRUCTABLE"
+    ],
+    "frozenAvailableCells": {
+      "M2-WORK-OA03": [
+        "PRIMARY_ROLLING|3|WORK_TOTAL",
+        "PRIMARY_ROLLING|6|WORK_TOTAL",
+        "PRIMARY_ROLLING|12|WORK_TOTAL"
+      ],
+      "M2-WORK-LG01": [
+        "PRIMARY_ROLLING|36|WORK_TOTAL",
+        "PRIMARY_ROLLING|36|WORK_CHANNEL",
+        "STRICT_ROLLING|3|WORK_TOTAL",
+        "STRICT_ROLLING|3|WORK_CHANNEL",
+        "STRICT_ROLLING|6|WORK_TOTAL",
+        "STRICT_ROLLING|6|WORK_CHANNEL",
+        "STRICT_ROLLING|12|WORK_TOTAL",
+        "STRICT_ROLLING|12|WORK_CHANNEL"
+      ],
+      "M2-WORK-CRMR01": [
+        "PRIMARY_ROLLING|3|WORK_TOTAL",
+        "PRIMARY_ROLLING|3|WORK_CHANNEL",
+        "PRIMARY_ROLLING|6|WORK_TOTAL",
+        "PRIMARY_ROLLING|6|WORK_CHANNEL",
+        "PRIMARY_ROLLING|12|WORK_TOTAL",
+        "PRIMARY_ROLLING|12|WORK_CHANNEL",
+        "PRIMARY_ROLLING|36|WORK_TOTAL",
+        "PRIMARY_ROLLING|36|WORK_CHANNEL",
+        "STRICT_ROLLING|3|WORK_TOTAL",
+        "STRICT_ROLLING|3|WORK_CHANNEL",
+        "STRICT_ROLLING|6|WORK_TOTAL",
+        "STRICT_ROLLING|6|WORK_CHANNEL",
+        "STRICT_ROLLING|12|WORK_TOTAL",
+        "STRICT_ROLLING|12|WORK_CHANNEL"
+      ]
+    },
+    "deterministicReplayIfCacheMissingModels": [
+      "M2-WORK-OA03",
+      "M2-WORK-LG01",
+      "M2-WORK-CRMR01"
+    ],
+    "notReconstructableCells": {
+      "M2-WORK-OA03": [
+        "STRICT_ROLLING|3|WORK_TOTAL",
+        "STRICT_ROLLING|6|WORK_TOTAL",
+        "STRICT_ROLLING|12|WORK_TOTAL"
+      ],
+      "M2-WORK-LG01": [
+        "PRIMARY_ROLLING|3|WORK_TOTAL",
+        "PRIMARY_ROLLING|3|WORK_CHANNEL",
+        "PRIMARY_ROLLING|6|WORK_TOTAL",
+        "PRIMARY_ROLLING|6|WORK_CHANNEL",
+        "PRIMARY_ROLLING|12|WORK_TOTAL",
+        "PRIMARY_ROLLING|12|WORK_CHANNEL",
+        "STRICT_ROLLING|36|WORK_TOTAL",
+        "STRICT_ROLLING|36|WORK_CHANNEL"
+      ],
+      "M2-WORK-CRMR01": [
+        "STRICT_ROLLING|36|WORK_TOTAL",
+        "STRICT_ROLLING|36|WORK_CHANNEL"
+      ]
+    },
+    "notReconstructableReasons": {
+      "M2-WORK-OA03|STRICT_ROLLING": "ORIGINAL_STRICT_ROLLING_FOLD_PARAMETERS_AND_PREDICTION_ROWS_ABSENT",
+      "M2-WORK-LG01|PRIMARY_ROLLING|3": "PRIMARY_PARAMETERS_SELECTED_ONLY_ON_H36_COPYING_ACROSS_HORIZONS_FORBIDDEN",
+      "M2-WORK-LG01|PRIMARY_ROLLING|6": "PRIMARY_PARAMETERS_SELECTED_ONLY_ON_H36_COPYING_ACROSS_HORIZONS_FORBIDDEN",
+      "M2-WORK-LG01|PRIMARY_ROLLING|12": "PRIMARY_PARAMETERS_SELECTED_ONLY_ON_H36_COPYING_ACROSS_HORIZONS_FORBIDDEN",
+      "M2-WORK-LG01|STRICT_ROLLING|36": "NO_MATURE_STRICT_H36_SELECTION_ORIGINS_WITHIN_FROZEN_AUTHORITY_WINDOW",
+      "M2-WORK-CRMR01|STRICT_ROLLING|36": "NO_MATURE_STRICT_H36_EVALUATION_ORIGINS_WITHIN_FROZEN_AUTHORITY_WINDOW"
+    }
+  },
+  "deterministicReplayContract": {
+    "contractId": "M2-FROZEN-REPLAY-CORE-LEGACY-HORIZON-01",
+    "allowed": [
+      "original_frozen_formula",
+      "original_parameter_grid",
+      "original_rolling_training_contract",
+      "training_rows_visible_at_each_original_fold_as_of",
+      "original_fold_refit_to_restore_missing_cache_rows"
+    ],
+    "forbidden": [
+      "parameter_change",
+      "parameter_grid_expansion",
+      "new_feature",
+      "fallback_change",
+      "post_result_parameter_selection",
+      "cross_horizon_parameter_copy",
+      "row_level_prediction_inference_from_public_aggregate"
+    ],
+    "replayIdentity": [
+      "modelId",
+      "evaluationFamily",
+      "origin",
+      "horizonMonths",
+      "standardWorkId",
+      "channelUid",
+      "foldAsOf"
+    ],
+    "maximumNumericDifference": 0,
+    "cacheAbsenceIsBlocking": false,
+    "historicalReceiptAbsenceIsBlocking": false
+  },
+  "sameCaseEvaluation": {
+    "key": [
+      "evaluationFamily",
+      "populationId",
+      "grain",
+      "origin",
+      "horizonMonths",
+      "standardWorkId",
+      "channelUid",
+      "actualDefinitionId"
+    ],
+    "metrics": [
+      "WAPE",
+      "signed_bias",
+      "MAE",
+      "median_absolute_error",
+      "zero_actual_false_positive_error",
+      "zero_prediction_positive_actual_miss_error"
+    ],
+    "bootstrap": {
+      "iterations": 2000,
+      "seed": 20260729,
+      "clusterUnit": "standardWorkId",
+      "confidenceLevel": 0.95
+    },
+    "materialRelativeWapeImprovement": 0.01,
+    "materialAbsoluteBiasWorsening": 0.02,
+    "winnerStates": [
+      "CLEAR_WINNER",
+      "WAPE_WIN_BIAS_TRADEOFF",
+      "NO_STABLE_WINNER",
+      "NOT_COMPARABLE"
+    ]
+  },
+  "horizonRouter": {
+    "modelId": "M2-WORK-HR01",
+    "displayNameZh": "按预测周期滚动模型路由器 v0.1",
+    "displayNameEn": "Rolling Horizon Model Router v0.1",
+    "minimumMatureSelectionOrigins": 3,
+    "matureHistoryDefinition": "prior_origin_target_window_fully_observed_by_outer_origin",
+    "outerActualAllowedForSelection": false,
+    "absoluteBiasExclusionThreshold": 0.1,
+    "wapeTieThreshold": 0.01,
+    "operationalFallbackModelId": "M2-WORK-OA03",
+    "unsupportedFallbackModelId": "M2-WORK-LG01",
+    "posthocReference": {
+      "3": "M2-WORK-OA03",
+      "6": "M2-WORK-CRMR01",
+      "12": "M2-WORK-OA03",
+      "36": "M2-WORK-LG01"
+    },
+    "posthocReferenceRole": "DIAGNOSTIC_ONLY_NOT_A_CANDIDATE",
+    "confirmationMinimumRelativeWapeImprovement": 0.01,
+    "maximumAbsoluteBiasWorsening": 0.02,
+    "maximumSingleWorkAbsoluteErrorContribution": 0.5,
+    "maximumTopFiveWorkAbsoluteErrorContribution": 0.8,
+    "maximumFallbackSelectionShareForConfirmation": 0.5,
+    "decisionStates": [
+      "HORIZON_ROUTER_CONFIRMED",
+      "HORIZON_ROUTER_MIXED",
+      "HORIZON_ROUTER_NOT_CONFIRMED",
+      "HORIZON_ROUTER_NOT_EVALUABLE"
+    ]
+  },
+  "channelAllocation": {
+    "totalSourceModelIds": [
+      "M2-WORK-OA03",
+      "M2-WORK-LG01",
+      "M2-WORK-CRMR01",
+      "M2-WORK-HR01"
+    ],
+    "arms": [
+      {
+        "armId": "C0_DIRECT",
+        "kind": "DIRECT_CHANNEL_MODEL"
+      },
+      {
+        "armId": "C1_TRAILING_3",
+        "kind": "TRAILING_NONNEGATIVE_REVENUE_SHARE",
+        "windowMonths": 3
+      },
+      {
+        "armId": "C2_TRAILING_6",
+        "kind": "TRAILING_NONNEGATIVE_REVENUE_SHARE",
+        "windowMonths": 6
+      },
+      {
+        "armId": "C3_TRAILING_12",
+        "kind": "TRAILING_NONNEGATIVE_REVENUE_SHARE",
+        "windowMonths": 12
+      },
+      {
+        "armId": "C4_LG01_IMPLIED",
+        "kind": "LG01_NONNEGATIVE_FORECAST_SHARE"
+      }
+    ],
+    "zeroDenominatorFallback": "LAST_NONZERO_MONTH_WITHIN_TRAILING_12",
+    "fallbackFailure": "ABSTAIN_CHANNEL_ALLOCATION",
+    "equalSplitAllowed": false,
+    "futureRevenueAllowed": false,
+    "resultBasedWindowSelectionAllowed": false,
+    "primaryConfirmationPopulationId": "CORE80",
+    "primaryConfirmationEvaluationFamily": "PRIMARY_ROLLING",
+    "primaryConfirmationTotalSourceModelId": "M2-WORK-OA03",
+    "primaryConfirmationHorizonsMonths": [
+      3,
+      6,
+      12
+    ],
+    "requiredRobustWindowArmIds": [
+      "C1_TRAILING_3",
+      "C2_TRAILING_6",
+      "C3_TRAILING_12"
+    ],
+    "directCentReconciliation": "LARGEST_REMAINDER_PRESERVE_RAW_SHARE_ORDER",
+    "currencyMinorUnits": 100,
+    "requiredConservationDifferenceMinor": 0,
+    "requiredWorkTotalMetricDifference": 0,
+    "confirmationMinimumRelativeWapeImprovement": 0.01,
+    "maximumAbsoluteBiasWorsening": 0.02,
+    "minimumTimeBlockWinShare": 0.5,
+    "minimumAnonymousChannelBucketCaseCount": 10,
+    "bootstrap": {
+      "iterations": 2000,
+      "seed": 20260730,
+      "clusterUnit": "standardWorkId",
+      "confidenceLevel": 0.95
+    },
+    "decisionStates": [
+      "CHANNEL_ALLOCATION_CONFIRMED",
+      "CHANNEL_ALLOCATION_MIXED",
+      "CHANNEL_ALLOCATION_NOT_CONFIRMED",
+      "CHANNEL_ALLOCATION_NOT_EVALUABLE"
+    ]
+  },
+  "heads": {
+    "evaluationHeadMeaning": "exact_committed_remote_head_that_passed_linux_and_windows_ci_before_first_valid_private_evaluation",
+    "finalDocumentationHeadMeaning": "exact_final_committed_remote_head_containing_reports_registry_catalog_and_state_index",
+    "mustBeReportedSeparately": true
+  },
+  "roles": {
+    "operationalWorkFallback": "M2-WORK-OA03",
+    "researchWorkBaseline": "M2-WORK-LG01",
+    "activeCandidate": null,
+    "approvedForAutomation": null
+  },
+  "authorization": {
+    "source": "user_attachment_M2_core_legacy_horizon_router_and_channel_allocation_v0.1_2026_07_29",
+    "capabilityMatrix": true,
+    "deterministicFrozenReplay": true,
+    "sameCaseFrozenRescore": true,
+    "nestedHorizonRouter": true,
+    "fixedObservedChannelAllocation": true,
+    "training": false,
+    "parameterTuning": false,
+    "weightedTraining": false,
+    "production": false,
+    "laterOrigin": false,
+    "finalHoldout": false,
+    "provider": false,
+    "database": false,
+    "canary": false,
+    "full160": false,
+    "release": false,
+    "m3Formal": false,
+    "pullRequestMerge": false
+  },
+  "privateOutputs": {
+    "directory": "data/private-output/m2-core-legacy-horizon-router",
+    "sameCaseRows": "M2-core-legacy-full-horizon-same-case-rows-private-v0.1.ndjson",
+    "routerRows": "M2-core-legacy-horizon-router-selections-private-v0.1.ndjson",
+    "allocationRows": "M2-core-legacy-channel-allocation-rows-private-v0.1.ndjson",
+    "manifest": "M2-core-legacy-horizon-router-manifest-private-v0.1.json",
+    "receipt": "M2-core-legacy-horizon-router-run-receipt-private-v0.1.json"
+  },
+  "publicOutputs": {
+    "capabilityMatrixJson": "docs/analysis/m2-current/M2-core-legacy-full-horizon-capability-matrix-v0.1.json",
+    "capabilityMatrixReport": "docs/analysis/m2-current/M2-core-legacy-full-horizon-capability-matrix-v0.1.md",
+    "replayContractReport": "docs/analysis/m2-current/M2-core-legacy-deterministic-frozen-replay-contract-v0.1.md",
+    "sameCaseJson": "docs/analysis/m2-current/M2-core-legacy-full-horizon-same-case-rescore-v0.1.json",
+    "sameCaseReport": "docs/analysis/m2-current/M2-core-legacy-full-horizon-same-case-rescore-v0.1.md",
+    "routerJson": "docs/analysis/m2-current/M2-core-legacy-horizon-router-v0.1.json",
+    "routerReport": "docs/analysis/m2-current/M2-core-legacy-horizon-router-v0.1.md",
+    "allocationJson": "docs/analysis/m2-current/M2-core-legacy-observed-channel-allocation-v0.1.json",
+    "allocationReport": "docs/analysis/m2-current/M2-core-legacy-observed-channel-allocation-v0.1.md"
+  }
+}

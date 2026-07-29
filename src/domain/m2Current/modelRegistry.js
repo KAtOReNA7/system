@@ -186,8 +186,20 @@ export function validateM2ModelRegistry(registry, {
       errors.push(`current_role_model_unknown:${role}:${modelId}`);
     }
   }
+  const activeExperiment = registry?.currentRoles?.activeExperiment;
+  if (
+    activeExperiment !== null
+    && activeExperiment !== undefined
+    && !experimentIds.has(activeExperiment)
+  ) {
+    errors.push(`active_experiment_unknown:${activeExperiment}`);
+  }
   const blockedExperiment = registry?.currentRoles?.blockedExperiment;
-  if (!experimentIds.has(blockedExperiment)) {
+  if (
+    blockedExperiment !== null
+    && blockedExperiment !== undefined
+    && !experimentIds.has(blockedExperiment)
+  ) {
     errors.push(`blocked_experiment_unknown:${blockedExperiment}`);
   }
   requirePublicEvidencePath(
@@ -396,6 +408,8 @@ export function renderM2ModelCatalog(registry) {
     "| 能力 | 类型 | 中文名称（英文原名、稳定 ID） | 旧 ID / 别名 | 当前角色（机器状态） | 谱系 |",
     "|---|---|---|---|---|---|",
     ...(registry.models ?? []).map((model) => {
+      const outsideCurrentWorkScope = model.currentM2ScopeStatus
+        === "OUT_OF_CURRENT_M2_SCOPE_PORTFOLIO_RESEARCH";
       const lineage = [
         model.predecessorIds.length > 0
           ? `前序 ${model.predecessorIds.map(code).join("、")}`
@@ -403,15 +417,22 @@ export function renderM2ModelCatalog(registry) {
         model.successorIds.length > 0
           ? `后续 ${model.successorIds.map(code).join("、")}`
           : "无后续"
-      ].join("；");
+      ].join("；") + (outsideCurrentWorkScope
+        ? "；不得参加作品模型排名"
+        : "");
       const aliases = [...model.legacyIds, ...model.legacyAliases]
         .map(code)
         .join("、");
+      const currentRole = outsideCurrentWorkScope
+        ? `已执行失败、且属于当前 M2 范围外组合研究（${
+          code(model.currentRole)
+        }；${code(model.currentM2ScopeStatus)}）`
+        : `${roleZh(model.currentRole)}（${code(model.currentRole)}）`;
       return `| ${capabilityZh(model.capability)}（${model.capability}）`
         + ` | ${entityTypeZh(model.entityType)}（${model.entityType}）`
         + ` | ${escapeTable(model.displayNameZh)}（${escapeTable(model.displayNameEn)}，`
         + `${code(model.stableModelId)}） | ${aliases || "无"}`
-        + ` | ${roleZh(model.currentRole)}（${code(model.currentRole)}）`
+        + ` | ${currentRole}`
         + ` | ${lineage} |`;
     }),
     "",
@@ -550,21 +571,27 @@ function renderCurrentRoles(registry) {
       + `${model.displayNameEn}，${code(id)}）。`;
   });
   if (
-    registry.currentRoles.blockedExperiment
+    registry.currentRoles.activeExperiment
       === "M2-EXP-PUBLISHING-SCALE-CHANNEL-01"
   ) {
     rows.push(
-      "- 当前阻断实验：出版行业规模适配渠道核心开发\n"
-        + "  （`M2-EXP-PUBLISHING-SCALE-CHANNEL-01`）；"
-        + "私有物化已启动，但在候选拟合前因实现\n"
-        + "  接线错误 fail-closed，没有形成候选结果。"
+      "- 当前实验：出版行业规模适配渠道核心开发\n"
+        + "  （Publishing-Scale Channel Core Development，"
+        + "`M2-EXP-PUBLISHING-SCALE-CHANNEL-01`）；"
+        + "第一份完整原始候选评价已执行并按冻结门失败\n"
+        + "  （`M2_PUBLISHING_SCALE_CORE_FAIL`），结果已冻结。"
     );
-  } else {
+  } else if (registry.currentRoles.activeExperiment !== null) {
     rows.push(
-      `- 阻断实验：${code(registry.currentRoles.blockedExperiment)}`
-        + "；这是前置条件阻断，不是已执行失败。"
+      `- 当前实验：${code(registry.currentRoles.activeExperiment)}。`
     );
   }
+  rows.push(
+    registry.currentRoles.blockedExperiment === null
+      ? "- 当前阻断实验：无（`null`）。"
+      : `- 当前阻断实验：${code(registry.currentRoles.blockedExperiment)}`
+        + "；这是前置条件阻断，不是已执行失败。"
+  );
   return rows;
 }
 
@@ -602,6 +629,7 @@ function capabilityZh(capability) {
 function entityTypeZh(entityType) {
   return {
     model: "模型",
+    model_revision: "模型修订",
     model_family: "模型族",
     model_pipeline: "选定管线"
   }[entityType] ?? "登记实体";
@@ -649,6 +677,39 @@ function comparisonClassZh(value) {
 function resultStatusZh(value) {
   if (value === "M2_PUBLISHING_SCALE_IMPLEMENTATION_BLOCKED") {
     return "实现阻断且无候选结果";
+  }
+  if (value === "HORIZON_ROUTER_NOT_CONFIRMED") {
+    return "按预测周期滚动模型路由未确认";
+  }
+  if (value === "SAME_CASE_NO_STABLE_WINNER") {
+    return "同案例重评分未形成稳定优胜";
+  }
+  if (value === "SAME_CASE_WAPE_BIAS_TRADEOFF") {
+    return "同案例 WAPE 与偏差存在权衡";
+  }
+  if (value === "SAME_CASE_CLEAR_WINNER") {
+    return "同案例重评分形成明确优胜";
+  }
+  if (value === "SAME_CASE_CLEAR_WINNER_COMPARISON_LOSER") {
+    return "同案例明确优胜比较中的落后模型";
+  }
+  if (value === "CHANNEL_ALLOCATION_MIXED") {
+    return "已有渠道分配证据混合";
+  }
+  if (value === "CHANNEL_ALLOCATION_NOT_CONFIRMED") {
+    return "已有渠道分配未确认";
+  }
+  if (value === "CONTROLLED_FULL_POPULATION_REFERENCE") {
+    return "已执行的全量训练人口参照";
+  }
+  if (value === "CONTROLLED_CORE90_TRAINING_TAIL_INTERFERENCE_NOT_CONFIRMED") {
+    return "动态核心 90% 训练已执行，尾部干扰未确认";
+  }
+  if (value === "CONTROLLED_CORE80_TRAINING_TAIL_INTERFERENCE_NOT_CONFIRMED") {
+    return "动态核心 80% 训练已执行且退化，尾部干扰未确认";
+  }
+  if (value === "TAIL_INTERFERENCE_NOT_CONFIRMED") {
+    return "尾部干扰未确认";
   }
   if (/NOT_EXECUTED/u.test(value)) {
     return "尚未执行";

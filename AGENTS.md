@@ -3,9 +3,21 @@
 ## 当前权威入口
 
 - 用户首页与公共开始入口：`README.md`
-- 当前 M2 状态：`docs/analysis/m2-v2/M2-v2-current-state-index-v0.36.md`
+- 当前 M2 状态：`docs/analysis/m2-v2/M2-v2-current-state-index-v0.41.md`
 - M2 模型机器权威：`config/m2-model-registry.v1.json`
 - M2 中文目录：`docs/analysis/m2-current/M2-model-catalog-and-scorecard-v1.md`
+- M2 出版行业规模适配渠道核心结论：
+  - `docs/analysis/m2-current/M2-current-publishing-scale-channel-development-v0.1.json`
+  - `docs/analysis/m2-current/M2-current-publishing-scale-channel-development-v0.1.md`
+  - `docs/analysis/m2-current/M2-current-publishing-scale-channel-forecastability-v0.1.json`
+  - `docs/analysis/m2-current/M2-current-publishing-scale-channel-forecastability-v0.1.md`
+- M2 分层收入组合模型开发结论：
+  - `docs/analysis/m2-current/M2-layered-revenue-composition-development-v0.1.json`
+  - `docs/analysis/m2-current/M2-layered-revenue-composition-development-v0.1.md`
+  - `docs/analysis/m2-current/M2-layered-revenue-four-component-conservation-v0.1.md`
+  - `docs/analysis/m2-current/M2-layered-revenue-future-new-work-v0.1.md`
+  - `docs/analysis/m2-current/M2-layered-revenue-existing-work-new-channel-v0.1.md`
+  - `docs/analysis/m2-current/M2-layered-revenue-36-month-retention-v0.1.md`
 - M2 评价体系：
   - `docs/analysis/m2-current/M2-evaluation-system-audit-v1.md`
   - `config/m2-evaluation-contract.v2.2.json`
@@ -27,6 +39,11 @@
   - `docs/analysis/m2-current/M2-evaluation-v2-frozen-rescore-v1.md`
   - `docs/analysis/m2-current/M2-evaluation-contract-v2-validation-v1.md`
 - M2 canonical core 局部规则：`src/domain/m2Current/AGENTS.md`
+- 当前 M2 作品预测范围：
+  - `docs/analysis/m2-current/M2-core-legacy-observed-channel-scope-contract-v0.1.md`
+  - `docs/analysis/m2-current/M2-core-legacy-training-population-and-loss-audit-v0.1.md`
+  - `docs/analysis/m2-current/M2-core-legacy-frozen-rescore-v0.1.md`
+  - `docs/analysis/m2-current/M2-core-legacy-tail-interference-test-v0.1.md`
 - 仓库收敛与可移植开发：
   - `docs/analysis/repository-current-state-and-convergence-audit-v0.1.md`
   - `docs/analysis/m2-v2/M2-repository-code-convergence-and-portable-development-audit-v0.4.md`
@@ -105,6 +122,18 @@ fixture composition。两者在无 private、无数据库条件下都必须能�
 
 - `data/private-input/**`、`data/private-output/**`、原始账单、台账、材料、private
   receipt/workbook、密钥、连接串、dump、`.env` 和 `.pgpass` 禁止提交。
+- Private 文件必须区分三类：不可由代码推导的权威输入
+  (`PRIVATE_SOURCE_AUTHORITY`)、可由权威输入与冻结代码确定性重建的派生缓存
+  (`PRIVATE_DERIVED_CACHE`) 和运行溯源 (`PRIVATE_RUN_PROVENANCE`)。Git ignored
+  private output 是可丢弃缓存，不是换电脑前置合同；历史 receipt 是 provenance，
+  不是训练数据或执行输入。
+- Capability doctor 必须分别报告 source authority、derived cache 和 historical
+  receipt 状态。只有权威输入缺失才可报告 `MISSING_SOURCE_AUTHORITY`；缓存缺失必须
+  报告 `CACHE_MISS_REBUILDABLE` 并给出自动重建计划；历史 receipt 缺失只能告警
+  `OPTIONAL_PROVENANCE_MISSING`，不得阻断或伪造。
+- 新电脑必须能从 `PRIVATE_SOURCE_AUTHORITY` 与仓库内冻结代码重建所需派生工件；
+  不得要求预置本机绝对路径、活动 HEAD、运输包 hash 或旧输出 digest。运行时生成的
+  digest 只绑定当次输入、代码和输出完整性。
 - 禁止伪造 private 文件、从公开聚合摘要反推 private 内容、降低真实性 verifier，
   或用文件存在代替真实性通过和执行授权。
 - 使用 `npm run doctor:capability -- <capability-id>` 盘点能力。缺少 private 只能
@@ -118,6 +147,8 @@ fixture composition。两者在无 private、无数据库条件下都必须能�
   缓存清理；清理必须报告精确目标、数量、字节数和剩余阻断项。
 - 跨电脑恢复只能使用 capability-scoped 加密包、逐文件摘要和原子恢复；环境变量、
   provider key 与数据库凭据不得进入包。
+- 跨电脑搬运只针对不可重建的原始权威输入，并使用仓库外 capability-scoped 加密包
+  或用户明确提供的私有数据根；可重建缓存和历史 receipt 不得成为搬运前提。
 - 需要用户补充材料时，先给中文简表、中文选项和“你的填写”列；允许“不清楚”或
   “没有”，并说明最少依据和可复制回复。敏感材料只能进入 Git ignored 的
   capability 目录或任务附件，不得要求上传 GitHub。
@@ -147,6 +178,15 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
 
 - 正式目标是未来分成收入现金。买断及其他非分成现金只进入模型外账单/审计层，
   不得进入特征、标签、回测指标、点预测、区间或年度预测明细。
+- 当前 M2 人口仅为 origin 时至少积累 3 个完整账单月的动态 Core80/Core90 老作品，
+  且只预测同一 origin 时至少积累 3 个完整账单月的已有 canonical 渠道。未来新增
+  作品、未来首次出现渠道和 Core 外尾部不属于当前 M2 actual，也不得按预测为 0。
+- Core80/Core90 必须在每个 forecast origin 和训练 pseudo-origin 用当时可见收入
+  重算，并同时约束训练、服务和评价人口；不得只在评价时筛 Core、继续让尾部主导
+  Core-only 训练，也不得用当前固定名单或未来 TopN 回看历史。
+- 尾部不得通过长尾池、公司组合或收入补差重新加入当前 M2。公司组合模型及参考
+  （`M2-PORT-LRC01`、`M2-PORT-ETS01`）保留历史证据，但不得参加当前作品模型排名，
+  也不得用公司全部未来收入判断作品模型。
 - 人工拆分账单成员关系是现金类型唯一权威：总账只作守恒审计，分成账单是预测
   actual 的唯一来源，买断账单只作评级/历史背景。
 - pure-buyout 必须 `null abstain`，原因为
@@ -155,6 +195,11 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
   scope 必须分别报告；不得为了保持旧人口把弃权 case 计为 0。
 - 所有模型输入必须能证明在 forecast origin 可得。没有 historical
   `effectiveAt/availableAt` 的 current 状态不得事后回填。
+- 业务权威明确为作品建立时即确定且基本固定的三级分类和作品来源，不要求伪造
+  historical `availableAt`；它们只允许用于诊断或预注册的层级回退，不得直接乘以
+  金额倍率。
+- 作品数量覆盖率不得替代收入金额覆盖率。核心人口必须只用预测起点可见收入选择，
+  禁止使用未来实际 TopN 形成候选人口或正式成绩。
 - 作品点预测、组合预测、排序/分配和风险区间属于不同能力，不得共享排行榜，也不得
   将 portfolio 结果分配回作品。
 - 不同目标、粒度、人口、horizon、评价窗口、actual 定义或评价家族的成绩不得直接
@@ -177,6 +222,9 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
   路径或预先抄录的活动提交 SHA 写进实现或长期合同。
 - 权威 payload digest 可以作为内容绑定保留；运输包 hash、恢复包路径和本机路径
   只是传输审计信息，不得成为长期业务或评价合同条件。
+- Git-ignored 可重建缓存和历史运行收据缺失不得阻断跨电脑公开开发；私有评价只有在
+  不可替代的权威源确实缺失或无法形成合法起点时才允许阻断。
+- 固定作品数资格门槛不得脱离当前出版业务的真实人口与独立支持证据。
 - 120 部人工预测/复核已取消；不得重建、重放或生成替代样本。人工只做技术门禁后的
   post-gate QA，不提供预测金额。
 - 默认不授权训练、调参、新候选、private evaluation、provider、数据库、

@@ -1,0 +1,211 @@
+{
+  "schema": "m2.current.core_legacy_population.v0.1",
+  "version": "0.1",
+  "asOf": "2026-07-29",
+  "experiment": {
+    "stableExperimentId": "M2-EXP-CORE-LEGACY-POPULATION-01",
+    "displayNameZh": "M2 核心老品—已有渠道范围纠偏、冻结重评分与尾部干扰验证 v0.1",
+    "displayNameEn": "M2 Core Legacy Work–Observed Channel Scope Correction, Frozen Rescore and Tail Interference Test v0.1",
+    "entityType": "experiment",
+    "activeCandidate": false,
+    "approvedForAutomation": false
+  },
+  "target": {
+    "name": "future_sales_share_development_modelable_cash",
+    "actualDefinitionId": "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01",
+    "calendarField": "billMonth",
+    "calendarMeaning": "financial_posting_month",
+    "predictionGrain": "standardWorkId_origin_observedMatureCanonicalChannel_horizon",
+    "workTotalMeaning": "sum_of_the_same_eligible_observed_mature_channel_pairs",
+    "excluded": [
+      "future_new_work",
+      "future_first_observed_channel",
+      "outside_core_tail_work",
+      "buyout_cash",
+      "other_non_sales_share_cash",
+      "company_total_revenue_gap"
+    ]
+  },
+  "eligibility": {
+    "workIdentity": "standardWorkId",
+    "minimumCompleteMonths": 3,
+    "workFirstPositiveDefinition": "first_positive_sales_share_billMonth_visible_at_origin",
+    "channelFirstPositiveDefinition": "first_positive_sales_share_billMonth_for_standardWorkId_and_canonicalChannel_visible_at_origin",
+    "completeMonthClock": "inclusive_first_positive_month_through_origin",
+    "workAndChannelMustBothQualify": true,
+    "immaturePolicy": "ABSTAIN_EXCLUDE_FROM_CANDIDATE_ERROR_REPORT_FUTURE_SHARE_SEPARATELY",
+    "futureNewWorkPolicy": "OUTSIDE_CURRENT_M2_ACTUAL",
+    "futureFirstChannelPolicy": "OUTSIDE_CURRENT_M2_ACTUAL"
+  },
+  "coreSelection": {
+    "recomputedAtEveryOrigin": true,
+    "selectionGrain": "standardWorkId_origin",
+    "referenceRevenue": "development_modelable_sales_share_cash_on_origin_eligible_observed_mature_channels",
+    "januaryFebruaryWindow": "latest_6_complete_billMonths_through_origin",
+    "marchThroughDecemberWindow": "calendar_year_january_through_origin",
+    "thresholds": {
+      "CORE80": 0.8,
+      "CORE90": 0.9
+    },
+    "cutoffTiePolicy": "INCLUDE_ALL_EXACT_REFERENCE_REVENUE_TIES",
+    "topDiagnostics": [
+      20,
+      50
+    ],
+    "futureActualSelectionAllowed": false,
+    "fixedCurrentCoreBackcastAllowed": false,
+    "tailPoolAllowed": false
+  },
+  "evaluation": {
+    "horizonsMonths": [
+      3,
+      6,
+      12,
+      36
+    ],
+    "populationIds": [
+      "CORE80",
+      "CORE90",
+      "TOP20",
+      "TOP50"
+    ],
+    "grains": [
+      "WORK_TOTAL",
+      "WORK_CHANNEL"
+    ],
+    "families": [
+      "PRIMARY_ROLLING",
+      "STRICT_ROLLING"
+    ],
+    "pointMetrics": [
+      "WAPE",
+      "signed_bias",
+      "MAE",
+      "median_absolute_error",
+      "zero_actual_false_positive_error",
+      "zero_prediction_positive_actual_miss_error"
+    ],
+    "bootstrap": {
+      "iterations": 2000,
+      "seed": 20260729,
+      "clusterUnit": "standardWorkId",
+      "confidenceLevel": 0.95
+    },
+    "coverageDenominator": "future_revenue_of_all_origin_mature_legacy_work_observed_mature_channel_pairs",
+    "companyFutureRevenueDenominatorAllowed": false,
+    "categoryRole": "REPORT_ONLY_DIAGNOSTIC"
+  },
+  "frozenRescore": {
+    "requiredModelIds": [
+      "M2-WORK-OA03",
+      "M2-WORK-LG01",
+      "M2-WORK-CRMR01"
+    ],
+    "excludedModelIds": [
+      "M2-PORT-LRC01",
+      "M2-PORT-ETS01"
+    ],
+    "formulaOrParameterMutationAllowed": false,
+    "predictionGenerationFromFrozenFormulaAllowed": true,
+    "unrebuildableStatus": "NOT_COMPARABLE",
+    "singleModelFailureBlocksOthers": false,
+    "publicAggregateInferenceAllowed": false
+  },
+  "trainingAblation": {
+    "baseModelId": "M2-WORK-LG01",
+    "rawLayer": "learnedGlobal",
+    "arms": [
+      {
+        "armId": "M2-EXP-CORE-LEGACY-POPULATION-01/T0_FULL",
+        "population": "ALL_ORIGIN_ELIGIBLE_MATURE_LEGACY_WORKS",
+        "statusBeforeExecution": "PREREGISTERED"
+      },
+      {
+        "armId": "M2-EXP-CORE-LEGACY-POPULATION-01/T1_CORE90",
+        "population": "DYNAMIC_ORIGIN_SAFE_CORE90",
+        "statusBeforeExecution": "PREREGISTERED"
+      },
+      {
+        "armId": "M2-EXP-CORE-LEGACY-POPULATION-01/T2_CORE80",
+        "population": "DYNAMIC_ORIGIN_SAFE_CORE80",
+        "statusBeforeExecution": "PREREGISTERED"
+      },
+      {
+        "armId": "M2-EXP-CORE-LEGACY-POPULATION-01/T3_REVENUE_WEIGHTED_FULL",
+        "population": "ALL_ORIGIN_ELIGIBLE_MATURE_LEGACY_WORKS",
+        "statusBeforeExecution": "NOT_EXECUTED_REQUIRES_MODEL_CHANGE"
+      }
+    ],
+    "sampleWeightSupport": "NOT_NATIVE",
+    "allowedDifference": "training_population_only",
+    "featureChangeAllowed": false,
+    "architectureChangeAllowed": false,
+    "parameterGridChangeAllowed": false,
+    "postResultTuningAllowed": false,
+    "fallbackMayReplaceRawResult": false,
+    "pseudoOriginPopulationMustBeRecomputed": true,
+    "evaluationOrigins": {
+      "frequency": "quarterly_from_runtime_legal_monthly_origins",
+      "selectionRule": "every_third_legal_origin_in_chronological_order_plus_last_if_needed"
+    },
+    "decisionStates": [
+      "TAIL_INTERFERENCE_CONFIRMED",
+      "TAIL_INTERFERENCE_MIXED",
+      "TAIL_INTERFERENCE_NOT_CONFIRMED",
+      "TAIL_INTERFERENCE_NOT_EVALUABLE"
+    ],
+    "confirmationMinimumRelativeWapeImprovement": 0.01,
+    "materialAbsoluteBiasWorseningThreshold": 0.01,
+    "bootstrapImprovementLowerBoundRequired": 0,
+    "minimumImprovingTimeBlockShare": 0.5,
+    "trainingHorizonMonths": 36,
+    "minimumMatureTrainingRows": 30,
+    "minimumMatureTrainingRowsRationale": "five_cross_work_folds_times_maximum_six_value_parameter_grid_fixed_before_training",
+    "evaluationFamily": "CONTROLLED_STRICT_ROLLING",
+    "fallbackStatus": "DISABLED_RAW_LEARNED_GLOBAL_ONLY"
+  },
+  "portfolioBoundary": {
+    "outOfScopeModelId": "M2-PORT-LRC01",
+    "outOfScopeStatus": "OUT_OF_CURRENT_M2_SCOPE_PORTFOLIO_RESEARCH",
+    "portfolioComparatorId": "M2-PORT-ETS01",
+    "workModelRankingAllowed": false,
+    "historicalEvidenceMutationAllowed": false
+  },
+  "authorization": {
+    "source": "user_attachment_M2_Core_Legacy_Work_Observed_Channel_Scope_Correction_v0.1_2026_07_29",
+    "scopeGovernance": true,
+    "frozenPredictionRescore": true,
+    "controlledTrainingAblationOnce": true,
+    "modelArchitectureChange": false,
+    "featureDevelopment": false,
+    "unboundedTuning": false,
+    "production": false,
+    "laterOrigin": false,
+    "finalHoldout": false,
+    "provider": false,
+    "database": false,
+    "canary": false,
+    "full160": false,
+    "release": false,
+    "m3Formal": false,
+    "pullRequestMerge": false
+  },
+  "privateOutputs": {
+    "directory": "data/private-output/m2-core-legacy-population",
+    "populationRows": "M2-core-legacy-population-rows-private-v0.1.ndjson",
+    "frozenRescoreRows": "M2-core-legacy-frozen-rescore-rows-private-v0.1.ndjson",
+    "trainingRows": "M2-core-legacy-tail-test-rows-private-v0.1.ndjson",
+    "manifest": "M2-core-legacy-population-manifest-private-v0.1.json",
+    "receipt": "M2-core-legacy-population-run-receipt-private-v0.1.json"
+  },
+  "publicOutputs": {
+    "diagnostic": "docs/analysis/m2-current/M2-core-legacy-population-public-diagnostic-v0.1.json",
+    "scopeContract": "docs/analysis/m2-current/M2-core-legacy-observed-channel-scope-contract-v0.1.md",
+    "trainingAuditJson": "docs/analysis/m2-current/M2-core-legacy-training-population-and-loss-audit-v0.1.json",
+    "trainingAuditReport": "docs/analysis/m2-current/M2-core-legacy-training-population-and-loss-audit-v0.1.md",
+    "frozenRescoreJson": "docs/analysis/m2-current/M2-core-legacy-frozen-rescore-v0.1.json",
+    "frozenRescoreReport": "docs/analysis/m2-current/M2-core-legacy-frozen-rescore-v0.1.md",
+    "tailTestJson": "docs/analysis/m2-current/M2-core-legacy-tail-interference-test-v0.1.json",
+    "tailTestReport": "docs/analysis/m2-current/M2-core-legacy-tail-interference-test-v0.1.md"
+  }
+}

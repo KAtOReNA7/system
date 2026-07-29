@@ -81,9 +81,9 @@ if (!mode) {
   process.exit(2);
 }
 
-const privateDirectory = path.join(
-  root,
-  "data/private-output/m2-evaluation-v2-frozen-rescore"
+const privateDirectory = resolvePrivateOutputDirectory(
+  process.argv.slice(2),
+  "data/private-output/m2-evaluation-v2-frozen-rescore",
 );
 fs.mkdirSync(privateDirectory, { recursive: true });
 
@@ -294,12 +294,7 @@ async function runV22LabelOnlyRescore(datasets, artifactInventory) {
     labels.byGroupCaseKey,
     artifactInventory
   );
-  const outputDirectory = path.join(
-    root,
-    "data",
-    "private-output",
-    reversalContract.privateOutputs.directoryRole
-  );
+  const outputDirectory = privateDirectory;
   fs.mkdirSync(outputDirectory, { recursive: true });
   const allocationPath = path.join(
     outputDirectory,
@@ -435,6 +430,31 @@ async function runV22LabelOnlyRescore(datasets, artifactInventory) {
     receiptPath: receiptPathV22,
     publicAggregateCandidatePath
   };
+}
+
+function resolvePrivateOutputDirectory(argumentsList, fallbackRelativePath) {
+  const prefix = "--private-output-directory=";
+  const values = argumentsList
+    .filter((argument) => argument.startsWith(prefix))
+    .map((argument) => argument.slice(prefix.length));
+  if (values.length > 1) {
+    throw new Error("m2_evaluation_v2_private_output_directory_repeated");
+  }
+  const relativePath = values[0] ?? fallbackRelativePath;
+  if (!relativePath || path.isAbsolute(relativePath)) {
+    throw new Error("m2_evaluation_v2_private_output_directory_invalid");
+  }
+  const resolved = path.resolve(root, relativePath);
+  const relative = path.relative(root, resolved);
+  if (
+    relative === ".."
+    || relative.startsWith(`..${path.sep}`)
+    || path.isAbsolute(relative)
+    || !relative.replaceAll("\\", "/").startsWith("data/private-output/")
+  ) {
+    throw new Error("m2_evaluation_v2_private_output_directory_escapes_root");
+  }
+  return resolved;
 }
 
 function resolveCapabilityV22() {

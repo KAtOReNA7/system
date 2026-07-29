@@ -15,6 +15,7 @@ import {
   expandM2ChannelGenerativePackedRows,
   fitM2ChannelGenerativeCandidate,
   predictM2ChannelGenerativeMonthly,
+  scoreM2ChannelGenerativeFrozenG0Comparator,
   strictRollingM2ChannelGenerativeG1,
   verifyM2ChannelGenerativeG0
 } from "../src/domain/m2Current/channelGenerative.js";
@@ -70,6 +71,77 @@ test("G0 verifier preserves frozen decomposition, reversal placement and overlap
   assert.throws(
     () => verifyM2ChannelGenerativeG0(drift),
     /CONTRACT_SEMANTIC_BLOCKER/u
+  );
+});
+
+test("frozen G0 channel comparison can use an explicit same-case intersection", () => {
+  const boundary = {
+    schema: "m2.current.channel_generative_monthly_row.v0.2",
+    trainingWeight: 1,
+    futureFirstSeenIdentityUsedAsFeature: false,
+    unmaturedLabelZeroImputed: false,
+    buyoutCashUsed: false,
+    standardWorkId: "W-INTERSECTION",
+    origin: "2022-12",
+    mechanism: "membership",
+    observedAtOrigin: true,
+    actualReversal: 0,
+    includedHorizons: [3]
+  };
+  const monthly = [
+    {
+      ...boundary,
+      channelUid: "C-PAIRED",
+      actualPositive: 10,
+      actual: 10
+    },
+    {
+      ...boundary,
+      channelUid: "C-NEW",
+      actualPositive: 5,
+      actual: 5
+    }
+  ];
+  const frozen = [
+    {
+      rowKind: "work",
+      standardWorkId: "W-INTERSECTION",
+      origin: "2022-12",
+      horizonMonths: 3,
+      ablationPositivePoints: { A1: 12 },
+      ablationPoints: { A1: 12 }
+    },
+    {
+      rowKind: "work_channel",
+      standardWorkId: "W-INTERSECTION",
+      origin: "2022-12",
+      horizonMonths: 3,
+      channelUid: "C-PAIRED",
+      ablationPoints: { A1: 8 }
+    }
+  ];
+  assert.throws(
+    () => scoreM2ChannelGenerativeFrozenG0Comparator(
+      monthly,
+      frozen,
+      config
+    ),
+    /G0_paired_channel_missing/u
+  );
+  const intersection = scoreM2ChannelGenerativeFrozenG0Comparator(
+    monthly,
+    frozen,
+    config,
+    { channelPairingPolicy: "same_case_intersection" }
+  );
+  assert.equal(intersection.workTotal.caseCount, 1);
+  assert.equal(intersection.workChannel.caseCount, 1);
+  assert.equal(intersection.coverage.currentChannelCaseCount, 2);
+  assert.equal(intersection.coverage.pairedChannelCaseCount, 1);
+  assert.equal(intersection.coverage.unpairedCurrentChannelCaseCount, 1);
+  assert.equal(
+    intersection.coverage.channelPairingPolicy,
+    "same_case_intersection"
   );
 });
 

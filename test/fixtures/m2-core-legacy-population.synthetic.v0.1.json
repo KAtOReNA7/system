@@ -1,0 +1,53 @@
+{
+  "schema": "m2.core_legacy_population.synthetic_fixture.v0.1",
+  "selectionCases": [
+    {
+      "id": "march_calendar_year_and_cutoff_ties",
+      "origin": "2024-03",
+      "eligibleMonthlyRows": [
+        {"standardWorkId": "W1", "channelUid": "C1", "month": "2024-01", "cash": 35},
+        {"standardWorkId": "W1", "channelUid": "C1", "month": "2024-02", "cash": 35},
+        {"standardWorkId": "W1", "channelUid": "C1", "month": "2024-03", "cash": 0},
+        {"standardWorkId": "W2", "channelUid": "C1", "month": "2024-01", "cash": 15},
+        {"standardWorkId": "W2", "channelUid": "C1", "month": "2024-02", "cash": 0},
+        {"standardWorkId": "W2", "channelUid": "C1", "month": "2024-03", "cash": 0},
+        {"standardWorkId": "W3", "channelUid": "C1", "month": "2024-01", "cash": 15},
+        {"standardWorkId": "W3", "channelUid": "C1", "month": "2024-02", "cash": 0},
+        {"standardWorkId": "W3", "channelUid": "C1", "month": "2024-03", "cash": 0}
+      ],
+      "expectedCore80": ["W1", "W2", "W3"],
+      "expectedCore90": ["W1", "W2", "W3"],
+      "expectedCore80TieCount": 2
+    },
+    {
+      "id": "february_uses_cross_year_six_months",
+      "origin": "2024-02",
+      "eligibleMonthlyRows": [
+        {"standardWorkId": "W1", "channelUid": "C1", "month": "2023-09", "cash": 10},
+        {"standardWorkId": "W1", "channelUid": "C1", "month": "2024-02", "cash": 10},
+        {"standardWorkId": "W2", "channelUid": "C1", "month": "2023-09", "cash": 1},
+        {"standardWorkId": "W2", "channelUid": "C1", "month": "2024-02", "cash": 1}
+      ],
+      "expectedCore80": ["W1"],
+      "expectedCore90": ["W1"],
+      "expectedCore80TieCount": 1
+    }
+  ],
+  "eligibilityCases": [
+    {
+      "id": "work_and_channel_both_need_three_complete_months",
+      "origin": "2024-03",
+      "monthlyRows": [
+        {"standardWorkId": "W1", "channelUid": "MATURE", "month": "2024-01", "cash": 10},
+        {"standardWorkId": "W1", "channelUid": "MATURE", "month": "2024-02", "cash": 0},
+        {"standardWorkId": "W1", "channelUid": "MATURE", "month": "2024-03", "cash": 5},
+        {"standardWorkId": "W1", "channelUid": "IMMATURE", "month": "2024-02", "cash": 2},
+        {"standardWorkId": "W1", "channelUid": "IMMATURE", "month": "2024-03", "cash": 3},
+        {"standardWorkId": "W2", "channelUid": "TOO_NEW", "month": "2024-02", "cash": 9},
+        {"standardWorkId": "W2", "channelUid": "TOO_NEW", "month": "2024-03", "cash": 1}
+      ],
+      "expectedEligiblePairs": ["W1|MATURE"],
+      "expectedImmaturePairCount": 2
+    }
+  ]
+}

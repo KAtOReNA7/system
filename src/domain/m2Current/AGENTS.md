@@ -31,6 +31,30 @@ This directory is the only implementation home for current M2 model logic.
   channel-expert experiment, the only additionally authorized static features
   are canonical channel identity, the user-confirmed monetization mechanism,
   and intrinsic work category.
+- When business authority explicitly establishes intrinsic category and work
+  source at work creation, do not fabricate historical `availableAt` values.
+  Such static fields may support diagnostics or a preregistered hierarchical
+  fallback, but never a direct cash multiplier.
+- Select core populations only from cash visible at the forecast origin.
+  Work-count coverage is not revenue coverage, and future-actual TopN may be
+  used only as a post-hoc oracle diagnostic.
+- Current M2 service, training, and evaluation scope is dynamic Core80/Core90
+  legacy works with at least three complete bill months, restricted to
+  canonical work-channel pairs that also have at least three complete bill
+  months at that origin. Recompute membership independently at every forecast
+  and training pseudo-origin, include all cutoff-revenue ties, and never use a
+  current fixed Core list to backcast history.
+- Future new works, future first-observed channels, and works outside Core are
+  abstained populations, not zero predictions. Do not pool, compose, allocate,
+  or add them back to a current-M2 candidate actual or error denominator.
+- A Core-only evaluation is invalid as evidence about tail interference when
+  the fitted training target still includes unrestricted tail cases. Training
+  population ablations must change only the origin-safe training population,
+  preserve every raw arm, and compare on identical Core cases.
+- `M2-PORT-LRC01` and `M2-PORT-ETS01` are portfolio capabilities outside the
+  current work-model ranking. Preserve their historical identities and
+  evidence, but never use company-total, future-work, or future-channel metrics
+  to select a current M2 work model.
 - Preserve every preregistered raw ablation result. A fallback or selected
   pipeline must never replace or conceal raw candidate metrics or raw FVA.
 - Model selection must be nested inside the applicable outer work or time
@@ -53,12 +77,40 @@ This directory is the only implementation home for current M2 model logic.
 - Public artifacts contain only aggregate evidence. Work IDs, channel IDs,
   row-level actuals, and row-level predictions remain in capability-scoped,
   Git-ignored private output.
+- M2 的 monthly materialization、primary/strict packed rows、冻结 baseline
+  prediction rows、candidate/evaluation rows、manifest、摘要和冲销
+  reconciliation/allocation 都属于 `PRIVATE_DERIVED_CACHE`。缺失时从已验证的
+  `PRIVATE_SOURCE_AUTHORITY` 与冻结实现自动重建，不得要求从旧电脑恢复。
+- 历史 execution/run/attempt receipt 属于 `PRIVATE_RUN_PROVENANCE`，缺失只告警，
+  不得作为拟合输入、标签、baseline 或运行硬门禁，也不得补造。每次当前执行仍必须
+  生成新的版本化 receipt，并用当次 digest 绑定代码、权威输入和输出。
+- M2 prepare/runner 必须在运行时解析仓库根并创建模型专属版本化 Git-ignored
+  目录。派生缓存可重建或替换 current-cache 镜像，但冻结历史 artifact、原始账单
+  和用户确认关系不可覆盖或改写。
 - Extend the existing human-anchored materializer and runner modes. Do not
   create a second production loader, route, API, runtime, or duplicated
   historical runner.
-- 出版行业适配渠道核心的 K7D 一次性私有授权已在候选拟合前的实现阻断中消耗。
-  未获新的明确授权、独立新收据和新 exact-head Linux/Windows CI 前，不得重跑、
-  覆盖失败收据或把公开 synthetic 验证解释为私有候选结果。
+- Missing rebuildable Git-ignored caches or historical receipts must not block
+  portable public development. A private evaluation may be blocked only when
+  an irreplaceable authoritative source is missing or no legal historical
+  forecast origin can be formed.
+- Company-level M2 sales-share forecasting must keep existing core, existing
+  tail, future new-work portfolio, and existing-work new-channel portfolio cash
+  mutually exclusive and amount-conserving. Future new works and future channel
+  entries may be forecast only as portfolio amounts, never as identities.
+- Do not default 36-month forecasts to recursive work-level growth factors.
+  Estimate each catalog year directly from mature pre-origin pseudo-origins;
+  judge support from mature time blocks, independent samples, positive cash
+  denominators, and uncertainty rather than fixed 50/100-work thresholds.
+- Horizon decisions remain separate. A 3/6-month pass must not authorize a
+  12/36-month claim, and a long-horizon failure must not erase valid short-term
+  evidence. Revenue coverage, not work-count coverage, is the business target.
+- 受控 private development 可在首个有效 raw candidate 评价之前修复基础设施、
+  路径、schema、缓存、receipt、内存或确定性实现错误并保留逐次 attempt receipt。
+  一旦首个完整、可解释结果产生，必须立即冻结；不得根据 outer outcome 修改特征、
+  参数、层级、fold 或评价门后再运行第二个版本。
+- 已完成或失败的 private evaluation 不授予再次执行权；后续模型运行仍需用户在当前
+  任务中明确授权、独立新收据和新 exact-head Linux/Windows CI。
 
 ## Evaluation contract rules
 

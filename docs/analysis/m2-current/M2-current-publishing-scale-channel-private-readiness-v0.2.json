@@ -1,0 +1,91 @@
+{
+  "schema": "m2.current.publishing_scale_channel_private_readiness.v0.2",
+  "recordedAt": "2026-07-28",
+  "status": "READY_PENDING_R1_EXACT_HEAD_LINUX_WINDOWS_CI",
+  "displayNameZh": "出版行业适配的渠道月度发生—条件金额核心",
+  "displayNameEn": "Publishing-Scale Channel Monthly Occurrence × Conditional Amount Core",
+  "modelId": "M2-CHAN-PSC01",
+  "experimentArmId": "M2-EXP-PUBLISHING-SCALE-CHANNEL-01/CORE",
+  "pullRequest": {
+    "number": 31,
+    "state": "OPEN",
+    "isDraft": true,
+    "merged": false,
+    "baseBranch": "main",
+    "headBranch": "codex/m2-publishing-scale-channel-core-retry"
+  },
+  "r0Evidence": {
+    "exactHead": "075d4654d414447d3a5293b3825913dd3b2136b5",
+    "originMainAtBranchCreation": "b00a6eac794123caa25e5d222735e050d0eaa4b7",
+    "originMainIsAncestor": true,
+    "localTrackingRemoteAndPullRequestHeadMatched": true,
+    "cleanClone": {
+      "remoteExactHeadMatched": true,
+      "privateInputDirectoryPresent": false,
+      "privateOutputDirectoryPresent": false,
+      "credentialsProvided": false,
+      "npmCi": "PASS",
+      "doctorDev": "PASS",
+      "noRealData": "PASS",
+      "lint": "PASS",
+      "build": "PASS",
+      "defaultTest": {
+        "status": "PASS",
+        "passed": 844,
+        "failed": 0
+      },
+      "smoke": "PASS",
+      "portableStartup": "PASS",
+      "e2e": {
+        "status": "PASS",
+        "passed": 13,
+        "failed": 0
+      },
+      "m2CurrentVerifier": "PASS"
+    },
+    "githubActions": {
+      "runId": 30366497690,
+      "headSha": "075d4654d414447d3a5293b3825913dd3b2136b5",
+      "linux": {
+        "check": "verify",
+        "status": "SUCCESS",
+        "jobId": 90298981191
+      },
+      "windows": {
+        "check": "verify-windows",
+        "status": "SUCCESS",
+        "jobId": 90298981215
+      }
+    }
+  },
+  "authorizationPreparation": {
+    "authorizationPolicyId": "M2-PSC01-CONTROLLED-RETRY-20260728-01",
+    "historicalConsumedAuthorizationRewritten": false,
+    "historicalReceiptOverwritten": false,
+    "runtimeAuthorizationIsAppendOnlyPrivateArtifact": true,
+    "runtimeExactHeadResolvedAtExecution": true,
+    "runtimeDraftPullRequestResolvedAtExecution": true,
+    "normalPrivateExecutionMaximum": 1,
+    "infrastructureRecoveryRetryMaximum": 1,
+    "r1ExactHeadLinuxWindowsCiRequiredBeforePrivateRead": true
+  },
+  "executionCounters": {
+    "privateArtifactRowsRead": 0,
+    "privateOutputWrites": 0,
+    "candidateFitStarted": false,
+    "predictionRowsProduced": 0,
+    "evaluationRowsProduced": 0,
+    "logicalExecutionWindowConsumed": false
+  },
+  "boundaries": {
+    "finalHoldoutOpened": false,
+    "laterOriginOpened": false,
+    "providerUsed": false,
+    "externalNetworkUsedByModel": false,
+    "databaseUsed": false,
+    "productionModified": false,
+    "operationalFallbackModified": false,
+    "exactV03Modified": false,
+    "mergeAuthorized": false
+  }
+}

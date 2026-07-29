@@ -34,10 +34,10 @@ test("registry schema, evidence paths and immutable digests validate", () => {
     canonicalEvidenceSha256("same\r\ncontent\r\n"),
     canonicalEvidenceSha256("same\ncontent\n")
   );
-  assert.equal(validation.counts.modelCount, 28);
-  assert.equal(validation.counts.experimentCount, 13);
-  assert.equal(validation.counts.nonModelIdentifierCount, 50);
-  assert.equal(validation.counts.comparabilityGroupCount, 14);
+  assert.equal(validation.counts.modelCount, 31);
+  assert.equal(validation.counts.experimentCount, 17);
+  assert.equal(validation.counts.nonModelIdentifierCount, 61);
+  assert.equal(validation.counts.comparabilityGroupCount, 32);
 });
 
 test("stable model IDs and model aliases are unique", () => {
@@ -88,11 +88,119 @@ test("current roles retain fallback, research baseline and no automation promoti
   assert.equal(registry.currentRoles.roleConflict, false);
 });
 
+test("core-revenue manual candidate failed without promotion", () => {
+  const model = registry.models.find(
+    (item) => item.stableModelId === "M2-WORK-CRMR01"
+  );
+  const experiment = registry.experiments.find(
+    (item) => (
+      item.experimentId === "M2-EXP-CORE-REVENUE-MANUAL-01"
+    )
+  );
+  assert.equal(
+    model.evidenceStatus,
+    "first_valid_development_evaluation_failed_long_term_compounding"
+  );
+  assert.equal(model.currentRole, "failed_development_candidate");
+  assert.equal(model.evaluations.length, 6);
+  assert.equal(
+    model.evaluations.slice(0, 2).every(
+      (item) => (
+        item.resultStatus === "M2_CORE_REVENUE_MANUAL_BASELINE_FAIL"
+      )
+    ),
+    true
+  );
+  assert.equal(model.automationAuthorized, false);
+  assert.equal(model.productionImported, false);
+  assert.deepEqual(
+    experiment.modelIds,
+    ["M2-WORK-CRMR01", "M2-WORK-LG01", "M2-WORK-OA03"]
+  );
+  assert.equal(
+    experiment.arms.find(
+      (item) => item.armId === "MANUAL_RULE"
+    ).executionStatus,
+    "EXECUTED_FAILED_LONG_TERM_COMPOUNDING"
+  );
+});
+
+test("layered revenue composition failed without post-outcome replacement", () => {
+  const model = registry.models.find(
+    (item) => item.stableModelId === "M2-PORT-LRC01"
+  );
+  const experiment = registry.experiments.find(
+    (item) => (
+      item.experimentId === "M2-EXP-LAYERED-REVENUE-COMPOSITION-01"
+    )
+  );
+  assert.equal(model.currentRole, "failed_development_candidate");
+  assert.equal(model.evaluations.length, 2);
+  assert.equal(
+    model.evaluations.every(
+      (item) => (
+        item.resultStatus === "M2_LAYERED_REVENUE_COMPOSITION_FAIL"
+      )
+    ),
+    true
+  );
+  assert.equal(model.automationAuthorized, false);
+  assert.equal(model.productionImported, false);
+  assert.equal(
+    experiment.arms.find(
+      (item) => item.armId === "L5B"
+    ).executionStatus,
+    "EXECUTED_PRIMARY_FAILED"
+  );
+  assert.equal(
+    experiment.arms.find(
+      (item) => item.armId === "L6B"
+    ).executionStatus,
+    "NOT_EXECUTED_DUPLICATES_L6A"
+  );
+});
+
+test("core legacy population test records non-confirmation without promotion", () => {
+  const experiment = registry.experiments.find(
+    (item) => (
+      item.experimentId === "M2-EXP-CORE-LEGACY-POPULATION-01"
+    )
+  );
+  assert.equal(
+    experiment.resultStatus,
+    "TAIL_INTERFERENCE_NOT_CONFIRMED"
+  );
+  assert.equal(
+    experiment.arms.find(
+      (item) => item.armId === "T1_CORE90"
+    ).executionStatus,
+    "EXECUTED_TAIL_INTERFERENCE_NOT_CONFIRMED"
+  );
+  assert.equal(
+    experiment.arms.find(
+      (item) => item.armId === "T2_CORE80"
+    ).executionStatus,
+    "EXECUTED_DEGRADED_TAIL_INTERFERENCE_NOT_CONFIRMED"
+  );
+  assert.equal(
+    experiment.arms.find(
+      (item) => item.armId === "T3_REVENUE_WEIGHTED_FULL"
+    ).executionStatus,
+    "NOT_EXECUTED_REQUIRES_MODEL_CHANGE"
+  );
+  assert.equal(
+    registry.currentRoles.latestStateIndex,
+    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.41.md"
+  );
+  assert.equal(registry.currentRoles.activeCandidate, null);
+  assert.equal(registry.currentRoles.approvedForAutomation, null);
+});
+
 test("evaluations preserve population and comparability contracts", () => {
   const oa03 = registry.models.find(
     (model) => model.stableModelId === "M2-WORK-OA03"
   );
-  assert.equal(oa03.evaluations.length, 2);
+  assert.equal(oa03.evaluations.length, 7);
   assert.notEqual(
     oa03.evaluations[0].comparableGroupId,
     oa03.evaluations[1].comparableGroupId
@@ -109,12 +217,15 @@ test("evaluations preserve population and comparability contracts", () => {
     "M2-WORK-LG01"
   );
   assert.equal(differentPopulation.comparable, true);
-  assert.equal(
-    differentPopulation.pairs.every(
+  assert.deepEqual(
+    new Set(differentPopulation.pairs.map(
       (pair) => pair.left.comparableGroupId
-        === "CG-WORK-SS-OVERLAP-5203-H36"
-    ),
-    true
+    )),
+    new Set([
+      "CG-WORK-SS-OVERLAP-5203-H36",
+      "CG-PSC01-V22-PRIMARY-12039-H36",
+      "CG-PSC01-V22-STRICT-74320"
+    ])
   );
   const differentGrain = compareM2ModelRegistryEntries(
     registry,
@@ -127,6 +238,40 @@ test("evaluations preserve population and comparability contracts", () => {
     differentGrain.differences.some((item) => item.field === "grain"),
     true
   );
+});
+
+test("horizon router and observed-channel allocation close without promotion", () => {
+  const model = registry.models.find(
+    (item) => item.stableModelId === "M2-WORK-HR01"
+  );
+  const experiment = registry.experiments.find(
+    (item) => (
+      item.experimentId === "M2-EXP-CORE-LEGACY-HORIZON-ROUTER-01"
+    )
+  );
+  assert.equal(model.entityType, "model_pipeline");
+  assert.equal(model.currentRole, "failed_development_candidate");
+  assert.equal(model.evaluations.length, 4);
+  assert.equal(
+    model.evaluations.every(
+      (item) => item.resultStatus === "HORIZON_ROUTER_NOT_CONFIRMED"
+    ),
+    true
+  );
+  assert.equal(
+    experiment.sameCaseEvidenceStatus,
+    "SAME_CASE_EVIDENCE_COMPLETE_FOR_LEGAL_MODEL_INTERSECTIONS"
+  );
+  assert.equal(
+    experiment.horizonRouterStatus,
+    "HORIZON_ROUTER_NOT_CONFIRMED"
+  );
+  assert.equal(
+    experiment.channelAllocationStatus,
+    "CHANNEL_ALLOCATION_MIXED"
+  );
+  assert.equal(registry.currentRoles.activeCandidate, null);
+  assert.equal(registry.currentRoles.approvedForAutomation, null);
 });
 
 test("channel generative G1 execution is eligibility-blocked rather than failed", () => {
@@ -195,20 +340,38 @@ test("reader catalog is a deterministic complete rendering of the registry", asy
   assert.match(catalog, /CG-G1-BLOCKED-NO-CANDIDATE-OUTCOME/u);
   assert.match(catalog, /M2_CHANNEL_GENERATIVE_G1_CORE_BLOCKED/u);
   assert.match(catalog, /M2_PUBLISHING_SCALE_IMPLEMENTATION_BLOCKED/u);
+  assert.match(catalog, /M2-PORT-LRC01/u);
+  assert.match(catalog, /M2_LAYERED_REVENUE_COMPOSITION_FAIL/u);
+  assert.match(catalog, /TAIL_INTERFERENCE_NOT_CONFIRMED/u);
+  assert.match(catalog, /CG-CORE-LEGACY-K2-CORE80-WORK-H3/u);
+  assert.match(catalog, /M2-WORK-HR01/u);
+  assert.match(catalog, /HORIZON_ROUTER_NOT_CONFIRMED/u);
+  assert.match(catalog, /M2_PUBLISHING_SCALE_CORE_FAIL/u);
+  assert.match(catalog, /CG-PSC01-V22-PRIMARY-12039-H36/u);
+  assert.match(catalog, /CG-PSC01-V22-STRICT-74320/u);
 });
 
 test("read-only query exposes scoped identities and refuses invalid ranking", () => {
   const list = runQuery("list");
   assert.equal(list.status, 0, list.stderr);
-  assert.match(list.stdout, /M2 持久模型与模型族：28 个/u);
+  assert.match(list.stdout, /M2 持久模型与模型族：31 个/u);
   assert.match(list.stdout, /M2-CHAN-GEN02/u);
 
   const status = runQuery("status");
   assert.equal(status.status, 0, status.stderr);
   assert.match(status.stdout, /本次只读查询模型执行次数：0/u);
-  assert.match(status.stdout, /K7D 私有物化启动次数：1/u);
-  assert.match(status.stdout, /候选拟合启动次数、候选外层预测行和候选评价行均为 0/u);
+  assert.match(status.stdout, /第一份有效原始候选评价已经冻结/u);
+  assert.match(status.stdout, /原始候选预测行 3,318,819/u);
+  assert.match(status.stdout, /M2_PUBLISHING_SCALE_CORE_FAIL/u);
   assert.match(status.stdout, /M2-WORK-OA03/u);
+
+  const publishingScale = runQuery("show", "M2-CHAN-PSC01");
+  assert.equal(publishingScale.status, 0, publishingScale.stderr);
+  assert.match(publishingScale.stdout, /模型修订（model_revision）/u);
+  assert.match(
+    publishingScale.stdout,
+    /未来分成收入开发可建模现金/u
+  );
 
   const show = runQuery("show", "M2-WORK-OA03");
   assert.equal(show.status, 0, show.stderr);

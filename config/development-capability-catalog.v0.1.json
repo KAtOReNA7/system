@@ -223,6 +223,256 @@
       "authorization": "USER_AUTHORIZED_TRAINING_SIDE_PUBLISHING_SCALE_CALIBRATION_2026_07_28"
     },
     {
+      "id": "m2-core-revenue-manual",
+      "description": "Run the user-authorized core-revenue manual-rule rolling development evaluation from authoritative sales-share billing sources. Derived caches and historical receipts are rebuildable and must not become execution gates.",
+      "requiredTools": [],
+      "requiredPrivateArtifacts": [
+        {
+          "role": "total-ledger-authority",
+          "kind": "file",
+          "path": "data/real-bills/渠道实销汇总 -总.xlsx"
+        },
+        {
+          "role": "sales-share-ledger-authority",
+          "kind": "file",
+          "path": "data/real-bills/渠道实销汇总 -分成.xlsx"
+        },
+        {
+          "role": "buyout-ledger-authority",
+          "kind": "file",
+          "path": "data/real-bills/渠道实销汇总 -买断.xlsx"
+        },
+        {
+          "role": "m1-work-mapping-authority",
+          "kind": "directory",
+          "path": "data/m1-master-data-private/mapping-candidate"
+        },
+        {
+          "role": "user-reviewed-channel-master",
+          "kind": "file",
+          "path": "data/private-output/outputs/channel-governance-20260726/M2-渠道统一与类型人工补全表-v0.2.xlsx"
+        }
+      ],
+      "canonicalValidationCommands": [
+        "npm run doctor:capability -- m2-core-revenue-manual",
+        "npm run diagnose:m2:core-revenue-manual",
+        "npm run develop:m2:current:core-revenue-manual"
+      ],
+      "recovery": "Restore only missing authoritative ledgers, work mapping authority, or the user-reviewed channel master from a capability-scoped verified package. All derived caches and historical receipts must be rebuilt or warned about; they must not block public implementation or a valid private evaluation.",
+      "authorization": "USER_AUTHORIZED_M2_CORE_REVENUE_MANUAL_RULE_DEVELOPMENT_EVALUATION_2026_07_29"
+    },
+    {
+      "id": "m2-core-legacy-population",
+      "description": "Run the user-authorized current-M2 core legacy work and observed mature channel scope audit, frozen rescore, and one controlled learnedGlobal training-population ablation. Source authority is blocking; every listed cache is deterministically rebuildable; historical receipts are optional provenance.",
+      "privateArtifactClassificationVersion": "private-artifact-classification.v0.1",
+      "requiredTools": [],
+      "requiredPrivateArtifacts": [
+        {
+          "role": "total-ledger-authority",
+          "kind": "file",
+          "artifactClass": "PRIVATE_SOURCE_AUTHORITY",
+          "path": "data/real-bills/渠道实销汇总 -总.xlsx"
+        },
+        {
+          "role": "sales-share-ledger-authority",
+          "kind": "file",
+          "artifactClass": "PRIVATE_SOURCE_AUTHORITY",
+          "path": "data/real-bills/渠道实销汇总 -分成.xlsx"
+        },
+        {
+          "role": "buyout-ledger-authority",
+          "kind": "file",
+          "artifactClass": "PRIVATE_SOURCE_AUTHORITY",
+          "path": "data/real-bills/渠道实销汇总 -买断.xlsx"
+        },
+        {
+          "role": "m1-work-mapping-authority",
+          "kind": "directory",
+          "artifactClass": "PRIVATE_SOURCE_AUTHORITY",
+          "path": "data/m1-master-data-private/mapping-candidate"
+        },
+        {
+          "role": "user-reviewed-channel-master",
+          "kind": "file",
+          "artifactClass": "PRIVATE_SOURCE_AUTHORITY",
+          "path": "data/private-output/outputs/channel-governance-20260726/M2-渠道统一与类型人工补全表-v0.2.xlsx"
+        },
+        {
+          "role": "reversal-authority-facts",
+          "kind": "file",
+          "artifactClass": "PRIVATE_DERIVED_CACHE",
+          "path": "data/private-output/m2-evaluation-v2-2-reversal-rescore/M2-reversal-authority-facts-private-v1.ndjson"
+        },
+        {
+          "role": "reversal-authority-export-receipt",
+          "kind": "file",
+          "artifactClass": "PRIVATE_DERIVED_CACHE",
+          "path": "data/private-output/m2-evaluation-v2-2-reversal-rescore/M2-reversal-authority-export-receipt-private-v1.json"
+        },
+        {
+          "role": "human-anchored-histories",
+          "kind": "file",
+          "artifactClass": "PRIVATE_DERIVED_CACHE",
+          "path": "data/private-output/m2-current-human-anchored/M2-current-human-anchored-histories-private-v0.1.ndjson"
+        },
+        {
+          "role": "frozen-learned-global-evaluation",
+          "kind": "file",
+          "artifactClass": "PRIVATE_DERIVED_CACHE",
+          "path": "data/private-output/m2-current-human-anchored/M2-current-human-anchored-evaluation-private-v0.1.ndjson"
+        },
+        {
+          "role": "frozen-occurrence-amount-evaluation",
+          "kind": "file",
+          "artifactClass": "PRIVATE_DERIVED_CACHE",
+          "path": "data/private-output/m2-current-quality/M2-current-occurrence-amount-candidate-cases-private-v0.3.ndjson"
+        },
+        {
+          "role": "core-revenue-static-metadata",
+          "kind": "file",
+          "artifactClass": "PRIVATE_DERIVED_CACHE",
+          "path": "data/private-output/m2-core-revenue-manual/M2-core-revenue-manual-static-metadata-private-v0.1.json"
+        },
+        {
+          "role": "core-legacy-population-cache",
+          "kind": "file",
+          "artifactClass": "PRIVATE_DERIVED_CACHE",
+          "path": "data/private-output/m2-core-legacy-population/M2-core-legacy-population-rows-private-v0.1.ndjson"
+        },
+        {
+          "role": "core-legacy-run-receipt",
+          "kind": "file",
+          "artifactClass": "PRIVATE_RUN_PROVENANCE",
+          "path": "data/private-output/m2-core-legacy-population/M2-core-legacy-population-run-receipt-private-v0.1.json"
+        }
+      ],
+      "canonicalValidationCommands": [
+        "npm run doctor:capability -- m2-core-legacy-population",
+        "npm run diagnose:m2:core-legacy-population",
+        "npm run prepare:m2:current:core-legacy-population",
+        "npm run rescore:m2:current:core-legacy-population",
+        "npm run develop:m2:current:core-legacy-tail-test"
+      ],
+      "recovery": "Restore only missing PRIVATE_SOURCE_AUTHORITY from a verified capability-scoped source. Rebuild authority exports, histories, frozen formula rows and experiment caches from source authority and frozen repository code. Missing historical receipts never block and are never fabricated.",
+      "authorization": "USER_AUTHORIZED_M2_CORE_LEGACY_SCOPE_FROZEN_RESCORE_AND_ONE_TAIL_INTERFERENCE_ABLATION_2026_07_29"
+    },
+    {
+      "id": "m2-core-legacy-horizon-router",
+      "description": "Run the user-authorized frozen full-horizon same-case rescore, nested horizon router, and fixed observed-channel allocation evaluation on the current M2 core legacy scope. Source authority is blocking; prediction, evaluation, router and allocation rows are rebuildable caches; receipts are optional provenance.",
+      "privateArtifactClassificationVersion": "private-artifact-classification.v0.1",
+      "requiredTools": [],
+      "requiredPrivateArtifacts": [
+        {
+          "role": "total-ledger-authority",
+          "kind": "file",
+          "artifactClass": "PRIVATE_SOURCE_AUTHORITY",
+          "path": "data/real-bills/渠道实销汇总 -总.xlsx"
+        },
+        {
+          "role": "sales-share-ledger-authority",
+          "kind": "file",
+          "artifactClass": "PRIVATE_SOURCE_AUTHORITY",
+          "path": "data/real-bills/渠道实销汇总 -分成.xlsx"
+        },
+        {
+          "role": "buyout-ledger-authority",
+          "kind": "file",
+          "artifactClass": "PRIVATE_SOURCE_AUTHORITY",
+          "path": "data/real-bills/渠道实销汇总 -买断.xlsx"
+        },
+        {
+          "role": "m1-work-mapping-authority",
+          "kind": "directory",
+          "artifactClass": "PRIVATE_SOURCE_AUTHORITY",
+          "path": "data/m1-master-data-private/mapping-candidate"
+        },
+        {
+          "role": "user-reviewed-channel-master",
+          "kind": "file",
+          "artifactClass": "PRIVATE_SOURCE_AUTHORITY",
+          "path": "data/private-output/outputs/channel-governance-20260726/M2-渠道统一与类型人工补全表-v0.2.xlsx"
+        },
+        {
+          "role": "core-legacy-frozen-rescore-rows",
+          "kind": "file",
+          "artifactClass": "PRIVATE_DERIVED_CACHE",
+          "path": "data/private-output/m2-core-legacy-population/M2-core-legacy-frozen-rescore-rows-private-v0.1.ndjson"
+        },
+        {
+          "role": "human-anchored-histories",
+          "kind": "file",
+          "artifactClass": "PRIVATE_DERIVED_CACHE",
+          "path": "data/private-output/m2-current-human-anchored/M2-current-human-anchored-histories-private-v0.1.ndjson"
+        },
+        {
+          "role": "frozen-learned-global-evaluation",
+          "kind": "file",
+          "artifactClass": "PRIVATE_DERIVED_CACHE",
+          "path": "data/private-output/m2-current-human-anchored/M2-current-human-anchored-evaluation-private-v0.1.ndjson"
+        },
+        {
+          "role": "frozen-occurrence-amount-evaluation",
+          "kind": "file",
+          "artifactClass": "PRIVATE_DERIVED_CACHE",
+          "path": "data/private-output/m2-current-quality/M2-current-occurrence-amount-candidate-cases-private-v0.3.ndjson"
+        },
+        {
+          "role": "horizon-router-run-receipt",
+          "kind": "file",
+          "artifactClass": "PRIVATE_RUN_PROVENANCE",
+          "path": "data/private-output/m2-core-legacy-horizon-router/M2-core-legacy-horizon-router-run-receipt-private-v0.1.json"
+        }
+      ],
+      "canonicalValidationCommands": [
+        "npm run doctor:capability -- m2-core-legacy-horizon-router",
+        "npm run diagnose:m2:core-legacy-horizon-router",
+        "npm run prepare:m2:current:core-legacy-horizon-router",
+        "npm run rescore:m2:current:core-legacy-horizon-router",
+        "npm run develop:m2:current:core-legacy-horizon-router"
+      ],
+      "recovery": "Restore only missing PRIVATE_SOURCE_AUTHORITY from a verified capability-scoped source. Rebuild frozen formula rows, same-case rows, router selections and channel allocations from source authority and frozen repository code. Missing caches or historical receipts never block and are never fabricated.",
+      "authorization": "USER_AUTHORIZED_M2_CORE_LEGACY_FULL_HORIZON_ROUTER_AND_CHANNEL_ALLOCATION_EVALUATION_2026_07_29"
+    },
+    {
+      "id": "m2-layered-revenue-composition",
+      "description": "Run the user-authorized layered revenue composition rolling development evaluation from authoritative sales-share billing sources. Rebuildable caches and historical receipts are not gates.",
+      "requiredTools": [],
+      "requiredPrivateArtifacts": [
+        {
+          "role": "total-ledger-authority",
+          "kind": "file",
+          "path": "data/real-bills/渠道实销汇总 -总.xlsx"
+        },
+        {
+          "role": "sales-share-ledger-authority",
+          "kind": "file",
+          "path": "data/real-bills/渠道实销汇总 -分成.xlsx"
+        },
+        {
+          "role": "buyout-ledger-authority",
+          "kind": "file",
+          "path": "data/real-bills/渠道实销汇总 -买断.xlsx"
+        },
+        {
+          "role": "m1-work-mapping-authority",
+          "kind": "directory",
+          "path": "data/m1-master-data-private/mapping-candidate"
+        },
+        {
+          "role": "user-reviewed-channel-master",
+          "kind": "file",
+          "path": "data/private-output/outputs/channel-governance-20260726/M2-渠道统一与类型人工补全表-v0.2.xlsx"
+        }
+      ],
+      "canonicalValidationCommands": [
+        "npm run doctor:capability -- m2-layered-revenue-composition",
+        "npm run diagnose:m2:layered-revenue-composition",
+        "npm run develop:m2:current:layered-revenue-composition"
+      ],
+      "recovery": "Restore only missing authoritative ledgers, work mapping authority, or the user-reviewed channel master. Rebuild derived reversal, label, candidate, evaluation and comparison caches; warn but do not block on historical receipt loss.",
+      "authorization": "USER_AUTHORIZED_M2_LAYERED_REVENUE_COMPOSITION_DEVELOPMENT_EVALUATION_2026_07_29"
+    },
+    {
       "id": "m2-current-canonical-channel",
       "description": "Run the user-authorized canonical-channel mapping audit and bounded M2 development challenger without opening final holdout or release capabilities.",
       "requiredTools": [],
@@ -433,6 +683,110 @@
       ],
       "recovery": "Restore only the capability-scoped channel master, verified model-input cache, frozen paired comparator, v2.2 reversal-restatement outputs and the fail-closed publishing-scale receipt for audit. Restoration does not reopen training or retry authorization; public synthetic diagnostics, tests and startup remain available.",
       "authorization": "CONSUMED_M2_PUBLISHING_SCALE_PRIVATE_EXECUTION_IMPLEMENTATION_BLOCKED_NO_RETRY_2026_07_28"
+    },
+    {
+      "id": "m2-current-publishing-scale-channel-controlled-retry-v2",
+      "description": "Prepare and execute the user-authorized publishing-scale channel core from an exact-head Draft PR. Source authority is blocking; derived cache is rebuilt automatically; historical receipts are optional provenance.",
+      "privateArtifactClassificationVersion": "private-artifact-classification.v0.1",
+      "requiredTools": [
+        {
+          "id": "git",
+          "command": "git",
+          "versionArgs": ["--version"]
+        },
+        {
+          "id": "gh",
+          "command": "gh",
+          "versionArgs": ["--version"]
+        }
+      ],
+      "requiredPrivateArtifacts": [
+        {
+          "role": "total-ledger-authority",
+          "kind": "file",
+          "artifactClass": "PRIVATE_SOURCE_AUTHORITY",
+          "path": "data/real-bills/渠道实销汇总 -总.xlsx"
+        },
+        {
+          "role": "sales-share-ledger-authority",
+          "kind": "file",
+          "artifactClass": "PRIVATE_SOURCE_AUTHORITY",
+          "path": "data/real-bills/渠道实销汇总 -分成.xlsx"
+        },
+        {
+          "role": "buyout-ledger-authority",
+          "kind": "file",
+          "artifactClass": "PRIVATE_SOURCE_AUTHORITY",
+          "path": "data/real-bills/渠道实销汇总 -买断.xlsx"
+        },
+        {
+          "role": "m1-work-mapping-authority",
+          "kind": "directory",
+          "artifactClass": "PRIVATE_SOURCE_AUTHORITY",
+          "path": "data/m1-master-data-private/mapping-candidate"
+        },
+        {
+          "role": "user-reviewed-channel-master",
+          "kind": "file",
+          "artifactClass": "PRIVATE_SOURCE_AUTHORITY",
+          "path": "data/private-output/outputs/channel-governance-20260726/M2-渠道统一与类型人工补全表-v0.2.xlsx"
+        },
+        {
+          "role": "formal-model-input-cache",
+          "kind": "file",
+          "artifactClass": "PRIVATE_DERIVED_CACHE",
+          "path": "data/private-output/m2-formal-execution/m2-formal-model-input-cache-v1.pkl"
+        },
+        {
+          "role": "operational-fallback-exact-overlap-comparator-read-only-source",
+          "kind": "file",
+          "artifactClass": "PRIVATE_DERIVED_CACHE",
+          "path": "data/private-output/m2-current-quality/M2-current-occurrence-amount-candidate-cases-private-v0.3.ndjson"
+        },
+        {
+          "role": "historical-base-materialization-manifest-read-only-source",
+          "kind": "file",
+          "artifactClass": "PRIVATE_DERIVED_CACHE",
+          "path": "data/private-output/m2-current-human-anchored/M2-current-human-anchored-manifest-private-v0.1.json"
+        },
+        {
+          "role": "frozen-learned-global-comparator-read-only-source",
+          "kind": "file",
+          "artifactClass": "PRIVATE_DERIVED_CACHE",
+          "path": "data/private-output/m2-current-human-anchored/M2-current-channel-experts-evaluation-private-v0.1.ndjson"
+        },
+        {
+          "role": "frozen-learned-global-comparator-manifest-read-only-source",
+          "kind": "file",
+          "artifactClass": "PRIVATE_DERIVED_CACHE",
+          "path": "data/private-output/m2-current-human-anchored/M2-current-channel-experts-evaluation-manifest-private-v0.1.json"
+        },
+        {
+          "role": "v2.2-development-modelable-scope-reconciliation",
+          "kind": "file",
+          "artifactClass": "PRIVATE_DERIVED_CACHE",
+          "path": "data/private-output/m2-current-publishing-scale-channel/prepared/v0.1/current/M2-reversal-scope-reconciliation-private-v1.json"
+        },
+        {
+          "role": "v2.2-reversal-allocation-ledger",
+          "kind": "file",
+          "artifactClass": "PRIVATE_DERIVED_CACHE",
+          "path": "data/private-output/m2-current-publishing-scale-channel/prepared/v0.1/current/M2-reversal-allocation-ledger-private-v1.ndjson"
+        },
+        {
+          "role": "v2.2-development-activation-receipt",
+          "kind": "file",
+          "artifactClass": "PRIVATE_RUN_PROVENANCE",
+          "path": "data/private-output/m2-current-publishing-scale-channel/prepared/v0.1/current/M2-evaluation-v2.2-execution-receipt-private-v1.json"
+        }
+      ],
+      "canonicalValidationCommands": [
+        "npm run doctor:capability -- m2-current-publishing-scale-channel-controlled-retry-v2",
+        "npm run prepare:m2:current:publishing-scale-channel",
+        "npm run develop:m2:current:publishing-scale-channel -- --preflight-only"
+      ],
+      "recovery": "Restore only missing PRIVATE_SOURCE_AUTHORITY from a verified capability-scoped source. Run prepare:m2:current:publishing-scale-channel for every derived cache miss; missing historical receipts are non-blocking and are never fabricated.",
+      "authorization": "M2-PSC01-DERIVED-CACHE-REBUILD-FIRST-VALID-20260728-01"
     },
     {
       "id": "m2-current-channel-generative",

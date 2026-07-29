@@ -1,0 +1,221 @@
+{
+  "schema": "m2.current.core_revenue_manual.public_diagnostic.v0.1",
+  "modelId": "M2-WORK-CRMR01",
+  "experimentId": "M2-EXP-CORE-REVENUE-MANUAL-01",
+  "status": "SYNTHETIC_DIAGNOSTIC_PASS",
+  "coreSelection": [
+    {
+      "id": "cross_year_one_or_two_months",
+      "status": "SELECTED",
+      "referenceStart": "2024-09",
+      "referenceEnd": "2025-02",
+      "orderedWorks": [
+        "W-A",
+        "W-B",
+        "W-C"
+      ],
+      "core80": [
+        "W-A",
+        "W-B"
+      ],
+      "core90": [
+        "W-A",
+        "W-B",
+        "W-C"
+      ]
+    },
+    {
+      "id": "calendar_year_at_least_three_months_and_tie_break",
+      "status": "SELECTED",
+      "referenceStart": "2025-01",
+      "referenceEnd": "2025-03",
+      "orderedWorks": [
+        "W-A",
+        "W-B",
+        "W-C"
+      ],
+      "core80": [
+        "W-A",
+        "W-B"
+      ],
+      "core90": [
+        "W-A",
+        "W-B",
+        "W-C"
+      ]
+    }
+  ],
+  "forecasts": [
+    {
+      "id": "not_eligible_two_months",
+      "status": "NOT_ELIGIBLE",
+      "historyMonthCount": 2,
+      "minimumHistoryMonthCount": 3
+    },
+    {
+      "id": "three_months_positive_slope",
+      "status": "ELIGIBLE",
+      "historyMonthCount": 3,
+      "slopeMonthCount": 3,
+      "M1": 30,
+      "S6": 60,
+      "S12": 60,
+      "P12": 0,
+      "b6": 10,
+      "F3": 90,
+      "F6": 60,
+      "F12": 360,
+      "directK": null,
+      "twoCompleteWindows": false,
+      "calendarWindowMonthCount": 3,
+      "k": 1,
+      "kSource": "ONE",
+      "kSupportCount": 0,
+      "channelFallbackK": 1,
+      "channelFallbackSupportCount": 0,
+      "Y1": 360,
+      "Y2": 360,
+      "Y3": 360,
+      "F36": 1080,
+      "F36OneFallback": 1080,
+      "F36ChannelFallback": 1080
+    },
+    {
+      "id": "six_months_negative_slope",
+      "status": "ELIGIBLE",
+      "historyMonthCount": 6,
+      "slopeMonthCount": 6,
+      "M1": 10,
+      "S6": 210,
+      "S12": 210,
+      "P12": 0,
+      "b6": -10,
+      "F3": 30,
+      "F6": 210,
+      "F12": 120,
+      "directK": null,
+      "twoCompleteWindows": false,
+      "calendarWindowMonthCount": 6,
+      "k": 1,
+      "kSource": "ONE",
+      "kSupportCount": 0,
+      "channelFallbackK": 1,
+      "channelFallbackSupportCount": 0,
+      "Y1": 120,
+      "Y2": 120,
+      "Y3": 120,
+      "F36": 360,
+      "F36OneFallback": 360,
+      "F36ChannelFallback": 360
+    },
+    {
+      "id": "six_months_zero_slope",
+      "status": "ELIGIBLE",
+      "historyMonthCount": 6,
+      "slopeMonthCount": 6,
+      "M1": 10,
+      "S6": 60,
+      "S12": 60,
+      "P12": 0,
+      "b6": 0,
+      "F3": 30,
+      "F6": 60,
+      "F12": 60,
+      "directK": null,
+      "twoCompleteWindows": false,
+      "calendarWindowMonthCount": 6,
+      "k": 1,
+      "kSource": "ONE",
+      "kSupportCount": 0,
+      "channelFallbackK": 1,
+      "channelFallbackSupportCount": 0,
+      "Y1": 60,
+      "Y2": 60,
+      "Y3": 60,
+      "F36": 180,
+      "F36OneFallback": 180,
+      "F36ChannelFallback": 180
+    },
+    {
+      "id": "direct_k_two_complete_windows",
+      "status": "ELIGIBLE",
+      "historyMonthCount": 24,
+      "slopeMonthCount": 6,
+      "M1": 10,
+      "S6": 60,
+      "S12": 120,
+      "P12": 60,
+      "b6": 0,
+      "F3": 30,
+      "F6": 60,
+      "F12": 120,
+      "directK": 2,
+      "twoCompleteWindows": true,
+      "calendarWindowMonthCount": 24,
+      "k": 2,
+      "kSource": "DIRECT",
+      "kSupportCount": 1,
+      "channelFallbackK": 1,
+      "channelFallbackSupportCount": 0,
+      "Y1": 120,
+      "Y2": 240,
+      "Y3": 480,
+      "F36": 840,
+      "F36OneFallback": 360,
+      "F36ChannelFallback": 360
+    }
+  ],
+  "kFallbacks": [
+    {
+      "id": "category_median",
+      "k": 1,
+      "sourceLevel": "CHANNEL_LEVEL2_CATEGORY",
+      "supportCount": 3,
+      "channelFallbackK": 2,
+      "channelFallbackSupportCount": 5,
+      "oneFallbackK": 1
+    },
+    {
+      "id": "channel_median",
+      "k": 2,
+      "sourceLevel": "CHANNEL",
+      "supportCount": 2,
+      "channelFallbackK": 2,
+      "channelFallbackSupportCount": 2,
+      "oneFallbackK": 1
+    },
+    {
+      "id": "unit_fallback",
+      "k": 1,
+      "sourceLevel": "ONE",
+      "supportCount": 0,
+      "channelFallbackK": 1,
+      "channelFallbackSupportCount": 0,
+      "oneFallbackK": 1
+    }
+  ],
+  "tailConservation": {
+    "monthly": [
+      {
+        "month": "2025-06",
+        "cash": 50
+      }
+    ],
+    "coreCash": 100,
+    "tailCash": 50,
+    "totalCash": 150
+  },
+  "boundaries": {
+    "publicSyntheticOnly": true,
+    "privateArtifactRead": false,
+    "modelTrained": false,
+    "parameterTuned": false,
+    "futureActualUsedForSelection": false,
+    "categoryAmountMultiplierUsed": false,
+    "platformTrendMultiplierUsed": false,
+    "operationalFallbackModified": false,
+    "activeCandidateChanged": false,
+    "approvedForAutomationChanged": false,
+    "productionModified": false
+  }
+}

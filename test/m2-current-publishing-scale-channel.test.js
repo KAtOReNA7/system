@@ -13,12 +13,22 @@ import {
   buildM2PublishingScaleSyntheticDiagnostic,
   crossFitM2PublishingScaleChannel,
   fitM2PublishingScaleChannelCore,
+  inspectM2PublishingScaleDesignContracts,
   M2_PUBLISHING_SCALE_ARM_ID,
+  M2_PUBLISHING_SCALE_MATERIALIZER_ID,
   M2_PUBLISHING_SCALE_MODEL_ID,
+  M2_PUBLISHING_SCALE_RECEIPT_CONTROLLER_ID,
   predictM2PublishingScaleChannelMonthly,
   strictRollingM2PublishingScaleChannel,
   validateM2PublishingScaleConfig
 } from "../src/domain/m2Current/publishingScaleChannelCore.js";
+import {
+  assertExecutionPolicy,
+  planM2PublishingScaleReceiptController
+} from "../scripts/m2-current/publishing_scale_channel_execution.mjs";
+import {
+  buildPublishingScaleDetailedEvaluation
+} from "../scripts/m2-current/channel_generative_mode.mjs";
 import {
   explainM2Identifier,
   loadM2ModelRegistry,
@@ -76,6 +86,17 @@ const [
   readText("scripts/m2-current/materialize_human_anchored_cases.py"),
   readJson("package.json")
 ]);
+const executionPolicy = await readJson(
+  "config/m2-publishing-scale-execution-policy.v0.3.json"
+);
+const publicPreflight = await readJson(
+  "docs/analysis/m2-current/"
+    + "M2-current-publishing-scale-channel-preflight-v0.2.json"
+);
+const privateReadiness = await readJson(
+  "docs/analysis/m2-current/"
+    + "M2-current-publishing-scale-channel-private-readiness-v0.2.json"
+);
 
 test("K7C active config is bound to the frozen publishing-scale contract", () => {
   assert.equal(validateM2PublishingScaleConfig(config, support), true);
@@ -91,6 +112,14 @@ test("K7C active config is bound to the frozen publishing-scale contract", () =>
   assert.equal(
     support.currentFreezeDecision.universalFixedDistinctWorkThreshold,
     null
+  );
+  const designs = inspectM2PublishingScaleDesignContracts(config);
+  assert.equal(designs.length, 9);
+  assert.equal(designs.every((node) => node.designCountMatches), true);
+  assert.equal(
+    designs.find((node) => node.nodeId === "globalPooledParent")
+      .basisMeaning,
+    "compact_linear_horizon_basis_alias_not_membership_routing"
   );
 });
 
@@ -140,8 +169,52 @@ test("primary and strict implementations preserve raw predictions", () => {
   assert.equal(primary.fallbackOverwroteRaw, false);
   assert.equal(primary.outerOutcomeUsedForSelection, false);
   assert.equal(primary.receipts.length, 5);
+  assert.equal(
+    primary.receipts.every(
+      (receipt) => receipt.primaryWorkFoldIsolationPassed === true
+        && receipt.trainingValidationWorkOverlapCount === 0
+        && receipt.sampleIdentity.monthlyRowsAreIndependentWorks === false
+    ),
+    true
+  );
+  for (const prediction of primary.predictions.values()) {
+    assert.deepEqual(
+      Object.keys(prediction.layerPredictions).sort(),
+      [
+        "globalPooledParent",
+        "mechanism",
+        "namedPlatform",
+        "originVisibleEmpiricalParent"
+      ]
+    );
+  }
   assert.ok(primary.evaluation.workTotal.wape >= 0);
   assert.ok(primary.evaluation.occurrence.logLoss >= 0);
+  const detailed = buildPublishingScaleDetailedEvaluation(primary, config);
+  assert.equal(
+    detailed.occurrenceCalibration.allPredictionEligibleRows.rowCount,
+    primary.rows.length
+  );
+  assert.deepEqual(
+    Object.keys(detailed.namedPlatforms).sort(),
+    config.nodes.namedPlatforms.map((platform) => platform.platformId).sort()
+  );
+  assert.deepEqual(
+    Object.keys(detailed.hierarchyLayerIncrement),
+    [
+      "originVisibleEmpiricalParent",
+      "globalPooledParent",
+      "mechanism",
+      "namedPlatform"
+    ]
+  );
+  assert.equal(
+    Number.isFinite(
+      detailed.topCashAndErrorAttribution.byPositiveRevenue["0.1"]
+        .absoluteErrorShare
+    ),
+    true
+  );
   const oracle = buildM2ChannelGenerativeForecastabilityDiagnostic(
     primary.rows,
     primary.predictions,
@@ -171,6 +244,14 @@ test("primary and strict implementations preserve raw predictions", () => {
   assert.equal(strict.evaluationFamily, "strict");
   assert.equal(strict.receipts.length, 1);
   assert.equal(strict.receipts[0].status, "EVALUATED");
+  assert.equal(strict.receipts[0].strictEarlierOriginTrainingPassed, true);
+  assert.equal(
+    Object.values(strict.receipts[0].labelAvailabilityByHorizon)
+      .every((value) => (
+        value.allLabelsAvailableBeforeStrictOuterOrigin === true
+      )),
+    true
+  );
   assert.ok(strict.evaluation.workTotal.wape >= 0);
 });
 
@@ -284,44 +365,15 @@ test("readiness and impact map disclose the K7D implementation block", () => {
   );
 });
 
-test("one-time private runner is closed after the fail-closed K7D attempt", () => {
+test("historical consumed authorization remains immutable", () => {
   assert.equal(
     packageConfig.scripts["develop:m2:current:publishing-scale-channel"],
-    "node --max-old-space-size=8192 "
+    "node --max-old-space-size=24576 "
       + "scripts/m2-current/run_m2_human_anchored_development.mjs "
       + "--publishing-scale-channel"
   );
-  assert.match(runnerSource, /verifyM2PublishingScaleGitAndCiPreflight/u);
-  assert.match(modeSource, /git", \["status", "--porcelain"\]/u);
-  assert.match(modeSource, /"verify-windows"/u);
-  assert.match(modeSource, /pr\.headRefOid !== head/u);
-  assert.match(
-    modeSource,
-    /PREPARED_BEFORE_PRIVATE_EVALUATION_ROW_READ/u
-  );
-  assert.match(
-    modeSource,
-    /m2_publishing_scale_one_time_private_execution_already_consumed/u
-  );
-  const preparationSource = modeSource.slice(
-    modeSource.indexOf(
-      "export async function prepareM2PublishingScaleRunReceipt"
-    ),
-    modeSource.indexOf(
-      "export async function runM2PublishingScalePrivateDevelopment"
-    )
-  );
-  assert.ok(
-    preparationSource.indexOf(
-      "assertPublishingScalePrivateAuthorization(config)"
-    ) < preparationSource.indexOf(
-      "M2-current-human-anchored-manifest-private-v0.1.json"
-    )
-  );
-  assert.match(
-    runnerSource,
-    /publishingScaleChannelPrivateMode[\s\S]*\["--publishing-scale-channel"\]/u
-  );
+  assert.match(runnerSource, /runM2PublishingScaleCommandPreflight/u);
+  assert.match(runnerSource, /--preflight-only/u);
   assert.match(
     materializerSource,
     /PUBLISHING_SCALE_CHANNEL_CONFIG_PATH/u
@@ -360,6 +412,22 @@ test("one-time private runner is closed after the fail-closed K7D attempt", () =
   );
   assert.equal(executionClosure.governance.activeCandidate, null);
   assert.equal(executionClosure.governance.approvedForAutomation, null);
+  assert.doesNotMatch(
+    JSON.stringify(config.privateOutputs),
+    /M2-current-channel-generative-(?:primary|auxiliary|materialization)/u
+  );
+  assert.equal(
+    config.privateOutputs.directory,
+    "data/private-output/m2-current-publishing-scale-channel"
+  );
+  assert.equal(
+    config.materializerId,
+    M2_PUBLISHING_SCALE_MATERIALIZER_ID
+  );
+  assert.equal(
+    config.receiptControllerId,
+    M2_PUBLISHING_SCALE_RECEIPT_CONTROLLER_ID
+  );
 });
 
 test("publishing-scale materialization config has a private-free self-test", () => {
@@ -380,10 +448,137 @@ test("publishing-scale materialization config has a private-free self-test", () 
   });
 });
 
+test("real npm entry preflight selects only the publishing-scale path", () => {
+  const output = runNpm([
+    "run",
+    "develop:m2:current:publishing-scale-channel",
+    "--",
+    "--preflight-only"
+  ]);
+  const record = JSON.parse(
+    output.split(/\r?\n/u).findLast((line) => line.startsWith("{"))
+  );
+  assert.equal(record.status, "READY_FOR_AUTHORIZED_PRIVATE_EXECUTION");
+  assert.equal(record.modelId, M2_PUBLISHING_SCALE_MODEL_ID);
+  assert.equal(record.experimentArmId, M2_PUBLISHING_SCALE_ARM_ID);
+  assert.equal(
+    record.materializerId,
+    M2_PUBLISHING_SCALE_MATERIALIZER_ID
+  );
+  assert.equal(
+    record.dispatch.publishingScaleMaterializerInvocationCount,
+    1
+  );
+  assert.equal(
+    record.dispatch.legacyChannelGenerativeMaterializerInvocationCount,
+    0
+  );
+  assert.equal(
+    record.dispatch.legacyChannelGenerativeMaterializerSelected,
+    false
+  );
+  assert.equal(record.dispatch.legacyAuthorizationChecked, false);
+  assert.equal(record.privateArtifactRowsRead, 0);
+  assert.equal(record.privateOutputWrites, 0);
+  assert.equal(record.candidateFitStarted, false);
+  assert.equal(record.predictionRowsProduced, 0);
+  assert.equal(record.dispatch.outputPathsPlanned, true);
+  assert.deepEqual(record, publicPreflight);
+});
+
+test("preflight identity, materializer and receipt bindings fail closed", () => {
+  assert.doesNotThrow(() => assertExecutionPolicy(executionPolicy, config));
+  assert.deepEqual(
+    planM2PublishingScaleReceiptController({
+      config,
+      policy: executionPolicy
+    }).status,
+    "PLANNED_NO_WRITE"
+  );
+  const wrongModel = structuredClone(executionPolicy);
+  wrongModel.authorizedModelId = "M2-CHAN-GEN02";
+  assert.throws(
+    () => assertExecutionPolicy(wrongModel, config),
+    /m2_publishing_scale_execution_policy_invalid/u
+  );
+  const wrongMaterializer = structuredClone(config);
+  wrongMaterializer.receiptControllerId = "legacy-controller";
+  assert.throws(
+    () => planM2PublishingScaleReceiptController({
+      config: wrongMaterializer,
+      policy: executionPolicy
+    }),
+    /m2_publishing_scale_receipt_controller_binding_invalid/u
+  );
+  assert.match(
+    materializerSource,
+    /_write_new_private_bytes/u
+  );
+  assert.match(
+    materializerSource,
+    /publishing-scale versioned output plan invalid/u
+  );
+  assert.match(
+    modeSource,
+    /flag: "wx"/u
+  );
+});
+
+test("R1 readiness preserves the unopened logical execution window", () => {
+  assert.equal(
+    privateReadiness.status,
+    "READY_PENDING_R1_EXACT_HEAD_LINUX_WINDOWS_CI"
+  );
+  assert.equal(privateReadiness.modelId, M2_PUBLISHING_SCALE_MODEL_ID);
+  assert.equal(
+    privateReadiness.experimentArmId,
+    M2_PUBLISHING_SCALE_ARM_ID
+  );
+  assert.equal(
+    privateReadiness.authorizationPreparation
+      .historicalConsumedAuthorizationRewritten,
+    false
+  );
+  assert.equal(privateReadiness.executionCounters.privateArtifactRowsRead, 0);
+  assert.equal(privateReadiness.executionCounters.candidateFitStarted, false);
+  assert.equal(
+    privateReadiness.executionCounters.logicalExecutionWindowConsumed,
+    false
+  );
+  assert.equal(
+    privateReadiness.r0Evidence.githubActions.linux.status,
+    "SUCCESS"
+  );
+  assert.equal(
+    privateReadiness.r0Evidence.githubActions.windows.status,
+    "SUCCESS"
+  );
+});
+
 async function readJson(relativePath) {
   return JSON.parse(await readText(relativePath));
 }
 
 async function readText(relativePath) {
   return readFile(path.join(root, relativePath), "utf8");
+}
+
+function runNpm(args) {
+  if (process.platform === "win32") {
+    const escaped = args.map((value) => (
+      /[\s"]/u.test(value)
+        ? `"${value.replaceAll('"', '""')}"`
+        : value
+    )).join(" ");
+    return execFileSync(
+      process.env.ComSpec,
+      ["/d", "/s", "/c", `npm ${escaped}`],
+      { cwd: root, encoding: "utf8", windowsHide: true }
+    );
+  }
+  return execFileSync(
+    "npm",
+    args,
+    { cwd: root, encoding: "utf8", windowsHide: true }
+  );
 }

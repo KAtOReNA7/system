@@ -10,6 +10,9 @@
   "actualDefinitionId": "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01",
   "comparabilityGroupId": "M2-COMP-WORK-POINT-DEVELOPMENT-MODELABLE-RESTATEMENT-01",
   "supportContract": "config/m2-publishing-scale-statistical-support.v1.json",
+  "executionPolicy": "config/m2-publishing-scale-execution-policy.v0.3.json",
+  "materializerId": "M2-MATERIALIZER-PUBLISHING-SCALE-CHANNEL-01",
+  "receiptControllerId": "M2-RECEIPT-CONTROLLER-PUBLISHING-SCALE-CHANNEL-01",
   "baseConfig": "config/m2-current-human-anchored.v0.1.json",
   "historicalPredecessorConfig": "config/m2-current-channel-generative.v0.2.json",
   "authorization": {
@@ -132,6 +135,7 @@
   "nodes": {
     "globalPooledParent": {
       "basisMechanism": "membership",
+      "basisMeaning": "compact_linear_horizon_basis_alias_not_membership_routing",
       "basisProfile": "compact",
       "occurrenceL2": 1,
       "conditionalAmountL2": 1,
@@ -141,6 +145,7 @@
     "mechanisms": {
       "membership": {
         "basisMechanism": "membership",
+        "basisMeaning": "membership_horizon_basis",
         "basisProfile": "current",
         "occurrenceL2": 1,
         "conditionalAmountL2": 1,
@@ -149,6 +154,7 @@
       },
       "advertising": {
         "basisMechanism": "advertising",
+        "basisMeaning": "advertising_horizon_basis",
         "basisProfile": "compact",
         "occurrenceL2": 1,
         "conditionalAmountL2": 1,
@@ -157,6 +163,7 @@
       },
       "transactional": {
         "basisMechanism": "transactional",
+        "basisMeaning": "transactional_horizon_basis",
         "basisProfile": "compact",
         "occurrenceL2": 1,
         "conditionalAmountL2": 3,
@@ -302,18 +309,27 @@
     }
   },
   "privateOutputs": {
-    "directory": "data/private-output/m2-current-human-anchored",
-    "primaryMonthlyCases": "M2-current-channel-generative-primary-monthly-private-v0.2.ndjson",
-    "auxiliaryMonthlyCases": "M2-current-channel-generative-auxiliary-monthly-private-v0.2.ndjson",
-    "materializationManifest": "M2-current-channel-generative-materialization-manifest-private-v0.2.json",
-    "runReceipt": "M2-current-publishing-scale-channel-run-receipt-private-v0.1.json",
-    "evaluationRows": "M2-current-publishing-scale-channel-evaluation-private-v0.1.ndjson",
-    "evaluationManifest": "M2-current-publishing-scale-channel-evaluation-manifest-private-v0.1.json",
+    "directory": "data/private-output/m2-current-publishing-scale-channel",
+    "preparationDirectory": "data/private-output/m2-current-publishing-scale-channel/prepared/v0.1/runs",
+    "preparationCurrentDirectory": "data/private-output/m2-current-publishing-scale-channel/prepared/v0.1/current",
+    "preparationReceipt": "M2-current-publishing-scale-channel-rebuild-receipt-private-v0.1.json",
+    "runtimeAuthorization": "M2-current-publishing-scale-channel-execution-authorization-private-v0.2.json",
+    "primaryMonthlyCases": "M2-current-publishing-scale-channel-primary-monthly-private-v0.2.ndjson",
+    "auxiliaryMonthlyCases": "M2-current-publishing-scale-channel-strict-monthly-private-v0.2.ndjson",
+    "materializationManifest": "M2-current-publishing-scale-channel-materialization-manifest-private-v0.2.json",
+    "runReceiptPrefix": "M2-current-publishing-scale-channel-run-receipt-private-v0.2",
+    "evaluationRows": "M2-current-publishing-scale-channel-evaluation-private-v0.2.ndjson",
+    "evaluationManifest": "M2-current-publishing-scale-channel-evaluation-manifest-private-v0.2.json",
+    "historicalSourceDirectory": "data/private-output/m2-current-human-anchored",
     "reversalRestatementDirectory": "data/private-output/m2-evaluation-v2-2-reversal-rescore",
     "reversalScopeReconciliation": "M2-reversal-scope-reconciliation-private-v1.json",
     "reversalAllocationLedger": "M2-reversal-allocation-ledger-private-v1.ndjson",
     "reversalExecutionReceipt": "M2-evaluation-v2.2-execution-receipt-private-v1.json"
   },
+  "publicPreflightOutput": "docs/analysis/m2-current/M2-current-publishing-scale-channel-preflight-v0.2.json",
+  "publicWiringReport": "docs/analysis/m2-current/M2-current-publishing-scale-channel-wiring-audit-v0.2.md",
+  "publicPrivateReadinessOutput": "docs/analysis/m2-current/M2-current-publishing-scale-channel-private-readiness-v0.2.json",
+  "publicPrivateReadinessReport": "docs/analysis/m2-current/M2-current-publishing-scale-channel-private-readiness-v0.2.md",
   "syntheticFixture": "test/fixtures/m2-current-channel-generative.synthetic.v0.2.json",
   "publicDiagnosticOutput": "docs/analysis/m2-current/M2-current-publishing-scale-channel-public-diagnostic-v0.1.json",
   "publicReadinessOutput": "docs/analysis/m2-current/M2-current-publishing-scale-channel-readiness-v0.1.json",
