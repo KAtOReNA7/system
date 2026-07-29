@@ -56,6 +56,7 @@ export async function runM2CoreLegacyHorizonRouterK0({
   if (verify) {
     await assertOptionalK1Evidence({ root, config });
     await assertOptionalK2Evidence({ root, config });
+    await assertOptionalK3Evidence({ root, config });
   }
   process.stdout.write(
     verify
@@ -251,6 +252,133 @@ ${reasonRows}
 holdout，没有写入数据库或 production。路由器原始候选、现行回退、每个单模型和
 事后诊断参照均分别保留，selected pipeline 没有掩盖 raw candidate。
 `;
+}
+
+export function renderM2CoreLegacyChannelAllocationReport(value) {
+  const horizonRows = value.horizonDecisions.map((row) => (
+    `| ${row.horizonMonths} | ${channelAllocationStatusName(row.status)} `
+      + `(\`${row.status}\`) | ${row.requiredWindowArms.map((arm) => (
+        `${allocationArmName(arm.armId)}：WAPE `
+          + `\`${formatNumber(arm.workChannelWape)}\` / bias `
+          + `\`${formatPercent(arm.workChannelSignedBias)}\` / `
+          + `相对直接渠道模型改善 `
+          + `\`${formatPercent(arm.relativeWapeImprovement)}\``
+      )).join("；")} |`
+  )).join("\n");
+  const primaryRows = value.evaluationSets
+    .filter((row) => (
+      row.evaluationFamily
+        === value.frozenAllocationContract.primaryConfirmation.evaluationFamily
+      && row.populationId
+        === value.frozenAllocationContract.primaryConfirmation.populationId
+      && row.totalSourceModelId
+        === value.frozenAllocationContract.primaryConfirmation
+          .totalSourceModelId
+    ))
+    .map((row) => (
+      `| ${row.horizonMonths} | ${allocationArmName(row.armId)} `
+        + `(\`${row.armId}\`) | \`${row.status}\` | `
+        + `${row.workCaseCount} | ${row.channelCaseCount} | `
+        + `${formatNumber(row.workTotalMetricsBefore?.wape)} | `
+        + `${formatPercent(row.workTotalMetricsBefore?.signedBias)} | `
+        + `${formatNumber(row.workChannelMetrics?.wape)} | `
+        + `${formatPercent(row.workChannelMetrics?.signedBias)} | `
+        + `${formatNumber(row.channelShareMae)} | `
+        + `${formatPercent(row.primaryChannelIdentificationRate)} | `
+        + `${formatPercent(row.channelPairwiseRankingAccuracy)} | `
+        + `${row.maximumConservationDifferenceMinor ?? "NA"} | `
+        + `\`${row.decision.status}\` |`
+    )).join("\n");
+  const fullRows = value.evaluationSets.map((row) => (
+    `| ${familyName(row.evaluationFamily)} `
+      + `(\`${row.evaluationFamily}\`) | ${row.populationId} | `
+      + `${row.horizonMonths} | ${modelShortName(row.totalSourceModelId)} | `
+      + `${allocationArmName(row.armId)} (\`${row.armId}\`) | `
+      + `${row.workCaseCount} | ${row.channelCaseCount} | `
+      + `${formatNumber(row.workChannelMetrics?.wape)} | `
+      + `${formatPercent(row.workChannelMetrics?.signedBias)} | `
+      + `${formatNumber(row.channelShareMae)} | `
+      + `${row.maximumConservationDifferenceMinor ?? "NA"} | `
+      + `\`${row.decision.status}\` |`
+  )).join("\n");
+  return `# M2 核心老品已有渠道份额分配验证报告 v0.1
+
+## 结论
+
+本报告属于实验“${value.experiment.displayNameZh}”
+（${value.experiment.displayNameEn}，\`${value.experiment.stableExperimentId}\`）的
+已有渠道份额分配阶段（\`${value.status}\`）。渠道分配总判定为
+${channelAllocationStatusName(value.channelAllocationStatus)}
+（\`${value.channelAllocationStatus}\`）。任务、同案例证据、按周期路由器和渠道分配
+是四种不同对象；本报告不会把任一开发证据解释为现行回退、活动候选、自动化批准或
+生产授权。
+
+首次有效同案例私有评价身份（\`evaluationHead\`）为
+\`${value.evaluationHead}\`；按周期路由器执行身份（\`routerExecutionHead\`）为
+\`${value.routerExecutionHead}\`；本次渠道分配执行身份
+（\`allocationExecutionHead\`）为 \`${value.allocationExecutionHead}\`，对应
+Linux/Windows 精确提交 CI \`${value.exactHeadCiRunId}\`。最终文档身份
+（\`finalDocumentationHead\`）将在包含本报告、注册表、中文目录与新状态索引的
+最终远端提交通过双平台 CI 后单独报告。
+
+## 冻结分配合同
+
+- 只在预测起点已经成熟、已观察的 canonical 渠道间分配；不得新增渠道，也不得读取
+  未来渠道收入。
+- 作品总额来源分别保留作品发生—金额校准模型 v0.3
+  （Occurrence-Amount Calibration v0.3，\`M2-WORK-OA03\`）、人工锚定可学习
+  全局模型（Human-Anchored Learned Global，\`M2-WORK-LG01\`）、核心收入人工
+  规则基线 v0.1（Core-Revenue Manual Rule Baseline v0.1，
+  \`M2-WORK-CRMR01\`）和按预测周期滚动模型路由器 v0.1
+  （Rolling Horizon Model Router v0.1，\`M2-WORK-HR01\`）。
+- 固定保留已有直接渠道模型（\`C0_DIRECT\`）、最近 3/6/12 个完整账单月非负收入
+  份额（\`C1_TRAILING_3\`、\`C2_TRAILING_6\`、\`C3_TRAILING_12\`）和
+  人工锚定可学习全局模型隐含份额（\`C4_LG01_IMPLIED\`）的全部原始结果。
+- 份额分母为零时，仅可回退到最近 12 个月内最后一个非零月份；仍无合法份额时
+  弃权（\`ABSTAIN_CHANNEL_ALLOCATION\`），禁止平均分配。
+- 没有根据外层结果选择 3/6/12 个月窗口。主确认合同要求 Core80、主滚动评价
+  （Primary rolling，\`PRIMARY_ROLLING\`）、作品发生—金额校准模型 v0.3
+  总额来源下的三个固定历史窗口同时通过预注册门禁。
+
+## 各预测周期的主确认判定
+
+| horizon（月） | 判定 | 三个固定历史窗口 |
+| ---: | --- | --- |
+${horizonRows}
+
+36 个月仍完整报告，但作品发生—金额校准模型 v0.3 不支持该周期，因此不用于主确认
+合同，也不会用其他周期参数补造。
+
+## Core80 主滚动评价的作品总额来源结果
+
+| horizon（月） | 分配臂 | 状态 | 作品数 | 渠道行数 | 总额 WAPE | 总额 bias | 渠道 WAPE | 渠道 bias | 份额 MAE | 主渠道识别率 | 排序准确率 | 最大守恒差（分） | 判定 |
+| ---: | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+${primaryRows}
+
+所有可执行分配前后的作品总额预测与评价指标完全不变；最大作品总额点预测差为
+\`${value.summaries.maximumWorkTotalPointDifference}\`。渠道预测按货币最小单位
+分配，最大金额守恒差为
+\`${value.summaries.maximumConservationDifferenceMinor}\` 分。
+
+## 全部原始评价单元
+
+| 评价族 | 人口 | horizon（月） | 作品总额来源 | 分配臂 | 作品数 | 渠道行数 | 渠道 WAPE | 渠道 bias | 份额 MAE | 最大守恒差（分） | 判定 |
+| --- | --- | ---: | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+${fullRows}
+
+完整机器结果还逐单元保留渠道层假阳性与漏报误差、主渠道识别率、成对排序准确率、
+按作品分配误差、2,000 次作品聚类配对 bootstrap、匿名渠道桶、独立时间块胜负、
+直接渠道比较模型、弃权数和零分母回退次数。公开文件不包含作品 ID、渠道 ID、
+case key、origin 或任何 private 路径。
+
+## 治理边界
+
+现行运行回退仍为作品发生—金额校准模型 v0.3
+（Occurrence-Amount Calibration v0.3，\`M2-WORK-OA03\`），研究比较基线仍为
+人工锚定可学习全局模型（Human-Anchored Learned Global，\`M2-WORK-LG01\`）。
+活动候选（\`activeCandidate\`）和自动化批准
+（\`approvedForAutomation\`）均为空。本阶段没有训练、调参、结果后选窗、修改
+fallback、读取 later-origin/final holdout、写数据库或 production。`;
 }
 
 function assertAuthorityBindings({ config, registry, priorRescore }) {
@@ -530,6 +658,68 @@ async function assertOptionalK2Evidence({ root, config }) {
   }
 }
 
+async function assertOptionalK3Evidence({ root, config }) {
+  const jsonPath = path.join(root, config.publicOutputs.allocationJson);
+  let value;
+  try {
+    value = await readJson(jsonPath);
+  } catch (error) {
+    if (error?.code === "ENOENT") return;
+    throw error;
+  }
+  if (
+    value?.status !== "K3_OBSERVED_CHANNEL_ALLOCATION_COMPLETE"
+    || value?.taskStatus
+      !== "M2_CORE_LEGACY_HORIZON_ROUTER_AND_CHANNEL_ALLOCATION_COMPLETE"
+    || value?.evaluationSets?.length !== 320
+    || value?.horizonDecisions?.length !== 4
+    || !/^[0-9a-f]{40}$/u.test(value?.evaluationHead ?? "")
+    || !/^[0-9a-f]{40}$/u.test(value?.routerExecutionHead ?? "")
+    || !/^[0-9a-f]{40}$/u.test(value?.allocationExecutionHead ?? "")
+    || !Number.isInteger(value?.exactHeadCiRunId)
+    || value?.boundaries?.rawC0ThroughC4Preserved !== true
+    || value?.boundaries?.resultBasedWindowSelectionPerformed !== false
+    || value?.boundaries?.workTotalPredictionChanged !== false
+    || value?.boundaries?.futureChannelRevenueReadForShares !== false
+    || value?.boundaries?.equalSplitFallbackUsed !== false
+    || value?.summaries?.maximumWorkTotalPointDifference !== 0
+    || value?.summaries?.maximumConservationDifferenceMinor !== 0
+  ) {
+    throw new Error(
+      "m2_core_legacy_horizon_router_k3_public_evidence_invalid"
+    );
+  }
+  const serialized = JSON.stringify(value);
+  for (const forbidden of [
+    "\"standardWorkId\":",
+    "\"channelUid\":",
+    "\"caseKey\":",
+    "\"workCaseKey\":",
+    "\"channelCaseKey\":",
+    "\"origin\":",
+    "data/private-input",
+    "data/private-output"
+  ]) {
+    if (serialized.includes(forbidden)) {
+      throw new Error(
+        `m2_core_legacy_horizon_router_k3_privacy_boundary:${forbidden}`
+      );
+    }
+  }
+  const reportPath = path.join(
+    root,
+    config.publicOutputs.allocationReport
+  );
+  if (
+    await readFile(reportPath, "utf8")
+      !== renderM2CoreLegacyChannelAllocationReport(value)
+  ) {
+    throw new Error(
+      "m2_core_legacy_horizon_router_k3_report_drift"
+    );
+  }
+}
+
 function formatDecision(status, winnerModelId, metrics) {
   if (status === "NOT_COMPARABLE") {
     return "不可比较（`NOT_COMPARABLE`）";
@@ -588,6 +778,25 @@ function routerReasonName(value) {
       "通过偏差护栏后选择历史同案例 WAPE 最低者",
     NO_COMPUTABLE_HISTORICAL_METRIC:
       "没有可计算的历史指标"
+  })[value] ?? value;
+}
+
+function allocationArmName(value) {
+  return ({
+    C0_DIRECT: "已有直接渠道模型",
+    C1_TRAILING_3: "最近 3 个完整账单月渠道份额",
+    C2_TRAILING_6: "最近 6 个完整账单月渠道份额",
+    C3_TRAILING_12: "最近 12 个完整账单月渠道份额",
+    C4_LG01_IMPLIED: "人工锚定可学习全局模型隐含渠道份额"
+  })[value] ?? value;
+}
+
+function channelAllocationStatusName(value) {
+  return ({
+    CHANNEL_ALLOCATION_CONFIRMED: "渠道分配已确认",
+    CHANNEL_ALLOCATION_MIXED: "渠道分配证据混合",
+    CHANNEL_ALLOCATION_NOT_CONFIRMED: "渠道分配未确认",
+    CHANNEL_ALLOCATION_NOT_EVALUABLE: "渠道分配不可评价"
   })[value] ?? value;
 }
 

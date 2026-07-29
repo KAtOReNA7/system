@@ -273,6 +273,12 @@
     ]
   },
   "channelAllocation": {
+    "totalSourceModelIds": [
+      "M2-WORK-OA03",
+      "M2-WORK-LG01",
+      "M2-WORK-CRMR01",
+      "M2-WORK-HR01"
+    ],
     "arms": [
       {
         "armId": "C0_DIRECT",
@@ -302,10 +308,34 @@
     "fallbackFailure": "ABSTAIN_CHANNEL_ALLOCATION",
     "equalSplitAllowed": false,
     "futureRevenueAllowed": false,
+    "resultBasedWindowSelectionAllowed": false,
+    "primaryConfirmationPopulationId": "CORE80",
+    "primaryConfirmationEvaluationFamily": "PRIMARY_ROLLING",
+    "primaryConfirmationTotalSourceModelId": "M2-WORK-OA03",
+    "primaryConfirmationHorizonsMonths": [
+      3,
+      6,
+      12
+    ],
+    "requiredRobustWindowArmIds": [
+      "C1_TRAILING_3",
+      "C2_TRAILING_6",
+      "C3_TRAILING_12"
+    ],
+    "directCentReconciliation": "LARGEST_REMAINDER_PRESERVE_RAW_SHARE_ORDER",
     "currencyMinorUnits": 100,
     "requiredConservationDifferenceMinor": 0,
+    "requiredWorkTotalMetricDifference": 0,
     "confirmationMinimumRelativeWapeImprovement": 0.01,
     "maximumAbsoluteBiasWorsening": 0.02,
+    "minimumTimeBlockWinShare": 0.5,
+    "minimumAnonymousChannelBucketCaseCount": 10,
+    "bootstrap": {
+      "iterations": 2000,
+      "seed": 20260730,
+      "clusterUnit": "standardWorkId",
+      "confidenceLevel": 0.95
+    },
     "decisionStates": [
       "CHANNEL_ALLOCATION_CONFIRMED",
       "CHANNEL_ALLOCATION_MIXED",

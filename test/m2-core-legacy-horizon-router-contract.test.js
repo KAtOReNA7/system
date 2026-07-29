@@ -32,6 +32,22 @@ test("horizon-router K0 freezes scope, roles and decision thresholds", () => {
   assert.equal(config.horizonRouter.wapeTieThreshold, 0.01);
   assert.equal(config.channelAllocation.equalSplitAllowed, false);
   assert.equal(config.channelAllocation.futureRevenueAllowed, false);
+  assert.equal(
+    config.channelAllocation.resultBasedWindowSelectionAllowed,
+    false
+  );
+  assert.deepEqual(
+    config.channelAllocation.requiredRobustWindowArmIds,
+    ["C1_TRAILING_3", "C2_TRAILING_6", "C3_TRAILING_12"]
+  );
+  assert.equal(
+    config.channelAllocation.requiredConservationDifferenceMinor,
+    0
+  );
+  assert.equal(
+    config.channelAllocation.requiredWorkTotalMetricDifference,
+    0
+  );
   assert.equal(config.roles.operationalWorkFallback, "M2-WORK-OA03");
   assert.equal(config.roles.researchWorkBaseline, "M2-WORK-LG01");
   assert.equal(config.roles.activeCandidate, null);

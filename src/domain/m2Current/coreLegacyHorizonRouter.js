@@ -73,6 +73,27 @@ export function validateM2CoreLegacyHorizonRouterConfig(config) {
     ["M2-PORT-ETS01", "M2-PORT-LRC01"],
     "excluded_models"
   );
+  assertExactSet(
+    config.channelAllocation?.totalSourceModelIds,
+    [
+      "M2-WORK-CRMR01",
+      "M2-WORK-HR01",
+      "M2-WORK-LG01",
+      "M2-WORK-OA03"
+    ],
+    "channel_allocation_total_sources"
+  );
+  assertExactSet(
+    config.channelAllocation?.arms?.map((arm) => arm.armId),
+    [
+      "C0_DIRECT",
+      "C1_TRAILING_3",
+      "C2_TRAILING_6",
+      "C3_TRAILING_12",
+      "C4_LG01_IMPLIED"
+    ],
+    "channel_allocation_arms"
+  );
   const models = requireArray(config.models, "models");
   assertExactSet(
     models.map((model) => model.modelId),
@@ -119,7 +140,26 @@ export function validateM2CoreLegacyHorizonRouterConfig(config) {
       ?.maximumFallbackSelectionShareForConfirmation !== 0.5
     || config.channelAllocation?.equalSplitAllowed !== false
     || config.channelAllocation?.futureRevenueAllowed !== false
+    || config.channelAllocation
+      ?.resultBasedWindowSelectionAllowed !== false
+    || config.channelAllocation
+      ?.primaryConfirmationPopulationId !== "CORE80"
+    || config.channelAllocation
+      ?.primaryConfirmationEvaluationFamily !== "PRIMARY_ROLLING"
+    || config.channelAllocation
+      ?.primaryConfirmationTotalSourceModelId !== "M2-WORK-OA03"
+    || config.channelAllocation?.primaryConfirmationHorizonsMonths
+      ?.join("|") !== "3|6|12"
+    || config.channelAllocation?.requiredRobustWindowArmIds?.join("|")
+      !== "C1_TRAILING_3|C2_TRAILING_6|C3_TRAILING_12"
+    || config.channelAllocation?.directCentReconciliation
+      !== "LARGEST_REMAINDER_PRESERVE_RAW_SHARE_ORDER"
     || config.channelAllocation?.requiredConservationDifferenceMinor !== 0
+    || config.channelAllocation?.requiredWorkTotalMetricDifference !== 0
+    || config.channelAllocation?.minimumTimeBlockWinShare !== 0.5
+    || config.channelAllocation
+      ?.minimumAnonymousChannelBucketCaseCount !== 10
+    || config.channelAllocation?.bootstrap?.iterations !== 2000
   ) {
     throw new M2CoreLegacyHorizonRouterError(
       "m2_core_legacy_preregistered_threshold_invalid"

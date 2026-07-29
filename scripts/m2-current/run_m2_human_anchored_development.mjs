@@ -61,6 +61,7 @@ import {
 } from "./core_legacy_horizon_router_mode.mjs";
 import {
   runM2CoreLegacyFullHorizonSameCaseRescore,
+  runM2CoreLegacyObservedChannelAllocation,
   runM2CoreLegacyRollingHorizonRouter
 } from "./core_legacy_horizon_router_private.mjs";
 
@@ -130,6 +131,9 @@ const coreLegacyHorizonRouterK1Mode = process.argv.includes(
 );
 const coreLegacyHorizonRouterK2Mode = process.argv.includes(
   "--core-legacy-horizon-router-k2"
+);
+const coreLegacyHorizonRouterK3Mode = process.argv.includes(
+  "--core-legacy-horizon-router-k3"
 );
 if (tsbPublicMode) {
   await runM2HumanAnchoredTsbPublicDiagnostic({
@@ -263,6 +267,23 @@ if (coreLegacyHorizonRouterK2Mode) {
     horizonRouterStatus: result.horizonRouterStatus,
     evaluationHead: result.evaluationHead,
     routerExecutionHead: result.routerExecutionHead
+  }, null, 2)}\n`);
+  return;
+}
+if (coreLegacyHorizonRouterK3Mode) {
+  const result = await runM2CoreLegacyObservedChannelAllocation({
+    root
+  });
+  process.stdout.write(`${JSON.stringify({
+    status: result.status,
+    taskStatus: result.taskStatus,
+    experimentId: result.experiment.stableExperimentId,
+    sameCaseEvidenceStatus: result.sameCaseEvidenceStatus,
+    horizonRouterStatus: result.horizonRouterStatus,
+    channelAllocationStatus: result.channelAllocationStatus,
+    evaluationHead: result.evaluationHead,
+    routerExecutionHead: result.routerExecutionHead,
+    allocationExecutionHead: result.allocationExecutionHead
   }, null, 2)}\n`);
   return;
 }
