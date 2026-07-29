@@ -1,0 +1,3802 @@
+{
+  "schema": "m2.current.core_legacy_rolling_horizon_router.public.v0.1",
+  "asOf": "2026-07-29",
+  "experiment": {
+    "stableExperimentId": "M2-EXP-CORE-LEGACY-HORIZON-ROUTER-01",
+    "displayNameZh": "M2 核心老品全周期同案例证据补齐、按周期模型路由与已有渠道分配验证 v0.1",
+    "displayNameEn": "M2 Core Legacy Full-Horizon Same-Case Evidence Completion, Horizon Router and Observed-Channel Allocation Validation v0.1",
+    "entityType": "experiment",
+    "activeCandidate": false,
+    "approvedForAutomation": false
+  },
+  "model": {
+    "modelId": "M2-WORK-HR01",
+    "displayNameZh": "按预测周期滚动模型路由器 v0.1",
+    "displayNameEn": "Rolling Horizon Model Router v0.1",
+    "entityType": "model_pipeline",
+    "role": "development_candidate_evidence_only"
+  },
+  "status": "K2_ROLLING_HORIZON_ROUTER_COMPLETE",
+  "taskStatus": "M2_CORE_LEGACY_HORIZON_ROUTER_AND_CHANNEL_ALLOCATION_PARTIAL",
+  "horizonRouterStatus": "HORIZON_ROUTER_NOT_CONFIRMED",
+  "evaluationHead": "f30fbc0660d90197bd44e516a0c07439fe08219b",
+  "routerExecutionHead": "fdb82d56560a0c7736acaa3605f45cb1f74e62cb",
+  "exactHeadCiRunId": 30463531260,
+  "finalDocumentationHead": null,
+  "target": {
+    "name": "future_sales_share_development_modelable_cash",
+    "actualDefinitionId": "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01",
+    "grain": "WORK_TOTAL",
+    "populations": [
+      "CORE80",
+      "CORE90"
+    ]
+  },
+  "frozenSelectionContract": {
+    "minimumMatureSelectionOrigins": 3,
+    "matureHistoryDefinition": "prior_origin_target_window_fully_observed_by_outer_origin",
+    "absoluteBiasExclusionThreshold": 0.1,
+    "wapeTieThreshold": 0.01,
+    "earlyFallbackOrder": [
+      "M2-WORK-OA03",
+      "M2-WORK-LG01",
+      "ABSTAIN"
+    ],
+    "posthocReference": {
+      "3": "M2-WORK-OA03",
+      "6": "M2-WORK-CRMR01",
+      "12": "M2-WORK-OA03",
+      "36": "M2-WORK-LG01"
+    },
+    "posthocReferenceRole": "DIAGNOSTIC_ONLY_NOT_A_CANDIDATE",
+    "outerActualAllowedForSelection": false
+  },
+  "horizonDecisions": [
+    {
+      "horizonMonths": 3,
+      "primaryStatus": "HORIZON_ROUTER_NOT_CONFIRMED",
+      "primaryMetrics": {
+        "sameCaseCount": 65,
+        "routerWape": 0.2624599783844896,
+        "routerSignedBias": -0.036456941339038214,
+        "strongestSingleModelId": "M2-WORK-OA03",
+        "strongestSingleWape": 0.2624599783844896,
+        "strongestSingleSignedBias": -0.036456941339038214,
+        "relativeFva": 0,
+        "absoluteBiasWorsening": 0,
+        "fallbackPredictionShare": 0.6153846153846154,
+        "decision": {
+          "status": "HORIZON_ROUTER_NOT_CONFIRMED",
+          "reason": "NO_DIRECTIONAL_ROUTER_IMPROVEMENT",
+          "conditions": {
+            "materialFva": false,
+            "biasGuardPass": true,
+            "bootstrapSupports": false,
+            "majorityTimeBlocksImprove": false,
+            "timeBlockWinShare": 0,
+            "extremeWorkGuardPass": true,
+            "fallbackGuardPass": false
+          }
+        }
+      },
+      "strictStatus": "HORIZON_ROUTER_NOT_CONFIRMED",
+      "strictMetrics": {
+        "sameCaseCount": 36,
+        "routerWape": 0.29242656733349626,
+        "routerSignedBias": -0.12136964771899117,
+        "strongestSingleModelId": "M2-WORK-LG01",
+        "strongestSingleWape": 0.29242656733349626,
+        "strongestSingleSignedBias": -0.12136964771899117,
+        "relativeFva": 0,
+        "absoluteBiasWorsening": 0,
+        "fallbackPredictionShare": 1,
+        "decision": {
+          "status": "HORIZON_ROUTER_NOT_CONFIRMED",
+          "reason": "NO_DIRECTIONAL_ROUTER_IMPROVEMENT",
+          "conditions": {
+            "materialFva": false,
+            "biasGuardPass": true,
+            "bootstrapSupports": false,
+            "majorityTimeBlocksImprove": false,
+            "timeBlockWinShare": 0,
+            "extremeWorkGuardPass": true,
+            "fallbackGuardPass": false
+          }
+        }
+      },
+      "horizonStatus": "HORIZON_ROUTER_NOT_CONFIRMED"
+    },
+    {
+      "horizonMonths": 6,
+      "primaryStatus": "HORIZON_ROUTER_NOT_CONFIRMED",
+      "primaryMetrics": {
+        "sameCaseCount": 65,
+        "routerWape": 0.27184062086144956,
+        "routerSignedBias": 0.04845672462333949,
+        "strongestSingleModelId": "M2-WORK-CRMR01",
+        "strongestSingleWape": 0.2651393636869711,
+        "strongestSingleSignedBias": 0.11386694059067995,
+        "relativeFva": -0.02527447106039708,
+        "absoluteBiasWorsening": -0.06541021596734045,
+        "fallbackPredictionShare": 0.6153846153846154,
+        "decision": {
+          "status": "HORIZON_ROUTER_NOT_CONFIRMED",
+          "reason": "NO_DIRECTIONAL_ROUTER_IMPROVEMENT",
+          "conditions": {
+            "materialFva": false,
+            "biasGuardPass": true,
+            "bootstrapSupports": false,
+            "majorityTimeBlocksImprove": false,
+            "timeBlockWinShare": 0.4,
+            "extremeWorkGuardPass": true,
+            "fallbackGuardPass": false
+          }
+        }
+      },
+      "strictStatus": "HORIZON_ROUTER_NOT_CONFIRMED",
+      "strictMetrics": {
+        "sameCaseCount": 36,
+        "routerWape": 0.3339772543659808,
+        "routerSignedBias": -0.11356991359621443,
+        "strongestSingleModelId": "M2-WORK-CRMR01",
+        "strongestSingleWape": 0.3033227911451008,
+        "strongestSingleSignedBias": 0.15534255132133018,
+        "relativeFva": -0.10106218232119524,
+        "absoluteBiasWorsening": -0.04177263772511575,
+        "fallbackPredictionShare": 1,
+        "decision": {
+          "status": "HORIZON_ROUTER_NOT_CONFIRMED",
+          "reason": "NO_DIRECTIONAL_ROUTER_IMPROVEMENT",
+          "conditions": {
+            "materialFva": false,
+            "biasGuardPass": true,
+            "bootstrapSupports": false,
+            "majorityTimeBlocksImprove": false,
+            "timeBlockWinShare": 0,
+            "extremeWorkGuardPass": true,
+            "fallbackGuardPass": false
+          }
+        }
+      },
+      "horizonStatus": "HORIZON_ROUTER_NOT_CONFIRMED"
+    },
+    {
+      "horizonMonths": 12,
+      "primaryStatus": "HORIZON_ROUTER_NOT_CONFIRMED",
+      "primaryMetrics": {
+        "sameCaseCount": 47,
+        "routerWape": 0.2489190665784273,
+        "routerSignedBias": 0.008340536791966386,
+        "strongestSingleModelId": "M2-WORK-OA03",
+        "strongestSingleWape": 0.2489190665784273,
+        "strongestSingleSignedBias": 0.008340536791966386,
+        "relativeFva": 0,
+        "absoluteBiasWorsening": 0,
+        "fallbackPredictionShare": 1,
+        "decision": {
+          "status": "HORIZON_ROUTER_NOT_CONFIRMED",
+          "reason": "NO_DIRECTIONAL_ROUTER_IMPROVEMENT",
+          "conditions": {
+            "materialFva": false,
+            "biasGuardPass": true,
+            "bootstrapSupports": false,
+            "majorityTimeBlocksImprove": false,
+            "timeBlockWinShare": 0,
+            "extremeWorkGuardPass": true,
+            "fallbackGuardPass": false
+          }
+        }
+      },
+      "strictStatus": "HORIZON_ROUTER_NOT_CONFIRMED",
+      "strictMetrics": {
+        "sameCaseCount": 36,
+        "routerWape": 0.3063600578744321,
+        "routerSignedBias": -0.0647041585721366,
+        "strongestSingleModelId": "M2-WORK-LG01",
+        "strongestSingleWape": 0.3063600578744321,
+        "strongestSingleSignedBias": -0.0647041585721366,
+        "relativeFva": 0,
+        "absoluteBiasWorsening": 0,
+        "fallbackPredictionShare": 1,
+        "decision": {
+          "status": "HORIZON_ROUTER_NOT_CONFIRMED",
+          "reason": "NO_DIRECTIONAL_ROUTER_IMPROVEMENT",
+          "conditions": {
+            "materialFva": false,
+            "biasGuardPass": true,
+            "bootstrapSupports": false,
+            "majorityTimeBlocksImprove": false,
+            "timeBlockWinShare": 0,
+            "extremeWorkGuardPass": true,
+            "fallbackGuardPass": false
+          }
+        }
+      },
+      "horizonStatus": "HORIZON_ROUTER_NOT_CONFIRMED"
+    },
+    {
+      "horizonMonths": 36,
+      "primaryStatus": "HORIZON_ROUTER_NOT_CONFIRMED",
+      "primaryMetrics": {
+        "sameCaseCount": 408,
+        "routerWape": 0.2848982117361462,
+        "routerSignedBias": 0.07555859934687727,
+        "strongestSingleModelId": "M2-WORK-LG01",
+        "strongestSingleWape": 0.2848982117361462,
+        "strongestSingleSignedBias": 0.07555859934687727,
+        "relativeFva": 0,
+        "absoluteBiasWorsening": 0,
+        "fallbackPredictionShare": 1,
+        "decision": {
+          "status": "HORIZON_ROUTER_NOT_CONFIRMED",
+          "reason": "NO_DIRECTIONAL_ROUTER_IMPROVEMENT",
+          "conditions": {
+            "materialFva": false,
+            "biasGuardPass": true,
+            "bootstrapSupports": false,
+            "majorityTimeBlocksImprove": false,
+            "timeBlockWinShare": 0,
+            "extremeWorkGuardPass": true,
+            "fallbackGuardPass": false
+          }
+        }
+      },
+      "strictStatus": "HORIZON_ROUTER_NOT_EVALUABLE",
+      "strictMetrics": {
+        "sameCaseCount": 0,
+        "routerWape": null,
+        "routerSignedBias": null,
+        "strongestSingleModelId": null,
+        "strongestSingleWape": null,
+        "strongestSingleSignedBias": null,
+        "relativeFva": null,
+        "absoluteBiasWorsening": null,
+        "fallbackPredictionShare": null,
+        "decision": {
+          "status": "HORIZON_ROUTER_NOT_EVALUABLE",
+          "reason": "NO_ROUTER_OUTER_PREDICTIONS"
+        }
+      },
+      "horizonStatus": "HORIZON_ROUTER_NOT_CONFIRMED"
+    }
+  ],
+  "evaluationSets": [
+    {
+      "evaluationSetId": "ROUTER-PRIMARY_ROLLING-CORE80-H3",
+      "evaluationFamily": "PRIMARY_ROLLING",
+      "populationId": "CORE80",
+      "grain": "WORK_TOTAL",
+      "horizonMonths": 3,
+      "status": "COMPUTED_SAME_CASE_INTERSECTION",
+      "outerOriginCount": 5,
+      "sameCaseCount": 65,
+      "workCount": 43,
+      "routerMetrics": {
+        "modelId": "M2-WORK-HR01",
+        "status": "COMPUTED",
+        "caseCount": 65,
+        "workCount": 43,
+        "actualTotal": 4385939.320699999,
+        "predictionTotal": 4226041.388168658,
+        "absoluteErrorTotal": 1151133.5393066048,
+        "wape": 0.2624599783844896,
+        "signedBias": -0.036456941339038214,
+        "mae": 17709.74675856315,
+        "medianAbsoluteError": 6232.60055834,
+        "zeroActualFalsePositiveError": 0,
+        "zeroPredictionPositiveActualMissError": 111782.135
+      },
+      "singleModelMetrics": [
+        {
+          "modelId": "M2-WORK-OA03",
+          "status": "COMPUTED",
+          "caseCount": 65,
+          "workCount": 43,
+          "actualTotal": 4385939.320699999,
+          "predictionTotal": 4226041.388168658,
+          "absoluteErrorTotal": 1151133.5393066048,
+          "wape": 0.2624599783844896,
+          "signedBias": -0.036456941339038214,
+          "mae": 17709.74675856315,
+          "medianAbsoluteError": 6232.60055834,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 111782.135
+        },
+        {
+          "modelId": "M2-WORK-CRMR01",
+          "status": "COMPUTED",
+          "caseCount": 65,
+          "workCount": 43,
+          "actualTotal": 4385939.320699999,
+          "predictionTotal": 5467107.949200002,
+          "absoluteErrorTotal": 1163255.0826999997,
+          "wape": 0.2652237064042061,
+          "signedBias": 0.246507885642031,
+          "mae": 17896.232041538457,
+          "medianAbsoluteError": 3854.575999999999,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 0
+        }
+      ],
+      "strongestSingleModelId": "M2-WORK-OA03",
+      "strongestSingleMetrics": {
+        "modelId": "M2-WORK-OA03",
+        "status": "COMPUTED",
+        "caseCount": 65,
+        "workCount": 43,
+        "actualTotal": 4385939.320699999,
+        "predictionTotal": 4226041.388168658,
+        "absoluteErrorTotal": 1151133.5393066048,
+        "wape": 0.2624599783844896,
+        "signedBias": -0.036456941339038214,
+        "mae": 17709.74675856315,
+        "medianAbsoluteError": 6232.60055834,
+        "zeroActualFalsePositiveError": 0,
+        "zeroPredictionPositiveActualMissError": 111782.135
+      },
+      "relativeFva": 0,
+      "absoluteBiasWorsening": 0,
+      "pairedBootstrap": {
+        "status": "COMPUTED",
+        "method": "paired_standard_work_cluster_resample",
+        "iterations": 2000,
+        "seed": 20288771,
+        "workCount": 43,
+        "improvement95": {
+          "lower": 0,
+          "median": 0,
+          "upper": 0
+        }
+      },
+      "independentTimeBlocks": [
+        {
+          "blockId": "TIME_BLOCK_001",
+          "caseCount": 17,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.5429797962200369,
+          "baselineModelId": "M2-WORK-OA03",
+          "baselineWape": 0.5429797962200369,
+          "winnerModelId": null
+        },
+        {
+          "blockId": "TIME_BLOCK_002",
+          "caseCount": 10,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.73985316458126,
+          "baselineModelId": "M2-WORK-OA03",
+          "baselineWape": 0.73985316458126,
+          "winnerModelId": null
+        },
+        {
+          "blockId": "TIME_BLOCK_003",
+          "caseCount": 13,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.19778214213213324,
+          "baselineModelId": "M2-WORK-OA03",
+          "baselineWape": 0.19778214213213324,
+          "winnerModelId": null
+        },
+        {
+          "blockId": "TIME_BLOCK_004",
+          "caseCount": 7,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.17453097968992493,
+          "baselineModelId": "M2-WORK-OA03",
+          "baselineWape": 0.17453097968992493,
+          "winnerModelId": null
+        },
+        {
+          "blockId": "TIME_BLOCK_005",
+          "caseCount": 18,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.27211256172064324,
+          "baselineModelId": "M2-WORK-OA03",
+          "baselineWape": 0.27211256172064324,
+          "winnerModelId": null
+        }
+      ],
+      "yearBlocks": [
+        {
+          "blockId": "2020",
+          "caseCount": 17,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.5429797962200369,
+          "baselineModelId": "M2-WORK-OA03",
+          "baselineWape": 0.5429797962200369,
+          "winnerModelId": null
+        },
+        {
+          "blockId": "2021",
+          "caseCount": 23,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.2511040480615399,
+          "baselineModelId": "M2-WORK-OA03",
+          "baselineWape": 0.2511040480615399,
+          "winnerModelId": null
+        },
+        {
+          "blockId": "2022",
+          "caseCount": 25,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.2306875952905812,
+          "baselineModelId": "M2-WORK-OA03",
+          "baselineWape": 0.2306875952905812,
+          "winnerModelId": null
+        }
+      ],
+      "currentFallbackComparison": {
+        "comparatorId": "CURRENT_OPERATIONAL_FALLBACK",
+        "status": "COMPUTED_SAME_CASE_INTERSECTION",
+        "caseCount": 65,
+        "routerMetrics": {
+          "modelId": "M2-WORK-HR01",
+          "status": "COMPUTED",
+          "caseCount": 65,
+          "workCount": 43,
+          "actualTotal": 4385939.320699999,
+          "predictionTotal": 4226041.388168658,
+          "absoluteErrorTotal": 1151133.5393066048,
+          "wape": 0.2624599783844896,
+          "signedBias": -0.036456941339038214,
+          "mae": 17709.74675856315,
+          "medianAbsoluteError": 6232.60055834,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 111782.135
+        },
+        "comparatorMetrics": {
+          "modelId": "CURRENT_OPERATIONAL_FALLBACK",
+          "status": "COMPUTED",
+          "caseCount": 65,
+          "workCount": 43,
+          "actualTotal": 4385939.320699999,
+          "predictionTotal": 4226041.388168658,
+          "absoluteErrorTotal": 1151133.5393066048,
+          "wape": 0.2624599783844896,
+          "signedBias": -0.036456941339038214,
+          "mae": 17709.74675856315,
+          "medianAbsoluteError": 6232.60055834,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 111782.135
+        },
+        "relativeFva": 0
+      },
+      "posthocReferenceComparison": {
+        "comparatorId": "POSTHOC_REFERENCE",
+        "status": "COMPUTED_SAME_CASE_INTERSECTION",
+        "caseCount": 65,
+        "routerMetrics": {
+          "modelId": "M2-WORK-HR01",
+          "status": "COMPUTED",
+          "caseCount": 65,
+          "workCount": 43,
+          "actualTotal": 4385939.320699999,
+          "predictionTotal": 4226041.388168658,
+          "absoluteErrorTotal": 1151133.5393066048,
+          "wape": 0.2624599783844896,
+          "signedBias": -0.036456941339038214,
+          "mae": 17709.74675856315,
+          "medianAbsoluteError": 6232.60055834,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 111782.135
+        },
+        "comparatorMetrics": {
+          "modelId": "POSTHOC_REFERENCE",
+          "status": "COMPUTED",
+          "caseCount": 65,
+          "workCount": 43,
+          "actualTotal": 4385939.320699999,
+          "predictionTotal": 4226041.388168658,
+          "absoluteErrorTotal": 1151133.5393066048,
+          "wape": 0.2624599783844896,
+          "signedBias": -0.036456941339038214,
+          "mae": 17709.74675856315,
+          "medianAbsoluteError": 6232.60055834,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 111782.135
+        },
+        "relativeFva": 0
+      },
+      "selectionSummary": {
+        "selectionCount": 5,
+        "selectedPredictionRouteCount": 5,
+        "abstainCount": 0,
+        "fallbackSelectionCount": 3,
+        "rollingInnerSelectionCount": 2,
+        "bySelectedModelId": {
+          "M2-WORK-OA03": 5
+        },
+        "bySelectionReason": {
+          "INSUFFICIENT_MATURE_SELECTION_ORIGINS_OPERATIONAL_FALLBACK": 3,
+          "LOWEST_HISTORICAL_SAME_CASE_WAPE_AFTER_BIAS_GUARD": 2
+        }
+      },
+      "extremeWorkContribution": {
+        "anonymousWorkCount": 43,
+        "largestWorkAbsoluteErrorContribution": 0.30209241738666426,
+        "topFiveWorksAbsoluteErrorContribution": 0.6511918746811086,
+        "workIdentityPublished": false
+      },
+      "fallbackPredictionShare": 0.6153846153846154,
+      "decision": {
+        "status": "HORIZON_ROUTER_NOT_CONFIRMED",
+        "reason": "NO_DIRECTIONAL_ROUTER_IMPROVEMENT",
+        "conditions": {
+          "materialFva": false,
+          "biasGuardPass": true,
+          "bootstrapSupports": false,
+          "majorityTimeBlocksImprove": false,
+          "timeBlockWinShare": 0,
+          "extremeWorkGuardPass": true,
+          "fallbackGuardPass": false
+        }
+      }
+    },
+    {
+      "evaluationSetId": "ROUTER-PRIMARY_ROLLING-CORE80-H6",
+      "evaluationFamily": "PRIMARY_ROLLING",
+      "populationId": "CORE80",
+      "grain": "WORK_TOTAL",
+      "horizonMonths": 6,
+      "status": "COMPUTED_SAME_CASE_INTERSECTION",
+      "outerOriginCount": 5,
+      "sameCaseCount": 65,
+      "workCount": 43,
+      "routerMetrics": {
+        "modelId": "M2-WORK-HR01",
+        "status": "COMPUTED",
+        "caseCount": 65,
+        "workCount": 43,
+        "actualTotal": 8445169.398700003,
+        "predictionTotal": 8854394.646650262,
+        "absoluteErrorTotal": 2295740.0926227234,
+        "wape": 0.27184062086144956,
+        "signedBias": 0.04845672462333949,
+        "mae": 35319.0783480419,
+        "medianAbsoluteError": 14307.32058663998,
+        "zeroActualFalsePositiveError": 0,
+        "zeroPredictionPositiveActualMissError": 0
+      },
+      "singleModelMetrics": [
+        {
+          "modelId": "M2-WORK-CRMR01",
+          "status": "COMPUTED",
+          "caseCount": 65,
+          "workCount": 43,
+          "actualTotal": 8445169.398700003,
+          "predictionTotal": 9406795.000900004,
+          "absoluteErrorTotal": 2239146.8405999993,
+          "wape": 0.2651393636869711,
+          "signedBias": 0.11386694059067995,
+          "mae": 34448.412932307685,
+          "medianAbsoluteError": 13319.371999999996,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 0
+        },
+        {
+          "modelId": "M2-WORK-OA03",
+          "status": "COMPUTED",
+          "caseCount": 65,
+          "workCount": 43,
+          "actualTotal": 8445169.398700003,
+          "predictionTotal": 8452080.77633728,
+          "absoluteErrorTotal": 2397999.9019257994,
+          "wape": 0.28394929559316273,
+          "signedBias": 0.0008183823569414941,
+          "mae": 36892.30618347384,
+          "medianAbsoluteError": 14079.122936000002,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 221995.44299999997
+        }
+      ],
+      "strongestSingleModelId": "M2-WORK-CRMR01",
+      "strongestSingleMetrics": {
+        "modelId": "M2-WORK-CRMR01",
+        "status": "COMPUTED",
+        "caseCount": 65,
+        "workCount": 43,
+        "actualTotal": 8445169.398700003,
+        "predictionTotal": 9406795.000900004,
+        "absoluteErrorTotal": 2239146.8405999993,
+        "wape": 0.2651393636869711,
+        "signedBias": 0.11386694059067995,
+        "mae": 34448.412932307685,
+        "medianAbsoluteError": 13319.371999999996,
+        "zeroActualFalsePositiveError": 0,
+        "zeroPredictionPositiveActualMissError": 0
+      },
+      "relativeFva": -0.02527447106039708,
+      "absoluteBiasWorsening": -0.06541021596734045,
+      "pairedBootstrap": {
+        "status": "COMPUTED",
+        "method": "paired_standard_work_cluster_resample",
+        "iterations": 2000,
+        "seed": 20300679,
+        "workCount": 43,
+        "improvement95": {
+          "lower": -0.06493282010844428,
+          "median": -0.007105823847689402,
+          "upper": 0.07179905841358314
+        }
+      },
+      "independentTimeBlocks": [
+        {
+          "blockId": "TIME_BLOCK_001",
+          "caseCount": 17,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.48180092141851605,
+          "baselineModelId": "M2-WORK-CRMR01",
+          "baselineWape": 0.5671350558448531,
+          "winnerModelId": "M2-WORK-HR01"
+        },
+        {
+          "blockId": "TIME_BLOCK_002",
+          "caseCount": 10,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.9200064283632593,
+          "baselineModelId": "M2-WORK-CRMR01",
+          "baselineWape": 0.976217179723469,
+          "winnerModelId": "M2-WORK-HR01"
+        },
+        {
+          "blockId": "TIME_BLOCK_003",
+          "caseCount": 13,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.21058578295637503,
+          "baselineModelId": "M2-WORK-CRMR01",
+          "baselineWape": 0.19282082063162814,
+          "winnerModelId": "M2-WORK-CRMR01"
+        },
+        {
+          "blockId": "TIME_BLOCK_004",
+          "caseCount": 7,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.1462410490293933,
+          "baselineModelId": "M2-WORK-CRMR01",
+          "baselineWape": 0.10622080360668128,
+          "winnerModelId": "M2-WORK-CRMR01"
+        },
+        {
+          "blockId": "TIME_BLOCK_005",
+          "caseCount": 18,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.30970887233100264,
+          "baselineModelId": "M2-WORK-CRMR01",
+          "baselineWape": 0.30970887233100264,
+          "winnerModelId": null
+        }
+      ],
+      "yearBlocks": [
+        {
+          "blockId": "2020",
+          "caseCount": 17,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.48180092141851605,
+          "baselineModelId": "M2-WORK-CRMR01",
+          "baselineWape": 0.5671350558448531,
+          "winnerModelId": "M2-WORK-HR01"
+        },
+        {
+          "blockId": "2021",
+          "caseCount": 23,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.2784474313346318,
+          "baselineModelId": "M2-WORK-CRMR01",
+          "baselineWape": 0.2677588261798117,
+          "winnerModelId": "M2-WORK-CRMR01"
+        },
+        {
+          "blockId": "2022",
+          "caseCount": 25,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.24019044312307095,
+          "baselineModelId": "M2-WORK-CRMR01",
+          "baselineWape": 0.22317091877808956,
+          "winnerModelId": "M2-WORK-CRMR01"
+        }
+      ],
+      "currentFallbackComparison": {
+        "comparatorId": "CURRENT_OPERATIONAL_FALLBACK",
+        "status": "COMPUTED_SAME_CASE_INTERSECTION",
+        "caseCount": 65,
+        "routerMetrics": {
+          "modelId": "M2-WORK-HR01",
+          "status": "COMPUTED",
+          "caseCount": 65,
+          "workCount": 43,
+          "actualTotal": 8445169.398700003,
+          "predictionTotal": 8854394.646650262,
+          "absoluteErrorTotal": 2295740.0926227234,
+          "wape": 0.27184062086144956,
+          "signedBias": 0.04845672462333949,
+          "mae": 35319.0783480419,
+          "medianAbsoluteError": 14307.32058663998,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 0
+        },
+        "comparatorMetrics": {
+          "modelId": "CURRENT_OPERATIONAL_FALLBACK",
+          "status": "COMPUTED",
+          "caseCount": 65,
+          "workCount": 43,
+          "actualTotal": 8445169.398700003,
+          "predictionTotal": 8452080.77633728,
+          "absoluteErrorTotal": 2397999.9019257994,
+          "wape": 0.28394929559316273,
+          "signedBias": 0.0008183823569414941,
+          "mae": 36892.30618347384,
+          "medianAbsoluteError": 14079.122936000002,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 221995.44299999997
+        },
+        "relativeFva": 0.04264379211231522
+      },
+      "posthocReferenceComparison": {
+        "comparatorId": "POSTHOC_REFERENCE",
+        "status": "COMPUTED_SAME_CASE_INTERSECTION",
+        "caseCount": 65,
+        "routerMetrics": {
+          "modelId": "M2-WORK-HR01",
+          "status": "COMPUTED",
+          "caseCount": 65,
+          "workCount": 43,
+          "actualTotal": 8445169.398700003,
+          "predictionTotal": 8854394.646650262,
+          "absoluteErrorTotal": 2295740.0926227234,
+          "wape": 0.27184062086144956,
+          "signedBias": 0.04845672462333949,
+          "mae": 35319.0783480419,
+          "medianAbsoluteError": 14307.32058663998,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 0
+        },
+        "comparatorMetrics": {
+          "modelId": "POSTHOC_REFERENCE",
+          "status": "COMPUTED",
+          "caseCount": 65,
+          "workCount": 43,
+          "actualTotal": 8445169.398700003,
+          "predictionTotal": 9406795.000900004,
+          "absoluteErrorTotal": 2239146.8405999993,
+          "wape": 0.2651393636869711,
+          "signedBias": 0.11386694059067995,
+          "mae": 34448.412932307685,
+          "medianAbsoluteError": 13319.371999999996,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 0
+        },
+        "relativeFva": -0.02527447106039708
+      },
+      "selectionSummary": {
+        "selectionCount": 5,
+        "selectedPredictionRouteCount": 5,
+        "abstainCount": 0,
+        "fallbackSelectionCount": 3,
+        "rollingInnerSelectionCount": 2,
+        "bySelectedModelId": {
+          "M2-WORK-OA03": 4,
+          "M2-WORK-CRMR01": 1
+        },
+        "bySelectionReason": {
+          "INSUFFICIENT_MATURE_SELECTION_ORIGINS_OPERATIONAL_FALLBACK": 3,
+          "LOWEST_HISTORICAL_SAME_CASE_WAPE_AFTER_BIAS_GUARD": 2
+        }
+      },
+      "extremeWorkContribution": {
+        "anonymousWorkCount": 43,
+        "largestWorkAbsoluteErrorContribution": 0.34742409487512266,
+        "topFiveWorksAbsoluteErrorContribution": 0.6045296093092075,
+        "workIdentityPublished": false
+      },
+      "fallbackPredictionShare": 0.6153846153846154,
+      "decision": {
+        "status": "HORIZON_ROUTER_NOT_CONFIRMED",
+        "reason": "NO_DIRECTIONAL_ROUTER_IMPROVEMENT",
+        "conditions": {
+          "materialFva": false,
+          "biasGuardPass": true,
+          "bootstrapSupports": false,
+          "majorityTimeBlocksImprove": false,
+          "timeBlockWinShare": 0.4,
+          "extremeWorkGuardPass": true,
+          "fallbackGuardPass": false
+        }
+      }
+    },
+    {
+      "evaluationSetId": "ROUTER-PRIMARY_ROLLING-CORE80-H12",
+      "evaluationFamily": "PRIMARY_ROLLING",
+      "populationId": "CORE80",
+      "grain": "WORK_TOTAL",
+      "horizonMonths": 12,
+      "status": "COMPUTED_SAME_CASE_INTERSECTION",
+      "outerOriginCount": 4,
+      "sameCaseCount": 47,
+      "workCount": 32,
+      "routerMetrics": {
+        "modelId": "M2-WORK-HR01",
+        "status": "COMPUTED",
+        "caseCount": 47,
+        "workCount": 32,
+        "actualTotal": 10435063.0147,
+        "predictionTotal": 10522097.041700592,
+        "absoluteErrorTotal": 2597486.1453061933,
+        "wape": 0.2489190665784273,
+        "signedBias": 0.008340536791966386,
+        "mae": 55265.66266608922,
+        "medianAbsoluteError": 29832.689124036795,
+        "zeroActualFalsePositiveError": 0,
+        "zeroPredictionPositiveActualMissError": 0
+      },
+      "singleModelMetrics": [
+        {
+          "modelId": "M2-WORK-OA03",
+          "status": "COMPUTED",
+          "caseCount": 47,
+          "workCount": 32,
+          "actualTotal": 10435063.0147,
+          "predictionTotal": 10522097.041700592,
+          "absoluteErrorTotal": 2597486.1453061933,
+          "wape": 0.2489190665784273,
+          "signedBias": 0.008340536791966386,
+          "mae": 55265.66266608922,
+          "medianAbsoluteError": 29832.689124036795,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 0
+        },
+        {
+          "modelId": "M2-WORK-CRMR01",
+          "status": "COMPUTED",
+          "caseCount": 47,
+          "workCount": 32,
+          "actualTotal": 10435063.0147,
+          "predictionTotal": 13666454.527699996,
+          "absoluteErrorTotal": 3962587.950399999,
+          "wape": 0.3797378075070417,
+          "signedBias": 0.30966669855734424,
+          "mae": 84310.38192340423,
+          "medianAbsoluteError": 25479.61099999999,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 0
+        }
+      ],
+      "strongestSingleModelId": "M2-WORK-OA03",
+      "strongestSingleMetrics": {
+        "modelId": "M2-WORK-OA03",
+        "status": "COMPUTED",
+        "caseCount": 47,
+        "workCount": 32,
+        "actualTotal": 10435063.0147,
+        "predictionTotal": 10522097.041700592,
+        "absoluteErrorTotal": 2597486.1453061933,
+        "wape": 0.2489190665784273,
+        "signedBias": 0.008340536791966386,
+        "mae": 55265.66266608922,
+        "medianAbsoluteError": 29832.689124036795,
+        "zeroActualFalsePositiveError": 0,
+        "zeroPredictionPositiveActualMissError": 0
+      },
+      "relativeFva": 0,
+      "absoluteBiasWorsening": 0,
+      "pairedBootstrap": {
+        "status": "COMPUTED",
+        "method": "paired_standard_work_cluster_resample",
+        "iterations": 2000,
+        "seed": 20307634,
+        "workCount": 32,
+        "improvement95": {
+          "lower": 0,
+          "median": 0,
+          "upper": 0
+        }
+      },
+      "independentTimeBlocks": [
+        {
+          "blockId": "TIME_BLOCK_001",
+          "caseCount": 17,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.5646090001141236,
+          "baselineModelId": "M2-WORK-OA03",
+          "baselineWape": 0.5646090001141236,
+          "winnerModelId": null
+        },
+        {
+          "blockId": "TIME_BLOCK_002",
+          "caseCount": 10,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 1.041827184523683,
+          "baselineModelId": "M2-WORK-OA03",
+          "baselineWape": 1.041827184523683,
+          "winnerModelId": null
+        },
+        {
+          "blockId": "TIME_BLOCK_003",
+          "caseCount": 13,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.19395048994374972,
+          "baselineModelId": "M2-WORK-OA03",
+          "baselineWape": 0.19395048994374972,
+          "winnerModelId": null
+        },
+        {
+          "blockId": "TIME_BLOCK_004",
+          "caseCount": 7,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.1100900393573064,
+          "baselineModelId": "M2-WORK-OA03",
+          "baselineWape": 0.1100900393573064,
+          "winnerModelId": null
+        }
+      ],
+      "yearBlocks": [
+        {
+          "blockId": "2020",
+          "caseCount": 17,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.5646090001141236,
+          "baselineModelId": "M2-WORK-OA03",
+          "baselineWape": 0.5646090001141236,
+          "winnerModelId": null
+        },
+        {
+          "blockId": "2021",
+          "caseCount": 23,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.2719589214223921,
+          "baselineModelId": "M2-WORK-OA03",
+          "baselineWape": 0.2719589214223921,
+          "winnerModelId": null
+        },
+        {
+          "blockId": "2022",
+          "caseCount": 7,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.1100900393573064,
+          "baselineModelId": "M2-WORK-OA03",
+          "baselineWape": 0.1100900393573064,
+          "winnerModelId": null
+        }
+      ],
+      "currentFallbackComparison": {
+        "comparatorId": "CURRENT_OPERATIONAL_FALLBACK",
+        "status": "COMPUTED_SAME_CASE_INTERSECTION",
+        "caseCount": 47,
+        "routerMetrics": {
+          "modelId": "M2-WORK-HR01",
+          "status": "COMPUTED",
+          "caseCount": 47,
+          "workCount": 32,
+          "actualTotal": 10435063.0147,
+          "predictionTotal": 10522097.041700592,
+          "absoluteErrorTotal": 2597486.1453061933,
+          "wape": 0.2489190665784273,
+          "signedBias": 0.008340536791966386,
+          "mae": 55265.66266608922,
+          "medianAbsoluteError": 29832.689124036795,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 0
+        },
+        "comparatorMetrics": {
+          "modelId": "CURRENT_OPERATIONAL_FALLBACK",
+          "status": "COMPUTED",
+          "caseCount": 47,
+          "workCount": 32,
+          "actualTotal": 10435063.0147,
+          "predictionTotal": 10522097.041700592,
+          "absoluteErrorTotal": 2597486.1453061933,
+          "wape": 0.2489190665784273,
+          "signedBias": 0.008340536791966386,
+          "mae": 55265.66266608922,
+          "medianAbsoluteError": 29832.689124036795,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 0
+        },
+        "relativeFva": 0
+      },
+      "posthocReferenceComparison": {
+        "comparatorId": "POSTHOC_REFERENCE",
+        "status": "COMPUTED_SAME_CASE_INTERSECTION",
+        "caseCount": 47,
+        "routerMetrics": {
+          "modelId": "M2-WORK-HR01",
+          "status": "COMPUTED",
+          "caseCount": 47,
+          "workCount": 32,
+          "actualTotal": 10435063.0147,
+          "predictionTotal": 10522097.041700592,
+          "absoluteErrorTotal": 2597486.1453061933,
+          "wape": 0.2489190665784273,
+          "signedBias": 0.008340536791966386,
+          "mae": 55265.66266608922,
+          "medianAbsoluteError": 29832.689124036795,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 0
+        },
+        "comparatorMetrics": {
+          "modelId": "POSTHOC_REFERENCE",
+          "status": "COMPUTED",
+          "caseCount": 47,
+          "workCount": 32,
+          "actualTotal": 10435063.0147,
+          "predictionTotal": 10522097.041700592,
+          "absoluteErrorTotal": 2597486.1453061933,
+          "wape": 0.2489190665784273,
+          "signedBias": 0.008340536791966386,
+          "mae": 55265.66266608922,
+          "medianAbsoluteError": 29832.689124036795,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 0
+        },
+        "relativeFva": 0
+      },
+      "selectionSummary": {
+        "selectionCount": 4,
+        "selectedPredictionRouteCount": 4,
+        "abstainCount": 0,
+        "fallbackSelectionCount": 4,
+        "rollingInnerSelectionCount": 0,
+        "bySelectedModelId": {
+          "M2-WORK-OA03": 4
+        },
+        "bySelectionReason": {
+          "INSUFFICIENT_MATURE_SELECTION_ORIGINS_OPERATIONAL_FALLBACK": 4
+        }
+      },
+      "extremeWorkContribution": {
+        "anonymousWorkCount": 32,
+        "largestWorkAbsoluteErrorContribution": 0.28655357213010996,
+        "topFiveWorksAbsoluteErrorContribution": 0.637138375812133,
+        "workIdentityPublished": false
+      },
+      "fallbackPredictionShare": 1,
+      "decision": {
+        "status": "HORIZON_ROUTER_NOT_CONFIRMED",
+        "reason": "NO_DIRECTIONAL_ROUTER_IMPROVEMENT",
+        "conditions": {
+          "materialFva": false,
+          "biasGuardPass": true,
+          "bootstrapSupports": false,
+          "majorityTimeBlocksImprove": false,
+          "timeBlockWinShare": 0,
+          "extremeWorkGuardPass": true,
+          "fallbackGuardPass": false
+        }
+      }
+    },
+    {
+      "evaluationSetId": "ROUTER-PRIMARY_ROLLING-CORE80-H36",
+      "evaluationFamily": "PRIMARY_ROLLING",
+      "populationId": "CORE80",
+      "grain": "WORK_TOTAL",
+      "horizonMonths": 36,
+      "status": "COMPUTED_SAME_CASE_INTERSECTION",
+      "outerOriginCount": 13,
+      "sameCaseCount": 408,
+      "workCount": 55,
+      "routerMetrics": {
+        "modelId": "M2-WORK-HR01",
+        "status": "COMPUTED",
+        "caseCount": 408,
+        "workCount": 55,
+        "actualTotal": 269248092.878,
+        "predictionTotal": 289592101.6526796,
+        "absoluteErrorTotal": 76708300.17431001,
+        "wape": 0.2848982117361462,
+        "signedBias": 0.07555859934687727,
+        "mae": 188010.5396429167,
+        "medianAbsoluteError": 96771.94483222858,
+        "zeroActualFalsePositiveError": 0,
+        "zeroPredictionPositiveActualMissError": 0
+      },
+      "singleModelMetrics": [
+        {
+          "modelId": "M2-WORK-LG01",
+          "status": "COMPUTED",
+          "caseCount": 408,
+          "workCount": 55,
+          "actualTotal": 269248092.878,
+          "predictionTotal": 289592101.6526796,
+          "absoluteErrorTotal": 76708300.17431001,
+          "wape": 0.2848982117361462,
+          "signedBias": 0.07555859934687727,
+          "mae": 188010.5396429167,
+          "medianAbsoluteError": 96771.94483222858,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 0
+        },
+        {
+          "modelId": "M2-WORK-CRMR01",
+          "status": "COMPUTED",
+          "caseCount": 408,
+          "workCount": 55,
+          "actualTotal": 269248092.878,
+          "predictionTotal": 5281204487.072757,
+          "absoluteErrorTotal": 5021368216.58871,
+          "wape": 18.649596225232912,
+          "signedBias": 18.614640277009286,
+          "mae": 12307275.040658602,
+          "medianAbsoluteError": 370900.18153975834,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 738432.531
+        }
+      ],
+      "strongestSingleModelId": "M2-WORK-LG01",
+      "strongestSingleMetrics": {
+        "modelId": "M2-WORK-LG01",
+        "status": "COMPUTED",
+        "caseCount": 408,
+        "workCount": 55,
+        "actualTotal": 269248092.878,
+        "predictionTotal": 289592101.6526796,
+        "absoluteErrorTotal": 76708300.17431001,
+        "wape": 0.2848982117361462,
+        "signedBias": 0.07555859934687727,
+        "mae": 188010.5396429167,
+        "medianAbsoluteError": 96771.94483222858,
+        "zeroActualFalsePositiveError": 0,
+        "zeroPredictionPositiveActualMissError": 0
+      },
+      "relativeFva": 0,
+      "absoluteBiasWorsening": 0,
+      "pairedBootstrap": {
+        "status": "COMPUTED",
+        "method": "paired_standard_work_cluster_resample",
+        "iterations": 2000,
+        "seed": 20295674,
+        "workCount": 55,
+        "improvement95": {
+          "lower": 0,
+          "median": 0,
+          "upper": 0
+        }
+      },
+      "independentTimeBlocks": [
+        {
+          "blockId": "TIME_BLOCK_001",
+          "caseCount": 35,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.258028452457481,
+          "baselineModelId": "M2-WORK-LG01",
+          "baselineWape": 0.258028452457481,
+          "winnerModelId": null
+        },
+        {
+          "blockId": "TIME_BLOCK_002",
+          "caseCount": 27,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.23380063263390824,
+          "baselineModelId": "M2-WORK-LG01",
+          "baselineWape": 0.23380063263390824,
+          "winnerModelId": null
+        },
+        {
+          "blockId": "TIME_BLOCK_003",
+          "caseCount": 28,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.23778447883160217,
+          "baselineModelId": "M2-WORK-LG01",
+          "baselineWape": 0.23778447883160217,
+          "winnerModelId": null
+        },
+        {
+          "blockId": "TIME_BLOCK_004",
+          "caseCount": 23,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.21411608191666112,
+          "baselineModelId": "M2-WORK-LG01",
+          "baselineWape": 0.21411608191666112,
+          "winnerModelId": null
+        },
+        {
+          "blockId": "TIME_BLOCK_005",
+          "caseCount": 26,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.22718225128342817,
+          "baselineModelId": "M2-WORK-LG01",
+          "baselineWape": 0.22718225128342817,
+          "winnerModelId": null
+        },
+        {
+          "blockId": "TIME_BLOCK_006",
+          "caseCount": 27,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.21952066036153134,
+          "baselineModelId": "M2-WORK-LG01",
+          "baselineWape": 0.21952066036153134,
+          "winnerModelId": null
+        },
+        {
+          "blockId": "TIME_BLOCK_007",
+          "caseCount": 29,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.2605540275598136,
+          "baselineModelId": "M2-WORK-LG01",
+          "baselineWape": 0.2605540275598136,
+          "winnerModelId": null
+        },
+        {
+          "blockId": "TIME_BLOCK_008",
+          "caseCount": 30,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.24367381215811945,
+          "baselineModelId": "M2-WORK-LG01",
+          "baselineWape": 0.24367381215811945,
+          "winnerModelId": null
+        },
+        {
+          "blockId": "TIME_BLOCK_009",
+          "caseCount": 31,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.28120026662543557,
+          "baselineModelId": "M2-WORK-LG01",
+          "baselineWape": 0.28120026662543557,
+          "winnerModelId": null
+        },
+        {
+          "blockId": "TIME_BLOCK_010",
+          "caseCount": 35,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.3317623425518763,
+          "baselineModelId": "M2-WORK-LG01",
+          "baselineWape": 0.3317623425518763,
+          "winnerModelId": null
+        },
+        {
+          "blockId": "TIME_BLOCK_011",
+          "caseCount": 37,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.34577027623250695,
+          "baselineModelId": "M2-WORK-LG01",
+          "baselineWape": 0.34577027623250695,
+          "winnerModelId": null
+        },
+        {
+          "blockId": "TIME_BLOCK_012",
+          "caseCount": 39,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.39289253716480843,
+          "baselineModelId": "M2-WORK-LG01",
+          "baselineWape": 0.39289253716480843,
+          "winnerModelId": null
+        },
+        {
+          "blockId": "TIME_BLOCK_013",
+          "caseCount": 41,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.39473518614860126,
+          "baselineModelId": "M2-WORK-LG01",
+          "baselineWape": 0.39473518614860126,
+          "winnerModelId": null
+        }
+      ],
+      "yearBlocks": [
+        {
+          "blockId": "2021",
+          "caseCount": 35,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.258028452457481,
+          "baselineModelId": "M2-WORK-LG01",
+          "baselineWape": 0.258028452457481,
+          "winnerModelId": null
+        },
+        {
+          "blockId": "2022",
+          "caseCount": 373,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.2868246476488126,
+          "baselineModelId": "M2-WORK-LG01",
+          "baselineWape": 0.2868246476488126,
+          "winnerModelId": null
+        }
+      ],
+      "currentFallbackComparison": {
+        "comparatorId": "CURRENT_OPERATIONAL_FALLBACK",
+        "status": "COMPUTED_SAME_CASE_INTERSECTION",
+        "caseCount": 408,
+        "routerMetrics": {
+          "modelId": "M2-WORK-HR01",
+          "status": "COMPUTED",
+          "caseCount": 408,
+          "workCount": 55,
+          "actualTotal": 269248092.878,
+          "predictionTotal": 289592101.6526796,
+          "absoluteErrorTotal": 76708300.17431001,
+          "wape": 0.2848982117361462,
+          "signedBias": 0.07555859934687727,
+          "mae": 188010.5396429167,
+          "medianAbsoluteError": 96771.94483222858,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 0
+        },
+        "comparatorMetrics": {
+          "modelId": "CURRENT_OPERATIONAL_FALLBACK",
+          "status": "COMPUTED",
+          "caseCount": 408,
+          "workCount": 55,
+          "actualTotal": 269248092.878,
+          "predictionTotal": 289592101.6526796,
+          "absoluteErrorTotal": 76708300.17431001,
+          "wape": 0.2848982117361462,
+          "signedBias": 0.07555859934687727,
+          "mae": 188010.5396429167,
+          "medianAbsoluteError": 96771.94483222858,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 0
+        },
+        "relativeFva": 0
+      },
+      "posthocReferenceComparison": {
+        "comparatorId": "POSTHOC_REFERENCE",
+        "status": "COMPUTED_SAME_CASE_INTERSECTION",
+        "caseCount": 408,
+        "routerMetrics": {
+          "modelId": "M2-WORK-HR01",
+          "status": "COMPUTED",
+          "caseCount": 408,
+          "workCount": 55,
+          "actualTotal": 269248092.878,
+          "predictionTotal": 289592101.6526796,
+          "absoluteErrorTotal": 76708300.17431001,
+          "wape": 0.2848982117361462,
+          "signedBias": 0.07555859934687727,
+          "mae": 188010.5396429167,
+          "medianAbsoluteError": 96771.94483222858,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 0
+        },
+        "comparatorMetrics": {
+          "modelId": "POSTHOC_REFERENCE",
+          "status": "COMPUTED",
+          "caseCount": 408,
+          "workCount": 55,
+          "actualTotal": 269248092.878,
+          "predictionTotal": 289592101.6526796,
+          "absoluteErrorTotal": 76708300.17431001,
+          "wape": 0.2848982117361462,
+          "signedBias": 0.07555859934687727,
+          "mae": 188010.5396429167,
+          "medianAbsoluteError": 96771.94483222858,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 0
+        },
+        "relativeFva": 0
+      },
+      "selectionSummary": {
+        "selectionCount": 13,
+        "selectedPredictionRouteCount": 13,
+        "abstainCount": 0,
+        "fallbackSelectionCount": 13,
+        "rollingInnerSelectionCount": 0,
+        "bySelectedModelId": {
+          "M2-WORK-LG01": 13
+        },
+        "bySelectionReason": {
+          "OA03_UNSUPPORTED_FOR_CELL_LG01_FALLBACK": 13
+        }
+      },
+      "extremeWorkContribution": {
+        "anonymousWorkCount": 55,
+        "largestWorkAbsoluteErrorContribution": 0.10644996417194083,
+        "topFiveWorksAbsoluteErrorContribution": 0.4724267968086454,
+        "workIdentityPublished": false
+      },
+      "fallbackPredictionShare": 1,
+      "decision": {
+        "status": "HORIZON_ROUTER_NOT_CONFIRMED",
+        "reason": "NO_DIRECTIONAL_ROUTER_IMPROVEMENT",
+        "conditions": {
+          "materialFva": false,
+          "biasGuardPass": true,
+          "bootstrapSupports": false,
+          "majorityTimeBlocksImprove": false,
+          "timeBlockWinShare": 0,
+          "extremeWorkGuardPass": true,
+          "fallbackGuardPass": false
+        }
+      }
+    },
+    {
+      "evaluationSetId": "ROUTER-PRIMARY_ROLLING-CORE90-H3",
+      "evaluationFamily": "PRIMARY_ROLLING",
+      "populationId": "CORE90",
+      "grain": "WORK_TOTAL",
+      "horizonMonths": 3,
+      "status": "COMPUTED_SAME_CASE_INTERSECTION",
+      "outerOriginCount": 5,
+      "sameCaseCount": 158,
+      "workCount": 90,
+      "routerMetrics": {
+        "modelId": "M2-WORK-HR01",
+        "status": "COMPUTED",
+        "caseCount": 158,
+        "workCount": 90,
+        "actualTotal": 4755575.613400001,
+        "predictionTotal": 4680301.272996186,
+        "absoluteErrorTotal": 1390727.3026624997,
+        "wape": 0.2924414236509634,
+        "signedBias": -0.015828649678434482,
+        "mae": 8802.071535838606,
+        "medianAbsoluteError": 2637.3867399965,
+        "zeroActualFalsePositiveError": 7870.963629942713,
+        "zeroPredictionPositiveActualMissError": 111782.135
+      },
+      "singleModelMetrics": [
+        {
+          "modelId": "M2-WORK-CRMR01",
+          "status": "COMPUTED",
+          "caseCount": 158,
+          "workCount": 90,
+          "actualTotal": 4755575.613400001,
+          "predictionTotal": 5934472.377900001,
+          "absoluteErrorTotal": 1333558.8601000002,
+          "wape": 0.2804200728808456,
+          "signedBias": 0.24789780677194337,
+          "mae": 8440.24595,
+          "medianAbsoluteError": 1422.34195,
+          "zeroActualFalsePositiveError": 1709.8500000000001,
+          "zeroPredictionPositiveActualMissError": 2128.392
+        },
+        {
+          "modelId": "M2-WORK-OA03",
+          "status": "COMPUTED",
+          "caseCount": 158,
+          "workCount": 90,
+          "actualTotal": 4755575.613400001,
+          "predictionTotal": 4680301.272996186,
+          "absoluteErrorTotal": 1390727.3026624997,
+          "wape": 0.2924414236509634,
+          "signedBias": -0.015828649678434482,
+          "mae": 8802.071535838606,
+          "medianAbsoluteError": 2637.3867399965,
+          "zeroActualFalsePositiveError": 7870.963629942713,
+          "zeroPredictionPositiveActualMissError": 111782.135
+        }
+      ],
+      "strongestSingleModelId": "M2-WORK-CRMR01",
+      "strongestSingleMetrics": {
+        "modelId": "M2-WORK-CRMR01",
+        "status": "COMPUTED",
+        "caseCount": 158,
+        "workCount": 90,
+        "actualTotal": 4755575.613400001,
+        "predictionTotal": 5934472.377900001,
+        "absoluteErrorTotal": 1333558.8601000002,
+        "wape": 0.2804200728808456,
+        "signedBias": 0.24789780677194337,
+        "mae": 8440.24595,
+        "medianAbsoluteError": 1422.34195,
+        "zeroActualFalsePositiveError": 1709.8500000000001,
+        "zeroPredictionPositiveActualMissError": 2128.392
+      },
+      "relativeFva": -0.04286908082798277,
+      "absoluteBiasWorsening": -0.2320691570935089,
+      "pairedBootstrap": {
+        "status": "COMPUTED",
+        "method": "paired_standard_work_cluster_resample",
+        "iterations": 2000,
+        "seed": 20294672,
+        "workCount": 90,
+        "improvement95": {
+          "lower": -0.17645532542045658,
+          "median": -0.02006629680454719,
+          "upper": 0.42143706660238966
+        }
+      },
+      "independentTimeBlocks": [
+        {
+          "blockId": "TIME_BLOCK_001",
+          "caseCount": 26,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.5450360698901271,
+          "baselineModelId": "M2-WORK-CRMR01",
+          "baselineWape": 1.5443435376123904,
+          "winnerModelId": "M2-WORK-HR01"
+        },
+        {
+          "blockId": "TIME_BLOCK_002",
+          "caseCount": 23,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.7239487856424104,
+          "baselineModelId": "M2-WORK-CRMR01",
+          "baselineWape": 0.32353965863841805,
+          "winnerModelId": "M2-WORK-CRMR01"
+        },
+        {
+          "blockId": "TIME_BLOCK_003",
+          "caseCount": 40,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.23995592951104533,
+          "baselineModelId": "M2-WORK-CRMR01",
+          "baselineWape": 0.09184588131238608,
+          "winnerModelId": "M2-WORK-CRMR01"
+        },
+        {
+          "blockId": "TIME_BLOCK_004",
+          "caseCount": 26,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.21205518970452528,
+          "baselineModelId": "M2-WORK-CRMR01",
+          "baselineWape": 0.10842223496096726,
+          "winnerModelId": "M2-WORK-CRMR01"
+        },
+        {
+          "blockId": "TIME_BLOCK_005",
+          "caseCount": 43,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.2906901922883254,
+          "baselineModelId": "M2-WORK-CRMR01",
+          "baselineWape": 0.25502232596056207,
+          "winnerModelId": "M2-WORK-CRMR01"
+        }
+      ],
+      "yearBlocks": [
+        {
+          "blockId": "2020",
+          "caseCount": 26,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.5450360698901271,
+          "baselineModelId": "M2-WORK-CRMR01",
+          "baselineWape": 1.5443435376123904,
+          "winnerModelId": "M2-WORK-HR01"
+        },
+        {
+          "blockId": "2021",
+          "caseCount": 63,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.29741631595377577,
+          "baselineModelId": "M2-WORK-CRMR01",
+          "baselineWape": 0.11935292777572536,
+          "winnerModelId": "M2-WORK-CRMR01"
+        },
+        {
+          "blockId": "2022",
+          "caseCount": 69,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.2563447484322954,
+          "baselineModelId": "M2-WORK-CRMR01",
+          "baselineWape": 0.19099174124290125,
+          "winnerModelId": "M2-WORK-CRMR01"
+        }
+      ],
+      "currentFallbackComparison": {
+        "comparatorId": "CURRENT_OPERATIONAL_FALLBACK",
+        "status": "COMPUTED_SAME_CASE_INTERSECTION",
+        "caseCount": 158,
+        "routerMetrics": {
+          "modelId": "M2-WORK-HR01",
+          "status": "COMPUTED",
+          "caseCount": 158,
+          "workCount": 90,
+          "actualTotal": 4755575.613400001,
+          "predictionTotal": 4680301.272996186,
+          "absoluteErrorTotal": 1390727.3026624997,
+          "wape": 0.2924414236509634,
+          "signedBias": -0.015828649678434482,
+          "mae": 8802.071535838606,
+          "medianAbsoluteError": 2637.3867399965,
+          "zeroActualFalsePositiveError": 7870.963629942713,
+          "zeroPredictionPositiveActualMissError": 111782.135
+        },
+        "comparatorMetrics": {
+          "modelId": "CURRENT_OPERATIONAL_FALLBACK",
+          "status": "COMPUTED",
+          "caseCount": 158,
+          "workCount": 90,
+          "actualTotal": 4755575.613400001,
+          "predictionTotal": 4680301.272996186,
+          "absoluteErrorTotal": 1390727.3026624997,
+          "wape": 0.2924414236509634,
+          "signedBias": -0.015828649678434482,
+          "mae": 8802.071535838606,
+          "medianAbsoluteError": 2637.3867399965,
+          "zeroActualFalsePositiveError": 7870.963629942713,
+          "zeroPredictionPositiveActualMissError": 111782.135
+        },
+        "relativeFva": 0
+      },
+      "posthocReferenceComparison": {
+        "comparatorId": "POSTHOC_REFERENCE",
+        "status": "COMPUTED_SAME_CASE_INTERSECTION",
+        "caseCount": 158,
+        "routerMetrics": {
+          "modelId": "M2-WORK-HR01",
+          "status": "COMPUTED",
+          "caseCount": 158,
+          "workCount": 90,
+          "actualTotal": 4755575.613400001,
+          "predictionTotal": 4680301.272996186,
+          "absoluteErrorTotal": 1390727.3026624997,
+          "wape": 0.2924414236509634,
+          "signedBias": -0.015828649678434482,
+          "mae": 8802.071535838606,
+          "medianAbsoluteError": 2637.3867399965,
+          "zeroActualFalsePositiveError": 7870.963629942713,
+          "zeroPredictionPositiveActualMissError": 111782.135
+        },
+        "comparatorMetrics": {
+          "modelId": "POSTHOC_REFERENCE",
+          "status": "COMPUTED",
+          "caseCount": 158,
+          "workCount": 90,
+          "actualTotal": 4755575.613400001,
+          "predictionTotal": 4680301.272996186,
+          "absoluteErrorTotal": 1390727.3026624997,
+          "wape": 0.2924414236509634,
+          "signedBias": -0.015828649678434482,
+          "mae": 8802.071535838606,
+          "medianAbsoluteError": 2637.3867399965,
+          "zeroActualFalsePositiveError": 7870.963629942713,
+          "zeroPredictionPositiveActualMissError": 111782.135
+        },
+        "relativeFva": 0
+      },
+      "selectionSummary": {
+        "selectionCount": 5,
+        "selectedPredictionRouteCount": 5,
+        "abstainCount": 0,
+        "fallbackSelectionCount": 3,
+        "rollingInnerSelectionCount": 2,
+        "bySelectedModelId": {
+          "M2-WORK-OA03": 5
+        },
+        "bySelectionReason": {
+          "INSUFFICIENT_MATURE_SELECTION_ORIGINS_OPERATIONAL_FALLBACK": 3,
+          "LOWEST_HISTORICAL_SAME_CASE_WAPE_AFTER_BIAS_GUARD": 2
+        }
+      },
+      "extremeWorkContribution": {
+        "anonymousWorkCount": 90,
+        "largestWorkAbsoluteErrorContribution": 0.2500480956678177,
+        "topFiveWorksAbsoluteErrorContribution": 0.5531200756617477,
+        "workIdentityPublished": false
+      },
+      "fallbackPredictionShare": 0.5632911392405063,
+      "decision": {
+        "status": "HORIZON_ROUTER_NOT_CONFIRMED",
+        "reason": "NO_DIRECTIONAL_ROUTER_IMPROVEMENT",
+        "conditions": {
+          "materialFva": false,
+          "biasGuardPass": true,
+          "bootstrapSupports": false,
+          "majorityTimeBlocksImprove": false,
+          "timeBlockWinShare": 0.2,
+          "extremeWorkGuardPass": true,
+          "fallbackGuardPass": false
+        }
+      }
+    },
+    {
+      "evaluationSetId": "ROUTER-PRIMARY_ROLLING-CORE90-H6",
+      "evaluationFamily": "PRIMARY_ROLLING",
+      "populationId": "CORE90",
+      "grain": "WORK_TOTAL",
+      "horizonMonths": 6,
+      "status": "COMPUTED_SAME_CASE_INTERSECTION",
+      "outerOriginCount": 5,
+      "sameCaseCount": 158,
+      "workCount": 90,
+      "routerMetrics": {
+        "modelId": "M2-WORK-HR01",
+        "status": "COMPUTED",
+        "caseCount": 158,
+        "workCount": 90,
+        "actualTotal": 9187536.16490001,
+        "predictionTotal": 9754874.321140047,
+        "absoluteErrorTotal": 2790427.4454863453,
+        "wape": 0.30371879853348194,
+        "signedBias": 0.06175084876481802,
+        "mae": 17660.933199280666,
+        "medianAbsoluteError": 5776.2504583400005,
+        "zeroActualFalsePositiveError": 4083.8410000000003,
+        "zeroPredictionPositiveActualMissError": 0
+      },
+      "singleModelMetrics": [
+        {
+          "modelId": "M2-WORK-CRMR01",
+          "status": "COMPUTED",
+          "caseCount": 158,
+          "workCount": 90,
+          "actualTotal": 9187536.16490001,
+          "predictionTotal": 10395525.337100005,
+          "absoluteErrorTotal": 2715030.0220000017,
+          "wape": 0.295512308552589,
+          "signedBias": 0.13148129710933673,
+          "mae": 17183.734316455706,
+          "medianAbsoluteError": 5975.143000000001,
+          "zeroActualFalsePositiveError": 4083.8410000000003,
+          "zeroPredictionPositiveActualMissError": 3680.0132999999996
+        },
+        {
+          "modelId": "M2-WORK-OA03",
+          "status": "COMPUTED",
+          "caseCount": 158,
+          "workCount": 90,
+          "actualTotal": 9187536.16490001,
+          "predictionTotal": 9360599.625992378,
+          "absoluteErrorTotal": 2910421.6593720475,
+          "wape": 0.3167793418317088,
+          "signedBias": 0.018836765155117216,
+          "mae": 18420.390249190175,
+          "medianAbsoluteError": 5706.600624990004,
+          "zeroActualFalsePositiveError": 4683.313059865425,
+          "zeroPredictionPositiveActualMissError": 221995.44299999997
+        }
+      ],
+      "strongestSingleModelId": "M2-WORK-CRMR01",
+      "strongestSingleMetrics": {
+        "modelId": "M2-WORK-CRMR01",
+        "status": "COMPUTED",
+        "caseCount": 158,
+        "workCount": 90,
+        "actualTotal": 9187536.16490001,
+        "predictionTotal": 10395525.337100005,
+        "absoluteErrorTotal": 2715030.0220000017,
+        "wape": 0.295512308552589,
+        "signedBias": 0.13148129710933673,
+        "mae": 17183.734316455706,
+        "medianAbsoluteError": 5975.143000000001,
+        "zeroActualFalsePositiveError": 4083.8410000000003,
+        "zeroPredictionPositiveActualMissError": 3680.0132999999996
+      },
+      "relativeFva": -0.02777038297013116,
+      "absoluteBiasWorsening": -0.06973044834451872,
+      "pairedBootstrap": {
+        "status": "COMPUTED",
+        "method": "paired_standard_work_cluster_resample",
+        "iterations": 2000,
+        "seed": 20261818,
+        "workCount": 90,
+        "improvement95": {
+          "lower": -0.05805525360305558,
+          "median": -0.00767130462237553,
+          "upper": 0.06163607339765213
+        }
+      },
+      "independentTimeBlocks": [
+        {
+          "blockId": "TIME_BLOCK_001",
+          "caseCount": 26,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.49755701961774673,
+          "baselineModelId": "M2-WORK-CRMR01",
+          "baselineWape": 0.5740014318481328,
+          "winnerModelId": "M2-WORK-HR01"
+        },
+        {
+          "blockId": "TIME_BLOCK_002",
+          "caseCount": 23,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.8921925219601161,
+          "baselineModelId": "M2-WORK-CRMR01",
+          "baselineWape": 0.9946515295302546,
+          "winnerModelId": "M2-WORK-HR01"
+        },
+        {
+          "blockId": "TIME_BLOCK_003",
+          "caseCount": 40,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.25157384041459474,
+          "baselineModelId": "M2-WORK-CRMR01",
+          "baselineWape": 0.2264591874196234,
+          "winnerModelId": "M2-WORK-CRMR01"
+        },
+        {
+          "blockId": "TIME_BLOCK_004",
+          "caseCount": 26,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.19677385773788428,
+          "baselineModelId": "M2-WORK-CRMR01",
+          "baselineWape": 0.15491180187310746,
+          "winnerModelId": "M2-WORK-CRMR01"
+        },
+        {
+          "blockId": "TIME_BLOCK_005",
+          "caseCount": 43,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.3220644949394512,
+          "baselineModelId": "M2-WORK-CRMR01",
+          "baselineWape": 0.3220644949394512,
+          "winnerModelId": null
+        }
+      ],
+      "yearBlocks": [
+        {
+          "blockId": "2020",
+          "caseCount": 26,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.49755701961774673,
+          "baselineModelId": "M2-WORK-CRMR01",
+          "baselineWape": 0.5740014318481328,
+          "winnerModelId": "M2-WORK-HR01"
+        },
+        {
+          "blockId": "2021",
+          "caseCount": 63,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.32373854821507364,
+          "baselineModelId": "M2-WORK-CRMR01",
+          "baselineWape": 0.31299487159485917,
+          "winnerModelId": "M2-WORK-CRMR01"
+        },
+        {
+          "blockId": "2022",
+          "caseCount": 69,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.2670875097659897,
+          "baselineModelId": "M2-WORK-CRMR01",
+          "baselineWape": 0.24871862222568714,
+          "winnerModelId": "M2-WORK-CRMR01"
+        }
+      ],
+      "currentFallbackComparison": {
+        "comparatorId": "CURRENT_OPERATIONAL_FALLBACK",
+        "status": "COMPUTED_SAME_CASE_INTERSECTION",
+        "caseCount": 158,
+        "routerMetrics": {
+          "modelId": "M2-WORK-HR01",
+          "status": "COMPUTED",
+          "caseCount": 158,
+          "workCount": 90,
+          "actualTotal": 9187536.16490001,
+          "predictionTotal": 9754874.321140047,
+          "absoluteErrorTotal": 2790427.4454863453,
+          "wape": 0.30371879853348194,
+          "signedBias": 0.06175084876481802,
+          "mae": 17660.933199280666,
+          "medianAbsoluteError": 5776.2504583400005,
+          "zeroActualFalsePositiveError": 4083.8410000000003,
+          "zeroPredictionPositiveActualMissError": 0
+        },
+        "comparatorMetrics": {
+          "modelId": "CURRENT_OPERATIONAL_FALLBACK",
+          "status": "COMPUTED",
+          "caseCount": 158,
+          "workCount": 90,
+          "actualTotal": 9187536.16490001,
+          "predictionTotal": 9360599.625992378,
+          "absoluteErrorTotal": 2910421.6593720475,
+          "wape": 0.3167793418317088,
+          "signedBias": 0.018836765155117216,
+          "mae": 18420.390249190175,
+          "medianAbsoluteError": 5706.600624990004,
+          "zeroActualFalsePositiveError": 4683.313059865425,
+          "zeroPredictionPositiveActualMissError": 221995.44299999997
+        },
+        "relativeFva": 0.04122915093739089
+      },
+      "posthocReferenceComparison": {
+        "comparatorId": "POSTHOC_REFERENCE",
+        "status": "COMPUTED_SAME_CASE_INTERSECTION",
+        "caseCount": 158,
+        "routerMetrics": {
+          "modelId": "M2-WORK-HR01",
+          "status": "COMPUTED",
+          "caseCount": 158,
+          "workCount": 90,
+          "actualTotal": 9187536.16490001,
+          "predictionTotal": 9754874.321140047,
+          "absoluteErrorTotal": 2790427.4454863453,
+          "wape": 0.30371879853348194,
+          "signedBias": 0.06175084876481802,
+          "mae": 17660.933199280666,
+          "medianAbsoluteError": 5776.2504583400005,
+          "zeroActualFalsePositiveError": 4083.8410000000003,
+          "zeroPredictionPositiveActualMissError": 0
+        },
+        "comparatorMetrics": {
+          "modelId": "POSTHOC_REFERENCE",
+          "status": "COMPUTED",
+          "caseCount": 158,
+          "workCount": 90,
+          "actualTotal": 9187536.16490001,
+          "predictionTotal": 10395525.337100005,
+          "absoluteErrorTotal": 2715030.0220000017,
+          "wape": 0.295512308552589,
+          "signedBias": 0.13148129710933673,
+          "mae": 17183.734316455706,
+          "medianAbsoluteError": 5975.143000000001,
+          "zeroActualFalsePositiveError": 4083.8410000000003,
+          "zeroPredictionPositiveActualMissError": 3680.0132999999996
+        },
+        "relativeFva": -0.02777038297013116
+      },
+      "selectionSummary": {
+        "selectionCount": 5,
+        "selectedPredictionRouteCount": 5,
+        "abstainCount": 0,
+        "fallbackSelectionCount": 3,
+        "rollingInnerSelectionCount": 2,
+        "bySelectedModelId": {
+          "M2-WORK-OA03": 4,
+          "M2-WORK-CRMR01": 1
+        },
+        "bySelectionReason": {
+          "INSUFFICIENT_MATURE_SELECTION_ORIGINS_OPERATIONAL_FALLBACK": 3,
+          "LOWEST_HISTORICAL_SAME_CASE_WAPE_AFTER_BIAS_GUARD": 2
+        }
+      },
+      "extremeWorkContribution": {
+        "anonymousWorkCount": 90,
+        "largestWorkAbsoluteErrorContribution": 0.285832704605214,
+        "topFiveWorksAbsoluteErrorContribution": 0.515270886832339,
+        "workIdentityPublished": false
+      },
+      "fallbackPredictionShare": 0.5632911392405063,
+      "decision": {
+        "status": "HORIZON_ROUTER_NOT_CONFIRMED",
+        "reason": "NO_DIRECTIONAL_ROUTER_IMPROVEMENT",
+        "conditions": {
+          "materialFva": false,
+          "biasGuardPass": true,
+          "bootstrapSupports": false,
+          "majorityTimeBlocksImprove": false,
+          "timeBlockWinShare": 0.4,
+          "extremeWorkGuardPass": true,
+          "fallbackGuardPass": false
+        }
+      }
+    },
+    {
+      "evaluationSetId": "ROUTER-PRIMARY_ROLLING-CORE90-H12",
+      "evaluationFamily": "PRIMARY_ROLLING",
+      "populationId": "CORE90",
+      "grain": "WORK_TOTAL",
+      "horizonMonths": 12,
+      "status": "COMPUTED_SAME_CASE_INTERSECTION",
+      "outerOriginCount": 4,
+      "sameCaseCount": 115,
+      "workCount": 72,
+      "routerMetrics": {
+        "modelId": "M2-WORK-HR01",
+        "status": "COMPUTED",
+        "caseCount": 115,
+        "workCount": 72,
+        "actualTotal": 11478571.946299996,
+        "predictionTotal": 11827611.459879965,
+        "absoluteErrorTotal": 3475482.8400253598,
+        "wape": 0.3027800719710301,
+        "signedBias": 0.03040792140458533,
+        "mae": 30221.589913263997,
+        "medianAbsoluteError": 11751.361496036801,
+        "zeroActualFalsePositiveError": 0,
+        "zeroPredictionPositiveActualMissError": 0
+      },
+      "singleModelMetrics": [
+        {
+          "modelId": "M2-WORK-OA03",
+          "status": "COMPUTED",
+          "caseCount": 115,
+          "workCount": 72,
+          "actualTotal": 11478571.946299996,
+          "predictionTotal": 11827611.459879965,
+          "absoluteErrorTotal": 3475482.8400253598,
+          "wape": 0.3027800719710301,
+          "signedBias": 0.03040792140458533,
+          "mae": 30221.589913263997,
+          "medianAbsoluteError": 11751.361496036801,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 0
+        },
+        {
+          "modelId": "M2-WORK-CRMR01",
+          "status": "COMPUTED",
+          "caseCount": 115,
+          "workCount": 72,
+          "actualTotal": 11478571.946299996,
+          "predictionTotal": 15004437.649600001,
+          "absoluteErrorTotal": 4679344.1633,
+          "wape": 0.4076590873142839,
+          "signedBias": 0.30716936913363446,
+          "mae": 40689.94924608696,
+          "medianAbsoluteError": 9884.204000000003,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 0
+        }
+      ],
+      "strongestSingleModelId": "M2-WORK-OA03",
+      "strongestSingleMetrics": {
+        "modelId": "M2-WORK-OA03",
+        "status": "COMPUTED",
+        "caseCount": 115,
+        "workCount": 72,
+        "actualTotal": 11478571.946299996,
+        "predictionTotal": 11827611.459879965,
+        "absoluteErrorTotal": 3475482.8400253598,
+        "wape": 0.3027800719710301,
+        "signedBias": 0.03040792140458533,
+        "mae": 30221.589913263997,
+        "medianAbsoluteError": 11751.361496036801,
+        "zeroActualFalsePositiveError": 0,
+        "zeroPredictionPositiveActualMissError": 0
+      },
+      "relativeFva": 0,
+      "absoluteBiasWorsening": 0,
+      "pairedBootstrap": {
+        "status": "COMPUTED",
+        "method": "paired_standard_work_cluster_resample",
+        "iterations": 2000,
+        "seed": 20311485,
+        "workCount": 72,
+        "improvement95": {
+          "lower": 0,
+          "median": 0,
+          "upper": 0
+        }
+      },
+      "independentTimeBlocks": [
+        {
+          "blockId": "TIME_BLOCK_001",
+          "caseCount": 26,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.5696245191143624,
+          "baselineModelId": "M2-WORK-OA03",
+          "baselineWape": 0.5696245191143624,
+          "winnerModelId": null
+        },
+        {
+          "blockId": "TIME_BLOCK_002",
+          "caseCount": 23,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 1.0814434479420114,
+          "baselineModelId": "M2-WORK-OA03",
+          "baselineWape": 1.0814434479420114,
+          "winnerModelId": null
+        },
+        {
+          "blockId": "TIME_BLOCK_003",
+          "caseCount": 40,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.24081261374068133,
+          "baselineModelId": "M2-WORK-OA03",
+          "baselineWape": 0.24081261374068133,
+          "winnerModelId": null
+        },
+        {
+          "blockId": "TIME_BLOCK_004",
+          "caseCount": 26,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.18409339890854481,
+          "baselineModelId": "M2-WORK-OA03",
+          "baselineWape": 0.18409339890854481,
+          "winnerModelId": null
+        }
+      ],
+      "yearBlocks": [
+        {
+          "blockId": "2020",
+          "caseCount": 26,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.5696245191143624,
+          "baselineModelId": "M2-WORK-OA03",
+          "baselineWape": 0.5696245191143624,
+          "winnerModelId": null
+        },
+        {
+          "blockId": "2021",
+          "caseCount": 63,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.32983790241718086,
+          "baselineModelId": "M2-WORK-OA03",
+          "baselineWape": 0.32983790241718086,
+          "winnerModelId": null
+        },
+        {
+          "blockId": "2022",
+          "caseCount": 26,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.18409339890854481,
+          "baselineModelId": "M2-WORK-OA03",
+          "baselineWape": 0.18409339890854481,
+          "winnerModelId": null
+        }
+      ],
+      "currentFallbackComparison": {
+        "comparatorId": "CURRENT_OPERATIONAL_FALLBACK",
+        "status": "COMPUTED_SAME_CASE_INTERSECTION",
+        "caseCount": 115,
+        "routerMetrics": {
+          "modelId": "M2-WORK-HR01",
+          "status": "COMPUTED",
+          "caseCount": 115,
+          "workCount": 72,
+          "actualTotal": 11478571.946299996,
+          "predictionTotal": 11827611.459879965,
+          "absoluteErrorTotal": 3475482.8400253598,
+          "wape": 0.3027800719710301,
+          "signedBias": 0.03040792140458533,
+          "mae": 30221.589913263997,
+          "medianAbsoluteError": 11751.361496036801,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 0
+        },
+        "comparatorMetrics": {
+          "modelId": "CURRENT_OPERATIONAL_FALLBACK",
+          "status": "COMPUTED",
+          "caseCount": 115,
+          "workCount": 72,
+          "actualTotal": 11478571.946299996,
+          "predictionTotal": 11827611.459879965,
+          "absoluteErrorTotal": 3475482.8400253598,
+          "wape": 0.3027800719710301,
+          "signedBias": 0.03040792140458533,
+          "mae": 30221.589913263997,
+          "medianAbsoluteError": 11751.361496036801,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 0
+        },
+        "relativeFva": 0
+      },
+      "posthocReferenceComparison": {
+        "comparatorId": "POSTHOC_REFERENCE",
+        "status": "COMPUTED_SAME_CASE_INTERSECTION",
+        "caseCount": 115,
+        "routerMetrics": {
+          "modelId": "M2-WORK-HR01",
+          "status": "COMPUTED",
+          "caseCount": 115,
+          "workCount": 72,
+          "actualTotal": 11478571.946299996,
+          "predictionTotal": 11827611.459879965,
+          "absoluteErrorTotal": 3475482.8400253598,
+          "wape": 0.3027800719710301,
+          "signedBias": 0.03040792140458533,
+          "mae": 30221.589913263997,
+          "medianAbsoluteError": 11751.361496036801,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 0
+        },
+        "comparatorMetrics": {
+          "modelId": "POSTHOC_REFERENCE",
+          "status": "COMPUTED",
+          "caseCount": 115,
+          "workCount": 72,
+          "actualTotal": 11478571.946299996,
+          "predictionTotal": 11827611.459879965,
+          "absoluteErrorTotal": 3475482.8400253598,
+          "wape": 0.3027800719710301,
+          "signedBias": 0.03040792140458533,
+          "mae": 30221.589913263997,
+          "medianAbsoluteError": 11751.361496036801,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 0
+        },
+        "relativeFva": 0
+      },
+      "selectionSummary": {
+        "selectionCount": 4,
+        "selectedPredictionRouteCount": 4,
+        "abstainCount": 0,
+        "fallbackSelectionCount": 4,
+        "rollingInnerSelectionCount": 0,
+        "bySelectedModelId": {
+          "M2-WORK-OA03": 4
+        },
+        "bySelectionReason": {
+          "INSUFFICIENT_MATURE_SELECTION_ORIGINS_OPERATIONAL_FALLBACK": 4
+        }
+      },
+      "extremeWorkContribution": {
+        "anonymousWorkCount": 72,
+        "largestWorkAbsoluteErrorContribution": 0.21416274162657886,
+        "topFiveWorksAbsoluteErrorContribution": 0.4916651796845451,
+        "workIdentityPublished": false
+      },
+      "fallbackPredictionShare": 1,
+      "decision": {
+        "status": "HORIZON_ROUTER_NOT_CONFIRMED",
+        "reason": "NO_DIRECTIONAL_ROUTER_IMPROVEMENT",
+        "conditions": {
+          "materialFva": false,
+          "biasGuardPass": true,
+          "bootstrapSupports": false,
+          "majorityTimeBlocksImprove": false,
+          "timeBlockWinShare": 0,
+          "extremeWorkGuardPass": true,
+          "fallbackGuardPass": false
+        }
+      }
+    },
+    {
+      "evaluationSetId": "ROUTER-PRIMARY_ROLLING-CORE90-H36",
+      "evaluationFamily": "PRIMARY_ROLLING",
+      "populationId": "CORE90",
+      "grain": "WORK_TOTAL",
+      "horizonMonths": 36,
+      "status": "COMPUTED_SAME_CASE_INTERSECTION",
+      "outerOriginCount": 13,
+      "sameCaseCount": 927,
+      "workCount": 126,
+      "routerMetrics": {
+        "modelId": "M2-WORK-HR01",
+        "status": "COMPUTED",
+        "caseCount": 927,
+        "workCount": 126,
+        "actualTotal": 299498500.1363999,
+        "predictionTotal": 322707897.44867,
+        "absoluteErrorTotal": 99554016.13203734,
+        "wape": 0.33240238627805374,
+        "signedBias": 0.07749420214692194,
+        "mae": 107393.76066023446,
+        "medianAbsoluteError": 40801.246594428594,
+        "zeroActualFalsePositiveError": 89439.6388050515,
+        "zeroPredictionPositiveActualMissError": 0
+      },
+      "singleModelMetrics": [
+        {
+          "modelId": "M2-WORK-LG01",
+          "status": "COMPUTED",
+          "caseCount": 927,
+          "workCount": 126,
+          "actualTotal": 299498500.1363999,
+          "predictionTotal": 322707897.44867,
+          "absoluteErrorTotal": 99554016.13203734,
+          "wape": 0.33240238627805374,
+          "signedBias": 0.07749420214692194,
+          "mae": 107393.76066023446,
+          "medianAbsoluteError": 40801.246594428594,
+          "zeroActualFalsePositiveError": 89439.6388050515,
+          "zeroPredictionPositiveActualMissError": 0
+        },
+        {
+          "modelId": "M2-WORK-CRMR01",
+          "status": "COMPUTED",
+          "caseCount": 927,
+          "workCount": 126,
+          "actualTotal": 299498500.1363999,
+          "predictionTotal": 3433845229.647222,
+          "absoluteErrorTotal": 3162894094.5047092,
+          "wape": 10.560634170335543,
+          "signedBias": 10.465316948443327,
+          "mae": 3411967.7394872806,
+          "medianAbsoluteError": 92650.66009635612,
+          "zeroActualFalsePositiveError": 32860.80444779102,
+          "zeroPredictionPositiveActualMissError": 1869676.5611999999
+        }
+      ],
+      "strongestSingleModelId": "M2-WORK-LG01",
+      "strongestSingleMetrics": {
+        "modelId": "M2-WORK-LG01",
+        "status": "COMPUTED",
+        "caseCount": 927,
+        "workCount": 126,
+        "actualTotal": 299498500.1363999,
+        "predictionTotal": 322707897.44867,
+        "absoluteErrorTotal": 99554016.13203734,
+        "wape": 0.33240238627805374,
+        "signedBias": 0.07749420214692194,
+        "mae": 107393.76066023446,
+        "medianAbsoluteError": 40801.246594428594,
+        "zeroActualFalsePositiveError": 89439.6388050515,
+        "zeroPredictionPositiveActualMissError": 0
+      },
+      "relativeFva": 0,
+      "absoluteBiasWorsening": 0,
+      "pairedBootstrap": {
+        "status": "COMPUTED",
+        "method": "paired_standard_work_cluster_resample",
+        "iterations": 2000,
+        "seed": 20285891,
+        "workCount": 126,
+        "improvement95": {
+          "lower": 0,
+          "median": 0,
+          "upper": 0
+        }
+      },
+      "independentTimeBlocks": [
+        {
+          "blockId": "TIME_BLOCK_001",
+          "caseCount": 70,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.2926495783170963,
+          "baselineModelId": "M2-WORK-LG01",
+          "baselineWape": 0.2926495783170963,
+          "winnerModelId": null
+        },
+        {
+          "blockId": "TIME_BLOCK_002",
+          "caseCount": 61,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.2763569760343329,
+          "baselineModelId": "M2-WORK-LG01",
+          "baselineWape": 0.2763569760343329,
+          "winnerModelId": null
+        },
+        {
+          "blockId": "TIME_BLOCK_003",
+          "caseCount": 62,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.28407611262363003,
+          "baselineModelId": "M2-WORK-LG01",
+          "baselineWape": 0.28407611262363003,
+          "winnerModelId": null
+        },
+        {
+          "blockId": "TIME_BLOCK_004",
+          "caseCount": 57,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.2838187626459025,
+          "baselineModelId": "M2-WORK-LG01",
+          "baselineWape": 0.2838187626459025,
+          "winnerModelId": null
+        },
+        {
+          "blockId": "TIME_BLOCK_005",
+          "caseCount": 59,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.2797332487066124,
+          "baselineModelId": "M2-WORK-LG01",
+          "baselineWape": 0.2797332487066124,
+          "winnerModelId": null
+        },
+        {
+          "blockId": "TIME_BLOCK_006",
+          "caseCount": 62,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.2648761544642138,
+          "baselineModelId": "M2-WORK-LG01",
+          "baselineWape": 0.2648761544642138,
+          "winnerModelId": null
+        },
+        {
+          "blockId": "TIME_BLOCK_007",
+          "caseCount": 69,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.306470060688277,
+          "baselineModelId": "M2-WORK-LG01",
+          "baselineWape": 0.306470060688277,
+          "winnerModelId": null
+        },
+        {
+          "blockId": "TIME_BLOCK_008",
+          "caseCount": 70,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.28232688527780864,
+          "baselineModelId": "M2-WORK-LG01",
+          "baselineWape": 0.28232688527780864,
+          "winnerModelId": null
+        },
+        {
+          "blockId": "TIME_BLOCK_009",
+          "caseCount": 72,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.3213748204959039,
+          "baselineModelId": "M2-WORK-LG01",
+          "baselineWape": 0.3213748204959039,
+          "winnerModelId": null
+        },
+        {
+          "blockId": "TIME_BLOCK_010",
+          "caseCount": 78,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.37328156726466594,
+          "baselineModelId": "M2-WORK-LG01",
+          "baselineWape": 0.37328156726466594,
+          "winnerModelId": null
+        },
+        {
+          "blockId": "TIME_BLOCK_011",
+          "caseCount": 84,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.4120593987490889,
+          "baselineModelId": "M2-WORK-LG01",
+          "baselineWape": 0.4120593987490889,
+          "winnerModelId": null
+        },
+        {
+          "blockId": "TIME_BLOCK_012",
+          "caseCount": 90,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.4253582607171951,
+          "baselineModelId": "M2-WORK-LG01",
+          "baselineWape": 0.4253582607171951,
+          "winnerModelId": null
+        },
+        {
+          "blockId": "TIME_BLOCK_013",
+          "caseCount": 93,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.4419043873630954,
+          "baselineModelId": "M2-WORK-LG01",
+          "baselineWape": 0.4419043873630954,
+          "winnerModelId": null
+        }
+      ],
+      "yearBlocks": [
+        {
+          "blockId": "2021",
+          "caseCount": 70,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.2926495783170963,
+          "baselineModelId": "M2-WORK-LG01",
+          "baselineWape": 0.2926495783170963,
+          "winnerModelId": null
+        },
+        {
+          "blockId": "2022",
+          "caseCount": 857,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.3350642065218414,
+          "baselineModelId": "M2-WORK-LG01",
+          "baselineWape": 0.3350642065218414,
+          "winnerModelId": null
+        }
+      ],
+      "currentFallbackComparison": {
+        "comparatorId": "CURRENT_OPERATIONAL_FALLBACK",
+        "status": "COMPUTED_SAME_CASE_INTERSECTION",
+        "caseCount": 927,
+        "routerMetrics": {
+          "modelId": "M2-WORK-HR01",
+          "status": "COMPUTED",
+          "caseCount": 927,
+          "workCount": 126,
+          "actualTotal": 299498500.1363999,
+          "predictionTotal": 322707897.44867,
+          "absoluteErrorTotal": 99554016.13203734,
+          "wape": 0.33240238627805374,
+          "signedBias": 0.07749420214692194,
+          "mae": 107393.76066023446,
+          "medianAbsoluteError": 40801.246594428594,
+          "zeroActualFalsePositiveError": 89439.6388050515,
+          "zeroPredictionPositiveActualMissError": 0
+        },
+        "comparatorMetrics": {
+          "modelId": "CURRENT_OPERATIONAL_FALLBACK",
+          "status": "COMPUTED",
+          "caseCount": 927,
+          "workCount": 126,
+          "actualTotal": 299498500.1363999,
+          "predictionTotal": 322707897.44867,
+          "absoluteErrorTotal": 99554016.13203734,
+          "wape": 0.33240238627805374,
+          "signedBias": 0.07749420214692194,
+          "mae": 107393.76066023446,
+          "medianAbsoluteError": 40801.246594428594,
+          "zeroActualFalsePositiveError": 89439.6388050515,
+          "zeroPredictionPositiveActualMissError": 0
+        },
+        "relativeFva": 0
+      },
+      "posthocReferenceComparison": {
+        "comparatorId": "POSTHOC_REFERENCE",
+        "status": "COMPUTED_SAME_CASE_INTERSECTION",
+        "caseCount": 927,
+        "routerMetrics": {
+          "modelId": "M2-WORK-HR01",
+          "status": "COMPUTED",
+          "caseCount": 927,
+          "workCount": 126,
+          "actualTotal": 299498500.1363999,
+          "predictionTotal": 322707897.44867,
+          "absoluteErrorTotal": 99554016.13203734,
+          "wape": 0.33240238627805374,
+          "signedBias": 0.07749420214692194,
+          "mae": 107393.76066023446,
+          "medianAbsoluteError": 40801.246594428594,
+          "zeroActualFalsePositiveError": 89439.6388050515,
+          "zeroPredictionPositiveActualMissError": 0
+        },
+        "comparatorMetrics": {
+          "modelId": "POSTHOC_REFERENCE",
+          "status": "COMPUTED",
+          "caseCount": 927,
+          "workCount": 126,
+          "actualTotal": 299498500.1363999,
+          "predictionTotal": 322707897.44867,
+          "absoluteErrorTotal": 99554016.13203734,
+          "wape": 0.33240238627805374,
+          "signedBias": 0.07749420214692194,
+          "mae": 107393.76066023446,
+          "medianAbsoluteError": 40801.246594428594,
+          "zeroActualFalsePositiveError": 89439.6388050515,
+          "zeroPredictionPositiveActualMissError": 0
+        },
+        "relativeFva": 0
+      },
+      "selectionSummary": {
+        "selectionCount": 13,
+        "selectedPredictionRouteCount": 13,
+        "abstainCount": 0,
+        "fallbackSelectionCount": 13,
+        "rollingInnerSelectionCount": 0,
+        "bySelectedModelId": {
+          "M2-WORK-LG01": 13
+        },
+        "bySelectionReason": {
+          "OA03_UNSUPPORTED_FOR_CELL_LG01_FALLBACK": 13
+        }
+      },
+      "extremeWorkContribution": {
+        "anonymousWorkCount": 126,
+        "largestWorkAbsoluteErrorContribution": 0.08202176187865551,
+        "topFiveWorksAbsoluteErrorContribution": 0.3640140091578219,
+        "workIdentityPublished": false
+      },
+      "fallbackPredictionShare": 1,
+      "decision": {
+        "status": "HORIZON_ROUTER_NOT_CONFIRMED",
+        "reason": "NO_DIRECTIONAL_ROUTER_IMPROVEMENT",
+        "conditions": {
+          "materialFva": false,
+          "biasGuardPass": true,
+          "bootstrapSupports": false,
+          "majorityTimeBlocksImprove": false,
+          "timeBlockWinShare": 0,
+          "extremeWorkGuardPass": true,
+          "fallbackGuardPass": false
+        }
+      }
+    },
+    {
+      "evaluationSetId": "ROUTER-STRICT_ROLLING-CORE80-H3",
+      "evaluationFamily": "STRICT_ROLLING",
+      "populationId": "CORE80",
+      "grain": "WORK_TOTAL",
+      "horizonMonths": 3,
+      "status": "COMPUTED_SAME_CASE_INTERSECTION",
+      "outerOriginCount": 1,
+      "sameCaseCount": 36,
+      "workCount": 36,
+      "routerMetrics": {
+        "modelId": "M2-WORK-HR01",
+        "status": "COMPUTED",
+        "caseCount": 36,
+        "workCount": 36,
+        "actualTotal": 2773632.2202,
+        "predictionTotal": 2436997.4547322826,
+        "absoluteErrorTotal": 811083.74919867,
+        "wape": 0.29242656733349626,
+        "signedBias": -0.12136964771899117,
+        "mae": 22530.1041444075,
+        "medianAbsoluteError": 10927.120283174409,
+        "zeroActualFalsePositiveError": 0,
+        "zeroPredictionPositiveActualMissError": 0
+      },
+      "singleModelMetrics": [
+        {
+          "modelId": "M2-WORK-LG01",
+          "status": "COMPUTED",
+          "caseCount": 36,
+          "workCount": 36,
+          "actualTotal": 2773632.2202,
+          "predictionTotal": 2436997.4547322826,
+          "absoluteErrorTotal": 811083.74919867,
+          "wape": 0.29242656733349626,
+          "signedBias": -0.12136964771899117,
+          "mae": 22530.1041444075,
+          "medianAbsoluteError": 10927.120283174409,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 0
+        },
+        {
+          "modelId": "M2-WORK-CRMR01",
+          "status": "COMPUTED",
+          "caseCount": 36,
+          "workCount": 36,
+          "actualTotal": 2773632.2202,
+          "predictionTotal": 4360007.752199999,
+          "absoluteErrorTotal": 1917786.7726000003,
+          "wape": 0.6914351364369835,
+          "signedBias": 0.5719487682781568,
+          "mae": 53271.85479444445,
+          "medianAbsoluteError": 9512.858050000003,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 0
+        }
+      ],
+      "strongestSingleModelId": "M2-WORK-LG01",
+      "strongestSingleMetrics": {
+        "modelId": "M2-WORK-LG01",
+        "status": "COMPUTED",
+        "caseCount": 36,
+        "workCount": 36,
+        "actualTotal": 2773632.2202,
+        "predictionTotal": 2436997.4547322826,
+        "absoluteErrorTotal": 811083.74919867,
+        "wape": 0.29242656733349626,
+        "signedBias": -0.12136964771899117,
+        "mae": 22530.1041444075,
+        "medianAbsoluteError": 10927.120283174409,
+        "zeroActualFalsePositiveError": 0,
+        "zeroPredictionPositiveActualMissError": 0
+      },
+      "relativeFva": 0,
+      "absoluteBiasWorsening": 0,
+      "pairedBootstrap": {
+        "status": "COMPUTED",
+        "method": "paired_standard_work_cluster_resample",
+        "iterations": 2000,
+        "seed": 20278254,
+        "workCount": 36,
+        "improvement95": {
+          "lower": 0,
+          "median": 0,
+          "upper": 0
+        }
+      },
+      "independentTimeBlocks": [
+        {
+          "blockId": "TIME_BLOCK_001",
+          "caseCount": 36,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.29242656733349626,
+          "baselineModelId": "M2-WORK-LG01",
+          "baselineWape": 0.29242656733349626,
+          "winnerModelId": null
+        }
+      ],
+      "yearBlocks": [
+        {
+          "blockId": "2023",
+          "caseCount": 36,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.29242656733349626,
+          "baselineModelId": "M2-WORK-LG01",
+          "baselineWape": 0.29242656733349626,
+          "winnerModelId": null
+        }
+      ],
+      "currentFallbackComparison": {
+        "comparatorId": "CURRENT_OPERATIONAL_FALLBACK",
+        "status": "COMPUTED_SAME_CASE_INTERSECTION",
+        "caseCount": 36,
+        "routerMetrics": {
+          "modelId": "M2-WORK-HR01",
+          "status": "COMPUTED",
+          "caseCount": 36,
+          "workCount": 36,
+          "actualTotal": 2773632.2202,
+          "predictionTotal": 2436997.4547322826,
+          "absoluteErrorTotal": 811083.74919867,
+          "wape": 0.29242656733349626,
+          "signedBias": -0.12136964771899117,
+          "mae": 22530.1041444075,
+          "medianAbsoluteError": 10927.120283174409,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 0
+        },
+        "comparatorMetrics": {
+          "modelId": "CURRENT_OPERATIONAL_FALLBACK",
+          "status": "COMPUTED",
+          "caseCount": 36,
+          "workCount": 36,
+          "actualTotal": 2773632.2202,
+          "predictionTotal": 2436997.4547322826,
+          "absoluteErrorTotal": 811083.74919867,
+          "wape": 0.29242656733349626,
+          "signedBias": -0.12136964771899117,
+          "mae": 22530.1041444075,
+          "medianAbsoluteError": 10927.120283174409,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 0
+        },
+        "relativeFva": 0
+      },
+      "posthocReferenceComparison": {
+        "comparatorId": "POSTHOC_REFERENCE",
+        "status": "NOT_COMPARABLE",
+        "caseCount": 0
+      },
+      "selectionSummary": {
+        "selectionCount": 1,
+        "selectedPredictionRouteCount": 1,
+        "abstainCount": 0,
+        "fallbackSelectionCount": 1,
+        "rollingInnerSelectionCount": 0,
+        "bySelectedModelId": {
+          "M2-WORK-LG01": 1
+        },
+        "bySelectionReason": {
+          "OA03_UNSUPPORTED_FOR_CELL_LG01_FALLBACK": 1
+        }
+      },
+      "extremeWorkContribution": {
+        "anonymousWorkCount": 36,
+        "largestWorkAbsoluteErrorContribution": 0.15371712539442506,
+        "topFiveWorksAbsoluteErrorContribution": 0.5190065537175721,
+        "workIdentityPublished": false
+      },
+      "fallbackPredictionShare": 1,
+      "decision": {
+        "status": "HORIZON_ROUTER_NOT_CONFIRMED",
+        "reason": "NO_DIRECTIONAL_ROUTER_IMPROVEMENT",
+        "conditions": {
+          "materialFva": false,
+          "biasGuardPass": true,
+          "bootstrapSupports": false,
+          "majorityTimeBlocksImprove": false,
+          "timeBlockWinShare": 0,
+          "extremeWorkGuardPass": true,
+          "fallbackGuardPass": false
+        }
+      }
+    },
+    {
+      "evaluationSetId": "ROUTER-STRICT_ROLLING-CORE80-H6",
+      "evaluationFamily": "STRICT_ROLLING",
+      "populationId": "CORE80",
+      "grain": "WORK_TOTAL",
+      "horizonMonths": 6,
+      "status": "COMPUTED_SAME_CASE_INTERSECTION",
+      "outerOriginCount": 1,
+      "sameCaseCount": 36,
+      "workCount": 36,
+      "routerMetrics": {
+        "modelId": "M2-WORK-HR01",
+        "status": "COMPUTED",
+        "caseCount": 36,
+        "workCount": 36,
+        "actualTotal": 5498453.836600001,
+        "predictionTotal": 4873994.909464565,
+        "absoluteErrorTotal": 1836358.5156057614,
+        "wape": 0.3339772543659808,
+        "signedBias": -0.11356991359621443,
+        "mae": 51009.958766826705,
+        "medianAbsoluteError": 29019.019443874833,
+        "zeroActualFalsePositiveError": 0,
+        "zeroPredictionPositiveActualMissError": 0
+      },
+      "singleModelMetrics": [
+        {
+          "modelId": "M2-WORK-CRMR01",
+          "status": "COMPUTED",
+          "caseCount": 36,
+          "workCount": 36,
+          "actualTotal": 5498453.836600001,
+          "predictionTotal": 6352597.683900001,
+          "absoluteErrorTotal": 1667806.3647000003,
+          "wape": 0.3033227911451008,
+          "signedBias": 0.15534255132133018,
+          "mae": 46327.95457500001,
+          "medianAbsoluteError": 21936.247450000003,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 0
+        },
+        {
+          "modelId": "M2-WORK-LG01",
+          "status": "COMPUTED",
+          "caseCount": 36,
+          "workCount": 36,
+          "actualTotal": 5498453.836600001,
+          "predictionTotal": 4873994.909464565,
+          "absoluteErrorTotal": 1836358.5156057614,
+          "wape": 0.3339772543659808,
+          "signedBias": -0.11356991359621443,
+          "mae": 51009.958766826705,
+          "medianAbsoluteError": 29019.019443874833,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 0
+        }
+      ],
+      "strongestSingleModelId": "M2-WORK-CRMR01",
+      "strongestSingleMetrics": {
+        "modelId": "M2-WORK-CRMR01",
+        "status": "COMPUTED",
+        "caseCount": 36,
+        "workCount": 36,
+        "actualTotal": 5498453.836600001,
+        "predictionTotal": 6352597.683900001,
+        "absoluteErrorTotal": 1667806.3647000003,
+        "wape": 0.3033227911451008,
+        "signedBias": 0.15534255132133018,
+        "mae": 46327.95457500001,
+        "medianAbsoluteError": 21936.247450000003,
+        "zeroActualFalsePositiveError": 0,
+        "zeroPredictionPositiveActualMissError": 0
+      },
+      "relativeFva": -0.10106218232119524,
+      "absoluteBiasWorsening": -0.04177263772511575,
+      "pairedBootstrap": {
+        "status": "COMPUTED",
+        "method": "paired_standard_work_cluster_resample",
+        "iterations": 2000,
+        "seed": 20345400,
+        "workCount": 36,
+        "improvement95": {
+          "lower": -0.16975098392628973,
+          "median": -0.029634713978708316,
+          "upper": 0.08214254664092173
+        }
+      },
+      "independentTimeBlocks": [
+        {
+          "blockId": "TIME_BLOCK_001",
+          "caseCount": 36,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.3339772543659808,
+          "baselineModelId": "M2-WORK-CRMR01",
+          "baselineWape": 0.3033227911451008,
+          "winnerModelId": "M2-WORK-CRMR01"
+        }
+      ],
+      "yearBlocks": [
+        {
+          "blockId": "2023",
+          "caseCount": 36,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.3339772543659808,
+          "baselineModelId": "M2-WORK-CRMR01",
+          "baselineWape": 0.3033227911451008,
+          "winnerModelId": "M2-WORK-CRMR01"
+        }
+      ],
+      "currentFallbackComparison": {
+        "comparatorId": "CURRENT_OPERATIONAL_FALLBACK",
+        "status": "COMPUTED_SAME_CASE_INTERSECTION",
+        "caseCount": 36,
+        "routerMetrics": {
+          "modelId": "M2-WORK-HR01",
+          "status": "COMPUTED",
+          "caseCount": 36,
+          "workCount": 36,
+          "actualTotal": 5498453.836600001,
+          "predictionTotal": 4873994.909464565,
+          "absoluteErrorTotal": 1836358.5156057614,
+          "wape": 0.3339772543659808,
+          "signedBias": -0.11356991359621443,
+          "mae": 51009.958766826705,
+          "medianAbsoluteError": 29019.019443874833,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 0
+        },
+        "comparatorMetrics": {
+          "modelId": "CURRENT_OPERATIONAL_FALLBACK",
+          "status": "COMPUTED",
+          "caseCount": 36,
+          "workCount": 36,
+          "actualTotal": 5498453.836600001,
+          "predictionTotal": 4873994.909464565,
+          "absoluteErrorTotal": 1836358.5156057614,
+          "wape": 0.3339772543659808,
+          "signedBias": -0.11356991359621443,
+          "mae": 51009.958766826705,
+          "medianAbsoluteError": 29019.019443874833,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 0
+        },
+        "relativeFva": 0
+      },
+      "posthocReferenceComparison": {
+        "comparatorId": "POSTHOC_REFERENCE",
+        "status": "COMPUTED_SAME_CASE_INTERSECTION",
+        "caseCount": 36,
+        "routerMetrics": {
+          "modelId": "M2-WORK-HR01",
+          "status": "COMPUTED",
+          "caseCount": 36,
+          "workCount": 36,
+          "actualTotal": 5498453.836600001,
+          "predictionTotal": 4873994.909464565,
+          "absoluteErrorTotal": 1836358.5156057614,
+          "wape": 0.3339772543659808,
+          "signedBias": -0.11356991359621443,
+          "mae": 51009.958766826705,
+          "medianAbsoluteError": 29019.019443874833,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 0
+        },
+        "comparatorMetrics": {
+          "modelId": "POSTHOC_REFERENCE",
+          "status": "COMPUTED",
+          "caseCount": 36,
+          "workCount": 36,
+          "actualTotal": 5498453.836600001,
+          "predictionTotal": 6352597.683900001,
+          "absoluteErrorTotal": 1667806.3647000003,
+          "wape": 0.3033227911451008,
+          "signedBias": 0.15534255132133018,
+          "mae": 46327.95457500001,
+          "medianAbsoluteError": 21936.247450000003,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 0
+        },
+        "relativeFva": -0.10106218232119524
+      },
+      "selectionSummary": {
+        "selectionCount": 1,
+        "selectedPredictionRouteCount": 1,
+        "abstainCount": 0,
+        "fallbackSelectionCount": 1,
+        "rollingInnerSelectionCount": 0,
+        "bySelectedModelId": {
+          "M2-WORK-LG01": 1
+        },
+        "bySelectionReason": {
+          "OA03_UNSUPPORTED_FOR_CELL_LG01_FALLBACK": 1
+        }
+      },
+      "extremeWorkContribution": {
+        "anonymousWorkCount": 36,
+        "largestWorkAbsoluteErrorContribution": 0.2434516304755617,
+        "topFiveWorksAbsoluteErrorContribution": 0.537594365363431,
+        "workIdentityPublished": false
+      },
+      "fallbackPredictionShare": 1,
+      "decision": {
+        "status": "HORIZON_ROUTER_NOT_CONFIRMED",
+        "reason": "NO_DIRECTIONAL_ROUTER_IMPROVEMENT",
+        "conditions": {
+          "materialFva": false,
+          "biasGuardPass": true,
+          "bootstrapSupports": false,
+          "majorityTimeBlocksImprove": false,
+          "timeBlockWinShare": 0,
+          "extremeWorkGuardPass": true,
+          "fallbackGuardPass": false
+        }
+      }
+    },
+    {
+      "evaluationSetId": "ROUTER-STRICT_ROLLING-CORE80-H12",
+      "evaluationFamily": "STRICT_ROLLING",
+      "populationId": "CORE80",
+      "grain": "WORK_TOTAL",
+      "horizonMonths": 12,
+      "status": "COMPUTED_SAME_CASE_INTERSECTION",
+      "outerOriginCount": 1,
+      "sameCaseCount": 36,
+      "workCount": 36,
+      "routerMetrics": {
+        "modelId": "M2-WORK-HR01",
+        "status": "COMPUTED",
+        "caseCount": 36,
+        "workCount": 36,
+        "actualTotal": 10422359.8429,
+        "predictionTotal": 9747989.81892913,
+        "absoluteErrorTotal": 3192994.764659001,
+        "wape": 0.3063600578744321,
+        "signedBias": -0.0647041585721366,
+        "mae": 88694.29901830558,
+        "medianAbsoluteError": 50881.32656543781,
+        "zeroActualFalsePositiveError": 0,
+        "zeroPredictionPositiveActualMissError": 0
+      },
+      "singleModelMetrics": [
+        {
+          "modelId": "M2-WORK-LG01",
+          "status": "COMPUTED",
+          "caseCount": 36,
+          "workCount": 36,
+          "actualTotal": 10422359.8429,
+          "predictionTotal": 9747989.81892913,
+          "absoluteErrorTotal": 3192994.764659001,
+          "wape": 0.3063600578744321,
+          "signedBias": -0.0647041585721366,
+          "mae": 88694.29901830558,
+          "medianAbsoluteError": 50881.32656543781,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 0
+        },
+        {
+          "modelId": "M2-WORK-CRMR01",
+          "status": "COMPUTED",
+          "caseCount": 36,
+          "workCount": 36,
+          "actualTotal": 10422359.8429,
+          "predictionTotal": 17237205.128599994,
+          "absoluteErrorTotal": 8377635.4037,
+          "wape": 0.8038136784738896,
+          "signedBias": 0.6538677793151092,
+          "mae": 232712.09454722222,
+          "medianAbsoluteError": 53776.85705,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 0
+        }
+      ],
+      "strongestSingleModelId": "M2-WORK-LG01",
+      "strongestSingleMetrics": {
+        "modelId": "M2-WORK-LG01",
+        "status": "COMPUTED",
+        "caseCount": 36,
+        "workCount": 36,
+        "actualTotal": 10422359.8429,
+        "predictionTotal": 9747989.81892913,
+        "absoluteErrorTotal": 3192994.764659001,
+        "wape": 0.3063600578744321,
+        "signedBias": -0.0647041585721366,
+        "mae": 88694.29901830558,
+        "medianAbsoluteError": 50881.32656543781,
+        "zeroActualFalsePositiveError": 0,
+        "zeroPredictionPositiveActualMissError": 0
+      },
+      "relativeFva": 0,
+      "absoluteBiasWorsening": 0,
+      "pairedBootstrap": {
+        "status": "COMPUTED",
+        "method": "paired_standard_work_cluster_resample",
+        "iterations": 2000,
+        "seed": 20320107,
+        "workCount": 36,
+        "improvement95": {
+          "lower": 0,
+          "median": 0,
+          "upper": 0
+        }
+      },
+      "independentTimeBlocks": [
+        {
+          "blockId": "TIME_BLOCK_001",
+          "caseCount": 36,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.3063600578744321,
+          "baselineModelId": "M2-WORK-LG01",
+          "baselineWape": 0.3063600578744321,
+          "winnerModelId": null
+        }
+      ],
+      "yearBlocks": [
+        {
+          "blockId": "2023",
+          "caseCount": 36,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.3063600578744321,
+          "baselineModelId": "M2-WORK-LG01",
+          "baselineWape": 0.3063600578744321,
+          "winnerModelId": null
+        }
+      ],
+      "currentFallbackComparison": {
+        "comparatorId": "CURRENT_OPERATIONAL_FALLBACK",
+        "status": "COMPUTED_SAME_CASE_INTERSECTION",
+        "caseCount": 36,
+        "routerMetrics": {
+          "modelId": "M2-WORK-HR01",
+          "status": "COMPUTED",
+          "caseCount": 36,
+          "workCount": 36,
+          "actualTotal": 10422359.8429,
+          "predictionTotal": 9747989.81892913,
+          "absoluteErrorTotal": 3192994.764659001,
+          "wape": 0.3063600578744321,
+          "signedBias": -0.0647041585721366,
+          "mae": 88694.29901830558,
+          "medianAbsoluteError": 50881.32656543781,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 0
+        },
+        "comparatorMetrics": {
+          "modelId": "CURRENT_OPERATIONAL_FALLBACK",
+          "status": "COMPUTED",
+          "caseCount": 36,
+          "workCount": 36,
+          "actualTotal": 10422359.8429,
+          "predictionTotal": 9747989.81892913,
+          "absoluteErrorTotal": 3192994.764659001,
+          "wape": 0.3063600578744321,
+          "signedBias": -0.0647041585721366,
+          "mae": 88694.29901830558,
+          "medianAbsoluteError": 50881.32656543781,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 0
+        },
+        "relativeFva": 0
+      },
+      "posthocReferenceComparison": {
+        "comparatorId": "POSTHOC_REFERENCE",
+        "status": "NOT_COMPARABLE",
+        "caseCount": 0
+      },
+      "selectionSummary": {
+        "selectionCount": 1,
+        "selectedPredictionRouteCount": 1,
+        "abstainCount": 0,
+        "fallbackSelectionCount": 1,
+        "rollingInnerSelectionCount": 0,
+        "bySelectedModelId": {
+          "M2-WORK-LG01": 1
+        },
+        "bySelectionReason": {
+          "OA03_UNSUPPORTED_FOR_CELL_LG01_FALLBACK": 1
+        }
+      },
+      "extremeWorkContribution": {
+        "anonymousWorkCount": 36,
+        "largestWorkAbsoluteErrorContribution": 0.18433895227093142,
+        "topFiveWorksAbsoluteErrorContribution": 0.4525679834135101,
+        "workIdentityPublished": false
+      },
+      "fallbackPredictionShare": 1,
+      "decision": {
+        "status": "HORIZON_ROUTER_NOT_CONFIRMED",
+        "reason": "NO_DIRECTIONAL_ROUTER_IMPROVEMENT",
+        "conditions": {
+          "materialFva": false,
+          "biasGuardPass": true,
+          "bootstrapSupports": false,
+          "majorityTimeBlocksImprove": false,
+          "timeBlockWinShare": 0,
+          "extremeWorkGuardPass": true,
+          "fallbackGuardPass": false
+        }
+      }
+    },
+    {
+      "evaluationSetId": "ROUTER-STRICT_ROLLING-CORE80-H36",
+      "evaluationFamily": "STRICT_ROLLING",
+      "populationId": "CORE80",
+      "grain": "WORK_TOTAL",
+      "horizonMonths": 36,
+      "status": "NOT_COMPARABLE",
+      "outerOriginCount": 0,
+      "sameCaseCount": 0,
+      "workCount": 0,
+      "routerMetrics": null,
+      "singleModelMetrics": [],
+      "strongestSingleModelId": null,
+      "strongestSingleMetrics": null,
+      "relativeFva": null,
+      "absoluteBiasWorsening": null,
+      "pairedBootstrap": null,
+      "independentTimeBlocks": [],
+      "yearBlocks": [],
+      "currentFallbackComparison": null,
+      "posthocReferenceComparison": null,
+      "selectionSummary": {
+        "selectionCount": 0,
+        "selectedPredictionRouteCount": 0,
+        "abstainCount": 0,
+        "fallbackSelectionCount": 0,
+        "rollingInnerSelectionCount": 0,
+        "bySelectedModelId": {},
+        "bySelectionReason": {}
+      },
+      "extremeWorkContribution": null,
+      "fallbackPredictionShare": null,
+      "decision": {
+        "status": "HORIZON_ROUTER_NOT_EVALUABLE",
+        "reason": "NO_ROUTER_OUTER_PREDICTIONS"
+      }
+    },
+    {
+      "evaluationSetId": "ROUTER-STRICT_ROLLING-CORE90-H3",
+      "evaluationFamily": "STRICT_ROLLING",
+      "populationId": "CORE90",
+      "grain": "WORK_TOTAL",
+      "horizonMonths": 3,
+      "status": "COMPUTED_SAME_CASE_INTERSECTION",
+      "outerOriginCount": 1,
+      "sameCaseCount": 75,
+      "workCount": 75,
+      "routerMetrics": {
+        "modelId": "M2-WORK-HR01",
+        "status": "COMPUTED",
+        "caseCount": 75,
+        "workCount": 75,
+        "actualTotal": 3325263.4280000003,
+        "predictionTotal": 2752376.4051821292,
+        "absoluteErrorTotal": 1157696.0357360584,
+        "wape": 0.34815167604100516,
+        "signedBias": -0.17228319957869848,
+        "mae": 15435.947143147445,
+        "medianAbsoluteError": 4315.174351705402,
+        "zeroActualFalsePositiveError": 0,
+        "zeroPredictionPositiveActualMissError": 0
+      },
+      "singleModelMetrics": [
+        {
+          "modelId": "M2-WORK-LG01",
+          "status": "COMPUTED",
+          "caseCount": 75,
+          "workCount": 75,
+          "actualTotal": 3325263.4280000003,
+          "predictionTotal": 2752376.4051821292,
+          "absoluteErrorTotal": 1157696.0357360584,
+          "wape": 0.34815167604100516,
+          "signedBias": -0.17228319957869848,
+          "mae": 15435.947143147445,
+          "medianAbsoluteError": 4315.174351705402,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 0
+        },
+        {
+          "modelId": "M2-WORK-CRMR01",
+          "status": "COMPUTED",
+          "caseCount": 75,
+          "workCount": 75,
+          "actualTotal": 3325263.4280000003,
+          "predictionTotal": 4732716.6800999995,
+          "absoluteErrorTotal": 2268708.3081,
+          "wape": 0.6822642347660643,
+          "signedBias": 0.4232606777101327,
+          "mae": 30249.444108,
+          "medianAbsoluteError": 3026.534999999998,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 0
+        }
+      ],
+      "strongestSingleModelId": "M2-WORK-LG01",
+      "strongestSingleMetrics": {
+        "modelId": "M2-WORK-LG01",
+        "status": "COMPUTED",
+        "caseCount": 75,
+        "workCount": 75,
+        "actualTotal": 3325263.4280000003,
+        "predictionTotal": 2752376.4051821292,
+        "absoluteErrorTotal": 1157696.0357360584,
+        "wape": 0.34815167604100516,
+        "signedBias": -0.17228319957869848,
+        "mae": 15435.947143147445,
+        "medianAbsoluteError": 4315.174351705402,
+        "zeroActualFalsePositiveError": 0,
+        "zeroPredictionPositiveActualMissError": 0
+      },
+      "relativeFva": 0,
+      "absoluteBiasWorsening": 0,
+      "pairedBootstrap": {
+        "status": "COMPUTED",
+        "method": "paired_standard_work_cluster_resample",
+        "iterations": 2000,
+        "seed": 20265239,
+        "workCount": 75,
+        "improvement95": {
+          "lower": 0,
+          "median": 0,
+          "upper": 0
+        }
+      },
+      "independentTimeBlocks": [
+        {
+          "blockId": "TIME_BLOCK_001",
+          "caseCount": 75,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.34815167604100516,
+          "baselineModelId": "M2-WORK-LG01",
+          "baselineWape": 0.34815167604100516,
+          "winnerModelId": null
+        }
+      ],
+      "yearBlocks": [
+        {
+          "blockId": "2023",
+          "caseCount": 75,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.34815167604100516,
+          "baselineModelId": "M2-WORK-LG01",
+          "baselineWape": 0.34815167604100516,
+          "winnerModelId": null
+        }
+      ],
+      "currentFallbackComparison": {
+        "comparatorId": "CURRENT_OPERATIONAL_FALLBACK",
+        "status": "COMPUTED_SAME_CASE_INTERSECTION",
+        "caseCount": 75,
+        "routerMetrics": {
+          "modelId": "M2-WORK-HR01",
+          "status": "COMPUTED",
+          "caseCount": 75,
+          "workCount": 75,
+          "actualTotal": 3325263.4280000003,
+          "predictionTotal": 2752376.4051821292,
+          "absoluteErrorTotal": 1157696.0357360584,
+          "wape": 0.34815167604100516,
+          "signedBias": -0.17228319957869848,
+          "mae": 15435.947143147445,
+          "medianAbsoluteError": 4315.174351705402,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 0
+        },
+        "comparatorMetrics": {
+          "modelId": "CURRENT_OPERATIONAL_FALLBACK",
+          "status": "COMPUTED",
+          "caseCount": 75,
+          "workCount": 75,
+          "actualTotal": 3325263.4280000003,
+          "predictionTotal": 2752376.4051821292,
+          "absoluteErrorTotal": 1157696.0357360584,
+          "wape": 0.34815167604100516,
+          "signedBias": -0.17228319957869848,
+          "mae": 15435.947143147445,
+          "medianAbsoluteError": 4315.174351705402,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 0
+        },
+        "relativeFva": 0
+      },
+      "posthocReferenceComparison": {
+        "comparatorId": "POSTHOC_REFERENCE",
+        "status": "NOT_COMPARABLE",
+        "caseCount": 0
+      },
+      "selectionSummary": {
+        "selectionCount": 1,
+        "selectedPredictionRouteCount": 1,
+        "abstainCount": 0,
+        "fallbackSelectionCount": 1,
+        "rollingInnerSelectionCount": 0,
+        "bySelectedModelId": {
+          "M2-WORK-LG01": 1
+        },
+        "bySelectionReason": {
+          "OA03_UNSUPPORTED_FOR_CELL_LG01_FALLBACK": 1
+        }
+      },
+      "extremeWorkContribution": {
+        "anonymousWorkCount": 75,
+        "largestWorkAbsoluteErrorContribution": 0.1941710333297335,
+        "topFiveWorksAbsoluteErrorContribution": 0.4978063845355593,
+        "workIdentityPublished": false
+      },
+      "fallbackPredictionShare": 1,
+      "decision": {
+        "status": "HORIZON_ROUTER_NOT_CONFIRMED",
+        "reason": "NO_DIRECTIONAL_ROUTER_IMPROVEMENT",
+        "conditions": {
+          "materialFva": false,
+          "biasGuardPass": true,
+          "bootstrapSupports": false,
+          "majorityTimeBlocksImprove": false,
+          "timeBlockWinShare": 0,
+          "extremeWorkGuardPass": true,
+          "fallbackGuardPass": false
+        }
+      }
+    },
+    {
+      "evaluationSetId": "ROUTER-STRICT_ROLLING-CORE90-H6",
+      "evaluationFamily": "STRICT_ROLLING",
+      "populationId": "CORE90",
+      "grain": "WORK_TOTAL",
+      "horizonMonths": 6,
+      "status": "COMPUTED_SAME_CASE_INTERSECTION",
+      "outerOriginCount": 1,
+      "sameCaseCount": 75,
+      "workCount": 75,
+      "routerMetrics": {
+        "modelId": "M2-WORK-HR01",
+        "status": "COMPUTED",
+        "caseCount": 75,
+        "workCount": 75,
+        "actualTotal": 6383819.302500002,
+        "predictionTotal": 5504752.8103642585,
+        "absoluteErrorTotal": 2299556.694693072,
+        "wape": 0.36021644500378164,
+        "signedBias": -0.13770228298778564,
+        "mae": 30660.755929240957,
+        "medianAbsoluteError": 9169.077298944485,
+        "zeroActualFalsePositiveError": 0,
+        "zeroPredictionPositiveActualMissError": 0
+      },
+      "singleModelMetrics": [
+        {
+          "modelId": "M2-WORK-CRMR01",
+          "status": "COMPUTED",
+          "caseCount": 75,
+          "workCount": 75,
+          "actualTotal": 6383819.302500002,
+          "predictionTotal": 7258019.614700002,
+          "absoluteErrorTotal": 2186750.731000001,
+          "wape": 0.3425458377469481,
+          "signedBias": 0.13694001518145246,
+          "mae": 29156.67641333335,
+          "medianAbsoluteError": 10010.610099999998,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 0
+        },
+        {
+          "modelId": "M2-WORK-LG01",
+          "status": "COMPUTED",
+          "caseCount": 75,
+          "workCount": 75,
+          "actualTotal": 6383819.302500002,
+          "predictionTotal": 5504752.8103642585,
+          "absoluteErrorTotal": 2299556.694693072,
+          "wape": 0.36021644500378164,
+          "signedBias": -0.13770228298778564,
+          "mae": 30660.755929240957,
+          "medianAbsoluteError": 9169.077298944485,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 0
+        }
+      ],
+      "strongestSingleModelId": "M2-WORK-CRMR01",
+      "strongestSingleMetrics": {
+        "modelId": "M2-WORK-CRMR01",
+        "status": "COMPUTED",
+        "caseCount": 75,
+        "workCount": 75,
+        "actualTotal": 6383819.302500002,
+        "predictionTotal": 7258019.614700002,
+        "absoluteErrorTotal": 2186750.731000001,
+        "wape": 0.3425458377469481,
+        "signedBias": 0.13694001518145246,
+        "mae": 29156.67641333335,
+        "medianAbsoluteError": 10010.610099999998,
+        "zeroActualFalsePositiveError": 0,
+        "zeroPredictionPositiveActualMissError": 0
+      },
+      "relativeFva": -0.05158610997307614,
+      "absoluteBiasWorsening": 0.0007622678063331778,
+      "pairedBootstrap": {
+        "status": "COMPUTED",
+        "method": "paired_standard_work_cluster_resample",
+        "iterations": 2000,
+        "seed": 20353337,
+        "workCount": 75,
+        "improvement95": {
+          "lower": -0.13438565541040154,
+          "median": -0.013889456288489088,
+          "upper": 0.08014043588099233
+        }
+      },
+      "independentTimeBlocks": [
+        {
+          "blockId": "TIME_BLOCK_001",
+          "caseCount": 75,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.36021644500378164,
+          "baselineModelId": "M2-WORK-CRMR01",
+          "baselineWape": 0.3425458377469481,
+          "winnerModelId": "M2-WORK-CRMR01"
+        }
+      ],
+      "yearBlocks": [
+        {
+          "blockId": "2023",
+          "caseCount": 75,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.36021644500378164,
+          "baselineModelId": "M2-WORK-CRMR01",
+          "baselineWape": 0.3425458377469481,
+          "winnerModelId": "M2-WORK-CRMR01"
+        }
+      ],
+      "currentFallbackComparison": {
+        "comparatorId": "CURRENT_OPERATIONAL_FALLBACK",
+        "status": "COMPUTED_SAME_CASE_INTERSECTION",
+        "caseCount": 75,
+        "routerMetrics": {
+          "modelId": "M2-WORK-HR01",
+          "status": "COMPUTED",
+          "caseCount": 75,
+          "workCount": 75,
+          "actualTotal": 6383819.302500002,
+          "predictionTotal": 5504752.8103642585,
+          "absoluteErrorTotal": 2299556.694693072,
+          "wape": 0.36021644500378164,
+          "signedBias": -0.13770228298778564,
+          "mae": 30660.755929240957,
+          "medianAbsoluteError": 9169.077298944485,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 0
+        },
+        "comparatorMetrics": {
+          "modelId": "CURRENT_OPERATIONAL_FALLBACK",
+          "status": "COMPUTED",
+          "caseCount": 75,
+          "workCount": 75,
+          "actualTotal": 6383819.302500002,
+          "predictionTotal": 5504752.8103642585,
+          "absoluteErrorTotal": 2299556.694693072,
+          "wape": 0.36021644500378164,
+          "signedBias": -0.13770228298778564,
+          "mae": 30660.755929240957,
+          "medianAbsoluteError": 9169.077298944485,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 0
+        },
+        "relativeFva": 0
+      },
+      "posthocReferenceComparison": {
+        "comparatorId": "POSTHOC_REFERENCE",
+        "status": "COMPUTED_SAME_CASE_INTERSECTION",
+        "caseCount": 75,
+        "routerMetrics": {
+          "modelId": "M2-WORK-HR01",
+          "status": "COMPUTED",
+          "caseCount": 75,
+          "workCount": 75,
+          "actualTotal": 6383819.302500002,
+          "predictionTotal": 5504752.8103642585,
+          "absoluteErrorTotal": 2299556.694693072,
+          "wape": 0.36021644500378164,
+          "signedBias": -0.13770228298778564,
+          "mae": 30660.755929240957,
+          "medianAbsoluteError": 9169.077298944485,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 0
+        },
+        "comparatorMetrics": {
+          "modelId": "POSTHOC_REFERENCE",
+          "status": "COMPUTED",
+          "caseCount": 75,
+          "workCount": 75,
+          "actualTotal": 6383819.302500002,
+          "predictionTotal": 7258019.614700002,
+          "absoluteErrorTotal": 2186750.731000001,
+          "wape": 0.3425458377469481,
+          "signedBias": 0.13694001518145246,
+          "mae": 29156.67641333335,
+          "medianAbsoluteError": 10010.610099999998,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 0
+        },
+        "relativeFva": -0.05158610997307614
+      },
+      "selectionSummary": {
+        "selectionCount": 1,
+        "selectedPredictionRouteCount": 1,
+        "abstainCount": 0,
+        "fallbackSelectionCount": 1,
+        "rollingInnerSelectionCount": 0,
+        "bySelectedModelId": {
+          "M2-WORK-LG01": 1
+        },
+        "bySelectionReason": {
+          "OA03_UNSUPPORTED_FOR_CELL_LG01_FALLBACK": 1
+        }
+      },
+      "extremeWorkContribution": {
+        "anonymousWorkCount": 75,
+        "largestWorkAbsoluteErrorContribution": 0.19441333009690193,
+        "topFiveWorksAbsoluteErrorContribution": 0.48713020586402567,
+        "workIdentityPublished": false
+      },
+      "fallbackPredictionShare": 1,
+      "decision": {
+        "status": "HORIZON_ROUTER_NOT_CONFIRMED",
+        "reason": "NO_DIRECTIONAL_ROUTER_IMPROVEMENT",
+        "conditions": {
+          "materialFva": false,
+          "biasGuardPass": true,
+          "bootstrapSupports": false,
+          "majorityTimeBlocksImprove": false,
+          "timeBlockWinShare": 0,
+          "extremeWorkGuardPass": true,
+          "fallbackGuardPass": false
+        }
+      }
+    },
+    {
+      "evaluationSetId": "ROUTER-STRICT_ROLLING-CORE90-H12",
+      "evaluationFamily": "STRICT_ROLLING",
+      "populationId": "CORE90",
+      "grain": "WORK_TOTAL",
+      "horizonMonths": 12,
+      "status": "COMPUTED_SAME_CASE_INTERSECTION",
+      "outerOriginCount": 1,
+      "sameCaseCount": 75,
+      "workCount": 75,
+      "routerMetrics": {
+        "modelId": "M2-WORK-HR01",
+        "status": "COMPUTED",
+        "caseCount": 75,
+        "workCount": 75,
+        "actualTotal": 11898208.8127,
+        "predictionTotal": 11009505.620728517,
+        "absoluteErrorTotal": 3948496.6154267457,
+        "wape": 0.3318563892753479,
+        "signedBias": -0.07469218316482158,
+        "mae": 52646.621539023276,
+        "medianAbsoluteError": 19550.180597888968,
+        "zeroActualFalsePositiveError": 0,
+        "zeroPredictionPositiveActualMissError": 0
+      },
+      "singleModelMetrics": [
+        {
+          "modelId": "M2-WORK-LG01",
+          "status": "COMPUTED",
+          "caseCount": 75,
+          "workCount": 75,
+          "actualTotal": 11898208.8127,
+          "predictionTotal": 11009505.620728517,
+          "absoluteErrorTotal": 3948496.6154267457,
+          "wape": 0.3318563892753479,
+          "signedBias": -0.07469218316482158,
+          "mae": 52646.621539023276,
+          "medianAbsoluteError": 19550.180597888968,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 0
+        },
+        {
+          "modelId": "M2-WORK-CRMR01",
+          "status": "COMPUTED",
+          "caseCount": 75,
+          "workCount": 75,
+          "actualTotal": 11898208.8127,
+          "predictionTotal": 18707334.707099993,
+          "absoluteErrorTotal": 9326681.194000002,
+          "wape": 0.7838727106591724,
+          "signedBias": 0.572281593102654,
+          "mae": 124355.74925333336,
+          "medianAbsoluteError": 22604.846600000004,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 0
+        }
+      ],
+      "strongestSingleModelId": "M2-WORK-LG01",
+      "strongestSingleMetrics": {
+        "modelId": "M2-WORK-LG01",
+        "status": "COMPUTED",
+        "caseCount": 75,
+        "workCount": 75,
+        "actualTotal": 11898208.8127,
+        "predictionTotal": 11009505.620728517,
+        "absoluteErrorTotal": 3948496.6154267457,
+        "wape": 0.3318563892753479,
+        "signedBias": -0.07469218316482158,
+        "mae": 52646.621539023276,
+        "medianAbsoluteError": 19550.180597888968,
+        "zeroActualFalsePositiveError": 0,
+        "zeroPredictionPositiveActualMissError": 0
+      },
+      "relativeFva": 0,
+      "absoluteBiasWorsening": 0,
+      "pairedBootstrap": {
+        "status": "COMPUTED",
+        "method": "paired_standard_work_cluster_resample",
+        "iterations": 2000,
+        "seed": 20355260,
+        "workCount": 75,
+        "improvement95": {
+          "lower": 0,
+          "median": 0,
+          "upper": 0
+        }
+      },
+      "independentTimeBlocks": [
+        {
+          "blockId": "TIME_BLOCK_001",
+          "caseCount": 75,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.3318563892753479,
+          "baselineModelId": "M2-WORK-LG01",
+          "baselineWape": 0.3318563892753479,
+          "winnerModelId": null
+        }
+      ],
+      "yearBlocks": [
+        {
+          "blockId": "2023",
+          "caseCount": 75,
+          "candidateModelId": "M2-WORK-HR01",
+          "candidateWape": 0.3318563892753479,
+          "baselineModelId": "M2-WORK-LG01",
+          "baselineWape": 0.3318563892753479,
+          "winnerModelId": null
+        }
+      ],
+      "currentFallbackComparison": {
+        "comparatorId": "CURRENT_OPERATIONAL_FALLBACK",
+        "status": "COMPUTED_SAME_CASE_INTERSECTION",
+        "caseCount": 75,
+        "routerMetrics": {
+          "modelId": "M2-WORK-HR01",
+          "status": "COMPUTED",
+          "caseCount": 75,
+          "workCount": 75,
+          "actualTotal": 11898208.8127,
+          "predictionTotal": 11009505.620728517,
+          "absoluteErrorTotal": 3948496.6154267457,
+          "wape": 0.3318563892753479,
+          "signedBias": -0.07469218316482158,
+          "mae": 52646.621539023276,
+          "medianAbsoluteError": 19550.180597888968,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 0
+        },
+        "comparatorMetrics": {
+          "modelId": "CURRENT_OPERATIONAL_FALLBACK",
+          "status": "COMPUTED",
+          "caseCount": 75,
+          "workCount": 75,
+          "actualTotal": 11898208.8127,
+          "predictionTotal": 11009505.620728517,
+          "absoluteErrorTotal": 3948496.6154267457,
+          "wape": 0.3318563892753479,
+          "signedBias": -0.07469218316482158,
+          "mae": 52646.621539023276,
+          "medianAbsoluteError": 19550.180597888968,
+          "zeroActualFalsePositiveError": 0,
+          "zeroPredictionPositiveActualMissError": 0
+        },
+        "relativeFva": 0
+      },
+      "posthocReferenceComparison": {
+        "comparatorId": "POSTHOC_REFERENCE",
+        "status": "NOT_COMPARABLE",
+        "caseCount": 0
+      },
+      "selectionSummary": {
+        "selectionCount": 1,
+        "selectedPredictionRouteCount": 1,
+        "abstainCount": 0,
+        "fallbackSelectionCount": 1,
+        "rollingInnerSelectionCount": 0,
+        "bySelectedModelId": {
+          "M2-WORK-LG01": 1
+        },
+        "bySelectionReason": {
+          "OA03_UNSUPPORTED_FOR_CELL_LG01_FALLBACK": 1
+        }
+      },
+      "extremeWorkContribution": {
+        "anonymousWorkCount": 75,
+        "largestWorkAbsoluteErrorContribution": 0.1490677001530608,
+        "topFiveWorksAbsoluteErrorContribution": 0.3759487298031356,
+        "workIdentityPublished": false
+      },
+      "fallbackPredictionShare": 1,
+      "decision": {
+        "status": "HORIZON_ROUTER_NOT_CONFIRMED",
+        "reason": "NO_DIRECTIONAL_ROUTER_IMPROVEMENT",
+        "conditions": {
+          "materialFva": false,
+          "biasGuardPass": true,
+          "bootstrapSupports": false,
+          "majorityTimeBlocksImprove": false,
+          "timeBlockWinShare": 0,
+          "extremeWorkGuardPass": true,
+          "fallbackGuardPass": false
+        }
+      }
+    },
+    {
+      "evaluationSetId": "ROUTER-STRICT_ROLLING-CORE90-H36",
+      "evaluationFamily": "STRICT_ROLLING",
+      "populationId": "CORE90",
+      "grain": "WORK_TOTAL",
+      "horizonMonths": 36,
+      "status": "NOT_COMPARABLE",
+      "outerOriginCount": 0,
+      "sameCaseCount": 0,
+      "workCount": 0,
+      "routerMetrics": null,
+      "singleModelMetrics": [],
+      "strongestSingleModelId": null,
+      "strongestSingleMetrics": null,
+      "relativeFva": null,
+      "absoluteBiasWorsening": null,
+      "pairedBootstrap": null,
+      "independentTimeBlocks": [],
+      "yearBlocks": [],
+      "currentFallbackComparison": null,
+      "posthocReferenceComparison": null,
+      "selectionSummary": {
+        "selectionCount": 0,
+        "selectedPredictionRouteCount": 0,
+        "abstainCount": 0,
+        "fallbackSelectionCount": 0,
+        "rollingInnerSelectionCount": 0,
+        "bySelectedModelId": {},
+        "bySelectionReason": {}
+      },
+      "extremeWorkContribution": null,
+      "fallbackPredictionShare": null,
+      "decision": {
+        "status": "HORIZON_ROUTER_NOT_EVALUABLE",
+        "reason": "NO_ROUTER_OUTER_PREDICTIONS"
+      }
+    }
+  ],
+  "selectionSummary": {
+    "selectionCount": 60,
+    "selectedPredictionRouteCount": 60,
+    "abstainCount": 0,
+    "fallbackSelectionCount": 52,
+    "rollingInnerSelectionCount": 8,
+    "bySelectedModelId": {
+      "M2-WORK-OA03": 26,
+      "M2-WORK-CRMR01": 2,
+      "M2-WORK-LG01": 32
+    },
+    "bySelectionReason": {
+      "INSUFFICIENT_MATURE_SELECTION_ORIGINS_OPERATIONAL_FALLBACK": 20,
+      "LOWEST_HISTORICAL_SAME_CASE_WAPE_AFTER_BIAS_GUARD": 8,
+      "OA03_UNSUPPORTED_FOR_CELL_LG01_FALLBACK": 32
+    }
+  },
+  "boundaries": {
+    "rawCandidatePreserved": true,
+    "selectedPipelineHidesRawCandidate": false,
+    "posthocReferenceUsedForSelection": false,
+    "currentOuterActualReadForSelection": false,
+    "onlyMaturePriorPseudoOriginsRead": true,
+    "modelTrainingPerformed": false,
+    "parameterOrGridChanged": false,
+    "fallbackChanged": false,
+    "privateIdentityPublished": false,
+    "productionChanged": false,
+    "laterOriginRead": false,
+    "finalHoldoutRead": false
+  }
+}
