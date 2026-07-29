@@ -386,8 +386,8 @@ function frozenRowIdentity(row) {
 
 function frozenWorkKey(row) {
   return [
-    String(row.origin),
     String(row.standardWorkId),
+    String(row.origin),
     String(Number(row.horizonMonths))
   ].join("\u0000");
 }
