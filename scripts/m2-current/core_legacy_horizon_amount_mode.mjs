@@ -20,6 +20,7 @@ import {
   buildM2CoreHorizonAmountFeatureRow,
   bootstrapM2HorizonAmountSameCase,
   fitM2CoreHorizonAmountModel,
+  intersectM2HorizonAmountRawArmCases,
   pairM2HorizonAmountSameCaseRows,
   pairM2Oa03Lg01AttributionRows,
   predictM2CoreHorizonAmount,
@@ -1139,13 +1140,34 @@ function evaluateRawCandidates({
   for (const family of FAMILIES) {
     for (const populationId of POPULATIONS) {
       for (const horizonMonths of HORIZONS) {
+        const candidatesByArm = Object.fromEntries(RAW_ARMS.map(
+          (armId) => [
+            armId,
+            predictions.filter((row) => (
+              row.evaluationFamily === family
+              && row.populationId === populationId
+              && row.horizonMonths === horizonMonths
+              && row.armId === armId
+            ))
+          ]
+        ));
+        const baseline = strictLg01Rows.filter((row) => (
+          row.populationId === populationId
+          && row.horizonMonths === horizonMonths
+        ));
+        const common = family === "STRICT_ROLLING"
+          ? intersectM2HorizonAmountRawArmCases({
+            candidateRowsByArm: candidatesByArm,
+            baselineRows: baseline
+          })
+          : null;
+        if (common?.actualMismatchCount > 0) {
+          throw new Error(
+            "m2_core_horizon_amount_common_case_actual_mismatch"
+          );
+        }
         for (const armId of RAW_ARMS) {
-          const candidate = predictions.filter((row) => (
-            row.evaluationFamily === family
-            && row.populationId === populationId
-            && row.horizonMonths === horizonMonths
-            && row.armId === armId
-          ));
+          const candidate = candidatesByArm[armId];
           const rawMetrics = scoreM2HorizonAmountPointRows(candidate);
           if (family === "PRIMARY_ROLLING") {
             cells.push({
@@ -1166,14 +1188,15 @@ function evaluateRawCandidates({
             });
             continue;
           }
-          const baseline = strictLg01Rows.filter((row) => (
-            row.populationId === populationId
-            && row.horizonMonths === horizonMonths
-          ));
           const paired = pairM2HorizonAmountSameCaseRows(
-            candidate,
-            baseline
+            common.candidateRowsByArm[armId],
+            common.baselineRows
           );
+          if (paired.exactSameCase !== true) {
+            throw new Error(
+              "m2_core_horizon_amount_common_case_contract_violation"
+            );
+          }
           const pairedCandidate = scoreM2HorizonAmountPointRows(
             paired.rows,
             { pointField: "candidatePointEstimate" }
@@ -1211,9 +1234,18 @@ function evaluateRawCandidates({
             occurrenceAuxiliary:
               publicOccurrenceAuxiliary(candidate, config),
             sameCaseStatus: paired.exactSameCase
-              ? "EXACT_SAME_CASE"
-              : "PARTIAL_SAME_CASE",
+              ? "EXACT_COMMON_RAW_ARMS_AND_B0_SAME_CASE"
+              : "COMMON_INTERSECTION_CONTRACT_VIOLATION",
             sameCaseCount: paired.sameCaseCount,
+            commonSameCase: {
+              status: common.status,
+              caseCount: common.commonCaseCount,
+              baselineCaseCount: common.baselineCaseCount,
+              candidateCaseCounts: common.candidateCaseCounts,
+              actualMismatchCount: common.actualMismatchCount,
+              sameCasesUsedForEveryRawArm:
+                common.sameCasesUsedForEveryRawArm
+            },
             baselineMetrics: publicMetrics(pairedBaseline, config),
             pairedCandidateMetrics: publicMetrics(
               pairedCandidate,

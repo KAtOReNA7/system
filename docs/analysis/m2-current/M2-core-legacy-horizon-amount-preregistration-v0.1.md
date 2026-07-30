@@ -37,6 +37,10 @@ rolling 只作补充，而且 LG01 的 canonical Primary 是 36 个月跨作品�
   `1 + 3 × percentile²` 权重，范围固定为 [1, 4]。
 - B3：与 B2 相同，并把同周期冻结 LG01 预测作为一个输入；不得退化为单一全局倍率。
 
+Strict 主决策中，B1、B2、B3 与 B0 必须先取四者共有且 actual 完全一致的
+same-case intersection；三个 raw arm 只能在这一份共同案例上比较和排序，不能
+各自在不同交集上产生“最佳”。
+
 现金特征和目标使用可逆 signed-log1p，以保留负值。缺失历史窗保持 `null` 并增加
 明确 missing indicator，不能用 0 冒充。标准化、百分位和权重只在当前训练 fold
 内计算。

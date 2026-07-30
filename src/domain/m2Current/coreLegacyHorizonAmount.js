@@ -632,6 +632,62 @@ export function pairM2HorizonAmountSameCaseRows(
   });
 }
 
+export function intersectM2HorizonAmountRawArmCases({
+  candidateRowsByArm,
+  baselineRows
+}) {
+  requireObject(candidateRowsByArm, "candidate_rows_by_arm");
+  if (!Array.isArray(baselineRows)) {
+    fail("m2_core_horizon_amount_baseline_rows_required");
+  }
+  const candidates = Object.fromEntries(RAW_ARMS.map((armId) => {
+    const rows = candidateRowsByArm[armId];
+    if (!Array.isArray(rows)) {
+      fail("m2_core_horizon_amount_raw_arm_rows_required");
+    }
+    return [armId, uniqueIndex(rows, coreHorizonComparisonKey)];
+  }));
+  const baseline = uniqueIndex(
+    baselineRows,
+    coreHorizonComparisonKey
+  );
+  let actualMismatchCount = 0;
+  const keys = [...baseline.keys()].filter((key) => {
+    const reference = baseline.get(key);
+    const present = RAW_ARMS.every((armId) => (
+      candidates[armId].has(key)
+    ));
+    if (!present) return false;
+    const actualMatches = RAW_ARMS.every((armId) => (
+      Math.abs(
+        finite(candidates[armId].get(key).actual, "common_arm_actual")
+        - finite(reference.actual, "common_baseline_actual")
+      ) <= 1e-7
+    ));
+    if (!actualMatches) actualMismatchCount += 1;
+    return actualMatches;
+  }).sort(stableTextCompare);
+  return Object.freeze({
+    status: keys.length > 0
+      ? "COMMON_RAW_ARMS_AND_B0_SAME_CASE_INTERSECTION"
+      : "NO_COMMON_RAW_ARMS_AND_B0_SAME_CASE_INTERSECTION",
+    commonCaseCount: keys.length,
+    baselineCaseCount: baseline.size,
+    candidateCaseCounts: Object.freeze(Object.fromEntries(
+      RAW_ARMS.map((armId) => [armId, candidates[armId].size])
+    )),
+    actualMismatchCount,
+    baselineRows: Object.freeze(keys.map((key) => baseline.get(key))),
+    candidateRowsByArm: Object.freeze(Object.fromEntries(
+      RAW_ARMS.map((armId) => [
+        armId,
+        Object.freeze(keys.map((key) => candidates[armId].get(key)))
+      ])
+    )),
+    sameCasesUsedForEveryRawArm: true
+  });
+}
+
 export function scoreM2HorizonAmountPointRows(rows, {
   pointField = "pointEstimate"
 } = {}) {

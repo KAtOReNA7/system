@@ -10,6 +10,7 @@ import {
   buildM2CoreHorizonAmountFeatureRow,
   coreHorizonCaseKey,
   fitM2CoreHorizonAmountModel,
+  intersectM2HorizonAmountRawArmCases,
   pairM2HorizonAmountSameCaseRows,
   predictM2CoreHorizonAmount,
   scoreM2HorizonAmountIndependentTimeBlocks,
@@ -230,6 +231,66 @@ test("same-case pairing rejects actual mismatch and never invents null as zero",
   );
   assert.equal(mismatch.sameCaseCount, 0);
   assert.equal(mismatch.actualMismatchCount, 1);
+});
+
+test("B1-B3 and frozen B0 are ranked only on one common same-case intersection", () => {
+  const baseline = ["a", "b", "c", "d"].map((workId) => ({
+    ...predictionFixture({
+      workId,
+      origin: "2022-01",
+      horizonMonths: 3,
+      actual: 10,
+      pointEstimate: 8,
+      armId: "B0"
+    }),
+    modelId: "M2-WORK-LG01"
+  }));
+  const byArm = {
+    B1: baseline.slice(0, 4).map((row) => ({
+      ...row,
+      modelId: "M2-WORK-CHAM01",
+      armId: "B1"
+    })),
+    B2: baseline.slice(1, 4).map((row) => ({
+      ...row,
+      modelId: "M2-WORK-CHAM01",
+      armId: "B2"
+    })),
+    B3: baseline.slice(2, 4).map((row) => ({
+      ...row,
+      modelId: "M2-WORK-CHAM01",
+      armId: "B3"
+    }))
+  };
+  const common = intersectM2HorizonAmountRawArmCases({
+    candidateRowsByArm: byArm,
+    baselineRows: baseline
+  });
+  assert.equal(
+    common.status,
+    "COMMON_RAW_ARMS_AND_B0_SAME_CASE_INTERSECTION"
+  );
+  assert.equal(common.commonCaseCount, 2);
+  assert.deepEqual(common.candidateCaseCounts, {
+    B1: 4,
+    B2: 3,
+    B3: 2
+  });
+  assert.equal(common.baselineRows.length, 2);
+  assert.equal(
+    Object.values(common.candidateRowsByArm).every(
+      (rows) => rows.length === 2
+    ),
+    true
+  );
+  for (const armId of ["B1", "B2", "B3"]) {
+    const paired = pairM2HorizonAmountSameCaseRows(
+      common.candidateRowsByArm[armId],
+      common.baselineRows
+    );
+    assert.equal(paired.exactSameCase, true);
+    assert.equal(paired.sameCaseCount, 2);
+  }
 });
 
 test("2,000-work bootstrap and non-overlapping blocks replay deterministically", () => {
