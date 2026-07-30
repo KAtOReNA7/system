@@ -5,7 +5,9 @@ import { fileURLToPath } from "node:url";
 import test from "node:test";
 
 import {
+  resolveM2Oa03RuntimeAuthorizationRecovery,
   runM2Oa03CurrentScopePublicDiagnostic,
+  suppressM2Oa03BootstrapForPublic,
   verifyM2Oa03GitAndCiPreflight
 } from "../scripts/m2-current/oa03_current_scope_replication_mode.mjs";
 
@@ -102,6 +104,80 @@ test("OA03 runtime authorization rejects an unexpected dirty path", () => {
       command: () => ({stdout: " M unrelated-user-file.txt\n"})
     }),
     /m2_oa03_unexpected_dirty_worktree/u
+  );
+});
+
+test("OA03 public bootstrap suppression preserves a legal null", () => {
+  assert.equal(suppressM2Oa03BootstrapForPublic(undefined), null);
+  assert.deepEqual(
+    suppressM2Oa03BootstrapForPublic({
+      status: "COMPUTED",
+      iterations: 2000,
+      seed: 20260728,
+      workCount: 42,
+      relativeWapeImprovement95: {lower: -0.1, upper: 0.2}
+    }),
+    {
+      status: "COMPUTED",
+      iterations: 2000,
+      seed: 20260728,
+      workCount: 42,
+      intervals: null
+    }
+  );
+});
+
+test("OA03 authorization rotates only after a result-free technical failure", () => {
+  const priorAuthorization = {
+    schema: "m2.current.oa03_runtime_authorization.private.v0.1",
+    status: "AUTHORIZED_FOR_ONE_LOGICAL_EXECUTION",
+    experimentId: "M2-EXP-OA03-CURRENT-SCOPE-REPLICATION-01",
+    capabilityId: "m2-oa03-current-scope-replication",
+    executionHead: HEAD,
+    branch: "codex/m2-oa03-current-scope-replication-v0-1",
+    prNumber: 987,
+    exactHeadCiRunId: 654
+  };
+  const priorReceipt = {
+    schema: "m2.current.oa03_attempt_receipt.private.v0.1",
+    experimentId: "M2-EXP-OA03-CURRENT-SCOPE-REPLICATION-01",
+    attemptId: "attempt-001",
+    status: "INFRASTRUCTURE_FAILURE_BEFORE_RESULT_RETRY_ALLOWED",
+    technicalStatus:
+      "OA03_CURRENT_SCOPE_REPLICATION_INFRASTRUCTURE_FAILURE_BEFORE_RESULT",
+    executionHead: HEAD,
+    exactHeadCiRunId: 654,
+    validCompleteInterpretableResultProduced: false,
+    retryAllowed: true,
+    formulaOrParameterChangeAllowedOnRetry: false
+  };
+  const preflight = {
+    branch: priorAuthorization.branch,
+    prNumber: priorAuthorization.prNumber
+  };
+  assert.deepEqual(
+    resolveM2Oa03RuntimeAuthorizationRecovery({
+      priorAuthorization,
+      priorReceipt,
+      preflight
+    }),
+    {
+      priorAttemptId: "attempt-001",
+      priorExecutionHead: HEAD,
+      priorExactHeadCiRunId: 654
+    }
+  );
+  assert.throws(
+    () => resolveM2Oa03RuntimeAuthorizationRecovery({
+      priorAuthorization,
+      priorReceipt: {
+        ...priorReceipt,
+        validCompleteInterpretableResultProduced: true,
+        retryAllowed: false
+      },
+      preflight
+    }),
+    /m2_oa03_runtime_authorization_conflict/u
   );
 });
 

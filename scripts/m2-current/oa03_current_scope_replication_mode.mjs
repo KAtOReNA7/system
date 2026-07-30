@@ -192,6 +192,7 @@ export async function prepareM2Oa03CurrentScopeRuntimeAuthorization({
     config.privateOutputs.runtimeAuthorization
   );
   const prior = await readJsonIfPresent(authorizationPath);
+  let recovery = null;
   if (prior !== null) {
     if (
       prior.status === "AUTHORIZED_FOR_ONE_LOGICAL_EXECUTION"
@@ -210,7 +211,36 @@ export async function prepareM2Oa03CurrentScopeRuntimeAuthorization({
         historicalReceiptStatus: inventory.historicalReceiptStatus
       });
     }
-    throw new Error("m2_oa03_runtime_authorization_conflict");
+    const priorReceipt = await readJsonIfPresent(path.join(
+      privateDirectory,
+      config.privateOutputs.attemptReceipt
+    ));
+    recovery = resolveM2Oa03RuntimeAuthorizationRecovery({
+      priorAuthorization: prior,
+      priorReceipt,
+      preflight
+    });
+    const attemptDirectory = path.join(
+      privateDirectory,
+      config.privateOutputs.attemptDirectory
+    );
+    await mkdir(attemptDirectory, { recursive: true });
+    const archivePath = path.join(
+      attemptDirectory,
+      `${recovery.priorAttemptId}-runtime-authorization.json`
+    );
+    const archived = await readJsonIfPresent(archivePath);
+    if (archived === null) {
+      await writeFile(
+        archivePath,
+        `${JSON.stringify(prior, null, 2)}\n`,
+        { encoding: "utf8", flag: "wx" }
+      );
+    } else if (JSON.stringify(archived) !== JSON.stringify(prior)) {
+      throw new Error(
+        "m2_oa03_runtime_authorization_archive_conflict"
+      );
+    }
   }
   const authorization = {
     schema:
@@ -236,6 +266,18 @@ export async function prepareM2Oa03CurrentScopeRuntimeAuthorization({
     safeToRebuildDerivedCache: inventory.safeToRebuildDerivedCache,
     singleLogicalExecution: true,
     validResultFreezesAuthorization: true,
+    infrastructureRecovery: recovery === null
+      ? null
+      : {
+        status:
+          "ROTATED_AFTER_INFRASTRUCTURE_FAILURE_BEFORE_RESULT",
+        priorAttemptId: recovery.priorAttemptId,
+        priorExecutionHead: recovery.priorExecutionHead,
+        priorExactHeadCiRunId: recovery.priorExactHeadCiRunId,
+        modelFormulaChanged: false,
+        parameterGridChanged: false,
+        evaluationGateChanged: false
+      },
     laterOrFinalHoldoutAuthorized: false,
     providerAuthorized: false,
     databaseAuthorized: false,
@@ -245,7 +287,9 @@ export async function prepareM2Oa03CurrentScopeRuntimeAuthorization({
   await writeFile(
     authorizationPath,
     `${JSON.stringify(authorization, null, 2)}\n`,
-    { encoding: "utf8", flag: "wx" }
+    prior === null
+      ? { encoding: "utf8", flag: "wx" }
+      : { encoding: "utf8" }
   );
   return Object.freeze({
     status: "OA03_RUNTIME_AUTHORIZATION_READY",
@@ -2247,7 +2291,7 @@ function publicComparison({
     baselineMetrics: publicMetric(baselineMetrics, config),
     bootstrap: privateEnough
       ? evidence.bootstrap
-      : suppressBootstrap(evidence.bootstrap),
+      : suppressM2Oa03BootstrapForPublic(evidence.bootstrap),
     timeBlocks: privateEnough
       ? publicTimeBlocks(evidence.timeBlocks, config)
       : Object.freeze([]),
@@ -2370,13 +2414,54 @@ function publicOccurrence(occurrence, pointMetrics, config) {
   return occurrence;
 }
 
-function suppressBootstrap(bootstrap) {
+export function suppressM2Oa03BootstrapForPublic(bootstrap) {
+  if (bootstrap === undefined || bootstrap === null) return null;
   return Object.freeze({
     status: bootstrap.status,
     iterations: bootstrap.iterations,
     seed: bootstrap.seed ?? null,
     workCount: bootstrap.workCount ?? null,
     intervals: null
+  });
+}
+
+export function resolveM2Oa03RuntimeAuthorizationRecovery({
+  priorAuthorization,
+  priorReceipt,
+  preflight
+}) {
+  const valid = (
+    priorAuthorization?.schema
+      === "m2.current.oa03_runtime_authorization.private.v0.1"
+    && priorAuthorization?.status
+      === "AUTHORIZED_FOR_ONE_LOGICAL_EXECUTION"
+    && priorAuthorization?.experimentId === EXPERIMENT_ID
+    && priorAuthorization?.capabilityId === CAPABILITY_ID
+    && priorAuthorization?.branch === preflight?.branch
+    && priorAuthorization?.prNumber === preflight?.prNumber
+    && priorReceipt?.schema
+      === "m2.current.oa03_attempt_receipt.private.v0.1"
+    && priorReceipt?.experimentId === EXPERIMENT_ID
+    && priorReceipt?.status
+      === "INFRASTRUCTURE_FAILURE_BEFORE_RESULT_RETRY_ALLOWED"
+    && priorReceipt?.technicalStatus
+      === "OA03_CURRENT_SCOPE_REPLICATION_INFRASTRUCTURE_FAILURE_BEFORE_RESULT"
+    && priorReceipt?.validCompleteInterpretableResultProduced === false
+    && priorReceipt?.retryAllowed === true
+    && priorReceipt?.formulaOrParameterChangeAllowedOnRetry === false
+    && priorReceipt?.executionHead === priorAuthorization.executionHead
+    && priorReceipt?.exactHeadCiRunId
+      === priorAuthorization.exactHeadCiRunId
+    && typeof priorReceipt?.attemptId === "string"
+    && /^attempt-\d{3}$/u.test(priorReceipt.attemptId)
+  );
+  if (!valid) {
+    throw new Error("m2_oa03_runtime_authorization_conflict");
+  }
+  return Object.freeze({
+    priorAttemptId: priorReceipt.attemptId,
+    priorExecutionHead: priorAuthorization.executionHead,
+    priorExactHeadCiRunId: priorAuthorization.exactHeadCiRunId
   });
 }
 
