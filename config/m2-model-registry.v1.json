@@ -66,18 +66,23 @@
   ],
   "currentRoles": {
     "operationalWorkFallback": "M2-WORK-OA03",
+    "operationalWorkFallbackScope": "compatibility_operational_fallback_only_no_current_scope_performance_support",
     "researchWorkBaseline": "M2-WORK-LG01",
+    "coreLegacyHorizonAmountResearchComparator": "M2-WORK-LG01",
     "portfolioReference": "M2-PORT-ETS01",
     "approvedForAutomation": null,
     "activeCandidate": null,
     "blockedExperiment": null,
-    "latestStateIndex": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.42.md",
+    "latestStateIndex": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.43.md",
     "roleConflict": false,
     "sourceAssertions": [
       {
         "source": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.25.md",
         "assertion": "exact_v0_3_is_work_level_development_champion",
-        "scope": "work_level_development"
+        "scope": "historical_work_level_development",
+        "historicalAssertion": true,
+        "currentAuthority": false,
+        "supersededBy": "docs/analysis/m2-current/M2-oa03-current-role-correction-v0.1.md"
       },
       {
         "source": "docs/analysis/m2-current/M2-current-channel-generative-g1-development-v0.1.json",
@@ -87,7 +92,10 @@
       {
         "source": "AGENTS.md",
         "assertion": "exact_v0_3_remains_current_development_champion_and_fallback",
-        "scope": "repository_governance"
+        "scope": "historical_repository_governance",
+        "historicalAssertion": true,
+        "currentAuthority": false,
+        "supersededBy": "docs/analysis/m2-current/M2-oa03-current-role-correction-v0.1.md"
       },
       {
         "source": "docs/analysis/m2-current/M2-core-legacy-tail-interference-test-v0.1.json",
@@ -128,9 +136,16 @@
         "source": "docs/analysis/m2-current/M2-oa03-trailing12-observed-channel-allocation-v0.1.json",
         "assertion": "fixed_trailing12_observed_channel_allocation_is_mixed_or_not_supported_and_preserves_exact_conservation",
         "scope": "dynamic_core80_primary_core90_sensitivity_observed_channel_allocation_development"
+      },
+      {
+        "source": "docs/analysis/m2-current/M2-oa03-current-role-correction-v0.1.md",
+        "assertion": "oa03_is_compatibility_operational_fallback_without_new_current_scope_performance_support_and_lg01_is_the_core_legacy_horizon_amount_research_comparator",
+        "scope": "current_dynamic_core_legacy_3_6_12_work_amount_development",
+        "historicalAssertion": false,
+        "currentAuthority": true
       }
     ],
-    "roleInterpretationZh": "作品发生—金额校准模型 v0.3 仍是作品级现行运行回退模型，人工锚定可学习全局模型仍是研究比较基线。当前范围技术复现已完成，但 Primary 的主要研究参考不可合法重建，Strict 的 3/6/12 月结果均不支持；固定最近 12 月已有渠道分配的证据混合或不支持。该结果不改变模型角色，活动实验、活动候选与自动化批准继续为空。",
+    "roleInterpretationZh": "OA03 同公式在当前 Core 老品合同下重新执行完成；没有复现历史数值，因为 actual、训练支持和人口合同不同。Primary 的主要参考不可重建，因此不可评价；Strict 的 3/6/12 月全部不支持 OA03，Core90 没有改变结论。PERFORMANCE_MIXED 只是机器证据完整性状态，不是业务整体通过。作品发生—金额校准模型 v0.3（M2-WORK-OA03）仅保留为兼容性现行运行回退，不是当前开发冠军或当前范围最优模型；人工锚定可学习全局模型（M2-WORK-LG01）是当前 Core 老品 3/6/12 月金额实验的主要研究比较基线。现行路由不变，活动候选与自动化批准继续为空。",
     "activeExperiment": null
   },
   "currentEvaluationContract": {
@@ -469,7 +484,8 @@
         "docs/analysis/m2-current/M2-current-sales-share-candidate-v0.6.json",
         "docs/analysis/m2-current/M2-oa03-current-scope-replication-development-v0.1.json",
         "docs/analysis/m2-current/M2-oa03-trailing12-observed-channel-allocation-v0.1.json",
-        "docs/analysis/m2-current/M2-oa03-current-scope-artifact-readiness-v0.1.md"
+        "docs/analysis/m2-current/M2-oa03-current-scope-artifact-readiness-v0.1.md",
+        "docs/analysis/m2-current/M2-oa03-current-role-correction-v0.1.md"
       ],
       "predecessorIds": [
         "M2-WORK-HRC02"
@@ -478,8 +494,11 @@
         "M2-WORK-HR01"
       ],
       "currentRole": "operational_work_fallback",
-      "evidenceStatus": "current_scope_technical_replication_complete_performance_mixed_no_role_change",
-      "operationalStatus": "development_fallback_not_mature_champion",
+      "currentScopeRole": "compatibility_operational_fallback_only",
+      "currentScopeChampion": false,
+      "nativeConditionalPositiveAmountStored": false,
+      "evidenceStatus": "current_scope_formula_reexecution_complete_no_new_performance_support",
+      "operationalStatus": "compatibility_operational_fallback_not_current_scope_champion",
       "automationAuthorized": false,
       "productionImported": false,
       "finalHoldoutOpened": false,
@@ -490,7 +509,10 @@
         "没有独立 later-origin 或 final holdout",
         "当前范围 Primary 的人工锚定可学习全局模型主要参考在 3/6/12 月不可合法重建",
         "当前范围 Strict 在 3/6/12 月相对人工锚定可学习全局模型均不支持",
-        "固定最近 12 月已有渠道分配只形成混合或不支持证据"
+        "固定最近 12 月已有渠道分配只形成混合或不支持证据",
+        "PERFORMANCE_MIXED 只表示机器证据中不可评价、混合与不支持状态并存，不表示业务通过",
+        "Primary/Core80 全为正例，其他当前 Core cell 也接近全正例；PR-AUC 受 prevalence 主导，金额误差才是主要问题",
+        "没有原生保存条件正金额预测，不能把 occurrence 指标解释为原生金额能力"
       ],
       "registryReviewRequired": false,
       "evaluations": [
@@ -1529,7 +1551,8 @@
         "docs/analysis/m2-current/M2-current-human-anchored-development-v0.1.json",
         "docs/analysis/m2-current/M2-current-human-anchored-tsb-occurrence-development-v0.1.json",
         "docs/analysis/m2-current/M2-current-channel-generative-v0.2-core-development-v0.1.json",
-        "docs/analysis/m2-current/M2-core-legacy-tail-interference-test-v0.1.json"
+        "docs/analysis/m2-current/M2-core-legacy-tail-interference-test-v0.1.json",
+        "docs/analysis/m2-current/M2-oa03-current-role-correction-v0.1.md"
       ],
       "predecessorIds": [
         "M2-WORK-MAN01"
@@ -1544,6 +1567,7 @@
         "M2-WORK-HR01"
       ],
       "currentRole": "research_work_baseline",
+      "coreLegacyHorizonAmountComparatorStatus": "PRIMARY_RESEARCH_COMPARATOR",
       "evidenceStatus": "development_evidence",
       "operationalStatus": "frozen_research_baseline_not_production",
       "automationAuthorized": false,
@@ -3731,7 +3755,7 @@
     {"comparableGroupId":"CG-OA03-CS-CORE90-STRICT-CHANNEL-H12","comparisonClass":"SAME_CASE_COMPARABLE","target":"future_sales_share_development_modelable_cash","cashAuthority":"user_reviewed_sales_share_workbook_membership","populationId":"oa03-cs-core90-strict-channel-195w-5710c-h12","horizons":[12],"grain":"work_origin_channel_horizon","asOfContract":"strict_rolling_fixed_trailing12_origin_observed_mature_channel_shares","actualDefinition":"M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01","evaluationFamily":"oa03_current_scope_strict_trailing12_channel_allocation"}
   ],
   "glossary": {
-    "operational fallback": "现行运行回退模型",
+    "operational fallback": "兼容性现行运行回退模型",
     "research baseline": "研究比较基线",
     "candidate": "待验证候选",
     "champion": "当前比较优胜模型",

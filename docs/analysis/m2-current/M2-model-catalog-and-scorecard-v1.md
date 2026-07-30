@@ -6,7 +6,7 @@
 
 ## 当前角色
 
-- 现行运行回退模型（operational fallback）：作品发生-金额校准模型 v0.3（Occurrence-Amount Calibration v0.3，`M2-WORK-OA03`）。
+- 兼容性现行运行回退模型（compatibility operational fallback）：作品发生-金额校准模型 v0.3（Occurrence-Amount Calibration v0.3，`M2-WORK-OA03`）。
 - 研究比较基线（research baseline）：人工锚定可学习全局模型（Human-Anchored Learned Global，`M2-WORK-LG01`）。
 - 组合级参考（portfolio reference）：组合现金 ETS/Holt-Winters 模型（Portfolio ETS/Holt-Winters，`M2-PORT-ETS01`）。
 - 活动候选（active candidate）：无（`null`）。
@@ -20,7 +20,7 @@
 | 作品点预测（WORK） | 模型（model） | 旧现金生命周期公式（Legacy Cash Lifecycle Formula，`M2-WORK-B4`） | `B4`、`B4 formula`、`B4 comparator` | 仅作比较（`comparator_only`） | 无前序；后续 `M2-WORK-SEG01`、`M2-WORK-HRC02`、`M2-WORK-OA03` |
 | 作品点预测（WORK） | 模型（model） | 作品分群向下校准模型 v0.1（Segmented Downward Calibration v0.1，`M2-WORK-SEG01`） | `M2-current-segmented-downward-calibration-v0.1`、`current v0.1`、`segmented calibration` | 已拒绝开发候选（`rejected_development_candidate`） | 前序 `M2-WORK-B4`；后续 `M2-WORK-HRC02` |
 | 作品点预测（WORK） | 模型（model） | 作品层级稳健校准模型 v0.2（Hierarchical Robust Calibration v0.2，`M2-WORK-HRC02`） | `M2-current-hierarchical-robust-calibration-v0.2`、`current v0.2`、`reliable candidate v0.2` | 已拒绝开发候选（`rejected_development_candidate`） | 前序 `M2-WORK-SEG01`；后续 `M2-WORK-OA03` |
-| 作品点预测（WORK） | 模型（model） | 作品发生-金额校准模型 v0.3（Occurrence-Amount Calibration v0.3，`M2-WORK-OA03`） | `M2-current-occurrence-amount-calibration-v0.3`、`exact v0.3`、`exact-v0.3`、`current v0.3` | 现行运行回退（`operational_work_fallback`） | 前序 `M2-WORK-HRC02`；后续 `M2-WORK-HR01` |
+| 作品点预测（WORK） | 模型（model） | 作品发生-金额校准模型 v0.3（Occurrence-Amount Calibration v0.3，`M2-WORK-OA03`） | `M2-current-occurrence-amount-calibration-v0.3`、`exact v0.3`、`exact-v0.3`、`current v0.3` | 兼容性现行运行回退（`operational_work_fallback`） | 前序 `M2-WORK-HRC02`；后续 `M2-WORK-HR01` |
 | 作品点预测（WORK） | 模型（model） | 全局门槛广义线性模型（Global Regularized Hurdle GLM，`M2-WORK-GHG01`） | `regularized_hurdle_glm`、`global hurdle GLM`、`hurdle GLM` | 已执行失败研究候选（`failed_research_candidate`） | 前序 `M2-WORK-OA03`；后续 `M2-WORK-GDE04` |
 | 作品点预测（WORK） | 模型（model） | 全局 Tweedie 提升树桩模型（Tweedie Boosted Stumps，`M2-WORK-TWD01`） | `tweedie_gradient_boosted_stumps`、`Tweedie boosted stumps`、`Tweedie boosting` | 已执行失败研究候选（`failed_research_candidate`） | 前序 `M2-WORK-OA03`；后续 `M2-WORK-GDE04` |
 | 作品点预测（WORK） | 模型（model） | 门槛梯度提升树桩模型（Hurdle Gradient-Boosted Stumps，`M2-WORK-HGB01`） | `hurdle_gradient_boosted_stumps`、`hurdle GBM`、`hurdle boosted stumps` | 已执行失败研究候选（`failed_research_candidate`） | 前序 `M2-WORK-OA03`；后续 `M2-WORK-GDE04` |

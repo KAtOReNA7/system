@@ -87,6 +87,36 @@ test("current roles retain fallback, research baseline and no automation promoti
   assert.equal(registry.currentRoles.activeCandidate, null);
   assert.equal(registry.currentRoles.approvedForAutomation, null);
   assert.equal(registry.currentRoles.roleConflict, false);
+  assert.equal(
+    registry.currentRoles.operationalWorkFallbackScope,
+    "compatibility_operational_fallback_only_no_current_scope_performance_support"
+  );
+  assert.equal(
+    registry.currentRoles.coreLegacyHorizonAmountResearchComparator,
+    "M2-WORK-LG01"
+  );
+  assert.match(
+    registry.currentRoles.roleInterpretationZh,
+    /OA03 同公式在当前 Core 老品合同下重新执行完成；没有复现历史数值/u
+  );
+  assert.match(
+    registry.currentRoles.roleInterpretationZh,
+    /PERFORMANCE_MIXED 只是机器证据完整性状态，不是业务整体通过/u
+  );
+  const historicalChampionAssertions = registry.currentRoles.sourceAssertions
+    .filter((item) => /champion/u.test(item.assertion));
+  assert.equal(historicalChampionAssertions.length, 2);
+  assert.equal(
+    historicalChampionAssertions.every(
+      (item) => (
+        item.historicalAssertion === true
+        && item.currentAuthority === false
+        && item.supersededBy
+          === "docs/analysis/m2-current/M2-oa03-current-role-correction-v0.1.md"
+      )
+    ),
+    true
+  );
 });
 
 test("core-revenue manual candidate failed without promotion", () => {
@@ -191,7 +221,7 @@ test("core legacy population test records non-confirmation without promotion", (
   );
   assert.equal(
     registry.currentRoles.latestStateIndex,
-    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.42.md"
+    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.43.md"
   );
   assert.equal(registry.currentRoles.activeCandidate, null);
   assert.equal(registry.currentRoles.approvedForAutomation, null);
@@ -311,6 +341,16 @@ test("OA03 current-scope replication closes without conflating allocation with a
   assert.equal(
     experiment.summaryStatus,
     "M2_OA03_CURRENT_SCOPE_REPLICATION_COMPLETE_PERFORMANCE_MIXED"
+  );
+  assert.equal(
+    oa03.evidenceStatus,
+    "current_scope_formula_reexecution_complete_no_new_performance_support"
+  );
+  assert.equal(oa03.currentScopeChampion, false);
+  assert.equal(oa03.nativeConditionalPositiveAmountStored, false);
+  assert.equal(
+    oa03.operationalStatus,
+    "compatibility_operational_fallback_not_current_scope_champion"
   );
   assert.equal(experiment.modelRolesChanged, false);
   assert.equal(experiment.secondResultExecuted, false);
@@ -445,9 +485,10 @@ test("read-only query exposes scoped identities and refuses invalid ranking", ()
   const status = runQuery("status");
   assert.equal(status.status, 0, status.stderr);
   assert.match(status.stdout, /本次只读查询模型执行次数：0/u);
-  assert.match(status.stdout, /第一份有效原始候选评价已经冻结/u);
-  assert.match(status.stdout, /原始候选预测行 3,318,819/u);
-  assert.match(status.stdout, /M2_PUBLISHING_SCALE_CORE_FAIL/u);
+  assert.match(status.stdout, /当前实验：无（null）/u);
+  assert.match(status.stdout, /兼容性现行运行回退模型/u);
+  assert.match(status.stdout, /没有复现历史数值/u);
+  assert.match(status.stdout, /不是业务整体通过/u);
   assert.match(status.stdout, /M2-WORK-OA03/u);
 
   const publishingScale = runQuery("show", "M2-CHAN-PSC01");

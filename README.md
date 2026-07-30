@@ -35,11 +35,11 @@
 | 你可能关心的问题 | 当前答案 |
 |---|---|
 | 这个项目预测什么？ | **未来分成收入现金**；买断及其他非分成现金不进入 M2 预测目标 |
-| 当前可以直接使用哪个模型？ | 作品发生-金额校准模型 v0.3（Occurrence-Amount Calibration v0.3，`M2-WORK-OA03`）仅作为**现行运行回退** |
+| 当前可以直接使用哪个模型？ | 作品发生-金额校准模型 v0.3（Occurrence-Amount Calibration v0.3，`M2-WORK-OA03`）仅作为**兼容性现行运行回退** |
 | 当前研究比较基线是什么？ | 人工锚定可学习全局模型（Human-Anchored Learned Global，`M2-WORK-LG01`） |
 | 是否已有生产模型？ | 没有；`activeCandidate=null`，`approvedForAutomation=null` |
 | 最新渠道模型结果如何？ | 出版行业规模适配渠道核心（Publishing-Scale Channel Core，`M2-CHAN-PSC01`）已实际执行并失败，不是“尚未运行” |
-| 最新核心老品结论如何？ | OA03 当前范围技术复现完成；作品总额 Primary 主要参考不可重建、Strict 不支持；固定 trailing-12 渠道分配在 3/12 月混合、6 月不支持 |
+| 最新核心老品结论如何？ | OA03 同公式在当前合同下重新执行完成，但没有复现历史数值；Primary 主要参考不可重建、Strict 3/6/12 月不支持，OA03 仅保留为兼容性现行运行回退 |
 | 没有真实账单能否开发？ | 可以完成公开安装、构建、测试、启动、查询和合成 fixture；只会阻断所属 private capability |
 
 ## 项目状态一览
@@ -55,10 +55,10 @@
 | M2 分层收入组合 v0.1 | 已完成首个有效组合开发评价并失败（`M2_LAYERED_REVENUE_COMPOSITION_FAIL`） | 12/36 个月主结果失败；年龄带辅助臂和年度分量未完整执行；没有晋升或自动化授权 |
 | M2 核心老品范围与尾部测试 | 范围纠偏、冻结重评分与一次训练人口消融已完成（`M2_CORE_LEGACY_SCOPE_AND_TAIL_TEST_COMPLETE`） | 尾部干扰未确认（`TAIL_INTERFERENCE_NOT_CONFIRMED`）；核心 80% 训练稳定退化，未授权新架构 |
 | M2 核心老品全周期路由与已有渠道分配 | 预注册验证已完成（`M2_CORE_LEGACY_HORIZON_ROUTER_AND_CHANNEL_ALLOCATION_COMPLETE`） | 合法模型交集的同案例证据已补齐；滚动路由未确认（`HORIZON_ROUTER_NOT_CONFIRMED`），已有渠道分配证据混合（`CHANNEL_ALLOCATION_MIXED`） |
-| M2 OA03 当前范围复现 | 技术复现完成、性能总结混合（`M2_OA03_CURRENT_SCOPE_REPLICATION_COMPLETE_PERFORMANCE_MIXED`） | Core80 Primary 主要参考不可合法重建，Strict 3/6/12 月均不支持；不改变运行回退角色 |
+| M2 OA03 当前范围复现 | 同公式重新执行完成、无新增性能支持（`M2_OA03_CURRENT_SCOPE_REPLICATION_COMPLETE_PERFORMANCE_MIXED`） | 没有复现历史数值；`PERFORMANCE_MIXED` 是机器证据状态而非业务通过；Core80 Primary 主要参考不可合法重建，Strict 3/6/12 月均不支持 |
 | M3 | 仅合成 fixture/prototype | 不代表真实材料执行或正式发布 |
 
-最新状态以 [M2 当前状态索引 v0.42](docs/analysis/m2-v2/M2-v2-current-state-index-v0.42.md)
+最新状态以 [M2 当前状态索引 v0.43](docs/analysis/m2-v2/M2-v2-current-state-index-v0.43.md)
 为准；模型名称、角色、别名、谱系、成绩人口和可比组以
 [Model Registry](config/m2-model-registry.v1.json) 为唯一当前机器权威。
 
@@ -74,7 +74,7 @@
 
 | 能力 | 当前角色 | 证据与限制 |
 |---|---|---|
-| 作品点预测 | 作品发生-金额校准模型 v0.3（Occurrence-Amount Calibration v0.3，`M2-WORK-OA03`）是现行运行回退模型（operational fallback） | 当前人工权威开发人口 WAPE 为 `0.49075894`；未通过绝对质量门槛 |
+| 作品点预测 | 作品发生-金额校准模型 v0.3（Occurrence-Amount Calibration v0.3，`M2-WORK-OA03`）是兼容性现行运行回退模型（compatibility operational fallback） | 当前人工权威开发人口 WAPE 为 `0.49075894`；未通过绝对质量门槛，当前 Core 老品范围没有新增性能支持 |
 | 作品研究比较 | 人工锚定可学习全局模型（Human-Anchored Learned Global，`M2-WORK-LG01`）是研究比较基线（research baseline） | 只用于研究比较，不是 production 晋升 |
 | 渠道预测研究 | 出版行业规模适配渠道核心（Publishing-Scale Channel Core，`M2-CHAN-PSC01`）已执行失败 | raw candidate 已冻结；历史实现阻断不能掩盖有效失败，也不授权同窗调参 |
 | 周期路由研究 | 按预测周期滚动模型路由器 v0.1（Rolling Horizon Model Router v0.1，`M2-WORK-HR01`）已执行但未确认 | 3/12/36 个月只追平最强单模型，6 个月 WAPE 退化约 2.53%；不是活动候选或运行管线 |
@@ -104,7 +104,7 @@
 
 | 能力 | 中文名称（英文原名、稳定 ID） | 当前角色 | 需要怎样理解 |
 |---|---|---|---|
-| 作品点预测 | 作品发生-金额校准模型 v0.3（Occurrence-Amount Calibration v0.3，`M2-WORK-OA03`） | 现行运行回退（operational fallback） | 可以作为已有现金历史的保守锚点，但尚未通过绝对质量与自动化门槛 |
+| 作品点预测 | 作品发生-金额校准模型 v0.3（Occurrence-Amount Calibration v0.3，`M2-WORK-OA03`） | 兼容性现行运行回退（compatibility operational fallback） | 可以作为已有现金历史的保守锚点，但不是当前开发冠军或当前范围最优模型，尚未通过绝对质量与自动化门槛 |
 | 作品研究比较 | 人工锚定可学习全局模型（Human-Anchored Learned Global，`M2-WORK-LG01`） | 研究比较基线（research baseline） | 用于同人口候选比较，不等于 production 晋升 |
 | 组合预测 | 组合现金 ETS/Holt-Winters（Portfolio ETS/Holt-Winters，`M2-PORT-ETS01`） | 组合级参考（portfolio reference） | 3/6/12 月必须分别评价，组合结果不能分配回作品 |
 | 渠道预测 | 出版行业适配渠道月度发生—条件金额核心（Publishing-Scale Channel Monthly Occurrence × Conditional Amount Core，`M2-CHAN-PSC01`） | 已执行失败候选 | raw candidate 已冻结；不允许同窗 outcome-driven 调参 |
@@ -133,7 +133,7 @@
 
 - [出版规模渠道开发评价](docs/analysis/m2-current/M2-current-publishing-scale-channel-development-v0.1.md)
 - [出版规模渠道可预测性诊断](docs/analysis/m2-current/M2-current-publishing-scale-channel-forecastability-v0.1.md)
-- [M2 当前状态索引 v0.42](docs/analysis/m2-v2/M2-v2-current-state-index-v0.42.md)
+- [M2 当前状态索引 v0.43](docs/analysis/m2-v2/M2-v2-current-state-index-v0.43.md)
 
 随后完成的核心老品审计进一步表明：
 
@@ -162,7 +162,7 @@
    明确预测目标、使用场景和禁止外推的边界；
 2. 再读 [M2 模型目录与成绩总账](docs/analysis/m2-current/M2-model-catalog-and-scorecard-v1.md)，
    理解模型、实验、状态码和当前角色；
-3. 最后读 [M2 当前状态索引 v0.42](docs/analysis/m2-v2/M2-v2-current-state-index-v0.42.md)，
+3. 最后读 [M2 当前状态索引 v0.43](docs/analysis/m2-v2/M2-v2-current-state-index-v0.43.md)，
    查看最新结论、阻断项和下一步。
 
 ### 给开发者
@@ -277,7 +277,8 @@ holdout。
 ## 当前研究与发布边界
 
 - 作品发生-金额校准模型 v0.3（Occurrence-Amount Calibration v0.3，
-  `M2-WORK-OA03`）继续作为作品级现行运行回退；没有活动实验、活动候选或自动化批准。
+  `M2-WORK-OA03`）仅作为兼容性现行运行回退；它不是当前开发冠军或当前范围最优
+  模型。没有活动实验、活动候选或自动化批准。
 - TSB occurrence、生命周期和渠道倍率专家的 raw 点预测均已失败；selected
   pipeline 的回退结果不能隐藏 raw candidate。
 - 渠道生成实验 v0.2（Channel Generative v0.2，
@@ -338,7 +339,7 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
 
 | 主题 | 当前入口 |
 |---|---|
-| 最新状态 | [M2 当前状态索引 v0.42](docs/analysis/m2-v2/M2-v2-current-state-index-v0.42.md) |
+| 最新状态 | [M2 当前状态索引 v0.43](docs/analysis/m2-v2/M2-v2-current-state-index-v0.43.md) |
 | 模型身份与角色 | [Model Registry](config/m2-model-registry.v1.json) · [中文模型目录](docs/analysis/m2-current/M2-model-catalog-and-scorecard-v1.md) |
 | 产品定义 | [M2 Forecast Intelligence v2 PRD](docs/prd/m2-v2/M2-forecast-intelligence-v2-prd-v0.2.md) |
 | 评价体系 | [v2.2 合同](docs/analysis/m2-current/M2-evaluation-contract-v2.2.md) · [v2.2 验证](docs/analysis/m2-current/M2-evaluation-contract-v2.2-validation.md) |

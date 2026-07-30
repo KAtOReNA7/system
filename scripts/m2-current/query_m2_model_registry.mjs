@@ -63,25 +63,24 @@ switch (command) {
 
 function printStatus() {
   console.log("M2 当前模型角色（Model Registry current roles）");
-  printRole("现行运行回退模型", "operationalWorkFallback");
+  printRole("兼容性现行运行回退模型", "operationalWorkFallback");
   printRole("研究比较基线", "researchWorkBaseline");
   printRole("组合级参考", "portfolioReference");
   printRole("活动候选", "activeCandidate");
   printRole("自动化批准模型", "approvedForAutomation");
   console.log(
-    `当前实验：${registry.currentRoles.activeExperiment}`
-      + "（出版行业规模适配渠道核心开发，"
-      + "第一份完整原始候选评价已执行并按冻结门失败；"
-      + "`M2_PUBLISHING_SCALE_CORE_FAIL`）"
+    registry.currentRoles.activeExperiment === null
+      ? "当前实验：无（null）。"
+      : `当前实验：${registry.currentRoles.activeExperiment}。`
   );
-  console.log("当前阻断实验：无（null）。");
+  console.log(
+    registry.currentRoles.blockedExperiment === null
+      ? "当前阻断实验：无（null）。"
+      : `当前阻断实验：${registry.currentRoles.blockedExperiment}。`
+  );
   console.log(`当前状态索引：${registry.currentRoles.latestStateIndex}`);
   console.log("本次只读查询模型执行次数：0。");
-  console.log(
-    "出版行业规模适配渠道核心开发的第一份有效原始候选评价已经冻结；"
-      + "原始候选预测行 3,318,819，primary 评价 case 12,039，"
-      + "strict 评价 case 74,320；不授权第二个参数版本。"
-  );
+  console.log(`当前角色解释：${registry.currentRoles.roleInterpretationZh}`);
 }
 
 function printRole(label, key) {
@@ -340,7 +339,7 @@ function grainZh(value) {
 
 function roleZh(value) {
   return {
-    operational_work_fallback: "现行运行回退",
+    operational_work_fallback: "兼容性现行运行回退",
     research_work_baseline: "研究比较基线",
     portfolio_reference: "组合级参考",
     comparator_only: "仅作比较",

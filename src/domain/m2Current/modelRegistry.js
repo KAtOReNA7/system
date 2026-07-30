@@ -552,7 +552,11 @@ function evaluationDimensions(registry, model) {
 
 function renderCurrentRoles(registry) {
   const definitions = [
-    ["现行运行回退模型", "operational fallback", "operationalWorkFallback"],
+    [
+      "兼容性现行运行回退模型",
+      "compatibility operational fallback",
+      "operationalWorkFallback"
+    ],
     ["研究比较基线", "research baseline", "researchWorkBaseline"],
     ["组合级参考", "portfolio reference", "portfolioReference"],
     ["活动候选", "active candidate", "activeCandidate"],
@@ -637,7 +641,7 @@ function entityTypeZh(entityType) {
 
 function roleZh(role) {
   return {
-    operational_work_fallback: "现行运行回退",
+    operational_work_fallback: "兼容性现行运行回退",
     research_baseline: "研究比较基线",
     portfolio_reference: "组合级参考",
     baseline_family: "研究基线族",
