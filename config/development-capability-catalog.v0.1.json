@@ -664,6 +664,112 @@
       "authorization": "USER_AUTHORIZED_M2_CHAM01_RECOVERY_UNTIL_FIRST_VALID_COMPLETE_OUTCOME_2026_07_30"
     },
     {
+      "id": "m2-lg01-head-cash-residual",
+      "description": "Run one user-authorized exploratory three-month LG01 head-cash residual calibration after preregistration, synthetic validation and exact-head Linux/Windows CI. Source authority is blocking; frozen LG01 and CHAM01 prediction caches are rebuildable evidence inputs; historical receipts never grant execution authority.",
+      "privateArtifactClassificationVersion": "private-artifact-classification.v0.1",
+      "requiredTools": [],
+      "requiredPrivateArtifacts": [
+        {
+          "role": "total-ledger-authority",
+          "kind": "file",
+          "artifactClass": "PRIVATE_SOURCE_AUTHORITY",
+          "path": "data/real-bills/渠道实销汇总 -总.xlsx"
+        },
+        {
+          "role": "sales-share-ledger-authority",
+          "kind": "file",
+          "artifactClass": "PRIVATE_SOURCE_AUTHORITY",
+          "path": "data/real-bills/渠道实销汇总 -分成.xlsx"
+        },
+        {
+          "role": "buyout-ledger-authority",
+          "kind": "file",
+          "artifactClass": "PRIVATE_SOURCE_AUTHORITY",
+          "path": "data/real-bills/渠道实销汇总 -买断.xlsx"
+        },
+        {
+          "role": "m1-work-mapping-authority",
+          "kind": "directory",
+          "artifactClass": "PRIVATE_SOURCE_AUTHORITY",
+          "path": "data/m1-master-data-private/mapping-candidate"
+        },
+        {
+          "role": "user-reviewed-channel-master",
+          "kind": "file",
+          "artifactClass": "PRIVATE_SOURCE_AUTHORITY",
+          "path": "data/private-output/outputs/channel-governance-20260726/M2-渠道统一与类型人工补全表-v0.2.xlsx"
+        },
+        {
+          "role": "reversal-authority-facts",
+          "kind": "file",
+          "artifactClass": "PRIVATE_DERIVED_CACHE",
+          "path": "data/private-output/m2-evaluation-v2-2-reversal-rescore/M2-reversal-authority-facts-private-v1.ndjson"
+        },
+        {
+          "role": "frozen-lg01-three-month-same-case-rows",
+          "kind": "file",
+          "artifactClass": "PRIVATE_DERIVED_CACHE",
+          "path": "data/private-output/m2-core-legacy-horizon-amount/M2-core-legacy-horizon-amount-frozen-lg01-rows-private-v0.1.ndjson"
+        },
+        {
+          "role": "frozen-cham01-b3-three-month-predictions",
+          "kind": "file",
+          "artifactClass": "PRIVATE_DERIVED_CACHE",
+          "path": "data/private-output/m2-core-legacy-horizon-amount/M2-core-legacy-horizon-amount-predictions-private-v0.1.ndjson"
+        },
+        {
+          "role": "frozen-cham01-feature-rows",
+          "kind": "file",
+          "artifactClass": "PRIVATE_DERIVED_CACHE",
+          "path": "data/private-output/m2-core-legacy-horizon-amount/M2-core-legacy-horizon-amount-feature-rows-private-v0.1.ndjson"
+        },
+        {
+          "role": "frozen-cham01-manifest",
+          "kind": "file",
+          "artifactClass": "PRIVATE_DERIVED_CACHE",
+          "path": "data/private-output/m2-core-legacy-horizon-amount/M2-core-legacy-horizon-amount-manifest-private-v0.1.json"
+        },
+        {
+          "role": "head-cash-residual-input-rows",
+          "kind": "file",
+          "artifactClass": "PRIVATE_DERIVED_CACHE",
+          "path": "data/private-output/m2-lg01-head-cash-residual/M2-lg01-head-cash-residual-input-rows-private-v0.1.ndjson"
+        },
+        {
+          "role": "head-cash-residual-predictions",
+          "kind": "file",
+          "artifactClass": "PRIVATE_DERIVED_CACHE",
+          "path": "data/private-output/m2-lg01-head-cash-residual/M2-lg01-head-cash-residual-predictions-private-v0.1.ndjson"
+        },
+        {
+          "role": "head-cash-residual-evaluation",
+          "kind": "file",
+          "artifactClass": "PRIVATE_DERIVED_CACHE",
+          "path": "data/private-output/m2-lg01-head-cash-residual/M2-lg01-head-cash-residual-evaluation-private-v0.1.ndjson"
+        },
+        {
+          "role": "head-cash-residual-manifest",
+          "kind": "file",
+          "artifactClass": "PRIVATE_DERIVED_CACHE",
+          "path": "data/private-output/m2-lg01-head-cash-residual/M2-lg01-head-cash-residual-manifest-private-v0.1.json"
+        },
+        {
+          "role": "head-cash-residual-attempt-receipt",
+          "kind": "file",
+          "artifactClass": "PRIVATE_RUN_PROVENANCE",
+          "path": "data/private-output/m2-lg01-head-cash-residual/M2-lg01-head-cash-residual-attempt-receipt-private-v0.1.json"
+        }
+      ],
+      "canonicalValidationCommands": [
+        "npm run doctor:capability -- m2-lg01-head-cash-residual",
+        "npm run diagnose:m2:lg01-head-cash-residual",
+        "npm run smoke:m2:current:lg01-head-cash-residual",
+        "npm run develop:m2:current:lg01-head-cash-residual"
+      ],
+      "recovery": "Restore only genuinely missing PRIVATE_SOURCE_AUTHORITY from a verified capability-scoped package. Deterministically rebuild frozen-input and experiment caches from source authority and committed frozen code, reconcile the rebuilt LG01 and CHAM01 aggregates to their frozen public evidence, and never treat that cache reconstruction as a new CHAM01 scientific evaluation. Missing caches or historical receipts never block public work and receipts are never fabricated.",
+      "authorization": "USER_AUTHORIZED_M2_LG01_HEAD_CASH_RESIDUAL_CALIBRATION_ONCE_2026_07_30"
+    },
+    {
       "id": "m2-layered-revenue-composition",
       "description": "Run the user-authorized layered revenue composition rolling development evaluation from authoritative sales-share billing sources. Rebuildable caches and historical receipts are not gates.",
       "requiredTools": [],

@@ -357,11 +357,21 @@ export function compareM2ModelRegistryEntries(registry, leftId, rightId) {
   if (!left || !right) {
     throw new Error("m2_model_registry_compare_model_unknown");
   }
+  const groups = new Map((registry.comparabilityGroups ?? []).map(
+    (group) => [group.comparableGroupId, group]
+  ));
+  const comparableClasses = new Set([
+    "SAME_CASE_COMPARABLE",
+    "SAME_INTERSECTION_COMPARABLE",
+    "REUSED_DEVELOPMENT_WINDOW"
+  ]);
   const pairs = [];
   for (const leftEvaluation of left.evaluations) {
     for (const rightEvaluation of right.evaluations) {
+      const group = groups.get(leftEvaluation.comparableGroupId);
       if (
         leftEvaluation.comparableGroupId === rightEvaluation.comparableGroupId
+        && comparableClasses.has(group?.comparisonClass)
         && leftEvaluation.WAPE !== null
         && rightEvaluation.WAPE !== null
       ) {
@@ -473,9 +483,18 @@ export function renderM2ModelCatalog(registry) {
     "",
     "## 成绩总账",
     "",
-    "| 可比组 | 模型（稳定 ID） | cases / works / origins | WAPE | signed bias | 结果（机器状态） |",
-    "|---|---|---:|---:|---:|---|",
+    "| 可比组 | 模型（稳定 ID） | 评价 / 实验臂 | cases / works / origins | WAPE | signed bias | 结果（机器状态） |",
+    "|---|---|---|---:|---:|---:|---|",
     ...renderScoreLedger(registry),
+    "",
+    "## 数值稳定性失败总账",
+    "",
+    "本表逐项保留冻结原始数值；数值稳定性失败与模型性能失败分别登记，"
+      + "不会把极端有限值改成截断值、0 或 `null`。",
+    "",
+    "| 实验臂（完整作用域） | 人口 / horizon | cases / works / origins | WAPE | signed bias | MAE / median AE | 最大单作品绝对误差占比 | 结果（机器状态） |",
+    "|---|---|---:|---:|---:|---:|---:|---|",
+    ...renderNumericStabilityLedger(registry),
     "",
     "## 查询",
     "",
@@ -574,20 +593,17 @@ function renderCurrentRoles(registry) {
     return `- ${zh}（${en}）：${model.displayNameZh}（`
       + `${model.displayNameEn}，${code(id)}）。`;
   });
-  if (
-    registry.currentRoles.activeExperiment
-      === "M2-EXP-PUBLISHING-SCALE-CHANNEL-01"
-  ) {
-    rows.push(
-      "- 当前实验：出版行业规模适配渠道核心开发\n"
-        + "  （Publishing-Scale Channel Core Development，"
-        + "`M2-EXP-PUBLISHING-SCALE-CHANNEL-01`）；"
-        + "第一份完整原始候选评价已执行并按冻结门失败\n"
-        + "  （`M2_PUBLISHING_SCALE_CORE_FAIL`），结果已冻结。"
+  if (registry.currentRoles.activeExperiment !== null) {
+    const experiment = registry.experiments.find(
+      (item) => (
+        item.experimentId === registry.currentRoles.activeExperiment
+      )
     );
-  } else if (registry.currentRoles.activeExperiment !== null) {
     rows.push(
-      `- 当前实验：${code(registry.currentRoles.activeExperiment)}。`
+      `- 当前实验：${experiment.displayNameZh}（${experiment.displayNameEn}，`
+        + `${code(experiment.experimentId)}；`
+        + `${resultStatusZh(experiment.resultStatus)}，`
+        + `${code(experiment.resultStatus)}）。`
     );
   }
   rows.push(
@@ -609,15 +625,68 @@ function renderScoreLedger(registry) {
         .map((evaluation) => (
           `| ${code(group.comparableGroupId)}`
           + ` | ${model.displayNameZh}（${code(model.stableModelId)}）`
+          + ` | ${code(evaluation.evaluationId)}`
+          + (
+            evaluation.experimentId && evaluation.experimentArmId
+              ? ` / ${code(
+                `${evaluation.experimentId}/${evaluation.experimentArmId}`
+              )}`
+              : ""
+          )
           + ` | ${displayCount(evaluation.caseCount)} / `
           + `${displayCount(evaluation.workCount)} / `
           + `${displayCount(evaluation.originCount)}`
           + ` | ${displayMetric(evaluation.WAPE, evaluation.resultStatus)}`
           + ` | ${displayMetric(evaluation.signedBias, evaluation.resultStatus)}`
           + ` | ${resultStatusZh(evaluation.resultStatus)}（`
-          + `${code(evaluation.resultStatus)}） |`
+          + `${code(evaluation.resultStatus)}）`
+          + (
+            evaluation.selectedPipelineStatus
+              ? `；回退后管线状态（${code(
+                evaluation.selectedPipelineStatus
+              )}）`
+              : ""
+          )
+          + " |"
         ))
     ))
+  ));
+}
+
+function renderNumericStabilityLedger(registry) {
+  const experiments = new Map((registry.experiments ?? []).map(
+    (experiment) => [experiment.experimentId, experiment]
+  ));
+  return registry.models.flatMap((model) => (
+    model.evaluations
+      .filter((evaluation) => evaluation.numericStabilityStatus)
+      .map((evaluation) => {
+        const experimentId = model.stableModelId === "M2-WORK-CHAM01"
+          ? "M2-EXP-CORE-HORIZON-AMOUNT-01"
+          : null;
+        const experiment = experiments.get(experimentId);
+        const arm = evaluation.rawArmId ?? "未登记";
+        const scopedArm = experiment
+          ? `${experiment.displayNameZh} / ${arm}（${
+            code(`${experimentId}/${arm}`)
+          }）`
+          : `${model.displayNameZh} / ${arm}`;
+        return `| ${scopedArm}`
+          + ` | ${code(evaluation.populationId)} / `
+          + `${evaluation.horizons.join("、")}`
+          + ` | ${displayCount(evaluation.caseCount)} / `
+          + `${displayCount(evaluation.workCount)} / `
+          + `${displayCount(evaluation.originCount)}`
+          + ` | ${displayRawNumber(evaluation.WAPE)}`
+          + ` | ${displayRawNumber(evaluation.signedBias)}`
+          + ` | ${displayRawNumber(evaluation.mae)} / `
+          + `${displayRawNumber(evaluation.medianAbsoluteError)}`
+          + ` | ${displayRawNumber(
+            evaluation.maximumSingleWorkAbsoluteErrorShare
+          )}`
+          + ` | ${resultStatusZh(evaluation.resultStatus)}（`
+          + `${code(evaluation.resultStatus)}） |`;
+      })
   ));
 }
 
@@ -667,6 +736,10 @@ function roleZh(role) {
       "开发执行阻断且无候选结果",
     development_model_recovery_ready_no_private_outcome:
       "恢复就绪且尚无真实私有结果",
+    preregistered_exploratory_candidate_not_executed:
+      "探索性候选已预注册但尚未执行",
+    implemented_exploratory_candidate_not_executed:
+      "探索性候选已实现并通过合成验证但尚未执行",
     archive_only_failed_model: "仅历史审计且已失败"
   }[role] ?? "登记角色";
 }
@@ -683,6 +756,26 @@ function comparisonClassZh(value) {
 }
 
 function resultStatusZh(value) {
+  if (
+    value
+      === "M2_CHAM01_PRIMARY_CORE90_NUMERIC_STABILITY_FAIL_"
+        + "FINITE_EXTREME_EXTRAPOLATION"
+  ) {
+    return "有限极端外推导致数值稳定性失败";
+  }
+  if (value === "M2_LG01_HEAD_CASH_RESIDUAL_PREREGISTERED_NOT_EXECUTED") {
+    return "已预注册且尚未执行";
+  }
+  if (
+    value
+      === "M2_LG01_HEAD_CASH_RESIDUAL_"
+        + "IMPLEMENTED_SYNTHETIC_VERIFIED_OUTER_UNREAD"
+  ) {
+    return "已实现并通过 synthetic 验证但 outer outcome 仍未读取";
+  }
+  if (value === "M2_LG01_HEAD_CASH_RESIDUAL_FAIL") {
+    return "LG01 头部现金残差校准开发失败";
+  }
   if (value === "OA03_CURRENT_SCOPE_PERFORMANCE_NOT_EVALUABLE") {
     return "主要参考不可合法重建，当前性能不可评价";
   }
@@ -747,6 +840,10 @@ function resultStatusZh(value) {
     return "已执行但未通过";
   }
   return "登记结果";
+}
+
+function displayRawNumber(value) {
+  return value === null || value === undefined ? "未登记（null）" : String(value);
 }
 
 function displayMetric(value, resultStatus) {

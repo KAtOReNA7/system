@@ -96,6 +96,9 @@ jobs:
       - name: M2 CHAM01 formal-chain synthetic recovery smoke
         run: npm run smoke:m2:current:core-legacy-horizon-amount-recovery
 
+      - name: M2 HCRC01 bounded residual synthetic smoke
+        run: npm run smoke:m2:current:lg01-head-cash-residual
+
       - name: Verify private-independent server startup
         run: npm run smoke:portable-start
 
@@ -187,6 +190,9 @@ jobs:
 
       - name: M2 CHAM01 formal-chain synthetic recovery smoke
         run: npm run smoke:m2:current:core-legacy-horizon-amount-recovery
+
+      - name: M2 HCRC01 bounded residual synthetic smoke
+        run: npm run smoke:m2:current:lg01-head-cash-residual
 
       - name: Verify private-independent server startup
         run: npm run smoke:portable-start

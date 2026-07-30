@@ -11,6 +11,7 @@
 - 组合级参考（portfolio reference）：组合现金 ETS/Holt-Winters 模型（Portfolio ETS/Holt-Winters，`M2-PORT-ETS01`）。
 - 活动候选（active candidate）：无（`null`）。
 - 自动化批准模型（approved for automation）：无（`null`）。
+- 当前实验：M2 LG01 头部现金残差校准 v0.1（M2 LG01 Head-Cash Residual Calibration v0.1，`M2-EXP-LG01-HEAD-CASH-RESIDUAL-01`；LG01 头部现金残差校准开发失败，`M2_LG01_HEAD_CASH_RESIDUAL_FAIL`）。
 - 当前阻断实验：无（`null`）。
 
 ## 持久模型与模型族
@@ -33,7 +34,7 @@
 | 作品点预测（WORK） | 模型（model） | 人工锚定忠实公式（Human-Anchored Manual-Faithful Formula，`M2-WORK-MAN01`） | `manualFaithful`、`manual faithful`、`human anchored manual` | 人工公式比较模型（`human_formula_comparator`） | 前序 `M2-WORK-MCR01`；后续 `M2-WORK-LG01` |
 | 作品点预测（WORK） | 模型（model） | 核心收入人工规则基线 v0.1（Core-Revenue Manual Rule Baseline v0.1，`M2-WORK-CRMR01`） | `core revenue manual rule`、`core-revenue manual baseline` | 已执行失败候选（`failed_development_candidate`） | 前序 `M2-WORK-MAN01`；后续 `M2-PORT-LRC01`、`M2-WORK-HR01` |
 | 组合预测（PORT） | 模型（model） | 分层收入组合模型 v0.1（Layered Revenue Composition Model v0.1，`M2-PORT-LRC01`） | `layered revenue composition`、`M2 layered revenue composition v0.1` | 已执行失败、且属于当前 M2 范围外组合研究（`failed_development_candidate`；`OUT_OF_CURRENT_M2_SCOPE_PORTFOLIO_RESEARCH`） | 前序 `M2-WORK-CRMR01`、`M2-PORT-ETS01`；无后续；不得参加作品模型排名 |
-| 作品点预测（WORK） | 模型（model） | 人工锚定可学习全局模型（Human-Anchored Learned Global，`M2-WORK-LG01`） | `learnedGlobal`、`learnedGlobal + common reversal`、`frozen_learnedGlobal_plus_common_reversal`、`learned global`、`learnedGlobal common reversal`、`G0 frozen baseline` | 研究比较基线（`research_work_baseline`） | 前序 `M2-WORK-MAN01`；后续 `M2-WORK-HP01`、`M2-WORK-OR01`、`M2-WORK-TSB01`、`M2-WORK-LC01`、`M2-CHAN-SCL01`、`M2-CHAN-GEN02`、`M2-WORK-HR01`、`M2-WORK-CHAM01` |
+| 作品点预测（WORK） | 模型（model） | 人工锚定可学习全局模型（Human-Anchored Learned Global，`M2-WORK-LG01`） | `learnedGlobal`、`learnedGlobal + common reversal`、`frozen_learnedGlobal_plus_common_reversal`、`learned global`、`learnedGlobal common reversal`、`G0 frozen baseline` | 研究比较基线（`research_work_baseline`） | 前序 `M2-WORK-MAN01`；后续 `M2-WORK-HP01`、`M2-WORK-OR01`、`M2-WORK-TSB01`、`M2-WORK-LC01`、`M2-CHAN-SCL01`、`M2-CHAN-GEN02`、`M2-WORK-HR01`、`M2-WORK-CHAM01`、`M2-WORK-HCRC01` |
 | 作品点预测（WORK） | 模型（model） | 人工锚定层级正金额专家模型（Human-Anchored Hierarchical Positive-Amount Experts，`M2-WORK-HP01`） | `hierarchicalPositive`、`four experts`、`hierarchical positive` | 已拒绝嵌套层（`rejected_nested_layer`） | 前序 `M2-WORK-LG01`；后续 `M2-WORK-OR01` |
 | 作品点预测（WORK） | 模型（model） | 人工锚定发生与冲销模型（Human-Anchored Occurrence and Reversal，`M2-WORK-OR01`） | `occurrenceAndReversal`、`occurrence reversal layer`、`human anchored occurrence and reversal` | 已拒绝嵌套层（`rejected_nested_layer`） | 前序 `M2-WORK-HP01`；后续 `M2-WORK-TSB01` |
 | 作品点预测（WORK） | 模型（model） | TSB 间歇发生模型（TSB Occurrence Model，`M2-WORK-TSB01`） | `raw TSB`、`M2-current-human-anchored-tsb-occurrence-challenger-v0.1/raw`、`raw tsb occurrence`、`TSB occurrence raw` | 已执行失败候选（`failed_development_candidate`） | 前序 `M2-WORK-LG01`；后续 `M2-WORK-TSBB01` |
@@ -48,7 +49,8 @@
 | 作品点预测（WORK） | 模型（model） | C2 活跃度与间歇模型组合（C2 Activity and Intermittent Model Mix，`M2-WORK-C2IM01`） | `C2`、`C2 intermittent mix` | 仅历史审计且已失败（`archive_only_failed_model`） | 前序 `M2-WORK-C2R101`；后续 `M2-WORK-C3IR01` |
 | 作品点预测（WORK） | 模型（model） | C3 内部特征残差校正模型（C3 Internal-Feature Residual Correction，`M2-WORK-C3IR01`） | `C3`、`C3-A`、`C3 residual`、`C3 internal features` | 仅历史审计且已失败（`archive_only_failed_model`） | 前序 `M2-WORK-C2IM01`；无后续 |
 | 作品点预测（WORK） | 选定管线（model_pipeline） | 按预测周期滚动模型路由器 v0.1（Rolling Horizon Model Router v0.1，`M2-WORK-HR01`） | `M2-current-core-legacy-horizon-router-v0.1`、`rolling horizon model router`、`horizon router v0.1` | 已执行失败候选（`failed_development_candidate`） | 前序 `M2-WORK-OA03`、`M2-WORK-LG01`、`M2-WORK-CRMR01`；无后续 |
-| 作品点预测（WORK） | 模型（model） | 核心老品分周期金额模型 v0.1（Core Legacy Horizon-Specific Amount Model v0.1，`M2-WORK-CHAM01`） | `core legacy horizon amount`、`horizon-specific amount model` | 已执行失败候选（`failed_development_candidate`） | 前序 `M2-WORK-LG01`；无后续 |
+| 作品点预测（WORK） | 模型（model） | 核心老品分周期金额模型 v0.1（Core Legacy Horizon-Specific Amount Model v0.1，`M2-WORK-CHAM01`） | `core legacy horizon amount`、`horizon-specific amount model` | 已执行失败候选（`failed_development_candidate`） | 前序 `M2-WORK-LG01`；后续 `M2-WORK-HCRC01` |
+| 作品点预测（WORK） | 模型（model） | LG01 头部现金残差校准模型 v0.1（LG01 Head-Cash Residual Calibration Model v0.1，`M2-WORK-HCRC01`） | `LG01 head-cash residual calibration`、`head-cash protected residual blend` | 已执行失败候选（`failed_development_candidate`） | 前序 `M2-WORK-LG01`、`M2-WORK-CHAM01`；无后续 |
 
 ## 实验、实验臂与检查点
 
@@ -74,6 +76,7 @@
 | M2 核心老品全周期同案例证据补齐、按周期模型路由与已有渠道分配验证 v0.1（M2 Core Legacy Full-Horizon Same-Case Evidence Completion, Horizon Router and Observed-Channel Allocation Validation v0.1，`M2-EXP-CORE-LEGACY-HORIZON-ROUTER-01`） | 完整周期能力矩阵与确定性重建审计 / CAPABILITY_MATRIX（`M2-EXP-CORE-LEGACY-HORIZON-ROUTER-01/CAPABILITY_MATRIX`；`EXECUTED_K0_CAPABILITY_MATRIX_COMPLETE`）；合法模型交集的冻结同案例重评分 / SAME_CASE_RESCORE（`M2-EXP-CORE-LEGACY-HORIZON-ROUTER-01/SAME_CASE_RESCORE`；`EXECUTED_K1_SAME_CASE_EVIDENCE_COMPLETE`）；按预测周期滚动模型路由 / ROLLING_ROUTER（`M2-EXP-CORE-LEGACY-HORIZON-ROUTER-01/ROLLING_ROUTER`；`EXECUTED_K2_HORIZON_ROUTER_NOT_CONFIRMED`）；已有渠道直接金额比较臂 / C0_DIRECT（`M2-EXP-CORE-LEGACY-HORIZON-ROUTER-01/C0_DIRECT`；`EXECUTED_K3_DIRECT_COMPARATOR`）；起点前三个月已有渠道份额分配臂 / C1_TRAILING_3（`M2-EXP-CORE-LEGACY-HORIZON-ROUTER-01/C1_TRAILING_3`；`EXECUTED_K3_CHANNEL_ALLOCATION_MIXED`）；起点前六个月已有渠道份额分配臂 / C2_TRAILING_6（`M2-EXP-CORE-LEGACY-HORIZON-ROUTER-01/C2_TRAILING_6`；`EXECUTED_K3_CHANNEL_ALLOCATION_MIXED`）；起点前十二个月已有渠道份额分配臂 / C3_TRAILING_12（`M2-EXP-CORE-LEGACY-HORIZON-ROUTER-01/C3_TRAILING_12`；`EXECUTED_K3_CHANNEL_ALLOCATION_MIXED`）；人工锚定可学习全局模型隐含渠道份额诊断臂 / C4_LG01_IMPLIED（`M2-EXP-CORE-LEGACY-HORIZON-ROUTER-01/C4_LG01_IMPLIED`；`EXECUTED_K3_DIAGNOSTIC_ONLY_MIXED`） |
 | 作品发生—金额校准模型 v0.3 当前范围复现与已有渠道分配验证 v0.1（Occurrence-Amount Calibration v0.3 Current-Scope Replication and Observed-Channel Allocation Validation v0.1，`M2-EXP-OA03-CURRENT-SCOPE-REPLICATION-01`） | 既有作品发生—金额校准模型当前范围技术复现臂 / R0（`M2-EXP-OA03-CURRENT-SCOPE-REPLICATION-01/R0`；`EXECUTED_CURRENT_SCOPE_TECHNICAL_REPLICATION_COMPLETE`）；动态核心人口作品总额评价臂 / R1（`M2-EXP-OA03-CURRENT-SCOPE-REPLICATION-01/R1`；`EXECUTED_PRIMARY_NOT_EVALUABLE_STRICT_NOT_SUPPORTED`）；固定最近 12 月已有成熟渠道份额分配臂 / C1（`M2-EXP-OA03-CURRENT-SCOPE-REPLICATION-01/C1`；`EXECUTED_MIXED_OR_NOT_SUPPORTED_EXACT_CONSERVATION`） |
 | 核心老品分周期金额模型开发 v0.1（Core Legacy Horizon-Specific Amount Model Development v0.1，`M2-EXP-CORE-HORIZON-AMOUNT-01`） | 冻结人工锚定可学习全局研究比较基线 / B0（`M2-EXP-CORE-HORIZON-AMOUNT-01/B0`；`FROZEN_SAME_CASE_REFERENCE_RECONSTRUCTED_AND_EVALUATED`）；分周期直接金额模型—等作品权重 / B1（`M2-EXP-CORE-HORIZON-AMOUNT-01/B1`；`TRAINED_AND_EVALUATED_FIRST_VALID_RESULT_FROZEN`）；分周期直接金额模型—起点收入秩权重 / B2（`M2-EXP-CORE-HORIZON-AMOUNT-01/B2`；`TRAINED_AND_EVALUATED_FIRST_VALID_RESULT_FROZEN`）；冻结 LG01 输入的分周期稳健金额模型 / B3（`M2-EXP-CORE-HORIZON-AMOUNT-01/B3`；`TRAINED_AND_EVALUATED_FIRST_VALID_RESULT_FROZEN`） |
+| M2 LG01 头部现金残差校准 v0.1（M2 LG01 Head-Cash Residual Calibration v0.1，`M2-EXP-LG01-HEAD-CASH-RESIDUAL-01`） | 冻结 LG01 三个月同案例基线 / C0（`M2-EXP-LG01-HEAD-CASH-RESIDUAL-01/C0`；`FROZEN_INPUT_NOT_REEXECUTED_EVALUATED_REFERENCE`）；冻结 CHAM01 B3 三个月原始诊断参考 / C1（`M2-EXP-LG01-HEAD-CASH-RESIDUAL-01/C1`；`FROZEN_INPUT_NOT_REEXECUTED_EVALUATED_DIAGNOSTIC_ONLY`）；全局有界残差混合 / C2（`M2-EXP-LG01-HEAD-CASH-RESIDUAL-01/C2`；`EXECUTED_RAW_CANDIDATE_ABSENT_UNIVERSAL_FALLBACK_FAIL`）；头部现金带保护的有界残差混合 / C3（`M2-EXP-LG01-HEAD-CASH-RESIDUAL-01/C3`；`EXECUTED_RAW_CANDIDATE_ABSENT_UNIVERSAL_FALLBACK_FAIL`） |
 | C1–C3 历史冻结开发活动（Archived C1-C3 Development Campaign，`M2-EXP-ARCHIVE-C1-C3`） | 透明组合开发 / C1（`M2-EXP-ARCHIVE-C1-C3/C1`；`ARCHIVE_DEVELOPMENT_FAIL`）；旧买断收入路由 / C2-R（`M2-EXP-ARCHIVE-C1-C3/C2-R`；`ARCHIVE_DEVELOPMENT_FAIL`）；正式现金路由分治 / C2-R.1（`M2-EXP-ARCHIVE-C1-C3/C2-R.1`；`ARCHIVE_DEVELOPMENT_FAIL`）；活跃度与间歇模型组合 / C2（`M2-EXP-ARCHIVE-C1-C3/C2`；`ARCHIVE_DEVELOPMENT_FAIL`）；内部特征残差校正 / C3（`M2-EXP-ARCHIVE-C1-C3/C3`；`ARCHIVE_DEVELOPMENT_FAIL`） |
 
 ## 成绩人口与可比组
@@ -143,110 +146,131 @@ as-of/label maturity、实际值定义或评价族不得直接排名。
 
 ## 成绩总账
 
-| 可比组 | 模型（稳定 ID） | cases / works / origins | WAPE | signed bias | 结果（机器状态） |
-|---|---|---:|---:|---:|---|
-| `CG-WORK-SS-CURRENT-7083` | 旧现金生命周期公式（`M2-WORK-B4`） | 7083 / 758 / 5 | 0.54929375 | 0.18322698 | 登记结果（`COMPARATOR_ONLY`） |
-| `CG-WORK-SS-CURRENT-7083` | 作品发生-金额校准模型 v0.3（`M2-WORK-OA03`） | 7083 / 758 / 5 | 0.49075894 | 0.07378107 | 已执行但未通过（`DEVELOPMENT_FAIL_RETAIN_FALLBACK`） |
-| `CG-WORK-SS-CURRENT-7083` | 统一渠道曲线模型（`M2-WORK-CCR01`） | 7083 / 758 / 5 | 0.49070110 | 0.07705278 | 已执行但未通过（`DEVELOPMENT_REJECTED_BELOW_MATERIALITY`） |
-| `CG-WORK-FORMAL-LEGACY-7851` | 旧现金生命周期公式（`M2-WORK-B4`） | 7851 / 824 / 5 | 0.55648454 | 0.08910997 | 登记结果（`ARCHIVE_DEVELOPMENT_COMPARATOR`） |
-| `CG-WORK-FORMAL-LEGACY-7851` | 作品分群向下校准模型 v0.1（`M2-WORK-SEG01`） | 7851 / 824 / 5 | 0.53184893 | 0.03680632 | 登记结果（`PARTIAL_PASS_NOT_ACCEPTED`） |
-| `CG-WORK-FORMAL-LEGACY-7851` | 作品层级稳健校准模型 v0.2（`M2-WORK-HRC02`） | 7851 / 824 / 5 | 0.51114966 | -0.00586227 | 登记结果（`PARTIAL_PASS_NOT_ACCEPTED`） |
-| `CG-WORK-FORMAL-LEGACY-7851` | 全局分布组合安全回退管线 v0.4（`M2-WORK-GDE04`） | 7851 / 824 / 5 | 0.50557140 | -0.01198958 | 已执行但未通过（`DEVELOPMENT_FAIL_SAFE_FALLBACK`） |
-| `CG-WORK-R0R5-GLOBAL-7851` | 全局门槛广义线性模型（`M2-WORK-GHG01`） | 7851 / 824 / 5 | 1.14324252 | 0.14962976 | 已执行但未通过（`DEVELOPMENT_FAIL`） |
-| `CG-WORK-R0R5-GLOBAL-7851` | 全局 Tweedie 提升树桩模型（`M2-WORK-TWD01`） | 7851 / 824 / 5 | 3.01164614 | 2.47005885 | 已执行但未通过（`DEVELOPMENT_FAIL`） |
-| `CG-WORK-R0R5-GLOBAL-7851` | 门槛梯度提升树桩模型（`M2-WORK-HGB01`） | 7851 / 824 / 5 | 0.86512643 | -0.73304615 | 已执行但未通过（`DEVELOPMENT_FAIL`） |
-| `CG-PORT-SS-30CELLS` | 组合现金 ETS/Holt-Winters 模型（`M2-PORT-ETS01`） | 30 / — / 12 | 0.12794956 | 0.10048252 | 已执行但未通过（`DEVELOPMENT_GATE_FAIL`） |
-| `CG-WORK-SS-DENSE-44301` | 经典时间序列比较基线族（`M2-BASE-CLASSIC01`） | 44301 / 824 / 25 | 0.46274198 | 0.06837072 | 登记结果（`COMPARATOR_ONLY`） |
-| `CG-WORK-SS-DENSE-44301` | 历史状态校准模型（`M2-WORK-HSC01`） | 44301 / 824 / 25 | 0.58623406 | -0.12927560 | 已执行但未通过（`POSTHOC_DEVELOPMENT_REJECTED`） |
-| `CG-WORK-SS-DENSE-44301` | 统一渠道曲线模型（`M2-WORK-CCR01`） | 44301 / 824 / 25 | 0.46506585 | 0.06843736 | 已执行但未通过（`DEVELOPMENT_FAIL`） |
-| `CG-WORK-SS-MANUAL-379-H36` | 人工渠道规则模型（`M2-WORK-MCR01`） | 379 / 214 / 3 | 0.70444680 | -0.29098286 | 已执行但未通过（`DEVELOPMENT_REJECTED`） |
-| `CG-WORK-SS-HA-PRIMARY-12039-H36` | 人工锚定忠实公式（`M2-WORK-MAN01`） | 12039 / 1125 / 13 | 0.53141021 | -0.40552340 | 登记结果（`DEVELOPMENT_COMPARATOR`） |
-| `CG-WORK-SS-HA-PRIMARY-12039-H36` | 人工锚定可学习全局模型（`M2-WORK-LG01`） | 12039 / 1125 / 13 | 0.44022495 | -0.12377106 | 登记结果（`FROZEN_RESEARCH_BASELINE`） |
-| `CG-WORK-SS-HA-PRIMARY-12039-H36` | 人工锚定可学习全局模型（`M2-WORK-LG01`） | 12039 / 1125 / 13 | 0.44022707 | -0.12366598 | 登记结果（`HISTORICAL_REPORT_REVISION_PRESERVED`） |
-| `CG-WORK-SS-HA-PRIMARY-12039-H36` | 人工锚定层级正金额专家模型（`M2-WORK-HP01`） | 12039 / 1125 / 13 | 0.45540455 | -0.02684314 | 已执行但未通过（`RAW_CANDIDATE_REJECTED`） |
-| `CG-WORK-SS-HA-PRIMARY-12039-H36` | 人工锚定发生与冲销模型（`M2-WORK-OR01`） | 12039 / 1125 / 13 | 0.44126080 | -0.14574128 | 已执行但未通过（`RAW_CANDIDATE_REJECTED`） |
-| `CG-WORK-SS-HA-PRIMARY-12039-H36` | TSB 间歇发生模型（`M2-WORK-TSB01`） | 12039 / 1125 / 13 | 0.54346231 | 0.22068122 | 已执行但未通过（`DEVELOPMENT_FAIL`） |
-| `CG-WORK-SS-HA-PRIMARY-12039-H36` | TSB 与全局模型混合候选（`M2-WORK-TSBB01`） | 12039 / 1125 / 13 | 0.45348237 | 0.03777402 | 已执行但未通过（`DEVELOPMENT_FAIL`） |
-| `CG-WORK-SS-HA-PRIMARY-12039-H36` | 生命周期五状态模型（`M2-WORK-LC01`） | 12039 / 1125 / 13 | 0.50139298 | 未登记（null） | 已执行但未通过（`DEVELOPMENT_FAIL`） |
-| `CG-WORK-SS-HA-PRIMARY-12039-H36` | 渠道倍率专家模型（`M2-CHAN-SCL01`） | 12039 / 1125 / 13 | 0.53776683 | 未登记（null） | 已执行但未通过（`DEVELOPMENT_FAIL`） |
-| `CG-WORK-SS-HA-PRIMARY-12039-H36` | 渠道时间生成模型 v0.2——独立渠道月度发生—条件金额核心（`M2-CHAN-GEN02`） | 12039 / 1125 / 13 | 0.44022495 | -0.12377106 | 登记结果（`G0_SEMANTIC_EQUIVALENCE_PASS_NOT_CANDIDATE_SCORE`） |
-| `CG-WORK-SS-HA-STRICT-74320` | 人工锚定可学习全局模型（`M2-WORK-LG01`） | 74320 / 2650 / 11 | 0.41191878 | -0.03847401 | 登记结果（`STRICT_ROLLING_DEVELOPMENT_BASELINE`） |
-| `CG-WORK-SS-HA-STRICT-74320` | TSB 间歇发生模型（`M2-WORK-TSB01`） | 74320 / 2650 / 11 | 0.50802197 | 0.20751052 | 已执行但未通过（`DEVELOPMENT_FAIL`） |
-| `CG-WORK-SS-HA-STRICT-74320` | TSB 与全局模型混合候选（`M2-WORK-TSBB01`） | 74320 / 2650 / 11 | 0.44487050 | 未登记（null） | 已执行但未通过（`DEVELOPMENT_FAIL`） |
-| `CG-WORK-SS-HA-STRICT-74320` | 生命周期五状态模型（`M2-WORK-LC01`） | 74320 / 2650 / 11 | 0.62275977 | 未登记（null） | 已执行但未通过（`DEVELOPMENT_FAIL`） |
-| `CG-WORK-SS-HA-STRICT-74320` | 渠道倍率专家模型（`M2-CHAN-SCL01`） | 74320 / 2650 / 11 | 0.65865324 | 未登记（null） | 已执行但未通过（`DEVELOPMENT_FAIL`） |
-| `CG-WORK-SS-OVERLAP-5203-H36` | 作品发生-金额校准模型 v0.3（`M2-WORK-OA03`） | 5203 / — / 13 | 0.37610234 | 0.09727286 | 登记结果（`SAME_INTERSECTION_DEVELOPMENT_ONLY`） |
-| `CG-WORK-SS-OVERLAP-5203-H36` | 人工锚定可学习全局模型（`M2-WORK-LG01`） | 5203 / — / 13 | 0.27723899 | -0.12220206 | 登记结果（`SAME_INTERSECTION_DEVELOPMENT_ONLY`） |
-| `CG-WORK-SS-OVERLAP-5203-H36` | TSB 与全局模型混合候选（`M2-WORK-TSBB01`） | 5203 / — / 13 | 0.26352433 | 0.00222693 | 登记结果（`SAME_INTERSECTION_DIAGNOSTIC_ONLY`） |
-| `CG-WORK-SS-OVERLAP-5203-H36` | 生命周期五状态模型（`M2-WORK-LC01`） | 5203 / — / 13 | 0.27458711 | 未登记（null） | 登记结果（`SAME_INTERSECTION_DIAGNOSTIC_ONLY`） |
-| `CG-G1-BLOCKED-NO-CANDIDATE-OUTCOME` | 渠道时间生成模型 v0.2——独立渠道月度发生—条件金额核心（`M2-CHAN-GEN02`） | 0 / 0 / 0 | 未产生（null） | 未产生（null） | 因前置条件不满足而阻断（`M2_CHANNEL_GENERATIVE_G1_CORE_BLOCKED`） |
-| `CG-PSC01-IMPLEMENTATION-BLOCK-NO-CANDIDATE-OUTCOME` | 出版行业适配的渠道月度发生—条件金额核心（`M2-CHAN-PSC01`） | 0 / 0 / 0 | 未产生（null） | 未产生（null） | 实现阻断且无候选结果（`M2_PUBLISHING_SCALE_IMPLEMENTATION_BLOCKED`） |
-| `CG-CHAM01-INFRASTRUCTURE-RETRY-EXHAUSTED-NO-CANDIDATE-OUTCOME` | 核心老品分周期金额模型 v0.1（`M2-WORK-CHAM01`） | 0 / 0 / 0 | 未登记（null） | 未登记（null） | 登记结果（`M2_CORE_HORIZON_AMOUNT_PRIVATE_EXECUTION_INVALIDATED_RETRY_EXHAUSTED`） |
-| `CG-CRMR01-CORE80-ABSOLUTE-6004` | 核心收入人工规则基线 v0.1（`M2-WORK-CRMR01`） | 6004 / 102 / 70 | 67.81190074 | 67.51463389 | 已执行但未通过（`M2_CORE_REVENUE_MANUAL_BASELINE_FAIL`） |
-| `CG-CRMR01-CORE90-ABSOLUTE-11612` | 核心收入人工规则基线 v0.1（`M2-WORK-CRMR01`） | 11612 / 194 / 70 | 61.84135010 | 61.50144536 | 已执行但未通过（`M2_CORE_REVENUE_MANUAL_BASELINE_FAIL`） |
-| `CG-LRC01-CORE80-PORT-280` | 分层收入组合模型 v0.1（`M2-PORT-LRC01`） | 280 / 0 / 70 | 1.50629188 | 0.71250400 | 已执行但未通过（`M2_LAYERED_REVENUE_COMPOSITION_FAIL`） |
-| `CG-LRC01-CORE90-PORT-280` | 分层收入组合模型 v0.1（`M2-PORT-LRC01`） | 280 / 0 / 70 | 1.50557046 | 0.71174456 | 已执行但未通过（`M2_LAYERED_REVENUE_COMPOSITION_FAIL`） |
-| `CG-CORE-LEGACY-K2-CORE80-WORK-H3` | 人工锚定可学习全局模型（`M2-WORK-LG01`） | 246 / 66 / 6 | 0.37817084 | -0.35183857 | 已执行的全量训练人口参照（`CONTROLLED_FULL_POPULATION_REFERENCE`） |
-| `CG-CORE-LEGACY-K2-CORE80-WORK-H3` | 人工锚定可学习全局模型（`M2-WORK-LG01`） | 246 / 66 / 6 | 0.37748436 | -0.34941786 | 动态核心 90% 训练已执行，尾部干扰未确认（`CONTROLLED_CORE90_TRAINING_TAIL_INTERFERENCE_NOT_CONFIRMED`） |
-| `CG-CORE-LEGACY-K2-CORE80-WORK-H3` | 人工锚定可学习全局模型（`M2-WORK-LG01`） | 246 / 66 / 6 | 0.39502114 | -0.37309004 | 动态核心 80% 训练已执行且退化，尾部干扰未确认（`CONTROLLED_CORE80_TRAINING_TAIL_INTERFERENCE_NOT_CONFIRMED`） |
-| `CG-CORE-LEGACY-K2-CORE80-WORK-H6` | 人工锚定可学习全局模型（`M2-WORK-LG01`） | 246 / 66 / 6 | 0.36591689 | -0.32833351 | 已执行的全量训练人口参照（`CONTROLLED_FULL_POPULATION_REFERENCE`） |
-| `CG-CORE-LEGACY-K2-CORE80-WORK-H6` | 人工锚定可学习全局模型（`M2-WORK-LG01`） | 246 / 66 / 6 | 0.36424168 | -0.32582502 | 动态核心 90% 训练已执行，尾部干扰未确认（`CONTROLLED_CORE90_TRAINING_TAIL_INTERFERENCE_NOT_CONFIRMED`） |
-| `CG-CORE-LEGACY-K2-CORE80-WORK-H6` | 人工锚定可学习全局模型（`M2-WORK-LG01`） | 246 / 66 / 6 | 0.38313227 | -0.35035564 | 动态核心 80% 训练已执行且退化，尾部干扰未确认（`CONTROLLED_CORE80_TRAINING_TAIL_INTERFERENCE_NOT_CONFIRMED`） |
-| `CG-CORE-LEGACY-K2-CORE80-CHANNEL-H3` | 人工锚定可学习全局模型（`M2-WORK-LG01`） | 1007 / 66 / 6 | 0.39498822 | -0.35183857 | 已执行的全量训练人口参照（`CONTROLLED_FULL_POPULATION_REFERENCE`） |
-| `CG-CORE-LEGACY-K2-CORE80-CHANNEL-H3` | 人工锚定可学习全局模型（`M2-WORK-LG01`） | 1007 / 66 / 6 | 0.39583859 | -0.34941786 | 动态核心 90% 训练已执行，尾部干扰未确认（`CONTROLLED_CORE90_TRAINING_TAIL_INTERFERENCE_NOT_CONFIRMED`） |
-| `CG-CORE-LEGACY-K2-CORE80-CHANNEL-H3` | 人工锚定可学习全局模型（`M2-WORK-LG01`） | 1007 / 66 / 6 | 0.41138971 | -0.37309004 | 动态核心 80% 训练已执行且退化，尾部干扰未确认（`CONTROLLED_CORE80_TRAINING_TAIL_INTERFERENCE_NOT_CONFIRMED`） |
-| `CG-CORE-LEGACY-K2-CORE80-CHANNEL-H6` | 人工锚定可学习全局模型（`M2-WORK-LG01`） | 1007 / 66 / 6 | 0.38563380 | -0.32833351 | 已执行的全量训练人口参照（`CONTROLLED_FULL_POPULATION_REFERENCE`） |
-| `CG-CORE-LEGACY-K2-CORE80-CHANNEL-H6` | 人工锚定可学习全局模型（`M2-WORK-LG01`） | 1007 / 66 / 6 | 0.38648351 | -0.32582502 | 动态核心 90% 训练已执行，尾部干扰未确认（`CONTROLLED_CORE90_TRAINING_TAIL_INTERFERENCE_NOT_CONFIRMED`） |
-| `CG-CORE-LEGACY-K2-CORE80-CHANNEL-H6` | 人工锚定可学习全局模型（`M2-WORK-LG01`） | 1007 / 66 / 6 | 0.40144557 | -0.35035564 | 动态核心 80% 训练已执行且退化，尾部干扰未确认（`CONTROLLED_CORE80_TRAINING_TAIL_INTERFERENCE_NOT_CONFIRMED`） |
-| `CG-CORE-LEGACY-K2-CORE90-WORK-H3` | 人工锚定可学习全局模型（`M2-WORK-LG01`） | 519 / 149 / 6 | 0.40019257 | -0.36822119 | 已执行的全量训练人口参照（`CONTROLLED_FULL_POPULATION_REFERENCE`） |
-| `CG-CORE-LEGACY-K2-CORE90-WORK-H3` | 人工锚定可学习全局模型（`M2-WORK-LG01`） | 519 / 149 / 6 | 0.40006001 | -0.36552515 | 动态核心 90% 训练已执行，尾部干扰未确认（`CONTROLLED_CORE90_TRAINING_TAIL_INTERFERENCE_NOT_CONFIRMED`） |
-| `CG-CORE-LEGACY-K2-CORE90-WORK-H6` | 人工锚定可学习全局模型（`M2-WORK-LG01`） | 519 / 149 / 6 | 0.39088288 | -0.34646069 | 已执行的全量训练人口参照（`CONTROLLED_FULL_POPULATION_REFERENCE`） |
-| `CG-CORE-LEGACY-K2-CORE90-WORK-H6` | 人工锚定可学习全局模型（`M2-WORK-LG01`） | 519 / 149 / 6 | 0.38991669 | -0.34367178 | 动态核心 90% 训练已执行，尾部干扰未确认（`CONTROLLED_CORE90_TRAINING_TAIL_INTERFERENCE_NOT_CONFIRMED`） |
-| `CG-CORE-LEGACY-K2-CORE90-CHANNEL-H3` | 人工锚定可学习全局模型（`M2-WORK-LG01`） | 1805 / 149 / 6 | 0.41742709 | -0.36822119 | 已执行的全量训练人口参照（`CONTROLLED_FULL_POPULATION_REFERENCE`） |
-| `CG-CORE-LEGACY-K2-CORE90-CHANNEL-H3` | 人工锚定可学习全局模型（`M2-WORK-LG01`） | 1805 / 149 / 6 | 0.41872730 | -0.36552515 | 动态核心 90% 训练已执行，尾部干扰未确认（`CONTROLLED_CORE90_TRAINING_TAIL_INTERFERENCE_NOT_CONFIRMED`） |
-| `CG-CORE-LEGACY-K2-CORE90-CHANNEL-H6` | 人工锚定可学习全局模型（`M2-WORK-LG01`） | 1805 / 149 / 6 | 0.41075784 | -0.34646069 | 已执行的全量训练人口参照（`CONTROLLED_FULL_POPULATION_REFERENCE`） |
-| `CG-CORE-LEGACY-K2-CORE90-CHANNEL-H6` | 人工锚定可学习全局模型（`M2-WORK-LG01`） | 1805 / 149 / 6 | 0.41208088 | -0.34367178 | 动态核心 90% 训练已执行，尾部干扰未确认（`CONTROLLED_CORE90_TRAINING_TAIL_INTERFERENCE_NOT_CONFIRMED`） |
-| `CG-CORE-LEGACY-HR01-CORE80-PRIMARY-WORK-H3` | 作品发生-金额校准模型 v0.3（`M2-WORK-OA03`） | 65 / 43 / 5 | 0.26245998 | -0.03645694 | 同案例重评分未形成稳定优胜（`SAME_CASE_NO_STABLE_WINNER`） |
-| `CG-CORE-LEGACY-HR01-CORE80-PRIMARY-WORK-H3` | 核心收入人工规则基线 v0.1（`M2-WORK-CRMR01`） | 65 / 43 / 5 | 0.26522371 | 0.24650789 | 同案例重评分未形成稳定优胜（`SAME_CASE_NO_STABLE_WINNER`） |
-| `CG-CORE-LEGACY-HR01-CORE80-PRIMARY-WORK-H3` | 按预测周期滚动模型路由器 v0.1（`M2-WORK-HR01`） | 65 / 43 / 5 | 0.26245998 | -0.03645694 | 按预测周期滚动模型路由未确认（`HORIZON_ROUTER_NOT_CONFIRMED`） |
-| `CG-CORE-LEGACY-HR01-CORE80-PRIMARY-WORK-H6` | 作品发生-金额校准模型 v0.3（`M2-WORK-OA03`） | 65 / 43 / 5 | 0.28394930 | 0.00081838 | 同案例 WAPE 与偏差存在权衡（`SAME_CASE_WAPE_BIAS_TRADEOFF`） |
-| `CG-CORE-LEGACY-HR01-CORE80-PRIMARY-WORK-H6` | 核心收入人工规则基线 v0.1（`M2-WORK-CRMR01`） | 65 / 43 / 5 | 0.26513936 | 0.11386694 | 同案例 WAPE 与偏差存在权衡（`SAME_CASE_WAPE_BIAS_TRADEOFF`） |
-| `CG-CORE-LEGACY-HR01-CORE80-PRIMARY-WORK-H6` | 按预测周期滚动模型路由器 v0.1（`M2-WORK-HR01`） | 65 / 43 / 5 | 0.27184062 | 0.04845672 | 按预测周期滚动模型路由未确认（`HORIZON_ROUTER_NOT_CONFIRMED`） |
-| `CG-CORE-LEGACY-HR01-CORE80-PRIMARY-WORK-H12` | 作品发生-金额校准模型 v0.3（`M2-WORK-OA03`） | 47 / 32 / 4 | 0.24891907 | 0.00834054 | 同案例重评分未形成稳定优胜（`SAME_CASE_NO_STABLE_WINNER`） |
-| `CG-CORE-LEGACY-HR01-CORE80-PRIMARY-WORK-H12` | 核心收入人工规则基线 v0.1（`M2-WORK-CRMR01`） | 47 / 32 / 4 | 0.37973781 | 0.30966670 | 同案例重评分未形成稳定优胜（`SAME_CASE_NO_STABLE_WINNER`） |
-| `CG-CORE-LEGACY-HR01-CORE80-PRIMARY-WORK-H12` | 按预测周期滚动模型路由器 v0.1（`M2-WORK-HR01`） | 47 / 32 / 4 | 0.24891907 | 0.00834054 | 按预测周期滚动模型路由未确认（`HORIZON_ROUTER_NOT_CONFIRMED`） |
-| `CG-CORE-LEGACY-HR01-CORE80-PRIMARY-WORK-H36` | 核心收入人工规则基线 v0.1（`M2-WORK-CRMR01`） | 408 / 55 / 13 | 18.64959623 | 18.61464028 | 同案例明确优胜比较中的落后模型（`SAME_CASE_CLEAR_WINNER_COMPARISON_LOSER`） |
-| `CG-CORE-LEGACY-HR01-CORE80-PRIMARY-WORK-H36` | 人工锚定可学习全局模型（`M2-WORK-LG01`） | 408 / 55 / 13 | 0.28489821 | 0.07555860 | 同案例重评分形成明确优胜（`SAME_CASE_CLEAR_WINNER`） |
-| `CG-CORE-LEGACY-HR01-CORE80-PRIMARY-WORK-H36` | 按预测周期滚动模型路由器 v0.1（`M2-WORK-HR01`） | 408 / 55 / 13 | 0.28489821 | 0.07555860 | 按预测周期滚动模型路由未确认（`HORIZON_ROUTER_NOT_CONFIRMED`） |
-| `CG-WORK-HISTORICAL-C1` | C1 透明组合模型（`M2-WORK-C1TE01`） | — / — / 5 | 3.85015700 | 3.51137000 | 已执行但未通过（`ARCHIVE_DEVELOPMENT_FAIL`） |
-| `CG-WORK-LEGACY-BUYOUT-C2R` | 旧买断收入路由模型（`M2-WORK-C2R01`） | — / — / — | 1.17960000 | 0.79260000 | 已执行但未通过（`ARCHIVE_DEVELOPMENT_FAIL`） |
-| `CG-WORK-ARCHIVE-FORMAL-7851` | 正式现金路由分治模型（`M2-WORK-C2R101`） | 7851 / 824 / 5 | 0.58382400 | 0.02933800 | 已执行但未通过（`ARCHIVE_DEVELOPMENT_FAIL`） |
-| `CG-WORK-ARCHIVE-FORMAL-7851` | C2 活跃度与间歇模型组合（`M2-WORK-C2IM01`） | 7851 / 824 / 5 | 0.55695500 | 0.09289100 | 已执行但未通过（`ARCHIVE_DEVELOPMENT_FAIL`） |
-| `CG-WORK-ARCHIVE-FORMAL-7851` | C3 内部特征残差校正模型（`M2-WORK-C3IR01`） | 7851 / 824 / 5 | 0.55394517 | 0.08273913 | 已执行但未通过（`ARCHIVE_DEVELOPMENT_FAIL`） |
-| `CG-PSC01-V22-PRIMARY-12039-H36` | 作品发生-金额校准模型 v0.3（`M2-WORK-OA03`） | 12039 / 1125 / 13 | 1.00000000 | -1.00000000 | 登记结果（`OPERATIONAL_FALLBACK_SAME_CASE_INTERSECTION`） |
-| `CG-PSC01-V22-PRIMARY-12039-H36` | 人工锚定可学习全局模型（`M2-WORK-LG01`） | 12039 / 1125 / 13 | 0.44310049 | -0.12165171 | 登记结果（`FROZEN_RESEARCH_BASELINE_SAME_CASE_V22`） |
-| `CG-PSC01-V22-PRIMARY-12039-H36` | 出版行业适配的渠道月度发生—条件金额核心（`M2-CHAN-PSC01`） | 12039 / 1125 / 13 | 0.92408663 | -0.88928240 | 已执行但未通过（`M2_PUBLISHING_SCALE_CORE_FAIL`） |
-| `CG-PSC01-V22-STRICT-74320` | 作品发生-金额校准模型 v0.3（`M2-WORK-OA03`） | 74320 / 2650 / 11 | 1.00000000 | -1.00000000 | 登记结果（`OPERATIONAL_FALLBACK_SAME_CASE_INTERSECTION`） |
-| `CG-PSC01-V22-STRICT-74320` | 人工锚定可学习全局模型（`M2-WORK-LG01`） | 74320 / 2650 / 11 | 0.41281268 | -0.03786001 | 登记结果（`FROZEN_RESEARCH_BASELINE_SAME_CASE_V22`） |
-| `CG-PSC01-V22-STRICT-74320` | 出版行业适配的渠道月度发生—条件金额核心（`M2-CHAN-PSC01`） | 74320 / 2650 / 11 | 0.91533339 | -0.85410647 | 已执行但未通过（`M2_PUBLISHING_SCALE_CORE_FAIL`） |
-| `CG-OA03-CS-CORE80-PRIMARY-WORK-H3` | 作品发生-金额校准模型 v0.3（`M2-WORK-OA03`） | 194 / 80 / 5 | 0.34189811 | -0.08938161 | 主要参考不可合法重建，当前性能不可评价（`OA03_CURRENT_SCOPE_PERFORMANCE_NOT_EVALUABLE`） |
-| `CG-OA03-CS-CORE80-PRIMARY-WORK-H6` | 作品发生-金额校准模型 v0.3（`M2-WORK-OA03`） | 194 / 80 / 5 | 0.35191501 | -0.06073666 | 主要参考不可合法重建，当前性能不可评价（`OA03_CURRENT_SCOPE_PERFORMANCE_NOT_EVALUABLE`） |
-| `CG-OA03-CS-CORE80-PRIMARY-WORK-H12` | 作品发生-金额校准模型 v0.3（`M2-WORK-OA03`） | 194 / 80 / 5 | 0.39457072 | -0.01464017 | 主要参考不可合法重建，当前性能不可评价（`OA03_CURRENT_SCOPE_PERFORMANCE_NOT_EVALUABLE`） |
-| `CG-OA03-CS-CORE90-PRIMARY-WORK-H3` | 作品发生-金额校准模型 v0.3（`M2-WORK-OA03`） | 396 / 155 / 5 | 0.37543153 | -0.10381422 | 主要参考不可合法重建，当前性能不可评价（`OA03_CURRENT_SCOPE_PERFORMANCE_NOT_EVALUABLE`） |
-| `CG-OA03-CS-CORE90-PRIMARY-WORK-H6` | 作品发生-金额校准模型 v0.3（`M2-WORK-OA03`） | 396 / 155 / 5 | 0.39470634 | -0.08714360 | 主要参考不可合法重建，当前性能不可评价（`OA03_CURRENT_SCOPE_PERFORMANCE_NOT_EVALUABLE`） |
-| `CG-OA03-CS-CORE90-PRIMARY-WORK-H12` | 作品发生-金额校准模型 v0.3（`M2-WORK-OA03`） | 396 / 155 / 5 | 0.43064757 | -0.02528715 | 主要参考不可合法重建，当前性能不可评价（`OA03_CURRENT_SCOPE_PERFORMANCE_NOT_EVALUABLE`） |
-| `CG-OA03-CS-CORE80-STRICT-WORK-H3` | 作品发生-金额校准模型 v0.3（`M2-WORK-OA03`） | 577 / 82 / 11 | 0.37480052 | -0.15158793 | 当前范围性能不支持（`OA03_CURRENT_SCOPE_PERFORMANCE_NOT_SUPPORTED`） |
-| `CG-OA03-CS-CORE80-STRICT-WORK-H3` | 核心老品分周期金额模型 v0.1（`M2-WORK-CHAM01`） | 577 / 82 / 11 | 0.25128824 | -0.04984846 | 已执行但未通过（`M2_CORE_HORIZON_AMOUNT_HORIZON_FAIL`） |
-| `CG-OA03-CS-CORE80-STRICT-WORK-H6` | 作品发生-金额校准模型 v0.3（`M2-WORK-OA03`） | 577 / 82 / 11 | 0.38119104 | -0.11981310 | 当前范围性能不支持（`OA03_CURRENT_SCOPE_PERFORMANCE_NOT_SUPPORTED`） |
-| `CG-OA03-CS-CORE80-STRICT-WORK-H6` | 核心老品分周期金额模型 v0.1（`M2-WORK-CHAM01`） | 577 / 82 / 11 | 0.28170413 | -0.06868190 | 已执行但未通过（`M2_CORE_HORIZON_AMOUNT_HORIZON_FAIL`） |
-| `CG-OA03-CS-CORE80-STRICT-WORK-H12` | 作品发生-金额校准模型 v0.3（`M2-WORK-OA03`） | 472 / 76 / 9 | 0.43547525 | -0.06697018 | 当前范围性能不支持（`OA03_CURRENT_SCOPE_PERFORMANCE_NOT_SUPPORTED`） |
-| `CG-OA03-CS-CORE80-STRICT-WORK-H12` | 核心老品分周期金额模型 v0.1（`M2-WORK-CHAM01`） | 472 / 76 / 9 | 0.39182014 | -0.13843079 | 已执行但未通过（`M2_CORE_HORIZON_AMOUNT_HORIZON_FAIL`） |
-| `CG-OA03-CS-CORE90-STRICT-WORK-H3` | 作品发生-金额校准模型 v0.3（`M2-WORK-OA03`） | 1288 / 208 / 11 | 0.39670669 | -0.13771657 | 当前范围性能不支持（`OA03_CURRENT_SCOPE_PERFORMANCE_NOT_SUPPORTED`） |
-| `CG-OA03-CS-CORE90-STRICT-WORK-H3` | 核心老品分周期金额模型 v0.1（`M2-WORK-CHAM01`） | 1288 / 208 / 11 | 0.26736111 | -0.06072603 | 已执行但未通过（`M2_CORE_HORIZON_AMOUNT_DEVELOPMENT_FAIL`） |
-| `CG-OA03-CS-CORE90-STRICT-WORK-H6` | 作品发生-金额校准模型 v0.3（`M2-WORK-OA03`） | 1288 / 208 / 11 | 0.40306858 | -0.09934961 | 当前范围性能不支持（`OA03_CURRENT_SCOPE_PERFORMANCE_NOT_SUPPORTED`） |
-| `CG-OA03-CS-CORE90-STRICT-WORK-H6` | 核心老品分周期金额模型 v0.1（`M2-WORK-CHAM01`） | 1288 / 208 / 11 | 0.29447803 | -0.07514950 | 已执行但未通过（`M2_CORE_HORIZON_AMOUNT_DEVELOPMENT_FAIL`） |
-| `CG-OA03-CS-CORE90-STRICT-WORK-H12` | 作品发生-金额校准模型 v0.3（`M2-WORK-OA03`） | 1053 / 195 / 9 | 0.46031533 | -0.03521578 | 当前范围性能不支持（`OA03_CURRENT_SCOPE_PERFORMANCE_NOT_SUPPORTED`） |
-| `CG-OA03-CS-CORE90-STRICT-WORK-H12` | 核心老品分周期金额模型 v0.1（`M2-WORK-CHAM01`） | 1053 / 195 / 9 | 0.39776131 | -0.13914718 | 已执行但未通过（`M2_CORE_HORIZON_AMOUNT_DEVELOPMENT_FAIL`） |
+| 可比组 | 模型（稳定 ID） | 评价 / 实验臂 | cases / works / origins | WAPE | signed bias | 结果（机器状态） |
+|---|---|---|---:|---:|---:|---|
+| `CG-WORK-SS-CURRENT-7083` | 旧现金生命周期公式（`M2-WORK-B4`） | `eval-b4-current-served-7083` | 7083 / 758 / 5 | 0.54929375 | 0.18322698 | 登记结果（`COMPARATOR_ONLY`） |
+| `CG-WORK-SS-CURRENT-7083` | 作品发生-金额校准模型 v0.3（`M2-WORK-OA03`） | `eval-oa03-current-served-7083` | 7083 / 758 / 5 | 0.49075894 | 0.07378107 | 已执行但未通过（`DEVELOPMENT_FAIL_RETAIN_FALLBACK`） |
+| `CG-WORK-SS-CURRENT-7083` | 统一渠道曲线模型（`M2-WORK-CCR01`） | `eval-ccr01-current-served-7083` | 7083 / 758 / 5 | 0.49070110 | 0.07705278 | 已执行但未通过（`DEVELOPMENT_REJECTED_BELOW_MATERIALITY`） |
+| `CG-WORK-FORMAL-LEGACY-7851` | 旧现金生命周期公式（`M2-WORK-B4`） | `eval-b4-formal-cash-7851` | 7851 / 824 / 5 | 0.55648454 | 0.08910997 | 登记结果（`ARCHIVE_DEVELOPMENT_COMPARATOR`） |
+| `CG-WORK-FORMAL-LEGACY-7851` | 作品分群向下校准模型 v0.1（`M2-WORK-SEG01`） | `eval-seg01-legacy-7851` | 7851 / 824 / 5 | 0.53184893 | 0.03680632 | 登记结果（`PARTIAL_PASS_NOT_ACCEPTED`） |
+| `CG-WORK-FORMAL-LEGACY-7851` | 作品层级稳健校准模型 v0.2（`M2-WORK-HRC02`） | `eval-hrc02-legacy-7851` | 7851 / 824 / 5 | 0.51114966 | -0.00586227 | 登记结果（`PARTIAL_PASS_NOT_ACCEPTED`） |
+| `CG-WORK-FORMAL-LEGACY-7851` | 全局分布组合安全回退管线 v0.4（`M2-WORK-GDE04`） | `eval-gde04-selected-7851` | 7851 / 824 / 5 | 0.50557140 | -0.01198958 | 已执行但未通过（`DEVELOPMENT_FAIL_SAFE_FALLBACK`） |
+| `CG-WORK-R0R5-GLOBAL-7851` | 全局门槛广义线性模型（`M2-WORK-GHG01`） | `eval-ghg01-r0-r5` | 7851 / 824 / 5 | 1.14324252 | 0.14962976 | 已执行但未通过（`DEVELOPMENT_FAIL`） |
+| `CG-WORK-R0R5-GLOBAL-7851` | 全局 Tweedie 提升树桩模型（`M2-WORK-TWD01`） | `eval-twd01-r0-r5` | 7851 / 824 / 5 | 3.01164614 | 2.47005885 | 已执行但未通过（`DEVELOPMENT_FAIL`） |
+| `CG-WORK-R0R5-GLOBAL-7851` | 门槛梯度提升树桩模型（`M2-WORK-HGB01`） | `eval-hgb01-r0-r5` | 7851 / 824 / 5 | 0.86512643 | -0.73304615 | 已执行但未通过（`DEVELOPMENT_FAIL`） |
+| `CG-PORT-SS-30CELLS` | 组合现金 ETS/Holt-Winters 模型（`M2-PORT-ETS01`） | `eval-port-ets01-sales-share-30cells` | 30 / — / 12 | 0.12794956 | 0.10048252 | 已执行但未通过（`DEVELOPMENT_GATE_FAIL`） |
+| `CG-WORK-SS-DENSE-44301` | 经典时间序列比较基线族（`M2-BASE-CLASSIC01`） | `eval-seasonal-naive-dense-44301` | 44301 / 824 / 25 | 0.46274198 | 0.06837072 | 登记结果（`COMPARATOR_ONLY`） |
+| `CG-WORK-SS-DENSE-44301` | 历史状态校准模型（`M2-WORK-HSC01`） | `eval-hsc01-dense-44301` | 44301 / 824 / 25 | 0.58623406 | -0.12927560 | 已执行但未通过（`POSTHOC_DEVELOPMENT_REJECTED`） |
+| `CG-WORK-SS-DENSE-44301` | 统一渠道曲线模型（`M2-WORK-CCR01`） | `eval-ccr01-dense-44301` | 44301 / 824 / 25 | 0.46506585 | 0.06843736 | 已执行但未通过（`DEVELOPMENT_FAIL`） |
+| `CG-WORK-SS-MANUAL-379-H36` | 人工渠道规则模型（`M2-WORK-MCR01`） | `eval-mcr01-safe-379-h36` | 379 / 214 / 3 | 0.70444680 | -0.29098286 | 已执行但未通过（`DEVELOPMENT_REJECTED`） |
+| `CG-WORK-SS-HA-PRIMARY-12039-H36` | 人工锚定忠实公式（`M2-WORK-MAN01`） | `eval-man01-primary-12039-h36` | 12039 / 1125 / 13 | 0.53141021 | -0.40552340 | 登记结果（`DEVELOPMENT_COMPARATOR`） |
+| `CG-WORK-SS-HA-PRIMARY-12039-H36` | 人工锚定可学习全局模型（`M2-WORK-LG01`） | `eval-lg01-primary-12039-h36-revised` | 12039 / 1125 / 13 | 0.44022495 | -0.12377106 | 登记结果（`FROZEN_RESEARCH_BASELINE`） |
+| `CG-WORK-SS-HA-PRIMARY-12039-H36` | 人工锚定可学习全局模型（`M2-WORK-LG01`） | `eval-lg01-primary-12039-h36-original` | 12039 / 1125 / 13 | 0.44022707 | -0.12366598 | 登记结果（`HISTORICAL_REPORT_REVISION_PRESERVED`） |
+| `CG-WORK-SS-HA-PRIMARY-12039-H36` | 人工锚定层级正金额专家模型（`M2-WORK-HP01`） | `eval-hp01-primary-12039-h36` | 12039 / 1125 / 13 | 0.45540455 | -0.02684314 | 已执行但未通过（`RAW_CANDIDATE_REJECTED`） |
+| `CG-WORK-SS-HA-PRIMARY-12039-H36` | 人工锚定发生与冲销模型（`M2-WORK-OR01`） | `eval-or01-primary-12039-h36` | 12039 / 1125 / 13 | 0.44126080 | -0.14574128 | 已执行但未通过（`RAW_CANDIDATE_REJECTED`） |
+| `CG-WORK-SS-HA-PRIMARY-12039-H36` | TSB 间歇发生模型（`M2-WORK-TSB01`） | `eval-tsb01-primary-12039-h36` | 12039 / 1125 / 13 | 0.54346231 | 0.22068122 | 已执行但未通过（`DEVELOPMENT_FAIL`） |
+| `CG-WORK-SS-HA-PRIMARY-12039-H36` | TSB 与全局模型混合候选（`M2-WORK-TSBB01`） | `eval-tsbb01-primary-12039-h36` | 12039 / 1125 / 13 | 0.45348237 | 0.03777402 | 已执行但未通过（`DEVELOPMENT_FAIL`） |
+| `CG-WORK-SS-HA-PRIMARY-12039-H36` | 生命周期五状态模型（`M2-WORK-LC01`） | `eval-lc01-primary-12039-h36` | 12039 / 1125 / 13 | 0.50139298 | 未登记（null） | 已执行但未通过（`DEVELOPMENT_FAIL`） |
+| `CG-WORK-SS-HA-PRIMARY-12039-H36` | 渠道倍率专家模型（`M2-CHAN-SCL01`） | `eval-scl01-a6-primary-12039` | 12039 / 1125 / 13 | 0.53776683 | 未登记（null） | 已执行但未通过（`DEVELOPMENT_FAIL`） |
+| `CG-WORK-SS-HA-PRIMARY-12039-H36` | 渠道时间生成模型 v0.2——独立渠道月度发生—条件金额核心（`M2-CHAN-GEN02`） | `eval-gen02-g0-primary-semantic-replay` | 12039 / 1125 / 13 | 0.44022495 | -0.12377106 | 登记结果（`G0_SEMANTIC_EQUIVALENCE_PASS_NOT_CANDIDATE_SCORE`） |
+| `CG-WORK-SS-HA-STRICT-74320` | 人工锚定可学习全局模型（`M2-WORK-LG01`） | `eval-lg01-strict-74320` | 74320 / 2650 / 11 | 0.41191878 | -0.03847401 | 登记结果（`STRICT_ROLLING_DEVELOPMENT_BASELINE`） |
+| `CG-WORK-SS-HA-STRICT-74320` | TSB 间歇发生模型（`M2-WORK-TSB01`） | `eval-tsb01-strict-74320` | 74320 / 2650 / 11 | 0.50802197 | 0.20751052 | 已执行但未通过（`DEVELOPMENT_FAIL`） |
+| `CG-WORK-SS-HA-STRICT-74320` | TSB 与全局模型混合候选（`M2-WORK-TSBB01`） | `eval-tsbb01-strict-74320` | 74320 / 2650 / 11 | 0.44487050 | 未登记（null） | 已执行但未通过（`DEVELOPMENT_FAIL`） |
+| `CG-WORK-SS-HA-STRICT-74320` | 生命周期五状态模型（`M2-WORK-LC01`） | `eval-lc01-strict-74320` | 74320 / 2650 / 11 | 0.62275977 | 未登记（null） | 已执行但未通过（`DEVELOPMENT_FAIL`） |
+| `CG-WORK-SS-HA-STRICT-74320` | 渠道倍率专家模型（`M2-CHAN-SCL01`） | `eval-scl01-a6-strict-74320` | 74320 / 2650 / 11 | 0.65865324 | 未登记（null） | 已执行但未通过（`DEVELOPMENT_FAIL`） |
+| `CG-WORK-SS-OVERLAP-5203-H36` | 作品发生-金额校准模型 v0.3（`M2-WORK-OA03`） | `eval-oa03-human-anchor-overlap-5203` | 5203 / — / 13 | 0.37610234 | 0.09727286 | 登记结果（`SAME_INTERSECTION_DEVELOPMENT_ONLY`） |
+| `CG-WORK-SS-OVERLAP-5203-H36` | 人工锚定可学习全局模型（`M2-WORK-LG01`） | `eval-lg01-overlap-5203-h36` | 5203 / — / 13 | 0.27723899 | -0.12220206 | 登记结果（`SAME_INTERSECTION_DEVELOPMENT_ONLY`） |
+| `CG-WORK-SS-OVERLAP-5203-H36` | TSB 与全局模型混合候选（`M2-WORK-TSBB01`） | `eval-tsbb01-overlap-5203-h36` | 5203 / — / 13 | 0.26352433 | 0.00222693 | 登记结果（`SAME_INTERSECTION_DIAGNOSTIC_ONLY`） |
+| `CG-WORK-SS-OVERLAP-5203-H36` | 生命周期五状态模型（`M2-WORK-LC01`） | `eval-lc01-overlap-5203-h36` | 5203 / — / 13 | 0.27458711 | 未登记（null） | 登记结果（`SAME_INTERSECTION_DIAGNOSTIC_ONLY`） |
+| `CG-G1-BLOCKED-NO-CANDIDATE-OUTCOME` | 渠道时间生成模型 v0.2——独立渠道月度发生—条件金额核心（`M2-CHAN-GEN02`） | `eval-gen02-g1-prerequisite-block` | 0 / 0 / 0 | 未产生（null） | 未产生（null） | 因前置条件不满足而阻断（`M2_CHANNEL_GENERATIVE_G1_CORE_BLOCKED`） |
+| `CG-PSC01-IMPLEMENTATION-BLOCK-NO-CANDIDATE-OUTCOME` | 出版行业适配的渠道月度发生—条件金额核心（`M2-CHAN-PSC01`） | `eval-psc01-k7d-implementation-block` | 0 / 0 / 0 | 未产生（null） | 未产生（null） | 实现阻断且无候选结果（`M2_PUBLISHING_SCALE_IMPLEMENTATION_BLOCKED`） |
+| `CG-CHAM01-INFRASTRUCTURE-RETRY-EXHAUSTED-NO-CANDIDATE-OUTCOME` | 核心老品分周期金额模型 v0.1（`M2-WORK-CHAM01`） | `eval-cham01-private-execution-retry-exhausted` | 0 / 0 / 0 | 未登记（null） | 未登记（null） | 登记结果（`M2_CORE_HORIZON_AMOUNT_PRIVATE_EXECUTION_INVALIDATED_RETRY_EXHAUSTED`） |
+| `CG-CRMR01-CORE80-ABSOLUTE-6004` | 核心收入人工规则基线 v0.1（`M2-WORK-CRMR01`） | `eval-crmr01-core80-all-horizons` | 6004 / 102 / 70 | 67.81190074 | 67.51463389 | 已执行但未通过（`M2_CORE_REVENUE_MANUAL_BASELINE_FAIL`） |
+| `CG-CRMR01-CORE90-ABSOLUTE-11612` | 核心收入人工规则基线 v0.1（`M2-WORK-CRMR01`） | `eval-crmr01-core90-all-horizons` | 11612 / 194 / 70 | 61.84135010 | 61.50144536 | 已执行但未通过（`M2_CORE_REVENUE_MANUAL_BASELINE_FAIL`） |
+| `CG-LRC01-CORE80-PORT-280` | 分层收入组合模型 v0.1（`M2-PORT-LRC01`） | `eval-lrc01-core80-portfolio-280` | 280 / 0 / 70 | 1.50629188 | 0.71250400 | 已执行但未通过（`M2_LAYERED_REVENUE_COMPOSITION_FAIL`） |
+| `CG-LRC01-CORE90-PORT-280` | 分层收入组合模型 v0.1（`M2-PORT-LRC01`） | `eval-lrc01-core90-portfolio-280` | 280 / 0 / 70 | 1.50557046 | 0.71174456 | 已执行但未通过（`M2_LAYERED_REVENUE_COMPOSITION_FAIL`） |
+| `CG-CORE-LEGACY-K2-CORE80-WORK-H3` | 人工锚定可学习全局模型（`M2-WORK-LG01`） | `eval-lg01-core-legacy-k2-t0-full-core80-work-h3` | 246 / 66 / 6 | 0.37817084 | -0.35183857 | 已执行的全量训练人口参照（`CONTROLLED_FULL_POPULATION_REFERENCE`） |
+| `CG-CORE-LEGACY-K2-CORE80-WORK-H3` | 人工锚定可学习全局模型（`M2-WORK-LG01`） | `eval-lg01-core-legacy-k2-t1-core90-core80-work-h3` | 246 / 66 / 6 | 0.37748436 | -0.34941786 | 动态核心 90% 训练已执行，尾部干扰未确认（`CONTROLLED_CORE90_TRAINING_TAIL_INTERFERENCE_NOT_CONFIRMED`） |
+| `CG-CORE-LEGACY-K2-CORE80-WORK-H3` | 人工锚定可学习全局模型（`M2-WORK-LG01`） | `eval-lg01-core-legacy-k2-t2-core80-core80-work-h3` | 246 / 66 / 6 | 0.39502114 | -0.37309004 | 动态核心 80% 训练已执行且退化，尾部干扰未确认（`CONTROLLED_CORE80_TRAINING_TAIL_INTERFERENCE_NOT_CONFIRMED`） |
+| `CG-CORE-LEGACY-K2-CORE80-WORK-H6` | 人工锚定可学习全局模型（`M2-WORK-LG01`） | `eval-lg01-core-legacy-k2-t0-full-core80-work-h6` | 246 / 66 / 6 | 0.36591689 | -0.32833351 | 已执行的全量训练人口参照（`CONTROLLED_FULL_POPULATION_REFERENCE`） |
+| `CG-CORE-LEGACY-K2-CORE80-WORK-H6` | 人工锚定可学习全局模型（`M2-WORK-LG01`） | `eval-lg01-core-legacy-k2-t1-core90-core80-work-h6` | 246 / 66 / 6 | 0.36424168 | -0.32582502 | 动态核心 90% 训练已执行，尾部干扰未确认（`CONTROLLED_CORE90_TRAINING_TAIL_INTERFERENCE_NOT_CONFIRMED`） |
+| `CG-CORE-LEGACY-K2-CORE80-WORK-H6` | 人工锚定可学习全局模型（`M2-WORK-LG01`） | `eval-lg01-core-legacy-k2-t2-core80-core80-work-h6` | 246 / 66 / 6 | 0.38313227 | -0.35035564 | 动态核心 80% 训练已执行且退化，尾部干扰未确认（`CONTROLLED_CORE80_TRAINING_TAIL_INTERFERENCE_NOT_CONFIRMED`） |
+| `CG-CORE-LEGACY-K2-CORE80-CHANNEL-H3` | 人工锚定可学习全局模型（`M2-WORK-LG01`） | `eval-lg01-core-legacy-k2-t0-full-core80-channel-h3` | 1007 / 66 / 6 | 0.39498822 | -0.35183857 | 已执行的全量训练人口参照（`CONTROLLED_FULL_POPULATION_REFERENCE`） |
+| `CG-CORE-LEGACY-K2-CORE80-CHANNEL-H3` | 人工锚定可学习全局模型（`M2-WORK-LG01`） | `eval-lg01-core-legacy-k2-t1-core90-core80-channel-h3` | 1007 / 66 / 6 | 0.39583859 | -0.34941786 | 动态核心 90% 训练已执行，尾部干扰未确认（`CONTROLLED_CORE90_TRAINING_TAIL_INTERFERENCE_NOT_CONFIRMED`） |
+| `CG-CORE-LEGACY-K2-CORE80-CHANNEL-H3` | 人工锚定可学习全局模型（`M2-WORK-LG01`） | `eval-lg01-core-legacy-k2-t2-core80-core80-channel-h3` | 1007 / 66 / 6 | 0.41138971 | -0.37309004 | 动态核心 80% 训练已执行且退化，尾部干扰未确认（`CONTROLLED_CORE80_TRAINING_TAIL_INTERFERENCE_NOT_CONFIRMED`） |
+| `CG-CORE-LEGACY-K2-CORE80-CHANNEL-H6` | 人工锚定可学习全局模型（`M2-WORK-LG01`） | `eval-lg01-core-legacy-k2-t0-full-core80-channel-h6` | 1007 / 66 / 6 | 0.38563380 | -0.32833351 | 已执行的全量训练人口参照（`CONTROLLED_FULL_POPULATION_REFERENCE`） |
+| `CG-CORE-LEGACY-K2-CORE80-CHANNEL-H6` | 人工锚定可学习全局模型（`M2-WORK-LG01`） | `eval-lg01-core-legacy-k2-t1-core90-core80-channel-h6` | 1007 / 66 / 6 | 0.38648351 | -0.32582502 | 动态核心 90% 训练已执行，尾部干扰未确认（`CONTROLLED_CORE90_TRAINING_TAIL_INTERFERENCE_NOT_CONFIRMED`） |
+| `CG-CORE-LEGACY-K2-CORE80-CHANNEL-H6` | 人工锚定可学习全局模型（`M2-WORK-LG01`） | `eval-lg01-core-legacy-k2-t2-core80-core80-channel-h6` | 1007 / 66 / 6 | 0.40144557 | -0.35035564 | 动态核心 80% 训练已执行且退化，尾部干扰未确认（`CONTROLLED_CORE80_TRAINING_TAIL_INTERFERENCE_NOT_CONFIRMED`） |
+| `CG-CORE-LEGACY-K2-CORE90-WORK-H3` | 人工锚定可学习全局模型（`M2-WORK-LG01`） | `eval-lg01-core-legacy-k2-t0-full-core90-work-h3` | 519 / 149 / 6 | 0.40019257 | -0.36822119 | 已执行的全量训练人口参照（`CONTROLLED_FULL_POPULATION_REFERENCE`） |
+| `CG-CORE-LEGACY-K2-CORE90-WORK-H3` | 人工锚定可学习全局模型（`M2-WORK-LG01`） | `eval-lg01-core-legacy-k2-t1-core90-core90-work-h3` | 519 / 149 / 6 | 0.40006001 | -0.36552515 | 动态核心 90% 训练已执行，尾部干扰未确认（`CONTROLLED_CORE90_TRAINING_TAIL_INTERFERENCE_NOT_CONFIRMED`） |
+| `CG-CORE-LEGACY-K2-CORE90-WORK-H6` | 人工锚定可学习全局模型（`M2-WORK-LG01`） | `eval-lg01-core-legacy-k2-t0-full-core90-work-h6` | 519 / 149 / 6 | 0.39088288 | -0.34646069 | 已执行的全量训练人口参照（`CONTROLLED_FULL_POPULATION_REFERENCE`） |
+| `CG-CORE-LEGACY-K2-CORE90-WORK-H6` | 人工锚定可学习全局模型（`M2-WORK-LG01`） | `eval-lg01-core-legacy-k2-t1-core90-core90-work-h6` | 519 / 149 / 6 | 0.38991669 | -0.34367178 | 动态核心 90% 训练已执行，尾部干扰未确认（`CONTROLLED_CORE90_TRAINING_TAIL_INTERFERENCE_NOT_CONFIRMED`） |
+| `CG-CORE-LEGACY-K2-CORE90-CHANNEL-H3` | 人工锚定可学习全局模型（`M2-WORK-LG01`） | `eval-lg01-core-legacy-k2-t0-full-core90-channel-h3` | 1805 / 149 / 6 | 0.41742709 | -0.36822119 | 已执行的全量训练人口参照（`CONTROLLED_FULL_POPULATION_REFERENCE`） |
+| `CG-CORE-LEGACY-K2-CORE90-CHANNEL-H3` | 人工锚定可学习全局模型（`M2-WORK-LG01`） | `eval-lg01-core-legacy-k2-t1-core90-core90-channel-h3` | 1805 / 149 / 6 | 0.41872730 | -0.36552515 | 动态核心 90% 训练已执行，尾部干扰未确认（`CONTROLLED_CORE90_TRAINING_TAIL_INTERFERENCE_NOT_CONFIRMED`） |
+| `CG-CORE-LEGACY-K2-CORE90-CHANNEL-H6` | 人工锚定可学习全局模型（`M2-WORK-LG01`） | `eval-lg01-core-legacy-k2-t0-full-core90-channel-h6` | 1805 / 149 / 6 | 0.41075784 | -0.34646069 | 已执行的全量训练人口参照（`CONTROLLED_FULL_POPULATION_REFERENCE`） |
+| `CG-CORE-LEGACY-K2-CORE90-CHANNEL-H6` | 人工锚定可学习全局模型（`M2-WORK-LG01`） | `eval-lg01-core-legacy-k2-t1-core90-core90-channel-h6` | 1805 / 149 / 6 | 0.41208088 | -0.34367178 | 动态核心 90% 训练已执行，尾部干扰未确认（`CONTROLLED_CORE90_TRAINING_TAIL_INTERFERENCE_NOT_CONFIRMED`） |
+| `CG-CORE-LEGACY-HR01-CORE80-PRIMARY-WORK-H3` | 作品发生-金额校准模型 v0.3（`M2-WORK-OA03`） | `eval-oa03-core-legacy-hr01-core80-primary-h3` | 65 / 43 / 5 | 0.26245998 | -0.03645694 | 同案例重评分未形成稳定优胜（`SAME_CASE_NO_STABLE_WINNER`） |
+| `CG-CORE-LEGACY-HR01-CORE80-PRIMARY-WORK-H3` | 核心收入人工规则基线 v0.1（`M2-WORK-CRMR01`） | `eval-crmr01-core-legacy-hr01-core80-primary-h3` | 65 / 43 / 5 | 0.26522371 | 0.24650789 | 同案例重评分未形成稳定优胜（`SAME_CASE_NO_STABLE_WINNER`） |
+| `CG-CORE-LEGACY-HR01-CORE80-PRIMARY-WORK-H3` | 按预测周期滚动模型路由器 v0.1（`M2-WORK-HR01`） | `eval-hr01-core80-primary-h3` | 65 / 43 / 5 | 0.26245998 | -0.03645694 | 按预测周期滚动模型路由未确认（`HORIZON_ROUTER_NOT_CONFIRMED`） |
+| `CG-CORE-LEGACY-HR01-CORE80-PRIMARY-WORK-H6` | 作品发生-金额校准模型 v0.3（`M2-WORK-OA03`） | `eval-oa03-core-legacy-hr01-core80-primary-h6` | 65 / 43 / 5 | 0.28394930 | 0.00081838 | 同案例 WAPE 与偏差存在权衡（`SAME_CASE_WAPE_BIAS_TRADEOFF`） |
+| `CG-CORE-LEGACY-HR01-CORE80-PRIMARY-WORK-H6` | 核心收入人工规则基线 v0.1（`M2-WORK-CRMR01`） | `eval-crmr01-core-legacy-hr01-core80-primary-h6` | 65 / 43 / 5 | 0.26513936 | 0.11386694 | 同案例 WAPE 与偏差存在权衡（`SAME_CASE_WAPE_BIAS_TRADEOFF`） |
+| `CG-CORE-LEGACY-HR01-CORE80-PRIMARY-WORK-H6` | 按预测周期滚动模型路由器 v0.1（`M2-WORK-HR01`） | `eval-hr01-core80-primary-h6` | 65 / 43 / 5 | 0.27184062 | 0.04845672 | 按预测周期滚动模型路由未确认（`HORIZON_ROUTER_NOT_CONFIRMED`） |
+| `CG-CORE-LEGACY-HR01-CORE80-PRIMARY-WORK-H12` | 作品发生-金额校准模型 v0.3（`M2-WORK-OA03`） | `eval-oa03-core-legacy-hr01-core80-primary-h12` | 47 / 32 / 4 | 0.24891907 | 0.00834054 | 同案例重评分未形成稳定优胜（`SAME_CASE_NO_STABLE_WINNER`） |
+| `CG-CORE-LEGACY-HR01-CORE80-PRIMARY-WORK-H12` | 核心收入人工规则基线 v0.1（`M2-WORK-CRMR01`） | `eval-crmr01-core-legacy-hr01-core80-primary-h12` | 47 / 32 / 4 | 0.37973781 | 0.30966670 | 同案例重评分未形成稳定优胜（`SAME_CASE_NO_STABLE_WINNER`） |
+| `CG-CORE-LEGACY-HR01-CORE80-PRIMARY-WORK-H12` | 按预测周期滚动模型路由器 v0.1（`M2-WORK-HR01`） | `eval-hr01-core80-primary-h12` | 47 / 32 / 4 | 0.24891907 | 0.00834054 | 按预测周期滚动模型路由未确认（`HORIZON_ROUTER_NOT_CONFIRMED`） |
+| `CG-CORE-LEGACY-HR01-CORE80-PRIMARY-WORK-H36` | 核心收入人工规则基线 v0.1（`M2-WORK-CRMR01`） | `eval-crmr01-core-legacy-hr01-core80-primary-h36` | 408 / 55 / 13 | 18.64959623 | 18.61464028 | 同案例明确优胜比较中的落后模型（`SAME_CASE_CLEAR_WINNER_COMPARISON_LOSER`） |
+| `CG-CORE-LEGACY-HR01-CORE80-PRIMARY-WORK-H36` | 人工锚定可学习全局模型（`M2-WORK-LG01`） | `eval-lg01-core-legacy-hr01-core80-primary-h36` | 408 / 55 / 13 | 0.28489821 | 0.07555860 | 同案例重评分形成明确优胜（`SAME_CASE_CLEAR_WINNER`） |
+| `CG-CORE-LEGACY-HR01-CORE80-PRIMARY-WORK-H36` | 按预测周期滚动模型路由器 v0.1（`M2-WORK-HR01`） | `eval-hr01-core80-primary-h36` | 408 / 55 / 13 | 0.28489821 | 0.07555860 | 按预测周期滚动模型路由未确认（`HORIZON_ROUTER_NOT_CONFIRMED`） |
+| `CG-WORK-HISTORICAL-C1` | C1 透明组合模型（`M2-WORK-C1TE01`） | `eval-c1-historical` | — / — / 5 | 3.85015700 | 3.51137000 | 已执行但未通过（`ARCHIVE_DEVELOPMENT_FAIL`） |
+| `CG-WORK-LEGACY-BUYOUT-C2R` | 旧买断收入路由模型（`M2-WORK-C2R01`） | `eval-c2r-legacy-buyout` | — / — / — | 1.17960000 | 0.79260000 | 已执行但未通过（`ARCHIVE_DEVELOPMENT_FAIL`） |
+| `CG-WORK-ARCHIVE-FORMAL-7851` | 正式现金路由分治模型（`M2-WORK-C2R101`） | `eval-c2r1-formal-7851` | 7851 / 824 / 5 | 0.58382400 | 0.02933800 | 已执行但未通过（`ARCHIVE_DEVELOPMENT_FAIL`） |
+| `CG-WORK-ARCHIVE-FORMAL-7851` | C2 活跃度与间歇模型组合（`M2-WORK-C2IM01`） | `eval-c2-formal-7851` | 7851 / 824 / 5 | 0.55695500 | 0.09289100 | 已执行但未通过（`ARCHIVE_DEVELOPMENT_FAIL`） |
+| `CG-WORK-ARCHIVE-FORMAL-7851` | C3 内部特征残差校正模型（`M2-WORK-C3IR01`） | `eval-c3a-formal-7851` | 7851 / 824 / 5 | 0.55394517 | 0.08273913 | 已执行但未通过（`ARCHIVE_DEVELOPMENT_FAIL`） |
+| `CG-PSC01-V22-PRIMARY-12039-H36` | 作品发生-金额校准模型 v0.3（`M2-WORK-OA03`） | `eval-oa03-psc01-v22-primary-12039-h36` | 12039 / 1125 / 13 | 1.00000000 | -1.00000000 | 登记结果（`OPERATIONAL_FALLBACK_SAME_CASE_INTERSECTION`） |
+| `CG-PSC01-V22-PRIMARY-12039-H36` | 人工锚定可学习全局模型（`M2-WORK-LG01`） | `eval-lg01-psc01-v22-primary-12039-h36` | 12039 / 1125 / 13 | 0.44310049 | -0.12165171 | 登记结果（`FROZEN_RESEARCH_BASELINE_SAME_CASE_V22`） |
+| `CG-PSC01-V22-PRIMARY-12039-H36` | 出版行业适配的渠道月度发生—条件金额核心（`M2-CHAN-PSC01`） | `eval-psc01-first-valid-primary-12039-h36` | 12039 / 1125 / 13 | 0.92408663 | -0.88928240 | 已执行但未通过（`M2_PUBLISHING_SCALE_CORE_FAIL`） |
+| `CG-PSC01-V22-STRICT-74320` | 作品发生-金额校准模型 v0.3（`M2-WORK-OA03`） | `eval-oa03-psc01-v22-strict-74320` | 74320 / 2650 / 11 | 1.00000000 | -1.00000000 | 登记结果（`OPERATIONAL_FALLBACK_SAME_CASE_INTERSECTION`） |
+| `CG-PSC01-V22-STRICT-74320` | 人工锚定可学习全局模型（`M2-WORK-LG01`） | `eval-lg01-psc01-v22-strict-74320` | 74320 / 2650 / 11 | 0.41281268 | -0.03786001 | 登记结果（`FROZEN_RESEARCH_BASELINE_SAME_CASE_V22`） |
+| `CG-PSC01-V22-STRICT-74320` | 出版行业适配的渠道月度发生—条件金额核心（`M2-CHAN-PSC01`） | `eval-psc01-first-valid-strict-74320` | 74320 / 2650 / 11 | 0.91533339 | -0.85410647 | 已执行但未通过（`M2_PUBLISHING_SCALE_CORE_FAIL`） |
+| `CG-OA03-CS-CORE80-PRIMARY-WORK-H3` | 作品发生-金额校准模型 v0.3（`M2-WORK-OA03`） | `eval-oa03-cs-core80-primary-work-h3` | 194 / 80 / 5 | 0.34189811 | -0.08938161 | 主要参考不可合法重建，当前性能不可评价（`OA03_CURRENT_SCOPE_PERFORMANCE_NOT_EVALUABLE`） |
+| `CG-OA03-CS-CORE80-PRIMARY-WORK-H6` | 作品发生-金额校准模型 v0.3（`M2-WORK-OA03`） | `eval-oa03-cs-core80-primary-work-h6` | 194 / 80 / 5 | 0.35191501 | -0.06073666 | 主要参考不可合法重建，当前性能不可评价（`OA03_CURRENT_SCOPE_PERFORMANCE_NOT_EVALUABLE`） |
+| `CG-OA03-CS-CORE80-PRIMARY-WORK-H12` | 作品发生-金额校准模型 v0.3（`M2-WORK-OA03`） | `eval-oa03-cs-core80-primary-work-h12` | 194 / 80 / 5 | 0.39457072 | -0.01464017 | 主要参考不可合法重建，当前性能不可评价（`OA03_CURRENT_SCOPE_PERFORMANCE_NOT_EVALUABLE`） |
+| `CG-OA03-CS-CORE90-PRIMARY-WORK-H3` | 作品发生-金额校准模型 v0.3（`M2-WORK-OA03`） | `eval-oa03-cs-core90-primary-work-h3` | 396 / 155 / 5 | 0.37543153 | -0.10381422 | 主要参考不可合法重建，当前性能不可评价（`OA03_CURRENT_SCOPE_PERFORMANCE_NOT_EVALUABLE`） |
+| `CG-OA03-CS-CORE90-PRIMARY-WORK-H3` | 核心老品分周期金额模型 v0.1（`M2-WORK-CHAM01`） | `eval-cham01-b1-core90-primary-h3-numeric-disclosure` | 396 / 155 / 5 | 5.494429874592189e+33 | 5.494429874592189e+33 | 有限极端外推导致数值稳定性失败（`M2_CHAM01_PRIMARY_CORE90_NUMERIC_STABILITY_FAIL_FINITE_EXTREME_EXTRAPOLATION`） |
+| `CG-OA03-CS-CORE90-PRIMARY-WORK-H3` | 核心老品分周期金额模型 v0.1（`M2-WORK-CHAM01`） | `eval-cham01-b2-core90-primary-h3-numeric-disclosure` | 396 / 155 / 5 | 2.739672113752189e+61 | 2.739672113752189e+61 | 有限极端外推导致数值稳定性失败（`M2_CHAM01_PRIMARY_CORE90_NUMERIC_STABILITY_FAIL_FINITE_EXTREME_EXTRAPOLATION`） |
+| `CG-OA03-CS-CORE90-PRIMARY-WORK-H3` | 核心老品分周期金额模型 v0.1（`M2-WORK-CHAM01`） | `eval-cham01-b3-core90-primary-h3-numeric-disclosure` | 396 / 155 / 5 | 1.5056004952219026e+52 | 1.5056004952219026e+52 | 有限极端外推导致数值稳定性失败（`M2_CHAM01_PRIMARY_CORE90_NUMERIC_STABILITY_FAIL_FINITE_EXTREME_EXTRAPOLATION`） |
+| `CG-OA03-CS-CORE90-PRIMARY-WORK-H6` | 作品发生-金额校准模型 v0.3（`M2-WORK-OA03`） | `eval-oa03-cs-core90-primary-work-h6` | 396 / 155 / 5 | 0.39470634 | -0.08714360 | 主要参考不可合法重建，当前性能不可评价（`OA03_CURRENT_SCOPE_PERFORMANCE_NOT_EVALUABLE`） |
+| `CG-OA03-CS-CORE90-PRIMARY-WORK-H6` | 核心老品分周期金额模型 v0.1（`M2-WORK-CHAM01`） | `eval-cham01-b1-core90-primary-h6-numeric-disclosure` | 396 / 155 / 5 | 9366475296846.14257813 | 9366475296845.53710938 | 有限极端外推导致数值稳定性失败（`M2_CHAM01_PRIMARY_CORE90_NUMERIC_STABILITY_FAIL_FINITE_EXTREME_EXTRAPOLATION`） |
+| `CG-OA03-CS-CORE90-PRIMARY-WORK-H6` | 核心老品分周期金额模型 v0.1（`M2-WORK-CHAM01`） | `eval-cham01-b2-core90-primary-h6-numeric-disclosure` | 396 / 155 / 5 | 8.271113970865827e+28 | 8.271113970865827e+28 | 有限极端外推导致数值稳定性失败（`M2_CHAM01_PRIMARY_CORE90_NUMERIC_STABILITY_FAIL_FINITE_EXTREME_EXTRAPOLATION`） |
+| `CG-OA03-CS-CORE90-PRIMARY-WORK-H12` | 作品发生-金额校准模型 v0.3（`M2-WORK-OA03`） | `eval-oa03-cs-core90-primary-work-h12` | 396 / 155 / 5 | 0.43064757 | -0.02528715 | 主要参考不可合法重建，当前性能不可评价（`OA03_CURRENT_SCOPE_PERFORMANCE_NOT_EVALUABLE`） |
+| `CG-OA03-CS-CORE80-STRICT-WORK-H3` | 作品发生-金额校准模型 v0.3（`M2-WORK-OA03`） | `eval-oa03-cs-core80-strict-work-h3` | 577 / 82 / 11 | 0.37480052 | -0.15158793 | 当前范围性能不支持（`OA03_CURRENT_SCOPE_PERFORMANCE_NOT_SUPPORTED`） |
+| `CG-OA03-CS-CORE80-STRICT-WORK-H3` | 核心老品分周期金额模型 v0.1（`M2-WORK-CHAM01`） | `eval-cham01-b3-core80-strict-h3` | 577 / 82 / 11 | 0.25128824 | -0.04984846 | 已执行但未通过（`M2_CORE_HORIZON_AMOUNT_HORIZON_FAIL`） |
+| `CG-OA03-CS-CORE80-STRICT-WORK-H3` | LG01 头部现金残差校准模型 v0.1（`M2-WORK-HCRC01`） | `eval-hcrc01-c2-core80-strict-h3-raw` / `M2-EXP-LG01-HEAD-CASH-RESIDUAL-01/C2` | 0 / 0 / 0 | 未登记（null） | 未登记（null） | LG01 头部现金残差校准开发失败（`M2_LG01_HEAD_CASH_RESIDUAL_FAIL`）；回退后管线状态（`FALLBACK_ONLY_NOT_RAW_CANDIDATE_EVIDENCE`） |
+| `CG-OA03-CS-CORE80-STRICT-WORK-H3` | LG01 头部现金残差校准模型 v0.1（`M2-WORK-HCRC01`） | `eval-hcrc01-c3-core80-strict-h3-raw` / `M2-EXP-LG01-HEAD-CASH-RESIDUAL-01/C3` | 0 / 0 / 0 | 未登记（null） | 未登记（null） | LG01 头部现金残差校准开发失败（`M2_LG01_HEAD_CASH_RESIDUAL_FAIL`）；回退后管线状态（`FALLBACK_ONLY_NOT_RAW_CANDIDATE_EVIDENCE`） |
+| `CG-OA03-CS-CORE80-STRICT-WORK-H6` | 作品发生-金额校准模型 v0.3（`M2-WORK-OA03`） | `eval-oa03-cs-core80-strict-work-h6` | 577 / 82 / 11 | 0.38119104 | -0.11981310 | 当前范围性能不支持（`OA03_CURRENT_SCOPE_PERFORMANCE_NOT_SUPPORTED`） |
+| `CG-OA03-CS-CORE80-STRICT-WORK-H6` | 核心老品分周期金额模型 v0.1（`M2-WORK-CHAM01`） | `eval-cham01-b3-core80-strict-h6` | 577 / 82 / 11 | 0.28170413 | -0.06868190 | 已执行但未通过（`M2_CORE_HORIZON_AMOUNT_HORIZON_FAIL`） |
+| `CG-OA03-CS-CORE80-STRICT-WORK-H12` | 作品发生-金额校准模型 v0.3（`M2-WORK-OA03`） | `eval-oa03-cs-core80-strict-work-h12` | 472 / 76 / 9 | 0.43547525 | -0.06697018 | 当前范围性能不支持（`OA03_CURRENT_SCOPE_PERFORMANCE_NOT_SUPPORTED`） |
+| `CG-OA03-CS-CORE80-STRICT-WORK-H12` | 核心老品分周期金额模型 v0.1（`M2-WORK-CHAM01`） | `eval-cham01-b3-core80-strict-h12` | 472 / 76 / 9 | 0.39182014 | -0.13843079 | 已执行但未通过（`M2_CORE_HORIZON_AMOUNT_HORIZON_FAIL`） |
+| `CG-OA03-CS-CORE90-STRICT-WORK-H3` | 作品发生-金额校准模型 v0.3（`M2-WORK-OA03`） | `eval-oa03-cs-core90-strict-work-h3` | 1288 / 208 / 11 | 0.39670669 | -0.13771657 | 当前范围性能不支持（`OA03_CURRENT_SCOPE_PERFORMANCE_NOT_SUPPORTED`） |
+| `CG-OA03-CS-CORE90-STRICT-WORK-H3` | 核心老品分周期金额模型 v0.1（`M2-WORK-CHAM01`） | `eval-cham01-b3-core90-strict-h3` | 1288 / 208 / 11 | 0.26736111 | -0.06072603 | 已执行但未通过（`M2_CORE_HORIZON_AMOUNT_DEVELOPMENT_FAIL`） |
+| `CG-OA03-CS-CORE90-STRICT-WORK-H3` | LG01 头部现金残差校准模型 v0.1（`M2-WORK-HCRC01`） | `eval-hcrc01-c2-core90-strict-h3-raw` / `M2-EXP-LG01-HEAD-CASH-RESIDUAL-01/C2` | 0 / 0 / 0 | 未登记（null） | 未登记（null） | LG01 头部现金残差校准开发失败（`M2_LG01_HEAD_CASH_RESIDUAL_FAIL`）；回退后管线状态（`FALLBACK_ONLY_NOT_RAW_CANDIDATE_EVIDENCE`） |
+| `CG-OA03-CS-CORE90-STRICT-WORK-H3` | LG01 头部现金残差校准模型 v0.1（`M2-WORK-HCRC01`） | `eval-hcrc01-c3-core90-strict-h3-raw` / `M2-EXP-LG01-HEAD-CASH-RESIDUAL-01/C3` | 0 / 0 / 0 | 未登记（null） | 未登记（null） | LG01 头部现金残差校准开发失败（`M2_LG01_HEAD_CASH_RESIDUAL_FAIL`）；回退后管线状态（`FALLBACK_ONLY_NOT_RAW_CANDIDATE_EVIDENCE`） |
+| `CG-OA03-CS-CORE90-STRICT-WORK-H6` | 作品发生-金额校准模型 v0.3（`M2-WORK-OA03`） | `eval-oa03-cs-core90-strict-work-h6` | 1288 / 208 / 11 | 0.40306858 | -0.09934961 | 当前范围性能不支持（`OA03_CURRENT_SCOPE_PERFORMANCE_NOT_SUPPORTED`） |
+| `CG-OA03-CS-CORE90-STRICT-WORK-H6` | 核心老品分周期金额模型 v0.1（`M2-WORK-CHAM01`） | `eval-cham01-b3-core90-strict-h6` | 1288 / 208 / 11 | 0.29447803 | -0.07514950 | 已执行但未通过（`M2_CORE_HORIZON_AMOUNT_DEVELOPMENT_FAIL`） |
+| `CG-OA03-CS-CORE90-STRICT-WORK-H12` | 作品发生-金额校准模型 v0.3（`M2-WORK-OA03`） | `eval-oa03-cs-core90-strict-work-h12` | 1053 / 195 / 9 | 0.46031533 | -0.03521578 | 当前范围性能不支持（`OA03_CURRENT_SCOPE_PERFORMANCE_NOT_SUPPORTED`） |
+| `CG-OA03-CS-CORE90-STRICT-WORK-H12` | 核心老品分周期金额模型 v0.1（`M2-WORK-CHAM01`） | `eval-cham01-b3-core90-strict-h12` | 1053 / 195 / 9 | 0.39776131 | -0.13914718 | 已执行但未通过（`M2_CORE_HORIZON_AMOUNT_DEVELOPMENT_FAIL`） |
+
+## 数值稳定性失败总账
+
+本表逐项保留冻结原始数值；数值稳定性失败与模型性能失败分别登记，不会把极端有限值改成截断值、0 或 `null`。
+
+| 实验臂（完整作用域） | 人口 / horizon | cases / works / origins | WAPE | signed bias | MAE / median AE | 最大单作品绝对误差占比 | 结果（机器状态） |
+|---|---|---:|---:|---:|---:|---:|---|
+| 核心老品分周期金额模型开发 v0.1 / B1（`M2-EXP-CORE-HORIZON-AMOUNT-01/B1`） | `oa03-cs-core90-primary-work-155w-396c-h3` / 3 | 396 / 155 / 5 | 5.494429874592189e+33 | 5.494429874592189e+33 | 1.5244782550707185e+38 / 1986.3817105023518 | 1 | 有限极端外推导致数值稳定性失败（`M2_CHAM01_PRIMARY_CORE90_NUMERIC_STABILITY_FAIL_FINITE_EXTREME_EXTRAPOLATION`） |
+| 核心老品分周期金额模型开发 v0.1 / B2（`M2-EXP-CORE-HORIZON-AMOUNT-01/B2`） | `oa03-cs-core90-primary-work-155w-396c-h3` / 3 | 396 / 155 / 5 | 2.739672113752189e+61 | 2.739672113752189e+61 | 7.601463043058385e+65 / 2160.1941136798405 | 1 | 有限极端外推导致数值稳定性失败（`M2_CHAM01_PRIMARY_CORE90_NUMERIC_STABILITY_FAIL_FINITE_EXTREME_EXTRAPOLATION`） |
+| 核心老品分周期金额模型开发 v0.1 / B3（`M2-EXP-CORE-HORIZON-AMOUNT-01/B3`） | `oa03-cs-core90-primary-work-155w-396c-h3` / 3 | 396 / 155 / 5 | 1.5056004952219026e+52 | 1.5056004952219026e+52 | 4.177421985861372e+56 / 2118.9971871204025 | 1 | 有限极端外推导致数值稳定性失败（`M2_CHAM01_PRIMARY_CORE90_NUMERIC_STABILITY_FAIL_FINITE_EXTREME_EXTRAPOLATION`） |
+| 核心老品分周期金额模型开发 v0.1 / B1（`M2-EXP-CORE-HORIZON-AMOUNT-01/B1`） | `oa03-cs-core90-primary-work-155w-396c-h6` / 6 | 396 / 155 / 5 | 9366475296846.143 | 9366475296845.537 | 510270329990009000 / 4597.685913923067 | 0.9999999999999616 | 有限极端外推导致数值稳定性失败（`M2_CHAM01_PRIMARY_CORE90_NUMERIC_STABILITY_FAIL_FINITE_EXTREME_EXTRAPOLATION`） |
+| 核心老品分周期金额模型开发 v0.1 / B2（`M2-EXP-CORE-HORIZON-AMOUNT-01/B2`） | `oa03-cs-core90-primary-work-155w-396c-h6` / 6 | 396 / 155 / 5 | 8.271113970865827e+28 | 8.271113970865827e+28 | 4.5059682767965e+33 / 4717.399115635721 | 1 | 有限极端外推导致数值稳定性失败（`M2_CHAM01_PRIMARY_CORE90_NUMERIC_STABILITY_FAIL_FINITE_EXTREME_EXTRAPOLATION`） |
 
 ## 查询
 

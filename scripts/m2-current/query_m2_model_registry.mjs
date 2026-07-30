@@ -68,10 +68,17 @@ function printStatus() {
   printRole("组合级参考", "portfolioReference");
   printRole("活动候选", "activeCandidate");
   printRole("自动化批准模型", "approvedForAutomation");
+  const activeExperiment = registry.experiments.find(
+    (item) => item.experimentId === registry.currentRoles.activeExperiment
+  );
   console.log(
-    registry.currentRoles.activeExperiment === null
+    activeExperiment === undefined
       ? "当前实验：无（null）。"
-      : `当前实验：${registry.currentRoles.activeExperiment}。`
+      : `当前实验：${activeExperiment.displayNameZh}（`
+        + `${activeExperiment.displayNameEn}，`
+        + `${activeExperiment.experimentId}；`
+        + `${resultStatusZh(activeExperiment.resultStatus)}，`
+        + `${activeExperiment.resultStatus}）。`
   );
   console.log(
     registry.currentRoles.blockedExperiment === null
@@ -358,11 +365,21 @@ function roleZh(value) {
       "开发执行阻断且无候选结果",
     development_model_recovery_ready_no_private_outcome:
       "恢复就绪且尚无真实私有结果",
+    preregistered_exploratory_candidate_not_executed:
+      "探索性候选已预注册但尚未执行",
+    implemented_exploratory_candidate_not_executed:
+      "探索性候选已实现并通过合成验证但尚未执行",
     archive_only_failed_model: "仅历史审计且已失败"
   }[value] ?? "登记角色";
 }
 
 function operationalStatusZh(value) {
+  if (value === "not_executed_not_promoted") {
+    return "尚未执行且未晋升";
+  }
+  if (value === "implemented_not_executed_not_promoted") {
+    return "已实现，尚未执行且未晋升";
+  }
   if (
     value
       === "recovery_authorized_until_first_valid_complete_outcome_"
@@ -383,6 +400,26 @@ function operationalStatusZh(value) {
 }
 
 function resultStatusZh(value) {
+  if (
+    value
+      === "M2_CHAM01_PRIMARY_CORE90_NUMERIC_STABILITY_FAIL_"
+        + "FINITE_EXTREME_EXTRAPOLATION"
+  ) {
+    return "有限极端外推导致数值稳定性失败";
+  }
+  if (value === "M2_LG01_HEAD_CASH_RESIDUAL_PREREGISTERED_NOT_EXECUTED") {
+    return "已预注册且尚未执行";
+  }
+  if (
+    value
+      === "M2_LG01_HEAD_CASH_RESIDUAL_"
+        + "IMPLEMENTED_SYNTHETIC_VERIFIED_OUTER_UNREAD"
+  ) {
+    return "已实现并通过合成验证且外层结果未读取";
+  }
+  if (value === "M2_LG01_HEAD_CASH_RESIDUAL_FAIL") {
+    return "LG01 头部现金残差校准开发失败";
+  }
   if (value === "HORIZON_ROUTER_NOT_CONFIRMED") {
     return "按预测周期滚动模型路由未确认";
   }
