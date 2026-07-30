@@ -35,9 +35,10 @@ test("registry schema, evidence paths and immutable digests validate", () => {
     canonicalEvidenceSha256("same\ncontent\n")
   );
   assert.equal(validation.counts.modelCount, 31);
-  assert.equal(validation.counts.experimentCount, 17);
-  assert.equal(validation.counts.nonModelIdentifierCount, 61);
-  assert.equal(validation.counts.comparabilityGroupCount, 32);
+  assert.equal(validation.counts.experimentCount, 18);
+  assert.equal(validation.counts.nonModelIdentifierCount, 72);
+  assert.equal(validation.counts.evaluationCount, 95);
+  assert.equal(validation.counts.comparabilityGroupCount, 56);
 });
 
 test("stable model IDs and model aliases are unique", () => {
@@ -190,7 +191,7 @@ test("core legacy population test records non-confirmation without promotion", (
   );
   assert.equal(
     registry.currentRoles.latestStateIndex,
-    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.41.md"
+    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.42.md"
   );
   assert.equal(registry.currentRoles.activeCandidate, null);
   assert.equal(registry.currentRoles.approvedForAutomation, null);
@@ -200,7 +201,7 @@ test("evaluations preserve population and comparability contracts", () => {
   const oa03 = registry.models.find(
     (model) => model.stableModelId === "M2-WORK-OA03"
   );
-  assert.equal(oa03.evaluations.length, 7);
+  assert.equal(oa03.evaluations.length, 19);
   assert.notEqual(
     oa03.evaluations[0].comparableGroupId,
     oa03.evaluations[1].comparableGroupId
@@ -238,6 +239,87 @@ test("evaluations preserve population and comparability contracts", () => {
     differentGrain.differences.some((item) => item.field === "grain"),
     true
   );
+});
+
+test("OA03 current-scope replication closes without conflating allocation with a model", () => {
+  const oa03 = registry.models.find(
+    (model) => model.stableModelId === "M2-WORK-OA03"
+  );
+  const experiment = registry.experiments.find(
+    (item) => (
+      item.experimentId === "M2-EXP-OA03-CURRENT-SCOPE-REPLICATION-01"
+    )
+  );
+  const evaluations = oa03.evaluations.filter(
+    (item) => (
+      item.datasetVersion === "M2-oa03-current-scope-replication-v0.1"
+    )
+  );
+  const primary = evaluations.filter(
+    (item) => item.comparableGroupId.includes("-PRIMARY-WORK-")
+  );
+  const strict = evaluations.filter(
+    (item) => item.comparableGroupId.includes("-STRICT-WORK-")
+  );
+  const groups = registry.comparabilityGroups.filter(
+    (item) => item.comparableGroupId.startsWith("CG-OA03-CS-")
+  );
+
+  assert.equal(evaluations.length, 12);
+  assert.equal(primary.length, 6);
+  assert.equal(
+    primary.every(
+      (item) => (
+        item.resultStatus === "OA03_CURRENT_SCOPE_PERFORMANCE_NOT_EVALUABLE"
+        && item.baselineModelId === null
+        && item.primaryReferenceModelId === "M2-WORK-LG01"
+      )
+    ),
+    true
+  );
+  assert.equal(strict.length, 6);
+  assert.equal(
+    strict.every(
+      (item) => (
+        item.resultStatus === "OA03_CURRENT_SCOPE_PERFORMANCE_NOT_SUPPORTED"
+        && item.baselineModelId === "M2-WORK-LG01"
+      )
+    ),
+    true
+  );
+  assert.equal(groups.length, 24);
+  assert.equal(
+    groups.filter((item) => item.grain === "work_origin_horizon").length,
+    12
+  );
+  assert.equal(
+    groups.filter(
+      (item) => item.grain === "work_origin_channel_horizon"
+    ).length,
+    12
+  );
+  assert.equal(
+    evaluations.some(
+      (item) => item.grain === "work_origin_channel_horizon"
+    ),
+    false
+  );
+  assert.equal(
+    experiment.technicalReplicationStatus,
+    "OA03_CURRENT_SCOPE_REPLICATION_COMPLETE"
+  );
+  assert.equal(
+    experiment.summaryStatus,
+    "M2_OA03_CURRENT_SCOPE_REPLICATION_COMPLETE_PERFORMANCE_MIXED"
+  );
+  assert.equal(experiment.modelRolesChanged, false);
+  assert.equal(experiment.secondResultExecuted, false);
+  assert.equal(
+    experiment.arms.find((arm) => arm.armId === "C1").modelId,
+    null
+  );
+  assert.equal(registry.currentRoles.activeCandidate, null);
+  assert.equal(registry.currentRoles.approvedForAutomation, null);
 });
 
 test("horizon router and observed-channel allocation close without promotion", () => {
@@ -337,6 +419,9 @@ test("reader catalog is a deterministic complete rendering of the registry", asy
   );
   assert.equal(catalog, renderM2ModelCatalog(registry));
   assert.match(catalog, /M2-WORK-OA03/u);
+  assert.match(catalog, /M2-EXP-OA03-CURRENT-SCOPE-REPLICATION-01/u);
+  assert.match(catalog, /CG-OA03-CS-CORE80-PRIMARY-WORK-H3/u);
+  assert.match(catalog, /OA03_CURRENT_SCOPE_PERFORMANCE_NOT_EVALUABLE/u);
   assert.match(catalog, /CG-G1-BLOCKED-NO-CANDIDATE-OUTCOME/u);
   assert.match(catalog, /M2_CHANNEL_GENERATIVE_G1_CORE_BLOCKED/u);
   assert.match(catalog, /M2_PUBLISHING_SCALE_IMPLEMENTATION_BLOCKED/u);

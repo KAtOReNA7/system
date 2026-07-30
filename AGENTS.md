@@ -3,7 +3,7 @@
 ## 当前权威入口
 
 - 用户首页与公共开始入口：`README.md`
-- 当前 M2 状态：`docs/analysis/m2-v2/M2-v2-current-state-index-v0.41.md`
+- 当前 M2 状态：`docs/analysis/m2-v2/M2-v2-current-state-index-v0.42.md`
 - M2 模型机器权威：`config/m2-model-registry.v1.json`
 - M2 中文目录：`docs/analysis/m2-current/M2-model-catalog-and-scorecard-v1.md`
 - M2 出版行业规模适配渠道核心结论：
@@ -18,6 +18,12 @@
   - `docs/analysis/m2-current/M2-layered-revenue-future-new-work-v0.1.md`
   - `docs/analysis/m2-current/M2-layered-revenue-existing-work-new-channel-v0.1.md`
   - `docs/analysis/m2-current/M2-layered-revenue-36-month-retention-v0.1.md`
+- M2 作品发生—金额校准模型当前范围复现：
+  - `docs/analysis/m2-current/M2-oa03-current-scope-replication-development-v0.1.json`
+  - `docs/analysis/m2-current/M2-oa03-current-scope-replication-development-v0.1.md`
+  - `docs/analysis/m2-current/M2-oa03-trailing12-observed-channel-allocation-v0.1.json`
+  - `docs/analysis/m2-current/M2-oa03-trailing12-observed-channel-allocation-v0.1.md`
+  - `docs/analysis/m2-current/M2-oa03-current-scope-artifact-readiness-v0.1.md`
 - M2 评价体系：
   - `docs/analysis/m2-current/M2-evaluation-system-audit-v1.md`
   - `config/m2-evaluation-contract.v2.2.json`
