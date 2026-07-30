@@ -23,6 +23,9 @@ ROOT = Path(__file__).resolve().parents[2]
 CURRENT = ROOT / "scripts" / "m2-current"
 if str(CURRENT) not in sys.path:
     sys.path.insert(0, str(CURRENT))
+REAL_DATA = ROOT / "scripts" / "m2-real-data"
+if str(REAL_DATA) not in sys.path:
+    sys.path.insert(0, str(REAL_DATA))
 
 import materialize_canonical_channel_cases as canonical  # noqa: E402
 import run_m2_current_formal_execution_payload as formal  # noqa: E402
@@ -2339,6 +2342,592 @@ def _fixture_self_test() -> dict[str, Any]:
     }
 
 
+def _materialize_oa03_base_rows(
+    input_path_value: str,
+    output_path_value: str,
+    capability_id: str = "m2-oa03-current-scope-replication",
+) -> dict[str, Any]:
+    input_path = _resolve_oa03_private_path(
+        input_path_value,
+        capability_id,
+    )
+    output_path = _resolve_oa03_private_path(
+        output_path_value,
+        capability_id,
+    )
+    if input_path == output_path:
+        raise HumanAnchoredMaterializationError(
+            "OA03 base materialization input and output must differ"
+        )
+    input_rows = _read_oa03_ndjson(input_path)
+    output_rows = _build_oa03_base_rows(input_rows)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    text = "".join(
+        json.dumps(
+            row,
+            ensure_ascii=False,
+            sort_keys=True,
+            allow_nan=False,
+        )
+        + "\n"
+        for row in output_rows
+    )
+    output_path.write_text(text, encoding="utf-8")
+    return {
+        "schema": "m2.current.oa03_base_materialization_receipt.private.v0.1",
+        "status": "OA03_BASE_MATERIALIZATION_COMPLETE",
+        "inputRowCount": len(input_rows),
+        "outputRowCount": len(output_rows),
+        "sha256": hashlib.sha256(text.encode("utf-8")).hexdigest(),
+        "formula": "m2_calibration_v1._sales_monthly_forecast:B0b",
+        "segmentThresholds": "m2_calibration_c2_v1:activitySegmentation",
+        "privatePathsPublished": False,
+    }
+
+
+def _resolve_oa03_private_path(
+    value: str,
+    capability_id: str = "m2-oa03-current-scope-replication",
+) -> Path:
+    raw = Path(str(value))
+    if raw.is_absolute():
+        raise HumanAnchoredMaterializationError(
+            "OA03 materialization paths must be repository-relative"
+        )
+    allowed_capability_ids = {
+        "m2-oa03-current-scope-replication",
+        "m2-core-legacy-horizon-amount",
+    }
+    if capability_id not in allowed_capability_ids:
+        raise HumanAnchoredMaterializationError(
+            "OA03 materialization capability is not allowed"
+        )
+    base = (
+        ROOT
+        / "data"
+        / "private-output"
+        / capability_id
+    ).resolve()
+    resolved = (ROOT / raw).resolve()
+    if not resolved.is_relative_to(base):
+        raise HumanAnchoredMaterializationError(
+            "OA03 materialization path escaped its capability directory"
+        )
+    return resolved
+
+
+def _read_oa03_ndjson(file_path: Path) -> list[dict[str, Any]]:
+    if not file_path.is_file():
+        raise HumanAnchoredMaterializationError(
+            "OA03 base materialization input is missing"
+        )
+    rows: list[dict[str, Any]] = []
+    for line_number, line in enumerate(
+        file_path.read_text(encoding="utf-8").splitlines(),
+        start=1,
+    ):
+        if not line.strip():
+            continue
+        value = json.loads(line)
+        if not isinstance(value, dict):
+            raise HumanAnchoredMaterializationError(
+                f"OA03 input line {line_number} is not an object"
+            )
+        rows.append(value)
+    if not rows:
+        raise HumanAnchoredMaterializationError(
+            "OA03 base materialization input is empty"
+        )
+    return rows
+
+
+def _build_oa03_base_rows(
+    input_rows: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    import m2_calibration_c2_v1 as c2  # noqa: PLC0415
+    import m2_calibration_v1 as calibration  # noqa: PLC0415
+
+    calibration_spec = calibration.load_spec()
+    segment_spec = c2.load_spec()
+    normalized = [
+        _normalize_oa03_base_input(row, calibration)
+        for row in input_rows
+    ]
+    identities = [
+        (
+            row["evaluationFamily"],
+            row["origin"],
+            row["standardWorkId"],
+        )
+        for row in normalized
+    ]
+    if len(set(identities)) != len(identities):
+        raise HumanAnchoredMaterializationError(
+            "OA03 base materialization input identity is duplicated"
+        )
+    value_bands = _oa03_value_bands(normalized)
+    output: list[dict[str, Any]] = []
+    for row in sorted(
+        normalized,
+        key=lambda item: (
+            item["evaluationFamily"],
+            item["origin"],
+            item["standardWorkId"],
+        ),
+    ):
+        aggregate_values = _oa03_aggregate_values(row, calibration)
+        segment = _oa03_segment_as_of(
+            aggregate_values,
+            segment_spec,
+        )
+        spike_candidate = False
+        for channel in row["channels"]:
+            candidates = calibration.spike_candidates_as_of(
+                {
+                    "monthly": channel["monthly"],
+                    "first_observed_month": channel["firstPositiveMonth"],
+                    "batch_cluster_sizes": {},
+                    "spike_confirmations": [],
+                },
+                row["origin"],
+                {"buyoutEventMonths": []},
+                calibration_spec,
+            )
+            spike_candidate = spike_candidate or bool(candidates)
+        for case in sorted(
+            row["cases"],
+            key=lambda item: int(item["horizonMonths"]),
+        ):
+            horizon = int(case["horizonMonths"])
+            point = 0.0
+            for channel in row["channels"]:
+                months = calibration.month_range(
+                    channel["firstPositiveMonth"],
+                    row["origin"],
+                )
+                values = [
+                    float(channel["monthly"].get(month, 0.0))
+                    for month in months
+                ]
+                forecast, _ = calibration._sales_monthly_forecast(
+                    months,
+                    values,
+                    row["origin"],
+                    horizon,
+                    "B0b",
+                    calibration_spec,
+                )
+                point += round(sum(forecast.values()), 8)
+            output.append(
+                {
+                    "schema":
+                        "m2.current.oa03_base_materialization_row.private.v0.1",
+                    "evaluationFamily": row["evaluationFamily"],
+                    "standardWorkId": row["standardWorkId"],
+                    "origin": row["origin"],
+                    "horizonMonths": horizon,
+                    "labelAvailableAsOf": case["labelAvailableAsOf"],
+                    "actualDefinitionId": case["actualDefinitionId"],
+                    "basePointEstimate": round(point, 8),
+                    "actual": float(case["actual"]),
+                    "actualPositive": float(case["actualPositive"]),
+                    "actualReversal": float(case["actualReversal"]),
+                    "segment": segment["segment"],
+                    "segmentReason": segment["segmentReason"],
+                    "spikeCandidate": spike_candidate,
+                    "valueBand": value_bands[
+                        (
+                            row["evaluationFamily"],
+                            row["origin"],
+                            row["standardWorkId"],
+                        )
+                    ],
+                    "route": "pure_sales_share",
+                    "historicalFeaturePolicy": "as_of_only",
+                    "sourceShelfRightsTermPolicy": "post_hoc_only",
+                    "core80": row["core80"],
+                    "core90": row["core90"],
+                    "eligibleChannelCount": len(row["channels"]),
+                    "workCompleteMonthCount": row["workCompleteMonthCount"],
+                    "minimumChannelCompleteMonthCount": min(
+                        channel["completeMonthCount"]
+                        for channel in row["channels"]
+                    ),
+                    "futureLabelRead": False,
+                    "productionFormulaMutated": False,
+                }
+            )
+    return output
+
+
+def _normalize_oa03_base_input(
+    value: Mapping[str, Any],
+    calibration: Any,
+) -> dict[str, Any]:
+    if (
+        value.get("schema")
+        != "m2.current.oa03_base_materialization_input.private.v0.1"
+    ):
+        raise HumanAnchoredMaterializationError(
+            "OA03 base materialization input schema is invalid"
+        )
+    family = str(value.get("evaluationFamily", ""))
+    if family not in {"PRIMARY_ROLLING", "STRICT_ROLLING"}:
+        raise HumanAnchoredMaterializationError(
+            "OA03 evaluation family is invalid"
+        )
+    work_id = str(value.get("standardWorkId", "")).strip()
+    if not work_id:
+        raise HumanAnchoredMaterializationError(
+            "OA03 standard work identity is missing"
+        )
+    origin = str(value.get("origin", ""))
+    calibration.month_ordinal(origin)
+    channels: list[dict[str, Any]] = []
+    for channel in value.get("channels", []):
+        channel_uid = str(channel.get("channelUid", "")).strip()
+        first_positive = str(channel.get("firstPositiveMonth", ""))
+        calibration.month_ordinal(first_positive)
+        if not channel_uid or first_positive > origin:
+            raise HumanAnchoredMaterializationError(
+                "OA03 mature channel identity or first month is invalid"
+            )
+        monthly: dict[str, float] = {}
+        for item in channel.get("monthly", []):
+            month = str(item.get("month", ""))
+            calibration.month_ordinal(month)
+            if month < first_positive or month > origin:
+                raise HumanAnchoredMaterializationError(
+                    "OA03 channel history crossed the forecast origin"
+                )
+            amount = float(item.get("cash"))
+            if not math.isfinite(amount):
+                raise HumanAnchoredMaterializationError(
+                    "OA03 channel history contains non-finite cash"
+                )
+            monthly[month] = monthly.get(month, 0.0) + amount
+        complete_count = (
+            calibration.month_ordinal(origin)
+            - calibration.month_ordinal(first_positive)
+            + 1
+        )
+        if complete_count < 3:
+            raise HumanAnchoredMaterializationError(
+                "OA03 channel did not meet the three-month maturity gate"
+            )
+        channels.append(
+            {
+                "channelUid": channel_uid,
+                "firstPositiveMonth": first_positive,
+                "completeMonthCount": complete_count,
+                "monthly": monthly,
+            }
+        )
+    if not channels:
+        raise HumanAnchoredMaterializationError(
+            "OA03 work has no origin-observed mature channel"
+        )
+    cases: list[dict[str, Any]] = []
+    for case in value.get("cases", []):
+        horizon = int(case.get("horizonMonths", 0))
+        if horizon not in {3, 6, 12}:
+            raise HumanAnchoredMaterializationError(
+                "OA03 case horizon is invalid"
+            )
+        expected_label = calibration.add_months(origin, horizon)
+        if str(case.get("labelAvailableAsOf", "")) != expected_label:
+            raise HumanAnchoredMaterializationError(
+                "OA03 label availability is not origin-safe"
+            )
+        if (
+            case.get("actualDefinitionId")
+            != "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01"
+        ):
+            raise HumanAnchoredMaterializationError(
+                "OA03 actual definition is invalid"
+            )
+        actual = float(case.get("actual"))
+        positive = float(case.get("actualPositive"))
+        reversal = float(case.get("actualReversal"))
+        if (
+            not all(math.isfinite(item) for item in (actual, positive, reversal))
+            or abs(actual - (positive - reversal)) > 1e-7
+        ):
+            raise HumanAnchoredMaterializationError(
+                "OA03 signed actual components do not reconcile"
+            )
+        cases.append(
+            {
+                "horizonMonths": horizon,
+                "labelAvailableAsOf": expected_label,
+                "actualDefinitionId": case["actualDefinitionId"],
+                "actual": actual,
+                "actualPositive": positive,
+                "actualReversal": reversal,
+            }
+        )
+    if not cases:
+        raise HumanAnchoredMaterializationError(
+            "OA03 work-origin has no legal mature label"
+        )
+    work_complete = int(value.get("workCompleteMonthCount", 0))
+    if work_complete < 3:
+        raise HumanAnchoredMaterializationError(
+            "OA03 work did not meet the three-month maturity gate"
+        )
+    return {
+        "evaluationFamily": family,
+        "standardWorkId": work_id,
+        "origin": origin,
+        "core80": value.get("core80") is True,
+        "core90": value.get("core90") is True,
+        "workCompleteMonthCount": work_complete,
+        "channels": sorted(channels, key=lambda item: item["channelUid"]),
+        "cases": cases,
+    }
+
+
+def _oa03_aggregate_values(
+    row: Mapping[str, Any],
+    calibration: Any,
+) -> list[float]:
+    first = min(
+        channel["firstPositiveMonth"]
+        for channel in row["channels"]
+    )
+    months = calibration.month_range(first, row["origin"])
+    return [
+        sum(
+            float(channel["monthly"].get(month, 0.0))
+            for channel in row["channels"]
+        )
+        for month in months
+    ]
+
+
+def _oa03_segment_as_of(
+    values: list[float],
+    spec: Mapping[str, Any],
+) -> dict[str, str]:
+    zero_tolerance = float(
+        spec["activitySegmentation"]["zeroAbsoluteTolerance"]
+    )
+    positive_count = sum(value > zero_tolerance for value in values)
+    trailing12 = values[-12:]
+    trailing6 = values[-6:]
+    positive12 = sum(value > zero_tolerance for value in trailing12)
+    positive6 = sum(value > zero_tolerance for value in trailing6)
+    zero12 = sum(abs(value) <= zero_tolerance for value in trailing12)
+    consecutive_zero = 0
+    for value in reversed(values):
+        if abs(value) > zero_tolerance:
+            break
+        consecutive_zero += 1
+    positive_trailing12 = [
+        value for value in trailing12 if value > zero_tolerance
+    ]
+    positive_sum12 = sum(positive_trailing12)
+    largest_share = (
+        max(positive_trailing12) / positive_sum12
+        if positive_sum12 > 0
+        else 0.0
+    )
+    observed = len(values)
+    dense = spec["activitySegmentation"]["dense"]
+    dormant = spec["activitySegmentation"]["dormant"]
+    minimum_override = int(
+        spec["candidateSpace"]["parameters"][
+            "minimumChannelHistoryMonthsBeforeOverride"
+        ]
+    )
+    if positive_count == 0:
+        return {
+            "segment": "intermittent",
+            "segmentReason": "no_positive_sales_evidence_b4_only",
+        }
+    if (
+        positive_count >= int(dormant["minimumHistoricalPositiveMonths"])
+        and consecutive_zero
+        >= int(dormant["minimumTrailingConsecutiveZeroMonths"])
+    ):
+        return {
+            "segment": "dormant",
+            "segmentReason": "historical_sales_and_trailing_zero_run",
+        }
+    if (
+        observed >= int(dense["minimumObservedCompleteMonths"])
+        and positive12 >= int(dense["minimumPositiveMonthsTrailing12"])
+        and positive6 >= int(dense["minimumPositiveMonthsTrailing6"])
+        and zero12 <= int(dense["maximumZeroMonthsTrailing12"])
+        and largest_share
+        <= float(dense["maximumLargestPositiveMonthShareTrailing12"])
+    ):
+        return {
+            "segment": "dense",
+            "segmentReason":
+                "sustained_positive_sales_without_single_month_dominance",
+        }
+    return {
+        "segment": "intermittent",
+        "segmentReason": (
+            "short_history_b4_only"
+            if observed < minimum_override
+            else "non_dense_non_dormant_sales"
+        ),
+    }
+
+
+def _oa03_value_bands(
+    rows: list[dict[str, Any]],
+) -> dict[tuple[str, str, str], str]:
+    groups: dict[tuple[str, str], list[tuple[str, float]]] = defaultdict(list)
+    for row in rows:
+        trailing = sum(
+            float(channel["monthly"].get(month, 0.0))
+            for channel in row["channels"]
+            for month in _last_months(row["origin"], 12)
+        )
+        groups[(row["evaluationFamily"], row["origin"])].append(
+            (row["standardWorkId"], trailing)
+        )
+    output: dict[tuple[str, str, str], str] = {}
+    for (family, origin), values in groups.items():
+        ranked = sorted(
+            (item for item in values if item[1] > 0),
+            key=lambda item: (-item[1], item[0]),
+        )
+        count = len(ranked)
+        top1 = {
+            item[0] for item in ranked[: math.ceil(count * 0.01)]
+        }
+        top5 = {
+            item[0] for item in ranked[: math.ceil(count * 0.05)]
+        }
+        top10 = {
+            item[0] for item in ranked[: math.ceil(count * 0.10)]
+        }
+        for work_id, amount in values:
+            band = (
+                "top_1_percent"
+                if work_id in top1
+                else "next_4_percent"
+                if work_id in top5
+                else "next_5_percent"
+                if work_id in top10
+                else "other_positive"
+                if amount > 0
+                else "non_positive"
+            )
+            output[(family, origin, work_id)] = band
+    return output
+
+
+def _last_months(origin: str, count: int) -> list[str]:
+    import m2_calibration_v1 as calibration  # noqa: PLC0415
+
+    return [
+        calibration.add_months(origin, offset)
+        for offset in range(-(count - 1), 1)
+    ]
+
+
+def _oa03_base_materialization_self_test() -> dict[str, Any]:
+    import m2_calibration_v1 as calibration  # noqa: PLC0415
+
+    months = calibration.month_range("2021-01", "2021-12")
+    fixture = [
+        {
+            "schema":
+                "m2.current.oa03_base_materialization_input.private.v0.1",
+            "evaluationFamily": "PRIMARY_ROLLING",
+            "standardWorkId": work_id,
+            "origin": "2021-12",
+            "core80": index == 0,
+            "core90": True,
+            "workCompleteMonthCount": 12,
+            "channels": [
+                {
+                    "channelUid": f"CHANNEL_{index}",
+                    "firstPositiveMonth": "2021-01",
+                    "monthly": [
+                        {"month": month, "cash": 10.0 + index}
+                        for month in months
+                    ],
+                }
+            ],
+            "cases": [
+                {
+                    "horizonMonths": horizon,
+                    "labelAvailableAsOf":
+                        calibration.add_months("2021-12", horizon),
+                    "actualDefinitionId":
+                        "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01",
+                    "actual": 30.0,
+                    "actualPositive": 30.0,
+                    "actualReversal": 0.0,
+                }
+                for horizon in (3, 6, 12)
+            ],
+        }
+        for index, work_id in enumerate(("WORK_A", "WORK_B"))
+    ]
+    first = _build_oa03_base_rows(fixture)
+    second = _build_oa03_base_rows(fixture)
+    if (
+        first != second
+        or len(first) != 6
+        or {row["horizonMonths"] for row in first} != {3, 6, 12}
+        or any(row["segment"] != "dense" for row in first)
+        or any(row["futureLabelRead"] for row in first)
+        or any(row["actual"] != 30.0 for row in first)
+    ):
+        raise HumanAnchoredMaterializationError(
+            "OA03 base materialization fixture failed"
+        )
+    for capability_id in (
+        "m2-oa03-current-scope-replication",
+        "m2-core-legacy-horizon-amount",
+    ):
+        relative_path = (
+            f"data/private-output/{capability_id}/"
+            "synthetic-path-policy-check.ndjson"
+        )
+        resolved = _resolve_oa03_private_path(
+            relative_path,
+            capability_id,
+        )
+        expected_parent = (
+            ROOT
+            / "data"
+            / "private-output"
+            / capability_id
+        ).resolve()
+        if not resolved.is_relative_to(expected_parent):
+            raise HumanAnchoredMaterializationError(
+                "OA03 capability path policy self-test failed"
+            )
+    try:
+        _resolve_oa03_private_path(
+            "data/private-output/unrelated-capability/file.ndjson",
+            "unrelated-capability",
+        )
+    except HumanAnchoredMaterializationError:
+        pass
+    else:
+        raise HumanAnchoredMaterializationError(
+            "OA03 capability allowlist self-test failed"
+        )
+    return {
+        "status": "OA03_BASE_MATERIALIZATION_SELF_TEST_PASSED",
+        "rowCount": len(first),
+        "deterministicReplay": True,
+        "horizons": [3, 6, 12],
+        "futureLabelRead": False,
+        "absolutePathRequired": False,
+        "capabilityPathPolicy": True,
+    }
+
+
 if __name__ == "__main__":
     arguments = sys.argv[1:]
     if arguments == ["--fixture-self-test"]:
@@ -2378,6 +2967,30 @@ if __name__ == "__main__":
         )
     elif arguments == ["--core-revenue-manual"]:
         result = run(core_revenue_manual=True)
+    elif arguments == ["--oa03-base-self-test"]:
+        result = _oa03_base_materialization_self_test()
+    elif (
+        len(arguments) == 5
+        and arguments[0] == "--oa03-base-materialize"
+        and arguments[1] == "--input"
+        and arguments[3] == "--output"
+    ):
+        result = _materialize_oa03_base_rows(
+            arguments[2],
+            arguments[4],
+        )
+    elif (
+        len(arguments) == 7
+        and arguments[0] == "--oa03-base-materialize"
+        and arguments[1] == "--input"
+        and arguments[3] == "--output"
+        and arguments[5] == "--capability-id"
+    ):
+        result = _materialize_oa03_base_rows(
+            arguments[2],
+            arguments[4],
+            arguments[6],
+        )
     elif arguments:
         raise HumanAnchoredMaterializationError(
             "unsupported materialization mode"

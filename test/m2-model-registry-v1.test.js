@@ -34,10 +34,11 @@ test("registry schema, evidence paths and immutable digests validate", () => {
     canonicalEvidenceSha256("same\r\ncontent\r\n"),
     canonicalEvidenceSha256("same\ncontent\n")
   );
-  assert.equal(validation.counts.modelCount, 31);
-  assert.equal(validation.counts.experimentCount, 17);
-  assert.equal(validation.counts.nonModelIdentifierCount, 61);
-  assert.equal(validation.counts.comparabilityGroupCount, 32);
+  assert.equal(validation.counts.modelCount, 32);
+  assert.equal(validation.counts.experimentCount, 19);
+  assert.equal(validation.counts.nonModelIdentifierCount, 77);
+  assert.equal(validation.counts.evaluationCount, 102);
+  assert.equal(validation.counts.comparabilityGroupCount, 57);
 });
 
 test("stable model IDs and model aliases are unique", () => {
@@ -86,6 +87,41 @@ test("current roles retain fallback, research baseline and no automation promoti
   assert.equal(registry.currentRoles.activeCandidate, null);
   assert.equal(registry.currentRoles.approvedForAutomation, null);
   assert.equal(registry.currentRoles.roleConflict, false);
+  assert.equal(
+    registry.currentRoles.operationalWorkFallbackScope,
+    "compatibility_operational_fallback_only_no_current_scope_performance_support"
+  );
+  assert.equal(
+    registry.currentRoles.coreLegacyHorizonAmountResearchComparator,
+    "M2-WORK-LG01"
+  );
+  assert.equal(
+    registry.currentRoles.activeExperiment,
+    null
+  );
+  assert.equal(registry.currentRoles.blockedExperiment, null);
+  assert.match(
+    registry.currentRoles.roleInterpretationZh,
+    /OA03 同公式在当前 Core 老品合同下重新执行完成；没有复现历史数值/u
+  );
+  assert.match(
+    registry.currentRoles.roleInterpretationZh,
+    /PERFORMANCE_MIXED 只是机器证据完整性状态，不是业务整体通过/u
+  );
+  const historicalChampionAssertions = registry.currentRoles.sourceAssertions
+    .filter((item) => /champion/u.test(item.assertion));
+  assert.equal(historicalChampionAssertions.length, 2);
+  assert.equal(
+    historicalChampionAssertions.every(
+      (item) => (
+        item.historicalAssertion === true
+        && item.currentAuthority === false
+        && item.supersededBy
+          === "docs/analysis/m2-current/M2-oa03-current-role-correction-v0.1.md"
+      )
+    ),
+    true
+  );
 });
 
 test("core-revenue manual candidate failed without promotion", () => {
@@ -190,8 +226,60 @@ test("core legacy population test records non-confirmation without promotion", (
   );
   assert.equal(
     registry.currentRoles.latestStateIndex,
-    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.41.md"
+    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.46.md"
   );
+  assert.equal(registry.currentRoles.activeCandidate, null);
+  assert.equal(registry.currentRoles.approvedForAutomation, null);
+});
+
+test("CHAM01 first complete result is failed, frozen and not promoted", () => {
+  const model = registry.models.find(
+    (item) => item.stableModelId === "M2-WORK-CHAM01"
+  );
+  const experiment = registry.experiments.find(
+    (item) => (
+      item.experimentId === "M2-EXP-CORE-HORIZON-AMOUNT-01"
+    )
+  );
+  assert.equal(model.currentRole, "failed_development_candidate");
+  assert.equal(
+    model.operationalStatus,
+    "development_failed_frozen_no_further_run_authorized"
+  );
+  assert.equal(model.evaluations.length, 7);
+  assert.equal(
+    model.evaluations.slice(1).every(
+      (item) => item.rawArmId === "B3"
+    ),
+    true
+  );
+  assert.equal(
+    model.evaluations.slice(1).every(
+      (item) => (
+        item.resultStatus === "M2_CORE_HORIZON_AMOUNT_HORIZON_FAIL"
+        || item.resultStatus === "M2_CORE_HORIZON_AMOUNT_DEVELOPMENT_FAIL"
+      )
+    ),
+    true
+  );
+  assert.equal(
+    experiment.resultStatus,
+    "M2_CORE_HORIZON_AMOUNT_DEVELOPMENT_FAIL"
+  );
+  assert.equal(experiment.candidateOutcomeProduced, true);
+  assert.equal(experiment.firstValidCompleteOutcomeFrozen, true);
+  assert.deepEqual(
+    experiment.bestRawArms,
+    { H3: "B3", H6: "B3", H12: "B3" }
+  );
+  assert.equal(
+    Object.values(experiment.horizonDecisions).every(
+      (status) => status === "M2_CORE_HORIZON_AMOUNT_HORIZON_FAIL"
+    ),
+    true
+  );
+  assert.equal(experiment.secondResultExecuted, false);
+  assert.equal(registry.currentRoles.activeExperiment, null);
   assert.equal(registry.currentRoles.activeCandidate, null);
   assert.equal(registry.currentRoles.approvedForAutomation, null);
 });
@@ -200,7 +288,7 @@ test("evaluations preserve population and comparability contracts", () => {
   const oa03 = registry.models.find(
     (model) => model.stableModelId === "M2-WORK-OA03"
   );
-  assert.equal(oa03.evaluations.length, 7);
+  assert.equal(oa03.evaluations.length, 19);
   assert.notEqual(
     oa03.evaluations[0].comparableGroupId,
     oa03.evaluations[1].comparableGroupId
@@ -238,6 +326,97 @@ test("evaluations preserve population and comparability contracts", () => {
     differentGrain.differences.some((item) => item.field === "grain"),
     true
   );
+});
+
+test("OA03 current-scope replication closes without conflating allocation with a model", () => {
+  const oa03 = registry.models.find(
+    (model) => model.stableModelId === "M2-WORK-OA03"
+  );
+  const experiment = registry.experiments.find(
+    (item) => (
+      item.experimentId === "M2-EXP-OA03-CURRENT-SCOPE-REPLICATION-01"
+    )
+  );
+  const evaluations = oa03.evaluations.filter(
+    (item) => (
+      item.datasetVersion === "M2-oa03-current-scope-replication-v0.1"
+    )
+  );
+  const primary = evaluations.filter(
+    (item) => item.comparableGroupId.includes("-PRIMARY-WORK-")
+  );
+  const strict = evaluations.filter(
+    (item) => item.comparableGroupId.includes("-STRICT-WORK-")
+  );
+  const groups = registry.comparabilityGroups.filter(
+    (item) => item.comparableGroupId.startsWith("CG-OA03-CS-")
+  );
+
+  assert.equal(evaluations.length, 12);
+  assert.equal(primary.length, 6);
+  assert.equal(
+    primary.every(
+      (item) => (
+        item.resultStatus === "OA03_CURRENT_SCOPE_PERFORMANCE_NOT_EVALUABLE"
+        && item.baselineModelId === null
+        && item.primaryReferenceModelId === "M2-WORK-LG01"
+      )
+    ),
+    true
+  );
+  assert.equal(strict.length, 6);
+  assert.equal(
+    strict.every(
+      (item) => (
+        item.resultStatus === "OA03_CURRENT_SCOPE_PERFORMANCE_NOT_SUPPORTED"
+        && item.baselineModelId === "M2-WORK-LG01"
+      )
+    ),
+    true
+  );
+  assert.equal(groups.length, 24);
+  assert.equal(
+    groups.filter((item) => item.grain === "work_origin_horizon").length,
+    12
+  );
+  assert.equal(
+    groups.filter(
+      (item) => item.grain === "work_origin_channel_horizon"
+    ).length,
+    12
+  );
+  assert.equal(
+    evaluations.some(
+      (item) => item.grain === "work_origin_channel_horizon"
+    ),
+    false
+  );
+  assert.equal(
+    experiment.technicalReplicationStatus,
+    "OA03_CURRENT_SCOPE_REPLICATION_COMPLETE"
+  );
+  assert.equal(
+    experiment.summaryStatus,
+    "M2_OA03_CURRENT_SCOPE_REPLICATION_COMPLETE_PERFORMANCE_MIXED"
+  );
+  assert.equal(
+    oa03.evidenceStatus,
+    "current_scope_formula_reexecution_complete_no_new_performance_support"
+  );
+  assert.equal(oa03.currentScopeChampion, false);
+  assert.equal(oa03.nativeConditionalPositiveAmountStored, false);
+  assert.equal(
+    oa03.operationalStatus,
+    "compatibility_operational_fallback_not_current_scope_champion"
+  );
+  assert.equal(experiment.modelRolesChanged, false);
+  assert.equal(experiment.secondResultExecuted, false);
+  assert.equal(
+    experiment.arms.find((arm) => arm.armId === "C1").modelId,
+    null
+  );
+  assert.equal(registry.currentRoles.activeCandidate, null);
+  assert.equal(registry.currentRoles.approvedForAutomation, null);
 });
 
 test("horizon router and observed-channel allocation close without promotion", () => {
@@ -337,6 +516,9 @@ test("reader catalog is a deterministic complete rendering of the registry", asy
   );
   assert.equal(catalog, renderM2ModelCatalog(registry));
   assert.match(catalog, /M2-WORK-OA03/u);
+  assert.match(catalog, /M2-EXP-OA03-CURRENT-SCOPE-REPLICATION-01/u);
+  assert.match(catalog, /CG-OA03-CS-CORE80-PRIMARY-WORK-H3/u);
+  assert.match(catalog, /OA03_CURRENT_SCOPE_PERFORMANCE_NOT_EVALUABLE/u);
   assert.match(catalog, /CG-G1-BLOCKED-NO-CANDIDATE-OUTCOME/u);
   assert.match(catalog, /M2_CHANNEL_GENERATIVE_G1_CORE_BLOCKED/u);
   assert.match(catalog, /M2_PUBLISHING_SCALE_IMPLEMENTATION_BLOCKED/u);
@@ -349,21 +531,44 @@ test("reader catalog is a deterministic complete rendering of the registry", asy
   assert.match(catalog, /M2_PUBLISHING_SCALE_CORE_FAIL/u);
   assert.match(catalog, /CG-PSC01-V22-PRIMARY-12039-H36/u);
   assert.match(catalog, /CG-PSC01-V22-STRICT-74320/u);
+  assert.match(catalog, /M2-WORK-CHAM01/u);
+  assert.match(catalog, /M2-EXP-CORE-HORIZON-AMOUNT-01/u);
+  assert.match(
+    catalog,
+    /M2_CORE_HORIZON_AMOUNT_PRIVATE_EXECUTION_INVALIDATED_RETRY_EXHAUSTED/u
+  );
 });
 
 test("read-only query exposes scoped identities and refuses invalid ranking", () => {
   const list = runQuery("list");
   assert.equal(list.status, 0, list.stderr);
-  assert.match(list.stdout, /M2 持久模型与模型族：31 个/u);
+  assert.match(list.stdout, /M2 持久模型与模型族：32 个/u);
   assert.match(list.stdout, /M2-CHAN-GEN02/u);
+  assert.match(list.stdout, /M2-WORK-CHAM01/u);
 
   const status = runQuery("status");
   assert.equal(status.status, 0, status.stderr);
   assert.match(status.stdout, /本次只读查询模型执行次数：0/u);
-  assert.match(status.stdout, /第一份有效原始候选评价已经冻结/u);
-  assert.match(status.stdout, /原始候选预测行 3,318,819/u);
-  assert.match(status.stdout, /M2_PUBLISHING_SCALE_CORE_FAIL/u);
+  assert.match(
+    status.stdout,
+    /当前实验：无（null）/u
+  );
+  assert.match(status.stdout, /兼容性现行运行回退模型/u);
+  assert.match(status.stdout, /没有复现历史数值/u);
+  assert.match(status.stdout, /不是业务整体通过/u);
   assert.match(status.stdout, /M2-WORK-OA03/u);
+  assert.match(
+    status.stdout,
+    /当前阻断实验：无（null）/u
+  );
+
+  const horizonAmount = runQuery("show", "M2-WORK-CHAM01");
+  assert.equal(horizonAmount.status, 0, horizonAmount.stderr);
+  assert.match(horizonAmount.stdout, /已执行失败候选/u);
+  assert.match(
+    horizonAmount.stdout,
+    /development_failed_frozen_no_further_run_authorized/u
+  );
 
   const publishingScale = runQuery("show", "M2-CHAN-PSC01");
   assert.equal(publishingScale.status, 0, publishingScale.stderr);

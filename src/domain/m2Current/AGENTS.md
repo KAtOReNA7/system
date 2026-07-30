@@ -38,12 +38,20 @@ This directory is the only implementation home for current M2 model logic.
 - Select core populations only from cash visible at the forecast origin.
   Work-count coverage is not revenue coverage, and future-actual TopN may be
   used only as a post-hoc oracle diagnostic.
-- Current M2 service, training, and evaluation scope is dynamic Core80/Core90
+- Current M2 service and primary evaluation scope is dynamic Core80/Core90
   legacy works with at least three complete bill months, restricted to
   canonical work-channel pairs that also have at least three complete bill
   months at that origin. Recompute membership independently at every forecast
-  and training pseudo-origin, include all cutoff-revenue ties, and never use a
-  current fixed Core list to backcast history.
+  origin, include all cutoff-revenue ties, and never use a current fixed Core
+  list to backcast history. Each model experiment must preregister an
+  origin-safe training population. Full mature history may be statistical
+  support only when labeled `FULL_MATURE_TRAINING_SUPPORT`; that label neither
+  serves the tail nor means Core-only training. Core-only, Core90-only, and
+  Core80-only training are explicit arms whose raw results must be retained.
+  This governance follows
+  `M2-core-legacy-tail-interference-test-v0.1.md`:
+  `TAIL_INTERFERENCE_NOT_CONFIRMED`, with only a small unstable Core90 change
+  and a material Core80 degradation.
 - Future new works, future first-observed channels, and works outside Core are
   abstained populations, not zero predictions. Do not pool, compose, allocate,
   or add them back to a current-M2 candidate actual or error denominator.

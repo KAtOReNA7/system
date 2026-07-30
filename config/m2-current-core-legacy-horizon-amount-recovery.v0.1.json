@@ -1,0 +1,110 @@
+{
+  "schema": "m2.current.core_legacy_horizon_amount_recovery_execution.v0.1",
+  "asOf": "2026-07-30",
+  "experimentId": "M2-EXP-CORE-HORIZON-AMOUNT-01",
+  "modelId": "M2-WORK-CHAM01",
+  "baseScientificContract": "config/m2-current-core-legacy-horizon-amount.v0.1.json",
+  "authority": {
+    "source": "user_attachment_M2_CHAM01_recovery_execution_2026_07_30",
+    "status": "RECOVERY_AUTHORIZED_UNTIL_FIRST_VALID_COMPLETE_OUTCOME",
+    "supersedesFixedRetryCountAsExecutionAuthority": true,
+    "doesNotRewriteHistoricalPreregistration": true
+  },
+  "boundary": {
+    "id": "FIRST_VALID_COMPLETE_OUTCOME_BOUNDARY",
+    "fixedInfrastructureRetryLimit": null,
+    "preOutcomeInfrastructureFailureConsumesScientificWindow": false,
+    "completeMetricsFreezeImmediately": true,
+    "secondCompleteOutcomeAllowed": false,
+    "partialOutcomeMayBeInspectedOrUsedForSelection": false
+  },
+  "recoverableFailureClasses": [
+    "WIRING",
+    "CAPABILITY_DIRECTORY",
+    "SERIALIZATION",
+    "MEMORY",
+    "IO",
+    "COMMAND_LIFECYCLE",
+    "DETERMINISTIC_IMPLEMENTATION"
+  ],
+  "blockingClasses": [
+    "SOURCE_AUTHORITY",
+    "LEAKAGE",
+    "CONTRACT_CHANGE",
+    "FIRST_VALID_COMPLETE_OUTCOME_ALREADY_FORMED",
+    "USER_AUTHORIZATION_REVOKED",
+    "REPEATED_INFRASTRUCTURE_FAILURE_WITHOUT_FORMAL_CHAIN_REGRESSION_COVERAGE"
+  ],
+  "requiredInvalidatedReceiptFields": [
+    "failureStage",
+    "failureClass",
+    "candidateFitStarted",
+    "predictionRowsProduced",
+    "evaluationRowsProduced",
+    "completeMetricsProduced",
+    "scientificContractChanged",
+    "partialOutcomeInspected"
+  ],
+  "scientificContract": {
+    "immutableSections": [
+      "authority",
+      "scope",
+      "rolling",
+      "k1Attribution",
+      "featureContract",
+      "arms",
+      "training",
+      "evaluation",
+      "publicPrivacy",
+      "decisionPolicy"
+    ],
+    "formulaChangeAllowed": false,
+    "featureChangeAllowed": false,
+    "featureWindowChangeAllowed": false,
+    "parameterGridChangeAllowed": false,
+    "foldChangeAllowed": false,
+    "trainingWeightChangeAllowed": false,
+    "populationChangeAllowed": false,
+    "actualChangeAllowed": false,
+    "baselineChangeAllowed": false,
+    "metricChangeAllowed": false,
+    "gateChangeAllowed": false
+  },
+  "syntheticRecoverySmoke": {
+    "fixture": "test/fixtures/m2-core-legacy-horizon-amount-recovery.synthetic.v0.1.json",
+    "mustUseFormalPrivateCommandEntrypoint": true,
+    "mustUseSharedPythonMaterializer": true,
+    "mustFitArms": [
+      "B1",
+      "B2",
+      "B3"
+    ],
+    "mustEvaluateHorizons": [
+      3,
+      6,
+      12
+    ],
+    "temporaryOutputMustStayWithinCapabilityDirectory": true,
+    "temporaryOutputMustBeRemoved": true,
+    "privateSourceReadAllowed": false
+  },
+  "authorization": {
+    "privateRecoveryExecution": true,
+    "derivedCacheRebuild": true,
+    "publicAggregatePublication": true,
+    "channelAllocation": false,
+    "taxonomy": false,
+    "thirtySixMonth": false,
+    "newWork": false,
+    "newChannel": false,
+    "laterOrigin": false,
+    "finalHoldout": false,
+    "canary": false,
+    "full160": false,
+    "production": false,
+    "automation": false,
+    "release": false,
+    "m3Formal": false,
+    "pullRequestMerge": false
+  }
+}

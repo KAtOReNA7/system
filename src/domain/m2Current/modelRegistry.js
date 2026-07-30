@@ -552,7 +552,11 @@ function evaluationDimensions(registry, model) {
 
 function renderCurrentRoles(registry) {
   const definitions = [
-    ["现行运行回退模型", "operational fallback", "operationalWorkFallback"],
+    [
+      "兼容性现行运行回退模型",
+      "compatibility operational fallback",
+      "operationalWorkFallback"
+    ],
     ["研究比较基线", "research baseline", "researchWorkBaseline"],
     ["组合级参考", "portfolio reference", "portfolioReference"],
     ["活动候选", "active candidate", "activeCandidate"],
@@ -637,7 +641,7 @@ function entityTypeZh(entityType) {
 
 function roleZh(role) {
   return {
-    operational_work_fallback: "现行运行回退",
+    operational_work_fallback: "兼容性现行运行回退",
     research_baseline: "研究比较基线",
     portfolio_reference: "组合级参考",
     baseline_family: "研究基线族",
@@ -659,6 +663,10 @@ function roleZh(role) {
     blocked_model_family_no_candidate_outcome: "阻断且无候选结果",
     implementation_blocked_no_candidate_outcome:
       "实现阻断且无候选结果",
+    blocked_development_model_no_candidate_outcome:
+      "开发执行阻断且无候选结果",
+    development_model_recovery_ready_no_private_outcome:
+      "恢复就绪且尚无真实私有结果",
     archive_only_failed_model: "仅历史审计且已失败"
   }[role] ?? "登记角色";
 }
@@ -675,6 +683,24 @@ function comparisonClassZh(value) {
 }
 
 function resultStatusZh(value) {
+  if (value === "OA03_CURRENT_SCOPE_PERFORMANCE_NOT_EVALUABLE") {
+    return "主要参考不可合法重建，当前性能不可评价";
+  }
+  if (value === "OA03_CURRENT_SCOPE_PERFORMANCE_NOT_SUPPORTED") {
+    return "当前范围性能不支持";
+  }
+  if (value === "OA03_CURRENT_SCOPE_PERFORMANCE_MIXED") {
+    return "当前范围性能证据混合";
+  }
+  if (value === "OA03_CURRENT_SCOPE_PERFORMANCE_SUPPORTED") {
+    return "当前范围局部比较获得支持";
+  }
+  if (value === "OA03_TRAILING12_CHANNEL_ALLOCATION_NOT_SUPPORTED") {
+    return "固定最近 12 月已有渠道分配不支持";
+  }
+  if (value === "OA03_TRAILING12_CHANNEL_ALLOCATION_MIXED") {
+    return "固定最近 12 月已有渠道分配证据混合";
+  }
   if (value === "M2_PUBLISHING_SCALE_IMPLEMENTATION_BLOCKED") {
     return "实现阻断且无候选结果";
   }

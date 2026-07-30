@@ -1,0 +1,50 @@
+{
+  "schema": "m2.current.core_legacy_horizon_amount_recovery_fixture.v0.1",
+  "authorityStartMonth": "2019-01",
+  "labelMaturityCutoff": "2025-12",
+  "workCount": 24,
+  "channelsPerWork": 2,
+  "baseMonthlyCash": 100,
+  "workCashCycle": [
+    0,
+    4,
+    8,
+    12
+  ],
+  "seasonalityCycle": [
+    -6,
+    -3,
+    0,
+    3,
+    6,
+    9
+  ],
+  "zeroIncomeBoundary": {
+    "workIndex": 0,
+    "months": [
+      "2023-04",
+      "2023-05",
+      "2023-06"
+    ]
+  },
+  "negativeReversalBoundary": {
+    "workIndex": 1,
+    "month": "2023-04",
+    "channelCash": [
+      -600,
+      -400
+    ]
+  },
+  "requirements": {
+    "minimumPseudoOriginCount": 3,
+    "horizons": [
+      3,
+      6,
+      12
+    ],
+    "core80MustBeNonempty": true,
+    "core90MustBeNonempty": true,
+    "allFrozenArmsMustProducePredictions": true,
+    "completeEvaluationMustClose": true
+  }
+}

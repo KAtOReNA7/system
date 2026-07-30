@@ -1,0 +1,150 @@
+{
+  "schema": "m2.current.core_horizon_amount.recovery_readiness.public.v0.1",
+  "asOf": "2026-07-30",
+  "status": "M2_CHAM01_RECOVERY_READY_R0_FORMAL_CHAIN_PASS",
+  "experimentId": "M2-EXP-CORE-HORIZON-AMOUNT-01",
+  "modelId": "M2-WORK-CHAM01",
+  "recoveryAuthorityStatus": "RECOVERY_AUTHORIZED_UNTIL_FIRST_VALID_COMPLETE_OUTCOME",
+  "recoveryBoundaryId": "FIRST_VALID_COMPLETE_OUTCOME_BOUNDARY",
+  "fixedInfrastructureRetryLimitApplied": false,
+  "historicalExecutionClosureMutated": false,
+  "scientificContractDigest": "cf6e9cf708835b2b76576e4624d0bfeb8c8cebca1c48a1524fe9efe45c9a2c04",
+  "scientificContractChanged": false,
+  "frozenScientificContract": {
+    "formulaChanged": false,
+    "featuresChanged": false,
+    "featureWindowsChanged": false,
+    "parameterGridChanged": false,
+    "foldsChanged": false,
+    "trainingWeightsChanged": false,
+    "populationsChanged": false,
+    "actualDefinitionChanged": false,
+    "baselineChanged": false,
+    "metricsChanged": false,
+    "gatesChanged": false
+  },
+  "syntheticR0": {
+    "status": "R0_FORMAL_CHAIN_SYNTHETIC_SMOKE_VERIFIED",
+    "formalPrivateCommandEntrypointReused": true,
+    "capabilityIdReused": true,
+    "sharedPythonMaterializerReused": true,
+    "featureCallbackIdentifierWiringVerified": true,
+    "capabilityDirectoryPolicyVerified": true,
+    "privateSourceRead": false,
+    "scientificWindowConsumed": false,
+    "temporaryOutputCleaned": true,
+    "originCount": 27,
+    "workCaseCount": 1944,
+    "oa03PredictionRowCount": 2076,
+    "frozenB0RowCount": 1488,
+    "candidatePredictionRowCount": 5176,
+    "evaluationPairRowCount": 3792,
+    "bootstrapSummaryRowCount": 18,
+    "armIds": [
+      "B1",
+      "B2",
+      "B3"
+    ],
+    "horizonsMonths": [
+      3,
+      6,
+      12
+    ],
+    "zeroIncomeBoundaryCovered": true,
+    "negativeReversalBoundaryCovered": true,
+    "core80Nonempty": true,
+    "core90Nonempty": true,
+    "checks": {
+      "sameFormalPrivateCommandEntrypoint": true,
+      "capabilityIdReused": true,
+      "capabilityDirectoryPolicyMatched": true,
+      "sharedPythonMaterializerReused": true,
+      "featureCallbackIdentifierWiring": true,
+      "pseudoOriginCountAboveTwo": true,
+      "zeroIncomeBoundaryPresent": true,
+      "negativeReversalBoundaryPresent": true,
+      "core80Nonempty": true,
+      "core90Nonempty": true,
+      "frozenB0Produced": true,
+      "allFrozenRawArmsProduced": true,
+      "horizonsFitIndependently": true,
+      "predictionSerializationClosed": true,
+      "evaluationSerializationClosed": true,
+      "bootstrapSummaryClosed": true,
+      "completeEvaluationClosed": true,
+      "manifestClosed": true,
+      "receiptClosed": true,
+      "publicAggregateSerializationClosed": true,
+      "oa03ScopeBoundaryPreserved": true,
+      "privateSourceReadAvoided": true,
+      "syntheticOutputOnly": true
+    }
+  },
+  "infrastructureRecoveryAudit": [
+    {
+      "failureId": "FEATURE_CALLBACK_IDENTIFIER_WIRING",
+      "scope": "historical_private_attempt",
+      "failureStage": "LEGAL_CASE_MATERIALIZATION",
+      "coveredByFormalChainRegression": true,
+      "scientificContractChanged": false
+    },
+    {
+      "failureId": "CAPABILITY_DIRECTORY_POLICY_MISMATCH",
+      "scope": "historical_private_recovery_attempt",
+      "failureStage": "OA03_CURRENT_SCOPE_REBUILD",
+      "coveredByFormalChainRegression": true,
+      "scientificContractChanged": false
+    },
+    {
+      "failureId": "INNER_SELECTION_EMPTY_TRAINING_DISPATCH",
+      "scope": "synthetic_R0_only",
+      "failureStage": "B1_B2_B3_OUTER_TRAINING",
+      "coveredByFormalChainRegression": true,
+      "scientificContractChanged": false
+    },
+    {
+      "failureId": "SYNTHETIC_FIXTURE_FEATURE_VARIANCE",
+      "scope": "synthetic_R0_only",
+      "failureStage": "B1_B2_B3_OUTER_TRAINING",
+      "coveredByFormalChainRegression": true,
+      "scientificContractChanged": false
+    },
+    {
+      "failureId": "PUBLIC_BOOTSTRAP_METHOD_SERIALIZATION",
+      "scope": "synthetic_R0_only",
+      "failureStage": "RAW_B0_B3_EVALUATION",
+      "coveredByFormalChainRegression": true,
+      "scientificContractChanged": false
+    },
+    {
+      "failureId": "R0_ASSERTION_POLARITY",
+      "scope": "synthetic_R0_only",
+      "failureStage": "R0_CLOSE_VALIDATION",
+      "coveredByFormalChainRegression": true,
+      "scientificContractChanged": false
+    }
+  ],
+  "nextRequiredGates": [
+    "FULL_PUBLIC_BASELINE",
+    "EXACT_HEAD_LINUX_WINDOWS_CI",
+    "CAPABILITY_DOCTOR",
+    "PRIVATE_SOURCE_AUTHORITY_PREFLIGHT"
+  ],
+  "boundaries": {
+    "privateExecutionPerformed": false,
+    "privateModelOutcomeExists": false,
+    "channelAllocationExecuted": false,
+    "taxonomyExecuted": false,
+    "thirtySixMonthExecuted": false,
+    "newWorkExecuted": false,
+    "newChannelExecuted": false,
+    "laterOriginOpened": false,
+    "finalHoldoutOpened": false,
+    "canaryOrFull160Opened": false,
+    "productionAuthorized": false,
+    "automationAuthorized": false,
+    "releaseAuthorized": false,
+    "m3FormalAuthorized": false,
+    "pullRequestMergeAuthorized": false
+  }
+}

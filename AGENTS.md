@@ -3,7 +3,7 @@
 ## 当前权威入口
 
 - 用户首页与公共开始入口：`README.md`
-- 当前 M2 状态：`docs/analysis/m2-v2/M2-v2-current-state-index-v0.41.md`
+- 当前 M2 状态：`docs/analysis/m2-v2/M2-v2-current-state-index-v0.46.md`
 - M2 模型机器权威：`config/m2-model-registry.v1.json`
 - M2 中文目录：`docs/analysis/m2-current/M2-model-catalog-and-scorecard-v1.md`
 - M2 出版行业规模适配渠道核心结论：
@@ -18,6 +18,24 @@
   - `docs/analysis/m2-current/M2-layered-revenue-future-new-work-v0.1.md`
   - `docs/analysis/m2-current/M2-layered-revenue-existing-work-new-channel-v0.1.md`
   - `docs/analysis/m2-current/M2-layered-revenue-36-month-retention-v0.1.md`
+- M2 作品发生—金额校准模型当前范围复现：
+  - `docs/analysis/m2-current/M2-oa03-current-scope-replication-development-v0.1.json`
+  - `docs/analysis/m2-current/M2-oa03-current-scope-replication-development-v0.1.md`
+  - `docs/analysis/m2-current/M2-oa03-trailing12-observed-channel-allocation-v0.1.json`
+  - `docs/analysis/m2-current/M2-oa03-trailing12-observed-channel-allocation-v0.1.md`
+  - `docs/analysis/m2-current/M2-oa03-current-scope-artifact-readiness-v0.1.md`
+- M2 核心老品分周期金额模型：
+  - `config/m2-current-core-legacy-horizon-amount.v0.1.json`
+  - `config/m2-current-core-legacy-horizon-amount-recovery.v0.1.json`
+  - `docs/analysis/m2-current/M2-core-legacy-horizon-amount-preregistration-v0.1.md`
+  - `docs/analysis/m2-current/M2-core-legacy-horizon-amount-execution-closure-v0.1.json`
+  - `docs/analysis/m2-current/M2-core-legacy-horizon-amount-execution-closure-v0.1.md`
+  - `docs/analysis/m2-current/M2-core-legacy-horizon-amount-recovery-readiness-v0.1.json`
+  - `docs/analysis/m2-current/M2-core-legacy-horizon-amount-recovery-readiness-v0.1.md`
+  - `docs/analysis/m2-current/M2-core-legacy-horizon-amount-development-v0.1.json`
+  - `docs/analysis/m2-current/M2-core-legacy-horizon-amount-development-v0.1.md`
+  - `docs/analysis/m2-current/M2-oa03-lg01-core-legacy-error-attribution-v0.1.json`
+  - `docs/analysis/m2-current/M2-oa03-lg01-core-legacy-error-attribution-v0.1.md`
 - M2 评价体系：
   - `docs/analysis/m2-current/M2-evaluation-system-audit-v1.md`
   - `config/m2-evaluation-contract.v2.2.json`
@@ -181,9 +199,14 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
 - 当前 M2 人口仅为 origin 时至少积累 3 个完整账单月的动态 Core80/Core90 老作品，
   且只预测同一 origin 时至少积累 3 个完整账单月的已有 canonical 渠道。未来新增
   作品、未来首次出现渠道和 Core 外尾部不属于当前 M2 actual，也不得按预测为 0。
-- Core80/Core90 必须在每个 forecast origin 和训练 pseudo-origin 用当时可见收入
-  重算，并同时约束训练、服务和评价人口；不得只在评价时筛 Core、继续让尾部主导
-  Core-only 训练，也不得用当前固定名单或未来 TopN 回看历史。
+- Core80/Core90 必须在每个 forecast origin 用当时可见收入重算，并固定约束当前
+  M2 的服务与主评价人口；不得用当前固定名单或未来 TopN 回看历史。训练人口由所属
+  模型实验预注册并保持 origin-safe；允许把起点前全体成熟历史作为统计支持，但必须
+  标记 `FULL_MATURE_TRAINING_SUPPORT`，且不得解释为服务 Core 外尾部或
+  Core-only training。Core-only、Core90-only 或 Core80-only 训练只能作为保留原始
+  结果的显式实验臂。该规则依据
+  `docs/analysis/m2-current/M2-core-legacy-tail-interference-test-v0.1.md` 的
+  `TAIL_INTERFERENCE_NOT_CONFIRMED`：Core90 改善微小且不稳定，Core80 明显退化。
 - 尾部不得通过长尾池、公司组合或收入补差重新加入当前 M2。公司组合模型及参考
   （`M2-PORT-LRC01`、`M2-PORT-ETS01`）保留历史证据，但不得参加当前作品模型排名，
   也不得用公司全部未来收入判断作品模型。

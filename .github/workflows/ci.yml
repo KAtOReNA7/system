@@ -93,6 +93,9 @@ jobs:
       - name: Smoke
         run: npm run smoke
 
+      - name: M2 CHAM01 formal-chain synthetic recovery smoke
+        run: npm run smoke:m2:current:core-legacy-horizon-amount-recovery
+
       - name: Verify private-independent server startup
         run: npm run smoke:portable-start
 
@@ -181,6 +184,9 @@ jobs:
 
       - name: Smoke
         run: npm run smoke
+
+      - name: M2 CHAM01 formal-chain synthetic recovery smoke
+        run: npm run smoke:m2:current:core-legacy-horizon-amount-recovery
 
       - name: Verify private-independent server startup
         run: npm run smoke:portable-start
