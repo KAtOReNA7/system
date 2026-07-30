@@ -73,7 +73,7 @@
     "approvedForAutomation": null,
     "activeCandidate": null,
     "blockedExperiment": null,
-    "latestStateIndex": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.47.md",
+    "latestStateIndex": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.48.md",
     "roleConflict": false,
     "sourceAssertions": [
       {
@@ -187,9 +187,16 @@
         "scope": "strict_core80_three_month_work_total_with_core90_sensitivity",
         "historicalAssertion": false,
         "currentAuthority": true
+      },
+      {
+        "source": "docs/analysis/m2-current/M2-lg01-head-cash-residual-implementation-readiness-v0.1.md",
+        "assertion": "lg01_head_cash_residual_implemented_and_synthetic_verified_while_outer_outcome_remains_unread",
+        "scope": "strict_core80_three_month_work_total_with_core90_sensitivity",
+        "historicalAssertion": false,
+        "currentAuthority": true
       }
     ],
-    "roleInterpretationZh": "OA03 同公式在当前 Core 老品合同下重新执行完成；没有复现历史数值，因为 actual、训练支持和人口合同不同。PERFORMANCE_MIXED 只是机器证据完整性状态，不是业务整体通过。作品发生—金额校准模型 v0.3（M2-WORK-OA03）继续只是兼容性现行运行回退；人工锚定可学习全局模型（M2-WORK-LG01）继续是 Core 老品 3/6/12 月金额实验的主要研究比较基线。核心老品分周期金额模型 v0.1（M2-WORK-CHAM01）的既有 3、6、12 月性能失败保持冻结；另外登记 Primary/Core90 五个有限但极端的原始单元格为数值稳定性失败，二者不得混为一项。LG01 头部现金残差校准模型 v0.1（M2-WORK-HCRC01）仅完成 3 个月探索性开发预注册，尚未读取外层结果，不是活动候选。现行路由不变，活动候选与自动化批准均为空。",
+    "roleInterpretationZh": "OA03 同公式在当前 Core 老品合同下重新执行完成；没有复现历史数值，因为 actual、训练支持和人口合同不同。PERFORMANCE_MIXED 只是机器证据完整性状态，不是业务整体通过。作品发生—金额校准模型 v0.3（M2-WORK-OA03）继续只是兼容性现行运行回退；人工锚定可学习全局模型（M2-WORK-LG01）继续是 Core 老品 3/6/12 月金额实验的主要研究比较基线。核心老品分周期金额模型 v0.1（M2-WORK-CHAM01）的既有 3、6、12 月性能失败保持冻结；另外登记 Primary/Core90 五个有限但极端的原始单元格为数值稳定性失败，二者不得混为一项。LG01 头部现金残差校准模型 v0.1（M2-WORK-HCRC01）已实现并通过 synthetic、泄漏、确定性、缓存重建和 private 防泄漏验证，但真实 outer outcome 仍未读取，不是活动候选。现行路由不变，活动候选与自动化批准均为空。",
     "activeExperiment": "M2-EXP-LG01-HEAD-CASH-RESIDUAL-01"
   },
   "currentEvaluationContract": {
@@ -3710,16 +3717,17 @@
       ],
       "evidenceRefs": [
         "docs/analysis/m2-current/M2-core-legacy-horizon-amount-numeric-stability-disclosure-v0.1.json",
-        "docs/analysis/m2-current/M2-lg01-head-cash-residual-preregistration-v0.1.md"
+        "docs/analysis/m2-current/M2-lg01-head-cash-residual-preregistration-v0.1.md",
+        "docs/analysis/m2-current/M2-lg01-head-cash-residual-implementation-readiness-v0.1.md"
       ],
       "predecessorIds": [
         "M2-WORK-LG01",
         "M2-WORK-CHAM01"
       ],
       "successorIds": [],
-      "currentRole": "preregistered_exploratory_candidate_not_executed",
-      "evidenceStatus": "preregistered_before_outer_outcome_no_candidate_result",
-      "operationalStatus": "not_executed_not_promoted",
+      "currentRole": "implemented_exploratory_candidate_not_executed",
+      "evidenceStatus": "synthetic_verified_outer_outcome_unread_no_candidate_result",
+      "operationalStatus": "implemented_not_executed_not_promoted",
       "automationAuthorized": false,
       "productionImported": false,
       "finalHoldoutOpened": false,
@@ -3727,7 +3735,7 @@
       "limitationsZh": [
         "研究方向是在读取 CHAM01 开发结果后提出，只能形成探索性开发证据，不能作为独立确认",
         "只授权 Strict Core80 三个月作品总额主评价；Core90 仅作敏感性，Primary 仅作数值诊断",
-        "尚未读取本实验外层结果，尚无候选成绩、通过结论、晋升或上线权限",
+        "实现和 synthetic 验证已经完成，但尚未读取本实验外层结果，尚无候选成绩、通过结论、晋升或上线权限",
         "不得重新拟合 LG01 或 CHAM01，不得增加实验臂、参数网格、业务字段或更长周期"
       ],
       "registryReviewRequired": false,
@@ -4161,16 +4169,16 @@
           "armId": "C2",
           "displayNameZh": "全局有界残差混合",
           "modelId": "M2-WORK-HCRC01",
-          "executionStatus": "PREREGISTERED_NOT_EXECUTED"
+          "executionStatus": "IMPLEMENTED_SYNTHETIC_VERIFIED_NOT_EXECUTED"
         },
         {
           "armId": "C3",
           "displayNameZh": "头部现金带保护的有界残差混合",
           "modelId": "M2-WORK-HCRC01",
-          "executionStatus": "PREREGISTERED_NOT_EXECUTED"
+          "executionStatus": "IMPLEMENTED_SYNTHETIC_VERIFIED_NOT_EXECUTED"
         }
       ],
-      "resultStatus": "M2_LG01_HEAD_CASH_RESIDUAL_PREREGISTERED_NOT_EXECUTED",
+      "resultStatus": "M2_LG01_HEAD_CASH_RESIDUAL_IMPLEMENTED_SYNTHETIC_VERIFIED_OUTER_UNREAD",
       "evidenceClassification": "EXPLORATORY_DEVELOPMENT_EVIDENCE_NOT_INDEPENDENT_CONFIRMATION",
       "sourceAuthorityStatus": "SOURCE_AUTHORITY_AVAILABLE_CACHE_MISS_REBUILDABLE",
       "candidateOutcomeProduced": false,
@@ -4181,7 +4189,8 @@
       "evidenceRefs": [
         "config/m2-current-lg01-head-cash-residual.v0.1.json",
         "docs/analysis/m2-current/M2-core-legacy-horizon-amount-numeric-stability-disclosure-v0.1.json",
-        "docs/analysis/m2-current/M2-lg01-head-cash-residual-preregistration-v0.1.md"
+        "docs/analysis/m2-current/M2-lg01-head-cash-residual-preregistration-v0.1.md",
+        "docs/analysis/m2-current/M2-lg01-head-cash-residual-implementation-readiness-v0.1.md"
       ]
     },
     {
@@ -4210,6 +4219,7 @@
     {"identifier": "K2", "namespace": "M2-EXP-LG01-HEAD-CASH-RESIDUAL-01", "parentExperiment": "M2-EXP-LG01-HEAD-CASH-RESIDUAL-01", "type": "execution_checkpoint", "displayNameZh": "LG01 头部现金残差校准执行检查点 K2（首次结果封存）", "meaningZh": "一次授权私有开发评价完成后冻结首个完整结果并收口公开报告，不是新的模型身份。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-lg01-head-cash-residual-preregistration-v0.1.md"},
     {"identifier": "M2_CHAM01_PRIMARY_CORE90_NUMERIC_STABILITY_FAIL_FINITE_EXTREME_EXTRAPOLATION", "namespace": "M2-STATUS", "parentExperiment": "M2-EXP-CORE-HORIZON-AMOUNT-01", "type": "numeric_stability_status_code", "displayNameZh": "核心老品分周期金额模型 Primary/Core90 有限极端外推数值稳定性失败", "meaningZh": "五个冻结原始单元格虽为有限数，但发生超出支持范围且被无界 signed-expm1 放大的极端外推；该状态与既有性能失败分别登记。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-core-legacy-horizon-amount-numeric-stability-disclosure-v0.1.json"},
     {"identifier": "M2_LG01_HEAD_CASH_RESIDUAL_PREREGISTERED_NOT_EXECUTED", "namespace": "M2-STATUS", "parentExperiment": "M2-EXP-LG01-HEAD-CASH-RESIDUAL-01", "type": "experiment_status_code", "displayNameZh": "LG01 头部现金残差校准已预注册且尚未执行", "meaningZh": "外层结果尚未读取，只有冻结合同，没有候选成绩、晋升或上线结论。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-lg01-head-cash-residual-preregistration-v0.1.md"},
+    {"identifier": "M2_LG01_HEAD_CASH_RESIDUAL_IMPLEMENTED_SYNTHETIC_VERIFIED_OUTER_UNREAD", "namespace": "M2-STATUS", "parentExperiment": "M2-EXP-LG01-HEAD-CASH-RESIDUAL-01", "type": "experiment_status_code", "displayNameZh": "LG01 头部现金残差校准已实现并通过合成验证且外层结果未读取", "meaningZh": "固定实验合同、候选实现、缓存重建、synthetic、泄漏、确定性和 private 防泄漏门禁已完成；尚未执行一次授权私有开发评价，因此没有候选成绩、晋升或上线结论。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-lg01-head-cash-residual-implementation-readiness-v0.1.md"},
     {"identifier": "M2_LG01_HEAD_CASH_RESIDUAL_CONFIRMED_DEVELOPMENT_PASS", "namespace": "M2-STATUS", "parentExperiment": "M2-EXP-LG01-HEAD-CASH-RESIDUAL-01", "type": "model_development_status_code", "displayNameZh": "LG01 头部现金残差校准确认级开发通过", "meaningZh": "仅当预注册的总体、区间、时间块、偏差、头部现金、集中度、数值稳定性和 Core90 护栏全部通过时可使用；仍非独立 later-origin 确认或上线授权。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-lg01-head-cash-residual-preregistration-v0.1.md"},
     {"identifier": "M2_LG01_HEAD_CASH_RESIDUAL_PROMISING_UNCONFIRMED", "namespace": "M2-STATUS", "parentExperiment": "M2-EXP-LG01-HEAD-CASH-RESIDUAL-01", "type": "model_development_status_code", "displayNameZh": "LG01 头部现金残差校准有希望但未确认", "meaningZh": "点估计、时间块及全部业务与稳定性护栏通过，但作品聚类 bootstrap 区间跨零；只可建议未来独立验证。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-lg01-head-cash-residual-preregistration-v0.1.md"},
     {"identifier": "M2_LG01_HEAD_CASH_RESIDUAL_FAIL", "namespace": "M2-STATUS", "parentExperiment": "M2-EXP-LG01-HEAD-CASH-RESIDUAL-01", "type": "model_development_status_code", "displayNameZh": "LG01 头部现金残差校准开发失败", "meaningZh": "任一预注册总体、偏差、头部现金、集中度、数值稳定性、Core90 或原始候选真实性门禁失败。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-lg01-head-cash-residual-preregistration-v0.1.md"},

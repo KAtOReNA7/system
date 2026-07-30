@@ -79,6 +79,9 @@ const EXECUTION_CLOSURE_JSON_PATH =
 const EXECUTION_CLOSURE_REPORT_PATH =
   "docs/analysis/m2-current/"
     + "M2-core-legacy-horizon-amount-execution-closure-v0.1.md";
+const FROZEN_DEVELOPMENT_JSON_PATH =
+  "docs/analysis/m2-current/"
+    + "M2-core-legacy-horizon-amount-development-v0.1.json";
 const RECOVERY_READINESS_JSON_PATH =
   "docs/analysis/m2-current/"
     + "M2-core-legacy-horizon-amount-recovery-readiness-v0.1.json";
@@ -343,6 +346,149 @@ export async function runM2CoreLegacyHorizonAmountPublicDiagnostic({
     throw new Error("m2_core_horizon_amount_public_proof_failed");
   }
   return result;
+}
+
+export async function rebuildM2CoreHorizonAmountFrozenH3B3Inputs({
+  root
+}) {
+  const [
+    config,
+    oa03Config,
+    coreConfig,
+    humanConfig,
+    frozenDevelopment
+  ] = await Promise.all([
+    readJson(path.join(root, CONFIG_PATH)),
+    readJson(path.join(root, OA03_CONFIG_PATH)),
+    readJson(path.join(root, CORE_CONFIG_PATH)),
+    readJson(path.join(root, HUMAN_CONFIG_PATH)),
+    readJson(path.join(root, FROZEN_DEVELOPMENT_JSON_PATH))
+  ]);
+  validateM2CoreLegacyHorizonAmountConfig(config);
+  validateM2CoreLegacyPopulationConfig(coreConfig);
+  const authority = await materializeM2CoreRevenueAuthority({ root });
+  const schedules = resolveM2Oa03CurrentScopeSchedules({
+    config: oa03Config,
+    authorityStartMonth: authority.authorityStartMonth,
+    labelMaturityCutoff: authority.labelMaturityCutoff
+  });
+  const origins = trainingAndEvaluationOrigins({
+    authorityStartMonth: authority.authorityStartMonth,
+    labelMaturityCutoff: authority.labelMaturityCutoff,
+    schedules
+  });
+  const featureCache = new Map();
+  const featureMonthlyRowsForOrigin = (origin) => {
+    if (!featureCache.has(origin)) {
+      featureCache.set(
+        origin,
+        authority.featureMonthlyRowsForOrigin(origin)
+      );
+    }
+    return featureCache.get(origin);
+  };
+  const allCases = buildCoreLegacyWorkCases({
+    origins,
+    horizons: HORIZONS,
+    finalMonthlyRows: authority.finalMonthlyRows,
+    featureMonthlyRowsForOrigin,
+    config: coreConfig
+  });
+  const workCases = allCases.workCases.filter(
+    (row) => row.labelAvailableAsOf <= authority.labelMaturityCutoff
+  );
+  const populations = new Map(origins.map((origin) => [
+    origin,
+    buildCoreLegacyOriginPopulation({
+      origin,
+      monthlyRows: featureMonthlyRowsForOrigin(origin),
+      minimumCompleteMonths: coreConfig.eligibility.minimumCompleteMonths,
+      thresholds: coreConfig.coreSelection.thresholds,
+      topCounts: coreConfig.coreSelection.topDiagnostics
+    })
+  ]));
+  const frozenLg01 = reconstructFrozenLg01({
+    workCases,
+    humanConfig
+  });
+  const featureRows = buildFeatureRows({
+    workCases,
+    populations,
+    frozenLg01Rows: frozenLg01.rows
+  });
+  const evaluationFeatures = buildEvaluationFeatureRows({
+    featureRows,
+    schedules
+  });
+  const strictLg01Rows = buildStrictLg01EvaluationRows({
+    evaluationFeatures
+  });
+  const training = trainRawCandidates({
+    featureRows,
+    evaluationFeatures,
+    config,
+    horizons: [3],
+    rawArms: ["B3"]
+  });
+  const reconciliation = reconcileFrozenH3B3({
+    predictions: training.predictions,
+    strictLg01Rows,
+    frozenDevelopment,
+    config
+  });
+  if (!reconciliation.exact) {
+    throw new Error(
+      "m2_core_horizon_amount_h3_b3_frozen_aggregate_reconciliation_failed"
+    );
+  }
+  const features = new Map(evaluationFeatures.filter(
+    (row) => row.horizonMonths === 3
+  ).map((row) => [evaluationFeatureKey(row), row]));
+  const inputRows = training.predictions.map((prediction) => {
+    const feature = features.get(evaluationFeatureKey(prediction));
+    if (!feature) {
+      throw new Error(
+        "m2_core_horizon_amount_h3_b3_feature_join_missing"
+      );
+    }
+    return {
+      schema:
+        "m2.current.lg01_head_cash_residual.input.private.v0.1",
+      evaluationFamily: prediction.evaluationFamily,
+      populationId: prediction.populationId,
+      standardWorkId: prediction.standardWorkId,
+      origin: prediction.origin,
+      horizonMonths: 3,
+      actual: prediction.actual,
+      basePointEstimate: feature.features.lg01PointEstimate,
+      rawPointEstimate: prediction.pointEstimate,
+      trailing12Cash: feature.features.trailing12Cash,
+      labelAvailableAsOf: feature.labelAvailableAsOf,
+      originVisibleOnly: true,
+      frozenLg01Reconstructed: true,
+      frozenCham01B3Reconstructed: true,
+      frozenAggregateReconciled: true
+    };
+  }).sort(compareRows);
+  return Object.freeze({
+    status: "FROZEN_H3_B3_INPUT_CACHE_REBUILT_AND_RECONCILED",
+    inputRows: Object.freeze(inputRows),
+    selectionRows: training.selections,
+    reconciliation,
+    sourceAuthority: Object.freeze({
+      rowCount: authority.authority.rowCount,
+      workCount: authority.authority.workCount,
+      authorityStartMonth: authority.authorityStartMonth,
+      labelMaturityCutoff: authority.labelMaturityCutoff
+    }),
+    frozenInputs: Object.freeze({
+      lg01RowCount: frozenLg01.rows.length,
+      cham01B3PredictionRowCount: training.predictions.length,
+      formulaOrGridChanged: false,
+      scientificReevaluationPerformed: false,
+      derivedCacheReconstructionOnly: true
+    })
+  });
 }
 
 export async function runM2CoreLegacyHorizonAmountPrivateDevelopment({
@@ -1779,25 +1925,139 @@ function topErrorBands(cells) {
   });
 }
 
+function reconcileFrozenH3B3({
+  predictions,
+  strictLg01Rows,
+  frozenDevelopment,
+  config
+}) {
+  const details = [];
+  const frozenCells = frozenDevelopment.rawEvaluationCells.filter(
+    (cell) => cell.horizonMonths === 3 && cell.armId === "B3"
+  );
+  for (const family of FAMILIES) {
+    for (const populationId of POPULATIONS) {
+      const candidate = predictions.filter((row) => (
+        row.evaluationFamily === family
+        && row.populationId === populationId
+        && row.horizonMonths === 3
+        && row.armId === "B3"
+      ));
+      const frozen = frozenCells.find((cell) => (
+        cell.evaluationFamily === family
+        && cell.populationId === populationId
+      ));
+      if (!frozen) {
+        details.push({
+          evaluationFamily: family,
+          populationId,
+          status: "FROZEN_PUBLIC_CELL_MISSING",
+          exact: false
+        });
+        continue;
+      }
+      const rawMetrics = publicMetrics(
+        scoreM2HorizonAmountPointRows(candidate),
+        config
+      );
+      let baselineMetrics = null;
+      let pairedCandidateMetrics = null;
+      let relativeWapeImprovement = null;
+      let strictExact = true;
+      if (family === "STRICT_ROLLING") {
+        const baseline = strictLg01Rows.filter((row) => (
+          row.populationId === populationId
+          && row.horizonMonths === 3
+        ));
+        const paired = pairM2HorizonAmountSameCaseRows(
+          candidate,
+          baseline
+        );
+        pairedCandidateMetrics = publicMetrics(
+          scoreM2HorizonAmountPointRows(paired.rows, {
+            pointField: "candidatePointEstimate"
+          }),
+          config
+        );
+        baselineMetrics = publicMetrics(
+          scoreM2HorizonAmountPointRows(paired.rows, {
+            pointField: "baselinePointEstimate"
+          }),
+          config
+        );
+        relativeWapeImprovement = baselineMetrics.wape > 0
+          ? (
+            baselineMetrics.wape - pairedCandidateMetrics.wape
+          ) / baselineMetrics.wape
+          : null;
+        strictExact = (
+          paired.exactSameCase === true
+          && paired.sameCaseCount === frozen.sameCaseCount
+          && jsonExactlyEqual(
+            pairedCandidateMetrics,
+            frozen.pairedCandidateMetrics
+          )
+          && jsonExactlyEqual(
+            baselineMetrics,
+            frozen.baselineMetrics
+          )
+          && Object.is(
+            relativeWapeImprovement,
+            frozen.relativeWapeImprovement
+          )
+        );
+      }
+      const rawExact = jsonExactlyEqual(rawMetrics, frozen.rawMetrics);
+      details.push({
+        evaluationFamily: family,
+        populationId,
+        status: rawExact && strictExact
+          ? "EXACT_FROZEN_PUBLIC_AGGREGATE_MATCH"
+          : "FROZEN_PUBLIC_AGGREGATE_MISMATCH",
+        exact: rawExact && strictExact,
+        candidateRowCount: candidate.length,
+        rawMetricsExact: rawExact,
+        strictSameCaseExact: family === "STRICT_ROLLING"
+          ? strictExact
+          : null
+      });
+    }
+  }
+  return Object.freeze({
+    status: details.every((row) => row.exact)
+      ? "EXACT_FROZEN_H3_B3_AGGREGATE_RECONCILIATION"
+      : "FROZEN_H3_B3_AGGREGATE_RECONCILIATION_FAILED",
+    exact: details.every((row) => row.exact),
+    cells: Object.freeze(details),
+    frozenPublicCellCount: frozenCells.length,
+    frozenPublicCellDigest: sha256Json(frozenCells),
+    frozenPublicArtifactModified: false,
+    newCham01ScientificEvaluationPerformed: false
+  });
+}
+
 function trainRawCandidates({
   featureRows,
   evaluationFeatures,
-  config
+  config,
+  families = FAMILIES,
+  horizons = HORIZONS,
+  rawArms = RAW_ARMS
 }) {
   const predictions = [];
   const selections = [];
-  for (const family of FAMILIES) {
+  for (const family of families) {
     const origins = [...new Set(evaluationFeatures.filter(
       (row) => row.evaluationFamily === family
     ).map((row) => row.origin))].sort();
     for (const outerOrigin of origins) {
-      for (const horizonMonths of HORIZONS) {
+      for (const horizonMonths of horizons) {
         const validation = featureRows.filter((row) => (
           row.origin === outerOrigin
           && row.horizonMonths === horizonMonths
         ));
         if (validation.length === 0) continue;
-        for (const armId of RAW_ARMS) {
+        for (const armId of rawArms) {
           const training = featureRows.filter((row) => (
             row.horizonMonths === horizonMonths
             && row.origin < outerOrigin
@@ -2948,6 +3208,20 @@ function workKey(row) {
     row.origin,
     Number(row.horizonMonths)
   ].join("\u0000");
+}
+
+function evaluationFeatureKey(row) {
+  return [
+    row.evaluationFamily,
+    row.populationId,
+    row.standardWorkId,
+    row.origin,
+    Number(row.horizonMonths)
+  ].join("\u0000");
+}
+
+function jsonExactlyEqual(left, right) {
+  return JSON.stringify(left) === JSON.stringify(right);
 }
 
 function groupBy(values, keyOf) {

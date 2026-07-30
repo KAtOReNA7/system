@@ -73,6 +73,11 @@ import {
   runM2CoreLegacyHorizonAmountPrivateDevelopment,
   runM2CoreLegacyHorizonAmountPublicDiagnostic
 } from "./core_legacy_horizon_amount_mode.mjs";
+import {
+  runM2Lg01HeadCashResidualPrivateDevelopment,
+  runM2Lg01HeadCashResidualPublicDiagnostic,
+  runM2Lg01HeadCashResidualSyntheticSmoke
+} from "./lg01_head_cash_residual_mode.mjs";
 
 let config;
 
@@ -161,6 +166,15 @@ const coreLegacyHorizonAmountPrivateMode = process.argv.includes(
 );
 const coreLegacyHorizonAmountSyntheticRecoverySmoke =
   process.argv.includes("--synthetic-recovery-smoke");
+const lg01HeadCashResidualPublicMode = process.argv.includes(
+  "--lg01-head-cash-residual-public"
+);
+const lg01HeadCashResidualSyntheticMode = process.argv.includes(
+  "--lg01-head-cash-residual-synthetic"
+);
+const lg01HeadCashResidualPrivateMode = process.argv.includes(
+  "--lg01-head-cash-residual"
+);
 const preflightOnly = process.argv.includes("--preflight-only");
 if (preflightOnly && !publishingScaleChannelPrivateMode) {
   throw new Error("m2_publishing_scale_preflight_requires_command_mode");
@@ -204,6 +218,28 @@ if (coreLegacyHorizonAmountPrivateMode) {
     root,
     syntheticRecoverySmoke:
       coreLegacyHorizonAmountSyntheticRecoverySmoke
+  });
+  process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+  return;
+}
+if (lg01HeadCashResidualPublicMode) {
+  const result = await runM2Lg01HeadCashResidualPublicDiagnostic({
+    root,
+    verify: process.argv.includes("--verify")
+  });
+  process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+  return;
+}
+if (lg01HeadCashResidualSyntheticMode) {
+  const result = await runM2Lg01HeadCashResidualSyntheticSmoke({
+    root
+  });
+  process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+  return;
+}
+if (lg01HeadCashResidualPrivateMode) {
+  const result = await runM2Lg01HeadCashResidualPrivateDevelopment({
+    root
   });
   process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
   return;

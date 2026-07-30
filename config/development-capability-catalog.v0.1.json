@@ -761,7 +761,10 @@
         }
       ],
       "canonicalValidationCommands": [
-        "npm run doctor:capability -- m2-lg01-head-cash-residual"
+        "npm run doctor:capability -- m2-lg01-head-cash-residual",
+        "npm run diagnose:m2:lg01-head-cash-residual",
+        "npm run smoke:m2:current:lg01-head-cash-residual",
+        "npm run develop:m2:current:lg01-head-cash-residual"
       ],
       "recovery": "Restore only genuinely missing PRIVATE_SOURCE_AUTHORITY from a verified capability-scoped package. Deterministically rebuild frozen-input and experiment caches from source authority and committed frozen code, reconcile the rebuilt LG01 and CHAM01 aggregates to their frozen public evidence, and never treat that cache reconstruction as a new CHAM01 scientific evaluation. Missing caches or historical receipts never block public work and receipts are never fabricated.",
       "authorization": "USER_AUTHORIZED_M2_LG01_HEAD_CASH_RESIDUAL_CALIBRATION_ONCE_2026_07_30"

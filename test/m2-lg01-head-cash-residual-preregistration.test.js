@@ -167,7 +167,12 @@ test("private capability blocks only on source authority", () => {
   assert.match(capability.recovery, /receipts are never fabricated/u);
   assert.deepEqual(
     capability.canonicalValidationCommands,
-    ["npm run doctor:capability -- m2-lg01-head-cash-residual"]
+    [
+      "npm run doctor:capability -- m2-lg01-head-cash-residual",
+      "npm run diagnose:m2:lg01-head-cash-residual",
+      "npm run smoke:m2:current:lg01-head-cash-residual",
+      "npm run develop:m2:current:lg01-head-cash-residual"
+    ]
   );
 });
 

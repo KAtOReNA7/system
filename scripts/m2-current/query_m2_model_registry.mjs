@@ -367,6 +367,8 @@ function roleZh(value) {
       "恢复就绪且尚无真实私有结果",
     preregistered_exploratory_candidate_not_executed:
       "探索性候选已预注册但尚未执行",
+    implemented_exploratory_candidate_not_executed:
+      "探索性候选已实现并通过合成验证但尚未执行",
     archive_only_failed_model: "仅历史审计且已失败"
   }[value] ?? "登记角色";
 }
@@ -374,6 +376,9 @@ function roleZh(value) {
 function operationalStatusZh(value) {
   if (value === "not_executed_not_promoted") {
     return "尚未执行且未晋升";
+  }
+  if (value === "implemented_not_executed_not_promoted") {
+    return "已实现，尚未执行且未晋升";
   }
   if (
     value
@@ -404,6 +409,13 @@ function resultStatusZh(value) {
   }
   if (value === "M2_LG01_HEAD_CASH_RESIDUAL_PREREGISTERED_NOT_EXECUTED") {
     return "已预注册且尚未执行";
+  }
+  if (
+    value
+      === "M2_LG01_HEAD_CASH_RESIDUAL_"
+        + "IMPLEMENTED_SYNTHETIC_VERIFIED_OUTER_UNREAD"
+  ) {
+    return "已实现并通过合成验证且外层结果未读取";
   }
   if (value === "HORIZON_ROUTER_NOT_CONFIRMED") {
     return "按预测周期滚动模型路由未确认";

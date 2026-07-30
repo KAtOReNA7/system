@@ -36,7 +36,7 @@ test("registry schema, evidence paths and immutable digests validate", () => {
   );
   assert.equal(validation.counts.modelCount, 33);
   assert.equal(validation.counts.experimentCount, 20);
-  assert.equal(validation.counts.nonModelIdentifierCount, 91);
+  assert.equal(validation.counts.nonModelIdentifierCount, 92);
   assert.equal(validation.counts.evaluationCount, 107);
   assert.equal(validation.counts.comparabilityGroupCount, 57);
 });
@@ -226,7 +226,7 @@ test("core legacy population test records non-confirmation without promotion", (
   );
   assert.equal(
     registry.currentRoles.latestStateIndex,
-    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.47.md"
+    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.48.md"
   );
   assert.equal(registry.currentRoles.activeCandidate, null);
   assert.equal(registry.currentRoles.approvedForAutomation, null);
@@ -305,7 +305,7 @@ test("CHAM01 first complete result is failed, frozen and not promoted", () => {
   assert.equal(registry.currentRoles.approvedForAutomation, null);
 });
 
-test("HCRC01 is preregistered without an outer outcome or promotion", () => {
+test("HCRC01 is implemented without an outer outcome or promotion", () => {
   const model = registry.models.find(
     (item) => item.stableModelId === "M2-WORK-HCRC01"
   );
@@ -317,9 +317,12 @@ test("HCRC01 is preregistered without an outer outcome or promotion", () => {
 
   assert.equal(
     model.currentRole,
-    "preregistered_exploratory_candidate_not_executed"
+    "implemented_exploratory_candidate_not_executed"
   );
-  assert.equal(model.operationalStatus, "not_executed_not_promoted");
+  assert.equal(
+    model.operationalStatus,
+    "implemented_not_executed_not_promoted"
+  );
   assert.deepEqual(
     model.predecessorIds,
     ["M2-WORK-LG01", "M2-WORK-CHAM01"]
@@ -333,7 +336,7 @@ test("HCRC01 is preregistered without an outer outcome or promotion", () => {
   );
   assert.equal(
     experiment.resultStatus,
-    "M2_LG01_HEAD_CASH_RESIDUAL_PREREGISTERED_NOT_EXECUTED"
+    "M2_LG01_HEAD_CASH_RESIDUAL_IMPLEMENTED_SYNTHETIC_VERIFIED_OUTER_UNREAD"
   );
   assert.equal(experiment.candidateOutcomeProduced, false);
   assert.equal(experiment.outerOutcomeRead, false);
@@ -637,8 +640,8 @@ test("read-only query exposes scoped identities and refuses invalid ranking", ()
 
   const headCashResidual = runQuery("show", "M2-WORK-HCRC01");
   assert.equal(headCashResidual.status, 0, headCashResidual.stderr);
-  assert.match(headCashResidual.stdout, /探索性候选已预注册但尚未执行/u);
-  assert.match(headCashResidual.stdout, /尚未执行且未晋升/u);
+  assert.match(headCashResidual.stdout, /已实现/u);
+  assert.match(headCashResidual.stdout, /尚未执行/u);
   assert.match(headCashResidual.stdout, /成绩：\s*$/u);
 
   const publishingScale = runQuery("show", "M2-CHAN-PSC01");
