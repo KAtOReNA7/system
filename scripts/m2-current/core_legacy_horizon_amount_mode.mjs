@@ -238,7 +238,7 @@ export async function runM2CoreLegacyHorizonAmountPrivateDevelopment({
       schedules
     });
     const featureCache = new Map();
-    const featureRowsForOrigin = (origin) => {
+    const featureMonthlyRowsForOrigin = (origin) => {
       if (!featureCache.has(origin)) {
         featureCache.set(
           origin,
@@ -262,7 +262,7 @@ export async function runM2CoreLegacyHorizonAmountPrivateDevelopment({
       origin,
       buildCoreLegacyOriginPopulation({
         origin,
-        monthlyRows: featureRowsForOrigin(origin),
+        monthlyRows: featureMonthlyRowsForOrigin(origin),
         minimumCompleteMonths: coreConfig.eligibility.minimumCompleteMonths,
         thresholds: coreConfig.coreSelection.thresholds,
         topCounts: coreConfig.coreSelection.topDiagnostics

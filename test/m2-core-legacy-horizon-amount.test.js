@@ -398,6 +398,24 @@ test("canonical dispatcher exposes public diagnostics and one restricted executi
     packageJson.scripts["verify:m2:current"],
     /--core-legacy-horizon-amount-public --verify/u
   );
+  const privateRunnerSource = await readFile(path.join(
+    root,
+    "scripts",
+    "m2-current",
+    "core_legacy_horizon_amount_mode.mjs"
+  ), "utf8");
+  assert.match(
+    privateRunnerSource,
+    /const featureMonthlyRowsForOrigin = \(origin\) =>/u
+  );
+  assert.match(
+    privateRunnerSource,
+    /buildCoreLegacyWorkCases\(\{[\s\S]*?featureMonthlyRowsForOrigin,/u
+  );
+  assert.doesNotMatch(
+    privateRunnerSource,
+    /\bfeatureRowsForOrigin\b/u
+  );
   const diagnostic = await runM2CoreLegacyHorizonAmountPublicDiagnostic({
     root,
     verify: true
