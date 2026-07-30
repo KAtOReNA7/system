@@ -41,6 +41,7 @@ test("catalog defines one private-free core capability and scoped private capabi
       "m2-core-legacy-population",
       "m2-core-legacy-horizon-router",
       "m2-oa03-current-scope-replication",
+      "m2-core-legacy-horizon-amount",
       "m2-layered-revenue-composition",
       "m2-current-canonical-channel",
       "m2-current-human-anchored",
@@ -169,6 +170,68 @@ test("OA03 current-scope cache misses rebuild and optional provenance does not b
     "AVAILABLE_FOR_CANONICAL_VALIDATION",
   );
   assert.equal(provenanceMissing.derivedCacheStatus, "CACHE_READY");
+  assert.equal(
+    provenanceMissing.historicalReceiptStatus,
+    "OPTIONAL_PROVENANCE_MISSING",
+  );
+  assert.equal(provenanceMissing.safeToStartModelAfterRebuild, true);
+});
+
+test("core horizon amount cache misses rebuild and provenance remains optional", () => {
+  const cacheMiss = evaluateCapability(
+    catalog,
+    "m2-core-legacy-horizon-amount",
+    {
+      repoRoot: REPO_ROOT,
+      artifactExists: (_absolutePath, artifact) => (
+        artifact.artifactClass === "PRIVATE_SOURCE_AUTHORITY"
+      ),
+      toolProbe: availableToolProbe,
+    },
+  );
+  assert.equal(cacheMiss.status, "DERIVED_CACHE_MISS_REBUILD_REQUIRED");
+  assert.equal(cacheMiss.sourceAuthorityStatus, "SOURCE_AUTHORITY_AVAILABLE");
+  assert.equal(cacheMiss.derivedCacheStatus, "CACHE_MISS_REBUILDABLE");
+  assert.equal(
+    cacheMiss.historicalReceiptStatus,
+    "OPTIONAL_PROVENANCE_MISSING",
+  );
+  assert.equal(
+    cacheMiss.privateArtifacts.filter(
+      (artifact) => artifact.artifactClass === "PRIVATE_SOURCE_AUTHORITY",
+    ).length,
+    5,
+  );
+  assert.equal(
+    cacheMiss.privateArtifacts.filter(
+      (artifact) => artifact.artifactClass === "PRIVATE_DERIVED_CACHE",
+    ).length,
+    5,
+  );
+  assert.equal(
+    cacheMiss.privateArtifacts.filter(
+      (artifact) => artifact.artifactClass === "PRIVATE_RUN_PROVENANCE",
+    ).length,
+    1,
+  );
+  assert.equal(cacheMiss.safeToRebuildDerivedCache, true);
+  assert.equal(cacheMiss.safeToStartModelAfterRebuild, true);
+
+  const provenanceMissing = evaluateCapability(
+    catalog,
+    "m2-core-legacy-horizon-amount",
+    {
+      repoRoot: REPO_ROOT,
+      artifactExists: (_absolutePath, artifact) => (
+        artifact.artifactClass !== "PRIVATE_RUN_PROVENANCE"
+      ),
+      toolProbe: availableToolProbe,
+    },
+  );
+  assert.equal(
+    provenanceMissing.status,
+    "AVAILABLE_FOR_CANONICAL_VALIDATION",
+  );
   assert.equal(
     provenanceMissing.historicalReceiptStatus,
     "OPTIONAL_PROVENANCE_MISSING",

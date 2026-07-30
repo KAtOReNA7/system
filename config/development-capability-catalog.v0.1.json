@@ -582,6 +582,87 @@
       "authorization": "USER_AUTHORIZED_M2_OA03_CURRENT_SCOPE_REPLICATION_AND_TRAILING12_ALLOCATION_ONCE_AFTER_P0_P1_CI_2026_07_30"
     },
     {
+      "id": "m2-core-legacy-horizon-amount",
+      "description": "Run the user-authorized K1 OA03/LG01 origin-visible same-case attribution and one frozen B0-B3 Core80-primary/Core90-sensitivity 3/6/12-month work-total horizon-specific amount development evaluation. Source authority is blocking; every cache is rebuildable; provenance never grants execution authority.",
+      "privateArtifactClassificationVersion": "private-artifact-classification.v0.1",
+      "requiredTools": [],
+      "requiredPrivateArtifacts": [
+        {
+          "role": "total-ledger-authority",
+          "kind": "file",
+          "artifactClass": "PRIVATE_SOURCE_AUTHORITY",
+          "path": "data/real-bills/渠道实销汇总 -总.xlsx"
+        },
+        {
+          "role": "sales-share-ledger-authority",
+          "kind": "file",
+          "artifactClass": "PRIVATE_SOURCE_AUTHORITY",
+          "path": "data/real-bills/渠道实销汇总 -分成.xlsx"
+        },
+        {
+          "role": "buyout-ledger-authority",
+          "kind": "file",
+          "artifactClass": "PRIVATE_SOURCE_AUTHORITY",
+          "path": "data/real-bills/渠道实销汇总 -买断.xlsx"
+        },
+        {
+          "role": "m1-work-mapping-authority",
+          "kind": "directory",
+          "artifactClass": "PRIVATE_SOURCE_AUTHORITY",
+          "path": "data/m1-master-data-private/mapping-candidate"
+        },
+        {
+          "role": "user-reviewed-channel-master",
+          "kind": "file",
+          "artifactClass": "PRIVATE_SOURCE_AUTHORITY",
+          "path": "data/private-output/outputs/channel-governance-20260726/M2-渠道统一与类型人工补全表-v0.2.xlsx"
+        },
+        {
+          "role": "reversal-authority-facts",
+          "kind": "file",
+          "artifactClass": "PRIVATE_DERIVED_CACHE",
+          "path": "data/private-output/m2-evaluation-v2-2-reversal-rescore/M2-reversal-authority-facts-private-v1.ndjson"
+        },
+        {
+          "role": "core-horizon-amount-feature-rows",
+          "kind": "file",
+          "artifactClass": "PRIVATE_DERIVED_CACHE",
+          "path": "data/private-output/m2-core-legacy-horizon-amount/M2-core-legacy-horizon-amount-feature-rows-private-v0.1.ndjson"
+        },
+        {
+          "role": "core-horizon-amount-frozen-lg01-rows",
+          "kind": "file",
+          "artifactClass": "PRIVATE_DERIVED_CACHE",
+          "path": "data/private-output/m2-core-legacy-horizon-amount/M2-core-legacy-horizon-amount-frozen-lg01-rows-private-v0.1.ndjson"
+        },
+        {
+          "role": "core-horizon-amount-predictions",
+          "kind": "file",
+          "artifactClass": "PRIVATE_DERIVED_CACHE",
+          "path": "data/private-output/m2-core-legacy-horizon-amount/M2-core-legacy-horizon-amount-predictions-private-v0.1.ndjson"
+        },
+        {
+          "role": "core-horizon-amount-manifest",
+          "kind": "file",
+          "artifactClass": "PRIVATE_DERIVED_CACHE",
+          "path": "data/private-output/m2-core-legacy-horizon-amount/M2-core-legacy-horizon-amount-manifest-private-v0.1.json"
+        },
+        {
+          "role": "core-horizon-amount-attempt-receipt",
+          "kind": "file",
+          "artifactClass": "PRIVATE_RUN_PROVENANCE",
+          "path": "data/private-output/m2-core-legacy-horizon-amount/M2-core-legacy-horizon-amount-attempt-receipt-private-v0.1.json"
+        }
+      ],
+      "canonicalValidationCommands": [
+        "npm run doctor:capability -- m2-core-legacy-horizon-amount",
+        "npm run diagnose:m2:core-legacy-horizon-amount",
+        "npm run develop:m2:current:core-legacy-horizon-amount"
+      ],
+      "recovery": "Restore only genuinely missing PRIVATE_SOURCE_AUTHORITY from a verified capability-scoped package. Rebuild all feature, frozen comparator, prediction, evaluation and bootstrap caches from source authority and the exact committed code. Missing cache or provenance never blocks public work and never reopens a consumed execution.",
+      "authorization": "USER_AUTHORIZED_M2_CORE_LEGACY_HORIZON_AMOUNT_K1_K2_SINGLE_PRIVATE_DEVELOPMENT_EXECUTION_2026_07_30"
+    },
+    {
       "id": "m2-layered-revenue-composition",
       "description": "Run the user-authorized layered revenue composition rolling development evaluation from authoritative sales-share billing sources. Rebuildable caches and historical receipts are not gates.",
       "requiredTools": [],

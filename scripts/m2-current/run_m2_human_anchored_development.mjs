@@ -69,6 +69,10 @@ import {
   runM2Oa03CurrentScopePrivateReplication,
   runM2Oa03CurrentScopePublicDiagnostic
 } from "./oa03_current_scope_replication_mode.mjs";
+import {
+  runM2CoreLegacyHorizonAmountPrivateDevelopment,
+  runM2CoreLegacyHorizonAmountPublicDiagnostic
+} from "./core_legacy_horizon_amount_mode.mjs";
 
 let config;
 
@@ -149,6 +153,12 @@ const oa03CurrentScopePrepareMode = process.argv.includes(
 const oa03CurrentScopePrivateMode = process.argv.includes(
   "--oa03-current-scope-replication"
 );
+const coreLegacyHorizonAmountPublicMode = process.argv.includes(
+  "--core-legacy-horizon-amount-public"
+);
+const coreLegacyHorizonAmountPrivateMode = process.argv.includes(
+  "--core-legacy-horizon-amount"
+);
 const preflightOnly = process.argv.includes("--preflight-only");
 if (preflightOnly && !publishingScaleChannelPrivateMode) {
   throw new Error("m2_publishing_scale_preflight_requires_command_mode");
@@ -174,6 +184,21 @@ if (oa03CurrentScopePrepareMode) {
 }
 if (oa03CurrentScopePrivateMode) {
   const result = await runM2Oa03CurrentScopePrivateReplication({
+    root
+  });
+  process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+  return;
+}
+if (coreLegacyHorizonAmountPublicMode) {
+  const result = await runM2CoreLegacyHorizonAmountPublicDiagnostic({
+    root,
+    verify: process.argv.includes("--verify")
+  });
+  process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+  return;
+}
+if (coreLegacyHorizonAmountPrivateMode) {
+  const result = await runM2CoreLegacyHorizonAmountPrivateDevelopment({
     root
   });
   process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);

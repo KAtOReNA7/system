@@ -24,6 +24,9 @@
   - `docs/analysis/m2-current/M2-oa03-trailing12-observed-channel-allocation-v0.1.json`
   - `docs/analysis/m2-current/M2-oa03-trailing12-observed-channel-allocation-v0.1.md`
   - `docs/analysis/m2-current/M2-oa03-current-scope-artifact-readiness-v0.1.md`
+- M2 核心老品分周期金额模型：
+  - `config/m2-current-core-legacy-horizon-amount.v0.1.json`
+  - `docs/analysis/m2-current/M2-core-legacy-horizon-amount-preregistration-v0.1.md`
 - M2 评价体系：
   - `docs/analysis/m2-current/M2-evaluation-system-audit-v1.md`
   - `config/m2-evaluation-contract.v2.2.json`

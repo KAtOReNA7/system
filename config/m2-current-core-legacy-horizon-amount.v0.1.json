@@ -1,0 +1,331 @@
+{
+  "schema": "m2.current.core_legacy_horizon_amount.v0.1",
+  "asOf": "2026-07-30",
+  "experiment": {
+    "stableExperimentId": "M2-EXP-CORE-HORIZON-AMOUNT-01",
+    "displayNameZh": "M2 核心老品分周期金额模型 v0.1",
+    "displayNameEn": "M2 Core Legacy Horizon-Specific Amount Model v0.1",
+    "entityType": "experiment",
+    "phase": "K2_PREREGISTERED_AWAITING_EXACT_HEAD_PUBLIC_GATES",
+    "outerOutcomeRead": false,
+    "activeCandidate": false,
+    "approvedForAutomation": false
+  },
+  "model": {
+    "stableModelId": "M2-WORK-CHAM01",
+    "displayNameZh": "核心老品分周期金额模型 v0.1",
+    "displayNameEn": "Core Legacy Horizon-Specific Amount Model v0.1",
+    "predictionGrain": "standardWorkId_forecastOrigin_horizon",
+    "nativeAmountPredictionStored": true,
+    "horizonSpecificParameters": true,
+    "sharedScalarAcrossHorizonsAllowed": false,
+    "occurrenceRole": "AUXILIARY_DIAGNOSTIC_ONLY",
+    "selectedFallbackAllowedToMaskRawCandidate": false
+  },
+  "authority": {
+    "target": "future_sales_share_development_modelable_cash_for_origin_mature_core_legacy_works_on_origin_observed_mature_channels",
+    "actualDefinitionId": "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01",
+    "cashAuthority": "user_reviewed_sales_share_workbook_membership",
+    "sourceAuthorityClasses": [
+      "PRIVATE_SOURCE_AUTHORITY",
+      "PRIVATE_DERIVED_CACHE",
+      "PRIVATE_RUN_PROVENANCE"
+    ],
+    "missingDerivedCachePolicy": "REBUILD_FROM_SOURCE_AUTHORITY_AND_CURRENT_CODE",
+    "missingRunProvenancePolicy": "WARN_NOT_BLOCK",
+    "onlyMissingSourceAuthorityMayBlock": true
+  },
+  "scope": {
+    "horizonsMonths": [
+      3,
+      6,
+      12
+    ],
+    "primaryPopulationId": "CORE80",
+    "sensitivityPopulationId": "CORE90",
+    "trainingPopulation": "ALL_ORIGIN_MATURE_LEGACY_WORKS",
+    "hardCoreOnlyTrainingAllowed": false,
+    "workTotalOnly": true,
+    "channelAllocationAuthorized": false,
+    "thirtySixMonthAuthorized": false,
+    "futureNewWorkAuthorized": false,
+    "futureFirstObservedChannelAuthorized": false,
+    "outsideCore90TailServingAuthorized": false,
+    "buyoutOrOtherNonSalesShareCashAuthorized": false
+  },
+  "rolling": {
+    "primaryFamilyId": "PRIMARY_ROLLING",
+    "strictFamilyId": "STRICT_ROLLING",
+    "strictIsDecisionAuthority": true,
+    "primaryIsSensitivityOnly": true,
+    "scheduleAuthority": "config/m2-current-oa03-replication.v0.1.json",
+    "trainingPseudoOrigins": "UNION_OF_LEGAL_QUARTERLY_AUTHORITY_ORIGINS_AND_FROZEN_EVALUATION_ORIGINS",
+    "rightCensoredPolicy": "EXCLUDE_NEVER_ZERO_IMPUTE",
+    "outerTrainingRule": "origin_before_outer_and_labelAvailableAsOf_not_after_outer",
+    "innerTrainingRule": "origin_before_inner_and_labelAvailableAsOf_not_after_inner",
+    "minimumTrainingRows": 100,
+    "minimumTrainingWorks": 20,
+    "minimumInnerValidationOrigins": 2,
+    "minimumIndependentStrictTimeBlocks": 2,
+    "independentTimeBlockRule": "GREEDY_NONOVERLAPPING_FORECAST_WINDOWS_BY_HORIZON"
+  },
+  "k1Attribution": {
+    "candidateModelId": "M2-WORK-OA03",
+    "referenceModelId": "M2-WORK-LG01",
+    "sameCaseFields": [
+      "actualDefinitionId",
+      "evaluationFamily",
+      "populationId",
+      "standardWorkId",
+      "origin",
+      "horizonMonths"
+    ],
+    "strictPrimaryEvidence": true,
+    "primarySupplementaryEvidence": true,
+    "primaryLg01ContractStatus": "NOT_RECONSTRUCTABLE_CANONICAL_PRIMARY_IS_36_MONTH_CROSS_WORK",
+    "futureOutcomeMayDefineGroup": false,
+    "fixedAttributionDimensions": [
+      "trailing12_origin_percentile",
+      "core80_origin_rank_band",
+      "trailing_1_3_6_12_cash",
+      "six_month_linear_slope",
+      "six_month_relative_slope",
+      "trailing6_to_previous6_ratio",
+      "trailing12_to_previous12_ratio",
+      "current_to_historical_peak_ratio",
+      "months_since_historical_peak",
+      "valid_history_months",
+      "origin_mature_channel_count",
+      "trailing12_coefficient_of_variation",
+      "trailing12_zero_share",
+      "work_age_months",
+      "absolute_error_contribution"
+    ],
+    "forbiddenGroupingOrSelection": [
+      "future_actual_rank",
+      "future_top20_or_top50",
+      "future_channel",
+      "future_state",
+      "evaluation_window_income",
+      "post_result_threshold",
+      "level3_category",
+      "company_portfolio_gap"
+    ]
+  },
+  "featureContract": {
+    "transform": "SIGNED_LOG1P_FOR_CASH_FEATURES",
+    "missingValuePolicy": "NULL_PLUS_EXPLICIT_MISSING_INDICATOR",
+    "zeroMayRepresentMissing": false,
+    "normalizationFitScope": "CURRENT_TRAINING_FOLD_ONLY",
+    "percentileFitScope": "CURRENT_TRAINING_FOLD_ORIGIN_ONLY",
+    "features": [
+      "signed_log1p_trailing1_cash",
+      "signed_log1p_trailing3_cash",
+      "signed_log1p_trailing6_cash",
+      "signed_log1p_trailing12_cash",
+      "six_month_linear_slope",
+      "six_month_relative_slope",
+      "trailing6_to_previous6_ratio",
+      "trailing12_to_previous12_ratio",
+      "current_to_historical_peak_ratio",
+      "months_since_historical_peak",
+      "valid_history_months",
+      "origin_mature_channel_count",
+      "trailing12_zero_share",
+      "trailing12_coefficient_of_variation",
+      "work_age_months",
+      "core80_marker",
+      "core90_marker"
+    ],
+    "b3AdditionalFeature": "signed_log1p_frozen_lg01_same_horizon_prediction",
+    "forbiddenFeatures": [
+      "level3_category",
+      "work_source",
+      "platform_mechanism",
+      "future_new_channel",
+      "availableAt",
+      "effectiveAt",
+      "exposure",
+      "plays",
+      "orders",
+      "price",
+      "sales_share_rate",
+      "company_target",
+      "future_topn",
+      "embedding",
+      "similar_work_retrieval"
+    ]
+  },
+  "arms": [
+    {
+      "armId": "B0",
+      "displayNameZh": "冻结人工锚定可学习全局研究基线",
+      "modelId": "M2-WORK-LG01",
+      "role": "FROZEN_SAME_CASE_RESEARCH_BASELINE",
+      "refitOrChangeAllowed": false,
+      "strictSameCaseRebuildRequired": true
+    },
+    {
+      "armId": "B1",
+      "displayNameZh": "分周期直接金额模型（等作品权重）",
+      "modelId": "M2-WORK-CHAM01",
+      "role": "RAW_CANDIDATE",
+      "trainingWeight": "ONE_PER_WORK_ORIGIN_HORIZON",
+      "lg01Input": false
+    },
+    {
+      "armId": "B2",
+      "displayNameZh": "分周期直接金额模型（起点收入秩权重）",
+      "modelId": "M2-WORK-CHAM01",
+      "role": "RAW_CANDIDATE",
+      "trainingWeight": "1_PLUS_3_TIMES_TRAIN_FOLD_ORIGIN_TRAILING12_PERCENTILE_SQUARED",
+      "minimumWeight": 1,
+      "maximumWeight": 4,
+      "lg01Input": false
+    },
+    {
+      "armId": "B3",
+      "displayNameZh": "冻结 LG01 输入的分周期稳健金额模型",
+      "modelId": "M2-WORK-CHAM01",
+      "role": "RAW_CANDIDATE",
+      "trainingWeight": "1_PLUS_3_TIMES_TRAIN_FOLD_ORIGIN_TRAILING12_PERCENTILE_SQUARED",
+      "minimumWeight": 1,
+      "maximumWeight": 4,
+      "lg01Input": true,
+      "globalMultiplierOnlyAllowed": false
+    }
+  ],
+  "training": {
+    "targetTransform": "REVERSIBLE_SIGNED_LOG1P",
+    "negativeActualPolicy": "PRESERVE_AND_TRANSFORM_NEVER_DELETE",
+    "loss": "HUBER_IN_TRANSFORMED_AMOUNT_SPACE",
+    "optimizer": "DETERMINISTIC_WEIGHTED_IRLS_WITH_L2",
+    "maximumIrlsIterations": 30,
+    "convergenceTolerance": 1e-9,
+    "grid": {
+      "huberDelta": [
+        1,
+        1.5
+      ],
+      "l2": [
+        0.1,
+        1,
+        10
+      ]
+    },
+    "innerSelectionObjective": "UNWEIGHTED_MEAN_HUBER_LOSS_ON_EARLIER_MATURE_INNER_ORIGINS",
+    "outerOutcomeMayTune": false,
+    "horizonsFitIndependently": true,
+    "normalizationFitIndependently": true
+  },
+  "evaluation": {
+    "primaryDecisionCell": "STRICT_ROLLING_CORE80_WORK_TOTAL_PER_HORIZON",
+    "sensitivityCells": [
+      "STRICT_ROLLING_CORE90_WORK_TOTAL_PER_HORIZON",
+      "PRIMARY_ROLLING_CORE80_WORK_TOTAL_PER_HORIZON",
+      "PRIMARY_ROLLING_CORE90_WORK_TOTAL_PER_HORIZON"
+    ],
+    "pointMetrics": [
+      "WAPE",
+      "signed_bias",
+      "MAE",
+      "median_absolute_error",
+      "prediction_actual_ratio"
+    ],
+    "pairedComparison": "RAW_CANDIDATE_VS_FROZEN_LG01_EXACT_SAME_CASE",
+    "bootstrap": {
+      "iterations": 2000,
+      "seed": 20260730,
+      "clusterUnit": "standardWorkId",
+      "paired": true,
+      "confidenceLevel": 0.95
+    },
+    "posthocFutureTopErrorAttributionAllowed": false,
+    "nativeAmountCapabilityRequired": true,
+    "occurrenceIsAuxiliaryOnly": true,
+    "bestRawArmRulePerHorizon": "LOWEST_STRICT_CORE80_WAPE_THEN_LOWEST_ABSOLUTE_BIAS_THEN_ARM_ID_ON_COMMON_SAME_CASE_INTERSECTION"
+  },
+  "publicPrivacy": {
+    "minimumCaseCount": 30,
+    "minimumWorkCount": 20,
+    "suppressionStatus": "SUPPRESSED_PRIVACY_THRESHOLD",
+    "smallGroupPolicy": "PUBLISH_COUNTS_ONLY_KEEP_AMOUNT_METRICS_AND_INTERVALS_NULL"
+  },
+  "decisionPolicy": {
+    "perHorizon": true,
+    "minimumRelativeWapeImprovement": 0.01,
+    "bootstrapRelativeWapeImprovementLowerBoundMustExceed": 0,
+    "minimumImprovingIndependentTimeBlockShareExclusive": 0.5,
+    "maximumAbsoluteBiasWorsening": 0.02,
+    "maximumCandidateAbsoluteBias": 0.15,
+    "core90OppositeMaterialDegradationAllowed": false,
+    "rawCandidateRequired": true,
+    "allHorizonsPassStatus": "M2_CORE_HORIZON_AMOUNT_DEVELOPMENT_PASS",
+    "partialHorizonsPassStatus": "M2_CORE_HORIZON_AMOUNT_DEVELOPMENT_PARTIAL",
+    "noHorizonPassStatus": "M2_CORE_HORIZON_AMOUNT_DEVELOPMENT_FAIL",
+    "sourceAuthorityBlockedStatus": "M2_CORE_HORIZON_AMOUNT_BLOCKED_SOURCE_AUTHORITY"
+  },
+  "execution": {
+    "singlePrivateDevelopmentExecution": true,
+    "exactHeadPublicGatesRequired": true,
+    "exactHeadLinuxAndWindowsCiRequired": true,
+    "firstCompleteInterpretableRawResultFreezes": true,
+    "secondResultAfterCompleteAllowed": false,
+    "oneInfrastructureRetryBeforeAnyPrediction": true,
+    "infrastructureRetryMayChangeSpecification": false,
+    "runtimeRepositoryRootResolved": true,
+    "runtimeGitHeadResolved": true,
+    "absoluteMachinePathInLongTermArtifactAllowed": false,
+    "fixedExecutionShaInContractAllowed": false,
+    "fixedPrStateInContractAllowed": false
+  },
+  "authorization": {
+    "source": "user_attachment_M2_core_legacy_horizon_amount_next_2026_07_30",
+    "k1Attribution": true,
+    "k2B0ThroughB3TrainingAndEvaluationOnce": true,
+    "privateRowOutputs": true,
+    "publicAggregatePublication": true,
+    "channelAllocation": false,
+    "taxonomy": false,
+    "thirtySixMonth": false,
+    "newWork": false,
+    "newChannel": false,
+    "laterOrigin": false,
+    "finalHoldout": false,
+    "canary": false,
+    "full160": false,
+    "production": false,
+    "automation": false,
+    "release": false,
+    "m3Formal": false,
+    "pullRequestMerge": false
+  },
+  "privateCapability": {
+    "capabilityId": "m2-core-legacy-horizon-amount",
+    "sourceAuthorityBlocking": true,
+    "derivedCacheBlocking": false,
+    "runProvenanceBlocking": false
+  },
+  "privateOutputs": {
+    "directory": "data/private-output/m2-core-legacy-horizon-amount",
+    "oa03BaseMaterializationInput": "M2-core-legacy-horizon-amount-oa03-base-input-private-v0.1.ndjson",
+    "oa03BaseMaterializationRows": "M2-core-legacy-horizon-amount-oa03-base-rows-private-v0.1.ndjson",
+    "featureRows": "M2-core-legacy-horizon-amount-feature-rows-private-v0.1.ndjson",
+    "frozenLg01Rows": "M2-core-legacy-horizon-amount-frozen-lg01-rows-private-v0.1.ndjson",
+    "k1PairedRows": "M2-core-legacy-horizon-amount-k1-paired-rows-private-v0.1.ndjson",
+    "predictionRows": "M2-core-legacy-horizon-amount-predictions-private-v0.1.ndjson",
+    "selectionRows": "M2-core-legacy-horizon-amount-selections-private-v0.1.ndjson",
+    "evaluationRows": "M2-core-legacy-horizon-amount-evaluation-private-v0.1.ndjson",
+    "bootstrapRows": "M2-core-legacy-horizon-amount-bootstrap-private-v0.1.ndjson",
+    "manifest": "M2-core-legacy-horizon-amount-manifest-private-v0.1.json",
+    "attemptReceipt": "M2-core-legacy-horizon-amount-attempt-receipt-private-v0.1.json",
+    "attemptDirectory": "attempts"
+  },
+  "publicOutputs": {
+    "preregistration": "docs/analysis/m2-current/M2-core-legacy-horizon-amount-preregistration-v0.1.md",
+    "k1AttributionJson": "docs/analysis/m2-current/M2-oa03-lg01-core-legacy-error-attribution-v0.1.json",
+    "k1AttributionReport": "docs/analysis/m2-current/M2-oa03-lg01-core-legacy-error-attribution-v0.1.md",
+    "developmentJson": "docs/analysis/m2-current/M2-core-legacy-horizon-amount-development-v0.1.json",
+    "developmentReport": "docs/analysis/m2-current/M2-core-legacy-horizon-amount-development-v0.1.md"
+  }
+}

@@ -775,7 +775,7 @@ export async function runM2Oa03CurrentScopePrivateReplication({
   }
 }
 
-function buildBaseMaterializationInputs({
+export function buildBaseMaterializationInputs({
   schedules,
   cases,
   populationCache
@@ -841,7 +841,7 @@ function buildBaseMaterializationInputs({
   return output.sort(comparePrivateCase);
 }
 
-function buildCandidatePopulationRows(familyResults) {
+export function buildCandidatePopulationRows(familyResults) {
   const output = [];
   for (const family of FAMILY_IDS) {
     for (const populationId of POPULATION_IDS) {
