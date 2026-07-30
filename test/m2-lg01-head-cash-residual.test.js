@@ -19,6 +19,9 @@ import {
 import {
   loadOrRebuildLg01HeadCashResidualInputCache
 } from "../scripts/m2-current/lg01_head_cash_residual_mode.mjs";
+import {
+  buildOriginVisibleTrailing12CashIndex
+} from "../scripts/m2-current/core_legacy_horizon_amount_mode.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const config = JSON.parse(await readFile(path.join(
@@ -76,6 +79,40 @@ test("cash bands keep boundary works whole without a 50-work threshold", () => {
     JSON.stringify(config.bandShrinkage).includes("minimumWorkCount"),
     false
   );
+});
+
+test("HCRC trailing-12 cash sums only origin-visible months up to 12", () => {
+  const firstPair = new Map([
+    [24276, 1000],
+    [24286, 10],
+    [24287, 20],
+    [24288, 30],
+    [24289, 40]
+  ]);
+  const secondPair = new Map([
+    [24287, -5],
+    [24288, 15]
+  ]);
+  const values = buildOriginVisibleTrailing12CashIndex(new Map([
+    ["2024-01", {
+      eligiblePairs: [
+        {
+          standardWorkId: "WORK-A",
+          monthlyCashBySerial: firstPair
+        },
+        {
+          standardWorkId: "WORK-A",
+          monthlyCashBySerial: secondPair
+        }
+      ]
+    }]
+  ]));
+
+  assert.equal(
+    config.cashBands.historyWindowPolicy,
+    "LATEST_UP_TO_12_ORIGIN_VISIBLE_MONTHS_MISSING_MONTHS_ARE_ZERO_CASH"
+  );
+  assert.equal(values.get("WORK-A\u00002024-01"), 70);
 });
 
 test("outer predictions are deterministic and cannot read their own outcome", () => {

@@ -79,6 +79,8 @@ export function validateLg01HeadCashResidualContract(config) {
   }
   if (
     config?.cashBands?.futureActualUsed !== false
+    || config?.cashBands?.historyWindowPolicy
+      !== "LATEST_UP_TO_12_ORIGIN_VISIBLE_MONTHS_MISSING_MONTHS_ARE_ZERO_CASH"
     || config?.bandShrinkage?.fixedMinimumWorkCountAllowed !== false
   ) {
     errors.push("hcrc_contract_cash_band_support_must_be_origin_visible");

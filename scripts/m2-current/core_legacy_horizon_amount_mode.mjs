@@ -407,6 +407,8 @@ export async function rebuildM2CoreHorizonAmountFrozenH3B3Inputs({
       topCounts: coreConfig.coreSelection.topDiagnostics
     })
   ]));
+  const originVisibleTrailing12Cash =
+    buildOriginVisibleTrailing12CashIndex(populations);
   const frozenLg01 = reconstructFrozenLg01({
     workCases,
     humanConfig
@@ -451,6 +453,14 @@ export async function rebuildM2CoreHorizonAmountFrozenH3B3Inputs({
         "m2_core_horizon_amount_h3_b3_feature_join_missing"
       );
     }
+    const trailing12Cash = originVisibleTrailing12Cash.get(
+      headCashKey(prediction)
+    );
+    if (!Number.isFinite(trailing12Cash)) {
+      throw new Error(
+        "m2_core_horizon_amount_hcrc_trailing12_cash_join_missing"
+      );
+    }
     return {
       schema:
         "m2.current.lg01_head_cash_residual.input.private.v0.1",
@@ -462,9 +472,11 @@ export async function rebuildM2CoreHorizonAmountFrozenH3B3Inputs({
       actual: prediction.actual,
       basePointEstimate: feature.features.lg01PointEstimate,
       rawPointEstimate: prediction.pointEstimate,
-      trailing12Cash: feature.features.trailing12Cash,
+      trailing12Cash,
       labelAvailableAsOf: feature.labelAvailableAsOf,
       originVisibleOnly: true,
+      trailing12CashBasis:
+        "ORIGIN_VISIBLE_LATEST_UP_TO_12_MONTHS_SIGNED_CASH",
       frozenLg01Reconstructed: true,
       frozenCham01B3Reconstructed: true,
       frozenAggregateReconciled: true
@@ -484,11 +496,56 @@ export async function rebuildM2CoreHorizonAmountFrozenH3B3Inputs({
     frozenInputs: Object.freeze({
       lg01RowCount: frozenLg01.rows.length,
       cham01B3PredictionRowCount: training.predictions.length,
+      trailing12CashBasis:
+        "ORIGIN_VISIBLE_LATEST_UP_TO_12_MONTHS_SIGNED_CASH",
       formulaOrGridChanged: false,
       scientificReevaluationPerformed: false,
       derivedCacheReconstructionOnly: true
     })
   });
+}
+
+export function buildOriginVisibleTrailing12CashIndex(populations) {
+  if (!(populations instanceof Map) || populations.size === 0) {
+    throw new Error(
+      "m2_core_horizon_amount_hcrc_population_map_required"
+    );
+  }
+  const output = new Map();
+  for (const [origin, population] of populations) {
+    const originSerial = monthToSerial(origin);
+    const byWork = new Map();
+    for (const pair of population?.eligiblePairs ?? []) {
+      let pairCash = 0;
+      for (
+        let serial = originSerial - 11;
+        serial <= originSerial;
+        serial += 1
+      ) {
+        const cash = Number(pair.monthlyCashBySerial.get(serial) ?? 0);
+        if (!Number.isFinite(cash)) {
+          throw new Error(
+            "m2_core_horizon_amount_hcrc_trailing12_cash_nonfinite"
+          );
+        }
+        pairCash += cash;
+      }
+      const current = byWork.get(pair.standardWorkId) ?? 0;
+      byWork.set(pair.standardWorkId, current + pairCash);
+    }
+    for (const [standardWorkId, cash] of byWork) {
+      if (!Number.isFinite(cash)) {
+        throw new Error(
+          "m2_core_horizon_amount_hcrc_trailing12_cash_nonfinite"
+        );
+      }
+      output.set(headCashKey({
+        standardWorkId,
+        origin
+      }), cash);
+    }
+  }
+  return output;
 }
 
 export async function runM2CoreLegacyHorizonAmountPrivateDevelopment({
@@ -3217,6 +3274,13 @@ function evaluationFeatureKey(row) {
     row.standardWorkId,
     row.origin,
     Number(row.horizonMonths)
+  ].join("\u0000");
+}
+
+function headCashKey(row) {
+  return [
+    row.standardWorkId,
+    row.origin
   ].join("\u0000");
 }
 

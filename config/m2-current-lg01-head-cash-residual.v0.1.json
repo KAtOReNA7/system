@@ -153,6 +153,7 @@
   },
   "cashBands": {
     "rankingValue": "max(originVisibleTrailing12SalesShareCash,0)",
+    "historyWindowPolicy": "LATEST_UP_TO_12_ORIGIN_VISIBLE_MONTHS_MISSING_MONTHS_ARE_ZERO_CASH",
     "sort": [
       "rankingValue_DESC",
       "standardWorkId_ASC"

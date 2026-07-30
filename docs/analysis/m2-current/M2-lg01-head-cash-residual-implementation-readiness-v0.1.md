@@ -55,6 +55,24 @@ outer selection。验证结果：
 `caecc0925b11cab0bd16534dca01398a10af8c250f552bb018604398ecc992fe`。
 该 digest 只绑定公开合成验证输出，不是私有文件 digest，也不构成跨电脑硬门禁。
 
+## 结果形成前的接线故障记录
+
+执行检查点 K1 的 exact-head CI 通过后，首次私有入口在任何完整指标形成前因
+`hcrc_trailing12_cash_nonfinite` 停止。私有收据明确登记为结果前基础设施失败、
+允许工程性重试
+（`PRE_OUTCOME_INFRASTRUCTURE_FAILURE_RETRY_ALLOWED`）：
+`completeMetricsProduced=false`、`scientificWindowConsumed=false`。
+因此这不是候选模型失败或成功，也没有可供选择或调参的 outer outcome。
+
+根因是冻结 CHAM01 特征接线把“必须满 12 个月才可计算”的模型输入
+`features.trailing12Cash` 直接复用于本实验现金带；422/2,455 条冻结重建输入属于
+已满足三个月成熟门槛但尚不足完整 12 个月的 case，因而得到 `null`。修复只在
+HCRC 派生缓存接线层从同一 origin 可见权威月度现金计算最近最多 12 个月之和，
+保留不足 12 个月 case，排除 future month，并聚合一个作品的全部合格 canonical
+渠道。冻结 LG01、冻结 CHAM01 B3、人口、actual、fold、alpha 网格、残差边界和
+评价门禁均未改变。修复增加了不足 12 个月、多渠道聚合、旧月份排除和未来月份
+排除的确定性测试；重试时旧失败收据将归档保留。
+
 ## 执行边界
 
 不可替代私有权威源在 K0 能力盘点中可用；历史冻结行缓存缺失是可重建缓存缺失
