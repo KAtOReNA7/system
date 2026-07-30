@@ -39,7 +39,7 @@
 | 当前研究比较基线是什么？ | 人工锚定可学习全局模型（Human-Anchored Learned Global，`M2-WORK-LG01`） |
 | 是否已有生产模型？ | 没有；`activeCandidate=null`，`approvedForAutomation=null` |
 | 最新渠道模型结果如何？ | 出版行业规模适配渠道核心（Publishing-Scale Channel Core，`M2-CHAN-PSC01`）已实际执行并失败，不是“尚未运行” |
-| 最新核心老品结论如何？ | OA03 仅保留为兼容性现行运行回退；新分周期金额模型已通过同正式链路的合成恢复冒烟，真实私有执行仍待公共门禁与精确提交双平台 CI，3/6/12 月尚无新成绩 |
+| 最新核心老品结论如何？ | OA03 仅保留为兼容性现行运行回退；核心老品分周期金额模型已真实训练并冻结首个完整结果，3/6/12 月均失败，不晋升、不重跑 |
 | 没有真实账单能否开发？ | 可以完成公开安装、构建、测试、启动、查询和合成 fixture；只会阻断所属 private capability |
 
 ## 项目状态一览
@@ -56,10 +56,10 @@
 | M2 核心老品范围与尾部测试 | 范围纠偏、冻结重评分与一次训练人口消融已完成（`M2_CORE_LEGACY_SCOPE_AND_TAIL_TEST_COMPLETE`） | 尾部干扰未确认（`TAIL_INTERFERENCE_NOT_CONFIRMED`）；核心 80% 训练稳定退化，未授权新架构 |
 | M2 核心老品全周期路由与已有渠道分配 | 预注册验证已完成（`M2_CORE_LEGACY_HORIZON_ROUTER_AND_CHANNEL_ALLOCATION_COMPLETE`） | 合法模型交集的同案例证据已补齐；滚动路由未确认（`HORIZON_ROUTER_NOT_CONFIRMED`），已有渠道分配证据混合（`CHANNEL_ALLOCATION_MIXED`） |
 | M2 OA03 当前范围复现 | 同公式重新执行完成、无新增性能支持（`M2_OA03_CURRENT_SCOPE_REPLICATION_COMPLETE_PERFORMANCE_MIXED`） | 没有复现历史数值；`PERFORMANCE_MIXED` 是机器证据状态而非业务通过；Core80 Primary 主要参考不可合法重建，Strict 3/6/12 月均不支持 |
-| M2 核心老品分周期金额模型 v0.1 | 正式链路合成恢复验证通过（`M2_CHAM01_RECOVERY_READY_R0_FORMAL_CHAIN_PASS`） | 历史失败继续保留审计；当前恢复可持续到首个完整有效私有结果，真实 3/6/12 月仍未评价 |
+| M2 核心老品分周期金额模型 v0.1 | 首个完整 B0–B3 开发评价已冻结并失败（`M2_CORE_HORIZON_AMOUNT_DEVELOPMENT_FAIL`） | B1–B3 已真实训练；3/6/12 月最佳原始实验臂均为 B3，但三个周期都未通过，现行回退、活动候选和自动化授权不变 |
 | M3 | 仅合成 fixture/prototype | 不代表真实材料执行或正式发布 |
 
-最新状态以 [M2 当前状态索引 v0.45](docs/analysis/m2-v2/M2-v2-current-state-index-v0.45.md)
+最新状态以 [M2 当前状态索引 v0.46](docs/analysis/m2-v2/M2-v2-current-state-index-v0.46.md)
 为准；模型名称、角色、别名、谱系、成绩人口和可比组以
 [Model Registry](config/m2-model-registry.v1.json) 为唯一当前机器权威。
 
@@ -134,7 +134,7 @@
 
 - [出版规模渠道开发评价](docs/analysis/m2-current/M2-current-publishing-scale-channel-development-v0.1.md)
 - [出版规模渠道可预测性诊断](docs/analysis/m2-current/M2-current-publishing-scale-channel-forecastability-v0.1.md)
-- [M2 当前状态索引 v0.45](docs/analysis/m2-v2/M2-v2-current-state-index-v0.45.md)
+- [M2 当前状态索引 v0.46](docs/analysis/m2-v2/M2-v2-current-state-index-v0.46.md)
 
 随后完成的核心老品审计进一步表明：
 
@@ -163,7 +163,7 @@
    明确预测目标、使用场景和禁止外推的边界；
 2. 再读 [M2 模型目录与成绩总账](docs/analysis/m2-current/M2-model-catalog-and-scorecard-v1.md)，
    理解模型、实验、状态码和当前角色；
-3. 最后读 [M2 当前状态索引 v0.45](docs/analysis/m2-v2/M2-v2-current-state-index-v0.45.md)，
+3. 最后读 [M2 当前状态索引 v0.46](docs/analysis/m2-v2/M2-v2-current-state-index-v0.46.md)，
    查看最新结论、阻断项和下一步。
 
 ### 给开发者
@@ -340,7 +340,7 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
 
 | 主题 | 当前入口 |
 |---|---|
-| 最新状态 | [M2 当前状态索引 v0.45](docs/analysis/m2-v2/M2-v2-current-state-index-v0.45.md) |
+| 最新状态 | [M2 当前状态索引 v0.46](docs/analysis/m2-v2/M2-v2-current-state-index-v0.46.md) |
 | 模型身份与角色 | [Model Registry](config/m2-model-registry.v1.json) · [中文模型目录](docs/analysis/m2-current/M2-model-catalog-and-scorecard-v1.md) |
 | 产品定义 | [M2 Forecast Intelligence v2 PRD](docs/prd/m2-v2/M2-forecast-intelligence-v2-prd-v0.2.md) |
 | 评价体系 | [v2.2 合同](docs/analysis/m2-current/M2-evaluation-contract-v2.2.md) · [v2.2 验证](docs/analysis/m2-current/M2-evaluation-contract-v2.2-validation.md) |

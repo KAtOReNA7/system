@@ -36,8 +36,8 @@ test("registry schema, evidence paths and immutable digests validate", () => {
   );
   assert.equal(validation.counts.modelCount, 32);
   assert.equal(validation.counts.experimentCount, 19);
-  assert.equal(validation.counts.nonModelIdentifierCount, 74);
-  assert.equal(validation.counts.evaluationCount, 96);
+  assert.equal(validation.counts.nonModelIdentifierCount, 77);
+  assert.equal(validation.counts.evaluationCount, 102);
   assert.equal(validation.counts.comparabilityGroupCount, 57);
 });
 
@@ -97,7 +97,7 @@ test("current roles retain fallback, research baseline and no automation promoti
   );
   assert.equal(
     registry.currentRoles.activeExperiment,
-    "M2-EXP-CORE-HORIZON-AMOUNT-01"
+    null
   );
   assert.equal(registry.currentRoles.blockedExperiment, null);
   assert.match(
@@ -226,8 +226,60 @@ test("core legacy population test records non-confirmation without promotion", (
   );
   assert.equal(
     registry.currentRoles.latestStateIndex,
-    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.45.md"
+    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.46.md"
   );
+  assert.equal(registry.currentRoles.activeCandidate, null);
+  assert.equal(registry.currentRoles.approvedForAutomation, null);
+});
+
+test("CHAM01 first complete result is failed, frozen and not promoted", () => {
+  const model = registry.models.find(
+    (item) => item.stableModelId === "M2-WORK-CHAM01"
+  );
+  const experiment = registry.experiments.find(
+    (item) => (
+      item.experimentId === "M2-EXP-CORE-HORIZON-AMOUNT-01"
+    )
+  );
+  assert.equal(model.currentRole, "failed_development_candidate");
+  assert.equal(
+    model.operationalStatus,
+    "development_failed_frozen_no_further_run_authorized"
+  );
+  assert.equal(model.evaluations.length, 7);
+  assert.equal(
+    model.evaluations.slice(1).every(
+      (item) => item.rawArmId === "B3"
+    ),
+    true
+  );
+  assert.equal(
+    model.evaluations.slice(1).every(
+      (item) => (
+        item.resultStatus === "M2_CORE_HORIZON_AMOUNT_HORIZON_FAIL"
+        || item.resultStatus === "M2_CORE_HORIZON_AMOUNT_DEVELOPMENT_FAIL"
+      )
+    ),
+    true
+  );
+  assert.equal(
+    experiment.resultStatus,
+    "M2_CORE_HORIZON_AMOUNT_DEVELOPMENT_FAIL"
+  );
+  assert.equal(experiment.candidateOutcomeProduced, true);
+  assert.equal(experiment.firstValidCompleteOutcomeFrozen, true);
+  assert.deepEqual(
+    experiment.bestRawArms,
+    { H3: "B3", H6: "B3", H12: "B3" }
+  );
+  assert.equal(
+    Object.values(experiment.horizonDecisions).every(
+      (status) => status === "M2_CORE_HORIZON_AMOUNT_HORIZON_FAIL"
+    ),
+    true
+  );
+  assert.equal(experiment.secondResultExecuted, false);
+  assert.equal(registry.currentRoles.activeExperiment, null);
   assert.equal(registry.currentRoles.activeCandidate, null);
   assert.equal(registry.currentRoles.approvedForAutomation, null);
 });
@@ -499,7 +551,7 @@ test("read-only query exposes scoped identities and refuses invalid ranking", ()
   assert.match(status.stdout, /本次只读查询模型执行次数：0/u);
   assert.match(
     status.stdout,
-    /当前实验：M2-EXP-CORE-HORIZON-AMOUNT-01/u
+    /当前实验：无（null）/u
   );
   assert.match(status.stdout, /兼容性现行运行回退模型/u);
   assert.match(status.stdout, /没有复现历史数值/u);
@@ -512,10 +564,10 @@ test("read-only query exposes scoped identities and refuses invalid ranking", ()
 
   const horizonAmount = runQuery("show", "M2-WORK-CHAM01");
   assert.equal(horizonAmount.status, 0, horizonAmount.stderr);
-  assert.match(horizonAmount.stdout, /恢复就绪且尚无真实私有结果/u);
+  assert.match(horizonAmount.stdout, /已执行失败候选/u);
   assert.match(
     horizonAmount.stdout,
-    /recovery_authorized_until_first_valid_complete_outcome_no_private_result_yet/u
+    /development_failed_frozen_no_further_run_authorized/u
   );
 
   const publishingScale = runQuery("show", "M2-CHAN-PSC01");

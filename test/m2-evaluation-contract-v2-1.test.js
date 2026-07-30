@@ -274,7 +274,7 @@ test("registry advances beyond v2.1 without changing model roles", () => {
   ));
   assert.equal(
     registry.currentRoles.latestStateIndex,
-    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.45.md"
+    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.46.md"
   );
   assert.equal(registry.currentRoles.operationalWorkFallback, "M2-WORK-OA03");
   assert.equal(registry.currentRoles.researchWorkBaseline, "M2-WORK-LG01");

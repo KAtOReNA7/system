@@ -1,0 +1,5276 @@
+{
+  "schema": "m2.current.core_horizon_amount.development.public.v0.1",
+  "asOf": "2026-07-30",
+  "experimentId": "M2-EXP-CORE-HORIZON-AMOUNT-01",
+  "modelId": "M2-WORK-CHAM01",
+  "displayNameZh": "核心老品分周期金额模型 v0.1",
+  "displayNameEn": "Core Legacy Horizon-Specific Amount Model v0.1",
+  "status": "M2_CORE_HORIZON_AMOUNT_DEVELOPMENT_FAIL",
+  "executionEvidence": {
+    "executionHead": "4215c423959f432414c52f1eb4ca88b4b489fb29",
+    "exactHeadCiRunId": 30524247060,
+    "linux": "success",
+    "windows": "success"
+  },
+  "sourceAndCache": {
+    "sourceAuthorityStatus": "SOURCE_AUTHORITY_AVAILABLE",
+    "derivedCacheStatusBefore": "CACHE_MISS_REBUILDABLE",
+    "historicalReceiptStatusBefore": "PROVENANCE_AVAILABLE",
+    "sourceAuthorityRowCount": 190663,
+    "sourceAuthorityWorkCount": 2719
+  },
+  "k1Status": "K1_ORIGIN_VISIBLE_SAME_CASE_ATTRIBUTION_COMPLETE",
+  "k2Eligibility": {
+    "status": "K2_ELIGIBLE",
+    "eligible": true,
+    "checks": {
+      "everyHorizonHasLegalTrainingPseudoOrigins": true,
+      "everyHorizonHasAtLeastTwoStrictIndependentTimeBlocks": true,
+      "lg01ReconstructableForEveryLegalStrictCell": true,
+      "allFeaturesOriginSafe": true,
+      "trainingEvaluationIsolationProven": true,
+      "labelsMaterializable": true
+    },
+    "byHorizon": [
+      {
+        "horizonMonths": 3,
+        "legalTrainingPseudoOriginCount": 53,
+        "legalTrainingRowCount": 60323,
+        "strictEvaluationCaseCount": 1865,
+        "strictLg01CaseCount": 1865,
+        "strictSameCaseCount": 1865,
+        "strictExactSameCase": true,
+        "independentTimeBlockCount": 11,
+        "labelMaterializable": true
+      },
+      {
+        "horizonMonths": 6,
+        "legalTrainingPseudoOriginCount": 52,
+        "legalTrainingRowCount": 57638,
+        "strictEvaluationCaseCount": 1865,
+        "strictLg01CaseCount": 1865,
+        "strictSameCaseCount": 1865,
+        "strictExactSameCase": true,
+        "independentTimeBlockCount": 6,
+        "labelMaterializable": true
+      },
+      {
+        "horizonMonths": 12,
+        "legalTrainingPseudoOriginCount": 48,
+        "legalTrainingRowCount": 47207,
+        "strictEvaluationCaseCount": 1525,
+        "strictLg01CaseCount": 1525,
+        "strictSameCaseCount": 1525,
+        "strictExactSameCase": true,
+        "independentTimeBlockCount": 3,
+        "labelMaterializable": true
+      }
+    ]
+  },
+  "arms": [
+    {
+      "armId": "B0",
+      "modelId": "M2-WORK-LG01",
+      "role": "FROZEN_SAME_CASE_RESEARCH_BASELINE"
+    },
+    {
+      "armId": "B1",
+      "modelId": "M2-WORK-CHAM01",
+      "role": "RAW_CANDIDATE"
+    },
+    {
+      "armId": "B2",
+      "modelId": "M2-WORK-CHAM01",
+      "role": "RAW_CANDIDATE"
+    },
+    {
+      "armId": "B3",
+      "modelId": "M2-WORK-CHAM01",
+      "role": "RAW_CANDIDATE"
+    }
+  ],
+  "rawEvaluationCells": [
+    {
+      "evaluationFamily": "PRIMARY_ROLLING",
+      "populationId": "CORE80",
+      "horizonMonths": 3,
+      "armId": "B1",
+      "rawMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 194,
+        "workCount": 80,
+        "originCount": 5,
+        "wape": 0.2778996239176395,
+        "signedBias": -0.1317287040100845,
+        "mae": 13545.507455916257,
+        "medianAbsoluteError": 5163.681668396299,
+        "predictionActualRatio": 0.8682712959899155,
+        "underpredictionCash": 1936729.8116933068,
+        "overpredictionCash": 691098.6347544462,
+        "errorConcentration": {
+          "maximumWorkShare": 0.3397711742152958,
+          "top1PercentWorkShare": 0.3397711742152958,
+          "top5PercentWorkShare": 0.46283670915182157,
+          "top10PercentWorkShare": 0.5633674416722267
+        }
+      },
+      "occurrenceAuxiliary": {
+        "status": "AUXILIARY_PREVALENCE_ONLY",
+        "caseCount": 194,
+        "workCount": 80,
+        "positiveCaseCount": 194,
+        "nonpositiveCaseCount": 0,
+        "positiveShare": 1,
+        "usedForTrainingSelectionRoutingOrPromotion": false
+      },
+      "sameCaseStatus": "NOT_EVALUABLE_CANONICAL_LG01_PRIMARY_IS_36_MONTH_CROSS_WORK",
+      "sameCaseCount": 0,
+      "baselineMetrics": null,
+      "relativeWapeImprovement": null,
+      "bootstrap": null,
+      "gate": null
+    },
+    {
+      "evaluationFamily": "PRIMARY_ROLLING",
+      "populationId": "CORE80",
+      "horizonMonths": 3,
+      "armId": "B2",
+      "rawMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 194,
+        "workCount": 80,
+        "originCount": 5,
+        "wape": 0.2850619315289293,
+        "signedBias": -0.10583704865255583,
+        "mae": 13894.615849020973,
+        "medianAbsoluteError": 5054.831186914906,
+        "predictionActualRatio": 0.8941629513474442,
+        "underpredictionCash": 1848177.1319574662,
+        "overpredictionCash": 847378.3427526023,
+        "errorConcentration": {
+          "maximumWorkShare": 0.2956178446795594,
+          "top1PercentWorkShare": 0.2956178446795594,
+          "top5PercentWorkShare": 0.4507499431298388,
+          "top10PercentWorkShare": 0.5530039575998498
+        }
+      },
+      "occurrenceAuxiliary": {
+        "status": "AUXILIARY_PREVALENCE_ONLY",
+        "caseCount": 194,
+        "workCount": 80,
+        "positiveCaseCount": 194,
+        "nonpositiveCaseCount": 0,
+        "positiveShare": 1,
+        "usedForTrainingSelectionRoutingOrPromotion": false
+      },
+      "sameCaseStatus": "NOT_EVALUABLE_CANONICAL_LG01_PRIMARY_IS_36_MONTH_CROSS_WORK",
+      "sameCaseCount": 0,
+      "baselineMetrics": null,
+      "relativeWapeImprovement": null,
+      "bootstrap": null,
+      "gate": null
+    },
+    {
+      "evaluationFamily": "PRIMARY_ROLLING",
+      "populationId": "CORE80",
+      "horizonMonths": 3,
+      "armId": "B3",
+      "rawMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 194,
+        "workCount": 80,
+        "originCount": 5,
+        "wape": 0.26460671723990187,
+        "signedBias": -0.10562262273158823,
+        "mae": 12897.578667903726,
+        "medianAbsoluteError": 5031.320143477238,
+        "predictionActualRatio": 0.8943773772684117,
+        "underpredictionCash": 1750450.7159300682,
+        "overpredictionCash": 751679.545643255,
+        "errorConcentration": {
+          "maximumWorkShare": 0.28149962739249823,
+          "top1PercentWorkShare": 0.28149962739249823,
+          "top5PercentWorkShare": 0.4150152433227981,
+          "top10PercentWorkShare": 0.5237905948615733
+        }
+      },
+      "occurrenceAuxiliary": {
+        "status": "AUXILIARY_PREVALENCE_ONLY",
+        "caseCount": 194,
+        "workCount": 80,
+        "positiveCaseCount": 194,
+        "nonpositiveCaseCount": 0,
+        "positiveShare": 1,
+        "usedForTrainingSelectionRoutingOrPromotion": false
+      },
+      "sameCaseStatus": "NOT_EVALUABLE_CANONICAL_LG01_PRIMARY_IS_36_MONTH_CROSS_WORK",
+      "sameCaseCount": 0,
+      "baselineMetrics": null,
+      "relativeWapeImprovement": null,
+      "bootstrap": null,
+      "gate": null
+    },
+    {
+      "evaluationFamily": "PRIMARY_ROLLING",
+      "populationId": "CORE80",
+      "horizonMonths": 6,
+      "armId": "B1",
+      "rawMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 194,
+        "workCount": 80,
+        "originCount": 5,
+        "wape": 0.3271116975894298,
+        "signedBias": -0.19345942705995364,
+        "mae": 30915.93721506868,
+        "medianAbsoluteError": 12002.057123421306,
+        "predictionActualRatio": 0.8065405729400463,
+        "underpredictionCash": 4772414.436570531,
+        "overpredictionCash": 1225277.3831527927,
+        "errorConcentration": {
+          "maximumWorkShare": 0.3859458391306274,
+          "top1PercentWorkShare": 0.3859458391306274,
+          "top5PercentWorkShare": 0.501312055894522,
+          "top10PercentWorkShare": 0.5900295985454438
+        }
+      },
+      "occurrenceAuxiliary": {
+        "status": "AUXILIARY_PREVALENCE_ONLY",
+        "caseCount": 194,
+        "workCount": 80,
+        "positiveCaseCount": 194,
+        "nonpositiveCaseCount": 0,
+        "positiveShare": 1,
+        "usedForTrainingSelectionRoutingOrPromotion": false
+      },
+      "sameCaseStatus": "NOT_EVALUABLE_CANONICAL_LG01_PRIMARY_IS_36_MONTH_CROSS_WORK",
+      "sameCaseCount": 0,
+      "baselineMetrics": null,
+      "relativeWapeImprovement": null,
+      "bootstrap": null,
+      "gate": null
+    },
+    {
+      "evaluationFamily": "PRIMARY_ROLLING",
+      "populationId": "CORE80",
+      "horizonMonths": 6,
+      "armId": "B2",
+      "rawMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 194,
+        "workCount": 80,
+        "originCount": 5,
+        "wape": 0.32874142862583794,
+        "signedBias": -0.20350153592678222,
+        "mae": 31069.966137819963,
+        "medianAbsoluteError": 11689.317732156804,
+        "predictionActualRatio": 0.7964984640732178,
+        "underpredictionCash": 4879417.792342644,
+        "overpredictionCash": 1148155.6383944263,
+        "errorConcentration": {
+          "maximumWorkShare": 0.382200046235384,
+          "top1PercentWorkShare": 0.382200046235384,
+          "top5PercentWorkShare": 0.5011391198474971,
+          "top10PercentWorkShare": 0.588006491563456
+        }
+      },
+      "occurrenceAuxiliary": {
+        "status": "AUXILIARY_PREVALENCE_ONLY",
+        "caseCount": 194,
+        "workCount": 80,
+        "positiveCaseCount": 194,
+        "nonpositiveCaseCount": 0,
+        "positiveShare": 1,
+        "usedForTrainingSelectionRoutingOrPromotion": false
+      },
+      "sameCaseStatus": "NOT_EVALUABLE_CANONICAL_LG01_PRIMARY_IS_36_MONTH_CROSS_WORK",
+      "sameCaseCount": 0,
+      "baselineMetrics": null,
+      "relativeWapeImprovement": null,
+      "bootstrap": null,
+      "gate": null
+    },
+    {
+      "evaluationFamily": "PRIMARY_ROLLING",
+      "populationId": "CORE80",
+      "horizonMonths": 6,
+      "armId": "B3",
+      "rawMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 161,
+        "workCount": 71,
+        "originCount": 4,
+        "wape": 0.2881405684340629,
+        "signedBias": -0.1571361380762137,
+        "mae": 30477.906176934746,
+        "medianAbsoluteError": 11167.265846204107,
+        "predictionActualRatio": 0.8428638619237863,
+        "underpredictionCash": 3791460.8535780427,
+        "overpredictionCash": 1115482.0409084498,
+        "errorConcentration": {
+          "maximumWorkShare": 0.417877621066346,
+          "top1PercentWorkShare": 0.417877621066346,
+          "top5PercentWorkShare": 0.5437566653912975,
+          "top10PercentWorkShare": 0.6242673326538595
+        }
+      },
+      "occurrenceAuxiliary": {
+        "status": "AUXILIARY_PREVALENCE_ONLY",
+        "caseCount": 161,
+        "workCount": 71,
+        "positiveCaseCount": 161,
+        "nonpositiveCaseCount": 0,
+        "positiveShare": 1,
+        "usedForTrainingSelectionRoutingOrPromotion": false
+      },
+      "sameCaseStatus": "NOT_EVALUABLE_CANONICAL_LG01_PRIMARY_IS_36_MONTH_CROSS_WORK",
+      "sameCaseCount": 0,
+      "baselineMetrics": null,
+      "relativeWapeImprovement": null,
+      "bootstrap": null,
+      "gate": null
+    },
+    {
+      "evaluationFamily": "PRIMARY_ROLLING",
+      "populationId": "CORE80",
+      "horizonMonths": 12,
+      "armId": "B1",
+      "rawMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 124,
+        "workCount": 62,
+        "originCount": 3,
+        "wape": 0.25835030284793675,
+        "signedBias": -0.10880160380483349,
+        "mae": 54282.91861789228,
+        "medianAbsoluteError": 21060.957206965162,
+        "predictionActualRatio": 0.8911983961951665,
+        "underpredictionCash": 4782904.315076241,
+        "overpredictionCash": 1948177.593542402,
+        "errorConcentration": {
+          "maximumWorkShare": 0.24584204260184037,
+          "top1PercentWorkShare": 0.24584204260184037,
+          "top5PercentWorkShare": 0.4360155633633483,
+          "top10PercentWorkShare": 0.5310250311118465
+        }
+      },
+      "occurrenceAuxiliary": {
+        "status": "AUXILIARY_PREVALENCE_ONLY",
+        "caseCount": 124,
+        "workCount": 62,
+        "positiveCaseCount": 124,
+        "nonpositiveCaseCount": 0,
+        "positiveShare": 1,
+        "usedForTrainingSelectionRoutingOrPromotion": false
+      },
+      "sameCaseStatus": "NOT_EVALUABLE_CANONICAL_LG01_PRIMARY_IS_36_MONTH_CROSS_WORK",
+      "sameCaseCount": 0,
+      "baselineMetrics": null,
+      "relativeWapeImprovement": null,
+      "bootstrap": null,
+      "gate": null
+    },
+    {
+      "evaluationFamily": "PRIMARY_ROLLING",
+      "populationId": "CORE80",
+      "horizonMonths": 12,
+      "armId": "B2",
+      "rawMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 124,
+        "workCount": 62,
+        "originCount": 3,
+        "wape": 0.28557847967864564,
+        "signedBias": -0.1430094914134599,
+        "mae": 60003.929550420224,
+        "medianAbsoluteError": 23300.193607465764,
+        "predictionActualRatio": 0.8569905085865401,
+        "underpredictionCash": 5583234.675299866,
+        "overpredictionCash": 1857252.5889522424,
+        "errorConcentration": {
+          "maximumWorkShare": 0.29141727031505127,
+          "top1PercentWorkShare": 0.29141727031505127,
+          "top5PercentWorkShare": 0.480490118035827,
+          "top10PercentWorkShare": 0.5676505513914364
+        }
+      },
+      "occurrenceAuxiliary": {
+        "status": "AUXILIARY_PREVALENCE_ONLY",
+        "caseCount": 124,
+        "workCount": 62,
+        "positiveCaseCount": 124,
+        "nonpositiveCaseCount": 0,
+        "positiveShare": 1,
+        "usedForTrainingSelectionRoutingOrPromotion": false
+      },
+      "sameCaseStatus": "NOT_EVALUABLE_CANONICAL_LG01_PRIMARY_IS_36_MONTH_CROSS_WORK",
+      "sameCaseCount": 0,
+      "baselineMetrics": null,
+      "relativeWapeImprovement": null,
+      "bootstrap": null,
+      "gate": null
+    },
+    {
+      "evaluationFamily": "PRIMARY_ROLLING",
+      "populationId": "CORE80",
+      "horizonMonths": 12,
+      "armId": "B3",
+      "rawMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 124,
+        "workCount": 62,
+        "originCount": 3,
+        "wape": 0.2839980515128374,
+        "signedBias": -0.13296336298895106,
+        "mae": 59671.86005965409,
+        "medianAbsoluteError": 23215.415464053673,
+        "predictionActualRatio": 0.8670366370110489,
+        "underpredictionCash": 5431775.002402405,
+        "overpredictionCash": 1967535.6449946973,
+        "errorConcentration": {
+          "maximumWorkShare": 0.3181911457786039,
+          "top1PercentWorkShare": 0.3181911457786039,
+          "top5PercentWorkShare": 0.4888234605242517,
+          "top10PercentWorkShare": 0.5790435072500962
+        }
+      },
+      "occurrenceAuxiliary": {
+        "status": "AUXILIARY_PREVALENCE_ONLY",
+        "caseCount": 124,
+        "workCount": 62,
+        "positiveCaseCount": 124,
+        "nonpositiveCaseCount": 0,
+        "positiveShare": 1,
+        "usedForTrainingSelectionRoutingOrPromotion": false
+      },
+      "sameCaseStatus": "NOT_EVALUABLE_CANONICAL_LG01_PRIMARY_IS_36_MONTH_CROSS_WORK",
+      "sameCaseCount": 0,
+      "baselineMetrics": null,
+      "relativeWapeImprovement": null,
+      "bootstrap": null,
+      "gate": null
+    },
+    {
+      "evaluationFamily": "PRIMARY_ROLLING",
+      "populationId": "CORE90",
+      "horizonMonths": 3,
+      "armId": "B1",
+      "rawMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 396,
+        "workCount": 155,
+        "originCount": 5,
+        "wape": 5.494429874592189e+33,
+        "signedBias": 5.494429874592189e+33,
+        "mae": 1.5244782550707185e+38,
+        "medianAbsoluteError": 1986.3817105023518,
+        "predictionActualRatio": 5.494429874592189e+33,
+        "underpredictionCash": 2446907.680429368,
+        "overpredictionCash": 6.036933890080045e+40,
+        "errorConcentration": {
+          "maximumWorkShare": 1,
+          "top1PercentWorkShare": 1,
+          "top5PercentWorkShare": 1,
+          "top10PercentWorkShare": 1
+        }
+      },
+      "occurrenceAuxiliary": {
+        "status": "AUXILIARY_PREVALENCE_ONLY",
+        "caseCount": 396,
+        "workCount": 155,
+        "positiveCaseCount": 394,
+        "nonpositiveCaseCount": 2,
+        "positiveShare": 0.9949494949494949,
+        "usedForTrainingSelectionRoutingOrPromotion": false
+      },
+      "sameCaseStatus": "NOT_EVALUABLE_CANONICAL_LG01_PRIMARY_IS_36_MONTH_CROSS_WORK",
+      "sameCaseCount": 0,
+      "baselineMetrics": null,
+      "relativeWapeImprovement": null,
+      "bootstrap": null,
+      "gate": null
+    },
+    {
+      "evaluationFamily": "PRIMARY_ROLLING",
+      "populationId": "CORE90",
+      "horizonMonths": 3,
+      "armId": "B2",
+      "rawMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 396,
+        "workCount": 155,
+        "originCount": 5,
+        "wape": 2.739672113752189e+61,
+        "signedBias": 2.739672113752189e+61,
+        "mae": 7.601463043058385e+65,
+        "medianAbsoluteError": 2160.1941136798405,
+        "predictionActualRatio": 2.739672113752189e+61,
+        "underpredictionCash": 2380145.9832563233,
+        "overpredictionCash": 3.0101793650511204e+68,
+        "errorConcentration": {
+          "maximumWorkShare": 1,
+          "top1PercentWorkShare": 1,
+          "top5PercentWorkShare": 1,
+          "top10PercentWorkShare": 1
+        }
+      },
+      "occurrenceAuxiliary": {
+        "status": "AUXILIARY_PREVALENCE_ONLY",
+        "caseCount": 396,
+        "workCount": 155,
+        "positiveCaseCount": 394,
+        "nonpositiveCaseCount": 2,
+        "positiveShare": 0.9949494949494949,
+        "usedForTrainingSelectionRoutingOrPromotion": false
+      },
+      "sameCaseStatus": "NOT_EVALUABLE_CANONICAL_LG01_PRIMARY_IS_36_MONTH_CROSS_WORK",
+      "sameCaseCount": 0,
+      "baselineMetrics": null,
+      "relativeWapeImprovement": null,
+      "bootstrap": null,
+      "gate": null
+    },
+    {
+      "evaluationFamily": "PRIMARY_ROLLING",
+      "populationId": "CORE90",
+      "horizonMonths": 3,
+      "armId": "B3",
+      "rawMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 396,
+        "workCount": 155,
+        "originCount": 5,
+        "wape": 1.5056004952219026e+52,
+        "signedBias": 1.5056004952219026e+52,
+        "mae": 4.177421985861372e+56,
+        "medianAbsoluteError": 2118.9971871204025,
+        "predictionActualRatio": 1.5056004952219026e+52,
+        "underpredictionCash": 2274520.013608648,
+        "overpredictionCash": 1.6542591064011036e+59,
+        "errorConcentration": {
+          "maximumWorkShare": 1,
+          "top1PercentWorkShare": 1,
+          "top5PercentWorkShare": 1,
+          "top10PercentWorkShare": 1
+        }
+      },
+      "occurrenceAuxiliary": {
+        "status": "AUXILIARY_PREVALENCE_ONLY",
+        "caseCount": 396,
+        "workCount": 155,
+        "positiveCaseCount": 394,
+        "nonpositiveCaseCount": 2,
+        "positiveShare": 0.9949494949494949,
+        "usedForTrainingSelectionRoutingOrPromotion": false
+      },
+      "sameCaseStatus": "NOT_EVALUABLE_CANONICAL_LG01_PRIMARY_IS_36_MONTH_CROSS_WORK",
+      "sameCaseCount": 0,
+      "baselineMetrics": null,
+      "relativeWapeImprovement": null,
+      "bootstrap": null,
+      "gate": null
+    },
+    {
+      "evaluationFamily": "PRIMARY_ROLLING",
+      "populationId": "CORE90",
+      "horizonMonths": 6,
+      "armId": "B1",
+      "rawMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 396,
+        "workCount": 155,
+        "originCount": 5,
+        "wape": 9366475296846.143,
+        "signedBias": 9366475296845.537,
+        "mae": 510270329990009000,
+        "medianAbsoluteError": 4597.685913923067,
+        "predictionActualRatio": 9366475296846.535,
+        "underpredictionCash": 6233821.401794617,
+        "overpredictionCash": 202067050676036900000,
+        "errorConcentration": {
+          "maximumWorkShare": 0.9999999999999616,
+          "top1PercentWorkShare": 0.9999999999999731,
+          "top5PercentWorkShare": 0.99999999999998,
+          "top10PercentWorkShare": 0.9999999999999856
+        }
+      },
+      "occurrenceAuxiliary": {
+        "status": "AUXILIARY_PREVALENCE_ONLY",
+        "caseCount": 396,
+        "workCount": 155,
+        "positiveCaseCount": 395,
+        "nonpositiveCaseCount": 1,
+        "positiveShare": 0.9974747474747475,
+        "usedForTrainingSelectionRoutingOrPromotion": false
+      },
+      "sameCaseStatus": "NOT_EVALUABLE_CANONICAL_LG01_PRIMARY_IS_36_MONTH_CROSS_WORK",
+      "sameCaseCount": 0,
+      "baselineMetrics": null,
+      "relativeWapeImprovement": null,
+      "bootstrap": null,
+      "gate": null
+    },
+    {
+      "evaluationFamily": "PRIMARY_ROLLING",
+      "populationId": "CORE90",
+      "horizonMonths": 6,
+      "armId": "B2",
+      "rawMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 396,
+        "workCount": 155,
+        "originCount": 5,
+        "wape": 8.271113970865827e+28,
+        "signedBias": 8.271113970865827e+28,
+        "mae": 4.5059682767965e+33,
+        "medianAbsoluteError": 4717.399115635721,
+        "predictionActualRatio": 8.271113970865827e+28,
+        "underpredictionCash": 6399097.937497259,
+        "overpredictionCash": 1.784363437611414e+36,
+        "errorConcentration": {
+          "maximumWorkShare": 1,
+          "top1PercentWorkShare": 1,
+          "top5PercentWorkShare": 1,
+          "top10PercentWorkShare": 1
+        }
+      },
+      "occurrenceAuxiliary": {
+        "status": "AUXILIARY_PREVALENCE_ONLY",
+        "caseCount": 396,
+        "workCount": 155,
+        "positiveCaseCount": 395,
+        "nonpositiveCaseCount": 1,
+        "positiveShare": 0.9974747474747475,
+        "usedForTrainingSelectionRoutingOrPromotion": false
+      },
+      "sameCaseStatus": "NOT_EVALUABLE_CANONICAL_LG01_PRIMARY_IS_36_MONTH_CROSS_WORK",
+      "sameCaseCount": 0,
+      "baselineMetrics": null,
+      "relativeWapeImprovement": null,
+      "bootstrap": null,
+      "gate": null
+    },
+    {
+      "evaluationFamily": "PRIMARY_ROLLING",
+      "populationId": "CORE90",
+      "horizonMonths": 6,
+      "armId": "B3",
+      "rawMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 334,
+        "workCount": 141,
+        "originCount": 4,
+        "wape": 0.32637735515258776,
+        "signedBias": -0.18819804175672672,
+        "mae": 19506.13320741569,
+        "medianAbsoluteError": 4085.375201410553,
+        "predictionActualRatio": 0.8118019582432733,
+        "underpredictionCash": 5135901.143807696,
+        "overpredictionCash": 1379147.347469147,
+        "errorConcentration": {
+          "maximumWorkShare": 0.3147331330230149,
+          "top1PercentWorkShare": 0.3591040823931902,
+          "top5PercentWorkShare": 0.5381593288362293,
+          "top10PercentWorkShare": 0.644609086587525
+        }
+      },
+      "occurrenceAuxiliary": {
+        "status": "AUXILIARY_PREVALENCE_ONLY",
+        "caseCount": 334,
+        "workCount": 141,
+        "positiveCaseCount": 333,
+        "nonpositiveCaseCount": 1,
+        "positiveShare": 0.9970059880239521,
+        "usedForTrainingSelectionRoutingOrPromotion": false
+      },
+      "sameCaseStatus": "NOT_EVALUABLE_CANONICAL_LG01_PRIMARY_IS_36_MONTH_CROSS_WORK",
+      "sameCaseCount": 0,
+      "baselineMetrics": null,
+      "relativeWapeImprovement": null,
+      "bootstrap": null,
+      "gate": null
+    },
+    {
+      "evaluationFamily": "PRIMARY_ROLLING",
+      "populationId": "CORE90",
+      "horizonMonths": 12,
+      "armId": "B1",
+      "rawMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 260,
+        "workCount": 134,
+        "originCount": 3,
+        "wape": 0.29497343016578464,
+        "signedBias": -0.13484097688300625,
+        "mae": 33818.65980612098,
+        "medianAbsoluteError": 9910.83753862451,
+        "predictionActualRatio": 0.8651590231169938,
+        "underpredictionCash": 6406160.502204561,
+        "overpredictionCash": 2386691.047386897,
+        "errorConcentration": {
+          "maximumWorkShare": 0.1881963906705542,
+          "top1PercentWorkShare": 0.25096717750910874,
+          "top5PercentWorkShare": 0.43751606921682906,
+          "top10PercentWorkShare": 0.5893217430943498
+        }
+      },
+      "occurrenceAuxiliary": {
+        "status": "AUXILIARY_PREVALENCE_ONLY",
+        "caseCount": 260,
+        "workCount": 134,
+        "positiveCaseCount": 259,
+        "nonpositiveCaseCount": 1,
+        "positiveShare": 0.9961538461538462,
+        "usedForTrainingSelectionRoutingOrPromotion": false
+      },
+      "sameCaseStatus": "NOT_EVALUABLE_CANONICAL_LG01_PRIMARY_IS_36_MONTH_CROSS_WORK",
+      "sameCaseCount": 0,
+      "baselineMetrics": null,
+      "relativeWapeImprovement": null,
+      "bootstrap": null,
+      "gate": null
+    },
+    {
+      "evaluationFamily": "PRIMARY_ROLLING",
+      "populationId": "CORE90",
+      "horizonMonths": 12,
+      "armId": "B2",
+      "rawMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 260,
+        "workCount": 134,
+        "originCount": 3,
+        "wape": 0.31914415391699963,
+        "signedBias": -0.17127476295599833,
+        "mae": 36589.8296818303,
+        "medianAbsoluteError": 9529.403031434023,
+        "predictionActualRatio": 0.8287252370440017,
+        "underpredictionCash": 7309439.244667087,
+        "overpredictionCash": 2203916.4726087893,
+        "errorConcentration": {
+          "maximumWorkShare": 0.2279202578775363,
+          "top1PercentWorkShare": 0.29007672467141943,
+          "top5PercentWorkShare": 0.4728210117895077,
+          "top10PercentWorkShare": 0.6171833726954632
+        }
+      },
+      "occurrenceAuxiliary": {
+        "status": "AUXILIARY_PREVALENCE_ONLY",
+        "caseCount": 260,
+        "workCount": 134,
+        "positiveCaseCount": 259,
+        "nonpositiveCaseCount": 1,
+        "positiveShare": 0.9961538461538462,
+        "usedForTrainingSelectionRoutingOrPromotion": false
+      },
+      "sameCaseStatus": "NOT_EVALUABLE_CANONICAL_LG01_PRIMARY_IS_36_MONTH_CROSS_WORK",
+      "sameCaseCount": 0,
+      "baselineMetrics": null,
+      "relativeWapeImprovement": null,
+      "bootstrap": null,
+      "gate": null
+    },
+    {
+      "evaluationFamily": "PRIMARY_ROLLING",
+      "populationId": "CORE90",
+      "horizonMonths": 12,
+      "armId": "B3",
+      "rawMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 260,
+        "workCount": 134,
+        "originCount": 3,
+        "wape": 0.3165415564579365,
+        "signedBias": -0.16041081610864083,
+        "mae": 36291.44227103584,
+        "medianAbsoluteError": 9329.289850423344,
+        "predictionActualRatio": 0.8395891838913592,
+        "underpredictionCash": 7108727.395966328,
+        "overpredictionCash": 2327047.5945029864,
+        "errorConcentration": {
+          "maximumWorkShare": 0.24951793946392165,
+          "top1PercentWorkShare": 0.30726631710641217,
+          "top5PercentWorkShare": 0.48022037022805636,
+          "top10PercentWorkShare": 0.6239459771923628
+        }
+      },
+      "occurrenceAuxiliary": {
+        "status": "AUXILIARY_PREVALENCE_ONLY",
+        "caseCount": 260,
+        "workCount": 134,
+        "positiveCaseCount": 259,
+        "nonpositiveCaseCount": 1,
+        "positiveShare": 0.9961538461538462,
+        "usedForTrainingSelectionRoutingOrPromotion": false
+      },
+      "sameCaseStatus": "NOT_EVALUABLE_CANONICAL_LG01_PRIMARY_IS_36_MONTH_CROSS_WORK",
+      "sameCaseCount": 0,
+      "baselineMetrics": null,
+      "relativeWapeImprovement": null,
+      "bootstrap": null,
+      "gate": null
+    },
+    {
+      "evaluationFamily": "STRICT_ROLLING",
+      "populationId": "CORE80",
+      "horizonMonths": 3,
+      "armId": "B1",
+      "rawMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 577,
+        "workCount": 82,
+        "originCount": 11,
+        "wape": 0.26339080092357076,
+        "signedBias": -0.06655776357187355,
+        "mae": 15127.159143558376,
+        "medianAbsoluteError": 3937.3172197923195,
+        "predictionActualRatio": 0.9334422364281264,
+        "underpredictionCash": 5466996.976107864,
+        "overpredictionCash": 3261373.849725318,
+        "errorConcentration": {
+          "maximumWorkShare": 0.26461544955378213,
+          "top1PercentWorkShare": 0.26461544955378213,
+          "top5PercentWorkShare": 0.5462531578041813,
+          "top10PercentWorkShare": 0.6511823998430389
+        }
+      },
+      "occurrenceAuxiliary": {
+        "status": "AUXILIARY_PREVALENCE_ONLY",
+        "caseCount": 577,
+        "workCount": 82,
+        "positiveCaseCount": 572,
+        "nonpositiveCaseCount": 5,
+        "positiveShare": 0.9913344887348353,
+        "usedForTrainingSelectionRoutingOrPromotion": false
+      },
+      "sameCaseStatus": "EXACT_COMMON_RAW_ARMS_AND_B0_SAME_CASE",
+      "sameCaseCount": 577,
+      "commonSameCase": {
+        "status": "COMMON_RAW_ARMS_AND_B0_SAME_CASE_INTERSECTION",
+        "caseCount": 577,
+        "baselineCaseCount": 577,
+        "candidateCaseCounts": {
+          "B1": 577,
+          "B2": 577,
+          "B3": 577
+        },
+        "actualMismatchCount": 0,
+        "sameCasesUsedForEveryRawArm": true
+      },
+      "baselineMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 577,
+        "workCount": 82,
+        "originCount": 11,
+        "wape": 0.258167158891209,
+        "signedBias": -0.026901661377163103,
+        "mae": 14827.15297760482,
+        "medianAbsoluteError": 5165.805237648419,
+        "predictionActualRatio": 0.9730983386228369,
+        "underpredictionCash": 4723373.719697903,
+        "overpredictionCash": 3831893.5483800746,
+        "errorConcentration": {
+          "maximumWorkShare": 0.14242790466832048,
+          "top1PercentWorkShare": 0.14242790466832048,
+          "top5PercentWorkShare": 0.44119087078445945,
+          "top10PercentWorkShare": 0.5609285565260461
+        }
+      },
+      "pairedCandidateMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 577,
+        "workCount": 82,
+        "originCount": 11,
+        "wape": 0.26339080092357076,
+        "signedBias": -0.06655776357187355,
+        "mae": 15127.159143558376,
+        "medianAbsoluteError": 3937.3172197923195,
+        "predictionActualRatio": 0.9334422364281264,
+        "underpredictionCash": 5466996.976107864,
+        "overpredictionCash": 3261373.849725318,
+        "errorConcentration": {
+          "maximumWorkShare": 0.26461544955378213,
+          "top1PercentWorkShare": 0.26461544955378213,
+          "top5PercentWorkShare": 0.5462531578041813,
+          "top10PercentWorkShare": 0.6511823998430389
+        }
+      },
+      "relativeWapeImprovement": -0.02023356516296088,
+      "bootstrap": {
+        "status": "COMPUTED",
+        "method": "PAIRED_WORK_CLUSTER_RESAMPLE",
+        "iterations": 2000,
+        "seed": 20421955,
+        "workCount": 82,
+        "relativeWapeImprovement95": {
+          "lower": -0.2811039742138675,
+          "median": -0.008738343493397843,
+          "upper": 0.21533676726046086
+        }
+      },
+      "gate": {
+        "status": "M2_CORE_HORIZON_AMOUNT_HORIZON_FAIL",
+        "pass": false,
+        "candidate": {
+          "status": "COMPUTED",
+          "caseCount": 577,
+          "workCount": 82,
+          "originCount": 11,
+          "wape": 0.26339080092357076,
+          "signedBias": -0.06655776357187355,
+          "mae": 15127.159143558376,
+          "medianAbsoluteError": 3937.3172197923195,
+          "predictionActualRatio": 0.9334422364281264,
+          "underpredictionCash": 5466996.976107864,
+          "overpredictionCash": 3261373.849725318,
+          "errorConcentration": {
+            "maximumWorkShare": 0.26461544955378213,
+            "top1PercentWorkShare": 0.26461544955378213,
+            "top5PercentWorkShare": 0.5462531578041813,
+            "top10PercentWorkShare": 0.6511823998430389
+          }
+        },
+        "baseline": {
+          "status": "COMPUTED",
+          "caseCount": 577,
+          "workCount": 82,
+          "originCount": 11,
+          "wape": 0.258167158891209,
+          "signedBias": -0.026901661377163103,
+          "mae": 14827.15297760482,
+          "medianAbsoluteError": 5165.805237648419,
+          "predictionActualRatio": 0.9730983386228369,
+          "underpredictionCash": 4723373.719697903,
+          "overpredictionCash": 3831893.5483800746,
+          "errorConcentration": {
+            "maximumWorkShare": 0.14242790466832048,
+            "top1PercentWorkShare": 0.14242790466832048,
+            "top5PercentWorkShare": 0.44119087078445945,
+            "top10PercentWorkShare": 0.5609285565260461
+          }
+        },
+        "relativeWapeImprovement": -0.02023356516296088,
+        "bootstrap": {
+          "status": "COMPUTED",
+          "method": "PAIRED_WORK_CLUSTER_RESAMPLE",
+          "iterations": 2000,
+          "seed": 20797065,
+          "workCount": 82,
+          "relativeWapeImprovement95": {
+            "lower": -0.28029653684958755,
+            "median": -0.002393427357760689,
+            "upper": 0.2175451361217969
+          }
+        },
+        "independentTimeBlocks": [
+          {
+            "blockId": "NONOVERLAP_001",
+            "origin": "2023-03",
+            "forecastStart": "2023-04",
+            "forecastEnd": "2023-06",
+            "caseCount": 41,
+            "workCount": 41,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.2642037472354351,
+            "baselineWape": 0.26466018032431143,
+            "relativeWapeImprovement": 0.0017246005361177543,
+            "candidateWins": true
+          },
+          {
+            "blockId": "NONOVERLAP_002",
+            "origin": "2023-06",
+            "forecastStart": "2023-07",
+            "forecastEnd": "2023-09",
+            "caseCount": 46,
+            "workCount": 46,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.3790189929777594,
+            "baselineWape": 0.40399496004132257,
+            "relativeWapeImprovement": 0.06182247189670023,
+            "candidateWins": true
+          },
+          {
+            "blockId": "NONOVERLAP_003",
+            "origin": "2023-09",
+            "forecastStart": "2023-10",
+            "forecastEnd": "2023-12",
+            "caseCount": 47,
+            "workCount": 47,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.2068673578755407,
+            "baselineWape": 0.24183404747258852,
+            "relativeWapeImprovement": 0.14458960581640695,
+            "candidateWins": true
+          },
+          {
+            "blockId": "NONOVERLAP_004",
+            "origin": "2023-12",
+            "forecastStart": "2024-01",
+            "forecastEnd": "2024-03",
+            "caseCount": 53,
+            "workCount": 53,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.31490359547782576,
+            "baselineWape": 0.22870904886688892,
+            "relativeWapeImprovement": -0.37687422967292816,
+            "candidateWins": false
+          },
+          {
+            "blockId": "NONOVERLAP_005",
+            "origin": "2024-03",
+            "forecastStart": "2024-04",
+            "forecastEnd": "2024-06",
+            "caseCount": 54,
+            "workCount": 54,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.29826713377699277,
+            "baselineWape": 0.2395786107374303,
+            "relativeWapeImprovement": -0.24496562050726226,
+            "candidateWins": false
+          },
+          {
+            "blockId": "NONOVERLAP_006",
+            "origin": "2024-06",
+            "forecastStart": "2024-07",
+            "forecastEnd": "2024-09",
+            "caseCount": 57,
+            "workCount": 57,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.31067674100347803,
+            "baselineWape": 0.2685004613871436,
+            "relativeWapeImprovement": -0.157080845963693,
+            "candidateWins": false
+          },
+          {
+            "blockId": "NONOVERLAP_007",
+            "origin": "2024-09",
+            "forecastStart": "2024-10",
+            "forecastEnd": "2024-12",
+            "caseCount": 59,
+            "workCount": 59,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.20533852863427135,
+            "baselineWape": 0.20250748689739567,
+            "relativeWapeImprovement": -0.013979936150756144,
+            "candidateWins": false
+          },
+          {
+            "blockId": "NONOVERLAP_008",
+            "origin": "2024-12",
+            "forecastStart": "2025-01",
+            "forecastEnd": "2025-03",
+            "caseCount": 62,
+            "workCount": 62,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.3081940686047931,
+            "baselineWape": 0.2565460584919125,
+            "relativeWapeImprovement": -0.2013206143820323,
+            "candidateWins": false
+          },
+          {
+            "blockId": "NONOVERLAP_009",
+            "origin": "2025-03",
+            "forecastStart": "2025-04",
+            "forecastEnd": "2025-06",
+            "caseCount": 53,
+            "workCount": 53,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.16946262946404295,
+            "baselineWape": 0.1561862315077939,
+            "relativeWapeImprovement": -0.08500363846467822,
+            "candidateWins": false
+          },
+          {
+            "blockId": "NONOVERLAP_010",
+            "origin": "2025-06",
+            "forecastStart": "2025-07",
+            "forecastEnd": "2025-09",
+            "caseCount": 52,
+            "workCount": 52,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.19209449844993853,
+            "baselineWape": 0.3121623349048486,
+            "relativeWapeImprovement": 0.38463268315669286,
+            "candidateWins": true
+          },
+          {
+            "blockId": "NONOVERLAP_011",
+            "origin": "2025-09",
+            "forecastStart": "2025-10",
+            "forecastEnd": "2025-12",
+            "caseCount": 53,
+            "workCount": 53,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.20323690462644453,
+            "baselineWape": 0.22684867313219687,
+            "relativeWapeImprovement": 0.10408598904165726,
+            "candidateWins": true
+          }
+        ],
+        "improvingIndependentTimeBlockShare": 0.45454545454545453,
+        "core90": {
+          "status": "COMPUTED",
+          "candidate": {
+            "status": "COMPUTED",
+            "caseCount": 1288,
+            "workCount": 208,
+            "originCount": 11,
+            "wape": 0.27783425461980893,
+            "signedBias": -0.07378502550365833,
+            "mae": 8102.263183815103,
+            "medianAbsoluteError": 1770.2876406403302,
+            "predictionActualRatio": 0.9262149744963417,
+            "underpredictionCash": 6603574.843799552,
+            "overpredictionCash": 3832140.1369542885,
+            "errorConcentration": {
+              "maximumWorkShare": 0.22132281057978068,
+              "top1PercentWorkShare": 0.3869065818240588,
+              "top5PercentWorkShare": 0.6007049120745538,
+              "top10PercentWorkShare": 0.7129887384141348
+            }
+          },
+          "baseline": {
+            "status": "COMPUTED",
+            "caseCount": 1288,
+            "workCount": 208,
+            "originCount": 11,
+            "wape": 0.28031752897021556,
+            "signedBias": -0.042438571781422754,
+            "mae": 8174.68097251486,
+            "medianAbsoluteError": 2031.281158337285,
+            "predictionActualRatio": 0.9575614282185773,
+            "underpredictionCash": 6061510.810379771,
+            "overpredictionCash": 4467478.282219375,
+            "errorConcentration": {
+              "maximumWorkShare": 0.11572894417055736,
+              "top1PercentWorkShare": 0.29989095884673467,
+              "top5PercentWorkShare": 0.5235665482721564,
+              "top10PercentWorkShare": 0.6639350375892202
+            }
+          },
+          "relativeWapeImprovement": 0.008858790813151331,
+          "noOppositeMaterialDegradation": true
+        },
+        "checks": {
+          "relativeWapeImprovementAtLeastMinimum": false,
+          "bootstrapLowerExceedsZero": false,
+          "majorityIndependentTimeBlocksImprove": false,
+          "biasWorseningWithinLimit": false,
+          "candidateAbsoluteBiasWithinLimit": true,
+          "core90NoOppositeMaterialDegradation": true,
+          "rawCandidateOnly": true
+        }
+      }
+    },
+    {
+      "evaluationFamily": "STRICT_ROLLING",
+      "populationId": "CORE80",
+      "horizonMonths": 3,
+      "armId": "B2",
+      "rawMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 577,
+        "workCount": 82,
+        "originCount": 11,
+        "wape": 0.2563515862618256,
+        "signedBias": -0.05973267044647131,
+        "mae": 14722.880330249374,
+        "medianAbsoluteError": 4149.67413028422,
+        "predictionActualRatio": 0.9402673295535287,
+        "underpredictionCash": 5237275.931968547,
+        "overpredictionCash": 3257826.0185853383,
+        "errorConcentration": {
+          "maximumWorkShare": 0.2429838828991405,
+          "top1PercentWorkShare": 0.2429838828991405,
+          "top5PercentWorkShare": 0.5356260912359635,
+          "top10PercentWorkShare": 0.6422331499748198
+        }
+      },
+      "occurrenceAuxiliary": {
+        "status": "AUXILIARY_PREVALENCE_ONLY",
+        "caseCount": 577,
+        "workCount": 82,
+        "positiveCaseCount": 572,
+        "nonpositiveCaseCount": 5,
+        "positiveShare": 0.9913344887348353,
+        "usedForTrainingSelectionRoutingOrPromotion": false
+      },
+      "sameCaseStatus": "EXACT_COMMON_RAW_ARMS_AND_B0_SAME_CASE",
+      "sameCaseCount": 577,
+      "commonSameCase": {
+        "status": "COMMON_RAW_ARMS_AND_B0_SAME_CASE_INTERSECTION",
+        "caseCount": 577,
+        "baselineCaseCount": 577,
+        "candidateCaseCounts": {
+          "B1": 577,
+          "B2": 577,
+          "B3": 577
+        },
+        "actualMismatchCount": 0,
+        "sameCasesUsedForEveryRawArm": true
+      },
+      "baselineMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 577,
+        "workCount": 82,
+        "originCount": 11,
+        "wape": 0.258167158891209,
+        "signedBias": -0.026901661377163103,
+        "mae": 14827.15297760482,
+        "medianAbsoluteError": 5165.805237648419,
+        "predictionActualRatio": 0.9730983386228369,
+        "underpredictionCash": 4723373.719697903,
+        "overpredictionCash": 3831893.5483800746,
+        "errorConcentration": {
+          "maximumWorkShare": 0.14242790466832048,
+          "top1PercentWorkShare": 0.14242790466832048,
+          "top5PercentWorkShare": 0.44119087078445945,
+          "top10PercentWorkShare": 0.5609285565260461
+        }
+      },
+      "pairedCandidateMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 577,
+        "workCount": 82,
+        "originCount": 11,
+        "wape": 0.2563515862618256,
+        "signedBias": -0.05973267044647131,
+        "mae": 14722.880330249374,
+        "medianAbsoluteError": 4149.67413028422,
+        "predictionActualRatio": 0.9402673295535287,
+        "underpredictionCash": 5237275.931968547,
+        "overpredictionCash": 3257826.0185853383,
+        "errorConcentration": {
+          "maximumWorkShare": 0.2429838828991405,
+          "top1PercentWorkShare": 0.2429838828991405,
+          "top5PercentWorkShare": 0.5356260912359635,
+          "top10PercentWorkShare": 0.6422331499748198
+        }
+      },
+      "relativeWapeImprovement": 0.00703254680874611,
+      "bootstrap": {
+        "status": "COMPUTED",
+        "method": "PAIRED_WORK_CLUSTER_RESAMPLE",
+        "iterations": 2000,
+        "seed": 21041070,
+        "workCount": 82,
+        "relativeWapeImprovement95": {
+          "lower": -0.1930354652635325,
+          "median": 0.019750883279211224,
+          "upper": 0.21098310001310921
+        }
+      },
+      "gate": {
+        "status": "M2_CORE_HORIZON_AMOUNT_HORIZON_FAIL",
+        "pass": false,
+        "candidate": {
+          "status": "COMPUTED",
+          "caseCount": 577,
+          "workCount": 82,
+          "originCount": 11,
+          "wape": 0.2563515862618256,
+          "signedBias": -0.05973267044647131,
+          "mae": 14722.880330249374,
+          "medianAbsoluteError": 4149.67413028422,
+          "predictionActualRatio": 0.9402673295535287,
+          "underpredictionCash": 5237275.931968547,
+          "overpredictionCash": 3257826.0185853383,
+          "errorConcentration": {
+            "maximumWorkShare": 0.2429838828991405,
+            "top1PercentWorkShare": 0.2429838828991405,
+            "top5PercentWorkShare": 0.5356260912359635,
+            "top10PercentWorkShare": 0.6422331499748198
+          }
+        },
+        "baseline": {
+          "status": "COMPUTED",
+          "caseCount": 577,
+          "workCount": 82,
+          "originCount": 11,
+          "wape": 0.258167158891209,
+          "signedBias": -0.026901661377163103,
+          "mae": 14827.15297760482,
+          "medianAbsoluteError": 5165.805237648419,
+          "predictionActualRatio": 0.9730983386228369,
+          "underpredictionCash": 4723373.719697903,
+          "overpredictionCash": 3831893.5483800746,
+          "errorConcentration": {
+            "maximumWorkShare": 0.14242790466832048,
+            "top1PercentWorkShare": 0.14242790466832048,
+            "top5PercentWorkShare": 0.44119087078445945,
+            "top10PercentWorkShare": 0.5609285565260461
+          }
+        },
+        "relativeWapeImprovement": 0.00703254680874611,
+        "bootstrap": {
+          "status": "COMPUTED",
+          "method": "PAIRED_WORK_CLUSTER_RESAMPLE",
+          "iterations": 2000,
+          "seed": 20850979,
+          "workCount": 82,
+          "relativeWapeImprovement95": {
+            "lower": -0.19262954357937512,
+            "median": 0.025688592838501886,
+            "upper": 0.2112456713194036
+          }
+        },
+        "independentTimeBlocks": [
+          {
+            "blockId": "NONOVERLAP_001",
+            "origin": "2023-03",
+            "forecastStart": "2023-04",
+            "forecastEnd": "2023-06",
+            "caseCount": 41,
+            "workCount": 41,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.27510051233039556,
+            "baselineWape": 0.26466018032431143,
+            "relativeWapeImprovement": -0.03944806503679802,
+            "candidateWins": false
+          },
+          {
+            "blockId": "NONOVERLAP_002",
+            "origin": "2023-06",
+            "forecastStart": "2023-07",
+            "forecastEnd": "2023-09",
+            "caseCount": 46,
+            "workCount": 46,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.374615976768627,
+            "baselineWape": 0.40399496004132257,
+            "relativeWapeImprovement": 0.07272116283255249,
+            "candidateWins": true
+          },
+          {
+            "blockId": "NONOVERLAP_003",
+            "origin": "2023-09",
+            "forecastStart": "2023-10",
+            "forecastEnd": "2023-12",
+            "caseCount": 47,
+            "workCount": 47,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.20987281726309484,
+            "baselineWape": 0.24183404747258852,
+            "relativeWapeImprovement": 0.13216182974862722,
+            "candidateWins": true
+          },
+          {
+            "blockId": "NONOVERLAP_004",
+            "origin": "2023-12",
+            "forecastStart": "2024-01",
+            "forecastEnd": "2024-03",
+            "caseCount": 53,
+            "workCount": 53,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.28944723975540604,
+            "baselineWape": 0.22870904886688892,
+            "relativeWapeImprovement": -0.26556968860408925,
+            "candidateWins": false
+          },
+          {
+            "blockId": "NONOVERLAP_005",
+            "origin": "2024-03",
+            "forecastStart": "2024-04",
+            "forecastEnd": "2024-06",
+            "caseCount": 54,
+            "workCount": 54,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.28237774263824106,
+            "baselineWape": 0.2395786107374303,
+            "relativeWapeImprovement": -0.17864337625580895,
+            "candidateWins": false
+          },
+          {
+            "blockId": "NONOVERLAP_006",
+            "origin": "2024-06",
+            "forecastStart": "2024-07",
+            "forecastEnd": "2024-09",
+            "caseCount": 57,
+            "workCount": 57,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.2998350114006209,
+            "baselineWape": 0.2685004613871436,
+            "relativeWapeImprovement": -0.11670203414770615,
+            "candidateWins": false
+          },
+          {
+            "blockId": "NONOVERLAP_007",
+            "origin": "2024-09",
+            "forecastStart": "2024-10",
+            "forecastEnd": "2024-12",
+            "caseCount": 59,
+            "workCount": 59,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.19942617707868446,
+            "baselineWape": 0.20250748689739567,
+            "relativeWapeImprovement": 0.015215782220794727,
+            "candidateWins": true
+          },
+          {
+            "blockId": "NONOVERLAP_008",
+            "origin": "2024-12",
+            "forecastStart": "2025-01",
+            "forecastEnd": "2025-03",
+            "caseCount": 62,
+            "workCount": 62,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.29195686623257583,
+            "baselineWape": 0.2565460584919125,
+            "relativeWapeImprovement": -0.13802904612459546,
+            "candidateWins": false
+          },
+          {
+            "blockId": "NONOVERLAP_009",
+            "origin": "2025-03",
+            "forecastStart": "2025-04",
+            "forecastEnd": "2025-06",
+            "caseCount": 53,
+            "workCount": 53,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.15647509239614799,
+            "baselineWape": 0.1561862315077939,
+            "relativeWapeImprovement": -0.0018494644858607276,
+            "candidateWins": false
+          },
+          {
+            "blockId": "NONOVERLAP_010",
+            "origin": "2025-06",
+            "forecastStart": "2025-07",
+            "forecastEnd": "2025-09",
+            "caseCount": 52,
+            "workCount": 52,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.19347781436716602,
+            "baselineWape": 0.3121623349048486,
+            "relativeWapeImprovement": 0.3802012839693145,
+            "candidateWins": true
+          },
+          {
+            "blockId": "NONOVERLAP_011",
+            "origin": "2025-09",
+            "forecastStart": "2025-10",
+            "forecastEnd": "2025-12",
+            "caseCount": 53,
+            "workCount": 53,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.20325448769897544,
+            "baselineWape": 0.22684867313219687,
+            "relativeWapeImprovement": 0.10400847890113876,
+            "candidateWins": true
+          }
+        ],
+        "improvingIndependentTimeBlockShare": 0.45454545454545453,
+        "core90": {
+          "status": "COMPUTED",
+          "candidate": {
+            "status": "COMPUTED",
+            "caseCount": 1288,
+            "workCount": 208,
+            "originCount": 11,
+            "wape": 0.27152091001284495,
+            "signedBias": -0.06932300367025586,
+            "mae": 7918.152050197906,
+            "medianAbsoluteError": 1738.558607824029,
+            "predictionActualRatio": 0.9306769963297441,
+            "underpredictionCash": 6401208.412887855,
+            "overpredictionCash": 3797371.4277670546,
+            "errorConcentration": {
+              "maximumWorkShare": 0.20239806814485803,
+              "top1PercentWorkShare": 0.3759778859739833,
+              "top5PercentWorkShare": 0.5933309356529909,
+              "top10PercentWorkShare": 0.7087382274338391
+            }
+          },
+          "baseline": {
+            "status": "COMPUTED",
+            "caseCount": 1288,
+            "workCount": 208,
+            "originCount": 11,
+            "wape": 0.28031752897021556,
+            "signedBias": -0.042438571781422754,
+            "mae": 8174.68097251486,
+            "medianAbsoluteError": 2031.281158337285,
+            "predictionActualRatio": 0.9575614282185773,
+            "underpredictionCash": 6061510.810379771,
+            "overpredictionCash": 4467478.282219375,
+            "errorConcentration": {
+              "maximumWorkShare": 0.11572894417055736,
+              "top1PercentWorkShare": 0.29989095884673467,
+              "top5PercentWorkShare": 0.5235665482721564,
+              "top10PercentWorkShare": 0.6639350375892202
+            }
+          },
+          "relativeWapeImprovement": 0.03138090931982091,
+          "noOppositeMaterialDegradation": true
+        },
+        "checks": {
+          "relativeWapeImprovementAtLeastMinimum": false,
+          "bootstrapLowerExceedsZero": false,
+          "majorityIndependentTimeBlocksImprove": false,
+          "biasWorseningWithinLimit": false,
+          "candidateAbsoluteBiasWithinLimit": true,
+          "core90NoOppositeMaterialDegradation": true,
+          "rawCandidateOnly": true
+        }
+      }
+    },
+    {
+      "evaluationFamily": "STRICT_ROLLING",
+      "populationId": "CORE80",
+      "horizonMonths": 3,
+      "armId": "B3",
+      "rawMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 577,
+        "workCount": 82,
+        "originCount": 11,
+        "wape": 0.25128824012222556,
+        "signedBias": -0.049848458950628005,
+        "mae": 14432.080338054971,
+        "medianAbsoluteError": 4234.983962293438,
+        "predictionActualRatio": 0.9501515410493719,
+        "underpredictionCash": 4989606.261036262,
+        "overpredictionCash": 3337704.094021454,
+        "errorConcentration": {
+          "maximumWorkShare": 0.23476651568068788,
+          "top1PercentWorkShare": 0.23476651568068788,
+          "top5PercentWorkShare": 0.5242668117400595,
+          "top10PercentWorkShare": 0.6322902854488385
+        }
+      },
+      "occurrenceAuxiliary": {
+        "status": "AUXILIARY_PREVALENCE_ONLY",
+        "caseCount": 577,
+        "workCount": 82,
+        "positiveCaseCount": 572,
+        "nonpositiveCaseCount": 5,
+        "positiveShare": 0.9913344887348353,
+        "usedForTrainingSelectionRoutingOrPromotion": false
+      },
+      "sameCaseStatus": "EXACT_COMMON_RAW_ARMS_AND_B0_SAME_CASE",
+      "sameCaseCount": 577,
+      "commonSameCase": {
+        "status": "COMMON_RAW_ARMS_AND_B0_SAME_CASE_INTERSECTION",
+        "caseCount": 577,
+        "baselineCaseCount": 577,
+        "candidateCaseCounts": {
+          "B1": 577,
+          "B2": 577,
+          "B3": 577
+        },
+        "actualMismatchCount": 0,
+        "sameCasesUsedForEveryRawArm": true
+      },
+      "baselineMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 577,
+        "workCount": 82,
+        "originCount": 11,
+        "wape": 0.258167158891209,
+        "signedBias": -0.026901661377163103,
+        "mae": 14827.15297760482,
+        "medianAbsoluteError": 5165.805237648419,
+        "predictionActualRatio": 0.9730983386228369,
+        "underpredictionCash": 4723373.719697903,
+        "overpredictionCash": 3831893.5483800746,
+        "errorConcentration": {
+          "maximumWorkShare": 0.14242790466832048,
+          "top1PercentWorkShare": 0.14242790466832048,
+          "top5PercentWorkShare": 0.44119087078445945,
+          "top10PercentWorkShare": 0.5609285565260461
+        }
+      },
+      "pairedCandidateMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 577,
+        "workCount": 82,
+        "originCount": 11,
+        "wape": 0.25128824012222556,
+        "signedBias": -0.049848458950628005,
+        "mae": 14432.080338054971,
+        "medianAbsoluteError": 4234.983962293438,
+        "predictionActualRatio": 0.9501515410493719,
+        "underpredictionCash": 4989606.261036262,
+        "overpredictionCash": 3337704.094021454,
+        "errorConcentration": {
+          "maximumWorkShare": 0.23476651568068788,
+          "top1PercentWorkShare": 0.23476651568068788,
+          "top5PercentWorkShare": 0.5242668117400595,
+          "top10PercentWorkShare": 0.6322902854488385
+        }
+      },
+      "relativeWapeImprovement": 0.02664521234430985,
+      "bootstrap": {
+        "status": "COMPUTED",
+        "method": "PAIRED_WORK_CLUSTER_RESAMPLE",
+        "iterations": 2000,
+        "seed": 20937570,
+        "workCount": 82,
+        "relativeWapeImprovement95": {
+          "lower": -0.17642261885776508,
+          "median": 0.043980352293229615,
+          "upper": 0.2136423046148122
+        }
+      },
+      "gate": {
+        "status": "M2_CORE_HORIZON_AMOUNT_HORIZON_FAIL",
+        "pass": false,
+        "candidate": {
+          "status": "COMPUTED",
+          "caseCount": 577,
+          "workCount": 82,
+          "originCount": 11,
+          "wape": 0.25128824012222556,
+          "signedBias": -0.049848458950628005,
+          "mae": 14432.080338054971,
+          "medianAbsoluteError": 4234.983962293438,
+          "predictionActualRatio": 0.9501515410493719,
+          "underpredictionCash": 4989606.261036262,
+          "overpredictionCash": 3337704.094021454,
+          "errorConcentration": {
+            "maximumWorkShare": 0.23476651568068788,
+            "top1PercentWorkShare": 0.23476651568068788,
+            "top5PercentWorkShare": 0.5242668117400595,
+            "top10PercentWorkShare": 0.6322902854488385
+          }
+        },
+        "baseline": {
+          "status": "COMPUTED",
+          "caseCount": 577,
+          "workCount": 82,
+          "originCount": 11,
+          "wape": 0.258167158891209,
+          "signedBias": -0.026901661377163103,
+          "mae": 14827.15297760482,
+          "medianAbsoluteError": 5165.805237648419,
+          "predictionActualRatio": 0.9730983386228369,
+          "underpredictionCash": 4723373.719697903,
+          "overpredictionCash": 3831893.5483800746,
+          "errorConcentration": {
+            "maximumWorkShare": 0.14242790466832048,
+            "top1PercentWorkShare": 0.14242790466832048,
+            "top5PercentWorkShare": 0.44119087078445945,
+            "top10PercentWorkShare": 0.5609285565260461
+          }
+        },
+        "relativeWapeImprovement": 0.02664521234430985,
+        "bootstrap": {
+          "status": "COMPUTED",
+          "method": "PAIRED_WORK_CLUSTER_RESAMPLE",
+          "iterations": 2000,
+          "seed": 20660669,
+          "workCount": 82,
+          "relativeWapeImprovement95": {
+            "lower": -0.1599465576807348,
+            "median": 0.03982323120195158,
+            "upper": 0.2164044772770593
+          }
+        },
+        "independentTimeBlocks": [
+          {
+            "blockId": "NONOVERLAP_001",
+            "origin": "2023-03",
+            "forecastStart": "2023-04",
+            "forecastEnd": "2023-06",
+            "caseCount": 41,
+            "workCount": 41,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.2803921107939503,
+            "baselineWape": 0.26466018032431143,
+            "relativeWapeImprovement": -0.05944200011638006,
+            "candidateWins": false
+          },
+          {
+            "blockId": "NONOVERLAP_002",
+            "origin": "2023-06",
+            "forecastStart": "2023-07",
+            "forecastEnd": "2023-09",
+            "caseCount": 46,
+            "workCount": 46,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.37460730421522037,
+            "baselineWape": 0.40399496004132257,
+            "relativeWapeImprovement": 0.07274262981670931,
+            "candidateWins": true
+          },
+          {
+            "blockId": "NONOVERLAP_003",
+            "origin": "2023-09",
+            "forecastStart": "2023-10",
+            "forecastEnd": "2023-12",
+            "caseCount": 47,
+            "workCount": 47,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.20488817611159896,
+            "baselineWape": 0.24183404747258852,
+            "relativeWapeImprovement": 0.15277365510403293,
+            "candidateWins": true
+          },
+          {
+            "blockId": "NONOVERLAP_004",
+            "origin": "2023-12",
+            "forecastStart": "2024-01",
+            "forecastEnd": "2024-03",
+            "caseCount": 53,
+            "workCount": 53,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.2729100473033005,
+            "baselineWape": 0.22870904886688892,
+            "relativeWapeImprovement": -0.1932630066689535,
+            "candidateWins": false
+          },
+          {
+            "blockId": "NONOVERLAP_005",
+            "origin": "2024-03",
+            "forecastStart": "2024-04",
+            "forecastEnd": "2024-06",
+            "caseCount": 54,
+            "workCount": 54,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.2693201512547055,
+            "baselineWape": 0.2395786107374303,
+            "relativeWapeImprovement": -0.12414105092992152,
+            "candidateWins": false
+          },
+          {
+            "blockId": "NONOVERLAP_006",
+            "origin": "2024-06",
+            "forecastStart": "2024-07",
+            "forecastEnd": "2024-09",
+            "caseCount": 57,
+            "workCount": 57,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.2950386442112834,
+            "baselineWape": 0.2685004613871436,
+            "relativeWapeImprovement": -0.09883849989320906,
+            "candidateWins": false
+          },
+          {
+            "blockId": "NONOVERLAP_007",
+            "origin": "2024-09",
+            "forecastStart": "2024-10",
+            "forecastEnd": "2024-12",
+            "caseCount": 59,
+            "workCount": 59,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.1948721960291578,
+            "baselineWape": 0.20250748689739567,
+            "relativeWapeImprovement": 0.0377037460946144,
+            "candidateWins": true
+          },
+          {
+            "blockId": "NONOVERLAP_008",
+            "origin": "2024-12",
+            "forecastStart": "2025-01",
+            "forecastEnd": "2025-03",
+            "caseCount": 62,
+            "workCount": 62,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.27416124716000156,
+            "baselineWape": 0.2565460584919125,
+            "relativeWapeImprovement": -0.06866287001889136,
+            "candidateWins": false
+          },
+          {
+            "blockId": "NONOVERLAP_009",
+            "origin": "2025-03",
+            "forecastStart": "2025-04",
+            "forecastEnd": "2025-06",
+            "caseCount": 53,
+            "workCount": 53,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.14666991994146472,
+            "baselineWape": 0.1561862315077939,
+            "relativeWapeImprovement": 0.06092926037372443,
+            "candidateWins": true
+          },
+          {
+            "blockId": "NONOVERLAP_010",
+            "origin": "2025-06",
+            "forecastStart": "2025-07",
+            "forecastEnd": "2025-09",
+            "caseCount": 52,
+            "workCount": 52,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.2017830309718666,
+            "baselineWape": 0.3121623349048486,
+            "relativeWapeImprovement": 0.3535958429021463,
+            "candidateWins": true
+          },
+          {
+            "blockId": "NONOVERLAP_011",
+            "origin": "2025-09",
+            "forecastStart": "2025-10",
+            "forecastEnd": "2025-12",
+            "caseCount": 53,
+            "workCount": 53,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.2063444411729017,
+            "baselineWape": 0.22684867313219687,
+            "relativeWapeImprovement": 0.0903872686411802,
+            "candidateWins": true
+          }
+        ],
+        "improvingIndependentTimeBlockShare": 0.5454545454545454,
+        "core90": {
+          "status": "COMPUTED",
+          "candidate": {
+            "status": "COMPUTED",
+            "caseCount": 1288,
+            "workCount": 208,
+            "originCount": 11,
+            "wape": 0.2673611051899227,
+            "signedBias": -0.0607260313693172,
+            "mae": 7796.842913875819,
+            "medianAbsoluteError": 1758.4306715194944,
+            "predictionActualRatio": 0.9392739686306828,
+            "underpredictionCash": 6161630.160883289,
+            "overpredictionCash": 3880703.5121887606,
+            "errorConcentration": {
+              "maximumWorkShare": 0.1946732403734764,
+              "top1PercentWorkShare": 0.365900880059453,
+              "top5PercentWorkShare": 0.5849215037545183,
+              "top10PercentWorkShare": 0.7017547841742817
+            }
+          },
+          "baseline": {
+            "status": "COMPUTED",
+            "caseCount": 1288,
+            "workCount": 208,
+            "originCount": 11,
+            "wape": 0.28031752897021556,
+            "signedBias": -0.042438571781422754,
+            "mae": 8174.68097251486,
+            "medianAbsoluteError": 2031.281158337285,
+            "predictionActualRatio": 0.9575614282185773,
+            "underpredictionCash": 6061510.810379771,
+            "overpredictionCash": 4467478.282219375,
+            "errorConcentration": {
+              "maximumWorkShare": 0.11572894417055736,
+              "top1PercentWorkShare": 0.29989095884673467,
+              "top5PercentWorkShare": 0.5235665482721564,
+              "top10PercentWorkShare": 0.6639350375892202
+            }
+          },
+          "relativeWapeImprovement": 0.04622052651466378,
+          "noOppositeMaterialDegradation": true
+        },
+        "checks": {
+          "relativeWapeImprovementAtLeastMinimum": true,
+          "bootstrapLowerExceedsZero": false,
+          "majorityIndependentTimeBlocksImprove": true,
+          "biasWorseningWithinLimit": false,
+          "candidateAbsoluteBiasWithinLimit": true,
+          "core90NoOppositeMaterialDegradation": true,
+          "rawCandidateOnly": true
+        }
+      }
+    },
+    {
+      "evaluationFamily": "STRICT_ROLLING",
+      "populationId": "CORE80",
+      "horizonMonths": 6,
+      "armId": "B1",
+      "rawMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 577,
+        "workCount": 82,
+        "originCount": 11,
+        "wape": 0.30007840121793644,
+        "signedBias": -0.08716686552977075,
+        "mae": 33224.1037994506,
+        "medianAbsoluteError": 9970.720902379504,
+        "predictionActualRatio": 0.9128331344702293,
+        "underpredictionCash": 12369452.388529798,
+        "overpredictionCash": 6800855.50375319,
+        "errorConcentration": {
+          "maximumWorkShare": 0.3032659066920782,
+          "top1PercentWorkShare": 0.3032659066920782,
+          "top5PercentWorkShare": 0.5512416918450107,
+          "top10PercentWorkShare": 0.6560424661233284
+        }
+      },
+      "occurrenceAuxiliary": {
+        "status": "AUXILIARY_PREVALENCE_ONLY",
+        "caseCount": 577,
+        "workCount": 82,
+        "positiveCaseCount": 572,
+        "nonpositiveCaseCount": 5,
+        "positiveShare": 0.9913344887348353,
+        "usedForTrainingSelectionRoutingOrPromotion": false
+      },
+      "sameCaseStatus": "EXACT_COMMON_RAW_ARMS_AND_B0_SAME_CASE",
+      "sameCaseCount": 577,
+      "commonSameCase": {
+        "status": "COMMON_RAW_ARMS_AND_B0_SAME_CASE_INTERSECTION",
+        "caseCount": 577,
+        "baselineCaseCount": 577,
+        "candidateCaseCounts": {
+          "B1": 577,
+          "B2": 577,
+          "B3": 577
+        },
+        "actualMismatchCount": 0,
+        "sameCasesUsedForEveryRawArm": true
+      },
+      "baselineMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 577,
+        "workCount": 82,
+        "originCount": 11,
+        "wape": 0.2750758950105334,
+        "signedBias": 0.00954332600911767,
+        "mae": 30455.874369709436,
+        "medianAbsoluteError": 10901.087155369289,
+        "predictionActualRatio": 1.0095433260091176,
+        "underpredictionCash": 8481685.257129,
+        "overpredictionCash": 9091354.254193341,
+        "errorConcentration": {
+          "maximumWorkShare": 0.15799158077045827,
+          "top1PercentWorkShare": 0.15799158077045827,
+          "top5PercentWorkShare": 0.43592110420270896,
+          "top10PercentWorkShare": 0.5482173924495691
+        }
+      },
+      "pairedCandidateMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 577,
+        "workCount": 82,
+        "originCount": 11,
+        "wape": 0.30007840121793644,
+        "signedBias": -0.08716686552977075,
+        "mae": 33224.1037994506,
+        "medianAbsoluteError": 9970.720902379504,
+        "predictionActualRatio": 0.9128331344702293,
+        "underpredictionCash": 12369452.388529798,
+        "overpredictionCash": 6800855.50375319,
+        "errorConcentration": {
+          "maximumWorkShare": 0.3032659066920782,
+          "top1PercentWorkShare": 0.3032659066920782,
+          "top5PercentWorkShare": 0.5512416918450107,
+          "top10PercentWorkShare": 0.6560424661233284
+        }
+      },
+      "relativeWapeImprovement": -0.09089311953868442,
+      "bootstrap": {
+        "status": "COMPUTED",
+        "method": "PAIRED_WORK_CLUSTER_RESAMPLE",
+        "iterations": 2000,
+        "seed": 21006997,
+        "workCount": 82,
+        "relativeWapeImprovement95": {
+          "lower": -0.39825458518060275,
+          "median": -0.07569198053551625,
+          "upper": 0.19698477979240933
+        }
+      },
+      "gate": {
+        "status": "M2_CORE_HORIZON_AMOUNT_HORIZON_FAIL",
+        "pass": false,
+        "candidate": {
+          "status": "COMPUTED",
+          "caseCount": 577,
+          "workCount": 82,
+          "originCount": 11,
+          "wape": 0.30007840121793644,
+          "signedBias": -0.08716686552977075,
+          "mae": 33224.1037994506,
+          "medianAbsoluteError": 9970.720902379504,
+          "predictionActualRatio": 0.9128331344702293,
+          "underpredictionCash": 12369452.388529798,
+          "overpredictionCash": 6800855.50375319,
+          "errorConcentration": {
+            "maximumWorkShare": 0.3032659066920782,
+            "top1PercentWorkShare": 0.3032659066920782,
+            "top5PercentWorkShare": 0.5512416918450107,
+            "top10PercentWorkShare": 0.6560424661233284
+          }
+        },
+        "baseline": {
+          "status": "COMPUTED",
+          "caseCount": 577,
+          "workCount": 82,
+          "originCount": 11,
+          "wape": 0.2750758950105334,
+          "signedBias": 0.00954332600911767,
+          "mae": 30455.874369709436,
+          "medianAbsoluteError": 10901.087155369289,
+          "predictionActualRatio": 1.0095433260091176,
+          "underpredictionCash": 8481685.257129,
+          "overpredictionCash": 9091354.254193341,
+          "errorConcentration": {
+            "maximumWorkShare": 0.15799158077045827,
+            "top1PercentWorkShare": 0.15799158077045827,
+            "top5PercentWorkShare": 0.43592110420270896,
+            "top10PercentWorkShare": 0.5482173924495691
+          }
+        },
+        "relativeWapeImprovement": -0.09089311953868442,
+        "bootstrap": {
+          "status": "COMPUTED",
+          "method": "PAIRED_WORK_CLUSTER_RESAMPLE",
+          "iterations": 2000,
+          "seed": 20405628,
+          "workCount": 82,
+          "relativeWapeImprovement95": {
+            "lower": -0.42407210666564243,
+            "median": -0.07198465167633752,
+            "upper": 0.20032049442695224
+          }
+        },
+        "independentTimeBlocks": [
+          {
+            "blockId": "NONOVERLAP_001",
+            "origin": "2023-03",
+            "forecastStart": "2023-04",
+            "forecastEnd": "2023-09",
+            "caseCount": 41,
+            "workCount": 41,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.23915371999905116,
+            "baselineWape": 0.30464103396314135,
+            "relativeWapeImprovement": 0.21496550583534826,
+            "candidateWins": true
+          },
+          {
+            "blockId": "NONOVERLAP_002",
+            "origin": "2023-09",
+            "forecastStart": "2023-10",
+            "forecastEnd": "2024-03",
+            "caseCount": 47,
+            "workCount": 47,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.2639717070766272,
+            "baselineWape": 0.2770342517003134,
+            "relativeWapeImprovement": 0.047151370429880476,
+            "candidateWins": true
+          },
+          {
+            "blockId": "NONOVERLAP_003",
+            "origin": "2024-03",
+            "forecastStart": "2024-04",
+            "forecastEnd": "2024-09",
+            "caseCount": 54,
+            "workCount": 54,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.3895132288128659,
+            "baselineWape": 0.279175633616077,
+            "relativeWapeImprovement": -0.39522645213559504,
+            "candidateWins": false
+          },
+          {
+            "blockId": "NONOVERLAP_004",
+            "origin": "2024-09",
+            "forecastStart": "2024-10",
+            "forecastEnd": "2025-03",
+            "caseCount": 59,
+            "workCount": 59,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.27733154010366634,
+            "baselineWape": 0.22607705565362368,
+            "relativeWapeImprovement": -0.22671245563534975,
+            "candidateWins": false
+          },
+          {
+            "blockId": "NONOVERLAP_005",
+            "origin": "2025-03",
+            "forecastStart": "2025-04",
+            "forecastEnd": "2025-09",
+            "caseCount": 53,
+            "workCount": 53,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.18304629698189448,
+            "baselineWape": 0.2019641897948232,
+            "relativeWapeImprovement": 0.09366954028903605,
+            "candidateWins": true
+          },
+          {
+            "blockId": "NONOVERLAP_006",
+            "origin": "2025-09",
+            "forecastStart": "2025-10",
+            "forecastEnd": "2026-03",
+            "caseCount": 53,
+            "workCount": 53,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.18314466501429988,
+            "baselineWape": 0.20924566593660762,
+            "relativeWapeImprovement": 0.1247385498068821,
+            "candidateWins": true
+          }
+        ],
+        "improvingIndependentTimeBlockShare": 0.6666666666666666,
+        "core90": {
+          "status": "COMPUTED",
+          "candidate": {
+            "status": "COMPUTED",
+            "caseCount": 1288,
+            "workCount": 208,
+            "originCount": 11,
+            "wape": 0.3109987929223854,
+            "signedBias": -0.09042650089685887,
+            "mae": 17366.111860242887,
+            "medianAbsoluteError": 3870.4083094762073,
+            "predictionActualRatio": 0.9095734991031411,
+            "underpredictionCash": 14435588.44674293,
+            "overpredictionCash": 7931963.629249911,
+            "errorConcentration": {
+              "maximumWorkShare": 0.25991672154233486,
+              "top1PercentWorkShare": 0.39782310993400843,
+              "top5PercentWorkShare": 0.6052088682597628,
+              "top10PercentWorkShare": 0.71719459101196
+            }
+          },
+          "baseline": {
+            "status": "COMPUTED",
+            "caseCount": 1288,
+            "workCount": 208,
+            "originCount": 11,
+            "wape": 0.2950412220787907,
+            "signedBias": 0.00016880613366378436,
+            "mae": 16475.044220772088,
+            "medianAbsoluteError": 4558.1188278526115,
+            "predictionActualRatio": 1.0001688061336638,
+            "underpredictionCash": 10603858.068787621,
+            "overpredictionCash": 10615998.887566837,
+            "errorConcentration": {
+              "maximumWorkShare": 0.13083935000344699,
+              "top1PercentWorkShare": 0.3032485400962776,
+              "top5PercentWorkShare": 0.5063852686561542,
+              "top10PercentWorkShare": 0.6516760846065381
+            }
+          },
+          "relativeWapeImprovement": -0.05408590274661098,
+          "noOppositeMaterialDegradation": false
+        },
+        "checks": {
+          "relativeWapeImprovementAtLeastMinimum": false,
+          "bootstrapLowerExceedsZero": false,
+          "majorityIndependentTimeBlocksImprove": true,
+          "biasWorseningWithinLimit": false,
+          "candidateAbsoluteBiasWithinLimit": true,
+          "core90NoOppositeMaterialDegradation": false,
+          "rawCandidateOnly": true
+        }
+      }
+    },
+    {
+      "evaluationFamily": "STRICT_ROLLING",
+      "populationId": "CORE80",
+      "horizonMonths": 6,
+      "armId": "B2",
+      "rawMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 577,
+        "workCount": 82,
+        "originCount": 11,
+        "wape": 0.28636003587028563,
+        "signedBias": -0.07637013890272941,
+        "mae": 31705.232756352365,
+        "medianAbsoluteError": 9497.316850022487,
+        "predictionActualRatio": 0.9236298610972706,
+        "underpredictionCash": 11586387.264123922,
+        "overpredictionCash": 6707532.036291403,
+        "errorConcentration": {
+          "maximumWorkShare": 0.2811698573180822,
+          "top1PercentWorkShare": 0.2811698573180822,
+          "top5PercentWorkShare": 0.5360523374202166,
+          "top10PercentWorkShare": 0.6453964093082086
+        }
+      },
+      "occurrenceAuxiliary": {
+        "status": "AUXILIARY_PREVALENCE_ONLY",
+        "caseCount": 577,
+        "workCount": 82,
+        "positiveCaseCount": 572,
+        "nonpositiveCaseCount": 5,
+        "positiveShare": 0.9913344887348353,
+        "usedForTrainingSelectionRoutingOrPromotion": false
+      },
+      "sameCaseStatus": "EXACT_COMMON_RAW_ARMS_AND_B0_SAME_CASE",
+      "sameCaseCount": 577,
+      "commonSameCase": {
+        "status": "COMMON_RAW_ARMS_AND_B0_SAME_CASE_INTERSECTION",
+        "caseCount": 577,
+        "baselineCaseCount": 577,
+        "candidateCaseCounts": {
+          "B1": 577,
+          "B2": 577,
+          "B3": 577
+        },
+        "actualMismatchCount": 0,
+        "sameCasesUsedForEveryRawArm": true
+      },
+      "baselineMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 577,
+        "workCount": 82,
+        "originCount": 11,
+        "wape": 0.2750758950105334,
+        "signedBias": 0.00954332600911767,
+        "mae": 30455.874369709436,
+        "medianAbsoluteError": 10901.087155369289,
+        "predictionActualRatio": 1.0095433260091176,
+        "underpredictionCash": 8481685.257129,
+        "overpredictionCash": 9091354.254193341,
+        "errorConcentration": {
+          "maximumWorkShare": 0.15799158077045827,
+          "top1PercentWorkShare": 0.15799158077045827,
+          "top5PercentWorkShare": 0.43592110420270896,
+          "top10PercentWorkShare": 0.5482173924495691
+        }
+      },
+      "pairedCandidateMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 577,
+        "workCount": 82,
+        "originCount": 11,
+        "wape": 0.28636003587028563,
+        "signedBias": -0.07637013890272941,
+        "mae": 31705.232756352365,
+        "medianAbsoluteError": 9497.316850022487,
+        "predictionActualRatio": 0.9236298610972706,
+        "underpredictionCash": 11586387.264123922,
+        "overpredictionCash": 6707532.036291403,
+        "errorConcentration": {
+          "maximumWorkShare": 0.2811698573180822,
+          "top1PercentWorkShare": 0.2811698573180822,
+          "top5PercentWorkShare": 0.5360523374202166,
+          "top10PercentWorkShare": 0.6453964093082086
+        }
+      },
+      "relativeWapeImprovement": -0.0410219181848708,
+      "bootstrap": {
+        "status": "COMPUTED",
+        "method": "PAIRED_WORK_CLUSTER_RESAMPLE",
+        "iterations": 2000,
+        "seed": 20895439,
+        "workCount": 82,
+        "relativeWapeImprovement95": {
+          "lower": -0.3064627585546867,
+          "median": -0.023716503501454867,
+          "upper": 0.21300377883499438
+        }
+      },
+      "gate": {
+        "status": "M2_CORE_HORIZON_AMOUNT_HORIZON_FAIL",
+        "pass": false,
+        "candidate": {
+          "status": "COMPUTED",
+          "caseCount": 577,
+          "workCount": 82,
+          "originCount": 11,
+          "wape": 0.28636003587028563,
+          "signedBias": -0.07637013890272941,
+          "mae": 31705.232756352365,
+          "medianAbsoluteError": 9497.316850022487,
+          "predictionActualRatio": 0.9236298610972706,
+          "underpredictionCash": 11586387.264123922,
+          "overpredictionCash": 6707532.036291403,
+          "errorConcentration": {
+            "maximumWorkShare": 0.2811698573180822,
+            "top1PercentWorkShare": 0.2811698573180822,
+            "top5PercentWorkShare": 0.5360523374202166,
+            "top10PercentWorkShare": 0.6453964093082086
+          }
+        },
+        "baseline": {
+          "status": "COMPUTED",
+          "caseCount": 577,
+          "workCount": 82,
+          "originCount": 11,
+          "wape": 0.2750758950105334,
+          "signedBias": 0.00954332600911767,
+          "mae": 30455.874369709436,
+          "medianAbsoluteError": 10901.087155369289,
+          "predictionActualRatio": 1.0095433260091176,
+          "underpredictionCash": 8481685.257129,
+          "overpredictionCash": 9091354.254193341,
+          "errorConcentration": {
+            "maximumWorkShare": 0.15799158077045827,
+            "top1PercentWorkShare": 0.15799158077045827,
+            "top5PercentWorkShare": 0.43592110420270896,
+            "top10PercentWorkShare": 0.5482173924495691
+          }
+        },
+        "relativeWapeImprovement": -0.0410219181848708,
+        "bootstrap": {
+          "status": "COMPUTED",
+          "method": "PAIRED_WORK_CLUSTER_RESAMPLE",
+          "iterations": 2000,
+          "seed": 20311553,
+          "workCount": 82,
+          "relativeWapeImprovement95": {
+            "lower": -0.3177943236482904,
+            "median": -0.029068475640837647,
+            "upper": 0.21196844580670288
+          }
+        },
+        "independentTimeBlocks": [
+          {
+            "blockId": "NONOVERLAP_001",
+            "origin": "2023-03",
+            "forecastStart": "2023-04",
+            "forecastEnd": "2023-09",
+            "caseCount": 41,
+            "workCount": 41,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.2452616104634754,
+            "baselineWape": 0.30464103396314135,
+            "relativeWapeImprovement": 0.19491603848367423,
+            "candidateWins": true
+          },
+          {
+            "blockId": "NONOVERLAP_002",
+            "origin": "2023-09",
+            "forecastStart": "2023-10",
+            "forecastEnd": "2024-03",
+            "caseCount": 47,
+            "workCount": 47,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.27133678849579135,
+            "baselineWape": 0.2770342517003134,
+            "relativeWapeImprovement": 0.020565916198280812,
+            "candidateWins": true
+          },
+          {
+            "blockId": "NONOVERLAP_003",
+            "origin": "2024-03",
+            "forecastStart": "2024-04",
+            "forecastEnd": "2024-09",
+            "caseCount": 54,
+            "workCount": 54,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.3586127501507285,
+            "baselineWape": 0.279175633616077,
+            "relativeWapeImprovement": -0.2845417256002135,
+            "candidateWins": false
+          },
+          {
+            "blockId": "NONOVERLAP_004",
+            "origin": "2024-09",
+            "forecastStart": "2024-10",
+            "forecastEnd": "2025-03",
+            "caseCount": 59,
+            "workCount": 59,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.24636692458997073,
+            "baselineWape": 0.22607705565362368,
+            "relativeWapeImprovement": -0.08974758131773213,
+            "candidateWins": false
+          },
+          {
+            "blockId": "NONOVERLAP_005",
+            "origin": "2025-03",
+            "forecastStart": "2025-04",
+            "forecastEnd": "2025-09",
+            "caseCount": 53,
+            "workCount": 53,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.167543448279706,
+            "baselineWape": 0.2019641897948232,
+            "relativeWapeImprovement": 0.17042992398843315,
+            "candidateWins": true
+          },
+          {
+            "blockId": "NONOVERLAP_006",
+            "origin": "2025-09",
+            "forecastStart": "2025-10",
+            "forecastEnd": "2026-03",
+            "caseCount": 53,
+            "workCount": 53,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.17882196161443936,
+            "baselineWape": 0.20924566593660762,
+            "relativeWapeImprovement": 0.14539705845752296,
+            "candidateWins": true
+          }
+        ],
+        "improvingIndependentTimeBlockShare": 0.6666666666666666,
+        "core90": {
+          "status": "COMPUTED",
+          "candidate": {
+            "status": "COMPUTED",
+            "caseCount": 1288,
+            "workCount": 208,
+            "originCount": 11,
+            "wape": 0.298305285807511,
+            "signedBias": -0.08181319535619494,
+            "mae": 16657.30890192815,
+            "medianAbsoluteError": 3739.4777667343224,
+            "predictionActualRatio": 0.9181868046438051,
+            "underpredictionCash": 13669377.688868461,
+            "overpredictionCash": 7785236.176814992,
+            "errorConcentration": {
+              "maximumWorkShare": 0.23974790279090516,
+              "top1PercentWorkShare": 0.38247747654179437,
+              "top5PercentWorkShare": 0.5939403378480883,
+              "top10PercentWorkShare": 0.7124526341010314
+            }
+          },
+          "baseline": {
+            "status": "COMPUTED",
+            "caseCount": 1288,
+            "workCount": 208,
+            "originCount": 11,
+            "wape": 0.2950412220787907,
+            "signedBias": 0.00016880613366378436,
+            "mae": 16475.044220772088,
+            "medianAbsoluteError": 4558.1188278526115,
+            "predictionActualRatio": 1.0001688061336638,
+            "underpredictionCash": 10603858.068787621,
+            "overpredictionCash": 10615998.887566837,
+            "errorConcentration": {
+              "maximumWorkShare": 0.13083935000344699,
+              "top1PercentWorkShare": 0.3032485400962776,
+              "top5PercentWorkShare": 0.5063852686561542,
+              "top10PercentWorkShare": 0.6516760846065381
+            }
+          },
+          "relativeWapeImprovement": -0.011063076900652962,
+          "noOppositeMaterialDegradation": false
+        },
+        "checks": {
+          "relativeWapeImprovementAtLeastMinimum": false,
+          "bootstrapLowerExceedsZero": false,
+          "majorityIndependentTimeBlocksImprove": true,
+          "biasWorseningWithinLimit": false,
+          "candidateAbsoluteBiasWithinLimit": true,
+          "core90NoOppositeMaterialDegradation": false,
+          "rawCandidateOnly": true
+        }
+      }
+    },
+    {
+      "evaluationFamily": "STRICT_ROLLING",
+      "populationId": "CORE80",
+      "horizonMonths": 6,
+      "armId": "B3",
+      "rawMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 577,
+        "workCount": 82,
+        "originCount": 11,
+        "wape": 0.28170412684453794,
+        "signedBias": -0.06868190168465514,
+        "mae": 31189.73945818628,
+        "medianAbsoluteError": 9064.67714784214,
+        "predictionActualRatio": 0.9313180983153448,
+        "underpredictionCash": 11192088.50219871,
+        "overpredictionCash": 6804391.165174755,
+        "errorConcentration": {
+          "maximumWorkShare": 0.28056849742504486,
+          "top1PercentWorkShare": 0.28056849742504486,
+          "top5PercentWorkShare": 0.5295260449865548,
+          "top10PercentWorkShare": 0.6401114928146399
+        }
+      },
+      "occurrenceAuxiliary": {
+        "status": "AUXILIARY_PREVALENCE_ONLY",
+        "caseCount": 577,
+        "workCount": 82,
+        "positiveCaseCount": 572,
+        "nonpositiveCaseCount": 5,
+        "positiveShare": 0.9913344887348353,
+        "usedForTrainingSelectionRoutingOrPromotion": false
+      },
+      "sameCaseStatus": "EXACT_COMMON_RAW_ARMS_AND_B0_SAME_CASE",
+      "sameCaseCount": 577,
+      "commonSameCase": {
+        "status": "COMMON_RAW_ARMS_AND_B0_SAME_CASE_INTERSECTION",
+        "caseCount": 577,
+        "baselineCaseCount": 577,
+        "candidateCaseCounts": {
+          "B1": 577,
+          "B2": 577,
+          "B3": 577
+        },
+        "actualMismatchCount": 0,
+        "sameCasesUsedForEveryRawArm": true
+      },
+      "baselineMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 577,
+        "workCount": 82,
+        "originCount": 11,
+        "wape": 0.2750758950105334,
+        "signedBias": 0.00954332600911767,
+        "mae": 30455.874369709436,
+        "medianAbsoluteError": 10901.087155369289,
+        "predictionActualRatio": 1.0095433260091176,
+        "underpredictionCash": 8481685.257129,
+        "overpredictionCash": 9091354.254193341,
+        "errorConcentration": {
+          "maximumWorkShare": 0.15799158077045827,
+          "top1PercentWorkShare": 0.15799158077045827,
+          "top5PercentWorkShare": 0.43592110420270896,
+          "top10PercentWorkShare": 0.5482173924495691
+        }
+      },
+      "pairedCandidateMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 577,
+        "workCount": 82,
+        "originCount": 11,
+        "wape": 0.28170412684453794,
+        "signedBias": -0.06868190168465514,
+        "mae": 31189.73945818628,
+        "medianAbsoluteError": 9064.67714784214,
+        "predictionActualRatio": 0.9313180983153448,
+        "underpredictionCash": 11192088.50219871,
+        "overpredictionCash": 6804391.165174755,
+        "errorConcentration": {
+          "maximumWorkShare": 0.28056849742504486,
+          "top1PercentWorkShare": 0.28056849742504486,
+          "top5PercentWorkShare": 0.5295260449865548,
+          "top10PercentWorkShare": 0.6401114928146399
+        }
+      },
+      "relativeWapeImprovement": -0.02409601115267008,
+      "bootstrap": {
+        "status": "COMPUTED",
+        "method": "PAIRED_WORK_CLUSTER_RESAMPLE",
+        "iterations": 2000,
+        "seed": 20995954,
+        "workCount": 82,
+        "relativeWapeImprovement95": {
+          "lower": -0.27682300494141154,
+          "median": -0.00038242066586879366,
+          "upper": 0.22702891539582973
+        }
+      },
+      "gate": {
+        "status": "M2_CORE_HORIZON_AMOUNT_HORIZON_FAIL",
+        "pass": false,
+        "candidate": {
+          "status": "COMPUTED",
+          "caseCount": 577,
+          "workCount": 82,
+          "originCount": 11,
+          "wape": 0.28170412684453794,
+          "signedBias": -0.06868190168465514,
+          "mae": 31189.73945818628,
+          "medianAbsoluteError": 9064.67714784214,
+          "predictionActualRatio": 0.9313180983153448,
+          "underpredictionCash": 11192088.50219871,
+          "overpredictionCash": 6804391.165174755,
+          "errorConcentration": {
+            "maximumWorkShare": 0.28056849742504486,
+            "top1PercentWorkShare": 0.28056849742504486,
+            "top5PercentWorkShare": 0.5295260449865548,
+            "top10PercentWorkShare": 0.6401114928146399
+          }
+        },
+        "baseline": {
+          "status": "COMPUTED",
+          "caseCount": 577,
+          "workCount": 82,
+          "originCount": 11,
+          "wape": 0.2750758950105334,
+          "signedBias": 0.00954332600911767,
+          "mae": 30455.874369709436,
+          "medianAbsoluteError": 10901.087155369289,
+          "predictionActualRatio": 1.0095433260091176,
+          "underpredictionCash": 8481685.257129,
+          "overpredictionCash": 9091354.254193341,
+          "errorConcentration": {
+            "maximumWorkShare": 0.15799158077045827,
+            "top1PercentWorkShare": 0.15799158077045827,
+            "top5PercentWorkShare": 0.43592110420270896,
+            "top10PercentWorkShare": 0.5482173924495691
+          }
+        },
+        "relativeWapeImprovement": -0.02409601115267008,
+        "bootstrap": {
+          "status": "COMPUTED",
+          "method": "PAIRED_WORK_CLUSTER_RESAMPLE",
+          "iterations": 2000,
+          "seed": 20847952,
+          "workCount": 82,
+          "relativeWapeImprovement95": {
+            "lower": -0.28426969259046525,
+            "median": 0.0007961558930118377,
+            "upper": 0.22555596535452216
+          }
+        },
+        "independentTimeBlocks": [
+          {
+            "blockId": "NONOVERLAP_001",
+            "origin": "2023-03",
+            "forecastStart": "2023-04",
+            "forecastEnd": "2023-09",
+            "caseCount": 41,
+            "workCount": 41,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.25584327577225435,
+            "baselineWape": 0.30464103396314135,
+            "relativeWapeImprovement": 0.16018117308776944,
+            "candidateWins": true
+          },
+          {
+            "blockId": "NONOVERLAP_002",
+            "origin": "2023-09",
+            "forecastStart": "2023-10",
+            "forecastEnd": "2024-03",
+            "caseCount": 47,
+            "workCount": 47,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.2860175526798162,
+            "baselineWape": 0.2770342517003134,
+            "relativeWapeImprovement": -0.032426679821600635,
+            "candidateWins": false
+          },
+          {
+            "blockId": "NONOVERLAP_003",
+            "origin": "2024-03",
+            "forecastStart": "2024-04",
+            "forecastEnd": "2024-09",
+            "caseCount": 54,
+            "workCount": 54,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.3402994244955143,
+            "baselineWape": 0.279175633616077,
+            "relativeWapeImprovement": -0.218943860134638,
+            "candidateWins": false
+          },
+          {
+            "blockId": "NONOVERLAP_004",
+            "origin": "2024-09",
+            "forecastStart": "2024-10",
+            "forecastEnd": "2025-03",
+            "caseCount": 59,
+            "workCount": 59,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.2384944683895384,
+            "baselineWape": 0.22607705565362368,
+            "relativeWapeImprovement": -0.05492557703396326,
+            "candidateWins": false
+          },
+          {
+            "blockId": "NONOVERLAP_005",
+            "origin": "2025-03",
+            "forecastStart": "2025-04",
+            "forecastEnd": "2025-09",
+            "caseCount": 53,
+            "workCount": 53,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.16103796959190525,
+            "baselineWape": 0.2019641897948232,
+            "relativeWapeImprovement": 0.20264097434547765,
+            "candidateWins": true
+          },
+          {
+            "blockId": "NONOVERLAP_006",
+            "origin": "2025-09",
+            "forecastStart": "2025-10",
+            "forecastEnd": "2026-03",
+            "caseCount": 53,
+            "workCount": 53,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.17789671699527113,
+            "baselineWape": 0.20924566593660762,
+            "relativeWapeImprovement": 0.14981886865381416,
+            "candidateWins": true
+          }
+        ],
+        "improvingIndependentTimeBlockShare": 0.5,
+        "core90": {
+          "status": "COMPUTED",
+          "candidate": {
+            "status": "COMPUTED",
+            "caseCount": 1288,
+            "workCount": 208,
+            "originCount": 11,
+            "wape": 0.2944780287992087,
+            "signedBias": -0.07514950156244436,
+            "mae": 16443.595618029125,
+            "medianAbsoluteError": 3910.748813783585,
+            "predictionActualRatio": 0.9248504984375556,
+            "underpredictionCash": 13292114.346161209,
+            "overpredictionCash": 7887236.80986028,
+            "errorConcentration": {
+              "maximumWorkShare": 0.2384041523283302,
+              "top1PercentWorkShare": 0.37725375027028335,
+              "top5PercentWorkShare": 0.5898739252082706,
+              "top10PercentWorkShare": 0.7057846975500468
+            }
+          },
+          "baseline": {
+            "status": "COMPUTED",
+            "caseCount": 1288,
+            "workCount": 208,
+            "originCount": 11,
+            "wape": 0.2950412220787907,
+            "signedBias": 0.00016880613366378436,
+            "mae": 16475.044220772088,
+            "medianAbsoluteError": 4558.1188278526115,
+            "predictionActualRatio": 1.0001688061336638,
+            "underpredictionCash": 10603858.068787621,
+            "overpredictionCash": 10615998.887566837,
+            "errorConcentration": {
+              "maximumWorkShare": 0.13083935000344699,
+              "top1PercentWorkShare": 0.3032485400962776,
+              "top5PercentWorkShare": 0.5063852686561542,
+              "top10PercentWorkShare": 0.6516760846065381
+            }
+          },
+          "relativeWapeImprovement": 0.0019088630246779056,
+          "noOppositeMaterialDegradation": true
+        },
+        "checks": {
+          "relativeWapeImprovementAtLeastMinimum": false,
+          "bootstrapLowerExceedsZero": false,
+          "majorityIndependentTimeBlocksImprove": false,
+          "biasWorseningWithinLimit": false,
+          "candidateAbsoluteBiasWithinLimit": true,
+          "core90NoOppositeMaterialDegradation": true,
+          "rawCandidateOnly": true
+        }
+      }
+    },
+    {
+      "evaluationFamily": "STRICT_ROLLING",
+      "populationId": "CORE80",
+      "horizonMonths": 12,
+      "armId": "B1",
+      "rawMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 472,
+        "workCount": 76,
+        "originCount": 9,
+        "wape": 0.42831289837849057,
+        "signedBias": -0.15790390561261325,
+        "mae": 90669.4813459961,
+        "medianAbsoluteError": 25933.97694214461,
+        "predictionActualRatio": 0.8420960943873868,
+        "underpredictionCash": 29286686.93143575,
+        "overpredictionCash": 13509308.26387444,
+        "errorConcentration": {
+          "maximumWorkShare": 0.39962906260665165,
+          "top1PercentWorkShare": 0.39962906260665165,
+          "top5PercentWorkShare": 0.575251006073052,
+          "top10PercentWorkShare": 0.6895060896142533
+        }
+      },
+      "occurrenceAuxiliary": {
+        "status": "AUXILIARY_PREVALENCE_ONLY",
+        "caseCount": 472,
+        "workCount": 76,
+        "positiveCaseCount": 467,
+        "nonpositiveCaseCount": 5,
+        "positiveShare": 0.989406779661017,
+        "usedForTrainingSelectionRoutingOrPromotion": false
+      },
+      "sameCaseStatus": "EXACT_COMMON_RAW_ARMS_AND_B0_SAME_CASE",
+      "sameCaseCount": 472,
+      "commonSameCase": {
+        "status": "COMMON_RAW_ARMS_AND_B0_SAME_CASE_INTERSECTION",
+        "caseCount": 472,
+        "baselineCaseCount": 472,
+        "candidateCaseCounts": {
+          "B1": 472,
+          "B2": 472,
+          "B3": 472
+        },
+        "actualMismatchCount": 0,
+        "sameCasesUsedForEveryRawArm": true
+      },
+      "baselineMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 472,
+        "workCount": 76,
+        "originCount": 9,
+        "wape": 0.3157491999243411,
+        "signedBias": 0.06427047135886367,
+        "mae": 66840.89202294951,
+        "medianAbsoluteError": 27547.777465982275,
+        "predictionActualRatio": 1.0642704713588638,
+        "underpredictionCash": 12563575.017416986,
+        "overpredictionCash": 18985326.01741517,
+        "errorConcentration": {
+          "maximumWorkShare": 0.16365665581051966,
+          "top1PercentWorkShare": 0.16365665581051966,
+          "top5PercentWorkShare": 0.40194828312644926,
+          "top10PercentWorkShare": 0.5071475921353935
+        }
+      },
+      "pairedCandidateMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 472,
+        "workCount": 76,
+        "originCount": 9,
+        "wape": 0.42831289837849057,
+        "signedBias": -0.15790390561261325,
+        "mae": 90669.4813459961,
+        "medianAbsoluteError": 25933.97694214461,
+        "predictionActualRatio": 0.8420960943873868,
+        "underpredictionCash": 29286686.93143575,
+        "overpredictionCash": 13509308.26387444,
+        "errorConcentration": {
+          "maximumWorkShare": 0.39962906260665165,
+          "top1PercentWorkShare": 0.39962906260665165,
+          "top5PercentWorkShare": 0.575251006073052,
+          "top10PercentWorkShare": 0.6895060896142533
+        }
+      },
+      "relativeWapeImprovement": -0.3564971771302086,
+      "bootstrap": {
+        "status": "COMPUTED",
+        "method": "PAIRED_WORK_CLUSTER_RESAMPLE",
+        "iterations": 2000,
+        "seed": 20403527,
+        "workCount": 76,
+        "relativeWapeImprovement95": {
+          "lower": -0.9721264077753342,
+          "median": -0.33841741841810535,
+          "upper": 0.1651283429257466
+        }
+      },
+      "gate": {
+        "status": "M2_CORE_HORIZON_AMOUNT_HORIZON_FAIL",
+        "pass": false,
+        "candidate": {
+          "status": "COMPUTED",
+          "caseCount": 472,
+          "workCount": 76,
+          "originCount": 9,
+          "wape": 0.42831289837849057,
+          "signedBias": -0.15790390561261325,
+          "mae": 90669.4813459961,
+          "medianAbsoluteError": 25933.97694214461,
+          "predictionActualRatio": 0.8420960943873868,
+          "underpredictionCash": 29286686.93143575,
+          "overpredictionCash": 13509308.26387444,
+          "errorConcentration": {
+            "maximumWorkShare": 0.39962906260665165,
+            "top1PercentWorkShare": 0.39962906260665165,
+            "top5PercentWorkShare": 0.575251006073052,
+            "top10PercentWorkShare": 0.6895060896142533
+          }
+        },
+        "baseline": {
+          "status": "COMPUTED",
+          "caseCount": 472,
+          "workCount": 76,
+          "originCount": 9,
+          "wape": 0.3157491999243411,
+          "signedBias": 0.06427047135886367,
+          "mae": 66840.89202294951,
+          "medianAbsoluteError": 27547.777465982275,
+          "predictionActualRatio": 1.0642704713588638,
+          "underpredictionCash": 12563575.017416986,
+          "overpredictionCash": 18985326.01741517,
+          "errorConcentration": {
+            "maximumWorkShare": 0.16365665581051966,
+            "top1PercentWorkShare": 0.16365665581051966,
+            "top5PercentWorkShare": 0.40194828312644926,
+            "top10PercentWorkShare": 0.5071475921353935
+          }
+        },
+        "relativeWapeImprovement": -0.3564971771302086,
+        "bootstrap": {
+          "status": "COMPUTED",
+          "method": "PAIRED_WORK_CLUSTER_RESAMPLE",
+          "iterations": 2000,
+          "seed": 20725950,
+          "workCount": 76,
+          "relativeWapeImprovement95": {
+            "lower": -1.020793027388313,
+            "median": -0.33815789837981125,
+            "upper": 0.15781042338566417
+          }
+        },
+        "independentTimeBlocks": [
+          {
+            "blockId": "NONOVERLAP_001",
+            "origin": "2023-03",
+            "forecastStart": "2023-04",
+            "forecastEnd": "2024-03",
+            "caseCount": 41,
+            "workCount": 41,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.3401856995354453,
+            "baselineWape": 0.289197211360733,
+            "relativeWapeImprovement": -0.1763104420502565,
+            "candidateWins": false
+          },
+          {
+            "blockId": "NONOVERLAP_002",
+            "origin": "2024-03",
+            "forecastStart": "2024-04",
+            "forecastEnd": "2025-03",
+            "caseCount": 54,
+            "workCount": 54,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.520029133319337,
+            "baselineWape": 0.32701901535929895,
+            "relativeWapeImprovement": -0.5902106877423502,
+            "candidateWins": false
+          },
+          {
+            "blockId": "NONOVERLAP_003",
+            "origin": "2025-03",
+            "forecastStart": "2025-04",
+            "forecastEnd": "2026-03",
+            "caseCount": 53,
+            "workCount": 53,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.2699854244560504,
+            "baselineWape": 0.2377965436386589,
+            "relativeWapeImprovement": -0.1353631147234156,
+            "candidateWins": false
+          }
+        ],
+        "improvingIndependentTimeBlockShare": 0,
+        "core90": {
+          "status": "COMPUTED",
+          "candidate": {
+            "status": "COMPUTED",
+            "caseCount": 1053,
+            "workCount": 195,
+            "originCount": 9,
+            "wape": 0.4308743362322024,
+            "signedBias": -0.15618776080031382,
+            "mae": 45676.3591848114,
+            "medianAbsoluteError": 8674.37880337081,
+            "predictionActualRatio": 0.8438122391996862,
+            "underpredictionCash": 32765988.098493982,
+            "overpredictionCash": 15331218.123112462,
+            "errorConcentration": {
+              "maximumWorkShare": 0.3555824711402408,
+              "top1PercentWorkShare": 0.43188708346463384,
+              "top5PercentWorkShare": 0.6485377611306851,
+              "top10PercentWorkShare": 0.7426622156292048
+            }
+          },
+          "baseline": {
+            "status": "COMPUTED",
+            "caseCount": 1053,
+            "workCount": 195,
+            "originCount": 9,
+            "wape": 0.33788870184091746,
+            "signedBias": 0.06416535298184463,
+            "mae": 35819.08786848264,
+            "medianAbsoluteError": 11601.882197167684,
+            "predictionActualRatio": 1.0641653529818447,
+            "underpredictionCash": 15277457.080489295,
+            "overpredictionCash": 22440042.445022933,
+            "errorConcentration": {
+              "maximumWorkShare": 0.1368910373914178,
+              "top1PercentWorkShare": 0.23330390963951883,
+              "top5PercentWorkShare": 0.46873966988818894,
+              "top10PercentWorkShare": 0.6157785957563066
+            }
+          },
+          "relativeWapeImprovement": -0.27519604498366396,
+          "noOppositeMaterialDegradation": false
+        },
+        "checks": {
+          "relativeWapeImprovementAtLeastMinimum": false,
+          "bootstrapLowerExceedsZero": false,
+          "majorityIndependentTimeBlocksImprove": false,
+          "biasWorseningWithinLimit": false,
+          "candidateAbsoluteBiasWithinLimit": false,
+          "core90NoOppositeMaterialDegradation": false,
+          "rawCandidateOnly": true
+        }
+      }
+    },
+    {
+      "evaluationFamily": "STRICT_ROLLING",
+      "populationId": "CORE80",
+      "horizonMonths": 12,
+      "armId": "B2",
+      "rawMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 472,
+        "workCount": 76,
+        "originCount": 9,
+        "wape": 0.4012616427137385,
+        "signedBias": -0.1487025077727987,
+        "mae": 84943.00584136727,
+        "medianAbsoluteError": 25366.404647000192,
+        "predictionActualRatio": 0.8512974922272013,
+        "underpredictionCash": 27475547.935771294,
+        "overpredictionCash": 12617550.821354048,
+        "errorConcentration": {
+          "maximumWorkShare": 0.3884703928564576,
+          "top1PercentWorkShare": 0.3884703928564576,
+          "top5PercentWorkShare": 0.5616997446690442,
+          "top10PercentWorkShare": 0.6768328418457387
+        }
+      },
+      "occurrenceAuxiliary": {
+        "status": "AUXILIARY_PREVALENCE_ONLY",
+        "caseCount": 472,
+        "workCount": 76,
+        "positiveCaseCount": 467,
+        "nonpositiveCaseCount": 5,
+        "positiveShare": 0.989406779661017,
+        "usedForTrainingSelectionRoutingOrPromotion": false
+      },
+      "sameCaseStatus": "EXACT_COMMON_RAW_ARMS_AND_B0_SAME_CASE",
+      "sameCaseCount": 472,
+      "commonSameCase": {
+        "status": "COMMON_RAW_ARMS_AND_B0_SAME_CASE_INTERSECTION",
+        "caseCount": 472,
+        "baselineCaseCount": 472,
+        "candidateCaseCounts": {
+          "B1": 472,
+          "B2": 472,
+          "B3": 472
+        },
+        "actualMismatchCount": 0,
+        "sameCasesUsedForEveryRawArm": true
+      },
+      "baselineMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 472,
+        "workCount": 76,
+        "originCount": 9,
+        "wape": 0.3157491999243411,
+        "signedBias": 0.06427047135886367,
+        "mae": 66840.89202294951,
+        "medianAbsoluteError": 27547.777465982275,
+        "predictionActualRatio": 1.0642704713588638,
+        "underpredictionCash": 12563575.017416986,
+        "overpredictionCash": 18985326.01741517,
+        "errorConcentration": {
+          "maximumWorkShare": 0.16365665581051966,
+          "top1PercentWorkShare": 0.16365665581051966,
+          "top5PercentWorkShare": 0.40194828312644926,
+          "top10PercentWorkShare": 0.5071475921353935
+        }
+      },
+      "pairedCandidateMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 472,
+        "workCount": 76,
+        "originCount": 9,
+        "wape": 0.4012616427137385,
+        "signedBias": -0.1487025077727987,
+        "mae": 84943.00584136727,
+        "medianAbsoluteError": 25366.404647000192,
+        "predictionActualRatio": 0.8512974922272013,
+        "underpredictionCash": 27475547.935771294,
+        "overpredictionCash": 12617550.821354048,
+        "errorConcentration": {
+          "maximumWorkShare": 0.3884703928564576,
+          "top1PercentWorkShare": 0.3884703928564576,
+          "top5PercentWorkShare": 0.5616997446690442,
+          "top10PercentWorkShare": 0.6768328418457387
+        }
+      },
+      "relativeWapeImprovement": -0.2708239413112928,
+      "bootstrap": {
+        "status": "COMPUTED",
+        "method": "PAIRED_WORK_CLUSTER_RESAMPLE",
+        "iterations": 2000,
+        "seed": 20942926,
+        "workCount": 76,
+        "relativeWapeImprovement95": {
+          "lower": -0.8102624372115844,
+          "median": -0.2513288001466183,
+          "upper": 0.20828303185230806
+        }
+      },
+      "gate": {
+        "status": "M2_CORE_HORIZON_AMOUNT_HORIZON_FAIL",
+        "pass": false,
+        "candidate": {
+          "status": "COMPUTED",
+          "caseCount": 472,
+          "workCount": 76,
+          "originCount": 9,
+          "wape": 0.4012616427137385,
+          "signedBias": -0.1487025077727987,
+          "mae": 84943.00584136727,
+          "medianAbsoluteError": 25366.404647000192,
+          "predictionActualRatio": 0.8512974922272013,
+          "underpredictionCash": 27475547.935771294,
+          "overpredictionCash": 12617550.821354048,
+          "errorConcentration": {
+            "maximumWorkShare": 0.3884703928564576,
+            "top1PercentWorkShare": 0.3884703928564576,
+            "top5PercentWorkShare": 0.5616997446690442,
+            "top10PercentWorkShare": 0.6768328418457387
+          }
+        },
+        "baseline": {
+          "status": "COMPUTED",
+          "caseCount": 472,
+          "workCount": 76,
+          "originCount": 9,
+          "wape": 0.3157491999243411,
+          "signedBias": 0.06427047135886367,
+          "mae": 66840.89202294951,
+          "medianAbsoluteError": 27547.777465982275,
+          "predictionActualRatio": 1.0642704713588638,
+          "underpredictionCash": 12563575.017416986,
+          "overpredictionCash": 18985326.01741517,
+          "errorConcentration": {
+            "maximumWorkShare": 0.16365665581051966,
+            "top1PercentWorkShare": 0.16365665581051966,
+            "top5PercentWorkShare": 0.40194828312644926,
+            "top10PercentWorkShare": 0.5071475921353935
+          }
+        },
+        "relativeWapeImprovement": -0.2708239413112928,
+        "bootstrap": {
+          "status": "COMPUTED",
+          "method": "PAIRED_WORK_CLUSTER_RESAMPLE",
+          "iterations": 2000,
+          "seed": 20437264,
+          "workCount": 76,
+          "relativeWapeImprovement95": {
+            "lower": -0.8561483796397051,
+            "median": -0.2565920044096287,
+            "upper": 0.21642008172558047
+          }
+        },
+        "independentTimeBlocks": [
+          {
+            "blockId": "NONOVERLAP_001",
+            "origin": "2023-03",
+            "forecastStart": "2023-04",
+            "forecastEnd": "2024-03",
+            "caseCount": 41,
+            "workCount": 41,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.33653043735871924,
+            "baselineWape": 0.289197211360733,
+            "relativeWapeImprovement": -0.16367110102920274,
+            "candidateWins": false
+          },
+          {
+            "blockId": "NONOVERLAP_002",
+            "origin": "2024-03",
+            "forecastStart": "2024-04",
+            "forecastEnd": "2025-03",
+            "caseCount": 54,
+            "workCount": 54,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.4921011358290095,
+            "baselineWape": 0.32701901535929895,
+            "relativeWapeImprovement": -0.5048089337812153,
+            "candidateWins": false
+          },
+          {
+            "blockId": "NONOVERLAP_003",
+            "origin": "2025-03",
+            "forecastStart": "2025-04",
+            "forecastEnd": "2026-03",
+            "caseCount": 53,
+            "workCount": 53,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.24009729006932667,
+            "baselineWape": 0.2377965436386589,
+            "relativeWapeImprovement": -0.009675272800280249,
+            "candidateWins": false
+          }
+        ],
+        "improvingIndependentTimeBlockShare": 0,
+        "core90": {
+          "status": "COMPUTED",
+          "candidate": {
+            "status": "COMPUTED",
+            "caseCount": 1053,
+            "workCount": 195,
+            "originCount": 9,
+            "wape": 0.40572100322216237,
+            "signedBias": -0.14837632676341586,
+            "mae": 43009.89108344228,
+            "medianAbsoluteError": 8536.267400255638,
+            "predictionActualRatio": 0.8516236732365842,
+            "underpredictionCash": 30926109.199499443,
+            "overpredictionCash": 14363306.111365268,
+            "errorConcentration": {
+              "maximumWorkShare": 0.3438989379330069,
+              "top1PercentWorkShare": 0.4189101109725748,
+              "top5PercentWorkShare": 0.6345511709871939,
+              "top10PercentWorkShare": 0.7355116947665425
+            }
+          },
+          "baseline": {
+            "status": "COMPUTED",
+            "caseCount": 1053,
+            "workCount": 195,
+            "originCount": 9,
+            "wape": 0.33788870184091746,
+            "signedBias": 0.06416535298184463,
+            "mae": 35819.08786848264,
+            "medianAbsoluteError": 11601.882197167684,
+            "predictionActualRatio": 1.0641653529818447,
+            "underpredictionCash": 15277457.080489295,
+            "overpredictionCash": 22440042.445022933,
+            "errorConcentration": {
+              "maximumWorkShare": 0.1368910373914178,
+              "top1PercentWorkShare": 0.23330390963951883,
+              "top5PercentWorkShare": 0.46873966988818894,
+              "top10PercentWorkShare": 0.6157785957563066
+            }
+          },
+          "relativeWapeImprovement": -0.2007533871706112,
+          "noOppositeMaterialDegradation": false
+        },
+        "checks": {
+          "relativeWapeImprovementAtLeastMinimum": false,
+          "bootstrapLowerExceedsZero": false,
+          "majorityIndependentTimeBlocksImprove": false,
+          "biasWorseningWithinLimit": false,
+          "candidateAbsoluteBiasWithinLimit": true,
+          "core90NoOppositeMaterialDegradation": false,
+          "rawCandidateOnly": true
+        }
+      }
+    },
+    {
+      "evaluationFamily": "STRICT_ROLLING",
+      "populationId": "CORE80",
+      "horizonMonths": 12,
+      "armId": "B3",
+      "rawMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 472,
+        "workCount": 76,
+        "originCount": 9,
+        "wape": 0.3918201438488853,
+        "signedBias": -0.13843078730327918,
+        "mae": 82944.33662443285,
+        "medianAbsoluteError": 24875.38609103143,
+        "predictionActualRatio": 0.8615692126967208,
+        "underpredictionCash": 26490699.19188358,
+        "overpredictionCash": 12659027.69484872,
+        "errorConcentration": {
+          "maximumWorkShare": 0.3939712427794534,
+          "top1PercentWorkShare": 0.3939712427794534,
+          "top5PercentWorkShare": 0.5617065862682828,
+          "top10PercentWorkShare": 0.6695460716489379
+        }
+      },
+      "occurrenceAuxiliary": {
+        "status": "AUXILIARY_PREVALENCE_ONLY",
+        "caseCount": 472,
+        "workCount": 76,
+        "positiveCaseCount": 467,
+        "nonpositiveCaseCount": 5,
+        "positiveShare": 0.989406779661017,
+        "usedForTrainingSelectionRoutingOrPromotion": false
+      },
+      "sameCaseStatus": "EXACT_COMMON_RAW_ARMS_AND_B0_SAME_CASE",
+      "sameCaseCount": 472,
+      "commonSameCase": {
+        "status": "COMMON_RAW_ARMS_AND_B0_SAME_CASE_INTERSECTION",
+        "caseCount": 472,
+        "baselineCaseCount": 472,
+        "candidateCaseCounts": {
+          "B1": 472,
+          "B2": 472,
+          "B3": 472
+        },
+        "actualMismatchCount": 0,
+        "sameCasesUsedForEveryRawArm": true
+      },
+      "baselineMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 472,
+        "workCount": 76,
+        "originCount": 9,
+        "wape": 0.3157491999243411,
+        "signedBias": 0.06427047135886367,
+        "mae": 66840.89202294951,
+        "medianAbsoluteError": 27547.777465982275,
+        "predictionActualRatio": 1.0642704713588638,
+        "underpredictionCash": 12563575.017416986,
+        "overpredictionCash": 18985326.01741517,
+        "errorConcentration": {
+          "maximumWorkShare": 0.16365665581051966,
+          "top1PercentWorkShare": 0.16365665581051966,
+          "top5PercentWorkShare": 0.40194828312644926,
+          "top10PercentWorkShare": 0.5071475921353935
+        }
+      },
+      "pairedCandidateMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 472,
+        "workCount": 76,
+        "originCount": 9,
+        "wape": 0.3918201438488853,
+        "signedBias": -0.13843078730327918,
+        "mae": 82944.33662443285,
+        "medianAbsoluteError": 24875.38609103143,
+        "predictionActualRatio": 0.8615692126967208,
+        "underpredictionCash": 26490699.19188358,
+        "overpredictionCash": 12659027.69484872,
+        "errorConcentration": {
+          "maximumWorkShare": 0.3939712427794534,
+          "top1PercentWorkShare": 0.3939712427794534,
+          "top5PercentWorkShare": 0.5617065862682828,
+          "top10PercentWorkShare": 0.6695460716489379
+        }
+      },
+      "relativeWapeImprovement": -0.24092204807730985,
+      "bootstrap": {
+        "status": "COMPUTED",
+        "method": "PAIRED_WORK_CLUSTER_RESAMPLE",
+        "iterations": 2000,
+        "seed": 20353665,
+        "workCount": 76,
+        "relativeWapeImprovement95": {
+          "lower": -0.7785962764783121,
+          "median": -0.22226441048818832,
+          "upper": 0.2359668623731
+        }
+      },
+      "gate": {
+        "status": "M2_CORE_HORIZON_AMOUNT_HORIZON_FAIL",
+        "pass": false,
+        "candidate": {
+          "status": "COMPUTED",
+          "caseCount": 472,
+          "workCount": 76,
+          "originCount": 9,
+          "wape": 0.3918201438488853,
+          "signedBias": -0.13843078730327918,
+          "mae": 82944.33662443285,
+          "medianAbsoluteError": 24875.38609103143,
+          "predictionActualRatio": 0.8615692126967208,
+          "underpredictionCash": 26490699.19188358,
+          "overpredictionCash": 12659027.69484872,
+          "errorConcentration": {
+            "maximumWorkShare": 0.3939712427794534,
+            "top1PercentWorkShare": 0.3939712427794534,
+            "top5PercentWorkShare": 0.5617065862682828,
+            "top10PercentWorkShare": 0.6695460716489379
+          }
+        },
+        "baseline": {
+          "status": "COMPUTED",
+          "caseCount": 472,
+          "workCount": 76,
+          "originCount": 9,
+          "wape": 0.3157491999243411,
+          "signedBias": 0.06427047135886367,
+          "mae": 66840.89202294951,
+          "medianAbsoluteError": 27547.777465982275,
+          "predictionActualRatio": 1.0642704713588638,
+          "underpredictionCash": 12563575.017416986,
+          "overpredictionCash": 18985326.01741517,
+          "errorConcentration": {
+            "maximumWorkShare": 0.16365665581051966,
+            "top1PercentWorkShare": 0.16365665581051966,
+            "top5PercentWorkShare": 0.40194828312644926,
+            "top10PercentWorkShare": 0.5071475921353935
+          }
+        },
+        "relativeWapeImprovement": -0.24092204807730985,
+        "bootstrap": {
+          "status": "COMPUTED",
+          "method": "PAIRED_WORK_CLUSTER_RESAMPLE",
+          "iterations": 2000,
+          "seed": 20550387,
+          "workCount": 76,
+          "relativeWapeImprovement95": {
+            "lower": -0.7855387011819721,
+            "median": -0.21643626161591176,
+            "upper": 0.23671000971669764
+          }
+        },
+        "independentTimeBlocks": [
+          {
+            "blockId": "NONOVERLAP_001",
+            "origin": "2023-03",
+            "forecastStart": "2023-04",
+            "forecastEnd": "2024-03",
+            "caseCount": 41,
+            "workCount": 41,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.34030628641054195,
+            "baselineWape": 0.289197211360733,
+            "relativeWapeImprovement": -0.17672741313559046,
+            "candidateWins": false
+          },
+          {
+            "blockId": "NONOVERLAP_002",
+            "origin": "2024-03",
+            "forecastStart": "2024-04",
+            "forecastEnd": "2025-03",
+            "caseCount": 54,
+            "workCount": 54,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.46570010473305495,
+            "baselineWape": 0.32701901535929895,
+            "relativeWapeImprovement": -0.42407653029407405,
+            "candidateWins": false
+          },
+          {
+            "blockId": "NONOVERLAP_003",
+            "origin": "2025-03",
+            "forecastStart": "2025-04",
+            "forecastEnd": "2026-03",
+            "caseCount": 53,
+            "workCount": 53,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.23622515575139044,
+            "baselineWape": 0.2377965436386589,
+            "relativeWapeImprovement": 0.006608119122438741,
+            "candidateWins": true
+          }
+        ],
+        "improvingIndependentTimeBlockShare": 0.3333333333333333,
+        "core90": {
+          "status": "COMPUTED",
+          "candidate": {
+            "status": "COMPUTED",
+            "caseCount": 1053,
+            "workCount": 195,
+            "originCount": 9,
+            "wape": 0.39776131197052494,
+            "signedBias": -0.139147184286301,
+            "mae": 42166.09583727087,
+            "medianAbsoluteError": 8667.491183658916,
+            "predictionActualRatio": 0.860852815713699,
+            "underpredictionCash": 29966740.29418229,
+            "overpredictionCash": 14434158.622463925,
+            "errorConcentration": {
+              "maximumWorkShare": 0.3473773489360501,
+              "top1PercentWorkShare": 0.4214120855373986,
+              "top5PercentWorkShare": 0.6238814224974426,
+              "top10PercentWorkShare": 0.7257144431296735
+            }
+          },
+          "baseline": {
+            "status": "COMPUTED",
+            "caseCount": 1053,
+            "workCount": 195,
+            "originCount": 9,
+            "wape": 0.33788870184091746,
+            "signedBias": 0.06416535298184463,
+            "mae": 35819.08786848264,
+            "medianAbsoluteError": 11601.882197167684,
+            "predictionActualRatio": 1.0641653529818447,
+            "underpredictionCash": 15277457.080489295,
+            "overpredictionCash": 22440042.445022933,
+            "errorConcentration": {
+              "maximumWorkShare": 0.1368910373914178,
+              "top1PercentWorkShare": 0.23330390963951883,
+              "top5PercentWorkShare": 0.46873966988818894,
+              "top10PercentWorkShare": 0.6157785957563066
+            }
+          },
+          "relativeWapeImprovement": -0.17719624776858126,
+          "noOppositeMaterialDegradation": false
+        },
+        "checks": {
+          "relativeWapeImprovementAtLeastMinimum": false,
+          "bootstrapLowerExceedsZero": false,
+          "majorityIndependentTimeBlocksImprove": false,
+          "biasWorseningWithinLimit": false,
+          "candidateAbsoluteBiasWithinLimit": true,
+          "core90NoOppositeMaterialDegradation": false,
+          "rawCandidateOnly": true
+        }
+      }
+    },
+    {
+      "evaluationFamily": "STRICT_ROLLING",
+      "populationId": "CORE90",
+      "horizonMonths": 3,
+      "armId": "B1",
+      "rawMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 1288,
+        "workCount": 208,
+        "originCount": 11,
+        "wape": 0.27783425461980893,
+        "signedBias": -0.07378502550365833,
+        "mae": 8102.263183815103,
+        "medianAbsoluteError": 1770.2876406403302,
+        "predictionActualRatio": 0.9262149744963417,
+        "underpredictionCash": 6603574.843799552,
+        "overpredictionCash": 3832140.1369542885,
+        "errorConcentration": {
+          "maximumWorkShare": 0.22132281057978068,
+          "top1PercentWorkShare": 0.3869065818240588,
+          "top5PercentWorkShare": 0.6007049120745538,
+          "top10PercentWorkShare": 0.7129887384141348
+        }
+      },
+      "occurrenceAuxiliary": {
+        "status": "AUXILIARY_PREVALENCE_ONLY",
+        "caseCount": 1288,
+        "workCount": 208,
+        "positiveCaseCount": 1281,
+        "nonpositiveCaseCount": 7,
+        "positiveShare": 0.9945652173913043,
+        "usedForTrainingSelectionRoutingOrPromotion": false
+      },
+      "sameCaseStatus": "EXACT_COMMON_RAW_ARMS_AND_B0_SAME_CASE",
+      "sameCaseCount": 1288,
+      "commonSameCase": {
+        "status": "COMMON_RAW_ARMS_AND_B0_SAME_CASE_INTERSECTION",
+        "caseCount": 1288,
+        "baselineCaseCount": 1288,
+        "candidateCaseCounts": {
+          "B1": 1288,
+          "B2": 1288,
+          "B3": 1288
+        },
+        "actualMismatchCount": 0,
+        "sameCasesUsedForEveryRawArm": true
+      },
+      "baselineMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 1288,
+        "workCount": 208,
+        "originCount": 11,
+        "wape": 0.28031752897021556,
+        "signedBias": -0.042438571781422754,
+        "mae": 8174.68097251486,
+        "medianAbsoluteError": 2031.281158337285,
+        "predictionActualRatio": 0.9575614282185773,
+        "underpredictionCash": 6061510.810379771,
+        "overpredictionCash": 4467478.282219375,
+        "errorConcentration": {
+          "maximumWorkShare": 0.11572894417055736,
+          "top1PercentWorkShare": 0.29989095884673467,
+          "top5PercentWorkShare": 0.5235665482721564,
+          "top10PercentWorkShare": 0.6639350375892202
+        }
+      },
+      "pairedCandidateMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 1288,
+        "workCount": 208,
+        "originCount": 11,
+        "wape": 0.27783425461980893,
+        "signedBias": -0.07378502550365833,
+        "mae": 8102.263183815103,
+        "medianAbsoluteError": 1770.2876406403302,
+        "predictionActualRatio": 0.9262149744963417,
+        "underpredictionCash": 6603574.843799552,
+        "overpredictionCash": 3832140.1369542885,
+        "errorConcentration": {
+          "maximumWorkShare": 0.22132281057978068,
+          "top1PercentWorkShare": 0.3869065818240588,
+          "top5PercentWorkShare": 0.6007049120745538,
+          "top10PercentWorkShare": 0.7129887384141348
+        }
+      },
+      "relativeWapeImprovement": 0.008858790813151331,
+      "bootstrap": {
+        "status": "COMPUTED",
+        "method": "PAIRED_WORK_CLUSTER_RESAMPLE",
+        "iterations": 2000,
+        "seed": 20305294,
+        "workCount": 208,
+        "relativeWapeImprovement95": {
+          "lower": -0.210311354385268,
+          "median": 0.022742662145992958,
+          "upper": 0.19626520446618279
+        }
+      },
+      "gate": null
+    },
+    {
+      "evaluationFamily": "STRICT_ROLLING",
+      "populationId": "CORE90",
+      "horizonMonths": 3,
+      "armId": "B2",
+      "rawMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 1288,
+        "workCount": 208,
+        "originCount": 11,
+        "wape": 0.27152091001284495,
+        "signedBias": -0.06932300367025586,
+        "mae": 7918.152050197906,
+        "medianAbsoluteError": 1738.558607824029,
+        "predictionActualRatio": 0.9306769963297441,
+        "underpredictionCash": 6401208.412887855,
+        "overpredictionCash": 3797371.4277670546,
+        "errorConcentration": {
+          "maximumWorkShare": 0.20239806814485803,
+          "top1PercentWorkShare": 0.3759778859739833,
+          "top5PercentWorkShare": 0.5933309356529909,
+          "top10PercentWorkShare": 0.7087382274338391
+        }
+      },
+      "occurrenceAuxiliary": {
+        "status": "AUXILIARY_PREVALENCE_ONLY",
+        "caseCount": 1288,
+        "workCount": 208,
+        "positiveCaseCount": 1281,
+        "nonpositiveCaseCount": 7,
+        "positiveShare": 0.9945652173913043,
+        "usedForTrainingSelectionRoutingOrPromotion": false
+      },
+      "sameCaseStatus": "EXACT_COMMON_RAW_ARMS_AND_B0_SAME_CASE",
+      "sameCaseCount": 1288,
+      "commonSameCase": {
+        "status": "COMMON_RAW_ARMS_AND_B0_SAME_CASE_INTERSECTION",
+        "caseCount": 1288,
+        "baselineCaseCount": 1288,
+        "candidateCaseCounts": {
+          "B1": 1288,
+          "B2": 1288,
+          "B3": 1288
+        },
+        "actualMismatchCount": 0,
+        "sameCasesUsedForEveryRawArm": true
+      },
+      "baselineMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 1288,
+        "workCount": 208,
+        "originCount": 11,
+        "wape": 0.28031752897021556,
+        "signedBias": -0.042438571781422754,
+        "mae": 8174.68097251486,
+        "medianAbsoluteError": 2031.281158337285,
+        "predictionActualRatio": 0.9575614282185773,
+        "underpredictionCash": 6061510.810379771,
+        "overpredictionCash": 4467478.282219375,
+        "errorConcentration": {
+          "maximumWorkShare": 0.11572894417055736,
+          "top1PercentWorkShare": 0.29989095884673467,
+          "top5PercentWorkShare": 0.5235665482721564,
+          "top10PercentWorkShare": 0.6639350375892202
+        }
+      },
+      "pairedCandidateMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 1288,
+        "workCount": 208,
+        "originCount": 11,
+        "wape": 0.27152091001284495,
+        "signedBias": -0.06932300367025586,
+        "mae": 7918.152050197906,
+        "medianAbsoluteError": 1738.558607824029,
+        "predictionActualRatio": 0.9306769963297441,
+        "underpredictionCash": 6401208.412887855,
+        "overpredictionCash": 3797371.4277670546,
+        "errorConcentration": {
+          "maximumWorkShare": 0.20239806814485803,
+          "top1PercentWorkShare": 0.3759778859739833,
+          "top5PercentWorkShare": 0.5933309356529909,
+          "top10PercentWorkShare": 0.7087382274338391
+        }
+      },
+      "relativeWapeImprovement": 0.03138090931982091,
+      "bootstrap": {
+        "status": "COMPUTED",
+        "method": "PAIRED_WORK_CLUSTER_RESAMPLE",
+        "iterations": 2000,
+        "seed": 20316077,
+        "workCount": 208,
+        "relativeWapeImprovement95": {
+          "lower": -0.14553234637990023,
+          "median": 0.04435661657084489,
+          "upper": 0.19024988277480748
+        }
+      },
+      "gate": null
+    },
+    {
+      "evaluationFamily": "STRICT_ROLLING",
+      "populationId": "CORE90",
+      "horizonMonths": 3,
+      "armId": "B3",
+      "rawMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 1288,
+        "workCount": 208,
+        "originCount": 11,
+        "wape": 0.2673611051899227,
+        "signedBias": -0.0607260313693172,
+        "mae": 7796.842913875819,
+        "medianAbsoluteError": 1758.4306715194944,
+        "predictionActualRatio": 0.9392739686306828,
+        "underpredictionCash": 6161630.160883289,
+        "overpredictionCash": 3880703.5121887606,
+        "errorConcentration": {
+          "maximumWorkShare": 0.1946732403734764,
+          "top1PercentWorkShare": 0.365900880059453,
+          "top5PercentWorkShare": 0.5849215037545183,
+          "top10PercentWorkShare": 0.7017547841742817
+        }
+      },
+      "occurrenceAuxiliary": {
+        "status": "AUXILIARY_PREVALENCE_ONLY",
+        "caseCount": 1288,
+        "workCount": 208,
+        "positiveCaseCount": 1281,
+        "nonpositiveCaseCount": 7,
+        "positiveShare": 0.9945652173913043,
+        "usedForTrainingSelectionRoutingOrPromotion": false
+      },
+      "sameCaseStatus": "EXACT_COMMON_RAW_ARMS_AND_B0_SAME_CASE",
+      "sameCaseCount": 1288,
+      "commonSameCase": {
+        "status": "COMMON_RAW_ARMS_AND_B0_SAME_CASE_INTERSECTION",
+        "caseCount": 1288,
+        "baselineCaseCount": 1288,
+        "candidateCaseCounts": {
+          "B1": 1288,
+          "B2": 1288,
+          "B3": 1288
+        },
+        "actualMismatchCount": 0,
+        "sameCasesUsedForEveryRawArm": true
+      },
+      "baselineMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 1288,
+        "workCount": 208,
+        "originCount": 11,
+        "wape": 0.28031752897021556,
+        "signedBias": -0.042438571781422754,
+        "mae": 8174.68097251486,
+        "medianAbsoluteError": 2031.281158337285,
+        "predictionActualRatio": 0.9575614282185773,
+        "underpredictionCash": 6061510.810379771,
+        "overpredictionCash": 4467478.282219375,
+        "errorConcentration": {
+          "maximumWorkShare": 0.11572894417055736,
+          "top1PercentWorkShare": 0.29989095884673467,
+          "top5PercentWorkShare": 0.5235665482721564,
+          "top10PercentWorkShare": 0.6639350375892202
+        }
+      },
+      "pairedCandidateMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 1288,
+        "workCount": 208,
+        "originCount": 11,
+        "wape": 0.2673611051899227,
+        "signedBias": -0.0607260313693172,
+        "mae": 7796.842913875819,
+        "medianAbsoluteError": 1758.4306715194944,
+        "predictionActualRatio": 0.9392739686306828,
+        "underpredictionCash": 6161630.160883289,
+        "overpredictionCash": 3880703.5121887606,
+        "errorConcentration": {
+          "maximumWorkShare": 0.1946732403734764,
+          "top1PercentWorkShare": 0.365900880059453,
+          "top5PercentWorkShare": 0.5849215037545183,
+          "top10PercentWorkShare": 0.7017547841742817
+        }
+      },
+      "relativeWapeImprovement": 0.04622052651466378,
+      "bootstrap": {
+        "status": "COMPUTED",
+        "method": "PAIRED_WORK_CLUSTER_RESAMPLE",
+        "iterations": 2000,
+        "seed": 20549003,
+        "workCount": 208,
+        "relativeWapeImprovement95": {
+          "lower": -0.11433797103553892,
+          "median": 0.053867432867722345,
+          "upper": 0.19762754568463842
+        }
+      },
+      "gate": null
+    },
+    {
+      "evaluationFamily": "STRICT_ROLLING",
+      "populationId": "CORE90",
+      "horizonMonths": 6,
+      "armId": "B1",
+      "rawMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 1288,
+        "workCount": 208,
+        "originCount": 11,
+        "wape": 0.3109987929223854,
+        "signedBias": -0.09042650089685887,
+        "mae": 17366.111860242887,
+        "medianAbsoluteError": 3870.4083094762073,
+        "predictionActualRatio": 0.9095734991031411,
+        "underpredictionCash": 14435588.44674293,
+        "overpredictionCash": 7931963.629249911,
+        "errorConcentration": {
+          "maximumWorkShare": 0.25991672154233486,
+          "top1PercentWorkShare": 0.39782310993400843,
+          "top5PercentWorkShare": 0.6052088682597628,
+          "top10PercentWorkShare": 0.71719459101196
+        }
+      },
+      "occurrenceAuxiliary": {
+        "status": "AUXILIARY_PREVALENCE_ONLY",
+        "caseCount": 1288,
+        "workCount": 208,
+        "positiveCaseCount": 1281,
+        "nonpositiveCaseCount": 7,
+        "positiveShare": 0.9945652173913043,
+        "usedForTrainingSelectionRoutingOrPromotion": false
+      },
+      "sameCaseStatus": "EXACT_COMMON_RAW_ARMS_AND_B0_SAME_CASE",
+      "sameCaseCount": 1288,
+      "commonSameCase": {
+        "status": "COMMON_RAW_ARMS_AND_B0_SAME_CASE_INTERSECTION",
+        "caseCount": 1288,
+        "baselineCaseCount": 1288,
+        "candidateCaseCounts": {
+          "B1": 1288,
+          "B2": 1288,
+          "B3": 1288
+        },
+        "actualMismatchCount": 0,
+        "sameCasesUsedForEveryRawArm": true
+      },
+      "baselineMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 1288,
+        "workCount": 208,
+        "originCount": 11,
+        "wape": 0.2950412220787907,
+        "signedBias": 0.00016880613366378436,
+        "mae": 16475.044220772088,
+        "medianAbsoluteError": 4558.1188278526115,
+        "predictionActualRatio": 1.0001688061336638,
+        "underpredictionCash": 10603858.068787621,
+        "overpredictionCash": 10615998.887566837,
+        "errorConcentration": {
+          "maximumWorkShare": 0.13083935000344699,
+          "top1PercentWorkShare": 0.3032485400962776,
+          "top5PercentWorkShare": 0.5063852686561542,
+          "top10PercentWorkShare": 0.6516760846065381
+        }
+      },
+      "pairedCandidateMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 1288,
+        "workCount": 208,
+        "originCount": 11,
+        "wape": 0.3109987929223854,
+        "signedBias": -0.09042650089685887,
+        "mae": 17366.111860242887,
+        "medianAbsoluteError": 3870.4083094762073,
+        "predictionActualRatio": 0.9095734991031411,
+        "underpredictionCash": 14435588.44674293,
+        "overpredictionCash": 7931963.629249911,
+        "errorConcentration": {
+          "maximumWorkShare": 0.25991672154233486,
+          "top1PercentWorkShare": 0.39782310993400843,
+          "top5PercentWorkShare": 0.6052088682597628,
+          "top10PercentWorkShare": 0.71719459101196
+        }
+      },
+      "relativeWapeImprovement": -0.05408590274661098,
+      "bootstrap": {
+        "status": "COMPUTED",
+        "method": "PAIRED_WORK_CLUSTER_RESAMPLE",
+        "iterations": 2000,
+        "seed": 20858275,
+        "workCount": 208,
+        "relativeWapeImprovement95": {
+          "lower": -0.33808872536986156,
+          "median": -0.03266247494012284,
+          "upper": 0.18454457148062625
+        }
+      },
+      "gate": null
+    },
+    {
+      "evaluationFamily": "STRICT_ROLLING",
+      "populationId": "CORE90",
+      "horizonMonths": 6,
+      "armId": "B2",
+      "rawMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 1288,
+        "workCount": 208,
+        "originCount": 11,
+        "wape": 0.298305285807511,
+        "signedBias": -0.08181319535619494,
+        "mae": 16657.30890192815,
+        "medianAbsoluteError": 3739.4777667343224,
+        "predictionActualRatio": 0.9181868046438051,
+        "underpredictionCash": 13669377.688868461,
+        "overpredictionCash": 7785236.176814992,
+        "errorConcentration": {
+          "maximumWorkShare": 0.23974790279090516,
+          "top1PercentWorkShare": 0.38247747654179437,
+          "top5PercentWorkShare": 0.5939403378480883,
+          "top10PercentWorkShare": 0.7124526341010314
+        }
+      },
+      "occurrenceAuxiliary": {
+        "status": "AUXILIARY_PREVALENCE_ONLY",
+        "caseCount": 1288,
+        "workCount": 208,
+        "positiveCaseCount": 1281,
+        "nonpositiveCaseCount": 7,
+        "positiveShare": 0.9945652173913043,
+        "usedForTrainingSelectionRoutingOrPromotion": false
+      },
+      "sameCaseStatus": "EXACT_COMMON_RAW_ARMS_AND_B0_SAME_CASE",
+      "sameCaseCount": 1288,
+      "commonSameCase": {
+        "status": "COMMON_RAW_ARMS_AND_B0_SAME_CASE_INTERSECTION",
+        "caseCount": 1288,
+        "baselineCaseCount": 1288,
+        "candidateCaseCounts": {
+          "B1": 1288,
+          "B2": 1288,
+          "B3": 1288
+        },
+        "actualMismatchCount": 0,
+        "sameCasesUsedForEveryRawArm": true
+      },
+      "baselineMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 1288,
+        "workCount": 208,
+        "originCount": 11,
+        "wape": 0.2950412220787907,
+        "signedBias": 0.00016880613366378436,
+        "mae": 16475.044220772088,
+        "medianAbsoluteError": 4558.1188278526115,
+        "predictionActualRatio": 1.0001688061336638,
+        "underpredictionCash": 10603858.068787621,
+        "overpredictionCash": 10615998.887566837,
+        "errorConcentration": {
+          "maximumWorkShare": 0.13083935000344699,
+          "top1PercentWorkShare": 0.3032485400962776,
+          "top5PercentWorkShare": 0.5063852686561542,
+          "top10PercentWorkShare": 0.6516760846065381
+        }
+      },
+      "pairedCandidateMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 1288,
+        "workCount": 208,
+        "originCount": 11,
+        "wape": 0.298305285807511,
+        "signedBias": -0.08181319535619494,
+        "mae": 16657.30890192815,
+        "medianAbsoluteError": 3739.4777667343224,
+        "predictionActualRatio": 0.9181868046438051,
+        "underpredictionCash": 13669377.688868461,
+        "overpredictionCash": 7785236.176814992,
+        "errorConcentration": {
+          "maximumWorkShare": 0.23974790279090516,
+          "top1PercentWorkShare": 0.38247747654179437,
+          "top5PercentWorkShare": 0.5939403378480883,
+          "top10PercentWorkShare": 0.7124526341010314
+        }
+      },
+      "relativeWapeImprovement": -0.011063076900652962,
+      "bootstrap": {
+        "status": "COMPUTED",
+        "method": "PAIRED_WORK_CLUSTER_RESAMPLE",
+        "iterations": 2000,
+        "seed": 20896001,
+        "workCount": 208,
+        "relativeWapeImprovement95": {
+          "lower": -0.24060772810198347,
+          "median": 0.0011710030494886969,
+          "upper": 0.1895503710596034
+        }
+      },
+      "gate": null
+    },
+    {
+      "evaluationFamily": "STRICT_ROLLING",
+      "populationId": "CORE90",
+      "horizonMonths": 6,
+      "armId": "B3",
+      "rawMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 1288,
+        "workCount": 208,
+        "originCount": 11,
+        "wape": 0.2944780287992087,
+        "signedBias": -0.07514950156244436,
+        "mae": 16443.595618029125,
+        "medianAbsoluteError": 3910.748813783585,
+        "predictionActualRatio": 0.9248504984375556,
+        "underpredictionCash": 13292114.346161209,
+        "overpredictionCash": 7887236.80986028,
+        "errorConcentration": {
+          "maximumWorkShare": 0.2384041523283302,
+          "top1PercentWorkShare": 0.37725375027028335,
+          "top5PercentWorkShare": 0.5898739252082706,
+          "top10PercentWorkShare": 0.7057846975500468
+        }
+      },
+      "occurrenceAuxiliary": {
+        "status": "AUXILIARY_PREVALENCE_ONLY",
+        "caseCount": 1288,
+        "workCount": 208,
+        "positiveCaseCount": 1281,
+        "nonpositiveCaseCount": 7,
+        "positiveShare": 0.9945652173913043,
+        "usedForTrainingSelectionRoutingOrPromotion": false
+      },
+      "sameCaseStatus": "EXACT_COMMON_RAW_ARMS_AND_B0_SAME_CASE",
+      "sameCaseCount": 1288,
+      "commonSameCase": {
+        "status": "COMMON_RAW_ARMS_AND_B0_SAME_CASE_INTERSECTION",
+        "caseCount": 1288,
+        "baselineCaseCount": 1288,
+        "candidateCaseCounts": {
+          "B1": 1288,
+          "B2": 1288,
+          "B3": 1288
+        },
+        "actualMismatchCount": 0,
+        "sameCasesUsedForEveryRawArm": true
+      },
+      "baselineMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 1288,
+        "workCount": 208,
+        "originCount": 11,
+        "wape": 0.2950412220787907,
+        "signedBias": 0.00016880613366378436,
+        "mae": 16475.044220772088,
+        "medianAbsoluteError": 4558.1188278526115,
+        "predictionActualRatio": 1.0001688061336638,
+        "underpredictionCash": 10603858.068787621,
+        "overpredictionCash": 10615998.887566837,
+        "errorConcentration": {
+          "maximumWorkShare": 0.13083935000344699,
+          "top1PercentWorkShare": 0.3032485400962776,
+          "top5PercentWorkShare": 0.5063852686561542,
+          "top10PercentWorkShare": 0.6516760846065381
+        }
+      },
+      "pairedCandidateMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 1288,
+        "workCount": 208,
+        "originCount": 11,
+        "wape": 0.2944780287992087,
+        "signedBias": -0.07514950156244436,
+        "mae": 16443.595618029125,
+        "medianAbsoluteError": 3910.748813783585,
+        "predictionActualRatio": 0.9248504984375556,
+        "underpredictionCash": 13292114.346161209,
+        "overpredictionCash": 7887236.80986028,
+        "errorConcentration": {
+          "maximumWorkShare": 0.2384041523283302,
+          "top1PercentWorkShare": 0.37725375027028335,
+          "top5PercentWorkShare": 0.5898739252082706,
+          "top10PercentWorkShare": 0.7057846975500468
+        }
+      },
+      "relativeWapeImprovement": 0.0019088630246779056,
+      "bootstrap": {
+        "status": "COMPUTED",
+        "method": "PAIRED_WORK_CLUSTER_RESAMPLE",
+        "iterations": 2000,
+        "seed": 21009470,
+        "workCount": 208,
+        "relativeWapeImprovement95": {
+          "lower": -0.21738178149063597,
+          "median": 0.014718795694581299,
+          "upper": 0.20983002936606515
+        }
+      },
+      "gate": null
+    },
+    {
+      "evaluationFamily": "STRICT_ROLLING",
+      "populationId": "CORE90",
+      "horizonMonths": 12,
+      "armId": "B1",
+      "rawMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 1053,
+        "workCount": 195,
+        "originCount": 9,
+        "wape": 0.4308743362322024,
+        "signedBias": -0.15618776080031382,
+        "mae": 45676.3591848114,
+        "medianAbsoluteError": 8674.37880337081,
+        "predictionActualRatio": 0.8438122391996862,
+        "underpredictionCash": 32765988.098493982,
+        "overpredictionCash": 15331218.123112462,
+        "errorConcentration": {
+          "maximumWorkShare": 0.3555824711402408,
+          "top1PercentWorkShare": 0.43188708346463384,
+          "top5PercentWorkShare": 0.6485377611306851,
+          "top10PercentWorkShare": 0.7426622156292048
+        }
+      },
+      "occurrenceAuxiliary": {
+        "status": "AUXILIARY_PREVALENCE_ONLY",
+        "caseCount": 1053,
+        "workCount": 195,
+        "positiveCaseCount": 1047,
+        "nonpositiveCaseCount": 6,
+        "positiveShare": 0.9943019943019943,
+        "usedForTrainingSelectionRoutingOrPromotion": false
+      },
+      "sameCaseStatus": "EXACT_COMMON_RAW_ARMS_AND_B0_SAME_CASE",
+      "sameCaseCount": 1053,
+      "commonSameCase": {
+        "status": "COMMON_RAW_ARMS_AND_B0_SAME_CASE_INTERSECTION",
+        "caseCount": 1053,
+        "baselineCaseCount": 1053,
+        "candidateCaseCounts": {
+          "B1": 1053,
+          "B2": 1053,
+          "B3": 1053
+        },
+        "actualMismatchCount": 0,
+        "sameCasesUsedForEveryRawArm": true
+      },
+      "baselineMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 1053,
+        "workCount": 195,
+        "originCount": 9,
+        "wape": 0.33788870184091746,
+        "signedBias": 0.06416535298184463,
+        "mae": 35819.08786848264,
+        "medianAbsoluteError": 11601.882197167684,
+        "predictionActualRatio": 1.0641653529818447,
+        "underpredictionCash": 15277457.080489295,
+        "overpredictionCash": 22440042.445022933,
+        "errorConcentration": {
+          "maximumWorkShare": 0.1368910373914178,
+          "top1PercentWorkShare": 0.23330390963951883,
+          "top5PercentWorkShare": 0.46873966988818894,
+          "top10PercentWorkShare": 0.6157785957563066
+        }
+      },
+      "pairedCandidateMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 1053,
+        "workCount": 195,
+        "originCount": 9,
+        "wape": 0.4308743362322024,
+        "signedBias": -0.15618776080031382,
+        "mae": 45676.3591848114,
+        "medianAbsoluteError": 8674.37880337081,
+        "predictionActualRatio": 0.8438122391996862,
+        "underpredictionCash": 32765988.098493982,
+        "overpredictionCash": 15331218.123112462,
+        "errorConcentration": {
+          "maximumWorkShare": 0.3555824711402408,
+          "top1PercentWorkShare": 0.43188708346463384,
+          "top5PercentWorkShare": 0.6485377611306851,
+          "top10PercentWorkShare": 0.7426622156292048
+        }
+      },
+      "relativeWapeImprovement": -0.27519604498366396,
+      "bootstrap": {
+        "status": "COMPUTED",
+        "method": "PAIRED_WORK_CLUSTER_RESAMPLE",
+        "iterations": 2000,
+        "seed": 20689458,
+        "workCount": 195,
+        "relativeWapeImprovement95": {
+          "lower": -0.811969919651655,
+          "median": -0.24382757621578002,
+          "upper": 0.16419835368002333
+        }
+      },
+      "gate": null
+    },
+    {
+      "evaluationFamily": "STRICT_ROLLING",
+      "populationId": "CORE90",
+      "horizonMonths": 12,
+      "armId": "B2",
+      "rawMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 1053,
+        "workCount": 195,
+        "originCount": 9,
+        "wape": 0.40572100322216237,
+        "signedBias": -0.14837632676341586,
+        "mae": 43009.89108344228,
+        "medianAbsoluteError": 8536.267400255638,
+        "predictionActualRatio": 0.8516236732365842,
+        "underpredictionCash": 30926109.199499443,
+        "overpredictionCash": 14363306.111365268,
+        "errorConcentration": {
+          "maximumWorkShare": 0.3438989379330069,
+          "top1PercentWorkShare": 0.4189101109725748,
+          "top5PercentWorkShare": 0.6345511709871939,
+          "top10PercentWorkShare": 0.7355116947665425
+        }
+      },
+      "occurrenceAuxiliary": {
+        "status": "AUXILIARY_PREVALENCE_ONLY",
+        "caseCount": 1053,
+        "workCount": 195,
+        "positiveCaseCount": 1047,
+        "nonpositiveCaseCount": 6,
+        "positiveShare": 0.9943019943019943,
+        "usedForTrainingSelectionRoutingOrPromotion": false
+      },
+      "sameCaseStatus": "EXACT_COMMON_RAW_ARMS_AND_B0_SAME_CASE",
+      "sameCaseCount": 1053,
+      "commonSameCase": {
+        "status": "COMMON_RAW_ARMS_AND_B0_SAME_CASE_INTERSECTION",
+        "caseCount": 1053,
+        "baselineCaseCount": 1053,
+        "candidateCaseCounts": {
+          "B1": 1053,
+          "B2": 1053,
+          "B3": 1053
+        },
+        "actualMismatchCount": 0,
+        "sameCasesUsedForEveryRawArm": true
+      },
+      "baselineMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 1053,
+        "workCount": 195,
+        "originCount": 9,
+        "wape": 0.33788870184091746,
+        "signedBias": 0.06416535298184463,
+        "mae": 35819.08786848264,
+        "medianAbsoluteError": 11601.882197167684,
+        "predictionActualRatio": 1.0641653529818447,
+        "underpredictionCash": 15277457.080489295,
+        "overpredictionCash": 22440042.445022933,
+        "errorConcentration": {
+          "maximumWorkShare": 0.1368910373914178,
+          "top1PercentWorkShare": 0.23330390963951883,
+          "top5PercentWorkShare": 0.46873966988818894,
+          "top10PercentWorkShare": 0.6157785957563066
+        }
+      },
+      "pairedCandidateMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 1053,
+        "workCount": 195,
+        "originCount": 9,
+        "wape": 0.40572100322216237,
+        "signedBias": -0.14837632676341586,
+        "mae": 43009.89108344228,
+        "medianAbsoluteError": 8536.267400255638,
+        "predictionActualRatio": 0.8516236732365842,
+        "underpredictionCash": 30926109.199499443,
+        "overpredictionCash": 14363306.111365268,
+        "errorConcentration": {
+          "maximumWorkShare": 0.3438989379330069,
+          "top1PercentWorkShare": 0.4189101109725748,
+          "top5PercentWorkShare": 0.6345511709871939,
+          "top10PercentWorkShare": 0.7355116947665425
+        }
+      },
+      "relativeWapeImprovement": -0.2007533871706112,
+      "bootstrap": {
+        "status": "COMPUTED",
+        "method": "PAIRED_WORK_CLUSTER_RESAMPLE",
+        "iterations": 2000,
+        "seed": 20801179,
+        "workCount": 195,
+        "relativeWapeImprovement95": {
+          "lower": -0.6957244101318437,
+          "median": -0.1725546659605949,
+          "upper": 0.1967133175502773
+        }
+      },
+      "gate": null
+    },
+    {
+      "evaluationFamily": "STRICT_ROLLING",
+      "populationId": "CORE90",
+      "horizonMonths": 12,
+      "armId": "B3",
+      "rawMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 1053,
+        "workCount": 195,
+        "originCount": 9,
+        "wape": 0.39776131197052494,
+        "signedBias": -0.139147184286301,
+        "mae": 42166.09583727087,
+        "medianAbsoluteError": 8667.491183658916,
+        "predictionActualRatio": 0.860852815713699,
+        "underpredictionCash": 29966740.29418229,
+        "overpredictionCash": 14434158.622463925,
+        "errorConcentration": {
+          "maximumWorkShare": 0.3473773489360501,
+          "top1PercentWorkShare": 0.4214120855373986,
+          "top5PercentWorkShare": 0.6238814224974426,
+          "top10PercentWorkShare": 0.7257144431296735
+        }
+      },
+      "occurrenceAuxiliary": {
+        "status": "AUXILIARY_PREVALENCE_ONLY",
+        "caseCount": 1053,
+        "workCount": 195,
+        "positiveCaseCount": 1047,
+        "nonpositiveCaseCount": 6,
+        "positiveShare": 0.9943019943019943,
+        "usedForTrainingSelectionRoutingOrPromotion": false
+      },
+      "sameCaseStatus": "EXACT_COMMON_RAW_ARMS_AND_B0_SAME_CASE",
+      "sameCaseCount": 1053,
+      "commonSameCase": {
+        "status": "COMMON_RAW_ARMS_AND_B0_SAME_CASE_INTERSECTION",
+        "caseCount": 1053,
+        "baselineCaseCount": 1053,
+        "candidateCaseCounts": {
+          "B1": 1053,
+          "B2": 1053,
+          "B3": 1053
+        },
+        "actualMismatchCount": 0,
+        "sameCasesUsedForEveryRawArm": true
+      },
+      "baselineMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 1053,
+        "workCount": 195,
+        "originCount": 9,
+        "wape": 0.33788870184091746,
+        "signedBias": 0.06416535298184463,
+        "mae": 35819.08786848264,
+        "medianAbsoluteError": 11601.882197167684,
+        "predictionActualRatio": 1.0641653529818447,
+        "underpredictionCash": 15277457.080489295,
+        "overpredictionCash": 22440042.445022933,
+        "errorConcentration": {
+          "maximumWorkShare": 0.1368910373914178,
+          "top1PercentWorkShare": 0.23330390963951883,
+          "top5PercentWorkShare": 0.46873966988818894,
+          "top10PercentWorkShare": 0.6157785957563066
+        }
+      },
+      "pairedCandidateMetrics": {
+        "status": "COMPUTED",
+        "caseCount": 1053,
+        "workCount": 195,
+        "originCount": 9,
+        "wape": 0.39776131197052494,
+        "signedBias": -0.139147184286301,
+        "mae": 42166.09583727087,
+        "medianAbsoluteError": 8667.491183658916,
+        "predictionActualRatio": 0.860852815713699,
+        "underpredictionCash": 29966740.29418229,
+        "overpredictionCash": 14434158.622463925,
+        "errorConcentration": {
+          "maximumWorkShare": 0.3473773489360501,
+          "top1PercentWorkShare": 0.4214120855373986,
+          "top5PercentWorkShare": 0.6238814224974426,
+          "top10PercentWorkShare": 0.7257144431296735
+        }
+      },
+      "relativeWapeImprovement": -0.17719624776858126,
+      "bootstrap": {
+        "status": "COMPUTED",
+        "method": "PAIRED_WORK_CLUSTER_RESAMPLE",
+        "iterations": 2000,
+        "seed": 21085719,
+        "workCount": 195,
+        "relativeWapeImprovement95": {
+          "lower": -0.6566708809048042,
+          "median": -0.1615496178085315,
+          "upper": 0.21878407217911602
+        }
+      },
+      "gate": null
+    }
+  ],
+  "bestRawArms": [
+    {
+      "horizonMonths": 3,
+      "armId": "B3",
+      "pass": false,
+      "gate": {
+        "status": "M2_CORE_HORIZON_AMOUNT_HORIZON_FAIL",
+        "pass": false,
+        "candidate": {
+          "status": "COMPUTED",
+          "caseCount": 577,
+          "workCount": 82,
+          "originCount": 11,
+          "wape": 0.25128824012222556,
+          "signedBias": -0.049848458950628005,
+          "mae": 14432.080338054971,
+          "medianAbsoluteError": 4234.983962293438,
+          "predictionActualRatio": 0.9501515410493719,
+          "underpredictionCash": 4989606.261036262,
+          "overpredictionCash": 3337704.094021454,
+          "errorConcentration": {
+            "maximumWorkShare": 0.23476651568068788,
+            "top1PercentWorkShare": 0.23476651568068788,
+            "top5PercentWorkShare": 0.5242668117400595,
+            "top10PercentWorkShare": 0.6322902854488385
+          }
+        },
+        "baseline": {
+          "status": "COMPUTED",
+          "caseCount": 577,
+          "workCount": 82,
+          "originCount": 11,
+          "wape": 0.258167158891209,
+          "signedBias": -0.026901661377163103,
+          "mae": 14827.15297760482,
+          "medianAbsoluteError": 5165.805237648419,
+          "predictionActualRatio": 0.9730983386228369,
+          "underpredictionCash": 4723373.719697903,
+          "overpredictionCash": 3831893.5483800746,
+          "errorConcentration": {
+            "maximumWorkShare": 0.14242790466832048,
+            "top1PercentWorkShare": 0.14242790466832048,
+            "top5PercentWorkShare": 0.44119087078445945,
+            "top10PercentWorkShare": 0.5609285565260461
+          }
+        },
+        "relativeWapeImprovement": 0.02664521234430985,
+        "bootstrap": {
+          "status": "COMPUTED",
+          "method": "PAIRED_WORK_CLUSTER_RESAMPLE",
+          "iterations": 2000,
+          "seed": 20660669,
+          "workCount": 82,
+          "relativeWapeImprovement95": {
+            "lower": -0.1599465576807348,
+            "median": 0.03982323120195158,
+            "upper": 0.2164044772770593
+          }
+        },
+        "independentTimeBlocks": [
+          {
+            "blockId": "NONOVERLAP_001",
+            "origin": "2023-03",
+            "forecastStart": "2023-04",
+            "forecastEnd": "2023-06",
+            "caseCount": 41,
+            "workCount": 41,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.2803921107939503,
+            "baselineWape": 0.26466018032431143,
+            "relativeWapeImprovement": -0.05944200011638006,
+            "candidateWins": false
+          },
+          {
+            "blockId": "NONOVERLAP_002",
+            "origin": "2023-06",
+            "forecastStart": "2023-07",
+            "forecastEnd": "2023-09",
+            "caseCount": 46,
+            "workCount": 46,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.37460730421522037,
+            "baselineWape": 0.40399496004132257,
+            "relativeWapeImprovement": 0.07274262981670931,
+            "candidateWins": true
+          },
+          {
+            "blockId": "NONOVERLAP_003",
+            "origin": "2023-09",
+            "forecastStart": "2023-10",
+            "forecastEnd": "2023-12",
+            "caseCount": 47,
+            "workCount": 47,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.20488817611159896,
+            "baselineWape": 0.24183404747258852,
+            "relativeWapeImprovement": 0.15277365510403293,
+            "candidateWins": true
+          },
+          {
+            "blockId": "NONOVERLAP_004",
+            "origin": "2023-12",
+            "forecastStart": "2024-01",
+            "forecastEnd": "2024-03",
+            "caseCount": 53,
+            "workCount": 53,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.2729100473033005,
+            "baselineWape": 0.22870904886688892,
+            "relativeWapeImprovement": -0.1932630066689535,
+            "candidateWins": false
+          },
+          {
+            "blockId": "NONOVERLAP_005",
+            "origin": "2024-03",
+            "forecastStart": "2024-04",
+            "forecastEnd": "2024-06",
+            "caseCount": 54,
+            "workCount": 54,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.2693201512547055,
+            "baselineWape": 0.2395786107374303,
+            "relativeWapeImprovement": -0.12414105092992152,
+            "candidateWins": false
+          },
+          {
+            "blockId": "NONOVERLAP_006",
+            "origin": "2024-06",
+            "forecastStart": "2024-07",
+            "forecastEnd": "2024-09",
+            "caseCount": 57,
+            "workCount": 57,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.2950386442112834,
+            "baselineWape": 0.2685004613871436,
+            "relativeWapeImprovement": -0.09883849989320906,
+            "candidateWins": false
+          },
+          {
+            "blockId": "NONOVERLAP_007",
+            "origin": "2024-09",
+            "forecastStart": "2024-10",
+            "forecastEnd": "2024-12",
+            "caseCount": 59,
+            "workCount": 59,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.1948721960291578,
+            "baselineWape": 0.20250748689739567,
+            "relativeWapeImprovement": 0.0377037460946144,
+            "candidateWins": true
+          },
+          {
+            "blockId": "NONOVERLAP_008",
+            "origin": "2024-12",
+            "forecastStart": "2025-01",
+            "forecastEnd": "2025-03",
+            "caseCount": 62,
+            "workCount": 62,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.27416124716000156,
+            "baselineWape": 0.2565460584919125,
+            "relativeWapeImprovement": -0.06866287001889136,
+            "candidateWins": false
+          },
+          {
+            "blockId": "NONOVERLAP_009",
+            "origin": "2025-03",
+            "forecastStart": "2025-04",
+            "forecastEnd": "2025-06",
+            "caseCount": 53,
+            "workCount": 53,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.14666991994146472,
+            "baselineWape": 0.1561862315077939,
+            "relativeWapeImprovement": 0.06092926037372443,
+            "candidateWins": true
+          },
+          {
+            "blockId": "NONOVERLAP_010",
+            "origin": "2025-06",
+            "forecastStart": "2025-07",
+            "forecastEnd": "2025-09",
+            "caseCount": 52,
+            "workCount": 52,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.2017830309718666,
+            "baselineWape": 0.3121623349048486,
+            "relativeWapeImprovement": 0.3535958429021463,
+            "candidateWins": true
+          },
+          {
+            "blockId": "NONOVERLAP_011",
+            "origin": "2025-09",
+            "forecastStart": "2025-10",
+            "forecastEnd": "2025-12",
+            "caseCount": 53,
+            "workCount": 53,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.2063444411729017,
+            "baselineWape": 0.22684867313219687,
+            "relativeWapeImprovement": 0.0903872686411802,
+            "candidateWins": true
+          }
+        ],
+        "improvingIndependentTimeBlockShare": 0.5454545454545454,
+        "core90": {
+          "status": "COMPUTED",
+          "candidate": {
+            "status": "COMPUTED",
+            "caseCount": 1288,
+            "workCount": 208,
+            "originCount": 11,
+            "wape": 0.2673611051899227,
+            "signedBias": -0.0607260313693172,
+            "mae": 7796.842913875819,
+            "medianAbsoluteError": 1758.4306715194944,
+            "predictionActualRatio": 0.9392739686306828,
+            "underpredictionCash": 6161630.160883289,
+            "overpredictionCash": 3880703.5121887606,
+            "errorConcentration": {
+              "maximumWorkShare": 0.1946732403734764,
+              "top1PercentWorkShare": 0.365900880059453,
+              "top5PercentWorkShare": 0.5849215037545183,
+              "top10PercentWorkShare": 0.7017547841742817
+            }
+          },
+          "baseline": {
+            "status": "COMPUTED",
+            "caseCount": 1288,
+            "workCount": 208,
+            "originCount": 11,
+            "wape": 0.28031752897021556,
+            "signedBias": -0.042438571781422754,
+            "mae": 8174.68097251486,
+            "medianAbsoluteError": 2031.281158337285,
+            "predictionActualRatio": 0.9575614282185773,
+            "underpredictionCash": 6061510.810379771,
+            "overpredictionCash": 4467478.282219375,
+            "errorConcentration": {
+              "maximumWorkShare": 0.11572894417055736,
+              "top1PercentWorkShare": 0.29989095884673467,
+              "top5PercentWorkShare": 0.5235665482721564,
+              "top10PercentWorkShare": 0.6639350375892202
+            }
+          },
+          "relativeWapeImprovement": 0.04622052651466378,
+          "noOppositeMaterialDegradation": true
+        },
+        "checks": {
+          "relativeWapeImprovementAtLeastMinimum": true,
+          "bootstrapLowerExceedsZero": false,
+          "majorityIndependentTimeBlocksImprove": true,
+          "biasWorseningWithinLimit": false,
+          "candidateAbsoluteBiasWithinLimit": true,
+          "core90NoOppositeMaterialDegradation": true,
+          "rawCandidateOnly": true
+        }
+      }
+    },
+    {
+      "horizonMonths": 6,
+      "armId": "B3",
+      "pass": false,
+      "gate": {
+        "status": "M2_CORE_HORIZON_AMOUNT_HORIZON_FAIL",
+        "pass": false,
+        "candidate": {
+          "status": "COMPUTED",
+          "caseCount": 577,
+          "workCount": 82,
+          "originCount": 11,
+          "wape": 0.28170412684453794,
+          "signedBias": -0.06868190168465514,
+          "mae": 31189.73945818628,
+          "medianAbsoluteError": 9064.67714784214,
+          "predictionActualRatio": 0.9313180983153448,
+          "underpredictionCash": 11192088.50219871,
+          "overpredictionCash": 6804391.165174755,
+          "errorConcentration": {
+            "maximumWorkShare": 0.28056849742504486,
+            "top1PercentWorkShare": 0.28056849742504486,
+            "top5PercentWorkShare": 0.5295260449865548,
+            "top10PercentWorkShare": 0.6401114928146399
+          }
+        },
+        "baseline": {
+          "status": "COMPUTED",
+          "caseCount": 577,
+          "workCount": 82,
+          "originCount": 11,
+          "wape": 0.2750758950105334,
+          "signedBias": 0.00954332600911767,
+          "mae": 30455.874369709436,
+          "medianAbsoluteError": 10901.087155369289,
+          "predictionActualRatio": 1.0095433260091176,
+          "underpredictionCash": 8481685.257129,
+          "overpredictionCash": 9091354.254193341,
+          "errorConcentration": {
+            "maximumWorkShare": 0.15799158077045827,
+            "top1PercentWorkShare": 0.15799158077045827,
+            "top5PercentWorkShare": 0.43592110420270896,
+            "top10PercentWorkShare": 0.5482173924495691
+          }
+        },
+        "relativeWapeImprovement": -0.02409601115267008,
+        "bootstrap": {
+          "status": "COMPUTED",
+          "method": "PAIRED_WORK_CLUSTER_RESAMPLE",
+          "iterations": 2000,
+          "seed": 20847952,
+          "workCount": 82,
+          "relativeWapeImprovement95": {
+            "lower": -0.28426969259046525,
+            "median": 0.0007961558930118377,
+            "upper": 0.22555596535452216
+          }
+        },
+        "independentTimeBlocks": [
+          {
+            "blockId": "NONOVERLAP_001",
+            "origin": "2023-03",
+            "forecastStart": "2023-04",
+            "forecastEnd": "2023-09",
+            "caseCount": 41,
+            "workCount": 41,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.25584327577225435,
+            "baselineWape": 0.30464103396314135,
+            "relativeWapeImprovement": 0.16018117308776944,
+            "candidateWins": true
+          },
+          {
+            "blockId": "NONOVERLAP_002",
+            "origin": "2023-09",
+            "forecastStart": "2023-10",
+            "forecastEnd": "2024-03",
+            "caseCount": 47,
+            "workCount": 47,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.2860175526798162,
+            "baselineWape": 0.2770342517003134,
+            "relativeWapeImprovement": -0.032426679821600635,
+            "candidateWins": false
+          },
+          {
+            "blockId": "NONOVERLAP_003",
+            "origin": "2024-03",
+            "forecastStart": "2024-04",
+            "forecastEnd": "2024-09",
+            "caseCount": 54,
+            "workCount": 54,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.3402994244955143,
+            "baselineWape": 0.279175633616077,
+            "relativeWapeImprovement": -0.218943860134638,
+            "candidateWins": false
+          },
+          {
+            "blockId": "NONOVERLAP_004",
+            "origin": "2024-09",
+            "forecastStart": "2024-10",
+            "forecastEnd": "2025-03",
+            "caseCount": 59,
+            "workCount": 59,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.2384944683895384,
+            "baselineWape": 0.22607705565362368,
+            "relativeWapeImprovement": -0.05492557703396326,
+            "candidateWins": false
+          },
+          {
+            "blockId": "NONOVERLAP_005",
+            "origin": "2025-03",
+            "forecastStart": "2025-04",
+            "forecastEnd": "2025-09",
+            "caseCount": 53,
+            "workCount": 53,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.16103796959190525,
+            "baselineWape": 0.2019641897948232,
+            "relativeWapeImprovement": 0.20264097434547765,
+            "candidateWins": true
+          },
+          {
+            "blockId": "NONOVERLAP_006",
+            "origin": "2025-09",
+            "forecastStart": "2025-10",
+            "forecastEnd": "2026-03",
+            "caseCount": 53,
+            "workCount": 53,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.17789671699527113,
+            "baselineWape": 0.20924566593660762,
+            "relativeWapeImprovement": 0.14981886865381416,
+            "candidateWins": true
+          }
+        ],
+        "improvingIndependentTimeBlockShare": 0.5,
+        "core90": {
+          "status": "COMPUTED",
+          "candidate": {
+            "status": "COMPUTED",
+            "caseCount": 1288,
+            "workCount": 208,
+            "originCount": 11,
+            "wape": 0.2944780287992087,
+            "signedBias": -0.07514950156244436,
+            "mae": 16443.595618029125,
+            "medianAbsoluteError": 3910.748813783585,
+            "predictionActualRatio": 0.9248504984375556,
+            "underpredictionCash": 13292114.346161209,
+            "overpredictionCash": 7887236.80986028,
+            "errorConcentration": {
+              "maximumWorkShare": 0.2384041523283302,
+              "top1PercentWorkShare": 0.37725375027028335,
+              "top5PercentWorkShare": 0.5898739252082706,
+              "top10PercentWorkShare": 0.7057846975500468
+            }
+          },
+          "baseline": {
+            "status": "COMPUTED",
+            "caseCount": 1288,
+            "workCount": 208,
+            "originCount": 11,
+            "wape": 0.2950412220787907,
+            "signedBias": 0.00016880613366378436,
+            "mae": 16475.044220772088,
+            "medianAbsoluteError": 4558.1188278526115,
+            "predictionActualRatio": 1.0001688061336638,
+            "underpredictionCash": 10603858.068787621,
+            "overpredictionCash": 10615998.887566837,
+            "errorConcentration": {
+              "maximumWorkShare": 0.13083935000344699,
+              "top1PercentWorkShare": 0.3032485400962776,
+              "top5PercentWorkShare": 0.5063852686561542,
+              "top10PercentWorkShare": 0.6516760846065381
+            }
+          },
+          "relativeWapeImprovement": 0.0019088630246779056,
+          "noOppositeMaterialDegradation": true
+        },
+        "checks": {
+          "relativeWapeImprovementAtLeastMinimum": false,
+          "bootstrapLowerExceedsZero": false,
+          "majorityIndependentTimeBlocksImprove": false,
+          "biasWorseningWithinLimit": false,
+          "candidateAbsoluteBiasWithinLimit": true,
+          "core90NoOppositeMaterialDegradation": true,
+          "rawCandidateOnly": true
+        }
+      }
+    },
+    {
+      "horizonMonths": 12,
+      "armId": "B3",
+      "pass": false,
+      "gate": {
+        "status": "M2_CORE_HORIZON_AMOUNT_HORIZON_FAIL",
+        "pass": false,
+        "candidate": {
+          "status": "COMPUTED",
+          "caseCount": 472,
+          "workCount": 76,
+          "originCount": 9,
+          "wape": 0.3918201438488853,
+          "signedBias": -0.13843078730327918,
+          "mae": 82944.33662443285,
+          "medianAbsoluteError": 24875.38609103143,
+          "predictionActualRatio": 0.8615692126967208,
+          "underpredictionCash": 26490699.19188358,
+          "overpredictionCash": 12659027.69484872,
+          "errorConcentration": {
+            "maximumWorkShare": 0.3939712427794534,
+            "top1PercentWorkShare": 0.3939712427794534,
+            "top5PercentWorkShare": 0.5617065862682828,
+            "top10PercentWorkShare": 0.6695460716489379
+          }
+        },
+        "baseline": {
+          "status": "COMPUTED",
+          "caseCount": 472,
+          "workCount": 76,
+          "originCount": 9,
+          "wape": 0.3157491999243411,
+          "signedBias": 0.06427047135886367,
+          "mae": 66840.89202294951,
+          "medianAbsoluteError": 27547.777465982275,
+          "predictionActualRatio": 1.0642704713588638,
+          "underpredictionCash": 12563575.017416986,
+          "overpredictionCash": 18985326.01741517,
+          "errorConcentration": {
+            "maximumWorkShare": 0.16365665581051966,
+            "top1PercentWorkShare": 0.16365665581051966,
+            "top5PercentWorkShare": 0.40194828312644926,
+            "top10PercentWorkShare": 0.5071475921353935
+          }
+        },
+        "relativeWapeImprovement": -0.24092204807730985,
+        "bootstrap": {
+          "status": "COMPUTED",
+          "method": "PAIRED_WORK_CLUSTER_RESAMPLE",
+          "iterations": 2000,
+          "seed": 20550387,
+          "workCount": 76,
+          "relativeWapeImprovement95": {
+            "lower": -0.7855387011819721,
+            "median": -0.21643626161591176,
+            "upper": 0.23671000971669764
+          }
+        },
+        "independentTimeBlocks": [
+          {
+            "blockId": "NONOVERLAP_001",
+            "origin": "2023-03",
+            "forecastStart": "2023-04",
+            "forecastEnd": "2024-03",
+            "caseCount": 41,
+            "workCount": 41,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.34030628641054195,
+            "baselineWape": 0.289197211360733,
+            "relativeWapeImprovement": -0.17672741313559046,
+            "candidateWins": false
+          },
+          {
+            "blockId": "NONOVERLAP_002",
+            "origin": "2024-03",
+            "forecastStart": "2024-04",
+            "forecastEnd": "2025-03",
+            "caseCount": 54,
+            "workCount": 54,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.46570010473305495,
+            "baselineWape": 0.32701901535929895,
+            "relativeWapeImprovement": -0.42407653029407405,
+            "candidateWins": false
+          },
+          {
+            "blockId": "NONOVERLAP_003",
+            "origin": "2025-03",
+            "forecastStart": "2025-04",
+            "forecastEnd": "2026-03",
+            "caseCount": 53,
+            "workCount": 53,
+            "privacyStatus": "PUBLISHED_ABOVE_THRESHOLD",
+            "candidateWape": 0.23622515575139044,
+            "baselineWape": 0.2377965436386589,
+            "relativeWapeImprovement": 0.006608119122438741,
+            "candidateWins": true
+          }
+        ],
+        "improvingIndependentTimeBlockShare": 0.3333333333333333,
+        "core90": {
+          "status": "COMPUTED",
+          "candidate": {
+            "status": "COMPUTED",
+            "caseCount": 1053,
+            "workCount": 195,
+            "originCount": 9,
+            "wape": 0.39776131197052494,
+            "signedBias": -0.139147184286301,
+            "mae": 42166.09583727087,
+            "medianAbsoluteError": 8667.491183658916,
+            "predictionActualRatio": 0.860852815713699,
+            "underpredictionCash": 29966740.29418229,
+            "overpredictionCash": 14434158.622463925,
+            "errorConcentration": {
+              "maximumWorkShare": 0.3473773489360501,
+              "top1PercentWorkShare": 0.4214120855373986,
+              "top5PercentWorkShare": 0.6238814224974426,
+              "top10PercentWorkShare": 0.7257144431296735
+            }
+          },
+          "baseline": {
+            "status": "COMPUTED",
+            "caseCount": 1053,
+            "workCount": 195,
+            "originCount": 9,
+            "wape": 0.33788870184091746,
+            "signedBias": 0.06416535298184463,
+            "mae": 35819.08786848264,
+            "medianAbsoluteError": 11601.882197167684,
+            "predictionActualRatio": 1.0641653529818447,
+            "underpredictionCash": 15277457.080489295,
+            "overpredictionCash": 22440042.445022933,
+            "errorConcentration": {
+              "maximumWorkShare": 0.1368910373914178,
+              "top1PercentWorkShare": 0.23330390963951883,
+              "top5PercentWorkShare": 0.46873966988818894,
+              "top10PercentWorkShare": 0.6157785957563066
+            }
+          },
+          "relativeWapeImprovement": -0.17719624776858126,
+          "noOppositeMaterialDegradation": false
+        },
+        "checks": {
+          "relativeWapeImprovementAtLeastMinimum": false,
+          "bootstrapLowerExceedsZero": false,
+          "majorityIndependentTimeBlocksImprove": false,
+          "biasWorseningWithinLimit": false,
+          "candidateAbsoluteBiasWithinLimit": true,
+          "core90NoOppositeMaterialDegradation": false,
+          "rawCandidateOnly": true
+        }
+      }
+    }
+  ],
+  "horizonDecision": {
+    "status": "M2_CORE_HORIZON_AMOUNT_DEVELOPMENT_FAIL",
+    "passedHorizons": [],
+    "failedHorizons": [
+      3,
+      6,
+      12
+    ],
+    "operationalFallbackChanged": false,
+    "activeCandidate": null,
+    "approvedForAutomation": null,
+    "productionAuthorized": false
+  },
+  "training": [
+    {
+      "armId": "B1",
+      "horizonMonths": 3,
+      "outerFitCount": 16,
+      "trainingRowCountRange": {
+        "minimum": 749,
+        "maximum": 49764
+      },
+      "trainingWorkCountRange": {
+        "minimum": 214,
+        "maximum": 2557
+      },
+      "trainingWeightRange": {
+        "minimum": 1,
+        "maximum": 1
+      },
+      "weightedHuberLossTotal": 91243.94269309379,
+      "selectedHyperparameters": [
+        {
+          "key": "delta=1;l2=10",
+          "count": 16
+        }
+      ],
+      "maximumTrainingLabelAvailableAsOf": "2025-09",
+      "futureLabelRead": false,
+      "normalizationFitOnCurrentTrainingFoldOnly": true,
+      "trainingWeightFitOnCurrentTrainingFoldOnly": true
+    },
+    {
+      "armId": "B1",
+      "horizonMonths": 6,
+      "outerFitCount": 16,
+      "trainingRowCountRange": {
+        "minimum": 535,
+        "maximum": 44679
+      },
+      "trainingWorkCountRange": {
+        "minimum": 133,
+        "maximum": 2489
+      },
+      "trainingWeightRange": {
+        "minimum": 1,
+        "maximum": 1
+      },
+      "weightedHuberLossTotal": 95499.35785209353,
+      "selectedHyperparameters": [
+        {
+          "key": "delta=1;l2=10",
+          "count": 16
+        }
+      ],
+      "maximumTrainingLabelAvailableAsOf": "2025-09",
+      "futureLabelRead": false,
+      "normalizationFitOnCurrentTrainingFoldOnly": true,
+      "trainingWeightFitOnCurrentTrainingFoldOnly": true
+    },
+    {
+      "armId": "B1",
+      "horizonMonths": 12,
+      "outerFitCount": 12,
+      "trainingRowCountRange": {
+        "minimum": 1462,
+        "maximum": 26578
+      },
+      "trainingWorkCountRange": {
+        "minimum": 367,
+        "maximum": 1926
+      },
+      "trainingWeightRange": {
+        "minimum": 1,
+        "maximum": 1
+      },
+      "weightedHuberLossTotal": 58938.32523963819,
+      "selectedHyperparameters": [
+        {
+          "key": "delta=1;l2=10",
+          "count": 12
+        }
+      ],
+      "maximumTrainingLabelAvailableAsOf": "2025-03",
+      "futureLabelRead": false,
+      "normalizationFitOnCurrentTrainingFoldOnly": true,
+      "trainingWeightFitOnCurrentTrainingFoldOnly": true
+    },
+    {
+      "armId": "B2",
+      "horizonMonths": 3,
+      "outerFitCount": 16,
+      "trainingRowCountRange": {
+        "minimum": 749,
+        "maximum": 49764
+      },
+      "trainingWorkCountRange": {
+        "minimum": 214,
+        "maximum": 2557
+      },
+      "trainingWeightRange": {
+        "minimum": 1,
+        "maximum": 4
+      },
+      "weightedHuberLossTotal": 139898.38408830806,
+      "selectedHyperparameters": [
+        {
+          "key": "delta=1;l2=10",
+          "count": 16
+        }
+      ],
+      "maximumTrainingLabelAvailableAsOf": "2025-09",
+      "futureLabelRead": false,
+      "normalizationFitOnCurrentTrainingFoldOnly": true,
+      "trainingWeightFitOnCurrentTrainingFoldOnly": true
+    },
+    {
+      "armId": "B2",
+      "horizonMonths": 6,
+      "outerFitCount": 16,
+      "trainingRowCountRange": {
+        "minimum": 535,
+        "maximum": 44679
+      },
+      "trainingWorkCountRange": {
+        "minimum": 133,
+        "maximum": 2489
+      },
+      "trainingWeightRange": {
+        "minimum": 1,
+        "maximum": 4
+      },
+      "weightedHuberLossTotal": 142803.20806608192,
+      "selectedHyperparameters": [
+        {
+          "key": "delta=1;l2=10",
+          "count": 16
+        }
+      ],
+      "maximumTrainingLabelAvailableAsOf": "2025-09",
+      "futureLabelRead": false,
+      "normalizationFitOnCurrentTrainingFoldOnly": true,
+      "trainingWeightFitOnCurrentTrainingFoldOnly": true
+    },
+    {
+      "armId": "B2",
+      "horizonMonths": 12,
+      "outerFitCount": 12,
+      "trainingRowCountRange": {
+        "minimum": 1462,
+        "maximum": 26578
+      },
+      "trainingWorkCountRange": {
+        "minimum": 367,
+        "maximum": 1926
+      },
+      "trainingWeightRange": {
+        "minimum": 1,
+        "maximum": 4
+      },
+      "weightedHuberLossTotal": 86374.0073134747,
+      "selectedHyperparameters": [
+        {
+          "key": "delta=1;l2=10",
+          "count": 12
+        }
+      ],
+      "maximumTrainingLabelAvailableAsOf": "2025-03",
+      "futureLabelRead": false,
+      "normalizationFitOnCurrentTrainingFoldOnly": true,
+      "trainingWeightFitOnCurrentTrainingFoldOnly": true
+    },
+    {
+      "armId": "B3",
+      "horizonMonths": 3,
+      "outerFitCount": 16,
+      "trainingRowCountRange": {
+        "minimum": 589,
+        "maximum": 49604
+      },
+      "trainingWorkCountRange": {
+        "minimum": 214,
+        "maximum": 2557
+      },
+      "trainingWeightRange": {
+        "minimum": 1,
+        "maximum": 4
+      },
+      "weightedHuberLossTotal": 135615.17488543235,
+      "selectedHyperparameters": [
+        {
+          "key": "delta=1;l2=10",
+          "count": 16
+        }
+      ],
+      "maximumTrainingLabelAvailableAsOf": "2025-09",
+      "futureLabelRead": false,
+      "normalizationFitOnCurrentTrainingFoldOnly": true,
+      "trainingWeightFitOnCurrentTrainingFoldOnly": true
+    },
+    {
+      "armId": "B3",
+      "horizonMonths": 6,
+      "outerFitCount": 15,
+      "trainingRowCountRange": {
+        "minimum": 1302,
+        "maximum": 44519
+      },
+      "trainingWorkCountRange": {
+        "minimum": 367,
+        "maximum": 2489
+      },
+      "trainingWeightRange": {
+        "minimum": 1,
+        "maximum": 4
+      },
+      "weightedHuberLossTotal": 137666.43510294013,
+      "selectedHyperparameters": [
+        {
+          "key": "delta=1;l2=10",
+          "count": 15
+        }
+      ],
+      "maximumTrainingLabelAvailableAsOf": "2025-09",
+      "futureLabelRead": false,
+      "normalizationFitOnCurrentTrainingFoldOnly": true,
+      "trainingWeightFitOnCurrentTrainingFoldOnly": true
+    },
+    {
+      "armId": "B3",
+      "horizonMonths": 12,
+      "outerFitCount": 12,
+      "trainingRowCountRange": {
+        "minimum": 1302,
+        "maximum": 26418
+      },
+      "trainingWorkCountRange": {
+        "minimum": 367,
+        "maximum": 1926
+      },
+      "trainingWeightRange": {
+        "minimum": 1,
+        "maximum": 4
+      },
+      "weightedHuberLossTotal": 82732.72595162876,
+      "selectedHyperparameters": [
+        {
+          "key": "delta=1;l2=10",
+          "count": 12
+        }
+      ],
+      "maximumTrainingLabelAvailableAsOf": "2025-03",
+      "futureLabelRead": false,
+      "normalizationFitOnCurrentTrainingFoldOnly": true,
+      "trainingWeightFitOnCurrentTrainingFoldOnly": true
+    }
+  ],
+  "nativeCapabilities": {
+    "amountPredictionStored": true,
+    "occurrenceRole": "AUXILIARY_DIAGNOSTIC_ONLY",
+    "selectedFallbackApplied": false,
+    "horizonsFitIndependently": true
+  },
+  "roles": {
+    "operationalFallback": "M2-WORK-OA03",
+    "operationalFallbackChanged": false,
+    "developmentCandidateOnly": true,
+    "activeCandidate": null,
+    "approvedForAutomation": null
+  },
+  "boundaries": {
+    "channelAllocationExecuted": false,
+    "thirtySixMonthExecuted": false,
+    "laterOriginOpened": false,
+    "finalHoldoutOpened": false,
+    "productionAuthorized": false,
+    "automationAuthorized": false,
+    "releaseAuthorized": false,
+    "m3FormalAuthorized": false,
+    "pullRequestMergeAuthorized": false,
+    "privateIdentityPublished": false,
+    "completeResultFrozen": true,
+    "secondResultAuthorized": false
+  }
+}

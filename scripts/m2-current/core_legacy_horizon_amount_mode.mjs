@@ -661,8 +661,7 @@ async function runM2CoreLegacyHorizonAmountExecution({
       eligibility,
       training,
       evaluation,
-      k1,
-      frozenLg01Digest
+      k1
     });
     assertPublicK1(k1);
     assertPublicDevelopment(development);
@@ -2132,8 +2131,7 @@ function buildPublicDevelopment({
   eligibility,
   training,
   evaluation,
-  k1,
-  frozenLg01Digest
+  k1
 }) {
   const selectionSummary = summarizeSelections(training.selections);
   const rawCells = evaluation.cells.map((cell) => ({
@@ -2161,8 +2159,7 @@ function buildPublicDevelopment({
       historicalReceiptStatusBefore:
         inventoryBefore.historicalReceiptStatus,
       sourceAuthorityRowCount: authority.authority.rowCount,
-      sourceAuthorityWorkCount: authority.authority.workCount,
-      frozenLg01ContentDigest: frozenLg01Digest
+      sourceAuthorityWorkCount: authority.authority.workCount
     },
     k1Status: k1.status,
     k2Eligibility: eligibility,

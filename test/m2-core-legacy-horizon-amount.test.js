@@ -502,6 +502,28 @@ test("canonical dispatcher exposes diagnostics, recovery smoke and restricted ex
     privateRunnerSource,
     /\bfeatureRowsForOrigin\b/u
   );
+  assert.doesNotMatch(
+    privateRunnerSource,
+    /frozenLg01ContentDigest/u
+  );
+  const publicDevelopment = JSON.parse(await readFile(path.join(
+    root,
+    "docs",
+    "analysis",
+    "m2-current",
+    "M2-core-legacy-horizon-amount-development-v0.1.json"
+  ), "utf8"));
+  assert.equal(
+    Object.hasOwn(
+      publicDevelopment.sourceAndCache,
+      "frozenLg01ContentDigest"
+    ),
+    false
+  );
+  assert.doesNotMatch(
+    JSON.stringify(publicDevelopment.sourceAndCache),
+    /digest/iu
+  );
   const diagnostic = await runM2CoreLegacyHorizonAmountPublicDiagnostic({
     root,
     verify: true
