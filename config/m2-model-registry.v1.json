@@ -73,7 +73,7 @@
     "approvedForAutomation": null,
     "activeCandidate": null,
     "blockedExperiment": null,
-    "latestStateIndex": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.46.md",
+    "latestStateIndex": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.47.md",
     "roleConflict": false,
     "sourceAssertions": [
       {
@@ -173,10 +173,24 @@
         "scope": "current_dynamic_core_legacy_3_6_12_work_amount_attribution",
         "historicalAssertion": false,
         "currentAuthority": true
+      },
+      {
+        "source": "docs/analysis/m2-current/M2-core-legacy-horizon-amount-numeric-stability-disclosure-v0.1.json",
+        "assertion": "cham01_primary_core90_has_five_finite_extreme_raw_cells_and_numeric_failure_is_separate_from_the_frozen_performance_failure",
+        "scope": "frozen_cham01_primary_core90_raw_numeric_stability",
+        "historicalAssertion": false,
+        "currentAuthority": true
+      },
+      {
+        "source": "docs/analysis/m2-current/M2-lg01-head-cash-residual-preregistration-v0.1.md",
+        "assertion": "lg01_head_cash_residual_exploratory_three_month_contract_preregistered_before_outer_outcome",
+        "scope": "strict_core80_three_month_work_total_with_core90_sensitivity",
+        "historicalAssertion": false,
+        "currentAuthority": true
       }
     ],
-    "roleInterpretationZh": "OA03 同公式在当前 Core 老品合同下重新执行完成；没有复现历史数值，因为 actual、训练支持和人口合同不同。PERFORMANCE_MIXED 只是机器证据完整性状态，不是业务整体通过。作品发生—金额校准模型 v0.3（M2-WORK-OA03）继续只是兼容性现行运行回退；人工锚定可学习全局模型（M2-WORK-LG01）继续是 Core 老品 3/6/12 月金额实验的主要研究比较基线。核心老品分周期金额模型 v0.1（M2-WORK-CHAM01）已真实训练 B1–B3，并在冻结的首个完整 B0–B3 评价中于 3、6、12 月全部失败。3 月只有 WAPE 点估计改善，bootstrap 下界未超过 0 且偏差护栏失败；6 月和 12 月相对 LG01 退化。结果已冻结，不得重跑；历史执行关闭与恢复 R0 继续只作审计。现行路由不变，当前实验、活动候选与自动化批准均为空。",
-    "activeExperiment": null
+    "roleInterpretationZh": "OA03 同公式在当前 Core 老品合同下重新执行完成；没有复现历史数值，因为 actual、训练支持和人口合同不同。PERFORMANCE_MIXED 只是机器证据完整性状态，不是业务整体通过。作品发生—金额校准模型 v0.3（M2-WORK-OA03）继续只是兼容性现行运行回退；人工锚定可学习全局模型（M2-WORK-LG01）继续是 Core 老品 3/6/12 月金额实验的主要研究比较基线。核心老品分周期金额模型 v0.1（M2-WORK-CHAM01）的既有 3、6、12 月性能失败保持冻结；另外登记 Primary/Core90 五个有限但极端的原始单元格为数值稳定性失败，二者不得混为一项。LG01 头部现金残差校准模型 v0.1（M2-WORK-HCRC01）仅完成 3 个月探索性开发预注册，尚未读取外层结果，不是活动候选。现行路由不变，活动候选与自动化批准均为空。",
+    "activeExperiment": "M2-EXP-LG01-HEAD-CASH-RESIDUAL-01"
   },
   "currentEvaluationContract": {
     "version": "2.2",
@@ -1595,7 +1609,8 @@
         "M2-CHAN-SCL01",
         "M2-CHAN-GEN02",
         "M2-WORK-HR01",
-        "M2-WORK-CHAM01"
+        "M2-WORK-CHAM01",
+        "M2-WORK-HCRC01"
       ],
       "currentRole": "research_work_baseline",
       "coreLegacyHorizonAmountComparatorStatus": "PRIMARY_RESEARCH_COMPARATOR",
@@ -3335,15 +3350,20 @@
         "docs/analysis/m2-current/M2-core-legacy-horizon-amount-recovery-readiness-v0.1.md",
         "docs/analysis/m2-current/M2-core-legacy-horizon-amount-development-v0.1.json",
         "docs/analysis/m2-current/M2-core-legacy-horizon-amount-development-v0.1.md",
+        "docs/analysis/m2-current/M2-core-legacy-horizon-amount-numeric-stability-disclosure-v0.1.json",
         "docs/analysis/m2-current/M2-oa03-lg01-core-legacy-error-attribution-v0.1.json",
         "docs/analysis/m2-current/M2-oa03-lg01-core-legacy-error-attribution-v0.1.md"
       ],
       "predecessorIds": [
         "M2-WORK-LG01"
       ],
-      "successorIds": [],
+      "successorIds": [
+        "M2-WORK-HCRC01"
+      ],
       "currentRole": "failed_development_candidate",
       "evidenceStatus": "first_valid_complete_B0_B3_evaluation_failed_all_3_6_12_month_gates",
+      "numericStabilityStatus": "M2_CHAM01_PRIMARY_CORE90_NUMERIC_STABILITY_FAIL_FINITE_EXTREME_EXTRAPOLATION",
+      "numericStabilityCause": "OUT_OF_SUPPORT_TRANSFORMED_SPACE_EXTRAPOLATION_AMPLIFIED_BY_UNBOUNDED_SIGNED_EXPM1",
       "operationalStatus": "development_failed_frozen_no_further_run_authorized",
       "automationAuthorized": false,
       "productionImported": false,
@@ -3354,6 +3374,7 @@
         "首个完整 B0–B3 评价已冻结，3、6、12 月最佳原始实验臂均为 B3，但三个周期均未通过",
         "3 月只有 WAPE 点估计改善，bootstrap 95% 区间跨 0 且偏差护栏失败",
         "6 月和 12 月 Strict Core80 相对 LG01 退化，12 月 Core90 也出现相反方向的实质退化",
+        "Primary/Core90 的 B1、B2、B3 共五个冻结原始单元格出现有限但极端的外推；其数值稳定性失败与既有性能失败分别登记",
         "结果只构成 development evidence；不得重跑、调参、晋升、自动化或改变现行运行回退"
       ],
       "registryReviewRequired": false,
@@ -3528,8 +3549,189 @@
           "reportRef": "docs/analysis/m2-current/M2-core-legacy-horizon-amount-development-v0.1.json",
           "resultStatus": "M2_CORE_HORIZON_AMOUNT_DEVELOPMENT_FAIL",
           "noOppositeMaterialDegradation": false
+        },
+        {
+          "evaluationId": "eval-cham01-b1-core90-primary-h3-numeric-disclosure",
+          "datasetVersion": "M2-core-legacy-horizon-amount-development-v0.1-first-valid-frozen",
+          "cashAuthority": "user_reviewed_sales_share_workbook_membership",
+          "populationId": "oa03-cs-core90-primary-work-155w-396c-h3",
+          "comparableGroupId": "CG-OA03-CS-CORE90-PRIMARY-WORK-H3",
+          "caseCount": 396,
+          "workCount": 155,
+          "originCount": 5,
+          "horizons": [3],
+          "target": "future_sales_share_development_modelable_cash",
+          "grain": "work_origin_horizon",
+          "rawArmId": "B1",
+          "WAPE": 5.494429874592189e+33,
+          "signedBias": 5.494429874592189e+33,
+          "baselineModelId": null,
+          "relativeWape": null,
+          "materiality": 0.01,
+          "independentEvidence": false,
+          "reportRef": "docs/analysis/m2-current/M2-core-legacy-horizon-amount-numeric-stability-disclosure-v0.1.json",
+          "resultStatus": "M2_CHAM01_PRIMARY_CORE90_NUMERIC_STABILITY_FAIL_FINITE_EXTREME_EXTRAPOLATION",
+          "mae": 1.5244782550707185e+38,
+          "medianAbsoluteError": 1986.3817105023518,
+          "maximumSingleWorkAbsoluteErrorShare": 1,
+          "numericStabilityStatus": "NUMERIC_STABILITY_FAIL_FINITE_EXTREME_EXTRAPOLATION"
+        },
+        {
+          "evaluationId": "eval-cham01-b2-core90-primary-h3-numeric-disclosure",
+          "datasetVersion": "M2-core-legacy-horizon-amount-development-v0.1-first-valid-frozen",
+          "cashAuthority": "user_reviewed_sales_share_workbook_membership",
+          "populationId": "oa03-cs-core90-primary-work-155w-396c-h3",
+          "comparableGroupId": "CG-OA03-CS-CORE90-PRIMARY-WORK-H3",
+          "caseCount": 396,
+          "workCount": 155,
+          "originCount": 5,
+          "horizons": [3],
+          "target": "future_sales_share_development_modelable_cash",
+          "grain": "work_origin_horizon",
+          "rawArmId": "B2",
+          "WAPE": 2.739672113752189e+61,
+          "signedBias": 2.739672113752189e+61,
+          "baselineModelId": null,
+          "relativeWape": null,
+          "materiality": 0.01,
+          "independentEvidence": false,
+          "reportRef": "docs/analysis/m2-current/M2-core-legacy-horizon-amount-numeric-stability-disclosure-v0.1.json",
+          "resultStatus": "M2_CHAM01_PRIMARY_CORE90_NUMERIC_STABILITY_FAIL_FINITE_EXTREME_EXTRAPOLATION",
+          "mae": 7.601463043058385e+65,
+          "medianAbsoluteError": 2160.1941136798405,
+          "maximumSingleWorkAbsoluteErrorShare": 1,
+          "numericStabilityStatus": "NUMERIC_STABILITY_FAIL_FINITE_EXTREME_EXTRAPOLATION"
+        },
+        {
+          "evaluationId": "eval-cham01-b3-core90-primary-h3-numeric-disclosure",
+          "datasetVersion": "M2-core-legacy-horizon-amount-development-v0.1-first-valid-frozen",
+          "cashAuthority": "user_reviewed_sales_share_workbook_membership",
+          "populationId": "oa03-cs-core90-primary-work-155w-396c-h3",
+          "comparableGroupId": "CG-OA03-CS-CORE90-PRIMARY-WORK-H3",
+          "caseCount": 396,
+          "workCount": 155,
+          "originCount": 5,
+          "horizons": [3],
+          "target": "future_sales_share_development_modelable_cash",
+          "grain": "work_origin_horizon",
+          "rawArmId": "B3",
+          "WAPE": 1.5056004952219026e+52,
+          "signedBias": 1.5056004952219026e+52,
+          "baselineModelId": null,
+          "relativeWape": null,
+          "materiality": 0.01,
+          "independentEvidence": false,
+          "reportRef": "docs/analysis/m2-current/M2-core-legacy-horizon-amount-numeric-stability-disclosure-v0.1.json",
+          "resultStatus": "M2_CHAM01_PRIMARY_CORE90_NUMERIC_STABILITY_FAIL_FINITE_EXTREME_EXTRAPOLATION",
+          "mae": 4.177421985861372e+56,
+          "medianAbsoluteError": 2118.9971871204025,
+          "maximumSingleWorkAbsoluteErrorShare": 1,
+          "numericStabilityStatus": "NUMERIC_STABILITY_FAIL_FINITE_EXTREME_EXTRAPOLATION"
+        },
+        {
+          "evaluationId": "eval-cham01-b1-core90-primary-h6-numeric-disclosure",
+          "datasetVersion": "M2-core-legacy-horizon-amount-development-v0.1-first-valid-frozen",
+          "cashAuthority": "user_reviewed_sales_share_workbook_membership",
+          "populationId": "oa03-cs-core90-primary-work-155w-396c-h6",
+          "comparableGroupId": "CG-OA03-CS-CORE90-PRIMARY-WORK-H6",
+          "caseCount": 396,
+          "workCount": 155,
+          "originCount": 5,
+          "horizons": [6],
+          "target": "future_sales_share_development_modelable_cash",
+          "grain": "work_origin_horizon",
+          "rawArmId": "B1",
+          "WAPE": 9366475296846.143,
+          "signedBias": 9366475296845.537,
+          "baselineModelId": null,
+          "relativeWape": null,
+          "materiality": 0.01,
+          "independentEvidence": false,
+          "reportRef": "docs/analysis/m2-current/M2-core-legacy-horizon-amount-numeric-stability-disclosure-v0.1.json",
+          "resultStatus": "M2_CHAM01_PRIMARY_CORE90_NUMERIC_STABILITY_FAIL_FINITE_EXTREME_EXTRAPOLATION",
+          "mae": 510270329990009000,
+          "medianAbsoluteError": 4597.685913923067,
+          "maximumSingleWorkAbsoluteErrorShare": 0.9999999999999616,
+          "numericStabilityStatus": "NUMERIC_STABILITY_FAIL_FINITE_EXTREME_EXTRAPOLATION"
+        },
+        {
+          "evaluationId": "eval-cham01-b2-core90-primary-h6-numeric-disclosure",
+          "datasetVersion": "M2-core-legacy-horizon-amount-development-v0.1-first-valid-frozen",
+          "cashAuthority": "user_reviewed_sales_share_workbook_membership",
+          "populationId": "oa03-cs-core90-primary-work-155w-396c-h6",
+          "comparableGroupId": "CG-OA03-CS-CORE90-PRIMARY-WORK-H6",
+          "caseCount": 396,
+          "workCount": 155,
+          "originCount": 5,
+          "horizons": [6],
+          "target": "future_sales_share_development_modelable_cash",
+          "grain": "work_origin_horizon",
+          "rawArmId": "B2",
+          "WAPE": 8.271113970865827e+28,
+          "signedBias": 8.271113970865827e+28,
+          "baselineModelId": null,
+          "relativeWape": null,
+          "materiality": 0.01,
+          "independentEvidence": false,
+          "reportRef": "docs/analysis/m2-current/M2-core-legacy-horizon-amount-numeric-stability-disclosure-v0.1.json",
+          "resultStatus": "M2_CHAM01_PRIMARY_CORE90_NUMERIC_STABILITY_FAIL_FINITE_EXTREME_EXTRAPOLATION",
+          "mae": 4.5059682767965e+33,
+          "medianAbsoluteError": 4717.399115635721,
+          "maximumSingleWorkAbsoluteErrorShare": 1,
+          "numericStabilityStatus": "NUMERIC_STABILITY_FAIL_FINITE_EXTREME_EXTRAPOLATION"
         }
       ]
+    },
+    {
+      "stableModelId": "M2-WORK-HCRC01",
+      "displayNameZh": "LG01 头部现金残差校准模型 v0.1",
+      "displayNameEn": "LG01 Head-Cash Residual Calibration Model v0.1",
+      "legacyIds": [],
+      "legacyAliases": [
+        "LG01 head-cash residual calibration",
+        "head-cash protected residual blend"
+      ],
+      "entityType": "model",
+      "capability": "WORK",
+      "target": "future_sales_share_development_modelable_cash",
+      "targetHistory": [
+        "future_sales_share_development_modelable_cash"
+      ],
+      "predictionGrain": "work_origin_horizon",
+      "horizonContract": "three-month Strict rolling Core80 work total only; Strict Core90 sensitivity and Primary/Core90 numeric diagnostic",
+      "formulaSummaryZh": "以冻结 LG01 三个月同案例预测为基线，对冻结 CHAM01 B3 原始残差做仅由更早 inner origin 推导的双侧分位数截断，再以全局或向全局收缩的起点可见现金带 alpha 有界混合。",
+      "formulaSummaryEn": "Cross-fitted bounded residual blend over frozen three-month LG01 and CHAM01 B3 predictions, with globally anchored origin-visible cash-band protection.",
+      "inputSummaryZh": "仅使用冻结 LG01 与 CHAM01 B3 三个月同案例预测、冻结 development-modelable actual、冻结 rolling fold/人口键，以及预测起点可见 trailing-12 分成现金；不使用 taxonomy、新渠道、新作品或未来排序。",
+      "codeEntrypoints": [
+        "src/domain/m2Current/lg01HeadCashResidual.js"
+      ],
+      "configEntrypoints": [
+        "config/m2-current-lg01-head-cash-residual.v0.1.json"
+      ],
+      "evidenceRefs": [
+        "docs/analysis/m2-current/M2-core-legacy-horizon-amount-numeric-stability-disclosure-v0.1.json",
+        "docs/analysis/m2-current/M2-lg01-head-cash-residual-preregistration-v0.1.md"
+      ],
+      "predecessorIds": [
+        "M2-WORK-LG01",
+        "M2-WORK-CHAM01"
+      ],
+      "successorIds": [],
+      "currentRole": "preregistered_exploratory_candidate_not_executed",
+      "evidenceStatus": "preregistered_before_outer_outcome_no_candidate_result",
+      "operationalStatus": "not_executed_not_promoted",
+      "automationAuthorized": false,
+      "productionImported": false,
+      "finalHoldoutOpened": false,
+      "developmentWindowReuse": "exploratory_reuse_of_frozen_cham01_development_window_requires_future_independent_later_origin_confirmation",
+      "limitationsZh": [
+        "研究方向是在读取 CHAM01 开发结果后提出，只能形成探索性开发证据，不能作为独立确认",
+        "只授权 Strict Core80 三个月作品总额主评价；Core90 仅作敏感性，Primary 仅作数值诊断",
+        "尚未读取本实验外层结果，尚无候选成绩、通过结论、晋升或上线权限",
+        "不得重新拟合 LG01 或 CHAM01，不得增加实验臂、参数网格、业务字段或更长周期"
+      ],
+      "registryReviewRequired": false,
+      "evaluations": []
     }
   ],
   "experiments": [
@@ -3928,7 +4130,58 @@
         "docs/analysis/m2-current/M2-core-legacy-horizon-amount-execution-closure-v0.1.json",
         "docs/analysis/m2-current/M2-core-legacy-horizon-amount-recovery-readiness-v0.1.json",
         "docs/analysis/m2-current/M2-core-legacy-horizon-amount-development-v0.1.json",
+        "docs/analysis/m2-current/M2-core-legacy-horizon-amount-numeric-stability-disclosure-v0.1.json",
         "docs/analysis/m2-current/M2-oa03-lg01-core-legacy-error-attribution-v0.1.json"
+      ]
+    },
+    {
+      "experimentId": "M2-EXP-LG01-HEAD-CASH-RESIDUAL-01",
+      "displayNameZh": "M2 LG01 头部现金残差校准 v0.1",
+      "displayNameEn": "M2 LG01 Head-Cash Residual Calibration v0.1",
+      "entityType": "experiment",
+      "modelIds": [
+        "M2-WORK-HCRC01",
+        "M2-WORK-LG01",
+        "M2-WORK-CHAM01"
+      ],
+      "arms": [
+        {
+          "armId": "C0",
+          "displayNameZh": "冻结 LG01 三个月同案例基线",
+          "modelId": "M2-WORK-LG01",
+          "executionStatus": "FROZEN_INPUT_NOT_REEXECUTED"
+        },
+        {
+          "armId": "C1",
+          "displayNameZh": "冻结 CHAM01 B3 三个月原始诊断参考",
+          "modelId": "M2-WORK-CHAM01",
+          "executionStatus": "FROZEN_INPUT_NOT_REEXECUTED_DIAGNOSTIC_ONLY"
+        },
+        {
+          "armId": "C2",
+          "displayNameZh": "全局有界残差混合",
+          "modelId": "M2-WORK-HCRC01",
+          "executionStatus": "PREREGISTERED_NOT_EXECUTED"
+        },
+        {
+          "armId": "C3",
+          "displayNameZh": "头部现金带保护的有界残差混合",
+          "modelId": "M2-WORK-HCRC01",
+          "executionStatus": "PREREGISTERED_NOT_EXECUTED"
+        }
+      ],
+      "resultStatus": "M2_LG01_HEAD_CASH_RESIDUAL_PREREGISTERED_NOT_EXECUTED",
+      "evidenceClassification": "EXPLORATORY_DEVELOPMENT_EVIDENCE_NOT_INDEPENDENT_CONFIRMATION",
+      "sourceAuthorityStatus": "SOURCE_AUTHORITY_AVAILABLE_CACHE_MISS_REBUILDABLE",
+      "candidateOutcomeProduced": false,
+      "firstCompleteOutcomeFrozen": false,
+      "outerOutcomeRead": false,
+      "modelRolesChanged": false,
+      "secondResultExecuted": false,
+      "evidenceRefs": [
+        "config/m2-current-lg01-head-cash-residual.v0.1.json",
+        "docs/analysis/m2-current/M2-core-legacy-horizon-amount-numeric-stability-disclosure-v0.1.json",
+        "docs/analysis/m2-current/M2-lg01-head-cash-residual-preregistration-v0.1.md"
       ]
     },
     {
@@ -3948,6 +4201,20 @@
     }
   ],
   "nonModelIdentifiers": [
+    {"identifier": "C0", "namespace": "M2-EXP-LG01-HEAD-CASH-RESIDUAL-01", "parentExperiment": "M2-EXP-LG01-HEAD-CASH-RESIDUAL-01", "type": "experiment_arm", "displayNameZh": "LG01 头部现金残差校准实验臂 C0（冻结 LG01 三个月同案例基线）", "meaningZh": "冻结研究比较基线，不重新拟合，不具备本轮候选通过资格。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-lg01-head-cash-residual-preregistration-v0.1.md"},
+    {"identifier": "C1", "namespace": "M2-EXP-LG01-HEAD-CASH-RESIDUAL-01", "parentExperiment": "M2-EXP-LG01-HEAD-CASH-RESIDUAL-01", "type": "experiment_arm", "displayNameZh": "LG01 头部现金残差校准实验臂 C1（冻结 CHAM01 B3 三个月原始诊断参考）", "meaningZh": "只保留冻结原始诊断结果，不重新拟合，不具备本轮候选通过资格。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-lg01-head-cash-residual-preregistration-v0.1.md"},
+    {"identifier": "C2", "namespace": "M2-EXP-LG01-HEAD-CASH-RESIDUAL-01", "parentExperiment": "M2-EXP-LG01-HEAD-CASH-RESIDUAL-01", "type": "experiment_arm", "displayNameZh": "LG01 头部现金残差校准实验臂 C2（全局有界残差混合）", "meaningZh": "只用更早 inner origin 选择全局 alpha 的探索性三个月作品总额候选。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-lg01-head-cash-residual-preregistration-v0.1.md"},
+    {"identifier": "C3", "namespace": "M2-EXP-LG01-HEAD-CASH-RESIDUAL-01", "parentExperiment": "M2-EXP-LG01-HEAD-CASH-RESIDUAL-01", "type": "experiment_arm", "displayNameZh": "LG01 头部现金残差校准实验臂 C3（头部现金带保护的有界残差混合）", "meaningZh": "按起点可见现金带选择并向全局 alpha 收缩的探索性三个月作品总额候选。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-lg01-head-cash-residual-preregistration-v0.1.md"},
+    {"identifier": "K0", "namespace": "M2-EXP-LG01-HEAD-CASH-RESIDUAL-01", "parentExperiment": "M2-EXP-LG01-HEAD-CASH-RESIDUAL-01", "type": "execution_checkpoint", "displayNameZh": "LG01 头部现金残差校准执行检查点 K0（披露与预注册）", "meaningZh": "补充冻结 CHAM01 数值稳定性披露并在外层结果读取前冻结新实验合同，不是模型或成绩。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-lg01-head-cash-residual-preregistration-v0.1.md"},
+    {"identifier": "K1", "namespace": "M2-EXP-LG01-HEAD-CASH-RESIDUAL-01", "parentExperiment": "M2-EXP-LG01-HEAD-CASH-RESIDUAL-01", "type": "execution_checkpoint", "displayNameZh": "LG01 头部现金残差校准执行检查点 K1（实现与合成验证）", "meaningZh": "实现有界残差、现金带、嵌套选择与可移植缓存重建，并只做合成验证，不读取外层结果。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-lg01-head-cash-residual-preregistration-v0.1.md"},
+    {"identifier": "K2", "namespace": "M2-EXP-LG01-HEAD-CASH-RESIDUAL-01", "parentExperiment": "M2-EXP-LG01-HEAD-CASH-RESIDUAL-01", "type": "execution_checkpoint", "displayNameZh": "LG01 头部现金残差校准执行检查点 K2（首次结果封存）", "meaningZh": "一次授权私有开发评价完成后冻结首个完整结果并收口公开报告，不是新的模型身份。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-lg01-head-cash-residual-preregistration-v0.1.md"},
+    {"identifier": "M2_CHAM01_PRIMARY_CORE90_NUMERIC_STABILITY_FAIL_FINITE_EXTREME_EXTRAPOLATION", "namespace": "M2-STATUS", "parentExperiment": "M2-EXP-CORE-HORIZON-AMOUNT-01", "type": "numeric_stability_status_code", "displayNameZh": "核心老品分周期金额模型 Primary/Core90 有限极端外推数值稳定性失败", "meaningZh": "五个冻结原始单元格虽为有限数，但发生超出支持范围且被无界 signed-expm1 放大的极端外推；该状态与既有性能失败分别登记。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-core-legacy-horizon-amount-numeric-stability-disclosure-v0.1.json"},
+    {"identifier": "M2_LG01_HEAD_CASH_RESIDUAL_PREREGISTERED_NOT_EXECUTED", "namespace": "M2-STATUS", "parentExperiment": "M2-EXP-LG01-HEAD-CASH-RESIDUAL-01", "type": "experiment_status_code", "displayNameZh": "LG01 头部现金残差校准已预注册且尚未执行", "meaningZh": "外层结果尚未读取，只有冻结合同，没有候选成绩、晋升或上线结论。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-lg01-head-cash-residual-preregistration-v0.1.md"},
+    {"identifier": "M2_LG01_HEAD_CASH_RESIDUAL_CONFIRMED_DEVELOPMENT_PASS", "namespace": "M2-STATUS", "parentExperiment": "M2-EXP-LG01-HEAD-CASH-RESIDUAL-01", "type": "model_development_status_code", "displayNameZh": "LG01 头部现金残差校准确认级开发通过", "meaningZh": "仅当预注册的总体、区间、时间块、偏差、头部现金、集中度、数值稳定性和 Core90 护栏全部通过时可使用；仍非独立 later-origin 确认或上线授权。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-lg01-head-cash-residual-preregistration-v0.1.md"},
+    {"identifier": "M2_LG01_HEAD_CASH_RESIDUAL_PROMISING_UNCONFIRMED", "namespace": "M2-STATUS", "parentExperiment": "M2-EXP-LG01-HEAD-CASH-RESIDUAL-01", "type": "model_development_status_code", "displayNameZh": "LG01 头部现金残差校准有希望但未确认", "meaningZh": "点估计、时间块及全部业务与稳定性护栏通过，但作品聚类 bootstrap 区间跨零；只可建议未来独立验证。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-lg01-head-cash-residual-preregistration-v0.1.md"},
+    {"identifier": "M2_LG01_HEAD_CASH_RESIDUAL_FAIL", "namespace": "M2-STATUS", "parentExperiment": "M2-EXP-LG01-HEAD-CASH-RESIDUAL-01", "type": "model_development_status_code", "displayNameZh": "LG01 头部现金残差校准开发失败", "meaningZh": "任一预注册总体、偏差、头部现金、集中度、数值稳定性、Core90 或原始候选真实性门禁失败。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-lg01-head-cash-residual-preregistration-v0.1.md"},
+    {"identifier": "M2_LG01_HEAD_CASH_RESIDUAL_BLOCKED_MISSING_PRIVATE_AUTHORITY", "namespace": "M2-STATUS", "parentExperiment": "M2-EXP-LG01-HEAD-CASH-RESIDUAL-01", "type": "execution_status_code", "displayNameZh": "LG01 头部现金残差校准因缺少不可替代私有权威源而阻断", "meaningZh": "只有不可由冻结代码重建的权威输入缺失时才能使用；缓存或历史收据缺失不得触发。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-lg01-head-cash-residual-preregistration-v0.1.md"},
+    {"identifier": "M2_LG01_HEAD_CASH_RESIDUAL_INVALIDATED_CONTRACT_BREACH", "namespace": "M2-STATUS", "parentExperiment": "M2-EXP-LG01-HEAD-CASH-RESIDUAL-01", "type": "execution_status_code", "displayNameZh": "LG01 头部现金残差校准因科学合同违约而失效", "meaningZh": "发生外层结果后改参、第二次完整评价、人口或 fold 变更、未来泄漏、原始候选遮蔽等合同违约时使用。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-lg01-head-cash-residual-preregistration-v0.1.md"},
     {"identifier": "B0", "namespace": "M2-V2-EVIDENCE", "parentExperiment": null, "type": "governance_stage", "displayNameZh": "证据治理阶段 B0", "meaningZh": "历史 PR #7 证据阶段，不是模型。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.3.json"},
     {"identifier": "B1", "namespace": "M2-V2-EVIDENCE", "parentExperiment": null, "type": "governance_stage", "displayNameZh": "证据治理阶段 B1", "meaningZh": "历史 authority 只读候选阶段，不是模型。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-v2/M2-v2-PR7-B1-authority-readonly-candidate-status-v0.1.md"},
     {"identifier": "B2", "namespace": "M2-V2-EVIDENCE", "parentExperiment": null, "type": "governance_stage", "displayNameZh": "证据治理阶段 B2", "meaningZh": "历史迁移与绑定检查阶段，不是模型。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.3.json"},

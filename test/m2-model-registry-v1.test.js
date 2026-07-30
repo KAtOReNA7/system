@@ -34,10 +34,10 @@ test("registry schema, evidence paths and immutable digests validate", () => {
     canonicalEvidenceSha256("same\r\ncontent\r\n"),
     canonicalEvidenceSha256("same\ncontent\n")
   );
-  assert.equal(validation.counts.modelCount, 32);
-  assert.equal(validation.counts.experimentCount, 19);
-  assert.equal(validation.counts.nonModelIdentifierCount, 77);
-  assert.equal(validation.counts.evaluationCount, 102);
+  assert.equal(validation.counts.modelCount, 33);
+  assert.equal(validation.counts.experimentCount, 20);
+  assert.equal(validation.counts.nonModelIdentifierCount, 91);
+  assert.equal(validation.counts.evaluationCount, 107);
   assert.equal(validation.counts.comparabilityGroupCount, 57);
 });
 
@@ -97,7 +97,7 @@ test("current roles retain fallback, research baseline and no automation promoti
   );
   assert.equal(
     registry.currentRoles.activeExperiment,
-    null
+    "M2-EXP-LG01-HEAD-CASH-RESIDUAL-01"
   );
   assert.equal(registry.currentRoles.blockedExperiment, null);
   assert.match(
@@ -226,7 +226,7 @@ test("core legacy population test records non-confirmation without promotion", (
   );
   assert.equal(
     registry.currentRoles.latestStateIndex,
-    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.46.md"
+    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.47.md"
   );
   assert.equal(registry.currentRoles.activeCandidate, null);
   assert.equal(registry.currentRoles.approvedForAutomation, null);
@@ -246,19 +246,37 @@ test("CHAM01 first complete result is failed, frozen and not promoted", () => {
     model.operationalStatus,
     "development_failed_frozen_no_further_run_authorized"
   );
-  assert.equal(model.evaluations.length, 7);
+  assert.equal(model.evaluations.length, 12);
   assert.equal(
-    model.evaluations.slice(1).every(
+    model.evaluations.slice(1, 7).every(
       (item) => item.rawArmId === "B3"
     ),
     true
   );
   assert.equal(
-    model.evaluations.slice(1).every(
+    model.evaluations.slice(1, 7).every(
       (item) => (
         item.resultStatus === "M2_CORE_HORIZON_AMOUNT_HORIZON_FAIL"
         || item.resultStatus === "M2_CORE_HORIZON_AMOUNT_DEVELOPMENT_FAIL"
       )
+    ),
+    true
+  );
+  assert.equal(
+    model.evaluations.slice(7).every(
+      (item) => (
+        item.resultStatus
+          === "M2_CHAM01_PRIMARY_CORE90_NUMERIC_STABILITY_FAIL_"
+            + "FINITE_EXTREME_EXTRAPOLATION"
+        && item.numericStabilityStatus
+          === "NUMERIC_STABILITY_FAIL_FINITE_EXTREME_EXTRAPOLATION"
+      )
+    ),
+    true
+  );
+  assert.equal(
+    model.evaluations.slice(7).every(
+      (item) => item.maximumSingleWorkAbsoluteErrorShare > 0.9999999999999
     ),
     true
   );
@@ -279,7 +297,47 @@ test("CHAM01 first complete result is failed, frozen and not promoted", () => {
     true
   );
   assert.equal(experiment.secondResultExecuted, false);
-  assert.equal(registry.currentRoles.activeExperiment, null);
+  assert.equal(
+    registry.currentRoles.activeExperiment,
+    "M2-EXP-LG01-HEAD-CASH-RESIDUAL-01"
+  );
+  assert.equal(registry.currentRoles.activeCandidate, null);
+  assert.equal(registry.currentRoles.approvedForAutomation, null);
+});
+
+test("HCRC01 is preregistered without an outer outcome or promotion", () => {
+  const model = registry.models.find(
+    (item) => item.stableModelId === "M2-WORK-HCRC01"
+  );
+  const experiment = registry.experiments.find(
+    (item) => (
+      item.experimentId === "M2-EXP-LG01-HEAD-CASH-RESIDUAL-01"
+    )
+  );
+
+  assert.equal(
+    model.currentRole,
+    "preregistered_exploratory_candidate_not_executed"
+  );
+  assert.equal(model.operationalStatus, "not_executed_not_promoted");
+  assert.deepEqual(
+    model.predecessorIds,
+    ["M2-WORK-LG01", "M2-WORK-CHAM01"]
+  );
+  assert.equal(model.evaluations.length, 0);
+  assert.equal(model.automationAuthorized, false);
+  assert.equal(model.productionImported, false);
+  assert.deepEqual(
+    experiment.arms.map((arm) => arm.armId),
+    ["C0", "C1", "C2", "C3"]
+  );
+  assert.equal(
+    experiment.resultStatus,
+    "M2_LG01_HEAD_CASH_RESIDUAL_PREREGISTERED_NOT_EXECUTED"
+  );
+  assert.equal(experiment.candidateOutcomeProduced, false);
+  assert.equal(experiment.outerOutcomeRead, false);
+  assert.equal(experiment.secondResultExecuted, false);
   assert.equal(registry.currentRoles.activeCandidate, null);
   assert.equal(registry.currentRoles.approvedForAutomation, null);
 });
@@ -533,6 +591,12 @@ test("reader catalog is a deterministic complete rendering of the registry", asy
   assert.match(catalog, /CG-PSC01-V22-STRICT-74320/u);
   assert.match(catalog, /M2-WORK-CHAM01/u);
   assert.match(catalog, /M2-EXP-CORE-HORIZON-AMOUNT-01/u);
+  assert.match(catalog, /M2-WORK-HCRC01/u);
+  assert.match(catalog, /M2-EXP-LG01-HEAD-CASH-RESIDUAL-01/u);
+  assert.match(
+    catalog,
+    /M2_CHAM01_PRIMARY_CORE90_NUMERIC_STABILITY_FAIL_FINITE_EXTREME_EXTRAPOLATION/u
+  );
   assert.match(
     catalog,
     /M2_CORE_HORIZON_AMOUNT_PRIVATE_EXECUTION_INVALIDATED_RETRY_EXHAUSTED/u
@@ -542,7 +606,7 @@ test("reader catalog is a deterministic complete rendering of the registry", asy
 test("read-only query exposes scoped identities and refuses invalid ranking", () => {
   const list = runQuery("list");
   assert.equal(list.status, 0, list.stderr);
-  assert.match(list.stdout, /M2 持久模型与模型族：32 个/u);
+  assert.match(list.stdout, /M2 持久模型与模型族：33 个/u);
   assert.match(list.stdout, /M2-CHAN-GEN02/u);
   assert.match(list.stdout, /M2-WORK-CHAM01/u);
 
@@ -551,12 +615,13 @@ test("read-only query exposes scoped identities and refuses invalid ranking", ()
   assert.match(status.stdout, /本次只读查询模型执行次数：0/u);
   assert.match(
     status.stdout,
-    /当前实验：无（null）/u
+    /当前实验：M2 LG01 头部现金残差校准 v0\.1/u
   );
   assert.match(status.stdout, /兼容性现行运行回退模型/u);
   assert.match(status.stdout, /没有复现历史数值/u);
   assert.match(status.stdout, /不是业务整体通过/u);
   assert.match(status.stdout, /M2-WORK-OA03/u);
+  assert.match(status.stdout, /M2-EXP-LG01-HEAD-CASH-RESIDUAL-01/u);
   assert.match(
     status.stdout,
     /当前阻断实验：无（null）/u
@@ -569,6 +634,12 @@ test("read-only query exposes scoped identities and refuses invalid ranking", ()
     horizonAmount.stdout,
     /development_failed_frozen_no_further_run_authorized/u
   );
+
+  const headCashResidual = runQuery("show", "M2-WORK-HCRC01");
+  assert.equal(headCashResidual.status, 0, headCashResidual.stderr);
+  assert.match(headCashResidual.stdout, /探索性候选已预注册但尚未执行/u);
+  assert.match(headCashResidual.stdout, /尚未执行且未晋升/u);
+  assert.match(headCashResidual.stdout, /成绩：\s*$/u);
 
   const publishingScale = runQuery("show", "M2-CHAN-PSC01");
   assert.equal(publishingScale.status, 0, publishingScale.stderr);

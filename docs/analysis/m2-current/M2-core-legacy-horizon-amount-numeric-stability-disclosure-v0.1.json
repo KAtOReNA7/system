@@ -1,0 +1,115 @@
+{
+  "schema": "m2.current.core_legacy_horizon_amount.numeric_stability_disclosure.v0.1",
+  "asOf": "2026-07-30",
+  "experimentId": "M2-EXP-CORE-HORIZON-AMOUNT-01",
+  "modelId": "M2-WORK-CHAM01",
+  "performanceStatus": "M2_CORE_HORIZON_AMOUNT_DEVELOPMENT_FAIL",
+  "numericStabilityStatus": "M2_CHAM01_PRIMARY_CORE90_NUMERIC_STABILITY_FAIL_FINITE_EXTREME_EXTRAPOLATION",
+  "frozenSourceArtifact": {
+    "path": "docs/analysis/m2-current/M2-core-legacy-horizon-amount-development-v0.1.json",
+    "sha256": "963f51e5e324203d0f6b58fb19e532f94036af19683928e985e20b94640e5703",
+    "modifiedByThisDisclosure": false,
+    "rerunPerformed": false
+  },
+  "affectedCells": [
+    {
+      "evaluationFamily": "PRIMARY_ROLLING",
+      "populationId": "CORE90",
+      "horizonMonths": 3,
+      "armId": "B1",
+      "caseCount": 396,
+      "workCount": 155,
+      "originCount": 5,
+      "wape": 5.494429874592189e+33,
+      "signedBias": 5.494429874592189e+33,
+      "mae": 1.5244782550707185e+38,
+      "medianAbsoluteError": 1986.3817105023518,
+      "maximumSingleWorkAbsoluteErrorShare": 1,
+      "numericStatus": "NUMERIC_STABILITY_FAIL_FINITE_EXTREME_EXTRAPOLATION"
+    },
+    {
+      "evaluationFamily": "PRIMARY_ROLLING",
+      "populationId": "CORE90",
+      "horizonMonths": 3,
+      "armId": "B2",
+      "caseCount": 396,
+      "workCount": 155,
+      "originCount": 5,
+      "wape": 2.739672113752189e+61,
+      "signedBias": 2.739672113752189e+61,
+      "mae": 7.601463043058385e+65,
+      "medianAbsoluteError": 2160.1941136798405,
+      "maximumSingleWorkAbsoluteErrorShare": 1,
+      "numericStatus": "NUMERIC_STABILITY_FAIL_FINITE_EXTREME_EXTRAPOLATION"
+    },
+    {
+      "evaluationFamily": "PRIMARY_ROLLING",
+      "populationId": "CORE90",
+      "horizonMonths": 3,
+      "armId": "B3",
+      "caseCount": 396,
+      "workCount": 155,
+      "originCount": 5,
+      "wape": 1.5056004952219026e+52,
+      "signedBias": 1.5056004952219026e+52,
+      "mae": 4.177421985861372e+56,
+      "medianAbsoluteError": 2118.9971871204025,
+      "maximumSingleWorkAbsoluteErrorShare": 1,
+      "numericStatus": "NUMERIC_STABILITY_FAIL_FINITE_EXTREME_EXTRAPOLATION"
+    },
+    {
+      "evaluationFamily": "PRIMARY_ROLLING",
+      "populationId": "CORE90",
+      "horizonMonths": 6,
+      "armId": "B1",
+      "caseCount": 396,
+      "workCount": 155,
+      "originCount": 5,
+      "wape": 9366475296846.143,
+      "signedBias": 9366475296845.537,
+      "mae": 510270329990009000,
+      "medianAbsoluteError": 4597.685913923067,
+      "maximumSingleWorkAbsoluteErrorShare": 0.9999999999999616,
+      "numericStatus": "NUMERIC_STABILITY_FAIL_FINITE_EXTREME_EXTRAPOLATION"
+    },
+    {
+      "evaluationFamily": "PRIMARY_ROLLING",
+      "populationId": "CORE90",
+      "horizonMonths": 6,
+      "armId": "B2",
+      "caseCount": 396,
+      "workCount": 155,
+      "originCount": 5,
+      "wape": 8.271113970865827e+28,
+      "signedBias": 8.271113970865827e+28,
+      "mae": 4.5059682767965e+33,
+      "medianAbsoluteError": 4717.399115635721,
+      "maximumSingleWorkAbsoluteErrorShare": 1,
+      "numericStatus": "NUMERIC_STABILITY_FAIL_FINITE_EXTREME_EXTRAPOLATION"
+    }
+  ],
+  "causeAssessment": {
+    "primaryCause": "OUT_OF_SUPPORT_TRANSFORMED_SPACE_EXTRAPOLATION_AMPLIFIED_BY_UNBOUNDED_SIGNED_EXPM1",
+    "inverseTransform": "AMPLIFIER_WITHOUT_MAGNITUDE_GUARD",
+    "featureScale": "FOLD_LOCAL_STANDARDIZATION_HAS_NO_OUTER_SUPPORT_OR_RATIO_BOUND",
+    "emptySupport": false,
+    "nonfinitePropagation": false,
+    "serialization": false,
+    "evidence": [
+      "All five frozen cells parsed as finite JSON numbers and retained COMPUTED arithmetic status.",
+      "Median absolute error remains in ordinary cash scale while aggregate WAPE and bias are extreme.",
+      "One work contributes effectively all absolute error in every affected cell.",
+      "The frozen implementation accepts any finite transformed score and applies unbounded signed expm1 without an outer support or prediction/base ratio guard."
+    ],
+    "singleFeatureAttributionAvailableWithoutFrozenPrivateState": false
+  },
+  "decisionImpact": {
+    "existingPerformanceFailureChanged": false,
+    "existingHorizonDecisionsChanged": false,
+    "performanceFailureAndNumericFailureRegisteredSeparately": true,
+    "rawExtremeValuesReplacedTruncatedOrNulled": false,
+    "activeCandidate": null,
+    "approvedForAutomation": null,
+    "operationalFallbackChanged": false
+  }
+}

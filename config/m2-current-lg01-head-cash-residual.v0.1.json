@@ -1,0 +1,389 @@
+{
+  "schema": "m2.current.lg01_head_cash_residual.v0.1",
+  "asOf": "2026-07-30",
+  "experiment": {
+    "stableExperimentId": "M2-EXP-LG01-HEAD-CASH-RESIDUAL-01",
+    "displayNameZh": "M2 LG01 头部现金残差校准 v0.1",
+    "displayNameEn": "M2 LG01 Head-Cash Residual Calibration v0.1",
+    "entityType": "experiment",
+    "phase": "PREREGISTERED_EXPLORATORY_DEVELOPMENT",
+    "evidenceClassification": "EXPLORATORY_DEVELOPMENT_EVIDENCE_NOT_INDEPENDENT_CONFIRMATION",
+    "directionProposedAfterCham01OutcomeWasRead": true,
+    "outerOutcomeRead": false,
+    "firstCompleteOutcomeProduced": false,
+    "activeCandidate": false,
+    "approvedForAutomation": false
+  },
+  "model": {
+    "stableModelId": "M2-WORK-HCRC01",
+    "displayNameZh": "LG01 头部现金残差校准模型 v0.1",
+    "displayNameEn": "LG01 Head-Cash Residual Calibration Model v0.1",
+    "entityType": "model",
+    "target": "future_sales_share_development_modelable_cash",
+    "predictionGrain": "work_origin_horizon",
+    "horizonMonths": 3,
+    "formulaClass": "BOUNDED_CROSS_FITTED_RESIDUAL_BLEND",
+    "independentConfirmationClaimAllowed": false,
+    "activeCandidate": false,
+    "approvedForAutomation": false,
+    "productionImported": false
+  },
+  "authority": {
+    "actualDefinitionId": "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01",
+    "cashAuthority": "user_reviewed_sales_share_workbook_membership",
+    "sourceAuthorityClasses": [
+      "PRIVATE_SOURCE_AUTHORITY",
+      "PRIVATE_DERIVED_CACHE",
+      "PRIVATE_RUN_PROVENANCE"
+    ],
+    "missingSourceAuthorityPolicy": "BLOCKED_MISSING_PRIVATE_AUTHORITY",
+    "missingDerivedCachePolicy": "AUTO_REBUILD_FROM_VERIFIED_SOURCE_AND_FROZEN_CODE",
+    "missingRunProvenancePolicy": "WARN_OPTIONAL_PROVENANCE_MISSING_NEVER_FABRICATE",
+    "frozenHistoricalArtifactsMayBeRewritten": false,
+    "onlyMissingSourceAuthorityMayBlock": true
+  },
+  "scope": {
+    "primaryEvaluationFamily": "STRICT_ROLLING",
+    "primaryPopulationId": "CORE80",
+    "sensitivityPopulationId": "CORE90",
+    "primaryDiagnosticPopulationId": "PRIMARY_CORE90",
+    "horizonsMonths": [
+      3
+    ],
+    "workTotalOnly": true,
+    "originMatureLegacyWorkOnly": true,
+    "originObservedMatureChannelOnly": true,
+    "futureNewWorkAuthorized": false,
+    "futureFirstObservedChannelAuthorized": false,
+    "outsideCore90TailAuthorized": false,
+    "channelAllocationAuthorized": false,
+    "taxonomyAuthorized": false,
+    "platformMechanismAuthorized": false,
+    "sixMonthAuthorized": false,
+    "twelveMonthAuthorized": false,
+    "thirtySixMonthAuthorized": false
+  },
+  "frozenInputs": {
+    "baseModelId": "M2-WORK-LG01",
+    "baseDescription": "FROZEN_LG01_THREE_MONTH_SAME_CASE_PREDICTION",
+    "rawResidualSourceModelId": "M2-WORK-CHAM01",
+    "rawResidualSourceExperimentId": "M2-EXP-CORE-HORIZON-AMOUNT-01",
+    "rawResidualSourceArmId": "B3",
+    "rawResidualSourceDescription": "FROZEN_CHAM01_B3_THREE_MONTH_RAW_PREDICTION",
+    "originVisibleHistory": "WORK_TRAILING_12_SALES_SHARE_CASH_AT_FORECAST_ORIGIN",
+    "population": "FROZEN_DYNAMIC_CORE80_CORE90",
+    "actual": "FROZEN_DEVELOPMENT_MODELABLE_ACTUAL",
+    "folds": "FROZEN_ROLLING_FOLD_TIME_BLOCK_AND_SAME_CASE_KEYS",
+    "lg01RefitAllowed": false,
+    "cham01RefitAllowed": false,
+    "actualPopulationFoldOrContractMutationAllowed": false,
+    "deterministicCacheReconstructionIsNotANewScientificFit": true,
+    "deterministicCacheReconstructionMustReconcileFrozenPublicAggregates": true
+  },
+  "caseKey": {
+    "fields": [
+      "evaluationFamily",
+      "populationId",
+      "standardWorkId",
+      "origin",
+      "horizonMonths",
+      "actualDefinitionId"
+    ],
+    "exactSameCaseRequired": true,
+    "duplicatePolicy": "FAIL_CLOSED",
+    "missingMemberPolicy": "EXCLUDE_AND_REPORT_NEVER_ZERO_IMPUTE"
+  },
+  "arms": [
+    {
+      "armId": "C0",
+      "displayNameZh": "冻结 LG01 三个月同案例基线",
+      "displayNameEn": "Frozen LG01 Three-Month Same-Case Baseline",
+      "modelId": "M2-WORK-LG01",
+      "role": "FROZEN_RESEARCH_BASELINE",
+      "promotionEligible": false
+    },
+    {
+      "armId": "C1",
+      "displayNameZh": "冻结 CHAM01 B3 三个月原始诊断参考",
+      "displayNameEn": "Frozen CHAM01 B3 Three-Month Raw Diagnostic Reference",
+      "modelId": "M2-WORK-CHAM01",
+      "role": "FROZEN_DIAGNOSTIC_REFERENCE",
+      "promotionEligible": false
+    },
+    {
+      "armId": "C2",
+      "displayNameZh": "全局有界残差混合",
+      "displayNameEn": "Global Bounded Residual Blend",
+      "modelId": "M2-WORK-HCRC01",
+      "role": "RAW_EXPLORATORY_CANDIDATE",
+      "promotionEligible": true
+    },
+    {
+      "armId": "C3",
+      "displayNameZh": "头部现金带保护的有界残差混合",
+      "displayNameEn": "Head-Cash-Band Protected Bounded Residual Blend",
+      "modelId": "M2-WORK-HCRC01",
+      "role": "RAW_EXPLORATORY_CANDIDATE",
+      "promotionEligible": true
+    }
+  ],
+  "residualBounding": {
+    "baseFormula": "frozenLg01PointEstimate",
+    "rawFormula": "frozenCham01B3PointEstimate",
+    "residualFormula": "rawMinusBase",
+    "trainingFoldPositiveBaseFloor": {
+      "sourceRows": "STRICTLY_EARLIER_INNER_ORIGINS_WITH_FINITE_POSITIVE_BASE",
+      "quantile": 0.1,
+      "quantileMethod": "LINEAR_INTERPOLATION_N_MINUS_ONE",
+      "minimumIndependentOriginCount": 2,
+      "insufficientSupportPolicy": "FALLBACK_TO_C0"
+    },
+    "scaleFormula": "max(abs(base),trainingFoldPositiveBaseFloor)",
+    "normalizedResidualFormula": "residualDividedByScale",
+    "clip": {
+      "sourceRows": "STRICTLY_EARLIER_INNER_ORIGINS_ONLY",
+      "lowerQuantile": 0.05,
+      "upperQuantile": 0.95,
+      "quantileMethod": "LINEAR_INTERPOLATION_N_MINUS_ONE",
+      "reason": "ROBUST_TWO_SIDED_BOUND_FIXED_FROM_EXISTING_FINITE_EXTREME_EXTRAPOLATION_EVIDENCE"
+    },
+    "boundedResidualFormula": "scaleTimesClippedNormalizedResidual",
+    "nonfinitePolicy": "PRESERVE_REASON_FALLBACK_TO_C0_AND_COUNT",
+    "zeroMeanOrArbitraryHorizonImputationAllowed": false
+  },
+  "cashBands": {
+    "rankingValue": "max(originVisibleTrailing12SalesShareCash,0)",
+    "sort": [
+      "rankingValue_DESC",
+      "standardWorkId_ASC"
+    ],
+    "population": "EACH_ORIGIN_STRICT_CORE80",
+    "bands": [
+      {
+        "bandId": "H50",
+        "displayNameZh": "头部约 50% 起点可见现金",
+        "cumulativeCashUpperInclusive": 0.5
+      },
+      {
+        "bandId": "M30",
+        "displayNameZh": "随后约 30% 起点可见现金",
+        "cumulativeCashUpperInclusive": 0.8
+      },
+      {
+        "bandId": "L20",
+        "displayNameZh": "核心 80% 内剩余起点可见现金",
+        "cumulativeCashUpperInclusive": 1
+      }
+    ],
+    "boundaryWorkPolicy": "WHOLE_WORK_STAYS_IN_HIGHER_CASH_BAND",
+    "nonpositiveOriginCashPolicy": "CASH_BAND_UNAVAILABLE_USE_GLOBAL_C2_ALPHA",
+    "futureActualUsed": false
+  },
+  "alpha": {
+    "candidateGrid": [
+      0.25,
+      0.5,
+      0.75,
+      1
+    ],
+    "zeroIsCandidate": false,
+    "zeroMeaning": "C0_FALLBACK_ONLY",
+    "outerOriginSelectionSource": "STRICTLY_EARLIER_INNER_ORIGINS",
+    "workSpecificAlphaAllowed": false
+  },
+  "numericStability": {
+    "allFormalPredictionsMustBeFinite": true,
+    "inverseTransformUsed": false,
+    "stablePredictionBaseRatio": {
+      "denominatorFormula": "signNonzero(base)TimesMax(abs(base),trainingFoldPositiveBaseFloor)",
+      "sourceRows": "STRICTLY_EARLIER_INNER_ORIGINS_FOR_SAME_ARM_AND_ALPHA",
+      "lowerCoreQuantile": 0.01,
+      "upperCoreQuantile": 0.99,
+      "interquartileRange": [
+        0.25,
+        0.75
+      ],
+      "lowerSafetyFenceFormula": "q01Minus1Point5TimesIqr",
+      "upperSafetyFenceFormula": "q99Plus1Point5TimesIqr",
+      "quantileMethod": "LINEAR_INTERPOLATION_N_MINUS_ONE",
+      "outerViolationPolicy": "RAW_ARM_NUMERIC_STABILITY_FAIL_SELECTED_PIPELINE_MAY_FALLBACK_C0_BUT_CANNOT_PASS"
+    },
+    "rawPredictionBaseRatioReporting": {
+      "formula": "predictionDividedByBaseWhenAbsBaseExceedsEpsilonElseNull",
+      "statistics": [
+        "p50",
+        "p90",
+        "p95",
+        "p99",
+        "max"
+      ]
+    },
+    "primaryCore90MustNotRepeatCham01ExtremeExtrapolation": true,
+    "finiteButMagnitudeUncontrolledAllowed": false,
+    "numericFailureStatus": "NUMERIC_STABILITY_FAIL",
+    "rawAndSelectedMustRemainSeparate": true
+  },
+  "innerSelection": {
+    "c2LexicographicRule": [
+      "EXCLUDE_NUMERIC_STABILITY_FAILURE",
+      "EXCLUDE_ABSOLUTE_SIGNED_BIAS_WORSE_THAN_C0_BY_MORE_THAN_0_POINT_01",
+      "EXCLUDE_H50_ABSOLUTE_ERROR_WORSE_THAN_C0",
+      "MINIMIZE_CORE80_SUM_ABSOLUTE_CASH_ERROR",
+      "TIE_BREAK_SMALLER_ALPHA"
+    ],
+    "noEligibleAlphaPolicy": "FALLBACK_TO_C0",
+    "transformedHuberIsFinalSelectionObjective": false,
+    "outerOutcomeMaySelectAlpha": false
+  },
+  "bandShrinkage": {
+    "bandAlphaCandidateSource": "SAME_ALPHA_GRID_AND_STRICTLY_EARLIER_INNER_ORIGINS",
+    "globalAnchor": "C2_SELECTED_ALPHA",
+    "minimumIndependentTimeBlocksForBandSpecificEvidence": 2,
+    "fixedMinimumWorkCountAllowed": false,
+    "supportWeight": {
+      "originFactorFormula": "clamp((independentTimeBlockCountMinus1)DividedBy3,0,1)",
+      "cashCoverageFormula": "finiteOriginVisibleBandCashDividedByTotalOriginVisibleBandCash",
+      "cashEssRatioFormula": "kishCashEssDividedByDistinctSupportedWorks",
+      "stabilityFactorFormula": "oneWhenAllCandidateRowsFiniteAndInsideSafetyFenceElseZero",
+      "combinedFormula": "minimumOfOriginFactorCashCoverageCashEssRatioAndStabilityFactor"
+    },
+    "selectionLossFormula": "supportWeightTimesBandNormalizedAbsoluteErrorPlusOneMinusSupportWeightTimesGlobalNormalizedAbsoluteError",
+    "tieBreak": "SMALLER_ALPHA",
+    "insufficientSupportPolicy": "USE_GLOBAL_C2_ALPHA",
+    "globalIneligiblePolicy": "FALLBACK_TO_C0",
+    "workSpecificFitAllowed": false
+  },
+  "evaluation": {
+    "primaryDecisionCell": "STRICT_ROLLING_CORE80_WORK_TOTAL_H3_EXACT_SAME_CASE_VS_FROZEN_LG01",
+    "sensitivityCells": [
+      "STRICT_ROLLING_CORE90_WORK_TOTAL_H3",
+      "PRIMARY_ROLLING_CORE80_WORK_TOTAL_H3_RAW_NUMERIC_DIAGNOSTIC",
+      "PRIMARY_ROLLING_CORE90_WORK_TOTAL_H3_RAW_NUMERIC_DIAGNOSTIC"
+    ],
+    "primaryWithoutLegalLg01ComparisonStatus": "NOT_COMPARABLE",
+    "metrics": [
+      "case_count",
+      "actual_cash",
+      "predicted_cash",
+      "WAPE",
+      "signed_bias",
+      "MAE",
+      "median_absolute_error",
+      "paired_FVA_vs_C0",
+      "independent_time_block_wins",
+      "cash_band_WAPE_bias_absolute_error_and_coverage",
+      "origin_visible_top20_and_top50_error",
+      "maximum_single_work_absolute_error_share",
+      "top5_and_top10_work_error_concentration",
+      "fallback_and_abstain_count",
+      "nonfinite_and_bound_trigger_count",
+      "prediction_base_ratio_distribution"
+    ],
+    "bootstrap": {
+      "iterations": 2000,
+      "seed": 20260730,
+      "clusterUnit": "standardWorkId",
+      "paired": true,
+      "confidenceLevel": 0.95,
+      "wholeWorkCluster": true
+    },
+    "independentTimeBlockRule": "GREEDY_NONOVERLAPPING_FORECAST_WINDOWS_BY_HORIZON",
+    "rawAndSelectedReportedSeparately": true,
+    "fallbackMayReplaceRawMetrics": false
+  },
+  "decisionPolicy": {
+    "confirmedDevelopmentPass": {
+      "status": "M2_LG01_HEAD_CASH_RESIDUAL_CONFIRMED_DEVELOPMENT_PASS",
+      "minimumCore80PairedFva": 0.01,
+      "bootstrapLowerBoundMustExceed": 0,
+      "minimumImprovingTimeBlockShareExclusive": 0.5,
+      "maximumAbsoluteBiasWorsening": 0.01,
+      "minimumH50AbsoluteErrorImprovement": 0.01,
+      "maximumSingleWorkErrorShareWorsening": 0.02,
+      "maximumTop10ErrorConcentrationWorsening": 0.02,
+      "numericStabilityMustPass": true,
+      "core90OppositeMaterialDegradationAllowed": false
+    },
+    "promisingUnconfirmed": {
+      "status": "M2_LG01_HEAD_CASH_RESIDUAL_PROMISING_UNCONFIRMED",
+      "minimumCore80PairedFva": 0.01,
+      "minimumImprovingTimeBlockShareExclusive": 0.5,
+      "bootstrapMayCrossZero": true,
+      "biasH50ConcentrationAndNumericGuardrailsMustPass": true,
+      "promotionAuthorized": false
+    },
+    "failureStatus": "M2_LG01_HEAD_CASH_RESIDUAL_FAIL",
+    "missingPrivateAuthorityStatus": "M2_LG01_HEAD_CASH_RESIDUAL_BLOCKED_MISSING_PRIVATE_AUTHORITY",
+    "contractBreachStatus": "M2_LG01_HEAD_CASH_RESIDUAL_INVALIDATED_CONTRACT_BREACH",
+    "rawCandidateEvidenceRequired": true,
+    "selectedFallbackMayCreatePass": false
+  },
+  "publicPrivacy": {
+    "minimumCaseCount": 30,
+    "minimumWorkCount": 20,
+    "smallCellStatus": "SUPPRESSED_PRIVACY_THRESHOLD",
+    "rowLevelWorkChannelActualPredictionOrReceiptAllowed": false
+  },
+  "execution": {
+    "singlePrivateDevelopmentEvaluationAuthorized": true,
+    "exactHeadLinuxAndWindowsCiBeforePrivateEvaluationRequired": true,
+    "firstCompleteLegalC0ThroughC3ResultFreezes": true,
+    "secondCompleteResultAllowed": false,
+    "infrastructureRepairBeforeAnyCompleteOutcomeAllowed": true,
+    "infrastructureRepairMayChangeScientificContract": false,
+    "parallelDuplicateProcessAllowed": false,
+    "runtimeRepositoryRootResolved": true,
+    "runtimeGitIdentityResolved": true,
+    "absoluteMachinePathInLongLivedArtifactAllowed": false,
+    "fixedExecutionShaInContractAllowed": false
+  },
+  "authorization": {
+    "source": "USER_INSTRUCTION_M2_LG01_HEAD_CASH_RESIDUAL_CALIBRATION_V0_1",
+    "privateSourceRead": true,
+    "derivedCacheRebuild": true,
+    "innerSelection": true,
+    "onePrivateDevelopmentEvaluation": true,
+    "publicAggregateReport": true,
+    "lg01Refit": false,
+    "cham01Refit": false,
+    "newBusinessFeature": false,
+    "sixTwelveOrThirtySixMonth": false,
+    "newWork": false,
+    "newChannel": false,
+    "channelAllocation": false,
+    "taxonomy": false,
+    "production": false,
+    "provider": false,
+    "database": false,
+    "laterOrigin": false,
+    "finalHoldout": false,
+    "canary": false,
+    "full160": false,
+    "release": false,
+    "m3Formal": false,
+    "pullRequestMerge": false
+  },
+  "privateCapability": {
+    "capabilityId": "m2-lg01-head-cash-residual",
+    "sourceAuthorityBlocking": true,
+    "derivedCacheBlocking": false,
+    "runProvenanceBlocking": false
+  },
+  "privateOutputs": {
+    "directory": "data/private-output/m2-lg01-head-cash-residual",
+    "inputRows": "M2-lg01-head-cash-residual-input-rows-private-v0.1.ndjson",
+    "predictionRows": "M2-lg01-head-cash-residual-predictions-private-v0.1.ndjson",
+    "selectionRows": "M2-lg01-head-cash-residual-selections-private-v0.1.ndjson",
+    "evaluationRows": "M2-lg01-head-cash-residual-evaluation-private-v0.1.ndjson",
+    "bootstrapRows": "M2-lg01-head-cash-residual-bootstrap-private-v0.1.ndjson",
+    "manifest": "M2-lg01-head-cash-residual-manifest-private-v0.1.json",
+    "attemptReceipt": "M2-lg01-head-cash-residual-attempt-receipt-private-v0.1.json",
+    "attemptDirectory": "attempts"
+  },
+  "publicOutputs": {
+    "cham01NumericDisclosureJson": "docs/analysis/m2-current/M2-core-legacy-horizon-amount-numeric-stability-disclosure-v0.1.json",
+    "preregistration": "docs/analysis/m2-current/M2-lg01-head-cash-residual-preregistration-v0.1.md",
+    "developmentJson": "docs/analysis/m2-current/M2-lg01-head-cash-residual-development-v0.1.json",
+    "developmentReport": "docs/analysis/m2-current/M2-lg01-head-cash-residual-development-v0.1.md"
+  }
+}
