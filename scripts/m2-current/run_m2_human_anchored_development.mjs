@@ -64,6 +64,11 @@ import {
   runM2PublishingScaleAuthorizedExecution,
   runM2PublishingScaleCommandPreflight
 } from "./publishing_scale_channel_execution.mjs";
+import {
+  prepareM2Oa03CurrentScopeRuntimeAuthorization,
+  runM2Oa03CurrentScopePrivateReplication,
+  runM2Oa03CurrentScopePublicDiagnostic
+} from "./oa03_current_scope_replication_mode.mjs";
 
 let config;
 
@@ -135,12 +140,43 @@ const coreLegacyHorizonRouterK2Mode = process.argv.includes(
 const coreLegacyHorizonRouterK3Mode = process.argv.includes(
   "--core-legacy-horizon-router-k3"
 );
+const oa03CurrentScopePublicMode = process.argv.includes(
+  "--oa03-current-scope-public"
+);
+const oa03CurrentScopePrepareMode = process.argv.includes(
+  "--oa03-current-scope-prepare"
+);
+const oa03CurrentScopePrivateMode = process.argv.includes(
+  "--oa03-current-scope-replication"
+);
 const preflightOnly = process.argv.includes("--preflight-only");
 if (preflightOnly && !publishingScaleChannelPrivateMode) {
   throw new Error("m2_publishing_scale_preflight_requires_command_mode");
 }
 if (publishingScaleChannelPrivateMode && preflightOnly) {
   await runM2PublishingScaleCommandPreflight({ root });
+  return;
+}
+if (oa03CurrentScopePublicMode) {
+  const result = await runM2Oa03CurrentScopePublicDiagnostic({
+    root,
+    verify: process.argv.includes("--verify")
+  });
+  process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+  return;
+}
+if (oa03CurrentScopePrepareMode) {
+  const result = await prepareM2Oa03CurrentScopeRuntimeAuthorization({
+    root
+  });
+  process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+  return;
+}
+if (oa03CurrentScopePrivateMode) {
+  const result = await runM2Oa03CurrentScopePrivateReplication({
+    root
+  });
+  process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
   return;
 }
 if (tsbPublicMode) {

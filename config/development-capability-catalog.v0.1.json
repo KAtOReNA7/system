@@ -505,14 +505,32 @@
           "artifactClass": "PRIVATE_DERIVED_CACHE",
           "path": "data/private-output/m2-current-quality/M2-current-occurrence-amount-candidate-cases-private-v0.3.ndjson"
         },
-        {
-          "role": "core-legacy-frozen-rescore-rows",
-          "kind": "file",
-          "artifactClass": "PRIVATE_DERIVED_CACHE",
-          "path": "data/private-output/m2-core-legacy-population/M2-core-legacy-frozen-rescore-rows-private-v0.1.ndjson"
-        },
-        {
-          "role": "oa03-current-scope-work-predictions",
+          {
+            "role": "core-legacy-frozen-rescore-rows",
+            "kind": "file",
+            "artifactClass": "PRIVATE_DERIVED_CACHE",
+            "path": "data/private-output/m2-core-legacy-population/M2-core-legacy-frozen-rescore-rows-private-v0.1.ndjson"
+          },
+          {
+            "role": "oa03-current-scope-base-materialization-input",
+            "kind": "file",
+            "artifactClass": "PRIVATE_DERIVED_CACHE",
+            "path": "data/private-output/m2-oa03-current-scope-replication/M2-oa03-current-scope-base-materialization-input-private-v0.1.ndjson"
+          },
+          {
+            "role": "oa03-current-scope-base-materialization-rows",
+            "kind": "file",
+            "artifactClass": "PRIVATE_DERIVED_CACHE",
+            "path": "data/private-output/m2-oa03-current-scope-replication/M2-oa03-current-scope-base-materialization-rows-private-v0.1.ndjson"
+          },
+          {
+            "role": "oa03-current-scope-comparator-rows",
+            "kind": "file",
+            "artifactClass": "PRIVATE_DERIVED_CACHE",
+            "path": "data/private-output/m2-oa03-current-scope-replication/M2-oa03-current-scope-comparator-rows-private-v0.1.ndjson"
+          },
+          {
+            "role": "oa03-current-scope-work-predictions",
           "kind": "file",
           "artifactClass": "PRIVATE_DERIVED_CACHE",
           "path": "data/private-output/m2-oa03-current-scope-replication/M2-oa03-current-scope-work-predictions-private-v0.1.ndjson"
@@ -523,22 +541,43 @@
           "artifactClass": "PRIVATE_DERIVED_CACHE",
           "path": "data/private-output/m2-oa03-current-scope-replication/M2-oa03-trailing12-channel-allocations-private-v0.1.ndjson"
         },
-        {
-          "role": "oa03-current-scope-evaluation",
-          "kind": "file",
-          "artifactClass": "PRIVATE_DERIVED_CACHE",
-          "path": "data/private-output/m2-oa03-current-scope-replication/M2-oa03-current-scope-evaluation-private-v0.1.ndjson"
-        },
-        {
-          "role": "oa03-current-scope-attempt-receipt",
+          {
+            "role": "oa03-current-scope-evaluation",
+            "kind": "file",
+            "artifactClass": "PRIVATE_DERIVED_CACHE",
+            "path": "data/private-output/m2-oa03-current-scope-replication/M2-oa03-current-scope-evaluation-private-v0.1.ndjson"
+          },
+          {
+            "role": "oa03-current-scope-bootstrap",
+            "kind": "file",
+            "artifactClass": "PRIVATE_DERIVED_CACHE",
+            "path": "data/private-output/m2-oa03-current-scope-replication/M2-oa03-current-scope-bootstrap-private-v0.1.ndjson"
+          },
+          {
+            "role": "oa03-current-scope-manifest",
+            "kind": "file",
+            "artifactClass": "PRIVATE_DERIVED_CACHE",
+            "path": "data/private-output/m2-oa03-current-scope-replication/M2-oa03-current-scope-manifest-private-v0.1.json"
+          },
+          {
+            "role": "oa03-current-scope-runtime-authorization",
+            "kind": "file",
+            "artifactClass": "PRIVATE_RUN_PROVENANCE",
+            "path": "data/private-output/m2-oa03-current-scope-replication/M2-oa03-current-scope-runtime-authorization-private-v0.1.json"
+          },
+          {
+            "role": "oa03-current-scope-attempt-receipt",
           "kind": "file",
           "artifactClass": "PRIVATE_RUN_PROVENANCE",
           "path": "data/private-output/m2-oa03-current-scope-replication/M2-oa03-current-scope-attempt-receipt-private-v0.1.json"
         }
       ],
-      "canonicalValidationCommands": [
-        "npm run doctor:capability -- m2-oa03-current-scope-replication"
-      ],
+        "canonicalValidationCommands": [
+          "npm run doctor:capability -- m2-oa03-current-scope-replication",
+          "npm run diagnose:m2:oa03-current-scope-replication",
+          "npm run prepare:m2:current:oa03-current-scope-replication",
+          "npm run develop:m2:current:oa03-current-scope-replication"
+        ],
       "recovery": "Restore only genuinely missing PRIVATE_SOURCE_AUTHORITY from a verified capability-scoped package. Rebuild reversal authority exports, histories, comparator rows, predictions, allocations and evaluation rows from source authority and the exact committed code. Missing caches or receipts never block, are never fabricated and do not grant execution authorization.",
       "authorization": "USER_AUTHORIZED_M2_OA03_CURRENT_SCOPE_REPLICATION_AND_TRAILING12_ALLOCATION_ONCE_AFTER_P0_P1_CI_2026_07_30"
     },

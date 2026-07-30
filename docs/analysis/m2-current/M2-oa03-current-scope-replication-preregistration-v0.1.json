@@ -265,6 +265,45 @@
       "pullRequestMergeAllowed": false
     }
   ],
+  "p1ImplementationFreeze": {
+    "status": "P1_IMPLEMENTED_AWAITING_EXACT_HEAD_CI",
+    "newExperimentOuterOutcomeRead": false,
+    "modelExecutionCount": 0,
+    "primaryScheduleRole": "ORIGINAL_OA03_SPARSE_PRIMARY_REPLICATION",
+    "strictScheduleRole": "CURRENT_STRICT_AUXILIARY_QUARTERLY_REPLICATION",
+    "canonicalJointHorizonFitPreserved": true,
+    "crossFamilyPoolingAllowed": false,
+    "crossOriginFutureLabelReadAllowed": false,
+    "baseFormula": "B4_COMMITTED_FITTED_GLOBAL_FORMULA",
+    "baseCandidate": "M2-current-hierarchical-robust-calibration-v0.2",
+    "oa03Candidate": "M2-current-occurrence-amount-calibration-v0.3",
+    "workPrimaryReference": "M2-WORK-LG01",
+    "workPrimaryReferenceFallbackAllowed": false,
+    "channelReferencePriority": [
+      "M2-WORK-LG01",
+      "M2-WORK-CRMR01"
+    ],
+    "channelReferenceFallbackAllowedWhenHigherPriorityIsNotLegallyAvailable": true,
+    "channelAllocationCanonicalAdapter": {
+      "contract": "config/m2-current-core-legacy-horizon-router.v0.1.json",
+      "implementation": "src/domain/m2Current/coreLegacyChannelAllocation.js",
+      "function": "allocateM2CoreLegacyChannelShares",
+      "armId": "C3_TRAILING_12",
+      "futureFirstAndImmatureChannels": "NULL_ABSTAIN_NOT_DENOMINATOR"
+    },
+    "privateArtifactInventoryAfterImplementation": {
+      "sourceAuthorityRoleCount": 5,
+      "derivedCacheRoleCount": 15,
+      "runProvenanceRoleCount": 2
+    },
+    "proceduralDisclosure": {
+      "status": "HISTORICAL_DERIVED_CACHE_PREVIEW_DISCLOSED",
+      "historicalRowsPrintedByOverbroadReadOnlyAuditSearch": 5,
+      "newExperimentOuterOutcomeRead": false,
+      "valuesUsedForFormulaFeatureThresholdWindowOrGate": false,
+      "p0PreregistrationAlreadyCommittedAndExactHeadCiPassed": true
+    }
+  },
   "outcomes": {
     "modelExecutionCount": 0,
     "trainingRowCount": null,

@@ -113,6 +113,69 @@ test("core legacy capability rebuilds cache but blocks only missing authority", 
   assert.equal(authorityMissing.safeToRebuildDerivedCache, false);
 });
 
+test("OA03 current-scope cache misses rebuild and optional provenance does not block", () => {
+  const cacheMiss = evaluateCapability(
+    catalog,
+    "m2-oa03-current-scope-replication",
+    {
+      repoRoot: REPO_ROOT,
+      artifactExists: (_absolutePath, artifact) => (
+        artifact.artifactClass === "PRIVATE_SOURCE_AUTHORITY"
+      ),
+      toolProbe: availableToolProbe,
+    },
+  );
+  assert.equal(cacheMiss.status, "DERIVED_CACHE_MISS_REBUILD_REQUIRED");
+  assert.equal(cacheMiss.sourceAuthorityStatus, "SOURCE_AUTHORITY_AVAILABLE");
+  assert.equal(cacheMiss.derivedCacheStatus, "CACHE_MISS_REBUILDABLE");
+  assert.equal(
+    cacheMiss.historicalReceiptStatus,
+    "OPTIONAL_PROVENANCE_MISSING",
+  );
+  assert.equal(
+    cacheMiss.privateArtifacts.filter(
+      (artifact) => artifact.artifactClass === "PRIVATE_SOURCE_AUTHORITY",
+    ).length,
+    5,
+  );
+  assert.equal(
+    cacheMiss.privateArtifacts.filter(
+      (artifact) => artifact.artifactClass === "PRIVATE_DERIVED_CACHE",
+    ).length,
+    15,
+  );
+  assert.equal(
+    cacheMiss.privateArtifacts.filter(
+      (artifact) => artifact.artifactClass === "PRIVATE_RUN_PROVENANCE",
+    ).length,
+    2,
+  );
+  assert.equal(cacheMiss.safeToRebuildDerivedCache, true);
+  assert.equal(cacheMiss.safeToStartModelAfterRebuild, true);
+
+  const provenanceMissing = evaluateCapability(
+    catalog,
+    "m2-oa03-current-scope-replication",
+    {
+      repoRoot: REPO_ROOT,
+      artifactExists: (_absolutePath, artifact) => (
+        artifact.artifactClass !== "PRIVATE_RUN_PROVENANCE"
+      ),
+      toolProbe: availableToolProbe,
+    },
+  );
+  assert.equal(
+    provenanceMissing.status,
+    "AVAILABLE_FOR_CANONICAL_VALIDATION",
+  );
+  assert.equal(provenanceMissing.derivedCacheStatus, "CACHE_READY");
+  assert.equal(
+    provenanceMissing.historicalReceiptStatus,
+    "OPTIONAL_PROVENANCE_MISSING",
+  );
+  assert.equal(provenanceMissing.safeToStartModelAfterRebuild, true);
+});
+
 test("missing publishing-scale inputs block only that audit capability", () => {
   const result = evaluateCapability(
     catalog,

@@ -6,7 +6,7 @@
     "displayNameZh": "M2 作品发生—金额校准模型 v0.3 当前范围复现与已有渠道分配验证 v0.1",
     "displayNameEn": "M2 Occurrence-Amount Calibration v0.3 Current-Scope Replication and Observed-Channel Allocation Validation v0.1",
     "entityType": "experiment",
-    "phase": "P0_PREREGISTERED",
+    "phase": "P1_IMPLEMENTED_AWAITING_EXACT_HEAD_CI",
     "outerOutcomeRead": false,
     "activeCandidate": false,
     "approvedForAutomation": false
@@ -18,7 +18,15 @@
     "originMainExactAtBranchCreation": true,
     "trackedWorktreeCleanAtBranchCreation": true,
     "openPullRequestCountAtBranchCreation": 0,
-    "trackedByteIdenticalFileGroupCount": 0
+    "trackedByteIdenticalFileGroupCount": 0,
+    "proceduralDisclosureBeforeP1Freeze": {
+      "status": "HISTORICAL_DERIVED_CACHE_PREVIEW_DISCLOSED",
+      "cause": "an overly broad read-only implementation-audit search printed five historical derived-cache rows",
+      "newExperimentOuterOutcomeRead": false,
+      "historicalRowsPrinted": 5,
+      "valuesUsedForFormulaFeatureThresholdWindowOrGate": false,
+      "p0PreregistrationAlreadyCommittedAndExactHeadCiPassed": true
+    }
   },
   "authority": {
     "modelRegistry": "config/m2-model-registry.v1.json",
@@ -102,6 +110,9 @@
   },
   "formula": {
     "baseCandidateId": "M2-current-hierarchical-robust-calibration-v0.2",
+    "baseCandidateConfig": "config/m2-current.v0.2.json",
+    "baseComparatorId": "B4_formula_switched_legacy_variant",
+    "baseComparatorConfig": "src/domain/oldProductEvaluation/calibrationSpec.v1.json",
     "eligibleSegments": [
       "dense",
       "intermittent"
@@ -130,6 +141,13 @@
     "routerAllowed": false,
     "blendAllowed": false,
     "horizonParameterCopyAllowed": false,
+    "originalJointHorizonFitSemantics": {
+      "enabled": true,
+      "meaning": "the canonical v0.2 and v0.3 functions select one segment-origin rule from all configured 3/6/12 rows available inside the same evaluation family",
+      "notParameterCopy": true,
+      "crossFamilyPoolingAllowed": false,
+      "crossOriginFutureLabelReadAllowed": false
+    },
     "nativeStoredOutputs": {
       "occurrenceProbability": true,
       "conditionalAmountScale": true,
@@ -210,6 +228,45 @@
     "innerSelectionRequiredOnlyIfOriginalFormulaRequiresIt": true,
     "fixedFormulaMustNotGainSyntheticInnerTuning": true,
     "horizonIsolationRequired": true,
+    "horizonIsolationMeaning": "separate case construction, reporting and comparison by horizon while preserving the canonical original joint 3/6/12 segment-origin fit",
+    "schedules": {
+      "PRIMARY_ROLLING": {
+        "role": "original_oa03_sparse_primary_replication",
+        "trainingAndEvaluationOrigins": [
+          "2020-12",
+          "2021-06",
+          "2021-12",
+          "2022-06",
+          "2022-12"
+        ],
+        "evaluationStartsAt": "2020-12",
+        "source": "docs/analysis/m2-current/M2-current-occurrence-amount-candidate-v0.3.json"
+      },
+      "STRICT_ROLLING": {
+        "role": "current_strict_auxiliary_as_of_replication",
+        "trainingAndEvaluationOrigins": [
+          "2021-12",
+          "2022-03",
+          "2022-06",
+          "2022-09",
+          "2022-12",
+          "2023-03",
+          "2023-06",
+          "2023-09",
+          "2023-12",
+          "2024-03",
+          "2024-06",
+          "2024-09",
+          "2024-12",
+          "2025-03",
+          "2025-06",
+          "2025-09"
+        ],
+        "evaluationStartsAt": "2023-03",
+        "source": "config/m2-current-human-anchored.v0.1.json",
+        "rightCensoredOriginHorizonPolicy": "exclude_never_zero_impute"
+      }
+    },
     "sameCaseComparabilityRequired": true,
     "comparators": [
       {
@@ -287,6 +344,10 @@
     "armId": "M2-EXP-OA03-CURRENT-SCOPE-REPLICATION-01/C1",
     "kind": "TRAILING_NONNEGATIVE_REVENUE_SHARE",
     "windowMonths": 12,
+    "canonicalContract": "config/m2-current-core-legacy-horizon-router.v0.1.json",
+    "canonicalImplementation": "src/domain/m2Current/coreLegacyChannelAllocation.js",
+    "canonicalFunction": "allocateM2CoreLegacyChannelShares",
+    "canonicalArmId": "C3_TRAILING_12",
     "windowMayBeChangedAfterOutcome": false,
     "sourceModelId": "M2-WORK-OA03",
     "sourceArmId": "M2-EXP-OA03-CURRENT-SCOPE-REPLICATION-01/R0",
@@ -306,6 +367,18 @@
       "M2-WORK-LG01",
       "M2-WORK-CRMR01"
     ],
+    "directReferencePriority": [
+      "M2-WORK-LG01",
+      "M2-WORK-CRMR01"
+    ],
+    "referencePolicy": "FIRST_LEGALLY_AVAILABLE_PREREGISTERED_DIRECT_REFERENCE_WITH_ALL_REFERENCES_REPORTED",
+    "primaryReferenceUnavailableFallbackAllowed": true,
+    "minimumRelativeWapeImprovement": 0.01,
+    "maximumAbsoluteBiasWorsening": 0.02,
+    "pairedIntervalLowerBoundRequired": 0,
+    "minimumImprovingTimeBlockShare": 0.5,
+    "minimumIndependentTimeBlocks": 2,
+    "noLegalDirectReferenceStatus": "OA03_TRAILING12_CHANNEL_ALLOCATION_NOT_EVALUABLE",
     "resultBasedWindowSelectionAllowed": false,
     "metrics": [
       "WAPE",
@@ -408,6 +481,10 @@
     "directory": "data/private-output/m2-oa03-current-scope-replication",
     "runtimeAuthorization": "M2-oa03-current-scope-runtime-authorization-private-v0.1.json",
     "attemptReceipt": "M2-oa03-current-scope-attempt-receipt-private-v0.1.json",
+    "attemptDirectory": "attempts",
+    "baseMaterializationInput": "M2-oa03-current-scope-base-materialization-input-private-v0.1.ndjson",
+    "baseMaterializationRows": "M2-oa03-current-scope-base-materialization-rows-private-v0.1.ndjson",
+    "comparatorRows": "M2-oa03-current-scope-comparator-rows-private-v0.1.ndjson",
     "manifest": "M2-oa03-current-scope-manifest-private-v0.1.json",
     "workPredictions": "M2-oa03-current-scope-work-predictions-private-v0.1.ndjson",
     "channelAllocations": "M2-oa03-trailing12-channel-allocations-private-v0.1.ndjson",

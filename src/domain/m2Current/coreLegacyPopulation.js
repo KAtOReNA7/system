@@ -421,6 +421,7 @@ export function buildCoreLegacyWorkCases({
           top20: representative.top20,
           top50: representative.top50,
           referenceRank: representative.referenceRank,
+          referenceRevenue: representative.referenceRevenue,
           revenueDecile: representative.revenueDecile,
           eligibleChannelCount: pairs.length,
           secondLevelCategoryReportingOnly:

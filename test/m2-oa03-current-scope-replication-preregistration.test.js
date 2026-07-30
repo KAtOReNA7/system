@@ -16,10 +16,13 @@ const capabilityCatalog = readJson(
 
 const experimentId = "M2-EXP-OA03-CURRENT-SCOPE-REPLICATION-01";
 
-test("OA03 P0 resolves one canonical formula without changing its identity", () => {
+test("OA03 resolves one canonical formula without changing its identity", () => {
   assert.equal(config.schema, "m2.current.oa03_replication.v0.1");
   assert.equal(config.experiment.stableExperimentId, experimentId);
-  assert.equal(config.experiment.phase, "P0_PREREGISTERED");
+  assert.equal(
+    config.experiment.phase,
+    "P1_IMPLEMENTED_AWAITING_EXACT_HEAD_CI"
+  );
   assert.equal(config.experiment.outerOutcomeRead, false);
   assert.equal(config.modelIdentity.stableModelId, "M2-WORK-OA03");
   assert.equal(
@@ -170,6 +173,14 @@ test("OA03 P0 freezes all arms before private outer outcome access", () => {
   );
   assert.equal(config.channelAllocation.windowMonths, 12);
   assert.equal(
+    config.channelAllocation.canonicalFunction,
+    "allocateM2CoreLegacyChannelShares"
+  );
+  assert.equal(
+    config.channelAllocation.canonicalArmId,
+    "C3_TRAILING_12"
+  );
+  assert.equal(
     config.channelAllocation.kind,
     "TRAILING_NONNEGATIVE_REVENUE_SHARE"
   );
@@ -292,12 +303,15 @@ test("OA03 P0 capability inventory distinguishes sources, caches and receipts", 
     (row) => row.artifactClass
   );
   assert.equal(byClass.PRIVATE_SOURCE_AUTHORITY.length, 5);
-  assert.ok(byClass.PRIVATE_DERIVED_CACHE.length >= 6);
-  assert.equal(byClass.PRIVATE_RUN_PROVENANCE.length, 1);
+  assert.equal(byClass.PRIVATE_DERIVED_CACHE.length, 15);
+  assert.equal(byClass.PRIVATE_RUN_PROVENANCE.length, 2);
   assert.deepEqual(
     capability.canonicalValidationCommands,
     [
-      "npm run doctor:capability -- m2-oa03-current-scope-replication"
+      "npm run doctor:capability -- m2-oa03-current-scope-replication",
+      "npm run diagnose:m2:oa03-current-scope-replication",
+      "npm run prepare:m2:current:oa03-current-scope-replication",
+      "npm run develop:m2:current:oa03-current-scope-replication"
     ]
   );
   assert.equal(
@@ -327,6 +341,23 @@ test("OA03 P0 capability inventory distinguishes sources, caches and receipts", 
       safeToStartModelAfterRebuild: true,
       privateContentsRead: false
     }
+  );
+  assert.deepEqual(
+    preregistration.p1ImplementationFreeze
+      .privateArtifactInventoryAfterImplementation,
+    {
+      sourceAuthorityRoleCount: 5,
+      derivedCacheRoleCount: 15,
+      runProvenanceRoleCount: 2
+    }
+  );
+  assert.equal(
+    preregistration.p1ImplementationFreeze.newExperimentOuterOutcomeRead,
+    false
+  );
+  assert.equal(
+    preregistration.p1ImplementationFreeze.modelExecutionCount,
+    0
   );
 });
 

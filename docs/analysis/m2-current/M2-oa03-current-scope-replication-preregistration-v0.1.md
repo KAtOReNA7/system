@@ -368,3 +368,45 @@ receipt、serialization 和 deterministic I/O 等基础设施问题；不得改�
 - PR merge。
 
 P0 尚未触发任何上述 private 执行能力。
+
+## P1 公开实现冻结
+
+阶段 `M2-EXP-OA03-CURRENT-SCOPE-REPLICATION-01/P1` 已把复现与分配语义固化为
+公开代码和合成测试，但仍未读取本实验的 private outer outcome，模型执行次数仍为
+0。进入 P2 前还必须由该阶段的普通提交、远端推送和 exact-head Linux/Windows CI
+共同关闭阶段门。
+
+Primary rolling 固定复现原作品发生—金额校准模型 v0.3
+（Occurrence-Amount Calibration v0.3，`M2-WORK-OA03`）的稀疏历史起点；
+Strict rolling 固定为当前辅助季度滚动起点并按 horizon 右删失。两个评价家族分别
+训练、选择和评价，不跨家族汇总训练信息，也不读取当前 origin 之后的标签。原始
+OA03 的 3/6/12 月联合 horizon 训练语义继续保留，但不会把一个 horizon 的结果复制
+给另一个 horizon。
+
+作品总额的主要直接参考固定为全局学习作品模型
+（Learned Global Work Model，`M2-WORK-LG01`）；若某个评价家族的原合同不能合法
+重建该参考，则明确记为 `NOT_RECONSTRUCTABLE`，不得用另一 horizon 或另一家族补造。
+渠道分配的合法直接参考优先级固定为 `M2-WORK-LG01`、随后为核心收入人工规则
+（Core-Revenue Manual Rule，`M2-WORK-CRMR01`）；只有更高优先级参考在相同合同下
+确实不可合法取得时，才允许使用后一项并公开标记 fallback。
+
+P1 实现后的 capability inventory 为：
+
+- 5 个不可重建的 `PRIVATE_SOURCE_AUTHORITY` role；
+- 15 个可从权威源和冻结代码重建的 `PRIVATE_DERIVED_CACHE` role；
+- 2 个可缺失且不得阻断的 `PRIVATE_RUN_PROVENANCE` role。
+
+公开实现包含运行时 Git/CI 授权、一次逻辑执行的 attempt 保留、确定性 cache
+materialization、2,000 次作品聚类配对 bootstrap，以及对既有 canonical
+`allocateM2CoreLegacyChannelShares` / `C3_TRAILING_12` 的适配调用；后者保留逐分币
+守恒，并把起点时未成熟渠道和未来首次渠道显式记录为 `null` 弃权。公共聚合不含
+private 身份、路径、receipt、digest 和逐行金额。路径、当前提交、PR 编号和 CI run
+均在运行时解析，不构成跨电脑硬编码前置条件。
+
+### 程序性披露
+
+P1 的一次过宽只读审计检索意外把 5 行历史 derived-cache 预览打印到本地命令输出。
+这些行属于既有历史缓存，不是本实验的新 outer outcome；该事件发生在 P0 已提交且
+exact-head 双平台 CI 通过之后。预览值没有用于选择公式、特征、阈值、窗口、评价门
+或实验臂。为避免任何静默遗漏，本事件同时记录在机器预注册 JSON；P1 剩余工作继续
+禁止读取 `data/**`，P2 只能在新的 exact-head 阶段门关闭后按 capability 范围读取。
