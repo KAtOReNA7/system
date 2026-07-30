@@ -2345,9 +2345,16 @@ def _fixture_self_test() -> dict[str, Any]:
 def _materialize_oa03_base_rows(
     input_path_value: str,
     output_path_value: str,
+    capability_id: str = "m2-oa03-current-scope-replication",
 ) -> dict[str, Any]:
-    input_path = _resolve_oa03_private_path(input_path_value)
-    output_path = _resolve_oa03_private_path(output_path_value)
+    input_path = _resolve_oa03_private_path(
+        input_path_value,
+        capability_id,
+    )
+    output_path = _resolve_oa03_private_path(
+        output_path_value,
+        capability_id,
+    )
     if input_path == output_path:
         raise HumanAnchoredMaterializationError(
             "OA03 base materialization input and output must differ"
@@ -2378,17 +2385,28 @@ def _materialize_oa03_base_rows(
     }
 
 
-def _resolve_oa03_private_path(value: str) -> Path:
+def _resolve_oa03_private_path(
+    value: str,
+    capability_id: str = "m2-oa03-current-scope-replication",
+) -> Path:
     raw = Path(str(value))
     if raw.is_absolute():
         raise HumanAnchoredMaterializationError(
             "OA03 materialization paths must be repository-relative"
         )
+    allowed_capability_ids = {
+        "m2-oa03-current-scope-replication",
+        "m2-core-legacy-horizon-amount",
+    }
+    if capability_id not in allowed_capability_ids:
+        raise HumanAnchoredMaterializationError(
+            "OA03 materialization capability is not allowed"
+        )
     base = (
         ROOT
         / "data"
         / "private-output"
-        / "m2-oa03-current-scope-replication"
+        / capability_id
     ).resolve()
     resolved = (ROOT / raw).resolve()
     if not resolved.is_relative_to(base):
@@ -2866,6 +2884,39 @@ def _oa03_base_materialization_self_test() -> dict[str, Any]:
         raise HumanAnchoredMaterializationError(
             "OA03 base materialization fixture failed"
         )
+    for capability_id in (
+        "m2-oa03-current-scope-replication",
+        "m2-core-legacy-horizon-amount",
+    ):
+        relative_path = (
+            f"data/private-output/{capability_id}/"
+            "synthetic-path-policy-check.ndjson"
+        )
+        resolved = _resolve_oa03_private_path(
+            relative_path,
+            capability_id,
+        )
+        expected_parent = (
+            ROOT
+            / "data"
+            / "private-output"
+            / capability_id
+        ).resolve()
+        if not resolved.is_relative_to(expected_parent):
+            raise HumanAnchoredMaterializationError(
+                "OA03 capability path policy self-test failed"
+            )
+    try:
+        _resolve_oa03_private_path(
+            "data/private-output/unrelated-capability/file.ndjson",
+            "unrelated-capability",
+        )
+    except HumanAnchoredMaterializationError:
+        pass
+    else:
+        raise HumanAnchoredMaterializationError(
+            "OA03 capability allowlist self-test failed"
+        )
     return {
         "status": "OA03_BASE_MATERIALIZATION_SELF_TEST_PASSED",
         "rowCount": len(first),
@@ -2873,6 +2924,7 @@ def _oa03_base_materialization_self_test() -> dict[str, Any]:
         "horizons": [3, 6, 12],
         "futureLabelRead": False,
         "absolutePathRequired": False,
+        "capabilityPathPolicy": True,
     }
 
 
@@ -2926,6 +2978,18 @@ if __name__ == "__main__":
         result = _materialize_oa03_base_rows(
             arguments[2],
             arguments[4],
+        )
+    elif (
+        len(arguments) == 7
+        and arguments[0] == "--oa03-base-materialize"
+        and arguments[1] == "--input"
+        and arguments[3] == "--output"
+        and arguments[5] == "--capability-id"
+    ):
+        result = _materialize_oa03_base_rows(
+            arguments[2],
+            arguments[4],
+            arguments[6],
         )
     elif arguments:
         raise HumanAnchoredMaterializationError(

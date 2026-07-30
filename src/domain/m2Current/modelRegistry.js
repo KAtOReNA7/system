@@ -663,6 +663,8 @@ function roleZh(role) {
     blocked_model_family_no_candidate_outcome: "阻断且无候选结果",
     implementation_blocked_no_candidate_outcome:
       "实现阻断且无候选结果",
+    blocked_development_model_no_candidate_outcome:
+      "开发执行阻断且无候选结果",
     archive_only_failed_model: "仅历史审计且已失败"
   }[role] ?? "登记角色";
 }

@@ -69,6 +69,12 @@ const BASE_CANDIDATE_CONFIG_PATH = "config/m2-current.v0.2.json";
 const OA03_FORMULA_CONFIG_PATH = "config/m2-current.v0.3.json";
 const IMPLEMENTATION_PATH =
   "scripts/m2-current/core_legacy_horizon_amount_mode.mjs";
+const EXECUTION_CLOSURE_JSON_PATH =
+  "docs/analysis/m2-current/"
+    + "M2-core-legacy-horizon-amount-execution-closure-v0.1.json";
+const EXECUTION_CLOSURE_REPORT_PATH =
+  "docs/analysis/m2-current/"
+    + "M2-core-legacy-horizon-amount-execution-closure-v0.1.md";
 const CAPABILITY_ID = "m2-core-legacy-horizon-amount";
 const EXPERIMENT_ID = "M2-EXP-CORE-HORIZON-AMOUNT-01";
 const MODEL_ID = "M2-WORK-CHAM01";
@@ -82,18 +88,37 @@ const POPULATIONS = Object.freeze(["CORE80", "CORE90"]);
 const HORIZONS = Object.freeze([3, 6, 12]);
 const RAW_ARMS = Object.freeze(["B1", "B2", "B3"]);
 
+export function classifyM2CoreHorizonAmountFailure({
+  predictionProduced,
+  recovery
+}) {
+  const recoveryConsumed = recovery?.status
+    === "ONE_INFRASTRUCTURE_RECOVERY_CONSUMED";
+  const retryAllowed = predictionProduced === false && !recoveryConsumed;
+  return Object.freeze({
+    retryAllowed,
+    status: predictionProduced
+      ? "FAILED_AFTER_PREDICTION_RETRY_NOT_ALLOWED"
+      : retryAllowed
+        ? "INVALIDATED_INFRASTRUCTURE_FAILURE_RETRY_ALLOWED"
+        : "INVALIDATED_INFRASTRUCTURE_FAILURE_RETRY_EXHAUSTED"
+  });
+}
+
 export async function runM2CoreLegacyHorizonAmountPublicDiagnostic({
   root,
   verify = false
 }) {
-  const [config, preregistration, source] = await Promise.all([
+  const [config, preregistration, source, executionClosure] =
+    await Promise.all([
     readJson(path.join(root, CONFIG_PATH)),
     readFile(path.join(
       root,
       "docs/analysis/m2-current/"
         + "M2-core-legacy-horizon-amount-preregistration-v0.1.md"
     ), "utf8"),
-    readFile(path.join(root, IMPLEMENTATION_PATH), "utf8")
+    readFile(path.join(root, IMPLEMENTATION_PATH), "utf8"),
+    readJsonIfPresent(path.join(root, EXECUTION_CLOSURE_JSON_PATH))
   ]);
   validateM2CoreLegacyHorizonAmountConfig(config);
   assertPreregistration(config, preregistration);
@@ -114,6 +139,10 @@ export async function runM2CoreLegacyHorizonAmountPublicDiagnostic({
     root,
     config.publicOutputs.developmentReport
   ));
+  const executionClosureReportPresent = await fileExists(path.join(
+    root,
+    EXECUTION_CLOSURE_REPORT_PATH
+  ));
   const resultCount = [k1, development].filter(Boolean).length;
   if (
     resultCount === 1
@@ -126,11 +155,35 @@ export async function runM2CoreLegacyHorizonAmountPublicDiagnostic({
     assertPublicK1(k1);
     assertPublicDevelopment(development);
   }
+  if ((executionClosure !== null) !== executionClosureReportPresent) {
+    throw new Error(
+      "m2_core_horizon_amount_execution_closure_pair_incomplete"
+    );
+  }
+  if (executionClosure !== null) {
+    assertM2CoreHorizonAmountPublicSafe(executionClosure);
+    if (
+      executionClosure.finalStatus
+        !== "M2_CORE_HORIZON_AMOUNT_PRIVATE_EXECUTION_"
+          + "INVALIDATED_RETRY_EXHAUSTED"
+      || executionClosure.execution
+        ?.infrastructureRetryExhausted !== true
+      || executionClosure.interpretation
+        ?.developmentPassOrFailOutcomeExists !== false
+    ) {
+      throw new Error(
+        "m2_core_horizon_amount_execution_closure_invalid"
+      );
+    }
+  }
   const synthetic = syntheticPublicProof(config);
   const result = Object.freeze({
-    status: k1 === null
-      ? "M2_CORE_HORIZON_AMOUNT_PUBLIC_IMPLEMENTATION_READY"
-      : "M2_CORE_HORIZON_AMOUNT_PUBLIC_RESULT_VALID",
+    status: k1 !== null
+      ? "M2_CORE_HORIZON_AMOUNT_PUBLIC_RESULT_VALID"
+      : executionClosure !== null
+        ? "M2_CORE_HORIZON_AMOUNT_PUBLIC_IMPLEMENTATION_READY_"
+          + "PRIVATE_EXECUTION_INVALIDATED_RETRY_EXHAUSTED"
+        : "M2_CORE_HORIZON_AMOUNT_PUBLIC_IMPLEMENTATION_READY",
     experimentId: EXPERIMENT_ID,
     modelId: MODEL_ID,
     originSafeFeatureProof: synthetic.originSafeFeatureProof,
@@ -139,6 +192,9 @@ export async function runM2CoreLegacyHorizonAmountPublicDiagnostic({
     deterministicBootstrap2000Proof:
       synthetic.deterministicBootstrap2000Proof,
     privateEvaluationPerformed: development !== null,
+    privateExecutionAttempted: executionClosure !== null,
+    privateExecutionClosureStatus:
+      executionClosure?.finalStatus ?? null,
     privateSourceReadByDiagnostic: false,
     developmentStatus: development?.status ?? null,
     verify
@@ -448,17 +504,18 @@ export async function runM2CoreLegacyHorizonAmountPrivateDevelopment({
       retryAllowed: false
     });
   } catch (error) {
-    const retryAllowed = predictionProduced === false;
+    const failure = classifyM2CoreHorizonAmountFailure({
+      predictionProduced,
+      recovery
+    });
     await writeJson(receiptPath, {
       ...attempt,
-      status: retryAllowed
-        ? "INVALIDATED_INFRASTRUCTURE_FAILURE_RETRY_ALLOWED"
-        : "FAILED_AFTER_PREDICTION_RETRY_NOT_ALLOWED",
+      status: failure.status,
       stage,
       errorCode: safeErrorCode(error),
       predictionProduced,
       validCompleteInterpretableResultProduced: false,
-      retryAllowed,
+      retryAllowed: failure.retryAllowed,
       failedAt: new Date().toISOString()
     });
     throw error;
@@ -560,7 +617,9 @@ async function rebuildOa03CurrentScope({
     "--input",
     repositoryRelative(root, inputPath),
     "--output",
-    repositoryRelative(root, outputPath)
+    repositoryRelative(root, outputPath),
+    "--capability-id",
+    CAPABILITY_ID
   ]);
   const receipt = lastJsonLine(command.stdout);
   if (
@@ -1736,6 +1795,12 @@ async function resolvePriorAttempt({
     || priorReceipt.status === "COMPLETE_RESULT_FROZEN"
   ) {
     throw new Error("m2_core_horizon_amount_complete_result_already_frozen");
+  }
+  if (
+    priorReceipt.recovery?.status
+      === "ONE_INFRASTRUCTURE_RECOVERY_CONSUMED"
+  ) {
+    throw new Error("m2_core_horizon_amount_retry_exhausted");
   }
   if (priorReceipt.retryAllowed !== true) {
     throw new Error("m2_core_horizon_amount_retry_not_authorized");

@@ -120,6 +120,7 @@ export async function runM2Oa03CurrentScopePublicDiagnostic({
       !== "OA03_BASE_MATERIALIZATION_SELF_TEST_PASSED"
     || pythonFixture.deterministicReplay !== true
     || pythonFixture.futureLabelRead !== false
+    || pythonFixture.capabilityPathPolicy !== true
   ) {
     throw new Error("m2_oa03_base_materialization_self_test_failed");
   }

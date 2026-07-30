@@ -21,6 +21,7 @@ import {
   validateM2CoreLegacyHorizonAmountConfig
 } from "../src/domain/m2Current/coreLegacyHorizonAmount.js";
 import {
+  classifyM2CoreHorizonAmountFailure,
   runM2CoreLegacyHorizonAmountPublicDiagnostic
 } from "../scripts/m2-current/core_legacy_horizon_amount_mode.mjs";
 
@@ -381,6 +382,41 @@ test("public contract is portable and aggregate payload guard blocks identities"
   );
 });
 
+test("one pre-prediction infrastructure recovery can never reopen twice", () => {
+  assert.deepEqual(
+    classifyM2CoreHorizonAmountFailure({
+      predictionProduced: false,
+      recovery: null
+    }),
+    {
+      retryAllowed: true,
+      status: "INVALIDATED_INFRASTRUCTURE_FAILURE_RETRY_ALLOWED"
+    }
+  );
+  assert.deepEqual(
+    classifyM2CoreHorizonAmountFailure({
+      predictionProduced: false,
+      recovery: {
+        status: "ONE_INFRASTRUCTURE_RECOVERY_CONSUMED"
+      }
+    }),
+    {
+      retryAllowed: false,
+      status: "INVALIDATED_INFRASTRUCTURE_FAILURE_RETRY_EXHAUSTED"
+    }
+  );
+  assert.deepEqual(
+    classifyM2CoreHorizonAmountFailure({
+      predictionProduced: true,
+      recovery: null
+    }),
+    {
+      retryAllowed: false,
+      status: "FAILED_AFTER_PREDICTION_RETRY_NOT_ALLOWED"
+    }
+  );
+});
+
 test("canonical dispatcher exposes public diagnostics and one restricted execution", async () => {
   const packageJson = JSON.parse(await readFile(path.join(
     root,
@@ -412,6 +448,14 @@ test("canonical dispatcher exposes public diagnostics and one restricted executi
     privateRunnerSource,
     /buildCoreLegacyWorkCases\(\{[\s\S]*?featureMonthlyRowsForOrigin,/u
   );
+  assert.match(
+    privateRunnerSource,
+    /"--capability-id",\s+CAPABILITY_ID/u
+  );
+  assert.match(
+    privateRunnerSource,
+    /m2_core_horizon_amount_retry_exhausted/u
+  );
   assert.doesNotMatch(
     privateRunnerSource,
     /\bfeatureRowsForOrigin\b/u
@@ -422,12 +466,20 @@ test("canonical dispatcher exposes public diagnostics and one restricted executi
   });
   assert.equal([
     "M2_CORE_HORIZON_AMOUNT_PUBLIC_IMPLEMENTATION_READY",
+    "M2_CORE_HORIZON_AMOUNT_PUBLIC_IMPLEMENTATION_READY_"
+      + "PRIVATE_EXECUTION_INVALIDATED_RETRY_EXHAUSTED",
     "M2_CORE_HORIZON_AMOUNT_PUBLIC_RESULT_VALID"
   ].includes(diagnostic.status), true);
   assert.equal(diagnostic.privateSourceReadByDiagnostic, false);
   assert.equal(
     diagnostic.privateEvaluationPerformed,
     diagnostic.status === "M2_CORE_HORIZON_AMOUNT_PUBLIC_RESULT_VALID"
+  );
+  assert.equal(diagnostic.privateExecutionAttempted, true);
+  assert.equal(
+    diagnostic.privateExecutionClosureStatus,
+    "M2_CORE_HORIZON_AMOUNT_PRIVATE_EXECUTION_"
+      + "INVALIDATED_RETRY_EXHAUSTED"
   );
   assert.equal(diagnostic.originSafeFeatureProof, true);
   assert.equal(diagnostic.horizonParameterIsolationProof, true);

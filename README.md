@@ -39,7 +39,7 @@
 | 当前研究比较基线是什么？ | 人工锚定可学习全局模型（Human-Anchored Learned Global，`M2-WORK-LG01`） |
 | 是否已有生产模型？ | 没有；`activeCandidate=null`，`approvedForAutomation=null` |
 | 最新渠道模型结果如何？ | 出版行业规模适配渠道核心（Publishing-Scale Channel Core，`M2-CHAN-PSC01`）已实际执行并失败，不是“尚未运行” |
-| 最新核心老品结论如何？ | OA03 同公式在当前合同下重新执行完成，但没有复现历史数值；Primary 主要参考不可重建、Strict 3/6/12 月不支持，OA03 仅保留为兼容性现行运行回退 |
+| 最新核心老品结论如何？ | OA03 仅保留为兼容性现行运行回退；新分周期金额模型的公共实现已验证，但正式执行和唯一基础设施重试均在预测前失效，3/6/12 月均未评价 |
 | 没有真实账单能否开发？ | 可以完成公开安装、构建、测试、启动、查询和合成 fixture；只会阻断所属 private capability |
 
 ## 项目状态一览
@@ -56,9 +56,10 @@
 | M2 核心老品范围与尾部测试 | 范围纠偏、冻结重评分与一次训练人口消融已完成（`M2_CORE_LEGACY_SCOPE_AND_TAIL_TEST_COMPLETE`） | 尾部干扰未确认（`TAIL_INTERFERENCE_NOT_CONFIRMED`）；核心 80% 训练稳定退化，未授权新架构 |
 | M2 核心老品全周期路由与已有渠道分配 | 预注册验证已完成（`M2_CORE_LEGACY_HORIZON_ROUTER_AND_CHANNEL_ALLOCATION_COMPLETE`） | 合法模型交集的同案例证据已补齐；滚动路由未确认（`HORIZON_ROUTER_NOT_CONFIRMED`），已有渠道分配证据混合（`CHANNEL_ALLOCATION_MIXED`） |
 | M2 OA03 当前范围复现 | 同公式重新执行完成、无新增性能支持（`M2_OA03_CURRENT_SCOPE_REPLICATION_COMPLETE_PERFORMANCE_MIXED`） | 没有复现历史数值；`PERFORMANCE_MIXED` 是机器证据状态而非业务通过；Core80 Primary 主要参考不可合法重建，Strict 3/6/12 月均不支持 |
+| M2 核心老品分周期金额模型 v0.1 | 公共实现已验证，私有执行失效且一次基础设施重试已耗尽（`M2_CORE_HORIZON_AMOUNT_PRIVATE_EXECUTION_INVALIDATED_RETRY_EXHAUSTED`） | 没有训练或预测结果；3/6/12 月均未评价，不能写成通过、部分通过或模型失败 |
 | M3 | 仅合成 fixture/prototype | 不代表真实材料执行或正式发布 |
 
-最新状态以 [M2 当前状态索引 v0.43](docs/analysis/m2-v2/M2-v2-current-state-index-v0.43.md)
+最新状态以 [M2 当前状态索引 v0.44](docs/analysis/m2-v2/M2-v2-current-state-index-v0.44.md)
 为准；模型名称、角色、别名、谱系、成绩人口和可比组以
 [Model Registry](config/m2-model-registry.v1.json) 为唯一当前机器权威。
 
@@ -133,7 +134,7 @@
 
 - [出版规模渠道开发评价](docs/analysis/m2-current/M2-current-publishing-scale-channel-development-v0.1.md)
 - [出版规模渠道可预测性诊断](docs/analysis/m2-current/M2-current-publishing-scale-channel-forecastability-v0.1.md)
-- [M2 当前状态索引 v0.43](docs/analysis/m2-v2/M2-v2-current-state-index-v0.43.md)
+- [M2 当前状态索引 v0.44](docs/analysis/m2-v2/M2-v2-current-state-index-v0.44.md)
 
 随后完成的核心老品审计进一步表明：
 
@@ -162,7 +163,7 @@
    明确预测目标、使用场景和禁止外推的边界；
 2. 再读 [M2 模型目录与成绩总账](docs/analysis/m2-current/M2-model-catalog-and-scorecard-v1.md)，
    理解模型、实验、状态码和当前角色；
-3. 最后读 [M2 当前状态索引 v0.43](docs/analysis/m2-v2/M2-v2-current-state-index-v0.43.md)，
+3. 最后读 [M2 当前状态索引 v0.44](docs/analysis/m2-v2/M2-v2-current-state-index-v0.44.md)，
    查看最新结论、阻断项和下一步。
 
 ### 给开发者
@@ -339,13 +340,14 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
 
 | 主题 | 当前入口 |
 |---|---|
-| 最新状态 | [M2 当前状态索引 v0.43](docs/analysis/m2-v2/M2-v2-current-state-index-v0.43.md) |
+| 最新状态 | [M2 当前状态索引 v0.44](docs/analysis/m2-v2/M2-v2-current-state-index-v0.44.md) |
 | 模型身份与角色 | [Model Registry](config/m2-model-registry.v1.json) · [中文模型目录](docs/analysis/m2-current/M2-model-catalog-and-scorecard-v1.md) |
 | 产品定义 | [M2 Forecast Intelligence v2 PRD](docs/prd/m2-v2/M2-forecast-intelligence-v2-prd-v0.2.md) |
 | 评价体系 | [v2.2 合同](docs/analysis/m2-current/M2-evaluation-contract-v2.2.md) · [v2.2 验证](docs/analysis/m2-current/M2-evaluation-contract-v2.2-validation.md) |
 | 出版规模渠道实验 | [开发评价](docs/analysis/m2-current/M2-current-publishing-scale-channel-development-v0.1.md) · [可预测性诊断](docs/analysis/m2-current/M2-current-publishing-scale-channel-forecastability-v0.1.md) |
 | 核心老品范围 | [范围合同](docs/analysis/m2-current/M2-core-legacy-observed-channel-scope-contract-v0.1.md) · [冻结重评分](docs/analysis/m2-current/M2-core-legacy-frozen-rescore-v0.1.md) · [尾部干扰测试](docs/analysis/m2-current/M2-core-legacy-tail-interference-test-v0.1.md) |
 | 核心老品全周期 | [同案例重评分](docs/analysis/m2-current/M2-core-legacy-full-horizon-same-case-rescore-v0.1.md) · [滚动路由](docs/analysis/m2-current/M2-core-legacy-horizon-router-v0.1.md) · [已有渠道分配](docs/analysis/m2-current/M2-core-legacy-observed-channel-allocation-v0.1.md) |
+| 核心老品分周期金额 | [预注册](docs/analysis/m2-current/M2-core-legacy-horizon-amount-preregistration-v0.1.md) · [执行闭环](docs/analysis/m2-current/M2-core-legacy-horizon-amount-execution-closure-v0.1.md) |
 | 工程与协作 | [协作规则](AGENTS.md) · [命令生命周期](config/command-lifecycle.v0.1.json) |
 
 ## 安全与贡献

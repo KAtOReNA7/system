@@ -3,7 +3,7 @@
 ## 当前权威入口
 
 - 用户首页与公共开始入口：`README.md`
-- 当前 M2 状态：`docs/analysis/m2-v2/M2-v2-current-state-index-v0.43.md`
+- 当前 M2 状态：`docs/analysis/m2-v2/M2-v2-current-state-index-v0.44.md`
 - M2 模型机器权威：`config/m2-model-registry.v1.json`
 - M2 中文目录：`docs/analysis/m2-current/M2-model-catalog-and-scorecard-v1.md`
 - M2 出版行业规模适配渠道核心结论：
@@ -27,6 +27,8 @@
 - M2 核心老品分周期金额模型：
   - `config/m2-current-core-legacy-horizon-amount.v0.1.json`
   - `docs/analysis/m2-current/M2-core-legacy-horizon-amount-preregistration-v0.1.md`
+  - `docs/analysis/m2-current/M2-core-legacy-horizon-amount-execution-closure-v0.1.json`
+  - `docs/analysis/m2-current/M2-core-legacy-horizon-amount-execution-closure-v0.1.md`
 - M2 评价体系：
   - `docs/analysis/m2-current/M2-evaluation-system-audit-v1.md`
   - `config/m2-evaluation-contract.v2.2.json`

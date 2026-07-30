@@ -72,8 +72,8 @@
     "portfolioReference": "M2-PORT-ETS01",
     "approvedForAutomation": null,
     "activeCandidate": null,
-    "blockedExperiment": null,
-    "latestStateIndex": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.43.md",
+    "blockedExperiment": "M2-EXP-CORE-HORIZON-AMOUNT-01",
+    "latestStateIndex": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.44.md",
     "roleConflict": false,
     "sourceAssertions": [
       {
@@ -143,9 +143,16 @@
         "scope": "current_dynamic_core_legacy_3_6_12_work_amount_development",
         "historicalAssertion": false,
         "currentAuthority": true
+      },
+      {
+        "source": "docs/analysis/m2-current/M2-core-legacy-horizon-amount-execution-closure-v0.1.json",
+        "assertion": "core_legacy_horizon_amount_private_execution_and_single_infrastructure_retry_invalidated_before_prediction_with_no_candidate_outcome",
+        "scope": "current_dynamic_core_legacy_3_6_12_work_amount_development",
+        "historicalAssertion": false,
+        "currentAuthority": true
       }
     ],
-    "roleInterpretationZh": "OA03 同公式在当前 Core 老品合同下重新执行完成；没有复现历史数值，因为 actual、训练支持和人口合同不同。Primary 的主要参考不可重建，因此不可评价；Strict 的 3/6/12 月全部不支持 OA03，Core90 没有改变结论。PERFORMANCE_MIXED 只是机器证据完整性状态，不是业务整体通过。作品发生—金额校准模型 v0.3（M2-WORK-OA03）仅保留为兼容性现行运行回退，不是当前开发冠军或当前范围最优模型；人工锚定可学习全局模型（M2-WORK-LG01）是当前 Core 老品 3/6/12 月金额实验的主要研究比较基线。现行路由不变，活动候选与自动化批准继续为空。",
+    "roleInterpretationZh": "OA03 同公式在当前 Core 老品合同下重新执行完成；没有复现历史数值，因为 actual、训练支持和人口合同不同。Primary 的主要参考不可重建，因此不可评价；Strict 的 3/6/12 月全部不支持 OA03，Core90 没有改变结论。PERFORMANCE_MIXED 只是机器证据完整性状态，不是业务整体通过。作品发生—金额校准模型 v0.3（M2-WORK-OA03）仅保留为兼容性现行运行回退，不是当前开发冠军或当前范围最优模型；人工锚定可学习全局模型（M2-WORK-LG01）是当前 Core 老品 3/6/12 月金额实验的主要研究比较基线。核心老品分周期金额模型 v0.1（M2-WORK-CHAM01）的正式私有执行及唯一一次基础设施重试均在形成预测前失效，因此没有模型成绩，3/6/12 月均未评价；该状态不能写成通过、部分通过或模型失败。现行路由不变，活动候选与自动化批准继续为空。",
     "activeExperiment": null
   },
   "currentEvaluationContract": {
@@ -1564,7 +1571,8 @@
         "M2-WORK-LC01",
         "M2-CHAN-SCL01",
         "M2-CHAN-GEN02",
-        "M2-WORK-HR01"
+        "M2-WORK-HR01",
+        "M2-WORK-CHAM01"
       ],
       "currentRole": "research_work_baseline",
       "coreLegacyHorizonAmountComparatorStatus": "PRIMARY_RESEARCH_COMPARATOR",
@@ -3266,6 +3274,81 @@
           "resultStatus": "HORIZON_ROUTER_NOT_CONFIRMED"
         }
       ]
+    },
+    {
+      "stableModelId": "M2-WORK-CHAM01",
+      "displayNameZh": "核心老品分周期金额模型 v0.1",
+      "displayNameEn": "Core Legacy Horizon-Specific Amount Model v0.1",
+      "legacyIds": [],
+      "legacyAliases": [
+        "core legacy horizon amount",
+        "horizon-specific amount model"
+      ],
+      "entityType": "model",
+      "capability": "WORK",
+      "target": "future_sales_share_development_modelable_cash",
+      "targetHistory": [
+        "future_sales_share_development_modelable_cash"
+      ],
+      "predictionGrain": "work_origin_horizon",
+      "horizonContract": "independently fitted 3/6/12-month cumulative amounts for origin-mature Core80 legacy works; Core90 sensitivity only",
+      "formulaSummaryZh": "按 3、6、12 个月分别拟合带 Huber 损失的可逆 signed-log1p 金额回归；三个候选臂固定为等作品权重、起点收入秩权重，以及加入同周期冻结 LG01 输入的起点收入秩权重。",
+      "formulaSummaryEn": "Independent 3/6/12-month reversible signed-log1p Huber amount regressions with equal-work, origin-revenue-rank, and frozen same-horizon LG01-input arms.",
+      "inputSummaryZh": "仅使用预测起点可见的分成收入历史、动态 Core80/Core90 标记、趋势、同比、峰值距离、历史长度和成熟已有渠道数；不使用未来 TopN、三级分类、新渠道或公司组合缺口。",
+      "codeEntrypoints": [
+        "src/domain/m2Current/coreLegacyHorizonAmount.js",
+        "scripts/m2-current/core_legacy_horizon_amount_mode.mjs",
+        "scripts/m2-current/run_m2_human_anchored_development.mjs"
+      ],
+      "configEntrypoints": [
+        "config/m2-current-core-legacy-horizon-amount.v0.1.json"
+      ],
+      "evidenceRefs": [
+        "docs/analysis/m2-current/M2-core-legacy-horizon-amount-preregistration-v0.1.md",
+        "docs/analysis/m2-current/M2-core-legacy-horizon-amount-execution-closure-v0.1.json",
+        "docs/analysis/m2-current/M2-core-legacy-horizon-amount-execution-closure-v0.1.md"
+      ],
+      "predecessorIds": [
+        "M2-WORK-LG01"
+      ],
+      "successorIds": [],
+      "currentRole": "blocked_development_model_no_candidate_outcome",
+      "evidenceStatus": "private_execution_and_single_infrastructure_retry_invalidated_before_prediction",
+      "operationalStatus": "retry_exhausted_no_training_no_prediction_no_evaluation",
+      "automationAuthorized": false,
+      "productionImported": false,
+      "finalHoldoutOpened": false,
+      "developmentWindowReuse": "no_valid_candidate_outcome_private_execution_closed_after_one_infrastructure_retry",
+      "limitationsZh": [
+        "正式私有执行和唯一一次基础设施重试均在模型训练与预测前失效",
+        "没有 B0–B3 原始候选结果、同案例指标、bootstrap 或时间块结论",
+        "3、6、12 个月均未评价，不能解释为通过、部分通过或模型失败",
+        "任何未来私有执行都需要新的用户明确授权和新的精确提交 Linux/Windows CI"
+      ],
+      "registryReviewRequired": false,
+      "evaluations": [
+        {
+          "evaluationId": "eval-cham01-private-execution-retry-exhausted",
+          "datasetVersion": "M2-core-legacy-horizon-amount-v0.1-no-valid-candidate-output",
+          "cashAuthority": "user_reviewed_sales_share_workbook_membership",
+          "populationId": "core-legacy-horizon-amount-retry-exhausted-before-candidate-prediction",
+          "comparableGroupId": "CG-CHAM01-INFRASTRUCTURE-RETRY-EXHAUSTED-NO-CANDIDATE-OUTCOME",
+          "caseCount": 0,
+          "workCount": 0,
+          "originCount": 0,
+          "horizons": [3, 6, 12],
+          "target": "future_sales_share_development_modelable_cash",
+          "grain": "work_origin_horizon",
+          "WAPE": null,
+          "signedBias": null,
+          "baselineModelId": null,
+          "relativeWape": null,
+          "materiality": 0.01,
+          "independentEvidence": false,
+          "reportRef": "docs/analysis/m2-current/M2-core-legacy-horizon-amount-execution-closure-v0.1.json",
+          "resultStatus": "M2_CORE_HORIZON_AMOUNT_PRIVATE_EXECUTION_INVALIDATED_RETRY_EXHAUSTED"
+        }
+      ]
     }
   ],
   "experiments": [
@@ -3607,6 +3690,55 @@
       ]
     },
     {
+      "experimentId": "M2-EXP-CORE-HORIZON-AMOUNT-01",
+      "displayNameZh": "核心老品分周期金额模型开发 v0.1",
+      "displayNameEn": "Core Legacy Horizon-Specific Amount Model Development v0.1",
+      "entityType": "experiment",
+      "modelIds": [
+        "M2-WORK-CHAM01",
+        "M2-WORK-LG01"
+      ],
+      "arms": [
+        {
+          "armId": "B0",
+          "displayNameZh": "冻结人工锚定可学习全局研究比较基线",
+          "modelId": "M2-WORK-LG01",
+          "executionStatus": "NOT_REBUILT_PRIVATE_EXECUTION_INVALIDATED_BEFORE_COMPARATOR_REBUILD"
+        },
+        {
+          "armId": "B1",
+          "displayNameZh": "分周期直接金额模型—等作品权重",
+          "modelId": "M2-WORK-CHAM01",
+          "executionStatus": "NOT_TRAINED_PRIVATE_EXECUTION_INVALIDATED_BEFORE_PREDICTION_RETRY_EXHAUSTED"
+        },
+        {
+          "armId": "B2",
+          "displayNameZh": "分周期直接金额模型—起点收入秩权重",
+          "modelId": "M2-WORK-CHAM01",
+          "executionStatus": "NOT_TRAINED_PRIVATE_EXECUTION_INVALIDATED_BEFORE_PREDICTION_RETRY_EXHAUSTED"
+        },
+        {
+          "armId": "B3",
+          "displayNameZh": "冻结 LG01 输入的分周期稳健金额模型",
+          "modelId": "M2-WORK-CHAM01",
+          "executionStatus": "NOT_TRAINED_PRIVATE_EXECUTION_INVALIDATED_BEFORE_PREDICTION_RETRY_EXHAUSTED"
+        }
+      ],
+      "resultStatus": "M2_CORE_HORIZON_AMOUNT_PRIVATE_EXECUTION_INVALIDATED_RETRY_EXHAUSTED",
+      "sourceAuthorityStatus": "SOURCE_AUTHORITY_AVAILABLE",
+      "candidateOutcomeProduced": false,
+      "horizonDecisions": {
+        "H3": "NOT_EVALUATED",
+        "H6": "NOT_EVALUATED",
+        "H12": "NOT_EVALUATED"
+      },
+      "evidenceRefs": [
+        "config/m2-current-core-legacy-horizon-amount.v0.1.json",
+        "docs/analysis/m2-current/M2-core-legacy-horizon-amount-preregistration-v0.1.md",
+        "docs/analysis/m2-current/M2-core-legacy-horizon-amount-execution-closure-v0.1.json"
+      ]
+    },
+    {
       "experimentId": "M2-EXP-ARCHIVE-C1-C3",
       "displayNameZh": "C1–C3 历史冻结开发活动",
       "displayNameEn": "Archived C1-C3 Development Campaign",
@@ -3693,6 +3825,7 @@
     {"identifier": "OA03_CURRENT_SCOPE_PERFORMANCE_SUPPORTED", "namespace": "M2-STATUS", "parentExperiment": "M2-EXP-OA03-CURRENT-SCOPE-REPLICATION-01", "type": "evaluation_status_code", "displayNameZh": "当前范围局部比较获得支持", "meaningZh": "仅表示具体人口、周期与参考下的预注册比较获得支持，不代表总体晋升或自动化批准。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-oa03-current-scope-replication-development-v0.1.json"},
     {"identifier": "OA03_TRAILING12_CHANNEL_ALLOCATION_MIXED", "namespace": "M2-STATUS", "parentExperiment": "M2-EXP-OA03-CURRENT-SCOPE-REPLICATION-01", "type": "allocation_status_code", "displayNameZh": "固定最近 12 月已有渠道分配证据混合", "meaningZh": "渠道分配的点估计、区间、偏差护栏或时间块方向存在冲突。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-oa03-trailing12-observed-channel-allocation-v0.1.json"},
     {"identifier": "OA03_TRAILING12_CHANNEL_ALLOCATION_NOT_SUPPORTED", "namespace": "M2-STATUS", "parentExperiment": "M2-EXP-OA03-CURRENT-SCOPE-REPLICATION-01", "type": "allocation_status_code", "displayNameZh": "固定最近 12 月已有渠道分配不支持", "meaningZh": "同案例相对参考的渠道分配改善未满足预注册门槛；精确守恒本身不等于预测性能通过。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-oa03-trailing12-observed-channel-allocation-v0.1.json"},
+    {"identifier": "M2_CORE_HORIZON_AMOUNT_PRIVATE_EXECUTION_INVALIDATED_RETRY_EXHAUSTED", "namespace": "M2-STATUS", "parentExperiment": "M2-EXP-CORE-HORIZON-AMOUNT-01", "type": "execution_status_code", "displayNameZh": "核心老品分周期金额模型私有执行失效且基础设施重试已耗尽", "meaningZh": "正式私有执行与合同允许的唯一一次基础设施重试均在训练和预测前失效；没有模型成绩，3、6、12 个月均未评价。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-core-legacy-horizon-amount-execution-closure-v0.1.json"},
     {"identifier": "AUTOMATION_BLOCKED", "namespace": "M2-BUSINESS-STATUS", "parentExperiment": null, "type": "business_status", "displayNameZh": "自动化被阻断", "meaningZh": "当前没有模型获准自动化。", "mayAppearAloneInUserReport": false, "evidenceRef": "AGENTS.md"},
     {"identifier": "CANARY_FAIL", "namespace": "M2-BUSINESS-STATUS", "parentExperiment": null, "type": "business_status", "displayNameZh": "Canary 结论失败", "meaningZh": "当前业务 gate 不允许 Canary 或发布。", "mayAppearAloneInUserReport": false, "evidenceRef": "AGENTS.md"}
   ],
@@ -3708,6 +3841,7 @@
     {"comparableGroupId": "CG-WORK-SS-OVERLAP-5203-H36", "comparisonClass": "SAME_INTERSECTION_COMPARABLE", "target": "future_sales_share_cash", "cashAuthority": "user_reviewed_sales_share_workbook_membership", "populationId": "human-anchored-exact-v03-intersection-5203c", "horizons": [36], "grain": "work_origin_horizon", "asOfContract": "same_work_fold_selection_reused_without_outer_metric_tuning", "actualDefinition": "sales_share_cash_actual_only", "evaluationFamily": "same_case_overlap_diagnostic"},
     {"comparableGroupId": "CG-G1-BLOCKED-NO-CANDIDATE-OUTCOME", "comparisonClass": "STANDALONE_ONLY", "target": "future_sales_share_development_modelable_cash", "cashAuthority": "user_reviewed_sales_share_workbook_membership", "populationId": "G1-primary-outer0-inner-eligibility-no-candidate-output", "horizons": [36], "grain": "work_origin_horizon_channel_month", "asOfContract": "primary_outer_fold_0_inner_selection_before_candidate_prediction", "actualDefinition": "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01", "evaluationFamily": "G1_inner_selection_eligibility_block"},
     {"comparableGroupId": "CG-PSC01-IMPLEMENTATION-BLOCK-NO-CANDIDATE-OUTCOME", "comparisonClass": "STANDALONE_ONLY", "target": "future_sales_share_development_modelable_cash", "cashAuthority": "user_reviewed_sales_share_workbook_membership", "populationId": "publishing-scale-private-materialization-blocked-before-candidate-fit", "horizons": [3, 6, 12, 18, 24, 36], "grain": "work_origin_horizon_channel_month", "asOfContract": "K7C_exact_head_ci_then_one_time_K7D_private_materialization_attempt", "actualDefinition": "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01", "evaluationFamily": "publishing_scale_K7D_implementation_block_before_candidate_fit"},
+    {"comparableGroupId": "CG-CHAM01-INFRASTRUCTURE-RETRY-EXHAUSTED-NO-CANDIDATE-OUTCOME", "comparisonClass": "STANDALONE_ONLY", "target": "future_sales_share_development_modelable_cash", "cashAuthority": "user_reviewed_sales_share_workbook_membership", "populationId": "core-legacy-horizon-amount-retry-exhausted-before-candidate-prediction", "horizons": [3, 6, 12], "grain": "work_origin_horizon", "asOfContract": "exact_head_linux_windows_ci_before_formal_execution_and_one_pre_prediction_infrastructure_retry", "actualDefinition": "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01", "evaluationFamily": "core_horizon_amount_infrastructure_retry_exhausted_before_candidate_prediction"},
     {"comparableGroupId": "CG-CRMR01-CORE80-ABSOLUTE-6004", "comparisonClass": "STANDALONE_ONLY", "target": "future_sales_share_development_modelable_cash", "cashAuthority": "user_reviewed_sales_share_workbook_membership", "populationId": "core-revenue-manual-core80-102w-6004c", "horizons": [3, 6, 12, 36], "grain": "work_origin_horizon", "asOfContract": "70_monthly_origins_2017_08_through_2023_05_origin_visible_features_36_month_label_maturity", "actualDefinition": "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01", "evaluationFamily": "core_revenue_manual_absolute_development"},
     {"comparableGroupId": "CG-CRMR01-CORE90-ABSOLUTE-11612", "comparisonClass": "STANDALONE_ONLY", "target": "future_sales_share_development_modelable_cash", "cashAuthority": "user_reviewed_sales_share_workbook_membership", "populationId": "core-revenue-manual-core90-194w-11612c", "horizons": [3, 6, 12, 36], "grain": "work_origin_horizon", "asOfContract": "70_monthly_origins_2017_08_through_2023_05_origin_visible_features_36_month_label_maturity", "actualDefinition": "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01", "evaluationFamily": "core_revenue_manual_absolute_development"},
     {"comparableGroupId": "CG-LRC01-CORE80-PORT-280", "comparisonClass": "STANDALONE_ONLY", "target": "future_sales_share_development_modelable_cash", "cashAuthority": "user_reviewed_sales_share_workbook_membership", "populationId": "layered-revenue-core80-70o-280c", "horizons": [3, 6, 12, 36], "grain": "portfolio_origin_horizon", "asOfContract": "70_monthly_origins_2017_08_through_2023_05_origin_visible_features_36_month_label_maturity", "actualDefinition": "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01", "evaluationFamily": "layered_revenue_composition_absolute_development"},

@@ -354,6 +354,8 @@ function roleZh(value) {
     rejected_nested_layer: "已拒绝嵌套层",
     failed_channel_development_model: "已执行失败渠道模型",
     blocked_model_family_no_candidate_outcome: "阻断且无候选结果",
+    blocked_development_model_no_candidate_outcome:
+      "开发执行阻断且无候选结果",
     archive_only_failed_model: "仅历史审计且已失败"
   }[value] ?? "登记角色";
 }

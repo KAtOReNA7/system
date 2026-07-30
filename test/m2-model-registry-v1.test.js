@@ -34,11 +34,11 @@ test("registry schema, evidence paths and immutable digests validate", () => {
     canonicalEvidenceSha256("same\r\ncontent\r\n"),
     canonicalEvidenceSha256("same\ncontent\n")
   );
-  assert.equal(validation.counts.modelCount, 31);
-  assert.equal(validation.counts.experimentCount, 18);
-  assert.equal(validation.counts.nonModelIdentifierCount, 72);
-  assert.equal(validation.counts.evaluationCount, 95);
-  assert.equal(validation.counts.comparabilityGroupCount, 56);
+  assert.equal(validation.counts.modelCount, 32);
+  assert.equal(validation.counts.experimentCount, 19);
+  assert.equal(validation.counts.nonModelIdentifierCount, 73);
+  assert.equal(validation.counts.evaluationCount, 96);
+  assert.equal(validation.counts.comparabilityGroupCount, 57);
 });
 
 test("stable model IDs and model aliases are unique", () => {
@@ -221,7 +221,7 @@ test("core legacy population test records non-confirmation without promotion", (
   );
   assert.equal(
     registry.currentRoles.latestStateIndex,
-    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.43.md"
+    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.44.md"
   );
   assert.equal(registry.currentRoles.activeCandidate, null);
   assert.equal(registry.currentRoles.approvedForAutomation, null);
@@ -474,13 +474,20 @@ test("reader catalog is a deterministic complete rendering of the registry", asy
   assert.match(catalog, /M2_PUBLISHING_SCALE_CORE_FAIL/u);
   assert.match(catalog, /CG-PSC01-V22-PRIMARY-12039-H36/u);
   assert.match(catalog, /CG-PSC01-V22-STRICT-74320/u);
+  assert.match(catalog, /M2-WORK-CHAM01/u);
+  assert.match(catalog, /M2-EXP-CORE-HORIZON-AMOUNT-01/u);
+  assert.match(
+    catalog,
+    /M2_CORE_HORIZON_AMOUNT_PRIVATE_EXECUTION_INVALIDATED_RETRY_EXHAUSTED/u
+  );
 });
 
 test("read-only query exposes scoped identities and refuses invalid ranking", () => {
   const list = runQuery("list");
   assert.equal(list.status, 0, list.stderr);
-  assert.match(list.stdout, /M2 持久模型与模型族：31 个/u);
+  assert.match(list.stdout, /M2 持久模型与模型族：32 个/u);
   assert.match(list.stdout, /M2-CHAN-GEN02/u);
+  assert.match(list.stdout, /M2-WORK-CHAM01/u);
 
   const status = runQuery("status");
   assert.equal(status.status, 0, status.stderr);
@@ -490,6 +497,18 @@ test("read-only query exposes scoped identities and refuses invalid ranking", ()
   assert.match(status.stdout, /没有复现历史数值/u);
   assert.match(status.stdout, /不是业务整体通过/u);
   assert.match(status.stdout, /M2-WORK-OA03/u);
+  assert.match(
+    status.stdout,
+    /当前阻断实验：M2-EXP-CORE-HORIZON-AMOUNT-01/u
+  );
+
+  const horizonAmount = runQuery("show", "M2-WORK-CHAM01");
+  assert.equal(horizonAmount.status, 0, horizonAmount.stderr);
+  assert.match(horizonAmount.stdout, /开发执行阻断且无候选结果/u);
+  assert.match(
+    horizonAmount.stdout,
+    /M2_CORE_HORIZON_AMOUNT_PRIVATE_EXECUTION_INVALIDATED_RETRY_EXHAUSTED/u
+  );
 
   const publishingScale = runQuery("show", "M2-CHAN-PSC01");
   assert.equal(publishingScale.status, 0, publishingScale.stderr);
