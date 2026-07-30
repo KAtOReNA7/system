@@ -20,6 +20,7 @@ import {
   LG01_HEAD_CASH_RESIDUAL_ARM_IDS,
   LG01_HEAD_CASH_RESIDUAL_EXPERIMENT_ID,
   LG01_HEAD_CASH_RESIDUAL_MODEL_ID,
+  rebuildLg01HeadCashResidualEvaluationFromFrozenCells,
   runLg01HeadCashResidualExperiment,
   validateLg01HeadCashResidualContract
 } from "../../src/domain/m2Current/lg01HeadCashResidual.js";
@@ -452,13 +453,175 @@ export async function runM2Lg01HeadCashResidualPrivateDevelopment({
   }
 }
 
+export async function recoverM2Lg01HeadCashResidualPublicReporting({
+  root
+}) {
+  const config = await readJson(path.join(root, CONFIG_PATH));
+  const validation = validateLg01HeadCashResidualContract(config);
+  if (!validation.valid) {
+    throw new Error(validation.errors.join(","));
+  }
+  const reportPreflight = verifyM2Oa03GitAndCiPreflight({
+    root,
+    allowedDirtyPaths: []
+  });
+  const privateDirectory = resolvePrivateDirectory(
+    root,
+    config.privateOutputs.directory
+  );
+  const receiptPath = path.join(
+    privateDirectory,
+    config.privateOutputs.attemptReceipt
+  );
+  const receipt = await readJson(receiptPath);
+  const privatePaths = privateOutputPaths(privateDirectory, config);
+  const manifest = await readJson(privatePaths.manifest);
+  if (
+    receipt.status
+      !== "POST_OUTCOME_INFRASTRUCTURE_FAILURE_RESULT_REMAINS_FROZEN"
+    || receipt.completeMetricsProduced !== true
+    || receipt.validCompleteInterpretableResultProduced !== true
+    || receipt.scientificWindowConsumed !== true
+    || receipt.retryAllowed !== false
+    || receipt.failureMessage !== "hcrc_public_payload_unsafe"
+    || manifest.completeResultFrozen !== true
+    || manifest.secondEvaluationAuthorized !== false
+    || manifest.executionHead !== receipt.executionHead
+    || manifest.exactHeadCiRunId !== receipt.exactHeadCiRunId
+    || !FINAL_STATUSES.includes(manifest.resultStatus)
+  ) {
+    throw new Error("hcrc_public_report_recovery_boundary_invalid");
+  }
+  const inputCachePath = path.join(
+    privateDirectory,
+    config.privateOutputs.inputRows
+  );
+  const bindings = await verifyFrozenPrivateBindings({
+    manifest,
+    paths: {
+      inputRows: inputCachePath,
+      predictions: privatePaths.predictions,
+      selections: privatePaths.selections,
+      evaluation: privatePaths.evaluation,
+      bootstrap: privatePaths.bootstrap
+    }
+  });
+  const [cells, selections] = await Promise.all([
+    readNdjson(privatePaths.evaluation),
+    readNdjson(privatePaths.selections)
+  ]);
+  const evaluation =
+    rebuildLg01HeadCashResidualEvaluationFromFrozenCells(
+      cells,
+      config
+    );
+  if (evaluation.decision.status !== manifest.resultStatus) {
+    throw new Error("hcrc_public_report_recovery_status_mismatch");
+  }
+  const evaluationPreflight = {
+    ...reportPreflight,
+    head: receipt.executionHead,
+    upstream: receipt.executionHead,
+    ciRunId: receipt.exactHeadCiRunId,
+    ciUrl:
+      `https://github.com/KAtOReNA7/system/actions/runs/${
+        receipt.exactHeadCiRunId
+      }`,
+    linux: "success",
+    windows: "success",
+    dirtyTaskImplementationPaths: []
+  };
+  const development = buildPublicDevelopment({
+    preflight: evaluationPreflight,
+    inventoryBefore: {
+      sourceAuthorityStatus: receipt.sourceAuthorityStatus,
+      derivedCacheStatus: receipt.derivedCacheStatusBefore,
+      historicalReceiptStatus: receipt.historicalReceiptStatusBefore
+    },
+    cached: {
+      cacheStatus: "CACHE_MISS_REBUILT_AND_FROZEN",
+      inputRows: { length: bindings.inputRows.rowCount }
+    },
+    reconstruction: {
+      reconciliation: {
+        status: manifest.frozenInputReconciliation,
+        exact: true,
+        frozenPublicArtifactModified: false,
+        newCham01ScientificEvaluationPerformed: false
+      },
+      sourceAuthority: {
+        rowCount: null,
+        workCount: null
+      }
+    },
+    outcome: {
+      predictions: { length: bindings.predictions.rowCount },
+      selections,
+      evaluation
+    },
+    manifest,
+    reportRecoveryEvidence: {
+      status: "POST_OUTCOME_PUBLIC_REPORT_RECOVERED_NO_REEVALUATION",
+      recoveryHead: reportPreflight.head,
+      exactHeadCiRunId: reportPreflight.ciRunId,
+      linux: reportPreflight.linux,
+      windows: reportPreflight.windows,
+      privateBindingsVerified: true,
+      modelOrBootstrapRerun: false
+    }
+  });
+  assertPublicDevelopment(development);
+  await Promise.all([
+    writeJsonAtomic(
+      path.join(root, config.publicOutputs.developmentJson),
+      development
+    ),
+    writeFileAtomic(
+      path.join(root, config.publicOutputs.developmentReport),
+      renderDevelopmentReport(development)
+    )
+  ]);
+  await writeJsonAtomic(receiptPath, {
+    ...receipt,
+    status: "COMPLETE_RESULT_FROZEN",
+    stage: "POST_OUTCOME_PUBLIC_REPORT_RECOVERY_COMPLETE",
+    resultStatus: manifest.resultStatus,
+    inputCaseCount: bindings.inputRows.rowCount,
+    predictionRowsProduced: bindings.predictions.rowCount,
+    selectionRowsProduced: bindings.selections.rowCount,
+    evaluationCellsProduced: bindings.evaluation.rowCount,
+    publicReportingRecovered: true,
+    postOutcomeInfrastructureFailureRecorded: true,
+    reportRecoveryHead: reportPreflight.head,
+    reportRecoveryCiRunId: reportPreflight.ciRunId,
+    retryAllowed: false,
+    secondEvaluationAuthorized: false
+  });
+  return Object.freeze({
+    schema:
+      "m2.current.lg01_head_cash_residual.public_report_recovery.v0.1",
+    experimentId: LG01_HEAD_CASH_RESIDUAL_EXPERIMENT_ID,
+    modelId: LG01_HEAD_CASH_RESIDUAL_MODEL_ID,
+    status: manifest.resultStatus,
+    recoveryStatus:
+      "POST_OUTCOME_PUBLIC_REPORT_RECOVERED_NO_REEVALUATION",
+    evaluationHead: receipt.executionHead,
+    reportRecoveryHead: reportPreflight.head,
+    privateBindingsVerified: true,
+    modelOrBootstrapRerun: false,
+    activeCandidate: null,
+    approvedForAutomation: null
+  });
+}
+
 function buildPublicDevelopment({
   preflight,
   inventoryBefore,
   cached,
   reconstruction,
   outcome,
-  manifest
+  manifest,
+  reportRecoveryEvidence = null
 }) {
   const result = {
     schema:
@@ -479,6 +642,7 @@ function buildPublicDevelopment({
       draftPrNumber: preflight.prNumber,
       draftPrUrl: preflight.prUrl
     },
+    reportRecoveryEvidence,
     sourceAndCache: {
       sourceAuthorityStatus: inventoryBefore.sourceAuthorityStatus,
       derivedCacheStatusBefore: inventoryBefore.derivedCacheStatus,
@@ -721,6 +885,13 @@ function renderDevelopmentReport(value) {
     `- 冻结输入缓存：\`${value.sourceAndCache.inputCacheStatus}\`；`
       + `冻结 B3 三个月公开聚合核对：`
       + `\`${value.sourceAndCache.frozenInputReconciliation.status}\`。`,
+    ...(value.reportRecoveryEvidence === null ? [] : [
+      "- 首个完整结果已先写入冻结私有 manifest；公开报告随后因 bootstrap "
+        + "方法元数据误触防泄漏守卫而中止。当前报告只从逐文件摘要核验通过的"
+        + "冻结聚合与选择行恢复"
+        + `（\`${value.reportRecoveryEvidence.status}\`），`
+        + "没有重新运行模型或 bootstrap。"
+    ]),
     "- 行级作品、actual、预测、选择、bootstrap 和运行收据只写入 Git ignored "
       + "capability 目录；公开报告只含达到合同要求的聚合。",
     "- 未执行 6/12/36 个月新候选、新作品、未来首次渠道、渠道分配、taxonomy、"
@@ -903,6 +1074,34 @@ async function buildManifest({
       reconstruction.reconciliation.status,
     files
   };
+}
+
+async function verifyFrozenPrivateBindings({ manifest, paths }) {
+  const expectedRoles = Object.keys(paths).sort();
+  const manifestRoles = manifest.files.map((item) => item.role).sort();
+  if (JSON.stringify(expectedRoles) !== JSON.stringify(manifestRoles)) {
+    throw new Error("hcrc_frozen_manifest_roles_invalid");
+  }
+  const result = {};
+  for (const item of manifest.files) {
+    const filePath = paths[item.role];
+    const details = await stat(filePath);
+    const digest = await sha256File(filePath);
+    if (
+      details.size !== item.byteCount
+      || digest !== item.sha256
+    ) {
+      throw new Error(
+        `hcrc_frozen_private_binding_mismatch:${item.role}`
+      );
+    }
+    result[item.role] = Object.freeze({
+      byteCount: details.size,
+      sha256: digest,
+      rowCount: await countNdjsonRows(filePath)
+    });
+  }
+  return Object.freeze(result);
 }
 
 function privateOutputPaths(privateDirectory, config) {
@@ -1115,6 +1314,11 @@ async function readTextIfPresent(filePath) {
 async function readNdjson(filePath) {
   const value = await readFile(filePath, "utf8");
   return value.split(/\r?\n/u).filter(Boolean).map(JSON.parse);
+}
+
+async function countNdjsonRows(filePath) {
+  const value = await readFile(filePath, "utf8");
+  return value.split(/\r?\n/u).filter(Boolean).length;
 }
 
 async function writeNdjsonAtomic(filePath, rows) {

@@ -372,12 +372,11 @@ export function quantileLinear(values, probability) {
 }
 
 export function assertM2Lg01HeadCashResidualPublicSafe(value) {
+  if (containsForbiddenPublicIdentityKey(value)) {
+    fail("hcrc_public_payload_unsafe");
+  }
   const serialized = JSON.stringify(value);
   for (const pattern of [
-    /standardWorkId/iu,
-    /channelUid/iu,
-    /workTitle/iu,
-    /authorName/iu,
     /data[\\/]+private-(?:input|output)/iu,
     /[A-Z]:[\\/]/u,
     /(?:^|[\\/])Users[\\/]/u
@@ -387,6 +386,64 @@ export function assertM2Lg01HeadCashResidualPublicSafe(value) {
     }
   }
   return true;
+}
+
+export function rebuildLg01HeadCashResidualEvaluationFromFrozenCells(
+  cells,
+  config
+) {
+  const validation = validateLg01HeadCashResidualContract(config);
+  if (!validation.valid) {
+    fail(validation.errors.join(","));
+  }
+  if (!Array.isArray(cells) || cells.length !== 16) {
+    fail("hcrc_frozen_evaluation_cells_invalid");
+  }
+  const expected = new Set();
+  for (const evaluationFamily of [
+    "PRIMARY_ROLLING",
+    "STRICT_ROLLING"
+  ]) {
+    for (const populationId of ["CORE80", "CORE90"]) {
+      for (const armId of LG01_HEAD_CASH_RESIDUAL_ARM_IDS) {
+        expected.add([
+          evaluationFamily,
+          populationId,
+          armId
+        ].join("\u0000"));
+      }
+    }
+  }
+  const actual = new Set(cells.map((cell) => {
+    if (
+      cell?.horizonMonths !== 3
+      || !["PRIMARY_ROLLING", "STRICT_ROLLING"].includes(
+        cell?.evaluationFamily
+      )
+      || !["CORE80", "CORE90"].includes(cell?.populationId)
+      || !LG01_HEAD_CASH_RESIDUAL_ARM_IDS.includes(cell?.armId)
+      || typeof cell?.raw !== "object"
+      || typeof cell?.selected !== "object"
+    ) {
+      fail("hcrc_frozen_evaluation_cell_invalid");
+    }
+    return [
+      cell.evaluationFamily,
+      cell.populationId,
+      cell.armId
+    ].join("\u0000");
+  }));
+  if (
+    actual.size !== expected.size
+    || [...expected].some((key) => !actual.has(key))
+  ) {
+    fail("hcrc_frozen_evaluation_cells_incomplete");
+  }
+  const frozenCells = Object.freeze(cells.map(Object.freeze));
+  return Object.freeze({
+    cells: frozenCells,
+    decision: decideCandidate(frozenCells, config)
+  });
 }
 
 function normalizeInputRows(inputRows) {
@@ -1681,4 +1738,21 @@ function nonempty(value, name) {
 
 function fail(message) {
   throw new Error(message);
+}
+
+function containsForbiddenPublicIdentityKey(value) {
+  if (value === null || typeof value !== "object") return false;
+  if (Array.isArray(value)) {
+    return value.some(containsForbiddenPublicIdentityKey);
+  }
+  const forbidden = new Set([
+    "standardWorkId",
+    "channelUid",
+    "workTitle",
+    "authorName"
+  ]);
+  return Object.entries(value).some(([key, item]) => (
+    forbidden.has(key)
+    || containsForbiddenPublicIdentityKey(item)
+  ));
 }

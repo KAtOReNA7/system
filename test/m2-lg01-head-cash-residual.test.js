@@ -14,6 +14,7 @@ import {
   assignLg01HeadCashBands,
   buildResidualBoundState,
   quantileLinear,
+  rebuildLg01HeadCashResidualEvaluationFromFrozenCells,
   runLg01HeadCashResidualExperiment
 } from "../src/domain/m2Current/lg01HeadCashResidual.js";
 import {
@@ -225,10 +226,42 @@ test("public guard rejects private work identities and machine paths", () => {
   assert.equal(
     assertM2Lg01HeadCashResidualPublicSafe({
       caseCount: 80,
-      workCount: 30
+      workCount: 30,
+      bootstrap: {
+        method: "whole-work cluster keyed by standardWorkId"
+      }
     }),
     true
   );
+});
+
+test("frozen failure cells reproduce the decision without model rerun", () => {
+  const rows = buildRows().filter(
+    (row) => row.origin <= "2022-04"
+  ).flatMap((row) => (
+    ["PRIMARY_ROLLING", "STRICT_ROLLING"].flatMap(
+      (evaluationFamily) => ["CORE80", "CORE90"].map(
+        (populationId) => ({
+          ...row,
+          evaluationFamily,
+          populationId
+        })
+      )
+    )
+  ));
+  const outcome = runLg01HeadCashResidualExperiment(
+    rows,
+    config
+  );
+  const rebuilt =
+    rebuildLg01HeadCashResidualEvaluationFromFrozenCells(
+      JSON.parse(JSON.stringify(outcome.evaluation.cells)),
+      config
+    );
+
+  assert.deepEqual(rebuilt, JSON.parse(JSON.stringify(
+    outcome.evaluation
+  )));
 });
 
 test("canonical dispatcher, lifecycle and dual-platform CI expose K1 gates", async () => {
@@ -258,6 +291,12 @@ test("canonical dispatcher, lifecycle and dual-platform CI expose K1 gates", asy
     packageJson.scripts["develop:m2:current:lg01-head-cash-residual"],
     /--lg01-head-cash-residual$/u
   );
+  assert.match(
+    packageJson.scripts[
+      "recover:m2:current:lg01-head-cash-residual-report"
+    ],
+    /--lg01-head-cash-residual-report-recovery$/u
+  );
   assert.ok(lifecycle.currentPublicCommands.includes(
     "diagnose:m2:lg01-head-cash-residual"
   ));
@@ -266,6 +305,10 @@ test("canonical dispatcher, lifecycle and dual-platform CI expose K1 gates", asy
   ));
   assert.match(dispatcher, /--lg01-head-cash-residual-public/u);
   assert.match(dispatcher, /--lg01-head-cash-residual-synthetic/u);
+  assert.match(
+    dispatcher,
+    /--lg01-head-cash-residual-report-recovery/u
+  );
   assert.equal(
     workflow.match(
       /npm run smoke:m2:current:lg01-head-cash-residual/gu
