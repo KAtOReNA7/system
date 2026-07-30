@@ -41,6 +41,7 @@
     "diagnose:m2:core-legacy-horizon-router",
     "diagnose:m2:oa03-current-scope-replication",
     "diagnose:m2:core-legacy-horizon-amount",
+    "smoke:m2:current:core-legacy-horizon-amount-recovery",
     "diagnose:m2:later-origin-readiness",
     "verify:m2:signal-input",
     "verify:m2:channel-governance",

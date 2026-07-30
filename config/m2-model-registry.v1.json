@@ -72,8 +72,8 @@
     "portfolioReference": "M2-PORT-ETS01",
     "approvedForAutomation": null,
     "activeCandidate": null,
-    "blockedExperiment": "M2-EXP-CORE-HORIZON-AMOUNT-01",
-    "latestStateIndex": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.44.md",
+    "blockedExperiment": null,
+    "latestStateIndex": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.45.md",
     "roleConflict": false,
     "sourceAssertions": [
       {
@@ -148,12 +148,20 @@
         "source": "docs/analysis/m2-current/M2-core-legacy-horizon-amount-execution-closure-v0.1.json",
         "assertion": "core_legacy_horizon_amount_private_execution_and_single_infrastructure_retry_invalidated_before_prediction_with_no_candidate_outcome",
         "scope": "current_dynamic_core_legacy_3_6_12_work_amount_development",
+        "historicalAssertion": true,
+        "currentAuthority": false,
+        "supersededBy": "docs/analysis/m2-current/M2-core-legacy-horizon-amount-recovery-readiness-v0.1.json"
+      },
+      {
+        "source": "docs/analysis/m2-current/M2-core-legacy-horizon-amount-recovery-readiness-v0.1.json",
+        "assertion": "fixed_retry_count_superseded_for_current_recovery_and_formal_chain_synthetic_R0_passed_without_private_outcome",
+        "scope": "current_dynamic_core_legacy_3_6_12_work_amount_recovery",
         "historicalAssertion": false,
         "currentAuthority": true
       }
     ],
-    "roleInterpretationZh": "OA03 同公式在当前 Core 老品合同下重新执行完成；没有复现历史数值，因为 actual、训练支持和人口合同不同。Primary 的主要参考不可重建，因此不可评价；Strict 的 3/6/12 月全部不支持 OA03，Core90 没有改变结论。PERFORMANCE_MIXED 只是机器证据完整性状态，不是业务整体通过。作品发生—金额校准模型 v0.3（M2-WORK-OA03）仅保留为兼容性现行运行回退，不是当前开发冠军或当前范围最优模型；人工锚定可学习全局模型（M2-WORK-LG01）是当前 Core 老品 3/6/12 月金额实验的主要研究比较基线。核心老品分周期金额模型 v0.1（M2-WORK-CHAM01）的正式私有执行及唯一一次基础设施重试均在形成预测前失效，因此没有模型成绩，3/6/12 月均未评价；该状态不能写成通过、部分通过或模型失败。现行路由不变，活动候选与自动化批准继续为空。",
-    "activeExperiment": null
+    "roleInterpretationZh": "OA03 同公式在当前 Core 老品合同下重新执行完成；没有复现历史数值，因为 actual、训练支持和人口合同不同。PERFORMANCE_MIXED 只是机器证据完整性状态，不是业务整体通过。作品发生—金额校准模型 v0.3（M2-WORK-OA03）继续只是兼容性现行运行回退；人工锚定可学习全局模型（M2-WORK-LG01）继续是 Core 老品 3/6/12 月金额实验的主要研究比较基线。核心老品分周期金额模型 v0.1（M2-WORK-CHAM01）已按新恢复授权通过同正式链路的合成 R0，但尚未执行真实私有训练或评价，因此仍无 3/6/12 月模型成绩。历史固定重试耗尽记录保留为历史审计，不再是本次恢复执行权威。现行路由不变，活动候选与自动化批准继续为空。",
+    "activeExperiment": "M2-EXP-CORE-HORIZON-AMOUNT-01"
   },
   "currentEvaluationContract": {
     "version": "2.2",
@@ -3301,29 +3309,33 @@
         "scripts/m2-current/run_m2_human_anchored_development.mjs"
       ],
       "configEntrypoints": [
-        "config/m2-current-core-legacy-horizon-amount.v0.1.json"
+        "config/m2-current-core-legacy-horizon-amount.v0.1.json",
+        "config/m2-current-core-legacy-horizon-amount-recovery.v0.1.json"
       ],
       "evidenceRefs": [
         "docs/analysis/m2-current/M2-core-legacy-horizon-amount-preregistration-v0.1.md",
         "docs/analysis/m2-current/M2-core-legacy-horizon-amount-execution-closure-v0.1.json",
-        "docs/analysis/m2-current/M2-core-legacy-horizon-amount-execution-closure-v0.1.md"
+        "docs/analysis/m2-current/M2-core-legacy-horizon-amount-execution-closure-v0.1.md",
+        "docs/analysis/m2-current/M2-core-legacy-horizon-amount-recovery-readiness-v0.1.json",
+        "docs/analysis/m2-current/M2-core-legacy-horizon-amount-recovery-readiness-v0.1.md"
       ],
       "predecessorIds": [
         "M2-WORK-LG01"
       ],
       "successorIds": [],
-      "currentRole": "blocked_development_model_no_candidate_outcome",
-      "evidenceStatus": "private_execution_and_single_infrastructure_retry_invalidated_before_prediction",
-      "operationalStatus": "retry_exhausted_no_training_no_prediction_no_evaluation",
+      "currentRole": "development_model_recovery_ready_no_private_outcome",
+      "evidenceStatus": "formal_chain_synthetic_R0_pass_awaiting_exact_head_ci",
+      "operationalStatus": "recovery_authorized_until_first_valid_complete_outcome_no_private_result_yet",
       "automationAuthorized": false,
       "productionImported": false,
       "finalHoldoutOpened": false,
-      "developmentWindowReuse": "no_valid_candidate_outcome_private_execution_closed_after_one_infrastructure_retry",
+      "developmentWindowReuse": "first_valid_complete_outcome_boundary_not_yet_reached",
       "limitationsZh": [
-        "正式私有执行和唯一一次基础设施重试均在模型训练与预测前失效",
+        "历史两次私有尝试均在模型训练与预测前失效，记录继续作为历史审计保留",
+        "同正式链路的合成 R0 已通过，但不构成私有模型成绩",
         "没有 B0–B3 原始候选结果、同案例指标、bootstrap 或时间块结论",
         "3、6、12 个月均未评价，不能解释为通过、部分通过或模型失败",
-        "任何未来私有执行都需要新的用户明确授权和新的精确提交 Linux/Windows CI"
+        "私有恢复必须先绑定新的精确提交 Linux/Windows CI，并在首个完整结果形成时停止"
       ],
       "registryReviewRequired": false,
       "evaluations": [
@@ -3703,28 +3715,28 @@
           "armId": "B0",
           "displayNameZh": "冻结人工锚定可学习全局研究比较基线",
           "modelId": "M2-WORK-LG01",
-          "executionStatus": "NOT_REBUILT_PRIVATE_EXECUTION_INVALIDATED_BEFORE_COMPARATOR_REBUILD"
+          "executionStatus": "SYNTHETIC_R0_VERIFIED_PRIVATE_RESULT_NOT_EXECUTED"
         },
         {
           "armId": "B1",
           "displayNameZh": "分周期直接金额模型—等作品权重",
           "modelId": "M2-WORK-CHAM01",
-          "executionStatus": "NOT_TRAINED_PRIVATE_EXECUTION_INVALIDATED_BEFORE_PREDICTION_RETRY_EXHAUSTED"
+          "executionStatus": "SYNTHETIC_R0_VERIFIED_PRIVATE_RESULT_NOT_EXECUTED"
         },
         {
           "armId": "B2",
           "displayNameZh": "分周期直接金额模型—起点收入秩权重",
           "modelId": "M2-WORK-CHAM01",
-          "executionStatus": "NOT_TRAINED_PRIVATE_EXECUTION_INVALIDATED_BEFORE_PREDICTION_RETRY_EXHAUSTED"
+          "executionStatus": "SYNTHETIC_R0_VERIFIED_PRIVATE_RESULT_NOT_EXECUTED"
         },
         {
           "armId": "B3",
           "displayNameZh": "冻结 LG01 输入的分周期稳健金额模型",
           "modelId": "M2-WORK-CHAM01",
-          "executionStatus": "NOT_TRAINED_PRIVATE_EXECUTION_INVALIDATED_BEFORE_PREDICTION_RETRY_EXHAUSTED"
+          "executionStatus": "SYNTHETIC_R0_VERIFIED_PRIVATE_RESULT_NOT_EXECUTED"
         }
       ],
-      "resultStatus": "M2_CORE_HORIZON_AMOUNT_PRIVATE_EXECUTION_INVALIDATED_RETRY_EXHAUSTED",
+      "resultStatus": "M2_CHAM01_RECOVERY_READY_R0_FORMAL_CHAIN_PASS",
       "sourceAuthorityStatus": "SOURCE_AUTHORITY_AVAILABLE",
       "candidateOutcomeProduced": false,
       "horizonDecisions": {
@@ -3734,8 +3746,10 @@
       },
       "evidenceRefs": [
         "config/m2-current-core-legacy-horizon-amount.v0.1.json",
+        "config/m2-current-core-legacy-horizon-amount-recovery.v0.1.json",
         "docs/analysis/m2-current/M2-core-legacy-horizon-amount-preregistration-v0.1.md",
-        "docs/analysis/m2-current/M2-core-legacy-horizon-amount-execution-closure-v0.1.json"
+        "docs/analysis/m2-current/M2-core-legacy-horizon-amount-execution-closure-v0.1.json",
+        "docs/analysis/m2-current/M2-core-legacy-horizon-amount-recovery-readiness-v0.1.json"
       ]
     },
     {
@@ -3826,6 +3840,7 @@
     {"identifier": "OA03_TRAILING12_CHANNEL_ALLOCATION_MIXED", "namespace": "M2-STATUS", "parentExperiment": "M2-EXP-OA03-CURRENT-SCOPE-REPLICATION-01", "type": "allocation_status_code", "displayNameZh": "固定最近 12 月已有渠道分配证据混合", "meaningZh": "渠道分配的点估计、区间、偏差护栏或时间块方向存在冲突。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-oa03-trailing12-observed-channel-allocation-v0.1.json"},
     {"identifier": "OA03_TRAILING12_CHANNEL_ALLOCATION_NOT_SUPPORTED", "namespace": "M2-STATUS", "parentExperiment": "M2-EXP-OA03-CURRENT-SCOPE-REPLICATION-01", "type": "allocation_status_code", "displayNameZh": "固定最近 12 月已有渠道分配不支持", "meaningZh": "同案例相对参考的渠道分配改善未满足预注册门槛；精确守恒本身不等于预测性能通过。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-oa03-trailing12-observed-channel-allocation-v0.1.json"},
     {"identifier": "M2_CORE_HORIZON_AMOUNT_PRIVATE_EXECUTION_INVALIDATED_RETRY_EXHAUSTED", "namespace": "M2-STATUS", "parentExperiment": "M2-EXP-CORE-HORIZON-AMOUNT-01", "type": "execution_status_code", "displayNameZh": "核心老品分周期金额模型私有执行失效且基础设施重试已耗尽", "meaningZh": "正式私有执行与合同允许的唯一一次基础设施重试均在训练和预测前失效；没有模型成绩，3、6、12 个月均未评价。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-core-legacy-horizon-amount-execution-closure-v0.1.json"},
+    {"identifier": "M2_CHAM01_RECOVERY_READY_R0_FORMAL_CHAIN_PASS", "namespace": "M2-STATUS", "parentExperiment": "M2-EXP-CORE-HORIZON-AMOUNT-01", "type": "recovery_readiness_status_code", "displayNameZh": "核心老品分周期金额模型正式链路合成恢复验证通过", "meaningZh": "同正式入口的合成 R0 已闭合，未读取私有源且未形成真实模型成绩；仍需完整公共门禁与精确提交双平台 CI。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-core-legacy-horizon-amount-recovery-readiness-v0.1.json"},
     {"identifier": "AUTOMATION_BLOCKED", "namespace": "M2-BUSINESS-STATUS", "parentExperiment": null, "type": "business_status", "displayNameZh": "自动化被阻断", "meaningZh": "当前没有模型获准自动化。", "mayAppearAloneInUserReport": false, "evidenceRef": "AGENTS.md"},
     {"identifier": "CANARY_FAIL", "namespace": "M2-BUSINESS-STATUS", "parentExperiment": null, "type": "business_status", "displayNameZh": "Canary 结论失败", "meaningZh": "当前业务 gate 不允许 Canary 或发布。", "mayAppearAloneInUserReport": false, "evidenceRef": "AGENTS.md"}
   ],

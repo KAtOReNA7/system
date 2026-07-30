@@ -22,7 +22,8 @@ import {
 } from "../src/domain/m2Current/coreLegacyHorizonAmount.js";
 import {
   classifyM2CoreHorizonAmountFailure,
-  runM2CoreLegacyHorizonAmountPublicDiagnostic
+  runM2CoreLegacyHorizonAmountPublicDiagnostic,
+  validateM2CoreHorizonAmountRecoveryPolicy
 } from "../scripts/m2-current/core_legacy_horizon_amount_mode.mjs";
 
 const root = path.resolve(import.meta.dirname, "..");
@@ -30,6 +31,11 @@ const config = JSON.parse(await readFile(path.join(
   root,
   "config",
   "m2-current-core-legacy-horizon-amount.v0.1.json"
+), "utf8"));
+const recoveryPolicy = JSON.parse(await readFile(path.join(
+  root,
+  "config",
+  "m2-current-core-legacy-horizon-amount-recovery.v0.1.json"
 ), "utf8"));
 
 test("CHAM01 preregistration freezes scope, B0-B3 and no promotion", () => {
@@ -382,42 +388,72 @@ test("public contract is portable and aggregate payload guard blocks identities"
   );
 });
 
-test("one pre-prediction infrastructure recovery can never reopen twice", () => {
+test("pre-outcome infrastructure failures do not consume the science window", () => {
   assert.deepEqual(
     classifyM2CoreHorizonAmountFailure({
-      predictionProduced: false,
-      recovery: null
+      failureClass: "WIRING",
+      completeMetricsProduced: false
     }),
     {
       retryAllowed: true,
-      status: "INVALIDATED_INFRASTRUCTURE_FAILURE_RETRY_ALLOWED"
+      status:
+        "INVALIDATED_PRE_OUTCOME_INFRASTRUCTURE_FAILURE_RECOVERY_ALLOWED"
     }
   );
   assert.deepEqual(
     classifyM2CoreHorizonAmountFailure({
-      predictionProduced: false,
-      recovery: {
-        status: "ONE_INFRASTRUCTURE_RECOVERY_CONSUMED"
-      }
+      failureClass: "CAPABILITY_DIRECTORY",
+      completeMetricsProduced: false
     }),
     {
-      retryAllowed: false,
-      status: "INVALIDATED_INFRASTRUCTURE_FAILURE_RETRY_EXHAUSTED"
-    }
-  );
-  assert.deepEqual(
-    classifyM2CoreHorizonAmountFailure({
-      predictionProduced: true,
-      recovery: null
-    }),
-    {
-      retryAllowed: false,
-      status: "FAILED_AFTER_PREDICTION_RETRY_NOT_ALLOWED"
+      retryAllowed: true,
+      status:
+        "INVALIDATED_PRE_OUTCOME_INFRASTRUCTURE_FAILURE_RECOVERY_ALLOWED"
     }
   );
 });
 
-test("canonical dispatcher exposes public diagnostics and one restricted execution", async () => {
+test("first complete outcome and contract changes block recovery", () => {
+  assert.deepEqual(
+    classifyM2CoreHorizonAmountFailure({
+      failureClass: "SERIALIZATION",
+      completeMetricsProduced: true
+    }),
+    {
+      retryAllowed: false,
+      status:
+        "FIRST_VALID_COMPLETE_OUTCOME_BOUNDARY_REACHED_RETRY_NOT_ALLOWED"
+    }
+  );
+  assert.deepEqual(
+    classifyM2CoreHorizonAmountFailure({
+      failureClass: "CONTRACT_CHANGE",
+      completeMetricsProduced: false,
+      scientificContractChanged: true
+    }),
+    {
+      retryAllowed: false,
+      status: "BLOCKED_RECOVERY_BOUNDARY_RETRY_NOT_ALLOWED"
+    }
+  );
+  const validation = validateM2CoreHorizonAmountRecoveryPolicy({
+    recoveryPolicy,
+    scientificConfig: config
+  });
+  const changed = structuredClone(config);
+  changed.training.grid.l2.push(100);
+  assert.throws(
+    () => validateM2CoreHorizonAmountRecoveryPolicy({
+      recoveryPolicy,
+      scientificConfig: changed,
+      expectedScientificContractDigest:
+        validation.scientificContractDigest
+    }),
+    /scientific_contract_changed/u
+  );
+});
+
+test("canonical dispatcher exposes diagnostics, recovery smoke and restricted execution", async () => {
   const packageJson = JSON.parse(await readFile(path.join(
     root,
     "package.json"
@@ -429,6 +465,12 @@ test("canonical dispatcher exposes public diagnostics and one restricted executi
   assert.match(
     packageJson.scripts["develop:m2:current:core-legacy-horizon-amount"],
     /--core-legacy-horizon-amount$/u
+  );
+  assert.match(
+    packageJson.scripts[
+      "smoke:m2:current:core-legacy-horizon-amount-recovery"
+    ],
+    /--core-legacy-horizon-amount --synthetic-recovery-smoke$/u
   );
   assert.match(
     packageJson.scripts["verify:m2:current"],
@@ -452,7 +494,7 @@ test("canonical dispatcher exposes public diagnostics and one restricted executi
     privateRunnerSource,
     /"--capability-id",\s+CAPABILITY_ID/u
   );
-  assert.match(
+  assert.doesNotMatch(
     privateRunnerSource,
     /m2_core_horizon_amount_retry_exhausted/u
   );
@@ -465,9 +507,9 @@ test("canonical dispatcher exposes public diagnostics and one restricted executi
     verify: true
   });
   assert.equal([
-    "M2_CORE_HORIZON_AMOUNT_PUBLIC_IMPLEMENTATION_READY",
     "M2_CORE_HORIZON_AMOUNT_PUBLIC_IMPLEMENTATION_READY_"
-      + "PRIVATE_EXECUTION_INVALIDATED_RETRY_EXHAUSTED",
+      + "RECOVERY_AUTHORIZED_AWAITING_R0",
+    "M2_CORE_HORIZON_AMOUNT_PUBLIC_RECOVERY_READY_R0_PASS",
     "M2_CORE_HORIZON_AMOUNT_PUBLIC_RESULT_VALID"
   ].includes(diagnostic.status), true);
   assert.equal(diagnostic.privateSourceReadByDiagnostic, false);
@@ -476,6 +518,11 @@ test("canonical dispatcher exposes public diagnostics and one restricted executi
     diagnostic.status === "M2_CORE_HORIZON_AMOUNT_PUBLIC_RESULT_VALID"
   );
   assert.equal(diagnostic.privateExecutionAttempted, true);
+  assert.equal(diagnostic.historicalExecutionClosureOnly, true);
+  assert.equal(
+    diagnostic.recoveryBoundaryId,
+    "FIRST_VALID_COMPLETE_OUTCOME_BOUNDARY"
+  );
   assert.equal(
     diagnostic.privateExecutionClosureStatus,
     "M2_CORE_HORIZON_AMOUNT_PRIVATE_EXECUTION_"

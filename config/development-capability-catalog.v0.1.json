@@ -657,10 +657,11 @@
       "canonicalValidationCommands": [
         "npm run doctor:capability -- m2-core-legacy-horizon-amount",
         "npm run diagnose:m2:core-legacy-horizon-amount",
+        "npm run smoke:m2:current:core-legacy-horizon-amount-recovery",
         "npm run develop:m2:current:core-legacy-horizon-amount"
       ],
-      "recovery": "Restore only genuinely missing PRIVATE_SOURCE_AUTHORITY from a verified capability-scoped package. Rebuild all feature, frozen comparator, prediction, evaluation and bootstrap caches from source authority and the exact committed code. Missing cache or provenance never blocks public work and never reopens a consumed execution.",
-      "authorization": "USER_AUTHORIZED_M2_CORE_LEGACY_HORIZON_AMOUNT_K1_K2_SINGLE_PRIVATE_DEVELOPMENT_EXECUTION_2026_07_30"
+      "recovery": "Restore only genuinely missing PRIVATE_SOURCE_AUTHORITY from a verified capability-scoped package. Rebuild all feature, frozen comparator, prediction, evaluation and bootstrap caches from source authority and the exact committed code. Missing cache or provenance never blocks public work. The current recovery authority permits infrastructure repair until the first valid complete outcome; historical fixed retry counts remain audit-only.",
+      "authorization": "USER_AUTHORIZED_M2_CHAM01_RECOVERY_UNTIL_FIRST_VALID_COMPLETE_OUTCOME_2026_07_30"
     },
     {
       "id": "m2-layered-revenue-composition",

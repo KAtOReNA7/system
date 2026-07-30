@@ -356,11 +356,20 @@ function roleZh(value) {
     blocked_model_family_no_candidate_outcome: "阻断且无候选结果",
     blocked_development_model_no_candidate_outcome:
       "开发执行阻断且无候选结果",
+    development_model_recovery_ready_no_private_outcome:
+      "恢复就绪且尚无真实私有结果",
     archive_only_failed_model: "仅历史审计且已失败"
   }[value] ?? "登记角色";
 }
 
 function operationalStatusZh(value) {
+  if (
+    value
+      === "recovery_authorized_until_first_valid_complete_outcome_"
+        + "no_private_result_yet"
+  ) {
+    return "恢复已授权，尚无真实私有结果";
+  }
   if (/blocked/u.test(value)) {
     return "因前置条件不满足而阻断";
   }

@@ -36,7 +36,7 @@ test("registry schema, evidence paths and immutable digests validate", () => {
   );
   assert.equal(validation.counts.modelCount, 32);
   assert.equal(validation.counts.experimentCount, 19);
-  assert.equal(validation.counts.nonModelIdentifierCount, 73);
+  assert.equal(validation.counts.nonModelIdentifierCount, 74);
   assert.equal(validation.counts.evaluationCount, 96);
   assert.equal(validation.counts.comparabilityGroupCount, 57);
 });
@@ -95,6 +95,11 @@ test("current roles retain fallback, research baseline and no automation promoti
     registry.currentRoles.coreLegacyHorizonAmountResearchComparator,
     "M2-WORK-LG01"
   );
+  assert.equal(
+    registry.currentRoles.activeExperiment,
+    "M2-EXP-CORE-HORIZON-AMOUNT-01"
+  );
+  assert.equal(registry.currentRoles.blockedExperiment, null);
   assert.match(
     registry.currentRoles.roleInterpretationZh,
     /OA03 同公式在当前 Core 老品合同下重新执行完成；没有复现历史数值/u
@@ -221,7 +226,7 @@ test("core legacy population test records non-confirmation without promotion", (
   );
   assert.equal(
     registry.currentRoles.latestStateIndex,
-    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.44.md"
+    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.45.md"
   );
   assert.equal(registry.currentRoles.activeCandidate, null);
   assert.equal(registry.currentRoles.approvedForAutomation, null);
@@ -492,22 +497,25 @@ test("read-only query exposes scoped identities and refuses invalid ranking", ()
   const status = runQuery("status");
   assert.equal(status.status, 0, status.stderr);
   assert.match(status.stdout, /本次只读查询模型执行次数：0/u);
-  assert.match(status.stdout, /当前实验：无（null）/u);
+  assert.match(
+    status.stdout,
+    /当前实验：M2-EXP-CORE-HORIZON-AMOUNT-01/u
+  );
   assert.match(status.stdout, /兼容性现行运行回退模型/u);
   assert.match(status.stdout, /没有复现历史数值/u);
   assert.match(status.stdout, /不是业务整体通过/u);
   assert.match(status.stdout, /M2-WORK-OA03/u);
   assert.match(
     status.stdout,
-    /当前阻断实验：M2-EXP-CORE-HORIZON-AMOUNT-01/u
+    /当前阻断实验：无（null）/u
   );
 
   const horizonAmount = runQuery("show", "M2-WORK-CHAM01");
   assert.equal(horizonAmount.status, 0, horizonAmount.stderr);
-  assert.match(horizonAmount.stdout, /开发执行阻断且无候选结果/u);
+  assert.match(horizonAmount.stdout, /恢复就绪且尚无真实私有结果/u);
   assert.match(
     horizonAmount.stdout,
-    /M2_CORE_HORIZON_AMOUNT_PRIVATE_EXECUTION_INVALIDATED_RETRY_EXHAUSTED/u
+    /recovery_authorized_until_first_valid_complete_outcome_no_private_result_yet/u
   );
 
   const publishingScale = runQuery("show", "M2-CHAN-PSC01");

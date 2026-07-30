@@ -159,6 +159,8 @@ const coreLegacyHorizonAmountPublicMode = process.argv.includes(
 const coreLegacyHorizonAmountPrivateMode = process.argv.includes(
   "--core-legacy-horizon-amount"
 );
+const coreLegacyHorizonAmountSyntheticRecoverySmoke =
+  process.argv.includes("--synthetic-recovery-smoke");
 const preflightOnly = process.argv.includes("--preflight-only");
 if (preflightOnly && !publishingScaleChannelPrivateMode) {
   throw new Error("m2_publishing_scale_preflight_requires_command_mode");
@@ -199,7 +201,9 @@ if (coreLegacyHorizonAmountPublicMode) {
 }
 if (coreLegacyHorizonAmountPrivateMode) {
   const result = await runM2CoreLegacyHorizonAmountPrivateDevelopment({
-    root
+    root,
+    syntheticRecoverySmoke:
+      coreLegacyHorizonAmountSyntheticRecoverySmoke
   });
   process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
   return;

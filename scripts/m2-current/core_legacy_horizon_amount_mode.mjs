@@ -2,7 +2,9 @@ import { spawnSync } from "node:child_process";
 import crypto from "node:crypto";
 import {
   mkdir,
+  mkdtemp,
   readFile,
+  rm,
   stat,
   writeFile
 } from "node:fs/promises";
@@ -59,6 +61,8 @@ import {
 
 const CONFIG_PATH =
   "config/m2-current-core-legacy-horizon-amount.v0.1.json";
+const RECOVERY_CONFIG_PATH =
+  "config/m2-current-core-legacy-horizon-amount-recovery.v0.1.json";
 const OA03_CONFIG_PATH =
   "config/m2-current-oa03-replication.v0.1.json";
 const CORE_CONFIG_PATH =
@@ -75,6 +79,12 @@ const EXECUTION_CLOSURE_JSON_PATH =
 const EXECUTION_CLOSURE_REPORT_PATH =
   "docs/analysis/m2-current/"
     + "M2-core-legacy-horizon-amount-execution-closure-v0.1.md";
+const RECOVERY_READINESS_JSON_PATH =
+  "docs/analysis/m2-current/"
+    + "M2-core-legacy-horizon-amount-recovery-readiness-v0.1.json";
+const RECOVERY_READINESS_REPORT_PATH =
+  "docs/analysis/m2-current/"
+    + "M2-core-legacy-horizon-amount-recovery-readiness-v0.1.md";
 const CAPABILITY_ID = "m2-core-legacy-horizon-amount";
 const EXPERIMENT_ID = "M2-EXP-CORE-HORIZON-AMOUNT-01";
 const MODEL_ID = "M2-WORK-CHAM01";
@@ -87,21 +97,112 @@ const FAMILIES = Object.freeze([
 const POPULATIONS = Object.freeze(["CORE80", "CORE90"]);
 const HORIZONS = Object.freeze([3, 6, 12]);
 const RAW_ARMS = Object.freeze(["B1", "B2", "B3"]);
+const SCIENTIFIC_CONTRACT_SECTIONS = Object.freeze([
+  "authority",
+  "scope",
+  "rolling",
+  "k1Attribution",
+  "featureContract",
+  "arms",
+  "training",
+  "evaluation",
+  "publicPrivacy",
+  "decisionPolicy"
+]);
+const RECOVERABLE_FAILURE_CLASSES = new Set([
+  "WIRING",
+  "CAPABILITY_DIRECTORY",
+  "SERIALIZATION",
+  "MEMORY",
+  "IO",
+  "COMMAND_LIFECYCLE",
+  "DETERMINISTIC_IMPLEMENTATION"
+]);
+const BLOCKING_FAILURE_CLASSES = new Set([
+  "SOURCE_AUTHORITY",
+  "LEAKAGE",
+  "CONTRACT_CHANGE",
+  "FIRST_VALID_COMPLETE_OUTCOME_ALREADY_FORMED",
+  "USER_AUTHORIZATION_REVOKED",
+  "REPEATED_INFRASTRUCTURE_FAILURE_WITHOUT_FORMAL_CHAIN_REGRESSION_COVERAGE"
+]);
 
 export function classifyM2CoreHorizonAmountFailure({
-  predictionProduced,
-  recovery
+  failureClass,
+  completeMetricsProduced = false,
+  scientificContractChanged = false,
+  partialOutcomeInspected = false,
+  repeatedSameFailureWithoutFormalChainRegressionCoverage = false
 }) {
-  const recoveryConsumed = recovery?.status
-    === "ONE_INFRASTRUCTURE_RECOVERY_CONSUMED";
-  const retryAllowed = predictionProduced === false && !recoveryConsumed;
+  const normalizedClass = String(
+    failureClass ?? "DETERMINISTIC_IMPLEMENTATION"
+  );
+  const boundaryReached = completeMetricsProduced === true;
+  const blocked = (
+    boundaryReached
+    || scientificContractChanged === true
+    || partialOutcomeInspected === true
+    || repeatedSameFailureWithoutFormalChainRegressionCoverage === true
+    || BLOCKING_FAILURE_CLASSES.has(normalizedClass)
+    || !RECOVERABLE_FAILURE_CLASSES.has(normalizedClass)
+  );
   return Object.freeze({
-    retryAllowed,
-    status: predictionProduced
-      ? "FAILED_AFTER_PREDICTION_RETRY_NOT_ALLOWED"
-      : retryAllowed
-        ? "INVALIDATED_INFRASTRUCTURE_FAILURE_RETRY_ALLOWED"
-        : "INVALIDATED_INFRASTRUCTURE_FAILURE_RETRY_EXHAUSTED"
+    retryAllowed: !blocked,
+    status: boundaryReached
+      ? "FIRST_VALID_COMPLETE_OUTCOME_BOUNDARY_REACHED_RETRY_NOT_ALLOWED"
+      : blocked
+        ? "BLOCKED_RECOVERY_BOUNDARY_RETRY_NOT_ALLOWED"
+        : "INVALIDATED_PRE_OUTCOME_INFRASTRUCTURE_FAILURE_RECOVERY_ALLOWED"
+  });
+}
+
+export function validateM2CoreHorizonAmountRecoveryPolicy({
+  recoveryPolicy,
+  scientificConfig,
+  expectedScientificContractDigest = null
+}) {
+  const digest = scientificContractDigest(scientificConfig);
+  if (
+    expectedScientificContractDigest !== null
+    && digest !== expectedScientificContractDigest
+  ) {
+    throw new Error("m2_core_horizon_amount_scientific_contract_changed");
+  }
+  validateM2CoreLegacyHorizonAmountConfig(scientificConfig);
+  if (
+    recoveryPolicy?.schema
+      !== "m2.current.core_legacy_horizon_amount_recovery_execution.v0.1"
+    || recoveryPolicy?.experimentId !== EXPERIMENT_ID
+    || recoveryPolicy?.modelId !== MODEL_ID
+    || recoveryPolicy?.baseScientificContract !== CONFIG_PATH
+    || recoveryPolicy?.authority?.status
+      !== "RECOVERY_AUTHORIZED_UNTIL_FIRST_VALID_COMPLETE_OUTCOME"
+    || recoveryPolicy?.boundary?.id
+      !== "FIRST_VALID_COMPLETE_OUTCOME_BOUNDARY"
+    || recoveryPolicy?.boundary?.fixedInfrastructureRetryLimit !== null
+    || recoveryPolicy?.boundary
+      ?.preOutcomeInfrastructureFailureConsumesScientificWindow !== false
+    || recoveryPolicy?.boundary?.completeMetricsFreezeImmediately !== true
+    || recoveryPolicy?.boundary?.secondCompleteOutcomeAllowed !== false
+    || recoveryPolicy?.boundary
+      ?.partialOutcomeMayBeInspectedOrUsedForSelection !== false
+    || JSON.stringify(
+      recoveryPolicy?.scientificContract?.immutableSections
+    ) !== JSON.stringify(SCIENTIFIC_CONTRACT_SECTIONS)
+    || recoveryPolicy?.scientificContract?.formulaChangeAllowed !== false
+    || recoveryPolicy?.scientificContract?.featureChangeAllowed !== false
+    || recoveryPolicy?.scientificContract?.gateChangeAllowed !== false
+    || recoveryPolicy?.authorization?.privateRecoveryExecution !== true
+    || recoveryPolicy?.authorization?.channelAllocation !== false
+    || recoveryPolicy?.authorization?.production !== false
+    || recoveryPolicy?.authorization?.pullRequestMerge !== false
+  ) {
+    throw new Error("m2_core_horizon_amount_recovery_policy_invalid");
+  }
+  return Object.freeze({
+    valid: true,
+    scientificContractDigest: digest,
+    boundaryId: recoveryPolicy.boundary.id
   });
 }
 
@@ -109,18 +210,32 @@ export async function runM2CoreLegacyHorizonAmountPublicDiagnostic({
   root,
   verify = false
 }) {
-  const [config, preregistration, source, executionClosure] =
+  const [
+    config,
+    recoveryPolicy,
+    preregistration,
+    source,
+    executionClosure,
+    recoveryReadiness
+  ] =
     await Promise.all([
     readJson(path.join(root, CONFIG_PATH)),
+    readJson(path.join(root, RECOVERY_CONFIG_PATH)),
     readFile(path.join(
       root,
       "docs/analysis/m2-current/"
         + "M2-core-legacy-horizon-amount-preregistration-v0.1.md"
     ), "utf8"),
     readFile(path.join(root, IMPLEMENTATION_PATH), "utf8"),
-    readJsonIfPresent(path.join(root, EXECUTION_CLOSURE_JSON_PATH))
+    readJsonIfPresent(path.join(root, EXECUTION_CLOSURE_JSON_PATH)),
+    readJsonIfPresent(path.join(root, RECOVERY_READINESS_JSON_PATH))
   ]);
   validateM2CoreLegacyHorizonAmountConfig(config);
+  const recoveryValidation =
+    validateM2CoreHorizonAmountRecoveryPolicy({
+      recoveryPolicy,
+      scientificConfig: config
+    });
   assertPreregistration(config, preregistration);
   assertPortableSource(source);
   const k1 = await readJsonIfPresent(path.join(
@@ -142,6 +257,10 @@ export async function runM2CoreLegacyHorizonAmountPublicDiagnostic({
   const executionClosureReportPresent = await fileExists(path.join(
     root,
     EXECUTION_CLOSURE_REPORT_PATH
+  ));
+  const recoveryReadinessReportPresent = await fileExists(path.join(
+    root,
+    RECOVERY_READINESS_REPORT_PATH
   ));
   const resultCount = [k1, development].filter(Boolean).length;
   if (
@@ -176,16 +295,33 @@ export async function runM2CoreLegacyHorizonAmountPublicDiagnostic({
       );
     }
   }
+  if (
+    (recoveryReadiness !== null) !== recoveryReadinessReportPresent
+  ) {
+    throw new Error(
+      "m2_core_horizon_amount_recovery_readiness_pair_incomplete"
+    );
+  }
+  if (recoveryReadiness !== null) {
+    assertRecoveryReadiness(
+      recoveryReadiness,
+      recoveryValidation.scientificContractDigest
+    );
+  }
   const synthetic = syntheticPublicProof(config);
   const result = Object.freeze({
     status: k1 !== null
       ? "M2_CORE_HORIZON_AMOUNT_PUBLIC_RESULT_VALID"
-      : executionClosure !== null
-        ? "M2_CORE_HORIZON_AMOUNT_PUBLIC_IMPLEMENTATION_READY_"
-          + "PRIVATE_EXECUTION_INVALIDATED_RETRY_EXHAUSTED"
-        : "M2_CORE_HORIZON_AMOUNT_PUBLIC_IMPLEMENTATION_READY",
+      : recoveryReadiness !== null
+        ? "M2_CORE_HORIZON_AMOUNT_PUBLIC_RECOVERY_READY_R0_PASS"
+        : "M2_CORE_HORIZON_AMOUNT_PUBLIC_IMPLEMENTATION_READY_"
+          + "RECOVERY_AUTHORIZED_AWAITING_R0",
     experimentId: EXPERIMENT_ID,
     modelId: MODEL_ID,
+    recoveryAuthorityStatus: recoveryPolicy.authority.status,
+    recoveryBoundaryId: recoveryValidation.boundaryId,
+    scientificContractDigest:
+      recoveryValidation.scientificContractDigest,
     originSafeFeatureProof: synthetic.originSafeFeatureProof,
     horizonParameterIsolationProof:
       synthetic.horizonParameterIsolationProof,
@@ -193,6 +329,8 @@ export async function runM2CoreLegacyHorizonAmountPublicDiagnostic({
       synthetic.deterministicBootstrap2000Proof,
     privateEvaluationPerformed: development !== null,
     privateExecutionAttempted: executionClosure !== null,
+    historicalExecutionClosureOnly: executionClosure !== null,
+    recoveryReadinessStatus: recoveryReadiness?.status ?? null,
     privateExecutionClosureStatus:
       executionClosure?.finalStatus ?? null,
     privateSourceReadByDiagnostic: false,
@@ -208,10 +346,58 @@ export async function runM2CoreLegacyHorizonAmountPublicDiagnostic({
 }
 
 export async function runM2CoreLegacyHorizonAmountPrivateDevelopment({
-  root
+  root,
+  syntheticRecoverySmoke = false
+}) {
+  if (!syntheticRecoverySmoke) {
+    return await runM2CoreLegacyHorizonAmountExecution({ root });
+  }
+  const config = await readJson(path.join(root, CONFIG_PATH));
+  const capabilityDirectory = resolvePrivateDirectory(
+    root,
+    config.privateOutputs.directory
+  );
+  await mkdir(capabilityDirectory, { recursive: true });
+  const temporaryDirectory = await mkdtemp(path.join(
+    capabilityDirectory,
+    "recovery-smoke-"
+  ));
+  assertCapabilityScopedDirectory(
+    capabilityDirectory,
+    temporaryDirectory
+  );
+  let result;
+  try {
+    result = await runM2CoreLegacyHorizonAmountExecution({
+      root,
+      syntheticRecoverySmoke: true,
+      privateDirectoryOverride: temporaryDirectory
+    });
+  } finally {
+    await rm(temporaryDirectory, {
+      recursive: true,
+      force: false
+    });
+  }
+  if (await fileExists(temporaryDirectory)) {
+    throw new Error(
+      "m2_core_horizon_amount_recovery_smoke_cleanup_failed"
+    );
+  }
+  return Object.freeze({
+    ...result,
+    temporaryOutputCleaned: true
+  });
+}
+
+async function runM2CoreLegacyHorizonAmountExecution({
+  root,
+  syntheticRecoverySmoke = false,
+  privateDirectoryOverride = null
 }) {
   const [
     config,
+    recoveryPolicy,
     oa03Config,
     coreConfig,
     humanConfig,
@@ -219,19 +405,28 @@ export async function runM2CoreLegacyHorizonAmountPrivateDevelopment({
     oa03FormulaConfig
   ] = await Promise.all([
     readJson(path.join(root, CONFIG_PATH)),
+    readJson(path.join(root, RECOVERY_CONFIG_PATH)),
     readJson(path.join(root, OA03_CONFIG_PATH)),
     readJson(path.join(root, CORE_CONFIG_PATH)),
     readJson(path.join(root, HUMAN_CONFIG_PATH)),
     readJson(path.join(root, BASE_CANDIDATE_CONFIG_PATH)),
     readJson(path.join(root, OA03_FORMULA_CONFIG_PATH))
   ]);
-  validateM2CoreLegacyHorizonAmountConfig(config);
+  const recoveryValidation =
+    validateM2CoreHorizonAmountRecoveryPolicy({
+      recoveryPolicy,
+      scientificConfig: config
+    });
   validateM2CoreLegacyPopulationConfig(coreConfig);
-  const preflight = verifyM2Oa03GitAndCiPreflight({
-    root,
-    allowedDirtyPaths: []
-  });
-  const inventoryBefore = capabilityInventory(root);
+  const preflight = syntheticRecoverySmoke
+    ? syntheticRecoveryPreflight(root)
+    : verifyM2Oa03GitAndCiPreflight({
+      root,
+      allowedDirtyPaths: []
+    });
+  const inventoryBefore = syntheticRecoverySmoke
+    ? syntheticRecoveryInventory()
+    : capabilityInventory(root);
   if (
     inventoryBefore.sourceAuthorityStatus
       !== "SOURCE_AUTHORITY_AVAILABLE"
@@ -244,9 +439,16 @@ export async function runM2CoreLegacyHorizonAmountPrivateDevelopment({
         : "m2_core_horizon_amount_required_tool_blocked"
     );
   }
-  const privateDirectory = resolvePrivateDirectory(
+  const capabilityDirectory = resolvePrivateDirectory(
     root,
     config.privateOutputs.directory
+  );
+  const privateDirectory = privateDirectoryOverride === null
+    ? capabilityDirectory
+    : path.resolve(privateDirectoryOverride);
+  assertCapabilityScopedDirectory(
+    capabilityDirectory,
+    privateDirectory
   );
   await mkdir(privateDirectory, { recursive: true });
   const receiptPath = path.join(
@@ -257,7 +459,9 @@ export async function runM2CoreLegacyHorizonAmountPrivateDevelopment({
   const recovery = await resolvePriorAttempt({
     priorReceipt,
     privateDirectory,
-    config
+    config,
+    scientificContractDigest:
+      recoveryValidation.scientificContractDigest
   });
   const attempt = {
     schema:
@@ -274,6 +478,18 @@ export async function runM2CoreLegacyHorizonAmountPrivateDevelopment({
     historicalReceiptStatusBefore:
       inventoryBefore.historicalReceiptStatus,
     recovery,
+    recoveryBoundaryId: recoveryValidation.boundaryId,
+    scientificContractDigest:
+      recoveryValidation.scientificContractDigest,
+    syntheticRecoverySmoke,
+    failureStage: null,
+    failureClass: null,
+    candidateFitStarted: false,
+    predictionRowsProduced: 0,
+    evaluationRowsProduced: 0,
+    completeMetricsProduced: false,
+    scientificContractChanged: false,
+    partialOutcomeInspected: false,
     predictionProduced: false,
     validCompleteInterpretableResultProduced: false,
     retryAllowed: false
@@ -281,8 +497,17 @@ export async function runM2CoreLegacyHorizonAmountPrivateDevelopment({
   await writeJson(receiptPath, attempt);
   let stage = "SOURCE_AUTHORITY_MATERIALIZATION";
   let predictionProduced = false;
+  let candidateFitStarted = false;
+  let predictionRowsProduced = 0;
+  let evaluationRowsProduced = 0;
+  let completeMetricsProduced = false;
   try {
-    const authority = await materializeM2CoreRevenueAuthority({ root });
+    const authority = syntheticRecoverySmoke
+      ? await buildSyntheticRecoveryAuthority({
+        root,
+        recoveryPolicy
+      })
+      : await materializeM2CoreRevenueAuthority({ root });
     const schedules = resolveM2Oa03CurrentScopeSchedules({
       config: oa03Config,
       authorityStartMonth: authority.authorityStartMonth,
@@ -341,11 +566,13 @@ export async function runM2CoreLegacyHorizonAmountPrivateDevelopment({
       populations
     });
     predictionProduced = oa03.candidateRows.length > 0;
+    predictionRowsProduced = oa03.candidateRows.length;
     await writeJson(receiptPath, {
       ...attempt,
       status: "EXECUTION_IN_PROGRESS",
       stage,
-      predictionProduced
+      predictionProduced,
+      predictionRowsProduced
     });
     stage = "FROZEN_LG01_RECONSTRUCTION";
     const frozenLg01 = reconstructFrozenLg01({
@@ -356,6 +583,7 @@ export async function runM2CoreLegacyHorizonAmountPrivateDevelopment({
       throw new Error("m2_core_horizon_amount_lg01_rebuild_empty");
     }
     predictionProduced = true;
+    predictionRowsProduced += frozenLg01.rows.length;
     const frozenLg01Digest = sha256Json(frozenLg01.rows);
     stage = "ORIGIN_VISIBLE_FEATURE_MATERIALIZATION";
     const featureRows = buildFeatureRows({
@@ -399,12 +627,22 @@ export async function runM2CoreLegacyHorizonAmountPrivateDevelopment({
       throw new Error("m2_core_horizon_amount_k2_not_eligible");
     }
     stage = "B1_B2_B3_OUTER_TRAINING";
+    candidateFitStarted = true;
+    await writeJson(receiptPath, {
+      ...attempt,
+      status: "EXECUTION_IN_PROGRESS",
+      stage,
+      candidateFitStarted,
+      predictionProduced,
+      predictionRowsProduced
+    });
     const training = trainRawCandidates({
       featureRows,
       evaluationFeatures,
       config
     });
     predictionProduced = training.predictions.length > 0;
+    predictionRowsProduced += training.predictions.length;
     if (!predictionProduced) {
       throw new Error("m2_core_horizon_amount_candidate_prediction_empty");
     }
@@ -414,6 +652,7 @@ export async function runM2CoreLegacyHorizonAmountPrivateDevelopment({
       strictLg01Rows,
       config
     });
+    evaluationRowsProduced = evaluation.privateRows.length;
     const development = buildPublicDevelopment({
       config,
       preflight,
@@ -427,6 +666,33 @@ export async function runM2CoreLegacyHorizonAmountPrivateDevelopment({
     });
     assertPublicK1(k1);
     assertPublicDevelopment(development);
+    completeMetricsProduced = true;
+    const completeOutcomeDigest = sha256Json({
+      k1,
+      development
+    });
+    stage = "FIRST_VALID_COMPLETE_OUTCOME_BOUNDARY";
+    await writeJson(receiptPath, {
+      ...attempt,
+      status: syntheticRecoverySmoke
+        ? "SYNTHETIC_COMPLETE_METRICS_FORMED"
+        : "FIRST_VALID_COMPLETE_OUTCOME_BOUNDARY_REACHED",
+      stage,
+      candidateFitStarted,
+      predictionProduced,
+      predictionRowsProduced,
+      evaluationRowsProduced,
+      completeMetricsProduced,
+      validCompleteInterpretableResultProduced:
+        !syntheticRecoverySmoke,
+      syntheticCompleteResultProduced: syntheticRecoverySmoke,
+      scientificWindowConsumed: !syntheticRecoverySmoke,
+      resultStatus: development.status,
+      bestRawArms: development.bestRawArms,
+      completeOutcomeDigest,
+      retryAllowed: syntheticRecoverySmoke,
+      boundaryReachedAt: new Date().toISOString()
+    });
     stage = "PRIVATE_OUTPUT_FREEZE";
     const privatePaths = privateOutputPaths(privateDirectory, config);
     await Promise.all([
@@ -453,7 +719,8 @@ export async function runM2CoreLegacyHorizonAmountPrivateDevelopment({
         bootstrapRows: evaluation.bootstrapRows.length
       },
       frozenLg01Digest,
-      status: development.status
+      status: development.status,
+      syntheticRecoverySmoke
     });
     const manifestPath = path.join(
       privateDirectory,
@@ -461,65 +728,487 @@ export async function runM2CoreLegacyHorizonAmountPrivateDevelopment({
     );
     await writeJson(manifestPath, manifest);
     stage = "PUBLIC_AGGREGATE_FREEZE";
+    const publicPaths = resolveExecutionPublicPaths({
+      root,
+      privateDirectory,
+      config,
+      syntheticRecoverySmoke
+    });
+    await mkdir(path.dirname(publicPaths.k1AttributionJson), {
+      recursive: true
+    });
     await Promise.all([
       writeJson(
-        path.join(root, config.publicOutputs.k1AttributionJson),
+        publicPaths.k1AttributionJson,
         k1
       ),
       writeFile(
-        path.join(root, config.publicOutputs.k1AttributionReport),
+        publicPaths.k1AttributionReport,
         renderK1Report(k1),
         "utf8"
       ),
       writeJson(
-        path.join(root, config.publicOutputs.developmentJson),
+        publicPaths.developmentJson,
         development
       ),
       writeFile(
-        path.join(root, config.publicOutputs.developmentReport),
+        publicPaths.developmentReport,
         renderDevelopmentReport(development),
         "utf8"
       )
     ]);
     await writeJson(receiptPath, {
       ...attempt,
-      status: "COMPLETE_RESULT_FROZEN",
+      status: syntheticRecoverySmoke
+        ? "SYNTHETIC_RECOVERY_SMOKE_COMPLETE"
+        : "COMPLETE_RESULT_FROZEN",
       stage: "COMPLETE",
+      candidateFitStarted,
       predictionProduced: true,
-      validCompleteInterpretableResultProduced: true,
-      retryAllowed: false,
+      predictionRowsProduced,
+      evaluationRowsProduced,
+      completeMetricsProduced,
+      validCompleteInterpretableResultProduced:
+        !syntheticRecoverySmoke,
+      syntheticCompleteResultProduced: syntheticRecoverySmoke,
+      scientificWindowConsumed: !syntheticRecoverySmoke,
+      retryAllowed: syntheticRecoverySmoke,
       resultStatus: development.status,
+      completeOutcomeDigest,
       manifestSha256: await sha256File(manifestPath),
       completedAt: new Date().toISOString()
     });
+    const smokeAudit = syntheticRecoverySmoke
+      ? await buildSyntheticRecoverySmokeAudit({
+        authority,
+        origins,
+        allCases,
+        populations,
+        oa03,
+        frozenLg01,
+        training,
+        evaluation,
+        development,
+        privatePaths,
+        manifest,
+        publicPaths,
+        receiptPath
+      })
+      : null;
     return Object.freeze({
-      status: "M2_CORE_HORIZON_AMOUNT_FIRST_COMPLETE_RESULT_FROZEN",
+      status: syntheticRecoverySmoke
+        ? "M2_CHAM01_R0_FORMAL_CHAIN_SYNTHETIC_SMOKE_PASS"
+        : "M2_CORE_HORIZON_AMOUNT_FIRST_COMPLETE_RESULT_FROZEN",
       experimentId: EXPERIMENT_ID,
       modelId: MODEL_ID,
       developmentStatus: development.status,
       bestRawArms: development.bestRawArms,
       executionHead: preflight.head,
       exactHeadCiRunId: preflight.ciRunId,
-      validCompleteInterpretableResultProduced: true,
-      retryAllowed: false
+      validCompleteInterpretableResultProduced:
+        !syntheticRecoverySmoke,
+      syntheticCompleteResultProduced: syntheticRecoverySmoke,
+      scientificWindowConsumed: !syntheticRecoverySmoke,
+      retryAllowed: syntheticRecoverySmoke,
+      smokeAudit
     });
   } catch (error) {
+    const failureClass = classifyRecoveryFailure(error, stage);
     const failure = classifyM2CoreHorizonAmountFailure({
-      predictionProduced,
-      recovery
+      failureClass,
+      completeMetricsProduced:
+        completeMetricsProduced && !syntheticRecoverySmoke,
+      scientificContractChanged:
+        failureClass === "CONTRACT_CHANGE",
+      partialOutcomeInspected: false,
+      repeatedSameFailureWithoutFormalChainRegressionCoverage: false
     });
     await writeJson(receiptPath, {
       ...attempt,
       status: failure.status,
       stage,
+      failureStage: stage,
+      failureClass,
       errorCode: safeErrorCode(error),
+      candidateFitStarted,
       predictionProduced,
+      predictionRowsProduced,
+      evaluationRowsProduced,
+      completeMetricsProduced,
+      scientificContractChanged:
+        failureClass === "CONTRACT_CHANGE",
+      partialOutcomeInspected: false,
       validCompleteInterpretableResultProduced: false,
       retryAllowed: failure.retryAllowed,
       failedAt: new Date().toISOString()
     });
     throw error;
   }
+}
+
+function scientificContractDigest(config) {
+  return sha256Json(Object.fromEntries(
+    SCIENTIFIC_CONTRACT_SECTIONS.map((section) => [
+      section,
+      config[section]
+    ])
+  ));
+}
+
+function syntheticRecoveryPreflight(root) {
+  const head = runCommand(root, "git", ["rev-parse", "HEAD"])
+    .stdout.trim();
+  if (!/^[0-9a-f]{40}$/u.test(head)) {
+    throw new Error(
+      "m2_core_horizon_amount_synthetic_git_head_invalid"
+    );
+  }
+  return Object.freeze({
+    head,
+    ciRunId: "SYNTHETIC_R0_NOT_CI_AUTHORITY",
+    linux: "SYNTHETIC_R0_NOT_CI_AUTHORITY",
+    windows: "SYNTHETIC_R0_NOT_CI_AUTHORITY",
+    syntheticOnly: true
+  });
+}
+
+function syntheticRecoveryInventory() {
+  return Object.freeze({
+    sourceAuthorityStatus: "SOURCE_AUTHORITY_AVAILABLE",
+    derivedCacheStatus: "SYNTHETIC_TEMPORARY_EMPTY",
+    historicalReceiptStatus: "SYNTHETIC_NOT_APPLICABLE",
+    unavailableTools: Object.freeze([])
+  });
+}
+
+async function buildSyntheticRecoveryAuthority({
+  root,
+  recoveryPolicy
+}) {
+  const fixturePath = recoveryPolicy?.syntheticRecoverySmoke?.fixture;
+  if (
+    typeof fixturePath !== "string"
+    || path.isAbsolute(fixturePath)
+    || !fixturePath.replaceAll("\\", "/").startsWith("test/fixtures/")
+  ) {
+    throw new Error(
+      "m2_core_horizon_amount_recovery_fixture_path_invalid"
+    );
+  }
+  const fixture = await readJson(path.join(root, fixturePath));
+  if (
+    fixture?.schema
+      !== "m2.current.core_legacy_horizon_amount_"
+        + "recovery_fixture.v0.1"
+    || !Number.isInteger(fixture.workCount)
+    || fixture.workCount < 20
+    || !Number.isInteger(fixture.channelsPerWork)
+    || fixture.channelsPerWork < 1
+    || !Array.isArray(fixture.workCashCycle)
+    || fixture.workCashCycle.length < 2
+    || fixture.workCashCycle.some(
+      (value) => !Number.isFinite(Number(value))
+    )
+    || monthToSerial(fixture.authorityStartMonth)
+      >= monthToSerial(fixture.labelMaturityCutoff)
+    || JSON.stringify(fixture.requirements?.horizons)
+      !== JSON.stringify(HORIZONS)
+  ) {
+    throw new Error(
+      "m2_core_horizon_amount_recovery_fixture_invalid"
+    );
+  }
+  const rows = [];
+  const start = monthToSerial(fixture.authorityStartMonth);
+  const end = monthToSerial(fixture.labelMaturityCutoff);
+  for (let serial = start; serial <= end; serial += 1) {
+    const month = serialToMonth(serial);
+    const seasonality = Number(fixture.seasonalityCycle[
+      (serial - start) % fixture.seasonalityCycle.length
+    ]);
+    for (
+      let workIndex = 0;
+      workIndex < fixture.workCount;
+      workIndex += 1
+    ) {
+      for (
+        let channelIndex = 0;
+        channelIndex < fixture.channelsPerWork;
+        channelIndex += 1
+      ) {
+        let cash = (
+          Number(fixture.baseMonthlyCash)
+          + Number(
+            fixture.workCashCycle[
+              workIndex % fixture.workCashCycle.length
+            ]
+          )
+          + seasonality
+          + channelIndex * 5
+        );
+        if (
+          workIndex === fixture.zeroIncomeBoundary.workIndex
+          && fixture.zeroIncomeBoundary.months.includes(month)
+        ) {
+          cash = 0;
+        }
+        if (
+          workIndex === fixture.negativeReversalBoundary.workIndex
+          && month === fixture.negativeReversalBoundary.month
+        ) {
+          cash = Number(
+            fixture.negativeReversalBoundary.channelCash[channelIndex]
+          );
+        }
+        rows.push(Object.freeze({
+          standardWorkId:
+            `SYNTHETIC_WORK_${String(workIndex + 1).padStart(2, "0")}`,
+          channelUid:
+            `SYNTHETIC_CHANNEL_${String(channelIndex + 1).padStart(2, "0")}`,
+          month,
+          amountMinor: String(Math.round(cash * 100)),
+          cash,
+          level2Category: "SYNTHETIC_RECOVERY",
+          level3Category: "SYNTHETIC_RECOVERY",
+          settlementMechanism: channelIndex === 0
+            ? "membership_subscription"
+            : "single_purchase"
+        }));
+      }
+    }
+  }
+  const asOfAudit = [];
+  const authority = Object.freeze({
+    rowCount: rows.length,
+    workCount: fixture.workCount,
+    channelCount: fixture.channelsPerWork,
+    reversalRowCount: rows.filter((row) => row.cash < 0).length,
+    scalePower: 2,
+    syntheticOnly: true
+  });
+  return Object.freeze({
+    fixture,
+    authority,
+    authorityStartMonth: fixture.authorityStartMonth,
+    labelMaturityCutoff: fixture.labelMaturityCutoff,
+    finalMonthlyRows: Object.freeze(rows),
+    asOfAudit,
+    featureMonthlyRowsForOrigin(origin) {
+      const visible = rows.filter((row) => row.month <= origin);
+      asOfAudit.push(Object.freeze({
+        origin,
+        visibleRowCount: visible.length,
+        futureExcludedCount: rows.length - visible.length,
+        conservationDifferenceMinor: "0",
+        syntheticOnly: true
+      }));
+      return visible;
+    }
+  });
+}
+
+function resolveExecutionPublicPaths({
+  root,
+  privateDirectory,
+  config,
+  syntheticRecoverySmoke
+}) {
+  if (!syntheticRecoverySmoke) {
+    return Object.freeze({
+      k1AttributionJson:
+        path.join(root, config.publicOutputs.k1AttributionJson),
+      k1AttributionReport:
+        path.join(root, config.publicOutputs.k1AttributionReport),
+      developmentJson:
+        path.join(root, config.publicOutputs.developmentJson),
+      developmentReport:
+        path.join(root, config.publicOutputs.developmentReport)
+    });
+  }
+  const directory = path.join(
+    privateDirectory,
+    "synthetic-public-aggregate"
+  );
+  return Object.freeze({
+    k1AttributionJson: path.join(
+      directory,
+      path.basename(config.publicOutputs.k1AttributionJson)
+    ),
+    k1AttributionReport: path.join(
+      directory,
+      path.basename(config.publicOutputs.k1AttributionReport)
+    ),
+    developmentJson: path.join(
+      directory,
+      path.basename(config.publicOutputs.developmentJson)
+    ),
+    developmentReport: path.join(
+      directory,
+      path.basename(config.publicOutputs.developmentReport)
+    )
+  });
+}
+
+async function buildSyntheticRecoverySmokeAudit({
+  authority,
+  origins,
+  allCases,
+  populations,
+  oa03,
+  frozenLg01,
+  training,
+  evaluation,
+  development,
+  privatePaths,
+  manifest,
+  publicPaths,
+  receiptPath
+}) {
+  const predictionArms = new Set(
+    training.predictions.map((row) => row.armId)
+  );
+  const predictionHorizons = new Set(
+    training.predictions.map((row) => row.horizonMonths)
+  );
+  const populationValues = [...populations.values()];
+  const privateSerializationClosed = (
+    await Promise.all(
+      Object.values(privatePaths).map((filePath) => fileExists(filePath))
+    )
+  ).every(Boolean);
+  const publicSerializationClosed = (
+    await Promise.all(
+      Object.values(publicPaths).map((filePath) => fileExists(filePath))
+    )
+  ).every(Boolean);
+  const receipt = await readJson(receiptPath);
+  const checks = Object.freeze({
+    sameFormalPrivateCommandEntrypoint: true,
+    capabilityIdReused: CAPABILITY_ID
+      === "m2-core-legacy-horizon-amount",
+    capabilityDirectoryPolicyMatched:
+      oa03.materializationReceipt?.status
+        === "OA03_BASE_MATERIALIZATION_COMPLETE",
+    sharedPythonMaterializerReused:
+      oa03.materializationReceipt?.formula
+        === "m2_calibration_v1._sales_monthly_forecast:B0b",
+    featureCallbackIdentifierWiring:
+      authority.asOfAudit.length === origins.length
+      && allCases.workCases.length > 0,
+    pseudoOriginCountAboveTwo: origins.length > 2,
+    zeroIncomeBoundaryPresent:
+      authority.finalMonthlyRows.some((row) => row.cash === 0),
+    negativeReversalBoundaryPresent:
+      authority.finalMonthlyRows.some((row) => row.cash < 0)
+      && allCases.workCases.some((row) => row.actual < 0),
+    core80Nonempty: populationValues.every(
+      (value) => value.selection.populations.CORE80.length > 0
+    ),
+    core90Nonempty: populationValues.every(
+      (value) => value.selection.populations.CORE90.length > 0
+    ),
+    frozenB0Produced: frozenLg01.rows.length > 0,
+    allFrozenRawArmsProduced: RAW_ARMS.every(
+      (armId) => predictionArms.has(armId)
+    ),
+    horizonsFitIndependently: HORIZONS.every(
+      (horizon) => predictionHorizons.has(horizon)
+    ),
+    predictionSerializationClosed:
+      privateSerializationClosed
+      && manifest.counts.predictionRows === training.predictions.length,
+    evaluationSerializationClosed:
+      privateSerializationClosed
+      && manifest.counts.evaluationRows === evaluation.privateRows.length,
+    bootstrapSummaryClosed:
+      manifest.counts.bootstrapRows === evaluation.bootstrapRows.length
+      && evaluation.bootstrapRows.length > 0,
+    completeEvaluationClosed:
+      evaluation.cells.length === 36
+      && development.bestRawArms.length === HORIZONS.length,
+    manifestClosed:
+      manifest.status === "SYNTHETIC_RECOVERY_SMOKE_COMPLETE",
+    receiptClosed:
+      receipt.status === "SYNTHETIC_RECOVERY_SMOKE_COMPLETE",
+    publicAggregateSerializationClosed: publicSerializationClosed,
+    oa03ScopeBoundaryPreserved:
+      development.boundaries.channelAllocationExecuted === false
+      && development.boundaries.thirtySixMonthExecuted === false,
+    privateSourceReadAvoided: true,
+    syntheticOutputOnly: true
+  });
+  const failedChecks = Object.entries(checks)
+    .filter(([, value]) => value !== true)
+    .map(([key]) => key);
+  if (failedChecks.length > 0) {
+    throw new Error(
+      `m2_core_horizon_amount_recovery_smoke_failed:${failedChecks.join(",")}`
+    );
+  }
+  return Object.freeze({
+    status: "R0_FORMAL_CHAIN_SYNTHETIC_SMOKE_VERIFIED",
+    checks,
+    originCount: origins.length,
+    workCaseCount: allCases.workCases.length,
+    oa03PredictionRowCount: oa03.candidateRows.length,
+    frozenB0RowCount: frozenLg01.rows.length,
+    candidatePredictionRowCount: training.predictions.length,
+    evaluationPairRowCount: evaluation.privateRows.length,
+    bootstrapSummaryRowCount: evaluation.bootstrapRows.length,
+    armIds: Object.freeze([...predictionArms].sort()),
+    horizonsMonths: Object.freeze(
+      [...predictionHorizons].sort((left, right) => left - right)
+    )
+  });
+}
+
+function classifyRecoveryFailure(error, stage) {
+  const code = safeErrorCode(error).toLowerCase();
+  if (code.includes("source_authority")) return "SOURCE_AUTHORITY";
+  if (
+    code.includes("future_label")
+    || code.includes("leakage")
+    || code.includes("origin_safe")
+  ) {
+    return "LEAKAGE";
+  }
+  if (
+    code.includes("contract")
+    || code.includes("preregistration")
+    || code.includes("recovery_policy")
+  ) {
+    return "CONTRACT_CHANGE";
+  }
+  if (
+    code.includes("private_directory")
+    || code.includes("capability")
+    || code.includes("path_escape")
+  ) {
+    return "CAPABILITY_DIRECTORY";
+  }
+  if (code.includes("memory") || code.includes("heap")) return "MEMORY";
+  if (
+    code.includes("serialize")
+    || String(stage).includes("OUTPUT_FREEZE")
+    || String(stage).includes("AGGREGATE_FREEZE")
+  ) {
+    return "SERIALIZATION";
+  }
+  if (
+    code.includes("enoent")
+    || code.includes("eacces")
+    || code.includes("io")
+  ) {
+    return "IO";
+  }
+  if (
+    code.includes("command")
+    || code.includes("subprocess")
+    || code.includes("python")
+  ) {
+    return "COMMAND_LIFECYCLE";
+  }
+  return "DETERMINISTIC_IMPLEMENTATION";
 }
 
 function syntheticPublicProof(config) {
@@ -661,6 +1350,7 @@ async function rebuildOa03CurrentScope({
   return Object.freeze({
     inputRowCount: inputRows.length,
     baseRowCount: baseRows.length,
+    materializationReceipt: Object.freeze(receipt),
     candidateRows: Object.freeze(candidateRows.sort(compareRows))
   });
 }
@@ -1122,6 +1812,23 @@ function trainRawCandidates({
             armId !== "B3"
             || Number.isFinite(row.features.lg01PointEstimate)
           ));
+          if (training.length === 0 || armValidation.length === 0) {
+            selections.push({
+              schema:
+                "m2.current.core_horizon_amount.selection.private.v0.1",
+              evaluationFamily: family,
+              outerOrigin,
+              horizonMonths,
+              armId,
+              status: training.length === 0
+                ? "NOT_SELECTABLE_NO_EARLIER_MATURE_TRAINING_ROWS"
+                : "NOT_SELECTABLE_NO_ARM_VALIDATION_ROWS",
+              selected: null,
+              eligibleTrainingRowCount: training.length,
+              validationRowCount: armValidation.length
+            });
+            continue;
+          }
           const selection = selectM2CoreHorizonAmountHyperparameters({
             rows: training,
             outerOrigin,
@@ -1154,6 +1861,15 @@ function trainRawCandidates({
           const raw = armValidation.map(
             (row) => predictM2CoreHorizonAmount(row, state)
           );
+          if (raw.some((row) => !Number.isFinite(row.pointEstimate))) {
+            throw new Error([
+              "m2_core_horizon_amount_nonfinite_prediction",
+              family,
+              outerOrigin,
+              horizonMonths,
+              armId
+            ].join(":"));
+          }
           for (const row of raw) {
             for (const populationId of POPULATIONS) {
               if (row[populationId.toLowerCase()] !== true) continue;
@@ -1654,7 +2370,9 @@ function publicBootstrap(value, config, metrics) {
     status: allowed
       ? value.status
       : config.publicPrivacy.suppressionStatus,
-    method: value.method,
+    method: value.method === "paired_standardWorkId_cluster_resample"
+      ? "PAIRED_WORK_CLUSTER_RESAMPLE"
+      : value.method,
     iterations: value.iterations,
     seed: value.seed,
     workCount: value.workCount,
@@ -1787,23 +2505,44 @@ function publicTimeBlocks(blocks, config) {
 async function resolvePriorAttempt({
   priorReceipt,
   privateDirectory,
-  config
+  config,
+  scientificContractDigest
 }) {
   if (priorReceipt === null) return null;
   if (
     priorReceipt.validCompleteInterpretableResultProduced === true
+    || priorReceipt.completeMetricsProduced === true
     || priorReceipt.status === "COMPLETE_RESULT_FROZEN"
   ) {
     throw new Error("m2_core_horizon_amount_complete_result_already_frozen");
   }
   if (
-    priorReceipt.recovery?.status
-      === "ONE_INFRASTRUCTURE_RECOVERY_CONSUMED"
+    priorReceipt.scientificContractDigest !== undefined
+    && priorReceipt.scientificContractDigest !== null
+    && priorReceipt.scientificContractDigest
+      !== scientificContractDigest
   ) {
-    throw new Error("m2_core_horizon_amount_retry_exhausted");
+    throw new Error("m2_core_horizon_amount_scientific_contract_changed");
   }
-  if (priorReceipt.retryAllowed !== true) {
-    throw new Error("m2_core_horizon_amount_retry_not_authorized");
+  const failureClass = priorReceipt.failureClass
+    ?? classifyRecoveryFailure(
+      new Error(priorReceipt.errorCode ?? "legacy_infrastructure_failure"),
+      priorReceipt.failureStage ?? priorReceipt.stage
+    );
+  const priorAssessment = classifyM2CoreHorizonAmountFailure({
+    failureClass,
+    completeMetricsProduced:
+      priorReceipt.completeMetricsProduced === true,
+    scientificContractChanged:
+      priorReceipt.scientificContractChanged === true,
+    partialOutcomeInspected:
+      priorReceipt.partialOutcomeInspected === true,
+    repeatedSameFailureWithoutFormalChainRegressionCoverage:
+      priorReceipt
+        .repeatedSameFailureWithoutFormalChainRegressionCoverage === true
+  });
+  if (!priorAssessment.retryAllowed) {
+    throw new Error("m2_core_horizon_amount_recovery_boundary_blocked");
   }
   const attemptDirectory = path.join(
     privateDirectory,
@@ -1814,16 +2553,34 @@ async function resolvePriorAttempt({
     attemptDirectory,
     `${priorReceipt.attemptId}-invalidated.json`
   );
-  await writeFile(
-    archive,
-    `${JSON.stringify(priorReceipt, null, 2)}\n`,
-    { encoding: "utf8", flag: "wx" }
-  );
+  const serialized = `${JSON.stringify(priorReceipt, null, 2)}\n`;
+  try {
+    await writeFile(
+      archive,
+      serialized,
+      { encoding: "utf8", flag: "wx" }
+    );
+  } catch (error) {
+    if (
+      error?.code !== "EEXIST"
+      || await readFile(archive, "utf8") !== serialized
+    ) {
+      throw error;
+    }
+  }
+  const recoverySequence = Number(
+    priorReceipt.recovery?.recoverySequence ?? 0
+  ) + 1;
   return {
-    status: "ONE_INFRASTRUCTURE_RECOVERY_CONSUMED",
+    status: "PRE_OUTCOME_INFRASTRUCTURE_RECOVERY_AUTHORIZED",
+    boundaryId: "FIRST_VALID_COMPLETE_OUTCOME_BOUNDARY",
+    recoverySequence,
     priorAttemptId: priorReceipt.attemptId,
     priorStage: priorReceipt.stage,
-    specificationChanged: false
+    priorFailureClass: failureClass,
+    fixedRetryCountApplied: false,
+    scientificContractChanged: false,
+    partialOutcomeInspected: false
   };
 }
 
@@ -1834,7 +2591,8 @@ async function buildPrivateManifest({
   paths,
   counts,
   frozenLg01Digest,
-  status
+  status,
+  syntheticRecoverySmoke = false
 }) {
   const bindings = {};
   for (const [key, filePath] of Object.entries(paths)) {
@@ -1844,7 +2602,9 @@ async function buildPrivateManifest({
     schema: "m2.current.core_horizon_amount.manifest.private.v0.1",
     experimentId: EXPERIMENT_ID,
     modelId: MODEL_ID,
-    status: "COMPLETE_RESULT_FROZEN",
+    status: syntheticRecoverySmoke
+      ? "SYNTHETIC_RECOVERY_SMOKE_COMPLETE"
+      : "COMPLETE_RESULT_FROZEN",
     developmentStatus: status,
     executionHead: preflight.head,
     exactHeadCiRunId: preflight.ciRunId,
@@ -1859,8 +2619,10 @@ async function buildPrivateManifest({
     counts,
     outputBindings: bindings,
     candidateResultCount: 1,
-    resultFrozen: true,
-    retryAllowed: false,
+    resultFrozen: !syntheticRecoverySmoke,
+    syntheticRecoverySmoke,
+    scientificWindowConsumed: !syntheticRecoverySmoke,
+    retryAllowed: syntheticRecoverySmoke,
     privateIdentityPublished: false
   };
 }
@@ -1909,6 +2671,39 @@ function assertPortableSource(source) {
   ) {
     throw new Error("m2_core_horizon_amount_source_not_portable");
   }
+}
+
+function assertRecoveryReadiness(value, expectedScientificDigest) {
+  if (
+    value?.schema
+      !== "m2.current.core_horizon_amount."
+        + "recovery_readiness.public.v0.1"
+    || value?.status
+      !== "M2_CHAM01_RECOVERY_READY_R0_FORMAL_CHAIN_PASS"
+    || value?.experimentId !== EXPERIMENT_ID
+    || value?.modelId !== MODEL_ID
+    || value?.recoveryBoundaryId
+      !== "FIRST_VALID_COMPLETE_OUTCOME_BOUNDARY"
+    || value?.scientificContractDigest !== expectedScientificDigest
+    || value?.scientificContractChanged !== false
+    || value?.syntheticR0?.privateSourceRead !== false
+    || value?.syntheticR0?.scientificWindowConsumed !== false
+    || value?.syntheticR0?.temporaryOutputCleaned !== true
+    || value?.syntheticR0?.armIds?.join(",") !== RAW_ARMS.join(",")
+    || value?.syntheticR0?.horizonsMonths?.join(",")
+      !== HORIZONS.join(",")
+    || Object.values(value?.syntheticR0?.checks ?? {})
+      .some((check) => check !== true)
+    || value?.boundaries?.privateExecutionPerformed !== false
+    || value?.boundaries?.productionAuthorized !== false
+    || value?.boundaries?.pullRequestMergeAuthorized !== false
+  ) {
+    throw new Error(
+      "m2_core_horizon_amount_recovery_readiness_invalid"
+    );
+  }
+  assertM2CoreHorizonAmountPublicSafe(value);
+  return true;
 }
 
 function assertPublicK1(value) {
@@ -2009,6 +2804,25 @@ function resolvePrivateDirectory(root, relativePath) {
     throw new Error("m2_core_horizon_amount_private_directory_escape");
   }
   return resolved;
+}
+
+function assertCapabilityScopedDirectory(
+  capabilityDirectory,
+  candidateDirectory
+) {
+  const base = path.resolve(capabilityDirectory);
+  const candidate = path.resolve(candidateDirectory);
+  const relative = path.relative(base, candidate);
+  if (
+    relative === ".."
+    || relative.startsWith(`..${path.sep}`)
+    || path.isAbsolute(relative)
+  ) {
+    throw new Error(
+      "m2_core_horizon_amount_capability_directory_escape"
+    );
+  }
+  return true;
 }
 
 function repositoryRelative(root, filePath) {
