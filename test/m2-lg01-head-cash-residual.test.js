@@ -18,7 +18,8 @@ import {
   runLg01HeadCashResidualExperiment
 } from "../src/domain/m2Current/lg01HeadCashResidual.js";
 import {
-  loadOrRebuildLg01HeadCashResidualInputCache
+  loadOrRebuildLg01HeadCashResidualInputCache,
+  renderM2Lg01HeadCashResidualDevelopmentReport
 } from "../scripts/m2-current/lg01_head_cash_residual_mode.mjs";
 import {
   buildOriginVisibleTrailing12CashIndex
@@ -262,6 +263,67 @@ test("frozen failure cells reproduce the decision without model rerun", () => {
   assert.deepEqual(rebuilt, JSON.parse(JSON.stringify(
     outcome.evaluation
   )));
+});
+
+test("K2 public result preserves raw failure and deterministic report", async () => {
+  const [developmentText, report] = await Promise.all([
+    readFile(path.join(
+      root,
+      "docs",
+      "analysis",
+      "m2-current",
+      "M2-lg01-head-cash-residual-development-v0.1.json"
+    ), "utf8"),
+    readFile(path.join(
+      root,
+      "docs",
+      "analysis",
+      "m2-current",
+      "M2-lg01-head-cash-residual-development-v0.1.md"
+    ), "utf8")
+  ]);
+  const development = JSON.parse(developmentText);
+  const candidateCells = development.evaluation.cells.filter((cell) => (
+    ["C2", "C3"].includes(cell.armId)
+  ));
+
+  assert.equal(
+    development.status,
+    "M2_LG01_HEAD_CASH_RESIDUAL_FAIL"
+  );
+  assert.equal(development.evaluation.decision.activeCandidate, null);
+  assert.equal(
+    development.evaluation.decision.approvedForAutomation,
+    null
+  );
+  assert.equal(
+    development.evaluation.decision.selectedFallbackMayCreatePass,
+    false
+  );
+  assert.equal(development.selectionSummary.outerSelectionCount, 16);
+  assert.deepEqual(
+    development.selectionSummary.globalAlphaCounts,
+    [{ key: "NO_ELIGIBLE_GLOBAL_ALPHA_FALLBACK_C0", count: 16 }]
+  );
+  assert.equal(
+    candidateCells.every((cell) => (
+      cell.raw.caseCount === 0
+      && cell.raw.rawCoverage === 0
+      && cell.selected.fallbackCount === cell.selected.caseCount
+      && cell.selected.predictedCash
+        === cell.selected.baseOnSameCases.predictedCash
+    )),
+    true
+  );
+  assert.equal(
+    report,
+    renderM2Lg01HeadCashResidualDevelopmentReport(development)
+  );
+  assert.match(report, /全部 16 个外层选择单元都没有合格 alpha/u);
+  assert.match(report, /该历史信号没有转化为新候选证据/u);
+  assert.match(report, /“全量回退”不是数值通过证据/u);
+  assert.match(report, /停止在同一现金特征和同一评价窗内继续做残差微调/u);
+  assert.equal(assertM2Lg01HeadCashResidualPublicSafe(development), true);
 });
 
 test("canonical dispatcher, lifecycle and dual-platform CI expose K1 gates", async () => {

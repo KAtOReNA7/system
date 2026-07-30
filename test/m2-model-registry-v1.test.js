@@ -37,7 +37,7 @@ test("registry schema, evidence paths and immutable digests validate", () => {
   assert.equal(validation.counts.modelCount, 33);
   assert.equal(validation.counts.experimentCount, 20);
   assert.equal(validation.counts.nonModelIdentifierCount, 92);
-  assert.equal(validation.counts.evaluationCount, 107);
+  assert.equal(validation.counts.evaluationCount, 111);
   assert.equal(validation.counts.comparabilityGroupCount, 57);
 });
 
@@ -107,6 +107,10 @@ test("current roles retain fallback, research baseline and no automation promoti
   assert.match(
     registry.currentRoles.roleInterpretationZh,
     /PERFORMANCE_MIXED 只是机器证据完整性状态，不是业务整体通过/u
+  );
+  assert.match(
+    registry.currentRoles.roleInterpretationZh,
+    /全部 16 个外层选择单元都没有合格 alpha/u
   );
   const historicalChampionAssertions = registry.currentRoles.sourceAssertions
     .filter((item) => /champion/u.test(item.assertion));
@@ -226,7 +230,7 @@ test("core legacy population test records non-confirmation without promotion", (
   );
   assert.equal(
     registry.currentRoles.latestStateIndex,
-    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.48.md"
+    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.49.md"
   );
   assert.equal(registry.currentRoles.activeCandidate, null);
   assert.equal(registry.currentRoles.approvedForAutomation, null);
@@ -305,7 +309,7 @@ test("CHAM01 first complete result is failed, frozen and not promoted", () => {
   assert.equal(registry.currentRoles.approvedForAutomation, null);
 });
 
-test("HCRC01 is implemented without an outer outcome or promotion", () => {
+test("HCRC01 first complete failure is frozen without promotion", () => {
   const model = registry.models.find(
     (item) => item.stableModelId === "M2-WORK-HCRC01"
   );
@@ -317,17 +321,30 @@ test("HCRC01 is implemented without an outer outcome or promotion", () => {
 
   assert.equal(
     model.currentRole,
-    "implemented_exploratory_candidate_not_executed"
+    "failed_development_candidate"
   );
   assert.equal(
     model.operationalStatus,
-    "implemented_not_executed_not_promoted"
+    "development_failed_frozen_no_second_evaluation_not_selected_not_production"
   );
   assert.deepEqual(
     model.predecessorIds,
     ["M2-WORK-LG01", "M2-WORK-CHAM01"]
   );
-  assert.equal(model.evaluations.length, 0);
+  assert.equal(model.evaluations.length, 4);
+  assert.equal(
+    model.evaluations.every((evaluation) => (
+      evaluation.caseCount === 0
+      && evaluation.WAPE === null
+      && evaluation.relativeWape === null
+      && evaluation.rawCoverage === 0
+      && evaluation.resultStatus === "M2_LG01_HEAD_CASH_RESIDUAL_FAIL"
+      && evaluation.selectedPipelineModelId === "M2-WORK-LG01"
+      && evaluation.selectedPipelineStatus
+        === "FALLBACK_ONLY_NOT_RAW_CANDIDATE_EVIDENCE"
+    )),
+    true
+  );
   assert.equal(model.automationAuthorized, false);
   assert.equal(model.productionImported, false);
   assert.deepEqual(
@@ -336,10 +353,18 @@ test("HCRC01 is implemented without an outer outcome or promotion", () => {
   );
   assert.equal(
     experiment.resultStatus,
-    "M2_LG01_HEAD_CASH_RESIDUAL_IMPLEMENTED_SYNTHETIC_VERIFIED_OUTER_UNREAD"
+    "M2_LG01_HEAD_CASH_RESIDUAL_FAIL"
   );
-  assert.equal(experiment.candidateOutcomeProduced, false);
-  assert.equal(experiment.outerOutcomeRead, false);
+  assert.equal(experiment.candidateOutcomeProduced, true);
+  assert.equal(experiment.rawCandidateEvidenceProduced, false);
+  assert.equal(experiment.firstCompleteOutcomeFrozen, true);
+  assert.equal(experiment.outerOutcomeRead, true);
+  assert.equal(experiment.qualifiedOuterSelectionCount, 0);
+  assert.equal(
+    experiment.selectedPipelineUniversalFallbackModelId,
+    "M2-WORK-LG01"
+  );
+  assert.equal(experiment.secondResultAuthorized, false);
   assert.equal(experiment.secondResultExecuted, false);
   assert.equal(registry.currentRoles.activeCandidate, null);
   assert.equal(registry.currentRoles.approvedForAutomation, null);
@@ -596,6 +621,11 @@ test("reader catalog is a deterministic complete rendering of the registry", asy
   assert.match(catalog, /M2-EXP-CORE-HORIZON-AMOUNT-01/u);
   assert.match(catalog, /M2-WORK-HCRC01/u);
   assert.match(catalog, /M2-EXP-LG01-HEAD-CASH-RESIDUAL-01/u);
+  assert.match(catalog, /eval-hcrc01-c2-core80-strict-h3-raw/u);
+  assert.match(
+    catalog,
+    /FALLBACK_ONLY_NOT_RAW_CANDIDATE_EVIDENCE/u
+  );
   assert.match(
     catalog,
     /M2_CHAM01_PRIMARY_CORE90_NUMERIC_STABILITY_FAIL_FINITE_EXTREME_EXTRAPOLATION/u
@@ -640,9 +670,14 @@ test("read-only query exposes scoped identities and refuses invalid ranking", ()
 
   const headCashResidual = runQuery("show", "M2-WORK-HCRC01");
   assert.equal(headCashResidual.status, 0, headCashResidual.stderr);
-  assert.match(headCashResidual.stdout, /已实现/u);
-  assert.match(headCashResidual.stdout, /尚未执行/u);
-  assert.match(headCashResidual.stdout, /成绩：\s*$/u);
+  assert.match(headCashResidual.stdout, /已执行失败候选/u);
+  assert.match(headCashResidual.stdout, /已执行但未通过/u);
+  assert.match(headCashResidual.stdout, /eval-hcrc01-c2-core80-strict-h3-raw/u);
+  assert.match(headCashResidual.stdout, /WAPE 未登记（null）/u);
+  assert.match(
+    headCashResidual.stdout,
+    /M2_LG01_HEAD_CASH_RESIDUAL_FAIL/u
+  );
 
   const publishingScale = runQuery("show", "M2-CHAN-PSC01");
   assert.equal(publishingScale.status, 0, publishingScale.stderr);

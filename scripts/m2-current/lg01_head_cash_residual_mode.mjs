@@ -400,7 +400,7 @@ export async function runM2Lg01HeadCashResidualPrivateDevelopment({
       ),
       writeFileAtomic(
         path.join(root, config.publicOutputs.developmentReport),
-        renderDevelopmentReport(development)
+        renderM2Lg01HeadCashResidualDevelopmentReport(development)
       )
     ]);
     stage = "COMPLETE_RESULT_FROZEN";
@@ -578,7 +578,7 @@ export async function recoverM2Lg01HeadCashResidualPublicReporting({
     ),
     writeFileAtomic(
       path.join(root, config.publicOutputs.developmentReport),
-      renderDevelopmentReport(development)
+      renderM2Lg01HeadCashResidualDevelopmentReport(development)
     )
   ]);
   await writeJsonAtomic(receiptPath, {
@@ -751,41 +751,36 @@ function summarizeSelections(selections) {
   };
 }
 
-function renderDevelopmentReport(value) {
-  const selectedArm = value.evaluation.decision.selectedRawArmId;
-  const primary = findCell(
+export function renderM2Lg01HeadCashResidualDevelopmentReport(value) {
+  const frozenLg01 = findCell(
     value,
     "STRICT_ROLLING",
     "CORE80",
-    selectedArm
+    "C0"
   )?.raw;
-  const sensitivity = findCell(
+  const frozenCham01 = findCell(
     value,
     "STRICT_ROLLING",
-    "CORE90",
-    selectedArm
+    "CORE80",
+    "C1"
   )?.raw;
-  const primaryDiagnostic = findCell(
+  const frozenCham01Primary = findCell(
     value,
     "PRIMARY_ROLLING",
     "CORE90",
-    selectedArm
+    "C1"
   )?.raw;
-  const signal = Number.isFinite(primary?.pairedFvaVsC0)
-    && primary.pairedFvaVsC0 >= 0.01;
-  const headProtected = Number.isFinite(
-    primary?.cashBands?.H50?.relativeAbsoluteErrorImprovementVsC0
-  ) && (
-    primary.cashBands.H50.relativeAbsoluteErrorImprovementVsC0 >= 0.01
+  const rawCandidateCases = ["C2", "C3"].reduce((total, armId) => (
+    total + (
+      findCell(value, "STRICT_ROLLING", "CORE80", armId)?.raw
+        ?.caseCount ?? 0
+    )
+  ), 0);
+  const historicalSignal = (
+    Number.isFinite(frozenCham01?.pairedFvaVsC0)
+    && frozenCham01.pairedFvaVsC0 >= 0.01
   );
-  const biasEliminated = (
-    Number.isFinite(primary?.signedBias)
-    && Number.isFinite(primary?.baseOnSameCases?.signedBias)
-    && primary.signedBias >= 0
-  );
-  const primaryStable =
-    primaryDiagnostic?.numericStabilityStatus
-      === "NUMERIC_STABILITY_PASS";
+  const rawCandidateEvidence = rawCandidateCases > 0;
   const nextStep = value.status ===
     "M2_LG01_HEAD_CASH_RESIDUAL_FAIL"
     ? "停止在同一现金特征和同一评价窗内继续做残差微调。"
@@ -800,18 +795,21 @@ function renderDevelopmentReport(value) {
     "",
     "## 一页结论",
     "",
-    `1. 三个月小幅信号：${signal ? "仍存在" : "未达到 1% 门槛"}；`
-      + `主候选原始配对 FVA 为 ${percent(primary?.pairedFvaVsC0)}。`,
-    `2. H50 头部现金：${headProtected ? "达到保护门禁" : "未达到保护门禁"}；`
-      + `绝对误差相对 LG01 变化为 ${percent(
-        primary?.cashBands?.H50?.relativeAbsoluteErrorImprovementVsC0
-      )}。`,
-    `3. 系统性低估：${biasEliminated ? "已消除" : "未被证明消除"}；`
-      + `候选 signed bias 为 ${metric(primary?.signedBias)}，`
-      + `同案例 LG01 为 ${metric(primary?.baseOnSameCases?.signedBias)}。`,
-    `4. Primary/Core90 极端外推：${primaryStable
-      ? "未复现，数值稳定性通过"
-      : "未彻底避免或证据不足"}。`,
+    `1. 三个月小幅信号：冻结 CHAM01 B3 诊断参考${historicalSignal
+      ? "仍保留 2.66% 的点估计信号"
+      : "未达到 1% 门槛"}，但 95% bootstrap 区间跨 0，且两个新候选`
+      + `${rawCandidateEvidence ? "形成了原始输出" : "均没有形成任何合格原始输出"}；`
+      + "因此该历史信号没有转化为新候选证据。",
+    "2. H50 头部现金：未能证明得到保护。两个新候选的原始 H50 案例数均为 0；"
+      + `冻结参考的 H50 只有 ${frozenLg01?.cashBands?.H50?.workCount ?? 0}`
+      + " 部作品，按隐私合同不公开误差金额，不能据此宣称通过。",
+    "3. 系统性低估：未消除。冻结 CHAM01 B3 诊断参考的 signed bias 为 "
+      + `${metric(frozenCham01?.signedBias)}，比冻结 LG01 的 `
+      + `${metric(frozenLg01?.signedBias)} 更负；两个新候选没有原始 bias。`,
+    "4. Primary/Core90 极端外推：不能认定已彻底避免。冻结 CHAM01 B3 "
+      + `诊断参考仍有 ${frozenCham01Primary?.numericFailureCount ?? 0} / `
+      + `${frozenCham01Primary?.caseCount ?? 0} 个数值失败案例；两个有界候选`
+      + "因没有合格原始输出而没有传播极端值，但“全量回退”不是数值通过证据。",
     `5. 证据等级：${statusZh(value.status)}（\`${value.status}\`）。`,
     `6. 下一步：${nextStep}`,
     "",
@@ -820,7 +818,7 @@ function renderDevelopmentReport(value) {
     "| 实验臂（experiment arm） | 中文名称 | 作用 |",
     "|---|---|---|",
     ...value.arms.map((arm) => (
-      `| ${arm.armId} | ${arm.displayNameZh}`
+      `| \`${value.experimentId}/${arm.armId}\` | ${arm.displayNameZh}`
       + `（${arm.displayNameEn}） | ${roleZh(arm.role)} |`
     )),
     "",
@@ -839,43 +837,56 @@ function renderDevelopmentReport(value) {
     "|---|---|---:|---:|---:|---:|---:|---:|---|",
     ...sensitivityRows(value),
     "",
+    "## Primary/Core90 原始数值稳定性诊断",
+    "",
+    "Primary/Core90 只用于数值诊断，比较状态保持 `NOT_COMPARABLE`；没有"
+      + "合法同案例参考时不计算或补造配对 FVA。",
+    "",
+    "| 实验臂 | raw cases | WAPE | signed bias | prediction/base max | "
+      + "fallback | 数值失败 | 解释后的数值状态 |",
+    "|---|---:|---:|---:|---:|---:|---:|---|",
+    ...primaryDiagnosticRows(value),
+    "",
     "## 起点可见现金带",
     "",
-    "| 现金带 | cases / works | 起点现金覆盖 | WAPE | signed bias | "
+    "| 实验臂 / 现金带 | cases / works | 起点现金覆盖 | WAPE | signed bias | "
       + "绝对误差 | 相对 LG01 改善 | 隐私状态 |",
     "|---|---:|---:|---:|---:|---:|---:|---|",
-    ...bandRows(primary),
+    ...bandRows(value),
     "",
     "## 关键护栏",
     "",
-    `- 作品聚类 bootstrap（2,000 次）：[${percent(
-      primary?.bootstrap?.lower
-    )}, ${percent(primary?.bootstrap?.upper)}]。`,
-    `- 独立时间块：${primary?.independentTimeBlocks?.wins ?? 0} 胜 / `
-      + `${primary?.independentTimeBlocks?.lossesOrTies ?? 0} 负或平，`
-      + `改善占比 ${percent(
-        primary?.independentTimeBlocks?.improvingShare
+    `- 冻结 CHAM01 B3 诊断参考的作品聚类 bootstrap（2,000 次）：[${percent(
+      frozenCham01?.bootstrap?.lower
+    )}, ${percent(frozenCham01?.bootstrap?.upper)}]，跨 0。`,
+    `- 冻结 CHAM01 B3 诊断参考的独立时间块：${
+      frozenCham01?.independentTimeBlocks?.wins ?? 0
+    } 胜 / ${frozenCham01?.independentTimeBlocks?.lossesOrTies ?? 0}`
+      + ` 负或平，改善占比 ${percent(
+        frozenCham01?.independentTimeBlocks?.improvingShare
       )}。`,
-    `- 最大单作品误差占比：候选 ${percent(
-      primary?.errorConcentration?.maximumSingleWorkAbsoluteErrorShare
-    )}，LG01 ${percent(
-      primary?.baseOnSameCases?.errorConcentration
-        ?.maximumSingleWorkAbsoluteErrorShare
-    )}。`,
-    `- top 10 作品误差集中度：候选 ${percent(
-      primary?.errorConcentration?.top10WorkAbsoluteErrorShare
-    )}，LG01 ${percent(
-      primary?.baseOnSameCases?.errorConcentration
-        ?.top10WorkAbsoluteErrorShare
-    )}。`,
-    `- Core90 配对 FVA：${percent(sensitivity?.pairedFvaVsC0)}；`
-      + `Primary/Core90 比较状态保持 \`NOT_COMPARABLE\`，没有补造 FVA。`,
+    `- 最大单作品误差占比：冻结 CHAM01 B3 为 ${percent(
+      frozenCham01?.errorConcentration?.maximumSingleWorkAbsoluteErrorShare
+    )}，冻结 LG01 为 ${percent(
+      frozenLg01?.errorConcentration?.maximumSingleWorkAbsoluteErrorShare
+    )}，明显恶化。`,
+    `- top 10 作品误差集中度：冻结 CHAM01 B3 为 ${percent(
+      frozenCham01?.errorConcentration?.top10WorkAbsoluteErrorShare
+    )}，冻结 LG01 为 ${percent(
+      frozenLg01?.errorConcentration?.top10WorkAbsoluteErrorShare
+    )}，明显恶化。`,
+    `- 冻结 CHAM01 B3 的 Core90 配对 FVA 为 ${percent(
+      findCell(value, "STRICT_ROLLING", "CORE90", "C1")
+        ?.raw?.pairedFvaVsC0
+    )}；两个新候选的 Core90 原始案例数均为 0。`,
     "",
     "## 原始候选与回退后结果",
     "",
     "原始候选（raw candidate）决定是否通过；回退后结果（selected "
       + "pipeline）只说明运行时如何回到冻结 LG01。任何回退都不能覆盖原始"
-      + "数值失败，也不能创造通过。上表分别列出 raw 与 selected，二者未混合。",
+      + "数值失败，也不能创造通过。全部 16 个外层选择单元都没有合格 alpha，"
+      + "所以 C2/C3 的 raw 版本在三个评价人口均为 0 个案例，而 selected "
+      + "版本全部等于 C0。上表分别列出 raw 与 selected，二者未混合。",
     "",
     "## 私有能力与边界",
     "",
@@ -899,7 +910,7 @@ function renderDevelopmentReport(value) {
       + "Canary/full160、release、M3 formal 或 PR 合并。",
     ""
   ];
-  return `${lines.join("\n")}\n`;
+  return `${lines.join("\n").trimEnd()}\n`;
 }
 
 function evaluationRows(value, family, populationId) {
@@ -908,14 +919,15 @@ function evaluationRows(value, family, populationId) {
     && cell.populationId === populationId
   )).flatMap((cell) => ["raw", "selected"].map((variant) => {
     const row = cell[variant];
-    return `| ${cell.armId} | ${variantZh(variant)} | ${row.caseCount}`
+    return `| ${armLabel(value, cell.armId)}`
+      + ` | ${variantZh(variant)} | ${row.caseCount}`
       + ` | ${metric(row.wape)} | ${metric(row.signedBias)}`
       + ` | ${metric(row.mae)} | ${metric(row.medianAbsoluteError)}`
       + ` | ${percent(row.pairedFvaVsC0)}`
       + ` | [${percent(row.bootstrap?.lower)}, `
       + `${percent(row.bootstrap?.upper)}]`
       + ` | ${percent(row.independentTimeBlocks?.improvingShare)}`
-      + ` | ${row.numericStabilityStatus} |`;
+      + ` | ${numericStatusForReport(cell, row, variant)} |`;
   }));
 }
 
@@ -925,24 +937,79 @@ function sensitivityRows(value) {
     && cell.populationId === "CORE90"
   )).flatMap((cell) => ["raw", "selected"].map((variant) => {
     const row = cell[variant];
-    return `| ${cell.armId} | ${variantZh(variant)} | ${row.caseCount}`
+    return `| ${armLabel(value, cell.armId)}`
+      + ` | ${variantZh(variant)} | ${row.caseCount}`
       + ` | ${metric(row.wape)} | ${metric(row.signedBias)}`
       + ` | ${percent(row.pairedFvaVsC0)} | ${row.fallbackCount}`
       + ` | ${row.nonfiniteCount}/${row.numericFailureCount}`
-      + ` | ${row.numericStabilityStatus} |`;
+      + ` | ${numericStatusForReport(cell, row, variant)} |`;
   }));
 }
 
-function bandRows(primary) {
-  return ["H50", "M30", "L20"].map((bandId) => {
-    const row = primary?.cashBands?.[bandId] ?? {};
-    return `| ${bandId} | ${row.caseCount ?? 0} / ${row.workCount ?? 0}`
+function primaryDiagnosticRows(value) {
+  return value.evaluation.cells.filter((cell) => (
+    cell.evaluationFamily === "PRIMARY_ROLLING"
+    && cell.populationId === "CORE90"
+  )).map((cell) => {
+    const row = cell.raw;
+    return `| ${armLabel(value, cell.armId)} | ${row.caseCount}`
+      + ` | ${metric(row.wape)} | ${metric(row.signedBias)}`
+      + ` | ${metric(row.predictionBaseRatio?.max)}`
+      + ` | ${row.fallbackCount} | ${row.numericFailureCount}`
+      + ` | ${numericStatusForReport(cell, row, "raw")} |`;
+  });
+}
+
+function bandRows(value) {
+  return value.evaluation.cells.filter((cell) => (
+    cell.evaluationFamily === "STRICT_ROLLING"
+    && cell.populationId === "CORE80"
+  )).flatMap((cell) => ["H50", "M30", "L20"].map((bandId) => {
+    const row = cell.raw?.cashBands?.[bandId] ?? {};
+    return `| ${armLabel(value, cell.armId)} / ${bandId}`
+      + ` | ${row.caseCount ?? 0} / ${row.workCount ?? 0}`
       + ` | ${percent(row.originVisibleCashShare)}`
       + ` | ${metric(row.wape)} | ${metric(row.signedBias)}`
       + ` | ${metric(row.absoluteError)}`
       + ` | ${percent(row.relativeAbsoluteErrorImprovementVsC0)}`
       + ` | ${row.privacyStatus ?? "NOT_AVAILABLE"} |`;
-  });
+  }));
+}
+
+function armLabel(value, armId) {
+  const arm = value.arms.find((item) => item.armId === armId);
+  return `${arm?.displayNameZh ?? "未知实验臂"}`
+    + `（\`${value.experimentId}/${armId}\`）`;
+}
+
+function numericStatusForReport(cell, row, variant) {
+  if (
+    cell.evaluationFamily === "PRIMARY_ROLLING"
+    && cell.populationId === "CORE90"
+    && cell.armId === "C1"
+    && row.numericFailureCount > 0
+  ) {
+    return "有限极端外推数值失败"
+      + "（`NUMERIC_STABILITY_FAIL_FINITE_EXTREME_EXTRAPOLATION`；"
+      + `冻结聚合字段为 \`${row.numericStabilityStatus}\`，但不能覆盖 `
+      + `${row.numericFailureCount} 个失败案例）`;
+  }
+  if (
+    variant === "raw"
+    && ["C2", "C3"].includes(cell.armId)
+    && row.caseCount === 0
+  ) {
+    return `无原始候选；\`${row.numericStabilityStatus}\` 只表示没有传播`
+      + "非有限值，不构成候选通过";
+  }
+  if (
+    variant === "selected"
+    && ["C2", "C3"].includes(cell.armId)
+    && row.fallbackCount === row.caseCount
+  ) {
+    return `\`${row.numericStabilityStatus}\`（全部回退冻结 LG01）`;
+  }
+  return `\`${row.numericStabilityStatus}\``;
 }
 
 function buildSyntheticRows() {

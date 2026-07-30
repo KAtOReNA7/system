@@ -417,6 +417,9 @@ function resultStatusZh(value) {
   ) {
     return "已实现并通过合成验证且外层结果未读取";
   }
+  if (value === "M2_LG01_HEAD_CASH_RESIDUAL_FAIL") {
+    return "LG01 头部现金残差校准开发失败";
+  }
   if (value === "HORIZON_ROUTER_NOT_CONFIRMED") {
     return "按预测周期滚动模型路由未确认";
   }

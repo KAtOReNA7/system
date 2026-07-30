@@ -483,8 +483,8 @@ export function renderM2ModelCatalog(registry) {
     "",
     "## 成绩总账",
     "",
-    "| 可比组 | 模型（稳定 ID） | cases / works / origins | WAPE | signed bias | 结果（机器状态） |",
-    "|---|---|---:|---:|---:|---|",
+    "| 可比组 | 模型（稳定 ID） | 评价 / 实验臂 | cases / works / origins | WAPE | signed bias | 结果（机器状态） |",
+    "|---|---|---|---:|---:|---:|---|",
     ...renderScoreLedger(registry),
     "",
     "## 数值稳定性失败总账",
@@ -625,13 +625,29 @@ function renderScoreLedger(registry) {
         .map((evaluation) => (
           `| ${code(group.comparableGroupId)}`
           + ` | ${model.displayNameZh}（${code(model.stableModelId)}）`
+          + ` | ${code(evaluation.evaluationId)}`
+          + (
+            evaluation.experimentId && evaluation.experimentArmId
+              ? ` / ${code(
+                `${evaluation.experimentId}/${evaluation.experimentArmId}`
+              )}`
+              : ""
+          )
           + ` | ${displayCount(evaluation.caseCount)} / `
           + `${displayCount(evaluation.workCount)} / `
           + `${displayCount(evaluation.originCount)}`
           + ` | ${displayMetric(evaluation.WAPE, evaluation.resultStatus)}`
           + ` | ${displayMetric(evaluation.signedBias, evaluation.resultStatus)}`
           + ` | ${resultStatusZh(evaluation.resultStatus)}（`
-          + `${code(evaluation.resultStatus)}） |`
+          + `${code(evaluation.resultStatus)}）`
+          + (
+            evaluation.selectedPipelineStatus
+              ? `；回退后管线状态（${code(
+                evaluation.selectedPipelineStatus
+              )}）`
+              : ""
+          )
+          + " |"
         ))
     ))
   ));
@@ -756,6 +772,9 @@ function resultStatusZh(value) {
         + "IMPLEMENTED_SYNTHETIC_VERIFIED_OUTER_UNREAD"
   ) {
     return "已实现并通过 synthetic 验证但 outer outcome 仍未读取";
+  }
+  if (value === "M2_LG01_HEAD_CASH_RESIDUAL_FAIL") {
+    return "LG01 头部现金残差校准开发失败";
   }
   if (value === "OA03_CURRENT_SCOPE_PERFORMANCE_NOT_EVALUABLE") {
     return "主要参考不可合法重建，当前性能不可评价";
