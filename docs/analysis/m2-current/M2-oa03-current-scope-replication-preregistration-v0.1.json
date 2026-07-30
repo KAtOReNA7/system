@@ -1,0 +1,291 @@
+{
+  "schema": "m2.current.oa03_replication_preregistration.public.v0.1",
+  "asOf": "2026-07-30",
+  "experiment": {
+    "stableExperimentId": "M2-EXP-OA03-CURRENT-SCOPE-REPLICATION-01",
+    "displayNameZh": "M2 作品发生—金额校准模型 v0.3 当前范围复现与已有渠道分配验证 v0.1",
+    "displayNameEn": "M2 Occurrence-Amount Calibration v0.3 Current-Scope Replication and Observed-Channel Allocation Validation v0.1",
+    "entityType": "experiment"
+  },
+  "status": "P0_PREREGISTERED_NO_OUTER_OUTCOME_READ",
+  "auditBaseline": {
+    "dynamicStartHead": "ac18c154fa9afbf93ff36a12e32925eb509dfd79",
+    "dynamicStartHeadRole": "AUDIT_ONLY_NOT_A_PORTABLE_EXECUTION_PRECONDITION",
+    "branch": "codex/m2-oa03-current-scope-replication-v0-1",
+    "originMainExactAtBranchCreation": true,
+    "trackedWorktreeCleanAtBranchCreation": true,
+    "upstream": "origin/main",
+    "ahead": 0,
+    "behind": 0,
+    "openPullRequestCount": 0,
+    "worktreeCount": 1,
+    "latestOriginMainCiStatus": "SUCCESS",
+    "trackedFileCount": 2075,
+    "trackedByteIdenticalFileGroupCount": 0,
+    "parallelProductionLoaderFound": false,
+    "parallelProductionRouteFound": false,
+    "parallelProductionApiFound": false,
+    "historicalMultiGenerationRunnerReusedAsNewRuntime": false
+  },
+  "authorityResolution": {
+    "modelRegistryRead": true,
+    "currentStateIndexRead": true,
+    "evaluationContractRead": true,
+    "scopeContractRead": true,
+    "formulaCodeRead": true,
+    "historicalRunnerRead": true,
+    "commandLifecycleRead": true,
+    "canonicalModelId": "M2-WORK-OA03",
+    "canonicalCoreEntrypoint": "src/domain/m2Current/candidate.js",
+    "canonicalFunction": "buildM2CurrentOccurrenceAmountCandidate",
+    "identityStatus": "CANONICAL_FORMULA_UNIQUELY_RESOLVED",
+    "historicalRunnerStatus": "ARCHIVE_ONLY_LINEAGE_EVIDENCE_NOT_NEW_RUNTIME",
+    "currentOperationalRole": "operational_work_fallback",
+    "activeCandidate": null,
+    "approvedForAutomation": null
+  },
+  "governanceCorrection": {
+    "status": "CURRENT_GOVERNANCE_LAYER_CORRECTED",
+    "historicalArtifactsMutated": false,
+    "serviceAndPrimaryEvaluationPopulation": "DYNAMIC_CORE80_CORE90",
+    "trainingPopulationRule": "EXPERIMENT_PREREGISTERED_AND_ORIGIN_SAFE",
+    "fullMatureSupportLabel": "FULL_MATURE_TRAINING_SUPPORT",
+    "tailServingImplied": false,
+    "coreOnlyTrainingImplied": false,
+    "evidenceStatus": "TAIL_INTERFERENCE_NOT_CONFIRMED",
+    "core90Evidence": "SMALL_AND_UNSTABLE",
+    "core80Evidence": "DEGRADED"
+  },
+  "frozenDesign": {
+    "target": "future_sales_share_development_modelable_cash_for_origin_mature_core_legacy_works_on_origin_observed_mature_channels",
+    "actualDefinitionId": "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01",
+    "primaryPopulationId": "CORE80",
+    "sensitivityPopulationId": "CORE90",
+    "families": [
+      "PRIMARY_ROLLING",
+      "STRICT_ROLLING"
+    ],
+    "horizonsMonths": [
+      3,
+      6,
+      12
+    ],
+    "minimumCompleteBillMonths": {
+      "work": 3,
+      "workCanonicalChannel": 3
+    },
+    "trainingSupportMode": "FULL_MATURE_TRAINING_SUPPORT",
+    "formulaConfig": "config/m2-current-oa03-replication.v0.1.json",
+    "bootstrap": {
+      "iterations": 2000,
+      "seed": 20260728,
+      "clusterUnit": "standardWorkId",
+      "confidenceLevel": 0.95
+    },
+    "publicPrivacy": {
+      "minimumCaseCount": 30,
+      "minimumWorkCount": 20
+    }
+  },
+  "arms": [
+    {
+      "armId": "M2-EXP-OA03-CURRENT-SCOPE-REPLICATION-01/R0",
+      "displayNameZh": "作品发生—金额校准模型 v0.3 当前范围严格复现臂",
+      "entityType": "existing-model replication arm",
+      "status": "PREREGISTERED_NOT_EXECUTED"
+    },
+    {
+      "armId": "M2-EXP-OA03-CURRENT-SCOPE-REPLICATION-01/R1",
+      "displayNameZh": "OA03 原冻结输出同案例重合验证",
+      "entityType": "semantic replay diagnostic",
+      "status": "PREREGISTERED_NOT_EXECUTED",
+      "differentContractStatus": "NOT_COMPARABLE_DIFFERENT_CONTRACT"
+    },
+    {
+      "armId": "M2-EXP-OA03-CURRENT-SCOPE-REPLICATION-01/C1",
+      "displayNameZh": "OA03 作品总额 × 最近 12 个完整账单月已有成熟渠道份额分配臂",
+      "entityType": "observed-channel allocation capability",
+      "status": "PREREGISTERED_NOT_EXECUTED",
+      "windowMonths": 12
+    }
+  ],
+  "capabilityMatrix": [
+    {
+      "capability": "READ_PRIVATE_SOURCE_AUTHORITY",
+      "authorized": true,
+      "phase": "P2_AFTER_P0_P1_EXACT_HEAD_CI"
+    },
+    {
+      "capability": "REBUILD_PRIVATE_DERIVED_CACHE",
+      "authorized": true,
+      "phase": "P2_AFTER_P0_P1_EXACT_HEAD_CI"
+    },
+    {
+      "capability": "FIT_OA03_FOR_STRICT_REPLICATION",
+      "authorized": true,
+      "phase": "P2_AFTER_P0_P1_EXACT_HEAD_CI"
+    },
+    {
+      "capability": "PRIMARY_AND_STRICT_ROLLING_3_6_12",
+      "authorized": true,
+      "phase": "P2_AFTER_P0_P1_EXACT_HEAD_CI"
+    },
+    {
+      "capability": "TRAILING_12_OBSERVED_CHANNEL_ALLOCATION",
+      "authorized": true,
+      "phase": "P2_AFTER_P0_P1_EXACT_HEAD_CI"
+    },
+    {
+      "capability": "STANDARD_WORK_CLUSTER_BOOTSTRAP_2000",
+      "authorized": true,
+      "phase": "P2_AFTER_P0_P1_EXACT_HEAD_CI"
+    },
+    {
+      "capability": "LATER_OR_FINAL_HOLDOUT",
+      "authorized": false,
+      "phase": "PROHIBITED"
+    },
+    {
+      "capability": "PROVIDER",
+      "authorized": false,
+      "phase": "PROHIBITED"
+    },
+    {
+      "capability": "PRODUCTION_SHARED_OR_STAGING_DATABASE",
+      "authorized": false,
+      "phase": "PROHIBITED"
+    },
+    {
+      "capability": "PRODUCTION_EXACT_V03_LOADER_ROUTE_API_MUTATION",
+      "authorized": false,
+      "phase": "PROHIBITED"
+    },
+    {
+      "capability": "CANARY_OR_FULL160",
+      "authorized": false,
+      "phase": "PROHIBITED"
+    },
+    {
+      "capability": "AUTOMATION_RELEASE_OR_M3_FORMAL",
+      "authorized": false,
+      "phase": "PROHIBITED"
+    },
+    {
+      "capability": "PULL_REQUEST_MERGE",
+      "authorized": false,
+      "phase": "PROHIBITED"
+    }
+  ],
+  "capabilityDoctor": {
+    "capabilityId": "m2-oa03-current-scope-replication",
+    "status": "DERIVED_CACHE_MISS_REBUILD_REQUIRED",
+    "sourceAuthorityStatus": "SOURCE_AUTHORITY_AVAILABLE",
+    "sourceAuthorityRoleCount": 5,
+    "sourceAuthorityPresentCount": 5,
+    "derivedCacheStatus": "CACHE_MISS_REBUILDABLE",
+    "derivedCacheRoleCount": 10,
+    "derivedCachePresentCount": 6,
+    "derivedCacheMissingCount": 4,
+    "historicalReceiptStatus": "OPTIONAL_PROVENANCE_MISSING",
+    "historicalReceiptRoleCount": 1,
+    "safeToRebuildDerivedCache": true,
+    "safeToStartModelAfterRebuild": true,
+    "privateContentsRead": false
+  },
+  "artifactClasses": {
+    "PRIVATE_SOURCE_AUTHORITY": {
+      "missingEffect": "OA03_CURRENT_SCOPE_REPLICATION_BLOCKED_SOURCE_AUTHORITY",
+      "reconstructAllowed": false
+    },
+    "PRIVATE_DERIVED_CACHE": {
+      "missingEffect": "CACHE_MISS_REBUILDABLE",
+      "reconstructAllowed": true
+    },
+    "PRIVATE_RUN_PROVENANCE": {
+      "missingEffect": "OPTIONAL_PROVENANCE_MISSING",
+      "reconstructAllowed": false,
+      "blocking": false
+    }
+  },
+  "decisionPolicy": {
+    "technicalReplicationStates": [
+      "OA03_CURRENT_SCOPE_REPLICATION_COMPLETE",
+      "OA03_CURRENT_SCOPE_REPLICATION_SEMANTIC_MISMATCH",
+      "OA03_CURRENT_SCOPE_REPLICATION_BLOCKED_SOURCE_AUTHORITY",
+      "OA03_CURRENT_SCOPE_REPLICATION_BLOCKED_NO_LEGAL_ORIGIN",
+      "OA03_CURRENT_SCOPE_REPLICATION_BLOCKED_MODEL_IDENTITY_AMBIGUOUS",
+      "OA03_CURRENT_SCOPE_REPLICATION_INFRASTRUCTURE_FAILURE_BEFORE_RESULT"
+    ],
+    "workTotalStatesByHorizon": [
+      "OA03_CURRENT_SCOPE_PERFORMANCE_SUPPORTED",
+      "OA03_CURRENT_SCOPE_PERFORMANCE_MIXED",
+      "OA03_CURRENT_SCOPE_PERFORMANCE_NOT_SUPPORTED",
+      "OA03_CURRENT_SCOPE_PERFORMANCE_NOT_EVALUABLE"
+    ],
+    "channelAllocationStatesByHorizon": [
+      "OA03_TRAILING12_CHANNEL_ALLOCATION_SUPPORTED",
+      "OA03_TRAILING12_CHANNEL_ALLOCATION_MIXED",
+      "OA03_TRAILING12_CHANNEL_ALLOCATION_NOT_SUPPORTED",
+      "OA03_TRAILING12_CHANNEL_ALLOCATION_NOT_EVALUABLE"
+    ],
+    "summaryStates": [
+      "M2_OA03_CURRENT_SCOPE_REPLICATION_COMPLETE_PERFORMANCE_SUPPORTED",
+      "M2_OA03_CURRENT_SCOPE_REPLICATION_COMPLETE_PERFORMANCE_MIXED",
+      "M2_OA03_CURRENT_SCOPE_REPLICATION_COMPLETE_PERFORMANCE_NOT_SUPPORTED",
+      "M2_OA03_CURRENT_SCOPE_REPLICATION_BLOCKED"
+    ],
+    "materialRelativeWapeImprovement": 0.01,
+    "maximumAbsoluteBiasWorsening": 0.02,
+    "minimumImprovingTimeBlockShare": 0.5,
+    "wapeImprovementWithMaterialBiasWorsening": "MIXED",
+    "technicalCompletionDoesNotImplyPerformanceSupport": true
+  },
+  "phaseGates": [
+    {
+      "phase": "P0",
+      "privateOuterOutcomeReadAllowed": false,
+      "nextPhaseRequiresExactHeadLinuxAndWindowsCi": true
+    },
+    {
+      "phase": "P1",
+      "privateOuterOutcomeReadAllowed": false,
+      "nextPhaseRequiresExactHeadLinuxAndWindowsCi": true,
+      "freshClonePublicBaselineRequired": true
+    },
+    {
+      "phase": "P2",
+      "privateOuterOutcomeReadAllowed": true,
+      "firstCompleteInterpretableResultMustFreeze": true,
+      "resultDrivenRerunAllowed": false
+    },
+    {
+      "phase": "P3",
+      "privateRowReadAllowed": false,
+      "closedPublicAggregateReadAllowed": true,
+      "pullRequestMergeAllowed": false
+    }
+  ],
+  "outcomes": {
+    "modelExecutionCount": 0,
+    "trainingRowCount": null,
+    "predictionRowCount": null,
+    "evaluationRowCount": null,
+    "performanceMetrics": null,
+    "channelAllocationMetrics": null,
+    "outerOutcomeRead": false
+  },
+  "boundaries": {
+    "historicalReportsRewritten": false,
+    "historicalIdsRenamed": false,
+    "historicalDigestsRewritten": false,
+    "newModelCreated": false,
+    "newFeatureCreated": false,
+    "newTrainingAblationCreated": false,
+    "productionChanged": false,
+    "holdoutRead": false,
+    "providerUsed": false,
+    "databaseUsed": false,
+    "releaseAuthorized": false,
+    "privateIdentityPublished": false
+  }
+}

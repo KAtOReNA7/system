@@ -40,6 +40,7 @@ test("catalog defines one private-free core capability and scoped private capabi
       "m2-core-revenue-manual",
       "m2-core-legacy-population",
       "m2-core-legacy-horizon-router",
+      "m2-oa03-current-scope-replication",
       "m2-layered-revenue-composition",
       "m2-current-canonical-channel",
       "m2-current-human-anchored",

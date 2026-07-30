@@ -1,0 +1,426 @@
+{
+  "schema": "m2.current.oa03_replication.v0.1",
+  "asOf": "2026-07-30",
+  "experiment": {
+    "stableExperimentId": "M2-EXP-OA03-CURRENT-SCOPE-REPLICATION-01",
+    "displayNameZh": "M2 作品发生—金额校准模型 v0.3 当前范围复现与已有渠道分配验证 v0.1",
+    "displayNameEn": "M2 Occurrence-Amount Calibration v0.3 Current-Scope Replication and Observed-Channel Allocation Validation v0.1",
+    "entityType": "experiment",
+    "phase": "P0_PREREGISTERED",
+    "outerOutcomeRead": false,
+    "activeCandidate": false,
+    "approvedForAutomation": false
+  },
+  "auditBaseline": {
+    "dynamicStartHead": "ac18c154fa9afbf93ff36a12e32925eb509dfd79",
+    "dynamicStartHeadRole": "AUDIT_ONLY_NOT_A_PORTABLE_EXECUTION_PRECONDITION",
+    "branch": "codex/m2-oa03-current-scope-replication-v0-1",
+    "originMainExactAtBranchCreation": true,
+    "trackedWorktreeCleanAtBranchCreation": true,
+    "openPullRequestCountAtBranchCreation": 0,
+    "trackedByteIdenticalFileGroupCount": 0
+  },
+  "authority": {
+    "modelRegistry": "config/m2-model-registry.v1.json",
+    "currentStateIndex": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.41.md",
+    "evaluationContract": "config/m2-evaluation-contract.v2.2.json",
+    "evaluationActivation": "docs/analysis/m2-current/M2-evaluation-contract-v2.2-development-activation-v1.md",
+    "scopeContract": "docs/analysis/m2-current/M2-core-legacy-observed-channel-scope-contract-v0.1.md",
+    "trainingPopulationEvidence": "docs/analysis/m2-current/M2-core-legacy-tail-interference-test-v0.1.md",
+    "allocationEvidence": "docs/analysis/m2-current/M2-core-legacy-observed-channel-allocation-v0.1.md",
+    "historicalFormulaConfig": "config/m2-current.v0.3.json",
+    "historicalFrozenOutput": "docs/analysis/m2-current/M2-current-occurrence-amount-candidate-v0.3.json"
+  },
+  "modelIdentity": {
+    "stableModelId": "M2-WORK-OA03",
+    "displayNameZh": "作品发生—金额校准模型 v0.3",
+    "displayNameEn": "Occurrence-Amount Calibration v0.3",
+    "entityType": "model",
+    "canonicalCoreEntrypoint": "src/domain/m2Current/candidate.js",
+    "canonicalFunction": "buildM2CurrentOccurrenceAmountCandidate",
+    "historicalRunnerRole": "ARCHIVE_ONLY_FORMULA_AND_LINEAGE_EVIDENCE",
+    "historicalRunner": "scripts/m2-current/run_m2_current_candidate.mjs",
+    "historicalConfigTarget": "future_bill_cash",
+    "currentReplicationTarget": "future_sales_share_development_modelable_cash",
+    "identityResolutionStatus": "CANONICAL_FORMULA_UNIQUELY_RESOLVED",
+    "productionExactV03MutationAllowed": false
+  },
+  "scope": {
+    "target": "future_sales_share_development_modelable_cash_for_origin_mature_core_legacy_works_on_origin_observed_mature_channels",
+    "actualDefinitionId": "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01",
+    "workPredictionGrain": "standardWorkId_forecastOrigin_horizon",
+    "channelAllocationGrain": "standardWorkId_canonicalChannel_forecastOrigin_horizon",
+    "calendarField": "billMonth",
+    "calendarMeaning": "financial_posting_month",
+    "horizonsMonths": [
+      3,
+      6,
+      12
+    ],
+    "primaryPopulationId": "CORE80",
+    "sensitivityPopulationId": "CORE90",
+    "minimumWorkCompleteBillMonths": 3,
+    "minimumWorkChannelCompleteBillMonths": 3,
+    "coreSelection": {
+      "originSafe": true,
+      "recomputedAtEveryForecastOrigin": true,
+      "referenceWindowRule": {
+        "januaryAndFebruary": "LATEST_6_COMPLETE_BILL_MONTHS_ENDING_AT_ORIGIN",
+        "marchThroughDecember": "CALENDAR_YEAR_JANUARY_THROUGH_ORIGIN"
+      },
+      "thresholds": {
+        "CORE80": 0.8,
+        "CORE90": 0.9
+      },
+      "minimumSetReachingRevenueThreshold": true,
+      "cutoffTiePolicy": "INCLUDE_ALL_EXACT_REFERENCE_REVENUE_TIES",
+      "futureActualTopNAllowed": false,
+      "currentFixedListBackcastAllowed": false
+    },
+    "abstentions": {
+      "outsideCore": "ABSTAIN_NOT_ZERO",
+      "futureNewWork": "ABSTAIN_NOT_ZERO",
+      "futureFirstObservedChannel": "ABSTAIN_NOT_ZERO",
+      "immatureWork": "ABSTAIN_NOT_ZERO",
+      "immatureObservedChannel": "ABSTAIN_NOT_ZERO"
+    },
+    "excludedCash": [
+      "buyout_cash",
+      "other_non_sales_share_cash",
+      "company_total_revenue_gap"
+    ],
+    "reversalPolicy": {
+      "rawReversalRowCountPreserved": 143,
+      "scope": "same_cash_category_standardWorkId_canonicalChannel_currency",
+      "traceDirection": "BACKWARD_FROM_POSTING_MONTH",
+      "futureReversalMayEnterEarlierOriginFeatures": false,
+      "unallocatedResidualTreatment": "EXCLUDE_ONLY_RESIDUAL_COMPONENT_FROM_DEVELOPMENT_MODELABLE_TARGET",
+      "financialReconciliationResidualPreserved": true,
+      "wholeCaseExclusionAllowed": false,
+      "positiveCashFallbackAllowed": false
+    }
+  },
+  "formula": {
+    "baseCandidateId": "M2-current-hierarchical-robust-calibration-v0.2",
+    "eligibleSegments": [
+      "dense",
+      "intermittent"
+    ],
+    "fallbackSegment": "dormant",
+    "scaleFactors": [
+      1.0
+    ],
+    "minimumEarlierCaseCount": 80,
+    "minimumRelativeWapeImprovement": 0.01,
+    "trainingAbsoluteBiasMaximum": 0.15,
+    "priorStrength": 10,
+    "priorOccurrenceProbability": 0.5,
+    "minimumFactor": 0.3,
+    "maximumFactor": 1.5,
+    "occurrenceDefinition": "actual_greater_than_zero",
+    "conditionalPositiveAmountDefinition": "sum_positive_actual_divided_by_sum_base_prediction_on_positive_rows",
+    "selectedFactorDefinition": "clamp(occurrenceProbability_times_conditionalAmountScale,minimumFactor,maximumFactor)",
+    "selectionGate": "relative_wape_improvement_at_least_1_percent_and_absolute_training_bias_at_most_0_15",
+    "fallbackFactor": 1.0,
+    "fallbackCandidateId": "M2-current-hierarchical-robust-calibration-v0.2",
+    "featureAdditionAllowed": false,
+    "parameterGridExpansionAllowed": false,
+    "revenueWeightedLossAllowed": false,
+    "tailTrainingRowDeletionAllowed": false,
+    "routerAllowed": false,
+    "blendAllowed": false,
+    "horizonParameterCopyAllowed": false,
+    "nativeStoredOutputs": {
+      "occurrenceProbability": true,
+      "conditionalAmountScale": true,
+      "conditionalPositiveAmountPrediction": false,
+      "conditionalPositiveAmountPredictionStatus": "CAPABILITY_NOT_STORED"
+    },
+    "moneySemantics": {
+      "currencyMinorUnits": 100,
+      "comparisonAndConservationIntegerType": "BigInt",
+      "fixedPointScalePower": 2,
+      "absoluteReplayToleranceMinor": 0,
+      "allocationConservationDifferenceMinor": 0
+    }
+  },
+  "training": {
+    "supportMode": "FULL_MATURE_TRAINING_SUPPORT",
+    "meaning": "origin_prior_full_mature_history_is_statistical_support_only",
+    "originSafe": true,
+    "labelAvailableAsOfRequired": true,
+    "outerOriginOrLaterTruthReadAllowed": false,
+    "servicePopulationUnchangedByTrainingSupport": true,
+    "evaluationPopulationUnchangedByTrainingSupport": true,
+    "tailServingAuthorized": false,
+    "coreOnlyClaimAllowed": false,
+    "newAblationAllowed": false,
+    "forbiddenArms": [
+      "CORE80_ONLY_TRAINING",
+      "CORE90_ONLY_TRAINING",
+      "REVENUE_WEIGHTED_TRAINING",
+      "FULL_VS_CORE_NEW_ABLATION"
+    ],
+    "requiredPublicDiagnostics": [
+      "outside_core_training_work_count",
+      "outside_core_training_row_share",
+      "outside_core_training_actual_share",
+      "outside_core_training_loss_share"
+    ],
+    "evidenceStatus": "TAIL_INTERFERENCE_NOT_CONFIRMED",
+    "evidenceInterpretation": {
+      "core90": "SMALL_UNSTABLE_IMPROVEMENT_BELOW_CONFIRMATION",
+      "core80": "MATERIAL_DEGRADATION"
+    }
+  },
+  "arms": [
+    {
+      "armId": "M2-EXP-OA03-CURRENT-SCOPE-REPLICATION-01/R0",
+      "displayNameZh": "作品发生—金额校准模型 v0.3 当前范围严格复现臂",
+      "displayNameEn": "OA03 Current-Scope Strict Replication Arm",
+      "entityType": "existing-model replication arm",
+      "modelId": "M2-WORK-OA03",
+      "outputRole": "WORK_TOTAL"
+    },
+    {
+      "armId": "M2-EXP-OA03-CURRENT-SCOPE-REPLICATION-01/R1",
+      "displayNameZh": "OA03 原冻结输出同案例重合验证",
+      "displayNameEn": "OA03 Original Frozen Output Same-Case Overlap Validation",
+      "entityType": "semantic replay diagnostic",
+      "modelId": "M2-WORK-OA03",
+      "outputRole": "REPLAY_DIAGNOSTIC"
+    },
+    {
+      "armId": "M2-EXP-OA03-CURRENT-SCOPE-REPLICATION-01/C1",
+      "displayNameZh": "OA03 作品总额 × 最近 12 个完整账单月已有成熟渠道份额分配臂",
+      "displayNameEn": "OA03 Work Total × Trailing-12 Mature Observed-Channel Share Allocation Arm",
+      "entityType": "observed-channel allocation capability",
+      "modelId": null,
+      "sourceModelId": "M2-WORK-OA03",
+      "outputRole": "WORK_CHANNEL"
+    }
+  ],
+  "rollingEvaluation": {
+    "families": [
+      "PRIMARY_ROLLING",
+      "STRICT_ROLLING"
+    ],
+    "familiesMustTrainSelectAndEvaluateIndependently": true,
+    "outerFoldSelectionMayReadOnlyPriorAvailableLabels": true,
+    "innerSelectionRequiredOnlyIfOriginalFormulaRequiresIt": true,
+    "fixedFormulaMustNotGainSyntheticInnerTuning": true,
+    "horizonIsolationRequired": true,
+    "sameCaseComparabilityRequired": true,
+    "comparators": [
+      {
+        "modelId": "M2-WORK-LG01",
+        "role": "PRIMARY_RESEARCH_BASELINE"
+      },
+      {
+        "modelId": "M2-WORK-CRMR01",
+        "role": "SECONDARY_MANUAL_RULE_BASELINE"
+      }
+    ],
+    "pointMetrics": [
+      "WAPE",
+      "signed_bias",
+      "absolute_bias",
+      "MAE",
+      "median_absolute_error",
+      "overprediction_cash",
+      "underprediction_cash",
+      "error_concentration",
+      "per_origin_wape",
+      "per_origin_signed_bias",
+      "per_time_block_wape",
+      "per_time_block_signed_bias"
+    ],
+    "occurrenceMetricsWhenStored": [
+      "Brier",
+      "log_loss",
+      "PR_AUC_TRAPEZOIDAL",
+      "Average_Precision",
+      "ROC_AUC",
+      "reliability"
+    ],
+    "conditionalAmountMetricsWhenStored": [
+      "WAPE",
+      "signed_bias",
+      "MAE",
+      "log_MAE"
+    ],
+    "reversalOccurrenceSeparateFromPositiveRevenueOccurrence": true,
+    "materialRelativeWapeImprovement": 0.01,
+    "maximumAbsoluteBiasWorsening": 0.02,
+    "minimumImprovingTimeBlockShare": 0.5,
+    "minimumIndependentTimeBlocks": 2,
+    "insufficientTimeBlocksStatus": "TIME_INDEPENDENCE_UNCONFIRMED",
+    "bootstrap": {
+      "iterations": 2000,
+      "seed": 20260728,
+      "clusterUnit": "standardWorkId",
+      "paired": true,
+      "recomputeMetricsEveryIteration": true,
+      "confidenceLevel": 0.95
+    }
+  },
+  "overlapValidation": {
+    "armId": "M2-EXP-OA03-CURRENT-SCOPE-REPLICATION-01/R1",
+    "identicalContractFields": [
+      "actualDefinitionId",
+      "caseKey",
+      "horizonMonths",
+      "trainingSupportMode",
+      "formulaVersion"
+    ],
+    "metrics": [
+      "exact_row_match_rate",
+      "maximum_absolute_difference_minor",
+      "sum_difference_minor",
+      "WAPE_replay_difference",
+      "signed_bias_replay_difference"
+    ],
+    "differentContractStatus": "NOT_COMPARABLE_DIFFERENT_CONTRACT",
+    "currentActualMayNotBeRewrittenForHistoricalMatch": true
+  },
+  "channelAllocation": {
+    "armId": "M2-EXP-OA03-CURRENT-SCOPE-REPLICATION-01/C1",
+    "kind": "TRAILING_NONNEGATIVE_REVENUE_SHARE",
+    "windowMonths": 12,
+    "windowMayBeChangedAfterOutcome": false,
+    "sourceModelId": "M2-WORK-OA03",
+    "sourceArmId": "M2-EXP-OA03-CURRENT-SCOPE-REPLICATION-01/R0",
+    "sameOriginAndHorizonRequired": true,
+    "onlyOriginObservedMatureCanonicalChannels": true,
+    "futureFirstChannelAllowed": false,
+    "futureActualShareAllowed": false,
+    "equalSplitAllowed": false,
+    "negativeHistoryTreatment": "CLAMP_TO_ZERO_FOR_SHARE_WEIGHT_ONLY",
+    "zeroDenominatorFallback": "LAST_NONZERO_MONTH_WITHIN_TRAILING_12",
+    "fallbackFailure": "ABSTAIN_CHANNEL_ALLOCATION",
+    "centAllocation": "LARGEST_REMAINDER_STABLE_CHANNEL_UID_TIE_BREAK",
+    "currencyMinorUnits": 100,
+    "requiredConservationDifferenceMinor": 0,
+    "legalAbstentionPoint": null,
+    "directComparatorModelIds": [
+      "M2-WORK-LG01",
+      "M2-WORK-CRMR01"
+    ],
+    "resultBasedWindowSelectionAllowed": false,
+    "metrics": [
+      "WAPE",
+      "signed_bias",
+      "MAE",
+      "median_absolute_error",
+      "successful_allocations",
+      "legal_abstentions",
+      "maximum_conservation_difference_minor",
+      "channel_error_contribution",
+      "major_canonical_channel_slices",
+      "time_blocks"
+    ]
+  },
+  "decisionPolicy": {
+    "technicalReplicationStates": [
+      "OA03_CURRENT_SCOPE_REPLICATION_COMPLETE",
+      "OA03_CURRENT_SCOPE_REPLICATION_SEMANTIC_MISMATCH",
+      "OA03_CURRENT_SCOPE_REPLICATION_BLOCKED_SOURCE_AUTHORITY",
+      "OA03_CURRENT_SCOPE_REPLICATION_BLOCKED_NO_LEGAL_ORIGIN",
+      "OA03_CURRENT_SCOPE_REPLICATION_BLOCKED_MODEL_IDENTITY_AMBIGUOUS",
+      "OA03_CURRENT_SCOPE_REPLICATION_INFRASTRUCTURE_FAILURE_BEFORE_RESULT"
+    ],
+    "workTotalStatesByHorizon": [
+      "OA03_CURRENT_SCOPE_PERFORMANCE_SUPPORTED",
+      "OA03_CURRENT_SCOPE_PERFORMANCE_MIXED",
+      "OA03_CURRENT_SCOPE_PERFORMANCE_NOT_SUPPORTED",
+      "OA03_CURRENT_SCOPE_PERFORMANCE_NOT_EVALUABLE"
+    ],
+    "channelAllocationStatesByHorizon": [
+      "OA03_TRAILING12_CHANNEL_ALLOCATION_SUPPORTED",
+      "OA03_TRAILING12_CHANNEL_ALLOCATION_MIXED",
+      "OA03_TRAILING12_CHANNEL_ALLOCATION_NOT_SUPPORTED",
+      "OA03_TRAILING12_CHANNEL_ALLOCATION_NOT_EVALUABLE"
+    ],
+    "summaryStates": [
+      "M2_OA03_CURRENT_SCOPE_REPLICATION_COMPLETE_PERFORMANCE_SUPPORTED",
+      "M2_OA03_CURRENT_SCOPE_REPLICATION_COMPLETE_PERFORMANCE_MIXED",
+      "M2_OA03_CURRENT_SCOPE_REPLICATION_COMPLETE_PERFORMANCE_NOT_SUPPORTED",
+      "M2_OA03_CURRENT_SCOPE_REPLICATION_BLOCKED"
+    ],
+    "supportedRequires": [
+      "raw_oa03_not_masked_by_selected_fallback",
+      "same_case_material_relative_wape_improvement",
+      "bias_guardrail_not_breached",
+      "paired_interval_not_in_conflict",
+      "time_block_evidence_not_in_conflict",
+      "primary_and_strict_have_no_unexplained_direction_reversal"
+    ],
+    "wapeImprovementWithMaterialBiasWorsening": "MIXED",
+    "crossHorizonUnifiedWinnerAllowed": false,
+    "technicalCompletionDoesNotImplyPerformanceSupport": true
+  },
+  "publicPrivacy": {
+    "minimumCaseCount": 30,
+    "minimumWorkCount": 20,
+    "minimumOriginCountForPortfolioLikeSummary": 5,
+    "suppressionStatus": "SUPPRESSED_PRIVACY_THRESHOLD",
+    "prohibitedFields": [
+      "standardWorkId",
+      "channelUid",
+      "workName",
+      "privatePath",
+      "privateReceipt",
+      "rowLevelActual",
+      "rowLevelPrediction"
+    ]
+  },
+  "privateCapability": {
+    "capabilityId": "m2-oa03-current-scope-replication",
+    "sourceAuthorityMissingStatus": "OA03_CURRENT_SCOPE_REPLICATION_BLOCKED_SOURCE_AUTHORITY",
+    "derivedCacheMissingStatus": "CACHE_MISS_REBUILDABLE",
+    "historicalReceiptMissingStatus": "OPTIONAL_PROVENANCE_MISSING",
+    "derivedCacheMustRebuildAutomatically": true,
+    "historicalReceiptMayBlock": false,
+    "repositoryRootResolution": "RUNTIME_FROM_IMPORT_META_AND_PROCESS_CWD_VERIFICATION",
+    "absolutePathAllowed": false
+  },
+  "authorization": {
+    "source": "user_attachment_M2_OA03_current_scope_replication_and_channel_allocation_v0.1_2026_07_30",
+    "privateSourceRead": true,
+    "derivedCacheRebuild": true,
+    "oa03TrainingAndFittingForStrictReplication": true,
+    "primaryAndStrictRolling": true,
+    "privateRowOutputs": true,
+    "bootstrap2000": true,
+    "publicAggregatePublication": true,
+    "laterOrFinalHoldout": false,
+    "provider": false,
+    "productionSharedOrStagingDatabase": false,
+    "productionExactV03LoaderRouteApiMutation": false,
+    "canary": false,
+    "full160": false,
+    "automation": false,
+    "release": false,
+    "m3Formal": false,
+    "pullRequestMerge": false
+  },
+  "privateOutputs": {
+    "directory": "data/private-output/m2-oa03-current-scope-replication",
+    "runtimeAuthorization": "M2-oa03-current-scope-runtime-authorization-private-v0.1.json",
+    "attemptReceipt": "M2-oa03-current-scope-attempt-receipt-private-v0.1.json",
+    "manifest": "M2-oa03-current-scope-manifest-private-v0.1.json",
+    "workPredictions": "M2-oa03-current-scope-work-predictions-private-v0.1.ndjson",
+    "channelAllocations": "M2-oa03-trailing12-channel-allocations-private-v0.1.ndjson",
+    "evaluationRows": "M2-oa03-current-scope-evaluation-private-v0.1.ndjson",
+    "bootstrapRows": "M2-oa03-current-scope-bootstrap-private-v0.1.ndjson"
+  },
+  "publicOutputs": {
+    "preregistrationJson": "docs/analysis/m2-current/M2-oa03-current-scope-replication-preregistration-v0.1.json",
+    "preregistrationReport": "docs/analysis/m2-current/M2-oa03-current-scope-replication-preregistration-v0.1.md",
+    "developmentJson": "docs/analysis/m2-current/M2-oa03-current-scope-replication-development-v0.1.json",
+    "developmentReport": "docs/analysis/m2-current/M2-oa03-current-scope-replication-development-v0.1.md",
+    "allocationJson": "docs/analysis/m2-current/M2-oa03-trailing12-observed-channel-allocation-v0.1.json",
+    "allocationReport": "docs/analysis/m2-current/M2-oa03-trailing12-observed-channel-allocation-v0.1.md",
+    "artifactReadinessReport": "docs/analysis/m2-current/M2-oa03-current-scope-artifact-readiness-v0.1.md"
+  }
+}
