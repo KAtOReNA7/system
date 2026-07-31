@@ -19,6 +19,10 @@ const contract = JSON.parse(readFileSync(
 
 test("M2 business acceptance v1 freezes scope, caps and roles", () => {
   assert.equal(validateM2BusinessAcceptanceContract(contract), true);
+  assert.equal(
+    contract.status,
+    "M2_BUSINESS_ACCEPTANCE_CONTRACT_V1_ACTIVE_FOR_DEVELOPMENT_ONLY"
+  );
   assert.deepEqual(
     contract.businessUsability.horizons.map((row) => [
       row.horizonMonths,
@@ -40,6 +44,19 @@ test("M2 business acceptance v1 freezes scope, caps and roles", () => {
   assert.equal(
     contract.h36Evidence.historicalEvidenceCaveat,
     "HISTORICAL_MULTI_ORIGIN_NOT_PROSPECTIVE_VALIDATION"
+  );
+  assert.equal(
+    contract.businessUsability.horizons[3].status,
+    "ACTIVE_FOR_DEVELOPMENT_EVALUATION_ONLY_WITH_HISTORICAL_NON_PROSPECTIVE_CAVEAT"
+  );
+  assert.equal(
+    contract.h36Evidence.reproductionStatus,
+    "EXACT_AGGREGATE_REPRODUCED_WITHIN_FIXED_TOLERANCE"
+  );
+  assert.equal(contract.h36Evidence.h36Activated, true);
+  assert.equal(
+    contract.h36Evidence.h50M30L20ExactlyMeasurable,
+    true
   );
   assert.equal(contract.h60.currentM2Gate, false);
 });
@@ -156,6 +173,59 @@ test("cache recovery and language boundaries are explicit", () => {
   assert.equal(contract.authorization.training, false);
   assert.equal(contract.authorization.fitting, false);
   assert.equal(contract.authorization.newCandidateExecution, false);
+  assert.equal(
+    contract.h36Evidence.firstLegalReconstruction
+      .scientificResultFrozen,
+    true
+  );
+  assert.equal(
+    contract.h36Evidence.firstLegalReconstruction.retryAllowed,
+    false
+  );
+  assert.equal(
+    contract.h36Evidence.firstLegalReconstruction.modelTrainingCount,
+    0
+  );
+  assert.equal(
+    contract.h36Evidence.firstLegalReconstruction
+      .hpsr02IndependentEvaluationCount,
+    0
+  );
+  assert.equal(
+    contract.h36Evidence.firstLegalReconstruction.laterOriginRead,
+    false
+  );
+  assert.equal(
+    contract.h36Evidence.firstLegalReconstruction.finalHoldoutRead,
+    false
+  );
+  assert.equal(
+    contract.h36Evidence.firstLegalReconstruction
+      .workTotalEvidenceStatus,
+    "COMPLETE_EXACT_FROZEN_PRIMARY_LG01_ROWS"
+  );
+  assert.equal(
+    contract.h36Evidence.firstLegalReconstruction
+      .workChannelEvidenceStatus,
+    "PARTIAL_DISCLOSED_NOT_USED_TO_DEFINE_WORK_TOTAL_BASELINE"
+  );
+  assert.equal(
+    contract.h36Evidence.core80BusinessUsability.wapePass,
+    true
+  );
+  assert.equal(
+    contract.h36Evidence.core80BusinessUsability
+      .absoluteSignedBiasPass,
+    true
+  );
+  assert.equal(
+    contract.h36Evidence.cashBandEvidence.status,
+    "EXACTLY_MEASURABLE_FROM_PRIVATE_SAME_CASE_ROWS"
+  );
+  assert.equal(
+    hasObjectKey(contract, "standardWorkId"),
+    false
+  );
 });
 
 function syntheticRow(
@@ -175,4 +245,14 @@ function syntheticRow(
     pointEstimate,
     actual
   };
+}
+
+function hasObjectKey(value, targetKey) {
+  if (Array.isArray(value)) {
+    return value.some((item) => hasObjectKey(item, targetKey));
+  }
+  if (!value || typeof value !== "object") return false;
+  return Object.entries(value).some(([key, child]) => (
+    key === targetKey || hasObjectKey(child, targetKey)
+  ));
 }

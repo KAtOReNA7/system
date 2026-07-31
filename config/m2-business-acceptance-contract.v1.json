@@ -2,7 +2,7 @@
   "schema": "m2.business_acceptance_contract.v1",
   "version": "1.0",
   "asOf": "2026-07-31",
-  "status": "M2_BUSINESS_ACCEPTANCE_CONTRACT_V1_H36_RECONSTRUCTION_PENDING",
+  "status": "M2_BUSINESS_ACCEPTANCE_CONTRACT_V1_ACTIVE_FOR_DEVELOPMENT_ONLY",
   "authority": {
     "role": "SOLE_NUMERICAL_AUTHORITY_FOR_M2_DEVELOPMENT_BUSINESS_ACCEPTANCE",
     "developmentEvaluationOnly": true,
@@ -75,7 +75,7 @@
         "horizonMonths": 36,
         "maximumWape": 0.4,
         "maximumAbsoluteSignedBias": 0.12,
-        "status": "PROVISIONAL_NOT_ACTIVE"
+        "status": "ACTIVE_FOR_DEVELOPMENT_EVALUATION_ONLY_WITH_HISTORICAL_NON_PROSPECTIVE_CAVEAT"
       }
     ]
   },
@@ -241,9 +241,189 @@
         }
       }
     },
-    "reproductionStatus": "PENDING_FIRST_LEGAL_RECONSTRUCTION",
-    "h50M30L20ExactlyMeasurable": false,
-    "h36Activated": false
+    "firstLegalReconstruction": {
+      "status": "M2_BUSINESS_ACCEPTANCE_CONTRACT_V1_ACTIVE_FOR_DEVELOPMENT_ONLY",
+      "completeLegalResultProduced": true,
+      "scientificResultFrozen": true,
+      "retryAllowed": false,
+      "executionHead": "ac65e59050475fb2024c126b574fa44e14141e89",
+      "exactHeadCiRunId": 30621317484,
+      "exactHeadLinuxCi": "success",
+      "exactHeadWindowsCi": "success",
+      "completeAuthoritativeBillMonthThrough": "2026-04",
+      "availableActualValueThroughNotOpenedForReservedEvaluation": "2026-05",
+      "sourceAuthorityStatus": "SOURCE_AUTHORITY_AVAILABLE",
+      "derivedCacheStatusBefore": "CACHE_MISS_REBUILDABLE",
+      "historicalReceiptStatusBefore": "OPTIONAL_PROVENANCE_MISSING",
+      "cacheStatusAfter": "CACHE_MISS_REBUILT_FROM_SOURCE_AUTHORITY",
+      "workTotalEvidenceStatus": "COMPLETE_EXACT_FROZEN_PRIMARY_LG01_ROWS",
+      "workChannelEvidenceStatus": "PARTIAL_DISCLOSED_NOT_USED_TO_DEFINE_WORK_TOTAL_BASELINE",
+      "sourcePrimaryH36CaseCount": 12039,
+      "currentScopeMatchedCaseCount": 11137,
+      "core80WorkTotalRowCount": 488,
+      "core90WorkTotalRowCount": 1030,
+      "partialChannelDecompositionCaseCount": 633,
+      "missingEligibleChannelComponentCount": 914,
+      "missingHistoryCount": 0,
+      "nonfinitePredictionCount": 0,
+      "modelTrainingCount": 0,
+      "modelFitCount": 0,
+      "tuningCount": 0,
+      "modelSelectionCount": 0,
+      "newCandidateExecutionCount": 0,
+      "hpsr02IndependentEvaluationCount": 0,
+      "laterOriginRead": false,
+      "finalHoldoutRead": false,
+      "privateIdentityPublished": false
+    },
+    "reproducedPublicAggregate": {
+      "CORE80": {
+        "originCount": 13,
+        "caseCount": 488,
+        "workCount": 62,
+        "actualTotalRmb": 291953066.50570047,
+        "predictionTotalRmb": 319889747.7430666,
+        "absoluteErrorTotalRmb": 86806521.47683543,
+        "signedErrorTotalRmb": 27936681.237366684,
+        "wape": 0.2973303980526627,
+        "signedBias": 0.09568894607524414,
+        "mae": 177882.2161410562,
+        "medianAbsoluteError": 86758.80472477981,
+        "errorConcentration": {
+          "maximumWorkShare": 0.09688042080439264,
+          "top5WorkShare": 0.42904808543258427,
+          "top10WorkShare": 0.6358073969893951
+        },
+        "perOriginWapeP10P50P90": {
+          "p10": 0.235455817077721,
+          "p50": 0.2680711382842307,
+          "p90": 0.39585870413428187
+        },
+        "perOriginSignedBiasP10P50P90": {
+          "p10": -0.06937662819488076,
+          "p50": 0.1320949509894536,
+          "p90": 0.23445154812010927
+        },
+        "numericStability": {
+          "nonfinitePredictionCount": 0,
+          "negativePredictionCount": 0
+        }
+      },
+      "CORE90": {
+        "originCount": 13,
+        "caseCount": 1030,
+        "workCount": 138,
+        "actualTotalRmb": 323669098.2617002,
+        "predictionTotalRmb": 354659106.8471638,
+        "absoluteErrorTotalRmb": 110499208.44029921,
+        "signedErrorTotalRmb": 30990008.58546367,
+        "wape": 0.3413956075317265,
+        "signedBias": 0.09574596015467267,
+        "mae": 107280.78489349438,
+        "medianAbsoluteError": 41247.27591759978,
+        "errorConcentration": {
+          "maximumWorkShare": 0.07610780609152554,
+          "top5WorkShare": 0.33705374335618954,
+          "top10WorkShare": 0.5163300001429808
+        },
+        "perOriginWapeP10P50P90": {
+          "p10": 0.276950221397371,
+          "p50": 0.3026019406692904,
+          "p90": 0.432901910920204
+        },
+        "perOriginSignedBiasP10P50P90": {
+          "p10": -0.058642720858728,
+          "p50": 0.1273232925226351,
+          "p90": 0.21796848153195983
+        },
+        "numericStability": {
+          "nonfinitePredictionCount": 0,
+          "negativePredictionCount": 0
+        }
+      }
+    },
+    "core80BusinessUsability": {
+      "maximumWape": 0.4,
+      "maximumAbsoluteSignedBias": 0.12,
+      "observedWape": 0.2973303980526627,
+      "observedAbsoluteSignedBias": 0.09568894607524414,
+      "wapePass": true,
+      "absoluteSignedBiasPass": true
+    },
+    "cashBandEvidence": {
+      "status": "EXACTLY_MEASURABLE_FROM_PRIVATE_SAME_CASE_ROWS",
+      "populationId": "CORE80",
+      "core90DefinesSeparateBands": false,
+      "H50": {
+        "originCount": 13,
+        "caseCount": 35,
+        "workCount": 5,
+        "actualTotalRmb": 167601112.05640006,
+        "predictionTotalRmb": 174410102.58224562,
+        "absoluteErrorTotalRmb": 21379110.445557572,
+        "signedErrorTotalRmb": 6808990.52584552,
+        "wape": 0.12755947847388513,
+        "signedBias": 0.04062616555643282,
+        "mae": 610831.7270159306,
+        "medianAbsoluteError": 560132.2123120904,
+        "errorConcentration": {
+          "maximumWorkShare": 0.36917696780325104,
+          "top5WorkShare": 1,
+          "top10WorkShare": 1
+        },
+        "numericStability": {
+          "nonfinitePredictionCount": 0,
+          "negativePredictionCount": 0
+        }
+      },
+      "M30": {
+        "originCount": 13,
+        "caseCount": 184,
+        "workCount": 31,
+        "actualTotalRmb": 65327390.97199999,
+        "predictionTotalRmb": 85229315.20745024,
+        "absoluteErrorTotalRmb": 38328199.810634136,
+        "signedErrorTotalRmb": 19901924.23545023,
+        "wape": 0.5867094834242196,
+        "signedBias": 0.3046489985185606,
+        "mae": 208305.43375344638,
+        "medianAbsoluteError": 102018.85467857879,
+        "errorConcentration": {
+          "maximumWorkShare": 0.1458829240618577,
+          "top5WorkShare": 0.6249591125876081,
+          "top10WorkShare": 0.8124092932035313
+        },
+        "numericStability": {
+          "nonfinitePredictionCount": 0,
+          "negativePredictionCount": 0
+        }
+      },
+      "L20": {
+        "originCount": 13,
+        "caseCount": 269,
+        "workCount": 52,
+        "actualTotalRmb": 59024563.47730003,
+        "predictionTotalRmb": 60250329.95337096,
+        "absoluteErrorTotalRmb": 27099211.220643785,
+        "signedErrorTotalRmb": 1225766.4760709424,
+        "wape": 0.4591175203026404,
+        "signedBias": 0.020767057032829002,
+        "mae": 100740.56215852709,
+        "medianAbsoluteError": 67415.8508301879,
+        "errorConcentration": {
+          "maximumWorkShare": 0.09024519897126845,
+          "top5WorkShare": 0.33554040531742296,
+          "top10WorkShare": 0.5338262025101816
+        },
+        "numericStability": {
+          "nonfinitePredictionCount": 0,
+          "negativePredictionCount": 0
+        }
+      }
+    },
+    "reproductionStatus": "EXACT_AGGREGATE_REPRODUCED_WITHIN_FIXED_TOLERANCE",
+    "h50M30L20ExactlyMeasurable": true,
+    "h36Activated": true
   },
   "h60": {
     "horizonMonths": 60,
