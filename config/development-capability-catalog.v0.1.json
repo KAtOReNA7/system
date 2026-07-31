@@ -417,6 +417,18 @@
           "path": "data/private-output/m2-current-quality/M2-current-occurrence-amount-candidate-cases-private-v0.3.ndjson"
         },
         {
+          "role": "business-acceptance-h36-lg01-baseline-rows",
+          "kind": "file",
+          "artifactClass": "PRIVATE_DERIVED_CACHE",
+          "path": "data/private-output/m2-business-acceptance-contract-v1/M2-business-acceptance-h36-lg01-baseline-rows-private-v1.ndjson"
+        },
+        {
+          "role": "business-acceptance-h36-evidence-manifest",
+          "kind": "file",
+          "artifactClass": "PRIVATE_DERIVED_CACHE",
+          "path": "data/private-output/m2-business-acceptance-contract-v1/M2-business-acceptance-h36-evidence-manifest-private-v1.json"
+        },
+        {
           "role": "horizon-router-run-receipt",
           "kind": "file",
           "artifactClass": "PRIVATE_RUN_PROVENANCE",
@@ -428,7 +440,8 @@
         "npm run diagnose:m2:core-legacy-horizon-router",
         "npm run prepare:m2:current:core-legacy-horizon-router",
         "npm run rescore:m2:current:core-legacy-horizon-router",
-        "npm run develop:m2:current:core-legacy-horizon-router"
+        "npm run develop:m2:current:core-legacy-horizon-router",
+        "npm run recover:m2:current:business-acceptance-h36"
       ],
       "recovery": "Restore only missing PRIVATE_SOURCE_AUTHORITY from a verified capability-scoped source. Rebuild frozen formula rows, same-case rows, router selections and channel allocations from source authority and frozen repository code. Missing caches or historical receipts never block and are never fabricated.",
       "authorization": "USER_AUTHORIZED_M2_CORE_LEGACY_FULL_HORIZON_ROUTER_AND_CHANNEL_ALLOCATION_EVALUATION_2026_07_29"

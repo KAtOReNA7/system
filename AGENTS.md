@@ -64,6 +64,8 @@
   - `config/m2-current-head-protected-tail-band-correction.v0.2.json`
   - `docs/analysis/m2-current/M2-head-protected-tail-band-correction-preregistration-v0.2.md`
 - M2 评价体系：
+  - `config/m2-business-acceptance-contract.v1.json`
+  - `docs/analysis/m2-current/M2-business-acceptance-contract-v1.md`
   - `docs/analysis/m2-current/M2-evaluation-system-audit-v1.md`
   - `config/m2-evaluation-contract.v2.2.json`
   - `docs/analysis/m2-current/M2-evaluation-contract-v2.2.md`
@@ -280,6 +282,11 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
 - 默认不授权训练、调参、新候选、private evaluation、provider、数据库、
   final holdout、embargo、Canary/full160、release 或 M3 formal。只有当前用户任务
   的明确授权才能打开对应能力，且授权不跨任务自动延续。
+- `config/m2-business-acceptance-contract.v1.json` 是 M2 开发业务验收门限的数值
+  唯一权威：Core80 是硬门禁，Core90 是完整披露的敏感性人口；业务可用性与候选
+  优越性分开，候选优越性使用合同中的 `AND` 规则。H36 只能作为带永久历史非前瞻
+  警示的开发门禁，H60 只属 M3 低置信情景参考；不得用失控基线制造虚假增益。
+  H36 精确行是可重建 private cache，历史 provenance 缺失只告警。
 - LG01 头部保护分段路由模型 v0.1（`M2-WORK-HPSR01`）的原机械合同不支持状态
   `M2_HPSR01_RETROSPECTIVE_DEVELOPMENT_UNSUPPORTED_STOP_BEFORE_K2` 必须保持
   冻结；不得重写其指标、报告或历史成绩。科学解释修订为

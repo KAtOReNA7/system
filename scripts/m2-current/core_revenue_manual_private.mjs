@@ -183,7 +183,10 @@ export async function runM2CoreRevenueManualPrivateEvaluation({ root }) {
   }
 }
 
-export async function materializeM2CoreRevenueAuthority({ root }) {
+export async function materializeM2CoreRevenueAuthority({
+  root,
+  labelMaturityCutoff: requestedLabelMaturityCutoff = null
+}) {
   const config = await readJson(path.join(root, CONFIG_PATH));
   validateM2CoreRevenueManualConfig(config);
   preparePrivateInputs(root);
@@ -199,10 +202,21 @@ export async function materializeM2CoreRevenueAuthority({ root }) {
   const authorityStartMonth = authority.rows
     .map((row) => row.postingMonth)
     .sort()[0];
-  const labelMaturityCutoff = authority.rows
+  const availableLabelMaturityCutoff = authority.rows
     .map((row) => row.recordedAt.slice(0, 7))
     .sort()
     .at(-1);
+  const labelMaturityCutoff = requestedLabelMaturityCutoff
+    ?? availableLabelMaturityCutoff;
+  if (
+    !/^\d{4}-(?:0[1-9]|1[0-2])$/u.test(labelMaturityCutoff)
+    || labelMaturityCutoff < authorityStartMonth
+    || labelMaturityCutoff > availableLabelMaturityCutoff
+  ) {
+    throw new Error(
+      "m2_core_revenue_manual_requested_label_cutoff_invalid"
+    );
+  }
   const finalRestatement = restateSalesShareReversalsV1(
     authority.rows,
     {
@@ -224,6 +238,7 @@ export async function materializeM2CoreRevenueAuthority({ root }) {
     authority,
     authorityStartMonth,
     labelMaturityCutoff,
+    availableLabelMaturityCutoff,
     finalRestatement,
     finalMonthlyRows,
     asOfAudit,

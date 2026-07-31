@@ -6,6 +6,9 @@ import {
   buildM2CurrentPublicDiagnosticReport
 } from "../../src/domain/m2Current/report.js";
 import {
+  validateM2BusinessAcceptanceContract
+} from "../../src/domain/m2Current/businessAcceptanceContract.js";
+import {
   loadM2CurrentConfigSync
 } from "./load_m2_current_config.mjs";
 
@@ -13,6 +16,9 @@ const config = loadM2CurrentConfigSync(
   process.cwd(),
   "config/m2-current.v0.6.json"
 );
+validateM2BusinessAcceptanceContract(readJson(
+  "config/m2-business-acceptance-contract.v1.json"
+));
 const sources = Object.fromEntries(
   Object.entries(config.publicSources)
     .map(([role, file]) => [role, readJson(file)])

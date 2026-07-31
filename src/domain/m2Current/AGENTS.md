@@ -6,6 +6,13 @@ This directory is the only implementation home for current M2 model logic.
   names, aliases, roles, evaluation populations, and comparability groups.
   Historical artifacts remain immutable evidence and are not rewritten from
   the registry.
+- `config/m2-business-acceptance-contract.v1.json` is the sole numerical
+  authority for development business-acceptance gates. Core80 is the hard
+  gate, Core90 is disclosed sensitivity, and candidate superiority is the
+  contract's `AND` rule, separate from absolute business usability. H36 keeps
+  its historical-not-prospective caveat, H60 is M3 scenario reference only,
+  and an uncontrolled baseline must never manufacture a gain. H36 exact rows
+  are rebuildable private cache; missing historical provenance only warns.
 - Keep model, model family, experiment, experiment arm/ablation, execution
   checkpoint, evaluation campaign, status index, report/config/schema version,
   status code, and command identities separate. User-facing text must not show

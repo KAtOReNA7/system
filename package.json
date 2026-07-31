@@ -123,6 +123,7 @@
     "rescore:m2:current:core-legacy-horizon-router": "node --max-old-space-size=8192 scripts/m2-current/run_m2_human_anchored_development.mjs --core-legacy-horizon-router-k1",
     "develop:m2:current:core-legacy-horizon-router": "node --max-old-space-size=8192 scripts/m2-current/run_m2_human_anchored_development.mjs --core-legacy-horizon-router-k2",
     "develop:m2:current:core-legacy-channel-allocation": "node --max-old-space-size=8192 scripts/m2-current/run_m2_human_anchored_development.mjs --core-legacy-horizon-router-k3",
+    "recover:m2:current:business-acceptance-h36": "node --max-old-space-size=8192 scripts/m2-current/run_m2_human_anchored_development.mjs --business-acceptance-h36-rebuild",
     "prepare:m2:current:oa03-current-scope-replication": "node scripts/m2-current/run_m2_human_anchored_development.mjs --oa03-current-scope-prepare",
     "develop:m2:current:oa03-current-scope-replication": "node --max-old-space-size=16384 scripts/m2-current/run_m2_human_anchored_development.mjs --oa03-current-scope-replication",
     "develop:m2:current:core-legacy-horizon-amount": "node --max-old-space-size=16384 scripts/m2-current/run_m2_human_anchored_development.mjs --core-legacy-horizon-amount",

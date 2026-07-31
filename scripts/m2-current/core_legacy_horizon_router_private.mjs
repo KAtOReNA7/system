@@ -1,7 +1,9 @@
 import crypto from "node:crypto";
+import { spawnSync } from "node:child_process";
 import {
   mkdir,
   readFile,
+  rename,
   writeFile
 } from "node:fs/promises";
 import fs from "node:fs";
@@ -14,16 +16,35 @@ import {
   validateM2CoreLegacyHorizonRouterConfig
 } from "../../src/domain/m2Current/coreLegacyHorizonRouter.js";
 import {
+  assignM2BusinessAcceptanceCashBands,
+  compareM2BusinessAcceptanceAggregate,
+  M2_BUSINESS_ACCEPTANCE_ACTIVE_STATUS,
+  summarizeM2BusinessAcceptanceBaselineRows,
+  summarizeM2BusinessAcceptanceCashBands,
+  validateM2BusinessAcceptanceContract
+} from "../../src/domain/m2Current/businessAcceptanceContract.js";
+import {
   buildCoreLegacyOriginPopulation,
   buildCoreLegacyWorkCases,
   validateM2CoreLegacyPopulationConfig
 } from "../../src/domain/m2Current/coreLegacyPopulation.js";
+import {
+  deterministicWorkFold,
+  forecastM2HumanAnchoredBase
+} from "../../src/domain/m2Current/humanAnchored.js";
+import {
+  evaluateCapability,
+  loadCapabilityCatalog
+} from "../check-development-capability.mjs";
 import {
   buildM2CoreLegacyObservedChannelAllocation
 } from "../../src/domain/m2Current/coreLegacyChannelAllocation.js";
 import {
   materializeM2CoreRevenueAuthority
 } from "./core_revenue_manual_private.mjs";
+import {
+  verifyM2Oa03GitAndCiPreflight
+} from "./oa03_current_scope_replication_mode.mjs";
 import {
   deduplicateFrozenRows,
   rebuildFrozenCoreRevenueManualRows,
@@ -53,6 +74,768 @@ const HUMAN_PUBLIC_EVALUATION =
 const OCCURRENCE_AMOUNT_EVALUATION =
   "data/private-output/m2-current-quality/"
   + "M2-current-occurrence-amount-candidate-cases-private-v0.3.ndjson";
+const BUSINESS_ACCEPTANCE_CONTRACT =
+  "config/m2-business-acceptance-contract.v1.json";
+const BUSINESS_ACCEPTANCE_AUDIT =
+  "docs/analysis/m2-current/"
+  + "M2-business-acceptance-threshold-audit-v1.json";
+const HUMAN_CONFIG =
+  "config/m2-current-human-anchored.v0.1.json";
+const CANONICAL_CHANNEL_CONFIG =
+  "config/m2-current-canonical-channel.v0.1.json";
+const HUMAN_PRIMARY_CASES =
+  "data/private-output/m2-current-human-anchored/"
+  + "M2-current-human-anchored-primary-cases-private-v0.1.ndjson";
+const HUMAN_MATERIALIZATION_MANIFEST =
+  "data/private-output/m2-current-human-anchored/"
+  + "M2-current-human-anchored-manifest-private-v0.1.json";
+const CORE_LEGACY_CAPABILITY_ID = "m2-core-legacy-horizon-router";
+
+export async function runM2BusinessAcceptanceH36EvidenceRebuild({
+  root
+}) {
+  const [
+    contract,
+    baseConfig,
+    humanConfig,
+    canonicalChannelConfig,
+    historicalAudit
+  ] = await Promise.all([
+    readJson(path.join(root, BUSINESS_ACCEPTANCE_CONTRACT)),
+    readJson(path.join(root, BASE_CONFIG_PATH)),
+    readJson(path.join(root, HUMAN_CONFIG)),
+    readJson(path.join(root, CANONICAL_CHANNEL_CONFIG)),
+    readJson(path.join(root, BUSINESS_ACCEPTANCE_AUDIT))
+  ]);
+  validateM2BusinessAcceptanceContract(contract);
+  validateM2CoreLegacyPopulationConfig(baseConfig);
+  const capability = evaluateCapability(
+    loadCapabilityCatalog(path.join(
+      root,
+      "config/development-capability-catalog.v0.1.json"
+    )),
+    CORE_LEGACY_CAPABILITY_ID,
+    { repoRoot: root }
+  );
+  if (
+    capability.sourceAuthorityStatus !== "SOURCE_AUTHORITY_AVAILABLE"
+  ) {
+    return Object.freeze({
+      status:
+        "M2_BUSINESS_ACCEPTANCE_CONTRACT_V1_BLOCKED_MISSING_SOURCE_AUTHORITY",
+      sourceAuthorityStatus: capability.sourceAuthorityStatus,
+      missingSourceRoles: Object.freeze(capability.privateArtifacts
+        .filter((row) => (
+          row.artifactClass === "PRIVATE_SOURCE_AUTHORITY"
+          && !row.present
+        ))
+        .map((row) => row.role)),
+      modelTrainingCount: 0,
+      modelFitCount: 0,
+      tuningCount: 0,
+      modelSelectionCount: 0,
+      laterOriginRead: false,
+      finalHoldoutRead: false
+    });
+  }
+  const privateDirectory = resolveRepositoryPath(
+    root,
+    contract.privateEvidence.cacheDirectory
+  );
+  const rowsPath = path.join(
+    privateDirectory,
+    contract.privateEvidence.h36BaselineRows
+  );
+  const manifestPath = path.join(
+    privateDirectory,
+    contract.privateEvidence.h36Manifest
+  );
+  await mkdir(privateDirectory, { recursive: true });
+  const priorManifest = await readJsonIfPresent(manifestPath);
+  if (
+    priorManifest?.completeLegalResultProduced === true
+    && await bindingMatches(rowsPath, priorManifest.outputBinding)
+  ) {
+    return Object.freeze({
+      ...priorManifest.publicSummary,
+      cacheStatus: "CACHE_HIT_FROZEN_RESULT_VERIFIED",
+      scientificReevaluationPerformed: false
+    });
+  }
+  const preflight = verifyM2Oa03GitAndCiPreflight({
+    root,
+    allowedDirtyPaths: []
+  });
+  const completeCutoff =
+    canonicalChannelConfig?.dataContract?.latestCompleteMonth;
+  if (!/^\d{4}-(?:0[1-9]|1[0-2])$/u.test(completeCutoff)) {
+    throw new Error(
+      "m2_business_acceptance_complete_month_authority_invalid"
+    );
+  }
+  await writeJsonAtomic(manifestPath, {
+    schema:
+      "m2.business_acceptance_h36_evidence_manifest.private.v1",
+    status: "ENGINEERING_REBUILD_STARTED_BEFORE_COMPLETE_METRICS",
+    completeLegalResultProduced: false,
+    retryAllowed: true,
+    executionHead: preflight.head,
+    completeAuthoritativeBillMonthThrough: completeCutoff,
+    sourceAuthorityStatus: capability.sourceAuthorityStatus,
+    derivedCacheStatusBefore: capability.derivedCacheStatus,
+    historicalReceiptStatusBefore:
+      capability.historicalReceiptStatus,
+    modelTrainingCount: 0,
+    modelFitCount: 0,
+    tuningCount: 0,
+    modelSelectionCount: 0,
+    laterOriginRead: false,
+    finalHoldoutRead: false
+  });
+  let completeMetricsProduced = false;
+  try {
+    runFrozenLg01SourceMaterialization(root);
+    const authority = await materializeM2CoreRevenueAuthority({
+      root,
+      labelMaturityCutoff: completeCutoff
+    });
+    const rebuilt = await rebuildBusinessAcceptanceH36Rows({
+      root,
+      authority,
+      baseConfig,
+      humanConfig
+    });
+    const core80Rows = rebuilt.rows.filter((row) => (
+      row.populationId === "CORE80"
+      && row.grain === "WORK_TOTAL"
+    ));
+    const core90Rows = rebuilt.rows.filter((row) => (
+      row.populationId === "CORE90"
+      && row.grain === "WORK_TOTAL"
+    ));
+    const bandedCore80 = assignM2BusinessAcceptanceCashBands(
+      core80Rows,
+      contract
+    );
+    const bandByWorkOrigin = new Map(bandedCore80.map((row) => [
+      `${row.origin}\u0000${row.standardWorkId}`,
+      row
+    ]));
+    const privateRows = rebuilt.rows.map((row) => {
+      const band = bandByWorkOrigin.get(
+        `${row.origin}\u0000${row.standardWorkId}`
+      );
+      return Object.freeze({
+        ...row,
+        cashBandId: band?.cashBandId ?? null,
+        cashBandRankingValue:
+          band?.cashBandRankingValue ?? null,
+        cashBandPopulation:
+          band ? "DYNAMIC_CORE80_AT_ORIGIN" : null,
+        core90DefinesSeparateCashBand: false
+      });
+    });
+    const aggregates = Object.freeze({
+      CORE80: summarizeM2BusinessAcceptanceBaselineRows(
+        bandedCore80
+      ),
+      CORE90: summarizeM2BusinessAcceptanceBaselineRows(core90Rows)
+    });
+    const cashBands = summarizeM2BusinessAcceptanceCashBands(
+      bandedCore80
+    );
+    completeMetricsProduced = true;
+    const expectedCore80 = historicalH36Aggregate(
+      historicalAudit,
+      "CORE80"
+    );
+    const expectedCore90 = historicalH36Aggregate(
+      historicalAudit,
+      "CORE90"
+    );
+    const tolerance =
+      contract.h36Evidence.aggregateReproductionTolerance;
+    const auditReconciliation = Object.freeze({
+      CORE80: compareM2BusinessAcceptanceAggregate({
+        actual: aggregates.CORE80,
+        expected: expectedCore80,
+        tolerance
+      }),
+      CORE90: compareM2BusinessAcceptanceAggregate({
+        actual: aggregates.CORE90,
+        expected: expectedCore90,
+        tolerance
+      })
+    });
+    const contractReconciliation = Object.freeze({
+      CORE80: compareM2BusinessAcceptanceAggregate({
+        actual: aggregates.CORE80,
+        expected:
+          contract.h36Evidence.aggregateAuthority.CORE80,
+        tolerance
+      }),
+      CORE90: compareM2BusinessAcceptanceAggregate({
+        actual: aggregates.CORE90,
+        expected:
+          contract.h36Evidence.aggregateAuthority.CORE90,
+        tolerance
+      })
+    });
+    const aggregateMatched = [
+      ...Object.values(auditReconciliation),
+      ...Object.values(contractReconciliation)
+    ].every((row) => row.matched);
+    const core80Cap = contract.businessUsability.horizons.find(
+      (row) => row.horizonMonths === 36
+    );
+    const core80BusinessUsability = Object.freeze({
+      maximumWape: core80Cap.maximumWape,
+      maximumAbsoluteSignedBias:
+        core80Cap.maximumAbsoluteSignedBias,
+      observedWape: aggregates.CORE80.wape,
+      observedAbsoluteSignedBias:
+        Math.abs(aggregates.CORE80.signedBias),
+      wapePass: aggregates.CORE80.wape <= core80Cap.maximumWape,
+      absoluteSignedBiasPass:
+        Math.abs(aggregates.CORE80.signedBias)
+          <= core80Cap.maximumAbsoluteSignedBias
+    });
+    const status = aggregateMatched
+      ? M2_BUSINESS_ACCEPTANCE_ACTIVE_STATUS
+      : "M2_BUSINESS_ACCEPTANCE_CONTRACT_V1_PARTIAL_H36_REPRODUCTION_MISMATCH";
+    await writeNdjsonAtomic(rowsPath, privateRows);
+    const outputBinding = await fileBinding(rowsPath);
+    const publicSummary = Object.freeze({
+      status,
+      cacheStatus: "CACHE_MISS_REBUILT_FROM_SOURCE_AUTHORITY",
+      sourceAuthorityStatus: capability.sourceAuthorityStatus,
+      completeAuthoritativeBillMonthThrough: completeCutoff,
+      actualDefinitionId:
+        contract.scope.actualDefinitionId,
+      baselineModelId: "M2-WORK-LG01",
+      evaluationFamily: "PRIMARY_ROLLING",
+      horizonMonths: 36,
+      aggregates,
+      cashBands,
+      aggregateMatched,
+      core80BusinessUsability,
+      h36Activated: (
+        aggregateMatched
+        && core80BusinessUsability.wapePass
+        && core80BusinessUsability.absoluteSignedBiasPass
+      ),
+      h36HistoricalEvidenceCaveat:
+        "HISTORICAL_MULTI_ORIGIN_NOT_PROSPECTIVE_VALIDATION",
+      independentTimeEvidenceStatus:
+        "INDEPENDENT_TIME_EVIDENCE_INSUFFICIENT",
+      exactSameCaseRowsAvailable: true,
+      h50M30L20ExactlyMeasurable: true,
+      modelTrainingCount: 0,
+      modelFitCount: 0,
+      tuningCount: 0,
+      modelSelectionCount: 0,
+      newCandidateExecutionCount: 0,
+      laterOriginRead: false,
+      finalHoldoutRead: false,
+      privateIdentityPublished: false
+    });
+    await writeJsonAtomic(manifestPath, {
+      schema:
+        "m2.business_acceptance_h36_evidence_manifest.private.v1",
+      status,
+      completeLegalResultProduced: true,
+      scientificResultFrozen: true,
+      retryAllowed: false,
+      executionHead: preflight.head,
+      branch: preflight.branch,
+      draftPullRequestNumber: preflight.prNumber,
+      exactHeadCiRunId: preflight.ciRunId,
+      exactHeadLinuxCi: preflight.linux,
+      exactHeadWindowsCi: preflight.windows,
+      completeAuthoritativeBillMonthThrough: completeCutoff,
+      availableActualValueThrough:
+        authority.availableLabelMaturityCutoff,
+      sourceAuthorityStatus: capability.sourceAuthorityStatus,
+      derivedCacheStatusBefore: capability.derivedCacheStatus,
+      historicalReceiptStatusBefore:
+        capability.historicalReceiptStatus,
+      sourceReplay: {
+        histories: await fileBinding(path.join(root, HUMAN_HISTORIES)),
+        primaryCases: await fileBinding(path.join(
+          root,
+          HUMAN_PRIMARY_CASES
+        )),
+        manifest: await fileBinding(path.join(
+          root,
+          HUMAN_MATERIALIZATION_MANIFEST
+        ))
+      },
+      reconstructionAudit: rebuilt.audit,
+      auditReconciliation,
+      contractReconciliation,
+      outputBinding,
+      publicSummary,
+      modelTrainingCount: 0,
+      modelFitCount: 0,
+      tuningCount: 0,
+      modelSelectionCount: 0,
+      newCandidateExecutionCount: 0,
+      hpsr02IndependentEvaluationCount: 0,
+      laterOriginRead: false,
+      finalHoldoutRead: false,
+      privateIdentityPublished: false
+    });
+    return publicSummary;
+  } catch (error) {
+    if (!completeMetricsProduced) {
+      await writeJsonAtomic(manifestPath, {
+        schema:
+          "m2.business_acceptance_h36_evidence_manifest.private.v1",
+        status:
+          "ENGINEERING_REBUILD_FAILED_BEFORE_COMPLETE_METRICS_RETRY_ALLOWED",
+        completeLegalResultProduced: false,
+        retryAllowed: true,
+        executionHead: preflight.head,
+        completeAuthoritativeBillMonthThrough: completeCutoff,
+        errorCode: safeErrorCode(error),
+        modelTrainingCount: 0,
+        modelFitCount: 0,
+        tuningCount: 0,
+        modelSelectionCount: 0,
+        laterOriginRead: false,
+        finalHoldoutRead: false
+      });
+    }
+    throw error;
+  }
+}
+
+async function rebuildBusinessAcceptanceH36Rows({
+  root,
+  authority,
+  baseConfig,
+  humanConfig
+}) {
+  const [histories, primaryCases, humanPublic] = await Promise.all([
+    readNdjson(path.join(root, HUMAN_HISTORIES)),
+    readNdjson(path.join(root, HUMAN_PRIMARY_CASES)),
+    readJson(path.join(root, HUMAN_PUBLIC_EVALUATION))
+  ]);
+  const historyIndex = new Map(histories.map((row) => [
+    String(row.historyKey),
+    row
+  ]));
+  if (historyIndex.size !== histories.length) {
+    throw new Error(
+      "m2_business_acceptance_rebuilt_history_key_duplicate"
+    );
+  }
+  const origins = [...humanConfig.dataContract.primaryOrigins]
+    .filter((origin) => (
+      monthToSerial(origin) + 36
+        <= monthToSerial(authority.labelMaturityCutoff)
+    ))
+    .sort();
+  if (origins.length === 0) {
+    throw new Error(
+      "m2_business_acceptance_no_legal_h36_historical_origin"
+    );
+  }
+  const featureCache = new Map();
+  const featureRows = (origin) => {
+    if (!featureCache.has(origin)) {
+      featureCache.set(
+        origin,
+        authority.featureMonthlyRowsForOrigin(origin)
+      );
+    }
+    return featureCache.get(origin);
+  };
+  const cases = buildCoreLegacyWorkCases({
+    origins,
+    horizons: [36],
+    finalMonthlyRows: authority.finalMonthlyRows,
+    featureMonthlyRowsForOrigin: featureRows,
+    config: baseConfig
+  });
+  const workCaseIndex = new Map(cases.workCases.map((row) => [
+    frozenWorkKey(row),
+    row
+  ]));
+  const channelCasesByWork = groupByValues(
+    cases.channelCases,
+    frozenWorkKey
+  );
+  const populations = new Map(origins.map((origin) => [
+    origin,
+    buildCoreLegacyOriginPopulation({
+      origin,
+      monthlyRows: featureRows(origin),
+      minimumCompleteMonths:
+        baseConfig.eligibility.minimumCompleteMonths,
+      thresholds: baseConfig.coreSelection.thresholds,
+      topCounts: baseConfig.coreSelection.topDiagnostics
+    })
+  ]));
+  const trailing12Cash = buildCore80Trailing12CashIndex(populations);
+  const foldParameters = new Map(
+    humanPublic.primary.foldSelections.map((row) => [
+      Number(row.fold),
+      row.parameters
+    ])
+  );
+  const foldCount = Number(
+    humanConfig.learning.crossWorkFoldCount
+  );
+  if (
+    foldParameters.size !== foldCount
+    || [...foldParameters.values()].some((row) => !row)
+  ) {
+    throw new Error(
+      "m2_business_acceptance_frozen_fold_parameters_missing"
+    );
+  }
+  const rows = [];
+  let sourcePrimaryH36CaseCount = 0;
+  let currentScopeMatchedCaseCount = 0;
+  let missingHistoryCount = 0;
+  let missingEligibleChannelComponentCount = 0;
+  let nonfinitePredictionCount = 0;
+  for (const sourceCase of primaryCases) {
+    if (
+      Number(sourceCase.horizonMonths) !== 36
+      || !origins.includes(String(sourceCase.origin))
+    ) {
+      continue;
+    }
+    sourcePrimaryH36CaseCount += 1;
+    const workCase = workCaseIndex.get(frozenWorkKey(sourceCase));
+    if (!workCase) continue;
+    currentScopeMatchedCaseCount += 1;
+    const history = historyIndex.get(String(sourceCase.historyKey));
+    if (!history) {
+      missingHistoryCount += 1;
+      continue;
+    }
+    const fold = deterministicWorkFold(
+      sourceCase.standardWorkId,
+      foldCount
+    );
+    const parameters = foldParameters.get(fold);
+    const forecast = forecastM2HumanAnchoredBase({
+      ...history,
+      horizonMonths: 36
+    }, parameters);
+    const components = new Map(
+      forecast.channelComponents.map((item) => [
+        String(item.channelUid),
+        Number(item.forecast36) * Number(forecast.horizonScale)
+      ])
+    );
+    const correctChannels = channelCasesByWork.get(
+      frozenWorkKey(sourceCase)
+    ) ?? [];
+    const missingChannels = correctChannels.filter(
+      (row) => !components.has(String(row.channelUid))
+    );
+    if (missingChannels.length > 0) {
+      missingEligibleChannelComponentCount += missingChannels.length;
+      continue;
+    }
+    const channelPredictions = correctChannels.map((channel) => ({
+      channel,
+      pointEstimate: components.get(String(channel.channelUid))
+    }));
+    if (channelPredictions.some(
+      (row) => !Number.isFinite(row.pointEstimate)
+    )) {
+      nonfinitePredictionCount += 1;
+      continue;
+    }
+    for (const populationId of ["CORE80", "CORE90"]) {
+      const belongs = populationId === "CORE80"
+        ? workCase.core80 === true
+        : workCase.core90 === true;
+      if (!belongs) continue;
+      const workTrailing12Cash = trailing12Cash.get(
+        `${workCase.origin}\u0000${workCase.standardWorkId}`
+      );
+      if (
+        workCase.core80 === true
+        && !Number.isFinite(workTrailing12Cash)
+      ) {
+        throw new Error(
+          "m2_business_acceptance_core80_trailing12_cash_missing"
+        );
+      }
+      for (const { channel, pointEstimate } of channelPredictions) {
+        rows.push(Object.freeze({
+          schema:
+            "m2.business_acceptance_h36_lg01_baseline_row.private.v1",
+          baselineModelId: "M2-WORK-LG01",
+          baselineRole: "HEALTHY_FROZEN_SAME_CASE_BASELINE",
+          actualDefinitionId:
+            "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01",
+          evaluationFamily: "PRIMARY_ROLLING",
+          populationId,
+          grain: "WORK_CHANNEL",
+          origin: channel.origin,
+          horizonMonths: 36,
+          standardWorkId: String(channel.standardWorkId),
+          channelUid: String(channel.channelUid),
+          pointEstimate,
+          actual: Number(channel.actual),
+          trailing12Cash: workCase.core80
+            ? workTrailing12Cash
+            : null,
+          originVisibleOnly: true,
+          exactSameCaseKey: businessAcceptanceCaseKey({
+            ...channel,
+            populationId,
+            grain: "WORK_CHANNEL"
+          }),
+          frozenParameterFold: fold,
+          frozenFormulaChanged: false,
+          frozenParameterChanged: false,
+          futureActualUsedForFeatureOrBand: false
+        }));
+      }
+      rows.push(Object.freeze({
+        schema:
+          "m2.business_acceptance_h36_lg01_baseline_row.private.v1",
+        baselineModelId: "M2-WORK-LG01",
+        baselineRole: "HEALTHY_FROZEN_SAME_CASE_BASELINE",
+        actualDefinitionId:
+          "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01",
+        evaluationFamily: "PRIMARY_ROLLING",
+        populationId,
+        grain: "WORK_TOTAL",
+        origin: workCase.origin,
+        horizonMonths: 36,
+        standardWorkId: String(workCase.standardWorkId),
+        channelUid: null,
+        pointEstimate: channelPredictions.reduce(
+          (total, row) => total + row.pointEstimate,
+          0
+        ),
+        actual: Number(workCase.actual),
+        trailing12Cash: workCase.core80
+          ? workTrailing12Cash
+          : null,
+        originVisibleOnly: true,
+        exactSameCaseKey: businessAcceptanceCaseKey({
+          ...workCase,
+          populationId,
+          grain: "WORK_TOTAL"
+        }),
+        frozenParameterFold: fold,
+        frozenFormulaChanged: false,
+        frozenParameterChanged: false,
+        futureActualUsedForFeatureOrBand: false
+      }));
+    }
+  }
+  if (
+    rows.length === 0
+    || missingHistoryCount !== 0
+    || missingEligibleChannelComponentCount !== 0
+    || nonfinitePredictionCount !== 0
+  ) {
+    throw new Error(
+      "m2_business_acceptance_h36_row_reconstruction_incomplete"
+    );
+  }
+  const sortedRows = rows.sort(compareBusinessAcceptanceRows);
+  return Object.freeze({
+    rows: Object.freeze(sortedRows),
+    audit: Object.freeze({
+      status:
+        "FROZEN_LG01_H36_ROWS_REBUILT_FROM_SOURCE_AND_PUBLIC_FROZEN_PARAMETERS",
+      sourcePrimaryH36CaseCount,
+      currentScopeMatchedCaseCount,
+      outputRowCount: sortedRows.length,
+      core80WorkTotalRowCount: sortedRows.filter((row) => (
+        row.populationId === "CORE80"
+        && row.grain === "WORK_TOTAL"
+      )).length,
+      core90WorkTotalRowCount: sortedRows.filter((row) => (
+        row.populationId === "CORE90"
+        && row.grain === "WORK_TOTAL"
+      )).length,
+      missingHistoryCount,
+      missingEligibleChannelComponentCount,
+      nonfinitePredictionCount,
+      humanEvaluationCacheRead: false,
+      frozenRescoreCacheRead: false,
+      historicalReceiptRead: false,
+      modelTrainingPerformed: false,
+      modelFittingPerformed: false,
+      modelSelectionPerformed: false,
+      futureActualUsedForFeatures: false,
+      futureActualUsedForCashBands: false
+    })
+  });
+}
+
+function buildCore80Trailing12CashIndex(populations) {
+  const output = new Map();
+  for (const [origin, population] of populations) {
+    const end = monthToSerial(origin);
+    const start = end - 11;
+    for (const pair of population.eligiblePairs) {
+      if (pair.core80 !== true) continue;
+      let value = 0;
+      for (let serial = start; serial <= end; serial += 1) {
+        value += Number(pair.monthlyCashBySerial.get(serial) ?? 0);
+      }
+      const key = `${origin}\u0000${pair.standardWorkId}`;
+      output.set(key, (output.get(key) ?? 0) + value);
+    }
+  }
+  return output;
+}
+
+function businessAcceptanceCaseKey(row) {
+  return [
+    "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01",
+    "PRIMARY_ROLLING",
+    row.populationId,
+    row.grain,
+    row.origin,
+    36,
+    row.standardWorkId,
+    row.channelUid ?? ""
+  ].join("\u0000");
+}
+
+function compareBusinessAcceptanceRows(left, right) {
+  return (
+    left.populationId.localeCompare(right.populationId)
+    || left.grain.localeCompare(right.grain)
+    || left.exactSameCaseKey.localeCompare(right.exactSameCaseKey)
+  );
+}
+
+function historicalH36Aggregate(audit, populationId) {
+  const row = audit?.frozenModelEvidence?.usabilityCells?.find(
+    (item) => (
+      item.modelId === "M2-WORK-LG01"
+      && item.populationId === populationId
+      && item.horizonMonths === 36
+      && item.evaluationFamily
+        === "PRIMARY_ROLLING_CURRENT_SCOPE_STANDALONE"
+    )
+  );
+  if (!row) {
+    throw new Error(
+      `m2_business_acceptance_historical_h36_authority_missing:${populationId}`
+    );
+  }
+  return Object.freeze({
+    originCount: row.originCount,
+    caseCount: row.caseCount,
+    workCount: row.workCount,
+    actualAbsoluteTotalRmb: row.actualAbsoluteTotalRmb,
+    absoluteErrorTotalRmb: row.absoluteErrorTotalRmb,
+    signedErrorTotalRmb: row.signedErrorTotalRmb,
+    wape: row.wape,
+    signedBias: row.signedBias,
+    mae: row.mae,
+    medianAbsoluteError: row.medianAbsoluteError,
+    errorConcentration: Object.freeze({
+      maximumWorkShare:
+        row.errorConcentration.maximumWorkShare,
+      top5WorkShare: row.errorConcentration.top5WorkShare,
+      top10WorkShare: row.errorConcentration.top10WorkShare
+    }),
+    perOriginWapeP10P50P90: row.perOriginWapeP10P50P90,
+    perOriginSignedBiasP10P50P90:
+      row.perOriginSignedBiasP10P50P90
+  });
+}
+
+function runFrozenLg01SourceMaterialization(root) {
+  const result = spawnSync(process.execPath, [
+    path.join(root, "scripts/run-codex-python.mjs"),
+    path.join(
+      root,
+      "scripts/m2-current/materialize_human_anchored_cases.py"
+    ),
+    "--frozen-lg01-replay"
+  ], {
+    cwd: root,
+    encoding: "utf8",
+    windowsHide: true,
+    maxBuffer: 10 * 1024 * 1024
+  });
+  if (result.status !== 0) {
+    throw new Error(
+      "m2_business_acceptance_frozen_lg01_source_materialization_failed:"
+      + safeErrorCode(result.stderr || result.error)
+    );
+  }
+}
+
+function resolveRepositoryPath(root, relativePath) {
+  if (
+    typeof relativePath !== "string"
+    || relativePath.length === 0
+    || path.isAbsolute(relativePath)
+  ) {
+    throw new Error(
+      "m2_business_acceptance_private_path_must_be_repository_relative"
+    );
+  }
+  const resolvedRoot = path.resolve(root);
+  const resolved = path.resolve(resolvedRoot, relativePath);
+  const relative = path.relative(resolvedRoot, resolved);
+  if (
+    relative === ".."
+    || relative.startsWith(`..${path.sep}`)
+    || path.isAbsolute(relative)
+  ) {
+    throw new Error(
+      "m2_business_acceptance_private_path_escapes_repository"
+    );
+  }
+  return resolved;
+}
+
+async function bindingMatches(filePath, binding) {
+  if (
+    !binding
+    || typeof binding.sha256 !== "string"
+    || !Number.isInteger(binding.byteCount)
+  ) {
+    return false;
+  }
+  try {
+    const current = await fileBinding(filePath);
+    return (
+      current.sha256 === binding.sha256
+      && current.byteCount === binding.byteCount
+    );
+  } catch (error) {
+    if (error?.code === "ENOENT") return false;
+    throw error;
+  }
+}
+
+async function writeJsonAtomic(filePath, value) {
+  const temporary = `${filePath}.${process.pid}.${crypto.randomUUID()}.tmp`;
+  await writeFile(
+    temporary,
+    `${JSON.stringify(value, null, 2)}\n`,
+    "utf8"
+  );
+  await rename(temporary, filePath);
+}
+
+async function writeNdjsonAtomic(filePath, rows) {
+  const temporary = `${filePath}.${process.pid}.${crypto.randomUUID()}.tmp`;
+  await writeNdjson(temporary, rows);
+  await rename(temporary, filePath);
+}
 
 export async function runM2CoreLegacyFullHorizonSameCaseRescore({
   root
