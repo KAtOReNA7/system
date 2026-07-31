@@ -1,20 +1,32 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import {
+  mkdtemp,
+  readFile,
+  rm
+} from "node:fs/promises";
+import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import test from "node:test";
 
 import {
+  deriveHpsrResidualBounds,
   HPSR_ARM_IDS,
   HPSR_EXPERIMENT_ID,
   HPSR_MODEL_ID,
   HPSR_WAITING_STATUS,
   forecastWindowsOverlap,
-  planHpsrLaterOrigins,
+  planHpsrProspectiveReservation,
+  summarizeHpsrOpenedEvidence,
   validateHeadProtectedSegmentedRouterContract,
   validateHpsrLaterOriginAvailability,
+  validateHpsrOpenedOriginSemantics,
+  validateHpsrResidualBoundProvenance,
   validateHpsrSelectionAttribution
 } from "../src/domain/m2Current/headProtectedSegmentedRouter.js";
+import {
+  loadOrRebuildHpsrResidualBoundCache
+} from "../scripts/m2-current/materialize_head_protected_segmented_router_bounds.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const config = await readJson(
@@ -24,12 +36,27 @@ const attribution = await readJson(
   config.publicOutputs.selectionAttributionJson
 );
 const availability = await readJson(config.publicOutputs.availabilityJson);
+const openedSemantics = await readJson(
+  config.publicOutputs.openedOriginSemanticsJson
+);
+const residualBoundProvenance = await readJson(
+  config.publicOutputs.residualBoundProvenanceJson
+);
 const availabilityReport = await readText(
   config.publicOutputs.availabilityReport
 );
 const preregistration = await readText(config.publicOutputs.preregistration);
+const openedSemanticsReport = await readText(
+  config.publicOutputs.openedOriginSemanticsReport
+);
+const prospectiveFinalHoldoutReport = await readText(
+  config.publicOutputs.prospectiveFinalHoldoutReport
+);
+const residualBoundReport = await readText(
+  config.publicOutputs.residualBoundProvenanceReport
+);
 
-test("K0B freezes identities and stops K1/K2 while no origin exists", () => {
+test("K1A freezes semantics and bounds while K2 remains closed", () => {
   const result = validateHeadProtectedSegmentedRouterContract(config);
   assert.equal(result.valid, true, result.errors.join("\n"));
   assert.equal(config.model.stableModelId, HPSR_MODEL_ID);
@@ -42,7 +69,11 @@ test("K0B freezes identities and stops K1/K2 while no origin exists", () => {
     HPSR_ARM_IDS
   );
   assert.equal(config.experiment.status, HPSR_WAITING_STATUS);
-  assert.equal(config.execution.K1ImplementationAuthorizedNow, false);
+  assert.equal(config.execution.K1ImplementationAuthorizedNow, true);
+  assert.equal(
+    config.execution.K1SemanticAndBoundPreparationCompleted,
+    true
+  );
   assert.equal(config.execution.K2PrivateEvaluationAuthorizedNow, false);
   assert.equal(config.authorization.modelTrainingNow, false);
   assert.equal(config.authorization.modelSelectionNow, false);
@@ -51,67 +82,88 @@ test("K0B freezes identities and stops K1/K2 while no origin exists", () => {
 test("current date evidence has no qualified later-origin", () => {
   const result = validateHpsrLaterOriginAvailability(availability);
   assert.equal(result.valid, true, result.errors.join("\n"));
-  const plan = planHpsrLaterOrigins({
-    maxPreviouslyOpenedOrigin:
-      availability.openedOriginLedger.maxPreviouslyOpenedOrigin,
-    openedFutureActualThrough:
-      availability.openedOriginLedger.openedFutureActualThrough,
-    latestCompleteMonth:
-      availability.billAvailability.latestCompleteMonth
+  const plan = planHpsrProspectiveReservation({
+    maxActualValueOpenedOrigin:
+      availability.openedSemantics.maxActualValueOpenedOrigin,
+    completeAuthoritativeBillMonthThrough:
+      availability.billAvailability
+        .completeAuthoritativeBillMonthThrough
   });
-  assert.deepEqual(plan.eligibleOrigins, []);
-  assert.deepEqual(plan.laterOrigins, []);
-  assert.equal(plan.reservedFinalHoldoutOrigin, null);
-  assert.equal(plan.waiting, true);
+  assert.equal(plan.firstIndependentLaterOrigin, "2026-03");
+  assert.deepEqual(
+    plan.firstIndependentFutureBillMonths,
+    ["2026-04", "2026-05", "2026-06"]
+  );
+  assert.equal(plan.firstIndependentLaterOriginReady, false);
+  assert.equal(plan.prospectiveFinalHoldoutOrigin, "2026-06");
+  assert.deepEqual(
+    plan.prospectiveFinalHoldoutFutureBillMonths,
+    ["2026-07", "2026-08", "2026-09"]
+  );
 });
 
-test("one mature unopened window is reserved as final holdout", () => {
-  const plan = planHpsrLaterOrigins({
-    maxPreviouslyOpenedOrigin: "2026-02",
-    openedFutureActualThrough: "2026-05",
-    latestCompleteMonth: "2026-08"
-  });
-  assert.deepEqual(
-    plan.nonoverlappingOrigins.map(({ origin }) => origin),
-    ["2026-05"]
-  );
-  assert.deepEqual(plan.laterOrigins, []);
-  assert.equal(plan.reservedFinalHoldoutOrigin, "2026-05");
-  assert.equal(plan.waiting, true);
+test("metadata-only evidence never advances actual-opened boundary", () => {
+  const summary = summarizeHpsrOpenedEvidence([
+    {
+      accessClass: "ACTUAL_VALUE_OPENED",
+      origin: "2026-02",
+      throughMonth: "2026-05",
+      evidenceRef: "frozen-complete-outcome",
+      failedAttempt: false
+    },
+    {
+      accessClass: "AVAILABILITY_METADATA_ONLY",
+      origin: "2026-04",
+      throughMonth: "2026-07",
+      evidenceRef: "failed-metadata-audit",
+      failedAttempt: true
+    }
+  ]);
+  assert.equal(summary.maxAvailabilityInspectedOrigin, "2026-04");
+  assert.equal(summary.availabilityInspectedThrough, "2026-07");
+  assert.equal(summary.maxActualValueOpenedOrigin, "2026-02");
+  assert.equal(summary.actualValueOpenedThrough, "2026-05");
+  assert.equal(summary.failedAttemptTouchedMetadataOnly, true);
+  assert.equal(summary.failedAttemptOpenedOutcome, false);
 });
 
-test("later-origin selection preserves a disjoint holdout", () => {
-  const single = planHpsrLaterOrigins({
-    maxPreviouslyOpenedOrigin: "2026-02",
-    openedFutureActualThrough: "2026-05",
-    latestCompleteMonth: "2026-11"
-  });
-  assert.deepEqual(
-    single.laterOrigins.map(({ origin }) => origin),
-    ["2026-05"]
-  );
-  assert.equal(single.reservedFinalHoldoutOrigin, "2026-08");
-  assert.equal(
-    single.availabilityClass,
-    "SINGLE_ORIGIN_DIRECTIONAL_VALIDATION_AVAILABLE"
-  );
+test("an amount read advances actual-opened boundary", () => {
+  const summary = summarizeHpsrOpenedEvidence([
+    {
+      accessClass: "AVAILABILITY_METADATA_ONLY",
+      origin: "2026-03",
+      throughMonth: "2026-06",
+      evidenceRef: "metadata"
+    },
+    {
+      accessClass: "ACTUAL_VALUE_OPENED",
+      origin: "2026-03",
+      throughMonth: "2026-06",
+      evidenceRef: "amount-read",
+      failedAttempt: true
+    }
+  ]);
+  assert.equal(summary.maxActualValueOpenedOrigin, "2026-03");
+  assert.equal(summary.actualValueOpenedThrough, "2026-06");
+  assert.equal(summary.failedAttemptOpenedOutcome, true);
+});
 
-  const multi = planHpsrLaterOrigins({
-    maxPreviouslyOpenedOrigin: "2026-02",
-    openedFutureActualThrough: "2026-05",
-    latestCompleteMonth: "2027-02"
+test("prospective holdout is reserved even before its bills mature", () => {
+  const plan = planHpsrProspectiveReservation({
+    maxActualValueOpenedOrigin: "2026-02",
+    completeAuthoritativeBillMonthThrough: "2026-06"
   });
-  assert.deepEqual(
-    multi.laterOrigins.map(({ origin }) => origin),
-    ["2026-05", "2026-08"]
-  );
-  assert.equal(multi.reservedFinalHoldoutOrigin, "2026-11");
-  assert.equal(
-    multi.availabilityClass,
-    "MULTI_ORIGIN_VALIDATION_AVAILABLE"
-  );
-  assert.equal(forecastWindowsOverlap("2026-05", "2026-08", 3), false);
-  assert.equal(forecastWindowsOverlap("2026-05", "2026-07", 3), true);
+  assert.equal(plan.firstIndependentLaterOrigin, "2026-03");
+  assert.equal(plan.firstIndependentLaterOriginReady, true);
+  assert.equal(plan.prospectiveFinalHoldoutOrigin, "2026-06");
+  assert.equal(plan.prospectiveFinalHoldoutReady, false);
+  assert.equal(plan.prospectiveFinalHoldoutOpened, false);
+  assert.equal(plan.prospectiveFinalHoldoutOutcomeRead, false);
+});
+
+test("three-month development and prospective holdout windows do not overlap", () => {
+  assert.equal(forecastWindowsOverlap("2026-03", "2026-06", 3), false);
+  assert.equal(forecastWindowsOverlap("2026-03", "2026-05", 3), true);
 });
 
 test("Core and cash bands are origin-visible without generic SKU floors", () => {
@@ -161,6 +213,108 @@ test("residual bounds exclude later-origin outcomes", () => {
   assert.equal(bounds.normalizedResidualBounds.upperQuantile, 0.95);
   assert.equal(bounds.boundValuesMustFreezeBeforeLaterOutcome, true);
   assert.equal(bounds.boundValuesPresentAtK0B, false);
+  assert.equal(bounds.boundValuesFrozenAtK1A, true);
+  assert.equal(bounds.privateDerivedArtifactMaterialized, true);
+  assert.equal(bounds.publicNumericValuesPublished, false);
+  assert.equal(
+    bounds.provenanceStatus,
+    "PROVEN_PREVIOUSLY_OPENED_DEVELOPMENT_ONLY"
+  );
+  const provenance = validateHpsrResidualBoundProvenance(
+    residualBoundProvenance
+  );
+  assert.equal(
+    provenance.valid,
+    true,
+    provenance.errors.join("\n")
+  );
+});
+
+test("q10 q05 and q95 derive only from old development rows", () => {
+  const bounds = deriveHpsrResidualBounds([
+    {
+      origin: "2025-01",
+      basePointEstimate: 100,
+      rawPointEstimate: 50
+    },
+    {
+      origin: "2025-02",
+      basePointEstimate: 200,
+      rawPointEstimate: 250
+    },
+    {
+      origin: "2025-03",
+      basePointEstimate: 300,
+      rawPointEstimate: 900
+    }
+  ], {
+    maximumOpenedDevelopmentOrigin: "2026-02"
+  });
+  assert.equal(bounds.valid, true);
+  assert.equal(bounds.inputRowCount, 3);
+  assert.equal(bounds.finiteSupportRowCount, 3);
+  assert.equal(bounds.laterOriginOutcomeUsed, false);
+  assert.equal(bounds.finalHoldoutOutcomeUsed, false);
+  assert.throws(
+    () => deriveHpsrResidualBounds([
+      {
+        origin: "2026-03",
+        basePointEstimate: 100,
+        rawPointEstimate: 200
+      }
+    ], {
+      maximumOpenedDevelopmentOrigin: "2026-02"
+    }),
+    /hpsr_residual_bound_later_origin_outcome_forbidden/u
+  );
+});
+
+test("missing private bound cache is rebuilt without a historical receipt", async () => {
+  const directory = await mkdtemp(path.join(os.tmpdir(), "hpsr-bound-"));
+  const cachePath = path.join(directory, "bound.json");
+  let rebuildCount = 0;
+  const artifact = {
+    schema:
+      "m2.current.head_protected_segmented_router."
+        + "residual_bounds.private.v0.1",
+    artifactClass: "PRIVATE_DERIVED_CACHE",
+    experimentId: HPSR_EXPERIMENT_ID,
+    modelId: HPSR_MODEL_ID,
+    status: "FROZEN_FROM_PREVIOUSLY_OPENED_DEVELOPMENT_ONLY",
+    sourcePopulation:
+      "STRICT_ROLLING_CORE80_H3_B3_JOIN_FROZEN_LG01",
+    parameterValues: {
+      frozenDevelopmentPositiveBaseFloor: 10,
+      frozenDevelopmentQ05: -1,
+      frozenDevelopmentQ95: 1
+    },
+    newLaterOriginActualValueRead: false,
+    laterOriginOutcomeUsed: false,
+    prospectiveFinalHoldoutOutcomeUsed: false,
+    publicParameterValuesPublished: false,
+    privateDigestIsCrossComputerGate: false
+  };
+  try {
+    const rebuilt = await loadOrRebuildHpsrResidualBoundCache({
+      cachePath,
+      rebuild: async () => {
+        rebuildCount += 1;
+        return artifact;
+      }
+    });
+    const cached = await loadOrRebuildHpsrResidualBoundCache({
+      cachePath,
+      rebuild: async () => {
+        rebuildCount += 1;
+        return artifact;
+      }
+    });
+    assert.equal(rebuilt.cacheStatus, "CACHE_MISS_REBUILT");
+    assert.equal(cached.cacheStatus, "CACHE_HIT");
+    assert.equal(rebuildCount, 1);
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
 });
 
 test("numeric and reporting contracts separate raw router from fallback", () => {
@@ -212,12 +366,20 @@ test("HCRC01 unknown per-alpha counts stay null without a rerun", () => {
 });
 
 test("public Chinese reports match machine waiting status and leak no private path", () => {
-  for (const report of [availabilityReport, preregistration]) {
-    assert.match(report, /等待/u);
-    assert.ok(report.includes(HPSR_WAITING_STATUS));
+  const semantics = validateHpsrOpenedOriginSemantics(openedSemantics);
+  assert.equal(semantics.valid, true, semantics.errors.join("\n"));
+  for (const report of [
+    availabilityReport,
+    preregistration,
+    openedSemanticsReport,
+    prospectiveFinalHoldoutReport,
+    residualBoundReport
+  ]) {
     assert.doesNotMatch(report, /data\/private-(?:input|output)\//u);
     assert.doesNotMatch(report, /[A-Z]:[\\/]/u);
   }
+  assert.ok(availabilityReport.includes(HPSR_WAITING_STATUS));
+  assert.ok(preregistration.includes(HPSR_WAITING_STATUS));
   assert.equal(availability.status, HPSR_WAITING_STATUS);
   assert.equal(availability.auditBoundary.newFutureActualAmountsRead, false);
   assert.equal(availability.auditBoundary.newModelMetricsRead, false);

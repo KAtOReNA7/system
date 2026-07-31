@@ -695,8 +695,14 @@ test("HPSR capability separates authority, rebuildable cache, and optional recei
     cacheMiss.historicalReceiptStatus,
     "OPTIONAL_PROVENANCE_MISSING",
   );
-  assert.match(cacheMiss.authorization, /CURRENTLY_WAITING/u);
-  assert.match(cacheMiss.recovery, /WAITING_FOR_NEW_BILLS/u);
+  assert.match(
+    cacheMiss.authorization,
+    /K1_IMPLEMENTATION_AND_SYNTHETIC_VALIDATION.*NO_K2/u,
+  );
+  assert.match(
+    cacheMiss.recovery,
+    /future K2 execution requires a new capability-scoped authorization/u,
+  );
   assert.ok(
     cacheMiss.notes.includes("availability does not grant execution authorization"),
   );

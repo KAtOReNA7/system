@@ -48,6 +48,25 @@
     "historicalReceiptMayGrantExecution": false,
     "privatePathOrDigestMayBeLongLivedGate": false
   },
+  "openedOriginSemantics": {
+    "semanticRevision": "v0.2",
+    "availabilityMetadataCountsAsActualValueOpened": false,
+    "schemaOrRowCountCountsAsActualValueOpened": false,
+    "actualAmountLabelMetricOrModelPerformanceCountsAsOpened": true,
+    "missingEvidencePolicy": "UNKNOWN_AMBIGUOUS_FAIL_CLOSED",
+    "maxAvailabilityInspectedOrigin": "2026-02",
+    "maxActualValueOpenedOrigin": "2026-02",
+    "availabilityInspectedThrough": "2026-05",
+    "actualValueOpenedThrough": "2026-05",
+    "completeAuthoritativeBillMonthThrough": "2026-04",
+    "failedAttemptTouchedMetadataOnly": true,
+    "failedAttemptOpenedOutcome": false,
+    "unknownOrAmbiguous": false,
+    "historicalRawReceiptModified": false,
+    "priorEarliestPotentialLaterOrigin": "2026-05",
+    "correctedEarliestIndependentLaterOrigin": "2026-03",
+    "earliestLaterOriginChangedBySemanticRevision": true
+  },
   "scope": {
     "primaryEvaluationFamily": "STRICT_ROLLING",
     "primaryPopulationId": "CORE80",
@@ -74,17 +93,27 @@
     "thirtySixMonthAuthorized": false
   },
   "laterOriginQualification": {
-    "maxPreviouslyOpenedOrigin": "2026-02",
-    "openedFutureActualThrough": "2026-05",
-    "latestCompleteMonth": "2026-04",
+    "maxAvailabilityInspectedOrigin": "2026-02",
+    "maxActualValueOpenedOrigin": "2026-02",
+    "availabilityInspectedThrough": "2026-05",
+    "actualValueOpenedThrough": "2026-05",
+    "completeAuthoritativeBillMonthThrough": "2026-04",
     "horizonMonths": 3,
-    "originMustBeStrictlyAfterMaxPreviouslyOpened": true,
-    "everyFutureBillMonthMustBeStrictlyAfterOpenedFutureActualThrough": true,
+    "originMustBeStrictlyAfterMaxActualValueOpenedOrigin": true,
+    "availabilityInspectionAloneMayAdvanceActualOpenedBoundary": false,
     "allFutureBillMonthsMustBeComplete": true,
     "newFutureActualAmountsReadDuringK0": false,
+    "earliestIndependentLaterOrigin": "2026-03",
+    "earliestIndependentFutureBillMonths": [
+      "2026-04",
+      "2026-05",
+      "2026-06"
+    ],
+    "earliestIndependentRequiredCompleteThrough": "2026-06",
+    "earliestIndependentLaterOriginReady": false,
     "eligibleLaterOrigins": [],
     "eligibleLaterOriginCount": 0,
-    "nonoverlappingSelectionRule": "GREEDY_EARLIEST_ORIGIN_WITH_DISJOINT_THREE_MONTH_FUTURE_WINDOWS",
+    "nonoverlappingSelectionRule": "FIRST_ORIGIN_AFTER_MAX_ACTUAL_VALUE_OPENED_THEN_ADVANCE_BY_THREE_MONTHS",
     "adjacentOverlappingWindowsCountAsIndependentEvidence": false,
     "currentDecision": "M2_HEAD_PROTECTED_SEGMENTED_ROUTER_WAITING_FOR_NEW_BILLS"
   },
@@ -98,22 +127,21 @@
     ],
     "historicalIsolationStatus": "HISTORICAL_FINAL_HOLDOUT_ISOLATION_CONFLICT",
     "historicalOriginsEligibleAsUntouchedHpsrHoldout": false,
-    "whenNoUntouchedExistingHoldout": "RESERVE_LATEST_COMPLETE_UNOPENED_NONOVERLAPPING_ORIGIN",
+    "whenNoUntouchedExistingHoldout": "PROSPECTIVELY_RESERVE_FIRST_ORIGIN_AT_LEAST_THREE_MONTHS_AFTER_FIRST_INDEPENDENT_LATER_ORIGIN",
     "singleAvailableOriginThatIsOnlyHoldoutMayBeConsumed": false,
     "reservationMayOpenOutcome": false,
-    "earliestOneLaterOriginPlan": {
-      "laterOrigin": "2026-05",
-      "reservedFinalHoldoutOrigin": "2026-08",
-      "requiredCompleteLedgerThrough": "2026-11"
-    },
-    "earliestTwoLaterOriginPlan": {
-      "laterOrigins": [
-        "2026-05",
-        "2026-08"
-      ],
-      "reservedFinalHoldoutOrigin": "2026-11",
-      "requiredCompleteLedgerThrough": "2027-02"
-    }
+    "selectionFormula": "addMonths(firstIndependentLaterOrigin,horizonMonths)",
+    "prospectiveFinalHoldoutOrigin": "2026-06",
+    "prospectiveFinalHoldoutFutureBillMonths": [
+      "2026-07",
+      "2026-08",
+      "2026-09"
+    ],
+    "prospectiveFinalHoldoutRequiredCompleteThrough": "2026-09",
+    "prospectiveFinalHoldoutCurrentlyComplete": false,
+    "prospectiveFinalHoldoutOpened": false,
+    "prospectiveFinalHoldoutOutcomeRead": false,
+    "futureAmountMayChangeReservedOrigin": false
   },
   "identities": [
     {
@@ -187,6 +215,12 @@
   },
   "residualBoundaryFreeze": {
     "source": "PREVIOUSLY_OPENED_HCRC01_DEVELOPMENT_ROWS_ONLY",
+    "sourcePopulation": "STRICT_ROLLING_CORE80_H3_B3_JOIN_FROZEN_LG01",
+    "sourceOriginRange": {
+      "from": "2023-03",
+      "through": "2025-09"
+    },
+    "maximumOpenedDevelopmentOrigin": "2026-02",
     "laterOriginRowsOrOutcomeAllowed": false,
     "positiveBaseFloor": {
       "sourceRows": "OLD_DEVELOPMENT_ROWS_WITH_FINITE_POSITIVE_LG01_BASE",
@@ -204,7 +238,12 @@
     "rebuildPolicy": "DETERMINISTIC_FROM_OLD_DEVELOPMENT_ROWS_NEVER_FROM_LATER_ORIGIN",
     "boundValuesMustFreezeBeforeLaterOutcome": true,
     "boundValuesPresentAtK0B": false,
-    "reasonBoundValuesAbsent": "K1_NOT_EXECUTED_WAITING_FOR_NEW_BILLS"
+    "boundValuesFrozenAtK1A": true,
+    "privateDerivedArtifactMaterialized": true,
+    "publicNumericValuesPublished": false,
+    "privateDigestIsCrossComputerGate": false,
+    "actualFieldConsumedForBoundDerivation": false,
+    "provenanceStatus": "PROVEN_PREVIOUSLY_OPENED_DEVELOPMENT_ONLY"
   },
   "routerFormula": {
     "base": "LG01_PREDICTION",
@@ -360,7 +399,8 @@
   },
   "execution": {
     "laterOriginAvailableAtK0": false,
-    "K1ImplementationAuthorizedNow": false,
+    "K1ImplementationAuthorizedNow": true,
+    "K1SemanticAndBoundPreparationCompleted": true,
     "K2PrivateEvaluationAuthorizedNow": false,
     "singleQualifiedLaterOriginEvaluationConditionallyAuthorizedByUser": true,
     "condition": "ONLY_AFTER_FRESH_DATE_AUDIT_PROVES_LATER_ORIGIN_AND_SEPARATE_FINAL_HOLDOUT",
@@ -377,6 +417,9 @@
     "source": "USER_INSTRUCTION_M2_HEAD_PROTECTED_SEGMENTED_ROUTER_LATER_ORIGIN_V0_1",
     "dateOnlyReadinessAudit": true,
     "contractPreregistration": true,
+    "K1CanonicalImplementation": true,
+    "syntheticFixtureValidation": true,
+    "oldOpenedDevelopmentRowsForResidualBounds": true,
     "qualifiedLaterOriginValidation": true,
     "qualifiedLaterOriginValidationUsableNow": false,
     "privateSourceReadForDateAudit": true,
@@ -398,13 +441,24 @@
     "capabilityId": "m2-head-protected-segmented-router",
     "sourceAuthorityBlocking": true,
     "derivedCacheBlocking": false,
-    "runProvenanceBlocking": false
+    "runProvenanceBlocking": false,
+    "boundSourceCaches": {
+      "frozenLg01Rows": "data/private-output/m2-core-legacy-horizon-amount/M2-core-legacy-horizon-amount-frozen-lg01-rows-private-v0.1.ndjson",
+      "frozenCham01PredictionRows": "data/private-output/m2-core-legacy-horizon-amount/M2-core-legacy-horizon-amount-predictions-private-v0.1.ndjson"
+    },
+    "openedOriginSemanticsArtifact": "data/private-output/m2-head-protected-segmented-router/M2-head-protected-segmented-router-opened-origin-semantics-private-v0.2.json",
+    "residualBoundArtifact": "data/private-output/m2-head-protected-segmented-router/M2-head-protected-segmented-router-residual-bounds-private-v0.1.json"
   },
   "publicOutputs": {
     "selectionAttributionJson": "docs/analysis/m2-current/M2-head-protected-segmented-router-selection-gate-attribution-v0.1.json",
     "selectionAttributionReport": "docs/analysis/m2-current/M2-head-protected-segmented-router-selection-gate-attribution-v0.1.md",
-    "availabilityJson": "docs/analysis/m2-current/M2-head-protected-segmented-router-later-origin-availability-v0.1.json",
-    "availabilityReport": "docs/analysis/m2-current/M2-head-protected-segmented-router-later-origin-availability-v0.1.md",
+    "openedOriginSemanticsJson": "docs/analysis/m2-current/M2-head-protected-segmented-router-opened-origin-semantics-v0.2.json",
+    "openedOriginSemanticsReport": "docs/analysis/m2-current/M2-head-protected-segmented-router-opened-origin-semantics-v0.2.md",
+    "availabilityJson": "docs/analysis/m2-current/M2-head-protected-segmented-router-later-origin-availability-v0.2.json",
+    "availabilityReport": "docs/analysis/m2-current/M2-head-protected-segmented-router-later-origin-availability-v0.2.md",
+    "prospectiveFinalHoldoutReport": "docs/analysis/m2-current/M2-head-protected-segmented-router-prospective-final-holdout-v0.1.md",
+    "residualBoundProvenanceJson": "docs/analysis/m2-current/M2-head-protected-segmented-router-residual-bound-provenance-v0.1.json",
+    "residualBoundProvenanceReport": "docs/analysis/m2-current/M2-head-protected-segmented-router-residual-bound-provenance-v0.1.md",
     "preregistration": "docs/analysis/m2-current/M2-head-protected-segmented-router-preregistration-v0.1.md"
   }
 }

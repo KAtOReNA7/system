@@ -1,11 +1,287 @@
+import {
+  quantileLinear
+} from "./lg01HeadCashResidual.js";
+
 export const HPSR_MODEL_ID = "M2-WORK-HPSR01";
 export const HPSR_EXPERIMENT_ID =
   "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01";
 export const HPSR_ARM_IDS = Object.freeze(["R0", "D1", "R1"]);
 export const HPSR_WAITING_STATUS =
   "M2_HEAD_PROTECTED_SEGMENTED_ROUTER_WAITING_FOR_NEW_BILLS";
+export const HPSR_IMPLEMENTED_STATUS =
+  "M2_HEAD_PROTECTED_SEGMENTED_ROUTER_"
+    + "IMPLEMENTED_AWAITING_LATER_ORIGIN_DATA";
+export const HPSR_READY_FOR_AUTHORIZATION_STATUS =
+  "M2_HEAD_PROTECTED_SEGMENTED_ROUTER_"
+    + "READY_FOR_SEPARATE_LATER_ORIGIN_AUTHORIZATION";
+export const HPSR_BOUND_PROVENANCE_BLOCKED_STATUS =
+  "M2_HEAD_PROTECTED_SEGMENTED_ROUTER_"
+    + "IMPLEMENTATION_BLOCKED_UNPROVEN_BOUND_PROVENANCE";
+export const HPSR_AUTHORITY_BLOCKED_STATUS =
+  "M2_HEAD_PROTECTED_SEGMENTED_ROUTER_"
+    + "BLOCKED_MISSING_PRIVATE_AUTHORITY";
 
 const MONTH_PATTERN = /^\d{4}-(?:0[1-9]|1[0-2])$/u;
+const OPENED_EVIDENCE_CLASSES = Object.freeze([
+  "AVAILABILITY_METADATA_ONLY",
+  "ACTUAL_VALUE_OPENED",
+  "UNKNOWN_AMBIGUOUS"
+]);
+
+export function summarizeHpsrOpenedEvidence(evidence) {
+  if (!Array.isArray(evidence) || evidence.length === 0) {
+    throw new Error("hpsr_opened_evidence_required");
+  }
+  const availabilityOrigins = [];
+  const actualOrigins = [];
+  const availabilityMonths = [];
+  const actualMonths = [];
+  const availabilityEvidenceRefs = [];
+  const actualEvidenceRefs = [];
+  const ambiguousEvidenceRefs = [];
+  let failedAttemptTouchedMetadataOnly = false;
+  let failedAttemptOpenedOutcome = false;
+
+  for (const item of evidence) {
+    const accessClass = String(item?.accessClass ?? "");
+    if (!OPENED_EVIDENCE_CLASSES.includes(accessClass)) {
+      throw new Error("hpsr_opened_evidence_access_class_invalid");
+    }
+    const evidenceRef = nonempty(
+      item?.evidenceRef,
+      "opened_evidence_ref"
+    );
+    const origin = item?.origin === null || item?.origin === undefined
+      ? null
+      : requireMonth(item.origin, "opened_evidence_origin");
+    const throughMonth =
+      item?.throughMonth === null || item?.throughMonth === undefined
+        ? null
+        : requireMonth(
+          item.throughMonth,
+          "opened_evidence_through_month"
+        );
+    if (origin === null && throughMonth === null) {
+      throw new Error("hpsr_opened_evidence_boundary_required");
+    }
+    if (accessClass === "UNKNOWN_AMBIGUOUS") {
+      ambiguousEvidenceRefs.push(evidenceRef);
+      continue;
+    }
+    if (origin !== null) availabilityOrigins.push(origin);
+    if (throughMonth !== null) availabilityMonths.push(throughMonth);
+    availabilityEvidenceRefs.push(evidenceRef);
+    if (accessClass === "ACTUAL_VALUE_OPENED") {
+      if (origin !== null) actualOrigins.push(origin);
+      if (throughMonth !== null) actualMonths.push(throughMonth);
+      actualEvidenceRefs.push(evidenceRef);
+      if (item.failedAttempt === true) {
+        failedAttemptOpenedOutcome = true;
+      }
+    } else if (item.failedAttempt === true) {
+      failedAttemptTouchedMetadataOnly = true;
+    }
+  }
+
+  return Object.freeze({
+    maxAvailabilityInspectedOrigin: maximumMonthOrNull(
+      availabilityOrigins
+    ),
+    maxActualValueOpenedOrigin: maximumMonthOrNull(actualOrigins),
+    availabilityInspectedThrough: maximumMonthOrNull(
+      availabilityMonths
+    ),
+    actualValueOpenedThrough: maximumMonthOrNull(actualMonths),
+    failedAttemptTouchedMetadataOnly,
+    failedAttemptOpenedOutcome,
+    availabilityEvidenceRefs: Object.freeze(unique(
+      availabilityEvidenceRefs
+    ).sort()),
+    actualEvidenceRefs: Object.freeze(unique(actualEvidenceRefs).sort()),
+    ambiguousEvidenceRefs: Object.freeze(unique(
+      ambiguousEvidenceRefs
+    ).sort()),
+    hasUnknownOrAmbiguousEvidence: ambiguousEvidenceRefs.length > 0
+  });
+}
+
+export function planHpsrProspectiveReservation({
+  maxActualValueOpenedOrigin,
+  completeAuthoritativeBillMonthThrough,
+  horizonMonths = 3
+}) {
+  const maximumOpenedOrigin = requireMonth(
+    maxActualValueOpenedOrigin,
+    "max_actual_value_opened_origin"
+  );
+  const completeThrough = requireMonth(
+    completeAuthoritativeBillMonthThrough,
+    "complete_authoritative_bill_month_through"
+  );
+  if (!Number.isSafeInteger(horizonMonths) || horizonMonths <= 0) {
+    throw new Error("hpsr_horizon_months_invalid");
+  }
+  const firstIndependentLaterOrigin = addMonths(maximumOpenedOrigin, 1);
+  const firstIndependentFutureBillMonths = Object.freeze(Array.from(
+    { length: horizonMonths },
+    (_, index) => addMonths(firstIndependentLaterOrigin, index + 1)
+  ));
+  const prospectiveFinalHoldoutOrigin = addMonths(
+    firstIndependentLaterOrigin,
+    horizonMonths
+  );
+  const prospectiveFinalHoldoutFutureBillMonths = Object.freeze(
+    Array.from(
+      { length: horizonMonths },
+      (_, index) => addMonths(
+        prospectiveFinalHoldoutOrigin,
+        index + 1
+      )
+    )
+  );
+  const firstIndependentLaterOriginReady = (
+    compareMonths(
+      firstIndependentFutureBillMonths.at(-1),
+      completeThrough
+    ) <= 0
+  );
+  const prospectiveFinalHoldoutReady = (
+    compareMonths(
+      prospectiveFinalHoldoutFutureBillMonths.at(-1),
+      completeThrough
+    ) <= 0
+  );
+  if (forecastWindowsOverlap(
+    firstIndependentLaterOrigin,
+    prospectiveFinalHoldoutOrigin,
+    horizonMonths
+  )) {
+    throw new Error("hpsr_prospective_holdout_window_overlap");
+  }
+  return Object.freeze({
+    firstIndependentLaterOrigin,
+    firstIndependentFutureBillMonths,
+    firstIndependentRequiredCompleteThrough:
+      firstIndependentFutureBillMonths.at(-1),
+    firstIndependentLaterOriginReady,
+    prospectiveFinalHoldoutOrigin,
+    prospectiveFinalHoldoutFutureBillMonths,
+    prospectiveFinalHoldoutRequiredCompleteThrough:
+      prospectiveFinalHoldoutFutureBillMonths.at(-1),
+    prospectiveFinalHoldoutReady,
+    prospectiveFinalHoldoutOpened: false,
+    prospectiveFinalHoldoutOutcomeRead: false,
+    status: firstIndependentLaterOriginReady
+      ? HPSR_READY_FOR_AUTHORIZATION_STATUS
+      : HPSR_IMPLEMENTED_STATUS
+  });
+}
+
+export function deriveHpsrResidualBounds(
+  developmentRows,
+  {
+    maximumOpenedDevelopmentOrigin,
+    positiveBaseQuantile = 0.1,
+    lowerResidualQuantile = 0.05,
+    upperResidualQuantile = 0.95
+  }
+) {
+  if (!Array.isArray(developmentRows) || developmentRows.length === 0) {
+    throw new Error("hpsr_residual_bound_development_rows_required");
+  }
+  const maximumOrigin = requireMonth(
+    maximumOpenedDevelopmentOrigin,
+    "maximum_opened_development_origin"
+  );
+  const normalized = developmentRows.map((input) => {
+    const origin = requireMonth(
+      input?.origin,
+      "residual_bound_row_origin"
+    );
+    if (compareMonths(origin, maximumOrigin) > 0) {
+      throw new Error(
+        "hpsr_residual_bound_later_origin_outcome_forbidden"
+      );
+    }
+    return Object.freeze({
+      origin,
+      basePointEstimate: nullableNumber(input?.basePointEstimate),
+      rawPointEstimate: nullableNumber(input?.rawPointEstimate)
+    });
+  });
+  const finiteRows = normalized.filter((row) => (
+    Number.isFinite(row.basePointEstimate)
+    && Number.isFinite(row.rawPointEstimate)
+  ));
+  const positiveBaseRows = finiteRows.filter(
+    (row) => row.basePointEstimate > 0
+  );
+  if (positiveBaseRows.length === 0) {
+    throw new Error(
+      "hpsr_residual_bound_positive_base_support_required"
+    );
+  }
+  const positiveBaseFloor = quantileLinear(
+    positiveBaseRows.map((row) => row.basePointEstimate),
+    positiveBaseQuantile
+  );
+  if (!Number.isFinite(positiveBaseFloor) || positiveBaseFloor <= 0) {
+    throw new Error("hpsr_residual_bound_positive_floor_invalid");
+  }
+  const normalizedResiduals = finiteRows.map((row) => {
+    const scale = Math.max(
+      Math.abs(row.basePointEstimate),
+      positiveBaseFloor
+    );
+    return (
+      row.rawPointEstimate - row.basePointEstimate
+    ) / scale;
+  }).filter(Number.isFinite);
+  if (normalizedResiduals.length === 0) {
+    throw new Error("hpsr_residual_bound_support_empty");
+  }
+  const lowerBound = quantileLinear(
+    normalizedResiduals,
+    lowerResidualQuantile
+  );
+  const upperBound = quantileLinear(
+    normalizedResiduals,
+    upperResidualQuantile
+  );
+  if (
+    !Number.isFinite(lowerBound)
+    || !Number.isFinite(upperBound)
+    || lowerBound > upperBound
+  ) {
+    throw new Error("hpsr_residual_bound_quantiles_invalid");
+  }
+  return Object.freeze({
+    status: "FROZEN_FROM_PREVIOUSLY_OPENED_DEVELOPMENT_ONLY",
+    valid: true,
+    positiveBaseFloor,
+    lowerBound,
+    upperBound,
+    inputRowCount: normalized.length,
+    finiteSupportRowCount: finiteRows.length,
+    excludedNonfiniteRowCount: normalized.length - finiteRows.length,
+    positiveBaseSupportRowCount: positiveBaseRows.length,
+    derivationOriginRange: Object.freeze({
+      from: minimumMonth(normalized.map((row) => row.origin)),
+      through: maximumMonthOrNull(
+        normalized.map((row) => row.origin)
+      )
+    }),
+    maximumOpenedDevelopmentOrigin: maximumOrigin,
+    laterOriginOutcomeUsed: false,
+    finalHoldoutOutcomeUsed: false,
+    quantileMethod: "LINEAR_INTERPOLATION_N_MINUS_ONE",
+    quantiles: Object.freeze({
+      positiveBaseFloor: positiveBaseQuantile,
+      lowerNormalizedResidual: lowerResidualQuantile,
+      upperNormalizedResidual: upperResidualQuantile
+    })
+  });
+}
 
 export function validateHeadProtectedSegmentedRouterContract(config) {
   const errors = [];
@@ -58,10 +334,14 @@ export function validateHeadProtectedSegmentedRouterContract(config) {
     || config?.laterOriginQualification?.currentDecision
       !== HPSR_WAITING_STATUS
     || config?.laterOriginQualification
-      ?.originMustBeStrictlyAfterMaxPreviouslyOpened !== true
+      ?.originMustBeStrictlyAfterMaxActualValueOpenedOrigin !== true
     || config?.laterOriginQualification
-      ?.everyFutureBillMonthMustBeStrictlyAfterOpenedFutureActualThrough
-      !== true
+      ?.availabilityInspectionAloneMayAdvanceActualOpenedBoundary
+      !== false
+    || config?.laterOriginQualification
+      ?.earliestIndependentLaterOrigin !== "2026-03"
+    || config?.laterOriginQualification
+      ?.earliestIndependentRequiredCompleteThrough !== "2026-06"
   ) {
     errors.push("hpsr_contract_later_origin_boundary_invalid");
   }
@@ -71,6 +351,9 @@ export function validateHeadProtectedSegmentedRouterContract(config) {
     || config?.finalHoldout?.historicalContractModified !== false
     || config?.finalHoldout?.singleAvailableOriginThatIsOnlyHoldoutMayBeConsumed
       !== false
+    || config?.finalHoldout?.prospectiveFinalHoldoutOrigin !== "2026-06"
+    || config?.finalHoldout?.prospectiveFinalHoldoutOpened !== false
+    || config?.finalHoldout?.prospectiveFinalHoldoutOutcomeRead !== false
   ) {
     errors.push("hpsr_contract_final_holdout_boundary_invalid");
   }
@@ -114,6 +397,11 @@ export function validateHeadProtectedSegmentedRouterContract(config) {
     || bounds?.normalizedResidualBounds?.upperQuantile !== 0.95
     || bounds?.boundValuesMustFreezeBeforeLaterOutcome !== true
     || bounds?.boundValuesPresentAtK0B !== false
+    || bounds?.boundValuesFrozenAtK1A !== true
+    || bounds?.privateDerivedArtifactMaterialized !== true
+    || bounds?.publicNumericValuesPublished !== false
+    || bounds?.provenanceStatus
+      !== "PROVEN_PREVIOUSLY_OPENED_DEVELOPMENT_ONLY"
   ) {
     errors.push("hpsr_contract_residual_bounds_invalid");
   }
@@ -139,13 +427,16 @@ export function validateHeadProtectedSegmentedRouterContract(config) {
     errors.push("hpsr_contract_evaluation_reporting_invalid");
   }
   if (
-    config?.execution?.K1ImplementationAuthorizedNow !== false
+    config?.execution?.K1ImplementationAuthorizedNow !== true
+    || config?.execution?.K1SemanticAndBoundPreparationCompleted !== true
     || config?.execution?.K2PrivateEvaluationAuthorizedNow !== false
     || config?.execution?.oneCompleteOutcomeMaximum !== true
     || config?.execution?.secondCompleteResultAllowed !== false
     || config?.execution?.secondBootstrapAllowed !== false
     || config?.authorization?.finalHoldout !== false
     || config?.authorization?.pullRequestMerge !== false
+    || config?.authorization?.K1CanonicalImplementation !== true
+    || config?.authorization?.syntheticFixtureValidation !== true
   ) {
     errors.push("hpsr_contract_execution_authorization_invalid");
   }
@@ -203,21 +494,97 @@ export function validateHpsrLaterOriginAvailability(value) {
   if (
     value?.schema
       !== "m2.current.head_protected_segmented_router."
-        + "later_origin_availability.v0.1"
+        + "later_origin_availability.v0.2"
     || value?.status !== HPSR_WAITING_STATUS
     || value?.auditBoundary?.newFutureActualAmountsRead !== false
     || value?.auditBoundary?.newModelMetricsRead !== false
-    || value?.openedOriginLedger?.maxPreviouslyOpenedOrigin !== "2026-02"
-    || value?.openedOriginLedger?.openedFutureActualThrough !== "2026-05"
-    || value?.billAvailability?.latestCompleteMonth !== "2026-04"
+    || value?.openedSemantics?.maxActualValueOpenedOrigin !== "2026-02"
+    || value?.openedSemantics?.availabilityInspectedThrough !== "2026-05"
+    || value?.openedSemantics?.actualValueOpenedThrough !== "2026-05"
+    || value?.billAvailability
+      ?.completeAuthoritativeBillMonthThrough !== "2026-04"
     || value?.candidateInventory?.eligibleLaterOriginCount !== 0
-    || value?.candidateInventory?.nonoverlappingLaterOriginCount !== 0
+    || value?.candidateInventory
+      ?.earliestIndependentLaterOrigin !== "2026-03"
+    || value?.candidateInventory
+      ?.earliestIndependentRequiredCompleteThrough !== "2026-06"
     || value?.historicalFinalHoldout?.openedByThisAudit !== false
-    || value?.futureReservation?.newFinalHoldoutOpened !== false
+    || value?.prospectiveFinalHoldout?.origin !== "2026-06"
+    || value?.prospectiveFinalHoldout?.opened !== false
+    || value?.prospectiveFinalHoldout?.outcomeRead !== false
     || value?.execution?.K1 !== "NOT_EXECUTED_WAITING_FOR_NEW_BILLS"
     || value?.execution?.K2 !== "NOT_EXECUTED_WAITING_FOR_NEW_BILLS"
   ) {
     errors.push("hpsr_later_origin_availability_boundary_invalid");
+  }
+  return Object.freeze({
+    valid: errors.length === 0,
+    errors: Object.freeze(errors)
+  });
+}
+
+export function validateHpsrOpenedOriginSemantics(value) {
+  const errors = [];
+  if (
+    value?.schema
+      !== "m2.current.head_protected_segmented_router."
+        + "opened_origin_semantics.public.v0.2"
+    || value?.experimentId !== HPSR_EXPERIMENT_ID
+    || value?.modelId !== HPSR_MODEL_ID
+    || value?.openedSemantics
+      ?.availabilityMetadataCountsAsActualValueOpened !== false
+    || value?.openedSemantics
+      ?.maxAvailabilityInspectedOrigin !== "2026-02"
+    || value?.openedSemantics
+      ?.maxActualValueOpenedOrigin !== "2026-02"
+    || value?.openedSemantics
+      ?.availabilityInspectedThrough !== "2026-05"
+    || value?.openedSemantics?.actualValueOpenedThrough !== "2026-05"
+    || value?.openedSemantics
+      ?.completeAuthoritativeBillMonthThrough !== "2026-04"
+    || value?.openedSemantics
+      ?.failedAttemptTouchedMetadataOnly !== true
+    || value?.openedSemantics?.failedAttemptOpenedOutcome !== false
+    || value?.openedSemantics?.unknownOrAmbiguous !== false
+    || value?.semanticImpact
+      ?.correctedEarliestIndependentLaterOrigin !== "2026-03"
+    || value?.semanticImpact?.changedEarliestLaterOrigin !== true
+    || value?.auditBoundary?.newFutureActualAmountsRead !== false
+    || value?.auditBoundary?.historicalRawReceiptModified !== false
+  ) {
+    errors.push("hpsr_opened_origin_semantics_invalid");
+  }
+  return Object.freeze({
+    valid: errors.length === 0,
+    errors: Object.freeze(errors)
+  });
+}
+
+export function validateHpsrResidualBoundProvenance(value) {
+  const errors = [];
+  if (
+    value?.schema
+      !== "m2.current.head_protected_segmented_router."
+        + "residual_bound_provenance.public.v0.1"
+    || value?.experimentId !== HPSR_EXPERIMENT_ID
+    || value?.modelId !== HPSR_MODEL_ID
+    || value?.status
+      !== "PROVEN_PREVIOUSLY_OPENED_DEVELOPMENT_ONLY"
+    || value?.sourcePopulation
+      !== "STRICT_ROLLING_CORE80_H3_B3_JOIN_FROZEN_LG01"
+    || value?.derivationOriginRange?.from !== "2023-03"
+    || value?.derivationOriginRange?.through !== "2025-09"
+    || value?.maximumOpenedDevelopmentOrigin !== "2026-02"
+    || value?.inputRowCount !== 577
+    || value?.finiteSupportRowCount !== 577
+    || value?.privateParameterValuesFrozen !== true
+    || value?.publicParameterValuesPublished !== false
+    || value?.actualFieldConsumedForBoundDerivation !== false
+    || value?.laterOriginOutcomeUsed !== false
+    || value?.prospectiveFinalHoldoutOutcomeUsed !== false
+    || value?.privateDigestIsCrossComputerGate !== false
+  ) {
+    errors.push("hpsr_residual_bound_provenance_invalid");
   }
   return Object.freeze({
     valid: errors.length === 0,
@@ -337,6 +704,36 @@ function requireMonth(value, name) {
     throw new Error(`hpsr_${name}_invalid`);
   }
   return value;
+}
+
+function minimumMonth(values) {
+  const months = [...values].sort();
+  if (months.length === 0) {
+    throw new Error("hpsr_month_collection_empty");
+  }
+  return months[0];
+}
+
+function maximumMonthOrNull(values) {
+  const months = [...values].sort();
+  return months.at(-1) ?? null;
+}
+
+function nullableNumber(value) {
+  if (value === null || value === undefined) return null;
+  const number = Number(value);
+  return Number.isFinite(number) ? number : null;
+}
+
+function nonempty(value, name) {
+  if (typeof value !== "string" || value.trim() === "") {
+    throw new Error(`hpsr_${name}_required`);
+  }
+  return value.trim();
+}
+
+function unique(values) {
+  return [...new Set(values)];
 }
 
 function sameValues(actual, expected) {

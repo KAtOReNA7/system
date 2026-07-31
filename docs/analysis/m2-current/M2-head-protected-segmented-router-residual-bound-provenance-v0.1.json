@@ -1,0 +1,44 @@
+{
+  "schema": "m2.current.head_protected_segmented_router.residual_bound_provenance.public.v0.1",
+  "asOf": "2026-07-31",
+  "experimentId": "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01",
+  "modelId": "M2-WORK-HPSR01",
+  "status": "PROVEN_PREVIOUSLY_OPENED_DEVELOPMENT_ONLY",
+  "sourcePopulation": "STRICT_ROLLING_CORE80_H3_B3_JOIN_FROZEN_LG01",
+  "sourceCacheRoles": [
+    "frozen-cham01-b3-prediction-rows",
+    "frozen-lg01-same-case-rows"
+  ],
+  "derivationOriginRange": {
+    "from": "2023-03",
+    "through": "2025-09"
+  },
+  "maximumOpenedDevelopmentOrigin": "2026-02",
+  "inputRowCount": 577,
+  "finiteSupportRowCount": 577,
+  "excludedNonfiniteRowCount": 0,
+  "positiveBaseSupportRowCount": 577,
+  "formula": {
+    "positiveBaseFloorQuantile": 0.1,
+    "normalizedResidualLowerQuantile": 0.05,
+    "normalizedResidualUpperQuantile": 0.95,
+    "quantileMethod": "LINEAR_INTERPOLATION_N_MINUS_ONE",
+    "scale": "max(abs(base),frozenDevelopmentPositiveBaseFloor)",
+    "normalizedResidual": "(raw-base)/scale"
+  },
+  "privateParameterValuesFrozen": true,
+  "publicParameterValuesPublished": false,
+  "actualFieldConsumedForBoundDerivation": false,
+  "laterOriginOutcomeUsed": false,
+  "prospectiveFinalHoldoutOutcomeUsed": false,
+  "cacheClassification": "PRIVATE_DERIVED_CACHE",
+  "cacheMissingPolicy": "REBUILD_FROM_FROZEN_DEVELOPMENT_CACHE_ROLES",
+  "historicalReceiptMissingPolicy": "OPTIONAL_PROVENANCE_MISSING_WARNING_ONLY",
+  "privateDigestIsCrossComputerGate": false,
+  "evidenceRefs": [
+    "src/domain/m2Current/lg01HeadCashResidual.js",
+    "scripts/m2-current/materialize_head_protected_segmented_router_bounds.mjs",
+    "docs/analysis/m2-current/M2-core-legacy-horizon-amount-development-v0.1.json",
+    "docs/analysis/m2-current/M2-lg01-head-cash-residual-preregistration-v0.1.md"
+  ]
+}

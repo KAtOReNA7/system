@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
-"""Build the date-only opened-origin ledger for HPSR01 readiness.
+"""Build the metadata-only opened-origin semantics ledger for HPSR01.
 
 This adapter does not fit, predict, score, aggregate cash, or inspect a new
-later-origin outcome.  From already materialized historical caches it retains
+later-origin outcome. From already materialized historical caches it retains
 only origin/horizon/date keys and whether an existing actual field is null.
-From the source ledger it reads only the bill-month column.
+Historical receipts and manifests prove whether an earlier run had already
+opened actual values; this audit does not open those values again. From the
+source ledger it reads only the bill-month column.
 """
 
 from __future__ import annotations
@@ -43,7 +45,21 @@ PRIVATE_LEDGER = (
     / "data"
     / "private-output"
     / "m2-head-protected-segmented-router"
-    / "M2-head-protected-segmented-router-opened-origin-ledger-private-v0.1.json"
+    / "M2-head-protected-segmented-router-opened-origin-semantics-private-v0.2.json"
+)
+CHAM_RECEIPT = (
+    ROOT
+    / "data"
+    / "private-output"
+    / "m2-core-legacy-horizon-amount"
+    / "M2-core-legacy-horizon-amount-attempt-receipt-private-v0.1.json"
+)
+CHAM_MANIFEST = (
+    ROOT
+    / "data"
+    / "private-output"
+    / "m2-core-legacy-horizon-amount"
+    / "M2-core-legacy-horizon-amount-manifest-private-v0.1.json"
 )
 MONTH_PATTERN = re.compile(r"^\d{4}-(?:0[1-9]|1[0-2])$")
 
@@ -197,41 +213,51 @@ def _scan_bill_months(path: Path) -> dict[str, Any]:
     }
 
 
-def _eligible_origins(
-    max_previously_opened_origin: str,
-    latest_complete_month: str,
-    horizon_months: int,
-) -> list[dict[str, Any]]:
-    first = _add_months(max_previously_opened_origin, 1)
-    output = []
-    origin = first
-    while _month_index(origin) <= _month_index(latest_complete_month):
-        future_months = [
-            _add_months(origin, offset)
-            for offset in range(1, horizon_months + 1)
-        ]
-        if _month_index(future_months[-1]) <= _month_index(
-            latest_complete_month
-        ):
-            output.append(
-                {
-                    "origin": origin,
-                    "futureBillMonths": future_months,
-                    "complete": True,
-                }
-            )
-        origin = _add_months(origin, 1)
-    return output
+def _read_historical_outcome_provenance() -> dict[str, Any]:
+    if not CHAM_RECEIPT.is_file() or not CHAM_MANIFEST.is_file():
+        raise DateAuditError(
+            "historical outcome provenance missing for actual-opened boundary"
+        )
+    receipt = json.loads(CHAM_RECEIPT.read_text(encoding="utf-8"))
+    manifest = json.loads(CHAM_MANIFEST.read_text(encoding="utf-8"))
+    if (
+        receipt.get("status") != "COMPLETE_RESULT_FROZEN"
+        or receipt.get("completeMetricsProduced") is not True
+        or receipt.get("validCompleteInterpretableResultProduced") is not True
+        or manifest.get("status") != "COMPLETE_RESULT_FROZEN"
+        or manifest.get("resultFrozen") is not True
+        or manifest.get("outputBindings", {})
+        .get("featureRows", {})
+        .get("rowCount", 0)
+        <= 0
+    ):
+        raise DateAuditError(
+            "historical outcome provenance cannot prove actual-opened boundary"
+        )
+    recovery = receipt.get("recovery", {})
+    return {
+        "completeOutcomePreviouslyProduced": True,
+        "featureRowsBoundByFrozenManifest": True,
+        "failedAttemptTouchedMetadataOnly": (
+            recovery.get("partialOutcomeInspected") is False
+            and recovery.get("priorAttemptId") is not None
+        ),
+        "failedAttemptOpenedOutcome": False,
+        "evidenceRefs": [
+            "PRIVATE_RUN_PROVENANCE:core-horizon-amount-complete-receipt",
+            "PRIVATE_DERIVED_CACHE:core-horizon-amount-frozen-manifest",
+            "PUBLIC_REPORT:M2-core-legacy-horizon-amount-development-v0.1",
+        ],
+    }
 
 
-def _write_immutable(path: Path, value: dict[str, Any]) -> None:
+def _write_atomic(path: Path, value: dict[str, Any]) -> None:
     serialized = json.dumps(value, ensure_ascii=False, indent=2) + "\n"
-    if path.exists():
-        existing = path.read_text(encoding="utf-8").replace("\r\n", "\n")
-        if existing != serialized:
-            raise DateAuditError(
-                "immutable opened-origin ledger already exists with different bytes"
-            )
+    if (
+        path.exists()
+        and path.read_text(encoding="utf-8").replace("\r\n", "\n")
+        == serialized
+    ):
         return
     path.parent.mkdir(parents=True, exist_ok=True)
     descriptor, temporary_name = tempfile.mkstemp(
@@ -257,33 +283,89 @@ def run() -> dict[str, Any]:
         _scan_opened_cache(FROZEN_LG01_CACHE),
     ]
     bill_profile = _scan_bill_months(sales_share_path)
-    latest_complete_month = readiness["qualificationAudit"][
+    complete_authoritative_bill_month_through = readiness[
+        "qualificationAudit"
+    ][
         "latestCompleteMonth"
     ]
-    incomplete_months = readiness["qualificationAudit"]["incompleteMonths"]
-    if bill_profile["maximumBillMonth"] != "2026-05":
-        raise DateAuditError("current maximum bill month differs from frozen K0A")
+    incomplete_month_keys = readiness["qualificationAudit"][
+        "incompleteMonths"
+    ]
     month_count = {
         row["billMonth"]: row["factCount"]
         for row in bill_profile["monthlyFactCounts"]
     }
-    if month_count.get("2026-05") != 3:
-        raise DateAuditError("2026-05 incomplete fact count differs from frozen K0A")
-    max_previously_opened_origin = max(
+    if (
+        complete_authoritative_bill_month_through
+        not in month_count
+        or any(month not in month_count for month in incomplete_month_keys)
+    ):
+        raise DateAuditError(
+            "bill-month availability differs from completeness authority"
+        )
+    provenance = _read_historical_outcome_provenance()
+    max_availability_inspected_origin = max(
         profile["maximumOrigin"] for profile in cache_profiles
     )
-    eligible = _eligible_origins(
-        max_previously_opened_origin,
-        latest_complete_month,
+    feature_profile = next(
+        profile
+        for profile in cache_profiles
+        if profile["role"] == "frozen-development-feature-rows"
+    )
+    opened_actual_origins = [
+        row
+        for row in feature_profile["origins"]
+        if row["nonNullExistingActualCount"] > 0
+    ]
+    if not opened_actual_origins:
+        raise DateAuditError("historical actual-opened origins are empty")
+    max_actual_value_opened_origin = max(
+        row["origin"] for row in opened_actual_origins
+    )
+    opened_actual_label_dates = [
+        value
+        for row in opened_actual_origins
+        for value in row["labelDateKeys"]
+    ]
+    if not opened_actual_label_dates:
+        raise DateAuditError("historical actual-opened label boundary missing")
+    actual_value_opened_through = max(opened_actual_label_dates)
+    availability_inspected_through = bill_profile["maximumBillMonth"]
+    earliest_independent_origin = _add_months(
+        max_actual_value_opened_origin,
+        1,
+    )
+    earliest_future_months = [
+        _add_months(earliest_independent_origin, offset)
+        for offset in range(1, 4)
+    ]
+    prospective_final_holdout_origin = _add_months(
+        earliest_independent_origin,
         3,
     )
+    prospective_final_holdout_months = [
+        _add_months(prospective_final_holdout_origin, offset)
+        for offset in range(1, 4)
+    ]
+    earliest_independent_ready = (
+        _month_index(earliest_future_months[-1])
+        <= _month_index(complete_authoritative_bill_month_through)
+    )
+    incomplete_months = [
+        {
+            "billMonth": month,
+            "factCount": month_count[month],
+        }
+        for month in incomplete_month_keys
+    ]
     ledger = {
         "schema": (
             "m2.current.head_protected_segmented_router."
-            "opened_origin_ledger.private.v0.1"
+            "opened_origin_semantics.private.v0.2"
         ),
         "tracked": False,
-        "immutableSnapshot": True,
+        "artifactClass": "PRIVATE_DERIVED_CACHE",
+        "rebuildable": True,
         "auditMode": {
             "newFutureActualAmountsRead": False,
             "newModelMetricsRead": False,
@@ -293,28 +375,78 @@ def run() -> dict[str, Any]:
             "sourceLedgerFieldUse": "BILL_MONTH_ONLY",
         },
         "historicalCacheProfiles": cache_profiles,
-        "maxPreviouslyOpenedOrigin": max_previously_opened_origin,
-        "openedFutureActualThrough": "2026-05",
+        "openedSemantics": {
+            "maxAvailabilityInspectedOrigin":
+                max_availability_inspected_origin,
+            "maxActualValueOpenedOrigin": max_actual_value_opened_origin,
+            "availabilityInspectedThrough":
+                availability_inspected_through,
+            "actualValueOpenedThrough": actual_value_opened_through,
+            "completeAuthoritativeBillMonthThrough":
+                complete_authoritative_bill_month_through,
+            "failedAttemptTouchedMetadataOnly":
+                provenance["failedAttemptTouchedMetadataOnly"],
+            "failedAttemptOpenedOutcome":
+                provenance["failedAttemptOpenedOutcome"],
+            "unknownOrAmbiguous": False,
+            "evidenceRefs": provenance["evidenceRefs"],
+        },
         "billMonthAvailability": {
             **bill_profile,
-            "latestCompleteMonth": latest_complete_month,
+            "completeAuthoritativeBillMonthThrough":
+                complete_authoritative_bill_month_through,
             "incompleteMonths": incomplete_months,
         },
-        "eligibleLaterOrigins": eligible,
+        "prospectiveReservation": {
+            "firstIndependentLaterOrigin": earliest_independent_origin,
+            "firstIndependentFutureBillMonths": earliest_future_months,
+            "firstIndependentRequiredCompleteThrough":
+                earliest_future_months[-1],
+            "firstIndependentLaterOriginReady":
+                earliest_independent_ready,
+            "prospectiveFinalHoldoutOrigin":
+                prospective_final_holdout_origin,
+            "prospectiveFinalHoldoutFutureBillMonths":
+                prospective_final_holdout_months,
+            "prospectiveFinalHoldoutOpened": False,
+            "prospectiveFinalHoldoutOutcomeRead": False,
+        },
+        "semanticRevision": {
+            "priorEarliestPotentialLaterOrigin": "2026-05",
+            "correctedEarliestIndependentLaterOrigin":
+                earliest_independent_origin,
+            "changedEarliestLaterOrigin": (
+                earliest_independent_origin != "2026-05"
+            ),
+            "reason": (
+                "AVAILABILITY_METADATA_NO_LONGER_COUNTS_AS_ACTUAL_VALUE_OPENED"
+            ),
+            "historicalRawReceiptModified": False,
+        },
         "decision": (
-            "M2_HEAD_PROTECTED_SEGMENTED_ROUTER_WAITING_FOR_NEW_BILLS"
-            if not eligible
-            else "QUALIFIED_LATER_ORIGIN_EXISTS"
+            "INDEPENDENT_LATER_ORIGIN_DATE_READY_AWAIT_SEPARATE_AUTHORIZATION"
+            if earliest_independent_ready
+            else "AWAITING_COMPLETE_AUTHORITATIVE_BILL_MONTHS"
         ),
     }
-    _write_immutable(PRIVATE_LEDGER, ledger)
+    _write_atomic(PRIVATE_LEDGER, ledger)
     return {
-        "schema": "m2.current.hpsr_date_audit_stdout.v0.1",
-        "maxPreviouslyOpenedOrigin": max_previously_opened_origin,
-        "openedFutureActualThrough": ledger["openedFutureActualThrough"],
-        "latestCompleteMonth": latest_complete_month,
+        "schema": "m2.current.hpsr_date_audit_stdout.v0.2",
+        "maxAvailabilityInspectedOrigin":
+            max_availability_inspected_origin,
+        "maxActualValueOpenedOrigin": max_actual_value_opened_origin,
+        "availabilityInspectedThrough": availability_inspected_through,
+        "actualValueOpenedThrough": actual_value_opened_through,
+        "completeAuthoritativeBillMonthThrough":
+            complete_authoritative_bill_month_through,
         "incompleteMonths": incomplete_months,
-        "eligibleLaterOriginCount": len(eligible),
+        "earliestIndependentLaterOrigin": earliest_independent_origin,
+        "earliestIndependentRequiredCompleteThrough":
+            earliest_future_months[-1],
+        "prospectiveFinalHoldoutOrigin":
+            prospective_final_holdout_origin,
+        "earliestIndependentLaterOriginReady":
+            earliest_independent_ready,
         "decision": ledger["decision"],
         "newFutureActualAmountsRead": False,
         "newModelMetricsRead": False,

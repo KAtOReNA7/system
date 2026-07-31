@@ -1280,7 +1280,7 @@
     },
     {
       "id": "m2-head-protected-segmented-router",
-      "description": "Rebuild the date-only opened-origin inventory and, only after a fresh audit proves at least one usable independent later-origin plus a separate untouched final holdout, permit the separately gated one-time HPSR01 validation. The current state is WAITING_FOR_NEW_BILLS, so this capability does not presently authorize K1 implementation or K2 outcome access.",
+      "description": "Rebuild the metadata-only opened-origin semantics inventory and residual-bound cache, implement HPSR01 with public synthetic validation, and retain a separate fail-closed gate for any future later-origin execution. K1 implementation is authorized; K2 outcome access remains unauthorized.",
       "privateArtifactClassificationVersion": "private-artifact-classification.v0.1",
       "requiredTools": [],
       "requiredPrivateArtifacts": [
@@ -1327,10 +1327,22 @@
           "path": "data/private-output/m2-core-legacy-horizon-amount/M2-core-legacy-horizon-amount-frozen-lg01-rows-private-v0.1.ndjson"
         },
         {
-          "role": "opened-origin-ledger",
+          "role": "opened-origin-semantics-ledger",
           "kind": "file",
           "artifactClass": "PRIVATE_DERIVED_CACHE",
-          "path": "data/private-output/m2-head-protected-segmented-router/M2-head-protected-segmented-router-opened-origin-ledger-private-v0.1.json"
+          "path": "data/private-output/m2-head-protected-segmented-router/M2-head-protected-segmented-router-opened-origin-semantics-private-v0.2.json"
+        },
+        {
+          "role": "frozen-cham01-b3-prediction-rows",
+          "kind": "file",
+          "artifactClass": "PRIVATE_DERIVED_CACHE",
+          "path": "data/private-output/m2-core-legacy-horizon-amount/M2-core-legacy-horizon-amount-predictions-private-v0.1.ndjson"
+        },
+        {
+          "role": "hpsr-residual-bounds",
+          "kind": "file",
+          "artifactClass": "PRIVATE_DERIVED_CACHE",
+          "path": "data/private-output/m2-head-protected-segmented-router/M2-head-protected-segmented-router-residual-bounds-private-v0.1.json"
         },
         {
           "role": "future-hpsr-attempt-receipt",
@@ -1342,10 +1354,11 @@
       "canonicalValidationCommands": [
         "npm run doctor:capability -- m2-head-protected-segmented-router",
         "npm run diagnose:m2:head-protected-segmented-router",
-        "npm run check:m2:head-protected-segmented-router-dates"
+        "npm run check:m2:head-protected-segmented-router-dates",
+        "npm run prepare:m2:head-protected-segmented-router-bounds"
       ],
-      "recovery": "Restore only genuinely missing PRIVATE_SOURCE_AUTHORITY from a verified capability-scoped package. Rebuild the opened-origin ledger and historical frozen-row inventories from verified source authority and committed frozen code. Missing derived caches never block public work; missing historical provenance only warns and is never fabricated. WAITING_FOR_NEW_BILLS remains the execution gate until a fresh audit proves an independent later-origin and a separate untouched final holdout.",
-      "authorization": "USER_AUTHORIZED_DATE_ONLY_READINESS_AND_CONDITIONAL_ONE_TIME_LATER_ORIGIN_VALIDATION_2026_07_31_CURRENTLY_WAITING"
+      "recovery": "Restore only genuinely missing PRIVATE_SOURCE_AUTHORITY from a verified capability-scoped package. Rebuild opened-origin semantics and residual bounds from previously opened development evidence and committed frozen code. Missing derived caches never block public work; missing historical provenance only warns and is never fabricated. Any future K2 execution requires a new capability-scoped authorization even after dates mature.",
+      "authorization": "USER_AUTHORIZED_HPSR01_K1_IMPLEMENTATION_AND_SYNTHETIC_VALIDATION_2026_07_31_NO_K2"
     },
     {
       "id": "m3-private-materials",

@@ -8,9 +8,10 @@ Model v0.1，`M2-WORK-HPSR01`）及其实验
 当前机器状态为
 `M2_HEAD_PROTECTED_SEGMENTED_ROUTER_WAITING_FOR_NEW_BILLS`。
 
-这表示“没有合格独立 later-origin”，不是模型失败。HPSR01 尚未实现、拟合或评价；
-R0、D1、R1 均没有 later-origin 预测或成绩。现行运行回退、研究基线与自动化状态
-均不改变。
+这表示“没有成熟独立 later-origin”，不是模型失败。opened 语义修订和 residual
+bound 来源冻结已经完成，HPSR01 canonical implementation 正在 K1 阶段实现；尚未
+拟合或评价真实 later-origin。R0、D1、R1 均没有 later-origin 预测或成绩。现行
+运行回退、研究基线与自动化状态均不改变。
 
 ## 固定身份
 
@@ -24,19 +25,23 @@ R0、D1、R1 均没有 later-origin 预测或成绩。现行运行回退、研�
 
 ## later-origin 与 final holdout
 
-- `maxPreviouslyOpenedOrigin = 2026-02`。
-- 历史缓存的 future actual 日期边界已经到 `2026-05`。
-- 最新完整分成账单月为 `2026-04`，`2026-05` 不完整。
-- 候选 origin 必须严格晚于 `2026-02`，其未来三个月必须全部完整、全部晚于既有
-  opened-future-actual 边界，并且从未用于设计、选参、阈值或报告结论。
-- 三个月窗口按最早 origin 贪心选择非重叠集合；重叠窗口不得冒充独立证据。
+- `maxAvailabilityInspectedOrigin = 2026-02`。
+- `maxActualValueOpenedOrigin = 2026-02`。
+- `availabilityInspectedThrough = actualValueOpenedThrough = 2026-05`，但两者
+  语义不同：前者只表示检查过月份，后者由历史完成评价收据与冻结 feature 工件证明。
+- 权威分成账单只完整到 `2026-04`，`2026-05` 不完整。
+- 候选 origin 必须严格晚于最大 actual-opened origin，其未来三个月必须全部完整，
+  并且 origin 自身从未用于设计、选参、阈值或报告结论。
+- 因此最早独立起点是 `2026-03`，需要完整账单 `2026-04` 至 `2026-06`。
 - 历史三个月 final holdout `2025-06`、`2025-12` 的合同保持不可变，但其 untouched
   隔离已与后续缓存冲突，不能复用为本实验 holdout。
-- 没有其他 untouched holdout 时，把最新一个完整、未读、非重叠 origin 留作 final
-  holdout。只有一个 origin 且它是唯一可保留 holdout 时，本轮不得消费。
+- prospective final holdout 按
+  `addMonths(firstIndependentLaterOrigin, 3)` 动态预留；当前为 `2026-06`，
+  窗口 `2026-07` 至 `2026-09`。它可以尚未成熟，但不得读取结果或根据未来金额更换。
 
-当前没有合格 origin，所以 K1 实现和 K2 私有评价均关闭。日期级未来保留不是执行
-授权，后续新任务必须重新盘点 opened-origin ledger。
+当前没有成熟 origin，所以 K2 私有评价关闭。K1 canonical implementation 与公开
+synthetic/fixture 验证已获本轮授权；日期级未来保留不是 K2 执行授权，后续必须
+重新盘点 opened-origin semantics ledger。
 
 ## 人口、目标与拟合
 
@@ -81,9 +86,10 @@ M30、L20 各自固定 `alpha=1.00`，互不依赖，也不依赖 global alpha�
 0.25/0.50/0.75、逐作品选模型或在 outcome 后改参。
 
 positive base floor、q05、q95 的计算规则已冻结为现有 HCRC01 的 q10/q05/q95
-线性分位数定义，来源只能是此前已打开的旧 development rows。实际 private 数值
-尚未物化，因为 K1 未执行；未来必须在读取 later-origin outcome 前冻结，且不得在
-公开 config 披露 private 明细。
+线性分位数定义，来源只能是此前已打开的旧 development rows。三个 private 数值
+已由 Strict rolling Core80、三个月、冻结 CHAM01 B3 与冻结 LG01 的 577 条旧开发
+行物化在 Git ignored 派生缓存；来源 origin 为 `2023-03` 至 `2025-09`。公开 config
+只披露公式、角色、范围和冻结状态，不披露数值。
 
 ## 数值安全与 raw/fallback
 
@@ -133,6 +139,7 @@ release 或 final-holdout preregistration。
 执行 SHA。权威源缺失才可阻断；opened-origin ledger、预测/评价行等派生缓存缺失
 必须自动重建，历史 receipt 缺失只告警且不得伪造。
 
-当前只授权日期盘点、合同冻结、公开验证与 Draft PR。模型训练、模型选择、
-bootstrap、later-origin outcome、final holdout、provider、数据库、Canary/full160、
-production、release、M3 formal、PR 合并均未打开。
+当前授权日期盘点、合同冻结、K1 canonical implementation、公开 synthetic/fixture
+验证与继续 Draft PR。模型训练、模型选择、真实 bootstrap、later-origin outcome、
+K2、final holdout、provider、数据库、Canary/full160、production、release、
+M3 formal、PR 合并均未打开。
