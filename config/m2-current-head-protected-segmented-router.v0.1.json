@@ -319,6 +319,61 @@
     "caseKeyConservationRequired": true,
     "futureLeakageAllowed": false
   },
+  "retrospectiveReplay": {
+    "status": "AUTHORIZED_PRE_OUTCOME_CONTRACT_FROZEN",
+    "authorizedNow": true,
+    "evidenceClass": "RETROSPECTIVE_DEVELOPMENT_NOT_INDEPENDENT",
+    "outcomeReadBeforeTaskRequired": true,
+    "originSelectionRuntimeDerived": true,
+    "originSelectionRules": [
+      "ORIGIN_STRICTLY_AFTER_RESIDUAL_BOUND_DERIVATION_THROUGH",
+      "THREE_MONTH_FUTURE_BILL_WINDOW_AUTHORITY_COMPLETE",
+      "ACTUAL_OPENED_BEFORE_CURRENT_TASK",
+      "ORIGIN_STRICTLY_BEFORE_FIRST_INDEPENDENT_LATER_ORIGIN",
+      "HISTORICAL_FINAL_HOLDOUT_OR_OTHER_ISOLATION_EXCLUDED",
+      "NO_MISSING_PARTIAL_OR_DUPLICATE_CASE_KEY",
+      "ORIGIN_VISIBLE_FEATURES_ONLY"
+    ],
+    "horizonMonths": 3,
+    "fixedCham01B3Fit": {
+      "formulaAndFeatureContractFrozen": true,
+      "originFaithfulRefitAllowed": true,
+      "huberDelta": 1,
+      "l2": 10,
+      "hyperparameterSearchExecuted": false,
+      "outerOutcomeMayTune": false
+    },
+    "newModelTrainingAllowed": false,
+    "hyperparameterSearchAllowed": false,
+    "alphaSearchAllowed": false,
+    "residualBoundReestimationAllowed": false,
+    "cashBandChangeAllowed": false,
+    "singleCompleteResultMaximum": true,
+    "secondCompleteResultAllowed": false,
+    "decisionPolicy": {
+      "supportedMinimumFva": 0.01,
+      "supportedBootstrapLowerExclusive": 0,
+      "supportedMaximumAbsoluteBiasWorsening": 0.01,
+      "supportedMinimumImprovingBlockShare": 0.6666666666666666,
+      "minimumStableTimeBlocks": 2,
+      "unsupportedRelativeWapeDegradation": 0.01,
+      "unsupportedAbsoluteBiasWorsening": 0.02,
+      "catastrophicMaximumWorkErrorShare": 0.35,
+      "catastrophicMaximumWorkShareWorsening": 0.1
+    },
+    "bootstrap": {
+      "iterations": 2000,
+      "seed": 20260731,
+      "clusterUnit": "standardWorkId",
+      "wholeWorkCluster": true,
+      "pairedSameCase": true
+    },
+    "singleTimeBlockMayBeSupported": false,
+    "singleTimeBlockMayBeMixedOrUnsupported": true,
+    "independentValidationClaimAllowed": false,
+    "activeCandidateOnSupportedAllowed": false,
+    "approvedForAutomationOnSupportedAllowed": false
+  },
   "evaluation": {
     "primaryDecisionCell": "INDEPENDENT_LATER_ORIGIN_STRICT_ROLLING_CORE80_WORK_TOTAL_H3_R1_VS_R0_EXACT_SAME_CASE",
     "sensitivityCells": [
@@ -406,6 +461,9 @@
     "readinessInventoryEntrypoint": "check:m2:head-protected-segmented-router-dates",
     "syntheticFixtureEntrypoint": "smoke:m2:current:head-protected-segmented-router",
     "futureControlledExecuteEntrypoint": "execute:m2:head-protected-segmented-router",
+    "retrospectiveControlledExecuteArguments": [
+      "--retrospective"
+    ],
     "futureControlledExecuteDefault": "FAIL_CLOSED_NO_K2_AUTHORIZATION",
     "productionLoaderRouteOrApiChanged": false,
     "productionSurfaceChangeCount": 0
@@ -416,9 +474,11 @@
     "K1SemanticAndBoundPreparationCompleted": true,
     "K1CanonicalImplementationCompleted": true,
     "K1PublicSyntheticValidationCompleted": true,
+    "retrospectiveDevelopmentEvaluationAuthorizedNow": true,
+    "retrospectiveDevelopmentEvaluationCompleted": false,
     "K2PrivateEvaluationAuthorizedNow": false,
-    "singleQualifiedLaterOriginEvaluationConditionallyAuthorizedByUser": false,
-    "condition": "REQUIRES_NEW_CAPABILITY_SCOPED_USER_AUTHORIZATION_AFTER_FRESH_DATE_AUDIT",
+    "singleQualifiedLaterOriginEvaluationConditionallyAuthorizedByUser": true,
+    "condition": "CURRENT_USER_AUTHORIZATION_USABLE_ONLY_IF_FRESH_METADATA_AUDIT_PROVES_K2_READY_AND_RETROSPECTIVE_IS_NOT_UNSUPPORTED",
     "oneCompleteOutcomeMaximum": true,
     "secondCompleteResultAllowed": false,
     "secondBootstrapAllowed": false,
@@ -429,19 +489,21 @@
     "fixedExecutionShaInContractAllowed": false
   },
   "authorization": {
-    "source": "USER_INSTRUCTION_M2_HPSR01_CONTINUE_K1_IMPLEMENTATION_AWAITING_DATA_2026_07_31",
+    "source": "USER_INSTRUCTION_M2_HPSR01_RETROSPECTIVE_AND_CONDITIONAL_K2_CONTINUATION_2026_07_31",
     "dateOnlyReadinessAudit": true,
     "contractPreregistration": true,
     "K1CanonicalImplementation": true,
     "syntheticFixtureValidation": true,
     "oldOpenedDevelopmentRowsForResidualBounds": true,
-    "qualifiedLaterOriginValidation": false,
+    "retrospectiveDevelopmentEvaluation": true,
+    "qualifiedLaterOriginValidation": true,
     "qualifiedLaterOriginValidationUsableNow": false,
     "privateSourceReadForDateAudit": true,
-    "privateSourceReadForModelOutcome": false,
+    "privateSourceReadForModelOutcome": true,
     "modelTrainingNow": false,
+    "frozenFormulaOriginFaithfulRefitNow": true,
     "modelSelectionNow": false,
-    "bootstrapNow": false,
+    "bootstrapNow": true,
     "finalHoldout": false,
     "production": false,
     "provider": false,
@@ -458,11 +520,16 @@
     "derivedCacheBlocking": false,
     "runProvenanceBlocking": false,
     "boundSourceCaches": {
+      "featureRows": "data/private-output/m2-core-legacy-horizon-amount/M2-core-legacy-horizon-amount-feature-rows-private-v0.1.ndjson",
       "frozenLg01Rows": "data/private-output/m2-core-legacy-horizon-amount/M2-core-legacy-horizon-amount-frozen-lg01-rows-private-v0.1.ndjson",
       "frozenCham01PredictionRows": "data/private-output/m2-core-legacy-horizon-amount/M2-core-legacy-horizon-amount-predictions-private-v0.1.ndjson"
     },
     "openedOriginSemanticsArtifact": "data/private-output/m2-head-protected-segmented-router/M2-head-protected-segmented-router-opened-origin-semantics-private-v0.2.json",
-    "residualBoundArtifact": "data/private-output/m2-head-protected-segmented-router/M2-head-protected-segmented-router-residual-bounds-private-v0.1.json"
+    "residualBoundArtifact": "data/private-output/m2-head-protected-segmented-router/M2-head-protected-segmented-router-residual-bounds-private-v0.1.json",
+    "retrospectiveReceipt": "data/private-output/m2-head-protected-segmented-router/M2-head-protected-segmented-router-retrospective-receipt-private-v0.1.json",
+    "retrospectivePredictionRows": "data/private-output/m2-head-protected-segmented-router/M2-head-protected-segmented-router-retrospective-predictions-private-v0.1.ndjson",
+    "retrospectiveEvaluationRows": "data/private-output/m2-head-protected-segmented-router/M2-head-protected-segmented-router-retrospective-evaluation-private-v0.1.ndjson",
+    "retrospectiveManifest": "data/private-output/m2-head-protected-segmented-router/M2-head-protected-segmented-router-retrospective-manifest-private-v0.1.json"
   },
   "publicOutputs": {
     "selectionAttributionJson": "docs/analysis/m2-current/M2-head-protected-segmented-router-selection-gate-attribution-v0.1.json",
@@ -477,6 +544,10 @@
     "syntheticFixture": "test/fixtures/m2-head-protected-segmented-router.synthetic.v0.1.json",
     "implementationReadinessJson": "docs/analysis/m2-current/M2-head-protected-segmented-router-k1-implementation-readiness-v0.1.json",
     "implementationReadinessReport": "docs/analysis/m2-current/M2-head-protected-segmented-router-k1-implementation-readiness-v0.1.md",
+    "retrospectiveReadinessJson": "docs/analysis/m2-current/M2-head-protected-segmented-router-retrospective-readiness-v0.1.json",
+    "retrospectiveReadinessReport": "docs/analysis/m2-current/M2-head-protected-segmented-router-retrospective-readiness-v0.1.md",
+    "retrospectiveEvaluationJson": "docs/analysis/m2-current/M2-head-protected-segmented-router-retrospective-development-v0.1.json",
+    "retrospectiveEvaluationReport": "docs/analysis/m2-current/M2-head-protected-segmented-router-retrospective-development-v0.1.md",
     "preregistration": "docs/analysis/m2-current/M2-head-protected-segmented-router-preregistration-v0.1.md"
   }
 }

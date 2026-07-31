@@ -53,6 +53,8 @@
   - `docs/analysis/m2-current/M2-head-protected-segmented-router-residual-bound-provenance-v0.1.json`
   - `docs/analysis/m2-current/M2-head-protected-segmented-router-k1-implementation-readiness-v0.1.json`
   - `docs/analysis/m2-current/M2-head-protected-segmented-router-k1-implementation-readiness-v0.1.md`
+  - `docs/analysis/m2-current/M2-head-protected-segmented-router-retrospective-readiness-v0.1.json`
+  - `docs/analysis/m2-current/M2-head-protected-segmented-router-retrospective-readiness-v0.1.md`
   - `docs/analysis/m2-current/M2-head-protected-segmented-router-preregistration-v0.1.md`
 - M2 评价体系：
   - `docs/analysis/m2-current/M2-evaluation-system-audit-v1.md`
@@ -271,14 +273,15 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
 - 默认不授权训练、调参、新候选、private evaluation、provider、数据库、
   final holdout、embargo、Canary/full160、release 或 M3 formal。只有当前用户任务
   的明确授权才能打开对应能力，且授权不跨任务自动延续。
-- LG01 头部保护分段路由模型 v0.1（`M2-WORK-HPSR01`）当前仅完成 K0 日期盘点和
-  预注册，状态为
-  `M2_HEAD_PROTECTED_SEGMENTED_ROUTER_WAITING_FOR_NEW_BILLS`。历史
-  `maxPreviouslyOpenedOrigin` 为 `2026-02`，future-actual 日期边界已到
-  `2026-05`，完整账单只到 `2026-04`；在新任务重新证明独立 later-origin 与另一
-  个 untouched final holdout 前，禁止实施 K1、执行 K2、读取 outcome 或 bootstrap。
-  历史三个月 final holdout 合同保持不可变，但其 origin 已被后续缓存暴露，不能
-  复用为本实验 untouched holdout。
+- LG01 头部保护分段路由模型 v0.1（`M2-WORK-HPSR01`）已完成 K1 canonical
+  implementation 与公开 synthetic 验证。本轮已经冻结回溯人口、固定 B3 参数、
+  2,000 次作品 cluster bootstrap 和 supported/mixed/unsupported 判断合同，并
+  授权一次此前已打开 outcome 的回溯开发评价。动态审计只纳入 `2025-11`；
+  `2025-12` 继续作为历史隔离 outcome，不得复用。独立 K2 已获本任务条件式授权，
+  但只有 fresh audit 证明 first independent origin 三个月账单完整且回溯不为
+  unsupported 时才可使用；当前完整账单只到 `2026-04`，因此 K2 仍不可执行。
+  prospective final holdout 必须保持未打开。回溯不属于独立证据，不得建立
+  active candidate、自动化批准或 production 权限。
 
 ## Git 与提交规则
 

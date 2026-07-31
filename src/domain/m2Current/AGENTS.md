@@ -103,20 +103,20 @@ This directory is the only implementation home for current M2 model logic.
   an irreplaceable authoritative source is missing or no legal historical
   forecast origin can be formed.
 - `M2-WORK-HPSR01` has completed its K1 canonical implementation and public
-  synthetic validation. Its current status is
-  `M2_HEAD_PROTECTED_SEGMENTED_ROUTER_IMPLEMENTED_AWAITING_LATER_ORIGIN_DATA`;
-  this is neither model success nor failure. Metadata availability and actual
-  value opening are separate: the current maximum actual-opened origin is
-  `2026-02`, the dynamically derived first independent origin is `2026-03`,
-  and its complete future bills must cover `2026-04` through `2026-06`.
-  Prospective final holdout origin is dynamically reserved three months after
-  the first independent origin and must remain unopened. Do not run K2, read a
-  later-origin amount, score, bootstrap, or open the holdout without a new
-  capability-scoped user authorization after a fresh metadata-only audit.
-  The public synthetic entrypoint remains private-free and the future
-  controlled execute entrypoint must fail closed by default. The historical
-  three-month holdout contract remains immutable evidence but its origins may
-  not be reused as untouched HPSR01 holdout after later caches exposed them.
+  synthetic validation. The current task freezes and authorizes one
+  retrospective development evaluation using only outcomes opened before the
+  task; the dynamically legal inventory currently contains only `2025-11`.
+  This evidence is not independent and cannot select or automate the model.
+  The current task also provides conditional capability-scoped K2
+  authorization, but it is usable only when a fresh metadata-only audit proves
+  the first independent origin's full three-month bill window is authoritative
+  and the retrospective result is not unsupported. The prospective final
+  holdout must remain unopened. Do not search hyperparameters, change cash
+  bands, re-estimate residual bounds, repeat a complete retrospective/K2
+  result, or treat an isolated historical holdout as untouched evidence.
+  The public synthetic entrypoint remains private-free and the controlled
+  entrypoint must fail closed outside its explicit retrospective or qualified
+  K2 mode.
 - Company-level M2 sales-share forecasting must keep existing core, existing
   tail, future new-work portfolio, and existing-work new-channel portfolio cash
   mutually exclusive and amount-conserving. Future new works and future channel

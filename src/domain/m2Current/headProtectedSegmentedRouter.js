@@ -30,6 +30,16 @@ export const HPSR_K1_EXECUTION_STATUS =
   "COMPLETED_PUBLIC_SYNTHETIC_VALIDATION";
 export const HPSR_K2_WAITING_STATUS =
   "NOT_EXECUTED_AWAITING_SEPARATE_AUTHORIZATION_AND_DATA";
+export const HPSR_RETROSPECTIVE_SUPPORTED_STATUS =
+  "M2_HPSR01_RETROSPECTIVE_DEVELOPMENT_SUPPORTED_"
+    + "AWAITING_INDEPENDENT_K2";
+export const HPSR_RETROSPECTIVE_MIXED_STATUS =
+  "M2_HPSR01_RETROSPECTIVE_DEVELOPMENT_MIXED_"
+    + "AWAITING_INDEPENDENT_K2";
+export const HPSR_RETROSPECTIVE_UNSUPPORTED_STATUS =
+  "M2_HPSR01_RETROSPECTIVE_DEVELOPMENT_UNSUPPORTED_STOP_BEFORE_K2";
+export const HPSR_RETROSPECTIVE_NO_ORIGIN_STATUS =
+  "M2_HPSR01_RETROSPECTIVE_REPLAY_BLOCKED_NO_LEGAL_COMPLETE_ORIGIN";
 
 const MONTH_PATTERN = /^\d{4}-(?:0[1-9]|1[0-2])$/u;
 const HPSR_CASH_BAND_IDS = Object.freeze(["H50", "M30", "L20"]);
@@ -187,6 +197,127 @@ export function planHpsrProspectiveReservation({
     status: firstIndependentLaterOriginReady
       ? HPSR_READY_FOR_AUTHORIZATION_STATUS
       : HPSR_IMPLEMENTED_STATUS
+  });
+}
+
+export function planHpsrRetrospectiveOrigins({
+  residualBoundDerivationThrough,
+  firstIndependentLaterOrigin,
+  completeAuthoritativeBillMonthThrough,
+  openedOriginProfiles,
+  isolatedOrigins = [],
+  horizonMonths = 3
+}) {
+  const boundThrough = requireMonth(
+    residualBoundDerivationThrough,
+    "retrospective_bound_derivation_through"
+  );
+  const firstIndependent = requireMonth(
+    firstIndependentLaterOrigin,
+    "retrospective_first_independent_origin"
+  );
+  const completeThrough = requireMonth(
+    completeAuthoritativeBillMonthThrough,
+    "retrospective_complete_bill_month_through"
+  );
+  if (Number(horizonMonths) !== 3) {
+    throw new Error("hpsr_retrospective_only_three_month_horizon_allowed");
+  }
+  if (!Array.isArray(openedOriginProfiles)) {
+    throw new Error("hpsr_retrospective_opened_profiles_required");
+  }
+  const profileByOrigin = new Map();
+  for (const profile of openedOriginProfiles) {
+    const origin = requireMonth(
+      profile?.origin,
+      "retrospective_profile_origin"
+    );
+    if (profileByOrigin.has(origin)) {
+      throw new Error("hpsr_retrospective_profile_origin_duplicate");
+    }
+    profileByOrigin.set(origin, Object.freeze({
+      origin,
+      rowCount: nonnegativeInteger(
+        profile?.rowCount,
+        "retrospective_profile_row_count"
+      ),
+      nonNullExistingActualCount: nonnegativeInteger(
+        profile?.nonNullExistingActualCount,
+        "retrospective_profile_actual_count"
+      ),
+      horizonsMonths: Object.freeze(
+        [...new Set(profile?.horizonsMonths ?? [])].map(Number).sort(
+          (left, right) => left - right
+        )
+      )
+    }));
+  }
+  const isolated = new Set((isolatedOrigins ?? []).map((origin) => (
+    requireMonth(origin, "retrospective_isolated_origin")
+  )));
+  const inventory = [];
+  for (
+    let origin = addMonths(boundThrough, 1);
+    compareMonths(origin, firstIndependent) < 0;
+    origin = addMonths(origin, 1)
+  ) {
+    const profile = profileByOrigin.get(origin) ?? null;
+    const requiredCompleteThrough = addMonths(origin, horizonMonths);
+    const reasons = [];
+    if (isolated.has(origin)) {
+      reasons.push("HISTORICAL_ISOLATED_OUTCOME");
+    }
+    if (
+      profile === null
+      || !profile.horizonsMonths.includes(horizonMonths)
+      || profile.rowCount < 1
+      || profile.nonNullExistingActualCount !== profile.rowCount
+    ) {
+      reasons.push("ACTUAL_NOT_OPENED_BEFORE_TASK");
+    }
+    if (compareMonths(requiredCompleteThrough, completeThrough) > 0) {
+      reasons.push("INCOMPLETE_THREE_MONTH_AUTHORITY_WINDOW");
+    }
+    inventory.push(Object.freeze({
+      origin,
+      horizonMonths,
+      requiredCompleteThrough,
+      actualOpenedBeforeTask: (
+        profile !== null
+        && profile.horizonsMonths.includes(horizonMonths)
+        && profile.rowCount > 0
+        && profile.nonNullExistingActualCount === profile.rowCount
+      ),
+      historicalIsolation: isolated.has(origin),
+      authorityWindowComplete:
+        compareMonths(requiredCompleteThrough, completeThrough) <= 0,
+      openedProfileRowCount: profile?.rowCount ?? 0,
+      included: reasons.length === 0,
+      exclusionReasons: Object.freeze(reasons)
+    }));
+  }
+  const includedOrigins = inventory.filter(
+    (item) => item.included
+  ).map((item) => item.origin);
+  return Object.freeze({
+    status: includedOrigins.length > 0
+      ? "M2_HPSR01_RETROSPECTIVE_REPLAY_READY"
+      : HPSR_RETROSPECTIVE_NO_ORIGIN_STATUS,
+    retrospectiveReplayReady: includedOrigins.length > 0,
+    residualBoundDerivationThrough: boundThrough,
+    firstIndependentLaterOrigin: firstIndependent,
+    completeAuthoritativeBillMonthThrough: completeThrough,
+    horizonMonths,
+    inventory: Object.freeze(inventory),
+    includedOrigins: Object.freeze(includedOrigins),
+    excludedOrigins: Object.freeze(inventory.filter(
+      (item) => !item.included
+    ).map((item) => Object.freeze({
+      origin: item.origin,
+      reasons: item.exclusionReasons
+    }))),
+    finalHoldoutOutcomeRead: false,
+    futureIndependentOutcomeRead: false
   });
 }
 
@@ -382,10 +513,59 @@ export function buildHpsrOriginCashBands({
   });
 }
 
+export function buildHpsrOriginCashBandsFromWorkCash({
+  origin,
+  originVisibleWorkCashRows
+}) {
+  const normalizedOrigin = requireMonth(
+    origin,
+    "work_cash_band_origin"
+  );
+  if (
+    !Array.isArray(originVisibleWorkCashRows)
+    || originVisibleWorkCashRows.length === 0
+  ) {
+    throw new Error("hpsr_origin_visible_work_cash_rows_required");
+  }
+  const seen = new Set();
+  const monthlyRows = originVisibleWorkCashRows.map((row) => {
+    assertNoOutcomeFields(row, "origin_visible_work_cash_row");
+    const standardWorkId = nonempty(
+      row?.standardWorkId,
+      "work_cash_standard_work_id"
+    );
+    if (seen.has(standardWorkId)) {
+      throw new Error("hpsr_origin_visible_work_cash_duplicate");
+    }
+    seen.add(standardWorkId);
+    const trailing12Cash = finiteNumber(
+      row?.trailing12Cash,
+      "work_cash_trailing12_cash"
+    );
+    return Object.freeze({
+      standardWorkId,
+      channelUid: "HPSR_ORIGIN_VISIBLE_WORK_CASH_AGGREGATE",
+      month: normalizedOrigin,
+      cash: trailing12Cash,
+      settlementMechanism: "sales_share_only"
+    });
+  });
+  const result = buildHpsrOriginCashBands({
+    origin: normalizedOrigin,
+    originVisibleMonthlyCashRows: monthlyRows
+  });
+  return Object.freeze({
+    ...result,
+    inputCashGrain: "ORIGIN_VISIBLE_TRAILING12_WORK_TOTAL",
+    workCashAggregationOnly: true
+  });
+}
+
 export function runHeadProtectedSegmentedRouter({
   origin,
   horizonMonths = 3,
-  originVisibleMonthlyCashRows,
+  originVisibleMonthlyCashRows = null,
+  originVisibleWorkCashRows = null,
   predictionRows,
   residualBoundState,
   executionMode = "SYNTHETIC_FIXTURE"
@@ -407,10 +587,21 @@ export function runHeadProtectedSegmentedRouter({
     residualBoundState,
     executionMode
   );
-  const population = buildHpsrOriginCashBands({
-    origin: normalizedOrigin,
-    originVisibleMonthlyCashRows
-  });
+  if (
+    (originVisibleMonthlyCashRows === null)
+      === (originVisibleWorkCashRows === null)
+  ) {
+    throw new Error("hpsr_exactly_one_origin_visible_cash_input_required");
+  }
+  const population = originVisibleWorkCashRows === null
+    ? buildHpsrOriginCashBands({
+      origin: normalizedOrigin,
+      originVisibleMonthlyCashRows
+    })
+    : buildHpsrOriginCashBandsFromWorkCash({
+      origin: normalizedOrigin,
+      originVisibleWorkCashRows
+    });
   const normalizedPredictions = predictionRows.map((row) => (
     normalizeHpsrPredictionRow(row, {
       origin: normalizedOrigin,
@@ -566,6 +757,511 @@ export function runHeadProtectedSegmentedRouter({
   });
 }
 
+export function evaluateHpsrRetrospectiveDevelopment({
+  originResults,
+  decisionPolicy,
+  bootstrap = {}
+}) {
+  if (!Array.isArray(originResults) || originResults.length === 0) {
+    throw new Error("hpsr_retrospective_origin_results_required");
+  }
+  const policy = normalizeRetrospectiveDecisionPolicy(decisionPolicy);
+  const bootstrapIterations = positiveInteger(
+    bootstrap.iterations ?? 2000,
+    "retrospective_bootstrap_iterations"
+  );
+  const bootstrapSeed = nonnegativeInteger(
+    bootstrap.seed ?? 20260731,
+    "retrospective_bootstrap_seed"
+  );
+  if (bootstrapIterations !== 2000) {
+    throw new Error("hpsr_retrospective_bootstrap_must_equal_2000");
+  }
+  const privateRows = [];
+  const originSummaries = [];
+  const originsSeen = new Set();
+  let eligibleActualCashDenominator = 0;
+  let core80ActualCashDenominator = 0;
+  for (const value of originResults) {
+    const run = value?.routerResult;
+    const origin = requireMonth(
+      value?.origin ?? run?.origin,
+      "retrospective_result_origin"
+    );
+    if (originsSeen.has(origin)) {
+      throw new Error("hpsr_retrospective_result_origin_duplicate");
+    }
+    originsSeen.add(origin);
+    if (
+      run?.origin !== origin
+      || run?.horizonMonths !== 3
+      || run?.executionMode !== "CONTROLLED_LATER_ORIGIN"
+      || run?.invariants?.scoreComputed !== false
+      || run?.invariants?.bootstrapExecuted !== false
+    ) {
+      throw new Error("hpsr_retrospective_router_result_invalid");
+    }
+    const allActualRows = normalizeHpsrActualRows(
+      value?.actualRows,
+      origin
+    );
+    const actualByWork = new Map(allActualRows.map((row) => [
+      row.standardWorkId,
+      row
+    ]));
+    const r0ByWork = uniqueWorkIndex(run.r0Rows, "r0");
+    const d1ByWork = uniqueWorkIndex(
+      run.d1RawDiagnosticRows,
+      "d1"
+    );
+    const r1ByWork = uniqueWorkIndex(run.r1RawRouterRows, "r1");
+    const core80Ids = run.population.core80WorkIds;
+    if (
+      !sameValues([...r0ByWork.keys()], core80Ids)
+      || !sameValues([...d1ByWork.keys()], core80Ids)
+      || !sameValues([...r1ByWork.keys()], core80Ids)
+      || core80Ids.some((standardWorkId) => (
+        !actualByWork.has(standardWorkId)
+      ))
+    ) {
+      throw new Error("hpsr_retrospective_exact_same_case_failed");
+    }
+    const eligibleActual = sum(allActualRows.map(
+      (row) => Math.abs(row.actual)
+    ));
+    const core80Actual = sum(core80Ids.map(
+      (standardWorkId) => Math.abs(
+        actualByWork.get(standardWorkId).actual
+      )
+    ));
+    eligibleActualCashDenominator += eligibleActual;
+    core80ActualCashDenominator += core80Actual;
+    for (const standardWorkId of core80Ids) {
+      const actual = actualByWork.get(standardWorkId).actual;
+      const r0 = r0ByWork.get(standardWorkId);
+      const d1 = d1ByWork.get(standardWorkId);
+      const r1 = r1ByWork.get(standardWorkId);
+      if (
+        r0.cashBandId !== d1.cashBandId
+        || r0.cashBandId !== r1.cashBandId
+      ) {
+        throw new Error("hpsr_retrospective_cash_band_mismatch");
+      }
+      privateRows.push(Object.freeze({
+        schema:
+          "m2.current.head_protected_segmented_router."
+            + "retrospective_evaluation_row.private.v0.1",
+        experimentId: HPSR_EXPERIMENT_ID,
+        modelId: HPSR_MODEL_ID,
+        actualDefinitionId:
+          "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01",
+        standardWorkId,
+        origin,
+        horizonMonths: 3,
+        cashBandId: r0.cashBandId,
+        actual,
+        r0PointEstimate: r0.pointEstimate,
+        d1RawPointEstimate: Number.isFinite(d1.rawPointEstimate)
+          ? d1.rawPointEstimate
+          : null,
+        d1RawPredictionFinite: d1.rawPredictionFinite,
+        d1FiniteExtreme: d1.finiteExtreme,
+        d1NumericStatus: d1.numericStatus,
+        r1PointEstimate: r1.pointEstimate,
+        r1BoundTriggered: r1.boundTriggered,
+        r1CorrectionApplied: r1.correctionApplied,
+        r1FallbackToLg01: r1.fallbackToLg01,
+        r1FallbackReason: r1.fallbackReason,
+        r1NumericStatus: r1.numericStatus,
+        caseKey: [
+          "STRICT_ROLLING",
+          "CORE80",
+          standardWorkId,
+          origin,
+          "3",
+          "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01"
+        ].join("\u0000")
+      }));
+    }
+    originSummaries.push(Object.freeze({
+      origin,
+      horizonMonths: 3,
+      eligibleWorkCount: allActualRows.length,
+      core80WorkCount: core80Ids.length,
+      core80ActualCashShare: ratioOrNull(
+        core80Actual,
+        eligibleActual
+      ),
+      core80OriginVisibleCashCapture:
+        run.population.core80ReferenceRevenueCapture,
+      core80CutoffTieCount: run.population.core80CutoffTieCount,
+      cashBandWorkCounts: run.population.bandCounts
+    }));
+  }
+  const orderedRows = privateRows.sort(compareRetrospectiveRows);
+  const caseKeys = orderedRows.map((row) => row.caseKey);
+  if (new Set(caseKeys).size !== caseKeys.length) {
+    throw new Error("hpsr_retrospective_case_key_duplicate");
+  }
+  const r0 = scoreHpsrEvaluationRows(orderedRows, "r0PointEstimate");
+  const r1 = scoreHpsrEvaluationRows(orderedRows, "r1PointEstimate");
+  const d1FiniteRows = orderedRows.filter(
+    (row) => row.d1RawPredictionFinite
+  );
+  const d1 = scoreHpsrEvaluationRows(
+    d1FiniteRows,
+    "d1RawPointEstimate",
+    "NO_FINITE_D1_ROWS"
+  );
+  const r1Fva = pairedFva(r1, r0);
+  const d1Baseline = scoreHpsrEvaluationRows(
+    d1FiniteRows,
+    "r0PointEstimate",
+    "NO_FINITE_D1_SAME_CASE_BASELINE"
+  );
+  const d1Fva = pairedFva(d1, d1Baseline);
+  const r1Bootstrap = bootstrapHpsrFva(orderedRows, {
+    candidateField: "r1PointEstimate",
+    baselineField: "r0PointEstimate",
+    iterations: bootstrapIterations,
+    seed: bootstrapSeed
+  });
+  const d1Bootstrap = bootstrapHpsrFva(d1FiniteRows, {
+    candidateField: "d1RawPointEstimate",
+    baselineField: "r0PointEstimate",
+    iterations: bootstrapIterations,
+    seed: bootstrapSeed + 1
+  });
+  const timeBlocks = [...originsSeen].sort().map((origin) => {
+    const rows = orderedRows.filter((row) => row.origin === origin);
+    const baseline = scoreHpsrEvaluationRows(
+      rows,
+      "r0PointEstimate"
+    );
+    const candidate = scoreHpsrEvaluationRows(
+      rows,
+      "r1PointEstimate"
+    );
+    const fva = pairedFva(candidate, baseline);
+    return Object.freeze({
+      origin,
+      forecastStart: addMonths(origin, 1),
+      forecastEnd: addMonths(origin, 3),
+      caseCount: rows.length,
+      r0Wape: baseline.wape,
+      r0SignedBias: baseline.signedBias,
+      r1Wape: candidate.wape,
+      r1SignedBias: candidate.signedBias,
+      pairedFva: fva,
+      outcome: fva === null
+        ? "NOT_EVALUABLE"
+        : fva > 0
+          ? "R1_IMPROVED"
+          : fva < 0
+            ? "R1_DEGRADED"
+            : "TIED"
+    });
+  });
+  const evaluableBlocks = timeBlocks.filter(
+    (block) => block.pairedFva !== null
+  );
+  const improvingBlockCount = evaluableBlocks.filter(
+    (block) => block.pairedFva > 0
+  ).length;
+  const degradingBlockCount = evaluableBlocks.filter(
+    (block) => block.pairedFva < 0
+  ).length;
+  const cashBands = Object.freeze(Object.fromEntries(
+    HPSR_CASH_BAND_IDS.map((bandId) => {
+      const rows = orderedRows.filter(
+        (row) => row.cashBandId === bandId
+      );
+      const absoluteActual = sum(rows.map(
+        (row) => Math.abs(row.actual)
+      ));
+      const bandR0 = scoreHpsrEvaluationRows(
+        rows,
+        "r0PointEstimate",
+        "NO_ROWS_IN_CASH_BAND"
+      );
+      const bandD1Rows = rows.filter(
+        (row) => row.d1RawPredictionFinite
+      );
+      const bandD1 = scoreHpsrEvaluationRows(
+        bandD1Rows,
+        "d1RawPointEstimate",
+        "NO_FINITE_D1_ROWS_IN_CASH_BAND"
+      );
+      const bandR1 = scoreHpsrEvaluationRows(
+        rows,
+        "r1PointEstimate",
+        "NO_ROWS_IN_CASH_BAND"
+      );
+      return [bandId, Object.freeze({
+        workCount: new Set(rows.map(
+          (row) => row.standardWorkId
+        )).size,
+        caseCount: rows.length,
+        absoluteActualCashShare: ratioOrNull(
+          absoluteActual,
+          r1.absoluteActualTotal
+        ),
+        r0: bandR0,
+        d1: bandD1,
+        r1: bandR1,
+        r0AbsoluteErrorContribution: ratioOrNull(
+          bandR0.absoluteErrorTotal,
+          r0.absoluteErrorTotal
+        ),
+        d1AbsoluteErrorContribution: ratioOrNull(
+          bandD1.absoluteErrorTotal,
+          d1.absoluteErrorTotal
+        ),
+        r1AbsoluteErrorContribution: ratioOrNull(
+          bandR1.absoluteErrorTotal,
+          r1.absoluteErrorTotal
+        ),
+        clipCount: rows.filter(
+          (row) => row.r1BoundTriggered
+        ).length,
+        clipRate: ratioOrNull(
+          rows.filter((row) => row.r1BoundTriggered).length,
+          rows.length
+        ),
+        d1NonfiniteCount: rows.filter(
+          (row) => !row.d1RawPredictionFinite
+        ).length,
+        d1NonfiniteRate: ratioOrNull(
+          rows.filter((row) => !row.d1RawPredictionFinite).length,
+          rows.length
+        ),
+        numericFallbackCount: rows.filter(
+          (row) => row.r1FallbackToLg01
+        ).length,
+        numericFallbackRate: ratioOrNull(
+          rows.filter((row) => row.r1FallbackToLg01).length,
+          rows.length
+        ),
+        rawR1Coverage: ratioOrNull(
+          rows.filter(
+            (row) => Number.isFinite(row.r1PointEstimate)
+          ).length,
+          rows.length
+        )
+      })];
+    })
+  ));
+  const h50Rows = orderedRows.filter(
+    (row) => row.cashBandId === "H50"
+  );
+  const h50Equality = h50Rows.every((row) => (
+    Object.is(row.r0PointEstimate, row.r1PointEstimate)
+    && Math.abs(
+      Math.abs(row.r0PointEstimate - row.actual)
+        - Math.abs(row.r1PointEstimate - row.actual)
+    ) === 0
+    && row.r1FallbackToLg01 === false
+  ));
+  const allFinalPredictionsFinite = orderedRows.every((row) => (
+    Number.isFinite(row.actual)
+    && Number.isFinite(row.r0PointEstimate)
+    && Number.isFinite(row.r1PointEstimate)
+  ));
+  const candidateConcentrationWorsening = (
+    (r1.errorConcentration.maximumWorkShare ?? 0)
+      - (r0.errorConcentration.maximumWorkShare ?? 0)
+  );
+  const catastrophicSingleWorkDominance = (
+    r1Fva !== null
+    && r1Fva < 0
+    && r1.errorConcentration.maximumWorkShare
+      >= policy.catastrophicMaximumWorkErrorShare
+    && candidateConcentrationWorsening
+      >= policy.catastrophicMaximumWorkShareWorsening
+  );
+  const absoluteBiasWorsening = (
+    r1.absoluteBias === null || r0.absoluteBias === null
+  ) ? null : r1.absoluteBias - r0.absoluteBias;
+  const improvingBlockShare = ratioOrNull(
+    improvingBlockCount,
+    evaluableBlocks.length
+  );
+  const degradingBlockShare = ratioOrNull(
+    degradingBlockCount,
+    evaluableBlocks.length
+  );
+  const structure = Object.freeze({
+    H50RowwisePredictionAndAbsoluteErrorEquality: h50Equality,
+    H50ArchitectureNotFallback: h50Rows.every(
+      (row) => !row.r1FallbackToLg01
+    ),
+    allActualAndFinalPredictionsFinite: allFinalPredictionsFinite,
+    d1NonfiniteIsolated: orderedRows.every((row) => (
+      row.d1RawPredictionFinite
+      || (
+        row.r1FallbackToLg01
+        && Number.isFinite(row.r1PointEstimate)
+      )
+    )),
+    unisolatedNonfiniteCount: orderedRows.filter((row) => (
+      !Number.isFinite(row.actual)
+      || !Number.isFinite(row.r0PointEstimate)
+      || !Number.isFinite(row.r1PointEstimate)
+    )).length,
+    uniqueWorkWithinOrigin: originResults.every(({ routerResult }) => (
+      new Set(routerResult.r1RawRouterRows.map(
+        (row) => row.standardWorkId
+      )).size === routerResult.r1RawRouterRows.length
+    )),
+    uniqueCaseKeyCount: new Set(caseKeys).size,
+    privateRowCount: orderedRows.length,
+    privateRowAndCaseKeyConservation:
+      new Set(caseKeys).size === orderedRows.length,
+    originVisibleOnly: originResults.every(({ routerResult }) => (
+      routerResult.population.futureCashUsed === false
+      && routerResult.invariants.futureCashUsed === false
+    )),
+    actualAmountConservation: true,
+    predictionAmountConservation: true
+  });
+  const unsupportedTriggers = Object.freeze({
+    overallWapeDegradedAtLeastOnePercent:
+      r1Fva !== null
+      && r1Fva <= -policy.unsupportedRelativeWapeDegradation,
+    absoluteBiasWorsenedMoreThanTwoPoints:
+      absoluteBiasWorsening !== null
+      && absoluteBiasWorsening
+        > policy.unsupportedAbsoluteBiasWorsening,
+    majorityTimeBlocksDegraded:
+      degradingBlockShare !== null
+      && degradingBlockShare > 0.5,
+    unisolatedNonfinite: structure.unisolatedNonfiniteCount > 0,
+    catastrophicSingleWorkDominance,
+    H50EqualityFailed: !h50Equality
+  });
+  const supportedChecks = Object.freeze({
+    aggregateFvaAtLeastOnePercent:
+      r1Fva !== null
+      && r1Fva >= policy.supportedMinimumFva,
+    bootstrapLowerAboveZero:
+      r1Bootstrap.interval95?.lower
+        > policy.supportedBootstrapLowerExclusive,
+    absoluteBiasWorseningWithinOnePoint:
+      absoluteBiasWorsening !== null
+      && absoluteBiasWorsening
+        <= policy.supportedMaximumAbsoluteBiasWorsening,
+    atLeastTwoThirdsEvaluableBlocksImprove:
+      improvingBlockShare !== null
+      && improvingBlockShare
+        >= policy.supportedMinimumImprovingBlockShare,
+    stableTimeBlockSupport:
+      evaluableBlocks.length >= policy.minimumStableTimeBlocks,
+    structureAndFiniteGatesPass: Object.values(structure).every(
+      (value) => value !== false
+    ) && structure.unisolatedNonfiniteCount === 0,
+    noCatastrophicSingleWorkDominance:
+      !catastrophicSingleWorkDominance
+  });
+  const unsupported = Object.values(unsupportedTriggers).some(Boolean);
+  const supported = !unsupported
+    && Object.values(supportedChecks).every(Boolean);
+  const status = unsupported
+    ? HPSR_RETROSPECTIVE_UNSUPPORTED_STATUS
+    : supported
+      ? HPSR_RETROSPECTIVE_SUPPORTED_STATUS
+      : HPSR_RETROSPECTIVE_MIXED_STATUS;
+  return Object.freeze({
+    schema:
+      "m2.current.head_protected_segmented_router."
+        + "retrospective_development_evaluation.v0.1",
+    experimentId: HPSR_EXPERIMENT_ID,
+    modelId: HPSR_MODEL_ID,
+    status,
+    evidenceClass: "RETROSPECTIVE_DEVELOPMENT_NOT_INDEPENDENT",
+    horizonMonths: 3,
+    origins: Object.freeze([...originsSeen].sort()),
+    originCount: originsSeen.size,
+    caseCount: orderedRows.length,
+    workCount: new Set(orderedRows.map(
+      (row) => row.standardWorkId
+    )).size,
+    originSummaries: Object.freeze(originSummaries.sort(
+      (left, right) => left.origin.localeCompare(right.origin)
+    )),
+    core80ActualCashCoverage: ratioOrNull(
+      core80ActualCashDenominator,
+      eligibleActualCashDenominator
+    ),
+    metrics: Object.freeze({
+      r0,
+      d1,
+      d1SameCaseR0: d1Baseline,
+      r1,
+      r1PairedFvaVsR0: r1Fva,
+      d1PairedFvaVsR0: d1Fva,
+      absoluteBiasWorsening,
+      r1BootstrapFva95: r1Bootstrap,
+      d1BootstrapFva95: d1Bootstrap
+    }),
+    timeBlocks: Object.freeze(timeBlocks),
+    timeBlockSummary: Object.freeze({
+      evaluableBlockCount: evaluableBlocks.length,
+      improvingBlockCount,
+      degradingBlockCount,
+      improvingBlockShare,
+      degradingBlockShare,
+      minimumStableTimeBlocks: policy.minimumStableTimeBlocks,
+      stableJudgmentSupport:
+        evaluableBlocks.length >= policy.minimumStableTimeBlocks
+    }),
+    cashBands,
+    numeric: Object.freeze({
+      d1FiniteCount: d1FiniteRows.length,
+      d1NonfiniteCount:
+        orderedRows.length - d1FiniteRows.length,
+      d1NonfiniteRate: ratioOrNull(
+        orderedRows.length - d1FiniteRows.length,
+        orderedRows.length
+      ),
+      finiteExtremeCount: orderedRows.filter(
+        (row) => row.d1FiniteExtreme
+      ).length,
+      clipCount: orderedRows.filter(
+        (row) => row.r1BoundTriggered
+      ).length,
+      numericFallbackCount: orderedRows.filter(
+        (row) => row.r1FallbackToLg01
+      ).length,
+      r1RawCoverage: ratioOrNull(
+        orderedRows.filter(
+          (row) => Number.isFinite(row.r1PointEstimate)
+        ).length,
+        orderedRows.length
+      )
+    }),
+    structure,
+    decision: Object.freeze({
+      classification: unsupported
+        ? "RETROSPECTIVE_UNSUPPORTED"
+        : supported
+          ? "RETROSPECTIVE_SUPPORTED"
+          : "RETROSPECTIVE_MIXED",
+      supportedChecks,
+      unsupportedTriggers,
+      insufficientStableTimeBlocks:
+        evaluableBlocks.length < policy.minimumStableTimeBlocks,
+      independentEvidence: false,
+      activeCandidate: false,
+      approvedForAutomation: false,
+      productionReady: false
+    }),
+    decisionPolicy: policy,
+    bootstrapExecutionCount: 1,
+    rawCandidateEvaluationCount: 1,
+    privateRows: Object.freeze(orderedRows)
+  });
+}
+
 export function assertHpsrControlledExecutionGate({
   contract,
   availability,
@@ -634,6 +1330,49 @@ export function assertHpsrControlledExecutionGate({
   });
 }
 
+export function assertHpsrRetrospectiveExecutionGate({
+  contract,
+  retrospectivePlan
+}) {
+  if (
+    contract?.experiment?.stableExperimentId !== HPSR_EXPERIMENT_ID
+    || contract?.model?.stableModelId !== HPSR_MODEL_ID
+    || contract?.retrospectiveReplay?.authorizedNow !== true
+    || contract?.retrospectiveReplay?.outcomeReadBeforeTaskRequired
+      !== true
+    || contract?.retrospectiveReplay?.newModelTrainingAllowed !== false
+    || contract?.retrospectiveReplay?.hyperparameterSearchAllowed !== false
+    || contract?.retrospectiveReplay?.residualBoundReestimationAllowed
+      !== false
+    || contract?.retrospectiveReplay?.singleCompleteResultMaximum !== true
+    || contract?.authorization?.retrospectiveDevelopmentEvaluation !== true
+    || contract?.authorization?.finalHoldout !== false
+    || contract?.authorization?.production !== false
+    || contract?.authorization?.pullRequestMerge !== false
+  ) {
+    throw new Error("hpsr_retrospective_current_authorization_invalid");
+  }
+  if (
+    retrospectivePlan?.retrospectiveReplayReady !== true
+    || !Array.isArray(retrospectivePlan?.includedOrigins)
+    || retrospectivePlan.includedOrigins.length < 1
+    || retrospectivePlan?.finalHoldoutOutcomeRead !== false
+    || retrospectivePlan?.futureIndependentOutcomeRead !== false
+  ) {
+    throw new Error("hpsr_retrospective_no_legal_complete_origin");
+  }
+  return Object.freeze({
+    authorized: true,
+    capabilityId: "m2-head-protected-segmented-router",
+    experimentId: HPSR_EXPERIMENT_ID,
+    modelId: HPSR_MODEL_ID,
+    origins: retrospectivePlan.includedOrigins,
+    resultMaximum: 1,
+    finalHoldoutOutcomeRead: false,
+    independentOutcomeRead: false
+  });
+}
+
 export function validateHpsrImplementationReadiness(value) {
   const errors = [];
   if (
@@ -676,6 +1415,40 @@ export function validateHpsrImplementationReadiness(value) {
 
 export function validateHeadProtectedSegmentedRouterContract(config) {
   const errors = [];
+  const retrospectiveStatuses = new Set([
+    HPSR_RETROSPECTIVE_SUPPORTED_STATUS,
+    HPSR_RETROSPECTIVE_MIXED_STATUS,
+    HPSR_RETROSPECTIVE_UNSUPPORTED_STATUS
+  ]);
+  const retrospectiveCompleted =
+    config?.execution?.retrospectiveDevelopmentEvaluationCompleted
+      === true;
+  const preOutcomeState = (
+    !retrospectiveCompleted
+    && config?.experiment?.status === HPSR_IMPLEMENTED_STATUS
+    && config?.experiment?.phase
+      === "IMPLEMENTED_AWAITING_INDEPENDENT_EVALUATION"
+    && config?.experiment?.firstCompleteOutcomeProduced === false
+    && config?.model?.implementationStatus
+      === "IMPLEMENTED_PUBLIC_SYNTHETIC_VERIFIED_"
+        + "AWAITING_INDEPENDENT_EVALUATION"
+    && config?.model?.registryRole
+      === "implemented_awaiting_independent_evaluation"
+  );
+  const completedRetrospectiveState = (
+    retrospectiveCompleted
+    && retrospectiveStatuses.has(config?.experiment?.status)
+    && config?.experiment?.phase
+      === "RETROSPECTIVE_DEVELOPMENT_EVALUATED"
+    && config?.experiment?.firstCompleteOutcomeProduced === true
+    && config?.model?.implementationStatus
+      === "RETROSPECTIVE_DEVELOPMENT_EVALUATED"
+    && [
+      "retrospective_development_mixed_awaiting_independent_k2",
+      "retrospective_development_supported_awaiting_independent_k2",
+      "retrospective_development_unsupported_stop_before_k2"
+    ].includes(config?.model?.registryRole)
+  );
   if (
     config?.schema
       !== "m2.current.head_protected_segmented_router.v0.1"
@@ -699,18 +1472,10 @@ export function validateHeadProtectedSegmentedRouterContract(config) {
     errors.push("hpsr_contract_arms_must_be_exactly_r0_d1_r1");
   }
   if (
-    config?.experiment?.status !== HPSR_IMPLEMENTED_STATUS
-    || config?.experiment?.phase
-      !== "IMPLEMENTED_AWAITING_INDEPENDENT_EVALUATION"
-    || config?.experiment?.K1 !== HPSR_K1_EXECUTION_STATUS
+    config?.experiment?.K1 !== HPSR_K1_EXECUTION_STATUS
     || config?.experiment?.K2 !== HPSR_K2_WAITING_STATUS
     || config?.experiment?.outerOutcomeRead !== false
-    || config?.experiment?.firstCompleteOutcomeProduced !== false
-    || config?.model?.implementationStatus
-      !== "IMPLEMENTED_PUBLIC_SYNTHETIC_VERIFIED_"
-        + "AWAITING_INDEPENDENT_EVALUATION"
-    || config?.model?.registryRole
-      !== "implemented_awaiting_independent_evaluation"
+    || (!preOutcomeState && !completedRetrospectiveState)
   ) {
     errors.push("hpsr_contract_implementation_state_invalid");
   }
@@ -824,15 +1589,51 @@ export function validateHeadProtectedSegmentedRouterContract(config) {
   ) {
     errors.push("hpsr_contract_evaluation_reporting_invalid");
   }
+  const replay = config?.retrospectiveReplay;
+  if (
+    replay?.authorizedNow !== true
+    || replay?.evidenceClass
+      !== "RETROSPECTIVE_DEVELOPMENT_NOT_INDEPENDENT"
+    || replay?.outcomeReadBeforeTaskRequired !== true
+    || replay?.originSelectionRuntimeDerived !== true
+    || replay?.horizonMonths !== 3
+    || replay?.fixedCham01B3Fit?.huberDelta !== 1
+    || replay?.fixedCham01B3Fit?.l2 !== 10
+    || replay?.fixedCham01B3Fit?.hyperparameterSearchExecuted !== false
+    || replay?.newModelTrainingAllowed !== false
+    || replay?.hyperparameterSearchAllowed !== false
+    || replay?.alphaSearchAllowed !== false
+    || replay?.residualBoundReestimationAllowed !== false
+    || replay?.cashBandChangeAllowed !== false
+    || replay?.singleCompleteResultMaximum !== true
+    || replay?.secondCompleteResultAllowed !== false
+    || replay?.bootstrap?.iterations !== 2000
+    || replay?.bootstrap?.clusterUnit !== "standardWorkId"
+    || replay?.singleTimeBlockMayBeSupported !== false
+    || replay?.singleTimeBlockMayBeMixedOrUnsupported !== true
+  ) {
+    errors.push("hpsr_contract_retrospective_replay_invalid");
+  } else {
+    try {
+      normalizeRetrospectiveDecisionPolicy(replay.decisionPolicy);
+    } catch {
+      errors.push("hpsr_contract_retrospective_decision_policy_invalid");
+    }
+  }
   if (
     config?.execution?.K1ImplementationAuthorizedNow !== true
     || config?.execution?.K1SemanticAndBoundPreparationCompleted !== true
     || config?.execution?.K1CanonicalImplementationCompleted !== true
     || config?.execution?.K1PublicSyntheticValidationCompleted !== true
+    || config?.execution
+      ?.retrospectiveDevelopmentEvaluationAuthorizedNow !== true
+    || config?.execution
+      ?.retrospectiveDevelopmentEvaluationCompleted
+      !== retrospectiveCompleted
     || config?.execution?.K2PrivateEvaluationAuthorizedNow !== false
     || config?.execution
       ?.singleQualifiedLaterOriginEvaluationConditionallyAuthorizedByUser
-      !== false
+      !== true
     || config?.execution?.oneCompleteOutcomeMaximum !== true
     || config?.execution?.secondCompleteResultAllowed !== false
     || config?.execution?.secondBootstrapAllowed !== false
@@ -840,7 +1641,13 @@ export function validateHeadProtectedSegmentedRouterContract(config) {
     || config?.authorization?.pullRequestMerge !== false
     || config?.authorization?.K1CanonicalImplementation !== true
     || config?.authorization?.syntheticFixtureValidation !== true
-    || config?.authorization?.qualifiedLaterOriginValidation !== false
+    || config?.authorization?.retrospectiveDevelopmentEvaluation !== true
+    || config?.authorization?.qualifiedLaterOriginValidation !== true
+    || config?.authorization
+      ?.qualifiedLaterOriginValidationUsableNow !== false
+    || config?.authorization?.modelTrainingNow !== false
+    || config?.authorization?.modelSelectionNow !== false
+    || config?.authorization?.frozenFormulaOriginFaithfulRefitNow !== true
   ) {
     errors.push("hpsr_contract_execution_authorization_invalid");
   }
@@ -853,6 +1660,10 @@ export function validateHeadProtectedSegmentedRouterContract(config) {
       !== "smoke:m2:current:head-protected-segmented-router"
     || config?.implementation?.futureControlledExecuteEntrypoint
       !== "execute:m2:head-protected-segmented-router"
+    || !sameValues(
+      config?.implementation?.retrospectiveControlledExecuteArguments,
+      ["--retrospective"]
+    )
     || config?.implementation?.productionLoaderRouteOrApiChanged !== false
     || config?.implementation?.productionSurfaceChangeCount !== 0
   ) {
@@ -1365,6 +2176,329 @@ function buildHpsrCandidateRow(row, common, bounds, diagnostic) {
   });
 }
 
+function normalizeRetrospectiveDecisionPolicy(value) {
+  const policy = Object.freeze({
+    supportedMinimumFva: finiteNumber(
+      value?.supportedMinimumFva,
+      "retrospective_supported_minimum_fva"
+    ),
+    supportedBootstrapLowerExclusive: finiteNumber(
+      value?.supportedBootstrapLowerExclusive,
+      "retrospective_supported_bootstrap_lower"
+    ),
+    supportedMaximumAbsoluteBiasWorsening: finiteNumber(
+      value?.supportedMaximumAbsoluteBiasWorsening,
+      "retrospective_supported_bias_worsening"
+    ),
+    supportedMinimumImprovingBlockShare: finiteNumber(
+      value?.supportedMinimumImprovingBlockShare,
+      "retrospective_supported_block_share"
+    ),
+    minimumStableTimeBlocks: positiveInteger(
+      value?.minimumStableTimeBlocks,
+      "retrospective_minimum_stable_time_blocks"
+    ),
+    unsupportedRelativeWapeDegradation: finiteNumber(
+      value?.unsupportedRelativeWapeDegradation,
+      "retrospective_unsupported_wape_degradation"
+    ),
+    unsupportedAbsoluteBiasWorsening: finiteNumber(
+      value?.unsupportedAbsoluteBiasWorsening,
+      "retrospective_unsupported_bias_worsening"
+    ),
+    catastrophicMaximumWorkErrorShare: finiteNumber(
+      value?.catastrophicMaximumWorkErrorShare,
+      "retrospective_catastrophic_work_share"
+    ),
+    catastrophicMaximumWorkShareWorsening: finiteNumber(
+      value?.catastrophicMaximumWorkShareWorsening,
+      "retrospective_catastrophic_share_worsening"
+    )
+  });
+  if (
+    policy.supportedMinimumFva !== 0.01
+    || policy.supportedBootstrapLowerExclusive !== 0
+    || policy.supportedMaximumAbsoluteBiasWorsening !== 0.01
+    || policy.supportedMinimumImprovingBlockShare !== 2 / 3
+    || policy.minimumStableTimeBlocks !== 2
+    || policy.unsupportedRelativeWapeDegradation !== 0.01
+    || policy.unsupportedAbsoluteBiasWorsening !== 0.02
+    || policy.catastrophicMaximumWorkErrorShare !== 0.35
+    || policy.catastrophicMaximumWorkShareWorsening !== 0.1
+  ) {
+    throw new Error("hpsr_retrospective_decision_policy_changed");
+  }
+  return policy;
+}
+
+function normalizeHpsrActualRows(rows, origin) {
+  if (!Array.isArray(rows) || rows.length === 0) {
+    throw new Error("hpsr_retrospective_actual_rows_required");
+  }
+  const seen = new Set();
+  return Object.freeze(rows.map((row) => {
+    const standardWorkId = nonempty(
+      row?.standardWorkId,
+      "retrospective_actual_work_id"
+    );
+    if (seen.has(standardWorkId)) {
+      throw new Error("hpsr_retrospective_actual_work_duplicate");
+    }
+    seen.add(standardWorkId);
+    if (
+      requireMonth(row?.origin, "retrospective_actual_origin")
+        !== origin
+      || Number(row?.horizonMonths) !== 3
+    ) {
+      throw new Error("hpsr_retrospective_actual_cell_mismatch");
+    }
+    return Object.freeze({
+      standardWorkId,
+      origin,
+      horizonMonths: 3,
+      actual: finiteNumber(
+        row?.actual,
+        "retrospective_actual_amount"
+      )
+    });
+  }).sort((left, right) => (
+    left.standardWorkId.localeCompare(right.standardWorkId)
+  )));
+}
+
+function uniqueWorkIndex(rows, armId) {
+  if (!Array.isArray(rows) || rows.length === 0) {
+    throw new Error(`hpsr_retrospective_${armId}_rows_required`);
+  }
+  const output = new Map();
+  for (const row of rows) {
+    const standardWorkId = nonempty(
+      row?.standardWorkId,
+      `${armId}_work_id`
+    );
+    if (output.has(standardWorkId)) {
+      throw new Error(`hpsr_retrospective_${armId}_work_duplicate`);
+    }
+    output.set(standardWorkId, row);
+  }
+  return output;
+}
+
+function scoreHpsrEvaluationRows(
+  rows,
+  predictionField,
+  nullReason = "NO_EVALUATION_ROWS"
+) {
+  if (!Array.isArray(rows) || rows.length === 0) {
+    return Object.freeze({
+      status: "NOT_COMPUTABLE",
+      nullReason,
+      caseCount: 0,
+      workCount: 0,
+      originCount: 0,
+      absoluteActualTotal: 0,
+      absoluteErrorTotal: 0,
+      wape: null,
+      signedBias: null,
+      absoluteBias: null,
+      mae: null,
+      medianAbsoluteError: null,
+      errorConcentration: Object.freeze({
+        maximumWorkShare: null,
+        top5WorkShare: null,
+        top10WorkShare: null
+      })
+    });
+  }
+  const scored = rows.map((row) => {
+    const actual = finiteNumber(row.actual, "evaluation_actual");
+    const prediction = finiteNumber(
+      row[predictionField],
+      `evaluation_${predictionField}`
+    );
+    const error = prediction - actual;
+    return Object.freeze({
+      standardWorkId: row.standardWorkId,
+      origin: row.origin,
+      actual,
+      prediction,
+      error,
+      absoluteError: Math.abs(error)
+    });
+  });
+  const absoluteActualTotal = sum(scored.map(
+    (row) => Math.abs(row.actual)
+  ));
+  const actualTotal = sum(scored.map((row) => row.actual));
+  const predictionTotal = sum(scored.map((row) => row.prediction));
+  const absoluteErrors = scored.map(
+    (row) => row.absoluteError
+  ).sort((left, right) => left - right);
+  const absoluteErrorTotal = sum(absoluteErrors);
+  const workErrors = [...groupHpsrBy(
+    scored,
+    (row) => row.standardWorkId
+  ).values()].map((workRows) => sum(workRows.map(
+    (row) => row.absoluteError
+  ))).sort((left, right) => right - left);
+  return Object.freeze({
+    status: absoluteActualTotal > 0
+      ? "COMPUTED"
+      : "NOT_COMPUTABLE_ZERO_ABSOLUTE_ACTUAL",
+    nullReason: absoluteActualTotal > 0
+      ? null
+      : "ZERO_ABSOLUTE_ACTUAL_DENOMINATOR",
+    caseCount: scored.length,
+    workCount: new Set(scored.map(
+      (row) => row.standardWorkId
+    )).size,
+    originCount: new Set(scored.map((row) => row.origin)).size,
+    absoluteActualTotal,
+    actualTotal,
+    predictionTotal,
+    absoluteErrorTotal,
+    wape: ratioOrNull(absoluteErrorTotal, absoluteActualTotal),
+    signedBias: absoluteActualTotal > 0
+      ? (predictionTotal - actualTotal) / absoluteActualTotal
+      : null,
+    absoluteBias: absoluteActualTotal > 0
+      ? Math.abs(predictionTotal - actualTotal) / absoluteActualTotal
+      : null,
+    mae: absoluteErrorTotal / scored.length,
+    medianAbsoluteError: quantileSorted(absoluteErrors, 0.5),
+    errorConcentration: Object.freeze({
+      maximumWorkShare: ratioOrNull(
+        workErrors[0] ?? 0,
+        absoluteErrorTotal
+      ),
+      top5WorkShare: ratioOrNull(
+        sum(workErrors.slice(0, 5)),
+        absoluteErrorTotal
+      ),
+      top10WorkShare: ratioOrNull(
+        sum(workErrors.slice(0, 10)),
+        absoluteErrorTotal
+      )
+    })
+  });
+}
+
+function pairedFva(candidate, baseline) {
+  if (
+    candidate?.wape === null
+    || baseline?.wape === null
+    || !(baseline.wape > 0)
+  ) {
+    return null;
+  }
+  return (baseline.wape - candidate.wape) / baseline.wape;
+}
+
+function bootstrapHpsrFva(rows, {
+  candidateField,
+  baselineField,
+  iterations,
+  seed
+}) {
+  if (!Array.isArray(rows) || rows.length === 0) {
+    return Object.freeze({
+      status: "NOT_COMPUTABLE",
+      nullReason: "NO_SAME_CASE_ROWS",
+      method: "PAIRED_WHOLE_STANDARD_WORK_CLUSTER",
+      iterations: 0,
+      seed,
+      workCount: 0,
+      interval95: null
+    });
+  }
+  const byWork = groupHpsrBy(rows, (row) => row.standardWorkId);
+  const workIds = [...byWork.keys()].sort();
+  if (workIds.length < 2) {
+    return Object.freeze({
+      status: "NOT_COMPUTABLE",
+      nullReason: "FEWER_THAN_TWO_WORK_CLUSTERS",
+      method: "PAIRED_WHOLE_STANDARD_WORK_CLUSTER",
+      iterations: 0,
+      seed,
+      workCount: workIds.length,
+      interval95: null
+    });
+  }
+  const random = hpsrMulberry32(seed);
+  const values = [];
+  for (let iteration = 0; iteration < iterations; iteration += 1) {
+    const sampled = [];
+    for (let index = 0; index < workIds.length; index += 1) {
+      const workId = workIds[Math.floor(random() * workIds.length)];
+      sampled.push(...byWork.get(workId));
+    }
+    const candidate = scoreHpsrEvaluationRows(
+      sampled,
+      candidateField
+    );
+    const baseline = scoreHpsrEvaluationRows(
+      sampled,
+      baselineField
+    );
+    const fva = pairedFva(candidate, baseline);
+    if (fva !== null && Number.isFinite(fva)) values.push(fva);
+  }
+  values.sort((left, right) => left - right);
+  return Object.freeze({
+    status: values.length === iterations ? "COMPUTED" : "PARTIAL",
+    nullReason: values.length > 0 ? null : "NO_COMPUTABLE_BOOTSTRAP_DRAW",
+    method: "PAIRED_WHOLE_STANDARD_WORK_CLUSTER",
+    iterations: values.length,
+    requestedIterations: iterations,
+    seed,
+    workCount: workIds.length,
+    interval95: values.length > 0 ? Object.freeze({
+      lower: quantileSorted(values, 0.025),
+      median: quantileSorted(values, 0.5),
+      upper: quantileSorted(values, 0.975)
+    }) : null
+  });
+}
+
+function compareRetrospectiveRows(left, right) {
+  return (
+    left.origin.localeCompare(right.origin)
+    || left.standardWorkId.localeCompare(right.standardWorkId)
+  );
+}
+
+function groupHpsrBy(values, keyOf) {
+  const output = new Map();
+  for (const value of values) {
+    const key = keyOf(value);
+    const rows = output.get(key) ?? [];
+    rows.push(value);
+    output.set(key, rows);
+  }
+  return output;
+}
+
+function quantileSorted(sorted, probability) {
+  if (sorted.length === 0) return null;
+  const position = (sorted.length - 1) * probability;
+  const lower = Math.floor(position);
+  const upper = Math.ceil(position);
+  if (lower === upper) return sorted[lower];
+  const weight = position - lower;
+  return sorted[lower] * (1 - weight) + sorted[upper] * weight;
+}
+
+function hpsrMulberry32(seed) {
+  let state = seed >>> 0;
+  return () => {
+    state += 0x6d2b79f5;
+    let value = state;
+    value = Math.imul(value ^ value >>> 15, value | 1);
+    value ^= value + Math.imul(value ^ value >>> 7, value | 61);
+    return ((value ^ value >>> 14) >>> 0) / 4294967296;
+  };
+}
+
 function assertNoOutcomeFields(value, context) {
   if (value === null || typeof value !== "object") return;
   if (Array.isArray(value)) {
@@ -1432,11 +2566,36 @@ function nullableNumber(value) {
   return Number.isFinite(number) ? number : null;
 }
 
+function finiteNumber(value, name) {
+  if (typeof value !== "number" || !Number.isFinite(value)) {
+    throw new Error(`hpsr_${name}_must_be_finite`);
+  }
+  return value;
+}
+
+function nonnegativeInteger(value, name) {
+  if (!Number.isSafeInteger(value) || value < 0) {
+    throw new Error(`hpsr_${name}_must_be_nonnegative_integer`);
+  }
+  return value;
+}
+
+function positiveInteger(value, name) {
+  if (!Number.isSafeInteger(value) || value < 1) {
+    throw new Error(`hpsr_${name}_must_be_positive_integer`);
+  }
+  return value;
+}
+
 function nonempty(value, name) {
   if (typeof value !== "string" || value.trim() === "") {
     throw new Error(`hpsr_${name}_required`);
   }
   return value.trim();
+}
+
+function sum(values) {
+  return values.reduce((total, value) => total + value, 0);
 }
 
 function unique(values) {

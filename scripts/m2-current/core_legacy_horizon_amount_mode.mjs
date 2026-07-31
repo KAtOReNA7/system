@@ -505,6 +505,138 @@ export async function rebuildM2CoreHorizonAmountFrozenH3B3Inputs({
   });
 }
 
+export async function materializeM2HpsrFrozenFormulaFeatureRows({
+  root,
+  retrospectiveOrigins
+}) {
+  if (
+    !Array.isArray(retrospectiveOrigins)
+    || retrospectiveOrigins.length === 0
+    || retrospectiveOrigins.some(
+      (origin) => !/^\d{4}-(?:0[1-9]|1[0-2])$/u.test(origin)
+    )
+  ) {
+    throw new Error("m2_hpsr_retrospective_origins_invalid");
+  }
+  const requestedOrigins = [...new Set(retrospectiveOrigins)].sort();
+  if (requestedOrigins.length !== retrospectiveOrigins.length) {
+    throw new Error("m2_hpsr_retrospective_origins_duplicate");
+  }
+  const [
+    config,
+    oa03Config,
+    coreConfig,
+    humanConfig
+  ] = await Promise.all([
+    readJson(path.join(root, CONFIG_PATH)),
+    readJson(path.join(root, OA03_CONFIG_PATH)),
+    readJson(path.join(root, CORE_CONFIG_PATH)),
+    readJson(path.join(root, HUMAN_CONFIG_PATH))
+  ]);
+  validateM2CoreLegacyHorizonAmountConfig(config);
+  validateM2CoreLegacyPopulationConfig(coreConfig);
+  const authority = await materializeM2CoreRevenueAuthority({ root });
+  const schedules = resolveM2Oa03CurrentScopeSchedules({
+    config: oa03Config,
+    authorityStartMonth: authority.authorityStartMonth,
+    labelMaturityCutoff: authority.labelMaturityCutoff
+  });
+  const maximumRequestedOrigin = requestedOrigins.at(-1);
+  const historicalOrigins = trainingAndEvaluationOrigins({
+    authorityStartMonth: authority.authorityStartMonth,
+    labelMaturityCutoff: authority.labelMaturityCutoff,
+    schedules
+  }).filter((origin) => origin < maximumRequestedOrigin);
+  const origins = [...new Set([
+    ...historicalOrigins,
+    ...requestedOrigins
+  ])].sort();
+  const featureCache = new Map();
+  const featureMonthlyRowsForOrigin = (origin) => {
+    if (!featureCache.has(origin)) {
+      featureCache.set(
+        origin,
+        authority.featureMonthlyRowsForOrigin(origin)
+      );
+    }
+    return featureCache.get(origin);
+  };
+  const historicalCases = buildCoreLegacyWorkCases({
+    origins: historicalOrigins,
+    horizons: HORIZONS,
+    finalMonthlyRows: authority.finalMonthlyRows,
+    featureMonthlyRowsForOrigin,
+    config: coreConfig
+  }).workCases.filter((row) => (
+    row.labelAvailableAsOf <= maximumRequestedOrigin
+  ));
+  const requestedCases = buildCoreLegacyWorkCases({
+    origins: requestedOrigins,
+    horizons: [3],
+    finalMonthlyRows: authority.finalMonthlyRows,
+    featureMonthlyRowsForOrigin,
+    config: coreConfig
+  }).workCases;
+  const workCases = [...historicalCases, ...requestedCases].sort(
+    compareRows
+  );
+  const workCaseKeys = workCases.map(workKey);
+  if (new Set(workCaseKeys).size !== workCaseKeys.length) {
+    throw new Error("m2_hpsr_rebuilt_work_case_duplicate");
+  }
+  const populations = new Map(origins.map((origin) => [
+    origin,
+    buildCoreLegacyOriginPopulation({
+      origin,
+      monthlyRows: featureMonthlyRowsForOrigin(origin),
+      minimumCompleteMonths: coreConfig.eligibility.minimumCompleteMonths,
+      thresholds: coreConfig.coreSelection.thresholds,
+      topCounts: coreConfig.coreSelection.topDiagnostics
+    })
+  ]));
+  const frozenLg01 = reconstructFrozenLg01({
+    workCases,
+    humanConfig
+  });
+  const featureRows = buildFeatureRows({
+    workCases,
+    populations,
+    frozenLg01Rows: frozenLg01.rows
+  }).filter((row) => (
+    row.horizonMonths === 3
+    && row.origin <= maximumRequestedOrigin
+  ));
+  for (const origin of requestedOrigins) {
+    const rows = featureRows.filter((row) => row.origin === origin);
+    if (
+      rows.length === 0
+      || rows.some((row) => (
+        !Number.isFinite(row.actual)
+        || !Number.isFinite(row.features.lg01PointEstimate)
+        || row.originVisibleOnly !== true
+        || row.futureHistoryRowCount !== 0
+      ))
+    ) {
+      throw new Error("m2_hpsr_rebuilt_requested_origin_invalid");
+    }
+  }
+  return Object.freeze({
+    status:
+      "M2_HPSR_PRIVATE_DERIVED_FEATURE_CACHE_MISS_REBUILT_IN_MEMORY",
+    artifactClass: "PRIVATE_DERIVED_CACHE",
+    requestedOrigins: Object.freeze(requestedOrigins),
+    featureRows: Object.freeze(featureRows),
+    sourceAuthority: Object.freeze({
+      rowCount: authority.authority.rowCount,
+      workCount: authority.authority.workCount,
+      authorityStartMonth: authority.authorityStartMonth
+    }),
+    originVisibleOnly: true,
+    futureIndependentOutcomeRead: false,
+    finalHoldoutOutcomeRead: false
+  });
+}
+
 export function buildOriginVisibleTrailing12CashIndex(populations) {
   if (!(populations instanceof Map) || populations.size === 0) {
     throw new Error(

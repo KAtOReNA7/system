@@ -17,12 +17,32 @@ const CONTRACT_PATH = path.join(
   "m2-current-head-protected-segmented-router.v0.1.json"
 );
 
-function main() {
+async function main() {
   const contract = readJson(CONTRACT_PATH);
   const availability = readJson(path.join(
     ROOT,
     contract.publicOutputs.availabilityJson
   ));
+  if (process.argv.includes("--retrospective")) {
+    const {
+      runHpsrRetrospectivePrivate
+    } = await import("./head_protected_segmented_router_private.mjs");
+    const result = await runHpsrRetrospectivePrivate({
+      root: ROOT,
+      contract,
+      availability
+    });
+    process.stdout.write(`${JSON.stringify({
+      status: result.status,
+      origins: result.origins,
+      retrospectiveReplayReady: result.retrospectiveReplayReady,
+      independentK2Ready: result.independentK2Ready,
+      independentK2Executed: result.independentK2Executed,
+      prospectiveFinalHoldoutOpened:
+        result.prospectiveFinalHoldoutOpened
+    })}\n`);
+    return;
+  }
   assertHpsrControlledExecutionGate({
     contract,
     availability,
@@ -41,12 +61,10 @@ if (
   process.argv[1]
   && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)
 ) {
-  try {
-    main();
-  } catch (error) {
+  main().catch((error) => {
     process.stderr.write(
       `[M2_HPSR_CONTROLLED_EXECUTE_DENIED] ${error.message}\n`
     );
     process.exitCode = 1;
-  }
+  });
 }

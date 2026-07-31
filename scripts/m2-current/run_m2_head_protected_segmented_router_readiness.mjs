@@ -30,6 +30,9 @@ const residualBoundProvenance = readJson(
 const implementationReadiness = readJson(
   config.publicOutputs.implementationReadinessJson
 );
+const retrospectiveReadiness = readJson(
+  config.publicOutputs.retrospectiveReadinessJson
+);
 
 if (!process.argv.includes("--verify")) {
   throw new Error("hpsr_readiness_mode_required_use_verify");
@@ -62,6 +65,9 @@ const residualBoundReport = readText(
 const implementationReadinessReport = readText(
   config.publicOutputs.implementationReadinessReport
 );
+const retrospectiveReadinessReport = readText(
+  config.publicOutputs.retrospectiveReadinessReport
+);
 if (
   !report.includes(HPSR_IMPLEMENTED_STATUS)
   || !preregistration.includes(HPSR_IMPLEMENTED_STATUS)
@@ -72,7 +78,8 @@ if (
     openedSemanticsReport,
     prospectiveHoldoutReport,
     residualBoundReport,
-    implementationReadinessReport
+    implementationReadinessReport,
+    retrospectiveReadinessReport
   ].some((value) => (
     value.includes("data/private-output/")
     || /[A-Z]:[\\/]/u.test(value)
@@ -80,9 +87,18 @@ if (
 ) {
   throw new Error("hpsr_public_report_status_or_privacy_boundary_invalid");
 }
+if (
+  retrospectiveReadiness?.retrospectiveReplayReady !== true
+  || retrospectiveReadiness?.independentK2Ready !== false
+  || retrospectiveReadiness?.auditBoundary
+    ?.newFutureActualAmountsRead !== false
+  || retrospectiveReadiness?.auditBoundary?.modelEvaluationRun !== false
+) {
+  throw new Error("hpsr_retrospective_readiness_invalid");
+}
 
 process.stdout.write(
-  "M2 HPSR K1 canonical implementation and public readiness artifacts verified.\n"
+  "M2 HPSR K1 implementation, retrospective readiness, and conditional K2 readiness verified.\n"
 );
 
 function readJson(repositoryRelativePath) {

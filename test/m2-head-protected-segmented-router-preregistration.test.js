@@ -12,15 +12,21 @@ import test from "node:test";
 
 import {
   assertHpsrControlledExecutionGate,
+  assertHpsrRetrospectiveExecutionGate,
   buildHpsrOriginCashBands,
+  buildHpsrOriginCashBandsFromWorkCash,
   deriveHpsrResidualBounds,
+  evaluateHpsrRetrospectiveDevelopment,
   HPSR_ARM_IDS,
   HPSR_EXPERIMENT_ID,
   HPSR_IMPLEMENTED_STATUS,
   HPSR_K1_EXECUTION_STATUS,
   HPSR_K2_WAITING_STATUS,
   HPSR_MODEL_ID,
+  HPSR_RETROSPECTIVE_MIXED_STATUS,
+  HPSR_RETROSPECTIVE_UNSUPPORTED_STATUS,
   forecastWindowsOverlap,
+  planHpsrRetrospectiveOrigins,
   planHpsrProspectiveReservation,
   runHeadProtectedSegmentedRouter,
   summarizeHpsrOpenedEvidence,
@@ -55,6 +61,9 @@ const residualBoundProvenance = await readJson(
 const implementationReadiness = await readJson(
   config.publicOutputs.implementationReadinessJson
 );
+const retrospectiveReadiness = await readJson(
+  config.publicOutputs.retrospectiveReadinessJson
+);
 const availabilityReport = await readText(
   config.publicOutputs.availabilityReport
 );
@@ -71,9 +80,12 @@ const residualBoundReport = await readText(
 const implementationReadinessReport = await readText(
   config.publicOutputs.implementationReadinessReport
 );
+const retrospectiveReadinessReport = await readText(
+  config.publicOutputs.retrospectiveReadinessReport
+);
 const synthetic = await runHpsrSyntheticFixture();
 
-test("K1 is implemented and synthetic-verified while K2 remains closed", () => {
+test("K1 is implemented, retrospective is authorized, and K2 stays conditional", () => {
   const result = validateHeadProtectedSegmentedRouterContract(config);
   assert.equal(result.valid, true, result.errors.join("\n"));
   assert.equal(config.model.stableModelId, HPSR_MODEL_ID);
@@ -99,10 +111,20 @@ test("K1 is implemented and synthetic-verified while K2 remains closed", () => {
   assert.equal(
     config.execution
       .singleQualifiedLaterOriginEvaluationConditionallyAuthorizedByUser,
+    true
+  );
+  assert.equal(
+    config.execution.retrospectiveDevelopmentEvaluationAuthorizedNow,
+    true
+  );
+  assert.equal(
+    config.execution.retrospectiveDevelopmentEvaluationCompleted,
     false
   );
   assert.equal(config.authorization.modelTrainingNow, false);
   assert.equal(config.authorization.modelSelectionNow, false);
+  assert.equal(config.authorization.retrospectiveDevelopmentEvaluation, true);
+  assert.equal(config.authorization.qualifiedLaterOriginValidation, true);
 });
 
 test("current date evidence has no qualified later-origin", () => {
@@ -126,6 +148,53 @@ test("current date evidence has no qualified later-origin", () => {
     plan.prospectiveFinalHoldoutFutureBillMonths,
     ["2026-07", "2026-08", "2026-09"]
   );
+});
+
+test("retrospective origin inventory is dynamic and excludes isolation or incomplete windows", () => {
+  const plan = planHpsrRetrospectiveOrigins({
+    residualBoundDerivationThrough: "2025-09",
+    firstIndependentLaterOrigin: "2026-03",
+    completeAuthoritativeBillMonthThrough: "2026-04",
+    openedOriginProfiles: [
+      {
+        origin: "2025-11",
+        rowCount: 20,
+        nonNullExistingActualCount: 20,
+        horizonsMonths: [3, 6]
+      },
+      {
+        origin: "2026-02",
+        rowCount: 10,
+        nonNullExistingActualCount: 10,
+        horizonsMonths: [3]
+      }
+    ],
+    isolatedOrigins: ["2025-12"]
+  });
+  assert.equal(plan.retrospectiveReplayReady, true);
+  assert.deepEqual(plan.includedOrigins, ["2025-11"]);
+  assert.deepEqual(
+    plan.inventory.map((row) => row.origin),
+    ["2025-10", "2025-11", "2025-12", "2026-01", "2026-02"]
+  );
+  assert.ok(
+    plan.inventory.find(
+      (row) => row.origin === "2025-12"
+    ).exclusionReasons.includes("HISTORICAL_ISOLATED_OUTCOME")
+  );
+  assert.ok(
+    plan.inventory.find(
+      (row) => row.origin === "2026-02"
+    ).exclusionReasons.includes(
+      "INCOMPLETE_THREE_MONTH_AUTHORITY_WINDOW"
+    )
+  );
+  const gate = assertHpsrRetrospectiveExecutionGate({
+    contract: config,
+    retrospectivePlan: plan
+  });
+  assert.equal(gate.authorized, true);
+  assert.deepEqual(gate.origins, ["2025-11"]);
 });
 
 test("metadata-only evidence never advances actual-opened boundary", () => {
@@ -206,6 +275,34 @@ test("Core and cash bands are origin-visible without generic SKU floors", () => 
     config.cashBands.bands.map(({ bandId }) => bandId),
     ["H50", "M30", "L20"]
   );
+});
+
+test("work-total trailing-12 adapter preserves the canonical cash bands", () => {
+  const cashByWork = new Map();
+  for (const row of synthetic.input.originVisibleMonthlyCashRows) {
+    cashByWork.set(
+      row.standardWorkId,
+      (cashByWork.get(row.standardWorkId) ?? 0) + row.cash
+    );
+  }
+  const direct = buildHpsrOriginCashBandsFromWorkCash({
+    origin: synthetic.input.origin,
+    originVisibleWorkCashRows: [...cashByWork].map(
+      ([standardWorkId, trailing12Cash]) => ({
+        standardWorkId,
+        trailing12Cash
+      })
+    )
+  });
+  assert.deepEqual(
+    direct.cashBandRows.map(
+      ({ standardWorkId, bandId }) => ({ standardWorkId, bandId })
+    ),
+    synthetic.result.population.cashBandRows.map(
+      ({ standardWorkId, bandId }) => ({ standardWorkId, bandId })
+    )
+  );
+  assert.equal(direct.workCashAggregationOnly, true);
 });
 
 test("H50 is exact architecture while M30 and L20 are independent", () => {
@@ -375,6 +472,96 @@ test("raw B3 diagnostics and raw HPSR rows remain separate", () => {
     true
   );
   assert.equal(synthetic.result.invariants.rawB3AndR1StoredSeparately, true);
+});
+
+test("one-origin retrospective produces a real mixed result rather than no result", () => {
+  const controlled = runHeadProtectedSegmentedRouter({
+    ...synthetic.input,
+    residualBoundState: {
+      ...synthetic.input.residualBoundState,
+      sourceClass: "FROZEN_FROM_PREVIOUSLY_OPENED_DEVELOPMENT_ONLY"
+    },
+    executionMode: "CONTROLLED_LATER_ORIGIN"
+  });
+  const candidateByWork = new Map(
+    controlled.r1RawRouterRows.map((row) => [
+      row.standardWorkId,
+      row.pointEstimate
+    ])
+  );
+  const result = evaluateHpsrRetrospectiveDevelopment({
+    originResults: [{
+      origin: controlled.origin,
+      routerResult: controlled,
+      actualRows: synthetic.fixture.works.map((work) => ({
+        standardWorkId: work.standardWorkId,
+        origin: controlled.origin,
+        horizonMonths: 3,
+        actual: candidateByWork.get(work.standardWorkId)
+      }))
+    }],
+    decisionPolicy: config.retrospectiveReplay.decisionPolicy,
+    bootstrap: config.retrospectiveReplay.bootstrap
+  });
+  assert.equal(result.status, HPSR_RETROSPECTIVE_MIXED_STATUS);
+  assert.equal(result.rawCandidateEvaluationCount, 1);
+  assert.equal(result.bootstrapExecutionCount, 1);
+  assert.equal(result.caseCount, 10);
+  assert.equal(result.metrics.r1.wape, 0);
+  assert.equal(result.timeBlockSummary.evaluableBlockCount, 1);
+  assert.equal(result.decision.insufficientStableTimeBlocks, true);
+  assert.equal(result.decision.independentEvidence, false);
+});
+
+test("clear one-origin degradation stops before independent K2", () => {
+  const extremeInput = {
+    ...synthetic.input,
+    predictionRows: synthetic.input.predictionRows.map((row) => ({
+      ...row,
+      cham01B3Prediction: row.lg01Prediction * 10,
+      cham01Diagnostics: {
+        signedExpm1Overflow: false,
+        supportRangeExtrapolation: true
+      }
+    })),
+    residualBoundState: {
+      ...synthetic.input.residualBoundState,
+      sourceClass: "FROZEN_FROM_PREVIOUSLY_OPENED_DEVELOPMENT_ONLY"
+    },
+    executionMode: "CONTROLLED_LATER_ORIGIN"
+  };
+  const controlled = runHeadProtectedSegmentedRouter(extremeInput);
+  const baselineByWork = new Map(
+    controlled.r0Rows.map((row) => [
+      row.standardWorkId,
+      row.pointEstimate
+    ])
+  );
+  const result = evaluateHpsrRetrospectiveDevelopment({
+    originResults: [{
+      origin: controlled.origin,
+      routerResult: controlled,
+      actualRows: synthetic.fixture.works.map((work) => ({
+        standardWorkId: work.standardWorkId,
+        origin: controlled.origin,
+        horizonMonths: 3,
+        actual: baselineByWork.get(work.standardWorkId) * 0.9
+      }))
+    }],
+    decisionPolicy: config.retrospectiveReplay.decisionPolicy,
+    bootstrap: config.retrospectiveReplay.bootstrap
+  });
+  assert.equal(
+    result.status,
+    HPSR_RETROSPECTIVE_UNSUPPORTED_STATUS
+  );
+  assert.equal(
+    result.decision.unsupportedTriggers
+      .overallWapeDegradedAtLeastOnePercent
+      || result.decision.unsupportedTriggers
+        .majorityTimeBlocksDegraded,
+    true
+  );
 });
 
 test("post-origin cash and outcome fields fail closed before routing", () => {
@@ -594,7 +781,8 @@ test("public Chinese reports match implemented-awaiting status and leak no priva
     openedSemanticsReport,
     prospectiveFinalHoldoutReport,
     residualBoundReport,
-    implementationReadinessReport
+    implementationReadinessReport,
+    retrospectiveReadinessReport
   ]) {
     assert.doesNotMatch(report, /data\/private-(?:input|output)\//u);
     assert.doesNotMatch(report, /[A-Z]:[\\/]/u);
@@ -605,6 +793,13 @@ test("public Chinese reports match implemented-awaiting status and leak no priva
   assert.equal(availability.status, HPSR_IMPLEMENTED_STATUS);
   assert.equal(availability.auditBoundary.newFutureActualAmountsRead, false);
   assert.equal(availability.auditBoundary.newModelMetricsRead, false);
+  assert.equal(retrospectiveReadiness.retrospectiveReplayReady, true);
+  assert.equal(retrospectiveReadiness.independentK2Ready, false);
+  assert.deepEqual(retrospectiveReadiness.includedOrigins, ["2025-11"]);
+  assert.equal(
+    retrospectiveReadiness.auditBoundary.newFutureActualAmountsRead,
+    false
+  );
 });
 
 test("K1 readiness records implementation without publishing a real score", () => {
