@@ -102,21 +102,26 @@ This directory is the only implementation home for current M2 model logic.
   portable public development. A private evaluation may be blocked only when
   an irreplaceable authoritative source is missing or no legal historical
   forecast origin can be formed.
-- `M2-WORK-HPSR01` has completed its K1 canonical implementation, public
-  synthetic validation, and its single authorized retrospective development
-  evaluation. The only dynamically legal origin was `2025-11`; the frozen
-  result is
-  `M2_HPSR01_RETROSPECTIVE_DEVELOPMENT_UNSUPPORTED_STOP_BEFORE_K2` because the
-  absolute-bias worsening exceeded the preregistered unsupported guardrail.
-  This evidence is not independent. Independent K2 was not executed: the
-  authoritative bill window remains incomplete through `2026-06`, and the
-  retrospective unsupported result separately stops the experiment before K2.
-  The prospective final holdout remains unopened. Do not wait and
-  automatically resume, search hyperparameters, change cash bands, re-estimate
-  residual bounds, repeat the complete retrospective result, execute K2, or
-  treat an isolated historical holdout as untouched evidence. The public
-  synthetic entrypoint remains private-free and the controlled entrypoint must
-  fail closed.
+- Preserve `M2-WORK-HPSR01`'s frozen mechanical result
+  `M2_HPSR01_RETROSPECTIVE_DEVELOPMENT_UNSUPPORTED_STOP_BEFORE_K2`, including
+  its metrics, population, report, and registry evaluation row. Its amended
+  scientific interpretation is
+  `M2_HPSR01_CONTRACT_UNSUPPORTED_SCIENTIFICALLY_INCONCLUSIVE`: a single
+  `2025-11` time block with 57 works, a bootstrap interval crossing zero, and
+  conflicting H50/M30/L20 directions cannot establish that the whole
+  head-protected segmentation direction fails. Any L20-only aggregate
+  arithmetic is `POST_HOC_AGGREGATE_ARITHMETIC_NOT_MODEL_EVIDENCE`; it is not
+  a row-level rescore, model evaluation, or leaderboard entry.
+- `M2-WORK-HPSR02` is a
+  `POST_HOC_INSPIRED_PROSPECTIVELY_PREREGISTERED` independent-evaluation
+  candidate, not an active candidate. Its only allowed structure keeps frozen
+  LG01 rowwise in H50 and M30 and applies the already frozen HPSR01 bounded
+  residual correction only in L20. Public synthetic code may verify
+  invariants, but must consume no outcome or private data. Do not run a real
+  evaluation, bootstrap, training, alpha search, bound re-estimation, or K2
+  without a later explicit authorization and dynamically complete bills. The
+  prospective final holdout remains unopened, and the production loader,
+  route, API, and current runtime composition must not import HPSR02.
 - Company-level M2 sales-share forecasting must keep existing core, existing
   tail, future new-work portfolio, and existing-work new-channel portfolio cash
   mutually exclusive and amount-conserving. Future new works and future channel

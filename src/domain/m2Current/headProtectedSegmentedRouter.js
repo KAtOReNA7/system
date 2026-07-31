@@ -1939,6 +1939,92 @@ export function addMonths(month, offset) {
   return `${year}-${String(monthNumber).padStart(2, "0")}`;
 }
 
+export function computeHpsrFrozenBoundedResidualCorrection(input) {
+  const {
+    residualBoundState,
+    executionMode = "SYNTHETIC_FIXTURE",
+    ...predictionInput
+  } = input ?? {};
+  assertNoOutcomeFields(
+    predictionInput,
+    "frozen_bounded_residual_correction_input"
+  );
+  const lg01Prediction = finiteNumber(
+    predictionInput.lg01Prediction,
+    "frozen_correction_lg01_prediction"
+  );
+  const rawValue = predictionInput.cham01B3Prediction;
+  if (
+    rawValue !== null
+    && rawValue !== undefined
+    && typeof rawValue !== "number"
+  ) {
+    throw new Error("hpsr_frozen_correction_raw_prediction_type_invalid");
+  }
+  const cham01Diagnostics = predictionInput.cham01Diagnostics ?? {};
+  if (
+    cham01Diagnostics.signedExpm1Overflow !== undefined
+    && typeof cham01Diagnostics.signedExpm1Overflow !== "boolean"
+  ) {
+    throw new Error(
+      "hpsr_frozen_correction_signed_expm1_overflow_flag_invalid"
+    );
+  }
+  if (
+    cham01Diagnostics.supportRangeExtrapolation !== undefined
+    && typeof cham01Diagnostics.supportRangeExtrapolation !== "boolean"
+  ) {
+    throw new Error(
+      "hpsr_frozen_correction_support_range_flag_invalid"
+    );
+  }
+  const bounds = normalizeHpsrBoundState(
+    residualBoundState,
+    executionMode
+  );
+  const row = Object.freeze({
+    lg01Prediction,
+    cham01B3Prediction: rawValue ?? null,
+    cham01Diagnostics: Object.freeze({
+      signedExpm1Overflow:
+        cham01Diagnostics.signedExpm1Overflow === true,
+      supportRangeExtrapolation:
+        cham01Diagnostics.supportRangeExtrapolation === true
+    })
+  });
+  const common = Object.freeze({
+    standardWorkId: "HPSR_FROZEN_CORRECTION_HELPER",
+    origin: "2000-01",
+    horizonMonths: 3,
+    cashBandId: "L20"
+  });
+  const diagnostic = buildHpsrRawDiagnostic(row, common, bounds);
+  const candidate = buildHpsrCandidateRow(
+    row,
+    common,
+    bounds,
+    diagnostic
+  );
+  return Object.freeze({
+    pointEstimate: candidate.pointEstimate,
+    alpha: candidate.alpha,
+    boundedNormalizedResidual:
+      candidate.boundedNormalizedResidual,
+    boundedResidual: candidate.boundedResidual,
+    boundTriggered: candidate.boundTriggered,
+    correctionApplied: candidate.correctionApplied,
+    fallbackToLg01: candidate.fallbackToLg01,
+    fallbackReason: candidate.fallbackReason,
+    numericStatus: candidate.numericStatus,
+    finalPredictionFinite: candidate.finalPredictionFinite,
+    rawPredictionFinite: diagnostic.rawPredictionFinite,
+    finiteExtreme: diagnostic.finiteExtreme,
+    signedExpm1Overflow: diagnostic.signedExpm1Overflow,
+    supportRangeExtrapolation:
+      diagnostic.supportRangeExtrapolation
+  });
+}
+
 function normalizeHpsrBoundState(value, executionMode) {
   const parameterValues = value?.parameterValues ?? value;
   const positiveBaseFloor = parameterValues

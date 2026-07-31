@@ -46,6 +46,7 @@
     "smoke:m2:current:core-legacy-horizon-amount-recovery",
     "smoke:m2:current:lg01-head-cash-residual",
     "smoke:m2:current:head-protected-segmented-router",
+    "smoke:m2:current:head-protected-tail-band-correction",
     "diagnose:m2:later-origin-readiness",
     "verify:m2:signal-input",
     "verify:m2:channel-governance",

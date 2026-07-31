@@ -3,7 +3,7 @@
 ## 当前权威入口
 
 - 用户首页与公共开始入口：`README.md`
-- 当前 M2 状态：`docs/analysis/m2-v2/M2-v2-current-state-index-v0.52.md`
+- 当前 M2 状态：`docs/analysis/m2-v2/M2-v2-current-state-index-v0.53.md`
 - M2 模型机器权威：`config/m2-model-registry.v1.json`
 - M2 中文目录：`docs/analysis/m2-current/M2-model-catalog-and-scorecard-v1.md`
 - M2 出版行业规模适配渠道核心结论：
@@ -58,6 +58,11 @@
   - `docs/analysis/m2-current/M2-head-protected-segmented-router-retrospective-development-v0.1.json`
   - `docs/analysis/m2-current/M2-head-protected-segmented-router-retrospective-development-v0.1.md`
   - `docs/analysis/m2-current/M2-head-protected-segmented-router-preregistration-v0.1.md`
+  - `docs/analysis/m2-current/M2-head-protected-segmented-router-interpretation-amendment-v0.1.json`
+  - `docs/analysis/m2-current/M2-head-protected-segmented-router-interpretation-amendment-v0.1.md`
+  - `docs/analysis/m2-current/M2-head-protected-tail-band-correction-cash-band-attribution-v0.1.md`
+  - `config/m2-current-head-protected-tail-band-correction.v0.2.json`
+  - `docs/analysis/m2-current/M2-head-protected-tail-band-correction-preregistration-v0.2.md`
 - M2 评价体系：
   - `docs/analysis/m2-current/M2-evaluation-system-audit-v1.md`
   - `config/m2-evaluation-contract.v2.2.json`
@@ -275,16 +280,20 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
 - 默认不授权训练、调参、新候选、private evaluation、provider、数据库、
   final holdout、embargo、Canary/full160、release 或 M3 formal。只有当前用户任务
   的明确授权才能打开对应能力，且授权不跨任务自动延续。
-- LG01 头部保护分段路由模型 v0.1（`M2-WORK-HPSR01`）已完成 K1 canonical
-  implementation、公开 synthetic 验证和唯一一次真实回溯开发评价。动态审计只纳入
-  `2025-11`；57 个同案例中 R1 相对 R0 的 paired FVA 为 0.8477%，bootstrap
-  95% 区间跨 0，absolute bias 恶化 2.0358 个百分点并越过预冻结失败护栏。首个
-  完整结果已冻结为
-  `M2_HPSR01_RETROSPECTIVE_DEVELOPMENT_UNSUPPORTED_STOP_BEFORE_K2`，该证据不是
-  独立 later-origin。独立 K2 未执行：当前完整账单只到 `2026-04`，仍缺
-  `2026-05`、`2026-06`，并且回溯不支持已经触发 K2 前停止。不得等待账单后自动
-  恢复、重跑或开发下一模型；prospective final holdout 必须保持未打开，active
-  candidate、自动化批准和 production 权限继续为空。
+- LG01 头部保护分段路由模型 v0.1（`M2-WORK-HPSR01`）的原机械合同不支持状态
+  `M2_HPSR01_RETROSPECTIVE_DEVELOPMENT_UNSUPPORTED_STOP_BEFORE_K2` 必须保持
+  冻结；不得重写其指标、报告或历史成绩。科学解释修订为
+  `M2_HPSR01_CONTRACT_UNSUPPORTED_SCIENTIFICALLY_INCONCLUSIVE`：单起点、57 部
+  作品、bootstrap 跨 0 且 H50/M30/L20 方向异质，不足以证明整个模型方向失败。
+  L20-only 数字只能标记为
+  `POST_HOC_AGGREGATE_ARITHMETIC_NOT_MODEL_EVIDENCE`，不得写入模型成绩榜。
+- LG01 头部保护尾段修正模型 v0.2（`M2-WORK-HPSR02`）已在独立 outcome 打开前
+  预注册为 `POST_HOC_INSPIRED_PROSPECTIVELY_PREREGISTERED`：H50/M30 逐行精确
+  使用冻结 LG01，只有 L20 使用 HPSR01 既有冻结有界修正。当前只有 canonical
+  implementation 和公开 synthetic 不变量验证；独立评价、真实 bootstrap、训练、
+  alpha 搜索与边界重估均未执行。当前完整账单只到 `2026-04`，首个独立起点预计仍缺
+  `2026-05`、`2026-06`；prospective final holdout 必须保持未打开，active
+  candidate、自动化批准和 production 权限继续为空。未来执行需要新的明确授权。
 
 ## Git 与提交规则
 

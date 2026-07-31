@@ -413,6 +413,10 @@ export function renderM2ModelCatalog(registry) {
     "",
     ...renderCurrentRoles(registry),
     "",
+    "## 当前科学解释与执行边界",
+    "",
+    registry.currentRoles.roleInterpretationZh,
+    "",
     "## 持久模型与模型族",
     "",
     "| 能力 | 类型 | 中文名称（英文原名、稳定 ID） | 旧 ID / 别名 | 当前角色（机器状态） | 谱系 |",
@@ -744,6 +748,10 @@ function roleZh(role) {
       "已实现并等待独立评价",
     retrospective_development_unsupported_stop_before_independent_k2:
       "回溯开发评价不支持并在独立评价前停止",
+    contract_unsupported_scientifically_inconclusive_interpretation_amended:
+      "原合同不支持保持，科学解释修订为证据不足",
+    preregistered_independent_candidate_not_executed_not_active:
+      "独立评价候选已预注册但尚未执行且未激活",
     archive_only_failed_model: "仅历史审计且已失败"
   }[role] ?? "登记角色";
 }
@@ -801,6 +809,20 @@ function resultStatusZh(value) {
         + "UNSUPPORTED_STOP_BEFORE_K2"
   ) {
     return "头部保护分段路由回溯开发评价不支持并在独立评价前停止";
+  }
+  if (
+    value
+      === "M2_HPSR02_POST_HOC_INSPIRED_PROSPECTIVELY_"
+        + "PREREGISTERED_AWAITING_INDEPENDENT_DATA"
+  ) {
+    return "头部保护尾段修正由事后诊断启发并已前瞻预注册，等待独立数据";
+  }
+  if (
+    value
+      === "M2_HPSR01_INTERPRETATION_AMENDED_HPSR02_"
+        + "PREREGISTERED_AWAITING_INDEPENDENT_DATA"
+  ) {
+    return "HPSR01 科学解释已修订且 HPSR02 已预注册，等待独立数据";
   }
   if (value === "OA03_CURRENT_SCOPE_PERFORMANCE_NOT_EVALUABLE") {
     return "主要参考不可合法重建，当前性能不可评价";

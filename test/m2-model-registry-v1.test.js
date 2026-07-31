@@ -34,11 +34,11 @@ test("registry schema, evidence paths and immutable digests validate", () => {
     canonicalEvidenceSha256("same\r\ncontent\r\n"),
     canonicalEvidenceSha256("same\ncontent\n")
   );
-  assert.equal(validation.counts.modelCount, 34);
-  assert.equal(validation.counts.experimentCount, 21);
-  assert.equal(validation.counts.nonModelIdentifierCount, 113);
+  assert.equal(validation.counts.modelCount, 35);
+  assert.equal(validation.counts.experimentCount, 22);
+  assert.equal(validation.counts.nonModelIdentifierCount, 123);
   assert.equal(validation.counts.evaluationCount, 112);
-  assert.equal(validation.counts.comparabilityGroupCount, 58);
+  assert.equal(validation.counts.comparabilityGroupCount, 59);
 });
 
 test("stable model IDs and model aliases are unique", () => {
@@ -227,7 +227,7 @@ test("core legacy population test records non-confirmation without promotion", (
   );
   assert.equal(
     registry.currentRoles.latestStateIndex,
-    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.52.md"
+    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.53.md"
   );
   assert.equal(registry.currentRoles.activeCandidate, null);
   assert.equal(registry.currentRoles.approvedForAutomation, null);
@@ -364,7 +364,7 @@ test("HCRC01 first complete failure is frozen without promotion", () => {
   assert.equal(registry.currentRoles.approvedForAutomation, null);
 });
 
-test("HPSR01 first retrospective result is frozen unsupported without promotion", () => {
+test("HPSR01 frozen result is preserved while interpretation is amended", () => {
   const model = registry.models.find(
     (item) => item.stableModelId === "M2-WORK-HPSR01"
   );
@@ -377,16 +377,17 @@ test("HPSR01 first retrospective result is frozen unsupported without promotion"
 
   assert.equal(
     model.currentRole,
-    "retrospective_development_unsupported_stop_before_independent_k2"
+    "contract_unsupported_scientifically_inconclusive_interpretation_amended"
   );
   assert.equal(
     model.operationalStatus,
-    "retrospective_development_unsupported_not_selected_not_production_independent_k2_stopped"
+    "original_contract_unsupported_not_selected_not_production_hpsr02_preregistered"
   );
   assert.deepEqual(
     model.predecessorIds,
     ["M2-WORK-LG01", "M2-WORK-CHAM01", "M2-WORK-HCRC01"]
   );
+  assert.deepEqual(model.successorIds, ["M2-WORK-HPSR02"]);
   assert.equal(model.evaluations.length, 1);
   assert.equal(
     model.evaluations[0].comparableGroupId,
@@ -414,6 +415,11 @@ test("HPSR01 first retrospective result is frozen unsupported without promotion"
     experiment.resultStatus,
     "M2_HPSR01_RETROSPECTIVE_DEVELOPMENT_UNSUPPORTED_STOP_BEFORE_K2"
   );
+  assert.equal(
+    experiment.scientificInterpretationStatus,
+    "M2_HPSR01_CONTRACT_UNSUPPORTED_SCIENTIFICALLY_INCONCLUSIVE"
+  );
+  assert.equal(experiment.interpretationAmended, true);
   assert.equal(experiment.k1CanonicalImplementationComplete, true);
   assert.equal(experiment.k1PublicSyntheticValidationComplete, true);
   assert.equal(experiment.k2PrivateEvaluationAuthorized, false);
@@ -443,6 +449,54 @@ test("HPSR01 first retrospective result is frozen unsupported without promotion"
   assert.equal(experiment.outerOutcomeRead, false);
   assert.equal(experiment.eligibleLaterOriginCount, 0);
   assert.equal(experiment.newFinalHoldoutOpened, false);
+  assert.equal(registry.currentRoles.activeExperiment, null);
+  assert.equal(registry.currentRoles.activeCandidate, null);
+  assert.equal(registry.currentRoles.approvedForAutomation, null);
+});
+
+test("HPSR02 is preregistered before independent outcome without promotion", () => {
+  const model = registry.models.find(
+    (item) => item.stableModelId === "M2-WORK-HPSR02"
+  );
+  const experiment = registry.experiments.find(
+    (item) => (
+      item.experimentId
+        === "M2-EXP-LG01-HEAD-PROTECTED-TAIL-BAND-CORRECTION-02"
+    )
+  );
+
+  assert.equal(
+    model.currentRole,
+    "preregistered_independent_candidate_not_executed_not_active"
+  );
+  assert.equal(
+    model.evidenceStatus,
+    "post_hoc_inspired_prospectively_preregistered_canonical_synthetic_verified_no_independent_outcome"
+  );
+  assert.deepEqual(model.evaluations, []);
+  assert.equal(model.automationAuthorized, false);
+  assert.equal(model.productionImported, false);
+  assert.equal(model.finalHoldoutOpened, false);
+  assert.deepEqual(
+    experiment.arms.map((arm) => arm.armId),
+    ["R0", "R1", "R2"]
+  );
+  assert.equal(
+    experiment.arms.every(
+      (arm) => arm.executionStatus === "PREREGISTERED_NOT_EXECUTED"
+    ),
+    true
+  );
+  assert.equal(
+    experiment.resultStatus,
+    "M2_HPSR02_POST_HOC_INSPIRED_PROSPECTIVELY_PREREGISTERED_AWAITING_INDEPENDENT_DATA"
+  );
+  assert.equal(experiment.k2PrivateEvaluationAuthorized, false);
+  assert.equal(experiment.k2Executed, false);
+  assert.equal(experiment.candidateOutcomeProduced, false);
+  assert.equal(experiment.rawCandidateEvidenceProduced, false);
+  assert.equal(experiment.independentOutcomeRead, false);
+  assert.equal(experiment.prospectiveFinalHoldoutOpened, false);
   assert.equal(registry.currentRoles.activeExperiment, null);
   assert.equal(registry.currentRoles.activeCandidate, null);
   assert.equal(registry.currentRoles.approvedForAutomation, null);
@@ -712,6 +766,19 @@ test("reader catalog is a deterministic complete rendering of the registry", asy
     catalog,
     /CG-HPSR01-RETROSPECTIVE-CORE80-STRICT-WORK-H3-2025-11/u
   );
+  assert.match(catalog, /M2-WORK-HPSR02/u);
+  assert.match(
+    catalog,
+    /M2-EXP-LG01-HEAD-PROTECTED-TAIL-BAND-CORRECTION-02/u
+  );
+  assert.match(
+    catalog,
+    /M2_HPSR01_CONTRACT_UNSUPPORTED_SCIENTIFICALLY_INCONCLUSIVE/u
+  );
+  assert.match(
+    catalog,
+    /CG-HPSR02-INDEPENDENT-LATER-ORIGIN-DYNAMIC-CORE80-WORK-H3/u
+  );
   assert.match(catalog, /eval-hcrc01-c2-core80-strict-h3-raw/u);
   assert.match(
     catalog,
@@ -730,10 +797,11 @@ test("reader catalog is a deterministic complete rendering of the registry", asy
 test("read-only query exposes scoped identities and refuses invalid ranking", () => {
   const list = runQuery("list");
   assert.equal(list.status, 0, list.stderr);
-  assert.match(list.stdout, /M2 持久模型与模型族：34 个/u);
+  assert.match(list.stdout, /M2 持久模型与模型族：35 个/u);
   assert.match(list.stdout, /M2-CHAN-GEN02/u);
   assert.match(list.stdout, /M2-WORK-CHAM01/u);
   assert.match(list.stdout, /M2-WORK-HPSR01/u);
+  assert.match(list.stdout, /M2-WORK-HPSR02/u);
 
   const status = runQuery("status");
   assert.equal(status.status, 0, status.stderr);
@@ -743,7 +811,11 @@ test("read-only query exposes scoped identities and refuses invalid ranking", ()
   assert.match(status.stdout, /没有复现历史数值/u);
   assert.match(status.stdout, /不是业务整体通过/u);
   assert.match(status.stdout, /M2-WORK-OA03/u);
-  assert.match(status.stdout, /回溯开发不支持/u);
+  assert.match(status.stdout, /原 v0\.1 合同结果继续是回溯开发不支持/u);
+  assert.match(
+    status.stdout,
+    /科学解释状态修订为[\s\S]*单起点、57 部作品的证据不足/u
+  );
   assert.match(
     status.stdout,
     /当前阻断实验：无（null）/u
