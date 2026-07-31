@@ -1,0 +1,124 @@
+{
+  "schema": "m2.current.head_protected_segmented_router.later_origin_availability.v0.1",
+  "asOf": "2026-07-31",
+  "experimentId": "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01",
+  "modelId": "M2-WORK-HPSR01",
+  "status": "M2_HEAD_PROTECTED_SEGMENTED_ROUTER_WAITING_FOR_NEW_BILLS",
+  "auditBoundary": {
+    "newFutureActualAmountsRead": false,
+    "newModelMetricsRead": false,
+    "modelFitRun": false,
+    "modelEvaluationRun": false,
+    "billFieldsRead": [
+      "billMonth"
+    ],
+    "historicalCacheFieldsUsed": [
+      "origin",
+      "horizonMonths",
+      "labelDateKeys",
+      "actual_nullness_only"
+    ]
+  },
+  "openedOriginLedger": {
+    "privateImmutableDateOnlyLedgerWritten": true,
+    "artifactClass": "PRIVATE_DERIVED_CACHE",
+    "rebuildableFromSourceAuthorityAndFrozenCode": true,
+    "historicalFeatureCacheOriginCount": 53,
+    "historicalFeatureCacheOriginRange": {
+      "from": "2017-08",
+      "through": "2026-02"
+    },
+    "historicalFrozenLg01CacheOriginCount": 45,
+    "historicalFrozenLg01CacheOriginRange": {
+      "from": "2019-08",
+      "through": "2026-02"
+    },
+    "maxPreviouslyOpenedOrigin": "2026-02",
+    "openedFutureActualThrough": "2026-05"
+  },
+  "billAvailability": {
+    "availableBillMonthRange": {
+      "from": "2013-09",
+      "through": "2026-05"
+    },
+    "latestCompleteMonth": "2026-04",
+    "incompleteMonths": [
+      {
+        "billMonth": "2026-05",
+        "factCount": 3
+      }
+    ],
+    "futureThreeMonthCompletenessRequired": true,
+    "unmaturedOrIncompleteLabelZeroImputationAllowed": false
+  },
+  "candidateInventory": {
+    "rule": "origin_strictly_after_max_previously_opened_and_all_three_future_bill_months_complete_and_previously_unread",
+    "eligibleLaterOrigins": [],
+    "eligibleLaterOriginCount": 0,
+    "nonoverlappingLaterOriginCount": 0,
+    "decisionClass": "NO_AVAILABLE_LATER_ORIGIN"
+  },
+  "historicalFinalHoldout": {
+    "sourceContract": "src/domain/oldProductEvaluation/calibrationSpec.v1.json",
+    "threeMonthOrigins": [
+      "2025-06",
+      "2025-12"
+    ],
+    "sourceContractModified": false,
+    "openedByThisAudit": false,
+    "previouslyOpenedByOtherM2Caches": true,
+    "eligibleAsUntouchedHpsrFinalHoldout": false,
+    "isolationStatus": "HISTORICAL_FINAL_HOLDOUT_ISOLATION_CONFLICT",
+    "interpretation": "The immutable historical contract remains evidence, but its three-month origins cannot be represented as untouched for this new experiment."
+  },
+  "futureReservation": {
+    "newFinalHoldoutOpened": false,
+    "earliestPotentialLaterOrigin": {
+      "origin": "2026-05",
+      "futureBillMonths": [
+        "2026-06",
+        "2026-07",
+        "2026-08"
+      ]
+    },
+    "oneLaterOriginPlusNonoverlappingFinalHoldout": {
+      "laterOrigin": "2026-05",
+      "reservedFinalHoldoutOrigin": "2026-08",
+      "reservedFinalHoldoutFutureBillMonths": [
+        "2026-09",
+        "2026-10",
+        "2026-11"
+      ],
+      "requiredCompleteLedgerThrough": "2026-11"
+    },
+    "twoNonoverlappingLaterOriginsPlusFinalHoldout": {
+      "laterOrigins": [
+        "2026-05",
+        "2026-08"
+      ],
+      "reservedFinalHoldoutOrigin": "2026-11",
+      "reservedFinalHoldoutFutureBillMonths": [
+        "2026-12",
+        "2027-01",
+        "2027-02"
+      ],
+      "requiredCompleteLedgerThrough": "2027-02"
+    },
+    "reservationIsExecutionAuthorization": false
+  },
+  "execution": {
+    "K0A": "COMPLETED_DATE_ONLY",
+    "K0B": "PENDING_AT_THIS_ARTIFACT",
+    "K1": "NOT_EXECUTED_WAITING_FOR_NEW_BILLS",
+    "K2": "NOT_EXECUTED_WAITING_FOR_NEW_BILLS",
+    "K3": "NOT_APPLICABLE_NO_FROZEN_RESULT",
+    "laterOriginConsumed": false,
+    "finalHoldoutConsumed": false
+  },
+  "evidenceRefs": [
+    "config/m2-current-human-anchored-later-origin.v0.1.json",
+    "docs/analysis/m2-current/M2-current-human-anchored-later-origin-readiness-v0.1.json",
+    "src/domain/oldProductEvaluation/calibrationSpec.v1.json",
+    "scripts/m2-current/audit_head_protected_segmented_router_dates.py"
+  ]
+}
