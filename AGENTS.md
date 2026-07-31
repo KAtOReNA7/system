@@ -254,6 +254,9 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
   禁止使用未来实际 TopN 形成候选人口或正式成绩。
 - 作品点预测、组合预测、排序/分配和风险区间属于不同能力，不得共享排行榜，也不得
   将 portfolio 结果分配回作品。
+- M2 业务验收必须分别标记作品总额（`WORK_TOTAL`）与作品×渠道
+  （`WORK_CHANNEL`）门禁；部分渠道证据不得写成完整渠道门禁，也不得用来反推作品
+  总额。状态与缺口数值的唯一权威是 `config/m2-business-acceptance-contract.v1.json`。
 - 不同目标、粒度、人口、horizon、评价窗口、actual 定义或评价家族的成绩不得直接
   排名；只允许同人口或明确 same-case intersection 的配对比较。
 - operational fallback、research baseline、candidate、blocked、failed 和

@@ -17,6 +17,14 @@ const contract = JSON.parse(readFileSync(
   "utf8"
 ));
 
+const report = readFileSync(
+  new URL(
+    "../docs/analysis/m2-current/M2-business-acceptance-contract-v1.md",
+    import.meta.url
+  ),
+  "utf8"
+);
+
 test("M2 business acceptance v1 freezes scope, caps and roles", () => {
   assert.equal(validateM2BusinessAcceptanceContract(contract), true);
   assert.equal(
@@ -59,6 +67,65 @@ test("M2 business acceptance v1 freezes scope, caps and roles", () => {
     true
   );
   assert.equal(contract.h60.currentM2Gate, false);
+});
+
+test("work-total and work-channel gates are independently queryable", () => {
+  const { workTotalGate, workChannelGate } = contract.grainGates;
+  assert.equal(
+    contract.grainGates.contractStatusDoesNotCollapseGrains,
+    true
+  );
+  assert.deepEqual(
+    [workTotalGate.grain, workTotalGate.status],
+    ["WORK_TOTAL", "ACTIVE_FOR_DEVELOPMENT_EVALUATION_ONLY"]
+  );
+  assert.deepEqual(workTotalGate.horizonMonths, [3, 6, 12, 36]);
+  assert.equal(
+    workTotalGate.h36HistoricalEvidenceCaveat,
+    contract.h36Evidence.historicalEvidenceCaveat
+  );
+  assert.equal(workTotalGate.workChannelCompletenessRequired, false);
+  assert.deepEqual(
+    [workChannelGate.grain, workChannelGate.status],
+    ["WORK_CHANNEL", "PARTIAL_NOT_ACTIVE"]
+  );
+  assert.equal(
+    workChannelGate.reason,
+    "MISSING_ELIGIBLE_CHANNEL_COMPONENTS"
+  );
+  assert.equal(workChannelGate.completeH36ValidationClaimAllowed, false);
+  assert.equal(workChannelGate.workTotalBaselineAffected, false);
+});
+
+test("work-channel gap counts are anchored to frozen machine evidence", () => {
+  const reconstruction = contract.h36Evidence.firstLegalReconstruction;
+  const channelGate = contract.grainGates.workChannelGate;
+  assert.equal(reconstruction.partialChannelDecompositionCaseCount, 633);
+  assert.equal(reconstruction.missingEligibleChannelComponentCount, 914);
+  assert.equal(
+    channelGate.missingCaseCount,
+    reconstruction.partialChannelDecompositionCaseCount
+  );
+  assert.equal(
+    channelGate.missingComponentCount,
+    reconstruction.missingEligibleChannelComponentCount
+  );
+  assert.equal(
+    channelGate.missingCaseCountAuthorityPath,
+    "h36Evidence.firstLegalReconstruction.partialChannelDecompositionCaseCount"
+  );
+  assert.equal(
+    channelGate.missingComponentCountAuthorityPath,
+    "h36Evidence.firstLegalReconstruction.missingEligibleChannelComponentCount"
+  );
+});
+
+test("public contract report does not claim complete channel validation", () => {
+  assert.match(report, /作品总额门禁（`WORK_TOTAL`）/u);
+  assert.match(report, /作品×渠道门禁（`WORK_CHANNEL`）/u);
+  assert.match(report, /`PARTIAL_NOT_ACTIVE`/u);
+  assert.match(report, /633 个 case[^\n]*914 个 eligible-channel 组件/u);
+  assert.match(report, /不得解释为[^\n]*作品×渠道[^\n]*完整验证/u);
 });
 
 test("candidate superiority is an AND rule with head protection", () => {

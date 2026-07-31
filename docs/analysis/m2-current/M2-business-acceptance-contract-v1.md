@@ -10,13 +10,24 @@
 
 `M2_BUSINESS_ACCEPTANCE_CONTRACT_V1_ACTIVE_FOR_DEVELOPMENT_ONLY`
 
-- 3、6、12 个月周期（H3/H6/H12）已固化为仅限开发评价的门禁。
+- 作品总额门禁（`WORK_TOTAL`）与作品×渠道门禁（`WORK_CHANNEL`）是两个独立、
+  可分别机器查询的对象；顶层合同状态不得替代任一粒度状态。
+
+| 门禁对象 | 粒度 | 状态 | 当前含义 |
+|---|---|---|---|
+| `workTotalGate` | `WORK_TOTAL` | `ACTIVE_FOR_DEVELOPMENT_EVALUATION_ONLY` | Core80 的 3/6/12/36 个月作品总额门禁已激活，仅限开发评价 |
+| `workChannelGate` | `WORK_CHANNEL` | `PARTIAL_NOT_ACTIVE` | 36 个月渠道分解缺少 eligible-channel 组件，未形成完整渠道门禁 |
+
+- 3、6、12 个月周期（H3/H6/H12）作品总额已固化为仅限开发评价的门禁。
 - 36 个月周期（H36）已从源权威精确重建作品级模型
   `M2-WORK-LG01`（Human-Anchored Learned Global，人工锚定可学习全局模型）
-  的冻结同案例基线，并激活为仅限开发评价的门禁。
+  的冻结同案例基线，并激活为仅限开发评价的作品总额门禁。
 - H36 永久携带
   `HISTORICAL_MULTI_ORIGIN_NOT_PROSPECTIVE_VALIDATION`；当前独立时间证据仍为
   `INDEPENDENT_TIME_EVIDENCE_INSUFFICIENT`。
+- H36 作品×渠道分解有 633 个 case 缺少 914 个 eligible-channel 组件，因此
+  渠道门禁为 `PARTIAL_NOT_ACTIVE`，原因是
+  `MISSING_ELIGIBLE_CHANNEL_COMPONENTS`；不得解释为渠道级完整验证。
 - H36 的 H50/M30/L20 头部现金带已经可精确评价，但它们不构成第二套 Core90
   分带，也不自动证明任何未来候选优于基线。
 - 本轮没有训练、拟合、调参、模型选择、模型晋升或新候选执行；没有执行头部保护
@@ -27,9 +38,9 @@
 
 | 层次 | 当前结论 |
 |---|---|
-| 已实现 | 合同、可移植缓存重建入口、精确作品总额行、现金带和聚焦测试已实现 |
-| 已验证 | 历史公开聚合精确复现；Core80 H36 双门限通过；双平台 CI 已验证评价执行 HEAD |
-| 已授权 | 仅授权 development evaluation 和确定性派生缓存重建 |
+| 已实现 | 合同、可移植缓存重建入口、精确作品总额行、现金带、独立粒度门禁和聚焦测试已实现 |
+| 已验证 | 历史公开聚合精确复现；Core80 H36 作品总额双门限通过；渠道缺口与冻结机器证据一致 |
+| 已授权 | 仅授权作品总额 development evaluation 和确定性派生缓存重建 |
 | 可发布 | 否；不授权 production、automation、release、财务承诺或 PR 合并 |
 
 ## 2. 范围、人口与 actual
@@ -50,7 +61,7 @@
 总收入补差都不属于当前 M2。作品级、组合级、排序分配和风险区间能力不得混为一个
 排行榜。
 
-## 3. 业务可用性门限
+## 3. 作品总额业务可用性门限
 
 | 周期 | Core80 WAPE 上限 | Core80 绝对 signed bias 上限 | 状态 |
 |---|---:|---:|---|
@@ -59,9 +70,11 @@
 | 12 个月（H12） | 0.35 | 0.12 | `ACTIVE_FOR_DEVELOPMENT_EVALUATION_ONLY` |
 | 36 个月（H36） | 0.40 | 0.12 | `ACTIVE_FOR_DEVELOPMENT_EVALUATION_ONLY_WITH_HISTORICAL_NON_PROSPECTIVE_CAVEAT` |
 
-业务可用性只回答“绝对预测误差是否进入当前业务可接受范围”。它不回答候选是否优于
-既有模型。60 个月周期（H60）只保留为未来 M3 新品预测的低置信成熟目录情景参考，
-不参加当前 M2 门禁或排名，本合同不实现 H60 模型，也不预测未来具体新作品。
+上表只定义作品总额门禁（`WORK_TOTAL`），不表示作品×渠道门禁
+（`WORK_CHANNEL`）已激活。业务可用性只回答“作品总额绝对预测误差是否进入当前业务
+可接受范围”，不回答候选是否优于既有模型。60 个月周期（H60）只保留为未来 M3
+新品预测的低置信成熟目录情景参考，不参加当前 M2 门禁或排名，本合同不实现 H60
+模型，也不预测未来具体新作品。
 
 ## 4. 候选优越性是 AND 规则
 
@@ -113,7 +126,7 @@ LG01 历史特征和原始 H36 案例，随后使用公开冻结的五折参数�
 `SOURCE_AUTHORITY_AVAILABLE`。重建后状态为
 `CACHE_MISS_REBUILT_FROM_SOURCE_AUTHORITY`。
 
-## 6. H36 聚合复现与业务门禁
+## 6. H36 作品总额聚合复现与业务门禁
 
 固定复现容差为绝对 `1e-7`、相对 `1e-9`。Core80 与 Core90 均在该容差内精确
 复现既有公开审计权威，状态为
@@ -125,14 +138,14 @@ LG01 历史特征和原始 H36 案例，随后使用公开冻结的五折参数�
 | Core90 敏感性 | 13 | 1,030 | 138 | 323,669,098.2617 | 110,499,208.4403 | 0.3413956075 | 0.0957459602 | 0.0761078061 | 0.5163300001 |
 
 Core80 的 WAPE 0.2973303981 小于 0.40，绝对 signed bias 0.0956889461 小于
-0.12，因此 H36 业务可用性双门限通过。Core90 的 nonfinite 和负预测计数均为 0，
-数值合同合法；其角色仍是非否决敏感性披露。
+0.12，因此 H36 作品总额业务可用性双门限通过。Core90 的 nonfinite 和负预测计数
+均为 0，数值合同合法；其角色仍是非否决敏感性披露。
 
-这只是 H36 历史 development-only 业务可用性通过，不是 prospective validation，
-也不是候选优越性结论。13 个历史滚动起点的结果窗口重叠，不能被写成 13 份独立
-证据。
+这只是 H36 历史 development-only 作品总额业务可用性通过，不是作品×渠道完整
+验证、prospective validation 或候选优越性结论。13 个历史滚动起点的结果窗口
+重叠，不能被写成 13 份独立证据。
 
-## 7. H50/M30/L20 头部现金证据
+## 7. H50/M30/L20 作品总额头部现金证据
 
 现金带只在每个起点的动态 Core80 内，以起点可见的 trailing-12 分成现金排序；
 边界作品整体留在较高现金带，不读取未来 actual。Core90 不重新定义第二套现金带。
@@ -155,10 +168,12 @@ Core90 冻结行，没有缺失历史、nonfinite 预测或负预测。作品总
 LG01 作品行的精确重建，不由不完整的渠道组件反推。
 
 渠道级分解存在透明限制：633 个 case 合计缺少 914 个 eligible-channel 组件。
-因此渠道级证据状态为
+机器可查询的作品×渠道门禁（`workChannelGate`，`WORK_CHANNEL`）因此为
+`PARTIAL_NOT_ACTIVE`，原因为 `MISSING_ELIGIBLE_CHANNEL_COMPONENTS`。冻结重建记录
+继续保留原渠道证据状态
 `PARTIAL_DISCLOSED_NOT_USED_TO_DEFINE_WORK_TOTAL_BASELINE`。这不会删除或改变完整
-作品总额基线，也不会伪造成完整渠道证据。当前合同的 H36 业务门禁和 H50/M30/L20
-均在作品总额层定义。
+作品总额基线；作品总额门禁不依赖这些不完整渠道组件反推。当前合同的 H36 门禁和
+H50/M30/L20 均在作品总额层定义，不得解释为“H36 作品×渠道预测已完整验证”。
 
 私有精确行足以支持未来已授权候选的 exact same-case join、现金带误差、每起点
 WAPE/bias、每起点误差减少、最大作品/Top10 集中度、整作品 bootstrap 和时间块
@@ -189,9 +204,13 @@ WAPE/bias、每起点误差减少、最大作品/Top10 集中度、整作品 boo
 - later-origin、final holdout、Canary/full160、production、automation、release；
 - M3 formal、生产 route/API 或 PR 合并。
 
-本轮计数全部为 0：模型训练 0、拟合 0、调参 0、模型选择 0、新候选执行 0、
-HPSR02 独立评价 0。`laterOriginRead=false`，
-`finalHoldoutRead=false`，`privateIdentityPublished=false`。
+合同字段本身不授权 PR 合并；本次 PR 收口如发生，只能来自当前用户在独立任务中的
+明确授权，并且不改变上述模型、数据与发布边界。
+
+本次粒度澄清只读取公开合同、报告和测试；private actual/row 读取 0。模型训练 0、
+拟合 0、调参 0、模型选择 0、新候选执行 0、HPSR02 独立评价 0。
+`laterOriginRead=false`，`finalHoldoutRead=false`，
+`privateIdentityPublished=false`。
 
 ## 11. 验证与 Git 状态
 
@@ -203,21 +222,21 @@ HPSR02 独立评价 0。`laterOriginRead=false`，
 - `npm run lint`：通过，477 个 JavaScript 文件与 312 条 package script
   生命周期通过；
 - `npm run build`：通过；
-- `npm test`：1,035/1,035 通过；
+- `npm test`：1,038/1,038 通过；
 - `npm run smoke`：通过，fixture 启动且 `realDataImported=false`；
 - `npm run smoke:portable-start`：formal 与 fixture 均通过，均不依赖 private；
 - `npm run test:e2e`：13/13 通过；
 - `npm run verify:m2:current`：通过，公开诊断未读取 private source。
 
-聚焦合同测试 7/7 通过，覆盖合同 schema、四周期上限、Core80/Core90 角色、候选
-优越性 AND 规则、重叠起点非独立、现金带仅用起点可见 trailing-12、L20 不得掩盖
-H50、缓存/receipt/source 三类边界、私有身份不进入公开合同，以及冻结后零训练与
-零保留窗口读取。
+聚焦合同测试 10/10 通过，覆盖独立作品总额/作品×渠道门禁查询、633/914 缺口与
+冻结机器证据绑定、报告不宣称渠道完整验证、合同 schema、四周期上限、
+Core80/Core90 角色、候选优越性 AND 规则、重叠起点非独立、现金带仅用起点可见
+trailing-12、L20 不得掩盖 H50、缓存/receipt/source 三类边界、私有身份不进入
+公开合同，以及冻结后零训练与零保留窗口读取。
 
-交付时已从 GitHub 远端活动分支的精确 HEAD 建立匿名 HTTPS、无 private、无凭据
-的新克隆；该克隆的 `npm ci` 成功、npm 审计为 0 个漏洞，并重复通过上述完整公共
-基线。同一精确 HEAD 的 Linux `verify` 与 Windows `verify-windows` 均成功。
-动态提交 SHA 和最终 CI run 由 Draft PR #35 与最终交付记录绑定，不作为数值合同
-的未来执行条件。PR 保持 Open + Draft + Unmerged，本任务不合并。
+交付时必须从 GitHub 远端活动分支的精确 HEAD 建立匿名 HTTPS、无 private、无凭据
+的新克隆，重复上述完整公共基线，并等待同一精确 HEAD 的 Linux `verify` 与
+Windows `verify-windows` 成功后才可合并。动态提交 SHA、CI run 和 PR 合并提交由
+PR 与最终交付记录绑定，不写入数值合同，也不作为未来执行条件。
 
 H36 科学结果已经冻结；上述后续动作只验证公开代码、合同和文档，不得再次重评分。

@@ -47,6 +47,41 @@
       "contractIllegalOutputStillFails": true
     }
   },
+  "grainGates": {
+    "contractStatusDoesNotCollapseGrains": true,
+    "workTotalGate": {
+      "grain": "WORK_TOTAL",
+      "status": "ACTIVE_FOR_DEVELOPMENT_EVALUATION_ONLY",
+      "horizonMonths": [
+        3,
+        6,
+        12,
+        36
+      ],
+      "horizonStatusAuthorityPath": "businessUsability.horizons",
+      "h36HistoricalEvidenceCaveatAuthorityPath": "h36Evidence.historicalEvidenceCaveat",
+      "h36HistoricalEvidenceCaveat": "HISTORICAL_MULTI_ORIGIN_NOT_PROSPECTIVE_VALIDATION",
+      "workChannelCompletenessRequired": false,
+      "productionAuthorization": false,
+      "automationAuthorization": false,
+      "releaseAuthorization": false,
+      "financialCommitment": false
+    },
+    "workChannelGate": {
+      "grain": "WORK_CHANNEL",
+      "status": "PARTIAL_NOT_ACTIVE",
+      "reason": "MISSING_ELIGIBLE_CHANNEL_COMPONENTS",
+      "horizonMonths": [
+        36
+      ],
+      "missingCaseCount": 633,
+      "missingComponentCount": 914,
+      "missingCaseCountAuthorityPath": "h36Evidence.firstLegalReconstruction.partialChannelDecompositionCaseCount",
+      "missingComponentCountAuthorityPath": "h36Evidence.firstLegalReconstruction.missingEligibleChannelComponentCount",
+      "completeH36ValidationClaimAllowed": false,
+      "workTotalBaselineAffected": false
+    }
+  },
   "businessUsability": {
     "question": "IS_ABSOLUTE_FORECAST_ERROR_WITHIN_CURRENT_BUSINESS_ACCEPTANCE_CAPS",
     "separateFromCandidateSuperiority": true,
