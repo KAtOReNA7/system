@@ -371,6 +371,8 @@ function roleZh(value) {
       "探索性候选已实现并通过合成验证但尚未执行",
     implemented_awaiting_independent_evaluation:
       "已实现并等待独立评价",
+    retrospective_development_unsupported_stop_before_independent_k2:
+      "回溯开发评价不支持并在独立评价前停止",
     archive_only_failed_model: "仅历史审计且已失败"
   }[value] ?? "登记角色";
 }
@@ -441,6 +443,13 @@ function resultStatusZh(value) {
         + "IMPLEMENTED_AWAITING_LATER_ORIGIN_DATA"
   ) {
     return "头部保护分段路由已实现并等待独立 later-origin 数据";
+  }
+  if (
+    value
+      === "M2_HPSR01_RETROSPECTIVE_DEVELOPMENT_"
+        + "UNSUPPORTED_STOP_BEFORE_K2"
+  ) {
+    return "头部保护分段路由回溯开发评价不支持并在独立评价前停止";
   }
   if (value === "HORIZON_ROUTER_NOT_CONFIRMED") {
     return "按预测周期滚动模型路由未确认";

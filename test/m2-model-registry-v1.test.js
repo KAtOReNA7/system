@@ -36,9 +36,9 @@ test("registry schema, evidence paths and immutable digests validate", () => {
   );
   assert.equal(validation.counts.modelCount, 34);
   assert.equal(validation.counts.experimentCount, 21);
-  assert.equal(validation.counts.nonModelIdentifierCount, 110);
-  assert.equal(validation.counts.evaluationCount, 111);
-  assert.equal(validation.counts.comparabilityGroupCount, 57);
+  assert.equal(validation.counts.nonModelIdentifierCount, 113);
+  assert.equal(validation.counts.evaluationCount, 112);
+  assert.equal(validation.counts.comparabilityGroupCount, 58);
 });
 
 test("stable model IDs and model aliases are unique", () => {
@@ -95,10 +95,7 @@ test("current roles retain fallback, research baseline and no automation promoti
     registry.currentRoles.coreLegacyHorizonAmountResearchComparator,
     "M2-WORK-LG01"
   );
-  assert.equal(
-    registry.currentRoles.activeExperiment,
-    "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01"
-  );
+  assert.equal(registry.currentRoles.activeExperiment, null);
   assert.equal(registry.currentRoles.blockedExperiment, null);
   assert.match(
     registry.currentRoles.roleInterpretationZh,
@@ -230,7 +227,7 @@ test("core legacy population test records non-confirmation without promotion", (
   );
   assert.equal(
     registry.currentRoles.latestStateIndex,
-    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.51.md"
+    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.52.md"
   );
   assert.equal(registry.currentRoles.activeCandidate, null);
   assert.equal(registry.currentRoles.approvedForAutomation, null);
@@ -301,10 +298,7 @@ test("CHAM01 first complete result is failed, frozen and not promoted", () => {
     true
   );
   assert.equal(experiment.secondResultExecuted, false);
-  assert.equal(
-    registry.currentRoles.activeExperiment,
-    "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01"
-  );
+  assert.equal(registry.currentRoles.activeExperiment, null);
   assert.equal(registry.currentRoles.activeCandidate, null);
   assert.equal(registry.currentRoles.approvedForAutomation, null);
 });
@@ -370,7 +364,7 @@ test("HCRC01 first complete failure is frozen without promotion", () => {
   assert.equal(registry.currentRoles.approvedForAutomation, null);
 });
 
-test("HPSR01 K1 is implemented awaiting independent evaluation without outcome", () => {
+test("HPSR01 first retrospective result is frozen unsupported without promotion", () => {
   const model = registry.models.find(
     (item) => item.stableModelId === "M2-WORK-HPSR01"
   );
@@ -383,17 +377,32 @@ test("HPSR01 K1 is implemented awaiting independent evaluation without outcome",
 
   assert.equal(
     model.currentRole,
-    "implemented_awaiting_independent_evaluation"
+    "retrospective_development_unsupported_stop_before_independent_k2"
   );
   assert.equal(
     model.operationalStatus,
-    "implemented_public_synthetic_verified_not_independently_evaluated_not_selected_not_production"
+    "retrospective_development_unsupported_not_selected_not_production_independent_k2_stopped"
   );
   assert.deepEqual(
     model.predecessorIds,
     ["M2-WORK-LG01", "M2-WORK-CHAM01", "M2-WORK-HCRC01"]
   );
-  assert.deepEqual(model.evaluations, []);
+  assert.equal(model.evaluations.length, 1);
+  assert.equal(
+    model.evaluations[0].comparableGroupId,
+    "CG-HPSR01-RETROSPECTIVE-CORE80-STRICT-WORK-H3-2025-11"
+  );
+  assert.equal(model.evaluations[0].caseCount, 57);
+  assert.equal(model.evaluations[0].workCount, 57);
+  assert.equal(model.evaluations[0].originCount, 1);
+  assert.equal(model.evaluations[0].WAPE, 0.14201942459219122);
+  assert.equal(model.evaluations[0].signedBias, -0.08733276491879227);
+  assert.equal(model.evaluations[0].relativeWape, 0.00847712522619727);
+  assert.equal(model.evaluations[0].independentEvidence, false);
+  assert.equal(
+    model.evaluations[0].resultStatus,
+    "M2_HPSR01_RETROSPECTIVE_DEVELOPMENT_UNSUPPORTED_STOP_BEFORE_K2"
+  );
   assert.equal(model.automationAuthorized, false);
   assert.equal(model.productionImported, false);
   assert.equal(model.finalHoldoutOpened, false);
@@ -403,31 +412,38 @@ test("HPSR01 K1 is implemented awaiting independent evaluation without outcome",
   );
   assert.equal(
     experiment.resultStatus,
-    "M2_HEAD_PROTECTED_SEGMENTED_ROUTER_IMPLEMENTED_AWAITING_LATER_ORIGIN_DATA"
+    "M2_HPSR01_RETROSPECTIVE_DEVELOPMENT_UNSUPPORTED_STOP_BEFORE_K2"
   );
   assert.equal(experiment.k1CanonicalImplementationComplete, true);
   assert.equal(experiment.k1PublicSyntheticValidationComplete, true);
   assert.equal(experiment.k2PrivateEvaluationAuthorized, false);
+  assert.equal(experiment.k2ConditionallyAuthorizedByCurrentTask, true);
+  assert.equal(experiment.k2Executed, false);
+  assert.equal(experiment.k2StoppedByRetrospectiveUnsupported, true);
   assert.equal(
     experiment.arms.find((arm) => arm.armId === "R1").executionStatus,
-    "IMPLEMENTED_PUBLIC_SYNTHETIC_VERIFIED_REAL_LATER_ORIGIN_NOT_EXECUTED"
+    "RETROSPECTIVE_DEVELOPMENT_EVALUATED_UNSUPPORTED_STOP_BEFORE_K2"
   );
   assert.equal(
     experiment.arms
       .filter((arm) => arm.armId !== "R1")
       .every(
         (arm) => (
-          arm.executionStatus
-            === "REAL_LATER_ORIGIN_NOT_EXECUTED_AWAITING_AUTHORIZATION_AND_DATA"
+          /RETROSPECTIVE_DEVELOPMENT_EVALUATED/u.test(arm.executionStatus)
         )
       ),
     true
   );
-  assert.equal(experiment.candidateOutcomeProduced, false);
-  assert.equal(experiment.rawCandidateEvidenceProduced, false);
+  assert.equal(experiment.candidateOutcomeProduced, true);
+  assert.equal(experiment.rawCandidateEvidenceProduced, true);
+  assert.equal(experiment.firstCompleteOutcomeFrozen, true);
+  assert.equal(experiment.retrospectiveDevelopmentEvaluationExecuted, true);
+  assert.deepEqual(experiment.retrospectiveOrigins, ["2025-11"]);
+  assert.equal(experiment.retrospectiveIndependentEvidence, false);
   assert.equal(experiment.outerOutcomeRead, false);
   assert.equal(experiment.eligibleLaterOriginCount, 0);
   assert.equal(experiment.newFinalHoldoutOpened, false);
+  assert.equal(registry.currentRoles.activeExperiment, null);
   assert.equal(registry.currentRoles.activeCandidate, null);
   assert.equal(registry.currentRoles.approvedForAutomation, null);
 });
@@ -690,7 +706,11 @@ test("reader catalog is a deterministic complete rendering of the registry", asy
   );
   assert.match(
     catalog,
-    /M2_HEAD_PROTECTED_SEGMENTED_ROUTER_IMPLEMENTED_AWAITING_LATER_ORIGIN_DATA/u
+    /M2_HPSR01_RETROSPECTIVE_DEVELOPMENT_UNSUPPORTED_STOP_BEFORE_K2/u
+  );
+  assert.match(
+    catalog,
+    /CG-HPSR01-RETROSPECTIVE-CORE80-STRICT-WORK-H3-2025-11/u
   );
   assert.match(catalog, /eval-hcrc01-c2-core80-strict-h3-raw/u);
   assert.match(
@@ -718,18 +738,12 @@ test("read-only query exposes scoped identities and refuses invalid ranking", ()
   const status = runQuery("status");
   assert.equal(status.status, 0, status.stderr);
   assert.match(status.stdout, /本次只读查询模型执行次数：0/u);
-  assert.match(
-    status.stdout,
-    /当前实验：M2 LG01 头部保护分段路由与独立 later-origin 验证 v0\.1/u
-  );
+  assert.match(status.stdout, /当前实验：无（null）/u);
   assert.match(status.stdout, /兼容性现行运行回退模型/u);
   assert.match(status.stdout, /没有复现历史数值/u);
   assert.match(status.stdout, /不是业务整体通过/u);
   assert.match(status.stdout, /M2-WORK-OA03/u);
-  assert.match(
-    status.stdout,
-    /M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01/u
-  );
+  assert.match(status.stdout, /回溯开发不支持/u);
   assert.match(
     status.stdout,
     /当前阻断实验：无（null）/u

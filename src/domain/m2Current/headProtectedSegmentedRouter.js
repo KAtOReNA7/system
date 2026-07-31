@@ -836,6 +836,19 @@ export function evaluateHpsrRetrospectiveDevelopment({
     ));
     eligibleActualCashDenominator += eligibleActual;
     core80ActualCashDenominator += core80Actual;
+    const cashBandActualShares = Object.fromEntries(
+      HPSR_CASH_BAND_IDS.map((bandId) => {
+        const workIds = run.population.cashBandRows.filter(
+          (row) => row.bandId === bandId
+        ).map((row) => row.standardWorkId);
+        const absoluteActual = sum(workIds.map(
+          (standardWorkId) => Math.abs(
+            actualByWork.get(standardWorkId).actual
+          )
+        ));
+        return [bandId, ratioOrNull(absoluteActual, core80Actual)];
+      })
+    );
     for (const standardWorkId of core80Ids) {
       const actual = actualByWork.get(standardWorkId).actual;
       const r0 = r0ByWork.get(standardWorkId);
@@ -887,6 +900,7 @@ export function evaluateHpsrRetrospectiveDevelopment({
       origin,
       horizonMonths: 3,
       eligibleWorkCount: allActualRows.length,
+      caseCount: core80Ids.length,
       core80WorkCount: core80Ids.length,
       core80ActualCashShare: ratioOrNull(
         core80Actual,
@@ -895,7 +909,8 @@ export function evaluateHpsrRetrospectiveDevelopment({
       core80OriginVisibleCashCapture:
         run.population.core80ReferenceRevenueCapture,
       core80CutoffTieCount: run.population.core80CutoffTieCount,
-      cashBandWorkCounts: run.population.bandCounts
+      cashBandWorkCounts: run.population.bandCounts,
+      cashBandActualShares: Object.freeze(cashBandActualShares)
     }));
   }
   const orderedRows = privateRows.sort(compareRetrospectiveRows);
@@ -1449,6 +1464,11 @@ export function validateHeadProtectedSegmentedRouterContract(config) {
       "retrospective_development_unsupported_stop_before_k2"
     ].includes(config?.model?.registryRole)
   );
+  const k2ExecutionStatusValid = retrospectiveCompleted
+    && config?.experiment?.status === HPSR_RETROSPECTIVE_UNSUPPORTED_STATUS
+    ? config?.experiment?.K2
+      === "NOT_EXECUTED_STOPPED_BY_RETROSPECTIVE_UNSUPPORTED"
+    : config?.experiment?.K2 === HPSR_K2_WAITING_STATUS;
   if (
     config?.schema
       !== "m2.current.head_protected_segmented_router.v0.1"
@@ -1473,7 +1493,7 @@ export function validateHeadProtectedSegmentedRouterContract(config) {
   }
   if (
     config?.experiment?.K1 !== HPSR_K1_EXECUTION_STATUS
-    || config?.experiment?.K2 !== HPSR_K2_WAITING_STATUS
+    || !k2ExecutionStatusValid
     || config?.experiment?.outerOutcomeRead !== false
     || (!preOutcomeState && !completedRetrospectiveState)
   ) {
@@ -1493,7 +1513,7 @@ export function validateHeadProtectedSegmentedRouterContract(config) {
   if (
     config?.laterOriginQualification?.eligibleLaterOriginCount !== 0
     || config?.laterOriginQualification?.currentDecision
-      !== HPSR_IMPLEMENTED_STATUS
+      !== config?.experiment?.status
     || config?.laterOriginQualification
       ?.originMustBeStrictlyAfterMaxActualValueOpenedOrigin !== true
     || config?.laterOriginQualification

@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 
 import {
   HPSR_IMPLEMENTED_STATUS,
+  HPSR_RETROSPECTIVE_UNSUPPORTED_STATUS,
   validateHeadProtectedSegmentedRouterContract,
   validateHpsrImplementationReadiness,
   validateHpsrLaterOriginAvailability,
@@ -32,6 +33,9 @@ const implementationReadiness = readJson(
 );
 const retrospectiveReadiness = readJson(
   config.publicOutputs.retrospectiveReadinessJson
+);
+const retrospectiveEvaluation = readJson(
+  config.publicOutputs.retrospectiveEvaluationJson
 );
 
 if (!process.argv.includes("--verify")) {
@@ -68,6 +72,9 @@ const implementationReadinessReport = readText(
 const retrospectiveReadinessReport = readText(
   config.publicOutputs.retrospectiveReadinessReport
 );
+const retrospectiveEvaluationReport = readText(
+  config.publicOutputs.retrospectiveEvaluationReport
+);
 if (
   !report.includes(HPSR_IMPLEMENTED_STATUS)
   || !preregistration.includes(HPSR_IMPLEMENTED_STATUS)
@@ -79,7 +86,8 @@ if (
     prospectiveHoldoutReport,
     residualBoundReport,
     implementationReadinessReport,
-    retrospectiveReadinessReport
+    retrospectiveReadinessReport,
+    retrospectiveEvaluationReport
   ].some((value) => (
     value.includes("data/private-output/")
     || /[A-Z]:[\\/]/u.test(value)
@@ -96,9 +104,43 @@ if (
 ) {
   throw new Error("hpsr_retrospective_readiness_invalid");
 }
+const retrospectivePayload = JSON.stringify(retrospectiveEvaluation);
+if (
+  retrospectiveEvaluation?.status
+    !== HPSR_RETROSPECTIVE_UNSUPPORTED_STATUS
+  || retrospectiveEvaluation?.status !== config.experiment.status
+  || retrospectiveEvaluation?.execution?.retrospectiveActuallyExecuted
+    !== true
+  || retrospectiveEvaluation?.execution?.independentK2Executed !== false
+  || retrospectiveEvaluation?.execution?.prospectiveFinalHoldoutOpened
+    !== false
+  || retrospectiveEvaluation?.retrospective?.independentEvidence !== false
+  || retrospectiveEvaluation?.retrospective?.evaluation
+    ?.rawCandidateEvaluationCount !== 1
+  || retrospectiveEvaluation?.retrospective?.evaluation
+    ?.bootstrapExecutionCount !== 1
+  || retrospectiveEvaluation?.retrospective?.evaluation?.decision
+    ?.unsupportedTriggers?.absoluteBiasWorsenedMoreThanTwoPoints !== true
+  || retrospectiveEvaluation?.scientificExecutionCounts
+    ?.newModelTrainingCount !== 0
+  || retrospectiveEvaluation?.scientificExecutionCounts
+    ?.completeRetrospectiveEvaluationCount !== 1
+  || retrospectiveEvaluation?.scientificExecutionCounts
+    ?.independentK2EvaluationCount !== 0
+  || !retrospectiveEvaluationReport.includes(
+    HPSR_RETROSPECTIVE_UNSUPPORTED_STATUS
+  )
+  || !retrospectiveEvaluationReport.includes(
+    "absolute bias 相对 R0 恶化"
+  )
+  || /standardWorkId|channelUid|data[\\/]+private-(?:input|output)|[A-Z]:[\\/]/u
+    .test(retrospectivePayload)
+) {
+  throw new Error("hpsr_retrospective_public_result_invalid");
+}
 
 process.stdout.write(
-  "M2 HPSR K1 implementation, retrospective readiness, and conditional K2 readiness verified.\n"
+  "M2 HPSR K1, frozen retrospective unsupported result, K2 stop, and holdout isolation verified.\n"
 );
 
 function readJson(repositoryRelativePath) {

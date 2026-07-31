@@ -3,7 +3,7 @@
 ## 当前权威入口
 
 - 用户首页与公共开始入口：`README.md`
-- 当前 M2 状态：`docs/analysis/m2-v2/M2-v2-current-state-index-v0.51.md`
+- 当前 M2 状态：`docs/analysis/m2-v2/M2-v2-current-state-index-v0.52.md`
 - M2 模型机器权威：`config/m2-model-registry.v1.json`
 - M2 中文目录：`docs/analysis/m2-current/M2-model-catalog-and-scorecard-v1.md`
 - M2 出版行业规模适配渠道核心结论：
@@ -55,6 +55,8 @@
   - `docs/analysis/m2-current/M2-head-protected-segmented-router-k1-implementation-readiness-v0.1.md`
   - `docs/analysis/m2-current/M2-head-protected-segmented-router-retrospective-readiness-v0.1.json`
   - `docs/analysis/m2-current/M2-head-protected-segmented-router-retrospective-readiness-v0.1.md`
+  - `docs/analysis/m2-current/M2-head-protected-segmented-router-retrospective-development-v0.1.json`
+  - `docs/analysis/m2-current/M2-head-protected-segmented-router-retrospective-development-v0.1.md`
   - `docs/analysis/m2-current/M2-head-protected-segmented-router-preregistration-v0.1.md`
 - M2 评价体系：
   - `docs/analysis/m2-current/M2-evaluation-system-audit-v1.md`
@@ -274,14 +276,15 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
   final holdout、embargo、Canary/full160、release 或 M3 formal。只有当前用户任务
   的明确授权才能打开对应能力，且授权不跨任务自动延续。
 - LG01 头部保护分段路由模型 v0.1（`M2-WORK-HPSR01`）已完成 K1 canonical
-  implementation 与公开 synthetic 验证。本轮已经冻结回溯人口、固定 B3 参数、
-  2,000 次作品 cluster bootstrap 和 supported/mixed/unsupported 判断合同，并
-  授权一次此前已打开 outcome 的回溯开发评价。动态审计只纳入 `2025-11`；
-  `2025-12` 继续作为历史隔离 outcome，不得复用。独立 K2 已获本任务条件式授权，
-  但只有 fresh audit 证明 first independent origin 三个月账单完整且回溯不为
-  unsupported 时才可使用；当前完整账单只到 `2026-04`，因此 K2 仍不可执行。
-  prospective final holdout 必须保持未打开。回溯不属于独立证据，不得建立
-  active candidate、自动化批准或 production 权限。
+  implementation、公开 synthetic 验证和唯一一次真实回溯开发评价。动态审计只纳入
+  `2025-11`；57 个同案例中 R1 相对 R0 的 paired FVA 为 0.8477%，bootstrap
+  95% 区间跨 0，absolute bias 恶化 2.0358 个百分点并越过预冻结失败护栏。首个
+  完整结果已冻结为
+  `M2_HPSR01_RETROSPECTIVE_DEVELOPMENT_UNSUPPORTED_STOP_BEFORE_K2`，该证据不是
+  独立 later-origin。独立 K2 未执行：当前完整账单只到 `2026-04`，仍缺
+  `2026-05`、`2026-06`，并且回溯不支持已经触发 K2 前停止。不得等待账单后自动
+  恢复、重跑或开发下一模型；prospective final holdout 必须保持未打开，active
+  candidate、自动化批准和 production 权限继续为空。
 
 ## Git 与提交规则
 

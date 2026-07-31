@@ -742,6 +742,8 @@ function roleZh(role) {
       "探索性候选已实现并通过合成验证但尚未执行",
     implemented_awaiting_independent_evaluation:
       "已实现并等待独立评价",
+    retrospective_development_unsupported_stop_before_independent_k2:
+      "回溯开发评价不支持并在独立评价前停止",
     archive_only_failed_model: "仅历史审计且已失败"
   }[role] ?? "登记角色";
 }
@@ -749,6 +751,8 @@ function roleZh(role) {
 function comparisonClassZh(value) {
   return {
     SAME_CASE_COMPARABLE: "同案例可比",
+    SAME_CASE_COMPARABLE_RETROSPECTIVE_DEVELOPMENT:
+      "回溯开发同案例可比（非独立证据）",
     SAME_INTERSECTION_COMPARABLE: "仅相同案例交集可比",
     REUSED_DEVELOPMENT_WINDOW: "复用开发窗口",
     DIFFERENT_GRAIN_NOT_COMPARABLE: "粒度不同，不可直接比较",
@@ -790,6 +794,13 @@ function resultStatusZh(value) {
         + "IMPLEMENTED_AWAITING_LATER_ORIGIN_DATA"
   ) {
     return "头部保护分段路由已实现并等待独立 later-origin 数据";
+  }
+  if (
+    value
+      === "M2_HPSR01_RETROSPECTIVE_DEVELOPMENT_"
+        + "UNSUPPORTED_STOP_BEFORE_K2"
+  ) {
+    return "头部保护分段路由回溯开发评价不支持并在独立评价前停止";
   }
   if (value === "OA03_CURRENT_SCOPE_PERFORMANCE_NOT_EVALUABLE") {
     return "主要参考不可合法重建，当前性能不可评价";

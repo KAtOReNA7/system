@@ -73,7 +73,7 @@
     "approvedForAutomation": null,
     "activeCandidate": null,
     "blockedExperiment": null,
-    "latestStateIndex": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.51.md",
+    "latestStateIndex": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.52.md",
     "roleConflict": false,
     "sourceAssertions": [
       {
@@ -230,11 +230,19 @@
         "assertion": "hpsr01_canonical_implementation_and_public_synthetic_validation_complete_without_later_origin_outcome",
         "scope": "public_k1_implementation_and_synthetic_validation",
         "historicalAssertion": false,
+        "currentAuthority": false,
+        "supersededBy": "docs/analysis/m2-current/M2-head-protected-segmented-router-retrospective-development-v0.1.json"
+      },
+      {
+        "source": "docs/analysis/m2-current/M2-head-protected-segmented-router-retrospective-development-v0.1.json",
+        "assertion": "hpsr01_first_complete_retrospective_development_evaluation_frozen_unsupported_by_absolute_bias_guardrail_and_stopped_before_independent_k2",
+        "scope": "retrospective_origin_safe_dynamic_core80_three_month_work_total_not_independent",
+        "historicalAssertion": false,
         "currentAuthority": true
       }
     ],
-    "roleInterpretationZh": "OA03 同公式在当前 Core 老品合同下重新执行完成；没有复现历史数值，因为 actual、训练支持和人口合同不同。PERFORMANCE_MIXED 只是机器证据完整性状态，不是业务整体通过。作品发生—金额校准模型 v0.3（M2-WORK-OA03）继续只是兼容性现行运行回退；人工锚定可学习全局模型（M2-WORK-LG01）继续是 Core 老品 3/6/12 月金额实验的主要研究比较基线。核心老品分周期金额模型 v0.1（M2-WORK-CHAM01）的既有 3、6、12 月性能失败保持冻结；另外登记 Primary/Core90 五个有限但极端的原始单元格为数值稳定性失败，二者不得混为一项。LG01 头部现金残差校准模型 v0.1（M2-WORK-HCRC01）的首个完整结果已冻结并失败：全部 16 个外层选择单元都没有合格 alpha，C2/C3 没有形成原始候选案例，selected 结果只是全量回退冻结 LG01，不能创造通过。LG01 头部保护分段路由模型 v0.1（M2-WORK-HPSR01）已经完成 canonical implementation 与公开 synthetic/fixture 验证，模型角色为已实现、等待独立评价；maxActualValueOpenedOrigin 为 2026-02，动态最早独立起点为 2026-03，需要 2026-04 至 2026-06 完整账单，而当前只完整到 2026-04。没有读取 later-origin outcome、没有真实成绩，K2 仍需新的独立授权。现行路由不变，活动候选与自动化批准均为空。",
-    "activeExperiment": "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01"
+    "roleInterpretationZh": "OA03 同公式在当前 Core 老品合同下重新执行完成；没有复现历史数值，因为 actual、训练支持和人口合同不同。PERFORMANCE_MIXED 只是机器证据完整性状态，不是业务整体通过。作品发生—金额校准模型 v0.3（M2-WORK-OA03）继续只是兼容性现行运行回退；人工锚定可学习全局模型（M2-WORK-LG01）继续是 Core 老品 3/6/12 月金额实验的主要研究比较基线。核心老品分周期金额模型 v0.1（M2-WORK-CHAM01）的既有 3、6、12 月性能失败保持冻结；另外登记 Primary/Core90 五个有限但极端的原始单元格为数值稳定性失败，二者不得混为一项。LG01 头部现金残差校准模型 v0.1（M2-WORK-HCRC01）的首个完整结果已冻结并失败：全部 16 个外层选择单元都没有合格 alpha，C2/C3 没有形成原始候选案例，selected 结果只是全量回退冻结 LG01，不能创造通过。LG01 头部保护分段路由模型 v0.1（M2-WORK-HPSR01）已在任务前打开且账单完整的 2025-11 起点完成唯一一次回溯开发评价：R1 相对 R0 的 paired FVA 为 0.8477%，bootstrap 95% 区间跨 0，绝对偏差恶化 2.0358 个百分点并越过预冻结失败护栏，因此结论为回溯开发不支持，且该证据不是独立 later-origin。当前完整账单只到 2026-04，独立 K2 仍缺 2026-05 与 2026-06；但 HPSR01 已按失败合同在 K2 前停止，不再作为活动实验或候选等待。prospective final holdout 仍未打开，现行路由不变，活动候选与自动化批准均为空。",
+    "activeExperiment": null
   },
   "currentEvaluationContract": {
     "version": "2.2",
@@ -3924,7 +3932,7 @@
       "horizonContract": "independent later-origin Strict rolling Core80 three-month work total only; Strict Core90 sensitivity and Primary numeric diagnostics",
       "formulaSummaryZh": "H50 固定逐行使用 LG01；M30 与 L20 分别以固定 alpha=1 使用只由旧 development window 冻结 q10 scale floor 与 q05/q95 边界约束的 CHAM01 B3 相对 LG01 残差，不依赖 global alpha 或其他现金带。",
       "formulaSummaryEn": "Head-protected segmented bounded-residual router: exact LG01 in H50 and independently bounded alpha-one CHAM01 B3 residuals in M30 and L20.",
-      "inputSummaryZh": "仅允许 origin 时可见的动态 Core80/Core90、trailing-12 分成现金、canonical LG01/CHAM01 B3 公式和旧 development rows 冻结边界；canonical implementation 与公开合成验证已经完成，当前没有成熟且获授权的 later-origin，未做真实拟合或评价。",
+    "inputSummaryZh": "仅允许 origin 时可见的动态 Core80、trailing-12 分成现金、canonical LG01/CHAM01 B3 冻结公式和旧 development rows 冻结边界。已在任务前打开且账单完整的 2025-11 origin 上完成一次回溯开发评价；没有读取独立 K2 或 prospective final holdout。",
       "codeEntrypoints": [
         "src/domain/m2Current/headProtectedSegmentedRouter.js"
       ],
@@ -3935,9 +3943,11 @@
         "docs/analysis/m2-current/M2-head-protected-segmented-router-selection-gate-attribution-v0.1.json",
         "docs/analysis/m2-current/M2-head-protected-segmented-router-opened-origin-semantics-v0.2.json",
         "docs/analysis/m2-current/M2-head-protected-segmented-router-later-origin-availability-v0.2.json",
-        "docs/analysis/m2-current/M2-head-protected-segmented-router-residual-bound-provenance-v0.1.json",
-        "docs/analysis/m2-current/M2-head-protected-segmented-router-k1-implementation-readiness-v0.1.json",
-        "docs/analysis/m2-current/M2-head-protected-segmented-router-preregistration-v0.1.md"
+      "docs/analysis/m2-current/M2-head-protected-segmented-router-residual-bound-provenance-v0.1.json",
+      "docs/analysis/m2-current/M2-head-protected-segmented-router-k1-implementation-readiness-v0.1.json",
+      "docs/analysis/m2-current/M2-head-protected-segmented-router-retrospective-readiness-v0.1.json",
+      "docs/analysis/m2-current/M2-head-protected-segmented-router-retrospective-development-v0.1.json",
+      "docs/analysis/m2-current/M2-head-protected-segmented-router-preregistration-v0.1.md"
       ],
       "predecessorIds": [
         "M2-WORK-LG01",
@@ -3945,21 +3955,57 @@
         "M2-WORK-HCRC01"
       ],
       "successorIds": [],
-      "currentRole": "implemented_awaiting_independent_evaluation",
-      "evidenceStatus": "k1_canonical_implementation_public_synthetic_verified_no_later_origin_outcome",
-      "operationalStatus": "implemented_public_synthetic_verified_not_independently_evaluated_not_selected_not_production",
+    "currentRole": "retrospective_development_unsupported_stop_before_independent_k2",
+    "evidenceStatus": "first_complete_retrospective_development_result_frozen_unsupported_bias_guardrail",
+    "operationalStatus": "retrospective_development_unsupported_not_selected_not_production_independent_k2_stopped",
       "automationAuthorized": false,
       "productionImported": false,
       "finalHoldoutOpened": false,
       "developmentWindowReuse": "old_hcrc01_development_rows_used_only_to_freeze_residual_bounds_before_any_future_qualified_later_origin_outcome",
       "limitationsZh": [
-        "当前完整账单只到 2026-04；maxActualValueOpenedOrigin 为 2026-02，动态最早独立起点 2026-03 需要 2026-04 至 2026-06 全部完整，因此没有成熟 later-origin",
+      "2025-11 单 origin 回溯中 R1 相对 R0 的 paired FVA 为 0.8477%，未达到 1%；bootstrap 95% 区间跨 0，且 absolute bias 恶化 2.0358 个百分点，超过 unsupported 的 2 个百分点门限",
+      "回溯只有一个时间块，证据不是独立 later-origin；机器合同已据 bias 护栏判定 unsupported 并在 K2 前停止",
+      "当前完整账单只到 2026-04；动态最早独立起点 2026-03 仍缺 2026-05 与 2026-06 完整账单，但回溯 unsupported 后不再等待 K2 作为本模型下一步",
         "历史三个月 final holdout 起点已被后续缓存预先暴露；历史合同保持不可变，但不能复用为本实验 untouched holdout",
-        "K1 canonical implementation 与公开 synthetic/fixture 验证已完成；K2 私有评价、真实 bootstrap、final holdout、生产与发布均未执行",
+      "K1 canonical implementation 与公开 synthetic/fixture 验证已完成；真实回溯 bootstrap 已执行一次，K2、final holdout、生产与发布均未执行",
         "prospective final holdout 按 firstIndependentLaterOrigin 加三个月动态预留为当前 2026-06，未读取 outcome，也不得按未来金额更换",
         "HCRC01 的失败保持冻结；新归因只说明 M30/L20 因 global alpha 短路而未独立形成 raw candidate，不改写历史结果"
       ],
-      "evaluations": []
+    "evaluations": [
+      {
+        "evaluationId": "eval-hpsr01-r1-core80-strict-h3-retrospective-2025-11",
+        "datasetVersion": "M2-head-protected-segmented-router-retrospective-development-v0.1-first-complete-frozen",
+        "cashAuthority": "user_reviewed_sales_share_workbook_membership",
+        "populationId": "hpsr01-retrospective-core80-strict-work-57w-57c-h3-origin-2025-11",
+        "comparableGroupId": "CG-HPSR01-RETROSPECTIVE-CORE80-STRICT-WORK-H3-2025-11",
+        "caseCount": 57,
+        "workCount": 57,
+        "originCount": 1,
+        "horizons": [
+          3
+        ],
+        "target": "future_sales_share_development_modelable_cash",
+        "grain": "work_origin_horizon",
+        "WAPE": 0.14201942459219122,
+        "signedBias": -0.08733276491879227,
+        "baselineModelId": "M2-WORK-LG01",
+        "relativeWape": 0.00847712522619727,
+        "materiality": 0.01,
+        "independentEvidence": false,
+        "reportRef": "docs/analysis/m2-current/M2-head-protected-segmented-router-retrospective-development-v0.1.json",
+        "resultStatus": "M2_HPSR01_RETROSPECTIVE_DEVELOPMENT_UNSUPPORTED_STOP_BEFORE_K2",
+        "experimentId": "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01",
+        "experimentArmId": "R1",
+        "baselineWAPE": 0.14323363404459052,
+        "baselineSignedBias": -0.06697447208389941,
+        "absoluteBiasWorsening": 0.02035829283489286,
+        "bootstrapFva95Lower": -0.1834407271166846,
+        "bootstrapFva95Upper": 0.2003025719176909,
+        "retrospectiveDevelopmentEvidence": true,
+        "rawCoverage": 1,
+        "numericFallbackCount": 0
+      }
+    ]
     }
   ],
   "experiments": [
@@ -4434,33 +4480,42 @@
       ],
       "arms": [
         {
-          "armId": "R0",
-          "displayNameZh": "冻结 LG01 later-origin 同案例基线",
-          "modelId": "M2-WORK-LG01",
-          "executionStatus": "REAL_LATER_ORIGIN_NOT_EXECUTED_AWAITING_AUTHORIZATION_AND_DATA"
+        "armId": "R0",
+        "displayNameZh": "冻结 LG01 later-origin 同案例基线",
+        "modelId": "M2-WORK-LG01",
+        "executionStatus": "RETROSPECTIVE_DEVELOPMENT_EVALUATED_FROZEN_BASELINE_NOT_INDEPENDENT"
         },
         {
-          "armId": "D1",
-          "displayNameZh": "冻结公式 CHAM01 B3 原始诊断",
-          "modelId": "M2-WORK-CHAM01",
-          "executionStatus": "REAL_LATER_ORIGIN_NOT_EXECUTED_AWAITING_AUTHORIZATION_AND_DATA"
+        "armId": "D1",
+        "displayNameZh": "冻结公式 CHAM01 B3 原始诊断",
+        "modelId": "M2-WORK-CHAM01",
+        "executionStatus": "RETROSPECTIVE_DEVELOPMENT_EVALUATED_RAW_DIAGNOSTIC_NOT_INDEPENDENT"
         },
         {
-          "armId": "R1",
-          "displayNameZh": "LG01 头部保护分段路由",
-          "modelId": "M2-WORK-HPSR01",
-          "executionStatus": "IMPLEMENTED_PUBLIC_SYNTHETIC_VERIFIED_REAL_LATER_ORIGIN_NOT_EXECUTED"
+        "armId": "R1",
+        "displayNameZh": "LG01 头部保护分段路由",
+        "modelId": "M2-WORK-HPSR01",
+        "executionStatus": "RETROSPECTIVE_DEVELOPMENT_EVALUATED_UNSUPPORTED_STOP_BEFORE_K2"
         }
       ],
-      "resultStatus": "M2_HEAD_PROTECTED_SEGMENTED_ROUTER_IMPLEMENTED_AWAITING_LATER_ORIGIN_DATA",
-      "evidenceClassification": "K1_IMPLEMENTATION_AND_PUBLIC_SYNTHETIC_VALIDATION_NO_REAL_MODEL_OUTCOME",
+    "resultStatus": "M2_HPSR01_RETROSPECTIVE_DEVELOPMENT_UNSUPPORTED_STOP_BEFORE_K2",
+    "evidenceClassification": "FIRST_COMPLETE_RETROSPECTIVE_DEVELOPMENT_RESULT_FROZEN_NOT_INDEPENDENT",
       "sourceAuthorityStatus": "SOURCE_AUTHORITY_AVAILABLE",
       "k1CanonicalImplementationComplete": true,
       "k1PublicSyntheticValidationComplete": true,
-      "k2PrivateEvaluationAuthorized": false,
-      "candidateOutcomeProduced": false,
-      "rawCandidateEvidenceProduced": false,
-      "firstCompleteOutcomeFrozen": false,
+    "k2PrivateEvaluationAuthorized": false,
+    "k2ConditionallyAuthorizedByCurrentTask": true,
+    "k2Executed": false,
+    "k2StoppedByRetrospectiveUnsupported": true,
+    "candidateOutcomeProduced": true,
+    "rawCandidateEvidenceProduced": true,
+    "firstCompleteOutcomeFrozen": true,
+    "retrospectiveDevelopmentEvaluationExecuted": true,
+    "retrospectiveOriginCount": 1,
+    "retrospectiveOrigins": [
+      "2025-11"
+    ],
+    "retrospectiveIndependentEvidence": false,
       "outerOutcomeRead": false,
       "modelRolesChanged": false,
       "modelImplementationRoleChanged": true,
@@ -4475,9 +4530,11 @@
         "docs/analysis/m2-current/M2-head-protected-segmented-router-selection-gate-attribution-v0.1.json",
         "docs/analysis/m2-current/M2-head-protected-segmented-router-opened-origin-semantics-v0.2.json",
         "docs/analysis/m2-current/M2-head-protected-segmented-router-later-origin-availability-v0.2.json",
-        "docs/analysis/m2-current/M2-head-protected-segmented-router-residual-bound-provenance-v0.1.json",
-        "docs/analysis/m2-current/M2-head-protected-segmented-router-k1-implementation-readiness-v0.1.json",
-        "docs/analysis/m2-current/M2-head-protected-segmented-router-preregistration-v0.1.md"
+      "docs/analysis/m2-current/M2-head-protected-segmented-router-residual-bound-provenance-v0.1.json",
+      "docs/analysis/m2-current/M2-head-protected-segmented-router-k1-implementation-readiness-v0.1.json",
+      "docs/analysis/m2-current/M2-head-protected-segmented-router-retrospective-readiness-v0.1.json",
+      "docs/analysis/m2-current/M2-head-protected-segmented-router-retrospective-development-v0.1.json",
+      "docs/analysis/m2-current/M2-head-protected-segmented-router-preregistration-v0.1.md"
       ]
     },
     {
@@ -4587,14 +4644,14 @@
     {"identifier": "K1_ORIGIN_VISIBLE_SAME_CASE_ATTRIBUTION_COMPLETE", "namespace": "M2-STATUS", "parentExperiment": "M2-EXP-CORE-HORIZON-AMOUNT-01", "type": "diagnostic_status_code", "displayNameZh": "作品发生—金额校准模型与人工锚定基线的起点可见同案例归因完成", "meaningZh": "仅用预测起点可见信息完成 Strict Core80/Core90 3、6、12 月同案例误差归因；Primary 的不可合法比较保持为空。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-oa03-lg01-core-legacy-error-attribution-v0.1.json"},
     {"identifier": "M2_CORE_HORIZON_AMOUNT_HORIZON_FAIL", "namespace": "M2-STATUS", "parentExperiment": "M2-EXP-CORE-HORIZON-AMOUNT-01", "type": "evaluation_status_code", "displayNameZh": "核心老品分周期金额模型单周期冻结门禁失败", "meaningZh": "该周期的最佳原始实验臂未同时满足相对 LG01 改善、bootstrap、偏差、独立时间块和 Core90 敏感性冻结门槛。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-core-legacy-horizon-amount-development-v0.1.json"},
     {"identifier": "M2_CORE_HORIZON_AMOUNT_DEVELOPMENT_FAIL", "namespace": "M2-STATUS", "parentExperiment": "M2-EXP-CORE-HORIZON-AMOUNT-01", "type": "model_development_status_code", "displayNameZh": "核心老品分周期金额模型首个完整开发评价失败", "meaningZh": "B1–B3 已真实训练，首个完整 B0–B3 结果已冻结；3、6、12 月均未通过各自冻结门禁，模型不得晋升或重跑。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-core-legacy-horizon-amount-development-v0.1.json"},
-    {"identifier": "R0", "namespace": "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01", "parentExperiment": "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01", "type": "experiment_arm", "displayNameZh": "头部保护分段路由实验臂 R0（冻结 LG01 later-origin 同案例基线）", "meaningZh": "未来取得合格 origin 后才可生成的冻结研究比较基线；当前未执行。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-head-protected-segmented-router-preregistration-v0.1.md"},
-    {"identifier": "D1", "namespace": "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01", "parentExperiment": "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01", "type": "experiment_arm", "displayNameZh": "头部保护分段路由实验臂 D1（冻结公式 CHAM01 B3 原始诊断）", "meaningZh": "只观察并隔离数值外推，不直接服务、不具备通过资格；当前未执行。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-head-protected-segmented-router-preregistration-v0.1.md"},
-    {"identifier": "R1", "namespace": "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01", "parentExperiment": "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01", "type": "experiment_arm", "displayNameZh": "头部保护分段路由实验臂 R1（唯一候选）", "meaningZh": "H50 固定 LG01、M30/L20 独立有界残差修正的候选；canonical implementation 与公开合成验证已完成，真实 later-origin 未执行。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-head-protected-segmented-router-k1-implementation-readiness-v0.1.json"},
+    {"identifier": "R0", "namespace": "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01", "parentExperiment": "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01", "type": "experiment_arm", "displayNameZh": "头部保护分段路由实验臂 R0（冻结 LG01 同案例基线）", "meaningZh": "已在 2025-11 回溯开发人口上作为冻结 LG01 同案例基线评价；不是独立 later-origin 证据。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-head-protected-segmented-router-retrospective-development-v0.1.json"},
+    {"identifier": "D1", "namespace": "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01", "parentExperiment": "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01", "type": "experiment_arm", "displayNameZh": "头部保护分段路由实验臂 D1（冻结公式 CHAM01 B3 原始诊断）", "meaningZh": "已在同一回溯开发人口上作为冻结公式原始诊断评价；只隔离数值外推，不直接服务、不具备通过资格。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-head-protected-segmented-router-retrospective-development-v0.1.json"},
+    {"identifier": "R1", "namespace": "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01", "parentExperiment": "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01", "type": "experiment_arm", "displayNameZh": "头部保护分段路由实验臂 R1（唯一原始候选）", "meaningZh": "H50 固定 LG01、M30/L20 独立有界残差修正的原始候选；2025-11 回溯开发评价已执行并因绝对偏差护栏判定不支持，独立 K2 未执行。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-head-protected-segmented-router-retrospective-development-v0.1.json"},
     {"identifier": "K0A", "namespace": "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01", "parentExperiment": "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01", "type": "execution_checkpoint", "displayNameZh": "头部保护分段路由执行检查点 K0A（日期盘点与归因）", "meaningZh": "完成 HCRC01 门禁归因、opened-origin metadata 与 actual-value-opened 语义分离及账单月份可用性盘点，不读取新 future actual 金额。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-head-protected-segmented-router-opened-origin-semantics-v0.2.json"},
     {"identifier": "K0B", "namespace": "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01", "parentExperiment": "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01", "type": "execution_checkpoint", "displayNameZh": "头部保护分段路由执行检查点 K0B（预注册合同冻结）", "meaningZh": "冻结身份、现金带、公式、评价与状态合同；不实现或执行模型。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-head-protected-segmented-router-preregistration-v0.1.md"},
     {"identifier": "K1", "namespace": "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01", "parentExperiment": "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01", "type": "execution_checkpoint", "displayNameZh": "头部保护分段路由执行检查点 K1（实现与合成验证）", "meaningZh": "canonical implementation、三个隔离入口、公开 synthetic/fixture 与数值安全验证已完成；没有读取真实 later-origin outcome。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-head-protected-segmented-router-k1-implementation-readiness-v0.1.json"},
-    {"identifier": "K2", "namespace": "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01", "parentExperiment": "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01", "type": "execution_checkpoint", "displayNameZh": "头部保护分段路由执行检查点 K2（一次 later-origin 评价）", "meaningZh": "只有合格 later-origin、未触碰的 prospective final holdout 和新的 capability-scoped 用户授权均成立后才可执行一次；当前未执行且未授权。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-head-protected-segmented-router-preregistration-v0.1.md"},
-    {"identifier": "K3", "namespace": "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01", "parentExperiment": "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01", "type": "execution_checkpoint", "displayNameZh": "头部保护分段路由执行检查点 K3（冻结结果治理）", "meaningZh": "只从未来合法冻结结果生成治理工件；当前无结果，不适用。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-head-protected-segmented-router-preregistration-v0.1.md"},
+    {"identifier": "K2", "namespace": "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01", "parentExperiment": "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01", "type": "execution_checkpoint", "displayNameZh": "头部保护分段路由执行检查点 K2（一次独立 later-origin 评价）", "meaningZh": "本任务曾提供条件式授权，但账单未成熟且回溯结论不支持，故未执行并在 K2 前停止；不得将回溯评价冒充 K2。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-head-protected-segmented-router-retrospective-development-v0.1.json"},
+    {"identifier": "K3", "namespace": "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01", "parentExperiment": "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01", "type": "execution_checkpoint", "displayNameZh": "头部保护分段路由执行检查点 K3（冻结结果治理）", "meaningZh": "首个合法完整回溯结果、人口、指标与治理映射已冻结；没有执行独立 K2 或打开 prospective final holdout。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-head-protected-segmented-router-retrospective-development-v0.1.json"},
     {"identifier": "M2_HEAD_PROTECTED_SEGMENTED_ROUTER_WAITING_FOR_NEW_BILLS", "namespace": "M2-STATUS", "parentExperiment": "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01", "type": "execution_status_code", "displayNameZh": "头部保护分段路由等待新账单", "meaningZh": "没有合格独立 later-origin，模型未执行；这不是模型失败。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-head-protected-segmented-router-later-origin-availability-v0.1.json"},
     {"identifier": "M2_HEAD_PROTECTED_SEGMENTED_ROUTER_IMPLEMENTED_AWAITING_LATER_ORIGIN_DATA", "namespace": "M2-STATUS", "parentExperiment": "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01", "type": "implementation_status_code", "displayNameZh": "头部保护分段路由已实现并等待独立 later-origin 数据", "meaningZh": "canonical implementation 与公开合成验证已完成，但没有读取独立时间结果；这不是模型通过或失败。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-head-protected-segmented-router-k1-implementation-readiness-v0.1.json"},
     {"identifier": "M2_HEAD_PROTECTED_SEGMENTED_ROUTER_READY_FOR_SEPARATE_LATER_ORIGIN_AUTHORIZATION", "namespace": "M2-STATUS", "parentExperiment": "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01", "type": "readiness_status_code", "displayNameZh": "头部保护分段路由日期已就绪并等待独立授权", "meaningZh": "只有 fresh metadata audit 证明账单完整且 holdout 未触碰时使用；仍不能在没有新授权时执行 K2。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-head-protected-segmented-router-preregistration-v0.1.md"},
@@ -4605,6 +4662,9 @@
     {"identifier": "M2_HEAD_PROTECTED_SEGMENTED_ROUTER_LATER_ORIGIN_FAIL_STOP_CASH_ONLY", "namespace": "M2-STATUS", "parentExperiment": "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01", "type": "model_validation_status_code", "displayNameZh": "头部保护分段路由 later-origin 失败并停止 cash-only", "meaningZh": "只有合法独立 later-origin 已执行且失败才可使用；当前未产生。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-head-protected-segmented-router-preregistration-v0.1.md"},
     {"identifier": "M2_HEAD_PROTECTED_SEGMENTED_ROUTER_BLOCKED_MISSING_PRIVATE_AUTHORITY", "namespace": "M2-STATUS", "parentExperiment": "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01", "type": "execution_status_code", "displayNameZh": "头部保护分段路由因缺少不可替代私有权威源而阻断", "meaningZh": "只有权威源确实缺失时可使用；缓存或 receipt 缺失不得触发。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-head-protected-segmented-router-preregistration-v0.1.md"},
     {"identifier": "M2_HEAD_PROTECTED_SEGMENTED_ROUTER_INVALIDATED_CONTRACT_BREACH", "namespace": "M2-STATUS", "parentExperiment": "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01", "type": "execution_status_code", "displayNameZh": "头部保护分段路由因科学合同违约而失效", "meaningZh": "发生 future leakage、结果后改参、打开 final holdout 或第二次执行时使用。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-head-protected-segmented-router-preregistration-v0.1.md"},
+    {"identifier": "M2_HPSR01_RETROSPECTIVE_DEVELOPMENT_SUPPORTED_AWAITING_INDEPENDENT_K2", "namespace": "M2-STATUS", "parentExperiment": "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01", "type": "retrospective_development_status_code", "displayNameZh": "头部保护分段路由回溯开发评价获得支持并等待独立评价", "meaningZh": "预注册回溯门禁全部通过时使用；仍不是独立证据、活动候选或生产批准。当前未产生。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-head-protected-segmented-router-retrospective-readiness-v0.1.json"},
+    {"identifier": "M2_HPSR01_RETROSPECTIVE_DEVELOPMENT_MIXED_AWAITING_INDEPENDENT_K2", "namespace": "M2-STATUS", "parentExperiment": "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01", "type": "retrospective_development_status_code", "displayNameZh": "头部保护分段路由回溯开发证据混合并等待独立评价", "meaningZh": "未达到支持但也未触发不支持门禁时使用；仍不是独立证据、活动候选或生产批准。当前未产生。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-head-protected-segmented-router-retrospective-readiness-v0.1.json"},
+    {"identifier": "M2_HPSR01_RETROSPECTIVE_DEVELOPMENT_UNSUPPORTED_STOP_BEFORE_K2", "namespace": "M2-STATUS", "parentExperiment": "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01", "type": "retrospective_development_status_code", "displayNameZh": "头部保护分段路由回溯开发评价不支持并在独立评价前停止", "meaningZh": "2025-11 唯一合法回溯起点中绝对偏差恶化 2.0358 个百分点，超过预冻结 2 个百分点硬门禁；结果已冻结，独立 K2 未执行，不再等待本模型复验。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-head-protected-segmented-router-retrospective-development-v0.1.json"},
     {"identifier": "AUTOMATION_BLOCKED", "namespace": "M2-BUSINESS-STATUS", "parentExperiment": null, "type": "business_status", "displayNameZh": "自动化被阻断", "meaningZh": "当前没有模型获准自动化。", "mayAppearAloneInUserReport": false, "evidenceRef": "AGENTS.md"},
     {"identifier": "CANARY_FAIL", "namespace": "M2-BUSINESS-STATUS", "parentExperiment": null, "type": "business_status", "displayNameZh": "Canary 结论失败", "meaningZh": "当前业务 gate 不允许 Canary 或发布。", "mayAppearAloneInUserReport": false, "evidenceRef": "AGENTS.md"}
   ],
@@ -4665,7 +4725,8 @@
     {"comparableGroupId":"CG-OA03-CS-CORE80-STRICT-CHANNEL-H12","comparisonClass":"SAME_CASE_COMPARABLE","target":"future_sales_share_development_modelable_cash","cashAuthority":"user_reviewed_sales_share_workbook_membership","populationId":"oa03-cs-core80-strict-channel-76w-2808c-h12","horizons":[12],"grain":"work_origin_channel_horizon","asOfContract":"strict_rolling_fixed_trailing12_origin_observed_mature_channel_shares","actualDefinition":"M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01","evaluationFamily":"oa03_current_scope_strict_trailing12_channel_allocation"},
     {"comparableGroupId":"CG-OA03-CS-CORE90-STRICT-CHANNEL-H3","comparisonClass":"SAME_CASE_COMPARABLE","target":"future_sales_share_development_modelable_cash","cashAuthority":"user_reviewed_sales_share_workbook_membership","populationId":"oa03-cs-core90-strict-channel-208w-7314c-h3","horizons":[3],"grain":"work_origin_channel_horizon","asOfContract":"strict_rolling_fixed_trailing12_origin_observed_mature_channel_shares","actualDefinition":"M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01","evaluationFamily":"oa03_current_scope_strict_trailing12_channel_allocation"},
     {"comparableGroupId":"CG-OA03-CS-CORE90-STRICT-CHANNEL-H6","comparisonClass":"SAME_CASE_COMPARABLE","target":"future_sales_share_development_modelable_cash","cashAuthority":"user_reviewed_sales_share_workbook_membership","populationId":"oa03-cs-core90-strict-channel-208w-7314c-h6","horizons":[6],"grain":"work_origin_channel_horizon","asOfContract":"strict_rolling_fixed_trailing12_origin_observed_mature_channel_shares","actualDefinition":"M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01","evaluationFamily":"oa03_current_scope_strict_trailing12_channel_allocation"},
-    {"comparableGroupId":"CG-OA03-CS-CORE90-STRICT-CHANNEL-H12","comparisonClass":"SAME_CASE_COMPARABLE","target":"future_sales_share_development_modelable_cash","cashAuthority":"user_reviewed_sales_share_workbook_membership","populationId":"oa03-cs-core90-strict-channel-195w-5710c-h12","horizons":[12],"grain":"work_origin_channel_horizon","asOfContract":"strict_rolling_fixed_trailing12_origin_observed_mature_channel_shares","actualDefinition":"M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01","evaluationFamily":"oa03_current_scope_strict_trailing12_channel_allocation"}
+    {"comparableGroupId":"CG-OA03-CS-CORE90-STRICT-CHANNEL-H12","comparisonClass":"SAME_CASE_COMPARABLE","target":"future_sales_share_development_modelable_cash","cashAuthority":"user_reviewed_sales_share_workbook_membership","populationId":"oa03-cs-core90-strict-channel-195w-5710c-h12","horizons":[12],"grain":"work_origin_channel_horizon","asOfContract":"strict_rolling_fixed_trailing12_origin_observed_mature_channel_shares","actualDefinition":"M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01","evaluationFamily":"oa03_current_scope_strict_trailing12_channel_allocation"},
+    {"comparableGroupId":"CG-HPSR01-RETROSPECTIVE-CORE80-STRICT-WORK-H3-2025-11","comparisonClass":"SAME_CASE_COMPARABLE_RETROSPECTIVE_DEVELOPMENT","target":"future_sales_share_development_modelable_cash","cashAuthority":"user_reviewed_sales_share_workbook_membership","populationId":"hpsr01-retrospective-core80-strict-work-57w-57c-h3-origin-2025-11","horizons":[3],"grain":"work_origin_horizon","asOfContract":"retrospective_origin_safe_dynamic_core80_opened_before_task_2025_11","actualDefinition":"M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01","evaluationFamily":"hpsr01_retrospective_development_strict_core80_not_independent"}
   ],
   "glossary": {
     "operational fallback": "兼容性现行运行回退模型",

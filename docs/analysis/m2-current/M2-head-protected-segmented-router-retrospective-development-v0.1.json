@@ -1,0 +1,655 @@
+{
+  "schema": "m2.current.head_protected_segmented_router.retrospective_development.public.v0.1",
+  "asOf": "2026-07-31",
+  "experimentId": "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01",
+  "modelId": "M2-WORK-HPSR01",
+  "displayNameZh": "LG01 头部保护分段路由模型 v0.1",
+  "displayNameEn": "LG01 Head-Protected Segmented Router Model v0.1",
+  "status": "M2_HPSR01_RETROSPECTIVE_DEVELOPMENT_UNSUPPORTED_STOP_BEFORE_K2",
+  "execution": {
+    "branch": "codex/m2-head-protected-segmented-router-v0-1",
+    "exactHead": "987f375c0dc8eaa68a3ba10c0af4c74793088e85",
+    "pullRequestNumber": 35,
+    "pullRequestDraft": true,
+    "exactHeadCiRunId": 30606102945,
+    "linuxCi": "success",
+    "windowsCi": "success",
+    "K1Completed": true,
+    "retrospectiveActuallyExecuted": true,
+    "retrospectiveCompleteResultCount": 1,
+    "independentK2Executed": false,
+    "prospectiveFinalHoldoutOpened": false,
+    "productionSurfaceChanged": false
+  },
+  "readiness": {
+    "retrospectiveReplayReady": true,
+    "independentK2Ready": false,
+    "firstIndependentLaterOrigin": "2026-03",
+    "firstIndependentRequiredCompleteThrough": "2026-06",
+    "completeAuthoritativeBillMonthThrough": "2026-04",
+    "missingOrIncompleteK2BillMonths": [
+      "2026-05",
+      "2026-06"
+    ],
+    "prospectiveFinalHoldoutOrigin": "2026-06",
+    "prospectiveFinalHoldoutOpened": false,
+    "prospectiveFinalHoldoutOutcomeRead": false
+  },
+  "retrospective": {
+    "evidenceClass": "RETROSPECTIVE_DEVELOPMENT_NOT_INDEPENDENT",
+    "independentEvidence": false,
+    "origins": [
+      "2025-11"
+    ],
+    "originCount": 1,
+    "includedOriginInventory": [
+      {
+        "origin": "2025-10",
+        "horizonMonths": 3,
+        "requiredCompleteThrough": "2026-01",
+        "actualOpenedBeforeTask": false,
+        "historicalIsolation": false,
+        "authorityWindowComplete": true,
+        "openedProfileRowCount": 0,
+        "included": false,
+        "exclusionReasons": [
+          "ACTUAL_NOT_OPENED_BEFORE_TASK"
+        ]
+      },
+      {
+        "origin": "2025-11",
+        "horizonMonths": 3,
+        "requiredCompleteThrough": "2026-02",
+        "actualOpenedBeforeTask": true,
+        "historicalIsolation": false,
+        "authorityWindowComplete": true,
+        "openedProfileRowCount": 5306,
+        "included": true,
+        "exclusionReasons": []
+      },
+      {
+        "origin": "2025-12",
+        "horizonMonths": 3,
+        "requiredCompleteThrough": "2026-03",
+        "actualOpenedBeforeTask": false,
+        "historicalIsolation": true,
+        "authorityWindowComplete": true,
+        "openedProfileRowCount": 0,
+        "included": false,
+        "exclusionReasons": [
+          "HISTORICAL_ISOLATED_OUTCOME",
+          "ACTUAL_NOT_OPENED_BEFORE_TASK"
+        ]
+      },
+      {
+        "origin": "2026-01",
+        "horizonMonths": 3,
+        "requiredCompleteThrough": "2026-04",
+        "actualOpenedBeforeTask": false,
+        "historicalIsolation": false,
+        "authorityWindowComplete": true,
+        "openedProfileRowCount": 0,
+        "included": false,
+        "exclusionReasons": [
+          "ACTUAL_NOT_OPENED_BEFORE_TASK"
+        ]
+      },
+      {
+        "origin": "2026-02",
+        "horizonMonths": 3,
+        "requiredCompleteThrough": "2026-05",
+        "actualOpenedBeforeTask": true,
+        "historicalIsolation": false,
+        "authorityWindowComplete": false,
+        "openedProfileRowCount": 2685,
+        "included": false,
+        "exclusionReasons": [
+          "INCOMPLETE_THREE_MONTH_AUTHORITY_WINDOW"
+        ]
+      }
+    ],
+    "excludedOrigins": [
+      {
+        "origin": "2025-10",
+        "reasons": [
+          "ACTUAL_NOT_OPENED_BEFORE_TASK"
+        ]
+      },
+      {
+        "origin": "2025-12",
+        "reasons": [
+          "HISTORICAL_ISOLATED_OUTCOME",
+          "ACTUAL_NOT_OPENED_BEFORE_TASK"
+        ]
+      },
+      {
+        "origin": "2026-01",
+        "reasons": [
+          "ACTUAL_NOT_OPENED_BEFORE_TASK"
+        ]
+      },
+      {
+        "origin": "2026-02",
+        "reasons": [
+          "INCOMPLETE_THREE_MONTH_AUTHORITY_WINDOW"
+        ]
+      }
+    ],
+    "evaluation": {
+      "schema": "m2.current.head_protected_segmented_router.retrospective_development_evaluation.v0.1",
+      "experimentId": "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01",
+      "modelId": "M2-WORK-HPSR01",
+      "status": "M2_HPSR01_RETROSPECTIVE_DEVELOPMENT_UNSUPPORTED_STOP_BEFORE_K2",
+      "evidenceClass": "RETROSPECTIVE_DEVELOPMENT_NOT_INDEPENDENT",
+      "horizonMonths": 3,
+      "origins": [
+        "2025-11"
+      ],
+      "originCount": 1,
+      "caseCount": 57,
+      "workCount": 57,
+      "originSummaries": [
+        {
+          "origin": "2025-11",
+          "horizonMonths": 3,
+          "eligibleWorkCount": 2653,
+          "caseCount": 57,
+          "core80WorkCount": 57,
+          "core80ActualCashShare": 0.8171042472660419,
+          "core80OriginVisibleCashCapture": 0.8022419042457508,
+          "core80CutoffTieCount": 1,
+          "cashBandWorkCounts": {
+            "H50": 5,
+            "M30": 19,
+            "L20": 33
+          },
+          "cashBandActualShares": {
+            "H50": 0.5554974511790506,
+            "M30": 0.26125972035472395,
+            "L20": 0.18324282846622533
+          }
+        }
+      ],
+      "core80ActualCashCoverage": 0.8171042472660419,
+      "metrics": {
+        "r0": {
+          "status": "COMPUTED",
+          "nullReason": null,
+          "caseCount": 57,
+          "workCount": 57,
+          "originCount": 1,
+          "absoluteActualTotal": 3108791.8325000005,
+          "actualTotal": 3108791.8325000005,
+          "predictionTotal": 2900582.1406995747,
+          "absoluteErrorTotal": 445283.55165711703,
+          "wape": 0.14323363404459052,
+          "signedBias": -0.06697447208389941,
+          "absoluteBias": 0.06697447208389941,
+          "mae": 7811.992134335386,
+          "medianAbsoluteError": 2266.8394794290216,
+          "errorConcentration": {
+            "maximumWorkShare": 0.28755851335031646,
+            "top5WorkShare": 0.5244234695487036,
+            "top10WorkShare": 0.6948902283943986
+          }
+        },
+        "d1": {
+          "status": "COMPUTED",
+          "nullReason": null,
+          "caseCount": 57,
+          "workCount": 57,
+          "originCount": 1,
+          "absoluteActualTotal": 3108791.8325000005,
+          "actualTotal": 3108791.8325000005,
+          "predictionTotal": 2576267.409982352,
+          "absoluteErrorTotal": 889190.574043974,
+          "wape": 0.2860244821631922,
+          "signedBias": -0.17129626273156015,
+          "absoluteBias": 0.17129626273156015,
+          "mae": 15599.834632350421,
+          "medianAbsoluteError": 2558.883710425256,
+          "errorConcentration": {
+            "maximumWorkShare": 0.4901120560538238,
+            "top5WorkShare": 0.7342638694811819,
+            "top10WorkShare": 0.8505468102029646
+          }
+        },
+        "d1SameCaseR0": {
+          "status": "COMPUTED",
+          "nullReason": null,
+          "caseCount": 57,
+          "workCount": 57,
+          "originCount": 1,
+          "absoluteActualTotal": 3108791.8325000005,
+          "actualTotal": 3108791.8325000005,
+          "predictionTotal": 2900582.1406995747,
+          "absoluteErrorTotal": 445283.55165711703,
+          "wape": 0.14323363404459052,
+          "signedBias": -0.06697447208389941,
+          "absoluteBias": 0.06697447208389941,
+          "mae": 7811.992134335386,
+          "medianAbsoluteError": 2266.8394794290216,
+          "errorConcentration": {
+            "maximumWorkShare": 0.28755851335031646,
+            "top5WorkShare": 0.5244234695487036,
+            "top10WorkShare": 0.6948902283943986
+          }
+        },
+        "r1": {
+          "status": "COMPUTED",
+          "nullReason": null,
+          "caseCount": 57,
+          "workCount": 57,
+          "originCount": 1,
+          "absoluteActualTotal": 3108791.8325000005,
+          "actualTotal": 3108791.8325000005,
+          "predictionTotal": 2837292.4462108165,
+          "absoluteErrorTotal": 441508.82722855377,
+          "wape": 0.14201942459219122,
+          "signedBias": -0.08733276491879227,
+          "absoluteBias": 0.08733276491879227,
+          "mae": 7745.768898746557,
+          "medianAbsoluteError": 2319.9413598287247,
+          "errorConcentration": {
+            "maximumWorkShare": 0.29001702398032675,
+            "top5WorkShare": 0.5912454264691602,
+            "top10WorkShare": 0.7585812085750591
+          }
+        },
+        "r1PairedFvaVsR0": 0.00847712522619727,
+        "d1PairedFvaVsR0": -0.9969086455919215,
+        "absoluteBiasWorsening": 0.020358292834892863,
+        "r1BootstrapFva95": {
+          "status": "COMPUTED",
+          "nullReason": null,
+          "method": "PAIRED_WHOLE_STANDARD_WORK_CLUSTER",
+          "iterations": 2000,
+          "requestedIterations": 2000,
+          "seed": 20260731,
+          "workCount": 57,
+          "interval95": {
+            "lower": -0.1834407271166846,
+            "median": 0.01064115354312988,
+            "upper": 0.2003025719176909
+          }
+        },
+        "d1BootstrapFva95": {
+          "status": "COMPUTED",
+          "nullReason": null,
+          "method": "PAIRED_WHOLE_STANDARD_WORK_CLUSTER",
+          "iterations": 2000,
+          "requestedIterations": 2000,
+          "seed": 20260732,
+          "workCount": 57,
+          "interval95": {
+            "lower": -1.677211183081426,
+            "median": -0.9561482033884261,
+            "upper": -0.07224815768747156
+          }
+        }
+      },
+      "timeBlocks": [
+        {
+          "origin": "2025-11",
+          "forecastStart": "2025-12",
+          "forecastEnd": "2026-02",
+          "caseCount": 57,
+          "r0Wape": 0.14323363404459052,
+          "r0SignedBias": -0.06697447208389941,
+          "r1Wape": 0.14201942459219122,
+          "r1SignedBias": -0.08733276491879227,
+          "pairedFva": 0.00847712522619727,
+          "outcome": "R1_IMPROVED"
+        }
+      ],
+      "timeBlockSummary": {
+        "evaluableBlockCount": 1,
+        "improvingBlockCount": 1,
+        "degradingBlockCount": 0,
+        "improvingBlockShare": 1,
+        "degradingBlockShare": 0,
+        "minimumStableTimeBlocks": 2,
+        "stableJudgmentSupport": false
+      },
+      "cashBands": {
+        "H50": {
+          "workCount": 5,
+          "caseCount": 5,
+          "absoluteActualCashShare": 0.5554974511790506,
+          "r0": {
+            "status": "COMPUTED",
+            "nullReason": null,
+            "caseCount": 5,
+            "workCount": 5,
+            "originCount": 1,
+            "absoluteActualTotal": 1726925.9392000001,
+            "actualTotal": 1726925.9392000001,
+            "predictionTotal": 1607697.5316971573,
+            "absoluteErrorTotal": 160126.91313042823,
+            "wape": 0.09272367129108453,
+            "signedBias": -0.06904083423408157,
+            "absoluteBias": 0.06904083423408157,
+            "mae": 32025.382626085648,
+            "medianAbsoluteError": 11632.584182766062,
+            "errorConcentration": {
+              "maximumWorkShare": 0.7996474398377542,
+              "top5WorkShare": 1,
+              "top10WorkShare": 1
+            }
+          },
+          "d1": {
+            "status": "COMPUTED",
+            "nullReason": null,
+            "caseCount": 5,
+            "workCount": 5,
+            "originCount": 1,
+            "absoluteActualTotal": 1726925.9392000001,
+            "actualTotal": 1726925.9392000001,
+            "predictionTotal": 1398235.64342638,
+            "absoluteErrorTotal": 542915.7451631238,
+            "wape": 0.3143827612055153,
+            "signedBias": -0.19033259522749787,
+            "absoluteBias": 0.19033259522749787,
+            "mae": 108583.14903262476,
+            "medianAbsoluteError": 13256.5770932421,
+            "errorConcentration": {
+              "maximumWorkShare": 0.8027083840374368,
+              "top5WorkShare": 0.9999999999999998,
+              "top10WorkShare": 0.9999999999999998
+            }
+          },
+          "r1": {
+            "status": "COMPUTED",
+            "nullReason": null,
+            "caseCount": 5,
+            "workCount": 5,
+            "originCount": 1,
+            "absoluteActualTotal": 1726925.9392000001,
+            "actualTotal": 1726925.9392000001,
+            "predictionTotal": 1607697.5316971573,
+            "absoluteErrorTotal": 160126.91313042823,
+            "wape": 0.09272367129108453,
+            "signedBias": -0.06904083423408157,
+            "absoluteBias": 0.06904083423408157,
+            "mae": 32025.382626085648,
+            "medianAbsoluteError": 11632.584182766062,
+            "errorConcentration": {
+              "maximumWorkShare": 0.7996474398377542,
+              "top5WorkShare": 1,
+              "top10WorkShare": 1
+            }
+          },
+          "r0AbsoluteErrorContribution": 0.35960662039843594,
+          "d1AbsoluteErrorContribution": 0.6105729874013199,
+          "r1AbsoluteErrorContribution": 0.3626811136157332,
+          "clipCount": 0,
+          "clipRate": 0,
+          "d1NonfiniteCount": 0,
+          "d1NonfiniteRate": 0,
+          "numericFallbackCount": 0,
+          "numericFallbackRate": 0,
+          "rawR1Coverage": 1
+        },
+        "M30": {
+          "workCount": 19,
+          "caseCount": 19,
+          "absoluteActualCashShare": 0.26125972035472395,
+          "r0": {
+            "status": "COMPUTED",
+            "nullReason": null,
+            "caseCount": 19,
+            "workCount": 19,
+            "originCount": 1,
+            "absoluteActualTotal": 812202.0848,
+            "actualTotal": 812202.0848,
+            "predictionTotal": 743591.0996439876,
+            "absoluteErrorTotal": 178009.63849635655,
+            "wape": 0.219169147466779,
+            "signedBias": -0.0844752635335914,
+            "absoluteBias": 0.0844752635335914,
+            "mae": 9368.928341913503,
+            "medianAbsoluteError": 5734.653982018728,
+            "errorConcentration": {
+              "maximumWorkShare": 0.19857350261244025,
+              "top5WorkShare": 0.6790217012278233,
+              "top10WorkShare": 0.8992673807877334
+            }
+          },
+          "d1": {
+            "status": "COMPUTED",
+            "nullReason": null,
+            "caseCount": 19,
+            "workCount": 19,
+            "originCount": 1,
+            "absoluteActualTotal": 812202.0848,
+            "actualTotal": 812202.0848,
+            "predictionTotal": 671235.2466224163,
+            "absoluteErrorTotal": 225342.75752601254,
+            "wape": 0.2774466622817176,
+            "signedBias": -0.1735612858126262,
+            "absoluteBias": 0.1735612858126262,
+            "mae": 11860.145132948028,
+            "medianAbsoluteError": 4097.702979104448,
+            "errorConcentration": {
+              "maximumWorkShare": 0.2760238257663809,
+              "top5WorkShare": 0.7650779739569646,
+              "top10WorkShare": 0.9305001619549423
+            }
+          },
+          "r1": {
+            "status": "COMPUTED",
+            "nullReason": null,
+            "caseCount": 19,
+            "workCount": 19,
+            "originCount": 1,
+            "absoluteActualTotal": 812202.0848,
+            "actualTotal": 812202.0848,
+            "predictionTotal": 695974.45531103,
+            "absoluteErrorTotal": 200603.54883739888,
+            "wape": 0.24698723703325182,
+            "signedBias": -0.14310186056416033,
+            "absoluteBias": 0.14310186056416033,
+            "mae": 10558.081517757835,
+            "medianAbsoluteError": 4097.702979104448,
+            "errorConcentration": {
+              "maximumWorkShare": 0.23290324028656773,
+              "top5WorkShare": 0.7361064773831858,
+              "top10WorkShare": 0.9219291720238759
+            }
+          },
+          "r0AbsoluteErrorContribution": 0.39976693015921194,
+          "d1AbsoluteErrorContribution": 0.25342459097510456,
+          "r1AbsoluteErrorContribution": 0.45435908970751654,
+          "clipCount": 2,
+          "clipRate": 0.10526315789473684,
+          "d1NonfiniteCount": 0,
+          "d1NonfiniteRate": 0,
+          "numericFallbackCount": 0,
+          "numericFallbackRate": 0,
+          "rawR1Coverage": 1
+        },
+        "L20": {
+          "workCount": 33,
+          "caseCount": 33,
+          "absoluteActualCashShare": 0.18324282846622533,
+          "r0": {
+            "status": "COMPUTED",
+            "nullReason": null,
+            "caseCount": 33,
+            "workCount": 33,
+            "originCount": 1,
+            "absoluteActualTotal": 569663.8084999999,
+            "actualTotal": 569663.8084999999,
+            "predictionTotal": 549293.5093584297,
+            "absoluteErrorTotal": 107147.00003033224,
+            "wape": 0.18808812922917545,
+            "signedBias": -0.035758457598364754,
+            "absoluteBias": 0.035758457598364754,
+            "mae": 3246.878788797947,
+            "medianAbsoluteError": 2149.665359749899,
+            "errorConcentration": {
+              "maximumWorkShare": 0.15635720891438729,
+              "top5WorkShare": 0.52115238961203,
+              "top10WorkShare": 0.7015819261510367
+            }
+          },
+          "d1": {
+            "status": "COMPUTED",
+            "nullReason": null,
+            "caseCount": 33,
+            "workCount": 33,
+            "originCount": 1,
+            "absoluteActualTotal": 569663.8084999999,
+            "actualTotal": 569663.8084999999,
+            "predictionTotal": 506796.519933555,
+            "absoluteErrorTotal": 120932.07135483774,
+            "wape": 0.21228673745883184,
+            "signedBias": -0.11035857926797706,
+            "absoluteBias": 0.11035857926797706,
+            "mae": 3664.608222873871,
+            "medianAbsoluteError": 1936.1407044579755,
+            "errorConcentration": {
+              "maximumWorkShare": 0.22824009789113775,
+              "top5WorkShare": 0.6104789845145825,
+              "top10WorkShare": 0.7346473175324738
+            }
+          },
+          "r1": {
+            "status": "COMPUTED",
+            "nullReason": null,
+            "caseCount": 33,
+            "workCount": 33,
+            "originCount": 1,
+            "absoluteActualTotal": 569663.8084999999,
+            "actualTotal": 569663.8084999999,
+            "predictionTotal": 533620.4592026282,
+            "absoluteErrorTotal": 80778.36526072661,
+            "wape": 0.14180006532875367,
+            "signedBias": -0.06327126413784051,
+            "absoluteBias": 0.06327126413784051,
+            "mae": 2447.8292503250486,
+            "medianAbsoluteError": 1775.906988065477,
+            "errorConcentration": {
+              "maximumWorkShare": 0.25226644894416517,
+              "top5WorkShare": 0.4707736118006487,
+              "top10WorkShare": 0.6368701405257688
+            }
+          },
+          "r0AbsoluteErrorContribution": 0.2406264494423521,
+          "d1AbsoluteErrorContribution": 0.13600242162357556,
+          "r1AbsoluteErrorContribution": 0.18295979667675016,
+          "clipCount": 5,
+          "clipRate": 0.15151515151515152,
+          "d1NonfiniteCount": 0,
+          "d1NonfiniteRate": 0,
+          "numericFallbackCount": 0,
+          "numericFallbackRate": 0,
+          "rawR1Coverage": 1
+        }
+      },
+      "numeric": {
+        "d1FiniteCount": 57,
+        "d1NonfiniteCount": 0,
+        "d1NonfiniteRate": 0,
+        "finiteExtremeCount": 8,
+        "clipCount": 7,
+        "numericFallbackCount": 0,
+        "r1RawCoverage": 1
+      },
+      "structure": {
+        "H50RowwisePredictionAndAbsoluteErrorEquality": true,
+        "H50ArchitectureNotFallback": true,
+        "allActualAndFinalPredictionsFinite": true,
+        "d1NonfiniteIsolated": true,
+        "unisolatedNonfiniteCount": 0,
+        "uniqueWorkWithinOrigin": true,
+        "uniqueCaseKeyCount": 57,
+        "privateRowCount": 57,
+        "privateRowAndCaseKeyConservation": true,
+        "originVisibleOnly": true,
+        "actualAmountConservation": true,
+        "predictionAmountConservation": true
+      },
+      "decision": {
+        "classification": "RETROSPECTIVE_UNSUPPORTED",
+        "supportedChecks": {
+          "aggregateFvaAtLeastOnePercent": false,
+          "bootstrapLowerAboveZero": false,
+          "absoluteBiasWorseningWithinOnePoint": false,
+          "atLeastTwoThirdsEvaluableBlocksImprove": true,
+          "stableTimeBlockSupport": false,
+          "structureAndFiniteGatesPass": true,
+          "noCatastrophicSingleWorkDominance": true
+        },
+        "unsupportedTriggers": {
+          "overallWapeDegradedAtLeastOnePercent": false,
+          "absoluteBiasWorsenedMoreThanTwoPoints": true,
+          "majorityTimeBlocksDegraded": false,
+          "unisolatedNonfinite": false,
+          "catastrophicSingleWorkDominance": false,
+          "H50EqualityFailed": false
+        },
+        "insufficientStableTimeBlocks": true,
+        "independentEvidence": false,
+        "activeCandidate": false,
+        "approvedForAutomation": false,
+        "productionReady": false
+      },
+      "decisionPolicy": {
+        "supportedMinimumFva": 0.01,
+        "supportedBootstrapLowerExclusive": 0,
+        "supportedMaximumAbsoluteBiasWorsening": 0.01,
+        "supportedMinimumImprovingBlockShare": 0.6666666666666666,
+        "minimumStableTimeBlocks": 2,
+        "unsupportedRelativeWapeDegradation": 0.01,
+        "unsupportedAbsoluteBiasWorsening": 0.02,
+        "catastrophicMaximumWorkErrorShare": 0.35,
+        "catastrophicMaximumWorkShareWorsening": 0.1
+      },
+      "bootstrapExecutionCount": 1,
+      "rawCandidateEvaluationCount": 1
+    }
+  },
+  "privateCapability": {
+    "sourceAuthorityStatus": "SOURCE_AUTHORITY_AVAILABLE",
+    "derivedFeatureCacheStatus": "CACHE_HIT",
+    "historicalReceiptStatusBefore": "OPTIONAL_PROVENANCE_MISSING",
+    "cacheMissingWouldBlock": false,
+    "provenanceMissingWouldBlock": false,
+    "privateIdentityOrRowAmountPublished": false
+  },
+  "scientificExecutionCounts": {
+    "newModelTrainingCount": 0,
+    "frozenFormulaOriginFaithfulRefitCount": 1,
+    "modelSelectionCount": 0,
+    "hyperparameterSearchCount": 0,
+    "alphaSearchCount": 0,
+    "residualBoundEstimationCount": 0,
+    "completeRetrospectiveEvaluationCount": 1,
+    "bootstrapExecutionCount": 1,
+    "independentK2EvaluationCount": 0,
+    "finalHoldoutEvaluationCount": 0
+  },
+  "frozenFormulaFitAudits": [
+    {
+      "origin": "2025-11",
+      "status": "FROZEN_FORMULA_ORIGIN_FAITHFUL_REFIT",
+      "trainingRowCount": 52209,
+      "trainingWorkCount": 2605,
+      "trainingOriginCount": 42,
+      "maximumTrainingLabelAvailableAsOf": "2025-11",
+      "fixedHuberDelta": 1,
+      "fixedL2": 10,
+      "hyperparameterSearchExecuted": false,
+      "newModelOrCandidateCreated": false
+    }
+  ],
+  "governance": {
+    "activeCandidate": false,
+    "approvedForAutomation": false,
+    "productionReady": false,
+    "releaseAuthorized": false,
+    "pullRequestMergeAuthorized": false,
+    "nextModelAutomaticallyAuthorized": false
+  }
+}

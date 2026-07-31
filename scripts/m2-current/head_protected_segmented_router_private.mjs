@@ -505,28 +505,44 @@ function renderChineseReport(value) {
   const metrics = evaluation.metrics;
   const bandRows = ["H50", "M30", "L20"].map((bandId) => {
     const band = evaluation.cashBands[bandId];
-    return [
-      `| ${bandId}`,
-      band.workCount,
-      percent(band.absoluteActualCashShare),
-      percent(band.r0.wape),
-      percent(band.d1.wape),
-      percent(band.r1.wape),
-      band.clipCount,
-      band.numericFallbackCount,
-      "|"
-    ].join(" | ");
+    return `| ${bandId} | ${band.workCount}`
+      + ` | ${percent(band.absoluteActualCashShare)}`
+      + ` | ${percent(band.r0.wape)} / `
+      + `${percent(band.r0.signedBias)} / ${number(band.r0.mae)} / `
+      + `${percent(band.r0AbsoluteErrorContribution)}`
+      + ` | ${percent(band.d1.wape)} / `
+      + `${percent(band.d1.signedBias)} / ${number(band.d1.mae)} / `
+      + `${percent(band.d1AbsoluteErrorContribution)}`
+      + ` | ${percent(band.r1.wape)} / `
+      + `${percent(band.r1.signedBias)} / ${number(band.r1.mae)} / `
+      + `${percent(band.r1AbsoluteErrorContribution)}`
+      + ` | ${band.clipCount} / ${percent(band.clipRate)}`
+      + ` | ${band.d1NonfiniteCount} / ${percent(band.d1NonfiniteRate)}`
+      + ` | ${band.numericFallbackCount} / `
+      + `${percent(band.numericFallbackRate)}`
+      + ` | ${percent(band.rawR1Coverage)} |`;
   });
   const originRows = value.retrospective.includedOriginInventory.map(
-    (item) => [
-      `| ${item.origin}`,
-      item.included ? "纳入" : "排除",
-      item.included
+    (item) => `| ${item.origin}`
+      + ` | ${item.included ? "纳入" : "排除"}`
+      + ` | ${item.included
         ? "满足全部动态门禁"
-        : item.exclusionReasons.join("、"),
-      item.openedProfileRowCount,
-      "|"
-    ].join(" | ")
+        : item.exclusionReasons.map(exclusionReasonZh).join("、")}`
+      + ` | ${item.openedProfileRowCount} |`
+  );
+  const includedOriginRows = evaluation.originSummaries.map(
+    (item) => `| ${item.origin}`
+      + ` | ${item.eligibleWorkCount}`
+      + ` | ${item.caseCount}`
+      + ` | ${item.core80WorkCount}`
+      + ` | ${percent(item.core80ActualCashShare)}`
+      + ` | ${item.cashBandWorkCounts.H50}`
+      + ` | ${percent(item.cashBandActualShares.H50)}`
+      + ` | ${item.cashBandWorkCounts.M30}`
+      + ` | ${percent(item.cashBandActualShares.M30)}`
+      + ` | ${item.cashBandWorkCounts.L20}`
+      + ` | ${percent(item.cashBandActualShares.L20)}`
+      + ` | ${item.core80CutoffTieCount} |`
   );
   return `# M2 HPSR01 回溯开发评价 v0.1
 
@@ -558,6 +574,10 @@ function renderChineseReport(value) {
 | --- | --- | --- | ---: |
 ${originRows.join("\n")}
 
+| 纳入 origin | 全部成熟可评价作品 | case 数 | Core80 作品 | Core80 actual cash coverage | H50 作品 | H50 actual share | M30 作品 | M30 actual share | L20 作品 | L20 actual share | cutoff tie |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+${includedOriginRows.join("\n")}
+
 - 最终唯一 case-key：${evaluation.structure.uniqueCaseKeyCount}
 - Core80 actual cash coverage：${percent(evaluation.core80ActualCashCoverage)}
 - H50 逐行严格等于 R0：${evaluation.structure.H50RowwisePredictionAndAbsoluteErrorEquality ? "通过" : "失败"}
@@ -574,15 +594,18 @@ ${originRows.join("\n")}
 - R1 相对 R0 paired FVA：${percent(metrics.r1PairedFvaVsR0)}
 - D1 相对 R0 paired FVA：${percent(metrics.d1PairedFvaVsR0)}
 - R1 作品 cluster bootstrap 95% 区间：${interval(metrics.r1BootstrapFva95.interval95)}
+- R1 absolute bias 相对 R0 恶化：${percent(metrics.absoluteBiasWorsening)}；预冻结 unsupported 门限为超过 ${percent(evaluation.decisionPolicy.unsupportedAbsoluteBiasWorsening)}，本次已触发。
 - 改善时间块：${evaluation.timeBlockSummary.improvingBlockCount}/${evaluation.timeBlockSummary.evaluableBlockCount}；单时间块不足以形成 supported 判断。
 
 ## 现金带诊断
 
-| 现金带 | 作品数 | actual cash share | R0 WAPE | D1 WAPE | R1 WAPE | clip 数 | numeric fallback 数 |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+每个模型单元依次为 WAPE / signed bias / MAE / 对总体 absolute error 的贡献。
+
+| 现金带 | 作品数 | actual cash share | R0 | D1 | R1 | clip 数/比例 | D1 nonfinite 数/比例 | numeric fallback 数/比例 | R1 raw coverage |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 ${bandRows.join("\n")}
 
-- D1 nonfinite：${evaluation.numeric.d1NonfiniteCount}；这些行只在 M30/L20 按冻结规则隔离回退，不会被整模型 fallback 掩盖。
+- D1 nonfinite：${evaluation.numeric.d1NonfiniteCount}；${evaluation.numeric.d1NonfiniteCount > 0 ? "这些行只在 M30/L20 按冻结规则隔离回退，不会被整模型 fallback 掩盖。" : "本次没有触发 numeric fallback。"}
 - R1 raw coverage：${percent(evaluation.numeric.r1RawCoverage)}
 - 最大单作品误差集中度（R0/R1）：${percent(metrics.r0.errorConcentration.maximumWorkShare)} / ${percent(metrics.r1.errorConcentration.maximumWorkShare)}
 - top 5 误差集中度（R0/R1）：${percent(metrics.r0.errorConcentration.top5WorkShare)} / ${percent(metrics.r1.errorConcentration.top5WorkShare)}
@@ -614,6 +637,18 @@ function decisionZh(status) {
     return "回溯开发证据支持，但仍等待独立 K2";
   }
   return "回溯开发证据混合，仍等待独立 K2";
+}
+
+function exclusionReasonZh(reason) {
+  const labels = {
+    ACTUAL_NOT_OPENED_BEFORE_TASK:
+      "本任务前没有 actual 已打开证据（ACTUAL_NOT_OPENED_BEFORE_TASK）",
+    HISTORICAL_ISOLATED_OUTCOME:
+      "历史隔离 outcome（HISTORICAL_ISOLATED_OUTCOME）",
+    INCOMPLETE_THREE_MONTH_AUTHORITY_WINDOW:
+      "三个月权威账单窗口不完整（INCOMPLETE_THREE_MONTH_AUTHORITY_WINDOW）"
+  };
+  return labels[reason] ?? reason;
 }
 
 function percent(value) {

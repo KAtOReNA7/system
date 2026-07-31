@@ -40,7 +40,7 @@
 | 是否已有生产模型？ | 没有；`activeCandidate=null`，`approvedForAutomation=null` |
 | 最新渠道模型结果如何？ | 出版行业规模适配渠道核心（Publishing-Scale Channel Core，`M2-CHAN-PSC01`）已实际执行并失败，不是“尚未运行” |
 | 最新核心老品结论如何？ | 核心老品分周期金额模型的 3/6/12 月性能失败保持冻结；Primary/Core90 另有 5 个有限极端外推单元格，已单独登记数值稳定性失败 |
-| 最新受控研究结果是什么？ | LG01 头部保护分段路由模型 v0.1（LG01 Head-Protected Segmented Router Model v0.1，`M2-WORK-HPSR01`）已完成 K1 canonical implementation 与公开 synthetic/fixture 验证，状态为已实现、等待独立后期起点数据（`M2_HEAD_PROTECTED_SEGMENTED_ROUTER_IMPLEMENTED_AWAITING_LATER_ORIGIN_DATA`）；没有读取真实后期起点 outcome，也没有真实成绩。最近一次已完成真实评价的研究仍是失败的 HCRC01 |
+| 最新受控研究结果是什么？ | LG01 头部保护分段路由模型 v0.1（LG01 Head-Protected Segmented Router Model v0.1，`M2-WORK-HPSR01`）已在唯一合法的 `2025-11` 起点完成真实回溯开发评价；R1 相对冻结 LG01 的 FVA 为 0.8477%，bootstrap 95% 区间跨 0，absolute bias 恶化 2.0358 个百分点，触发“不支持并在独立评价前停止”（`M2_HPSR01_RETROSPECTIVE_DEVELOPMENT_UNSUPPORTED_STOP_BEFORE_K2`）。这不是独立证据 |
 | 没有真实账单能否开发？ | 可以完成公开安装、构建、测试、启动、查询和合成 fixture；只会阻断所属 private capability |
 
 ## 项目状态一览
@@ -60,10 +60,10 @@
 | M2 核心老品分周期金额模型 v0.1 | 首个完整 B0–B3 开发评价已冻结并失败（`M2_CORE_HORIZON_AMOUNT_DEVELOPMENT_FAIL`） | B1–B3 已真实训练；3/6/12 月最佳原始实验臂均为 B3，但三个周期都未通过，现行回退、活动候选和自动化授权不变 |
 | M2 CHAM01 数值稳定性披露 | Primary/Core90 有限极端外推（`M2_CHAM01_PRIMARY_CORE90_NUMERIC_STABILITY_FAIL_FINITE_EXTREME_EXTRAPOLATION`） | 5 个冻结原始单元格的单一作品贡献近乎全部绝对误差；原值未截断、置零或重跑，数值失败与性能失败分别登记 |
 | M2 LG01 头部现金残差校准 v0.1 | 首个完整结果已冻结并失败（`M2_LG01_HEAD_CASH_RESIDUAL_FAIL`） | 全部 16 个外层选择单元都没有合格 alpha；C2/C3 原始候选均为 0 个案例，selected 全量回退冻结 LG01；`activeCandidate=null` |
-| M2 LG01 头部保护分段路由 v0.1 | K1 canonical implementation 与公开 synthetic/fixture 验证已完成，等待独立后期起点数据（`M2_HEAD_PROTECTED_SEGMENTED_ROUTER_IMPLEMENTED_AWAITING_LATER_ORIGIN_DATA`） | 实际值已打开的最大起点为 `2026-02`；动态最早独立起点为 `2026-03`，需要 `2026-04` 至 `2026-06` 完整账单，而当前只完整到 `2026-04`。K2 私有评价和 final holdout 均未执行 |
+| M2 LG01 头部保护分段路由 v0.1 | 首个真实回溯开发结果已冻结为不支持（`M2_HPSR01_RETROSPECTIVE_DEVELOPMENT_UNSUPPORTED_STOP_BEFORE_K2`） | 仅纳入 `2025-11` 的 57 个同案例；不是独立证据。独立评价仍缺 `2026-05`、`2026-06`，但模型已按失败合同停止；K2 与 prospective final holdout 均未执行 |
 | M3 | 仅合成 fixture/prototype | 不代表真实材料执行或正式发布 |
 
-最新状态以 [M2 当前状态索引 v0.51](docs/analysis/m2-v2/M2-v2-current-state-index-v0.51.md)
+最新状态以 [M2 当前状态索引 v0.52](docs/analysis/m2-v2/M2-v2-current-state-index-v0.52.md)
 为准；模型名称、角色、别名、谱系、成绩人口和可比组以
 [Model Registry](config/m2-model-registry.v1.json) 为唯一当前机器权威。
 
@@ -84,7 +84,7 @@
 | 渠道预测研究 | 出版行业规模适配渠道核心（Publishing-Scale Channel Core，`M2-CHAN-PSC01`）已执行失败 | raw candidate 已冻结；历史实现阻断不能掩盖有效失败，也不授权同窗调参 |
 | 周期路由研究 | 按预测周期滚动模型路由器 v0.1（Rolling Horizon Model Router v0.1，`M2-WORK-HR01`）已执行但未确认 | 3/12/36 个月只追平最强单模型，6 个月 WAPE 退化约 2.53%；不是活动候选或运行管线 |
 | 头部现金残差研究 | LG01 头部现金残差校准模型 v0.1（LG01 Head-Cash Residual Calibration Model v0.1，`M2-WORK-HCRC01`）已执行失败 | 16 个外层选择单元均无合格 alpha，两个 raw 候选均无案例；停止在同一现金特征与同一评价窗内继续微调，不得重跑或外推到 6/12/36 月 |
-| 头部保护分段路由研究 | LG01 头部保护分段路由模型 v0.1（LG01 Head-Protected Segmented Router Model v0.1，`M2-WORK-HPSR01`）已实现、等待独立评价 | canonical implementation 与公开 synthetic/fixture 验证已完成；没有合格独立 later-origin，没有读取真实 outcome，不是活动候选、运行管线或自动化批准 |
+| 头部保护分段路由研究 | LG01 头部保护分段路由模型 v0.1（LG01 Head-Protected Segmented Router Model v0.1，`M2-WORK-HPSR01`）回溯开发评价不支持并停止 | `2025-11` 的 57 个同案例已经真实评价；该证据非独立，absolute bias 护栏失败。K2、final holdout、活动候选、运行管线和自动化批准均为空或未执行 |
 | 组合预测 | 组合现金 ETS/Holt-Winters（Portfolio ETS/Holt-Winters，`M2-PORT-ETS01`）是组合级参考（portfolio reference） | 组合结果不得分配回作品；不同 horizon 必须分别报告 |
 | 分层组合开发候选 | 分层收入组合模型 v0.1（Layered Revenue Composition Model v0.1，`M2-PORT-LRC01`）已执行失败 | 四分量守恒，但 12/36 个月质量失败且协议物化不完整；不替代组合级参考 |
 | 排序能力 | 仅有后验诊断（post-hoc diagnostic） | 排序信号不能掩盖点预测失败，也不能直接用于分配 |
@@ -117,19 +117,31 @@
 | 渠道预测 | 出版行业适配渠道月度发生—条件金额核心（Publishing-Scale Channel Monthly Occurrence × Conditional Amount Core，`M2-CHAN-PSC01`） | 已执行失败候选 | raw candidate 已冻结；不允许同窗 outcome-driven 调参 |
 | 周期路由 | 按预测周期滚动模型路由器 v0.1（Rolling Horizon Model Router v0.1，`M2-WORK-HR01`） | 已执行失败候选 | 没有稳定优于各周期最强单模型，不是 selected pipeline |
 | 头部现金残差 | LG01 头部现金残差校准模型 v0.1（LG01 Head-Cash Residual Calibration Model v0.1，`M2-WORK-HCRC01`） | 已执行失败候选 | C2/C3 没有 raw 候选案例；selected 只是全量回退冻结 LG01，不能掩盖失败 |
-| 头部保护分段路由 | LG01 头部保护分段路由模型 v0.1（LG01 Head-Protected Segmented Router Model v0.1，`M2-WORK-HPSR01`） | 已实现、等待独立评价 | K1 canonical implementation 与公开 synthetic/fixture 验证已完成；K2 私有评价未授权且未执行，不是活动候选、运行管线或自动化批准 |
+| 头部保护分段路由 | LG01 头部保护分段路由模型 v0.1（LG01 Head-Protected Segmented Router Model v0.1，`M2-WORK-HPSR01`） | 回溯开发评价不支持并在独立评价前停止 | 唯一真实回溯结果已冻结；K2 未执行、prospective final holdout 未打开，不是活动候选、运行管线或自动化批准 |
 | 分层组合 | 分层收入组合模型 v0.1（Layered Revenue Composition Model v0.1，`M2-PORT-LRC01`） | 已执行失败候选 | 作品点预测以外的组合能力；不能与作品模型直接排名 |
 
 当前没有活动候选和自动化批准模型。完整历史模型、实验臂、别名和成绩总账见
 [M2 模型目录与成绩总账](docs/analysis/m2-current/M2-model-catalog-and-scorecard-v1.md)。
-当前活动实验是 M2 LG01 头部保护分段路由 v0.1
-（M2 LG01 Head-Protected Segmented Router v0.1，
-`M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01`）。它已完成 K1 canonical
-implementation 与公开 synthetic/fixture 验证；没有读取真实 later-origin outcome，
-没有真实成绩。K2 私有评价与 final holdout 均未授权且未执行，活动候选和自动化批准
-仍为空。
+当前活动实验为 `null`。最近关闭的 M2 LG01 头部保护分段路由实验
+（`M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01`）已经产生首个真实回溯开发
+结果并判定不支持；独立 K2 未执行，prospective final holdout 未打开，活动候选和
+自动化批准仍为空。
 
 ## 最新研究结论
+
+LG01 头部保护分段路由模型 v0.1（`M2-WORK-HPSR01`）在唯一合法回溯起点
+`2025-11` 上完成 57 个同案例的三个月真实评价。冻结 LG01 基线 WAPE 为 14.3234%，
+HPSR01 原始候选为 14.2019%，paired FVA 为 0.8477%；2,000 次作品聚类 bootstrap
+95% 区间为 [-18.3441%, 20.0303%]。虽然点估计略有改善，absolute bias 从 6.6974%
+恶化到 8.7333%，恶化 2.0358 个百分点并越过预冻结硬门禁，故结论为回溯开发
+不支持并在独立评价前停止。这份证据不是独立 later-origin；K2 和 prospective final
+holdout 均未执行。
+
+详细证据：
+
+- [HPSR01 回溯开发评价](docs/analysis/m2-current/M2-head-protected-segmented-router-retrospective-development-v0.1.md)
+- [HPSR01 回溯开发机器结果](docs/analysis/m2-current/M2-head-protected-segmented-router-retrospective-development-v0.1.json)
+- [M2 当前状态索引 v0.52](docs/analysis/m2-v2/M2-v2-current-state-index-v0.52.md)
 
 出版行业规模适配渠道核心（`M2-CHAN-PSC01-RAW`）已完成首个完整、同人口、可解释的
 原始候选评价，共冻结 `3,318,819` 行预测：
@@ -148,7 +160,7 @@ implementation 与公开 synthetic/fixture 验证；没有读取真实 later-ori
 
 - [出版规模渠道开发评价](docs/analysis/m2-current/M2-current-publishing-scale-channel-development-v0.1.md)
 - [出版规模渠道可预测性诊断](docs/analysis/m2-current/M2-current-publishing-scale-channel-forecastability-v0.1.md)
-- [M2 当前状态索引 v0.51](docs/analysis/m2-v2/M2-v2-current-state-index-v0.51.md)
+- [M2 当前状态索引 v0.52](docs/analysis/m2-v2/M2-v2-current-state-index-v0.52.md)
 
 随后完成的核心老品审计进一步表明：
 
@@ -177,7 +189,7 @@ implementation 与公开 synthetic/fixture 验证；没有读取真实 later-ori
    明确预测目标、使用场景和禁止外推的边界；
 2. 再读 [M2 模型目录与成绩总账](docs/analysis/m2-current/M2-model-catalog-and-scorecard-v1.md)，
    理解模型、实验、状态码和当前角色；
-3. 最后读 [M2 当前状态索引 v0.51](docs/analysis/m2-v2/M2-v2-current-state-index-v0.51.md)，
+3. 最后读 [M2 当前状态索引 v0.52](docs/analysis/m2-v2/M2-v2-current-state-index-v0.52.md)，
    查看最新结论、阻断项和下一步。
 
 ### 给开发者
@@ -354,7 +366,7 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
 
 | 主题 | 当前入口 |
 |---|---|
-| 最新状态 | [M2 当前状态索引 v0.51](docs/analysis/m2-v2/M2-v2-current-state-index-v0.51.md) |
+| 最新状态 | [M2 当前状态索引 v0.52](docs/analysis/m2-v2/M2-v2-current-state-index-v0.52.md) |
 | 模型身份与角色 | [Model Registry](config/m2-model-registry.v1.json) · [中文模型目录](docs/analysis/m2-current/M2-model-catalog-and-scorecard-v1.md) |
 | 产品定义 | [M2 Forecast Intelligence v2 PRD](docs/prd/m2-v2/M2-forecast-intelligence-v2-prd-v0.2.md) |
 | 评价体系 | [v2.2 合同](docs/analysis/m2-current/M2-evaluation-contract-v2.2.md) · [v2.2 验证](docs/analysis/m2-current/M2-evaluation-contract-v2.2-validation.md) |
@@ -363,7 +375,7 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
 | 核心老品全周期 | [同案例重评分](docs/analysis/m2-current/M2-core-legacy-full-horizon-same-case-rescore-v0.1.md) · [滚动路由](docs/analysis/m2-current/M2-core-legacy-horizon-router-v0.1.md) · [已有渠道分配](docs/analysis/m2-current/M2-core-legacy-observed-channel-allocation-v0.1.md) |
 | 核心老品分周期金额 | [预注册](docs/analysis/m2-current/M2-core-legacy-horizon-amount-preregistration-v0.1.md) · [冻结开发评价](docs/analysis/m2-current/M2-core-legacy-horizon-amount-development-v0.1.md) · [有限极端外推披露](docs/analysis/m2-current/M2-core-legacy-horizon-amount-numeric-stability-disclosure-v0.1.json) |
 | LG01 头部现金残差校准 | [冻结开发评价](docs/analysis/m2-current/M2-lg01-head-cash-residual-development-v0.1.md) · [机器结果](docs/analysis/m2-current/M2-lg01-head-cash-residual-development-v0.1.json) · [三个月探索性预注册](docs/analysis/m2-current/M2-lg01-head-cash-residual-preregistration-v0.1.md) · [实现与合成验证](docs/analysis/m2-current/M2-lg01-head-cash-residual-implementation-readiness-v0.1.md) · [机器合同](config/m2-current-lg01-head-cash-residual.v0.1.json) |
-| LG01 头部保护分段路由 | [预注册](docs/analysis/m2-current/M2-head-protected-segmented-router-preregistration-v0.1.md) · [later-origin 日期盘点](docs/analysis/m2-current/M2-head-protected-segmented-router-later-origin-availability-v0.1.md) · [HCRC01 选择门禁归因](docs/analysis/m2-current/M2-head-protected-segmented-router-selection-gate-attribution-v0.1.md) · [机器合同](config/m2-current-head-protected-segmented-router.v0.1.json) |
+| LG01 头部保护分段路由 | [回溯开发评价](docs/analysis/m2-current/M2-head-protected-segmented-router-retrospective-development-v0.1.md) · [机器结果](docs/analysis/m2-current/M2-head-protected-segmented-router-retrospective-development-v0.1.json) · [回溯 readiness](docs/analysis/m2-current/M2-head-protected-segmented-router-retrospective-readiness-v0.1.md) · [预注册](docs/analysis/m2-current/M2-head-protected-segmented-router-preregistration-v0.1.md) · [later-origin 日期盘点](docs/analysis/m2-current/M2-head-protected-segmented-router-later-origin-availability-v0.2.md) · [HCRC01 选择门禁归因](docs/analysis/m2-current/M2-head-protected-segmented-router-selection-gate-attribution-v0.1.md) · [机器合同](config/m2-current-head-protected-segmented-router.v0.1.json) |
 | 工程与协作 | [协作规则](AGENTS.md) · [命令生命周期](config/command-lifecycle.v0.1.json) |
 
 ## 安全与贡献

@@ -64,6 +64,9 @@ const implementationReadiness = await readJson(
 const retrospectiveReadiness = await readJson(
   config.publicOutputs.retrospectiveReadinessJson
 );
+const retrospectiveDevelopment = await readJson(
+  config.publicOutputs.retrospectiveEvaluationJson
+);
 const availabilityReport = await readText(
   config.publicOutputs.availabilityReport
 );
@@ -83,9 +86,12 @@ const implementationReadinessReport = await readText(
 const retrospectiveReadinessReport = await readText(
   config.publicOutputs.retrospectiveReadinessReport
 );
+const retrospectiveDevelopmentReport = await readText(
+  config.publicOutputs.retrospectiveEvaluationReport
+);
 const synthetic = await runHpsrSyntheticFixture();
 
-test("K1 is implemented, retrospective is authorized, and K2 stays conditional", () => {
+test("K1 and one retrospective result are frozen while K2 is stopped", () => {
   const result = validateHeadProtectedSegmentedRouterContract(config);
   assert.equal(result.valid, true, result.errors.join("\n"));
   assert.equal(config.model.stableModelId, HPSR_MODEL_ID);
@@ -97,9 +103,15 @@ test("K1 is implemented, retrospective is authorized, and K2 stays conditional",
     config.identities.map(({ armId }) => armId),
     HPSR_ARM_IDS
   );
-  assert.equal(config.experiment.status, HPSR_IMPLEMENTED_STATUS);
+  assert.equal(
+    config.experiment.status,
+    HPSR_RETROSPECTIVE_UNSUPPORTED_STATUS
+  );
   assert.equal(config.experiment.K1, HPSR_K1_EXECUTION_STATUS);
-  assert.equal(config.experiment.K2, HPSR_K2_WAITING_STATUS);
+  assert.equal(
+    config.experiment.K2,
+    "NOT_EXECUTED_STOPPED_BY_RETROSPECTIVE_UNSUPPORTED"
+  );
   assert.equal(config.execution.K1ImplementationAuthorizedNow, true);
   assert.equal(
     config.execution.K1SemanticAndBoundPreparationCompleted,
@@ -119,7 +131,7 @@ test("K1 is implemented, retrospective is authorized, and K2 stays conditional",
   );
   assert.equal(
     config.execution.retrospectiveDevelopmentEvaluationCompleted,
-    false
+    true
   );
   assert.equal(config.authorization.modelTrainingNow, false);
   assert.equal(config.authorization.modelSelectionNow, false);
@@ -772,7 +784,81 @@ test("HCRC01 unknown per-alpha counts stay null without a rerun", () => {
   );
 });
 
-test("public Chinese reports match implemented-awaiting status and leak no private path", () => {
+test("frozen retrospective public result preserves the real unsupported outcome", () => {
+  assert.equal(
+    retrospectiveDevelopment.status,
+    HPSR_RETROSPECTIVE_UNSUPPORTED_STATUS
+  );
+  assert.equal(
+    retrospectiveDevelopment.execution.retrospectiveActuallyExecuted,
+    true
+  );
+  assert.equal(
+    retrospectiveDevelopment.retrospective.independentEvidence,
+    false
+  );
+  assert.deepEqual(
+    retrospectiveDevelopment.retrospective.origins,
+    ["2025-11"]
+  );
+  const evaluation = retrospectiveDevelopment.retrospective.evaluation;
+  assert.equal(evaluation.caseCount, 57);
+  assert.equal(evaluation.workCount, 57);
+  assert.equal(evaluation.structure.uniqueCaseKeyCount, 57);
+  assert.equal(
+    evaluation.metrics.r1PairedFvaVsR0,
+    0.00847712522619727
+  );
+  assert.equal(
+    evaluation.metrics.absoluteBiasWorsening,
+    0.020358292834892863
+  );
+  assert.equal(
+    evaluation.metrics.r1BootstrapFva95.interval95.lower,
+    -0.1834407271166846
+  );
+  assert.equal(
+    evaluation.decision.unsupportedTriggers
+      .absoluteBiasWorsenedMoreThanTwoPoints,
+    true
+  );
+  assert.equal(
+    evaluation.structure.H50RowwisePredictionAndAbsoluteErrorEquality,
+    true
+  );
+  assert.deepEqual(
+    evaluation.originSummaries[0].cashBandWorkCounts,
+    { H50: 5, M30: 19, L20: 33 }
+  );
+  assert.equal(evaluation.numeric.numericFallbackCount, 0);
+  assert.equal(evaluation.numeric.r1RawCoverage, 1);
+  assert.equal(
+    retrospectiveDevelopment.scientificExecutionCounts
+      .newModelTrainingCount,
+    0
+  );
+  assert.equal(
+    retrospectiveDevelopment.scientificExecutionCounts
+      .completeRetrospectiveEvaluationCount,
+    1
+  );
+  assert.equal(
+    retrospectiveDevelopment.scientificExecutionCounts
+      .independentK2EvaluationCount,
+    0
+  );
+  assert.equal(
+    retrospectiveDevelopment.readiness.prospectiveFinalHoldoutOpened,
+    false
+  );
+  assert.equal(retrospectiveDevelopment.governance.activeCandidate, false);
+  assert.equal(
+    retrospectiveDevelopment.governance.approvedForAutomation,
+    false
+  );
+});
+
+test("public Chinese reports preserve history and leak no private path", () => {
   const semantics = validateHpsrOpenedOriginSemantics(openedSemantics);
   assert.equal(semantics.valid, true, semantics.errors.join("\n"));
   for (const report of [
@@ -782,7 +868,8 @@ test("public Chinese reports match implemented-awaiting status and leak no priva
     prospectiveFinalHoldoutReport,
     residualBoundReport,
     implementationReadinessReport,
-    retrospectiveReadinessReport
+    retrospectiveReadinessReport,
+    retrospectiveDevelopmentReport
   ]) {
     assert.doesNotMatch(report, /data\/private-(?:input|output)\//u);
     assert.doesNotMatch(report, /[A-Z]:[\\/]/u);
@@ -799,6 +886,15 @@ test("public Chinese reports match implemented-awaiting status and leak no priva
   assert.equal(
     retrospectiveReadiness.auditBoundary.newFutureActualAmountsRead,
     false
+  );
+  assert.ok(
+    retrospectiveDevelopmentReport.includes(
+      HPSR_RETROSPECTIVE_UNSUPPORTED_STATUS
+    )
+  );
+  assert.doesNotMatch(
+    JSON.stringify(retrospectiveDevelopment),
+    /standardWorkId|channelUid|data[\\/]+private-(?:input|output)|[A-Z]:[\\/]/u
   );
 });
 
