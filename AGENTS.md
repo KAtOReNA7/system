@@ -294,6 +294,15 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
   alpha 搜索与边界重估均未执行。当前完整账单只到 `2026-04`，首个独立起点预计仍缺
   `2026-05`、`2026-06`；prospective final holdout 必须保持未打开，active
   candidate、自动化批准和 production 权限继续为空。未来执行需要新的明确授权。
+- 当前 M2 的 3、6、12、36 个月都是必须分别交付和分别判定的硬业务输出；不得用短周期
+  通过替代长周期。36 个月必须使用多个合法历史起点的 origin-safe rolling 现金、
+  逐起点稳定性和不确定性作为当前硬门禁，并明确尚未形成 prospective 验证。
+  60 个月只允许作为未来 M3 precursor 的低置信成熟目录情景参考，不属于当前 M2
+  排名、验收门禁或实现范围。
+- LG01 头部保护尾段修正模型 v0.2（`M2-WORK-HPSR02`）未来首次合法独立评价若为
+  `NOT_SUPPORTED` 或 `INCONCLUSIVE`，必须结束现金-only 邻接模型工作，不得继续
+  HPSR03；只有 `SUPPORTED` 才可在用户另行授权后增加至多一个第二独立起点确认，
+  且任何结果都不自动授权 production。
 
 ## Git 与提交规则
 

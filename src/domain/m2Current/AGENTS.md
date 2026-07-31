@@ -122,17 +122,31 @@ This directory is the only implementation home for current M2 model logic.
   without a later explicit authorization and dynamically complete bills. The
   prospective final holdout remains unopened, and the production loader,
   route, API, and current runtime composition must not import HPSR02.
-- Company-level M2 sales-share forecasting must keep existing core, existing
-  tail, future new-work portfolio, and existing-work new-channel portfolio cash
-  mutually exclusive and amount-conserving. Future new works and future channel
-  entries may be forecast only as portfolio amounts, never as identities.
+- If the first legal independent evaluation of `M2-WORK-HPSR02` is
+  `NOT_SUPPORTED` or `INCONCLUSIVE`, end cash-only adjacent-model work and do
+  not create HPSR03. Only `SUPPORTED` may permit at most one second independent
+  origin confirmation after separate user authorization; no result
+  automatically authorizes production.
+- Historical company portfolio, future-new-work, and existing-work
+  future-channel studies are `FUTURE_PHASE` references only. Preserve their
+  mutually exclusive, amount-conserving audit identities, but do not treat
+  them as current-M2 models, current actual, current ranking inputs, or current
+  implementation scope.
 - Do not default 36-month forecasts to recursive work-level growth factors.
   Estimate each catalog year directly from mature pre-origin pseudo-origins;
   judge support from mature time blocks, independent samples, positive cash
   denominators, and uncertainty rather than fixed 50/100-work thresholds.
-- Horizon decisions remain separate. A 3/6-month pass must not authorize a
-  12/36-month claim, and a long-horizon failure must not erase valid short-term
-  evidence. Revenue coverage, not work-count coverage, is the business target.
+- Three-, six-, twelve-, and thirty-six-month outputs are all required current
+  M2 business outputs and remain separate decision surfaces. A short-horizon
+  pass must not authorize a longer-horizon claim, and a long-horizon failure
+  must not erase valid short-term evidence. The thirty-six-month output is a
+  hard gate based on multiple legal historical origin-safe rolling cash
+  origins, per-origin stability, and uncertainty, with an explicit
+  non-prospective caveat. Revenue coverage, not work-count coverage, is the
+  business target.
+- A sixty-month output is only a low-confidence mature-catalog scenario
+  reference for a future M3 precursor. It is not a current-M2 ranking surface,
+  acceptance gate, or implementation target.
 - 受控 private development 可在首个有效 raw candidate 评价之前修复基础设施、
   路径、schema、缓存、receipt、内存或确定性实现错误并保留逐次 attempt receipt。
   一旦首个完整、可解释结果产生，必须立即冻结；不得根据 outer outcome 修改特征、
