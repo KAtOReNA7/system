@@ -37,6 +37,7 @@
 | 这个项目预测什么？ | **未来分成收入现金**；买断及其他非分成现金不进入 M2 预测目标 |
 | 当前可以直接使用哪个模型？ | 作品发生-金额校准模型 v0.3（Occurrence-Amount Calibration v0.3，`M2-WORK-OA03`）仅作为**兼容性现行运行回退** |
 | 当前研究比较基线是什么？ | 人工锚定可学习全局模型（Human-Anchored Learned Global，`M2-WORK-LG01`） |
+| 当前开发业务验收门限是什么？ | [M2 业务验收合同 v1](config/m2-business-acceptance-contract.v1.json) 已激活 3/6/12/36 个月（H3/H6/H12/H36）development-only 门禁；Core80 是硬门禁，Core90 是非否决敏感性披露 |
 | 是否已有生产模型？ | 没有；`activeCandidate=null`，`approvedForAutomation=null` |
 | 最新渠道模型结果如何？ | 出版行业规模适配渠道核心（Publishing-Scale Channel Core，`M2-CHAN-PSC01`）已实际执行并失败，不是“尚未运行” |
 | 最新核心老品结论如何？ | 核心老品分周期金额模型的 3/6/12 月性能失败保持冻结；Primary/Core90 另有 5 个有限极端外推单元格，已单独登记数值稳定性失败 |
@@ -48,7 +49,8 @@
 | 范围 | 当前结论 | 用户应如何理解 |
 |---|---|---|
 | 公共工程 | 可安装、构建、测试和启动 | Linux/Windows 使用同一套无私有数据门禁；以上方 CI 徽章为准 |
-| M2 业务门禁 | Canary 失败（`CANARY_FAIL`） | 尚未达到自动化或发布要求 |
+| M2 开发业务验收合同 v1 | 四周期门限已激活（`M2_BUSINESS_ACCEPTANCE_CONTRACT_V1_ACTIVE_FOR_DEVELOPMENT_ONLY`） | 只回答绝对误差是否进入开发业务可接受范围；不等于候选优越、production、automation 或 release |
+| M2 发布与自动化门禁 | Canary 失败（`CANARY_FAIL`） | 尚未达到自动化或发布要求；不与 development-only 业务验收混写 |
 | M2 自动化 | 自动化被阻断（`AUTOMATION_BLOCKED`） | 没有模型获准自动化，活动候选为空（`activeCandidate=null`） |
 | M2 评价合同 v2.1 | 历史开发评价合同 | 继续保留审计证据，但当前开发评价权威已前移到 v2.2 |
 | M2 评价合同 v2.2 | 开发评价已激活，并透明隔离无法分配的冲销残差（`M2_EVALUATION_V2_2_ACTIVE_FOR_DEVELOPMENT_WITH_DISCLOSED_RESIDUAL_EXCLUSION`） | 不是 production/automation gate，不改变运行回退模型 |
@@ -134,6 +136,22 @@ synthetic 验证，尚未执行。prospective final holdout 未打开，活动�
 
 ## 最新研究结论
 
+M2 业务验收合同 v1 已成为开发业务门限的唯一数值权威。3/6/12 个月
+（H3/H6/H12）门限已激活；36 个月（H36）冻结
+`M2-WORK-LG01`（Human-Anchored Learned Global，人工锚定可学习全局模型）
+同案例基线已从源权威精确重建并激活。H36 Core80 共 13 个历史起点、488 个 case、
+62 部作品，WAPE 为 29.7330%，absolute signed bias 为 9.5689%，通过 40% / 12%
+双门限；H50/M30/L20 已可精确评价。该结论永久携带
+`HISTORICAL_MULTI_ORIGIN_NOT_PROSPECTIVE_VALIDATION`，独立时间证据仍不足，
+没有因此训练、选择或晋升模型。
+
+业务可用性与候选优越性保持分离：未来候选必须在 exact same-case 上同时满足九项
+`AND` 规则；滚动人民币量只能称为“滚动预测决策误差减少（aggregated
+forecast-decision error reduction）”，不能表述为公司实际节省或利润。详细证据见：
+
+- [M2 业务验收机器合同 v1](config/m2-business-acceptance-contract.v1.json)
+- [M2 业务验收合同与 H36 验证报告](docs/analysis/m2-current/M2-business-acceptance-contract-v1.md)
+
 LG01 头部保护分段路由模型 v0.1（`M2-WORK-HPSR01`）的原机械合同结果不变：
 冻结 LG01 基线 WAPE 为 14.3234%，HPSR01 为 14.2019%，paired FVA 为 0.8477%；
 bootstrap 95% 区间为 [-18.3441%, 20.0303%]，absolute bias 恶化 2.0358 个百分点
@@ -197,9 +215,11 @@ H50/M30 精确使用 LG01、仅 L20 使用既有冻结有界修正的唯一主�
 
 1. 先读 [M2 Forecast Intelligence v2 PRD](docs/prd/m2-v2/M2-forecast-intelligence-v2-prd-v0.2.md)，
    明确预测目标、使用场景和禁止外推的边界；
-2. 再读 [M2 模型目录与成绩总账](docs/analysis/m2-current/M2-model-catalog-and-scorecard-v1.md)，
+2. 再读 [M2 业务验收合同与 H36 验证报告](docs/analysis/m2-current/M2-business-acceptance-contract-v1.md)，
+   区分开发业务可用性、候选优越性和发布授权；
+3. 再读 [M2 模型目录与成绩总账](docs/analysis/m2-current/M2-model-catalog-and-scorecard-v1.md)，
    理解模型、实验、状态码和当前角色；
-3. 最后读 [M2 当前状态索引 v0.53](docs/analysis/m2-v2/M2-v2-current-state-index-v0.53.md)，
+4. 最后读 [M2 当前状态索引 v0.53](docs/analysis/m2-v2/M2-v2-current-state-index-v0.53.md)，
    查看最新结论、阻断项和下一步。
 
 ### 给开发者
@@ -298,6 +318,13 @@ holdout。
 授予 production、automation 或 release 权限。详情见
 [评价合同 v2.2](docs/analysis/m2-current/M2-evaluation-contract-v2.2.md)。
 
+[M2 业务验收合同 v1](config/m2-business-acceptance-contract.v1.json) 是开发业务门限
+的唯一数值权威，与评价合同的 actual、人口和可比组语义配合使用。Core80 是硬门禁，
+Core90 是必须披露但通常不否决 Core80 的敏感性人口；3/6/12/36 个月 WAPE 上限
+分别为 30%/32%/35%/40%，absolute signed bias 上限分别为 10%/10%/12%/12%。
+H36 当前只凭历史多起点 development-only 证据激活，不是 prospective validation，
+也不改变运行回退、活动候选、自动化或发布状态。
+
 ## Public / Private 边界
 
 | 类型 | 示例 | 缺失时如何处理 | 是否进入 Git |
@@ -380,6 +407,7 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
 | 模型身份与角色 | [Model Registry](config/m2-model-registry.v1.json) · [中文模型目录](docs/analysis/m2-current/M2-model-catalog-and-scorecard-v1.md) |
 | 产品定义 | [M2 Forecast Intelligence v2 PRD](docs/prd/m2-v2/M2-forecast-intelligence-v2-prd-v0.2.md) |
 | 评价体系 | [v2.2 合同](docs/analysis/m2-current/M2-evaluation-contract-v2.2.md) · [v2.2 验证](docs/analysis/m2-current/M2-evaluation-contract-v2.2-validation.md) |
+| 开发业务验收 | [机器合同 v1](config/m2-business-acceptance-contract.v1.json) · [中文合同与 H36 验证](docs/analysis/m2-current/M2-business-acceptance-contract-v1.md) |
 | 出版规模渠道实验 | [开发评价](docs/analysis/m2-current/M2-current-publishing-scale-channel-development-v0.1.md) · [可预测性诊断](docs/analysis/m2-current/M2-current-publishing-scale-channel-forecastability-v0.1.md) |
 | 核心老品范围 | [范围合同](docs/analysis/m2-current/M2-core-legacy-observed-channel-scope-contract-v0.1.md) · [冻结重评分](docs/analysis/m2-current/M2-core-legacy-frozen-rescore-v0.1.md) · [尾部干扰测试](docs/analysis/m2-current/M2-core-legacy-tail-interference-test-v0.1.md) |
 | 核心老品全周期 | [同案例重评分](docs/analysis/m2-current/M2-core-legacy-full-horizon-same-case-rescore-v0.1.md) · [滚动路由](docs/analysis/m2-current/M2-core-legacy-horizon-router-v0.1.md) · [已有渠道分配](docs/analysis/m2-current/M2-core-legacy-observed-channel-allocation-v0.1.md) |
