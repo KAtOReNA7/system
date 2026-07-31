@@ -214,10 +214,10 @@ HPSR02 独立评价 0。`laterOriginRead=false`，
 H50、缓存/receipt/source 三类边界、私有身份不进入公开合同，以及冻结后零训练与
 零保留窗口读取。
 
-最终公开提交还必须从 GitHub 远端分支的精确 HEAD 建立无 private、无凭据的新克隆，
-并在该克隆重复上述完整公共基线；同一精确 HEAD 的 Linux `verify` 与 Windows
-`verify-windows` 也必须成功。动态提交 SHA 和最终 CI run 由 Draft PR #35 与最终
-交付记录绑定，不作为数值合同的未来执行条件。PR 保持 Open + Draft + Unmerged，
-本任务不合并。
+交付时已从 GitHub 远端活动分支的精确 HEAD 建立匿名 HTTPS、无 private、无凭据
+的新克隆；该克隆的 `npm ci` 成功、npm 审计为 0 个漏洞，并重复通过上述完整公共
+基线。同一精确 HEAD 的 Linux `verify` 与 Windows `verify-windows` 均成功。
+动态提交 SHA 和最终 CI run 由 Draft PR #35 与最终交付记录绑定，不作为数值合同
+的未来执行条件。PR 保持 Open + Draft + Unmerged，本任务不合并。
 
 H36 科学结果已经冻结；上述后续动作只验证公开代码、合同和文档，不得再次重评分。
