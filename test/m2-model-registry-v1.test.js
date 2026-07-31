@@ -36,7 +36,7 @@ test("registry schema, evidence paths and immutable digests validate", () => {
   );
   assert.equal(validation.counts.modelCount, 34);
   assert.equal(validation.counts.experimentCount, 21);
-  assert.equal(validation.counts.nonModelIdentifierCount, 107);
+  assert.equal(validation.counts.nonModelIdentifierCount, 110);
   assert.equal(validation.counts.evaluationCount, 111);
   assert.equal(validation.counts.comparabilityGroupCount, 57);
 });
@@ -230,7 +230,7 @@ test("core legacy population test records non-confirmation without promotion", (
   );
   assert.equal(
     registry.currentRoles.latestStateIndex,
-    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.50.md"
+    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.51.md"
   );
   assert.equal(registry.currentRoles.activeCandidate, null);
   assert.equal(registry.currentRoles.approvedForAutomation, null);
@@ -370,7 +370,7 @@ test("HCRC01 first complete failure is frozen without promotion", () => {
   assert.equal(registry.currentRoles.approvedForAutomation, null);
 });
 
-test("HPSR01 is preregistered waiting and has no model outcome", () => {
+test("HPSR01 K1 is implemented awaiting independent evaluation without outcome", () => {
   const model = registry.models.find(
     (item) => item.stableModelId === "M2-WORK-HPSR01"
   );
@@ -383,11 +383,11 @@ test("HPSR01 is preregistered waiting and has no model outcome", () => {
 
   assert.equal(
     model.currentRole,
-    "preregistered_exploratory_candidate_not_executed"
+    "implemented_awaiting_independent_evaluation"
   );
   assert.equal(
     model.operationalStatus,
-    "not_implemented_not_executed_not_selected_not_production"
+    "implemented_public_synthetic_verified_not_independently_evaluated_not_selected_not_production"
   );
   assert.deepEqual(
     model.predecessorIds,
@@ -403,7 +403,25 @@ test("HPSR01 is preregistered waiting and has no model outcome", () => {
   );
   assert.equal(
     experiment.resultStatus,
-    "M2_HEAD_PROTECTED_SEGMENTED_ROUTER_WAITING_FOR_NEW_BILLS"
+    "M2_HEAD_PROTECTED_SEGMENTED_ROUTER_IMPLEMENTED_AWAITING_LATER_ORIGIN_DATA"
+  );
+  assert.equal(experiment.k1CanonicalImplementationComplete, true);
+  assert.equal(experiment.k1PublicSyntheticValidationComplete, true);
+  assert.equal(experiment.k2PrivateEvaluationAuthorized, false);
+  assert.equal(
+    experiment.arms.find((arm) => arm.armId === "R1").executionStatus,
+    "IMPLEMENTED_PUBLIC_SYNTHETIC_VERIFIED_REAL_LATER_ORIGIN_NOT_EXECUTED"
+  );
+  assert.equal(
+    experiment.arms
+      .filter((arm) => arm.armId !== "R1")
+      .every(
+        (arm) => (
+          arm.executionStatus
+            === "REAL_LATER_ORIGIN_NOT_EXECUTED_AWAITING_AUTHORIZATION_AND_DATA"
+        )
+      ),
+    true
   );
   assert.equal(experiment.candidateOutcomeProduced, false);
   assert.equal(experiment.rawCandidateEvidenceProduced, false);
@@ -672,7 +690,7 @@ test("reader catalog is a deterministic complete rendering of the registry", asy
   );
   assert.match(
     catalog,
-    /M2_HEAD_PROTECTED_SEGMENTED_ROUTER_WAITING_FOR_NEW_BILLS/u
+    /M2_HEAD_PROTECTED_SEGMENTED_ROUTER_IMPLEMENTED_AWAITING_LATER_ORIGIN_DATA/u
   );
   assert.match(catalog, /eval-hcrc01-c2-core80-strict-h3-raw/u);
   assert.match(

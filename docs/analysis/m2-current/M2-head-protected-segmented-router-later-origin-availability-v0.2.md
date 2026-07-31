@@ -6,7 +6,9 @@ LG01 头部保护分段路由模型 v0.1（`M2-WORK-HPSR01`）目前仍没有可
 later-origin：
 
 当前机器状态为
-`M2_HEAD_PROTECTED_SEGMENTED_ROUTER_WAITING_FOR_NEW_BILLS`。
+`M2_HEAD_PROTECTED_SEGMENTED_ROUTER_IMPLEMENTED_AWAITING_LATER_ORIGIN_DATA`：
+公共 canonical 实现与 synthetic/fixture 验证已经完成，但仍在等待完整账单和后续
+独立授权。这不是模型失败，也不是模型通过。
 
 - 最大 actual 值已打开起点：`2026-02`；
 - 最早独立起点：`2026-03`；
@@ -38,5 +40,6 @@ holdout 可以尚未成熟；现在只登记公式和日期，不读取其金额
 
 ## 当前停止点
 
-HPSR01 的 opened 语义与 residual-bound 来源合同可以继续完成，K1 canonical
-implementation 可以继续完成；K2、真实评分、bootstrap 和 final holdout 仍关闭。
+HPSR01 的 opened 语义、residual-bound 来源冻结、canonical implementation 与
+公开 synthetic/fixture 验证均已完成。K2、真实评分、bootstrap 和 final holdout
+仍关闭；即使账单变为完整，也必须等待新的 capability-scoped 用户授权。

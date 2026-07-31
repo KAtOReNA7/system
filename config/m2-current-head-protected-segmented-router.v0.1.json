@@ -6,12 +6,12 @@
     "displayNameZh": "M2 LG01 头部保护分段路由与独立 later-origin 验证 v0.1",
     "displayNameEn": "M2 LG01 Head-Protected Segmented Router and Independent Later-Origin Validation v0.1",
     "entityType": "experiment",
-    "phase": "PREREGISTERED_WAITING_FOR_NEW_BILLS",
-    "status": "M2_HEAD_PROTECTED_SEGMENTED_ROUTER_WAITING_FOR_NEW_BILLS",
+    "phase": "IMPLEMENTED_AWAITING_INDEPENDENT_EVALUATION",
+    "status": "M2_HEAD_PROTECTED_SEGMENTED_ROUTER_IMPLEMENTED_AWAITING_LATER_ORIGIN_DATA",
     "K0A": "COMPLETED_DATE_ONLY",
     "K0B": "COMPLETED_CONTRACT_FROZEN",
-    "K1": "NOT_EXECUTED_WAITING_FOR_NEW_BILLS",
-    "K2": "NOT_EXECUTED_WAITING_FOR_NEW_BILLS",
+    "K1": "COMPLETED_PUBLIC_SYNTHETIC_VALIDATION",
+    "K2": "NOT_EXECUTED_AWAITING_SEPARATE_AUTHORIZATION_AND_DATA",
     "outerOutcomeRead": false,
     "firstCompleteOutcomeProduced": false,
     "activeCandidate": false,
@@ -26,7 +26,8 @@
     "predictionGrain": "work_origin_horizon",
     "horizonMonths": 3,
     "formulaClass": "FROZEN_HEAD_PROTECTED_SEGMENTED_BOUNDED_RESIDUAL_ROUTER",
-    "implementationStatus": "NOT_IMPLEMENTED_WAITING_FOR_NEW_BILLS",
+    "implementationStatus": "IMPLEMENTED_PUBLIC_SYNTHETIC_VERIFIED_AWAITING_INDEPENDENT_EVALUATION",
+    "registryRole": "implemented_awaiting_independent_evaluation",
     "independentConfirmationClaimAllowed": false,
     "activeCandidate": false,
     "approvedForAutomation": false,
@@ -115,7 +116,7 @@
     "eligibleLaterOriginCount": 0,
     "nonoverlappingSelectionRule": "FIRST_ORIGIN_AFTER_MAX_ACTUAL_VALUE_OPENED_THEN_ADVANCE_BY_THREE_MONTHS",
     "adjacentOverlappingWindowsCountAsIndependentEvidence": false,
-    "currentDecision": "M2_HEAD_PROTECTED_SEGMENTED_ROUTER_WAITING_FOR_NEW_BILLS"
+    "currentDecision": "M2_HEAD_PROTECTED_SEGMENTED_ROUTER_IMPLEMENTED_AWAITING_LATER_ORIGIN_DATA"
   },
   "finalHoldout": {
     "authorized": false,
@@ -286,6 +287,7 @@
     "finiteExtremeRawB3Policy": "PRESERVE_D1_RAW_AND_CLIP_NORMALIZED_RESIDUAL_BEFORE_R1",
     "nonfiniteBaseRawScaleOrResidualPolicy": "M30_OR_L20_ROW_FALLBACK_TO_LG01",
     "nonfiniteFallbackStatus": "NUMERIC_INPUT_INVALID_FALLBACK_LG01",
+    "nonfiniteLg01BasePolicy": "FAIL_CLOSED_BECAUSE_NO_FINITE_LG01_FALLBACK_EXISTS",
     "zeroMeanOtherWorkOrOtherHorizonSubstitutionAllowed": false,
     "allFinalR1PredictionsFiniteRequired": true,
     "knownPrimaryCore90MagnitudeExplosionAllowed": false,
@@ -391,19 +393,32 @@
       "automaticNextModelAllowed": false
     },
     "waiting": {
-      "status": "M2_HEAD_PROTECTED_SEGMENTED_ROUTER_WAITING_FOR_NEW_BILLS",
+      "status": "M2_HEAD_PROTECTED_SEGMENTED_ROUTER_IMPLEMENTED_AWAITING_LATER_ORIGIN_DATA",
       "isModelFailure": false
     },
     "missingAuthorityStatus": "M2_HEAD_PROTECTED_SEGMENTED_ROUTER_BLOCKED_MISSING_PRIVATE_AUTHORITY",
     "contractBreachStatus": "M2_HEAD_PROTECTED_SEGMENTED_ROUTER_INVALIDATED_CONTRACT_BREACH"
   },
+  "implementation": {
+    "canonicalModule": "src/domain/m2Current/headProtectedSegmentedRouter.js",
+    "canonicalImplementationComplete": true,
+    "publicSyntheticValidationPassed": true,
+    "readinessInventoryEntrypoint": "check:m2:head-protected-segmented-router-dates",
+    "syntheticFixtureEntrypoint": "smoke:m2:current:head-protected-segmented-router",
+    "futureControlledExecuteEntrypoint": "execute:m2:head-protected-segmented-router",
+    "futureControlledExecuteDefault": "FAIL_CLOSED_NO_K2_AUTHORIZATION",
+    "productionLoaderRouteOrApiChanged": false,
+    "productionSurfaceChangeCount": 0
+  },
   "execution": {
     "laterOriginAvailableAtK0": false,
     "K1ImplementationAuthorizedNow": true,
     "K1SemanticAndBoundPreparationCompleted": true,
+    "K1CanonicalImplementationCompleted": true,
+    "K1PublicSyntheticValidationCompleted": true,
     "K2PrivateEvaluationAuthorizedNow": false,
-    "singleQualifiedLaterOriginEvaluationConditionallyAuthorizedByUser": true,
-    "condition": "ONLY_AFTER_FRESH_DATE_AUDIT_PROVES_LATER_ORIGIN_AND_SEPARATE_FINAL_HOLDOUT",
+    "singleQualifiedLaterOriginEvaluationConditionallyAuthorizedByUser": false,
+    "condition": "REQUIRES_NEW_CAPABILITY_SCOPED_USER_AUTHORIZATION_AFTER_FRESH_DATE_AUDIT",
     "oneCompleteOutcomeMaximum": true,
     "secondCompleteResultAllowed": false,
     "secondBootstrapAllowed": false,
@@ -414,13 +429,13 @@
     "fixedExecutionShaInContractAllowed": false
   },
   "authorization": {
-    "source": "USER_INSTRUCTION_M2_HEAD_PROTECTED_SEGMENTED_ROUTER_LATER_ORIGIN_V0_1",
+    "source": "USER_INSTRUCTION_M2_HPSR01_CONTINUE_K1_IMPLEMENTATION_AWAITING_DATA_2026_07_31",
     "dateOnlyReadinessAudit": true,
     "contractPreregistration": true,
     "K1CanonicalImplementation": true,
     "syntheticFixtureValidation": true,
     "oldOpenedDevelopmentRowsForResidualBounds": true,
-    "qualifiedLaterOriginValidation": true,
+    "qualifiedLaterOriginValidation": false,
     "qualifiedLaterOriginValidationUsableNow": false,
     "privateSourceReadForDateAudit": true,
     "privateSourceReadForModelOutcome": false,
@@ -459,6 +474,9 @@
     "prospectiveFinalHoldoutReport": "docs/analysis/m2-current/M2-head-protected-segmented-router-prospective-final-holdout-v0.1.md",
     "residualBoundProvenanceJson": "docs/analysis/m2-current/M2-head-protected-segmented-router-residual-bound-provenance-v0.1.json",
     "residualBoundProvenanceReport": "docs/analysis/m2-current/M2-head-protected-segmented-router-residual-bound-provenance-v0.1.md",
+    "syntheticFixture": "test/fixtures/m2-head-protected-segmented-router.synthetic.v0.1.json",
+    "implementationReadinessJson": "docs/analysis/m2-current/M2-head-protected-segmented-router-k1-implementation-readiness-v0.1.json",
+    "implementationReadinessReport": "docs/analysis/m2-current/M2-head-protected-segmented-router-k1-implementation-readiness-v0.1.md",
     "preregistration": "docs/analysis/m2-current/M2-head-protected-segmented-router-preregistration-v0.1.md"
   }
 }

@@ -6,12 +6,12 @@ LG01 头部保护分段路由模型 v0.1（LG01 Head-Protected Segmented Router
 Model v0.1，`M2-WORK-HPSR01`）及其实验
 `M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01` 已完成 K0 科学合同冻结，
 当前机器状态为
-`M2_HEAD_PROTECTED_SEGMENTED_ROUTER_WAITING_FOR_NEW_BILLS`。
+`M2_HEAD_PROTECTED_SEGMENTED_ROUTER_IMPLEMENTED_AWAITING_LATER_ORIGIN_DATA`。
 
-这表示“没有成熟独立 later-origin”，不是模型失败。opened 语义修订和 residual
-bound 来源冻结已经完成，HPSR01 canonical implementation 正在 K1 阶段实现；尚未
-拟合或评价真实 later-origin。R0、D1、R1 均没有 later-origin 预测或成绩。现行
-运行回退、研究基线与自动化状态均不改变。
+这表示“canonical implementation 与公开 synthetic/fixture 验证已经完成，但没有
+成熟独立 later-origin”，不是模型失败或通过。opened 语义修订和 residual bound
+来源冻结已经完成；尚未拟合或评价真实 later-origin。R0、D1、R1 均没有真实
+later-origin 预测或成绩。现行运行回退、研究基线与自动化状态均不改变。
 
 ## 固定身份
 
@@ -19,7 +19,7 @@ bound 来源冻结已经完成，HPSR01 canonical implementation 正在 K1 阶�
 |---|---|---|
 | `M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01/R0` | 冻结 LG01 later-origin 同案例基线 | 研究比较基线，不具备本轮晋升资格 |
 | `M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01/D1` | 冻结公式 CHAM01 B3 原始诊断 | 只观察数值外推，禁止直接服务 |
-| `M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01/R1` | LG01 头部保护分段路由 | 唯一候选；当前未实现、未执行 |
+| `M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01/R1` | LG01 头部保护分段路由 | 唯一研究候选；已实现并通过公开合成验证，真实评价未执行 |
 
 不得增加 R2/R3、临时 alpha、事后实验臂或逐作品模型选择。
 
@@ -40,8 +40,8 @@ bound 来源冻结已经完成，HPSR01 canonical implementation 正在 K1 阶�
   窗口 `2026-07` 至 `2026-09`。它可以尚未成熟，但不得读取结果或根据未来金额更换。
 
 当前没有成熟 origin，所以 K2 私有评价关闭。K1 canonical implementation 与公开
-synthetic/fixture 验证已获本轮授权；日期级未来保留不是 K2 执行授权，后续必须
-重新盘点 opened-origin semantics ledger。
+synthetic/fixture 验证已经完成；日期级未来保留不是 K2 执行授权，后续必须重新
+盘点 opened-origin semantics ledger 并取得新的 capability-scoped 用户授权。
 
 ## 人口、目标与拟合
 
@@ -128,10 +128,13 @@ positive base floor、q05、q95 的计算规则已冻结为现有 HCRC01 的 q10
 - later-origin 失败并停止 cash-only：
   `M2_HEAD_PROTECTED_SEGMENTED_ROUTER_LATER_ORIGIN_FAIL_STOP_CASH_ONLY`；
 - 当前无独立 origin：
-  `M2_HEAD_PROTECTED_SEGMENTED_ROUTER_WAITING_FOR_NEW_BILLS`。
+  `M2_HEAD_PROTECTED_SEGMENTED_ROUTER_IMPLEMENTED_AWAITING_LATER_ORIGIN_DATA`；
+- 日期已成熟但尚未取得独立授权：
+  `M2_HEAD_PROTECTED_SEGMENTED_ROUTER_READY_FOR_SEPARATE_LATER_ORIGIN_AUTHORIZATION`。
 
-当前只适用最后一项。没有任何成绩可用于通过、晋升、production、automation、
-release 或 final-holdout preregistration。
+当前适用“已实现、等待 later-origin 数据”。没有任何成绩可用于通过、晋升、
+production、automation 或 release；prospective final holdout 只预留日期，未读取
+outcome。
 
 ## 工程与权限边界
 
@@ -139,7 +142,7 @@ release 或 final-holdout preregistration。
 执行 SHA。权威源缺失才可阻断；opened-origin ledger、预测/评价行等派生缓存缺失
 必须自动重建，历史 receipt 缺失只告警且不得伪造。
 
-当前授权日期盘点、合同冻结、K1 canonical implementation、公开 synthetic/fixture
-验证与继续 Draft PR。模型训练、模型选择、真实 bootstrap、later-origin outcome、
-K2、final holdout、provider、数据库、Canary/full160、production、release、
-M3 formal、PR 合并均未打开。
+日期盘点、合同冻结、K1 canonical implementation 与公开 synthetic/fixture 验证
+已经完成。本任务没有创建 K2 授权；模型训练、模型选择、真实 bootstrap、
+later-origin outcome、K2、final holdout、provider、数据库、Canary/full160、
+production、release、M3 formal、PR 合并均未打开。

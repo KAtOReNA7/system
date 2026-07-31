@@ -1,0 +1,115 @@
+{
+  "schema": "m2.current.head_protected_segmented_router.synthetic_fixture.v0.1",
+  "syntheticOnly": true,
+  "realDataAccessAllowed": false,
+  "origin": "2026-03",
+  "horizonMonths": 3,
+  "historyMonthCount": 12,
+  "syntheticChannelUid": "SYN-HPSR-CHANNEL",
+  "residualBoundState": {
+    "sourceClass": "PUBLIC_SYNTHETIC_FIXTURE_ONLY",
+    "frozenDevelopmentPositiveBaseFloor": 10,
+    "frozenDevelopmentQ05": -0.5,
+    "frozenDevelopmentQ95": 0.5,
+    "laterOriginOutcomeUsed": false,
+    "prospectiveFinalHoldoutOutcomeUsed": false
+  },
+  "works": [
+    {
+      "standardWorkId": "SYN-HPSR-W01",
+      "monthlySalesShareCash": 10,
+      "lg01Prediction": 100,
+      "cham01B3Prediction": 105
+    },
+    {
+      "standardWorkId": "SYN-HPSR-W02",
+      "monthlySalesShareCash": 10,
+      "lg01Prediction": 90,
+      "cham01B3Prediction": 85
+    },
+    {
+      "standardWorkId": "SYN-HPSR-W03",
+      "monthlySalesShareCash": 10,
+      "lg01Prediction": 80,
+      "cham01B3Prediction": 84
+    },
+    {
+      "standardWorkId": "SYN-HPSR-W04",
+      "monthlySalesShareCash": 10,
+      "lg01Prediction": 70,
+      "cham01B3Prediction": 66
+    },
+    {
+      "standardWorkId": "SYN-HPSR-W05",
+      "monthlySalesShareCash": 10,
+      "lg01Prediction": 60,
+      "cham01B3Prediction": 63
+    },
+    {
+      "standardWorkId": "SYN-HPSR-W06",
+      "monthlySalesShareCash": 10,
+      "lg01Prediction": 50,
+      "cham01B3Prediction": 1000000000000,
+      "cham01Diagnostics": {
+        "supportRangeExtrapolation": true
+      }
+    },
+    {
+      "standardWorkId": "SYN-HPSR-W07",
+      "monthlySalesShareCash": 10,
+      "lg01Prediction": 40,
+      "cham01B3Prediction": 44
+    },
+    {
+      "standardWorkId": "SYN-HPSR-W08",
+      "monthlySalesShareCash": 10,
+      "lg01Prediction": 30,
+      "cham01B3Prediction": 27
+    },
+    {
+      "standardWorkId": "SYN-HPSR-W09",
+      "monthlySalesShareCash": 10,
+      "lg01Prediction": 20,
+      "cham01B3Prediction": -1000000000000,
+      "cham01Diagnostics": {
+        "supportRangeExtrapolation": true
+      }
+    },
+    {
+      "standardWorkId": "SYN-HPSR-W10",
+      "monthlySalesShareCash": 10,
+      "lg01Prediction": 10,
+      "cham01B3Prediction": null,
+      "cham01Diagnostics": {
+        "signedExpm1Overflow": true,
+        "supportRangeExtrapolation": true
+      }
+    }
+  ],
+  "expected": {
+    "core80WorkCount": 10,
+    "core80CutoffTieCount": 10,
+    "H50WorkIds": [
+      "SYN-HPSR-W01",
+      "SYN-HPSR-W02",
+      "SYN-HPSR-W03",
+      "SYN-HPSR-W04",
+      "SYN-HPSR-W05"
+    ],
+    "M30WorkIds": [
+      "SYN-HPSR-W06",
+      "SYN-HPSR-W07",
+      "SYN-HPSR-W08"
+    ],
+    "L20WorkIds": [
+      "SYN-HPSR-W09",
+      "SYN-HPSR-W10"
+    ],
+    "H50FallbackRowCount": 0,
+    "correctedRowCount": 4,
+    "numericFallbackRowCount": 1,
+    "boundTriggeredRowCount": 2,
+    "rawB3FiniteExtremeRowCount": 2,
+    "rawB3NonfiniteRowCount": 1
+  }
+}

@@ -3,7 +3,7 @@
 ## 当前权威入口
 
 - 用户首页与公共开始入口：`README.md`
-- 当前 M2 状态：`docs/analysis/m2-v2/M2-v2-current-state-index-v0.50.md`
+- 当前 M2 状态：`docs/analysis/m2-v2/M2-v2-current-state-index-v0.51.md`
 - M2 模型机器权威：`config/m2-model-registry.v1.json`
 - M2 中文目录：`docs/analysis/m2-current/M2-model-catalog-and-scorecard-v1.md`
 - M2 出版行业规模适配渠道核心结论：
@@ -47,8 +47,12 @@
   - `config/m2-current-head-protected-segmented-router.v0.1.json`
   - `docs/analysis/m2-current/M2-head-protected-segmented-router-selection-gate-attribution-v0.1.json`
   - `docs/analysis/m2-current/M2-head-protected-segmented-router-selection-gate-attribution-v0.1.md`
-  - `docs/analysis/m2-current/M2-head-protected-segmented-router-later-origin-availability-v0.1.json`
-  - `docs/analysis/m2-current/M2-head-protected-segmented-router-later-origin-availability-v0.1.md`
+  - `docs/analysis/m2-current/M2-head-protected-segmented-router-opened-origin-semantics-v0.2.json`
+  - `docs/analysis/m2-current/M2-head-protected-segmented-router-later-origin-availability-v0.2.json`
+  - `docs/analysis/m2-current/M2-head-protected-segmented-router-later-origin-availability-v0.2.md`
+  - `docs/analysis/m2-current/M2-head-protected-segmented-router-residual-bound-provenance-v0.1.json`
+  - `docs/analysis/m2-current/M2-head-protected-segmented-router-k1-implementation-readiness-v0.1.json`
+  - `docs/analysis/m2-current/M2-head-protected-segmented-router-k1-implementation-readiness-v0.1.md`
   - `docs/analysis/m2-current/M2-head-protected-segmented-router-preregistration-v0.1.md`
 - M2 评价体系：
   - `docs/analysis/m2-current/M2-evaluation-system-audit-v1.md`

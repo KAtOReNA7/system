@@ -697,7 +697,7 @@ test("HPSR capability separates authority, rebuildable cache, and optional recei
   );
   assert.match(
     cacheMiss.authorization,
-    /K1_IMPLEMENTATION_AND_SYNTHETIC_VALIDATION.*NO_K2/u,
+    /K1_COMPLETED_PUBLIC_SYNTHETIC_VALIDATION.*NO_K2/u,
   );
   assert.match(
     cacheMiss.recovery,

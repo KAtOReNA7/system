@@ -323,7 +323,7 @@ test("registry records active development-only v2.2 without changing model roles
   ));
   assert.equal(
     registry.currentRoles.latestStateIndex,
-    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.50.md"
+    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.51.md"
   );
   assert.equal(registry.currentRoles.operationalWorkFallback, "M2-WORK-OA03");
   assert.equal(registry.currentRoles.researchWorkBaseline, "M2-WORK-LG01");

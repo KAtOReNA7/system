@@ -102,15 +102,21 @@ This directory is the only implementation home for current M2 model logic.
   portable public development. A private evaluation may be blocked only when
   an irreplaceable authoritative source is missing or no legal historical
   forecast origin can be formed.
-- `M2-WORK-HPSR01` is currently preregistered but not implemented or executed.
-  Its current status is
-  `M2_HEAD_PROTECTED_SEGMENTED_ROUTER_WAITING_FOR_NEW_BILLS`. Do not implement
-  K1, run K2, read a later-origin outcome, or bootstrap until a fresh date-only
-  audit proves an origin strictly after every previously opened origin, three
-  complete and previously unread future bill months, and a separate untouched
-  nonoverlapping final holdout. The historical three-month holdout contract is
-  immutable evidence but its origins may not be reused as untouched HPSR01
-  holdout after later caches exposed them.
+- `M2-WORK-HPSR01` has completed its K1 canonical implementation and public
+  synthetic validation. Its current status is
+  `M2_HEAD_PROTECTED_SEGMENTED_ROUTER_IMPLEMENTED_AWAITING_LATER_ORIGIN_DATA`;
+  this is neither model success nor failure. Metadata availability and actual
+  value opening are separate: the current maximum actual-opened origin is
+  `2026-02`, the dynamically derived first independent origin is `2026-03`,
+  and its complete future bills must cover `2026-04` through `2026-06`.
+  Prospective final holdout origin is dynamically reserved three months after
+  the first independent origin and must remain unopened. Do not run K2, read a
+  later-origin amount, score, bootstrap, or open the holdout without a new
+  capability-scoped user authorization after a fresh metadata-only audit.
+  The public synthetic entrypoint remains private-free and the future
+  controlled execute entrypoint must fail closed by default. The historical
+  three-month holdout contract remains immutable evidence but its origins may
+  not be reused as untouched HPSR01 holdout after later caches exposed them.
 - Company-level M2 sales-share forecasting must keep existing core, existing
   tail, future new-work portfolio, and existing-work new-channel portfolio cash
   mutually exclusive and amount-conserving. Future new works and future channel

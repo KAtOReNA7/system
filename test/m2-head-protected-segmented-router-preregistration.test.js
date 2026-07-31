@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
 import {
   mkdtemp,
   readFile,
@@ -10,15 +11,21 @@ import { fileURLToPath } from "node:url";
 import test from "node:test";
 
 import {
+  assertHpsrControlledExecutionGate,
+  buildHpsrOriginCashBands,
   deriveHpsrResidualBounds,
   HPSR_ARM_IDS,
   HPSR_EXPERIMENT_ID,
+  HPSR_IMPLEMENTED_STATUS,
+  HPSR_K1_EXECUTION_STATUS,
+  HPSR_K2_WAITING_STATUS,
   HPSR_MODEL_ID,
-  HPSR_WAITING_STATUS,
   forecastWindowsOverlap,
   planHpsrProspectiveReservation,
+  runHeadProtectedSegmentedRouter,
   summarizeHpsrOpenedEvidence,
   validateHeadProtectedSegmentedRouterContract,
+  validateHpsrImplementationReadiness,
   validateHpsrLaterOriginAvailability,
   validateHpsrOpenedOriginSemantics,
   validateHpsrResidualBoundProvenance,
@@ -27,6 +34,9 @@ import {
 import {
   loadOrRebuildHpsrResidualBoundCache
 } from "../scripts/m2-current/materialize_head_protected_segmented_router_bounds.mjs";
+import {
+  runHpsrSyntheticFixture
+} from "../scripts/m2-current/run_m2_head_protected_segmented_router_synthetic.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const config = await readJson(
@@ -42,6 +52,9 @@ const openedSemantics = await readJson(
 const residualBoundProvenance = await readJson(
   config.publicOutputs.residualBoundProvenanceJson
 );
+const implementationReadiness = await readJson(
+  config.publicOutputs.implementationReadinessJson
+);
 const availabilityReport = await readText(
   config.publicOutputs.availabilityReport
 );
@@ -55,8 +68,12 @@ const prospectiveFinalHoldoutReport = await readText(
 const residualBoundReport = await readText(
   config.publicOutputs.residualBoundProvenanceReport
 );
+const implementationReadinessReport = await readText(
+  config.publicOutputs.implementationReadinessReport
+);
+const synthetic = await runHpsrSyntheticFixture();
 
-test("K1A freezes semantics and bounds while K2 remains closed", () => {
+test("K1 is implemented and synthetic-verified while K2 remains closed", () => {
   const result = validateHeadProtectedSegmentedRouterContract(config);
   assert.equal(result.valid, true, result.errors.join("\n"));
   assert.equal(config.model.stableModelId, HPSR_MODEL_ID);
@@ -68,13 +85,22 @@ test("K1A freezes semantics and bounds while K2 remains closed", () => {
     config.identities.map(({ armId }) => armId),
     HPSR_ARM_IDS
   );
-  assert.equal(config.experiment.status, HPSR_WAITING_STATUS);
+  assert.equal(config.experiment.status, HPSR_IMPLEMENTED_STATUS);
+  assert.equal(config.experiment.K1, HPSR_K1_EXECUTION_STATUS);
+  assert.equal(config.experiment.K2, HPSR_K2_WAITING_STATUS);
   assert.equal(config.execution.K1ImplementationAuthorizedNow, true);
   assert.equal(
     config.execution.K1SemanticAndBoundPreparationCompleted,
     true
   );
+  assert.equal(config.execution.K1CanonicalImplementationCompleted, true);
+  assert.equal(config.execution.K1PublicSyntheticValidationCompleted, true);
   assert.equal(config.execution.K2PrivateEvaluationAuthorizedNow, false);
+  assert.equal(
+    config.execution
+      .singleQualifiedLaterOriginEvaluationConditionallyAuthorizedByUser,
+    false
+  );
   assert.equal(config.authorization.modelTrainingNow, false);
   assert.equal(config.authorization.modelSelectionNow, false);
 });
@@ -199,6 +225,200 @@ test("H50 is exact architecture while M30 and L20 are independent", () => {
   }
   assert.equal(formula.alphaSelectionAllowed, false);
   assert.equal(formula.additionalArmAllowed, false);
+});
+
+test("public synthetic fixture executes dynamic Core80 and 5/3/2 cash bands", () => {
+  const { result, summary } = synthetic;
+  assert.equal(result.population.core80WorkCount, 10);
+  assert.equal(result.population.core80CutoffTieCount, 10);
+  assert.deepEqual(result.population.bandCounts, {
+    H50: 5,
+    M30: 3,
+    L20: 2
+  });
+  assert.equal(result.population.fixedMinimumWorkCountRequired, false);
+  assert.equal(summary.H50RowwiseExactLg01, true);
+  assert.equal(summary.H50FallbackRowCount, 0);
+  assert.equal(summary.privateDataAccessed, false);
+  assert.equal(summary.realScoreProduced, false);
+  assert.equal(summary.realBootstrapExecuted, false);
+});
+
+test("synthetic H50 is rowwise exact LG01 and never a fallback", () => {
+  const baselineByWork = new Map(synthetic.result.r0Rows.map((row) => [
+    row.standardWorkId,
+    row.pointEstimate
+  ]));
+  const h50 = synthetic.result.r1RawRouterRows.filter(
+    (row) => row.cashBandId === "H50"
+  );
+  assert.equal(h50.length, 5);
+  for (const row of h50) {
+    assert.equal(row.pointEstimate, baselineByWork.get(row.standardWorkId));
+    assert.equal(row.fallbackToLg01, false);
+    assert.equal(row.numericStatus, "H50_EXACT_LG01_ARCHITECTURE");
+  }
+});
+
+test("M30 and L20 use fixed alpha one with no cross-band dependency", () => {
+  const candidateRows = synthetic.result.r1RawRouterRows.filter(
+    (row) => row.cashBandId !== "H50"
+  );
+  assert.equal(candidateRows.every((row) => row.alpha === 1), true);
+  assert.equal(candidateRows.every((row) => row.globalAlpha === null), true);
+  assert.equal(synthetic.result.invariants.alphaSearchExecuted, false);
+  assert.equal(synthetic.result.invariants.otherBandDependency, false);
+
+  const mutate = (standardWorkId, cham01B3Prediction) => (
+    runHeadProtectedSegmentedRouter({
+      ...synthetic.input,
+      predictionRows: synthetic.input.predictionRows.map((row) => (
+        row.standardWorkId === standardWorkId
+          ? { ...row, cham01B3Prediction }
+          : row
+      ))
+    })
+  );
+  const changedM30 = mutate("SYN-HPSR-W06", 51);
+  const originalL20 = synthetic.result.r1RawRouterRows.filter(
+    (row) => row.cashBandId === "L20"
+  ).map((row) => row.pointEstimate);
+  const changedL20 = changedM30.r1RawRouterRows.filter(
+    (row) => row.cashBandId === "L20"
+  ).map((row) => row.pointEstimate);
+  assert.deepEqual(changedL20, originalL20);
+
+  const changedL20Run = mutate("SYN-HPSR-W09", 19);
+  const originalM30 = synthetic.result.r1RawRouterRows.filter(
+    (row) => row.cashBandId === "M30"
+  ).map((row) => row.pointEstimate);
+  const changedM30Rows = changedL20Run.r1RawRouterRows.filter(
+    (row) => row.cashBandId === "M30"
+  ).map((row) => row.pointEstimate);
+  assert.deepEqual(changedM30Rows, originalM30);
+});
+
+test("finite extremes are clipped and nonfinite B3 falls back to LG01", () => {
+  const { result } = synthetic;
+  const extremes = result.d1RawDiagnosticRows.filter(
+    (row) => row.finiteExtreme
+  );
+  assert.equal(extremes.length, 2);
+  for (const diagnostic of extremes) {
+    const candidate = result.r1RawRouterRows.find(
+      (row) => row.standardWorkId === diagnostic.standardWorkId
+    );
+    assert.equal(candidate.boundTriggered, true);
+    assert.equal(candidate.fallbackToLg01, false);
+    assert.equal(Number.isFinite(candidate.pointEstimate), true);
+  }
+  const nonfinite = result.d1RawDiagnosticRows.find(
+    (row) => !row.rawPredictionFinite
+  );
+  const fallback = result.r1RawRouterRows.find(
+    (row) => row.standardWorkId === nonfinite.standardWorkId
+  );
+  const baseline = result.r0Rows.find(
+    (row) => row.standardWorkId === nonfinite.standardWorkId
+  );
+  assert.equal(fallback.numericStatus, "NUMERIC_INPUT_INVALID_FALLBACK_LG01");
+  assert.equal(fallback.pointEstimate, baseline.pointEstimate);
+  assert.equal(result.coverage.correctedRowCount, 4);
+  assert.equal(result.coverage.numericFallbackRowCount, 1);
+  assert.equal(result.coverage.boundTriggeredRowCount, 2);
+});
+
+test("nonfinite raw and residual paths preserve finite LG01 fallback", () => {
+  const withInfinity = runHeadProtectedSegmentedRouter({
+    ...synthetic.input,
+    predictionRows: synthetic.input.predictionRows.map((row) => (
+      row.standardWorkId === "SYN-HPSR-W10"
+        ? { ...row, cham01B3Prediction: Number.POSITIVE_INFINITY }
+        : row
+    ))
+  });
+  const infinityRow = withInfinity.r1RawRouterRows.find(
+    (row) => row.standardWorkId === "SYN-HPSR-W10"
+  );
+  assert.equal(infinityRow.fallbackToLg01, true);
+  assert.equal(Number.isFinite(infinityRow.pointEstimate), true);
+
+  const withOverflowResidual = runHeadProtectedSegmentedRouter({
+    ...synthetic.input,
+    predictionRows: synthetic.input.predictionRows.map((row) => (
+      row.standardWorkId === "SYN-HPSR-W10"
+        ? {
+          ...row,
+          lg01Prediction: Number.MAX_VALUE,
+          cham01B3Prediction: -Number.MAX_VALUE
+        }
+        : row
+    ))
+  });
+  const overflowRow = withOverflowResidual.r1RawRouterRows.find(
+    (row) => row.standardWorkId === "SYN-HPSR-W10"
+  );
+  assert.equal(overflowRow.fallbackReason, "NONFINITE_RESIDUAL");
+  assert.equal(overflowRow.pointEstimate, Number.MAX_VALUE);
+  assert.equal(Number.isFinite(overflowRow.pointEstimate), true);
+});
+
+test("raw B3 diagnostics and raw HPSR rows remain separate", () => {
+  assert.notEqual(
+    synthetic.result.d1RawDiagnosticRows,
+    synthetic.result.r1RawRouterRows
+  );
+  assert.equal(
+    synthetic.result.r1RawRouterRows.every(
+      (row) => !Object.hasOwn(row, "rawPointEstimate")
+    ),
+    true
+  );
+  assert.equal(synthetic.result.invariants.rawB3AndR1StoredSeparately, true);
+});
+
+test("post-origin cash and outcome fields fail closed before routing", () => {
+  assert.throws(
+    () => buildHpsrOriginCashBands({
+      origin: synthetic.input.origin,
+      originVisibleMonthlyCashRows: [
+        ...synthetic.input.originVisibleMonthlyCashRows,
+        {
+          standardWorkId: "SYN-HPSR-W01",
+          channelUid: "SYN-HPSR-CHANNEL",
+          month: "2026-04",
+          cash: 999999
+        }
+      ]
+    }),
+    /hpsr_post_origin_cash_row_forbidden/u
+  );
+  assert.throws(
+    () => runHeadProtectedSegmentedRouter({
+      ...synthetic.input,
+      predictionRows: synthetic.input.predictionRows.map((row, index) => (
+        index === 0 ? { ...row, futureActual: 1 } : row
+      ))
+    }),
+    /outcome_field_forbidden/u
+  );
+});
+
+test("bill completeness changes readiness but not the actual-opened boundary", () => {
+  const waiting = planHpsrProspectiveReservation({
+    maxActualValueOpenedOrigin: "2026-02",
+    completeAuthoritativeBillMonthThrough: "2026-04"
+  });
+  const ready = planHpsrProspectiveReservation({
+    maxActualValueOpenedOrigin: "2026-02",
+    completeAuthoritativeBillMonthThrough: "2026-06"
+  });
+  assert.equal(waiting.firstIndependentLaterOrigin, "2026-03");
+  assert.equal(ready.firstIndependentLaterOrigin, "2026-03");
+  assert.equal(waiting.firstIndependentLaterOriginReady, false);
+  assert.equal(ready.firstIndependentLaterOriginReady, true);
+  assert.equal(ready.prospectiveFinalHoldoutOrigin, "2026-06");
+  assert.equal(ready.prospectiveFinalHoldoutOutcomeRead, false);
 });
 
 test("residual bounds exclude later-origin outcomes", () => {
@@ -365,7 +585,7 @@ test("HCRC01 unknown per-alpha counts stay null without a rerun", () => {
   );
 });
 
-test("public Chinese reports match machine waiting status and leak no private path", () => {
+test("public Chinese reports match implemented-awaiting status and leak no private path", () => {
   const semantics = validateHpsrOpenedOriginSemantics(openedSemantics);
   assert.equal(semantics.valid, true, semantics.errors.join("\n"));
   for (const report of [
@@ -373,16 +593,107 @@ test("public Chinese reports match machine waiting status and leak no private pa
     preregistration,
     openedSemanticsReport,
     prospectiveFinalHoldoutReport,
-    residualBoundReport
+    residualBoundReport,
+    implementationReadinessReport
   ]) {
     assert.doesNotMatch(report, /data\/private-(?:input|output)\//u);
     assert.doesNotMatch(report, /[A-Z]:[\\/]/u);
   }
-  assert.ok(availabilityReport.includes(HPSR_WAITING_STATUS));
-  assert.ok(preregistration.includes(HPSR_WAITING_STATUS));
-  assert.equal(availability.status, HPSR_WAITING_STATUS);
+  assert.ok(availabilityReport.includes(HPSR_IMPLEMENTED_STATUS));
+  assert.ok(preregistration.includes(HPSR_IMPLEMENTED_STATUS));
+  assert.ok(implementationReadinessReport.includes(HPSR_IMPLEMENTED_STATUS));
+  assert.equal(availability.status, HPSR_IMPLEMENTED_STATUS);
   assert.equal(availability.auditBoundary.newFutureActualAmountsRead, false);
   assert.equal(availability.auditBoundary.newModelMetricsRead, false);
+});
+
+test("K1 readiness records implementation without publishing a real score", () => {
+  const validation = validateHpsrImplementationReadiness(
+    implementationReadiness
+  );
+  assert.equal(validation.valid, true, validation.errors.join("\n"));
+  assert.equal(
+    implementationReadiness.implementation.productionSurfaceChangeCount,
+    0
+  );
+  assert.equal(
+    implementationReadiness.syntheticValidation
+      .dynamicCore80WorkCount,
+    synthetic.summary.dynamicCore80WorkCount
+  );
+  assert.deepEqual(
+    implementationReadiness.syntheticValidation.cashBandWorkCounts,
+    synthetic.summary.bandCounts
+  );
+  assert.equal(
+    implementationReadiness.auditBoundary.newLaterOriginFutureActualRead,
+    false
+  );
+  assert.equal(implementationReadiness.auditBoundary.realWapeProduced, false);
+  assert.equal(implementationReadiness.auditBoundary.realBiasProduced, false);
+  assert.equal(implementationReadiness.auditBoundary.realFvaProduced, false);
+  assert.equal(
+    implementationReadiness.auditBoundary.realBootstrapExecuted,
+    false
+  );
+});
+
+test("future controlled execute is denied before any private adapter runs", async () => {
+  assert.throws(
+    () => assertHpsrControlledExecutionGate({
+      contract: config,
+      availability,
+      authorization: null
+    }),
+    /hpsr_k2_not_authorized_current_task_fail_closed/u
+  );
+  const runnerPath = path.join(
+    root,
+    "scripts",
+    "m2-current",
+    "run_m2_head_protected_segmented_router_controlled.mjs"
+  );
+  const executed = spawnSync(process.execPath, [runnerPath], {
+    cwd: root,
+    encoding: "utf8"
+  });
+  assert.notEqual(executed.status, 0);
+  assert.equal(executed.stdout, "");
+  assert.match(
+    executed.stderr,
+    /hpsr_k2_not_authorized_current_task_fail_closed/u
+  );
+  const source = await readText(
+    "scripts/m2-current/"
+      + "run_m2_head_protected_segmented_router_controlled.mjs"
+  );
+  assert.doesNotMatch(source, /data[\\/]+private-(?:input|output)/iu);
+});
+
+test("public entrypoints are portable and production surfaces stay untouched", async () => {
+  const sources = await Promise.all([
+    readText(
+      "scripts/m2-current/"
+        + "run_m2_head_protected_segmented_router_synthetic.mjs"
+    ),
+    readText(
+      "scripts/m2-current/"
+        + "run_m2_head_protected_segmented_router_controlled.mjs"
+    ),
+    readText(
+      "scripts/m2-current/"
+        + "run_m2_head_protected_segmented_router_readiness.mjs"
+    )
+  ]);
+  for (const source of sources) {
+    assert.doesNotMatch(source, /[A-Z]:[\\/]/u);
+    assert.doesNotMatch(source, /5d7a40d|48d5e3b/u);
+  }
+  assert.equal(
+    config.implementation.productionLoaderRouteOrApiChanged,
+    false
+  );
+  assert.equal(config.implementation.productionSurfaceChangeCount, 0);
 });
 
 test("portable cache classification never turns cache or receipt into authority", () => {

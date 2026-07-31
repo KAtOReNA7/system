@@ -4,8 +4,9 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import {
-  HPSR_WAITING_STATUS,
+  HPSR_IMPLEMENTED_STATUS,
   validateHeadProtectedSegmentedRouterContract,
+  validateHpsrImplementationReadiness,
   validateHpsrLaterOriginAvailability,
   validateHpsrOpenedOriginSemantics,
   validateHpsrResidualBoundProvenance,
@@ -26,6 +27,9 @@ const openedSemantics = readJson(
 const residualBoundProvenance = readJson(
   config.publicOutputs.residualBoundProvenanceJson
 );
+const implementationReadiness = readJson(
+  config.publicOutputs.implementationReadinessJson
+);
 
 if (!process.argv.includes("--verify")) {
   throw new Error("hpsr_readiness_mode_required_use_verify");
@@ -36,7 +40,8 @@ for (const result of [
   validateHpsrSelectionAttribution(attribution),
   validateHpsrLaterOriginAvailability(availability),
   validateHpsrOpenedOriginSemantics(openedSemantics),
-  validateHpsrResidualBoundProvenance(residualBoundProvenance)
+  validateHpsrResidualBoundProvenance(residualBoundProvenance),
+  validateHpsrImplementationReadiness(implementationReadiness)
 ]) {
   if (!result.valid) {
     throw new Error(result.errors.join(","));
@@ -54,15 +59,20 @@ const prospectiveHoldoutReport = readText(
 const residualBoundReport = readText(
   config.publicOutputs.residualBoundProvenanceReport
 );
+const implementationReadinessReport = readText(
+  config.publicOutputs.implementationReadinessReport
+);
 if (
-  !report.includes(HPSR_WAITING_STATUS)
-  || !preregistration.includes(HPSR_WAITING_STATUS)
+  !report.includes(HPSR_IMPLEMENTED_STATUS)
+  || !preregistration.includes(HPSR_IMPLEMENTED_STATUS)
+  || !implementationReadinessReport.includes(HPSR_IMPLEMENTED_STATUS)
   || [
     report,
     preregistration,
     openedSemanticsReport,
     prospectiveHoldoutReport,
-    residualBoundReport
+    residualBoundReport,
+    implementationReadinessReport
   ].some((value) => (
     value.includes("data/private-output/")
     || /[A-Z]:[\\/]/u.test(value)
@@ -72,7 +82,7 @@ if (
 }
 
 process.stdout.write(
-  "M2 HPSR K0/K1A semantics, bound provenance, and waiting artifacts verified.\n"
+  "M2 HPSR K1 canonical implementation and public readiness artifacts verified.\n"
 );
 
 function readJson(repositoryRelativePath) {

@@ -1,0 +1,95 @@
+{
+  "schema": "m2.current.head_protected_segmented_router.k1_implementation_readiness.public.v0.1",
+  "asOf": "2026-07-31",
+  "experimentId": "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01",
+  "modelId": "M2-WORK-HPSR01",
+  "status": "M2_HEAD_PROTECTED_SEGMENTED_ROUTER_IMPLEMENTED_AWAITING_LATER_ORIGIN_DATA",
+  "implementation": {
+    "canonicalImplementationComplete": true,
+    "canonicalModule": "src/domain/m2Current/headProtectedSegmentedRouter.js",
+    "publicSyntheticValidationPassed": true,
+    "productionSurfaceChangeCount": 0,
+    "productionLoaderRouteOrApiChanged": false
+  },
+  "entrypoints": {
+    "readinessInventory": "check:m2:head-protected-segmented-router-dates",
+    "syntheticFixture": "smoke:m2:current:head-protected-segmented-router",
+    "futureControlledExecute": "execute:m2:head-protected-segmented-router",
+    "futureControlledExecuteCurrentPolicy": "FAIL_CLOSED_NO_K2_AUTHORIZATION"
+  },
+  "syntheticValidation": {
+    "fixture": "test/fixtures/m2-head-protected-segmented-router.synthetic.v0.1.json",
+    "syntheticOnly": true,
+    "dynamicCore80WorkCount": 10,
+    "core80CutoffTieCount": 10,
+    "cashBandWorkCounts": {
+      "H50": 5,
+      "M30": 3,
+      "L20": 2
+    },
+    "H50RowwiseExactLg01": true,
+    "H50FallbackRowCount": 0,
+    "M30Alpha": 1,
+    "L20Alpha": 1,
+    "globalAlphaDependency": false,
+    "otherBandDependency": false,
+    "correctedRowCount": 4,
+    "numericFallbackRowCount": 1,
+    "boundTriggeredRowCount": 2,
+    "rawB3FiniteExtremeRowCount": 2,
+    "rawB3NonfiniteRowCount": 1,
+    "finiteExtremeIsolated": true,
+    "nonfiniteRawFallbackToLg01": true,
+    "allFinalR1PredictionsFinite": true,
+    "rawB3AndR1StoredSeparately": true,
+    "fixedMinimum50Or100WorkThresholdUsed": false
+  },
+  "residualBounds": {
+    "provenPreviouslyOpenedDevelopmentOnly": true,
+    "sourcePopulation": "STRICT_ROLLING_CORE80_H3_B3_JOIN_FROZEN_LG01",
+    "sourceOriginRange": {
+      "from": "2023-03",
+      "through": "2025-09"
+    },
+    "privateParameterValuesFrozen": true,
+    "publicParameterValuesPublished": false,
+    "laterOriginOutcomeUsed": false,
+    "prospectiveFinalHoldoutOutcomeUsed": false
+  },
+  "dateReadiness": {
+    "maxActualValueOpenedOrigin": "2026-02",
+    "earliestIndependentLaterOrigin": "2026-03",
+    "requiredCompleteBillMonths": [
+      "2026-04",
+      "2026-05",
+      "2026-06"
+    ],
+    "completeAuthoritativeBillMonthThrough": "2026-04",
+    "laterOriginReady": false,
+    "prospectiveFinalHoldoutOrigin": "2026-06",
+    "prospectiveFinalHoldoutFutureBillMonths": [
+      "2026-07",
+      "2026-08",
+      "2026-09"
+    ],
+    "prospectiveFinalHoldoutOpened": false
+  },
+  "auditBoundary": {
+    "newLaterOriginFutureActualRead": false,
+    "realModelFitExecuted": false,
+    "realScoreProduced": false,
+    "realWapeProduced": false,
+    "realBiasProduced": false,
+    "realFvaProduced": false,
+    "realBootstrapExecuted": false,
+    "finalHoldoutOutcomeRead": false
+  },
+  "authorization": {
+    "K1Completed": true,
+    "K2PrivateEvaluationAuthorizedNow": false,
+    "newCapabilityScopedAuthorizationRequiredForK2": true,
+    "finalHoldoutOpened": false,
+    "productionAuthorized": false,
+    "pullRequestMergeAuthorized": false
+  }
+}

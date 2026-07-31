@@ -1280,7 +1280,7 @@
     },
     {
       "id": "m2-head-protected-segmented-router",
-      "description": "Rebuild the metadata-only opened-origin semantics inventory and residual-bound cache, implement HPSR01 with public synthetic validation, and retain a separate fail-closed gate for any future later-origin execution. K1 implementation is authorized; K2 outcome access remains unauthorized.",
+      "description": "Rebuild the metadata-only opened-origin semantics inventory and residual-bound cache, verify the completed HPSR01 canonical implementation with public synthetic data, and retain a separate fail-closed gate for any future later-origin execution. K1 is complete; K2 outcome access remains unauthorized.",
       "privateArtifactClassificationVersion": "private-artifact-classification.v0.1",
       "requiredTools": [],
       "requiredPrivateArtifacts": [
@@ -1355,10 +1355,16 @@
         "npm run doctor:capability -- m2-head-protected-segmented-router",
         "npm run diagnose:m2:head-protected-segmented-router",
         "npm run check:m2:head-protected-segmented-router-dates",
-        "npm run prepare:m2:head-protected-segmented-router-bounds"
+        "npm run prepare:m2:head-protected-segmented-router-bounds",
+        "npm run smoke:m2:current:head-protected-segmented-router"
       ],
+      "futureControlledEntrypoint": {
+        "command": "npm run execute:m2:head-protected-segmented-router",
+        "currentExpectedStatus": "FAIL_CLOSED_NO_K2_AUTHORIZATION",
+        "newCapabilityScopedAuthorizationRequired": true
+      },
       "recovery": "Restore only genuinely missing PRIVATE_SOURCE_AUTHORITY from a verified capability-scoped package. Rebuild opened-origin semantics and residual bounds from previously opened development evidence and committed frozen code. Missing derived caches never block public work; missing historical provenance only warns and is never fabricated. Any future K2 execution requires a new capability-scoped authorization even after dates mature.",
-      "authorization": "USER_AUTHORIZED_HPSR01_K1_IMPLEMENTATION_AND_SYNTHETIC_VALIDATION_2026_07_31_NO_K2"
+      "authorization": "USER_AUTHORIZED_HPSR01_K1_COMPLETED_PUBLIC_SYNTHETIC_VALIDATION_2026_07_31_NO_K2"
     },
     {
       "id": "m3-private-materials",

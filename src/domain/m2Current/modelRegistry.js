@@ -740,6 +740,8 @@ function roleZh(role) {
       "探索性候选已预注册但尚未执行",
     implemented_exploratory_candidate_not_executed:
       "探索性候选已实现并通过合成验证但尚未执行",
+    implemented_awaiting_independent_evaluation:
+      "已实现并等待独立评价",
     archive_only_failed_model: "仅历史审计且已失败"
   }[role] ?? "登记角色";
 }
@@ -781,6 +783,13 @@ function resultStatusZh(value) {
       === "M2_HEAD_PROTECTED_SEGMENTED_ROUTER_WAITING_FOR_NEW_BILLS"
   ) {
     return "头部保护分段路由等待新账单且尚未执行";
+  }
+  if (
+    value
+      === "M2_HEAD_PROTECTED_SEGMENTED_ROUTER_"
+        + "IMPLEMENTED_AWAITING_LATER_ORIGIN_DATA"
+  ) {
+    return "头部保护分段路由已实现并等待独立 later-origin 数据";
   }
   if (value === "OA03_CURRENT_SCOPE_PERFORMANCE_NOT_EVALUABLE") {
     return "主要参考不可合法重建，当前性能不可评价";
