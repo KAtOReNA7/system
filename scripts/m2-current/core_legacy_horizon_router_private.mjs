@@ -500,6 +500,7 @@ async function rebuildBusinessAcceptanceH36Rows({
   let currentScopeMatchedCaseCount = 0;
   let missingHistoryCount = 0;
   let missingEligibleChannelComponentCount = 0;
+  let partialChannelDecompositionCaseCount = 0;
   let nonfinitePredictionCount = 0;
   for (const sourceCase of primaryCases) {
     if (
@@ -540,15 +541,21 @@ async function rebuildBusinessAcceptanceH36Rows({
     );
     if (missingChannels.length > 0) {
       missingEligibleChannelComponentCount += missingChannels.length;
-      continue;
+      partialChannelDecompositionCaseCount += 1;
     }
-    const channelPredictions = correctChannels.map((channel) => ({
-      channel,
-      pointEstimate: components.get(String(channel.channelUid))
-    }));
-    if (channelPredictions.some(
-      (row) => !Number.isFinite(row.pointEstimate)
-    )) {
+    const channelPredictions = correctChannels
+      .filter((channel) => components.has(String(channel.channelUid)))
+      .map((channel) => ({
+        channel,
+        pointEstimate: components.get(String(channel.channelUid))
+      }));
+    const workPointEstimate = Number(forecast.positivePointEstimate);
+    if (
+      !Number.isFinite(workPointEstimate)
+      || channelPredictions.some(
+        (row) => !Number.isFinite(row.pointEstimate)
+      )
+    ) {
       nonfinitePredictionCount += 1;
       continue;
     }
@@ -597,7 +604,9 @@ async function rebuildBusinessAcceptanceH36Rows({
           frozenParameterFold: fold,
           frozenFormulaChanged: false,
           frozenParameterChanged: false,
-          futureActualUsedForFeatureOrBand: false
+          futureActualUsedForFeatureOrBand: false,
+          channelDecompositionComplete:
+            missingChannels.length === 0
         }));
       }
       rows.push(Object.freeze({
@@ -614,10 +623,7 @@ async function rebuildBusinessAcceptanceH36Rows({
         horizonMonths: 36,
         standardWorkId: String(workCase.standardWorkId),
         channelUid: null,
-        pointEstimate: channelPredictions.reduce(
-          (total, row) => total + row.pointEstimate,
-          0
-        ),
+        pointEstimate: workPointEstimate,
         actual: Number(workCase.actual),
         trailing12Cash: workCase.core80
           ? workTrailing12Cash
@@ -631,14 +637,17 @@ async function rebuildBusinessAcceptanceH36Rows({
         frozenParameterFold: fold,
         frozenFormulaChanged: false,
         frozenParameterChanged: false,
-        futureActualUsedForFeatureOrBand: false
+        futureActualUsedForFeatureOrBand: false,
+        channelDecompositionComplete:
+          missingChannels.length === 0,
+        workTotalPredictionSource:
+          "EXACT_RECONSTRUCTION_OF_FROZEN_PRIMARY_LG01_WORK_ROW"
       }));
     }
   }
   if (
     rows.length === 0
     || missingHistoryCount !== 0
-    || missingEligibleChannelComponentCount !== 0
     || nonfinitePredictionCount !== 0
   ) {
     throw new Error(
@@ -664,7 +673,12 @@ async function rebuildBusinessAcceptanceH36Rows({
       )).length,
       missingHistoryCount,
       missingEligibleChannelComponentCount,
+      partialChannelDecompositionCaseCount,
       nonfinitePredictionCount,
+      workTotalEvidenceStatus:
+        "COMPLETE_EXACT_FROZEN_PRIMARY_LG01_ROWS",
+      workChannelEvidenceStatus:
+        "PARTIAL_DISCLOSED_NOT_USED_TO_DEFINE_WORK_TOTAL_BASELINE",
       humanEvaluationCacheRead: false,
       frozenRescoreCacheRead: false,
       historicalReceiptRead: false,
