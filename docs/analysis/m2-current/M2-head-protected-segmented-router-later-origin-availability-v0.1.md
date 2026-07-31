@@ -68,6 +68,6 @@ origin 后连续三个完整 future billMonth，且不得把未成熟或不完�
 
 ## 停止点
 
-K0A 日期盘点已经完成。因没有合格 later-origin，本轮只继续完成 K0B 的公开预注册、
-合同测试和 Draft PR；随后停止，不实施 HPSR01、不拟合 LG01/CHAM01、不执行
-later-origin 评分或 bootstrap，也不打开 final holdout。
+K0A 日期盘点与 K0B 公开预注册、合同测试已经完成。因没有合格 later-origin，
+本轮在 Draft PR 停止，不实施 HPSR01、不拟合 LG01/CHAM01、不执行 later-origin
+评分或 bootstrap，也不打开 final holdout。

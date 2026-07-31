@@ -51,9 +51,10 @@ test("catalog defines one private-free core capability and scoped private capabi
     "m2-current-channel-experts",
     "m2-current-publishing-scale-channel",
     "m2-current-publishing-scale-channel-controlled-retry-v2",
-    "m2-current-channel-generative",
+      "m2-current-channel-generative",
       "m2-current-human-anchored-later-origin",
       "m2-evaluation-v2-2-reversal-rescore",
+      "m2-head-protected-segmented-router",
       "m3-private-materials",
     ],
   );
@@ -673,6 +674,50 @@ test("missing v2.2 reversal-rescore inputs block only that private capability", 
     "frozen-portfolio-evaluation",
   ]);
   assert.match(result.recovery, /Never regenerate predictions/u);
+});
+
+test("HPSR capability separates authority, rebuildable cache, and optional receipt", () => {
+  const cacheMiss = evaluateCapability(
+    catalog,
+    "m2-head-protected-segmented-router",
+    {
+      repoRoot: REPO_ROOT,
+      artifactExists: (_absolutePath, artifact) => (
+        artifact.artifactClass === "PRIVATE_SOURCE_AUTHORITY"
+      ),
+      toolProbe: availableToolProbe,
+    },
+  );
+  assert.equal(cacheMiss.status, "DERIVED_CACHE_MISS_REBUILD_REQUIRED");
+  assert.equal(cacheMiss.sourceAuthorityStatus, "SOURCE_AUTHORITY_AVAILABLE");
+  assert.equal(cacheMiss.derivedCacheStatus, "CACHE_MISS_REBUILDABLE");
+  assert.equal(
+    cacheMiss.historicalReceiptStatus,
+    "OPTIONAL_PROVENANCE_MISSING",
+  );
+  assert.match(cacheMiss.authorization, /CURRENTLY_WAITING/u);
+  assert.match(cacheMiss.recovery, /WAITING_FOR_NEW_BILLS/u);
+  assert.ok(
+    cacheMiss.notes.includes("availability does not grant execution authorization"),
+  );
+
+  const authorityMissing = evaluateCapability(
+    catalog,
+    "m2-head-protected-segmented-router",
+    {
+      repoRoot: REPO_ROOT,
+      artifactExists: (_absolutePath, artifact) => (
+        artifact.artifactClass !== "PRIVATE_SOURCE_AUTHORITY"
+      ),
+      toolProbe: availableToolProbe,
+    },
+  );
+  assert.equal(authorityMissing.status, "MISSING_SOURCE_AUTHORITY");
+  assert.equal(
+    authorityMissing.sourceAuthorityStatus,
+    "MISSING_SOURCE_AUTHORITY",
+  );
+  assert.equal(authorityMissing.safeToRebuildDerivedCache, false);
 });
 
 test("capability paths cannot escape the repository", () => {

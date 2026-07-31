@@ -102,6 +102,15 @@ This directory is the only implementation home for current M2 model logic.
   portable public development. A private evaluation may be blocked only when
   an irreplaceable authoritative source is missing or no legal historical
   forecast origin can be formed.
+- `M2-WORK-HPSR01` is currently preregistered but not implemented or executed.
+  Its current status is
+  `M2_HEAD_PROTECTED_SEGMENTED_ROUTER_WAITING_FOR_NEW_BILLS`. Do not implement
+  K1, run K2, read a later-origin outcome, or bootstrap until a fresh date-only
+  audit proves an origin strictly after every previously opened origin, three
+  complete and previously unread future bill months, and a separate untouched
+  nonoverlapping final holdout. The historical three-month holdout contract is
+  immutable evidence but its origins may not be reused as untouched HPSR01
+  holdout after later caches exposed them.
 - Company-level M2 sales-share forecasting must keep existing core, existing
   tail, future new-work portfolio, and existing-work new-channel portfolio cash
   mutually exclusive and amount-conserving. Future new works and future channel

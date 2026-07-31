@@ -34,9 +34,9 @@ test("registry schema, evidence paths and immutable digests validate", () => {
     canonicalEvidenceSha256("same\r\ncontent\r\n"),
     canonicalEvidenceSha256("same\ncontent\n")
   );
-  assert.equal(validation.counts.modelCount, 33);
-  assert.equal(validation.counts.experimentCount, 20);
-  assert.equal(validation.counts.nonModelIdentifierCount, 92);
+  assert.equal(validation.counts.modelCount, 34);
+  assert.equal(validation.counts.experimentCount, 21);
+  assert.equal(validation.counts.nonModelIdentifierCount, 107);
   assert.equal(validation.counts.evaluationCount, 111);
   assert.equal(validation.counts.comparabilityGroupCount, 57);
 });
@@ -97,7 +97,7 @@ test("current roles retain fallback, research baseline and no automation promoti
   );
   assert.equal(
     registry.currentRoles.activeExperiment,
-    "M2-EXP-LG01-HEAD-CASH-RESIDUAL-01"
+    "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01"
   );
   assert.equal(registry.currentRoles.blockedExperiment, null);
   assert.match(
@@ -230,7 +230,7 @@ test("core legacy population test records non-confirmation without promotion", (
   );
   assert.equal(
     registry.currentRoles.latestStateIndex,
-    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.49.md"
+    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.50.md"
   );
   assert.equal(registry.currentRoles.activeCandidate, null);
   assert.equal(registry.currentRoles.approvedForAutomation, null);
@@ -303,7 +303,7 @@ test("CHAM01 first complete result is failed, frozen and not promoted", () => {
   assert.equal(experiment.secondResultExecuted, false);
   assert.equal(
     registry.currentRoles.activeExperiment,
-    "M2-EXP-LG01-HEAD-CASH-RESIDUAL-01"
+    "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01"
   );
   assert.equal(registry.currentRoles.activeCandidate, null);
   assert.equal(registry.currentRoles.approvedForAutomation, null);
@@ -366,6 +366,50 @@ test("HCRC01 first complete failure is frozen without promotion", () => {
   );
   assert.equal(experiment.secondResultAuthorized, false);
   assert.equal(experiment.secondResultExecuted, false);
+  assert.equal(registry.currentRoles.activeCandidate, null);
+  assert.equal(registry.currentRoles.approvedForAutomation, null);
+});
+
+test("HPSR01 is preregistered waiting and has no model outcome", () => {
+  const model = registry.models.find(
+    (item) => item.stableModelId === "M2-WORK-HPSR01"
+  );
+  const experiment = registry.experiments.find(
+    (item) => (
+      item.experimentId
+        === "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01"
+    )
+  );
+
+  assert.equal(
+    model.currentRole,
+    "preregistered_exploratory_candidate_not_executed"
+  );
+  assert.equal(
+    model.operationalStatus,
+    "not_implemented_not_executed_not_selected_not_production"
+  );
+  assert.deepEqual(
+    model.predecessorIds,
+    ["M2-WORK-LG01", "M2-WORK-CHAM01", "M2-WORK-HCRC01"]
+  );
+  assert.deepEqual(model.evaluations, []);
+  assert.equal(model.automationAuthorized, false);
+  assert.equal(model.productionImported, false);
+  assert.equal(model.finalHoldoutOpened, false);
+  assert.deepEqual(
+    experiment.arms.map((arm) => arm.armId),
+    ["R0", "D1", "R1"]
+  );
+  assert.equal(
+    experiment.resultStatus,
+    "M2_HEAD_PROTECTED_SEGMENTED_ROUTER_WAITING_FOR_NEW_BILLS"
+  );
+  assert.equal(experiment.candidateOutcomeProduced, false);
+  assert.equal(experiment.rawCandidateEvidenceProduced, false);
+  assert.equal(experiment.outerOutcomeRead, false);
+  assert.equal(experiment.eligibleLaterOriginCount, 0);
+  assert.equal(experiment.newFinalHoldoutOpened, false);
   assert.equal(registry.currentRoles.activeCandidate, null);
   assert.equal(registry.currentRoles.approvedForAutomation, null);
 });
@@ -621,6 +665,15 @@ test("reader catalog is a deterministic complete rendering of the registry", asy
   assert.match(catalog, /M2-EXP-CORE-HORIZON-AMOUNT-01/u);
   assert.match(catalog, /M2-WORK-HCRC01/u);
   assert.match(catalog, /M2-EXP-LG01-HEAD-CASH-RESIDUAL-01/u);
+  assert.match(catalog, /M2-WORK-HPSR01/u);
+  assert.match(
+    catalog,
+    /M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01/u
+  );
+  assert.match(
+    catalog,
+    /M2_HEAD_PROTECTED_SEGMENTED_ROUTER_WAITING_FOR_NEW_BILLS/u
+  );
   assert.match(catalog, /eval-hcrc01-c2-core80-strict-h3-raw/u);
   assert.match(
     catalog,
@@ -639,22 +692,26 @@ test("reader catalog is a deterministic complete rendering of the registry", asy
 test("read-only query exposes scoped identities and refuses invalid ranking", () => {
   const list = runQuery("list");
   assert.equal(list.status, 0, list.stderr);
-  assert.match(list.stdout, /M2 持久模型与模型族：33 个/u);
+  assert.match(list.stdout, /M2 持久模型与模型族：34 个/u);
   assert.match(list.stdout, /M2-CHAN-GEN02/u);
   assert.match(list.stdout, /M2-WORK-CHAM01/u);
+  assert.match(list.stdout, /M2-WORK-HPSR01/u);
 
   const status = runQuery("status");
   assert.equal(status.status, 0, status.stderr);
   assert.match(status.stdout, /本次只读查询模型执行次数：0/u);
   assert.match(
     status.stdout,
-    /当前实验：M2 LG01 头部现金残差校准 v0\.1/u
+    /当前实验：M2 LG01 头部保护分段路由与独立 later-origin 验证 v0\.1/u
   );
   assert.match(status.stdout, /兼容性现行运行回退模型/u);
   assert.match(status.stdout, /没有复现历史数值/u);
   assert.match(status.stdout, /不是业务整体通过/u);
   assert.match(status.stdout, /M2-WORK-OA03/u);
-  assert.match(status.stdout, /M2-EXP-LG01-HEAD-CASH-RESIDUAL-01/u);
+  assert.match(
+    status.stdout,
+    /M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01/u
+  );
   assert.match(
     status.stdout,
     /当前阻断实验：无（null）/u

@@ -3,7 +3,7 @@
 ## 当前权威入口
 
 - 用户首页与公共开始入口：`README.md`
-- 当前 M2 状态：`docs/analysis/m2-v2/M2-v2-current-state-index-v0.49.md`
+- 当前 M2 状态：`docs/analysis/m2-v2/M2-v2-current-state-index-v0.50.md`
 - M2 模型机器权威：`config/m2-model-registry.v1.json`
 - M2 中文目录：`docs/analysis/m2-current/M2-model-catalog-and-scorecard-v1.md`
 - M2 出版行业规模适配渠道核心结论：
@@ -43,6 +43,13 @@
   - `docs/analysis/m2-current/M2-lg01-head-cash-residual-development-v0.1.md`
   - `docs/analysis/m2-current/M2-oa03-lg01-core-legacy-error-attribution-v0.1.json`
   - `docs/analysis/m2-current/M2-oa03-lg01-core-legacy-error-attribution-v0.1.md`
+- M2 LG01 头部保护分段路由与 later-origin 资格：
+  - `config/m2-current-head-protected-segmented-router.v0.1.json`
+  - `docs/analysis/m2-current/M2-head-protected-segmented-router-selection-gate-attribution-v0.1.json`
+  - `docs/analysis/m2-current/M2-head-protected-segmented-router-selection-gate-attribution-v0.1.md`
+  - `docs/analysis/m2-current/M2-head-protected-segmented-router-later-origin-availability-v0.1.json`
+  - `docs/analysis/m2-current/M2-head-protected-segmented-router-later-origin-availability-v0.1.md`
+  - `docs/analysis/m2-current/M2-head-protected-segmented-router-preregistration-v0.1.md`
 - M2 评价体系：
   - `docs/analysis/m2-current/M2-evaluation-system-audit-v1.md`
   - `config/m2-evaluation-contract.v2.2.json`
@@ -260,6 +267,14 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
 - 默认不授权训练、调参、新候选、private evaluation、provider、数据库、
   final holdout、embargo、Canary/full160、release 或 M3 formal。只有当前用户任务
   的明确授权才能打开对应能力，且授权不跨任务自动延续。
+- LG01 头部保护分段路由模型 v0.1（`M2-WORK-HPSR01`）当前仅完成 K0 日期盘点和
+  预注册，状态为
+  `M2_HEAD_PROTECTED_SEGMENTED_ROUTER_WAITING_FOR_NEW_BILLS`。历史
+  `maxPreviouslyOpenedOrigin` 为 `2026-02`，future-actual 日期边界已到
+  `2026-05`，完整账单只到 `2026-04`；在新任务重新证明独立 later-origin 与另一
+  个 untouched final holdout 前，禁止实施 K1、执行 K2、读取 outcome 或 bootstrap。
+  历史三个月 final holdout 合同保持不可变，但其 origin 已被后续缓存暴露，不能
+  复用为本实验 untouched holdout。
 
 ## Git 与提交规则
 

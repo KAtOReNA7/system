@@ -776,6 +776,12 @@ function resultStatusZh(value) {
   if (value === "M2_LG01_HEAD_CASH_RESIDUAL_FAIL") {
     return "LG01 头部现金残差校准开发失败";
   }
+  if (
+    value
+      === "M2_HEAD_PROTECTED_SEGMENTED_ROUTER_WAITING_FOR_NEW_BILLS"
+  ) {
+    return "头部保护分段路由等待新账单且尚未执行";
+  }
   if (value === "OA03_CURRENT_SCOPE_PERFORMANCE_NOT_EVALUABLE") {
     return "主要参考不可合法重建，当前性能不可评价";
   }

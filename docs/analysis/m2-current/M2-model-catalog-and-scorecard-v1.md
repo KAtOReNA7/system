@@ -11,7 +11,7 @@
 - 组合级参考（portfolio reference）：组合现金 ETS/Holt-Winters 模型（Portfolio ETS/Holt-Winters，`M2-PORT-ETS01`）。
 - 活动候选（active candidate）：无（`null`）。
 - 自动化批准模型（approved for automation）：无（`null`）。
-- 当前实验：M2 LG01 头部现金残差校准 v0.1（M2 LG01 Head-Cash Residual Calibration v0.1，`M2-EXP-LG01-HEAD-CASH-RESIDUAL-01`；LG01 头部现金残差校准开发失败，`M2_LG01_HEAD_CASH_RESIDUAL_FAIL`）。
+- 当前实验：M2 LG01 头部保护分段路由与独立 later-origin 验证 v0.1（M2 LG01 Head-Protected Segmented Router and Independent Later-Origin Validation v0.1，`M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01`；头部保护分段路由等待新账单且尚未执行，`M2_HEAD_PROTECTED_SEGMENTED_ROUTER_WAITING_FOR_NEW_BILLS`）。
 - 当前阻断实验：无（`null`）。
 
 ## 持久模型与模型族
@@ -50,7 +50,8 @@
 | 作品点预测（WORK） | 模型（model） | C3 内部特征残差校正模型（C3 Internal-Feature Residual Correction，`M2-WORK-C3IR01`） | `C3`、`C3-A`、`C3 residual`、`C3 internal features` | 仅历史审计且已失败（`archive_only_failed_model`） | 前序 `M2-WORK-C2IM01`；无后续 |
 | 作品点预测（WORK） | 选定管线（model_pipeline） | 按预测周期滚动模型路由器 v0.1（Rolling Horizon Model Router v0.1，`M2-WORK-HR01`） | `M2-current-core-legacy-horizon-router-v0.1`、`rolling horizon model router`、`horizon router v0.1` | 已执行失败候选（`failed_development_candidate`） | 前序 `M2-WORK-OA03`、`M2-WORK-LG01`、`M2-WORK-CRMR01`；无后续 |
 | 作品点预测（WORK） | 模型（model） | 核心老品分周期金额模型 v0.1（Core Legacy Horizon-Specific Amount Model v0.1，`M2-WORK-CHAM01`） | `core legacy horizon amount`、`horizon-specific amount model` | 已执行失败候选（`failed_development_candidate`） | 前序 `M2-WORK-LG01`；后续 `M2-WORK-HCRC01` |
-| 作品点预测（WORK） | 模型（model） | LG01 头部现金残差校准模型 v0.1（LG01 Head-Cash Residual Calibration Model v0.1，`M2-WORK-HCRC01`） | `LG01 head-cash residual calibration`、`head-cash protected residual blend` | 已执行失败候选（`failed_development_candidate`） | 前序 `M2-WORK-LG01`、`M2-WORK-CHAM01`；无后续 |
+| 作品点预测（WORK） | 模型（model） | LG01 头部现金残差校准模型 v0.1（LG01 Head-Cash Residual Calibration Model v0.1，`M2-WORK-HCRC01`） | `LG01 head-cash residual calibration`、`head-cash protected residual blend` | 已执行失败候选（`failed_development_candidate`） | 前序 `M2-WORK-LG01`、`M2-WORK-CHAM01`；后续 `M2-WORK-HPSR01` |
+| 作品点预测（WORK） | 模型（model） | LG01 头部保护分段路由模型 v0.1（LG01 Head-Protected Segmented Router Model v0.1，`M2-WORK-HPSR01`） | `LG01 head-protected segmented router`、`HPSR01` | 探索性候选已预注册但尚未执行（`preregistered_exploratory_candidate_not_executed`） | 前序 `M2-WORK-LG01`、`M2-WORK-CHAM01`、`M2-WORK-HCRC01`；无后续 |
 
 ## 实验、实验臂与检查点
 
@@ -77,6 +78,7 @@
 | 作品发生—金额校准模型 v0.3 当前范围复现与已有渠道分配验证 v0.1（Occurrence-Amount Calibration v0.3 Current-Scope Replication and Observed-Channel Allocation Validation v0.1，`M2-EXP-OA03-CURRENT-SCOPE-REPLICATION-01`） | 既有作品发生—金额校准模型当前范围技术复现臂 / R0（`M2-EXP-OA03-CURRENT-SCOPE-REPLICATION-01/R0`；`EXECUTED_CURRENT_SCOPE_TECHNICAL_REPLICATION_COMPLETE`）；动态核心人口作品总额评价臂 / R1（`M2-EXP-OA03-CURRENT-SCOPE-REPLICATION-01/R1`；`EXECUTED_PRIMARY_NOT_EVALUABLE_STRICT_NOT_SUPPORTED`）；固定最近 12 月已有成熟渠道份额分配臂 / C1（`M2-EXP-OA03-CURRENT-SCOPE-REPLICATION-01/C1`；`EXECUTED_MIXED_OR_NOT_SUPPORTED_EXACT_CONSERVATION`） |
 | 核心老品分周期金额模型开发 v0.1（Core Legacy Horizon-Specific Amount Model Development v0.1，`M2-EXP-CORE-HORIZON-AMOUNT-01`） | 冻结人工锚定可学习全局研究比较基线 / B0（`M2-EXP-CORE-HORIZON-AMOUNT-01/B0`；`FROZEN_SAME_CASE_REFERENCE_RECONSTRUCTED_AND_EVALUATED`）；分周期直接金额模型—等作品权重 / B1（`M2-EXP-CORE-HORIZON-AMOUNT-01/B1`；`TRAINED_AND_EVALUATED_FIRST_VALID_RESULT_FROZEN`）；分周期直接金额模型—起点收入秩权重 / B2（`M2-EXP-CORE-HORIZON-AMOUNT-01/B2`；`TRAINED_AND_EVALUATED_FIRST_VALID_RESULT_FROZEN`）；冻结 LG01 输入的分周期稳健金额模型 / B3（`M2-EXP-CORE-HORIZON-AMOUNT-01/B3`；`TRAINED_AND_EVALUATED_FIRST_VALID_RESULT_FROZEN`） |
 | M2 LG01 头部现金残差校准 v0.1（M2 LG01 Head-Cash Residual Calibration v0.1，`M2-EXP-LG01-HEAD-CASH-RESIDUAL-01`） | 冻结 LG01 三个月同案例基线 / C0（`M2-EXP-LG01-HEAD-CASH-RESIDUAL-01/C0`；`FROZEN_INPUT_NOT_REEXECUTED_EVALUATED_REFERENCE`）；冻结 CHAM01 B3 三个月原始诊断参考 / C1（`M2-EXP-LG01-HEAD-CASH-RESIDUAL-01/C1`；`FROZEN_INPUT_NOT_REEXECUTED_EVALUATED_DIAGNOSTIC_ONLY`）；全局有界残差混合 / C2（`M2-EXP-LG01-HEAD-CASH-RESIDUAL-01/C2`；`EXECUTED_RAW_CANDIDATE_ABSENT_UNIVERSAL_FALLBACK_FAIL`）；头部现金带保护的有界残差混合 / C3（`M2-EXP-LG01-HEAD-CASH-RESIDUAL-01/C3`；`EXECUTED_RAW_CANDIDATE_ABSENT_UNIVERSAL_FALLBACK_FAIL`） |
+| M2 LG01 头部保护分段路由与独立 later-origin 验证 v0.1（M2 LG01 Head-Protected Segmented Router and Independent Later-Origin Validation v0.1，`M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01`） | 冻结 LG01 later-origin 同案例基线 / R0（`M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01/R0`；`NOT_EXECUTED_WAITING_FOR_NEW_BILLS`）；冻结公式 CHAM01 B3 原始诊断 / D1（`M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01/D1`；`NOT_EXECUTED_WAITING_FOR_NEW_BILLS`）；LG01 头部保护分段路由 / R1（`M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01/R1`；`NOT_IMPLEMENTED_NOT_EXECUTED_WAITING_FOR_NEW_BILLS`） |
 | C1–C3 历史冻结开发活动（Archived C1-C3 Development Campaign，`M2-EXP-ARCHIVE-C1-C3`） | 透明组合开发 / C1（`M2-EXP-ARCHIVE-C1-C3/C1`；`ARCHIVE_DEVELOPMENT_FAIL`）；旧买断收入路由 / C2-R（`M2-EXP-ARCHIVE-C1-C3/C2-R`；`ARCHIVE_DEVELOPMENT_FAIL`）；正式现金路由分治 / C2-R.1（`M2-EXP-ARCHIVE-C1-C3/C2-R.1`；`ARCHIVE_DEVELOPMENT_FAIL`）；活跃度与间歇模型组合 / C2（`M2-EXP-ARCHIVE-C1-C3/C2`；`ARCHIVE_DEVELOPMENT_FAIL`）；内部特征残差校正 / C3（`M2-EXP-ARCHIVE-C1-C3/C3`；`ARCHIVE_DEVELOPMENT_FAIL`） |
 
 ## 成绩人口与可比组

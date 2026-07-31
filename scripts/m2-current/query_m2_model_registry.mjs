@@ -420,6 +420,12 @@ function resultStatusZh(value) {
   if (value === "M2_LG01_HEAD_CASH_RESIDUAL_FAIL") {
     return "LG01 头部现金残差校准开发失败";
   }
+  if (
+    value
+      === "M2_HEAD_PROTECTED_SEGMENTED_ROUTER_WAITING_FOR_NEW_BILLS"
+  ) {
+    return "头部保护分段路由等待新账单且尚未执行";
+  }
   if (value === "HORIZON_ROUTER_NOT_CONFIRMED") {
     return "按预测周期滚动模型路由未确认";
   }

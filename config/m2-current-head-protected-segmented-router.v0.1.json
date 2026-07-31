@@ -1,0 +1,410 @@
+{
+  "schema": "m2.current.head_protected_segmented_router.v0.1",
+  "asOf": "2026-07-31",
+  "experiment": {
+    "stableExperimentId": "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01",
+    "displayNameZh": "M2 LG01 头部保护分段路由与独立 later-origin 验证 v0.1",
+    "displayNameEn": "M2 LG01 Head-Protected Segmented Router and Independent Later-Origin Validation v0.1",
+    "entityType": "experiment",
+    "phase": "PREREGISTERED_WAITING_FOR_NEW_BILLS",
+    "status": "M2_HEAD_PROTECTED_SEGMENTED_ROUTER_WAITING_FOR_NEW_BILLS",
+    "K0A": "COMPLETED_DATE_ONLY",
+    "K0B": "COMPLETED_CONTRACT_FROZEN",
+    "K1": "NOT_EXECUTED_WAITING_FOR_NEW_BILLS",
+    "K2": "NOT_EXECUTED_WAITING_FOR_NEW_BILLS",
+    "outerOutcomeRead": false,
+    "firstCompleteOutcomeProduced": false,
+    "activeCandidate": false,
+    "approvedForAutomation": false
+  },
+  "model": {
+    "stableModelId": "M2-WORK-HPSR01",
+    "displayNameZh": "LG01 头部保护分段路由模型 v0.1",
+    "displayNameEn": "LG01 Head-Protected Segmented Router Model v0.1",
+    "entityType": "model",
+    "target": "future_sales_share_development_modelable_cash",
+    "predictionGrain": "work_origin_horizon",
+    "horizonMonths": 3,
+    "formulaClass": "FROZEN_HEAD_PROTECTED_SEGMENTED_BOUNDED_RESIDUAL_ROUTER",
+    "implementationStatus": "NOT_IMPLEMENTED_WAITING_FOR_NEW_BILLS",
+    "independentConfirmationClaimAllowed": false,
+    "activeCandidate": false,
+    "approvedForAutomation": false,
+    "productionImported": false
+  },
+  "authority": {
+    "actualDefinitionId": "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01",
+    "cashAuthority": "user_reviewed_sales_share_workbook_membership",
+    "onlySalesShareCashAllowed": true,
+    "buyoutOrOtherCashAllowed": false,
+    "sourceAuthorityClasses": [
+      "PRIVATE_SOURCE_AUTHORITY",
+      "PRIVATE_DERIVED_CACHE",
+      "PRIVATE_RUN_PROVENANCE"
+    ],
+    "missingSourceAuthorityPolicy": "M2_HEAD_PROTECTED_SEGMENTED_ROUTER_BLOCKED_MISSING_PRIVATE_AUTHORITY",
+    "missingDerivedCachePolicy": "CACHE_MISS_REBUILDABLE",
+    "missingRunProvenancePolicy": "OPTIONAL_PROVENANCE_MISSING_WARNING_ONLY",
+    "historicalReceiptMayGrantExecution": false,
+    "privatePathOrDigestMayBeLongLivedGate": false
+  },
+  "scope": {
+    "primaryEvaluationFamily": "STRICT_ROLLING",
+    "primaryPopulationId": "CORE80",
+    "sensitivityPopulationId": "CORE90",
+    "numericDiagnosticEvaluationFamily": "PRIMARY_ROLLING",
+    "horizonsMonths": [
+      3
+    ],
+    "workTotalOnly": true,
+    "originMatureLegacyWorkOnly": true,
+    "originObservedMatureChannelOnly": true,
+    "corePopulationSource": "ORIGIN_VISIBLE_SALES_SHARE_CASH_ONLY",
+    "corePopulationRecomputedAtEveryOrigin": true,
+    "futureActualTopNAllowed": false,
+    "futureNewWorkAuthorized": false,
+    "futureFirstObservedChannelAuthorized": false,
+    "outsideCoreTailAuthorized": false,
+    "companyTargetAuthorized": false,
+    "channelAllocationAuthorized": false,
+    "taxonomyAuthorized": false,
+    "platformMechanismAuthorized": false,
+    "sixMonthAuthorized": false,
+    "twelveMonthAuthorized": false,
+    "thirtySixMonthAuthorized": false
+  },
+  "laterOriginQualification": {
+    "maxPreviouslyOpenedOrigin": "2026-02",
+    "openedFutureActualThrough": "2026-05",
+    "latestCompleteMonth": "2026-04",
+    "horizonMonths": 3,
+    "originMustBeStrictlyAfterMaxPreviouslyOpened": true,
+    "everyFutureBillMonthMustBeStrictlyAfterOpenedFutureActualThrough": true,
+    "allFutureBillMonthsMustBeComplete": true,
+    "newFutureActualAmountsReadDuringK0": false,
+    "eligibleLaterOrigins": [],
+    "eligibleLaterOriginCount": 0,
+    "nonoverlappingSelectionRule": "GREEDY_EARLIEST_ORIGIN_WITH_DISJOINT_THREE_MONTH_FUTURE_WINDOWS",
+    "adjacentOverlappingWindowsCountAsIndependentEvidence": false,
+    "currentDecision": "M2_HEAD_PROTECTED_SEGMENTED_ROUTER_WAITING_FOR_NEW_BILLS"
+  },
+  "finalHoldout": {
+    "authorized": false,
+    "openedByThisTask": false,
+    "historicalContractModified": false,
+    "historicalThreeMonthOrigins": [
+      "2025-06",
+      "2025-12"
+    ],
+    "historicalIsolationStatus": "HISTORICAL_FINAL_HOLDOUT_ISOLATION_CONFLICT",
+    "historicalOriginsEligibleAsUntouchedHpsrHoldout": false,
+    "whenNoUntouchedExistingHoldout": "RESERVE_LATEST_COMPLETE_UNOPENED_NONOVERLAPPING_ORIGIN",
+    "singleAvailableOriginThatIsOnlyHoldoutMayBeConsumed": false,
+    "reservationMayOpenOutcome": false,
+    "earliestOneLaterOriginPlan": {
+      "laterOrigin": "2026-05",
+      "reservedFinalHoldoutOrigin": "2026-08",
+      "requiredCompleteLedgerThrough": "2026-11"
+    },
+    "earliestTwoLaterOriginPlan": {
+      "laterOrigins": [
+        "2026-05",
+        "2026-08"
+      ],
+      "reservedFinalHoldoutOrigin": "2026-11",
+      "requiredCompleteLedgerThrough": "2027-02"
+    }
+  },
+  "identities": [
+    {
+      "armId": "R0",
+      "displayNameZh": "冻结 LG01 later-origin 同案例基线",
+      "displayNameEn": "Frozen LG01 Later-Origin Same-Case Baseline",
+      "modelId": "M2-WORK-LG01",
+      "role": "FROZEN_RESEARCH_BASELINE",
+      "promotionEligible": false
+    },
+    {
+      "armId": "D1",
+      "displayNameZh": "冻结公式 CHAM01 B3 原始诊断",
+      "displayNameEn": "Frozen-Formula CHAM01 B3 Raw Diagnostic",
+      "modelId": "M2-WORK-CHAM01",
+      "role": "RAW_NUMERIC_DIAGNOSTIC_ONLY",
+      "directServingAllowed": false,
+      "promotionEligible": false
+    },
+    {
+      "armId": "R1",
+      "displayNameZh": "LG01 头部保护分段路由",
+      "displayNameEn": "LG01 Head-Protected Segmented Router",
+      "modelId": "M2-WORK-HPSR01",
+      "role": "ONLY_RAW_CANDIDATE",
+      "promotionEligibleOnlyAfterQualifiedExecution": true
+    }
+  ],
+  "originFaithfulFit": {
+    "lg01CanonicalFormulaAndHyperparametersFrozen": true,
+    "cham01B3CanonicalFormulaAndHyperparametersFrozen": true,
+    "refitAtQualifiedOriginAllowed": true,
+    "trainingDataCutoff": "FORECAST_ORIGIN_INCLUSIVE_ONLY",
+    "postOriginBillClassificationRankingOrActualAllowed": false,
+    "laterOriginOutcomeMayReselectHyperparameters": false,
+    "signedLogHuberL2WeightsOrB3StructureMutationAllowed": false,
+    "rawB3PrivateDiagnosticRequiredIfExecuted": true
+  },
+  "cashBands": {
+    "rankingValue": "max(originVisibleTrailing12SalesShareCash,0)",
+    "historyWindowPolicy": "LATEST_UP_TO_12_ORIGIN_VISIBLE_MONTHS_MISSING_MONTHS_ARE_ZERO_CASH",
+    "population": "EACH_ORIGIN_DYNAMIC_CORE80",
+    "sort": [
+      "rankingValue_DESC",
+      "stableInternalWorkKey_ASC"
+    ],
+    "bands": [
+      {
+        "bandId": "H50",
+        "cumulativeCashUpperInclusive": 0.5
+      },
+      {
+        "bandId": "M30",
+        "cumulativeCashUpperInclusive": 0.8
+      },
+      {
+        "bandId": "L20",
+        "cumulativeCashUpperInclusive": 1
+      }
+    ],
+    "boundaryWorkPolicy": "WHOLE_WORK_STAYS_IN_HIGHER_CASH_BAND",
+    "futureActualUsed": false,
+    "fixedMinimumWorkCountAllowed": false,
+    "minimum50Or100WorksRequired": false,
+    "smallPublishingPopulationAllowed": true,
+    "supportReportedBy": [
+      "independent_origin_count",
+      "origin_visible_cash_coverage",
+      "prediction_stability"
+    ]
+  },
+  "residualBoundaryFreeze": {
+    "source": "PREVIOUSLY_OPENED_HCRC01_DEVELOPMENT_ROWS_ONLY",
+    "laterOriginRowsOrOutcomeAllowed": false,
+    "positiveBaseFloor": {
+      "sourceRows": "OLD_DEVELOPMENT_ROWS_WITH_FINITE_POSITIVE_LG01_BASE",
+      "quantile": 0.1,
+      "quantileMethod": "LINEAR_INTERPOLATION_N_MINUS_ONE",
+      "publicNumericValuePublished": false
+    },
+    "normalizedResidualBounds": {
+      "sourceRows": "OLD_DEVELOPMENT_ROWS_ONLY",
+      "lowerQuantile": 0.05,
+      "upperQuantile": 0.95,
+      "quantileMethod": "LINEAR_INTERPOLATION_N_MINUS_ONE",
+      "publicNumericValuesPublished": false
+    },
+    "rebuildPolicy": "DETERMINISTIC_FROM_OLD_DEVELOPMENT_ROWS_NEVER_FROM_LATER_ORIGIN",
+    "boundValuesMustFreezeBeforeLaterOutcome": true,
+    "boundValuesPresentAtK0B": false,
+    "reasonBoundValuesAbsent": "K1_NOT_EXECUTED_WAITING_FOR_NEW_BILLS"
+  },
+  "routerFormula": {
+    "base": "LG01_PREDICTION",
+    "raw": "CHAM01_B3_PREDICTION",
+    "H50": {
+      "predictionFormula": "base",
+      "architectureComponent": true,
+      "fallback": false,
+      "abstain": false,
+      "rowwiseExactEqualityToR0Required": true,
+      "currencyPrecisionDifferenceAllowed": 0
+    },
+    "M30": {
+      "residualFormula": "rawMinusBase",
+      "scaleFormula": "max(abs(base),frozenDevelopmentPositiveBaseFloor)",
+      "normalizedResidualFormula": "residualDividedByScale",
+      "boundedNormalizedResidualFormula": "clip(normalizedResidual,frozenDevelopmentQ05,frozenDevelopmentQ95)",
+      "boundedResidualFormula": "scaleTimesBoundedNormalizedResidual",
+      "predictionFormula": "basePlusBoundedResidual",
+      "alpha": 1,
+      "globalAlphaDependencyAllowed": false,
+      "otherBandDependencyAllowed": false
+    },
+    "L20": {
+      "residualFormula": "rawMinusBase",
+      "scaleFormula": "max(abs(base),frozenDevelopmentPositiveBaseFloor)",
+      "normalizedResidualFormula": "residualDividedByScale",
+      "boundedNormalizedResidualFormula": "clip(normalizedResidual,frozenDevelopmentQ05,frozenDevelopmentQ95)",
+      "boundedResidualFormula": "scaleTimesBoundedNormalizedResidual",
+      "predictionFormula": "basePlusBoundedResidual",
+      "alpha": 1,
+      "globalAlphaDependencyAllowed": false,
+      "otherBandDependencyAllowed": false
+    },
+    "alphaSelectionAllowed": false,
+    "workSpecificModelSelectionAllowed": false,
+    "additionalArmAllowed": false
+  },
+  "numericSafety": {
+    "finiteExtremeRawB3Policy": "PRESERVE_D1_RAW_AND_CLIP_NORMALIZED_RESIDUAL_BEFORE_R1",
+    "nonfiniteBaseRawScaleOrResidualPolicy": "M30_OR_L20_ROW_FALLBACK_TO_LG01",
+    "nonfiniteFallbackStatus": "NUMERIC_INPUT_INVALID_FALLBACK_LG01",
+    "zeroMeanOtherWorkOrOtherHorizonSubstitutionAllowed": false,
+    "allFinalR1PredictionsFiniteRequired": true,
+    "knownPrimaryCore90MagnitudeExplosionAllowed": false,
+    "predictionBaseSafetyRangeSource": "OLD_DEVELOPMENT_ROWS_ONLY",
+    "requiredDiagnostics": [
+      "h50_fixed_lg01_count",
+      "m30_l20_corrected_count",
+      "m30_l20_numeric_fallback_count",
+      "bound_trigger_count",
+      "raw_b3_finite_extreme_count",
+      "nonfinite_count",
+      "prediction_base_p50_p90_p95_p99_max",
+      "correction_coverage_by_origin"
+    ]
+  },
+  "caseAndConservation": {
+    "caseKeyFields": [
+      "evaluationFamily",
+      "populationId",
+      "standardWorkId",
+      "origin",
+      "horizonMonths",
+      "actualDefinitionId"
+    ],
+    "exactSameCaseRequired": true,
+    "duplicatePolicy": "FAIL_CLOSED",
+    "missingMemberPolicy": "EXCLUDE_AND_REPORT_NEVER_ZERO_IMPUTE",
+    "amountConservationRequired": true,
+    "caseKeyConservationRequired": true,
+    "futureLeakageAllowed": false
+  },
+  "evaluation": {
+    "primaryDecisionCell": "INDEPENDENT_LATER_ORIGIN_STRICT_ROLLING_CORE80_WORK_TOTAL_H3_R1_VS_R0_EXACT_SAME_CASE",
+    "sensitivityCells": [
+      "INDEPENDENT_LATER_ORIGIN_STRICT_ROLLING_CORE90_WORK_TOTAL_H3",
+      "INDEPENDENT_LATER_ORIGIN_PRIMARY_ROLLING_CORE80_WORK_TOTAL_H3_NUMERIC_DIAGNOSTIC",
+      "INDEPENDENT_LATER_ORIGIN_PRIMARY_ROLLING_CORE90_WORK_TOTAL_H3_NUMERIC_DIAGNOSTIC"
+    ],
+    "primaryMetrics": [
+      "sum_absolute_cash_error",
+      "WAPE",
+      "paired_FVA_vs_R0"
+    ],
+    "guardrails": [
+      "absolute_signed_bias_no_worse_than_R0_plus_0.01",
+      "H50_rowwise_prediction_and_absolute_error_exactly_equal_R0",
+      "at_least_one_of_M30_L20_improves_and_other_not_worse_than_minus_0.01",
+      "Core90_FVA_not_below_minus_0.01",
+      "numeric_hard_guardrails_all_pass"
+    ],
+    "diagnosticOnly": [
+      "maximum_single_work_absolute_error_share",
+      "top5_and_top10_work_error_concentration",
+      "MAE",
+      "median_absolute_error",
+      "work_error_distribution",
+      "bootstrap_interval_width"
+    ],
+    "errorConcentrationIsHardGate": false,
+    "aggregateByCashWeightedErrorsNotMeanOriginWape": true,
+    "bootstrap": {
+      "workClusterIterations": 2000,
+      "wholeWorkCluster": true,
+      "originBlockOrFeasibleTimeBlockResamplingRequired": true
+    },
+    "rawRouterReported": true,
+    "correctedOnlySubsetReported": true,
+    "fallbackOnlySubsetReported": true,
+    "selectedPipelineMayReplaceRawRouter": false,
+    "overlappingWindowsMustBeDisclosed": true,
+    "sameWorkAcrossOriginsCorrelationMustBeDisclosed": true
+  },
+  "decisionPolicy": {
+    "multiOriginPass": {
+      "status": "M2_HEAD_PROTECTED_SEGMENTED_ROUTER_LATER_ORIGIN_PASS",
+      "minimumNonoverlappingLaterOrigins": 2,
+      "minimumAggregateCore80Fva": 0.01,
+      "minimumImprovingOriginShareExclusive": 0.5,
+      "allGuardrailsMustPass": true,
+      "positiveBootstrapPointEstimateRequired": true,
+      "productionReadyClaimAllowed": false
+    },
+    "singleOriginDirectional": {
+      "status": "M2_HEAD_PROTECTED_SEGMENTED_ROUTER_SINGLE_ORIGIN_DIRECTIONAL_ONLY",
+      "exactLaterOriginCount": 1,
+      "minimumCore80Fva": 0.01,
+      "allGuardrailsMustPass": true,
+      "promotionAuthorized": false
+    },
+    "inconclusive": {
+      "status": "M2_HEAD_PROTECTED_SEGMENTED_ROUTER_INCONCLUSIVE_WAIT_FOR_MORE_BILLS",
+      "fvaRangeInclusive": [
+        -0.01,
+        0.01
+      ],
+      "sameWindowRetuningAllowed": false
+    },
+    "failure": {
+      "status": "M2_HEAD_PROTECTED_SEGMENTED_ROUTER_LATER_ORIGIN_FAIL_STOP_CASH_ONLY",
+      "maximumSingleOriginFva": -0.01,
+      "multiOriginAggregateFvaBelow": 0.01,
+      "guardrailFailureTriggersStop": true,
+      "automaticNextModelAllowed": false
+    },
+    "waiting": {
+      "status": "M2_HEAD_PROTECTED_SEGMENTED_ROUTER_WAITING_FOR_NEW_BILLS",
+      "isModelFailure": false
+    },
+    "missingAuthorityStatus": "M2_HEAD_PROTECTED_SEGMENTED_ROUTER_BLOCKED_MISSING_PRIVATE_AUTHORITY",
+    "contractBreachStatus": "M2_HEAD_PROTECTED_SEGMENTED_ROUTER_INVALIDATED_CONTRACT_BREACH"
+  },
+  "execution": {
+    "laterOriginAvailableAtK0": false,
+    "K1ImplementationAuthorizedNow": false,
+    "K2PrivateEvaluationAuthorizedNow": false,
+    "singleQualifiedLaterOriginEvaluationConditionallyAuthorizedByUser": true,
+    "condition": "ONLY_AFTER_FRESH_DATE_AUDIT_PROVES_LATER_ORIGIN_AND_SEPARATE_FINAL_HOLDOUT",
+    "oneCompleteOutcomeMaximum": true,
+    "secondCompleteResultAllowed": false,
+    "secondBootstrapAllowed": false,
+    "parallelDuplicateProcessAllowed": false,
+    "runtimeRepositoryRootResolved": true,
+    "runtimeGitIdentityResolved": true,
+    "absoluteMachinePathInLongLivedArtifactAllowed": false,
+    "fixedExecutionShaInContractAllowed": false
+  },
+  "authorization": {
+    "source": "USER_INSTRUCTION_M2_HEAD_PROTECTED_SEGMENTED_ROUTER_LATER_ORIGIN_V0_1",
+    "dateOnlyReadinessAudit": true,
+    "contractPreregistration": true,
+    "qualifiedLaterOriginValidation": true,
+    "qualifiedLaterOriginValidationUsableNow": false,
+    "privateSourceReadForDateAudit": true,
+    "privateSourceReadForModelOutcome": false,
+    "modelTrainingNow": false,
+    "modelSelectionNow": false,
+    "bootstrapNow": false,
+    "finalHoldout": false,
+    "production": false,
+    "provider": false,
+    "database": false,
+    "canary": false,
+    "full160": false,
+    "release": false,
+    "m3Formal": false,
+    "pullRequestMerge": false
+  },
+  "privateCapability": {
+    "capabilityId": "m2-head-protected-segmented-router",
+    "sourceAuthorityBlocking": true,
+    "derivedCacheBlocking": false,
+    "runProvenanceBlocking": false
+  },
+  "publicOutputs": {
+    "selectionAttributionJson": "docs/analysis/m2-current/M2-head-protected-segmented-router-selection-gate-attribution-v0.1.json",
+    "selectionAttributionReport": "docs/analysis/m2-current/M2-head-protected-segmented-router-selection-gate-attribution-v0.1.md",
+    "availabilityJson": "docs/analysis/m2-current/M2-head-protected-segmented-router-later-origin-availability-v0.1.json",
+    "availabilityReport": "docs/analysis/m2-current/M2-head-protected-segmented-router-later-origin-availability-v0.1.md",
+    "preregistration": "docs/analysis/m2-current/M2-head-protected-segmented-router-preregistration-v0.1.md"
+  }
+}
