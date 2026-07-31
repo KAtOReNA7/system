@@ -1,0 +1,3155 @@
+{
+  "schema": "m2.business_acceptance_threshold_audit.public.v1",
+  "asOf": "2026-07-31",
+  "status": "M2_BUSINESS_ACCEPTANCE_THRESHOLD_AUDIT_COMPLETE_AWAITING_USER_DECISION",
+  "purpose": "MEASURE_BUSINESS_SCALE_AND_THRESHOLD_SENSITIVITY_WITHOUT_MODEL_DEVELOPMENT",
+  "executionBoundary": {
+    "sourceAuthorityStatus": "SOURCE_AUTHORITY_AVAILABLE",
+    "derivedCacheStatus": "REQUIRED_MEASUREMENT_CACHES_AVAILABLE_EXCEPT_EXACT_H36_SAME_CASE_ROWS",
+    "historicalReceiptStatus": "OPTIONAL_PROVENANCE_NOT_EXECUTION_AUTHORITY",
+    "completeAuthoritativeBillMonthThrough": "2026-04",
+    "actualValueOpenedThrough": "2026-05",
+    "scaleOrigins": {
+      "from": "2017-08",
+      "through": "2023-04",
+      "count": 69,
+      "longestTargetEnd": "2026-04"
+    },
+    "excludedIncompleteOrigin": "2023-05",
+    "excludedIncompleteReason": "H36_TARGET_ENDS_IN_INCOMPLETE_2026_05",
+    "independentReservedWindow": {
+      "origin": "2026-03",
+      "requiredCompleteThrough": "2026-06",
+      "outcomeRead": false
+    },
+    "prospectiveFinalHoldout": {
+      "origin": "2026-06",
+      "requiredCompleteThrough": "2026-09",
+      "outcomeRead": false
+    },
+    "frozenReplayForMeasurementOnlyCount": 1,
+    "replayResult": "COMPLETE_MONTH_TRUNCATED_REPLAY_NOT_BYTE_EQUIVALENT_TO_OLD_PUBLIC_COMPARISON_SETS",
+    "secondReplayPerformed": false,
+    "modelTrainingCount": 0,
+    "modelFitCount": 0,
+    "tuningCount": 0,
+    "modelSelectionCount": 0,
+    "newPredictionGenerationCount": 0,
+    "hpsr02IndependentEvaluationCount": 0,
+    "finalHoldoutReadCount": 0,
+    "privateIdentityPublished": false
+  },
+  "businessOutputContract": {
+    "requiredHorizonsMonths": [
+      3,
+      6,
+      12,
+      36
+    ],
+    "h36Evidence": "HARD_GATE_USING_MULTIPLE_LEGAL_HISTORICAL_ORIGINS_WITH_NON_PROSPECTIVE_CAVEAT",
+    "h60": "FUTURE_M3_PRECURSOR_LOW_CONFIDENCE_SCENARIO_REFERENCE_ONLY_NOT_CURRENT_M2_GATE_OR_RANK",
+    "populations": [
+      "DYNAMIC_CORE80",
+      "DYNAMIC_CORE90_SENSITIVITY"
+    ],
+    "target": "FUTURE_SALES_SHARE_DEVELOPMENT_MODELABLE_CASH_FOR_ORIGIN_MATURE_EXISTING_CANONICAL_CHANNELS"
+  },
+  "actualScale": {
+    "cashBandApplicability": "H50_M30_L20_ARE_CANONICAL_ONLY_INSIDE_EACH_ORIGIN_DYNAMIC_CORE80",
+    "postHocTopCashSharesNeverUsedForEligibilityOrPrediction": true,
+    "cells": [
+      {
+        "populationId": "CORE80",
+        "horizonMonths": 3,
+        "originCount": 69,
+        "originFrom": "2017-08",
+        "originThrough": "2023-04",
+        "caseCount": 1418,
+        "uniqueWorkCount": 102,
+        "workCountPerOrigin": {
+          "minimum": 1,
+          "p50": 14,
+          "maximum": 51,
+          "mean": 20.55072463768116
+        },
+        "signedActualTotalRmb": 73786813.5248001,
+        "perOriginSignedActualRmb": {
+          "p10": 8348.616060000002,
+          "p25": 153875.4631,
+          "p50": 596791.6945999999,
+          "p75": 1891890.0375000008,
+          "p90": 2699260.25022
+        },
+        "cashCoefficientOfVariation": 1.0027488389654502,
+        "cashRobustIqrOverMedian": 2.912263341005284,
+        "coverage": {
+          "originVisibleEligibleCashCapture": {
+            "perOrigin": {
+              "p10": 0.8015702625711838,
+              "p25": 0.8029673216944131,
+              "p50": 0.8069407904233772,
+              "p75": 0.8394695199622624,
+              "p90": 0.9650840734876582
+            },
+            "mean": 0.839682907342716
+          },
+          "selectedWorksAllChannelFutureCashCapture": 0.6431713496327635,
+          "servedCurrentScopeFutureCashCapture": 0.6242413922639172,
+          "servedCashShareWithinEligibleMatureExistingChannelScope": 0.7693463352012719,
+          "denominatorsSeparated": true
+        },
+        "postHocActualCashConcentration": {
+          "basis": "POSITIVE_ACTUAL_CASH_WITHIN_POPULATION_POST_HOC_ONLY",
+          "top10Share": 0.7565304078937904,
+          "top20Share": 0.8830380822760514,
+          "top50Share": 0.9999668448889018
+        },
+        "originVisibleCashBands": {
+          "H50": {
+            "uniqueWorkCount": 26,
+            "workOriginCount": 173,
+            "workCountPerOrigin": {
+              "minimum": 1,
+              "p50": 2,
+              "maximum": 7,
+              "mean": 2.5072463768115942
+            },
+            "signedActualRmb": 37059117.48870001,
+            "positiveActualRmb": 37059117.48870001,
+            "positiveActualCashShare": 0.5022458040723531
+          },
+          "M30": {
+            "uniqueWorkCount": 53,
+            "workOriginCount": 471,
+            "workCountPerOrigin": {
+              "minimum": 0,
+              "p50": 4,
+              "maximum": 17,
+              "mean": 6.826086956521739
+            },
+            "signedActualRmb": 19913988.95969998,
+            "positiveActualRmb": 19913988.95969998,
+            "positiveActualCashShare": 0.2698854715145924
+          },
+          "L20": {
+            "uniqueWorkCount": 93,
+            "workOriginCount": 774,
+            "workCountPerOrigin": {
+              "minimum": 0,
+              "p50": 7,
+              "maximum": 27,
+              "mean": 11.217391304347826
+            },
+            "signedActualRmb": 16813707.076399982,
+            "positiveActualRmb": 16813707.076399982,
+            "positiveActualCashShare": 0.22786872441305264
+          }
+        }
+      },
+      {
+        "populationId": "CORE80",
+        "horizonMonths": 6,
+        "originCount": 69,
+        "originFrom": "2017-08",
+        "originThrough": "2023-04",
+        "caseCount": 1418,
+        "uniqueWorkCount": 102,
+        "workCountPerOrigin": {
+          "minimum": 1,
+          "p50": 14,
+          "maximum": 51,
+          "mean": 20.55072463768116
+        },
+        "signedActualTotalRmb": 142595149.10179988,
+        "perOriginSignedActualRmb": {
+          "p10": 14321.03148,
+          "p25": 337445.7766,
+          "p50": 937491.3934000001,
+          "p75": 3714055.8586999997,
+          "p90": 5020514.332059999
+        },
+        "cashCoefficientOfVariation": 0.9994139800410576,
+        "cashRobustIqrOverMedian": 3.601750486320784,
+        "coverage": {
+          "originVisibleEligibleCashCapture": {
+            "perOrigin": {
+              "p10": 0.8015702625711838,
+              "p25": 0.8029673216944131,
+              "p50": 0.8069407904233772,
+              "p75": 0.8394695199622624,
+              "p90": 0.9650840734876582
+            },
+            "mean": 0.839682907342716
+          },
+          "selectedWorksAllChannelFutureCashCapture": 0.5880279179316827,
+          "servedCurrentScopeFutureCashCapture": 0.5674342658218134,
+          "servedCashShareWithinEligibleMatureExistingChannelScope": 0.7708774597205013,
+          "denominatorsSeparated": true
+        },
+        "postHocActualCashConcentration": {
+          "basis": "POSITIVE_ACTUAL_CASH_WITHIN_POPULATION_POST_HOC_ONLY",
+          "top10Share": 0.7567039160362146,
+          "top20Share": 0.8848190533552119,
+          "top50Share": 0.9999633977029873
+        },
+        "originVisibleCashBands": {
+          "H50": {
+            "uniqueWorkCount": 26,
+            "workOriginCount": 173,
+            "workCountPerOrigin": {
+              "minimum": 1,
+              "p50": 2,
+              "maximum": 7,
+              "mean": 2.5072463768115942
+            },
+            "signedActualRmb": 72206584.37549996,
+            "positiveActualRmb": 72206584.37549996,
+            "positiveActualCashShare": 0.5063747598030216
+          },
+          "M30": {
+            "uniqueWorkCount": 53,
+            "workOriginCount": 471,
+            "workCountPerOrigin": {
+              "minimum": 0,
+              "p50": 4,
+              "maximum": 17,
+              "mean": 6.826086956521739
+            },
+            "signedActualRmb": 37535507.053899996,
+            "positiveActualRmb": 37535507.053899996,
+            "positiveActualCashShare": 0.26323130408246276
+          },
+          "L20": {
+            "uniqueWorkCount": 93,
+            "workOriginCount": 774,
+            "workCountPerOrigin": {
+              "minimum": 0,
+              "p50": 7,
+              "maximum": 27,
+              "mean": 11.217391304347826
+            },
+            "signedActualRmb": 32853057.672400042,
+            "positiveActualRmb": 32853057.672400042,
+            "positiveActualCashShare": 0.23039393611451656
+          }
+        }
+      },
+      {
+        "populationId": "CORE80",
+        "horizonMonths": 12,
+        "originCount": 69,
+        "originFrom": "2017-08",
+        "originThrough": "2023-04",
+        "caseCount": 1418,
+        "uniqueWorkCount": 102,
+        "workCountPerOrigin": {
+          "minimum": 1,
+          "p50": 14,
+          "maximum": 51,
+          "mean": 20.55072463768116
+        },
+        "signedActualTotalRmb": 269235583.25930023,
+        "perOriginSignedActualRmb": {
+          "p10": 17437.264280000003,
+          "p25": 825423.4854000001,
+          "p50": 1627780.9708999996,
+          "p75": 7278324.2995,
+          "p90": 9091988.437099997
+        },
+        "cashCoefficientOfVariation": 0.9905392688620269,
+        "cashRobustIqrOverMedian": 3.964231631564161,
+        "coverage": {
+          "originVisibleEligibleCashCapture": {
+            "perOrigin": {
+              "p10": 0.8015702625711838,
+              "p25": 0.8029673216944131,
+              "p50": 0.8069407904233772,
+              "p75": 0.8394695199622624,
+              "p90": 0.9650840734876582
+            },
+            "mean": 0.839682907342716
+          },
+          "selectedWorksAllChannelFutureCashCapture": 0.5048067535828492,
+          "servedCurrentScopeFutureCashCapture": 0.48192932613046163,
+          "servedCashShareWithinEligibleMatureExistingChannelScope": 0.7810532898884097,
+          "denominatorsSeparated": true
+        },
+        "postHocActualCashConcentration": {
+          "basis": "POSITIVE_ACTUAL_CASH_WITHIN_POPULATION_POST_HOC_ONLY",
+          "top10Share": 0.7553886577188712,
+          "top20Share": 0.8861404538452994,
+          "top50Share": 0.9999687740754836
+        },
+        "originVisibleCashBands": {
+          "H50": {
+            "uniqueWorkCount": 26,
+            "workOriginCount": 173,
+            "workCountPerOrigin": {
+              "minimum": 1,
+              "p50": 2,
+              "maximum": 7,
+              "mean": 2.5072463768115942
+            },
+            "signedActualRmb": 139304185.81370002,
+            "positiveActualRmb": 139304185.81370002,
+            "positiveActualCashShare": 0.5174062957329695
+          },
+          "M30": {
+            "uniqueWorkCount": 53,
+            "workOriginCount": 471,
+            "workCountPerOrigin": {
+              "minimum": 0,
+              "p50": 4,
+              "maximum": 17,
+              "mean": 6.826086956521739
+            },
+            "signedActualRmb": 67530166.45220001,
+            "positiveActualRmb": 67530166.45220001,
+            "positiveActualCashShare": 0.25082184767219956
+          },
+          "L20": {
+            "uniqueWorkCount": 93,
+            "workOriginCount": 774,
+            "workCountPerOrigin": {
+              "minimum": 0,
+              "p50": 7,
+              "maximum": 27,
+              "mean": 11.217391304347826
+            },
+            "signedActualRmb": 62401230.99339996,
+            "positiveActualRmb": 62401230.99339996,
+            "positiveActualCashShare": 0.23177185659483007
+          }
+        }
+      },
+      {
+        "populationId": "CORE80",
+        "horizonMonths": 36,
+        "originCount": 69,
+        "originFrom": "2017-08",
+        "originThrough": "2023-04",
+        "caseCount": 1418,
+        "uniqueWorkCount": 102,
+        "workCountPerOrigin": {
+          "minimum": 1,
+          "p50": 14,
+          "maximum": 51,
+          "mean": 20.55072463768116
+        },
+        "signedActualTotalRmb": 687107858.7915992,
+        "perOriginSignedActualRmb": {
+          "p10": 42391.60880000001,
+          "p25": 2421005.3756999997,
+          "p50": 3536908.9299000003,
+          "p75": 19234515.164800003,
+          "p90": 23814737.637679994
+        },
+        "cashCoefficientOfVariation": 0.9931168521574509,
+        "cashRobustIqrOverMedian": 4.753729915679614,
+        "coverage": {
+          "originVisibleEligibleCashCapture": {
+            "perOrigin": {
+              "p10": 0.8015702625711838,
+              "p25": 0.8029673216944131,
+              "p50": 0.8069407904233772,
+              "p75": 0.8394695199622624,
+              "p90": 0.9650840734876582
+            },
+            "mean": 0.839682907342716
+          },
+          "selectedWorksAllChannelFutureCashCapture": 0.33515839966446564,
+          "servedCurrentScopeFutureCashCapture": 0.3069543173177868,
+          "servedCashShareWithinEligibleMatureExistingChannelScope": 0.8137732117502636,
+          "denominatorsSeparated": true
+        },
+        "postHocActualCashConcentration": {
+          "basis": "POSITIVE_ACTUAL_CASH_WITHIN_POPULATION_POST_HOC_ONLY",
+          "top10Share": 0.7867159144658418,
+          "top20Share": 0.9095522071620646,
+          "top50Share": 0.999980652993806
+        },
+        "originVisibleCashBands": {
+          "H50": {
+            "uniqueWorkCount": 26,
+            "workOriginCount": 173,
+            "workCountPerOrigin": {
+              "minimum": 1,
+              "p50": 2,
+              "maximum": 7,
+              "mean": 2.5072463768115942
+            },
+            "signedActualRmb": 389793039.7437,
+            "positiveActualRmb": 389793039.7437,
+            "positiveActualCashShare": 0.5672952721414366
+          },
+          "M30": {
+            "uniqueWorkCount": 53,
+            "workOriginCount": 471,
+            "workCountPerOrigin": {
+              "minimum": 0,
+              "p50": 4,
+              "maximum": 17,
+              "mean": 6.826086956521739
+            },
+            "signedActualRmb": 147577500.03690007,
+            "positiveActualRmb": 147577500.03690007,
+            "positiveActualCashShare": 0.21478069003087993
+          },
+          "L20": {
+            "uniqueWorkCount": 93,
+            "workOriginCount": 774,
+            "workCountPerOrigin": {
+              "minimum": 0,
+              "p50": 7,
+              "maximum": 27,
+              "mean": 11.217391304347826
+            },
+            "signedActualRmb": 149737319.011,
+            "positiveActualRmb": 149737319.011,
+            "positiveActualCashShare": 0.21792403782768488
+          }
+        }
+      },
+      {
+        "populationId": "CORE90",
+        "horizonMonths": 3,
+        "originCount": 69,
+        "originFrom": "2017-08",
+        "originThrough": "2023-04",
+        "caseCount": 2752,
+        "uniqueWorkCount": 190,
+        "workCountPerOrigin": {
+          "minimum": 1,
+          "p50": 25,
+          "maximum": 101,
+          "mean": 39.88405797101449
+        },
+        "signedActualTotalRmb": 84643736.40869991,
+        "perOriginSignedActualRmb": {
+          "p10": 8348.616060000002,
+          "p25": 175223.8405,
+          "p50": 649652.8541,
+          "p75": 2107766.380500001,
+          "p90": 3155519.0017999997
+        },
+        "cashCoefficientOfVariation": 1.0072717756934557,
+        "cashRobustIqrOverMedian": 2.9747310856923104,
+        "coverage": {
+          "originVisibleEligibleCashCapture": {
+            "perOrigin": {
+              "p10": 0.900284279095199,
+              "p25": 0.9009286301474387,
+              "p50": 0.9017879455940021,
+              "p75": 0.9209766664680339,
+              "p90": 0.9650840734876582
+            },
+            "mean": 0.9177959935881584
+          },
+          "selectedWorksAllChannelFutureCashCapture": 0.7403439095264159,
+          "servedCurrentScopeFutureCashCapture": 0.7160916881771544,
+          "servedCashShareWithinEligibleMatureExistingChannelScope": 0.8825472370058189,
+          "denominatorsSeparated": true
+        },
+        "postHocActualCashConcentration": {
+          "basis": "POSITIVE_ACTUAL_CASH_WITHIN_POPULATION_POST_HOC_ONLY",
+          "top10Share": 0.6812661368145014,
+          "top20Share": 0.8020842499861794,
+          "top50Share": 0.9619354790785344
+        },
+        "originVisibleCashBands": null
+      },
+      {
+        "populationId": "CORE90",
+        "horizonMonths": 6,
+        "originCount": 69,
+        "originFrom": "2017-08",
+        "originThrough": "2023-04",
+        "caseCount": 2752,
+        "uniqueWorkCount": 190,
+        "workCountPerOrigin": {
+          "minimum": 1,
+          "p50": 25,
+          "maximum": 101,
+          "mean": 39.88405797101449
+        },
+        "signedActualTotalRmb": 163386988.80030018,
+        "perOriginSignedActualRmb": {
+          "p10": 16375.927440000001,
+          "p25": 416802.3768,
+          "p50": 1013570.7748,
+          "p75": 4024624.5341000017,
+          "p90": 5916643.676700003
+        },
+        "cashCoefficientOfVariation": 1.001904357803255,
+        "cashRobustIqrOverMedian": 3.5595167569940096,
+        "coverage": {
+          "originVisibleEligibleCashCapture": {
+            "perOrigin": {
+              "p10": 0.900284279095199,
+              "p25": 0.9009286301474387,
+              "p50": 0.9017879455940021,
+              "p75": 0.9209766664680339,
+              "p90": 0.9650840734876582
+            },
+            "mean": 0.9177959935881584
+          },
+          "selectedWorksAllChannelFutureCashCapture": 0.6766495173573958,
+          "servedCurrentScopeFutureCashCapture": 0.6501720193058432,
+          "servedCashShareWithinEligibleMatureExistingChannelScope": 0.8832793238137395,
+          "denominatorsSeparated": true
+        },
+        "postHocActualCashConcentration": {
+          "basis": "POSITIVE_ACTUAL_CASH_WITHIN_POPULATION_POST_HOC_ONLY",
+          "top10Share": 0.6811942900253488,
+          "top20Share": 0.8049250615931451,
+          "top50Share": 0.96355923902804
+        },
+        "originVisibleCashBands": null
+      },
+      {
+        "populationId": "CORE90",
+        "horizonMonths": 12,
+        "originCount": 69,
+        "originFrom": "2017-08",
+        "originThrough": "2023-04",
+        "caseCount": 2752,
+        "uniqueWorkCount": 190,
+        "workCountPerOrigin": {
+          "minimum": 1,
+          "p50": 25,
+          "maximum": 101,
+          "mean": 39.88405797101449
+        },
+        "signedActualTotalRmb": 306049641.5333003,
+        "perOriginSignedActualRmb": {
+          "p10": 20141.865120000002,
+          "p25": 1004514.6633,
+          "p50": 1882876.8624,
+          "p75": 7843677.5923999995,
+          "p90": 10691918.795459999
+        },
+        "cashCoefficientOfVariation": 0.986164501449462,
+        "cashRobustIqrOverMedian": 3.632294318165073,
+        "coverage": {
+          "originVisibleEligibleCashCapture": {
+            "perOrigin": {
+              "p10": 0.900284279095199,
+              "p25": 0.9009286301474387,
+              "p50": 0.9017879455940021,
+              "p75": 0.9209766664680339,
+              "p90": 0.9650840734876582
+            },
+            "mean": 0.9177959935881584
+          },
+          "selectedWorksAllChannelFutureCashCapture": 0.5771895015773232,
+          "servedCurrentScopeFutureCashCapture": 0.5478261666644607,
+          "servedCashShareWithinEligibleMatureExistingChannelScope": 0.8878509909239324,
+          "denominatorsSeparated": true
+        },
+        "postHocActualCashConcentration": {
+          "basis": "POSITIVE_ACTUAL_CASH_WITHIN_POPULATION_POST_HOC_ONLY",
+          "top10Share": 0.6839316138690038,
+          "top20Share": 0.8096059289157511,
+          "top50Share": 0.9662814602114894
+        },
+        "originVisibleCashBands": null
+      },
+      {
+        "populationId": "CORE90",
+        "horizonMonths": 36,
+        "originCount": 69,
+        "originFrom": "2017-08",
+        "originThrough": "2023-04",
+        "caseCount": 2752,
+        "uniqueWorkCount": 190,
+        "workCountPerOrigin": {
+          "minimum": 1,
+          "p50": 25,
+          "maximum": 101,
+          "mean": 39.88405797101449
+        },
+        "signedActualTotalRmb": 763470768.8012992,
+        "perOriginSignedActualRmb": {
+          "p10": 42391.60880000001,
+          "p25": 2629085.2164,
+          "p50": 4688112.038,
+          "p75": 20326628.187200014,
+          "p90": 26920074.478040002
+        },
+        "cashCoefficientOfVariation": 0.9796942495687432,
+        "cashRobustIqrOverMedian": 3.7749829413953124,
+        "coverage": {
+          "originVisibleEligibleCashCapture": {
+            "perOrigin": {
+              "p10": 0.900284279095199,
+              "p25": 0.9009286301474387,
+              "p50": 0.9017879455940021,
+              "p75": 0.9209766664680339,
+              "p90": 0.9650840734876582
+            },
+            "mean": 0.9177959935881584
+          },
+          "selectedWorksAllChannelFutureCashCapture": 0.37596560661554324,
+          "servedCurrentScopeFutureCashCapture": 0.3410682116802385,
+          "servedCashShareWithinEligibleMatureExistingChannelScope": 0.9042132929428696,
+          "denominatorsSeparated": true
+        },
+        "postHocActualCashConcentration": {
+          "basis": "POSITIVE_ACTUAL_CASH_WITHIN_POPULATION_POST_HOC_ONLY",
+          "top10Share": 0.7257430588384521,
+          "top20Share": 0.8485375301891939,
+          "top50Share": 0.9765245797447624
+        },
+        "originVisibleCashBands": null
+      }
+    ],
+    "monthlyCore80": {
+      "originCount": 69,
+      "targetMonthFrom": "2017-09",
+      "targetMonthThrough": "2023-05",
+      "oneMonthActualRmb": {
+        "quantiles": {
+          "p10": 2028.6738000000003,
+          "p25": 43086.1176,
+          "p50": 156065.27419999996,
+          "p75": 669456.7030999995,
+          "p90": 889534.8857600001
+        },
+        "dispersion": {
+          "mean": 367409.0142478261,
+          "standardDeviation": 374911.40219573077,
+          "coefficientOfVariation": 1.0204197166018472,
+          "median": 156065.27419999996,
+          "robustIqrOverMedian": 4.013516707741764
+        }
+      },
+      "monthOverMonth": {
+        "evaluableChangeCount": 68,
+        "quantiles": {
+          "p10": -0.42982892712687065,
+          "p25": -0.1347226663637607,
+          "p50": 0.049665416423892356,
+          "p75": 0.15956967963374946,
+          "p90": 1.0333180894637501
+        },
+        "absoluteChangeQuantiles": {
+          "p10": 0.03939709217675096,
+          "p25": 0.0804125625065164,
+          "p50": 0.15119621344191347,
+          "p75": 0.49958444749006947,
+          "p90": 1.0333180894637501
+        },
+        "negativeShare": 0.4264705882352941,
+        "absoluteChangeAbove20PercentShare": 0.4264705882352941,
+        "largestPrivacyEligibleChanges": [
+          {
+            "origin": "2020-11",
+            "targetMonth": "2020-12",
+            "workCount": 32,
+            "change": 2.208074330290341
+          },
+          {
+            "origin": "2021-01",
+            "targetMonth": "2021-02",
+            "workCount": 34,
+            "change": 1.0578800090836165
+          },
+          {
+            "origin": "2020-12",
+            "targetMonth": "2021-01",
+            "workCount": 33,
+            "change": -0.5518682143188932
+          },
+          {
+            "origin": "2023-02",
+            "targetMonth": "2023-03",
+            "workCount": 51,
+            "change": 0.5431943768928115
+          },
+          {
+            "origin": "2023-03",
+            "targetMonth": "2023-04",
+            "workCount": 41,
+            "change": -0.42053469047623226
+          }
+        ],
+        "privacySuppressedChangeCount": 30
+      }
+    }
+  },
+  "frozenModelEvidence": {
+    "usabilityCells": [
+      {
+        "modelId": "M2-WORK-CRMR01",
+        "populationId": "CORE80",
+        "horizonMonths": 3,
+        "evaluationFamily": "ABSOLUTE_ROLLING_COMPLETE_MONTHS",
+        "evidenceClass": "FROZEN_PRIVATE_EVALUATION_ROWS",
+        "originCount": 69,
+        "caseCount": 1455,
+        "workCount": 102,
+        "actualAbsoluteTotalRmb": 76238148.68969995,
+        "absoluteErrorTotalRmb": 28370179.160100028,
+        "signedErrorTotalRmb": 7701594.170099959,
+        "wape": 0.37212576180949347,
+        "signedBias": 0.10102021497723583,
+        "mae": 19498.404921030946,
+        "medianAbsoluteError": 5829.649399999998,
+        "errorConcentration": {
+          "maximumWorkShare": 0.11440092843208381,
+          "top5WorkShare": 0.36624493744167685,
+          "top10WorkShare": 0.5463581067827613
+        },
+        "perOriginWapeP10P50P90": {
+          "p10": 0.14645820346300711,
+          "p50": 0.5449896468396255,
+          "p90": 2.174815790271846
+        },
+        "perOriginSignedBiasP10P50P90": {
+          "p10": -0.13971742298380516,
+          "p50": 0.13272856021025603,
+          "p90": 2.1649524941056084
+        },
+        "initialTechnicalSensitivity": {
+          "wapeCap": 0.3,
+          "absoluteBiasCap": 0.1,
+          "overallPass": false,
+          "passingOriginCount": 21,
+          "passingOriginShare": 0.30434782608695654
+        },
+        "worstPrivacyEligibleOrigin": {
+          "origin": "2020-03",
+          "caseCount": 12,
+          "workCount": 12,
+          "actualAbsoluteTotalRmb": 239632.62540000002,
+          "wape": 1.4987966605151586,
+          "signedBias": 1.4018658233170613,
+          "maximumWorkErrorShare": 0.2477431145758425
+        },
+        "privacySuppressedOriginCount": 29
+      },
+      {
+        "modelId": "M2-WORK-CRMR01",
+        "populationId": "CORE80",
+        "horizonMonths": 6,
+        "evaluationFamily": "ABSOLUTE_ROLLING_COMPLETE_MONTHS",
+        "evidenceClass": "FROZEN_PRIVATE_EVALUATION_ROWS",
+        "originCount": 69,
+        "caseCount": 1455,
+        "workCount": 102,
+        "actualAbsoluteTotalRmb": 148177970.20460007,
+        "absoluteErrorTotalRmb": 60976062.79289993,
+        "signedErrorTotalRmb": 12725008.851700038,
+        "wape": 0.4115055882376163,
+        "signedBias": 0.08587652290100678,
+        "mae": 41907.94693670098,
+        "medianAbsoluteError": 17733.54950000001,
+        "errorConcentration": {
+          "maximumWorkShare": 0.15009801197373646,
+          "top5WorkShare": 0.38667303829504396,
+          "top10WorkShare": 0.5305303456730696
+        },
+        "perOriginWapeP10P50P90": {
+          "p10": 0.2433049824990135,
+          "p50": 0.7421419987471211,
+          "p90": 5.42429522943121
+        },
+        "perOriginSignedBiasP10P50P90": {
+          "p10": -0.1871757977450731,
+          "p50": 0.14309772985615238,
+          "p90": 5.42429522943121
+        },
+        "initialTechnicalSensitivity": {
+          "wapeCap": 0.32,
+          "absoluteBiasCap": 0.12,
+          "overallPass": false,
+          "passingOriginCount": 13,
+          "passingOriginShare": 0.18840579710144928
+        },
+        "worstPrivacyEligibleOrigin": {
+          "origin": "2020-03",
+          "caseCount": 12,
+          "workCount": 12,
+          "actualAbsoluteTotalRmb": 461560.56760000007,
+          "wape": 1.830819523413724,
+          "signedBias": 1.8229057901869161,
+          "maximumWorkErrorShare": 0.2677753385673318
+        },
+        "privacySuppressedOriginCount": 29
+      },
+      {
+        "modelId": "M2-WORK-CRMR01",
+        "populationId": "CORE80",
+        "horizonMonths": 12,
+        "evaluationFamily": "ABSOLUTE_ROLLING_COMPLETE_MONTHS",
+        "evidenceClass": "FROZEN_PRIVATE_EVALUATION_ROWS",
+        "originCount": 69,
+        "caseCount": 1455,
+        "workCount": 102,
+        "actualAbsoluteTotalRmb": 282843033.0454997,
+        "absoluteErrorTotalRmb": 130571511.32319993,
+        "signedErrorTotalRmb": 41385602.92740023,
+        "wape": 0.461639482214842,
+        "signedBias": 0.14632003652974093,
+        "mae": 89739.87032522332,
+        "medianAbsoluteError": 31490.667199999996,
+        "errorConcentration": {
+          "maximumWorkShare": 0.15492518715455614,
+          "top5WorkShare": 0.37975592301189587,
+          "top10WorkShare": 0.5163057473695776
+        },
+        "perOriginWapeP10P50P90": {
+          "p10": 0.25438805455774693,
+          "p50": 0.6990843074097374,
+          "p90": 3.271751180199054
+        },
+        "perOriginSignedBiasP10P50P90": {
+          "p10": -0.189636442481242,
+          "p50": 0.16280580697311384,
+          "p90": 3.193187163268383
+        },
+        "initialTechnicalSensitivity": {
+          "wapeCap": 0.32,
+          "absoluteBiasCap": 0.1,
+          "overallPass": false,
+          "passingOriginCount": 8,
+          "passingOriginShare": 0.11594202898550725
+        },
+        "worstPrivacyEligibleOrigin": {
+          "origin": "2020-12",
+          "caseCount": 31,
+          "workCount": 31,
+          "actualAbsoluteTotalRmb": 6007715.5986,
+          "wape": 1.3201122932397396,
+          "signedBias": 0.10816081126600309,
+          "maximumWorkErrorShare": 0.42029117254727477
+        },
+        "privacySuppressedOriginCount": 29
+      },
+      {
+        "modelId": "M2-WORK-CRMR01",
+        "populationId": "CORE80",
+        "horizonMonths": 36,
+        "evaluationFamily": "ABSOLUTE_ROLLING_COMPLETE_MONTHS",
+        "evidenceClass": "FROZEN_PRIVATE_EVALUATION_ROWS",
+        "originCount": 69,
+        "caseCount": 1455,
+        "workCount": 102,
+        "actualAbsoluteTotalRmb": 753907528.0994997,
+        "absoluteErrorTotalRmb": 89039882418.0442,
+        "signedErrorTotalRmb": 88834321529.43655,
+        "wape": 118.10451427975772,
+        "signedBias": 117.83185366695572,
+        "mae": 61195795.47631904,
+        "medianAbsoluteError": 199580.04399701452,
+        "errorConcentration": {
+          "maximumWorkShare": 0.9063527258087245,
+          "top5WorkShare": 0.9597034151904862,
+          "top10WorkShare": 0.9742013558805935
+        },
+        "perOriginWapeP10P50P90": {
+          "p10": 0.6109207266626213,
+          "p50": 1.0732091200512397,
+          "p90": 23.776651580992073
+        },
+        "perOriginSignedBiasP10P50P90": {
+          "p10": -0.12223910027733222,
+          "p50": 0.9821876954791348,
+          "p90": 23.62071943808859
+        },
+        "initialTechnicalSensitivity": {
+          "wapeCap": 0.35,
+          "absoluteBiasCap": 0.12,
+          "overallPass": false,
+          "passingOriginCount": 1,
+          "passingOriginShare": 0.014492753623188406
+        },
+        "worstPrivacyEligibleOrigin": {
+          "origin": "2021-08",
+          "caseCount": 41,
+          "workCount": 41,
+          "actualAbsoluteTotalRmb": 19794122.077800002,
+          "wape": 4062.5008418649763,
+          "signedBias": 4062.48973394732,
+          "maximumWorkErrorShare": 0.999855533591024
+        },
+        "privacySuppressedOriginCount": 29
+      },
+      {
+        "modelId": "M2-WORK-OA03",
+        "populationId": "CORE80",
+        "horizonMonths": 3,
+        "evaluationFamily": "PRIMARY_ROLLING_CURRENT_SCOPE",
+        "evidenceClass": "FROZEN_PRIVATE_SAME_CASE_ROWS",
+        "originCount": 5,
+        "caseCount": 194,
+        "workCount": 80,
+        "actualAbsoluteTotalRmb": 9456034.5545,
+        "absoluteErrorTotalRmb": 3233000.3414999996,
+        "signedErrorTotalRmb": -845195.5944999997,
+        "wape": 0.34189810991769887,
+        "signedBias": -0.08938161019068848,
+        "mae": 16664.950213917524,
+        "medianAbsoluteError": 6260.3155,
+        "errorConcentration": {
+          "maximumWorkShare": 0.32151201682760483,
+          "top5WorkShare": 0.5089661711067284,
+          "top10WorkShare": 0.6172149853452157
+        },
+        "perOriginWapeP10P50P90": {
+          "p10": 0.29591344576023476,
+          "p50": 0.30889197242224303,
+          "p90": 0.5299825858787885
+        },
+        "perOriginSignedBiasP10P50P90": {
+          "p10": -0.246475765978272,
+          "p50": -0.10205971385058848,
+          "p90": 0.21750103409428076
+        },
+        "initialTechnicalSensitivity": {
+          "wapeCap": 0.3,
+          "absoluteBiasCap": 0.1,
+          "overallPass": false,
+          "passingOriginCount": 0,
+          "passingOriginShare": 0
+        },
+        "worstPrivacyEligibleOrigin": {
+          "origin": "2020-12",
+          "caseCount": 33,
+          "workCount": 33,
+          "actualAbsoluteTotalRmb": 653885.2001000002,
+          "wape": 0.6205911536733675,
+          "signedBias": 0.35068447774155337,
+          "maximumWorkErrorShare": 0.1517158465701541
+        },
+        "privacySuppressedOriginCount": 0
+      },
+      {
+        "modelId": "M2-WORK-CRMR01",
+        "populationId": "CORE80",
+        "horizonMonths": 3,
+        "evaluationFamily": "PRIMARY_ROLLING_CURRENT_SCOPE",
+        "evidenceClass": "FROZEN_PRIVATE_SAME_CASE_ROWS",
+        "originCount": 5,
+        "caseCount": 194,
+        "workCount": 80,
+        "actualAbsoluteTotalRmb": 9456034.5545,
+        "absoluteErrorTotalRmb": 3751992.900299999,
+        "signedErrorTotalRmb": 3352545.805899998,
+        "wape": 0.3967829092285281,
+        "signedBias": 0.3545403505642401,
+        "mae": 19340.169589175253,
+        "medianAbsoluteError": 4583.534750000001,
+        "errorConcentration": {
+          "maximumWorkShare": 0.11612549319194139,
+          "top5WorkShare": 0.4246689347873232,
+          "top10WorkShare": 0.5983955379874205
+        },
+        "perOriginWapeP10P50P90": {
+          "p10": 0.15125765297462992,
+          "p50": 0.24151390024222738,
+          "p90": 1.2196903971338138
+        },
+        "perOriginSignedBiasP10P50P90": {
+          "p10": 0.08716778533587066,
+          "p50": 0.20351760571285282,
+          "p90": 1.2001954890120508
+        },
+        "initialTechnicalSensitivity": {
+          "wapeCap": 0.3,
+          "absoluteBiasCap": 0.1,
+          "overallPass": false,
+          "passingOriginCount": 2,
+          "passingOriginShare": 0.4
+        },
+        "worstPrivacyEligibleOrigin": {
+          "origin": "2020-12",
+          "caseCount": 33,
+          "workCount": 33,
+          "actualAbsoluteTotalRmb": 653885.2001000002,
+          "wape": 1.6578107706585476,
+          "signedBias": 1.638048780942273,
+          "maximumWorkErrorShare": 0.3088914375911002
+        },
+        "privacySuppressedOriginCount": 0
+      },
+      {
+        "modelId": "M2-WORK-LG01",
+        "populationId": "CORE80",
+        "horizonMonths": 3,
+        "evaluationFamily": "STRICT_ROLLING_CURRENT_SCOPE",
+        "evidenceClass": "FROZEN_PRIVATE_SAME_CASE_ROWS",
+        "originCount": 11,
+        "caseCount": 577,
+        "workCount": 82,
+        "actualAbsoluteTotalRmb": 33138480.14139997,
+        "absoluteErrorTotalRmb": 8336443.7776821125,
+        "signedErrorTotalRmb": -1214930.5483787097,
+        "wape": 0.2515638539278504,
+        "signedBias": -0.036662229021810044,
+        "mae": 14447.909493383211,
+        "medianAbsoluteError": 4699.0917305219555,
+        "errorConcentration": {
+          "maximumWorkShare": 0.1402001889652431,
+          "top5WorkShare": 0.44269344567878344,
+          "top10WorkShare": 0.5875028064058938
+        },
+        "perOriginWapeP10P50P90": {
+          "p10": 0.19810569759798963,
+          "p50": 0.24114544175808417,
+          "p90": 0.310768978431793
+        },
+        "perOriginSignedBiasP10P50P90": {
+          "p10": -0.1304896298273871,
+          "p50": 0.006708400316062765,
+          "p90": 0.05925326703593799
+        },
+        "initialTechnicalSensitivity": {
+          "wapeCap": 0.3,
+          "absoluteBiasCap": 0.1,
+          "overallPass": true,
+          "passingOriginCount": 8,
+          "passingOriginShare": 0.7272727272727273
+        },
+        "worstPrivacyEligibleOrigin": {
+          "origin": "2023-06",
+          "caseCount": 46,
+          "workCount": 46,
+          "actualAbsoluteTotalRmb": 3683866.7095999992,
+          "wape": 0.4039949600413225,
+          "signedBias": -0.2189541463852381,
+          "maximumWorkErrorShare": 0.45041698235830097
+        },
+        "privacySuppressedOriginCount": 0
+      },
+      {
+        "modelId": "M2-WORK-OA03",
+        "populationId": "CORE80",
+        "horizonMonths": 6,
+        "evaluationFamily": "PRIMARY_ROLLING_CURRENT_SCOPE",
+        "evidenceClass": "FROZEN_PRIVATE_SAME_CASE_ROWS",
+        "originCount": 5,
+        "caseCount": 194,
+        "workCount": 80,
+        "actualAbsoluteTotalRmb": 18335302.173299998,
+        "absoluteErrorTotalRmb": 6452468.001900004,
+        "signedErrorTotalRmb": -1113624.9532999955,
+        "wape": 0.35191500750372884,
+        "signedBias": -0.06073665668415677,
+        "mae": 33260.14433969074,
+        "medianAbsoluteError": 11165.316850000001,
+        "errorConcentration": {
+          "maximumWorkShare": 0.31100723128097424,
+          "top5WorkShare": 0.5022583220785762,
+          "top10WorkShare": 0.6177289403568235
+        },
+        "perOriginWapeP10P50P90": {
+          "p10": 0.3048294637283949,
+          "p50": 0.33440802830080657,
+          "p90": 0.5343944906049525
+        },
+        "perOriginSignedBiasP10P50P90": {
+          "p10": -0.25251984040179315,
+          "p50": -0.031246535031329934,
+          "p90": 0.23932605942589635
+        },
+        "initialTechnicalSensitivity": {
+          "wapeCap": 0.32,
+          "absoluteBiasCap": 0.12,
+          "overallPass": false,
+          "passingOriginCount": 2,
+          "passingOriginShare": 0.4
+        },
+        "worstPrivacyEligibleOrigin": {
+          "origin": "2020-12",
+          "caseCount": 33,
+          "workCount": 33,
+          "actualAbsoluteTotalRmb": 1305617.9425999997,
+          "wape": 0.631739398707617,
+          "signedBias": 0.3529112096012032,
+          "maximumWorkErrorShare": 0.16147740779772574
+        },
+        "privacySuppressedOriginCount": 0
+      },
+      {
+        "modelId": "M2-WORK-CRMR01",
+        "populationId": "CORE80",
+        "horizonMonths": 6,
+        "evaluationFamily": "PRIMARY_ROLLING_CURRENT_SCOPE",
+        "evidenceClass": "FROZEN_PRIVATE_SAME_CASE_ROWS",
+        "originCount": 5,
+        "caseCount": 194,
+        "workCount": 80,
+        "actualAbsoluteTotalRmb": 18335302.173299998,
+        "absoluteErrorTotalRmb": 5575689.4302,
+        "signedErrorTotalRmb": 2572046.7324,
+        "wape": 0.3040958571339697,
+        "signedBias": 0.1402783934559548,
+        "mae": 28740.667165979383,
+        "medianAbsoluteError": 13381.555849999993,
+        "errorConcentration": {
+          "maximumWorkShare": 0.1444138751772472,
+          "top5WorkShare": 0.3751139542621505,
+          "top10WorkShare": 0.49783769324835425
+        },
+        "perOriginWapeP10P50P90": {
+          "p10": 0.231690315112345,
+          "p50": 0.3165260744647587,
+          "p90": 0.46124964797304274
+        },
+        "perOriginSignedBiasP10P50P90": {
+          "p10": 0.014553396518873102,
+          "p50": 0.14101267000861034,
+          "p90": 0.2881695921175678
+        },
+        "initialTechnicalSensitivity": {
+          "wapeCap": 0.32,
+          "absoluteBiasCap": 0.12,
+          "overallPass": false,
+          "passingOriginCount": 2,
+          "passingOriginShare": 0.4
+        },
+        "worstPrivacyEligibleOrigin": {
+          "origin": "2020-12",
+          "caseCount": 33,
+          "workCount": 33,
+          "actualAbsoluteTotalRmb": 1305617.9425999997,
+          "wape": 0.5358864970151187,
+          "signedBias": 0.2980198667652719,
+          "maximumWorkErrorShare": 0.20574502226407987
+        },
+        "privacySuppressedOriginCount": 0
+      },
+      {
+        "modelId": "M2-WORK-LG01",
+        "populationId": "CORE80",
+        "horizonMonths": 6,
+        "evaluationFamily": "STRICT_ROLLING_CURRENT_SCOPE",
+        "evidenceClass": "FROZEN_PRIVATE_SAME_CASE_ROWS",
+        "originCount": 11,
+        "caseCount": 577,
+        "workCount": 82,
+        "actualAbsoluteTotalRmb": 63884330.9431,
+        "absoluteErrorTotalRmb": 17074396.06974953,
+        "signedErrorTotalRmb": -37231.757057480514,
+        "wape": 0.26727048429069755,
+        "signedBias": -0.0005827995144950615,
+        "mae": 29591.674297659498,
+        "medianAbsoluteError": 10555.979463190874,
+        "errorConcentration": {
+          "maximumWorkShare": 0.15677958298020758,
+          "top5WorkShare": 0.4368947495171371,
+          "top10WorkShare": 0.5752503991515338
+        },
+        "perOriginWapeP10P50P90": {
+          "p10": 0.19019190299676025,
+          "p50": 0.276393688644971,
+          "p90": 0.29919184486690154
+        },
+        "perOriginSignedBiasP10P50P90": {
+          "p10": -0.12507273994988977,
+          "p50": 0.031670378115173106,
+          "p90": 0.08255612181176397
+        },
+        "initialTechnicalSensitivity": {
+          "wapeCap": 0.32,
+          "absoluteBiasCap": 0.12,
+          "overallPass": true,
+          "passingOriginCount": 9,
+          "passingOriginShare": 0.8181818181818182
+        },
+        "worstPrivacyEligibleOrigin": {
+          "origin": "2023-06",
+          "caseCount": 46,
+          "workCount": 46,
+          "actualAbsoluteTotalRmb": 6754923.2021,
+          "wape": 0.36548854509050765,
+          "signedBias": -0.1480972521173779,
+          "maximumWorkErrorShare": 0.3558213425413155
+        },
+        "privacySuppressedOriginCount": 0
+      },
+      {
+        "modelId": "M2-WORK-OA03",
+        "populationId": "CORE80",
+        "horizonMonths": 12,
+        "evaluationFamily": "PRIMARY_ROLLING_CURRENT_SCOPE",
+        "evidenceClass": "FROZEN_PRIVATE_SAME_CASE_ROWS",
+        "originCount": 5,
+        "caseCount": 194,
+        "workCount": 80,
+        "actualAbsoluteTotalRmb": 34955102.48399999,
+        "absoluteErrorTotalRmb": 13792259.838799996,
+        "signedErrorTotalRmb": -511748.6839999929,
+        "wape": 0.39457071668186733,
+        "signedBias": -0.014640171180566151,
+        "mae": 71094.12288041235,
+        "medianAbsoluteError": 30080.21495,
+        "errorConcentration": {
+          "maximumWorkShare": 0.2799835180262947,
+          "top5WorkShare": 0.4916491212284164,
+          "top10WorkShare": 0.6157177189564073
+        },
+        "perOriginWapeP10P50P90": {
+          "p10": 0.3465787147956706,
+          "p50": 0.38047894763656515,
+          "p90": 0.6052310806649862
+        },
+        "perOriginSignedBiasP10P50P90": {
+          "p10": -0.22991555307442307,
+          "p50": 0.08130708207399358,
+          "p90": 0.24273918708022385
+        },
+        "initialTechnicalSensitivity": {
+          "wapeCap": 0.32,
+          "absoluteBiasCap": 0.1,
+          "overallPass": false,
+          "passingOriginCount": 0,
+          "passingOriginShare": 0
+        },
+        "worstPrivacyEligibleOrigin": {
+          "origin": "2020-12",
+          "caseCount": 33,
+          "workCount": 33,
+          "actualAbsoluteTotalRmb": 2646678.4203000003,
+          "wape": 0.7499616777300097,
+          "signedBias": 0.33479393752700826,
+          "maximumWorkErrorShare": 0.13926771082700315
+        },
+        "privacySuppressedOriginCount": 0
+      },
+      {
+        "modelId": "M2-WORK-CRMR01",
+        "populationId": "CORE80",
+        "horizonMonths": 12,
+        "evaluationFamily": "PRIMARY_ROLLING_CURRENT_SCOPE",
+        "evidenceClass": "FROZEN_PRIVATE_SAME_CASE_ROWS",
+        "originCount": 5,
+        "caseCount": 194,
+        "workCount": 80,
+        "actualAbsoluteTotalRmb": 34955102.48399999,
+        "absoluteErrorTotalRmb": 19634469.924999993,
+        "signedErrorTotalRmb": 14099555.389600024,
+        "wape": 0.5617054029232866,
+        "signedBias": 0.4033618667275777,
+        "mae": 101208.6078608247,
+        "medianAbsoluteError": 28320.820550000004,
+        "errorConcentration": {
+          "maximumWorkShare": 0.13680721401497167,
+          "top5WorkShare": 0.4553507603032478,
+          "top10WorkShare": 0.60778951650257
+        },
+        "perOriginWapeP10P50P90": {
+          "p10": 0.2636592031204131,
+          "p50": 0.5058216843832081,
+          "p90": 1.3721888856354454
+        },
+        "perOriginSignedBiasP10P50P90": {
+          "p10": -0.004428936779397624,
+          "p50": 0.34191455412784766,
+          "p90": 1.2131070829365982
+        },
+        "initialTechnicalSensitivity": {
+          "wapeCap": 0.32,
+          "absoluteBiasCap": 0.1,
+          "overallPass": false,
+          "passingOriginCount": 0,
+          "passingOriginShare": 0
+        },
+        "worstPrivacyEligibleOrigin": {
+          "origin": "2020-12",
+          "caseCount": 33,
+          "workCount": 33,
+          "actualAbsoluteTotalRmb": 2646678.4203000003,
+          "wape": 1.8022009228304134,
+          "signedBias": 1.5699978823377407,
+          "maximumWorkErrorShare": 0.2855950155516662
+        },
+        "privacySuppressedOriginCount": 0
+      },
+      {
+        "modelId": "M2-WORK-LG01",
+        "populationId": "CORE80",
+        "horizonMonths": 12,
+        "evaluationFamily": "STRICT_ROLLING_CURRENT_SCOPE",
+        "evidenceClass": "FROZEN_PRIVATE_SAME_CASE_ROWS",
+        "originCount": 9,
+        "caseCount": 472,
+        "workCount": 76,
+        "actualAbsoluteTotalRmb": 99917596.12499994,
+        "absoluteErrorTotalRmb": 30535048.372527312,
+        "signedErrorTotalRmb": 5714387.955776215,
+        "wape": 0.3056023118723457,
+        "signedBias": 0.05719100716381669,
+        "mae": 64692.899094337525,
+        "medianAbsoluteError": 25380.48895257678,
+        "errorConcentration": {
+          "maximumWorkShare": 0.16632280514756484,
+          "top5WorkShare": 0.43204852957018197,
+          "top10WorkShare": 0.5491685092128785
+        },
+        "perOriginWapeP10P50P90": {
+          "p10": 0.2455636326122168,
+          "p50": 0.31447915461736625,
+          "p90": 0.34970735659760915
+        },
+        "perOriginSignedBiasP10P50P90": {
+          "p10": -0.046328042664902286,
+          "p50": 0.05181625509290468,
+          "p90": 0.13329791356029508
+        },
+        "initialTechnicalSensitivity": {
+          "wapeCap": 0.32,
+          "absoluteBiasCap": 0.1,
+          "overallPass": true,
+          "passingOriginCount": 3,
+          "passingOriginShare": 0.3333333333333333
+        },
+        "worstPrivacyEligibleOrigin": {
+          "origin": "2023-09",
+          "caseCount": 47,
+          "workCount": 47,
+          "actualAbsoluteTotalRmb": 11042921.632200003,
+          "wape": 0.36536327346023906,
+          "signedBias": 0.15843565595960285,
+          "maximumWorkErrorShare": 0.205083827128664
+        },
+        "privacySuppressedOriginCount": 0
+      },
+      {
+        "modelId": "M2-WORK-LG01",
+        "populationId": "CORE80",
+        "horizonMonths": 36,
+        "evaluationFamily": "PRIMARY_ROLLING_CURRENT_SCOPE_STANDALONE",
+        "evidenceClass": "FROZEN_PREDICTION_JOINED_TO_COMPLETE_MONTH_CURRENT_SCOPE_ACTUAL",
+        "originCount": 13,
+        "caseCount": 488,
+        "workCount": 62,
+        "actualAbsoluteTotalRmb": 291953066.50570047,
+        "absoluteErrorTotalRmb": 86806521.47683543,
+        "signedErrorTotalRmb": 27936681.23736614,
+        "wape": 0.2973303980526627,
+        "signedBias": 0.09568894607524414,
+        "mae": 177882.2161410562,
+        "medianAbsoluteError": 86758.80472477981,
+        "errorConcentration": {
+          "maximumWorkShare": 0.0968804208043927,
+          "top5WorkShare": 0.4290480854325845,
+          "top10WorkShare": 0.6358073969893955
+        },
+        "perOriginWapeP10P50P90": {
+          "p10": 0.235455817077721,
+          "p50": 0.2680711382842307,
+          "p90": 0.39585870413428187
+        },
+        "perOriginSignedBiasP10P50P90": {
+          "p10": -0.06937662819488076,
+          "p50": 0.1320949509894536,
+          "p90": 0.23445154812010927
+        },
+        "initialTechnicalSensitivity": {
+          "wapeCap": 0.35,
+          "absoluteBiasCap": 0.12,
+          "overallPass": true,
+          "passingOriginCount": 6,
+          "passingOriginShare": 0.46153846153846156
+        },
+        "worstPrivacyEligibleOrigin": {
+          "origin": "2022-12",
+          "caseCount": 47,
+          "workCount": 47,
+          "actualAbsoluteTotalRmb": 25383886.315099996,
+          "wape": 0.40735262681376544,
+          "signedBias": 0.23523573930430233,
+          "maximumWorkErrorShare": 0.14708943281606643
+        },
+        "privacySuppressedOriginCount": 0
+      },
+      {
+        "modelId": "M2-WORK-CRMR01",
+        "populationId": "CORE90",
+        "horizonMonths": 3,
+        "evaluationFamily": "ABSOLUTE_ROLLING_COMPLETE_MONTHS",
+        "evidenceClass": "FROZEN_PRIVATE_EVALUATION_ROWS",
+        "originCount": 69,
+        "caseCount": 2799,
+        "workCount": 192,
+        "actualAbsoluteTotalRmb": 87916177.30079989,
+        "absoluteErrorTotalRmb": 34468426.663400024,
+        "signedErrorTotalRmb": 6986097.251400173,
+        "wape": 0.39206011591550877,
+        "signedBias": 0.07946315986303253,
+        "mae": 12314.550433511977,
+        "medianAbsoluteError": 2855.4872,
+        "errorConcentration": {
+          "maximumWorkShare": 0.09416080598614274,
+          "top5WorkShare": 0.3045800975229201,
+          "top10WorkShare": 0.4655396725589085
+        },
+        "perOriginWapeP10P50P90": {
+          "p10": 0.18177095313565506,
+          "p50": 0.5723365499440732,
+          "p90": 2.1192005609935562
+        },
+        "perOriginSignedBiasP10P50P90": {
+          "p10": -0.13145163200118776,
+          "p50": 0.10695912360589538,
+          "p90": 2.110621518629863
+        },
+        "initialTechnicalSensitivity": {
+          "wapeCap": 0.3,
+          "absoluteBiasCap": 0.1,
+          "overallPass": false,
+          "passingOriginCount": 16,
+          "passingOriginShare": 0.2318840579710145
+        },
+        "worstPrivacyEligibleOrigin": {
+          "origin": "2019-11",
+          "caseCount": 13,
+          "workCount": 13,
+          "actualAbsoluteTotalRmb": 317491.9521,
+          "wape": 3.2040106269515727,
+          "signedBias": 3.019789677056195,
+          "maximumWorkErrorShare": 0.34394101077783
+        },
+        "privacySuppressedOriginCount": 18
+      },
+      {
+        "modelId": "M2-WORK-CRMR01",
+        "populationId": "CORE90",
+        "horizonMonths": 6,
+        "evaluationFamily": "ABSOLUTE_ROLLING_COMPLETE_MONTHS",
+        "evidenceClass": "FROZEN_PRIVATE_EVALUATION_ROWS",
+        "originCount": 69,
+        "caseCount": 2799,
+        "workCount": 192,
+        "actualAbsoluteTotalRmb": 170777062.73040012,
+        "absoluteErrorTotalRmb": 75393239.34969987,
+        "signedErrorTotalRmb": 10003098.560299844,
+        "wape": 0.44147169499407884,
+        "signedBias": 0.05857401691052265,
+        "mae": 26935.776830903847,
+        "medianAbsoluteError": 9230.122999999996,
+        "errorConcentration": {
+          "maximumWorkShare": 0.12139531186275303,
+          "top5WorkShare": 0.3151937427237579,
+          "top10WorkShare": 0.43787939158143396
+        },
+        "perOriginWapeP10P50P90": {
+          "p10": 0.3118610725297881,
+          "p50": 0.7187681319486265,
+          "p90": 5.42429522943121
+        },
+        "perOriginSignedBiasP10P50P90": {
+          "p10": -0.2047686729418426,
+          "p50": 0.0948337379143873,
+          "p90": 5.42429522943121
+        },
+        "initialTechnicalSensitivity": {
+          "wapeCap": 0.32,
+          "absoluteBiasCap": 0.12,
+          "overallPass": false,
+          "passingOriginCount": 5,
+          "passingOriginShare": 0.07246376811594203
+        },
+        "worstPrivacyEligibleOrigin": {
+          "origin": "2019-08",
+          "caseCount": 10,
+          "workCount": 10,
+          "actualAbsoluteTotalRmb": 425272.5586,
+          "wape": 1.936193750687021,
+          "signedBias": 1.8997205569990432,
+          "maximumWorkErrorShare": 0.4067587630765463
+        },
+        "privacySuppressedOriginCount": 18
+      },
+      {
+        "modelId": "M2-WORK-CRMR01",
+        "populationId": "CORE90",
+        "horizonMonths": 12,
+        "evaluationFamily": "ABSOLUTE_ROLLING_COMPLETE_MONTHS",
+        "evidenceClass": "FROZEN_PRIVATE_EVALUATION_ROWS",
+        "originCount": 69,
+        "caseCount": 2799,
+        "workCount": 192,
+        "actualAbsoluteTotalRmb": 324432524.40419936,
+        "absoluteErrorTotalRmb": 158431597.32789952,
+        "signedErrorTotalRmb": 43718403.66870105,
+        "wape": 0.48833450844316406,
+        "signedBias": 0.13475345528006863,
+        "mae": 56602.92866305806,
+        "medianAbsoluteError": 16802.94429999999,
+        "errorConcentration": {
+          "maximumWorkShare": 0.12768170093578762,
+          "top5WorkShare": 0.3194801376864403,
+          "top10WorkShare": 0.4388635572725866
+        },
+        "perOriginWapeP10P50P90": {
+          "p10": 0.29450953901166244,
+          "p50": 0.7123290554058653,
+          "p90": 2.7677112380931947
+        },
+        "perOriginSignedBiasP10P50P90": {
+          "p10": -0.15942812031839837,
+          "p50": 0.1380663709651609,
+          "p90": 2.713154007169169
+        },
+        "initialTechnicalSensitivity": {
+          "wapeCap": 0.32,
+          "absoluteBiasCap": 0.1,
+          "overallPass": false,
+          "passingOriginCount": 5,
+          "passingOriginShare": 0.07246376811594203
+        },
+        "worstPrivacyEligibleOrigin": {
+          "origin": "2019-11",
+          "caseCount": 13,
+          "workCount": 13,
+          "actualAbsoluteTotalRmb": 1053843.5040999998,
+          "wape": 3.663896174126449,
+          "signedBias": 3.3727926744071115,
+          "maximumWorkErrorShare": 0.3969388703742553
+        },
+        "privacySuppressedOriginCount": 18
+      },
+      {
+        "modelId": "M2-WORK-CRMR01",
+        "populationId": "CORE90",
+        "horizonMonths": 36,
+        "evaluationFamily": "ABSOLUTE_ROLLING_COMPLETE_MONTHS",
+        "evidenceClass": "FROZEN_PRIVATE_EVALUATION_ROWS",
+        "originCount": 69,
+        "caseCount": 2799,
+        "workCount": 192,
+        "actualAbsoluteTotalRmb": 846148383.5275991,
+        "absoluteErrorTotalRmb": 91871384015.29399,
+        "signedErrorTotalRmb": 91604342997.55013,
+        "wape": 108.57597296620894,
+        "signedBias": 108.26037699871377,
+        "mae": 32822931.05226652,
+        "medianAbsoluteError": 97194.94954619295,
+        "errorConcentration": {
+          "maximumWorkShare": 0.8805803138756485,
+          "top5WorkShare": 0.9543729640345002,
+          "top10WorkShare": 0.9745327782332712
+        },
+        "perOriginWapeP10P50P90": {
+          "p10": 0.6757680405709288,
+          "p50": 1.573977582240672,
+          "p90": 52.12228234469455
+        },
+        "perOriginSignedBiasP10P50P90": {
+          "p10": -0.10388449541015574,
+          "p50": 1.573977582240672,
+          "p90": 52.07301730725121
+        },
+        "initialTechnicalSensitivity": {
+          "wapeCap": 0.35,
+          "absoluteBiasCap": 0.12,
+          "overallPass": false,
+          "passingOriginCount": 0,
+          "passingOriginShare": 0
+        },
+        "worstPrivacyEligibleOrigin": {
+          "origin": "2021-08",
+          "caseCount": 78,
+          "workCount": 78,
+          "actualAbsoluteTotalRmb": 21143402.094400007,
+          "wape": 3803.357068843043,
+          "signedBias": 3803.3194693819846,
+          "maximumWorkErrorShare": 0.9998273061652845
+        },
+        "privacySuppressedOriginCount": 18
+      },
+      {
+        "modelId": "M2-WORK-OA03",
+        "populationId": "CORE90",
+        "horizonMonths": 3,
+        "evaluationFamily": "PRIMARY_ROLLING_CURRENT_SCOPE",
+        "evidenceClass": "FROZEN_PRIVATE_SAME_CASE_ROWS",
+        "originCount": 5,
+        "caseCount": 396,
+        "workCount": 155,
+        "actualAbsoluteTotalRmb": 10987370.897199998,
+        "absoluteErrorTotalRmb": 4125005.459400002,
+        "signedErrorTotalRmb": -1140645.3371999934,
+        "wape": 0.37543152934349483,
+        "signedBias": -0.10381421978670743,
+        "mae": 10416.680453030307,
+        "medianAbsoluteError": 3466.1378499999983,
+        "errorConcentration": {
+          "maximumWorkShare": 0.25198717200029885,
+          "top5WorkShare": 0.41315120466480304,
+          "top10WorkShare": 0.5163910623308202
+        },
+        "perOriginWapeP10P50P90": {
+          "p10": 0.3346055358185685,
+          "p50": 0.3703858452048374,
+          "p90": 0.5142865691001511
+        },
+        "perOriginSignedBiasP10P50P90": {
+          "p10": -0.2434622605808588,
+          "p50": -0.1073344901535062,
+          "p90": 0.1306550910384908
+        },
+        "initialTechnicalSensitivity": {
+          "wapeCap": 0.3,
+          "absoluteBiasCap": 0.1,
+          "overallPass": false,
+          "passingOriginCount": 0,
+          "passingOriginShare": 0
+        },
+        "worstPrivacyEligibleOrigin": {
+          "origin": "2020-12",
+          "caseCount": 62,
+          "workCount": 62,
+          "actualAbsoluteTotalRmb": 820202.9236,
+          "wape": 0.5910848947868832,
+          "signedBias": 0.22764413662472827,
+          "maximumWorkErrorShare": 0.12698922098893237
+        },
+        "privacySuppressedOriginCount": 0
+      },
+      {
+        "modelId": "M2-WORK-CRMR01",
+        "populationId": "CORE90",
+        "horizonMonths": 3,
+        "evaluationFamily": "PRIMARY_ROLLING_CURRENT_SCOPE",
+        "evidenceClass": "FROZEN_PRIVATE_SAME_CASE_ROWS",
+        "originCount": 5,
+        "caseCount": 396,
+        "workCount": 155,
+        "actualAbsoluteTotalRmb": 10987370.897199998,
+        "absoluteErrorTotalRmb": 4631371.066499999,
+        "signedErrorTotalRmb": 3564258.7270999867,
+        "wape": 0.4215176778714414,
+        "signedBias": 0.3243959597293922,
+        "mae": 11695.381481060604,
+        "medianAbsoluteError": 2650.423700000001,
+        "errorConcentration": {
+          "maximumWorkShare": 0.09407625080001783,
+          "top5WorkShare": 0.3452257428399687,
+          "top10WorkShare": 0.4920844649837778
+        },
+        "perOriginWapeP10P50P90": {
+          "p10": 0.18465080951209129,
+          "p50": 0.29290764051215645,
+          "p90": 1.0855889842858661
+        },
+        "perOriginSignedBiasP10P50P90": {
+          "p10": 0.06366884790681343,
+          "p50": 0.22401767798190814,
+          "p90": 1.0074867877567582
+        },
+        "initialTechnicalSensitivity": {
+          "wapeCap": 0.3,
+          "absoluteBiasCap": 0.1,
+          "overallPass": false,
+          "passingOriginCount": 1,
+          "passingOriginShare": 0.2
+        },
+        "worstPrivacyEligibleOrigin": {
+          "origin": "2020-12",
+          "caseCount": 62,
+          "workCount": 62,
+          "actualAbsoluteTotalRmb": 820202.9236,
+          "wape": 1.4200110565175266,
+          "signedBias": 1.3666902409709965,
+          "maximumWorkErrorShare": 0.28749433777411315
+        },
+        "privacySuppressedOriginCount": 0
+      },
+      {
+        "modelId": "M2-WORK-LG01",
+        "populationId": "CORE90",
+        "horizonMonths": 3,
+        "evaluationFamily": "STRICT_ROLLING_CURRENT_SCOPE",
+        "evidenceClass": "FROZEN_PRIVATE_SAME_CASE_ROWS",
+        "originCount": 11,
+        "caseCount": 1288,
+        "workCount": 208,
+        "actualAbsoluteTotalRmb": 37560937.16750004,
+        "absoluteErrorTotalRmb": 10289476.720214682,
+        "signedErrorTotalRmb": -2002490.375213407,
+        "wape": 0.27394089434801827,
+        "signedBias": -0.05331311000797075,
+        "mae": 7988.724161657362,
+        "medianAbsoluteError": 1999.795986394575,
+        "errorConcentration": {
+          "maximumWorkShare": 0.11358896323979165,
+          "top5WorkShare": 0.36779340538423144,
+          "top10WorkShare": 0.5049936917873331
+        },
+        "perOriginWapeP10P50P90": {
+          "p10": 0.21547039861413342,
+          "p50": 0.2716567758668745,
+          "p90": 0.3178573939448032
+        },
+        "perOriginSignedBiasP10P50P90": {
+          "p10": -0.1796558199276679,
+          "p50": -0.029550659167408268,
+          "p90": 0.0518220213278539
+        },
+        "initialTechnicalSensitivity": {
+          "wapeCap": 0.3,
+          "absoluteBiasCap": 0.1,
+          "overallPass": true,
+          "passingOriginCount": 7,
+          "passingOriginShare": 0.6363636363636364
+        },
+        "worstPrivacyEligibleOrigin": {
+          "origin": "2023-06",
+          "caseCount": 103,
+          "workCount": 103,
+          "actualAbsoluteTotalRmb": 4078572.4429999976,
+          "wape": 0.3986513965662198,
+          "signedBias": -0.20850981514714229,
+          "maximumWorkErrorShare": 0.4122808297725381
+        },
+        "privacySuppressedOriginCount": 0
+      },
+      {
+        "modelId": "M2-WORK-OA03",
+        "populationId": "CORE90",
+        "horizonMonths": 6,
+        "evaluationFamily": "PRIMARY_ROLLING_CURRENT_SCOPE",
+        "evidenceClass": "FROZEN_PRIVATE_SAME_CASE_ROWS",
+        "originCount": 5,
+        "caseCount": 396,
+        "workCount": 155,
+        "actualAbsoluteTotalRmb": 21573435.49969999,
+        "absoluteErrorTotalRmb": 8515171.839900004,
+        "signedErrorTotalRmb": -1879986.769699987,
+        "wape": 0.3947063433646634,
+        "signedBias": -0.08714359702821235,
+        "mae": 21502.959191666676,
+        "medianAbsoluteError": 6889.063349999999,
+        "errorConcentration": {
+          "maximumWorkShare": 0.23566925552773885,
+          "top5WorkShare": 0.3947189181022412,
+          "top10WorkShare": 0.5131042653804282
+        },
+        "perOriginWapeP10P50P90": {
+          "p10": 0.3581674773923861,
+          "p50": 0.39537587032839044,
+          "p90": 0.5234011693142145
+        },
+        "perOriginSignedBiasP10P50P90": {
+          "p10": -0.2527648101031203,
+          "p50": -0.045162733118979614,
+          "p90": 0.1494680423285971
+        },
+        "initialTechnicalSensitivity": {
+          "wapeCap": 0.32,
+          "absoluteBiasCap": 0.12,
+          "overallPass": false,
+          "passingOriginCount": 0,
+          "passingOriginShare": 0
+        },
+        "worstPrivacyEligibleOrigin": {
+          "origin": "2020-12",
+          "caseCount": 62,
+          "workCount": 62,
+          "actualAbsoluteTotalRmb": 1611730.4719999994,
+          "wape": 0.6063738875565544,
+          "signedBias": 0.24948595003048402,
+          "maximumWorkErrorShare": 0.1362802538104769
+        },
+        "privacySuppressedOriginCount": 0
+      },
+      {
+        "modelId": "M2-WORK-CRMR01",
+        "populationId": "CORE90",
+        "horizonMonths": 6,
+        "evaluationFamily": "PRIMARY_ROLLING_CURRENT_SCOPE",
+        "evidenceClass": "FROZEN_PRIVATE_SAME_CASE_ROWS",
+        "originCount": 5,
+        "caseCount": 396,
+        "workCount": 155,
+        "actualAbsoluteTotalRmb": 21573435.49969999,
+        "absoluteErrorTotalRmb": 7649110.6680999985,
+        "signedErrorTotalRmb": 1977199.9989,
+        "wape": 0.3545615471493342,
+        "signedBias": 0.09164975133086688,
+        "mae": 19315.936030555553,
+        "medianAbsoluteError": 7868.389700000003,
+        "errorConcentration": {
+          "maximumWorkShare": 0.10526804387313288,
+          "top5WorkShare": 0.27734227736398404,
+          "top10WorkShare": 0.3986667210107795
+        },
+        "perOriginWapeP10P50P90": {
+          "p10": 0.2852341853327053,
+          "p50": 0.35287746567077566,
+          "p90": 0.48057384255120106
+        },
+        "perOriginSignedBiasP10P50P90": {
+          "p10": -0.005594285438992022,
+          "p50": 0.11913759954042963,
+          "p90": 0.18741156856949379
+        },
+        "initialTechnicalSensitivity": {
+          "wapeCap": 0.32,
+          "absoluteBiasCap": 0.12,
+          "overallPass": false,
+          "passingOriginCount": 1,
+          "passingOriginShare": 0.2
+        },
+        "worstPrivacyEligibleOrigin": {
+          "origin": "2020-12",
+          "caseCount": 62,
+          "workCount": 62,
+          "actualAbsoluteTotalRmb": 1611730.4719999994,
+          "wape": 0.5234601445197472,
+          "signedBias": 0.20355029870031588,
+          "maximumWorkErrorShare": 0.17062482658981704
+        },
+        "privacySuppressedOriginCount": 0
+      },
+      {
+        "modelId": "M2-WORK-LG01",
+        "populationId": "CORE90",
+        "horizonMonths": 6,
+        "evaluationFamily": "STRICT_ROLLING_CURRENT_SCOPE",
+        "evidenceClass": "FROZEN_PRIVATE_SAME_CASE_ROWS",
+        "originCount": 11,
+        "caseCount": 1288,
+        "workCount": 208,
+        "actualAbsoluteTotalRmb": 71921668.4598998,
+        "absoluteErrorTotalRmb": 20674704.415466793,
+        "signedErrorTotalRmb": -804774.8753265291,
+        "wape": 0.2874614126477621,
+        "signedBias": -0.011189602418292541,
+        "mae": 16051.789142443162,
+        "medianAbsoluteError": 4270.223915526896,
+        "errorConcentration": {
+          "maximumWorkShare": 0.12947787023506946,
+          "top5WorkShare": 0.36579433628015234,
+          "top10WorkShare": 0.4883453686187497
+        },
+        "perOriginWapeP10P50P90": {
+          "p10": 0.21506351743455773,
+          "p50": 0.28853454731009076,
+          "p90": 0.3265607265558252
+        },
+        "perOriginSignedBiasP10P50P90": {
+          "p10": -0.14427494620267306,
+          "p50": 0.022535651830030246,
+          "p90": 0.07773606557821193
+        },
+        "initialTechnicalSensitivity": {
+          "wapeCap": 0.32,
+          "absoluteBiasCap": 0.12,
+          "overallPass": true,
+          "passingOriginCount": 9,
+          "passingOriginShare": 0.8181818181818182
+        },
+        "worstPrivacyEligibleOrigin": {
+          "origin": "2023-06",
+          "caseCount": 103,
+          "workCount": 103,
+          "actualAbsoluteTotalRmb": 7544830.065500002,
+          "wape": 0.37128264882445383,
+          "signedBias": -0.14427494620267306,
+          "maximumWorkErrorShare": 0.31359711861023065
+        },
+        "privacySuppressedOriginCount": 0
+      },
+      {
+        "modelId": "M2-WORK-OA03",
+        "populationId": "CORE90",
+        "horizonMonths": 12,
+        "evaluationFamily": "PRIMARY_ROLLING_CURRENT_SCOPE",
+        "evidenceClass": "FROZEN_PRIVATE_SAME_CASE_ROWS",
+        "originCount": 5,
+        "caseCount": 396,
+        "workCount": 155,
+        "actualAbsoluteTotalRmb": 40408716.481599994,
+        "absoluteErrorTotalRmb": 17401915.50199999,
+        "signedErrorTotalRmb": -1021821.2316000164,
+        "wape": 0.43064756857407005,
+        "signedBias": -0.02528714892652678,
+        "mae": 43944.23106565654,
+        "medianAbsoluteError": 16010.46215,
+        "errorConcentration": {
+          "maximumWorkShare": 0.22190691770432902,
+          "top5WorkShare": 0.40299355098546574,
+          "top10WorkShare": 0.50969457586325
+        },
+        "perOriginWapeP10P50P90": {
+          "p10": 0.3976486077504473,
+          "p50": 0.4132951261305199,
+          "p90": 0.5992190662008741
+        },
+        "perOriginSignedBiasP10P50P90": {
+          "p10": -0.22135599149189664,
+          "p50": 0.061179237235574085,
+          "p90": 0.20211438883875327
+        },
+        "initialTechnicalSensitivity": {
+          "wapeCap": 0.32,
+          "absoluteBiasCap": 0.1,
+          "overallPass": false,
+          "passingOriginCount": 0,
+          "passingOriginShare": 0
+        },
+        "worstPrivacyEligibleOrigin": {
+          "origin": "2020-12",
+          "caseCount": 62,
+          "workCount": 62,
+          "actualAbsoluteTotalRmb": 3131466.7966,
+          "wape": 0.718461026137262,
+          "signedBias": 0.2861925102872092,
+          "maximumWorkErrorShare": 0.1228682464000607
+        },
+        "privacySuppressedOriginCount": 0
+      },
+      {
+        "modelId": "M2-WORK-CRMR01",
+        "populationId": "CORE90",
+        "horizonMonths": 12,
+        "evaluationFamily": "PRIMARY_ROLLING_CURRENT_SCOPE",
+        "evidenceClass": "FROZEN_PRIVATE_SAME_CASE_ROWS",
+        "originCount": 5,
+        "caseCount": 396,
+        "workCount": 155,
+        "actualAbsoluteTotalRmb": 40408716.481599994,
+        "absoluteErrorTotalRmb": 23881940.50339999,
+        "signedErrorTotalRmb": 15577966.244599998,
+        "wape": 0.5910096281893678,
+        "signedBias": 0.3855100483504193,
+        "mae": 60307.93056414139,
+        "medianAbsoluteError": 15275.57834999999,
+        "errorConcentration": {
+          "maximumWorkShare": 0.11247566455990388,
+          "top5WorkShare": 0.3747555563764106,
+          "top10WorkShare": 0.5011101067476584
+        },
+        "perOriginWapeP10P50P90": {
+          "p10": 0.31327211449236436,
+          "p50": 0.5110576472131126,
+          "p90": 1.2968410971351143
+        },
+        "perOriginSignedBiasP10P50P90": {
+          "p10": -0.0022065090834951645,
+          "p50": 0.36199735450006915,
+          "p90": 1.109414336362326
+        },
+        "initialTechnicalSensitivity": {
+          "wapeCap": 0.32,
+          "absoluteBiasCap": 0.1,
+          "overallPass": false,
+          "passingOriginCount": 0,
+          "passingOriginShare": 0
+        },
+        "worstPrivacyEligibleOrigin": {
+          "origin": "2020-12",
+          "caseCount": 62,
+          "workCount": 62,
+          "actualAbsoluteTotalRmb": 3131466.7966,
+          "wape": 1.6653809187957207,
+          "signedBias": 1.4468996087774117,
+          "maximumWorkErrorShare": 0.26121229328079876
+        },
+        "privacySuppressedOriginCount": 0
+      },
+      {
+        "modelId": "M2-WORK-LG01",
+        "populationId": "CORE90",
+        "horizonMonths": 12,
+        "evaluationFamily": "STRICT_ROLLING_CURRENT_SCOPE",
+        "evidenceClass": "FROZEN_PRIVATE_SAME_CASE_ROWS",
+        "originCount": 9,
+        "caseCount": 1053,
+        "workCount": 195,
+        "actualAbsoluteTotalRmb": 111626992.32029997,
+        "absoluteErrorTotalRmb": 36627169.3721087,
+        "signedErrorTotalRmb": 6244241.359039232,
+        "wape": 0.32812108084943764,
+        "signedBias": 0.055938453856412676,
+        "mae": 34783.63663068252,
+        "medianAbsoluteError": 10863.009791424867,
+        "errorConcentration": {
+          "maximumWorkShare": 0.13865867845366991,
+          "top5WorkShare": 0.3614885545381614,
+          "top10WorkShare": 0.4700032065711109
+        },
+        "perOriginWapeP10P50P90": {
+          "p10": 0.2740839493962996,
+          "p50": 0.331666869753551,
+          "p90": 0.3634678124052356
+        },
+        "perOriginSignedBiasP10P50P90": {
+          "p10": -0.04058840828518423,
+          "p50": 0.06703651874331329,
+          "p90": 0.13689114171371913
+        },
+        "initialTechnicalSensitivity": {
+          "wapeCap": 0.32,
+          "absoluteBiasCap": 0.1,
+          "overallPass": false,
+          "passingOriginCount": 2,
+          "passingOriginShare": 0.2222222222222222
+        },
+        "worstPrivacyEligibleOrigin": {
+          "origin": "2023-09",
+          "caseCount": 109,
+          "workCount": 109,
+          "actualAbsoluteTotalRmb": 12394776.473199995,
+          "wape": 0.37785087051525507,
+          "signedBias": 0.1519669833399388,
+          "maximumWorkErrorShare": 0.17667746809543855
+        },
+        "privacySuppressedOriginCount": 0
+      },
+      {
+        "modelId": "M2-WORK-LG01",
+        "populationId": "CORE90",
+        "horizonMonths": 36,
+        "evaluationFamily": "PRIMARY_ROLLING_CURRENT_SCOPE_STANDALONE",
+        "evidenceClass": "FROZEN_PREDICTION_JOINED_TO_COMPLETE_MONTH_CURRENT_SCOPE_ACTUAL",
+        "originCount": 13,
+        "caseCount": 1030,
+        "workCount": 138,
+        "actualAbsoluteTotalRmb": 323669098.2617002,
+        "absoluteErrorTotalRmb": 110499208.44029921,
+        "signedErrorTotalRmb": 30990008.585463583,
+        "wape": 0.3413956075317265,
+        "signedBias": 0.09574596015467267,
+        "mae": 107280.78489349438,
+        "medianAbsoluteError": 41247.27591759978,
+        "errorConcentration": {
+          "maximumWorkShare": 0.07610780609152566,
+          "top5WorkShare": 0.3370537433561901,
+          "top10WorkShare": 0.5163300001429818
+        },
+        "perOriginWapeP10P50P90": {
+          "p10": 0.276950221397371,
+          "p50": 0.3026019406692904,
+          "p90": 0.432901910920204
+        },
+        "perOriginSignedBiasP10P50P90": {
+          "p10": -0.058642720858728,
+          "p50": 0.1273232925226351,
+          "p90": 0.21796848153195983
+        },
+        "initialTechnicalSensitivity": {
+          "wapeCap": 0.35,
+          "absoluteBiasCap": 0.12,
+          "overallPass": true,
+          "passingOriginCount": 6,
+          "passingOriginShare": 0.46153846153846156
+        },
+        "worstPrivacyEligibleOrigin": {
+          "origin": "2022-12",
+          "caseCount": 100,
+          "workCount": 100,
+          "actualAbsoluteTotalRmb": 28480633.144599997,
+          "wape": 0.45330784167172755,
+          "signedBias": 0.21340369103551413,
+          "maximumWorkErrorShare": 0.11780595301386916
+        },
+        "privacySuppressedOriginCount": 0
+      }
+    ],
+    "sensitivityMatrices": [
+      {
+        "modelId": "M2-WORK-LG01",
+        "populationId": "CORE80",
+        "horizonMonths": 3,
+        "evaluationFamily": "STRICT_ROLLING_CURRENT_SCOPE",
+        "wapeCaps": [
+          0.25,
+          0.3,
+          0.32,
+          0.35,
+          0.4
+        ],
+        "absoluteBiasCaps": [
+          0.05,
+          0.1,
+          0.12,
+          0.15
+        ],
+        "evaluableOriginCount": 11,
+        "passOriginCounts": [
+          [
+            2,
+            6,
+            6,
+            6
+          ],
+          [
+            2,
+            8,
+            8,
+            9
+          ],
+          [
+            3,
+            9,
+            9,
+            10
+          ],
+          [
+            3,
+            9,
+            9,
+            10
+          ],
+          [
+            3,
+            9,
+            9,
+            10
+          ]
+        ]
+      },
+      {
+        "modelId": "M2-WORK-LG01",
+        "populationId": "CORE80",
+        "horizonMonths": 6,
+        "evaluationFamily": "STRICT_ROLLING_CURRENT_SCOPE",
+        "wapeCaps": [
+          0.25,
+          0.3,
+          0.32,
+          0.35,
+          0.4
+        ],
+        "absoluteBiasCaps": [
+          0.05,
+          0.1,
+          0.12,
+          0.15
+        ],
+        "evaluableOriginCount": 11,
+        "passOriginCounts": [
+          [
+            2,
+            3,
+            3,
+            3
+          ],
+          [
+            4,
+            8,
+            9,
+            10
+          ],
+          [
+            4,
+            8,
+            9,
+            10
+          ],
+          [
+            4,
+            8,
+            9,
+            10
+          ],
+          [
+            4,
+            8,
+            9,
+            11
+          ]
+        ]
+      },
+      {
+        "modelId": "M2-WORK-LG01",
+        "populationId": "CORE80",
+        "horizonMonths": 12,
+        "evaluationFamily": "STRICT_ROLLING_CURRENT_SCOPE",
+        "wapeCaps": [
+          0.25,
+          0.3,
+          0.32,
+          0.35,
+          0.4
+        ],
+        "absoluteBiasCaps": [
+          0.05,
+          0.1,
+          0.12,
+          0.15
+        ],
+        "evaluableOriginCount": 9,
+        "passOriginCounts": [
+          [
+            0,
+            1,
+            1,
+            1
+          ],
+          [
+            0,
+            2,
+            2,
+            3
+          ],
+          [
+            1,
+            3,
+            3,
+            5
+          ],
+          [
+            3,
+            5,
+            6,
+            8
+          ],
+          [
+            3,
+            5,
+            6,
+            8
+          ]
+        ]
+      },
+      {
+        "modelId": "M2-WORK-LG01",
+        "populationId": "CORE80",
+        "horizonMonths": 36,
+        "evaluationFamily": "PRIMARY_ROLLING_CURRENT_SCOPE_STANDALONE",
+        "wapeCaps": [
+          0.25,
+          0.3,
+          0.32,
+          0.35,
+          0.4
+        ],
+        "absoluteBiasCaps": [
+          0.05,
+          0.1,
+          0.12,
+          0.15
+        ],
+        "evaluableOriginCount": 13,
+        "passOriginCounts": [
+          [
+            1,
+            6,
+            6,
+            6
+          ],
+          [
+            1,
+            6,
+            6,
+            7
+          ],
+          [
+            1,
+            6,
+            6,
+            7
+          ],
+          [
+            1,
+            6,
+            6,
+            7
+          ],
+          [
+            1,
+            6,
+            6,
+            7
+          ]
+        ]
+      },
+      {
+        "modelId": "M2-WORK-LG01",
+        "populationId": "CORE90",
+        "horizonMonths": 3,
+        "evaluationFamily": "STRICT_ROLLING_CURRENT_SCOPE",
+        "wapeCaps": [
+          0.25,
+          0.3,
+          0.32,
+          0.35,
+          0.4
+        ],
+        "absoluteBiasCaps": [
+          0.05,
+          0.1,
+          0.12,
+          0.15
+        ],
+        "evaluableOriginCount": 11,
+        "passOriginCounts": [
+          [
+            2,
+            4,
+            4,
+            4
+          ],
+          [
+            4,
+            7,
+            7,
+            8
+          ],
+          [
+            5,
+            8,
+            8,
+            9
+          ],
+          [
+            5,
+            8,
+            8,
+            9
+          ],
+          [
+            5,
+            8,
+            8,
+            9
+          ]
+        ]
+      },
+      {
+        "modelId": "M2-WORK-LG01",
+        "populationId": "CORE90",
+        "horizonMonths": 6,
+        "evaluationFamily": "STRICT_ROLLING_CURRENT_SCOPE",
+        "wapeCaps": [
+          0.25,
+          0.3,
+          0.32,
+          0.35,
+          0.4
+        ],
+        "absoluteBiasCaps": [
+          0.05,
+          0.1,
+          0.12,
+          0.15
+        ],
+        "evaluableOriginCount": 11,
+        "passOriginCounts": [
+          [
+            2,
+            3,
+            3,
+            3
+          ],
+          [
+            5,
+            7,
+            7,
+            7
+          ],
+          [
+            5,
+            9,
+            9,
+            9
+          ],
+          [
+            5,
+            9,
+            9,
+            10
+          ],
+          [
+            5,
+            9,
+            9,
+            11
+          ]
+        ]
+      },
+      {
+        "modelId": "M2-WORK-LG01",
+        "populationId": "CORE90",
+        "horizonMonths": 12,
+        "evaluationFamily": "STRICT_ROLLING_CURRENT_SCOPE",
+        "wapeCaps": [
+          0.25,
+          0.3,
+          0.32,
+          0.35,
+          0.4
+        ],
+        "absoluteBiasCaps": [
+          0.05,
+          0.1,
+          0.12,
+          0.15
+        ],
+        "evaluableOriginCount": 9,
+        "passOriginCounts": [
+          [
+            0,
+            1,
+            1,
+            1
+          ],
+          [
+            0,
+            1,
+            2,
+            2
+          ],
+          [
+            0,
+            2,
+            3,
+            3
+          ],
+          [
+            0,
+            3,
+            4,
+            5
+          ],
+          [
+            2,
+            5,
+            7,
+            8
+          ]
+        ]
+      },
+      {
+        "modelId": "M2-WORK-LG01",
+        "populationId": "CORE90",
+        "horizonMonths": 36,
+        "evaluationFamily": "PRIMARY_ROLLING_CURRENT_SCOPE_STANDALONE",
+        "wapeCaps": [
+          0.25,
+          0.3,
+          0.32,
+          0.35,
+          0.4
+        ],
+        "absoluteBiasCaps": [
+          0.05,
+          0.1,
+          0.12,
+          0.15
+        ],
+        "evaluableOriginCount": 13,
+        "passOriginCounts": [
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            4,
+            5,
+            5,
+            5
+          ],
+          [
+            4,
+            6,
+            6,
+            7
+          ],
+          [
+            4,
+            6,
+            6,
+            7
+          ],
+          [
+            4,
+            6,
+            6,
+            7
+          ]
+        ]
+      }
+    ],
+    "exactSameCaseSuperiority": [
+      {
+        "comparisonSetId": "SC-PRIMARY_ROLLING-CORE80-WORK_TOTAL-H3",
+        "populationId": "CORE80",
+        "horizonMonths": 3,
+        "caseCount": 65,
+        "workCount": 43,
+        "modelMetrics": [
+          {
+            "modelId": "M2-WORK-OA03",
+            "actualTotalRmb": 4385939.320699999,
+            "absoluteErrorTotalRmb": 1151133.5393066048,
+            "wape": 0.2624599783844896,
+            "signedBias": -0.036456941339038214,
+            "mae": 17709.74675856315,
+            "medianAbsoluteError": 6232.60055834,
+            "maximumWorkErrorShare": 0.30209241738666426,
+            "top5WorkErrorShare": 0.6511918746811086
+          },
+          {
+            "modelId": "M2-WORK-CRMR01",
+            "actualTotalRmb": 4385939.320699999,
+            "absoluteErrorTotalRmb": 1163255.0826999997,
+            "wape": 0.2652237064042061,
+            "signedBias": 0.246507885642031,
+            "mae": 17896.232041538457,
+            "medianAbsoluteError": 3854.575999999999,
+            "maximumWorkErrorShare": 0.28785075688025635,
+            "top5WorkErrorShare": 0.7525538388090297
+          }
+        ],
+        "pointWapeLeaderModelId": "M2-WORK-OA03",
+        "comparatorModelId": "M2-WORK-CRMR01",
+        "relativeFva": 0.010420365725168442,
+        "absoluteErrorReductionRmb": 12121.54339339491,
+        "actualCashMateriality": 0.002763728019716493,
+        "materialitySensitivity": {
+          "atLeast0_5PercentActualCash": false,
+          "atLeast1PercentActualCash": false,
+          "atLeast2PercentActualCash": false
+        },
+        "bootstrap95": {
+          "lower": -0.15643793343384862,
+          "median": -0.0009969815282095396,
+          "upper": 0.6339869701986036
+        },
+        "improvingTimeBlockShare": 0.2,
+        "improvingYearBlockShare": 0.3333333333333333,
+        "independentEvidence": false,
+        "historicalMultiOrigin": true
+      },
+      {
+        "comparisonSetId": "SC-PRIMARY_ROLLING-CORE80-WORK_TOTAL-H6",
+        "populationId": "CORE80",
+        "horizonMonths": 6,
+        "caseCount": 65,
+        "workCount": 43,
+        "modelMetrics": [
+          {
+            "modelId": "M2-WORK-CRMR01",
+            "actualTotalRmb": 8445169.398700003,
+            "absoluteErrorTotalRmb": 2239146.8405999993,
+            "wape": 0.2651393636869711,
+            "signedBias": 0.11386694059067995,
+            "mae": 34448.412932307685,
+            "medianAbsoluteError": 13319.371999999996,
+            "maximumWorkErrorShare": 0.3263608043696603,
+            "top5WorkErrorShare": 0.5902839622817364
+          },
+          {
+            "modelId": "M2-WORK-OA03",
+            "actualTotalRmb": 8445169.398700003,
+            "absoluteErrorTotalRmb": 2397999.9019257994,
+            "wape": 0.28394929559316273,
+            "signedBias": 0.0008183823569414941,
+            "mae": 36892.30618347384,
+            "medianAbsoluteError": 14079.122936000002,
+            "maximumWorkErrorShare": 0.27867476254327206,
+            "top5WorkErrorShare": 0.6297502619270026
+          }
+        ],
+        "pointWapeLeaderModelId": "M2-WORK-CRMR01",
+        "comparatorModelId": "M2-WORK-OA03",
+        "relativeFva": 0.06624398157740861,
+        "absoluteErrorReductionRmb": 158853.06132580014,
+        "actualCashMateriality": 0.018809931906191603,
+        "materialitySensitivity": {
+          "atLeast0_5PercentActualCash": true,
+          "atLeast1PercentActualCash": true,
+          "atLeast2PercentActualCash": false
+        },
+        "bootstrap95": {
+          "lower": -0.05007696079126926,
+          "median": 0.018100686214736664,
+          "upper": 0.2072363527301274
+        },
+        "improvingTimeBlockShare": 0.6,
+        "improvingYearBlockShare": 0.6666666666666666,
+        "independentEvidence": false,
+        "historicalMultiOrigin": true
+      },
+      {
+        "comparisonSetId": "SC-PRIMARY_ROLLING-CORE80-WORK_TOTAL-H12",
+        "populationId": "CORE80",
+        "horizonMonths": 12,
+        "caseCount": 47,
+        "workCount": 32,
+        "modelMetrics": [
+          {
+            "modelId": "M2-WORK-OA03",
+            "actualTotalRmb": 10435063.0147,
+            "absoluteErrorTotalRmb": 2597486.1453061933,
+            "wape": 0.2489190665784273,
+            "signedBias": 0.008340536791966386,
+            "mae": 55265.66266608922,
+            "medianAbsoluteError": 29832.689124036795,
+            "maximumWorkErrorShare": 0.28655357213010996,
+            "top5WorkErrorShare": 0.637138375812133
+          },
+          {
+            "modelId": "M2-WORK-CRMR01",
+            "actualTotalRmb": 10435063.0147,
+            "absoluteErrorTotalRmb": 3962587.950399999,
+            "wape": 0.3797378075070417,
+            "signedBias": 0.30966669855734424,
+            "mae": 84310.38192340423,
+            "medianAbsoluteError": 25479.61099999999,
+            "maximumWorkErrorShare": 0.3437764266311085,
+            "top5WorkErrorShare": 0.775033822376103
+          }
+        ],
+        "pointWapeLeaderModelId": "M2-WORK-OA03",
+        "comparatorModelId": "M2-WORK-CRMR01",
+        "relativeFva": 0.3444975410466301,
+        "absoluteErrorReductionRmb": 1365101.8050938058,
+        "actualCashMateriality": 0.13081874092861445,
+        "materialitySensitivity": {
+          "atLeast0_5PercentActualCash": true,
+          "atLeast1PercentActualCash": true,
+          "atLeast2PercentActualCash": true
+        },
+        "bootstrap95": {
+          "lower": -0.07145705457239718,
+          "median": 0.1228410522212849,
+          "upper": 1.4561118272594236
+        },
+        "improvingTimeBlockShare": 0.25,
+        "improvingYearBlockShare": 0.3333333333333333,
+        "independentEvidence": false,
+        "historicalMultiOrigin": true
+      },
+      {
+        "comparisonSetId": "SC-PRIMARY_ROLLING-CORE80-WORK_TOTAL-H36",
+        "populationId": "CORE80",
+        "horizonMonths": 36,
+        "caseCount": 408,
+        "workCount": 55,
+        "modelMetrics": [
+          {
+            "modelId": "M2-WORK-LG01",
+            "actualTotalRmb": 269248092.878,
+            "absoluteErrorTotalRmb": 76708300.17431001,
+            "wape": 0.2848982117361462,
+            "signedBias": 0.07555859934687727,
+            "mae": 188010.5396429167,
+            "medianAbsoluteError": 96771.94483222858,
+            "maximumWorkErrorShare": 0.10644996417194083,
+            "top5WorkErrorShare": 0.4724267968086454
+          },
+          {
+            "modelId": "M2-WORK-CRMR01",
+            "actualTotalRmb": 269248092.878,
+            "absoluteErrorTotalRmb": 5021368216.58871,
+            "wape": 18.649596225232912,
+            "signedBias": 18.614640277009286,
+            "mae": 12307275.040658602,
+            "medianAbsoluteError": 370900.18153975834,
+            "maximumWorkErrorShare": 0.5009484557722539,
+            "top5WorkErrorShare": 0.776122820385909
+          }
+        ],
+        "pointWapeLeaderModelId": "M2-WORK-LG01",
+        "comparatorModelId": "M2-WORK-CRMR01",
+        "relativeFva": 0.984723625739914,
+        "absoluteErrorReductionRmb": 4944659916.4144,
+        "actualCashMateriality": 18.364698013496767,
+        "materialitySensitivity": {
+          "atLeast0_5PercentActualCash": true,
+          "atLeast1PercentActualCash": true,
+          "atLeast2PercentActualCash": true
+        },
+        "bootstrap95": {
+          "lower": 11.161176111930006,
+          "median": 17.976975407291302,
+          "upper": 29.81118101103117
+        },
+        "improvingTimeBlockShare": 1,
+        "improvingYearBlockShare": 1,
+        "independentEvidence": false,
+        "historicalMultiOrigin": true
+      },
+      {
+        "comparisonSetId": "SC-PRIMARY_ROLLING-CORE90-WORK_TOTAL-H3",
+        "populationId": "CORE90",
+        "horizonMonths": 3,
+        "caseCount": 158,
+        "workCount": 90,
+        "modelMetrics": [
+          {
+            "modelId": "M2-WORK-CRMR01",
+            "actualTotalRmb": 4755575.613400001,
+            "absoluteErrorTotalRmb": 1333558.8601000002,
+            "wape": 0.2804200728808456,
+            "signedBias": 0.24789780677194337,
+            "mae": 8440.24595,
+            "medianAbsoluteError": 1422.34195,
+            "maximumWorkErrorShare": 0.2510904212918588,
+            "top5WorkErrorShare": 0.6564480235498229
+          },
+          {
+            "modelId": "M2-WORK-OA03",
+            "actualTotalRmb": 4755575.613400001,
+            "absoluteErrorTotalRmb": 1390727.3026624997,
+            "wape": 0.2924414236509634,
+            "signedBias": -0.015828649678434482,
+            "mae": 8802.071535838606,
+            "medianAbsoluteError": 2637.3867399965,
+            "maximumWorkErrorShare": 0.2500480956678177,
+            "top5WorkErrorShare": 0.5531200756617477
+          }
+        ],
+        "pointWapeLeaderModelId": "M2-WORK-CRMR01",
+        "comparatorModelId": "M2-WORK-OA03",
+        "relativeFva": 0.04110686721476774,
+        "absoluteErrorReductionRmb": 57168.44256249955,
+        "actualCashMateriality": 0.012021350770117803,
+        "materialitySensitivity": {
+          "atLeast0_5PercentActualCash": true,
+          "atLeast1PercentActualCash": true,
+          "atLeast2PercentActualCash": false
+        },
+        "bootstrap95": {
+          "lower": -0.41114037000755654,
+          "median": 0.018658230988888663,
+          "upper": 0.15488079970358004
+        },
+        "improvingTimeBlockShare": 0.8,
+        "improvingYearBlockShare": 0.6666666666666666,
+        "independentEvidence": false,
+        "historicalMultiOrigin": true
+      },
+      {
+        "comparisonSetId": "SC-PRIMARY_ROLLING-CORE90-WORK_TOTAL-H6",
+        "populationId": "CORE90",
+        "horizonMonths": 6,
+        "caseCount": 158,
+        "workCount": 90,
+        "modelMetrics": [
+          {
+            "modelId": "M2-WORK-CRMR01",
+            "actualTotalRmb": 9187536.16490001,
+            "absoluteErrorTotalRmb": 2715030.0220000017,
+            "wape": 0.295512308552589,
+            "signedBias": 0.13148129710933673,
+            "mae": 17183.734316455706,
+            "medianAbsoluteError": 5975.143000000001,
+            "maximumWorkErrorShare": 0.2691571577767251,
+            "top5WorkErrorShare": 0.48682057232883136
+          },
+          {
+            "modelId": "M2-WORK-OA03",
+            "actualTotalRmb": 9187536.16490001,
+            "absoluteErrorTotalRmb": 2910421.6593720475,
+            "wape": 0.3167793418317088,
+            "signedBias": 0.018836765155117216,
+            "mae": 18420.390249190175,
+            "medianAbsoluteError": 5706.600624990004,
+            "maximumWorkErrorShare": 0.22961004674221203,
+            "top5WorkErrorShare": 0.5325951252305791
+          }
+        ],
+        "pointWapeLeaderModelId": "M2-WORK-CRMR01",
+        "comparatorModelId": "M2-WORK-OA03",
+        "relativeFva": 0.06713516467376868,
+        "absoluteErrorReductionRmb": 195391.63737204578,
+        "actualCashMateriality": 0.02126703327911986,
+        "materialitySensitivity": {
+          "atLeast0_5PercentActualCash": true,
+          "atLeast1PercentActualCash": true,
+          "atLeast2PercentActualCash": true
+        },
+        "bootstrap95": {
+          "lower": -0.04809553652843919,
+          "median": 0.0219228489270952,
+          "upper": 0.172771490917337
+        },
+        "improvingTimeBlockShare": 0.6,
+        "improvingYearBlockShare": 0.6666666666666666,
+        "independentEvidence": false,
+        "historicalMultiOrigin": true
+      },
+      {
+        "comparisonSetId": "SC-PRIMARY_ROLLING-CORE90-WORK_TOTAL-H12",
+        "populationId": "CORE90",
+        "horizonMonths": 12,
+        "caseCount": 115,
+        "workCount": 72,
+        "modelMetrics": [
+          {
+            "modelId": "M2-WORK-OA03",
+            "actualTotalRmb": 11478571.946299996,
+            "absoluteErrorTotalRmb": 3475482.8400253598,
+            "wape": 0.3027800719710301,
+            "signedBias": 0.03040792140458533,
+            "mae": 30221.589913263997,
+            "medianAbsoluteError": 11751.361496036801,
+            "maximumWorkErrorShare": 0.21416274162657886,
+            "top5WorkErrorShare": 0.4916651796845451
+          },
+          {
+            "modelId": "M2-WORK-CRMR01",
+            "actualTotalRmb": 11478571.946299996,
+            "absoluteErrorTotalRmb": 4679344.1633,
+            "wape": 0.4076590873142839,
+            "signedBias": 0.30716936913363446,
+            "mae": 40689.94924608696,
+            "medianAbsoluteError": 9884.204000000003,
+            "maximumWorkErrorShare": 0.2911186436090883,
+            "top5WorkErrorShare": 0.6574951863190729
+          }
+        ],
+        "pointWapeLeaderModelId": "M2-WORK-OA03",
+        "comparatorModelId": "M2-WORK-CRMR01",
+        "relativeFva": 0.2572713784800229,
+        "absoluteErrorReductionRmb": 1203861.3232746404,
+        "actualCashMateriality": 0.10487901534325383,
+        "materialitySensitivity": {
+          "atLeast0_5PercentActualCash": true,
+          "atLeast1PercentActualCash": true,
+          "atLeast2PercentActualCash": true
+        },
+        "bootstrap95": {
+          "lower": -0.08049174815904585,
+          "median": 0.09897658976730564,
+          "upper": 1.0212601995530979
+        },
+        "improvingTimeBlockShare": 0.25,
+        "improvingYearBlockShare": 0.3333333333333333,
+        "independentEvidence": false,
+        "historicalMultiOrigin": true
+      },
+      {
+        "comparisonSetId": "SC-PRIMARY_ROLLING-CORE90-WORK_TOTAL-H36",
+        "populationId": "CORE90",
+        "horizonMonths": 36,
+        "caseCount": 927,
+        "workCount": 126,
+        "modelMetrics": [
+          {
+            "modelId": "M2-WORK-LG01",
+            "actualTotalRmb": 299498500.1363999,
+            "absoluteErrorTotalRmb": 99554016.13203734,
+            "wape": 0.33240238627805374,
+            "signedBias": 0.07749420214692194,
+            "mae": 107393.76066023446,
+            "medianAbsoluteError": 40801.246594428594,
+            "maximumWorkErrorShare": 0.08202176187865551,
+            "top5WorkErrorShare": 0.3640140091578219
+          },
+          {
+            "modelId": "M2-WORK-CRMR01",
+            "actualTotalRmb": 299498500.1363999,
+            "absoluteErrorTotalRmb": 3162894094.5047092,
+            "wape": 10.560634170335543,
+            "signedBias": 10.465316948443327,
+            "mae": 3411967.7394872806,
+            "medianAbsoluteError": 92650.66009635612,
+            "maximumWorkErrorShare": 0.7708241156990996,
+            "top5WorkErrorShare": 0.8651530182223471
+          }
+        ],
+        "pointWapeLeaderModelId": "M2-WORK-LG01",
+        "comparatorModelId": "M2-WORK-CRMR01",
+        "relativeFva": 0.9685243915359023,
+        "absoluteErrorReductionRmb": 3063340078.372672,
+        "actualCashMateriality": 10.22823178405749,
+        "materialitySensitivity": {
+          "atLeast0_5PercentActualCash": true,
+          "atLeast1PercentActualCash": true,
+          "atLeast2PercentActualCash": true
+        },
+        "bootstrap95": {
+          "lower": 2.5437381656062157,
+          "median": 9.913137580120166,
+          "upper": 13.981726265937612
+        },
+        "improvingTimeBlockShare": 1,
+        "improvingYearBlockShare": 1,
+        "independentEvidence": false,
+        "historicalMultiOrigin": true
+      }
+    ],
+    "h50ProtectionMeasurements": [
+      {
+        "horizonMonths": 3,
+        "populationId": "CORE80",
+        "candidateModelId": "M2-WORK-OA03",
+        "baselineModelId": "M2-WORK-CRMR01",
+        "comparableGroup": "OA03_CURRENT_SCOPE_PRIMARY_ROLLING_PRIVATE_SAME_CASE",
+        "bands": {
+          "H50": {
+            "caseCount": 17,
+            "workCount": 11,
+            "actualAbsoluteTotalRmb": 4847133.7206,
+            "candidateAbsoluteErrorRmb": 1486821.3424,
+            "baselineAbsoluteErrorRmb": 1329139.5863999997,
+            "candidateMinusBaselineAbsoluteErrorRmb": 157681.75600000028,
+            "candidateWape": 0.30674238180826474,
+            "baselineWape": 0.274211454235571
+          },
+          "M30": {
+            "caseCount": 67,
+            "workCount": 36,
+            "actualAbsoluteTotalRmb": 2650429.1150000007,
+            "candidateAbsoluteErrorRmb": 905001.6176,
+            "baselineAbsoluteErrorRmb": 1645600.3857999996,
+            "candidateMinusBaselineAbsoluteErrorRmb": -740598.7681999996,
+            "candidateWape": 0.3414547525448534,
+            "baselineWape": 0.6208807383252727
+          },
+          "L20": {
+            "caseCount": 110,
+            "workCount": 64,
+            "actualAbsoluteTotalRmb": 1958471.7189000002,
+            "candidateAbsoluteErrorRmb": 841177.3815000001,
+            "baselineAbsoluteErrorRmb": 777252.9280999999,
+            "candidateMinusBaselineAbsoluteErrorRmb": 63924.45340000023,
+            "candidateWape": 0.42950703519602407,
+            "baselineWape": 0.3968670676217646
+          }
+        }
+      },
+      {
+        "horizonMonths": 6,
+        "populationId": "CORE80",
+        "candidateModelId": "M2-WORK-OA03",
+        "baselineModelId": "M2-WORK-CRMR01",
+        "comparableGroup": "OA03_CURRENT_SCOPE_PRIMARY_ROLLING_PRIVATE_SAME_CASE",
+        "bands": {
+          "H50": {
+            "caseCount": 17,
+            "workCount": 11,
+            "actualAbsoluteTotalRmb": 9471182.147699999,
+            "candidateAbsoluteErrorRmb": 3019343.5441,
+            "baselineAbsoluteErrorRmb": 1866824.211199999,
+            "candidateMinusBaselineAbsoluteErrorRmb": 1152519.332900001,
+            "candidateWape": 0.3187926804715949,
+            "baselineWape": 0.1971057236665375
+          },
+          "M30": {
+            "caseCount": 67,
+            "workCount": 36,
+            "actualAbsoluteTotalRmb": 5057375.192899999,
+            "candidateAbsoluteErrorRmb": 1725144.9068999998,
+            "baselineAbsoluteErrorRmb": 1844276.7687000001,
+            "candidateMinusBaselineAbsoluteErrorRmb": -119131.8618000003,
+            "candidateWape": 0.3411146772978035,
+            "baselineWape": 0.36467074289626816
+          },
+          "L20": {
+            "caseCount": 110,
+            "workCount": 64,
+            "actualAbsoluteTotalRmb": 3806744.8326999997,
+            "candidateAbsoluteErrorRmb": 1707979.5509,
+            "baselineAbsoluteErrorRmb": 1864588.4503,
+            "candidateMinusBaselineAbsoluteErrorRmb": -156608.8994,
+            "candidateWape": 0.44867192994613875,
+            "baselineWape": 0.48981177679238047
+          }
+        }
+      },
+      {
+        "horizonMonths": 12,
+        "populationId": "CORE80",
+        "candidateModelId": "M2-WORK-OA03",
+        "baselineModelId": "M2-WORK-CRMR01",
+        "comparableGroup": "OA03_CURRENT_SCOPE_PRIMARY_ROLLING_PRIVATE_SAME_CASE",
+        "bands": {
+          "H50": {
+            "caseCount": 17,
+            "workCount": 11,
+            "actualAbsoluteTotalRmb": 18224154.994799998,
+            "candidateAbsoluteErrorRmb": 6375359.308199999,
+            "baselineAbsoluteErrorRmb": 7992015.236899999,
+            "candidateMinusBaselineAbsoluteErrorRmb": -1616655.9287,
+            "candidateWape": 0.34983017374573017,
+            "baselineWape": 0.43853968752901884
+          },
+          "M30": {
+            "caseCount": 67,
+            "workCount": 36,
+            "actualAbsoluteTotalRmb": 9430225.3954,
+            "candidateAbsoluteErrorRmb": 3906376.0296,
+            "baselineAbsoluteErrorRmb": 7537468.773699998,
+            "candidateMinusBaselineAbsoluteErrorRmb": -3631092.744099998,
+            "candidateWape": 0.4142399429292012,
+            "baselineWape": 0.7992882945700029
+          },
+          "L20": {
+            "caseCount": 110,
+            "workCount": 64,
+            "actualAbsoluteTotalRmb": 7300722.093800001,
+            "candidateAbsoluteErrorRmb": 3510524.5009999997,
+            "baselineAbsoluteErrorRmb": 4104985.9143999997,
+            "candidateMinusBaselineAbsoluteErrorRmb": -594461.4134,
+            "candidateWape": 0.4808462034161314,
+            "baselineWape": 0.5622712194299356
+          }
+        }
+      },
+      {
+        "horizonMonths": 36,
+        "populationId": "CORE80",
+        "candidateModelId": "M2-WORK-LG01",
+        "baselineModelId": "M2-WORK-CRMR01",
+        "status": "NOT_EXACTLY_MEASURABLE_FROM_RETAINED_PRIVATE_ROWS",
+        "reason": "MISSING_EXACT_H36_SAME_CASE_PRIVATE_ROW_CACHE_AND_REPLAY_LIMIT_EXHAUSTED",
+        "activationAllowed": false
+      }
+    ],
+    "exactH36H50GuardMissingBlocksThresholdActivation": true,
+    "currentHpsr01": {
+      "originalContractDecision": "M2_HPSR01_RETROSPECTIVE_DEVELOPMENT_UNSUPPORTED_STOP_BEFORE_K2",
+      "scientificInterpretation": "M2_HPSR01_CONTRACT_UNSUPPORTED_SCIENTIFICALLY_INCONCLUSIVE",
+      "independentEvidence": false,
+      "originCount": 1,
+      "workCount": 57,
+      "pairedFva": 0.00847712522619727,
+      "bootstrapFva95": {
+        "lower": -0.1834407271166846,
+        "median": 0.01064115354312988,
+        "upper": 0.2003025719176909,
+        "crossesZero": true
+      },
+      "h50AbsoluteErrorNotWorse": true,
+      "thresholdSettingWeight": "CONTEXT_ONLY_ONE_NONINDEPENDENT_ORIGIN_CANNOT_SET_THRESHOLD"
+    }
+  },
+  "thresholdSensitivity": {
+    "initialTechnicalSensitivityOnlyNotActivated": {
+      "3": {
+        "wapeCap": 0.3,
+        "absoluteBiasCap": 0.1
+      },
+      "6": {
+        "wapeCap": 0.32,
+        "absoluteBiasCap": 0.12
+      },
+      "12": {
+        "wapeCap": 0.32,
+        "absoluteBiasCap": 0.1
+      },
+      "36": {
+        "wapeCap": 0.35,
+        "absoluteBiasCap": 0.12
+      }
+    },
+    "wapeCaps": [
+      0.25,
+      0.3,
+      0.32,
+      0.35,
+      0.4
+    ],
+    "absoluteBiasCaps": [
+      0.05,
+      0.1,
+      0.12,
+      0.15
+    ],
+    "candidateSuperiorityMaterialitySensitivity": [
+      0.005,
+      0.01,
+      0.02
+    ],
+    "recommendedCandidateSuperiorityFloor": "AT_LEAST_0_01_OF_ACTUAL_CASH_OR_USER_CONFIRMED_RMB_MINIMUM",
+    "recommendedBusinessUsabilityRangesAwaitingUserDecision": {
+      "3": {
+        "wape": [
+          0.3,
+          0.32
+        ],
+        "absoluteBias": [
+          0.1,
+          0.12
+        ],
+        "rationale": "LG01_STRICT_CORE80_AND_CORE90_PASS_0_30_AND_0_10_OVERALL_WHILE_OA03_CURRENT_SCOPE_DOES_NOT"
+      },
+      "6": {
+        "wape": [
+          0.3,
+          0.32
+        ],
+        "absoluteBias": [
+          0.1,
+          0.12
+        ],
+        "rationale": "LG01_STRICT_BOTH_POPULATIONS_BELOW_0_29_WAPE_WITH_NEAR_ZERO_AGGREGATE_BIAS"
+      },
+      "12": {
+        "wape": [
+          0.32,
+          0.35
+        ],
+        "absoluteBias": [
+          0.1,
+          0.12
+        ],
+        "rationale": "LG01_STRICT_CORE80_PASSES_0_32_WHILE_CORE90_WAPE_IS_0_3281_AND_CASH_IS_HIGHLY_VOLATILE"
+      },
+      "36": {
+        "wape": [
+          0.35,
+          0.4
+        ],
+        "absoluteBias": [
+          0.1,
+          0.12
+        ],
+        "rationale": "LG01_MULTI_ORIGIN_CORE80_AND_CORE90_PASS_0_35_AND_0_12_OVERALL_WITH_NON_PROSPECTIVE_CAVEAT"
+      }
+    },
+    "proposedStabilityRequirementsAwaitingUserDecision": {
+      "h3H6H12": {
+        "minimumIndependentOriginCount": 2,
+        "minimumPassingOriginShare": 0.6666666666666666,
+        "oneIndependentOriginMayRejectObviousFailure": true,
+        "oneIndependentOriginMayConfirmStableSuccess": false
+      },
+      "h36": {
+        "currentHistoricalOriginCount": 13,
+        "currentHistoricalSpanMonths": 13,
+        "prospectiveValidationEstablished": false,
+        "currentGateMayUseHistoricalMultiOriginEvidence": true
+      }
+    },
+    "h50AndConcentrationGuards": {
+      "h50AbsoluteErrorMayExceedBaseline": false,
+      "aggregateAbsoluteBiasMustRemainWithinHorizonCap": true,
+      "maximumWorkErrorShareMayWorsen": false,
+      "top10WorkErrorShareMayWorsen": false,
+      "l20GainMayMaskH50Loss": false,
+      "exactH36GuardCurrentlyMeasurable": false
+    },
+    "businessUsabilityAndCandidateSuperiorityAreSeparate": true,
+    "noThresholdActivated": true,
+    "userApprovalRequired": true
+  },
+  "lifecycleRule": {
+    "hpsr02FirstLegalIndependentEvaluation": {
+      "ifNotSupported": "END_CASH_ONLY_ADJACENT_MODEL_WORK_NO_HPSR03",
+      "ifInconclusive": "END_CASH_ONLY_ADJACENT_MODEL_WORK_NO_HPSR03",
+      "ifSupported": "ALLOW_AT_MOST_ONE_SECOND_INDEPENDENT_ORIGIN_CONFIRMATION_WITH_SEPARATE_AUTHORIZATION",
+      "productionAutomaticallyAuthorized": false
+    }
+  },
+  "evidenceLimitations": [
+    "ALL_MODEL_EVIDENCE_IS_DEVELOPMENT_OR_RETROSPECTIVE_AND_NOT_INDEPENDENT",
+    "H36_HAS_MULTI_ORIGIN_HISTORICAL_SUPPORT_BUT_NO_PROSPECTIVE_VALIDATION",
+    "EXACT_H36_SAME_CASE_H50_PRIVATE_ROWS_ARE_NOT_RETAINED",
+    "ONE_COMPLETE_MONTH_TRUNCATED_REPLAY_DID_NOT_BYTE_MATCH_THE_OLD_PUBLIC_COMPARISON_SETS_AND_WAS_NOT_REPEATED",
+    "EARLY_THIN_ORIGIN_DETAIL_IS_PRIVACY_SUPPRESSED",
+    "THRESHOLD_SENSITIVITY_IS_NOT_A_MODEL_RANKING_OR_PRODUCTION_GATE"
+  ],
+  "publicPrivacy": {
+    "aggregateOnly": true,
+    "containsWorkIdentity": false,
+    "containsChannelIdentity": false,
+    "containsPrivatePath": false,
+    "containsPrivateDigest": false,
+    "containsMachineAbsolutePath": false
+  }
+}

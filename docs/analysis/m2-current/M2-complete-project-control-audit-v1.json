@@ -1,0 +1,2247 @@
+{
+  "schema": "m2.complete_project_control_audit.v1",
+  "asOf": "2026-07-31T15:14:43+08:00",
+  "repositoryState": {
+    "auditEvidenceBaseHead": "51f62a1f295bcf108f72b5699901bb3f2c4f56e2",
+    "branch": "codex/m2-head-protected-segmented-router-v0-1",
+    "upstream": "origin/codex/m2-head-protected-segmented-router-v0-1",
+    "originMain": "628bc959e18457509e3120af11e0cb4708ffdb64",
+    "aheadOfUpstream": 0,
+    "behindUpstream": 0,
+    "aheadOfOriginMain": 8,
+    "behindOriginMain": 0,
+    "worktreeDirtyAtAuditStart": false,
+    "worktreeCount": 1,
+    "pullRequest": {
+      "number": 35,
+      "url": "https://github.com/KAtOReNA7/system/pull/35",
+      "state": "OPEN",
+      "draft": true,
+      "merged": false,
+      "mergeable": true,
+      "base": "main",
+      "head": "codex/m2-head-protected-segmented-router-v0-1"
+    },
+    "auditStartExactHeadCi": {
+      "runId": 30609647798,
+      "url": "https://github.com/KAtOReNA7/system/actions/runs/30609647798",
+      "workflow": "CI",
+      "linux": "SUCCESS",
+      "windows": "SUCCESS",
+      "conclusion": "SUCCESS"
+    },
+    "publicationHeadBinding": {
+      "method": "Resolve from the ordinary audit commit on PR #35 and its exact-head CI; the artifact does not embed a self-referential commit hash.",
+      "requiredConclusion": "Linux and Windows exact-head jobs both SUCCESS",
+      "prMustRemain": "Draft / Open / Unmerged"
+    },
+    "latestStateIndex": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.53.md",
+    "registry": "config/m2-model-registry.v1.json"
+  },
+  "auditCompleteness": {
+    "status": "M2_COMPLETE_PROJECT_CONTROL_AUDIT_READY_FOR_EXTERNAL_REVIEW",
+    "overall": "COMPLETE_WITH_EXPLICIT_NON_PRIVATE_EVIDENCE_LIMITS",
+    "reviewed": [
+      "Git-tracked public code, config, tests, reports and aggregate JSON",
+      "Model Registry, current state index, current root and domain AGENTS",
+      "Git history, 35 pull requests and GitHub Actions metadata",
+      "Business scope, model lineage, evaluation contracts v1/v2/v2.1/v2.2",
+      "Engineering convergence, command lifecycle and public/private boundary",
+      "All 25 requested instruction-quality hypotheses"
+    ],
+    "notPerformed": [
+      "No model run, fit, training, tuning, selection or prediction generation",
+      "No private actual row, work identity, amount or prediction read",
+      "No later-origin or final holdout opened",
+      "No production, automation, release or model-role change",
+      "No historical result rewritten",
+      "No AGENTS modification"
+    ],
+    "evidenceGapDoesNotBlockAudit": true
+  },
+  "overallControlStatus": {
+    "status": "PARTIALLY_OUT_OF_CONTROL_RECOVERABLE",
+    "scoreTotal": 44,
+    "scoreMaximum": 75,
+    "scoreAverage": 2.9333,
+    "why": "Engineering controls and auditability are strong, but scope convergence, governance complexity, independent scientific closure and value delivery are materially weak.",
+    "outOfControlParts": [
+      "Adjacent-model development continued without an independent later-origin closeout",
+      "Current M2 accumulated 1,475 tracked files, 60 state-index artifacts and 123 non-model identifiers",
+      "No active candidate, automation approval, independent later-origin result or production model exists"
+    ],
+    "controlledParts": [
+      "Machine authority, current model roles and comparability groups are explicit",
+      "Private data boundary, portable toolchain and Linux/Windows public gates are strong",
+      "Raw failures, fallbacks, actual definitions and historical evidence are not silently rewritten"
+    ],
+    "pauseAlgorithmDevelopment": true,
+    "governanceBeforeFurtherDevelopment": true,
+    "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+  },
+  "dimensionScores": [
+    {
+      "dimension": "目标清晰度",
+      "score": 4,
+      "reason": "Current governance clearly defines mature legacy works, observed channels and future sales-share cash; historical portfolio drift remains.",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "dimension": "范围控制",
+      "score": 2,
+      "reason": "Current scope is corrected, but portfolio, future-new-work, commercial-state and repeated channel routes consumed material development.",
+      "evidenceGrade": "VERIFIED_FROM_GIT_HISTORY"
+    },
+    {
+      "dimension": "业务语义一致性",
+      "score": 3,
+      "reason": "Identity, cash type, channel and Core semantics are now coherent; several real-world semantics remain user-confirmed rather than independently verifiable.",
+      "evidenceGrade": "DOCUMENTED_BUT_NOT_INDEPENDENTLY_VERIFIED"
+    },
+    {
+      "dimension": "模型身份可理解性",
+      "score": 3,
+      "reason": "Stable IDs and Registry are valuable, but 35 model objects and 123 non-model identifiers impose high reader cost.",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "dimension": "评价可比性",
+      "score": 4,
+      "reason": "v2.2 explicitly binds population, actual, same-case and comparability group; missing raw rows and historical denominator differences remain.",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "dimension": "数据边界合理性",
+      "score": 4,
+      "reason": "Source authority, derived cache and provenance are separated, as are sales-share and buyout cash; independent new data are not yet available.",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "dimension": "执行可完成性",
+      "score": 2,
+      "reason": "Several experiments were interrupted by portability, infrastructure or eligibility gates before a candidate outcome.",
+      "evidenceGrade": "VERIFIED_FROM_GIT_HISTORY"
+    },
+    {
+      "dimension": "跨电脑可迁移性",
+      "score": 4,
+      "reason": "Portable Python resolution and public clone gates are established; earlier tasks were repeatedly blocked by ignored cache assumptions.",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "dimension": "报告与治理复杂度",
+      "score": 1,
+      "reason": "Artifact, state-code and command volume materially impairs comprehension.",
+      "evidenceGrade": "VERIFIED_FROM_GIT_HISTORY"
+    },
+    {
+      "dimension": "工程质量",
+      "score": 4,
+      "reason": "Canonical runtime, deterministic validators, conservation and isolation are strong; historical entrypoint volume remains high.",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "dimension": "测试与 CI 价值",
+      "score": 4,
+      "reason": "Linux and Windows run common public gates and have caught real regressions; CI success is not scientific validation.",
+      "evidenceGrade": "VERIFIED_FROM_GIT_HISTORY"
+    },
+    {
+      "dimension": "科学证据质量",
+      "score": 2,
+      "reason": "Same-case, bootstrap and time-block evidence improved, but most evidence is development-window reuse, post-hoc or single-origin.",
+      "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+    },
+    {
+      "dimension": "结果可复现性",
+      "score": 4,
+      "reason": "Frozen configs, Registry and aggregate verifiers are strong; private row-level replay was intentionally not performed.",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "dimension": "投入产出比",
+      "score": 1,
+      "reason": "Engineering assets grew substantially while active candidate, independent outcome, automation and production counts remain zero.",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "dimension": "距离业务可用程度",
+      "score": 2,
+      "reason": "Fallback and research baseline roles exist, but there is no approved candidate, independent proof, business acceptance or production contract.",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    }
+  ],
+  "verifiedBusinessScope": [
+    {
+      "item": "Mature legacy works with at least three complete bill months at origin",
+      "userDefinition": "In scope",
+      "repositoryImplementation": "Dynamic origin-mature eligibility",
+      "alignment": "ALIGNED",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "item": "standardWorkId as prediction object",
+      "userDefinition": "Work is the canonical object; ISBN, edition, audio product and platform listing are not separate objects",
+      "repositoryImplementation": "Canonical work identity and work-grain predictions",
+      "alignment": "ALIGNED",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "item": "Channels already observed at forecast origin",
+      "userDefinition": "Predict only mature existing channels",
+      "repositoryImplementation": "Observed-channel scope and future-first exclusion",
+      "alignment": "ALIGNED",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "item": "Future sales-share cash",
+      "userDefinition": "Sales-share only",
+      "repositoryImplementation": "Target authority excludes buyout and other non-sales-share cash",
+      "alignment": "ALIGNED",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "item": "3/6/12/36-month horizons",
+      "userDefinition": "All four are required",
+      "repositoryImplementation": "Evidence matrix covers all four, but strict 36-month and HPSR02 coverage are incomplete",
+      "alignment": "PARTIALLY_ALIGNED",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "item": "Core80/Core90 purpose",
+      "userDefinition": "Revenue-concentrated service/evaluation population, not company portfolio",
+      "repositoryImplementation": "Dynamic origin-visible selection; service population and training support separated",
+      "alignment": "ALIGNED",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "item": "Company future total revenue, budget and gap",
+      "userDefinition": "Excluded",
+      "repositoryImplementation": "Excluded from current roles; historical portfolio research remains",
+      "alignment": "PARTIALLY_ALIGNED",
+      "evidenceGrade": "VERIFIED_FROM_GIT_HISTORY"
+    },
+    {
+      "item": "Future new works and future-first channels",
+      "userDefinition": "Excluded from current actual and must not be predicted as zero",
+      "repositoryImplementation": "Current scope excludes both",
+      "alignment": "ALIGNED",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "item": "Pure buyout",
+      "userDefinition": "Outside M2",
+      "repositoryImplementation": "null abstain with buyout_outside_m2_forecast_scope",
+      "alignment": "ALIGNED",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "item": "Three-level category and work source",
+      "userDefinition": "Fixed at creation; diagnostic hypothesis only",
+      "repositoryImplementation": "Allowed for diagnostic/preregistered fallback; direct amount multiplier prohibited",
+      "alignment": "ALIGNED",
+      "evidenceGrade": "DOCUMENTED_BUT_NOT_INDEPENDENTLY_VERIFIED"
+    },
+    {
+      "item": "Historical effectiveAt/availableAt for fixed fields",
+      "userDefinition": "Do not fabricate",
+      "repositoryImplementation": "Current governance exempts fixed business authority fields; older commercial-state work over-required history",
+      "alignment": "PARTIALLY_ALIGNED",
+      "evidenceGrade": "VERIFIED_FROM_GIT_HISTORY"
+    },
+    {
+      "item": "billMonth",
+      "userDefinition": "Financial posting month; a 1–2 month global shift does not change curve interpretation",
+      "repositoryImplementation": "Posting-time actual plus separate restatement views",
+      "alignment": "ALIGNED",
+      "evidenceGrade": "DOCUMENTED_BUT_NOT_INDEPENDENTLY_VERIFIED"
+    },
+    {
+      "item": "First bill as first online appearance",
+      "userDefinition": "A channel enters only after first bill",
+      "repositoryImplementation": "Channel entry is bill-observed",
+      "alignment": "ALIGNED",
+      "evidenceGrade": "DOCUMENTED_BUT_NOT_INDEPENDENTLY_VERIFIED"
+    },
+    {
+      "item": "Platform consumption, exposure, eCPM and orders",
+      "userDefinition": "Not required for current black-box cash-only legacy model",
+      "repositoryImplementation": "Not a current source-authority prerequisite",
+      "alignment": "ALIGNED",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "item": "Promotion, recommendation slots and free campaigns",
+      "userDefinition": "Not core inputs",
+      "repositoryImplementation": "Not required by current configs",
+      "alignment": "ALIGNED",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "item": "Manual rule baseline formula",
+      "userDefinition": "Monthly rolling latest-month, half-year, annual anchor/trend and three-year coefficient",
+      "repositoryImplementation": "Formula is faithfully implemented; unbounded 36-month compounding fails",
+      "alignment": "ALIGNED",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    }
+  ],
+  "scopeDriftFindings": [
+    {
+      "direction": "公司未来总收入",
+      "classification": "OUT_OF_SCOPE_DRIFT",
+      "resourceUse": "Layered and portfolio work consumed development",
+      "value": "Potential company-planning value, but not current work-level M2",
+      "evidenceGrade": "VERIFIED_FROM_GIT_HISTORY"
+    },
+    {
+      "direction": "未来新增作品组合",
+      "classification": "OUT_OF_SCOPE_DRIFT",
+      "resourceUse": "Future-new-work artifacts exist",
+      "value": "Future phase only",
+      "evidenceGrade": "VERIFIED_FROM_GIT_HISTORY"
+    },
+    {
+      "direction": "portfolio ETS",
+      "classification": "SUPPORTING_DIAGNOSTIC",
+      "resourceUse": "Executed and retained",
+      "value": "Useful portfolio reference, never comparable to work models",
+      "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+    },
+    {
+      "direction": "新作品",
+      "classification": "FUTURE_PHASE",
+      "resourceUse": "Documented but excluded from current execution",
+      "value": "Requires a separate target and authorization",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "direction": "future-first channel",
+      "classification": "FUTURE_PHASE",
+      "resourceUse": "Scope and allocation audits addressed it",
+      "value": "Only after first observed bill in a later origin",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "direction": "commercial-state history",
+      "classification": "NECESSARY_BUT_OVERBUILT",
+      "resourceUse": "Historical audit and proposed state work",
+      "value": "Time-varying states can help future explicit models; fixed category/source do not need fabricated history",
+      "evidenceGrade": "VERIFIED_FROM_GIT_HISTORY"
+    },
+    {
+      "direction": "channel generative",
+      "classification": "VALID_FAILED_EXPERIMENT",
+      "resourceUse": "GEN02 blocked; PSC01 executed",
+      "value": "Mechanism contract and valid negative amount result remain useful",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "direction": "platform taxonomy",
+      "classification": "SUPPORTING_DIAGNOSTIC",
+      "resourceUse": "Used in channel/category analysis",
+      "value": "Diagnostic strata only",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "direction": "三级分类倍率",
+      "classification": "OUT_OF_SCOPE_DRIFT",
+      "resourceUse": "Multiplier hypotheses were explored",
+      "value": "Direct amount multiplier is prohibited without evidence",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "direction": "作品总额",
+      "classification": "CORE_M2",
+      "resourceUse": "Primary model capability",
+      "value": "Core point-forecast target",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "direction": "已有渠道份额分配",
+      "classification": "CORE_M2",
+      "resourceUse": "Full-horizon allocation analysis",
+      "value": "Conserving decomposition with mixed evidence",
+      "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+    },
+    {
+      "direction": "Core80/Core90",
+      "classification": "CORE_M2",
+      "resourceUse": "Scope correction and tail-interference test",
+      "value": "Service/evaluation population, not company portfolio",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "direction": "occurrence",
+      "classification": "SUPPORTING_DIAGNOSTIC",
+      "resourceUse": "OA03, TSB, lifecycle and PSC",
+      "value": "Explains sparsity but does not substitute for cash accuracy",
+      "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+    },
+    {
+      "direction": "conditional amount",
+      "classification": "SUPPORTING_DIAGNOSTIC",
+      "resourceUse": "PSC and related mechanisms",
+      "value": "Useful only when stored and validated; no current accepted model",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "direction": "ranking",
+      "classification": "SUPPORTING_DIAGNOSTIC",
+      "resourceUse": "Evaluation v2 and channel experts",
+      "value": "Can support prioritization but cannot replace point cash",
+      "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+    },
+    {
+      "direction": "interval",
+      "classification": "SUPPORTING_DIAGNOSTIC",
+      "resourceUse": "LG01 native quantile evidence",
+      "value": "Risk communication; not independently validated",
+      "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+    },
+    {
+      "direction": "production/automation",
+      "classification": "FUTURE_PHASE",
+      "resourceUse": "Governance only",
+      "value": "Requires separate business and release authorization",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    }
+  ],
+  "modelLineage": [
+    {
+      "stableModelId": "M2-WORK-B4",
+      "nameZh": "旧现金生命周期公式",
+      "entityType": "MODEL_BASELINE",
+      "inputOutput": "Historical work cash to work-origin-horizon amount",
+      "horizonPopulationActual": "Legacy sparse 3/6/12/18/24 and historical 36; legacy actual contract",
+      "executed": true,
+      "rawCandidate": true,
+      "mainComparator": "Historical registered baselines",
+      "score": "No single current-normalized score quoted because the historical denominator/contract differs",
+      "uncertainty": "Current bootstrap/time-block comparability unavailable",
+      "comparableWithCurrentCore": false,
+      "evidenceStatus": "development_evidence",
+      "currentRole": "comparator_only",
+      "reusableValue": "Historical regression baseline",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "stableModelId": "M2-WORK-SEG01",
+      "nameZh": "作品分群向下校准模型 v0.1",
+      "entityType": "MODEL_RAW_CANDIDATE",
+      "inputOutput": "Segment statistics to calibrated work amount",
+      "horizonPopulationActual": "Legacy frozen cases",
+      "executed": true,
+      "rawCandidate": true,
+      "mainComparator": "M2-WORK-B4",
+      "score": "Rejected; a unified current-contract WAPE is not recoverable without invalid cross-contract normalization",
+      "uncertainty": "No current comparable bootstrap",
+      "comparableWithCurrentCore": false,
+      "evidenceStatus": "development_evidence",
+      "currentRole": "rejected_development_candidate",
+      "reusableValue": "Historical segmentation evidence",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "stableModelId": "M2-WORK-HRC02",
+      "nameZh": "作品层级稳健校准模型 v0.2",
+      "entityType": "MODEL_RAW_CANDIDATE",
+      "inputOutput": "Hierarchical robust statistics to calibrated work amount",
+      "horizonPopulationActual": "Legacy frozen cases",
+      "executed": true,
+      "rawCandidate": true,
+      "mainComparator": "Legacy calibration family",
+      "score": "Rejected by historical development evidence",
+      "uncertainty": "No current comparable bootstrap",
+      "comparableWithCurrentCore": false,
+      "evidenceStatus": "development_evidence",
+      "currentRole": "rejected_development_candidate",
+      "reusableValue": "Historical hierarchy evidence",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "stableModelId": "M2-WORK-OA03",
+      "nameZh": "作品发生—金额校准模型 v0.3",
+      "entityType": "MODEL_FALLBACK",
+      "inputOutput": "Occurrence and amount calibration to work total and occurrence output",
+      "horizonPopulationActual": "Historical 3/6/12/18/24 and current-scope replication; sales-share posting/restated groups",
+      "executed": true,
+      "rawCandidate": true,
+      "mainComparator": "M2-WORK-LG01 and manual baselines on legal intersections",
+      "score": "Historical served Primary WAPE 0.4907589424; bias 0.0737810668; current-scope evidence mixed/not supported",
+      "uncertainty": "Development reuse; current replication cannot reproduce historical result because scope/actual/support changed",
+      "comparableWithCurrentCore": "Only within explicitly registered same-case groups",
+      "evidenceStatus": "current_scope_formula_reexecution_complete_no_new_performance_support",
+      "currentRole": "operational_work_fallback",
+      "reusableValue": "Compatibility fallback and occurrence output",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "stableModelId": "M2-WORK-GHG01",
+      "nameZh": "全局门槛广义线性模型",
+      "entityType": "MODEL_ARM",
+      "inputOutput": "Global features to hurdle occurrence and amount",
+      "horizonPopulationActual": "M2-EXP-R0-R5-01 multi-layer evaluation and global-candidate frozen outer origins",
+      "executed": true,
+      "rawCandidate": true,
+      "mainComparator": "OA03 family",
+      "score": "Rejected by nested gate; no current-scope headline score",
+      "uncertainty": "Historical development only",
+      "comparableWithCurrentCore": false,
+      "evidenceStatus": "development_evidence",
+      "currentRole": "failed_research_candidate",
+      "reusableValue": "Algorithm-family negative evidence",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "stableModelId": "M2-WORK-TWD01",
+      "nameZh": "全局 Tweedie 提升树桩模型",
+      "entityType": "MODEL_ARM",
+      "inputOutput": "Global features to Tweedie amount",
+      "horizonPopulationActual": "M2-EXP-R0-R5-01 multi-layer evaluation and global-candidate frozen outer origins",
+      "executed": true,
+      "rawCandidate": true,
+      "mainComparator": "OA03 family",
+      "score": "Rejected by nested gate",
+      "uncertainty": "Historical development only",
+      "comparableWithCurrentCore": false,
+      "evidenceStatus": "development_evidence",
+      "currentRole": "failed_research_candidate",
+      "reusableValue": "Algorithm-family negative evidence",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "stableModelId": "M2-WORK-HGB01",
+      "nameZh": "门槛梯度提升树桩模型",
+      "entityType": "MODEL_ARM",
+      "inputOutput": "Global features to hurdle boosted amount",
+      "horizonPopulationActual": "M2-EXP-R0-R5-01 multi-layer evaluation and global-candidate frozen outer origins",
+      "executed": true,
+      "rawCandidate": true,
+      "mainComparator": "OA03 family",
+      "score": "Rejected by nested gate",
+      "uncertainty": "Historical development only",
+      "comparableWithCurrentCore": false,
+      "evidenceStatus": "development_evidence",
+      "currentRole": "failed_research_candidate",
+      "reusableValue": "Algorithm-family negative evidence",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "stableModelId": "M2-WORK-GDE04",
+      "nameZh": "全局分布组合安全回退管线 v0.4",
+      "entityType": "SELECTED_PIPELINE",
+      "inputOutput": "Candidate arms plus safety gate to selected prediction",
+      "horizonPopulationActual": "Legacy frozen work cases",
+      "executed": true,
+      "rawCandidate": "Provided by component arms",
+      "mainComparator": "OA03 fallback",
+      "score": "Development failure returns OA03; selected fallback is not candidate evidence",
+      "uncertainty": "Raw arm evidence must be read separately",
+      "comparableWithCurrentCore": false,
+      "evidenceStatus": "development_evidence",
+      "currentRole": "rejected_pipeline_safe_fallback",
+      "reusableValue": "Raw-versus-fallback governance",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "stableModelId": "M2-PORT-ETS01",
+      "nameZh": "组合现金 ETS/Holt-Winters 模型",
+      "entityType": "PORTFOLIO_REFERENCE",
+      "inputOutput": "Portfolio monthly cash series to portfolio horizon amount",
+      "horizonPopulationActual": "Portfolio H3/H6/H12",
+      "executed": true,
+      "rawCandidate": true,
+      "mainComparator": "Seasonal naive",
+      "score": "Pooled WAPE 0.1279496; bias 0.1004825; relative WAPE improvement 22.24%, but H12 0.1094 worse than naive 0.0848",
+      "uncertainty": "Small non-independent development portfolio",
+      "comparableWithCurrentCore": false,
+      "evidenceStatus": "development_evidence",
+      "currentRole": "portfolio_reference",
+      "reusableValue": "Portfolio-only reference",
+      "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+    },
+    {
+      "stableModelId": "M2-BASE-CLASSIC01",
+      "nameZh": "经典时间序列比较基线族",
+      "entityType": "MODEL_FAMILY_BASELINE",
+      "inputOutput": "Seasonal-naive and classic time-series inputs to baseline predictions",
+      "horizonPopulationActual": "Varies by registered experiment",
+      "executed": true,
+      "rawCandidate": true,
+      "mainComparator": "Experiment-specific",
+      "score": "No single score because it is a family across grains and contracts",
+      "uncertainty": "Experiment-specific",
+      "comparableWithCurrentCore": "Only through the owning comparability group",
+      "evidenceStatus": "development_evidence",
+      "currentRole": "regression_baseline_family",
+      "reusableValue": "Regression baselines",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "stableModelId": "M2-WORK-HSC01",
+      "nameZh": "历史状态校准模型",
+      "entityType": "MODEL_POST_HOC",
+      "inputOutput": "Historical/current state diagnostics to post-hoc calibrated amount",
+      "horizonPopulationActual": "25 monthly origins; H3/H6/H12 mature labels",
+      "executed": true,
+      "rawCandidate": true,
+      "mainComparator": "Classic baselines",
+      "score": "Rejected post-hoc diagnostic; no independent headline score",
+      "uncertainty": "Post-hoc, not independent",
+      "comparableWithCurrentCore": false,
+      "evidenceStatus": "development_evidence",
+      "currentRole": "rejected_posthoc_diagnostic",
+      "reusableValue": "State-diagnostic evidence",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "stableModelId": "M2-WORK-MCR01",
+      "nameZh": "人工渠道规则模型",
+      "entityType": "MODEL_BASELINE",
+      "inputOutput": "Manual channel rules to 36-month work amount",
+      "horizonPopulationActual": "36-month safe-window comparator",
+      "executed": true,
+      "rawCandidate": true,
+      "mainComparator": "Historical channel baseline",
+      "score": "Rejected under its historical contract",
+      "uncertainty": "Not current Core comparable",
+      "comparableWithCurrentCore": false,
+      "evidenceStatus": "development_evidence",
+      "currentRole": "rejected_comparator",
+      "reusableValue": "Historical manual-channel comparison",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "stableModelId": "M2-WORK-CCR01",
+      "nameZh": "统一渠道曲线模型",
+      "entityType": "MODEL_RAW_CANDIDATE",
+      "inputOutput": "Canonical channel curve to work and channel amounts",
+      "horizonPopulationActual": "H3/H6/H12 dense and served H3/H6/H12/H18/H24",
+      "executed": true,
+      "rawCandidate": true,
+      "mainComparator": "OA03",
+      "score": "v2.2 restated WAPE 0.485389; not selected over OA03",
+      "uncertainty": "Development evidence",
+      "comparableWithCurrentCore": "Only within its historical same-case group",
+      "evidenceStatus": "development_evidence",
+      "currentRole": "rejected_development_candidate",
+      "reusableValue": "Canonical channel curve implementation",
+      "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+    },
+    {
+      "stableModelId": "M2-WORK-MAN01",
+      "nameZh": "人工锚定忠实公式",
+      "entityType": "MODEL_BASELINE",
+      "inputOutput": "Manual anchors to 36-month work amount",
+      "horizonPopulationActual": "Primary H36 human-anchored cases",
+      "executed": true,
+      "rawCandidate": true,
+      "mainComparator": "LG01",
+      "score": "WAPE 0.531410205; bias -0.405523399",
+      "uncertainty": "Development-window evidence",
+      "comparableWithCurrentCore": "Only on registered H36 intersections",
+      "evidenceStatus": "development_evidence",
+      "currentRole": "human_formula_comparator",
+      "reusableValue": "Human-faithful reference",
+      "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+    },
+    {
+      "stableModelId": "M2-WORK-CRMR01",
+      "nameZh": "核心收入人工规则基线 v0.1",
+      "entityType": "MODEL_BASELINE",
+      "inputOutput": "Rolling recent cash and trend rules to work-channel cumulative amounts",
+      "horizonPopulationActual": "Dynamic Core80 primary/Core90 sensitivity; H3/H6/H12/H36 sales-share",
+      "executed": true,
+      "rawCandidate": true,
+      "mainComparator": "OA03/LG01 on legal same-case intersections",
+      "score": "All-horizon WAPE Core80 67.8119 and Core90 61.84135; H36 WAPE 113.43/104.38; k=1 counterfactual H36 0.660/0.721",
+      "uncertainty": "Short horizons can be competitive; 36-month compounding is unstable",
+      "comparableWithCurrentCore": true,
+      "evidenceStatus": "first_valid_development_evaluation_failed_long_term_compounding",
+      "currentRole": "failed_development_candidate",
+      "reusableValue": "Faithful business baseline and long-horizon stress test",
+      "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+    },
+    {
+      "stableModelId": "M2-PORT-LRC01",
+      "nameZh": "分层收入组合模型 v0.1",
+      "entityType": "PORTFOLIO_MODEL",
+      "inputOutput": "Four revenue components to portfolio horizon amount",
+      "horizonPopulationActual": "Portfolio H3/H6/H12/H36 with annual components",
+      "executed": true,
+      "rawCandidate": true,
+      "mainComparator": "Portfolio ETS and component baselines",
+      "score": "WAPE H3 0.180339; H6 0.218944; H12 0.552720; H36 1.963796",
+      "uncertainty": "Protocol gaps include duplicate arm and incomplete annual-component scoring",
+      "comparableWithCurrentCore": false,
+      "evidenceStatus": "first_valid_development_evaluation_failed_with_protocol_gaps",
+      "currentRole": "failed_development_candidate",
+      "reusableValue": "Conservation and future portfolio evidence",
+      "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+    },
+    {
+      "stableModelId": "M2-WORK-LG01",
+      "nameZh": "人工锚定可学习全局模型",
+      "entityType": "MODEL_RESEARCH_BASELINE",
+      "inputOutput": "Origin-visible mature history and manual anchor to work amount and native quantiles",
+      "horizonPopulationActual": "Primary H36 plus Strict H3/H6/H12/H18/H24 sales-share",
+      "executed": true,
+      "rawCandidate": true,
+      "mainComparator": "MAN01, OA03 and registered challengers",
+      "score": "Primary WAPE 0.4402249502; bias -0.1237710583; Strict WAPE 0.4119187843; bias -0.0384740095",
+      "uncertainty": "Development-window reuse; interval coverage 0.8985/0.8009/0.5995 at nominal 90/80/60%",
+      "comparableWithCurrentCore": "Yes on explicit same-case groups",
+      "evidenceStatus": "development_evidence",
+      "currentRole": "research_work_baseline",
+      "reusableValue": "Best retained simple research baseline",
+      "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+    },
+    {
+      "stableModelId": "M2-WORK-HP01",
+      "nameZh": "人工锚定层级正金额专家模型",
+      "entityType": "MODEL_RAW_CANDIDATE",
+      "inputOutput": "Hierarchical positive-amount experts to work amount",
+      "horizonPopulationActual": "Primary H36 human-anchored cases",
+      "executed": true,
+      "rawCandidate": true,
+      "mainComparator": "LG01",
+      "score": "WAPE 0.455405, worse than LG01",
+      "uncertainty": "Development-window evidence",
+      "comparableWithCurrentCore": "H36 registered group only",
+      "evidenceStatus": "development_evidence",
+      "currentRole": "rejected_nested_layer",
+      "reusableValue": "Raw negative result",
+      "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+    },
+    {
+      "stableModelId": "M2-WORK-OR01",
+      "nameZh": "人工锚定发生与冲销模型",
+      "entityType": "MODEL_RAW_CANDIDATE",
+      "inputOutput": "Occurrence and reversal components to work amount",
+      "horizonPopulationActual": "Primary H36 human-anchored cases",
+      "executed": true,
+      "rawCandidate": true,
+      "mainComparator": "LG01",
+      "score": "WAPE 0.441261; did not pass material gate",
+      "uncertainty": "Development-window evidence",
+      "comparableWithCurrentCore": "H36 registered group only",
+      "evidenceStatus": "development_evidence",
+      "currentRole": "rejected_nested_layer",
+      "reusableValue": "Raw negative result",
+      "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+    },
+    {
+      "stableModelId": "M2-WORK-TSB01",
+      "nameZh": "TSB 间歇发生模型",
+      "entityType": "MODEL_RAW_CANDIDATE",
+      "inputOutput": "Intermittent occurrence dynamics to work amount",
+      "horizonPopulationActual": "Primary H36 and Strict rolling sales-share",
+      "executed": true,
+      "rawCandidate": true,
+      "mainComparator": "LG01",
+      "score": "Primary WAPE 0.543462, bias 0.220681; Strict WAPE 0.508022",
+      "uncertainty": "Occurrence signal did not translate to point-cash improvement",
+      "comparableWithCurrentCore": "Owning groups only",
+      "evidenceStatus": "development_evidence",
+      "currentRole": "failed_development_candidate",
+      "reusableValue": "Intermittency negative evidence",
+      "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+    },
+    {
+      "stableModelId": "M2-WORK-TSBB01",
+      "nameZh": "TSB 与全局模型混合候选",
+      "entityType": "MODEL_ARM_SELECTED_PIPELINE",
+      "inputOutput": "TSB and LG01 blend to work amount",
+      "horizonPopulationActual": "Primary H36 and Strict rolling sales-share",
+      "executed": true,
+      "rawCandidate": true,
+      "mainComparator": "LG01",
+      "score": "Primary WAPE 0.453482, bias 0.037774; Strict WAPE 0.444871; selected lambda=0 falls back to LG01",
+      "uncertainty": "Fallback cannot be interpreted as candidate success",
+      "comparableWithCurrentCore": "Owning groups only",
+      "evidenceStatus": "development_evidence",
+      "currentRole": "failed_development_candidate",
+      "reusableValue": "Fallback transparency evidence",
+      "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+    },
+    {
+      "stableModelId": "M2-WORK-LC01",
+      "nameZh": "生命周期五状态模型",
+      "entityType": "MODEL_RAW_AND_POST_HOC",
+      "inputOutput": "Five lifecycle states to work amount",
+      "horizonPopulationActual": "Primary H36 and Strict rolling sales-share",
+      "executed": true,
+      "rawCandidate": true,
+      "mainComparator": "LG01",
+      "score": "Raw WAPE 0.501393 Primary and 0.622760 Strict; selected post-hoc 0.440161/0.411899 gives only about 0.0145%/0.0048% gain",
+      "uncertainty": "One revival slice has 15 cases; post-hoc and trivial",
+      "comparableWithCurrentCore": "Owning groups only",
+      "evidenceStatus": "development_evidence",
+      "currentRole": "failed_development_candidate",
+      "reusableValue": "Lifecycle diagnostic",
+      "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+    },
+    {
+      "stableModelId": "M2-CHAN-SCL01",
+      "nameZh": "渠道倍率专家模型",
+      "entityType": "MODEL_ARM",
+      "inputOutput": "Channel scalar multipliers to decomposed work amount",
+      "horizonPopulationActual": "Primary H36 and Strict rolling sales-share",
+      "executed": true,
+      "rawCandidate": true,
+      "mainComparator": "LG01",
+      "score": "Channel scalar expert experiment arm A6 WAPE 0.537767 Primary and 0.658653 Strict; Spearman 0.8343/0.9056 but point forecast failed",
+      "uncertainty": "Implementation is a multiplier, not the intended channel-time generator",
+      "comparableWithCurrentCore": "Point scores only within owning group",
+      "evidenceStatus": "development_evidence",
+      "currentRole": "failed_channel_development_model",
+      "reusableValue": "Implementation-mismatch evidence",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "stableModelId": "M2-CHAN-GEN02",
+      "nameZh": "渠道时间生成模型 v0.2",
+      "entityType": "MODEL_FAMILY_BLOCKED_EXECUTION",
+      "inputOutput": "Independent monthly occurrence times conditional amount to channel-month prediction",
+      "horizonPopulationActual": "Independent monthly occurrence-times-conditional-amount core arm G1 started; later channel-generative arms G2–G6 not executed",
+      "executed": "Attempted but no outer candidate",
+      "rawCandidate": false,
+      "mainComparator": "LG01 frozen outer comparator",
+      "score": "No WAPE, bias, FVA or bootstrap; blocked at primary outer fold 0 inner eligibility",
+      "uncertainty": "Independent-work support 25–32 was below an unsupported frozen threshold of 50",
+      "comparableWithCurrentCore": false,
+      "evidenceStatus": "G1_preregistered_mechanism_parent_eligibility_block",
+      "currentRole": "blocked_model_family_no_candidate_outcome",
+      "reusableValue": "Mechanism contract; theory not disproven",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "stableModelId": "M2-CHAN-PSC01",
+      "nameZh": "出版行业适配的渠道月度发生—条件金额核心",
+      "entityType": "MODEL_REVISION_RAW_CANDIDATE",
+      "inputOutput": "Publishing-scale support tiers to channel-month occurrence and amount",
+      "horizonPopulationActual": "Development H3/H6/H12/H18/H24/H36 sales-share",
+      "executed": true,
+      "rawCandidate": true,
+      "mainComparator": "Frozen LG01",
+      "score": "3,318,819 prediction rows; Primary WAPE 0.92408663 and bias -0.88928240 versus LG01 0.44310049/-0.12165171; Strict 0.91533339/-0.85410647 versus 0.41281268/-0.03786001",
+      "uncertainty": "2,000-work bootstrap harm intervals Primary [-2.4894,-0.3071], Strict [-2.0623,-0.5515]",
+      "comparableWithCurrentCore": "Yes within PSC registered same-case groups",
+      "evidenceStatus": "first_valid_raw_candidate_evaluation_complete_gate_fail",
+      "currentRole": "failed_development_candidate",
+      "reusableValue": "Valid negative amount result; occurrence diagnostics",
+      "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+    },
+    {
+      "stableModelId": "M2-WORK-C1TE01",
+      "nameZh": "C1 透明组合模型",
+      "entityType": "ARCHIVE_MODEL",
+      "inputOutput": "Historical ensemble to work amount",
+      "horizonPopulationActual": "Historical frozen development",
+      "executed": true,
+      "rawCandidate": true,
+      "mainComparator": "Historical campaign",
+      "score": "Historical failure; not re-ranked under current contract",
+      "uncertainty": "Immutable archive only",
+      "comparableWithCurrentCore": false,
+      "evidenceStatus": "immutable_archive_evidence",
+      "currentRole": "archive_only_failed_model",
+      "reusableValue": "Audit history",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "stableModelId": "M2-WORK-C2R01",
+      "nameZh": "旧买断收入路由模型",
+      "entityType": "ARCHIVE_MODEL",
+      "inputOutput": "Historical buyout route to work amount",
+      "horizonPopulationActual": "Historical frozen development with a now-excluded target",
+      "executed": true,
+      "rawCandidate": true,
+      "mainComparator": "Historical campaign",
+      "score": "Historical failure; buyout is outside current M2",
+      "uncertainty": "Immutable archive only",
+      "comparableWithCurrentCore": false,
+      "evidenceStatus": "immutable_archive_evidence",
+      "currentRole": "archive_only_failed_model",
+      "reusableValue": "Target-scope audit history",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "stableModelId": "M2-WORK-C2R101",
+      "nameZh": "正式现金路由分治模型",
+      "entityType": "ARCHIVE_MODEL",
+      "inputOutput": "Route-specific historical cash to work amount",
+      "horizonPopulationActual": "Historical frozen 3/6/12/18/24",
+      "executed": true,
+      "rawCandidate": true,
+      "mainComparator": "Historical campaign",
+      "score": "Historical failure; no current re-score",
+      "uncertainty": "Immutable archive only",
+      "comparableWithCurrentCore": false,
+      "evidenceStatus": "immutable_archive_evidence",
+      "currentRole": "archive_only_failed_model",
+      "reusableValue": "Audit history",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "stableModelId": "M2-WORK-C2IM01",
+      "nameZh": "C2 活跃度与间歇模型组合",
+      "entityType": "ARCHIVE_MODEL",
+      "inputOutput": "Activity/intermittency mix to work amount",
+      "horizonPopulationActual": "Historical frozen development",
+      "executed": true,
+      "rawCandidate": true,
+      "mainComparator": "Historical campaign",
+      "score": "Historical failure; no current re-score",
+      "uncertainty": "Immutable archive only",
+      "comparableWithCurrentCore": false,
+      "evidenceStatus": "immutable_archive_evidence",
+      "currentRole": "archive_only_failed_model",
+      "reusableValue": "Audit history",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "stableModelId": "M2-WORK-C3IR01",
+      "nameZh": "C3 内部特征残差校正模型",
+      "entityType": "ARCHIVE_MODEL",
+      "inputOutput": "Internal features to residual correction",
+      "horizonPopulationActual": "Historical frozen development",
+      "executed": true,
+      "rawCandidate": true,
+      "mainComparator": "Historical campaign",
+      "score": "Historical failure; no current re-score",
+      "uncertainty": "Immutable archive only",
+      "comparableWithCurrentCore": false,
+      "evidenceStatus": "immutable_archive_evidence",
+      "currentRole": "archive_only_failed_model",
+      "reusableValue": "Audit history",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "stableModelId": "M2-WORK-HR01",
+      "nameZh": "按预测周期滚动模型路由器 v0.1",
+      "entityType": "ROUTER_SELECTED_PIPELINE",
+      "inputOutput": "Legally available frozen model results to horizon-specific selection",
+      "horizonPopulationActual": "Dynamic Core80/Core90 H3/H6/H12/H36",
+      "executed": true,
+      "rawCandidate": "Provided by component models",
+      "mainComparator": "OA03/LG01/manual rule",
+      "score": "No stable added FVA; H6 selection degrades",
+      "uncertainty": "Same-case evidence complete but rolling router not confirmed",
+      "comparableWithCurrentCore": true,
+      "evidenceStatus": "rolling_horizon_router_not_confirmed",
+      "currentRole": "failed_development_candidate",
+      "reusableValue": "Full-horizon capability matrix",
+      "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+    },
+    {
+      "stableModelId": "M2-WORK-CHAM01",
+      "nameZh": "核心老品分周期金额模型 v0.1",
+      "entityType": "MODEL_RAW_CANDIDATE",
+      "inputOutput": "Independent horizon fits to cumulative work amount",
+      "horizonPopulationActual": "Origin-mature Core80 H3/H6/H12; Core90 sensitivity",
+      "executed": true,
+      "rawCandidate": true,
+      "mainComparator": "LG01",
+      "score": "Strict Core80 H3 WAPE 0.251288 versus LG01 0.258167, FVA 2.66%, CI [-15.99%,21.64%]; H6 FVA -2.41%; H12 -24.09%",
+      "uncertainty": "Five Primary/Core90 cells are finite but astronomically extreme due unbounded signed-expm1 extrapolation",
+      "comparableWithCurrentCore": true,
+      "evidenceStatus": "first_valid_complete_B0_B3_evaluation_failed_all_3_6_12_month_gates",
+      "currentRole": "failed_development_candidate",
+      "reusableValue": "Valid negative result and numeric-stability disclosure",
+      "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+    },
+    {
+      "stableModelId": "M2-WORK-HCRC01",
+      "nameZh": "LG01 头部现金残差校准模型 v0.1",
+      "entityType": "MODEL_SELECTION_GATE_FAILURE",
+      "inputOutput": "LG01 residuals to eligible alpha correction",
+      "horizonPopulationActual": "Strict Core80 H3; Core90 sensitivity and Primary numeric diagnostic",
+      "executed": true,
+      "rawCandidate": false,
+      "mainComparator": "LG01",
+      "score": "All 16 outer selection cells had no eligible alpha; C2/C3 raw cases=0; selected output is universal LG01 fallback",
+      "uncertainty": "No candidate performance exists",
+      "comparableWithCurrentCore": "Fallback is comparable; non-existent raw candidate is not",
+      "evidenceStatus": "first_complete_development_evaluation_frozen_raw_candidates_absent_universal_fallback_fail",
+      "currentRole": "failed_development_candidate",
+      "reusableValue": "Selection-gate evidence",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "stableModelId": "M2-WORK-HPSR01",
+      "nameZh": "LG01 头部保护分段路由模型 v0.1",
+      "entityType": "ROUTER_RAW_CANDIDATE",
+      "inputOutput": "H50/M30/L20 cash bands to three-month work amount",
+      "horizonPopulationActual": "Retrospective origin-safe Core80 H3; one origin, 57 works",
+      "executed": true,
+      "rawCandidate": true,
+      "mainComparator": "LG01",
+      "score": "LG01 WAPE 0.143234 and bias -0.066974; router 0.142019/-0.087333; FVA 0.8477%; bootstrap [-18.3441%,20.0303%]",
+      "uncertainty": "Absolute bias worsened 2.0358pp and crossed a 2pp hard gate by 0.0358pp; one origin only",
+      "comparableWithCurrentCore": true,
+      "evidenceStatus": "original_contract_unsupported_preserved_scientific_interpretation_inconclusive",
+      "currentRole": "contract_unsupported_scientifically_inconclusive_interpretation_amended",
+      "reusableValue": "Single-origin band diagnostic",
+      "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+    },
+    {
+      "stableModelId": "M2-WORK-HPSR02",
+      "nameZh": "LG01 头部保护尾段修正模型 v0.2",
+      "entityType": "PREREGISTERED_MODEL_IMPLEMENTED_ONLY",
+      "inputOutput": "H50/M30 exact LG01 and L20 frozen bounded correction to H3 work amount",
+      "horizonPopulationActual": "First independent dynamic Strict Core80 H3",
+      "executed": false,
+      "rawCandidate": false,
+      "mainComparator": "LG01",
+      "score": "No actual, WAPE, bias, FVA, bootstrap or time-block result",
+      "uncertainty": "Post-hoc inspired but prospectively preregistered before independent outcome",
+      "comparableWithCurrentCore": "Will be comparable only if the preregistered independent evaluation is later authorized and completed",
+      "evidenceStatus": "post_hoc_inspired_prospectively_preregistered_canonical_synthetic_verified_no_independent_outcome",
+      "currentRole": "preregistered_independent_candidate_not_executed_not_active",
+      "reusableValue": "One frozen narrow hypothesis",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    }
+  ],
+  "bestByCapability": [
+    {
+      "capability": "Core80 work total 3 months",
+      "bestObject": "NO_CONFIRMED_WINNER",
+      "descriptiveLeaders": "Primary OA03 WAPE 0.262461/bias -0.036460; Strict LG01 WAPE 0.292427/bias -0.1214",
+      "population": "Dynamic Core80",
+      "horizon": "3 months",
+      "actualDefinition": "Registered sales-share actual; Primary and Strict remain separate",
+      "sameCase": true,
+      "independent": false,
+      "confidence": "LOW_TO_MEDIUM",
+      "missingEvidence": "Independent origins and stable bootstrap/time-block plus bias agreement",
+      "crossGroupWarning": "Primary and Strict leaders cannot be collapsed into one score",
+      "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+    },
+    {
+      "capability": "Core80 work total 6 months",
+      "bestObject": "NO_CONFIRMED_WINNER",
+      "descriptiveLeaders": "Primary manual WAPE 0.265139/bias 0.11387 versus OA03 0.283949/0.000818; Strict manual 0.303323/0.1553 versus LG01 0.333977/-0.1136",
+      "population": "Dynamic Core80",
+      "horizon": "6 months",
+      "actualDefinition": "Registered sales-share actual",
+      "sameCase": true,
+      "independent": false,
+      "confidence": "LOW",
+      "missingEvidence": "A business-approved bias trade-off and independent time blocks",
+      "crossGroupWarning": "Lower WAPE and lower absolute bias point to different objects",
+      "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+    },
+    {
+      "capability": "Core80 work total 12 months",
+      "bestObject": "NO_CROSS_POPULATION_WINNER",
+      "descriptiveLeaders": "Primary OA03 WAPE 0.248919/bias 0.008341; Strict LG01 0.306360/-0.0647",
+      "population": "Dynamic Core80",
+      "horizon": "12 months",
+      "actualDefinition": "Registered sales-share actual",
+      "sameCase": true,
+      "independent": false,
+      "confidence": "LOW_TO_MEDIUM",
+      "missingEvidence": "Independent validation under one frozen Primary/Strict decision policy",
+      "crossGroupWarning": "Primary and Strict are not interchangeable",
+      "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+    },
+    {
+      "capability": "Core80 work total 36 months",
+      "bestObject": "M2-WORK-LG01_DESCRIPTIVE_ONLY",
+      "descriptiveLeaders": "LG01 same-case WAPE 0.284898/bias 0.075559 versus manual rule 18.649596/18.61464",
+      "population": "Dynamic Core80 Primary intersection",
+      "horizon": "36 months",
+      "actualDefinition": "Sales-share actual",
+      "sameCase": true,
+      "independent": false,
+      "confidence": "MEDIUM",
+      "missingEvidence": "Strict 36-month capability and independent origin",
+      "crossGroupWarning": "Cannot generalize to Strict or portfolio",
+      "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+    },
+    {
+      "capability": "Core90 sensitivity",
+      "bestObject": "NO_SINGLE_WINNER",
+      "descriptiveLeaders": "LG01 is clear at Primary H36 WAPE 0.332402 versus manual 10.560634; H3/H6/H12 contain trade-offs",
+      "population": "Dynamic Core90 sensitivity only",
+      "horizon": "3/6/12/36 months",
+      "actualDefinition": "Registered sales-share actual",
+      "sameCase": true,
+      "independent": false,
+      "confidence": "LOW_TO_MEDIUM",
+      "missingEvidence": "Independent multi-horizon stability",
+      "crossGroupWarning": "Core90 sensitivity cannot replace Core80 primary",
+      "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+    },
+    {
+      "capability": "Mature legacy full population",
+      "bestObject": "M2-WORK-LG01_RETAINED_RESEARCH_BASELINE",
+      "descriptiveLeaders": "Primary H36 WAPE 0.440225/bias -0.123771 versus MAN01 0.531410/-0.405523",
+      "population": "Full mature training/evaluation support under historical human-anchored group",
+      "horizon": "36 months",
+      "actualDefinition": "Historical registered sales-share actual",
+      "sameCase": true,
+      "independent": false,
+      "confidence": "MEDIUM",
+      "missingEvidence": "Independent future origin",
+      "crossGroupWarning": "Full mature support does not authorize serving the Core-external tail",
+      "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+    },
+    {
+      "capability": "Work-by-existing-channel allocation",
+      "bestObject": "NO_CONFIRMED_WINNER",
+      "descriptiveLeaders": "Trailing-12 allocation Core80 WAPE H3/H6/H12 0.294089/0.315692/0.286101 with FVA 0.84%/-7.10%/32.81%",
+      "population": "Origin-observed mature channels for dynamic Core80",
+      "horizon": "3/6/12 months; 36 unavailable",
+      "actualDefinition": "Sales-share observed-channel actual",
+      "sameCase": true,
+      "independent": false,
+      "confidence": "LOW",
+      "missingEvidence": "Stable bootstrap/time blocks and H36",
+      "crossGroupWarning": "Allocation cannot be compared to work-total or future-first-channel tasks",
+      "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+    },
+    {
+      "capability": "Portfolio reference",
+      "bestObject": "M2-PORT-ETS01_REFERENCE_ONLY",
+      "descriptiveLeaders": "Pooled WAPE 0.127950/bias 0.100483; H12 worse than seasonal naive",
+      "population": "Portfolio",
+      "horizon": "3/6/12 months",
+      "actualDefinition": "Portfolio cash",
+      "sameCase": true,
+      "independent": false,
+      "confidence": "LOW_TO_MEDIUM",
+      "missingEvidence": "Independent portfolio evaluation and consistent horizon performance",
+      "crossGroupWarning": "Portfolio and work scores must never share a ranking",
+      "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+    },
+    {
+      "capability": "Occurrence",
+      "bestObject": "NO_CONFIRMED_WINNER",
+      "descriptiveLeaders": "PSC01 Brier 0.25234 and PR-AUC 0.73755; OA03 stores occurrence but strict prevalence is extremely high",
+      "population": "Different registered occurrence populations",
+      "horizon": "Varies",
+      "actualDefinition": "Occurrence derived from sales-share actual",
+      "sameCase": false,
+      "independent": false,
+      "confidence": "LOW",
+      "missingEvidence": "One accepted same-case occurrence candidate whose signal improves cash",
+      "crossGroupWarning": "PSC and OA03 occurrence populations differ",
+      "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+    },
+    {
+      "capability": "Conditional amount",
+      "bestObject": "NO_ACCEPTED_MODEL",
+      "descriptiveLeaders": "PSC01 positive-amount WAPE 0.949714 failed; OA03 current artifact does not store an independent conditional-amount output",
+      "population": "Positive-amount cases",
+      "horizon": "Varies",
+      "actualDefinition": "Positive sales-share amount",
+      "sameCase": false,
+      "independent": false,
+      "confidence": "HIGH that no accepted object exists",
+      "missingEvidence": "Stored same-case conditional output with acceptable error",
+      "crossGroupWarning": "Do not infer conditional performance from total point forecast",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "capability": "Ranking",
+      "bestObject": "NO_ACCEPTED_MODEL",
+      "descriptiveLeaders": "Channel scalar experts Spearman 0.8343 Primary and 0.9056 Strict, but point WAPE failed",
+      "population": "Historical channel-expert groups",
+      "horizon": "Registered rolling horizons",
+      "actualDefinition": "Sales-share ranking",
+      "sameCase": true,
+      "independent": false,
+      "confidence": "LOW",
+      "missingEvidence": "Independent ranking benefit tied to an explicit business decision",
+      "crossGroupWarning": "Ranking and amount are separate capabilities",
+      "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+    },
+    {
+      "capability": "Interval/risk",
+      "bestObject": "M2-WORK-LG01_DIAGNOSTIC_LEADER",
+      "descriptiveLeaders": "Coverage 0.8985/0.8009/0.5995 at nominal 90/80/60%",
+      "population": "LG01 registered development cases",
+      "horizon": "Registered LG01 horizons",
+      "actualDefinition": "Sales-share actual",
+      "sameCase": true,
+      "independent": false,
+      "confidence": "MEDIUM",
+      "missingEvidence": "Independent interval calibration and business use",
+      "crossGroupWarning": "Most models have no native interval and cannot be compared",
+      "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+    },
+    {
+      "capability": "Operational fallback",
+      "bestObject": "M2-WORK-OA03",
+      "descriptiveLeaders": "Registry role; historical served WAPE 0.490759/bias 0.073781",
+      "population": "Compatibility served population",
+      "horizon": "3/6/12/18/24 historical sparse cases",
+      "actualDefinition": "Registered historical/current groups remain separate",
+      "sameCase": "Role decision rather than a new tournament",
+      "independent": false,
+      "confidence": "HIGH for role, LOW for current-scope performance",
+      "missingEvidence": "Current-scope independent performance support",
+      "crossGroupWarning": "Operational role is not champion status",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "capability": "Research baseline",
+      "bestObject": "M2-WORK-LG01",
+      "descriptiveLeaders": "Primary H36 WAPE 0.440225/bias -0.123771; Strict pooled 0.411919/-0.038474",
+      "population": "Registered mature legacy development populations",
+      "horizon": "Primary H36 and Strict H3/H6/H12/H18/H24",
+      "actualDefinition": "Registered sales-share actual",
+      "sameCase": true,
+      "independent": false,
+      "confidence": "HIGH for role, MEDIUM-LOW for scientific effect",
+      "missingEvidence": "Independent later-origin",
+      "crossGroupWarning": "Research baseline is not production authorization",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    }
+  ],
+  "experimentOutcomeCounts": {
+    "registeredExperiments": 22,
+    "enteredOutcomeExecution": 21,
+    "experimentsWithLegalRawCandidateResult": 19,
+    "resultYield": {
+      "numerator": 19,
+      "denominator": 21,
+      "ratio": 0.9048,
+      "definition": "Experiments with at least one legal raw candidate result divided by experiments that attempted to form a real development/outer outcome.",
+      "warning": "A legal result includes failures and archive evidence; it is not a success rate."
+    },
+    "verifiedLowerBoundTrainedModels": 14,
+    "trainedModelCountPrecision": "LOWER_BOUND_ONLY",
+    "trainedModelCountReason": "Registry has no uniform trained boolean and historical formulas, selectors, families and fitted estimators cannot be counted without ambiguity.",
+    "preregistrationOnly": 0,
+    "implementationOrSyntheticOnly": 1,
+    "blockedBeforeLegalOuterCandidate": 1,
+    "experimentsWithAtLeastOneInfrastructureFailureBeforeOutcomeLowerBound": 4,
+    "explicitFailedOrRejectedAfterResultLowerBound": 15,
+    "mixedOrInconclusiveLowerBound": 4,
+    "awaitingIndependentData": 1,
+    "independentLaterOriginCompleted": 0,
+    "finalHoldoutOpened": 0,
+    "activeCandidate": 0,
+    "automationApproval": 0,
+    "productionModification": 0,
+    "governanceOrBlockRatioLowerBound": {
+      "numerator": 3,
+      "denominator": 22,
+      "ratio": 0.1364,
+      "definition": "Registered experiments ending only in eligibility block, universal fallback without raw candidate, or preregistration/synthetic.",
+      "unrecoverable": "A unique all-M2-task denominator cannot be reconstructed from commits, closures and state-index artifacts; the true task-level governance share is higher."
+    },
+    "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+  },
+  "executionBlockCounts": {
+    "historicalFailureReclassification": [
+      {
+        "object": "M2-CHAN-SCL01",
+        "classifications": [
+          "IMPLEMENTATION_MISMATCH",
+          "MODEL_PERFORMANCE_FAIL"
+        ],
+        "conclusion": "The scalar multiplier implementation failed; the theoretical channel-time generator was not tested.",
+        "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+      },
+      {
+        "object": "M2-CHAN-GEN02",
+        "classifications": [
+          "ARBITRARY_THRESHOLD_BLOCK",
+          "CONTRACT_SEMANTIC_BLOCK"
+        ],
+        "conclusion": "Execution reached eligibility but produced no outer raw candidate.",
+        "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+      },
+      {
+        "object": "M2-CHAN-PSC01_FIRST_ATTEMPT",
+        "classifications": [
+          "INFRASTRUCTURE_FAILURE_BEFORE_OUTCOME"
+        ],
+        "conclusion": "The first attempt failed closed before candidate fit and is not a model result.",
+        "evidenceGrade": "VERIFIED_FROM_GIT_HISTORY"
+      },
+      {
+        "object": "M2-CHAN-PSC01_VALID_EXECUTION",
+        "classifications": [
+          "VALID_NEGATIVE_RESULT",
+          "MODEL_PERFORMANCE_FAIL"
+        ],
+        "conclusion": "The amount mechanism failed decisively; this does not disprove every channel mechanism.",
+        "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+      },
+      {
+        "object": "FIXED_50_100_THRESHOLDS",
+        "classifications": [
+          "ARBITRARY_THRESHOLD_BLOCK"
+        ],
+        "conclusion": "No project-specific learning curve or effective-sample-size evidence supported the fixed threshold.",
+        "evidenceGrade": "VERIFIED_FROM_GIT_HISTORY"
+      },
+      {
+        "object": "M2-WORK-CRMR01_H36",
+        "classifications": [
+          "MODEL_PERFORMANCE_FAIL"
+        ],
+        "conclusion": "Unbounded multi-year compounding failed; short-horizon manual anchoring was not disproven.",
+        "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+      },
+      {
+        "object": "M2-PORT-LRC01",
+        "classifications": [
+          "OUT_OF_SCOPE",
+          "VALID_NEGATIVE_RESULT"
+        ],
+        "conclusion": "Portfolio H12/H36 failed and the target is outside current work-level M2.",
+        "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+      },
+      {
+        "object": "M2-WORK-CHAM01",
+        "classifications": [
+          "VALID_NEGATIVE_RESULT",
+          "MODEL_PERFORMANCE_FAIL"
+        ],
+        "conclusion": "All frozen gates failed; a separate numeric instability was disclosed. The direction is not permanently disproven.",
+        "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+      },
+      {
+        "object": "M2-WORK-HCRC01",
+        "classifications": [
+          "CONTRACT_SEMANTIC_BLOCK"
+        ],
+        "conclusion": "No eligible alpha and no C2/C3 raw cases; universal fallback is not candidate performance.",
+        "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+      },
+      {
+        "object": "M2-WORK-HPSR01",
+        "classifications": [
+          "EVIDENCE_INCONCLUSIVE",
+          "MODEL_PERFORMANCE_FAIL"
+        ],
+        "conclusion": "The original mechanical contract is unsupported, but single-origin scientific evidence is inconclusive.",
+        "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+      },
+      {
+        "object": "M2-WORK-HPSR02",
+        "classifications": [
+          "DATA_NOT_AVAILABLE"
+        ],
+        "conclusion": "Preregistered and synthetic-verified only; no independent actual has been opened.",
+        "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+      },
+      {
+        "object": "HISTORICAL_PRIVATE_RECOVERY_BLOCKS",
+        "classifications": [
+          "PRIVATE_ARTIFACT_PORTABILITY_BLOCK",
+          "REPORTING/GOVERNANCE ERROR"
+        ],
+        "conclusion": "Rebuildable cache or provenance was sometimes treated as source authority; current governance corrects this.",
+        "evidenceGrade": "VERIFIED_FROM_GIT_HISTORY"
+      }
+    ],
+    "strictCountsUnavailable": "Historical retry and closure records do not provide one normalized event table; only experiment-level lower bounds are reported.",
+    "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+  },
+  "evidenceQuality": {
+    "gradeDefinitions": {
+      "VERIFIED_FROM_CODE_AND_RESULT": "Code, contract and result cross-checked",
+      "VERIFIED_FROM_AGGREGATE_RESULT": "Verified from committed public aggregate without private-row replay",
+      "VERIFIED_FROM_GIT_HISTORY": "Verified from Git, pull request or CI history",
+      "DOCUMENTED_BUT_NOT_INDEPENDENTLY_VERIFIED": "Documented by repository or user but not independently reconstructable in this audit",
+      "NOT_RECOVERABLE_FROM_REPOSITORY": "Repository cannot recover the requested quantity",
+      "USER_CONFIRMATION_REQUIRED": "A real business decision remains"
+    },
+    "strongestEvidence": [
+      "Registry roles and authorization booleans",
+      "Public aggregate result files and frozen configs",
+      "Git/PR/CI state and command lifecycle",
+      "Current route and private-boundary code"
+    ],
+    "materialGaps": [
+      "No independent later-origin result",
+      "No final holdout",
+      "Some historical models lack raw rows, pre-origin MASE scale or native interval output",
+      "Historical natural-language instructions are not all recoverable",
+      "Real-world business facts are user-confirmed rather than independently verifiable"
+    ],
+    "privateRowReplayRequiredForAudit": false
+  },
+  "instructionFindings": [
+    {
+      "id": 1,
+      "finding": "固定远端 branch/HEAD/PR 状态",
+      "holds": "YES",
+      "severity": "HIGH",
+      "sourceCategory": "ChatGPT 指令设计错误 / 仓库旧治理规则",
+      "consequence": "Instructions become stale after merge or branch movement.",
+      "action": "DELETE fixed state; resolve repository and PR dynamically.",
+      "evidenceGrade": "VERIFIED_FROM_GIT_HISTORY"
+    },
+    {
+      "id": 2,
+      "finding": "私有派生缓存和历史 receipt 被误当 source authority",
+      "holds": "YES",
+      "severity": "HIGH",
+      "sourceCategory": "ChatGPT 指令设计错误 / 仓库旧治理规则",
+      "consequence": "Portable execution was blocked by non-authoritative artifacts.",
+      "action": "PRESERVE and enforce the three private roles.",
+      "evidenceGrade": "VERIFIED_FROM_GIT_HISTORY"
+    },
+    {
+      "id": 3,
+      "finding": "换电脑后因 Git ignored 文件缺失反复阻断",
+      "holds": "YES",
+      "severity": "HIGH",
+      "sourceCategory": "工程实现缺陷 / 仓库旧治理规则",
+      "consequence": "Rebuildable cache absence was mistaken for missing data authority.",
+      "action": "DELETE cache-existence gates; preserve capability doctor.",
+      "evidenceGrade": "VERIFIED_FROM_GIT_HISTORY"
+    },
+    {
+      "id": 4,
+      "finding": "固定路径、SHA、digest 或换行成为无意义门禁",
+      "holds": "PARTIAL",
+      "severity": "MEDIUM",
+      "sourceCategory": "ChatGPT 指令设计错误",
+      "consequence": "Machine-specific transport detail polluted business contracts.",
+      "action": "SIMPLIFY; retain content digests, remove machine path and transport hash conditions.",
+      "evidenceGrade": "VERIFIED_FROM_GIT_HISTORY"
+    },
+    {
+      "id": 5,
+      "finding": "工程故障提前消耗科学执行或重试窗口",
+      "holds": "YES",
+      "severity": "HIGH",
+      "sourceCategory": "工程实现缺陷 / ChatGPT 指令设计错误",
+      "consequence": "Experiments closed before an outcome.",
+      "action": "CODIFY that infrastructure failure does not consume a scientific outcome.",
+      "evidenceGrade": "VERIFIED_FROM_GIT_HISTORY"
+    },
+    {
+      "id": 6,
+      "finding": "单次 retry exhausted 导致模型永远没有结果",
+      "holds": "YES",
+      "severity": "HIGH",
+      "sourceCategory": "ChatGPT 指令设计错误",
+      "consequence": "Temporary engineering failure became permanent closure.",
+      "action": "DELETE arbitrary retry counts; require repair plus explicit reauthorization.",
+      "evidenceGrade": "VERIFIED_FROM_GIT_HISTORY"
+    },
+    {
+      "id": 7,
+      "finding": "历史任务的 Python 环境阶段 K0 / 公开实现准备阶段 K1 被误解为整个模型任务完成",
+      "holds": "YES",
+      "severity": "HIGH",
+      "sourceCategory": "Codex 执行错误 / 报告治理错误",
+      "consequence": "Readiness and implementation appeared as scientific progress.",
+      "action": "Require object type and outcome state in every user-visible status.",
+      "evidenceGrade": "VERIFIED_FROM_GIT_HISTORY"
+    },
+    {
+      "id": 8,
+      "finding": "报告和状态码过多",
+      "holds": "YES",
+      "severity": "HIGH",
+      "sourceCategory": "仓库旧治理规则 / Codex 执行错误",
+      "consequence": "Users cannot distinguish model, arm, gate and workflow status.",
+      "action": "SIMPLIFY user-facing states while retaining stable IDs internally.",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "id": 9,
+      "finding": "50/100 部作品门槛脱离出版行业规模",
+      "holds": "YES",
+      "severity": "HIGH",
+      "sourceCategory": "ChatGPT 指令设计错误",
+      "consequence": "GEN02 produced no raw candidate.",
+      "action": "DELETE fixed threshold; use project-specific ESS, learning curve and uncertainty.",
+      "evidenceGrade": "VERIFIED_FROM_GIT_HISTORY"
+    },
+    {
+      "id": 10,
+      "finding": "通用大行业样本量规则套入出版行业",
+      "holds": "PARTIAL",
+      "severity": "MEDIUM",
+      "sourceCategory": "ChatGPT 指令设计错误",
+      "consequence": "A project-specific support test was absent.",
+      "action": "Require internal evidence for any future threshold.",
+      "evidenceGrade": "DOCUMENTED_BUT_NOT_INDEPENDENTLY_VERIFIED"
+    },
+    {
+      "id": 11,
+      "finding": "公司组合、未来新作品偏离 M2",
+      "holds": "YES",
+      "severity": "HIGH",
+      "sourceCategory": "用户早期业务定义不完整 / ChatGPT 指令设计错误",
+      "consequence": "LRC and future-new-work work consumed scope.",
+      "action": "MOVE to separate future capability; retain historical evidence.",
+      "evidenceGrade": "VERIFIED_FROM_GIT_HISTORY"
+    },
+    {
+      "id": 12,
+      "finding": "过度强调 historical effectiveAt/availableAt",
+      "holds": "YES",
+      "severity": "MEDIUM",
+      "sourceCategory": "ChatGPT 指令设计错误 / 仓库旧治理规则",
+      "consequence": "Fixed category/source authority was treated as unusable.",
+      "action": "Require time availability only for genuinely changing fields.",
+      "evidenceGrade": "VERIFIED_FROM_GIT_HISTORY"
+    },
+    {
+      "id": 13,
+      "finding": "将消费、曝光、订单、eCPM 当必要前提",
+      "holds": "PARTIAL",
+      "severity": "MEDIUM",
+      "sourceCategory": "用户早期业务定义不完整 / ChatGPT 指令设计错误",
+      "consequence": "Data-gap lists expanded beyond cash-only needs.",
+      "action": "FIX the minimum cash-only data contract.",
+      "evidenceGrade": "DOCUMENTED_BUT_NOT_INDEPENDENTLY_VERIFIED"
+    },
+    {
+      "id": 14,
+      "finding": "WAPE/bias 被当成唯一评价",
+      "holds": "HISTORICALLY_YES_CURRENTLY_CORRECTED",
+      "severity": "HIGH",
+      "sourceCategory": "仓库旧治理规则",
+      "consequence": "Stability, ranking, occurrence and risk evidence were hidden.",
+      "action": "PRESERVE v2.2 concepts but simplify the primary table.",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "id": 15,
+      "finding": "单一硬阈值产生门槛悬崖",
+      "holds": "YES",
+      "severity": "HIGH",
+      "sourceCategory": "ChatGPT 指令设计错误",
+      "consequence": "HPSR01 crossed a 2pp bias gate by only 0.0358pp and was mechanically failed.",
+      "action": "Use three-state conclusions and threshold sensitivity.",
+      "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+    },
+    {
+      "id": 16,
+      "finding": "一个时间块或极少样本被写成永久方向失败",
+      "holds": "YES",
+      "severity": "HIGH",
+      "sourceCategory": "Codex 执行错误 / 合理科学失败的错误解释",
+      "consequence": "HPSR01 needed an interpretation amendment.",
+      "action": "Require explicit independent-time minimum before permanent claims.",
+      "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+    },
+    {
+      "id": 17,
+      "finding": "为了独立证据让已有完整账单不能用于开发诊断",
+      "holds": "PARTIAL",
+      "severity": "MEDIUM",
+      "sourceCategory": "ChatGPT 指令设计错误",
+      "consequence": "Development diagnosis and final evidence were conflated.",
+      "action": "Separate development diagnostics from independent decisions.",
+      "evidenceGrade": "VERIFIED_FROM_GIT_HISTORY"
+    },
+    {
+      "id": 18,
+      "finding": "每轮重复 Git/private/CI 模板",
+      "holds": "YES",
+      "severity": "MEDIUM",
+      "sourceCategory": "仓库旧治理规则 / ChatGPT 指令设计错误",
+      "consequence": "Instructions became long and science was obscured.",
+      "action": "MOVE stable rules to AGENTS and scripts.",
+      "evidenceGrade": "VERIFIED_FROM_GIT_HISTORY"
+    },
+    {
+      "id": 19,
+      "finding": "每一小步都 commit/push/CI",
+      "holds": "YES",
+      "severity": "HIGH",
+      "sourceCategory": "ChatGPT 指令设计错误 / Codex 执行错误",
+      "consequence": "Governance overhead grew across 304 M2-related commits.",
+      "action": "Batch work into one reviewable scientific unit.",
+      "evidenceGrade": "VERIFIED_FROM_GIT_HISTORY"
+    },
+    {
+      "id": 20,
+      "finding": "过多 private receipt/manifest/digest 未提高业务可信度",
+      "holds": "PARTIAL",
+      "severity": "MEDIUM",
+      "sourceCategory": "仓库旧治理规则",
+      "consequence": "Transport provenance became an execution gate.",
+      "action": "PRESERVE authority/integrity digests; demote transport provenance.",
+      "evidenceGrade": "VERIFIED_FROM_GIT_HISTORY"
+    },
+    {
+      "id": 21,
+      "finding": "过度防止任何数据打开",
+      "holds": "PARTIAL",
+      "severity": "HIGH",
+      "sourceCategory": "ChatGPT 指令设计错误",
+      "consequence": "Legitimate diagnostics were sometimes blocked with holdout protection.",
+      "action": "Separate data permissions by development, independent and final use.",
+      "evidenceGrade": "VERIFIED_FROM_GIT_HISTORY"
+    },
+    {
+      "id": 22,
+      "finding": "指令太长、停止条件太多",
+      "holds": "YES",
+      "severity": "HIGH",
+      "sourceCategory": "ChatGPT 指令设计错误",
+      "consequence": "Codex frequently stopped at readiness or closure rather than scientific outcome.",
+      "action": "Use the one-page minimum template.",
+      "evidenceGrade": "VERIFIED_FROM_GIT_HISTORY"
+    },
+    {
+      "id": 23,
+      "finding": "失败后立即开发相邻新模型",
+      "holds": "YES",
+      "severity": "HIGH",
+      "sourceCategory": "用户指令选择 / ChatGPT 指令设计错误 / Codex 执行错误",
+      "consequence": "TSB, lifecycle, channel, CHAM, HCRC and HPSR accumulated without stage-wide closure.",
+      "action": "PAUSE and require project-control review before any new family.",
+      "evidenceGrade": "VERIFIED_FROM_GIT_HISTORY"
+    },
+    {
+      "id": 24,
+      "finding": "public/private、安全与科学评价边界混在一起",
+      "holds": "YES",
+      "severity": "HIGH",
+      "sourceCategory": "仓库旧治理规则 / ChatGPT 指令设计错误",
+      "consequence": "Capability readiness was confused with model evidence.",
+      "action": "Report engineering capability and scientific status separately.",
+      "evidenceGrade": "VERIFIED_FROM_GIT_HISTORY"
+    },
+    {
+      "id": 25,
+      "finding": "实现、验证、授权、可发布层级被过度使用",
+      "holds": "PARTIAL",
+      "severity": "MEDIUM",
+      "sourceCategory": "仓库旧治理规则 / Codex 报告选择",
+      "consequence": "Necessary distinctions produced excessive state artifacts.",
+      "action": "PRESERVE the four meanings but collapse user-facing status artifacts.",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    }
+  ],
+  "agentsRecommendations": {
+    "doNotModifyInThisAudit": true,
+    "A_permanentlyCodify": [
+      "Chinese-first reporting plus stable model ID and object type",
+      "Current M2 scope, Core purpose and explicit exclusions",
+      "Source authority, derived cache and provenance separation",
+      "Dynamic repository/branch/HEAD resolution",
+      "Historical results immutable; raw candidates never masked by fallback",
+      "Infrastructure, contract, performance and inconclusive states separated",
+      "Origin-safe, same-case, actual/population/comparability discipline",
+      "One shared definition for implemented, validated, authorized and releasable"
+    ],
+    "B_removeOrShorten": [
+      "Unsupported fixed sample thresholds and retry counts",
+      "Fixed branch, SHA, PR state and private-cache existence",
+      "Multiple CI cycles per small step and repeated gate prose",
+      "Transport receipt/hash as business conditions",
+      "Unrelated release or future-phase rules in each experiment instruction",
+      "Experiment-specific parameters and holdout dates"
+    ],
+    "C_preregistrationOnly": [
+      "Population, horizon, actual, arms and parameters",
+      "Materiality, bias guardrail and threshold sensitivity",
+      "Bootstrap unit/count, time blocks and multiple-comparison treatment",
+      "Success/failure/inconclusive gates and fallback",
+      "Allowed data window, one execution authorization and stop condition"
+    ],
+    "minimumInstructionTemplate": {
+      "目标": "One business/scientific question",
+      "允许范围": "One capability, stable IDs, population and horizon",
+      "禁止范围": "All ungranted model, data, holdout and production actions",
+      "数据": "Authority, allowed window, prohibited window and actual definition",
+      "实验": "Frozen candidate, baseline, same-case and fallback",
+      "评价": "WAPE, bias, clustered bootstrap, time blocks and three-state conclusion",
+      "完成条件": "One outcome or one real block; implementation is not outcome",
+      "交付": "At most one Markdown and one JSON, Chinese conclusion first",
+      "Git": "Dynamic state, one ordinary commit/push, exact-head CI, no merge"
+    }
+  },
+  "evaluationFindings": {
+    "currentContract": {
+      "version": "2.2",
+      "status": "M2_EVALUATION_V2_2_ACTIVE_FOR_DEVELOPMENT_WITH_DISCLOSED_RESIDUAL_EXCLUSION",
+      "productionGateActive": false,
+      "automationGateActive": false,
+      "modelRolesChanged": false
+    },
+    "versions": [
+      {
+        "version": "v1",
+        "contribution": "WAPE for aggregate cash error and signed bias for systematic over/under prediction",
+        "gap": "No individual distribution, stability, time independence, decomposition, ranking or interval evidence"
+      },
+      {
+        "version": "v2 proposal",
+        "contribution": "Horizon, same-case, MAE/median AE, bootstrap/time blocks and capability metrics",
+        "gap": "Initially proposal-only; raw capability was incomplete"
+      },
+      {
+        "version": "v2.1",
+        "contribution": "Active development comparability and Primary/Strict evidence",
+        "gap": "200 bootstrap samples and incomplete reversal/residual semantics"
+      },
+      {
+        "version": "v2.2",
+        "contribution": "2,000 clustered bootstrap, PR-AUC/AP distinction, four reversal views and frozen label-only rescore",
+        "gap": "Complex documentation layering and incomplete historical raw capability"
+      }
+    ],
+    "reversalRestatementImpact": [
+      "OA03 WAPE 0.490759 to 0.486136",
+      "CCR01 WAPE 0.490701 to 0.485389",
+      "LG01 Primary WAPE 0.440225 to 0.443114",
+      "LG01 Strict WAPE 0.411919 to 0.412814",
+      "LG01 overlap WAPE 0.277239 to 0.274130",
+      "292 cases recovered, 143 reversals retained, unallocated residual -267.769... retained",
+      "Six frozen artifacts and 716,801 prediction rows unchanged"
+    ],
+    "conclusionAfterActualChange": "Changes are small and do not reverse the main failures; posting-time and modelable-restated scores remain separate comparability groups.",
+    "recommendedPrimaryMetrics": [
+      "Same-case WAPE",
+      "Signed bias",
+      "Case/work/origin counts",
+      "2,000-replicate work-cluster bootstrap FVA",
+      "At least two legal time blocks"
+    ],
+    "diagnosticOnlyWhenNative": [
+      "Occurrence Brier and AP/PR-AUC",
+      "Conditional positive-amount error",
+      "Ranking",
+      "Interval calibration",
+      "Post-hoc top-revenue attribution"
+    ],
+    "threeStateRecommendation": "SUPPORTED / INCONCLUSIVE / NOT_SUPPORTED with threshold-sensitivity disclosure",
+    "contractChangeAuthorized": false,
+    "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+  },
+  "dataFindings": {
+    "A_currentCashOnlyRequired": [
+      "Authoritative sales-share bill rows",
+      "standardWorkId",
+      "canonical channel",
+      "billMonth",
+      "A new independent bill window only when independent evaluation is authorized"
+    ],
+    "B_helpfulNotRequired": [
+      "Listing status and rights start/end for anomaly diagnosis",
+      "Three-level category and work source",
+      "Price, discount, rate, platform-pool and promotion metadata when reliably available"
+    ],
+    "C_futureNewWorkPhase": [
+      "New works",
+      "Future-first channels",
+      "Pre-release and acquisition data"
+    ],
+    "D_userSaysUnavailableOrMeaninglessForCurrentM2": [
+      "Consumption/listening/reading",
+      "Exposure/eCPM",
+      "Platform black-box allocation mechanics",
+      "Orders/refunds as a mandatory prerequisite"
+    ],
+    "E_repositoryPreviouslyAssumedRequired": [
+      "Historical effectiveAt/availableAt for creation-fixed category/source",
+      "Rebuildable private cache",
+      "Historical receipt",
+      "Machine-specific transport path/hash"
+    ],
+    "currentBlocker": "No legal independent outcome window has been opened for HPSR02; this does not block public audit or development artifact review.",
+    "privateActualReadThisAudit": false,
+    "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+  },
+  "engineeringAssessment": {
+    "score": 4,
+    "strengths": [
+      "Single canonical current loader/route/API/fixture composition",
+      "Shared Python 3.11–3.13 resolver and portable public clone contract",
+      "No-real-data and capability-scoped private isolation",
+      "Deterministic materialization, cash conservation and reversal reconciliation",
+      "Numeric stability disclosure, Registry/report validators",
+      "Zero duplicate tracked blob groups at audit start",
+      "All 311 package scripts classified by lifecycle"
+    ],
+    "limitations": [
+      "183 archive-only commands remain visible",
+      "Many frozen challenger modules are not production imports but cannot be called dead code without contract/reference proof",
+      "Historical CI failures show substantial stabilization cost",
+      "Current exact-head CI proves engineering consistency, not model usefulness"
+    ],
+    "commandLifecycle": {
+      "currentPublic": 43,
+      "historyDispatcher": 1,
+      "archiveOnly": 183,
+      "restrictedLocal": 84,
+      "unclassified": 0
+    },
+    "duplicateTrackedBlobGroups": 0,
+    "productionImportsChallengers": false,
+    "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+  },
+  "scientificAssessment": {
+    "score": 2,
+    "strengths": [
+      "Origin-safe and same-case contracts",
+      "Population and actual comparability groups",
+      "Cluster bootstrap, time blocks, bias trade-off and threshold sensitivity",
+      "Raw candidate separated from fallback",
+      "Post-hoc HPSR01 interpretation separated from prospective HPSR02 preregistration"
+    ],
+    "limitations": [
+      "Independent later-origin completed count is zero",
+      "Final holdout opened count is zero",
+      "Most evidence reuses development windows",
+      "Multiple adjacent hypotheses were inspired by the same data",
+      "HPSR01 has one origin and 57 works",
+      "Some models lack raw rows, pre-origin scales or native intervals"
+    ],
+    "engineeringMaskingScience": true,
+    "answer": "Engineering completeness has partially masked the absence of clear independent predictive progress. Green CI validates artifacts, not future superiority.",
+    "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+  },
+  "complexityInventory": {
+    "trackedFilesTotal": 2164,
+    "m2RelatedTrackedFiles": 1475,
+    "m2RelatedByLocation": {
+      "docs": 983,
+      "test": 176,
+      "scripts": 164,
+      "src": 96,
+      "config": 47,
+      "db": 5,
+      "tools": 3,
+      "github": 1
+    },
+    "m2RelatedByExtension": {
+      "markdown": 527,
+      "json": 520,
+      "javascript": 252,
+      "python": 83,
+      "mjs": 76,
+      "powershell": 8,
+      "sql": 6,
+      "other": 3
+    },
+    "m2CurrentArtifacts": {
+      "total": 223,
+      "markdown": 113,
+      "json": 110
+    },
+    "m2V2Artifacts": 211,
+    "stateIndexArtifacts": {
+      "total": 60,
+      "markdown": 51,
+      "json": 9
+    },
+    "m2CurrentDomainFiles": {
+      "total": 48,
+      "javascript": 47
+    },
+    "m2NamedTests": 176,
+    "m2Configs": 47,
+    "m2NamedScripts": 164,
+    "registry": {
+      "models": 35,
+      "experiments": 22,
+      "nonModelIdentifiers": 123,
+      "comparabilityGroups": 59,
+      "metricDefinitions": 13
+    },
+    "git": {
+      "headReachableCommits": 412,
+      "coreM2PathCommits": 155,
+      "broadM2PathCommits": 304,
+      "broadM2CommitTouchProxy": {
+        "evidenceGovernanceOnly": 63,
+        "runtimeResearchOnly": 49,
+        "mixedRuntimeAndEvidence": 149,
+        "evidenceTestMixed": 26,
+        "testCiOnly": 17
+      },
+      "proxyWarning": "File-touch categories are not time, cost or labor estimates."
+    },
+    "pullRequests": {
+      "total": 35,
+      "merged": 34,
+      "openDraft": 1,
+      "openDraftNumber": 35
+    },
+    "githubActions": {
+      "allRuns": 340,
+      "success": 248,
+      "failure": 90,
+      "cancelled": 2,
+      "projectPullRequestRunsSince2026_07_15": 210,
+      "projectPullRequestSuccess": 180,
+      "projectPullRequestFailure": 29,
+      "projectPullRequestCancelled": 1,
+      "failedStepEvents": {
+        "total": 45,
+        "publicDefaultTestRegistry": 16,
+        "s1Preflight": 9,
+        "test": 8,
+        "s0Doctor": 7,
+        "historicalM2Contracts": 4,
+        "authorityProof": 1
+      },
+      "warning": "A failed run can contain more than one failed job/step event; these are not root-cause counts."
+    },
+    "privateArtifactRoles": 3,
+    "currentReleasableModels": 0,
+    "tokenHoursAndCost": {
+      "recoverable": false,
+      "reason": "NOT_RECOVERABLE_FROM_REPOSITORY"
+    },
+    "valuableComplexity": [
+      "Stable identities and comparability",
+      "Private authority isolation",
+      "Origin-safe and raw/fallback evidence",
+      "Portable public gates"
+    ],
+    "governanceBloat": [
+      "Artifact per micro-stage",
+      "User-visible local status codes",
+      "Archive command surface",
+      "Repeated Git/private/CI instruction prose",
+      "Transport provenance used as completion gates"
+    ],
+    "physicalDeletionAuthorized": false,
+    "evidenceGrade": "VERIFIED_FROM_GIT_HISTORY"
+  },
+  "completionLevels": [
+    {
+      "level": "A_MINIMUM_BUSINESS_USABLE",
+      "criteriaTotal": 7,
+      "criteriaSatisfied": 5,
+      "criteriaPartialOrMissing": 2,
+      "attained": false,
+      "missing": [
+        "One frozen accepted method across all required horizons",
+        "Business acceptance thresholds and sign-off"
+      ],
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "level": "B_M2_RESEARCH_COMPLETE",
+      "criteriaTotal": 6,
+      "criteriaSatisfied": 2,
+      "criteriaPartialOrMissing": 4,
+      "attained": false,
+      "missing": [
+        "Independent later-origin and any justified holdout",
+        "Explicit cash-only information ceiling",
+        "Final frozen simple method decision",
+        "Formal stop decision for adjacent models"
+      ],
+      "recommendedAsCurrentRealisticEndpoint": true,
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "level": "C_AUTOMATION_PRODUCTION_COMPLETE",
+      "criteriaTotal": 7,
+      "criteriaSatisfied": 0,
+      "criteriaPartialOrMissing": 7,
+      "attained": false,
+      "missing": [
+        "Business acceptance",
+        "Production contract",
+        "Monitoring",
+        "Rollback",
+        "Canary",
+        "Production data-source and permission approval",
+        "Release"
+      ],
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    }
+  ],
+  "routeOptions": [
+    {
+      "route": "A",
+      "title": "Wait for independent bills and evaluate only frozen HPSR02",
+      "goal": "Answer whether the L20-only frozen correction adds independent three-month value",
+      "requiredData": "First legal independent origin for existing-channel sales-share actual",
+      "cost": "Low engineering cost plus waiting time",
+      "risk": "Single-origin uncertainty and another inconclusive result",
+      "canAnswer": "Independent value of this one frozen tail-band hypothesis",
+      "cannotAnswer": "Long-term production stability or every channel mechanism",
+      "stopCondition": "No stable material FVA, unacceptable bias, or insufficient bootstrap/time evidence",
+      "priority": 1,
+      "executeNow": false
+    },
+    {
+      "route": "B",
+      "title": "Freeze simple models and end cash-only research now",
+      "goal": "Converge governance and retain OA03/LG01 roles",
+      "requiredData": "No new data",
+      "cost": "Lowest",
+      "risk": "Foregoes one low-cost independent HPSR02 test",
+      "canAnswer": "Provides immediate research closure",
+      "cannotAnswer": "Independent HPSR02 value",
+      "stopCondition": "External review judges current evidence sufficient and waiting value low",
+      "priority": 2,
+      "executeNow": false
+    },
+    {
+      "route": "C",
+      "title": "Open a new phase only after new data or a new business question",
+      "goal": "Address information that cash-only history cannot answer",
+      "requiredData": "User-confirmed incremental signal or distinct target",
+      "cost": "Highest",
+      "risk": "High scope-drift recurrence",
+      "canAnswer": "A genuinely new causal or business question",
+      "cannotAnswer": "Cannot be presented as continued tuning of current M2",
+      "stopCondition": "Do not open without explicit information-gain rationale and authorization",
+      "priority": 3,
+      "executeNow": false
+    }
+  ],
+  "uniqueRecommendation": {
+    "now": "Keep all subsequent M2 algorithm development paused and submit this audit to external review.",
+    "doNotDoNow": [
+      "Do not train, tune, rerun or select a model",
+      "Do not open new private actual, later-origin or final holdout",
+      "Do not create HPSR03 or another adjacent candidate",
+      "Do not modify production or model roles"
+    ],
+    "redecisionPoint": "A legal independent origin becomes available and the user explicitly reauthorizes one frozen HPSR02 evaluation after external review.",
+    "futureStopRule": "If that one evaluation does not show stable, material, same-case improvement with acceptable bias, end cash-only M2 research and retain OA03/LG01 roles.",
+    "executedInThisAudit": false
+  },
+  "userQuestions": [
+    {
+      "question": "M2 的首要业务用途是月度现金预算、作品运营排序，还是财务风险区间？",
+      "impact": "Determines the primary loss and minimum-business-usable acceptance.",
+      "evidenceGrade": "USER_CONFIRMATION_REQUIRED"
+    },
+    {
+      "question": "36 个月是否必须与 3/6/12 月同等约束，还是只作低置信情景参考？",
+      "impact": "Determines whether long-horizon failure blocks level A.",
+      "evidenceGrade": "USER_CONFIRMATION_REQUIRED"
+    },
+    {
+      "question": "Core80 各 horizon 可接受的 WAPE、signed bias 和最小实质 FVA 是多少？",
+      "impact": "Replaces arbitrary universal thresholds with business materiality.",
+      "evidenceGrade": "USER_CONFIRMATION_REQUIRED"
+    },
+    {
+      "question": "最小业务可用时允许多少作品或收入金额 abstain？",
+      "impact": "Defines service coverage and fallback policy.",
+      "evidenceGrade": "USER_CONFIRMATION_REQUIRED"
+    },
+    {
+      "question": "若 HPSR02 首次独立结果仍为 inconclusive，是否同意直接结束 cash-only 研究？",
+      "impact": "Prevents another adjacent-model loop.",
+      "evidenceGrade": "USER_CONFIRMATION_REQUIRED"
+    }
+  ],
+  "limitations": [
+    "Private row-level results were not read or recomputed.",
+    "User-confirmed business facts cannot be independently proven from Git.",
+    "Not every historical natural-language instruction is present in the repository.",
+    "Registry model objects include models, families, pipelines and archive objects; they are not 35 homogeneous trained models.",
+    "Registered experiments are not a complete task ledger, so governance ratio is a lower bound.",
+    "CI failed-step events are not normalized root-cause counts.",
+    "File, commit and PR counts cannot recover labor, token or monetary cost.",
+    "Historical models without raw rows or current scales were not fabricated into a new ranking.",
+    "The report commit cannot self-embed its own exact hash; final PR checks are the publication binding."
+  ],
+  "sourceIndex": [
+    {
+      "id": "SRC-001",
+      "path": "config/m2-model-registry.v1.json",
+      "purpose": "Machine authority for models, experiments, roles, comparability and evaluation",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "id": "SRC-002",
+      "path": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.53.md",
+      "purpose": "Current M2 state entry",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "id": "SRC-003",
+      "path": "AGENTS.md",
+      "purpose": "Repository-wide current governance",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "id": "SRC-004",
+      "path": "src/domain/m2Current/AGENTS.md",
+      "purpose": "Canonical current M2 domain rules",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "id": "SRC-005",
+      "path": "config/m2-evaluation-contract.v2.2.json",
+      "purpose": "Current development evaluation machine contract",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "id": "SRC-006",
+      "path": "docs/analysis/m2-current/M2-evaluation-contract-v2.2-development-activation-v1.md",
+      "purpose": "v2.2 activation authority",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "id": "SRC-007",
+      "path": "docs/analysis/m2-current/M2-evaluation-v2.2-development-modelable-rescore-v1.json",
+      "purpose": "Frozen prediction label-only rescore",
+      "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+    },
+    {
+      "id": "SRC-008",
+      "path": "docs/analysis/m2-current/M2-reversal-four-view-reconciliation-v1.json",
+      "purpose": "Reversal four-view conservation and residual",
+      "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+    },
+    {
+      "id": "SRC-009",
+      "path": "docs/analysis/m2-current/M2-current-human-anchored-development-v0.1.json",
+      "purpose": "MAN01, LG01, HP01 and OR01 results",
+      "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+    },
+    {
+      "id": "SRC-010",
+      "path": "docs/analysis/m2-current/M2-current-human-anchored-tsb-occurrence-development-v0.1.json",
+      "purpose": "TSB raw, blend and selected fallback",
+      "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+    },
+    {
+      "id": "SRC-011",
+      "path": "docs/analysis/m2-current/M2-current-lifecycle-aware-revenue-forecast-development-v0.1.json",
+      "purpose": "Lifecycle raw and post-hoc evidence",
+      "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+    },
+    {
+      "id": "SRC-012",
+      "path": "docs/analysis/m2-current/M2-current-channel-experts-development-v0.1.json",
+      "purpose": "Channel scalar expert scores",
+      "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+    },
+    {
+      "id": "SRC-013",
+      "path": "docs/analysis/m2-current/M2-current-channel-experts-architecture-failure-audit-v0.1.md",
+      "purpose": "Multiplier implementation mismatch",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "id": "SRC-014",
+      "path": "docs/analysis/m2-current/M2-current-channel-generative-g1-development-v0.1.json",
+      "purpose": "GEN02 eligibility block without raw candidate",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "id": "SRC-015",
+      "path": "docs/analysis/m2-current/M2-current-publishing-scale-channel-development-v0.1.json",
+      "purpose": "PSC01 valid raw negative result",
+      "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+    },
+    {
+      "id": "SRC-016",
+      "path": "docs/analysis/m2-current/M2-current-publishing-scale-channel-forecastability-v0.1.json",
+      "purpose": "PSC occurrence and conditional amount diagnostics",
+      "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+    },
+    {
+      "id": "SRC-017",
+      "path": "docs/analysis/m2-current/M2-core-revenue-manual-development-v0.1.json",
+      "purpose": "Manual-rule horizon results and compounding",
+      "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+    },
+    {
+      "id": "SRC-018",
+      "path": "docs/analysis/m2-current/M2-layered-revenue-composition-development-v0.1.json",
+      "purpose": "Layered portfolio result",
+      "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+    },
+    {
+      "id": "SRC-019",
+      "path": "docs/analysis/m2-current/M2-core-legacy-tail-interference-test-v0.1.json",
+      "purpose": "Core training-population sensitivity",
+      "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+    },
+    {
+      "id": "SRC-020",
+      "path": "docs/analysis/m2-current/M2-core-legacy-full-horizon-same-case-rescore-v0.1.json",
+      "purpose": "Core80/Core90 3/6/12/36 same-case evidence",
+      "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+    },
+    {
+      "id": "SRC-021",
+      "path": "docs/analysis/m2-current/M2-core-legacy-horizon-router-v0.1.json",
+      "purpose": "Horizon router result",
+      "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+    },
+    {
+      "id": "SRC-022",
+      "path": "docs/analysis/m2-current/M2-core-legacy-observed-channel-allocation-v0.1.json",
+      "purpose": "Observed-channel allocation evidence",
+      "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+    },
+    {
+      "id": "SRC-023",
+      "path": "docs/analysis/m2-current/M2-oa03-current-scope-replication-development-v0.1.json",
+      "purpose": "OA03 current-scope technical replication",
+      "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+    },
+    {
+      "id": "SRC-024",
+      "path": "docs/analysis/m2-current/M2-oa03-trailing12-observed-channel-allocation-v0.1.json",
+      "purpose": "OA03 current-scope allocation evidence",
+      "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+    },
+    {
+      "id": "SRC-025",
+      "path": "docs/analysis/m2-current/M2-core-legacy-horizon-amount-development-v0.1.json",
+      "purpose": "CHAM01 raw evaluation",
+      "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+    },
+    {
+      "id": "SRC-026",
+      "path": "docs/analysis/m2-current/M2-core-legacy-horizon-amount-numeric-stability-disclosure-v0.1.json",
+      "purpose": "CHAM01 finite extreme cells",
+      "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+    },
+    {
+      "id": "SRC-027",
+      "path": "docs/analysis/m2-current/M2-lg01-head-cash-residual-development-v0.1.json",
+      "purpose": "HCRC01 universal fallback and absent raw candidates",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "id": "SRC-028",
+      "path": "docs/analysis/m2-current/M2-head-protected-segmented-router-retrospective-development-v0.1.json",
+      "purpose": "HPSR01 one-origin result",
+      "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+    },
+    {
+      "id": "SRC-029",
+      "path": "docs/analysis/m2-current/M2-head-protected-segmented-router-interpretation-amendment-v0.1.json",
+      "purpose": "HPSR01 scientific interpretation amendment",
+      "evidenceGrade": "VERIFIED_FROM_AGGREGATE_RESULT"
+    },
+    {
+      "id": "SRC-030",
+      "path": "docs/analysis/m2-current/M2-head-protected-tail-band-correction-preregistration-v0.2.md",
+      "purpose": "HPSR02 frozen preregistration",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "id": "SRC-031",
+      "path": "config/command-lifecycle.v0.1.json",
+      "purpose": "Package command lifecycle authority",
+      "evidenceGrade": "VERIFIED_FROM_CODE_AND_RESULT"
+    },
+    {
+      "id": "SRC-032",
+      "path": "Git history and GitHub PR #1–#35 / Actions metadata",
+      "purpose": "Timeline, merge state and CI counts",
+      "evidenceGrade": "VERIFIED_FROM_GIT_HISTORY"
+    }
+  ],
+  "modelExecutionCount": 0,
+  "privateActualRowsRead": 0,
+  "productionChangeCount": 0
+}

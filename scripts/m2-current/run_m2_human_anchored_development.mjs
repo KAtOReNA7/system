@@ -56,6 +56,7 @@ import {
   runM2CoreLegacyHorizonRouterK0
 } from "./core_legacy_horizon_router_mode.mjs";
 import {
+  runM2BusinessAcceptanceH36EvidenceRebuild,
   runM2CoreLegacyFullHorizonSameCaseRescore,
   runM2CoreLegacyObservedChannelAllocation,
   runM2CoreLegacyRollingHorizonRouter
@@ -149,6 +150,9 @@ const coreLegacyHorizonRouterK2Mode = process.argv.includes(
 );
 const coreLegacyHorizonRouterK3Mode = process.argv.includes(
   "--core-legacy-horizon-router-k3"
+);
+const businessAcceptanceH36RebuildMode = process.argv.includes(
+  "--business-acceptance-h36-rebuild"
 );
 const oa03CurrentScopePublicMode = process.argv.includes(
   "--oa03-current-scope-public"
@@ -408,6 +412,27 @@ if (coreLegacyHorizonRouterK3Mode) {
     evaluationHead: result.evaluationHead,
     routerExecutionHead: result.routerExecutionHead,
     allocationExecutionHead: result.allocationExecutionHead
+  }, null, 2)}\n`);
+  return;
+}
+if (businessAcceptanceH36RebuildMode) {
+  const result = await runM2BusinessAcceptanceH36EvidenceRebuild({
+    root
+  });
+  process.stdout.write(`${JSON.stringify({
+    status: result.status,
+    cacheStatus: result.cacheStatus,
+    h36Activated: result.h36Activated ?? false,
+    exactSameCaseRowsAvailable:
+      result.exactSameCaseRowsAvailable ?? false,
+    h50M30L20ExactlyMeasurable:
+      result.h50M30L20ExactlyMeasurable ?? false,
+    modelTrainingCount: result.modelTrainingCount,
+    modelFitCount: result.modelFitCount,
+    tuningCount: result.tuningCount,
+    modelSelectionCount: result.modelSelectionCount,
+    laterOriginRead: result.laterOriginRead,
+    finalHoldoutRead: result.finalHoldoutRead
   }, null, 2)}\n`);
   return;
 }

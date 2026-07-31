@@ -1,0 +1,66 @@
+{
+  "schema": "m2.current.head_protected_segmented_router.opened_origin_semantics.public.v0.2",
+  "asOf": "2026-07-31",
+  "experimentId": "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01",
+  "modelId": "M2-WORK-HPSR01",
+  "openedSemantics": {
+    "availabilityMetadataCountsAsActualValueOpened": false,
+    "schemaOrRowCountCountsAsActualValueOpened": false,
+    "actualAmountLabelMetricOrModelPerformanceCountsAsOpened": true,
+    "maxAvailabilityInspectedOrigin": "2026-02",
+    "maxActualValueOpenedOrigin": "2026-02",
+    "availabilityInspectedThrough": "2026-05",
+    "actualValueOpenedThrough": "2026-05",
+    "completeAuthoritativeBillMonthThrough": "2026-04",
+    "failedAttemptTouchedMetadataOnly": true,
+    "failedAttemptOpenedOutcome": false,
+    "unknownOrAmbiguous": false
+  },
+  "boundaryEvidence": {
+    "maxAvailabilityInspectedOrigin": [
+      "scripts/m2-current/audit_head_protected_segmented_router_dates.py",
+      "PRIVATE_DERIVED_CACHE_ROLE:frozen-development-feature-rows",
+      "PRIVATE_DERIVED_CACHE_ROLE:frozen-lg01-same-case-rows"
+    ],
+    "maxActualValueOpenedOrigin": [
+      "docs/analysis/m2-current/M2-core-legacy-horizon-amount-development-v0.1.json",
+      "PRIVATE_RUN_PROVENANCE_ROLE:core-horizon-amount-complete-receipt",
+      "PRIVATE_DERIVED_CACHE_ROLE:core-horizon-amount-frozen-manifest"
+    ],
+    "availabilityInspectedThrough": [
+      "scripts/m2-current/audit_head_protected_segmented_router_dates.py",
+      "PRIVATE_SOURCE_AUTHORITY_ROLE:sales-share-ledger-bill-month-only"
+    ],
+    "actualValueOpenedThrough": [
+      "PRIVATE_DERIVED_CACHE_ROLE:frozen-development-feature-row-label-date-keys",
+      "PRIVATE_RUN_PROVENANCE_ROLE:core-horizon-amount-complete-receipt"
+    ],
+    "completeAuthoritativeBillMonthThrough": [
+      "config/m2-current-human-anchored-later-origin.v0.1.json",
+      "scripts/m2-current/audit_head_protected_segmented_router_dates.py"
+    ],
+    "failedAttemptClassification": [
+      "PRIVATE_RUN_PROVENANCE_ROLE:core-horizon-amount-recovery-receipt"
+    ]
+  },
+  "semanticImpact": {
+    "priorEarliestPotentialLaterOrigin": "2026-05",
+    "correctedEarliestIndependentLaterOrigin": "2026-03",
+    "changedEarliestLaterOrigin": true,
+    "reason": "AVAILABILITY_METADATA_NO_LONGER_COUNTS_AS_ACTUAL_VALUE_OPENED",
+    "requiredFutureBillMonths": [
+      "2026-04",
+      "2026-05",
+      "2026-06"
+    ],
+    "requiredCompleteThrough": "2026-06"
+  },
+  "auditBoundary": {
+    "newFutureActualAmountsRead": false,
+    "newModelMetricsRead": false,
+    "modelFitRun": false,
+    "modelEvaluationRun": false,
+    "historicalRawReceiptModified": false,
+    "privateRowValuesPublished": false
+  }
+}

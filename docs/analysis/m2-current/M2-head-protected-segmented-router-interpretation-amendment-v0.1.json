@@ -1,0 +1,115 @@
+{
+  "schema": "m2.current.hpsr01.interpretation_amendment.public.v0.1",
+  "asOf": "2026-07-31",
+  "modelId": "M2-WORK-HPSR01",
+  "experimentId": "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01",
+  "displayNameZh": "LG01 头部保护分段路由模型 v0.1",
+  "displayNameEn": "LG01 Head-Protected Segmented Router Model v0.1",
+  "interpretationStatus": "M2_HPSR01_CONTRACT_UNSUPPORTED_SCIENTIFICALLY_INCONCLUSIVE",
+  "amendmentClass": "INTERPRETATION_ONLY_HISTORY_AND_FROZEN_METRICS_UNCHANGED",
+  "originalContractDecision": {
+    "status": "M2_HPSR01_RETROSPECTIVE_DEVELOPMENT_UNSUPPORTED_STOP_BEFORE_K2",
+    "classification": "RETROSPECTIVE_UNSUPPORTED",
+    "contractVersion": "m2.current.head_protected_segmented_router.v0.1",
+    "mechanicalRule": "ABSOLUTE_BIAS_WORSENING_GREATER_THAN_0_02_INDEPENDENTLY_TRIGGERS_UNSUPPORTED",
+    "observedAbsoluteBiasWorsening": 0.020358292834892863,
+    "guardrail": 0.02,
+    "guardrailExcess": 0.00035829283489286245,
+    "calculationErrorFound": false,
+    "decisionPreserved": true,
+    "sourceJson": "docs/analysis/m2-current/M2-head-protected-segmented-router-retrospective-development-v0.1.json",
+    "sourceReport": "docs/analysis/m2-current/M2-head-protected-segmented-router-retrospective-development-v0.1.md"
+  },
+  "scientificInterpretation": {
+    "classification": "CONTRACT_UNSUPPORTED_SCIENTIFICALLY_INCONCLUSIVE",
+    "statementZh": "HPSR01 在原合同下被判不支持，但现有单起点证据只够说明尚未确认且存在偏差权衡，不够证明整个头部保护分段方向无效。",
+    "wholeDirectionProvenFailed": false,
+    "independentEvidence": false,
+    "originCount": 1,
+    "workCount": 57,
+    "r1WapeBetterThanR0": true,
+    "r1PairedFvaVsR0": 0.00847712522619727,
+    "bootstrapFva95": {
+      "lower": -0.1834407271166846,
+      "median": 0.01064115354312988,
+      "upper": 0.2003025719176909,
+      "crossesZero": true
+    },
+    "fvaMateriality": 0.01,
+    "fvaShortfall": 0.0015228747738027302,
+    "absoluteBiasGuardrailExcess": 0.00035829283489286245,
+    "timeBlockCount": 1,
+    "crossTimeStabilityEstablished": false,
+    "cashBandDirectionHomogeneous": false,
+    "reasons": [
+      "ONE_RETROSPECTIVE_ORIGIN_ONLY",
+      "FIFTY_SEVEN_WORKS_ONLY",
+      "R1_WAPE_BETTER_THAN_R0",
+      "PAIRED_FVA_POSITIVE",
+      "BOOTSTRAP_INTERVAL_WIDE_AND_CROSSES_ZERO",
+      "FVA_ONLY_0_0015228747738027302_BELOW_MATERIALITY",
+      "BIAS_ONLY_0_00035829283489286245_ABOVE_V0_1_HARD_STOP",
+      "ONE_TIME_BLOCK_CANNOT_ESTABLISH_CROSS_TIME_STABILITY",
+      "CASH_BAND_EFFECTS_ARE_HETEROGENEOUS"
+    ]
+  },
+  "cashBandAttribution": {
+    "sourceClass": "COMMITTED_SANITIZED_FROZEN_PUBLIC_AGGREGATES_ONLY",
+    "calculationClass": "DETERMINISTIC_RECOMPUTATION_NO_NEW_PREDICTIONS",
+    "bands": {
+      "H50": {
+        "workCount": 5,
+        "actualCashShare": 0.5554974511790506,
+        "r0AbsoluteError": 160126.91313042823,
+        "r1AbsoluteError": 160126.91313042823,
+        "r1MinusR0AbsoluteError": 0,
+        "interpretation": "HEAD_PROTECTION_EXACT_R0_EQUALITY"
+      },
+      "M30": {
+        "workCount": 19,
+        "actualCashShare": 0.26125972035472395,
+        "r0AbsoluteError": 178009.63849635655,
+        "r1AbsoluteError": 200603.54883739888,
+        "r1MinusR0AbsoluteError": 22593.910341042327,
+        "interpretation": "CORRECTION_INCREASED_ABSOLUTE_ERROR"
+      },
+      "L20": {
+        "workCount": 33,
+        "actualCashShare": 0.18324282846622533,
+        "r0AbsoluteError": 107147.00003033224,
+        "r1AbsoluteError": 80778.36526072661,
+        "r1MinusR0AbsoluteError": -26368.634769605633,
+        "interpretation": "CORRECTION_REDUCED_ABSOLUTE_ERROR"
+      }
+    },
+    "netR1MinusR0AbsoluteError": -3774.7244285632623,
+    "interpretation": "M30_LOSS_OFFSET_MOST_OF_L20_GAIN_CONSISTENT_WITH_SMALL_OVERALL_WAPE_IMPROVEMENT"
+  },
+  "postHocAggregateArithmetic": {
+    "status": "POST_HOC_AGGREGATE_ARITHMETIC_NOT_MODEL_EVIDENCE",
+    "statementZh": "事后聚合算术诊断，不是模型成绩。",
+    "assumption": "H50_AND_M30_USE_FROZEN_R0_WHILE_L20_USES_FROZEN_R1_AGGREGATES",
+    "diagnosticAbsoluteError": 418914.9168875114,
+    "diagnosticWape": 0.13475167829125184,
+    "diagnosticPairedFvaVsR0": 0.05921762587339036,
+    "diagnosticSignedBias": -0.07201599657323708,
+    "diagnosticAbsoluteBiasWorseningVsR0": 0.005041524489337673,
+    "modelPredictionRowsGenerated": false,
+    "modelEvaluationExecuted": false,
+    "bootstrapExecuted": false,
+    "independentEvidence": false,
+    "leaderboardEligible": false,
+    "contractPassClaimAllowed": false
+  },
+  "auditBoundary": {
+    "hpsr01Rerun": false,
+    "newPrivateActualRead": false,
+    "newRealPredictionGenerated": false,
+    "newModelEvaluationExecuted": false,
+    "newBootstrapExecuted": false,
+    "frozenPredictionModified": false,
+    "frozenMetricModified": false,
+    "prospectiveFinalHoldoutOpened": false,
+    "productionChanged": false
+  }
+}

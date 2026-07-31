@@ -1,0 +1,102 @@
+{
+  "schema": "m2.current.head_protected_segmented_router.later_origin_availability.v0.2",
+  "asOf": "2026-07-31",
+  "experimentId": "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01",
+  "modelId": "M2-WORK-HPSR01",
+  "status": "M2_HEAD_PROTECTED_SEGMENTED_ROUTER_IMPLEMENTED_AWAITING_LATER_ORIGIN_DATA",
+  "auditBoundary": {
+    "newFutureActualAmountsRead": false,
+    "newModelMetricsRead": false,
+    "modelFitRun": false,
+    "modelEvaluationRun": false,
+    "billFieldsRead": [
+      "billMonth"
+    ],
+    "historicalCacheFieldsUsed": [
+      "origin",
+      "horizonMonths",
+      "labelDateKeys",
+      "actual_nullness_only"
+    ]
+  },
+  "openedSemantics": {
+    "maxAvailabilityInspectedOrigin": "2026-02",
+    "maxActualValueOpenedOrigin": "2026-02",
+    "availabilityInspectedThrough": "2026-05",
+    "actualValueOpenedThrough": "2026-05",
+    "failedAttemptTouchedMetadataOnly": true,
+    "failedAttemptOpenedOutcome": false,
+    "unknownOrAmbiguous": false,
+    "semanticAuthority": "docs/analysis/m2-current/M2-head-protected-segmented-router-opened-origin-semantics-v0.2.json"
+  },
+  "billAvailability": {
+    "availableBillMonthRange": {
+      "from": "2013-09",
+      "through": "2026-05"
+    },
+    "completeAuthoritativeBillMonthThrough": "2026-04",
+    "incompleteMonths": [
+      {
+        "billMonth": "2026-05",
+        "factCount": 3
+      }
+    ],
+    "futureThreeMonthCompletenessRequired": true,
+    "unmaturedOrIncompleteLabelZeroImputationAllowed": false
+  },
+  "candidateInventory": {
+    "rule": "first_origin_strictly_after_max_actual_value_opened_with_three_complete_future_bill_months",
+    "earliestIndependentLaterOrigin": "2026-03",
+    "earliestIndependentFutureBillMonths": [
+      "2026-04",
+      "2026-05",
+      "2026-06"
+    ],
+    "earliestIndependentRequiredCompleteThrough": "2026-06",
+    "earliestIndependentLaterOriginReady": false,
+    "eligibleLaterOrigins": [],
+    "eligibleLaterOriginCount": 0,
+    "decisionClass": "AWAITING_COMPLETE_AUTHORITATIVE_BILL_MONTHS"
+  },
+  "historicalFinalHoldout": {
+    "sourceContract": "src/domain/oldProductEvaluation/calibrationSpec.v1.json",
+    "threeMonthOrigins": [
+      "2025-06",
+      "2025-12"
+    ],
+    "sourceContractModified": false,
+    "openedByThisAudit": false,
+    "eligibleAsUntouchedHpsrFinalHoldout": false,
+    "isolationStatus": "HISTORICAL_FINAL_HOLDOUT_ISOLATION_CONFLICT"
+  },
+  "prospectiveFinalHoldout": {
+    "selectionFormula": "addMonths(firstIndependentLaterOrigin,3)",
+    "origin": "2026-06",
+    "futureBillMonths": [
+      "2026-07",
+      "2026-08",
+      "2026-09"
+    ],
+    "requiredCompleteThrough": "2026-09",
+    "currentlyComplete": false,
+    "opened": false,
+    "outcomeRead": false,
+    "futureAmountMayChangeReservedOrigin": false,
+    "reservationIsExecutionAuthorization": false
+  },
+  "execution": {
+    "K0A": "COMPLETED_DATE_ONLY",
+    "K0B": "COMPLETED_CONTRACT_FROZEN",
+    "K1": "COMPLETED_PUBLIC_SYNTHETIC_VALIDATION",
+    "K2": "NOT_EXECUTED_AWAITING_SEPARATE_AUTHORIZATION_AND_DATA",
+    "laterOriginConsumed": false,
+    "finalHoldoutConsumed": false
+  },
+  "evidenceRefs": [
+    "docs/analysis/m2-current/M2-head-protected-segmented-router-opened-origin-semantics-v0.2.json",
+    "config/m2-current-human-anchored-later-origin.v0.1.json",
+    "src/domain/oldProductEvaluation/calibrationSpec.v1.json",
+    "scripts/m2-current/audit_head_protected_segmented_router_dates.py",
+    "docs/analysis/m2-current/M2-head-protected-segmented-router-k1-implementation-readiness-v0.1.json"
+  ]
+}

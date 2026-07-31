@@ -3,7 +3,7 @@
 ## 当前权威入口
 
 - 用户首页与公共开始入口：`README.md`
-- 当前 M2 状态：`docs/analysis/m2-v2/M2-v2-current-state-index-v0.49.md`
+- 当前 M2 状态：`docs/analysis/m2-v2/M2-v2-current-state-index-v0.53.md`
 - M2 模型机器权威：`config/m2-model-registry.v1.json`
 - M2 中文目录：`docs/analysis/m2-current/M2-model-catalog-and-scorecard-v1.md`
 - M2 出版行业规模适配渠道核心结论：
@@ -43,7 +43,29 @@
   - `docs/analysis/m2-current/M2-lg01-head-cash-residual-development-v0.1.md`
   - `docs/analysis/m2-current/M2-oa03-lg01-core-legacy-error-attribution-v0.1.json`
   - `docs/analysis/m2-current/M2-oa03-lg01-core-legacy-error-attribution-v0.1.md`
+- M2 LG01 头部保护分段路由与 later-origin 资格：
+  - `config/m2-current-head-protected-segmented-router.v0.1.json`
+  - `docs/analysis/m2-current/M2-head-protected-segmented-router-selection-gate-attribution-v0.1.json`
+  - `docs/analysis/m2-current/M2-head-protected-segmented-router-selection-gate-attribution-v0.1.md`
+  - `docs/analysis/m2-current/M2-head-protected-segmented-router-opened-origin-semantics-v0.2.json`
+  - `docs/analysis/m2-current/M2-head-protected-segmented-router-later-origin-availability-v0.2.json`
+  - `docs/analysis/m2-current/M2-head-protected-segmented-router-later-origin-availability-v0.2.md`
+  - `docs/analysis/m2-current/M2-head-protected-segmented-router-residual-bound-provenance-v0.1.json`
+  - `docs/analysis/m2-current/M2-head-protected-segmented-router-k1-implementation-readiness-v0.1.json`
+  - `docs/analysis/m2-current/M2-head-protected-segmented-router-k1-implementation-readiness-v0.1.md`
+  - `docs/analysis/m2-current/M2-head-protected-segmented-router-retrospective-readiness-v0.1.json`
+  - `docs/analysis/m2-current/M2-head-protected-segmented-router-retrospective-readiness-v0.1.md`
+  - `docs/analysis/m2-current/M2-head-protected-segmented-router-retrospective-development-v0.1.json`
+  - `docs/analysis/m2-current/M2-head-protected-segmented-router-retrospective-development-v0.1.md`
+  - `docs/analysis/m2-current/M2-head-protected-segmented-router-preregistration-v0.1.md`
+  - `docs/analysis/m2-current/M2-head-protected-segmented-router-interpretation-amendment-v0.1.json`
+  - `docs/analysis/m2-current/M2-head-protected-segmented-router-interpretation-amendment-v0.1.md`
+  - `docs/analysis/m2-current/M2-head-protected-tail-band-correction-cash-band-attribution-v0.1.md`
+  - `config/m2-current-head-protected-tail-band-correction.v0.2.json`
+  - `docs/analysis/m2-current/M2-head-protected-tail-band-correction-preregistration-v0.2.md`
 - M2 评价体系：
+  - `config/m2-business-acceptance-contract.v1.json`
+  - `docs/analysis/m2-current/M2-business-acceptance-contract-v1.md`
   - `docs/analysis/m2-current/M2-evaluation-system-audit-v1.md`
   - `config/m2-evaluation-contract.v2.2.json`
   - `docs/analysis/m2-current/M2-evaluation-contract-v2.2.md`
@@ -232,6 +254,9 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
   禁止使用未来实际 TopN 形成候选人口或正式成绩。
 - 作品点预测、组合预测、排序/分配和风险区间属于不同能力，不得共享排行榜，也不得
   将 portfolio 结果分配回作品。
+- M2 业务验收必须分别标记作品总额（`WORK_TOTAL`）与作品×渠道
+  （`WORK_CHANNEL`）门禁；部分渠道证据不得写成完整渠道门禁，也不得用来反推作品
+  总额。状态与缺口数值的唯一权威是 `config/m2-business-acceptance-contract.v1.json`。
 - 不同目标、粒度、人口、horizon、评价窗口、actual 定义或评价家族的成绩不得直接
   排名；只允许同人口或明确 same-case intersection 的配对比较。
 - operational fallback、research baseline、candidate、blocked、failed 和
@@ -260,6 +285,34 @@ npm run history:m2 -- --acknowledge-archive-only <archive-script> [arguments]
 - 默认不授权训练、调参、新候选、private evaluation、provider、数据库、
   final holdout、embargo、Canary/full160、release 或 M3 formal。只有当前用户任务
   的明确授权才能打开对应能力，且授权不跨任务自动延续。
+- `config/m2-business-acceptance-contract.v1.json` 是 M2 开发业务验收门限的数值
+  唯一权威：Core80 是硬门禁，Core90 是完整披露的敏感性人口；业务可用性与候选
+  优越性分开，候选优越性使用合同中的 `AND` 规则。H36 只能作为带永久历史非前瞻
+  警示的开发门禁，H60 只属 M3 低置信情景参考；不得用失控基线制造虚假增益。
+  H36 精确行是可重建 private cache，历史 provenance 缺失只告警。
+- LG01 头部保护分段路由模型 v0.1（`M2-WORK-HPSR01`）的原机械合同不支持状态
+  `M2_HPSR01_RETROSPECTIVE_DEVELOPMENT_UNSUPPORTED_STOP_BEFORE_K2` 必须保持
+  冻结；不得重写其指标、报告或历史成绩。科学解释修订为
+  `M2_HPSR01_CONTRACT_UNSUPPORTED_SCIENTIFICALLY_INCONCLUSIVE`：单起点、57 部
+  作品、bootstrap 跨 0 且 H50/M30/L20 方向异质，不足以证明整个模型方向失败。
+  L20-only 数字只能标记为
+  `POST_HOC_AGGREGATE_ARITHMETIC_NOT_MODEL_EVIDENCE`，不得写入模型成绩榜。
+- LG01 头部保护尾段修正模型 v0.2（`M2-WORK-HPSR02`）已在独立 outcome 打开前
+  预注册为 `POST_HOC_INSPIRED_PROSPECTIVELY_PREREGISTERED`：H50/M30 逐行精确
+  使用冻结 LG01，只有 L20 使用 HPSR01 既有冻结有界修正。当前只有 canonical
+  implementation 和公开 synthetic 不变量验证；独立评价、真实 bootstrap、训练、
+  alpha 搜索与边界重估均未执行。当前完整账单只到 `2026-04`，首个独立起点预计仍缺
+  `2026-05`、`2026-06`；prospective final holdout 必须保持未打开，active
+  candidate、自动化批准和 production 权限继续为空。未来执行需要新的明确授权。
+- 当前 M2 的 3、6、12、36 个月都是必须分别交付和分别判定的硬业务输出；不得用短周期
+  通过替代长周期。36 个月必须使用多个合法历史起点的 origin-safe rolling 现金、
+  逐起点稳定性和不确定性作为当前硬门禁，并明确尚未形成 prospective 验证。
+  60 个月只允许作为未来 M3 precursor 的低置信成熟目录情景参考，不属于当前 M2
+  排名、验收门禁或实现范围。
+- LG01 头部保护尾段修正模型 v0.2（`M2-WORK-HPSR02`）未来首次合法独立评价若为
+  `NOT_SUPPORTED` 或 `INCONCLUSIVE`，必须结束现金-only 邻接模型工作，不得继续
+  HPSR03；只有 `SUPPORTED` 才可在用户另行授权后增加至多一个第二独立起点确认，
+  且任何结果都不自动授权 production。
 
 ## Git 与提交规则
 

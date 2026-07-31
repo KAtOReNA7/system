@@ -1,0 +1,91 @@
+{
+  "schema": "m2.current.head_protected_segmented_router.retrospective_readiness.public.v0.1",
+  "asOf": "2026-07-31",
+  "experimentId": "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01",
+  "modelId": "M2-WORK-HPSR01",
+  "status": "M2_HPSR01_RETROSPECTIVE_REPLAY_READY_K2_NOT_READY",
+  "retrospectiveReplayReady": true,
+  "independentK2Ready": false,
+  "authority": {
+    "sourceAuthorityStatus": "SOURCE_AUTHORITY_AVAILABLE",
+    "derivedCacheStatus": "CACHE_READY",
+    "historicalReceiptStatus": "OPTIONAL_PROVENANCE_MISSING",
+    "historicalReceiptMissingBlocks": false,
+    "derivedCacheMissingWouldBlock": false
+  },
+  "boundaries": {
+    "residualBoundDerivationThrough": "2025-09",
+    "residualBoundProvenanceStatus": "PROVEN_PREVIOUSLY_OPENED_DEVELOPMENT_ONLY",
+    "completeAuthoritativeBillMonthThrough": "2026-04",
+    "maxActualValueOpenedOrigin": "2026-02",
+    "availabilityInspectedThrough": "2026-05",
+    "actualValueOpenedThrough": "2026-05",
+    "firstIndependentLaterOrigin": "2026-03",
+    "firstIndependentRequiredCompleteThrough": "2026-06",
+    "prospectiveFinalHoldoutOrigin": "2026-06",
+    "prospectiveFinalHoldoutRequiredCompleteThrough": "2026-09",
+    "prospectiveFinalHoldoutOpened": false,
+    "prospectiveFinalHoldoutOutcomeRead": false
+  },
+  "retrospectiveOriginInventory": [
+    {
+      "origin": "2025-10",
+      "included": false,
+      "reasons": [
+        "ACTUAL_NOT_OPENED_BEFORE_TASK"
+      ]
+    },
+    {
+      "origin": "2025-11",
+      "included": true,
+      "reasons": []
+    },
+    {
+      "origin": "2025-12",
+      "included": false,
+      "reasons": [
+        "HISTORICAL_ISOLATED_OUTCOME"
+      ]
+    },
+    {
+      "origin": "2026-01",
+      "included": false,
+      "reasons": [
+        "ACTUAL_NOT_OPENED_BEFORE_TASK"
+      ]
+    },
+    {
+      "origin": "2026-02",
+      "included": false,
+      "reasons": [
+        "INCOMPLETE_THREE_MONTH_AUTHORITY_WINDOW"
+      ]
+    }
+  ],
+  "includedOrigins": [
+    "2025-11"
+  ],
+  "excludedOrigins": [
+    "2025-10",
+    "2025-12",
+    "2026-01",
+    "2026-02"
+  ],
+  "auditBoundary": {
+    "metadataOnlyAudit": true,
+    "newFutureActualAmountsRead": false,
+    "newModelMetricsRead": false,
+    "modelFitRun": false,
+    "modelEvaluationRun": false,
+    "bootstrapRun": false,
+    "finalHoldoutOpened": false
+  },
+  "authorization": {
+    "retrospectiveDevelopmentEvaluationAuthorized": true,
+    "independentK2ConditionallyAuthorized": true,
+    "independentK2UsableNow": false,
+    "production": false,
+    "release": false,
+    "pullRequestMerge": false
+  }
+}

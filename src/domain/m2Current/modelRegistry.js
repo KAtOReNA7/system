@@ -413,6 +413,10 @@ export function renderM2ModelCatalog(registry) {
     "",
     ...renderCurrentRoles(registry),
     "",
+    "## 当前科学解释与执行边界",
+    "",
+    registry.currentRoles.roleInterpretationZh,
+    "",
     "## 持久模型与模型族",
     "",
     "| 能力 | 类型 | 中文名称（英文原名、稳定 ID） | 旧 ID / 别名 | 当前角色（机器状态） | 谱系 |",
@@ -740,6 +744,14 @@ function roleZh(role) {
       "探索性候选已预注册但尚未执行",
     implemented_exploratory_candidate_not_executed:
       "探索性候选已实现并通过合成验证但尚未执行",
+    implemented_awaiting_independent_evaluation:
+      "已实现并等待独立评价",
+    retrospective_development_unsupported_stop_before_independent_k2:
+      "回溯开发评价不支持并在独立评价前停止",
+    contract_unsupported_scientifically_inconclusive_interpretation_amended:
+      "原合同不支持保持，科学解释修订为证据不足",
+    preregistered_independent_candidate_not_executed_not_active:
+      "独立评价候选已预注册但尚未执行且未激活",
     archive_only_failed_model: "仅历史审计且已失败"
   }[role] ?? "登记角色";
 }
@@ -747,6 +759,8 @@ function roleZh(role) {
 function comparisonClassZh(value) {
   return {
     SAME_CASE_COMPARABLE: "同案例可比",
+    SAME_CASE_COMPARABLE_RETROSPECTIVE_DEVELOPMENT:
+      "回溯开发同案例可比（非独立证据）",
     SAME_INTERSECTION_COMPARABLE: "仅相同案例交集可比",
     REUSED_DEVELOPMENT_WINDOW: "复用开发窗口",
     DIFFERENT_GRAIN_NOT_COMPARABLE: "粒度不同，不可直接比较",
@@ -775,6 +789,40 @@ function resultStatusZh(value) {
   }
   if (value === "M2_LG01_HEAD_CASH_RESIDUAL_FAIL") {
     return "LG01 头部现金残差校准开发失败";
+  }
+  if (
+    value
+      === "M2_HEAD_PROTECTED_SEGMENTED_ROUTER_WAITING_FOR_NEW_BILLS"
+  ) {
+    return "头部保护分段路由等待新账单且尚未执行";
+  }
+  if (
+    value
+      === "M2_HEAD_PROTECTED_SEGMENTED_ROUTER_"
+        + "IMPLEMENTED_AWAITING_LATER_ORIGIN_DATA"
+  ) {
+    return "头部保护分段路由已实现并等待独立 later-origin 数据";
+  }
+  if (
+    value
+      === "M2_HPSR01_RETROSPECTIVE_DEVELOPMENT_"
+        + "UNSUPPORTED_STOP_BEFORE_K2"
+  ) {
+    return "头部保护分段路由回溯开发评价不支持并在独立评价前停止";
+  }
+  if (
+    value
+      === "M2_HPSR02_POST_HOC_INSPIRED_PROSPECTIVELY_"
+        + "PREREGISTERED_AWAITING_INDEPENDENT_DATA"
+  ) {
+    return "头部保护尾段修正由事后诊断启发并已前瞻预注册，等待独立数据";
+  }
+  if (
+    value
+      === "M2_HPSR01_INTERPRETATION_AMENDED_HPSR02_"
+        + "PREREGISTERED_AWAITING_INDEPENDENT_DATA"
+  ) {
+    return "HPSR01 科学解释已修订且 HPSR02 已预注册，等待独立数据";
   }
   if (value === "OA03_CURRENT_SCOPE_PERFORMANCE_NOT_EVALUABLE") {
     return "主要参考不可合法重建，当前性能不可评价";

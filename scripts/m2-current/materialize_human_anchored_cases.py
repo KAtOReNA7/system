@@ -69,6 +69,7 @@ def run(
     channel_generative: bool = False,
     publishing_scale_channel: bool = False,
     core_revenue_manual: bool = False,
+    frozen_lg01_replay: bool = False,
     publishing_scale_prepare: bool = False,
     preparation_output_directory: str | None = None,
     execution_authorization_file: str | None = None,
@@ -193,7 +194,7 @@ def run(
     platform_panel = _platform_monthly_panel(panel)
     first_observed = _first_observed_month(bill, authority_work_ids)
     reporting = _reporting_attributes(inputs, authority_work_ids)
-    v03 = _read_v03()
+    v03 = {} if frozen_lg01_replay else _read_v03()
 
     history_origins = sorted(
         set(config["dataContract"]["primaryOrigins"])
@@ -265,6 +266,20 @@ def run(
         bill,
         rows,
     )
+    manifest["rebuildBoundary"] = {
+        "mode": (
+            "FROZEN_LG01_SOURCE_REPLAY"
+            if frozen_lg01_replay
+            else "STANDARD_MATERIALIZATION"
+        ),
+        "frozenParametersApplied": False,
+        "modelTrainingPerformed": False,
+        "modelFittingPerformed": False,
+        "modelSelectionPerformed": False,
+        "v03DerivedCacheRequired": not frozen_lg01_replay,
+        "laterOriginRead": False,
+        "finalHoldoutRead": False,
+    }
     output_dir.mkdir(parents=True, exist_ok=True)
     if not publishing_scale_channel:
         (output_dir / config["privateOutputs"]["histories"]).write_bytes(
@@ -2967,6 +2982,8 @@ if __name__ == "__main__":
         )
     elif arguments == ["--core-revenue-manual"]:
         result = run(core_revenue_manual=True)
+    elif arguments == ["--frozen-lg01-replay"]:
+        result = run(frozen_lg01_replay=True)
     elif arguments == ["--oa03-base-self-test"]:
         result = _oa03_base_materialization_self_test()
     elif (

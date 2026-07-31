@@ -1,0 +1,504 @@
+{
+  "schema": "m2.business_acceptance_contract.v1",
+  "version": "1.0",
+  "asOf": "2026-07-31",
+  "status": "M2_BUSINESS_ACCEPTANCE_CONTRACT_V1_ACTIVE_FOR_DEVELOPMENT_ONLY",
+  "authority": {
+    "role": "SOLE_NUMERICAL_AUTHORITY_FOR_M2_DEVELOPMENT_BUSINESS_ACCEPTANCE",
+    "developmentEvaluationOnly": true,
+    "productionCommitment": false,
+    "automationAuthorization": false,
+    "releaseAuthorization": false,
+    "financialCommitment": false
+  },
+  "scope": {
+    "target": "future_sales_share_development_modelable_cash",
+    "actualDefinitionId": "M2-ACTUAL-DEVELOPMENT-MODELABLE-RESTATEMENT-01",
+    "minimumCompleteBillMonthsAtOrigin": 3,
+    "workPopulation": "origin_mature_legacy_work",
+    "channelPopulation": "origin_mature_existing_canonical_channel",
+    "coreRecomputedAtEveryOrigin": true,
+    "excluded": [
+      "future_new_work",
+      "future_first_observed_channel",
+      "outside_core80_tail_work",
+      "buyout_cash",
+      "other_non_sales_share_cash",
+      "company_total_revenue_gap"
+    ]
+  },
+  "populations": {
+    "primary": {
+      "populationId": "CORE80",
+      "role": "HARD_GATE",
+      "dynamicAtEveryOrigin": true
+    },
+    "sensitivity": {
+      "populationId": "CORE90",
+      "role": "DISCLOSED_SENSITIVITY_NOT_A_VETO",
+      "dynamicAtEveryOrigin": true,
+      "requiredDisclosures": [
+        "WAPE",
+        "signed_bias",
+        "absolute_error_RMB",
+        "numeric_stability",
+        "error_concentration"
+      ],
+      "contractIllegalOutputStillFails": true
+    }
+  },
+  "grainGates": {
+    "contractStatusDoesNotCollapseGrains": true,
+    "workTotalGate": {
+      "grain": "WORK_TOTAL",
+      "status": "ACTIVE_FOR_DEVELOPMENT_EVALUATION_ONLY",
+      "horizonMonths": [
+        3,
+        6,
+        12,
+        36
+      ],
+      "horizonStatusAuthorityPath": "businessUsability.horizons",
+      "h36HistoricalEvidenceCaveatAuthorityPath": "h36Evidence.historicalEvidenceCaveat",
+      "h36HistoricalEvidenceCaveat": "HISTORICAL_MULTI_ORIGIN_NOT_PROSPECTIVE_VALIDATION",
+      "workChannelCompletenessRequired": false,
+      "productionAuthorization": false,
+      "automationAuthorization": false,
+      "releaseAuthorization": false,
+      "financialCommitment": false
+    },
+    "workChannelGate": {
+      "grain": "WORK_CHANNEL",
+      "status": "PARTIAL_NOT_ACTIVE",
+      "reason": "MISSING_ELIGIBLE_CHANNEL_COMPONENTS",
+      "horizonMonths": [
+        36
+      ],
+      "missingCaseCount": 633,
+      "missingComponentCount": 914,
+      "missingCaseCountAuthorityPath": "h36Evidence.firstLegalReconstruction.partialChannelDecompositionCaseCount",
+      "missingComponentCountAuthorityPath": "h36Evidence.firstLegalReconstruction.missingEligibleChannelComponentCount",
+      "completeH36ValidationClaimAllowed": false,
+      "workTotalBaselineAffected": false
+    }
+  },
+  "businessUsability": {
+    "question": "IS_ABSOLUTE_FORECAST_ERROR_WITHIN_CURRENT_BUSINESS_ACCEPTANCE_CAPS",
+    "separateFromCandidateSuperiority": true,
+    "decisionPopulationId": "CORE80",
+    "combinationRule": "WAPE_AND_ABSOLUTE_SIGNED_BIAS",
+    "horizons": [
+      {
+        "horizonMonths": 3,
+        "maximumWape": 0.3,
+        "maximumAbsoluteSignedBias": 0.1,
+        "status": "ACTIVE_FOR_DEVELOPMENT_EVALUATION_ONLY"
+      },
+      {
+        "horizonMonths": 6,
+        "maximumWape": 0.32,
+        "maximumAbsoluteSignedBias": 0.1,
+        "status": "ACTIVE_FOR_DEVELOPMENT_EVALUATION_ONLY"
+      },
+      {
+        "horizonMonths": 12,
+        "maximumWape": 0.35,
+        "maximumAbsoluteSignedBias": 0.12,
+        "status": "ACTIVE_FOR_DEVELOPMENT_EVALUATION_ONLY"
+      },
+      {
+        "horizonMonths": 36,
+        "maximumWape": 0.4,
+        "maximumAbsoluteSignedBias": 0.12,
+        "status": "ACTIVE_FOR_DEVELOPMENT_EVALUATION_ONLY_WITH_HISTORICAL_NON_PROSPECTIVE_CAVEAT"
+      }
+    ]
+  },
+  "candidateSuperiority": {
+    "question": "IS_CANDIDATE_STABLY_AND_MATERIALLY_BETTER_THAN_PREREGISTERED_HEALTHY_SAME_CASE_BASELINE",
+    "separateFromBusinessUsability": true,
+    "comparisonIdentity": [
+      "exact_same_case",
+      "same_actual_definition",
+      "same_population",
+      "same_horizon",
+      "same_evaluation_family"
+    ],
+    "combinationRule": "AND",
+    "requirements": [
+      "PAIRED_ABSOLUTE_ERROR_REDUCTION_OVER_PAIRED_ACTUAL_AT_LEAST_ONE_PERCENT",
+      "WHOLE_WORK_CLUSTER_BOOTSTRAP_2000_LOWER_BOUND_ABOVE_ZERO",
+      "ABSOLUTE_SIGNED_BIAS_WITHIN_HORIZON_CAP",
+      "CORE80_H50_ABSOLUTE_ERROR_NOT_WORSE_THAN_HEALTHY_BASELINE",
+      "MAXIMUM_WORK_ERROR_SHARE_NOT_WORSE",
+      "TOP10_WORK_ERROR_SHARE_NOT_WORSE",
+      "L20_IMPROVEMENT_CANNOT_MASK_H50_LOSS",
+      "PER_ORIGIN_ABSOLUTE_ERROR_REDUCTION_MEDIAN_ABOVE_ZERO",
+      "NON_OVERLAPPING_TIME_EVIDENCE_REQUIREMENTS_MET"
+    ],
+    "materiality": {
+      "minimumPairedAbsoluteErrorReductionOverPairedActual": 0.01,
+      "fixedRmbGate": null,
+      "rmbReductionMustBeReported": true
+    },
+    "bootstrap": {
+      "iterations": 2000,
+      "clusterUnit": "standardWorkId",
+      "improvementIntervalLowerBoundExclusive": 0
+    },
+    "errorProtection": {
+      "core80H50AbsoluteErrorMayWorsen": false,
+      "maximumWorkErrorShareMayWorsen": false,
+      "top10WorkErrorShareMayWorsen": false,
+      "l20MayMaskH50Loss": false
+    },
+    "relativeFvaRole": "DIAGNOSTIC_ONLY",
+    "rmbReductionCanonicalNameZh": "滚动预测决策误差减少",
+    "rmbReductionCanonicalNameEn": "aggregated forecast-decision error reduction",
+    "rmbReductionForbiddenInterpretations": [
+      "company_actual_savings",
+      "unique_cash_benefit",
+      "financial_profit",
+      "nonduplicated_business_value"
+    ],
+    "requiredReductionDisclosures": [
+      "per_origin_absolute_error_reduction_p25_p50_p75",
+      "aggregated_forecast_decision_error_reduction",
+      "paired_actual",
+      "actual_cash_normalized_reduction",
+      "relative_fva"
+    ]
+  },
+  "timeEvidence": {
+    "overlappingOriginsIndependent": false,
+    "nonOverlappingDefinition": "PRIMARY_FUTURE_ACTUAL_WINDOWS_DO_NOT_OVERLAP",
+    "minimumNonOverlappingWindows": 2,
+    "minimumActualCashWeightedPassingShare": 0.6666666666666666,
+    "perOriginAbsoluteErrorReductionMedianMustBeAboveZero": true,
+    "singleIndependentLaterOriginCanConfirmStableSuccess": false,
+    "singleIndependentLaterOriginCanRejectObviousFailure": true,
+    "insufficientStatus": "INDEPENDENT_TIME_EVIDENCE_INSUFFICIENT"
+  },
+  "cashBands": {
+    "populationId": "CORE80",
+    "recomputedAtEveryOrigin": true,
+    "rankingCash": "origin_visible_trailing_12_sales_share_cash",
+    "rankingValue": "max(origin_visible_trailing_12_sales_share_cash,0)",
+    "historyWindowPolicy": "LATEST_UP_TO_12_ORIGIN_VISIBLE_MONTHS_MISSING_MONTHS_ARE_ZERO_CASH",
+    "bands": [
+      {
+        "bandId": "H50",
+        "cumulativeCashUpperInclusive": 0.5
+      },
+      {
+        "bandId": "M30",
+        "cumulativeCashUpperInclusive": 0.8
+      },
+      {
+        "bandId": "L20",
+        "cumulativeCashUpperInclusive": 1
+      }
+    ],
+    "boundaryWorkPolicy": "WHOLE_WORK_STAYS_IN_HIGHER_CASH_BAND",
+    "nonpositiveOriginCashPolicy": "CASH_BAND_UNAVAILABLE_USE_GLOBAL_C2_ALPHA",
+    "futureActualUsed": false,
+    "core90DefinesSeparateBands": false
+  },
+  "h36Evidence": {
+    "baselineModel": {
+      "modelId": "M2-WORK-LG01",
+      "displayNameZh": "人工锚定可学习全局模型",
+      "displayNameEn": "Human-Anchored Learned Global",
+      "role": "HEALTHY_FROZEN_SAME_CASE_BASELINE"
+    },
+    "evaluationFamily": "PRIMARY_ROLLING",
+    "horizonMonths": 36,
+    "historicalEvidenceCaveat": "HISTORICAL_MULTI_ORIGIN_NOT_PROSPECTIVE_VALIDATION",
+    "independentTimeEvidenceStatus": "INDEPENDENT_TIME_EVIDENCE_INSUFFICIENT",
+    "aggregateAuthoritySource": "docs/analysis/m2-current/M2-business-acceptance-threshold-audit-v1.json",
+    "aggregateReproductionTolerance": {
+      "absolute": 1e-7,
+      "relative": 1e-9
+    },
+    "aggregateAuthority": {
+      "CORE80": {
+        "originCount": 13,
+        "caseCount": 488,
+        "workCount": 62,
+        "actualAbsoluteTotalRmb": 291953066.50570047,
+        "absoluteErrorTotalRmb": 86806521.47683543,
+        "signedErrorTotalRmb": 27936681.23736614,
+        "wape": 0.2973303980526627,
+        "signedBias": 0.09568894607524414,
+        "mae": 177882.2161410562,
+        "medianAbsoluteError": 86758.80472477981,
+        "errorConcentration": {
+          "maximumWorkShare": 0.0968804208043927,
+          "top5WorkShare": 0.4290480854325845,
+          "top10WorkShare": 0.6358073969893955
+        },
+        "perOriginWapeP10P50P90": {
+          "p10": 0.235455817077721,
+          "p50": 0.2680711382842307,
+          "p90": 0.39585870413428187
+        },
+        "perOriginSignedBiasP10P50P90": {
+          "p10": -0.06937662819488076,
+          "p50": 0.1320949509894536,
+          "p90": 0.23445154812010927
+        }
+      },
+      "CORE90": {
+        "originCount": 13,
+        "caseCount": 1030,
+        "workCount": 138,
+        "actualAbsoluteTotalRmb": 323669098.2617002,
+        "absoluteErrorTotalRmb": 110499208.44029921,
+        "signedErrorTotalRmb": 30990008.585463583,
+        "wape": 0.3413956075317265,
+        "signedBias": 0.09574596015467267,
+        "mae": 107280.78489349438,
+        "medianAbsoluteError": 41247.27591759978,
+        "errorConcentration": {
+          "maximumWorkShare": 0.07610780609152566,
+          "top5WorkShare": 0.3370537433561901,
+          "top10WorkShare": 0.5163300001429818
+        },
+        "perOriginWapeP10P50P90": {
+          "p10": 0.276950221397371,
+          "p50": 0.3026019406692904,
+          "p90": 0.432901910920204
+        },
+        "perOriginSignedBiasP10P50P90": {
+          "p10": -0.058642720858728,
+          "p50": 0.1273232925226351,
+          "p90": 0.21796848153195983
+        }
+      }
+    },
+    "firstLegalReconstruction": {
+      "status": "M2_BUSINESS_ACCEPTANCE_CONTRACT_V1_ACTIVE_FOR_DEVELOPMENT_ONLY",
+      "completeLegalResultProduced": true,
+      "scientificResultFrozen": true,
+      "retryAllowed": false,
+      "executionHead": "ac65e59050475fb2024c126b574fa44e14141e89",
+      "exactHeadCiRunId": 30621317484,
+      "exactHeadLinuxCi": "success",
+      "exactHeadWindowsCi": "success",
+      "completeAuthoritativeBillMonthThrough": "2026-04",
+      "availableActualValueThroughNotOpenedForReservedEvaluation": "2026-05",
+      "sourceAuthorityStatus": "SOURCE_AUTHORITY_AVAILABLE",
+      "derivedCacheStatusBefore": "CACHE_MISS_REBUILDABLE",
+      "historicalReceiptStatusBefore": "OPTIONAL_PROVENANCE_MISSING",
+      "cacheStatusAfter": "CACHE_MISS_REBUILT_FROM_SOURCE_AUTHORITY",
+      "workTotalEvidenceStatus": "COMPLETE_EXACT_FROZEN_PRIMARY_LG01_ROWS",
+      "workChannelEvidenceStatus": "PARTIAL_DISCLOSED_NOT_USED_TO_DEFINE_WORK_TOTAL_BASELINE",
+      "sourcePrimaryH36CaseCount": 12039,
+      "currentScopeMatchedCaseCount": 11137,
+      "core80WorkTotalRowCount": 488,
+      "core90WorkTotalRowCount": 1030,
+      "partialChannelDecompositionCaseCount": 633,
+      "missingEligibleChannelComponentCount": 914,
+      "missingHistoryCount": 0,
+      "nonfinitePredictionCount": 0,
+      "modelTrainingCount": 0,
+      "modelFitCount": 0,
+      "tuningCount": 0,
+      "modelSelectionCount": 0,
+      "newCandidateExecutionCount": 0,
+      "hpsr02IndependentEvaluationCount": 0,
+      "laterOriginRead": false,
+      "finalHoldoutRead": false,
+      "privateIdentityPublished": false
+    },
+    "reproducedPublicAggregate": {
+      "CORE80": {
+        "originCount": 13,
+        "caseCount": 488,
+        "workCount": 62,
+        "actualTotalRmb": 291953066.50570047,
+        "predictionTotalRmb": 319889747.7430666,
+        "absoluteErrorTotalRmb": 86806521.47683543,
+        "signedErrorTotalRmb": 27936681.237366684,
+        "wape": 0.2973303980526627,
+        "signedBias": 0.09568894607524414,
+        "mae": 177882.2161410562,
+        "medianAbsoluteError": 86758.80472477981,
+        "errorConcentration": {
+          "maximumWorkShare": 0.09688042080439264,
+          "top5WorkShare": 0.42904808543258427,
+          "top10WorkShare": 0.6358073969893951
+        },
+        "perOriginWapeP10P50P90": {
+          "p10": 0.235455817077721,
+          "p50": 0.2680711382842307,
+          "p90": 0.39585870413428187
+        },
+        "perOriginSignedBiasP10P50P90": {
+          "p10": -0.06937662819488076,
+          "p50": 0.1320949509894536,
+          "p90": 0.23445154812010927
+        },
+        "numericStability": {
+          "nonfinitePredictionCount": 0,
+          "negativePredictionCount": 0
+        }
+      },
+      "CORE90": {
+        "originCount": 13,
+        "caseCount": 1030,
+        "workCount": 138,
+        "actualTotalRmb": 323669098.2617002,
+        "predictionTotalRmb": 354659106.8471638,
+        "absoluteErrorTotalRmb": 110499208.44029921,
+        "signedErrorTotalRmb": 30990008.58546367,
+        "wape": 0.3413956075317265,
+        "signedBias": 0.09574596015467267,
+        "mae": 107280.78489349438,
+        "medianAbsoluteError": 41247.27591759978,
+        "errorConcentration": {
+          "maximumWorkShare": 0.07610780609152554,
+          "top5WorkShare": 0.33705374335618954,
+          "top10WorkShare": 0.5163300001429808
+        },
+        "perOriginWapeP10P50P90": {
+          "p10": 0.276950221397371,
+          "p50": 0.3026019406692904,
+          "p90": 0.432901910920204
+        },
+        "perOriginSignedBiasP10P50P90": {
+          "p10": -0.058642720858728,
+          "p50": 0.1273232925226351,
+          "p90": 0.21796848153195983
+        },
+        "numericStability": {
+          "nonfinitePredictionCount": 0,
+          "negativePredictionCount": 0
+        }
+      }
+    },
+    "core80BusinessUsability": {
+      "maximumWape": 0.4,
+      "maximumAbsoluteSignedBias": 0.12,
+      "observedWape": 0.2973303980526627,
+      "observedAbsoluteSignedBias": 0.09568894607524414,
+      "wapePass": true,
+      "absoluteSignedBiasPass": true
+    },
+    "cashBandEvidence": {
+      "status": "EXACTLY_MEASURABLE_FROM_PRIVATE_SAME_CASE_ROWS",
+      "populationId": "CORE80",
+      "core90DefinesSeparateBands": false,
+      "H50": {
+        "originCount": 13,
+        "caseCount": 35,
+        "workCount": 5,
+        "actualTotalRmb": 167601112.05640006,
+        "predictionTotalRmb": 174410102.58224562,
+        "absoluteErrorTotalRmb": 21379110.445557572,
+        "signedErrorTotalRmb": 6808990.52584552,
+        "wape": 0.12755947847388513,
+        "signedBias": 0.04062616555643282,
+        "mae": 610831.7270159306,
+        "medianAbsoluteError": 560132.2123120904,
+        "errorConcentration": {
+          "maximumWorkShare": 0.36917696780325104,
+          "top5WorkShare": 1,
+          "top10WorkShare": 1
+        },
+        "numericStability": {
+          "nonfinitePredictionCount": 0,
+          "negativePredictionCount": 0
+        }
+      },
+      "M30": {
+        "originCount": 13,
+        "caseCount": 184,
+        "workCount": 31,
+        "actualTotalRmb": 65327390.97199999,
+        "predictionTotalRmb": 85229315.20745024,
+        "absoluteErrorTotalRmb": 38328199.810634136,
+        "signedErrorTotalRmb": 19901924.23545023,
+        "wape": 0.5867094834242196,
+        "signedBias": 0.3046489985185606,
+        "mae": 208305.43375344638,
+        "medianAbsoluteError": 102018.85467857879,
+        "errorConcentration": {
+          "maximumWorkShare": 0.1458829240618577,
+          "top5WorkShare": 0.6249591125876081,
+          "top10WorkShare": 0.8124092932035313
+        },
+        "numericStability": {
+          "nonfinitePredictionCount": 0,
+          "negativePredictionCount": 0
+        }
+      },
+      "L20": {
+        "originCount": 13,
+        "caseCount": 269,
+        "workCount": 52,
+        "actualTotalRmb": 59024563.47730003,
+        "predictionTotalRmb": 60250329.95337096,
+        "absoluteErrorTotalRmb": 27099211.220643785,
+        "signedErrorTotalRmb": 1225766.4760709424,
+        "wape": 0.4591175203026404,
+        "signedBias": 0.020767057032829002,
+        "mae": 100740.56215852709,
+        "medianAbsoluteError": 67415.8508301879,
+        "errorConcentration": {
+          "maximumWorkShare": 0.09024519897126845,
+          "top5WorkShare": 0.33554040531742296,
+          "top10WorkShare": 0.5338262025101816
+        },
+        "numericStability": {
+          "nonfinitePredictionCount": 0,
+          "negativePredictionCount": 0
+        }
+      }
+    },
+    "reproductionStatus": "EXACT_AGGREGATE_REPRODUCED_WITHIN_FIXED_TOLERANCE",
+    "h50M30L20ExactlyMeasurable": true,
+    "h36Activated": true
+  },
+  "h60": {
+    "horizonMonths": 60,
+    "role": "M3_ONLY_LOW_CONFIDENCE_MATURE_CATALOG_SCENARIO_REFERENCE",
+    "currentM2Gate": false,
+    "currentM2Ranking": false,
+    "implementedByThisContract": false,
+    "predictsNamedFutureWorks": false
+  },
+  "privateEvidence": {
+    "capabilityId": "m2-core-legacy-horizon-router",
+    "sourceAuthorityClass": "PRIVATE_SOURCE_AUTHORITY",
+    "derivedCacheClass": "PRIVATE_DERIVED_CACHE",
+    "historicalProvenanceClass": "PRIVATE_RUN_PROVENANCE",
+    "sourceAuthorityMissingBlocks": true,
+    "derivedCacheMissingBlocks": false,
+    "historicalProvenanceMissingBlocks": false,
+    "cacheDirectory": "data/private-output/m2-business-acceptance-contract-v1",
+    "h36BaselineRows": "M2-business-acceptance-h36-lg01-baseline-rows-private-v1.ndjson",
+    "h36Manifest": "M2-business-acceptance-h36-evidence-manifest-private-v1.json",
+    "rebuildCommand": "npm run recover:m2:current:business-acceptance-h36",
+    "publicAggregateOnly": true,
+    "privateIdentityPublished": false
+  },
+  "authorization": {
+    "developmentEvaluationOnly": true,
+    "frozenBaselineCacheReconstruction": true,
+    "training": false,
+    "fitting": false,
+    "tuning": false,
+    "modelSelection": false,
+    "newCandidateExecution": false,
+    "hpsr02IndependentEvaluation": false,
+    "hpsr03Development": false,
+    "production": false,
+    "automation": false,
+    "release": false,
+    "laterOrigin": false,
+    "finalHoldout": false,
+    "m3Formal": false,
+    "pullRequestMerge": false
+  }
+}

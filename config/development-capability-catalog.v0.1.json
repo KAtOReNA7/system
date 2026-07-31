@@ -417,6 +417,18 @@
           "path": "data/private-output/m2-current-quality/M2-current-occurrence-amount-candidate-cases-private-v0.3.ndjson"
         },
         {
+          "role": "business-acceptance-h36-lg01-baseline-rows",
+          "kind": "file",
+          "artifactClass": "PRIVATE_DERIVED_CACHE",
+          "path": "data/private-output/m2-business-acceptance-contract-v1/M2-business-acceptance-h36-lg01-baseline-rows-private-v1.ndjson"
+        },
+        {
+          "role": "business-acceptance-h36-evidence-manifest",
+          "kind": "file",
+          "artifactClass": "PRIVATE_DERIVED_CACHE",
+          "path": "data/private-output/m2-business-acceptance-contract-v1/M2-business-acceptance-h36-evidence-manifest-private-v1.json"
+        },
+        {
           "role": "horizon-router-run-receipt",
           "kind": "file",
           "artifactClass": "PRIVATE_RUN_PROVENANCE",
@@ -428,7 +440,8 @@
         "npm run diagnose:m2:core-legacy-horizon-router",
         "npm run prepare:m2:current:core-legacy-horizon-router",
         "npm run rescore:m2:current:core-legacy-horizon-router",
-        "npm run develop:m2:current:core-legacy-horizon-router"
+        "npm run develop:m2:current:core-legacy-horizon-router",
+        "npm run recover:m2:current:business-acceptance-h36"
       ],
       "recovery": "Restore only missing PRIVATE_SOURCE_AUTHORITY from a verified capability-scoped source. Rebuild frozen formula rows, same-case rows, router selections and channel allocations from source authority and frozen repository code. Missing caches or historical receipts never block and are never fabricated.",
       "authorization": "USER_AUTHORIZED_M2_CORE_LEGACY_FULL_HORIZON_ROUTER_AND_CHANNEL_ALLOCATION_EVALUATION_2026_07_29"
@@ -1277,6 +1290,95 @@
       ],
       "recovery": "Restore only the user-reviewed ledger partition, its work-mapping authority, and the six digest-bound frozen prediction artifacts. Never regenerate predictions or infer private rows from public aggregates.",
       "authorization": "USER_AUTHORIZED_M2_EVALUATION_V2_2_LABEL_ONLY_RESCORE_2026_07_28"
+    },
+    {
+      "id": "m2-head-protected-segmented-router",
+      "description": "Rebuild metadata-only opened-origin semantics and derived caches, verify the completed HPSR01 canonical implementation, execute the single authorized retrospective development replay on outcomes opened before this task, and retain a separate fail-closed conditional gate for an independent K2. K1 is complete; K2 is authorized by the current task only when the fresh audit proves maturity and the retrospective result is not unsupported.",
+      "privateArtifactClassificationVersion": "private-artifact-classification.v0.1",
+      "requiredTools": [],
+      "requiredPrivateArtifacts": [
+        {
+          "role": "total-ledger-authority",
+          "kind": "file",
+          "artifactClass": "PRIVATE_SOURCE_AUTHORITY",
+          "path": "data/real-bills/渠道实销汇总 -总.xlsx"
+        },
+        {
+          "role": "sales-share-ledger-authority",
+          "kind": "file",
+          "artifactClass": "PRIVATE_SOURCE_AUTHORITY",
+          "path": "data/real-bills/渠道实销汇总 -分成.xlsx"
+        },
+        {
+          "role": "buyout-ledger-authority",
+          "kind": "file",
+          "artifactClass": "PRIVATE_SOURCE_AUTHORITY",
+          "path": "data/real-bills/渠道实销汇总 -买断.xlsx"
+        },
+        {
+          "role": "m1-work-mapping-authority",
+          "kind": "directory",
+          "artifactClass": "PRIVATE_SOURCE_AUTHORITY",
+          "path": "data/m1-master-data-private/mapping-candidate"
+        },
+        {
+          "role": "user-reviewed-channel-master",
+          "kind": "file",
+          "artifactClass": "PRIVATE_SOURCE_AUTHORITY",
+          "path": "data/private-output/outputs/channel-governance-20260726/M2-渠道统一与类型人工补全表-v0.2.xlsx"
+        },
+        {
+          "role": "frozen-cham01-feature-rows",
+          "kind": "file",
+          "artifactClass": "PRIVATE_DERIVED_CACHE",
+          "path": "data/private-output/m2-core-legacy-horizon-amount/M2-core-legacy-horizon-amount-feature-rows-private-v0.1.ndjson"
+        },
+        {
+          "role": "frozen-lg01-same-case-rows",
+          "kind": "file",
+          "artifactClass": "PRIVATE_DERIVED_CACHE",
+          "path": "data/private-output/m2-core-legacy-horizon-amount/M2-core-legacy-horizon-amount-frozen-lg01-rows-private-v0.1.ndjson"
+        },
+        {
+          "role": "opened-origin-semantics-ledger",
+          "kind": "file",
+          "artifactClass": "PRIVATE_DERIVED_CACHE",
+          "path": "data/private-output/m2-head-protected-segmented-router/M2-head-protected-segmented-router-opened-origin-semantics-private-v0.2.json"
+        },
+        {
+          "role": "frozen-cham01-b3-prediction-rows",
+          "kind": "file",
+          "artifactClass": "PRIVATE_DERIVED_CACHE",
+          "path": "data/private-output/m2-core-legacy-horizon-amount/M2-core-legacy-horizon-amount-predictions-private-v0.1.ndjson"
+        },
+        {
+          "role": "hpsr-residual-bounds",
+          "kind": "file",
+          "artifactClass": "PRIVATE_DERIVED_CACHE",
+          "path": "data/private-output/m2-head-protected-segmented-router/M2-head-protected-segmented-router-residual-bounds-private-v0.1.json"
+        },
+        {
+          "role": "hpsr-retrospective-run-receipt",
+          "kind": "file",
+          "artifactClass": "PRIVATE_RUN_PROVENANCE",
+          "path": "data/private-output/m2-head-protected-segmented-router/M2-head-protected-segmented-router-retrospective-receipt-private-v0.1.json"
+        }
+      ],
+      "canonicalValidationCommands": [
+        "npm run doctor:capability -- m2-head-protected-segmented-router",
+        "npm run diagnose:m2:head-protected-segmented-router",
+        "npm run check:m2:head-protected-segmented-router-dates",
+        "npm run prepare:m2:head-protected-segmented-router-bounds",
+        "npm run smoke:m2:current:head-protected-segmented-router"
+      ],
+      "futureControlledEntrypoint": {
+        "command": "npm run execute:m2:head-protected-segmented-router",
+        "retrospectiveArguments": "-- --retrospective",
+        "defaultExpectedStatus": "FAIL_CLOSED_K2_NOT_READY",
+        "currentTaskConditionalK2Authorization": true
+      },
+      "recovery": "Restore only genuinely missing PRIVATE_SOURCE_AUTHORITY from a verified capability-scoped package. Rebuild feature rows, opened-origin semantics and residual bounds from authority and committed frozen code. Missing derived caches never block after deterministic rebuild; missing historical provenance only warns and is never fabricated. The current authorization permits exactly one retrospective result and conditionally one independent K2 only if the fresh audit proves maturity.",
+      "authorization": "USER_AUTHORIZED_HPSR01_RETROSPECTIVE_AND_CONDITIONAL_K2_2026_07_31"
     },
     {
       "id": "m3-private-materials",

@@ -1,0 +1,593 @@
+import {
+  buildHpsrOriginCashBands,
+  buildHpsrOriginCashBandsFromWorkCash,
+  computeHpsrFrozenBoundedResidualCorrection,
+  planHpsrProspectiveReservation
+} from "./headProtectedSegmentedRouter.js";
+
+export const HPSR02_MODEL_ID = "M2-WORK-HPSR02";
+export const HPSR02_EXPERIMENT_ID =
+  "M2-EXP-LG01-HEAD-PROTECTED-TAIL-BAND-CORRECTION-02";
+export const HPSR02_ARM_IDS = Object.freeze(["R0", "R1", "R2"]);
+export const HPSR02_PREREGISTERED_STATUS =
+  "M2_HPSR02_POST_HOC_INSPIRED_PROSPECTIVELY_"
+    + "PREREGISTERED_AWAITING_INDEPENDENT_DATA";
+export const HPSR02_WORKFLOW_STATUS =
+  "M2_HPSR01_INTERPRETATION_AMENDED_HPSR02_"
+    + "PREREGISTERED_AWAITING_INDEPENDENT_DATA";
+
+const MONTH_PATTERN = /^\d{4}-(?:0[1-9]|1[0-2])$/u;
+const CASH_BANDS = Object.freeze(["H50", "M30", "L20"]);
+const PREDICTION_ROW_FIELDS = new Set([
+  "standardWorkId",
+  "origin",
+  "horizonMonths",
+  "lg01Prediction",
+  "cham01B3Prediction",
+  "cham01Diagnostics"
+]);
+const DIAGNOSTIC_FIELDS = new Set([
+  "signedExpm1Overflow",
+  "supportRangeExtrapolation"
+]);
+
+export function runHeadProtectedTailBandCorrection({
+  origin,
+  horizonMonths = 3,
+  originVisibleMonthlyCashRows = null,
+  originVisibleWorkCashRows = null,
+  predictionRows,
+  residualBoundState,
+  executionMode = "SYNTHETIC_FIXTURE"
+}) {
+  const normalizedOrigin = requireMonth(origin, "router_origin");
+  if (Number(horizonMonths) !== 3) {
+    throw new Error("hpsr02_only_three_month_horizon_allowed");
+  }
+  if (![
+    "SYNTHETIC_FIXTURE",
+    "CONTROLLED_LATER_ORIGIN"
+  ].includes(executionMode)) {
+    throw new Error("hpsr02_execution_mode_invalid");
+  }
+  if (
+    (originVisibleMonthlyCashRows === null)
+      === (originVisibleWorkCashRows === null)
+  ) {
+    throw new Error(
+      "hpsr02_exactly_one_origin_visible_cash_input_required"
+    );
+  }
+  if (!Array.isArray(predictionRows) || predictionRows.length === 0) {
+    throw new Error("hpsr02_prediction_rows_required");
+  }
+  assertNoPrivateReference({
+    originVisibleMonthlyCashRows,
+    originVisibleWorkCashRows,
+    predictionRows,
+    residualBoundState
+  });
+  const population = originVisibleWorkCashRows === null
+    ? buildHpsrOriginCashBands({
+      origin: normalizedOrigin,
+      originVisibleMonthlyCashRows
+    })
+    : buildHpsrOriginCashBandsFromWorkCash({
+      origin: normalizedOrigin,
+      originVisibleWorkCashRows
+    });
+  const normalizedPredictions = predictionRows.map((row) => (
+    normalizePredictionRow(row, normalizedOrigin)
+  ));
+  const predictionByWork = new Map();
+  for (const row of normalizedPredictions) {
+    if (predictionByWork.has(row.standardWorkId)) {
+      throw new Error("hpsr02_prediction_case_duplicate");
+    }
+    predictionByWork.set(row.standardWorkId, row);
+  }
+  const bandByWork = new Map(population.cashBandRows.map((row) => [
+    row.standardWorkId,
+    row.bandId
+  ]));
+  const r0Rows = [];
+  const r2Rows = [];
+  for (const standardWorkId of population.core80WorkIds) {
+    const prediction = predictionByWork.get(standardWorkId);
+    if (prediction === undefined) {
+      throw new Error("hpsr02_core80_prediction_member_missing");
+    }
+    const cashBandId = bandByWork.get(standardWorkId);
+    if (!CASH_BANDS.includes(cashBandId)) {
+      throw new Error("hpsr02_cash_band_member_missing");
+    }
+    const common = Object.freeze({
+      standardWorkId,
+      origin: normalizedOrigin,
+      horizonMonths: 3,
+      cashBandId
+    });
+    r0Rows.push(Object.freeze({
+      ...common,
+      armId: "R0",
+      modelId: "M2-WORK-LG01",
+      pointEstimate: prediction.lg01Prediction,
+      architectureStatus: "FROZEN_LG01_BASELINE"
+    }));
+    if (cashBandId !== "L20") {
+      r2Rows.push(Object.freeze({
+        ...common,
+        armId: "R2",
+        modelId: HPSR02_MODEL_ID,
+        pointEstimate: prediction.lg01Prediction,
+        alpha: null,
+        boundedNormalizedResidual: null,
+        boundedResidual: null,
+        boundTriggered: false,
+        correctionApplied: false,
+        fallbackToLg01: false,
+        fallbackReason: null,
+        numericStatus:
+          `${cashBandId}_EXACT_LG01_ARCHITECTURE`,
+        finalPredictionFinite: true
+      }));
+      continue;
+    }
+    const correction = computeHpsrFrozenBoundedResidualCorrection({
+      lg01Prediction: prediction.lg01Prediction,
+      cham01B3Prediction: prediction.cham01B3Prediction,
+      cham01Diagnostics: prediction.cham01Diagnostics,
+      residualBoundState,
+      executionMode
+    });
+    r2Rows.push(Object.freeze({
+      ...common,
+      armId: "R2",
+      modelId: HPSR02_MODEL_ID,
+      ...correction
+    }));
+  }
+  const r0CaseKeys = r0Rows.map(caseKey);
+  const r2CaseKeys = r2Rows.map(caseKey);
+  if (JSON.stringify(r0CaseKeys) !== JSON.stringify(r2CaseKeys)) {
+    throw new Error("hpsr02_case_key_conservation_failed");
+  }
+  const protectedRows = r2Rows.filter(
+    (row) => row.cashBandId !== "L20"
+  );
+  const protectedRowsExact = protectedRows.every((row) => {
+    const baseline = predictionByWork.get(row.standardWorkId);
+    return (
+      row.pointEstimate === baseline?.lg01Prediction
+      && row.correctionApplied === false
+      && row.fallbackToLg01 === false
+    );
+  });
+  if (!protectedRowsExact) {
+    throw new Error("hpsr02_h50_m30_exact_lg01_invariant_failed");
+  }
+  if (!r2Rows.every((row) => Number.isFinite(row.pointEstimate))) {
+    throw new Error("hpsr02_final_prediction_nonfinite");
+  }
+  const l20Rows = r2Rows.filter((row) => row.cashBandId === "L20");
+  const outsideDynamicCore80WorkCount = normalizedPredictions.filter(
+    (row) => !bandByWork.has(row.standardWorkId)
+  ).length;
+  const coverage = Object.freeze({
+    inputPredictionWorkCount: normalizedPredictions.length,
+    dynamicCore80WorkCount: r2Rows.length,
+    outsideDynamicCore80AbstainedWorkCount:
+      outsideDynamicCore80WorkCount,
+    H50RowCount: protectedRows.filter(
+      (row) => row.cashBandId === "H50"
+    ).length,
+    M30RowCount: protectedRows.filter(
+      (row) => row.cashBandId === "M30"
+    ).length,
+    L20RowCount: l20Rows.length,
+    protectedH50M30RowCount: protectedRows.length,
+    correctedL20RowCount: l20Rows.filter(
+      (row) => row.correctionApplied
+    ).length,
+    numericFallbackL20RowCount: l20Rows.filter(
+      (row) => row.fallbackToLg01
+    ).length,
+    boundTriggeredL20RowCount: l20Rows.filter(
+      (row) => row.boundTriggered
+    ).length,
+    finiteExtremeL20RowCount: l20Rows.filter(
+      (row) => row.finiteExtreme
+    ).length,
+    nonfiniteRawL20RowCount: l20Rows.filter(
+      (row) => row.rawPredictionFinite === false
+    ).length
+  });
+  return Object.freeze({
+    schema:
+      "m2.current.head_protected_tail_band_correction.run.v0.2",
+    experimentId: HPSR02_EXPERIMENT_ID,
+    modelId: HPSR02_MODEL_ID,
+    executionMode,
+    origin: normalizedOrigin,
+    horizonMonths: 3,
+    status: executionMode === "SYNTHETIC_FIXTURE"
+      ? "PUBLIC_SYNTHETIC_HPSR02_VALIDATED"
+      : "CONTROLLED_HPSR02_PREDICTIONS_COMPUTED_NO_EVALUATION",
+    population,
+    r0Rows: Object.freeze(r0Rows),
+    r2Rows: Object.freeze(r2Rows),
+    coverage,
+    invariants: Object.freeze({
+      dynamicCore80OriginVisibleOnly: true,
+      H50M30RowwiseExactLg01: protectedRowsExact,
+      L20Alpha: 1,
+      globalAlphaDependency: false,
+      crossBandDependency: false,
+      alphaSearchExecuted: false,
+      residualBoundsReestimated: false,
+      workLevelSelectionExecuted: false,
+      caseKeyConservationPass: true,
+      allFinalR2PredictionsFinite: true,
+      futureCashUsed: false,
+      outcomeFieldsConsumed: false,
+      privateDataAccessed: false,
+      scoreComputed: false,
+      bootstrapExecuted: false,
+      productionSurfaceChanged: false
+    })
+  });
+}
+
+export function planHpsr02IndependentCheckpoint({
+  maxActualValueOpenedOrigin,
+  completeAuthoritativeBillMonthThrough
+}) {
+  const plan = planHpsrProspectiveReservation({
+    maxActualValueOpenedOrigin,
+    completeAuthoritativeBillMonthThrough,
+    horizonMonths: 3
+  });
+  return Object.freeze({
+    maxActualValueOpenedOrigin,
+    firstIndependentLaterOrigin: plan.firstIndependentLaterOrigin,
+    firstIndependentRequiredCompleteThrough:
+      plan.firstIndependentRequiredCompleteThrough,
+    completeAuthoritativeBillMonthThrough,
+    missingOrIncompleteBillMonths: Object.freeze(
+      plan.firstIndependentFutureBillMonths.filter(
+        (month) => month > completeAuthoritativeBillMonthThrough
+      )
+    ),
+    independentCheckpointReady:
+      plan.firstIndependentLaterOriginReady,
+    prospectiveFinalHoldoutOrigin:
+      plan.prospectiveFinalHoldoutOrigin,
+    prospectiveFinalHoldoutRequiredCompleteThrough:
+      plan.prospectiveFinalHoldoutRequiredCompleteThrough,
+    prospectiveFinalHoldoutOpened: false,
+    prospectiveFinalHoldoutOutcomeRead: false
+  });
+}
+
+export function classifyHpsr02IndependentEvidence({
+  pairedFva,
+  bootstrapLower,
+  absoluteBiasWorsening,
+  H50M30EqualityPass,
+  allFinite,
+  caseKeyPass,
+  originVisibilityPass,
+  dataValidityPass,
+  catastrophicSingleWorkDominance
+}) {
+  for (const [name, value] of Object.entries({
+    pairedFva,
+    bootstrapLower,
+    absoluteBiasWorsening
+  })) {
+    if (!Number.isFinite(value)) {
+      throw new Error(`hpsr02_${name}_must_be_finite`);
+    }
+  }
+  const structuralFailures = Object.freeze([
+    H50M30EqualityPass === true
+      ? null
+      : "H50_M30_EQUALITY_FAILED",
+    allFinite === true ? null : "UNISOLATED_NONFINITE",
+    caseKeyPass === true ? null : "CASE_KEY_VALIDITY_FAILED",
+    originVisibilityPass === true
+      ? null
+      : "ORIGIN_VISIBILITY_FAILED",
+    dataValidityPass === true ? null : "DATA_VALIDITY_FAILED",
+    catastrophicSingleWorkDominance === true
+      ? "CATASTROPHIC_SINGLE_WORK_ERROR_DOMINANCE"
+      : null
+  ].filter(Boolean));
+  const thresholdDistances = Object.freeze({
+    supportedFva: Math.abs(pairedFva - 0.01),
+    supportedBootstrapLower: Math.abs(bootstrapLower),
+    supportedBias: Math.abs(absoluteBiasWorsening - 0.01),
+    unsupportedFva: Math.abs(pairedFva + 0.01),
+    unsupportedBias: Math.abs(absoluteBiasWorsening - 0.025)
+  });
+  const thresholdSensitive = Object.values(thresholdDistances).some(
+    (distance) => distance <= 0.0025
+  );
+  const supported = (
+    pairedFva >= 0.01
+    && bootstrapLower > 0
+    && absoluteBiasWorsening <= 0.01
+    && structuralFailures.length === 0
+  );
+  const unsupportedReasons = Object.freeze([
+    pairedFva <= -0.01
+      ? "WAPE_FVA_DEGRADED_AT_LEAST_ONE_PERCENT"
+      : null,
+    (
+      absoluteBiasWorsening > 0.025
+      && pairedFva < 0.01
+    )
+      ? "ABSOLUTE_BIAS_WORSENED_OVER_2_5_POINTS_WITHOUT_1_PERCENT_FVA"
+      : null,
+    ...structuralFailures
+  ].filter(Boolean));
+  let classification = "MIXED";
+  if (structuralFailures.length > 0) {
+    classification = "UNSUPPORTED";
+  } else if (thresholdSensitive) {
+    classification = "MIXED";
+  } else if (supported) {
+    classification = "SUPPORTED";
+  } else if (unsupportedReasons.length > 0) {
+    classification = "UNSUPPORTED";
+  }
+  return Object.freeze({
+    classification,
+    thresholdSensitive,
+    thresholdSensitiveStatus: thresholdSensitive
+      ? "THRESHOLD_SENSITIVE"
+      : null,
+    thresholdDistances,
+    structuralFailures,
+    unsupportedReasons,
+    independentCheckpointOnly: true,
+    approvedForAutomation: false,
+    productionReady: false,
+    prospectiveFinalHoldoutPreserved: true
+  });
+}
+
+export function validateHeadProtectedTailBandCorrectionContract(config) {
+  const errors = [];
+  let currentBoundary = null;
+  try {
+    currentBoundary = planHpsr02IndependentCheckpoint({
+      maxActualValueOpenedOrigin:
+        config?.independentDataBoundary?.currentEstimate
+          ?.maxActualValueOpenedOrigin,
+      completeAuthoritativeBillMonthThrough:
+        config?.independentDataBoundary?.currentEstimate
+          ?.completeAuthoritativeBillMonthThrough
+    });
+  } catch {
+    errors.push("hpsr02_current_boundary_inputs_invalid");
+  }
+  if (
+    config?.schema
+      !== "m2.current.head_protected_tail_band_correction.v0.2"
+    || config?.model?.stableModelId !== HPSR02_MODEL_ID
+    || config?.experiment?.stableExperimentId
+      !== HPSR02_EXPERIMENT_ID
+    || config?.status !== HPSR02_PREREGISTERED_STATUS
+    || config?.workflowStatus !== HPSR02_WORKFLOW_STATUS
+    || config?.inspiration?.classification
+      !== "POST_HOC_INSPIRED_PROSPECTIVELY_PREREGISTERED"
+  ) {
+    errors.push("hpsr02_identity_or_status_invalid");
+  }
+  if (
+    JSON.stringify(config?.experiment?.arms?.map(
+      (arm) => arm.armId
+    )) !== JSON.stringify(HPSR02_ARM_IDS)
+    || config?.experiment?.primaryCandidateArmId !== "R2"
+    || config?.experiment?.historicalComparatorArmId !== "R1"
+    || config?.experiment?.baselineArmId !== "R0"
+  ) {
+    errors.push("hpsr02_arm_contract_invalid");
+  }
+  if (
+    config?.scope?.horizonsMonths?.length !== 1
+    || config.scope.horizonsMonths[0] !== 3
+    || config?.scope?.population !== "DYNAMIC_CORE80"
+    || config?.scope?.originMatureLegacyWorkOnly !== true
+    || config?.scope?.originObservedMatureChannelOnly !== true
+    || config?.scope?.futureNewWorkAuthorized !== false
+    || config?.scope?.futureFirstObservedChannelAuthorized !== false
+    || config?.scope?.outsideCore80TailAuthorized !== false
+    || config?.scope?.companyFutureRevenueAuthorized !== false
+  ) {
+    errors.push("hpsr02_scope_invalid");
+  }
+  if (
+    config?.cashBands?.sourceContract
+      !== "HPSR01_IDENTICAL_ORIGIN_VISIBLE_DYNAMIC_CORE80_BANDS"
+    || config?.cashBands?.cutoffTiePolicy
+      !== "WHOLE_WORK_STAYS_IN_HIGHER_CASH_BAND"
+    || config?.cashBands?.fixedWorkCountThresholdAllowed !== false
+    || config?.frozenStructure?.H50?.prediction !== "FROZEN_LG01"
+    || config?.frozenStructure?.M30?.prediction !== "FROZEN_LG01"
+    || config?.frozenStructure?.L20?.prediction
+      !== "HPSR01_FROZEN_BOUNDED_RESIDUAL_CORRECTION"
+    || config?.frozenStructure?.L20?.alpha !== 1
+    || config?.frozenStructure?.globalAlphaAllowed !== false
+    || config?.frozenStructure?.alphaSearchAllowed !== false
+    || config?.frozenStructure?.residualBoundReestimationAllowed
+      !== false
+    || config?.frozenStructure?.workLevelSelectionAllowed !== false
+  ) {
+    errors.push("hpsr02_frozen_structure_invalid");
+  }
+  const policy = config?.independentEvaluation?.decisionPolicy;
+  if (
+    policy?.supported?.minimumPairedFva !== 0.01
+    || policy?.supported?.bootstrapLowerExclusive !== 0
+    || policy?.supported?.maximumAbsoluteBiasWorsening !== 0.01
+    || policy?.unsupported?.maximumPairedFva !== -0.01
+    || policy?.unsupported?.absoluteBiasWorseningExclusive !== 0.025
+    || policy?.thresholdSensitive?.distanceInclusive !== 0.0025
+    || policy?.thresholdSensitive?.classificationWithoutStructuralFailure
+      !== "MIXED"
+  ) {
+    errors.push("hpsr02_decision_policy_invalid");
+  }
+  const estimate = config?.independentDataBoundary?.currentEstimate;
+  if (currentBoundary !== null) {
+    for (const key of [
+      "maxActualValueOpenedOrigin",
+      "firstIndependentLaterOrigin",
+      "firstIndependentRequiredCompleteThrough",
+      "completeAuthoritativeBillMonthThrough",
+      "prospectiveFinalHoldoutOrigin",
+      "prospectiveFinalHoldoutRequiredCompleteThrough"
+    ]) {
+      if (estimate?.[key] !== currentBoundary[key]) {
+        errors.push(`hpsr02_current_boundary_${key}_invalid`);
+      }
+    }
+    if (
+      JSON.stringify(estimate?.missingOrIncompleteBillMonths)
+        !== JSON.stringify(currentBoundary.missingOrIncompleteBillMonths)
+      || estimate?.independentCheckpointReady !== false
+      || estimate?.prospectiveFinalHoldoutOpened !== false
+    ) {
+      errors.push("hpsr02_current_boundary_readiness_invalid");
+    }
+  }
+  if (
+    config?.authorization?.independentK2EvaluationAuthorizedNow !== false
+    || config?.authorization?.newPrivateActualReadAuthorizedNow !== false
+    || config?.authorization?.modelTrainingAuthorizedNow !== false
+    || config?.authorization?.alphaSearchAuthorizedNow !== false
+    || config?.authorization?.residualBoundReestimationAuthorizedNow
+      !== false
+    || config?.authorization?.prospectiveFinalHoldoutOpenAuthorizedNow
+      !== false
+    || config?.authorization?.productionAuthorized !== false
+    || config?.authorization?.mergeAuthorized !== false
+    || config?.governance?.activeCandidate !== null
+    || config?.governance?.approvedForAutomation !== null
+    || config?.governance?.productionReady !== false
+    || config?.governance?.finalHoldoutOpened !== false
+  ) {
+    errors.push("hpsr02_authorization_or_governance_invalid");
+  }
+  return Object.freeze({
+    valid: errors.length === 0,
+    errors: Object.freeze(errors)
+  });
+}
+
+function normalizePredictionRow(row, origin) {
+  if (row === null || typeof row !== "object" || Array.isArray(row)) {
+    throw new Error("hpsr02_prediction_row_invalid");
+  }
+  for (const key of Object.keys(row)) {
+    if (!PREDICTION_ROW_FIELDS.has(key)) {
+      throw new Error(`hpsr02_prediction_field_forbidden_${key}`);
+    }
+  }
+  const standardWorkId = nonempty(
+    row.standardWorkId,
+    "prediction_standard_work_id"
+  );
+  if (requireMonth(row.origin, "prediction_origin") !== origin) {
+    throw new Error("hpsr02_prediction_origin_mismatch");
+  }
+  if (Number(row.horizonMonths) !== 3) {
+    throw new Error("hpsr02_prediction_horizon_mismatch");
+  }
+  const lg01Prediction = finiteNumber(
+    row.lg01Prediction,
+    "prediction_lg01"
+  );
+  if (
+    row.cham01B3Prediction !== null
+    && row.cham01B3Prediction !== undefined
+    && typeof row.cham01B3Prediction !== "number"
+  ) {
+    throw new Error("hpsr02_prediction_cham01_type_invalid");
+  }
+  const diagnostics = row.cham01Diagnostics ?? {};
+  for (const key of Object.keys(diagnostics)) {
+    if (!DIAGNOSTIC_FIELDS.has(key)) {
+      throw new Error(`hpsr02_diagnostic_field_forbidden_${key}`);
+    }
+    if (typeof diagnostics[key] !== "boolean") {
+      throw new Error(`hpsr02_diagnostic_field_type_invalid_${key}`);
+    }
+  }
+  return Object.freeze({
+    standardWorkId,
+    origin,
+    horizonMonths: 3,
+    lg01Prediction,
+    cham01B3Prediction: row.cham01B3Prediction ?? null,
+    cham01Diagnostics: Object.freeze({
+      signedExpm1Overflow:
+        diagnostics.signedExpm1Overflow === true,
+      supportRangeExtrapolation:
+        diagnostics.supportRangeExtrapolation === true
+    })
+  });
+}
+
+function assertNoPrivateReference(value) {
+  if (value === null || value === undefined) return;
+  if (typeof value === "string") {
+    if (
+      /data[\\/]+private-(?:input|output)/iu.test(value)
+      || /[A-Z]:[\\/]/u.test(value)
+    ) {
+      throw new Error("hpsr02_private_or_absolute_path_forbidden");
+    }
+    return;
+  }
+  if (Array.isArray(value)) {
+    for (const item of value) assertNoPrivateReference(item);
+    return;
+  }
+  if (typeof value === "object") {
+    for (const nested of Object.values(value)) {
+      assertNoPrivateReference(nested);
+    }
+  }
+}
+
+function caseKey(row) {
+  return [
+    row.standardWorkId,
+    row.origin,
+    Number(row.horizonMonths)
+  ].join("\u0000");
+}
+
+function requireMonth(value, name) {
+  if (typeof value !== "string" || !MONTH_PATTERN.test(value)) {
+    throw new Error(`hpsr02_${name}_invalid`);
+  }
+  return value;
+}
+
+function finiteNumber(value, name) {
+  if (typeof value !== "number" || !Number.isFinite(value)) {
+    throw new Error(`hpsr02_${name}_must_be_finite`);
+  }
+  return value;
+}
+
+function nonempty(value, name) {
+  if (typeof value !== "string" || value.trim() === "") {
+    throw new Error(`hpsr02_${name}_required`);
+  }
+  return value.trim();
+}

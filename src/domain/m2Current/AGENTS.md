@@ -6,6 +6,13 @@ This directory is the only implementation home for current M2 model logic.
   names, aliases, roles, evaluation populations, and comparability groups.
   Historical artifacts remain immutable evidence and are not rewritten from
   the registry.
+- `config/m2-business-acceptance-contract.v1.json` is the sole numerical
+  authority for development business-acceptance gates. Core80 is the hard
+  gate, Core90 is disclosed sensitivity, and candidate superiority is the
+  contract's `AND` rule, separate from absolute business usability. H36 keeps
+  its historical-not-prospective caveat, H60 is M3 scenario reference only,
+  and an uncontrolled baseline must never manufacture a gain. H36 exact rows
+  are rebuildable private cache; missing historical provenance only warns.
 - Keep model, model family, experiment, experiment arm/ablation, execution
   checkpoint, evaluation campaign, status index, report/config/schema version,
   status code, and command identities separate. User-facing text must not show
@@ -102,17 +109,51 @@ This directory is the only implementation home for current M2 model logic.
   portable public development. A private evaluation may be blocked only when
   an irreplaceable authoritative source is missing or no legal historical
   forecast origin can be formed.
-- Company-level M2 sales-share forecasting must keep existing core, existing
-  tail, future new-work portfolio, and existing-work new-channel portfolio cash
-  mutually exclusive and amount-conserving. Future new works and future channel
-  entries may be forecast only as portfolio amounts, never as identities.
+- Preserve `M2-WORK-HPSR01`'s frozen mechanical result
+  `M2_HPSR01_RETROSPECTIVE_DEVELOPMENT_UNSUPPORTED_STOP_BEFORE_K2`, including
+  its metrics, population, report, and registry evaluation row. Its amended
+  scientific interpretation is
+  `M2_HPSR01_CONTRACT_UNSUPPORTED_SCIENTIFICALLY_INCONCLUSIVE`: a single
+  `2025-11` time block with 57 works, a bootstrap interval crossing zero, and
+  conflicting H50/M30/L20 directions cannot establish that the whole
+  head-protected segmentation direction fails. Any L20-only aggregate
+  arithmetic is `POST_HOC_AGGREGATE_ARITHMETIC_NOT_MODEL_EVIDENCE`; it is not
+  a row-level rescore, model evaluation, or leaderboard entry.
+- `M2-WORK-HPSR02` is a
+  `POST_HOC_INSPIRED_PROSPECTIVELY_PREREGISTERED` independent-evaluation
+  candidate, not an active candidate. Its only allowed structure keeps frozen
+  LG01 rowwise in H50 and M30 and applies the already frozen HPSR01 bounded
+  residual correction only in L20. Public synthetic code may verify
+  invariants, but must consume no outcome or private data. Do not run a real
+  evaluation, bootstrap, training, alpha search, bound re-estimation, or K2
+  without a later explicit authorization and dynamically complete bills. The
+  prospective final holdout remains unopened, and the production loader,
+  route, API, and current runtime composition must not import HPSR02.
+- If the first legal independent evaluation of `M2-WORK-HPSR02` is
+  `NOT_SUPPORTED` or `INCONCLUSIVE`, end cash-only adjacent-model work and do
+  not create HPSR03. Only `SUPPORTED` may permit at most one second independent
+  origin confirmation after separate user authorization; no result
+  automatically authorizes production.
+- Historical company portfolio, future-new-work, and existing-work
+  future-channel studies are `FUTURE_PHASE` references only. Preserve their
+  mutually exclusive, amount-conserving audit identities, but do not treat
+  them as current-M2 models, current actual, current ranking inputs, or current
+  implementation scope.
 - Do not default 36-month forecasts to recursive work-level growth factors.
   Estimate each catalog year directly from mature pre-origin pseudo-origins;
   judge support from mature time blocks, independent samples, positive cash
   denominators, and uncertainty rather than fixed 50/100-work thresholds.
-- Horizon decisions remain separate. A 3/6-month pass must not authorize a
-  12/36-month claim, and a long-horizon failure must not erase valid short-term
-  evidence. Revenue coverage, not work-count coverage, is the business target.
+- Three-, six-, twelve-, and thirty-six-month outputs are all required current
+  M2 business outputs and remain separate decision surfaces. A short-horizon
+  pass must not authorize a longer-horizon claim, and a long-horizon failure
+  must not erase valid short-term evidence. The thirty-six-month output is a
+  hard gate based on multiple legal historical origin-safe rolling cash
+  origins, per-origin stability, and uncertainty, with an explicit
+  non-prospective caveat. Revenue coverage, not work-count coverage, is the
+  business target.
+- A sixty-month output is only a low-confidence mature-catalog scenario
+  reference for a future M3 precursor. It is not a current-M2 ranking surface,
+  acceptance gate, or implementation target.
 - 受控 private development 可在首个有效 raw candidate 评价之前修复基础设施、
   路径、schema、缓存、receipt、内存或确定性实现错误并保留逐次 attempt receipt。
   一旦首个完整、可解释结果产生，必须立即冻结；不得根据 outer outcome 修改特征、

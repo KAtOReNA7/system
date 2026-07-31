@@ -1,0 +1,121 @@
+{
+  "schema": "m2.current.head_protected_tail_band_correction.synthetic_fixture.v0.2",
+  "syntheticOnly": true,
+  "realDataAccessAllowed": false,
+  "origin": "2026-03",
+  "horizonMonths": 3,
+  "historyMonthCount": 12,
+  "syntheticChannelUid": "SYN-HPSR02-CHANNEL",
+  "residualBoundState": {
+    "sourceClass": "PUBLIC_SYNTHETIC_FIXTURE_ONLY",
+    "frozenDevelopmentPositiveBaseFloor": 10,
+    "frozenDevelopmentQ05": -0.5,
+    "frozenDevelopmentQ95": 0.5,
+    "laterOriginOutcomeUsed": false,
+    "prospectiveFinalHoldoutOutcomeUsed": false
+  },
+  "works": [
+    {
+      "standardWorkId": "SYN-HPSR02-W01",
+      "monthlySalesShareCash": 10,
+      "lg01Prediction": 100,
+      "cham01B3Prediction": null
+    },
+    {
+      "standardWorkId": "SYN-HPSR02-W02",
+      "monthlySalesShareCash": 10,
+      "lg01Prediction": 90,
+      "cham01B3Prediction": 900000000000
+    },
+    {
+      "standardWorkId": "SYN-HPSR02-W03",
+      "monthlySalesShareCash": 10,
+      "lg01Prediction": 80,
+      "cham01B3Prediction": 1
+    },
+    {
+      "standardWorkId": "SYN-HPSR02-W04",
+      "monthlySalesShareCash": 10,
+      "lg01Prediction": 70,
+      "cham01B3Prediction": null
+    },
+    {
+      "standardWorkId": "SYN-HPSR02-W05",
+      "monthlySalesShareCash": 10,
+      "lg01Prediction": 60,
+      "cham01B3Prediction": 63
+    },
+    {
+      "standardWorkId": "SYN-HPSR02-W06",
+      "monthlySalesShareCash": 10,
+      "lg01Prediction": 50,
+      "cham01B3Prediction": 1000000000000,
+      "cham01Diagnostics": {
+        "supportRangeExtrapolation": true
+      }
+    },
+    {
+      "standardWorkId": "SYN-HPSR02-W07",
+      "monthlySalesShareCash": 10,
+      "lg01Prediction": 40,
+      "cham01B3Prediction": null,
+      "cham01Diagnostics": {
+        "signedExpm1Overflow": true
+      }
+    },
+    {
+      "standardWorkId": "SYN-HPSR02-W08",
+      "monthlySalesShareCash": 10,
+      "lg01Prediction": 30,
+      "cham01B3Prediction": -1000000000000,
+      "cham01Diagnostics": {
+        "supportRangeExtrapolation": true
+      }
+    },
+    {
+      "standardWorkId": "SYN-HPSR02-W09",
+      "monthlySalesShareCash": 10,
+      "lg01Prediction": 20,
+      "cham01B3Prediction": -1000000000000,
+      "cham01Diagnostics": {
+        "supportRangeExtrapolation": true
+      }
+    },
+    {
+      "standardWorkId": "SYN-HPSR02-W10",
+      "monthlySalesShareCash": 10,
+      "lg01Prediction": 10,
+      "cham01B3Prediction": null,
+      "cham01Diagnostics": {
+        "signedExpm1Overflow": true,
+        "supportRangeExtrapolation": true
+      }
+    }
+  ],
+  "expected": {
+    "core80WorkCount": 10,
+    "core80CutoffTieCount": 10,
+    "H50WorkIds": [
+      "SYN-HPSR02-W01",
+      "SYN-HPSR02-W02",
+      "SYN-HPSR02-W03",
+      "SYN-HPSR02-W04",
+      "SYN-HPSR02-W05"
+    ],
+    "M30WorkIds": [
+      "SYN-HPSR02-W06",
+      "SYN-HPSR02-W07",
+      "SYN-HPSR02-W08"
+    ],
+    "L20WorkIds": [
+      "SYN-HPSR02-W09",
+      "SYN-HPSR02-W10"
+    ],
+    "protectedH50M30RowCount": 8,
+    "correctedL20RowCount": 1,
+    "numericFallbackL20RowCount": 1,
+    "boundTriggeredL20RowCount": 1,
+    "finiteExtremeL20RowCount": 1,
+    "nonfiniteRawL20RowCount": 1
+  }
+}

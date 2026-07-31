@@ -1,0 +1,115 @@
+{
+  "schema": "m2.current.head_protected_segmented_router.selection_gate_attribution.v0.1",
+  "asOf": "2026-07-31",
+  "sourceExperimentId": "M2-EXP-LG01-HEAD-CASH-RESIDUAL-01",
+  "sourceModelId": "M2-WORK-HCRC01",
+  "sourceStatusPreserved": "M2_LG01_HEAD_CASH_RESIDUAL_FAIL",
+  "auditMode": {
+    "oldModelRerun": false,
+    "oldBootstrapRerun": false,
+    "oldOuterOutcomeRowsReadForNewSelection": false,
+    "frozenPublicAggregateRecoveryOnly": true
+  },
+  "privateSelectionEvidence": {
+    "historicalExpectedSelectionRowCount": 16,
+    "currentlyRecoverableSelectionRowCount": 0,
+    "artifactClass": "PRIVATE_DERIVED_CACHE",
+    "currentStatus": "CACHE_MISS_REBUILDABLE_BUT_OLD_RERUN_PROHIBITED_FOR_THIS_TASK",
+    "gitHistoryContainsArtifact": false,
+    "pullRequestEvidenceContainsRowLevelSelectionDiagnostics": false,
+    "perOuterSelectionUnitAlphaRejectionReasonsRecoverable": false
+  },
+  "perAlphaRejectionCounts": [
+    {
+      "alpha": 0.25,
+      "biasGuard": null,
+      "h50AbsoluteErrorGuard": null,
+      "maximumSingleWorkErrorShareGuard": null,
+      "top10ErrorShareGuard": null,
+      "numericStabilityGuard": null,
+      "core90OppositeDegradationGuard": null,
+      "status": "NOT_RECOVERABLE_FROM_REMAINING_FROZEN_EVIDENCE"
+    },
+    {
+      "alpha": 0.5,
+      "biasGuard": null,
+      "h50AbsoluteErrorGuard": null,
+      "maximumSingleWorkErrorShareGuard": null,
+      "top10ErrorShareGuard": null,
+      "numericStabilityGuard": null,
+      "core90OppositeDegradationGuard": null,
+      "status": "NOT_RECOVERABLE_FROM_REMAINING_FROZEN_EVIDENCE"
+    },
+    {
+      "alpha": 0.75,
+      "biasGuard": null,
+      "h50AbsoluteErrorGuard": null,
+      "maximumSingleWorkErrorShareGuard": null,
+      "top10ErrorShareGuard": null,
+      "numericStabilityGuard": null,
+      "core90OppositeDegradationGuard": null,
+      "status": "NOT_RECOVERABLE_FROM_REMAINING_FROZEN_EVIDENCE"
+    },
+    {
+      "alpha": 1,
+      "biasGuard": null,
+      "h50AbsoluteErrorGuard": null,
+      "maximumSingleWorkErrorShareGuard": null,
+      "top10ErrorShareGuard": null,
+      "numericStabilityGuard": null,
+      "core90OppositeDegradationGuard": null,
+      "status": "NOT_RECOVERABLE_FROM_REMAINING_FROZEN_EVIDENCE"
+    }
+  ],
+  "recoverableFrozenAggregates": {
+    "outerSelectionCount": 16,
+    "qualifiedGlobalAlphaSelectionCount": 0,
+    "globalAlphaStatusCounts": [
+      {
+        "status": "NO_ELIGIBLE_GLOBAL_ALPHA_FALLBACK_C0",
+        "count": 16
+      }
+    ],
+    "bandStatusCounts": [
+      {
+        "bandId": "H50",
+        "status": "GLOBAL_ALPHA_INELIGIBLE_FALLBACK_C0",
+        "count": 16
+      },
+      {
+        "bandId": "M30",
+        "status": "GLOBAL_ALPHA_INELIGIBLE_FALLBACK_C0",
+        "count": 16
+      },
+      {
+        "bandId": "L20",
+        "status": "GLOBAL_ALPHA_INELIGIBLE_FALLBACK_C0",
+        "count": 16
+      }
+    ],
+    "outerOutcomeUsedForSelection": false,
+    "fixedWorkCountThresholdUsed": false,
+    "rawCandidateCaseCount": {
+      "C2": 0,
+      "C3": 0
+    }
+  },
+  "dependencyAttribution": {
+    "contractGlobalAnchor": "C2_SELECTED_ALPHA",
+    "contractGlobalIneligiblePolicy": "FALLBACK_TO_C0",
+    "implementationShortCircuit": "selectBandAlphas_returns_all_bands_GLOBAL_ALPHA_INELIGIBLE_FALLBACK_C0_when_global_selectedAlpha_is_nonfinite",
+    "classification": "PREREGISTERED_AND_IMPLEMENTED_GLOBAL_DEPENDENCY_NOT_A_NEWLY_DISCOVERED_ENGINEERING_ERROR",
+    "confirmed": true
+  },
+  "interpretation": {
+    "supported": "HCRC01_DEPLOYABLE_ROUTER_FAILED",
+    "notSupported": "M30_OR_L20_INDEPENDENT_RAW_SEGMENT_CORRECTION_WAS_OUTER_EVALUATED_AND_FAILED",
+    "hcrc01FrozenFailureMayBeRewritten": false
+  },
+  "evidenceRefs": [
+    "config/m2-current-lg01-head-cash-residual.v0.1.json",
+    "src/domain/m2Current/lg01HeadCashResidual.js",
+    "docs/analysis/m2-current/M2-lg01-head-cash-residual-development-v0.1.json",
+    "docs/analysis/m2-current/M2-lg01-head-cash-residual-development-v0.1.md"
+  ]
+}

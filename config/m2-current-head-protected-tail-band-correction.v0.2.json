@@ -1,0 +1,286 @@
+{
+  "schema": "m2.current.head_protected_tail_band_correction.v0.2",
+  "asOf": "2026-07-31",
+  "status": "M2_HPSR02_POST_HOC_INSPIRED_PROSPECTIVELY_PREREGISTERED_AWAITING_INDEPENDENT_DATA",
+  "workflowStatus": "M2_HPSR01_INTERPRETATION_AMENDED_HPSR02_PREREGISTERED_AWAITING_INDEPENDENT_DATA",
+  "model": {
+    "stableModelId": "M2-WORK-HPSR02",
+    "displayNameZh": "LG01 头部保护尾段修正模型 v0.2",
+    "displayNameEn": "LG01 Head-Protected Tail-Band Correction Model v0.2",
+    "entityType": "model",
+    "capability": "WORK",
+    "implementationStatus": "PREREGISTERED_CANONICAL_SYNTHETIC_VERIFIED_AWAITING_INDEPENDENT_DATA",
+    "productionImported": false
+  },
+  "experiment": {
+    "stableExperimentId": "M2-EXP-LG01-HEAD-PROTECTED-TAIL-BAND-CORRECTION-02",
+    "displayNameZh": "M2 LG01 头部保护尾段修正独立评价 v0.2",
+    "displayNameEn": "M2 LG01 Head-Protected Tail-Band Correction Independent Evaluation v0.2",
+    "baselineArmId": "R0",
+    "historicalComparatorArmId": "R1",
+    "primaryCandidateArmId": "R2",
+    "arms": [
+      {
+        "armId": "R0",
+        "displayNameZh": "冻结 LG01 同案例基线",
+        "modelId": "M2-WORK-LG01",
+        "role": "FROZEN_SAME_CASE_BASELINE",
+        "executionStatus": "PREREGISTERED_NOT_EXECUTED"
+      },
+      {
+        "armId": "R1",
+        "displayNameZh": "冻结 HPSR01 v0.1 历史结构对照",
+        "modelId": "M2-WORK-HPSR01",
+        "role": "HISTORICAL_STRUCTURE_COMPARATOR_NOT_PRIMARY",
+        "executionStatus": "PREREGISTERED_NOT_EXECUTED"
+      },
+      {
+        "armId": "R2",
+        "displayNameZh": "HPSR02 v0.2 唯一主候选",
+        "modelId": "M2-WORK-HPSR02",
+        "role": "SOLE_PRIMARY_CANDIDATE",
+        "executionStatus": "PREREGISTERED_NOT_EXECUTED"
+      }
+    ],
+    "sameIndependentCheckpointRequired": true,
+    "sameCaseRequired": true,
+    "independentK2Executed": false
+  },
+  "inspiration": {
+    "classification": "POST_HOC_INSPIRED_PROSPECTIVELY_PREREGISTERED",
+    "statementZh": "由回溯诊断启发，但在独立 outcome 打开前预注册。",
+    "source": "docs/analysis/m2-current/M2-head-protected-tail-band-correction-cash-band-attribution-v0.1.md",
+    "postHocArithmeticIsModelEvidence": false,
+    "historicalLeaderboardEntryAllowed": false,
+    "contractPassClaimAllowed": false
+  },
+  "scope": {
+    "target": "future_sales_share_development_modelable_cash",
+    "predictionGrain": "work_origin_horizon",
+    "horizonsMonths": [
+      3
+    ],
+    "population": "DYNAMIC_CORE80",
+    "originMatureLegacyWorkOnly": true,
+    "originObservedMatureChannelOnly": true,
+    "corePopulationSource": "ORIGIN_VISIBLE_TRAILING12_SALES_SHARE_CASH_ONLY",
+    "corePopulationRecomputedAtEveryOrigin": true,
+    "futureActualTopNAllowed": false,
+    "futureNewWorkAuthorized": false,
+    "futureFirstObservedChannelAuthorized": false,
+    "outsideCore80TailAuthorized": false,
+    "companyFutureRevenueAuthorized": false,
+    "channelAllocationAuthorized": false,
+    "taxonomyAuthorized": false,
+    "channelExpertAuthorized": false,
+    "core90SelectionAuthorized": false,
+    "sixMonthAuthorized": false,
+    "twelveMonthAuthorized": false,
+    "thirtySixMonthAuthorized": false,
+    "productionAuthorized": false
+  },
+  "cashBands": {
+    "sourceContract": "HPSR01_IDENTICAL_ORIGIN_VISIBLE_DYNAMIC_CORE80_BANDS",
+    "rankingValue": "max(originVisibleTrailing12SalesShareCash,0)",
+    "historyWindowPolicy": "LATEST_UP_TO_12_ORIGIN_VISIBLE_MONTHS_MISSING_MONTHS_ARE_ZERO_CASH",
+    "bands": [
+      {
+        "bandId": "H50",
+        "cumulativeCashUpperInclusive": 0.5
+      },
+      {
+        "bandId": "M30",
+        "cumulativeCashUpperInclusive": 0.8
+      },
+      {
+        "bandId": "L20",
+        "cumulativeCashUpperInclusive": 1
+      }
+    ],
+    "cutoffTiePolicy": "WHOLE_WORK_STAYS_IN_HIGHER_CASH_BAND",
+    "fixedWorkCountThresholdAllowed": false,
+    "minimum50Or100WorksRequired": false,
+    "futureActualUsed": false
+  },
+  "frozenStructure": {
+    "H50": {
+      "prediction": "FROZEN_LG01",
+      "rowwiseExactR0Required": true,
+      "correctionAllowed": false
+    },
+    "M30": {
+      "prediction": "FROZEN_LG01",
+      "rowwiseExactR0Required": true,
+      "correctionAllowed": false
+    },
+    "L20": {
+      "prediction": "HPSR01_FROZEN_BOUNDED_RESIDUAL_CORRECTION",
+      "alpha": 1,
+      "positiveBaseFloorSource": "HPSR01_FROZEN_PREVIOUSLY_OPENED_DEVELOPMENT_ONLY",
+      "lowerBoundSource": "HPSR01_FROZEN_DEVELOPMENT_Q05",
+      "upperBoundSource": "HPSR01_FROZEN_DEVELOPMENT_Q95",
+      "nonfiniteInputPolicy": "FALLBACK_TO_FROZEN_LG01_AND_DISCLOSE",
+      "correctionAllowed": true
+    },
+    "residualBoundAuthority": "docs/analysis/m2-current/M2-head-protected-segmented-router-residual-bound-provenance-v0.1.json",
+    "globalAlphaAllowed": false,
+    "alphaSearchAllowed": false,
+    "residualBoundReestimationAllowed": false,
+    "workLevelSelectionAllowed": false,
+    "crossBandDependencyAllowed": false,
+    "postOutcomeFallbackAllowed": false,
+    "selectedPipelineAllowed": false
+  },
+  "independentEvaluation": {
+    "checkpoint": "FIRST_INDEPENDENT_LATER_ORIGIN",
+    "primaryComparison": "R2_VS_R0_EXACT_SAME_CASE",
+    "historicalStructureComparison": "R1_VS_R0_EXACT_SAME_CASE",
+    "primaryMetrics": [
+      "sum_absolute_cash_error",
+      "WAPE",
+      "paired_FVA_vs_R0",
+      "signed_bias",
+      "absolute_bias"
+    ],
+    "bootstrap": {
+      "iterations": 2000,
+      "clusterUnit": "standardWorkId",
+      "wholeWorkCluster": true,
+      "pairedSameCase": true
+    },
+    "errorConcentration": {
+      "maximumSingleWorkAbsoluteErrorShare": true,
+      "top5AndTop10WorkErrorShare": true,
+      "catastrophicMaximumSingleWorkAbsoluteErrorShare": 0.35,
+      "catastrophicMaximumSingleWorkShareWorsening": 0.1,
+      "thresholdSource": "HPSR01_FROZEN_DECISION_POLICY"
+    },
+    "decisionPolicy": {
+      "supported": {
+        "minimumPairedFva": 0.01,
+        "bootstrapLowerExclusive": 0,
+        "maximumAbsoluteBiasWorsening": 0.01,
+        "H50M30RowwiseEqualityRequired": true,
+        "finiteRequired": true,
+        "caseKeyRequired": true,
+        "originVisibilityRequired": true
+      },
+      "mixed": {
+        "examples": [
+          "POINT_FVA_POSITIVE_BUT_BELOW_0_01",
+          "BOOTSTRAP_INTERVAL_CROSSES_ZERO",
+          "WAPE_IMPROVES_BUT_ABSOLUTE_BIAS_WORSENS_FROM_0_01_THROUGH_0_025",
+          "SINGLE_LATER_ORIGIN_CANNOT_ESTABLISH_CROSS_TIME_STABILITY",
+          "CASH_BAND_DIRECTIONS_CONFLICT"
+        ]
+      },
+      "unsupported": {
+        "maximumPairedFva": -0.01,
+        "absoluteBiasWorseningExclusive": 0.025,
+        "biasTriggerRequiresPairedFvaBelow": 0.01,
+        "H50M30EqualityFailure": true,
+        "unisolatedNonfinite": true,
+        "catastrophicSingleWorkErrorDominance": true,
+        "dataCaseOrOriginVisibilityFailure": true
+      },
+      "thresholdSensitive": {
+        "status": "THRESHOLD_SENSITIVE",
+        "distanceInclusive": 0.0025,
+        "classificationWithoutStructuralFailure": "MIXED",
+        "permanentDirectionStopAllowed": false
+      }
+    },
+    "supportedMeaning": "INDEPENDENT_CHECKPOINT_SUPPORTED_ONLY",
+    "supportedMayCreateApprovedForAutomation": false,
+    "supportedMayEnterProduction": false,
+    "prospectiveFinalHoldoutMustRemainReserved": true,
+    "separateLaterAuthorizationRequired": true
+  },
+  "independentDataBoundary": {
+    "runtimeRecomputeRequired": true,
+    "currentEstimateOnly": true,
+    "dynamicFields": [
+      "maxActualValueOpenedOrigin",
+      "firstIndependentLaterOrigin",
+      "firstIndependentRequiredCompleteThrough",
+      "completeAuthoritativeBillMonthThrough",
+      "prospectiveFinalHoldoutOrigin",
+      "prospectiveFinalHoldoutRequiredCompleteThrough"
+    ],
+    "currentEstimate": {
+      "maxActualValueOpenedOrigin": "2026-02",
+      "firstIndependentLaterOrigin": "2026-03",
+      "firstIndependentRequiredCompleteThrough": "2026-06",
+      "completeAuthoritativeBillMonthThrough": "2026-04",
+      "missingOrIncompleteBillMonths": [
+        "2026-05",
+        "2026-06"
+      ],
+      "independentCheckpointReady": false,
+      "prospectiveFinalHoldoutOrigin": "2026-06",
+      "prospectiveFinalHoldoutRequiredCompleteThrough": "2026-09",
+      "prospectiveFinalHoldoutOpened": false
+    },
+    "futureAuthorizationConditions": [
+      "FIRST_INDEPENDENT_ORIGIN_THREE_MONTH_BILLS_ALL_COMPLETE",
+      "INDEPENDENT_OUTCOME_NOT_OPENED",
+      "R0_R1_R2_POPULATION_PARAMETERS_BOUNDS_AND_METRICS_FROZEN",
+      "PROSPECTIVE_FINAL_HOLDOUT_UNOPENED",
+      "PRIVATE_SOURCE_AUTHORITY_AVAILABLE",
+      "PUBLIC_GATES_PASS",
+      "USER_SEPARATELY_AUTHORIZES_K2"
+    ]
+  },
+  "implementation": {
+    "canonicalModule": "src/domain/m2Current/headProtectedTailBandCorrection.js",
+    "publicSyntheticEntrypoint": "scripts/m2-current/run_m2_head_protected_tail_band_correction_synthetic.mjs",
+    "publicSyntheticFixture": "test/fixtures/m2-head-protected-tail-band-correction.synthetic.v0.2.json",
+    "privateRunnerCreated": false,
+    "realEvaluationEntrypointCreated": false,
+    "productionLoaderModified": false,
+    "productionRouteModified": false,
+    "productionApiModified": false,
+    "productionSurfaceChangeCount": 0
+  },
+  "publicOutputs": {
+    "hpsr01InterpretationJson": "docs/analysis/m2-current/M2-head-protected-segmented-router-interpretation-amendment-v0.1.json",
+    "hpsr01InterpretationReport": "docs/analysis/m2-current/M2-head-protected-segmented-router-interpretation-amendment-v0.1.md",
+    "cashBandAttributionReport": "docs/analysis/m2-current/M2-head-protected-tail-band-correction-cash-band-attribution-v0.1.md",
+    "preregistrationReport": "docs/analysis/m2-current/M2-head-protected-tail-band-correction-preregistration-v0.2.md"
+  },
+  "authorization": {
+    "independentK2EvaluationAuthorizedNow": false,
+    "newPrivateActualReadAuthorizedNow": false,
+    "modelTrainingAuthorizedNow": false,
+    "modelFittingAuthorizedNow": false,
+    "hyperparameterTuningAuthorizedNow": false,
+    "alphaSearchAuthorizedNow": false,
+    "residualBoundReestimationAuthorizedNow": false,
+    "prospectiveFinalHoldoutOpenAuthorizedNow": false,
+    "productionAuthorized": false,
+    "mergeAuthorized": false,
+    "nextModelAuthorized": false
+  },
+  "governance": {
+    "activeCandidate": null,
+    "approvedForAutomation": null,
+    "productionReady": false,
+    "finalHoldoutOpened": false,
+    "hpsr01OriginalContractResultPreserved": true,
+    "hpsr01ScientificInterpretationAmended": true,
+    "postHocArithmeticIsIndependentEvidence": false,
+    "independentK2Executed": false
+  },
+  "auditBoundary": {
+    "hpsr01Rerun": false,
+    "newActualRead": false,
+    "realPredictionGenerated": false,
+    "realModelEvaluationExecuted": false,
+    "realBootstrapExecuted": false,
+    "trainingOrFittingExecuted": false,
+    "alphaSearchExecuted": false,
+    "residualBoundReestimationExecuted": false,
+    "prospectiveFinalHoldoutOpened": false,
+    "productionChanged": false
+  }
+}

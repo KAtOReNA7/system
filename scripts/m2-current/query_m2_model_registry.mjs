@@ -369,6 +369,10 @@ function roleZh(value) {
       "探索性候选已预注册但尚未执行",
     implemented_exploratory_candidate_not_executed:
       "探索性候选已实现并通过合成验证但尚未执行",
+    implemented_awaiting_independent_evaluation:
+      "已实现并等待独立评价",
+    retrospective_development_unsupported_stop_before_independent_k2:
+      "回溯开发评价不支持并在独立评价前停止",
     archive_only_failed_model: "仅历史审计且已失败"
   }[value] ?? "登记角色";
 }
@@ -379,6 +383,13 @@ function operationalStatusZh(value) {
   }
   if (value === "implemented_not_executed_not_promoted") {
     return "已实现，尚未执行且未晋升";
+  }
+  if (
+    value
+      === "implemented_public_synthetic_verified_"
+        + "not_independently_evaluated_not_selected_not_production"
+  ) {
+    return "已实现并通过公共合成验证，尚未独立评价、选择或进入生产";
   }
   if (
     value
@@ -419,6 +430,26 @@ function resultStatusZh(value) {
   }
   if (value === "M2_LG01_HEAD_CASH_RESIDUAL_FAIL") {
     return "LG01 头部现金残差校准开发失败";
+  }
+  if (
+    value
+      === "M2_HEAD_PROTECTED_SEGMENTED_ROUTER_WAITING_FOR_NEW_BILLS"
+  ) {
+    return "头部保护分段路由等待新账单且尚未执行";
+  }
+  if (
+    value
+      === "M2_HEAD_PROTECTED_SEGMENTED_ROUTER_"
+        + "IMPLEMENTED_AWAITING_LATER_ORIGIN_DATA"
+  ) {
+    return "头部保护分段路由已实现并等待独立 later-origin 数据";
+  }
+  if (
+    value
+      === "M2_HPSR01_RETROSPECTIVE_DEVELOPMENT_"
+        + "UNSUPPORTED_STOP_BEFORE_K2"
+  ) {
+    return "头部保护分段路由回溯开发评价不支持并在独立评价前停止";
   }
   if (value === "HORIZON_ROUTER_NOT_CONFIRMED") {
     return "按预测周期滚动模型路由未确认";
