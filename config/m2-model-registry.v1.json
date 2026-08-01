@@ -74,7 +74,7 @@
     "activeCandidate": null,
     "blockedExperiment": null,
     "pendingExperiment": null,
-    "latestStateIndex": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.56.md",
+    "latestStateIndex": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.57.md",
     "roleConflict": false,
     "sourceAssertions": [
       {
@@ -282,10 +282,18 @@
         "assertion": "psc02_core_implemented_public_synthetic_verified_private_source_authority_precheck_blocked_before_prediction",
         "scope": "publishing_scale_channel_origin_visible_cash_anchor_development_implementation_readiness_no_real_outcome",
         "historicalAssertion": false,
+        "currentAuthority": false,
+        "supersededBy": "docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-development-evaluation-v0.1.json"
+      },
+      {
+        "source": "docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-development-evaluation-v0.1.json",
+        "assertion": "psc02_single_controlled_development_replay_stopped_before_fit_prediction_and_outcome_by_private_source_authority_without_model_metrics",
+        "scope": "publishing_scale_channel_origin_visible_cash_anchor_development_replay_source_authority_blocker_no_candidate_result",
+        "historicalAssertion": false,
         "currentAuthority": true
       }
     ],
-    "roleInterpretationZh": "作品发生—金额校准模型 v0.3（M2-WORK-OA03）继续只是兼容性现行运行回退；人工锚定可学习全局模型（M2-WORK-LG01）继续是 Core 老品金额实验的主要研究比较基线。核心老品分周期金额模型 v0.1（M2-WORK-CHAM01）的既有性能与数值稳定性失败、LG01 头部现金残差校准模型 v0.1（M2-WORK-HCRC01）的失败结果均保持冻结。LG01 头部保护分段路由模型 v0.1（M2-WORK-HPSR01）的原 v0.1 合同结果继续是回溯开发不支持，科学解释状态为 M2_HPSR01_CONTRACT_UNSUPPORTED_SCIENTIFICALLY_INCONCLUSIVE，两者均保持冻结。LG01 头部保护尾段修正模型 v0.2（M2-WORK-HPSR02）已完成唯一一次 2026-03 起点独立评价：动态 Core80 为 43 部，候选 WAPE 为 64.1150%，相对冻结 LG01 同案例基线的 relative FVA 为 0.5179%，2,000 次作品 cluster bootstrap 95% 区间为 [-2.4406%, 3.8718%]，未达到 1% 支持门限且区间跨 0，最终为证据不足并结束现金-only 相邻研究（M2_HPSR02_FIRST_INDEPENDENT_INCONCLUSIVE_CASH_ONLY_RESEARCH_ENDED）。positive base floor、q05 与 q95 继续是不可变冻结模型参数（IMMUTABLE_FROZEN_MODEL_PARAMETER）；旧 577 行仅为参数谱系快照（PARAMETER_LINEAGE_SNAPSHOT）。当前账单形成 2026-03 输入与 2026-04 至 2026-06 作品总额 actual；渠道行级两侧各 732 行漂移继续登记且不改写参数或 actual。七次结果前工程停止、两个历史阻断检查点和冻结结果均保留。作品—渠道门禁继续为部分且未激活；前瞻最终留出、第二独立起点、后继现金模型、活动候选、自动化与生产权限均为空。出版行业渠道起点可见现金锚金额模型 v0.1（M2-CHAN-PSC02；raw variant M2-CHAN-PSC02-RAW）已按预注册创建核心并通过公共 synthetic 合同，尚未拟合、预测或评价；private source authority 元数据预检缺少 component/revision/effectiveAt/availableAt，执行前保持失败关闭。活动候选、自动化、production 与 final holdout 继续为空。",
+    "roleInterpretationZh": "作品发生—金额校准模型 v0.3（M2-WORK-OA03）继续只是兼容性现行运行回退；人工锚定可学习全局模型（M2-WORK-LG01）继续是 Core 老品金额实验的主要研究比较基线。核心老品分周期金额模型 v0.1（M2-WORK-CHAM01）的既有性能与数值稳定性失败、LG01 头部现金残差校准模型 v0.1（M2-WORK-HCRC01）的失败结果均保持冻结。LG01 头部保护分段路由模型 v0.1（M2-WORK-HPSR01）的原 v0.1 合同结果继续是回溯开发不支持，科学解释状态为 M2_HPSR01_CONTRACT_UNSUPPORTED_SCIENTIFICALLY_INCONCLUSIVE，两者均保持冻结。LG01 头部保护尾段修正模型 v0.2（M2-WORK-HPSR02）已完成唯一一次 2026-03 起点独立评价：动态 Core80 为 43 部，候选 WAPE 为 64.1150%，相对冻结 LG01 同案例基线的 relative FVA 为 0.5179%，2,000 次作品 cluster bootstrap 95% 区间为 [-2.4406%, 3.8718%]，未达到 1% 支持门限且区间跨 0，最终为证据不足并结束现金-only 相邻研究（M2_HPSR02_FIRST_INDEPENDENT_INCONCLUSIVE_CASH_ONLY_RESEARCH_ENDED）。positive base floor、q05 与 q95 继续是不可变冻结模型参数（IMMUTABLE_FROZEN_MODEL_PARAMETER）；旧 577 行仅为参数谱系快照（PARAMETER_LINEAGE_SNAPSHOT）。当前账单形成 2026-03 输入与 2026-04 至 2026-06 作品总额 actual；渠道行级两侧各 732 行漂移继续登记且不改写参数或 actual。七次结果前工程停止、两个历史阻断检查点和冻结结果均保留。作品—渠道门禁继续为部分且未激活；前瞻最终留出、第二独立起点、后继现金模型、活动候选、自动化与生产权限均为空。出版行业渠道核心（M2-CHAN-PSC01）冻结失败，根因是估计器尺度收缩且实现与同案例比较器完整。出版行业渠道起点可见现金锚金额模型 v0.1（M2-CHAN-PSC02；raw variant M2-CHAN-PSC02-RAW）已实现并通过公共 synthetic 合同；唯一受控开发重放因缺少 component/revision/effectiveAt/availableAt 权威且账本拆分复核失败，在拟合、预测、outcome、指标与 bootstrap 前停止，登记为 PSC02_DEVELOPMENT_NOT_SUPPORTED 和 PRIVATE_SOURCE_AUTHORITY_BLOCKER_NOT_MODEL_FAILURE。没有原始候选结果、评价行或重试授权；活动候选、自动化、production 与 final holdout 继续为空。",
     "activeExperiment": null
   },
   "currentEvaluationContract": {
@@ -3110,26 +3118,29 @@
         "docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-preregistration-v0.1.md",
         "docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-pre-outcome-contract-clarification-v0.1.md",
         "docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-implementation-readiness-v0.1.json",
-        "docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-implementation-readiness-v0.1.md"
+        "docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-implementation-readiness-v0.1.md",
+        "docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-development-evaluation-v0.1.json",
+        "docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-development-evaluation-v0.1.md",
+        "docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-implementation-and-result-decision-v0.1.md"
       ],
       "predecessorIds": [
         "M2-CHAN-PSC01"
       ],
       "successorIds": [],
       "rawCandidateVariantId": "M2-CHAN-PSC02-RAW",
-      "currentRole": "inactive_development_candidate_not_evaluated",
-      "evidenceStatus": "implemented_public_synthetic_verified_private_source_authority_precheck_blocked_before_prediction",
-      "operationalStatus": "inactive_awaiting_exact_head_ci_and_controlled_development_replay",
+      "currentRole": "blocked_development_model_no_candidate_outcome",
+      "evidenceStatus": "single_controlled_development_replay_stopped_before_fit_prediction_outcome_and_metrics_by_private_source_authority",
+      "operationalStatus": "inactive_development_not_supported_source_authority_blocker_authorization_consumed",
       "automationAuthorized": false,
       "productionImported": false,
       "finalHoldoutOpened": false,
-      "developmentWindowReuse": "single_authorized_historical_development_replay_not_yet_executed",
+      "developmentWindowReuse": "single_authorized_historical_development_replay_consumed_before_prediction_no_complete_result",
       "limitationsZh": [
-        "尚未形成任何真实 PSC02 拟合、预测、候选指标或 bootstrap",
-        "当前可见私有源缺少不可事后推造的 componentId、revisionId、effectiveAt 和 availableAt",
-        "现金权威未通过前不得生成只覆盖容易子集的候选结果",
+        "唯一授权开发重放已在拟合、预测、outcome、候选指标与 bootstrap 前停止，没有完整原始候选结果",
+        "私有源缺少不可事后推造的 componentId、revisionId、effectiveAt 和 availableAt，且总账与人工拆分账本多重集复核失败",
+        "本次属于私有源权威阻断而非模型性能失败；不得生成只覆盖容易子集的候选结果",
         "现金锚单独诊断与锚定对数比率岭回归诊断不是候选或 numerical fallback",
-        "不具备独立评价、later-origin、final holdout、自动化、生产、发布或财务使用权限"
+        "不具备重试、独立评价、later-origin、final holdout、自动化、生产、发布或财务使用权限"
       ],
       "evaluations": []
     },
@@ -4541,22 +4552,22 @@
           "armId": "D0",
           "displayNameZh": "现金锚单独诊断",
           "modelId": "M2-CHAN-PSC02",
-          "executionStatus": "IMPLEMENTED_PUBLIC_SYNTHETIC_VERIFIED_NOT_EXECUTED_PRIVATE_ATTRIBUTION_ONLY"
+          "executionStatus": "NOT_EXECUTED_PRIVATE_SOURCE_AUTHORITY_BLOCKED"
         },
         {
           "armId": "D1",
           "displayNameZh": "锚定对数比率岭回归诊断",
           "modelId": "M2-CHAN-PSC02",
-          "executionStatus": "IMPLEMENTED_PUBLIC_SYNTHETIC_VERIFIED_NOT_EXECUTED_PRIVATE_ATTRIBUTION_ONLY"
+          "executionStatus": "NOT_EXECUTED_PRIVATE_SOURCE_AUTHORITY_BLOCKED"
         },
         {
           "armId": "P",
           "displayNameZh": "锚定准 Gamma offset 主设计",
           "modelId": "M2-CHAN-PSC02",
-          "executionStatus": "IMPLEMENTED_PUBLIC_SYNTHETIC_VERIFIED_AWAITING_EXACT_HEAD_CI_CONTROLLED_DEVELOPMENT_REPLAY"
+          "executionStatus": "NOT_EXECUTED_PRIVATE_SOURCE_AUTHORITY_BLOCKED"
         }
       ],
-      "resultStatus": "M2_PSC02_IMPLEMENTED_AWAITING_EXACT_HEAD_CI_AND_CONTROLLED_DEVELOPMENT_REPLAY",
+      "resultStatus": "PSC02_DEVELOPMENT_NOT_SUPPORTED",
       "currentAuthority": true,
       "modelCreated": true,
       "realPredictionGenerated": false,
@@ -4570,7 +4581,10 @@
         "docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-pre-outcome-contract-clarification-v0.1.md",
         "config/m2-current-publishing-scale-channel-origin-visible-cash-anchor-development.v0.1.json",
         "docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-implementation-readiness-v0.1.json",
-        "docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-implementation-readiness-v0.1.md"
+        "docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-implementation-readiness-v0.1.md",
+        "docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-development-evaluation-v0.1.json",
+        "docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-development-evaluation-v0.1.md",
+        "docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-implementation-and-result-decision-v0.1.md"
       ]
     },
     {
@@ -5147,6 +5161,9 @@
     {"identifier": "M2_PSC02_PRE_OUTCOME_CONTRACT_CLARIFIED_NO_REAL_OUTCOME_OPENED", "namespace": "M2-STATUS", "parentExperiment": "M2-EXP-PUBLISHING-SCALE-CHANNEL-CASH-ANCHOR-02", "type": "pre_outcome_contract_clarification_status_code", "displayNameZh": "出版行业渠道现金锚结果形成前合同已消歧且未打开真实结果", "meaningZh": "月度锚粒度、发生概率逐案一致性、完整评价人口覆盖和未截断 Gamma 拟合目标已在任何 private 输入或真实 prediction 前修正；没有形成候选结果。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-pre-outcome-contract-clarification-v0.1.md"},
     {"identifier": "M2-CHAN-PSC02-RAW", "namespace": "M2-MODEL-VARIANT", "parentExperiment": "M2-EXP-PUBLISHING-SCALE-CHANNEL-CASH-ANCHOR-02", "type": "raw_candidate_variant", "displayNameZh": "出版行业渠道起点可见现金锚金额模型 v0.1 原始候选变体", "meaningZh": "锚定准 Gamma offset 主设计的唯一原始候选身份；不得由诊断臂、fallback 或 selected pipeline 替换。当前尚未形成真实预测或成绩。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-implementation-readiness-v0.1.json"},
     {"identifier": "M2_PSC02_IMPLEMENTED_AWAITING_EXACT_HEAD_CI_AND_CONTROLLED_DEVELOPMENT_REPLAY", "namespace": "M2-STATUS", "parentExperiment": "M2-EXP-PUBLISHING-SCALE-CHANNEL-CASH-ANCHOR-02", "type": "implementation_readiness_status_code", "displayNameZh": "出版行业渠道起点可见现金锚金额核心已实现并等待执行前双平台门禁", "meaningZh": "模型身份、三臂核心、失败关闭路径和公共 synthetic 合同已实现；尚未生成真实预测、打开 outer outcome、计算候选指标或执行 bootstrap。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-implementation-readiness-v0.1.json"},
+    {"identifier": "PSC02_DEVELOPMENT_NOT_SUPPORTED", "namespace": "M2-STATUS", "parentExperiment": "M2-EXP-PUBLISHING-SCALE-CHANNEL-CASH-ANCHOR-02", "type": "development_replay_result_status_code", "displayNameZh": "出版行业渠道现金锚开发重放不支持", "meaningZh": "唯一授权历史开发重放在拟合、预测和 outcome 以前因私有源权威缺口失败关闭；没有候选性能结果，也不授权重试或独立评价。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-development-evaluation-v0.1.json"},
+    {"identifier": "PRIVATE_SOURCE_AUTHORITY_BLOCKER_NOT_MODEL_FAILURE", "namespace": "M2-DECISION-CLASS", "parentExperiment": "M2-EXP-PUBLISHING-SCALE-CHANNEL-CASH-ANCHOR-02", "type": "execution_blocker_classification", "displayNameZh": "私有源权威阻断而非模型性能失败", "meaningZh": "真实 component/revision/effectiveAt/availableAt 权威和账本拆分复核未通过，因此没有形成可评价候选；不得解释为模型 WAPE、FVA 或设计方向失败。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-development-evaluation-v0.1.json"},
+    {"identifier": "NOT_EXECUTED_PRIVATE_SOURCE_AUTHORITY_BLOCKED", "namespace": "M2-EXECUTION-STATUS", "parentExperiment": "M2-EXP-PUBLISHING-SCALE-CHANNEL-CASH-ANCHOR-02", "type": "experiment_arm_execution_status", "displayNameZh": "实验臂因私有源权威阻断而未执行", "meaningZh": "现金锚尺度诊断、锚定对数比率岭回归诊断和锚定准 Gamma offset 主设计均未开始真实拟合或预测，且没有指标。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-development-evaluation-v0.1.json"},
     {"identifier": "AUTOMATION_BLOCKED", "namespace": "M2-BUSINESS-STATUS", "parentExperiment": null, "type": "business_status", "displayNameZh": "自动化被阻断", "meaningZh": "当前没有模型获准自动化。", "mayAppearAloneInUserReport": false, "evidenceRef": "AGENTS.md"},
     {"identifier": "CANARY_FAIL", "namespace": "M2-BUSINESS-STATUS", "parentExperiment": null, "type": "business_status", "displayNameZh": "Canary 结论失败", "meaningZh": "当前业务 gate 不允许 Canary 或发布。", "mayAppearAloneInUserReport": false, "evidenceRef": "AGENTS.md"}
   ],

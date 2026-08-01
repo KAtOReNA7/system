@@ -1139,7 +1139,7 @@
     },
     {
       "id": "m2-current-publishing-scale-cash-anchor-development",
-      "description": "Run the single authorized PSC02 historical DEVELOPMENT_REPLAY only from an exact-head Draft PR after source-authority schema, frozen PSC01 occurrence, frozen LG01 comparator and dual-platform CI gates pass.",
+      "description": "Audit the consumed PSC02 historical DEVELOPMENT_REPLAY. The only authorized attempt stopped before fit, prediction and outcome access because authentic component/revision/time authority and ledger-partition reconciliation failed closed; no retry is authorized.",
       "privateArtifactClassificationVersion": "private-artifact-classification.v0.1",
       "requiredTools": [
         {
@@ -1200,11 +1200,10 @@
       "canonicalValidationCommands": [
         "npm run doctor:capability -- m2-current-publishing-scale-cash-anchor-development",
         "npm run diagnose:m2:publishing-scale-cash-anchor",
-        "npm run precheck:m2:current:publishing-scale-cash-anchor",
-        "npm run develop:m2:current:publishing-scale-cash-anchor"
+        "npm run precheck:m2:current:publishing-scale-cash-anchor"
       ],
-      "recovery": "Restore only authentic PRIVATE_SOURCE_AUTHORITY with component, revision, effectiveAt and availableAt lineage. Derived PSC01/LG01 caches may be rebuilt only from their frozen code and authorities. Never synthesize historical revision metadata, score an anchor-available subset or fabricate receipts.",
-      "authorization": "USER_AUTHORIZED_SINGLE_PSC02_CONTROLLED_DEVELOPMENT_REPLAY_2026_08_01"
+      "recovery": "Restore only authentic PRIVATE_SOURCE_AUTHORITY with component, revision, effectiveAt and availableAt lineage. Derived PSC01/LG01 caches may be rebuilt only from their frozen code and authorities. Never synthesize historical revision metadata, score an anchor-available subset or fabricate receipts. Any retry requires a separate scope, explicit user authorization and new exact-head Linux/Windows CI.",
+      "authorization": "USER_AUTHORIZED_SINGLE_PSC02_CONTROLLED_DEVELOPMENT_REPLAY_CONSUMED_SOURCE_AUTHORITY_BLOCKED_2026_08_01"
     },
     {
       "id": "m2-current-channel-generative",

@@ -88,6 +88,16 @@ This directory is the only implementation home for current M2 model logic.
   Windows CI plus authentic component/revision/time source authority. Never
   score an available-only subset, replace the raw candidate with a diagnostic
   arm, or treat a source-authority blocker as a model performance failure.
+  The single authorized historical development replay has been consumed and
+  stopped before fit, prediction, outcome access, metrics, or bootstrap because
+  authentic component/revision/effectiveAt/availableAt authority is absent and
+  ledger-partition reconciliation failed closed. Its current result is
+  `PSC02_DEVELOPMENT_NOT_SUPPORTED` with decision class
+  `PRIVATE_SOURCE_AUTHORITY_BLOCKER_NOT_MODEL_FAILURE`; all three experiment
+  arms are `NOT_EXECUTED_PRIVATE_SOURCE_AUTHORITY_BLOCKED`, no raw candidate
+  result exists, and no retry is authorized. Restoring authority requires a
+  separate scope, explicit authorization, and a new exact-head dual-platform CI
+  gate before any execution attempt.
 - For origin-visible cash anchors sourced from posting components, aggregate
   within one legal as-of revision snapshot to the canonical monthly natural key
   `standardWorkId|channelUid|cashMonth|cashCategory|currency` before counting

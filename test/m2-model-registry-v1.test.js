@@ -36,7 +36,7 @@ test("registry schema, evidence paths and immutable digests validate", () => {
   );
   assert.equal(validation.counts.modelCount, 36);
   assert.equal(validation.counts.experimentCount, 23);
-  assert.equal(validation.counts.nonModelIdentifierCount, 132);
+  assert.equal(validation.counts.nonModelIdentifierCount, 135);
   assert.equal(validation.counts.evaluationCount, 115);
   assert.equal(validation.counts.comparabilityGroupCount, 59);
 });
@@ -228,7 +228,7 @@ test("core legacy population test records non-confirmation without promotion", (
   );
   assert.equal(
     registry.currentRoles.latestStateIndex,
-    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.56.md"
+    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.57.md"
   );
   assert.equal(registry.currentRoles.activeCandidate, null);
   assert.equal(registry.currentRoles.approvedForAutomation, null);

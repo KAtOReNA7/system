@@ -23,7 +23,7 @@ const paths = {
     "docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-design-decision-v0.1.md",
   clarification:
     "docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-pre-outcome-contract-clarification-v0.1.md",
-  state: "docs/analysis/m2-v2/M2-v2-current-state-index-v0.56.md"
+  state: "docs/analysis/m2-v2/M2-v2-current-state-index-v0.57.md"
 };
 const config = await readJson(paths.config);
 const schema = await readJson(paths.schema);
@@ -138,7 +138,7 @@ test("Model Registry preserves the preregistration and maps the later authorized
   );
 });
 
-test("README, state index, and catalog preserve preregistration lineage without promotion", async () => {
+test("README, state index, and catalog preserve preregistration lineage after the source-authority stop", async () => {
   const catalog = await readText(
     "docs/analysis/m2-current/M2-model-catalog-and-scorecard-v1.md"
   );
@@ -154,7 +154,8 @@ test("README, state index, and catalog preserve preregistration lineage without 
     new RegExp(M2_PSC02_PREREGISTRATION_STATUS, "u")
   );
   assert.match(readme, /M2-CHAN-PSC02-RAW/u);
-  assert.match(state, /尚未拟合、预测或评价/u);
+  assert.match(state, /PSC02_DEVELOPMENT_NOT_SUPPORTED/u);
+  assert.match(state, /PRIVATE_SOURCE_AUTHORITY_BLOCKER_NOT_MODEL_FAILURE/u);
   assert.match(state, /activeCandidate=null/u);
   assert.match(state, /approvedForAutomation=null/u);
   assert.match(state, /finalHoldoutOpened=false/u);
