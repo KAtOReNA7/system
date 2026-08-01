@@ -1,0 +1,145 @@
+{
+  "schema": "m2.psc02.origin_visible_cash_anchor_public_preregistration.v0.1",
+  "status": "M2_PSC02_ORIGIN_VISIBLE_CASH_ANCHOR_PREREGISTERED_IMPLEMENTATION_NOT_AUTHORIZED",
+  "asOf": "2026-08-01",
+  "preregistrationId": "M2-PREREG-PSC02-ORIGIN-VISIBLE-CASH-ANCHOR-01",
+  "designId": "M2-DESIGN-PSC02-ORIGIN-VISIBLE-CASH-ANCHOR-01",
+  "experimentId": "M2-EXP-PUBLISHING-SCALE-CHANNEL-CASH-ANCHOR-02",
+  "modelId": null,
+  "entityType": "preregistered_experiment_design",
+  "displayNameZh": "出版行业渠道起点可见现金锚金额设计 v0.1",
+  "displayNameEn": "Publishing-Scale Channel Origin-Visible Cash-Anchor Amount Design v0.1",
+  "contractRef": "config/m2-current-publishing-scale-channel-origin-visible-cash-anchor-preregistration.v0.1.json",
+  "schemaRef": "config/m2-current-publishing-scale-channel-origin-visible-cash-anchor-schema.v0.1.json",
+  "validatorAndReferenceRef": "src/domain/m2Current/publishingScaleCashAnchorPreregistration.js",
+  "parentEvidence": {
+    "modelId": "M2-CHAN-PSC01",
+    "rawVariantId": "M2-CHAN-PSC01-RAW",
+    "rootCauseCategory": "ESTIMATOR_SCALE_SHRINKAGE_CONFIRMED_IMPLEMENTATION_CORRECT",
+    "rootCauseReport": "docs/analysis/m2-current/M2-publishing-scale-channel-amount-scale-root-cause-audit-v0.1.json",
+    "frozenArtifactsRewritten": false
+  },
+  "researchQuestionZh": "在完全冻结 PSC01 发生子模型的前提下，使用预测起点可见的作品现金尺度锚，并在该尺度上估计条件正金额，能否消除 PSC01 的金额尺度收缩，同时保留渠道、机制和时间结构？",
+  "formula": {
+    "monthly": "yhat_positive_{w,c,o,m}=p_PSC01_{w,c,o,m}*A_{w,c,o}*exp(g(x_{w,c,o,m}))",
+    "horizon": "yhat_{w,c,o,h}=sum_{m=1..h} yhat_positive_{w,c,o,m}",
+    "occurrenceSource": "FROZEN_PSC01_OCCURRENCE_PROBABILITY",
+    "occurrenceMultiplyCount": 1,
+    "anchorApplyCount": 1
+  },
+  "cashAnchor": {
+    "unit": "CNY_PER_POSITIVE_WORK_CHANNEL_MONTH",
+    "forecastCutoff": "END_OF_FORECAST_ORIGIN_MONTH_ASIA_SHANGHAI",
+    "lookbackMonths": 12,
+    "timeDecay": "NONE_EQUAL_POSITIVE_WORK_CHANNEL_MONTH_WEIGHT",
+    "aggregation": "UNWEIGHTED_ARITHMETIC_MEAN_OF_STRICTLY_POSITIVE_MONTHLY_AMOUNTS",
+    "fallbackOrder": [
+      "WORK_CHANNEL",
+      "WORK_MECHANISM",
+      "WORK",
+      "CHANNEL_POOL",
+      "MECHANISM_POOL",
+      "GLOBAL_POOL"
+    ],
+    "minimumCompleteBillMonthsForOwnScale": 3,
+    "minimumPositiveObservationsForOwnScale": 1,
+    "minimumDistinctWorksForPool": 8,
+    "minimumPositiveDistinctWorksForPool": 6,
+    "floorCny": 0.01,
+    "cap": "MAXIMUM_STRICTLY_POSITIVE_ORIGIN_VISIBLE_MONTHLY_CASH_WITHIN_LOOKBACK",
+    "futureNewWorkBehavior": "ABSTAIN",
+    "futureFirstObservedChannelBehavior": "ABSTAIN",
+    "noOriginVisiblePositiveCashBehavior": "ABSTAIN",
+    "taxonomyUsed": false,
+    "evaluationActualUsed": false
+  },
+  "experimentArms": [
+    {
+      "armId": "M2-EXP-PUBLISHING-SCALE-CHANNEL-CASH-ANCHOR-02/D0",
+      "displayNameZh": "现金锚单独诊断",
+      "displayNameEn": "Anchor Only Diagnostic",
+      "machineName": "ANCHOR_ONLY",
+      "role": "MECHANISM_ATTRIBUTION_ONLY_NOT_CANDIDATE"
+    },
+    {
+      "armId": "M2-EXP-PUBLISHING-SCALE-CHANNEL-CASH-ANCHOR-02/D1",
+      "displayNameZh": "锚定对数比率岭回归诊断",
+      "displayNameEn": "Anchored Log-Ratio Ridge Diagnostic",
+      "machineName": "ANCHORED_LOG_RATIO_RIDGE",
+      "role": "MECHANISM_ATTRIBUTION_ONLY_NOT_CANDIDATE"
+    },
+    {
+      "armId": "M2-EXP-PUBLISHING-SCALE-CHANNEL-CASH-ANCHOR-02/P",
+      "displayNameZh": "锚定准 Gamma offset 主设计",
+      "displayNameEn": "Anchored Quasi-Gamma Offset Primary Design",
+      "machineName": "ANCHORED_GAMMA_OFFSET",
+      "role": "ONLY_DESIGN_ELIGIBLE_FOR_A_FUTURE_CANDIDATE_AFTER_SEPARATE_AUTHORIZATION"
+    }
+  ],
+  "primaryEstimator": {
+    "distribution": "QUASI_GAMMA_VARIANCE_PROPORTIONAL_TO_MU_SQUARED",
+    "link": "LOG",
+    "offset": "log(A)_FIXED_COEFFICIENT_ONE",
+    "loss": "sum_i(w_i*(y_i/mu_i+log(mu_i)))+0.5*lambda*sum_nonintercept(beta_j^2)",
+    "sampleWeight": "EQUAL_TOTAL_WEIGHT_PER_STANDARD_WORK_NORMALIZED_TO_SUM_ONE",
+    "regularizationGrid": [1, 3],
+    "selectionRule": "LOWEST_WORK_BALANCED_INNER_GAMMA_DEVIANCE;EXACT_TIE_WITHIN_1E-12_SELECT_LARGER_LAMBDA",
+    "solver": "DAMPED_NEWTON_IRLS_WITH_STEP_HALVING",
+    "silentEstimatorSwitchAllowed": false,
+    "diagnosticArmReplacementAllowed": false
+  },
+  "evaluationFreeze": {
+    "status": "FROZEN_BEFORE_ANY_REAL_PSC02_PREDICTION",
+    "developmentEvidenceClass": "DEVELOPMENT_REPLAY",
+    "psc01PrimaryAndStrictRelativeWapeFvaMinimum": 0.1,
+    "primaryPredictionActualCashRatioInclusive": [0.75, 1.25],
+    "eachStrictHorizonPredictionActualCashRatioInclusive": [0.67, 1.5],
+    "normalizedChannelCompositionMaximumWapeHarmAbsolute": 0.02,
+    "normalizedCompositionRole": "POST_HOC_DIAGNOSTIC_NOT_MODEL_EVIDENCE_NOT_CANDIDATE_SCORE",
+    "lg01RuleSource": "config/m2-business-acceptance-contract.v1.json#/candidateSuperiority",
+    "lg01CombinationRule": "AND",
+    "bootstrapIterations": 2000,
+    "bootstrapResamplingUnit": "standardWorkId",
+    "privacyMinimumCaseCount": 30,
+    "privacyMinimumWorkCount": 20,
+    "decisionStates": [
+      "PSC02_DEVELOPMENT_NOT_SUPPORTED",
+      "PSC02_DEVELOPMENT_PROMISING_INDEPENDENT_NOT_READY",
+      "PSC02_FIRST_INDEPENDENT_EVALUATION_REQUEST_SUPPORTED_NOT_AUTHORIZED"
+    ]
+  },
+  "publicSyntheticValidation": {
+    "status": "PUBLIC_SYNTHETIC_REFERENCE_CONTRACT_VERIFIED_NO_REAL_OUTCOME",
+    "requiredInvariantCount": 14,
+    "verifiedInvariantCount": 14,
+    "privateRowsUsed": false,
+    "realPredictionGenerated": false,
+    "candidateFitExecuted": false,
+    "realEvaluationExecuted": false,
+    "productionConnected": false
+  },
+  "authorizationBoundary": {
+    "activeCandidate": null,
+    "approvedForAutomation": null,
+    "productionReady": false,
+    "finalHoldoutOpened": false,
+    "implementationAuthorized": false,
+    "privateFittingAuthorized": false,
+    "realPredictionAuthorized": false,
+    "developmentEvaluationAuthorized": false,
+    "bootstrapAuthorized": false,
+    "independentEvaluationAuthorized": false,
+    "laterOriginAuthorized": false,
+    "productionAuthorized": false,
+    "automationAuthorized": false,
+    "financialUseAuthorized": false
+  },
+  "publication": {
+    "privateRowsIncluded": false,
+    "workIdentitiesIncluded": false,
+    "channelUidsIncluded": false,
+    "privatePathsIncluded": false,
+    "privateDigestsIncluded": false,
+    "candidateMetricsIncluded": false
+  }
+}

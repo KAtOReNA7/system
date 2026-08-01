@@ -1,0 +1,166 @@
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+import path from "node:path";
+import test from "node:test";
+import { fileURLToPath } from "node:url";
+
+import {
+  M2_PSC02_PREREGISTRATION_STATUS,
+  validateM2Psc02Preregistration
+} from "../src/domain/m2Current/publishingScaleCashAnchorPreregistration.js";
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const paths = {
+  config:
+    "config/m2-current-publishing-scale-channel-origin-visible-cash-anchor-preregistration.v0.1.json",
+  schema:
+    "config/m2-current-publishing-scale-channel-origin-visible-cash-anchor-schema.v0.1.json",
+  machine:
+    "docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-preregistration-v0.1.json",
+  report:
+    "docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-preregistration-v0.1.md",
+  decision:
+    "docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-design-decision-v0.1.md",
+  state: "docs/analysis/m2-v2/M2-v2-current-state-index-v0.55.md"
+};
+const config = await readJson(paths.config);
+const schema = await readJson(paths.schema);
+const machine = await readJson(paths.machine);
+const registry = await readJson("config/m2-model-registry.v1.json");
+const report = await readText(paths.report);
+const state = await readText(paths.state);
+const readme = await readText("README.md");
+
+test("public preregistration report and machine contract share one status and identity", async () => {
+  assert.equal(machine.status, M2_PSC02_PREREGISTRATION_STATUS);
+  assert.equal(config.status, M2_PSC02_PREREGISTRATION_STATUS);
+  assert.equal(machine.preregistrationId, config.preregistrationId);
+  assert.equal(machine.experimentId, config.experimentId);
+  assert.equal(machine.modelId, null);
+  assert.equal(machine.contractRef, paths.config);
+  assert.equal(machine.schemaRef, paths.schema);
+  assert.match(report, new RegExp(M2_PSC02_PREREGISTRATION_STATUS, "u"));
+  assert.match(report, /没有授权创建 PSC02 模型 ID/u);
+  assert.doesNotMatch(
+    JSON.stringify(machine),
+    /data[\\/]+private-(input|output)|[A-Z]:[\\/]/iu
+  );
+});
+
+test("schema covers config, anchor input, anchor result, and manifest identities", () => {
+  assert.equal(
+    schema.$id,
+    "m2.current.publishing_scale_channel_origin_visible_cash_anchor_schema.v0.1"
+  );
+  assert.equal(schema.properties.status.const, M2_PSC02_PREREGISTRATION_STATUS);
+  assert.equal(schema.properties.modelId.type, "null");
+  assert.ok(schema.$defs.anchorInputRow);
+  assert.ok(schema.$defs.anchorResult);
+  assert.ok(schema.$defs.anchorManifest);
+  assert.deepEqual(
+    schema.$defs.cashAnchorContract.properties.fallbackOrder.const,
+    config.cashAnchor.fallbackOrder
+  );
+});
+
+test("semantic validator binds all current contracts", async () => {
+  assert.equal(validateM2Psc02Preregistration(config, {
+    psc01Config: await readJson(
+      "config/m2-current-publishing-scale-channel.v0.1.json"
+    ),
+    baseConfig: await readJson("config/m2-current-human-anchored.v0.1.json"),
+    evaluationContract: await readJson("config/m2-evaluation-contract.v2.2.json"),
+    businessAcceptanceContract: await readJson(
+      "config/m2-business-acceptance-contract.v1.json"
+    )
+  }), true);
+});
+
+test("Model Registry records an experiment design without inventing a model or score", () => {
+  assert.equal(registry.currentRoles.activeCandidate, null);
+  assert.equal(registry.currentRoles.approvedForAutomation, null);
+  assert.equal(
+    registry.currentRoles.latestStateIndex,
+    paths.state
+  );
+  const experiment = registry.experiments.find(
+    (item) => item.experimentId === config.experimentId
+  );
+  assert.ok(experiment);
+  assert.deepEqual(experiment.modelIds, []);
+  assert.equal(experiment.modelCreated, false);
+  assert.equal(experiment.realPredictionGenerated, false);
+  assert.equal(experiment.evaluationExecuted, false);
+  assert.ok(experiment.arms.every((arm) => arm.modelId === null));
+  assert.equal(
+    registry.models.some((model) => /PSC02/u.test(model.stableModelId)),
+    false
+  );
+  assert.equal(
+    registry.models.flatMap((model) => model.evaluations).some(
+      (evaluation) => /PSC02/u.test(evaluation.evaluationId)
+    ),
+    false
+  );
+  assert.equal(
+    registry.models.find((model) => model.stableModelId === "M2-CHAN-PSC01")
+      .successorIds.length,
+    0
+  );
+});
+
+test("README, state index, and catalog expose the preregistration without promotion", async () => {
+  const catalog = await readText(
+    "docs/analysis/m2-current/M2-model-catalog-and-scorecard-v1.md"
+  );
+  for (const value of [readme, state, catalog]) {
+    assert.match(value, /M2-PREREG-PSC02-ORIGIN-VISIBLE-CASH-ANCHOR-01/u);
+    assert.match(value, new RegExp(M2_PSC02_PREREGISTRATION_STATUS, "u"));
+  }
+  assert.match(readme, /没有创建模型、真实实现、拟合或评价/u);
+  assert.match(state, /activeCandidate=null/u);
+  assert.match(state, /approvedForAutomation=null/u);
+  assert.match(state, /finalHoldoutOpened=false/u);
+});
+
+test("production loader, route, and package scripts do not import the reference harness", async () => {
+  const [loader, route, packageJson] = await Promise.all([
+    readText("src/domain/m2Current/loader.js"),
+    readText("src/domain/m2Current/route.js"),
+    readText("package.json")
+  ]);
+  for (const value of [loader, route, packageJson]) {
+    assert.doesNotMatch(
+      value,
+      /publishingScaleCashAnchorPreregistration/u
+    );
+  }
+});
+
+test("evaluation gates and public synthetic disclosure are frozen before real prediction", () => {
+  assert.equal(
+    machine.evaluationFreeze.status,
+    "FROZEN_BEFORE_ANY_REAL_PSC02_PREDICTION"
+  );
+  assert.equal(
+    machine.evaluationFreeze.psc01PrimaryAndStrictRelativeWapeFvaMinimum,
+    0.1
+  );
+  assert.equal(machine.evaluationFreeze.lg01CombinationRule, "AND");
+  assert.equal(machine.evaluationFreeze.bootstrapIterations, 2000);
+  assert.equal(machine.evaluationFreeze.bootstrapResamplingUnit, "standardWorkId");
+  assert.equal(machine.publicSyntheticValidation.requiredInvariantCount, 14);
+  assert.equal(machine.publicSyntheticValidation.verifiedInvariantCount, 14);
+  assert.equal(machine.publicSyntheticValidation.privateRowsUsed, false);
+  assert.equal(machine.publicSyntheticValidation.realPredictionGenerated, false);
+  assert.equal(machine.publicSyntheticValidation.candidateFitExecuted, false);
+  assert.equal(machine.publicSyntheticValidation.realEvaluationExecuted, false);
+});
+
+async function readJson(relativePath) {
+  return JSON.parse(await readText(relativePath));
+}
+
+async function readText(relativePath) {
+  return readFile(path.join(root, relativePath), "utf8");
+}

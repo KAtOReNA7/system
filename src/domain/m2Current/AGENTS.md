@@ -77,10 +77,15 @@ This directory is the only implementation home for current M2 model logic.
   `ESTIMATOR_SCALE_SHRINKAGE_CONFIRMED_IMPLEMENTATION_CORRECT`: the collapse
   begins in the work-balanced log1p empirical parent and is amplified by
   hierarchical amount shrinkage, while implementation and same-case
-  comparator integrity passed. This supports only a separately authorized
-  future design preregistration
-  (`PSC02_DESIGN_PREREGISTRATION_SUPPORTED_NOT_AUTHORIZED`); do not create,
-  fit, tune, evaluate, or register a successor from this rule alone.
+  comparator integrity passed. The origin-visible arithmetic cash-anchor and
+  quasi-Gamma offset design is now preregistered only as experiment design
+  `M2-PREREG-PSC02-ORIGIN-VISIBLE-CASH-ANCHOR-01`, with status
+  `M2_PSC02_ORIGIN_VISIBLE_CASH_ANCHOR_PREREGISTERED_IMPLEMENTATION_NOT_AUTHORIZED`.
+  It freezes PSC01 occurrence, keeps taxonomy `REPORT_ONLY`, and has only a
+  disconnected public synthetic reference harness. Do not create a successor
+  model ID, connect a runtime, read private input, fit, tune, predict, evaluate,
+  bootstrap, or register a candidate/evaluation row without separate explicit
+  authorization.
 - Model selection must be nested inside the applicable outer work or time
   split. Exact v0.3, later-origin, final holdout, provider, database, canary,
   release, and M3 data must not be read for selection.

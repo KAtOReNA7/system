@@ -133,7 +133,7 @@ test("PSC01 audit is wired into current governance without creating PSC02", () =
   const registry = readJson(registryPath);
   assert.equal(
     registry.currentRoles.latestStateIndex,
-    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.54.md"
+    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.55.md"
   );
   const model = registry.models.find(
     (value) => value.stableModelId === "M2-CHAN-PSC01"
