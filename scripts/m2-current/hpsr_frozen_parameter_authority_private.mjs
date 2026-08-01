@@ -17,8 +17,7 @@ import {
   materializeM2HpsrFrozenFormulaFeatureRows
 } from "./core_legacy_horizon_amount_mode.mjs";
 import {
-  fitHpsrFrozenB3AtOrigin,
-  monthRangeInclusive
+  fitHpsrFrozenB3AtOrigin
 } from "./hpsr_frozen_formula_private.mjs";
 
 const RECOVERY_ALGORITHM_VERSION =
@@ -39,6 +38,29 @@ const HISTORICAL_RECEIPT =
 const STATIC_METADATA =
   "data/private-output/m2-core-revenue-manual/"
     + "M2-core-revenue-manual-static-metadata-private-v0.1.json";
+const HCRC_LINEAGE_DIRECTORY =
+  "data/private-output/m2-lg01-head-cash-residual";
+const HCRC_LINEAGE_INPUT =
+  `${HCRC_LINEAGE_DIRECTORY}/`
+    + "M2-lg01-head-cash-residual-input-rows-private-v0.1.ndjson";
+const HCRC_LINEAGE_MANIFEST =
+  `${HCRC_LINEAGE_DIRECTORY}/`
+    + "M2-lg01-head-cash-residual-manifest-private-v0.1.json";
+const HCRC_LINEAGE_RECEIPT =
+  `${HCRC_LINEAGE_DIRECTORY}/`
+    + "M2-lg01-head-cash-residual-attempt-receipt-private-v0.1.json";
+const HCRC_LINEAGE_FILES = Object.freeze({
+  inputRows:
+    "M2-lg01-head-cash-residual-input-rows-private-v0.1.ndjson",
+  predictions:
+    "M2-lg01-head-cash-residual-predictions-private-v0.1.ndjson",
+  selections:
+    "M2-lg01-head-cash-residual-selections-private-v0.1.ndjson",
+  evaluation:
+    "M2-lg01-head-cash-residual-evaluation-private-v0.1.ndjson",
+  bootstrap:
+    "M2-lg01-head-cash-residual-bootstrap-private-v0.1.ndjson"
+});
 const HISTORICAL_FROZEN_RESULT =
   "docs/analysis/m2-current/"
     + "M2-head-protected-segmented-router-"
@@ -277,6 +299,11 @@ async function reconstructFromHistoricalLineage({
   coreAmountConfig,
   boundProof
 }) {
+  const hcrcLineage = await loadFrozenHcrcParameterLineage({
+    root,
+    hpsr01Config,
+    boundProof
+  });
   const receipt = await readJson(path.join(root, HISTORICAL_RECEIPT));
   const factsDigest = await sha256File(path.join(root, HISTORICAL_FACTS));
   if (
@@ -288,17 +315,13 @@ async function reconstructFromHistoricalLineage({
       "hpsr02_historical_parameter_lineage_receipt_invalid"
     );
   }
-  const boundOrigins = monthRangeInclusive(
-    hpsr01Config.residualBoundaryFreeze.sourceOriginRange.from,
-    hpsr01Config.residualBoundaryFreeze.sourceOriginRange.through
-  );
   const historicalCutoff = hpsr01Config.residualBoundaryFreeze
     .maximumOpenedDevelopmentOrigin;
   const replayOrigin = "2025-11";
   const materialization =
     await materializeM2HpsrFrozenFormulaFeatureRows({
       root,
-      retrospectiveOrigins: [...boundOrigins, replayOrigin],
+      retrospectiveOrigins: [replayOrigin],
       authorityMode: LINEAGE_AUTHORITY_MODE,
       labelMaturityCutoff: historicalCutoff
     });
@@ -314,30 +337,7 @@ async function reconstructFromHistoricalLineage({
       "hpsr02_historical_parameter_lineage_cutoff_invalid"
     );
   }
-  const fixedFit = hpsr01Config.retrospectiveReplay.fixedCham01B3Fit;
-  const snapshotRows = [];
-  for (const origin of boundOrigins) {
-    const fit = fitHpsrFrozenB3AtOrigin({
-      origin,
-      featureRows: materialization.featureRows,
-      coreAmountConfig,
-      fixedFit
-    });
-    for (let index = 0; index < fit.validationRows.length; index += 1) {
-      const feature = fit.validationRows[index];
-      if (feature.core80 !== true) continue;
-      snapshotRows.push(Object.freeze({
-        schema: "m2.current.hpsr.parameter_lineage_row.private.v0.2",
-        origin,
-        basePointEstimate: feature.features.lg01PointEstimate,
-        rawPointEstimate: fit.predictions[index].pointEstimate
-      }));
-    }
-  }
-  validateLineageSnapshotRows(snapshotRows, {
-    hpsr01Config,
-    boundProof
-  });
+  const snapshotRows = hcrcLineage.snapshotRows;
   const boundState = deriveFromSnapshot({
     snapshotRows,
     hpsr01Config,
@@ -357,6 +357,18 @@ async function reconstructFromHistoricalLineage({
     staticMetadata: Object.freeze({
       path: STATIC_METADATA,
       sha256: await sha256File(path.join(root, STATIC_METADATA))
+    }),
+    historicalParameterLineageInput: Object.freeze({
+      path: HCRC_LINEAGE_INPUT,
+      sha256: hcrcLineage.inputSha256
+    }),
+    historicalParameterLineageManifest: Object.freeze({
+      path: HCRC_LINEAGE_MANIFEST,
+      sha256: hcrcLineage.manifestSha256
+    }),
+    historicalParameterLineageReceipt: Object.freeze({
+      path: HCRC_LINEAGE_RECEIPT,
+      sha256: hcrcLineage.receiptSha256
     }),
     publicProvenance: Object.freeze({
       path: paths.publicProvenance,
@@ -414,6 +426,140 @@ async function reconstructFromHistoricalLineage({
     lastRecoveryMode: RECOVERY_IDENTITY
   });
   return Object.freeze({ artifact, snapshotRows, snapshotText, manifest });
+}
+
+async function loadFrozenHcrcParameterLineage({
+  root,
+  hpsr01Config,
+  boundProof
+}) {
+  const [manifest, receipt, inputRows] = await Promise.all([
+    readJson(path.join(root, HCRC_LINEAGE_MANIFEST)),
+    readJson(path.join(root, HCRC_LINEAGE_RECEIPT)),
+    readNdjson(path.join(root, HCRC_LINEAGE_INPUT))
+  ]);
+  if (
+    manifest?.schema
+      !== "m2.current.lg01_head_cash_residual.manifest.private.v0.1"
+    || manifest?.experimentId
+      !== "M2-EXP-LG01-HEAD-CASH-RESIDUAL-01"
+    || manifest?.modelId !== "M2-WORK-HCRC01"
+    || manifest?.resultStatus !== "M2_LG01_HEAD_CASH_RESIDUAL_FAIL"
+    || manifest?.completeResultFrozen !== true
+    || manifest?.frozenInputReconciliation
+      !== "EXACT_FROZEN_H3_B3_AGGREGATE_RECONCILIATION"
+    || manifest?.secondEvaluationAuthorized !== false
+    || !Array.isArray(manifest?.files)
+    || manifest.files.length !== Object.keys(HCRC_LINEAGE_FILES).length
+  ) {
+    throw missingImmutableParameterError(
+      "hpsr02_historical_parameter_lineage_manifest_invalid"
+    );
+  }
+  if (
+    receipt?.schema
+      !== "m2.current.lg01_head_cash_residual."
+        + "attempt_receipt.private.v0.1"
+    || receipt?.experimentId
+      !== "M2-EXP-LG01-HEAD-CASH-RESIDUAL-01"
+    || receipt?.modelId !== "M2-WORK-HCRC01"
+    || receipt?.status !== "COMPLETE_RESULT_FROZEN"
+    || receipt?.resultStatus !== "M2_LG01_HEAD_CASH_RESIDUAL_FAIL"
+    || receipt?.completeMetricsProduced !== true
+    || receipt?.validCompleteInterpretableResultProduced !== true
+    || receipt?.scientificWindowConsumed !== true
+    || receipt?.secondEvaluationAuthorized !== false
+    || receipt?.outerOutcomeInspectedBeforeCompleteBoundary !== false
+    || receipt?.scientificContractChanged !== false
+    || receipt?.inputCaseCount !== inputRows.length
+  ) {
+    throw missingImmutableParameterError(
+      "hpsr02_historical_parameter_lineage_receipt_invalid"
+    );
+  }
+  const fileEntries = new Map(manifest.files.map(
+    (entry) => [entry?.role, entry]
+  ));
+  if (
+    fileEntries.size !== Object.keys(HCRC_LINEAGE_FILES).length
+    || Object.keys(HCRC_LINEAGE_FILES).some(
+      (role) => !fileEntries.has(role)
+    )
+  ) {
+    throw missingImmutableParameterError(
+      "hpsr02_historical_parameter_lineage_file_roles_invalid"
+    );
+  }
+  for (const [role, fileName] of Object.entries(HCRC_LINEAGE_FILES)) {
+    const repositoryPath = `${HCRC_LINEAGE_DIRECTORY}/${fileName}`;
+    const absolutePath = path.join(root, repositoryPath);
+    const entry = fileEntries.get(role);
+    if (
+      !Number.isInteger(entry?.byteCount)
+      || entry.byteCount <= 0
+      || !/^[a-f0-9]{64}$/u.test(String(entry?.sha256 ?? ""))
+      || !await fileExists(absolutePath)
+      || fs.statSync(absolutePath).size !== entry.byteCount
+      || await sha256File(absolutePath) !== entry.sha256
+    ) {
+      throw missingImmutableParameterError(
+        "hpsr02_historical_parameter_lineage_file_digest_mismatch"
+      );
+    }
+  }
+  const sourceRange = hpsr01Config
+    .residualBoundaryFreeze.sourceOriginRange;
+  const selectedRows = inputRows.filter((row) => (
+    row?.schema
+      === "m2.current.lg01_head_cash_residual.input.private.v0.1"
+    && row?.evaluationFamily === "STRICT_ROLLING"
+    && row?.populationId === "CORE80"
+    && Number(row?.horizonMonths) === 3
+    && row?.origin >= sourceRange.from
+    && row?.origin <= sourceRange.through
+  ));
+  const caseKeys = selectedRows.map((row) => (
+    `${row.standardWorkId}\u0000${row.origin}\u0000${row.horizonMonths}`
+  ));
+  if (
+    selectedRows.length !== boundProof.inputRowCount
+    || new Set(caseKeys).size !== selectedRows.length
+    || selectedRows.some((row) => (
+      row.frozenLg01Reconstructed !== true
+      || row.frozenCham01B3Reconstructed !== true
+      || row.frozenAggregateReconciled !== true
+      || row.originVisibleOnly !== true
+      || row.labelAvailableAsOf
+        > hpsr01Config.residualBoundaryFreeze
+          .maximumOpenedDevelopmentOrigin
+    ))
+  ) {
+    throw missingImmutableParameterError(
+      "hpsr02_historical_parameter_lineage_filter_invalid"
+    );
+  }
+  const snapshotRows = selectedRows.map((row) => Object.freeze({
+    schema: "m2.current.hpsr.parameter_lineage_row.private.v0.2",
+    origin: row.origin,
+    basePointEstimate: row.basePointEstimate,
+    rawPointEstimate: row.rawPointEstimate
+  }));
+  validateLineageSnapshotRows(snapshotRows, {
+    hpsr01Config,
+    boundProof
+  });
+  return Object.freeze({
+    snapshotRows: Object.freeze(snapshotRows),
+    inputSha256: fileEntries.get("inputRows").sha256,
+    manifestSha256: await sha256File(path.join(
+      root,
+      HCRC_LINEAGE_MANIFEST
+    )),
+    receiptSha256: await sha256File(path.join(
+      root,
+      HCRC_LINEAGE_RECEIPT
+    ))
+  });
 }
 
 function deriveFromSnapshot({ snapshotRows, hpsr01Config, boundProof }) {
@@ -710,6 +856,51 @@ async function validateParameterBundle({
     }
     historicalReceiptStatus = "PROVENANCE_AVAILABLE";
   }
+  const historicalLineageInputExists = await fileExists(path.join(
+    root,
+    HCRC_LINEAGE_INPUT
+  ));
+  const historicalLineageManifestExists = await fileExists(path.join(
+    root,
+    HCRC_LINEAGE_MANIFEST
+  ));
+  const historicalLineageReceiptExists = await fileExists(path.join(
+    root,
+    HCRC_LINEAGE_RECEIPT
+  ));
+  if (historicalLineageInputExists !== historicalLineageManifestExists) {
+    throw missingImmutableParameterError(
+      "hpsr02_frozen_parameter_partial_historical_parameter_lineage"
+    );
+  }
+  if (historicalLineageInputExists) {
+    for (const role of [
+      "historicalParameterLineageInput",
+      "historicalParameterLineageManifest"
+    ]) {
+      if (!await optionalFileDigestMatches(root, manifest.bindings[role])) {
+        throw missingImmutableParameterError(
+          "hpsr02_frozen_parameter_historical_parameter_lineage_"
+            + "digest_mismatch"
+        );
+      }
+    }
+  }
+  if (
+    historicalLineageReceiptExists
+    && !await optionalFileDigestMatches(
+      root,
+      manifest.bindings.historicalParameterLineageReceipt
+    )
+  ) {
+    throw missingImmutableParameterError(
+      "hpsr02_frozen_parameter_historical_parameter_lineage_"
+        + "receipt_digest_mismatch"
+    );
+  }
+  if (historicalLineageReceiptExists) {
+    historicalReceiptStatus = "PROVENANCE_AVAILABLE";
+  }
   const staticBinding = manifest.bindings?.staticMetadata;
   if (
     await fileExists(path.join(root, staticBinding.path))
@@ -738,22 +929,42 @@ function validateLineageSnapshotRows(
     "rawPointEstimate",
     "schema"
   ];
-  if (
-    !Array.isArray(rows)
-    || rows.length !== boundProof.inputRowCount
-    || rows.some((row) => (
-      JSON.stringify(Object.keys(row).sort())
-        !== JSON.stringify(expectedKeys)
-      || row.schema
-        !== "m2.current.hpsr.parameter_lineage_row.private.v0.2"
-      || row.origin < expectedRange.from
-      || row.origin > expectedRange.through
-      || !Number.isFinite(row.basePointEstimate)
-      || !Number.isFinite(row.rawPointEstimate)
-    ))
-  ) {
+  if (!Array.isArray(rows)) {
     throw missingImmutableParameterError(
-      "hpsr02_parameter_lineage_snapshot_invalid"
+      "hpsr02_parameter_lineage_snapshot_not_an_array"
+    );
+  }
+  if (rows.length !== boundProof.inputRowCount) {
+    throw missingImmutableParameterError(
+      "hpsr02_parameter_lineage_snapshot_row_count_mismatch"
+    );
+  }
+  if (rows.some((row) => (
+    JSON.stringify(Object.keys(row).sort())
+      !== JSON.stringify(expectedKeys)
+    || row.schema
+      !== "m2.current.hpsr.parameter_lineage_row.private.v0.2"
+  ))) {
+    throw missingImmutableParameterError(
+      "hpsr02_parameter_lineage_snapshot_schema_mismatch"
+    );
+  }
+  if (rows.some((row) => (
+    row.origin < expectedRange.from
+    || row.origin > expectedRange.through
+  ))) {
+    throw missingImmutableParameterError(
+      "hpsr02_parameter_lineage_snapshot_origin_range_mismatch"
+    );
+  }
+  if (rows.some((row) => !Number.isFinite(row.basePointEstimate))) {
+    throw missingImmutableParameterError(
+      "hpsr02_parameter_lineage_snapshot_nonfinite_base"
+    );
+  }
+  if (rows.some((row) => !Number.isFinite(row.rawPointEstimate))) {
+    throw missingImmutableParameterError(
+      "hpsr02_parameter_lineage_snapshot_nonfinite_raw"
     );
   }
 }
@@ -840,9 +1051,19 @@ function assertParameterArtifactsEqual(existing, rebuilt) {
 }
 
 function historicalLineageInputsPresent(root) {
-  return [HISTORICAL_FACTS, HISTORICAL_RECEIPT, STATIC_METADATA].every(
-    (repositoryPath) => fs.existsSync(path.join(root, repositoryPath))
-  );
+  return [
+    HISTORICAL_FACTS,
+    HISTORICAL_RECEIPT,
+    STATIC_METADATA,
+    HCRC_LINEAGE_INPUT,
+    HCRC_LINEAGE_MANIFEST,
+    HCRC_LINEAGE_RECEIPT,
+    ...Object.values(HCRC_LINEAGE_FILES).map(
+      (fileName) => `${HCRC_LINEAGE_DIRECTORY}/${fileName}`
+    )
+  ].every((repositoryPath) => (
+    fs.existsSync(path.join(root, repositoryPath))
+  ));
 }
 
 function missingImmutableParameterError(reason) {

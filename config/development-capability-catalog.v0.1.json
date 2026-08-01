@@ -1364,12 +1364,25 @@
           "parameterRecoverySource": true,
           "path": "data/private-output/m2-head-protected-segmented-router/M2-hpsr01-hpsr02-parameter-lineage-snapshot-private-v0.2.ndjson"
         },
-        {
-          "role": "hpsr-parameter-lineage-historical-derived-facts",
-          "kind": "file",
-          "artifactClass": "PARAMETER_LINEAGE_SNAPSHOT",
-          "parameterRecoverySource": true,
-          "path": "data/private-output/m2-evaluation-v2-2-reversal-rescore/M2-reversal-authority-facts-private-v1.ndjson"
+      {
+        "role": "hpsr-parameter-lineage-hcrc01-frozen-input",
+        "kind": "file",
+        "artifactClass": "PARAMETER_LINEAGE_SNAPSHOT",
+        "parameterRecoverySource": true,
+        "path": "data/private-output/m2-lg01-head-cash-residual/M2-lg01-head-cash-residual-input-rows-private-v0.1.ndjson"
+      },
+      {
+        "role": "hpsr-parameter-lineage-hcrc01-manifest",
+        "kind": "file",
+        "artifactClass": "PARAMETER_LINEAGE_SNAPSHOT",
+        "parameterRecoverySource": true,
+        "path": "data/private-output/m2-lg01-head-cash-residual/M2-lg01-head-cash-residual-manifest-private-v0.1.json"
+      },
+      {
+        "role": "hpsr-historical-run-replay-derived-facts",
+        "kind": "file",
+        "artifactClass": "REBUILDABLE_CACHE",
+        "path": "data/private-output/m2-evaluation-v2-2-reversal-rescore/M2-reversal-authority-facts-private-v1.ndjson"
         },
         {
           "role": "hpsr-parameter-recovery-manifest",
@@ -1378,11 +1391,17 @@
           "parameterRecoverySource": false,
           "path": "data/private-output/m2-head-protected-segmented-router/M2-hpsr01-hpsr02-frozen-parameter-recovery-manifest-private-v0.2.json"
         },
-        {
-          "role": "hpsr-parameter-lineage-historical-receipt",
-          "kind": "file",
-          "artifactClass": "PRIVATE_RUN_PROVENANCE",
-          "path": "data/private-output/m2-evaluation-v2-2-reversal-rescore/M2-reversal-authority-export-receipt-private-v1.json"
+      {
+        "role": "hpsr-parameter-lineage-historical-receipt",
+        "kind": "file",
+        "artifactClass": "PRIVATE_RUN_PROVENANCE",
+        "path": "data/private-output/m2-lg01-head-cash-residual/M2-lg01-head-cash-residual-attempt-receipt-private-v0.1.json"
+      },
+      {
+        "role": "hpsr-historical-run-replay-receipt",
+        "kind": "file",
+        "artifactClass": "PRIVATE_RUN_PROVENANCE",
+        "path": "data/private-output/m2-evaluation-v2-2-reversal-rescore/M2-reversal-authority-export-receipt-private-v1.json"
         },
         {
           "role": "hpsr-retrospective-run-receipt",

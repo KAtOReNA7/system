@@ -710,6 +710,18 @@ test("parameter recovery uses historical lineage and cannot consume current spli
     parameterAuthoritySource,
     /HPSR_FROZEN_PARAMETER_LINEAGE_SNAPSHOT/u
   );
+  assert.match(
+    parameterAuthoritySource,
+    /M2-lg01-head-cash-residual-input-rows-private-v0\.1\.ndjson/u
+  );
+  assert.match(
+    parameterAuthoritySource,
+    /EXACT_FROZEN_H3_B3_AGGREGATE_RECONCILIATION/u
+  );
+  assert.match(
+    parameterAuthoritySource,
+    /row\?\.evaluationFamily === "STRICT_ROLLING"[\s\S]*row\?\.populationId === "CORE80"[\s\S]*Number\(row\?\.horizonMonths\) === 3/u
+  );
   assert.doesNotMatch(
     parameterAuthoritySource,
     /HPSR02_WORK_TOTAL_SCOPE_AWARE_AUTHORITY/u
