@@ -63,6 +63,9 @@ const parameterAuthoritySource = await readText(
 const coreRevenuePrivateSource = await readText(
   "scripts/m2-current/core_revenue_manual_private.mjs"
 );
+const controlledSource = await readText(
+  "scripts/m2-current/run_m2_head_protected_segmented_router_controlled.mjs"
+);
 
 test("HPSR02 stable identity and preregistration contract validate", () => {
   const validation = validateHeadProtectedTailBandCorrectionContract(
@@ -733,6 +736,10 @@ test("parameter recovery uses historical lineage and cannot consume current spli
     /retrospectiveOrigins: \["2026-03"\],[\s\S]*authorityMode: "HPSR02_WORK_TOTAL_SCOPE_AWARE_AUTHORITY"/u
   );
   assert.match(parameterAuthoritySource, /M2_HPSR02_BLOCKED_MISSING_IMMUTABLE_FROZEN_PARAMETER/u);
+  assert.match(
+    controlledSource,
+    /\^hpsr02_\[a-z0-9_\]\+\$/u
+  );
 });
 
 test("production loader route and API do not import HPSR02", async () => {

@@ -104,8 +104,13 @@ if (
   && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)
 ) {
   main().catch((error) => {
+    const safeReason = typeof error?.parameterBlockerReason === "string"
+      && /^hpsr02_[a-z0-9_]+$/u.test(error.parameterBlockerReason)
+      ? ` reason=${error.parameterBlockerReason}`
+      : "";
     process.stderr.write(
-      `[M2_HPSR_CONTROLLED_EXECUTE_DENIED] ${error.message}\n`
+      `[M2_HPSR_CONTROLLED_EXECUTE_DENIED] ${error.message}`
+        + `${safeReason}\n`
     );
     process.exitCode = 1;
   });
