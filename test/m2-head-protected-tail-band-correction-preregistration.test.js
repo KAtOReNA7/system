@@ -36,6 +36,19 @@ const attributionReport = await readText(
   config.publicOutputs.cashBandAttributionReport
 );
 const synthetic = await runHpsr02SyntheticFixture();
+const independentEvaluation = await readJson(
+  "docs/analysis/m2-current/"
+    + "M2-head-protected-tail-band-correction-"
+    + "independent-evaluation-v0.2.json"
+);
+const independentEvaluationReport = await readText(
+  "docs/analysis/m2-current/"
+    + "M2-head-protected-tail-band-correction-"
+    + "independent-evaluation-v0.2.md"
+);
+const dateAuditSource = await readText(
+  "scripts/m2-current/audit_head_protected_segmented_router_dates.py"
+);
 
 test("HPSR02 stable identity and preregistration contract validate", () => {
   const validation = validateHeadProtectedTailBandCorrectionContract(
@@ -60,6 +73,78 @@ test("HPSR02 stable identity and preregistration contract validate", () => {
   assert.equal(config.inspiration.postHocArithmeticIsModelEvidence, false);
   assert.equal(config.experiment.primaryCandidateArmId, "R2");
   assert.equal(config.experiment.independentK2Executed, false);
+});
+
+test("first independent evaluation stops at incomplete source authority", () => {
+  assert.equal(
+    independentEvaluation.status,
+    "M2_HPSR02_BLOCKED_MISSING_SOURCE_AUTHORITY"
+  );
+  assert.equal(
+    independentEvaluation.model.stableModelId,
+    "M2-WORK-HPSR02"
+  );
+  assert.equal(
+    independentEvaluation.experiment.stableExperimentId,
+    "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01"
+  );
+  const checkpoint = independentEvaluation
+    .amountPreReadIntegrityAndContractCheckpoint;
+  assert.equal(checkpoint.metadataOnly, true);
+  assert.equal(checkpoint.billMonthWindowComplete, true);
+  assert.equal(checkpoint.completeAuthoritativeBillMonthThrough, "2026-06");
+  assert.equal(checkpoint.schemaValid, true);
+  assert.equal(checkpoint.workMappingValid, true);
+  assert.equal(checkpoint.canonicalChannelMappingValid, false);
+  assert.equal(checkpoint.missingCanonicalChannelMappingRowCount, 134);
+  assert.equal(checkpoint.missingCanonicalRawPairCount, 3);
+  assert.equal(checkpoint.metadataPartitionAudit.extraInSplitRowCount, 3);
+  assert.equal(checkpoint.amountCellReadCount, 0);
+  assert.equal(checkpoint.checkpointPassed, false);
+  assert.equal(independentEvaluation.executionLedger.actualAmountRowsRead, 0);
+  assert.equal(independentEvaluation.executionLedger.candidateModelRuns, 0);
+  assert.equal(
+    independentEvaluation.executionLedger.scientificEvaluationsExecuted,
+    0
+  );
+  assert.equal(independentEvaluation.executionLedger.bootstrapRuns, 0);
+  assert.equal(
+    independentEvaluation.scientificEvidence.metricsAvailable,
+    false
+  );
+  assert.equal(
+    independentEvaluation.scientificEvidence.core90SensitivityStatus,
+    "CAPABILITY_NOT_DEFINED"
+  );
+  assert.equal(independentEvaluation.governance.activeCandidate, null);
+  assert.equal(independentEvaluation.governance.approvedForAutomation, null);
+  assert.equal(independentEvaluation.governance.productionReady, false);
+  assert.equal(independentEvaluation.governance.finalHoldoutOpened, false);
+  assert.equal(
+    independentEvaluation.reservedEvaluationBoundary.actualAmountRead,
+    false
+  );
+  assert.equal(
+    independentEvaluation.reservedEvaluationBoundary
+      .prospectiveFinalHoldoutOpened,
+    false
+  );
+  assert.match(
+    independentEvaluationReport,
+    /因不可替代源权威不完整而阻断/u
+  );
+  assert.match(
+    independentEvaluationReport,
+    /M2_HPSR02_BLOCKED_MISSING_SOURCE_AUTHORITY/u
+  );
+});
+
+test("metadata readiness adapter never reads an amount cell", () => {
+  assert.match(dateAuditSource, /max_col=6/u);
+  assert.match(dateAuditSource, /min_col=8/u);
+  assert.match(dateAuditSource, /sourceLedgerAmountCellReadCount": 0/u);
+  assert.doesNotMatch(dateAuditSource, /row\[6\]/u);
+  assert.doesNotMatch(dateAuditSource, /min_col=7/u);
 });
 
 test("HPSR01 mechanical result stays frozen while interpretation is inconclusive", () => {
@@ -320,6 +405,8 @@ test("public reports explain post-hoc inspiration without private leakage", () =
   for (const content of [
     preregistration,
     attributionReport,
+    independentEvaluationReport,
+    JSON.stringify(independentEvaluation),
     JSON.stringify(config)
   ]) {
     assert.doesNotMatch(content, /data[\\/]+private-(?:input|output)/iu);

@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
-"""Build the metadata-only opened-origin semantics ledger for HPSR01.
+"""Build the metadata-only opened-origin semantics ledger for HPSR01/02.
 
 This adapter does not fit, predict, score, aggregate cash, or inspect a new
-later-origin outcome. From already materialized historical caches it retains
-only origin/horizon/date keys and whether an existing actual field is null.
-Historical receipts and manifests prove whether an earlier run had already
-opened actual values; this audit does not open those values again. From the
-source ledger it reads only the bill-month column.
+later-origin amount. It verifies authoritative workbook schema, non-amount
+row keys, split membership, work/channel mapping, bill-month coverage, and
+the absence of an explicit partial-import marker. The amount column header is
+required, but no amount cell is read. Missing derived caches and historical
+receipts are reported by class and never masquerade as missing source
+authority.
 """
 
 from __future__ import annotations
@@ -21,10 +22,15 @@ from typing import Any
 
 from openpyxl import load_workbook
 
+import export_m2_reversal_authority as reversal
+
 
 ROOT = Path(__file__).resolve().parents[2]
 READINESS_CONFIG = (
     ROOT / "config" / "m2-current-human-anchored-later-origin.v0.1.json"
+)
+HPSR_CONFIG = (
+    ROOT / "config" / "m2-current-head-protected-segmented-router.v0.1.json"
 )
 FEATURE_CACHE = (
     ROOT
@@ -169,55 +175,185 @@ def _scan_opened_cache(path: Path) -> dict[str, Any]:
     }
 
 
-def _scan_bill_months(path: Path) -> dict[str, Any]:
+def _scan_opened_cache_if_present(path: Path) -> dict[str, Any]:
+    if path.is_file():
+        return _scan_opened_cache(path)
+    return {
+        "role": (
+            "frozen-development-feature-rows"
+            if path == FEATURE_CACHE
+            else "frozen-lg01-same-case-rows"
+        ),
+        "artifactClass": "PRIVATE_DERIVED_CACHE",
+        "repositoryRelativePath": _repository_relative(path),
+        "status": "CACHE_MISS_REBUILDABLE",
+        "scannedFields": [],
+        "originCount": None,
+        "minimumOrigin": None,
+        "maximumOrigin": None,
+        "origins": [],
+    }
+
+
+def _metadata_row_key(values: tuple[Any, ...]) -> tuple[str, ...]:
+    return tuple(reversal.clean_text(value) for value in values)
+
+
+def _scan_ledger_metadata(
+    path: Path,
+    *,
+    expected_types: set[str],
+    mapping: dict[str, str] | None = None,
+    channel_master: dict[tuple[str, str], dict] | None = None,
+) -> tuple[dict[str, Any], Counter[tuple[str, ...]]]:
     if not path.is_file():
         raise DateAuditError(f"source authority missing: {path.name}")
     workbook = load_workbook(path, read_only=True, data_only=True)
     try:
         worksheet = workbook[workbook.sheetnames[0]]
-        headers = [cell.value for cell in next(worksheet.iter_rows(min_row=1, max_row=1))]
-        month_index = next(
-            (
-                index
-                for index, header in enumerate(headers)
-                if str(header).strip() in {"年月", "billMonth", "账期"}
-            ),
-            None,
+        headers = [
+            cell.value
+            for cell in next(worksheet.iter_rows(min_row=1, max_row=1))
+        ]
+        required_headers = [
+            *reversal.REAL_BILL_COLUMNS,
+            reversal.TYPE_COLUMN,
+        ]
+        if headers != required_headers:
+            raise DateAuditError(f"ledger schema mismatch: {path.name}")
+        if len(required_headers) != 8 or required_headers[6] != "实销金额":
+            raise DateAuditError("standard ledger amount column position changed")
+        partial_markers = re.compile(
+            r"partial|incomplete|部分导入|未完整",
+            re.IGNORECASE,
         )
-        if month_index is None:
-            raise DateAuditError("sales-share ledger bill-month column missing")
+        if any(
+            partial_markers.search(str(value))
+            for value in [*workbook.sheetnames, *headers]
+        ):
+            raise DateAuditError(
+                f"explicit partial-import marker present: {path.name}"
+            )
         counts: Counter[str] = Counter()
+        metadata_keys: Counter[tuple[str, ...]] = Counter()
+        missing_month_count = 0
+        missing_work_mapping_count = 0
+        missing_channel_mapping_count = 0
+        missing_channel_pairs: set[tuple[str, str]] = set()
+        missing_channel_months: Counter[str] = Counter()
         for row in worksheet.iter_rows(
             min_row=2,
-            min_col=month_index + 1,
-            max_col=month_index + 1,
+            min_col=1,
+            max_col=6,
             values_only=True,
         ):
-            month = _normalize_month(row[0])
-            if month is not None:
+            if all(value is None for value in row):
+                continue
+            key = _metadata_row_key(row)
+            metadata_keys[key] += 1
+            month = _normalize_month(key[0])
+            if month is None:
+                missing_month_count += 1
+            else:
                 counts[month] += 1
+            if mapping is not None:
+                raw_work_id = reversal.normalize_raw_work_id(key[4])
+                standard_work_id = mapping.get(raw_work_id)
+                if not standard_work_id:
+                    standard_work_id = reversal.derive_standard_work_id(
+                        raw_work_id
+                    )
+                if not standard_work_id:
+                    missing_work_mapping_count += 1
+            if channel_master is not None:
+                raw_pair = (
+                    reversal.canonical.clean(key[1]),
+                    reversal.canonical.clean(key[2]),
+                )
+                channel_mapping = channel_master.get(raw_pair)
+                if not channel_mapping or not channel_mapping.get(
+                    "channelUid"
+                ):
+                    missing_channel_mapping_count += 1
+                    missing_channel_pairs.add(raw_pair)
+                    if month is not None:
+                        missing_channel_months[month] += 1
+        type_counts: Counter[str] = Counter()
+        for row in worksheet.iter_rows(
+            min_row=2,
+            min_col=8,
+            max_col=8,
+            values_only=True,
+        ):
+            value = reversal.clean_text(row[0])
+            type_counts[value] += 1
     finally:
         workbook.close()
     if not counts:
-        raise DateAuditError("sales-share ledger has no bill-month values")
+        raise DateAuditError(f"ledger has no bill-month values: {path.name}")
+    if set(type_counts) != expected_types:
+        raise DateAuditError(f"ledger split type invalid: {path.name}")
+    if sum(type_counts.values()) != sum(metadata_keys.values()):
+        raise DateAuditError(f"ledger split type row mismatch: {path.name}")
+    metadata_collision_count = sum(
+        count - 1 for count in metadata_keys.values() if count > 1
+    )
     return {
-        "role": "sales-share-ledger-authority",
+        "role": "reviewed-ledger-authority",
         "artifactClass": "PRIVATE_SOURCE_AUTHORITY",
-        "scannedFields": ["billMonth"],
+        "repositoryRelativePath": _repository_relative(path),
+        "scannedFields": [
+            "billMonth",
+            "rawChannelId",
+            "rawChannelName",
+            "authorizationCategory",
+            "rawWorkId",
+            "workName",
+            "splitType",
+        ],
+        "amountColumnHeaderValidated": True,
+        "amountCellReadCount": 0,
+        "schemaValid": True,
+        "splitTypeValues": sorted(type_counts),
+        "rowCount": sum(metadata_keys.values()),
+        "distinctMetadataKeyCount": len(metadata_keys),
+        "metadataCollisionCount": metadata_collision_count,
+        "missingMonthCount": missing_month_count,
+        "missingWorkMappingCount": missing_work_mapping_count,
+        "missingCanonicalChannelMappingCount":
+            missing_channel_mapping_count,
+        "missingCanonicalRawPairCount": len(missing_channel_pairs),
+        "missingCanonicalChannelMonths": [
+            {
+                "billMonth": month,
+                "rowCount": missing_channel_months[month],
+            }
+            for month in sorted(missing_channel_months)
+        ],
         "minimumBillMonth": min(counts),
         "maximumBillMonth": max(counts),
         "monthlyFactCounts": [
             {"billMonth": month, "factCount": counts[month]}
             for month in sorted(counts)
         ],
-    }
+        "explicitPartialImportMarkerPresent": False,
+    }, metadata_keys
 
 
 def _read_historical_outcome_provenance() -> dict[str, Any]:
     if not CHAM_RECEIPT.is_file() or not CHAM_MANIFEST.is_file():
-        raise DateAuditError(
-            "historical outcome provenance missing for actual-opened boundary"
-        )
+        return {
+            "status": "OPTIONAL_PROVENANCE_MISSING",
+            "completeOutcomePreviouslyProduced": None,
+            "featureRowsBoundByFrozenManifest": None,
+            "failedAttemptTouchedMetadataOnly": None,
+            "failedAttemptOpenedOutcome": None,
+            "evidenceRefs": [
+                "PUBLIC_FROZEN_AUTHORITY:"
+                "M2-head-protected-segmented-router-opened-origin-"
+                "semantics-v0.2"
+            ],
+        }
     receipt = json.loads(CHAM_RECEIPT.read_text(encoding="utf-8"))
     manifest = json.loads(CHAM_MANIFEST.read_text(encoding="utf-8"))
     if (
@@ -236,6 +372,7 @@ def _read_historical_outcome_provenance() -> dict[str, Any]:
         )
     recovery = receipt.get("recovery", {})
     return {
+        "status": "PRIVATE_RUN_PROVENANCE_AVAILABLE",
         "completeOutcomePreviouslyProduced": True,
         "featureRowsBoundByFrozenManifest": True,
         "failedAttemptTouchedMetadataOnly": (
@@ -277,59 +414,104 @@ def _write_atomic(path: Path, value: dict[str, Any]) -> None:
 
 def run() -> dict[str, Any]:
     readiness = json.loads(READINESS_CONFIG.read_text(encoding="utf-8"))
-    sales_share_path = ROOT / readiness["privateInputs"]["salesShareLedger"]
+    hpsr = json.loads(HPSR_CONFIG.read_text(encoding="utf-8"))
+    capability, _ = reversal.load_contracts()
+    sources, mapping_directory, channel_master_path = (
+        reversal.authority_paths(capability)
+    )
+    expected_sales_share_path = (
+        ROOT / readiness["privateInputs"]["salesShareLedger"]
+    ).resolve()
+    if sources.sales_share.resolve() != expected_sales_share_path:
+        raise DateAuditError("sales-share authority path contract mismatch")
+    mapping, _ = reversal.load_mapping(mapping_directory)
+    channel_contract = json.loads(
+        (
+            ROOT / "config" / "m2-current-canonical-channel.v0.1.json"
+        ).read_text(encoding="utf-8")
+    )
+    channel_master, channel_evidence = (
+        reversal.canonical.load_channel_master(
+            channel_contract,
+            channel_master_path,
+        )
+    )
+    total_profile, total_keys = _scan_ledger_metadata(
+        sources.total_ledger,
+        expected_types={"", "买断"},
+    )
+    bill_profile, sales_share_keys = _scan_ledger_metadata(
+        sources.sales_share,
+        expected_types={"分成"},
+        mapping=mapping,
+        channel_master=channel_master,
+    )
+    buyout_profile, buyout_keys = _scan_ledger_metadata(
+        sources.buyout,
+        expected_types={"买断"},
+    )
+    split_multiset_conserved = (
+        total_keys == sales_share_keys + buyout_keys
+    )
+    combined_split_keys = sales_share_keys + buyout_keys
+    metadata_split_missing_row_count = sum(
+        (total_keys - combined_split_keys).values()
+    )
+    metadata_split_extra_row_count = sum(
+        (combined_split_keys - total_keys).values()
+    )
     cache_profiles = [
-        _scan_opened_cache(FEATURE_CACHE),
-        _scan_opened_cache(FROZEN_LG01_CACHE),
-    ]
-    bill_profile = _scan_bill_months(sales_share_path)
-    complete_authoritative_bill_month_through = readiness[
-        "qualificationAudit"
-    ][
-        "latestCompleteMonth"
-    ]
-    incomplete_month_keys = readiness["qualificationAudit"][
-        "incompleteMonths"
+        _scan_opened_cache_if_present(FEATURE_CACHE),
+        _scan_opened_cache_if_present(FROZEN_LG01_CACHE),
     ]
     month_count = {
         row["billMonth"]: row["factCount"]
         for row in bill_profile["monthlyFactCounts"]
     }
-    if (
-        complete_authoritative_bill_month_through
-        not in month_count
-        or any(month not in month_count for month in incomplete_month_keys)
-    ):
-        raise DateAuditError(
-            "bill-month availability differs from completeness authority"
-        )
+    required_months = hpsr["laterOriginQualification"][
+        "earliestIndependentFutureBillMonths"
+    ]
+    missing_required_months = [
+        month
+        for month in required_months
+        if month_count.get(month, 0) <= 0
+    ]
+    standard_metadata_checks_pass = all([
+        total_profile["schemaValid"],
+        bill_profile["schemaValid"],
+        buyout_profile["schemaValid"],
+        split_multiset_conserved,
+        bill_profile["missingWorkMappingCount"] == 0,
+        bill_profile["missingCanonicalChannelMappingCount"] == 0,
+        not bill_profile["explicitPartialImportMarkerPresent"],
+    ])
+    bill_month_window_complete = all([
+        not missing_required_months,
+        not bill_profile["explicitPartialImportMarkerPresent"],
+    ])
+    complete_authoritative_bill_month_through = (
+        required_months[-1]
+        if bill_month_window_complete
+        else hpsr["openedOriginSemantics"][
+            "completeAuthoritativeBillMonthThrough"
+        ]
+    )
+    source_authority_complete = standard_metadata_checks_pass
+    source_authority_status = (
+        "SOURCE_AUTHORITY_AVAILABLE"
+        if source_authority_complete
+        else "SOURCE_AUTHORITY_INCOMPLETE_STANDARD_IMPORT"
+    )
     provenance = _read_historical_outcome_provenance()
-    max_availability_inspected_origin = max(
-        profile["maximumOrigin"] for profile in cache_profiles
-    )
-    feature_profile = next(
-        profile
-        for profile in cache_profiles
-        if profile["role"] == "frozen-development-feature-rows"
-    )
-    opened_actual_origins = [
-        row
-        for row in feature_profile["origins"]
-        if row["nonNullExistingActualCount"] > 0
+    max_availability_inspected_origin = hpsr["openedOriginSemantics"][
+        "maxAvailabilityInspectedOrigin"
     ]
-    if not opened_actual_origins:
-        raise DateAuditError("historical actual-opened origins are empty")
-    max_actual_value_opened_origin = max(
-        row["origin"] for row in opened_actual_origins
-    )
-    opened_actual_label_dates = [
-        value
-        for row in opened_actual_origins
-        for value in row["labelDateKeys"]
+    max_actual_value_opened_origin = hpsr["openedOriginSemantics"][
+        "maxActualValueOpenedOrigin"
     ]
-    if not opened_actual_label_dates:
-        raise DateAuditError("historical actual-opened label boundary missing")
-    actual_value_opened_through = max(opened_actual_label_dates)
+    actual_value_opened_through = hpsr["openedOriginSemantics"][
+        "actualValueOpenedThrough"
+    ]
     availability_inspected_through = bill_profile["maximumBillMonth"]
     earliest_independent_origin = _add_months(
         max_actual_value_opened_origin,
@@ -347,16 +529,19 @@ def run() -> dict[str, Any]:
         _add_months(prospective_final_holdout_origin, offset)
         for offset in range(1, 4)
     ]
-    earliest_independent_ready = (
+    date_window_ready = (
         _month_index(earliest_future_months[-1])
         <= _month_index(complete_authoritative_bill_month_through)
+    )
+    earliest_independent_ready = (
+        date_window_ready and source_authority_complete
     )
     incomplete_months = [
         {
             "billMonth": month,
-            "factCount": month_count[month],
+            "factCount": month_count.get(month, 0),
         }
-        for month in incomplete_month_keys
+        for month in missing_required_months
     ]
     ledger = {
         "schema": (
@@ -371,10 +556,41 @@ def run() -> dict[str, Any]:
             "newModelMetricsRead": False,
             "modelFitRun": False,
             "modelEvaluationRun": False,
-            "historicalCacheActualFieldUse": "NULLNESS_ONLY",
-            "sourceLedgerFieldUse": "BILL_MONTH_ONLY",
+            "historicalCacheActualFieldUse": (
+                "NULLNESS_ONLY_WHEN_CACHE_PRESENT_OTHERWISE_PUBLIC_"
+                "FROZEN_BOUNDARY"
+            ),
+            "sourceLedgerFieldUse": "NON_AMOUNT_METADATA_ONLY",
+            "sourceLedgerAmountCellReadCount": 0,
         },
         "historicalCacheProfiles": cache_profiles,
+        "sourceAuthorityReadiness": {
+            "sourceAuthorityStatus": source_authority_status,
+            "totalLedger": total_profile,
+            "salesShareLedger": bill_profile,
+            "buyoutLedger": buyout_profile,
+            "splitRowMultisetConserved": split_multiset_conserved,
+            "metadataSplitMissingRowCount":
+                metadata_split_missing_row_count,
+            "metadataSplitExtraRowCount":
+                metadata_split_extra_row_count,
+            "workMappingValid":
+                bill_profile["missingWorkMappingCount"] == 0,
+            "canonicalChannelMappingValid":
+                bill_profile[
+                    "missingCanonicalChannelMappingCount"
+                ] == 0,
+            "canonicalChannelCount":
+                channel_evidence["canonicalChannelCount"],
+            "standardMetadataChecksPass": standard_metadata_checks_pass,
+            "billMonthWindowComplete": bill_month_window_complete,
+            "dateWindowReady": date_window_ready,
+            "completenessAuthorityMode": (
+                "REQUIRED_MONTHS_PRESENT_STANDARD_METADATA_CHECKS_PASS_"
+                "NO_PARTIAL_IMPORT_MARKER"
+            ),
+            "stalePriorIncompleteMonthSnapshotUsed": False,
+        },
         "openedSemantics": {
             "maxAvailabilityInspectedOrigin":
                 max_availability_inspected_origin,
@@ -384,18 +600,25 @@ def run() -> dict[str, Any]:
             "actualValueOpenedThrough": actual_value_opened_through,
             "completeAuthoritativeBillMonthThrough":
                 complete_authoritative_bill_month_through,
-            "failedAttemptTouchedMetadataOnly":
-                provenance["failedAttemptTouchedMetadataOnly"],
-            "failedAttemptOpenedOutcome":
-                provenance["failedAttemptOpenedOutcome"],
+            "failedAttemptTouchedMetadataOnly": provenance.get(
+                "failedAttemptTouchedMetadataOnly"
+            ),
+            "failedAttemptOpenedOutcome": provenance.get(
+                "failedAttemptOpenedOutcome"
+            ),
             "unknownOrAmbiguous": False,
             "evidenceRefs": provenance["evidenceRefs"],
+            "historicalReceiptStatus": provenance["status"],
         },
         "billMonthAvailability": {
             **bill_profile,
             "completeAuthoritativeBillMonthThrough":
                 complete_authoritative_bill_month_through,
             "incompleteMonths": incomplete_months,
+            "requiredMonths": required_months,
+            "requiredMonthsPresent": not missing_required_months,
+            "standardMetadataChecksPass": standard_metadata_checks_pass,
+            "amountCellReadCount": 0,
         },
         "prospectiveReservation": {
             "firstIndependentLaterOrigin": earliest_independent_origin,
@@ -424,9 +647,14 @@ def run() -> dict[str, Any]:
             "historicalRawReceiptModified": False,
         },
         "decision": (
-            "INDEPENDENT_LATER_ORIGIN_DATE_READY_AWAIT_SEPARATE_AUTHORIZATION"
-            if earliest_independent_ready
-            else "AWAITING_COMPLETE_AUTHORITATIVE_BILL_MONTHS"
+            "M2_HPSR02_BLOCKED_MISSING_SOURCE_AUTHORITY"
+            if not source_authority_complete
+            else (
+                "INDEPENDENT_LATER_ORIGIN_DATE_READY_AWAIT_SEPARATE_"
+                "AUTHORIZATION"
+                if earliest_independent_ready
+                else "M2_HPSR02_WAITING_FOR_COMPLETE_AUTHORITATIVE_BILLS"
+            )
         ),
     }
     _write_atomic(PRIVATE_LEDGER, ledger)
@@ -450,6 +678,21 @@ def run() -> dict[str, Any]:
         "decision": ledger["decision"],
         "newFutureActualAmountsRead": False,
         "newModelMetricsRead": False,
+        "sourceAuthorityStatus": source_authority_status,
+        "derivedCacheStatus": (
+            "CACHE_MISS_REBUILDABLE"
+            if any(
+                profile.get("status") == "CACHE_MISS_REBUILDABLE"
+                for profile in cache_profiles
+            )
+            else "CACHE_READY"
+        ),
+        "historicalReceiptStatus": provenance["status"],
+        "standardMetadataChecksPass": standard_metadata_checks_pass,
+        "billMonthWindowComplete": bill_month_window_complete,
+        "dateWindowReady": date_window_ready,
+        "requiredBillMonths": required_months,
+        "amountCellReadCount": 0,
     }
 
 

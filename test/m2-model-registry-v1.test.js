@@ -96,7 +96,10 @@ test("current roles retain fallback, research baseline and no automation promoti
     "M2-WORK-LG01"
   );
   assert.equal(registry.currentRoles.activeExperiment, null);
-  assert.equal(registry.currentRoles.blockedExperiment, null);
+  assert.equal(
+    registry.currentRoles.blockedExperiment,
+    "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01"
+  );
   assert.match(
     registry.currentRoles.roleInterpretationZh,
     /OA03 同公式在当前 Core 老品合同下重新执行完成；没有复现历史数值/u
@@ -409,7 +412,7 @@ test("HPSR01 frozen result is preserved while interpretation is amended", () => 
   assert.equal(model.finalHoldoutOpened, false);
   assert.deepEqual(
     experiment.arms.map((arm) => arm.armId),
-    ["R0", "D1", "R1"]
+    ["R0", "D1", "R1", "R2"]
   );
   assert.equal(
     experiment.resultStatus,
@@ -432,7 +435,7 @@ test("HPSR01 frozen result is preserved while interpretation is amended", () => 
   );
   assert.equal(
     experiment.arms
-      .filter((arm) => arm.armId !== "R1")
+      .filter((arm) => ["R0", "D1"].includes(arm.armId))
       .every(
         (arm) => (
           /RETROSPECTIVE_DEVELOPMENT_EVALUATED/u.test(arm.executionStatus)
@@ -454,11 +457,17 @@ test("HPSR01 frozen result is preserved while interpretation is amended", () => 
   assert.equal(registry.currentRoles.approvedForAutomation, null);
 });
 
-test("HPSR02 is preregistered before independent outcome without promotion", () => {
+test("HPSR02 source-authority blocker is recorded without promotion", () => {
   const model = registry.models.find(
     (item) => item.stableModelId === "M2-WORK-HPSR02"
   );
   const experiment = registry.experiments.find(
+    (item) => (
+      item.experimentId
+        === "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01"
+    )
+  );
+  const historicalPreregistrationNamespace = registry.experiments.find(
     (item) => (
       item.experimentId
         === "M2-EXP-LG01-HEAD-PROTECTED-TAIL-BAND-CORRECTION-02"
@@ -467,36 +476,46 @@ test("HPSR02 is preregistered before independent outcome without promotion", () 
 
   assert.equal(
     model.currentRole,
-    "preregistered_independent_candidate_not_executed_not_active"
+    "blocked_missing_source_authority_not_executed_not_active"
   );
   assert.equal(
     model.evidenceStatus,
-    "post_hoc_inspired_prospectively_preregistered_canonical_synthetic_verified_no_independent_outcome"
+    "k0_metadata_only_source_authority_incomplete_no_actual_amount_read_no_independent_outcome"
+  );
+  assert.equal(
+    model.currentExperimentId,
+    "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01"
   );
   assert.deepEqual(model.evaluations, []);
   assert.equal(model.automationAuthorized, false);
   assert.equal(model.productionImported, false);
   assert.equal(model.finalHoldoutOpened, false);
-  assert.deepEqual(
-    experiment.arms.map((arm) => arm.armId),
-    ["R0", "R1", "R2"]
+  const hpsr02Arm = experiment.arms.find((arm) => arm.armId === "R2");
+  assert.equal(
+    hpsr02Arm.executionStatus,
+    "BLOCKED_K0_SOURCE_AUTHORITY_INCOMPLETE_NOT_EXECUTED"
   );
   assert.equal(
-    experiment.arms.every(
-      (arm) => arm.executionStatus === "PREREGISTERED_NOT_EXECUTED"
-    ),
-    true
+    experiment.hpsr02IndependentEvaluation.status,
+    "M2_HPSR02_BLOCKED_MISSING_SOURCE_AUTHORITY"
   );
   assert.equal(
-    experiment.resultStatus,
-    "M2_HPSR02_POST_HOC_INSPIRED_PROSPECTIVELY_PREREGISTERED_AWAITING_INDEPENDENT_DATA"
+    experiment.hpsr02IndependentEvaluation.amountCellReadCount,
+    0
   );
-  assert.equal(experiment.k2PrivateEvaluationAuthorized, false);
-  assert.equal(experiment.k2Executed, false);
-  assert.equal(experiment.candidateOutcomeProduced, false);
-  assert.equal(experiment.rawCandidateEvidenceProduced, false);
-  assert.equal(experiment.independentOutcomeRead, false);
-  assert.equal(experiment.prospectiveFinalHoldoutOpened, false);
+  assert.equal(
+    experiment.hpsr02IndependentEvaluation.scientificEvaluationsExecuted,
+    0
+  );
+  assert.equal(
+    experiment.hpsr02IndependentEvaluation.prospectiveFinalHoldoutOpened,
+    false
+  );
+  assert.equal(historicalPreregistrationNamespace.currentAuthority, false);
+  assert.equal(
+    historicalPreregistrationNamespace.mappedCurrentParentExperimentId,
+    "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01"
+  );
   assert.equal(registry.currentRoles.activeExperiment, null);
   assert.equal(registry.currentRoles.activeCandidate, null);
   assert.equal(registry.currentRoles.approvedForAutomation, null);
@@ -818,7 +837,7 @@ test("read-only query exposes scoped identities and refuses invalid ranking", ()
   );
   assert.match(
     status.stdout,
-    /当前阻断实验：无（null）/u
+    /当前阻断实验：M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01/u
   );
 
   const horizonAmount = runQuery("show", "M2-WORK-CHAM01");

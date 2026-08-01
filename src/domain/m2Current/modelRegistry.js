@@ -456,16 +456,23 @@ export function renderM2ModelCatalog(registry) {
     "",
     "| 实验（英文原名、稳定 ID） | 已登记实验臂（完整作用域、机器状态） |",
     "|---|---|",
-    ...(registry.experiments ?? []).map((experiment) => (
-      `| ${experiment.displayNameZh}（${experiment.displayNameEn}，`
-      + `${code(experiment.experimentId)}） | `
-      + experiment.arms.map((arm) => (
+    ...(registry.experiments ?? []).map((experiment) => {
+      const armLedger = experiment.arms.map((arm) => (
         `${arm.displayNameZh} / ${arm.armId}（`
         + `${code(`${experiment.experimentId}/${arm.armId}`)}；`
         + `${code(arm.executionStatus)}）`
-      )).join("；")
-      + " |"
-    )),
+      )).join("；");
+      const identityPrefix = experiment.currentAuthority === false
+        ? `历史预注册命名空间，保留用于审计追溯但不再作为当前实验权威（${
+          code(experiment.identityStatus)
+        }）；当前所属实验映射为 ${
+          code(experiment.mappedCurrentParentExperimentId)
+        }；`
+        : "";
+      return `| ${experiment.displayNameZh}（${experiment.displayNameEn}，`
+        + `${code(experiment.experimentId)}） | ${identityPrefix}`
+        + `${armLedger} |`;
+    }),
     "",
     "## 成绩人口与可比组",
     "",
@@ -610,12 +617,23 @@ function renderCurrentRoles(registry) {
         + `${code(experiment.resultStatus)}）。`
     );
   }
-  rows.push(
-    registry.currentRoles.blockedExperiment === null
-      ? "- 当前阻断实验：无（`null`）。"
-      : `- 当前阻断实验：${code(registry.currentRoles.blockedExperiment)}`
-        + "；这是前置条件阻断，不是已执行失败。"
-  );
+  if (registry.currentRoles.blockedExperiment === null) {
+    rows.push("- 当前阻断实验：无（`null`）。");
+  } else {
+    const experiment = registry.experiments.find(
+      (item) => (
+        item.experimentId === registry.currentRoles.blockedExperiment
+      )
+    );
+    const status = experiment?.hpsr02IndependentEvaluation?.status
+      ?? experiment?.resultStatus
+      ?? "BLOCKED";
+    rows.push(
+      `- 当前阻断实验：${experiment.displayNameZh}（`
+        + `${experiment.displayNameEn}，${code(experiment.experimentId)}；`
+        + `${code(status)}）。`
+    );
+  }
   return rows;
 }
 
@@ -752,6 +770,8 @@ function roleZh(role) {
       "原合同不支持保持，科学解释修订为证据不足",
     preregistered_independent_candidate_not_executed_not_active:
       "独立评价候选已预注册但尚未执行且未激活",
+    blocked_missing_source_authority_not_executed_not_active:
+      "首次独立评价因源权威不完整而阻断，未读取金额、未执行且未激活",
     archive_only_failed_model: "仅历史审计且已失败"
   }[role] ?? "登记角色";
 }
