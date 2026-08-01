@@ -280,6 +280,42 @@ test("future-first channel remains zero without identity or authority backfill",
   assert.equal(prediction.authorizationBackfillUsed, false);
 });
 
+test("PSC01 candidate ignores frozen LG01 fields and amount multipliers", () => {
+  const rows = buildM2ChannelGenerativeSyntheticRows(fixture, config);
+  const training = rows.filter(
+    (row) => row.evaluationFamily === "primary"
+  );
+  const state = fitM2PublishingScaleChannelCore(
+    training,
+    config,
+    support
+  );
+  const target = rows.find((row) => (
+    row.evaluationFamily === "strict" && row.observedAtOrigin === true
+  ));
+  const original = predictM2PublishingScaleChannelMonthly(
+    target,
+    state,
+    config
+  );
+  const perturbed = predictM2PublishingScaleChannelMonthly(
+    {
+      ...target,
+      g0MonthlyPositive: 1e15,
+      learnedGlobalPointEstimate: 1e15,
+      learnedGlobalMultiplier: 1e9
+    },
+    state,
+    config
+  );
+  assert.deepEqual(perturbed, original);
+  assert.equal(config.featureOrder.includes("g0MonthlyPositive"), false);
+  assert.equal(
+    config.featureOrder.includes("learnedGlobalPointEstimate"),
+    false
+  );
+});
+
 test("historical fixed eligibility remains historical, not active truth", () => {
   assert.equal(historical.eligibility.minimumDistinctTrainingWorks, 50);
   assert.doesNotMatch(

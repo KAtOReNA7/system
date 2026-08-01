@@ -72,6 +72,15 @@ This directory is the only implementation home for current M2 model logic.
   to select a current M2 work model.
 - Preserve every preregistered raw ablation result. A fallback or selected
   pipeline must never replace or conceal raw candidate metrics or raw FVA.
+- Preserve the frozen failure of the publishing-scale channel core
+  (`M2-CHAN-PSC01`). Its amount-scale root-cause audit status is
+  `ESTIMATOR_SCALE_SHRINKAGE_CONFIRMED_IMPLEMENTATION_CORRECT`: the collapse
+  begins in the work-balanced log1p empirical parent and is amplified by
+  hierarchical amount shrinkage, while implementation and same-case
+  comparator integrity passed. This supports only a separately authorized
+  future design preregistration
+  (`PSC02_DESIGN_PREREGISTRATION_SUPPORTED_NOT_AUTHORIZED`); do not create,
+  fit, tune, evaluate, or register a successor from this rule alone.
 - Model selection must be nested inside the applicable outer work or time
   split. Exact v0.3, later-origin, final holdout, provider, database, canary,
   release, and M3 data must not be read for selection.
