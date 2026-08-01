@@ -403,7 +403,7 @@ export function evaluateHpsr02IndependentEvaluation({
       !== "SOURCE_AUTHORITY_AVAILABLE_FOR_WORK_TOTAL"
     || sourceGate?.workTotalSourceAuthorityChecksPass !== true
     || sourceGate?.workChannelGateStatus !== "PARTIAL_NOT_ACTIVE"
-    || sourceGate?.futureActualOutcomeOpened !== false
+    || sourceGate?.newFutureActualOutcomeOpened !== false
   ) {
     throw new Error("hpsr02_independent_source_gate_invalid");
   }

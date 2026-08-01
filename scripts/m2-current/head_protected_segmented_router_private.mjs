@@ -290,6 +290,7 @@ export async function reconcileHpsr02SourceAuthorityPrivate({ root }) {
       finalReconciliation.partitionAudit
         .workTotalScopeRelevantDifferenceRowCount,
     workChannelGateStatus: finalAudit.workChannelGateStatus,
+    newFutureActualOutcomeOpened: false,
     futureActualOutcomeRead: false,
     modelPredictionRun: false,
     scoreComputed: false

@@ -429,7 +429,7 @@ test("independent evaluator reports paired WORK_TOTAL evidence once", () => {
         "SOURCE_AUTHORITY_AVAILABLE_FOR_WORK_TOTAL",
       workTotalSourceAuthorityChecksPass: true,
       workChannelGateStatus: "PARTIAL_NOT_ACTIVE",
-      futureActualOutcomeOpened: false
+      newFutureActualOutcomeOpened: false
     },
     bootstrap: {
       iterations: 2000,
