@@ -45,6 +45,8 @@ const AUTHORITY_RECEIPT =
   `${AUTHORITY_DIRECTORY}/M2-reversal-authority-export-receipt-private-v1.json`;
 const HPSR02_WORK_TOTAL_AUTHORITY_MODE =
   "HPSR02_WORK_TOTAL_SCOPE_AWARE_AUTHORITY";
+const HPSR_FROZEN_PARAMETER_LINEAGE_MODE =
+  "HPSR_FROZEN_PARAMETER_LINEAGE_SNAPSHOT";
 const HPSR02_AUTHORITY_DIRECTORY =
   "data/private-output/m2-head-protected-segmented-router";
 const HPSR02_AUTHORITY_FACTS =
@@ -381,6 +383,20 @@ function preparePrivateInputs(
         + "audit_head_protected_segmented_router_dates.py",
       "--export-work-total-authority"
     ]);
+  } else if (authorityMode === HPSR_FROZEN_PARAMETER_LINEAGE_MODE) {
+    for (const repositoryPath of [
+      AUTHORITY_FACTS,
+      AUTHORITY_RECEIPT,
+      "data/private-output/m2-core-revenue-manual/"
+        + "M2-core-revenue-manual-static-metadata-private-v0.1.json"
+    ]) {
+      if (!fs.existsSync(path.join(root, repositoryPath))) {
+        throw new Error(
+          "m2_hpsr_frozen_parameter_lineage_snapshot_missing"
+        );
+      }
+    }
+    return;
   } else if (authorityMode === "CANONICAL_WORK_CHANNEL_AUTHORITY") {
     run(root, process.execPath, [
       "scripts/run-codex-python.mjs",
@@ -401,6 +417,15 @@ async function loadAuthority(
   authorityMode = "CANONICAL_WORK_CHANNEL_AUTHORITY"
 ) {
   const hpsr02Mode = authorityMode === HPSR02_WORK_TOTAL_AUTHORITY_MODE;
+  const frozenParameterLineageMode =
+    authorityMode === HPSR_FROZEN_PARAMETER_LINEAGE_MODE;
+  if (
+    !hpsr02Mode
+    && !frozenParameterLineageMode
+    && authorityMode !== "CANONICAL_WORK_CHANNEL_AUTHORITY"
+  ) {
+    throw new Error("m2_core_revenue_manual_authority_mode_invalid");
+  }
   const receiptPath = hpsr02Mode
     ? HPSR02_AUTHORITY_RECEIPT
     : AUTHORITY_RECEIPT;

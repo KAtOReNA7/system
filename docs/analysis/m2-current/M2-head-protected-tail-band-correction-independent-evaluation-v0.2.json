@@ -1,19 +1,19 @@
 {
   "schema": "m2.current.head_protected_tail_band_correction.independent_evaluation.public.v0.2",
   "asOf": "2026-08-01",
-  "status": "M2_HPSR02_BLOCKED_ACTIONABLE_SOURCE_AUTHORITY_DECISION_REQUIRED",
+  "status": "M2_HPSR02_FROZEN_PARAMETER_AUTHORITY_DECIDED_PENDING_PRIVATE_INTEGRITY_GATE",
   "model": {
     "displayNameZh": "LG01 头部保护尾段修正模型 v0.2",
     "displayNameEn": "LG01 Head-Protected Tail-Band Correction Model v0.2",
     "stableModelId": "M2-WORK-HPSR02"
   },
   "experiment": {
-    "displayNameZh": "M2 LG01 头部保护分段路由与独立后期起点验证 v0.1",
-    "displayNameEn": "M2 LG01 Head-Protected Segmented Router and Independent Later-Origin Validation v0.1",
-    "stableExperimentId": "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01",
+    "displayNameZh": "M2 LG01 头部保护尾段修正独立评价 v0.2",
+    "displayNameEn": "M2 LG01 Head-Protected Tail-Band Correction Independent Evaluation v0.2",
+    "stableExperimentId": "M2-EXP-LG01-HEAD-PROTECTED-TAIL-BAND-CORRECTION-02",
     "baselineModelId": "M2-WORK-LG01",
     "candidateArmId": "R2",
-    "executionStatus": "BLOCKED_ACTIONABLE_SOURCE_AUTHORITY_DECISION_REQUIRED"
+    "executionStatus": "PARAMETER_AUTHORITY_DECIDED_PENDING_PRIVATE_INTEGRITY_GATE"
   },
   "priorBlockedAttempt": {
     "status": "M2_HPSR02_BLOCKED_MISSING_SOURCE_AUTHORITY",
@@ -77,8 +77,8 @@
     "bootstrapRuns": 0,
     "completeIndependentResultProduced": false,
     "resultFrozen": false,
-    "retryAllowed": false,
-    "currentResumeBlockedBySourceAuthorityDecision": true,
+    "retryAllowed": true,
+    "currentResumeBlockedBySourceAuthorityDecision": false,
     "contractChangedForRecovery": false
   },
   "sourceAuthorityReconciliation": {
@@ -138,6 +138,25 @@
     "sourceDecisionTableGeneratedPrivately": true,
     "privateIdentitiesOrAmountsPublished": false
   },
+  "frozenParameterAuthorityDecision": {
+    "status": "IMMUTABLE_FROZEN_MODEL_PARAMETER_AUTHORITY_DECIDED_PENDING_PRIVATE_VALIDATION",
+    "artifactClass": "IMMUTABLE_FROZEN_MODEL_PARAMETER",
+    "parameterCount": 3,
+    "parameterNames": [
+      "positive base floor",
+      "q05",
+      "q95"
+    ],
+    "lineageArtifactClass": "PARAMETER_LINEAGE_SNAPSHOT",
+    "recoveryIdentity": "FROZEN_PARAMETER_RECONSTRUCTION_FROM_DIGEST_BOUND_LINEAGE_SNAPSHOT",
+    "currentBillsRemainSourceAuthorityForOriginInputAndWorkTotalActual": true,
+    "currentBillsMayDeriveFrozenParameters": false,
+    "historicalLineageMayReplaceCurrentActual": false,
+    "channelLineageDriftStatus": "HISTORICAL_CHANNEL_LINEAGE_DRIFT_WITH_WORK_MONTH_CASH_CONSERVED",
+    "priorSourceAuthorityDecisionCheckpointPreserved": true,
+    "firstIndependentOutcomePreviouslyOpened": true,
+    "privateParameterValuesPublished": false
+  },
   "reservedEvaluationBoundary": {
     "origin": "2026-03",
     "horizonMonths": 3,
@@ -173,7 +192,7 @@
     "modelSelectionRuns": 0
   },
   "scientificEvidence": {
-    "status": "BLOCKED_BEFORE_PREDICTION_BY_FROZEN_BOUND_SOURCE_AUTHORITY_CONFLICT",
+    "status": "PENDING_PRIVATE_IMMUTABLE_PARAMETER_INTEGRITY_GATE_BEFORE_PREDICTION",
     "candidateOutcomeProduced": false,
     "metricsAvailable": false,
     "firstCompleteLegalResultCount": 0
@@ -193,8 +212,8 @@
     "approvedForAutomation": null,
     "productionReady": false,
     "finalHoldoutOpened": false,
-    "currentTaskResumeAuthorized": false,
-    "sourceAuthorityDecisionRequired": true,
+    "currentTaskResumeAuthorized": true,
+    "sourceAuthorityDecisionRequired": false,
     "secondIndependentOriginAuthorized": false,
     "pullRequestMustRemainDraftOpenUnmerged": true
   },

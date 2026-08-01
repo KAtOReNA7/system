@@ -96,9 +96,10 @@ test("current roles retain fallback, research baseline and no automation promoti
     "M2-WORK-LG01"
   );
   assert.equal(registry.currentRoles.activeExperiment, null);
+  assert.equal(registry.currentRoles.blockedExperiment, null);
   assert.equal(
-    registry.currentRoles.blockedExperiment,
-    "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01"
+    registry.currentRoles.pendingExperiment,
+    "M2-EXP-LG01-HEAD-PROTECTED-TAIL-BAND-CORRECTION-02"
   );
   assert.match(
     registry.currentRoles.roleInterpretationZh,
@@ -457,34 +458,34 @@ test("HPSR01 frozen result is preserved while interpretation is amended", () => 
   assert.equal(registry.currentRoles.approvedForAutomation, null);
 });
 
-test("HPSR02 source authority conflict blocks execution without promotion", () => {
+test("HPSR02 immutable parameter authority resumes without promotion", () => {
   const model = registry.models.find(
     (item) => item.stableModelId === "M2-WORK-HPSR02"
   );
   const experiment = registry.experiments.find(
     (item) => (
       item.experimentId
-        === "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01"
+        === "M2-EXP-LG01-HEAD-PROTECTED-TAIL-BAND-CORRECTION-02"
     )
   );
-  const historicalPreregistrationNamespace = registry.experiments.find(
+  const predecessorExperiment = registry.experiments.find(
     (item) => (
       item.experimentId
-        === "M2-EXP-LG01-HEAD-PROTECTED-TAIL-BAND-CORRECTION-02"
+        === "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01"
     )
   );
 
   assert.equal(
     model.currentRole,
-    "blocked_source_authority_decision_required_not_active"
+    "candidate_pending_immutable_parameter_integrity_gate_not_active"
   );
   assert.equal(
     model.evidenceStatus,
-    "work_total_actual_source_reconciled_frozen_bound_source_conflict_no_prediction_no_score"
+    "work_total_actual_source_reconciled_immutable_parameter_authority_decided_no_complete_result"
   );
   assert.equal(
     model.currentExperimentId,
-    "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01"
+    "M2-EXP-LG01-HEAD-PROTECTED-TAIL-BAND-CORRECTION-02"
   );
   assert.deepEqual(model.evaluations, []);
   assert.equal(model.automationAuthorized, false);
@@ -493,34 +494,44 @@ test("HPSR02 source authority conflict blocks execution without promotion", () =
   const hpsr02Arm = experiment.arms.find((arm) => arm.armId === "R2");
   assert.equal(
     hpsr02Arm.executionStatus,
-    "BLOCKED_ACTIONABLE_SOURCE_AUTHORITY_DECISION_REQUIRED"
+    "RESUME_AUTHORIZED_PENDING_PRIVATE_PARAMETER_GATE"
   );
   assert.equal(
-    experiment.hpsr02IndependentEvaluation.status,
+    predecessorExperiment.hpsr02IndependentEvaluation.status,
+    "M2_HPSR02_FROZEN_PARAMETER_AUTHORITY_DECIDED_"
+      + "PENDING_PRIVATE_INTEGRITY_GATE"
+  );
+  assert.equal(
+    predecessorExperiment.hpsr02IndependentEvaluation.priorStatus,
     "M2_HPSR02_BLOCKED_ACTIONABLE_SOURCE_AUTHORITY_DECISION_REQUIRED"
   );
   assert.equal(
-    experiment.hpsr02IndependentEvaluation.sourceAuthorityStatus,
+    predecessorExperiment.hpsr02IndependentEvaluation
+      .priorStatusHistoryRewritten,
+    false
+  );
+  assert.equal(
+    predecessorExperiment.hpsr02IndependentEvaluation.sourceAuthorityStatus,
     "SOURCE_AUTHORITY_AVAILABLE_FOR_WORK_TOTAL"
   );
   assert.equal(
-    experiment.hpsr02IndependentEvaluation.workTotalScopeRelevantDifferenceRowCount,
+    predecessorExperiment.hpsr02IndependentEvaluation.workTotalScopeRelevantDifferenceRowCount,
     0
   );
   assert.equal(
-    experiment.hpsr02IndependentEvaluation.workChannelGateStatus,
+    predecessorExperiment.hpsr02IndependentEvaluation.workChannelGateStatus,
     "PARTIAL_NOT_ACTIVE"
   );
   assert.equal(
-    experiment.hpsr02IndependentEvaluation.outcomeValueAccessOccurred,
+    predecessorExperiment.hpsr02IndependentEvaluation.outcomeValueAccessOccurred,
     true
   );
   assert.equal(
-    experiment.hpsr02IndependentEvaluation.preResultEngineeringAttemptCount,
+    predecessorExperiment.hpsr02IndependentEvaluation.preResultEngineeringAttemptCount,
     3
   );
   assert.deepEqual(
-    experiment.hpsr02IndependentEvaluation.preResultEngineeringErrorCodes,
+    predecessorExperiment.hpsr02IndependentEvaluation.preResultEngineeringErrorCodes,
     [
       "m2_hpsr_rebuilt_work_case_duplicate",
       "hpsr02_residual_bound_rebuild_not_reconciled",
@@ -528,38 +539,40 @@ test("HPSR02 source authority conflict blocks execution without promotion", () =
     ]
   );
   assert.equal(
-    experiment.hpsr02IndependentEvaluation.frozenBoundSourceStatus,
+    predecessorExperiment.hpsr02IndependentEvaluation.frozenBoundSourceStatus,
     "FROZEN_HPSR01_BOUND_SOURCE_AUTHORITY_CONFLICT"
   );
   assert.equal(
-    experiment.hpsr02IndependentEvaluation.historicalOnlyRowCount,
+    predecessorExperiment.hpsr02IndependentEvaluation.historicalOnlyRowCount,
     732
   );
   assert.equal(
-    experiment.hpsr02IndependentEvaluation.currentOnlyRowCount,
+    predecessorExperiment.hpsr02IndependentEvaluation.currentOnlyRowCount,
     732
   );
   assert.equal(
-    experiment.hpsr02IndependentEvaluation.workMonthAmountTotalEqual,
+    predecessorExperiment.hpsr02IndependentEvaluation.workMonthAmountTotalEqual,
     true
   );
   assert.equal(
-    experiment.hpsr02IndependentEvaluation.sourceAuthorityDecisionRequired,
-    true
+    predecessorExperiment.hpsr02IndependentEvaluation.sourceAuthorityDecisionRequired,
+    false
   );
   assert.equal(
-    experiment.hpsr02IndependentEvaluation.scientificEvaluationsExecuted,
+    predecessorExperiment.hpsr02IndependentEvaluation.scientificEvaluationsExecuted,
     0
   );
   assert.equal(
-    experiment.hpsr02IndependentEvaluation.prospectiveFinalHoldoutOpened,
+    predecessorExperiment.hpsr02IndependentEvaluation.prospectiveFinalHoldoutOpened,
     false
   );
-  assert.equal(historicalPreregistrationNamespace.currentAuthority, false);
+  assert.equal(experiment.currentAuthority, true);
   assert.equal(
-    historicalPreregistrationNamespace.mappedCurrentParentExperimentId,
+    experiment.predecessorExperimentId,
     "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01"
   );
+  assert.equal(experiment.k2PrivateEvaluationAuthorized, true);
+  assert.equal(experiment.independentOutcomeRead, true);
   assert.equal(registry.currentRoles.activeExperiment, null);
   assert.equal(registry.currentRoles.activeCandidate, null);
   assert.equal(registry.currentRoles.approvedForAutomation, null);
@@ -881,11 +894,11 @@ test("read-only query exposes scoped identities and refuses invalid ranking", ()
   );
   assert.match(
     status.stdout,
-    /当前阻断实验：M2 LG01 头部保护分段路由与独立 later-origin 验证 v0\.1/u
+    /当前待门禁实验：M2 LG01 头部保护尾段修正独立评价 v0\.2/u
   );
   assert.match(
     status.stdout,
-    /M2_HPSR02_BLOCKED_ACTIONABLE_SOURCE_AUTHORITY_DECISION_REQUIRED/u
+    /M2_HPSR02_FROZEN_PARAMETER_AUTHORITY_DECIDED_PENDING_PRIVATE_INTEGRITY_GATE/u
   );
 
   const horizonAmount = runQuery("show", "M2-WORK-CHAM01");

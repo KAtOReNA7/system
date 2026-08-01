@@ -29,11 +29,14 @@ async function main() {
     process.stdout.write(`${JSON.stringify(result)}\n`);
     return;
   }
-  if (process.argv.includes("--hpsr02-bound-reconciliation")) {
+  if (
+    process.argv.includes("--hpsr02-parameter-authority")
+    || process.argv.includes("--hpsr02-bound-reconciliation")
+  ) {
     const {
-      reconcileHpsr02FrozenBoundCachePrivate
+      reconcileHpsr02ImmutableFrozenParameterPrivate
     } = await import("./head_protected_segmented_router_private.mjs");
-    const result = await reconcileHpsr02FrozenBoundCachePrivate({
+    const result = await reconcileHpsr02ImmutableFrozenParameterPrivate({
       root: ROOT
     });
     process.stdout.write(`${JSON.stringify(result)}\n`);

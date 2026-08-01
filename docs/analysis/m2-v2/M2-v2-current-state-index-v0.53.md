@@ -21,9 +21,14 @@ v0.2，`M2-WORK-HPSR02`）在任何独立 outcome 打开前完成了前瞻预注
 
 作品总额门禁（WORK_TOTAL）已经确认可用于开发评价，作品—渠道门禁（WORK_CHANNEL）
 继续为部分证据且未激活（`PARTIAL_NOT_ACTIVE`）。后续只读复核发现，截至 2026-02，
-旧冻结来源与当前来源的作品×月份总额完全一致，但渠道行级拆分两侧各有 732 行差异，
-当前来源无法复现 HPSR01 的 577 行冻结边界证明。当前完成状态因此是需要明确来源
-权威决策（`M2_HPSR02_BLOCKED_ACTIONABLE_SOURCE_AUTHORITY_DECISION_REQUIRED`）。
+旧冻结谱系与当前来源的作品×月份总额完全一致，但渠道行级拆分两侧各有 732 行差异。
+用户现已明确：positive base floor、q05 与 q95 是 outcome 打开前形成的三项不可变冻结
+模型参数（`IMMUTABLE_FROZEN_MODEL_PARAMETER`）；旧 577 行仅是参数谱系快照
+（`PARAMETER_LINEAGE_SNAPSHOT`），当前账单仍是当前起点输入与 WORK_TOTAL actual 的
+源权威。渠道漂移登记为
+`HISTORICAL_CHANNEL_LINEAGE_DRIFT_WITH_WORK_MONTH_CASH_CONSERVED`，不得据此重算参数或
+替换当前 actual。当前状态为已决定参数权威、等待私有完整性门禁
+（`M2_HPSR02_FROZEN_PARAMETER_AUTHORITY_DECIDED_PENDING_PRIVATE_INTEGRITY_GATE`）。
 
 ## 首页结论
 
@@ -32,11 +37,11 @@ v0.2，`M2-WORK-HPSR02`）在任何独立 outcome 打开前完成了前瞻预注
 | HPSR01 原合同结果是否保留？ | 是；原不支持判定、冻结指标和历史成绩完全保留 |
 | HPSR01 科学解释 | 原机械合同判定正确，但单起点证据在科学上不足，不能判定整个方向失败 |
 | HPSR01 是否重跑？ | 否；模型、预测、评价和 bootstrap 均未重跑 |
-| HPSR02 身份 | 事后诊断启发、独立结果前预注册的唯一主候选结构；首次独立检查点已开始但在预测前阻断，不是活动候选 |
+| HPSR02 身份 | 事后诊断启发、独立结果前预注册的唯一主候选结构；独立 outcome 已打开，尚无完整结果，参数门禁后获授权继续，不是活动候选 |
 | HPSR02 唯一结构 | H50、M30 逐行精确使用冻结 LG01；仅 L20 使用 HPSR01 既有冻结有界残差修正 |
 | 是否读取新实际值或 private 行？ | 是；授权的 2026-04 至 2026-06 作品总额 outcome 已在结果前工程尝试中访问，公开报告不含行级身份或金额 |
 | 是否训练、拟合、调参、搜索 alpha 或重估边界？ | 否 |
-| 独立评价检查点 | 已授权且账单窗口完整；因冻结边界来源权威冲突在候选预测前停止，等待一项人工决策 |
+| 独立评价检查点 | 已授权且账单窗口完整；参数权威决定已完成，等待私有完整性门禁后继续唯一一次评价 |
 | prospective final holdout | 动态预留起点当前估计为 2026-06，outcome 未打开 |
 | 当前活动候选 / 自动化批准 | `null` / `null` |
 | production ready / final holdout opened | `false` / `false` |
@@ -78,18 +83,17 @@ HPSR02 模型成绩，不进入历史排行榜，也不能证明新结构已通�
 
 ## HPSR02 冻结预注册
 
-稳定模型 ID 为 `M2-WORK-HPSR02`。历史预注册实验命名空间
-`M2-EXP-LG01-HEAD-PROTECTED-TAIL-BAND-CORRECTION-02` 保留用于审计；当前评价权威
-映射到 M2 LG01 头部保护分段路由与独立后期起点验证实验 v0.1
-（M2 LG01 Head-Protected Segmented Router and Independent Later-Origin Validation
-v0.1，`M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01`），没有创建第二个模型或实验。
+稳定模型 ID 为 `M2-WORK-HPSR02`。当前评价权威是 M2 LG01 头部保护尾段修正独立评价
+v0.2（M2 LG01 Head-Protected Tail-Band Correction Independent Evaluation v0.2，
+`M2-EXP-LG01-HEAD-PROTECTED-TAIL-BAND-CORRECTION-02`）；其前序架构实验仍是
+`M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01`。没有创建第二个模型或重复实验。
 独立评价的三个实验臂已经在 outcome 前冻结：
 
 | 实验臂 | 中文含义 | 当前状态 |
 |---|---|---|
 | R0 | 冻结 LG01 同案例基线 | 已预注册；本检查点未形成评分 |
 | R1 | 冻结 HPSR01 v0.1 历史结构对照 | 已预注册；本检查点未形成评分 |
-| R2 | HPSR02 v0.2 唯一主候选 | 在预测前因来源权威决策阻断（`BLOCKED_ACTIONABLE_SOURCE_AUTHORITY_DECISION_REQUIRED`） |
+| R2 | HPSR02 v0.2 唯一主候选 | 已决定不可变参数权威，等待私有参数门禁（`RESUME_AUTHORIZED_PENDING_PRIVATE_PARAMETER_GATE`） |
 
 人口继续是每个预测起点用当时可见 trailing-12 分成现金动态重算的 Core80 成熟
 老作品，只评价三个月作品总金额。H50 与 M30 必须逐行精确等于 R0；L20 固定
@@ -118,10 +122,10 @@ R2 vs R0，并同时报告 R1 vs R0。主要指标、2,000 次作品聚类配对
 - prospective final holdout 起点当前估计为 `2026-06`，需账单完整到
   `2026-09`，outcome 仍未打开。
 
-本次独立评价授权已经使用，不能因工程故障改写为“未授权”。当前停止原因也不是账单
-月份缺失，而是冻结 HPSR01 边界所依赖的历史渠道拆分无法从当前源复现。当前任务禁止
-边界重估和绑定旧电脑派生缓存，因此必须先由用户在私有决策表中选择来源权威处理方式；
-在此之前不得再次运行候选。
+本次独立评价授权已经使用，不能因工程故障改写为“未授权”。当前停止原因不是账单
+月份缺失；参数权威决定已经完成。参数文件必须先按摘要绑定谱系与既有冻结运行记录
+通过完整性门禁，评价入口随后只能加载参数，不得从当前账单重算。门禁通过后，本任务
+明确授权继续唯一一次候选评价，不再要求新的授权。
 
 ## HPSR02 首次独立检查点来源复核
 
@@ -131,19 +135,20 @@ R2 vs R0，并同时报告 R1 vs R0。主要指标、2,000 次作品聚类配对
 部分证据且未激活（`WORK_TOTAL_CANONICAL_MAPPING_WARNING_WORK_CHANNEL_REMAINS_PARTIAL`）。
 总表与分表的 3 条非零事实差异也都在当前动态 Core80 外，不阻断作品总额评价。
 
-真正的阻断来自更早历史窗口的冻结边界来源：截至 2026-02，旧冻结事实与当前事实在
+渠道谱系限制来自更早历史窗口：截至 2026-02，旧冻结事实与当前事实在
 作品×月份聚合层的行数和金额完全相等，但精确渠道行多重集不相等；两侧各有 732 行
 差异，涉及 421 部作品、82 个月、21 个渠道身份和 721 个作品×月份组合。由于模型人口
-要求使用起点时已观察到的成熟来源渠道，这一差异会影响模型输入身份，不能降级为纯
-展示警告。公开报告不包含私有身份、金额、digest 或本机路径。
+要求使用起点时已观察到的成熟来源渠道，这一差异会影响模型输入身份，因此必须作为
+冻结模型迁移限制完整披露；它不修改冻结参数，也不重新阻断 WORK_TOTAL。公开报告不
+包含私有身份、金额、digest 或本机路径。
 
 ## 实现、验证、授权与发布
 
 | 层次 | 当前状态 |
 |---|---|
 | 已实现 | HPSR02 canonical pure function、公共 synthetic fixture 和合同测试已实现 |
-| 已验证 | 公开 synthetic 验证人口、现金带、H50/M30 精确保护、L20 修正与有限值；来源审计验证作品总额门禁可用并定位冻结边界来源冲突 |
-| 已授权 | 本轮一次首次独立评价与必要的结果前工程恢复已授权；当前因来源权威决策阻断，不授权边界重估、再次科学运行或下一模型 |
+| 已验证 | 公开 synthetic 验证人口、现金带、H50/M30 精确保护、L20 修正与有限值；来源审计验证作品总额门禁可用并定位渠道谱系漂移 |
+| 已授权 | 本轮一次首次独立评价与必要的结果前工程恢复已授权；参数完整性门禁通过后继续，不授权边界重估、第二起点或下一模型 |
 | 可发布 | 否；活动候选、自动化批准、production 与 release 均为空或未授权 |
 
 本轮执行计数：

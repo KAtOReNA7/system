@@ -676,8 +676,51 @@ test("missing v2.2 reversal-rescore inputs block only that private capability", 
   assert.match(result.recovery, /Never regenerate predictions/u);
 });
 
-test("HPSR capability separates authority, rebuildable cache, and optional receipt", () => {
+test("HPSR capability separates source, immutable parameter, lineage, cache, and receipt", () => {
   const cacheMiss = evaluateCapability(
+    catalog,
+    "m2-head-protected-segmented-router",
+    {
+      repoRoot: REPO_ROOT,
+      artifactExists: (_absolutePath, artifact) => (
+        artifact.artifactClass === "PRIVATE_SOURCE_AUTHORITY"
+        || (
+          artifact.artifactClass === "PARAMETER_LINEAGE_SNAPSHOT"
+          && artifact.parameterRecoverySource === true
+        )
+      ),
+      toolProbe: availableToolProbe,
+    },
+  );
+  assert.equal(
+    cacheMiss.status,
+    "IMMUTABLE_FROZEN_PARAMETER_RECOVERY_REQUIRED",
+  );
+  assert.equal(cacheMiss.sourceAuthorityStatus, "SOURCE_AUTHORITY_AVAILABLE");
+  assert.equal(cacheMiss.derivedCacheStatus, "CACHE_MISS_REBUILDABLE");
+  assert.equal(
+    cacheMiss.immutableFrozenParameterStatus,
+    "MISSING_IMMUTABLE_FROZEN_PARAMETER",
+  );
+  assert.equal(cacheMiss.parameterRecoverySourceAvailable, true);
+  assert.equal(cacheMiss.safeToRecoverImmutableFrozenParameter, true);
+  assert.equal(
+    cacheMiss.historicalReceiptStatus,
+    "OPTIONAL_PROVENANCE_MISSING",
+  );
+  assert.match(
+    cacheMiss.authorization,
+    /HPSR02_FROZEN_PARAMETER_AUTHORITY_AND_FIRST_INDEPENDENT_RESUME/u,
+  );
+  assert.match(
+    cacheMiss.recovery,
+    /exactly one HPSR02 first independent result/u,
+  );
+  assert.ok(
+    cacheMiss.notes.includes("availability does not grant execution authorization"),
+  );
+
+  const immutableParameterMissing = evaluateCapability(
     catalog,
     "m2-head-protected-segmented-router",
     {
@@ -688,23 +731,13 @@ test("HPSR capability separates authority, rebuildable cache, and optional recei
       toolProbe: availableToolProbe,
     },
   );
-  assert.equal(cacheMiss.status, "DERIVED_CACHE_MISS_REBUILD_REQUIRED");
-  assert.equal(cacheMiss.sourceAuthorityStatus, "SOURCE_AUTHORITY_AVAILABLE");
-  assert.equal(cacheMiss.derivedCacheStatus, "CACHE_MISS_REBUILDABLE");
   assert.equal(
-    cacheMiss.historicalReceiptStatus,
-    "OPTIONAL_PROVENANCE_MISSING",
+    immutableParameterMissing.status,
+    "MISSING_IMMUTABLE_FROZEN_PARAMETER",
   );
-  assert.match(
-    cacheMiss.authorization,
-    /HPSR02_SOURCE_AUTHORITY_RECONCILIATION_AND_FIRST_INDEPENDENT_RESUME/u,
-  );
-  assert.match(
-    cacheMiss.recovery,
-    /exactly one HPSR02 first independent result/u,
-  );
-  assert.ok(
-    cacheMiss.notes.includes("availability does not grant execution authorization"),
+  assert.equal(
+    immutableParameterMissing.safeToRecoverImmutableFrozenParameter,
+    false,
   );
 
   const authorityMissing = evaluateCapability(

@@ -1,8 +1,8 @@
 # M2 LG01 头部保护尾段修正模型首次独立评价 v0.2
 
-当前状态：**当前作品总额 actual 来源权威可用，但 HPSR01 冻结残差边界的历史源无法从当前权威输入复现；首次独立评价在预测前停止并等待一项明确来源决策**（`M2_HPSR02_BLOCKED_ACTIONABLE_SOURCE_AUTHORITY_DECISION_REQUIRED`）。
+当前状态：**用户已明确把 outcome 打开前冻结的 positive base floor、q05 与 q95 定义为不可变冻结模型参数；当前等待私有参数完整性门禁，通过后继续唯一一次独立评价**（`M2_HPSR02_FROZEN_PARAMETER_AUTHORITY_DECIDED_PENDING_PRIVATE_INTEGRITY_GATE`）。
 
-对象是 LG01 头部保护尾段修正模型 v0.2（LG01 Head-Protected Tail-Band Correction Model v0.2，`M2-WORK-HPSR02`），所属实验是 M2 LG01 头部保护分段路由与独立后期起点验证 v0.1（M2 LG01 Head-Protected Segmented Router and Independent Later-Origin Validation v0.1，`M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01`）。同案例基线仍是冻结 LG01（`M2-WORK-LG01`）。
+对象是 LG01 头部保护尾段修正模型 v0.2（LG01 Head-Protected Tail-Band Correction Model v0.2，`M2-WORK-HPSR02`），所属实验是 M2 LG01 头部保护尾段修正独立评价 v0.2（M2 LG01 Head-Protected Tail-Band Correction Independent Evaluation v0.2，`M2-EXP-LG01-HEAD-PROTECTED-TAIL-BAND-CORRECTION-02`）。同案例基线仍是冻结 LG01（`M2-WORK-LG01`）。
 
 ## 先前阻断检查点（完整保留）
 
@@ -47,3 +47,16 @@
 - 首次独立评价当前由冻结边界来源冲突阻断；未获得明确来源决策前不得继续。
 
 候选预测、科学评价、bootstrap 和完整合法结果均为 0；活动候选与自动化批准保持 `null`，生产就绪为 `false`，前瞻最终留出未打开，作品—渠道门禁保持 `PARTIAL_NOT_ACTIVE`。Draft PR 保持 Open / Draft / Unmerged。机器可读同源状态见 `M2-head-protected-tail-band-correction-independent-evaluation-v0.2.json`。
+
+## 2026-08-01 参数权威修订（当前）
+
+上述“等待来源权威决策”的第二个阻断检查点（`M2_HPSR02_BLOCKED_ACTIONABLE_SOURCE_AUTHORITY_DECISION_REQUIRED`）继续作为历史审计记录，不删除、不改写；本节记录用户随后作出的范围更窄决定：
+
+- 当前人工复核分成账单仍是 2026-03 起点可见输入和 2026-04 至 2026-06 作品总额 actual 的源权威（Source Authority，`SOURCE_AUTHORITY`）。
+- outcome 打开前已经冻结的 positive base floor、q05 与 q95 是 HPSR01/HPSR02 不可变冻结模型参数（Immutable Frozen Model Parameter，`IMMUTABLE_FROZEN_MODEL_PARAMETER`），推断时直接加载，不要求从当前账单重新生成。
+- 旧 577 行摘要绑定输入只承担参数谱系快照（Parameter Lineage Snapshot，`PARAMETER_LINEAGE_SNAPSHOT`）与确定性恢复作用；它不替换当前 actual，也不升格为全项目原始账单权威。
+- 参数文件缺失时只允许执行摘要绑定谱系的冻结参数恢复（`FROZEN_PARAMETER_RECONSTRUCTION_FROM_DIGEST_BOUND_LINEAGE_SNAPSHOT`）；这不是训练、调参或边界重估。
+- 截至 2026-02 的作品×月份行数和金额守恒、渠道行级两侧各 732 行差异登记为 `HISTORICAL_CHANNEL_LINEAGE_DRIFT_WITH_WORK_MONTH_CASH_CONSERVED`。它构成冻结模型迁移限制，但不重新阻断作品总额评价。
+- 独立 outcome 已经打开、三个结果前工程失败均保留；在参数门禁前仍不产生候选预测、评分或 bootstrap。参数门禁通过后，本任务已获明确授权继续唯一一次首个独立评价。
+
+此修订不激活作品—渠道门禁，不授权第二独立起点、前瞻最终留出、HPSR03、production、automation 或 release。

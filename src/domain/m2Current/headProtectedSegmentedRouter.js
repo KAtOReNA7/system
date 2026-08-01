@@ -2056,8 +2056,19 @@ function normalizeHpsrBoundState(value, executionMode) {
   }
   if (
     executionMode === "CONTROLLED_LATER_ORIGIN"
-    && sourceClass
-      !== "FROZEN_FROM_PREVIOUSLY_OPENED_DEVELOPMENT_ONLY"
+    && (
+      sourceClass
+        !== "FROZEN_FROM_PREVIOUSLY_OPENED_DEVELOPMENT_ONLY"
+      || value?.status
+        !== "FROZEN_FROM_PREVIOUSLY_OPENED_DEVELOPMENT_ONLY"
+      || value?.artifactClass !== "IMMUTABLE_FROZEN_MODEL_PARAMETER"
+      || JSON.stringify(Object.keys(value?.parameterValues ?? {}).sort())
+        !== JSON.stringify([
+          "frozenDevelopmentPositiveBaseFloor",
+          "frozenDevelopmentQ05",
+          "frozenDevelopmentQ95"
+        ])
+    )
   ) {
     throw new Error("hpsr_controlled_bound_provenance_invalid");
   }

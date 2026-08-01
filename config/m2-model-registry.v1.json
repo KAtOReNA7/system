@@ -72,7 +72,8 @@
     "portfolioReference": "M2-PORT-ETS01",
     "approvedForAutomation": null,
     "activeCandidate": null,
-    "blockedExperiment": "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01",
+    "blockedExperiment": null,
+    "pendingExperiment": "M2-EXP-LG01-HEAD-PROTECTED-TAIL-BAND-CORRECTION-02",
     "latestStateIndex": "docs/analysis/m2-v2/M2-v2-current-state-index-v0.53.md",
     "roleConflict": false,
     "sourceAssertions": [
@@ -262,7 +263,7 @@
         "currentAuthority": true
       }
     ],
-    "roleInterpretationZh": "OA03 同公式在当前 Core 老品合同下重新执行完成；没有复现历史数值，因为 actual、训练支持和人口合同不同。PERFORMANCE_MIXED 只是机器证据完整性状态，不是业务整体通过。作品发生—金额校准模型 v0.3（M2-WORK-OA03）继续只是兼容性现行运行回退；人工锚定可学习全局模型（M2-WORK-LG01）继续是 Core 老品 3/6/12 月金额实验的主要研究比较基线。核心老品分周期金额模型 v0.1（M2-WORK-CHAM01）的既有 3、6、12 月性能失败保持冻结；另外登记 Primary/Core90 五个有限但极端的原始单元格为数值稳定性失败，二者不得混为一项。LG01 头部现金残差校准模型 v0.1（M2-WORK-HCRC01）的首个完整结果已冻结并失败：全部 16 个外层选择单元都没有合格 alpha，C2/C3 没有形成原始候选案例，selected 结果只是全量回退冻结 LG01，不能创造通过。LG01 头部保护分段路由模型 v0.1（M2-WORK-HPSR01）的原 v0.1 合同结果继续是回溯开发不支持并在独立评价前停止；该机械判定没有计算错误。科学解释状态修订为 M2_HPSR01_CONTRACT_UNSUPPORTED_SCIENTIFICALLY_INCONCLUSIVE：单起点、57 部作品的证据不足，R1 的 WAPE 与配对 FVA 小幅优于 R0，bootstrap 跨 0，且 H50 相等、M30 变差、L20 改善，不能证明整个头部保护分段方向失败。L20-only 数字只是事后聚合算术，不是模型成绩。LG01 头部保护尾段修正模型 v0.2（M2-WORK-HPSR02）已在独立 outcome 打开前冻结为 H50/M30 使用 LG01、仅 L20 使用既有有界修正的唯一主候选结构。先前尝试以 M2_HPSR02_BLOCKED_MISSING_SOURCE_AUTHORITY 在金额读取前停止，未运行候选、评分或 bootstrap。范围感知复核确认当前作品总额 actual 来源可用，缺失 canonical 映射只使作品×渠道评价保持 PARTIAL_NOT_ACTIVE，且当前窗口 3 条分表差异均在 2026-03 动态 Core80 外。首次授权运行打开作品总额权威事实后发生三次结果前工程停止，均未形成预测、评分或 bootstrap。随后冻结边界复核发现：2026-02 前旧冻结来源与当前来源的作品×月份总额一致，但渠道行级拆分各有 732 行差异并使 577 行冻结边界证明无法复现；因当前任务禁止 bound 重估和绑定旧缓存，状态改为 M2_HPSR02_BLOCKED_ACTIONABLE_SOURCE_AUTHORITY_DECISION_REQUIRED。prospective final holdout 仍未打开，现行路由不变，活动候选与自动化批准均为空。",
+    "roleInterpretationZh": "OA03 同公式在当前 Core 老品合同下重新执行完成；没有复现历史数值，因为 actual、训练支持和人口合同不同。PERFORMANCE_MIXED 只是机器证据完整性状态，不是业务整体通过。作品发生—金额校准模型 v0.3（M2-WORK-OA03）继续只是兼容性现行运行回退；人工锚定可学习全局模型（M2-WORK-LG01）继续是 Core 老品 3/6/12 月金额实验的主要研究比较基线。核心老品分周期金额模型 v0.1（M2-WORK-CHAM01）的既有 3、6、12 月性能失败保持冻结；另外登记 Primary/Core90 五个有限但极端的原始单元格为数值稳定性失败，二者不得混为一项。LG01 头部现金残差校准模型 v0.1（M2-WORK-HCRC01）的首个完整结果已冻结并失败：全部 16 个外层选择单元都没有合格 alpha，C2/C3 没有形成原始候选案例，selected 结果只是全量回退冻结 LG01，不能创造通过。LG01 头部保护分段路由模型 v0.1（M2-WORK-HPSR01）的原 v0.1 合同结果继续是回溯开发不支持并在独立评价前停止；该机械判定没有计算错误。科学解释状态修订为 M2_HPSR01_CONTRACT_UNSUPPORTED_SCIENTIFICALLY_INCONCLUSIVE：单起点、57 部作品的证据不足，R1 的 WAPE 与配对 FVA 小幅优于 R0，bootstrap 跨 0，且 H50 相等、M30 变差、L20 改善，不能证明整个头部保护分段方向失败。L20-only 数字只是事后聚合算术，不是模型成绩。LG01 头部保护尾段修正模型 v0.2（M2-WORK-HPSR02）已在独立 outcome 打开前冻结为 H50/M30 使用 LG01、仅 L20 使用既有有界修正的唯一主候选结构。先前两个阻断检查点及三次结果前工程停止继续保留；独立 outcome 已打开但尚无完整结果。用户已明确 positive base floor、q05 与 q95 是不可变冻结模型参数（IMMUTABLE_FROZEN_MODEL_PARAMETER），旧 577 行只承担参数谱系快照（PARAMETER_LINEAGE_SNAPSHOT）与确定性恢复作用，当前人工复核账单仍形成 2026-03 输入和 2026-04 至 2026-06 WORK_TOTAL actual。2026-02 前作品×月份总额守恒而渠道行级两侧各 732 行漂移登记为 HISTORICAL_CHANNEL_LINEAGE_DRIFT_WITH_WORK_MONTH_CASH_CONSERVED；不得据此重算参数或替换当前 actual。当前等待私有参数完整性门禁，通过后继续唯一一次独立评价。prospective final holdout 仍未打开，活动候选与自动化批准均为空。",
     "activeExperiment": null
   },
   "currentEvaluationContract": {
@@ -4060,7 +4061,7 @@
       "configEntrypoints": [
         "config/m2-current-head-protected-tail-band-correction.v0.2.json"
       ],
-      "currentExperimentId": "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01",
+      "currentExperimentId": "M2-EXP-LG01-HEAD-PROTECTED-TAIL-BAND-CORRECTION-02",
       "evidenceRefs": [
         "docs/analysis/m2-current/M2-head-protected-segmented-router-interpretation-amendment-v0.1.json",
         "docs/analysis/m2-current/M2-head-protected-tail-band-correction-cash-band-attribution-v0.1.md",
@@ -4074,9 +4075,9 @@
         "M2-WORK-CHAM01"
       ],
       "successorIds": [],
-      "currentRole": "blocked_source_authority_decision_required_not_active",
-      "evidenceStatus": "work_total_actual_source_reconciled_frozen_bound_source_conflict_no_prediction_no_score",
-      "operationalStatus": "first_independent_blocked_actionable_source_decision_required_not_active_not_production",
+      "currentRole": "candidate_pending_immutable_parameter_integrity_gate_not_active",
+      "evidenceStatus": "work_total_actual_source_reconciled_immutable_parameter_authority_decided_no_complete_result",
+      "operationalStatus": "first_independent_resume_authorized_after_parameter_gate_not_active_not_production",
       "automationAuthorized": false,
       "productionImported": false,
       "finalHoldoutOpened": false,
@@ -4087,7 +4088,8 @@
         "先前首次独立评价尝试因标准导入来源权威不完整而在金额读取前停止；该历史阻断记录保持不变",
         "范围感知复核确认作品总额来源权威可用：缺失 canonical 映射仅影响作品×渠道粒度，3 条总表/分表非零事实差异均在动态 Core80 外",
         "首次授权运行已打开作品总额权威事实，但在预测、评分和 bootstrap 前发生三次工程停止；完整结果仍为 0",
-        "冻结边界复核确认 2026-02 前作品×月份总额一致，但旧冻结来源与当前来源的渠道行级拆分各有 732 行差异，当前源无法复现 577 行冻结边界证明；必须先完成一项明确来源权威决策",
+        "冻结边界复核确认 2026-02 前作品×月份总额一致，但旧冻结谱系与当前来源的渠道行级拆分各有 732 行差异；该漂移作为冻结模型迁移限制披露，不改写三项不可变冻结参数",
+        "positive base floor、q05 与 q95 属于 IMMUTABLE_FROZEN_MODEL_PARAMETER；旧 577 行只作为 PARAMETER_LINEAGE_SNAPSHOT，当前人工复核账单只形成当前起点输入与 WORK_TOTAL actual",
         "公开 synthetic 只验证实现不变量，不能作为模型效果证据",
         "即使未来独立检查点支持，也不能自动授予 active candidate、自动化、生产、final holdout 或发布权限"
       ],
@@ -4588,7 +4590,7 @@
         "armId": "R2",
         "displayNameZh": "LG01 头部保护尾段修正模型 v0.2 唯一主候选",
         "modelId": "M2-WORK-HPSR02",
-        "executionStatus": "BLOCKED_ACTIONABLE_SOURCE_AUTHORITY_DECISION_REQUIRED"
+        "executionStatus": "MOVED_TO_DEDICATED_INDEPENDENT_EVALUATION_EXPERIMENT"
         }
       ],
       "resultStatus": "M2_HPSR01_RETROSPECTIVE_DEVELOPMENT_UNSUPPORTED_STOP_BEFORE_K2",
@@ -4621,7 +4623,9 @@
       "historicalFinalHoldoutIsolationStatus": "HISTORICAL_FINAL_HOLDOUT_ISOLATION_CONFLICT",
       "newFinalHoldoutOpened": false,
       "hpsr02IndependentEvaluation": {
-        "status": "M2_HPSR02_BLOCKED_ACTIONABLE_SOURCE_AUTHORITY_DECISION_REQUIRED",
+        "status": "M2_HPSR02_FROZEN_PARAMETER_AUTHORITY_DECIDED_PENDING_PRIVATE_INTEGRITY_GATE",
+        "priorStatus": "M2_HPSR02_BLOCKED_ACTIONABLE_SOURCE_AUTHORITY_DECISION_REQUIRED",
+        "priorStatusHistoryRewritten": false,
         "sourceAuthorityStatus": "SOURCE_AUTHORITY_AVAILABLE_FOR_WORK_TOTAL",
         "workTotalCanonicalMappingStatus": "WORK_TOTAL_CANONICAL_MAPPING_WARNING_WORK_CHANNEL_REMAINS_PARTIAL",
         "metadataDifferenceStatus": "OUT_OF_WORK_TOTAL_SCOPE_FACT_DIFFERENCE_WARNING",
@@ -4637,13 +4641,16 @@
           "m2_core_revenue_manual_command_failed:node.exe"
         ],
         "frozenBoundSourceStatus": "FROZEN_HPSR01_BOUND_SOURCE_AUTHORITY_CONFLICT",
+        "immutableFrozenParameterStatus": "IMMUTABLE_FROZEN_MODEL_PARAMETER_AUTHORITY_DECIDED_PENDING_PRIVATE_VALIDATION",
+        "parameterLineageStatus": "PARAMETER_LINEAGE_SNAPSHOT_PENDING_PRIVATE_VALIDATION",
+        "channelLineageDriftStatus": "HISTORICAL_CHANNEL_LINEAGE_DRIFT_WITH_WORK_MONTH_CASH_CONSERVED",
         "historicalOnlyRowCount": 732,
         "currentOnlyRowCount": 732,
         "affectedWorkCount": 421,
         "affectedMonthCount": 82,
         "workMonthAmountTotalEqual": true,
         "currentSourceRebuildMatchesFrozenProvenance": false,
-        "sourceAuthorityDecisionRequired": true,
+        "sourceAuthorityDecisionRequired": false,
         "candidateModelRuns": 0,
         "scientificEvaluationsExecuted": 0,
         "bootstrapRuns": 0,
@@ -4674,9 +4681,9 @@
       "displayNameZh": "M2 LG01 头部保护尾段修正独立评价 v0.2",
       "displayNameEn": "M2 LG01 Head-Protected Tail-Band Correction Independent Evaluation v0.2",
       "entityType": "experiment",
-      "currentAuthority": false,
-      "identityStatus": "HISTORICAL_PREREGISTRATION_NAMESPACE_PRESERVED_NON_CURRENT",
-      "mappedCurrentParentExperimentId": "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01",
+      "currentAuthority": true,
+      "identityStatus": "CURRENT_INDEPENDENT_EVALUATION_EXPERIMENT",
+      "predecessorExperimentId": "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01",
       "modelIds": [
         "M2-WORK-HPSR02",
         "M2-WORK-LG01",
@@ -4687,32 +4694,32 @@
           "armId": "R0",
           "displayNameZh": "冻结 LG01 同案例基线",
           "modelId": "M2-WORK-LG01",
-          "executionStatus": "PREREGISTERED_NOT_EXECUTED"
+          "executionStatus": "RESUME_AUTHORIZED_PENDING_PRIVATE_PARAMETER_GATE"
         },
         {
           "armId": "R1",
           "displayNameZh": "冻结 HPSR01 v0.1 历史结构对照",
           "modelId": "M2-WORK-HPSR01",
-          "executionStatus": "PREREGISTERED_NOT_EXECUTED"
+          "executionStatus": "RESUME_AUTHORIZED_PENDING_PRIVATE_PARAMETER_GATE"
         },
         {
           "armId": "R2",
           "displayNameZh": "HPSR02 v0.2 唯一主候选",
           "modelId": "M2-WORK-HPSR02",
-          "executionStatus": "PREREGISTERED_NOT_EXECUTED"
+          "executionStatus": "RESUME_AUTHORIZED_PENDING_PRIVATE_PARAMETER_GATE"
         }
       ],
-      "resultStatus": "M2_HPSR02_POST_HOC_INSPIRED_PROSPECTIVELY_PREREGISTERED_AWAITING_INDEPENDENT_DATA",
-      "workflowStatus": "M2_HPSR01_INTERPRETATION_AMENDED_HPSR02_PREREGISTERED_AWAITING_INDEPENDENT_DATA",
-      "evidenceClassification": "POST_HOC_INSPIRED_PROSPECTIVELY_PREREGISTERED_NO_INDEPENDENT_MODEL_EVIDENCE",
-      "sourceAuthorityStatus": "INDEPENDENT_SOURCE_AUTHORITY_NOT_READ_CURRENT_PUBLIC_PREREGISTRATION_ONLY",
+      "resultStatus": "M2_HPSR02_FROZEN_PARAMETER_AUTHORITY_DECIDED_PENDING_PRIVATE_INTEGRITY_GATE",
+      "workflowStatus": "M2_HPSR02_FIRST_INDEPENDENT_RESUME_AUTHORIZED_AFTER_IMMUTABLE_PARAMETER_GATE",
+      "evidenceClassification": "POST_HOC_INSPIRED_PROSPECTIVELY_PREREGISTERED_OUTCOME_OPENED_NO_COMPLETE_RESULT",
+      "sourceAuthorityStatus": "SOURCE_AUTHORITY_AVAILABLE_FOR_WORK_TOTAL",
       "k1CanonicalImplementationComplete": true,
       "k1PublicSyntheticValidationComplete": true,
-      "k2PrivateEvaluationAuthorized": false,
+      "k2PrivateEvaluationAuthorized": true,
       "k2Executed": false,
       "candidateOutcomeProduced": false,
       "rawCandidateEvidenceProduced": false,
-      "independentOutcomeRead": false,
+      "independentOutcomeRead": true,
       "modelRolesChanged": false,
       "operationalModelRolesChanged": false,
       "prospectiveFinalHoldoutOpened": false,

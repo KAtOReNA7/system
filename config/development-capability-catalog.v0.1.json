@@ -1293,7 +1293,7 @@
     },
     {
       "id": "m2-head-protected-segmented-router",
-      "description": "Reconcile HPSR02 source authority at WORK_TOTAL versus WORK_CHANNEL grain, rebuild origin-visible population and frozen derived caches, and execute at most one user-authorized first independent later-origin evaluation after an exact-head dual-platform CI preflight. Canonical channel gaps remain PARTIAL_NOT_ACTIVE for WORK_CHANNEL and cannot block WORK_TOTAL when stable raw identity and dynamic Core80 scope prove no impact.",
+      "description": "Validate the HPSR01/HPSR02 immutable frozen model parameter independently from current bill source authority, preserve its digest-bound parameter lineage, rebuild only disposable caches, and execute at most one user-authorized first independent later-origin WORK_TOTAL evaluation after an exact-head dual-platform CI preflight. Canonical channel gaps remain PARTIAL_NOT_ACTIVE for WORK_CHANNEL.",
       "privateArtifactClassificationVersion": "private-artifact-classification.v0.1",
       "requiredTools": [],
       "requiredPrivateArtifacts": [
@@ -1330,32 +1330,59 @@
         {
           "role": "frozen-cham01-feature-rows",
           "kind": "file",
-          "artifactClass": "PRIVATE_DERIVED_CACHE",
+          "artifactClass": "REBUILDABLE_CACHE",
           "path": "data/private-output/m2-core-legacy-horizon-amount/M2-core-legacy-horizon-amount-feature-rows-private-v0.1.ndjson"
         },
         {
           "role": "frozen-lg01-same-case-rows",
           "kind": "file",
-          "artifactClass": "PRIVATE_DERIVED_CACHE",
+          "artifactClass": "REBUILDABLE_CACHE",
           "path": "data/private-output/m2-core-legacy-horizon-amount/M2-core-legacy-horizon-amount-frozen-lg01-rows-private-v0.1.ndjson"
         },
         {
           "role": "opened-origin-semantics-ledger",
           "kind": "file",
-          "artifactClass": "PRIVATE_DERIVED_CACHE",
+          "artifactClass": "REBUILDABLE_CACHE",
           "path": "data/private-output/m2-head-protected-segmented-router/M2-head-protected-segmented-router-opened-origin-semantics-private-v0.2.json"
         },
         {
           "role": "frozen-cham01-b3-prediction-rows",
           "kind": "file",
-          "artifactClass": "PRIVATE_DERIVED_CACHE",
+          "artifactClass": "REBUILDABLE_CACHE",
           "path": "data/private-output/m2-core-legacy-horizon-amount/M2-core-legacy-horizon-amount-predictions-private-v0.1.ndjson"
         },
         {
-          "role": "hpsr-residual-bounds",
+          "role": "hpsr01-hpsr02-immutable-frozen-parameters",
           "kind": "file",
-          "artifactClass": "PRIVATE_DERIVED_CACHE",
-          "path": "data/private-output/m2-head-protected-segmented-router/M2-head-protected-segmented-router-residual-bounds-private-v0.1.json"
+          "artifactClass": "IMMUTABLE_FROZEN_MODEL_PARAMETER",
+          "path": "data/private-output/m2-head-protected-segmented-router/M2-hpsr01-hpsr02-immutable-frozen-parameters-private-v0.2.json"
+        },
+        {
+          "role": "hpsr-parameter-lineage-minimal-snapshot",
+          "kind": "file",
+          "artifactClass": "PARAMETER_LINEAGE_SNAPSHOT",
+          "parameterRecoverySource": true,
+          "path": "data/private-output/m2-head-protected-segmented-router/M2-hpsr01-hpsr02-parameter-lineage-snapshot-private-v0.2.ndjson"
+        },
+        {
+          "role": "hpsr-parameter-lineage-historical-derived-facts",
+          "kind": "file",
+          "artifactClass": "PARAMETER_LINEAGE_SNAPSHOT",
+          "parameterRecoverySource": true,
+          "path": "data/private-output/m2-evaluation-v2-2-reversal-rescore/M2-reversal-authority-facts-private-v1.ndjson"
+        },
+        {
+          "role": "hpsr-parameter-recovery-manifest",
+          "kind": "file",
+          "artifactClass": "PARAMETER_LINEAGE_SNAPSHOT",
+          "parameterRecoverySource": false,
+          "path": "data/private-output/m2-head-protected-segmented-router/M2-hpsr01-hpsr02-frozen-parameter-recovery-manifest-private-v0.2.json"
+        },
+        {
+          "role": "hpsr-parameter-lineage-historical-receipt",
+          "kind": "file",
+          "artifactClass": "PRIVATE_RUN_PROVENANCE",
+          "path": "data/private-output/m2-evaluation-v2-2-reversal-rescore/M2-reversal-authority-export-receipt-private-v1.json"
         },
         {
           "role": "hpsr-retrospective-run-receipt",
@@ -1375,12 +1402,13 @@
         "command": "npm run execute:m2:head-protected-segmented-router",
         "retrospectiveArguments": "-- --retrospective",
         "sourceReconciliationArguments": "-- --source-authority-reconciliation",
+        "parameterAuthorityArguments": "-- --hpsr02-parameter-authority",
         "firstIndependentArguments": "-- --hpsr02-independent",
         "defaultExpectedStatus": "FAIL_CLOSED_WITHOUT_EXPLICIT_MODE",
         "currentTaskFirstIndependentAuthorization": true
       },
-      "recovery": "Restore only genuinely missing PRIVATE_SOURCE_AUTHORITY from a verified capability-scoped package. Rebuild scope reconciliation, feature rows, opened-origin population and residual bounds from authority and committed frozen code. Missing derived caches never block after deterministic rebuild; missing historical provenance only warns and is never fabricated. The current authorization permits exactly one HPSR02 first independent result and no second origin or final holdout.",
-      "authorization": "USER_AUTHORIZED_HPSR02_SOURCE_AUTHORITY_RECONCILIATION_AND_FIRST_INDEPENDENT_RESUME_2026_08_01"
+      "recovery": "Use current manually reviewed bills only as SOURCE_AUTHORITY for the 2026-03 origin-visible input and 2026-04 through 2026-06 WORK_TOTAL actual. Load the immutable positive-base-floor/q05/q95 parameter directly; if absent, recover it only from a validated digest-bound PARAMETER_LINEAGE_SNAPSHOT and reconcile the existing frozen run record. Never derive the parameter from current bills. Missing disposable caches rebuild automatically; missing historical receipt warns when the immutable parameter plus minimal lineage remain valid. The authorization permits exactly one HPSR02 first independent result and no second origin or final holdout.",
+      "authorization": "USER_AUTHORIZED_HPSR02_FROZEN_PARAMETER_AUTHORITY_AND_FIRST_INDEPENDENT_RESUME_2026_08_01"
     },
     {
       "id": "m3-private-materials",

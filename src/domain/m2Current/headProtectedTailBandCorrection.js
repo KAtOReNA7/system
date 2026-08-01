@@ -845,8 +845,8 @@ export function validateHeadProtectedTailBandCorrectionContract(config) {
   }
   if (
     config?.authorization?.source
-      !== "USER_INSTRUCTION_M2_HPSR02_SOURCE_AUTHORITY_"
-        + "RECONCILIATION_AND_RESUME_2026_08_01"
+      !== "USER_INSTRUCTION_M2_HPSR02_FROZEN_PARAMETER_"
+        + "AUTHORITY_AND_RESUME_2026_08_01"
     || config?.authorization?.independentK2EvaluationAuthorizedNow
       !== true
     || config?.authorization?.newPrivateActualReadAuthorizedNow
@@ -854,6 +854,14 @@ export function validateHeadProtectedTailBandCorrectionContract(config) {
     || config?.authorization?.modelTrainingAuthorizedNow !== false
     || config?.authorization?.alphaSearchAuthorizedNow !== false
     || config?.authorization?.residualBoundReestimationAuthorizedNow
+      !== false
+    || config?.authorization?.immutableFrozenParameterDirectUseAuthorizedNow
+      !== true
+    || config?.authorization
+      ?.digestBoundParameterLineageRecoveryAuthorizedNow !== true
+    || config?.authorization?.currentBillParameterDerivationAuthorizedNow
+      !== false
+    || config?.authorization?.executionBlockedBySourceAuthorityDecision
       !== false
     || config?.authorization?.prospectiveFinalHoldoutOpenAuthorizedNow
       !== false

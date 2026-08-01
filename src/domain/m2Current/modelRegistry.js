@@ -202,6 +202,14 @@ export function validateM2ModelRegistry(registry, {
   ) {
     errors.push(`blocked_experiment_unknown:${blockedExperiment}`);
   }
+  const pendingExperiment = registry?.currentRoles?.pendingExperiment;
+  if (
+    pendingExperiment !== null
+    && pendingExperiment !== undefined
+    && !experimentIds.has(pendingExperiment)
+  ) {
+    errors.push(`pending_experiment_unknown:${pendingExperiment}`);
+  }
   requirePublicEvidencePath(
     registry?.currentRoles?.latestStateIndex,
     repoRoot,
@@ -631,7 +639,21 @@ function renderCurrentRoles(registry) {
     rows.push(
       `- 当前阻断实验：${experiment.displayNameZh}（`
         + `${experiment.displayNameEn}，${code(experiment.experimentId)}；`
-        + `${code(status)}）。`
+      + `${code(status)}）。`
+    );
+  }
+  if (registry.currentRoles.pendingExperiment === null) {
+    rows.push("- 当前待门禁实验：无（`null`）。");
+  } else {
+    const experiment = registry.experiments.find(
+      (item) => (
+        item.experimentId === registry.currentRoles.pendingExperiment
+      )
+    );
+    rows.push(
+      `- 当前待门禁实验：${experiment.displayNameZh}（`
+        + `${experiment.displayNameEn}，${code(experiment.experimentId)}；`
+        + `${code(experiment.resultStatus)}）。`
     );
   }
   return rows;
@@ -778,6 +800,8 @@ function roleZh(role) {
       "首次独立评价发生结果前工程故障，恢复已授权但尚无完整结果且未激活",
     blocked_source_authority_decision_required_not_active:
       "冻结边界来源权威冲突，等待明确决策且未激活",
+    candidate_pending_immutable_parameter_integrity_gate_not_active:
+      "已决定不可变冻结参数权威，等待私有完整性门禁且未激活",
     archive_only_failed_model: "仅历史审计且已失败"
   }[role] ?? "登记角色";
 }
@@ -796,6 +820,32 @@ function comparisonClassZh(value) {
 }
 
 function resultStatusZh(value) {
+  if (
+    value
+      === "M2_HPSR02_FROZEN_PARAMETER_AUTHORITY_DECIDED_"
+        + "PENDING_PRIVATE_INTEGRITY_GATE"
+  ) {
+    return "不可变冻结参数权威已决定，等待私有完整性门禁";
+  }
+  if (
+    value === "M2_HPSR02_FIRST_INDEPENDENT_SUPPORTED_FOR_SECOND_CONFIRMATION"
+  ) {
+    return "首个独立起点支持，仅待另行授权确认";
+  }
+  if (
+    value
+      === "M2_HPSR02_FIRST_INDEPENDENT_NOT_SUPPORTED_"
+        + "CASH_ONLY_RESEARCH_ENDED"
+  ) {
+    return "首个独立起点不支持，现金邻接研究结束";
+  }
+  if (
+    value
+      === "M2_HPSR02_FIRST_INDEPENDENT_INCONCLUSIVE_"
+        + "CASH_ONLY_RESEARCH_ENDED"
+  ) {
+    return "首个独立起点证据不足，现金邻接研究结束";
+  }
   if (
     value
       === "M2_CHAM01_PRIMARY_CORE90_NUMERIC_STABILITY_FAIL_"

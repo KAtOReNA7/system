@@ -93,6 +93,18 @@ function printStatus() {
         + `${blockedExperiment.experimentId}；`
         + `${resultStatusZh(blockedStatus)}，${blockedStatus}）。`
   );
+  const pendingExperiment = registry.experiments.find(
+    (item) => item.experimentId === registry.currentRoles.pendingExperiment
+  );
+  console.log(
+    pendingExperiment === undefined
+      ? "当前待门禁实验：无（null）。"
+      : `当前待门禁实验：${pendingExperiment.displayNameZh}（`
+        + `${pendingExperiment.displayNameEn}，`
+        + `${pendingExperiment.experimentId}；`
+        + `${resultStatusZh(pendingExperiment.resultStatus)}，`
+        + `${pendingExperiment.resultStatus}）。`
+  );
   console.log(`当前状态索引：${registry.currentRoles.latestStateIndex}`);
   console.log("本次只读查询模型执行次数：0。");
   console.log(`当前角色解释：${registry.currentRoles.roleInterpretationZh}`);
@@ -421,6 +433,32 @@ function operationalStatusZh(value) {
 }
 
 function resultStatusZh(value) {
+  if (
+    value
+      === "M2_HPSR02_FROZEN_PARAMETER_AUTHORITY_DECIDED_"
+        + "PENDING_PRIVATE_INTEGRITY_GATE"
+  ) {
+    return "不可变冻结参数权威已决定，等待私有完整性门禁";
+  }
+  if (
+    value === "M2_HPSR02_FIRST_INDEPENDENT_SUPPORTED_FOR_SECOND_CONFIRMATION"
+  ) {
+    return "首个独立起点支持，仅可等待另行授权的第二次确认";
+  }
+  if (
+    value
+      === "M2_HPSR02_FIRST_INDEPENDENT_NOT_SUPPORTED_"
+        + "CASH_ONLY_RESEARCH_ENDED"
+  ) {
+    return "首个独立起点不支持，现金邻接研究结束";
+  }
+  if (
+    value
+      === "M2_HPSR02_FIRST_INDEPENDENT_INCONCLUSIVE_"
+        + "CASH_ONLY_RESEARCH_ENDED"
+  ) {
+    return "首个独立起点证据不足，现金邻接研究结束";
+  }
   if (
     value
       === "M2_HPSR02_BLOCKED_ACTIONABLE_"

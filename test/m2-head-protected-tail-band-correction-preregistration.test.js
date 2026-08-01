@@ -57,6 +57,12 @@ const dateAuditSource = await readText(
 const privateRunnerSource = await readText(
   "scripts/m2-current/head_protected_segmented_router_private.mjs"
 );
+const parameterAuthoritySource = await readText(
+  "scripts/m2-current/hpsr_frozen_parameter_authority_private.mjs"
+);
+const coreRevenuePrivateSource = await readText(
+  "scripts/m2-current/core_revenue_manual_private.mjs"
+);
 
 test("HPSR02 stable identity and preregistration contract validate", () => {
   const validation = validateHeadProtectedTailBandCorrectionContract(
@@ -91,10 +97,17 @@ test("first independent evaluation preserves prior blocker and current gate", ()
     "M2_HPSR02_PRE_RESULT_ENGINEERING_FAILURE_RECOVERY_AUTHORIZED";
   const sourceDecisionStatus =
     "M2_HPSR02_BLOCKED_ACTIONABLE_SOURCE_AUTHORITY_DECISION_REQUIRED";
+  const parameterPendingStatus =
+    "M2_HPSR02_FROZEN_PARAMETER_AUTHORITY_DECIDED_"
+      + "PENDING_PRIVATE_INTEGRITY_GATE";
+  const missingImmutableParameterStatus =
+    "M2_HPSR02_BLOCKED_MISSING_IMMUTABLE_FROZEN_PARAMETER";
   assert.ok([
     readyStatus,
     recoveryStatus,
     sourceDecisionStatus,
+    parameterPendingStatus,
+    missingImmutableParameterStatus,
     ...Object.values(HPSR02_FINAL_STATUSES)
   ].includes(independentEvaluation.status));
   assert.equal(
@@ -103,7 +116,7 @@ test("first independent evaluation preserves prior blocker and current gate", ()
   );
   assert.equal(
     independentEvaluation.experiment.stableExperimentId,
-    "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01"
+    "M2-EXP-LG01-HEAD-PROTECTED-TAIL-BAND-CORRECTION-02"
   );
   assert.equal(
     independentEvaluation.priorBlockedAttempt.status,
@@ -210,6 +223,45 @@ test("first independent evaluation preserves prior blocker and current gate", ()
       independentEvaluation.governance.sourceAuthorityDecisionRequired,
       true
     );
+  } else if (independentEvaluation.status === parameterPendingStatus) {
+    assert.equal(
+      independentEvaluation.frozenParameterAuthorityDecision.artifactClass,
+      "IMMUTABLE_FROZEN_MODEL_PARAMETER"
+    );
+    assert.equal(
+      independentEvaluation.frozenParameterAuthorityDecision
+        .lineageArtifactClass,
+      "PARAMETER_LINEAGE_SNAPSHOT"
+    );
+    assert.equal(
+      independentEvaluation.frozenParameterAuthorityDecision
+        .currentBillsMayDeriveFrozenParameters,
+      false
+    );
+    assert.equal(
+      independentEvaluation.executionLedger.candidateModelRuns,
+      0
+    );
+    assert.equal(
+      independentEvaluation.executionLedger.scientificEvaluationsExecuted,
+      0
+    );
+    assert.equal(independentEvaluation.executionLedger.bootstrapRuns, 0);
+    assert.equal(
+      independentEvaluation.governance.currentTaskResumeAuthorized,
+      true
+    );
+    assert.equal(
+      independentEvaluation.governance.sourceAuthorityDecisionRequired,
+      false
+    );
+  } else if (independentEvaluation.status === missingImmutableParameterStatus) {
+    assert.equal(independentEvaluation.executionLedger.candidateModelRuns, 0);
+    assert.equal(
+      independentEvaluation.executionLedger.scientificEvaluationsExecuted,
+      0
+    );
+    assert.equal(independentEvaluation.executionLedger.bootstrapRuns, 0);
   } else {
     assert.equal(
       independentEvaluation.execution
@@ -230,6 +282,14 @@ test("first independent evaluation preserves prior blocker and current gate", ()
   assert.match(
     independentEvaluationReport,
     /M2_HPSR02_BLOCKED_ACTIONABLE_SOURCE_AUTHORITY_DECISION_REQUIRED/u
+  );
+  assert.match(
+    independentEvaluationReport,
+    /IMMUTABLE_FROZEN_MODEL_PARAMETER/u
+  );
+  assert.match(
+    independentEvaluationReport,
+    /HISTORICAL_CHANNEL_LINEAGE_DRIFT_WITH_WORK_MONTH_CASH_CONSERVED/u
   );
 });
 
@@ -571,18 +631,31 @@ test("authorization, final holdout, automation, and production remain closed", (
   ]);
   assert.equal(
     config.experiment.engineeringRecoveryStatus,
-    "M2_HPSR02_BLOCKED_ACTIONABLE_SOURCE_AUTHORITY_DECISION_REQUIRED"
+    "M2_HPSR02_PRE_RESULT_ENGINEERING_FAILURE_RECOVERY_AUTHORIZED"
   );
   assert.equal(
     config.currentExecutionStatus,
-    "M2_HPSR02_BLOCKED_ACTIONABLE_SOURCE_AUTHORITY_DECISION_REQUIRED"
+    "M2_HPSR02_FROZEN_PARAMETER_AUTHORITY_DECIDED_"
+      + "PENDING_PRIVATE_INTEGRITY_GATE"
   );
   assert.equal(
     config.authorization.executionBlockedBySourceAuthorityDecision,
+    false
+  );
+  assert.equal(config.governance.preResultEngineeringRecoveryAuthorized, true);
+  assert.equal(config.governance.sourceAuthorityDecisionRequired, false);
+  assert.equal(
+    config.authorization.immutableFrozenParameterDirectUseAuthorizedNow,
     true
   );
-  assert.equal(config.governance.preResultEngineeringRecoveryAuthorized, false);
-  assert.equal(config.governance.sourceAuthorityDecisionRequired, true);
+  assert.equal(
+    config.authorization.digestBoundParameterLineageRecoveryAuthorizedNow,
+    true
+  );
+  assert.equal(
+    config.authorization.currentBillParameterDerivationAuthorizedNow,
+    false
+  );
   assert.equal(
     config.independentDataBoundary.currentEstimate.independentCheckpointReady,
     true
@@ -592,26 +665,74 @@ test("authorization, final holdout, automation, and production remain closed", (
       .independentEvaluationExecutionReady,
     false
   );
+  assert.equal(
+    config.independentDataBoundary.currentEstimate
+      .privateParameterIntegrityGatePending,
+    true
+  );
   assert.equal(config.auditBoundary.realModelEvaluationExecuted, false);
 });
 
-test("source decision blocks recovery after frozen historical cutoff audit", () => {
-  assert.match(
-    privateRunnerSource,
-    /retrospectiveOrigins: boundOrigins,[\s\S]{0,180}authorityMode: "HPSR02_WORK_TOTAL_SCOPE_AWARE_AUTHORITY",[\s\S]{0,100}labelMaturityCutoff: historicalCutoff/u
+test("controlled evaluation loads immutable parameters before current bills", () => {
+  const independentStart = privateRunnerSource.indexOf(
+    "export async function runHpsr02IndependentPrivate"
   );
+  const independentEnd = privateRunnerSource.indexOf(
+    "export async function runHpsrRetrospectivePrivate",
+    independentStart
+  );
+  const independentSource = privateRunnerSource.slice(
+    independentStart,
+    independentEnd
+  );
+  const parameterGateIndex = independentSource.indexOf(
+    "loadOrRecoverHpsrImmutableFrozenParameters"
+  );
+  const sourceGateIndex = independentSource.indexOf(
+    "reconcileHpsr02SourceAuthorityPrivate"
+  );
+  const currentFeatureIndex = independentSource.indexOf(
+    "HPSR02_WORK_TOTAL_SCOPE_AWARE_AUTHORITY"
+  );
+  assert.ok(parameterGateIndex >= 0);
+  assert.ok(sourceGateIndex > parameterGateIndex);
+  assert.ok(currentFeatureIndex > sourceGateIndex);
+  assert.doesNotMatch(independentSource, /deriveHpsrResidualBounds/u);
+  assert.doesNotMatch(privateRunnerSource, /deriveHpsrResidualBounds/u);
+  assert.match(parameterAuthoritySource, /deriveHpsrResidualBounds/u);
+});
+
+test("parameter recovery uses historical lineage and cannot consume current split or future actual", () => {
+  assert.match(
+    parameterAuthoritySource,
+    /HPSR_FROZEN_PARAMETER_LINEAGE_SNAPSHOT/u
+  );
+  assert.doesNotMatch(
+    parameterAuthoritySource,
+    /HPSR02_WORK_TOTAL_SCOPE_AWARE_AUTHORITY/u
+  );
+  assert.match(
+    coreRevenuePrivateSource,
+    /authorityMode === HPSR_FROZEN_PARAMETER_LINEAGE_MODE[\s\S]*return;/u
+  );
+  assert.match(
+    parameterAuthoritySource,
+    /currentBillSourceUsedForParameterDerivation: false/u
+  );
+  assert.match(
+    parameterAuthoritySource,
+    /laterOriginOutcomeUsed: false/u
+  );
+  assert.match(
+    parameterAuthoritySource,
+    /prospectiveFinalHoldoutOutcomeUsed: false/u
+  );
+  assert.doesNotMatch(parameterAuthoritySource, /2026-0[3-9]/u);
   assert.match(
     privateRunnerSource,
     /retrospectiveOrigins: \["2026-03"\],[\s\S]*authorityMode: "HPSR02_WORK_TOTAL_SCOPE_AWARE_AUTHORITY"/u
   );
-  assert.match(
-    privateRunnerSource,
-    /assertHpsr02FrozenBoundArtifactMatches/u
-  );
-  assert.match(
-    privateRunnerSource,
-    /hpsr02_source_authority_decision_required/u
-  );
+  assert.match(parameterAuthoritySource, /M2_HPSR02_BLOCKED_MISSING_IMMUTABLE_FROZEN_PARAMETER/u);
 });
 
 test("production loader route and API do not import HPSR02", async () => {

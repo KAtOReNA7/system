@@ -130,6 +130,9 @@ const PRIVATE_ARTIFACT_CLASSES = new Set([
   "PRIVATE_SOURCE_AUTHORITY",
   "PRIVATE_DERIVED_CACHE",
   "PRIVATE_RUN_PROVENANCE",
+  "IMMUTABLE_FROZEN_MODEL_PARAMETER",
+  "PARAMETER_LINEAGE_SNAPSHOT",
+  "REBUILDABLE_CACHE",
 ]);
 
 function privateArtifactClass(artifact) {
@@ -234,6 +237,7 @@ export function evaluateCapability(catalog, capabilityId, options = {}) {
       kind: artifact.kind,
       path: artifact.path,
       artifactClass: privateArtifactClass(artifact),
+      parameterRecoverySource: artifact.parameterRecoverySource === true,
       present: Boolean(artifactExists(absolutePath, artifact)),
     };
   });
@@ -244,9 +248,26 @@ export function evaluateCapability(catalog, capabilityId, options = {}) {
     && !artifact.present
   ));
   const missingDerivedCache = artifacts.filter((artifact) => (
-    artifact.artifactClass === "PRIVATE_DERIVED_CACHE"
+    ["PRIVATE_DERIVED_CACHE", "REBUILDABLE_CACHE"].includes(
+      artifact.artifactClass
+    )
     && !artifact.present
   ));
+  const missingImmutableFrozenParameters = artifacts.filter(
+    (artifact) => (
+      artifact.artifactClass === "IMMUTABLE_FROZEN_MODEL_PARAMETER"
+      && !artifact.present
+    )
+  );
+  const parameterLineageArtifacts = artifacts.filter((artifact) => (
+    artifact.artifactClass === "PARAMETER_LINEAGE_SNAPSHOT"
+  ));
+  const missingParameterLineage = parameterLineageArtifacts.filter(
+    (artifact) => !artifact.present
+  );
+  const parameterRecoverySourceAvailable = parameterLineageArtifacts.some(
+    (artifact) => artifact.parameterRecoverySource && artifact.present
+  );
   const missingHistoricalReceipts = artifacts.filter((artifact) => (
     artifact.artifactClass === "PRIVATE_RUN_PROVENANCE"
     && !artifact.present
@@ -261,11 +282,25 @@ export function evaluateCapability(catalog, capabilityId, options = {}) {
     status = capability.privateArtifactClassificationVersion
       ? "MISSING_SOURCE_AUTHORITY"
       : "BLOCKED_MISSING_PRIVATE_ARTIFACT";
+  } else if (
+    missingImmutableFrozenParameters.length > 0
+    && !parameterRecoverySourceAvailable
+  ) {
+    status = "MISSING_IMMUTABLE_FROZEN_PARAMETER";
+  } else if (missingImmutableFrozenParameters.length > 0) {
+    status = "IMMUTABLE_FROZEN_PARAMETER_RECOVERY_REQUIRED";
   } else if (missingDerivedCache.length > 0) {
     status = "DERIVED_CACHE_MISS_REBUILD_REQUIRED";
+  } else if (missingParameterLineage.length > 0) {
+    status = "PARAMETER_LINEAGE_INVENTORY_WARNING";
   }
   const safeToRebuildDerivedCache =
     unavailableTools.length === 0 && missingSourceAuthority.length === 0;
+  const safeToRecoverImmutableFrozenParameter = (
+    unavailableTools.length === 0
+    && missingSourceAuthority.length === 0
+    && parameterRecoverySourceAvailable
+  );
   return {
     schemaVersion: "development-capability-doctor-result.v0.1",
     capabilityId,
@@ -287,13 +322,36 @@ export function evaluateCapability(catalog, capabilityId, options = {}) {
     historicalReceiptStatus: missingHistoricalReceipts.length > 0
       ? "OPTIONAL_PROVENANCE_MISSING"
       : "PROVENANCE_AVAILABLE",
+    immutableFrozenParameterStatus:
+      missingImmutableFrozenParameters.length > 0
+        ? "MISSING_IMMUTABLE_FROZEN_PARAMETER"
+        : "IMMUTABLE_FROZEN_PARAMETER_PRESENT",
+    parameterLineageStatus: missingParameterLineage.length > 0
+      ? "PARAMETER_LINEAGE_INVENTORY_INCOMPLETE"
+      : "PARAMETER_LINEAGE_SNAPSHOT_PRESENT",
+    parameterRecoverySourceAvailable,
+    safeToRecoverImmutableFrozenParameter,
     rebuildPlan: missingDerivedCache.map((artifact) => ({
       role: artifact.role,
       path: artifact.path,
       action: "REBUILD_FROM_PRIVATE_SOURCE_AUTHORITY",
     })),
+    parameterRecoveryPlan: missingImmutableFrozenParameters.map(
+      (artifact) => ({
+        role: artifact.role,
+        path: artifact.path,
+        action: parameterRecoverySourceAvailable
+          ? "RECOVER_FROM_DIGEST_BOUND_PARAMETER_LINEAGE_SNAPSHOT"
+          : "STOP_MISSING_IMMUTABLE_FROZEN_PARAMETER",
+      }),
+    ),
     safeToRebuildDerivedCache,
-    safeToStartModelAfterRebuild: safeToRebuildDerivedCache,
+    safeToStartModelAfterRebuild:
+      safeToRebuildDerivedCache
+      && (
+        missingImmutableFrozenParameters.length === 0
+        || safeToRecoverImmutableFrozenParameter
+      ),
     unavailableTools: unavailableTools.map((tool) => tool.id),
     canonicalValidationCommands: capability.canonicalValidationCommands ?? [],
     recovery: capability.recovery ?? null,
@@ -338,6 +396,14 @@ export function formatCapabilityResult(result) {
   lines.push(`Source authority: ${result.sourceAuthorityStatus}`);
   lines.push(`Derived cache: ${result.derivedCacheStatus}`);
   lines.push(`Historical receipt: ${result.historicalReceiptStatus}`);
+  lines.push(
+    `Immutable frozen parameter: ${result.immutableFrozenParameterStatus}`,
+  );
+  lines.push(`Parameter lineage: ${result.parameterLineageStatus}`);
+  lines.push(
+    `Safe to recover immutable frozen parameter: `
+      + `${result.safeToRecoverImmutableFrozenParameter}`,
+  );
   lines.push(`Safe to rebuild derived cache: ${result.safeToRebuildDerivedCache}`);
   lines.push(
     `Safe to start model after rebuild: ${result.safeToStartModelAfterRebuild}`,
@@ -350,6 +416,18 @@ export function formatCapabilityResult(result) {
   }
   if (result.status === "DERIVED_CACHE_MISS_REBUILD_REQUIRED") {
     lines.push("Derived cache is rebuildable and does not block after preparation.");
+  }
+  if (result.status === "MISSING_IMMUTABLE_FROZEN_PARAMETER") {
+    lines.push(
+      "The owning capability is blocked because neither the immutable "
+        + "parameter nor a registered recovery lineage source is present.",
+    );
+  }
+  if (result.status === "IMMUTABLE_FROZEN_PARAMETER_RECOVERY_REQUIRED") {
+    lines.push(
+      "Recover the immutable parameter only from its digest-bound lineage; "
+        + "do not derive it from current bills.",
+    );
   }
   if (result.recovery) {
     lines.push(`Recovery: ${result.recovery}`);
@@ -390,6 +468,7 @@ function main() {
     process.exitCode = (
       result.status.startsWith("BLOCKED_")
       || result.status === "MISSING_SOURCE_AUTHORITY"
+      || result.status === "MISSING_IMMUTABLE_FROZEN_PARAMETER"
     ) ? 1 : 0;
   } catch (error) {
     process.stderr.write(`[CAPABILITY_DOCTOR_ERROR] ${error.message}\n`);

@@ -119,6 +119,18 @@ This directory is the only implementation home for current M2 model logic.
   head-protected segmentation direction fails. Any L20-only aggregate
   arithmetic is `POST_HOC_AGGREGATE_ARITHMETIC_NOT_MODEL_EVIDENCE`; it is not
   a row-level rescore, model evaluation, or leaderboard entry.
+- For `M2-WORK-HPSR01` and `M2-WORK-HPSR02`, the outcome-preceding positive
+  base floor, q05, and q95 are exactly three
+  `IMMUTABLE_FROZEN_MODEL_PARAMETER` values. Current manually reviewed bills
+  remain `SOURCE_AUTHORITY` for current origin-visible input and WORK_TOTAL
+  actual; they must never be used to re-derive those parameters. Digest-bound
+  historical rows are only a `PARAMETER_LINEAGE_SNAPSHOT` and may support
+  deterministic `FROZEN_PARAMETER_RECONSTRUCTION_FROM_DIGEST_BOUND_LINEAGE_SNAPSHOT`;
+  they do not replace current actual or become project-wide bill authority.
+  Missing historical provenance is only a warning when the immutable artifact
+  and minimal lineage snapshot validate. Preserve channel split drift as
+  `HISTORICAL_CHANNEL_LINEAGE_DRIFT_WITH_WORK_MONTH_CASH_CONSERVED` without
+  changing the frozen values or activating WORK_CHANNEL.
 - `M2-WORK-HPSR02` is a
   `POST_HOC_INSPIRED_PROSPECTIVELY_PREREGISTERED` independent-evaluation
   candidate, not an active candidate. Its only allowed structure keeps frozen
