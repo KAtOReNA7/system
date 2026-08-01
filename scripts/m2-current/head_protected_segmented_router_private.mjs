@@ -292,6 +292,48 @@ export async function reconcileHpsr02SourceAuthorityPrivate({ root }) {
   });
 }
 
+export async function reconcileHpsr02FrozenBoundCachePrivate({ root }) {
+  const preflight = verifyM2Oa03GitAndCiPreflight({
+    root,
+    allowedDirtyPaths: []
+  });
+  const [hpsr01Config, coreAmountConfig, boundProof] =
+    await Promise.all([
+      readJson(path.join(root, HPSR01_CONFIG)),
+      readJson(path.join(root, CORE_AMOUNT_CONFIG)),
+      readJson(path.join(root, HPSR02_BOUND_PROVENANCE))
+    ]);
+  validateM2CoreLegacyHorizonAmountConfig(coreAmountConfig);
+  const reconciliation =
+    await reconcileHpsr02FrozenResidualBoundCache({
+      root,
+      hpsr01Config,
+      coreAmountConfig,
+      boundProof
+    });
+  return Object.freeze({
+    status:
+      "M2_HPSR02_FROZEN_BOUND_CACHE_RECONCILED_"
+        + "WITHOUT_SCIENTIFIC_EVALUATION",
+    executionHead: preflight.head,
+    exactHeadCiRunId: preflight.ciRunId,
+    cacheStatus: reconciliation.cacheStatus,
+    authorityMode:
+      reconciliation.sourceAuthority.authorityMode,
+    historicalCutoff:
+      reconciliation.sourceAuthority.labelMaturityCutoff,
+    inputRowCount: reconciliation.boundState.inputRowCount,
+    finiteSupportRowCount:
+      reconciliation.boundState.finiteSupportRowCount,
+    parameterValuesPublished: false,
+    futureActualOutcomeRead: false,
+    candidatePredictionsProduced: 0,
+    scientificEvaluationsExecuted: 0,
+    bootstrapRuns: 0,
+    prospectiveFinalHoldoutOpened: false
+  });
+}
+
 export async function runHpsr02IndependentPrivate({ root }) {
   const preflight = verifyM2Oa03GitAndCiPreflight({
     root,
@@ -351,15 +393,12 @@ export async function runHpsr02IndependentPrivate({ root }) {
     finalHoldoutOutcomeRead: false
   });
   try {
-    const boundOrigins = monthRangeInclusive(
-      hpsr01Config.residualBoundaryFreeze.sourceOriginRange.from,
-      hpsr01Config.residualBoundaryFreeze.sourceOriginRange.through
-    );
-    const boundFeatureMaterialization =
-      await materializeM2HpsrFrozenFormulaFeatureRows({
+    const boundReconciliation =
+      await reconcileHpsr02FrozenResidualBoundCache({
         root,
-        retrospectiveOrigins: boundOrigins,
-        authorityMode: "CANONICAL_WORK_CHANNEL_AUTHORITY"
+        hpsr01Config,
+        coreAmountConfig,
+        boundProof
       });
     const currentFeatureMaterialization =
       await materializeM2HpsrFrozenFormulaFeatureRows({
@@ -368,109 +407,19 @@ export async function runHpsr02IndependentPrivate({ root }) {
         authorityMode: "HPSR02_WORK_TOTAL_SCOPE_AWARE_AUTHORITY"
       });
     if (
-      boundFeatureMaterialization.sourceAuthority.authorityMode
-        !== "CANONICAL_WORK_CHANNEL_AUTHORITY"
-      || currentFeatureMaterialization.sourceAuthority.authorityMode
+      currentFeatureMaterialization.sourceAuthority.authorityMode
         !== "HPSR02_WORK_TOTAL_SCOPE_AWARE_AUTHORITY"
     ) {
       throw new Error("hpsr02_independent_authority_mode_mismatch");
     }
     const fixedFit = hpsr01Config.retrospectiveReplay.fixedCham01B3Fit;
-    const originFits = new Map();
-    for (const origin of boundOrigins) {
-      originFits.set(origin, fitFrozenB3AtOrigin({
-        origin,
-        featureRows: boundFeatureMaterialization.featureRows,
-        coreAmountConfig,
-        fixedFit
-      }));
-    }
-    originFits.set("2026-03", fitFrozenB3AtOrigin({
+    const currentFit = fitFrozenB3AtOrigin({
       origin: "2026-03",
       featureRows: currentFeatureMaterialization.featureRows,
       coreAmountConfig,
       fixedFit
-    }));
-    const boundRows = [];
-    for (const origin of boundOrigins) {
-      const fit = originFits.get(origin);
-      for (let index = 0; index < fit.validationRows.length; index += 1) {
-        const feature = fit.validationRows[index];
-        if (feature.core80 !== true) continue;
-        boundRows.push({
-          origin,
-          basePointEstimate: feature.features.lg01PointEstimate,
-          rawPointEstimate: fit.predictions[index].pointEstimate
-        });
-      }
-    }
-    const boundState = deriveHpsrResidualBounds(boundRows, {
-      maximumOpenedDevelopmentOrigin:
-        hpsr01Config.residualBoundaryFreeze
-          .maximumOpenedDevelopmentOrigin,
-      positiveBaseQuantile:
-        hpsr01Config.residualBoundaryFreeze
-          .positiveBaseFloor.quantile,
-      lowerResidualQuantile:
-        hpsr01Config.residualBoundaryFreeze
-          .normalizedResidualBounds.lowerQuantile,
-      upperResidualQuantile:
-        hpsr01Config.residualBoundaryFreeze
-          .normalizedResidualBounds.upperQuantile
     });
-    if (
-      boundState.inputRowCount !== boundProof.inputRowCount
-      || boundState.finiteSupportRowCount
-        !== boundProof.finiteSupportRowCount
-      || boundState.excludedNonfiniteRowCount
-        !== boundProof.excludedNonfiniteRowCount
-      || boundState.positiveBaseSupportRowCount
-        !== boundProof.positiveBaseSupportRowCount
-      || JSON.stringify(boundState.derivationOriginRange)
-        !== JSON.stringify(boundProof.derivationOriginRange)
-    ) {
-      throw new Error("hpsr02_residual_bound_rebuild_not_reconciled");
-    }
-    const frozenBoundArtifact = {
-      schema:
-        "m2.current.head_protected_segmented_router."
-          + "residual_bounds.private.v0.1",
-      artifactClass: "PRIVATE_DERIVED_CACHE",
-      tracked: false,
-      rebuildable: true,
-      experimentId:
-        "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01",
-      modelId: "M2-WORK-HPSR01",
-      status: "FROZEN_FROM_PREVIOUSLY_OPENED_DEVELOPMENT_ONLY",
-      sourcePopulation:
-        "STRICT_ROLLING_CORE80_H3_B3_JOIN_FROZEN_LG01",
-      derivationOriginRange: boundState.derivationOriginRange,
-      maximumOpenedDevelopmentOrigin:
-        boundState.maximumOpenedDevelopmentOrigin,
-      inputRowCount: boundState.inputRowCount,
-      finiteSupportRowCount: boundState.finiteSupportRowCount,
-      excludedNonfiniteRowCount: boundState.excludedNonfiniteRowCount,
-      positiveBaseSupportRowCount:
-        boundState.positiveBaseSupportRowCount,
-      quantileMethod: boundState.quantileMethod,
-      quantiles: boundState.quantiles,
-      parameterValues: {
-        frozenDevelopmentPositiveBaseFloor:
-          boundState.positiveBaseFloor,
-        frozenDevelopmentQ05: boundState.lowerBound,
-        frozenDevelopmentQ95: boundState.upperBound
-      },
-      actualFieldConsumedForBoundDerivation: false,
-      laterOriginOutcomeUsed: false,
-      prospectiveFinalHoldoutOutcomeUsed: false,
-      publicParameterValuesPublished: false,
-      privateDigestIsCrossComputerGate: false
-    };
-    await writeJsonAtomic(path.join(
-      root,
-      hpsr01Config.privateCapability.residualBoundArtifact
-    ), frozenBoundArtifact);
-    const currentFit = originFits.get("2026-03");
+    const boundState = boundReconciliation.boundState;
     const validationRows = currentFit.validationRows;
     if (
       validationRows.length === 0
@@ -674,7 +623,8 @@ export async function runHpsr02IndependentPrivate({ root }) {
       priorPreResultEngineeringAttempt?.futureActualOutcomeRead === true
       || [
         "m2_hpsr_rebuilt_work_case_duplicate",
-        "hpsr02_residual_bound_rebuild_not_reconciled"
+        "hpsr02_residual_bound_rebuild_not_reconciled",
+        "m2_core_revenue_manual_command_failed:node.exe"
       ].includes(errorCode)
     );
     await writeJsonAtomic(receiptPath, {
@@ -1258,13 +1208,19 @@ function renderHpsr02ChineseReport(value) {
     : (() => {
       const recoveryValue = value.preResultEngineeringRecovery;
       const attempts = recoveryValue.attempts.map((attempt, index) => {
-        const reason = attempt.errorCode
-          === "m2_hpsr_rebuilt_work_case_duplicate"
-          ? "请求起点与历史支持起点重复拼接"
-          : "历史冻结边界与当前作品总额评价错误共用了来源权威口径";
+        const reasons = {
+          m2_hpsr_rebuilt_work_case_duplicate:
+            "请求起点与历史支持起点重复拼接",
+          hpsr02_residual_bound_rebuild_not_reconciled:
+            "历史冻结边界与当前作品总额评价错误共用了来源权威口径",
+          "m2_core_revenue_manual_command_failed:node.exe":
+            "历史全账渠道导出被当前窗口三条范围外分表事实阻断"
+        };
+        const reason = reasons[attempt.errorCode]
+          ?? "结果前工程步骤停止";
         return `${index + 1}. ${reason}（\`${attempt.errorCode}\`）`;
       });
-      return `\n## 结果前工程恢复\n\n首次独立评价在形成候选预测、科学评分或 bootstrap 前共有 ${recoveryValue.attemptCount} 次纯工程停止：\n\n${attempts.join("\n")}\n\n两次尝试均已读取作品总额权威事实，但候选预测、科学评价、bootstrap 和完整结果仍均为 0；审计状态保持结果前工程失败、可恢复（\`${recoveryValue.status}\`）。恢复先消除重复起点，再把历史冻结残差边界重建固定在原渠道权威口径，只让当前 2026-03 作品总额评价使用范围感知权威口径；模型、人口、基线、门限和 outcome 均未改变。\n`;
+      return `\n## 结果前工程恢复\n\n首次独立评价在形成候选预测、科学评分或 bootstrap 前共有 ${recoveryValue.attemptCount} 次纯工程停止：\n\n${attempts.join("\n")}\n\n这些尝试均已读取作品总额权威事实，但候选预测、科学评价、bootstrap 和完整结果仍均为 0；审计状态保持结果前工程失败、可恢复（\`${recoveryValue.status}\`）。恢复先消除重复起点，再把历史冻结残差边界重建限制在原开发最大可见截止月；既有缓存存在时必须逐值一致，缓存缺失时必须通过公开冻结 provenance 的结构门禁。当前 2026-03 评价继续单独使用作品总额范围感知权威口径。模型、人口、基线、门限和 outcome 均未改变。\n`;
     })();
   return `# M2 LG01 头部保护尾段修正模型首次独立评价 v0.2
 
@@ -1344,6 +1300,167 @@ function safeHpsr02Error(error) {
     .slice(0, 240);
 }
 
+async function reconcileHpsr02FrozenResidualBoundCache({
+  root,
+  hpsr01Config,
+  coreAmountConfig,
+  boundProof
+}) {
+  const boundOrigins = monthRangeInclusive(
+    hpsr01Config.residualBoundaryFreeze.sourceOriginRange.from,
+    hpsr01Config.residualBoundaryFreeze.sourceOriginRange.through
+  );
+  const historicalCutoff =
+    hpsr01Config.residualBoundaryFreeze.maximumOpenedDevelopmentOrigin;
+  const materialization =
+    await materializeM2HpsrFrozenFormulaFeatureRows({
+      root,
+      retrospectiveOrigins: boundOrigins,
+      authorityMode: "HPSR02_WORK_TOTAL_SCOPE_AWARE_AUTHORITY",
+      labelMaturityCutoff: historicalCutoff
+    });
+  if (
+    materialization.sourceAuthority.authorityMode
+      !== "HPSR02_WORK_TOTAL_SCOPE_AWARE_AUTHORITY"
+    || materialization.sourceAuthority.labelMaturityCutoff
+      !== historicalCutoff
+  ) {
+    throw new Error("hpsr02_frozen_bound_authority_cutoff_mismatch");
+  }
+  const fixedFit = hpsr01Config.retrospectiveReplay.fixedCham01B3Fit;
+  const boundRows = [];
+  for (const origin of boundOrigins) {
+    const fit = fitFrozenB3AtOrigin({
+      origin,
+      featureRows: materialization.featureRows,
+      coreAmountConfig,
+      fixedFit
+    });
+    for (let index = 0; index < fit.validationRows.length; index += 1) {
+      const feature = fit.validationRows[index];
+      if (feature.core80 !== true) continue;
+      boundRows.push({
+        origin,
+        basePointEstimate: feature.features.lg01PointEstimate,
+        rawPointEstimate: fit.predictions[index].pointEstimate
+      });
+    }
+  }
+  const boundState = deriveHpsrResidualBounds(boundRows, {
+    maximumOpenedDevelopmentOrigin: historicalCutoff,
+    positiveBaseQuantile:
+      hpsr01Config.residualBoundaryFreeze.positiveBaseFloor.quantile,
+    lowerResidualQuantile:
+      hpsr01Config.residualBoundaryFreeze
+        .normalizedResidualBounds.lowerQuantile,
+    upperResidualQuantile:
+      hpsr01Config.residualBoundaryFreeze
+        .normalizedResidualBounds.upperQuantile
+  });
+  if (
+    boundState.inputRowCount !== boundProof.inputRowCount
+    || boundState.finiteSupportRowCount
+      !== boundProof.finiteSupportRowCount
+    || boundState.excludedNonfiniteRowCount
+      !== boundProof.excludedNonfiniteRowCount
+    || boundState.positiveBaseSupportRowCount
+      !== boundProof.positiveBaseSupportRowCount
+    || JSON.stringify(boundState.derivationOriginRange)
+      !== JSON.stringify(boundProof.derivationOriginRange)
+  ) {
+    throw new Error("hpsr02_residual_bound_rebuild_not_reconciled");
+  }
+  const rebuiltArtifact = {
+    schema:
+      "m2.current.head_protected_segmented_router."
+        + "residual_bounds.private.v0.1",
+    artifactClass: "PRIVATE_DERIVED_CACHE",
+    tracked: false,
+    rebuildable: true,
+    experimentId:
+      "M2-EXP-LG01-HEAD-PROTECTED-SEGMENTED-ROUTER-01",
+    modelId: "M2-WORK-HPSR01",
+    status: "FROZEN_FROM_PREVIOUSLY_OPENED_DEVELOPMENT_ONLY",
+    sourcePopulation:
+      "STRICT_ROLLING_CORE80_H3_B3_JOIN_FROZEN_LG01",
+    derivationOriginRange: boundState.derivationOriginRange,
+    maximumOpenedDevelopmentOrigin:
+      boundState.maximumOpenedDevelopmentOrigin,
+    historicalSourceCutoff: historicalCutoff,
+    inputRowCount: boundState.inputRowCount,
+    finiteSupportRowCount: boundState.finiteSupportRowCount,
+    excludedNonfiniteRowCount: boundState.excludedNonfiniteRowCount,
+    positiveBaseSupportRowCount:
+      boundState.positiveBaseSupportRowCount,
+    quantileMethod: boundState.quantileMethod,
+    quantiles: boundState.quantiles,
+    parameterValues: {
+      frozenDevelopmentPositiveBaseFloor:
+        boundState.positiveBaseFloor,
+      frozenDevelopmentQ05: boundState.lowerBound,
+      frozenDevelopmentQ95: boundState.upperBound
+    },
+    actualFieldConsumedForBoundDerivation: false,
+    laterOriginOutcomeUsed: false,
+    prospectiveFinalHoldoutOutcomeUsed: false,
+    publicParameterValuesPublished: false,
+    privateDigestIsCrossComputerGate: false
+  };
+  const artifactPath = path.join(
+    root,
+    hpsr01Config.privateCapability.residualBoundArtifact
+  );
+  const existingArtifact = await readJsonIfPresent(artifactPath);
+  if (existingArtifact === null) {
+    await writeJsonAtomic(artifactPath, rebuiltArtifact);
+  } else {
+    assertHpsr02FrozenBoundArtifactMatches(
+      existingArtifact,
+      rebuiltArtifact
+    );
+  }
+  return Object.freeze({
+    boundState,
+    sourceAuthority: materialization.sourceAuthority,
+    cacheStatus: existingArtifact === null
+      ? "CACHE_MISS_REBUILT_AND_FROZEN_VALUES_RECONCILED"
+      : "CACHE_HIT_FROZEN_VALUES_EXACTLY_RECONCILED"
+  });
+}
+
+function assertHpsr02FrozenBoundArtifactMatches(existing, rebuilt) {
+  const identity = [
+    "schema",
+    "experimentId",
+    "modelId",
+    "status",
+    "sourcePopulation",
+    "maximumOpenedDevelopmentOrigin",
+    "inputRowCount",
+    "finiteSupportRowCount",
+    "excludedNonfiniteRowCount",
+    "positiveBaseSupportRowCount",
+    "quantileMethod",
+    "actualFieldConsumedForBoundDerivation",
+    "laterOriginOutcomeUsed",
+    "prospectiveFinalHoldoutOutcomeUsed",
+    "publicParameterValuesPublished",
+    "privateDigestIsCrossComputerGate"
+  ];
+  const mismatch = identity.some(
+    (key) => !Object.is(existing?.[key], rebuilt[key])
+  ) || [
+    "derivationOriginRange",
+    "quantiles",
+    "parameterValues"
+  ].some((key) => (
+    JSON.stringify(existing?.[key]) !== JSON.stringify(rebuilt[key])
+  ));
+  if (mismatch) {
+    throw new Error("hpsr02_frozen_residual_bound_value_mismatch");
+  }
+}
+
 function mergeHpsr02PreResultEngineeringAttempts({
   priorReceipt,
   priorPublicCheckpoint
@@ -1377,8 +1494,17 @@ function mergeHpsr02PreResultEngineeringAttempts({
           attempt.futureActualOutcomeRead === true
           || [
             "m2_hpsr_rebuilt_work_case_duplicate",
-            "hpsr02_residual_bound_rebuild_not_reconciled"
+            "hpsr02_residual_bound_rebuild_not_reconciled",
+            "m2_core_revenue_manual_command_failed:node.exe"
           ].includes(errorCode),
+        diagnosticCauseCode: attempt.diagnosticCauseCode
+          ?? (
+            errorCode
+              === "m2_core_revenue_manual_command_failed:node.exe"
+              ? "HISTORICAL_GLOBAL_CHANNEL_EXPORT_BLOCKED_BY_"
+                + "THREE_CURRENT_WINDOW_OUT_OF_SCOPE_SPLIT_FACTS"
+              : null
+          ),
         candidatePredictionsProduced: 0,
         scientificEvaluationsExecuted: 0,
         bootstrapRuns: 0,

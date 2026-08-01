@@ -31,7 +31,7 @@
   },
   "preResultEngineeringRecovery": {
     "status": "INVALIDATED_PRE_RESULT_ENGINEERING_FAILURE_RECOVERY_ALLOWED",
-    "attemptCount": 2,
+    "attemptCount": 3,
     "attempts": [
       {
         "status": "INVALIDATED_PRE_RESULT_ENGINEERING_FAILURE_RECOVERY_ALLOWED",
@@ -48,6 +48,19 @@
       {
         "status": "INVALIDATED_PRE_RESULT_ENGINEERING_FAILURE_RECOVERY_ALLOWED",
         "errorCode": "hpsr02_residual_bound_rebuild_not_reconciled",
+        "futureActualOutcomeRead": true,
+        "candidatePredictionsProduced": 0,
+        "scientificEvaluationsExecuted": 0,
+        "bootstrapRuns": 0,
+        "completeIndependentResultProduced": false,
+        "resultFrozen": false,
+        "retryAllowed": true,
+        "contractChangedForRecovery": false
+      },
+      {
+        "status": "INVALIDATED_PRE_RESULT_ENGINEERING_FAILURE_RECOVERY_ALLOWED",
+        "errorCode": "m2_core_revenue_manual_command_failed:node.exe",
+        "diagnosticCauseCode": "HISTORICAL_GLOBAL_CHANNEL_EXPORT_BLOCKED_BY_THREE_CURRENT_WINDOW_OUT_OF_SCOPE_SPLIT_FACTS",
         "futureActualOutcomeRead": true,
         "candidatePredictionsProduced": 0,
         "scientificEvaluationsExecuted": 0,
@@ -127,7 +140,7 @@
   "executionLedger": {
     "futureActualOutcomeAccessOccurred": true,
     "scoringCaseRowsConstructed": 0,
-    "preResultEngineeringAttempts": 2,
+    "preResultEngineeringAttempts": 3,
     "candidateModelRuns": 0,
     "candidatePredictionsProduced": 0,
     "scientificEvaluationsExecuted": 0,

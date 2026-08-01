@@ -514,13 +514,14 @@ test("HPSR02 pre-result engineering recovery is authorized without promotion", (
   );
   assert.equal(
     experiment.hpsr02IndependentEvaluation.preResultEngineeringAttemptCount,
-    2
+    3
   );
   assert.deepEqual(
     experiment.hpsr02IndependentEvaluation.preResultEngineeringErrorCodes,
     [
       "m2_hpsr_rebuilt_work_case_duplicate",
-      "hpsr02_residual_bound_rebuild_not_reconciled"
+      "hpsr02_residual_bound_rebuild_not_reconciled",
+      "m2_core_revenue_manual_command_failed:node.exe"
     ]
   );
   assert.equal(

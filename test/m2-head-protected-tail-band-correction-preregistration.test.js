@@ -146,7 +146,7 @@ test("first independent evaluation preserves prior blocker and current gate", ()
     );
     assert.equal(
       independentEvaluation.preResultEngineeringRecovery.attemptCount,
-      2
+      3
     );
     assert.deepEqual(
       independentEvaluation.preResultEngineeringRecovery.attempts.map(
@@ -154,12 +154,13 @@ test("first independent evaluation preserves prior blocker and current gate", ()
       ),
       [
         "m2_hpsr_rebuilt_work_case_duplicate",
-        "hpsr02_residual_bound_rebuild_not_reconciled"
+        "hpsr02_residual_bound_rebuild_not_reconciled",
+        "m2_core_revenue_manual_command_failed:node.exe"
       ]
     );
     assert.equal(
       independentEvaluation.executionLedger.preResultEngineeringAttempts,
-      2
+      3
     );
     assert.equal(
       independentEvaluation.executionLedger.candidateModelRuns,
@@ -518,10 +519,11 @@ test("authorization, final holdout, automation, and production remain closed", (
   assert.equal(config.auditBoundary.hpsr01Rerun, false);
   assert.equal(config.auditBoundary.newActualRead, true);
   assert.equal(config.experiment.completeIndependentResultProduced, false);
-  assert.equal(config.experiment.preResultEngineeringAttemptCount, 2);
+  assert.equal(config.experiment.preResultEngineeringAttemptCount, 3);
   assert.deepEqual(config.experiment.preResultEngineeringErrorCodes, [
     "m2_hpsr_rebuilt_work_case_duplicate",
-    "hpsr02_residual_bound_rebuild_not_reconciled"
+    "hpsr02_residual_bound_rebuild_not_reconciled",
+    "m2_core_revenue_manual_command_failed:node.exe"
   ]);
   assert.equal(
     config.experiment.engineeringRecoveryStatus,
@@ -530,14 +532,18 @@ test("authorization, final holdout, automation, and production remain closed", (
   assert.equal(config.auditBoundary.realModelEvaluationExecuted, false);
 });
 
-test("engineering recovery keeps frozen and current authority modes separate", () => {
+test("engineering recovery freezes historical cutoff before current outcome", () => {
   assert.match(
     privateRunnerSource,
-    /retrospectiveOrigins: boundOrigins,[\s\S]*authorityMode: "CANONICAL_WORK_CHANNEL_AUTHORITY"/u
+    /retrospectiveOrigins: boundOrigins,[\s\S]{0,180}authorityMode: "HPSR02_WORK_TOTAL_SCOPE_AWARE_AUTHORITY",[\s\S]{0,100}labelMaturityCutoff: historicalCutoff/u
   );
   assert.match(
     privateRunnerSource,
     /retrospectiveOrigins: \["2026-03"\],[\s\S]*authorityMode: "HPSR02_WORK_TOTAL_SCOPE_AWARE_AUTHORITY"/u
+  );
+  assert.match(
+    privateRunnerSource,
+    /assertHpsr02FrozenBoundArtifactMatches/u
   );
 });
 

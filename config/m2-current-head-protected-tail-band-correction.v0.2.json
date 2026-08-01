@@ -46,10 +46,11 @@
     "sameCaseRequired": true,
     "independentK2Executed": false,
     "firstIndependentOutcomeOpened": true,
-    "preResultEngineeringAttemptCount": 2,
+    "preResultEngineeringAttemptCount": 3,
     "preResultEngineeringErrorCodes": [
       "m2_hpsr_rebuilt_work_case_duplicate",
-      "hpsr02_residual_bound_rebuild_not_reconciled"
+      "hpsr02_residual_bound_rebuild_not_reconciled",
+      "m2_core_revenue_manual_command_failed:node.exe"
     ],
     "completeIndependentResultProduced": false,
     "engineeringRecoveryStatus": "INVALIDATED_PRE_RESULT_ENGINEERING_FAILURE_RECOVERY_ALLOWED"

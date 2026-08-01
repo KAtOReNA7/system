@@ -27,9 +27,9 @@
 
 ## 结果前工程失败与恢复
 
-首次授权运行已经打开作品总额权威事实，但在构造预测、评分或 bootstrap 之前先后发生两次纯工程停止：第一次是请求起点与历史支持起点重复拼接（`m2_hpsr_rebuilt_work_case_duplicate`）；完成普通提交、精确提交 Linux/Windows CI 后继续同一次授权评价，第二次因历史冻结残差边界重建与当前作品总额评价错误共用了来源权威口径而停止（`hpsr02_residual_bound_rebuild_not_reconciled`）。两次尝试的候选预测、科学评价、bootstrap 和完整合法结果仍均为 0；receipt 状态均为结果前工程失败、可恢复（`INVALIDATED_PRE_RESULT_ENGINEERING_FAILURE_RECOVERY_ALLOWED`），没有冻结科学结果。
+首次授权运行已经打开作品总额权威事实，但在构造预测、评分或 bootstrap 之前先后发生三次纯工程停止：第一次是请求起点与历史支持起点重复拼接（`m2_hpsr_rebuilt_work_case_duplicate`）；完成普通提交、精确提交 Linux/Windows CI 后继续同一次授权评价，第二次因历史冻结残差边界重建与当前作品总额评价错误共用了来源权威口径而停止（`hpsr02_residual_bound_rebuild_not_reconciled`）；再次完成提交与双平台 CI 后，第三次在历史全账渠道导出阶段被当前窗口 3 条范围外分表事实阻断（`m2_core_revenue_manual_command_failed:node.exe`；`HISTORICAL_GLOBAL_CHANNEL_EXPORT_BLOCKED_BY_THREE_CURRENT_WINDOW_OUT_OF_SCOPE_SPLIT_FACTS`）。三次尝试的候选预测、科学评价、bootstrap 和完整合法结果仍均为 0；receipt 状态均为结果前工程失败、可恢复（`INVALIDATED_PRE_RESULT_ENGINEERING_FAILURE_RECOVERY_ALLOWED`），没有冻结科学结果。
 
-恢复先排除历史支持集合中已由请求集合显式物化的重复起点，再把 HPSR01 历史冻结残差边界重建固定在原渠道权威口径（`CANONICAL_WORK_CHANNEL_AUTHORITY`），只让 2026-03 当前评价人口使用作品总额范围感知权威口径（`HPSR02_WORK_TOTAL_SCOPE_AWARE_AUTHORITY`）。模型、人口、actual、现金带、基线、门限和评价规则均不改变。按照预注册边界，本次修复仍须先普通提交并通过新的精确提交 Linux/Windows CI，之后才允许继续同一首次独立评价；这不是第二次科学运行。
+恢复先排除历史支持集合中已由请求集合显式物化的重复起点，再把 HPSR01 历史冻结残差边界重建限制到原开发最大可见截止月 2026-02；这会排除 2026-05 的范围外分表差异，同时保持可跨电脑从权威源确定性重建。若既有冻结缓存存在，重建参数必须逐值一致；若缓存缺失，则重建结果必须与公开冻结 provenance 的人口、起点范围、支持行数和分位数合同一致。2026-03 当前评价人口仍单独使用作品总额范围感知权威口径（`HPSR02_WORK_TOTAL_SCOPE_AWARE_AUTHORITY`）。模型、人口、actual、现金带、基线、门限和评价规则均不改变。按照预注册边界，本次修复仍须先普通提交并通过新的精确提交 Linux/Windows CI；随后先运行不读取 outcome、不产生预测或评分的冻结边界复核，只有一致性门禁通过才允许继续同一首次独立评价。这不是第二次科学运行。
 
 ## 执行前冻结边界
 

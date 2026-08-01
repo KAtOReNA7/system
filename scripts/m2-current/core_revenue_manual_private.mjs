@@ -1768,8 +1768,16 @@ function run(root, executable, args) {
     maxBuffer: 16 * 1024 * 1024
   });
   if (result.status !== 0) {
+    const scriptName = args.find(
+      (argument) => /\.(?:mjs|py)$/u.test(String(argument))
+    );
+    const failureDetail = result.error?.code
+      ?? result.signal
+      ?? `exit_${result.status}`;
     throw new Error(
       `m2_core_revenue_manual_command_failed:${path.basename(executable)}`
+        + `:${path.basename(scriptName ?? "unknown")}`
+        + `:${failureDetail}`
     );
   }
   return result.stdout;
