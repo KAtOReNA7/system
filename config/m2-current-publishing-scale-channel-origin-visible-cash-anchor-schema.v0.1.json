@@ -1,0 +1,519 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "m2.current.publishing_scale_channel_origin_visible_cash_anchor_schema.v0.1",
+  "title": "M2 PSC02 origin-visible cash-anchor preregistration and reference artifact schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "version",
+    "asOf",
+    "status",
+    "preregistrationId",
+    "designId",
+    "experimentId",
+    "modelId",
+    "displayNameZh",
+    "displayNameEn",
+    "researchQuestionZh",
+    "parentModelId",
+    "parentRawVariantId",
+    "parentExperimentId",
+    "authorization",
+    "identityBoundary",
+    "immutableScientificScope",
+    "occurrenceFreeze",
+    "cashAnchor",
+    "amountDesign",
+    "trainingAndSelection",
+    "frozenEvaluationContract",
+    "dependencyBoundary",
+    "publicSyntheticContract",
+    "publication"
+  ],
+  "properties": {
+    "schema": {
+      "const": "m2.current.publishing_scale_channel_origin_visible_cash_anchor_preregistration.v0.1"
+    },
+    "version": {"const": "0.1.1"},
+    "asOf": {"type": "string", "format": "date"},
+    "status": {
+      "const": "M2_PSC02_ORIGIN_VISIBLE_CASH_ANCHOR_PREREGISTERED_IMPLEMENTATION_NOT_AUTHORIZED"
+    },
+    "preregistrationId": {"const": "M2-PREREG-PSC02-ORIGIN-VISIBLE-CASH-ANCHOR-01"},
+    "designId": {"const": "M2-DESIGN-PSC02-ORIGIN-VISIBLE-CASH-ANCHOR-01"},
+    "experimentId": {"const": "M2-EXP-PUBLISHING-SCALE-CHANNEL-CASH-ANCHOR-02"},
+    "modelId": {"type": "null"},
+    "displayNameZh": {"type": "string", "minLength": 1},
+    "displayNameEn": {"type": "string", "minLength": 1},
+    "researchQuestionZh": {"type": "string", "minLength": 1},
+    "parentModelId": {"const": "M2-CHAN-PSC01"},
+    "parentRawVariantId": {"const": "M2-CHAN-PSC01-RAW"},
+    "parentExperimentId": {"const": "M2-EXP-PUBLISHING-SCALE-CHANNEL-01"},
+    "authorization": {"$ref": "#/$defs/authorization"},
+    "identityBoundary": {"$ref": "#/$defs/identityBoundary"},
+    "immutableScientificScope": {"type": "object"},
+    "occurrenceFreeze": {"$ref": "#/$defs/occurrenceFreeze"},
+    "cashAnchor": {"$ref": "#/$defs/cashAnchorContract"},
+    "amountDesign": {"$ref": "#/$defs/amountDesign"},
+    "trainingAndSelection": {"type": "object"},
+    "frozenEvaluationContract": {"$ref": "#/$defs/frozenEvaluationContract"},
+    "dependencyBoundary": {"type": "object"},
+    "publicSyntheticContract": {"$ref": "#/$defs/publicSyntheticContract"},
+    "publication": {"type": "object"}
+  },
+  "$defs": {
+    "authorization": {
+      "type": "object",
+      "required": [
+        "mathematicalDesign",
+        "preregistrationContract",
+        "publicSyntheticReference",
+        "implementation",
+        "privateInputRead",
+        "fitting",
+        "training",
+        "tuning",
+        "realPrediction",
+        "developmentEvaluation",
+        "bootstrap",
+        "independentEvaluation",
+        "laterOrigin",
+        "finalHoldout",
+        "modelActivation",
+        "production",
+        "automation",
+        "release",
+        "database",
+        "api",
+        "provider",
+        "financialUse"
+      ],
+      "properties": {
+        "mathematicalDesign": {"const": true},
+        "preregistrationContract": {"const": true},
+        "publicSyntheticReference": {"const": true},
+        "implementation": {"const": false},
+        "privateInputRead": {"const": false},
+        "fitting": {"const": false},
+        "training": {"const": false},
+        "tuning": {"const": false},
+        "realPrediction": {"const": false},
+        "developmentEvaluation": {"const": false},
+        "bootstrap": {"const": false},
+        "independentEvaluation": {"const": false},
+        "laterOrigin": {"const": false},
+        "finalHoldout": {"const": false},
+        "modelActivation": {"const": false},
+        "production": {"const": false},
+        "automation": {"const": false},
+        "release": {"const": false},
+        "database": {"const": false},
+        "api": {"const": false},
+        "provider": {"const": false},
+        "financialUse": {"const": false}
+      },
+      "additionalProperties": false
+    },
+    "identityBoundary": {
+      "type": "object",
+      "required": [
+        "entityType",
+        "modelCreated",
+        "candidateScoreCreated",
+        "evaluationRowCreated",
+        "activeCandidate",
+        "approvedForAutomation",
+        "productionReady",
+        "finalHoldoutOpened"
+      ],
+      "properties": {
+        "entityType": {"const": "preregistered_experiment_design"},
+        "modelCreated": {"const": false},
+        "candidateScoreCreated": {"const": false},
+        "evaluationRowCreated": {"const": false},
+        "activeCandidate": {"type": "null"},
+        "approvedForAutomation": {"type": "null"},
+        "productionReady": {"const": false},
+        "finalHoldoutOpened": {"const": false}
+      },
+      "additionalProperties": false
+    },
+    "occurrenceFreeze": {
+      "type": "object",
+      "required": [
+        "sourceModelId",
+        "sourceVariantId",
+        "sourceConfig",
+        "sourceImplementation",
+        "supportContract",
+        "executionPolicy",
+        "algorithm",
+        "developmentReplayPolicy",
+        "futureAuthorizedOriginPolicy",
+        "probabilityTransform",
+        "calibrationAllowed",
+        "refitForDevelopmentReplayAllowed",
+        "multiplyCount",
+        "parity",
+        "oneClassSmoothing",
+        "numerical",
+        "selection",
+        "featureOrder",
+        "basisProfiles",
+        "nodeContracts",
+        "taxonomyUsed",
+        "fallbackChanged"
+      ],
+      "properties": {
+        "sourceModelId": {"const": "M2-CHAN-PSC01"},
+        "sourceVariantId": {"const": "M2-CHAN-PSC01-RAW"},
+        "sourceConfig": {"type": "string", "minLength": 1},
+        "sourceImplementation": {"type": "string", "minLength": 1},
+        "supportContract": {"const": "config/m2-publishing-scale-statistical-support.v1.json"},
+        "executionPolicy": {"const": "config/m2-publishing-scale-execution-policy.v0.3.json"},
+        "algorithm": {"type": "string", "minLength": 1},
+        "developmentReplayPolicy": {"type": "string", "minLength": 1},
+        "futureAuthorizedOriginPolicy": {"type": "string", "minLength": 1},
+        "probabilityTransform": {"const": "IDENTITY"},
+        "calibrationAllowed": {"const": false},
+        "refitForDevelopmentReplayAllowed": {"const": false},
+        "multiplyCount": {"const": 1},
+        "parity": {"type": "object"},
+        "oneClassSmoothing": {"type": "object"},
+        "numerical": {"type": "object"},
+        "selection": {"type": "object"},
+        "featureOrder": {
+          "type": "array",
+          "minItems": 18,
+          "maxItems": 18,
+          "uniqueItems": true,
+          "items": {"type": "string"}
+        },
+        "basisProfiles": {"type": "object"},
+        "nodeContracts": {"type": "object"},
+        "taxonomyUsed": {"const": false},
+        "fallbackChanged": {"const": false}
+      },
+      "additionalProperties": false
+    },
+    "cashAnchorContract": {
+      "type": "object",
+      "required": [
+        "symbol",
+        "unit",
+        "inputSchema",
+        "sourceAuthority",
+        "inputGrain",
+        "anchorObservationGrain",
+        "allowedCashCategory",
+        "allowedCurrency",
+        "forecastCutoff",
+        "visibilityRule",
+        "revisionRule",
+        "naturalKey",
+        "lookbackMonths",
+        "lookbackBoundary",
+        "timeDecay",
+        "positiveCashRule",
+        "positiveObservationCountRule",
+        "zeroCashRule",
+        "reversalRule",
+        "restatementRule",
+        "negativeCashRule",
+        "excludedResidualRule",
+        "aggregation",
+        "geometricOrLog1pCenterAllowed",
+        "applyCount",
+        "fallbackOrder",
+        "ownScaleSupport",
+        "pooledScaleSupport",
+        "eligibility",
+        "clipping",
+        "manifest"
+      ],
+      "properties": {
+        "symbol": {"const": "A_{w,c,o}"},
+        "unit": {"const": "CNY_PER_POSITIVE_WORK_CHANNEL_MONTH"},
+        "inputSchema": {"type": "string"},
+        "sourceAuthority": {"$ref": "#/$defs/anchorSourceAuthority"},
+        "inputGrain": {"type": "string"},
+        "anchorObservationGrain": {
+          "const": "standardWorkId|channelUid|cashMonth|cashCategory|currency"
+        },
+        "allowedCashCategory": {"const": "sales_share"},
+        "allowedCurrency": {"const": "CNY"},
+        "forecastCutoff": {"const": "END_OF_FORECAST_ORIGIN_MONTH_ASIA_SHANGHAI"},
+        "visibilityRule": {"type": "string"},
+        "revisionRule": {"type": "string"},
+        "naturalKey": {"type": "string"},
+        "lookbackMonths": {"const": 12},
+        "lookbackBoundary": {"type": "string"},
+        "timeDecay": {"const": "NONE_EQUAL_POSITIVE_WORK_CHANNEL_MONTH_WEIGHT"},
+        "positiveCashRule": {"type": "string"},
+        "positiveObservationCountRule": {
+          "const": "COUNT_STRICTLY_POSITIVE_CANONICAL_MONTHLY_NATURAL_KEYS_AFTER_VISIBLE_REVISION_SELECTION"
+        },
+        "zeroCashRule": {"type": "string"},
+        "reversalRule": {"type": "string"},
+        "restatementRule": {"type": "string"},
+        "negativeCashRule": {"type": "string"},
+        "excludedResidualRule": {"type": "string"},
+        "aggregation": {"const": "UNWEIGHTED_ARITHMETIC_MEAN_OF_STRICTLY_POSITIVE_MONTHLY_AMOUNTS"},
+        "geometricOrLog1pCenterAllowed": {"const": false},
+        "applyCount": {"const": 1},
+        "fallbackOrder": {
+          "const": ["WORK_CHANNEL", "WORK_MECHANISM", "WORK", "CHANNEL_POOL", "MECHANISM_POOL", "GLOBAL_POOL"]
+        },
+        "ownScaleSupport": {"type": "object"},
+        "pooledScaleSupport": {"type": "object"},
+        "eligibility": {"type": "object"},
+        "clipping": {"type": "object"},
+        "manifest": {"type": "object"}
+      },
+      "additionalProperties": false
+    },
+    "anchorSourceAuthority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "form",
+        "publicCodeEvidence",
+        "componentIdentityField",
+        "revisionIdentityField",
+        "revisionMetadataFields",
+        "componentAggregationRequired",
+        "directComponentMeanAllowed",
+        "identicalDuplicatePolicy",
+        "conflictPolicy"
+      ],
+      "properties": {
+        "form": {
+          "const": "POSTING_COMPONENT_ROWS_AGGREGATED_WITHIN_CANONICAL_AS_OF_REVISION_SNAPSHOT"
+        },
+        "publicCodeEvidence": {"type": "string", "minLength": 1},
+        "componentIdentityField": {"const": "componentId"},
+        "revisionIdentityField": {"const": "revisionId"},
+        "revisionMetadataFields": {"const": ["effectiveAt", "availableAt"]},
+        "componentAggregationRequired": {"const": true},
+        "directComponentMeanAllowed": {"const": false},
+        "identicalDuplicatePolicy": {"type": "string", "minLength": 1},
+        "conflictPolicy": {"type": "string", "minLength": 1}
+      }
+    },
+    "amountDesign": {
+      "type": "object",
+      "required": [
+        "monthlyFormula",
+        "horizonFormula",
+        "conditionalMeanFormula",
+        "monthlyUnit",
+        "horizonUnit",
+        "exposure",
+        "occurrenceMultiplyCount",
+        "anchorApplyCount",
+        "globalOrPerWorkPostHocCalibrationAllowed",
+        "taxonomy",
+        "taxonomyUsedByPrior",
+        "taxonomyUsedByFeature",
+        "taxonomyUsedByFallback",
+        "taxonomyUsedByAmountCorrection",
+        "taxonomyUsedBySelection",
+        "residualFeatureOrderSource",
+        "residualBasisSource",
+        "residualHierarchy",
+        "residualHierarchyCombinationScale",
+        "residualPredictionClip",
+        "residualPredictionClipRole",
+        "trainingRows",
+        "sampleWeight",
+        "estimators"
+      ],
+      "properties": {
+        "monthlyFormula": {"type": "string"},
+        "horizonFormula": {"type": "string"},
+        "conditionalMeanFormula": {"type": "string"},
+        "monthlyUnit": {"const": "CNY_PER_WORK_CHANNEL_MONTH"},
+        "horizonUnit": {"const": "CNY_PER_WORK_CHANNEL_HORIZON"},
+        "exposure": {"const": 1},
+        "occurrenceMultiplyCount": {"const": 1},
+        "anchorApplyCount": {"const": 1},
+        "globalOrPerWorkPostHocCalibrationAllowed": {"const": false},
+        "taxonomy": {"const": "REPORT_ONLY"},
+        "taxonomyUsedByPrior": {"const": false},
+        "taxonomyUsedByFeature": {"const": false},
+        "taxonomyUsedByFallback": {"const": false},
+        "taxonomyUsedByAmountCorrection": {"const": false},
+        "taxonomyUsedBySelection": {"const": false},
+        "residualFeatureOrderSource": {"type": "string"},
+        "residualBasisSource": {"type": "string"},
+        "residualHierarchy": {"type": "array", "items": {"type": "string"}},
+        "residualHierarchyCombinationScale": {"type": "string"},
+        "residualPredictionClip": {"const": [-30, 30]},
+        "residualPredictionClipRole": {
+          "const": "FINAL_PREDICTION_ONLY_NOT_FIT_OBJECTIVE_GRADIENT_OR_HESSIAN"
+        },
+        "trainingRows": {"type": "string"},
+        "sampleWeight": {"type": "string"},
+        "estimators": {"type": "object", "required": ["D0", "D1", "P"]}
+      },
+      "additionalProperties": false
+    },
+    "anchorInputRow": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "sourceForm",
+        "componentId",
+        "standardWorkId",
+        "channelUid",
+        "mechanism",
+        "cashMonth",
+        "cashCategory",
+        "currency",
+        "effectiveAt",
+        "availableAt",
+        "revisionId",
+        "positiveCash",
+        "reversalCash",
+        "excludedUnallocatedReversalResidual"
+      ],
+      "properties": {
+        "sourceForm": {
+          "const": "POSTING_COMPONENT_ROWS_AGGREGATED_WITHIN_CANONICAL_AS_OF_REVISION_SNAPSHOT"
+        },
+        "componentId": {"type": "string", "minLength": 1},
+        "standardWorkId": {"type": "string", "minLength": 1},
+        "channelUid": {"type": "string", "minLength": 1},
+        "mechanism": {"enum": ["membership", "advertising", "transactional"]},
+        "cashMonth": {"type": "string", "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"},
+        "cashCategory": {"const": "sales_share"},
+        "currency": {"const": "CNY"},
+        "effectiveAt": {"type": "string", "format": "date-time"},
+        "availableAt": {"type": "string", "format": "date-time"},
+        "revisionId": {"type": "string", "minLength": 1},
+        "positiveCash": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Positive posting component amount; components are summed to one canonical monthly natural-key revision before anchor statistics."
+        },
+        "reversalCash": {"type": "number", "maximum": 0},
+        "excludedUnallocatedReversalResidual": {"type": "number", "maximum": 0}
+      }
+    },
+    "anchorResult": {
+      "type": "object",
+      "required": [
+        "status",
+        "origin",
+        "level",
+        "value",
+        "unit",
+        "support",
+        "observationGrain",
+        "sourceAuthorityForm"
+      ],
+      "properties": {
+        "status": {"enum": ["ANCHOR_AVAILABLE", "ANCHOR_UNAVAILABLE_NO_ORIGIN_VISIBLE_POSITIVE_CASH"]},
+        "origin": {"type": "string"},
+        "level": {"type": ["string", "null"]},
+        "value": {"type": ["number", "null"]},
+        "unit": {"const": "CNY_PER_POSITIVE_WORK_CHANNEL_MONTH"},
+        "support": {"type": "object"},
+        "observationGrain": {
+          "const": "standardWorkId|channelUid|cashMonth|cashCategory|currency"
+        },
+        "sourceAuthorityForm": {
+          "const": "POSTING_COMPONENT_ROWS_AGGREGATED_WITHIN_CANONICAL_AS_OF_REVISION_SNAPSHOT"
+        }
+      }
+    },
+    "frozenEvaluationContract": {
+      "type": "object",
+      "required": [
+        "status",
+        "exactCaseCoverage",
+        "correctnessGates"
+      ],
+      "properties": {
+        "status": {"const": "FROZEN_BEFORE_ANY_REAL_PSC02_PREDICTION"},
+        "exactCaseCoverage": {
+          "type": "object",
+          "required": [
+            "candidatePopulation",
+            "comparison",
+            "intersectionScoringAllowed",
+            "abstentionZeroImputationAllowed",
+            "anchorUnavailableDecision",
+            "candidateScoreOnFailureAllowed"
+          ],
+          "properties": {
+            "candidatePopulation": {"const": "FROZEN_M2_CHAN_PSC01_RAW_MONTHLY_CASE_KEYS"},
+            "comparison": {"const": "EXACT_ROW_COUNT_UNIQUE_KEY_COUNT_AND_COMPLETE_KEY_SET"},
+            "intersectionScoringAllowed": {"const": false},
+            "abstentionZeroImputationAllowed": {"const": false},
+            "anchorUnavailableDecision": {"const": "PSC02_DEVELOPMENT_NOT_SUPPORTED"},
+            "candidateScoreOnFailureAllowed": {"const": false}
+          }
+        },
+        "correctnessGates": {
+          "type": "array",
+          "contains": {"const": "PSC02_EXACT_CASE_COVERAGE_EQUALS_FROZEN_PSC01_RAW"}
+        }
+      }
+    },
+    "publicSyntheticContract": {
+      "type": "object",
+      "required": [
+        "referenceOnly",
+        "privateRowsUsed",
+        "realOutcomeUsed",
+        "productionConnected",
+        "requiredInvariantCount",
+        "requiredInvariants"
+      ],
+      "properties": {
+        "referenceOnly": {"const": true},
+        "privateRowsUsed": {"const": false},
+        "realOutcomeUsed": {"const": false},
+        "productionConnected": {"const": false},
+        "requiredInvariantCount": {"const": 22},
+        "requiredInvariants": {
+          "type": "array",
+          "minItems": 22,
+          "maxItems": 22,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "anchorManifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "preregistrationId",
+        "origin",
+        "configSha256",
+        "schemaSha256",
+        "sourceAuthorityDigestRefs",
+        "canonicalVisibleInputSha256",
+        "anchorRowsSha256",
+        "codeSha256",
+        "runtimeReceipt"
+      ],
+      "properties": {
+        "schema": {"const": "m2.psc02.origin_visible_cash_anchor_manifest.v0.1"},
+        "preregistrationId": {"const": "M2-PREREG-PSC02-ORIGIN-VISIBLE-CASH-ANCHOR-01"},
+        "origin": {"type": "string"},
+        "configSha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "schemaSha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "sourceAuthorityDigestRefs": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "canonicalVisibleInputSha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "anchorRowsSha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "codeSha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "runtimeReceipt": {"type": "object"}
+      }
+    }
+  }
+}
