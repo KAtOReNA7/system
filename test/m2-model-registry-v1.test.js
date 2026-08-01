@@ -34,9 +34,9 @@ test("registry schema, evidence paths and immutable digests validate", () => {
     canonicalEvidenceSha256("same\r\ncontent\r\n"),
     canonicalEvidenceSha256("same\ncontent\n")
   );
-  assert.equal(validation.counts.modelCount, 35);
+  assert.equal(validation.counts.modelCount, 36);
   assert.equal(validation.counts.experimentCount, 23);
-  assert.equal(validation.counts.nonModelIdentifierCount, 130);
+  assert.equal(validation.counts.nonModelIdentifierCount, 132);
   assert.equal(validation.counts.evaluationCount, 115);
   assert.equal(validation.counts.comparabilityGroupCount, 59);
 });
@@ -228,7 +228,7 @@ test("core legacy population test records non-confirmation without promotion", (
   );
   assert.equal(
     registry.currentRoles.latestStateIndex,
-    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.55.md"
+    "docs/analysis/m2-v2/M2-v2-current-state-index-v0.56.md"
   );
   assert.equal(registry.currentRoles.activeCandidate, null);
   assert.equal(registry.currentRoles.approvedForAutomation, null);
@@ -894,7 +894,8 @@ test("reader catalog is a deterministic complete rendering of the registry", asy
 test("read-only query exposes scoped identities and refuses invalid ranking", () => {
   const list = runQuery("list");
   assert.equal(list.status, 0, list.stderr);
-  assert.match(list.stdout, /M2 持久模型与模型族：35 个/u);
+  assert.match(list.stdout, /M2 持久模型与模型族：36 个/u);
+  assert.match(list.stdout, /M2-CHAN-PSC02/u);
   assert.match(list.stdout, /M2-CHAN-GEN02/u);
   assert.match(list.stdout, /M2-WORK-CHAM01/u);
   assert.match(list.stdout, /M2-WORK-HPSR01/u);

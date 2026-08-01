@@ -66,6 +66,11 @@ import {
   runM2PublishingScaleCommandPreflight
 } from "./publishing_scale_channel_execution.mjs";
 import {
+  runM2Psc02ControlledDevelopmentReplay,
+  runM2Psc02MetadataPrecheck,
+  runM2Psc02PublicDiagnostic
+} from "./publishing_scale_cash_anchor_execution.mjs";
+import {
   prepareM2Oa03CurrentScopeRuntimeAuthorization,
   runM2Oa03CurrentScopePrivateReplication,
   runM2Oa03CurrentScopePublicDiagnostic
@@ -111,6 +116,15 @@ const publishingScaleChannelPublicMode = process.argv.includes(
 );
 const publishingScaleChannelPrivateMode = process.argv.includes(
   "--publishing-scale-channel"
+);
+const publishingScaleCashAnchorPublicMode = process.argv.includes(
+  "--publishing-scale-cash-anchor-public"
+);
+const publishingScaleCashAnchorMetadataMode = process.argv.includes(
+  "--publishing-scale-cash-anchor-metadata-precheck"
+);
+const publishingScaleCashAnchorPrivateMode = process.argv.includes(
+  "--publishing-scale-cash-anchor"
 );
 const coreRevenueManualPublicMode = process.argv.includes(
   "--core-revenue-manual-public"
@@ -189,6 +203,21 @@ if (preflightOnly && !publishingScaleChannelPrivateMode) {
 }
 if (publishingScaleChannelPrivateMode && preflightOnly) {
   await runM2PublishingScaleCommandPreflight({ root });
+  return;
+}
+if (publishingScaleCashAnchorPublicMode) {
+  await runM2Psc02PublicDiagnostic({
+    root,
+    verify: process.argv.includes("--verify")
+  });
+  return;
+}
+if (publishingScaleCashAnchorMetadataMode) {
+  await runM2Psc02MetadataPrecheck({root});
+  return;
+}
+if (publishingScaleCashAnchorPrivateMode) {
+  await runM2Psc02ControlledDevelopmentReplay({root});
   return;
 }
 if (oa03CurrentScopePublicMode) {

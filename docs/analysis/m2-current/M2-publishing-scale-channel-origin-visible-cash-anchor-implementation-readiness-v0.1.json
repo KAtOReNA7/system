@@ -1,0 +1,82 @@
+{
+  "schema": "m2.current.psc02.implementation_readiness_public.v0.1",
+  "status": "M2_PSC02_IMPLEMENTED_AWAITING_EXACT_HEAD_CI_AND_CONTROLLED_DEVELOPMENT_REPLAY",
+  "modelId": "M2-CHAN-PSC02",
+  "rawCandidateId": "M2-CHAN-PSC02-RAW",
+  "experimentId": "M2-EXP-PUBLISHING-SCALE-CHANNEL-CASH-ANCHOR-02",
+  "primaryArmId": "M2-EXP-PUBLISHING-SCALE-CHANNEL-CASH-ANCHOR-02/P",
+  "diagnosticArmIds": [
+    "M2-EXP-PUBLISHING-SCALE-CHANNEL-CASH-ANCHOR-02/D0",
+    "M2-EXP-PUBLISHING-SCALE-CHANNEL-CASH-ANCHOR-02/D1"
+  ],
+  "evidenceClass": "DEVELOPMENT_REPLAY",
+  "syntheticDiagnostic": {
+    "schema": "m2.current.psc02.implementation_diagnostic.v0.1",
+    "status": "M2_PSC02_PUBLIC_SYNTHETIC_IMPLEMENTATION_VERIFIED",
+    "modelId": "M2-CHAN-PSC02",
+    "rawCandidateId": "M2-CHAN-PSC02-RAW",
+    "experimentId": "M2-EXP-PUBLISHING-SCALE-CHANNEL-CASH-ANCHOR-02",
+    "arms": {
+      "anchorOnlyDiagnostic": "M2-EXP-PUBLISHING-SCALE-CHANNEL-CASH-ANCHOR-02/D0",
+      "logRatioDiagnostic": "M2-EXP-PUBLISHING-SCALE-CHANNEL-CASH-ANCHOR-02/D1",
+      "primary": "M2-EXP-PUBLISHING-SCALE-CHANNEL-CASH-ANCHOR-02/P"
+    },
+    "scaleEquivarianceFactor": 10,
+    "occurrenceMultiplyCount": 1,
+    "anchorApplyCount": 1,
+    "taxonomyUsed": false,
+    "lg01PredictionUsed": false,
+    "estimatorSwitchUsed": false,
+    "privateRowsUsed": false,
+    "realOutcomeUsed": false,
+    "independentEvaluationOpened": false,
+    "finalHoldoutOpened": false,
+    "productionModified": false
+  },
+  "implementation": {
+    "frozenPsc01OccurrencePassThrough": true,
+    "originVisibleCashAnchor": true,
+    "anchorFallbackOrder": [
+      "WORK_CHANNEL",
+      "WORK_MECHANISM",
+      "WORK",
+      "CHANNEL_POOL",
+      "MECHANISM_POOL",
+      "GLOBAL_POOL"
+    ],
+    "residualFeatureCount": 18,
+    "residualBasisCopiedFromPsc01": true,
+    "nestedPrimaryWorkSelection": true,
+    "strictRollingTimeSelection": true,
+    "gammaFitLinearPredictorClipUsed": false,
+    "finalPredictionResidualClip": [-30, 30],
+    "diagnosticArmsMayReplacePrimary": false,
+    "taxonomy": "REPORT_ONLY",
+    "lg01PredictionDependency": false
+  },
+  "execution": {
+    "privateMetadataOnlyPrecheckAllowed": true,
+    "completePrimaryRawResultMaximum": 1,
+    "exactHeadLinuxWindowsCiRequiredBeforePrediction": true,
+    "realPredictionGenerated": false,
+    "outerOutcomeOpened": false,
+    "candidateMetricsComputed": false
+  },
+  "boundaries": {
+    "taxonomy": "REPORT_ONLY",
+    "lg01ModelInputAllowed": false,
+    "independentEvaluationAuthorized": false,
+    "laterOriginAuthorized": false,
+    "finalHoldoutOpened": false,
+    "productionReady": false,
+    "productionModified": false,
+    "automationAuthorized": false,
+    "releaseAuthorized": false,
+    "databaseAllowed": false,
+    "apiAllowed": false,
+    "providerAllowed": false,
+    "financialUseAllowed": false,
+    "activeCandidate": null,
+    "approvedForAutomation": null
+  }
+}

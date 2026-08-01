@@ -1138,6 +1138,75 @@
       "authorization": "M2-PSC01-DERIVED-CACHE-REBUILD-FIRST-VALID-20260728-01"
     },
     {
+      "id": "m2-current-publishing-scale-cash-anchor-development",
+      "description": "Run the single authorized PSC02 historical DEVELOPMENT_REPLAY only from an exact-head Draft PR after source-authority schema, frozen PSC01 occurrence, frozen LG01 comparator and dual-platform CI gates pass.",
+      "privateArtifactClassificationVersion": "private-artifact-classification.v0.1",
+      "requiredTools": [
+        {
+          "id": "git",
+          "command": "git",
+          "versionArgs": ["--version"]
+        },
+        {
+          "id": "gh",
+          "command": "gh",
+          "versionArgs": ["--version"]
+        }
+      ],
+      "requiredPrivateArtifacts": [
+        {
+          "role": "total-ledger-authority",
+          "kind": "file",
+          "artifactClass": "PRIVATE_SOURCE_AUTHORITY",
+          "path": "data/real-bills/渠道实销汇总 -总.xlsx"
+        },
+        {
+          "role": "sales-share-ledger-authority",
+          "kind": "file",
+          "artifactClass": "PRIVATE_SOURCE_AUTHORITY",
+          "path": "data/real-bills/渠道实销汇总 -分成.xlsx"
+        },
+        {
+          "role": "buyout-ledger-authority",
+          "kind": "file",
+          "artifactClass": "PRIVATE_SOURCE_AUTHORITY",
+          "path": "data/real-bills/渠道实销汇总 -买断.xlsx"
+        },
+        {
+          "role": "user-reviewed-channel-master",
+          "kind": "file",
+          "artifactClass": "PRIVATE_SOURCE_AUTHORITY",
+          "path": "data/private-output/outputs/channel-governance-20260726/M2-渠道统一与类型人工补全表-v0.2.xlsx"
+        },
+        {
+          "role": "frozen-psc01-private-evidence-directory",
+          "kind": "directory",
+          "artifactClass": "PRIVATE_DERIVED_CACHE",
+          "path": "data/private-output/m2-current-publishing-scale-channel"
+        },
+        {
+          "role": "frozen-lg01-comparator",
+          "kind": "file",
+          "artifactClass": "PRIVATE_DERIVED_CACHE",
+          "path": "data/private-output/m2-current-human-anchored/M2-current-channel-experts-evaluation-private-v0.1.ndjson"
+        },
+        {
+          "role": "frozen-lg01-comparator-manifest",
+          "kind": "file",
+          "artifactClass": "PRIVATE_DERIVED_CACHE",
+          "path": "data/private-output/m2-current-human-anchored/M2-current-channel-experts-evaluation-manifest-private-v0.1.json"
+        }
+      ],
+      "canonicalValidationCommands": [
+        "npm run doctor:capability -- m2-current-publishing-scale-cash-anchor-development",
+        "npm run diagnose:m2:publishing-scale-cash-anchor",
+        "npm run precheck:m2:current:publishing-scale-cash-anchor",
+        "npm run develop:m2:current:publishing-scale-cash-anchor"
+      ],
+      "recovery": "Restore only authentic PRIVATE_SOURCE_AUTHORITY with component, revision, effectiveAt and availableAt lineage. Derived PSC01/LG01 caches may be rebuilt only from their frozen code and authorities. Never synthesize historical revision metadata, score an anchor-available subset or fabricate receipts.",
+      "authorization": "USER_AUTHORIZED_SINGLE_PSC02_CONTROLLED_DEVELOPMENT_REPLAY_2026_08_01"
+    },
+    {
       "id": "m2-current-channel-generative",
       "description": "Audit the consumed Channel Generative v0.2 independent G1 private capability and its prerequisite-blocked receipt. The one-time execution authorization is closed; frozen G0 remains only an unexecuted paired outer-case comparator.",
       "requiredTools": [],

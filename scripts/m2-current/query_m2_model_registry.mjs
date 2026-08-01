@@ -389,6 +389,8 @@ function roleZh(value) {
       "探索性候选已预注册但尚未执行",
     implemented_exploratory_candidate_not_executed:
       "探索性候选已实现并通过合成验证但尚未执行",
+    inactive_development_candidate_not_evaluated:
+      "开发候选核心已实现、尚未评价且未激活",
     implemented_awaiting_independent_evaluation:
       "已实现并等待独立评价",
     retrospective_development_unsupported_stop_before_independent_k2:

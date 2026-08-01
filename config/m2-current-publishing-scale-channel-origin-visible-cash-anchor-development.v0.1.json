@@ -1,0 +1,102 @@
+{
+  "schema": "m2.current.publishing_scale_channel_origin_visible_cash_anchor_development.v0.1",
+  "version": "0.1.0",
+  "asOf": "2026-08-01",
+  "status": "M2_PSC02_CORE_IMPLEMENTED_CONTROLLED_DEVELOPMENT_REPLAY_AUTHORIZED_NOT_EXECUTED",
+  "modelId": "M2-CHAN-PSC02",
+  "rawCandidateId": "M2-CHAN-PSC02-RAW",
+  "experimentId": "M2-EXP-PUBLISHING-SCALE-CHANNEL-CASH-ANCHOR-02",
+  "primaryArmId": "M2-EXP-PUBLISHING-SCALE-CHANNEL-CASH-ANCHOR-02/P",
+  "diagnosticArmIds": [
+    "M2-EXP-PUBLISHING-SCALE-CHANNEL-CASH-ANCHOR-02/D0",
+    "M2-EXP-PUBLISHING-SCALE-CHANNEL-CASH-ANCHOR-02/D1"
+  ],
+  "displayNameZh": "出版行业渠道起点可见现金锚金额模型 v0.1",
+  "displayNameEn": "Publishing-Scale Channel Origin-Visible Cash-Anchor Amount Model v0.1",
+  "preregistration": "config/m2-current-publishing-scale-channel-origin-visible-cash-anchor-preregistration.v0.1.json",
+  "anchorSchema": "config/m2-current-publishing-scale-channel-origin-visible-cash-anchor-schema.v0.1.json",
+  "frozenOccurrenceConfig": "config/m2-current-publishing-scale-channel.v0.1.json",
+  "supportContract": "config/m2-publishing-scale-statistical-support.v1.json",
+  "evaluationContract": "config/m2-evaluation-contract.v2.2.json",
+  "businessAcceptanceContract": "config/m2-business-acceptance-contract.v1.json",
+  "implementation": "src/domain/m2Current/publishingScaleCashAnchorDevelopment.js",
+  "runner": "scripts/m2-current/run_m2_human_anchored_development.mjs",
+  "command": "npm run develop:m2:current:publishing-scale-cash-anchor",
+  "metadataPrecheckCommand": "npm run precheck:m2:current:publishing-scale-cash-anchor",
+  "evidenceClass": "DEVELOPMENT_REPLAY",
+  "executionWindow": {
+    "maximumCompletePrimaryRawResults": 1,
+    "firstCompletePrimaryRawResultMustFreeze": true,
+    "infrastructureAttemptsBeforeCompleteResultRequireReceipt": true,
+    "rerunAfterCompletePrimaryRawResultAllowed": false,
+    "outcomeDrivenDesignChangeAllowed": false
+  },
+  "runtimeBinding": {
+    "cleanWorktreeRequired": true,
+    "pushedExactHeadRequired": true,
+    "openDraftPullRequestRequired": true,
+    "linuxAndWindowsExactHeadCiRequired": true,
+    "originMainMustBeAncestor": true
+  },
+  "sourceAuthority": {
+    "capabilityId": "m2-current-publishing-scale-cash-anchor-development",
+    "salesShareWorkbook": "data/real-bills/渠道实销汇总 -分成.xlsx",
+    "totalLedgerWorkbook": "data/real-bills/渠道实销汇总 -总.xlsx",
+    "buyoutLedgerWorkbook": "data/real-bills/渠道实销汇总 -买断.xlsx",
+    "requiredComponentFields": [
+      "componentId",
+      "standardWorkId",
+      "channelUid",
+      "mechanism",
+      "cashMonth",
+      "cashCategory",
+      "currency",
+      "effectiveAt",
+      "availableAt",
+      "revisionId",
+      "positiveCash",
+      "reversalCash",
+      "excludedUnallocatedReversalResidual"
+    ],
+    "missingOrInvalidBehavior": "FAIL_CLOSED_BEFORE_ANY_PSC02_PREDICTION_OR_OUTER_OUTCOME"
+  },
+  "frozenComparators": {
+    "psc01Directory": "data/private-output/m2-current-publishing-scale-channel",
+    "psc01CompletedReceiptPrefix": "M2-current-publishing-scale-channel-run-receipt-private-v0.2-",
+    "psc01EvaluationManifestSchema": "m2.current.publishing_scale_channel_evaluation_private_manifest.v0.2",
+    "psc01ModelId": "M2-CHAN-PSC01",
+    "psc01RawCandidateId": "M2-CHAN-PSC01-RAW",
+    "lg01Rows": "data/private-output/m2-current-human-anchored/M2-current-channel-experts-evaluation-private-v0.1.ndjson",
+    "lg01Manifest": "data/private-output/m2-current-human-anchored/M2-current-channel-experts-evaluation-manifest-private-v0.1.json",
+    "readOnly": true
+  },
+  "privateOutputs": {
+    "directory": "data/private-output/m2-current-publishing-scale-cash-anchor",
+    "runReceiptPrefix": "M2-current-psc02-development-replay-receipt-private-v0.1",
+    "anchorComponents": "M2-current-psc02-origin-visible-anchor-components-private-v0.1.ndjson",
+    "anchorManifest": "M2-current-psc02-origin-visible-anchor-manifest-private-v0.1.json",
+    "diagnosticD0Rows": "M2-current-psc02-anchor-only-diagnostic-private-v0.1.ndjson",
+    "diagnosticD1Rows": "M2-current-psc02-log-ratio-diagnostic-private-v0.1.ndjson",
+    "primaryRawRows": "M2-current-psc02-primary-raw-private-v0.1.ndjson",
+    "evaluation": "M2-current-psc02-development-evaluation-private-v0.1.json",
+    "bootstrap": "M2-current-psc02-development-bootstrap-private-v0.1.json",
+    "manifest": "M2-current-psc02-development-manifest-private-v0.1.json"
+  },
+  "boundaries": {
+    "taxonomy": "REPORT_ONLY",
+    "lg01ModelInputAllowed": false,
+    "independentEvaluationAuthorized": false,
+    "laterOriginAuthorized": false,
+    "finalHoldoutOpened": false,
+    "productionReady": false,
+    "productionModified": false,
+    "automationAuthorized": false,
+    "releaseAuthorized": false,
+    "databaseAllowed": false,
+    "apiAllowed": false,
+    "providerAllowed": false,
+    "financialUseAllowed": false,
+    "activeCandidate": null,
+    "approvedForAutomation": null
+  }
+}

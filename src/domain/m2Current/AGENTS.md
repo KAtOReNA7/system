@@ -78,14 +78,16 @@ This directory is the only implementation home for current M2 model logic.
   begins in the work-balanced log1p empirical parent and is amplified by
   hierarchical amount shrinkage, while implementation and same-case
   comparator integrity passed. The origin-visible arithmetic cash-anchor and
-  quasi-Gamma offset design is now preregistered only as experiment design
-  `M2-PREREG-PSC02-ORIGIN-VISIBLE-CASH-ANCHOR-01`, with status
-  `M2_PSC02_ORIGIN_VISIBLE_CASH_ANCHOR_PREREGISTERED_IMPLEMENTATION_NOT_AUTHORIZED`.
-  It freezes PSC01 occurrence, keeps taxonomy `REPORT_ONLY`, and has only a
-  disconnected public synthetic reference harness. Do not create a successor
-  model ID, connect a runtime, read private input, fit, tune, predict, evaluate,
-  bootstrap, or register a candidate/evaluation row without separate explicit
-  authorization.
+  quasi-Gamma offset design remains frozen as preregistration
+  `M2-PREREG-PSC02-ORIGIN-VISIBLE-CASH-ANCHOR-01`; the separately authorized
+  implementation is model `M2-CHAN-PSC02`, with exactly one raw candidate
+  variant `M2-CHAN-PSC02-RAW`. It freezes PSC01 occurrence, keeps taxonomy
+  `REPORT_ONLY`, and keeps the anchor-only and log-ratio arms attribution-only.
+  A public synthetic pass is not model evidence. Real prediction or outcome
+  access requires a clean pushed Draft-PR exact HEAD with successful Linux and
+  Windows CI plus authentic component/revision/time source authority. Never
+  score an available-only subset, replace the raw candidate with a diagnostic
+  arm, or treat a source-authority blocker as a model performance failure.
 - For origin-visible cash anchors sourced from posting components, aggregate
   within one legal as-of revision snapshot to the canonical monthly natural key
   `standardWorkId|channelUid|cashMonth|cashCategory|currency` before counting
