@@ -16,6 +16,7 @@ __pycache__/
 *.pyc
 node_modules/
 coverage/
+test-results/
 npm-debug.log*
 tools/**/__pycache__/
 experiments/**/__pycache__/

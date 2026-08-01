@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";
+import { mkdir, writeFile } from "node:fs/promises";
 import http from "node:http";
+import path from "node:path";
 import { after, before, test } from "node:test";
 import { chromium } from "playwright";
 import { createFixtureApp } from "../../src/http/fixtureApp.js";
@@ -45,6 +47,15 @@ const baseConfig = {
   }
 };
 
+const ADMIN_FAILURE_ARTIFACT_ROOT = path.join(
+  process.cwd(),
+  "test-results",
+  "admin-mobile-table-readiness"
+);
+const MAX_DIAGNOSTIC_BODY_TEXT = 4_000;
+const MAX_DIAGNOSTIC_HTML = 20_000;
+const MAX_DIAGNOSTIC_EVENTS = 20;
+
 let browser;
 let server;
 let baseUrl;
@@ -81,6 +92,175 @@ async function assertNoForbiddenWriteControls(page) {
   assert.deepEqual(forbidden, [], `Unexpected write-like controls: ${forbidden.join(", ")}`);
 }
 
+function appendDiagnosticEvent(events, value) {
+  if (events.length < MAX_DIAGNOSTIC_EVENTS) {
+    events.push(value);
+  }
+}
+
+function attachFailureDiagnostics(page) {
+  const diagnostics = {
+    consoleErrors: [],
+    pageErrors: [],
+    failedRequests: [],
+    failedResponses: []
+  };
+
+  page.on("console", (message) => {
+    if (message.type() === "error") {
+      appendDiagnosticEvent(diagnostics.consoleErrors, message.text());
+    }
+  });
+  page.on("pageerror", (error) => {
+    appendDiagnosticEvent(diagnostics.pageErrors, error.message);
+  });
+  page.on("requestfailed", (request) => {
+    appendDiagnosticEvent(diagnostics.failedRequests, {
+      method: request.method(),
+      url: request.url(),
+      errorText: request.failure()?.errorText ?? "unknown"
+    });
+  });
+  page.on("response", (response) => {
+    if (response.status() >= 400) {
+      appendDiagnosticEvent(diagnostics.failedResponses, {
+        status: response.status(),
+        url: response.url()
+      });
+    }
+  });
+
+  return diagnostics;
+}
+
+async function captureAdminMobileTableFailure({ page, pageName, diagnostics, error }) {
+  let snapshot;
+  try {
+    snapshot = await page.evaluate(
+      ({ expectedPageName, maxBodyText, maxHtml }) => {
+      const targetRoot = document.querySelector(`[data-page="${expectedPageName}"]`);
+      const activeRoots = [...document.querySelectorAll("[data-page]:not(.is-hidden)")];
+      const allHints = [...document.querySelectorAll(".table-hint")];
+      const targetHints = targetRoot ? [...targetRoot.querySelectorAll(".table-hint")] : [];
+      const tableWrap = targetRoot?.querySelector(".table-wrap") ?? null;
+      const table = tableWrap?.querySelector("table") ?? null;
+      const statePill = targetRoot?.querySelector(`[data-state-for="${expectedPageName}"]`) ?? null;
+      const isVisible = (element) => {
+        if (!element) {
+          return false;
+        }
+        const style = getComputedStyle(element);
+        return style.display !== "none" && style.visibility !== "hidden" && element.getClientRects().length > 0;
+      };
+      const bodyText = document.body?.innerText ?? "";
+      const activeHtml = targetRoot?.outerHTML ?? "";
+
+      return {
+        url: location.href,
+        pathname: location.pathname,
+        search: location.search,
+        hash: location.hash,
+        documentReadyState: document.readyState,
+        activePages: activeRoots.map((root) => root.getAttribute("data-page")),
+        targetRoot: {
+          exists: Boolean(targetRoot),
+          visible: isVisible(targetRoot)
+        },
+        pageState: {
+          value: statePill?.getAttribute("data-state") ?? null,
+          text: statePill?.textContent?.trim() ?? null
+        },
+        hints: {
+          documentCount: allHints.length,
+          targetCount: targetHints.length,
+          targetVisibleCount: targetHints.filter(isVisible).length,
+          targetTexts: targetHints.map((hint) => hint.textContent?.trim() ?? "")
+        },
+        tableWrap: {
+          exists: Boolean(tableWrap),
+          visible: isVisible(tableWrap),
+          clientWidth: tableWrap?.clientWidth ?? 0,
+          scrollWidth: tableWrap?.scrollWidth ?? 0,
+          overflowX: tableWrap ? getComputedStyle(tableWrap).overflowX : null
+        },
+        table: {
+          exists: Boolean(table),
+          visible: isVisible(table)
+        },
+        bodyTextLength: bodyText.length,
+        bodyText: bodyText.slice(0, maxBodyText),
+        activeHtmlLength: activeHtml.length,
+        activeHtml: activeHtml.slice(0, maxHtml)
+      };
+      },
+      {
+        expectedPageName: pageName,
+        maxBodyText: MAX_DIAGNOSTIC_BODY_TEXT,
+        maxHtml: MAX_DIAGNOSTIC_HTML
+      }
+    );
+  } catch (snapshotError) {
+    snapshot = {
+      snapshotError: snapshotError.message,
+      activeHtml: ""
+    };
+  }
+
+  await mkdir(ADMIN_FAILURE_ARTIFACT_ROOT, { recursive: true });
+  const artifactBase = path.join(ADMIN_FAILURE_ARTIFACT_ROOT, pageName.replaceAll(/[^a-z0-9_-]/gi, "_"));
+  const screenshotPath = `${artifactBase}.png`;
+  const htmlPath = `${artifactBase}.html`;
+  const jsonPath = `${artifactBase}.json`;
+  const reportPath = (absolutePath) =>
+    path.relative(process.cwd(), absolutePath).replaceAll("\\", "/");
+  let screenshotError = null;
+  try {
+    await page.screenshot({ path: screenshotPath, fullPage: true });
+  } catch (screenshotFailure) {
+    screenshotError = screenshotFailure.message;
+  }
+
+  const { activeHtml, ...publicSnapshot } = snapshot;
+  const report = {
+    status: "ADMIN_MOBILE_TABLE_READINESS_FAILURE",
+    pageName,
+    originalError: error.message,
+    snapshot: publicSnapshot,
+    browserEvents: diagnostics,
+    artifacts: {
+      screenshotPath: reportPath(screenshotPath),
+      screenshotError,
+      htmlPath: reportPath(htmlPath),
+      jsonPath: reportPath(jsonPath)
+    }
+  };
+  await writeFile(htmlPath, activeHtml, "utf8");
+  await writeFile(jsonPath, `${JSON.stringify(report, null, 2)}\n`, "utf8");
+  console.error(JSON.stringify(report));
+}
+
+async function waitForAdminTableReady(page, pageName) {
+  await page.waitForURL((url) =>
+    url.pathname === "/admin" &&
+    url.searchParams.get("fixture") === "1" &&
+    url.hash === `#${pageName}`
+  );
+  const activePage = page.locator(`[data-page="${pageName}"]:not(.is-hidden)`);
+  await activePage.waitFor({ state: "visible" });
+  await activePage
+    .locator(`[data-state-for="${pageName}"][data-state="success"]`)
+    .waitFor({ state: "visible" });
+  const tableWrap = activePage.locator(".table-wrap");
+  await tableWrap.waitFor({ state: "visible" });
+  await tableWrap.locator("table").waitFor({ state: "visible" });
+  const tableHint = tableWrap.locator(".table-hint", {
+    hasText: "小屏幕下可横向滚动查看完整列"
+  });
+  await tableHint.waitFor({ state: "visible" });
+  assert.equal(await tableHint.count(), 1, `${pageName} must expose one table hint in its active table`);
+  return activePage;
+}
+
 function assertNoSensitiveOutput(text) {
   for (const pattern of SENSITIVE_OUTPUT_PATTERNS) {
     assert.doesNotMatch(text, pattern);
@@ -92,6 +272,9 @@ async function openPage(path, options = {}) {
     viewport: options.viewport ?? { width: 1280, height: 720 }
   });
   const page = await context.newPage();
+  const failureDiagnostics = options.captureFailureDiagnostics
+    ? attachFailureDiagnostics(page)
+    : null;
   const requestedUrls = [];
   if (options.captureRequests) {
     page.on("request", (request) => requestedUrls.push(request.url()));
@@ -100,7 +283,7 @@ async function openPage(path, options = {}) {
     await page.route(routeConfig.url, routeConfig.handler);
   }
   await page.goto(`${baseUrl}${path}`, { waitUntil: "load" });
-  return { context, page, requestedUrls };
+  return { context, page, requestedUrls, failureDiagnostics };
 }
 
 before(async () => {
@@ -184,14 +367,14 @@ test("admin mobile fixture tables avoid page overflow and expose horizontal scro
   const tablePages = ["works", "mapping", "jobs"];
 
   for (const pageName of tablePages) {
-    const { context, page } = await openPage(`/admin?fixture=1#${pageName}`, {
-      viewport: { width: 390, height: 780 }
+    const { context, page, failureDiagnostics } = await openPage(`/admin?fixture=1#${pageName}`, {
+      viewport: { width: 390, height: 780 },
+      captureFailureDiagnostics: true
     });
     try {
-      await page.getByText("小屏幕下可横向滚动查看完整列").waitFor();
-      const metrics = await page.evaluate(() => {
-        const activePage = document.querySelector("[data-page]:not(.is-hidden)");
-        const tableWrap = activePage?.querySelector(".table-wrap");
+      const activePage = await waitForAdminTableReady(page, pageName);
+      const metrics = await activePage.evaluate((root) => {
+        const tableWrap = root.querySelector(".table-wrap");
         return {
           pageScrollWidth: document.documentElement.scrollWidth,
           pageClientWidth: document.documentElement.clientWidth,
@@ -211,6 +394,14 @@ test("admin mobile fixture tables avoid page overflow and expose horizontal scro
       );
       assert.equal(metrics.tableOverflowX, "auto");
       await assertNoForbiddenWriteControls(page);
+    } catch (error) {
+      await captureAdminMobileTableFailure({
+        page,
+        pageName,
+        diagnostics: failureDiagnostics,
+        error
+      });
+      throw error;
     } finally {
       await context.close();
     }
