@@ -11,6 +11,12 @@ export const M2_PSC02_PREREGISTRATION_STATUS =
 export const M2_PSC02_ANCHOR_AVAILABLE = "ANCHOR_AVAILABLE";
 export const M2_PSC02_ANCHOR_UNAVAILABLE =
   "ANCHOR_UNAVAILABLE_NO_ORIGIN_VISIBLE_POSITIVE_CASH";
+export const M2_PSC02_ANCHOR_SOURCE_FORM =
+  "POSTING_COMPONENT_ROWS_AGGREGATED_WITHIN_CANONICAL_AS_OF_REVISION_SNAPSHOT";
+export const M2_PSC02_EXACT_CASE_COVERAGE_GATE =
+  "PSC02_EXACT_CASE_COVERAGE_EQUALS_FROZEN_PSC01_RAW";
+export const M2_PSC02_GAMMA_NUMERICAL_FAILURE =
+  "PSC02_P_GAMMA_OFFSET_NUMERICAL_FAILURE_NO_CANDIDATE_OUTPUT";
 
 const ARM_IDS = Object.freeze({
   D0: `${M2_PSC02_EXPERIMENT_ID}/D0`,
@@ -327,6 +333,60 @@ export function validateM2Psc02Preregistration(
 
   const anchor = config?.cashAnchor;
   requireEqual(anchor?.unit, "CNY_PER_POSITIVE_WORK_CHANNEL_MONTH", "anchor_unit", failures);
+  requireEqual(
+    anchor?.sourceAuthority?.form,
+    M2_PSC02_ANCHOR_SOURCE_FORM,
+    "anchor_source_authority_form",
+    failures
+  );
+  requireEqual(
+    anchor?.sourceAuthority?.componentAggregationRequired,
+    true,
+    "anchor_component_aggregation_required",
+    failures
+  );
+  requireEqual(
+    anchor?.sourceAuthority?.directComponentMeanAllowed,
+    false,
+    "anchor_component_mean_forbidden",
+    failures
+  );
+  requireEqual(
+    anchor?.sourceAuthority?.publicCodeEvidence,
+    "scripts/m2-current/materialize_human_anchored_cases.py#_map_sales_share_rows->_monthly_panel",
+    "anchor_source_authority_public_code_evidence",
+    failures
+  );
+  requireEqual(
+    anchor?.sourceAuthority?.componentIdentityField,
+    "componentId",
+    "anchor_component_identity_field",
+    failures
+  );
+  requireEqual(
+    anchor?.sourceAuthority?.revisionIdentityField,
+    "revisionId",
+    "anchor_revision_identity_field",
+    failures
+  );
+  requireJsonEqual(
+    anchor?.sourceAuthority?.revisionMetadataFields,
+    ["effectiveAt", "availableAt"],
+    "anchor_revision_metadata_fields",
+    failures
+  );
+  requireEqual(
+    anchor?.anchorObservationGrain,
+    "standardWorkId|channelUid|cashMonth|cashCategory|currency",
+    "anchor_monthly_observation_grain",
+    failures
+  );
+  requireEqual(
+    anchor?.positiveObservationCountRule,
+    "COUNT_STRICTLY_POSITIVE_CANONICAL_MONTHLY_NATURAL_KEYS_AFTER_VISIBLE_REVISION_SELECTION",
+    "anchor_positive_observation_count_rule",
+    failures
+  );
   requireEqual(anchor?.lookbackMonths, 12, "anchor_lookback", failures);
   requireEqual(
     anchor?.timeDecay,
@@ -380,6 +440,12 @@ export function validateM2Psc02Preregistration(
     requireEqual(amount?.[key], false, key, failures);
   }
   requireJsonEqual(amount?.residualPredictionClip, [-30, 30], "residual_clip", failures);
+  requireEqual(
+    amount?.residualPredictionClipRole,
+    "FINAL_PREDICTION_ONLY_NOT_FIT_OBJECTIVE_GRADIENT_OR_HESSIAN",
+    "residual_clip_role",
+    failures
+  );
   requireEqual(amount?.estimators?.D0?.machineName, "ANCHOR_ONLY", "d0_identity", failures);
   requireEqual(
     amount?.estimators?.D1?.machineName,
@@ -407,6 +473,24 @@ export function validateM2Psc02Preregistration(
     failures
   );
   requireJsonEqual(amount?.estimators?.P?.regularizationGrid, [1, 3], "p_lambda_grid", failures);
+  requireEqual(
+    amount?.estimators?.P?.fitLinearPredictorClip,
+    "NONE_UNCLIPPED_X_BETA",
+    "p_fit_linear_predictor_clip",
+    failures
+  );
+  requireEqual(
+    amount?.estimators?.P?.numericEvaluation,
+    "LOG_DOMAIN_RATIO_WITH_EXPLICIT_NONFINITE_FAILURE",
+    "p_numeric_evaluation",
+    failures
+  );
+  requireEqual(
+    amount?.estimators?.P?.globalNumericFailureStatus,
+    M2_PSC02_GAMMA_NUMERICAL_FAILURE,
+    "p_global_numeric_failure_status",
+    failures
+  );
   requireEqual(amount?.estimators?.P?.silentEstimatorSwitchAllowed, false, "p_silent_switch", failures);
   requireEqual(amount?.estimators?.P?.diagnosticArmReplacementAllowed, false, "p_diagnostic_replace", failures);
   requireEqual(amount?.estimators?.D0?.mayReplaceMainDesign, false, "d0_replace", failures);
@@ -427,6 +511,35 @@ export function validateM2Psc02Preregistration(
     evaluation?.status,
     "FROZEN_BEFORE_ANY_REAL_PSC02_PREDICTION",
     "evaluation_freeze",
+    failures
+  );
+  if (!evaluation?.correctnessGates?.includes(
+    M2_PSC02_EXACT_CASE_COVERAGE_GATE
+  )) {
+    failures.push("exact_case_coverage_gate_missing");
+  }
+  requireEqual(
+    evaluation?.exactCaseCoverage?.candidatePopulation,
+    "FROZEN_M2_CHAN_PSC01_RAW_MONTHLY_CASE_KEYS",
+    "exact_case_candidate_population",
+    failures
+  );
+  requireEqual(
+    evaluation?.exactCaseCoverage?.intersectionScoringAllowed,
+    false,
+    "exact_case_intersection_scoring",
+    failures
+  );
+  requireEqual(
+    evaluation?.exactCaseCoverage?.abstentionZeroImputationAllowed,
+    false,
+    "exact_case_zero_imputation",
+    failures
+  );
+  requireEqual(
+    evaluation?.exactCaseCoverage?.anchorUnavailableDecision,
+    "PSC02_DEVELOPMENT_NOT_SUPPORTED",
+    "exact_case_anchor_unavailable_decision",
     failures
   );
   requireEqual(evaluation?.diagnosticArmsParticipateInCandidateSelection, false, "diagnostic_selection", failures);
@@ -544,6 +657,12 @@ export function validateM2Psc02Preregistration(
       failures.push(`forbidden_dependency_missing:${forbidden}`);
     }
   }
+  requireEqual(
+    config?.publicSyntheticContract?.requiredInvariantCount,
+    22,
+    "public_synthetic_invariant_count",
+    failures
+  );
 
   if (failures.length > 0) {
     throw new M2Psc02PreregistrationContractError(
@@ -623,6 +742,8 @@ export function buildM2Psc02OriginVisibleCashAnchor(
       support: Object.freeze(support),
       timeDecay: config.cashAnchor.timeDecay,
       lookbackMonths: config.cashAnchor.lookbackMonths,
+      observationGrain: config.cashAnchor.anchorObservationGrain,
+      sourceAuthorityForm: config.cashAnchor.sourceAuthority.form,
       taxonomyUsed: false,
       evaluationActualUsed: false
     });
@@ -676,28 +797,96 @@ export function createM2Psc02AnchorManifest({
 }
 
 export function assertM2Psc02OccurrenceParity(psc01Rows, psc02Rows) {
-  const left = new Map(psc01Rows.map((row) => [
-    row.caseKey,
-    row.occurrenceProbability
-  ]));
-  const right = new Map(psc02Rows.map((row) => [
-    row.caseKey,
-    row.occurrenceProbability
-  ]));
-  if (left.size !== right.size) {
+  const left = indexUniqueCaseRows(psc01Rows, "psc01_occurrence");
+  const right = indexUniqueCaseRows(psc02Rows, "psc02_occurrence");
+  if (psc01Rows.length !== psc02Rows.length
+      || left.size !== psc01Rows.length
+      || right.size !== psc02Rows.length
+      || left.size !== right.size) {
     throw new M2Psc02PreregistrationContractError(
       "m2_psc02_occurrence_parity_case_count_mismatch"
     );
   }
-  for (const [caseKey, probability] of left) {
-    if (!right.has(caseKey)
-        || doubleBits(probability) !== doubleBits(right.get(caseKey))) {
+  for (const [caseKey, leftRow] of left) {
+    const rightRow = right.get(caseKey);
+    if (rightRow === undefined) {
+      throw new M2Psc02PreregistrationContractError(
+        `m2_psc02_occurrence_parity_key_set_mismatch:${caseKey}`
+      );
+    }
+    const leftProbability = requireProbability(
+      leftRow.occurrenceProbability,
+      "psc01_occurrenceProbability"
+    );
+    const rightProbability = requireProbability(
+      rightRow.occurrenceProbability,
+      "psc02_occurrenceProbability"
+    );
+    if (doubleBits(leftProbability) !== doubleBits(rightProbability)) {
       throw new M2Psc02PreregistrationContractError(
         `m2_psc02_occurrence_parity_failed:${caseKey}`
       );
     }
   }
   return true;
+}
+
+export function evaluateM2Psc02ExactCaseCoverage(
+  frozenPsc01RawRows,
+  psc02PrimaryRows
+) {
+  const frozen = indexUniqueCaseRows(
+    frozenPsc01RawRows,
+    "frozen_psc01_raw_coverage"
+  );
+  const candidate = indexUniqueCaseRows(
+    psc02PrimaryRows,
+    "psc02_primary_coverage"
+  );
+  if (frozenPsc01RawRows.length !== psc02PrimaryRows.length
+      || frozen.size !== candidate.size) {
+    throw new M2Psc02PreregistrationContractError(
+      "m2_psc02_exact_case_coverage_count_mismatch"
+    );
+  }
+  for (const caseKey of frozen.keys()) {
+    if (!candidate.has(caseKey)) {
+      throw new M2Psc02PreregistrationContractError(
+        `m2_psc02_exact_case_coverage_key_set_mismatch:${caseKey}`
+      );
+    }
+  }
+  const unavailableCount = [...candidate.values()].filter((row) => (
+    row.anchorStatus !== M2_PSC02_ANCHOR_AVAILABLE
+    || row.abstained !== false
+    || !Number.isFinite(row.positivePoint)
+  )).length;
+  if (unavailableCount > 0) {
+    return Object.freeze({
+      correctnessGate: M2_PSC02_EXACT_CASE_COVERAGE_GATE,
+      status: "FAILED_ANCHOR_UNAVAILABLE_IN_FROZEN_POPULATION",
+      passed: false,
+      frozenCaseCount: frozen.size,
+      psc02CaseCount: candidate.size,
+      anchorUnavailableCaseCount: unavailableCount,
+      candidateScoreAllowed: false,
+      intersectionScoringUsed: false,
+      abstentionZeroImputationUsed: false,
+      developmentDecision: "PSC02_DEVELOPMENT_NOT_SUPPORTED"
+    });
+  }
+  return Object.freeze({
+    correctnessGate: M2_PSC02_EXACT_CASE_COVERAGE_GATE,
+    status: "PASSED_EXACT_KEY_SET_AND_COMPLETE_ANCHOR_COVERAGE",
+    passed: true,
+    frozenCaseCount: frozen.size,
+    psc02CaseCount: candidate.size,
+    anchorUnavailableCaseCount: 0,
+    candidateScoreAllowed: true,
+    intersectionScoringUsed: false,
+    abstentionZeroImputationUsed: false,
+    developmentDecision: null
+  });
 }
 
 export function predictM2Psc02MonthlyReference({
@@ -802,6 +991,7 @@ export function fitM2Psc02AnchoredLogRatioRidgeReference(
   rows,
   {lambda = 1, pivotTolerance = 1e-12} = {}
 ) {
+  requireReferenceLambda(lambda);
   const prepared = prepareReferenceRows(rows);
   const matrix = prepared.design;
   const response = prepared.rows.map((row) => Math.log(
@@ -845,42 +1035,39 @@ export function fitM2Psc02AnchoredGammaOffsetReference(
     pivotTolerance = 1e-12
   } = {}
 ) {
+  requireReferenceLambda(lambda);
   const prepared = prepareReferenceRows(rows);
   const matrix = prepared.design;
   const dimension = matrix[0].length;
   let coefficients = Array(dimension).fill(0);
-  let objective = gammaObjective(
-    prepared.rows,
-    matrix,
-    prepared.weights,
-    coefficients,
-    lambda
-  );
+  let currentEvaluation;
+  try {
+    currentEvaluation = gammaEvaluation(
+      prepared.rows,
+      matrix,
+      prepared.weights,
+      coefficients,
+      lambda
+    );
+  } catch (error) {
+    return gammaFailure("INITIAL_UNCLIPPED_TARGET_NONFINITE", {
+      iteration: 0,
+      lambda,
+      errorCode: error.message,
+      standardizer: prepared.standardizer
+    });
+  }
+  const objectiveTrace = [currentEvaluation.objective];
   for (let iteration = 1; iteration <= maximumIterations; iteration += 1) {
-    const gradient = Array(dimension).fill(0);
-    const hessian = zeros(dimension, dimension);
-    for (let rowIndex = 0; rowIndex < matrix.length; rowIndex += 1) {
-      const row = prepared.rows[rowIndex];
-      const x = matrix[rowIndex];
-      const weight = prepared.weights[rowIndex];
-      const mu = row.anchor * Math.exp(clamp(dot(x, coefficients), -30, 30));
-      const ratio = row.actualPositive / mu;
-      for (let left = 0; left < dimension; left += 1) {
-        gradient[left] += weight * (1 - ratio) * x[left];
-        for (let right = 0; right < dimension; right += 1) {
-          hessian[left][right] += weight * ratio * x[left] * x[right];
-        }
-      }
-    }
-    for (let index = 1; index < dimension; index += 1) {
-      gradient[index] += lambda * coefficients[index];
-      hessian[index][index] += lambda;
-    }
     let delta;
     try {
-      delta = solveLinear(hessian, gradient, pivotTolerance);
+      delta = solveLinear(
+        currentEvaluation.hessian,
+        currentEvaluation.gradient,
+        pivotTolerance
+      );
     } catch {
-      return gammaFailure("PSC02_P_GAMMA_OFFSET_SINGULAR_HESSIAN", {
+      return gammaFailure("SINGULAR_UNCLIPPED_TARGET_HESSIAN", {
         iteration,
         lambda,
         standardizer: prepared.standardizer
@@ -888,42 +1075,58 @@ export function fitM2Psc02AnchoredGammaOffsetReference(
     }
     let accepted = false;
     let nextCoefficients = coefficients;
-    let nextObjective = objective;
+    let nextEvaluation = currentEvaluation;
     let scale = 1;
+    let nonfiniteCandidateCount = 0;
     for (let halving = 0; halving <= maximumStepHalvings; halving += 1) {
       const candidate = coefficients.map(
         (value, index) => value - scale * delta[index]
       );
-      const candidateObjective = gammaObjective(
-        prepared.rows,
-        matrix,
-        prepared.weights,
-        candidate,
-        lambda
-      );
-      if (Number.isFinite(candidateObjective)
-          && candidateObjective <= objective + 1e-15) {
+      let candidateEvaluation;
+      try {
+        candidateEvaluation = gammaEvaluation(
+          prepared.rows,
+          matrix,
+          prepared.weights,
+          candidate,
+          lambda
+        );
+      } catch {
+        nonfiniteCandidateCount += 1;
+        scale /= 2;
+        continue;
+      }
+      if (candidateEvaluation.objective
+          <= currentEvaluation.objective + 1e-15) {
         accepted = true;
         nextCoefficients = candidate;
-        nextObjective = candidateObjective;
+        nextEvaluation = candidateEvaluation;
         break;
       }
       scale /= 2;
     }
     if (!accepted) {
-      return gammaFailure("PSC02_P_GAMMA_OFFSET_STEP_HALVING_EXHAUSTED", {
+      return gammaFailure(
+        nonfiniteCandidateCount > 0
+          ? "NONFINITE_UNCLIPPED_TARGET_DURING_STEP_HALVING"
+          : "OBJECTIVE_STEP_HALVING_EXHAUSTED",
+        {
         iteration,
         lambda,
+        nonfiniteCandidateCount,
         standardizer: prepared.standardizer
-      });
+        }
+      );
     }
     const coefficientChange = Math.max(...nextCoefficients.map(
       (value, index) => Math.abs(value - coefficients[index])
     ));
-    const relativeObjectiveChange = Math.abs(nextObjective - objective)
-      / Math.max(1, Math.abs(objective));
+    const relativeObjectiveChange = Math.abs(
+      nextEvaluation.objective - currentEvaluation.objective
+    ) / Math.max(1, Math.abs(currentEvaluation.objective));
     coefficients = nextCoefficients;
-    objective = nextObjective;
+    currentEvaluation = nextEvaluation;
+    objectiveTrace.push(currentEvaluation.objective);
     if (coefficientChange <= coefficientTolerance
         && relativeObjectiveChange <= relativeObjectiveTolerance) {
       return Object.freeze({
@@ -931,7 +1134,8 @@ export function fitM2Psc02AnchoredGammaOffsetReference(
         status: "CONVERGED",
         lambda,
         iterations: iteration,
-        objective,
+        objective: currentEvaluation.objective,
+        objectiveTrace: Object.freeze(objectiveTrace),
         coefficients: Object.freeze(coefficients),
         standardizer: prepared.standardizer,
         sampleWeight: "EQUAL_TOTAL_WEIGHT_PER_STANDARD_WORK_NORMALIZED_TO_SUM_ONE",
@@ -940,10 +1144,41 @@ export function fitM2Psc02AnchoredGammaOffsetReference(
       });
     }
   }
-  return gammaFailure("PSC02_P_GAMMA_OFFSET_MAXIMUM_ITERATIONS", {
+  return gammaFailure("MAXIMUM_ITERATIONS_WITHOUT_CONVERGENCE", {
     iteration: maximumIterations,
     lambda,
+    objectiveTrace: Object.freeze(objectiveTrace),
     standardizer: prepared.standardizer
+  });
+}
+
+export function evaluateM2Psc02GammaObjectiveReference(
+  rows,
+  coefficients,
+  {lambda = 1} = {}
+) {
+  requireReferenceLambda(lambda);
+  const prepared = prepareReferenceRows(rows);
+  if (!Array.isArray(coefficients)
+      || coefficients.length !== prepared.design[0].length
+      || coefficients.some((value) => !Number.isFinite(value))) {
+    throw new M2Psc02PreregistrationContractError(
+      "m2_psc02_gamma_coefficients_invalid"
+    );
+  }
+  const evaluation = gammaEvaluation(
+    prepared.rows,
+    prepared.design,
+    prepared.weights,
+    coefficients,
+    lambda
+  );
+  return Object.freeze({
+    objective: evaluation.objective,
+    gradient: Object.freeze(evaluation.gradient),
+    hessian: Object.freeze(evaluation.hessian.map(Object.freeze)),
+    standardizer: prepared.standardizer,
+    fitLinearPredictorClipUsed: false
   });
 }
 
@@ -968,7 +1203,11 @@ function canonicalVisibleAnchorRows(rows, origin, config) {
     );
   }
   const cutoff = endOfOriginMonthUtc(origin);
-  const visible = rows.map(normalizeAnchorRow).filter((row) => (
+  const components = canonicalAnchorComponents(rows, config);
+  const monthlyRevisions = aggregateAnchorComponentsToMonthlyRevisions(
+    components
+  );
+  const visible = monthlyRevisions.filter((row) => (
     row.cashMonth <= origin
     && Date.parse(row.effectiveAt) <= cutoff
     && Date.parse(row.availableAt) <= cutoff
@@ -984,8 +1223,35 @@ function canonicalVisibleAnchorRows(rows, origin, config) {
   return [...latest.values()].sort(compareAnchorRows).map(Object.freeze);
 }
 
-function normalizeAnchorRow(row) {
+function canonicalAnchorComponents(rows, config) {
+  if (config?.cashAnchor?.sourceAuthority?.form
+      !== M2_PSC02_ANCHOR_SOURCE_FORM) {
+    throw new M2Psc02PreregistrationContractError(
+      "m2_psc02_anchor_source_authority_form_invalid"
+    );
+  }
+  const unique = new Map();
+  for (const source of rows) {
+    const row = normalizeAnchorComponentRow(source);
+    const identity = anchorComponentIdentity(row);
+    const current = unique.get(identity);
+    if (current === undefined) {
+      unique.set(identity, row);
+      continue;
+    }
+    if (stableStringify(current) !== stableStringify(row)) {
+      throw new M2Psc02PreregistrationContractError(
+        `m2_psc02_anchor_component_duplicate_conflict:${row.componentId}`
+      );
+    }
+  }
+  return [...unique.values()].sort(compareAnchorComponentRows);
+}
+
+function normalizeAnchorComponentRow(row) {
   const normalized = {
+    sourceForm: requireText(row?.sourceForm, "sourceForm"),
+    componentId: requireText(row?.componentId, "componentId"),
     standardWorkId: requireText(row?.standardWorkId, "standardWorkId"),
     channelUid: requireText(row?.channelUid, "channelUid"),
     mechanism: requireMechanism(row?.mechanism),
@@ -1002,7 +1268,8 @@ function normalizeAnchorRow(row) {
       "excludedUnallocatedReversalResidual"
     )
   };
-  if (normalized.cashCategory !== "sales_share"
+  if (normalized.sourceForm !== M2_PSC02_ANCHOR_SOURCE_FORM
+      || normalized.cashCategory !== "sales_share"
       || normalized.currency !== "CNY"
       || normalized.positiveCash < 0
       || normalized.reversalCash > 0
@@ -1012,6 +1279,61 @@ function normalizeAnchorRow(row) {
     );
   }
   return normalized;
+}
+
+function aggregateAnchorComponentsToMonthlyRevisions(components) {
+  const groups = new Map();
+  for (const component of components) {
+    const key = anchorRevisionGroupKey(component);
+    const current = groups.get(key);
+    if (current === undefined) {
+      groups.set(key, {
+        standardWorkId: component.standardWorkId,
+        channelUid: component.channelUid,
+        mechanism: component.mechanism,
+        cashMonth: component.cashMonth,
+        cashCategory: component.cashCategory,
+        currency: component.currency,
+        effectiveAt: component.effectiveAt,
+        availableAt: component.availableAt,
+        revisionId: component.revisionId,
+        components: [component]
+      });
+      continue;
+    }
+    if (current.mechanism !== component.mechanism
+        || current.effectiveAt !== component.effectiveAt
+        || current.availableAt !== component.availableAt) {
+      throw new M2Psc02PreregistrationContractError(
+        `m2_psc02_anchor_monthly_revision_metadata_conflict:${key}`
+      );
+    }
+    current.components.push(component);
+  }
+  return [...groups.values()].map((group) => {
+    const ordered = [...group.components].sort(compareAnchorComponentRows);
+    return {
+      standardWorkId: group.standardWorkId,
+      channelUid: group.channelUid,
+      mechanism: group.mechanism,
+      cashMonth: group.cashMonth,
+      cashCategory: group.cashCategory,
+      currency: group.currency,
+      effectiveAt: group.effectiveAt,
+      availableAt: group.availableAt,
+      revisionId: group.revisionId,
+      positiveCash: sum(ordered.map((row) => row.positiveCash)),
+      reversalCash: sum(ordered.map((row) => row.reversalCash)),
+      excludedUnallocatedReversalResidual: sum(ordered.map(
+        (row) => row.excludedUnallocatedReversalResidual
+      )),
+      componentCount: ordered.length,
+      componentIds: ordered.map((row) => row.componentId),
+      sourceComponentsSha256: sha256(stableStringify(ordered)),
+      observationGrain:
+        "standardWorkId|channelUid|cashMonth|cashCategory|currency"
+    };
+  }).sort(compareAnchorRows);
 }
 
 function anchorLevelEligible(level, support, config) {
@@ -1049,6 +1371,9 @@ function unavailableAnchor(origin, reason) {
     rawArithmeticMean: null,
     unit: "CNY_PER_POSITIVE_WORK_CHANNEL_MONTH",
     support: Object.freeze({reason}),
+    observationGrain:
+      "standardWorkId|channelUid|cashMonth|cashCategory|currency",
+    sourceAuthorityForm: M2_PSC02_ANCHOR_SOURCE_FORM,
     taxonomyUsed: false,
     evaluationActualUsed: false
   });
@@ -1122,26 +1447,64 @@ function standardizeFeatures(features, standardizer) {
   ));
 }
 
-function gammaObjective(rows, matrix, weights, coefficients, lambda) {
-  let value = 0;
+function gammaEvaluation(rows, matrix, weights, coefficients, lambda) {
+  let objective = 0;
+  const gradient = Array(coefficients.length).fill(0);
+  const hessian = zeros(coefficients.length, coefficients.length);
+  const minimumLogRatio = Math.log(Number.MIN_VALUE);
+  const maximumLogRatio = Math.log(Number.MAX_VALUE);
   for (let index = 0; index < rows.length; index += 1) {
-    const mu = rows[index].anchor * Math.exp(
-      clamp(dot(matrix[index], coefficients), -30, 30)
-    );
-    value += weights[index] * (
-      rows[index].actualPositive / mu + Math.log(mu)
-    );
+    const x = matrix[index];
+    const eta = dot(x, coefficients);
+    const logAnchor = Math.log(rows[index].anchor);
+    const logActual = Math.log(rows[index].actualPositive);
+    const logRatio = logActual - logAnchor - eta;
+    if (!Number.isFinite(eta)
+        || !Number.isFinite(logRatio)
+        || logRatio < minimumLogRatio
+        || logRatio > maximumLogRatio) {
+      throw new M2Psc02PreregistrationContractError(
+        `m2_psc02_gamma_unclipped_ratio_not_representable:${index}`
+      );
+    }
+    const ratio = Math.exp(logRatio);
+    const rowObjective = ratio + logAnchor + eta;
+    if (!Number.isFinite(ratio) || !Number.isFinite(rowObjective)) {
+      throw new M2Psc02PreregistrationContractError(
+        `m2_psc02_gamma_unclipped_objective_nonfinite:${index}`
+      );
+    }
+    const weight = weights[index];
+    objective += weight * rowObjective;
+    for (let left = 0; left < coefficients.length; left += 1) {
+      gradient[left] += weight * (1 - ratio) * x[left];
+      for (let right = 0; right < coefficients.length; right += 1) {
+        hessian[left][right] += weight * ratio * x[left] * x[right];
+      }
+    }
   }
-  value += 0.5 * lambda * sum(coefficients.slice(1).map(
+  objective += 0.5 * lambda * sum(coefficients.slice(1).map(
     (coefficient) => coefficient ** 2
   ));
-  return value;
+  for (let index = 1; index < coefficients.length; index += 1) {
+    gradient[index] += lambda * coefficients[index];
+    hessian[index][index] += lambda;
+  }
+  if (!Number.isFinite(objective)
+      || gradient.some((value) => !Number.isFinite(value))
+      || hessian.some((row) => row.some((value) => !Number.isFinite(value)))) {
+    throw new M2Psc02PreregistrationContractError(
+      "m2_psc02_gamma_unclipped_derivative_nonfinite"
+    );
+  }
+  return {objective, gradient, hessian};
 }
 
-function gammaFailure(status, details) {
+function gammaFailure(failureReason, details) {
   return Object.freeze({
     armId: ARM_IDS.P,
-    status,
+    status: M2_PSC02_GAMMA_NUMERICAL_FAILURE,
+    failureReason,
     coefficients: null,
     estimatorSwitchUsed: false,
     diagnosticArmReplacementUsed: false,
@@ -1225,6 +1588,14 @@ function compareAnchorRows(left, right) {
     || left.revisionId.localeCompare(right.revisionId);
 }
 
+function compareAnchorComponentRows(left, right) {
+  return anchorNaturalKey(left).localeCompare(anchorNaturalKey(right))
+    || left.revisionId.localeCompare(right.revisionId)
+    || left.availableAt.localeCompare(right.availableAt)
+    || left.effectiveAt.localeCompare(right.effectiveAt)
+    || left.componentId.localeCompare(right.componentId);
+}
+
 function anchorNaturalKey(row) {
   return [
     row.standardWorkId,
@@ -1233,6 +1604,14 @@ function anchorNaturalKey(row) {
     row.cashCategory,
     row.currency
   ].join("\u0000");
+}
+
+function anchorRevisionGroupKey(row) {
+  return `${anchorNaturalKey(row)}\u0000${row.revisionId}`;
+}
+
+function anchorComponentIdentity(row) {
+  return `${anchorRevisionGroupKey(row)}\u0000${row.componentId}`;
 }
 
 function endOfOriginMonthUtc(origin) {
@@ -1306,6 +1685,44 @@ function requirePositive(value, field) {
     );
   }
   return number;
+}
+
+function requireReferenceLambda(value) {
+  if (![1, 3].includes(value)) {
+    throw new M2Psc02PreregistrationContractError(
+      "m2_psc02_reference_lambda_outside_frozen_grid"
+    );
+  }
+  return value;
+}
+
+function requireProbability(value, field) {
+  const number = requireFinite(value, field);
+  if (number < 0 || number > 1) {
+    throw new M2Psc02PreregistrationContractError(
+      `m2_psc02_probability_invalid:${field}`
+    );
+  }
+  return number;
+}
+
+function indexUniqueCaseRows(rows, label) {
+  if (!Array.isArray(rows)) {
+    throw new M2Psc02PreregistrationContractError(
+      `m2_psc02_case_rows_required:${label}`
+    );
+  }
+  const indexed = new Map();
+  for (const row of rows) {
+    const caseKey = requireText(row?.caseKey, `${label}.caseKey`);
+    if (indexed.has(caseKey)) {
+      throw new M2Psc02PreregistrationContractError(
+        `m2_psc02_duplicate_case_key:${label}:${caseKey}`
+      );
+    }
+    indexed.set(caseKey, row);
+  }
+  return indexed;
 }
 
 function requireFeatureVector(value) {

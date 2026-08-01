@@ -4492,7 +4492,8 @@
         "config/m2-current-publishing-scale-channel-origin-visible-cash-anchor-schema.v0.1.json",
         "docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-preregistration-v0.1.json",
         "docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-preregistration-v0.1.md",
-        "docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-design-decision-v0.1.md"
+        "docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-design-decision-v0.1.md",
+        "docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-pre-outcome-contract-clarification-v0.1.md"
       ]
     },
     {
@@ -5066,6 +5067,7 @@
     {"identifier": "POST_HOC_DIAGNOSTIC_NOT_MODEL_EVIDENCE", "namespace": "M2-EVIDENCE-CLASS", "parentExperiment": "M2-EXP-PUBLISHING-SCALE-CHANNEL-01", "type": "evidence_classification", "displayNameZh": "事后诊断而非模型证据", "meaningZh": "使用评价 actual 形成的归一化 scalar 只用于区分总额尺度与渠道构成误差；不参加训练、选模、门禁或候选成绩登记。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-publishing-scale-channel-amount-scale-root-cause-audit-v0.1.json"},
     {"identifier": "PSC02_DESIGN_PREREGISTRATION_SUPPORTED_NOT_AUTHORIZED", "namespace": "M2-DESIGN-DECISION", "parentExperiment": "M2-EXP-PUBLISHING-SCALE-CHANNEL-01", "type": "future_design_decision_status", "displayNameZh": "下一渠道修订的独立预注册设计有证据支持但未授权", "meaningZh": "现有根因证据支持另行设计现金尺度对齐的条件金额估计器；没有创建模型 ID，也不授权实现、拟合、调参、private evaluation 或 holdout。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-publishing-scale-channel-amount-scale-root-cause-audit-v0.1.json"},
     {"identifier": "M2_PSC02_ORIGIN_VISIBLE_CASH_ANCHOR_PREREGISTERED_IMPLEMENTATION_NOT_AUTHORIZED", "namespace": "M2-STATUS", "parentExperiment": "M2-EXP-PUBLISHING-SCALE-CHANNEL-CASH-ANCHOR-02", "type": "preregistration_status_code", "displayNameZh": "出版行业渠道起点可见现金锚金额设计已预注册且实现未授权", "meaningZh": "现金锚、准 Gamma offset 主设计、两个归因诊断、训练防泄漏与评价门限已经结果前冻结并通过公共合成 reference 合同；没有创建模型 ID、真实实现、拟合、预测、评价或候选成绩。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-preregistration-v0.1.json"},
+    {"identifier": "M2_PSC02_PRE_OUTCOME_CONTRACT_CLARIFIED_NO_REAL_OUTCOME_OPENED", "namespace": "M2-STATUS", "parentExperiment": "M2-EXP-PUBLISHING-SCALE-CHANNEL-CASH-ANCHOR-02", "type": "pre_outcome_contract_clarification_status_code", "displayNameZh": "出版行业渠道现金锚结果形成前合同已消歧且未打开真实结果", "meaningZh": "月度锚粒度、发生概率逐案一致性、完整评价人口覆盖和未截断 Gamma 拟合目标已在任何 private 输入或真实 prediction 前修正；没有形成候选结果。", "mayAppearAloneInUserReport": false, "evidenceRef": "docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-pre-outcome-contract-clarification-v0.1.md"},
     {"identifier": "AUTOMATION_BLOCKED", "namespace": "M2-BUSINESS-STATUS", "parentExperiment": null, "type": "business_status", "displayNameZh": "自动化被阻断", "meaningZh": "当前没有模型获准自动化。", "mayAppearAloneInUserReport": false, "evidenceRef": "AGENTS.md"},
     {"identifier": "CANARY_FAIL", "namespace": "M2-BUSINESS-STATUS", "parentExperiment": null, "type": "business_status", "displayNameZh": "Canary 结论失败", "meaningZh": "当前业务 gate 不允许 Canary 或发布。", "mayAppearAloneInUserReport": false, "evidenceRef": "AGENTS.md"}
   ],

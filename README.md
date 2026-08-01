@@ -40,7 +40,7 @@
 | 当前开发业务验收门限是什么？ | [M2 业务验收合同 v1](config/m2-business-acceptance-contract.v1.json) 已激活 3/6/12/36 个月（H3/H6/H12/H36）development-only 门禁；Core80 是硬门禁，Core90 是非否决敏感性披露 |
 | 是否已有生产模型？ | 没有；`activeCandidate=null`，`approvedForAutomation=null` |
 | 最新渠道模型结果如何？ | 出版行业规模适配渠道核心（Publishing-Scale Channel Core，`M2-CHAN-PSC01`）已实际执行并失败；根因审计确认是**估计器尺度收缩、实现正确**（`ESTIMATOR_SCALE_SHRINKAGE_CONFIRMED_IMPLEMENTATION_CORRECT`），不是“尚未运行”或简单漏乘倍率 |
-| 后续渠道金额设计到哪一步？ | 出版行业渠道起点可见现金锚金额设计 v0.1（Publishing-Scale Channel Origin-Visible Cash-Anchor Amount Design v0.1，`M2-PREREG-PSC02-ORIGIN-VISIBLE-CASH-ANCHOR-01`）已完成数学预注册和 14 项公共 synthetic reference 验证；**没有创建模型、真实实现、拟合或评价**（`M2_PSC02_ORIGIN_VISIBLE_CASH_ANCHOR_PREREGISTERED_IMPLEMENTATION_NOT_AUTHORIZED`） |
+| 后续渠道金额设计到哪一步？ | 出版行业渠道起点可见现金锚金额设计 v0.1（Publishing-Scale Channel Origin-Visible Cash-Anchor Amount Design v0.1，`M2-PREREG-PSC02-ORIGIN-VISIBLE-CASH-ANCHOR-01`）已完成结果形成前合同消歧和 22 项公共 synthetic reference 验证；**没有创建模型、真实实现、拟合或评价**（`M2_PSC02_ORIGIN_VISIBLE_CASH_ANCHOR_PREREGISTERED_IMPLEMENTATION_NOT_AUTHORIZED`） |
 | 最新核心老品结论如何？ | 核心老品分周期金额模型的 3/6/12 月性能失败保持冻结；Primary/Core90 另有 5 个有限极端外推单元格，已单独登记数值稳定性失败 |
 | 最新受控研究结果是什么？ | LG01 头部保护尾段修正模型 v0.2（LG01 Head-Protected Tail-Band Correction Model v0.2，`M2-WORK-HPSR02`）唯一一次独立评价已冻结：43 部动态 Core80 上 WAPE 为 64.1150%，相对冻结 LG01 基线的 relative FVA 为 0.5179%，bootstrap 95% 区间跨 0，结论为证据不足并结束现金-only 相邻研究（`M2_HPSR02_FIRST_INDEPENDENT_INCONCLUSIVE_CASH_ONLY_RESEARCH_ENDED`） |
 | 没有真实账单能否开发？ | 可以完成公开安装、构建、测试、启动、查询和合成 fixture；只会阻断所属 private capability |
@@ -194,8 +194,10 @@ q95 为不可变冻结模型参数（`IMMUTABLE_FROZEN_MODEL_PARAMETER`）；旧
 work-balanced `log1p` 经验父层已经发生；条件金额 oracle 可移除主评价 78.1641% 的
 原始误差，机制时间结构仍有约 5% 的局部信息增益。基于该证据，后续金额设计已经把
 最近 12 个完整账单月的 origin-visible 正现金算术锚、固定 fallback、准 Gamma offset
-主设计、两个同案诊断和评价门限在任何真实 prediction 前冻结，并通过 14 项公共
-synthetic reference 合同。它没有模型 ID，也未授权真实实现、训练、拟合、预测或评价。
+主设计、两个同案诊断和评价门限在任何真实 prediction 前冻结。结果形成前进一步锁定
+posting component 先聚合为月度自然键、两侧 occurrence 重复键拒绝、冻结 PSC01 raw
+完整人口覆盖，以及未截断 Gamma 拟合目标，并通过 22 项公共 synthetic reference 合同。
+它没有模型 ID，也未授权真实实现、训练、拟合、预测或评价。
 
 详细证据：
 

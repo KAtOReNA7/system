@@ -35,7 +35,7 @@
     "schema": {
       "const": "m2.current.publishing_scale_channel_origin_visible_cash_anchor_preregistration.v0.1"
     },
-    "version": {"const": "0.1.0"},
+    "version": {"const": "0.1.1"},
     "asOf": {"type": "string", "format": "date"},
     "status": {
       "const": "M2_PSC02_ORIGIN_VISIBLE_CASH_ANCHOR_PREREGISTERED_IMPLEMENTATION_NOT_AUTHORIZED"
@@ -57,9 +57,9 @@
     "cashAnchor": {"$ref": "#/$defs/cashAnchorContract"},
     "amountDesign": {"$ref": "#/$defs/amountDesign"},
     "trainingAndSelection": {"type": "object"},
-    "frozenEvaluationContract": {"type": "object"},
+    "frozenEvaluationContract": {"$ref": "#/$defs/frozenEvaluationContract"},
     "dependencyBoundary": {"type": "object"},
-    "publicSyntheticContract": {"type": "object"},
+    "publicSyntheticContract": {"$ref": "#/$defs/publicSyntheticContract"},
     "publication": {"type": "object"}
   },
   "$defs": {
@@ -203,7 +203,9 @@
         "symbol",
         "unit",
         "inputSchema",
+        "sourceAuthority",
         "inputGrain",
+        "anchorObservationGrain",
         "allowedCashCategory",
         "allowedCurrency",
         "forecastCutoff",
@@ -214,6 +216,7 @@
         "lookbackBoundary",
         "timeDecay",
         "positiveCashRule",
+        "positiveObservationCountRule",
         "zeroCashRule",
         "reversalRule",
         "restatementRule",
@@ -233,7 +236,11 @@
         "symbol": {"const": "A_{w,c,o}"},
         "unit": {"const": "CNY_PER_POSITIVE_WORK_CHANNEL_MONTH"},
         "inputSchema": {"type": "string"},
+        "sourceAuthority": {"$ref": "#/$defs/anchorSourceAuthority"},
         "inputGrain": {"type": "string"},
+        "anchorObservationGrain": {
+          "const": "standardWorkId|channelUid|cashMonth|cashCategory|currency"
+        },
         "allowedCashCategory": {"const": "sales_share"},
         "allowedCurrency": {"const": "CNY"},
         "forecastCutoff": {"const": "END_OF_FORECAST_ORIGIN_MONTH_ASIA_SHANGHAI"},
@@ -244,6 +251,9 @@
         "lookbackBoundary": {"type": "string"},
         "timeDecay": {"const": "NONE_EQUAL_POSITIVE_WORK_CHANNEL_MONTH_WEIGHT"},
         "positiveCashRule": {"type": "string"},
+        "positiveObservationCountRule": {
+          "const": "COUNT_STRICTLY_POSITIVE_CANONICAL_MONTHLY_NATURAL_KEYS_AFTER_VISIBLE_REVISION_SELECTION"
+        },
         "zeroCashRule": {"type": "string"},
         "reversalRule": {"type": "string"},
         "restatementRule": {"type": "string"},
@@ -262,6 +272,34 @@
         "manifest": {"type": "object"}
       },
       "additionalProperties": false
+    },
+    "anchorSourceAuthority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "form",
+        "publicCodeEvidence",
+        "componentIdentityField",
+        "revisionIdentityField",
+        "revisionMetadataFields",
+        "componentAggregationRequired",
+        "directComponentMeanAllowed",
+        "identicalDuplicatePolicy",
+        "conflictPolicy"
+      ],
+      "properties": {
+        "form": {
+          "const": "POSTING_COMPONENT_ROWS_AGGREGATED_WITHIN_CANONICAL_AS_OF_REVISION_SNAPSHOT"
+        },
+        "publicCodeEvidence": {"type": "string", "minLength": 1},
+        "componentIdentityField": {"const": "componentId"},
+        "revisionIdentityField": {"const": "revisionId"},
+        "revisionMetadataFields": {"const": ["effectiveAt", "availableAt"]},
+        "componentAggregationRequired": {"const": true},
+        "directComponentMeanAllowed": {"const": false},
+        "identicalDuplicatePolicy": {"type": "string", "minLength": 1},
+        "conflictPolicy": {"type": "string", "minLength": 1}
+      }
     },
     "amountDesign": {
       "type": "object",
@@ -286,6 +324,7 @@
         "residualHierarchy",
         "residualHierarchyCombinationScale",
         "residualPredictionClip",
+        "residualPredictionClipRole",
         "trainingRows",
         "sampleWeight",
         "estimators"
@@ -311,6 +350,9 @@
         "residualHierarchy": {"type": "array", "items": {"type": "string"}},
         "residualHierarchyCombinationScale": {"type": "string"},
         "residualPredictionClip": {"const": [-30, 30]},
+        "residualPredictionClipRole": {
+          "const": "FINAL_PREDICTION_ONLY_NOT_FIT_OBJECTIVE_GRADIENT_OR_HESSIAN"
+        },
         "trainingRows": {"type": "string"},
         "sampleWeight": {"type": "string"},
         "estimators": {"type": "object", "required": ["D0", "D1", "P"]}
@@ -321,6 +363,8 @@
       "type": "object",
       "additionalProperties": true,
       "required": [
+        "sourceForm",
+        "componentId",
         "standardWorkId",
         "channelUid",
         "mechanism",
@@ -335,6 +379,10 @@
         "excludedUnallocatedReversalResidual"
       ],
       "properties": {
+        "sourceForm": {
+          "const": "POSTING_COMPONENT_ROWS_AGGREGATED_WITHIN_CANONICAL_AS_OF_REVISION_SNAPSHOT"
+        },
+        "componentId": {"type": "string", "minLength": 1},
         "standardWorkId": {"type": "string", "minLength": 1},
         "channelUid": {"type": "string", "minLength": 1},
         "mechanism": {"enum": ["membership", "advertising", "transactional"]},
@@ -344,21 +392,99 @@
         "effectiveAt": {"type": "string", "format": "date-time"},
         "availableAt": {"type": "string", "format": "date-time"},
         "revisionId": {"type": "string", "minLength": 1},
-        "positiveCash": {"type": "number", "minimum": 0},
+        "positiveCash": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Positive posting component amount; components are summed to one canonical monthly natural-key revision before anchor statistics."
+        },
         "reversalCash": {"type": "number", "maximum": 0},
         "excludedUnallocatedReversalResidual": {"type": "number", "maximum": 0}
       }
     },
     "anchorResult": {
       "type": "object",
-      "required": ["status", "origin", "level", "value", "unit", "support"],
+      "required": [
+        "status",
+        "origin",
+        "level",
+        "value",
+        "unit",
+        "support",
+        "observationGrain",
+        "sourceAuthorityForm"
+      ],
       "properties": {
         "status": {"enum": ["ANCHOR_AVAILABLE", "ANCHOR_UNAVAILABLE_NO_ORIGIN_VISIBLE_POSITIVE_CASH"]},
         "origin": {"type": "string"},
         "level": {"type": ["string", "null"]},
         "value": {"type": ["number", "null"]},
         "unit": {"const": "CNY_PER_POSITIVE_WORK_CHANNEL_MONTH"},
-        "support": {"type": "object"}
+        "support": {"type": "object"},
+        "observationGrain": {
+          "const": "standardWorkId|channelUid|cashMonth|cashCategory|currency"
+        },
+        "sourceAuthorityForm": {
+          "const": "POSTING_COMPONENT_ROWS_AGGREGATED_WITHIN_CANONICAL_AS_OF_REVISION_SNAPSHOT"
+        }
+      }
+    },
+    "frozenEvaluationContract": {
+      "type": "object",
+      "required": [
+        "status",
+        "exactCaseCoverage",
+        "correctnessGates"
+      ],
+      "properties": {
+        "status": {"const": "FROZEN_BEFORE_ANY_REAL_PSC02_PREDICTION"},
+        "exactCaseCoverage": {
+          "type": "object",
+          "required": [
+            "candidatePopulation",
+            "comparison",
+            "intersectionScoringAllowed",
+            "abstentionZeroImputationAllowed",
+            "anchorUnavailableDecision",
+            "candidateScoreOnFailureAllowed"
+          ],
+          "properties": {
+            "candidatePopulation": {"const": "FROZEN_M2_CHAN_PSC01_RAW_MONTHLY_CASE_KEYS"},
+            "comparison": {"const": "EXACT_ROW_COUNT_UNIQUE_KEY_COUNT_AND_COMPLETE_KEY_SET"},
+            "intersectionScoringAllowed": {"const": false},
+            "abstentionZeroImputationAllowed": {"const": false},
+            "anchorUnavailableDecision": {"const": "PSC02_DEVELOPMENT_NOT_SUPPORTED"},
+            "candidateScoreOnFailureAllowed": {"const": false}
+          }
+        },
+        "correctnessGates": {
+          "type": "array",
+          "contains": {"const": "PSC02_EXACT_CASE_COVERAGE_EQUALS_FROZEN_PSC01_RAW"}
+        }
+      }
+    },
+    "publicSyntheticContract": {
+      "type": "object",
+      "required": [
+        "referenceOnly",
+        "privateRowsUsed",
+        "realOutcomeUsed",
+        "productionConnected",
+        "requiredInvariantCount",
+        "requiredInvariants"
+      ],
+      "properties": {
+        "referenceOnly": {"const": true},
+        "privateRowsUsed": {"const": false},
+        "realOutcomeUsed": {"const": false},
+        "productionConnected": {"const": false},
+        "requiredInvariantCount": {"const": 22},
+        "requiredInvariants": {
+          "type": "array",
+          "minItems": 22,
+          "maxItems": 22,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        }
       }
     },
     "anchorManifest": {

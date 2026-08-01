@@ -12,6 +12,10 @@ schema、语义 validator 与公共 reference harness 分别位于：
 - `config/m2-current-publishing-scale-channel-origin-visible-cash-anchor-schema.v0.1.json`
 - `src/domain/m2Current/publishingScaleCashAnchorPreregistration.js`
 
+结果形成前的四项合同消歧见
+`docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-pre-outcome-contract-clarification-v0.1.md`。
+该消歧发生时真实 outcome 从未打开，也没有读取 private 输入或生成真实 PSC02 prediction。
+
 ## 1. 唯一问题与证据起点
 
 本预注册只回答如何检验下列问题，不产生真实候选结果：
@@ -78,6 +82,8 @@ occurrence probability 只乘一次，现金锚只应用一次，exposure 固定
 
 开发重放必须按精确月 case key 直接连接冻结 PSC01 occurrence probability，不重新拟合、
 校准或变换。逐 case 比较使用 IEEE-754 binary64 bit pattern，绝对与相对容差都为 0。
+PSC01 与 PSC02 两侧分别先验证原始行数、唯一 key 数和完整 key 集；任一侧内部重复、
+任一缺失或多余 key、任一 bit drift 都失败关闭，禁止通过 `Map` 覆盖重复行。
 
 冻结边界还包括：
 
@@ -95,8 +101,12 @@ occurrence probability 只乘一次，现金锚只应用一次，exposure 固定
 
 ### 5.1 输入与 as-of
 
-输入粒度是已经 canonical 化的
-`work × channel × cashMonth × cashCategory × currency × as-of revision`。只接受人民币
+现有公共 materializer 的 source authority 形态已由
+`scripts/m2-current/materialize_human_anchored_cases.py` 的
+`_map_sales_share_rows -> _monthly_panel` 调用链证明为 posting component 来源。输入先在
+同一合法 as-of revision snapshot 内，按
+`standardWorkId × channelUid × cashMonth × cashCategory × currency` 聚合为一个 canonical
+月度自然键金额，再参与 anchor 统计；绝不直接对 component 金额求均值。只接受人民币
 分成现金（`sales_share`、`CNY`）。forecast cutoff 是上海时区 origin 月最后一刻。
 
 一行只有同时满足以下条件才可见：
@@ -108,11 +118,14 @@ occurrence probability 只乘一次，现金锚只应用一次，exposure 固定
 同一自然键
 `standardWorkId|channelUid|cashMonth|cashCategory|currency` 有多个修订时，只在可见修订
 中依次按 `availableAt`、`effectiveAt`、`revisionId` 取最后一版。cutoff 后到达的新增行
-或修订不能改变旧 origin 的 anchor。
+或修订不能改变旧 origin 的 anchor。同一自然键、同一 revision identity、同一
+`componentId` 的 canonical 内容完全相同可确定性去重；金额、机制或时间字段冲突必须
+失败关闭，不得依赖输入顺序选择。
 
 ### 5.2 金额口径
 
-- anchor 只使用严格大于 0 的原入账分成现金 component；
+- 同一月度 revision 内先汇总正原入账分成现金 component，anchor 只使用汇总后严格
+  大于 0 的 canonical 月金额；
 - 0 只属于 occurrence exposure，不进入条件正金额分子或分母；
 - 冲销继续单独保存，不从正现金 anchor 扣除；
 - `positiveCash < 0` 是输入合同错误，负数必须在 reversal component；
@@ -123,7 +136,8 @@ occurrence probability 只乘一次，现金锚只应用一次，exposure 固定
 ### 5.3 窗口、尺度与支持
 
 窗口固定为截至 origin 的最近 12 个完整账单月（含 origin），时间权重均为 1，不衰减。
-anchor 是所选层级严格正月金额的普通算术均值：
+anchor 是所选层级严格正月金额的普通算术均值；`positiveObservationCount` 统计的是
+汇总并完成可见 revision 选择后的严格正月度自然键数量，不是 posting component 数量：
 
 \[
 A=\frac{1}{n_+}\sum_{i:y_i^+>0}y_i^+.
@@ -154,7 +168,9 @@ taxonomy 不参与路径。floor 固定为人民币 0.01 元，上限固定为�
 
 未来新增作品、起点时首次出现渠道或从未出现过正分成现金的作品—渠道一律弃权
 （`ANCHOR_UNAVAILABLE_NO_ORIGIN_VISIBLE_POSITIVE_CASH`），不得以 0 冒充预测。所有层级
-均不合格时同样弃权。
+均不合格时同样弃权。六级 fallback 只在目标作品—渠道于 origin 前至少已有一次可见
+正现金、但最近 12 个月直接层级支持不足时使用；pool 支持本身不能让从未正现金的目标
+取得预测资格。
 
 ### 5.5 manifest
 
@@ -211,6 +227,11 @@ relative objective change `<=1e-12` 才算收敛。全局节点失败时状态�
 log-ratio 或 anchor-only。稀疏/失败 child 只能带 receipt 明确回到最近 eligible residual
 parent，不改变 estimator。
 
+拟合 objective、gradient 与 Hessian 全部针对同一个未截断的
+`mu=A×exp(xβ)`，以 log-domain ratio 做确定性数值计算；任何不可表示或非有限值进入上述
+显式 numerical failure。`[-30,30]` 只属于最终 residual prediction clip，不进入拟合
+objective、gradient 或 Hessian，也不得无声改变成另一估计器。
+
 三个臂的 (lambda) grid 固定为 `[1, 3]`，沿用 PSC01 已冻结的 amount penalty 值域。
 exact tie（差 `<=1e-12`）取较大的 (lambda)。
 
@@ -236,6 +257,12 @@ WAPE 改 estimator、12 个月窗口、fallback、feature、fold 或 penalty gri
 - 主设计 vs 冻结 PSC01 raw candidate，exact same-case；
 - 主设计 vs 冻结 LG01，exact same-case；
 - 两个诊断臂只作机制归因，不参加 candidate selection。
+
+主设计月度 case keys 还必须通过完整评价人口覆盖门禁
+`PSC02_EXACT_CASE_COVERAGE_EQUALS_FROZEN_PSC01_RAW`：原始行数、唯一 key 数与完整 key 集
+必须和冻结 `M2-CHAN-PSC01-RAW` 完全一致。不得只评 anchor-available 交集，不得把弃权
+填 0；冻结人口内只要存在 anchor unavailable case，就只发布覆盖诊断并直接判为开发
+不支持（`PSC02_DEVELOPMENT_NOT_SUPPORTED`），不得生成看似完整的候选成绩。
 
 必报：cash WAPE、relative FVA、prediction/actual cash ratio、signed bias、occurrence
 parity、条件正金额 WAPE/bias/MAE/log-MAE、各 horizon、strict time block、五个重点平台、
@@ -284,22 +311,30 @@ horizon bias cap、Core80 H50 不恶化、maximum-work 与 top-10 error share �
 
 ## 9. 公共 synthetic reference 验证
 
-公共 reference harness 已用纯合成数据验证 14 项合同：
+公共 reference harness 已用纯合成数据验证 22 项合同：
 
 1. 现金整体乘 (k)，anchor 与 prediction 同步乘 (k)；
 2. 常量正金额恢复算术现金尺度；
 3. 高金额 observation 不回缩到几何中心；
-4. origin 后新增行或修订不改变旧 anchor；
-5. occurrence IEEE-754 bit-for-bit parity；
-6. occurrence probability 只乘一次；
-7. offset/anchor 只应用一次；
-8. monthly 到 horizon 只求和一次；
-9. cold-start 弃权及六层 fallback 均唯一、有限、确定；
-10. 0、负数、冲销与 as-of restatement 符合 target 合同；
-11. taxonomy 改变不影响 anchor 或 prediction；
-12. allowed model inputs 不包含 LG01 prediction；
-13. quasi-Gamma 主设计和 log-ratio ridge 诊断在合成数据上可区分；
-14. 输入顺序不改变结果或 digest。
+4. posting components 先汇总成月度自然键，正观测数只计月份；
+5. 完全相同 component 重复行确定性去重，金额或月度 revision 元数据冲突失败关闭；
+6. origin 后新增行或修订不改变旧 anchor；
+7. PSC01 与 PSC02 两侧重复 occurrence key 分别拒绝；
+8. occurrence 完整 key 集和 IEEE-754 bit-for-bit parity；
+9. 冻结 PSC01 raw 人口 exact-case coverage；
+10. anchor unavailable 不产生候选成绩且不填 0；
+11. occurrence probability 只乘一次；
+12. offset/anchor 只应用一次；
+13. monthly 到 horizon 只求和一次；
+14. 从未正现金目标即使 pool 充足仍弃权；
+15. 仅历史曾为正且直接窗口支持不足时才可 fallback；
+16. 0、负数、冲销与 as-of restatement 符合 target 合同；
+17. taxonomy 改变不影响 anchor 或 prediction，allowed inputs 不含 LG01 prediction；
+18. quasi-Gamma 主设计和 log-ratio ridge 诊断可区分且只接受 `[1,3]`；
+19. quasi-Gamma analytical gradient 通过有限差分检查；
+20. intercept-only quasi-Gamma 恢复闭式最优值；
+21. quasi-Gamma objective 单调下降、确定性收敛并保持尺度等变；
+22. numerical failure 不切换为两个诊断臂，输入顺序不改变 anchor 或 digest。
 
 状态是公共合成 reference 合同已验证且没有真实 outcome
 （`PUBLIC_SYNTHETIC_REFERENCE_CONTRACT_VERIFIED_NO_REAL_OUTCOME`）。这些测试没有连接

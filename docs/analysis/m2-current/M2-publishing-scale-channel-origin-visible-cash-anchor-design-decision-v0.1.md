@@ -31,6 +31,15 @@
 7. **LG01 门禁使用现行强标准。** LG01 是健康冻结 same-case baseline，所以采用
    `config/m2-business-acceptance-contract.v1.json#/candidateSuperiority` 的九项 `AND`
    规则；不使用较弱的“WAPE 最多恶化 2%”备用条件。
+8. **先聚合 source component，再形成月度锚。** 现有公共 materializer 证明 source
+   authority 是 posting component 形态；同一合法 revision snapshot 内先汇总到月度自然
+   键。直接对 component 求均值会改变月权重，因此明确禁止。
+9. **人口覆盖和数值失败均失败关闭。** 主设计必须覆盖冻结 PSC01 raw 的完整月度 key
+   集；不得交集评分或把弃权填 0。Gamma 拟合使用未截断 `mu=A×exp(xβ)`，预测 clip 不得
+   进入 objective 或导数；不可表示值只产生显式 numerical failure。
+
+上述第 8、9 项在任何 private 输入或真实 outcome 打开前消歧，详见
+`docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-pre-outcome-contract-clarification-v0.1.md`。
 
 ## 明确拒绝的替代方案
 

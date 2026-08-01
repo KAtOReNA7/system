@@ -36,7 +36,7 @@ test("registry schema, evidence paths and immutable digests validate", () => {
   );
   assert.equal(validation.counts.modelCount, 35);
   assert.equal(validation.counts.experimentCount, 23);
-  assert.equal(validation.counts.nonModelIdentifierCount, 129);
+  assert.equal(validation.counts.nonModelIdentifierCount, 130);
   assert.equal(validation.counts.evaluationCount, 115);
   assert.equal(validation.counts.comparabilityGroupCount, 59);
 });

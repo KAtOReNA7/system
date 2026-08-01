@@ -17,6 +17,8 @@
   - `config/m2-current-publishing-scale-channel-origin-visible-cash-anchor-schema.v0.1.json`
   - `docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-preregistration-v0.1.json`
   - `docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-preregistration-v0.1.md`
+  - `docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-design-decision-v0.1.md`
+  - `docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-pre-outcome-contract-clarification-v0.1.md`
 - M2 分层收入组合模型开发结论：
   - `docs/analysis/m2-current/M2-layered-revenue-composition-development-v0.1.json`
   - `docs/analysis/m2-current/M2-layered-revenue-composition-development-v0.1.md`

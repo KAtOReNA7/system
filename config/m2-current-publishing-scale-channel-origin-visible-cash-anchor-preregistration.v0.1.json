@@ -1,6 +1,6 @@
 {
   "schema": "m2.current.publishing_scale_channel_origin_visible_cash_anchor_preregistration.v0.1",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "asOf": "2026-08-01",
   "status": "M2_PSC02_ORIGIN_VISIBLE_CASH_ANCHOR_PREREGISTERED_IMPLEMENTATION_NOT_AUTHORIZED",
   "preregistrationId": "M2-PREREG-PSC02-ORIGIN-VISIBLE-CASH-ANCHOR-01",
@@ -159,7 +159,19 @@
     "symbol": "A_{w,c,o}",
     "unit": "CNY_PER_POSITIVE_WORK_CHANNEL_MONTH",
     "inputSchema": "config/m2-current-publishing-scale-channel-origin-visible-cash-anchor-schema.v0.1.json",
-    "inputGrain": "canonical_work_x_channel_x_cash_month_x_cash_category_x_currency_asof_revision",
+    "sourceAuthority": {
+      "form": "POSTING_COMPONENT_ROWS_AGGREGATED_WITHIN_CANONICAL_AS_OF_REVISION_SNAPSHOT",
+      "publicCodeEvidence": "scripts/m2-current/materialize_human_anchored_cases.py#_map_sales_share_rows->_monthly_panel",
+      "componentIdentityField": "componentId",
+      "revisionIdentityField": "revisionId",
+      "revisionMetadataFields": ["effectiveAt", "availableAt"],
+      "componentAggregationRequired": true,
+      "directComponentMeanAllowed": false,
+      "identicalDuplicatePolicy": "DETERMINISTIC_DEDUPLICATION_BY_MONTHLY_NATURAL_KEY_REVISION_ID_COMPONENT_ID_AND_CANONICAL_CONTENT",
+      "conflictPolicy": "FAIL_CLOSED_ON_SAME_COMPONENT_ID_CONTENT_CONFLICT_OR_MONTHLY_REVISION_MECHANISM_TIME_CONFLICT"
+    },
+    "inputGrain": "posting_component_with_monthly_natural_key_revision_identity",
+    "anchorObservationGrain": "standardWorkId|channelUid|cashMonth|cashCategory|currency",
     "allowedCashCategory": "sales_share",
     "allowedCurrency": "CNY",
     "forecastCutoff": "END_OF_FORECAST_ORIGIN_MONTH_ASIA_SHANGHAI",
@@ -169,7 +181,8 @@
     "lookbackMonths": 12,
     "lookbackBoundary": "LATEST_12_COMPLETE_BILL_MONTHS_ENDING_AT_ORIGIN_INCLUSIVE",
     "timeDecay": "NONE_EQUAL_POSITIVE_WORK_CHANNEL_MONTH_WEIGHT",
-    "positiveCashRule": "STRICTLY_POSITIVE_POSTING_COMPONENT_ONLY",
+    "positiveCashRule": "SUM_POSITIVE_POSTING_COMPONENTS_WITHIN_VISIBLE_CANONICAL_MONTHLY_REVISION_THEN_REQUIRE_MONTHLY_AMOUNT_STRICTLY_POSITIVE",
+    "positiveObservationCountRule": "COUNT_STRICTLY_POSITIVE_CANONICAL_MONTHLY_NATURAL_KEYS_AFTER_VISIBLE_REVISION_SELECTION",
     "zeroCashRule": "OCCURRENCE_EXPOSURE_ONLY_EXCLUDED_FROM_CONDITIONAL_AMOUNT_NUMERATOR_AND_DENOMINATOR",
     "reversalRule": "PRESERVE_SEPARATELY_NEVER_SUBTRACT_FROM_POSITIVE_CASH_ANCHOR",
     "restatementRule": "ONLY_REVISIONS_VISIBLE_BY_ORIGIN_MAY_REPLACE_THEIR_NATURAL_KEY;_LATER_REVISIONS_IGNORED",
@@ -227,7 +240,7 @@
         "runtimeReceipt"
       ],
       "digestAlgorithm": "SHA256_STABLE_JSON_UTF8_V1",
-      "canonicalInputOrdering": ["standardWorkId", "channelUid", "cashMonth", "cashCategory", "currency", "availableAt", "effectiveAt", "revisionId"],
+      "canonicalInputOrdering": ["standardWorkId", "channelUid", "cashMonth", "cashCategory", "currency", "revisionId", "availableAt", "effectiveAt", "componentId"],
       "inputOrderAffectsDigest": false,
       "privateManifestPublicationAllowed": false,
       "publicPrivateDigestPublicationAllowed": false
@@ -254,6 +267,7 @@
     "residualHierarchy": ["GLOBAL_POOLED_PARENT", "MECHANISM", "NAMED_PLATFORM"],
     "residualHierarchyCombinationScale": "LOG_MULTIPLIER_G_NOT_LOG1P_ABSOLUTE_AMOUNT",
     "residualPredictionClip": [-30, 30],
+    "residualPredictionClipRole": "FINAL_PREDICTION_ONLY_NOT_FIT_OBJECTIVE_GRADIENT_OR_HESSIAN",
     "trainingRows": "STRICTLY_POSITIVE_CONDITIONAL_AMOUNT_ROWS_ONLY",
     "sampleWeight": "EQUAL_TOTAL_WEIGHT_PER_STANDARD_WORK_NORMALIZED_TO_SUM_ONE",
     "estimators": {
@@ -302,6 +316,8 @@
         "coefficientTolerance": 1e-10,
         "relativeObjectiveTolerance": 1e-12,
         "pivotTolerance": 1e-12,
+        "fitLinearPredictorClip": "NONE_UNCLIPPED_X_BETA",
+        "numericEvaluation": "LOG_DOMAIN_RATIO_WITH_EXPLICIT_NONFINITE_FAILURE",
         "convergenceRule": "MAX_ABSOLUTE_COEFFICIENT_CHANGE_AT_MOST_TOLERANCE_AND_RELATIVE_OBJECTIVE_CHANGE_AT_MOST_TOLERANCE",
         "nodeNumericFailurePolicy": "EXPLICIT_NEAREST_ELIGIBLE_RESIDUAL_PARENT_WITH_RECEIPT",
         "globalNumericFailureStatus": "PSC02_P_GAMMA_OFFSET_NUMERICAL_FAILURE_NO_CANDIDATE_OUTPUT",
@@ -353,6 +369,14 @@
       "PSC02_D1_ANCHORED_LOG_RATIO_RIDGE_ATTRIBUTION"
     ],
     "diagnosticArmsParticipateInCandidateSelection": false,
+    "exactCaseCoverage": {
+      "candidatePopulation": "FROZEN_M2_CHAN_PSC01_RAW_MONTHLY_CASE_KEYS",
+      "comparison": "EXACT_ROW_COUNT_UNIQUE_KEY_COUNT_AND_COMPLETE_KEY_SET",
+      "intersectionScoringAllowed": false,
+      "abstentionZeroImputationAllowed": false,
+      "anchorUnavailableDecision": "PSC02_DEVELOPMENT_NOT_SUPPORTED",
+      "candidateScoreOnFailureAllowed": false
+    },
     "requiredMetrics": [
       "cash_WAPE",
       "relative_FVA",
@@ -416,6 +440,7 @@
     },
     "correctnessGates": [
       "OCCURRENCE_IEEE754_PARITY_ALL_MONTHLY_CASES",
+      "PSC02_EXACT_CASE_COVERAGE_EQUALS_FROZEN_PSC01_RAW",
       "NO_TIME_LEAKAGE",
       "OCCURRENCE_MULTIPLIED_EXACTLY_ONCE",
       "ANCHOR_APPLIED_EXACTLY_ONCE",
@@ -460,12 +485,37 @@
     "privateRowsUsed": false,
     "realOutcomeUsed": false,
     "productionConnected": false,
-    "requiredInvariantCount": 14
+    "requiredInvariantCount": 22,
+    "requiredInvariants": [
+      "MONTHLY_COMPONENTS_AGGREGATED_BEFORE_ANCHOR_MEAN",
+      "IDENTICAL_COMPONENT_DUPLICATES_DEDUPED_DETERMINISTICALLY",
+      "CONFLICTING_COMPONENT_DUPLICATES_FAIL_CLOSED",
+      "MONTHLY_REVISION_METADATA_CONFLICT_FAILS_CLOSED",
+      "POSITIVE_OBSERVATION_COUNT_COUNTS_MONTHLY_NATURAL_KEYS",
+      "FUTURE_REVISION_EXCLUDED_BY_ORIGIN_VISIBILITY",
+      "INPUT_ORDER_INVARIANT_ANCHOR_AND_DIGEST",
+      "NEVER_POSITIVE_TARGET_ABSTAINS_DESPITE_POOL_SUPPORT",
+      "HISTORICALLY_POSITIVE_TARGET_MAY_USE_POOL_WHEN_DIRECT_WINDOW_SUPPORT_FAILS",
+      "PSC01_DUPLICATE_OCCURRENCE_KEY_REJECTED",
+      "PSC02_DUPLICATE_OCCURRENCE_KEY_REJECTED",
+      "OCCURRENCE_COMPLETE_KEY_SET_AND_BINARY64_PARITY",
+      "EXACT_FROZEN_CASE_COVERAGE_REQUIRED",
+      "ANCHOR_UNAVAILABLE_PREVENTS_CANDIDATE_SCORE_WITHOUT_ZERO_IMPUTATION",
+      "OCCURRENCE_ANCHOR_AND_HORIZON_APPLIED_ONCE",
+      "D0_ANCHOR_ONLY_IDENTITY",
+      "D1_FROZEN_LAMBDA_GRID_ONLY",
+      "GAMMA_FINITE_DIFFERENCE_GRADIENT",
+      "GAMMA_INTERCEPT_ONLY_CLOSED_FORM",
+      "GAMMA_SCALE_EQUIVARIANCE",
+      "GAMMA_MONOTONE_DETERMINISTIC_CONVERGENCE",
+      "GAMMA_NUMERICAL_FAILURE_NEVER_SWITCHES_TO_DIAGNOSTIC_ARM"
+    ]
   },
   "publication": {
     "publicReport": "docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-preregistration-v0.1.md",
     "publicMachineReport": "docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-preregistration-v0.1.json",
     "designDecision": "docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-design-decision-v0.1.md",
+    "preOutcomeContractClarification": "docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-pre-outcome-contract-clarification-v0.1.md",
     "schema": "config/m2-current-publishing-scale-channel-origin-visible-cash-anchor-schema.v0.1.json",
     "validatorAndReference": "src/domain/m2Current/publishingScaleCashAnchorPreregistration.js",
     "privateContentIncluded": false,

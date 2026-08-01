@@ -6,11 +6,15 @@ import { fileURLToPath } from "node:url";
 
 import {
   M2_PSC02_ANCHOR_AVAILABLE,
+  M2_PSC02_ANCHOR_SOURCE_FORM,
   M2_PSC02_ANCHOR_UNAVAILABLE,
+  M2_PSC02_GAMMA_NUMERICAL_FAILURE,
   aggregateM2Psc02HorizonReference,
   assertM2Psc02OccurrenceParity,
   buildM2Psc02OriginVisibleCashAnchor,
   canonicalM2Psc02AnchorInputDigest,
+  evaluateM2Psc02ExactCaseCoverage,
+  evaluateM2Psc02GammaObjectiveReference,
   fitM2Psc02AnchoredGammaOffsetReference,
   fitM2Psc02AnchoredLogRatioRidgeReference,
   m2Psc02ReferenceArmIds,
@@ -139,6 +143,48 @@ test("a high cash observation stays on the arithmetic scale instead of a geometr
   assert.ok(anchor.value > Math.exp((Math.log(1) + Math.log(1) + Math.log(1000)) / 3) * 30);
 });
 
+test("posting components are aggregated to monthly natural keys before the anchor mean", () => {
+  const rows = [
+    makeRow({
+      cashMonth: "2024-10",
+      revisionId: "r-october",
+      componentId: "october-a",
+      positiveCash: 4
+    }),
+    makeRow({
+      cashMonth: "2024-10",
+      revisionId: "r-october",
+      componentId: "october-b",
+      positiveCash: 6
+    }),
+    makeRow({cashMonth: "2024-11", positiveCash: 20}),
+    makeRow({cashMonth: "2024-12", positiveCash: 30})
+  ];
+  const anchor = buildAnchor(rows);
+  assert.equal(anchor.value, 20);
+  assert.equal(anchor.support.visibleObservationCount, 3);
+  assert.equal(anchor.support.positiveObservationCount, 3);
+  assert.equal(anchor.observationGrain, config.cashAnchor.anchorObservationGrain);
+});
+
+test("component duplicate and monthly revision conflicts fail closed without order dependence", () => {
+  const rows = targetRows([10, 20, 30]);
+  assert.deepEqual(buildAnchor([...rows, {...rows[0]}]), buildAnchor(rows));
+  assert.throws(() => buildAnchor([
+    ...rows,
+    {...rows[0], positiveCash: 11}
+  ]), /anchor_component_duplicate_conflict/u);
+  const conflict = makeRow({
+    cashMonth: "2024-12",
+    revisionId: rows[2].revisionId,
+    componentId: "conflicting-mechanism-component",
+    mechanism: "advertising",
+    positiveCash: 5
+  });
+  assert.throws(() => buildAnchor([...rows, conflict]),
+    /anchor_monthly_revision_metadata_conflict/u);
+});
+
 test("post-origin rows and revisions cannot change a past-origin anchor", () => {
   const rows = targetRows([10, 20, 30]);
   const futureRevision = {
@@ -196,6 +242,51 @@ test("frozen PSC01 occurrence is bit-for-bit identical and passed through unchan
     residualLogMultiplier: 0
   });
   assert.ok(Object.is(prediction.occurrenceProbability, probability));
+});
+
+test("occurrence parity rejects duplicate, missing, and extra monthly case keys", () => {
+  const a = {caseKey: "a", occurrenceProbability: 0.2};
+  const b = {caseKey: "b", occurrenceProbability: 0.3};
+  assert.throws(() => assertM2Psc02OccurrenceParity([a, a], [a, b]),
+    /duplicate_case_key:psc01_occurrence:a/u);
+  assert.throws(() => assertM2Psc02OccurrenceParity([a, b], [a, a]),
+    /duplicate_case_key:psc02_occurrence:a/u);
+  assert.throws(() => assertM2Psc02OccurrenceParity([a, b], [a]),
+    /case_count_mismatch/u);
+  assert.throws(() => assertM2Psc02OccurrenceParity([a, b], [a, {
+    caseKey: "c",
+    occurrenceProbability: 0.3
+  }]), /key_set_mismatch:b/u);
+});
+
+test("primary design requires exact frozen PSC01 raw population coverage", () => {
+  const frozen = [{caseKey: "a"}, {caseKey: "b"}];
+  const complete = frozen.map((row) => ({
+    ...row,
+    anchorStatus: M2_PSC02_ANCHOR_AVAILABLE,
+    positivePoint: 10,
+    abstained: false
+  }));
+  const passed = evaluateM2Psc02ExactCaseCoverage(frozen, complete);
+  assert.equal(passed.passed, true);
+  assert.equal(passed.candidateScoreAllowed, true);
+  assert.throws(() => evaluateM2Psc02ExactCaseCoverage(
+    frozen,
+    complete.slice(0, 1)
+  ), /exact_case_coverage_count_mismatch/u);
+  const unavailable = evaluateM2Psc02ExactCaseCoverage(frozen, [
+    complete[0],
+    {
+      caseKey: "b",
+      anchorStatus: M2_PSC02_ANCHOR_UNAVAILABLE,
+      positivePoint: null,
+      abstained: true
+    }
+  ]);
+  assert.equal(unavailable.passed, false);
+  assert.equal(unavailable.candidateScoreAllowed, false);
+  assert.equal(unavailable.abstentionZeroImputationUsed, false);
+  assert.equal(unavailable.developmentDecision, "PSC02_DEVELOPMENT_NOT_SUPPORTED");
 });
 
 test("occurrence probability is multiplied exactly once", () => {
@@ -270,6 +361,30 @@ test("cold start abstains and every anchor fallback is deterministic and finite"
   assert.equal(prediction.abstained, true);
 });
 
+test("a never-positive target abstains despite pool support", () => {
+  const anchor = buildAnchor(poolRows({
+    channelUid: "target-channel",
+    mechanism: "membership"
+  }));
+  assert.equal(anchor.status, M2_PSC02_ANCHOR_UNAVAILABLE);
+  assert.equal(anchor.support.reason, "no_origin_visible_positive_cash_for_target_channel");
+});
+
+test("a historically positive target may use fallback only when recent direct support is insufficient", () => {
+  const historical = makeRow({
+    cashMonth: "2023-01",
+    positiveCash: 15,
+    revisionId: "historical-positive"
+  });
+  const anchor = buildAnchor([
+    historical,
+    ...poolRows({channelUid: "target-channel", mechanism: "advertising"})
+  ]);
+  assert.equal(anchor.status, M2_PSC02_ANCHOR_AVAILABLE);
+  assert.equal(anchor.level, "CHANNEL_POOL");
+  assert.equal(anchor.support.positiveDistinctWorks, 8);
+});
+
 test("zero cash, reversal cash, and as-of restatement retain the positive target contract", () => {
   const original = targetRows([10, 20, 30]);
   const zero = makeRow({
@@ -336,6 +451,75 @@ test("quasi-Gamma primary design is distinguishable from the log-ratio ridge dia
   const gammaResidual = predictM2Psc02ResidualReference(gamma, [2]);
   const logResidual = predictM2Psc02ResidualReference(logRatio, [2]);
   assert.ok(Math.abs(gammaResidual - logResidual) > 0.05);
+});
+
+test("quasi-Gamma analytical gradient matches a finite-difference gradient", () => {
+  const training = [
+    referenceFitRow("w1", 10, 5, [-1]),
+    referenceFitRow("w2", 10, 15, [0]),
+    referenceFitRow("w3", 10, 40, [1])
+  ];
+  const coefficients = [0.2, -0.15];
+  const exact = evaluateM2Psc02GammaObjectiveReference(
+    training,
+    coefficients,
+    {lambda: 1}
+  );
+  const step = 1e-6;
+  for (let index = 0; index < coefficients.length; index += 1) {
+    const plus = [...coefficients];
+    const minus = [...coefficients];
+    plus[index] += step;
+    minus[index] -= step;
+    const finiteDifference = (
+      evaluateM2Psc02GammaObjectiveReference(training, plus).objective
+      - evaluateM2Psc02GammaObjectiveReference(training, minus).objective
+    ) / (2 * step);
+    assert.ok(Math.abs(finiteDifference - exact.gradient[index]) < 1e-7);
+  }
+});
+
+test("intercept-only quasi-Gamma converges to its closed-form optimum", () => {
+  const training = [
+    referenceFitRow("w1", 10, 10, []),
+    referenceFitRow("w2", 10, 20, []),
+    referenceFitRow("w3", 10, 40, [])
+  ];
+  const state = fitM2Psc02AnchoredGammaOffsetReference(training);
+  assert.equal(state.status, "CONVERGED");
+  assert.ok(Math.abs(state.coefficients[0] - Math.log(7 / 3)) < 1e-10);
+});
+
+test("quasi-Gamma objective decreases monotonically and convergence is deterministic", () => {
+  const training = [
+    referenceFitRow("w1", 10, 2, [-1]),
+    referenceFitRow("w2", 10, 10, [0]),
+    referenceFitRow("w3", 10, 90, [1])
+  ];
+  const first = fitM2Psc02AnchoredGammaOffsetReference(training);
+  const second = fitM2Psc02AnchoredGammaOffsetReference(training);
+  assert.equal(first.status, "CONVERGED");
+  assert.deepEqual(second, first);
+  assert.ok(first.objectiveTrace.every((value, index, values) => (
+    index === 0 || value <= values[index - 1] + 1e-15
+  )));
+});
+
+test("quasi-Gamma numerical failure never switches to a diagnostic estimator", () => {
+  const state = fitM2Psc02AnchoredGammaOffsetReference([
+    referenceFitRow("w1", Number.MIN_VALUE, Number.MAX_VALUE, [])
+  ]);
+  assert.equal(state.status, M2_PSC02_GAMMA_NUMERICAL_FAILURE);
+  assert.equal(state.coefficients, null);
+  assert.equal(state.estimatorSwitchUsed, false);
+  assert.equal(state.diagnosticArmReplacementUsed, false);
+  assert.match(state.failureReason, /NONFINITE/u);
+  assert.throws(() => fitM2Psc02AnchoredGammaOffsetReference([
+    referenceFitRow("w1", 1, 1, [])
+  ], {lambda: 2}), /lambda_outside_frozen_grid/u);
+  assert.throws(() => fitM2Psc02AnchoredLogRatioRidgeReference([
+    referenceFitRow("w1", 1, 1, [])
+  ], {lambda: 2}), /lambda_outside_frozen_grid/u);
 });
 
 test("input order changes neither anchor output nor canonical input digest", () => {
@@ -435,7 +619,8 @@ function poolRows({channelUid, mechanism}) {
 
 function makeRow(overrides = {}) {
   const cashMonth = overrides.cashMonth ?? "2024-12";
-  return {
+  const row = {
+    sourceForm: M2_PSC02_ANCHOR_SOURCE_FORM,
     standardWorkId: "target-work",
     channelUid: "target-channel",
     mechanism: "membership",
@@ -449,6 +634,15 @@ function makeRow(overrides = {}) {
     reversalCash: 0,
     excludedUnallocatedReversalResidual: 0,
     ...overrides
+  };
+  return {
+    ...row,
+    componentId: overrides.componentId ?? [
+      row.standardWorkId,
+      row.channelUid,
+      row.cashMonth,
+      row.revisionId
+    ].join("|")
   };
 }
 

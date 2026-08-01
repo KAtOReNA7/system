@@ -21,6 +21,8 @@ const paths = {
     "docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-preregistration-v0.1.md",
   decision:
     "docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-design-decision-v0.1.md",
+  clarification:
+    "docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-pre-outcome-contract-clarification-v0.1.md",
   state: "docs/analysis/m2-v2/M2-v2-current-state-index-v0.55.md"
 };
 const config = await readJson(paths.config);
@@ -28,6 +30,7 @@ const schema = await readJson(paths.schema);
 const machine = await readJson(paths.machine);
 const registry = await readJson("config/m2-model-registry.v1.json");
 const report = await readText(paths.report);
+const clarification = await readText(paths.clarification);
 const state = await readText(paths.state);
 const readme = await readText("README.md");
 
@@ -41,6 +44,9 @@ test("public preregistration report and machine contract share one status and id
   assert.equal(machine.schemaRef, paths.schema);
   assert.match(report, new RegExp(M2_PSC02_PREREGISTRATION_STATUS, "u"));
   assert.match(report, /没有授权创建 PSC02 模型 ID/u);
+  assert.match(report, /posting component/u);
+  assert.match(clarification, /真实 outcome 从未打开/u);
+  assert.match(clarification, /privateInputRead=false/u);
   assert.doesNotMatch(
     JSON.stringify(machine),
     /data[\\/]+private-(input|output)|[A-Z]:[\\/]/iu
@@ -57,10 +63,33 @@ test("schema covers config, anchor input, anchor result, and manifest identities
   assert.ok(schema.$defs.anchorInputRow);
   assert.ok(schema.$defs.anchorResult);
   assert.ok(schema.$defs.anchorManifest);
+  assert.equal(schema.properties.version.const, "0.1.1");
+  assert.equal(
+    schema.$defs.anchorInputRow.properties.sourceForm.const,
+    config.cashAnchor.sourceAuthority.form
+  );
+  assert.ok(schema.$defs.anchorInputRow.required.includes("componentId"));
   assert.deepEqual(
     schema.$defs.cashAnchorContract.properties.fallbackOrder.const,
     config.cashAnchor.fallbackOrder
   );
+});
+
+test("public materializer proves the authority is component source aggregated monthly", async () => {
+  const materializer = await readText(
+    "scripts/m2-current/materialize_human_anchored_cases.py"
+  );
+  assert.equal(
+    config.cashAnchor.sourceAuthority.form,
+    "POSTING_COMPONENT_ROWS_AGGREGATED_WITHIN_CANONICAL_AS_OF_REVISION_SNAPSHOT"
+  );
+  assert.match(materializer, /rows, mapping_audit = _map_sales_share_rows\(/u);
+  assert.match(materializer, /panel = _monthly_panel\(rows\)/u);
+  assert.match(
+    materializer,
+    /bucket\["positive"\] \+= max\(amount, Decimal\("0"\)\)/u
+  );
+  assert.equal(config.cashAnchor.sourceAuthority.directComponentMeanAllowed, false);
 });
 
 test("semantic validator binds all current contracts", async () => {
@@ -149,12 +178,18 @@ test("evaluation gates and public synthetic disclosure are frozen before real pr
   assert.equal(machine.evaluationFreeze.lg01CombinationRule, "AND");
   assert.equal(machine.evaluationFreeze.bootstrapIterations, 2000);
   assert.equal(machine.evaluationFreeze.bootstrapResamplingUnit, "standardWorkId");
-  assert.equal(machine.publicSyntheticValidation.requiredInvariantCount, 14);
-  assert.equal(machine.publicSyntheticValidation.verifiedInvariantCount, 14);
+  assert.equal(machine.publicSyntheticValidation.requiredInvariantCount, 22);
+  assert.equal(machine.publicSyntheticValidation.verifiedInvariantCount, 22);
   assert.equal(machine.publicSyntheticValidation.privateRowsUsed, false);
   assert.equal(machine.publicSyntheticValidation.realPredictionGenerated, false);
   assert.equal(machine.publicSyntheticValidation.candidateFitExecuted, false);
   assert.equal(machine.publicSyntheticValidation.realEvaluationExecuted, false);
+  assert.equal(machine.preOutcomeClarification.realOutcomeEverOpened, false);
+  assert.equal(machine.preOutcomeClarification.privateInputReadForClarification, false);
+  assert.equal(
+    machine.evaluationFreeze.exactCaseCoverageGate,
+    "PSC02_EXACT_CASE_COVERAGE_EQUALS_FROZEN_PSC01_RAW"
+  );
 });
 
 async function readJson(relativePath) {

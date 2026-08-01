@@ -29,6 +29,13 @@
   },
   "cashAnchor": {
     "unit": "CNY_PER_POSITIVE_WORK_CHANNEL_MONTH",
+    "sourceAuthorityForm": "POSTING_COMPONENT_ROWS_AGGREGATED_WITHIN_CANONICAL_AS_OF_REVISION_SNAPSHOT",
+    "sourceAuthorityPublicCodeEvidence": "scripts/m2-current/materialize_human_anchored_cases.py#_map_sales_share_rows->_monthly_panel",
+    "sourceComponentAggregationRequired": true,
+    "directComponentMeanAllowed": false,
+    "anchorObservationGrain": "standardWorkId|channelUid|cashMonth|cashCategory|currency",
+    "positiveObservationCountRule": "COUNT_STRICTLY_POSITIVE_CANONICAL_MONTHLY_NATURAL_KEYS_AFTER_VISIBLE_REVISION_SELECTION",
+    "duplicatePolicy": "IDENTICAL_CANONICAL_COMPONENT_DUPLICATES_DEDUPED_CONFLICTS_FAIL_CLOSED",
     "forecastCutoff": "END_OF_FORECAST_ORIGIN_MONTH_ASIA_SHANGHAI",
     "lookbackMonths": 12,
     "timeDecay": "NONE_EQUAL_POSITIVE_WORK_CHANNEL_MONTH_WEIGHT",
@@ -85,11 +92,21 @@
     "regularizationGrid": [1, 3],
     "selectionRule": "LOWEST_WORK_BALANCED_INNER_GAMMA_DEVIANCE;EXACT_TIE_WITHIN_1E-12_SELECT_LARGER_LAMBDA",
     "solver": "DAMPED_NEWTON_IRLS_WITH_STEP_HALVING",
+    "fitLinearPredictorClip": "NONE_UNCLIPPED_X_BETA",
+    "numericEvaluation": "LOG_DOMAIN_RATIO_WITH_EXPLICIT_NONFINITE_FAILURE",
+    "residualPredictionClip": [-30, 30],
+    "residualPredictionClipRole": "FINAL_PREDICTION_ONLY_NOT_FIT_OBJECTIVE_GRADIENT_OR_HESSIAN",
+    "globalNumericFailureStatus": "PSC02_P_GAMMA_OFFSET_NUMERICAL_FAILURE_NO_CANDIDATE_OUTPUT",
     "silentEstimatorSwitchAllowed": false,
     "diagnosticArmReplacementAllowed": false
   },
   "evaluationFreeze": {
     "status": "FROZEN_BEFORE_ANY_REAL_PSC02_PREDICTION",
+    "exactCaseCoverageGate": "PSC02_EXACT_CASE_COVERAGE_EQUALS_FROZEN_PSC01_RAW",
+    "exactCaseCoveragePopulation": "FROZEN_M2_CHAN_PSC01_RAW_MONTHLY_CASE_KEYS",
+    "intersectionScoringAllowed": false,
+    "abstentionZeroImputationAllowed": false,
+    "anchorUnavailableDecision": "PSC02_DEVELOPMENT_NOT_SUPPORTED",
     "developmentEvidenceClass": "DEVELOPMENT_REPLAY",
     "psc01PrimaryAndStrictRelativeWapeFvaMinimum": 0.1,
     "primaryPredictionActualCashRatioInclusive": [0.75, 1.25],
@@ -110,13 +127,20 @@
   },
   "publicSyntheticValidation": {
     "status": "PUBLIC_SYNTHETIC_REFERENCE_CONTRACT_VERIFIED_NO_REAL_OUTCOME",
-    "requiredInvariantCount": 14,
-    "verifiedInvariantCount": 14,
+    "requiredInvariantCount": 22,
+    "verifiedInvariantCount": 22,
     "privateRowsUsed": false,
     "realPredictionGenerated": false,
     "candidateFitExecuted": false,
     "realEvaluationExecuted": false,
     "productionConnected": false
+  },
+  "preOutcomeClarification": {
+    "decisionRef": "docs/analysis/m2-current/M2-publishing-scale-channel-origin-visible-cash-anchor-pre-outcome-contract-clarification-v0.1.md",
+    "realOutcomeEverOpened": false,
+    "privateInputReadForClarification": false,
+    "realPsc02PredictionGenerated": false,
+    "scientificGridOrThresholdChanged": false
   },
   "authorizationBoundary": {
     "activeCandidate": null,

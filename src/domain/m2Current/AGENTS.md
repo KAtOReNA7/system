@@ -86,6 +86,24 @@ This directory is the only implementation home for current M2 model logic.
   model ID, connect a runtime, read private input, fit, tune, predict, evaluate,
   bootstrap, or register a candidate/evaluation row without separate explicit
   authorization.
+- For origin-visible cash anchors sourced from posting components, aggregate
+  within one legal as-of revision snapshot to the canonical monthly natural key
+  `standardWorkId|channelUid|cashMonth|cashCategory|currency` before counting
+  positive observations or taking an arithmetic mean. Never average posting
+  components directly. Canonically identical component duplicates may be
+  deterministically deduplicated; amount, mechanism, or time conflicts fail
+  closed without input-order selection.
+- Frozen PSC01/PSC02 occurrence parity must reject duplicate case keys on each
+  side separately, then compare raw counts, unique counts, complete key sets,
+  and IEEE-754 binary64 probability bits. PSC02 primary monthly coverage must
+  equal the complete frozen PSC01 raw population; never score an available-only
+  intersection or zero-impute abstention. Any unavailable anchor in that
+  population yields `PSC02_DEVELOPMENT_NOT_SUPPORTED` without a candidate score.
+- PSC02 quasi-Gamma fitting uses one unclipped mathematical target
+  `mu=A*exp(x_beta)` for objective, gradient, and Hessian. The `[-30,30]`
+  residual clip is prediction-only. Non-finite or unrepresentable fit values
+  must produce an explicit numerical failure and must not switch to a
+  diagnostic arm.
 - Model selection must be nested inside the applicable outer work or time
   split. Exact v0.3, later-origin, final holdout, provider, database, canary,
   release, and M3 data must not be read for selection.
