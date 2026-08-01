@@ -5,6 +5,9 @@ import { fileURLToPath } from "node:url";
 import test from "node:test";
 
 import {
+  runHeadProtectedSegmentedRouter
+} from "../src/domain/m2Current/headProtectedSegmentedRouter.js";
+import {
   classifyHpsr02IndependentEvidence,
   evaluateHpsr02IndependentEvaluation,
   HPSR02_ARM_IDS,
@@ -231,6 +234,24 @@ test("only L20 receives the frozen bounded correction", () => {
 
 test("independent evaluator reports paired WORK_TOTAL evidence once", () => {
   const { result } = synthetic;
+  const historicalSynthetic = runHeadProtectedSegmentedRouter({
+    origin: synthetic.fixture.origin,
+    horizonMonths: 3,
+    originVisibleWorkCashRows: synthetic.fixture.works.map((work) => ({
+      standardWorkId: work.standardWorkId,
+      trailing12Cash: work.monthlySalesShareCash * 12
+    })),
+    predictionRows: synthetic.fixture.works.map((work) => ({
+      standardWorkId: work.standardWorkId,
+      origin: synthetic.fixture.origin,
+      horizonMonths: 3,
+      lg01Prediction: work.lg01Prediction,
+      cham01B3Prediction: work.cham01B3Prediction,
+      cham01Diagnostics: work.cham01Diagnostics
+    })),
+    residualBoundState: synthetic.fixture.residualBoundState,
+    executionMode: "SYNTHETIC_FIXTURE"
+  });
   const r2ByWork = new Map(result.r2Rows.map((row) => [
     row.standardWorkId,
     row
@@ -246,6 +267,10 @@ test("independent evaluator reports paired WORK_TOTAL evidence once", () => {
   const evaluation = evaluateHpsr02IndependentEvaluation({
     routerResult: {
       ...result,
+      executionMode: "CONTROLLED_LATER_ORIGIN"
+    },
+    historicalRouterResult: {
+      ...historicalSynthetic,
       executionMode: "CONTROLLED_LATER_ORIGIN"
     },
     actualRows,
@@ -269,7 +294,11 @@ test("independent evaluator reports paired WORK_TOTAL evidence once", () => {
   assert.equal(evaluation.structure.H50M30RowwiseExactLg01, true);
   assert.equal(evaluation.structure.workChannelStatus, "PARTIAL_NOT_ACTIVE");
   assert.equal(evaluation.metrics.bootstrapFva95.iterations, 2000);
+  assert.equal(evaluation.metrics.r1BootstrapFva95.iterations, 2000);
   assert.equal(evaluation.bootstrapExecutionCount, 1);
+  assert.equal(evaluation.bootstrapComparisonCount, 2);
+  assert.equal(evaluation.historicalComparatorEvaluationCount, 1);
+  assert.equal(evaluation.structure.historicalR1SameCasePass, true);
   assert.equal(evaluation.rawCandidateEvaluationCount, 1);
   assert.equal(evaluation.privateRows.length, 10);
 });

@@ -372,6 +372,7 @@ export function classifyHpsr02IndependentEvidence({
 
 export function evaluateHpsr02IndependentEvaluation({
   routerResult,
+  historicalRouterResult,
   actualRows,
   eligibleActualRows,
   sourceGate,
@@ -386,6 +387,16 @@ export function evaluateHpsr02IndependentEvaluation({
     || routerResult?.invariants?.bootstrapExecuted !== false
   ) {
     throw new Error("hpsr02_independent_router_result_invalid");
+  }
+  if (
+    historicalRouterResult?.modelId !== "M2-WORK-HPSR01"
+    || historicalRouterResult?.origin !== "2026-03"
+    || historicalRouterResult?.horizonMonths !== 3
+    || historicalRouterResult?.executionMode !== "CONTROLLED_LATER_ORIGIN"
+    || historicalRouterResult?.invariants?.scoreComputed !== false
+    || historicalRouterResult?.invariants?.bootstrapExecuted !== false
+  ) {
+    throw new Error("hpsr02_independent_historical_router_result_invalid");
   }
   if (
     sourceGate?.sourceAuthorityStatus
@@ -409,19 +420,32 @@ export function evaluateHpsr02IndependentEvaluation({
     row.actual
   ]));
   const r0ByWork = independentWorkIndex(routerResult.r0Rows, "R0");
+  const r1ByWork = independentWorkIndex(
+    historicalRouterResult.r1RawRouterRows,
+    "R1"
+  );
   const r2ByWork = independentWorkIndex(routerResult.r2Rows, "R2");
   const core80Ids = [...routerResult.population.core80WorkIds];
   if (
     !sameIndependentValues([...r0ByWork.keys()], core80Ids)
+    || !sameIndependentValues([...r1ByWork.keys()], core80Ids)
     || !sameIndependentValues([...r2ByWork.keys()], core80Ids)
+    || !sameIndependentValues(
+      historicalRouterResult.population.core80WorkIds,
+      core80Ids
+    )
     || core80Ids.some((workId) => !actualByWork.has(workId))
   ) {
     throw new Error("hpsr02_independent_exact_same_case_failed");
   }
   const privateRows = core80Ids.map((standardWorkId) => {
     const r0 = r0ByWork.get(standardWorkId);
+    const r1 = r1ByWork.get(standardWorkId);
     const r2 = r2ByWork.get(standardWorkId);
-    if (r0.cashBandId !== r2.cashBandId) {
+    if (
+      r0.cashBandId !== r1.cashBandId
+      || r0.cashBandId !== r2.cashBandId
+    ) {
       throw new Error("hpsr02_independent_cash_band_mismatch");
     }
     return Object.freeze({
@@ -438,6 +462,13 @@ export function evaluateHpsr02IndependentEvaluation({
       cashBandId: r2.cashBandId,
       actual: actualByWork.get(standardWorkId),
       r0PointEstimate: r0.pointEstimate,
+      r1PointEstimate: r1.pointEstimate,
+      r1BoundTriggered: r1.boundTriggered,
+      r1CorrectionApplied: r1.correctionApplied,
+      r1FallbackToLg01: r1.fallbackToLg01,
+      r1FallbackReason: r1.fallbackReason,
+      r1NumericStatus: r1.numericStatus,
+      r1RawPredictionFinite: r1.rawPredictionFinite ?? null,
       r2PointEstimate: r2.pointEstimate,
       r2BoundTriggered: r2.boundTriggered,
       r2CorrectionApplied: r2.correctionApplied,
@@ -465,16 +496,27 @@ export function evaluateHpsr02IndependentEvaluation({
     privateRows,
     "r0PointEstimate"
   );
+  const r1 = scoreHpsrEvaluationRows(
+    privateRows,
+    "r1PointEstimate"
+  );
   const r2 = scoreHpsrEvaluationRows(
     privateRows,
     "r2PointEstimate"
   );
   const relativeFva = pairedFva(r2, r0);
+  const r1RelativeFva = pairedFva(r1, r0);
   const pairedAbsoluteErrorReduction =
     r0.absoluteErrorTotal - r2.absoluteErrorTotal;
+  const r1PairedAbsoluteErrorReduction =
+    r0.absoluteErrorTotal - r1.absoluteErrorTotal;
   const pairedAbsoluteErrorReductionOverActualCash =
     r0.absoluteActualTotal > 0
       ? pairedAbsoluteErrorReduction / r0.absoluteActualTotal
+      : null;
+  const r1PairedAbsoluteErrorReductionOverActualCash =
+    r0.absoluteActualTotal > 0
+      ? r1PairedAbsoluteErrorReduction / r0.absoluteActualTotal
       : null;
   const iterations = Number(bootstrap.iterations ?? 2000);
   const seed = Number(bootstrap.seed ?? 20260801);
@@ -487,9 +529,17 @@ export function evaluateHpsr02IndependentEvaluation({
     iterations,
     seed
   });
+  const r1BootstrapResult = bootstrapHpsrFva(privateRows, {
+    candidateField: "r1PointEstimate",
+    baselineField: "r0PointEstimate",
+    iterations,
+    seed
+  });
   if (
     bootstrapResult.iterations !== 2000
     || bootstrapResult.interval95 === null
+    || r1BootstrapResult.iterations !== 2000
+    || r1BootstrapResult.interval95 === null
   ) {
     throw new Error("hpsr02_independent_bootstrap_incomplete");
   }
@@ -508,8 +558,15 @@ export function evaluateHpsr02IndependentEvaluation({
         "r2PointEstimate",
         "NO_ROWS_IN_CASH_BAND"
       );
+      const historical = scoreHpsrEvaluationRows(
+        rows,
+        "r1PointEstimate",
+        "NO_ROWS_IN_CASH_BAND"
+      );
       const errorReduction =
         baseline.absoluteErrorTotal - candidate.absoluteErrorTotal;
+      const historicalErrorReduction =
+        baseline.absoluteErrorTotal - historical.absoluteErrorTotal;
       return [cashBandId, Object.freeze({
         workCount: rows.length,
         actualCash: candidate.absoluteActualTotal,
@@ -517,7 +574,14 @@ export function evaluateHpsr02IndependentEvaluation({
           ? candidate.absoluteActualTotal / r2.absoluteActualTotal
           : null,
         r0: baseline,
+        r1: historical,
         r2: candidate,
+        r1AbsoluteErrorReduction: historicalErrorReduction,
+        r1Direction: historicalErrorReduction > 0
+          ? "IMPROVED"
+          : historicalErrorReduction < 0
+            ? "DEGRADED"
+            : "TIED",
         absoluteErrorReduction: errorReduction,
         direction: errorReduction > 0
           ? "IMPROVED"
@@ -537,6 +601,7 @@ export function evaluateHpsr02IndependentEvaluation({
   const allFinite = privateRows.every((row) => (
     Number.isFinite(row.actual)
     && Number.isFinite(row.r0PointEstimate)
+    && Number.isFinite(row.r1PointEstimate)
     && Number.isFinite(row.r2PointEstimate)
   ));
   const absoluteBiasWorsening =
@@ -592,7 +657,12 @@ export function evaluateHpsr02IndependentEvaluation({
       : null,
     metrics: Object.freeze({
       r0,
+      r1,
       r2,
+      r1PairedAbsoluteErrorReduction,
+      r1PairedAbsoluteErrorReductionOverActualCash,
+      r1RelativeFva,
+      r1BootstrapFva95: r1BootstrapResult,
       pairedAbsoluteErrorReduction,
       pairedAbsoluteErrorReductionOverActualCash,
       relativeFva,
@@ -618,11 +688,31 @@ export function evaluateHpsr02IndependentEvaluation({
           (row) => row.rawPredictionFinite === true
         ).length / l20Rows.length
         : null,
+      historicalR1: Object.freeze({
+        clipCount: privateRows.filter(
+          (row) => row.r1BoundTriggered
+        ).length,
+        correctionCount: privateRows.filter(
+          (row) => row.r1CorrectionApplied
+        ).length,
+        fallbackCount: privateRows.filter(
+          (row) => row.r1FallbackToLg01
+        ).length,
+        nonfiniteRawCount: privateRows.filter(
+          (row) => row.r1RawPredictionFinite === false
+        ).length,
+        rawCoverage: privateRows.length > 0
+          ? privateRows.filter(
+            (row) => row.r1RawPredictionFinite === true
+          ).length / privateRows.length
+          : null
+      }),
       allFinalPredictionsFinite: allFinite
     }),
     structure: Object.freeze({
       H50M30RowwiseExactLg01: H50M30EqualityPass,
       caseKeyConservationPass: true,
+      historicalR1SameCasePass: true,
       originVisibleOnly: true,
       workTotalPrimary: true,
       workChannelStatus: "PARTIAL_NOT_ACTIVE",
@@ -630,6 +720,8 @@ export function evaluateHpsr02IndependentEvaluation({
     }),
     decision: evidence,
     bootstrapExecutionCount: 1,
+    bootstrapComparisonCount: 2,
+    historicalComparatorEvaluationCount: 1,
     rawCandidateEvaluationCount: 1,
     privateRows: Object.freeze(privateRows)
   });

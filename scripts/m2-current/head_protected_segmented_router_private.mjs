@@ -464,14 +464,12 @@ export async function runHpsr02IndependentPrivate({ root }) {
     ) {
       throw new Error("hpsr02_independent_validation_rows_invalid");
     }
-    const routerResult = runHeadProtectedTailBandCorrection({
-      origin: "2026-03",
-      horizonMonths: 3,
-      originVisibleWorkCashRows: validationRows.map((row) => ({
-        standardWorkId: row.standardWorkId,
-        trailing12Cash: row.referenceRevenue
-      })),
-      predictionRows: currentFit.predictions.map((prediction, index) => ({
+    const originVisibleWorkCashRows = validationRows.map((row) => ({
+      standardWorkId: row.standardWorkId,
+      trailing12Cash: row.referenceRevenue
+    }));
+    const predictionRows = currentFit.predictions.map(
+      (prediction, index) => ({
         standardWorkId: prediction.standardWorkId,
         origin: "2026-03",
         horizonMonths: 3,
@@ -484,7 +482,21 @@ export async function runHpsr02IndependentPrivate({ root }) {
             && Number.isFinite(prediction.transformedPointEstimate),
           supportRangeExtrapolation: false
         }
-      })),
+      })
+    );
+    const routerResult = runHeadProtectedTailBandCorrection({
+      origin: "2026-03",
+      horizonMonths: 3,
+      originVisibleWorkCashRows,
+      predictionRows,
+      residualBoundState: frozenBoundArtifact,
+      executionMode: "CONTROLLED_LATER_ORIGIN"
+    });
+    const historicalRouterResult = runHeadProtectedSegmentedRouter({
+      origin: "2026-03",
+      horizonMonths: 3,
+      originVisibleWorkCashRows,
+      predictionRows,
       residualBoundState: frozenBoundArtifact,
       executionMode: "CONTROLLED_LATER_ORIGIN"
     });
@@ -499,6 +511,7 @@ export async function runHpsr02IndependentPrivate({ root }) {
     }
     const evaluation = evaluateHpsr02IndependentEvaluation({
       routerResult,
+      historicalRouterResult,
       actualRows: validationRows.filter(
         (row) => row.core80 === true
       ).map(actualRow),
@@ -516,6 +529,9 @@ export async function runHpsr02IndependentPrivate({ root }) {
         (item) => item.standardWorkId === row.standardWorkId
       );
       const r0 = routerResult.r0Rows.find(
+        (item) => item.standardWorkId === row.standardWorkId
+      );
+      const r1 = historicalRouterResult.r1RawRouterRows.find(
         (item) => item.standardWorkId === row.standardWorkId
       );
       const r2 = routerResult.r2Rows.find(
@@ -536,6 +552,11 @@ export async function runHpsr02IndependentPrivate({ root }) {
           ? prediction.pointEstimate
           : null,
         cham01B3RawFinite: Number.isFinite(prediction.pointEstimate),
+        hpsr01HistoricalComparatorPointEstimate: r1.pointEstimate,
+        hpsr01HistoricalComparatorCorrectionApplied:
+          r1.correctionApplied,
+        hpsr01HistoricalComparatorFallbackToLg01:
+          r1.fallbackToLg01,
         hpsr02PointEstimate: r2.pointEstimate,
         correctionApplied: r2.correctionApplied,
         fallbackToLg01: r2.fallbackToLg01,
@@ -1130,7 +1151,9 @@ function buildHpsr02PublicResult({
     executionLedger: Object.freeze({
       futureActualRowsUsedForScoring: fit.validationRows.length,
       candidateModelRuns: 1,
+      historicalComparatorModelRuns: 1,
       candidatePredictionsProduced: evaluation.caseCount,
+      historicalComparatorPredictionsProduced: evaluation.caseCount,
       scientificEvaluationsExecuted: 1,
       bootstrapRuns: 1,
       bootstrapIterations: 2000,
@@ -1184,6 +1207,7 @@ function renderHpsr02ChineseReport(value) {
     return `| ${bandId} | ${band.workCount} | ${number(band.actualCash)}`
       + ` | ${percent(band.actualCashShare)}`
       + ` | ${number(band.r0.absoluteErrorTotal)}`
+      + ` | ${number(band.r1.absoluteErrorTotal)}`
       + ` | ${number(band.r2.absoluteErrorTotal)}`
       + ` | ${number(band.absoluteErrorReduction)}`
       + ` | ${band.direction} |`;
@@ -1215,8 +1239,8 @@ function renderHpsr02ChineseReport(value) {
 - 全部成熟可评价作品：${evaluation.eligibleWorkCount}；动态 Core80：${evaluation.workCount}。
 - Core80 实际现金覆盖：${percent(evaluation.core80ActualCashCoverage)}。
 
-| 现金带 | 作品数 | actual cash | actual share | R0 absolute error | HPSR02 absolute error | paired reduction | 方向 |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| 现金带 | 作品数 | actual cash | actual share | R0 absolute error | HPSR01 历史结构 absolute error | HPSR02 absolute error | HPSR02 paired reduction | HPSR02 方向 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
 ${bandRows.join("\n")}
 
 ## 同案例成绩
@@ -1224,11 +1248,13 @@ ${bandRows.join("\n")}
 | 对象 | WAPE | signed bias | absolute bias | MAE | median AE |
 | --- | ---: | ---: | ---: | ---: | ---: |
 | 冻结 LG01 同案例基线（\`M2-WORK-LG01\`） | ${percent(metrics.r0.wape)} | ${percent(metrics.r0.signedBias)} | ${percent(metrics.r0.absoluteBias)} | ${number(metrics.r0.mae)} | ${number(metrics.r0.medianAbsoluteError)} |
+| LG01 头部保护分段路由模型 v0.1 历史结构对照（\`M2-WORK-HPSR01\`） | ${percent(metrics.r1.wape)} | ${percent(metrics.r1.signedBias)} | ${percent(metrics.r1.absoluteBias)} | ${number(metrics.r1.mae)} | ${number(metrics.r1.medianAbsoluteError)} |
 | LG01 头部保护尾段修正模型 v0.2（\`M2-WORK-HPSR02\`） | ${percent(metrics.r2.wape)} | ${percent(metrics.r2.signedBias)} | ${percent(metrics.r2.absoluteBias)} | ${number(metrics.r2.mae)} | ${number(metrics.r2.medianAbsoluteError)} |
 
 - 配对绝对误差减少：${number(metrics.pairedAbsoluteErrorReduction)}；占 actual cash：${percent(metrics.pairedAbsoluteErrorReductionOverActualCash)}。
 - relative FVA：${percent(metrics.relativeFva)}。
 - 2,000 次作品 cluster bootstrap 95% 区间：${interval(metrics.bootstrapFva95.interval95)}。
+- HPSR01 历史结构对照相对 R0 的配对绝对误差减少 / relative FVA / 2,000 次 bootstrap 95% 区间：${number(metrics.r1PairedAbsoluteErrorReduction)} / ${percent(metrics.r1RelativeFva)} / ${interval(metrics.r1BootstrapFva95.interval95)}。
 - absolute bias 相对 R0 变化：${percent(metrics.absoluteBiasWorsening)}。
 - 最大单作品误差集中度（R0/HPSR02）：${percent(metrics.r0.errorConcentration.maximumWorkShare)} / ${percent(metrics.r2.errorConcentration.maximumWorkShare)}。
 - Top5：${percent(metrics.r0.errorConcentration.top5WorkShare)} / ${percent(metrics.r2.errorConcentration.top5WorkShare)}；Top10：${percent(metrics.r0.errorConcentration.top10WorkShare)} / ${percent(metrics.r2.errorConcentration.top10WorkShare)}。
@@ -1238,6 +1264,7 @@ ${bandRows.join("\n")}
 - H50/M30 逐行精确等于冻结 LG01：${evaluation.structure.H50M30RowwiseExactLg01 ? "通过" : "失败"}。
 - clip / fallback / nonfinite raw L20：${evaluation.numeric.clipCount} / ${evaluation.numeric.fallbackCount} / ${evaluation.numeric.nonfiniteRawL20Count}。
 - L20 raw coverage：${percent(evaluation.numeric.rawL20Coverage)}；最终预测全部有限：${evaluation.numeric.allFinalPredictionsFinite ? "是" : "否"}。
+- HPSR01 历史结构对照的 clip / fallback / nonfinite / raw coverage：${evaluation.numeric.historicalR1.clipCount} / ${evaluation.numeric.historicalR1.fallbackCount} / ${evaluation.numeric.historicalR1.nonfiniteRawCount} / ${percent(evaluation.numeric.historicalR1.rawCoverage)}。
 - 没有训练新模型、调参、alpha 搜索、残差边界重估或结果后选模；只执行冻结公式的 origin-faithful 确定性重建。
 
 ## 治理与停止
